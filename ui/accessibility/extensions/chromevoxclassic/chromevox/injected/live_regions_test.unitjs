@@ -1,0 +1,322 @@
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Include test fixture.
+GEN_INCLUDE(['//ui/accessibility/extensions/chromevoxclassic/testing/chromevox_unittest_base.js']);
+
+/**
+ * Test fixture.
+ * @constructor
+ * @extends {ChromeVoxUnitTestBase}
+ */
+function ChromeVoxLiveRegionsUnitTest() {
+  ChromeVoxUnitTestBase.call(this);
+}
+
+ChromeVoxLiveRegionsUnitTest.prototype = {
+  __proto__: ChromeVoxUnitTestBase.prototype,
+
+  /** @override */
+  isAsync: true,
+
+  /** @override */
+  closureModuleDeps: [
+    'cvox.ChromeVoxTester',
+    'cvox.SpokenListBuilder',
+  ],
+
+  /** @override */
+  setUp: function() {
+    cvox.ChromeVoxTester.setUp(document);
+  },
+
+  /** @override */
+  tearDown: function() {
+    cvox.ChromeVoxTester.tearDown(document);
+  }
+};
+
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'InsertNonLiveRegion', function() {
+  var region = document.createElement('div');
+  region.innerHTML = '<div role="button">Alpha</div>';
+  document.body.appendChild(region);
+
+  this.waitForCalm(function() {
+    assertEquals(0, cvox.ChromeVoxTester.getUtteranceList().length);
+  });
+});
+
+
+/**
+ * Test inserting an 'alert' live region.
+ */
+// Flaky on Chromium OS: crbug.com/498881.
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_InsertAlertLiveRegion',
+       function() {
+  var region = document.createElement('div');
+  region.innerHTML = '<div role="alert">Alpha</div>';
+  document.body.appendChild(region);
+
+  this.waitForCalm(function() {
+    var utterances = cvox.ChromeVoxTester.getUtteranceList();
+    assertEquals('Alpha', utterances[0]);
+    assertEquals('Alert', utterances[1]);
+  });
+});
+
+
+/**
+ * Test making text appear inside an 'alert' live region by setting its
+ * display to something other than 'none'.
+ */
+// Flaky on Chromium OS: crbug.com/498881.
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_RevealAlertLiveRegion', function() {
+  this.loadDoc(function() {/*!
+    <div role="alert">
+      <style>
+        .invisible {
+          display: none;
+        }
+      </style>
+      <div id="mymessage" class="invisible">
+        I just appeared!
+      </div>
+    </div>
+  */});
+  $('mymessage').className = '';
+
+  this.waitForCalm(function() {
+    var utterances = cvox.ChromeVoxTester.getUtteranceList();
+    assertEquals('I just appeared!', utterances[0]);
+  });
+});
+
+
+/**
+ * Test inserting a 'polite' live region.
+ */
+// Flaky on Chromium OS: crbug.com/498881.
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_InsertPoliteLiveRegion', function() {
+  var region = document.createElement('div');
+  region.innerHTML = '<div aria-live="polite">Beta</div>';
+  document.body.appendChild(region);
+
+  this.waitForCalm(function() {
+    var utterances = cvox.ChromeVoxTester.getUtteranceList();
+    assertEquals('Beta', utterances[0]);
+  });
+});
+
+
+/**
+ * Test modifying an existing status live region.
+ */
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_ModifyStatusLiveRegion', function() {
+  var region = document.createElement('div');
+  region.innerHTML = '<div id="status" role="status">Gamma</div>';
+  document.body.appendChild(region);
+
+  this.waitForCalm(function() {
+    $('status').innerText = 'Delta';
+    // Wait for this to make it through the event queue and
+    // trigger the live region change announcement.
+    this.waitForCalm(function() {
+      var utterances = cvox.ChromeVoxTester.getUtteranceList();
+      assertEquals('Delta', utterances[utterances.length - 1]);
+    });
+  });
+});
+
+
+/**
+ * Test adding element to a atomic and non-atomic live regions.
+ */
+// Flaky on Chromium OS: crbug.com/909973.
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_AddToLiveRegion', function() {
+  this.loadDoc(function() {/*!
+    <div>
+      <div id="non_atomic_buddylist" aria-live="polite">
+        <div>Larry</div>
+        <div>Sergey</div>
+      </div>
+      <div id="atomic_buddylist" aria-live="polite" aria-atomic="true">
+        <div>Larry</div>
+        <div>Sergey</div>
+      </div>
+    </div>
+  */});
+
+  this.waitForCalm(function() {
+    var eric1 = document.createElement('div');
+    eric1.innerHTML = 'Eric';
+    $('non_atomic_buddylist').appendChild(eric1);
+    var eric2 = document.createElement('div');
+    eric2.innerHTML = 'Eric';
+    $('atomic_buddylist').appendChild(eric2);
+    this.waitForCalm(function() {
+      var utterances = cvox.ChromeVoxTester.getUtteranceList();
+      assertEquals('Eric', utterances[utterances.length - 2]);
+      assertEquals('Larry Sergey Eric', utterances[utterances.length - 1]);
+    });
+  });
+});
+
+/**
+ * Test removing elements from live regions.
+ */
+// Flaky on Chromium OS: crbug.com/498881.
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_RemoveFromLiveRegion', function() {
+  this.loadDoc(function() {/*!
+    <div>
+      <div id="buddylist2" aria-relevant="removals">
+        <div id="jack">Jack</div>
+        <div id="janet">Janet</div>
+        <div id="chrissy">Chrissy</div>
+      </div>
+    </div>
+  */});
+
+  $('buddylist2').setAttribute('aria-live', 'polite');
+  $('buddylist2').removeChild($('jack'));
+  this.waitForCalm(function() {
+    var utterances = cvox.ChromeVoxTester.getUtteranceList();
+    assertEquals(1, utterances.length);
+    assertEquals('removed:, Jack', utterances[0]);
+  });
+});
+
+
+/**
+ * Test live region that's a progress bar through the event watcher.
+ */
+// Flaky on Chromium OS: crbug.com/498881.
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_ProgressBarLiveRegionEvents', function() {
+  this.loadDoc(function() {/*!
+    <div id="progress" role="progressbar" aria-live="polite" aria-valuenow="1">
+      <div id="ptext">
+        1% complete.
+      </div>
+    </div>
+  */});
+
+  $('progress').setAttribute('aria-valuenow', '2');
+  $('ptext').innerText = '2% complete';
+  this.waitForCalm(function() {
+    var utterances = cvox.ChromeVoxTester.getUtteranceList();
+    assertEquals('Progress bar 2', utterances[utterances.length - 1]);
+  });
+});
+
+
+/**
+ * Test 'alert' live region inserted as a result of focus change, like
+ *   when there's an error message when filling out a form.
+ */
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'FocusTriggeredAlertLiveRegion', function() {
+  this.loadDoc(function() {/*!
+    <form id="form">
+      <label>
+        Name
+        <input id="name">
+      </label>
+      <label>
+        Address
+        <input id="address">
+      </label>
+    </form>
+  */});
+
+  // Suppress EventWatcher's artificial limit on the number of DOM subtree
+  // modified events that can happen in a row.
+  cvox.ChromeVoxEventWatcher.SUBTREE_MODIFIED_BURST_COUNT_LIMIT_ = 999;
+
+  var form = $('form');
+  var name = $('name');
+  var address = $('address');
+
+  name.addEventListener(
+      'blur',
+      function() {
+          var region = document.createElement('div');
+          region.innerHTML = '<div role="alert">Not a valid name!</div>';
+          form.appendChild(region);
+      }, false);
+
+  this.waitForCalm(function() { name.focus(); })
+      .waitForCalm(function() { address.focus(); })
+      .waitForCalm(this.assertSpokenList,
+                   new cvox.SpokenListBuilder()
+                       .categoryFlush('Name')
+                       .queue('Edit text')
+                       .categoryFlush('Address')
+                           .queue('Edit text')
+                       .categoryFlush('Not a valid name!')
+                       .queue('Alert'));
+});
+
+
+/**
+ * Test focus followed by live region change, make sure both are spoken.
+ */
+// Flaky on Chromium OS: crbug.com/498881.
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_FocusThenLiveRegion', function() {
+  this.loadDoc(function() {/*!
+    <button id="button_to_focus">Button To Focus</button>
+    <div id="live" aria-live="polite"></div>
+  */});
+
+  $('button_to_focus').focus();
+  $('live').innerText = 'Live region text';
+
+  this.waitForCalm(this.assertSpokenList,
+                   new cvox.SpokenListBuilder()
+                       .categoryFlush('Button To Focus')
+                       .queue('Button')
+                       .categoryFlush('Live region text'));
+});
+
+
+/**
+ * Test live region change followed by focus, make sure both are spoken.
+ */
+// Flaky on Chromium OS: crbug.com/498881.
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_LiveRegionThenFocus', function() {
+  this.loadDoc(function() {/*!
+    <button id="button_to_focus">Button To Focus</button>
+    <div id="live" aria-live="polite"></div>
+  */});
+
+  $('live').innerText = 'Live region text';
+
+  this.waitForCalm(function() {
+         $('button_to_focus').focus();
+       })
+      .waitForCalm(this.assertSpokenList,
+                   new cvox.SpokenListBuilder()
+                       .categoryFlush('Live region text')
+                       .categoryFlush('Button To Focus')
+                       .queue('Button'));
+});
+
+
+/**
+ * Two elements inside a live region. These are all combined into
+ * one utterance until this bug is fixed: http://crbug.com/415679
+ */
+// Flaky on Chromium OS: crbug.com/498881.
+TEST_F('ChromeVoxLiveRegionsUnitTest', 'DISABLED_TwoElementsInLiveRegion', function() {
+  this.loadDoc(function() {/*!
+    <div id="live" aria-live="polite">
+      <div id="hidden" style="display:none">
+        <button>L1</button>
+        <button>L2</button>
+      </div>
+    </div>
+  */});
+
+  $('hidden').style.display = 'block';
+  this.waitForCalm(this.assertSpokenList,
+                    new cvox.SpokenListBuilder()
+                        .categoryFlush('L1, L2'));
+});

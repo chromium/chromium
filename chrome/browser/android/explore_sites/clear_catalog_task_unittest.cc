@@ -124,7 +124,8 @@ VALUES
 };
 
 TEST_F(ExploreSitesClearCatalogTest, StoreFailure) {
-  store()->SetInitializationStatusForTest(InitializationStatus::FAILURE);
+  store()->SetInitializationStatusForTesting(
+      ExploreSitesStore::InitializationStatus::kFailure, false);
 
   // A database failure should be completed but return with an error.
   EXPECT_FALSE(RunTaskWithResult());

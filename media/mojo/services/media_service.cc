@@ -41,7 +41,7 @@ void MediaService::OnBindInterface(
 }
 
 void MediaService::OnDisconnected() {
-  interface_factory_bindings_.CloseAllBindings();
+  interface_factory_receivers_.Clear();
   mojo_media_client_.reset();
   Terminate();
 }
@@ -51,17 +51,18 @@ void MediaService::Create(mojom::MediaServiceRequest request) {
 }
 
 void MediaService::CreateInterfaceFactory(
-    mojom::InterfaceFactoryRequest request,
-    service_manager::mojom::InterfaceProviderPtr host_interfaces) {
+    mojo::PendingReceiver<mojom::InterfaceFactory> receiver,
+    mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
+        host_interfaces) {
   // Ignore request if service has already stopped.
   if (!mojo_media_client_)
     return;
 
-  interface_factory_bindings_.AddBinding(
+  interface_factory_receivers_.Add(
       std::make_unique<InterfaceFactoryImpl>(std::move(host_interfaces),
                                              keepalive_.CreateRef(),
                                              mojo_media_client_.get()),
-      std::move(request));
+      std::move(receiver));
 }
 
 }  // namespace media

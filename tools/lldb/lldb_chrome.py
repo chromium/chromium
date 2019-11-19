@@ -11,16 +11,17 @@
 
 import lldb
 
+
 def __lldb_init_module(debugger, internal_dict):
     debugger.HandleCommand('type summary add -F ' +
         'lldb_chrome.basestring16_SummaryProvider base::string16')
 
-# This is highly dependent on libc++ being compiled with little endian.
+
 def basestring16_SummaryProvider(valobj, internal_dict):
     s = valobj.GetValueForExpressionPath('.__r_.__value_.__s')
     l = valobj.GetValueForExpressionPath('.__r_.__value_.__l')
     size = s.GetChildMemberWithName('__size_').GetValueAsUnsigned(0)
-    is_short_string = size & 1 == 0
+    is_short_string = size & 128 == 0  # Assumes _LIBCPP_BIG_ENDIAN is defined.
     if is_short_string:
         length = size >> 1
         data = s.GetChildMemberWithName('__data_').GetPointeeData(0, length)
@@ -35,4 +36,4 @@ def basestring16_SummaryProvider(valobj, internal_dict):
     if error.fail:
         return 'Summary error: %s' % error.description
     else:
-        return '"' + byte_string.decode('utf-16').encode('utf-8') + '"'
+        return '"' + byte_string.decode('utf-16') + '"'

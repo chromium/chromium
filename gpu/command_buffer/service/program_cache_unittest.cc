@@ -59,8 +59,12 @@ class NoBackendProgramCache : public ProgramCache {
                        varyings,
                        buffer_mode,
                        sha);
+    const std::string a_shaString(a_sha, kHashLength);
+    const std::string b_shaString(b_sha, kHashLength);
     const std::string shaString(sha, kHashLength);
 
+    CompiledShaderCacheSuccess(a_shaString);
+    CompiledShaderCacheSuccess(b_shaString);
     LinkedProgramCacheSuccess(shaString);
   }
 
@@ -84,8 +88,10 @@ class NoBackendProgramCache : public ProgramCache {
                                      result);
   }
 
-  void Evict(const std::string& program_hash) {
-    ProgramCache::Evict(program_hash);
+  void Evict(const std::string& program_hash,
+             const std::string& shader_0_hash,
+             const std::string& shader_1_hash) {
+    ProgramCache::Evict(program_hash, shader_0_hash, shader_1_hash);
   }
 
   size_t Trim(size_t limit) override { return 0; }
@@ -155,7 +161,9 @@ TEST_F(ProgramCacheTest, StatusEviction) {
 
   char sha[ProgramCache::kHashLength];
   cache_->ComputeProgramHash(a_sha, b_sha, nullptr, varyings_, GL_NONE, sha);
-  cache_->Evict(std::string(sha, ProgramCache::kHashLength));
+  cache_->Evict(std::string(sha, ProgramCache::kHashLength),
+                std::string(a_sha, ProgramCache::kHashLength),
+                std::string(b_sha, ProgramCache::kHashLength));
   EXPECT_EQ(ProgramCache::LINK_UNKNOWN,
             cache_->GetLinkedProgramStatus(shader1, shader2, nullptr, varyings_,
                                            GL_NONE));
@@ -177,7 +185,9 @@ TEST_F(ProgramCacheTest, EvictionWithReusedShader) {
 
   char sha[ProgramCache::kHashLength];
   cache_->ComputeProgramHash(a_sha, b_sha, nullptr, varyings_, GL_NONE, sha);
-  cache_->Evict(std::string(sha, ProgramCache::kHashLength));
+  cache_->Evict(std::string(sha, ProgramCache::kHashLength),
+                std::string(a_sha, ProgramCache::kHashLength),
+                std::string(b_sha, ProgramCache::kHashLength));
   EXPECT_EQ(ProgramCache::LINK_UNKNOWN,
             cache_->GetLinkedProgramStatus(shader1, shader2, nullptr, varyings_,
                                            GL_NONE));
@@ -186,7 +196,9 @@ TEST_F(ProgramCacheTest, EvictionWithReusedShader) {
                                            GL_NONE));
 
   cache_->ComputeProgramHash(a_sha, c_sha, nullptr, varyings_, GL_NONE, sha);
-  cache_->Evict(std::string(sha, ProgramCache::kHashLength));
+  cache_->Evict(std::string(sha, ProgramCache::kHashLength),
+                std::string(a_sha, ProgramCache::kHashLength),
+                std::string(c_sha, ProgramCache::kHashLength));
   EXPECT_EQ(ProgramCache::LINK_UNKNOWN,
             cache_->GetLinkedProgramStatus(shader1, shader2, nullptr, varyings_,
                                            GL_NONE));
@@ -225,6 +237,30 @@ TEST_F(ProgramCacheTest, LinkUnknownOnTransformFeedbackChange) {
   EXPECT_EQ(ProgramCache::LINK_UNKNOWN,
             cache_->GetLinkedProgramStatus(shader1, shader2, nullptr, varyings_,
                                            GL_INTERLEAVED_ATTRIBS));
+}
+
+TEST_F(ProgramCacheTest, ShaderCompileStatus) {
+  const std::string shader1 = "abcd1234";
+  const std::string shader2 = "abcda sda b1~#4 bbbbb1234";
+  {
+    std::string shader_a = shader1;
+    std::string shader_b = shader2;
+
+    EXPECT_EQ(cache_->HasSuccessfullyCompiledShader(shader1), false);
+    EXPECT_EQ(cache_->HasSuccessfullyCompiledShader(shader2), false);
+    cache_->SaySuccessfullyCached(shader_a, shader_b, nullptr, varyings_,
+                                  GL_NONE);
+
+    shader_a.clear();
+    shader_b.clear();
+  }
+  // make sure it was copied
+  EXPECT_EQ(ProgramCache::LINK_SUCCEEDED,
+            cache_->GetLinkedProgramStatus(shader1, shader2, nullptr, varyings_,
+                                           GL_NONE));
+
+  EXPECT_EQ(cache_->HasSuccessfullyCompiledShader(shader1), true);
+  EXPECT_EQ(cache_->HasSuccessfullyCompiledShader(shader2), true);
 }
 
 }  // namespace gles2

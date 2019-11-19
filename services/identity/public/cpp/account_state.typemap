@@ -10,4 +10,4 @@ sources = [
   "//services/identity/public/cpp/account_state_mojom_traits.cc",
 ]
 
-type_mappings = [ "identity.mojom.AccountState=identity::AccountState" ]
+type_mappings = [ "identity.mojom.AccountState=::identity::AccountState" ]

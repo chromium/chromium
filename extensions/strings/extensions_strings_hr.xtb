@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Nije uspjelo dekodiranje slike: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Lokalizacija je korištena, ali default_locale nije naveden u manifestu.</translation>
 <translation id="2576842806987913196">Već postoji CRX datoteka s takvim nazivom.</translation>
-<translation id="2753617847762399167">Neispravna putanja (apsolutna ili relativna u odnosu na ".."): "<ph name="IMAGE_PATH" />"</translation>
 <translation id="2785530881066938471">Nije bilo moguće učitati datoteku "<ph name="RELATIVE_PATH" />" za skriptu sadržaja. Nema UTF-8 kodiranje.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ID proširenja "<ph name="EXTENSION_ID" />") blokirao je administrator. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Nije moguće instaliranje paketa: "<ph name="ERROR_CODE" />"</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Oblikovani prozori nisu podržani.</translation>
 <translation id="5456409301717116725">To proširenje uključuje ključnu datoteku "<ph name="KEY_PATH" />". Vjerojatno ne želite to učiniti.</translation>
 <translation id="5486326529110362464">Vrijednost unosa za osobni ključ mora postojati.</translation>
-<translation id="5627523580512561598">proširenje <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Administrator ovog računala zahtijeva instaliranje proširenja <ph name="EXTENSION_NAME" /> i ono se ne može deinstalirati.</translation>
 <translation id="6027032947578871493">Nepoznati proizvod <ph name="PRODUCT_ID" />, <ph name="VENDOR_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> dobavljača <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" zahtijeva pristup nekim od vaših uređaja:</translation>
 <translation id="657064425229075395">Nije bilo moguće učitati pozadinsku skriptu "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167">pristupiti uređaju <ph name="PRODUCT_NAME" /> dobavljača <ph name="VENDOR_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Nije uspjelo stvaranje direktorija za raspakiravanje: "<ph name="DIRECTORY_PATH" />"</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Proširenje se prečesto ponovno učitavalo.</translation>
 <translation id="7003844668372540529">Nepoznati proizvod <ph name="PRODUCT_ID" />, <ph name="VENDOR_NAME" /></translation>

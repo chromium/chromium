@@ -7,10 +7,10 @@ public_headers = [
   "//third_party/blink/public/common/messaging/transferable_message.h",
   "//third_party/blink/public/common/messaging/message_port_channel.h",
 ]
-traits_headers = [ "//third_party/blink/public/common/messaging/transferable_message_struct_traits.h" ]
+traits_headers = [ "//third_party/blink/public/common/messaging/transferable_message_mojom_traits.h" ]
 
 deps = [
-  "//skia/public/interfaces",
+  "//skia/public/mojom",
 ]
 type_mappings = [
   "blink.mojom.TransferableMessage=::blink::TransferableMessage[move_only]",

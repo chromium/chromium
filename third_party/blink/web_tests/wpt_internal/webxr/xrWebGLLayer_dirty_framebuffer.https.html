@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>let additionalChromiumResources = ["resources/xr-internal-device-mocking.js"];</script>
+<script src="/webxr/resources/webxr_util.js"></script>
+<script src="/webxr/resources/webxr_test_constants.js"></script>
+<canvas />
+
+<script>
+// This test utilizes internal getSubmitFrameCount and getMissingFrameCount methods
+// that are not part of the external webxr-test-api, and thus is internal to chrome.
+let testName = "A frame should be submitted if the base layer was written to "
+  + "during requestAnimationFrame";
+
+let fakeDeviceInitParams = TRACKED_IMMERSIVE_DEVICE;
+
+let testFunction =
+  (session, fakeDeviceController, t, sessionObjects) => new Promise((resolve, reject) => {
+  let gl = sessionObjects.gl;
+  let webglLayer = sessionObjects.glLayer;
+  function onSkipFrame(time, xrFrame) {
+    assert_equals(fakeDeviceController.getSubmitFrameCount(), 0);
+    assert_equals(fakeDeviceController.getMissingFrameCount(), 0);
+    // No GL commands issued.
+    session.requestAnimationFrame(onDrawToCanvas);
+  }
+
+  function onDrawToCanvas(time, xrFrame) {
+    // Ensure the previous step did not submit a frame.
+    assert_equals(fakeDeviceController.getSubmitFrameCount(), 0);
+    assert_equals(fakeDeviceController.getMissingFrameCount(), 1);
+
+    // Clear the canvas, but don't touch the framebuffer.
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    session.requestAnimationFrame(onDrawToFramebuffer);
+  }
+
+  function onDrawToFramebuffer(time, xrFrame) {
+    // Ensure both previous steps did not submit frames.
+    assert_equals(fakeDeviceController.getSubmitFrameCount(), 0);
+    assert_equals(fakeDeviceController.getMissingFrameCount(), 2);
+
+    // Clear the VRWebGLLayer framebuffer.
+    gl.bindFramebuffer(gl.FRAMEBUFFER, webglLayer.framebuffer);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // After the function returns ensure the frame was submitted.
+    t.step_timeout(() => {
+      assert_equals(fakeDeviceController.getSubmitFrameCount(), 1);
+      assert_equals(fakeDeviceController.getMissingFrameCount(), 2);
+      // Finished test.
+      resolve();
+    }, 100);
+  }
+
+  session.requestAnimationFrame(onSkipFrame);
+});
+
+xr_session_promise_test(
+  testName, testFunction, fakeDeviceInitParams, 'immersive-vr');
+
+</script>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
+    <item android:alpha="@dimen/default_disabled_alpha"
+        android:color="@color/default_icon_color_secondary" android:state_enabled="false"/>
+    <item android:color="@color/default_icon_color_secondary" />
+</selector>

@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -203,9 +203,9 @@ struct LowLevelAlloc::Arena {
 
   base_internal::SpinLock mu;
   // Head of free list, sorted by address
-  AllocList freelist GUARDED_BY(mu);
+  AllocList freelist ABSL_GUARDED_BY(mu);
   // Count of allocated blocks
-  int32_t allocation_count GUARDED_BY(mu);
+  int32_t allocation_count ABSL_GUARDED_BY(mu);
   // flags passed to NewArena
   const uint32_t flags;
   // Result of sysconf(_SC_PAGESIZE)
@@ -215,7 +215,7 @@ struct LowLevelAlloc::Arena {
   // Smallest allocation block size
   const size_t min_size;
   // PRNG state
-  uint32_t random GUARDED_BY(mu);
+  uint32_t random ABSL_GUARDED_BY(mu);
 };
 
 namespace {
@@ -275,10 +275,10 @@ static const uintptr_t kMagicAllocated = 0x4c833e95U;
 static const uintptr_t kMagicUnallocated = ~kMagicAllocated;
 
 namespace {
-class SCOPED_LOCKABLE ArenaLock {
+class ABSL_SCOPED_LOCKABLE ArenaLock {
  public:
   explicit ArenaLock(LowLevelAlloc::Arena *arena)
-      EXCLUSIVE_LOCK_FUNCTION(arena->mu)
+      ABSL_EXCLUSIVE_LOCK_FUNCTION(arena->mu)
       : arena_(arena) {
 #ifndef ABSL_LOW_LEVEL_ALLOC_ASYNC_SIGNAL_SAFE_MISSING
     if ((arena->flags & LowLevelAlloc::kAsyncSignalSafe) != 0) {
@@ -290,11 +290,14 @@ class SCOPED_LOCKABLE ArenaLock {
     arena_->mu.Lock();
   }
   ~ArenaLock() { ABSL_RAW_CHECK(left_, "haven't left Arena region"); }
-  void Leave() UNLOCK_FUNCTION() {
+  void Leave() ABSL_UNLOCK_FUNCTION() {
     arena_->mu.Unlock();
 #ifndef ABSL_LOW_LEVEL_ALLOC_ASYNC_SIGNAL_SAFE_MISSING
     if (mask_valid_) {
-      pthread_sigmask(SIG_SETMASK, &mask_, nullptr);
+      const int err = pthread_sigmask(SIG_SETMASK, &mask_, nullptr);
+      if (err != 0) {
+        ABSL_RAW_LOG(FATAL, "pthread_sigmask failed: %d", err);
+      }
     }
 #endif
     left_ = true;

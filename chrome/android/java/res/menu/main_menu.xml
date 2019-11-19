@@ -12,18 +12,23 @@
             <menu>
               <item android:id="@+id/forward_menu_id"
                 android:title="@string/accessibility_menu_forward"
+                android:titleCondensed="@string/menu_forward"
                 android:icon="@drawable/btn_forward"/>
               <item android:id="@+id/bookmark_this_page_id"
                 android:title="@string/accessibility_menu_bookmark"
+                android:titleCondensed="@string/menu_bookmark"
                 android:icon="@drawable/btn_star"/>
               <item android:id="@+id/offline_page_id"
                 android:title="@string/download_page"
+                android:titleCondensed="@string/menu_download"
                 android:icon="@drawable/ic_file_download_white_24dp"/>
               <item android:id="@+id/info_menu_id"
                 android:title="@string/accessibility_menu_info"
+                android:titleCondensed="@string/menu_page_info"
                 android:icon="@drawable/btn_info" />
               <item android:id="@+id/reload_menu_id"
                 android:title="@string/accessibility_btn_refresh"
+                android:titleCondensed="@string/menu_refresh"
                 android:icon="@drawable/btn_reload_stop"/>
             </menu>
         </item>
@@ -93,6 +98,8 @@
              android:title="@string/menu_close_all_tabs" />
          <item android:id="@+id/close_all_incognito_tabs_menu_id"
              android:title="@string/menu_close_all_incognito_tabs" />
+         <item android:id="@+id/menu_group_tabs"
+             android:title="@string/menu_group_tabs" />
          <item android:id="@id/preferences_id"
              android:title="@string/menu_preferences" />
     </group>

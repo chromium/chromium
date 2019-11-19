@@ -13,8 +13,8 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/browser_sync/browser_sync_switches.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "components/sync/driver/sync_driver_switches.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class SyncPromoUITest : public testing::Test {
@@ -34,7 +34,7 @@ class SyncPromoUITest : public testing::Test {
         switches::kDisableSync);
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
  private:

@@ -32,8 +32,15 @@ class ExampleAppListClient : public TestAppListClient {
 
   // TestAppListClient:
   void StartSearch(const base::string16& trimmed_query) override;
-  void OpenSearchResult(const std::string& result_id, int event_flags) override;
-  void ActivateItem(const std::string& id, int event_flags) override;
+  void OpenSearchResult(const std::string& result_id,
+                        int event_flags,
+                        ash::AppListLaunchedFrom launched_from,
+                        ash::AppListLaunchType launch_type,
+                        int suggestion_index,
+                        bool launch_as_default) override;
+  void ActivateItem(int profile_id,
+                    const std::string& id,
+                    int event_flags) override;
 
   AppListControllerImpl* controller_;
 

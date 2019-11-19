@@ -21,7 +21,7 @@ namespace {
 void ItemSelectedCallback(ash::ShelfAction* action_taken,
                           base::RunLoop* run_loop,
                           ash::ShelfAction action,
-                          base::Optional<ash::MenuItemList>) {
+                          ash::ShelfItemDelegate::AppMenuItems items) {
   *action_taken = action;
   run_loop->Quit();
 }

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+    padding: 10px;
+  }
+
+  input {
+    width: 90%;
+    height: 90%;
+  }
+</style>
+
+<div id="outside" tabindex="0">
+  <input id="inside" type="text" value="text">
+</div>
+
+<script>
+  // This test checks that focusless mode allows entering focus into an element
+  // with the enter key and exiting it with the escape key.
+  const outside = document.getElementById("outside");
+  const inside = document.getElementById("inside");
+
+  outside.addEventListener('click', () => {
+    inside.focus();
+  });
+
+  test(() => {
+    // Move interest to outer div. Click event will move focus to the input
+    // inside. This is a common pattern on the web. Ensure escape key still
+    // works in this scenario.
+    snav.triggerMove('Down');
+    eventSender.keyDown('Enter');
+
+    assert_equals(document.activeElement,
+                  inside,
+                  "input box starts off focused");
+
+    eventSender.keyDown('Escape');
+
+    assert_not_equals(document.activeElement,
+                      inside,
+                      "input box unfocused by escape key");
+  }, "Enter key moves focus into interested element");
+</script>

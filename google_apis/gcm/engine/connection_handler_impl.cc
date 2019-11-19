@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "google/protobuf/io/coded_stream.h"
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
 #include "google_apis/gcm/base/mcs_util.h"
@@ -17,7 +16,7 @@
 #include "net/base/net_errors.h"
 #include "net/socket/stream_socket.h"
 
-using namespace google::protobuf::io;
+namespace io = google::protobuf::io;
 
 namespace gcm {
 
@@ -46,19 +45,22 @@ const int kMCSVersion = 41;
 }  // namespace
 
 ConnectionHandlerImpl::ConnectionHandlerImpl(
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     base::TimeDelta read_timeout,
     const ProtoReceivedCallback& read_callback,
     const ProtoSentCallback& write_callback,
     const ConnectionChangedCallback& connection_callback)
-    : read_timeout_(read_timeout),
+    : io_task_runner_(std::move(io_task_runner)),
+      read_timeout_(read_timeout),
       handshake_complete_(false),
       message_tag_(0),
       message_size_(0),
       read_callback_(read_callback),
       write_callback_(write_callback),
       connection_callback_(connection_callback),
-      size_packet_so_far_(0),
-      weak_ptr_factory_(this) {
+      size_packet_so_far_(0) {
+  DCHECK(io_task_runner_);
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 }
 
 ConnectionHandlerImpl::~ConnectionHandlerImpl() {
@@ -99,7 +101,7 @@ void ConnectionHandlerImpl::SendMessage(
   DCHECK(handshake_complete_);
 
   {
-    CodedOutputStream coded_output_stream(output_stream_.get());
+    io::CodedOutputStream coded_output_stream(output_stream_.get());
     DVLOG(1) << "Writing proto of size " << message.ByteSize();
     int tag = GetMCSProtoTag(message);
     DCHECK_NE(tag, -1);
@@ -117,12 +119,13 @@ void ConnectionHandlerImpl::SendMessage(
 
 void ConnectionHandlerImpl::Login(
     const google::protobuf::MessageLite& login_request) {
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(output_stream_->GetState(), SocketOutputStream::EMPTY);
 
   const char version_byte[1] = {kMCSVersion};
   const char login_request_tag[1] = {kLoginRequestTag};
   {
-    CodedOutputStream coded_output_stream(output_stream_.get());
+    io::CodedOutputStream coded_output_stream(output_stream_.get());
     coded_output_stream.WriteRaw(version_byte, 1);
     coded_output_stream.WriteRaw(login_request_tag, 1);
     coded_output_stream.WriteVarint32(login_request.ByteSize());
@@ -132,7 +135,7 @@ void ConnectionHandlerImpl::Login(
   if (output_stream_->Flush(
           base::Bind(&ConnectionHandlerImpl::OnMessageSent,
                      weak_ptr_factory_.GetWeakPtr())) != net::ERR_IO_PENDING) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    io_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ConnectionHandlerImpl::OnMessageSent,
                                   weak_ptr_factory_.GetWeakPtr()));
   }
@@ -175,6 +178,7 @@ void ConnectionHandlerImpl::GetNextMessage() {
 }
 
 void ConnectionHandlerImpl::WaitForData(ProcessingState state) {
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   DVLOG(1) << "Waiting for MCS data: state == " << state;
 
   if (!input_stream_) {
@@ -259,7 +263,7 @@ void ConnectionHandlerImpl::WaitForData(ProcessingState state) {
     DVLOG(1) << "Socket read finished prematurely. Waiting for "
              << min_bytes_needed - input_stream_->UnreadByteCount()
              << " more bytes.";
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    io_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ConnectionHandlerImpl::WaitForData,
                        weak_ptr_factory_.GetWeakPtr(), MCS_PROTO_BYTES));
@@ -287,7 +291,7 @@ void ConnectionHandlerImpl::WaitForData(ProcessingState state) {
 void ConnectionHandlerImpl::OnGotVersion() {
   uint8_t version = 0;
   {
-    CodedInputStream coded_input_stream(input_stream_.get());
+    io::CodedInputStream coded_input_stream(input_stream_.get());
     coded_input_stream.ReadRaw(&version, 1);
   }
   // TODO(zea): remove this when the server is ready.
@@ -311,7 +315,7 @@ void ConnectionHandlerImpl::OnGotMessageTag() {
   }
 
   {
-    CodedInputStream coded_input_stream(input_stream_.get());
+    io::CodedInputStream coded_input_stream(input_stream_.get());
     coded_input_stream.ReadRaw(&message_tag_, 1);
   }
 
@@ -338,7 +342,7 @@ void ConnectionHandlerImpl::OnGotMessageSize() {
   int result = net::OK;
   bool incomplete_size_packet = false;
   {
-    CodedInputStream coded_input_stream(input_stream_.get());
+    io::CodedInputStream coded_input_stream(input_stream_.get());
     if (!coded_input_stream.ReadVarint32(&message_size_)) {
       DVLOG(1) << "Expecting another message size byte.";
       if (prev_byte_count >= kSizePacketLenMax) {
@@ -374,13 +378,15 @@ void ConnectionHandlerImpl::OnGotMessageSize() {
 }
 
 void ConnectionHandlerImpl::OnGotMessageBytes() {
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+
   read_timeout_timer_.Stop();
   std::unique_ptr<google::protobuf::MessageLite> protobuf(
       BuildProtobufFromTag(message_tag_));
   // Messages with no content are valid; just use the default protobuf for
   // that tag.
   if (protobuf.get() && message_size_ == 0) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
+    io_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ConnectionHandlerImpl::GetNextMessage,
                                   weak_ptr_factory_.GetWeakPtr()));
     read_callback_.Run(std::move(protobuf));
@@ -404,7 +410,7 @@ void ConnectionHandlerImpl::OnGotMessageBytes() {
 
   int result = net::OK;
   if (message_size_ < kDefaultDataPacketLimit) {
-    CodedInputStream coded_input_stream(input_stream_.get());
+    io::CodedInputStream coded_input_stream(input_stream_.get());
     if (!protobuf->ParsePartialFromCodedStream(&coded_input_stream)) {
       LOG(ERROR) << "Unable to parse GCM message of type "
                  << static_cast<unsigned int>(message_tag_);
@@ -412,7 +418,7 @@ void ConnectionHandlerImpl::OnGotMessageBytes() {
     }
   } else {
     // Copy any data in the input stream onto the end of the buffer.
-    const void* data_ptr = NULL;
+    const void* data_ptr = nullptr;
     int size = 0;
     input_stream_->Next(&data_ptr, &size);
     payload_input_buffer_.insert(payload_input_buffer_.end(),
@@ -421,9 +427,9 @@ void ConnectionHandlerImpl::OnGotMessageBytes() {
     DCHECK_LE(payload_input_buffer_.size(), message_size_);
 
     if (payload_input_buffer_.size() == message_size_) {
-      ArrayInputStream buffer_input_stream(payload_input_buffer_.data(),
-                                           payload_input_buffer_.size());
-      CodedInputStream coded_input_stream(&buffer_input_stream);
+      io::ArrayInputStream buffer_input_stream(payload_input_buffer_.data(),
+                                               payload_input_buffer_.size());
+      io::CodedInputStream coded_input_stream(&buffer_input_stream);
       if (!protobuf->ParsePartialFromCodedStream(&coded_input_stream)) {
         LOG(ERROR) << "Unable to parse GCM message of type "
                    << static_cast<unsigned int>(message_tag_);
@@ -452,7 +458,7 @@ void ConnectionHandlerImpl::OnGotMessageBytes() {
   }
 
   input_stream_->RebuildBuffer();
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
+  io_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ConnectionHandlerImpl::GetNextMessage,
                                 weak_ptr_factory_.GetWeakPtr()));
   if (message_tag_ == kLoginResponseTag) {

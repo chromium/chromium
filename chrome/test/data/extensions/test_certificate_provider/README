@@ -1,0 +1,5 @@
+An extension that provides testing certificates and private keys to
+Chrome via the chrome.certificateProvider API.
+
+The cryptographic operations are implemented by the C++ counterpart in
+chrome/browser/chromeos/certificate_provider/test_certificate_provider_extension.h.

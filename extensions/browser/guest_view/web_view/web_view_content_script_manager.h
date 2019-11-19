@@ -75,7 +75,8 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data,
   using GuestContentScriptMap = std::map<GuestMapKey, ContentScriptMap>;
 
   // UserScriptLoader::Observer implementation:
-  void OnScriptsLoaded(UserScriptLoader* loader) override;
+  void OnScriptsLoaded(UserScriptLoader* loader,
+                       content::BrowserContext* browser_context) override;
   void OnUserScriptLoaderDestroyed(UserScriptLoader* loader) override;
 
   // If |user_script_loader_observer_| doesn't observe any source, we will run

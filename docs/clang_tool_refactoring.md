@@ -15,8 +15,6 @@ with a traditional find-and-replace regexp:
 
 ## Caveats
 
-* Clang tools do not work with jumbo builds.
-
 * Invocations of a clang tool runs on on only one build config at a time. For
 example, running the tool across a `target_os="win"` build won't update code
 that is guarded by `OS_POSIX`. Performing a global refactoring will often
@@ -96,7 +94,7 @@ doesn't work well for Chromium:
 Synopsis:
 
 ```shell
-tools/clang/scripts/update.py --bootstrap --force-local-build --without-android \
+tools/clang/scripts/build.py --bootstrap --without-android \
   --extra-tools rewrite_to_chrome_style
 ```
 

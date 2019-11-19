@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "components/version_info/version_info.h"
@@ -24,6 +25,8 @@ namespace keys = manifest_keys;
 
 class ExtensionManifestBackgroundTest : public ChromeManifestTest {
 };
+
+// TODO(devlin): Can this file move to //extensions?
 
 TEST_F(ExtensionManifestBackgroundTest, BackgroundPermission) {
   LoadAndExpectError("background_permission.json",
@@ -88,10 +91,44 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPageWebRequest) {
   EXPECT_TRUE(BackgroundInfo::HasLazyBackgroundPage(extension.get()));
 
   base::Value permissions(base::Value::Type::LIST);
-  permissions.GetList().push_back(base::Value("webRequest"));
+  permissions.Append(base::Value("webRequest"));
   manifest.SetKey(keys::kPermissions, std::move(permissions));
   LoadAndExpectError(ManifestData(&manifest, ""),
                      errors::kWebRequestConflictsWithLazyBackground);
+}
+
+TEST_F(ExtensionManifestBackgroundTest, BackgroundPageTransientBackground) {
+  ScopedCurrentChannel current_channel(version_info::Channel::DEV);
+
+  scoped_refptr<Extension> extension(
+      LoadAndExpectSuccess(ManifestData(base::test::ParseJson(R"(
+          {
+            "name": "test",
+            "manifest_version": 2,
+            "version": "1",
+            "background": {
+              "page": "foo.html"
+            }
+          })"),
+                                        "")));
+  ASSERT_TRUE(extension.get());
+  EXPECT_TRUE(BackgroundInfo::HasPersistentBackgroundPage(extension.get()));
+
+  LoadAndExpectError(
+      ManifestData(base::test::ParseJson(R"(
+          {
+            "name": "test",
+            "manifest_version": 2,
+            "version": "1",
+            "permissions": [
+              "transientBackground"
+            ],
+            "background": {
+              "page": "foo.html"
+            }
+          })"),
+                   ""),
+      errors::kTransientBackgroundConflictsWithPersistentBackground);
 }
 
 TEST_F(ExtensionManifestBackgroundTest, BackgroundPagePersistentPlatformApp) {
@@ -127,23 +164,97 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPagePersistentInvalidKey) {
             warnings[0].message);
 }
 
-// Tests channel restriction on "background.service_worker_script" key.
+// Tests channel restriction on "background.service_worker" key.
 TEST_F(ExtensionManifestBackgroundTest, ServiceWorkerBasedBackgroundKey) {
   // TODO(lazyboy): Add exhaustive tests here, e.g.
   //   - specifying a non-existent file.
   //   - specifying multiple files.
   //   - specifying invalid type (non-string) values.
   {
-    ScopedCurrentChannel beta(version_info::Channel::BETA);
-    scoped_refptr<Extension> extension = LoadAndExpectWarning(
-        "service_worker_based_background.json",
-        "'background.service_worker_script' requires trunk "
-        "channel or newer, but this is the beta channel.");
+    ScopedCurrentChannel dev(version_info::Channel::DEV);
+    scoped_refptr<Extension> extension =
+        LoadAndExpectWarning("service_worker_based_background.json",
+                             "'background.service_worker' requires canary "
+                             "channel or newer, but this is the dev channel.");
   }
   {
-    ScopedCurrentChannel beta(version_info::Channel::UNKNOWN);
+    ScopedCurrentChannel canary(version_info::Channel::CANARY);
     scoped_refptr<Extension> extension =
         LoadAndExpectSuccess("service_worker_based_background.json");
+  }
+  {
+    ScopedCurrentChannel trunk(version_info::Channel::UNKNOWN);
+    scoped_refptr<Extension> extension =
+        LoadAndExpectSuccess("service_worker_based_background.json");
+  }
+}
+
+TEST_F(ExtensionManifestBackgroundTest, ManifestV3Restrictions) {
+  auto get_expected_error = [](base::StringPiece key) {
+    return ErrorUtils::FormatErrorMessage(
+        errors::kBackgroundSpecificationInvalidForManifestV3, key);
+  };
+
+  {
+    constexpr char kManifestBackgroundPage[] =
+        R"({
+             "name": "MV3 Test",
+             "manifest_version": 3,
+             "version": "0.1",
+             "background": {
+               "page": "background.html"
+             }
+           })";
+    base::Value manifest_value = base::test::ParseJson(kManifestBackgroundPage);
+    LoadAndExpectError(
+        ManifestData(std::move(manifest_value), "background page"),
+        get_expected_error(keys::kBackgroundPage));
+  }
+  {
+    constexpr char kManifestBackgroundScripts[] =
+        R"({
+             "name": "MV3 Test",
+             "manifest_version": 3,
+             "version": "0.1",
+             "background": {
+               "scripts": ["background.js"]
+             }
+           })";
+    base::Value manifest_value =
+        base::test::ParseJson(kManifestBackgroundScripts);
+    LoadAndExpectError(
+        ManifestData(std::move(manifest_value), "background scripts"),
+        get_expected_error(keys::kBackgroundScripts));
+  }
+  {
+    constexpr char kManifestBackgroundPersistent[] =
+        R"({
+             "name": "MV3 Test",
+             "manifest_version": 3,
+             "version": "0.1",
+             "background": {
+               "service_worker": "worker.js",
+               "persistent": true
+             }
+           })";
+    base::Value manifest_value =
+        base::test::ParseJson(kManifestBackgroundPersistent);
+    LoadAndExpectError(
+        ManifestData(std::move(manifest_value), "persistent background"),
+        get_expected_error(keys::kBackgroundPersistent));
+  }
+  {
+    // An extension with no background key present should still be allowed.
+    constexpr char kManifestBackgroundPersistent[] =
+        R"({
+             "name": "MV3 Test",
+             "manifest_version": 3,
+             "version": "0.1"
+           })";
+    base::Value manifest_value =
+        base::test::ParseJson(kManifestBackgroundPersistent);
+    LoadAndExpectSuccess(
+        ManifestData(std::move(manifest_value), "no background"));
   }
 }
 

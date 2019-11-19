@@ -7,7 +7,7 @@
 
 #include <tuple>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "ipc/ipc_message.h"
 
 namespace content {

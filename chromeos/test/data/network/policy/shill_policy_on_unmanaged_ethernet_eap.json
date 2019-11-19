@@ -1,13 +1,9 @@
 {
   "Device": "",
   "EAP.EAP": "TLS",
-  "GUID": "guid",
-  "Name": "guid",
+  "GUID": "policy_ethernet_eap",
   "Profile": "/profile/user1/shill",
-  "SSID": "guid",
-  "State": "idle",
   "Type": "etherneteap",
   "UIData": "{\"onc_source\":\"user_policy\"}",
-  "Visible": true,
-  "WiFi.HexSSID": "67756964"
+  "Visible": true
 }

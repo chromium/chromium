@@ -10,7 +10,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/web/public/test/web_js_test.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/web_state.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -85,26 +85,22 @@ class ImageFetchJsTest : public web::WebJsTest<web::WebTestWithWebState> {
     WebTestWithWebState::SetUp();
     server_.RegisterDefaultHandler(base::BindRepeating(HandleRequest));
     ASSERT_TRUE(server_.Start());
-    web_state()->AddScriptCommandCallback(
+    subscription_ = web_state()->AddScriptCommandCallback(
         base::BindRepeating(&ImageFetchJsTest::OnMessageFromJavaScript,
                             base::Unretained(this)),
         kCommandPrefix);
   }
 
-  void TearDown() override {
-    web_state()->RemoveScriptCommandCallback(kCommandPrefix);
-    WebTestWithWebState::TearDown();
-  }
-
-  bool OnMessageFromJavaScript(const base::DictionaryValue& message,
+  void OnMessageFromJavaScript(const base::DictionaryValue& message,
                                const GURL& page_url,
-                               bool has_user_gesture,
-                               bool form_in_main_frame,
+                               bool user_is_interacting,
                                web::WebFrame* sender_frame) {
     message_received_ = true;
     message_ = message.Clone();
-    return true;
   }
+
+  // Subscription for JS message.
+  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
 
   net::EmbeddedTestServer server_;
   base::Value message_;

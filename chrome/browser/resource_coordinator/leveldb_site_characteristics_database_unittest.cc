@@ -13,10 +13,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/resource_coordinator/site_characteristics.pb.h"
+#include "chrome/browser/performance_manager/persistence/site_data/site_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
@@ -54,13 +54,13 @@ ScopedReadOnlyDirectory::ScopedReadOnlyDirectory(
   EXPECT_FALSE(base::PathIsWritable(read_only_path_));
 }
 
-// Initialize a SiteCharacteristicsProto object with a test value (the same
+// Initialize a SiteDataProto object with a test value (the same
 // value is used to initialize all fields).
-void InitSiteCharacteristicProto(SiteCharacteristicsProto* proto,
+void InitSiteCharacteristicProto(SiteDataProto* proto,
                                  ::google::protobuf::int64 test_value) {
   proto->set_last_loaded(test_value);
 
-  SiteCharacteristicsFeatureProto feature_proto;
+  SiteDataFeatureProto feature_proto;
   feature_proto.set_observation_duration(test_value);
   feature_proto.set_use_timestamp(test_value);
 
@@ -105,13 +105,12 @@ class LevelDBSiteCharacteristicsDatabaseTest : public ::testing::Test {
   // Try to read an entry from the database, returns true if the entry is
   // present and false otherwise. |receiving_proto| will receive the protobuf
   // corresponding to this entry on success.
-  bool ReadFromDB(const url::Origin& origin,
-                  SiteCharacteristicsProto* receiving_proto) {
+  bool ReadFromDB(const url::Origin& origin, SiteDataProto* receiving_proto) {
     EXPECT_TRUE(receiving_proto);
     bool success = false;
     auto init_callback = base::BindOnce(
-        [](SiteCharacteristicsProto* receiving_proto, bool* success,
-           base::Optional<SiteCharacteristicsProto> proto_opt) {
+        [](SiteDataProto* receiving_proto, bool* success,
+           base::Optional<SiteDataProto> proto_opt) {
           *success = proto_opt.has_value();
           if (proto_opt)
             receiving_proto->CopyFrom(proto_opt.value());
@@ -126,7 +125,7 @@ class LevelDBSiteCharacteristicsDatabaseTest : public ::testing::Test {
   std::vector<url::Origin> AddDummyEntriesToDB(size_t num_entries) {
     std::vector<url::Origin> site_origins;
     for (size_t i = 0; i < num_entries; ++i) {
-      SiteCharacteristicsProto proto_temp;
+      SiteDataProto proto_temp;
       std::string origin_str = base::StringPrintf("http://%zu.com", i);
       InitSiteCharacteristicProto(&proto_temp,
                                   static_cast<::google::protobuf::int64>(i));
@@ -144,22 +143,22 @@ class LevelDBSiteCharacteristicsDatabaseTest : public ::testing::Test {
   const url::Origin kDummyOrigin = url::Origin::Create(GURL("http://foo.com"));
 
   base::FilePath db_path_;
-  base::test::ScopedTaskEnvironment task_env_;
+  base::test::TaskEnvironment task_env_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<LevelDBSiteCharacteristicsDatabase> db_;
 };
 
 TEST_F(LevelDBSiteCharacteristicsDatabaseTest, InitAndStoreSiteCharacteristic) {
   // Initializing an entry that doesn't exist in the database should fail.
-  SiteCharacteristicsProto early_read_proto;
+  SiteDataProto early_read_proto;
   EXPECT_FALSE(ReadFromDB(kDummyOrigin, &early_read_proto));
 
   // Add an entry to the database and make sure that we can read it back.
   ::google::protobuf::int64 test_value = 42;
-  SiteCharacteristicsProto stored_proto;
+  SiteDataProto stored_proto;
   InitSiteCharacteristicProto(&stored_proto, test_value);
   db_->WriteSiteCharacteristicsIntoDB(kDummyOrigin, stored_proto);
-  SiteCharacteristicsProto read_proto;
+  SiteDataProto read_proto;
   EXPECT_TRUE(ReadFromDB(kDummyOrigin, &read_proto));
   EXPECT_TRUE(read_proto.IsInitialized());
   EXPECT_EQ(stored_proto.SerializeAsString(), read_proto.SerializeAsString());
@@ -176,7 +175,7 @@ TEST_F(LevelDBSiteCharacteristicsDatabaseTest, RemoveEntries) {
   WaitForAsyncOperationsToComplete();
 
   // Verify that the origins were removed correctly.
-  SiteCharacteristicsProto proto_temp;
+  SiteDataProto proto_temp;
   for (const auto& iter : site_origins_to_remove)
     EXPECT_FALSE(ReadFromDB(iter, &proto_temp));
 
@@ -216,7 +215,7 @@ TEST_F(LevelDBSiteCharacteristicsDatabaseTest, GetDatabaseSize) {
 
   // Verify that the DB is still operational (see implementation detail
   // for Windows).
-  SiteCharacteristicsProto read_proto;
+  SiteDataProto read_proto;
   EXPECT_TRUE(ReadFromDB(site_origins[0], &read_proto));
 }
 
@@ -254,7 +253,7 @@ TEST_F(LevelDBSiteCharacteristicsDatabaseTest, DatabaseOpeningFailure) {
   OpenDB(read_only_dir.GetReadOnlyPath());
   EXPECT_FALSE(db_->DatabaseIsInitializedForTesting());
 
-  SiteCharacteristicsProto proto_temp;
+  SiteDataProto proto_temp;
   EXPECT_FALSE(
       ReadFromDB(url::Origin::Create(GURL("https://foo.com")), &proto_temp));
   WaitForAsyncOperationsToComplete();
@@ -281,7 +280,7 @@ TEST_F(LevelDBSiteCharacteristicsDatabaseTest, DBGetsClearedOnVersionUpgrade) {
   // Add some dummy data to the database to ensure the database gets cleared
   // when upgrading it to the new version.
   ::google::protobuf::int64 test_value = 42;
-  SiteCharacteristicsProto stored_proto;
+  SiteDataProto stored_proto;
   InitSiteCharacteristicProto(&stored_proto, test_value);
   db_->WriteSiteCharacteristicsIntoDB(kDummyOrigin, stored_proto);
   WaitForAsyncOperationsToComplete();
@@ -300,7 +299,7 @@ TEST_F(LevelDBSiteCharacteristicsDatabaseTest, DBGetsClearedOnVersionUpgrade) {
   EXPECT_TRUE(base::StringToSizeT(db_metadata, &version));
   EXPECT_EQ(LevelDBSiteCharacteristicsDatabase::kDbVersion, version);
 
-  SiteCharacteristicsProto proto_temp;
+  SiteDataProto proto_temp;
   EXPECT_FALSE(ReadFromDB(kDummyOrigin, &proto_temp));
 }
 

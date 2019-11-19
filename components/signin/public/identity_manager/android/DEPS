@@ -1,0 +1,9 @@
+specific_include_rules = {
+  "CoreAccountInfo.java": [
+    "+components/signin/core/browser/android/java/src/org/chromium/components/signin/AccountManagerFacade.java"
+  ],
+  "IdentityManager.java": [
+    "+components/signin/core/browser/android/java/src/org/chromium/components/signin/AccountManagerFacade.java",
+    "+components/signin/core/browser/android/java/src/org/chromium/components/signin/OAuth2TokenService.java"
+  ],
+}

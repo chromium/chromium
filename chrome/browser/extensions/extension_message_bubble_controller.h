@@ -13,17 +13,16 @@
 #include "base/scoped_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
 
 class Browser;
-class BrowserList;
 class ToolbarActionsModel;
 class Profile;
 
 namespace extensions {
 
-class ExtensionRegistry;
 class ExtensionService;
 
 class ExtensionMessageBubbleController : public BrowserListObserver,
@@ -242,8 +241,7 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
   base::Closure close_bubble_callback_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
-  ScopedObserver<BrowserList, BrowserListObserver> browser_list_observer_;
+      extension_registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleController);
 };

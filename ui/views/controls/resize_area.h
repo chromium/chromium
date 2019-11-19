@@ -17,13 +17,12 @@ class ResizeAreaDelegate;
 // An invisible area that acts like a horizontal resizer.
 class VIEWS_EXPORT ResizeArea : public View {
  public:
-  static const char kViewClassName[];
+  METADATA_HEADER(ResizeArea);
 
   explicit ResizeArea(ResizeAreaDelegate* delegate);
   ~ResizeArea() override;
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;

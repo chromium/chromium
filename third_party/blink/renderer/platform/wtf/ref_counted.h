@@ -22,7 +22,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_REF_COUNTED_H_
 
 #include "base/memory/ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace WTF {
 

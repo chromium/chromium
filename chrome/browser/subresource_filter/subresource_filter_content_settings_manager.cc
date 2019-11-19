@@ -16,7 +16,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "url/gurl.h"
 
@@ -39,8 +38,7 @@ constexpr base::TimeDelta
 
 SubresourceFilterContentSettingsManager::
     SubresourceFilterContentSettingsManager(Profile* profile)
-    : history_observer_(this),
-      settings_map_(HostContentSettingsMapFactory::GetForProfile(profile)),
+    : settings_map_(HostContentSettingsMapFactory::GetForProfile(profile)),
       clock_(std::make_unique<base::DefaultClock>(base::DefaultClock())),
       should_use_smart_ui_(ShouldUseSmartUI()) {
   DCHECK(profile);
@@ -56,15 +54,14 @@ SubresourceFilterContentSettingsManager::
 
 ContentSetting SubresourceFilterContentSettingsManager::GetSitePermission(
     const GURL& url) const {
-  return settings_map_->GetContentSetting(
-      url, GURL(), ContentSettingsType::CONTENT_SETTINGS_TYPE_ADS,
-      std::string());
+  return settings_map_->GetContentSetting(url, GURL(), ContentSettingsType::ADS,
+                                          std::string());
 }
 
 void SubresourceFilterContentSettingsManager::WhitelistSite(const GURL& url) {
   settings_map_->SetContentSettingDefaultScope(
-      url, GURL(), ContentSettingsType::CONTENT_SETTINGS_TYPE_ADS,
-      std::string(), CONTENT_SETTING_ALLOW);
+      url, GURL(), ContentSettingsType::ADS, std::string(),
+      CONTENT_SETTING_ALLOW);
 }
 
 void SubresourceFilterContentSettingsManager::OnDidShowUI(const GURL& url) {
@@ -107,15 +104,15 @@ std::unique_ptr<base::DictionaryValue>
 SubresourceFilterContentSettingsManager::GetSiteMetadata(
     const GURL& url) const {
   return base::DictionaryValue::From(settings_map_->GetWebsiteSetting(
-      url, GURL(), CONTENT_SETTINGS_TYPE_ADS_DATA, std::string(), nullptr));
+      url, GURL(), ContentSettingsType::ADS_DATA, std::string(), nullptr));
 }
 
 void SubresourceFilterContentSettingsManager::SetSiteMetadata(
     const GURL& url,
     std::unique_ptr<base::DictionaryValue> dict) {
-  settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::CONTENT_SETTINGS_TYPE_ADS_DATA,
-      std::string(), std::move(dict));
+  settings_map_->SetWebsiteSettingDefaultScope(url, GURL(),
+                                               ContentSettingsType::ADS_DATA,
+                                               std::string(), std::move(dict));
 }
 
 // When history URLs are deleted, clear the metadata for the smart UI.
@@ -123,7 +120,7 @@ void SubresourceFilterContentSettingsManager::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   if (deletion_info.IsAllHistory()) {
-    settings_map_->ClearSettingsForOneType(CONTENT_SETTINGS_TYPE_ADS_DATA);
+    settings_map_->ClearSettingsForOneType(ContentSettingsType::ADS_DATA);
     return;
   }
 

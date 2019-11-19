@@ -130,7 +130,7 @@ bool WebviewHandler::Parse(Extension* extension, base::string16* error) {
   }
 
   // The partition list must have at least one entry.
-  const base::Value::ListStorage& partition_list_storage =
+  base::span<const base::Value> partition_list_storage =
       partition_list->GetList();
   if (partition_list_storage.empty()) {
     *error = base::ASCIIToUTF16(errors::kInvalidWebviewPartitionsList);
@@ -162,7 +162,7 @@ bool WebviewHandler::Parse(Extension* extension, base::string16* error) {
     }
 
     // The URL list should have at least one entry.
-    const base::Value::ListStorage& url_list_storage = url_list->GetList();
+    base::span<const base::Value> url_list_storage = url_list->GetList();
     if (url_list_storage.empty()) {
       *error = base::ASCIIToUTF16(
           errors::kInvalidWebviewAccessibleResourcesList);

@@ -9,13 +9,15 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/strings/string16.h"
 #include "content/browser/frame_host/navigation_controller_impl.h"
 #include "content/browser/frame_host/navigation_entry_impl.h"
+#include "content/public/android/content_jni_headers/NavigationControllerImpl_jni.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
+#include "content/public/common/referrer.h"
 #include "content/public/common/resource_request_body_android.h"
-#include "jni/NavigationControllerImpl_jni.h"
 #include "net/base/data_url.h"
 #include "ui/gfx/android/java_bitmap.h"
 
@@ -29,6 +31,8 @@ using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
+
+const char kMapDataKey[] = "map_data_key";
 
 // static
 static base::android::ScopedJavaLocalRef<jobject>
@@ -53,10 +57,11 @@ JNI_NavigationControllerImpl_CreateJavaNavigationEntry(
   const content::FaviconStatus& status = entry->GetFavicon();
   if (status.valid && status.image.ToSkBitmap()->computeByteSize() > 0)
     j_bitmap = gfx::ConvertToJavaBitmap(status.image.ToSkBitmap());
+  jlong j_timestamp = entry->GetTimestamp().ToJavaTime();
 
   return content::Java_NavigationControllerImpl_createNavigationEntry(
       env, index, j_url, j_virtual_url, j_original_url, j_referrer_url, j_title,
-      j_bitmap, entry->GetTransitionType());
+      j_bitmap, entry->GetTransitionType(), j_timestamp);
 }
 
 static void JNI_NavigationControllerImpl_AddNavigationEntryToHistory(
@@ -70,6 +75,36 @@ static void JNI_NavigationControllerImpl_AddNavigationEntryToHistory(
                                                              index));
 }
 
+class MapData : public base::SupportsUserData::Data {
+ public:
+  MapData() = default;
+  ~MapData() override = default;
+
+  static MapData* Get(content::NavigationEntry* entry) {
+    MapData* map_data = static_cast<MapData*>(entry->GetUserData(kMapDataKey));
+    if (map_data)
+      return map_data;
+    auto map_data_ptr = std::make_unique<MapData>();
+    map_data = map_data_ptr.get();
+    entry->SetUserData(kMapDataKey, std::move(map_data_ptr));
+    return map_data;
+  }
+
+  base::flat_map<std::string, base::string16>& map() { return map_; }
+
+  // base::SupportsUserData::Data:
+  std::unique_ptr<Data> Clone() override {
+    std::unique_ptr<MapData> clone = std::make_unique<MapData>();
+    clone->map_ = map_;
+    return clone;
+  }
+
+ private:
+  base::flat_map<std::string, base::string16> map_;
+
+  DISALLOW_COPY_AND_ASSIGN(MapData);
+};
+
 }  // namespace
 
 namespace content {
@@ -78,9 +113,9 @@ NavigationControllerAndroid::NavigationControllerAndroid(
     NavigationControllerImpl* navigation_controller)
     : navigation_controller_(navigation_controller) {
   JNIEnv* env = AttachCurrentThread();
-  obj_.Reset(env,
-             Java_NavigationControllerImpl_create(
-                 env, reinterpret_cast<intptr_t>(this)).obj());
+  obj_.Reset(env, Java_NavigationControllerImpl_create(
+                      env, reinterpret_cast<intptr_t>(this))
+                      .obj());
 }
 
 NavigationControllerAndroid::~NavigationControllerAndroid() {
@@ -248,9 +283,9 @@ void NavigationControllerAndroid::LoadUrl(
   }
 
   if (j_referrer_url) {
-    params.referrer = content::Referrer(
-        GURL(ConvertJavaStringToUTF8(env, j_referrer_url)),
-        static_cast<network::mojom::ReferrerPolicy>(referrer_policy));
+    params.referrer =
+        Referrer(GURL(ConvertJavaStringToUTF8(env, j_referrer_url)),
+                 Referrer::ConvertToPolicy(referrer_policy));
   }
 
   navigation_controller_->LoadURLWithParams(params);
@@ -289,8 +324,7 @@ void NavigationControllerAndroid::GetDirectedNavigationHistory(
   int num_added = 0;
   int increment_value = is_forward ? 1 : -1;
   for (int i = navigation_controller_->GetCurrentEntryIndex() + increment_value;
-       i >= 0 && i < count;
-       i += increment_value) {
+       i >= 0 && i < count; i += increment_value) {
     if (num_added >= max_entries)
       break;
 
@@ -303,7 +337,7 @@ void NavigationControllerAndroid::GetDirectedNavigationHistory(
 void NavigationControllerAndroid::ClearSslPreferences(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  content::SSLHostStateDelegate* delegate =
+  SSLHostStateDelegate* delegate =
       navigation_controller_->GetBrowserContext()->GetSSLHostStateDelegate();
   if (delegate)
     delegate->Clear(base::Callback<bool(const std::string&)>());
@@ -312,7 +346,7 @@ void NavigationControllerAndroid::ClearSslPreferences(
 bool NavigationControllerAndroid::GetUseDesktopUserAgent(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  NavigationEntry* entry = navigation_controller_->GetVisibleEntry();
+  NavigationEntry* entry = navigation_controller_->GetLastCommittedEntry();
   return entry && entry->GetIsOverridingUserAgent();
 }
 
@@ -325,7 +359,7 @@ void NavigationControllerAndroid::SetUseDesktopUserAgent(
     return;
 
   // Make sure the navigation entry actually exists.
-  NavigationEntry* entry = navigation_controller_->GetVisibleEntry();
+  NavigationEntry* entry = navigation_controller_->GetLastCommittedEntry();
   if (!entry)
     return;
 
@@ -348,16 +382,27 @@ NavigationControllerAndroid::GetEntryAtIndex(JNIEnv* env,
   if (index < 0 || index >= navigation_controller_->GetEntryCount())
     return base::android::ScopedJavaLocalRef<jobject>();
 
-  content::NavigationEntry* entry =
-      navigation_controller_->GetEntryAtIndex(index);
+  NavigationEntry* entry = navigation_controller_->GetEntryAtIndex(index);
   return JNI_NavigationControllerImpl_CreateJavaNavigationEntry(env, entry,
                                                                 index);
 }
 
 base::android::ScopedJavaLocalRef<jobject>
+NavigationControllerAndroid::GetVisibleEntry(JNIEnv* env,
+                                             const JavaParamRef<jobject>& obj) {
+  NavigationEntry* entry = navigation_controller_->GetVisibleEntry();
+
+  if (!entry)
+    return base::android::ScopedJavaLocalRef<jobject>();
+
+  return JNI_NavigationControllerImpl_CreateJavaNavigationEntry(env, entry,
+                                                                /*index=*/-1);
+}
+
+base::android::ScopedJavaLocalRef<jobject>
 NavigationControllerAndroid::GetPendingEntry(JNIEnv* env,
                                              const JavaParamRef<jobject>& obj) {
-  content::NavigationEntry* entry = navigation_controller_->GetPendingEntry();
+  NavigationEntry* entry = navigation_controller_->GetPendingEntry();
 
   if (!entry)
     return base::android::ScopedJavaLocalRef<jobject>();
@@ -379,6 +424,12 @@ jboolean NavigationControllerAndroid::RemoveEntryAtIndex(
   return navigation_controller_->RemoveEntryAtIndex(index);
 }
 
+void NavigationControllerAndroid::PruneForwardEntries(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  return navigation_controller_->PruneForwardEntries();
+}
+
 ScopedJavaLocalRef<jstring> NavigationControllerAndroid::GetEntryExtraData(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
@@ -388,9 +439,11 @@ ScopedJavaLocalRef<jstring> NavigationControllerAndroid::GetEntryExtraData(
     return ScopedJavaLocalRef<jstring>();
 
   std::string key = base::android::ConvertJavaStringToUTF8(env, jkey);
-  base::string16 value;
-  navigation_controller_->GetEntryAtIndex(index)->GetExtraData(key, &value);
-  return ConvertUTF16ToJavaString(env, value);
+  MapData* map_data =
+      MapData::Get(navigation_controller_->GetEntryAtIndex(index));
+  auto iter = map_data->map().find(key);
+  return ConvertUTF16ToJavaString(
+      env, iter == map_data->map().end() ? base::string16() : iter->second);
 }
 
 void NavigationControllerAndroid::SetEntryExtraData(
@@ -404,7 +457,9 @@ void NavigationControllerAndroid::SetEntryExtraData(
 
   std::string key = base::android::ConvertJavaStringToUTF8(env, jkey);
   base::string16 value = base::android::ConvertJavaStringToUTF16(env, jvalue);
-  navigation_controller_->GetEntryAtIndex(index)->SetExtraData(key, value);
+  MapData* map_data =
+      MapData::Get(navigation_controller_->GetEntryAtIndex(index));
+  map_data->map()[key] = value;
 }
 
 jboolean NavigationControllerAndroid::IsEntryMarkedToBeSkipped(

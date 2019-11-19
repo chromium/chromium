@@ -1,0 +1,72 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Copy a list of file into a destination directory. Potentially renaming
+# files are they are copied. This also ensures that symlinks are followed
+# during the copy (i.e. the symlinks are never copied, only their content).
+#
+# Variables:
+#  dest: Destination directory path.
+#  sources: List of source files or directories to copy to dest.
+#  renaming_sources: Optional list of source file paths that will be renamed
+#    during the copy operation. If provided, renaming_destinations is required.
+#  renaming_destinations: Optional list of destination file paths, required
+#    when renaming_sources is provided. Both lists should have the same size
+#    and matching entries.
+#  args: Optional. Additionnal arguments to the copy_ex.py script.
+#
+#  The following variables have the usual GN meaning: data, deps, inputs,
+#  outputs, testonly, visibility.
+
+import("//build/config/python.gni")
+
+template("copy_ex") {
+  set_sources_assignment_filter([])
+  action_with_pydeps(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "data",
+                             "deps",
+                             "testonly",
+                             "visibility",
+                           ])
+    sources = []
+    if (defined(invoker.sources)) {
+      sources += invoker.sources
+    }
+    outputs = []
+    if (defined(invoker.outputs)) {
+      outputs += invoker.outputs
+    }
+    if (defined(invoker.inputs)) {
+      inputs = invoker.inputs
+    }
+
+    script = "//build/android/gyp/copy_ex.py"
+
+    args = [
+      "--dest",
+      rebase_path(invoker.dest, root_build_dir),
+    ]
+    rebased_sources = rebase_path(sources, root_build_dir)
+    args += [ "--files=$rebased_sources" ]
+
+    if (defined(invoker.args)) {
+      args += invoker.args
+    }
+
+    if (defined(invoker.renaming_sources) &&
+        defined(invoker.renaming_destinations)) {
+      sources += invoker.renaming_sources
+      renaming_destinations = invoker.renaming_destinations
+      outputs +=
+          get_path_info(rebase_path(renaming_destinations, ".", invoker.dest),
+                        "abspath")
+      rebased_renaming_sources =
+          rebase_path(invoker.renaming_sources, root_build_dir)
+      args += [ "--renaming-sources=$rebased_renaming_sources" ]
+      args += [ "--renaming-destinations=$renaming_destinations" ]
+    }
+  }
+}

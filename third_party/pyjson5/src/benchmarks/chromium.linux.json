@@ -4133,15 +4133,15 @@
         }
       },
       {
-        "isolate_name": "devtools_closure_compile",
-        "name": "devtools_closure_compile",
+        "isolate_name": "devtools_lint_check",
+        "name": "devtools_lint_check",
         "swarming": {
           "can_use_on_swarming_builders": true
         }
       },
       {
-        "isolate_name": "devtools_eslint",
-        "name": "devtools_eslint",
+        "isolate_name": "devtools_type_check",
+        "name": "devtools_type_check",
         "swarming": {
           "can_use_on_swarming_builders": true
         }

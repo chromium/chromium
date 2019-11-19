@@ -8,8 +8,6 @@
        doesn't ignore this. -->
   <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.chromium.cronet_sample_apk.tests">
-    <!-- //components/cronet still needs to support Jelly Bean. See crbug.com/922656 -->
-    <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="23" />
     <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
     <!-- We add an application tag here just so that we can indicate that this
          package needs to link against the android.test library, which is
@@ -20,8 +18,4 @@
     <instrumentation android:name="android.support.test.runner.AndroidJUnitRunner"
         android:targetPackage="org.chromium.cronet_sample_apk"
         android:label="Tests for org.chromium.cronet_sample_apk"/>
-    <instrumentation android:name="android.test.InstrumentationTestRunner"
-        android:targetPackage="org.chromium.cronet_sample_apk"
-        android:label="Tests for org.chromium.cronet_sample_apk"
-        chromium-junit3="true"/>
 </manifest>

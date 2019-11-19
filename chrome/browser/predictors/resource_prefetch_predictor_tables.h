@@ -14,9 +14,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/sequenced_task_runner.h"
-#include "chrome/browser/predictors/glowplug_key_value_table.h"
+#include "chrome/browser/predictors/loading_predictor_key_value_table.h"
 #include "chrome/browser/predictors/predictor_table_base.h"
-#include "chrome/browser/predictors/resource_prefetch_common.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.pb.h"
 
 namespace base {
@@ -40,8 +39,8 @@ class ResourcePrefetchPredictorTables : public PredictorTableBase {
 
   virtual void ExecuteDBTaskOnDBSequence(DBTask task);
 
-  virtual GlowplugKeyValueTable<RedirectData>* host_redirect_table();
-  virtual GlowplugKeyValueTable<OriginData>* origin_table();
+  virtual LoadingPredictorKeyValueTable<RedirectData>* host_redirect_table();
+  virtual LoadingPredictorKeyValueTable<OriginData>* origin_table();
 
   // Removes the redirects with more than |max_consecutive_misses| consecutive
   // misses from |data|.
@@ -88,8 +87,9 @@ class ResourcePrefetchPredictorTables : public PredictorTableBase {
   static int GetDatabaseVersion(sql::Database* db);
   static bool SetDatabaseVersion(sql::Database* db, int version);
 
-  std::unique_ptr<GlowplugKeyValueTable<RedirectData>> host_redirect_table_;
-  std::unique_ptr<GlowplugKeyValueTable<OriginData>> origin_table_;
+  std::unique_ptr<LoadingPredictorKeyValueTable<RedirectData>>
+      host_redirect_table_;
+  std::unique_ptr<LoadingPredictorKeyValueTable<OriginData>> origin_table_;
 
   DISALLOW_COPY_AND_ASSIGN(ResourcePrefetchPredictorTables);
 };

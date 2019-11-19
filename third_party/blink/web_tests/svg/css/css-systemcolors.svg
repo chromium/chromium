@@ -339,6 +339,90 @@
             </feDiffuseLighting>
             <feComposite in="SourceGraphic" in2="light" k1="1" k2="0" k3="0" k4="0" operator="arithmetic" />
         </filter>
+        <filter x="0" y="0" width="1" height="1" id="f28">
+            <feFlood flood-color="currentColor" color="LinkText" />
+        </filter>
+        <linearGradient id="g28">
+            <stop stop-color="currentColor" color="LinkColor" />
+        </linearGradient>
+        <filter x="0" y="0" width="1" height="1" id="fl28">
+            <feDiffuseLighting color="LinkColor" lighting-color="currentColor" in="SourceAlpha" result="light">
+                <feDistantLight azimuth="45" elevation="45" />
+            </feDiffuseLighting>
+            <feComposite in="SourceGraphic" in2="light" k1="1" k2="0" k3="0" k4="0" operator="arithmetic" />
+        </filter>
+        <filter x="0" y="0" width="1" height="1" id="f29">
+            <feFlood flood-color="currentColor" color="VisitedText" />
+        </filter>
+        <linearGradient id="g29">
+            <stop stop-color="currentColor" color="VisitedText" />
+        </linearGradient>
+        <filter x="0" y="0" width="1" height="1" id="fl29">
+            <feDiffuseLighting color="VisitedText" lighting-color="currentColor" in="SourceAlpha" result="light">
+                <feDistantLight azimuth="45" elevation="45" />
+            </feDiffuseLighting>
+            <feComposite in="SourceGraphic" in2="light" k1="1" k2="0" k3="0" k4="0" operator="arithmetic" />
+        </filter>
+        <filter x="0" y="0" width="1" height="1" id="f30">
+            <feFlood flood-color="currentColor" color="Canvas" />
+        </filter>
+        <linearGradient id="g30">
+            <stop stop-color="currentColor" color="Canvas" />
+        </linearGradient>
+        <filter x="0" y="0" width="1" height="1" id="fl30">
+            <feDiffuseLighting color="Canvas" lighting-color="currentColor" in="SourceAlpha" result="light">
+                <feDistantLight azimuth="45" elevation="45" />
+            </feDiffuseLighting>
+            <feComposite in="SourceGraphic" in2="light" k1="1" k2="0" k3="0" k4="0" operator="arithmetic" />
+        </filter>
+         <filter x="0" y="0" width="1" height="1" id="f31">
+            <feFlood flood-color="currentColor" color="CanvasText" />
+        </filter>
+        <linearGradient id="g31">
+            <stop stop-color="currentColor" color="CanvasText" />
+        </linearGradient>
+        <filter x="0" y="0" width="1" height="1" id="fl31">
+            <feDiffuseLighting color="CanvasText" lighting-color="currentColor" in="SourceAlpha" result="light">
+                <feDistantLight azimuth="45" elevation="45" />
+            </feDiffuseLighting>
+            <feComposite in="SourceGraphic" in2="light" k1="1" k2="0" k3="0" k4="0" operator="arithmetic" />
+        </filter>
+        <filter x="0" y="0" width="1" height="1" id="f32">
+            <feFlood flood-color="currentColor" color="ActiveText" />
+        </filter>
+        <linearGradient id="g32">
+            <stop stop-color="currentColor" color="ActiveText" />
+        </linearGradient>
+        <filter x="0" y="0" width="1" height="1" id="fl32">
+            <feDiffuseLighting color="ActiveText" lighting-color="currentColor" in="SourceAlpha" result="light">
+                <feDistantLight azimuth="45" elevation="45" />
+            </feDiffuseLighting>
+            <feComposite in="SourceGraphic" in2="light" k1="1" k2="0" k3="0" k4="0" operator="arithmetic" />
+        </filter>
+         <filter x="0" y="0" width="1" height="1" id="f33">
+            <feFlood flood-color="currentColor" color="Field" />
+        </filter>
+        <linearGradient id="g33">
+            <stop stop-color="currentColor" color="Field" />
+        </linearGradient>
+        <filter x="0" y="0" width="1" height="1" id="fl33">
+            <feDiffuseLighting color="Field" lighting-color="currentColor" in="SourceAlpha" result="light">
+                <feDistantLight azimuth="45" elevation="45" />
+            </feDiffuseLighting>
+            <feComposite in="SourceGraphic" in2="light" k1="1" k2="0" k3="0" k4="0" operator="arithmetic" />
+        </filter>
+        <filter x="0" y="0" width="1" height="1" id="f34">
+            <feFlood flood-color="currentColor" color="FieldText" />
+        </filter>
+        <linearGradient id="g34">
+            <stop stop-color="currentColor" color="FieldText" />
+        </linearGradient>
+        <filter x="0" y="0" width="1" height="1" id="fl34">
+            <feDiffuseLighting color="FieldText" lighting-color="currentColor" in="SourceAlpha" result="light">
+                <feDistantLight azimuth="45" elevation="45" />
+            </feDiffuseLighting>
+            <feComposite in="SourceGraphic" in2="light" k1="1" k2="0" k3="0" k4="0" operator="arithmetic" />
+        </filter>
     </defs>
     <rect width="28" height="28" x="0" filter="url(#f0)" />
     <rect width="28" height="28" x="0" y="28" fill="url(#g0)" />
@@ -424,4 +508,25 @@
     <rect width="28" height="28" x="756" filter="url(#f27)" />
     <rect width="28" height="28" x="756" y="28" fill="url(#g27)" />
     <rect width="28" height="28" x="756" y="56" fill="white" filter="url(#fl27)" />
+    <rect width="28" height="28" x="756" filter="url(#f28)" />
+    <rect width="28" height="28" x="756" y="28" fill="url(#g28)" />
+    <rect width="28" height="28" x="756" y="56" fill="white" filter="url(#fl28)" />
+    <rect width="28" height="28" x="756" filter="url(#f29)" />
+    <rect width="28" height="28" x="756" y="28" fill="url(#g29)" />
+    <rect width="28" height="28" x="756" y="56" fill="white" filter="url(#fl29)" />
+    <rect width="28" height="28" x="756" filter="url(#f30)" />
+    <rect width="28" height="28" x="756" y="28" fill="url(#g30)" />
+    <rect width="28" height="28" x="756" y="56" fill="white" filter="url(#fl30)" />
+    <rect width="28" height="28" x="756" filter="url(#f31)" />
+    <rect width="28" height="28" x="756" y="28" fill="url(#g31)" />
+    <rect width="28" height="28" x="756" y="56" fill="white" filter="url(#fl31)" />
+    <rect width="28" height="28" x="756" filter="url(#f32)" />
+    <rect width="28" height="28" x="756" y="28" fill="url(#g32)" />
+    <rect width="28" height="28" x="756" y="56" fill="white" filter="url(#fl32)" />
+    <rect width="28" height="28" x="756" filter="url(#f33)" />
+    <rect width="28" height="28" x="756" y="28" fill="url(#g33)" />
+    <rect width="28" height="28" x="756" y="56" fill="white" filter="url(#fl33)" />
+    <rect width="28" height="28" x="756" filter="url(#f34)" />
+    <rect width="28" height="28" x="756" y="28" fill="url(#g34)" />
+    <rect width="28" height="28" x="756" y="56" fill="white" filter="url(#fl34)" />
 </svg>

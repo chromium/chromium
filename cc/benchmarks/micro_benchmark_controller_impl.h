@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "cc/benchmarks/micro_benchmark_impl.h"
 
 namespace cc {
@@ -17,7 +16,11 @@ class LayerTreeHostImpl;
 class CC_EXPORT MicroBenchmarkControllerImpl {
  public:
   explicit MicroBenchmarkControllerImpl(LayerTreeHostImpl* host);
+  MicroBenchmarkControllerImpl(const MicroBenchmarkControllerImpl&) = delete;
   ~MicroBenchmarkControllerImpl();
+
+  MicroBenchmarkControllerImpl& operator=(const MicroBenchmarkControllerImpl&) =
+      delete;
 
   void DidCompleteCommit();
 
@@ -28,8 +31,6 @@ class CC_EXPORT MicroBenchmarkControllerImpl {
 
   LayerTreeHostImpl* host_;
   std::vector<std::unique_ptr<MicroBenchmarkImpl>> benchmarks_;
-
-  DISALLOW_COPY_AND_ASSIGN(MicroBenchmarkControllerImpl);
 };
 
 }  // namespace cc

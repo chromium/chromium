@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_STORAGE_SETTINGS_SYNC_UTIL_H_
 #define CHROME_BROWSER_EXTENSIONS_API_STORAGE_SETTINGS_SYNC_UTIL_H_
 
+#include <string>
+
+#include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
 
@@ -51,10 +55,13 @@ syncer::SyncChange CreateDelete(
     const std::string& key,
     syncer::ModelType type);
 
-// Returns the sync service for settings. Must be called on the FILE thread.
-// |type| must be either APP_SETTINGS or EXTENSION_SETTINGS.
-syncer::SyncableService* GetSyncableService(content::BrowserContext* context,
-                                            syncer::ModelType type);
+// Returns a callback that provides a SyncableService. The function must be
+// called on the UI thread and |type| must be either APP_SETTINGS or
+// EXTENSION_SETTINGS. The returned callback must be called on the backend
+// sequence.
+base::OnceCallback<base::WeakPtr<syncer::SyncableService>()>
+GetSyncableServiceProvider(content::BrowserContext* context,
+                           syncer::ModelType type);
 
 }  // namespace settings_sync_util
 

@@ -13,7 +13,7 @@
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream.h"
 #include "net/quic/quic_crypto_client_stream_factory.h"
-#include "net/third_party/quic/core/quic_server_id.h"
+#include "net/third_party/quiche/src/quic/core/quic_server_id.h"
 
 namespace quic {
 class QuicCryptoClientStream;

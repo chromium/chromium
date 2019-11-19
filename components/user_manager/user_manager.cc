@@ -9,6 +9,8 @@
 
 namespace user_manager {
 
+const char kRegularUsersPref[] = "LoggedInUsers";
+
 UserManager* UserManager::instance = nullptr;
 
 UserManager::Observer::~Observer() = default;
@@ -26,29 +28,23 @@ void UserManager::Observer::OnUserProfileImageUpdated(
 void UserManager::Observer::OnUsersSignInConstraintsChanged() {}
 
 void UserManager::UserSessionStateObserver::ActiveUserChanged(
-    const User* active_user) {
-}
+    User* active_user) {}
 
 void UserManager::UserSessionStateObserver::UserAddedToSession(
-    const User* active_user) {
-}
+    const User* active_user) {}
 
 void UserManager::UserSessionStateObserver::ActiveUserHashChanged(
-    const std::string& hash) {
-}
+    const std::string& hash) {}
 
-UserManager::UserSessionStateObserver::~UserSessionStateObserver() {
-}
+UserManager::UserSessionStateObserver::~UserSessionStateObserver() {}
 
 UserManager::UserAccountData::UserAccountData(
     const base::string16& display_name,
     const base::string16& given_name,
     const std::string& locale)
-    : display_name_(display_name), given_name_(given_name), locale_(locale) {
-}
+    : display_name_(display_name), given_name_(given_name), locale_(locale) {}
 
-UserManager::UserAccountData::~UserAccountData() {
-}
+UserManager::UserAccountData::~UserAccountData() {}
 
 void UserManager::Initialize() {
   DCHECK(!UserManager::instance);
@@ -140,18 +136,6 @@ UserType UserManager::CalculateUserType(const AccountId& account_id,
     return USER_TYPE_ACTIVE_DIRECTORY;
 
   return USER_TYPE_REGULAR;
-}
-
-ScopedUserSessionStateObserver::ScopedUserSessionStateObserver(
-    UserManager::UserSessionStateObserver* observer)
-    : observer_(observer) {
-  if (UserManager::IsInitialized())
-    UserManager::Get()->AddSessionStateObserver(observer_);
-}
-
-ScopedUserSessionStateObserver::~ScopedUserSessionStateObserver() {
-  if (UserManager::IsInitialized())
-    UserManager::Get()->RemoveSessionStateObserver(observer_);
 }
 
 }  // namespace user_manager

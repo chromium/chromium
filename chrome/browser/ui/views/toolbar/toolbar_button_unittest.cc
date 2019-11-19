@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/menu_model.h"
 
@@ -22,6 +22,10 @@ class CheckActiveWebContentsMenuModel : public ui::MenuModel {
       : tab_strip_model_(tab_strip_model) {
     DCHECK(tab_strip_model_);
   }
+  CheckActiveWebContentsMenuModel(const CheckActiveWebContentsMenuModel&) =
+      delete;
+  CheckActiveWebContentsMenuModel& operator=(
+      const CheckActiveWebContentsMenuModel&) = delete;
   ~CheckActiveWebContentsMenuModel() override = default;
 
   // ui::MenuModel:
@@ -45,7 +49,7 @@ class CheckActiveWebContentsMenuModel : public ui::MenuModel {
   }
   bool IsItemCheckedAt(int index) const override { return false; }
   int GetGroupIdAt(int index) const override { return 0; }
-  bool GetIconAt(int index, gfx::Image* icon) override { return false; }
+  bool GetIconAt(int index, gfx::Image* icon) const override { return false; }
   ui::ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override {
     return nullptr;
   }
@@ -55,8 +59,6 @@ class CheckActiveWebContentsMenuModel : public ui::MenuModel {
 
  private:
   TabStripModel* const tab_strip_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckActiveWebContentsMenuModel);
 };
 
 class TestParentView : public views::View {
@@ -66,16 +68,16 @@ class TestParentView : public views::View {
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.context = context;
     widget_ = std::make_unique<views::Widget>();
-    widget_->Init(params);
+    widget_->Init(std::move(params));
   }
+  TestParentView(const TestParentView&) = delete;
+  TestParentView& operator=(const TestParentView&) = delete;
   ~TestParentView() override = default;
 
   const views::Widget* GetWidget() const override { return widget_.get(); }
 
  private:
   std::unique_ptr<views::Widget> widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestParentView);
 };
 
 }  // namespace
@@ -83,9 +85,8 @@ class TestParentView : public views::View {
 class ToolbarButtonViewsTest : public ChromeViewsTestBase {
  public:
   ToolbarButtonViewsTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ToolbarButtonViewsTest);
+  ToolbarButtonViewsTest(const ToolbarButtonViewsTest&) = delete;
+  ToolbarButtonViewsTest& operator=(const ToolbarButtonViewsTest&) = delete;
 };
 
 TEST_F(ToolbarButtonViewsTest, MenuDoesNotShowWhenTabStripIsEmpty) {

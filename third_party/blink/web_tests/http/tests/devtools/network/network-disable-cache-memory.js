@@ -26,7 +26,7 @@
 
   loadScriptAndGetContent(step1);
 
-  function step1(content) {
+  function step1({ content, error, isEncoded }) {
     content1 = content;
     TestRunner.reloadPage(step2);
   }
@@ -35,7 +35,7 @@
     loadScriptAndGetContent(step3);
   }
 
-  function step3(content) {
+  function step3({ content, error, isEncoded }) {
     content2 = content;
     TestRunner.NetworkAgent.setCacheDisabled(true).then(step4);
   }
@@ -48,7 +48,7 @@
     loadScriptAndGetContent(step6);
   }
 
-  function step6(content) {
+  function step6({ content, error, isEncoded }) {
     content3 = content;
 
     TestRunner.assertTrue(content1 === content2, 'First and second scripts should be equal.');

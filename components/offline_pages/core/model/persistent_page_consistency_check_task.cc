@@ -5,17 +5,21 @@
 #include "components/offline_pages/core/model/persistent_page_consistency_check_task.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/offline_pages/core/archive_manager.h"
-#include "components/offline_pages/core/client_policy_controller.h"
+#include "components/offline_pages/core/model/delete_page_task.h"
+#include "components/offline_pages/core/model/get_pages_task.h"
 #include "components/offline_pages/core/offline_page_client_policy.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 #include "components/offline_pages/core/offline_store_utils.h"
+#include "components/offline_pages/core/page_criteria.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -28,63 +32,23 @@ namespace offline_pages {
 
 namespace {
 
-#define OFFLINE_PAGES_TABLE_NAME "offlinepages_v1"
-
 const base::TimeDelta kExpireThreshold = base::TimeDelta::FromDays(365);
 
-struct PageInfo {
-  int64_t offline_id;
-  base::FilePath file_path;
-  base::Time file_missing_time;
-  int64_t system_download_id;
-};
-
-std::vector<PageInfo> GetPageInfosByNamespaces(
-    const std::vector<std::string>& temp_namespaces,
+std::vector<OfflinePageItem> GetPersistentPages(
     sql::Database* db) {
-  std::vector<PageInfo> result;
-
-  static const char kSql[] =
-      "SELECT offline_id, file_path, file_missing_time, system_download_id"
-      " FROM " OFFLINE_PAGES_TABLE_NAME " WHERE client_namespace = ?";
-
-  for (const auto& temp_namespace : temp_namespaces) {
-    sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-    statement.BindString(0, temp_namespace);
-    while (statement.Step()) {
-      result.push_back(
-          {statement.ColumnInt64(0),
-           store_utils::FromDatabaseFilePath(statement.ColumnString(1)),
-           store_utils::FromDatabaseTime(statement.ColumnInt64(2)),
-           statement.ColumnInt64(3)});
-    }
-  }
-
-  return result;
+  PageCriteria criteria;
+  criteria.lifetime_type = LifetimeType::PERSISTENT;
+  return std::move(GetPagesTask::ReadPagesWithCriteriaSync(criteria, db).pages);
 }
 
-bool DeletePagesByOfflineIds(const std::vector<int64_t>& offline_ids,
-                             sql::Database* db) {
-  static const char kSql[] =
-      "DELETE FROM " OFFLINE_PAGES_TABLE_NAME " WHERE offline_id = ?";
+bool SetItemsFileMissingTimeSync(const std::vector<int64_t>& item_ids,
+                                 base::Time missing_time,
+                                 sql::Database* db) {
+  static const char kSql[] = "UPDATE OR IGNORE offlinepages_v1"
+                             " SET file_missing_time=?"
+                             " WHERE offline_id=?";
 
-  for (const auto& offline_id : offline_ids) {
-    sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-    statement.BindInt64(0, offline_id);
-    if (!statement.Run())
-      return false;
-  }
-  return true;
-}
-
-bool MarkPagesAsMissing(const std::vector<int64_t>& ids_of_missing_pages,
-                        base::Time missing_time,
-                        sql::Database* db) {
-  static const char kSql[] = "UPDATE OR IGNORE " OFFLINE_PAGES_TABLE_NAME
-                             " SET file_missing_time = ?"
-                             " WHERE offline_id = ?";
-
-  for (auto offline_id : ids_of_missing_pages) {
+  for (auto offline_id : item_ids) {
     sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
     statement.BindInt64(0, store_utils::ToDatabaseTime(missing_time));
     statement.BindInt64(1, offline_id);
@@ -94,21 +58,15 @@ bool MarkPagesAsMissing(const std::vector<int64_t>& ids_of_missing_pages,
   return true;
 }
 
+bool MarkPagesAsMissing(const std::vector<int64_t>& ids_of_missing_pages,
+                        base::Time missing_time,
+                        sql::Database* db) {
+  return SetItemsFileMissingTimeSync(ids_of_missing_pages, missing_time, db);
+}
+
 bool MarkPagesAsReappeared(const std::vector<int64_t>& ids_of_reappeared_pages,
                            sql::Database* db) {
-  static const char kSql[] = "UPDATE OR IGNORE " OFFLINE_PAGES_TABLE_NAME
-                             " SET file_missing_time = ?"
-                             " WHERE offline_id = ?";
-
-  base::Time invalid_time;
-  for (auto offline_id : ids_of_reappeared_pages) {
-    sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-    statement.BindInt64(0, store_utils::ToDatabaseTime(invalid_time));
-    statement.BindInt64(1, offline_id);
-    if (!statement.Run())
-      return false;
-  }
-  return true;
+  return SetItemsFileMissingTimeSync(ids_of_reappeared_pages, base::Time(), db);
 }
 
 PersistentPageConsistencyCheckTask::CheckResult
@@ -116,43 +74,43 @@ PersistentPageConsistencyCheckSync(
     OfflinePageMetadataStore* store,
     const base::FilePath& private_dir,
     const base::FilePath& public_dir,
-    const std::vector<std::string>& persistent_namespaces,
     base::Time check_time,
     sql::Database* db) {
-  std::vector<int64_t> download_ids_of_deleted_pages;
+  std::vector<PublishedArchiveId> publish_ids_of_deleted_pages;
 
   sql::Transaction transaction(db);
   if (!transaction.Begin())
     return {SyncOperationResult::TRANSACTION_BEGIN_ERROR,
-            download_ids_of_deleted_pages};
+            publish_ids_of_deleted_pages};
 
-  std::vector<PageInfo> persistent_page_infos =
-      GetPageInfosByNamespaces(persistent_namespaces, db);
+  std::vector<OfflinePageItem> persistent_page_infos = GetPersistentPages(db);
 
   std::vector<int64_t> pages_found_missing;
   std::vector<int64_t> pages_reappeared;
   std::vector<int64_t> page_ids_to_delete;
-  for (const auto& page_info : persistent_page_infos) {
-    if (base::PathExists(page_info.file_path)) {
-      if (page_info.file_missing_time != base::Time())
-        pages_reappeared.push_back(page_info.offline_id);
+  for (const OfflinePageItem& item : persistent_page_infos) {
+    if (base::PathExists(item.file_path)) {
+      if (item.file_missing_time != base::Time())
+        pages_reappeared.push_back(item.offline_id);
     } else {
-      if (page_info.file_missing_time == base::Time()) {
-        pages_found_missing.push_back(page_info.offline_id);
+      if (item.file_missing_time == base::Time()) {
+        pages_found_missing.push_back(item.offline_id);
       } else {
-        if (check_time - page_info.file_missing_time > kExpireThreshold) {
-          page_ids_to_delete.push_back(page_info.offline_id);
-          download_ids_of_deleted_pages.push_back(page_info.system_download_id);
+        if (check_time - item.file_missing_time > kExpireThreshold) {
+          page_ids_to_delete.push_back(item.offline_id);
+
+          publish_ids_of_deleted_pages.emplace_back(item.system_download_id,
+                                                    item.file_path);
         }
       }
     }
   }
 
-  if (!DeletePagesByOfflineIds(page_ids_to_delete, db) ||
+  if (!DeletePageTask::DeletePagesFromDbSync(page_ids_to_delete, db) ||
       !MarkPagesAsMissing(pages_found_missing, check_time, db) ||
       !MarkPagesAsReappeared(pages_reappeared, db)) {
     return {SyncOperationResult::DB_OPERATION_ERROR,
-            download_ids_of_deleted_pages};
+            publish_ids_of_deleted_pages};
   }
 
   if (page_ids_to_delete.size() > 0) {
@@ -173,9 +131,9 @@ PersistentPageConsistencyCheckSync(
 
   if (!transaction.Commit())
     return {SyncOperationResult::TRANSACTION_COMMIT_ERROR,
-            download_ids_of_deleted_pages};
+            publish_ids_of_deleted_pages};
 
-  return {SyncOperationResult::SUCCESS, download_ids_of_deleted_pages};
+  return {SyncOperationResult::SUCCESS, publish_ids_of_deleted_pages};
 }
 
 }  // namespace
@@ -184,8 +142,8 @@ PersistentPageConsistencyCheckTask::CheckResult::CheckResult() = default;
 
 PersistentPageConsistencyCheckTask::CheckResult::CheckResult(
     SyncOperationResult result,
-    const std::vector<int64_t>& system_download_ids)
-    : result(result), download_ids_of_deleted_pages(system_download_ids) {}
+    const std::vector<PublishedArchiveId>& ids_of_deleted_pages)
+    : result(result), ids_of_deleted_pages(ids_of_deleted_pages) {}
 
 PersistentPageConsistencyCheckTask::CheckResult::CheckResult(
     const CheckResult& other) = default;
@@ -199,35 +157,28 @@ PersistentPageConsistencyCheckTask::CheckResult::~CheckResult() {}
 PersistentPageConsistencyCheckTask::PersistentPageConsistencyCheckTask(
     OfflinePageMetadataStore* store,
     ArchiveManager* archive_manager,
-    ClientPolicyController* policy_controller,
     base::Time check_time,
     PersistentPageConsistencyCheckCallback callback)
     : store_(store),
       archive_manager_(archive_manager),
-      policy_controller_(policy_controller),
       check_time_(check_time),
-      callback_(std::move(callback)),
-      weak_ptr_factory_(this) {
+      callback_(std::move(callback)) {
   DCHECK(store_);
   DCHECK(archive_manager_);
-  DCHECK(policy_controller_);
 }
 
 PersistentPageConsistencyCheckTask::~PersistentPageConsistencyCheckTask() =
     default;
 
 void PersistentPageConsistencyCheckTask::Run() {
-  std::vector<std::string> persistent_namespaces =
-      policy_controller_->GetNamespacesForUserRequestedDownload();
-
-  store_->Execute(base::BindOnce(&PersistentPageConsistencyCheckSync, store_,
-                                 archive_manager_->GetPrivateArchivesDir(),
-                                 archive_manager_->GetPublicArchivesDir(),
-                                 persistent_namespaces, check_time_),
-                  base::BindOnce(&PersistentPageConsistencyCheckTask::
-                                     OnPersistentPageConsistencyCheckDone,
-                                 weak_ptr_factory_.GetWeakPtr()),
-                  CheckResult{SyncOperationResult::INVALID_DB_CONNECTION, {}});
+  store_->Execute(
+      base::BindOnce(&PersistentPageConsistencyCheckSync, store_,
+                     archive_manager_->GetPrivateArchivesDir(),
+                     archive_manager_->GetPublicArchivesDir(), check_time_),
+      base::BindOnce(&PersistentPageConsistencyCheckTask::
+                         OnPersistentPageConsistencyCheckDone,
+                     weak_ptr_factory_.GetWeakPtr()),
+      CheckResult{SyncOperationResult::INVALID_DB_CONNECTION, {}});
 }
 
 void PersistentPageConsistencyCheckTask::OnPersistentPageConsistencyCheckDone(
@@ -239,7 +190,7 @@ void PersistentPageConsistencyCheckTask::OnPersistentPageConsistencyCheckDone(
   if (check_result.result != SyncOperationResult::SUCCESS) {
     std::move(callback_).Run(false, {});
   } else {
-    std::move(callback_).Run(true, check_result.download_ids_of_deleted_pages);
+    std::move(callback_).Run(true, check_result.ids_of_deleted_pages);
   }
   TaskComplete();
 }

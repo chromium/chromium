@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_CONTROLS_TREE_TREE_VIEW_VIEWS_H_
-#define UI_VIEWS_CONTROLS_TREE_TREE_VIEW_VIEWS_H_
+#ifndef UI_VIEWS_CONTROLS_TREE_TREE_VIEW_H_
+#define UI_VIEWS_CONTROLS_TREE_TREE_VIEW_H_
 
 #include <memory>
 #include <vector>
@@ -26,6 +26,7 @@ class Rect;
 namespace views {
 
 class PrefixSelector;
+class ScrollView;
 class Textfield;
 class TreeViewController;
 
@@ -42,14 +43,14 @@ class VIEWS_EXPORT TreeView : public View,
                               public FocusChangeListener,
                               public PrefixDelegate {
  public:
-  // The tree view's class name.
-  static const char kViewClassName[];
+  METADATA_HEADER(TreeView);
 
   TreeView();
   ~TreeView() override;
 
-  // Returns new ScrollPane that contains the receiver.
-  View* CreateParentIfNecessary();
+  // Returns a new ScrollView that contains the given |tree|.
+  static std::unique_ptr<ScrollView> CreateScrollViewWithTree(
+      std::unique_ptr<TreeView> tree);
 
   // Sets the model. TreeView does not take ownership of the model.
   void SetModel(ui::TreeModel* model);
@@ -137,17 +138,16 @@ class VIEWS_EXPORT TreeView : public View,
   void ShowContextMenu(const gfx::Point& p,
                        ui::MenuSourceType source_type) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  const char* GetClassName() const override;
 
   // TreeModelObserver overrides:
   void TreeNodesAdded(ui::TreeModel* model,
                       ui::TreeModelNode* parent,
-                      int start,
-                      int count) override;
+                      size_t start,
+                      size_t count) override;
   void TreeNodesRemoved(ui::TreeModel* model,
                         ui::TreeModelNode* parent,
-                        int start,
-                        int count) override;
+                        size_t start,
+                        size_t count) override;
   void TreeNodeChanged(ui::TreeModel* model,
                        ui::TreeModelNode* model_node) override;
 
@@ -218,14 +218,14 @@ class VIEWS_EXPORT TreeView : public View,
 
    private:
     // The node from the model.
-    ui::TreeModelNode* model_node_;
+    ui::TreeModelNode* model_node_ = nullptr;
 
     // Whether the children have been loaded.
-    bool loaded_children_;
+    bool loaded_children_ = false;
 
-    bool is_expanded_;
+    bool is_expanded_ = false;
 
-    int text_width_;
+    int text_width_ = 0;
 
     DISALLOW_COPY_AND_ASSIGN(InternalNode);
   };
@@ -375,7 +375,7 @@ class VIEWS_EXPORT TreeView : public View,
   void SetHasFocusIndicator(bool);
 
   // The model, may be null.
-  ui::TreeModel* model_;
+  ui::TreeModel* model_ = nullptr;
 
   // Default icons for closed/open.
   gfx::ImageSkia closed_icon_;
@@ -387,34 +387,34 @@ class VIEWS_EXPORT TreeView : public View,
   // The root node.
   InternalNode root_;
 
-  // The selected node, may be NULL.
-  InternalNode* selected_node_;
+  // The selected node, may be null.
+  InternalNode* selected_node_ = nullptr;
 
-  bool editing_;
+  bool editing_ = false;
 
   // The editor; lazily created and never destroyed (well, until TreeView is
   // destroyed). Hidden when no longer editing. We do this avoid destruction
   // problems.
-  Textfield* editor_;
+  Textfield* editor_ = nullptr;
 
   // Preferred size of |editor_| with no content.
   gfx::Size empty_editor_size_;
 
   // If non-NULL we've attached a listener to this focus manager. Used to know
   // when focus is changing to another view so that we can cancel the edit.
-  FocusManager* focus_manager_;
+  FocusManager* focus_manager_ = nullptr;
 
   // Whether to automatically expand children when a parent node is expanded.
-  bool auto_expand_children_;
+  bool auto_expand_children_ = false;
 
   // Whether the user can edit the items.
-  bool editable_;
+  bool editable_ = true;
 
   // The controller.
-  TreeViewController* controller_;
+  TreeViewController* controller_ = nullptr;
 
   // Whether or not the root is shown in the tree.
-  bool root_shown_;
+  bool root_shown_ = true;
 
   // Cached preferred size.
   gfx::Size preferred_size_;
@@ -439,4 +439,4 @@ class VIEWS_EXPORT TreeView : public View,
 
 }  // namespace views
 
-#endif  // UI_VIEWS_CONTROLS_TREE_TREE_VIEW_VIEWS_H_
+#endif  // UI_VIEWS_CONTROLS_TREE_TREE_VIEW_H_

@@ -3,11 +3,15 @@
     <!-- Modern color palette -->
     <color name="modern_blue_300">#8AB4F8</color>
     <color name="modern_blue_600">#1A73E8</color>
+    <color name="modern_blue_700">#3367D6</color>
+    <color name="modern_blue_800" tools:ignore="UnusedResources">#185ABC</color>
     <color name="modern_grey_50" tools:ignore="UnusedResources">#F8F9FA</color>
     <color name="modern_grey_100" tools:ignore="UnusedResources">#F1F3F4</color>
+    <color name="modern_grey_100_alpha_38" tools:ignore="UnusedResources">#61F1F3F4</color>
     <color name="modern_grey_200" tools:ignore="UnusedResources">#E8EAED</color>
     <color name="modern_grey_200_alpha_38" tools:ignore="UnusedResources">#61E8EAED</color>
     <color name="modern_grey_300" tools:ignore="UnusedResources">#DADCE0</color>
+    <color name="modern_grey_300_alpha_38">#61DADCE0</color>
     <color name="modern_grey_400" tools:ignore="UnusedResources">#BDC1C6</color>
     <color name="modern_grey_500" tools:ignore="UnusedResources">#9AA0A6</color>
     <color name="modern_grey_600" tools:ignore="UnusedResources">#80868B</color>
@@ -15,13 +19,81 @@
     <color name="modern_grey_800" tools:ignore="UnusedResources">#3C4043</color>
     <color name="modern_grey_800_alpha_38" tools:ignore="UnusedResources">#613C4043</color>
     <color name="modern_grey_900">#202124</color>
+    <color name="modern_grey_900_alpha_38" tools:ignore="UnusedResources">#61202124</color>
 
-    <color name="modern_grey_900_with_white_alpha_8" tools:ignore="UnusedResources">#313235</color>
+    <color name="modern_grey_900_with_grey_200_alpha_5">#292A2D</color>
+    <color name="modern_grey_900_with_grey_200_alpha_8">#303134</color>
+    <color name="modern_grey_900_with_grey_200_alpha_11">#35363A</color>
+    <color name="modern_grey_900_with_grey_200_alpha_12">#38383C</color>
 
-    <color name="black_alpha_38">#61000000</color>
+    <color name="black_alpha_38" tools:ignore="UnusedResources">#61000000</color>
 
+    <color name="white_alpha_8" tools:ignore="UnusedResources">#14FFFFFF</color>
     <color name="white_alpha_10" tools:ignore="UnusedResources">#1AFFFFFF</color>
-    <color name="white_alpha_20">#33FFFFFF</color>
+    <color name="white_alpha_12" tools:ignore="UnusedResources">#1FFFFFFF</color>
+    <color name="white_alpha_20" tools:ignore="UnusedResources">#33FFFFFF</color>
+    <color name="white_alpha_24" tools:ignore="UnusedResources">#3DFFFFFF</color>
+    <color name="white_alpha_32" tools:ignore="UnusedResources">#51FFFFFF</color>
+    <color name="white_alpha_38" tools:ignore="UnusedResources">#61FFFFFF</color>
     <color name="white_alpha_50" tools:ignore="UnusedResources">#80FFFFFF</color>
     <color name="white_alpha_70">#B3FFFFFF</color>
+
+    <color name="google_red_300" tools:ignore="UnusedResources">#F28B82</color>
+    <color name="google_red_600" tools:ignore="UnusedResources">#D93025</color>
+
+    <color name="google_green_300" tools:ignore="UnusedResources">#81C995</color>
+    <color name="google_green_600" tools:ignore="UnusedResources">#1E8E3E</color>
+
+    <!-- Semantic color references that don't change on night mode. -->
+    <!-- Common icon colors for drawables. -->
+    <color name="default_icon_color_dark">@color/modern_grey_800</color>
+    <color name="default_icon_color_dark_disabled">@color/modern_grey_800_alpha_38</color>
+    <color name="default_icon_color_white" tools:ignore="UnusedResources">
+        @android:color/white
+    </color>
+    <color name="default_icon_color_white_disabled" tools:ignore="UnusedResources">
+        @color/white_alpha_50
+    </color>
+    <color name="default_icon_color_white_pressed" tools:ignore="UnusedResources">
+        @color/white_alpha_50
+    </color>
+
+    <color name="default_icon_color_secondary_dark">@color/modern_grey_600</color>
+    <color name="default_icon_color_secondary_light">@color/white_alpha_70</color>
+
+    <!-- Common text colors -->
+    <color name="default_text_color_dark">@color/modern_grey_900</color>
+    <color name="default_text_color_light">@android:color/white</color>
+    <color name="default_text_color_dark_secondary" tools:ignore="UnusedResources">@color/modern_grey_700</color>
+
+    <!-- TODO(https://crbug.com/1020436): Update the highlight colors to meet accessibility
+         contrast ratio. -->
+    <color name="highlight_color_on_light_text" tools:ignore="UnusedResources">#CC5595FE</color>
+    <color name="highlight_color_on_dark_text" tools:ignore="UnusedResources">#C6DAFC</color>
+
+    <color name="default_red_light" tools:ignore="UnusedResources">@color/google_red_300</color>
+    <color name="default_red_dark" tools:ignore="UnusedResources">@color/google_red_600</color>
+
+    <color name="default_green_light" tools:ignore="UnusedResources">@color/google_green_300</color>
+    <color name="default_green_dark" tools:ignore="UnusedResources">@color/google_green_600</color>
+
+    <!-- Common background colors. -->
+    <color name="default_bg_color_light">@android:color/white</color>
+    <color name="default_bg_color_dark" tools:ignore="UnusedResources">
+        @color/modern_grey_900
+    </color>
+    <color name="default_bg_color_dark_elev_1" tools:ignore="UnusedResources">
+        @color/modern_grey_900_with_grey_200_alpha_5
+    </color>
+    <color name="default_bg_color_dark_elev_2" tools:ignore="UnusedResources">
+        @color/modern_grey_900_with_grey_200_alpha_8
+    </color>
+    <color name="default_bg_color_dark_elev_3" tools:ignore="UnusedResources">
+        @color/modern_grey_900_with_grey_200_alpha_11
+    </color>
+    <color name="default_bg_color_dark_elev_4" tools:ignore="UnusedResources">
+        @color/modern_grey_900_with_grey_200_alpha_12
+    </color>
+    <color name="divider_bg_color_dark">@color/modern_grey_300</color>
+    <color name="divider_bg_color_light">@color/white_alpha_12</color>
 </resources>

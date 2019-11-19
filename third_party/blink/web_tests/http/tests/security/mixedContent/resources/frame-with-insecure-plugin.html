@@ -2,7 +2,7 @@
 window.onload = function() {
   setTimeout(function() {
     if (window.internals)
-      internals.updateLayoutIgnorePendingStylesheetsAndRunPostLayoutTasks(document);
+      internals.updateLayoutAndRunPostLayoutTasks(document);
     if (window.testRunner)
       testRunner.notifyDone();
   }, 0);

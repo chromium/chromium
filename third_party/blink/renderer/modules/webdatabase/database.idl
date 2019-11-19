@@ -33,11 +33,11 @@
     readonly attribute DOMString version;
     // TODO(crbug.com/841185): |callback|, |errorCallback|, and
     // |successCallback| are not nullable in the spec.
-    void changeVersion(DOMString oldVersion, DOMString newVersion, optional SQLTransactionCallback? callback, optional SQLTransactionErrorCallback? errorCallback, optional VoidCallback? successCallback);
+    [Measure] void changeVersion(DOMString oldVersion, DOMString newVersion, optional SQLTransactionCallback? callback, optional SQLTransactionErrorCallback? errorCallback, optional VoidCallback? successCallback);
     // TODO(crbug.com/841185): |errorCallback| and |successCallback| are not
     // nullable in the spec.
-    void transaction(SQLTransactionCallback callback, optional SQLTransactionErrorCallback? errorCallback, optional VoidCallback? successCallback);
+    [Measure] void transaction(SQLTransactionCallback callback, optional SQLTransactionErrorCallback? errorCallback, optional VoidCallback? successCallback);
     // TODO(crbug.com/841185): |errorCallback| and |successCallback| are not
     // nullable in the spec.
-    void readTransaction(SQLTransactionCallback callback, optional SQLTransactionErrorCallback? errorCallback, optional VoidCallback? successCallback);
+    [Measure] void readTransaction(SQLTransactionCallback callback, optional SQLTransactionErrorCallback? errorCallback, optional VoidCallback? successCallback);
 };

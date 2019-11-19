@@ -121,8 +121,8 @@ class ComputedStyleInitialValues{
 
  private:
   static const FilterOperations& InitialFilterInternal() {
-    DEFINE_STATIC_LOCAL(Persistent<FilterOperationsWrapper>, ops,
-        (FilterOperationsWrapper::Create()));
+    DEFINE_STATIC_LOCAL(const Persistent<FilterOperationsWrapper>, ops,
+        (MakeGarbageCollected<FilterOperationsWrapper>()));
     return ops->Operations();
   }
 };

@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -40,7 +39,7 @@ class MODULES_EXPORT IDBObserver final : public ScriptWrappable {
   void Trace(blink::Visitor*) override;
 
  private:
-  TraceWrapperMember<V8IDBObserverCallback> callback_;
+  Member<V8IDBObserverCallback> callback_;
   HeapHashMap<int32_t, WeakMember<IDBDatabase>> observer_ids_;
 };
 

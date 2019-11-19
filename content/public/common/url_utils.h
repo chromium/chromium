@@ -18,7 +18,6 @@ CONTENT_EXPORT bool HasWebUIScheme(const GURL& url);
 // Check whether we can do the saving page operation for the specified URL.
 CONTENT_EXPORT bool IsSavableURL(const GURL& url);
 
-// PlzNavigate
 // Helper function to determine if the navigation to |url| should make a request
 // to the network stack. A request should not be sent for JavaScript URLs or
 // about:blank. In these cases, no request needs to be sent.

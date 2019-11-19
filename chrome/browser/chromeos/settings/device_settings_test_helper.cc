@@ -13,7 +13,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/browser/browser_thread.h"
@@ -36,9 +36,11 @@ ScopedDeviceSettingsTestHelper::~ScopedDeviceSettingsTestHelper() {
 }
 
 DeviceSettingsTestBase::DeviceSettingsTestBase()
-    : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP) {}
+    : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
-DeviceSettingsTestBase::~DeviceSettingsTestBase() = default;
+DeviceSettingsTestBase::~DeviceSettingsTestBase() {
+  CHECK(teardown_called_);
+}
 
 void DeviceSettingsTestBase::SetUp() {
   device_policy_ = std::make_unique<policy::DevicePolicyBuilder>();
@@ -47,8 +49,9 @@ void DeviceSettingsTestBase::SetUp() {
       base::WrapUnique(user_manager_));
   owner_key_util_ = new ownership::MockOwnerKeyUtil();
   device_settings_service_ = std::make_unique<DeviceSettingsService>();
-  PowerManagerClient::Initialize();
   dbus_setter_ = DBusThreadManager::GetSetterForTesting();
+  CryptohomeClient::InitializeFake();
+  PowerManagerClient::InitializeFake();
   OwnerSettingsServiceChromeOSFactory::SetDeviceSettingsServiceForTesting(
       device_settings_service_.get());
   OwnerSettingsServiceChromeOSFactory::GetInstance()->SetOwnerKeyUtilForTesting(
@@ -66,13 +69,15 @@ void DeviceSettingsTestBase::SetUp() {
 }
 
 void DeviceSettingsTestBase::TearDown() {
+  teardown_called_ = true;
   OwnerSettingsServiceChromeOSFactory::SetDeviceSettingsServiceForTesting(
       nullptr);
   FlushDeviceSettings();
   device_settings_service_->UnsetSessionManager();
   device_settings_service_.reset();
-  DBusThreadManager::Shutdown();
   PowerManagerClient::Shutdown();
+  CryptohomeClient::Shutdown();
+  DBusThreadManager::Shutdown();
   device_policy_.reset();
   base::RunLoop().RunUntilIdle();
   profile_.reset();

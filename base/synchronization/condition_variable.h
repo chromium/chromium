@@ -58,9 +58,6 @@
 // thread that has Wait()ed the longest is selected. The default policy
 // may improve performance, as the selected thread may have a greater chance of
 // having some of its stack data in various CPU caches.
-//
-// For a discussion of the many very subtle implementation details, see the FAQ
-// at the end of condition_variable_win.cc.
 
 #ifndef BASE_SYNCHRONIZATION_CONDITION_VARIABLE_H_
 #define BASE_SYNCHRONIZATION_CONDITION_VARIABLE_H_

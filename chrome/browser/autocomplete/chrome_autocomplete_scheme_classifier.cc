@@ -23,7 +23,7 @@ metrics::OmniboxInputType
 ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
     const std::string& scheme) const {
   if (scheme.empty()) {
-    return metrics::OmniboxInputType::INVALID;
+    return metrics::OmniboxInputType::EMPTY;
   }
   if (base::IsStringASCII(scheme) &&
       (ProfileIOData::IsHandledProtocol(scheme) ||
@@ -63,17 +63,17 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
       // Linux impl of GetApplicationNameForProtocol doesn't distinguish
       // between URL schemes with handers and those without. This will
       // make the default behaviour be search on Linux.
-      return metrics::OmniboxInputType::INVALID;
+      return metrics::OmniboxInputType::EMPTY;
 #endif // defined(OS_LINUX)
       // If block state is unknown, check if there is an application registered
       // for the url scheme.
       GURL url(scheme + "://");
       base::string16 application_name =
           shell_integration::GetApplicationNameForProtocol(url);
-      return application_name.empty() ? metrics::OmniboxInputType::INVALID
+      return application_name.empty() ? metrics::OmniboxInputType::EMPTY
                                       : metrics::OmniboxInputType::URL;
     }
   }
   NOTREACHED();
-  return metrics::OmniboxInputType::INVALID;
+  return metrics::OmniboxInputType::EMPTY;
 }

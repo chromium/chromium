@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/trees/layer_tree_frame_sink.h"
@@ -86,9 +87,24 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
   }
 
   static std::unique_ptr<FakeLayerTreeFrameSink> Create3dForGpuRasterization(
-      int max_msaa_samples = 0) {
+      int max_msaa_samples = 0,
+      bool msaa_is_slow = false) {
     return Builder()
         .AllContexts(&viz::TestGLES2Interface::set_gpu_rasterization, true)
+        .AllContexts(&viz::TestGLES2Interface::set_msaa_is_slow, msaa_is_slow)
+        .AllContexts(&viz::TestGLES2Interface::SetMaxSamples, max_msaa_samples)
+        .Build();
+  }
+
+  static std::unique_ptr<FakeLayerTreeFrameSink> Create3dForOopRasterization(
+      int max_msaa_samples = 0,
+      bool msaa_is_slow = false) {
+    // TODO(enne): this should really use a TestRasterInterface.
+    // It's very fake to use "supports oop raster" on a gles2 interface.
+    return Builder()
+        .AllContexts(&viz::TestGLES2Interface::set_gpu_rasterization, true)
+        .AllContexts(&viz::TestGLES2Interface::set_supports_oop_raster, true)
+        .AllContexts(&viz::TestGLES2Interface::set_msaa_is_slow, msaa_is_slow)
         .AllContexts(&viz::TestGLES2Interface::SetMaxSamples, max_msaa_samples)
         .Build();
   }
@@ -104,7 +120,7 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
                              bool hit_test_data_changed,
                              bool show_hit_test_borders) override;
   void DidNotProduceFrame(const viz::BeginFrameAck& ack) override;
-  void DidAllocateSharedBitmap(mojo::ScopedSharedBufferHandle buffer,
+  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
                                const viz::SharedBitmapId& id) override;
   void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override;
 
@@ -142,7 +158,7 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
   void DidReceiveCompositorFrameAck();
 
   std::unique_ptr<viz::BeginFrameSource> begin_frame_source_;
-  base::WeakPtrFactory<FakeLayerTreeFrameSink> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeLayerTreeFrameSink> weak_ptr_factory_{this};
 };
 
 }  // namespace cc

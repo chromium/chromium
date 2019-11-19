@@ -180,7 +180,8 @@ TreeScopeEventContext* EventPath::EnsureTreeScopeEventContext(
   TreeScopeEventContext* tree_scope_event_context =
       GetTreeScopeEventContext(*tree_scope);
   if (!tree_scope_event_context) {
-    tree_scope_event_context = TreeScopeEventContext::Create(*tree_scope);
+    tree_scope_event_context =
+        MakeGarbageCollected<TreeScopeEventContext>(*tree_scope);
     tree_scope_event_contexts_.push_back(tree_scope_event_context);
 
     TreeScopeEventContext* parent_tree_scope_event_context =
@@ -274,6 +275,10 @@ void EventPath::RetargetRelatedTarget(const Node& related_target_node) {
     DCHECK(adjusted_related_target);
     tree_scope_event_context.Get()->SetRelatedTarget(*adjusted_related_target);
   }
+  // Explicitly clear the heap container to avoid memory regressions in the hot
+  // path.
+  // TODO(bikineev): Revisit after young generation is there.
+  related_node_map.clear();
 }
 
 namespace {
@@ -371,6 +376,10 @@ void EventPath::AdjustTouchList(
       adjusted_touch_list[j]->Append(touch.CloneWithNewTarget(
           FindRelatedNode(*tree_scopes[j], related_node_map)));
     }
+    // Explicitly clear the heap container to avoid memory regressions in the
+    // hot path.
+    // TODO(bikineev): Revisit after young generation is there.
+    related_node_map.clear();
   }
 }
 
@@ -406,13 +415,13 @@ void EventPath::EnsureWindowEventContext() {
 #if DCHECK_IS_ON()
 void EventPath::CheckReachability(TreeScope& tree_scope,
                                   TouchList& touch_list) {
-  for (wtf_size_t i = 0; i < touch_list.length(); ++i)
+  for (wtf_size_t i = 0; i < touch_list.length(); ++i) {
     DCHECK(touch_list.item(i)
                ->target()
                ->ToNode()
                ->GetTreeScope()
-               .IsInclusiveOlderSiblingShadowRootOrAncestorTreeScopeOf(
-                   tree_scope));
+               .IsInclusiveAncestorTreeScopeOf(tree_scope));
+  }
 }
 #endif
 

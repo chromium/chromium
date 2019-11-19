@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "media/mojo/services/deferred_destroy_strong_binding_set.h"
 #include "mojo/public/interfaces/bindings/tests/ping_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,7 +15,6 @@ namespace media {
 namespace {
 
 using PingService = mojo::test::PingService;
-using PingServicePtr = mojo::test::PingServicePtr;
 
 class DeferredDestroyPingImpl : public DeferredDestroy<PingService> {
  public:
@@ -46,10 +45,10 @@ int DeferredDestroyPingImpl::instance_count = 0;
 
 DeferredDestroyPingImpl* AddDeferredDestroyBinding(
     DeferredDestroyStrongBindingSet<PingService>* bindings,
-    PingServicePtr* ptr) {
+    mojo::PendingRemote<PingService>* ptr) {
   auto impl = std::make_unique<DeferredDestroyPingImpl>();
   DeferredDestroyPingImpl* impl_ptr = impl.get();
-  bindings->AddBinding(std::move(impl), mojo::MakeRequest(ptr));
+  bindings->AddBinding(std::move(impl), ptr->InitWithNewPipeAndPassReceiver());
   return impl_ptr;
 }
 
@@ -59,11 +58,11 @@ class DeferredDestroyStrongBindingSetTest : public testing::Test {
   ~DeferredDestroyStrongBindingSetTest() override = default;
 
  protected:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(DeferredDestroyStrongBindingSetTest, Destructor) {
-  PingServicePtr ping[2];
+  mojo::PendingRemote<PingService> ping[2];
   auto bindings =
       std::make_unique<DeferredDestroyStrongBindingSet<PingService>>();
 
@@ -76,7 +75,7 @@ TEST_F(DeferredDestroyStrongBindingSetTest, Destructor) {
 }
 
 TEST_F(DeferredDestroyStrongBindingSetTest, ConnectionError) {
-  PingServicePtr ping[4];
+  mojo::PendingRemote<PingService> ping[4];
   DeferredDestroyPingImpl* impl[4];
   auto bindings =
       std::make_unique<DeferredDestroyStrongBindingSet<PingService>>();
@@ -112,7 +111,7 @@ TEST_F(DeferredDestroyStrongBindingSetTest, ConnectionError) {
 }
 
 TEST_F(DeferredDestroyStrongBindingSetTest, CloseAllBindings) {
-  PingServicePtr ping[3];
+  mojo::PendingRemote<PingService> ping[3];
   DeferredDestroyPingImpl* impl[3];
   DeferredDestroyStrongBindingSet<PingService> bindings;
 

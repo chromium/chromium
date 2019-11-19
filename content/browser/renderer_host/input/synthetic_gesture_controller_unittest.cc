@@ -12,7 +12,7 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
@@ -205,8 +205,7 @@ class MockMoveGestureTarget : public MockSyntheticGestureTarget {
  public:
   MockMoveGestureTarget()
       : total_abs_move_distance_length_(0),
-        precise_scrolling_deltas_(false),
-        scroll_by_page_(false) {}
+        granularity_(ui::input_types::ScrollGranularity::kScrollByPixel) {}
   ~MockMoveGestureTarget() override {}
 
   gfx::Vector2dF start_to_end_distance() const {
@@ -215,14 +214,15 @@ class MockMoveGestureTarget : public MockSyntheticGestureTarget {
   float total_abs_move_distance_length() const {
     return total_abs_move_distance_length_;
   }
-  bool precise_scrolling_deltas() const { return precise_scrolling_deltas_; }
-  bool scroll_by_page() const { return scroll_by_page_; }
+
+  ui::input_types::ScrollGranularity granularity() const {
+    return granularity_;
+  }
 
  protected:
   gfx::Vector2dF start_to_end_distance_;
   float total_abs_move_distance_length_;
-  bool precise_scrolling_deltas_;
-  bool scroll_by_page_;
+  ui::input_types::ScrollGranularity granularity_;
 };
 
 class MockScrollMouseTarget : public MockMoveGestureTarget {
@@ -237,8 +237,7 @@ class MockScrollMouseTarget : public MockMoveGestureTarget {
     gfx::Vector2dF delta(mouse_wheel_event.delta_x, mouse_wheel_event.delta_y);
     start_to_end_distance_ += delta;
     total_abs_move_distance_length_ += delta.Length();
-    precise_scrolling_deltas_ = mouse_wheel_event.has_precise_scrolling_deltas;
-    scroll_by_page_ = mouse_wheel_event.scroll_by_page;
+    granularity_ = mouse_wheel_event.delta_units;
   }
 };
 
@@ -804,9 +803,13 @@ class SyntheticGestureControllerTestBase {
       num_failure_++;
   }
 
+  bool DispatchTimerRunning() const {
+    return controller_->dispatch_timer_.IsRunning();
+  }
+
   base::TimeDelta GetTotalTime() const { return time_ - start_time_; }
 
-  base::test::ScopedTaskEnvironment env_;
+  base::test::TaskEnvironment env_;
   MockSyntheticGestureTarget* target_;
   DummySyntheticGestureControllerDelegate delegate_;
   std::unique_ptr<SyntheticGestureController> controller_;
@@ -1280,7 +1283,8 @@ TEST_F(SyntheticGestureControllerTest, SingleScrollGestureMousePreciseScroll) {
   params.input_type = SyntheticSmoothMoveGestureParams::MOUSE_WHEEL_INPUT;
   params.start_point.SetPoint(39, 86);
   params.distances.push_back(gfx::Vector2d(0, -132));
-  params.precise_scrolling_deltas = true;
+  params.granularity =
+      ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
 
   std::unique_ptr<SyntheticSmoothMoveGesture> gesture(
       new SyntheticSmoothMoveGesture(params));
@@ -1291,8 +1295,7 @@ TEST_F(SyntheticGestureControllerTest, SingleScrollGestureMousePreciseScroll) {
       static_cast<MockMoveGestureTarget*>(target_);
   EXPECT_EQ(1, num_success_);
   EXPECT_EQ(0, num_failure_);
-  EXPECT_EQ(params.precise_scrolling_deltas,
-            scroll_target->precise_scrolling_deltas());
+  EXPECT_EQ(params.granularity, scroll_target->granularity());
 }
 
 TEST_F(SyntheticGestureControllerTest, SingleScrollGestureMouseScrollByPage) {
@@ -1302,7 +1305,7 @@ TEST_F(SyntheticGestureControllerTest, SingleScrollGestureMouseScrollByPage) {
   params.input_type = SyntheticSmoothMoveGestureParams::MOUSE_WHEEL_INPUT;
   params.start_point.SetPoint(39, 86);
   params.distances.push_back(gfx::Vector2d(0, -132));
-  params.scroll_by_page = true;
+  params.granularity = ui::input_types::ScrollGranularity::kScrollByPage;
 
   std::unique_ptr<SyntheticSmoothMoveGesture> gesture(
       new SyntheticSmoothMoveGesture(params));
@@ -1313,7 +1316,7 @@ TEST_F(SyntheticGestureControllerTest, SingleScrollGestureMouseScrollByPage) {
       static_cast<MockMoveGestureTarget*>(target_);
   EXPECT_EQ(1, num_success_);
   EXPECT_EQ(0, num_failure_);
-  EXPECT_EQ(params.scroll_by_page, scroll_target->scroll_by_page());
+  EXPECT_EQ(params.granularity, scroll_target->granularity());
 }
 
 void CheckIsWithinRangeMulti(float scroll_distance,
@@ -2009,6 +2012,80 @@ TEST_F(SyntheticGestureControllerTest, PointerPenAction) {
   EXPECT_EQ(pointer_pen_target->num_dispatched_pointer_actions(), 5);
   EXPECT_TRUE(
       pointer_pen_target->SyntheticMouseActionDispatchedCorrectly(param, 0));
+}
+
+class MockSyntheticGestureTargetManualAck : public MockSyntheticGestureTarget {
+ public:
+  void WaitForTargetAck(SyntheticGestureParams::GestureType type,
+                        SyntheticGestureParams::GestureSourceType source,
+                        base::OnceClosure callback) const override {
+    if (manually_ack_)
+      target_ack_ = std::move(callback);
+    else
+      std::move(callback).Run();
+  }
+  bool HasOutstandingAck() const { return !target_ack_.is_null(); }
+  void InvokeAck() {
+    DCHECK(HasOutstandingAck());
+    std::move(target_ack_).Run();
+  }
+  void SetManuallyAck(bool manually_ack) { manually_ack_ = manually_ack; }
+
+ private:
+  mutable base::OnceClosure target_ack_;
+  bool manually_ack_ = true;
+};
+
+// Ensure the first time a gesture is queued, we wait for a renderer ACK before
+// starting the gesture. Following gestures should start immediately. This test
+// the renderer_known_to_be_initialized_ bit in the controller.
+TEST_F(SyntheticGestureControllerTest, WaitForRendererInitialization) {
+  CreateControllerAndTarget<MockSyntheticGestureTargetManualAck>();
+
+  auto* target = static_cast<MockSyntheticGestureTargetManualAck*>(target_);
+
+  EXPECT_FALSE(target->HasOutstandingAck());
+
+  SyntheticTapGestureParams params;
+  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.duration_ms = 123;
+  params.position.SetPoint(87, -124);
+
+  // Queue the first gesture.
+  {
+    auto gesture = std::make_unique<SyntheticTapGesture>(params);
+    QueueSyntheticGesture(std::move(gesture));
+
+    // We should have received a WaitForTargetAck and the dispatch timer won't
+    // start until that's ACK'd.
+    EXPECT_TRUE(target->HasOutstandingAck());
+    EXPECT_FALSE(DispatchTimerRunning());
+
+    target->InvokeAck();
+
+    // The timer should now be running.
+    EXPECT_FALSE(target->HasOutstandingAck());
+    EXPECT_TRUE(DispatchTimerRunning());
+  }
+
+  // Finish the gesture.
+  {
+    target->SetManuallyAck(false);
+    FlushInputUntilComplete();
+    target->SetManuallyAck(true);
+    EXPECT_FALSE(DispatchTimerRunning());
+  }
+
+  // Queue the second gesture.
+  {
+    auto gesture = std::make_unique<SyntheticTapGesture>(params);
+    QueueSyntheticGesture(std::move(gesture));
+
+    // This time, because we've already sent a gesuture to the renderer,
+    // there's no need to wait for an ACK before starting the dispatch timer.
+    EXPECT_FALSE(target->HasOutstandingAck());
+    EXPECT_TRUE(DispatchTimerRunning());
+  }
 }
 
 }  // namespace content

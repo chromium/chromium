@@ -33,13 +33,17 @@ public class WebApkInstallService {
 
     /** Displays a notification when a WebAPK is successfully installed. */
     @CalledByNative
-    private static void showInstalledNotification(
-            String webApkPackage, String manifestUrl, String shortName, String url, Bitmap icon) {
+    private static void showInstalledNotification(String webApkPackage, String manifestUrl,
+            String shortName, String url, Bitmap icon, boolean isIconMaskable) {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = WebApkNavigationClient.createLaunchWebApkIntent(webApkPackage, url, false
                 /* forceNavigation */);
         PendingIntent clickPendingIntent =
                 PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        if (isIconMaskable && ShortcutHelper.doesAndroidSupportMaskableIcons()) {
+            icon = ShortcutHelper.generateAdaptiveIconBitmap(icon);
+        }
 
         showNotification(manifestUrl, shortName, url, icon,
                 context.getResources().getString(R.string.notification_webapk_installed),
@@ -49,9 +53,12 @@ public class WebApkInstallService {
     /** Display a notification when an install starts. */
     @CalledByNative
     private static void showInstallInProgressNotification(
-            String manifestUrl, String shortName, String url, Bitmap icon) {
+            String manifestUrl, String shortName, String url, Bitmap icon, boolean isIconMaskable) {
         String message = ContextUtils.getApplicationContext().getResources().getString(
                 R.string.notification_webapk_install_in_progress, shortName);
+        if (isIconMaskable && ShortcutHelper.doesAndroidSupportMaskableIcons()) {
+            icon = ShortcutHelper.generateAdaptiveIconBitmap(icon);
+        }
         showNotification(manifestUrl, shortName, url, icon, message, null);
         ShortcutHelper.showToast(message);
     }

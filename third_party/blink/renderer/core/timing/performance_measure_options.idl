@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(maxlg): refer to user timing L3 spec once authored.
-// https://docs.google.com/document/d/1hltt8z9C4PaI5Qu1YMIp1wOGdbJPJPoJwBarEeCY6xQ/edit#
+// https://w3c.github.io/user-timing/#performancemeasureoptions-dictionary
 dictionary PerformanceMeasureOptions {
-    any detail = null;
-    (DOMString or DOMHighResTimeStamp)? startTime;
-    // TODO(crbug.com/758385): add |duration| for better ergonomics.
-    (DOMString or DOMHighResTimeStamp)? endTime;
+    any detail;
+    (DOMString or DOMHighResTimeStamp) start;
+    DOMHighResTimeStamp duration;
+    (DOMString or DOMHighResTimeStamp) end;
 };

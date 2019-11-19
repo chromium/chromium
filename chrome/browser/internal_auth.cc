@@ -15,6 +15,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/numerics/ranges.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -110,8 +111,8 @@ bool IsVarSane(const std::string& var) {
       sizeof(kAllowedChars) == 26 + 26 + 10 + 1 + 1, "some mess with chars");
   // We must not allow kItemSeparator in anything used as an input to construct
   // message to sign.
-  DCHECK(!base::ContainsValue(kAllowedChars, kItemSeparator));
-  DCHECK(!base::ContainsValue(kAllowedChars, kVarValueSeparator));
+  DCHECK(!base::Contains(kAllowedChars, kItemSeparator));
+  DCHECK(!base::Contains(kAllowedChars, kVarValueSeparator));
   return !var.empty() &&
       var.size() <= kStringLengthLimit &&
       base::IsStringASCII(var) &&
@@ -381,7 +382,7 @@ class InternalAuthGenerationService : public base::ThreadChecker {
       int idx = static_cast<int>(used_ticks_.size()) -
           static_cast<int>(current_tick - tick + 1);
       if (idx < 0 || used_ticks_[idx] != tick) {
-        DCHECK(!base::ContainsValue(used_ticks_, tick));
+        DCHECK(!base::Contains(used_ticks_, tick));
         return tick;
       }
     }
@@ -449,7 +450,7 @@ int InternalAuthVerification::get_verification_window_ticks() {
   if (verification_window_seconds_ > 0)
     candidate = verification_window_seconds_ *
         base::Time::kMicrosecondsPerSecond / kTickUs;
-  return std::max(1, std::min(candidate, kVerificationWindowTicks));
+  return base::ClampToRange(candidate, 1, kVerificationWindowTicks);
 }
 
 int InternalAuthVerification::verification_window_seconds_ = 0;

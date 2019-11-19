@@ -13,6 +13,7 @@
 #include "crazy_linker_elf_symbols.h"
 #include "crazy_linker_elf_view.h"
 #include "crazy_linker_error.h"
+#include "crazy_linker_load_params.h"
 #include "crazy_linker_memory_mapping.h"
 #include "crazy_linker_rdebug.h"
 #include "crazy_linker_util.h"
@@ -50,17 +51,13 @@ class SharedLibrary {
   // Load a library (without its dependents) from an ELF file.
   // Note: This does not apply relocations, nor runs constructors.
   // |full_path| if the file full path.
-  // |load_address| is the page-aligned load address in memory, or 0.
-  // |file_offset| is the page-aligned file offset.
+  // |params| are the load parameters for this operation.
   // On failure, return false and set |error| message.
   //
   // After this, the caller should load all library dependencies,
   // Then call Relocate() and CallConstructors() to complete the
   // operation.
-  bool Load(const char* full_path,
-            size_t load_address,
-            size_t file_offset,
-            Error* error);
+  bool Load(const LoadParams& params, Error* error);
 
   // Relocate this library, assuming all its dependencies are already
   // loaded in |lib_list|. On failure, return false and set |error|
@@ -95,7 +92,7 @@ class SharedLibrary {
 
   // Return the ELF symbol entry for a given symbol, if defined by
   // this library, or NULL otherwise.
-  const ELF::Sym* LookupSymbolEntry(const char* symbol_name);
+  const ELF::Sym* LookupSymbolEntry(const char* symbol_name) const;
 
   // Find the nearest symbol near a given |address|. On success, return
   // true and set |*sym_name| to the symbol name, |*sym_addr| to its address
@@ -103,14 +100,14 @@ class SharedLibrary {
   bool FindNearestSymbolForAddress(void* address,
                                    const char** sym_name,
                                    void** sym_addr,
-                                   size_t* sym_size) {
+                                   size_t* sym_size) const {
     return symbols_.LookupNearestByAddress(
         address, load_bias(), sym_name, sym_addr, sym_size);
   }
 
   // Return the address of a given |symbol_name| if it is exported
   // by the library, NULL otherwise.
-  void* FindAddressForSymbol(const char* symbol_name);
+  void* FindAddressForSymbol(const char* symbol_name) const;
 
   // Create a new Ashmem region holding a copy of the library's RELRO section,
   // potentially relocated for a new |load_address|. On success, return true
@@ -157,7 +154,7 @@ class SharedLibrary {
   //    }
   class DependencyIterator {
    public:
-    explicit DependencyIterator(SharedLibrary* lib)
+    explicit DependencyIterator(const SharedLibrary* lib)
         : iter_(&lib->view_), symbols_(&lib->symbols_), dep_name_(NULL) {}
 
     bool GetNext();
@@ -165,9 +162,9 @@ class SharedLibrary {
     const char* GetName() const { return dep_name_; }
 
    private:
-    DependencyIterator();
-    DependencyIterator(const DependencyIterator&);
-    DependencyIterator& operator=(const DependencyIterator&);
+    DependencyIterator() = delete;
+    DependencyIterator(const DependencyIterator&) = delete;
+    DependencyIterator& operator=(const DependencyIterator&) = delete;
 
     ElfView::DynamicIterator iter_;
     const ElfSymbols* symbols_;

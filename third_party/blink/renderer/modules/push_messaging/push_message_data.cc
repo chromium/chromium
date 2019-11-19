@@ -38,14 +38,15 @@ PushMessageData* PushMessageData::Create(
             : message_data.GetAsArrayBuffer();
 
     return MakeGarbageCollected<PushMessageData>(
-        static_cast<const char*>(buffer->Data()), buffer->ByteLength());
+        static_cast<const char*>(buffer->Data()),
+        buffer->DeprecatedByteLengthAsUnsigned());
   }
 
   if (message_data.IsUSVString()) {
-    CString encoded_string = UTF8Encoding().Encode(
+    std::string encoded_string = UTF8Encoding().Encode(
         message_data.GetAsUSVString(), WTF::kNoUnencodables);
-    return MakeGarbageCollected<PushMessageData>(encoded_string.data(),
-                                                 encoded_string.length());
+    return MakeGarbageCollected<PushMessageData>(
+        encoded_string.c_str(), static_cast<unsigned>(encoded_string.length()));
   }
 
   DCHECK(message_data.IsNull());
@@ -63,13 +64,13 @@ DOMArrayBuffer* PushMessageData::arrayBuffer() const {
 }
 
 Blob* PushMessageData::blob() const {
-  std::unique_ptr<BlobData> blob_data = BlobData::Create();
+  auto blob_data = std::make_unique<BlobData>();
   blob_data->AppendBytes(data_.data(), data_.size());
 
   // Note that the content type of the Blob object is deliberately not being
   // provided, following the specification.
 
-  const long long byte_length = blob_data->length();
+  const uint64_t byte_length = blob_data->length();
   return Blob::Create(
       BlobDataHandle::Create(std::move(blob_data), byte_length));
 }
@@ -83,7 +84,7 @@ ScriptValue PushMessageData::json(ScriptState* script_state,
   if (exception_state.HadException())
     return ScriptValue();
 
-  return ScriptValue(script_state, parsed);
+  return ScriptValue(script_state->GetIsolate(), parsed);
 }
 
 String PushMessageData::text() const {

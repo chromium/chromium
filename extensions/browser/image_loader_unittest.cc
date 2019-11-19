@@ -69,7 +69,7 @@ class ImageLoaderTest : public ExtensionsTest {
     base::FilePath extension_dir;
     if (!base::PathService::Get(DIR_TEST_DATA, &extension_dir)) {
       EXPECT_FALSE(true);
-      return NULL;
+      return nullptr;
     }
     extension_dir = extension_dir.AppendASCII(dir_name);
     int error_code = 0;
@@ -81,11 +81,11 @@ class ImageLoaderTest : public ExtensionsTest {
             deserializer.Deserialize(&error_code, &error));
     EXPECT_EQ(0, error_code) << error;
     if (error_code != 0)
-      return NULL;
+      return nullptr;
 
     EXPECT_TRUE(valid_value.get());
     if (!valid_value)
-      return NULL;
+      return nullptr;
 
     return Extension::Create(
         extension_dir, location, *valid_value, Extension::NO_FLAGS, &error);
@@ -103,7 +103,7 @@ class ImageLoaderTest : public ExtensionsTest {
 TEST_F(ImageLoaderTest, LoadImage) {
   scoped_refptr<Extension> extension(
       CreateExtension("image_loader", Manifest::INVALID_LOCATION));
-  ASSERT_TRUE(extension.get() != NULL);
+  ASSERT_TRUE(extension.get() != nullptr);
 
   ExtensionResource image_resource =
       IconsInfo::GetIconResource(extension.get(),
@@ -135,7 +135,7 @@ TEST_F(ImageLoaderTest, LoadImage) {
 TEST_F(ImageLoaderTest, DeleteExtensionWhileWaitingForCache) {
   scoped_refptr<Extension> extension(
       CreateExtension("image_loader", Manifest::INVALID_LOCATION));
-  ASSERT_TRUE(extension.get() != NULL);
+  ASSERT_TRUE(extension.get() != nullptr);
 
   ExtensionResource image_resource =
       IconsInfo::GetIconResource(extension.get(),
@@ -159,7 +159,7 @@ TEST_F(ImageLoaderTest, DeleteExtensionWhileWaitingForCache) {
 
   // Chuck the extension, that way if anyone tries to access it we should crash
   // or get valgrind errors.
-  extension = NULL;
+  extension = nullptr;
 
   WaitForImageLoad();
 
@@ -176,7 +176,7 @@ TEST_F(ImageLoaderTest, DeleteExtensionWhileWaitingForCache) {
 TEST_F(ImageLoaderTest, MultipleImages) {
   scoped_refptr<Extension> extension(
       CreateExtension("image_loader", Manifest::INVALID_LOCATION));
-  ASSERT_TRUE(extension.get() != NULL);
+  ASSERT_TRUE(extension.get() != nullptr);
 
   std::vector<ImageLoader::ImageRepresentation> info_list;
   int sizes[] = {extension_misc::EXTENSION_ICON_BITTY,
@@ -219,7 +219,7 @@ TEST_F(ImageLoaderTest, MultipleImages) {
 TEST_F(ImageLoaderTest, LoadImageFamily) {
   scoped_refptr<Extension> extension(
       CreateExtension("image_loader", Manifest::INVALID_LOCATION));
-  ASSERT_TRUE(extension.get() != NULL);
+  ASSERT_TRUE(extension.get() != nullptr);
 
   std::vector<ImageLoader::ImageRepresentation> info_list;
   int sizes[] = {extension_misc::EXTENSION_ICON_BITTY,

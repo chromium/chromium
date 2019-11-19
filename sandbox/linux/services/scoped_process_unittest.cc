@@ -38,7 +38,7 @@ void RaiseAndExit(int signal) {
 
 TEST(ScopedProcess, ScopedProcessNormalExit) {
   const int kCustomExitCode = 12;
-  ScopedProcess process(base::Bind(&ExitWithCode, kCustomExitCode));
+  ScopedProcess process(base::BindOnce(&ExitWithCode, kCustomExitCode));
   bool got_signaled = true;
   int exit_code = process.WaitForExit(&got_signaled);
   EXPECT_FALSE(got_signaled);
@@ -55,7 +55,7 @@ TEST(ScopedProcess, ScopedProcessNormalExit) {
 // Disable this test on Android, SIGABRT is funky there.
 TEST(ScopedProcess, DISABLE_ON_ANDROID(ScopedProcessAbort)) {
   PCHECK(SIG_ERR != signal(SIGABRT, SIG_DFL));
-  ScopedProcess process(base::Bind(&RaiseAndExit, SIGABRT));
+  ScopedProcess process(base::BindOnce(&RaiseAndExit, SIGABRT));
   bool got_signaled = false;
   int exit_code = process.WaitForExit(&got_signaled);
   EXPECT_TRUE(got_signaled);
@@ -77,7 +77,7 @@ TEST(ScopedProcess, DiesForReal) {
   base::ScopedFD read_end_closer(pipe_fds[0]);
   base::ScopedFD write_end_closer(pipe_fds[1]);
 
-  { ScopedProcess process(base::Bind(&DoExit)); }
+  { ScopedProcess process(base::BindOnce(&DoExit)); }
 
   // Close writing end of the pipe.
   write_end_closer.reset();
@@ -94,7 +94,7 @@ TEST(ScopedProcess, SynchronizationBasic) {
   ScopedProcess process1{base::DoNothing()};
   EXPECT_TRUE(process1.WaitForClosureToRun());
 
-  ScopedProcess process2(base::Bind(&DoExit));
+  ScopedProcess process2(base::BindOnce(&DoExit));
   // The closure didn't finish running normally. This case is simple enough
   // that process.WaitForClosureToRun() should return false, even though the
   // API does not guarantees that it will return at all.
@@ -114,7 +114,7 @@ TEST(ScopedProcess, SynchronizationWorks) {
 
   // Start a process with a closure that takes a little bit to run.
   ScopedProcess process(
-      base::Bind(&SleepInMsAndWriteOneByte, 100, pipe_fds[1]));
+      base::BindOnce(&SleepInMsAndWriteOneByte, 100, pipe_fds[1]));
   EXPECT_TRUE(process.WaitForClosureToRun());
 
   // Verify that the closure did, indeed, run.

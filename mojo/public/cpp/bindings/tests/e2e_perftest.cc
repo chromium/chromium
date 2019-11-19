@@ -8,15 +8,16 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/perf_time_logger.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/mojo_test_base.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/interfaces/bindings/tests/ping_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,31 +26,34 @@ namespace {
 
 class EchoServiceImpl : public test::EchoService {
  public:
-  explicit EchoServiceImpl(const base::Closure& quit_closure);
-  ~EchoServiceImpl() override;
+  EchoServiceImpl(PendingReceiver<test::EchoService> receiver,
+                  base::OnceClosure quit_closure)
+      : receiver_(this, std::move(receiver)),
+        quit_closure_(std::move(quit_closure)) {
+    receiver_.set_disconnect_handler(
+        base::BindOnce(&EchoServiceImpl::OnDisconnect, base::Unretained(this)));
+  }
 
-  // |EchoService| methods:
-  void Echo(const std::string& test_data, EchoCallback callback) override;
+  ~EchoServiceImpl() override { std::move(quit_closure_).Run(); }
+
+  // EchoService:
+  void Echo(const std::string& test_data, EchoCallback callback) override {
+    std::move(callback).Run(test_data);
+  }
 
  private:
-  const base::Closure quit_closure_;
+  void OnDisconnect() { delete this; }
+
+  Receiver<test::EchoService> receiver_;
+  base::OnceClosure quit_closure_;
 };
-
-EchoServiceImpl::EchoServiceImpl(const base::Closure& quit_closure)
-    : quit_closure_(quit_closure) {}
-
-EchoServiceImpl::~EchoServiceImpl() {
-  quit_closure_.Run();
-}
-
-void EchoServiceImpl::Echo(const std::string& test_data,
-                           EchoCallback callback) {
-  std::move(callback).Run(test_data);
-}
 
 class PingPongTest {
  public:
-  explicit PingPongTest(test::EchoServicePtr service);
+  explicit PingPongTest(PendingRemote<test::EchoService> service)
+      : service_(std::move(service)),
+        ping_done_callback_(base::BindRepeating(&PingPongTest::OnPingDone,
+                                                base::Unretained(this))) {}
 
   void RunTest(int iterations, int batch_size, int message_size);
 
@@ -57,8 +61,8 @@ class PingPongTest {
   void DoPing();
   void OnPingDone(const std::string& reply);
 
-  test::EchoServicePtr service_;
-  const base::Callback<void(const std::string&)> ping_done_callback_;
+  Remote<test::EchoService> service_;
+  const base::RepeatingCallback<void(const std::string&)> ping_done_callback_;
 
   int iterations_;
   int batch_size_;
@@ -67,13 +71,8 @@ class PingPongTest {
   int current_iterations_;
   int calls_outstanding_;
 
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
 };
-
-PingPongTest::PingPongTest(test::EchoServicePtr service)
-    : service_(std::move(service)),
-      ping_done_callback_(
-          base::Bind(&PingPongTest::OnPingDone, base::Unretained(this))) {}
 
 void PingPongTest::RunTest(int iterations, int batch_size, int message_size) {
   iterations_ = iterations;
@@ -94,7 +93,7 @@ void PingPongTest::DoPing() {
   DCHECK_EQ(0, calls_outstanding_);
   current_iterations_++;
   if (current_iterations_ > iterations_) {
-    quit_closure_.Run();
+    std::move(quit_closure_).Run();
     return;
   }
 
@@ -123,15 +122,15 @@ class MojoE2EPerftest : public core::test::MojoTestBase {
       base::RunLoop run_loop;
       runner->PostTaskAndReply(
           FROM_HERE,
-          base::Bind(&MojoE2EPerftest::RunTests, base::Unretained(this),
-                     client_mp, test_name),
+          base::BindOnce(&MojoE2EPerftest::RunTests, base::Unretained(this),
+                         client_mp, test_name),
           run_loop.QuitClosure());
       run_loop.Run();
     }
   }
 
  protected:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
  private:
   void RunTests(MojoHandle client_mp, const std::string& test_name) {
@@ -139,10 +138,8 @@ class MojoE2EPerftest : public core::test::MojoTestBase {
     const int kBatchSizes[] = {1, 10, 100};
     const int kMessageSizes[] = {8, 64, 512, 4096, 65536};
 
-    test::EchoServicePtr service;
-    service.Bind(InterfacePtrInfo<test::EchoService>(
-        ScopedMessagePipeHandle(MessagePipeHandle(client_mp)),
-        service.version()));
+    PendingRemote<test::EchoService> service(
+        ScopedMessagePipeHandle(MessagePipeHandle(client_mp)), 0);
     PingPongTest test(std::move(service));
 
     for (int batch_size : kBatchSizes) {
@@ -160,24 +157,26 @@ class MojoE2EPerftest : public core::test::MojoTestBase {
   }
 };
 
-void CreateAndRunService(InterfaceRequest<test::EchoService> request,
-                         const base::Closure& cb) {
-  MakeStrongBinding(std::make_unique<EchoServiceImpl>(cb), std::move(request));
+void CreateAndRunService(PendingReceiver<test::EchoService> receiver,
+                         base::OnceClosure quit_closure) {
+  // Self-owned.
+  new EchoServiceImpl(std::move(receiver), std::move(quit_closure));
 }
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(PingService, MojoE2EPerftest, mp) {
   MojoHandle service_mp;
   EXPECT_EQ("hello", ReadMessageWithHandles(mp, &service_mp, 1));
 
-  auto request = InterfaceRequest<test::EchoService>(
+  auto receiver = PendingReceiver<test::EchoService>(
       ScopedMessagePipeHandle(MessagePipeHandle(service_mp)));
   base::RunLoop run_loop;
   core::GetIOTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&CreateAndRunService, std::move(request),
-                     base::Bind(base::IgnoreResult(&base::TaskRunner::PostTask),
-                                message_loop_.task_runner(), FROM_HERE,
-                                run_loop.QuitClosure())));
+      base::BindOnce(
+          &CreateAndRunService, std::move(receiver),
+          base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
+                         task_environment_.GetMainThreadTaskRunner(), FROM_HERE,
+                         run_loop.QuitClosure())));
   run_loop.Run();
 }
 
@@ -186,8 +185,8 @@ TEST_F(MojoE2EPerftest, MultiProcessEchoMainThread) {
     MojoHandle client_mp, service_mp;
     CreateMessagePipe(&client_mp, &service_mp);
     WriteMessageWithHandles(mp, "hello", &service_mp, 1);
-    RunTestOnTaskRunner(message_loop_.task_runner().get(), client_mp,
-                        "MultiProcessEchoMainThread");
+    RunTestOnTaskRunner(task_environment_.GetMainThreadTaskRunner().get(),
+                        client_mp, "MultiProcessEchoMainThread");
   });
 }
 

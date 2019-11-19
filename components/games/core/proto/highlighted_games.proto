@@ -1,0 +1,28 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package games;
+
+import "date.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message HighlightedGame {
+  // ID of the Game proto to be retrieved from the GamesCatalog.
+  int32 game_id = 1;
+
+  // Date at which the game becomes highlighted; this is a client-specific date.
+  Date start_date = 2;
+
+  // Date at which the game stops being highlighted; this is a client-specific
+  // date.
+  Date end_date = 3;
+}
+
+// HighlightedGamesResponse proto, also used in Chrome.
+message HighlightedGamesResponse {
+  repeated HighlightedGame games = 1;
+}

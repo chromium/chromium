@@ -23,16 +23,16 @@ void TestBluetoothLocalGattServiceDelegate::OnCharacteristicReadRequest(
     const BluetoothDevice* device,
     const BluetoothLocalGattCharacteristic* characteristic,
     int offset,
-    const ValueCallback& callback,
-    const ErrorCallback& error_callback) {
+    ValueCallback callback,
+    ErrorCallback error_callback) {
   EXPECT_EQ(expected_characteristic_->GetIdentifier(),
             characteristic->GetIdentifier());
   if (should_fail_) {
-    error_callback.Run();
+    std::move(error_callback).Run();
     return;
   }
   last_seen_device_ = device->GetIdentifier();
-  callback.Run(BluetoothGattServerTest::GetValue(value_to_write_));
+  std::move(callback).Run(BluetoothGattServerTest::GetValue(value_to_write_));
 }
 
 void TestBluetoothLocalGattServiceDelegate::OnCharacteristicWriteRequest(
@@ -40,17 +40,17 @@ void TestBluetoothLocalGattServiceDelegate::OnCharacteristicWriteRequest(
     const BluetoothLocalGattCharacteristic* characteristic,
     const std::vector<uint8_t>& value,
     int offset,
-    const base::Closure& callback,
-    const ErrorCallback& error_callback) {
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
   EXPECT_EQ(expected_characteristic_->GetIdentifier(),
             characteristic->GetIdentifier());
   if (should_fail_) {
-    error_callback.Run();
+    std::move(error_callback).Run();
     return;
   }
   last_seen_device_ = device->GetIdentifier();
   last_written_value_ = BluetoothGattServerTest::GetInteger(value);
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void TestBluetoothLocalGattServiceDelegate::OnCharacteristicPrepareWriteRequest(
@@ -59,12 +59,12 @@ void TestBluetoothLocalGattServiceDelegate::OnCharacteristicPrepareWriteRequest(
     const std::vector<uint8_t>& value,
     int offset,
     bool has_subsequent_request,
-    const base::Closure& callback,
-    const ErrorCallback& error_callback) {
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
   EXPECT_EQ(expected_characteristic_->GetIdentifier(),
             characteristic->GetIdentifier());
   if (should_fail_) {
-    error_callback.Run();
+    std::move(error_callback).Run();
     return;
   }
   // For testing purpose, we don't maintain a queue for all the pending prepare
@@ -73,22 +73,22 @@ void TestBluetoothLocalGattServiceDelegate::OnCharacteristicPrepareWriteRequest(
   if (!has_subsequent_request)
     last_written_value_ = BluetoothGattServerTest::GetInteger(value);
   last_seen_device_ = device->GetIdentifier();
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void TestBluetoothLocalGattServiceDelegate::OnDescriptorReadRequest(
     const BluetoothDevice* device,
     const BluetoothLocalGattDescriptor* descriptor,
     int offset,
-    const ValueCallback& callback,
-    const ErrorCallback& error_callback) {
+    ValueCallback callback,
+    ErrorCallback error_callback) {
   EXPECT_EQ(expected_descriptor_->GetIdentifier(), descriptor->GetIdentifier());
   if (should_fail_) {
-    error_callback.Run();
+    std::move(error_callback).Run();
     return;
   }
   last_seen_device_ = device->GetIdentifier();
-  callback.Run(BluetoothGattServerTest::GetValue(value_to_write_));
+  std::move(callback).Run(BluetoothGattServerTest::GetValue(value_to_write_));
 }
 
 void TestBluetoothLocalGattServiceDelegate::OnDescriptorWriteRequest(
@@ -96,16 +96,16 @@ void TestBluetoothLocalGattServiceDelegate::OnDescriptorWriteRequest(
     const BluetoothLocalGattDescriptor* descriptor,
     const std::vector<uint8_t>& value,
     int offset,
-    const base::Closure& callback,
-    const ErrorCallback& error_callback) {
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
   EXPECT_EQ(expected_descriptor_->GetIdentifier(), descriptor->GetIdentifier());
   if (should_fail_) {
-    error_callback.Run();
+    std::move(error_callback).Run();
     return;
   }
   last_seen_device_ = device->GetIdentifier();
   last_written_value_ = BluetoothGattServerTest::GetInteger(value);
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void TestBluetoothLocalGattServiceDelegate::OnNotificationsStart(

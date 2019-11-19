@@ -49,7 +49,8 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -58,6 +59,9 @@ class PaintLayer;
 class PaintLayerCompositor;
 class ComputedStyle;
 
+// This class is only for PaintLayer, PaintLayerPaintOrderIterator and
+// PaintLayerPaintOrderReverseIterator. Other classes should not use this class.
+//
 // PaintLayerStackingNode represents a stacked element which is either a
 // stacking context or a positioned element.
 // See
@@ -74,136 +78,122 @@ class ComputedStyle;
 //
 // Stacked elements form a subtree over the layout tree. Ideally we would want
 // objects of this class to be a node in this tree but there are potential
-// issues with stale pointers so we rely on PaintLayer's tree
-// structure.
+// issues with stale pointers so we rely on PaintLayer's tree structure.
 //
 // This class's purpose is to represent a node in the stacked element tree
 // (aka paint tree). It currently caches the z-order lists for painting and
 // hit-testing.
 //
-// To implement any z-order list iterations, use
-// PaintLayerStackingNodeIterator and
-// PaintLayerStackingNodeReverseIterator.
+// To implement any paint order iterations, use PaintLayerPaintOrderIterator and
+// PaintLayerZOrderReverseIterator.
 //
-// Only a real stacking context can have non-empty z-order lists thus contain
-// child nodes in the tree. The z-order lists of a positioned element with auto
-// z-index are always empty (i.e. it's a leaf of the stacked element tree).
-// A real stacking context can also be a leaf if it doesn't contain any stacked
-// elements.
+// We create PaintLayerStackingNode only for real stacking contexts with stacked
+// children. PaintLayerPaintOrder[Reverse]Iterator can iterate normal flow
+// children in paint order with or without a stacking node.
 class CORE_EXPORT PaintLayerStackingNode {
   USING_FAST_MALLOC(PaintLayerStackingNode);
 
  public:
-  explicit PaintLayerStackingNode(PaintLayer*);
+  explicit PaintLayerStackingNode(PaintLayer&);
   ~PaintLayerStackingNode();
 
-  bool ZOrderListsDirty() const { return z_order_lists_dirty_; }
   void DirtyZOrderLists();
   void UpdateZOrderLists();
-  void ClearZOrderLists();
-  static void DirtyStackingContextZOrderLists(PaintLayer*);
-
-  bool HasPositiveZOrderList() const {
-    return PosZOrderList() && PosZOrderList()->size();
-  }
-  bool HasNegativeZOrderList() const {
-    return NegZOrderList() && NegZOrderList()->size();
-  }
 
   // Returns whether a relevant style changed.
-  static bool StyleDidChange(PaintLayer* paint_layer,
+  static bool StyleDidChange(PaintLayer& paint_layer,
                              const ComputedStyle* old_style);
 
-  PaintLayer* Layer() const { return layer_; }
-
-#if DCHECK_IS_ON()
-  bool LayerListMutationAllowed() const { return layer_list_mutation_allowed_; }
-  void SetLayerListMutationAllowed(bool flag) {
-    layer_list_mutation_allowed_ = flag;
-  }
-#endif
-
-  static PaintLayerStackingNode* AncestorStackingContextNode(const PaintLayer*);
   using PaintLayers = Vector<PaintLayer*>;
 
+  const PaintLayers& PosZOrderList() const {
+    DCHECK(!z_order_lists_dirty_);
+    return pos_z_order_list_;
+  }
+  const PaintLayers& NegZOrderList() const {
+    DCHECK(!z_order_lists_dirty_);
+    return neg_z_order_list_;
+  }
+
+  const PaintLayers* LayersPaintingOverlayOverflowControlsAfter(
+      const PaintLayer* layer) const {
+    DCHECK(!z_order_lists_dirty_);
+    auto it = layer_to_overlay_overflow_controls_painting_after_.find(layer);
+    return it == layer_to_overlay_overflow_controls_painting_after_.end()
+               ? nullptr
+               : &it->value;
+  }
+
+  void ClearNeedsReorderOverlayOverflowControls();
+
  private:
-  friend class PaintLayerStackingNodeIterator;
-  friend class PaintLayerStackingNodeReverseIterator;
-  friend class LayoutTreeAsText;
-
-#if DCHECK_IS_ON()
-  friend class PaintLayer;
-#endif
-
-  PaintLayers* PosZOrderList() const;
-
-  PaintLayers* NegZOrderList() const;
-
   void RebuildZOrderLists();
 
-  static void CollectLayers(PaintLayer*,
-                            std::unique_ptr<PaintLayers>& pos_z_order_list,
-                            std::unique_ptr<PaintLayers>& neg_z_order_list);
+  struct HighestLayers;
+  void CollectLayers(PaintLayer&, HighestLayers*);
 
 #if DCHECK_IS_ON()
   void UpdateStackingParentForZOrderLists(
       PaintLayerStackingNode* stacking_parent);
 #endif
 
-  bool IsDirtyStackingContext() const;
-
   PaintLayerCompositor* Compositor() const;
 
-  PaintLayer* layer_;
+  PaintLayer& layer_;
 
-  // m_posZOrderList holds a sorted list of all the descendant nodes within
-  // that have z-indices of 0 (or is treated as 0 for positioned objects) or
-  // greater.
-  std::unique_ptr<PaintLayers> pos_z_order_list_;
-  // m_negZOrderList holds descendants within our stacking context with
-  // negative z-indices.
-  std::unique_ptr<PaintLayers> neg_z_order_list_;
+  // Holds a sorted list of all the descendant nodes within that have z-indices
+  // of 0 (or is treated as 0 for positioned objects) or greater.
+  PaintLayers pos_z_order_list_;
+  // Holds descendants within our stacking context with negative z-indices.
+  PaintLayers neg_z_order_list_;
 
-  // This boolean caches whether the z-order lists above are dirty.
-  // It is only ever set for stacking contexts, as no other element can
-  // have z-order lists.
+  // Overlay overflow controls(scrollbar or resizer) need to be painted above
+  // all child contents, even if the contents are stacked in a stacking context
+  // which is an ancestor of the scrolling or resizing layer, for example:
+  //   <div id="stacking-context" style="opacity: 0.5">
+  //     <div id="other" style="position: relative; z-index: 10></div>
+  //     <div id="target" style="overflow: scroll; resize: both">
+  //       <div id="child" style="position: relative">CHILD</div>
+  //     </div>
+  //   </div>
+  // and
+  //   <div id="stacking-context" style="opacity: 0.5">
+  //     <div id="other" style="position: relative; z-index: 10></div>
+  //     <div id="target" style="overflow: scroll; position: relative">
+  //       <div id="child" style="position: absolute; z-index: 5">CHILD</div>
+  //     </div>
+  //   </div>
+  //
+  // The paint order without reordering overlay overflow controls would be:
+  //              stacking-context
+  //                 /      |    \
+  //              target  child  other
+  //                |
+  //    overlay overflow controls
+  // where the overlay overflow controls would be painted incorrectly below
+  // |child| which is the sub content of |target|.
+  //
+  // To paint the overlay overflow controls above all child contents, we need to
+  // reorder the z-order of overlay scrollbars in the stacking context:
+  //              stacking-context
+  //              /      |    |   \
+  //           target  child  |  other
+  //                          |
+  //               overlay overflow controls
+  //
+  // This map records which PaintLayers (the values of the map) have overlay
+  // overflow controls which should paint after the given PaintLayer (the key of
+  // the map). The value of the map is a list of PaintLayers because there may
+  // be more than one scrolling or resizing container in the same stacking
+  // context with overlay overflow controls.
+  HashMap<const PaintLayer*, PaintLayers>
+      layer_to_overlay_overflow_controls_painting_after_;
+
+  // Indicates whether the z-order lists above are dirty.
   bool z_order_lists_dirty_ : 1;
-
-  // This attribute caches whether the element was stacked. It's needed to check
-  // the current stacked status (instead of the new stacked status determined by
-  // the new style which has not been realized yet) when a layer is removed due
-  // to style change.
-  bool is_stacked_ : 1;
-
-#if DCHECK_IS_ON()
-  bool layer_list_mutation_allowed_ : 1;
-#endif
 
   DISALLOW_COPY_AND_ASSIGN(PaintLayerStackingNode);
 };
-
-#if DCHECK_IS_ON()
-class LayerListMutationDetector {
-  STACK_ALLOCATED();
-
- public:
-  explicit LayerListMutationDetector(PaintLayerStackingNode* stacking_node)
-      : stacking_node_(stacking_node),
-        previous_mutation_allowed_state_(
-            stacking_node->LayerListMutationAllowed()) {
-    stacking_node_->SetLayerListMutationAllowed(false);
-  }
-
-  ~LayerListMutationDetector() {
-    stacking_node_->SetLayerListMutationAllowed(
-        previous_mutation_allowed_state_);
-  }
-
- private:
-  PaintLayerStackingNode* stacking_node_;
-  bool previous_mutation_allowed_state_;
-};
-#endif
 
 }  // namespace blink
 

@@ -6,7 +6,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ppapi/c/dev/ppb_truetype_font_dev.h"
@@ -36,47 +35,49 @@ const NSInteger kPepperFontWeightsLength = base::size(kPepperFontWeights);
 }  // namespace
 
 void GetFontFamilies_SlowBlocking(std::vector<std::string>* font_families) {
-  base::mac::ScopedNSAutoreleasePool autorelease_pool;
-  NSFontManager* fontManager = [[[NSFontManager alloc] init] autorelease];
-  NSArray* fonts = [fontManager availableFontFamilies];
-  font_families->reserve([fonts count]);
-  for (NSString* family_name in fonts)
-    font_families->push_back(base::SysNSStringToUTF8(family_name));
+  @autoreleasepool {
+    NSFontManager* fontManager = [[[NSFontManager alloc] init] autorelease];
+    NSArray* fonts = [fontManager availableFontFamilies];
+    font_families->reserve([fonts count]);
+    for (NSString* family_name in fonts)
+      font_families->push_back(base::SysNSStringToUTF8(family_name));
+  }
 }
 
 void GetFontsInFamily_SlowBlocking(
     const std::string& family,
     std::vector<ppapi::proxy::SerializedTrueTypeFontDesc>* fonts_in_family) {
-  base::mac::ScopedNSAutoreleasePool autorelease_pool;
-  NSFontManager* fontManager = [[[NSFontManager alloc] init] autorelease];
-  NSString* ns_family = base::SysUTF8ToNSString(family);
-  NSArray* ns_fonts_in_family =
-      [fontManager availableMembersOfFontFamily:ns_family];
+  @autoreleasepool {
+    NSFontManager* fontManager = [[[NSFontManager alloc] init] autorelease];
+    NSString* ns_family = base::SysUTF8ToNSString(family);
+    NSArray* ns_fonts_in_family =
+        [fontManager availableMembersOfFontFamily:ns_family];
 
-  for (NSArray* font_info in ns_fonts_in_family) {
-    ppapi::proxy::SerializedTrueTypeFontDesc desc;
-    desc.family = family;
-    NSInteger font_weight = [[font_info objectAtIndex:2] intValue];
-    font_weight = std::max(static_cast<NSInteger>(0), font_weight);
-    font_weight = std::min(kPepperFontWeightsLength - 1, font_weight);
-    desc.weight = kPepperFontWeights[font_weight];
+    for (NSArray* font_info in ns_fonts_in_family) {
+      ppapi::proxy::SerializedTrueTypeFontDesc desc;
+      desc.family = family;
+      NSInteger font_weight = [[font_info objectAtIndex:2] intValue];
+      font_weight = std::max(static_cast<NSInteger>(0), font_weight);
+      font_weight = std::min(kPepperFontWeightsLength - 1, font_weight);
+      desc.weight = kPepperFontWeights[font_weight];
 
-    NSFontTraitMask font_traits =
-        [[font_info objectAtIndex:3] unsignedIntValue];
-    desc.style = PP_TRUETYPEFONTSTYLE_NORMAL;
-    if (font_traits & NSItalicFontMask)
-      desc.style = PP_TRUETYPEFONTSTYLE_ITALIC;
+      NSFontTraitMask font_traits =
+          [[font_info objectAtIndex:3] unsignedIntValue];
+      desc.style = PP_TRUETYPEFONTSTYLE_NORMAL;
+      if (font_traits & NSItalicFontMask)
+        desc.style = PP_TRUETYPEFONTSTYLE_ITALIC;
 
-    desc.width = PP_TRUETYPEFONTWIDTH_NORMAL;
-    if (font_traits & NSCondensedFontMask)
-      desc.width = PP_TRUETYPEFONTWIDTH_CONDENSED;
-    else if (font_traits & NSExpandedFontMask)
-      desc.width = PP_TRUETYPEFONTWIDTH_EXPANDED;
+      desc.width = PP_TRUETYPEFONTWIDTH_NORMAL;
+      if (font_traits & NSCondensedFontMask)
+        desc.width = PP_TRUETYPEFONTWIDTH_CONDENSED;
+      else if (font_traits & NSExpandedFontMask)
+        desc.width = PP_TRUETYPEFONTWIDTH_EXPANDED;
 
-    // Mac doesn't support requesting non-default character sets.
-    desc.charset = PP_TRUETYPEFONTCHARSET_DEFAULT;
+      // Mac doesn't support requesting non-default character sets.
+      desc.charset = PP_TRUETYPEFONTCHARSET_DEFAULT;
 
-    fonts_in_family->push_back(desc);
+      fonts_in_family->push_back(desc);
+    }
   }
 }
 

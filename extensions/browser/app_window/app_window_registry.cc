@@ -107,13 +107,6 @@ AppWindowRegistry::AppWindowList AppWindowRegistry::GetAppWindowsForApp(
   return app_windows;
 }
 
-void AppWindowRegistry::CloseAllAppWindowsForApp(const std::string& app_id) {
-  const AppWindowList windows = GetAppWindowsForApp(app_id);
-  for (auto it = windows.cbegin(); it != windows.cend(); ++it) {
-    (*it)->GetBaseWindow()->Close();
-  }
-}
-
 AppWindow* AppWindowRegistry::GetAppWindowForWebContents(
     const content::WebContents* web_contents) const {
   for (AppWindow* window : app_windows_) {
@@ -182,7 +175,7 @@ void AppWindowRegistry::DevToolsAgentHostDetached(
 }
 
 void AppWindowRegistry::AddAppWindowToList(AppWindow* app_window) {
-  if (base::ContainsValue(app_windows_, app_window))
+  if (base::Contains(app_windows_, app_window))
     return;
   app_windows_.push_back(app_window);
 }

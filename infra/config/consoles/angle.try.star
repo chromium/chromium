@@ -1,0 +1,20 @@
+luci.list_view(
+    name = 'angle.try',
+    entries = [
+        'android_angle_deqp_rel_ng',
+        'android_angle_vk32_deqp_rel_ng',
+        'android_angle_vk64_deqp_rel_ng',
+        'android_angle_rel_ng',
+        'android_angle_vk32_rel_ng',
+        'android_angle_vk64_rel_ng',
+        'fuchsia-angle-rel',
+        'linux-angle-rel',
+        'linux_angle_deqp_rel_ng',
+        'linux_angle_ozone_rel_ng',
+        'mac-angle-rel',
+        'win-angle-deqp-rel-32',
+        'win-angle-deqp-rel-64',
+        'win-angle-rel-32',
+        'win-angle-rel-64',
+    ],
+)

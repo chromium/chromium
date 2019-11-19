@@ -56,9 +56,11 @@ VideoCaptureDeviceLinux::VideoCaptureDeviceLinux(
     const VideoCaptureDeviceDescriptor& device_descriptor)
     : device_descriptor_(device_descriptor),
       v4l2_(std::move(v4l2)),
-      v4l2_thread_("V4L2CaptureThread") {}
+      v4l2_thread_("V4L2CaptureThread"),
+      rotation_(0) {}
 
 VideoCaptureDeviceLinux::~VideoCaptureDeviceLinux() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Check if the thread is running.
   // This means that the device has not been StopAndDeAllocate()d properly.
   DCHECK(!v4l2_thread_.IsRunning());
@@ -68,6 +70,7 @@ VideoCaptureDeviceLinux::~VideoCaptureDeviceLinux() {
 void VideoCaptureDeviceLinux::AllocateAndStart(
     const VideoCaptureParams& params,
     std::unique_ptr<VideoCaptureDevice::Client> client) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!capture_impl_);
   if (v4l2_thread_.IsRunning())
     return;  // Wrong state.
@@ -77,7 +80,7 @@ void VideoCaptureDeviceLinux::AllocateAndStart(
       TranslatePowerLineFrequencyToV4L2(GetPowerLineFrequency(params));
   capture_impl_ = std::make_unique<V4L2CaptureDelegate>(
       v4l2_.get(), device_descriptor_, v4l2_thread_.task_runner(),
-      line_frequency);
+      line_frequency, rotation_);
   if (!capture_impl_) {
     client->OnError(VideoCaptureError::
                         kDeviceCaptureLinuxFailedToCreateVideoCaptureDelegate,
@@ -98,6 +101,7 @@ void VideoCaptureDeviceLinux::AllocateAndStart(
 }
 
 void VideoCaptureDeviceLinux::StopAndDeAllocate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!v4l2_thread_.IsRunning())
     return;  // Wrong state.
   v4l2_thread_.task_runner()->PostTask(
@@ -110,6 +114,7 @@ void VideoCaptureDeviceLinux::StopAndDeAllocate() {
 }
 
 void VideoCaptureDeviceLinux::TakePhoto(TakePhotoCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(capture_impl_);
   auto functor =
       base::BindOnce(&V4L2CaptureDelegate::TakePhoto,
@@ -123,6 +128,7 @@ void VideoCaptureDeviceLinux::TakePhoto(TakePhotoCallback callback) {
 }
 
 void VideoCaptureDeviceLinux::GetPhotoState(GetPhotoStateCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto functor =
       base::BindOnce(&V4L2CaptureDelegate::GetPhotoState,
                      capture_impl_->GetWeakPtr(), std::move(callback));
@@ -137,6 +143,7 @@ void VideoCaptureDeviceLinux::GetPhotoState(GetPhotoStateCallback callback) {
 void VideoCaptureDeviceLinux::SetPhotoOptions(
     mojom::PhotoSettingsPtr settings,
     SetPhotoOptionsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto functor = base::BindOnce(&V4L2CaptureDelegate::SetPhotoOptions,
                                 capture_impl_->GetWeakPtr(),
                                 std::move(settings), std::move(callback));
@@ -149,6 +156,8 @@ void VideoCaptureDeviceLinux::SetPhotoOptions(
 }
 
 void VideoCaptureDeviceLinux::SetRotation(int rotation) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  rotation_ = rotation;
   if (v4l2_thread_.IsRunning()) {
     v4l2_thread_.task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&V4L2CaptureDelegate::SetRotation,

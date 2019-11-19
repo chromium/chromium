@@ -21,9 +21,9 @@ class CORE_EXPORT StrictYieldingDisplayLockBudget final
   StrictYieldingDisplayLockBudget(DisplayLockContext*);
   ~StrictYieldingDisplayLockBudget() override = default;
 
-  bool ShouldPerformPhase(Phase) const override;
+  bool ShouldPerformPhase(Phase, const LifecycleData&) override;
   void DidPerformPhase(Phase) override;
-  void WillStartLifecycleUpdate() override;
+  void OnLifecycleChange(const LifecycleData&) override;
   // Returns true if any of the lifecycles that have been previously blocked by
   // this budget need updates. Note that this does not check lifecycle phases
   // that have already completed by this budget even if they are now dirty

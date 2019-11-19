@@ -1,0 +1,40 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Implementation of the proposed "Idle Detection API".
+//
+// Proposal: https://github.com/inexorabletash/idle-detection
+
+enum UserIdleState {
+  kActive,
+  kIdle
+};
+
+enum ScreenIdleState {
+  kLocked,
+  kUnlocked
+};
+
+struct IdleState {
+  UserIdleState user;
+  ScreenIdleState screen;
+};
+
+interface IdleMonitor {
+  Update(IdleState state);
+};
+
+interface IdleManager {
+  // Register an IdleMonitor instance. When registered, it will return the
+  // initial state. It will be notified by calls to Update() per the threshold
+  // registered for this instance. It can be unregistered by simply closing
+  // the pipe.
+  AddMonitor(mojo_base.mojom.TimeDelta threshold,
+             pending_remote<IdleMonitor> monitor)
+      => (IdleState state);
+};

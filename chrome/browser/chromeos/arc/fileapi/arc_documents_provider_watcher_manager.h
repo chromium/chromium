@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "storage/browser/fileapi/watcher_manager.h"
+#include "storage/browser/file_system/watcher_manager.h"
 
 namespace arc {
 
@@ -40,7 +40,8 @@ class ArcDocumentsProviderWatcherManager : public storage::WatcherManager {
   void OnNotification(const NotificationCallback& notification_callback,
                       ChangeType change_type);
 
-  base::WeakPtrFactory<ArcDocumentsProviderWatcherManager> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcDocumentsProviderWatcherManager> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderWatcherManager);
 };

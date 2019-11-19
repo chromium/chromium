@@ -1,0 +1,10 @@
+document
+++group
+++++group
+++++++description Name='This is editable.'
+++++description Name='This is not editable.'
+++++separator Name='<newline>'
+++++group
+++++++description Name='But this one is.'
+++++group
+++++++description Name='So is this one.'

@@ -22,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/test_message_loop.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -32,7 +33,6 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/gmock_callback_support.h"
 #include "services/audio/loopback_group_member.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,8 +49,9 @@ using media::AudioBus;
 using media::AudioManager;
 using media::AudioOutputStream;
 using media::AudioParameters;
-using media::RunClosure;
-using media::RunOnceClosure;
+
+using base::test::RunClosure;
+using base::test::RunOnceClosure;
 
 namespace audio {
 namespace {
@@ -132,6 +133,7 @@ class MockAudioOutputStream : public AudioOutputStream,
   MOCK_METHOD0(DidStop, void());
   MOCK_METHOD0(DidClose, void());
   MOCK_METHOD1(DidSetVolume, void(double));
+  MOCK_METHOD0(DidFlush, void());
 
   bool Open() override {
     if (impl_)
@@ -186,6 +188,12 @@ class MockAudioOutputStream : public AudioOutputStream,
   }
 
   void GetVolume(double* volume) override { *volume = volume_; }
+
+  void Flush() override {
+    if (impl_)
+      impl_->Flush();
+    DidFlush();
+  }
 
  protected:
   ~MockAudioOutputStream() override = default;
@@ -415,8 +423,8 @@ class OutputControllerTest : public ::testing::Test {
     Mock::VerifyAndClearExpectations(&mock_event_handler_);
   }
 
-  void StartSnooping(MockSnooper* snooper, Snoopable::SnoopingMode mode) {
-    controller_->StartSnooping(snooper, mode);
+  void StartSnooping(MockSnooper* snooper) {
+    controller_->StartSnooping(snooper);
   }
 
   void WaitForSnoopedData(MockSnooper* snooper) {
@@ -428,8 +436,8 @@ class OutputControllerTest : public ::testing::Test {
     Mock::VerifyAndClearExpectations(snooper);
   }
 
-  void StopSnooping(MockSnooper* snooper, Snoopable::SnoopingMode mode) {
-    controller_->StopSnooping(snooper, mode);
+  void StopSnooping(MockSnooper* snooper) {
+    controller_->StopSnooping(snooper);
   }
 
   Snoopable* GetSnoopable() { return &(*controller_); }
@@ -451,6 +459,8 @@ class OutputControllerTest : public ::testing::Test {
     audio_manager_.GetTaskRunner()->PostTask(FROM_HERE, loop.QuitClosure());
     loop.Run();
   }
+
+  void Flush() { controller_->Flush(); }
 
   void SimulateErrorThenDeviceChange() {
     audio_manager_.GetTaskRunner()->PostTask(
@@ -477,12 +487,13 @@ class OutputControllerTest : public ::testing::Test {
     Mock::VerifyAndClearExpectations(&mock_event_handler_);
   }
 
+  StrictMock<MockOutputControllerEventHandler> mock_event_handler_;
+
  private:
   base::TestMessageLoop message_loop_;
   AudioManagerForControllerTest audio_manager_;
   base::UnguessableToken group_id_;
   base::UnguessableToken processing_id_;
-  StrictMock<MockOutputControllerEventHandler> mock_event_handler_;
   StrictMock<MockOutputControllerSyncReader> mock_sync_reader_;
   base::Optional<OutputController> controller_;
   StreamMonitorCoordinator stream_monitor_coordinator_;
@@ -609,72 +620,68 @@ TEST_F(OutputControllerTest, PlayMuteUnmuteClose) {
   EXPECT_EQ(playout_stream, last_closed_stream());
 }
 
-class WithSnoopingMode
-    : public OutputControllerTest,
-      public ::testing::WithParamInterface<Snoopable::SnoopingMode> {};
-
-TEST_P(WithSnoopingMode, SnoopCreatePlayStopClose) {
+TEST_F(OutputControllerTest, SnoopCreatePlayStopClose) {
   NiceMock<MockSnooper> snooper;
-  StartSnooping(&snooper, GetParam());
+  StartSnooping(&snooper);
   Create();
   Play();
   WaitForSnoopedData(&snooper);
-  StopSnooping(&snooper, GetParam());
+  StopSnooping(&snooper);
   Close();
 }
 
-TEST_P(WithSnoopingMode, CreatePlaySnoopStopClose) {
+TEST_F(OutputControllerTest, CreatePlaySnoopStopClose) {
   NiceMock<MockSnooper> snooper;
   Create();
   Play();
-  StartSnooping(&snooper, GetParam());
+  StartSnooping(&snooper);
   WaitForSnoopedData(&snooper);
-  StopSnooping(&snooper, GetParam());
+  StopSnooping(&snooper);
   Close();
 }
 
-TEST_P(WithSnoopingMode, CreatePlaySnoopCloseStop) {
+TEST_F(OutputControllerTest, CreatePlaySnoopCloseStop) {
   NiceMock<MockSnooper> snooper;
   Create();
   Play();
-  StartSnooping(&snooper, GetParam());
+  StartSnooping(&snooper);
   WaitForSnoopedData(&snooper);
   Close();
-  StopSnooping(&snooper, GetParam());
+  StopSnooping(&snooper);
 }
 
-TEST_P(WithSnoopingMode, TwoSnoopers_StartAtDifferentTimes) {
+TEST_F(OutputControllerTest, TwoSnoopers_StartAtDifferentTimes) {
   NiceMock<MockSnooper> snooper1;
   NiceMock<MockSnooper> snooper2;
-  StartSnooping(&snooper1, GetParam());
+  StartSnooping(&snooper1);
   Create();
   Play();
   WaitForSnoopedData(&snooper1);
-  StartSnooping(&snooper2, GetParam());
+  StartSnooping(&snooper2);
   WaitForSnoopedData(&snooper2);
   WaitForSnoopedData(&snooper1);
   WaitForSnoopedData(&snooper2);
   Close();
-  StopSnooping(&snooper1, GetParam());
-  StopSnooping(&snooper2, GetParam());
+  StopSnooping(&snooper1);
+  StopSnooping(&snooper2);
 }
 
-TEST_P(WithSnoopingMode, TwoSnoopers_StopAtDifferentTimes) {
+TEST_F(OutputControllerTest, TwoSnoopers_StopAtDifferentTimes) {
   NiceMock<MockSnooper> snooper1;
   NiceMock<MockSnooper> snooper2;
   Create();
   Play();
-  StartSnooping(&snooper1, GetParam());
+  StartSnooping(&snooper1);
   WaitForSnoopedData(&snooper1);
-  StartSnooping(&snooper2, GetParam());
+  StartSnooping(&snooper2);
   WaitForSnoopedData(&snooper2);
-  StopSnooping(&snooper1, GetParam());
+  StopSnooping(&snooper1);
   WaitForSnoopedData(&snooper2);
   Close();
-  StopSnooping(&snooper2, GetParam());
+  StopSnooping(&snooper2);
 }
 
-TEST_P(WithSnoopingMode, SnoopWhileMuting) {
+TEST_F(OutputControllerTest, SnoopWhileMuting) {
   NiceMock<MockSnooper> snooper;
 
   StartMutingBeforePlaying();
@@ -691,13 +698,13 @@ TEST_P(WithSnoopingMode, SnoopWhileMuting) {
   EXPECT_EQ(nullptr, last_closed_stream());
   EXPECT_EQ(AudioParameters::AUDIO_FAKE, mute_stream->format());
 
-  StartSnooping(&snooper, GetParam());
+  StartSnooping(&snooper);
   ASSERT_EQ(mute_stream, last_created_stream());
   EXPECT_EQ(nullptr, last_closed_stream());
   EXPECT_EQ(AudioParameters::AUDIO_FAKE, mute_stream->format());
   WaitForSnoopedData(&snooper);
 
-  StopSnooping(&snooper, GetParam());
+  StopSnooping(&snooper);
   ASSERT_EQ(mute_stream, last_created_stream());
   EXPECT_EQ(nullptr, last_closed_stream());
   EXPECT_EQ(AudioParameters::AUDIO_FAKE, mute_stream->format());
@@ -706,11 +713,6 @@ TEST_P(WithSnoopingMode, SnoopWhileMuting) {
   EXPECT_EQ(mute_stream, last_created_stream());
   EXPECT_EQ(mute_stream, last_closed_stream());
 }
-
-INSTANTIATE_TEST_SUITE_P(OutputControllerSnoopingTest,
-                         WithSnoopingMode,
-                         ::testing::Values(Snoopable::SnoopingMode::kDeferred,
-                                           Snoopable::SnoopingMode::kRealtime));
 
 TEST_F(OutputControllerTest, InformsStreamMonitorsAlreadyInGroup) {
   MockStreamMonitor monitor;
@@ -744,6 +746,30 @@ TEST_F(OutputControllerTest,
   Close();
   JoinProcessingGroup(&monitor);
   LeaveProcessingGroup(&monitor);
+}
+
+TEST_F(OutputControllerTest, FlushWhenStreamIsPlayingTriggersError) {
+  Create();
+  Play();
+
+  MockAudioOutputStream* const mock_stream = last_created_stream();
+  EXPECT_CALL(*mock_stream, DidFlush()).Times(0);
+  EXPECT_CALL(mock_event_handler_, OnControllerError()).Times(1);
+  Flush();
+
+  Close();
+}
+
+TEST_F(OutputControllerTest, FlushesWhenStreamIsNotPlaying) {
+  Create();
+  Play();
+  Pause();
+
+  MockAudioOutputStream* const mock_stream = last_created_stream();
+  EXPECT_CALL(*mock_stream, DidFlush()).Times(1);
+  Flush();
+
+  Close();
 }
 
 }  // namespace

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.chrome.browser.explore_sites.ExploreSitesCategoryCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/explore_sites_category_padding_horizontal"
+    android:layout_marginEnd="@dimen/explore_sites_category_padding_horizontal"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/explore_sites_dense_category_padding_vertical_bottom"
+    android:paddingTop="@dimen/explore_sites_dense_category_padding_vertical_top" >
+
+    <TextView
+        android:id="@+id/category_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.BlackTitle2"
+        android:minHeight="@dimen/explore_sites_dense_category_title_height"
+        tools:text="Category" />
+
+    <org.chromium.chrome.browser.suggestions.tile.TileGridLayout
+        android:id="@+id/category_sites"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:columnCount="5"
+        android:columnOrderPreserved="true"
+        android:paddingTop="@dimen/explore_sites_dense_category_title_spacing"/>
+
+</org.chromium.chrome.browser.explore_sites.ExploreSitesCategoryCardView>

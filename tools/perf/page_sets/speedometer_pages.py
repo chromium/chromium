@@ -3,9 +3,8 @@
 # found in the LICENSE file.
 from telemetry import story
 
-from telemetry.value import list_of_scalar_values
-
 from page_sets import press_story
+
 
 class SpeedometerStory(press_story.PressStory):
   URL='http://browserbench.org/Speedometer/'
@@ -44,30 +43,24 @@ class SpeedometerStory(press_story.PressStory):
         timeout=600)
 
   def ParseTestResults(self, action_runner):
-    self.AddJavascriptMetricValue(list_of_scalar_values.ListOfScalarValues(
-        self, 'Total', 'ms',
-        action_runner.EvaluateJavaScript('benchmarkClient._timeValues'),
-        important=True))
-    self.AddJavascriptMetricValue(list_of_scalar_values.ListOfScalarValues(
-        self, 'RunsPerMinute', 'score',
-        action_runner.EvaluateJavaScript(
-            '[parseFloat(document.getElementById("result-number").innerText)];'
-        ),
-        important=True))
+    self.AddJavaScriptMeasurement('Total', 'ms', 'benchmarkClient._timeValues')
+    self.AddJavaScriptMeasurement(
+        'RunsPerMinute', 'score',
+        '[parseFloat(document.getElementById("result-number").innerText)];')
 
     # Extract the timings for each suite
     for suite_name in self.enabled_suites:
-      self.AddJavascriptMetricValue(list_of_scalar_values.ListOfScalarValues(
-          self, suite_name, 'ms',
-          action_runner.EvaluateJavaScript("""
-              var suite_times = [];
-              for(var i = 0; i < benchmarkClient.iterationCount; i++) {
-                suite_times.push(
-                    benchmarkClient._measuredValues[i].tests[{{ key }}].total);
-              };
-              suite_times;
-              """,
-              key=suite_name), important=False))
+      self.AddJavaScriptMeasurement(
+          suite_name, 'ms',
+          """
+          var suite_times = [];
+          for(var i = 0; i < benchmarkClient.iterationCount; i++) {
+            suite_times.push(
+                benchmarkClient._measuredValues[i].tests[{{ key }}].total);
+          };
+          suite_times;
+          """,
+          key=suite_name)
 
 
 class SpeedometerStorySet(story.StorySet):

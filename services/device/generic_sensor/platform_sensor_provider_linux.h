@@ -7,14 +7,9 @@
 
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequenced_task_runner.h"
 #include "services/device/generic_sensor/linux/sensor_device_manager.h"
-
-namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
-class Thread;
-}  // namespace base
 
 namespace device {
 
@@ -23,50 +18,35 @@ struct SensorInfoLinux;
 class PlatformSensorProviderLinux : public PlatformSensorProvider,
                                     public SensorDeviceManager::Delegate {
  public:
-  static PlatformSensorProviderLinux* GetInstance();
+  PlatformSensorProviderLinux();
+  ~PlatformSensorProviderLinux() override;
 
   // Sets another service provided by tests.
   void SetSensorDeviceManagerForTesting(
       std::unique_ptr<SensorDeviceManager> sensor_device_manager);
 
-  // Sets task runner for tests.
-  void SetFileTaskRunnerForTesting(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
  protected:
-  ~PlatformSensorProviderLinux() override;
-
   void CreateSensorInternal(mojom::SensorType type,
                             SensorReadingSharedBuffer* reading_buffer,
                             const CreateSensorCallback& callback) override;
 
   void FreeResources() override;
 
-  void SetFileTaskRunner(
-      scoped_refptr<base::SingleThreadTaskRunner> file_task_runner) override;
-
  private:
-  friend struct base::DefaultSingletonTraits<PlatformSensorProviderLinux>;
+  friend class PlatformSensorAndProviderLinuxTest;
+
+  // This is also needed for testing, as we create one provider per test, and
+  // std::unique_ptr needs access to the destructor here.
+  friend std::unique_ptr<PlatformSensorProviderLinux>::deleter_type;
 
   using SensorDeviceMap =
       std::unordered_map<mojom::SensorType, std::unique_ptr<SensorInfoLinux>>;
-
-  PlatformSensorProviderLinux();
 
   void SensorDeviceFound(
       mojom::SensorType type,
       SensorReadingSharedBuffer* reading_buffer,
       const PlatformSensorProviderBase::CreateSensorCallback& callback,
       const SensorInfoLinux* sensor_device);
-
-  bool StartPollingThread();
-
-  // Stops a polling thread if there are no sensors left. Must be called on
-  // a different than the polling thread which allows I/O.
-  void StopPollingThread();
-
-  // Shuts down a service that tracks events from iio subsystem.
-  void Shutdown();
 
   // Returns SensorInfoLinux structure of a requested type.
   // If a request cannot be processed immediately, returns nullptr and
@@ -104,17 +84,16 @@ class PlatformSensorProviderLinux : public PlatformSensorProvider,
   // Stores all available sensor devices by type.
   SensorDeviceMap sensor_devices_by_type_;
 
-  // A thread that is used by sensor readers in case of polling strategy.
-  std::unique_ptr<base::Thread> polling_thread_;
+  // A task runner that can run blocking tasks. SensorDeviceManager's methods
+  // run in this task runner, as they need to interact with udev.
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   // This manager is being used to get |SensorInfoLinux|, which represents
   // all the information of a concrete sensor provided by OS.
-  std::unique_ptr<SensorDeviceManager> sensor_device_manager_;
+  std::unique_ptr<SensorDeviceManager, base::OnTaskRunnerDeleter>
+      sensor_device_manager_;
 
-  // Browser's file thread task runner passed from renderer. Used by this
-  // provider to stop a polling thread and passed to a manager that
-  // runs a linux device monitor service on this task runner.
-  scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
+  base::WeakPtrFactory<PlatformSensorProviderLinux> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PlatformSensorProviderLinux);
 };

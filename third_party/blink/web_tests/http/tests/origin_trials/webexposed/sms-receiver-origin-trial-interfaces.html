@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 SmsReceiver --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial" content="AqptJAocypqw+Nd2rdevpkjUlMBz2si2im0MOtLpKsztHb0CaV25R8qpoQn9Loe/FrswYNlSZSM+8SKwocAUtwoAAABTeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiU21zUmVjZWl2ZXIiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=" />
+<title>SmsReceiver - interfaces exposed by origin trial</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/origin-trials-helper.js"></script>
+<script>
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this,
+      {
+        'Navigator': ['sms'],
+        'SMSReceiver': ['receive'],
+        'SMS': ['content'],
+      },
+  );
+}, "Sms related interfaces in Origin-Trial enabled document.");
+
+</script>

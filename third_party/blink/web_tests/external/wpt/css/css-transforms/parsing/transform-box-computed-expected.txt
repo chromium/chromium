@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Property transform-box value 'content-box' computes to 'content-box' assert_true: 'content-box' is a supported value for transform-box. expected true got false
+FAIL Property transform-box value 'border-box' computes to 'border-box' assert_true: 'border-box' is a supported value for transform-box. expected true got false
+PASS Property transform-box value 'fill-box' computes to 'fill-box'
+FAIL Property transform-box value 'stroke-box' computes to 'stroke-box' assert_true: 'stroke-box' is a supported value for transform-box. expected true got false
+PASS Property transform-box value 'view-box' computes to 'view-box'
+Harness: the test ran to completion.
+

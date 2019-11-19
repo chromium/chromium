@@ -1,38 +1,45 @@
 rootWebArea scrollXMin=0
-++paragraph
-++++staticText name='no overflow'
-++++++inlineTextBox name='no overflow'
-++genericContainer
-++++paragraph
-++++++staticText name='tiny'
-++++++++inlineTextBox name='tiny'
-++genericContainer scrollXMin=0
-++++paragraph
-++++++staticText name='x=hidden'
-++++++++inlineTextBox name='x=hidden'
-++genericContainer name='x=auto' scrollXMin=0
-++++paragraph
-++++++staticText name='x=auto'
-++++++++inlineTextBox name='x=auto'
-++genericContainer name='x=scroll' scrollXMin=0
-++++paragraph
-++++++staticText name='x=scroll'
-++++++++inlineTextBox name='x=scroll'
-++paragraph
-++++staticText name='x=visible'
-++++++inlineTextBox name='x=visible'
-++genericContainer scrollXMin=0
-++++paragraph
-++++++staticText name='y=hidden'
-++++++++inlineTextBox name='y=hidden'
-++genericContainer name='y=auto' scrollXMin=0
-++++paragraph
-++++++staticText name='y=auto'
-++++++++inlineTextBox name='y=auto'
-++genericContainer name='y=scroll' scrollXMin=0
-++++paragraph
-++++++staticText name='y=scroll'
-++++++++inlineTextBox name='y=scroll'
-++paragraph
-++++staticText name='y=visible'
-++++++inlineTextBox name='y=visible'
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='no overflow'
+++++++++++inlineTextBox name='no overflow'
+++++genericContainer ignored
+++++++genericContainer
+++++++++paragraph
+++++++++++staticText name='tiny'
+++++++++++++inlineTextBox name='tiny'
+++++genericContainer ignored
+++++++genericContainer scrollXMin=0
+++++++++paragraph
+++++++++++staticText name='x=hidden'
+++++++++++++inlineTextBox name='x=hidden'
+++++++genericContainer name='x=auto' scrollXMin=0
+++++++++paragraph
+++++++++++staticText name='x=auto'
+++++++++++++inlineTextBox name='x=auto'
+++++++genericContainer name='x=scroll' scrollXMin=0
+++++++++paragraph
+++++++++++staticText name='x=scroll'
+++++++++++++inlineTextBox name='x=scroll'
+++++++genericContainer ignored
+++++++++paragraph
+++++++++++staticText name='x=visible'
+++++++++++++inlineTextBox name='x=visible'
+++++genericContainer ignored
+++++++genericContainer scrollXMin=0
+++++++++paragraph
+++++++++++staticText name='y=hidden'
+++++++++++++inlineTextBox name='y=hidden'
+++++++genericContainer name='y=auto' scrollXMin=0
+++++++++paragraph
+++++++++++staticText name='y=auto'
+++++++++++++inlineTextBox name='y=auto'
+++++++genericContainer name='y=scroll' scrollXMin=0
+++++++++paragraph
+++++++++++staticText name='y=scroll'
+++++++++++++inlineTextBox name='y=scroll'
+++++++genericContainer ignored
+++++++++paragraph
+++++++++++staticText name='y=visible'
+++++++++++++inlineTextBox name='y=visible'

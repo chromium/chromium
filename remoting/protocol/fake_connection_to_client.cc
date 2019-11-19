@@ -16,7 +16,7 @@
 namespace remoting {
 namespace protocol {
 
-FakeVideoStream::FakeVideoStream() : weak_factory_(this) {}
+FakeVideoStream::FakeVideoStream() {}
 FakeVideoStream::~FakeVideoStream() = default;
 
 void FakeVideoStream::SetEventTimestampsSource(

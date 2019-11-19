@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1">
+<title>WebGL Low to High Power Transition Test</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+}
+</style>
+<script src="pixel_webgl_fullscreen_quad.js"></script>
+
+<script>
+function main() {
+  if (setup())
+    drawSomeFrames(allocateHighPowerContext);
+}
+
+function allocateHighPowerContext() {
+  c2.getContext("webgl", { powerPreference: "high-performance" });
+  setTimeout(() => { drawSomeFrames(waitForFinish) }, 1000);
+}
+
+function waitForFinish()
+{
+  let numFramesBeforeEnd = 15;
+
+  function waitForFinishImpl() {
+    if (--numFramesBeforeEnd == 0) {
+      sendResult("SUCCESS", "Test complete");
+    } else {
+      window.requestAnimationFrame(waitForFinishImpl);
+    }
+  }
+
+  window.requestAnimationFrame(waitForFinishImpl);
+}
+</script>
+</head>
+<body onload="main()">
+<canvas id="c" width="300" height="300" class="nomargin" style="position:absolute; top:0px; left:0px;"></canvas>
+<canvas id="c2" width="1" height="1" class="nomargin"></canvas>
+</div>
+</body>
+</html>

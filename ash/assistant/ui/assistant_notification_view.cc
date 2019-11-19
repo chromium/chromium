@@ -168,7 +168,7 @@ void AssistantNotificationView::InitLayout(
           gfx::Insets(0, kPaddingLeftDip, 0, kPaddingRightDip), kSpacingDip));
 
   layout_manager->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::CROSS_AXIS_ALIGNMENT_CENTER);
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   gfx::FontList font_list =
       assistant::ui::GetDefaultFontList().DeriveWithSizeDelta(1);

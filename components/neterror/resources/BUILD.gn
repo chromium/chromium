@@ -1,0 +1,25 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":neterror",
+    ":offline",
+    "//components/security_interstitials/core/common/resources:interstitial_common",
+    "//components/security_interstitials/core/common/resources:interstitial_mobile_nav",
+    "//ui/webui/resources/js:load_time_data",
+  ]
+}
+
+js_library("neterror") {
+  deps = [
+    ":offline",
+    "//third_party/jstemplate:jstemplate",
+  ]
+}
+
+js_library("offline") {
+}

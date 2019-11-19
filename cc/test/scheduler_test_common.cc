@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/tick_clock.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
+#include "cc/test/fake_compositor_frame_reporting_controller.h"
 
 namespace cc {
 
@@ -20,20 +21,26 @@ FakeCompositorTimingHistory::Create(
     bool using_synchronous_renderer_compositor) {
   std::unique_ptr<RenderingStatsInstrumentation>
       rendering_stats_instrumentation = RenderingStatsInstrumentation::Create();
+  std::unique_ptr<CompositorFrameReportingController> reporting_controller =
+      std::make_unique<FakeCompositorFrameReportingController>();
   return base::WrapUnique(new FakeCompositorTimingHistory(
       using_synchronous_renderer_compositor,
-      std::move(rendering_stats_instrumentation)));
+      std::move(rendering_stats_instrumentation),
+      std::move(reporting_controller)));
 }
 
 FakeCompositorTimingHistory::FakeCompositorTimingHistory(
     bool using_synchronous_renderer_compositor,
     std::unique_ptr<RenderingStatsInstrumentation>
-        rendering_stats_instrumentation)
+        rendering_stats_instrumentation,
+    std::unique_ptr<CompositorFrameReportingController> reporting_controller)
     : CompositorTimingHistory(using_synchronous_renderer_compositor,
                               CompositorTimingHistory::NULL_UMA,
-                              rendering_stats_instrumentation.get()),
+                              rendering_stats_instrumentation.get(),
+                              reporting_controller.get()),
       rendering_stats_instrumentation_owned_(
-          std::move(rendering_stats_instrumentation)) {}
+          std::move(rendering_stats_instrumentation)),
+      reporting_controller_owned_(std::move(reporting_controller)) {}
 
 FakeCompositorTimingHistory::~FakeCompositorTimingHistory() = default;
 

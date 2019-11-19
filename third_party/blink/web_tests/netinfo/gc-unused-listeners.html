@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <head>
+<script src="../resources/gc.js"></script>
 <script src="../resources/js-test.js"></script>
 <script src="resources/netinfo_common.js"></script>
 </head>
@@ -26,17 +27,18 @@ var callbackObserver;
   connection.addEventListener('typechange', callback);
 })();
 
-gc();
-shouldBeFalse('callbackObserver.wasCollected');
-
-// Remove the listener and its callback reference.
-// Access objects in an inner function to avoid references to objects
-// remaining live on this function's stack frame (http://crbug.com/595672/).
-(() => {connection.removeEventListener('typechange', callback);})();
-callback = null;
-gc();
-shouldBeTrue('callbackObserver.wasCollected');
-finishJSTest();
+asyncGC().then( () => {
+    shouldBeFalse('callbackObserver.wasCollected');
+   // Remove the listener and its callback reference.
+   // Access objects in an inner function to avoid references to objects
+   // remaining live on this function's stack frame (http://crbug.com/595672/).
+   (() => {connection.removeEventListener('typechange', callback);})();
+   callback = null;
+   return asyncGC();
+}).then(() => {
+  shouldBeTrue('callbackObserver.wasCollected');
+  finishJSTest();
+});
 
 </script>
 </body>

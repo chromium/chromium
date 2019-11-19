@@ -6,14 +6,14 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="match_parent" >
 
   <include layout="@layout/bottom_toolbar_browsing" />
 
   <ViewStub
       android:id="@+id/bottom_toolbar_tab_switcher_mode_stub"
       android:layout_width="match_parent"
-      android:layout_height="@dimen/bottom_toolbar_height_with_shadow"
+      android:layout_height="match_parent"
       android:inflatedId="@+id/bottom_toolbar_tab_switcher_mode"
       android:layout="@layout/bottom_toolbar_tab_switcher" />
 

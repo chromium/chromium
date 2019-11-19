@@ -14,21 +14,24 @@ DIST=sid
 # like libc6 would take precedence over the sid (released) versions.  While this
 # may be useful for certain kinds of development, the standard sysroots should
 # continue to be shipped only with released packages.
+# Also keep "stretch" before "sid" and "experimental".  For now, it's needed to
+# bring back libgnome-keyring-dev which has since been deprecated and removed
+# from sid.  It will be needed until gnome keyring is removed
+# (http://crbug.com/466975 and http://crbug.com/355223).
 ARCHIVE_URL="https://snapshot.debian.org/archive/debian"
-ARCHIVE_TIMESTAMP=20181214T150526Z
-APT_SOURCES_LIST="${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ experimental main
+ARCHIVE_TIMESTAMP=20191015T084824Z
+APT_SOURCES_LIST="${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ stretch main
+${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ experimental main
 ${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ sid main"
 
-# gpg keyring file generated using:
-#   export KEYS="518E17E1 46925553 2B90D010 C857C906 F66AEC98 8AE22BA9 1A7B6500"
-#   gpg --recv-keys $KEYS
-#   gpg --output ./debian-archive-sid-stable.gpg --export $KEYS
-KEYRING_FILE="${SCRIPT_DIR}/debian-archive-sid-stable.gpg"
+# gpg keyring file generated using generate_debian_archive_unstable.sh
+KEYRING_FILE="${SCRIPT_DIR}/debian_archive_unstable.gpg"
 
 HAS_ARCH_AMD64=1
 HAS_ARCH_I386=1
 HAS_ARCH_ARM=1
 HAS_ARCH_ARM64=1
+HAS_ARCH_ARMEL=1
 HAS_ARCH_MIPS=1
 HAS_ARCH_MIPS64EL=1
 
@@ -56,11 +59,13 @@ DEBIAN_PACKAGES="\
   libaudit1
   libavahi-client3
   libavahi-common3
+  libblkid-dev
   libblkid1
   libbluetooth-dev
   libbluetooth3
   libbrlapi-dev
-  libbrlapi0.6
+  libbrlapi0.7
+  libbrotli1
   libbsd0
   libc6
   libc6-dev
@@ -114,7 +119,7 @@ DEBIAN_PACKAGES="\
   libfribidi0
   libgbm-dev
   libgbm1
-  libgcc-6-dev
+  libgcc-7-dev
   libgcc1
   libgcrypt20
   libgcrypt20-dev
@@ -160,8 +165,7 @@ DEBIAN_PACKAGES="\
   libhogweed4
   libice6
   libicu-le-hb0
-  libicu57
-  libicu60
+  libicu63
   libidl-2-0
   libidn11
   libidn2-0
@@ -188,6 +192,7 @@ DEBIAN_PACKAGES="\
   liblzo2-2
   libminizip-dev
   libminizip1
+  libmount-dev
   libmount1
   libnettle6
   libnspr4
@@ -200,8 +205,6 @@ DEBIAN_PACKAGES="\
   libopengl0
   libopus-dev
   libopus0
-  liborbit-2-0
-  liborbit2
   libp11-kit0
   libpam0g
   libpam0g-dev
@@ -215,6 +218,11 @@ DEBIAN_PACKAGES="\
   libpci3
   libpciaccess0
   libpcre16-3
+  libpcre2-16-0
+  libpcre2-32-0
+  libpcre2-8-0
+  libpcre2-dev
+  libpcre2-posix0
   libpcre3
   libpcre3-dev
   libpcre32-3
@@ -230,10 +238,13 @@ DEBIAN_PACKAGES="\
   libpulse-dev
   libpulse-mainloop-glib0
   libpulse0
-  libre2-4
+  libre2-5
   libre2-dev
   librest-0.7-0
+  libselinux1-dev
   libselinux1
+  libsepol1-dev
+  libsepol1
   libsm6
   libsnappy-dev
   libsnappy1v5
@@ -245,9 +256,8 @@ DEBIAN_PACKAGES="\
   libspeechd2
   libsqlite3-0
   libssl-dev
-  libssl1.0.2
   libssl1.1
-  libstdc++-6-dev
+  libstdc++-7-dev
   libstdc++6
   libsystemd0
   libtasn1-6
@@ -267,7 +277,7 @@ DEBIAN_PACKAGES="\
   libvorbis0a
   libvorbisenc2
   libvpx-dev
-  libvpx5
+  libvpx6
   libvulkan1
   libwayland-client0
   libwayland-cursor0
@@ -336,6 +346,7 @@ DEBIAN_PACKAGES="\
   libxtst6
   libxxf86vm-dev
   libxxf86vm1
+  libzstd1
   linux-libc-dev
   mesa-common-dev
   shared-mime-info
@@ -364,7 +375,7 @@ DEBIAN_PACKAGES_AMD64="
 "
 
 DEBIAN_PACKAGES_X86="
-  libasan3
+  libasan4
   libcilkrts5
   libdrm-intel1
   libitm1
@@ -374,7 +385,8 @@ DEBIAN_PACKAGES_X86="
 "
 
 DEBIAN_PACKAGES_ARM="
-  libasan3
+  libasan4
+  libcilkrts5
   libdrm-etnaviv1
   libdrm-exynos1
   libdrm-freedreno1
@@ -384,14 +396,29 @@ DEBIAN_PACKAGES_ARM="
 "
 
 DEBIAN_PACKAGES_ARM64="
-  libasan3
+  libasan4
   libdrm-etnaviv1
   libdrm-freedreno1
   libdrm-tegra0
   libgmp10
   libitm1
+  liblsan0
   libthai0
+  libtsan0
   libubsan0
+"
+
+DEBIAN_PACKAGES_ARMEL="
+  libasan4
+  libcilkrts5
+  libdrm-exynos1
+  libdrm-freedreno1
+  libdrm-omap1
+  libdrm-tegra0
+  libubsan0
+"
+
+DEBIAN_PACKAGES_MIPS64EL="
 "
 
 . "${SCRIPT_DIR}/sysroot-creator.sh"

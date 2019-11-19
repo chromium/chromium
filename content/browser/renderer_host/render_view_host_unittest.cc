@@ -21,14 +21,17 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/mock_widget_impl.h"
+#include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/platform/web_drag_operation.h"
 #include "ui/base/page_transition_types.h"
@@ -83,9 +86,9 @@ TEST_F(RenderViewHostTest, FilterAbout) {
 TEST_F(RenderViewHostTest, CreateFullscreenWidget) {
   int32_t routing_id = process()->GetNextRoutingID();
 
-  mojom::WidgetPtr widget;
+  mojo::PendingRemote<mojom::Widget> widget;
   std::unique_ptr<MockWidgetImpl> widget_impl =
-      std::make_unique<MockWidgetImpl>(mojo::MakeRequest(&widget));
+      std::make_unique<MockWidgetImpl>(widget.InitWithNewPipeAndPassReceiver());
   test_rvh()->CreateNewFullscreenWidget(routing_id, std::move(widget));
 }
 
@@ -240,35 +243,27 @@ TEST_F(RenderViewHostTest, MessageWithBadHistoryItemFiles) {
   EXPECT_EQ(1, process()->bad_msg_count());
 }
 
-namespace {
-void SetBadFilePath(const GURL& url,
-                    const base::FilePath& file_path,
-                    FrameHostMsg_DidCommitProvisionalLoad_Params* params) {
-  params->page_state =
-      PageState::CreateForTesting(url, false, "data", &file_path);
-}
-}
-
 TEST_F(RenderViewHostTest, NavigationWithBadHistoryItemFiles) {
   GURL url("http://www.google.com");
   base::FilePath file_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_TEMP, &file_path));
   file_path = file_path.AppendASCII("bar");
-  auto set_bad_file_path_callback = base::Bind(SetBadFilePath, url, file_path);
 
   EXPECT_EQ(0, process()->bad_msg_count());
-  main_test_rfh()->SendRendererInitiatedNavigationRequest(url, false);
-  main_test_rfh()->PrepareForCommit();
-  contents()->GetMainFrame()->SendNavigateWithModificationCallback(
-      1, true, url, set_bad_file_path_callback);
+  auto navigation1 =
+      NavigationSimulatorImpl::CreateRendererInitiated(url, main_test_rfh());
+  navigation1->set_page_state(
+      PageState::CreateForTesting(url, false, "data", &file_path));
+  navigation1->Commit();
   EXPECT_EQ(1, process()->bad_msg_count());
 
   ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(
       process()->GetID(), file_path);
-  main_test_rfh()->SendRendererInitiatedNavigationRequest(url, false);
-  main_test_rfh()->PrepareForCommit();
-  contents()->GetMainFrame()->SendNavigateWithModificationCallback(
-      2, true, url, std::move(set_bad_file_path_callback));
+  auto navigation2 =
+      NavigationSimulatorImpl::CreateRendererInitiated(url, main_test_rfh());
+  navigation2->set_page_state(
+      PageState::CreateForTesting(url, false, "data", &file_path));
+  navigation2->Commit();
   EXPECT_EQ(1, process()->bad_msg_count());
 }
 
@@ -278,74 +273,6 @@ TEST_F(RenderViewHostTest, RoutingIdSane) {
   EXPECT_EQ(contents()->GetMainFrame(), root_rfh);
   EXPECT_EQ(test_rvh()->GetProcess(), root_rfh->GetProcess());
   EXPECT_NE(test_rvh()->GetRoutingID(), root_rfh->routing_id());
-}
-
-class TestSaveImageFromDataURL : public RenderFrameMessageFilter {
- public:
-  TestSaveImageFromDataURL(BrowserContext* context)
-      : RenderFrameMessageFilter(
-            0,
-            nullptr,
-            context,
-            BrowserContext::GetDefaultStoragePartition(context),
-            nullptr) {
-    Reset();
-  }
-
-  void Reset() {
-    url_string_ = std::string();
-    is_downloaded_ = false;
-  }
-
-  std::string& UrlString() const {
-    return url_string_;
-  }
-
-  bool IsDownloaded() const {
-    return is_downloaded_;
-  }
-
-  void Test(const std::string& url) {
-    OnMessageReceived(FrameHostMsg_SaveImageFromDataURL(0, 0, url));
-  }
-
- protected:
-  ~TestSaveImageFromDataURL() override {}
-  void DownloadUrl(
-      int render_view_id,
-      int render_frame_id,
-      const GURL& url,
-      const Referrer& referrer,
-      const url::Origin& initiator,
-      const base::string16& suggested_name,
-      const bool use_prompt,
-      const bool follow_cross_origin_redirects,
-      blink::mojom::BlobURLTokenPtrInfo blob_url_token) const override {
-    url_string_ = url.spec();
-    is_downloaded_ = true;
-  }
-
- private:
-  mutable std::string url_string_;
-  mutable bool is_downloaded_;
-};
-
-TEST_F(RenderViewHostTest, SaveImageFromDataURL) {
-  scoped_refptr<TestSaveImageFromDataURL> tester(
-      new TestSaveImageFromDataURL(browser_context()));
-
-  tester->Reset();
-  tester->Test("http://non-data-url.com");
-  EXPECT_EQ(tester->UrlString(), "");
-  EXPECT_FALSE(tester->IsDownloaded());
-
-  const std::string data_url = "data:image/gif;base64,"
-      "R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=";
-
-  tester->Reset();
-  tester->Test(data_url);
-  EXPECT_EQ(tester->UrlString(), data_url);
-  EXPECT_TRUE(tester->IsDownloaded());
 }
 
 }  // namespace content

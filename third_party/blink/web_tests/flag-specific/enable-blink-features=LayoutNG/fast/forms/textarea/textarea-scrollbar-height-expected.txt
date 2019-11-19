@@ -1,6 +1,0 @@
-Vertical scrollbar should not be created when there is no overflow.
-
-This test passes if the list item below, bordered in blue, has no vertical scrollbar.
-
-list item
-This test: PASSED!

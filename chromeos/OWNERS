@@ -7,11 +7,21 @@ per-file BUILD.gn=*
 # Translation artifacts:
 per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
 
+# PST
 achuith@chromium.org
 alemate@chromium.org
-derat@chromium.org
+jamescook@chromium.org
 oshima@chromium.org
-rkc@chromium.org
-satorux@chromium.org
 stevenjb@chromium.org
+tbarzic@chromium.org
 xiyuan@chromium.org
+
+# CET
+antrim@chromium.org
+emaxx@chromium.org
+rsorokin@chromium.org
+
+# JST
+hashimoto@chromium.org
+
+# COMPONENT: UI>Shell

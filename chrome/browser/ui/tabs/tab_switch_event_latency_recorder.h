@@ -30,6 +30,10 @@ class TabSwitchEventLatencyRecorder {
   // this do nothing.
   void OnWillChangeActiveTab(const base::TimeTicks change_time);
 
+  base::TimeTicks input_event_timestamp() const {
+    return input_event_timestamp_;
+  }
+
  private:
   base::TimeTicks input_event_timestamp_ = base::TimeTicks();
   base::Optional<EventType> event_type_ = base::nullopt;

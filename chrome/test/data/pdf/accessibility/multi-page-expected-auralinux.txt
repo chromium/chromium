@@ -1,0 +1,8 @@
+[embedded component]
+++[document frame]
+++++[landmark] name='Page 1'
+++++++[paragraph]
+++++++++[static] name='Page 1'
+++++[landmark] name='Page 2'
+++++++[paragraph]
+++++++++[static] name='Page 2'

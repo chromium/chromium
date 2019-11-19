@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/media_list_or_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet_init.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -68,6 +70,33 @@ TEST_F(CSSStyleSheetTest,
   EXPECT_TRUE(sheet->disabled());
   EXPECT_EQ(sheet->cssRules(exception_state)->length(), 0U);
   ASSERT_FALSE(exception_state.HadException());
+}
+
+TEST_F(CSSStyleSheetTest,
+       GarbageCollectedShadowRootsRemovedFromAdoptedTreeScopes) {
+  SetBodyInnerHTML("<div id='host_a'></div><div id='host_b'></div>");
+  auto* host_a = GetElementById("host_a");
+  auto& shadow_a = host_a->AttachShadowRootInternal(ShadowRootType::kOpen);
+  auto* host_b = GetElementById("host_b");
+  auto& shadow_b = host_b->AttachShadowRootInternal(ShadowRootType::kOpen);
+  DummyExceptionStateForTesting exception_state;
+  CSSStyleSheetInit* init = CSSStyleSheetInit::Create();
+  CSSStyleSheet* sheet =
+      CSSStyleSheet::Create(GetDocument(), init, exception_state);
+
+  HeapVector<Member<CSSStyleSheet>> adopted_sheets;
+  adopted_sheets.push_back(sheet);
+  shadow_a.SetAdoptedStyleSheets(adopted_sheets);
+  shadow_b.SetAdoptedStyleSheets(adopted_sheets);
+
+  EXPECT_EQ(sheet->adopted_tree_scopes_.size(), 2u);
+  EXPECT_EQ(shadow_a.AdoptedStyleSheets().size(), 1u);
+  EXPECT_EQ(shadow_b.AdoptedStyleSheets().size(), 1u);
+
+  host_a->remove();
+  WebHeap::CollectAllGarbageForTesting();
+  EXPECT_EQ(sheet->adopted_tree_scopes_.size(), 1u);
+  EXPECT_EQ(shadow_b.AdoptedStyleSheets().size(), 1u);
 }
 
 }  // namespace blink

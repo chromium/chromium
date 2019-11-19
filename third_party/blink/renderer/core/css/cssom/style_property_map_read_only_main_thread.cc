@@ -73,10 +73,9 @@ CSSStyleValue* StylePropertyMapReadOnlyMainThread::get(
   if (property.IsShorthand())
     return GetShorthandProperty(property);
 
-  const CSSValue* value =
-      (name->IsCustomProperty())
-          ? GetCustomProperty(*execution_context, name->ToAtomicString())
-          : GetProperty(name->Id());
+  const CSSValue* value = (name->IsCustomProperty())
+                              ? GetCustomProperty(name->ToAtomicString())
+                              : GetProperty(name->Id());
   if (!value)
     return nullptr;
 
@@ -110,10 +109,9 @@ CSSStyleValueVector StylePropertyMapReadOnlyMainThread::getAll(
     return values;
   }
 
-  const CSSValue* value =
-      (name->IsCustomProperty())
-          ? GetCustomProperty(*execution_context, name->ToAtomicString())
-          : GetProperty(name->Id());
+  const CSSValue* value = (name->IsCustomProperty())
+                              ? GetCustomProperty(name->ToAtomicString())
+                              : GetProperty(name->Id());
   if (!value)
     return CSSStyleValueVector();
 
@@ -127,41 +125,14 @@ bool StylePropertyMapReadOnlyMainThread::has(
   return !getAll(execution_context, property_name, exception_state).IsEmpty();
 }
 
-const CSSValue* StylePropertyMapReadOnlyMainThread::GetCustomProperty(
-    const ExecutionContext& execution_context,
-    const AtomicString& property_name) const {
-  const CSSValue* value = GetCustomProperty(property_name);
-
-  const auto* document = DynamicTo<Document>(execution_context);
-  if (!document)
-    return value;
-
-  return PropertyRegistry::ParseIfRegistered(*document, property_name, value);
-}
-
 StylePropertyMapReadOnlyMainThread::IterationSource*
 StylePropertyMapReadOnlyMainThread::StartIteration(ScriptState* script_state,
                                                    ExceptionState&) {
   HeapVector<StylePropertyMapReadOnlyMainThread::StylePropertyMapEntry> result;
 
-  const ExecutionContext& execution_context =
-      *ExecutionContext::From(script_state);
-
-  ForEachProperty([&result, &execution_context](const CSSPropertyName& name,
-                                                const CSSValue& css_value) {
-    const CSSValue* value = &css_value;
-
-    // TODO(andruud): Refactor this. ForEachProperty should yield the correct,
-    // already-parsed value in the first place.
-    if (name.IsCustomProperty()) {
-      const auto* document = DynamicTo<Document>(execution_context);
-      if (document) {
-        value = PropertyRegistry::ParseIfRegistered(
-            *document, name.ToAtomicString(), value);
-      }
-    }
-
-    auto values = StyleValueFactory::CssValueToStyleValueVector(name, *value);
+  ForEachProperty([&result](const CSSPropertyName& name,
+                            const CSSValue& value) {
+    auto values = StyleValueFactory::CssValueToStyleValueVector(name, value);
     result.emplace_back(name.ToAtomicString(), std::move(values));
   });
 

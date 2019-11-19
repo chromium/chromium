@@ -79,6 +79,13 @@ public class ChromeVersionInfo {
     }
 
     /**
+     * @return The build number.
+     */
+    public static int getBuildVersion() {
+        return ChromeVersionConstants.PRODUCT_BUILD_VERSION;
+    }
+
+    /**
      * Returns info about the Google Play services setup for Chrome and the device.
      *
      * Contains the version number of the SDK Chrome was built with and the one for the installed

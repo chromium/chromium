@@ -52,4 +52,53 @@ const char ServiceWorkerConsts::kUpdateTimeoutErrorMesage[] =
 const char ServiceWorkerConsts::kUserDeniedPermissionMessage[] =
     "The user denied permission to use Service Worker.";
 
+const char ServiceWorkerConsts::kServiceWorkerRegisterErrorPrefix[] =
+    "Failed to register a ServiceWorker for scope ('%s') with script ('%s'): ";
+
+const char ServiceWorkerConsts::kServiceWorkerUpdateErrorPrefix[] =
+    "Failed to update a ServiceWorker for scope ('%s') with script ('%s'): ";
+
+const char ServiceWorkerConsts::kServiceWorkerUnregisterErrorPrefix[] =
+    "Failed to unregister a ServiceWorkerRegistration: ";
+
+const char ServiceWorkerConsts::kServiceWorkerGetRegistrationErrorPrefix[] =
+    "Failed to get a ServiceWorkerRegistration: ";
+
+const char ServiceWorkerConsts::kServiceWorkerGetRegistrationsErrorPrefix[] =
+    "Failed to get ServiceWorkerRegistration objects: ";
+
+const char ServiceWorkerConsts::kServiceWorkerFetchScriptError[] =
+    "An unknown error occurred when fetching the script.";
+
+const char ServiceWorkerConsts::kServiceWorkerBadHTTPResponseError[] =
+    "A bad HTTP response code (%d) was received when fetching the script.";
+
+const char ServiceWorkerConsts::kServiceWorkerSSLError[] =
+    "An SSL certificate error occurred when fetching the script.";
+
+const char ServiceWorkerConsts::kServiceWorkerBadMIMEError[] =
+    "The script has an unsupported MIME type ('%s').";
+
+const char ServiceWorkerConsts::kServiceWorkerNoMIMEError[] =
+    "The script does not have a MIME type.";
+
+const char ServiceWorkerConsts::kServiceWorkerRedirectError[] =
+    "The script resource is behind a redirect, which is disallowed.";
+
+const char ServiceWorkerConsts::kServiceWorkerAllowed[] =
+    "Service-Worker-Allowed";
+
+const char ServiceWorkerConsts::kServiceWorkerCopyScriptError[] =
+    "An unknown error occurred when copying the script.";
+
+const char ServiceWorkerConsts::kServiceWorkerInvalidVersionError[] =
+    "Service worker went to a bad state unexpectedly.";
+
+const int ServiceWorkerConsts::kInvalidEmbeddedWorkerThreadId = -1;
+
+const int64_t ServiceWorkerConsts::kInvalidServiceWorkerResourceId = -1;
+
+// static
+constexpr base::TimeDelta ServiceWorkerConsts::kServiceWorkerScriptMaxCacheAge;
+
 }  // namespace content

@@ -21,7 +21,7 @@
 
 #include "dlfcn_internal.h"
 
-#if __ANDROID_API__ < 29
+#if __NDK_MAJOR__ < 20
 
 extern "C" {
 
@@ -47,4 +47,4 @@ int android_get_device_api_level() {
 
 }  // extern "C"
 
-#endif  // __ANDROID_API__ < 29
+#endif  // __NDK_MAJOR__ < 20

@@ -12,15 +12,17 @@
 
 #include "base/command_line.h"
 #include "base/containers/mru_cache.h"
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ui/gfx/font.h"
+#include "ui/gfx/linux/fontconfig_util.h"
 #include "ui/gfx/skia_font_delegate.h"
 #include "ui/gfx/switches.h"
 
@@ -102,36 +104,12 @@ struct SynchronizedCache {
 base::LazyInstance<SynchronizedCache>::Leaky g_synchronized_cache =
     LAZY_INSTANCE_INITIALIZER;
 
-// Converts Fontconfig FC_HINT_STYLE to FontRenderParams::Hinting.
-FontRenderParams::Hinting ConvertFontconfigHintStyle(int hint_style) {
-  switch (hint_style) {
-    case FC_HINT_SLIGHT: return FontRenderParams::HINTING_SLIGHT;
-    case FC_HINT_MEDIUM: return FontRenderParams::HINTING_MEDIUM;
-    case FC_HINT_FULL:   return FontRenderParams::HINTING_FULL;
-    default:             return FontRenderParams::HINTING_NONE;
-  }
-}
-
-// Converts Fontconfig FC_RGBA to FontRenderParams::SubpixelRendering.
-FontRenderParams::SubpixelRendering ConvertFontconfigRgba(int rgba) {
-  switch (rgba) {
-    case FC_RGBA_RGB:  return FontRenderParams::SUBPIXEL_RENDERING_RGB;
-    case FC_RGBA_BGR:  return FontRenderParams::SUBPIXEL_RENDERING_BGR;
-    case FC_RGBA_VRGB: return FontRenderParams::SUBPIXEL_RENDERING_VRGB;
-    case FC_RGBA_VBGR: return FontRenderParams::SUBPIXEL_RENDERING_VBGR;
-    default:           return FontRenderParams::SUBPIXEL_RENDERING_NONE;
-  }
-}
-
 // Queries Fontconfig for rendering settings and updates |params_out| and
 // |family_out| (if non-NULL). Returns false on failure.
 bool QueryFontconfig(const FontRenderParamsQuery& query,
                      FontRenderParams* params_out,
                      std::string* family_out) {
-  struct FcPatternDeleter {
-    void operator()(FcPattern* ptr) const { FcPatternDestroy(ptr); }
-  };
-  typedef std::unique_ptr<FcPattern, FcPatternDeleter> ScopedFcPattern;
+  TRACE_EVENT0("fonts", "gfx::QueryFontconfig");
 
   ScopedFcPattern query_pattern(FcPatternCreate());
   CHECK(query_pattern);
@@ -155,7 +133,8 @@ bool QueryFontconfig(const FontRenderParamsQuery& query,
                         FontWeightToFCWeight(query.weight));
   }
 
-  FcConfigSubstitute(NULL, query_pattern.get(), FcMatchPattern);
+  FcConfig* config = GetGlobalFontConfig();
+  FcConfigSubstitute(config, query_pattern.get(), FcMatchPattern);
   FcDefaultSubstitute(query_pattern.get());
 
   ScopedFcPattern result_pattern;
@@ -169,11 +148,12 @@ bool QueryFontconfig(const FontRenderParamsQuery& query,
     FcPatternDel(result_pattern.get(), FC_FAMILY);
     FcPatternDel(result_pattern.get(), FC_PIXEL_SIZE);
     FcPatternDel(result_pattern.get(), FC_SIZE);
-    FcConfigSubstituteWithPat(NULL, result_pattern.get(), query_pattern.get(),
+    FcConfigSubstituteWithPat(config, result_pattern.get(), query_pattern.get(),
                               FcMatchFont);
   } else {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("fonts"), "FcFontMatch");
     FcResult result;
-    result_pattern.reset(FcFontMatch(NULL, query_pattern.get(), &result));
+    result_pattern.reset(FcFontMatch(config, query_pattern.get(), &result));
     if (!result_pattern)
       return false;
   }
@@ -186,42 +166,8 @@ bool QueryFontconfig(const FontRenderParamsQuery& query,
       family_out->assign(reinterpret_cast<const char*>(family));
   }
 
-  if (params_out) {
-    FcBool fc_antialias = 0;
-    if (FcPatternGetBool(result_pattern.get(), FC_ANTIALIAS, 0,
-                         &fc_antialias) == FcResultMatch) {
-      params_out->antialiasing = fc_antialias;
-    }
-
-    FcBool fc_autohint = 0;
-    if (FcPatternGetBool(result_pattern.get(), FC_AUTOHINT, 0, &fc_autohint) ==
-        FcResultMatch) {
-      params_out->autohinter = fc_autohint;
-    }
-
-    FcBool fc_bitmap = 0;
-    if (FcPatternGetBool(result_pattern.get(), FC_EMBEDDED_BITMAP, 0,
-                         &fc_bitmap) ==
-        FcResultMatch) {
-      params_out->use_bitmaps = fc_bitmap;
-    }
-
-    FcBool fc_hinting = 0;
-    if (FcPatternGetBool(result_pattern.get(), FC_HINTING, 0, &fc_hinting) ==
-        FcResultMatch) {
-      int fc_hint_style = FC_HINT_NONE;
-      if (fc_hinting) {
-        FcPatternGetInteger(
-            result_pattern.get(), FC_HINT_STYLE, 0, &fc_hint_style);
-      }
-      params_out->hinting = ConvertFontconfigHintStyle(fc_hint_style);
-    }
-
-    int fc_rgba = FC_RGBA_NONE;
-    if (FcPatternGetInteger(result_pattern.get(), FC_RGBA, 0, &fc_rgba) ==
-        FcResultMatch)
-      params_out->subpixel_rendering = ConvertFontconfigRgba(fc_rgba);
-  }
+  if (params_out)
+    GetFontRenderParamsFromFcPattern(result_pattern.get(), params_out);
 
   return true;
 }
@@ -240,6 +186,8 @@ uint32_t HashFontRenderParamsQuery(const FontRenderParamsQuery& query) {
 
 FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
                                      std::string* family_out) {
+  TRACE_EVENT0("fonts", "gfx::GetFontRenderParams");
+
   FontRenderParamsQuery actual_query(query);
   if (actual_query.device_scale_factor == 0)
     actual_query.device_scale_factor = device_scale_factor_;

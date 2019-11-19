@@ -1,0 +1,16 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+// Corresponds to viz::OverlayStrategy. Note that OverlayStrategy::kUnknown and
+// OverlayStrategy::kNoStrategyUsed aren't defined for the mojo enum. These
+// values don't correspond to usable strategies so they don't need to be sent
+// over IPC.
+enum OverlayStrategy {
+  kFullscreen,
+  kSingleOnTop,
+  kUnderlay,
+  kUnderlayCast,
+};

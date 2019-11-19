@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/resource_host.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
@@ -62,12 +63,12 @@ class PepperFlashBrowserHost : public ppapi::host::ResourceHost {
 
   // Requests a wake lock to prevent going to sleep, and a timer to cancel it
   // after a certain amount of time has elapsed without an UpdateActivity.
-  device::mojom::WakeLockPtr wake_lock_;
+  mojo::Remote<device::mojom::WakeLock> wake_lock_;
   base::DelayTimer delay_timer_;
 
   // For fetching the Flash LSO settings.
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  base::WeakPtrFactory<PepperFlashBrowserHost> weak_factory_;
+  base::WeakPtrFactory<PepperFlashBrowserHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperFlashBrowserHost);
 };

@@ -1,0 +1,17 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # Whether Developer UI (chrome:// pages) should be split into a separate
+  # Dynamic Feature Module (DFM: //docs/android_dynamic_feature_modules.md).
+  dfmify_dev_ui = true
+}
+
+dev_ui_module_desc = {
+  name = "dev_ui"
+  java_deps = [ "//chrome/android/features/dev_ui:java" ]
+  android_manifest = "//chrome/android/features/dev_ui/java/AndroidManifest.xml"
+  paks = [ "$root_gen_dir/chrome/dev_ui_resources.pak" ]
+  pak_deps = [ "//chrome/browser/resources:dev_ui_paks" ]
+}

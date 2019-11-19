@@ -8,8 +8,8 @@
 #include "base/android/jni_string.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
-#include "jni/IDNStringUtil_jni.h"
 #include "url/url_canon_internal.h"
+#include "url/url_jni_headers/IDNStringUtil_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

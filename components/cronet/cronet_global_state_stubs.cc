@@ -7,10 +7,9 @@
 #include "base/at_exit.h"
 #include "base/feature_list.h"
 #include "base/task/post_task.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "net/proxy_resolution/proxy_config_service.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
-#include "url/url_util.h"
 
 // This file provides minimal "stub" implementations of the Cronet global-state
 // functions for the native library build, sufficient to have cronet_tests and
@@ -29,15 +28,13 @@ scoped_refptr<base::SingleThreadTaskRunner> InitializeAndCreateTaskRunner() {
 
   base::FeatureList::InitializeInstance(std::string(), std::string());
 
-  url::Initialize();
-
-  // Note that in component builds this TaskScheduler will be shared with the
-  // calling process, if it also depends on //base. In particular this means
+  // Note that in component builds this ThreadPoolInstance will be shared with
+  // the calling process, if it also depends on //base. In particular this means
   // that the Cronet test binaries must avoid initializing or shutting-down the
-  // TaskScheduler themselves.
-  base::TaskScheduler::CreateAndStartWithDefaultParams("cronet");
+  // ThreadPoolInstance themselves.
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("cronet");
 
-  return base::CreateSingleThreadTaskRunnerWithTraits({});
+  return base::CreateSingleThreadTaskRunner({base::ThreadPool()});
 }
 
 base::SingleThreadTaskRunner* InitTaskRunner() {

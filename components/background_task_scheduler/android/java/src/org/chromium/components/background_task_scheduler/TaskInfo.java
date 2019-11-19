@@ -6,8 +6,11 @@ package org.chromium.components.background_task_scheduler;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+
+import org.chromium.base.Log;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,20 +20,61 @@ import java.lang.annotation.RetentionPolicy;
  * parameters, such as whether a special type of network is available.
  */
 public class TaskInfo {
+    private static final String TAG = "BkgrdTaskInfo";
+
+    /**
+     * Common interface for all types of task information.
+     */
+    public interface TimingInfo {
+        /**
+         * Receives a {@link TimingInfoVisitor}, which will perform actions on this object.
+         * @param visitor object that will perform actions on this instance.
+         */
+        void accept(TimingInfoVisitor visitor);
+    }
+
+    /**
+     * Common interface for actions over TimingInfo implementations.
+     *
+     * This implements the Visitor design pattern over {@link TimingInfo} objects.
+     * For a guide on how to use it, see the `Performing actions over TimingInfo objects` section
+     * in //components/background_task_scheduler/README.md.
+     */
+    public interface TimingInfoVisitor {
+        /**
+         * Applies actions on a given {@link OneOffInfo}. This affects information regarding
+         * timing for a one-off task.
+         * @param oneOffInfo object to act on.
+         */
+        void visit(OneOffInfo oneOffInfo);
+        /**
+         * Applies actions on a given {@link PeriodicInfo}. This affects information regarding
+         * timing for a periodic task.
+         * @param periodicInfo object to act on.
+         */
+        void visit(PeriodicInfo periodicInfo);
+        /**
+         * Applies actions on a given {@link ExactInfo}. This affects information regarding
+         * timing for an exact task.
+         * @param exactInfo object to act on.
+         */
+        void visit(ExactInfo exactInfo);
+    }
+
     /**
      * Specifies information regarding one-off tasks.
-     * This is part of a {@link TaskInfo} iff the task is NOT a periodic task.
      */
-    public static class OneOffInfo {
+    public static class OneOffInfo implements TimingInfo {
         private final long mWindowStartTimeMs;
         private final long mWindowEndTimeMs;
         private final boolean mHasWindowStartTimeConstraint;
+        private final boolean mExpiresAfterWindowEndTime;
 
-        private OneOffInfo(long windowStartTimeMs, long windowEndTimeMs,
-                boolean hasWindowStartTimeConstraint) {
-            mWindowStartTimeMs = windowStartTimeMs;
-            mWindowEndTimeMs = windowEndTimeMs;
-            mHasWindowStartTimeConstraint = hasWindowStartTimeConstraint;
+        private OneOffInfo(Builder builder) {
+            mWindowStartTimeMs = builder.mWindowStartTimeMs;
+            mWindowEndTimeMs = builder.mWindowEndTimeMs;
+            mHasWindowStartTimeConstraint = builder.mHasWindowStartTimeConstraint;
+            mExpiresAfterWindowEndTime = builder.mExpiresAfterWindowEndTime;
         }
 
         /**
@@ -56,26 +100,105 @@ public class TaskInfo {
             return mHasWindowStartTimeConstraint;
         }
 
+        /**
+         * @return whether this one-off task expires after {@link #getWindowEndTimeMs()}
+         * False by default.
+         */
+        public boolean expiresAfterWindowEndTime() {
+            return mExpiresAfterWindowEndTime;
+        }
+
+        /**
+         * Checks if a one-off task expired.
+         * @param scheduleTimeMs the time at which the task was scheduled.
+         * @param endTimeMs the time at which the task was set to expire.
+         * @param currentTimeMs the current time to check for expiration.
+         * @return true if the task expired and false otherwise.
+         */
+        static boolean getExpirationStatus(
+                long scheduleTimeMs, long endTimeMs, long currentTimeMs) {
+            return currentTimeMs >= scheduleTimeMs + endTimeMs;
+        }
+
+        @Override
+        public void accept(TimingInfoVisitor visitor) {
+            visitor.visit(this);
+        }
+
         @Override
         public String toString() {
-            return "{windowStartTimeMs: " + mWindowStartTimeMs + ", windowEndTimeMs: "
-                    + mWindowEndTimeMs + "}";
+            StringBuilder sb = new StringBuilder("{");
+            if (hasWindowStartTimeConstraint()) {
+                sb.append("windowStartTimeMs: ").append(mWindowStartTimeMs).append(", ");
+            }
+            sb.append("windowEndTimeMs: ").append(mWindowEndTimeMs).append(", ");
+            sb.append("expiresAfterWindowEndTime (+flex): ").append(mExpiresAfterWindowEndTime);
+            sb.append("}");
+            return sb.toString();
+        }
+
+        /**
+         * @return a new {@link Builder} object to set the values of the one-off task.
+         */
+        public static Builder create() {
+            return new Builder();
+        }
+
+        /**
+         * A helper builder to provide a way to build {@link OneOffInfo}.
+         *
+         * @see #create()
+         */
+        public static final class Builder {
+            private long mWindowStartTimeMs;
+            private long mWindowEndTimeMs;
+            // By default, a {@link OneOffInfo} doesn't have a set start time. The start time is
+            // considered the time of scheduling the task.
+            private boolean mHasWindowStartTimeConstraint;
+            // By default, a {@link OneOffInfo} doesn't have the expiration feature activated.
+            private boolean mExpiresAfterWindowEndTime;
+
+            public Builder setWindowStartTimeMs(long windowStartTimeMs) {
+                mWindowStartTimeMs = windowStartTimeMs;
+                mHasWindowStartTimeConstraint = true;
+                return this;
+            }
+
+            public Builder setWindowEndTimeMs(long windowEndTimeMs) {
+                mWindowEndTimeMs = windowEndTimeMs;
+                return this;
+            }
+
+            public Builder setExpiresAfterWindowEndTime(boolean expiresAfterWindowEndTime) {
+                mExpiresAfterWindowEndTime = expiresAfterWindowEndTime;
+                return this;
+            }
+
+            /**
+             * Build the {@link OneOffInfo object} specified by this builder.
+             *
+             * @return the {@link OneOffInfo} object.
+             */
+            public OneOffInfo build() {
+                return new OneOffInfo(this);
+            }
         }
     }
 
     /**
      * Specifies information regarding periodic tasks.
-     * This is part of a {@link TaskInfo} iff the task is a periodic task.
      */
-    public static class PeriodicInfo {
+    public static class PeriodicInfo implements TimingInfo {
         private final long mIntervalMs;
         private final long mFlexMs;
         private final boolean mHasFlex;
+        private final boolean mExpiresAfterWindowEndTime;
 
-        private PeriodicInfo(long intervalMs, long flexMs, boolean hasFlex) {
-            mIntervalMs = intervalMs;
-            mFlexMs = flexMs;
-            mHasFlex = hasFlex;
+        private PeriodicInfo(PeriodicInfo.Builder builder) {
+            mIntervalMs = builder.mIntervalMs;
+            mFlexMs = builder.mFlexMs;
+            mHasFlex = builder.mHasFlex;
+            mExpiresAfterWindowEndTime = builder.mExpiresAfterWindowEndTime;
         }
 
         /**
@@ -100,16 +223,165 @@ public class TaskInfo {
             return mHasFlex;
         }
 
+        /**
+         * @return whether this periodic task expires after {@link #getIntervalMs()} +
+         * {@link #getFlexMs()}
+         * False by default.
+         */
+        public boolean expiresAfterWindowEndTime() {
+            return mExpiresAfterWindowEndTime;
+        }
+
+        /**
+         * Checks if a periodic task expired.
+         * @param scheduleTimeMs the time at which the task was scheduled.
+         * @param intervalTimeMs the interval at which the periodic task was scheduled.
+         * @param flexTimeMs the flex time of the task, either set by the caller or the default one.
+         * @param currentTimeMs the current time to check for expiration.
+         * @return true if the task expired and false otherwise.
+         */
+        static boolean getExpirationStatus(
+                long scheduleTimeMs, long intervalTimeMs, long flexTimeMs, long currentTimeMs) {
+            // Whether the task is executed during the wanted time window is determined here. The
+            // position of the current time in relation to the time window is calculated here.
+            // This position is compared with the time window margins.
+            // For example, if a task is scheduled at 6am with an interval of 5h and a flex of
+            // 5min, the valid starting times in that day are: 10:55am to 11am, 3:55pm to 4pm and
+            // 8:55pm to 9pm. For 7pm as the current time, the time in the interval window is 3h.
+            // This is not inside a valid starting time, so the task is considered expired.
+            // Similarly, for 8:58pm as the current time, the time in the interval window is 4h
+            // and 58min, which fits in a valid interval window.
+            // In the case of a flex value equal or bigger than the interval value, the task
+            // never expires.
+            long timeSinceScheduledMs = currentTimeMs - scheduleTimeMs;
+            long deltaTimeComparedToWindowMs = timeSinceScheduledMs % intervalTimeMs;
+            return deltaTimeComparedToWindowMs < intervalTimeMs - flexTimeMs
+                    && flexTimeMs < intervalTimeMs;
+        }
+
+        @Override
+        public void accept(TimingInfoVisitor visitor) {
+            visitor.visit(this);
+        }
+
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder("{");
-            sb.append("{");
-            sb.append("intervalMs: ").append(mIntervalMs);
+            sb.append("intervalMs: ").append(mIntervalMs).append(", ");
             if (mHasFlex) {
-                sb.append(", flexMs: ").append(mFlexMs);
+                sb.append(", flexMs: ").append(mFlexMs).append(", ");
             }
+            sb.append("expiresAfterWindowEndTime (+flex): ").append(mExpiresAfterWindowEndTime);
             sb.append("}");
             return sb.toString();
+        }
+
+        /**
+         * @return a new {@link OneOffInfo.Builder} object to set the values of the one-off task.
+         */
+        public static PeriodicInfo.Builder create() {
+            return new PeriodicInfo.Builder();
+        }
+
+        /**
+         * A helper builder to provide a way to build {@link OneOffInfo}.
+         *
+         * @see #create()
+         */
+        public static final class Builder {
+            private long mIntervalMs;
+            private long mFlexMs;
+            // By default, a {@link PeriodicInfo} doesn't have a specified flex and the default
+            // one will be used in the scheduler.
+            private boolean mHasFlex;
+            // By default, a {@link PeriodicInfo} doesn't have the expiration feature activated.
+            private boolean mExpiresAfterWindowEndTime;
+
+            public Builder setIntervalMs(long intervalMs) {
+                mIntervalMs = intervalMs;
+                return this;
+            }
+
+            public Builder setFlexMs(long flexMs) {
+                mFlexMs = flexMs;
+                mHasFlex = true;
+                return this;
+            }
+
+            public Builder setExpiresAfterWindowEndTime(boolean expiresAfterWindowEndTime) {
+                mExpiresAfterWindowEndTime = expiresAfterWindowEndTime;
+                return this;
+            }
+            /**
+             * Build the {@link PeriodicInfo object} specified by this builder.
+             *
+             * @return the {@link PeriodicInfo} object.
+             */
+            public PeriodicInfo build() {
+                return new PeriodicInfo(this);
+            }
+        }
+    }
+
+    /**
+     * Specifies information regarding exact tasks.
+     */
+    static class ExactInfo implements TimingInfo {
+        private final long mTriggerAtMs;
+
+        private ExactInfo(Builder builder) {
+            mTriggerAtMs = builder.mTriggerAtMs;
+        }
+
+        long getTriggerAtMs() {
+            return mTriggerAtMs;
+        }
+
+        @Override
+        public void accept(TimingInfoVisitor visitor) {
+            visitor.visit(this);
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder("{");
+            sb.append("triggerAtMs: ").append(mTriggerAtMs).append("}");
+            return sb.toString();
+        }
+
+        /**
+         * @return a new {@link Builder} object to set the values of the exact task.
+         */
+        static Builder create() {
+            return new Builder();
+        }
+
+        /**
+         * A helper builder to provide a way to build {@link ExactInfo}.
+         *
+         * @see #create()
+         */
+        static final class Builder {
+            private long mTriggerAtMs;
+
+            /**
+             * Sets the exact UTC timestamp at which to schedule the exact task.
+             * @param triggerAtMs the UTC timestamp at which the task should be started.
+             * @return the {@link Builder} for creating the {@link ExactInfo} object.
+             */
+            Builder setTriggerAtMs(long triggerAtMs) {
+                mTriggerAtMs = triggerAtMs;
+                return this;
+            }
+
+            /**
+             * Build the {@link ExactInfo object} specified by this builder.
+             *
+             * @return the {@link ExactInfo} object.
+             */
+            ExactInfo build() {
+                return new ExactInfo(this);
+            }
         }
     }
 
@@ -143,12 +415,6 @@ public class TaskInfo {
     private final int mTaskId;
 
     /**
-     * The {@link BackgroundTask} to invoke when this task is run.
-     */
-    @NonNull
-    private final Class<? extends BackgroundTask> mBackgroundTaskClass;
-
-    /**
      * The extras to provide to the {@link BackgroundTask} when it is run.
      */
     @NonNull
@@ -176,38 +442,18 @@ public class TaskInfo {
     private final boolean mUpdateCurrent;
 
     /**
-     * Whether this task is periodic.
+     * Task information regarding a type of task.
      */
-    private final boolean mIsPeriodic;
-
-    /**
-     * Task information regarding one-off tasks. Non-null iff {@link #mIsPeriodic} is false.
-     */
-    private final OneOffInfo mOneOffInfo;
-
-    /**
-     * Task information regarding periodic tasks. Non-null iff {@link #mIsPeriodic} is true.
-     */
-    private final PeriodicInfo mPeriodicInfo;
+    private final TimingInfo mTimingInfo;
 
     private TaskInfo(Builder builder) {
         mTaskId = builder.mTaskId;
-        mBackgroundTaskClass = builder.mBackgroundTaskClass;
         mExtras = builder.mExtras == null ? new Bundle() : builder.mExtras;
         mRequiredNetworkType = builder.mRequiredNetworkType;
         mRequiresCharging = builder.mRequiresCharging;
         mIsPersisted = builder.mIsPersisted;
         mUpdateCurrent = builder.mUpdateCurrent;
-        mIsPeriodic = builder.mIsPeriodic;
-        if (mIsPeriodic) {
-            mOneOffInfo = null;
-            mPeriodicInfo =
-                    new PeriodicInfo(builder.mIntervalMs, builder.mFlexMs, builder.mHasFlex);
-        } else {
-            mOneOffInfo = new OneOffInfo(builder.mWindowStartTimeMs, builder.mWindowEndTimeMs,
-                    builder.mHasWindowStartTimeConstraint);
-            mPeriodicInfo = null;
-        }
+        mTimingInfo = builder.mTimingInfo;
     }
 
     /**
@@ -222,7 +468,13 @@ public class TaskInfo {
      */
     @NonNull
     public Class<? extends BackgroundTask> getBackgroundTaskClass() {
-        return mBackgroundTaskClass;
+        BackgroundTask backgroundTask =
+                BackgroundTaskSchedulerFactory.getBackgroundTaskFromTaskId(mTaskId);
+        if (backgroundTask == null) {
+            Log.w(TAG, "Cannot get BackgorundTask class from task id " + mTaskId);
+            return null;
+        }
+        return backgroundTask.getClass();
     }
 
     /**
@@ -265,28 +517,38 @@ public class TaskInfo {
     /**
      * @return Whether or not this task is a periodic task.
      */
+    @Deprecated
     public boolean isPeriodic() {
-        return mIsPeriodic;
+        return mTimingInfo instanceof PeriodicInfo;
     }
 
     /**
-    * This is part of a {@link TaskInfo} iff the task is NOT a periodic task, i.e.
-    * {@link TaskInfo#isPeriodic()} returns false.
-    *
-    * @return the specific data that is only available for one-off tasks.
-    */
-    public OneOffInfo getOneOffInfo() {
-        return mOneOffInfo;
-    }
-
-    /**
-     * This is part of a {@link TaskInfo} iff the task is a periodic task, i.e.
-     * {@link TaskInfo#isPeriodic()} returns true.
+     * This is part of a {@link TaskInfo} iff the task is a one-off task.
      *
-     * @return the specific data that is only available for periodic tasks.
+     * @return the specific data if it is a one-off tasks and null otherwise.
      */
+    @Deprecated
+    public OneOffInfo getOneOffInfo() {
+        if (mTimingInfo instanceof OneOffInfo) return (OneOffInfo) mTimingInfo;
+        return null;
+    }
+
+    /**
+     * This is part of a {@link TaskInfo} iff the task is a periodic task.
+     *
+     * @return the specific data that if it is a periodic tasks and null otherwise.
+     */
+    @Deprecated
     public PeriodicInfo getPeriodicInfo() {
-        return mPeriodicInfo;
+        if (mTimingInfo instanceof PeriodicInfo) return (PeriodicInfo) mTimingInfo;
+        return null;
+    }
+
+    /**
+     * @return the specific data based on the type of task.
+     */
+    public TimingInfo getTimingInfo() {
+        return mTimingInfo;
     }
 
     @Override
@@ -294,20 +556,26 @@ public class TaskInfo {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append("taskId: ").append(mTaskId);
-        sb.append(", backgroundTaskClass: ").append(mBackgroundTaskClass);
         sb.append(", extras: ").append(mExtras);
         sb.append(", requiredNetworkType: ").append(mRequiredNetworkType);
         sb.append(", requiresCharging: ").append(mRequiresCharging);
         sb.append(", isPersisted: ").append(mIsPersisted);
         sb.append(", updateCurrent: ").append(mUpdateCurrent);
-        sb.append(", isPeriodic: ").append(mIsPeriodic);
-        if (isPeriodic()) {
-            sb.append(", periodicInfo: ").append(mPeriodicInfo);
-        } else {
-            sb.append(", oneOffInfo: ").append(mOneOffInfo);
-        }
+        sb.append(", timingInfo: ").append(mTimingInfo);
         sb.append("}");
         return sb.toString();
+    }
+
+    /**
+     * Creates a task that holds all information necessary to schedule it.
+     *
+     * @param taskId the unique task ID for this task. Should be listed in {@link TaskIds}.
+     * @param timingInfo the task information specific to each type of task.
+     * @return the builder which can be used to continue configuration and {@link Builder#build()}.
+     * @see TaskIds
+     */
+    public static Builder createTask(int taskId, TimingInfo timingInfo) {
+        return new Builder(taskId).setTimingInfo(timingInfo);
     }
 
     /**
@@ -319,13 +587,20 @@ public class TaskInfo {
      * @param backgroundTaskClass the {@link BackgroundTask} class that will be instantiated for
      * this task.
      * @param windowEndTimeMs the end of the window that the task can begin executing as a delta in
-     * milliseconds from now.
+     * milliseconds from now. Note that the task begins executing at this point even if the
+     * prerequisite conditions are not met.
      * @return the builder which can be used to continue configuration and {@link Builder#build()}.
      * @see TaskIds
+     *
+     * @deprecated the {@see #createTask(int, Class, TimingInfo)} method should be used instead.
+     * This method requires an additional step for the caller: the creation of the specific
+     * {@link TimingInfo} object with the wanted properties.
      */
+    @Deprecated
     public static Builder createOneOffTask(
             int taskId, Class<? extends BackgroundTask> backgroundTaskClass, long windowEndTimeMs) {
-        return new Builder(taskId, backgroundTaskClass, false).setWindowEndTimeMs(windowEndTimeMs);
+        TimingInfo oneOffInfo = OneOffInfo.create().setWindowEndTimeMs(windowEndTimeMs).build();
+        return new Builder(taskId).setTimingInfo(oneOffInfo);
     }
 
     /**
@@ -338,34 +613,24 @@ public class TaskInfo {
      * @param windowStartTimeMs the start of the window that the task can begin executing as a delta
      * in milliseconds from now.
      * @param windowEndTimeMs the end of the window that the task can begin executing as a delta in
-     * milliseconds from now.
+     * milliseconds from now. Note that the task begins executing at this point even if the
+     * prerequisite conditions are not met.
      * @return the builder which can be used to continue configuration and {@link Builder#build()}.
      * @see TaskIds
+     *
+     * @deprecated the {@see #createTask(int, Class, TimingInfo)} method should be used instead.
+     * This method requires an additional step for the caller: the creation of the specific
+     * {@link TimingInfo} object with the wanted properties.
      */
+    @Deprecated
     public static Builder createOneOffTask(int taskId,
             Class<? extends BackgroundTask> backgroundTaskClass, long windowStartTimeMs,
             long windowEndTimeMs) {
-        return new Builder(taskId, backgroundTaskClass, false)
-                .setWindowStartTimeMs(windowStartTimeMs)
-                .setWindowEndTimeMs(windowEndTimeMs);
-    }
-
-    /**
-     * Schedule a periodic task that will recur at the specified interval, without the need to
-     * be rescheduled. The task will continue to recur until
-     * {@link BackgroundTaskScheduler#cancel(Context, int)} is invoked with the task ID from this
-     * {@link TaskInfo}.
-     *
-     * @param taskId the unique task ID for this task. Should be listed in {@link TaskIds}.
-     * @param backgroundTaskClass the {@link BackgroundTask} class that will be instantiated for
-     * this task.
-     * @param intervalMs the interval between occurrences of this task in milliseconds.
-     * @return the builder which can be used to continue configuration and {@link Builder#build()}.
-     * @see TaskIds
-     */
-    public static Builder createPeriodicTask(
-            int taskId, Class<? extends BackgroundTask> backgroundTaskClass, long intervalMs) {
-        return new Builder(taskId, backgroundTaskClass, true).setIntervalMs(intervalMs);
+        TimingInfo oneOffInfo = OneOffInfo.create()
+                                        .setWindowStartTimeMs(windowStartTimeMs)
+                                        .setWindowEndTimeMs(windowEndTimeMs)
+                                        .build();
+        return new Builder(taskId).setTimingInfo(oneOffInfo);
     }
 
     /**
@@ -386,75 +651,42 @@ public class TaskInfo {
      * length at the end of the period. It is reported in milliseconds.
      * @return the builder which can be used to continue configuration and {@link Builder#build()}.
      * @see TaskIds
+     *
+     * @deprecated the {@see #createTask(int, Class, TimingInfo)} method should be used instead.
+     * This method requires an additional step for the caller: the creation of the specific
+     * {@link TimingInfo} object with the wanted properties.
      */
+    @Deprecated
     public static Builder createPeriodicTask(int taskId,
             Class<? extends BackgroundTask> backgroundTaskClass, long intervalMs, long flexMs) {
-        return new Builder(taskId, backgroundTaskClass, true)
-                .setIntervalAndFlexMs(intervalMs, flexMs);
+        TimingInfo periodicInfo =
+                PeriodicInfo.create().setIntervalMs(intervalMs).setFlexMs(flexMs).build();
+        return new Builder(taskId).setTimingInfo(periodicInfo);
     }
 
     /**
      * A helper builder to provide a way to build {@link TaskInfo}. To create a {@link Builder}
-     * use one of the create* class method on {@link TaskInfo}.
+     * use the createTask method on {@link TaskInfo}.
      *
-     * @see #createOneOffTask(int, Class, long)
-     * @see #createOneOffTask(int, Class, long, long)
-     * @see #createPeriodicTask(int, Class, long)
-     * @see #createPeriodicTask(int, Class, long, long)
+     * @see @createTask(int, Class, TimingInfo)
      */
     public static final class Builder {
         private final int mTaskId;
-        @NonNull
-        private final Class<? extends BackgroundTask> mBackgroundTaskClass;
-        private final boolean mIsPeriodic;
+
         private Bundle mExtras;
         @NetworkType
         private int mRequiredNetworkType;
         private boolean mRequiresCharging;
         private boolean mIsPersisted;
         private boolean mUpdateCurrent;
+        private TimingInfo mTimingInfo;
 
-        // Data about one-off tasks.
-        private long mWindowStartTimeMs;
-        private long mWindowEndTimeMs;
-        private boolean mHasWindowStartTimeConstraint;
-
-        // Data about periodic tasks.
-        private long mIntervalMs;
-        private long mFlexMs;
-        private boolean mHasFlex;
-
-        Builder(int taskId, @NonNull Class<? extends BackgroundTask> backgroundTaskClass,
-                boolean isPeriodic) {
+        Builder(int taskId) {
             mTaskId = taskId;
-            mBackgroundTaskClass = backgroundTaskClass;
-            mIsPeriodic = isPeriodic;
         }
 
-        Builder setWindowStartTimeMs(long windowStartTimeMs) {
-            assert !mIsPeriodic;
-            mWindowStartTimeMs = windowStartTimeMs;
-            mHasWindowStartTimeConstraint = true;
-            return this;
-        }
-
-        Builder setWindowEndTimeMs(long windowEndTimeMs) {
-            assert !mIsPeriodic;
-            mWindowEndTimeMs = windowEndTimeMs;
-            return this;
-        }
-
-        Builder setIntervalMs(long intervalMs) {
-            assert mIsPeriodic;
-            mIntervalMs = intervalMs;
-            return this;
-        }
-
-        Builder setIntervalAndFlexMs(long intervalMs, long flexMs) {
-            assert mIsPeriodic;
-            mIntervalMs = intervalMs;
-            mFlexMs = flexMs;
-            mHasFlex = true;
+        Builder setTimingInfo(TimingInfo timingInfo) {
+            mTimingInfo = timingInfo;
             return this;
         }
 

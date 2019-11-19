@@ -25,6 +25,12 @@ found in the LICENSE file.
     </ul>
   </div>
 
+  <div class='angle-features-div'>
+    <h3>ANGLE Features</h3>
+    <ul class="angle-features-list">
+    </ul>
+  </div>
+
   <div>
     <h3>Version Information</h3>
     <div id="client-info"></div>
@@ -53,6 +59,11 @@ found in the LICENSE file.
   <div>
     <h3>Video Acceleration Information</h3>
     <div id="video-acceleration-info"></div>
+  </div>
+
+  <div>
+    <h3>Vulkan Information</h3>
+    <div id="vulkan-info"></div>
   </div>
 
   <div class="diagnostics">
@@ -106,7 +117,7 @@ found in the LICENSE file.
             <span class="row-title" jscontent="description">title</span>
           </td>
           <td jsdisplay="!(value instanceof Array)">
-            <span jscontent="value">value</span>
+            <span jscontent="value" jsvalues=".id:id">value</span>
           </td>
           <td jsdisplay="value instanceof Array" colspan=2>
             <span jscontent="description" class="row-title"></span>

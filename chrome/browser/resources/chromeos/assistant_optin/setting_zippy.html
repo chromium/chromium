@@ -10,32 +10,49 @@
     <link rel="stylesheet" href="../login/oobe_flex_layout.css">
     <link rel="stylesheet" href="setting_zippy.css">
     <link rel="stylesheet" href="assistant_shared_styles.css">
-    <div class="flex layout horizontal" id="container"
-        popupStyle$="[[popupStyle]]">
-      <div class="icon">
-        <webview class="icon-view" src="[[iconSrc]]"></webview>
-      </div>
-      <div>
-        <div class="sub-title">
-          <content select=".zippy-title"></content>
+    <template is="dom-if" if="[[expandStyle]]">
+      <cr-expand-button expanded="{{expanded_}}">
+        <div id="container" class="flex layout horizontal"
+            expandStyle$="[[expandStyle]]">
+          <div class="icon">
+            <webview class="icon-view" src="[[iconSrc]]" tabindex="-1">
+            </webview>
+          </div>
+          <div>
+            <div class="sub-title">
+              <content select=".zippy-title"></content>
+            </div>
+            <div class="content">
+              <content select=".zippy-description, .learn-more-link"></content>
+            </div>
+          </div>
         </div>
-        <div class="content" toggleStyle$="[[toggleStyle]]"
-            popupStyle$="[[popupStyle]]">
-          <content select=".zippy-description, .learn-more-link"></content>
-        </div>
-      </div>
-      <div class="flex"></div>
-      <cr-expand-button expanded="{{expanded_}}" hidden="[[!expandStyle]]">
       </cr-expand-button>
-      <div class="toggle">
-        <content select=".zippy-toggle" hidden="[[!toggleStyle]]"></content>
+      <iron-collapse opened="[[expanded_]]">
+        <div class="content indent">
+          <content select=.zippy-additional></content>
+        </div>
+      </iron-collapse>
+    </template>
+    <template is="dom-if" if="[[!expandStyle]]">
+      <div id="container" class="flex layout horizontal"
+          expandStyle$="[[expandStyle]]">
+        <div class="icon">
+          <webview class="icon-view" src="[[iconSrc]]" tabindex="-1"></webview>
+        </div>
+        <div>
+          <div class="sub-title">
+            <content select=".zippy-title"></content>
+          </div>
+          <div id="description" class="content">
+            <content select=".zippy-description, .learn-more-link"></content>
+          </div>
+        </div>
+        <div class="toggle">
+          <content select=".zippy-toggle" hidden="[[!toggleStyle]]"></content>
+        </div>
       </div>
-    </div>
-    <iron-collapse opened="[[expanded_]]">
-      <div class="content indent">
-        <content select=.zippy-additional></content>
-      </div>
-    </iron-collapse>
+    </template>
     <div class="line" hidden="[[hideLine]]"></div>
   </template>
 </dom-module>

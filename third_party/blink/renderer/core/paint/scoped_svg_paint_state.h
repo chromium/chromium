@@ -58,7 +58,14 @@ class ScopedSVGTransformState {
       return;
 
     if (const auto* transform_node = properties->Transform()) {
-      DCHECK(transform_node->Matrix() == transform.ToTransformationMatrix());
+#if DCHECK_IS_ON()
+      if (transform_node->IsIdentityOr2DTranslation()) {
+        DCHECK_EQ(transform_node->Translation2D(),
+                  transform.ToTransformationMatrix().To2DTranslation());
+      } else {
+        DCHECK_EQ(transform_node->Matrix(), transform.ToTransformationMatrix());
+      }
+#endif
       transform_property_scope_.emplace(
           paint_info.context.GetPaintController(), *transform_node, object,
           DisplayItem::PaintPhaseToSVGTransformType(paint_info.phase));

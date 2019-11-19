@@ -13,7 +13,9 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/test_utils.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace {
@@ -37,8 +39,10 @@ class RemoveCookieTester {
                  const std::string& value);
 
  private:
-  void GetCookieListCallback(const std::vector<net::CanonicalCookie>& cookies);
-  void SetCanonicalCookieCallback(bool result);
+  void GetCookieListCallback(const net::CookieStatusList& cookies,
+                             const net::CookieStatusList& excluded_cookies);
+  void SetCanonicalCookieCallback(
+      net::CanonicalCookie::CookieInclusionStatus result);
 
   void BlockUntilNotified();
   void Notify();
@@ -46,7 +50,7 @@ class RemoveCookieTester {
   std::vector<net::CanonicalCookie> last_cookies_;
   bool waiting_callback_;
   Profile* profile_;
-  network::mojom::CookieManagerPtr cookie_manager_;
+  mojo::Remote<network::mojom::CookieManager> cookie_manager_;
   scoped_refptr<content::MessageLoopRunner> runner_;
 
   DISALLOW_COPY_AND_ASSIGN(RemoveCookieTester);
@@ -58,7 +62,8 @@ RemoveCookieTester::RemoveCookieTester(Profile* profile)
   network::mojom::NetworkContext* network_context =
       content::BrowserContext::GetDefaultStoragePartition(profile_)
           ->GetNetworkContext();
-  network_context->GetCookieManager(mojo::MakeRequest(&cookie_manager_));
+  network_context->GetCookieManager(
+      cookie_manager_.BindNewPipeAndPassReceiver());
 }
 
 RemoveCookieTester::~RemoveCookieTester() {}
@@ -72,7 +77,7 @@ bool RemoveCookieTester::GetCookie(const std::string& host,
   waiting_callback_ = true;
   net::CookieOptions cookie_options;
   cookie_manager_->GetCookieList(
-      GURL("http://" + host + "/"), cookie_options,
+      GURL("https://" + host + "/"), cookie_options,
       base::BindOnce(&RemoveCookieTester::GetCookieListCallback,
                      base::Unretained(this)));
   BlockUntilNotified();
@@ -88,25 +93,29 @@ void RemoveCookieTester::AddCookie(const std::string& host,
                                    const std::string& value) {
   DCHECK(!waiting_callback_);
   waiting_callback_ = true;
+  net::CookieOptions options;
+  options.set_include_httponly();
   cookie_manager_->SetCanonicalCookie(
       net::CanonicalCookie(name, value, host, "/", base::Time(), base::Time(),
-                           base::Time(), false, false,
+                           base::Time(), true /* secure*/, false /* http only*/,
                            net::CookieSameSite::NO_RESTRICTION,
                            net::COOKIE_PRIORITY_MEDIUM),
-      "http", true /* modify_http_only */,
+      "https", options,
       base::BindOnce(&RemoveCookieTester::SetCanonicalCookieCallback,
                      base::Unretained(this)));
   BlockUntilNotified();
 }
 
 void RemoveCookieTester::GetCookieListCallback(
-    const std::vector<net::CanonicalCookie>& cookies) {
-  last_cookies_ = cookies;
+    const net::CookieStatusList& cookies,
+    const net::CookieStatusList& excluded_cookies) {
+  last_cookies_ = net::cookie_util::StripStatuses(cookies);
   Notify();
 }
 
-void RemoveCookieTester::SetCanonicalCookieCallback(bool result) {
-  ASSERT_TRUE(result);
+void RemoveCookieTester::SetCanonicalCookieCallback(
+    net::CanonicalCookie::CookieInclusionStatus result) {
+  ASSERT_TRUE(result.IsInclude());
   Notify();
 }
 
@@ -115,7 +124,7 @@ void RemoveCookieTester::BlockUntilNotified() {
   if (waiting_callback_) {
     runner_ = new content::MessageLoopRunner;
     runner_->Run();
-    runner_ = NULL;
+    runner_.reset();
   }
 }
 
@@ -137,7 +146,6 @@ class ProfileResetTest : public InProcessBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ProfileResetTest, ResetCookiesAndSiteData) {
   RemoveCookieTester tester(browser()->profile());
-  std::string host_prefix("http://");
   tester.AddCookie(kCookieHostname, kCookieName, kCookieValue);
   net::CanonicalCookie cookie;
   ASSERT_TRUE(tester.GetCookie(kCookieHostname, &cookie));
@@ -146,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(ProfileResetTest, ResetCookiesAndSiteData) {
 
   ResetAndWait(ProfileResetter::COOKIES_AND_SITE_DATA);
 
-  EXPECT_FALSE(tester.GetCookie(host_prefix + kCookieHostname, &cookie));
+  EXPECT_FALSE(tester.GetCookie(kCookieHostname, &cookie));
 }
 
 }  // namespace

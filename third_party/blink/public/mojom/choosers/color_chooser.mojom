@@ -12,8 +12,8 @@ struct ColorSuggestion {
 // A ColorChooser window is shown for <input type="color">.
 interface ColorChooserFactory {
   OpenColorChooser(
-      ColorChooser& chooser,
-      ColorChooserClient client,
+      pending_receiver<ColorChooser> chooser,
+      pending_remote<ColorChooserClient> client,
       uint32 color,
       array<ColorSuggestion> suggestions);
 };

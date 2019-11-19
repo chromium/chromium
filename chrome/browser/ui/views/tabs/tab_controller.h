@@ -5,13 +5,18 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTROLLER_H_
 
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 
-class SkPath;
+class Browser;
 class Tab;
+class TabGroupVisualData;
+class TabGroupId;
+class TabSlotView;
+
+enum class BrowserFrameActiveState;
 
 namespace gfx {
 class Point;
@@ -34,16 +39,8 @@ class TabController {
   // Returns true if multiple selection is supported.
   virtual bool SupportsMultipleSelection() = 0;
 
-  // Returns where the new tab button should be placed. This is needed to
-  // determine which tab separators need to be faded in/out while animating into
-  // position.
-  virtual NewTabButtonPosition GetNewTabButtonPosition() const = 0;
-
   // Returns true if the close button for the given tab is forced to be hidden.
   virtual bool ShouldHideCloseButtonForTab(Tab* tab) const = 0;
-
-  // Returns true if ShouldPaintTab() could return a non-empty clip path.
-  virtual bool MaySetClip() = 0;
 
   // Selects the tab. |event| is the event that causes |tab| to be selected.
   virtual void SelectTab(Tab* tab, const ui::Event& event) = 0;
@@ -59,6 +56,20 @@ class TabController {
 
   // Closes the tab.
   virtual void CloseTab(Tab* tab, CloseTabSource source) = 0;
+
+  // Attempts to move the specified tab to the right.
+  virtual void MoveTabRight(Tab* tab) = 0;
+
+  // Attempts to move the specified tab to the left.
+  virtual void MoveTabLeft(Tab* tab) = 0;
+
+  // Attempts to move the specified tab to the beginning of the tabstrip (or the
+  // beginning of the unpinned tab region if the tab is not pinned).
+  virtual void MoveTabFirst(Tab* tab) = 0;
+
+  // Attempts to move the specified tab to the end of the tabstrip (or the end
+  // of the pinned tab region if the tab is pinned).
+  virtual void MoveTabLast(Tab* tab) = 0;
 
   // Shows a context menu for the tab at the specified point in screen coords.
   virtual void ShowContextMenuForTab(Tab* tab,
@@ -79,9 +90,12 @@ class TabController {
   virtual bool IsFirstVisibleTab(const Tab* tab) const = 0;
   virtual bool IsLastVisibleTab(const Tab* tab) const = 0;
 
+  // Returns true if any tab or one of its children has focus.
+  virtual bool IsFocusInTabs() const = 0;
+
   // Potentially starts a drag for the specified Tab.
   virtual void MaybeStartDrag(
-      Tab* tab,
+      TabSlotView* source,
       const ui::LocatedEvent& event,
       const ui::ListSelectionModel& original_selection) = 0;
 
@@ -105,14 +119,16 @@ class TabController {
                                  const ui::MouseEvent& event) = 0;
 
   // Updates hover-card content, anchoring and visibility based on what tab is
-  // hovered and whether the card should be shown.
-  virtual void UpdateHoverCard(Tab* tab, bool should_show) = 0;
+  // hovered and whether the card should be shown. Providing a nullptr for |tab|
+  // will cause the tab hover card to be hidden.
+  virtual void UpdateHoverCard(Tab* tab) = 0;
 
-  // Returns whether |tab| needs to be painted. When this returns true, |clip|
-  // is set to the path which should be clipped out of the current tab's region
-  // (for hit testing or painting), if any.  |clip| is only non-empty when
-  // stacking tabs; if it is empty, no clipping is needed.
-  virtual bool ShouldPaintTab(const Tab* tab, float scale, SkPath* clip) = 0;
+  // Returns true if the hover card is showing for the given tab.
+  virtual bool HoverCardIsShowingForTab(Tab* tab) = 0;
+
+  // Returns the background offset used by inactive tabs to match the frame
+  // image.
+  virtual int GetBackgroundOffset() const = 0;
 
   // Returns the thickness of the stroke around the active tab in DIP.  Returns
   // 0 if there is no stroke.
@@ -141,22 +157,18 @@ class TabController {
   // Returns the tab background color based on both the |tab_state| and the
   // |active_state| of the window.
   virtual SkColor GetTabBackgroundColor(
-      TabState tab_state,
-      BrowserNonClientFrameView::ActiveState active_state =
-          BrowserNonClientFrameView::kUseCurrent) const = 0;
+      TabActive active,
+      BrowserFrameActiveState active_state) const = 0;
 
   // Returns the tab foreground color of the the text based on the |tab_state|,
   // the activation state of the window, and the current |background_color|.
-  virtual SkColor GetTabForegroundColor(TabState tab_state,
+  virtual SkColor GetTabForegroundColor(TabActive active,
                                         SkColor background_color) const = 0;
 
-  // Returns the resource ID for the image to use as the tab background.
-  // |custom_image| is an outparam set to true if either the tab or the frame
-  // background images have been customized; see implementation comments.
-  virtual int GetBackgroundResourceId(
-      bool* has_custom_image,
-      BrowserNonClientFrameView::ActiveState active_state =
-          BrowserNonClientFrameView::kUseCurrent) const = 0;
+  // Returns the background tab image resource ID if the image has been
+  // customized, directly or indirectly, by the theme.
+  virtual base::Optional<int> GetCustomBackgroundId(
+      BrowserFrameActiveState active_state) const = 0;
 
   // If the given tab is animating to its target destination, this returns the
   // target bounds. If the tab isn't moving this will return the current bounds
@@ -173,6 +185,21 @@ class TabController {
 
   // Returns opacity for use on tab hover radial highlight.
   virtual float GetHoverOpacityForRadialHighlight() const = 0;
+
+  // Returns the TabGroupVisualData instance for the given |group|.
+  virtual const TabGroupVisualData* GetVisualDataForGroup(
+      TabGroupId group) const = 0;
+
+  virtual void SetVisualDataForGroup(TabGroupId group,
+                                     TabGroupVisualData visual_data) = 0;
+
+  virtual void CloseAllTabsInGroup(TabGroupId group) = 0;
+
+  virtual void UngroupAllTabsInGroup(TabGroupId group) = 0;
+
+  virtual void AddNewTabInGroup(TabGroupId group) = 0;
+
+  virtual const Browser* GetBrowser() = 0;
 
  protected:
   virtual ~TabController() {}

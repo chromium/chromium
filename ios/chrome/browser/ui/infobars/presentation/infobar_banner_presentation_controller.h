@@ -7,8 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol InfobarBannerPositioner;
+
 // InfobarBanner Presentation Controller.
 @interface InfobarBannerPresentationController : UIPresentationController
+
+// Delegate used to position the InfobarBanner.
+@property(nonatomic, assign) id<InfobarBannerPositioner> bannerPositioner;
 
 @end
 

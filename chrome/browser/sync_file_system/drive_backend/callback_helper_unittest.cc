@@ -8,7 +8,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +43,7 @@ void VerifyCalledOnTaskRunner(base::TaskRunner* task_runner,
 }  // namespace
 
 TEST(DriveBackendCallbackHelperTest, BasicTest) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
 
   bool called = false;
   RelayCallbackToCurrentThread(
@@ -63,7 +63,7 @@ TEST(DriveBackendCallbackHelperTest, BasicTest) {
 }
 
 TEST(DriveBackendCallbackHelperTest, RunOnOtherThreadTest) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   base::Thread thread("WorkerThread");
   thread.Start();
 
@@ -91,7 +91,7 @@ TEST(DriveBackendCallbackHelperTest, RunOnOtherThreadTest) {
 }
 
 TEST(DriveBackendCallbackHelperTest, PassNullFunctionTest) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   base::Closure closure = RelayCallbackToCurrentThread(
       FROM_HERE,
       base::Closure());

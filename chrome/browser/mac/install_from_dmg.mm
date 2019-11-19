@@ -29,7 +29,6 @@
 #include "base/mac/scoped_authorizationref.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/mac/sdk_forward_declarations.h"
 #include "base/macros.h"
 #include "base/stl_util.h"
@@ -358,8 +357,11 @@ bool LaunchInstalledApp(NSString* installed_path,
                         const std::string& dmg_bsd_device_name) {
   base::FilePath browser_path([installed_path fileSystemRepresentation]);
 
-  base::FilePath helper_path = browser_path.Append("Contents/Versions");
+  base::FilePath helper_path = browser_path.Append("Contents/Frameworks");
+  helper_path = helper_path.Append(chrome::kFrameworkName);
+  helper_path = helper_path.Append("Versions");
   helper_path = helper_path.Append(chrome::kChromeVersion);
+  helper_path = helper_path.Append("Helpers");
   helper_path = helper_path.Append(chrome::kHelperProcessExecutablePath);
 
   std::vector<std::string> args =
@@ -407,84 +409,80 @@ DiskImageStatus IsAppRunningFromReadOnlyDiskImage(
 }
 
 bool MaybeInstallFromDiskImage() {
-  base::mac::ScopedNSAutoreleasePool autorelease_pool;
+  @autoreleasepool {
+    std::string dmg_bsd_device_name;
+    if (IsAppRunningFromReadOnlyDiskImage(&dmg_bsd_device_name) !=
+        DiskImageStatusTrue) {
+      return false;
+    }
 
-  std::string dmg_bsd_device_name;
-  if (IsAppRunningFromReadOnlyDiskImage(&dmg_bsd_device_name) !=
-      DiskImageStatusTrue) {
-    return false;
+    NSArray* application_directories = NSSearchPathForDirectoriesInDomains(
+        NSApplicationDirectory, NSLocalDomainMask, YES);
+    if ([application_directories count] == 0) {
+      LOG(ERROR) << "NSSearchPathForDirectoriesInDomains: "
+                 << "no local application directories";
+      return false;
+    }
+    NSString* application_directory = [application_directories objectAtIndex:0];
+
+    NSFileManager* file_manager = [NSFileManager defaultManager];
+
+    BOOL is_directory;
+    if (![file_manager fileExistsAtPath:application_directory
+                            isDirectory:&is_directory] ||
+        !is_directory) {
+      VLOG(1) << "No application directory at "
+              << [application_directory UTF8String];
+      return false;
+    }
+
+    NSString* source_path = [base::mac::OuterBundle() bundlePath];
+    NSString* application_name = [source_path lastPathComponent];
+    NSString* target_path =
+        [application_directory stringByAppendingPathComponent:application_name];
+
+    if ([file_manager fileExistsAtPath:target_path]) {
+      VLOG(1) << "Something already exists at " << [target_path UTF8String];
+      return false;
+    }
+
+    NSString* installer_path =
+        [base::mac::FrameworkBundle() pathForResource:@"install" ofType:@"sh"];
+    if (!installer_path) {
+      VLOG(1) << "Could not locate install.sh";
+      return false;
+    }
+
+    if (!ShouldInstallDialog()) {
+      return false;
+    }
+
+    base::mac::ScopedAuthorizationRef authorization(
+        MaybeShowAuthorizationDialog(application_directory));
+    // authorization will be NULL if it's deemed unnecessary or if
+    // authentication fails.  In either case, try to install without privilege
+    // escalation.
+
+    if (!InstallFromDiskImage(authorization.release(), installer_path,
+                              source_path, target_path)) {
+      ShowErrorDialog();
+      return false;
+    }
+
+    dock::AddIcon(target_path, source_path);
+
+    if (dmg_bsd_device_name.empty()) {
+      // Not fatal, just diagnostic.
+      LOG(ERROR) << "Could not determine disk image BSD device name";
+    }
+
+    if (!LaunchInstalledApp(target_path, dmg_bsd_device_name)) {
+      ShowErrorDialog();
+      return false;
+    }
+
+    return true;
   }
-
-  NSArray* application_directories =
-      NSSearchPathForDirectoriesInDomains(NSApplicationDirectory,
-                                          NSLocalDomainMask,
-                                          YES);
-  if ([application_directories count] == 0) {
-    LOG(ERROR) << "NSSearchPathForDirectoriesInDomains: "
-               << "no local application directories";
-    return false;
-  }
-  NSString* application_directory = [application_directories objectAtIndex:0];
-
-  NSFileManager* file_manager = [NSFileManager defaultManager];
-
-  BOOL is_directory;
-  if (![file_manager fileExistsAtPath:application_directory
-                          isDirectory:&is_directory] ||
-      !is_directory) {
-    VLOG(1) << "No application directory at "
-            << [application_directory UTF8String];
-    return false;
-  }
-
-  NSString* source_path = [base::mac::OuterBundle() bundlePath];
-  NSString* application_name = [source_path lastPathComponent];
-  NSString* target_path =
-      [application_directory stringByAppendingPathComponent:application_name];
-
-  if ([file_manager fileExistsAtPath:target_path]) {
-    VLOG(1) << "Something already exists at " << [target_path UTF8String];
-    return false;
-  }
-
-  NSString* installer_path =
-      [base::mac::FrameworkBundle() pathForResource:@"install" ofType:@"sh"];
-  if (!installer_path) {
-    VLOG(1) << "Could not locate install.sh";
-    return false;
-  }
-
-  if (!ShouldInstallDialog()) {
-    return false;
-  }
-
-  base::mac::ScopedAuthorizationRef authorization(
-      MaybeShowAuthorizationDialog(application_directory));
-  // authorization will be NULL if it's deemed unnecessary or if
-  // authentication fails.  In either case, try to install without privilege
-  // escalation.
-
-  if (!InstallFromDiskImage(authorization.release(),
-                            installer_path,
-                            source_path,
-                            target_path)) {
-    ShowErrorDialog();
-    return false;
-  }
-
-  dock::AddIcon(target_path, source_path);
-
-  if (dmg_bsd_device_name.empty()) {
-    // Not fatal, just diagnostic.
-    LOG(ERROR) << "Could not determine disk image BSD device name";
-  }
-
-  if (!LaunchInstalledApp(target_path, dmg_bsd_device_name)) {
-    ShowErrorDialog();
-    return false;
-  }
-
-  return true;
 }
 
 namespace {

@@ -93,6 +93,10 @@ class CC_EXPORT VideoFrameProvider {
   // frame missed its intended deadline.
   virtual void PutCurrentFrame() = 0;
 
+  // Returns the interval at which the provider expects to have new frames for
+  // the client.
+  virtual base::TimeDelta GetPreferredRenderInterval() = 0;
+
  protected:
   virtual ~VideoFrameProvider() {}
 };

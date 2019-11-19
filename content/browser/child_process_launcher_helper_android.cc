@@ -17,13 +17,13 @@
 #include "content/browser/child_process_launcher_helper_posix.h"
 #include "content/browser/posix_file_descriptor_info_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/android/content_jni_headers/ChildProcessLauncherHelperImpl_jni.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
-#include "jni/ChildProcessLauncherHelperImpl_jni.h"
 #include "services/service_manager/sandbox/switches.h"
 
 using base::android::AttachCurrentThread;
@@ -83,13 +83,19 @@ ChildProcessLauncherHelper::GetFilesToMap() {
   base::MemoryMappedFile::Region icu_region;
   int fd = base::i18n::GetIcuDataFileHandle(&icu_region);
   files_to_register->ShareWithRegion(kAndroidICUDataDescriptor, fd, icu_region);
+  base::MemoryMappedFile::Region icu_extra_region;
+  int extra_fd = base::i18n::GetIcuExtraDataFileHandle(&icu_extra_region);
+  if (extra_fd != -1) {
+    files_to_register->ShareWithRegion(kAndroidICUExtraDataDescriptor, extra_fd,
+                                       icu_extra_region);
+  }
 #endif  // ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
 
   return files_to_register;
 }
 
 bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
-    const PosixFileDescriptorInfo& files_to_register,
+    PosixFileDescriptorInfo& files_to_register,
     base::LaunchOptions* options) {
   return true;
 }
@@ -98,6 +104,7 @@ ChildProcessLauncherHelper::Process
 ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     const base::LaunchOptions& options,
     std::unique_ptr<PosixFileDescriptorInfo> files_to_register,
+    bool can_use_warm_up_connection,
     bool* is_synchronous_launch,
     int* launch_result) {
   *is_synchronous_launch = false;
@@ -136,10 +143,11 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
   }
 
   java_peer_.Reset(Java_ChildProcessLauncherHelperImpl_createAndStart(
-      env, reinterpret_cast<intptr_t>(this), j_argv, j_file_infos));
+      env, reinterpret_cast<intptr_t>(this), j_argv, j_file_infos,
+      can_use_warm_up_connection));
   AddRef();  // Balanced by OnChildProcessStarted.
-  base::PostTaskWithTraits(
-      FROM_HERE, {client_thread_id_},
+  client_task_runner_->PostTask(
+      FROM_HERE,
       base::BindOnce(
           &ChildProcessLauncherHelper::set_java_peer_available_on_client_thread,
           this));
@@ -159,7 +167,7 @@ ChildProcessTerminationInfo ChildProcessLauncherHelper::GetTerminationInfo(
   if (!java_peer_avaiable_on_client_thread_)
     return info;
 
-  Java_ChildProcessLauncherHelperImpl_getTerminationInfo(
+  Java_ChildProcessLauncherHelperImpl_getTerminationInfoAndStop(
       AttachCurrentThread(), java_peer_, reinterpret_cast<intptr_t>(&info));
 
   base::android::ApplicationState app_state =
@@ -188,7 +196,8 @@ static void JNI_ChildProcessLauncherHelperImpl_SetTerminationInfo(
     jboolean clean_exit,
     jint remaining_process_with_strong_binding,
     jint remaining_process_with_moderate_binding,
-    jint remaining_process_with_waived_binding) {
+    jint remaining_process_with_waived_binding,
+    jint reverse_rank) {
   ChildProcessTerminationInfo* info =
       reinterpret_cast<ChildProcessTerminationInfo*>(termination_info_ptr);
   info->binding_state =
@@ -201,6 +210,7 @@ static void JNI_ChildProcessLauncherHelperImpl_SetTerminationInfo(
       remaining_process_with_moderate_binding;
   info->remaining_process_with_waived_binding =
       remaining_process_with_waived_binding;
+  info->best_effort_reverse_rank = reverse_rank;
 }
 
 // static
@@ -250,12 +260,19 @@ base::File OpenFileToShare(const base::FilePath& path,
   return base::File(base::android::OpenApkAsset(path.value(), region));
 }
 
+void ChildProcessLauncherHelper::DumpProcessStack(
+    const base::Process& process) {
+  JNIEnv* env = AttachCurrentThread();
+  DCHECK(env);
+  return Java_ChildProcessLauncherHelperImpl_dumpProcessStack(env, java_peer_,
+                                                              process.Handle());
+}
+
 // Called from ChildProcessLauncher.java when the ChildProcess was started.
 // |handle| is the processID of the child process as originated in Java, 0 if
 // the ChildProcess could not be created.
 void ChildProcessLauncherHelper::OnChildProcessStarted(
     JNIEnv*,
-    const base::android::JavaParamRef<jobject>& obj,
     jint handle) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   scoped_refptr<ChildProcessLauncherHelper> ref(this);

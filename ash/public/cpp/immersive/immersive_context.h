@@ -20,12 +20,13 @@ namespace ash {
 class ImmersiveFullscreenController;
 
 // ImmersiveContext abstracts away all the windowing related calls so that
-// ImmersiveFullscreenController does not depend upon aura, mus or ash. In Ash,
-// the browser and Ash will share one implementation. In Mash, the client will
-// have its own.
+// ImmersiveFullscreenController does not depend upon aura or ash.
 class ASH_PUBLIC_EXPORT ImmersiveContext {
  public:
-  virtual ~ImmersiveContext() = default;
+  virtual ~ImmersiveContext();
+
+  // Returns the singleton instance.
+  static ImmersiveContext* Get();
 
   // Used to setup state necessary for entering or existing immersive mode. It
   // is expected this interacts with the shelf, and installs any other necessary
@@ -39,6 +40,9 @@ class ASH_PUBLIC_EXPORT ImmersiveContext {
 
   // Returns true if any window has capture.
   virtual bool DoesAnyWindowHaveCapture() = 0;
+
+ protected:
+  ImmersiveContext();
 };
 
 }  // namespace ash

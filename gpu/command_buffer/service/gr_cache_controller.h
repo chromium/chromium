@@ -30,6 +30,7 @@ class GPU_GLES2_EXPORT GrCacheController {
 
  private:
   void PurgeGrCache(uint64_t idle_id);
+  void RecordGrContextMemory() const;
 
   // The |current_idle_id_| is used to avoid continuously posting tasks to clear
   // the GrContext. Each time the context is used this id is incremented and

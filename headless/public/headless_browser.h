@@ -293,16 +293,15 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
 //
 // [1]
 // https://chromium.googlesource.com/chromium/src/+/master/docs/linux_zygote.md
-HEADLESS_EXPORT void RunChildProcessIfNeeded(int argc, const char** argv);
+void RunChildProcessIfNeeded(int argc, const char** argv);
 #else
 // In Windows, the headless browser may need to create child processes. This is
 // done by re-executing the parent process which may have been initialized with
 // different libraries (e.g. child_dll). In this case, the embedder has to pass
 // the appropiate HINSTANCE and initalization sandbox_info to properly launch
 // the child process.
-HEADLESS_EXPORT void RunChildProcessIfNeeded(
-    HINSTANCE instance,
-    sandbox::SandboxInterfaceInfo* sandbox_info);
+void RunChildProcessIfNeeded(HINSTANCE instance,
+                             sandbox::SandboxInterfaceInfo* sandbox_info);
 #endif  // !defined(OS_WIN)
 
 // Main entry point for running the headless browser. This function constructs
@@ -311,7 +310,7 @@ HEADLESS_EXPORT void RunChildProcessIfNeeded(
 // the main loop, it will only return after HeadlessBrowser::Shutdown() is
 // called, returning the exit code for the process. It is not possible to
 // initialize the browser again after it has been torn down.
-HEADLESS_EXPORT int HeadlessBrowserMain(
+int HeadlessBrowserMain(
     HeadlessBrowser::Options options,
     base::OnceCallback<void(HeadlessBrowser*)> on_browser_start_callback);
 

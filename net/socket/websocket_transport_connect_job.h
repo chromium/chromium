@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/net_export.h"
@@ -20,6 +21,7 @@
 
 namespace net {
 
+class SocketTag;
 class WebSocketTransportConnectSubJob;
 
 // WebSocketTransportConnectJob handles the host resolution necessary for socket
@@ -39,7 +41,8 @@ class NET_EXPORT_PRIVATE WebSocketTransportConnectJob : public ConnectJob {
  public:
   WebSocketTransportConnectJob(
       RequestPriority priority,
-      const CommonConnectJobParams& common_connect_job_params,
+      const SocketTag& socket_tag,
+      const CommonConnectJobParams* common_connect_job_params,
       const scoped_refptr<TransportSocketParams>& params,
       Delegate* delegate,
       const NetLogWithSource* net_log);
@@ -102,6 +105,8 @@ class NET_EXPORT_PRIVATE WebSocketTransportConnectJob : public ConnectJob {
 
   bool had_ipv4_;
   bool had_ipv6_;
+
+  base::WeakPtrFactory<WebSocketTransportConnectJob> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebSocketTransportConnectJob);
 };

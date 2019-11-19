@@ -1,8 +1,0 @@
-Testing animationName on a: PASS
-Testing animationDuration on a: PASS
-Testing animationTimingFunction on a: PASS
-Testing animationDelay on a: PASS
-Testing animationIterationCount on a: PASS
-Testing animationDirection on a: PASS
-Testing animationFillMode on a: PASS
-

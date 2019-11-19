@@ -28,8 +28,6 @@ class TestModelTypeStoreService : public ModelTypeStoreService {
   const base::FilePath& GetSyncDataPath() const override;
   RepeatingModelTypeStoreFactory GetStoreFactory() override;
   scoped_refptr<base::SequencedTaskRunner> GetBackendTaskRunner() override;
-  std::unique_ptr<BlockingModelTypeStore>
-  CreateBlockingStoreFromBackendSequence(ModelType type) override;
 
  private:
   const scoped_refptr<ModelTypeStoreBackend> store_backend_;

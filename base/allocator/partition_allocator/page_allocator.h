@@ -26,12 +26,15 @@ enum PageAccessibilityConfiguration {
   PageReadWriteExecute,
 };
 
-// Mac OSX supports tagged memory regions, to help in debugging.
+// macOS supports tagged memory regions, to help in debugging. On Android,
+// these tags are used to name anonymous mappings.
 enum class PageTag {
-  kFirst = 240,     // Minimum tag value.
-  kChromium = 254,  // Chromium page, including off-heap V8 ArrayBuffers.
-  kV8 = 255,        // V8 heap pages.
-  kLast = kV8       // Maximum tag value.
+  kFirst = 240,           // Minimum tag value.
+  kBlinkGC = 252,         // Blink GC pages.
+  kPartitionAlloc = 253,  // PartitionAlloc, no matter the partition.
+  kChromium = 254,        // Chromium page.
+  kV8 = 255,              // V8 heap pages.
+  kLast = kV8             // Maximum tag value.
 };
 
 // Allocate one or more pages.
@@ -46,13 +49,15 @@ enum class PageTag {
 // automatically.
 //
 // |page_accessibility| controls the permission of the allocated pages.
+// |page_tag| is used on some platforms to identify the source of the
+// allocation. Use PageTag::kChromium as a catch-all category.
 //
 // This call will return null if the allocation cannot be satisfied.
 BASE_EXPORT void* AllocPages(void* address,
                              size_t length,
                              size_t align,
                              PageAccessibilityConfiguration page_accessibility,
-                             PageTag tag = PageTag::kChromium,
+                             PageTag tag,
                              bool commit = true);
 
 // Free one or more pages starting at |address| and continuing for |length|

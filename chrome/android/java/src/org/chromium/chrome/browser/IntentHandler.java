@@ -18,33 +18,33 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Browser;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.speech.RecognizerResultsIntent;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Pair;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.browserservices.BrowserSessionContentUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.externalnav.IntentWithGesturesHandler;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.rappor.RapporServiceBridge;
-import org.chromium.chrome.browser.search_engines.TemplateUrlService;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinatorFactory;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.document.ActivityDelegate;
 import org.chromium.chrome.browser.util.IntentUtils;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.chrome.browser.util.UrlUtilities;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -53,7 +53,6 @@ import org.chromium.content_public.common.Referrer;
 import org.chromium.net.HttpUtil;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -212,7 +211,7 @@ public class IntentHandler {
     private static int sReferrerId;
     private static String sPendingIncognitoUrl;
 
-    private static final String PACKAGE_GSA = "com.google.android.googlequicksearchbox";
+    public static final String PACKAGE_GSA = "com.google.android.googlequicksearchbox";
     private static final String PACKAGE_GMAIL = "com.google.android.gm";
     private static final String PACKAGE_PLUS = "com.google.android.apps.plus";
     private static final String PACKAGE_HANGOUTS = "com.google.android.talk";
@@ -284,7 +283,7 @@ public class IntentHandler {
     /**
      * Receiver for screen unlock broadcast.
      */
-    private DelayedScreenLockIntentHandler mDelayedScreenIntentHandler;
+    private static DelayedScreenLockIntentHandler sDelayedScreenIntentHandler;
 
     @IntDef({TabOpenType.OPEN_NEW_TAB, TabOpenType.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB,
             TabOpenType.REUSE_APP_ID_MATCHING_TAB_ELSE_NEW_TAB, TabOpenType.CLOBBER_CURRENT_TAB,
@@ -302,12 +301,16 @@ public class IntentHandler {
         // Opens a new incognito tab.
         int OPEN_NEW_INCOGNITO_TAB = 5;
         // Tab is reused only if the tab ID exists (tab ID is specified with the integer extra
-        // REUSE_TAB_MATCHING_ID_STRING), and if the tab matches the requested URL.
-        // Otherwise, the URL is opened in a new tab.
+        // REUSE_TAB_MATCHING_ID_STRING), and if the tab matches either the requested URL, or
+        // the URL provided in the REUSE_TAB_ORIGINAL_URL_STRING extra.
+        // Otherwise, the URL is opened in a new tab. REUSE_TAB_ORIGINAL_URL_STRING can be used if
+        // the intent url is a result of a redirect, so that a tab pointing at the original URL can
+        // be reused.
         int REUSE_TAB_MATCHING_ID_ELSE_NEW_TAB = 6;
 
         String BRING_TAB_TO_FRONT_STRING = "BRING_TAB_TO_FRONT";
         String REUSE_TAB_MATCHING_ID_STRING = "REUSE_TAB_MATCHING_ID";
+        String REUSE_TAB_ORIGINAL_URL_STRING = "REUSE_TAB_ORIGINAL_URL";
     }
 
     /**
@@ -406,12 +409,6 @@ public class IntentHandler {
         int externalId = determineExternalIntentSource(intent);
         RecordHistogram.recordEnumeratedHistogram(
                 "MobileIntent.PageLoadDueToExternalApp", externalId, ExternalAppId.NUM_ENTRIES);
-        if (externalId == ExternalAppId.OTHER) {
-            String appId = IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID);
-            if (!TextUtils.isEmpty(appId)) {
-                RapporServiceBridge.sampleString("Android.PageLoadDueToExternalApp", appId);
-            }
-        }
     }
 
     /**
@@ -424,19 +421,16 @@ public class IntentHandler {
                 IntentHandler.EXTRA_EXTERNAL_NAV_PACKAGES);
         if (packages != null && packages.size() > 0) {
             RecordUserAction.record("MobileExternalNavigationReceived");
-            for (String name : packages) {
-                RapporServiceBridge.sampleString("Android.ExternalNavigationNotChosen", name);
-            }
         }
     }
 
-    private void updateDeferredIntent(Intent intent) {
-        if (mDelayedScreenIntentHandler == null && intent != null) {
-            mDelayedScreenIntentHandler = new DelayedScreenLockIntentHandler();
+    private static void updateDeferredIntent(Intent intent) {
+        if (sDelayedScreenIntentHandler == null && intent != null) {
+            sDelayedScreenIntentHandler = new DelayedScreenLockIntentHandler();
         }
 
-        if (mDelayedScreenIntentHandler != null) {
-            mDelayedScreenIntentHandler.updateDeferredIntent(intent);
+        if (sDelayedScreenIntentHandler != null) {
+            sDelayedScreenIntentHandler.updateDeferredIntent(intent);
         }
     }
 
@@ -523,8 +517,8 @@ public class IntentHandler {
         } else if (isValidReferrerHeader(referrerExtra)) {
             return referrerExtra.toString();
         } else if (IntentHandler.notSecureIsIntentChromeOrFirstParty(intent)
-                || BrowserSessionContentUtils.canActiveContentHandlerUseReferrer(
-                           intent, referrerExtra)) {
+                || ChromeApplication.getComponent().resolveSessionDataHolder()
+                        .canActiveHandlerUseReferrer(intent, referrerExtra)) {
             return referrerExtra.toString();
         }
         return null;
@@ -625,20 +619,22 @@ public class IntentHandler {
                 results.add(testResult);
             }
         }
+        // The logic in this method should be moved to ChromeTabbedActivity eventually. We should
+        // support async handling of voice search when native finishes initializing.
         if (results == null || results.size() == 0
                 || !BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                            .isStartupSuccessfullyCompleted()) {
+                            .isFullBrowserStarted()) {
             return null;
         }
         String query = results.get(0);
-        String url = AutocompleteController.nativeQualifyPartialURLQuery(query);
+        String url = AutocompleteCoordinatorFactory.qualifyPartialURLQuery(query);
         if (url == null) {
             List<String> urls = IntentUtils.safeGetStringArrayListExtra(
                     intent, RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_URLS);
             if (urls != null && urls.size() > 0) {
                 url = urls.get(0);
             } else {
-                url = TemplateUrlService.getInstance().getUrlForVoiceSearchQuery(query);
+                url = TemplateUrlServiceFactory.get().getUrlForVoiceSearchQuery(query);
             }
         }
         return url;
@@ -835,26 +831,12 @@ public class IntentHandler {
     }
 
     /**
-     * Adds provided WebAPK's shell launch timestamp to an intent.
-     */
-    public static void addShellLaunchTimestampToIntent(Intent intent, long timestamp) {
-        intent.putExtra(WebApkConstants.EXTRA_WEBAPK_LAUNCH_TIME, timestamp);
-    }
-
-    /**
-     * @return the WebAPK's shell launch timestamp associated with an intent, or -1.
-     */
-    public static long getWebApkShellLaunchTimestampFromIntent(Intent intent) {
-        return intent.getLongExtra(WebApkConstants.EXTRA_WEBAPK_LAUNCH_TIME, -1);
-    }
-
-    /**
      * Returns true if the app should ignore a given intent.
      *
      * @param intent Intent to check.
      * @return true if the intent should be ignored.
      */
-    public boolean shouldIgnoreIntent(Intent intent) {
+    public static boolean shouldIgnoreIntent(Intent intent) {
         // Although not documented to, many/most methods that retrieve values from an Intent may
         // throw. Because we can't control what packages might send to us, we should catch any
         // Throwable and then fail closed (safe). This is ugly, but resolves top crashers in the
@@ -908,7 +890,8 @@ public class IntentHandler {
                     // applications.
                     String lowerCaseUrl = url.toLowerCase(Locale.US);
                     if (ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(lowerCaseUrl)
-                            || ContentUrlConstants.ABOUT_BLANK_URL.equals(lowerCaseUrl)) {
+                            || ContentUrlConstants.ABOUT_BLANK_URL.equals(lowerCaseUrl)
+                            || UrlConstants.CHROME_DINO_URL.equals(lowerCaseUrl)) {
                         return false;
                     }
 
@@ -931,7 +914,7 @@ public class IntentHandler {
     }
 
     @VisibleForTesting
-    boolean intentHasValidUrl(Intent intent) {
+    static boolean intentHasValidUrl(Intent intent) {
         String url = extractUrlFromIntent(intent);
 
         // Check if this is a valid googlechrome:// URL.
@@ -1006,22 +989,28 @@ public class IntentHandler {
         if (isChromeToken(token)) {
             return true;
         }
-        if (ExternalAuthUtils.getInstance().isGoogleSigned(
-                    ApiCompatibilityUtils.getCreatorPackage(token))) {
+        if (ExternalAuthUtils.getInstance().isGoogleSigned(token.getCreatorPackage())) {
             return true;
         }
         return false;
     }
 
     @VisibleForTesting
-    boolean isIntentUserVisible() {
+    static boolean isIntentUserVisible() {
         // Only process Intents if the screen is on and the device is unlocked;
         // i.e. the user will see what is going on.
         Context appContext = ContextUtils.getApplicationContext();
-        if (!ApiCompatibilityUtils.isInteractive(appContext)) return false;
-        if (!ApiCompatibilityUtils.isDeviceProvisioned(appContext)) return true;
+        if (!ApiCompatibilityUtils.isInteractive()) return false;
+        if (!isDeviceProvisioned(appContext)) return true;
         return !((KeyguardManager) appContext.getSystemService(Context.KEYGUARD_SERVICE))
                 .inKeyguardRestrictedInputMode();
+    }
+
+    private static boolean isDeviceProvisioned(Context context) {
+        if (context == null || context.getContentResolver() == null) return true;
+        return Settings.Global.getInt(
+                       context.getContentResolver(), Settings.Global.DEVICE_PROVISIONED, 0)
+                != 0;
     }
 
     /*
@@ -1061,7 +1050,7 @@ public class IntentHandler {
                                           : TabOpenType.REUSE_APP_ID_MATCHING_TAB_ELSE_NEW_TAB;
     }
 
-    private boolean isInvalidScheme(String scheme) {
+    private static boolean isInvalidScheme(String scheme) {
         return scheme != null
             && (scheme.toLowerCase(Locale.US).equals(UrlConstants.JAVASCRIPT_SCHEME)
                 || scheme.toLowerCase(Locale.US).equals(UrlConstants.JAR_SCHEME));
@@ -1103,7 +1092,7 @@ public class IntentHandler {
         return scheme;
     }
 
-    private boolean isJavascriptSchemeOrInvalidUrl(String url) {
+    private static boolean isJavascriptSchemeOrInvalidUrl(String url) {
         String urlScheme = getSanitizedUrlScheme(url);
         return isInvalidScheme(urlScheme);
     }
@@ -1131,7 +1120,6 @@ public class IntentHandler {
     private static String extractUrlFromIntent(Intent intent) {
         if (intent == null) return null;
         String url = getUrlFromVoiceSearchResult(intent);
-        if (url == null) url = ActivityDelegate.getInitialUrlForDocument(intent);
         if (url == null) url = getUrlForCustomTab(intent);
         if (url == null) url = intent.getDataString();
         if (url == null) return null;

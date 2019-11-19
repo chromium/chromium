@@ -5,7 +5,7 @@
 #include "ui/android/handle_view_resources.h"
 
 #include "base/trace_event/trace_event.h"
-#include "jni/HandleViewResources_jni.h"
+#include "ui/android/ui_android_jni_headers/HandleViewResources_jni.h"
 
 namespace {
 

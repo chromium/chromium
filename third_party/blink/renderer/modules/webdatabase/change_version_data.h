@@ -26,7 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_CHANGE_VERSION_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_CHANGE_VERSION_DATA_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {

@@ -65,11 +65,6 @@ login.createScreen(
          */
         setUIState: function(state) {
           $('encryption-migration-element').uiState = state;
-
-          // TODO(qnnguyen): Hide the views login shelf "Shutdown" button during
-          // migration.
-          $('login-header-bar').showShutdownButton =
-              state != EncryptionMigrationUIState.MIGRATING;
         },
 
         /**

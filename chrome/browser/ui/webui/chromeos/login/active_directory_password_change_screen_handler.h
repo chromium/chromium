@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/macros.h"
+#include "chrome/browser/chromeos/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-#include "chromeos/login/auth/authpolicy_login_helper.h"
 
 namespace authpolicy {
 class ActiveDirectoryAccountInfo;
@@ -49,8 +49,8 @@ class ActiveDirectoryPasswordChangeScreenHandler : public BaseScreenHandler {
   // Shows the screen with the error message corresponding to |error|.
   void ShowScreenWithError(int error);
 
-  // Callback called by AuthPolicyLoginHelper::AuthenticateUser with results and
-  // error code. (see AuthPolicyLoginHelper::AuthenticateUser)
+  // Callback called by AuthPolicyHelper::AuthenticateUser with results and
+  // error code. (see AuthPolicyHelper::AuthenticateUser)
   void OnAuthFinished(
       const std::string& username,
       const Key& key,
@@ -59,13 +59,13 @@ class ActiveDirectoryPasswordChangeScreenHandler : public BaseScreenHandler {
 
   // Helper to call AuthPolicyClient and cancel calls if needed. Used to change
   // password on the Active Directory server.
-  std::unique_ptr<AuthPolicyLoginHelper> authpolicy_login_helper_;
+  std::unique_ptr<AuthPolicyHelper> authpolicy_login_helper_;
 
   // Non-owned. Used to display signin error.
   CoreOobeView* core_oobe_view_ = nullptr;
 
   base::WeakPtrFactory<ActiveDirectoryPasswordChangeScreenHandler>
-      weak_factory_;
+      weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryPasswordChangeScreenHandler);
 };

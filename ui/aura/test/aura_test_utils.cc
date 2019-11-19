@@ -10,14 +10,6 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 
-#if defined(USE_OZONE)
-#include "services/ws/public/cpp/input_devices/input_device_client.h"
-#include "ui/aura/env.h"
-#include "ui/base/ui_base_features.h"
-#else
-#include "ui/events/devices/input_device_manager.h"
-#endif
-
 namespace aura {
 namespace test {
 
@@ -54,18 +46,6 @@ void SetHostDispatcher(WindowTreeHost* host,
 
 void DisableIME(WindowTreeHost* host) {
   WindowTreeHostTestApi(host).disable_ime();
-}
-
-std::unique_ptr<ui::InputDeviceManager> CreateTestInputDeviceManager() {
-#if defined(USE_OZONE)
-  // Some tests may have already created an InputDeviceManager, e.g. through
-  // AshTestHelper. Some tests will not have created their Env yet, which may
-  // create an InputDeviceManager. So only create one if an Env has been created
-  // but it didn't create an InputDeviceManager.
-  if (aura::Env::HasInstance() && !ui::InputDeviceManager::HasInstance())
-    return std::make_unique<ws::InputDeviceClient>();
-#endif
-  return nullptr;
 }
 
 }  // namespace test

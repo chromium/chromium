@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_device_lister.h"
 
+#include "chrome/browser/media/router/discovery/mdns/dns_sd_delegate.h"
+
 using local_discovery::ServiceDescription;
 
 namespace media_router {
@@ -30,13 +32,19 @@ DnsSdDeviceLister::DnsSdDeviceLister(
     local_discovery::ServiceDiscoveryClient* service_discovery_client,
     DnsSdDelegate* delegate,
     const std::string& service_type)
-    : delegate_(delegate),
+    : delegate_(delegate)
+#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
+      ,
       service_discovery_client_(service_discovery_client),
-      service_type_(service_type) {}
+      service_type_(service_type)
+#endif
+{
+}
 
 DnsSdDeviceLister::~DnsSdDeviceLister() {}
 
 void DnsSdDeviceLister::Discover() {
+#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
   if (!device_lister_) {
     device_lister_ = local_discovery::ServiceDiscoveryDeviceLister::Create(
         this, service_discovery_client_, service_type_);
@@ -47,6 +55,7 @@ void DnsSdDeviceLister::Discover() {
   device_lister_->DiscoverNewDevices();
   VLOG(1) << "Discovery new devices for service type "
           << device_lister_->service_type();
+#endif
 }
 
 void DnsSdDeviceLister::Reset() {

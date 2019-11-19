@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
@@ -16,7 +17,6 @@
 #include "components/exo/surface_observer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
-#include "ui/keyboard/keyboard_controller_observer.h"
 
 namespace ui {
 enum class DomCode;
@@ -34,7 +34,7 @@ class Surface;
 class Keyboard : public ui::EventHandler,
                  public SurfaceObserver,
                  public SeatObserver,
-                 public keyboard::KeyboardControllerObserver {
+                 public ash::KeyboardControllerObserver {
  public:
   Keyboard(KeyboardDelegate* delegate, Seat* seat);
   ~Keyboard() override;
@@ -65,7 +65,7 @@ class Keyboard : public ui::EventHandler,
   void OnSurfaceFocusing(Surface* gaining_focus) override;
   void OnSurfaceFocused(Surface* gained_focus) override;
 
-  // Overridden from keyboard::KeyboardControllerObserver
+  // Overridden from ash::KeyboardControllerObserver
   void OnKeyboardEnabledChanged(bool is_enabled) override;
 
  private:
@@ -129,7 +129,7 @@ class Keyboard : public ui::EventHandler,
 
   base::ObserverList<KeyboardObserver>::Unchecked observer_list_;
 
-  base::WeakPtrFactory<Keyboard> weak_ptr_factory_;
+  base::WeakPtrFactory<Keyboard> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Keyboard);
 };

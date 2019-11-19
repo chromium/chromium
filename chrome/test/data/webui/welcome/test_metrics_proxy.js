@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @implements {nux.ModuleMetricsProxy} */
-class TestMetricsProxy extends TestBrowserProxy {
+import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+
+/** @implements {ModuleMetricsProxy} */
+export class TestMetricsProxy extends TestBrowserProxy {
   constructor() {
     super([
       'recordChoseAnOptionAndChoseNext',

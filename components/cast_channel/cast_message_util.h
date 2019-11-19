@@ -48,7 +48,10 @@ enum class CastMessageType {
   kReceiverStatus,
   kMediaStatus,
   kLaunchError,
-  kOther  // Add new types above |kOther|.
+  kOffer,
+  kAnswer,
+  kOther,  // Add new types above |kOther|.
+  kMaxValue = kOther,
 };
 
 enum class V2MessageType {
@@ -65,12 +68,17 @@ enum class V2MessageType {
   kQueueRemove,
   kQueueReorder,
   kQueueUpdate,
+  kQueueNext,
+  kQueuePrev,
   kSeek,
   kSetVolume,
   kStop,
   kStopMedia,
-  kOther  // Add new types above |kOther|.
+  kOther,  // Add new types above |kOther|.
+  kMaxValue = kOther,
 };
+
+std::ostream& operator<<(std::ostream& lhs, const CastMessage& rhs);
 
 // Checks if the contents of |message_proto| are valid.
 bool IsCastMessageValid(const CastMessage& message_proto);
@@ -198,6 +206,7 @@ enum class GetAppAvailabilityResult {
   kAvailable,
   kUnavailable,
   kUnknown,
+  kMaxValue = kUnknown,
 };
 
 const char* ToString(GetAppAvailabilityResult result);
@@ -213,7 +222,7 @@ GetAppAvailabilityResult GetAppAvailabilityResultFromResponse(
 
 // Result of a session launch.
 struct LaunchSessionResponse {
-  enum Result { kOk, kError, kTimedOut, kUnknown };
+  enum Result { kOk, kError, kTimedOut, kUnknown, kMaxValue = kUnknown };
 
   LaunchSessionResponse();
   LaunchSessionResponse(LaunchSessionResponse&& other);

@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.ui.modelutil.PropertyModel;
 
 /** A mechanism for creating {@link SuggestionViewDelegate}s. */
 public interface SuggestionHost {
@@ -16,20 +14,4 @@ public interface SuggestionHost {
      * @return A delegate for the specified suggestion.
      */
     SuggestionViewDelegate createSuggestionViewDelegate(OmniboxSuggestion suggestion, int position);
-
-    /**
-     * @param model The model to check.
-     * @return Whether the model is active in the list being shown.
-     */
-    boolean isActiveModel(PropertyModel model);
-
-    /**
-     * Notify the host that the suggestion models have changed.
-     */
-    void notifyPropertyModelsChanged();
-
-    /**
-     * @return The browser's active profile.
-     */
-    Profile getCurrentProfile();
 }

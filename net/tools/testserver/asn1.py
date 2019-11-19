@@ -15,6 +15,10 @@ def ToDER(obj):
   if type(obj) == types.StringType:
     # Strings are PRINTABLESTRING
     return TagAndLength(19, len(obj)) + obj
+  if type(obj) == types.UnicodeType:
+    # Encode Unicode strings as UTF8String.
+    utf8val = obj.encode('utf-8')
+    return TagAndLength(12, len(utf8val)) + utf8val
   if type(obj) == types.BooleanType:
     val = "\x00"
     if obj:

@@ -3,14 +3,8 @@
 <script src=../resources/testharnessreport.js></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/mojo/public/mojom/base/big_buffer.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/barcodedetection.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/barcodedetection_provider.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/facedetection.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/facedetection_provider.mojom.js"></script>
 <script src="file:///gen/services/shape_detection/public/mojom/textdetection.mojom.js"></script>
 <script src="resources/big-buffer-helpers.js"></script>
-<script src="resources/mock-barcodedetection.js"></script>
-<script src="resources/mock-facedetection.js"></script>
 <script src="resources/mock-textdetection.js"></script>
 <script>
 
@@ -47,8 +41,6 @@ var createTestForBadImage = function(createDetector) {
 
 // Detectors should reject undecodable images with an InvalidStateError.
 generate_tests(createTestForBadImage, [
-  [ "Face - detect(broken image)", () => { return new FaceDetector(); } ],
-  [ "Barcode - detect(broken image)", () => { return new BarcodeDetector(); } ],
   [ "Text - detect(broken image)", () => { return new TextDetector(); } ]
 ]);
 
@@ -66,8 +58,6 @@ var createTestForBadVideo = function(createDetector) {
 
 // Detectors should reject undecodable videos with an InvalidStateError.
 generate_tests(createTestForBadVideo, [
-  [ "Face - detect(broken video)", () => { return new FaceDetector(); } ],
-  [ "Barcode - detect(broken video)", () => { return new BarcodeDetector(); } ],
   [ "Text - detect(broken video)", () => { return new TextDetector(); } ]
 ]);
 

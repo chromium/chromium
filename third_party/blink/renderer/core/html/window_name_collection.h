@@ -11,14 +11,10 @@ namespace blink {
 
 class WindowNameCollection final : public HTMLNameCollection {
  public:
-  static WindowNameCollection* Create(ContainerNode& document,
-                                      CollectionType type,
-                                      const AtomicString& name) {
-    DCHECK_EQ(type, kWindowNamedItems);
-    return MakeGarbageCollected<WindowNameCollection>(document, name);
-  }
-
   WindowNameCollection(ContainerNode& document, const AtomicString& name);
+  WindowNameCollection(ContainerNode& document,
+                       CollectionType type,
+                       const AtomicString& name);
 
   bool ElementMatches(const Element&) const;
 };

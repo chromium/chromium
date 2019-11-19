@@ -20,6 +20,10 @@
 // |contentViewController| does not clear |contentView|.
 @property(nonatomic, strong) UIViewController* contentViewController;
 
+// The UIViewController used to display overlay UI over the web content area.
+@property(nonatomic, strong)
+    UIViewController* webContentsOverlayContainerViewController;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BROWSER_CONTAINER_BROWSER_CONTAINER_VIEW_CONTROLLER_H_

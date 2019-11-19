@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/platform/heap/process_heap.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
@@ -24,11 +24,34 @@ enum WeaknessPersistentConfiguration {
   kWeakPersistentConfiguration
 };
 
+enum CrossThreadnessPersistentConfiguration {
+  kSingleThreadPersistentConfiguration,
+  kCrossThreadPersistentConfiguration
+};
+
+template <CrossThreadnessPersistentConfiguration>
+struct PersistentMutexTraits {
+  struct [[maybe_unused]] Locker{};
+  static void AssertAcquired() {}
+};
+
+template <>
+struct PersistentMutexTraits<kCrossThreadPersistentConfiguration> {
+  struct Locker {
+    MutexLocker locker{ProcessHeap::CrossThreadPersistentMutex()};
+  };
+  static void AssertAcquired() {
+#if DCHECK_IS_ON()
+    ProcessHeap::CrossThreadPersistentMutex().AssertAcquired();
+#endif
+  }
+};
+
 class PersistentNode final {
   DISALLOW_NEW();
 
  public:
-  PersistentNode() : self_(nullptr), trace_(nullptr) { DCHECK(IsUnused()); }
+  PersistentNode() { DCHECK(IsUnused()); }
 
 #if DCHECK_IS_ON()
   ~PersistentNode() {
@@ -63,6 +86,11 @@ class PersistentNode final {
     trace_ = trace;
   }
 
+  void Reinitialize(void* self, TraceCallback trace) {
+    self_ = self;
+    trace_ = trace;
+  }
+
   void SetFreeListNext(PersistentNode* node) {
     DCHECK(!node || node->IsUnused());
     self_ = node;
@@ -88,19 +116,18 @@ class PersistentNode final {
   // If this PersistentNode is freed:
   //   - m_self points to the next freed PersistentNode.
   //   - m_trace is nullptr.
-  void* self_;
-  TraceCallback trace_;
+  void* self_ = nullptr;
+  TraceCallback trace_ = nullptr;
 };
 
 struct PersistentNodeSlots final {
   USING_FAST_MALLOC(PersistentNodeSlots);
 
- private:
-  static const int kSlotCount = 256;
-  PersistentNodeSlots* next_;
-  PersistentNode slot_[kSlotCount];
-  friend class PersistentRegion;
-  friend class CrossThreadPersistentRegion;
+ public:
+  static constexpr int kSlotCount = 256;
+
+  PersistentNodeSlots* next;
+  PersistentNode slot[kSlotCount];
 };
 
 // Used by PersistentBase to manage a pointer to a thread heap persistent node.
@@ -109,12 +136,20 @@ struct PersistentNodeSlots final {
 template <ThreadAffinity affinity,
           WeaknessPersistentConfiguration weakness_configuration>
 class PersistentNodePtr {
+  STACK_ALLOCATED();
+
  public:
   PersistentNode* Get() const { return ptr_; }
   bool IsInitialized() const { return ptr_; }
 
   void Initialize(void* owner, TraceCallback);
   void Uninitialize();
+
+  PersistentNodePtr& operator=(PersistentNodePtr&& other) {
+    ptr_ = other.ptr_;
+    other.ptr_ = nullptr;
+    return *this;
+  }
 
  private:
   PersistentNode* ptr_ = nullptr;
@@ -128,11 +163,12 @@ class PersistentNodePtr {
 // but can be polled to see whether it is initialized without the mutex.
 template <WeaknessPersistentConfiguration weakness_configuration>
 class CrossThreadPersistentNodePtr {
+  STACK_ALLOCATED();
+
  public:
   PersistentNode* Get() const {
-#if DCHECK_IS_ON()
-    ProcessHeap::CrossThreadPersistentMutex().AssertAcquired();
-#endif
+    PersistentMutexTraits<
+        kCrossThreadPersistentConfiguration>::AssertAcquired();
     return ptr_.load(std::memory_order_relaxed);
   }
   bool IsInitialized() const { return ptr_.load(std::memory_order_acquire); }
@@ -142,6 +178,16 @@ class CrossThreadPersistentNodePtr {
 
   void ClearWithLockHeld();
 
+  CrossThreadPersistentNodePtr& operator=(
+      CrossThreadPersistentNodePtr&& other) {
+    PersistentMutexTraits<
+        kCrossThreadPersistentConfiguration>::AssertAcquired();
+    PersistentNode* node = other.ptr_.load(std::memory_order_relaxed);
+    ptr_.store(node, std::memory_order_relaxed);
+    other.ptr_.store(nullptr, std::memory_order_relaxed);
+    return *this;
+  }
+
  private:
   // Access must either be protected by the cross-thread persistent mutex or
   // handle the fact that this may be changed concurrently (with a
@@ -149,131 +195,118 @@ class CrossThreadPersistentNodePtr {
   std::atomic<PersistentNode*> ptr_{nullptr};
 };
 
-// PersistentRegion provides a region of PersistentNodes. PersistentRegion
-// holds a linked list of PersistentNodeSlots, each of which stores
-// a predefined number of PersistentNodes. You can call allocatePersistentNode/
-// freePersistentNode to allocate/free a PersistentNode on the region.
-class PLATFORM_EXPORT PersistentRegion final {
-  USING_FAST_MALLOC(PersistentRegion);
-
+class PLATFORM_EXPORT PersistentRegionBase {
  public:
-  PersistentRegion()
-      : free_list_head_(nullptr),
-        slots_(nullptr)
-#if DCHECK_IS_ON()
-        ,
-        persistent_count_(0)
-#endif
-  {
-  }
-  ~PersistentRegion();
+  ~PersistentRegionBase();
 
-  PersistentNode* AllocatePersistentNode(void* self, TraceCallback trace) {
-#if DCHECK_IS_ON()
-    ++persistent_count_;
-#endif
-    if (UNLIKELY(!free_list_head_))
-      EnsurePersistentNodeSlots(self, trace);
-    DCHECK(free_list_head_);
-    PersistentNode* node = free_list_head_;
-    free_list_head_ = free_list_head_->FreeListNext();
-    node->Initialize(self, trace);
-    DCHECK(!node->IsUnused());
-    return node;
-  }
+  inline PersistentNode* AllocateNode(void* self, TraceCallback trace);
+  inline void FreeNode(PersistentNode* persistent_node);
+  int NodesInUse() const;
 
-  void FreePersistentNode(PersistentNode* persistent_node) {
-#if DCHECK_IS_ON()
-    DCHECK_GT(persistent_count_, 0);
-#endif
-    persistent_node->SetFreeListNext(free_list_head_);
-    free_list_head_ = persistent_node;
-#if DCHECK_IS_ON()
-    --persistent_count_;
-#endif
-  }
-
-  static bool ShouldTracePersistentNode(Visitor*, PersistentNode*) {
-    return true;
-  }
-
-  void ReleasePersistentNode(PersistentNode*,
-                             ThreadState::PersistentClearCallback);
+ protected:
   using ShouldTraceCallback = bool (*)(Visitor*, PersistentNode*);
-  void TracePersistentNodes(
-      Visitor*,
-      ShouldTraceCallback = PersistentRegion::ShouldTracePersistentNode);
-  int NumberOfPersistents();
-  void PrepareForThreadStateTermination();
 
- private:
-  friend CrossThreadPersistentRegion;
+  void TraceNodesImpl(Visitor*, ShouldTraceCallback);
 
-  void EnsurePersistentNodeSlots(void*, TraceCallback);
+  void EnsureNodeSlots();
 
-  PersistentNode* free_list_head_;
-  PersistentNodeSlots* slots_;
+  PersistentNode* free_list_head_ = nullptr;
+  PersistentNodeSlots* slots_ = nullptr;
 #if DCHECK_IS_ON()
-  int persistent_count_;
+  size_t used_node_count_ = 0;
 #endif
 };
 
-// Protected by ProcessHeap::CrossThreadPersistentMutex.
-class CrossThreadPersistentRegion final {
-  USING_FAST_MALLOC(CrossThreadPersistentRegion);
+inline PersistentNode* PersistentRegionBase::AllocateNode(void* self,
+                                                          TraceCallback trace) {
+#if DCHECK_IS_ON()
+  ++used_node_count_;
+#endif
+  if (UNLIKELY(!free_list_head_))
+    EnsureNodeSlots();
+  DCHECK(free_list_head_);
+  PersistentNode* node = free_list_head_;
+  free_list_head_ = free_list_head_->FreeListNext();
+  node->Initialize(self, trace);
+  DCHECK(!node->IsUnused());
+  return node;
+}
+
+void PersistentRegionBase::FreeNode(PersistentNode* persistent_node) {
+#if DCHECK_IS_ON()
+  DCHECK_GT(used_node_count_, 0u);
+#endif
+  persistent_node->SetFreeListNext(free_list_head_);
+  free_list_head_ = persistent_node;
+#if DCHECK_IS_ON()
+  --used_node_count_;
+#endif
+}
+
+class PLATFORM_EXPORT PersistentRegion final : public PersistentRegionBase {
+  USING_FAST_MALLOC(PersistentRegion);
 
  public:
-  PersistentNode* AllocatePersistentNode(void* self, TraceCallback trace) {
-#if DCHECK_IS_ON()
-    ProcessHeap::CrossThreadPersistentMutex().AssertAcquired();
-#endif
-    return persistent_region_.AllocatePersistentNode(self, trace);
-  }
+  inline void TraceNodes(Visitor*);
 
-  void FreePersistentNode(PersistentNode* node) {
-#if DCHECK_IS_ON()
-    ProcessHeap::CrossThreadPersistentMutex().AssertAcquired();
-#endif
-    // When the thread that holds the heap object that the cross-thread
-    // persistent shuts down, prepareForThreadStateTermination() will clear out
-    // the associated CrossThreadPersistent<> and PersistentNode so as to avoid
-    // unsafe access. This can overlap with a holder of the
-    // CrossThreadPersistent<> also clearing the persistent and freeing the
-    // PersistentNode.
-    //
-    // The lock ensures the updating is ordered, but by the time lock has been
-    // acquired the PersistentNode reference may have been cleared out already;
-    // check for this.
-    if (!node)
-      return;
-    persistent_region_.FreePersistentNode(node);
-  }
-
-  void TracePersistentNodes(Visitor* visitor) {
-// If this assert triggers, you're tracing without being in a LockScope.
-#if DCHECK_IS_ON()
-    ProcessHeap::CrossThreadPersistentMutex().AssertAcquired();
-#endif
-    persistent_region_.TracePersistentNodes(
-        visitor, CrossThreadPersistentRegion::ShouldTracePersistentNode);
-  }
+  // Clears the Persistent and then frees the node.
+  void ReleaseNode(PersistentNode*);
 
   void PrepareForThreadStateTermination(ThreadState*);
 
-  NO_SANITIZE_ADDRESS
-  static bool ShouldTracePersistentNode(Visitor*, PersistentNode*);
+ private:
+  static constexpr bool ShouldTracePersistentNode(Visitor*, PersistentNode*) {
+    return true;
+  }
+};
+
+inline void PersistentRegion::TraceNodes(Visitor* visitor) {
+  PersistentRegionBase::TraceNodesImpl(visitor, ShouldTracePersistentNode);
+}
+
+class PLATFORM_EXPORT CrossThreadPersistentRegion final
+    : public PersistentRegionBase {
+  USING_FAST_MALLOC(CrossThreadPersistentRegion);
+
+ public:
+  inline PersistentNode* AllocateNode(void* self, TraceCallback trace);
+  inline void FreeNode(PersistentNode*);
+  inline void TraceNodes(Visitor*);
+
+  void PrepareForThreadStateTermination(ThreadState*);
 
 #if defined(ADDRESS_SANITIZER)
   void UnpoisonCrossThreadPersistents();
 #endif
 
  private:
-
-  // We don't make CrossThreadPersistentRegion inherit from PersistentRegion
-  // because we don't want to virtualize performance-sensitive methods
-  // such as PersistentRegion::allocate/freePersistentNode.
-  PersistentRegion persistent_region_;
+  NO_SANITIZE_ADDRESS
+  static bool ShouldTracePersistentNode(Visitor*, PersistentNode*);
 };
+
+inline PersistentNode* CrossThreadPersistentRegion::AllocateNode(
+    void* self,
+    TraceCallback trace) {
+  PersistentMutexTraits<kCrossThreadPersistentConfiguration>::AssertAcquired();
+  return PersistentRegionBase::AllocateNode(self, trace);
+}
+
+inline void CrossThreadPersistentRegion::FreeNode(PersistentNode* node) {
+  PersistentMutexTraits<kCrossThreadPersistentConfiguration>::AssertAcquired();
+  // PersistentBase::UninitializeSafe opportunistically checks for uninitialized
+  // nodes to allow a fast path destruction of unused nodes. This check is
+  // performed without taking the lock that is required for processing a
+  // cross-thread node. After taking the lock the condition needs to checked
+  // again to avoid double-freeing a node because the node may have been
+  // concurrently freed by the garbage collector on another thread.
+  if (!node)
+    return;
+  PersistentRegionBase::FreeNode(node);
+}
+
+inline void CrossThreadPersistentRegion::TraceNodes(Visitor* visitor) {
+  PersistentRegionBase::TraceNodesImpl(visitor, ShouldTracePersistentNode);
+}
 
 template <ThreadAffinity affinity,
           WeaknessPersistentConfiguration weakness_configuration>
@@ -286,7 +319,7 @@ void PersistentNodePtr<affinity, weakness_configuration>::Initialize(
       weakness_configuration == kWeakPersistentConfiguration
           ? state->GetWeakPersistentRegion()
           : state->GetPersistentRegion();
-  ptr_ = region->AllocatePersistentNode(owner, trace_callback);
+  ptr_ = region->AllocateNode(owner, trace_callback);
 #if DCHECK_IS_ON()
   state_ = state;
 #endif
@@ -316,48 +349,34 @@ template <WeaknessPersistentConfiguration weakness_configuration>
 void CrossThreadPersistentNodePtr<weakness_configuration>::Initialize(
     void* owner,
     TraceCallback trace_callback) {
+  PersistentMutexTraits<kCrossThreadPersistentConfiguration>::AssertAcquired();
   CrossThreadPersistentRegion& region =
       weakness_configuration == kWeakPersistentConfiguration
           ? ProcessHeap::GetCrossThreadWeakPersistentRegion()
           : ProcessHeap::GetCrossThreadPersistentRegion();
-  MutexLocker lock(ProcessHeap::CrossThreadPersistentMutex());
-  PersistentNode* node = region.AllocatePersistentNode(owner, trace_callback);
+  PersistentNode* node = region.AllocateNode(owner, trace_callback);
   ptr_.store(node, std::memory_order_release);
 }
 
 template <WeaknessPersistentConfiguration weakness_configuration>
 void CrossThreadPersistentNodePtr<weakness_configuration>::Uninitialize() {
-  // As an optimization, skip the mutex acquisition.
-  //
-  // Persistent handles are often assigned or destroyed while being
-  // uninitialized.
-  //
-  // Calling code is still expected to synchronize mutations to persistent
-  // handles, so if this thread can see the node pointer as having been
-  // cleared and the program does not have a data race, then this pointer would
-  // still have been blank after waiting for the cross-thread persistent mutex.
-  if (!ptr_.load(std::memory_order_acquire))
-    return;
-
+  PersistentMutexTraits<kCrossThreadPersistentConfiguration>::AssertAcquired();
   CrossThreadPersistentRegion& region =
       weakness_configuration == kWeakPersistentConfiguration
           ? ProcessHeap::GetCrossThreadWeakPersistentRegion()
           : ProcessHeap::GetCrossThreadPersistentRegion();
-  MutexLocker lock(ProcessHeap::CrossThreadPersistentMutex());
-  region.FreePersistentNode(ptr_.load(std::memory_order_relaxed));
+  region.FreeNode(ptr_.load(std::memory_order_relaxed));
   ptr_.store(nullptr, std::memory_order_release);
 }
 
 template <WeaknessPersistentConfiguration weakness_configuration>
 void CrossThreadPersistentNodePtr<weakness_configuration>::ClearWithLockHeld() {
-#if DCHECK_IS_ON()
-  ProcessHeap::CrossThreadPersistentMutex().AssertAcquired();
-#endif
+  PersistentMutexTraits<kCrossThreadPersistentConfiguration>::AssertAcquired();
   CrossThreadPersistentRegion& region =
       weakness_configuration == kWeakPersistentConfiguration
           ? ProcessHeap::GetCrossThreadWeakPersistentRegion()
           : ProcessHeap::GetCrossThreadPersistentRegion();
-  region.FreePersistentNode(ptr_.load(std::memory_order_relaxed));
+  region.FreeNode(ptr_.load(std::memory_order_relaxed));
   ptr_.store(nullptr, std::memory_order_release);
 }
 

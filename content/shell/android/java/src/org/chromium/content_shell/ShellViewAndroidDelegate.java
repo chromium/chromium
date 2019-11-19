@@ -7,8 +7,8 @@ package org.chromium.content_shell;
 import android.graphics.Bitmap;
 import android.view.ViewGroup;
 
-import org.chromium.blink_public.web.WebCursorInfoType;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui_base.web.CursorType;
 
 /**
  * Implementation of the abstract class {@link ViewAndroidDelegate} for content shell.
@@ -45,7 +45,7 @@ public class ShellViewAndroidDelegate extends ViewAndroidDelegate {
     public void onCursorChangedToCustom(Bitmap customCursorBitmap, int hotspotX, int hotspotY) {
         super.onCursorChangedToCustom(customCursorBitmap, hotspotX, hotspotY);
         if (mOnCursorUpdateHelper != null) {
-            mOnCursorUpdateHelper.notifyCalled(WebCursorInfoType.CUSTOM);
+            mOnCursorUpdateHelper.notifyCalled(CursorType.CUSTOM);
         }
     }
 

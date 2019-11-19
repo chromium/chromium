@@ -21,9 +21,17 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/process_memory_dump.h"
+#include "build/build_config.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/helpers/memenv/memenv.h"
 #include "util/mutexlock.h"
+
+#if defined(OS_WIN)
+#undef DeleteFile
+#define base_DeleteFile base::DeleteFileW
+#else  // defined(OS_WIN)
+#define base_DeleteFile base::DeleteFile
+#endif  // defined(OS_WIN)
 
 using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 using base::trace_event::MemoryAllocatorDump;
@@ -53,17 +61,22 @@ std::string GetDumpNameForMemEnv(const leveldb::Env* memenv) {
 class Globals {
  public:
   static Globals* GetInstance() {
-    static Globals* globals = new Globals();
-    return globals;
+    static base::NoDestructor<Globals> singleton;
+    return singleton.get();
   }
 
-  Globals() : browser_block_cache_(NewLRUCache(DefaultBlockCacheSize())) {
-    if (!base::SysInfo::IsLowEndDevice())
-      web_block_cache_.reset(NewLRUCache(DefaultBlockCacheSize()));
-
-    memory_pressure_listener_.reset(new base::MemoryPressureListener(
-        base::Bind(&Globals::OnMemoryPressure, base::Unretained(this))));
-  }
+  Globals()
+      : web_block_cache_(base::SysInfo::IsLowEndDevice()
+                             ? nullptr
+                             : NewLRUCache(DefaultBlockCacheSize())),
+        browser_block_cache_(NewLRUCache(DefaultBlockCacheSize())),
+        // Using |this| here (when Globals is only partially constructed) is
+        // safe because base::MemoryPressureListener calls our callback
+        // asynchronously, so this instance will be fully constructed by the
+        // time it is called.
+        memory_pressure_listener_(
+            base::BindRepeating(&Globals::OnMemoryPressure,
+                                base::Unretained(this))) {}
 
   Cache* web_block_cache() const {
     if (web_block_cache_)
@@ -124,14 +137,17 @@ class Globals {
   }
 
  private:
-  ~Globals() {}
+  // Instances are never destroyed.
+  // If this destructor needs to exist in the future, the callback given to
+  // base::MemoryPressureListener() must use a WeakPtr.
+  ~Globals() = delete;
 
   std::unique_ptr<Cache> web_block_cache_;      // null on low end devices.
   std::unique_ptr<Cache> browser_block_cache_;  // Never null.
-  // Listens for the system being under memory pressure.
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
   mutable leveldb::port::Mutex env_mutex_;
   base::flat_set<leveldb::Env*> in_memory_envs_;
+  // Listens for the system being under memory pressure.
+  const base::MemoryPressureListener memory_pressure_listener_;
 
   DISALLOW_COPY_AND_ASSIGN(Globals);
 };
@@ -173,7 +189,7 @@ class ChromeMemEnv : public leveldb::EnvWrapper {
     leveldb::Status s = leveldb::EnvWrapper::DeleteFile(fname);
     if (s.ok()) {
       base::AutoLock lock(files_lock_);
-      DCHECK(base::ContainsKey(file_names_, fname));
+      DCHECK(base::Contains(file_names_, fname));
       file_names_.erase(fname);
     }
     return s;
@@ -365,7 +381,7 @@ leveldb::Status DeleteDB(const base::FilePath& db_path,
 
   // TODO(cmumford): To be fully safe this implementation should acquire a lock
   // as there is some daylight in between DestroyDB and DeleteFile.
-  if (!base::DeleteFile(db_path, true)) {
+  if (!base_DeleteFile(db_path, true)) {
     // Only delete the directory when when DestroyDB is successful. This is
     // because DestroyDB checks for database locks, and will fail if in use.
     return leveldb::Status::IOError(db_path.AsUTF8Unsafe(), "Error deleting");

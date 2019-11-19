@@ -2,26 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function runTests() {
-  chrome.test.runTests([
-    function test() {
-      chrome.musicManagerPrivate.getDeviceId(function(id) {
-          console.log('Device ID=' + id);
-          if (id) {
-            // This block is not entered in VMs (e.g. the bots) which return
-            // dummy MACs.
-            chrome.test.assertEq('string', typeof id);
-            chrome.test.assertTrue(id.length >= 8);
-          }
-          chrome.test.succeed();
-      });
-    }
-  ]);
-}
-
-window.onload = function() {
-  chrome.test.getConfig(function(config) {
-    console.log('customArg=' + config.customArg);
-    runTests();
-  });
-}
+chrome.test.runTests([
+  function getDeviceIdTest() {
+    chrome.musicManagerPrivate.getDeviceId(function(id) {
+      if (id !== undefined) {
+        chrome.test.assertNoLastError();
+        chrome.test.assertEq('string', typeof id);
+        chrome.test.assertTrue(id.length >= 8);
+      } else {
+        // Bots may not support device ID. In this case, we still check that the
+        // error message is what we expect.
+        chrome.test.assertLastError(
+            'Device ID API is not supported on this platform.');
+      }
+      chrome.test.succeed();
+    });
+  }
+]);

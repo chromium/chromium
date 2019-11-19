@@ -32,10 +32,9 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/vdmx_parser.h"
-
-#include <SkFont.h>
-#include <SkFontMetrics.h>
-#include <SkTypeface.h>
+#include "third_party/skia/include/core/SkFont.h"
+#include "third_party/skia/include/core/SkFontMetrics.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
 

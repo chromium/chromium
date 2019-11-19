@@ -23,6 +23,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) KeepaliveStatisticsRecorder
     int num_registrations = 1;
     int num_inflight_requests = 0;
     int peak_inflight_requests = 0;
+    int total_request_size = 0;
   };
 
   KeepaliveStatisticsRecorder();
@@ -36,16 +37,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) KeepaliveStatisticsRecorder
   void Unregister(int process_id);
 
   // Called when a request with keepalive set starts.
-  void OnLoadStarted(int process_id);
+  void OnLoadStarted(int process_id, int request_size);
   // Called when a request with keepalive set finishes.
-  void OnLoadFinished(int process_id);
+  void OnLoadFinished(int process_id, int request_size);
 
   const std::unordered_map<int, PerProcessStats>& per_process_records() const {
     return per_process_records_;
   }
-  // Returns true iff. number of Register calls > Unregister calls.
-  bool HasRecordForProcess(int process_id) const;
   int NumInflightRequestsPerProcess(int process_id) const;
+  int GetTotalRequestSizePerProcess(int process_id) const;
   int num_inflight_requests() const { return num_inflight_requests_; }
   int peak_inflight_requests() const { return peak_inflight_requests_; }
 

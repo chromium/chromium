@@ -22,7 +22,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 
 #include "base/auto_reset.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
+#include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 
 namespace blink {
 

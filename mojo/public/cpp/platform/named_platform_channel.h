@@ -23,8 +23,9 @@ namespace mojo {
 
 // NamedPlatformChannel encapsulates a Mojo invitation transport channel which
 // can listen for inbound connections established by clients connecting to
-// a named system resource (i.e. a named pipe server on Windows, a named
-// Unix domain socket on POSIX; other platforms not supported).
+// a named system resource (i.e. a named pipe server on Windows, a named Unix
+// domain socket on POSIX, a Mach bootstrap server on macOS, other platforms
+// not supported).
 //
 // This can be especially useful when the local process has no way to transfer
 // handles to the remote process, e.g. it does not control process launch or

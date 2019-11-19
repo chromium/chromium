@@ -16,7 +16,7 @@
 #include "base/strings/string16.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -133,7 +133,7 @@ class MockBluetoothDevice : public BluetoothDevice {
   // trying to run callbacks in response to other actions e.g. run a read
   // value callback in response to a connection request.
   // Appends callback to the end of the callbacks queue.
-  void PushPendingCallback(const base::Closure& callback);
+  void PushPendingCallback(base::OnceClosure callback);
   // Runs all pending callbacks.
   void RunPendingCallbacks();
 
@@ -147,7 +147,7 @@ class MockBluetoothDevice : public BluetoothDevice {
   bool connected_;
 
   // Used by tests to save callbacks that will be run in the future.
-  base::queue<base::Closure> pending_callbacks_;
+  base::queue<base::OnceClosure> pending_callbacks_;
 
   std::vector<std::unique_ptr<MockBluetoothGattService>> mock_services_;
 };

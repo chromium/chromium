@@ -4,6 +4,8 @@
 
 #include "content/browser/scheduler/responsiveness/message_loop_observer.h"
 
+#include "base/message_loop/message_loop_current.h"
+
 namespace content {
 namespace responsiveness {
 

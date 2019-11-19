@@ -25,8 +25,7 @@ namespace offline_pages {
 // operations on the store, for test writing convenience.
 class OfflinePageMetadataStoreTestUtil {
  public:
-  explicit OfflinePageMetadataStoreTestUtil(
-      scoped_refptr<base::TestMockTimeTaskRunner> task_runner);
+  OfflinePageMetadataStoreTestUtil();
   ~OfflinePageMetadataStoreTestUtil();
 
   // Builds a new store in a temporary directory.
@@ -54,9 +53,6 @@ class OfflinePageMetadataStoreTestUtil {
   base::SimpleTestClock* clock() { return &clock_; }
 
  private:
-  void RunUntilIdle();
-
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::ScopedTempDir temp_directory_;
   // TODO(romax): Refactor the test util along with the similar one used in
   // Prefetching, to remove the ownership to the store. And clean up related

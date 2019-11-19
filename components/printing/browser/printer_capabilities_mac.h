@@ -16,6 +16,12 @@ namespace printing {
 // Must be called on a task runner that allows blocking.
 PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizes();
 
+// Override the values returned by GetMacCustomPaperSizes() for unit tests. To
+// accurately emulate custom paper sizes from a macOS device, the papers should
+// have an empty |vendor_id| field.
+void SetMacCustomPaperSizesForTesting(
+    const PrinterSemanticCapsAndDefaults::Papers& papers);
+
 namespace internal {
 
 PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizesFromFile(

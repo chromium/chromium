@@ -14,7 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/remote_commands/device_command_start_crd_session_job.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
-#include "google_apis/gaia/oauth2_token_service.h"
+#include "google_apis/gaia/oauth2_access_token_manager.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -26,7 +26,7 @@ namespace policy {
 
 // An implementation of the |DeviceCommandStartCRDSessionJob::Delegate|.
 class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
-                        public OAuth2TokenService::Consumer,
+                        public OAuth2AccessTokenManager::Consumer,
                         public extensions::NativeMessageHost::Client {
  public:
   CRDHostDelegate();
@@ -49,14 +49,15 @@ class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
   void StartCRDHostAndGetCode(
       const std::string& oauth_token,
       base::Value ice_config,
+      bool terminate_upon_input,
       DeviceCommandStartCRDSessionJob::AccessCodeCallback success_callback,
       DeviceCommandStartCRDSessionJob::ErrorCallback error_callback) override;
 
-  // OAuth2TokenService::Consumer:
+  // OAuth2AccessTokenManager::Consumer:
   void OnGetTokenSuccess(
-      const OAuth2TokenService::Request* request,
+      const OAuth2AccessTokenManager::Request* request,
       const OAuth2AccessTokenConsumer::TokenResponse& token_response) override;
-  void OnGetTokenFailure(const OAuth2TokenService::Request* request,
+  void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
                          const GoogleServiceAuthError& error) override;
 
   // extensions::NativeMessageHost::Client:
@@ -91,7 +92,7 @@ class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
   DeviceCommandStartCRDSessionJob::AccessCodeCallback code_success_callback_;
   DeviceCommandStartCRDSessionJob::ErrorCallback error_callback_;
 
-  std::unique_ptr<OAuth2TokenService::Request> oauth_request_;
+  std::unique_ptr<OAuth2AccessTokenManager::Request> oauth_request_;
   std::unique_ptr<network::SimpleURLLoader> ice_config_loader_;
   std::unique_ptr<extensions::NativeMessageHost> host_;
 
@@ -105,7 +106,7 @@ class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
   // True if remote session was established.
   bool remote_connected_;
 
-  base::WeakPtrFactory<CRDHostDelegate> weak_factory_;
+  base::WeakPtrFactory<CRDHostDelegate> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CRDHostDelegate);
 };

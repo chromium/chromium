@@ -22,7 +22,7 @@ The main scheduling unit in Blink is a task. A task is a base::Closure posted vi
 TaskRunner::PostTask or TaskRunner::PostDelayedTask interface. The regular method of
 creating closures (base::BindOnce/Repeating) [is banned](#binding-tasks).
 Blink should use WTF::Bind (for tasks which are posted to the same thread) and
-WTF::CrossThreadBind
+CrossThreadBind
 ([for tasks which are posted to a different thread](#off-main-thread-scheduling)).
 
 At the moment Blink Scheduler treats tasks as an atomic unit — if a task has started,
@@ -35,7 +35,7 @@ In order to post a task, a task runner reference is needed. Almost all main
 thread tasks should be associated with a frame to allow the scheduler to freeze
 or prioritise individual frames. This is a hard requirement backed by a DCHECK
 that a task running javascript should have this association
-(which is being introduced). 
+(which is being introduced).
 
 FrameScheduler::GetTaskRunner (or its aliases LocalFrame::GetTaskRunner,
 WebLocalFrame::GetTaskRunner, RenderFrame::GetTaskRunner or
@@ -155,7 +155,7 @@ worker_pool::PostTask, which uses a thread pool
 behind the scenes.
 
 Do not create your own dedicated thread if you need ordering for your tasks,
-use worker_pool::CreateTaskRunnerWithTraits instead —
+use worker_pool::CreateTaskRunner instead —
 this creates a sequence (virtual thread which can run tasks in order on
 any of the threads in the thread pool).
 (Note: this doesn't exist yet because we haven't encountered a use case in Blink
@@ -169,12 +169,12 @@ more details.
 Many data structures in Blink are bound to a particular thread (e.g. Strings,
 garbage-collected classes, etc), so it’s not safe to pass a pointer to them to
 another thread. To enforce this, base::Bind is banned in Blink and WTF::Bind
-and WTF::CrossThreadBind are provided as alternatives. WTF::Bind should be used
+and CrossThreadBind are provided as alternatives. WTF::Bind should be used
 to post tasks to the same thread and closures returned by it DCHECK that
-they run on the same thread. WTF::CrossThreadBind applies CrossThreadCopier
+they run on the same thread. CrossThreadBind applies CrossThreadCopier
 to its arguments and creates a deep copy, so the resulting closure can run
 on a different thread.
 
 
-## TODO(altimin): Document idle tasks 
+## TODO(altimin): Document idle tasks
 

@@ -1,11 +1,6 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
-// READ BEFORE UPDATING:
-// If this file is updated, make sure to increment the "revision" value of any
-// tests that use this file in content/test/gpu/page_sets/pixel_tests.py. This
-// will ensure that the baseline images are regenerated on the next run.
 
 var vertexShader = [
   "attribute vec3 pos;",

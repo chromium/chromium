@@ -12,24 +12,25 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.snippets.CategoryInt;
 import org.chromium.chrome.browser.ntp.snippets.KnownCategories;
 import org.chromium.chrome.browser.ntp.snippets.SnippetsBridge;
 import org.chromium.chrome.browser.ntp.snippets.SuggestionsSource;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Misc. Content Suggestions instrumentation tests.
@@ -54,7 +55,7 @@ public class ContentSuggestionsTest {
     @Test
     @SmallTest
     @Feature("Suggestions")
-    public void testRemoteSuggestionsEnabled() throws InterruptedException {
+    public void testRemoteSuggestionsEnabled() {
         NewTabPage ntp = loadNTPWithSearchSuggestState(true);
         SuggestionsUiDelegate uiDelegate = ntp.getManagerForTesting();
         Assert.assertTrue(
@@ -64,7 +65,7 @@ public class ContentSuggestionsTest {
     @Test
     @SmallTest
     @Feature("Suggestions")
-    public void testRemoteSuggestionsDisabled() throws InterruptedException {
+    public void testRemoteSuggestionsDisabled() {
         NewTabPage ntp = loadNTPWithSearchSuggestState(false);
         SuggestionsUiDelegate uiDelegate = ntp.getManagerForTesting();
         // Since header is expandable, category should still be enabled.
@@ -72,11 +73,12 @@ public class ContentSuggestionsTest {
                 isCategoryEnabled(uiDelegate.getSuggestionsSource(), KnownCategories.ARTICLES));
     }
 
-    private NewTabPage loadNTPWithSearchSuggestState(final boolean enabled)
-            throws InterruptedException {
+    private NewTabPage loadNTPWithSearchSuggestState(final boolean enabled) {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> PrefServiceBridge.getInstance().setSearchSuggestEnabled(enabled));
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> PrefServiceBridge.getInstance().setBoolean(
+                                Pref.SEARCH_SUGGEST_ENABLED, enabled));
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         NewTabPageTestUtils.waitForNtpLoaded(tab);

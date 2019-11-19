@@ -13,7 +13,7 @@ namespace media {
 MojoCdmProxyService::MojoCdmProxyService(
     std::unique_ptr<::media::CdmProxy> cdm_proxy,
     MojoCdmServiceContext* context)
-    : cdm_proxy_(std::move(cdm_proxy)), context_(context), weak_factory_(this) {
+    : cdm_proxy_(std::move(cdm_proxy)), context_(context) {
   DVLOG(1) << __func__;
   DCHECK(cdm_proxy_);
   DCHECK(context_);
@@ -27,9 +27,13 @@ MojoCdmProxyService::~MojoCdmProxyService() {
 }
 
 void MojoCdmProxyService::Initialize(
-    mojom::CdmProxyClientAssociatedPtrInfo client,
+    mojo::PendingAssociatedRemote<mojom::CdmProxyClient> client,
     InitializeCallback callback) {
   DVLOG(2) << __func__;
+
+  CHECK(!has_initialize_been_called_) << "Initialize should only happen once";
+  has_initialize_been_called_ = true;
+
   client_.Bind(std::move(client));
 
   cdm_proxy_->Initialize(
@@ -85,6 +89,9 @@ void MojoCdmProxyService::OnInitialized(InitializeCallback callback,
                                         ::media::CdmProxy::Status status,
                                         ::media::CdmProxy::Protocol protocol,
                                         uint32_t crypto_session_id) {
+  CHECK_EQ(cdm_id_, CdmContext::kInvalidCdmId)
+      << "CDM proxy should only be created once.";
+
   if (status == ::media::CdmProxy::Status::kOk)
     cdm_id_ = context_->RegisterCdmProxy(this);
 

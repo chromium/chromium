@@ -8,6 +8,8 @@
 #include <string>
 
 #include "content/public/common/resource_type.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "ui/base/page_transition_types.h"
 
@@ -17,14 +19,7 @@ namespace base {
 class FilePath;
 }
 
-namespace net {
-class NetworkDelegate;
-class URLRequest;
-class URLRequestJob;
-}
-
 namespace extensions {
-struct ComponentExtensionResourceInfo;
 class Extension;
 class ExtensionSet;
 class ProcessMap;
@@ -46,34 +41,27 @@ bool AllowCrossRendererResourceLoad(const GURL& url,
                                     const ProcessMap& process_map,
                                     bool* allowed);
 
-// Creates a URLRequestJob for loading component extension resources out of
-// a Chrome resource bundle. Returns NULL if the requested resource is not a
-// component extension resource.
-net::URLRequestJob* MaybeCreateURLRequestResourceBundleJob(
-    net::URLRequest* request,
-    net::NetworkDelegate* network_delegate,
-    const base::FilePath& directory_path,
-    const std::string& content_security_policy,
-    bool send_cors_header);
-
 // Return the |request|'s resource path relative to the Chromium resources path
 // (chrome::DIR_RESOURCES) *if* the request refers to a resource within the
 // Chrome resource bundle. If not then the returned file path will be empty.
+// |resource_id| is used to check whether the requested resource is registered
+// as a component extensions resource, via
+// ChromeComponentExtensionResourceManager::IsComponentExtensionResource()
 base::FilePath GetBundleResourcePath(
     const network::ResourceRequest& request,
     const base::FilePath& extension_resources_path,
-    ComponentExtensionResourceInfo* resource_info);
+    int* resource_id);
 
 // Creates and starts a URLLoader for loading component extension resources out
 // of a Chrome resource bundle. This should only be called if
 // GetBundleResourcePath returns a valid path.
 void LoadResourceFromResourceBundle(
     const network::ResourceRequest& request,
-    network::mojom::URLLoaderRequest loader,
+    mojo::PendingReceiver<network::mojom::URLLoader> loader,
     const base::FilePath& resource_relative_path,
-    const ComponentExtensionResourceInfo& resource_info,
+    int resource_id,
     const std::string& content_security_policy,
-    network::mojom::URLLoaderClientPtr client,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     bool send_cors_header);
 
 }  // namespace chrome_url_request_util

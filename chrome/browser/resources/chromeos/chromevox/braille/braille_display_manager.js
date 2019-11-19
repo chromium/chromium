@@ -7,44 +7,44 @@
  *
  */
 
-goog.provide('cvox.BrailleDisplayManager');
+goog.provide('BrailleDisplayManager');
 
-goog.require('cvox.BrailleCaptionsBackground');
-goog.require('cvox.BrailleDisplayState');
-goog.require('cvox.ExpandingBrailleTranslator');
-goog.require('cvox.LibLouis');
-goog.require('cvox.NavBraille');
-goog.require('cvox.PanStrategy');
+goog.require('BrailleCaptionsBackground');
+goog.require('BrailleDisplayState');
+goog.require('ExpandingBrailleTranslator');
+goog.require('LibLouis');
+goog.require('NavBraille');
+goog.require('PanStrategy');
 
 
 /**
- * @param {!cvox.BrailleTranslatorManager} translatorManager Keeps track
+ * @param {!BrailleTranslatorManager} translatorManager Keeps track
  *     of the current translator to use.
  * @constructor
  */
-cvox.BrailleDisplayManager = function(translatorManager) {
+BrailleDisplayManager = function(translatorManager) {
   /**
-   * @type {!cvox.BrailleTranslatorManager}
+   * @type {!BrailleTranslatorManager}
    * @private
    */
   this.translatorManager_ = translatorManager;
   /**
-   * @type {!cvox.NavBraille}
+   * @type {!NavBraille}
    * @private
    */
-  this.content_ = new cvox.NavBraille({});
+  this.content_ = new NavBraille({});
   /**
-   * @type {!cvox.ExpandingBrailleTranslator.ExpansionType} valueExpansion
+   * @type {!ExpandingBrailleTranslator.ExpansionType} valueExpansion
    * @private
    */
-  this.expansionType_ = cvox.ExpandingBrailleTranslator.ExpansionType.SELECTION;
+  this.expansionType_ = ExpandingBrailleTranslator.ExpansionType.SELECTION;
   /**
-   * @type {cvox.PanStrategy}
+   * @type {PanStrategy}
    * @private
    */
-  this.panStrategy_ = new cvox.PanStrategy();
+  this.panStrategy_ = new PanStrategy();
   /**
-   * @type {function(!cvox.BrailleKeyEvent, !cvox.NavBraille)}
+   * @type {function(!BrailleKeyEvent, !NavBraille)}
    * @private
    */
   this.commandListener_ = function() {};
@@ -53,14 +53,14 @@ cvox.BrailleDisplayManager = function(translatorManager) {
    * This is different from realDisplayState_ if the braille captions feature
    * is enabled and there is no hardware display connected.  Otherwise, it is
    * the same object as realDisplayState_.
-   * @type {!cvox.BrailleDisplayState}
+   * @type {!BrailleDisplayState}
    * @private
    */
   this.displayState_ = {available: false, textRowCount: 0, textColumnCount: 0};
   /**
    * State reported from the chrome api, reflecting a real hardware
    * display.
-   * @type {!cvox.BrailleDisplayState}
+   * @type {!BrailleDisplayState}
    * @private
    */
   this.realDisplayState_ = this.displayState_;
@@ -83,8 +83,7 @@ cvox.BrailleDisplayManager = function(translatorManager) {
     this.updatePanStrategy_(items.brailleWordWrap);
   }.bind(this));
 
-  cvox.BrailleCaptionsBackground.init(
-      goog.bind(this.onCaptionsStateChanged_, this));
+  BrailleCaptionsBackground.init(goog.bind(this.onCaptionsStateChanged_, this));
   if (goog.isDef(chrome.brailleDisplayPrivate)) {
     var onDisplayStateChanged = goog.bind(this.refreshDisplayState_, this);
     chrome.brailleDisplayPrivate.getDisplayState(onDisplayStateChanged);
@@ -104,7 +103,7 @@ cvox.BrailleDisplayManager = function(translatorManager) {
  * Dots representing a cursor.
  * @const
  */
-cvox.BrailleDisplayManager.CURSOR_DOTS = 1 << 6 | 1 << 7;
+BrailleDisplayManager.CURSOR_DOTS = 1 << 6 | 1 << 7;
 
 
 /**
@@ -115,7 +114,7 @@ cvox.BrailleDisplayManager.CURSOR_DOTS = 1 << 6 | 1 << 7;
  * @const
  * @private
  */
-cvox.BrailleDisplayManager.ALPHA_THRESHOLD_ = 255;
+BrailleDisplayManager.ALPHA_THRESHOLD_ = 255;
 
 
 /**
@@ -125,7 +124,7 @@ cvox.BrailleDisplayManager.ALPHA_THRESHOLD_ = 255;
  * @const
  * @private
  */
-cvox.BrailleDisplayManager.LUMINANCE_THRESHOLD_ = 128;
+BrailleDisplayManager.LUMINANCE_THRESHOLD_ = 128;
 
 
 /**
@@ -134,7 +133,7 @@ cvox.BrailleDisplayManager.LUMINANCE_THRESHOLD_ = 128;
  * @const
  * @private
  */
-cvox.BrailleDisplayManager.COORDS_TO_BRAILLE_DOT_ =
+BrailleDisplayManager.COORDS_TO_BRAILLE_DOT_ =
     [0x1, 0x2, 0x4, 0x40, 0x8, 0x10, 0x20, 0x80];
 
 
@@ -143,18 +142,17 @@ cvox.BrailleDisplayManager.COORDS_TO_BRAILLE_DOT_ =
  * effect.
  * @const {number}
  */
-cvox.BrailleDisplayManager.CURSOR_BLINK_TIME_MS = 1000;
+BrailleDisplayManager.CURSOR_BLINK_TIME_MS = 1000;
 
 
 /**
- * @param {!cvox.NavBraille} content Content to send to the braille display.
- * @param {!cvox.ExpandingBrailleTranslator.ExpansionType} expansionType
+ * @param {!NavBraille} content Content to send to the braille display.
+ * @param {!ExpandingBrailleTranslator.ExpansionType} expansionType
  *     If the text has a {@code ValueSpan}, this indicates how that part
  *     of the display content is expanded when translating to braille.
- *     (See {@code cvox.ExpandingBrailleTranslator}).
+ *     (See {@code ExpandingBrailleTranslator}).
  */
-cvox.BrailleDisplayManager.prototype.setContent = function(
-    content, expansionType) {
+BrailleDisplayManager.prototype.setContent = function(content, expansionType) {
   this.translateContent_(content, expansionType);
 };
 
@@ -164,7 +162,7 @@ cvox.BrailleDisplayManager.prototype.setContent = function(
  * onto the physical braille display and the virtual braille captions display.
  * @param {!string} imageUrl The image, in the form of a data url.
  */
-cvox.BrailleDisplayManager.prototype.setImageContent = function(imageUrl) {
+BrailleDisplayManager.prototype.setImageContent = function(imageUrl) {
   if (!this.displayState_.available) {
     return;
   }
@@ -202,8 +200,8 @@ cvox.BrailleDisplayManager.prototype.setImageContent = function(imageUrl) {
       // Show braille pin if the alpha is greater than the threshold and
       // the luminance is less than the threshold.
       var show =
-          (alpha >= cvox.BrailleDisplayManager.ALPHA_THRESHOLD_ &&
-           luminance < cvox.BrailleDisplayManager.LUMINANCE_THRESHOLD_);
+          (alpha >= BrailleDisplayManager.ALPHA_THRESHOLD_ &&
+           luminance < BrailleDisplayManager.LUMINANCE_THRESHOLD_);
       outputData.push(show);
     }
 
@@ -221,9 +219,9 @@ cvox.BrailleDisplayManager.prototype.setImageContent = function(imageUrl) {
                 (i * columns * cellHeight + j + cellRow * columns) * cellWidth +
                 cellColumn;
             if (outputData[bitmapIndex]) {
+              var index = cellColumn * maxCellHeight + cellRow;
               view[brailleIndex] +=
-                  cvox.BrailleDisplayManager.COORDS_TO_BRAILLE_DOT_
-                      [cellColumn * maxCellHeight + cellRow];
+                  BrailleDisplayManager.COORDS_TO_BRAILLE_DOT_[index];
             }
           }
         }
@@ -235,8 +233,8 @@ cvox.BrailleDisplayManager.prototype.setImageContent = function(imageUrl) {
           brailleBuf, this.displayState_.textColumnCount,
           this.displayState_.textRowCount);
     }
-    if (cvox.BrailleCaptionsBackground.isEnabled()) {
-      cvox.BrailleCaptionsBackground.setImageContent(brailleBuf, rows, columns);
+    if (BrailleCaptionsBackground.isEnabled()) {
+      BrailleCaptionsBackground.setImageContent(brailleBuf, rows, columns);
     }
   }.bind(this);
 };
@@ -247,18 +245,18 @@ cvox.BrailleDisplayManager.prototype.setImageContent = function(imageUrl) {
  * called with the BrailleKeyEvent corresponding to the command and the content
  * that was present on the display when the command was invoked.  The content
  * is guaranteed to be identical to an object previously used as the parameter
- * to cvox.BrailleDisplayManager.setContent, or null if no content was set.
- * @param {function(!cvox.BrailleKeyEvent, !cvox.NavBraille)} func The listener.
+ * to BrailleDisplayManager.setContent, or null if no content was set.
+ * @param {function(!BrailleKeyEvent, !NavBraille)} func The listener.
  */
-cvox.BrailleDisplayManager.prototype.setCommandListener = function(func) {
+BrailleDisplayManager.prototype.setCommandListener = function(func) {
   this.commandListener_ = func;
 };
 
 
 /**
- * @return {!cvox.BrailleDisplayState} The current display state.
+ * @return {!BrailleDisplayState} The current display state.
  */
-cvox.BrailleDisplayManager.prototype.getDisplayState = function() {
+BrailleDisplayManager.prototype.getDisplayState = function() {
   return this.displayState_;
 };
 
@@ -267,11 +265,11 @@ cvox.BrailleDisplayManager.prototype.getDisplayState = function() {
  * @param {{available: boolean, textRowCount: (number|undefined),
  *     textColumnCount: (number|undefined)}} newState Display state reported
  *     by the extension API. Note that the type is almost the same as
- *     cvox.BrailleDisplayState except that the extension API allows
- *     some fields to be undefined, while cvox.BrailleDisplayState does not.
+ *     BrailleDisplayState except that the extension API allows
+ *     some fields to be undefined, while BrailleDisplayState does not.
  * @private
  */
-cvox.BrailleDisplayManager.prototype.refreshDisplayState_ = function(newState) {
+BrailleDisplayManager.prototype.refreshDisplayState_ = function(newState) {
   var oldColumnCount = this.displayState_.textColumnCount || 0;
   var oldRowCount = this.displayState_.textRowCount || 0;
   var processDisplayState = function(displayState) {
@@ -294,7 +292,7 @@ cvox.BrailleDisplayManager.prototype.refreshDisplayState_ = function(newState) {
     // Update the dimensions of the virtual braille captions display to those
     // of a real physical display when one is plugged in.
   } else {
-    cvox.BrailleCaptionsBackground.getVirtualDisplayState(processDisplayState);
+    BrailleCaptionsBackground.getVirtualDisplayState(processDisplayState);
   }
 };
 
@@ -303,7 +301,7 @@ cvox.BrailleDisplayManager.prototype.refreshDisplayState_ = function(newState) {
  * Called when the state of braille captions changes.
  * @private
  */
-cvox.BrailleDisplayManager.prototype.onCaptionsStateChanged_ = function() {
+BrailleDisplayManager.prototype.onCaptionsStateChanged_ = function() {
   // Force reevaluation of the display state based on our stored real
   // hardware display state, meaning that if a real display is connected,
   // that takes precedence over the state from the captions 'virtual' display.
@@ -316,7 +314,7 @@ cvox.BrailleDisplayManager.prototype.onCaptionsStateChanged_ = function() {
  * braille captions display.
  * @private
  */
-cvox.BrailleDisplayManager.prototype.refresh_ = function() {
+BrailleDisplayManager.prototype.refresh_ = function() {
   if (this.blinkerId_ !== undefined) {
     window.clearInterval(this.blinkerId_);
   }
@@ -326,21 +324,22 @@ cvox.BrailleDisplayManager.prototype.refresh_ = function() {
   var hideCursor = cursor.start == -1 || cursor.end == -1;
 
   this.refreshInternal_(!hideCursor);
-  if (hideCursor)
+  if (hideCursor) {
     return;
+  }
 
   var showCursor = false;
   this.blinkerId_ = window.setInterval(function() {
     this.refreshInternal_(showCursor);
     showCursor = !showCursor;
-  }.bind(this), cvox.BrailleDisplayManager.CURSOR_BLINK_TIME_MS);
+  }.bind(this), BrailleDisplayManager.CURSOR_BLINK_TIME_MS);
 };
 
 /**
  * @param {boolean} showCursor Whether to show the cursor.
  * @private
  */
-cvox.BrailleDisplayManager.prototype.refreshInternal_ = function(showCursor) {
+BrailleDisplayManager.prototype.refreshInternal_ = function(showCursor) {
   if (!this.displayState_.available) {
     return;
   }
@@ -351,8 +350,8 @@ cvox.BrailleDisplayManager.prototype.refreshInternal_ = function(showCursor) {
     chrome.brailleDisplayPrivate.writeDots(
         brailleBuf, brailleBuf.byteLength, 1);
   }
-  if (cvox.BrailleCaptionsBackground.isEnabled()) {
-    cvox.BrailleCaptionsBackground.setContent(
+  if (BrailleCaptionsBackground.isEnabled()) {
+    BrailleCaptionsBackground.setContent(
         textBuf, brailleBuf, this.panStrategy_.brailleToText,
         this.panStrategy_.offsetsForSlices, this.displayState_.textRowCount,
         this.displayState_.textColumnCount);
@@ -360,13 +359,13 @@ cvox.BrailleDisplayManager.prototype.refreshInternal_ = function(showCursor) {
 };
 
 /**
- * @param {!cvox.NavBraille} newContent New display content.
- * @param {cvox.ExpandingBrailleTranslator.ExpansionType} newExpansionType
+ * @param {!NavBraille} newContent New display content.
+ * @param {ExpandingBrailleTranslator.ExpansionType} newExpansionType
  *     How the value part of of the new content should be expanded
  *     with regards to contractions.
  * @private
  */
-cvox.BrailleDisplayManager.prototype.translateContent_ = function(
+BrailleDisplayManager.prototype.translateContent_ = function(
     newContent, newExpansionType) {
   var writeTranslatedContent = function(cells, textToBraille, brailleToText) {
     this.content_ = newContent;
@@ -420,18 +419,18 @@ cvox.BrailleDisplayManager.prototype.translateContent_ = function(
 
 
 /**
- * @param {cvox.BrailleKeyEvent} event The key event.
+ * @param {BrailleKeyEvent} event The key event.
  * @private
  */
-cvox.BrailleDisplayManager.prototype.onKeyEvent_ = function(event) {
+BrailleDisplayManager.prototype.onKeyEvent_ = function(event) {
   switch (event.command) {
-    case cvox.BrailleKeyCommand.PAN_LEFT:
+    case BrailleKeyCommand.PAN_LEFT:
       this.panLeft_();
       break;
-    case cvox.BrailleKeyCommand.PAN_RIGHT:
+    case BrailleKeyCommand.PAN_RIGHT:
       this.panRight_();
       break;
-    case cvox.BrailleKeyCommand.ROUTING:
+    case BrailleKeyCommand.ROUTING:
       event.displayPosition = this.brailleToTextPosition_(
           event.displayPosition +
           this.panStrategy_.viewPort.firstRow *
@@ -450,12 +449,11 @@ cvox.BrailleDisplayManager.prototype.onKeyEvent_ = function(event) {
  * position.
  * @private
  */
-cvox.BrailleDisplayManager.prototype.panLeft_ = function() {
+BrailleDisplayManager.prototype.panLeft_ = function() {
   if (this.panStrategy_.previous()) {
     this.refresh_();
   } else {
-    this.commandListener_(
-        {command: cvox.BrailleKeyCommand.PAN_LEFT}, this.content_);
+    this.commandListener_({command: BrailleKeyCommand.PAN_LEFT}, this.content_);
   }
 };
 
@@ -466,12 +464,12 @@ cvox.BrailleDisplayManager.prototype.panLeft_ = function() {
  * already at its rightmost position.
  * @private
  */
-cvox.BrailleDisplayManager.prototype.panRight_ = function() {
+BrailleDisplayManager.prototype.panRight_ = function() {
   if (this.panStrategy_.next()) {
     this.refresh_();
   } else {
     this.commandListener_(
-        {command: cvox.BrailleKeyCommand.PAN_RIGHT}, this.content_);
+        {command: BrailleKeyCommand.PAN_RIGHT}, this.content_);
   }
 };
 
@@ -482,7 +480,7 @@ cvox.BrailleDisplayManager.prototype.panRight_ = function() {
  * @param {number} endIndex The end index to place the cursor (exclusive).
  * @private
  */
-cvox.BrailleDisplayManager.prototype.setCursor_ = function(
+BrailleDisplayManager.prototype.setCursor_ = function(
     buffer, startIndex, endIndex) {
   if (startIndex < 0 || startIndex >= buffer.byteLength ||
       endIndex < startIndex || endIndex > buffer.byteLength) {
@@ -503,7 +501,7 @@ cvox.BrailleDisplayManager.prototype.setCursor_ = function(
  *        the translated content.
  * @return {number} The mapped position in code units.
  */
-cvox.BrailleDisplayManager.prototype.brailleToTextPosition_ = function(
+BrailleDisplayManager.prototype.brailleToTextPosition_ = function(
     braillePosition) {
   var mapping = this.panStrategy_.brailleToText;
   if (braillePosition < 0) {
@@ -524,7 +522,7 @@ cvox.BrailleDisplayManager.prototype.brailleToTextPosition_ = function(
  * @param {boolean} wordWrap
  * @private
  */
-cvox.BrailleDisplayManager.prototype.updatePanStrategy_ = function(wordWrap) {
+BrailleDisplayManager.prototype.updatePanStrategy_ = function(wordWrap) {
   this.panStrategy_.setPanStrategy(wordWrap);
   this.refresh_();
 };

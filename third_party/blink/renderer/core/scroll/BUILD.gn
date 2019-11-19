@@ -35,10 +35,10 @@ blink_core_sources("scroll") {
     "scrollbar_theme_android.cc",
     "scrollbar_theme_mac.h",
     "scrollbar_theme_mac.mm",
-    "scrollbar_theme_mock.cc",
-    "scrollbar_theme_mock.h",
     "scrollbar_theme_overlay.cc",
     "scrollbar_theme_overlay.h",
+    "scrollbar_theme_overlay_mobile.cc",
+    "scrollbar_theme_overlay_mobile.h",
     "scrollbar_theme_overlay_mock.h",
     "smooth_scroll_sequencer.cc",
     "smooth_scroll_sequencer.h",
@@ -53,7 +53,7 @@ blink_core_sources("scroll") {
     sources += [ "web_scrollbar_theme.mm" ]
   }
 
-  if (use_default_render_theme) {
+  if (use_aura) {
     sources += [
       "scrollbar_theme_aura.cc",
       "scrollbar_theme_aura.h",

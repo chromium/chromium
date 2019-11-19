@@ -21,6 +21,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -38,6 +39,7 @@ struct CONTENT_EXPORT ExplodedHttpBody {
 struct CONTENT_EXPORT ExplodedFrameState {
   base::Optional<base::string16> url_string;
   base::Optional<base::string16> referrer;
+  base::Optional<url::Origin> initiator_origin;
   base::Optional<base::string16> target;
   base::Optional<base::string16> state_object;
   std::vector<base::Optional<base::string16>> document_state;

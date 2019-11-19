@@ -28,10 +28,10 @@ VideoCaptureOverlay::FrameSource::~FrameSource() = default;
 
 VideoCaptureOverlay::VideoCaptureOverlay(
     FrameSource* frame_source,
-    mojom::FrameSinkVideoCaptureOverlayRequest request)
-    : frame_source_(frame_source), binding_(this, std::move(request)) {
+    mojo::PendingReceiver<mojom::FrameSinkVideoCaptureOverlay> receiver)
+    : frame_source_(frame_source), receiver_(this, std::move(receiver)) {
   DCHECK(frame_source_);
-  binding_.set_connection_error_handler(
+  receiver_.set_disconnect_handler(
       base::BindOnce(&FrameSource::OnOverlayConnectionLost,
                      base::Unretained(frame_source_), this));
 }

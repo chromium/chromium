@@ -13,11 +13,13 @@
 
 #include <cmath>
 #include <limits>
+#include <queue>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -32,6 +34,8 @@
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"
 #include "ui/events/ozone/evdev/touch_filter/false_touch_finder.h"
+#include "ui/events/ozone/evdev/touch_filter/palm_detection_filter.h"
+#include "ui/events/ozone/evdev/touch_filter/palm_detection_filter_factory.h"
 #include "ui/ozone/public/input_controller.h"
 
 namespace {
@@ -113,11 +117,15 @@ const int kTrackingIdForUnusedSlot = -1;
 
 namespace ui {
 
+const base::Feature kEnableSingleCancelTouch{"EnableSingleTouchCancel",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 TouchEventConverterEvdev::TouchEventConverterEvdev(
     base::ScopedFD fd,
     base::FilePath path,
     int id,
     const EventDeviceInfo& devinfo,
+    SharedPalmDetectionFilterState* shared_palm_state,
     DeviceEventDispatcherEvdev* dispatcher)
     : EventConverterEvdev(fd.get(),
                           path,
@@ -126,9 +134,12 @@ TouchEventConverterEvdev::TouchEventConverterEvdev(
                           devinfo.name(),
                           devinfo.phys(),
                           devinfo.vendor_id(),
-                          devinfo.product_id()),
+                          devinfo.product_id(),
+                          devinfo.version()),
       input_device_fd_(std::move(fd)),
-      dispatcher_(dispatcher) {
+      dispatcher_(dispatcher),
+      palm_detection_filter_(
+          CreatePalmDetectionFilter(devinfo, shared_palm_state)) {
   touch_evdev_debug_buffer_.Initialize(devinfo);
 }
 
@@ -202,6 +213,7 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
   // TODO(denniskempin): Use EVIOCGKEY to synchronize key state.
 
   events_.resize(touch_points_);
+  held_events_.resize(touch_points_);
   bool cancelled_state = false;
   if (has_mt_) {
     for (size_t i = 0; i < events_.size(); ++i) {
@@ -218,16 +230,17 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
       // Optional bits.
       int touch_major =
           info.GetAbsMtSlotValueWithDefault(ABS_MT_TOUCH_MAJOR, i, 0);
+      int touch_minor =
+          info.GetAbsMtSlotValueWithDefault(ABS_MT_TOUCH_MINOR, i, 0);
       events_[i].radius_x = touch_major * touch_major_scale_ / 2.0f;
-      events_[i].radius_y =
-          info.GetAbsMtSlotValueWithDefault(ABS_MT_TOUCH_MINOR, i, 0) *
-          touch_minor_scale_ / 2.0f;
+      events_[i].radius_y = touch_minor * touch_minor_scale_ / 2.0f;
       events_[i].pressure = ScalePressure(
           info.GetAbsMtSlotValueWithDefault(ABS_MT_PRESSURE, i, 0));
       int tool_type = info.GetAbsMtSlotValueWithDefault(ABS_MT_TOOL_TYPE, i,
                                                         MT_TOOL_FINGER);
       events_[i].tool_type = tool_type;
       events_[i].major = touch_major;
+      events_[i].minor = touch_minor;
       events_[i].stylus_button = false;
       if (events_[i].cancelled)
         cancelled_state = true;
@@ -249,7 +262,7 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
     events_[0].cancelled = false;
   }
   if (cancelled_state)
-    CancelAllTouches();
+    MaybeCancelAllTouches();
 
   false_touch_finder_ = FalseTouchFinder::Create(GetTouchscreenSize());
 }
@@ -412,6 +425,7 @@ void TouchEventConverterEvdev::ProcessAbs(const input_event& input) {
       break;
     case ABS_MT_TOUCH_MINOR:
       events_[current_slot_].radius_y = input.value * touch_minor_scale_ / 2.0f;
+      events_[current_slot_].minor = input.value;
       break;
     case ABS_MT_POSITION_X:
       events_[current_slot_].x = input.value;
@@ -513,9 +527,14 @@ void TouchEventConverterEvdev::ReportTouchEvent(
       details, timestamp, flags));
 }
 
-void TouchEventConverterEvdev::CancelAllTouches() {
+bool TouchEventConverterEvdev::MaybeCancelAllTouches() {
   // TODO(denniskempin): Remove once upper layers properly handle single
   // cancelled touches.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableCancelAllTouches) ||
+      base::FeatureList::IsEnabled(kEnableSingleCancelTouch)) {
+    return false;
+  }
   for (size_t i = 0; i < events_.size(); i++) {
     InProgressTouchEvdev* event = &events_[i];
     if (event->was_touching || event->touching) {
@@ -523,6 +542,7 @@ void TouchEventConverterEvdev::CancelAllTouches() {
       event->altered = true;
     }
   }
+  return true;
 }
 
 bool TouchEventConverterEvdev::IsPalm(const InProgressTouchEvdev& touch) {
@@ -538,17 +558,25 @@ void TouchEventConverterEvdev::ReportEvents(base::TimeTicks timestamp) {
 
   if (false_touch_finder_)
     false_touch_finder_->HandleTouches(events_, timestamp);
-
+  std::bitset<kNumTouchEvdevSlots> hold, suppress;
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER(kPalmFilterTimerEventName);
+    palm_detection_filter_->Filter(events_, timestamp, &hold, &suppress);
+  }
   for (size_t i = 0; i < events_.size(); i++) {
     InProgressTouchEvdev* event = &events_[i];
     if (IsPalm(*event)) {
       event->cancelled = true;
     }
+    event->held |= hold.test(i);
+    event->cancelled |= suppress.test(i);
     if (event->altered && (event->cancelled ||
                            (false_touch_finder_ &&
                             false_touch_finder_->SlotHasNoise(event->slot)))) {
-      CancelAllTouches();
-      break;
+      if (MaybeCancelAllTouches()) {
+        // If all touches were cancelled, break out of this loop.
+        break;
+      }
     }
   }
 
@@ -556,25 +584,69 @@ void TouchEventConverterEvdev::ReportEvents(base::TimeTicks timestamp) {
     InProgressTouchEvdev* event = &events_[i];
     if (!event->altered)
       continue;
-
-    if (enable_palm_suppression_callback_)
-      enable_palm_suppression_callback_.Run(event->tool_code > 0);
-
     if (false_touch_finder_)
       event->delayed = false_touch_finder_->SlotShouldDelay(event->slot);
 
-    EventType event_type = GetEventTypeForTouch(*event);
-    // The tool type is fixed with the touch pressed event and does not change.
-    if (event_type == ET_TOUCH_PRESSED)
-      event->reported_tool_type = GetEventPointerType(event->tool_code);
-    if (event_type != ET_UNKNOWN)
-      ReportTouchEvent(*event, event_type, timestamp);
+    if (event->held) {
+      // For held events, we update the event state appropriately, and then stop
+      // processing.
+      held_events_[i].push(std::make_pair(*event, timestamp));
+      event->was_cancelled = event->cancelled;
+      event->was_touching = event->touching;
+      event->was_delayed = event->delayed;
+      event->altered = false;
+      event->held = false;
+      // Do nothing here.
+      continue;
+    }
+    if ((event->was_cancelled || event->cancelled) &&
+        !held_events_[i].empty()) {
+      // This event is cancelled, but we also have a queue of events "held" . We
+      // need to clear the queue and update state appropriately.
+      auto first_held_event = held_events_[i].front().first;
+      event->was_touching = first_held_event.was_touching;
+      event->was_cancelled = first_held_event.was_cancelled;
+      event->was_delayed = first_held_event.was_delayed;
 
+      // Quick delete everything in the queue.
+      auto empty_q =
+          std::queue<std::pair<InProgressTouchEvdev, base::TimeTicks>>();
+      held_events_[i].swap(empty_q);
+      UMA_HISTOGRAM_COUNTS_100(kHoldCountAtCancelEventName, empty_q.size());
+    }
+
+    if (!held_events_[i].empty()) {
+      UMA_HISTOGRAM_COUNTS_100(kHoldCountAtReleaseEventName,
+                               held_events_[i].size());
+      while (!held_events_[i].empty()) {
+        auto held_event = held_events_[i].front();
+        held_events_[i].pop();
+        held_event.first.held = false;
+        held_event.first.was_held = true;
+        ProcessTouchEvent(&held_event.first, held_event.second);
+      }
+    }
+    ProcessTouchEvent(event, timestamp);
     event->was_cancelled = event->cancelled;
     event->was_touching = event->touching;
     event->was_delayed = event->delayed;
+    event->was_held = event->held;
     event->altered = false;
   }
+}
+
+void TouchEventConverterEvdev::ProcessTouchEvent(InProgressTouchEvdev* event,
+                                                 base::TimeTicks timestamp) {
+  if (enable_palm_suppression_callback_)
+    enable_palm_suppression_callback_.Run(event->tool_code > 0);
+
+  EventType event_type = GetEventTypeForTouch(*event);
+
+  // The tool type is fixed with the touch pressed event and does not change.
+  if (event_type == ET_TOUCH_PRESSED)
+    event->reported_tool_type = GetEventPointerType(event->tool_code);
+  if (event_type != ET_UNKNOWN)
+    ReportTouchEvent(*event, event_type, timestamp);
 }
 
 void TouchEventConverterEvdev::UpdateTrackingId(int slot, int tracking_id) {
@@ -603,7 +675,7 @@ void TouchEventConverterEvdev::ReleaseTouches() {
   ReportEvents(EventTimeForNow());
 }
 
-float TouchEventConverterEvdev::ScalePressure(int32_t value) {
+float TouchEventConverterEvdev::ScalePressure(int32_t value) const {
   float pressure = value - pressure_min_;
   if (pressure_max_ - pressure_min_)
     pressure /= pressure_max_ - pressure_min_;
@@ -615,5 +687,12 @@ float TouchEventConverterEvdev::ScalePressure(int32_t value) {
 int TouchEventConverterEvdev::NextTrackingId() {
   return next_tracking_id_++ & kMaxTrackingId;
 }
+
+const char TouchEventConverterEvdev::kHoldCountAtReleaseEventName[] =
+    "Ozone.TouchEventConverterEvdev.HoldCountAtRelease";
+const char TouchEventConverterEvdev::kHoldCountAtCancelEventName[] =
+    "Ozone.TouchEventConverterEvdev.HoldCountAtCancel";
+const char TouchEventConverterEvdev::kPalmFilterTimerEventName[] =
+    "Ozone.TouchEventConverterEvdev.PalmDetectionFilterTime";
 
 }  // namespace ui

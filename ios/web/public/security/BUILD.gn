@@ -1,0 +1,21 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("security") {
+  deps = [
+    "//base",
+    "//net",
+  ]
+
+  sources = [
+    "cert_policy.h",
+    "certificate_policy_cache.h",
+    "security_style.h",
+    "ssl_status.h",
+    "web_interstitial.h",
+    "web_interstitial_delegate.h",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

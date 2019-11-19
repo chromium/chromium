@@ -23,7 +23,7 @@ class TestServiceDiscoveryClient : public ServiceDiscoverySharedClient {
 
   std::unique_ptr<ServiceWatcher> CreateServiceWatcher(
       const std::string& service_type,
-      const ServiceWatcher::UpdatedCallback& callback) override;
+      ServiceWatcher::UpdatedCallback callback) override;
   std::unique_ptr<ServiceResolver> CreateServiceResolver(
       const std::string& service_name,
       ServiceResolver::ResolveCompleteCallback callback) override;

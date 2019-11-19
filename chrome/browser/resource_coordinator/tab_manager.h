@@ -20,7 +20,6 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
-#include "chrome/browser/resource_coordinator/intervention_policy_database.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source_observer.h"
@@ -46,27 +45,13 @@ class WebContents;
 namespace resource_coordinator {
 
 class BackgroundTabNavigationThrottle;
-class PageSignalReceiver;
 
 #if defined(OS_CHROMEOS)
 class TabManagerDelegate;
 #endif
 class TabManagerStatsCollector;
 
-// The TabManager periodically updates (see
-// |kAdjustmentIntervalSeconds| in the source) the status of renderers
-// which are then used by the algorithm embedded here for priority in being
-// killed upon OOM conditions.
-//
-// The algorithm used favors killing tabs that are not active, not in an active
-// window, not in a visible window, not pinned, and have been idle for longest,
-// in that order of priority.
-//
-// On Chrome OS (via the delegate), the kernel (via /proc/<pid>/oom_score_adj)
-// will be informed of each renderer's score, which is based on the status, so
-// in case Chrome is not able to relieve the pressure quickly enough and the
-// kernel is forced to kill processes, it will be able to do so using the same
-// algorithm as the one used here.
+// TabManager is responsible for triggering tab lifecycle state transitions.
 //
 // The TabManager also delays background tabs' navigation when needed in order
 // to improve users' experience with the foreground tab.
@@ -93,14 +78,11 @@ class TabManager : public LifecycleUnitObserver,
 
   using TabDiscardDoneCB = base::ScopedClosureRunner;
 
-  // |page_signal_receiver| might be null.
-  TabManager(PageSignalReceiver* page_signal_receiver,
-             TabLoadTracker* tab_load_tracker);
+  explicit TabManager(TabLoadTracker* tab_load_tracker);
   ~TabManager() override;
 
-  // Start/Stop the Tab Manager.
+  // Start the Tab Manager.
   void Start();
-  void Stop();
 
   // Returns the LifecycleUnits managed by this, sorted from less to most
   // important to the user. It is unsafe to access a pointer in the returned
@@ -134,10 +116,6 @@ class TabManager : public LifecycleUnitObserver,
   // https://crbug.com/775644
   void AddObserver(TabLifecycleObserver* observer);
   void RemoveObserver(TabLifecycleObserver* observer);
-
-  // Returns true when a given renderer can be purged if the specified
-  // renderer is eligible for purging.
-  bool CanPurgeBackgroundedRenderer(int render_process_id) const;
 
   // Indicates how TabManager should load pending background tabs. The mode is
   // recorded in tracing for easier debugging. The existing explicit numbering
@@ -180,10 +158,6 @@ class TabManager : public LifecycleUnitObserver,
   // non-zero only during session restore.
   int restored_tab_count() const { return restored_tab_count_; }
 
-  InterventionPolicyDatabase* intervention_policy_database() {
-    return intervention_policy_database_.get();
-  }
-
   UsageClock* usage_clock() { return &usage_clock_; }
 
   // Returns true if the tab was created by session restore and has not finished
@@ -198,14 +172,12 @@ class TabManager : public LifecycleUnitObserver,
   friend class TabManagerStatsCollectorTest;
   friend class TabManagerWithProactiveDiscardExperimentEnabledTest;
 
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, ActivateTabResetPurgeState);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, AutoDiscardable);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, BackgroundTabLoadingMode);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, BackgroundTabLoadingSlots);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, BackgroundTabsLoadingOrdering);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, CanOnlyDiscardOnce);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, ChildProcessNotifications);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, DefaultTimeToPurgeInCorrectRange);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, EnablePageAlmostIdleSignal);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, FreezeTab);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, InvalidOrEmptyURL);
@@ -233,12 +205,10 @@ class TabManager : public LifecycleUnitObserver,
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
                            ProtectRecentlyUsedTabsFromUrgentDiscarding);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, ProtectVideoTabs);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, PurgeBackgroundRenderer);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
                            SessionRestoreAfterBackgroundTabOpeningSession);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
                            SessionRestoreBeforeBackgroundTabOpeningSession);
-  FRIEND_TEST_ALL_PREFIXES(TabManagerTest, ShouldPurgeAtDefaultTime);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, TabManagerBasics);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, TabManagerWasDiscarded);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
@@ -264,43 +234,9 @@ class TabManager : public LifecycleUnitObserver,
   FRIEND_TEST_ALL_PREFIXES(TabManagerWithProactiveDiscardExperimentEnabledTest,
                            NoUnfreezeWhenUnfreezingVariationParamDisabled);
 
-  // The time of the first purging after a renderer is backgrounded.
-  // The initial value was chosen because most of users activate backgrounded
-  // tabs within 30 minutes. (c.f. Tabs.StateTransfer.Time_Inactive_Active)
-  static constexpr base::TimeDelta kDefaultMinTimeToPurge =
-      base::TimeDelta::FromMinutes(1);
-
-  // The min/max time to purge ratio. The max time to purge is set to be
-  // min time to purge times this value.
-  const int kDefaultMinMaxTimeToPurgeRatio = 4;
-
   // Returns true if the |url| represents an internal Chrome web UI page that
   // can be easily reloaded and hence makes a good choice to discard.
   static bool IsInternalPage(const GURL& url);
-
-  // Callback for when |update_timer_| fires. Takes care of executing the tasks
-  // that need to be run periodically (see comment in implementation).
-  void UpdateTimerCallback();
-
-  // Returns a random time-to-purge whose min value is min_time_to_purge and max
-  // value is max_time_to_purge.
-  base::TimeDelta GetTimeToPurge(base::TimeDelta min_time_to_purge,
-                                 base::TimeDelta max_time_to_purge) const;
-
-  // Returns true if the tab specified by |content| is now eligible to have
-  // its memory purged.
-  bool ShouldPurgeNow(content::WebContents* content) const;
-
-  // Purges renderers in backgrounded tabs if the following conditions are
-  // satisfied:
-  // - the renderers are not purged yet,
-  // - the renderers are not playing media,
-  //   (CanPurgeBackgroundedRenderer returns true)
-  // - the renderers are left inactive and background for time-to-purge.
-  // If renderers are purged, their internal states become 'purged'.
-  // The state is reset to be 'not purged' only when they are activated
-  // (=ActiveTabChanged is invoked).
-  void PurgeBackgroundedTabsIfNeeded();
 
   // Makes a request to the WebContents at the specified index to freeze its
   // page.
@@ -326,10 +262,9 @@ class TabManager : public LifecycleUnitObserver,
   // beginning of tab discards.
   void UnregisterMemoryPressureListener();
 
-  // Methods called by OnTabStripModelChanged()
+  // Called by OnTabStripModelChanged()
   void OnActiveTabChanged(content::WebContents* old_contents,
                           content::WebContents* new_contents);
-  void OnTabInserted(content::WebContents* contents, bool foreground);
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -494,9 +429,6 @@ class TabManager : public LifecycleUnitObserver,
   // Parameters for proactive freezing and discarding.
   ProactiveTabFreezeAndDiscardParams proactive_freeze_discard_params_;
 
-  // Timer to periodically update the stats of the renderers.
-  base::RepeatingTimer update_timer_;
-
   // Timer to update the state of LifecycleUnits. This is an std::unique_ptr to
   // allow initialization after mock time is setup in unit tests.
   std::unique_ptr<base::OneShotTimer> state_transitions_timer_;
@@ -507,11 +439,6 @@ class TabManager : public LifecycleUnitObserver,
 
   // A listener to global memory pressure events.
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
-
-  // A backgrounded renderer will be purged between min_time_to_purge_ and
-  // max_time_to_purge_.
-  base::TimeDelta min_time_to_purge_;
-  base::TimeDelta max_time_to_purge_;
 
 #if defined(OS_CHROMEOS)
   std::unique_ptr<TabManagerDelegate> delegate_;
@@ -545,18 +472,9 @@ class TabManager : public LifecycleUnitObserver,
   // in parallel.
   size_t loading_slots_;
 
-  // |resource_coordinator_signal_observer_| is owned by TabManager and is used
-  // to receive various signals from ResourceCoordinator.
-  std::unique_ptr<ResourceCoordinatorSignalObserver>
-      resource_coordinator_signal_observer_;
-
   // Records UMAs for tab and system-related events and properties during
   // session restore.
   std::unique_ptr<TabManagerStatsCollector> stats_collector_;
-
-  // The intervention policy database, should be initialized by
-  // InterventionPolicyDatabaseComponentInstallerPolicy.
-  std::unique_ptr<InterventionPolicyDatabase> intervention_policy_database_;
 
   // Last time at which a LifecycleUnit was temporarily unfrozen.
   base::TimeTicks last_unfreeze_time_;
@@ -568,7 +486,7 @@ class TabManager : public LifecycleUnitObserver,
   TabLoadTracker* const tab_load_tracker_;
 
   // Weak pointer factory used for posting delayed tasks.
-  base::WeakPtrFactory<TabManager> weak_ptr_factory_;
+  base::WeakPtrFactory<TabManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TabManager);
 };

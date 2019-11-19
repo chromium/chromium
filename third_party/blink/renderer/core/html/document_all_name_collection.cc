@@ -11,6 +11,13 @@ DocumentAllNameCollection::DocumentAllNameCollection(ContainerNode& document,
                                                      const AtomicString& name)
     : HTMLNameCollection(document, kDocumentAllNamedItems, name) {}
 
+DocumentAllNameCollection::DocumentAllNameCollection(ContainerNode& document,
+                                                     CollectionType type,
+                                                     const AtomicString& name)
+    : DocumentAllNameCollection(document, name) {
+  DCHECK_EQ(type, kDocumentAllNamedItems);
+}
+
 bool DocumentAllNameCollection::ElementMatches(const Element& element) const {
   // https://html.spec.whatwg.org/C/#all-named-elements
   // Match below type of elements by name but any type of element by id.

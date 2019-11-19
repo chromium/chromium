@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/web/public/crw_session_storage.h"
+#import "ios/web/public/session/crw_session_storage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -49,12 +49,19 @@ TEST_F(SessionWindowIOSTest, InitWithSessions) {
 TEST_F(SessionWindowIOSTest, CodingEncoding) {
   SessionWindowIOS* original_session_window = CreateSessionWindowForTest(1u);
 
+  NSError* error = nil;
   NSData* data =
-      [NSKeyedArchiver archivedDataWithRootObject:original_session_window];
+      [NSKeyedArchiver archivedDataWithRootObject:original_session_window
+                            requiringSecureCoding:NO
+                                            error:&error];
   ASSERT_TRUE(data != nil);
+  ASSERT_TRUE(error == nil);
 
+  NSKeyedUnarchiver* unarchiver =
+      [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
+  unarchiver.requiresSecureCoding = NO;
   SessionWindowIOS* unarchived_session_window =
-      [NSKeyedUnarchiver unarchiveObjectWithData:data];
+      [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
   ASSERT_TRUE(unarchived_session_window != nil);
 
   EXPECT_EQ(1u, unarchived_session_window.selectedIndex);

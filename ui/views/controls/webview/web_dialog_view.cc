@@ -15,6 +15,7 @@
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/resource_load_info.mojom.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/webview/webview.h"
@@ -22,6 +23,7 @@
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
@@ -34,16 +36,47 @@ using ui::WebDialogWebContentsDelegate;
 
 namespace views {
 
+ObservableWebView::ObservableWebView(content::BrowserContext* browser_context,
+                                     WebDialogDelegate* delegate)
+    : WebView(browser_context), delegate_(delegate) {}
+
+ObservableWebView::~ObservableWebView() {}
+
+void ObservableWebView::DidFinishLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url) {
+  // Only listen to the main frame.
+  if (render_frame_host->GetParent())
+    return;
+
+  if (delegate_)
+    delegate_->OnWebContentsFinishedLoad();
+}
+
+void ObservableWebView::ResourceLoadComplete(
+    content::RenderFrameHost* render_frame_host,
+    const content::GlobalRequestID& request_id,
+    const content::mojom::ResourceLoadInfo& resource_load_info) {
+  // Only listen to the main frame.
+  if (render_frame_host->GetParent())
+    return;
+
+  if (delegate_)
+    delegate_->OnMainFrameResourceLoadComplete(resource_load_info);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // WebDialogView, public:
 
 WebDialogView::WebDialogView(content::BrowserContext* context,
                              WebDialogDelegate* delegate,
-                             std::unique_ptr<WebContentsHandler> handler)
+                             std::unique_ptr<WebContentsHandler> handler,
+                             bool use_dialog_frame)
     : ClientView(nullptr, nullptr),
       WebDialogWebContentsDelegate(context, std::move(handler)),
       delegate_(delegate),
-      web_view_(new views::WebView(context)) {
+      web_view_(new ObservableWebView(context, delegate)),
+      use_dialog_frame_(use_dialog_frame) {
   web_view_->set_allow_accelerators(true);
   AddChildView(web_view_);
   set_contents_view(web_view_);
@@ -57,8 +90,7 @@ WebDialogView::WebDialogView(content::BrowserContext* context,
   }
 }
 
-WebDialogView::~WebDialogView() {
-}
+WebDialogView::~WebDialogView() = default;
 
 content::WebContents* WebDialogView::web_contents() {
   return web_view_->web_contents();
@@ -125,6 +157,10 @@ bool WebDialogView::CanClose() {
 ////////////////////////////////////////////////////////////////////////////////
 // WebDialogView, views::WidgetDelegate implementation:
 
+bool WebDialogView::OnCloseRequested(Widget::ClosedReason close_reason) {
+  return !delegate_ || delegate_->OnDialogCloseRequested();
+}
+
 bool WebDialogView::CanResize() const {
   if (delegate_)
     return delegate_->CanResizeDialog();
@@ -167,6 +203,12 @@ views::View* WebDialogView::GetContentsView() {
 
 views::ClientView* WebDialogView::CreateClientView(views::Widget* widget) {
   return this;
+}
+
+NonClientFrameView* WebDialogView::CreateNonClientFrameView(Widget* widget) {
+  if (use_dialog_frame_)
+    return DialogDelegate::CreateDialogFrameView(widget);
+  return WidgetDelegate::CreateNonClientFrameView(widget);
 }
 
 views::View* WebDialogView::GetInitiallyFocusedView() {
@@ -226,10 +268,9 @@ std::string WebDialogView::GetDialogArgs() const {
   return std::string();
 }
 
-void WebDialogView::OnDialogShown(content::WebUI* webui,
-                                  content::RenderViewHost* render_view_host) {
+void WebDialogView::OnDialogShown(content::WebUI* webui) {
   if (delegate_)
-    delegate_->OnDialogShown(webui, render_view_host);
+    delegate_->OnDialogShown(webui);
 }
 
 void WebDialogView::OnDialogClosed(const std::string& json_retval) {
@@ -265,6 +306,18 @@ void WebDialogView::OnCloseContents(WebContents* source,
 bool WebDialogView::ShouldShowDialogTitle() const {
   if (delegate_)
     return delegate_->ShouldShowDialogTitle();
+  return true;
+}
+
+bool WebDialogView::ShouldCenterDialogTitleText() const {
+  if (delegate_)
+    return delegate_->ShouldCenterDialogTitleText();
+  return false;
+}
+
+bool WebDialogView::ShouldShowCloseButton() const {
+  if (delegate_)
+    return delegate_->ShouldShowCloseButton();
   return true;
 }
 
@@ -343,22 +396,15 @@ void WebDialogView::BeforeUnloadFired(content::WebContents* tab,
   *proceed_to_fire_unload = proceed;
 }
 
-bool WebDialogView::ShouldCreateWebContents(
-    content::WebContents* web_contents,
-    content::RenderFrameHost* opener,
+bool WebDialogView::IsWebContentsCreationOverridden(
     content::SiteInstance* source_site_instance,
-    int32_t route_id,
-    int32_t main_frame_route_id,
-    int32_t main_frame_widget_route_id,
     content::mojom::WindowContainerType window_container_type,
     const GURL& opener_url,
     const std::string& frame_name,
-    const GURL& target_url,
-    const std::string& partition_id,
-    content::SessionStorageNamespace* session_storage_namespace) {
+    const GURL& target_url) {
   if (delegate_)
-    return delegate_->HandleShouldCreateWebContents();
-  return true;
+    return delegate_->HandleShouldOverrideWebContentsCreation();
+  return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

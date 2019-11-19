@@ -4,6 +4,6 @@
      found in the LICENSE file. -->
 
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@mipmap/ic_launcher_background"/>
-    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+    <background android:drawable="@color/white_adaptive_ic_launcher_background"/>
+    <foreground android:drawable="@mipmap/maskable_app_icon"/>
 </adaptive-icon>

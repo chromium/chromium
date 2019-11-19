@@ -27,6 +27,7 @@ class InputDeviceInfo final : public MediaDeviceInfo {
                   MediaDeviceType);
 
   void SetVideoInputCapabilities(mojom::blink::VideoInputDeviceCapabilitiesPtr);
+  void SetAudioInputCapabilities(mojom::blink::AudioInputDeviceCapabilitiesPtr);
 
   MediaTrackCapabilities* getCapabilities() const;
 

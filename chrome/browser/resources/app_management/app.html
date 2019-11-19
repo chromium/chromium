@@ -19,24 +19,20 @@
 <dom-module id="app-management-app">
   <template>
     <style include="app-management-shared-css">
-    :host {
-      display: flex;
-      flex-direction: column;
-      font-size: var(--app-management-font-size);
-      height: 100%;
-      line-height: var(--app-management-line-height);
-      overflow: hidden;
-    }
+      :host {
+        display: flex;
+        flex-direction: column;
+        font-size: var(--app-management-font-size);
+        height: 100%;
+        line-height: var(--app-management-line-height);
+        overflow: hidden;
+      }
 
-    cr-toolbar {
-      background: var(--md-toolbar-color);
-      min-height: var(--toolbar-height);
-    }
-
-    #main-container {
-      overflow: auto;
-      padding: 0 40px;
-    }
+      #main-container {
+        flex: 1;
+        overflow: auto;
+        padding: 0 40px;
+      }
     </style>
     <cr-toolbar
         page-name="$i18n{title}"

@@ -53,7 +53,7 @@
           'frame': '0x2f7b63884000',
           'scriptId': '52',
           'scriptLine': 539,
-          'scriptName': 'chrome-devtools://devtools/bundled/ui/UIUtils.js'
+          'scriptName': 'devtools://devtools/bundled/ui/UIUtils.js'
         }
       },
       'cat': 'disabled-by-default-devtools.timeline',

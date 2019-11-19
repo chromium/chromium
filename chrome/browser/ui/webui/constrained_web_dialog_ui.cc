@@ -15,7 +15,6 @@
 #include "base/values.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -28,7 +27,6 @@
 #endif
 
 using content::RenderFrameHost;
-using content::RenderViewHost;
 using content::WebContents;
 using content::WebUIMessageHandler;
 
@@ -79,14 +77,13 @@ void ConstrainedWebDialogUI::RenderFrameCreated(
   ui::WebDialogDelegate* dialog_delegate = delegate->GetWebDialogDelegate();
   std::vector<WebUIMessageHandler*> handlers;
   dialog_delegate->GetWebUIMessageHandlers(&handlers);
-  RenderViewHost* render_view_host = render_frame_host->GetRenderViewHost();
-  render_view_host->SetWebUIProperty("dialogArguments",
-                                     dialog_delegate->GetDialogArgs());
+  render_frame_host->SetWebUIProperty("dialogArguments",
+                                      dialog_delegate->GetDialogArgs());
   for (WebUIMessageHandler* handler : handlers) {
     web_ui()->AddMessageHandler(base::WrapUnique(handler));
   }
 
-  dialog_delegate->OnDialogShown(web_ui(), render_view_host);
+  dialog_delegate->OnDialogShown(web_ui());
 }
 
 void ConstrainedWebDialogUI::OnDialogCloseMessage(const base::ListValue* args) {

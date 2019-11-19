@@ -72,11 +72,7 @@ void EnvInputStateController::SetLastMouseLocation(
     const gfx::Point& location_in_root) const {
   // If |root_window| is null, we are only using the event to update event
   // states, so we shouldn't update mouse location.
-  // This should be able to be skipped for Mus regardless of |root_window|, the
-  // last mouse location should be taken care of by MusMouseLocationUpdater. But
-  // leave this as-is for now since some test functions rely on it.
-  // TODO(mukai): fix this.
-  if (!root_window && env_->mode() == aura::Env::Mode::MUS)
+  if (!root_window)
     return;
 
   client::ScreenPositionClient* client =

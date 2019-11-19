@@ -45,7 +45,26 @@ config("crashpad_fuzzer_flags") {
     "-fsanitize=fuzzer",
   ]
 
-  ldflags = [
-    "-fsanitize=address",
-  ]
+  ldflags = [ "-fsanitize=address" ]
+}
+
+if (crashpad_is_ios) {
+  group("ios_enable_arc") {
+    if (crashpad_is_in_chromium) {
+      public_configs = [ "//build/config/compiler:enable_arc" ]
+    } else if (crashpad_is_standalone) {
+      public_configs =
+          [ "//third_party/mini_chromium/mini_chromium/build:ios_enable_arc" ]
+    }
+  }
+
+  group("ios_xctest") {
+    if (crashpad_is_in_chromium) {
+      public_configs = [ "//build/config/ios:xctest_config" ]
+    } else if (crashpad_is_standalone) {
+      public_configs = [
+        "//third_party/mini_chromium/mini_chromium/build/ios:xctest_config",
+      ]
+    }
+  }
 }

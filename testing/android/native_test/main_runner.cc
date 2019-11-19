@@ -6,7 +6,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/logging.h"
-#include "jni/MainRunner_jni.h"
+#include "testing/android/native_test/native_test_jni_headers/MainRunner_jni.h"
 #include "testing/android/native_test/native_test_util.h"
 
 extern int main(int argc, char** argv);

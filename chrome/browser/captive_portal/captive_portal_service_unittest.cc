@@ -20,7 +20,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_source.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -280,7 +280,7 @@ class CaptivePortalServiceTest : public testing::Test,
   // after the test.
   const CaptivePortalService::TestingState old_captive_portal_testing_state_;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   // Note that the construction order of these matters.
   std::unique_ptr<TestingProfile> profile_;

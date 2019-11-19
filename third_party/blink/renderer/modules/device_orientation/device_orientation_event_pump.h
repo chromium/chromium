@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_ORIENTATION_EVENT_PUMP_H_
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/core/frame/platform_event_dispatcher.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_sensor_event_pump.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -15,11 +14,11 @@ namespace blink {
 
 class DeviceOrientationData;
 class DeviceSensorEntry;
+class PlatformEventController;
 
 class MODULES_EXPORT DeviceOrientationEventPump
-    : public GarbageCollectedFinalized<DeviceOrientationEventPump>,
-      public DeviceSensorEventPump,
-      public PlatformEventDispatcher {
+    : public GarbageCollected<DeviceOrientationEventPump>,
+      public DeviceSensorEventPump {
   USING_GARBAGE_COLLECTED_MIXIN(DeviceOrientationEventPump);
 
  public:
@@ -31,6 +30,9 @@ class MODULES_EXPORT DeviceOrientationEventPump
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       bool absolute);
   ~DeviceOrientationEventPump() override;
+
+  void SetController(PlatformEventController*);
+  void RemoveController();
 
   // Note that the returned object is owned by this class.
   DeviceOrientationData* LatestDeviceOrientationData();
@@ -53,9 +55,9 @@ class MODULES_EXPORT DeviceOrientationEventPump
   friend class DeviceOrientationEventPumpTest;
   friend class DeviceAbsoluteOrientationEventPumpTest;
 
-  // Inherited from PlatformEventDispatcher.
-  void StartListening(LocalFrame*) override;
-  void StopListening() override;
+  void StartListening(LocalFrame*);
+  void StopListening();
+  void NotifyController();
 
   // DeviceSensorEventPump:
   bool SensorsReadyOrErrored() const override;
@@ -68,6 +70,7 @@ class MODULES_EXPORT DeviceOrientationEventPump
   bool fall_back_to_absolute_orientation_sensor_;
   bool should_suspend_absolute_orientation_sensor_ = false;
   Member<DeviceOrientationData> data_;
+  Member<PlatformEventController> controller_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceOrientationEventPump);
 };

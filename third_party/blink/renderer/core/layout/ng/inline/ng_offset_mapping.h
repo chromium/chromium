@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NGOffsetMapping_h
-#define NGOffsetMapping_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_OFFSET_MAPPING_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_OFFSET_MAPPING_H_
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_navigator.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -43,15 +42,22 @@ class CORE_EXPORT NGOffsetMappingUnit {
 
  public:
   NGOffsetMappingUnit(NGOffsetMappingUnitType,
-                      const Node&,
+                      const LayoutObject&,
                       unsigned dom_start,
                       unsigned dom_end,
                       unsigned text_content_start,
                       unsigned text_content_end);
   ~NGOffsetMappingUnit();
 
+  // Returns associated node for this unit or null if this unit is associated
+  // to generated content.
+  const Node* AssociatedNode() const;
   NGOffsetMappingUnitType GetType() const { return type_; }
-  const Node& GetOwner() const { return *owner_; }
+  const LayoutObject& GetLayoutObject() const { return *layout_object_; }
+  // Returns |Node| for this unit. If this unit comes from CSS generated
+  // content, we can't use this function.
+  // TODO(yosin): We should rename |GetOwner()| to |NonPseudoNode()|.
+  const Node& GetOwner() const;
   unsigned DOMStart() const { return dom_start_; }
   unsigned DOMEnd() const { return dom_end_; }
   unsigned TextContentStart() const { return text_content_start_; }
@@ -66,33 +72,25 @@ class CORE_EXPORT NGOffsetMappingUnit {
   unsigned ConvertTextContentToFirstDOMOffset(unsigned) const;
   unsigned ConvertTextContentToLastDOMOffset(unsigned) const;
 
+  void AssertValid() const;
+
  private:
   NGOffsetMappingUnitType type_ = NGOffsetMappingUnitType::kIdentity;
 
-  Persistent<const Node> owner_;
+  const LayoutObject* layout_object_;
+  // TODO(yosin): We should rename |dom_start_| and |dom_end_| to appropriate
+  // names since |layout_object_| is for generated text, these offsets are
+  // offset in |LayoutText::text_| instead of DOM node.
   unsigned dom_start_;
   unsigned dom_end_;
+
+  // |text_content_start_| and |text_content_end_| are offsets in
+  // |NGOffsetMapping::text_|. These values are in [0, |text_.length()] to
+  // represent collapsed spaces at the end of block.
   unsigned text_content_start_;
   unsigned text_content_end_;
 
   friend class NGOffsetMappingBuilder;
-};
-
-class NGMappingUnitRange {
-  STACK_ALLOCATED();
-
- public:
-  const NGOffsetMappingUnit* begin() const { return begin_; }
-  const NGOffsetMappingUnit* end() const { return end_; }
-
-  NGMappingUnitRange() : begin_(nullptr), end_(nullptr) {}
-  NGMappingUnitRange(const NGOffsetMappingUnit* begin,
-                     const NGOffsetMappingUnit* end)
-      : begin_(begin), end_(end) {}
-
- private:
-  const NGOffsetMappingUnit* begin_;
-  const NGOffsetMappingUnit* end_;
 };
 
 // Each inline formatting context laid out with LayoutNG has an NGOffsetMapping
@@ -107,7 +105,6 @@ class CORE_EXPORT NGOffsetMapping {
   using RangeMap =
       HashMap<Persistent<const Node>, std::pair<unsigned, unsigned>>;
 
-  NGOffsetMapping(NGOffsetMapping&&);
   NGOffsetMapping(UnitVector&&, RangeMap&&, String);
   ~NGOffsetMapping();
 
@@ -122,7 +119,7 @@ class CORE_EXPORT NGOffsetMapping {
 
   // NGOffsetMapping APIs only accept the following positions:
   // 1. Offset-in-anchor in a text node;
-  // 2. Before/After-anchor of an inline-level node.
+  // 2. Before/After-anchor of an atomic inline or a text-like node like <br>.
   static bool AcceptsPosition(const Position&);
 
   // Returns the mapping object of the inline formatting context laying out the
@@ -158,9 +155,20 @@ class CORE_EXPORT NGOffsetMapping {
   // same anchor node.
   UnitVector GetMappingUnitsForDOMRange(const EphemeralRange&) const;
 
-  // Returns all NGOffsetMappingUnits associated to |node|. Note: |node| should
-  // have associated mapping.
-  NGMappingUnitRange GetMappingUnitsForNode(const Node& node) const;
+  // Returns all NGOffsetMappingUnits associated to |node|. When |node| is
+  // laid out with ::first-letter, this function returns both first-letter part
+  // and remaining part. Note: |node| should have associated mapping.
+  base::span<const NGOffsetMappingUnit> GetMappingUnitsForNode(
+      const Node& node) const;
+
+  // Returns all NGOffsetMappingUnits associated to |layout_object|. This
+  // function works even if |layout_object| is for CSS generated content
+  // ("content" property in ::before/::after, etc.)
+  // Note: Unlike |GetMappingUnitsForNode()|, this function returns units
+  // for first-letter or remaining part only instead of both parts.
+  // Note: |layout_object| should have associated mapping.
+  base::span<const NGOffsetMappingUnit> GetMappingUnitsForLayoutObject(
+      const LayoutObject& layout_object) const;
 
   // Returns the text content offset corresponding to the given position.
   // Returns nullopt when the position is not laid out in this context.
@@ -200,21 +208,16 @@ class CORE_EXPORT NGOffsetMapping {
   Position GetFirstPosition(unsigned) const;
   Position GetLastPosition(unsigned) const;
 
-  // Converts the given caret position on text content to a PositionWithAffinity
-  // in DOM. If |position| is before a character, the function creates a
-  // downstream position before |GetLastPosition()| of the character; otherwise,
-  // it returns an upstream position after |GetFirstPosition()| of the character
-  PositionWithAffinity GetPositionWithAffinity(
-      const NGCaretNavigator::Position& position) const;
-
   // Returns all NGOffsetMappingUnits whose text content ranges has non-empty
   // (but possibly collapsed) intersection with (start, end). Note that units
   // that only "touch" |start| or |end| are excluded.
-  NGMappingUnitRange GetMappingUnitsForTextContentOffsetRange(
-      unsigned start,
-      unsigned end) const;
+  // Note: Returned range may include units for generated content.
+  base::span<const NGOffsetMappingUnit>
+  GetMappingUnitsForTextContentOffsetRange(unsigned start, unsigned end) const;
 
-  // TODO(xiaochengh): Add offset-to-DOM APIs skipping generated contents.
+  // Returns the last |NGOffsetMappingUnit| where |TextContentStart() >= offset|
+  // including unit for generated content.
+  const NGOffsetMappingUnit* GetLastMappingUnit(unsigned offset) const;
 
   // ------ APIs inspecting the text content string ------
 
@@ -240,4 +243,4 @@ CORE_EXPORT LayoutBlockFlow* NGInlineFormattingContextOf(const Position&);
 
 }  // namespace blink
 
-#endif  // NGOffsetMapping_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_OFFSET_MAPPING_H_

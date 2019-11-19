@@ -16,15 +16,14 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/stream_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/mime_handler_view_mode.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_constants.h"
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_content_script_manager.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
@@ -44,40 +43,6 @@ using guest_view::GuestViewManagerDelegate;
 using guest_view::GuestViewMessageFilter;
 
 namespace extensions {
-
-namespace {
-
-// TODO(ekaramad): Remove this once MimeHandlerViewGuest has fully migrated to
-// using cross-process-frames.
-// Returns true if |child_routing_id| corresponds to a frame which is a direct
-// child of |parent_rfh|.
-bool AreRoutingIDsConsistent(RenderFrameHost* parent_rfh,
-                             int32_t child_routing_id) {
-  const bool uses_cross_process_frame =
-      content::MimeHandlerViewMode::UsesCrossProcessFrame();
-  const bool is_child_routing_id_none = (child_routing_id == MSG_ROUTING_NONE);
-
-  // For cross-process-frame MimeHandlerView, |child_routing_id| cannot be none.
-  bool should_shutdown_process =
-      (is_child_routing_id_none == uses_cross_process_frame);
-
-  if (!should_shutdown_process && uses_cross_process_frame) {
-    // The |child_routing_id| is the routing ID of either a RenderFrame or a
-    // proxy in the |parent_rfh|. Therefore, to get the associated RFH we need
-    // to go through the FTN first.
-    int32_t child_ftn_id = RenderFrameHost::GetFrameTreeNodeIdForRoutingId(
-        parent_rfh->GetProcess()->GetID(), child_routing_id);
-    // The |child_rfh| is not really used; it is retrieved to verify whether or
-    // not what the renderer process says makes any sense.
-    auto* child_rfh = content::WebContents::FromRenderFrameHost(parent_rfh)
-                          ->UnsafeFindFrameByFrameTreeNodeId(child_ftn_id);
-    should_shutdown_process =
-        child_rfh && (child_rfh->GetParent() != parent_rfh);
-  }
-  return !should_shutdown_process;
-}
-
-}  // namespace
 
 const uint32_t ExtensionsGuestViewMessageFilter::kFilteredMessageClasses[] = {
     GuestViewMsgStart, ExtensionsGuestViewMsgStart};
@@ -151,24 +116,41 @@ void ExtensionsGuestViewMessageFilter::CreateMimeHandlerViewGuest(
     const std::string& view_id,
     int32_t element_instance_id,
     const gfx::Size& element_size,
-    mime_handler::BeforeUnloadControlPtr before_unload_control,
-    int32_t plugin_frame_routing_id) {
-  base::PostTaskWithTraits(
+    mojo::PendingRemote<mime_handler::BeforeUnloadControl>
+        before_unload_control) {
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&ExtensionsGuestViewMessageFilter::
                          CreateMimeHandlerViewGuestOnUIThread,
                      this, render_frame_id, view_id, element_instance_id,
-                     element_size, before_unload_control.PassInterface(),
-                     plugin_frame_routing_id, false));
+                     element_size, std::move(before_unload_control), false));
 }
 
+void ExtensionsGuestViewMessageFilter::ReadyToCreateMimeHandlerView(
+    int32_t render_frame_id,
+    bool success) {
+  if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    base::PostTask(
+        FROM_HERE, {content::BrowserThread::UI},
+        base::BindOnce(
+            &ExtensionsGuestViewMessageFilter::ReadyToCreateMimeHandlerView,
+            this, render_frame_id, success));
+    return;
+  }
+  auto* rfh =
+      content::RenderFrameHost::FromID(render_process_id_, render_frame_id);
+  if (!rfh)
+    return;
+  if (auto* mhve = MimeHandlerViewEmbedder::Get(rfh->GetFrameTreeNodeId()))
+    mhve->ReadyToCreateMimeHandlerView(success);
+}
 void ExtensionsGuestViewMessageFilter::CreateMimeHandlerViewGuestOnUIThread(
     int render_frame_id,
     const std::string& view_id,
     int element_instance_id,
     const gfx::Size& element_size,
-    mime_handler::BeforeUnloadControlPtrInfo before_unload_control,
-    int32_t plugin_frame_routing_id,
+    mojo::PendingRemote<mime_handler::BeforeUnloadControl>
+        before_unload_control,
     bool is_full_page_plugin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -179,17 +161,10 @@ void ExtensionsGuestViewMessageFilter::CreateMimeHandlerViewGuestOnUIThread(
   if (!embedder_web_contents)
     return;
 
-  if (!AreRoutingIDsConsistent(rfh, plugin_frame_routing_id)) {
-    bad_message::ReceivedBadMessage(rfh->GetProcess(),
-                                    bad_message::MHVG_INVALID_PLUGIN_FRAME_ID);
-    return;
-  }
-
   GuestViewManager::WebContentsCreatedCallback callback = base::BindOnce(
       &ExtensionsGuestViewMessageFilter::MimeHandlerViewGuestCreatedCallback,
       this, element_instance_id, render_process_id_, render_frame_id,
-      plugin_frame_routing_id, element_size, std::move(before_unload_control),
-      is_full_page_plugin);
+      element_size, std::move(before_unload_control), is_full_page_plugin);
 
   base::DictionaryValue create_params;
   create_params.SetString(mime_handler_view::kViewId, view_id);
@@ -227,17 +202,14 @@ void ExtensionsGuestViewMessageFilter::CreateEmbeddedMimeHandlerViewGuest(
     const GURL& original_url,
     int32_t element_instance_id,
     const gfx::Size& element_size,
-    content::mojom::TransferrableURLLoaderPtr transferrable_url_loader,
-    int32_t plugin_frame_routing_id) {
+    content::mojom::TransferrableURLLoaderPtr transferrable_url_loader) {
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {content::BrowserThread::UI},
-        base::BindOnce(&ExtensionsGuestViewMessageFilter::
-                           CreateEmbeddedMimeHandlerViewGuest,
-                       this, render_frame_id, tab_id, original_url,
-                       element_instance_id, element_size,
-                       base::Passed(&transferrable_url_loader),
-                       plugin_frame_routing_id));
+    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                   base::BindOnce(&ExtensionsGuestViewMessageFilter::
+                                      CreateEmbeddedMimeHandlerViewGuest,
+                                  this, render_frame_id, tab_id, original_url,
+                                  element_instance_id, element_size,
+                                  base::Passed(&transferrable_url_loader)));
     return;
   }
 
@@ -266,7 +238,7 @@ void ExtensionsGuestViewMessageFilter::CreateEmbeddedMimeHandlerViewGuest(
 
   std::string view_id = base::GenerateGUID();
   std::unique_ptr<StreamContainer> stream_container(new StreamContainer(
-      nullptr, tab_id, true /* embedded */, handler_url, extension_id,
+      tab_id, true /* embedded */, handler_url, extension_id,
       std::move(transferrable_url_loader), original_url));
   MimeHandlerStreamManager::Get(browser_context)
       ->AddStream(view_id, std::move(stream_container),
@@ -275,16 +247,16 @@ void ExtensionsGuestViewMessageFilter::CreateEmbeddedMimeHandlerViewGuest(
 
   CreateMimeHandlerViewGuestOnUIThread(render_frame_id, view_id,
                                        element_instance_id, element_size,
-                                       nullptr, plugin_frame_routing_id, false);
+                                       mojo::NullRemote(), false);
 }
 
 void ExtensionsGuestViewMessageFilter::MimeHandlerViewGuestCreatedCallback(
     int element_instance_id,
     int embedder_render_process_id,
     int embedder_render_frame_id,
-    int32_t plugin_frame_routing_id,
     const gfx::Size& element_size,
-    mime_handler::BeforeUnloadControlPtrInfo before_unload_control,
+    mojo::PendingRemote<mime_handler::BeforeUnloadControl>
+        before_unload_control,
     bool is_full_page_plugin,
     WebContents* web_contents) {
   auto* guest_view = MimeHandlerViewGuest::FromWebContents(web_contents);
@@ -320,11 +292,6 @@ void ExtensionsGuestViewMessageFilter::MimeHandlerViewGuestCreatedCallback(
         element_instance_id));
     return;
   }
-
-  MimeHandlerViewAttachHelper::Get(render_process_id_)
-      ->AttachToOuterWebContents(guest_view, embedder_render_process_id,
-                                 plugin_frame_routing_id, element_instance_id,
-                                 is_full_page_plugin);
 }
 
 }  // namespace extensions

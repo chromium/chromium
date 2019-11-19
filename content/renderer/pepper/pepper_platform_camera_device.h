@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/unguessable_token.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/media/video_capture.h"
 
@@ -36,7 +37,7 @@ class PepperPlatformCameraDevice {
  private:
   void OnDeviceOpened(int request_id, bool succeeded, const std::string& label);
 
-  // Called by VideoCaptureImplManager.
+  // Called by blink::WebVideoCaptureImplManager.
   void OnDeviceSupportedFormatsEnumerated(
       const media::VideoCaptureFormats& formats);
 
@@ -48,8 +49,8 @@ class PepperPlatformCameraDevice {
   const std::string device_id_;
 
   std::string label_;
-  int session_id_;
-  base::Closure release_device_cb_;
+  base::UnguessableToken session_id_;
+  base::OnceClosure release_device_cb_;
 
   PepperCameraDeviceHost* handler_;
 
@@ -60,7 +61,7 @@ class PepperPlatformCameraDevice {
 
   base::ThreadChecker thread_checker_;
 
-  base::WeakPtrFactory<PepperPlatformCameraDevice> weak_factory_;
+  base::WeakPtrFactory<PepperPlatformCameraDevice> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperPlatformCameraDevice);
 };

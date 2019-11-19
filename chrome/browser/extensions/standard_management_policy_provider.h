@@ -42,6 +42,8 @@ class StandardManagementPolicyProvider : public ManagementPolicy::Provider {
                           base::string16* error) const override;
   bool MustRemainInstalled(const Extension* extension,
                            base::string16* error) const override;
+  bool ShouldForceUninstall(const Extension* extension,
+                            base::string16* error) const override;
 
  private:
   const ExtensionManagement* settings_;

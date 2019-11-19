@@ -12,7 +12,7 @@
  * @throws {Error} In case of non supported markup.
  * @return {DocumentFragment} A document fragment containing the DOM tree.
  */
-const parseHtmlSubset = (function() {
+/* #export */ const parseHtmlSubset = (function() {
   'use strict';
 
   const allowedAttributes = {

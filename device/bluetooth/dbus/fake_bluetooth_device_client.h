@@ -83,41 +83,41 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothDeviceClient
       const dbus::ObjectPath& adapter_path) override;
   Properties* GetProperties(const dbus::ObjectPath& object_path) override;
   void Connect(const dbus::ObjectPath& object_path,
-               const base::Closure& callback,
-               const ErrorCallback& error_callback) override;
+               base::OnceClosure callback,
+               ErrorCallback error_callback) override;
   void Disconnect(const dbus::ObjectPath& object_path,
-                  const base::Closure& callback,
-                  const ErrorCallback& error_callback) override;
+                  base::OnceClosure callback,
+                  ErrorCallback error_callback) override;
   void ConnectProfile(const dbus::ObjectPath& object_path,
                       const std::string& uuid,
-                      const base::Closure& callback,
-                      const ErrorCallback& error_callback) override;
+                      base::OnceClosure callback,
+                      ErrorCallback error_callback) override;
   void DisconnectProfile(const dbus::ObjectPath& object_path,
                          const std::string& uuid,
-                         const base::Closure& callback,
-                         const ErrorCallback& error_callback) override;
+                         base::OnceClosure callback,
+                         ErrorCallback error_callback) override;
   void Pair(const dbus::ObjectPath& object_path,
-            const base::Closure& callback,
-            const ErrorCallback& error_callback) override;
+            base::OnceClosure callback,
+            ErrorCallback error_callback) override;
   void CancelPairing(const dbus::ObjectPath& object_path,
-                     const base::Closure& callback,
-                     const ErrorCallback& error_callback) override;
+                     base::OnceClosure callback,
+                     ErrorCallback error_callback) override;
   void GetConnInfo(const dbus::ObjectPath& object_path,
-                   const ConnInfoCallback& callback,
-                   const ErrorCallback& error_callback) override;
+                   ConnInfoCallback callback,
+                   ErrorCallback error_callback) override;
   void SetLEConnectionParameters(const dbus::ObjectPath& object_path,
                                  const ConnectionParameters& conn_params,
-                                 const base::Closure& callback,
-                                 const ErrorCallback& error_callback) override;
+                                 base::OnceClosure callback,
+                                 ErrorCallback error_callback) override;
   void GetServiceRecords(const dbus::ObjectPath& object_path,
-                         const ServiceRecordsCallback& callback,
-                         const ErrorCallback& error_callback) override;
+                         ServiceRecordsCallback callback,
+                         ErrorCallback error_callback) override;
   void ExecuteWrite(const dbus::ObjectPath& object_path,
-                    const base::Closure& callback,
-                    const ErrorCallback& error_callback) override;
+                    base::OnceClosure callback,
+                    ErrorCallback error_callback) override;
   void AbortWrite(const dbus::ObjectPath& object_path,
-                  const base::Closure& callback,
-                  const ErrorCallback& error_callback) override;
+                  base::OnceClosure callback,
+                  ErrorCallback error_callback) override;
 
   void SetSimulationIntervalMs(int interval_ms);
 
@@ -155,8 +155,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothDeviceClient
   // |callback| will be called, on failure, |error_callback| is called.
   void SimulatePairing(const dbus::ObjectPath& object_path,
                        bool incoming_request,
-                       const base::Closure& callback,
-                       const ErrorCallback& error_callback);
+                       base::OnceClosure callback,
+                       ErrorCallback error_callback);
 
   // Updates the connection properties of the fake device that will be returned
   // by GetConnInfo.
@@ -308,16 +308,16 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothDeviceClient
   void IncomingPairingSimulationTimer();
 
   void CompleteSimulatedPairing(const dbus::ObjectPath& object_path,
-                                const base::Closure& callback,
-                                const ErrorCallback& error_callback);
+                                base::OnceClosure callback,
+                                ErrorCallback error_callback);
   void TimeoutSimulatedPairing(const dbus::ObjectPath& object_path,
-                               const ErrorCallback& error_callback);
+                               ErrorCallback error_callback);
   void CancelSimulatedPairing(const dbus::ObjectPath& object_path,
-                              const ErrorCallback& error_callback);
+                              ErrorCallback error_callback);
   void RejectSimulatedPairing(const dbus::ObjectPath& object_path,
-                              const ErrorCallback& error_callback);
+                              ErrorCallback error_callback);
   void FailSimulatedPairing(const dbus::ObjectPath& object_path,
-                            const ErrorCallback& error_callback);
+                            ErrorCallback error_callback);
   void AddInputDeviceIfNeeded(const dbus::ObjectPath& object_path,
                               Properties* properties);
 
@@ -326,34 +326,34 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothDeviceClient
   void InvalidateDeviceRSSI(const dbus::ObjectPath& object_path);
 
   void PinCodeCallback(const dbus::ObjectPath& object_path,
-                       const base::Closure& callback,
-                       const ErrorCallback& error_callback,
+                       base::OnceClosure callback,
+                       ErrorCallback error_callback,
                        BluetoothAgentServiceProvider::Delegate::Status status,
                        const std::string& pincode);
   void PasskeyCallback(const dbus::ObjectPath& object_path,
-                       const base::Closure& callback,
-                       const ErrorCallback& error_callback,
+                       base::OnceClosure callback,
+                       ErrorCallback error_callback,
                        BluetoothAgentServiceProvider::Delegate::Status status,
                        uint32_t passkey);
   void ConfirmationCallback(
       const dbus::ObjectPath& object_path,
-      const base::Closure& callback,
-      const ErrorCallback& error_callback,
+      base::OnceClosure callback,
+      ErrorCallback error_callback,
       BluetoothAgentServiceProvider::Delegate::Status status);
   void SimulateKeypress(uint16_t entered,
                         const dbus::ObjectPath& object_path,
-                        const base::Closure& callback,
-                        const ErrorCallback& error_callback);
+                        base::OnceClosure callback,
+                        ErrorCallback error_callback);
 
   void ConnectionCallback(
       const dbus::ObjectPath& object_path,
-      const base::Closure& callback,
-      const ErrorCallback& error_callback,
+      base::OnceClosure callback,
+      ErrorCallback error_callback,
       BluetoothProfileServiceProvider::Delegate::Status status);
   void DisconnectionCallback(
       const dbus::ObjectPath& object_path,
-      const base::Closure& callback,
-      const ErrorCallback& error_callback,
+      base::OnceClosure callback,
+      ErrorCallback error_callback,
       BluetoothProfileServiceProvider::Delegate::Status status);
 
   // List of observers interested in event notifications from us.

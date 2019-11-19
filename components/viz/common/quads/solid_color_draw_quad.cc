@@ -19,8 +19,8 @@ void SolidColorDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                                 SkColor color,
                                 bool force_anti_aliasing_off) {
   bool needs_blending = SkColorGetA(color) != 255;
-  DrawQuad::SetAll(shared_quad_state, DrawQuad::SOLID_COLOR, rect, visible_rect,
-                   needs_blending);
+  DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kSolidColor, rect,
+                   visible_rect, needs_blending);
   this->color = color;
   this->force_anti_aliasing_off = force_anti_aliasing_off;
 }
@@ -31,15 +31,15 @@ void SolidColorDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                                 bool needs_blending,
                                 SkColor color,
                                 bool force_anti_aliasing_off) {
-  DrawQuad::SetAll(shared_quad_state, DrawQuad::SOLID_COLOR, rect, visible_rect,
-                   needs_blending);
+  DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kSolidColor, rect,
+                   visible_rect, needs_blending);
   this->color = color;
   this->force_anti_aliasing_off = force_anti_aliasing_off;
 }
 
 const SolidColorDrawQuad* SolidColorDrawQuad::MaterialCast(
     const DrawQuad* quad) {
-  DCHECK(quad->material == DrawQuad::SOLID_COLOR);
+  DCHECK(quad->material == DrawQuad::Material::kSolidColor);
   return static_cast<const SolidColorDrawQuad*>(quad);
 }
 

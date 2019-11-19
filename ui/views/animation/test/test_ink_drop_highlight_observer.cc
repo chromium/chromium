@@ -9,7 +9,7 @@
 namespace views {
 namespace test {
 
-TestInkDropHighlightObserver::TestInkDropHighlightObserver() {}
+TestInkDropHighlightObserver::TestInkDropHighlightObserver() = default;
 
 void TestInkDropHighlightObserver::AnimationStarted(
     InkDropHighlight::AnimationType animation_type) {

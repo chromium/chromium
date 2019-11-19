@@ -56,7 +56,7 @@ void* WebArrayBuffer::Data() const {
 
 unsigned WebArrayBuffer::ByteLength() const {
   if (!IsNull())
-    return private_->ByteLength();
+    return private_->DeprecatedByteLengthAsUnsigned();
   return 0;
 }
 

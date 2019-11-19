@@ -15,7 +15,13 @@ class TestPaintWorkletLayerPainter : public PaintWorkletLayerPainter {
   TestPaintWorkletLayerPainter();
   ~TestPaintWorkletLayerPainter() override;
 
-  sk_sp<PaintRecord> Paint() override;
+  void DispatchWorklets(PaintWorkletJobMap, DoneCallback) override;
+  bool HasOngoingDispatch() const override;
+
+  DoneCallback TakeDoneCallback() { return std::move(done_callback_); }
+
+ private:
+  DoneCallback done_callback_;
 };
 
 }  // namespace cc

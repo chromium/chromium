@@ -21,18 +21,17 @@ bool IsValidPositionCoord(CSSNumericValue* v) {
 }
 
 CSSNumericValue* FromSingleValue(const CSSValue& value) {
-  if (value.IsIdentifierValue()) {
-    const auto& ident = ToCSSIdentifierValue(value);
-    switch (ident.GetValueID()) {
-      case CSSValueLeft:
-      case CSSValueTop:
+  if (const auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    switch (ident->GetValueID()) {
+      case CSSValueID::kLeft:
+      case CSSValueID::kTop:
         return CSSUnitValue::Create(0,
                                     CSSPrimitiveValue::UnitType::kPercentage);
-      case CSSValueCenter:
+      case CSSValueID::kCenter:
         return CSSUnitValue::Create(50,
                                     CSSPrimitiveValue::UnitType::kPercentage);
-      case CSSValueRight:
-      case CSSValueBottom:
+      case CSSValueID::kRight:
+      case CSSValueID::kBottom:
         return CSSUnitValue::Create(100,
                                     CSSPrimitiveValue::UnitType::kPercentage);
       default:
@@ -41,24 +40,23 @@ CSSNumericValue* FromSingleValue(const CSSValue& value) {
     }
   }
 
-  if (value.IsPrimitiveValue())
-    return CSSNumericValue::FromCSSValue(ToCSSPrimitiveValue(value));
+  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value))
+    return CSSNumericValue::FromCSSValue(*primitive_value);
 
-  DCHECK(value.IsValuePair());
-  const auto& pair = ToCSSValuePair(value);
-  DCHECK(pair.First().IsIdentifierValue());
-  DCHECK(pair.Second().IsPrimitiveValue());
+  const auto& pair = To<CSSValuePair>(value);
+  DCHECK(IsA<CSSIdentifierValue>(pair.First()));
+  DCHECK(IsA<CSSPrimitiveValue>(pair.Second()));
 
   CSSNumericValue* offset =
-      CSSNumericValue::FromCSSValue(ToCSSPrimitiveValue(pair.Second()));
+      CSSNumericValue::FromCSSValue(To<CSSPrimitiveValue>(pair.Second()));
   DCHECK(offset);
 
-  switch (ToCSSIdentifierValue(pair.First()).GetValueID()) {
-    case CSSValueLeft:
-    case CSSValueTop:
+  switch (To<CSSIdentifierValue>(pair.First()).GetValueID()) {
+    case CSSValueID::kLeft:
+    case CSSValueID::kTop:
       return offset;
-    case CSSValueRight:
-    case CSSValueBottom: {
+    case CSSValueID::kRight:
+    case CSSValueID::kBottom: {
       CSSNumericValueVector args;
       args.push_back(
           CSSUnitValue::Create(100, CSSPrimitiveValue::UnitType::kPercentage));
@@ -97,11 +95,11 @@ CSSPositionValue* CSSPositionValue::Create(CSSNumericValue* x,
 }
 
 CSSPositionValue* CSSPositionValue::FromCSSValue(const CSSValue& value) {
-  DCHECK(value.IsValuePair());
-  const auto& pair = ToCSSValuePair(value);
-
-  CSSNumericValue* x = FromSingleValue(pair.First());
-  CSSNumericValue* y = FromSingleValue(pair.Second());
+  const auto* pair = DynamicTo<CSSValuePair>(&value);
+  if (!pair)
+    return nullptr;
+  CSSNumericValue* x = FromSingleValue(pair->First());
+  CSSNumericValue* y = FromSingleValue(pair->Second());
   DCHECK(x);
   DCHECK(y);
 
@@ -133,7 +131,8 @@ const CSSValue* CSSPositionValue::ToCSSValue() const {
   const CSSValue* y = y_->ToCSSValue();
   if (!x || !y)
     return nullptr;
-  return CSSValuePair::Create(x, y, CSSValuePair::kKeepIdenticalValues);
+  return MakeGarbageCollected<CSSValuePair>(x, y,
+                                            CSSValuePair::kKeepIdenticalValues);
 }
 
 }  // namespace blink

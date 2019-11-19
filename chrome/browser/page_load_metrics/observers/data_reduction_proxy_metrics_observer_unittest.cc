@@ -10,29 +10,28 @@
 
 #include "base/metrics/field_trial.h"
 #include "base/time/time.h"
+#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
+#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/page_load_metrics/observers/data_reduction_proxy_metrics_observer_test_utils.h"
 #include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
-#include "chrome/browser/page_load_metrics/page_load_tracker.h"
-#include "components/data_reduction_proxy/content/browser/data_reduction_proxy_pingback_client_impl.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
+#include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/previews/content/previews_user_data.h"
+#include "content/public/browser/web_contents.h"
 
 namespace data_reduction_proxy {
 
 // DataReductionProxyMetricsObserver responsible for modifying data about the
-// navigation in OnCommit. It is also responsible for using a passed in
-// DataReductionProxyPingbackClient instead of the default.
+// navigation in OnCommit.
 class TestDataReductionProxyMetricsObserver
     : public DataReductionProxyMetricsObserver {
  public:
   TestDataReductionProxyMetricsObserver(content::WebContents* web_contents,
-                                        TestPingbackClient* pingback_client,
                                         bool data_reduction_proxy_used,
                                         bool cached_data_reduction_proxy_used,
                                         bool lite_page_used,
                                         bool black_listed)
       : web_contents_(web_contents),
-        pingback_client_(pingback_client),
         data_reduction_proxy_used_(data_reduction_proxy_used),
         cached_data_reduction_proxy_used_(cached_data_reduction_proxy_used),
         lite_page_used_(lite_page_used),
@@ -43,13 +42,17 @@ class TestDataReductionProxyMetricsObserver
   // DataReductionProxyMetricsObserver:
   ObservePolicy OnCommitCalled(content::NavigationHandle* navigation_handle,
                                ukm::SourceId source_id) override {
-    DataReductionProxyData* data =
-        DataForNavigationHandle(web_contents_, navigation_handle);
+    auto data =
+        std::make_unique<data_reduction_proxy::DataReductionProxyData>();
+    data->set_request_url(navigation_handle->GetURL());
     data->set_used_data_reduction_proxy(data_reduction_proxy_used_);
     data->set_was_cached_data_reduction_proxy_response(
         cached_data_reduction_proxy_used_);
     data->set_request_url(GURL(kDefaultTestUrl));
     data->set_lite_page_received(lite_page_used_);
+    DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
+        web_contents_->GetBrowserContext())
+        ->SetDataForNextCommitForTesting(std::move(data));
 
     auto* previews_data = PreviewsDataForNavigationHandle(navigation_handle);
     previews_data->set_black_listed_for_lite_page(black_listed_);
@@ -58,33 +61,8 @@ class TestDataReductionProxyMetricsObserver
                                                              source_id);
   }
 
-  DataReductionProxyPingbackClient* GetPingbackClient() const override {
-    return pingback_client_;
-  }
-
-  void RequestProcessDump(
-      base::ProcessId pid,
-      memory_instrumentation::MemoryInstrumentation::RequestGlobalDumpCallback
-          callback) override {
-    memory_instrumentation::mojom::GlobalMemoryDumpPtr global_dump(
-        memory_instrumentation::mojom::GlobalMemoryDump::New());
-
-    memory_instrumentation::mojom::ProcessMemoryDumpPtr pmd(
-        memory_instrumentation::mojom::ProcessMemoryDump::New());
-    pmd->pid = pid;
-    pmd->process_type = memory_instrumentation::mojom::ProcessType::RENDERER;
-    pmd->os_dump = memory_instrumentation::mojom::OSMemDump::New();
-    pmd->os_dump->private_footprint_kb = kMemoryKb;
-
-    global_dump->process_dumps.push_back(std::move(pmd));
-    std::move(callback).Run(true,
-                            memory_instrumentation::GlobalMemoryDump::MoveFrom(
-                                std::move(global_dump)));
-  }
-
  private:
   content::WebContents* web_contents_;
-  TestPingbackClient* pingback_client_;
   bool data_reduction_proxy_used_;
   bool cached_data_reduction_proxy_used_;
   bool lite_page_used_;
@@ -130,18 +108,18 @@ class DataReductionProxyMetricsObserverTest
   void ValidateHistogramsForSuffix(
       const std::string& histogram_suffix,
       const base::Optional<base::TimeDelta>& event) {
-    histogram_tester().ExpectTotalCount(
+    tester()->histogram_tester().ExpectTotalCount(
         std::string(internal::kHistogramDataReductionProxyPrefix)
             .append(histogram_suffix),
         data_reduction_proxy_used() || cached_data_reduction_proxy_used() ? 1
                                                                           : 0);
-    histogram_tester().ExpectTotalCount(
+    tester()->histogram_tester().ExpectTotalCount(
         std::string(internal::kHistogramDataReductionProxyLitePagePrefix)
             .append(histogram_suffix),
         is_using_lite_page() ? 1 : 0);
     if (!(data_reduction_proxy_used() || cached_data_reduction_proxy_used()))
       return;
-    histogram_tester().ExpectUniqueSample(
+    tester()->histogram_tester().ExpectUniqueSample(
         std::string(internal::kHistogramDataReductionProxyPrefix)
             .append(histogram_suffix),
         static_cast<base::HistogramBase::Sample>(
@@ -149,7 +127,7 @@ class DataReductionProxyMetricsObserverTest
         1);
     if (!is_using_lite_page())
       return;
-    histogram_tester().ExpectUniqueSample(
+    tester()->histogram_tester().ExpectUniqueSample(
         std::string(internal::kHistogramDataReductionProxyLitePagePrefix)
             .append(histogram_suffix),
         event.value().InMilliseconds(), is_using_lite_page() ? 1 : 0);
@@ -160,67 +138,67 @@ class DataReductionProxyMetricsObserverTest
                               int64_t network_bytes,
                               int64_t drp_bytes,
                               int64_t ocl_bytes) {
-    histogram_tester().ExpectUniqueSample(
+    tester()->histogram_tester().ExpectUniqueSample(
         std::string(internal::kHistogramDataReductionProxyPrefix)
             .append(internal::kResourcesPercentProxied),
         100 * drp_resources / network_resources, 1);
 
-    histogram_tester().ExpectUniqueSample(
+    tester()->histogram_tester().ExpectUniqueSample(
         std::string(internal::kHistogramDataReductionProxyPrefix)
             .append(internal::kBytesPercentProxied),
         static_cast<int>(100 * drp_bytes / network_bytes), 1);
 
-    histogram_tester().ExpectUniqueSample(
+    tester()->histogram_tester().ExpectUniqueSample(
         std::string(internal::kHistogramDataReductionProxyPrefix)
             .append(internal::kNetworkResources),
         network_resources, 1);
 
-    histogram_tester().ExpectUniqueSample(
+    tester()->histogram_tester().ExpectUniqueSample(
         std::string(internal::kHistogramDataReductionProxyPrefix)
             .append(internal::kResourcesProxied),
         drp_resources, 1);
 
-    histogram_tester().ExpectUniqueSample(
+    tester()->histogram_tester().ExpectUniqueSample(
         std::string(internal::kHistogramDataReductionProxyPrefix)
             .append(internal::kResourcesNotProxied),
         network_resources - drp_resources, 1);
 
-    histogram_tester().ExpectUniqueSample(
+    tester()->histogram_tester().ExpectUniqueSample(
         std::string(internal::kHistogramDataReductionProxyPrefix)
             .append(internal::kNetworkBytes),
         static_cast<int>(network_bytes / 1024), 1);
 
-    histogram_tester().ExpectUniqueSample(
+    tester()->histogram_tester().ExpectUniqueSample(
         std::string(internal::kHistogramDataReductionProxyPrefix)
             .append(internal::kBytesProxied),
         static_cast<int>(drp_bytes / 1024), 1);
 
-    histogram_tester().ExpectUniqueSample(
+    tester()->histogram_tester().ExpectUniqueSample(
         std::string(internal::kHistogramDataReductionProxyPrefix)
             .append(internal::kBytesNotProxied),
         static_cast<int>((network_bytes - drp_bytes) / 1024), 1);
 
-    histogram_tester().ExpectUniqueSample(
+    tester()->histogram_tester().ExpectUniqueSample(
         std::string(internal::kHistogramDataReductionProxyPrefix)
             .append(internal::kBytesOriginal),
         static_cast<int>(ocl_bytes / 1024), 1);
     if (ocl_bytes < network_bytes) {
-      histogram_tester().ExpectUniqueSample(
+      tester()->histogram_tester().ExpectUniqueSample(
           std::string(internal::kHistogramDataReductionProxyPrefix)
               .append(internal::kBytesInflationPercent),
           static_cast<int>(100 * network_bytes / ocl_bytes - 100), 1);
 
-      histogram_tester().ExpectUniqueSample(
+      tester()->histogram_tester().ExpectUniqueSample(
           std::string(internal::kHistogramDataReductionProxyPrefix)
               .append(internal::kBytesInflation),
           static_cast<int>((network_bytes - ocl_bytes) / 1024), 1);
     } else {
-      histogram_tester().ExpectUniqueSample(
+      tester()->histogram_tester().ExpectUniqueSample(
           std::string(internal::kHistogramDataReductionProxyPrefix)
               .append(internal::kBytesCompressionRatio),
           static_cast<int>(100 * network_bytes / ocl_bytes), 1);
 
-      histogram_tester().ExpectUniqueSample(
+      tester()->histogram_tester().ExpectUniqueSample(
           std::string(internal::kHistogramDataReductionProxyPrefix)
               .append(internal::kBytesSavings),
           static_cast<int>((ocl_bytes - network_bytes) / 1024), 1);
@@ -231,7 +209,7 @@ class DataReductionProxyMetricsObserverTest
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(
         std::make_unique<TestDataReductionProxyMetricsObserver>(
-            web_contents(), pingback_client(), data_reduction_proxy_used(),
+            web_contents(), data_reduction_proxy_used(),
             cached_data_reduction_proxy_used(), is_using_lite_page(),
             black_listed()));
   }
@@ -250,7 +228,7 @@ TEST_F(DataReductionProxyMetricsObserverTest, DataReductionProxyOff) {
 TEST_F(DataReductionProxyMetricsObserverTest, DataReductionProxyOn) {
   ResetTest();
   // Verify that when the data reduction proxy was used, but lite page was not
-  // used, the correpsonding UMA is reported.
+  // used, the corresponding UMA is reported.
   RunTest(true, false, false, false);
   ValidateHistograms();
 }
@@ -267,11 +245,6 @@ TEST_F(DataReductionProxyMetricsObserverTest, ByteInformationCompression) {
   ResetTest();
 
   RunTest(true, false, false, false);
-
-  std::unique_ptr<DataReductionProxyData> data =
-      std::make_unique<DataReductionProxyData>();
-  data->set_used_data_reduction_proxy(true);
-  data->set_request_url(GURL(kDefaultTestUrl));
 
   std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
   // Cached resource.
@@ -293,7 +266,7 @@ TEST_F(DataReductionProxyMetricsObserverTest, ByteInformationCompression) {
       false /* is_complete */, true /* proxy_used*/,
       0.5 /* compression_ratio */));
 
-  SimulateResourceDataUseUpdate(resources);
+  tester()->SimulateResourceDataUseUpdate(resources);
 
   int network_resources = 0;
   int drp_resources = 0;
@@ -303,7 +276,8 @@ TEST_F(DataReductionProxyMetricsObserverTest, ByteInformationCompression) {
   int64_t insecure_ocl_bytes = 0;
   int64_t secure_ocl_bytes = 0;
   for (const auto& request : resources) {
-    if (!request->was_fetched_via_cache) {
+    if (request->cache_type ==
+        page_load_metrics::mojom::CacheType::kNotCached) {
       if (request->is_secure_scheme) {
         secure_network_bytes += request->delta_bytes;
         secure_ocl_bytes +=
@@ -320,11 +294,13 @@ TEST_F(DataReductionProxyMetricsObserverTest, ByteInformationCompression) {
     }
     if (request->proxy_used) {
       drp_bytes += request->delta_bytes;
-      if (!request->was_fetched_via_cache && request->is_complete)
+      if (request->cache_type ==
+              page_load_metrics::mojom::CacheType::kNotCached &&
+          request->is_complete)
         ++drp_resources;
     }
   }
-  NavigateToUntrackedUrl();
+  tester()->NavigateToUntrackedUrl();
 
   ValidateDataHistograms(network_resources, drp_resources,
                          insecure_network_bytes + secure_network_bytes,
@@ -335,11 +311,6 @@ TEST_F(DataReductionProxyMetricsObserverTest, ByteInformationInflation) {
   ResetTest();
 
   RunTest(true, false, false, false);
-
-  std::unique_ptr<DataReductionProxyData> data =
-      std::make_unique<DataReductionProxyData>();
-  data->set_used_data_reduction_proxy(true);
-  data->set_request_url(GURL(kDefaultTestUrl));
 
   std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
   // Cached resource.
@@ -360,7 +331,7 @@ TEST_F(DataReductionProxyMetricsObserverTest, ByteInformationInflation) {
       false /* is_complete */, true /* proxy_used*/,
       10 /* compression_ratio */));
 
-  SimulateResourceDataUseUpdate(resources);
+  tester()->SimulateResourceDataUseUpdate(resources);
 
   int network_resources = 0;
   int drp_resources = 0;
@@ -371,7 +342,8 @@ TEST_F(DataReductionProxyMetricsObserverTest, ByteInformationInflation) {
   int64_t insecure_ocl_bytes = 0;
   int64_t secure_ocl_bytes = 0;
   for (const auto& request : resources) {
-    if (!request->was_fetched_via_cache) {
+    if (request->cache_type ==
+        page_load_metrics::mojom::CacheType::kNotCached) {
       if (request->is_secure_scheme) {
         secure_network_bytes += request->delta_bytes;
         secure_ocl_bytes +=
@@ -391,11 +363,13 @@ TEST_F(DataReductionProxyMetricsObserverTest, ByteInformationInflation) {
         secure_drp_bytes += request->delta_bytes;
       else
         drp_bytes += request->delta_bytes;
-      if (!request->was_fetched_via_cache && request->is_complete)
+      if (request->cache_type ==
+              page_load_metrics::mojom::CacheType::kNotCached &&
+          request->is_complete)
         ++drp_resources;
     }
   }
-  NavigateToUntrackedUrl();
+  tester()->NavigateToUntrackedUrl();
 
   ValidateDataHistograms(network_resources, drp_resources,
                          insecure_network_bytes + secure_network_bytes,

@@ -16,7 +16,7 @@ namespace chromeos {
 namespace assistant {
 
 IPCDataSource::IPCDataSource(
-    mojom::AssistantMediaDataSourcePtr media_data_source)
+    mojo::PendingRemote<mojom::AssistantMediaDataSource> media_data_source)
     : media_data_source_(std::move(media_data_source)),
       utility_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DETACH_FROM_THREAD(data_source_thread_checker_);

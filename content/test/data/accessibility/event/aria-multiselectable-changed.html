@@ -1,0 +1,20 @@
+<!--
+@WIN-ALLOW:MULTISELECTABLE
+-->
+<!DOCTYPE html>
+
+<div role="grid"></div>
+<div role="listbox"></div>
+<div role="tablist"></div>
+<div role="tree" aria-multiselectable="true"></div>
+<div role="treegrid" aria-multiselectable="true"></div>
+
+<script>
+  function go() {
+    document.querySelector('div[role=grid]').setAttribute('aria-multiselectable', true);
+    document.querySelector('div[role=listbox]').setAttribute('aria-multiselectable', true);
+    document.querySelector('div[role=tablist]').setAttribute('aria-multiselectable', true);
+    document.querySelector('div[role=tree]').setAttribute('aria-multiselectable', false);
+    document.querySelector('div[role=treegrid]').setAttribute('aria-multiselectable', false);
+  }
+</script>

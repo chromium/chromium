@@ -38,13 +38,15 @@ function frameLoaded() {
     stage = "after forward";
     history.forward();
   } else if (stage == "after forward") {
-    // Check that the value is still in the form.
-    if (getTextInput().value == "test")
-      document.getElementById("result").innerHTML = "PASS";
+    setTimeout(function() {
+      // Check that the value is still in the form.
+      if (getTextInput().value == "test")
+        document.getElementById("result").innerHTML = "PASS";
 
-    if (window.testRunner) {
-      testRunner.notifyDone();
-    }
+      if (window.testRunner) {
+        testRunner.notifyDone();
+      }
+    }, 1);
   }
 }
 

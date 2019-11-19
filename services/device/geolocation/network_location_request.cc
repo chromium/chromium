@@ -153,9 +153,8 @@ bool NetworkLocationRequest::MakeRequest(
   resource_request->url = FormRequestURL(api_key_);
   DCHECK(resource_request->url.is_valid());
   resource_request->load_flags =
-      net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE |
-      net::LOAD_DO_NOT_SAVE_COOKIES | net::LOAD_DO_NOT_SEND_COOKIES |
-      net::LOAD_DO_NOT_SEND_AUTH_DATA;
+      net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
@@ -278,8 +277,10 @@ void AddWifiData(const WifiData& wifi_data,
   auto wifi_access_point_list = std::make_unique<base::ListValue>();
   for (auto* ap_data : access_points_by_signal_strength) {
     auto wifi_dict = std::make_unique<base::DictionaryValue>();
-    AddString("macAddress", base::UTF16ToUTF8(ap_data->mac_address),
-              wifi_dict.get());
+    auto macAddress = base::UTF16ToUTF8(ap_data->mac_address);
+    if (macAddress.empty())
+      continue;
+    AddString("macAddress", macAddress, wifi_dict.get());
     AddInteger("signalStrength", ap_data->radio_signal_strength,
                wifi_dict.get());
     AddInteger("age", age_milliseconds, wifi_dict.get());
@@ -287,7 +288,8 @@ void AddWifiData(const WifiData& wifi_data,
     AddInteger("signalToNoiseRatio", ap_data->signal_to_noise, wifi_dict.get());
     wifi_access_point_list->Append(std::move(wifi_dict));
   }
-  request->Set("wifiAccessPoints", std::move(wifi_access_point_list));
+  if (!wifi_access_point_list->empty())
+    request->Set("wifiAccessPoints", std::move(wifi_access_point_list));
 }
 
 void FormatPositionError(const GURL& server_url,

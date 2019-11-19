@@ -183,7 +183,7 @@ void Vp8Encoder::ConfigureForNewFrameSize(const gfx::Size& frame_size) {
            VPX_CODEC_OK);
 }
 
-void Vp8Encoder::Encode(const scoped_refptr<media::VideoFrame>& video_frame,
+void Vp8Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
                         const base::TimeTicks& reference_time,
                         SenderEncodedFrame* encoded_frame) {
   DCHECK(thread_checker_.CalledOnValidThread());

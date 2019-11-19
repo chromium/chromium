@@ -7,12 +7,18 @@
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 
-This presubmit checks for two rules:
+This presubmit checks for three rules:
 1. If anything in the webapk/libs/common or the webapk/shell_apk directories
 has changed (excluding test files), $CURRENT_VERSION_VARIABLE should be updated.
 2. If $REQUEST_UPDATE_FOR_VERSION_VARIABLE in
 $REQUEST_UPDATE_FOR_VERSION_LOCAL_PATH is changed, the variable change should
 be the only change in the CL.
+3. If a file in a res/ directory has been added, its' file name should be
+unique to the res/ directory.
+  res/values/dimens.xml and res/values-v17/dimens.xml -> OK
+  res/values/dimens.xml and libs/common/res_splash/values/dimens.xml -> BAD
+This requirement is needed to upload the resources to the Google storage
+build bucket.
 """
 
 CURRENT_VERSION_VARIABLE = 'current_shell_apk_version'
@@ -24,9 +30,16 @@ REQUEST_UPDATE_FOR_VERSION_LOCAL_PATH = (
 
 TRIGGER_CURRENT_VERSION_UPDATE_LOCAL_PATHS = [
     'libs/common/src/',
+    'libs/common/res_splash/',
     'shell_apk/AndroidManifest.xml',
     'shell_apk/res/',
     'shell_apk/src/',
+]
+
+RES_DIR_LOCAL_PATHS = [
+    'shell_apk/res',
+    'shell_apk/res_template',
+    'libs/common/res_splash'
 ]
 
 def _DoChangedContentsContain(changed_contents, key):
@@ -34,6 +47,19 @@ def _DoChangedContentsContain(changed_contents, key):
     if key in line:
       return True
   return False
+
+
+def _FindFileNamesInDirectory(input_api, dir_path, search_file_names):
+  """
+  Searches the directory recursively for files with the passed-in file name
+  (not file path) set. Returns the file names of any matches.
+  """
+  matches = []
+  for _, _, file_names in input_api.os_walk(dir_path):
+    for file_name in file_names:
+      if file_name in search_file_names:
+        matches.append(file_name)
+  return matches
 
 
 def _CheckVersionVariableChanged(input_api, version_file_local_path,
@@ -92,11 +118,54 @@ def _CheckCurrentVersionIncreaseRule(input_api, output_api):
   return []
 
 
+def _CheckNoOverlappingFileNamesInResourceDirsRule(input_api, output_api):
+  """
+  Checks that if a file has been added to a res/ directory that its file name
+  is unique to the res/ directory.
+    res/values/dimens.xml and res/values-v17/dimens.xml -> OK
+    res/values/dimens.xml and libs/common/res_splash/values/dimens.xml -> BAD
+  """
+  res_dir_file_names_map = {}
+  for f in input_api.AffectedFiles():
+    local_path = input_api.os_path.relpath(f.AbsoluteLocalPath(),
+                                           input_api.PresubmitLocalPath())
+    for res_dir_local_path in RES_DIR_LOCAL_PATHS:
+      if local_path.startswith(res_dir_local_path):
+        file_name = input_api.os_path.basename(local_path)
+        res_dir_file_names_map.setdefault(res_dir_local_path, set()).add(
+            file_name)
+        break
+
+  if len(res_dir_file_names_map) == 0:
+    return []
+
+  overlapping_file_names = set()
+  for res_dir, file_names in res_dir_file_names_map.items():
+    for other_res_dir, other_file_names in res_dir_file_names_map.items():
+      if res_dir == other_res_dir:
+        continue
+
+      # Check for affected files with identical name in |other_res_dir|.
+      overlapping_file_names |= (file_names & other_file_names)
+
+      # Check for existing files with identical name in |other_res_dir|.
+      overlapping_file_names.update(
+          _FindFileNamesInDirectory(input_api, other_res_dir, file_names))
+
+  if len(overlapping_file_names) > 0:
+    error_msg = ('Resources in different top level res/ directories {} should '
+                 'have different names:').format(RES_DIR_LOCAL_PATHS)
+    return [output_api.PresubmitError(error_msg,
+                                      items=list(overlapping_file_names))]
+  return []
+
 def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   result = []
   result.extend(_CheckChromeUpdateTriggerRule(input_api, output_api))
   result.extend(_CheckCurrentVersionIncreaseRule(input_api, output_api))
+  result.extend(_CheckNoOverlappingFileNamesInResourceDirsRule(input_api,
+                                                               output_api))
 
   return result
 

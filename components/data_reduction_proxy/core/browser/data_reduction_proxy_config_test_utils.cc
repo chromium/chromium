@@ -15,8 +15,6 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params_test_utils.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_type_info.h"
 #include "net/proxy_resolution/proxy_bypass_rules.h"
-#include "net/url_request/test_url_fetcher_factory.h"
-#include "net/url_request/url_request_test_util.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -25,23 +23,15 @@ using testing::_;
 namespace data_reduction_proxy {
 
 TestDataReductionProxyConfig::TestDataReductionProxyConfig(
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     DataReductionProxyConfigurator* configurator)
     : TestDataReductionProxyConfig(
           std::make_unique<TestDataReductionProxyParams>(),
-          io_task_runner,
-          ui_task_runner,
           configurator) {}
 
 TestDataReductionProxyConfig::TestDataReductionProxyConfig(
     std::unique_ptr<DataReductionProxyConfigValues> config_values,
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     DataReductionProxyConfigurator* configurator)
     : DataReductionProxyConfig(
-          io_task_runner,
-          ui_task_runner,
           network::TestNetworkConnectionTracker::GetInstance(),
           std::move(config_values),
           configurator),
@@ -119,6 +109,9 @@ void TestDataReductionProxyConfig::SetInFlightWarmupProxyDetails(
     base::Optional<
         std::pair<bool /* is_secure_proxy */, bool /*is_core_proxy */>>
         in_flight_warmup_proxy_details) {
+  // |is_core_proxy| should be true since all proxies are now marked as core.
+  DCHECK(!in_flight_warmup_proxy_details ||
+         in_flight_warmup_proxy_details->second);
   in_flight_warmup_proxy_details_ = in_flight_warmup_proxy_details;
 }
 
@@ -145,12 +138,8 @@ void TestDataReductionProxyConfig::SetWarmupURLFetchAttemptCounts(
 
 MockDataReductionProxyConfig::MockDataReductionProxyConfig(
     std::unique_ptr<DataReductionProxyConfigValues> config_values,
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     DataReductionProxyConfigurator* configurator)
     : TestDataReductionProxyConfig(std::move(config_values),
-                                   io_task_runner,
-                                   ui_task_runner,
                                    configurator) {}
 
 MockDataReductionProxyConfig::~MockDataReductionProxyConfig() {

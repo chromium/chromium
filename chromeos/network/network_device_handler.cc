@@ -4,6 +4,9 @@
 
 #include "chromeos/network/network_device_handler.h"
 
+#include "base/memory/ptr_util.h"
+#include "chromeos/network/network_device_handler_impl.h"
+
 namespace chromeos {
 
 const char NetworkDeviceHandler::kErrorDeviceMissing[] = "device-missing";
@@ -18,5 +21,14 @@ const char NetworkDeviceHandler::kErrorUnknown[] = "unknown";
 NetworkDeviceHandler::NetworkDeviceHandler() = default;
 
 NetworkDeviceHandler::~NetworkDeviceHandler() = default;
+
+// static
+std::unique_ptr<NetworkDeviceHandler>
+NetworkDeviceHandler::InitializeForTesting(
+    NetworkStateHandler* network_state_handler) {
+  auto* handler = new NetworkDeviceHandlerImpl();
+  handler->Init(network_state_handler);
+  return base::WrapUnique(handler);
+}
 
 }  // namespace chromeos

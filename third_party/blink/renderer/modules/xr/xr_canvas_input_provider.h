@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_CANVAS_INPUT_PROVIDER_H_
 
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -20,9 +19,8 @@ class PointerEvent;
 class XRInputSource;
 class XRSession;
 
-class XRCanvasInputProvider
-    : public GarbageCollectedFinalized<XRCanvasInputProvider>,
-      public NameClient {
+class XRCanvasInputProvider : public GarbageCollected<XRCanvasInputProvider>,
+                              public NameClient {
  public:
   XRCanvasInputProvider(XRSession*, HTMLCanvasElement*);
   virtual ~XRCanvasInputProvider();
@@ -52,7 +50,7 @@ class XRCanvasInputProvider
   const Member<XRSession> session_;
   Member<HTMLCanvasElement> canvas_;
   Member<EventListener> listener_;
-  TraceWrapperMember<XRInputSource> input_source_;
+  Member<XRInputSource> input_source_;
 };
 
 }  // namespace blink

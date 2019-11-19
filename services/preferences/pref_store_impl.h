@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "components/prefs/pref_store.h"
 #include "components/prefs/pref_value_store.h"
-#include "mojo/public/cpp/bindings/binding.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
 
 namespace prefs {

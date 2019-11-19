@@ -24,7 +24,7 @@ class SANDBOX_EXPORT ScopedProcess {
   // A new process will be created and |child_callback| will run in the child
   // process. This callback is allowed to terminate the process or to simply
   // return. If the callback returns, the process will wait forever.
-  explicit ScopedProcess(const base::Closure& child_callback);
+  explicit ScopedProcess(base::OnceClosure child_callback);
   ~ScopedProcess();
 
   // Wait for the process to exit.

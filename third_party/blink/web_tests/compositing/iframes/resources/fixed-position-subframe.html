@@ -9,7 +9,7 @@
     }
 
     #trigger {
-        transform:translateZ(0);
+        will-change:transform;
     }
 
     #overlap {
@@ -24,16 +24,10 @@
 </head>
 <script>
     function doTest() {
-        if (window.testRunner) {
-            testRunner.dumpAsTextWithPixelResults();
-            testRunner.waitUntilDone();
-        }
         window.scrollTo(0, 2000);
         runAfterLayoutAndPaint(function() {
             window.scrollTo(0, 1800);
-            if (window.testRunner)
-                testRunner.notifyDone();
-        });
+        }, true);
     }
     window.addEventListener("load", doTest, false);
 </script>

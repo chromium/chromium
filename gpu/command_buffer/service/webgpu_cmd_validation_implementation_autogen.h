@@ -11,6 +11,13 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_WEBGPU_CMD_VALIDATION_IMPLEMENTATION_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_SERVICE_WEBGPU_CMD_VALIDATION_IMPLEMENTATION_AUTOGEN_H_
 
-Validators::Validators() {}
+static const PowerPreference valid_power_preference_table[] = {
+    PowerPreference::kHighPerformance,
+    PowerPreference::kLowPower,
+};
+
+Validators::Validators()
+    : power_preference(valid_power_preference_table,
+                       base::size(valid_power_preference_table)) {}
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_WEBGPU_CMD_VALIDATION_IMPLEMENTATION_AUTOGEN_H_

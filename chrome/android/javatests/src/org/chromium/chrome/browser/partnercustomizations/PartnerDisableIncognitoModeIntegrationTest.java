@@ -18,17 +18,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.Callable;
@@ -55,16 +55,15 @@ public class PartnerDisableIncognitoModeIntegrationTest {
     }
 
     private void assertIncognitoMenuItemEnabled(boolean enabled) throws ExecutionException {
-        Menu menu = ThreadUtils.runOnUiThreadBlocking(new Callable<Menu>() {
+        Menu menu = TestThreadUtils.runOnUiThreadBlocking(new Callable<Menu>() {
             @Override
-            public Menu call() throws Exception {
+            public Menu call() {
                 // PopupMenu is a convenient way of building a temp menu.
                 PopupMenu tempMenu = new PopupMenu(mActivityTestRule.getActivity(),
                         mActivityTestRule.getActivity().findViewById(R.id.menu_anchor_stub));
                 tempMenu.inflate(R.menu.main_menu);
                 Menu menu = tempMenu.getMenu();
 
-                mActivityTestRule.getActivity().prepareMenu(menu);
                 return menu;
             }
         });
@@ -86,18 +85,17 @@ public class PartnerDisableIncognitoModeIntegrationTest {
                 // UI thread have also triggered.
                 boolean retVal = parentalControlsEnabled
                         == PartnerBrowserCustomizations.isIncognitoDisabled();
-                retVal &= parentalControlsEnabled
-                        != PrefServiceBridge.getInstance().isIncognitoModeEnabled();
+                retVal &= parentalControlsEnabled != IncognitoUtils.isIncognitoModeEnabled();
                 return retVal;
             }
         });
     }
 
     private void toggleActivityForegroundState() {
-        ThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().onPause());
-        ThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().onStop());
-        ThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().onStart());
-        ThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().onResume());
+        TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().onPause());
+        TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().onStop());
+        TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().onStart());
+        TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().onResume());
     }
 
     @Test

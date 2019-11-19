@@ -4,6 +4,7 @@
 
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_throttle_manager.h"
 
+#include "base/memory/ptr_util.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_server.h"
 
@@ -13,71 +14,51 @@ class HttpRequestHeaders;
 
 namespace data_reduction_proxy {
 
-DataReductionProxyThrottleManager::~DataReductionProxyThrottleManager() =
-    default;
-
 DataReductionProxyThrottleManager::DataReductionProxyThrottleManager(
-    mojom::DataReductionProxyPtr data_reduction_proxy,
+    mojom::DataReductionProxy* data_reduction_proxy,
     mojom::DataReductionProxyThrottleConfigPtr initial_config)
-    : data_reduction_proxy_(std::move(data_reduction_proxy)), binding_(this) {
-  data_reduction_proxy::mojom::DataReductionProxyThrottleConfigObserverPtr
-      observer;
-  binding_.Bind(mojo::MakeRequest(&observer));
-  data_reduction_proxy_->AddThrottleConfigObserver(std::move(observer));
+    : shared_data_reduction_proxy_(data_reduction_proxy) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  shared_data_reduction_proxy_->AddThrottleConfigObserver(
+      receiver_.BindNewPipeAndPassRemote());
 
   OnThrottleConfigChanged(std::move(initial_config));
 }
 
-base::Optional<DataReductionProxyTypeInfo>
-DataReductionProxyThrottleManager::FindConfiguredDataReductionProxy(
-    const net::ProxyServer& proxy_server) {
-  // TODO(https://crbug.com/721403): The non-NS code also searches through the
-  // recently seen proxies, not just the current ones.
-  return params::FindConfiguredProxyInVector(proxies_for_http_, proxy_server);
-}
+DataReductionProxyThrottleManager::~DataReductionProxyThrottleManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-void DataReductionProxyThrottleManager::MarkProxiesAsBad(
-    base::TimeDelta bypass_duration,
-    const net::ProxyList& bad_proxies,
-    mojom::DataReductionProxy::MarkProxiesAsBadCallback callback) {
-  // There is no need to handle the case where |callback| is never invoked
-  // (possible on connection error). That would imply disconnection from the
-  // browser, which is not recoverable.
-  data_reduction_proxy_->MarkProxiesAsBad(bypass_duration, bad_proxies,
-                                          std::move(callback));
-}
-
-std::unique_ptr<DataReductionProxyThrottleManager>
-DataReductionProxyThrottleManager::Clone() {
-  mojom::DataReductionProxyPtr data_reduction_proxy;
-
-  if (data_reduction_proxy_)
-    data_reduction_proxy_->Clone(mojo::MakeRequest(&data_reduction_proxy));
-
-  auto cloned_config = proxies_for_http_.empty()
-                           ? mojom::DataReductionProxyThrottleConfigPtr()
-                           : CreateConfig(proxies_for_http_);
-
-  return std::make_unique<DataReductionProxyThrottleManager>(
-      std::move(data_reduction_proxy), std::move(cloned_config));
+  for (DataReductionProxyThrottleConfigCheckedObserver& observer :
+       same_sequence_observers_) {
+    observer.OnThrottleManagerDestroyed(this);
+  }
 }
 
 void DataReductionProxyThrottleManager::OnThrottleConfigChanged(
     mojom::DataReductionProxyThrottleConfigPtr config) {
-  proxies_for_http_.clear();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  last_proxy_config_ = config.Clone();
 
-  if (!config)
-    return;
-
-  // TODO(eroman): Use typemappings instead of converting here?
-  for (const auto& entry : config->proxies_for_http) {
-    proxies_for_http_.push_back(DataReductionProxyServer(
-        entry->proxy_server, entry->is_core
-                                 ? ProxyServer_ProxyType_CORE
-                                 : ProxyServer_ProxyType_UNSPECIFIED_TYPE));
+  for (DataReductionProxyThrottleConfigCheckedObserver& observer :
+       same_sequence_observers_) {
+    observer.OnThrottleConfigChanged(config.Clone());
   }
 }
 
+void DataReductionProxyThrottleManager::AddSameSequenceObserver(
+    DataReductionProxyThrottleConfigCheckedObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  same_sequence_observers_.AddObserver(observer);
+}
+
+void DataReductionProxyThrottleManager::RemoveSameSequenceObserver(
+    DataReductionProxyThrottleConfigCheckedObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  same_sequence_observers_.RemoveObserver(observer);
+}
+
+// static
 mojom::DataReductionProxyThrottleConfigPtr
 DataReductionProxyThrottleManager::CreateConfig(
     const std::vector<DataReductionProxyServer>& proxies_for_http) {

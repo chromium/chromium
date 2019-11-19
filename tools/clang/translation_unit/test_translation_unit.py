@@ -5,6 +5,8 @@
 
 """Test for TranslationUnitGenerator tool."""
 
+from __future__ import print_function
+
 import difflib
 import glob
 import json
@@ -55,7 +57,7 @@ def main():
   run_tool = subprocess.Popen(args, stdout=subprocess.PIPE)
   stdout, _ = run_tool.communicate()
   if run_tool.returncode != 0:
-    print 'run_tool failed:\n%s' % stdout
+    print('run_tool failed:\n%s' % stdout)
     sys.exit(1)
 
   passed = 0
@@ -63,7 +65,7 @@ def main():
   for actual in source_files:
     actual += '.filepaths'
     expected = actual + '.expected'
-    print '[ RUN      ] %s' % os.path.relpath(actual)
+    print('[ RUN      ] %s' % os.path.relpath(actual))
     expected_output = actual_output = None
     with open(expected, 'r') as f:
       expected_output = f.readlines()
@@ -85,22 +87,22 @@ def main():
                                        fromfile=os.path.relpath(expected),
                                        tofile=os.path.relpath(actual)):
         sys.stdout.write(line)
-      print '[  FAILED  ] %s' % os.path.relpath(actual)
+      print('[  FAILED  ] %s' % os.path.relpath(actual))
       # Don't clean up the file on failure, so the results can be referenced
       # more easily.
       continue
-    print '[       OK ] %s' % os.path.relpath(actual)
+    print('[       OK ] %s' % os.path.relpath(actual))
     passed += 1
     os.remove(actual)
 
   if failed == 0:
     os.remove(compile_database)
 
-  print '[==========] %s ran.' % _NumberOfTestsToString(len(source_files))
+  print('[==========] %s ran.' % _NumberOfTestsToString(len(source_files)))
   if passed > 0:
-    print '[  PASSED  ] %s.' % _NumberOfTestsToString(passed)
+    print('[  PASSED  ] %s.' % _NumberOfTestsToString(passed))
   if failed > 0:
-    print '[  FAILED  ] %s.' % _NumberOfTestsToString(failed)
+    print('[  FAILED  ] %s.' % _NumberOfTestsToString(failed))
 
 
 if __name__ == '__main__':

@@ -22,12 +22,6 @@ class MODULES_EXPORT PublicKeyCredential final : public Credential {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static PublicKeyCredential* Create(
-      const String& id,
-      DOMArrayBuffer* raw_id,
-      AuthenticatorResponse*,
-      const AuthenticationExtensionsClientOutputs*);
-
   explicit PublicKeyCredential(
       const String& id,
       DOMArrayBuffer* raw_id,

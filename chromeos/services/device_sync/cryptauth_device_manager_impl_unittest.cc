@@ -161,16 +161,16 @@ void ExpectSyncedDevicesAreEqual(
               device.supported_software_features_size());
     for (const auto& software_feature :
          expected_device.supported_software_features()) {
-      EXPECT_TRUE(base::ContainsValue(device.supported_software_features(),
-                                      software_feature));
+      EXPECT_TRUE(base::Contains(device.supported_software_features(),
+                                 software_feature));
     }
 
     EXPECT_EQ(expected_device.enabled_software_features_size(),
               device.enabled_software_features_size());
     for (const auto& software_feature :
          expected_device.enabled_software_features()) {
-      EXPECT_TRUE(base::ContainsValue(device.enabled_software_features(),
-                                      software_feature));
+      EXPECT_TRUE(
+          base::Contains(device.enabled_software_features(), software_feature));
     }
   }
 }
@@ -366,13 +366,13 @@ void ExpectSyncedDevicesAndPrefAreEqual(
           enabled_software_features.size());
       for (auto supported_software_feature :
            expected_device.supported_software_features()) {
-        EXPECT_TRUE(base::ContainsValue(
+        EXPECT_TRUE(base::Contains(
             supported_software_features,
             SoftwareFeatureStringToEnum(supported_software_feature)));
       }
       for (auto enabled_software_feature :
            expected_device.enabled_software_features()) {
-        EXPECT_TRUE(base::ContainsValue(
+        EXPECT_TRUE(base::Contains(
             enabled_software_features,
             SoftwareFeatureStringToEnum(enabled_software_feature)));
       }
@@ -735,18 +735,18 @@ TEST_F(
 
   EXPECT_EQ(2, synced_devices[0].supported_software_features().size());
   EXPECT_TRUE(
-      base::ContainsValue(synced_devices[0].supported_software_features(),
-                          SoftwareFeatureEnumToString(
-                              cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
+      base::Contains(synced_devices[0].supported_software_features(),
+                     SoftwareFeatureEnumToString(
+                         cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
   EXPECT_TRUE(
-      base::ContainsValue(synced_devices[0].supported_software_features(),
-                          SoftwareFeatureEnumToString(
-                              cryptauth::SoftwareFeature::MAGIC_TETHER_HOST)));
+      base::Contains(synced_devices[0].supported_software_features(),
+                     SoftwareFeatureEnumToString(
+                         cryptauth::SoftwareFeature::MAGIC_TETHER_HOST)));
   EXPECT_EQ(1, synced_devices[0].enabled_software_features().size());
   EXPECT_TRUE(
-      base::ContainsValue(synced_devices[0].enabled_software_features(),
-                          SoftwareFeatureEnumToString(
-                              cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
+      base::Contains(synced_devices[0].enabled_software_features(),
+                     SoftwareFeatureEnumToString(
+                         cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
 }
 
 TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest, SyncSucceedsForFirstTime) {
@@ -954,7 +954,8 @@ TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest, SyncOnGCMPushMessage) {
   device_manager_->Start();
 
   EXPECT_CALL(*sync_scheduler(), ForceSync());
-  gcm_manager_.PushResyncMessage();
+  gcm_manager_.PushResyncMessage(base::nullopt /* session_id */,
+                                 base::nullopt /* feature_type */);
 
   FireSchedulerForSync(cryptauth::INVOCATION_REASON_SERVER_INITIATED);
 
@@ -971,7 +972,8 @@ TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest, SyncDeviceWithNoContents) {
   device_manager_->Start();
 
   EXPECT_CALL(*sync_scheduler(), ForceSync());
-  gcm_manager_.PushResyncMessage();
+  gcm_manager_.PushResyncMessage(base::nullopt /* session_id */,
+                                 base::nullopt /* feature_type */);
 
   FireSchedulerForSync(cryptauth::INVOCATION_REASON_SERVER_INITIATED);
 
@@ -1107,21 +1109,21 @@ TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest,
   EXPECT_FALSE(synced_device.mobile_hotspot_supported());
 
   EXPECT_TRUE(
-      base::ContainsValue(synced_device.supported_software_features(),
-                          SoftwareFeatureEnumToString(
-                              cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
+      base::Contains(synced_device.supported_software_features(),
+                     SoftwareFeatureEnumToString(
+                         cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
   EXPECT_TRUE(
-      base::ContainsValue(synced_device.enabled_software_features(),
-                          SoftwareFeatureEnumToString(
-                              cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
+      base::Contains(synced_device.enabled_software_features(),
+                     SoftwareFeatureEnumToString(
+                         cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
   EXPECT_TRUE(
-      base::ContainsValue(synced_device.supported_software_features(),
-                          SoftwareFeatureEnumToString(
-                              cryptauth::SoftwareFeature::MAGIC_TETHER_HOST)));
+      base::Contains(synced_device.supported_software_features(),
+                     SoftwareFeatureEnumToString(
+                         cryptauth::SoftwareFeature::MAGIC_TETHER_HOST)));
   EXPECT_FALSE(
-      base::ContainsValue(synced_device.enabled_software_features(),
-                          SoftwareFeatureEnumToString(
-                              cryptauth::SoftwareFeature::MAGIC_TETHER_HOST)));
+      base::Contains(synced_device.enabled_software_features(),
+                     SoftwareFeatureEnumToString(
+                         cryptauth::SoftwareFeature::MAGIC_TETHER_HOST)));
 }
 
 TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest,
@@ -1158,21 +1160,21 @@ TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest,
   EXPECT_FALSE(synced_device.mobile_hotspot_supported());
 
   EXPECT_TRUE(
-      base::ContainsValue(synced_device.supported_software_features(),
-                          SoftwareFeatureEnumToString(
-                              cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
+      base::Contains(synced_device.supported_software_features(),
+                     SoftwareFeatureEnumToString(
+                         cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
   EXPECT_TRUE(
-      base::ContainsValue(synced_device.enabled_software_features(),
-                          SoftwareFeatureEnumToString(
-                              cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
+      base::Contains(synced_device.enabled_software_features(),
+                     SoftwareFeatureEnumToString(
+                         cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
   EXPECT_TRUE(
-      base::ContainsValue(synced_device.supported_software_features(),
-                          SoftwareFeatureEnumToString(
-                              cryptauth::SoftwareFeature::MAGIC_TETHER_HOST)));
+      base::Contains(synced_device.supported_software_features(),
+                     SoftwareFeatureEnumToString(
+                         cryptauth::SoftwareFeature::MAGIC_TETHER_HOST)));
   EXPECT_FALSE(
-      base::ContainsValue(synced_device.enabled_software_features(),
-                          SoftwareFeatureEnumToString(
-                              cryptauth::SoftwareFeature::MAGIC_TETHER_HOST)));
+      base::Contains(synced_device.enabled_software_features(),
+                     SoftwareFeatureEnumToString(
+                         cryptauth::SoftwareFeature::MAGIC_TETHER_HOST)));
 }
 
 // Regression test for crbug.com/888031.
@@ -1208,21 +1210,21 @@ TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest,
   // CryptAuthDeviceManager should recognize that the SoftwareFeature prefs had
   // been stored as refs, and convert them to their full string representations.
   EXPECT_TRUE(
-      base::ContainsValue(synced_device.supported_software_features(),
-                          SoftwareFeatureEnumToString(
-                              cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
+      base::Contains(synced_device.supported_software_features(),
+                     SoftwareFeatureEnumToString(
+                         cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
   EXPECT_TRUE(
-      base::ContainsValue(synced_device.enabled_software_features(),
-                          SoftwareFeatureEnumToString(
-                              cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
+      base::Contains(synced_device.enabled_software_features(),
+                     SoftwareFeatureEnumToString(
+                         cryptauth::SoftwareFeature::EASY_UNLOCK_HOST)));
   EXPECT_TRUE(
-      base::ContainsValue(synced_device.supported_software_features(),
-                          SoftwareFeatureEnumToString(
-                              cryptauth::SoftwareFeature::MAGIC_TETHER_HOST)));
+      base::Contains(synced_device.supported_software_features(),
+                     SoftwareFeatureEnumToString(
+                         cryptauth::SoftwareFeature::MAGIC_TETHER_HOST)));
   EXPECT_FALSE(
-      base::ContainsValue(synced_device.enabled_software_features(),
-                          SoftwareFeatureEnumToString(
-                              cryptauth::SoftwareFeature::MAGIC_TETHER_HOST)));
+      base::Contains(synced_device.enabled_software_features(),
+                     SoftwareFeatureEnumToString(
+                         cryptauth::SoftwareFeature::MAGIC_TETHER_HOST)));
 }
 
 TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest,

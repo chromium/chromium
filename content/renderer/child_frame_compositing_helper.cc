@@ -78,8 +78,10 @@ void ChildFrameCompositingHelper::SetSurfaceId(
 
 void ChildFrameCompositingHelper::UpdateVisibility(bool visible) {
   cc::Layer* layer = child_frame_compositor_->GetLayer();
-  if (layer)
+  if (layer) {
     layer->SetIsDrawable(visible);
+    layer->SetHitTestable(visible);
+  }
 }
 
 gfx::Rect ChildFrameCompositingHelper::PaintableRegion() {

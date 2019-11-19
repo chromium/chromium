@@ -1,0 +1,4 @@
+file://content/browser/native_file_system/OWNERS
+
+# TEAM: storage-dev@chromium.org
+# COMPONENT: Blink>Storage>FileSystem

@@ -25,10 +25,10 @@
 #include "extensions/browser/api/file_handlers/directory_util.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
-#include "storage/browser/fileapi/file_system_backend.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_operation_runner.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_backend.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 using content::BrowserThread;
 using storage::FileSystemURL;
@@ -40,7 +40,8 @@ namespace {
 bool shell_operations_allowed = true;
 
 void IgnoreFileTaskExecuteResult(
-    extensions::api::file_manager_private::TaskResult result) {}
+    extensions::api::file_manager_private::TaskResult result,
+    std::string failure_reason) {}
 
 // Executes the |task| for the file specified by |url|.
 void ExecuteFileTaskForUrl(Profile* profile,
@@ -166,6 +167,26 @@ void OpenItemWithMetadata(Profile* profile,
   callback.Run(platform_util::OPEN_FAILED_INVALID_TYPE);
 }
 
+void ShowItemInFolderWithMetadata(
+    Profile* profile,
+    const base::FilePath& file_path,
+    const GURL& url,
+    const platform_util::OpenOperationCallback& callback,
+    base::File::Error error,
+    const base::File::Info& file_info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (error != base::File::FILE_OK) {
+    callback.Run(error == base::File::FILE_ERROR_NOT_FOUND
+                     ? platform_util::OPEN_FAILED_PATH_NOT_FOUND
+                     : platform_util::OPEN_FAILED_FILE_ERROR);
+    return;
+  }
+
+  // This action changes the selection so we do not reuse existing tabs.
+  OpenFileManagerWithInternalActionId(profile, url, "select");
+  callback.Run(platform_util::OPEN_SUCCEEDED);
+}
+
 }  // namespace
 
 void OpenItem(Profile* profile,
@@ -201,9 +222,11 @@ void ShowItemInFolder(Profile* profile,
     return;
   }
 
-  // This action changes the selection so we do not reuse existing tabs.
-  OpenFileManagerWithInternalActionId(profile, url, "select");
-  callback.Run(platform_util::OPEN_SUCCEEDED);
+  GetMetadataForPath(
+      GetFileSystemContextForExtensionId(profile, kFileManagerAppId), file_path,
+      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+      base::BindOnce(&ShowItemInFolderWithMetadata, profile, file_path, url,
+                     callback));
 }
 
 void DisableShellOperationsForTesting() {

@@ -30,8 +30,7 @@ TCPBoundSocket::TCPBoundSocket(
           nullptr /*socket_performance_watcher*/,
           net_log,
           net::NetLogSource())),
-      traffic_annotation_(traffic_annotation),
-      weak_factory_(this) {}
+      traffic_annotation_(traffic_annotation) {}
 
 TCPBoundSocket::~TCPBoundSocket() = default;
 
@@ -55,9 +54,10 @@ int TCPBoundSocket::Bind(const net::IPEndPoint& local_addr,
   return socket_->GetLocalAddress(local_addr_out);
 }
 
-void TCPBoundSocket::Listen(uint32_t backlog,
-                            mojom::TCPServerSocketRequest request,
-                            ListenCallback callback) {
+void TCPBoundSocket::Listen(
+    uint32_t backlog,
+    mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
+    ListenCallback callback) {
   DCHECK(socket_->IsValid());
 
   if (!socket_) {
@@ -85,15 +85,15 @@ void TCPBoundSocket::Listen(uint32_t backlog,
           std::make_unique<net::TCPServerSocket>(std::move(socket_)), backlog,
           socket_factory_, traffic_annotation_);
   socket_factory_->OnBoundSocketListening(binding_id_, std::move(server_socket),
-                                          std::move(request));
+                                          std::move(receiver));
   // The above call will have destroyed |this|.
 }
 
 void TCPBoundSocket::Connect(
     const net::AddressList& remote_addr_list,
     mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
-    mojom::TCPConnectedSocketRequest request,
-    mojom::SocketObserverPtr observer,
+    mojo::PendingReceiver<mojom::TCPConnectedSocket> receiver,
+    mojo::PendingRemote<mojom::SocketObserver> observer,
     ConnectCallback callback) {
   DCHECK(socket_->IsValid());
 
@@ -106,10 +106,10 @@ void TCPBoundSocket::Connect(
   }
 
   DCHECK(!connect_callback_);
-  DCHECK(!connected_socket_request_);
+  DCHECK(!connected_socket_receiver_);
   DCHECK(!connecting_socket_);
 
-  connected_socket_request_ = std::move(request);
+  connected_socket_receiver_ = std::move(receiver);
   connect_callback_ = std::move(callback);
 
   // Create a TCPConnectedSocket and have it do the work of connecting and
@@ -146,9 +146,9 @@ void TCPBoundSocket::OnConnectComplete(
     return;
   }
 
-  socket_factory_->OnBoundSocketConnected(binding_id_,
-                                          std::move(connecting_socket_),
-                                          std::move(connected_socket_request_));
+  socket_factory_->OnBoundSocketConnected(
+      binding_id_, std::move(connecting_socket_),
+      std::move(connected_socket_receiver_));
   // The above call will have destroyed |this|.
 }
 

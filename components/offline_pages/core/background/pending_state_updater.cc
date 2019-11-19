@@ -13,8 +13,7 @@ namespace offline_pages {
 PendingStateUpdater::PendingStateUpdater(
     RequestCoordinator* request_coordinator)
     : request_coordinator_(request_coordinator),
-      requests_pending_another_download_(false),
-      weak_ptr_factory_(this) {}
+      requests_pending_another_download_(false) {}
 
 PendingStateUpdater::~PendingStateUpdater() {}
 

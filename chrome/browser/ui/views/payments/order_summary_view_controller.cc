@@ -57,7 +57,7 @@ std::unique_ptr<views::View> CreateLineItemView(const base::string16& label,
       row_insets));
 
   views::GridLayout* layout =
-      row->SetLayoutManager(std::make_unique<views::GridLayout>(row.get()));
+      row->SetLayoutManager(std::make_unique<views::GridLayout>());
 
   views::ColumnSet* columns = layout->AddColumnSet(0);
   // The first column has resize_percent = 1 so that it stretches all the way
@@ -86,7 +86,7 @@ std::unique_ptr<views::View> CreateLineItemView(const base::string16& label,
   // them according to the language of the text. This will result, for example,
   // in "he" labels being right-aligned in a browser that's using "en" locale.
   label_text->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-  amount_text->set_id(static_cast<int>(amount_label_id));
+  amount_text->SetID(static_cast<int>(amount_label_id));
   amount_text->SetMultiLine(true);
   // The amount is formatted by the browser (and not provided by the website) so
   // it can be aligned to left.
@@ -94,8 +94,8 @@ std::unique_ptr<views::View> CreateLineItemView(const base::string16& label,
   amount_text->SetAllowCharacterBreak(true);
 
   std::unique_ptr<views::View> amount_wrapper = std::make_unique<views::View>();
-  views::GridLayout* wrapper_layout = amount_wrapper->SetLayoutManager(
-      std::make_unique<views::GridLayout>(amount_wrapper.get()));
+  views::GridLayout* wrapper_layout =
+      amount_wrapper->SetLayoutManager(std::make_unique<views::GridLayout>());
   views::ColumnSet* wrapper_columns = wrapper_layout->AddColumnSet(0);
   wrapper_columns->AddColumn(
       views::GridLayout::LEADING, views::GridLayout::CENTER,
@@ -105,12 +105,12 @@ std::unique_ptr<views::View> CreateLineItemView(const base::string16& label,
                              views::GridLayout::USE_PREF, 0, 0);
 
   wrapper_layout->StartRow(views::GridLayout::kFixedSize, 0);
-  currency_text->set_id(static_cast<int>(currency_label_id));
-  wrapper_layout->AddView(currency_text.release());
-  wrapper_layout->AddView(amount_text.release());
+  currency_text->SetID(static_cast<int>(currency_label_id));
+  wrapper_layout->AddView(std::move(currency_text));
+  wrapper_layout->AddView(std::move(amount_text));
 
-  layout->AddView(label_text.release());
-  layout->AddView(amount_wrapper.release());
+  layout->AddView(std::move(label_text));
+  layout->AddView(std::move(amount_wrapper));
 
   return row;
 }
@@ -145,7 +145,7 @@ OrderSummaryViewController::CreatePrimaryButton() {
       views::MdTextButton::CreateSecondaryUiBlueButton(
           this, l10n_util::GetStringUTF16(IDS_PAYMENTS_PAY_BUTTON)));
   button->set_tag(static_cast<int>(PaymentRequestCommonTags::PAY_BUTTON_TAG));
-  button->set_id(static_cast<int>(DialogViewID::PAY_BUTTON));
+  button->SetID(static_cast<int>(DialogViewID::PAY_BUTTON));
   pay_button_ = button.get();
   UpdatePayButtonState(state()->is_ready_to_pay());
   return button;
@@ -160,10 +160,11 @@ base::string16 OrderSummaryViewController::GetSheetTitle() {
 }
 
 void OrderSummaryViewController::FillContentView(views::View* content_view) {
-  auto layout = std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical);
-  layout->set_main_axis_alignment(views::BoxLayout::MAIN_AXIS_ALIGNMENT_START);
+  auto layout = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical);
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_STRETCH);
+      views::BoxLayout::CrossAxisAlignment::kStretch);
   content_view->SetLayoutManager(std::move(layout));
 
   bool is_mixed_currency = spec()->IsMixedCurrency();
@@ -172,8 +173,7 @@ void OrderSummaryViewController::FillContentView(views::View* content_view) {
       DialogViewID::ORDER_SUMMARY_LINE_ITEM_1,
       DialogViewID::ORDER_SUMMARY_LINE_ITEM_2,
       DialogViewID::ORDER_SUMMARY_LINE_ITEM_3};
-  const auto& display_items =
-      spec()->GetDisplayItems(state()->selected_instrument());
+  const auto& display_items = spec()->GetDisplayItems(state()->selected_app());
   for (size_t i = 0; i < display_items.size(); i++) {
     DialogViewID view_id =
         i < line_items.size() ? line_items[i] : DialogViewID::VIEW_ID_NONE;
@@ -193,19 +193,17 @@ void OrderSummaryViewController::FillContentView(views::View* content_view) {
   base::string16 total_label_value = l10n_util::GetStringFUTF16(
       IDS_PAYMENT_REQUEST_ORDER_SUMMARY_SHEET_TOTAL_FORMAT,
       base::UTF8ToUTF16(
-          spec()->GetTotal(state()->selected_instrument())->amount->currency),
+          spec()->GetTotal(state()->selected_app())->amount->currency),
       spec()->GetFormattedCurrencyAmount(
-          spec()->GetTotal(state()->selected_instrument())->amount));
+          spec()->GetTotal(state()->selected_app())->amount));
 
   content_view->AddChildView(
       CreateLineItemView(
+          base::UTF8ToUTF16(spec()->GetTotal(state()->selected_app())->label),
           base::UTF8ToUTF16(
-              spec()->GetTotal(state()->selected_instrument())->label),
-          base::UTF8ToUTF16(spec()
-                                ->GetTotal(state()->selected_instrument())
-                                ->amount->currency),
+              spec()->GetTotal(state()->selected_app())->amount->currency),
           spec()->GetFormattedCurrencyAmount(
-              spec()->GetTotal(state()->selected_instrument())->amount),
+              spec()->GetTotal(state()->selected_app())->amount),
           true, DialogViewID::ORDER_SUMMARY_TOTAL_CURRENCY_LABEL,
           DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL)
           .release());

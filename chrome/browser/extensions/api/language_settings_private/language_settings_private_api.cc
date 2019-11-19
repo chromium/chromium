@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_split.h"
@@ -34,11 +33,13 @@
 #include "chrome/common/pref_names.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/language/core/common/language_util.h"
 #include "components/language/core/common/locale_util.h"
+#include "components/spellcheck/browser/spellcheck_platform.h"
 #include "components/spellcheck/common/spellcheck_common.h"
+#include "components/spellcheck/common/spellcheck_features.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_prefs.h"
-#include "components/translate/core/common/translate_util.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_collator.h"
@@ -90,7 +91,7 @@ std::unordered_set<std::string> GetIMEsFromPref(PrefService* prefs,
 // Returns the set of allowed UI locales.
 std::unordered_set<std::string> GetAllowedLanguages(PrefService* prefs) {
   std::unordered_set<std::string> allowed_languages;
-  const base::Value::ListStorage& pref_value =
+  base::span<const base::Value> pref_value =
       prefs->GetList(prefs::kAllowedLanguages)->GetList();
   for (const base::Value& locale_value : pref_value)
     allowed_languages.insert(locale_value.GetString());
@@ -168,7 +169,7 @@ std::vector<std::string> GetSortedThirdPartyIMEs(
     auto it = descriptors.begin();
     while (it != descriptors.end() && descriptors.size()) {
       if (third_party_ime_set.count(it->id()) &&
-          base::ContainsValue(it->language_codes(), language)) {
+          base::Contains(it->language_codes(), language)) {
         ime_list.push_back(it->id());
         // Remove the added descriptor from the candidate list.
         it = descriptors.erase(it);
@@ -227,18 +228,15 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
     language.native_display_name = entry.native_display_name;
 
     // Set optional fields only if they differ from the default.
-    if (base::ContainsKey(spellcheck_language_set, entry.code)) {
+    if (base::Contains(spellcheck_language_set, entry.code)) {
       language.supports_spellcheck.reset(new bool(true));
     }
     if (entry.supports_translate) {
       language.supports_translate.reset(new bool(true));
     }
-    if (base::FeatureList::IsEnabled(translate::kRegionalLocalesAsDisplayUI)) {
-      std::string temp_locale = entry.code;
-      if (language::ConvertToActualUILocale(&temp_locale)) {
-        language.supports_ui.reset(new bool(true));
-      }
-    } else if (base::ContainsKey(locale_set, entry.code)) {
+
+    std::string temp_locale = entry.code;
+    if (language::ConvertToActualUILocale(&temp_locale)) {
       language.supports_ui.reset(new bool(true));
     }
 #if defined(OS_CHROMEOS)
@@ -288,14 +286,15 @@ LanguageSettingsPrivateEnableLanguageFunction::Run() {
   std::vector<std::string> languages;
   translate_prefs->GetLanguageList(&languages);
   std::string chrome_language = language_code;
-  translate::ToChromeLanguageSynonym(&chrome_language);
+  language::ToChromeLanguageSynonym(&chrome_language);
 
-  if (base::ContainsValue(languages, chrome_language)) {
+  if (base::Contains(languages, chrome_language)) {
     LOG(ERROR) << "Language " << chrome_language << " already enabled";
     return RespondNow(NoArguments());
   }
 
   translate_prefs->AddToLanguageList(language_code, /*force_blocked=*/false);
+  translate_prefs->ResetRecentTargetLanguage();
 
   return RespondNow(NoArguments());
 }
@@ -321,14 +320,15 @@ LanguageSettingsPrivateDisableLanguageFunction::Run() {
   std::vector<std::string> languages;
   translate_prefs->GetLanguageList(&languages);
   std::string chrome_language = language_code;
-  translate::ToChromeLanguageSynonym(&chrome_language);
+  language::ToChromeLanguageSynonym(&chrome_language);
 
-  if (!base::ContainsValue(languages, chrome_language)) {
+  if (!base::Contains(languages, chrome_language)) {
     LOG(ERROR) << "Language " << chrome_language << " not enabled";
     return RespondNow(NoArguments());
   }
 
   translate_prefs->RemoveFromLanguageList(language_code);
+  translate_prefs->ResetRecentTargetLanguage();
 
   return RespondNow(NoArguments());
 }
@@ -358,6 +358,7 @@ LanguageSettingsPrivateSetEnableTranslationForLanguageFunction::Run() {
   } else {
     translate_prefs->BlockLanguage(language_code);
   }
+  translate_prefs->ResetRecentTargetLanguage();
 
   return RespondNow(NoArguments());
 }
@@ -410,6 +411,7 @@ LanguageSettingsPrivateMoveLanguageFunction::Run() {
   const int offset = 1;
   translate_prefs->RearrangeLanguage(language_code, where, offset,
                                      supported_language_codes);
+  translate_prefs->ResetRecentTargetLanguage();
 
   return RespondNow(NoArguments());
 }
@@ -499,6 +501,12 @@ LanguageSettingsPrivateAddSpellcheckWordFunction::Run() {
       SpellcheckServiceFactory::GetForContext(browser_context());
   bool success = service->GetCustomDictionary()->AddWord(params->word);
 
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  if (spellcheck::UseBrowserSpellChecker()) {
+    spellcheck_platform::AddWord(base::UTF8ToUTF16(params->word));
+  }
+#endif
+
   return RespondNow(OneArgument(std::make_unique<base::Value>(success)));
 }
 
@@ -517,6 +525,12 @@ LanguageSettingsPrivateRemoveSpellcheckWordFunction::Run() {
   SpellcheckService* service =
       SpellcheckServiceFactory::GetForContext(browser_context());
   bool success = service->GetCustomDictionary()->RemoveWord(params->word);
+
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  if (spellcheck::UseBrowserSpellChecker()) {
+    spellcheck_platform::RemoveWord(base::UTF8ToUTF16(params->word));
+  }
+#endif
 
   return RespondNow(OneArgument(std::make_unique<base::Value>(success)));
 }

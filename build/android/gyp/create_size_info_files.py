@@ -127,11 +127,10 @@ def main(args):
       action='append',
       help='Same as --assets, except disables compression.')
   parser.add_argument(
-      '--resource-apk',
-      dest='resource_apks',
+      '--in-res-info-path',
       required=True,
       action='append',
-      help='An .ap_ file built using aapt')
+      help='Paths to .ap_.info files')
 
   options = parser.parse_args(args)
 
@@ -143,7 +142,7 @@ def main(args):
   jar_inputs = _FindJarInputs(set(options.jar_files))
   pak_inputs = _PakInfoPathsForAssets(options.assets +
                                       options.uncompressed_assets)
-  res_inputs = [p + '.info' for p in options.resource_apks]
+  res_inputs = options.in_res_info_path
 
   # Don't bother re-running if no .info files have changed (saves ~250ms).
   md5_check.CallAndRecordIfStale(

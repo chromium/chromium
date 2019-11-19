@@ -37,12 +37,11 @@
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable_marking_visitor.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/bindings/v8_value_cache.h"
-#include "third_party/blink/renderer/platform/heap/unified_heap_controller.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "v8/include/v8.h"
@@ -56,7 +55,7 @@ constexpr char kInterfaceMapLabel[] =
 
 }  // namespace
 
-// Wrapper function defined in WebKit.h
+// Wrapper function defined in blink.h
 v8::Isolate* MainThreadIsolate() {
   return V8PerIsolateData::MainThreadIsolate();
 }
@@ -85,15 +84,11 @@ V8PerIsolateData::V8PerIsolateData(
       interface_template_map_for_v8_context_snapshot_(GetIsolate(),
                                                       kInterfaceMapLabel),
       string_cache_(std::make_unique<StringCache>(GetIsolate())),
-      private_property_(V8PrivateProperty::Create()),
+      private_property_(std::make_unique<V8PrivateProperty>()),
       constructor_mode_(ConstructorMode::kCreateNewObject),
       use_counter_disabled_(false),
       is_handling_recursion_level_error_(false),
       is_reporting_exception_(false),
-      script_wrappable_visitor_(
-          new ScriptWrappableMarkingVisitor(ThreadState::Current())),
-      unified_heap_controller_(
-          new UnifiedHeapController(ThreadState::Current())),
       runtime_call_stats_(base::DefaultTickClock::GetInstance()) {
   // FIXME: Remove once all v8::Isolate::GetCurrent() calls are gone.
   GetIsolate()->Enter();
@@ -114,7 +109,7 @@ V8PerIsolateData::V8PerIsolateData()
                       gin::IsolateHolder::IsolateCreationMode::kCreateSnapshot),
       interface_template_map_for_v8_context_snapshot_(GetIsolate()),
       string_cache_(std::make_unique<StringCache>(GetIsolate())),
-      private_property_(V8PrivateProperty::Create()),
+      private_property_(std::make_unique<V8PrivateProperty>()),
       constructor_mode_(ConstructorMode::kCreateNewObject),
       use_counter_disabled_(false),
       is_handling_recursion_level_error_(false),
@@ -165,21 +160,21 @@ void V8PerIsolateData::WillBeDestroyed(v8::Isolate* isolate) {
   // prior to calling ThreadState::detach().
   data->ClearEndOfScopeTasks();
 
+  if (data->profiler_group_) {
+    data->profiler_group_->WillBeDestroyed();
+    data->profiler_group_ = nullptr;
+  }
+
   data->active_script_wrappables_.Clear();
 
   // Detach V8's garbage collector.
-  if (RuntimeEnabledFeatures::HeapUnifiedGarbageCollectionEnabled()) {
-    // Need to finalize an already running garbage collection as otherwise
-    // callbacks are missing and state gets out of sync.
-    ThreadState::Current()->FinishIncrementalMarkingIfRunning(
-        BlinkGC::kHeapPointersOnStack, BlinkGC::kAtomicMarking,
-        BlinkGC::kEagerSweeping, BlinkGC::GCReason::kThreadTerminationGC);
-  }
-  isolate->SetEmbedderHeapTracer(nullptr);
-  if (data->script_wrappable_visitor_->WrapperTracingInProgress())
-    data->script_wrappable_visitor_->AbortTracingForTermination();
-  data->script_wrappable_visitor_.reset();
-  data->unified_heap_controller_.reset();
+  // Need to finalize an already running garbage collection as otherwise
+  // callbacks are missing and state gets out of sync.
+  ThreadState* const thread_state = ThreadState::Current();
+  thread_state->FinishIncrementalMarkingIfRunning(
+      BlinkGC::kHeapPointersOnStack, BlinkGC::kAtomicMarking,
+      BlinkGC::kEagerSweeping, BlinkGC::GCReason::kThreadTerminationGC);
+  thread_state->DetachFromIsolate();
 }
 
 // destroy() clear things that should be cleared after ThreadState::detach()
@@ -298,7 +293,7 @@ v8::Local<v8::Context> V8PerIsolateData::EnsureScriptRegexpContext() {
   if (!script_regexp_script_state_) {
     LEAK_SANITIZER_DISABLED_SCOPE;
     v8::Local<v8::Context> context(v8::Context::New(GetIsolate()));
-    script_regexp_script_state_ = ScriptState::Create(
+    script_regexp_script_state_ = MakeGarbageCollected<ScriptState>(
         context, DOMWrapperWorld::Create(GetIsolate(),
                                          DOMWrapperWorld::WorldType::kRegExp));
   }
@@ -382,6 +377,15 @@ void V8PerIsolateData::SetThreadDebugger(
 
 V8PerIsolateData::Data* V8PerIsolateData::ThreadDebugger() {
   return thread_debugger_.get();
+}
+
+void V8PerIsolateData::SetProfilerGroup(
+    V8PerIsolateData::GarbageCollectedData* profiler_group) {
+  profiler_group_ = profiler_group;
+}
+
+V8PerIsolateData::GarbageCollectedData* V8PerIsolateData::ProfilerGroup() {
+  return profiler_group_;
 }
 
 void V8PerIsolateData::AddActiveScriptWrappable(

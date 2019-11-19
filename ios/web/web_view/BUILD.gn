@@ -1,0 +1,50 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+
+source_set("util") {
+  sources = [
+    "content_type_util.cc",
+    "content_type_util.h",
+    "error_translation_util.h",
+    "error_translation_util.mm",
+    "wk_security_origin_util.h",
+    "wk_security_origin_util.mm",
+    "wk_web_view_util.h",
+    "wk_web_view_util.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/net",
+    "//ios/web/public",
+    "//net",
+    "//url",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unittests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  deps = [
+    ":util",
+    "//base",
+    "//base/test:test_support",
+    "//ios/net",
+    "//ios/web/test:test_constants",
+    "//net",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  sources = [
+    "content_type_util_unittest.cc",
+    "error_translation_util_unittest.mm",
+    "wk_security_origin_util_unittest.mm",
+    "wk_web_view_util_unittest.mm",
+  ]
+}

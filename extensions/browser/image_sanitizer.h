@@ -15,13 +15,13 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
-#include "services/service_manager/public/cpp/service_filter.h"
 
 class SkBitmap;
 
-namespace service_manager {
-class Connector;
+namespace data_decoder {
+class DataDecoder;
 }
 
 namespace extensions {
@@ -55,18 +55,14 @@ class ImageSanitizer {
   // |image_relative_paths|. These paths should be relative and not reference
   // their parent dir or an kImagePathError will be reported to |done_callback|.
   // These relative paths are resolved against |image_dir|.
-  // |connector| should be a connector to the ServiceManager usable on the
-  // current thread. |service_filter| is used when accessing the data decoder
-  // service which is used internally to decode images. It lets callers
-  // potentially share a process when doing unrelated data decoding operations.
+  // |decoder| should be a DataDecoder instance to use for image decoding.
   // |done_callback| is invoked asynchronously when all images have been
   // sanitized or if an error occurred.
   // If the returned ImageSanitizer instance is deleted, |done_callback| and
   // |image_decoded_callback| are not called and the sanitization stops promptly
   // (some background tasks may still run).
   static std::unique_ptr<ImageSanitizer> CreateAndStart(
-      service_manager::Connector* connector,
-      const service_manager::ServiceFilter& service_filter,
+      data_decoder::DataDecoder* decoder,
       const base::FilePath& image_dir,
       const std::set<base::FilePath>& image_relative_paths,
       ImageDecodedCallback image_decoded_callback,
@@ -80,8 +76,7 @@ class ImageSanitizer {
                  ImageDecodedCallback image_decoded_callback,
                  SanitizationDoneCallback done_callback);
 
-  void Start(service_manager::Connector* connector,
-             const service_manager::ServiceFilter& service_filter);
+  void Start(data_decoder::DataDecoder* decoder);
 
   void ImageFileRead(
       const base::FilePath& image_path,
@@ -106,8 +101,8 @@ class ImageSanitizer {
   std::set<base::FilePath> image_paths_;
   ImageDecodedCallback image_decoded_callback_;
   SanitizationDoneCallback done_callback_;
-  data_decoder::mojom::ImageDecoderPtr image_decoder_ptr_;
-  base::WeakPtrFactory<ImageSanitizer> weak_factory_;
+  mojo::Remote<data_decoder::mojom::ImageDecoder> image_decoder_;
+  base::WeakPtrFactory<ImageSanitizer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ImageSanitizer);
 };

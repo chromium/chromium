@@ -1,0 +1,66 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+common_namespace_rewrites_polymer = [
+  "cr.ui.FocusOutlineManager|FocusOutlineManager",
+  "Polymer.PaperRippleBehavior|PaperRippleBehavior",
+  "Polymer.RenderStatus.afterNextRender|afterNextRender",
+  "Polymer.IronA11yAnnouncer|IronA11yAnnouncer",
+
+  # TODO(dpapad): Add more such rewrites as they get discovered.
+]
+
+common_auto_imports = [
+  "third_party/polymer/v1_0/components-chromium/iron-a11y-announcer/iron-a11y-announcer.html|IronA11yAnnouncer",
+  "third_party/polymer/v1_0/components-chromium/paper-behaviors/paper-ripple-behavior.html|PaperRippleBehavior",
+  "ui/webui/resources/html/cr/ui/focus_outline_manager.html|FocusOutlineManager",
+  "ui/webui/resources/html/polymer.html|Polymer,html",
+
+  # TODO(dpapad): Add more auto-imports here, as needed.
+]
+
+template("polymer_modulizer") {
+  action(target_name + "_module") {
+    script = "//tools/polymer/polymer.py"
+
+    inputs = [
+      invoker.html_file,
+    ]
+
+    if (invoker.html_type == "dom-module" || invoker.html_type == "v3-ready") {
+      inputs += [ invoker.js_file ]
+    }
+
+    output_js_file = invoker.js_file
+    if (invoker.html_type == "dom-module") {
+      output_js_file = get_path_info(invoker.js_file, "name") + ".m.js"
+    }
+    outputs = [
+      "$target_gen_dir/" + output_js_file,
+    ]
+
+    args = [
+      "--js_file",
+      invoker.js_file,
+      "--html_file",
+      invoker.html_file,
+      "--html_type",
+      invoker.html_type,
+      "--in_folder",
+      rebase_path(".", root_build_dir),
+      "--out_folder",
+      rebase_path(target_gen_dir, root_build_dir),
+    ]
+
+    args += [ "--namespace_rewrites" ] + common_namespace_rewrites_polymer
+    if (defined(invoker.namespace_rewrites)) {
+      args += invoker.namespace_rewrites
+    }
+
+    args += [ "--auto_imports" ] + common_auto_imports
+    if (defined(invoker.auto_imports)) {
+      args += invoker.auto_imports
+    }
+  }
+}

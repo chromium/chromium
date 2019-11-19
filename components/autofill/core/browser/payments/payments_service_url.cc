@@ -21,10 +21,21 @@
 namespace autofill {
 namespace {
 
+// Service URLs used for calls to Google Payments endpoints.
 const char kProdPaymentsServiceUrl[] = "https://payments.google.com/";
-
 const char kSandboxPaymentsSecureServiceUrl[] =
     "https://payments.sandbox.google.com/";
+
+// URLs used when opening the Payment methods management page from
+// chrome://settings/payments.
+const char kProdPaymentsManageCardsUrl[] =
+    "https://pay.google.com/payments/"
+    "home?utm_source=chrome&utm_medium=settings&utm_campaign=payment-methods#"
+    "paymentMethods";
+const char kSandboxPaymentsManageCardsUrl[] =
+    "https://pay.sandbox.google.com/payments/"
+    "home?utm_source=chrome&utm_medium=settings&utm_campaign=payment-methods#"
+    "paymentMethods";
 
 }  // namespace
 
@@ -44,15 +55,14 @@ GURL GetBaseSecureUrl() {
                                             : kSandboxPaymentsSecureServiceUrl);
 }
 
-GURL GetManageInstrumentsUrl(size_t user_index) {
-  std::string path =
-      base::StringPrintf("u/%" PRIuS "#paymentMethods", user_index);
-  return GetBaseSecureUrl().Resolve(path);
+GURL GetManageInstrumentsUrl() {
+  return GURL(IsPaymentsProductionEnabled() ? kProdPaymentsManageCardsUrl
+                                            : kSandboxPaymentsManageCardsUrl);
 }
 
-GURL GetManageAddressesUrl(size_t user_index) {
+GURL GetManageAddressesUrl() {
   // Billing addresses are now managed as a part of the payment instrument.
-  return GetManageInstrumentsUrl(user_index);
+  return GetManageInstrumentsUrl();
 }
 
 }  // namespace payments

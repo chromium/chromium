@@ -7,8 +7,6 @@
 
 namespace blink {
 
-using namespace html_names;
-
 class BoolAttributeSetter : public AXSparseAttributeSetter {
  public:
   BoolAttributeSetter(AXBoolAttribute attribute) : attribute_(attribute) {}
@@ -24,6 +22,34 @@ class BoolAttributeSetter : public AXSparseAttributeSetter {
                    !EqualIgnoringASCIICase(value, "false");
     if (is_true)  // Not necessary to add if false
       attribute_map.AddBoolAttribute(attribute_, true);
+  }
+};
+
+class IntAttributeSetter : public AXSparseAttributeSetter {
+ public:
+  IntAttributeSetter(AXIntAttribute attribute) : attribute_(attribute) {}
+
+ private:
+  AXIntAttribute attribute_;
+
+  void Run(const AXObject& obj,
+           AXSparseAttributeClient& attribute_map,
+           const AtomicString& value) override {
+    attribute_map.AddIntAttribute(attribute_, value.ToInt());
+  }
+};
+
+class UIntAttributeSetter : public AXSparseAttributeSetter {
+ public:
+  UIntAttributeSetter(AXUIntAttribute attribute) : attribute_(attribute) {}
+
+ private:
+  AXUIntAttribute attribute_;
+
+  void Run(const AXObject& obj,
+           AXSparseAttributeClient& attribute_map,
+           const AtomicString& value) override {
+    attribute_map.AddUIntAttribute(attribute_, value.ToInt());
   }
 };
 
@@ -54,10 +80,10 @@ class ObjectAttributeSetter : public AXSparseAttributeSetter {
     if (value.IsNull() || value.IsEmpty())
       return;
 
-    Node* node = obj.GetNode();
-    if (!node || !node->IsElementNode())
+    auto* element = DynamicTo<Element>(obj.GetNode());
+    if (!element)
       return;
-    Element* target = ToElement(node)->GetTreeScope().getElementById(value);
+    Element* target = element->GetTreeScope().getElementById(value);
     if (!target)
       return;
     AXObject* ax_target = obj.AXObjectCache().GetOrCreate(target);
@@ -85,7 +111,6 @@ class ObjectVectorAttributeSetter : public AXSparseAttributeSetter {
     if (attribute_value.IsEmpty())
       return;
 
-    attribute_value.SimplifyWhiteSpace();
     Vector<String> ids;
     attribute_value.Split(' ', ids);
     if (ids.IsEmpty())
@@ -118,28 +143,48 @@ AXSparseAttributeSetterMap& GetSparseAttributeSetterMap() {
                       ax_sparse_attribute_setter_map, ());
   if (ax_sparse_attribute_setter_map.IsEmpty()) {
     ax_sparse_attribute_setter_map.Set(
-        kAriaActivedescendantAttr,
+        html_names::kAriaActivedescendantAttr,
         new ObjectAttributeSetter(AXObjectAttribute::kAriaActiveDescendant));
     ax_sparse_attribute_setter_map.Set(
-        kAriaControlsAttr, new ObjectVectorAttributeSetter(
-                               AXObjectVectorAttribute::kAriaControls));
+        html_names::kAriaControlsAttr,
+        new ObjectVectorAttributeSetter(
+            AXObjectVectorAttribute::kAriaControls));
     ax_sparse_attribute_setter_map.Set(
-        kAriaFlowtoAttr,
+        html_names::kAriaFlowtoAttr,
         new ObjectVectorAttributeSetter(AXObjectVectorAttribute::kAriaFlowTo));
     ax_sparse_attribute_setter_map.Set(
-        kAriaDetailsAttr,
+        html_names::kAriaDetailsAttr,
         new ObjectAttributeSetter(AXObjectAttribute::kAriaDetails));
     ax_sparse_attribute_setter_map.Set(
-        kAriaErrormessageAttr,
+        html_names::kAriaErrormessageAttr,
         new ObjectAttributeSetter(AXObjectAttribute::kAriaErrorMessage));
     ax_sparse_attribute_setter_map.Set(
-        kAriaKeyshortcutsAttr,
+        html_names::kAriaKeyshortcutsAttr,
         new StringAttributeSetter(AXStringAttribute::kAriaKeyShortcuts));
     ax_sparse_attribute_setter_map.Set(
-        kAriaRoledescriptionAttr,
+        html_names::kAriaRoledescriptionAttr,
         new StringAttributeSetter(AXStringAttribute::kAriaRoleDescription));
     ax_sparse_attribute_setter_map.Set(
-        kAriaBusyAttr, new BoolAttributeSetter(AXBoolAttribute::kAriaBusy));
+        html_names::kAriaBusyAttr,
+        new BoolAttributeSetter(AXBoolAttribute::kAriaBusy));
+    ax_sparse_attribute_setter_map.Set(
+        html_names::kAriaColcountAttr,
+        new IntAttributeSetter(AXIntAttribute::kAriaColumnCount));
+    ax_sparse_attribute_setter_map.Set(
+        html_names::kAriaColindexAttr,
+        new UIntAttributeSetter(AXUIntAttribute::kAriaColumnIndex));
+    ax_sparse_attribute_setter_map.Set(
+        html_names::kAriaColspanAttr,
+        new UIntAttributeSetter(AXUIntAttribute::kAriaColumnSpan));
+    ax_sparse_attribute_setter_map.Set(
+        html_names::kAriaRowcountAttr,
+        new IntAttributeSetter(AXIntAttribute::kAriaRowCount));
+    ax_sparse_attribute_setter_map.Set(
+        html_names::kAriaRowindexAttr,
+        new UIntAttributeSetter(AXUIntAttribute::kAriaRowIndex));
+    ax_sparse_attribute_setter_map.Set(
+        html_names::kAriaRowspanAttr,
+        new UIntAttributeSetter(AXUIntAttribute::kAriaRowSpan));
   }
   return ax_sparse_attribute_setter_map;
 }

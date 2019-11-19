@@ -38,7 +38,7 @@ const char kPerResourceIdentifierPrefName[] = "per_resource";
 // dictionary under which per-resource content settings are stored.
 // Otherwise, returns false.
 bool SupportsResourceIdentifiers(ContentSettingsType content_type) {
-  return content_type == CONTENT_SETTINGS_TYPE_PLUGINS;
+  return content_type == ContentSettingsType::PLUGINS;
 }
 
 bool IsValueAllowedForType(const base::Value* value, ContentSettingsType type) {
@@ -78,15 +78,16 @@ ContentSettingsPref::ContentSettingsPref(
     PrefService* prefs,
     PrefChangeRegistrar* registrar,
     const std::string& pref_name,
-    bool incognito,
+    bool off_the_record,
     NotifyObserversCallback notify_callback)
     : content_type_(content_type),
       prefs_(prefs),
       registrar_(registrar),
       pref_name_(pref_name),
-      is_incognito_(incognito),
+      off_the_record_(off_the_record),
       updating_preferences_(false),
-      notify_callback_(notify_callback) {
+      notify_callback_(notify_callback),
+      allow_resource_identifiers_(false) {
   DCHECK(prefs_);
 
   ReadContentSettingsFromPref();
@@ -101,11 +102,15 @@ ContentSettingsPref::~ContentSettingsPref() {
 
 std::unique_ptr<RuleIterator> ContentSettingsPref::GetRuleIterator(
     const ResourceIdentifier& resource_identifier,
-    bool incognito) const {
-  if (incognito)
-    return incognito_value_map_.GetRuleIterator(content_type_,
-                                                resource_identifier,
-                                                &lock_);
+    bool off_the_record) const {
+  // Resource Identifiers have been supported by the API but never used by any
+  // users of the API.
+  // TODO(crbug.com/754178): remove |resource_identifier| from the API.
+  DCHECK(resource_identifier.empty() || allow_resource_identifiers_);
+
+  if (off_the_record)
+    return off_the_record_value_map_.GetRuleIterator(
+        content_type_, resource_identifier, &lock_);
   return value_map_.GetRuleIterator(content_type_, resource_identifier, &lock_);
 }
 
@@ -114,20 +119,25 @@ bool ContentSettingsPref::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     const ResourceIdentifier& resource_identifier,
     base::Time modified_time,
-    base::Value* in_value) {
-  DCHECK(!in_value || IsValueAllowedForType(in_value, content_type_));
+    std::unique_ptr<base::Value>&& in_value) {
+  DCHECK(!in_value || IsValueAllowedForType(in_value.get(), content_type_));
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(prefs_);
   DCHECK(primary_pattern != ContentSettingsPattern::Wildcard() ||
          secondary_pattern != ContentSettingsPattern::Wildcard() ||
-         !resource_identifier.empty());
+         (!resource_identifier.empty() && allow_resource_identifiers_));
+
+  // Resource Identifiers have been supported by the API but never used by any
+  // users of the API.
+  // TODO(crbug.com/754178): remove |resource_identifier| from the API.
+  DCHECK(resource_identifier.empty() || allow_resource_identifiers_);
 
   // At this point take the ownership of the |in_value|.
-  std::unique_ptr<base::Value> value(in_value);
+  std::unique_ptr<base::Value> value(std::move(in_value));
 
   // Update in memory value map.
-  OriginIdentifierValueMap* map_to_modify = &incognito_value_map_;
-  if (!is_incognito_)
+  OriginIdentifierValueMap* map_to_modify = &off_the_record_value_map_;
+  if (!off_the_record_)
     map_to_modify = &value_map_;
 
   {
@@ -145,7 +155,7 @@ bool ContentSettingsPref::SetWebsiteSetting(
     }
   }
   // Update the content settings preference.
-  if (!is_incognito_) {
+  if (!off_the_record_) {
     UpdatePref(primary_pattern, secondary_pattern, resource_identifier,
                modified_time, value.get());
   }
@@ -160,8 +170,8 @@ base::Time ContentSettingsPref::GetWebsiteSettingLastModified(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     const ResourceIdentifier& resource_identifier) {
-  OriginIdentifierValueMap* map_to_modify = &incognito_value_map_;
-  if (!is_incognito_)
+  OriginIdentifierValueMap* map_to_modify = &off_the_record_value_map_;
+  if (!off_the_record_)
     map_to_modify = &value_map_;
 
   base::Time last_modified = map_to_modify->GetLastModified(
@@ -189,9 +199,9 @@ void ContentSettingsPref::ClearAllContentSettingsRules() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(prefs_);
 
-  if (is_incognito_) {
+  if (off_the_record_) {
     base::AutoLock auto_lock(lock_);
-    incognito_value_map_.clear();
+    off_the_record_value_map_.clear();
   } else {
     ClearPref();
   }
@@ -277,8 +287,8 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
 
     if (SupportsResourceIdentifiers(content_type_)) {
       const base::DictionaryValue* resource_dictionary = nullptr;
-      if (settings_dictionary->GetDictionary(
-              kPerResourceIdentifierPrefName, &resource_dictionary)) {
+      if (settings_dictionary->GetDictionary(kPerResourceIdentifierPrefName,
+                                             &resource_dictionary)) {
         base::Time last_modified = GetTimeStamp(settings_dictionary);
         for (base::DictionaryValue::Iterator j(*resource_dictionary);
              !j.IsAtEnd();
@@ -309,12 +319,12 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
     }
   }
 
-  // Canonicalization is unnecessary when |is_incognito_|. Both incognito and
-  // non-incognito read from the same pref and non-incognito reads occur
-  // before incognito reads. Thus, by the time the incognito call to
-  // ReadContentSettingsFromPref() occurs, the regular profile will have
-  // canonicalized the stored pref data.
-  if (!is_incognito_) {
+  // Canonicalization is unnecessary when |off_the_record_|. Both
+  // off_the_record and non off_the_record read from the same pref and
+  // non off_the_record reads occur before off_the_record reads. Thus, by the
+  // time the off_the_record call to ReadContentSettingsFromPref() occurs, the
+  // regular profile will have canonicalized the stored pref data.
+  if (!off_the_record_) {
     auto mutable_settings = update.Get();
 
     for (const auto& pattern : non_canonical_patterns_to_remove) {

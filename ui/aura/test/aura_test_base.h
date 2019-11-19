@@ -9,23 +9,23 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
-#include "ui/aura/mus/property_converter.h"
-#include "ui/aura/mus/window_tree_client_delegate.h"
 #include "ui/aura/test/aura_test_helper.h"
 
-namespace ws {
-namespace mojom {
-class WindowTreeClient;
-}
+#if defined(OS_WIN)
+#include "base/win/scoped_com_initializer.h"
+#endif
+
+namespace ui {
+class TestContextFactories;
 }
 
 namespace aura {
 class Window;
 class WindowDelegate;
-class WindowTreeClientDelegate;
 
 namespace client {
 class FocusClient;
@@ -37,7 +37,7 @@ class AuraTestContextFactory;
 
 // A base class for aura unit tests.
 // TODO(beng): Instances of this test will create and own a RootWindow.
-class AuraTestBase : public testing::Test, public WindowTreeClientDelegate {
+class AuraTestBase : public testing::Test {
  public:
   AuraTestBase();
   ~AuraTestBase() override;
@@ -51,23 +51,6 @@ class AuraTestBase : public testing::Test, public WindowTreeClientDelegate {
                                    aura::WindowDelegate* delegate);
 
  protected:
-  void set_window_tree_client_delegate(
-      WindowTreeClientDelegate* window_tree_client_delegate) {
-    window_tree_client_delegate_ = window_tree_client_delegate;
-  }
-
-  // Turns on mus with a test WindowTree. Must be called before SetUp().
-  void EnableMusWithTestWindowTree();
-
-  // Deletes the WindowTreeClient now. Normally the WindowTreeClient is deleted
-  // at the right time and there is no need to call this. This is provided for
-  // testing shutdown ordering.
-  void DeleteWindowTreeClient();
-
-  // Used to configure the backend. This is exposed to make parameterized tests
-  // easy to write. This *must* be called from SetUp().
-  void ConfigureEnvMode(Env::Mode mode);
-
   void RunAllPendingInMessageLoop();
 
   void ParentWindow(Window* window);
@@ -82,61 +65,20 @@ class AuraTestBase : public testing::Test, public WindowTreeClientDelegate {
   TestScreen* test_screen() { return helper_->test_screen(); }
   client::FocusClient* focus_client() { return helper_->focus_client(); }
 
-  TestWindowTree* window_tree() { return helper_->window_tree(); }
-  WindowTreeClient* window_tree_client_impl() {
-    return helper_->window_tree_client();
-  }
-  ws::mojom::WindowTreeClient* window_tree_client();
-
-  // WindowTreeClientDelegate:
-  void OnEmbed(std::unique_ptr<WindowTreeHostMus> window_tree_host) override;
-  void OnUnembed(Window* root) override;
-  void OnEmbedRootDestroyed(WindowTreeHostMus* window_tree_host) override;
-  void OnLostConnection(WindowTreeClient* client) override;
-  PropertyConverter* GetPropertyConverter() override;
-
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
-  // Only used for mus, initially set to this, but may be reset.
-  WindowTreeClientDelegate* window_tree_client_delegate_;
+#if defined(OS_WIN)
+  base::win::ScopedCOMInitializer com_initializer_;
+#endif
 
-  Env::Mode env_mode_ = Env::Mode::LOCAL;
   bool setup_called_ = false;
   bool teardown_called_ = false;
-  PropertyConverter property_converter_;
+  std::unique_ptr<ui::TestContextFactories> context_factories_;
   std::unique_ptr<AuraTestHelper> helper_;
   std::unique_ptr<AuraTestContextFactory> mus_context_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(AuraTestBase);
-};
-
-// Use as a base class for tests that want to target both backends.
-class AuraTestBaseWithType : public AuraTestBase,
-                             public ::testing::WithParamInterface<Env::Mode> {
- public:
-  AuraTestBaseWithType();
-  ~AuraTestBaseWithType() override;
-
-  // AuraTestBase:
-  void SetUp() override;
-
- private:
-  bool setup_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AuraTestBaseWithType);
-};
-
-class AuraTestBaseMus : public AuraTestBase {
- public:
-  AuraTestBaseMus();
-  ~AuraTestBaseMus() override;
-
-  // AuraTestBase:
-  void SetUp() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuraTestBaseMus);
 };
 
 }  // namespace test

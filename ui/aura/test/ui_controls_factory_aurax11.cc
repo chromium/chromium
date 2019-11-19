@@ -66,7 +66,8 @@ class UIControlsX11 : public UIControlsAura {
                                   bool alt,
                                   bool command,
                                   base::OnceClosure closure) override {
-    XEvent xevent = {0};
+    XEvent xevent;
+    xevent.xkey = {};
     xevent.xkey.type = KeyPress;
     if (control)
       SetKeycodeAndSendThenMask(&xevent, XK_Control_L, ControlMask);
@@ -119,7 +120,8 @@ class UIControlsX11 : public UIControlsAura {
       // current mouse position as a result of XGrabPointer()
       host_->window()->MoveCursorTo(root_location);
     } else {
-      XEvent xevent = {0};
+      XEvent xevent;
+      xevent.xmotion = {};
       XMotionEvent* xmotion = &xevent.xmotion;
       xmotion->type = MotionNotify;
       xmotion->x = root_location.x();
@@ -142,9 +144,10 @@ class UIControlsX11 : public UIControlsAura {
                                      int button_state,
                                      base::OnceClosure closure,
                                      int accelerator_state) override {
-    XEvent xevent = {0};
+    XEvent xevent;
+    xevent.xbutton = {};
     XButtonEvent* xbutton = &xevent.xbutton;
-    gfx::Point mouse_loc = host_->window()->env()->last_mouse_location();
+    gfx::Point mouse_loc = Env::GetInstance()->last_mouse_location();
     aura::client::ScreenPositionClient* screen_position_client =
           aura::client::GetScreenPositionClient(host_->window());
     if (screen_position_client) {
@@ -209,7 +212,8 @@ class UIControlsX11 : public UIControlsAura {
     }
     marker_event->xclient.message_type = MarkerEventAtom();
     PostEventToWindowTreeHost(*marker_event, host_);
-    ui::PlatformEventWaiter::Create(std::move(closure), base::Bind(&Matcher));
+    ui::PlatformEventWaiter::Create(std::move(closure),
+                                    base::BindRepeating(&Matcher));
   }
  private:
   void SetKeycodeAndSendThenMask(XEvent* xevent,

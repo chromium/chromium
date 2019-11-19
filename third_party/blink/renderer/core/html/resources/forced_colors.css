@@ -1,0 +1,206 @@
+/* Copyright 2019 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* These forced colors mode styles override the default styling for HTML
+ * elements as defined in core/html/resources/html.css when forced colors mode
+ * is enabled.
+ */
+
+@media forced-colors {
+  body {
+    background-color: Window;
+    color: WindowText;
+  }
+
+  :focus {
+    outline-color: Highlight;
+  }
+
+  a:link,
+  a:-webkit-any-link:active {
+    color: LinkText;
+  }
+
+  a:visited {
+    color: VisitedText;
+  }
+
+  fieldset {
+    border-color: WindowText;
+  }
+
+  ::placeholder {
+    color: GrayText;
+  }
+
+  input,
+  textarea {
+    background: Window;
+    border-color: ButtonText;
+    color: WindowText;
+  }
+
+  input:hover,
+  textarea:hover,
+  input[type="file"]:hover::-webkit-file-upload-button,
+  input:focus,
+  textarea:focus {
+    border-color: Highlight;
+  }
+
+  input[type="text"]:disabled,
+  input[type="password"]:disabled,
+  input[type="email"]:disabled,
+  input[type="number"]:disabled,
+  input[type="tel"]:disabled,
+  input[type="url"]:disabled,
+  input[type="search"]:disabled,
+  input[type="date"]:disabled,
+  input[type="month"]:disabled,
+  input[type="week"]:disabled,
+  input[type="time"]:disabled,
+  input[type="datetime-local"]:disabled,
+  textarea:disabled {
+    background-color: ButtonFace;
+    border-color: GrayText;
+    color: GrayText;
+  }
+
+  input::-webkit-calendar-picker-indicator {
+    background-color: ButtonFace;
+    color: ButtonText;
+  }
+
+  input::-webkit-datetime-edit-ampm-field:focus,
+  input::-webkit-datetime-edit-day-field:focus,
+  input::-webkit-datetime-edit-hour-field:focus,
+  input::-webkit-datetime-edit-millisecond-field:focus,
+  input::-webkit-datetime-edit-minute-field:focus,
+  input::-webkit-datetime-edit-month-field:focus,
+  input::-webkit-datetime-edit-second-field:focus,
+  input::-webkit-datetime-edit-week-field:focus,
+  input::-webkit-datetime-edit-year-field:focus {
+      background-color: highlight;
+      color: highlighttext;
+      outline: none;
+  }
+
+  input[type="color"]:disabled {
+    border-color: GrayText;
+  }
+
+  input[type="color"] {
+    forced-color-adjust: none;
+  }
+
+  input[type="color"]::-webkit-color-swatch {
+    border-color: WindowText !important;
+  }
+
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  input[type="file"]::-webkit-file-upload-button {
+    border-color: ButtonText;
+    background: ButtonFace;
+    color: ButtonText;
+  }
+
+  button:hover,
+  input[type="button"]:hover,
+  input[type="submit"]:hover,
+  input[type="reset"]:hover,
+  button:focus,
+  input[type="button"]:focus,
+  input[type="submit"]:focus,
+  input[type="reset"]:focus {
+    border-color: Highlight;
+  }
+
+  button:disabled,
+  input[type="button"]:disabled,
+  input[type="submit"]:disabled,
+  input[type="reset"]:disabled {
+    border-color: GrayText;
+    color: GrayText;
+  }
+
+  /* same color as hyperlinks */
+  details summary {
+    color: LinkText;
+  }
+
+  select:-internal-list-box {
+    background-color: Window !important;
+    border-color: ButtonText;
+  }
+
+  /* option disabled */
+  select:-internal-list-box option:disabled,
+  select:-internal-list-box option:disabled:hover,
+  select:-internal-list-box:disabled option,
+  select:-internal-list-box:disabled option:hover {
+    background-color: Window !important;
+    color: GrayText !important;
+  }
+
+  /* option selected */
+  select:-internal-list-box:focus option:checked,
+  select:-internal-list-box:focus option:checked:hover,
+  select:-internal-list-box option:checked,
+  select:-internal-list-box option:checked:hover {
+    background-color: Highlight !important;
+    color: Window !important;
+    forced-color-adjust: none;
+  }
+
+  /* option both disabled and selected */
+  select:-internal-list-box:focus option:checked:disabled,
+  select:-internal-list-box:focus option:checked:disabled:hover,
+  select:-internal-list-box:disabled option:checked,
+  select:-internal-list-box:disabled option:checked:hover,
+  select:-internal-list-box option:checked:disabled,
+  select:-internal-list-box option:checked:disabled:hover {
+    background-color: GrayText !important;
+    color: Window !important;
+    forced-color-adjust: none;
+  }
+
+  select:-internal-list-box option:hover {
+    background-color: Window;
+    color: Highlight;
+  }
+
+  select {
+    background: Window;
+    border-color: WindowText;
+    color: WindowText;
+  }
+
+  select:hover {
+    border-color: Highlight;
+  }
+
+  select:focus {
+    border-color: Highlight;
+  }
+
+  select:disabled {
+    border-color: GrayText;
+    color: GrayText;
+  }
+
+  meter::-webkit-meter-bar {
+    background: ButtonFace;
+    border-color: WindowText;
+  }
+
+  meter::-webkit-meter-even-less-good-value,
+  meter::-webkit-meter-optimum-value,
+  meter::-webkit-meter-suboptimum-value {
+    background: Highlight;
+  }
+}

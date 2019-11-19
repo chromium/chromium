@@ -18,3 +18,16 @@
 (allow file-read-data
   (subpath "/System/Library/ColorSync/Profiles")  ; https://crbug.com/822218
 )
+
+; This is available in 10.15+, and rolled out as a Finch experiment.
+(if (param-true? filter-syscalls)
+  (when (defined? 'syscall-unix)
+    (deny syscall-unix (with send-signal SIGSYS))
+    (allow syscall-unix
+      (syscall-number SYS_fsgetpath)
+      (syscall-number SYS_getfsstat64)
+      (syscall-number SYS_mkdir)
+      (syscall-number SYS_pathconf)
+      (syscall-number SYS_sigaltstack)
+      (syscall-number SYS_write)
+)))

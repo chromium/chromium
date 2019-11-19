@@ -63,8 +63,9 @@ class AudioTimestampValidatorTest
 TEST_P(AudioTimestampValidatorTest, WarnForEraticTimes) {
   AudioDecoderConfig decoder_config;
   decoder_config.Initialize(kCodec, kSampleFormat, kChannelLayout,
-                            kSamplesPerSecond, EmptyExtraData(), Unencrypted(),
-                            kSeekPreroll, codec_delay_);
+                            kSamplesPerSecond, EmptyExtraData(),
+                            EncryptionScheme::kUnencrypted, kSeekPreroll,
+                            codec_delay_);
 
   // Validator should fail to stabilize pattern for timestamp expectations.
   EXPECT_MEDIA_LOG(
@@ -104,7 +105,7 @@ TEST_P(AudioTimestampValidatorTest, WarnForEraticTimes) {
       scoped_refptr<AudioBuffer> decoded_buffer = MakeAudioBuffer<float>(
           kSampleFormat, kChannelLayout, kChannelCount, kSamplesPerSecond, 1.0f,
           0.0f, kFramesPerBuffer, i * kBufferDuration);
-      validator.RecordOutputDuration(decoded_buffer.get());
+      validator.RecordOutputDuration(*decoded_buffer);
     }
   }
 }
@@ -112,8 +113,9 @@ TEST_P(AudioTimestampValidatorTest, WarnForEraticTimes) {
 TEST_P(AudioTimestampValidatorTest, NoWarningForValidTimes) {
   AudioDecoderConfig decoder_config;
   decoder_config.Initialize(kCodec, kSampleFormat, kChannelLayout,
-                            kSamplesPerSecond, EmptyExtraData(), Unencrypted(),
-                            kSeekPreroll, codec_delay_);
+                            kSamplesPerSecond, EmptyExtraData(),
+                            EncryptionScheme::kUnencrypted, kSeekPreroll,
+                            codec_delay_);
 
   // Validator should quickly stabilize pattern for timestamp expectations.
   EXPECT_MEDIA_LOG(HasSubstr("Failed to reconcile encoded audio times "
@@ -143,7 +145,7 @@ TEST_P(AudioTimestampValidatorTest, NoWarningForValidTimes) {
       scoped_refptr<AudioBuffer> decoded_buffer = MakeAudioBuffer<float>(
           kSampleFormat, kChannelLayout, kChannelCount, kSamplesPerSecond, 1.0f,
           0.0f, kFramesPerBuffer, i * kBufferDuration);
-      validator.RecordOutputDuration(decoded_buffer.get());
+      validator.RecordOutputDuration(*decoded_buffer);
     }
   }
 }
@@ -151,8 +153,9 @@ TEST_P(AudioTimestampValidatorTest, NoWarningForValidTimes) {
 TEST_P(AudioTimestampValidatorTest, SingleWarnForSingleLargeGap) {
   AudioDecoderConfig decoder_config;
   decoder_config.Initialize(kCodec, kSampleFormat, kChannelLayout,
-                            kSamplesPerSecond, EmptyExtraData(), Unencrypted(),
-                            kSeekPreroll, codec_delay_);
+                            kSamplesPerSecond, EmptyExtraData(),
+                            EncryptionScheme::kUnencrypted, kSeekPreroll,
+                            codec_delay_);
 
   AudioTimestampValidator validator(decoder_config, &media_log_);
 
@@ -188,7 +191,7 @@ TEST_P(AudioTimestampValidatorTest, SingleWarnForSingleLargeGap) {
       scoped_refptr<AudioBuffer> decoded_buffer = MakeAudioBuffer<float>(
           kSampleFormat, kChannelLayout, kChannelCount, kSamplesPerSecond, 1.0f,
           0.0f, kFramesPerBuffer, i * kBufferDuration);
-      validator.RecordOutputDuration(decoded_buffer.get());
+      validator.RecordOutputDuration(*decoded_buffer);
     }
   }
 }
@@ -196,8 +199,9 @@ TEST_P(AudioTimestampValidatorTest, SingleWarnForSingleLargeGap) {
 TEST_P(AudioTimestampValidatorTest, RepeatedWarnForSlowAccumulatingDrift) {
   AudioDecoderConfig decoder_config;
   decoder_config.Initialize(kCodec, kSampleFormat, kChannelLayout,
-                            kSamplesPerSecond, EmptyExtraData(), Unencrypted(),
-                            kSeekPreroll, codec_delay_);
+                            kSamplesPerSecond, EmptyExtraData(),
+                            EncryptionScheme::kUnencrypted, kSeekPreroll,
+                            codec_delay_);
 
   AudioTimestampValidator validator(decoder_config, &media_log_);
 
@@ -238,7 +242,7 @@ TEST_P(AudioTimestampValidatorTest, RepeatedWarnForSlowAccumulatingDrift) {
       scoped_refptr<AudioBuffer> decoded_buffer = MakeAudioBuffer<float>(
           kSampleFormat, kChannelLayout, kChannelCount, kSamplesPerSecond, 1.0f,
           0.0f, kFramesPerBuffer, i * kBufferDuration);
-      validator.RecordOutputDuration(decoded_buffer.get());
+      validator.RecordOutputDuration(*decoded_buffer);
     }
   }
 }

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL XMLHttpRequest: abort() after send() assert_equals: expected "abort(0,0,false)" but got "upload.abort(0,0,false)"
+Harness: the test ran to completion.
+

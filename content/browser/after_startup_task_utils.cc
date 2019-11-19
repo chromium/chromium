@@ -4,12 +4,14 @@
 
 #include "content/browser/after_startup_task_utils.h"
 
+#include "content/browser/scheduler/browser_task_executor.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 
 namespace content {
 
 void SetBrowserStartupIsCompleteForTesting() {
+  content::BrowserTaskExecutor::EnableAllQueues();
   // Forward the message to ContentBrowserClient if one is registered (there are
   // many tests where one isn't but that's fine as that also means they get the
   // default ContentBrowserClient::IsBrowserStartupComplete() which is always

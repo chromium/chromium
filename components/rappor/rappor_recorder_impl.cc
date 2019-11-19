@@ -8,7 +8,7 @@
 
 #include "components/rappor/public/rappor_utils.h"
 #include "components/rappor/rappor_service_impl.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace rappor {
 
@@ -20,9 +20,10 @@ RapporRecorderImpl::~RapporRecorderImpl() = default;
 // static
 void RapporRecorderImpl::Create(
     RapporServiceImpl* rappor_service,
-    mojom::RapporRecorderRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<RapporRecorderImpl>(rappor_service),
-                          std::move(request));
+    mojo::PendingReceiver<mojom::RapporRecorder> receiver) {
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<RapporRecorderImpl>(rappor_service),
+      std::move(receiver));
 }
 
 void RapporRecorderImpl::RecordRappor(const std::string& metric,

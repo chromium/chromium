@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import org.junit.Before;
@@ -16,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.CachedMetrics;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
@@ -41,14 +43,54 @@ public class LazySubscriptionsManagerTest {
      */
     @Test
     public void testHasPersistedMessages() {
-        // Default is false.
-        assertFalse(LazySubscriptionsManager.hasPersistedMessages());
+        final String subscriptionId = "subscription_id";
+        // By default there is no persisted messages.
+        assertTrue(LazySubscriptionsManager.getSubscriptionIdsWithPersistedMessages(subscriptionId)
+                           .isEmpty());
 
-        LazySubscriptionsManager.storeHasPersistedMessages(true);
-        assertTrue(LazySubscriptionsManager.hasPersistedMessages());
+        LazySubscriptionsManager.storeHasPersistedMessagesForSubscription(subscriptionId, true);
+        assertEquals(1,
+                LazySubscriptionsManager.getSubscriptionIdsWithPersistedMessages(subscriptionId)
+                        .size());
 
-        LazySubscriptionsManager.storeHasPersistedMessages(false);
-        assertFalse(LazySubscriptionsManager.hasPersistedMessages());
+        LazySubscriptionsManager.storeHasPersistedMessagesForSubscription(subscriptionId, false);
+        assertTrue(LazySubscriptionsManager.getSubscriptionIdsWithPersistedMessages(subscriptionId)
+                           .isEmpty());
+    }
+
+    /**
+     * Tests the migration path from one boolean pref to a set subscription ids for persisted
+     * messages.
+     */
+    @Test
+    public void testMigrateHasPersistedMessagesPref() {
+        final String subscriptionId1 = "subscription_id1";
+        final String subscriptionId2 = "subscription_id2";
+        LazySubscriptionsManager.storeLazinessInformation(subscriptionId1, true);
+        LazySubscriptionsManager.storeLazinessInformation(subscriptionId2, true);
+
+        SharedPreferences sharedPrefs = ContextUtils.getAppSharedPreferences();
+        sharedPrefs.edit()
+                .putBoolean(LazySubscriptionsManager.LEGACY_HAS_PERSISTED_MESSAGES_KEY, false)
+                .apply();
+        LazySubscriptionsManager.migrateHasPersistedMessagesPref();
+
+        assertTrue(LazySubscriptionsManager.getSubscriptionIdsWithPersistedMessages(subscriptionId1)
+                           .isEmpty());
+        assertTrue(LazySubscriptionsManager.getSubscriptionIdsWithPersistedMessages(subscriptionId2)
+                           .isEmpty());
+
+        sharedPrefs.edit()
+                .putBoolean(LazySubscriptionsManager.LEGACY_HAS_PERSISTED_MESSAGES_KEY, true)
+                .apply();
+        LazySubscriptionsManager.migrateHasPersistedMessagesPref();
+
+        assertEquals(1,
+                LazySubscriptionsManager.getSubscriptionIdsWithPersistedMessages(subscriptionId1)
+                        .size());
+        assertEquals(1,
+                LazySubscriptionsManager.getSubscriptionIdsWithPersistedMessages(subscriptionId2)
+                        .size());
     }
 
     /**

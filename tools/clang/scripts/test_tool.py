@@ -5,6 +5,8 @@
 
 """Test harness for chromium clang tools."""
 
+from __future__ import print_function
+
 import argparse
 import difflib
 import glob
@@ -102,7 +104,7 @@ def _ApplyTool(tools_clang_scripts_directory,
     for process in processes:
       process.wait()
       if process.returncode != 0:
-        print 'Failure while running the tool.'
+        print('Failure while running the tool.')
         return process.returncode
 
     if apply_edits:
@@ -142,7 +144,7 @@ def main(argv):
                       help='Clang tool to be tested.')
   args = parser.parse_args(argv)
   tool_to_test = args.tool_name[0]
-  print '\nTesting %s\n' % tool_to_test
+  print('\nTesting %s\n' % tool_to_test)
   tools_clang_scripts_directory = os.path.dirname(os.path.realpath(__file__))
   tools_clang_directory = os.path.dirname(tools_clang_scripts_directory)
   test_directory_for_tool = os.path.join(
@@ -157,7 +159,7 @@ def main(argv):
   expected_files = ['-'.join([source_file.rsplit('-', 1)[0], 'expected.' + ext])
                     for source_file in source_files]
   if not args.apply_edits and len(actual_files) != 1:
-    print 'Only one test file is expected for testing without apply-edits.'
+    print('Only one test file is expected for testing without apply-edits.')
     return 1
 
   include_paths = []
@@ -175,7 +177,7 @@ def main(argv):
                                     'testing/gmock/include')))
 
   if len(actual_files) == 0:
-    print 'Tool "%s" does not have compatible test files.' % tool_to_test
+    print('Tool "%s" does not have compatible test files.' % tool_to_test)
     return 1
 
   # Set up the test environment.
@@ -198,7 +200,7 @@ def main(argv):
   passed = 0
   failed = 0
   for expected, actual in zip(expected_files, actual_files):
-    print '[ RUN      ] %s' % os.path.relpath(actual)
+    print('[ RUN      ] %s' % os.path.relpath(actual))
     expected_output = actual_output = None
     with open(expected, 'r') as f:
       expected_output = f.read().splitlines()
@@ -210,22 +212,22 @@ def main(argv):
                                        fromfile=os.path.relpath(expected),
                                        tofile=os.path.relpath(actual)):
         sys.stdout.write(line)
-      print '[  FAILED  ] %s' % os.path.relpath(actual)
+      print('[  FAILED  ] %s' % os.path.relpath(actual))
       # Don't clean up the file on failure, so the results can be referenced
       # more easily.
       continue
-    print '[       OK ] %s' % os.path.relpath(actual)
+    print('[       OK ] %s' % os.path.relpath(actual))
     passed += 1
     os.remove(actual)
 
   if failed == 0:
     os.remove(compile_database)
 
-  print '[==========] %s ran.' % _NumberOfTestsToString(len(source_files))
+  print('[==========] %s ran.' % _NumberOfTestsToString(len(source_files)))
   if passed > 0:
-    print '[  PASSED  ] %s.' % _NumberOfTestsToString(passed)
+    print('[  PASSED  ] %s.' % _NumberOfTestsToString(passed))
   if failed > 0:
-    print '[  FAILED  ] %s.' % _NumberOfTestsToString(failed)
+    print('[  FAILED  ] %s.' % _NumberOfTestsToString(failed))
     return 1
 
 

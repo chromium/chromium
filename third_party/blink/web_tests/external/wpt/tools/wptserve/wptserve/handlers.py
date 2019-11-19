@@ -105,17 +105,21 @@ class DirectoryHandler(object):
 
 def wrap_pipeline(path, request, response):
     query = parse_qs(request.url_parts.query)
+    pipe_string = ""
 
-    pipeline = None
-    if "pipe" in query:
-        pipeline = Pipeline(query["pipe"][-1])
-    elif ".sub." in path:
+    if ".sub." in path:
         ml_extensions = {".html", ".htm", ".xht", ".xhtml", ".xml", ".svg"}
         escape_type = "html" if os.path.splitext(path)[1] in ml_extensions else "none"
-        pipeline = Pipeline("sub(%s)" % escape_type)
+        pipe_string = "sub(%s)" % escape_type
 
-    if pipeline is not None:
-        response = pipeline(request, response)
+    if "pipe" in query:
+        if pipe_string:
+            pipe_string += "|"
+
+        pipe_string += query["pipe"][-1]
+
+    if pipe_string:
+        response = Pipeline(pipe_string)(request, response)
 
     return response
 
@@ -159,8 +163,8 @@ class FileHandler(object):
         rv = (self.load_headers(request, os.path.join(os.path.split(path)[0], "__dir__")) +
               self.load_headers(request, path))
 
-        if not any(key.lower() == "content-type" for (key, _) in rv):
-            rv.insert(0, ("Content-Type", guess_content_type(path)))
+        if not any(key.lower() == b"content-type" for (key, _) in rv):
+            rv.insert(0, (b"Content-Type", guess_content_type(path).encode("ascii")))
 
         return rv
 
@@ -173,14 +177,14 @@ class FileHandler(object):
             use_sub = False
 
         try:
-            with open(headers_path) as headers_file:
+            with open(headers_path, "rb") as headers_file:
                 data = headers_file.read()
         except IOError:
             return []
         else:
             if use_sub:
                 data = template(request, data, escape_type="none")
-            return [tuple(item.strip() for item in line.split(":", 1))
+            return [tuple(item.strip() for item in line.split(b":", 1))
                     for line in data.splitlines() if line]
 
     def get_data(self, response, path, byte_ranges):

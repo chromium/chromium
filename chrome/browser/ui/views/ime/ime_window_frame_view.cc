@@ -17,6 +17,8 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -24,33 +26,71 @@ namespace ui {
 
 ImeWindowFrameView::ImeWindowFrameView(ImeWindowView* ime_window_view,
                                        ImeWindow::Mode mode)
-    : ime_window_view_(ime_window_view),
-      mode_(mode),
-      close_button_(nullptr),
-      title_icon_(nullptr) {}
+    : ime_window_view_(ime_window_view), mode_(mode) {}
 
-ImeWindowFrameView::~ImeWindowFrameView() {}
+ImeWindowFrameView::~ImeWindowFrameView() = default;
 
 void ImeWindowFrameView::Init() {
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  auto* outer_layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+  auto* titlebar = AddChildView(std::make_unique<views::View>());
+  auto* titlebar_layout =
+      titlebar->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  titlebar_layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  auto content = std::make_unique<views::View>();
+  content->SetProperty(views::kFlexBehaviorKey,
+                       views::FlexSpecification::ForSizeRule(
+                           views::MinimumFlexSizeRule::kPreferred,
+                           views::MaximumFlexSizeRule::kUnbounded));
 
-  close_button_ = new views::ImageButton(this);
-  close_button_->SetImage(views::Button::STATE_NORMAL,
-                          rb.GetImageSkiaNamed(IDR_IME_WINDOW_CLOSE));
-  close_button_->SetImage(views::Button::STATE_HOVERED,
-                          rb.GetImageSkiaNamed(IDR_IME_WINDOW_CLOSE_H));
-  close_button_->SetImage(views::Button::STATE_PRESSED,
-                          rb.GetImageSkiaNamed(IDR_IME_WINDOW_CLOSE_C));
-  close_button_->SetImageAlignment(views::ImageButton::ALIGN_CENTER,
-                                   views::ImageButton::ALIGN_MIDDLE);
-  close_button_->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
-  AddChildView(close_button_);
+  constexpr int kLeadingMarginDp = 8, kTrailingMarginDp = 6;
+  if (in_follow_cursor_mode()) {
+    titlebar->SetPreferredSize({kTitlebarHeight, 0});
+    titlebar_layout->SetOrientation(views::LayoutOrientation::kVertical)
+        .SetInteriorMargin({kLeadingMarginDp, 0, kTrailingMarginDp, 0});
+    content->SetBorder(views::CreateEmptyBorder(
+        {kImeBorderThickness, 0, kImeBorderThickness, kImeBorderThickness}));
+  } else {
+    outer_layout->SetOrientation(views::LayoutOrientation::kVertical);
+    titlebar->SetPreferredSize({0, kTitlebarHeight});
+    titlebar_layout->SetInteriorMargin(
+        {0, kLeadingMarginDp, 0, kTrailingMarginDp});
+    content->SetBorder(views::CreateEmptyBorder(
+        {0, kImeBorderThickness, kImeBorderThickness, kImeBorderThickness}));
+  }
 
-  title_icon_ = new views::ImageView();
-  title_icon_->SetImage(ime_window_view_->GetWindowIcon());
-  title_icon_->set_tooltip_text(ime_window_view_->GetWindowTitle());
-  AddChildView(title_icon_);
+  content_ = AddChildView(std::move(content));
+
+  auto title_icon = std::make_unique<views::ImageView>();
+  title_icon->SetImage(ime_window_view_->GetWindowIcon());
+  title_icon->SetImageSize({16, 16});
+  title_icon->set_tooltip_text(ime_window_view_->GetWindowTitle());
+  title_icon->SetProperty(views::kFlexBehaviorKey,
+                          views::FlexSpecification::ForSizeRule(
+                              views::MinimumFlexSizeRule::kPreferred,
+                              views::MaximumFlexSizeRule::kUnbounded)
+                              .WithAlignment(views::LayoutAlignment::kStart));
+  title_icon_ = titlebar->AddChildView(std::move(title_icon));
+
+  if (!in_follow_cursor_mode()) {
+    auto close_button = std::make_unique<views::ImageButton>(this);
+    ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+    close_button->SetImage(views::Button::STATE_NORMAL,
+                           rb.GetImageSkiaNamed(IDR_IME_WINDOW_CLOSE));
+    close_button->SetImage(views::Button::STATE_HOVERED,
+                           rb.GetImageSkiaNamed(IDR_IME_WINDOW_CLOSE_H));
+    close_button->SetImage(views::Button::STATE_PRESSED,
+                           rb.GetImageSkiaNamed(IDR_IME_WINDOW_CLOSE_C));
+    close_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
+    close_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+    close_button->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
+    close_button->SetProperty(views::kFlexBehaviorKey,
+                              views::FlexSpecification::ForSizeRule(
+                                  views::MinimumFlexSizeRule::kPreferred,
+                                  views::MaximumFlexSizeRule::kUnbounded)
+                                  .WithAlignment(views::LayoutAlignment::kEnd));
+    close_button_ = titlebar->AddChildView(std::move(close_button));
+  }
 }
 
 void ImeWindowFrameView::UpdateIcon() {
@@ -58,16 +98,7 @@ void ImeWindowFrameView::UpdateIcon() {
 }
 
 gfx::Rect ImeWindowFrameView::GetBoundsForClientView() const {
-  if (in_follow_cursor_mode()) {
-    return gfx::Rect(
-        kTitlebarHeight, kImeBorderThickness,
-        std::max(0, width() - kTitlebarHeight - kImeBorderThickness),
-        std::max(0, height() - kImeBorderThickness * 2));
-  }
-  return gfx::Rect(
-      kImeBorderThickness, kTitlebarHeight,
-      std::max(0, width() - kImeBorderThickness * 2),
-      std::max(0, height() - kTitlebarHeight - kImeBorderThickness));
+  return content_->ConvertRectToParent(content_->GetContentsBounds());
 }
 
 gfx::Rect ImeWindowFrameView::GetWindowBoundsForClientBounds(
@@ -94,11 +125,9 @@ int ImeWindowFrameView::NonClientHitTest(const gfx::Point& point) {
   if (client_component != HTNOWHERE)
     return client_component;
 
-  if (close_button_ && close_button_->visible() &&
-      close_button_->GetMirroredBounds().Contains(point))
-    return HTCLOSE;
-
-  return HTNOWHERE;
+  return (close_button_ && close_button_->GetMirroredBounds().Contains(point))
+             ? HTCLOSE
+             : HTNOWHERE;
 }
 
 void ImeWindowFrameView::GetWindowMask(const gfx::Size& size,
@@ -140,25 +169,6 @@ gfx::Size ImeWindowFrameView::GetMinimumSize() const {
 
 gfx::Size ImeWindowFrameView::GetMaximumSize() const {
   return ime_window_view_->GetMaximumSize();
-}
-
-void ImeWindowFrameView::Layout() {
-  // Layout the icon.
-  // TODO(shuchen): Consider the RTL case.
-  int icon_y = (kTitlebarHeight - kTitleIconSize) / 2;
-  bool follow_cursor = in_follow_cursor_mode();
-  title_icon_->SetBounds(follow_cursor ? icon_y : kTitlebarLeftPadding,
-                         follow_cursor ? kTitlebarLeftPadding : icon_y,
-                         kTitleIconSize, kTitleIconSize);
-
-  if (follow_cursor) {
-    close_button_->SetVisible(false);
-  } else {
-    // Layout the close button.
-    close_button_->SetBounds(width() - kTitlebarRightPadding - kButtonSize,
-                             (kTitlebarHeight - kButtonSize) / 2, kButtonSize,
-                             kButtonSize);
-  }
 }
 
 void ImeWindowFrameView::OnPaint(gfx::Canvas* canvas) {
@@ -225,8 +235,8 @@ void ImeWindowFrameView::OnGestureEvent(ui::GestureEvent* event) {
 
 void ImeWindowFrameView::ButtonPressed(views::Button* sender,
                                        const ui::Event& event) {
-  if (sender == close_button_)
-    ime_window_view_->OnCloseButtonClicked();
+  DCHECK_EQ(close_button_, sender);
+  ime_window_view_->OnCloseButtonClicked();
 }
 
 void ImeWindowFrameView::PaintFrameBackground(gfx::Canvas* canvas) {

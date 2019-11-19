@@ -2,17 +2,21 @@
 #
 # Download latest Firebase SDK from
 #   https://firebase.google.com/download/ios
-# Unzip package and remove all directories other than Analytics/ and any other
-# frameworks inside Analytics/ that is not needed by Chrome for iOS.
+# Unzip package and find the Analytics/ directory. Move *.framework into
+# Analytics/ directory. Update the "data:" section in this configuration
+# file if necessary.
 #
-# Update the "data:" section if necessary.
+# Refer to docs/cipd.md "Create your CIPD package" section for more
+# detailed instructions.
 #
 # If necessary, authenticate (once)
 #   cipd auth-login
 #
 # Create CIPD package with:
-#   cipd create --pkg-def cipd.yaml -tag version:5.8.0
-# where "5.8.0" is the version number for the current version of Firebase SDK.
+#   cipd create --pkg-def cipd.yaml
+# Take note of the instance ID printed in the log. It will be needed for
+# updating DEPS file. To see what instances are available, use this:
+#   cipd instances chromium/third_party/firebase_ios
 #
 #
 package: chromium/third_party/firebase_ios

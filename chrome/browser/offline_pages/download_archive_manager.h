@@ -10,7 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/offline_pages/core/archive_manager.h"
 
-class Profile;
+class PrefService;
 
 namespace base {
 class SequencedTaskRunner;
@@ -27,13 +27,13 @@ class DownloadArchiveManager : public ArchiveManager {
       const base::FilePath& private_archives_dir,
       const base::FilePath& public_archives_dir,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      Profile* profile);
+      PrefService* prefs);
   ~DownloadArchiveManager() override;
 
   const base::FilePath& GetPublicArchivesDir() override;
 
  private:
-  Profile* profile_;
+  PrefService* prefs_;
   base::FilePath download_archives_dir_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadArchiveManager);

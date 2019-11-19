@@ -21,8 +21,7 @@ PepperGamepadHost::PepperGamepadHost(BrowserPpapiHost* host,
                                      PP_Resource resource)
     : ResourceHost(host->GetPpapiHost(), instance, resource),
       gamepad_service_(device::GamepadService::GetInstance()),
-      is_started_(false),
-      weak_factory_(this) {}
+      is_started_(false) {}
 
 PepperGamepadHost::PepperGamepadHost(device::GamepadService* gamepad_service,
                                      BrowserPpapiHost* host,
@@ -30,8 +29,7 @@ PepperGamepadHost::PepperGamepadHost(device::GamepadService* gamepad_service,
                                      PP_Resource resource)
     : ResourceHost(host->GetPpapiHost(), instance, resource),
       gamepad_service_(gamepad_service),
-      is_started_(false),
-      weak_factory_(this) {}
+      is_started_(false) {}
 
 PepperGamepadHost::~PepperGamepadHost() {
   if (is_started_)

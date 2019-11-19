@@ -4,6 +4,18 @@
 
 #include "ios/chrome/browser/ios_chrome_field_trials.h"
 
+#include "base/path_service.h"
+#include "components/metrics/persistent_histograms.h"
+#include "ios/chrome/browser/chrome_paths.h"
+
+void IOSChromeFieldTrials::SetupFieldTrials() {
+  // Persistent histograms must be enabled as soon as possible.
+  base::FilePath user_data_dir;
+  if (base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir)) {
+    InstantiatePersistentHistograms(user_data_dir);
+  }
+}
+
 void IOSChromeFieldTrials::SetupFeatureControllingFieldTrials(
     bool has_seed,
     base::FeatureList* feature_list) {

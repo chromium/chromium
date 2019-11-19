@@ -5,141 +5,92 @@
 assert(is_fuchsia)
 
 import("//build/config/fuchsia/fidl_library.gni")
-import("//build/util/process_version.gni")
-
-# Location where Fuchsia release archives and supporting files are placed.
-_release_artifact_root = "$root_out_dir/fuchsia_artifacts"
-
-# Location where debug symbol tarballs are placed.
-_symbol_artifact_root = "$root_out_dir/symbol_artifacts"
-
-fidl_library("web_fidl") {
-  library_name = "web"
-  namespace = "chromium"
-
-  sources = [
-    "fidl/web/context.fidl",
-    "fidl/web/context_provider.fidl",
-    "fidl/web/frame.fidl",
-    "fidl/web/navigation_controller.fidl",
-    "fidl/web/navigation_event_observer.fidl",
-  ]
-
-  public_deps = [
-    "//third_party/fuchsia-sdk/sdk:io",
-    "//third_party/fuchsia-sdk/sdk:sys",
-    "//third_party/fuchsia-sdk/sdk:ui_gfx",
-  ]
-}
 
 fidl_library("cast_fidl") {
   library_name = "cast"
   namespace = "chromium"
 
   sources = [
+    "fidl/cast/api_bindings.fidl",
     "fidl/cast/application_config.fidl",
-    "fidl/cast/cast_channel.fidl",
-    "fidl/cast/queryable_data.fidl",
+    "fidl/cast/application_controller.fidl",
+    "fidl/cast/url_request_rewriter.fidl",
   ]
 
   public_deps = [
-    ":web_fidl",
+    "//third_party/fuchsia-sdk/sdk:web",
   ]
 }
 
-# gn binary location.
-if (host_os == "mac") {
-  _gn_path = "//buildtools/mac/gn"
-} else if (host_os == "linux") {
-  _gn_path = "//buildtools/linux64/gn"
-}
+# DEPRECATED. Use //fuchsia/cipd instead.
+# TODO(crbug.com/974363): Remove this.
+if (is_official_build) {
+  group("archive_sources") {
+    testonly = true
+    deps = [
+      ":release_archives",
+      ":symbol_tarballs",
+    ]
+  }
 
-# Produces a LICENSE file for webrunner and its transitive dependencies.
-_license_path = "$_release_artifact_root/LICENSE"
-action("license") {
-  script = "//tools/licenses.py"
-  inputs = [
-    "$_gn_path",
-  ]
-  outputs = [
-    _license_path,
-  ]
-  args = [
-    "license_file",
-    rebase_path(_license_path, root_build_dir),
-    "--gn-target",
-    "//fuchsia/runners:web_runner_pkg",
-    "--gn-out-dir",
-    ".",
-  ]
-}
+  # Location where Fuchsia release archives and supporting files are placed.
+  _release_artifact_root = "$root_out_dir/fuchsia_artifacts"
 
-# Extracts the numeric Chrome build ID and writes it to a file in the output
-# directory.
-#
-# To check out the repository on the commit where the build ID was generated,
-# simply call `git checkout <build-id>`, and Git will check out the commit
-# associated with the <build-id> tag.
-process_version("build_id") {
-  template_file = "cipd/build_id.template"
-  sources = [
-    "//chrome/VERSION",
-  ]
-  output = "$_release_artifact_root/build_id.txt"
-  process_only = true
-}
+  # Location where debug symbol tarballs are placed.
+  _symbol_artifact_root = "$root_out_dir/symbol_artifacts"
 
-# Puts copies of files at the top level of the CIPD archive's structure.
-copy("release_archives") {
-  sources = [
-    "$root_gen_dir/fuchsia/engine/chromium/chromium.far",
-    "$root_gen_dir/fuchsia/http/http/http.far",
-    "$root_gen_dir/fuchsia/runners/cast_runner/cast_runner.far",
-    "$root_gen_dir/fuchsia/runners/web_runner/web_runner.far",
-  ]
-  outputs = [
-    "$_release_artifact_root/{{source_file_part}}",
-  ]
-  deps = [
-    "//fuchsia/engine:web_engine",
-    "//fuchsia/http:http_pkg",
-    "//fuchsia/runners:cast_runner_pkg",
-    "//fuchsia/runners:web_runner_pkg",
-  ]
-}
-
-copy("symbol_tarballs") {
-  sources = [
-    "$_release_artifact_root/build_id.txt",
+  # Create a manifest of symbol archives for downstream consumption.
+  _symbol_tarballs = [
     "$root_gen_dir/fuchsia/engine/chromium/chromium.symbols.tar.bz2",
     "$root_gen_dir/fuchsia/http/http/http.symbols.tar.bz2",
     "$root_gen_dir/fuchsia/runners/cast_runner/cast_runner.symbols.tar.bz2",
     "$root_gen_dir/fuchsia/runners/web_runner/web_runner.symbols.tar.bz2",
-    _license_path,
   ]
-  outputs = [
-    "$_symbol_artifact_root/{{source_file_part}}",
-  ]
-  deps = [
-    ":build_id",
-    ":license",
-    "//fuchsia/engine:symbol_archive",
-    "//fuchsia/http:symbol_archive",
-    "//fuchsia/runners:cast_runner_symbol_archive",
-    "//fuchsia/runners:web_runner_symbol_archive",
-  ]
-}
+  _symbol_manifest = "$target_gen_dir/debug_symbols.json"
+  _symbol_manifest_contents = []
+  foreach(_symbol_file, _symbol_tarballs) {
+    _symbol_manifest_contents += [ get_path_info(_symbol_file, "file") ]
+  }
+  write_file(_symbol_manifest, _symbol_manifest_contents, "json")
 
-# Specifies the build steps that must be performed before the creation of
-# a CIPD archive.
-group("archive_sources") {
-  deps = [
-    ":build_id",
-    ":license",
-    ":release_archives",
-    ":symbol_tarballs",
-  ]
-}
+  # Puts copies of files at the top level of the CIPD archive's structure.
+  copy("release_archives") {
+    sources = [
+      "$root_gen_dir/fuchsia/engine/chromium/chromium.far",
+      "$root_gen_dir/fuchsia/http/http/http.far",
+      "$root_gen_dir/fuchsia/runners/cast_runner/cast_runner.far",
+      "$root_gen_dir/fuchsia/runners/web_runner/web_runner.far",
+    ]
+    outputs = [
+      "$_release_artifact_root/{{source_file_part}}",
+    ]
+    deps = [
+      "//fuchsia/engine:web_engine",
+      "//fuchsia/http:http_pkg",
+      "//fuchsia/runners:cast_runner_pkg",
+      "//fuchsia/runners:web_runner_pkg",
+    ]
+  }
+
+  copy("symbol_tarballs") {
+    sources = [
+                _symbol_manifest,
+                "${root_gen_dir}/fuchsia/cipd/build_id.txt",
+                "${root_gen_dir}/fuchsia/cipd/LICENSE",
+              ] + _symbol_tarballs
+    outputs = [
+      "$_symbol_artifact_root/{{source_file_part}}",
+    ]
+    deps = [
+      "//fuchsia/cipd:build_id",
+      "//fuchsia/cipd:license",
+      "//fuchsia/engine:symbol_archive",
+      "//fuchsia/http:symbol_archive",
+      "//fuchsia/runners:cast_runner_symbol_archive",
+      "//fuchsia/runners:web_runner_symbol_archive",
+    ]
+  }
+}  # is_official_build
 
 # Used by the top-level "gn_all" target to discover Fuchsia build targets.
 group("gn_all") {
@@ -148,11 +99,19 @@ group("gn_all") {
     "base:cr_fuchsia_base_unittests",
     "engine:web_engine",
     "engine:web_engine_browsertests",
+    "engine:web_engine_shell",
     "engine:web_engine_unittests",
     "http:http_service_tests",
+    "mojom:fuchsia_mojo_unittests",
     "runners:cast_runner",
     "runners:cast_runner_browsertests",
     "runners:cast_runner_integration_tests",
+    "runners:cast_runner_unittests",
     "runners:web_runner",
+    "//chromecast/bindings:bindings_manager_fuchsia",
   ]
+
+  if (is_official_build) {
+    deps += [ "cipd" ]
+  }
 }

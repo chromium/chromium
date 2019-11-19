@@ -33,27 +33,11 @@ gfx::Image OmniboxClient::GetFavicon() const {
   return gfx::Image();
 }
 
-bool OmniboxClient::IsInstantNTP() const {
-  return false;
-}
-
-bool OmniboxClient::IsSearchResultsPage() const {
-  return false;
-}
-
 bool OmniboxClient::IsLoading() const {
   return false;
 }
 
 bool OmniboxClient::IsPasteAndGoEnabled() const {
-  return false;
-}
-
-bool OmniboxClient::IsNewTabPage(const GURL& url) const {
-  return false;
-}
-
-bool OmniboxClient::IsHomePage(const GURL& url) const {
   return false;
 }
 
@@ -106,6 +90,12 @@ gfx::Image OmniboxClient::GetFaviconForPageUrl(
 }
 
 gfx::Image OmniboxClient::GetFaviconForDefaultSearchProvider(
+    FaviconFetchedCallback on_favicon_fetched) {
+  return gfx::Image();
+}
+
+gfx::Image OmniboxClient::GetFaviconForKeywordSearchProvider(
+    const TemplateURL* template_url,
     FaviconFetchedCallback on_favicon_fetched) {
   return gfx::Image();
 }

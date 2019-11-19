@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "components/arc/common/bluetooth.mojom.h"
+#include "components/arc/mojom/bluetooth.mojom.h"
 #include "mojo/public/cpp/bindings/binding.h"
 
 namespace device {

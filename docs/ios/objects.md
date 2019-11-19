@@ -119,9 +119,7 @@ assume that a tab helper will be available when using a WebState but
 instead should support the tab helper being unavailable.
 
 A WebState and all the attached tab helpers are sometimes called a
-tab (because they implement what the user sees and interacts with in
-a browser tab). There currently is a Tab interface but it is a legacy
-object that is deprecated and is slowly being removed. If possible,
-prefer to use WebState directly instead of Tab.
+tab because they implement what the user sees and interacts with in
+a browser tab.
 
 The corresponding object on desktop is WebContents.

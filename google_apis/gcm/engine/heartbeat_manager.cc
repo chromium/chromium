@@ -11,7 +11,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -42,19 +41,27 @@ const int kHeartbeatMissedCheckMs = 1000 * 60 * 5;  // 5 minutes.
 
 }  // namespace
 
-HeartbeatManager::HeartbeatManager()
+HeartbeatManager::HeartbeatManager(
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> maybe_power_wrapped_io_task_runner)
     : waiting_for_ack_(false),
       heartbeat_interval_ms_(0),
       server_interval_ms_(0),
       client_interval_ms_(0),
-      heartbeat_timer_(new base::RetainingOneShotTimer()),
-      weak_ptr_factory_(this) {}
+      io_task_runner_(std::move(io_task_runner)),
+      heartbeat_timer_(new base::RetainingOneShotTimer()) {
+  DCHECK(io_task_runner_);
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  // Set the heartbeat timer task runner to |maybe_power_wrapped_io_task_runner|
+  // so that a delayed task posted to it can wake the system up from sleep to
+  // perform the task.
+  heartbeat_timer_->SetTaskRunner(
+      std::move(maybe_power_wrapped_io_task_runner));
+}
 
 HeartbeatManager::~HeartbeatManager() {
   // Stop listening for system suspend and resume events.
-  base::PowerMonitor* monitor = base::PowerMonitor::Get();
-  if (monitor)
-    monitor->RemoveObserver(this);
+  base::PowerMonitor::RemoveObserver(this);
 }
 
 void HeartbeatManager::Start(
@@ -66,9 +73,7 @@ void HeartbeatManager::Start(
   trigger_reconnect_callback_ = trigger_reconnect_callback;
 
   // Listen for system suspend and resume events.
-  base::PowerMonitor* monitor = base::PowerMonitor::Get();
-  if (monitor)
-    monitor->AddObserver(this);
+  base::PowerMonitor::AddObserver(this);
 
   // Calculated the heartbeat interval just before we start the timer.
   UpdateHeartbeatInterval();
@@ -84,9 +89,7 @@ void HeartbeatManager::Stop() {
   heartbeat_timer_->Stop();
   waiting_for_ack_ = false;
 
-  base::PowerMonitor* monitor = base::PowerMonitor::Get();
-  if (monitor)
-    monitor->RemoveObserver(this);
+  base::PowerMonitor::RemoveObserver(this);
 }
 
 void HeartbeatManager::OnHeartbeatAcked() {
@@ -192,7 +195,7 @@ void HeartbeatManager::RestartTimer() {
   // Windows, Mac, Android, iOS, and Chrome OS all provide a way to be notified
   // when the system is suspending or resuming.  The only one that does not is
   // Linux so we need to poll to check for missed heartbeats.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  io_task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&HeartbeatManager::CheckForMissedHeartbeat,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -215,7 +218,7 @@ void HeartbeatManager::CheckForMissedHeartbeat() {
 
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
   // Otherwise check again later.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  io_task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&HeartbeatManager::CheckForMissedHeartbeat,
                      weak_ptr_factory_.GetWeakPtr()),

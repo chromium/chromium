@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Replacement of document prototype object after document.open assert_equals: expected (undefined) undefined but got (number) 1
-Harness: the test ran to completion.
-

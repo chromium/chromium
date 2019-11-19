@@ -380,7 +380,8 @@ TEST_F(BrowserRendererTest, ProcessControllerInputForWebXr) {
   EXPECT_CALL(*ui_, HandleInput(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*ui_, HandleMenuButtonEvents(_)).Times(1).InSequence(s);
 
-  browser_renderer->ProcessControllerInputForWebXr(base::TimeTicks());
+  browser_renderer->ProcessControllerInputForWebXr(gfx::Transform(),
+                                                   base::TimeTicks());
 }
 
 }  // namespace vr

@@ -25,22 +25,23 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.test.DisableHistogramsRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.blink_public.web.WebContextMenuMediaType;
+import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorTest.ShadowUrlUtilities;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.search_engines.TemplateUrlService;
+import org.chromium.chrome.browser.share.ShareDelegate;
+;
 import org.chromium.chrome.browser.util.UrlUtilities;
-import org.chromium.chrome.test.support.DisableHistogramsRule;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.MenuSourceType;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -48,7 +49,6 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
-@DisableFeatures(ChromeFeatureList.INCOGNITO_STRINGS)
 public class ChromeContextMenuPopulatorTest {
     private static final String PAGE_URL = "http://www.blah.com";
     private static final String LINK_URL = "http://www.blah.com/other_blah";
@@ -66,11 +66,13 @@ public class ChromeContextMenuPopulatorTest {
     private ContextMenuItemDelegate mItemDelegate;
     @Mock
     private TemplateUrlService mTemplateUrlService;
+    @Mock
+    private ShareDelegate mShareDelegate;
 
     private ChromeContextMenuPopulator mPopulator;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         when(mItemDelegate.getPageUrl()).thenReturn(PAGE_URL);
@@ -82,10 +84,17 @@ public class ChromeContextMenuPopulatorTest {
         when(mItemDelegate.supportsAddToContacts()).thenReturn(true);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL);
+
+        HashMap<String, Boolean> features = new HashMap<String, Boolean>();
+        features.put(ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS, false);
+        features.put(ChromeFeatureList.EPHEMERAL_TAB, false);
+
+        ChromeFeatureList.setTestFeatures(features);
     }
 
     private void initializePopulator(@ContextMenuMode int mode) {
-        mPopulator = Mockito.spy(new ChromeContextMenuPopulator(mItemDelegate, mode));
+        mPopulator =
+                Mockito.spy(new ChromeContextMenuPopulator(mItemDelegate, mShareDelegate, mode));
         doReturn(mTemplateUrlService).when(mPopulator).getTemplateUrlService();
     }
 
@@ -118,11 +127,10 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
     public void testHttpLink() {
         FirstRunStatus.setFirstRunFlowComplete(false);
         ContextMenuParams contextMenuParams = new ContextMenuParams(0, PAGE_URL, LINK_URL,
-                LINK_TEXT, "", "", "", false, null, false, 0, 0, MenuSourceType.MENU_SOURCE_TOUCH);
+                LINK_TEXT, "", "", "", null, false, 0, 0, MenuSourceType.MENU_SOURCE_TOUCH);
 
         int[] expected = {R.id.contextmenu_copy_link_address, R.id.contextmenu_copy_link_text};
         checkMenuOptions(contextMenuParams, expected);
@@ -156,48 +164,11 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
-    public void testHttpLinkWithCustomContextMenu() {
-        FirstRunStatus.setFirstRunFlowComplete(false);
-        ContextMenuParams contextMenuParams = new ContextMenuParams(0, PAGE_URL, LINK_URL,
-                LINK_TEXT, "", "", "", false, null, false, 0, 0, MenuSourceType.MENU_SOURCE_TOUCH);
-
-        int[] expected = {R.id.contextmenu_copy_link_address};
-        checkMenuOptions(contextMenuParams, expected);
-
-        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB);
-        checkMenuOptions(contextMenuParams, expected);
-
-        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.WEB_APP);
-        checkMenuOptions(contextMenuParams, expected);
-
-        FirstRunStatus.setFirstRunFlowComplete(true);
-
-        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL);
-        int[] expected2 = {R.id.contextmenu_open_in_new_tab, R.id.contextmenu_open_in_incognito_tab,
-                R.id.contextmenu_open_in_other_window, R.id.contextmenu_open_in_ephemeral_tab,
-                R.id.contextmenu_copy_link_address, R.id.contextmenu_save_link_as,
-                R.id.contextmenu_share_link};
-        checkMenuOptions(contextMenuParams, expected2);
-
-        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB);
-        int[] expected3 = {R.id.contextmenu_open_in_browser_id, R.id.contextmenu_copy_link_address,
-                R.id.contextmenu_save_link_as, R.id.contextmenu_share_link};
-        checkMenuOptions(contextMenuParams, expected3);
-
-        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.WEB_APP);
-        int[] expected4 = {R.id.contextmenu_copy_link_address, R.id.contextmenu_save_link_as,
-                R.id.contextmenu_share_link, R.id.contextmenu_open_in_chrome};
-        checkMenuOptions(contextMenuParams, expected4);
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
     public void testMailLink() {
         FirstRunStatus.setFirstRunFlowComplete(false);
         ContextMenuParams contextMenuParams =
                 new ContextMenuParams(0, PAGE_URL, "mailto:marcin@mwiacek.com", "MAIL!", "", "", "",
-                        false, null, false, 0, 0, MenuSourceType.MENU_SOURCE_TOUCH);
+                        null, false, 0, 0, MenuSourceType.MENU_SOURCE_TOUCH);
 
         int[] expected = {R.id.contextmenu_copy};
         checkMenuOptions(contextMenuParams, expected);
@@ -231,12 +202,11 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
     public void testTelLink() {
         FirstRunStatus.setFirstRunFlowComplete(false);
         ContextMenuParams contextMenuParams =
-                new ContextMenuParams(0, PAGE_URL, "tel:0048221234567", "PHONE!", "", "", "", false,
-                        null, false, 0, 0, MenuSourceType.MENU_SOURCE_TOUCH);
+                new ContextMenuParams(0, PAGE_URL, "tel:0048221234567", "PHONE!", "", "", "", null,
+                        false, 0, 0, MenuSourceType.MENU_SOURCE_TOUCH);
 
         int[] expected = {R.id.contextmenu_copy};
         checkMenuOptions(contextMenuParams, expected);
@@ -271,12 +241,11 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
     public void testVideoLink() {
         FirstRunStatus.setFirstRunFlowComplete(false);
-        ContextMenuParams contextMenuParams = new ContextMenuParams(WebContextMenuMediaType.VIDEO,
-                PAGE_URL, "http://www.blah.com/I_love_mouse_video.avi", "VIDEO!", "", "", "", false,
-                null, true, 0, 0, MenuSourceType.MENU_SOURCE_TOUCH);
+        ContextMenuParams contextMenuParams = new ContextMenuParams(ContextMenuDataMediaType.VIDEO,
+                PAGE_URL, "http://www.blah.com/I_love_mouse_video.avi", "VIDEO!", "", "", "", null,
+                true, 0, 0, MenuSourceType.MENU_SOURCE_TOUCH);
 
         int[] expectedTab1 = {R.id.contextmenu_copy_link_address, R.id.contextmenu_copy_link_text};
         checkMenuOptions(contextMenuParams, expectedTab1);
@@ -311,45 +280,10 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
-    public void testImageLoFi() {
-        FirstRunStatus.setFirstRunFlowComplete(false);
-        ContextMenuParams contextMenuParams = new ContextMenuParams(WebContextMenuMediaType.IMAGE,
-                PAGE_URL, "", "", "", IMAGE_SRC_URL, IMAGE_TITLE_TEXT, true, null, true, 0, 0,
-                MenuSourceType.MENU_SOURCE_TOUCH);
-
-        int[] expected = null;
-        checkMenuOptions(contextMenuParams, expected);
-
-        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB);
-        checkMenuOptions(contextMenuParams, expected);
-
-        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.WEB_APP);
-        checkMenuOptions(contextMenuParams, expected);
-
-        FirstRunStatus.setFirstRunFlowComplete(true);
-
-        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL);
-        int[] expected2 = {
-                R.id.contextmenu_load_original_image, R.id.contextmenu_open_image_in_new_tab};
-        checkMenuOptions(contextMenuParams, expected2);
-
-        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB);
-        int[] expected3 = {
-                R.id.contextmenu_open_in_browser_id, R.id.contextmenu_load_original_image};
-        checkMenuOptions(contextMenuParams, expected3);
-
-        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.WEB_APP);
-        int[] expected4 = {R.id.contextmenu_load_original_image, R.id.contextmenu_open_in_chrome};
-        checkMenuOptions(contextMenuParams, expected4);
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
     public void testImageHiFi() {
         FirstRunStatus.setFirstRunFlowComplete(false);
-        ContextMenuParams contextMenuParams = new ContextMenuParams(WebContextMenuMediaType.IMAGE,
-                PAGE_URL, "", "", "", IMAGE_SRC_URL, IMAGE_TITLE_TEXT, false, null, true, 0, 0,
+        ContextMenuParams contextMenuParams = new ContextMenuParams(ContextMenuDataMediaType.IMAGE,
+                PAGE_URL, "", "", "", IMAGE_SRC_URL, IMAGE_TITLE_TEXT, null, true, 0, 0,
                 MenuSourceType.MENU_SOURCE_TOUCH);
 
         int[] expected = null;
@@ -380,12 +314,11 @@ public class ChromeContextMenuPopulatorTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.CUSTOM_CONTEXT_MENU, ChromeFeatureList.EPHEMERAL_TAB})
     public void testHttpLinkWithImageHiFi() {
         FirstRunStatus.setFirstRunFlowComplete(false);
-        ContextMenuParams contextMenuParams = new ContextMenuParams(WebContextMenuMediaType.IMAGE,
-                PAGE_URL, LINK_URL, LINK_TEXT, "", IMAGE_SRC_URL, IMAGE_TITLE_TEXT, false, null,
-                true, 0, 0, MenuSourceType.MENU_SOURCE_TOUCH);
+        ContextMenuParams contextMenuParams = new ContextMenuParams(ContextMenuDataMediaType.IMAGE,
+                PAGE_URL, LINK_URL, LINK_TEXT, "", IMAGE_SRC_URL, IMAGE_TITLE_TEXT, null, true, 0,
+                0, MenuSourceType.MENU_SOURCE_TOUCH);
 
         int[] expected = {R.id.contextmenu_copy_link_address};
         checkMenuOptions(contextMenuParams, expected);

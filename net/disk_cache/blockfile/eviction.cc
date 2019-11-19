@@ -47,7 +47,6 @@
 #include "net/disk_cache/blockfile/experiments.h"
 #include "net/disk_cache/blockfile/histogram_macros.h"
 #include "net/disk_cache/blockfile/trace.h"
-#include "net/disk_cache/blockfile/webfonts_histogram.h"
 
 // Provide a BackendImpl object to macros from histogram_macros.h.
 #define CACHE_UMA_BACKEND_IMPL_OBJ backend_
@@ -79,11 +78,7 @@ namespace disk_cache {
 
 // The real initialization happens during Init(), init_ is the only member that
 // has to be initialized here.
-Eviction::Eviction()
-    : backend_(NULL),
-      init_(false),
-      ptr_factory_(this) {
-}
+Eviction::Eviction() : backend_(nullptr), init_(false) {}
 
 Eviction::~Eviction() = default;
 
@@ -294,7 +289,6 @@ bool Eviction::EvictEntry(CacheRankingsBlock* node, bool empty,
     return false;
   }
 
-  web_fonts_histogram::RecordEviction(entry.get());
   ReportTrimTimes(entry.get());
   if (empty || !new_eviction_) {
     entry->DoomImpl();
@@ -331,7 +325,7 @@ void Eviction::TrimCacheV2(bool empty) {
     next[i].set_rankings(rankings_);
     if (done)
       continue;
-    next[i].reset(rankings_->GetPrev(NULL, static_cast<Rankings::List>(i)));
+    next[i].reset(rankings_->GetPrev(nullptr, static_cast<Rankings::List>(i)));
     if (!empty && NodeIsOldEnough(next[i].get(), i)) {
       list = static_cast<Rankings::List>(i);
       done = true;
@@ -577,14 +571,14 @@ void Eviction::ReportListStats() {
   if (!new_eviction_)
     return;
 
-  Rankings::ScopedRankingsBlock last1(rankings_,
-      rankings_->GetPrev(NULL, Rankings::NO_USE));
-  Rankings::ScopedRankingsBlock last2(rankings_,
-      rankings_->GetPrev(NULL, Rankings::LOW_USE));
-  Rankings::ScopedRankingsBlock last3(rankings_,
-      rankings_->GetPrev(NULL, Rankings::HIGH_USE));
-  Rankings::ScopedRankingsBlock last4(rankings_,
-      rankings_->GetPrev(NULL, Rankings::DELETED));
+  Rankings::ScopedRankingsBlock last1(
+      rankings_, rankings_->GetPrev(nullptr, Rankings::NO_USE));
+  Rankings::ScopedRankingsBlock last2(
+      rankings_, rankings_->GetPrev(nullptr, Rankings::LOW_USE));
+  Rankings::ScopedRankingsBlock last3(
+      rankings_, rankings_->GetPrev(nullptr, Rankings::HIGH_USE));
+  Rankings::ScopedRankingsBlock last4(
+      rankings_, rankings_->GetPrev(nullptr, Rankings::DELETED));
 
   if (last1.get())
     CACHE_UMA(AGE, "NoUseAge", 0,

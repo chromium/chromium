@@ -9,30 +9,31 @@ from pylib import constants
 
 
 _BLACKLIST = [
-  re.compile(r'.*OWNERS'),  # Should never be included.
-  re.compile(r'.*\.crx'),  # Chrome extension zip files.
-  re.compile(r'.*\.so'),  # Libraries packed into .apk.
-  re.compile(r'.*Mojo.*manifest\.json'),  # Some source_set()s pull these in.
-  re.compile(r'.*\.py'),  # Some test_support targets include python deps.
-  re.compile(r'.*\.stamp'),  # Stamp files should never be included.
-  re.compile(r'.*\.apk'),  # Should be installed separately.
-  re.compile(r'.*lib.java/.*'),  # Never need java intermediates.
+    re.compile(r'.*OWNERS'),  # Should never be included.
+    re.compile(r'.*\.crx'),  # Chrome extension zip files.
+    re.compile(os.path.join('.*',
+                            r'\.git.*')),  # Any '.git*' directories/files.
+    re.compile(r'.*\.so'),  # Libraries packed into .apk.
+    re.compile(r'.*Mojo.*manifest\.json'),  # Some source_set()s pull these in.
+    re.compile(r'.*\.py'),  # Some test_support targets include python deps.
+    re.compile(r'.*\.stamp'),  # Stamp files should never be included.
+    re.compile(r'.*\.apk'),  # Should be installed separately.
+    re.compile(r'.*lib.java/.*'),  # Never need java intermediates.
 
-  # Chrome external extensions config file.
-  re.compile(r'.*external_extensions\.json'),
+    # Chrome external extensions config file.
+    re.compile(r'.*external_extensions\.json'),
 
-  # Exists just to test the compile, not to be run.
-  re.compile(r'.*jni_generator_tests'),
+    # Exists just to test the compile, not to be run.
+    re.compile(r'.*jni_generator_tests'),
 
-  # v8's blobs and icu data get packaged into APKs.
-  re.compile(r'.*natives_blob.*\.bin'),
-  re.compile(r'.*snapshot_blob.*\.bin'),
-  re.compile(r'.*icudtl.bin'),
+    # v8's blobs and icu data get packaged into APKs.
+    re.compile(r'.*snapshot_blob.*\.bin'),
+    re.compile(r'.*icudtl.bin'),
 
-  # Scripts that are needed by swarming, but not on devices:
-  re.compile(r'.*llvm-symbolizer'),
-  re.compile(r'.*md5sum_bin'),
-  re.compile(os.path.join('.*', 'development', 'scripts', 'stack')),
+    # Scripts that are needed by swarming, but not on devices:
+    re.compile(r'.*llvm-symbolizer'),
+    re.compile(r'.*md5sum_bin'),
+    re.compile(os.path.join('.*', 'development', 'scripts', 'stack')),
 ]
 
 

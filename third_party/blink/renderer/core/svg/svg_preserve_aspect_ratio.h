@@ -55,10 +55,6 @@ class SVGPreserveAspectRatio final
 
   typedef SVGPreserveAspectRatioTearOff TearOffType;
 
-  static SVGPreserveAspectRatio* Create() {
-    return MakeGarbageCollected<SVGPreserveAspectRatio>();
-  }
-
   SVGPreserveAspectRatio();
 
   virtual SVGPreserveAspectRatio* Clone() const;
@@ -91,7 +87,7 @@ class SVGPreserveAspectRatio final
   bool Parse(const LChar*& ptr, const LChar* end, bool validate);
 
   void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(SVGAnimationElement*,
+  void CalculateAnimatedValue(const SVGAnimateElement&,
                               float percentage,
                               unsigned repeat_count,
                               SVGPropertyBase* from,

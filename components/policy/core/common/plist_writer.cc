@@ -6,7 +6,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "third_party/libxml/chromium/libxml_utils.h"
+#include "third_party/libxml/chromium/xml_writer.h"
 
 namespace policy {
 

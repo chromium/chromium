@@ -12,7 +12,6 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_settings.h"
-#include "third_party/blink/public/web/web_user_media_client.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -145,19 +144,8 @@ bool AutoplayPolicy::DocumentShouldAutoplayMutedVideos(
 
 // static
 bool AutoplayPolicy::DocumentIsCapturingUserMedia(const Document& document) {
-  if (!document.GetFrame())
-    return false;
-
-  WebFrame* web_frame = WebFrame::FromFrame(document.GetFrame());
-  if (!web_frame)
-    return false;
-
-  WebLocalFrame* frame = web_frame->ToWebLocalFrame();
-  if (!frame || !frame->Client())
-    return false;
-
-  if (WebUserMediaClient* media_client = frame->Client()->UserMediaClient())
-    return media_client->IsCapturing();
+  if (auto* local_frame = document.GetFrame())
+    return local_frame->IsCapturingMedia();
 
   return false;
 }
@@ -165,7 +153,7 @@ bool AutoplayPolicy::DocumentIsCapturingUserMedia(const Document& document) {
 AutoplayPolicy::AutoplayPolicy(HTMLMediaElement* element)
     : locked_pending_user_gesture_(false),
       element_(element),
-      autoplay_uma_helper_(AutoplayUmaHelper::Create(element)) {
+      autoplay_uma_helper_(MakeGarbageCollected<AutoplayUmaHelper>(element)) {
   locked_pending_user_gesture_ =
       ComputeLockPendingUserGestureRequired(element->GetDocument());
 }
@@ -188,7 +176,15 @@ void AutoplayPolicy::DidMoveToNewDocument(Document& old_document) {
 }
 
 bool AutoplayPolicy::IsEligibleForAutoplayMuted() const {
-  return element_->IsHTMLVideoElement() && element_->muted() &&
+  if (!element_->IsHTMLVideoElement())
+    return false;
+
+  if (RuntimeEnabledFeatures::VideoAutoFullscreenEnabled() &&
+      !element_->FastHasAttribute(html_names::kPlaysinlineAttr)) {
+    return false;
+  }
+
+  return !element_->EffectiveMediaVolume() &&
          DocumentShouldAutoplayMutedVideos(element_->GetDocument());
 }
 
@@ -215,7 +211,7 @@ void AutoplayPolicy::StopAutoplayMutedWhenVisible() {
 }
 
 bool AutoplayPolicy::RequestAutoplayUnmute() {
-  DCHECK(!element_->muted());
+  DCHECK_NE(0, element_->EffectiveMediaVolume());
   bool was_autoplaying_muted = IsAutoplayingMutedInternal(true);
 
   TryUnlockingUserGesture();
@@ -224,8 +220,8 @@ bool AutoplayPolicy::RequestAutoplayUnmute() {
     if (IsGestureNeededForPlayback()) {
       if (IsUsingDocumentUserActivationRequiredPolicy()) {
         element_->GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-            kJSMessageSource, mojom::ConsoleMessageLevel::kWarning,
-            kWarningUnmuteFailed));
+            mojom::ConsoleMessageSource::kJavaScript,
+            mojom::ConsoleMessageLevel::kWarning, kWarningUnmuteFailed));
       }
 
       autoplay_uma_helper_->RecordAutoplayUnmuteStatus(
@@ -281,7 +277,7 @@ bool AutoplayPolicy::IsAutoplayingMutedInternal(bool muted) const {
 }
 
 bool AutoplayPolicy::IsOrWillBeAutoplayingMuted() const {
-  return IsOrWillBeAutoplayingMutedInternal(element_->muted());
+  return IsOrWillBeAutoplayingMutedInternal(!element_->EffectiveMediaVolume());
 }
 
 bool AutoplayPolicy::IsOrWillBeAutoplayingMutedInternal(bool muted) const {
@@ -312,15 +308,9 @@ bool AutoplayPolicy::IsGestureNeededForPlayback() const {
     return false;
 
   // We want to allow muted video to autoplay if:
-  // - the flag is enabled;
-  // - Autoplay is enabled in settings;
-  if (element_->IsHTMLVideoElement() && element_->muted() &&
-      DocumentShouldAutoplayMutedVideos(element_->GetDocument()) &&
-      IsAutoplayAllowedPerSettings()) {
-    return false;
-  }
-
-  return true;
+  // - The element is allowed to autoplay muted;
+  // - Autoplay is enabled in settings.
+  return !(IsEligibleForAutoplayMuted() && IsAutoplayAllowedPerSettings());
 }
 
 String AutoplayPolicy::GetPlayErrorMessage() const {
@@ -397,7 +387,7 @@ bool AutoplayPolicy::IsAutoplayAllowedPerSettings() const {
 }
 
 bool AutoplayPolicy::ShouldAutoplay() {
-  if (element_->GetDocument().IsSandboxed(kSandboxAutomaticFeatures))
+  if (element_->GetDocument().IsSandboxed(WebSandboxFlags::kAutomaticFeatures))
     return false;
   return element_->can_autoplay_ && element_->paused_ && element_->Autoplay();
 }

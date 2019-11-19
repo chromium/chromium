@@ -153,8 +153,7 @@ class ForeignSessionsMatchChecker : public MultiClientStatusChangeChecker {
       const std::vector<sessions_helper::ScopedWindowMap>& windows);
 
   // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
   int browser_index_;

@@ -7,6 +7,8 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/containers/queue.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/stl_util.h"
 #include "ui/display/manager/display_util.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -36,6 +38,39 @@ const DisplayMode* FindNextMode(const DisplaySnapshot& display_state,
   return best_mode;
 }
 
+// Samples used to define buckets used by DisplayResolution enum.
+// The enum is used to record screen resolution statistics.
+const int32_t kDisplayResolutionSamples[] = {1024, 1280, 1440, 1920,
+                                             2560, 3840, 5120, 7680};
+
+// Computes the index of the enum DisplayResolution.
+// The index has to match the definition of the enum in enums.xml
+int ComputeDisplayResolutionEnum(const DisplayMode* mode) {
+  if (!mode)
+    return 0;  // Display is powered off
+
+  const gfx::Size size = mode->size();
+  uint32_t width_idx = 0;
+  uint32_t height_idx = 0;
+  for (; width_idx < base::size(kDisplayResolutionSamples); width_idx++) {
+    if (size.width() <= kDisplayResolutionSamples[width_idx])
+      break;
+  }
+  for (; height_idx < base::size(kDisplayResolutionSamples); height_idx++) {
+    if (size.height() <= kDisplayResolutionSamples[height_idx])
+      break;
+  }
+
+  if (width_idx == base::size(kDisplayResolutionSamples) ||
+      height_idx == base::size(kDisplayResolutionSamples))
+    return base::size(kDisplayResolutionSamples) *
+               base::size(kDisplayResolutionSamples) +
+           1;  // Overflow bucket
+  // Computes the index of DisplayResolution, starting from 1, since 0 is used
+  // when powering off the display.
+  return width_idx * base::size(kDisplayResolutionSamples) + height_idx + 1;
+}
+
 }  // namespace
 
 DisplayConfigureRequest::DisplayConfigureRequest(DisplaySnapshot* display,
@@ -46,14 +81,13 @@ DisplayConfigureRequest::DisplayConfigureRequest(DisplaySnapshot* display,
 ConfigureDisplaysTask::ConfigureDisplaysTask(
     NativeDisplayDelegate* delegate,
     const std::vector<DisplayConfigureRequest>& requests,
-    const ResponseCallback& callback)
+    ResponseCallback callback)
     : delegate_(delegate),
       requests_(requests),
-      callback_(callback),
+      callback_(std::move(callback)),
       is_configuring_(false),
       num_displays_configured_(0),
-      task_status_(SUCCESS),
-      weak_ptr_factory_(this) {
+      task_status_(SUCCESS) {
   for (size_t i = 0; i < requests_.size(); ++i)
     pending_request_indexes_.push(i);
   delegate_->AddObserver(this);
@@ -77,22 +111,34 @@ void ConfigureDisplaysTask::Run() {
       size_t index = pending_request_indexes_.front();
       DisplayConfigureRequest* request = &requests_[index];
       pending_request_indexes_.pop();
-      // Non-native displays do not require configuration through the
-      // NativeDisplayDelegate.
-      if (!IsPhysicalDisplayType(request->display->type())) {
-        OnConfigured(index, true);
-      } else {
-        delegate_->Configure(*request->display, request->mode, request->origin,
-                             base::Bind(&ConfigureDisplaysTask::OnConfigured,
-                                        weak_ptr_factory_.GetWeakPtr(), index));
-      }
+      const bool internal =
+          request->display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
+      base::UmaHistogramExactLinear(
+          internal ? "ConfigureDisplays.Internal.Modeset.Resolution"
+                   : "ConfigureDisplays.External.Modeset.Resolution",
+          ComputeDisplayResolutionEnum(request->mode),
+          base::size(kDisplayResolutionSamples) *
+                  base::size(kDisplayResolutionSamples) +
+              2);
+
+      base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
+          internal ? "ConfigureDisplays.Internal.Modeset.RefreshRate"
+                   : "ConfigureDisplays.External.Modeset.RefreshRate",
+          1, 240, 18, base::HistogramBase::kUmaTargetedHistogramFlag);
+      histogram->Add(request->mode ? std::round(request->mode->refresh_rate())
+                                   : 0);
+
+      delegate_->Configure(
+          *request->display, request->mode, request->origin,
+          base::BindOnce(&ConfigureDisplaysTask::OnConfigured,
+                         weak_ptr_factory_.GetWeakPtr(), index));
     }
   }
 
   // Nothing should be modified after the |callback_| is called since the
   // task may be deleted in the callback.
   if (num_displays_configured_ == requests_.size())
-    callback_.Run(task_status_);
+    std::move(callback_).Run(task_status_);
 }
 
 void ConfigureDisplaysTask::OnConfigurationChanged() {}
@@ -112,6 +158,14 @@ void ConfigureDisplaysTask::OnConfigured(size_t index, bool success) {
           << " display=" << request->display->display_id()
           << " origin=" << request->origin.ToString()
           << " mode=" << (request->mode ? request->mode->ToString() : "null");
+
+  const bool internal =
+      request->display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
+  base::UmaHistogramBoolean(
+      internal ? "ConfigureDisplays.Internal.Modeset.AttemptSucceeded"
+               : "ConfigureDisplays.External.Modeset.AttemptSucceeded",
+      success);
+
   if (!success) {
     request->mode = FindNextMode(*request->display, request->mode);
     if (request->mode) {
@@ -128,6 +182,11 @@ void ConfigureDisplaysTask::OnConfigured(size_t index, bool success) {
   }
 
   num_displays_configured_++;
+
+  base::UmaHistogramBoolean(
+      internal ? "ConfigureDisplays.Internal.Modeset.FinalStatus"
+               : "ConfigureDisplays.External.Modeset.FinalStatus",
+      success);
   if (!success)
     task_status_ = ERROR;
 

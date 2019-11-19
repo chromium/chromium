@@ -109,3 +109,18 @@ function onUpdatedExpect(queryableAttrib, expected, nonqueryableAttribsDict) {
     }
   );
 }
+
+// Create one window with names. It returns created windowId and tabIdsTable
+// that can be used to find tab's id by page name.
+function setupWindow(pageNames) {
+  const pages = pageNames.map(pageName => pageUrl(pageName));
+  return new Promise(resolve => {
+    createWindow(pages, {}, function(winId, tabIds) {
+      const tabIdsTable = {};
+      for (let i = 0; i < tabIds.length; i++) {
+        tabIdsTable[pageNames[i]] = tabIds[i];
+      };
+      resolve([winId, tabIdsTable]);
+    });
+  });
+};

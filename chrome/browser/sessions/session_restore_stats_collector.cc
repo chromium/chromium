@@ -5,7 +5,6 @@
 #include "chrome/browser/sessions/session_restore_stats_collector.h"
 
 #include <string>
-#include <utility>
 
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -16,7 +15,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
-#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 
@@ -102,21 +100,25 @@ SessionRestoreStatsCollector::TabLoaderStats::TabLoaderStats()
     : tab_count(0u),
       tabs_deferred(0u),
       tabs_load_started(0u),
-      tabs_loaded(0u) {}
+      tabs_loaded(0u),
+      tab_first_paint_reason(PAINT_FINISHED_UMA_MAX) {}
 
 SessionRestoreStatsCollector::TabState::TabState(
     NavigationController* controller)
     : controller(controller),
       is_deferred(false),
-      loading_state(TAB_IS_NOT_LOADING) {
-}
+      was_hidden_or_occluded(false),
+      loading_state(TAB_IS_NOT_LOADING),
+      observed_host(nullptr) {}
 
 SessionRestoreStatsCollector::SessionRestoreStatsCollector(
     const base::TimeTicks& restore_started,
     std::unique_ptr<StatsReportingDelegate> reporting_delegate)
     : done_tracking_non_deferred_tabs_(false),
       got_first_foreground_load_(false),
-      got_first_paint_(false),
+      waiting_for_first_paint_(true),
+      non_restored_tab_painted_first_(false),
+      hidden_or_occluded_tab_ignored_(false),
       restore_started_(restore_started),
       waiting_for_load_tab_count_(0u),
       loading_tab_count_(0u),
@@ -267,7 +269,7 @@ void SessionRestoreStatsCollector::Observe(
       // By default tabs transition to being tracked for paint events after the
       // load event has been seen. However, if the first paint event has already
       // been seen then this is not necessary and the tab can be removed.
-      if (got_first_paint_)
+      if (!waiting_for_first_paint_)
         RemoveTab(tab);
 
       break;
@@ -278,17 +280,23 @@ void SessionRestoreStatsCollector::Observe(
       // will arrive for tabs that the collector is not explicitly tracking.
 
       // Only process this event if first paint hasn't been seen and this is a
-      // paint of a visible tab.
+      // paint of a tab that has not been hidden or occluded.
       RenderWidgetHost* render_widget_host =
           Source<RenderWidgetHost>(source).ptr();
-      if (!got_first_paint_ && render_widget_host->GetView() &&
+      if (waiting_for_first_paint_ && render_widget_host->GetView() &&
           render_widget_host->GetView()->IsShowing()) {
-        got_first_paint_ = true;
         TabState* tab_state = GetTabState(render_widget_host);
         if (tab_state) {
+          // Ignore first paint of a restored tab that was hidden or occluded
+          // before first paint. If an other restored tab is painted, its
+          // paint time will be recorded.
+          if (tab_state->was_hidden_or_occluded) {
+            hidden_or_occluded_tab_ignored_ = true;
+            break;
+          }
           // This is a paint for a tab that is explicitly being tracked so
           // update the statistics. Otherwise the host is for a tab that's not
-          // being tracked thus some other tab has visibility and has rendered
+          // being tracked. Thus some other tab has visibility and has rendered
           // and there's no point in tracking the time to first paint. This can
           // happen because the user opened a different tab or restored tabs
           // to an already existing browser and an existing tab was in the
@@ -297,7 +305,10 @@ void SessionRestoreStatsCollector::Observe(
               tick_clock_->NowTicks() - restore_started_;
           DCHECK(!done_tracking_non_deferred_tabs_);
           tab_loader_stats_.foreground_tab_first_paint = time_to_paint;
+        } else {
+          non_restored_tab_painted_first_ = true;
         }
+        waiting_for_first_paint_ = false;
 
         // Once first paint has been observed the entire to-paint tracking
         // mechanism is no longer needed.
@@ -328,6 +339,23 @@ void SessionRestoreStatsCollector::Observe(
   ReleaseIfDoneTracking();
 }
 
+void SessionRestoreStatsCollector::RenderWidgetHostVisibilityChanged(
+    content::RenderWidgetHost* widget_host,
+    bool became_visible) {
+  auto* tab_state = GetTabState(widget_host);
+  if (tab_state && !became_visible)
+    tab_state->was_hidden_or_occluded = true;
+}
+
+void SessionRestoreStatsCollector::RenderWidgetHostDestroyed(
+    content::RenderWidgetHost* widget_host) {
+  auto* tab_state = GetTabState(widget_host);
+  if (tab_state) {
+    observer_.Remove(tab_state->observed_host);
+    tab_state->observed_host = nullptr;
+  }
+}
+
 void SessionRestoreStatsCollector::RemoveTab(NavigationController* tab) {
   // Stop observing this tab.
   registrar_.Remove(this, content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
@@ -336,10 +364,11 @@ void SessionRestoreStatsCollector::RemoveTab(NavigationController* tab) {
                     Source<NavigationController>(tab));
   registrar_.Remove(this, content::NOTIFICATION_LOAD_START,
                     Source<NavigationController>(tab));
-
   auto tab_it = tabs_tracked_.find(tab);
   DCHECK(tab_it != tabs_tracked_.end());
   TabState& tab_state = tab_it->second;
+  if (tab_state.observed_host)
+    observer_.Remove(tab_state.observed_host);
 
   // If this tab was waiting for a NOTIFICATION_LOAD_STOP event then update
   // the loading counts.
@@ -360,15 +389,15 @@ void SessionRestoreStatsCollector::RemoveTab(NavigationController* tab) {
   if (tab_state.is_deferred)
     --deferred_tab_count_;
 
-  // Remove the tab from the |tracked_tabs_| map.
+  // Remove the tab from the tabs_tracked_| map.
   tabs_tracked_.erase(tab_it);
 
   // It is possible for all restored contents to be destroyed or forcibly
   // renavigated before a first paint has arrived. This can be detected by
   // tabs_tracked_ containing only deferred tabs. At this point the paint
   // mechanism can be disabled and stats collection will stop.
-  if (tabs_tracked_.size() == deferred_tab_count_ && !got_first_paint_) {
-    got_first_paint_ = true;
+  if (tabs_tracked_.size() == deferred_tab_count_ && waiting_for_first_paint_) {
+    waiting_for_first_paint_ = false;
     registrar_.Remove(
         this,
         content::NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES,
@@ -388,6 +417,10 @@ SessionRestoreStatsCollector::RegisterForNotifications(
   auto result = tabs_tracked_.insert(std::make_pair(tab, TabState(tab)));
   DCHECK(result.second);
   TabState* tab_state = &result.first->second;
+  // Register for RenderWidgetHostVisibilityChanged notifications for this tab.
+  tab_state->observed_host = GetRenderWidgetHost(tab);
+  if (tab_state->observed_host)
+    observer_.Add(tab_state->observed_host);
   return tab_state;
 }
 
@@ -404,8 +437,7 @@ SessionRestoreStatsCollector::GetTabState(NavigationController* tab) {
 SessionRestoreStatsCollector::TabState*
 SessionRestoreStatsCollector::GetTabState(RenderWidgetHost* tab) {
   for (auto& pair : tabs_tracked_) {
-    auto* rwh = GetRenderWidgetHost(pair.first);
-    if (rwh == tab)
+    if (pair.second.observed_host == tab)
       return &pair.second;
   }
   // It's possible for this lookup to fail as paint events can be received for
@@ -435,9 +467,20 @@ void SessionRestoreStatsCollector::MarkTabAsLoading(TabState* tab_state) {
 void SessionRestoreStatsCollector::ReleaseIfDoneTracking() {
   // If non-deferred tabs are no longer being tracked then report tab loader
   // statistics.
-  if (!done_tracking_non_deferred_tabs_ && got_first_paint_ &&
+  if (!done_tracking_non_deferred_tabs_ && !waiting_for_first_paint_ &&
       waiting_for_load_tab_count_ == 0) {
     done_tracking_non_deferred_tabs_ = true;
+    if (!tab_loader_stats_.foreground_tab_first_paint.is_zero()) {
+      tab_loader_stats_.tab_first_paint_reason = PAINT_FINISHED_UMA_DONE;
+    } else if (non_restored_tab_painted_first_) {
+      tab_loader_stats_.tab_first_paint_reason =
+          PAINT_FINISHED_NON_RESTORED_TAB_PAINTED_FIRST;
+    } else if (hidden_or_occluded_tab_ignored_) {
+      tab_loader_stats_.tab_first_paint_reason =
+          PAINT_FINISHED_UMA_NO_COMPLETELY_VISIBLE_TABS;
+    } else {
+      tab_loader_stats_.tab_first_paint_reason = PAINT_FINISHED_UMA_NO_PAINT;
+    }
     reporting_delegate_->ReportTabLoaderStats(tab_loader_stats_);
   }
 
@@ -513,13 +556,13 @@ void SessionRestoreStatsCollector::UmaStatsReportingDelegate::
   }
 
   if (!tab_loader_stats.foreground_tab_first_paint.is_zero()) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("SessionRestore.ForegroundTabFirstPaint3",
+    UMA_HISTOGRAM_CUSTOM_TIMES("SessionRestore.ForegroundTabFirstPaint4",
                                tab_loader_stats.foreground_tab_first_paint,
                                base::TimeDelta::FromMilliseconds(100),
                                base::TimeDelta::FromMinutes(16), 50);
 
     std::string time_for_count = base::StringPrintf(
-        "SessionRestore.ForegroundTabFirstPaint3_%u",
+        "SessionRestore.ForegroundTabFirstPaint4_%u",
         static_cast<unsigned int>(tab_loader_stats.tab_count));
     base::HistogramBase* counter_for_count = base::Histogram::FactoryTimeGet(
         time_for_count, base::TimeDelta::FromMilliseconds(100),
@@ -527,6 +570,9 @@ void SessionRestoreStatsCollector::UmaStatsReportingDelegate::
         base::Histogram::kUmaTargetedHistogramFlag);
     counter_for_count->AddTime(tab_loader_stats.foreground_tab_first_paint);
   }
+  UMA_HISTOGRAM_ENUMERATION(
+      "SessionRestore.ForegroundTabFirstPaint4.FinishReason",
+      tab_loader_stats.tab_first_paint_reason, PAINT_FINISHED_UMA_MAX);
 
   if (!tab_loader_stats.non_deferred_tabs_loaded.is_zero()) {
     UMA_HISTOGRAM_CUSTOM_TIMES("SessionRestore.AllTabsLoaded",

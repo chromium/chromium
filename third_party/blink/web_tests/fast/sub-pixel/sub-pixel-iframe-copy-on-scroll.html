@@ -12,11 +12,8 @@
 </style>
 <script src="../../resources/run-after-layout-and-paint.js" type="text/javascript"></script>
 <script>
-if (window.testRunner) {
+if (window.testRunner)
   testRunner.waitUntilDone();
-  testRunner.dumpAsTextWithPixelResults();
-  internals.settings.setMockScrollbarsEnabled(true);
-}
 
 function setupIframes() {
   setupIframe(document.getElementById('iframe1').contentWindow.document);

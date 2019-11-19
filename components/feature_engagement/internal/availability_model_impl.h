@@ -59,7 +59,7 @@ class AvailabilityModelImpl : public AvailabilityModel {
   // as soon as it is invoked.
   StoreLoadCallback store_load_callback_;
 
-  base::WeakPtrFactory<AvailabilityModelImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<AvailabilityModelImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AvailabilityModelImpl);
 };

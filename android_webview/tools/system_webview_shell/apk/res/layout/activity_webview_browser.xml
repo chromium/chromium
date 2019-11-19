@@ -5,12 +5,18 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center">
+    <android.support.v7.widget.Toolbar
+         android:id="@+id/browser_toolbar"
+         android:layout_width="match_parent"
+         android:layout_height="?attr/actionBarSize"
+         android:elevation="4dp" />
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -26,16 +32,11 @@
             android:imeOptions="actionGo"
             android:importantForAutofill="no" />
         <ImageButton
+            android:id="@+id/btn_load_url"
+            android:background="@null"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:src="@drawable/breadcrumb_arrow_black"
-            android:contentDescription="@string/load_url"
-            android:onClick="loadUrlFromUrlBar" />
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/item_more_black"
-            android:contentDescription="@string/menu_about"
-            android:onClick="showPopup" />
+            android:contentDescription="@string/load_url" />
     </LinearLayout>
 </LinearLayout>

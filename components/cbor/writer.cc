@@ -16,23 +16,49 @@ Writer::~Writer() {}
 
 // static
 base::Optional<std::vector<uint8_t>> Writer::Write(const Value& node,
-                                                   size_t max_nesting_level) {
+                                                   const Config& config) {
   std::vector<uint8_t> cbor;
   Writer writer(&cbor);
-  if (writer.EncodeCBOR(node, base::checked_cast<int>(max_nesting_level)))
-    return cbor;
-  return base::nullopt;
+  if (!writer.EncodeCBOR(node, config.max_nesting_level,
+                         config.allow_invalid_utf8_for_testing)) {
+    return base::nullopt;
+  }
+  return cbor;
+}
+
+// static
+base::Optional<std::vector<uint8_t>> Writer::Write(const Value& node,
+                                                   size_t max_nesting_level) {
+  Config config;
+  config.max_nesting_level = base::checked_cast<int>(max_nesting_level);
+  return Write(node, config);
 }
 
 Writer::Writer(std::vector<uint8_t>* cbor) : encoded_cbor_(cbor) {}
 
-bool Writer::EncodeCBOR(const Value& node, int max_nesting_level) {
+bool Writer::EncodeCBOR(const Value& node,
+                        int max_nesting_level,
+                        bool allow_invalid_utf8) {
   if (max_nesting_level < 0)
     return false;
 
   switch (node.type()) {
     case Value::Type::NONE: {
       StartItem(Value::Type::BYTE_STRING, 0);
+      return true;
+    }
+
+    case Value::Type::INVALID_UTF8: {
+      if (!allow_invalid_utf8) {
+        NOTREACHED() << constants::kUnsupportedMajorType;
+        return false;
+      }
+      // Encode a CBOR string with invalid UTF-8 data. This may produce invalid
+      // CBOR and is reachable in tests only. See
+      // |allow_invalid_utf8_for_testing| in Config.
+      const Value::BinaryValue& bytes = node.GetInvalidUTF8();
+      StartItem(Value::Type::STRING, base::strict_cast<uint64_t>(bytes.size()));
+      encoded_cbor_->insert(encoded_cbor_->end(), bytes.begin(), bytes.end());
       return true;
     }
 
@@ -75,7 +101,7 @@ bool Writer::EncodeCBOR(const Value& node, int max_nesting_level) {
       const Value::ArrayValue& array = node.GetArray();
       StartItem(Value::Type::ARRAY, array.size());
       for (const auto& value : array) {
-        if (!EncodeCBOR(value, max_nesting_level - 1))
+        if (!EncodeCBOR(value, max_nesting_level - 1, allow_invalid_utf8))
           return false;
       }
       return true;
@@ -87,9 +113,10 @@ bool Writer::EncodeCBOR(const Value& node, int max_nesting_level) {
       StartItem(Value::Type::MAP, map.size());
 
       for (const auto& value : map) {
-        if (!EncodeCBOR(value.first, max_nesting_level - 1))
+        if (!EncodeCBOR(value.first, max_nesting_level - 1, allow_invalid_utf8))
           return false;
-        if (!EncodeCBOR(value.second, max_nesting_level - 1))
+        if (!EncodeCBOR(value.second, max_nesting_level - 1,
+                        allow_invalid_utf8))
           return false;
       }
       return true;

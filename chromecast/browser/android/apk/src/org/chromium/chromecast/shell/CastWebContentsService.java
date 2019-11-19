@@ -5,10 +5,15 @@
 package org.chromium.chromecast.shell;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import org.chromium.base.Log;
@@ -27,9 +32,11 @@ import org.chromium.content_public.browser.WebContents;
  * service via CastWebContentsComponent.
  */
 public class CastWebContentsService extends Service {
-    private static final String TAG = "cr_CastWebService";
+    private static final String TAG = "CastWebService";
     private static final boolean DEBUG = true;
     private static final int CAST_NOTIFICATION_ID = 100;
+    private static final String NOTIFICATION_CHANNEL_ID =
+            "org.chromium.chromecast.shell.CastWebContentsService.channel";
 
     private final Controller<Intent> mIntentState = new Controller<>();
     private final Observable<WebContents> mWebContentsState =
@@ -41,14 +48,17 @@ public class CastWebContentsService extends Service {
     {
         // React to web contents by presenting them in a headless view.
         mWebContentsState.subscribe(CastWebContentsScopes.withoutLayout(this));
-        mWebContentsState.subscribe(x -> {
-            // TODO(thoren): Notification.Builder(Context) is deprecated in O. Use the
-            // (Context, String) constructor when CastWebContentsService starts supporting O.
-            Notification notification = new Notification.Builder(this).build();
+        mWebContentsState.subscribe(webContents -> {
+            Notification notification =
+                    new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+                            .setContentTitle(webContents.getTitle())
+                            .setContentText("A Google Cast app is running in the background")
+                            .setSmallIcon(R.drawable.ic_settings_cast)
+                            .build();
             startForeground(CAST_NOTIFICATION_ID, notification);
             return () -> stopForeground(true /*removeNotification*/);
         });
-        mWebContentsState.map(this ::getMediaSessionImpl)
+        mWebContentsState.map(this::getMediaSessionImpl)
                 .subscribe(Observers.onEnter(MediaSessionImpl::requestSystemAudioFocus));
         // Inform CastContentWindowAndroid we're detaching.
         Observable<String> instanceIdState = mIntentState.map(Intent::getData).map(Uri::getPath);
@@ -71,6 +81,7 @@ public class CastWebContentsService extends Service {
                     .show();
             stopSelf();
         }
+        createNotificationChannel();
     }
 
     @Override
@@ -100,5 +111,15 @@ public class CastWebContentsService extends Service {
     @RemovableInRelease
     void setMediaSessionImplGetterForTesting(Function<WebContents, MediaSessionImpl> getter) {
         mMediaSessionGetter = getter;
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
+                    "Cast Audio Apps", NotificationManager.IMPORTANCE_NONE);
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }

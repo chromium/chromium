@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Disallowed because noparent removes the +allowed from the parent dir.
-#include "checkdeps/testdata/allowed/bad.h"
+#include "buildtools/checkdeps/testdata/allowed/bad.h"
 
 // Same-directory includes are still allowed.
-#include "checkdeps/testdata/noparent/self.h"
+#include "buildtools/checkdeps/testdata/noparent/self.h"

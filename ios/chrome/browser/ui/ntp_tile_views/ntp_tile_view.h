@@ -22,9 +22,6 @@
 @property(nonatomic, strong, readonly, nonnull)
     UIImageView* imageBackgroundView;
 
-// Image to be used as the image background. The default is the grey squircle.
-+ (nonnull UIImage*)backgroundImage;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_TILE_VIEWS_NTP_TILE_VIEW_H_

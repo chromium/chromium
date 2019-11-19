@@ -19,7 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -27,13 +27,15 @@ import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import org.chromium.chrome.browser.preferences.privacy.PrivacyPreferencesManager;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.List;
@@ -96,24 +98,20 @@ public class InfoBarContainerTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 
     // Adds an infobar to the currrent tab. Blocks until the infobar has been added.
-    private TestListener addInfoBarToCurrentTab(final boolean expires)
-            throws InterruptedException, TimeoutException {
+    private TestListener addInfoBarToCurrentTab(final boolean expires) throws TimeoutException {
         List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
         int previousCount = infoBars.size();
 
         final TestListener testListener = new TestListener();
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                SimpleConfirmInfoBarBuilder.create(mActivityTestRule.getActivity().getActivityTab(),
-                        testListener, InfoBarIdentifier.TEST_INFOBAR, 0, MESSAGE_TEXT, null, null,
-                        null, expires);
-            }
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            SimpleConfirmInfoBarBuilder.create(mActivityTestRule.getActivity().getActivityTab(),
+                    testListener, InfoBarIdentifier.TEST_INFOBAR, 0, MESSAGE_TEXT, null, null, null,
+                    expires);
         });
         mListener.addInfoBarAnimationFinished("InfoBar not added.");
 
@@ -184,7 +182,7 @@ public class InfoBarContainerTest {
         return new Runnable() {
             @Override
             public void run() {
-                PrefServiceBridge.getInstance().setNetworkPredictionEnabled(
+                PrivacyPreferencesManager.getInstance().setNetworkPredictionEnabled(
                         networkPredictionEnabled);
             }
         };
@@ -201,18 +199,19 @@ public class InfoBarContainerTest {
     public void testInfoBarExpirationNoPrerender() throws Exception {
         // Save prediction preference.
         boolean networkPredictionEnabled =
-                ThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
+                TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
                     @Override
                     public Boolean call() {
-                        return PrefServiceBridge.getInstance().getNetworkPredictionEnabled();
+                        return PrivacyPreferencesManager.getInstance()
+                                .getNetworkPredictionEnabled();
                     }
                 });
         try {
-            ThreadUtils.runOnUiThreadBlocking(setNetworkPredictionOptions(false));
+            TestThreadUtils.runOnUiThreadBlocking(setNetworkPredictionOptions(false));
             testInfoBarExpiration();
         } finally {
             // Make sure we restore prediction preference.
-            ThreadUtils.runOnUiThreadBlocking(
+            TestThreadUtils.runOnUiThreadBlocking(
                     setNetworkPredictionOptions(networkPredictionEnabled));
         }
     }
@@ -246,14 +245,11 @@ public class InfoBarContainerTest {
         Assert.assertEquals(1, mActivityTestRule.getInfoBars().size());
         final InfoBar infoBar = mActivityTestRule.getInfoBars().get(0);
 
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                Assert.assertEquals(0, infobarListener.dismissedCallback.getCallCount());
-                infoBar.onCloseButtonClicked();
-                mActivityTestRule.getActivity().getTabModelSelector().closeTab(
-                        mActivityTestRule.getActivity().getActivityTab());
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals(0, infobarListener.dismissedCallback.getCallCount());
+            infoBar.onCloseButtonClicked();
+            mActivityTestRule.getActivity().getTabModelSelector().closeTab(
+                    mActivityTestRule.getActivity().getActivityTab());
         });
 
         infobarListener.dismissedCallback.waitForCallback(0, 1);
@@ -299,6 +295,10 @@ public class InfoBarContainerTest {
         final ViewGroup decorView =
                 (ViewGroup) mActivityTestRule.getActivity().getWindow().getDecorView();
         final InfoBarContainer infoBarContainer = mActivityTestRule.getInfoBarContainer();
+        final InfoBarContainerView infoBarContainerView =
+                infoBarContainer.getContainerViewForTesting();
+
+        Assert.assertNotNull("InfoBarContainerView should not be null.", infoBarContainerView);
 
         // Detect layouts. Note this doesn't actually need to be atomic (just final).
         final AtomicInteger layoutCount = new AtomicInteger();
@@ -338,18 +338,16 @@ public class InfoBarContainerTest {
             public void run() {
                 decorView.getWindowVisibleDisplayFrame(fullDisplayFrame);
                 decorView.getWindowVisibleDisplayFrame(fullDisplayFrameMinusContainer);
-                fullDisplayFrameMinusContainer.bottom -= infoBarContainer.getHeight();
+                fullDisplayFrameMinusContainer.bottom -= infoBarContainerView.getHeight();
                 int windowLocation[] = new int[2];
-                infoBarContainer.getLocationInWindow(windowLocation);
-                containerDisplayFrame.set(
-                        windowLocation[0],
-                        windowLocation[1],
-                        windowLocation[0] + infoBarContainer.getWidth(),
-                        windowLocation[1] + infoBarContainer.getHeight());
+                infoBarContainerView.getLocationInWindow(windowLocation);
+                containerDisplayFrame.set(windowLocation[0], windowLocation[1],
+                        windowLocation[0] + infoBarContainerView.getWidth(),
+                        windowLocation[1] + infoBarContainerView.getHeight());
 
                 // The InfoBarContainer subtracts itself from the transparent region.
                 Region transparentRegion = new Region(fullDisplayFrame);
-                infoBarContainer.gatherTransparentRegion(transparentRegion);
+                infoBarContainerView.gatherTransparentRegion(transparentRegion);
                 Assert.assertEquals(
                         "Values did not match. Expected: " + transparentRegion.getBounds()
                                 + ", actual: " + fullDisplayFrameMinusContainer,

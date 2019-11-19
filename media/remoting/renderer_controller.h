@@ -16,10 +16,13 @@
 #include "build/buildflag.h"
 #include "media/base/media_observer.h"
 #include "media/media_buildflags.h"
-#include "media/mojo/interfaces/remoting.mojom.h"
-#include "media/mojo/interfaces/remoting_common.mojom.h"
+#include "media/mojo/mojom/remoting.mojom.h"
+#include "media/mojo/mojom/remoting_common.mojom.h"
 #include "media/remoting/metrics.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
 #include "media/remoting/rpc_broker.h"  // nogncheck
@@ -38,8 +41,9 @@ namespace remoting {
 class RendererController final : public mojom::RemotingSource,
                                  public MediaObserver {
  public:
-  RendererController(mojom::RemotingSourceRequest source_request,
-                     mojom::RemoterPtr remoter);
+  RendererController(
+      mojo::PendingReceiver<mojom::RemotingSource> source_receiver,
+      mojo::PendingRemote<mojom::Remoter> remoter);
   ~RendererController() override;
 
   // mojom::RemotingSource implementations.
@@ -160,8 +164,8 @@ class RendererController final : public mojom::RemotingSource,
   RpcBroker rpc_broker_;
 #endif
 
-  const mojo::Binding<mojom::RemotingSource> binding_;
-  const mojom::RemoterPtr remoter_;
+  const mojo::Receiver<mojom::RemotingSource> receiver_;
+  const mojo::Remote<mojom::Remoter> remoter_;
 
   // When the sink is available for remoting, this describes its metadata. When
   // not available, this is empty. Updated by OnSinkAvailable/Gone().
@@ -224,7 +228,7 @@ class RendererController final : public mojom::RemotingSource,
 
   const base::TickClock* clock_;
 
-  base::WeakPtrFactory<RendererController> weak_factory_;
+  base::WeakPtrFactory<RendererController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RendererController);
 };

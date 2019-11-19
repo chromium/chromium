@@ -24,7 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -33,24 +33,29 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.omnibox.UrlBar;
+import org.chromium.chrome.browser.prerender.PrerenderTestHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
+import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.PrerenderTestHelper;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.SelectionPopupController;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
@@ -71,7 +76,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RetryOnFailure
 public class FullscreenManagerTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public ChromeActivityTestRule<? extends ChromeActivity> mActivityTestRule =
+            new ChromeActivityTestRule(ChromeTabbedActivity.class);
 
     private static final String LONG_HTML_WITH_AUTO_FOCUS_INPUT_TEST_PAGE =
             UrlUtils.encodeHtmlDataUri("<html>"
@@ -134,23 +140,19 @@ public class FullscreenManagerTest {
                     + "</html>");
 
     @Before
-    public void setUp() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                TabStateBrowserControlsVisibilityDelegate.disablePageLoadDelayForTests();
-            }
-        });
+    public void setUp() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> TabStateBrowserControlsVisibilityDelegate.disablePageLoadDelayForTests());
     }
 
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    public void testTogglePersistentFullscreen() throws InterruptedException {
+    public void testTogglePersistentFullscreen() {
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
 
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        final TabWebContentsDelegateAndroid delegate = tab.getTabWebContentsDelegateAndroid();
+        final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
 
         FullscreenTestUtils.waitForFullscreenFlag(tab, false, mActivityTestRule.getActivity());
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, false);
@@ -172,7 +174,7 @@ public class FullscreenManagerTest {
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        final TabWebContentsDelegateAndroid delegate = tab.getTabWebContentsDelegateAndroid();
+        final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
 
         FullscreenTestUtils.waitForFullscreenFlag(tab, false, mActivityTestRule.getActivity());
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, false);
@@ -185,13 +187,10 @@ public class FullscreenManagerTest {
         // the test (See https://b/10387660)
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                View view = tab.getContentView();
-                view.setSystemUiVisibility(
-                        view.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_FULLSCREEN);
-            }
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            View view = tab.getContentView();
+            view.setSystemUiVisibility(
+                    view.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_FULLSCREEN);
         });
         FullscreenTestUtils.waitForFullscreenFlag(tab, true, mActivityTestRule.getActivity());
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, true);
@@ -200,7 +199,7 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    public void testExitPersistentFullscreenAllowsManualFullscreen() throws InterruptedException {
+    public void testExitPersistentFullscreenAllowsManualFullscreen() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_FULLSCREEN_API_HTML_TEST_PAGE);
 
@@ -210,8 +209,7 @@ public class FullscreenManagerTest {
 
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         View view = tab.getView();
-        final TabWebContentsDelegateAndroid delegate =
-                tab.getTabWebContentsDelegateAndroid();
+        final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
 
         TouchCommon.singleClickView(view);
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, true);
@@ -232,7 +230,7 @@ public class FullscreenManagerTest {
     //@LargeTest
     //@Feature({"Fullscreen"})
     @DisabledTest(message = "crbug.com/901280")
-    public void testManualHidingShowingBrowserControls() throws InterruptedException {
+    public void testManualHidingShowingBrowserControls() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
 
@@ -253,7 +251,7 @@ public class FullscreenManagerTest {
     //@LargeTest
     //@RetryOnFailure
     @DisabledTest(message = "crbug.com/901280")
-    public void testHideBrowserControlsAfterFlingBoosting() throws InterruptedException {
+    public void testHideBrowserControlsAfterFlingBoosting() {
         // Test that fling boosting doesn't break the scroll state management
         // that's used by the FullscreenManager to dispatch URL bar based
         // resizes to the renderer.
@@ -350,8 +348,7 @@ public class FullscreenManagerTest {
     @LargeTest
     @Feature({"Fullscreen"})
     @Features.DisableFeatures({ChromeFeatureList.OFFLINE_INDICATOR})
-    public void testHidingBrowserControlsRemovesSurfaceFlingerOverlay()
-            throws InterruptedException {
+    public void testHidingBrowserControlsRemovesSurfaceFlingerOverlay() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
 
@@ -384,21 +381,18 @@ public class FullscreenManagerTest {
                     }
                 });
 
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                // Check that when the browser controls are gone, the entire decorView is contained
-                // in the transparent region of the app.
-                Rect visibleDisplayFrame = new Rect();
-                Region transparentRegion = new Region();
-                ViewGroup decorView =
-                        (ViewGroup) mActivityTestRule.getActivity().getWindow().getDecorView();
-                decorView.getWindowVisibleDisplayFrame(visibleDisplayFrame);
-                decorView.gatherTransparentRegion(transparentRegion);
-                Assert.assertTrue("Transparent region " + transparentRegion.getBounds()
-                                + " should contain " + visibleDisplayFrame,
-                        transparentRegion.quickContains(visibleDisplayFrame));
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Check that when the browser controls are gone, the entire decorView is contained
+            // in the transparent region of the app.
+            Rect visibleDisplayFrame = new Rect();
+            Region transparentRegion = new Region();
+            ViewGroup decorView =
+                    (ViewGroup) mActivityTestRule.getActivity().getWindow().getDecorView();
+            decorView.getWindowVisibleDisplayFrame(visibleDisplayFrame);
+            decorView.gatherTransparentRegion(transparentRegion);
+            Assert.assertTrue("Transparent region " + transparentRegion.getBounds()
+                            + " should contain " + visibleDisplayFrame,
+                    transparentRegion.quickContains(visibleDisplayFrame));
         });
 
         // Additional manual test that this is working:
@@ -410,7 +404,7 @@ public class FullscreenManagerTest {
     @LargeTest
     @Feature({"Fullscreen"})
     @DisabledTest(message = "Flaky. crbug.com/936252")
-    public void testManualFullscreenDisabledForChromePages() throws InterruptedException {
+    public void testManualFullscreenDisabledForChromePages() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         // The credits page was chosen as it is a chrome:// page that is long and would support
         // manual fullscreen if it were supported.
@@ -438,7 +432,7 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    public void testControlsShownOnUnresponsiveRenderer() throws InterruptedException {
+    public void testControlsShownOnUnresponsiveRenderer() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
 
@@ -449,22 +443,13 @@ public class FullscreenManagerTest {
         FullscreenManagerTestUtils.scrollBrowserControls(mActivityTestRule, false);
 
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        final TabWebContentsDelegateAndroid delegate =
-                tab.getTabWebContentsDelegateAndroid();
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                delegate.rendererUnresponsive();
-            }
-        });
+        final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
+        PostTask.runOrPostTask(
+                UiThreadTaskTraits.DEFAULT, () -> { delegate.rendererUnresponsive(); });
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(mActivityTestRule, 0);
 
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                delegate.rendererResponsive();
-            }
-        });
+        PostTask.runOrPostTask(
+                UiThreadTaskTraits.DEFAULT, () -> { delegate.rendererResponsive(); });
 
         // TODO(tedchoc): This is running into timing issues with the renderer offset logic.
         //waitForBrowserControlsToBeMoveable(getActivity().getActivityTab());
@@ -507,8 +492,7 @@ public class FullscreenManagerTest {
      */
     @Test
     @DisabledTest(message = "crbug.com/698413")
-    public void testBrowserControlsShownWhenInputIsFocused()
-            throws InterruptedException, TimeoutException {
+    public void testBrowserControlsShownWhenInputIsFocused() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_WITH_AUTO_FOCUS_INPUT_TEST_PAGE);
 
@@ -541,7 +525,7 @@ public class FullscreenManagerTest {
     @LargeTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.KITKAT)
     @Feature({"Fullscreen"})
-    public void testPersistentFullscreenWithOptions() throws InterruptedException {
+    public void testPersistentFullscreenWithOptions() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_FULLSCREEN_API_HTML_WITH_OPTIONS_TEST_PAGE);
 
@@ -551,7 +535,7 @@ public class FullscreenManagerTest {
 
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         View view = tab.getView();
-        final TabWebContentsDelegateAndroid delegate = tab.getTabWebContentsDelegateAndroid();
+        final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
 
         TouchCommon.singleClickView(view);
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, true);
@@ -559,7 +543,7 @@ public class FullscreenManagerTest {
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule, -browserControlsHeight);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue("Navigation bar not hidden.",
                     (view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
                             == 0);
@@ -579,7 +563,7 @@ public class FullscreenManagerTest {
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule, -browserControlsHeight);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue("Navigation bar hidden.",
                     (view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
                             != 0);

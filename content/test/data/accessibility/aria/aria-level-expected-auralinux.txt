@@ -1,0 +1,30 @@
+[document web]
+++[heading] name='Level 2' level:2
+++++[static] name='Level 2'
+++[heading] name='Level 9' level:9
+++++[static] name='Level 9'
+++[heading] name='Level 1' level:1
+++++[static] name='Level 1'
+++[heading] name='Level 3' level:3
+++++[static] name='Level 3'
+++[heading] name='Level 3' level:3
+++++[static] name='Level 3'
+++[heading] name='Level 4' level:4
+++++[static] name='Level 4'
+++[heading] name='Level 5' level:5
+++++[static] name='Level 5'
+++[tree]
+++++[tree item] name='Tree item at level 1' expandable expanded selectable level:1
+++++++[static] name='Tree item at level 1'
+++++++[panel]
+++++++++[tree item] name='Tree item at level 2' selectable level:2
+++++++++++[static] name='Tree item at level 2'
+++++[tree item] name='Tree item at level 3' selectable level:3
+++++++[static] name='Tree item at level 3'
+++[tree table] cols=1 headers=(NONE); rows=2 headers=(NONE); caption=false; spans=(all: 1x1)
+++++[table row] selectable level:1
+++++++[table cell] name='Cell at level 1' selectable (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Cell at level 1'
+++++[table row] selectable level:2
+++++++[table cell] name='Cell at level 2' selectable (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Cell at level 2'

@@ -1,15 +1,17 @@
 function createIFrame(origin, type) {
     var file;
     if (type == "document") {
-        file = "post-addressspace-to-parent.html";
+        file = "post-addressspace-to-parent.php";
     } else if (type == "document+csp") {
-        file = "post-addressspace-to-parent.html?csp";
+        file = "post-addressspace-to-parent.php?csp";
     } else if (type == "document+appcache") {
-        file = "post-addressspace-to-parent-with-appcache.html";
+        file = "post-addressspace-to-parent-with-appcache.php";
     } else if (type == "document+appcache+csp") {
-        file = "post-addressspace-to-parent-with-appcache.html?csp";
+        file = "post-addressspace-to-parent-with-appcache.php?csp";
     } else if (type == "worker") {
         file = "post-addressspace-from-worker.html";
+    } else if (type == "module-worker") {
+        file = "post-addressspace-from-worker.html?module";
     } else if (type == "sharedworker") {
         file = "post-addressspace-from-sharedworker.html";
     } else if (type == "serviceworker") {

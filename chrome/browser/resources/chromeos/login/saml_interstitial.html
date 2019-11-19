@@ -56,10 +56,9 @@ Events:
       <gaia-input-form id="samlInterstitialForm"
                        on-submit="onSamlPageNextClicked_"
                        i18n-values="button-text:samlInterstitialNextBtn">
-        <gaia-button id="changeAccountLink" type="link"
-                     on-tap="onSamlPageChangeAccountClicked_"
-                     i18n-content="samlInterstitialChangeAccountLink">
-        </gaia-button>
+        <gaia-button id="changeAccountLink"
+            on-click="onSamlPageChangeAccountClicked_"
+            i18n-content="samlInterstitialChangeAccountLink" link></gaia-button>
       </gaia-input-form>
 
       <img id="logo-img" src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90"

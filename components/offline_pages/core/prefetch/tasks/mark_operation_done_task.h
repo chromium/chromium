@@ -58,7 +58,7 @@ class MarkOperationDoneTask : public Task {
   std::string operation_name_;
   TaskResult result_ = std::make_pair(StoreResult::UNFINISHED, -1);
 
-  base::WeakPtrFactory<MarkOperationDoneTask> weak_factory_;
+  base::WeakPtrFactory<MarkOperationDoneTask> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MarkOperationDoneTask);
 };

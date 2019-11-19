@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,86 @@
  * @const
  */
 chrome.inputMethodPrivate = {};
+
+/**
+ * @enum {string}
+ */
+chrome.inputMethodPrivate.MenuItemStyle = {
+  CHECK: 'check',
+  RADIO: 'radio',
+  SEPARATOR: 'separator',
+};
+
+/**
+ * A menu item used by an input method to interact with the user from the language menu.
+ * @typedef {{
+ *   id: string,
+ *   label: (string|undefined),
+ *   style: (!chrome.inputMethodPrivate.MenuItemStyle|undefined),
+ *   visible: (boolean|undefined),
+ *   checked: (boolean|undefined),
+ *   enabled: (boolean|undefined)
+ * }}
+ */
+chrome.inputMethodPrivate.MenuItem;
+
+/**
+ * @enum {string}
+ */
+chrome.inputMethodPrivate.UnderlineStyle = {
+  UNDERLINE: 'underline',
+  DOUBLE_UNDERLINE: 'doubleUnderline',
+  NO_UNDERLINE: 'noUnderline',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.inputMethodPrivate.FocusReason = {
+  MOUSE: 'mouse',
+  TOUCH: 'touch',
+  PEN: 'pen',
+  OTHER: 'other',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.inputMethodPrivate.InputContextType = {
+  TEXT: 'text',
+  SEARCH: 'search',
+  TEL: 'tel',
+  URL: 'url',
+  EMAIL: 'email',
+  NUMBER: 'number',
+  PASSWORD: 'password',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.inputMethodPrivate.AutoCapitalizeType = {
+  OFF: 'off',
+  CHARACTERS: 'characters',
+  WORDS: 'words',
+  SENTENCES: 'sentences',
+};
+
+/**
+ * Describes an input Context
+ * @typedef {{
+ *   contextID: number,
+ *   type: !chrome.inputMethodPrivate.InputContextType,
+ *   autoCorrect: boolean,
+ *   autoComplete: boolean,
+ *   autoCapitalize: !chrome.inputMethodPrivate.AutoCapitalizeType,
+ *   spellCheck: boolean,
+ *   shouldDoLearning: boolean,
+ *   focusReason: !chrome.inputMethodPrivate.FocusReason,
+ *   hasBeenPassword: boolean
+ * }}
+ */
+chrome.inputMethodPrivate.InputContext;
 
 /**
  * Gets configurations for input methods.
@@ -82,6 +162,114 @@ chrome.inputMethodPrivate.getEncryptSyncEnabled = function(callback) {};
 chrome.inputMethodPrivate.setXkbLayout = function(xkb_name, callback) {};
 
 /**
+ * Commits the text currently being composed without moving the selected text
+ * range. This is a no-op if the context is incorrect.
+ * @param {{
+ *   contextID: number
+ * }} parameters
+ * @param {function():void=} callback Called when the operation completes.
+ */
+chrome.inputMethodPrivate.finishComposingText = function(parameters, callback) {};
+
+/**
+ * Sets the selection range
+ * @param {{
+ *   contextID: number,
+ *   selectionStart: (number|undefined),
+ *   selectionEnd: (number|undefined)
+ * }} parameters
+ * @param {function(boolean):void=} callback Called when the operation completes
+ *     with a boolean indicating if the text was accepted or not.
+ */
+chrome.inputMethodPrivate.setSelectionRange = function(parameters, callback) {};
+
+/**
+ * Fires the input.ime.onMenuItemActivated event.
+ * @param {string} engineID ID of the engine to use.
+ * @param {string} name Name of the MenuItem which was activated
+ */
+chrome.inputMethodPrivate.notifyImeMenuItemActivated = function(engineID, name) {};
+
+/**
+ * Shows the input view window. If the input view window is already shown, this
+ * function will do nothing.
+ * @param {function():void=} callback Called when the operation completes.
+ */
+chrome.inputMethodPrivate.showInputView = function(callback) {};
+
+/**
+ * Opens the options page for the input method extension. If the input method
+ * does not have options, this function will do nothing.
+ * @param {string} inputMethodId ID of the input method to open options for.
+ */
+chrome.inputMethodPrivate.openOptionsPage = function(inputMethodId) {};
+
+/**
+ * Gets the composition bounds
+ * @param {function(!Array<{
+ *   x: number,
+ *   y: number,
+ *   w: number,
+ *   h: number
+ * }>):void} callback Callback which is called to provide the result
+ */
+chrome.inputMethodPrivate.getCompositionBounds = function(callback) {};
+
+/**
+ * Gets the surrounding text of the current selection
+ * @param {number} beforeLength The number of characters before the current
+ *     selection.
+ * @param {number} afterLength The number of characters after the current
+ *     selection.
+ * @param {function({
+ *   before: string,
+ *   selected: string,
+ *   after: string
+ * }):void} callback Callback which is called to provide the result
+ */
+chrome.inputMethodPrivate.getSurroundingText = function(beforeLength, afterLength, callback) {};
+
+/**
+ * Gets the current value of a setting for a particular input method
+ * @param {string} engineID The ID of the engine (e.g. 'zh-t-i0-pinyin',
+ *     'xkb:us::eng')
+ * @param {string} key The setting to get
+ * @param {function((*|undefined)):void} callback Callback to receive the
+ *     setting
+ */
+chrome.inputMethodPrivate.getSetting = function(engineID, key, callback) {};
+
+/**
+ * Sets the value of a setting for a particular input method
+ * @param {string} engineID The ID of the engine (e.g. 'zh-t-i0-pinyin',
+ *     'xkb:us::eng')
+ * @param {string} key The setting to set
+ * @param {*} value The new value of the setting
+ * @param {function():void=} callback Callback to notify that the new value has
+ *     been set
+ */
+chrome.inputMethodPrivate.setSetting = function(engineID, key, value, callback) {};
+
+/**
+ * Set the composition range. If this extension does not own the active IME,
+ * this fails.
+ * @param {{
+ *   contextID: number,
+ *   selectionBefore: number,
+ *   selectionAfter: number,
+ *   segments: (!Array<{
+ *     start: number,
+ *     end: number,
+ *     style: !chrome.inputMethodPrivate.UnderlineStyle
+ *   }>|undefined)
+ * }} parameters
+ * @param {function(boolean):void=} callback Called when the operation completes
+ *     with a boolean indicating if the text was accepted or not. On failure,
+ *     chrome.runtime.lastError is set.
+ */
+chrome.inputMethodPrivate.setCompositionRange = function(parameters, callback) {};
+
+/**
  * Fired when the input method is changed.
  * @type {!ChromeEvent}
  */
@@ -110,3 +298,38 @@ chrome.inputMethodPrivate.onDictionaryChanged;
  * @type {!ChromeEvent}
  */
 chrome.inputMethodPrivate.onImeMenuActivationChanged;
+
+/**
+ * Fired when the input method or the list of active input method IDs is
+ * changed.
+ * @type {!ChromeEvent}
+ */
+chrome.inputMethodPrivate.onImeMenuListChanged;
+
+/**
+ * Fired when the input.ime.setMenuItems or input.ime.updateMenuItems API is
+ * called.
+ * @type {!ChromeEvent}
+ */
+chrome.inputMethodPrivate.onImeMenuItemsChanged;
+
+/**
+ * This event is sent when focus enters a text box. It is sent to all extensions
+ * that are listening to this event, and enabled by the user.
+ * @type {!ChromeEvent}
+ */
+chrome.inputMethodPrivate.onFocus;
+
+/**
+ * This event is sent when the settings for any input method changed. It is sent
+ * to all extensions that are listening to this event, and enabled by the user.
+ * @type {!ChromeEvent}
+ */
+chrome.inputMethodPrivate.onSettingsChanged;
+
+/**
+ * This event is sent when the screen is being mirrored or the desktop is being
+ * cast.
+ * @type {!ChromeEvent}
+ */
+chrome.inputMethodPrivate.onScreenProjectionChanged;

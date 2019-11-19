@@ -20,7 +20,7 @@
 // anything.
 class ClipboardRecentContentGeneric : public ClipboardRecentContent {
  public:
-  explicit ClipboardRecentContentGeneric();
+  ClipboardRecentContentGeneric();
 
   // ClipboardRecentContent implementation.
   base::Optional<GURL> GetRecentURLFromClipboard() override;
@@ -28,6 +28,7 @@ class ClipboardRecentContentGeneric : public ClipboardRecentContent {
   base::Optional<gfx::Image> GetRecentImageFromClipboard() override;
   base::TimeDelta GetClipboardContentAge() const override;
   void SuppressClipboardContent() override;
+  void ClearClipboardContent() override;
 
  private:
   // Returns true if the URL is appropriate to be suggested.

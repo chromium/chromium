@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ssl;
 
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.WebContents;
 
@@ -21,10 +22,13 @@ public class SecurityStateModel {
      */
     public static int getSecurityLevelForWebContents(WebContents webContents) {
         if (webContents == null) return ConnectionSecurityLevel.NONE;
-        return nativeGetSecurityLevelForWebContents(webContents);
+        return SecurityStateModelJni.get().getSecurityLevelForWebContents(webContents);
     }
 
     private SecurityStateModel() {}
 
-    private static native int nativeGetSecurityLevelForWebContents(WebContents webContents);
+    @NativeMethods
+    interface Natives {
+        int getSecurityLevelForWebContents(WebContents webContents);
+    }
 }

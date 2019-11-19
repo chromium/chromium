@@ -19,7 +19,7 @@ class PaintChunkerTest : public testing::Test {
  protected:
   class TestDisplayItemClient : public DisplayItemClient {
     String DebugName() const final { return "Test"; }
-    LayoutRect VisualRect() const final { return LayoutRect(); }
+    IntRect VisualRect() const final { return IntRect(); }
   };
   TestDisplayItemClient client_;
 };
@@ -259,6 +259,7 @@ TEST_F(PaintChunkerTest, CreatesSeparateChunksWhenRequested) {
   TestChunkerDisplayItem after_i2(client_, DisplayItemType(10));
   chunker.IncrementDisplayItemIndex(after_i2);
   chunker.IncrementDisplayItemIndex(TestChunkerDisplayItem(client_));
+  chunker.UpdateCurrentPaintChunkProperties(id0, DefaultPaintChunkProperties());
   chunker.IncrementDisplayItemIndex(i3);
 
   EXPECT_THAT(

@@ -8,8 +8,7 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
-#import "ios/chrome/browser/ui/url_loader.h"
-#import "ios/web/public/block_types.h"
+#include "url/gurl.h"
 
 @protocol CRWNativeContentDelegate;
 
@@ -82,7 +81,7 @@ typedef void (^HtmlCallback)(NSString*);
 // moment, |completionHandler| is called with an NSError. The
 // |completionHandler| can be nil.
 - (void)executeJavaScript:(NSString*)script
-        completionHandler:(web::JavaScriptResultBlock)completionHandler;
+        completionHandler:(void (^)(id, NSError*))completionHandler;
 
 // The web page title. Will return nil if not available.
 - (NSString*)title;

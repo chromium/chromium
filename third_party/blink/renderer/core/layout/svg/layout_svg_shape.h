@@ -160,8 +160,8 @@ class LayoutSVGShape : public LayoutSVGModelObject {
   void Paint(const PaintInfo&) const final;
 
   bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation& location_in_parent,
-                   const LayoutPoint& accumulated_offset,
+                   const HitTestLocation&,
+                   const PhysicalOffset& accumulated_offset,
                    HitTestAction) final;
   bool HitTestShape(const HitTestRequest&,
                     const HitTestLocation&,
@@ -179,7 +179,6 @@ class LayoutSVGShape : public LayoutSVGModelObject {
   FloatRect ApproximateStrokeBoundingBox(const FloatRect& shape_bounds) const;
   FloatRect CalculateNonScalingStrokeBoundingBox() const;
   void UpdateNonScalingStrokeData();
-  bool UpdateLocalTransform();
 
  private:
   AffineTransform local_transform_;

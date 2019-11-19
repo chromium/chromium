@@ -23,8 +23,9 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/painter.h"
+#include "ui/views/view_targeter_delegate.h"
 
-namespace app_list {
+namespace ash {
 
 namespace {
 
@@ -34,19 +35,26 @@ constexpr SkColor kFolderTitleHintTextColor = SkColorSetRGB(0xA0, 0xA0, 0xA0);
 
 }  // namespace
 
-class FolderHeaderView::FolderNameView : public views::Textfield {
+class FolderHeaderView::FolderNameView : public views::Textfield,
+                                         public views::ViewTargeterDelegate {
  public:
   explicit FolderNameView(FolderHeaderView* folder_header_view)
       : folder_header_view_(folder_header_view) {
     DCHECK(folder_header_view_);
     SetBorder(views::CreateEmptyBorder(1, 1, 1, 1));
+    SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   }
 
   ~FolderNameView() override = default;
 
+  gfx::Size CalculatePreferredSize() const override {
+    return gfx::Size(kMaxFolderNameWidth,
+                     AppListConfig::instance().folder_header_height());
+  }
+
   void OnFocus() override {
     SetText(base::UTF8ToUTF16(folder_header_view_->folder_item_->name()));
-    starting_name_ = text();
+    starting_name_ = GetText();
     folder_header_view_->previous_folder_name_ = starting_name_;
     SelectAll(false);
     Textfield::OnFocus();
@@ -54,21 +62,34 @@ class FolderHeaderView::FolderNameView : public views::Textfield {
 
   void OnBlur() override {
     // Collapse whitespace when FolderNameView loses focus.
-    SetText(base::CollapseWhitespace(text(), false));
-    folder_header_view_->ContentsChanged(this, text());
+    folder_header_view_->ContentsChanged(
+        this, base::CollapseWhitespace(GetText(), false));
+
+    // Ensure folder name is truncated when FolderNameView loses focus.
+    SetText(folder_header_view_->GetElidedFolderName(
+        base::UTF8ToUTF16(folder_header_view_->folder_item_->name())));
 
     // Record metric each time a folder is renamed.
-    if (text() != starting_name_) {
+    if (GetText() != starting_name_) {
       if (folder_header_view_->is_tablet_mode()) {
         UMA_HISTOGRAM_COUNTS_100("Apps.AppListFolderNameLength.TabletMode",
-                                 text().length());
+                                 GetText().length());
       } else {
         UMA_HISTOGRAM_COUNTS_100("Apps.AppListFolderNameLength.ClamshellMode",
-                                 text().length());
+                                 GetText().length());
       }
     }
 
     Textfield::OnBlur();
+  }
+
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override {
+    DCHECK_EQ(target, this);
+    gfx::Rect textfield_bounds = target->GetLocalBounds();
+    int horizontal_padding = -(textfield_bounds.height() * 1.5);
+    textfield_bounds.Inset(gfx::Insets(0, horizontal_padding));
+    return textfield_bounds.Intersects(rect);
   }
 
  private:
@@ -92,7 +113,7 @@ FolderHeaderView::FolderHeaderView(FolderHeaderViewDelegate* delegate)
       folder_name_visible_(true),
       is_tablet_mode_(false) {
   folder_name_view_->set_placeholder_text_color(kFolderTitleHintTextColor);
-  folder_name_view_->set_placeholder_text(folder_name_placeholder_text_);
+  folder_name_view_->SetPlaceholderText(folder_name_placeholder_text_);
   folder_name_view_->SetBorder(views::NullBorder());
 
   // Make folder name font size 14px.
@@ -134,7 +155,7 @@ void FolderHeaderView::UpdateFolderNameVisibility(bool visible) {
 }
 
 void FolderHeaderView::OnFolderItemRemoved() {
-  folder_item_ = NULL;
+  folder_item_ = nullptr;
 }
 
 void FolderHeaderView::SetTextFocus() {
@@ -163,16 +184,16 @@ void FolderHeaderView::Update() {
 void FolderHeaderView::UpdateFolderNameAccessibleName() {
   // Sets |folder_name_view_|'s accessible name to the placeholder text if
   // |folder_name_view_| is blank; otherwise, clear the accessible name, the
-  // accessible state's value is set to be folder_name_view_->text() by
+  // accessible state's value is set to be folder_name_view_->GetText() by
   // TextField.
-  base::string16 accessible_name = folder_name_view_->text().empty()
+  base::string16 accessible_name = folder_name_view_->GetText().empty()
                                        ? folder_name_placeholder_text_
                                        : base::string16();
   folder_name_view_->SetAccessibleName(accessible_name);
 }
 
 const base::string16& FolderHeaderView::GetFolderNameForTest() {
-  return folder_name_view_->text();
+  return folder_name_view_->GetText();
 }
 
 void FolderHeaderView::SetFolderNameForTest(const base::string16& name) {
@@ -180,12 +201,20 @@ void FolderHeaderView::SetFolderNameForTest(const base::string16& name) {
 }
 
 bool FolderHeaderView::IsFolderNameEnabledForTest() const {
-  return folder_name_view_->enabled();
+  return folder_name_view_->GetEnabled();
 }
 
 gfx::Size FolderHeaderView::CalculatePreferredSize() const {
   return gfx::Size(kMaxFolderNameWidth,
                    folder_name_view_->GetPreferredSize().height());
+}
+
+const char* FolderHeaderView::GetClassName() const {
+  return "FolderHeaderView";
+}
+
+void FolderHeaderView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  Update();
 }
 
 views::View* FolderHeaderView::GetFolderNameViewForTest() const {
@@ -203,7 +232,7 @@ base::string16 FolderHeaderView::GetElidedFolderName(
       folder_name.substr(0, AppListConfig::instance().max_folder_name_chars());
 
   // Get maximum text width for fitting into |folder_name_view_|.
-  int text_width = GetMaxFolderNameWidth() -
+  int text_width = std::min(GetMaxFolderNameWidth(), width()) -
                    folder_name_view_->GetCaretBounds().width() -
                    folder_name_view_->GetInsets().width();
   base::string16 elided_name = gfx::ElideText(
@@ -225,11 +254,13 @@ void FolderHeaderView::Layout() {
       folder_name_view_->GetCaretBounds().width() +
       folder_name_view_->GetInsets().width();
   text_width = std::min(text_width, GetMaxFolderNameWidth());
-  text_bounds.set_x(rect.x() + (rect.width() - text_width) / 2);
+  text_bounds.set_x(std::max(0, rect.x() + (rect.width() - text_width) / 2));
 
-  // The width of the text field should always be maximum length, to prevent the
-  // touch target from resizing with the text.
-  text_bounds.set_width(GetMaxFolderNameWidth());
+  // The width of the text field should always be the maximum length possible,
+  // to prevent the touch target from resizing with the text. The width should
+  // also stay within the FolderHeaderView bounds.
+  text_bounds.set_width(std::min(rect.width(), GetMaxFolderNameWidth()));
+
   text_bounds.ClampToCenteredSize(gfx::Size(
       text_bounds.width(), folder_name_view_->GetPreferredSize().height()));
   folder_name_view_->SetBoundsRect(text_bounds);
@@ -246,8 +277,8 @@ void FolderHeaderView::ContentsChanged(views::Textfield* sender,
   if (new_contents.length() >
       AppListConfig::instance().max_folder_name_chars()) {
     folder_name_view_->SetText(previous_folder_name_.value());
-    sender->SelectRange(gfx::Range(previous_cursor_position_.value(),
-                                   previous_cursor_position_.value()));
+    sender->SetSelectedRange(gfx::Range(previous_cursor_position_.value(),
+                                        previous_cursor_position_.value()));
   } else {
     previous_folder_name_ = new_contents;
     delegate_->SetItemName(folder_item_, base::UTF16ToUTF8(new_contents));
@@ -291,4 +322,4 @@ void FolderHeaderView::SetPreviousFolderNameForTest(
   previous_folder_name_ = previous_name;
 }
 
-}  // namespace app_list
+}  // namespace ash

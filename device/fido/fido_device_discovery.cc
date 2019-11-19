@@ -17,7 +17,7 @@ namespace device {
 FidoDeviceDiscovery::Observer::~Observer() = default;
 
 FidoDeviceDiscovery::FidoDeviceDiscovery(FidoTransportProtocol transport)
-    : FidoDiscoveryBase(transport), weak_factory_(this) {}
+    : FidoDiscoveryBase(transport) {}
 
 FidoDeviceDiscovery::~FidoDeviceDiscovery() = default;
 
@@ -25,7 +25,7 @@ void FidoDeviceDiscovery::Start() {
   DCHECK_EQ(state_, State::kIdle);
   state_ = State::kStarting;
 
-  // To ensure that that NotifiyStarted() is never invoked synchronously,
+  // To ensure that that NotifyStarted() is never invoked synchronously,
   // post task asynchronously.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&FidoDeviceDiscovery::StartInternal,
@@ -38,13 +38,18 @@ void FidoDeviceDiscovery::NotifyDiscoveryStarted(bool success) {
     state_ = State::kRunning;
   if (!observer())
     return;
-  observer()->DiscoveryStarted(this, success);
+
+  std::vector<FidoAuthenticator*> authenticators;
+  authenticators.reserve(authenticators_.size());
+  for (const auto& authenticator : authenticators_)
+    authenticators.push_back(authenticator.second.get());
+  observer()->DiscoveryStarted(this, success, std::move(authenticators));
 }
 
 void FidoDeviceDiscovery::NotifyAuthenticatorAdded(
     FidoAuthenticator* authenticator) {
   DCHECK_NE(state_, State::kIdle);
-  if (!observer())
+  if (!observer() || state_ != State::kRunning)
     return;
   observer()->AuthenticatorAdded(this, authenticator);
 }
@@ -52,7 +57,7 @@ void FidoDeviceDiscovery::NotifyAuthenticatorAdded(
 void FidoDeviceDiscovery::NotifyAuthenticatorRemoved(
     FidoAuthenticator* authenticator) {
   DCHECK_NE(state_, State::kIdle);
-  if (!observer())
+  if (!observer() || state_ != State::kRunning)
     return;
   observer()->AuthenticatorRemoved(this, authenticator);
 }

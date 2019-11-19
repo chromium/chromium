@@ -144,9 +144,7 @@ PepperFlashRendererHost::PepperFlashRendererHost(
     content::RendererPpapiHost* host,
     PP_Instance instance,
     PP_Resource resource)
-    : ResourceHost(host->GetPpapiHost(), instance, resource),
-      host_(host),
-      weak_factory_(this) {}
+    : ResourceHost(host->GetPpapiHost(), instance, resource), host_(host) {}
 
 PepperFlashRendererHost::~PepperFlashRendererHost() {
   // This object may be destroyed in the middle of a sync message. If that is
@@ -317,7 +315,7 @@ int32_t PepperFlashRendererHost::OnNavigate(
   bool rejected = false;
   while (header_iter.GetNext()) {
     std::string lower_case_header_name =
-        base::ToLowerASCII(header_iter.name());
+        base::ToLowerASCII(header_iter.name_piece());
     if (!IsSimpleHeader(lower_case_header_name, header_iter.values())) {
       rejected = true;
 

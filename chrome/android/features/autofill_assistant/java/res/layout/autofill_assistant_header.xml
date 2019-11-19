@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/header"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:minHeight="56dp"
+      android:gravity="center_vertical"
+      android:orientation="horizontal"
+      android:paddingStart="19dp"
+      android:paddingEnd="24dp">
+    <TextView
+        android:id="@+id/status_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:gravity="center_vertical"
+        android:paddingStart="14dp"
+        android:paddingEnd="24dp"
+        android:maxLines="4"
+        android:ellipsize="end"
+        android:textAppearance="@style/TextAppearance.AssistantBlackTitle"/>
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/profile_image"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@string/preferences"
+        app:srcCompat="@drawable/logo_avatar_anonymous"/>
+  </LinearLayout>
+
+  <org.chromium.chrome.browser.ui.widget.MaterialProgressBar
+      android:id="@+id/progress_bar"
+      android:layout_width="match_parent"
+      android:layout_height="2dp"
+      android:layout_marginStart="@dimen/autofill_assistant_bottombar_horizontal_spacing"
+      android:layout_marginEnd="@dimen/autofill_assistant_bottombar_horizontal_spacing"
+      app:colorBackground="@color/modern_secondary_color"
+      app:colorProgress="@color/default_text_color_blue"/>
+</LinearLayout>

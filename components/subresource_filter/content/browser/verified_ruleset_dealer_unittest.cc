@@ -14,7 +14,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace subresource_filter {
@@ -468,7 +468,7 @@ class SubresourceFilterVerifiedRulesetDealerHandleTest
  private:
   TestRulesets rulesets_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(SubresourceFilterVerifiedRulesetDealerHandleTest);
 };
@@ -629,7 +629,7 @@ class SubresourceFilterVerifiedRulesetHandleTest : public ::testing::Test {
   TestRulesets rulesets_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(SubresourceFilterVerifiedRulesetHandleTest);
 };

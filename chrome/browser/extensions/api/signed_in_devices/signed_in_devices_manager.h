@@ -12,10 +12,11 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
-#include "components/sync/device_info/device_info_tracker.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 class Profile;
@@ -26,7 +27,6 @@ class BrowserContext;
 
 namespace extensions {
 class BrowserContextKeyedAPI;
-class ExtensionRegistry;
 
 struct EventListenerInfo;
 
@@ -54,6 +54,8 @@ class SignedInDevicesChangeObserver
   std::string extension_id_;
   Profile* const profile_;
   content::NotificationRegistrar registrar_;
+
+  DISALLOW_COPY_AND_ASSIGN(SignedInDevicesChangeObserver);
 };
 
 class SignedInDevicesManager : public BrowserContextKeyedAPI,
@@ -90,12 +92,12 @@ class SignedInDevicesManager : public BrowserContextKeyedAPI,
 
   void RemoveChangeObserverForExtension(const std::string& extension_id);
 
-  Profile* const profile_;
+  Profile* const profile_ = nullptr;
   std::vector<std::unique_ptr<SignedInDevicesChangeObserver>> change_observers_;
 
   // Listen to extension unloaded notification.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   FRIEND_TEST_ALL_PREFIXES(SignedInDevicesManager, UpdateListener);
 

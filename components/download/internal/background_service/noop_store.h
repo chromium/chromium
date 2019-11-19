@@ -34,7 +34,7 @@ class NoopStore : public Store {
   // Initialize() is called.
   bool initialized_;
 
-  base::WeakPtrFactory<NoopStore> weak_ptr_factory_;
+  base::WeakPtrFactory<NoopStore> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NoopStore);
 };

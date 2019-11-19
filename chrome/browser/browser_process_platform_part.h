@@ -18,7 +18,7 @@
 #include "chrome/browser/browser_process_platform_part_win.h"
 #else
 #include "chrome/browser/browser_process_platform_part_base.h"
-typedef BrowserProcessPlatformPartBase BrowserProcessPlatformPart;
+class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {};
 #endif
 
 #endif  // CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_H_

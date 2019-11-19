@@ -18,10 +18,10 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-shared.h"
 
 using blink::mojom::PermissionDescriptorPtr;
 using blink::mojom::PermissionName;
-using blink::mojom::PermissionObserverPtr;
 using blink::mojom::PermissionStatus;
 
 namespace content {
@@ -88,6 +88,28 @@ bool PermissionDescriptorToPermissionType(
     case PermissionName::IDLE_DETECTION:
       *permission_type = PermissionType::IDLE_DETECTION;
       return true;
+    case PermissionName::PERIODIC_BACKGROUND_SYNC:
+      *permission_type = PermissionType::PERIODIC_BACKGROUND_SYNC;
+      return true;
+    case PermissionName::WAKE_LOCK:
+      if (descriptor->extension && descriptor->extension->is_wake_lock()) {
+        switch (descriptor->extension->get_wake_lock()->type) {
+          case blink::mojom::WakeLockType::kScreen:
+            *permission_type = PermissionType::WAKE_LOCK_SCREEN;
+            break;
+          case blink::mojom::WakeLockType::kSystem:
+            *permission_type = PermissionType::WAKE_LOCK_SYSTEM;
+            break;
+          default:
+            NOTREACHED();
+            return false;
+        }
+        return true;
+      }
+      break;
+    case PermissionName::NFC:
+      *permission_type = PermissionType::NFC;
+      return true;
   }
 
   NOTREACHED();
@@ -135,7 +157,7 @@ class PermissionServiceImpl::PendingRequest {
 
 PermissionServiceImpl::PermissionServiceImpl(PermissionServiceContext* context,
                                              const url::Origin& origin)
-    : context_(context), origin_(origin), weak_factory_(this) {}
+    : context_(context), origin_(origin) {}
 
 PermissionServiceImpl::~PermissionServiceImpl() {}
 
@@ -192,13 +214,13 @@ void PermissionServiceImpl::RequestPermissions(
       std::make_unique<PendingRequest>(types, std::move(callback));
 
   int pending_request_id = pending_requests_.Add(std::move(pending_request));
-  int id =
-      PermissionControllerImpl::FromBrowserContext(browser_context)
-          ->RequestPermissions(
-              types, context_->render_frame_host(), origin_.GetURL(),
-              user_gesture,
-              base::Bind(&PermissionServiceImpl::OnRequestPermissionsResponse,
-                         weak_factory_.GetWeakPtr(), pending_request_id));
+  int id = PermissionControllerImpl::FromBrowserContext(browser_context)
+               ->RequestPermissions(
+                   types, context_->render_frame_host(), origin_.GetURL(),
+                   user_gesture,
+                   base::BindOnce(
+                       &PermissionServiceImpl::OnRequestPermissionsResponse,
+                       weak_factory_.GetWeakPtr(), pending_request_id));
 
   // Check if the request still exists. It may have been removed by the
   // the response callback.
@@ -247,20 +269,15 @@ void PermissionServiceImpl::RevokePermission(
 void PermissionServiceImpl::AddPermissionObserver(
     PermissionDescriptorPtr permission,
     PermissionStatus last_known_status,
-    PermissionObserverPtr observer) {
-  PermissionStatus current_status = GetPermissionStatus(permission);
-  if (current_status != last_known_status) {
-    observer->OnPermissionStatusChange(current_status);
-    last_known_status = current_status;
-  }
-
+    mojo::PendingRemote<blink::mojom::PermissionObserver> observer) {
   PermissionType type;
   if (!PermissionDescriptorToPermissionType(permission, &type)) {
     ReceivedBadMessage();
     return;
   }
 
-  context_->CreateSubscription(type, origin_, std::move(observer));
+  context_->CreateSubscription(type, origin_, GetPermissionStatus(permission),
+                               last_known_status, std::move(observer));
 }
 
 PermissionStatus PermissionServiceImpl::GetPermissionStatus(

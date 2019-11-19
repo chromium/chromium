@@ -48,6 +48,8 @@ public class AwTestContainerView extends FrameLayout {
     private HardwareView mHardwareView;
     private boolean mAttachedContents;
 
+    private Rect mWindowVisibleDisplayFrameOverride;
+
     private class HardwareView extends GLSurfaceView {
         private static final int MODE_DRAW = 0;
         private static final int MODE_PROCESS = 1;
@@ -278,6 +280,19 @@ public class AwTestContainerView extends FrameLayout {
         mAwContents = awContents;
         if (isBackedByHardwareView()) {
             AwDrawFnImpl.setDrawFnFunctionTable(DrawFn.getDrawFnFunctionTable());
+        }
+    }
+
+    public void setWindowVisibleDisplayFrameOverride(Rect rect) {
+        mWindowVisibleDisplayFrameOverride = rect;
+    }
+
+    @Override
+    public void getWindowVisibleDisplayFrame(Rect outRect) {
+        if (mWindowVisibleDisplayFrameOverride != null) {
+            outRect.set(mWindowVisibleDisplayFrameOverride);
+        } else {
+            super.getWindowVisibleDisplayFrame(outRect);
         }
     }
 

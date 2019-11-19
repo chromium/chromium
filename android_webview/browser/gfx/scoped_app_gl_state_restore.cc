@@ -199,8 +199,11 @@ ScopedAppGLStateRestoreImpl::ScopedAppGLStateRestoreImpl(
     SaveHWUIState();
   }
 
-  if (mode_ == ScopedAppGLStateRestore::MODE_RESOURCE_MANAGEMENT) {
+  if (mode_ == ScopedAppGLStateRestore::MODE_RESOURCE_MANAGEMENT &&
+      ::gl::g_current_gl_driver->fn.glBindRenderbufferEXTFn != nullptr) {
     // Android 5.0.0 specific qualcomm workaround. See crbug.com/434570.
+    // Null check the binding since checking the proper condition is hard. See
+    // crbug.com/950472.
     glBindRenderbufferEXT(GL_RENDERBUFFER, 0);
   }
 

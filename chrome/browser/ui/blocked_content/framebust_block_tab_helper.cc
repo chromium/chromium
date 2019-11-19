@@ -5,20 +5,8 @@
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 
 #include "base/logging.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_service.h"
-
-namespace {
-
-void UpdateLocationBarUI(content::WebContents* contents) {
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_WEB_CONTENT_SETTINGS_CHANGED,
-      content::Source<content::WebContents>(contents),
-      content::NotificationService::NoDetails());
-}
-
-}  // namespace
 
 FramebustBlockTabHelper::~FramebustBlockTabHelper() = default;
 
@@ -29,7 +17,7 @@ void FramebustBlockTabHelper::AddBlockedUrl(const GURL& blocked_url,
   DCHECK_EQ(blocked_urls_.size(), callbacks_.size());
 
   manager_.NotifyObservers(0 /* id */, blocked_url);
-  UpdateLocationBarUI(web_contents());
+  content_settings::UpdateLocationBarUiForWebContents(web_contents());
 }
 
 bool FramebustBlockTabHelper::HasBlockedUrls() const {
@@ -61,7 +49,7 @@ void FramebustBlockTabHelper::DidFinishNavigation(
   blocked_urls_.clear();
   callbacks_.clear();
 
-  UpdateLocationBarUI(web_contents());
+  content_settings::UpdateLocationBarUiForWebContents(web_contents());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FramebustBlockTabHelper)

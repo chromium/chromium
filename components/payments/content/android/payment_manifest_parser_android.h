@@ -25,19 +25,15 @@ class PaymentManifestParserAndroid {
 
   void ParsePaymentMethodManifest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
       const base::android::JavaParamRef<jstring>& jcontent,
       const base::android::JavaParamRef<jobject>& jcallback);
 
   void ParseWebAppManifest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
       const base::android::JavaParamRef<jstring>& jcontent,
       const base::android::JavaParamRef<jobject>& jcallback);
 
-  void DestroyPaymentManifestParserAndroid(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller);
+  void DestroyPaymentManifestParserAndroid(JNIEnv* env);
 
  private:
   PaymentManifestParser parser_;

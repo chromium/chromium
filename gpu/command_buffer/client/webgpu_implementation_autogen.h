@@ -13,6 +13,16 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_WEBGPU_IMPLEMENTATION_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_CLIENT_WEBGPU_IMPLEMENTATION_AUTOGEN_H_
 
-void Dummy() override;
+void AssociateMailbox(GLuint device_id,
+                      GLuint device_generation,
+                      GLuint id,
+                      GLuint generation,
+                      GLuint usage,
+                      const GLbyte* mailbox) override;
+
+void DissociateMailbox(GLuint texture_id, GLuint texture_generation) override;
+
+void RequestAdapter(PowerPreference power_preference =
+                        PowerPreference::kHighPerformance) override;
 
 #endif  // GPU_COMMAND_BUFFER_CLIENT_WEBGPU_IMPLEMENTATION_AUTOGEN_H_

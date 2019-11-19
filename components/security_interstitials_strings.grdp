@@ -64,18 +64,41 @@
     Applications that can cause this error include antivirus, firewall, and web-filtering or proxy software.
   </message>
 
-  <!-- Lookalike URL warning -->
-  <message name="IDS_LOOKALIKE_URL_TITLE" desc="Tab title. Context: the requested URL looks like a more popular URL.">
-    Did you mean?
+  <message name="IDS_BLOCKED_INTERCEPTION_HEADING" desc="Large heading of the known interception interstitial.">
+    Your activity on <ph name="HOSTNAME">$1<ex>example.com</ex></ph> is being monitored
   </message>
-  <message name="IDS_LOOKALIKE_URL_HEADING" desc="Large heading. Context: the error page that's shown when the requested URL looks like a more popular URL.">
+
+  <message name="IDS_BLOCKED_INTERCEPTION_PRIMARY_PARAGRAPH" desc="Main paragraph of the known interception interstitial. A user visits a website, a known interception certificate intercepts their connection, and they are shown this error. Page title and additional description of the error are shown above.">
+    Anything you type, any pages you view, or any other activity on the web is being watched, and content on sites may be changed without your knowledge.
+    <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+  </message>
+
+  <if expr="_google_chrome">
+  <message name="IDS_BLOCKED_INTERCEPTION_EXPLANATION" desc="Part of an extended description hidden behind an 'Advanced' button on an error page. A user visits a website, a known interception certificate intercepts their connection, and they are shown this error. Page title and additional description of the error are shown above.">
+    The certificate for this connection is not trusted by Google Chrome, because it is known to be used for network interception and monitoring.
+  </message>
+  </if>
+  <if expr="not _google_chrome">
+  <message name="IDS_BLOCKED_INTERCEPTION_EXPLANATION" desc="Part of an extended description hidden behind an 'Advanced' button on an error page. A user visits a website, a known interception certificate intercepts their connection, and they are shown this error. Page title and additional description of the error are shown above.">
+    The certificate for this connection is not trusted by Chromium, because it is known to be used for network interception and monitoring.
+  </message>
+  </if>
+
+  <!-- Lookalike URL warning -->
+  <message name="IDS_LOOKALIKE_URL_TITLE" desc="Tab title. Context: the requested URL might be trying to trick the user since it looks like a more popular URL. This interstitial points the user to the safe site instead.">
+    Did you mean <ph name="DOMAIN">$1<ex>example.com</ex></ph>?
+  </message>
+  <message name="IDS_LOOKALIKE_URL_HEADING" desc="Large heading. Context: the error page that's shown when the requested URL might be trying to trick the user since it looks like a more popular URL. This interstitial points the user to the safe site instead.">
     Did you mean &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN">$1<ex>example.com</ex></ph>&lt;/a&gt;?
   </message>
-  <message name="IDS_LOOKALIKE_URL_IGNORE" desc="Button text. Context: the error page that's shown when the requested URL looks like a more popular URL. This button continues on to the originally-requested URL.">
+  <message name="IDS_LOOKALIKE_URL_IGNORE" desc="Button text. Context: the error page that's shown when the requested URL might be trying to trick the user since it looks like a more popular URL. This button dismisses the interstitial and navigates to the originally-requested URL.">
     Ignore
   </message>
-  <message name="IDS_LOOKALIKE_URL_PRIMARY_PARAGRAPH" desc="Main paragraph of an error message. Context: the error page that's shown when the requested URL looks like a more popular URL.">
-    The link you originally opened is unusual
+  <message name="IDS_LOOKALIKE_URL_CONTINUE" desc="Button text. Context: the error page that's shown when the requested URL might be trying to trick the user since it looks like a more popular URL. This button dismisses the interstitial and navigates to the suggested (safe) URL.">
+    Go to <ph name="DOMAIN">$1<ex>example.com</ex></ph>
+  </message>
+  <message name="IDS_LOOKALIKE_URL_PRIMARY_PARAGRAPH" desc="Main paragraph of an error message. Context: the error page that's shown when the requested URL might be trying to trick the user since it looks like a more popular URL.">
+    The site you just tried to visit looks fake. Attackers sometimes mimic sites by making small, hard-to-see changes to the URL.
   </message>
 
   <!-- Clock errors -->
@@ -225,7 +248,7 @@
     Privacy policy
   </message>
   <message name="IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE" desc="SafeBrowsing Scout label next to checkbox">
-    Help improve Safe Browsing by sending some <ph name="BEGIN_WHITEPAPER_LINK">&lt;a href="#" id="whitepaper-link"&gt;</ph>system information and page content<ph name="END_WHITEPAPER_LINK">&lt;/a&gt;</ph> to Google. <ph name="PRIVACY_PAGE_LINK">$1</ph>
+    Help improve Chrome security by sending <ph name="BEGIN_WHITEPAPER_LINK">&lt;a href="#" id="whitepaper-link"&gt;</ph>URLs of some pages you visit, limited system information, and some page content<ph name="END_WHITEPAPER_LINK">&lt;/a&gt;</ph> to Google. <ph name="PRIVACY_PAGE_LINK">$1</ph>
   </message>
 
   <!-- Harmful download interstitial -->
@@ -382,6 +405,9 @@
   </if>
 
   <!-- Billing interstitial -->
+  <message name="IDS_BILLING_TITLE" desc="The tab title for the Safe Browsing Billing interstitial.">
+    Page may charge money
+  </message>
   <message name="IDS_BILLING_HEADING" desc="The large heading at the top of the billing interstitial.">
     The page ahead may try to charge you money
   </message>
@@ -402,13 +428,12 @@
   </message>
   <message name="IDS_ORIGIN_POLICY_HEADING"
     desc="The large heading at the top of the Origin Policy Error Interstitial">
-    Blocked according to <ph name="ORIGIN">$2</ph>'s security policy.
+    Blocked according to <ph name="ORIGIN">$2</ph>'s origin policy.
   </message>
   <message name="IDS_ORIGIN_POLICY_INFO"
     desc="The primary explanatory paragraph for the Origin Policy Error interstitial.">
-    The site <ph name="ORIGIN">$2</ph> has requested that a security policy
-    will apply to all its request, and this policy presently deems the site
-    unsafe.
+    The site <ph name="ORIGIN">$2</ph> has requested that an origin policy
+    will apply to all its request, but this policy cannot presently be applied.
   </message>
   <message name="IDS_ORIGIN_POLICY_INFO2" desc="The second paragrpah of the text of the Origin Policy Error Interstitial. (Presently intentionally left blank.)" />
   <message name="IDS_ORIGIN_POLICY_BUTTON"
@@ -421,27 +446,45 @@
   </message>
   <message name="IDS_ORIGIN_POLICY_EXPLANATION_CANNOT_LOAD" desc="The text of the Origin Policy Error Interstitial that will be displayed when the user presses the 'Advanced' button for additional information, for the case where the policy could not be loaded.">
     The server you are going to, <ph name="ORIGIN">$2</ph>, has requested that
-    a security policy will be applied to all requests to it. But it has now
+    an origin policy will be applied to all requests to it. But it has now
     failed to deliver a policy, which prevents the browser from fulfilling
-    your request for <ph name="SITE">$1</ph>.
+    your request for <ph name="SITE">$1</ph>. Origin policies can be used by
+    site operators to configure security and other properties for a site.
   </message>
   <message name="IDS_ORIGIN_POLICY_EXPLANATION_SHOULD_NOT_REDIRECT" desc="The text of the Origin Policy Error Interstitial that will be displayed when the user presses the 'Advanced' button for additional information, for the case where the policy request was met with a 'redirect' response.">
     The server you are going to, <ph name="ORIGIN">$2</ph>, has requested that
-    a security policy will be applied to all requests to it. But instead of
+    an origin policy will be applied to all requests to it. But instead of
     delivering a policy it has redirected the browser elsewhere, which prevents
-    the browser from fulfilling your request for <ph name="SITE">$1</ph>.
+    the browser from fulfilling your request for <ph name="SITE">$1</ph>. Origin
+    policies can be used by site operators to configure security and other
+    properties for a site.
   </message>
   <message name="IDS_ORIGIN_POLICY_EXPLANATION_OTHER" desc="The text of the Origin Policy Error Interstitial that will be displayed when the user presses the 'Advanced' button for additional information, for cases other than redirect or load error.">
     The server you are going to, <ph name="ORIGIN">$2</ph>, has requested that
-    a security policy will be applied to all requests to it. But it has now
-    delivered an invalid policy, which prevents the browser from
-    fulfilling your request for <ph name="SITE">$1</ph>.
+    an origin policy will be applied to all requests to it. But it has now
+    delivered an invalid policy, which means the browser cannot fullfil your
+    request for <ph name="SITE">$1</ph>. Origin policies can be used by
+    site operators to configure security and other properties for a site.
   </message>
   <message name="IDS_ORIGIN_POLICY_FINAL_PARAGRAPH"
     desc="The text of the Origin Policy Error Interstitial that a user can click to proceed to the site, despite the error.">
-    <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>Proceed to <ph name="SITE">$1<ex>example.com</ex></ph> (unsafe)<ph name="END_LINK">&lt;/a&gt;</ph>
+    <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>Proceed to <ph name="SITE">$1<ex>example.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_ORIGIN_POLICY_CLOSE" desc="The text of the Origin Policy Error Interstitial that will hide the 'advanced' section again.">
     Hide advanced
+  </message>
+
+  <!-- Safety Tip summary strings for Android (Desktop is in page_info_strings.grdp) -->
+  <message name="IDS_SAFETY_TIP_ANDROID_IGNORE_BUTTON" desc="Text of button to leave a suspicious page. Shown on the safety tip infobar.">
+    Ignore
+  </message>
+  <message name="IDS_SAFETY_TIP_ANDROID_LEAVE_BUTTON" desc="Text of button to ignore the warning on a suspicious page. Shown on the safety tip infobar.">
+    Leave site
+  </message>
+  <message name="IDS_SAFETY_TIP_ANDROID_LOOKALIKE_TITLE" desc="Title of Safety Tip infobar on a domain that looks like another domain.">
+    Is this the right site?
+  </message>
+  <message name="IDS_SAFETY_TIP_ANDROID_LOOKALIKE_DESCRIPTION" desc="Body of an infobar warning when the user visits a page that triggered a Safety Tip because the domain looked like another domain.">
+    <ph name='LOOKALIKE_DOMAIN'>$1<ex>fake-google.com</ex></ph> looks similar to <ph name='SUGGESTED_DOMAIN'>$2<ex>google.com</ex></ph>. Attackers sometimes mimic sites by using similar URLs.
   </message>
 </grit-part>

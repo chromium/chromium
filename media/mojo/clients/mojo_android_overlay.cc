@@ -5,15 +5,16 @@
 #include "media/mojo/clients/mojo_android_overlay.h"
 
 #include "gpu/ipc/common/gpu_surface_lookup.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/connect.h"
 
 namespace media {
 
 MojoAndroidOverlay::MojoAndroidOverlay(
-    mojom::AndroidOverlayProviderPtr provider_ptr,
+    mojo::PendingRemote<mojom::AndroidOverlayProvider> pending_provider,
     AndroidOverlayConfig config,
     const base::UnguessableToken& routing_token)
-    : config_(std::move(config)), binding_(this) {
+    : config_(std::move(config)) {
   // Fill in details of |config| into |mojo_config|.  Our caller could do this
   // too, but since we want to retain |config_| anyway, we do it here.
   mojom::AndroidOverlayConfigPtr mojo_config =
@@ -23,14 +24,15 @@ MojoAndroidOverlay::MojoAndroidOverlay(
   mojo_config->secure = config_.secure;
   mojo_config->power_efficient = config_.power_efficient;
 
-  mojom::AndroidOverlayClientPtr ptr;
-  binding_.Bind(mojo::MakeRequest(&ptr));
-  provider_ptr->CreateOverlay(mojo::MakeRequest(&overlay_ptr_), std::move(ptr),
-                              std::move(mojo_config));
+  mojo::Remote<mojom::AndroidOverlayProvider> provider(
+      std::move(pending_provider));
+  provider->CreateOverlay(overlay_.BindNewPipeAndPassReceiver(),
+                          receiver_.BindNewPipeAndPassRemote(),
+                          std::move(mojo_config));
 }
 
 MojoAndroidOverlay::~MojoAndroidOverlay() {
-  // Dropping |overlay_ptr_| will signal to the implementation that we're done
+  // Dropping |overlay_| will signal to the implementation that we're done
   // with the surface.  If a synchronous destroy is pending, then it can be
   // allowed to continue.
 }
@@ -40,7 +42,7 @@ void MojoAndroidOverlay::ScheduleLayout(const gfx::Rect& rect) {
   if (!received_surface_)
     return;
 
-  overlay_ptr_->ScheduleLayout(rect);
+  overlay_->ScheduleLayout(rect);
 }
 
 const base::android::JavaRef<jobject>& MojoAndroidOverlay::GetJavaSurface()
@@ -52,8 +54,10 @@ void MojoAndroidOverlay::OnSurfaceReady(uint64_t surface_key) {
   received_surface_ = true;
 
   // Get the surface and notify our client.
-  surface_ =
-      gpu::GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(surface_key);
+  bool can_be_used_with_surface_control = false;
+  surface_ = gpu::GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(
+      surface_key, &can_be_used_with_surface_control);
+  DCHECK(!can_be_used_with_surface_control);
 
   // If no surface was returned, then fail instead.
   if (surface_.IsEmpty()) {
@@ -66,7 +70,7 @@ void MojoAndroidOverlay::OnSurfaceReady(uint64_t surface_key) {
 }
 
 void MojoAndroidOverlay::OnDestroyed() {
-  // Note that |overlay_ptr_| might not be bound yet, or we might not have ever
+  // Note that |overlay_| might not be bound yet, or we might not have ever
   // gotten a surface.  Regardless, the overlay cannot be used.
 
   if (!received_surface_)
@@ -74,7 +78,7 @@ void MojoAndroidOverlay::OnDestroyed() {
   else
     RunSurfaceDestroyedCallbacks();
 
-  // Note: we do not delete |overlay_ptr_| here.  Our client must delete us to
+  // Note: we do not delete |overlay_| here.  Our client must delete us to
   // signal that we should do that, since it still might be in use.
 }
 

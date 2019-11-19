@@ -13,9 +13,10 @@
 #include "base/values.h"
 
 #include "ios/web/public/test/element_selector.h"
-#import "ios/web/public/web_state/web_state.h"
 
 namespace web {
+class WebState;
+
 namespace test {
 
 // Synchronously returns the result of executed JavaScript, returning nullptr
@@ -29,7 +30,7 @@ std::unique_ptr<base::Value> ExecuteJavaScript(web::WebState* web_state,
 // callers should check and act accordingly (scrolling the webview, perhaps).
 // Returns CGRectNull if no element could be found.
 CGRect GetBoundingRectOfElement(web::WebState* web_state,
-                                const web::test::ElementSelector& selector);
+                                ElementSelector* selector);
 
 // Returns whether the element with |element_id| in the passed |web_state| has
 // been tapped using a JavaScript click() event.

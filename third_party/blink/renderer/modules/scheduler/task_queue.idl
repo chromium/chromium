@@ -1,0 +1,22 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Experimental Scheduling API Proposal:
+// https://docs.google.com/document/d/1xU7HyNsEsbXhTgt0ZnXDbeSXm5-m5FzkLJAT6LTizEI/edit#
+enum TaskQueuePriority {
+    "immediate",
+    "high",
+    "default",
+    "low",
+    "idle"
+};
+
+[
+    ImplementedAs=DOMTaskQueue,
+    RuntimeEnabled=WebScheduler
+] interface TaskQueue {
+    readonly attribute TaskQueuePriority priority;
+    Task postTask(Function callback, optional TaskQueuePostTaskOptions options, any... arguments);
+    void take(Task task);
+};

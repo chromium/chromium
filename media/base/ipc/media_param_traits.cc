@@ -113,28 +113,6 @@ struct ParamTraits<media::EncryptionPattern> {
   static void Log(const param_type& p, std::string* l);
 };
 
-void ParamTraits<media::EncryptionScheme>::Write(base::Pickle* m,
-                                                 const param_type& p) {
-  WriteParam(m, p.mode());
-  WriteParam(m, p.pattern());
-}
-
-bool ParamTraits<media::EncryptionScheme>::Read(const base::Pickle* m,
-                                                base::PickleIterator* iter,
-                                                param_type* r) {
-  media::EncryptionScheme::CipherMode mode;
-  media::EncryptionPattern pattern;
-  if (!ReadParam(m, iter, &mode) || !ReadParam(m, iter, &pattern))
-    return false;
-  *r = media::EncryptionScheme(mode, pattern);
-  return true;
-}
-
-void ParamTraits<media::EncryptionScheme>::Log(const param_type& p,
-                                               std::string* l) {
-  l->append(base::StringPrintf("<EncryptionScheme>"));
-}
-
 void ParamTraits<media::EncryptionPattern>::Write(base::Pickle* m,
                                                   const param_type& p) {
   WriteParam(m, p.crypt_byte_block());

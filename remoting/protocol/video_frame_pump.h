@@ -184,7 +184,7 @@ class VideoFramePump : public VideoStream,
 
   base::ThreadChecker thread_checker_;
 
-  base::WeakPtrFactory<VideoFramePump> weak_factory_;
+  base::WeakPtrFactory<VideoFramePump> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoFramePump);
 };

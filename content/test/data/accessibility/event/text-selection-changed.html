@@ -1,0 +1,34 @@
+<!--
+@UIA-WIN-DENY:AutomationFocusChanged*
+-->
+<!DOCTYPE html>
+<div>
+  <h1 id="header" aria-label="title">title</h1>
+  <input id="input" aria-label="input" value="input"/>
+  <textarea id="textarea" aria-label="textarea"></textarea>
+</div>
+<script>
+  var input = document.getElementById("input");
+  var header = document.getElementById("header");
+  var textarea = document.getElementById("textarea");
+
+  const go_passes = [
+    () => {
+      var range = document.createRange();
+      range.selectNodeContents(header);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+    },
+    () => {
+      input.focus();
+      input.setSelectionRange(2, 3);
+    },
+    () => textarea.select(),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>

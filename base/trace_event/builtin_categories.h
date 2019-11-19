@@ -15,6 +15,9 @@
 // your code and you get a static assert, this is the right place to register
 // the name. If the name is going to be used only for testing, please add it to
 // |kIgnoredCategoriesForTesting| instead.
+//
+// Prefer to use '_' to separate word of category name, like content_capture.
+//
 // Parameter |X| must be a *macro* that takes a single |name| string argument,
 // denoting a category name.
 #define INTERNAL_TRACE_LIST_BUILTIN_CATEGORIES(X)                        \
@@ -37,6 +40,7 @@
   X("blink.net")                                                         \
   X("blink_style")                                                       \
   X("blink.user_timing")                                                 \
+  X("blink.worker")                                                      \
   X("Blob")                                                              \
   X("browser")                                                           \
   X("browsing_data")                                                     \
@@ -51,6 +55,7 @@
   X("cma")                                                               \
   X("compositor")                                                        \
   X("content")                                                           \
+  X("content_capture")                                                   \
   X("devtools")                                                          \
   X("devtools.timeline")                                                 \
   X("devtools.timeline.async")                                           \
@@ -84,8 +89,8 @@
   X("latency")                                                           \
   X("latencyInfo")                                                       \
   X("leveldb")                                                           \
-  X("loader")                                                            \
   X("loading")                                                           \
+  X("log")                                                               \
   X("login")                                                             \
   X("media")                                                             \
   X("media_router")                                                      \
@@ -124,7 +129,7 @@
   X("startup")                                                           \
   X("sync")                                                              \
   X("sync_lock_contention")                                              \
-  X("task_scheduler")                                                    \
+  X("thread_pool")                                                       \
   X("test_gpu")                                                          \
   X("test_tracing")                                                      \
   X("toplevel")                                                          \
@@ -137,13 +142,15 @@
   X("viz")                                                               \
   X("vk")                                                                \
   X("wayland")                                                           \
-  X("Wayland")                                                           \
   X("webaudio")                                                          \
+  X("weblayer")                                                          \
   X("WebCore")                                                           \
   X("webrtc")                                                            \
+  X("xr")                                                                \
   X(TRACE_DISABLED_BY_DEFAULT("animation-worklet"))                      \
   X(TRACE_DISABLED_BY_DEFAULT("audio-worklet"))                          \
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug"))                            \
+  X(TRACE_DISABLED_BY_DEFAULT("blink.debug.display_lock"))               \
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout"))                     \
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"))               \
   X(TRACE_DISABLED_BY_DEFAULT("blink.feature_usage"))                    \
@@ -154,7 +161,6 @@
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug"))                               \
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug.cdp-perf"))                      \
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug.display_items"))                 \
-  X(TRACE_DISABLED_BY_DEFAULT("cc.debug.ipc"))                           \
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug.picture"))                       \
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler"))                     \
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.frames"))              \
@@ -168,13 +174,17 @@
   X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers"))               \
   X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.picture"))              \
   X(TRACE_DISABLED_BY_DEFAULT("file"))                                   \
+  X(TRACE_DISABLED_BY_DEFAULT("fonts"))                                  \
   X(TRACE_DISABLED_BY_DEFAULT("gpu_cmd_queue"))                          \
+  X(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"))                               \
   X(TRACE_DISABLED_BY_DEFAULT("gpu.debug"))                              \
   X(TRACE_DISABLED_BY_DEFAULT("gpu_decoder"))                            \
   X(TRACE_DISABLED_BY_DEFAULT("gpu.device"))                             \
   X(TRACE_DISABLED_BY_DEFAULT("gpu.service"))                            \
   X(TRACE_DISABLED_BY_DEFAULT("ipc.flow"))                               \
+  X(TRACE_DISABLED_BY_DEFAULT("java-heap-profiler"))                     \
   X(TRACE_DISABLED_BY_DEFAULT("layer-element"))                          \
+  X(TRACE_DISABLED_BY_DEFAULT("lifecycles"))                             \
   X(TRACE_DISABLED_BY_DEFAULT("loading"))                                \
   X(TRACE_DISABLED_BY_DEFAULT("memory-infra"))                           \
   X(TRACE_DISABLED_BY_DEFAULT("memory-infra.v8.code_stats"))             \
@@ -192,8 +202,9 @@
   X(TRACE_DISABLED_BY_DEFAULT("skia.gpu.cache"))                         \
   X(TRACE_DISABLED_BY_DEFAULT("SyncFileSystem"))                         \
   X(TRACE_DISABLED_BY_DEFAULT("system_stats"))                           \
-  X(TRACE_DISABLED_BY_DEFAULT("task_scheduler_diagnostics"))             \
+  X(TRACE_DISABLED_BY_DEFAULT("thread_pool_diagnostics"))                \
   X(TRACE_DISABLED_BY_DEFAULT("toplevel.flow"))                          \
+  X(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"))                           \
   X(TRACE_DISABLED_BY_DEFAULT("v8.compile"))                             \
   X(TRACE_DISABLED_BY_DEFAULT("v8.cpu_profiler"))                        \
   X(TRACE_DISABLED_BY_DEFAULT("v8.cpu_profiler.hires"))                  \
@@ -203,6 +214,8 @@
   X(TRACE_DISABLED_BY_DEFAULT("v8.runtime"))                             \
   X(TRACE_DISABLED_BY_DEFAULT("v8.runtime_stats"))                       \
   X(TRACE_DISABLED_BY_DEFAULT("v8.runtime_stats_sampling"))              \
+  X(TRACE_DISABLED_BY_DEFAULT("v8.turbofan"))                            \
+  X(TRACE_DISABLED_BY_DEFAULT("v8.wasm"))                                \
   X(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"))                \
   X(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"))               \
   X(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"))                   \

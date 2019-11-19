@@ -4,6 +4,7 @@
 
 #include "chrome/browser/notifications/web_page_notifier_controller.h"
 
+#include "ash/public/cpp/notifier_metadata.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -21,13 +22,13 @@ WebPageNotifierController::WebPageNotifierController(Observer* observer)
 
 WebPageNotifierController::~WebPageNotifierController() {}
 
-std::vector<ash::mojom::NotifierUiDataPtr>
-WebPageNotifierController::GetNotifierList(Profile* profile) {
-  std::vector<ash::mojom::NotifierUiDataPtr> notifiers;
+std::vector<ash::NotifierMetadata> WebPageNotifierController::GetNotifierList(
+    Profile* profile) {
+  std::vector<ash::NotifierMetadata> notifiers;
 
   ContentSettingsForOneType settings;
   HostContentSettingsMapFactory::GetForProfile(profile)->GetSettingsForOneType(
-      CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+      ContentSettingsType::NOTIFICATIONS,
       content_settings::ResourceIdentifier(), &settings);
 
   favicon::FaviconService* const favicon_service =
@@ -51,12 +52,12 @@ WebPageNotifierController::GetNotifierList(Profile* profile) {
         NotifierStateTrackerFactory::GetForProfile(profile);
     content_settings::SettingInfo info;
     HostContentSettingsMapFactory::GetForProfile(profile)->GetWebsiteSetting(
-        url, GURL(), CONTENT_SETTINGS_TYPE_NOTIFICATIONS, std::string(), &info);
-    notifiers.push_back(ash::mojom::NotifierUiData::New(
+        url, GURL(), ContentSettingsType::NOTIFICATIONS, std::string(), &info);
+    notifiers.emplace_back(
         notifier_id, name,
         notifier_state_tracker->IsNotifierEnabled(notifier_id),
         info.source == content_settings::SETTING_SOURCE_POLICY,
-        gfx::ImageSkia()));
+        gfx::ImageSkia());
     patterns_[url_pattern] = iter->primary_pattern;
     // Note that favicon service obtains the favicon from history. This means
     // that it will fail to obtain the image if there are no history data for
@@ -80,7 +81,7 @@ void WebPageNotifierController::SetNotifierEnabled(
   // TODO(mukai): fix this.
   ContentSetting default_setting =
       HostContentSettingsMapFactory::GetForProfile(profile)
-          ->GetDefaultContentSetting(CONTENT_SETTINGS_TYPE_NOTIFICATIONS, NULL);
+          ->GetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS, NULL);
 
   DCHECK(default_setting == CONTENT_SETTING_ALLOW ||
          default_setting == CONTENT_SETTING_BLOCK ||
@@ -123,7 +124,7 @@ void WebPageNotifierController::SetNotifierEnabled(
       HostContentSettingsMapFactory::GetForProfile(profile)
           ->SetContentSettingCustomScope(
               pattern, ContentSettingsPattern::Wildcard(),
-              CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+              ContentSettingsType::NOTIFICATIONS,
               content_settings::ResourceIdentifier(), CONTENT_SETTING_DEFAULT);
     }
   }

@@ -35,7 +35,7 @@ template <typename MojomType>
 struct MojomSerializationImplTraits<
     MojomType,
     typename std::enable_if<
-        BelongsTo<MojomType, MojomTypeCategory::STRUCT>::value>::type> {
+        BelongsTo<MojomType, MojomTypeCategory::kStruct>::value>::type> {
   template <typename MaybeConstUserType, typename WriterType>
   static void Serialize(MaybeConstUserType& input,
                         Buffer* buffer,
@@ -49,7 +49,7 @@ template <typename MojomType>
 struct MojomSerializationImplTraits<
     MojomType,
     typename std::enable_if<
-        BelongsTo<MojomType, MojomTypeCategory::UNION>::value>::type> {
+        BelongsTo<MojomType, MojomTypeCategory::kUnion>::value>::type> {
   template <typename MaybeConstUserType, typename WriterType>
   static void Serialize(MaybeConstUserType& input,
                         Buffer* buffer,
@@ -73,8 +73,8 @@ mojo::Message SerializeAsMessageImpl(UserType* input) {
 
 template <typename MojomType, typename DataArrayType, typename UserType>
 DataArrayType SerializeImpl(UserType* input) {
-  static_assert(BelongsTo<MojomType, MojomTypeCategory::STRUCT>::value ||
-                    BelongsTo<MojomType, MojomTypeCategory::UNION>::value,
+  static_assert(BelongsTo<MojomType, MojomTypeCategory::kStruct>::value ||
+                    BelongsTo<MojomType, MojomTypeCategory::kUnion>::value,
                 "Unexpected type.");
   Message message = SerializeAsMessageImpl<MojomType>(input);
   uint32_t size = message.payload_num_bytes();
@@ -90,8 +90,8 @@ bool DeserializeImpl(const void* data,
                      std::vector<mojo::ScopedHandle> handles,
                      UserType* output,
                      bool (*validate_func)(const void*, ValidationContext*)) {
-  static_assert(BelongsTo<MojomType, MojomTypeCategory::STRUCT>::value ||
-                    BelongsTo<MojomType, MojomTypeCategory::UNION>::value,
+  static_assert(BelongsTo<MojomType, MojomTypeCategory::kStruct>::value ||
+                    BelongsTo<MojomType, MojomTypeCategory::kUnion>::value,
                 "Unexpected type.");
   using DataType = typename MojomTypeTraits<MojomType>::Data;
 

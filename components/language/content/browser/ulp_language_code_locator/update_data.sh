@@ -19,7 +19,7 @@ if [ ! -d components/test/data/language ]; then
 fi
 for i in `seq 0 2`;
 do
-  cp ${DIR}/geolanguage-data_rank$i.txt \
+  cp ${DIR}/geolanguage-data_rank$i.bin \
     components/language/content/browser/ulp_language_code_locator/
   cp ${DIR}/celltolang-data_rank$i.csv components/test/data/language/
 done

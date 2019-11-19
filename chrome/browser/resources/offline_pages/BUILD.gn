@@ -14,15 +14,13 @@ js_type_check("closure_compile") {
 js_library("offline_internals") {
   deps = [
     ":offline_internals_browser_proxy",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 
 js_library("offline_internals_browser_proxy") {
   deps = [
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:cr.m",
   ]
 }

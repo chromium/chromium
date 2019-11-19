@@ -39,11 +39,10 @@ class IOSPaymentInstrumentLauncher : public KeyedService {
   // indicating if it made an attempt to launch the IOSPaymentInstrument. The
   // only instance when the launcher will not attempt a launch is when there is
   // another in-flight request already happening.
-  bool LaunchIOSPaymentInstrument(
-      payments::PaymentRequest* payment_request,
-      web::WebState* active_web_state,
-      GURL& universal_link,
-      payments::PaymentInstrument::Delegate* delegate);
+  bool LaunchIOSPaymentInstrument(payments::PaymentRequest* payment_request,
+                                  web::WebState* active_web_state,
+                                  GURL& universal_link,
+                                  payments::PaymentApp::Delegate* delegate);
 
   // Callback for when an iOS payment app sends a response back to Chrome.
   // |response| is a base-64 encodeded string. When decoded, |response| is
@@ -58,10 +57,10 @@ class IOSPaymentInstrumentLauncher : public KeyedService {
 
   // Before invoking ReceieveResponseFromIOSPaymentInstrument, callers can
   // use delegate() to ensure that the delegate property is valid.
-  payments::PaymentInstrument::Delegate* delegate() { return delegate_; }
+  payments::PaymentApp::Delegate* delegate() { return delegate_; }
 
   // Sets the delegate for the current IOSPaymentInstrumentLauncher request.
-  void set_delegate(payments::PaymentInstrument::Delegate* delegate) {
+  void set_delegate(payments::PaymentApp::Delegate* delegate) {
     delegate_ = delegate;
   }
 
@@ -100,7 +99,7 @@ class IOSPaymentInstrumentLauncher : public KeyedService {
   void CompleteLaunchRequest(const std::string& method_name,
                              const std::string& details);
 
-  payments::PaymentInstrument::Delegate* delegate_;
+  payments::PaymentApp::Delegate* delegate_;
   std::string payment_request_id_;
 };
 

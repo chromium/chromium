@@ -1,31 +1,47 @@
 This is a testharness.js-based test.
-PASS Magnetometer: Test that 'onreading' is called and sensor reading is valid
-PASS Magnetometer: sensor reading is correct
-PASS Magnetometer: sensor timestamp is updated when time passes
+PASS Magnetometer: Test that onerror is sent when sensor is not supported.
+PASS Magnetometer: Test that onerror is sent when permissions are not granted.
+PASS Magnetometer: Test that onerror is send when start() call has failed.
+PASS Magnetometer: Test that frequency is capped to allowed maximum.
+PASS Magnetometer: Test that frequency is capped to the maximum supported frequency.
+PASS Magnetometer: Test that frequency is limited to the minimum supported frequency.
+PASS Magnetometer: Test that sensor cannot be constructed within iframe disallowed to use feature policy.
+PASS Magnetometer: Test that sensor can be constructed within an iframe allowed to use feature policy.
+PASS Magnetometer: Test that 'onreading' is called and sensor reading is valid.
+PASS Magnetometer: sensor reading is correct.
+PASS Magnetometer: sensor timestamp is updated when time passes.
 PASS Magnetometer: Test that sensor can be successfully created and its states are correct.
-PASS Magnetometer: sensor.start() returns undefined
-PASS Magnetometer: no exception is thrown when calling start() on already started sensor
-PASS Magnetometer: sensor.stop() returns undefined
-PASS Magnetometer: no exception is thrown when calling stop() on already stopped sensor
-PASS Magnetometer: Test that fresh reading is fetched on start()
-PASS Magnetometer: frequency hint works
-PASS Magnetometer: sensor receives suspend / resume notifications when  cross-origin subframe is focused
-PASS Magnetometer: throw 'TypeError' if frequency is invalid
-PASS Magnetometer: sensor reading is correct when options.referenceFrame is 'screen'
-PASS Magnetometer: throw 'TypeError' if referenceFrame is not one of enumeration values
-FAIL UncalibratedMagnetometer: Test that 'onreading' is called and sensor reading is valid assert_true: expected true got false
-FAIL UncalibratedMagnetometer: sensor reading is correct assert_true: expected true got false
-FAIL UncalibratedMagnetometer: sensor timestamp is updated when time passes assert_true: expected true got false
+PASS Magnetometer: sensor.start() returns undefined.
+PASS Magnetometer: no exception is thrown when calling start() on already started sensor.
+PASS Magnetometer: sensor.stop() returns undefined.
+PASS Magnetometer: no exception is thrown when calling stop() on already stopped sensor.
+PASS Magnetometer: Test that fresh reading is fetched on start().
+PASS Magnetometer: frequency hint works.
+PASS Magnetometer: sensor receives suspend / resume notifications when cross-origin subframe is focused.
+PASS Magnetometer: throw 'TypeError' if frequency is invalid.
+PASS Magnetometer: sensor reading is correct when options.referenceFrame is 'screen'.
+PASS Magnetometer: throw 'TypeError' if referenceFrame is not one of enumeration values.
+FAIL UncalibratedMagnetometer: Test that onerror is sent when sensor is not supported. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: Test that onerror is sent when permissions are not granted. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: Test that onerror is send when start() call has failed. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: Test that frequency is capped to allowed maximum. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: Test that frequency is capped to the maximum supported frequency. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: Test that frequency is limited to the minimum supported frequency. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: Test that sensor cannot be constructed within iframe disallowed to use feature policy. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: Test that sensor can be constructed within an iframe allowed to use feature policy. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: Test that 'onreading' is called and sensor reading is valid. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: sensor reading is correct. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: sensor timestamp is updated when time passes. assert_true: expected true got false
 FAIL UncalibratedMagnetometer: Test that sensor can be successfully created and its states are correct. assert_true: expected true got false
-FAIL UncalibratedMagnetometer: sensor.start() returns undefined assert_true: expected true got false
-FAIL UncalibratedMagnetometer: no exception is thrown when calling start() on already started sensor assert_true: expected true got false
-FAIL UncalibratedMagnetometer: sensor.stop() returns undefined assert_true: expected true got false
-FAIL UncalibratedMagnetometer: no exception is thrown when calling stop() on already stopped sensor assert_true: expected true got false
-FAIL UncalibratedMagnetometer: Test that fresh reading is fetched on start() assert_true: expected true got false
-FAIL UncalibratedMagnetometer: frequency hint works assert_true: expected true got false
-FAIL UncalibratedMagnetometer: sensor receives suspend / resume notifications when  cross-origin subframe is focused assert_true: expected true got false
-FAIL UncalibratedMagnetometer: throw 'TypeError' if frequency is invalid assert_true: expected true got false
-FAIL UncalibratedMagnetometer: sensor reading is correct when options.referenceFrame is 'screen' assert_true: expected true got false
-FAIL UncalibratedMagnetometer: throw 'TypeError' if referenceFrame is not one of enumeration values assert_true: expected true got false
+FAIL UncalibratedMagnetometer: sensor.start() returns undefined. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: no exception is thrown when calling start() on already started sensor. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: sensor.stop() returns undefined. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: no exception is thrown when calling stop() on already stopped sensor. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: Test that fresh reading is fetched on start(). assert_true: expected true got false
+FAIL UncalibratedMagnetometer: frequency hint works. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: sensor receives suspend / resume notifications when cross-origin subframe is focused. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: throw 'TypeError' if frequency is invalid. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: sensor reading is correct when options.referenceFrame is 'screen'. assert_true: expected true got false
+FAIL UncalibratedMagnetometer: throw 'TypeError' if referenceFrame is not one of enumeration values. assert_true: expected true got false
 Harness: the test ran to completion.
 

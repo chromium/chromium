@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class RenderFrame;
@@ -22,6 +23,8 @@ class PageAutoFetcherHelper {
       chrome::mojom::OfflinePageAutoFetcherScheduleResult;
   explicit PageAutoFetcherHelper(content::RenderFrame* render_frame);
   virtual ~PageAutoFetcherHelper();
+  // Should be called for each page load.
+  void OnCommitLoad();
   void TrySchedule(
       bool user_requested,
       base::OnceCallback<void(FetcherScheduleResult)> complete_callback);
@@ -37,7 +40,7 @@ class PageAutoFetcherHelper {
   virtual bool Bind();
 
   content::RenderFrame* render_frame_;
-  chrome::mojom::OfflinePageAutoFetcherPtr fetcher_;
+  mojo::Remote<chrome::mojom::OfflinePageAutoFetcher> fetcher_;
 
   base::WeakPtrFactory<PageAutoFetcherHelper> weak_ptr_factory_{this};
 

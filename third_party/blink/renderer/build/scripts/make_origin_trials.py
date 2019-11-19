@@ -37,25 +37,29 @@ import template_expander
 
 # We want exactly the same parsing as RuntimeFeatureWriter
 # but generate different files.
-class OriginTrialsWriter(make_runtime_features.RuntimeFeatureWriter):
+class OriginTrialsWriter(make_runtime_features.BaseRuntimeFeatureWriter):
     file_basename = 'origin_trials'
 
     def __init__(self, json5_file_path, output_dir):
         super(OriginTrialsWriter, self).__init__(json5_file_path, output_dir)
         self._outputs = {
             (self.file_basename + '.cc'): self.generate_implementation,
-            (self.file_basename + '.h'): self.generate_header,
         }
+        self._implied_mappings = self._make_implied_mappings()
+        self._trial_to_features_map = self._make_trial_to_features_map()
+
+    def _make_implied_mappings(self):
         # Set up the implied_by relationships between trials.
         implied_mappings = dict()
         for implied_feature in (
                 feature for feature in self._origin_trial_features
-                if feature['implied_by']):
+                if feature['origin_trial_feature_name'] and feature['implied_by']):
             # An origin trial can only be implied by other features that also
             # have a trial defined.
             implied_by_trials = []
             for implied_by_name in implied_feature['implied_by']:
-                if any(implied_by_name == feature['name'].original
+                if any(implied_by_name == feature['name'].original and
+                       feature['origin_trial_feature_name']
                        for feature in self._origin_trial_features):
 
                     implied_by_trials.append(implied_by_name)
@@ -71,7 +75,18 @@ class OriginTrialsWriter(make_runtime_features.RuntimeFeatureWriter):
 
             implied_feature['implied_by_origin_trials'] = implied_by_trials
 
-        self._implied_mappings = implied_mappings
+        return implied_mappings
+
+    def _make_trial_to_features_map(self):
+        trial_feature_mappings = {}
+        for feature in [feature for feature in self._origin_trial_features
+                        if feature['origin_trial_feature_name']]:
+            trial_name = feature['origin_trial_feature_name']
+            if trial_name in trial_feature_mappings:
+                trial_feature_mappings[trial_name].append(feature)
+            else:
+                trial_feature_mappings[trial_name] = [feature]
+        return trial_feature_mappings
 
     @template_expander.use_jinja('templates/' + file_basename + '.cc.tmpl')
     def generate_implementation(self):
@@ -79,17 +94,8 @@ class OriginTrialsWriter(make_runtime_features.RuntimeFeatureWriter):
             'features': self._features,
             'origin_trial_features': self._origin_trial_features,
             'implied_origin_trial_features': self._implied_mappings,
+            'trial_to_features_map': self._trial_to_features_map,
             'input_files': self._input_files,
-        }
-
-    @template_expander.use_jinja('templates/' + file_basename + '.h.tmpl')
-    def generate_header(self):
-        return {
-            'features': self._features,
-            'origin_trial_features': self._origin_trial_features,
-            'implied_origin_trial_features': self._implied_mappings,
-            'input_files': self._input_files,
-            'header_guard': self._header_guard,
         }
 
 

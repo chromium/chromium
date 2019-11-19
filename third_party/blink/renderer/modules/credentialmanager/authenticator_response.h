@@ -16,8 +16,6 @@ class MODULES_EXPORT AuthenticatorResponse : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static AuthenticatorResponse* Create(DOMArrayBuffer* client_data_json);
-
   explicit AuthenticatorResponse(DOMArrayBuffer* client_data_json);
   ~AuthenticatorResponse() override;
 

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "build/build_config.h"
 #include "content/public/common/sandbox_init.h"
 #include "content/public/renderer/render_thread.h"
@@ -36,12 +35,11 @@ ManifestServiceChannel::ManifestServiceChannel(
           base::ThreadTaskRunnerHandle::Get(),
           true,
           waitable_event)),
-      peer_pid_(base::kNullProcessId),
-      weak_ptr_factory_(this) {}
+      peer_pid_(base::kNullProcessId) {}
 
 ManifestServiceChannel::~ManifestServiceChannel() {
   if (!connected_callback_.is_null())
-    base::ResetAndReturn(&connected_callback_).Run(PP_ERROR_FAILED);
+    std::move(connected_callback_).Run(PP_ERROR_FAILED);
 }
 
 void ManifestServiceChannel::Send(IPC::Message* message) {
@@ -63,12 +61,12 @@ bool ManifestServiceChannel::OnMessageReceived(const IPC::Message& message) {
 void ManifestServiceChannel::OnChannelConnected(int32_t peer_pid) {
   peer_pid_ = peer_pid;
   if (!connected_callback_.is_null())
-    base::ResetAndReturn(&connected_callback_).Run(PP_OK);
+    std::move(connected_callback_).Run(PP_OK);
 }
 
 void ManifestServiceChannel::OnChannelError() {
   if (!connected_callback_.is_null())
-    base::ResetAndReturn(&connected_callback_).Run(PP_ERROR_FAILED);
+    std::move(connected_callback_).Run(PP_ERROR_FAILED);
 }
 
 void ManifestServiceChannel::OnStartupInitializationComplete() {

@@ -24,27 +24,23 @@ using blink::MessagePortChannel;
 namespace content {
 namespace {
 
-void PostMessageToFrameInternal(
-    WebContents* web_contents,
-    const base::string16& source_origin,
-    const base::Optional<base::string16>& target_origin,
-    const base::string16& data,
-    std::vector<MessagePortChannel> channels) {
+void PostMessageToFrameInternal(WebContents* web_contents,
+                                const base::string16& source_origin,
+                                const base::string16& target_origin,
+                                const base::string16& data,
+                                std::vector<MessagePortChannel> channels) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  FrameMsg_PostMessage_Params params;
-  params.message = new base::RefCountedData<blink::TransferableMessage>();
-  params.message->data.owned_encoded_message = blink::EncodeStringMessage(data);
-  params.message->data.encoded_message =
-      params.message->data.owned_encoded_message;
-  params.message->data.ports = std::move(channels);
-  params.source_routing_id = MSG_ROUTING_NONE;
-  params.source_origin = source_origin;
-  if (target_origin)
-    params.target_origin = *target_origin;
+  blink::TransferableMessage message;
+  message.owned_encoded_message = blink::EncodeStringMessage(data);
+  message.encoded_message = message.owned_encoded_message;
+  message.ports = std::move(channels);
+  int32_t source_routing_id = MSG_ROUTING_NONE;
 
-  RenderFrameHost* rfh = web_contents->GetMainFrame();
-  rfh->Send(new FrameMsg_PostMessageEvent(rfh->GetRoutingID(), params));
+  RenderFrameHostImpl* rfh =
+      static_cast<RenderFrameHostImpl*>(web_contents->GetMainFrame());
+  rfh->PostMessageEvent(source_routing_id, source_origin, target_origin,
+                        std::move(message));
 }
 
 #if defined(OS_ANDROID)
@@ -83,7 +79,7 @@ void MessagePortProvider::PostMessageToFrame(
 }
 #endif
 
-#if defined(OS_FUCHSIA)
+#if defined(OS_FUCHSIA) || defined(IS_CHROMECAST)
 // static
 void MessagePortProvider::PostMessageToFrame(
     WebContents* web_contents,
@@ -95,9 +91,9 @@ void MessagePortProvider::PostMessageToFrame(
   for (mojo::ScopedMessagePipeHandle& handle : channels) {
     channels_wrapped.emplace_back(std::move(handle));
   }
-
-  PostMessageToFrameInternal(web_contents, source_origin, target_origin, data,
-                             channels_wrapped);
+  PostMessageToFrameInternal(web_contents, source_origin,
+                             target_origin.value_or(base::EmptyString16()),
+                             data, channels_wrapped);
 }
 #endif
 

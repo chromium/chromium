@@ -4020,6 +4020,22 @@ error::Error GLES2DecoderPassthroughImpl::HandleDispatchCompute(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::HandleDispatchComputeIndirect(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2ComputeContext())
+    return error::kUnknownCommand;
+  const volatile gles2::cmds::DispatchComputeIndirect& c =
+      *static_cast<const volatile gles2::cmds::DispatchComputeIndirect*>(
+          cmd_data);
+  GLintptr offset = static_cast<GLintptr>(c.offset);
+  error::Error error = DoDispatchComputeIndirect(offset);
+  if (error != error::kNoError) {
+    return error;
+  }
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::HandleGetProgramInterfaceiv(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -4471,8 +4487,8 @@ error::Error GLES2DecoderPassthroughImpl::HandleScheduleDCLayerCHROMIUM(
   const volatile gles2::cmds::ScheduleDCLayerCHROMIUM& c =
       *static_cast<const volatile gles2::cmds::ScheduleDCLayerCHROMIUM*>(
           cmd_data);
-  GLuint y_texture_id = static_cast<GLuint>(c.y_texture_id);
-  GLuint uv_texture_id = static_cast<GLuint>(c.uv_texture_id);
+  GLuint texture_0 = static_cast<GLuint>(c.texture_0);
+  GLuint texture_1 = static_cast<GLuint>(c.texture_1);
   GLint z_order = static_cast<GLint>(c.z_order);
   GLint content_x = static_cast<GLint>(c.content_x);
   GLint content_y = static_cast<GLint>(c.content_y);
@@ -4495,7 +4511,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleScheduleDCLayerCHROMIUM(
   GLint clip_height = static_cast<GLint>(c.clip_height);
   GLuint protected_video_type = static_cast<GLuint>(c.protected_video_type);
   error::Error error = DoScheduleDCLayerCHROMIUM(
-      y_texture_id, uv_texture_id, z_order, content_x, content_y, content_width,
+      texture_0, texture_1, z_order, content_x, content_y, content_width,
       content_height, quad_x, quad_y, quad_width, quad_height, transform_c1r1,
       transform_c2r1, transform_c1r2, transform_c2r2, transform_tx,
       transform_ty, is_clipped, clip_x, clip_y, clip_width, clip_height,
@@ -4597,6 +4613,20 @@ error::Error GLES2DecoderPassthroughImpl::HandlePathStencilFuncCHROMIUM(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::HandleContextVisibilityHintCHROMIUM(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::ContextVisibilityHintCHROMIUM& c =
+      *static_cast<const volatile gles2::cmds::ContextVisibilityHintCHROMIUM*>(
+          cmd_data);
+  GLboolean visibility = static_cast<GLboolean>(c.visibility);
+  error::Error error = DoContextVisibilityHintCHROMIUM(visibility);
+  if (error != error::kNoError) {
+    return error;
+  }
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::HandleCoverageModulationCHROMIUM(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -4623,21 +4653,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleBlendBarrierKHR(
   }
 
   error::Error error = DoBlendBarrierKHR();
-  if (error != error::kNoError) {
-    return error;
-  }
-  return error::kNoError;
-}
-
-error::Error
-GLES2DecoderPassthroughImpl::HandleApplyScreenSpaceAntialiasingCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  if (!features().chromium_screen_space_antialiasing) {
-    return error::kUnknownCommand;
-  }
-
-  error::Error error = DoApplyScreenSpaceAntialiasingCHROMIUM();
   if (error != error::kNoError) {
     return error;
   }
@@ -4835,17 +4850,15 @@ GLES2DecoderPassthroughImpl::HandleSetReadbackBufferShadowAllocationINTERNAL(
   return error::kNoError;
 }
 
-error::Error
-GLES2DecoderPassthroughImpl::HandleFramebufferTextureMultiviewLayeredANGLE(
+error::Error GLES2DecoderPassthroughImpl::HandleFramebufferTextureMultiviewOVR(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
   if (!feature_info_->IsWebGL2OrES3OrHigherContext())
     return error::kUnknownCommand;
-  const volatile gles2::cmds::FramebufferTextureMultiviewLayeredANGLE& c =
-      *static_cast<
-          const volatile gles2::cmds::FramebufferTextureMultiviewLayeredANGLE*>(
+  const volatile gles2::cmds::FramebufferTextureMultiviewOVR& c =
+      *static_cast<const volatile gles2::cmds::FramebufferTextureMultiviewOVR*>(
           cmd_data);
-  if (!features().angle_multiview) {
+  if (!features().ovr_multiview2) {
     return error::kUnknownCommand;
   }
 
@@ -4855,7 +4868,7 @@ GLES2DecoderPassthroughImpl::HandleFramebufferTextureMultiviewLayeredANGLE(
   GLint level = static_cast<GLint>(c.level);
   GLint baseViewIndex = static_cast<GLint>(c.baseViewIndex);
   GLsizei numViews = static_cast<GLsizei>(c.numViews);
-  error::Error error = DoFramebufferTextureMultiviewLayeredANGLE(
+  error::Error error = DoFramebufferTextureMultiviewOVR(
       target, attachment, texture, level, baseViewIndex, numViews);
   if (error != error::kNoError) {
     return error;
@@ -4890,6 +4903,7 @@ error::Error GLES2DecoderPassthroughImpl::
                            CreateAndTexStorage2DSharedImageINTERNALImmediate*>(
           cmd_data);
   GLuint texture = static_cast<GLuint>(c.texture);
+  GLenum internalformat = static_cast<GLenum>(c.internalformat);
   uint32_t mailbox_size;
   if (!GLES2Util::ComputeDataSize<GLbyte, 16>(1, &mailbox_size)) {
     return error::kOutOfBounds;
@@ -4899,12 +4913,11 @@ error::Error GLES2DecoderPassthroughImpl::
   }
   volatile const GLbyte* mailbox = GetImmediateDataAs<volatile const GLbyte*>(
       c, mailbox_size, immediate_data_size);
-  GLenum internalformat = static_cast<GLenum>(c.internalformat);
   if (mailbox == nullptr) {
     return error::kOutOfBounds;
   }
   error::Error error = DoCreateAndTexStorage2DSharedImageINTERNAL(
-      texture, mailbox, internalformat);
+      texture, internalformat, mailbox);
   if (error != error::kNoError) {
     return error;
   }

@@ -8,8 +8,8 @@ import("//build/config/mac/base_rules.gni")
 import("//build/mac/tweak_info_plist.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
-import("//tools/grit/repack.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
+import("//tools/grit/repack.gni")
 
 tweak_info_plist("tweak_info_plist") {
   info_plist = "Info.plist"
@@ -54,6 +54,7 @@ source_set("content_widget") {
     "//base",
     "//ios/chrome/common:common_extension",
     "//ios/chrome/common/app_group",
+    "//ios/chrome/common/app_group:command",
     "//ios/chrome/common/favicon",
     "//ios/chrome/common/ntp_tile",
     "//ios/chrome/common/ui_util",

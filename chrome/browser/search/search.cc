@@ -32,10 +32,6 @@
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #endif
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/login/signin/merge_session_throttling_utils.h"
-#endif  // defined(OS_CHROMEOS)
-
 #if !defined(OS_ANDROID)
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
@@ -128,13 +124,19 @@ bool IsMatchingServiceWorker(const GURL& my_url, const GURL& document_url) {
 
 // Returns true if |url| matches the NTP URL or the URL of the NTP's associated
 // service worker.
-bool IsNTPOrServiceWorkerURL(const GURL& url, Profile* profile) {
+bool IsNTPOrRelatedURLHelper(const GURL& url, Profile* profile) {
   if (!url.is_valid())
     return false;
 
   const GURL new_tab_url(GetNewTabPageURL(profile));
   return new_tab_url.is_valid() && (MatchesOriginAndPath(url, new_tab_url) ||
                                     IsMatchingServiceWorker(url, new_tab_url));
+}
+
+GURL RemoveQueryParam(const GURL& url) {
+  url::Replacements<char> replacements;
+  replacements.ClearQuery();
+  return url.ReplaceComponents(replacements);
 }
 
 bool IsURLAllowedForSupervisedUser(const GURL& url, Profile* profile) {
@@ -156,24 +158,8 @@ bool IsURLAllowedForSupervisedUser(const GURL& url, Profile* profile) {
 
 bool ShouldShowLocalNewTab(Profile* profile) {
 #if !defined(OS_ANDROID)
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(switches::kForceLocalNtp) ||
-         (base::FeatureList::IsEnabled(features::kUseGoogleLocalNtp) &&
-          profile && DefaultSearchProviderIsGoogle(profile));
+  return DefaultSearchProviderIsGoogle(profile);
 #endif
-  return false;
-}
-
-bool ShouldDelayRemoteNTP(const GURL& search_provider_url, Profile* profile) {
-#if defined(OS_CHROMEOS)
-  // On Chrome OS, if the session hasn't merged yet, we need to avoid loading
-  // the remote NTP because that will trigger showing the merge session throttle
-  // interstitial page, which can show for 5+ seconds. crbug.com/591530.
-  if (merge_session_throttling_utils::ShouldDelayUrl(search_provider_url) &&
-      merge_session_throttling_utils::IsSessionRestorePending(profile)) {
-    return true;
-  }
-#endif  // defined(OS_CHROMEOS)
   return false;
 }
 
@@ -200,10 +186,7 @@ struct NewTabURLDetails {
 
     GURL search_provider_url(template_url->new_tab_url_ref().ReplaceSearchTerms(
         TemplateURLRef::SearchTermsArgs(base::string16()),
-        UIThreadSearchTermsData(profile)));
-
-    if (ShouldDelayRemoteNTP(search_provider_url, profile))
-      return NewTabURLDetails(local_url, NEW_TAB_URL_VALID);
+        UIThreadSearchTermsData()));
 
     if (!search_provider_url.is_valid())
       return NewTabURLDetails(local_url, NEW_TAB_URL_NOT_SET);
@@ -258,16 +241,22 @@ bool DefaultSearchProviderIsGoogle(
          SearchEngineType::SEARCH_ENGINE_GOOGLE;
 }
 
-bool IsNTPURL(const GURL& url, Profile* profile) {
+bool IsNTPOrRelatedURL(const GURL& url, Profile* profile) {
   if (!url.is_valid())
     return false;
 
   if (!IsInstantExtendedAPIEnabled())
     return url == chrome::kChromeUINewTabURL;
 
-  // TODO(treib,sfiera): Tolerate query params when detecting local NTPs.
-  return profile && (IsNTPOrServiceWorkerURL(url, profile) ||
-                     url == chrome::kChromeSearchLocalNtpUrl);
+  GURL url_no_params = RemoveQueryParam(url);
+  return profile && (IsNTPOrRelatedURLHelper(url, profile) ||
+                     url_no_params == chrome::kChromeSearchLocalNtpUrl);
+}
+
+bool IsNTPURL(const GURL& url) {
+  return url.SchemeIs(chrome::kChromeSearchScheme) &&
+         (url.host_piece() == chrome::kChromeSearchRemoteNtpHost ||
+          url.host_piece() == chrome::kChromeSearchLocalNtpHost);
 }
 
 bool IsInstantNTP(content::WebContents* contents) {
@@ -300,8 +289,8 @@ bool IsInstantNTPURL(const GURL& url, Profile* profile) {
   if (!IsInstantExtendedAPIEnabled())
     return false;
 
-  // TODO(treib,sfiera): Tolerate query params when detecting local NTPs.
-  if (url == chrome::kChromeSearchLocalNtpUrl)
+  GURL url_no_params = RemoveQueryParam(url);
+  if (url_no_params == chrome::kChromeSearchLocalNtpUrl)
     return true;
 
   GURL new_tab_url(GetNewTabPageURL(profile));
@@ -317,7 +306,7 @@ GURL GetNewTabPageURL(Profile* profile) {
 bool ShouldAssignURLToInstantRenderer(const GURL& url, Profile* profile) {
   return url.is_valid() && profile && IsInstantExtendedAPIEnabled() &&
          (url.SchemeIs(chrome::kChromeSearchScheme) ||
-          IsNTPOrServiceWorkerURL(url, profile));
+          IsNTPOrRelatedURLHelper(url, profile));
 }
 
 bool ShouldUseProcessPerSiteForInstantURL(const GURL& url, Profile* profile) {

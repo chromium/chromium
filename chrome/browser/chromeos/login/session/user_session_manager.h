@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOGIN_SESSION_USER_SESSION_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_LOGIN_SESSION_USER_SESSION_MANAGER_H_
 
+#include <bitset>
 #include <map>
 #include <memory>
 #include <set>
@@ -27,8 +28,10 @@
 #include "chrome/browser/chromeos/login/oobe_screen.h"
 #include "chrome/browser/chromeos/login/signin/oauth2_login_manager.h"
 #include "chrome/browser/chromeos/login/signin/token_handle_util.h"
+#include "chrome/browser/chromeos/release_notes/release_notes_notification.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chrome/browser/chromeos/u2f_notification.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/login/auth/authenticator.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/arc/net/always_on_vpn_manager.h"
@@ -61,6 +64,7 @@ class UserSessionManagerTestApi;
 class EasyUnlockKeyManager;
 class InputEventsBlocker;
 class LoginDisplayHost;
+class StubAuthenticatorBuilder;
 
 class UserSessionManagerDelegate {
  public:
@@ -139,6 +143,21 @@ class UserSessionManager
     base::TimeDelta time_since_oobe_completion;
   };
 
+  // To keep track of which systems need the login password to be stored in the
+  // kernel keyring.
+  enum class PasswordConsumingService {
+    // Shill needs the login password if ${PASSWORD} is specified somewhere in
+    // the OpenNetworkConfiguration policy.
+    kNetwork = 0,
+
+    // The Kerberos service needs the login password if ${PASSWORD} is specified
+    // somewhere in the KerberosAccounts policy.
+    kKerberos = 1,
+
+    // Should be last. All enum values must be consecutive starting from 0.
+    kCount = 2,
+  };
+
   // Returns UserSessionManager instance.
   static UserSessionManager* GetInstance();
 
@@ -148,9 +167,10 @@ class UserSessionManager
   // Registers session related preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // Appends additional command switches to the given command line if
-  // SitePerProcess/IsolateOrigins policy is present.
-  static void MaybeAppendPolicySwitches(PrefService* user_profile_prefs,
+  // Applies user policies to |user_flags| .
+  // This could mean removing command-line switchis that have been added by the
+  // flag handling logic or appending additional switches due to policy.
+  static void ApplyUserPolicyToSwitches(PrefService* user_profile_prefs,
                                         base::CommandLine* user_flags);
 
   // Invoked after the tmpfs is successfully mounted.
@@ -208,8 +228,7 @@ class UserSessionManager
   // Starts loading CRL set.
   void InitializeCRLSetFetcher(const user_manager::User* user);
 
-  // Starts loading CT-related components, which are the EV Certificates
-  // whitelist and the STHSet.
+  // Initializes Certificate Transparency-related components.
   void InitializeCertificateTransparencyComponents(
       const user_manager::User* user);
 
@@ -259,7 +278,7 @@ class UserSessionManager
   void AddSessionStateObserver(chromeos::UserSessionStateObserver* observer);
   void RemoveSessionStateObserver(chromeos::UserSessionStateObserver* observer);
 
-  void ActiveUserChanged(const user_manager::User* active_user) override;
+  void ActiveUserChanged(user_manager::User* active_user) override;
 
   // This method will be called when user have obtained oauth2 tokens.
   void OnOAuth2TokensFetched(UserContext context);
@@ -270,7 +289,7 @@ class UserSessionManager
 
   // Check to see if given profile should show EndOfLife Notification
   // and show the message accordingly.
-  void CheckEolStatus(Profile* profile);
+  void CheckEolInfo(Profile* profile);
 
   // Starts migrating accounts to Chrome OS Account Manager.
   void StartAccountManagerMigration(Profile* profile);
@@ -306,20 +325,37 @@ class UserSessionManager
                           CommandLineSwitchesType switches_type,
                           const std::vector<std::string>& switches);
 
-  // Called when the user network policy has been parsed. If |send_password| is
-  // true, the user's password will be sent over dbus to the session manager to
-  // save in a keyring. Before the function exits, it will clear the user
-  // password from the UserContext regardless of the value of |send_password|.
-  void OnUserNetworkPolicyParsed(bool send_password);
+  // Notify whether |service| wants session manager to save the user's login
+  // password. If |save_password| is true, the login password is sent over D-Bus
+  // to the session manager to save in a keyring. Once this method has been
+  // called from all services defined in |PasswordConsumingService|, or if
+  // |save_password| is true, the method clears the user password from the
+  // UserContext before exiting.
+  // Should be called for each |service| in |PasswordConsumingService| as soon
+  // as the service knows whether it needs the login password. Must be called
+  // before user_context_.ClearSecrets() (see .cc), where Chrome 'forgets' the
+  // password.
+  void VoteForSavingLoginPassword(PasswordConsumingService service,
+                                  bool save_password);
+
+  UserContext* mutable_user_context_for_testing() { return &user_context_; }
+
+  // Shows U2F notification if necessary.
+  void MaybeShowU2FNotification();
+
+  // Shows Release Notes notification if necessary.
+  void MaybeShowReleaseNotesNotification(Profile* profile);
+
+ protected:
+  // Protected for testability reasons.
+  UserSessionManager();
+  ~UserSessionManager() override;
 
  private:
   friend class test::UserSessionManagerTestApi;
   friend struct base::DefaultSingletonTraits<UserSessionManager>;
 
   typedef std::set<std::string> SigninSessionRestoreStateSet;
-
-  UserSessionManager();
-  ~UserSessionManager() override;
 
   void SetNetworkConnectionTracker(
       network::NetworkConnectionTracker* network_connection_tracker);
@@ -362,8 +398,10 @@ class UserSessionManager
   // PrepareProfile().
   void UpdateArcFileSystemCompatibilityAndPrepareProfile();
 
+  void InitializeAccountManager();
+
   void StartCrosSession();
-  void PrepareProfile();
+  void PrepareProfile(const base::FilePath& profile_path);
 
   // Callback for asynchronous profile creation.
   void OnProfileCreated(const UserContext& user_context,
@@ -406,7 +444,7 @@ class UserSessionManager
   void InitializeChildUserServices(Profile* profile);
 
   // Starts out-of-box flow with the specified screen.
-  void ActivateWizard(OobeScreen screen);
+  void ActivateWizard(OobeScreenId screen);
 
   // Adds first-time login URLs.
   void InitializeStartUrls() const;
@@ -479,10 +517,8 @@ class UserSessionManager
   void CreateTokenUtilIfMissing();
 
   // Test API methods.
-
-  // Injects |user_context| that will be used to create StubAuthenticator
-  // instance when CreateAuthenticator() is called.
-  void InjectStubUserContext(const UserContext& user_context);
+  void InjectAuthenticatorBuilder(
+      std::unique_ptr<StubAuthenticatorBuilder> builer);
 
   // Controls whether browser instance should be launched after sign in
   // (used in tests).
@@ -526,8 +562,7 @@ class UserSessionManager
   scoped_refptr<Authenticator> authenticator_;
   StartSessionType start_session_type_;
 
-  // Injected user context for stub authenticator.
-  std::unique_ptr<UserContext> injected_user_context_;
+  std::unique_ptr<StubAuthenticatorBuilder> injected_authenticator_builder_;
 
   // True if the authentication context's cookie jar contains authentication
   // cookies from the authentication extension login flow.
@@ -575,10 +610,17 @@ class UserSessionManager
   std::map<Profile*, std::unique_ptr<EolNotification>, ProfileCompare>
       eol_notification_handler_;
 
-  // Maps command-line switch types to the currently set command-line switches
-  // for that type. Note: This is not per Profile/AccountId, because session
-  // manager currently doesn't support setting command-line switches per
-  // AccountId.
+  // Keeps track of which password-requiring-service has already told us whether
+  // they need the login password or not.
+  std::bitset<static_cast<size_t>(PasswordConsumingService::kCount)>
+      password_service_voted_;
+  // Whether the login password was saved in the kernel keyring.
+  bool password_was_saved_ = false;
+
+  // Maps command-line switch types to the currently set command-line
+  // switches for that type. Note: This is not per Profile/AccountId,
+  // because session manager currently doesn't support setting command-line
+  // switches per AccountId.
   base::flat_map<CommandLineSwitchesType, std::vector<std::string>>
       command_line_switches_;
 
@@ -614,7 +656,11 @@ class UserSessionManager
 
   std::unique_ptr<ChildPolicyObserver> child_policy_observer_;
 
-  base::WeakPtrFactory<UserSessionManager> weak_factory_;
+  std::unique_ptr<U2FNotification> u2f_notification_;
+
+  std::unique_ptr<ReleaseNotesNotification> release_notes_notification_;
+
+  base::WeakPtrFactory<UserSessionManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UserSessionManager);
 };

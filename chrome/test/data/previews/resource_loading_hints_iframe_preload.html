@@ -1,0 +1,15 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <p>Test page for Resource Loading Hints.</p>
+   <iframe src="resource_loading_hints_preload.html"></iframe>
+   <script>
+    window.addEventListener("load", function () {
+      var xhr_foo = new XMLHttpRequest();
+      xhr_foo.open('GET', 'foo.woff2', true /* async */);
+      xhr_foo.send();
+    });
+    </script>
+   </body>
+</html>

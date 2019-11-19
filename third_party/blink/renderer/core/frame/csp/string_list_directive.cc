@@ -44,8 +44,13 @@ bool StringListDirective::IsInvalidStringValue(const String& str) {
   return str.Contains('\'') || str.Contains('"');
 }
 
-bool StringListDirective::Allows(const String& string_piece) {
-  return allow_any_ || list_.Contains(string_piece);
+bool StringListDirective::Allows(const String& string_piece,
+                                 bool is_duplicate) {
+  if (string_piece == "default" && is_duplicate)
+    return false;
+  if (allow_any_)
+    return true;
+  return list_.Contains(string_piece) && !is_duplicate;
 }
 
 void StringListDirective::Trace(blink::Visitor* visitor) {

@@ -22,10 +22,6 @@ class MockInputMethodManagerWithInputMethods
   MockInputMethodManagerWithInputMethods();
   ~MockInputMethodManagerWithInputMethods() override;
 
-  // input_method::MockInputMethodManagerImpl:
-  std::unique_ptr<input_method::InputMethodDescriptors>
-  GetSupportedInputMethods() const override;
-
   void AddInputMethod(const std::string& id,
                       const std::string& raw_layout,
                       const std::string& language_code);

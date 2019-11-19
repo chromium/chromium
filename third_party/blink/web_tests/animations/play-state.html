@@ -5,11 +5,13 @@
     .target {
       height: 100px;
       width: 100px;
-      animation-duration: 40ms;
+      animation-duration: 100ms;
       animation-timing-function: linear;
     }
     #translate {
       background-color: blue;
+    }
+    #translate.started {
       animation-name: move1;
     }
     @keyframes move1 {
@@ -19,6 +21,8 @@
     #left {
       position: relative;
       background-color: red;
+    }
+    #left.started {
       animation-name: move2;
     }
     @keyframes move2 {
@@ -36,10 +40,10 @@
       testRunner.waitUntilDone();
     }
 
-    function log(message) { 
-      var div = document.createElement('div'); 
-      div.textContent = message; 
-      document.body.appendChild(div);  
+    function log(message) {
+      var div = document.createElement('div');
+      div.textContent = message;
+      document.body.appendChild(div);
     }
 
     function logPassFail(expected, actual, id, description) {
@@ -47,35 +51,39 @@
       log((didPass ? 'PASS' : 'FAIL') + ': Element \'' + id + '\' had ' + (didPass ? 'correct' : 'incorrect') + '  style ' + description);
     }
 
-    function togglePaused() {
+    function toggleClass(className) {
       var targets = document.getElementsByClassName('target');
       for (var i = 0; i < targets.length; ++i) {
-        targets[i].classList.toggle('paused');
+        targets[i].classList.toggle(className);
       }
     }
 
     var start = function() {
       document.removeEventListener('animationstart', start, false);
-      setTimeout(pause, 20);
+      requestAnimationFrame(pause);
     }
 
     var transform;
     var left;
+    var paused = false;
     function pause() {
-      togglePaused();
+      paused = true;
+      toggleClass('paused');
       transform = getComputedStyle(document.getElementById('translate')).transform;
       left = getComputedStyle(document.getElementById('left')).left;
-      setTimeout(resume, 20);
+      requestAnimationFrame(resume);
     }
 
     function resume() {
       logPassFail(transform, getComputedStyle(document.getElementById('translate')).transform, 'translate', 'when paused');
       logPassFail(left, getComputedStyle(document.getElementById('left')).left, 'left', 'when paused');
-      togglePaused();
-      setTimeout(end, 100);
+      toggleClass('paused');
     }
 
     function end() {
+      document.removeEventListener('animationend', end, false);
+      if (!paused)
+        log('Missed frame in which to pause animation');
       logPassFail('none', getComputedStyle(document.getElementById('translate')).transform, 'translate', 'at end');
       logPassFail('0px', getComputedStyle(document.getElementById('left')).left, 'left', 'at end');
       if (window.testRunner) {
@@ -83,7 +91,15 @@
       }
     }
 
-    document.addEventListener('animationstart', start, false);
+    // Wait until the page has loaded and painted to start the animations to
+    // ensure we will have enough main frames to pause the animation.
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        document.addEventListener('animationstart', start, false);
+        document.addEventListener('animationend', end, false);
+        toggleClass('started');
+      });
+    });
   </script>
 </head>
 <body>

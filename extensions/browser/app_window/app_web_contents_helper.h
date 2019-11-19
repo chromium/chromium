@@ -54,7 +54,7 @@ class AppWebContentsHelper {
   // WebContentsDelegate.
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const GURL& security_origin,
-                                  blink::MediaStreamType type) const;
+                                  blink::mojom::MediaStreamType type) const;
 
  private:
   const Extension* GetExtension() const;

@@ -37,11 +37,9 @@ bool VerifyDigestString(const std::string& key,
                         const std::string& message,
                         const std::string& digest_string) {
   crypto::HMAC hmac(crypto::HMAC::SHA256);
-  std::vector<uint8_t> digest;
-  return base::HexStringToBytes(digest_string, &digest) && hmac.Init(key) &&
-         hmac.Verify(message,
-                     base::StringPiece(reinterpret_cast<char*>(&digest[0]),
-                                       digest.size()));
+  std::string digest;
+  return base::HexStringToString(digest_string, &digest) && hmac.Init(key) &&
+         hmac.Verify(message, digest);
 }
 
 // Renders |value| as a string. |value| may be NULL, in which case the result

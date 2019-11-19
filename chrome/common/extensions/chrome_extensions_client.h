@@ -38,8 +38,6 @@ class ChromeExtensionsClient : public ExtensionsClient {
       const Extension* extension,
       const APIPermissionSet& api_permissions) const override;
   bool IsScriptableURL(const GURL& url, std::string* error) const override;
-  bool ShouldSuppressFatalErrors() const override;
-  void RecordDidSuppressFatalError() override;
   const GURL& GetWebstoreBaseURL() const override;
   const GURL& GetWebstoreUpdateURL() const override;
   bool IsBlacklistUpdateURL(const GURL& url) const override;

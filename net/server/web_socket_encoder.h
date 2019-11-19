@@ -38,7 +38,7 @@ class WebSocketEncoder final {
   WebSocket::ParseResult DecodeFrame(const base::StringPiece& frame,
                                      int* bytes_consumed,
                                      std::string* output);
-  void EncodeFrame(const std::string& frame,
+  void EncodeFrame(base::StringPiece frame,
                    int masking_key,
                    std::string* output);
 
@@ -55,7 +55,7 @@ class WebSocketEncoder final {
                    std::unique_ptr<WebSocketInflater> inflater);
 
   bool Inflate(std::string* message);
-  bool Deflate(const std::string& message, std::string* output);
+  bool Deflate(base::StringPiece message, std::string* output);
 
   Type type_;
   std::unique_ptr<WebSocketDeflater> deflater_;

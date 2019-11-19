@@ -12,7 +12,9 @@ if (isset($cookie_check)) {
   }
 }
 
-header("Access-Control-Allow-Origin: http://127.0.0.1:8000");
+$secure = isset($_GET["Secure"]);
+$origin = $secure ? "https://127.0.0.1:8443" : "http://127.0.0.1:8000";
+header("Access-Control-Allow-Origin: " . $origin);
 header("Access-Control-Allow-Credentials: true");
 
 $name = 'abe.png';

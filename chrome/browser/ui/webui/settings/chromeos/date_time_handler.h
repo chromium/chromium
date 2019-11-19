@@ -55,6 +55,14 @@ class DateTimeHandler : public ::settings::SettingsPageUIHandler,
   // Called to show the Set Time UI.
   void HandleShowSetDateTimeUI(const base::ListValue* args);
 
+  // Handles clicks on the timezone row on the settings page. This should only
+  // be called when the current user is a child.
+  void HandleShowParentAccessForTimeZone(const base::ListValue* args);
+
+  // Called when the parent access code was validated with result equals
+  // |success|.
+  void OnParentAccessValidation(bool success);
+
   // Updates the UI, enabling or disabling the time zone automatic detection
   // setting according to policy.
   void NotifyTimezoneAutomaticDetectionPolicy();
@@ -67,7 +75,7 @@ class DateTimeHandler : public ::settings::SettingsPageUIHandler,
 
   ScopedObserver<SystemClockClient, SystemClockClient::Observer>
       scoped_observer_;
-  base::WeakPtrFactory<DateTimeHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<DateTimeHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DateTimeHandler);
 };

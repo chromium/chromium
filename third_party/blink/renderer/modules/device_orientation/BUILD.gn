@@ -37,4 +37,7 @@ blink_modules_sources("device_orientation") {
     "dom_window_device_motion.h",
     "dom_window_device_orientation.h",
   ]
+  deps = [
+    "//services/device/public/mojom:generic_sensor",
+  ]
 }

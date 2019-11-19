@@ -3,7 +3,6 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../assert_selection.js"></script>
 <script>
-const usesBidiAffinity = window.internals && internals.runtimeFlags.bidiCaretAffinityEnabled;
 
 selection_test(
   '<div contenteditable dir="ltr" contenteditable style="width: 100px;">|This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
@@ -56,83 +55,73 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr" contenteditable style="width: 100px;">This is |\u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA|\u05E8 the boxes.</div>'
-      : '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6|\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
+  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9|\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   '22-8 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" contenteditable style="width: 100px;">This is \u05D9|\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 100px;">This is |\u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>'
-      : '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8| \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
+  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5|\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   '22-9 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" contenteditable style="width: 100px;">This is \u05D9\u05D5|\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9|\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
+  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA|\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   '22-10 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" contenteditable style="width: 100px;">This is \u05D9\u05D5\u05EA|\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5|\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
+  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8| \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   '22-11 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" contenteditable style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8| \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA|\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
+  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 |\u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   '22-12 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" contenteditable style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 |\u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8| \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
+  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6|\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   '22-13 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" contenteditable style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6|\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 |\u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
+  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8| \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   '22-14 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" contenteditable style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8| \u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6|\u05E8 \u05DE\u05D9\u05EA\u05E8 the boxes.</div>'
-      : '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 |\u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
+  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 |\u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   '22-15 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" contenteditable style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 |\u05DE\u05D9\u05EA\u05E8 the boxes.</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8 |the boxes.</div>'
-      : '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA|\u05E8 the boxes.</div>',
+  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE|\u05D9\u05EA\u05E8 the boxes.</div>',
   '22-16 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" contenteditable style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE|\u05D9\u05EA\u05E8 the boxes.</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 |\u05DE\u05D9\u05EA\u05E8 the boxes.</div>'
-      : '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8| the boxes.</div>',
+  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9|\u05EA\u05E8 the boxes.</div>',
   '22-17 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" contenteditable style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9|\u05EA\u05E8 the boxes.</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE|\u05D9\u05EA\u05E8 the boxes.</div>',
+  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA|\u05E8 the boxes.</div>',
   '22-18 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" contenteditable style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA|\u05E8 the boxes.</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9|\u05EA\u05E8 the boxes.</div>',
+  '<div contenteditable dir="ltr" style="width: 100px;">This is \u05D9\u05D5\u05EA\u05E8 \u05E6\u05E8 \u05DE\u05D9\u05EA\u05E8| the boxes.</div>',
   '22-19 ltr right character');
 
 selection_test(

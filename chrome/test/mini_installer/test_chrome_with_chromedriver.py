@@ -45,13 +45,13 @@ except ImportError:
 
 @contextlib.contextmanager
 def CreateChromedriver(args):
-  """Create a webdriver object ad close it after."""
+  """Create a webdriver object and close it after."""
 
   def DeleteWithRetry(path, func):
     # There seems to be a race condition on the bots that causes the paths
-    # to not delete because they are being used. This allows up to 2 seconds
+    # to not delete because they are being used. This allows up to 4 seconds
     # to delete
-    for _ in xrange(4):
+    for _ in xrange(8):
       try:
         return func(path)
       except WindowsError:
@@ -129,7 +129,11 @@ def CreateChromedriver(args):
           target = os.path.join(args.output_dir, os.path.basename(log_file))
           shutil.copyfile(log_file, target)
           logging.error('Saved Chrome log to %s', target)
-      DeleteWithRetry(log_file, os.remove)
+      try:
+        DeleteWithRetry(log_file, os.remove)
+      except WindowsError:
+        # Don't fail the test if the log file couldn't be deleted.
+        logging.exception('Failed to delete log file %s' % log_file)
     if report_count:
       raise Exception('Failing test due to %s crash reports found' %
                       report_count)

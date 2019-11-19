@@ -1,0 +1,49 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+source_set("public") {
+  sources = [
+    "display_agent.cc",
+    "display_agent.h",
+    "features.cc",
+    "features.h",
+    "icon_bundle.cc",
+    "icon_bundle.h",
+    "impression_detail.cc",
+    "impression_detail.h",
+    "notification_background_task_scheduler.h",
+    "notification_data.cc",
+    "notification_data.h",
+    "notification_params.cc",
+    "notification_params.h",
+    "notification_schedule_service.h",
+    "notification_scheduler_client.h",
+    "notification_scheduler_client_registrar.cc",
+    "notification_scheduler_client_registrar.h",
+    "notification_scheduler_constant.h",
+    "notification_scheduler_types.cc",
+    "notification_scheduler_types.h",
+    "schedule_params.cc",
+    "schedule_params.h",
+    "user_action_handler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//skia",
+  ]
+}
+
+if (is_android) {
+  java_cpp_enum("jni_enums") {
+    sources = [
+      "notification_scheduler_types.h",
+    ]
+  }
+}

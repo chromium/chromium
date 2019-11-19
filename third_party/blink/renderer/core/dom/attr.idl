@@ -19,13 +19,14 @@
  */
 
 // https://dom.spec.whatwg.org/#interface-attr
-
-interface Attr : Node {
+[
+    Exposed=Window
+] interface Attr : Node {
     readonly attribute DOMString? namespaceURI;
     readonly attribute DOMString? prefix;
     readonly attribute DOMString localName;
     readonly attribute DOMString name;
-    [CEReactions, CustomElementCallbacks] attribute DOMString value;
+    [RaisesException=Setter, CEReactions, CustomElementCallbacks] attribute DOMString value;
 
     readonly attribute Element? ownerElement;
 

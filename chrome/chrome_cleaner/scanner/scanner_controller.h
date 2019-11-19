@@ -47,15 +47,14 @@ class ScannerController {
   // access to result_code_.
   virtual int WatchdogTimeoutCallback();
 
+  // Write exit information to the registry on timeouts.
+  void HandleWatchdogTimeout(ResultCode result_code);
+
   RegistryLogger* registry_logger_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Allow subclasses to override the default watchdog timeout.
   uint32_t watchdog_timeout_in_seconds_;
-
-  // Allow subclasses to quit the current run loop without uploading logs.
-  // Should only be called from unit tests.
-  base::OnceClosure QuitClosureForTesting() { return std::move(quit_closure_); }
 
  private:
   // Callback for LoggingServiceAPI::SendLogsToSafeBrowsing() that finishes the

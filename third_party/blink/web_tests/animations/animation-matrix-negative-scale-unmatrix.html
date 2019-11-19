@@ -21,13 +21,10 @@
                 to { transform: matrix(1, 0, 0, 1, 0, 0); }
             }
         </style>
+        <script src="../resources/testharness.js"></script>
+        <script src="../resources/testharnessreport.js"></script>
         <script type="text/javascript" charset="utf-8">
-            if (window.testRunner) {
-                testRunner.dumpAsText();
-                testRunner.waitUntilDone();
-            }
-
-            result = "PASS";
+            var test = async_test("This test performs an animation of the matrix operator");
 
             function snapshot()
             {
@@ -35,12 +32,9 @@
                 var matrix = new WebKitCSSMatrix(boxComputedStyle.transform);
 
                 // "d" component (scaleY) should be negative.
-                if (matrix["d"] > 0)
-                    result = "FAIL(scaleY was positive, expected to be negative)";
+                assert_less_than_equal(matrix["d"] , 0, "'d' component(scaleY) should be negative");
 
                 document.getElementById('result').innerHTML = result;
-                if (window.testRunner)
-                    testRunner.notifyDone();
             }
 
             function startAnimation()
@@ -48,7 +42,7 @@
                 document.getElementById("box").style.animationName = "anim";
             }
 
-            document.addEventListener('webkitAnimationStart', snapshot, false);
+            document.addEventListener('webkitAnimationStart', test.step_func_done(snapshot), false);
         </script>
     </head>
     <body>

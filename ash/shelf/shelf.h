@@ -24,12 +24,13 @@ class Rect;
 namespace ui {
 class GestureEvent;
 class MouseWheelEvent;
+class MouseEvent;
 }
 
 namespace ash {
 
 enum class AnimationChangeType;
-class ShelfBezelEventHandler;
+class ShelfFocusCycler;
 class ShelfLayoutManager;
 class ShelfLayoutManagerTest;
 class ShelfLockingManager;
@@ -38,6 +39,8 @@ class ShelfWidget;
 class StatusAreaWidget;
 class ShelfObserver;
 class TrayBackgroundView;
+class WorkAreaInsets;
+class ShelfTooltipManager;
 
 // Controller for the shelf state. One per display, because each display might
 // have different shelf alignment, autohide, etc. Exists for the lifetime of the
@@ -88,6 +91,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   bool IsVisible() const;
 
   // Returns the window showing the shelf.
+  const aura::Window* GetWindow() const;
   aura::Window* GetWindow();
 
   void SetAlignment(ShelfAlignment alignment);
@@ -117,16 +121,12 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
 
   ShelfVisibilityState GetVisibilityState() const;
 
-  int GetAccessibilityPanelHeight() const;
-  void SetAccessibilityPanelHeight(int height);
-
-  // Returns the height of the Docked Magnifier viewport.
-  int GetDockedMagnifierHeight() const;
-
   // Returns the ideal bounds of the shelf assuming it is visible.
   gfx::Rect GetIdealBounds() const;
 
-  gfx::Rect GetUserWorkAreaBounds() const;
+  // Returns the ideal bounds of the shelf, but in tablet mode always returns
+  // the bounds of the in-app shelf.
+  gfx::Rect GetIdealBoundsForWorkAreaCalculation();
 
   // Returns the screen bounds of the item for the specified window. If there is
   // no item for the specified window an empty rect is returned.
@@ -138,8 +138,11 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   // Returns true if the event was handled.
   bool ProcessGestureEvent(const ui::GestureEvent& event);
 
+  // Handles a mouse |event| coming from the Shelf.
+  void ProcessMouseEvent(const ui::MouseEvent& event);
+
   // Handles a mousewheel scroll event coming from the shelf.
-  void ProcessMouseWheelEvent(const ui::MouseWheelEvent& event);
+  void ProcessMouseWheelEvent(ui::MouseWheelEvent* event);
 
   void AddObserver(ShelfObserver* observer);
   void RemoveObserver(ShelfObserver* observer);
@@ -173,6 +176,9 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   ShelfAutoHideBehavior auto_hide_behavior() const {
     return auto_hide_behavior_;
   }
+
+  ShelfFocusCycler* shelf_focus_cycler() { return shelf_focus_cycler_.get(); }
+
   void set_is_tablet_mode_animation_running(bool value) {
     is_tablet_mode_animation_running_ = value;
   }
@@ -181,6 +187,8 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   }
   int auto_hide_lock() const { return auto_hide_lock_; }
 
+  ShelfTooltipManager* tooltip() { return tooltip_.get(); }
+
  protected:
   // ShelfLayoutManagerObserver:
   void WillDeleteShelfLayoutManager() override;
@@ -188,15 +196,22 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
   void OnBackgroundUpdated(ShelfBackgroundType background_type,
                            AnimationChangeType change_type) override;
+  void OnWorkAreaInsetsChanged() override;
 
  private:
   class AutoHideEventHandler;
+  class AutoDimEventHandler;
   friend class ShelfLayoutManagerTest;
+
+  // Returns work area insets object for the window with this shelf.
+  WorkAreaInsets* GetWorkAreaInsets() const;
 
   // Layout manager for the shelf container window. Instances are constructed by
   // ShelfWidget and lifetimes are managed by the container windows themselves.
   ShelfLayoutManager* shelf_layout_manager_ = nullptr;
 
+  // Null during display teardown, see WindowTreeHostManager::DeleteHost() and
+  // RootWindowController::CloseAllChildWindows().
   std::unique_ptr<ShelfWidget> shelf_widget_;
 
   // These initial values hide the shelf until user preferences are available.
@@ -211,20 +226,25 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   // Forwards mouse and gesture events to ShelfLayoutManager for auto-hide.
   std::unique_ptr<AutoHideEventHandler> auto_hide_event_handler_;
 
-  // Forwards touch gestures on a bezel sensor to the shelf.
-  std::unique_ptr<ShelfBezelEventHandler> bezel_event_handler_;
+  // Forwards mouse and gesture events to ShelfLayoutManager for auto-dim.
+  std::unique_ptr<AutoDimEventHandler> auto_dim_event_handler_;
+
+  // Hands focus off to different parts of the shelf.
+  std::unique_ptr<ShelfFocusCycler> shelf_focus_cycler_;
 
   // True while the animation to enter or exit tablet mode is running. Sometimes
   // this value is true when the shelf movements are not actually animating
   // (animation value = 0.0). This is because this is set to true when we
   // enter/exit tablet mode but the animation is not started until a shelf
   // OnBoundsChanged is called because of tablet mode. Use this value to sync
-  // the animation for AppListButton.
+  // the animation for HomeButton.
   bool is_tablet_mode_animation_running_ = false;
 
   // Used by ScopedAutoHideLock to maintain the state of the lock for auto-hide
   // shelf.
   int auto_hide_lock_ = 0;
+
+  std::unique_ptr<ShelfTooltipManager> tooltip_;
 
   DISALLOW_COPY_AND_ASSIGN(Shelf);
 };

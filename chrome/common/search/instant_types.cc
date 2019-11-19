@@ -4,51 +4,30 @@
 
 #include "chrome/common/search/instant_types.h"
 
-RGBAColor::RGBAColor()
-    : r(0),
-      g(0),
-      b(0),
-      a(0) {
+SearchBoxTheme::SearchBoxTheme() = default;
+
+SearchBoxTheme::SearchBoxTheme(const SearchBoxTheme& other) = default;
+
+SearchBoxTheme::~SearchBoxTheme() = default;
+
+bool SearchBoxTheme::operator==(const SearchBoxTheme& rhs) const {
+  return bg == rhs.bg && icon == rhs.icon && placeholder == rhs.placeholder &&
+         results_bg == rhs.results_bg &&
+         results_bg_hovered == rhs.results_bg_hovered &&
+         results_bg_selected == rhs.results_bg_selected &&
+         results_dim == rhs.results_dim && results_text == rhs.results_text &&
+         results_url == rhs.results_url && text == rhs.text;
 }
 
-RGBAColor::RGBAColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
-    : r(r), g(g), b(b), a(a) {}
+NtpTheme::NtpTheme() = default;
 
-RGBAColor::~RGBAColor() {
-}
+NtpTheme::NtpTheme(const NtpTheme& other) = default;
 
-bool RGBAColor::operator==(const RGBAColor& rhs) const {
-  return r == rhs.r &&
-      g == rhs.g &&
-      b == rhs.b &&
-      a == rhs.a;
-}
+NtpTheme::~NtpTheme() = default;
 
-ThemeBackgroundInfo::ThemeBackgroundInfo()
-    : using_default_theme(true),
-      using_dark_mode(false),
-      custom_background_url(std::string()),
-      custom_background_attribution_line_1(std::string()),
-      custom_background_attribution_line_2(std::string()),
-      custom_background_attribution_action_url(std::string()),
-      background_color(),
-      text_color(),
-      link_color(),
-      text_color_light(),
-      header_color(),
-      section_border_color(),
-      image_horizontal_alignment(THEME_BKGRND_IMAGE_ALIGN_CENTER),
-      image_vertical_alignment(THEME_BKGRND_IMAGE_ALIGN_CENTER),
-      image_tiling(THEME_BKGRND_IMAGE_NO_REPEAT),
-      has_attribution(false),
-      logo_alternate(false) {}
-
-ThemeBackgroundInfo::~ThemeBackgroundInfo() {
-}
-
-bool ThemeBackgroundInfo::operator==(const ThemeBackgroundInfo& rhs) const {
+bool NtpTheme::operator==(const NtpTheme& rhs) const {
   return using_default_theme == rhs.using_default_theme &&
-         using_dark_mode == rhs.using_dark_mode &&
+         using_dark_colors == rhs.using_dark_colors &&
          custom_background_url == rhs.custom_background_url &&
          custom_background_attribution_line_1 ==
              rhs.custom_background_attribution_line_1 &&
@@ -56,17 +35,20 @@ bool ThemeBackgroundInfo::operator==(const ThemeBackgroundInfo& rhs) const {
              rhs.custom_background_attribution_line_2 &&
          custom_background_attribution_action_url ==
              rhs.custom_background_attribution_action_url &&
+         collection_id == rhs.collection_id &&
          background_color == rhs.background_color &&
-         text_color == rhs.text_color && link_color == rhs.link_color &&
-         text_color_light == rhs.text_color_light &&
-         header_color == rhs.header_color &&
-         section_border_color == rhs.section_border_color &&
-         theme_id == rhs.theme_id &&
+         text_color == rhs.text_color &&
+         text_color_light == rhs.text_color_light && theme_id == rhs.theme_id &&
          image_horizontal_alignment == rhs.image_horizontal_alignment &&
          image_vertical_alignment == rhs.image_vertical_alignment &&
          image_tiling == rhs.image_tiling &&
          has_attribution == rhs.has_attribution &&
-         logo_alternate == rhs.logo_alternate;
+         logo_alternate == rhs.logo_alternate &&
+         has_theme_image == rhs.has_theme_image &&
+         theme_name == rhs.theme_name && color_id == rhs.color_id &&
+         color_dark == rhs.color_dark && color_light == rhs.color_light &&
+         color_picked == rhs.color_picked && logo_color == rhs.logo_color &&
+         shortcut_color == rhs.shortcut_color && search_box == rhs.search_box;
 }
 
 InstantMostVisitedItem::InstantMostVisitedItem()
@@ -77,3 +59,10 @@ InstantMostVisitedItem::InstantMostVisitedItem(
     const InstantMostVisitedItem& other) = default;
 
 InstantMostVisitedItem::~InstantMostVisitedItem() {}
+
+InstantMostVisitedInfo::InstantMostVisitedInfo() = default;
+
+InstantMostVisitedInfo::InstantMostVisitedInfo(
+    const InstantMostVisitedInfo& other) = default;
+
+InstantMostVisitedInfo::~InstantMostVisitedInfo() {}

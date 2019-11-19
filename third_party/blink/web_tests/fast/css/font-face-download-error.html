@@ -11,7 +11,7 @@
 /* Test 0: Download success */
 @font-face {
     font-family:myfont_0;
-    src: local('Courier'), local('Courier New');
+    src: local('Courier'), local('Courier New'), local('Cousine Regular');
 }
 @font-face {
     font-family:myfont_0;
@@ -22,7 +22,7 @@
 /* Test 1: Download error */
 @font-face {
     font-family:myfont_1;
-    src: local('Courier'), local('Courier New');
+    src: local('Courier'), local('Courier New'), local('Cousine Regular');
 }
 @font-face {
     font-family:myfont_1;
@@ -33,7 +33,7 @@
 /* Test 2: Download error followed by success */
 @font-face {
     font-family:myfont_2;
-    src: local('Courier'), local('Courier New');
+    src: local('Courier'), local('Courier New'), local('Cousine Regular');
 }
 @font-face {
     font-family:myfont_2;
@@ -44,11 +44,11 @@
 /* Test 3: Download error followed by existing local font */
 @font-face {
     font-family:myfont_3;
-    src: local('Courier'), local('Courier New');
+    src: local('Courier'), local('Courier New'), local('Cousine Regular');
 }
 @font-face {
     font-family:myfont_3;
-    src: url('resources/DownLoadErrorAhem.otf'), local(Arial);
+    src: url('resources/DownLoadErrorAhem.otf'), local(Arial), local(Arimo Regular);
     unicode-range: u+69; /* 'i' */
 }
 
@@ -123,13 +123,9 @@ for (var mainTestId = 0; mainTestId < expectedResults.length; mainTestId++) {
     testsElement.appendChild(document.createElement("br"));
 }
 
-// We need to run tests after the font downloading succeeded or failed.
-// Using a timer is not ideal, but there seems to be no better options.
-function runTest()
-{
-    window.setTimeout(test, 200);
+function runTest() {
+  document.fonts.ready.then(test);
 }
 </script>
 </body>
 </html>
-

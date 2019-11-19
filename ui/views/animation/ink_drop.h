@@ -36,9 +36,8 @@ class VIEWS_EXPORT InkDrop {
   // Animates from the current InkDropState to |ink_drop_state|.
   virtual void AnimateToState(InkDropState ink_drop_state) = 0;
 
-  // Sets hover highlight fade animations to last for |duration_ms|
-  // milliseconds.
-  virtual void SetHoverHighlightFadeDurationMs(int duration_ms) = 0;
+  // Sets hover highlight fade animations to last for |duration|.
+  virtual void SetHoverHighlightFadeDuration(base::TimeDelta duration) = 0;
 
   // Clears any set hover highlight fade durations and uses the default
   // durations instead.

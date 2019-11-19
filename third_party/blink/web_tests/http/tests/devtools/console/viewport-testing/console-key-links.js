@@ -44,6 +44,15 @@
       press('ArrowUp');
       dumpFocus(true, 0, true);
 
+      press('ArrowUp');
+      dumpFocus(true, 0, true);
+
+      press('ArrowUp');
+      dumpFocus(true, 0, true);
+
+      press('ArrowDown');
+      dumpFocus(true, 0, true);
+
       press('ArrowDown');
       dumpFocus(true, 0, true);
 
@@ -69,16 +78,21 @@
       TestRunner.addResult(`Setting focus in prompt:`);
       prompt.focus();
       shiftPress('Tab');
-
+      press('ArrowUp');  // Move from source link to message link.
       dumpFocus(true, 0, true);
 
       press('ArrowDown');
+
+      press('ArrowUp');
       dumpFocus(true, 0, true);
 
       press('ArrowUp');
       dumpFocus(true, 0, true);
 
       press('ArrowRight');
+      dumpFocus(true, 0, true);
+
+      press('ArrowDown');
       dumpFocus(true, 0, true);
 
       press('ArrowDown');

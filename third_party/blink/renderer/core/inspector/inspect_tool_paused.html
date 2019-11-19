@@ -1,0 +1,108 @@
+<!--
+ Copyright 2019 The Chromium Authors. All rights reserved.
+ Use of this source code is governed by a BSD-style license that can be
+ found in the LICENSE file.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+<script src="inspect_tool_common.js"></script>
+<link rel="stylesheet" href="inspect_tool_common.css">
+<style>
+body {
+  background-color: rgba(0, 0, 0, 0.31);
+}
+
+.controls-line {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.message-box {
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  cursor: default;
+  overflow: hidden;
+}
+
+#paused-in-debugger {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.controls-line > * {
+  background-color: rgb(255, 255, 194);
+  border: 1px solid rgb(202, 202, 202);
+  height: 22px;
+  box-sizing: border-box;
+}
+
+.controls-line .button {
+  width: 26px;
+  margin-left: -1px;
+  margin-right: 0;
+  padding: 0;
+  flex-shrink: 0;
+  flex-grow: 0;
+  cursor: pointer;
+}
+
+.controls-line .button .glyph {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  opacity: 0.8;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  position: relative;
+}
+
+.controls-line .button:active .glyph {
+  top: 1px;
+  left: 1px;
+}
+
+#resume-button .glyph {
+  -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAKCAYAAABv7tTEAAAAAXNSR0IArs4c6QAAAFJJREFUKM+10bEJgGAMBeEPbR3BLRzEVdzEVRzELRzBVohVwEJ+iODBlQfhBeJhsmHU4C0KnFjQV6J0x1SNAhdWDJUoPTB3PvLLeaUhypM3n3sD/qc7lDrdpIEAAAAASUVORK5CYII=);
+  -webkit-mask-size: 13px 10px;
+  background-color: rgb(66, 129, 235);
+}
+
+#step-over-button .glyph {
+  -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAKCAYAAAC5Sw6hAAAAAXNSR0IArs4c6QAAAOFJREFUKM+N0j8rhXEUB/DPcxW35CqhvIBrtqibkklhV8qkTHe4ZbdblcXgPVhuMdqUTUl5A2KRRCF5LGc4PT1P7qnfcr5/zu/8KdTHLFaxjHnc4RZXKI0QYxjgLQTVd42l/0wmg5iFX3iq5H6w22RS4DyRH7CB8cAXcBTGJT6xUmd0mEwuMdFQcA3fwXvGTAan8BrgPabTL9fRRyfx91PRMwyjGwcJ2EyCfsrfpPw2Pipz24NT/MZciiQYVshzOKnZ5Hturxt3k2MnCpS4SPkeHpPR8Sh3tYgttBoW9II2/AHiaEqvD2Fc0wAAAABJRU5ErkJggg==);
+  -webkit-mask-size: 18px 10px;
+}
+
+</style>
+<script>
+
+function drawPausedInDebuggerMessage(message) {
+  document.getElementById("paused-in-debugger").textContent = message;
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("resume-button").addEventListener("click", () => InspectorOverlayHost.send("resume"));
+  document.getElementById("step-over-button").addEventListener("click", () => InspectorOverlayHost.send("stepOver"));
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key == "F8" || eventHasCtrlOrMeta(event) && event.keyCode == 220 /* backslash */)
+    InspectorOverlayHost.send("resume");
+  else if (event.key == "F10" || eventHasCtrlOrMeta(event) && event.keyCode == 222 /* single quote */)
+    InspectorOverlayHost.send("stepOver");
+});
+
+</script>
+</head>
+
+<body class="fill">
+  <div class="controls-line">
+    <div class="message-box"><div id="paused-in-debugger"></div></div>
+    <div class="button" id="resume-button" title="Resume script execution (F8)."><div class="glyph"></div></div>
+    <div class="button" id="step-over-button" title="Step over next function call (F10)."><div class="glyph"></div></div>
+  </div>
+</body>
+</html>

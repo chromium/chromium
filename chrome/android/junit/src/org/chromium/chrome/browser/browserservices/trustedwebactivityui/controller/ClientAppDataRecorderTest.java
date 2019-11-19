@@ -43,8 +43,8 @@ public class ClientAppDataRecorderTest {
     private static final String APP_NAME = "Example App";
     private static final String APP_PACKAGE = "com.example.app";
     private static final String MISSING_PACKAGE = "com.missing.app";
-    private static final Origin ORIGIN = new Origin("https://www.example.com/");
-    private static final Origin OTHER_ORIGIN = new Origin("https://www.other.com/");
+    private static final Origin ORIGIN = Origin.create("https://www.example.com/");
+    private static final Origin OTHER_ORIGIN = Origin.create("https://www.other.com/");
 
     @Mock private ClientAppDataRegister mRegister;
     @Mock private PackageManager mPackageManager;

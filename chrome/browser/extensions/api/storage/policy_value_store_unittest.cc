@@ -15,7 +15,7 @@
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/settings_observer.h"
@@ -126,7 +126,7 @@ class PolicyValueStoreTest : public testing::Test {
   }
 
   base::ScopedTempDir scoped_temp_dir_;
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<PolicyValueStore> store_;
   MockSettingsObserver observer_;
   scoped_refptr<SettingsObserverList> observers_;
@@ -174,7 +174,7 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
   const base::Value value("111");
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange("aaa", nullptr, value.CreateDeepCopy()));
+    changes.push_back(ValueStoreChange("aaa", base::nullopt, value.Clone()));
     EXPECT_CALL(observer_,
                 OnSettingsChanged(kTestExtensionId,
                                   settings_namespace::MANAGED,
@@ -190,7 +190,7 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
   // Notify when new policies are added.
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange("bbb", nullptr, value.CreateDeepCopy()));
+    changes.push_back(ValueStoreChange("bbb", base::nullopt, value.Clone()));
     EXPECT_CALL(observer_,
                 OnSettingsChanged(kTestExtensionId,
                                   settings_namespace::MANAGED,
@@ -206,8 +206,8 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
   const base::Value new_value("222");
   {
     ValueStoreChangeList changes;
-    changes.push_back(ValueStoreChange("bbb", value.CreateDeepCopy(),
-                                       new_value.CreateDeepCopy()));
+    changes.push_back(
+        ValueStoreChange("bbb", value.Clone(), new_value.Clone()));
     EXPECT_CALL(observer_,
                 OnSettingsChanged(kTestExtensionId,
                                   settings_namespace::MANAGED,
@@ -224,7 +224,7 @@ TEST_F(PolicyValueStoreTest, NotifyOnChanges) {
   {
     ValueStoreChangeList changes;
     changes.push_back(
-        ValueStoreChange("bbb", new_value.CreateDeepCopy(), nullptr));
+        ValueStoreChange("bbb", new_value.Clone(), base::nullopt));
     EXPECT_CALL(observer_,
                 OnSettingsChanged(kTestExtensionId,
                                   settings_namespace::MANAGED,

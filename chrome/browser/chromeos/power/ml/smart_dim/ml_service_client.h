@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POWER_ML_SMART_DIM_ML_SERVICE_CLIENT_H_
 #define CHROME_BROWSER_CHROMEOS_POWER_ML_SMART_DIM_ML_SERVICE_CLIENT_H_
 
-#include <utility>
+#include <memory>
 #include <vector>
 
 #include "base/callback.h"
@@ -20,8 +20,7 @@ namespace ml {
 // inference on inputs provided by the caller.
 class MlServiceClient {
  public:
-  MlServiceClient() = default;
-  virtual ~MlServiceClient() {}
+  virtual ~MlServiceClient() = default;
 
   // Sends an input vector to the ML service to run inference on. It also
   // provides a |decision_callback| to the Mojo service which will be run

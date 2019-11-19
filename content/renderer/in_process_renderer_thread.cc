@@ -16,23 +16,14 @@
 
 namespace content {
 
-#if defined(OS_ANDROID)
-extern bool g_browser_main_loop_shutting_down;
-#endif
-
 InProcessRendererThread::InProcessRendererThread(
-    const InProcessChildThreadParams& params)
-    : Thread("Chrome_InProcRendererThread"), params_(params) {
-}
+    const InProcessChildThreadParams& params,
+    int32_t renderer_client_id)
+    : Thread("Chrome_InProcRendererThread"),
+      params_(params),
+      renderer_client_id_(renderer_client_id) {}
 
 InProcessRendererThread::~InProcessRendererThread() {
-#if defined(OS_ANDROID)
-  // Don't allow the render thread to be shut down in single process mode on
-  // Android unless the browser is shutting down.
-  // Temporary CHECK() to debug http://crbug.com/514141
-  CHECK(g_browser_main_loop_shutting_down);
-#endif
-
   Stop();
 }
 
@@ -54,17 +45,11 @@ void InProcessRendererThread::Init() {
   // RenderThreadImpl doesn't currently support a proper shutdown sequence
   // and it's okay when we're running in multi-process mode because renderers
   // get killed by the OS. In-process mode is used for test and debug only.
-  new RenderThreadImpl(params_, std::move(main_thread_scheduler));
+  new RenderThreadImpl(params_, renderer_client_id_,
+                       std::move(main_thread_scheduler));
 }
 
 void InProcessRendererThread::CleanUp() {
-#if defined(OS_ANDROID)
-  // Don't allow the render thread to be shut down in single process mode on
-  // Android unless the browser is shutting down.
-  // Temporary CHECK() to debug http://crbug.com/514141
-  CHECK(g_browser_main_loop_shutting_down);
-#endif
-
   render_process_.reset();
 
   // It's a little lame to manually set this flag.  But the single process
@@ -80,8 +65,9 @@ void InProcessRendererThread::CleanUp() {
 }
 
 base::Thread* CreateInProcessRendererThread(
-    const InProcessChildThreadParams& params) {
-  return new InProcessRendererThread(params);
+    const InProcessChildThreadParams& params,
+    int32_t renderer_client_id) {
+  return new InProcessRendererThread(params, renderer_client_id);
 }
 
 }  // namespace content

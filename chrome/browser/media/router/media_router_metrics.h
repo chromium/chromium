@@ -22,7 +22,7 @@ enum class SinkIconType;
 
 // NOTE: Do not renumber enums as that would confuse interpretation of
 // previously logged data. When making changes, also update the enum list
-// in tools/metrics/histograms/histograms.xml to keep it in sync.
+// in tools/metrics/histograms/enums.xml to keep it in sync.
 
 // NOTE: For metrics specific to the Media Router component extension, see
 // mojo/media_router_mojo_metrics.h.
@@ -33,9 +33,10 @@ enum class MediaRouterDialogOpenOrigin {
   OVERFLOW_MENU = 1,
   CONTEXTUAL_MENU = 2,
   PAGE = 3,
+  APP_MENU = 4,
 
   // NOTE: Add entries only immediately above this line.
-  TOTAL_COUNT = 4
+  TOTAL_COUNT = 5
 };
 
 // The possible outcomes from a route creation response.
@@ -99,8 +100,9 @@ class MediaRouterMetrics {
   static const char kHistogramStartLocalSessionSuccessful[];
   static const char kHistogramStopRoute[];
   static const char kHistogramUiDeviceCount[];
-  static const char kHistogramUiDialogPaint[];
+  static const char kHistogramUiDialogIconStateAtOpen[];
   static const char kHistogramUiDialogLoadedWithData[];
+  static const char kHistogramUiDialogPaint[];
   static const char kHistogramUiFirstAction[];
 
   // Records where the user clicked to open the Media Router dialog.
@@ -175,6 +177,10 @@ class MediaRouterMetrics {
   // Records whether or not a sink was found for the ID that the user manually
   // entered and attempted to cast to.
   static void RecordSearchSinkOutcome(bool success);
+
+  // Records whether the toolbar icon is pinned by the user pref / admin policy.
+  // Recorded whenever the Cast dialog is opened.
+  static void RecordIconStateAtDialogOpen(bool is_pinned);
 };
 
 }  // namespace media_router

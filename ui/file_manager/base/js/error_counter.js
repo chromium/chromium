@@ -100,5 +100,4 @@ Function.prototype.wrap = function(thisObject, ...bindArgs) {
     }
   };
 };
-
 })();

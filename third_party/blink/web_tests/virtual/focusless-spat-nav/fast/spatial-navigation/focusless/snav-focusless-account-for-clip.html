@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 130px;
+    height: 130px;
+    border: 1px solid black;
+  }
+
+  #clip {
+    margin: 5px;
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    background-color: lightgrey;
+  }
+
+  #target {
+    margin: 20px;
+    height: 50px;
+  }
+
+  pre {
+    position: absolute;
+    top: 400px;
+  }
+
+</style>
+<div tabindex="0" id="outer">
+  Outer Target
+  <div id="clip" tabindex="0">
+    Clip
+    <div id="target" tabindex="0">Inner Target</div>
+  </div>
+</div>
+
+<script>
+  const outer = document.getElementById("outer");
+  const clip = document.getElementById("clip");
+  const target = document.getElementById("target");
+
+  // This test checks that the spatial navigation overlap testing works
+  // correctly in the presence of clipping. The spatial navigation algorithm
+  // attempts to prioritize inner elements that are fully contained by another
+  // valid target.
+  //
+  // The spatial navigation algorithm focuses "containers" from the outside and
+  // in. This test ensures that also clipped "insiders" are reachable.
+  test(() => {
+    assert_true(!!window.internals);
+
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+                  outer,
+                  "Expected interest to move to |outer| element.");
+
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+                  clip,
+                  "Expected interest to move to |clip| element.");
+
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+                  target,
+                  "Expected interest to move to |target| element.");
+  }, "Navigation to fully contained but clipped element.");
+</script>

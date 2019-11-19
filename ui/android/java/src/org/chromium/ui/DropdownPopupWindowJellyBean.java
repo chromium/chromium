@@ -20,7 +20,6 @@ import android.widget.ListPopupWindow;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 
 import java.lang.reflect.Method;
@@ -128,8 +127,8 @@ class DropdownPopupWindowJellyBean implements DropdownPopupWindowInterface {
         boolean wasShowing = mListPopupWindow.isShowing();
         mListPopupWindow.show();
         mListPopupWindow.getListView().setDividerHeight(0);
-        ApiCompatibilityUtils.setLayoutDirection(mListPopupWindow.getListView(),
-                mRtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
+        int layoutDirection = mRtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR;
+        mListPopupWindow.getListView().setLayoutDirection(layoutDirection);
         if (!wasShowing) {
             mListPopupWindow.getListView().setContentDescription(mDescription);
             mListPopupWindow.getListView().sendAccessibilityEvent(

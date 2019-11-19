@@ -10,7 +10,10 @@
 #include "chrome/browser/media/router/route_message_observer.h"
 #include "chrome/common/media_router/media_route.h"
 #include "content/public/browser/presentation_service_delegate.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
 namespace media_router {
@@ -41,17 +44,18 @@ class BrowserPresentationConnectionProxy
       public RouteMessageObserver {
  public:
   // |router|: media router instance not owned by this class;
-  // |route_id|: underlying media route. |target_connection_ptr_| sends message
-  // to media route with |route_id|;
-  // |receiver_connection_request|: mojo interface request to be bind with this
-  // object;
-  // |controller_connection_ptr|: mojo interface ptr of controlling frame's
+  // |route_id|: underlying media route. |target_connection_remote_| sends
+  // message to media route with |route_id|;
+  // |receiver_connection_receiver|: mojo receiver to be bind with this object;
+  // |controller_connection_remote|: mojo remote of controlling frame's
   // connection proxy object.
   BrowserPresentationConnectionProxy(
       MediaRouter* router,
       const MediaRoute::Id& route_id,
-      blink::mojom::PresentationConnectionRequest receiver_connection_request,
-      blink::mojom::PresentationConnectionPtr controller_connection_ptr);
+      mojo::PendingReceiver<blink::mojom::PresentationConnection>
+          receiver_connection_receiver,
+      mojo::PendingRemote<blink::mojom::PresentationConnection>
+          controller_connection_remote);
   ~BrowserPresentationConnectionProxy() override;
 
   // blink::mojom::PresentationConnection implementation
@@ -74,8 +78,8 @@ class BrowserPresentationConnectionProxy
   MediaRouter* const router_;
   const MediaRoute::Id route_id_;
 
-  mojo::Binding<blink::mojom::PresentationConnection> binding_;
-  blink::mojom::PresentationConnectionPtr target_connection_ptr_;
+  mojo::Receiver<blink::mojom::PresentationConnection> receiver_{this};
+  mojo::Remote<blink::mojom::PresentationConnection> target_connection_remote_;
 };
 
 }  // namespace media_router

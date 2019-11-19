@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/base/lap_timer.h"
+#include "base/timer/lap_timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_test.h"
 #include "third_party/blink/renderer/platform/scheduler/test/test_queueing_time_estimator_client.h"
@@ -21,7 +21,7 @@ class QueueingTimeEstimatorTestPerfTest : public testing::Test {
  public:
   QueueingTimeEstimatorTestPerfTest()
       : timer_(kWarmupRuns, kTimeLimit, kCheckInterval) {}
-  cc::LapTimer timer_;
+  base::LapTimer timer_;
   base::TimeTicks time;
   TestQueueingTimeEstimatorClient client;
 };
@@ -41,7 +41,7 @@ TEST_F(QueueingTimeEstimatorTestPerfTest, DISABLED_ManyTasks) {
     time += base::TimeDelta::FromSeconds(1);
     timer_.Reset();
     do {
-      estimator.OnExecutionStarted(time, nullptr);
+      estimator.OnExecutionStarted(time);
       time += task_lengths[i];
       estimator.OnExecutionStopped(time);
       timer_.NextLap();

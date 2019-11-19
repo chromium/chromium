@@ -1,155 +1,139 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+from __future__ import division
+
 import os
 import unittest
 
+from telemetry import decorators
 from telemetry import story
-from telemetry.testing import options_for_unittests
-from telemetry.testing import page_test_test_case
+from telemetry.testing import legacy_page_test_case
 from telemetry.timeline import async_slice
 from telemetry.timeline import model as model_module
-
 
 from benchmarks import blink_perf
 
 
-class BlinkPerfTest(page_test_test_case.PageTestTestCase):
-  _BLINK_PERF_TEST_DATA_DIR = os.path.join(os.path.dirname(__file__),
-      '..', '..', '..', 'third_party', 'blink', 'perf_tests',
-      'test_data')
+_BLINK_PERF_TEST_DATA_DIR = os.path.join(os.path.dirname(__file__),
+    '..', '..', '..', 'third_party', 'blink', 'perf_tests', 'test_data')
+_BLINK_PERF_RESOURCES_DIR = os.path.join(os.path.dirname(__file__),
+    '..', '..', '..', 'third_party', 'blink', 'perf_tests', 'resources')
 
-  _BLINK_PERF_RESOURCES_DIR = os.path.join(os.path.dirname(__file__),
-      '..', '..', '..', 'third_party', 'blink', 'perf_tests',
-      'resources')
+
+def _Mean(values):
+  return sum(values) / len(values)
+
+
+class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
   def setUp(self):
-    self._options = options_for_unittests.GetCopy()
+    super(BlinkPerfTest, self).setUp()
     # pylint: disable=protected-access
-    self._measurement = blink_perf._BlinkPerfMeasurement()
+    self.blink_page_test = blink_perf._BlinkPerfMeasurement()
     # pylint: enable=protected-access
 
-  def _CreateStorySetForTestFile(self, test_file_name):
-    story_set = story.StorySet(base_dir=self._BLINK_PERF_TEST_DATA_DIR,
-        serving_dirs={self._BLINK_PERF_TEST_DATA_DIR,
-                      self._BLINK_PERF_RESOURCES_DIR})
-    # pylint: disable=protected-access
-    page = blink_perf._BlinkPerfPage('file://' + test_file_name, story_set,
-        base_dir=story_set.base_dir, name=test_file_name)
-    # pylint: enable=protected-access
-    story_set.AddStory(page)
+  def HasChromeTraces(self):
+    return any(name.startswith('trace/traceEvents/')
+               for name in self.test_result['outputArtifacts'])
+
+  @staticmethod
+  def CreateStorySetForTest(url):
+    story_set = story.StorySet(
+        base_dir=_BLINK_PERF_TEST_DATA_DIR,
+        serving_dirs=[_BLINK_PERF_TEST_DATA_DIR, _BLINK_PERF_RESOURCES_DIR])
+    assert url.startswith('file://'), 'Expected local URI, got %s' % url
+    blink_page = blink_perf._BlinkPerfPage(  # pylint: disable=protected-access
+        url, story_set, base_dir=story_set.base_dir, name=url[len('file://'):])
+    story_set.AddStory(blink_page)
     return story_set
 
   def testBlinkPerfTracingMetricsForMeasureTime(self):
-    results = self.RunMeasurement(measurement=self._measurement,
-        ps=self._CreateStorySetForTestFile('append-child-measure-time.html'),
-        options=self._options)
-    self.assertFalse(results.had_failures)
-    self.assertEquals(len(results.FindAllTraceValues()), 1)
+    measurements = self.RunPageTest(
+        self.blink_page_test, 'file://append-child-measure-time.html')
+    self.assertTrue(self.HasChromeTraces())
 
-    frame_view_layouts = results.FindAllPageSpecificValuesNamed(
-        'LocalFrameView::layout')
-    self.assertEquals(len(frame_view_layouts), 1)
+    frame_view_layouts = measurements['LocalFrameView::layout']['samples']
     # append-child-measure-time.html specifies 5 iterationCount.
-    self.assertEquals(len(frame_view_layouts[0].values), 5)
-    self.assertGreater(frame_view_layouts[0].mean, 0.001)
+    self.assertEquals(len(frame_view_layouts), 5)
+    self.assertGreater(_Mean(frame_view_layouts), 0.001)
 
-    update_layout_trees = results.FindAllPageSpecificValuesNamed(
-        'UpdateLayoutTree')
-    self.assertEquals(len(update_layout_trees), 1)
+    update_layout_trees = measurements['UpdateLayoutTree']['samples']
     # append-child-measure-time.html specifies 5 iterationCount.
-    self.assertEquals(len(update_layout_trees[0].values), 5)
-    self.assertGreater(update_layout_trees[0].mean, 0.001)
+    self.assertEquals(len(update_layout_trees), 5)
+    self.assertGreater(_Mean(update_layout_trees), 0.001)
 
   def testBlinkPerfTracingMetricsForMeasureFrameTime(self):
-    results = self.RunMeasurement(measurement=self._measurement,
-        ps=self._CreateStorySetForTestFile(
-            'color-changes-measure-frame-time.html'),
-        options=self._options)
-    self.assertFalse(results.had_failures)
-    self.assertEquals(len(results.FindAllTraceValues()), 1)
+    measurements = self.RunPageTest(
+        self.blink_page_test, 'file://color-changes-measure-frame-time.html')
+    self.assertTrue(self.HasChromeTraces())
 
-    frame_view_prepaints = results.FindAllPageSpecificValuesNamed(
-        'LocalFrameView::RunPrePaintLifecyclePhase')
+    frame_view_prepaints = measurements[
+        'LocalFrameView::RunPrePaintLifecyclePhase']['samples']
 
-    self.assertEquals(len(frame_view_prepaints), 1)
     # color-changes-measure-frame-time.html specifies 9 iterationCount.
-    self.assertEquals(len(frame_view_prepaints[0].values), 9)
-    self.assertGreater(frame_view_prepaints[0].mean, 0.001)
+    self.assertEquals(len(frame_view_prepaints), 9)
+    self.assertGreater(_Mean(frame_view_prepaints), 0.001)
 
-    frame_view_painttrees = results.FindAllPageSpecificValuesNamed(
-        'LocalFrameView::RunPaintLifecyclePhase')
-    self.assertEquals(len(frame_view_painttrees), 1)
+    frame_view_painttrees = measurements[
+        'LocalFrameView::RunPaintLifecyclePhase']['samples']
     # color-changes-measure-frame-time.html specifies 9 iterationCount.
-    self.assertEquals(len(frame_view_painttrees[0].values), 9)
-    self.assertGreater(frame_view_painttrees[0].mean, 0.001)
+    self.assertEquals(len(frame_view_painttrees), 9)
+    self.assertGreater(_Mean(frame_view_painttrees), 0.001)
 
   def testBlinkPerfTracingMetricsForMeasurePageLoadTime(self):
-    results = self.RunMeasurement(measurement=self._measurement,
-        ps=self._CreateStorySetForTestFile(
-            'simple-html-measure-page-load-time.html'),
-        options=self._options)
-    self.assertFalse(results.had_failures)
-    self.assertEquals(len(results.FindAllTraceValues()), 1)
+    measurements = self.RunPageTest(
+        self.blink_page_test, 'file://simple-html-measure-page-load-time.html')
+    self.assertTrue(self.HasChromeTraces())
 
-    create_child_frame = results.FindAllPageSpecificValuesNamed(
-        'WebLocalFrameImpl::createChildframe')
-    self.assertEquals(len(create_child_frame), 1)
+    create_child_frame = measurements[
+        'WebLocalFrameImpl::createChildframe']['samples']
     # color-changes-measure-frame-time.html specifies 7 iterationCount.
-    self.assertEquals(len(create_child_frame[0].values), 7)
-    self.assertGreater(create_child_frame[0].mean, 0.001)
+    self.assertEquals(len(create_child_frame), 7)
+    self.assertGreater(_Mean(create_child_frame), 0.001)
 
-    post_layout_task = results.FindAllPageSpecificValuesNamed(
-        'LocalFrameView::performPostLayoutTasks')
-    self.assertEquals(len(post_layout_task), 1)
+    post_layout_task = measurements[
+        'LocalFrameView::performPostLayoutTasks']['samples']
     # color-changes-measure-frame-time.html specifies 7 iterationCount.
-    self.assertEquals(len(post_layout_task[0].values), 7)
-    self.assertGreater(post_layout_task[0].mean, 0.001)
+    self.assertEquals(len(post_layout_task), 7)
+    self.assertGreater(_Mean(post_layout_task), 0.001)
 
-
+  @decorators.Disabled('mac')  # Flaky on mac: crbug.com/960554
   def testBlinkPerfTracingMetricsForMeasureAsync(self):
-    results = self.RunMeasurement(measurement=self._measurement,
-        ps=self._CreateStorySetForTestFile(
-            'simple-blob-measure-async.html'),
-        options=self._options)
-    self.assertFalse(results.failures)
-    self.assertEquals(len(results.FindAllTraceValues()), 1)
+    measurements = self.RunPageTest(
+        self.blink_page_test, 'file://simple-blob-measure-async.html')
+    self.assertTrue(self.HasChromeTraces())
 
-    blob_requests = results.FindAllPageSpecificValuesNamed(
-        'BlobRequest')
-    blob_readers = results.FindAllPageSpecificValuesNamed(
-        'BlobReader')
-    self.assertEquals(len(blob_requests), 1)
-    self.assertEquals(len(blob_readers), 1)
+    blob_requests = measurements['BlobRequest']['samples']
+    blob_readers = measurements['BlobReader']['samples']
     # simple-blob-measure-async.html specifies 6 iterationCount.
-    self.assertEquals(len(blob_requests[0].values), 6)
-    self.assertEquals(len(blob_readers[0].values), 6)
+    self.assertEquals(len(blob_requests), 6)
+    self.assertEquals(len(blob_readers), 6)
 
     # TODO(mek): Delete non-mojo code paths when blobs are always using mojo.
-    using_mojo = blob_readers[0].mean > 0.001
+    using_mojo = _Mean(blob_readers) > 0.001
     if using_mojo:
-      self.assertEquals(blob_requests[0].mean, 0)
-      self.assertGreater(blob_readers[0].mean, 0.001)
+      self.assertEquals(_Mean(blob_requests), 0)
+      self.assertGreater(_Mean(blob_readers), 0.001)
     else:
-      self.assertGreater(blob_requests[0].mean, 0.001)
-      self.assertEquals(blob_readers[0].mean, 0)
+      self.assertGreater(_Mean(blob_requests), 0.001)
+      self.assertEquals(_Mean(blob_readers), 0)
 
     if using_mojo:
-      read_data = results.FindAllPageSpecificValuesNamed(
-          'BlobReader::ReadMore')
+      read_data = measurements['BlobReader::ReadMore']['samples']
     else:
-      read_data = results.FindAllPageSpecificValuesNamed(
-          'BlobRequest::ReadRawData')
-    self.assertEquals(len(read_data), 1)
+      read_data = measurements['BlobRequest::ReadRawData']['samples']
     # simple-blob-measure-async.html specifies 6 iterationCount.
-    self.assertEquals(len(read_data[0].values), 6)
-    self.assertGreater(read_data[0].mean, 0.001)
+    self.assertEquals(len(read_data), 6)
+    self.assertGreater(_Mean(read_data), 0.001)
 
   def testBlinkPerfLifecycleMethods(self):
-    results = self.RunMeasurement(measurement=self._measurement,
-        ps=self._CreateStorySetForTestFile(
-            'lifecycle-methods.html'),
-        options=self._options)
-    self.assertFalse(results.failures)
+    self.RunPageTest(self.blink_page_test, 'file://lifecycle-methods.html')
+    self.assertFalse(self.HasChromeTraces())
+
+  def testExtraChromeCategories(self):
+    self.options.extra_chrome_categories = 'cc,blink'
+    self.RunPageTest(self.blink_page_test, 'file://lifecycle-methods.html')
+    self.assertTrue(self.HasChromeTraces())
 
 
 # pylint: disable=protected-access

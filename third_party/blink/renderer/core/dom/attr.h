@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -37,11 +37,6 @@ class CORE_EXPORT Attr final : public Node {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static Attr* Create(Element&, const QualifiedName&);
-  static Attr* Create(Document&,
-                      const QualifiedName&,
-                      const AtomicString& value);
-
   Attr(Element&, const QualifiedName&);
   Attr(Document&, const QualifiedName&, const AtomicString& value);
   ~Attr() override;
@@ -51,7 +46,7 @@ class CORE_EXPORT Attr final : public Node {
   Element* ownerElement() const { return element_; }
 
   const AtomicString& value() const;
-  void setValue(const AtomicString&);
+  void setValue(const AtomicString&, ExceptionState&);
 
   const QualifiedName GetQualifiedName() const;
 
@@ -81,7 +76,7 @@ class CORE_EXPORT Attr final : public Node {
   // standalone Node.)
   // Note that name_ is always set, but element_ /
   // standalone_value_or_attached_local_name_ may be null.
-  TraceWrapperMember<Element> element_;
+  Member<Element> element_;
   QualifiedName name_;
   // Holds the value if it is a standalone Node, or the local name of the
   // attribute it is attached to on an Element. The latter may (letter case)
@@ -90,7 +85,10 @@ class CORE_EXPORT Attr final : public Node {
   AtomicString standalone_value_or_attached_local_name_;
 };
 
-DEFINE_NODE_TYPE_CASTS(Attr, IsAttributeNode());
+template <>
+struct DowncastTraits<Attr> {
+  static bool AllowFrom(const Node& node) { return node.IsAttributeNode(); }
+};
 
 }  // namespace blink
 

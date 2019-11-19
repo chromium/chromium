@@ -1,6 +1,6 @@
-<html> 
+<html>
 <head>
-<title>Unfilled Properties Test</title> 
+<title>Unfilled Properties Test</title>
 <style type="text/css" media="screen">
 #box {
     height: 50px;
@@ -21,10 +21,11 @@
 @keyframes d { }
 @keyframes e { }
 </style>
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
   <script type="text/javascript" charset="utf-8">
-    if (window.testRunner)
-        testRunner.dumpAsText();
-  
+    var test = async_test("Unfilled Properties Test");
+
     const kExpectedResults = [
       { 'property': 'transitionDuration', 'value': '1s, 2s' },
       { 'property': 'transitionProperty', 'value': 'opacity, left, opacity, top, width, opacity, height, opacity' },
@@ -35,33 +36,25 @@
       { 'property': 'animationDelay',     'value': '1s' },
       { 'property': 'animationFillMode',  'value': 'forwards, backwards' },
     ];
-    
+
     function start()
     {
         var box = document.getElementById('box');
         var resultsString = "";
         var boxStyle = window.getComputedStyle(box);
-        
+
         kExpectedResults.forEach(function(curItem) {
           var computedValue = boxStyle[curItem.property];
           var expectedValue = curItem.value;
-          if (computedValue == expectedValue)
-            resultsString += "Testing " + curItem.property + ": PASS" + "<br>";
-          else
-            resultsString += "Testing " + curItem.property + " expected <code>" + curItem.value + "</code> got <code>" + computedValue + "</code>: FAIL" + "<br>";
+          assert_equals(computedValue, expectedValue, "Testing " + curItem.property + " expected " + curItem.value);
         });
-
-        var results = document.getElementById('result');
-        results.innerHTML = resultsString;
     }
-    
-    window.addEventListener('load', start, false);
+
+    window.addEventListener('load', test.step_func_done(start), false);
   </script>
-</head> 
+</head>
 <body>
 <div id="box">
-</div>
-<div id="result">
 </div>
 </body>
 </html>

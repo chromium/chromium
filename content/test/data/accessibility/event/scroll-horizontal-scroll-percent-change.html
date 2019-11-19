@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="div" style="width: 200px; height: 200px; overflow: scroll;">
+    <div style="width: 400px; background-color: green;">overflow div</div>
+  </div>
+
+  <div style="width: 150vw; background-color: yellow;">overflow window</div>
+
+<script>
+  function go() {
+    // scroll page in the x direction
+    window.scrollTo(20, 0);
+    // scroll the overflow div in the x direction.
+    document.getElementById('div').scrollTo(20, 0);
+  }
+</script>
+</body>
+</html>

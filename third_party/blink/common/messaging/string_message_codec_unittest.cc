@@ -5,7 +5,7 @@
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8/include/v8.h"
 
@@ -13,7 +13,7 @@ namespace blink {
 namespace {
 
 base::string16 DecodeWithV8(const std::vector<uint8_t>& encoded) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   base::string16 result;
 
   v8::Isolate::CreateParams params;
@@ -46,7 +46,7 @@ base::string16 DecodeWithV8(const std::vector<uint8_t>& encoded) {
 }
 
 std::vector<uint8_t> EncodeWithV8(const base::string16& message) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   std::vector<uint8_t> result;
 
   v8::Isolate::CreateParams params;

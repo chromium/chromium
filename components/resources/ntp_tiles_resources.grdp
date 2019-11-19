@@ -3,7 +3,7 @@
   <if expr="is_android or is_ios">
     <if expr="_google_chrome">
       <then>
-        <include name="IDR_DEFAULT_POPULAR_SITES_JSON" file="../ntp_tiles/resources/internal/default_popular_sites.json" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_JSON" file="../ntp_tiles/resources/internal/default_popular_sites.json" type="BINDATA" compress="gzip" />
         <include name="IDR_DEFAULT_POPULAR_SITES_ICON0" file="../ntp_tiles/resources/internal/icon0.webp" type="BINDATA" />
         <include name="IDR_DEFAULT_POPULAR_SITES_ICON1" file="../ntp_tiles/resources/internal/icon1.webp" type="BINDATA" />
         <include name="IDR_DEFAULT_POPULAR_SITES_ICON2" file="../ntp_tiles/resources/internal/icon2.webp" type="BINDATA" />
@@ -15,7 +15,7 @@
       </then>
       <else>
         <!-- Fall back to a local resource so popular sites can be tested properly. -->
-        <include name="IDR_DEFAULT_POPULAR_SITES_JSON" file="../ntp_tiles/resources/default_popular_sites.json" type="BINDATA" />
+        <include name="IDR_DEFAULT_POPULAR_SITES_JSON" file="../ntp_tiles/resources/default_popular_sites.json" type="BINDATA" compress="gzip" />
       </else>
     </if>
   </if>

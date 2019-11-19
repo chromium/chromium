@@ -39,14 +39,7 @@ double Tween::CalculateValue(Tween::Type type, double state) {
         return pow(state * 2, 2) / 2.0;
       return 1.0 - (pow((state - 1.0) * 2, 2) / 2.0);
 
-    case FAST_IN_OUT:
-      return (pow(state - 0.5, 3) + 0.125) / 0.25;
-
     case LINEAR:
-      return state;
-
-    case EASE_OUT_SNAP:
-      state = 0.95 * (1.0 - pow(1.0 - state, 2));
       return state;
 
     case EASE_OUT:
@@ -213,9 +206,17 @@ gfx::Transform Tween::TransformValueBetween(double value,
   return to_return;
 }
 
-gfx::SizeF Tween::SizeValueBetween(double value,
-                                   const gfx::SizeF& start,
-                                   const gfx::SizeF& target) {
+gfx::Size Tween::SizeValueBetween(double value,
+                                  const gfx::Size& start,
+                                  const gfx::Size& target) {
+  return gfx::Size(
+      Tween::LinearIntValueBetween(value, start.width(), target.width()),
+      Tween::LinearIntValueBetween(value, start.height(), target.height()));
+}
+
+gfx::SizeF Tween::SizeFValueBetween(double value,
+                                    const gfx::SizeF& start,
+                                    const gfx::SizeF& target) {
   return gfx::SizeF(
       Tween::FloatValueBetween(value, start.width(), target.width()),
       Tween::FloatValueBetween(value, start.height(), target.height()));

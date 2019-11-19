@@ -1,0 +1,4 @@
+[document web]
+++[entry] description='Your username should be your email id' selectable-text described-by
+++[tool tip] name='Your username should be your email id' description-for
+++++[static] name='Your username should be your email id'

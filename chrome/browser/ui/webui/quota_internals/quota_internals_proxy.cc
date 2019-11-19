@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
-#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/webui/quota_internals/quota_internals_handler.h"
 #include "chrome/browser/ui/webui/quota_internals/quota_internals_types.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -22,15 +21,13 @@ using content::BrowserThread;
 namespace quota_internals {
 
 QuotaInternalsProxy::QuotaInternalsProxy(QuotaInternalsHandler* handler)
-    : handler_(handler),
-      weak_factory_(this) {
-}
+    : handler_(handler) {}
 
 void QuotaInternalsProxy::RequestInfo(
     scoped_refptr<storage::QuotaManager> quota_manager) {
   DCHECK(quota_manager.get());
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&QuotaInternalsProxy::RequestInfo, this, quota_manager));
     return;
@@ -72,18 +69,17 @@ void QuotaInternalsProxy::RequestInfo(
 
 QuotaInternalsProxy::~QuotaInternalsProxy() {}
 
-#define RELAY_TO_HANDLER(func, arg_t)                             \
-  void QuotaInternalsProxy::func(arg_t arg) {                     \
-    if (!handler_)                                                \
-      return;                                                     \
-    if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {         \
-      base::PostTaskWithTraits(                                   \
-          FROM_HERE, {BrowserThread::UI},                         \
-          base::BindOnce(&QuotaInternalsProxy::func, this, arg)); \
-      return;                                                     \
-    }                                                             \
-                                                                  \
-    handler_->func(arg);                                          \
+#define RELAY_TO_HANDLER(func, arg_t)                                        \
+  void QuotaInternalsProxy::func(arg_t arg) {                                \
+    if (!handler_)                                                           \
+      return;                                                                \
+    if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {                    \
+      base::PostTask(FROM_HERE, {BrowserThread::UI},                         \
+                     base::BindOnce(&QuotaInternalsProxy::func, this, arg)); \
+      return;                                                                \
+    }                                                                        \
+                                                                             \
+    handler_->func(arg);                                                     \
   }
 
 RELAY_TO_HANDLER(ReportAvailableSpace, int64_t)

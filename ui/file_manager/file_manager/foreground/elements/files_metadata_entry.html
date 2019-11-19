@@ -23,14 +23,11 @@
         display: none;
       }
 
-      #padding {
-        width: 32px;
-      }
-
       #key {
         color: white;
         font-weight: 500;
         margin-inline-end: 16px;
+        margin-inline-start: 32px;
         overflow-wrap: break-word;
         vertical-align: bottom;
         width: 96px;
@@ -44,40 +41,30 @@
         width: 160px;
       }
 
-      #value[loading] {
-        font-size: 30px;
-      }
-
       #value[loading]::after {
-        animation: ellipsis steps(4,end) 900ms infinite;
-        content: '\2026'; /* ascii code for the ellipsis character */
+        animation: ellipsis 1s steps(4,end) 100ms infinite;
+        content: '\2026'; /* Unicode horizontal ellipsis */
         display: inline-block;
         overflow: hidden;
+        transform: scale(2.5) translate(0, 1px);
+        transform-origin: left bottom;
         vertical-align: bottom;
         width: 0;
       }
 
       @keyframes ellipsis {
         to {
-          width: 1.25em;
-        }
-      }
-
-      @keyframes ellipsis {
-        to {
-          width: 1.25em;
+          width: 0.93em;
         }
       }
 
       @media only screen and (max-width: 720px) {
-        #padding {
-          width: 12px;
-        }
         #box {
           width: 240px;
         }
         #key {
           margin-inline-end: 8px;
+          margin-inline-start: 12px;
           width: 80px;
         }
         #value {
@@ -86,9 +73,10 @@
       }
     </style>
     <div id="box" hidden="[[!value]]">
-      <div id="padding"></div>
       <div id="key">[[key]]</div>
-      <div id="value" loading$="{{loading}}"><div hidden="[[loading]]">[[value]]</div></div>
+      <div id="value" loading$="{{loading}}">
+        <div hidden="[[loading]]">[[value]]</div>
+      </div>
     </div>
   </template>
 </dom-module>

@@ -17,6 +17,7 @@
 # The command line above counts the RSS of 1) process 12345, 2) process 23456
 # and 3) all descendant processes of process 23456.
 
+from __future__ import print_function
 
 import collections
 import logging
@@ -134,7 +135,7 @@ def main(argv):
     return 1
 
   # TODO(dmikurube): Classify this total RSS.
-  print len(pageframes) * 4096
+  print(len(pageframes) * 4096)
 
   return 0
 

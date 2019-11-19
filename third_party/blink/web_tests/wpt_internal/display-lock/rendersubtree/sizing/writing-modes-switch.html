@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: writing modes switch</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="writing-modes-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+.verticalrl {
+  writing-mode: vertical-rl;
+}
+.verticallr {
+  writing-mode: vertical-lr;
+}
+.horizontaltb {
+  writing-mode: horizontal-tb;
+}
+.sized {
+  width: 100px;
+  height: 200px;
+}
+.box {
+  background: lightblue;
+  intrinsic-size: 12px 34px;
+  border-color: blue;
+  border-style: solid;
+  border-width: 1px 2px 3px 4px;
+  padding: 5px 6px 7px 8px;
+}
+.border {
+  border: 1px solid black;
+  width: max-content;
+  margin: 5px;
+}
+div:not([rendersubtree~="invisible"]) {
+  intrinsic-size: legacy !important;
+}
+</style>
+
+<div class="border verticalrl">
+  <div class="box">
+    <div class="sized">hello<br>world</div>
+  </div>
+</div>
+<div class="border verticalrl">
+  <div class="box horizontaltb">
+    <div class="sized">hello<br>world</div>
+  </div>
+</div>
+<div class="border verticallr">
+  <div class="box">
+    <div class="sized">hello<br>world</div>
+  </div>
+</div>
+<div class="border horizontaltb">
+  <div class="box">
+    <div class="sized">hello<br>world</div>
+  </div>
+</div>
+<div class="border horizontaltb">
+  <div class="box verticalrl">
+    <div class="sized">hello<br>world</div>
+  </div>
+</div>
+
+<script>
+async function runTest() {
+  let items = document.getElementsByClassName("box");
+  let promises = []
+  for (let i = 0; i < items.length; ++i) {
+    promises.push(setInvisible(items[i]));
+  }
+  await Promise.all(promises);
+
+  let borders = document.getElementsByClassName("border");
+  for (let i = 0; i < borders.length; ++i) {
+    if (borders[i].classList.contains("horizontaltb")) {
+      borders[i].classList.replace("horizontaltb", "verticalrl");
+    } else {
+      borders[i].classList.replace("verticalrl", "horizontaltb");
+      borders[i].classList.replace("verticallr", "horizontaltb");
+    }
+  }
+
+  takeScreenshot();
+}
+
+onload = () => requestAnimationFrame(runTest);
+</script>
+</html>

@@ -1,9 +1,0 @@
-Name: A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined in FIPS 180-1.
-Short Name: sha1.js
-URL: http://pajhome.org.uk/crypt/md5/
-License: BSD
-Security Critical: no
-
-This directory contains Chromium's version of sha1.js which is for hashing strings in javascript synchronously. Added
-jsdoc types to functions, wrapped functions in an outer function and removed portions of code that are not needed by
-Chromium.

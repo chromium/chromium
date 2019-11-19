@@ -1,0 +1,15 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// A HID event fired when an input report is received.
+// https://wicg.github.io/webhid/index.html#events
+
+[
+    Exposed(Window WebHID),
+    SecureContext
+] interface HIDInputReportEvent : Event {
+    [SameObject] readonly attribute HIDDevice device;
+    readonly attribute octet reportId;
+    readonly attribute DataView data;
+};

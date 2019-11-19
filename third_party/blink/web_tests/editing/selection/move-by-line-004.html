@@ -1,49 +1,68 @@
-<p>
-    Test that moving the caret with line granularity within the highest
-    editable root works across non-editable content.
-</p>
-<pre id="console"></pre>
-<div contenteditable="true">
-    <div contenteditable="false">
-        <span id="pie" contenteditable="true">apple pie</span>
-    </div>
-    <div contenteditable="false">
-        pineapple
-    </div>
-    <div contenteditable="false">
-        <span id="juice" contenteditable="true">apple juice</span>
-    </div>
-</div>
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-    function log(message)
-    {
-        document.getElementById("console").appendChild(document.createTextNode(message + "\n"));
-    }
+//  Test that moving the caret with line granularity within the highest
+//  editable root works across non-editable content.
 
-    if (window.testRunner)
-        testRunner.dumpAsText();
+selection_test(
+    `
+      <div contenteditable style="font-family: monospace">
+        <div contenteditable="false">
+          <span contenteditable="true">app|le pie</span>
+        </div>
+        <div contenteditable="false">
+          pineapple
+        </div>
+        <div contenteditable="false">
+          <span contenteditable="true">apple juice</span>
+        </div>
+      </div>
+    `,
+    selection => selection.modify('move', 'forward', 'line'),
+    `
+      <div contenteditable style="font-family: monospace">
+        <div contenteditable="false">
+          <span contenteditable="true">apple pie</span>
+        </div>
+        <div contenteditable="false">
+          pineapple
+        </div>
+        <div contenteditable="false">
+          <span contenteditable="true">app|le juice</span>
+        </div>
+      </div>
+    `,
+    'Move down across non-editable div');
 
-    var fail = false;
-    var pie = document.getElementById("pie");
-    var juice = document.getElementById("juice");
-
-    var sel = getSelection();
-    sel.collapse(pie.firstChild, 3);
-    sel.modify("move", "forward", "line");
-
-    if (sel.anchorNode !== juice.firstChild || sel.anchorOffset != 3) {
-        log("FAIL: Did not move to the next line");
-        fail = true;
-    }
-
-    sel.collapse(juice.firstChild, 3);
-    sel.modify("move", "backward", "line");
-
-    if (sel.anchorNode !== pie.firstChild || sel.anchorOffset != 3) {
-        log("FAIL: Did not move to the previous line");
-        fail = true;
-    }
-
-    if (!fail)
-        log("PASS");
+selection_test(
+    `
+      <div contenteditable style="font-family: monospace">
+        <div contenteditable="false">
+          <span contenteditable="true">apple pie</span>
+        </div>
+        <div contenteditable="false">
+          pineapple
+        </div>
+        <div contenteditable="false">
+          <span contenteditable="true">app|le juice</span>
+        </div>
+      </div>
+    `,
+    selection => selection.modify('move', 'backward', 'line'),
+    `
+      <div contenteditable style="font-family: monospace">
+        <div contenteditable="false">
+          <span contenteditable="true">app|le pie</span>
+        </div>
+        <div contenteditable="false">
+          pineapple
+        </div>
+        <div contenteditable="false">
+          <span contenteditable="true">apple juice</span>
+        </div>
+      </div>
+    `,
+    'Move up across non-editable div');
 </script>

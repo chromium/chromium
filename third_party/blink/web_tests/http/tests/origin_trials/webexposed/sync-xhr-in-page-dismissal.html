@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<body>
+<title>Test behavior of sync XHR during unload</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+var t = async_test();
+var xhr_fired = false;
+
+function start_test() {
+  step_timeout(t.step_func(function() {
+    assert_true(xhr_fired);
+    t.done();
+  }), 1000);
+}
+
+onload = function() {
+  setTimeout(function() {
+    var iframe = document.getElementById("ifr")
+    iframe.src = "about:blank";
+  }, 100)
+}
+</script>
+<iframe id="ifr" name="ifr" src="resources/sync-xhr-in-page-dismissal.html"></iframe>
+</body>
+</html>

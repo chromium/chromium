@@ -82,7 +82,7 @@ class NetworkLocationProvider : public LocationProvider {
 
   base::ThreadChecker thread_checker_;
 
-  base::WeakPtrFactory<NetworkLocationProvider> weak_factory_;
+  base::WeakPtrFactory<NetworkLocationProvider> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkLocationProvider);
 };

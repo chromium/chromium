@@ -1,0 +1,34 @@
+<!--
+@EXECUTE-AND-WAIT-FOR:open_modal()
+@EXECUTE-AND-WAIT-FOR:remove_span()
+This regression test ensures that the dialog is included in the tree.
+There was a bug where ClearChildren would disconnect indirect children from
+their parent. crbug: 996992
+-->
+<!DOCTYPE html>
+<html>
+
+<span>some text</span>
+<div>
+  <dialog>
+    <div id="dialog-text" tabindex="0">Dialog Text</div>
+  </dialog>
+</div>
+
+
+<script>
+  function open_modal() {
+    document.querySelector("dialog").showModal();
+    return "Dialog Text";
+  }
+  function remove_span() {
+    // Cause the root to be updated.
+    let span = document.querySelector("span");
+    span.parentElement.removeChild(span);
+
+    document.getElementById("dialog-text").innerText = "Done";
+    return "Done";
+  }
+</script>
+
+</html>

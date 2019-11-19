@@ -12,31 +12,37 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_rtc_peer_connection_handler.h"
 #include "third_party/blink/public/platform/web_rtc_rtp_receiver.h"
-#include "third_party/blink/public/platform/web_rtc_rtp_sender.h"
 #include "third_party/blink/public/platform/web_rtc_session_description.h"
-#include "third_party/blink/public/platform/web_rtc_session_description_request.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_peer_connection_error_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_callback.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/peerconnection/mock_web_rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_answer_options.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_configuration.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_server.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_offer_options.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_session_description_init.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_web_rtc.h"
 #include "third_party/webrtc/api/rtc_error.h"
 #include "v8/include/v8.h"
 
 namespace blink {
+
+class RTCOfferOptionsPlatform;
 
 static const char* kOfferSdpUnifiedPlanSingleAudioSingleVideo =
     "v=0\r\n"
@@ -384,24 +390,33 @@ class RTCPeerConnectionTestWithPlatformTestingPlatformType
     HeapVector<Member<RTCIceServer>> ice_servers;
     ice_servers.push_back(ice_server);
     config->setIceServers(ice_servers);
+    RTCPeerConnection::SetRtcPeerConnectionHandlerFactoryForTesting(
+        base::BindRepeating(
+            &RTCPeerConnectionTestWithPlatformTestingPlatformType::
+                CreateRTCPeerConnectionHandler,
+            base::Unretained(this)));
     return RTCPeerConnection::Create(scope.GetExecutionContext(), config,
                                      Dictionary(), scope.GetExceptionState());
+  }
+
+  virtual std::unique_ptr<WebRTCPeerConnectionHandler>
+  CreateRTCPeerConnectionHandler() {
+    return std::make_unique<MockWebRTCPeerConnectionHandler>();
   }
 
   MediaStreamTrack* CreateTrack(V8TestingScope& scope,
                                 MediaStreamSource::StreamType type,
                                 String id) {
-    MediaStreamSource* source =
-        MediaStreamSource::Create("sourceId", type, "sourceName", false);
-    MediaStreamComponent* component = MediaStreamComponent::Create(id, source);
+    auto* source = MakeGarbageCollected<MediaStreamSource>("sourceId", type,
+                                                           "sourceName", false);
+    auto* component = MakeGarbageCollected<MediaStreamComponent>(id, source);
     return MediaStreamTrack::Create(scope.GetExecutionContext(), component);
   }
 
   std::string GetExceptionMessage(V8TestingScope& scope) {
     ExceptionState& exception_state = scope.GetExceptionState();
-    return exception_state.HadException()
-               ? exception_state.Message().Utf8().data()
-               : "";
+    return exception_state.HadException() ? exception_state.Message().Utf8()
+                                          : "";
   }
 
   void AddStream(V8TestingScope& scope,
@@ -423,11 +438,11 @@ class RTCPeerConnectionTestWithPlatformTestingPlatformType
   ScopedTestingPlatformSupport<PlatformSupportType> platform_;
 };
 
+// TODO(crbug.com/787254): Consider removing or simplifying the inheritance
+// altogether.
 class RTCPeerConnectionTest
     : public RTCPeerConnectionTestWithPlatformTestingPlatformType<
-          TestingPlatformSupportWithWebRTC> {
- public:
-};
+          TestingPlatformSupport> {};
 
 TEST_F(RTCPeerConnectionTest, GetAudioTrack) {
   V8TestingScope scope;
@@ -644,33 +659,32 @@ enum class AsyncOperationAction {
 };
 
 template <typename RequestType>
-void CompleteRequest(RequestType request, bool resolve);
+void CompleteRequest(RequestType* request, bool resolve);
 
 template <>
-void CompleteRequest(WebRTCSessionDescriptionRequest request, bool resolve) {
+void CompleteRequest(RTCVoidRequest* request, bool resolve) {
   if (resolve) {
-    WebRTCSessionDescription description =
-        WebRTCSessionDescription(WebString(), WebString());
-    request.RequestSucceeded(description);
+    request->RequestSucceeded();
   } else {
-    request.RequestFailed(
+    request->RequestFailed(
         webrtc::RTCError(webrtc::RTCErrorType::INVALID_MODIFICATION));
   }
 }
 
 template <>
-void CompleteRequest(WebRTCVoidRequest request, bool resolve) {
+void CompleteRequest(RTCSessionDescriptionRequest* request, bool resolve) {
   if (resolve) {
-    request.RequestSucceeded();
+    WebRTCSessionDescription description =
+        WebRTCSessionDescription(WebString(), WebString());
+    request->RequestSucceeded(description);
   } else {
-    request.RequestFailed(
+    request->RequestFailed(
         webrtc::RTCError(webrtc::RTCErrorType::INVALID_MODIFICATION));
   }
 }
 
 template <typename RequestType>
-void PostToCompleteRequest(AsyncOperationAction action,
-                           const RequestType& request) {
+void PostToCompleteRequest(AsyncOperationAction action, RequestType* request) {
   switch (action) {
     case AsyncOperationAction::kLeavePending:
       return;
@@ -689,42 +703,42 @@ void PostToCompleteRequest(AsyncOperationAction action,
 
 class FakeWebRTCPeerConnectionHandler : public MockWebRTCPeerConnectionHandler {
  public:
-  std::vector<std::unique_ptr<WebRTCRtpTransceiver>> CreateOffer(
-      const WebRTCSessionDescriptionRequest& request,
+  WebVector<std::unique_ptr<WebRTCRtpTransceiver>> CreateOffer(
+      RTCSessionDescriptionRequest* request,
       const WebMediaConstraints&) override {
-    PostToCompleteRequest<WebRTCSessionDescriptionRequest>(
-        async_operation_action_, request);
+    PostToCompleteRequest<RTCSessionDescriptionRequest>(async_operation_action_,
+                                                        request);
     return {};
   }
 
-  std::vector<std::unique_ptr<WebRTCRtpTransceiver>> CreateOffer(
-      const WebRTCSessionDescriptionRequest& request,
-      const WebRTCOfferOptions&) override {
-    PostToCompleteRequest<WebRTCSessionDescriptionRequest>(
-        async_operation_action_, request);
+  WebVector<std::unique_ptr<WebRTCRtpTransceiver>> CreateOffer(
+      RTCSessionDescriptionRequest* request,
+      RTCOfferOptionsPlatform*) override {
+    PostToCompleteRequest<RTCSessionDescriptionRequest>(async_operation_action_,
+                                                        request);
     return {};
   }
 
-  void CreateAnswer(const WebRTCSessionDescriptionRequest& request,
+  void CreateAnswer(RTCSessionDescriptionRequest* request,
                     const WebMediaConstraints&) override {
-    PostToCompleteRequest<WebRTCSessionDescriptionRequest>(
-        async_operation_action_, request);
+    PostToCompleteRequest<RTCSessionDescriptionRequest>(async_operation_action_,
+                                                        request);
   }
 
-  void CreateAnswer(const WebRTCSessionDescriptionRequest& request,
-                    const WebRTCAnswerOptions&) override {
-    PostToCompleteRequest<WebRTCSessionDescriptionRequest>(
-        async_operation_action_, request);
+  void CreateAnswer(RTCSessionDescriptionRequest* request,
+                    RTCAnswerOptionsPlatform*) override {
+    PostToCompleteRequest<RTCSessionDescriptionRequest>(async_operation_action_,
+                                                        request);
   }
 
-  void SetLocalDescription(const WebRTCVoidRequest& request,
+  void SetLocalDescription(RTCVoidRequest* request,
                            const WebRTCSessionDescription&) override {
-    PostToCompleteRequest<WebRTCVoidRequest>(async_operation_action_, request);
+    PostToCompleteRequest<RTCVoidRequest>(async_operation_action_, request);
   }
 
-  void SetRemoteDescription(const WebRTCVoidRequest& request,
+  void SetRemoteDescription(RTCVoidRequest* request,
                             const WebRTCSessionDescription&) override {
-    PostToCompleteRequest<WebRTCVoidRequest>(async_operation_action_, request);
+    PostToCompleteRequest<RTCVoidRequest>(async_operation_action_, request);
   }
 
   void set_async_operation_action(AsyncOperationAction action) {
@@ -737,21 +751,6 @@ class FakeWebRTCPeerConnectionHandler : public MockWebRTCPeerConnectionHandler {
       AsyncOperationAction::kLeavePending;
 };
 
-class TestingPlatformSupportWithFakeWebRTC : public TestingPlatformSupport {
- public:
-  std::unique_ptr<WebRTCPeerConnectionHandler> CreateRTCPeerConnectionHandler(
-      WebRTCPeerConnectionHandlerClient*,
-      scoped_refptr<base::SingleThreadTaskRunner>) override {
-    handler_ = new FakeWebRTCPeerConnectionHandler();
-    return std::unique_ptr<WebRTCPeerConnectionHandler>(handler_);
-  }
-
-  FakeWebRTCPeerConnectionHandler* handler() const { return handler_; }
-
- private:
-  FakeWebRTCPeerConnectionHandler* handler_;
-};
-
 // These tests verifies the code paths for notifying the peer connection's
 // CallSetupStateTracker of offerer and answerer events. Because fakes are used
 // the test can pass empty SDP around, deciding whether to resolve or reject
@@ -759,10 +758,20 @@ class TestingPlatformSupportWithFakeWebRTC : public TestingPlatformSupport {
 // platform_->RunUntilIdle() is enough to ensure a pending operation has
 // completed. Without fakes we would have had to await promises and callbacks,
 // passing SDP returned by one operation to the next.
+//
+// TODO(crbug.com/787254): Consider removing or simplifying the inheritance
+// altogether.
 class RTCPeerConnectionCallSetupStateTest
     : public RTCPeerConnectionTestWithPlatformTestingPlatformType<
-          TestingPlatformSupportWithFakeWebRTC> {
+          TestingPlatformSupport> {
  public:
+  std::unique_ptr<WebRTCPeerConnectionHandler> CreateRTCPeerConnectionHandler()
+      override {
+    auto handler = std::make_unique<FakeWebRTCPeerConnectionHandler>();
+    handler_ = handler.get();
+    return handler;
+  }
+
   RTCPeerConnection* Initialize(V8TestingScope& scope) {
     RTCPeerConnection* pc = CreatePC(scope);
     tracker_ = &pc->call_setup_state_tracker();
@@ -771,9 +780,9 @@ class RTCPeerConnectionCallSetupStateTest
   }
 
   void SetNextOperationIsSuccessful(bool successful) {
-    platform_->handler()->set_async_operation_action(
-        successful ? AsyncOperationAction::kResolve
-                   : AsyncOperationAction::kReject);
+    handler_->set_async_operation_action(successful
+                                             ? AsyncOperationAction::kResolve
+                                             : AsyncOperationAction::kReject);
   }
 
   RTCSessionDescriptionInit* EmptyOffer() {
@@ -808,6 +817,7 @@ class RTCPeerConnectionCallSetupStateTest
 
  protected:
   const CallSetupStateTracker* tracker_ = nullptr;
+  FakeWebRTCPeerConnectionHandler* handler_ = nullptr;
 };
 
 TEST_F(RTCPeerConnectionCallSetupStateTest, InitialState) {
@@ -1112,6 +1122,74 @@ TEST(DeduceSdpUsageCategory, ComplexSdpIsSafeIfMatchingExplicitSdpSemantics) {
   EXPECT_EQ(SdpUsageCategory::kUnsafe,
             DeduceSdpUsageCategory("offer", kOfferSdpPlanBMultipleAudioTracks,
                                    true, webrtc::SdpSemantics::kUnifiedPlan));
+}
+
+// This test was originally extracted out of [1], so that core/ does not need
+// to depend on mobules/.
+//
+// [1] core/scheduler_integration_tests/scheduler_affecting_features_test.cc
+//
+// TODO(crbug.com/787254): Consider factorying
+// SchedulingAffectingWebRTCFeaturesTest out to avoid the code duplication.
+class SchedulingAffectingWebRTCFeaturesTest : public SimTest {
+ public:
+  PageScheduler* PageScheduler() {
+    return MainFrameScheduler()->GetPageScheduler();
+  }
+
+  FrameScheduler* MainFrameScheduler() { return MainFrame().Scheduler(); }
+
+  // Some features (e.g. document.load) are expected to appear in almost
+  // any output. Filter them out to make most of the tests simpler.
+  Vector<SchedulingPolicy::Feature> GetNonTrivialMainFrameFeatures() {
+    Vector<SchedulingPolicy::Feature> result;
+    for (SchedulingPolicy::Feature feature :
+         MainFrameScheduler()
+             ->GetActiveFeaturesTrackedForBackForwardCacheMetrics()) {
+      if (feature != SchedulingPolicy::Feature::kWebRTC)
+        continue;
+      result.push_back(feature);
+    }
+    return result;
+  }
+
+  std::unique_ptr<WebRTCPeerConnectionHandler>
+  CreateRTCPeerConnectionHandler() {
+    return std::make_unique<MockWebRTCPeerConnectionHandler>();
+  }
+};
+
+TEST_F(SchedulingAffectingWebRTCFeaturesTest, WebRTCStopsThrottling) {
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
+
+  RTCPeerConnection::SetRtcPeerConnectionHandlerFactoryForTesting(
+      base::BindRepeating(&SchedulingAffectingWebRTCFeaturesTest::
+                              CreateRTCPeerConnectionHandler,
+                          base::Unretained(this)));
+
+  SimRequest main_resource("https://example.com/", "text/html");
+
+  LoadURL("https://example.com/");
+
+  EXPECT_FALSE(PageScheduler()->OptedOutFromAggressiveThrottlingForTest());
+  EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
+              testing::UnorderedElementsAre());
+
+  main_resource.Complete(
+      "<script>"
+      "  var data_channel = new RTCPeerConnection();"
+      "</script>");
+
+  EXPECT_TRUE(PageScheduler()->OptedOutFromAggressiveThrottlingForTest());
+  EXPECT_THAT(
+      GetNonTrivialMainFrameFeatures(),
+      testing::UnorderedElementsAre(SchedulingPolicy::Feature::kWebRTC));
+
+  MainFrame().ExecuteScript(WebString("data_channel.close();"));
+
+  EXPECT_FALSE(PageScheduler()->OptedOutFromAggressiveThrottlingForTest());
+  EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
+              testing::UnorderedElementsAre());
 }
 
 }  // namespace blink

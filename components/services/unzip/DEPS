@@ -1,6 +1,5 @@
 include_rules = [
   "+components/services/filesystem",
   "+mojo/public",
-  "+services/service_manager/public",
   "+third_party/zlib/google",
 ]

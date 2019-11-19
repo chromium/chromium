@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "cc/cc_export.h"
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/tiles/raster_tile_priority_queue.h"
@@ -21,7 +20,11 @@ namespace cc {
 class CC_EXPORT RasterTilePriorityQueueAll : public RasterTilePriorityQueue {
  public:
   RasterTilePriorityQueueAll();
+  RasterTilePriorityQueueAll(const RasterTilePriorityQueueAll&) = delete;
   ~RasterTilePriorityQueueAll() override;
+
+  RasterTilePriorityQueueAll& operator=(const RasterTilePriorityQueueAll&) =
+      delete;
 
   bool IsEmpty() const override;
   const PrioritizedTile& Top() const override;
@@ -41,8 +44,6 @@ class CC_EXPORT RasterTilePriorityQueueAll : public RasterTilePriorityQueue {
   std::vector<std::unique_ptr<TilingSetRasterQueueAll>> active_queues_;
   std::vector<std::unique_ptr<TilingSetRasterQueueAll>> pending_queues_;
   TreePriority tree_priority_;
-
-  DISALLOW_COPY_AND_ASSIGN(RasterTilePriorityQueueAll);
 };
 
 }  // namespace cc

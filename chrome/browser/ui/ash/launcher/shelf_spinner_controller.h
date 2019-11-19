@@ -8,13 +8,17 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/public/cpp/shelf_model_observer.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/account_id/account_id.h"
 
+class ShelfItemDelegate;
 class ShelfSpinnerItemController;
 class ChromeLauncherController;
 class Profile;
@@ -28,6 +32,10 @@ class ImageSkia;
 // waiting for ARC or Crostini to be ready.
 class ShelfSpinnerController : public ash::ShelfModelObserver {
  public:
+  // ShelfSpinnerData holds the information used to draw the spinner, including
+  // animating the spinner after it has been dismissed.
+  class ShelfSpinnerData;
+
   explicit ShelfSpinnerController(ChromeLauncherController* owner);
   ~ShelfSpinnerController() override;
 
@@ -44,9 +52,10 @@ class ShelfSpinnerController : public ash::ShelfModelObserver {
   void MaybeApplySpinningEffect(const std::string& app_id,
                                 gfx::ImageSkia* image);
 
-  // Closes Shelf item if it has ShelfSpinnerItemController controller
-  // and removes entry from the list of tracking items.
-  void Close(const std::string& app_id);
+  // Finishes spinning on an icon. If an icon is pinned it will be kept on the
+  // shelf as a shortcut, otherwise it will be removed without storing the
+  // delegate.
+  void CloseSpinner(const std::string& app_id);
 
   // Closes all Crostini spinner shelf items.
   // This should be avoided when possible.
@@ -54,27 +63,51 @@ class ShelfSpinnerController : public ash::ShelfModelObserver {
 
   Profile* OwnerProfile();
 
+  // Hide all the spinners associated with the old user, and restore to the
+  // shelf any spinners associated with the new active user. Called by
+  // ChromeLauncherController when the active user is changed.
+  void ActiveUserChanged(const AccountId& account_id);
+
   // ash::ShelfModelObserver:
   void ShelfItemDelegateChanged(const ash::ShelfID& id,
                                 ash::ShelfItemDelegate* old_delegate,
                                 ash::ShelfItemDelegate* delegate) override;
 
  private:
-  // Defines mapping of a shelf app id to a corresponded controller. Shelf app
-  // id is optional mapping (for example, Play Store to ARC Host Support).
-  using AppControllerMap = std::map<std::string, ShelfSpinnerItemController*>;
+  // Defines mapping of a shelf app id to a corresponding controller's data.
+  // Shelf app id is optional mapping (for example, Play Store to ARC Host
+  // Support).
+  using AppControllerMap = std::map<std::string, ShelfSpinnerData>;
+  // Defines a mapping from account id to (app id, ShelfSpinnerItemController)
+  // for spinners that are not currently on the shelf. Taking ownership of these
+  // delegates allows us to reuse them if we need to add the spinner back on to
+  // the shelf.
+  using HiddenAppControllerMap = std::multimap<
+      AccountId,
+      std::pair<std::string, std::unique_ptr<ShelfSpinnerItemController>>>;
 
   void UpdateApps();
   void UpdateShelfItemIcon(const std::string& app_id);
   void RegisterNextUpdate();
+  // Removes the spinner with id |app_id| from |app_controller_map_| and returns
+  // true if it was present, false otherwise.
+  bool RemoveSpinnerFromControllerMap(const std::string& app_id);
+
+  // Removes a spinner from the shelf and stores the delegate for later
+  // restoration. Used when the user switches from one profile to another.
+  void HideSpinner(const std::string& app_id);
 
   // Unowned pointers.
   ChromeLauncherController* owner_;
 
+  AccountId current_account_id_;
+
   AppControllerMap app_controller_map_;
 
+  HiddenAppControllerMap hidden_app_controller_map_;
+
   // Always keep this the last member of this class.
-  base::WeakPtrFactory<ShelfSpinnerController> weak_ptr_factory_;
+  base::WeakPtrFactory<ShelfSpinnerController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ShelfSpinnerController);
 };

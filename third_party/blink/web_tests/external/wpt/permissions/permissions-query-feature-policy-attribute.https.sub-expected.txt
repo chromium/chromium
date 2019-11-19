@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Permissions.state is "prompt" with allow="geolocation" in same-origin iframes. assert_equals: navigator.permissions.query("geolocation") expected "prompt" but got "denied"
+FAIL Permissions.state is "prompt" with allow="geolocation" in cross-origin iframes. assert_equals: navigator.permissions.query("geolocation") expected "prompt" but got "denied"
+FAIL Permission.state is "prompt" in same-origin iframes. assert_equals: navigator.permissions.query("geolocation") expected "prompt" but got "denied"
+PASS Permission.state is "denied" in cross-origin iframes.
+Harness: the test ran to completion.
+

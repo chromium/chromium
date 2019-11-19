@@ -13,7 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_mock_clock_override.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/mutator_host.h"
@@ -25,9 +25,9 @@
 #include "ui/compositor/layer_animator_collection.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/compositor/test/context_factories_for_test.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/compositor/test/test_compositor_host.h"
+#include "ui/compositor/test/test_context_factories.h"
 #include "ui/compositor/test/test_layer_animation_delegate.h"
 #include "ui/compositor/test/test_layer_animation_observer.h"
 #include "ui/compositor/test/test_utils.h"
@@ -1706,7 +1706,7 @@ TEST(LayerAnimatorTest, AddObserverExplicit) {
 
   animator->StartAnimation(sequence);
 
-  animator = NULL;
+  animator.reset();
 
   EXPECT_EQ(observer.last_aborted_sequence(), sequence);
 }
@@ -2366,7 +2366,7 @@ TEST(LayerAnimatorTest, ImplicitObserversAtAnimatorDestruction) {
 
   EXPECT_FALSE(observer_notify.animations_completed());
   EXPECT_FALSE(observer_do_not_notify.animations_completed());
-  animator = NULL;
+  animator.reset();
   EXPECT_TRUE(observer_notify.animations_completed());
   EXPECT_TRUE(observer_notify.WasAnimationAbortedForProperty(
       LayerAnimationElement::BRIGHTNESS));
@@ -3253,18 +3253,17 @@ TEST(LayerAnimatorTest, AnimatorRemovedFromCollectionWhenLayerIsDestroyed) {
 }
 
 TEST(LayerAnimatorTest, LayerMovedBetweenCompositorsDuringAnimation) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_(
-      base::test::ScopedTaskEnvironment::MainThreadType::UI);
-  bool enable_pixel_output = false;
-  ui::ContextFactory* context_factory = nullptr;
-  ui::ContextFactoryPrivate* context_factory_private = nullptr;
-  InitializeContextFactoryForTests(enable_pixel_output, &context_factory,
-                                   &context_factory_private);
+  base::test::TaskEnvironment task_environment_(
+      base::test::TaskEnvironment::MainThreadType::UI);
+  const bool enable_pixel_output = false;
+  TestContextFactories context_factories(enable_pixel_output);
   const gfx::Rect bounds(10, 10, 100, 100);
-  std::unique_ptr<TestCompositorHost> host_1(TestCompositorHost::Create(
-      bounds, context_factory, context_factory_private));
-  std::unique_ptr<TestCompositorHost> host_2(TestCompositorHost::Create(
-      bounds, context_factory, context_factory_private));
+  std::unique_ptr<TestCompositorHost> host_1(
+      TestCompositorHost::Create(bounds, context_factories.GetContextFactory(),
+                                 context_factories.GetContextFactoryPrivate()));
+  std::unique_ptr<TestCompositorHost> host_2(
+      TestCompositorHost::Create(bounds, context_factories.GetContextFactory(),
+                                 context_factories.GetContextFactoryPrivate()));
   host_1->Show();
   host_2->Show();
 
@@ -3315,20 +3314,17 @@ TEST(LayerAnimatorTest, LayerMovedBetweenCompositorsDuringAnimation) {
 
   host_2.reset();
   host_1.reset();
-  TerminateContextFactoryForTests();
 }
 
 TEST(LayerAnimatorTest, ThreadedAnimationSurvivesIfLayerRemovedAdded) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_(
-      base::test::ScopedTaskEnvironment::MainThreadType::UI);
-  bool enable_pixel_output = false;
-  ui::ContextFactory* context_factory = nullptr;
-  ui::ContextFactoryPrivate* context_factory_private = nullptr;
-  InitializeContextFactoryForTests(enable_pixel_output, &context_factory,
-                                   &context_factory_private);
+  base::test::TaskEnvironment task_environment_(
+      base::test::TaskEnvironment::MainThreadType::UI);
+  const bool enable_pixel_output = false;
+  TestContextFactories context_factories(enable_pixel_output);
   const gfx::Rect bounds(10, 10, 100, 100);
-  std::unique_ptr<TestCompositorHost> host(TestCompositorHost::Create(
-      bounds, context_factory, context_factory_private));
+  std::unique_ptr<TestCompositorHost> host(
+      TestCompositorHost::Create(bounds, context_factories.GetContextFactory(),
+                                 context_factories.GetContextFactoryPrivate()));
   host->Show();
 
   Compositor* compositor = host->GetCompositor();
@@ -3359,7 +3355,6 @@ TEST(LayerAnimatorTest, ThreadedAnimationSurvivesIfLayerRemovedAdded) {
   EXPECT_TRUE(mutator->HasTickingKeyframeModelForTesting(layer.element_id()));
 
   host.reset();
-  TerminateContextFactoryForTests();
 }
 
 // A simple AnimationMetricsReporter class that remembers smoothness metric

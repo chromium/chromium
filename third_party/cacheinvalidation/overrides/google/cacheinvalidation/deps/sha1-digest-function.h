@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/sha1.h"
+#include "base/hash/sha1.h"
 #include "google/cacheinvalidation/deps/digest-function.h"
 #include "google/cacheinvalidation/deps/stl-namespace.h"
 

@@ -7,7 +7,6 @@
 """Adds the code parts to a resource APK."""
 
 import argparse
-import itertools
 import os
 import shutil
 import sys
@@ -17,6 +16,10 @@ import zipfile
 import finalize_apk
 
 from util import build_utils
+from util import zipalign
+
+# Input dex.jar files are zipaligned.
+zipalign.ApplyZipFileZipAlignFix()
 
 
 # Taken from aapt's Package.cpp:
@@ -69,6 +72,12 @@ def _ParseArgs(args):
   parser.add_argument('--secondary-android-abi',
                       help='The secondary Android architecture to use for'
                            'secondary native libraries')
+  parser.add_argument(
+      '--is-multi-abi',
+      action='store_true',
+      help='Will add a placeholder for the missing ABI if no native libs or '
+      'placeholders are set for either the primary or secondary ABI. Can only '
+      'be set if both --android-abi and --secondary-android-abi are set.')
   parser.add_argument(
       '--native-lib-placeholders',
       help='GYP-list of native library placeholders to add.')
@@ -128,6 +137,10 @@ def _ParseArgs(args):
       options.secondary_native_lib_placeholders):
     raise Exception('Must specify --secondary-android-abi with'
                     ' --secondary-native-libs')
+  if options.is_multi_abi and not (options.android_abi
+                                   and options.secondary_android_abi):
+    raise Exception('Must specify --is-multi-abi with both --android-abi '
+                    'and --secondary-android-abi.')
   return options
 
 
@@ -191,28 +204,25 @@ def _AddAssets(apk, path_tuples, disable_compression=False):
                                        compress=compress)
 
 
-def _CreateAssetsList(path_tuples):
-  """Returns a newline-separated list of asset paths for the given paths."""
-  dests = sorted(t[1] for t in path_tuples)
-  return '\n'.join(dests) + '\n'
-
-
 def _AddNativeLibraries(out_apk, native_libs, android_abi, uncompress):
   """Add native libraries to APK."""
-  has_crazy_linker = any('android_linker' in os.path.basename(p)
-                         for p in native_libs)
+  has_crazy_linker = any(
+      'android_linker' in os.path.basename(p) for p in native_libs)
+  has_monochrome = any('monochrome' in os.path.basename(p) for p in native_libs)
+
   for path in native_libs:
     basename = os.path.basename(path)
-
     compress = None
-    if (uncompress and os.path.splitext(basename)[1] == '.so'
-        and 'android_linker' not in basename
-        and (not has_crazy_linker or 'clang_rt' not in basename)
-        and (not has_crazy_linker or 'crashpad_handler' not in basename)):
-      compress = False
-      # Add prefix to prevent android install from extracting upon install.
-      if has_crazy_linker:
-        basename = 'crazy.' + basename
+    if uncompress and os.path.splitext(basename)[1] == '.so':
+      # Trichrome
+      if has_crazy_linker and has_monochrome:
+        compress = False
+      elif ('android_linker' not in basename
+            and (not has_crazy_linker or 'clang_rt' not in basename)
+            and (not has_crazy_linker or 'crashpad_handler' not in basename)):
+        compress = False
+        if has_crazy_linker and not has_monochrome:
+          basename = 'crazy.' + basename
 
     apk_path = 'lib/%s/%s' % (android_abi, basename)
     build_utils.AddToZipHermetic(out_apk,
@@ -230,6 +240,12 @@ def main(args):
   # Include native libs in the depfile_deps since GN doesn't know about the
   # dependencies when is_component_build=true.
   depfile_deps = list(native_libs)
+
+  # For targets that depend on static library APKs, dex paths are created by
+  # the static library's dexsplitter target and GN doesn't know about these
+  # paths.
+  if options.dex_file:
+    depfile_deps.append(options.dex_file)
 
   secondary_native_libs = []
   if options.secondary_native_libs:
@@ -289,10 +305,6 @@ def main(args):
           resource_apk.getinfo('AndroidManifest.xml'), out_dir=apk_manifest_dir)
 
       # 2. Assets
-      if options.write_asset_list:
-        data = _CreateAssetsList(itertools.chain(assets, uncompressed_assets))
-        build_utils.AddToZipHermetic(out_apk, 'assets/assets_list', data=data)
-
       _AddAssets(out_apk, assets, disable_compression=False)
       _AddAssets(out_apk, uncompressed_assets, disable_compression=True)
 
@@ -321,14 +333,29 @@ def main(args):
                             options.secondary_android_abi,
                             options.uncompress_shared_libraries)
 
-      for name in sorted(options.native_lib_placeholders):
+      # Add a placeholder lib if the APK should be multi ABI but is missing libs
+      # for one of the ABIs.
+      native_lib_placeholders = options.native_lib_placeholders
+      secondary_native_lib_placeholders = (
+          options.secondary_native_lib_placeholders)
+      if options.is_multi_abi:
+        if ((secondary_native_libs or secondary_native_lib_placeholders)
+            and not native_libs and not native_lib_placeholders):
+          native_lib_placeholders += ['libplaceholder.so']
+        if ((native_libs or native_lib_placeholders)
+            and not secondary_native_libs
+            and not secondary_native_lib_placeholders):
+          secondary_native_lib_placeholders += ['libplaceholder.so']
+
+      # Add placeholder libs.
+      for name in sorted(native_lib_placeholders):
         # Note: Empty libs files are ignored by md5check (can cause issues
         # with stale builds when the only change is adding/removing
         # placeholders).
         apk_path = 'lib/%s/%s' % (options.android_abi, name)
         build_utils.AddToZipHermetic(out_apk, apk_path, data='')
 
-      for name in sorted(options.secondary_native_lib_placeholders):
+      for name in sorted(secondary_native_lib_placeholders):
         # Note: Empty libs files are ignored by md5check (can cause issues
         # with stale builds when the only change is adding/removing
         # placeholders).
@@ -336,7 +363,7 @@ def main(args):
         build_utils.AddToZipHermetic(out_apk, apk_path, data='')
 
       # 5. Resources
-      for info in resource_infos:
+      for info in sorted(resource_infos, key=lambda i: i.filename):
         if info.filename != 'AndroidManifest.xml':
           copy_resource(info)
 
@@ -345,7 +372,7 @@ def main(args):
       # Prebuilt jars may contain class files which we shouldn't include.
       for java_resource in options.java_resources:
         with zipfile.ZipFile(java_resource, 'r') as java_resource_jar:
-          for apk_path in java_resource_jar.namelist():
+          for apk_path in sorted(java_resource_jar.namelist()):
             apk_path_lower = apk_path.lower()
 
             if apk_path_lower.startswith('meta-inf/'):

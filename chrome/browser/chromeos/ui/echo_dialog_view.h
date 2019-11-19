@@ -55,7 +55,6 @@ class EchoDialogView : public views::DialogDelegateView,
   friend class ExtensionEchoPrivateApiTest;
 
   // views::DialogDelegate overrides.
-  View* CreateExtraView() override;
   int GetDialogButtons() const override;
   base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool Cancel() override;

@@ -66,7 +66,7 @@ bool BrowserExtensionWindowController::IsVisibleToTabsAPIForExtension(
   if (extension->is_platform_app())
     return false;
 
-  return !browser_->is_devtools() || allow_dev_tools_windows;
+  return !browser_->is_type_devtools() || allow_dev_tools_windows;
 }
 
 }  // namespace extensions

@@ -18,8 +18,7 @@ LoginInterstitialDelegate::LoginInterstitialDelegate(
       interstitial_page_(content::InterstitialPage::Create(web_contents,
                                                            true,
                                                            request_url,
-                                                           this)),
-      weak_ptr_factory_(this) {
+                                                           this)) {
   // When shown, interstitial page takes ownership of |this|.
   interstitial_page_->Show();
 }
@@ -45,7 +44,7 @@ void LoginInterstitialDelegate::CommandReceived(const std::string& command) {
 }
 
 content::InterstitialPageDelegate::TypeID
-LoginInterstitialDelegate::GetTypeForTesting() const {
+LoginInterstitialDelegate::GetTypeForTesting() {
   return LoginInterstitialDelegate::kTypeForTesting;
 }
 

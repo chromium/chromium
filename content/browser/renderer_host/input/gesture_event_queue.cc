@@ -44,7 +44,7 @@ GestureEventQueue::~GestureEventQueue() { }
 
 bool GestureEventQueue::DebounceOrForwardEvent(
     const GestureEventWithLatencyInfo& gesture_event) {
-  // GFS and GFC should have been filtered in FlingControllerFilterEvent.
+  // GFS and GFC should have been filtered in PassToFlingController.
   DCHECK_NE(gesture_event.event.GetType(), WebInputEvent::kGestureFlingStart);
   DCHECK_NE(gesture_event.event.GetType(), WebInputEvent::kGestureFlingCancel);
   if (!ShouldForwardForBounceReduction(gesture_event))
@@ -54,29 +54,9 @@ bool GestureEventQueue::DebounceOrForwardEvent(
   return true;
 }
 
-bool GestureEventQueue::FlingControllerFilterEvent(
+bool GestureEventQueue::PassToFlingController(
     const GestureEventWithLatencyInfo& gesture_event) {
-  TRACE_EVENT0("input", "GestureEventQueue::QueueEvent");
-  if (fling_controller_.FilterGestureEvent(gesture_event))
-    return true;
-
-  // fling_controller_ is in charge of handling GFS events and the events are
-  // not sent to the renderer, the controller processes the fling and generates
-  // fling progress events (wheel events for touchpad and GSU events for
-  // touchscreen and autoscroll) which are handled normally.
-  if (gesture_event.event.GetType() == WebInputEvent::kGestureFlingStart) {
-    fling_controller_.ProcessGestureFlingStart(gesture_event);
-    return true;
-  }
-
-  // If the GestureFlingStart event is processed by the fling_controller_, the
-  // GestureFlingCancel event should be the same.
-  if (gesture_event.event.GetType() == WebInputEvent::kGestureFlingCancel) {
-    fling_controller_.ProcessGestureFlingCancel(gesture_event);
-    return true;
-  }
-
-  return false;
+  return fling_controller_.ObserveAndMaybeConsumeGestureEvent(gesture_event);
 }
 
 void GestureEventQueue::QueueDeferredEvents(
@@ -92,10 +72,6 @@ GestureEventQueue::GestureQueue GestureEventQueue::TakeDeferredEvents() {
 
 void GestureEventQueue::StopFling() {
   fling_controller_.StopFling();
-}
-
-bool GestureEventQueue::FlingCancellationIsDeferred() const {
-  return fling_controller_.FlingCancellationIsDeferred();
 }
 
 gfx::Vector2dF GestureEventQueue::CurrentFlingVelocity() const {
@@ -171,8 +147,8 @@ bool GestureEventQueue::ShouldForwardForBounceReduction(
 
 void GestureEventQueue::ForwardGestureEvent(
     const GestureEventWithLatencyInfo& gesture_event) {
-  // GFS and GFC should have been filtered in FlingControllerFilterEvent to
-  // get handled by fling controller.
+  // GFS and GFC should have been filtered in PassToFlingController to get
+  // handled by fling controller.
   DCHECK_NE(gesture_event.event.GetType(), WebInputEvent::kGestureFlingStart);
   DCHECK_NE(gesture_event.event.GetType(), WebInputEvent::kGestureFlingCancel);
   sent_events_awaiting_ack_.push_back(gesture_event);
@@ -241,12 +217,19 @@ void GestureEventQueue::SendScrollEndingEventsNow() {
   debouncing_deferral_queue.swap(debouncing_deferral_queue_);
   for (GestureQueue::const_iterator it = debouncing_deferral_queue.begin();
        it != debouncing_deferral_queue.end(); it++) {
-    if (!fling_controller_.FilterGestureEvent(*it)) {
+    if (!fling_controller_.ObserveAndMaybeConsumeGestureEvent(*it)) {
       if (it->event.GetType() == WebInputEvent::kGestureScrollEnd)
         scroll_end_filtered_by_deboucing_deferral_queue_ = false;
       ForwardGestureEvent(*it);
     }
   }
+}
+
+void GestureEventQueue::OnWheelEventAck(
+    const MouseWheelEventWithLatencyInfo& event,
+    InputEventAckSource ack_source,
+    InputEventAckState ack_result) {
+  fling_controller_.OnWheelEventAck(event, ack_source, ack_result);
 }
 
 }  // namespace content

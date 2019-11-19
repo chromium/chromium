@@ -1,0 +1,1 @@
+{ "name": "Manifest test app", "start_url": "manifest_test_page.html", "icons": [ { "src": "launcher-icon-1x.png", "sizes": "48x48", "type": "image/png" }, { "src": "image-512px.png", "sizes": "512x512", "type": "image/png" } ], "display": "standalone", "orientation": "landscape" }

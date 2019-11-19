@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/passwords/credential_manager.h"
 
-#import <EarlGrey/EarlGrey.h>
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
@@ -14,23 +12,32 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/passwords/password_manager_app_interface.h"
 #include "ios/chrome/browser/passwords/password_manager_features.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+#if defined(CHROME_EARL_GREY_2)
+// TODO(crbug.com/1015113): The EG2 macro is breaking indexing for some reason
+// without the trailing semicolon.  For now, disable the extra semi warning
+// so Xcode indexing works for the egtest.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
+GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(PasswordManagerAppInterface);
+#endif  // defined(CHROME_EARL_GREY_2)
 
 namespace {
 
@@ -64,6 +71,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 - (void)setUp {
   _featureList.InitAndEnableFeature(features::kCredentialManager);
+
   [super setUp];
 
   // Set up server.
@@ -72,71 +80,49 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 - (void)tearDown {
-  scoped_refptr<password_manager::PasswordStore> passwordStore =
-      IOSChromePasswordStoreFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState(),
-          ServiceAccessType::IMPLICIT_ACCESS)
-          .get();
-  // Remove Credentials stored during executing the test.
-  passwordStore->RemoveLoginsCreatedBetween(base::Time(), base::Time::Now(),
-                                            base::Closure());
+  [PasswordManagerAppInterface clearCredentials];
   [super tearDown];
 }
 
-#pragma mark - Utils
-
-// Sets preferences required for autosign-in to true.
-- (void)setAutosigninPreferences {
-  chrome_test_util::SetBooleanUserPref(
-      chrome_test_util::GetOriginalBrowserState(),
-      password_manager::prefs::kWasAutoSignInFirstRunExperienceShown, true);
-  chrome_test_util::SetBooleanUserPref(
-      chrome_test_util::GetOriginalBrowserState(),
-      password_manager::prefs::kCredentialsEnableAutosignin, true);
+- (void)launchAppForTestMethod {
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithFeaturesEnabled:{features::kCredentialManager}
+                                  disabled:{}
+                              forceRestart:NO];
 }
+
+#pragma mark - Utils
 
 // Loads simple page on localhost and stores an example PasswordCredential.
 - (void)loadSimplePageAndStoreACredential {
   // Loads simple page. It is on localhost so it is considered a secure context.
   const GURL URL = self.testServer->GetURL("/example");
   [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGrey waitForWebViewContainingText:"You are here."];
+  [ChromeEarlGrey waitForWebStateContainingText:"You are here."];
 
-  // Obtain a PasswordStore.
-  scoped_refptr<password_manager::PasswordStore> passwordStore =
-      IOSChromePasswordStoreFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState(),
-          ServiceAccessType::IMPLICIT_ACCESS)
-          .get();
-  GREYAssertTrue(passwordStore != nullptr,
-                 @"PasswordStore is unexpectedly null for BrowserState");
-
-  // Store a PasswordForm representing a PasswordCredential.
-  autofill::PasswordForm passwordCredentialForm;
-  passwordCredentialForm.username_value =
-      base::ASCIIToUTF16("johndoe@example.com");
-  passwordCredentialForm.password_value = base::ASCIIToUTF16("ilovejanedoe123");
-  passwordCredentialForm.origin =
-      chrome_test_util::GetCurrentWebState()->GetLastCommittedURL().GetOrigin();
-  passwordCredentialForm.signon_realm = passwordCredentialForm.origin.spec();
-  passwordCredentialForm.scheme = autofill::PasswordForm::SCHEME_HTML;
-  passwordStore->AddLogin(passwordCredentialForm);
+  NSError* error = [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"johndoe@example.com"
+                         password:@"ilovejanedoe123"];
+  GREYAssertNil(error, error.localizedDescription);
 }
 
 #pragma mark - Tests
 
 // Tests that notification saying "Signing is as ..." appears on auto sign-in.
 - (void)testNotificationAppearsOnAutoSignIn {
-  // TODO(crbug.com/786960): re-enable when fixed.
+  // TODO(crbug.com/786960): re-enable when fixed. Tests may pass on EG2
+#if defined(CHROME_EARL_GREY_1)
   EARL_GREY_TEST_DISABLED(@"Fails on iOS 11.0.");
+#endif
 
-  [self setAutosigninPreferences];
+  [PasswordManagerAppInterface setAutosigninPreferences];
   [self loadSimplePageAndStoreACredential];
 
   // Call get() from JavaScript.
   NSError* error = nil;
-  NSString* result = chrome_test_util::ExecuteJavaScript(
-      @"typeof navigator.credentials.get({password: true})", &error);
+  NSString* result = [ChromeEarlGreyAppInterface
+      executeJavaScript:@"typeof navigator.credentials.get({password: true})"
+                  error:&error];
   GREYAssertTrue([result isEqual:@"object"],
                  @"Unexpected error occurred when executing JavaScript.");
   GREYAssertTrue(!error,
@@ -174,22 +160,18 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tests that when navigator.credentials.get() was called from inactive tab, the
 // autosign-in notification appears once tab becomes active.
 - (void)testNotificationAppearsWhenTabIsActive {
-  // TODO(crbug.com/786960): re-enable when fixed.
+  // TODO(crbug.com/786960): re-enable when fixed. Tests may pass on EG2
+#if defined(CHROME_EARL_GREY_1)
   EARL_GREY_TEST_DISABLED(@"Fails on iOS 11.0.");
-
-  [self setAutosigninPreferences];
+#endif
+  [PasswordManagerAppInterface setAutosigninPreferences];
   [self loadSimplePageAndStoreACredential];
-
-  // Get WebState before switching the tab.
-  web::WebState* webState = chrome_test_util::GetCurrentWebState();
 
   // Open new tab.
   [ChromeEarlGreyUI openNewTab];
   [ChromeEarlGrey waitForMainTabCount:2];
 
-  // Execute JavaScript from inactive tab.
-  webState->ExecuteJavaScript(
-      base::UTF8ToUTF16("typeof navigator.credentials.get({password: true})"));
+  [PasswordManagerAppInterface getCredentialsInTabAtIndex:0];
 
   // Matches the UILabel by its accessibilityLabel.
   id<GREYMatcher> matcher = chrome_test_util::StaticTextWithAccessibilityLabel(
@@ -210,7 +192,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       @"Notification appeared in wrong tab");
 
   // Switch to previous tab.
-  chrome_test_util::SelectTabAtIndexInCurrentMode(0);
+  [ChromeEarlGrey selectTabAtIndex:0];
 
   // Check that the notification has appeared.
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(

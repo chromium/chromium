@@ -15,7 +15,7 @@ async_test(function(t)
     {
         // The scrollbar should remain.
         assert_equals(getComputedStyle(root).overflow, "scroll");
-        if (window.internals && window.internals.runtimeFlags.overlayScrollbarsEnabled)
+        if (window.internals && internals.overlayScrollbarsEnabled)
           assert_equals(root.clientWidth, window.innerWidth);
         else
           assert_less_than(root.clientWidth, window.innerWidth);

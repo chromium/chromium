@@ -24,9 +24,10 @@ enum { FONT_HELVETICA, FONT_HELVETICA_NEUE, FONT_HELVETICA_NEUE_LIGHT };
 // localized string corresponding to |idsAccessibilityLabel|.
 // |englishUiAutomationName| is the name used in JavaScript UI Automation test
 // scripts to identify the |element|.
-void SetA11yLabelAndUiAutomationName(UIView* element,
-                                     int idsAccessibilityLabel,
-                                     NSString* englishUiAutomationName);
+void SetA11yLabelAndUiAutomationName(
+    NSObject<UIAccessibilityIdentification>* element,
+    int idsAccessibilityLabel,
+    NSString* englishUiAutomationName);
 
 // Sets the given |button|'s width to exactly fit its image and text.  Does not
 // modify the button's height.
@@ -171,6 +172,10 @@ UIImage* BlurImage(UIImage* image,
 // output image's alpha is scaled by the color's alpha value.
 UIImage* TintImage(UIImage* image, UIColor* color);
 
+// Returns the first responder in the subviews of |view|, or nil if no view in
+// the subtree is the first responder.
+UIView* GetFirstResponderSubview(UIView* view);
+
 // Returns a cropped image using |cropRect| on |image|.
 UIImage* CropImage(UIImage* image, const CGRect& cropRect);
 
@@ -254,10 +259,5 @@ void TriggerHapticFeedbackForNotification(UINotificationFeedbackType type);
 // As an easter egg, show a smiley face instead of the count if the user has
 // more than 99 tabs open.
 NSString* TextForTabCount(long count);
-
-UIFont* PreferredFontForTextStyleWithMaxCategory(
-    UIFontTextStyle style,
-    UIContentSizeCategory currentCategory,
-    UIContentSizeCategory maxCategory);
 
 #endif  // IOS_CHROME_BROWSER_UI_UTIL_UIKIT_UI_UTIL_H_

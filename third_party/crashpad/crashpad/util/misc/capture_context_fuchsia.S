@@ -116,7 +116,7 @@ CAPTURECONTEXT_SYMBOL:
   movq 0x90(%rdi), %rax
   movq 0x28(%rdi), %r8
 
-  // TODO(scottmg): save floating-point registers.
+  // TODO(https://crashpad.chromium.org/bug/300): save floating-point registers.
 
   popfq
 
@@ -166,7 +166,7 @@ CAPTURECONTEXT_SYMBOL:
   // Restore x1 from the saved context.
   ldr x1, [x0, #0xc0]
 
-  // TODO(scottmg): save floating-point registers.
+  // TODO(https://crashpad.chromium.org/bug/300): save floating-point registers.
 
   ret
 

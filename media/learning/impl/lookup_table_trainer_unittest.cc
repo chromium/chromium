@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -23,11 +23,11 @@ class LookupTableTrainerTest : public testing::Test {
             [](std::unique_ptr<Model>* model_out,
                std::unique_ptr<Model> model) { *model_out = std::move(model); },
             &model));
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     return model;
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   LookupTableTrainer trainer_;
   LearningTask task_;
@@ -37,7 +37,7 @@ TEST_F(LookupTableTrainerTest, EmptyTrainingDataWorks) {
   TrainingData empty;
   std::unique_ptr<Model> model = Train(task_, empty);
   EXPECT_NE(model.get(), nullptr);
-  EXPECT_EQ(model->PredictDistribution(FeatureVector()), TargetDistribution());
+  EXPECT_EQ(model->PredictDistribution(FeatureVector()), TargetHistogram());
 }
 
 TEST_F(LookupTableTrainerTest, UniformTrainingDataWorks) {
@@ -51,8 +51,7 @@ TEST_F(LookupTableTrainerTest, UniformTrainingDataWorks) {
 
   // The tree should produce a distribution for one value (our target), which
   // has |n_examples| counts.
-  TargetDistribution distribution =
-      model->PredictDistribution(example.features);
+  TargetHistogram distribution = model->PredictDistribution(example.features);
   EXPECT_EQ(distribution.size(), 1u);
   EXPECT_EQ(distribution[example.target_value], n_examples);
 }
@@ -66,8 +65,7 @@ TEST_F(LookupTableTrainerTest, SimpleSeparableTrainingData) {
   std::unique_ptr<Model> model = Train(task_, training_data);
 
   // Each value should have a distribution with one target value with one count.
-  TargetDistribution distribution =
-      model->PredictDistribution(example_1.features);
+  TargetHistogram distribution = model->PredictDistribution(example_1.features);
   EXPECT_NE(model.get(), nullptr);
   EXPECT_EQ(distribution.size(), 1u);
   EXPECT_EQ(distribution[example_1.target_value], 1u);
@@ -104,8 +102,7 @@ TEST_F(LookupTableTrainerTest, ComplexSeparableTrainingData) {
 
   // Each example should have a distribution that selects the right value.
   for (const auto& example : training_data) {
-    TargetDistribution distribution =
-        model->PredictDistribution(example.features);
+    TargetHistogram distribution = model->PredictDistribution(example.features);
     TargetValue singular_max;
     EXPECT_TRUE(distribution.FindSingularMax(&singular_max));
     EXPECT_EQ(singular_max, example.target_value);
@@ -122,8 +119,7 @@ TEST_F(LookupTableTrainerTest, UnseparableTrainingData) {
   EXPECT_NE(model.get(), nullptr);
 
   // Each value should have a distribution with two targets with one count each.
-  TargetDistribution distribution =
-      model->PredictDistribution(example_1.features);
+  TargetHistogram distribution = model->PredictDistribution(example_1.features);
   EXPECT_EQ(distribution.size(), 2u);
   EXPECT_EQ(distribution[example_1.target_value], 1u);
   EXPECT_EQ(distribution[example_2.target_value], 1u);
@@ -143,7 +139,7 @@ TEST_F(LookupTableTrainerTest, UnknownFeatureValueHandling) {
   training_data.push_back(example_2);
 
   std::unique_ptr<Model> model = Train(task_, training_data);
-  TargetDistribution distribution =
+  TargetHistogram distribution =
       model->PredictDistribution(FeatureVector({FeatureValue(789)}));
   // OOV data should return an empty distribution (nominal).
   EXPECT_EQ(distribution.size(), 0u);
@@ -160,7 +156,7 @@ TEST_F(LookupTableTrainerTest, RegressionWithWeightedExamplesWorks) {
   training_data.push_back(example_2);
 
   std::unique_ptr<Model> model = Train(task_, training_data);
-  TargetDistribution distribution =
+  TargetHistogram distribution =
       model->PredictDistribution(FeatureVector({FeatureValue(123)}));
   double avg = distribution.Average();
   const double expected =

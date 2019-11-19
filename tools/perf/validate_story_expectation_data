@@ -5,8 +5,11 @@
 
 import sys
 
+from core import path_util
+path_util.AddTelemetryToPath()
+
 from core import story_expectation_validator
 
 
 if __name__ == '__main__':
-  sys.exit(story_expectation_validator.main(sys.argv[1:]))
+  sys.exit(story_expectation_validator.main())

@@ -13,7 +13,7 @@ import sys
 
 def ComputeIntegrity(input_path):
   hasher = hashlib.sha256()
-  with open(input_path, 'r') as f:
+  with open(input_path, 'rb') as f:
     hasher.update(f.read())
   return base64.b64encode(hasher.digest())
 
@@ -32,7 +32,7 @@ def WriteHeader(input_paths_and_integrity, output_path):
       define_name = re.sub('\W', '_', input_filename.upper())
       define_name = define_name + '_INTEGRITY'
 
-      f.write('#define ' + define_name + ' "' + integrity + '"\n')
+      f.write('#define ' + define_name + ' "' + integrity.decode() + '"\n')
 
       f.write('\n')
 

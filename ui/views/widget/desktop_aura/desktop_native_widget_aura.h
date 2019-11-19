@@ -102,9 +102,13 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   // Overridden from internal::NativeWidgetPrivate:
   gfx::NativeWindow GetNativeWindow() const override;
 
+  // Configures the appropriate aura::Windows based on the
+  // DesktopWindowTreeHost's transparency.
+  void UpdateWindowTransparency();
+
  protected:
   // Overridden from internal::NativeWidgetPrivate:
-  void InitNativeWidget(const Widget::InitParams& params) override;
+  void InitNativeWidget(Widget::InitParams params) override;
   void OnWidgetInitDone() override;
   NonClientFrameView* CreateNonClientFrameView() override;
   bool ShouldUseNativeFrame() const override;
@@ -151,8 +155,8 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void Activate() override;
   void Deactivate() override;
   bool IsActive() const override;
-  void SetAlwaysOnTop(bool always_on_top) override;
-  bool IsAlwaysOnTop() const override;
+  void SetZOrderLevel(ui::ZOrderLevel order) override;
+  ui::ZOrderLevel GetZOrderLevel() const override;
   void SetVisibleOnAllWorkspaces(bool always_visible) override;
   bool IsVisibleOnAllWorkspaces() const override;
   void Maximize() override;
@@ -168,11 +172,12 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
   void FlashFrame(bool flash_frame) override;
   void RunShellDrag(View* view,
-                    const ui::OSExchangeData& data,
+                    std::unique_ptr<ui::OSExchangeData> data,
                     const gfx::Point& location,
                     int operation,
                     ui::DragDropTypes::DragEventSource source) override;
   void SchedulePaintInRect(const gfx::Rect& rect) override;
+  void ScheduleLayout() override;
   void SetCursor(gfx::NativeCursor cursor) override;
   bool IsMouseEventsEnabled() const override;
   bool IsMouseButtonDown() const override;
@@ -190,7 +195,6 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   bool IsTranslucentWindowOpacitySupported() const override;
   ui::GestureRecognizer* GetGestureRecognizer() override;
   void OnSizeConstraintsChanged() override;
-  void OnCanActivateChanged() override;
   std::string GetName() const override;
 
   // Overridden from aura::WindowDelegate:
@@ -213,6 +217,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void OnWindowTargetVisibilityChanged(bool visible) override;
   bool HasHitTestMask() const override;
   void GetHitTestMask(SkPath* mask) const override;
+  void UpdateVisualState() override;
 
   // Overridden from ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
@@ -236,7 +241,8 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  int OnPerformDrop(const ui::DropTargetEvent& event) override;
+  int OnPerformDrop(const ui::DropTargetEvent& event,
+                    std::unique_ptr<ui::OSExchangeData> data) override;
 
   // Overridden from aura::WindowTreeHostObserver:
   void OnHostCloseRequested(aura::WindowTreeHost* host) override;
@@ -247,10 +253,6 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
 
  private:
   friend class RootWindowDestructionObserver;
-
-  // To save a clear on platforms where the window is never transparent, the
-  // window is only set as transparent when the glass frame is in use.
-  void UpdateWindowTransparency();
 
   void RootWindowDestroyed();
 
@@ -321,7 +323,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
 
   // The following factory is used for calls to close the NativeWidgetAura
   // instance.
-  base::WeakPtrFactory<DesktopNativeWidgetAura> close_widget_factory_;
+  base::WeakPtrFactory<DesktopNativeWidgetAura> close_widget_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DesktopNativeWidgetAura);
 };

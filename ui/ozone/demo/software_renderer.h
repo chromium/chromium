@@ -18,11 +18,14 @@ class VSyncProvider;
 
 namespace ui {
 
+class PlatformWindowSurface;
 class SurfaceOzoneCanvas;
 
 class SoftwareRenderer : public RendererBase {
  public:
-  SoftwareRenderer(gfx::AcceleratedWidget widget, const gfx::Size& size);
+  SoftwareRenderer(gfx::AcceleratedWidget widget,
+                   std::unique_ptr<PlatformWindowSurface> window_surface,
+                   const gfx::Size& size);
   ~SoftwareRenderer() override;
 
   // Renderer:
@@ -34,6 +37,8 @@ class SoftwareRenderer : public RendererBase {
   void UpdateVSyncParameters(const base::TimeTicks timebase,
                              const base::TimeDelta interval);
 
+  std::unique_ptr<PlatformWindowSurface> window_surface_;
+
   std::unique_ptr<SurfaceOzoneCanvas> software_surface_;
 
   std::unique_ptr<gfx::VSyncProvider> vsync_provider_;
@@ -43,7 +48,7 @@ class SoftwareRenderer : public RendererBase {
 
   base::TimeDelta vsync_period_;
 
-  base::WeakPtrFactory<SoftwareRenderer> weak_ptr_factory_;
+  base::WeakPtrFactory<SoftwareRenderer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SoftwareRenderer);
 };

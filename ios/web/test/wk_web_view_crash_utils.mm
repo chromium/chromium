@@ -8,8 +8,8 @@
 #import <WebKit/WebKit.h>
 
 #include "base/logging.h"
+#import "ios/web/common/web_view_creation_util.h"
 #include "ios/web/public/test/fakes/test_browser_state.h"
-#import "ios/web/public/web_view_creation_util.h"
 #import "third_party/ocmock/OCMock/NSInvocation+OCMAdditions.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 

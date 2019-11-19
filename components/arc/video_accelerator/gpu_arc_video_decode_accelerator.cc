@@ -4,21 +4,19 @@
 
 #include "components/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
 
+#include <utility>
+
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "components/arc/video_accelerator/arc_video_accelerator_util.h"
 #include "components/arc/video_accelerator/protected_buffer_manager.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
-#include "media/gpu/format_utils.h"
+#include "media/gpu/buffer_validation.h"
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
+#include "media/gpu/macros.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-
-#define VLOGF(level) VLOG(level) << __func__ << "(): "
-#define DVLOGF(level) DVLOG(level) << __func__ << "(): "
-#define VPLOGF(level) VPLOG(level) << __func__ << "(): "
 
 // Make sure arc::mojom::VideoDecodeAccelerator::Result and
 // media::VideoDecodeAccelerator::Error match.
@@ -70,78 +68,9 @@ arc::mojom::VideoDecodeAccelerator::Result ConvertErrorCode(
   }
 }
 
-// Return true iff |planes| is valid for a video frame located on |dmabuf_fd|
-// and of |pixel_format|.
-static bool VerifyDmabuf(media::VideoPixelFormat pixel_format,
-                         const gfx::Size& coded_size,
-                         int dmabuf_fd,
-                         const std::vector<arc::VideoFramePlane>& planes) {
-  const size_t num_planes = media::VideoFrame::NumPlanes(pixel_format);
-  if (planes.size() != num_planes || num_planes == 0) {
-    VLOGF(1) << "Invalid number of dmabuf planes passed: " << planes.size()
-             << ", expected: " << num_planes;
-    return false;
-  }
-
-  off_t size = lseek(dmabuf_fd, 0, SEEK_END);
-  lseek(dmabuf_fd, 0, SEEK_SET);
-  if (size < 0) {
-    VPLOGF(1) << "Fail to find the size of dmabuf.";
-    return false;
-  }
-
-  for (size_t i = 0; i < planes.size(); ++i) {
-    const auto& plane = planes[i];
-
-    DVLOGF(4) << "Plane " << i << ", offset: " << plane.offset
-              << ", stride: " << plane.stride;
-
-    size_t rows = media::VideoFrame::Rows(i, pixel_format, coded_size.height());
-    base::CheckedNumeric<off_t> current_size(plane.offset);
-    current_size += base::CheckMul(plane.stride, rows);
-
-    if (!current_size.IsValid() || current_size.ValueOrDie() > size) {
-      VLOGF(1) << "Invalid strides/offsets.";
-      return false;
-    }
-  }
-
-  return true;
-}
 }  // namespace
 
 namespace arc {
-
-class GpuArcVideoDecodeAccelerator::ScopedBitstreamBuffer {
- public:
-  ScopedBitstreamBuffer(ScopedBitstreamBuffer&& scoped_bitstream_buffer) {
-    bitstream_buffer_ = scoped_bitstream_buffer.release();
-  }
-  ScopedBitstreamBuffer& operator=(
-      ScopedBitstreamBuffer&& scoped_bitstream_buffer) {
-    CloseIfNeeded();
-    bitstream_buffer_ = scoped_bitstream_buffer.release();
-    return *this;
-  }
-  ~ScopedBitstreamBuffer() { CloseIfNeeded(); }
-  explicit ScopedBitstreamBuffer(const media::BitstreamBuffer& bitstream_buffer)
-      : bitstream_buffer_(bitstream_buffer) {}
-
-  media::BitstreamBuffer release() WARN_UNUSED_RESULT {
-    return std::exchange(bitstream_buffer_, media::BitstreamBuffer());
-  }
-
- private:
-  void CloseIfNeeded() {
-    if (bitstream_buffer_.handle().IsValid()) {
-      VLOGF(2) << "Handle is not closed yet and closed here, "
-               << "fd=" << bitstream_buffer_.handle().GetHandle();
-      bitstream_buffer_.handle().Close();
-    }
-  }
-  media::BitstreamBuffer bitstream_buffer_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedBitstreamBuffer);
-};
 
 // static
 size_t GpuArcVideoDecodeAccelerator::client_count_ = 0;
@@ -164,6 +93,17 @@ void GpuArcVideoDecodeAccelerator::ProvidePictureBuffers(
     uint32_t textures_per_buffer,
     const gfx::Size& dimensions,
     uint32_t texture_target) {
+  NOTIMPLEMENTED() << "VDA must call ProvidePictureBuffersWithVisibleRect() "
+                   << "for ARC++ video decoding";
+}
+
+void GpuArcVideoDecodeAccelerator::ProvidePictureBuffersWithVisibleRect(
+    uint32_t requested_num_of_buffers,
+    media::VideoPixelFormat format,
+    uint32_t textures_per_buffer,
+    const gfx::Size& dimensions,
+    const gfx::Rect& visible_rect,
+    uint32_t texture_target) {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(client_);
@@ -173,7 +113,7 @@ void GpuArcVideoDecodeAccelerator::ProvidePictureBuffers(
   auto pbf = mojom::PictureBufferFormat::New();
   pbf->min_num_buffers = requested_num_of_buffers;
   pbf->coded_size = dimensions;
-  client_->ProvidePictureBuffers(std::move(pbf));
+  client_->ProvidePictureBuffers(std::move(pbf), visible_rect);
 }
 
 void GpuArcVideoDecodeAccelerator::DismissPictureBuffer(
@@ -245,7 +185,7 @@ void GpuArcVideoDecodeAccelerator::NotifyResetDone() {
     pending_flush_callbacks_.pop();
   }
 
-  base::ResetAndReturn(&pending_reset_callback_)
+  std::move(pending_reset_callback_)
       .Run(mojom::VideoDecodeAccelerator::Result::SUCCESS);
   RunPendingRequests();
 }
@@ -263,7 +203,7 @@ void GpuArcVideoDecodeAccelerator::NotifyError(
     pending_flush_callbacks_.pop();
   }
   if (pending_reset_callback_) {
-    base::ResetAndReturn(&pending_reset_callback_)
+    std::move(pending_reset_callback_)
         .Run(mojom::VideoDecodeAccelerator::Result::PLATFORM_FAILURE);
   }
 
@@ -301,12 +241,12 @@ void GpuArcVideoDecodeAccelerator::ResetRequest(
 }
 
 void GpuArcVideoDecodeAccelerator::DecodeRequest(
-    ScopedBitstreamBuffer scoped_bitstream_buffer,
+    media::BitstreamBuffer bitstream_buffer,
     PendingCallback cb,
     media::VideoDecodeAccelerator* vda) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(vda);
-  vda->Decode(scoped_bitstream_buffer.release());
+  vda->Decode(std::move(bitstream_buffer));
 }
 
 void GpuArcVideoDecodeAccelerator::ExecuteRequest(
@@ -418,21 +358,34 @@ void GpuArcVideoDecodeAccelerator::Decode(
   }
   DVLOGF(4) << "fd=" << handle_fd.get();
 
-  base::SharedMemoryHandle shm_handle;
+  base::subtle::PlatformSharedMemoryRegion shm_region;
   if (secure_mode_) {
     // Use protected shared memory associated with the given file descriptor.
-    shm_handle = protected_buffer_manager_->GetProtectedSharedMemoryHandleFor(
+    shm_region = protected_buffer_manager_->GetProtectedSharedMemoryRegionFor(
         std::move(handle_fd));
-    if (!shm_handle.IsValid()) {
+    if (!shm_region.IsValid()) {
       VLOGF(1) << "No protected shared memory found for handle";
       client_->NotifyError(
           mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
       return;
     }
   } else {
-    shm_handle = base::SharedMemoryHandle(
-        base::FileDescriptor(handle_fd.release(), true), 0u,
+    size_t handle_size;
+    if (!media::GetFileSize(handle_fd.get(), &handle_size)) {
+      client_->NotifyError(
+          mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
+      return;
+    }
+    shm_region = base::subtle::PlatformSharedMemoryRegion::Take(
+        std::move(handle_fd),
+        base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe, handle_size,
         base::UnguessableToken::Create());
+    if (!shm_region.IsValid()) {
+      VLOGF(1) << "Cannot take file descriptor based shared memory";
+      client_->NotifyError(
+          mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
+      return;
+    }
   }
 
   // Use Unretained(this) is safe, this callback will be executed in
@@ -443,9 +396,9 @@ void GpuArcVideoDecodeAccelerator::Decode(
   ExecuteRequest(
       {base::BindOnce(
            &GpuArcVideoDecodeAccelerator::DecodeRequest, base::Unretained(this),
-           ScopedBitstreamBuffer(media::BitstreamBuffer(
-               bitstream_buffer->bitstream_id, shm_handle,
-               bitstream_buffer->bytes_used, bitstream_buffer->offset))),
+           media::BitstreamBuffer(
+               bitstream_buffer->bitstream_id, std::move(shm_region),
+               bitstream_buffer->bytes_used, bitstream_buffer->offset)),
        PendingCallback()});
 }
 
@@ -463,15 +416,17 @@ void GpuArcVideoDecodeAccelerator::AssignPictureBuffers(uint32_t count) {
         mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
     return;
   }
+  if (assign_picture_buffers_called_) {
+    VLOGF(1) << "AssignPictureBuffers is called twice without "
+             << "ImportBufferForPicture()";
+    client_->NotifyError(
+        mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
+    return;
+  }
 
   coded_size_ = pending_coded_size_;
-  std::vector<media::PictureBuffer> buffers;
-  for (uint32_t id = 0; id < count; ++id) {
-    buffers.push_back(
-        media::PictureBuffer(static_cast<int32_t>(id), coded_size_));
-  }
   output_buffer_count_ = static_cast<size_t>(count);
-  vda_->AssignPictureBuffers(buffers);
+  assign_picture_buffers_called_ = true;
 }
 
 void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
@@ -524,7 +479,7 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
     auto protected_native_pixmap =
         protected_buffer_manager_->GetProtectedNativePixmapHandleFor(
             std::move(handle_fd));
-    if (protected_native_pixmap.fds.size() == 0) {
+    if (protected_native_pixmap.planes.size() == 0) {
       VLOGF(1) << "No protected native pixmap found for handle";
       client_->NotifyError(
           mojom::VideoDecodeAccelerator::Result::PLATFORM_FAILURE);
@@ -532,40 +487,43 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
     }
     gmb_handle.native_pixmap_handle = std::move(protected_native_pixmap);
   } else {
-    if (!VerifyDmabuf(pixel_format, coded_size_, handle_fd.get(), planes)) {
-      VLOGF(1) << "Failed verifying dmabuf";
+    std::vector<base::ScopedFD> handle_fds =
+        DuplicateFD(std::move(handle_fd), planes.size());
+    if (handle_fds.empty()) {
+      VLOGF(1) << "Failed to duplicate fd";
       client_->NotifyError(
           mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
       return;
     }
 
-    const size_t num_planes = media::VideoFrame::NumPlanes(pixel_format);
-
-    // TODO(crbug.com/911370): Remove this workaround once Android passes one fd
-    // per plane.
-    std::array<base::ScopedFD, media::VideoFrame::kMaxPlanes> scoped_fds;
-    scoped_fds[0].reset(handle_fd.release());
-    for (size_t i = 1; i < num_planes; ++i) {
-      scoped_fds[i].reset(HANDLE_EINTR(dup(scoped_fds[0].get())));
-      if (!scoped_fds[i].is_valid()) {
-        VLOGF(1) << "Failed to duplicate fd.";
-        client_->NotifyError(
-            mojom::VideoDecodeAccelerator::Result::PLATFORM_FAILURE);
-        return;
-      }
+    auto handle = CreateGpuMemoryBufferHandle(pixel_format, coded_size_,
+                                              std::move(handle_fds), planes);
+    if (!handle) {
+      VLOGF(1) << "Failed to create GpuMemoryBufferHandle";
+      client_->NotifyError(
+          mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
+      return;
     }
-    for (size_t i = 0; i < num_planes; ++i) {
-      gmb_handle.native_pixmap_handle.fds.push_back(
-          base::FileDescriptor(scoped_fds[i].release(), true));
-    }
-
-    for (const auto& plane : planes) {
-      gmb_handle.native_pixmap_handle.planes.emplace_back(plane.stride,
-                                                          plane.offset, 0);
-    }
+    gmb_handle = std::move(handle).value();
   }
 
-  vda_->ImportBufferForPicture(picture_buffer_id, pixel_format, gmb_handle);
+  // This is the first time of ImportBufferForPicture() after
+  // AssignPictureBuffers() is called. Call VDA::AssignPictureBuffers() here.
+  if (assign_picture_buffers_called_) {
+    gfx::Size picture_size(gmb_handle.native_pixmap_handle.planes[0].stride,
+                           coded_size_.height());
+    std::vector<media::PictureBuffer> buffers;
+    for (size_t id = 0; id < output_buffer_count_; ++id) {
+      buffers.push_back(
+          media::PictureBuffer(static_cast<int32_t>(id), picture_size));
+    }
+
+    vda_->AssignPictureBuffers(std::move(buffers));
+    assign_picture_buffers_called_ = false;
+  }
+
+  vda_->ImportBufferForPicture(picture_buffer_id, pixel_format,
+                               std::move(gmb_handle));
 }
 
 void GpuArcVideoDecodeAccelerator::ReusePictureBuffer(

@@ -4,6 +4,7 @@ include_rules = [
   "+chrome/installer/util",
   "+components/crash",
   "+google_apis",
+  "+third_party/boringssl/src/include",
 ]
 
 specific_include_rules = {

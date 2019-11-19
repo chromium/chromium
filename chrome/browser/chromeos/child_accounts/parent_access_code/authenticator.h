@@ -12,10 +12,12 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "components/account_id/account_id.h"
 #include "crypto/hmac.h"
 
 namespace base {
 class DictionaryValue;
+class Value;
 }  // namespace base
 
 namespace chromeos {
@@ -39,8 +41,8 @@ class AccessCodeConfig {
   AccessCodeConfig(const std::string& shared_secret,
                    base::TimeDelta code_validity,
                    base::TimeDelta clock_drift_tolerance);
-  AccessCodeConfig(const AccessCodeConfig& rhs);
-  AccessCodeConfig& operator=(const AccessCodeConfig&);
+  AccessCodeConfig(AccessCodeConfig&&);
+  AccessCodeConfig& operator=(AccessCodeConfig&&);
   ~AccessCodeConfig();
 
   // Secret shared between child and parent devices.
@@ -54,10 +56,15 @@ class AccessCodeConfig {
     return clock_drift_tolerance_;
   }
 
+  // Converts the AccessCodeConfig object to its dictionary equivalent.
+  base::Value ToDictionary() const;
+
  private:
   std::string shared_secret_;
   base::TimeDelta code_validity_;
   base::TimeDelta clock_drift_tolerance_;
+
+  DISALLOW_COPY_AND_ASSIGN(AccessCodeConfig);
 };
 
 // Parent access code that can be used to authorize various actions on child
@@ -105,13 +112,12 @@ class Authenticator {
   static constexpr base::TimeDelta kAccessCodeGranularity =
       base::TimeDelta::FromMinutes(1);
 
-  explicit Authenticator(const AccessCodeConfig& config);
+  explicit Authenticator(AccessCodeConfig config);
   ~Authenticator();
 
   // Generates parent access code from the given |timestamp|. Returns the code
   // if generation was successful. |timestamp| needs to be greater or equal Unix
   // Epoch.
-
   base::Optional<AccessCode> Generate(base::Time timestamp) const;
 
   // Returns AccessCode structure with validity information, if |code| is

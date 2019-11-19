@@ -17,6 +17,7 @@
 #include "base/scoped_observer.h"
 #include "base/timer/timer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/alarms.h"
 #include "extensions/common/extension_id.h"
@@ -31,7 +32,6 @@ class BrowserContext;
 
 namespace extensions {
 class ExtensionAlarmsSchedulingTest;
-class ExtensionRegistry;
 
 struct Alarm {
   Alarm();
@@ -225,7 +225,7 @@ class AlarmManager : public BrowserContextKeyedAPI,
 
   // Listen to extension load notifications.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   // The timer for this alarm manager.
   base::OneShotTimer timer_;

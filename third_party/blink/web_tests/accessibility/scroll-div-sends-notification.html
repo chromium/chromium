@@ -1,7 +1,8 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <style>
 .container {
   padding: 100px;
@@ -25,30 +26,27 @@
     <button class="bigbutton">Three</button>
 </div>
 
-<div id="console"></div>
 <script>
 
-description("This test ensures that scrolling the window sends a notification.");
-window.jsTestIsAsync = true;
+async_test((t) => {
+  var container = document.getElementById('container');
 
-if (window.testRunner && window.accessibilityController) {
-    testRunner.dumpAsText();
+  accessibilityController.addNotificationListener(t.step_func((target, notification) => {
+    if (target.role == 'AXRole: AXGenericContainer') {
+      console.log('Got notification on container div');
+      assert_equals(container.scrollTop, 500);
+      accessibilityController.removeNotificationListener();
+      t.done();
+    }
+  }));
 
-    var container = document.getElementById('container');
-
-    accessibilityController.addNotificationListener(function (target, notification) {
-        if (target.role == 'AXRole: AXGenericContainer') {
-            debug('Got notification on container div');
-            shouldBe("container.scrollTop", "500");
-            accessibilityController.removeNotificationListener();
-            finishJSTest();
-        }
-    });
-
-    window.setTimeout(function() {
-        container.scrollTop = 500;
-    }, 0);
-}
+  window.setTimeout(function() {
+    container.scrollTop = 500;
+  }, 0);
+  window.setTimeout(t.step_func_done(() => {
+    assert_unreached();
+  }), 200);
+}, "This test ensures that scrolling the window sends a notification.");
 
 </script>
 

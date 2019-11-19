@@ -7,6 +7,9 @@
 
 #include "content/public/browser/desktop_media_id.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -25,7 +28,6 @@ struct DesktopMediaSourceViewStyle {
                               const gfx::Rect& label_rect,
                               gfx::HorizontalAlignment text_alignment,
                               const gfx::Rect& image_rect,
-                              int selection_border_thickness,
                               int focus_rectangle_inset);
 
   // This parameter controls how many source items can be displayed in a row.
@@ -41,10 +43,6 @@ struct DesktopMediaSourceViewStyle {
   gfx::Rect label_rect;
   gfx::HorizontalAlignment text_alignment;
   gfx::Rect image_rect;
-
-  // When a source item is selected, we paint the border to show it. This
-  // parameter controls how thick the border would be.
-  int selection_border_thickness;
 
   // When a source item is focused, we paint dotted line. This parameter
   // controls the distance between dotted line and the source view boundary.
@@ -78,9 +76,7 @@ class DesktopMediaSourceView : public views::View {
   const char* GetClassName() const override;
   views::View* GetSelectedViewForGroup(int group) override;
   bool IsGroupFocusTraversable() const override;
-  void OnPaint(gfx::Canvas* canvas) override;
   void OnFocus() override;
-  void OnBlur() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -100,9 +96,12 @@ class DesktopMediaSourceView : public views::View {
   content::DesktopMediaID source_id_;
 
   DesktopMediaSourceViewStyle style_;
-  views::ImageView* icon_view_;
-  views::ImageView* image_view_;
-  views::Label* label_;
+  views::ImageView* icon_view_ = new views::ImageView;
+  views::ImageView* image_view_ = new views::ImageView;
+  views::Label* label_ = new views::Label;
+
+  std::unique_ptr<views::FocusRing> focus_ring_ =
+      views::FocusRing::Install(this);
 
   bool selected_;
 

@@ -20,9 +20,8 @@ void VideoFrameReceiverOnTaskRunner::OnNewBuffer(
     int buffer_id,
     media::mojom::VideoBufferHandlePtr buffer_handle) {
   task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VideoFrameReceiver::OnNewBuffer, receiver_, buffer_id,
-                     base::Passed(std::move(buffer_handle))));
+      FROM_HERE, base::BindOnce(&VideoFrameReceiver::OnNewBuffer, receiver_,
+                                buffer_id, std::move(buffer_handle)));
 }
 
 void VideoFrameReceiverOnTaskRunner::OnFrameReadyInBuffer(

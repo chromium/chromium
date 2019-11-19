@@ -119,6 +119,9 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
   bool mute_system_audio_;
   bool mute_done_;
 
+  // Value of input stream volume, between 0.0 - 1.0.
+  double input_volume_;
+
   std::unique_ptr<AudioBus> audio_bus_;
 
   DISALLOW_COPY_AND_ASSIGN(CrasInputStream);

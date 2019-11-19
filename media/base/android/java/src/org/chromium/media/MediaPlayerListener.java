@@ -8,6 +8,7 @@ import android.media.MediaPlayer;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 // This class implements all the listener interface for android mediaplayer.
 // Callbacks will be sent to the native class for processing.
@@ -66,23 +67,27 @@ class MediaPlayerListener implements MediaPlayer.OnPreparedListener,
                 errorType = MEDIA_ERROR_INVALID_CODE;
                 break;
         }
-        nativeOnMediaError(mNativeMediaPlayerListener, errorType);
+        MediaPlayerListenerJni.get().onMediaError(
+                mNativeMediaPlayerListener, MediaPlayerListener.this, errorType);
         return true;
     }
 
     @Override
     public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-        nativeOnVideoSizeChanged(mNativeMediaPlayerListener, width, height);
+        MediaPlayerListenerJni.get().onVideoSizeChanged(
+                mNativeMediaPlayerListener, MediaPlayerListener.this, width, height);
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        nativeOnPlaybackComplete(mNativeMediaPlayerListener);
+        MediaPlayerListenerJni.get().onPlaybackComplete(
+                mNativeMediaPlayerListener, MediaPlayerListener.this);
     }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        nativeOnMediaPrepared(mNativeMediaPlayerListener);
+        MediaPlayerListenerJni.get().onMediaPrepared(
+                mNativeMediaPlayerListener, MediaPlayerListener.this);
     }
 
     @CalledByNative
@@ -101,15 +106,14 @@ class MediaPlayerListener implements MediaPlayer.OnPreparedListener,
     /**
      * See media/base/android/media_player_listener.cc for all the following functions.
      */
-    private native void nativeOnMediaError(
-            long nativeMediaPlayerListener,
-            int errorType);
 
-    private native void nativeOnVideoSizeChanged(
-            long nativeMediaPlayerListener,
-            int width, int height);
-
-    private native void nativeOnMediaPrepared(long nativeMediaPlayerListener);
-
-    private native void nativeOnPlaybackComplete(long nativeMediaPlayerListener);
+    @NativeMethods
+    interface Natives {
+        void onMediaError(
+                long nativeMediaPlayerListener, MediaPlayerListener caller, int errorType);
+        void onVideoSizeChanged(
+                long nativeMediaPlayerListener, MediaPlayerListener caller, int width, int height);
+        void onMediaPrepared(long nativeMediaPlayerListener, MediaPlayerListener caller);
+        void onPlaybackComplete(long nativeMediaPlayerListener, MediaPlayerListener caller);
+    }
 }

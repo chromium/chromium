@@ -19,7 +19,7 @@
 #include "base/time/time.h"
 #include "components/search_provider_logos/logo_common.h"
 #include "components/search_provider_logos/logo_service.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 class TemplateURLService;
 
@@ -42,11 +42,11 @@ class LogoCache;
 class LogoObserver;
 
 class LogoServiceImpl : public LogoService,
-                        public identity::IdentityManager::Observer {
+                        public signin::IdentityManager::Observer {
  public:
   LogoServiceImpl(
       const base::FilePath& cache_directory,
-      identity::IdentityManager* identity_manager,
+      signin::IdentityManager* identity_manager,
       TemplateURLService* template_url_service,
       std::unique_ptr<image_fetcher::ImageDecoder> image_decoder,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -103,8 +103,8 @@ class LogoServiceImpl : public LogoService,
 
   const int kDownloadOutcomeNotTracked = -1;
 
-  // identity::IdentityManager::Observer implementation.
-  void OnAccountsInCookieUpdated(const identity::AccountsInCookieJarInfo&,
+  // signin::IdentityManager::Observer implementation.
+  void OnAccountsInCookieUpdated(const signin::AccountsInCookieJarInfo&,
                                  const GoogleServiceAuthError&) override;
 
   // Clear any cached logo we might have. Useful on sign-out to get rid of
@@ -120,10 +120,17 @@ class LogoServiceImpl : public LogoService,
   // will be NULL if there wasn't a valid, up-to-date logo in the cache.
   void OnCachedLogoRead(std::unique_ptr<EncodedLogo> cached_logo);
 
-  // Called when the cached logo has been decoded into an SkBitmap. |image| will
-  // be NULL if decoding failed.
+  // Called when the light cached image has been decoded into an SkBitmap.
+  // |image| will be NULL if decoding failed.
+  void OnLightCachedImageDecoded(std::unique_ptr<EncodedLogo> cached_logo,
+                                 const SkBitmap& image);
+
+  // Called when both the light and dark cached images have been decoded into an
+  // SkBitmap. |image| will be NULL if decoding failed. |dark_image| will be
+  // NULL if decoding failed or no dark image is provided.
   void OnCachedLogoAvailable(std::unique_ptr<EncodedLogo> encoded_logo,
-                             const SkBitmap& image);
+                             const SkBitmap& image,
+                             const SkBitmap& dark_image);
 
   // Stores |logo| in the cache.
   void SetCachedLogo(std::unique_ptr<EncodedLogo> logo);
@@ -140,13 +147,23 @@ class LogoServiceImpl : public LogoService,
                          bool from_http_cache,
                          std::unique_ptr<EncodedLogo> logo);
 
-  // Called when the fresh logo has been decoded into an SkBitmap. |image| will
+  // Called when the light image has been decoded into an SkBitmap. |image| will
   // be NULL if decoding failed.
+  void OnLightFreshImageDecoded(std::unique_ptr<EncodedLogo> logo,
+                                bool download_failed,
+                                bool parsing_failed,
+                                bool from_http_cache,
+                                const SkBitmap& image);
+
+  // Called when both the light and dark images have been decoded into an
+  // SkBitmap. |image| will be NULL if decoding failed. |dark_image| will be
+  // null if decoding failed or no dark image is provided.
   void OnFreshLogoAvailable(std::unique_ptr<EncodedLogo> logo,
                             bool download_failed,
                             bool parsing_failed,
                             bool from_http_cache,
-                            const SkBitmap& image);
+                            const SkBitmap& image,
+                            const SkBitmap& dark_image);
 
   // Invoked by |loader|.
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
@@ -154,7 +171,7 @@ class LogoServiceImpl : public LogoService,
 
   // Constructor arguments.
   const base::FilePath cache_directory_;
-  identity::IdentityManager* const identity_manager_;
+  signin::IdentityManager* const identity_manager_;
   TemplateURLService* const template_url_service_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
@@ -211,7 +228,7 @@ class LogoServiceImpl : public LogoService,
   // Clock used to determine current time. Can be overridden in tests.
   base::Clock* clock_ = nullptr;
 
-  base::WeakPtrFactory<LogoServiceImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<LogoServiceImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LogoServiceImpl);
 };

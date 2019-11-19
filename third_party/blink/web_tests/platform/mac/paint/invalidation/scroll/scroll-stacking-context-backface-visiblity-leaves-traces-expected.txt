@@ -1,17 +1,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [785, 5054],
       "contentsOpaque": true,
@@ -19,18 +8,15 @@
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) HEADER",
-      "position": [8, 26],
-      "bounds": [769, 20],
-      "drawsContent": false,
-      "backfaceVisibility": "hidden",
-      "transform": 1
+      "name": "LayoutNGBlockFlow (positioned) DIV id='searchbar'",
+      "bounds": [150, 150],
+      "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='searchbar'",
-      "position": [18, 1850],
-      "bounds": [150, 150],
-      "transform": 1
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -41,8 +27,16 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -1400, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 450, 0, 1]
+      ]
     }
   ]
 }

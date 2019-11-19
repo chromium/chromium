@@ -7,13 +7,13 @@
  * uncontracted.
  */
 
-goog.provide('cvox.ExpandingBrailleTranslator');
+goog.provide('ExpandingBrailleTranslator');
 
 goog.require('Spannable');
-goog.require('cvox.ExtraCellsSpan');
-goog.require('cvox.LibLouis');
-goog.require('cvox.ValueSelectionSpan');
-goog.require('cvox.ValueSpan');
+goog.require('ExtraCellsSpan');
+goog.require('LibLouis');
+goog.require('ValueSelectionSpan');
+goog.require('ValueSpan');
 
 
 /**
@@ -27,21 +27,21 @@ goog.require('cvox.ValueSpan');
  * translation for around a position, a region surrounding that position
  * containing either only whitespace characters or only non-whitespace
  * characters is used.
- * @param {!cvox.LibLouis.Translator} defaultTranslator The translator for all
+ * @param {!LibLouis.Translator} defaultTranslator The translator for all
  *     text when the uncontracted translator is not used.
- * @param {cvox.LibLouis.Translator=} opt_uncontractedTranslator
+ * @param {LibLouis.Translator=} opt_uncontractedTranslator
  *     Translator to use for uncontracted braille translation.
  * @constructor
  */
-cvox.ExpandingBrailleTranslator = function(
+ExpandingBrailleTranslator = function(
     defaultTranslator, opt_uncontractedTranslator) {
   /**
-   * @type {!cvox.LibLouis.Translator}
+   * @type {!LibLouis.Translator}
    * @private
    */
   this.defaultTranslator_ = defaultTranslator;
   /**
-   * @type {cvox.LibLouis.Translator}
+   * @type {LibLouis.Translator}
    * @private
    */
   this.uncontractedTranslator_ = opt_uncontractedTranslator || null;
@@ -50,10 +50,10 @@ cvox.ExpandingBrailleTranslator = function(
 
 /**
  * What expansion to apply to the part of the translated string marked by the
- * {@code cvox.ValueSpan} spannable.
+ * {@code ValueSpan} spannable.
  * @enum {number}
  */
-cvox.ExpandingBrailleTranslator.ExpansionType = {
+ExpandingBrailleTranslator.ExpansionType = {
   /**
    * Use the default translator all of the value, regardless of any selection.
    * This is typically used when the user is in the middle of typing and the
@@ -78,26 +78,26 @@ cvox.ExpandingBrailleTranslator.ExpansionType = {
 
 /**
  * Translates text to braille using the translator(s) provided to the
- * constructor.  See {@code cvox.LibLouis.Translator} for further details.
+ * constructor.  See {@code LibLouis.Translator} for further details.
  * @param {!Spannable} text Text to translate.
- * @param {cvox.ExpandingBrailleTranslator.ExpansionType} expansionType
+ * @param {ExpandingBrailleTranslator.ExpansionType} expansionType
  *     Indicates how the text marked by a value span, if any, is expanded.
  * @param {function(!ArrayBuffer, !Array<number>, !Array<number>)}
  *     callback Called when the translation is done.  It takes resulting
  *         braille cells and positional mappings as parameters.
  */
-cvox.ExpandingBrailleTranslator.prototype.translate = function(
+ExpandingBrailleTranslator.prototype.translate = function(
     text, expansionType, callback) {
   var expandRanges = this.findExpandRanges_(text, expansionType);
   var extraCellsSpans =
-      text.getSpansInstanceOf(cvox.ExtraCellsSpan).filter(function(span) {
+      text.getSpansInstanceOf(ExtraCellsSpan).filter(function(span) {
         return span.cells.byteLength > 0;
       });
   var extraCellsPositions = extraCellsSpans.map(function(span) {
     return text.getSpanStart(span);
   });
   var formTypeMap = new Array(text.length).fill(0);
-  text.getSpansInstanceOf(cvox.BrailleTextStyleSpan).forEach(function(span) {
+  text.getSpansInstanceOf(BrailleTextStyleSpan).forEach(function(span) {
     var start = text.getSpanStart(span);
     var end = text.getSpanEnd(span);
     for (var i = start; i < end; i++)
@@ -107,15 +107,16 @@ cvox.ExpandingBrailleTranslator.prototype.translate = function(
   if (expandRanges.length == 0 && extraCellsSpans.length == 0) {
     this.defaultTranslator_.translate(
         text.toString(), formTypeMap,
-        cvox.ExpandingBrailleTranslator.nullParamsToEmptyAdapter_(
+        ExpandingBrailleTranslator.nullParamsToEmptyAdapter_(
             text.length, callback));
     return;
   }
 
   var chunks = [];
   function maybeAddChunkToTranslate(translator, start, end) {
-    if (start < end)
+    if (start < end) {
       chunks.push({translator: translator, start: start, end: end});
+    }
   }
   function addExtraCellsChunk(pos, cells) {
     var chunk = {
@@ -158,8 +159,9 @@ cvox.ExpandingBrailleTranslator.prototype.translate = function(
     chunk.cells = cells;
     chunk.textToBraille = textToBraille;
     chunk.brailleToText = brailleToText;
-    if (--numPendingCallbacks <= 0)
+    if (--numPendingCallbacks <= 0) {
       finish();
+    }
   }
 
   function finish() {
@@ -189,7 +191,7 @@ cvox.ExpandingBrailleTranslator.prototype.translate = function(
       chunk.translator.translate(
           text.toString().substring(chunk.start, chunk.end),
           formTypeMap.slice(chunk.start, chunk.end),
-          cvox.ExpandingBrailleTranslator.nullParamsToEmptyAdapter_(
+          ExpandingBrailleTranslator.nullParamsToEmptyAdapter_(
               chunk.end - chunk.start, goog.partial(chunkTranslated, chunk)));
     });
   } else {
@@ -207,11 +209,10 @@ cvox.ExpandingBrailleTranslator.prototype.translate = function(
  *     range.
  * @param {number} end Maximum value for the end position of the returned
  *     range.
- * @return {!cvox.ExpandingBrailleTranslator.Range_} The claculated range.
+ * @return {!ExpandingBrailleTranslator.Range_} The claculated range.
  * @private
  */
-cvox.ExpandingBrailleTranslator.rangeForPosition_ = function(
-    str, pos, start, end) {
+ExpandingBrailleTranslator.rangeForPosition_ = function(str, pos, start, end) {
   if (start < 0 || end > str.length) {
     throw RangeError(
         'End-points out of range looking for braille expansion range');
@@ -234,26 +235,26 @@ cvox.ExpandingBrailleTranslator.rangeForPosition_ = function(
 /**
  * Finds the ranges in which contracted braille should not be used.
  * @param {!Spannable} text Text to find expansion ranges in.
- * @param {cvox.ExpandingBrailleTranslator.ExpansionType} expansionType
+ * @param {ExpandingBrailleTranslator.ExpansionType} expansionType
  *     Indicates how the text marked up as the value is expanded.
- * @return {!Array<cvox.ExpandingBrailleTranslator.Range_>} The calculated
+ * @return {!Array<ExpandingBrailleTranslator.Range_>} The calculated
  *     ranges.
  * @private
  */
-cvox.ExpandingBrailleTranslator.prototype.findExpandRanges_ = function(
+ExpandingBrailleTranslator.prototype.findExpandRanges_ = function(
     text, expansionType) {
   var result = [];
   if (this.uncontractedTranslator_ &&
-      expansionType != cvox.ExpandingBrailleTranslator.ExpansionType.NONE) {
-    var value = text.getSpanInstanceOf(cvox.ValueSpan);
+      expansionType != ExpandingBrailleTranslator.ExpansionType.NONE) {
+    var value = text.getSpanInstanceOf(ValueSpan);
     if (value) {
       var valueStart = text.getSpanStart(value);
       var valueEnd = text.getSpanEnd(value);
       switch (expansionType) {
-        case cvox.ExpandingBrailleTranslator.ExpansionType.SELECTION:
+        case ExpandingBrailleTranslator.ExpansionType.SELECTION:
           this.addRangesForSelection_(text, valueStart, valueEnd, result);
           break;
-        case cvox.ExpandingBrailleTranslator.ExpansionType.ALL:
+        case ExpandingBrailleTranslator.ExpansionType.ALL:
           result.push({start: valueStart, end: valueEnd});
           break;
       }
@@ -270,14 +271,14 @@ cvox.ExpandingBrailleTranslator.prototype.findExpandRanges_ = function(
  * @param {Spannable} text Text to find ranges in.
  * @param {number} valueStart Start of the value in {@code text}.
  * @param {number} valueEnd End of the value in {@code text}.
- * @param {Array<cvox.ExpandingBrailleTranslator.Range_>} outRanges
+ * @param {Array<ExpandingBrailleTranslator.Range_>} outRanges
  *     Destination for the expansion ranges.  Untouched if no ranges
  *     are found.  Note that ranges may be coalesced.
  * @private
  */
-cvox.ExpandingBrailleTranslator.prototype.addRangesForSelection_ = function(
+ExpandingBrailleTranslator.prototype.addRangesForSelection_ = function(
     text, valueStart, valueEnd, outRanges) {
-  var selection = text.getSpanInstanceOf(cvox.ValueSelectionSpan);
+  var selection = text.getSpanInstanceOf(ValueSelectionSpan);
   if (!selection) {
     return;
   }
@@ -307,7 +308,7 @@ cvox.ExpandingBrailleTranslator.prototype.addRangesForSelection_ = function(
 
   var lastRange = outRanges[outRanges.length - 1] || null;
   for (var i = 0; i < expandPositions.length; ++i) {
-    var range = cvox.ExpandingBrailleTranslator.rangeForPosition_(
+    var range = ExpandingBrailleTranslator.rangeForPosition_(
         text.toString(), expandPositions[i], valueStart, valueEnd);
     if (lastRange && lastRange.end >= range.start) {
       lastRange.end = range.end;
@@ -330,7 +331,7 @@ cvox.ExpandingBrailleTranslator.prototype.addRangesForSelection_ = function(
  *     An adapted version of the callback.
  * @private
  */
-cvox.ExpandingBrailleTranslator.nullParamsToEmptyAdapter_ = function(
+ExpandingBrailleTranslator.nullParamsToEmptyAdapter_ = function(
     inputLength, callback) {
   return function(cells, textToBraille, brailleToText) {
     if (!textToBraille) {
@@ -349,4 +350,4 @@ cvox.ExpandingBrailleTranslator.nullParamsToEmptyAdapter_ = function(
  * @typedef {{start: number, end: number}}
  * @private
  */
-cvox.ExpandingBrailleTranslator.Range_;
+ExpandingBrailleTranslator.Range_;

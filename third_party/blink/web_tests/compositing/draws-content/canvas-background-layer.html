@@ -22,6 +22,8 @@
     <script>
         if (window.testRunner)
             testRunner.dumpAsText();
+        if (window.internals)
+            internals.runtimeFlags.accelerated2dCanvasEnabled = true;
 
         function drawCanvas(canvasID, hasAlpha) {
             var canvas = document.getElementById(canvasID);

@@ -30,8 +30,7 @@ CastAppDiscoveryServiceImpl::CastAppDiscoveryServiceImpl(
     : message_handler_(message_handler),
       socket_service_(socket_service),
       media_sink_service_(media_sink_service),
-      clock_(clock),
-      weak_ptr_factory_(this) {
+      clock_(clock) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(message_handler_);
   DCHECK(socket_service_);

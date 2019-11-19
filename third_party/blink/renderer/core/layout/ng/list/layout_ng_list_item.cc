@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/list_marker_text.h"
+#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_marker_image.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -51,14 +52,37 @@ void LayoutNGListItem::StyleDidChange(StyleDifference diff,
   LayoutNGBlockFlow::StyleDidChange(diff, old_style);
 
   UpdateMarker();
+
+  if (old_style && (old_style->ListStyleType() != StyleRef().ListStyleType() ||
+                    (StyleRef().ListStyleType() == EListStyleType::kString &&
+                     old_style->ListStyleStringValue() !=
+                         StyleRef().ListStyleStringValue())))
+    ListStyleTypeChanged();
+}
+
+// If the value of ListStyleType changed, we need to the marker text has been
+// updated.
+void LayoutNGListItem::ListStyleTypeChanged() {
+  if (!is_marker_text_updated_)
+    return;
+
+  is_marker_text_updated_ = false;
+  if (marker_) {
+    marker_->SetNeedsLayoutAndPrefWidthsRecalcAndFullPaintInvalidation(
+        layout_invalidation_reason::kListStyleTypeChange);
+  }
 }
 
 void LayoutNGListItem::OrdinalValueChanged() {
   if (marker_type_ == kOrdinalValue && is_marker_text_updated_) {
     is_marker_text_updated_ = false;
-    DCHECK(marker_);
-    marker_->SetNeedsLayoutAndPrefWidthsRecalcAndFullPaintInvalidation(
-        layout_invalidation_reason::kListValueChange);
+
+    // |marker_| can be a nullptr, for example, in the case of :after list item
+    // elements.
+    if (marker_) {
+      marker_->SetNeedsLayoutAndPrefWidthsRecalcAndFullPaintInvalidation(
+          layout_invalidation_reason::kListValueChange);
+    }
   }
 }
 
@@ -104,7 +128,7 @@ void LayoutNGListItem::UpdateMarkerText(LayoutText* text) {
   DCHECK(text);
   StringBuilder marker_text_builder;
   marker_type_ = MarkerText(&marker_text_builder, kWithSuffix);
-  text->SetText(marker_text_builder.ToString().ReleaseImpl());
+  text->SetTextIfNeeded(marker_text_builder.ToString().ReleaseImpl());
   is_marker_text_updated_ = true;
 }
 
@@ -115,7 +139,7 @@ void LayoutNGListItem::UpdateMarkerText() {
 
 void LayoutNGListItem::UpdateMarker() {
   const ComputedStyle& style = StyleRef();
-  if (style.ListStyleType() == EListStyleType::kNone) {
+  if (style.ListStyleType() == EListStyleType::kNone && !IsMarkerImage()) {
     DestroyMarker();
     marker_type_ = kStatic;
     is_marker_text_updated_ = true;
@@ -123,25 +147,39 @@ void LayoutNGListItem::UpdateMarker() {
   }
 
   // Create a marker box if it does not exist yet.
+  Node* list_item = GetNode();
+  const ComputedStyle* cached_marker_style =
+      list_item->IsPseudoElement()
+          ? nullptr
+          : ToElement(list_item)->CachedStyleForPseudoElement(kPseudoIdMarker);
   scoped_refptr<ComputedStyle> marker_style;
+  if (cached_marker_style) {
+    marker_style = ComputedStyle::Clone(*cached_marker_style);
+  } else {
+    marker_style = ComputedStyle::Create();
+    marker_style->InheritFrom(style);
+  }
   if (IsInside()) {
     if (marker_ && !marker_->IsLayoutInline())
       DestroyMarker();
     if (!marker_)
-      marker_ = LayoutInline::CreateAnonymous(&GetDocument());
-    marker_style = ComputedStyle::CreateAnonymousStyleWithDisplay(
-        style, EDisplay::kInline);
+      marker_ = LayoutNGInsideListMarker::CreateAnonymous(&GetDocument());
+    marker_style->SetDisplay(EDisplay::kInline);
     auto margins =
         LayoutListMarker::InlineMarginsForInside(style, IsMarkerImage());
     marker_style->SetMarginStart(Length::Fixed(margins.first));
     marker_style->SetMarginEnd(Length::Fixed(margins.second));
+    // Markers should have unicode-bidi:isolate according to the spec
+    // (https://drafts.csswg.org/css-lists/#ua-stylesheet).
+    // Note this is only relevant for inside markers with arbitrary strings.
+    if (style.ListStyleType() == EListStyleType::kString)
+      marker_style->SetUnicodeBidi(UnicodeBidi::kIsolate);
   } else {
     if (marker_ && !marker_->IsLayoutBlockFlow())
       DestroyMarker();
     if (!marker_)
       marker_ = LayoutNGListMarker::CreateAnonymous(&GetDocument());
-    marker_style = ComputedStyle::CreateAnonymousStyleWithDisplay(
-        style, EDisplay::kInlineBlock);
+    marker_style->SetDisplay(EDisplay::kInlineBlock);
     // Do not break inside the marker, and honor the trailing spaces.
     marker_style->SetWhiteSpace(EWhiteSpace::kPre);
     // Compute margins for 'outside' during layout, because it requires the
@@ -162,6 +200,21 @@ void LayoutNGListItem::UpdateMarker() {
   }
 }
 
+LayoutNGListItem* LayoutNGListItem::FromMarker(const LayoutObject& marker) {
+  DCHECK(marker.IsLayoutNGListMarkerIncludingInside());
+  for (LayoutObject* parent = marker.Parent(); parent;
+       parent = parent->Parent()) {
+    if (parent->IsLayoutNGListItem()) {
+      DCHECK(ToLayoutNGListItem(parent)->Marker() == &marker);
+      return ToLayoutNGListItem(parent);
+    }
+    // These DCHECKs are not critical but to ensure we cover all cases we know.
+    DCHECK(parent->IsAnonymous());
+    DCHECK(parent->IsLayoutBlockFlow() || parent->IsLayoutFlowThread());
+  }
+  return nullptr;
+}
+
 int LayoutNGListItem::Value() const {
   DCHECK(GetNode());
   return ordinal_.Value(*GetNode());
@@ -170,15 +223,25 @@ int LayoutNGListItem::Value() const {
 LayoutNGListItem::MarkerType LayoutNGListItem::MarkerText(
     StringBuilder* text,
     MarkerTextFormat format) const {
+  if (IsMarkerImage()) {
+    if (format == kWithSuffix)
+      text->Append(' ');
+    return kStatic;
+  }
+
   const ComputedStyle& style = StyleRef();
   switch (style.ListStyleType()) {
     case EListStyleType::kNone:
       return kStatic;
+    case EListStyleType::kString: {
+      text->Append(style.ListStyleStringValue());
+      return kStatic;
+    }
     case EListStyleType::kDisc:
     case EListStyleType::kCircle:
     case EListStyleType::kSquare:
       // value is ignored for these types
-      text->Append(list_marker_text::GetText(Style()->ListStyleType(), 0));
+      text->Append(list_marker_text::GetText(style.ListStyleType(), 0));
       if (format == kWithSuffix)
         text->Append(' ');
       return kSymbolValue;
@@ -235,9 +298,9 @@ LayoutNGListItem::MarkerType LayoutNGListItem::MarkerText(
     case EListStyleType::kUpperRoman:
     case EListStyleType::kUrdu: {
       int value = Value();
-      text->Append(list_marker_text::GetText(Style()->ListStyleType(), value));
+      text->Append(list_marker_text::GetText(style.ListStyleType(), value));
       if (format == kWithSuffix) {
-        text->Append(list_marker_text::Suffix(Style()->ListStyleType(), value));
+        text->Append(list_marker_text::Suffix(style.ListStyleType(), value));
         text->Append(' ');
       }
       return kOrdinalValue;
@@ -259,10 +322,20 @@ String LayoutNGListItem::MarkerTextWithoutSuffix() const {
   return text.ToString();
 }
 
+String LayoutNGListItem::TextAlternative(const LayoutObject& marker) {
+  // For accessibility, return the marker string in the logical order even in
+  // RTL, reflecting speech order.
+  if (LayoutNGListItem* list_item = FromMarker(marker))
+    return list_item->MarkerTextWithSuffix();
+  return g_empty_string;
+}
+
 void LayoutNGListItem::UpdateMarkerContentIfNeeded() {
   DCHECK(marker_);
 
   LayoutObject* child = marker_->SlowFirstChild();
+  // There should be at most one child.
+  DCHECK(!child || !child->SlowFirstChild());
   if (IsMarkerImage()) {
     StyleImage* list_style_image = StyleRef().ListStyleImage();
     if (child) {
@@ -282,25 +355,32 @@ void LayoutNGListItem::UpdateMarkerContentIfNeeded() {
                                                          EDisplay::kInline);
       image->SetStyle(image_style);
       image->SetImageResource(
-          LayoutImageResourceStyleImage::Create(list_style_image));
+          MakeGarbageCollected<LayoutImageResourceStyleImage>(
+              list_style_image));
       image->SetIsGeneratedContent();
       marker_->AddChild(image);
     }
   } else {
     // Create a LayoutText in it.
     LayoutText* text = nullptr;
+    // |text_style| should be as same as style propagated in
+    // |LayoutObject::PropagateStyleToAnonymousChildren()| to avoid unexpected
+    // full layout due by style difference. See http://crbug.com/980399
+    scoped_refptr<ComputedStyle> text_style =
+        ComputedStyle::CreateAnonymousStyleWithDisplay(
+            marker_->StyleRef(), marker_->StyleRef().Display());
     if (child) {
       if (child->IsText()) {
         text = ToLayoutText(child);
-        text->SetStyle(marker_->MutableStyle());
+        text->SetStyle(text_style);
       } else {
         child->Destroy();
         child = nullptr;
       }
     }
     if (!child) {
-      text = LayoutText::CreateEmptyAnonymous(GetDocument(),
-                                              marker_->MutableStyle());
+      text = LayoutText::CreateEmptyAnonymous(GetDocument(), text_style,
+                                              LegacyLayout::kAuto);
       marker_->AddChild(text);
       is_marker_text_updated_ = false;
     }

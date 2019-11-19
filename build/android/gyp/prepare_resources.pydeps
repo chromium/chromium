@@ -22,9 +22,9 @@
 ../../../third_party/markupsafe/_compat.py
 ../../../third_party/markupsafe/_native.py
 ../../gn_helpers.py
-generate_v14_compatible_resources.py
 prepare_resources.py
 util/__init__.py
 util/build_utils.py
+util/manifest_utils.py
 util/md5_check.py
 util/resource_utils.py

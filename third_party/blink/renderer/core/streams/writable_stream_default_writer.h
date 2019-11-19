@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_WRITABLE_STREAM_DEFAULT_WRITER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_WRITABLE_STREAM_DEFAULT_WRITER_H_
 
+#include "base/optional.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -21,7 +22,7 @@ class WritableStream;
 class WritableStreamNative;
 
 // https://streams.spec.whatwg.org/#default-writer-class
-class WritableStreamDefaultWriter final : public ScriptWrappable {
+class CORE_EXPORT WritableStreamDefaultWriter final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -73,12 +74,35 @@ class WritableStreamDefaultWriter final : public ScriptWrappable {
                                          v8::Local<v8::Value> error);
 
   //
+  // Methods used by ReadableStreamNative
+  //
+
+  // https://streams.spec.whatwg.org/#writable-stream-default-writer-close-with-error-propagation
+  static v8::Local<v8::Promise> CloseWithErrorPropagation(
+      ScriptState*,
+      WritableStreamDefaultWriter*);
+
+  // https://streams.spec.whatwg.org/#writable-stream-default-writer-release
+  static void Release(ScriptState*, WritableStreamDefaultWriter*);
+
+  // https://streams.spec.whatwg.org/#writable-stream-default-writer-write
+  static v8::Local<v8::Promise> Write(ScriptState*,
+                                      WritableStreamDefaultWriter*,
+                                      v8::Local<v8::Value> chunk);
+
+  //
   // Accessors used by ReadableStreamNative and WritableStreamNative. These do
   // not appear in the standard.
   //
 
   StreamPromiseResolver* ClosedPromise() { return closed_promise_; }
   StreamPromiseResolver* ReadyPromise() { return ready_promise_; }
+  WritableStreamNative* OwnerWritableStream() { return owner_writable_stream_; }
+
+  // This is a variant of GetDesiredSize() that doesn't create an intermediate
+  // JavaScript object. Instead it returns base::nullopt where the JavaScript
+  // version would return null.
+  base::Optional<double> GetDesiredSizeInternal() const;
 
   void SetReadyPromise(StreamPromiseResolver*);
 
@@ -94,36 +118,22 @@ class WritableStreamDefaultWriter final : public ScriptWrappable {
   static v8::Local<v8::Promise> Close(ScriptState*,
                                       WritableStreamDefaultWriter*);
 
-  // https://streams.spec.whatwg.org/#writable-stream-default-writer-close-with-error-propagation
-  static v8::Local<v8::Promise> CloseWithErrorPropagation(
-      ScriptState*,
-      WritableStreamDefaultWriter*);
-
   // https://streams.spec.whatwg.org/#writable-stream-default-writer-ensure-closed-promise-rejected
   static void EnsureClosedPromiseRejected(ScriptState*,
                                           WritableStreamDefaultWriter*,
                                           v8::Local<v8::Value> error);
-
 
   // https://streams.spec.whatwg.org/#writable-stream-default-writer-get-desired-size
   static v8::Local<v8::Value> GetDesiredSize(
       v8::Isolate* isolate,
       const WritableStreamDefaultWriter*);
 
-  // https://streams.spec.whatwg.org/#writable-stream-default-writer-release
-  static void Release(ScriptState*, WritableStreamDefaultWriter*);
-
-  // https://streams.spec.whatwg.org/#writable-stream-default-writer-write
-  static v8::Local<v8::Promise> Write(ScriptState*,
-                                      WritableStreamDefaultWriter*,
-                                      v8::Local<v8::Value> chunk);
-
   // |closed_promise_| and |ready_promise_| are implemented as resolvers. The
   // names come from the slots [[closedPromise]] and [[readyPromise]] in the
   // standard.
-  TraceWrapperMember<StreamPromiseResolver> closed_promise_;
-  TraceWrapperMember<WritableStreamNative> owner_writable_stream_;
-  TraceWrapperMember<StreamPromiseResolver> ready_promise_;
+  Member<StreamPromiseResolver> closed_promise_;
+  Member<WritableStreamNative> owner_writable_stream_;
+  Member<StreamPromiseResolver> ready_promise_;
 };
 
 }  // namespace blink

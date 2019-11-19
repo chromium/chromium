@@ -56,8 +56,7 @@ ArcAndroidManagementChecker::ArcAndroidManagementChecker(Profile* profile,
           g_browser_process->system_network_context_manager()
               ->GetSharedURLLoaderFactory(),
           device_account_id_,
-          identity_manager_),
-      weak_ptr_factory_(this) {}
+          identity_manager_) {}
 
 ArcAndroidManagementChecker::~ArcAndroidManagementChecker() {
   identity_manager_->RemoveObserver(this);

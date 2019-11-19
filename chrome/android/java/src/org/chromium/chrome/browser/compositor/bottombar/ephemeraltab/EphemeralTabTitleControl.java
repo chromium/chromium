@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelTextViewInflater;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -28,7 +29,13 @@ public class EphemeralTabTitleControl extends OverlayPanelTextViewInflater {
     public EphemeralTabTitleControl(OverlayPanel panel, Context context, ViewGroup container,
             DynamicResourceLoader resourceLoader) {
         super(panel, R.layout.ephemeral_tab_text_view, R.id.ephemeral_tab_text_view, context,
-                container, resourceLoader);
+                container, resourceLoader,
+                (ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)
+                                ? R.dimen.overlay_panel_end_buttons_width
+                                : R.dimen.overlay_panel_padded_button_width),
+                (ChromeFeatureList.isEnabled(ChromeFeatureList.OVERLAY_NEW_LAYOUT)
+                                ? R.dimen.overlay_panel_end_buttons_width
+                                : R.dimen.overlay_panel_padded_button_width));
         invalidate();
     }
 

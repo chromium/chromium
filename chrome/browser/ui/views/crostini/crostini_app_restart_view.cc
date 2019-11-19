@@ -5,12 +5,10 @@
 #include "chrome/browser/ui/views/crostini/crostini_app_restart_view.h"
 
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/crostini_app_window_shelf_controller.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "services/ws/public/cpp/property_type_converters.h"
-#include "services/ws/public/mojom/window_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/display/screen.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -32,34 +30,14 @@ gfx::NativeWindow GetNativeWindowFromDisplayId(int64_t display_id) {
 // static
 void CrostiniAppRestartView::Show(const ash::ShelfID& id, int64_t display_id) {
   CrostiniAppRestartView* view = new CrostiniAppRestartView(id, display_id);
-  if (features::IsUsingWindowService()) {
-    // TODO(mash): Simplify specifying |display_id| via CreateDialogWidget, etc.
-    views::Widget* widget = new views::Widget;
-    views::Widget::InitParams params =
-        views::DialogDelegate::GetDialogWidgetInitParams(view, nullptr, nullptr,
-                                                         gfx::Rect());
-    params.mus_properties[ws::mojom::WindowManager::kDisplayId_InitProperty] =
-        mojo::ConvertTo<std::vector<uint8_t>>(display_id);
-    widget->Init(params);
-  } else {
-    // TODO(timzheng): Remove this after single process mash is enabled.
-    views::DialogDelegate::CreateDialogWidget(
-        view, GetNativeWindowFromDisplayId(display_id), nullptr);
-  }
+  views::DialogDelegate::CreateDialogWidget(
+      view, GetNativeWindowFromDisplayId(display_id), nullptr);
   view->GetWidget()->Show();
   chrome::RecordDialogCreation(chrome::DialogIdentifier::CROSTINI_APP_RESTART);
 }
 
 int CrostiniAppRestartView::GetDialogButtons() const {
   return ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
-}
-
-base::string16 CrostiniAppRestartView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  if (button == ui::DIALOG_BUTTON_OK)
-    return l10n_util::GetStringUTF16(IDS_CROSTINI_APP_RESTART_BUTTON);
-  DCHECK_EQ(button, ui::DIALOG_BUTTON_CANCEL);
-  return l10n_util::GetStringUTF16(IDS_CROSTINI_NOT_NOW_BUTTON);
 }
 
 bool CrostiniAppRestartView::ShouldShowCloseButton() const {
@@ -83,13 +61,18 @@ gfx::Size CrostiniAppRestartView::CalculatePreferredSize() const {
 CrostiniAppRestartView::CrostiniAppRestartView(const ash::ShelfID& id,
                                                int64_t display_id)
     : id_(id), display_id_(display_id) {
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_CROSTINI_APP_RESTART_BUTTON));
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_CANCEL,
+      l10n_util::GetStringUTF16(IDS_CROSTINI_NOT_NOW_BUTTON));
+
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical,
+      views::BoxLayout::Orientation::kVertical,
       provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
-  set_margins(provider->GetDialogInsetsForContentType(
-      views::DialogContentType::TEXT, views::DialogContentType::TEXT));
 
   const base::string16 device_type = ui::GetChromeOSDeviceName();
   const base::string16 message =

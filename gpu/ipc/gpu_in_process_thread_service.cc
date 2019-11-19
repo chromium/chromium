@@ -7,48 +7,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/ipc/scheduler_sequence.h"
 
 namespace gpu {
-
-namespace {
-
-// CommandBufferTaskExectuor::Sequence implementation that uses gpu scheduler
-// sequences.
-class SchedulerSequence : public CommandBufferTaskExecutor::Sequence {
- public:
-  explicit SchedulerSequence(Scheduler* scheduler)
-      : CommandBufferTaskExecutor::Sequence(),
-        scheduler_(scheduler),
-        sequence_id_(scheduler->CreateSequence(SchedulingPriority::kHigh)) {}
-
-  // Note: this drops tasks not executed yet.
-  ~SchedulerSequence() override { scheduler_->DestroySequence(sequence_id_); }
-
-  // CommandBufferTaskExecutor::Sequence implementation.
-  SequenceId GetSequenceId() override { return sequence_id_; }
-
-  bool ShouldYield() override { return scheduler_->ShouldYield(sequence_id_); }
-
-  void ScheduleTask(base::OnceClosure task,
-                    std::vector<SyncToken> sync_token_fences) override {
-    scheduler_->ScheduleTask(Scheduler::Task(sequence_id_, std::move(task),
-                                             std::move(sync_token_fences)));
-  }
-
-  void ContinueTask(base::OnceClosure task) override {
-    scheduler_->ContinueTask(sequence_id_, std::move(task));
-  }
-
- private:
-  Scheduler* const scheduler_;
-  const SequenceId sequence_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchedulerSequence);
-};
-
-}  // namespace
 
 GpuInProcessThreadService::GpuInProcessThreadService(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
@@ -60,7 +24,8 @@ GpuInProcessThreadService::GpuInProcessThreadService(
     const GpuFeatureInfo& gpu_feature_info,
     const GpuPreferences& gpu_preferences,
     SharedImageManager* shared_image_manager,
-    gles2::ProgramCache* program_cache)
+    gles2::ProgramCache* program_cache,
+    scoped_refptr<SharedContextState> shared_context_state)
     : CommandBufferTaskExecutor(gpu_preferences,
                                 gpu_feature_info,
                                 sync_point_manager,
@@ -68,7 +33,8 @@ GpuInProcessThreadService::GpuInProcessThreadService(
                                 share_group,
                                 share_group_surface_format,
                                 shared_image_manager,
-                                program_cache),
+                                program_cache,
+                                std::move(shared_context_state)),
       task_runner_(task_runner),
       scheduler_(scheduler) {}
 
@@ -82,7 +48,7 @@ bool GpuInProcessThreadService::ShouldCreateMemoryTracker() const {
   return true;
 }
 
-std::unique_ptr<CommandBufferTaskExecutor::Sequence>
+std::unique_ptr<SingleTaskSequence>
 GpuInProcessThreadService::CreateSequence() {
   return std::make_unique<SchedulerSequence>(scheduler_);
 }
@@ -94,6 +60,11 @@ void GpuInProcessThreadService::ScheduleOutOfOrderTask(base::OnceClosure task) {
 void GpuInProcessThreadService::ScheduleDelayedWork(base::OnceClosure task) {
   task_runner_->PostDelayedTask(FROM_HERE, std::move(task),
                                 base::TimeDelta::FromMilliseconds(2));
+}
+
+void GpuInProcessThreadService::PostNonNestableToClient(
+    base::OnceClosure callback) {
+  NOTREACHED();
 }
 
 }  // namespace gpu

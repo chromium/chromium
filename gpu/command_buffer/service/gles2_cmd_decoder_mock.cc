@@ -10,9 +10,10 @@ namespace gpu {
 namespace gles2 {
 
 MockGLES2Decoder::MockGLES2Decoder(
+    DecoderClient* client,
     CommandBufferServiceBase* command_buffer_service,
     Outputter* outputter)
-    : GLES2Decoder(command_buffer_service, outputter), weak_ptr_factory_(this) {
+    : GLES2Decoder(client, command_buffer_service, outputter) {
   ON_CALL(*this, MakeCurrent())
       .WillByDefault(testing::Return(true));
 }

@@ -19,7 +19,7 @@ namespace {
 
 const char* HELP_TEXT = R"(
 Traffic Annotation Auditor
-Extracts network traffic annotaions from the repository, audits them for errors
+Extracts network traffic annotations from the repository, audits them for errors
 and coverage, produces reports, and updates related files.
 
 Usage: traffic_annotation_auditor [OPTION]... [path_filters]
@@ -64,9 +64,17 @@ Options:
   --error-resilient   Optional flag, stating not to return error in exit code if
                       auditor fails to perform the tests. This flag can be used
                       for trybots to avoid spamming when tests cannot run.
+  --extractor-backend=[clang_tool,python_script]
+                      Optional flag specifying which backend to use for
+                      extracting annotation definitions from source code (Clang
+                      Tool or extractor.py). Defaults to "python_script".
   path_filters        Optional paths to filter which files the tool is run on.
                       It can also include deleted files names when auditor is
-                      run on a partial repository.
+                      run on a partial repository. These are ignored if all of
+                      the following are true:
+                        - Not using --extractor-input
+                        - Using --no-filtering OR --all-files
+                        - Using the python extractor
 
 Example:
   traffic_annotation_auditor --build-path=out/Release
@@ -126,6 +134,14 @@ std::string UpdateTextForTSV(std::string text) {
       text.find('\t') != std::string::npos)
     return base::StringPrintf("\"%s\"", text.c_str());
   return text;
+}
+
+ExtractorBackend GetExtractorBackend(const std::string& backend_switch) {
+  if (backend_switch == "clang_tool")
+    return ExtractorBackend::CLANG_TOOL;
+  if (backend_switch.empty() || backend_switch == "python_script")
+    return ExtractorBackend::PYTHON_SCRIPT;
+  return ExtractorBackend::INVALID;
 }
 
 // TODO(rhalavati): Update this function to extract the policy name and value
@@ -364,11 +380,28 @@ int main(int argc, char* argv[]) {
                       .Append(base::FilePath::kParentDirectory);
   }
 
-  TrafficAnnotationAuditor auditor(source_path, build_path, tool_path);
+  TrafficAnnotationAuditor auditor(source_path, build_path, tool_path,
+                                   path_filters);
 
   // Extract annotations.
   if (extractor_input.empty()) {
-    if (!auditor.RunClangTool(path_filters, filter_files, all_files,
+    std::string backend_switch =
+        command_line.GetSwitchValueASCII("extractor-backend");
+    ExtractorBackend backend = GetExtractorBackend(backend_switch);
+    if (backend == ExtractorBackend::INVALID) {
+      LOG(ERROR) << "Unrecognized extractor backend '" << backend_switch << "'";
+      return error_value;
+    }
+
+    // If we're using the Python backend, it's fast enough that we can ignore
+    // any path filters when we say we want to audit everything.
+    if (backend == ExtractorBackend::PYTHON_SCRIPT &&
+        (!filter_files || all_files)) {
+      LOG(WARNING) << "The path_filters input is being ignored.";
+      auditor.ClearPathFilters();
+    }
+
+    if (!auditor.RunExtractor(backend, filter_files, all_files,
                               !error_resilient, errors_file)) {
       LOG(ERROR) << "Failed to run clang tool.";
       return error_value;
@@ -376,7 +409,7 @@ int main(int argc, char* argv[]) {
 
     // Write extractor output if requested.
     if (!extractor_output.empty()) {
-      std::string raw_output = auditor.clang_tool_raw_output();
+      std::string raw_output = auditor.extractor_raw_output();
       base::WriteFile(extractor_output, raw_output.c_str(),
                       raw_output.length());
     }
@@ -387,7 +420,7 @@ int main(int argc, char* argv[]) {
                  << extractor_input.value().c_str();
       return error_value;
     } else {
-      auditor.set_clang_tool_raw_output(raw_output);
+      auditor.set_extractor_raw_output(raw_output);
     }
   }
 
@@ -396,7 +429,7 @@ int main(int argc, char* argv[]) {
     return error_value;
 
   // Perform checks.
-  if (!auditor.RunAllChecks(path_filters, test_only)) {
+  if (!auditor.RunAllChecks(test_only)) {
     LOG(ERROR) << "Running checks failed.";
     return error_value;
   }
@@ -432,7 +465,7 @@ int main(int argc, char* argv[]) {
   }
 
   for (const AuditorResult& result : raw_errors) {
-    if (base::ContainsKey(warning_types, result.type()))
+    if (base::Contains(warning_types, result.type()))
       warnings.push_back(result);
     else
       errors.push_back(result);

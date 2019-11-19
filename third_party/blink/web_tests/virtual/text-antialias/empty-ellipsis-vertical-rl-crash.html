@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<style>
+menu {
+  text-overflow: ellipsis;
+  -webkit-writing-mode: vertical-rl;
+  -webkit-logical-width: 1px;
+}
+menu, menuitem {
+  -webkit-box-decoration-break: clone;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  border-bottom: solid;
+}
+</style>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+</script>
+<p>
+  Test passes if it does not crash.
+</p>
+<menu><menuitem>

@@ -182,24 +182,16 @@ suite('route', function() {
     assertEquals(
         settings.routes.SITE_SETTINGS_COOKIES,
         settings.getRouteForPath('/content/cookies/'));
-
-    if (cr.isChromeOS) {
-      // Path with a dash.
-      assertEquals(
-          settings.routes.KEYBOARD,
-          settings.getRouteForPath('/keyboard-overlay'));
-      assertEquals(
-          settings.routes.KEYBOARD,
-          settings.getRouteForPath('/keyboard-overlay/'));
-    }
   });
 
   test('isNavigableDialog', function() {
     assertTrue(settings.routes.CLEAR_BROWSER_DATA.isNavigableDialog);
-    assertTrue(settings.routes.IMPORT_DATA.isNavigableDialog);
     assertTrue(settings.routes.RESET_DIALOG.isNavigableDialog);
     assertTrue(settings.routes.SIGN_OUT.isNavigableDialog);
     assertTrue(settings.routes.TRIGGERED_RESET_DIALOG.isNavigableDialog);
+    if (!cr.isChromeOS) {
+      assertTrue(settings.routes.IMPORT_DATA.isNavigableDialog);
+    }
 
     assertFalse(settings.routes.PRIVACY.isNavigableDialog);
     assertFalse(settings.routes.DEFAULT_BROWSER.isNavigableDialog);
@@ -207,26 +199,23 @@ suite('route', function() {
 
   test('pageVisibility affects route availability', function() {
     settings.pageVisibility = {
-      advancedSettings: false,
       appearance: false,
       autofill: false,
       defaultBrowser: false,
       onStartup: false,
-      people: false,
       reset: false,
     };
+    loadTimeData.overrideValues({showOSSettings: false});
 
-    const router = new settings.Router();
+    const router = settings.buildRouterForTesting();
     const hasRoute = route => router.getRoutes().hasOwnProperty(route);
 
     assertTrue(hasRoute('BASIC'));
 
-    assertFalse(hasRoute('ADVANCED'));
     assertFalse(hasRoute('APPEARANCE'));
     assertFalse(hasRoute('AUTOFILL'));
     assertFalse(hasRoute('DEFAULT_BROWSER'));
     assertFalse(hasRoute('ON_STARTUP'));
-    assertFalse(hasRoute('PEOPLE'));
     assertFalse(hasRoute('RESET'));
   });
 

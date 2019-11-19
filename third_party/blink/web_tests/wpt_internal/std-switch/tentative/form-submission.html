@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/semantics/forms/form-submission-0/resources/targetted-form.js"></script>
+<body>
+<div id="container"></div>
+<script type="module">
+import 'std:elements/switch';
+
+promise_test(async () => {
+  const form = populateForm('<std-switch on></std-switch>');
+  const query = await submitPromise(form, form.previousSibling);
+  assert_equals(query.indexOf('on'), -1);
+}, 'No "name" attribute');
+
+promise_test(async () => {
+  const form = populateForm('<std-switch name=switch1></std-switch>' +
+      '<std-switch name=switch2 on></std-switch>');
+  const query = await submitPromise(form, form.previousSibling);
+  assert_not_equals(query.indexOf('switch1=off'), -1,
+      `${query} should contain "switch1=off".`);
+  assert_not_equals(query.indexOf('switch2=on'), -1,
+      `${query} should contain "switch2=on".`);
+}, 'Normal case');
+</script>
+</body>

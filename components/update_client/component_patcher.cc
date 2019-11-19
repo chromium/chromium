@@ -17,9 +17,9 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "components/update_client/component_patcher_operation.h"
+#include "components/update_client/patcher.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace update_client {
 
@@ -44,15 +44,14 @@ base::ListValue* ReadCommands(const base::FilePath& unpack_path) {
 
 }  // namespace
 
-ComponentPatcher::ComponentPatcher(
-    const base::FilePath& input_dir,
-    const base::FilePath& unpack_dir,
-    scoped_refptr<CrxInstaller> installer,
-    std::unique_ptr<service_manager::Connector> connector)
+ComponentPatcher::ComponentPatcher(const base::FilePath& input_dir,
+                                   const base::FilePath& unpack_dir,
+                                   scoped_refptr<CrxInstaller> installer,
+                                   scoped_refptr<Patcher> patcher)
     : input_dir_(input_dir),
       unpack_dir_(unpack_dir),
       installer_(installer),
-      connector_(std::move(connector)) {}
+      patcher_(patcher) {}
 
 ComponentPatcher::~ComponentPatcher() {
 }
@@ -87,7 +86,7 @@ void ComponentPatcher::PatchNextFile() {
 
   std::string operation;
   if (command_args->GetString(kOp, &operation)) {
-    current_operation_ = CreateDeltaUpdateOp(operation, connector_.get());
+    current_operation_ = CreateDeltaUpdateOp(operation, patcher_);
   }
 
   if (!current_operation_) {

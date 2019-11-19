@@ -1,0 +1,3 @@
+document
+++group
+++++link Name='normal link'

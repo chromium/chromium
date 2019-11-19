@@ -68,8 +68,6 @@ static_library("with_no_strings") {
       "html_dialog_impl.cc",
       "logging_installer.cc",
       "logging_installer.h",
-      "lzma_file_allocator.cc",
-      "lzma_file_allocator.h",
       "lzma_util.cc",
       "lzma_util.h",
       "master_preferences.cc",
@@ -94,6 +92,7 @@ static_library("with_no_strings") {
       ":generate_strings",
       "//base:i18n",
       "//base/third_party/dynamic_annotations",
+      "//build:branding_buildflags",
       "//chrome/install_static:install_static_util",
       "//components/base32",
       "//components/metrics",
@@ -210,7 +209,7 @@ generate_embedded_i18n("generate_strings") {
   ]
   extractor_datafile =
       "//chrome/installer/util/prebuild/create_installer_string_rc.py"
-  
+
   grdfile_folder = "//chrome/app/"
   if (is_chrome_branded) {
     grdfile_name = "google_chrome_strings"
@@ -218,14 +217,12 @@ generate_embedded_i18n("generate_strings") {
     grdfile_name = "chromium_strings"
   }
   xtb_relative_path = "resources"
-  grd_files_info = [
-    [
-      grdfile_folder,
-      grdfile_name,
-      xtb_relative_path,
-      default_embedded_i18_locales
-    ]
-  ]
+  grd_files_info = [ [
+        grdfile_folder,
+        grdfile_name,
+        xtb_relative_path,
+        default_embedded_i18_locales,
+      ] ]
 
   output_file_name_base = "installer_util_strings"
 
@@ -274,11 +271,8 @@ if (is_win) {
       "experiment_unittest.cc",
       "google_update_settings_unittest.cc",
       "install_util_unittest.cc",
-      "installer_util_test_common.cc",
-      "installer_util_test_common.h",
       "l10n_string_util_unittest.cc",
       "logging_installer_unittest.cc",
-      "lzma_file_allocator_unittest.cc",
       "lzma_util_unittest.cc",
       "master_preferences_unittest.cc",
       "move_tree_work_item_unittest.cc",
@@ -304,6 +298,7 @@ if (is_win) {
       ":with_rc_strings",
       "//base",
       "//base/test:test_support",
+      "//build:branding_buildflags",
       "//chrome:other_version",
       "//chrome/common:constants",
       "//chrome/install_static:install_static_util",

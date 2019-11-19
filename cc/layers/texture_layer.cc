@@ -23,8 +23,7 @@ scoped_refptr<TextureLayer> TextureLayer::CreateForMailbox(
   return scoped_refptr<TextureLayer>(new TextureLayer(client));
 }
 
-TextureLayer::TextureLayer(TextureLayerClient* client)
-    : client_(client), weak_ptr_factory_(this) {}
+TextureLayer::TextureLayer(TextureLayerClient* client) : client_(client) {}
 
 TextureLayer::~TextureLayer() = default;
 
@@ -97,6 +96,13 @@ void TextureLayer::SetBlendBackgroundColor(bool blend) {
   if (blend_background_color_ == blend)
     return;
   blend_background_color_ = blend;
+  SetNeedsCommit();
+}
+
+void TextureLayer::SetForceTextureToOpaque(bool opaque) {
+  if (force_texture_to_opaque_ == opaque)
+    return;
+  force_texture_to_opaque_ = opaque;
   SetNeedsCommit();
 }
 
@@ -213,6 +219,7 @@ void TextureLayer::PushPropertiesTo(LayerImpl* layer) {
   texture_layer->SetVertexOpacity(vertex_opacity_);
   texture_layer->SetPremultipliedAlpha(premultiplied_alpha_);
   texture_layer->SetBlendBackgroundColor(blend_background_color_);
+  texture_layer->SetForceTextureToOpaque(force_texture_to_opaque_);
   if (needs_set_resource_) {
     viz::TransferableResource resource;
     std::unique_ptr<viz::SingleReleaseCallback> release_callback;

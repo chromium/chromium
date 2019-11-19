@@ -129,8 +129,9 @@ class FrameTokenMessageQueueTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(FrameTokenMessageQueueTest);
 };
 
-FrameTokenMessageQueueTest::FrameTokenMessageQueueTest()
-    : frame_token_message_queue_(&test_client_) {}
+FrameTokenMessageQueueTest::FrameTokenMessageQueueTest() {
+  frame_token_message_queue_.Init(&test_client_);
+}
 
 // Tests that if a valid IPC::Message is enqueued, that it is processed when its
 // matching frame token arrives.

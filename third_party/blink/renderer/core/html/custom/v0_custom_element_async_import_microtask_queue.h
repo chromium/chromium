@@ -38,10 +38,6 @@ namespace blink {
 class V0CustomElementAsyncImportMicrotaskQueue
     : public V0CustomElementMicrotaskQueueBase {
  public:
-  static V0CustomElementAsyncImportMicrotaskQueue* Create() {
-    return MakeGarbageCollected<V0CustomElementAsyncImportMicrotaskQueue>();
-  }
-
   V0CustomElementAsyncImportMicrotaskQueue() = default;
 
   void Enqueue(V0CustomElementMicrotaskStep*);

@@ -45,7 +45,7 @@ class DownloadCleanupTask : public Task {
   std::set<std::string> outstanding_download_ids_;
   std::map<std::string, std::pair<base::FilePath, int64_t>> success_downloads_;
 
-  base::WeakPtrFactory<DownloadCleanupTask> weak_ptr_factory_;
+  base::WeakPtrFactory<DownloadCleanupTask> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DownloadCleanupTask);
 };

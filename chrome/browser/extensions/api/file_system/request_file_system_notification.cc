@@ -56,11 +56,12 @@ class AppNotificationLauncher : public AppIconLoaderDelegate {
   // AppIconLoaderDelegate overrides:
   void OnAppImageUpdated(const std::string& id,
                          const gfx::ImageSkia& image) override {
-    extension_icon_.reset(new gfx::Image(image));
+    extension_icon_ = gfx::Image(image);
 
-    pending_notification_->set_icon(*extension_icon_);
+    pending_notification_->set_icon(extension_icon_);
     NotificationDisplayService::GetForProfile(profile_)->Display(
-        NotificationHandler::Type::TRANSIENT, *pending_notification_);
+        NotificationHandler::Type::TRANSIENT, *pending_notification_,
+        /*metadata=*/nullptr);
     delete this;
   }
 
@@ -69,7 +70,7 @@ class AppNotificationLauncher : public AppIconLoaderDelegate {
 
   Profile* profile_;
   std::unique_ptr<AppIconLoader> icon_loader_;
-  std::unique_ptr<gfx::Image> extension_icon_;
+  gfx::Image extension_icon_;
   std::unique_ptr<message_center::Notification> pending_notification_;
 
   DISALLOW_COPY_AND_ASSIGN(AppNotificationLauncher);

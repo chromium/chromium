@@ -1,0 +1,11 @@
+include_rules = [
+  "+third_party/libyuv",
+]
+specific_include_rules = {
+  "gl_tests_main.cc": [
+    "+mojo/core/embedder",
+  ],
+  "webgpu_test.cc": [
+    "+components/viz/test/test_gpu_service_holder.h",
+  ],
+}

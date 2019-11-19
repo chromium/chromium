@@ -7,7 +7,7 @@
 
 #include "ash/app_list/model/app_list_model_export.h"
 
-namespace app_list {
+namespace ash {
 
 class APP_LIST_MODEL_EXPORT SearchBoxModelObserver {
  public:
@@ -30,6 +30,6 @@ class APP_LIST_MODEL_EXPORT SearchBoxModelObserver {
   virtual ~SearchBoxModelObserver() {}
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_MODEL_SEARCH_SEARCH_BOX_MODEL_OBSERVER_H_

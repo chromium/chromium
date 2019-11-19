@@ -42,7 +42,7 @@ class GPU_GLES2_EXPORT GLContextVirtual : public gl::GLContext {
   std::string GetGLRenderer() override;
   const gfx::ExtensionSet& GetExtensions() override;
   void SetSafeToForceGpuSwitch() override;
-  bool WasAllocatedUsingRobustnessExtension() override;
+  unsigned int CheckStickyGraphicsResetStatus() override;
   void SetUnbindFboOnMakeCurrent() override;
   gl::YUVToRGBConverter* GetYUVToRGBConverter(
       const gfx::ColorSpace& color_space) override;

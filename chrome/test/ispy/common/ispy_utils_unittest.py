@@ -108,8 +108,9 @@ class ISpyUtilsUnitTest(unittest.TestCase):
         ispy_utils.GetFailurePath('test', 'test1', 'actual.png')],
         image_tools.EncodePNG(self.black))
     self.ispy_utils.PerformComparison('test', 'test1', self.red)
-    self.assertTrue(self.bucket.datastore.has_key(
-            ispy_utils.GetFailurePath('test', 'test1', 'actual.png')))
+    self.assertTrue(
+        ispy_utils.GetFailurePath('test', 'test1', 'actual.png') in self.bucket
+        .datastore)
 
   def testGetExpectation(self):
     self.bucket.Reset()

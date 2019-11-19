@@ -25,12 +25,12 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_option.h"
 
-#include "SkMatrix44.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "third_party/skia/include/core/SkMatrix44.h"
 
 namespace blink {
 
@@ -73,7 +73,7 @@ AXObject* AXMenuListOption::ComputeParent() const {
   Node* node = GetNode();
   if (!node)
     return nullptr;
-  HTMLSelectElement* select = ToHTMLOptionElement(node)->OwnerSelectElement();
+  auto* select = To<HTMLOptionElement>(node)->OwnerSelectElement();
   if (!select)
     return nullptr;
   AXObject* select_ax_object = AXObjectCache().GetOrCreate(select);
@@ -212,7 +212,7 @@ HTMLSelectElement* AXMenuListOption::ParentSelectNode() const {
   if (!GetNode())
     return nullptr;
 
-  if (auto* option = ToHTMLOptionElementOrNull(GetNode()))
+  if (auto* option = DynamicTo<HTMLOptionElement>(GetNode()))
     return option->OwnerSelectElement();
 
   return nullptr;

@@ -13,6 +13,7 @@ import android.view.View;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeFeatureList;
@@ -22,6 +23,7 @@ import org.chromium.components.autofill.AutofillPopup;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.DropdownItem;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -46,7 +48,7 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
             mAutofillPopup = new AutofillPopup(activity, anchorView, this);
             mContext = activity;
             ChromeActivity chromeActivity = (ChromeActivity) activity;
-            chromeActivity.getManualFillingController().notifyPopupAvailable(mAutofillPopup);
+            chromeActivity.getManualFillingComponent().notifyPopupAvailable(mAutofillPopup);
             mWebContentsAccessibility = WebContentsAccessibility.fromWebContents(
                     chromeActivity.getCurrentWebContents());
         }
@@ -60,17 +62,19 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
 
     @Override
     public void dismissed() {
-        nativePopupDismissed(mNativeAutofillPopup);
+        AutofillPopupBridgeJni.get().popupDismissed(mNativeAutofillPopup, AutofillPopupBridge.this);
     }
 
     @Override
     public void suggestionSelected(int listIndex) {
-        nativeSuggestionSelected(mNativeAutofillPopup, listIndex);
+        AutofillPopupBridgeJni.get().suggestionSelected(
+                mNativeAutofillPopup, AutofillPopupBridge.this, listIndex);
     }
 
     @Override
     public void deleteSuggestion(int listIndex) {
-        nativeDeletionRequested(mNativeAutofillPopup, listIndex);
+        AutofillPopupBridgeJni.get().deletionRequested(
+                mNativeAutofillPopup, AutofillPopupBridge.this, listIndex);
     }
 
     @Override
@@ -81,7 +85,8 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
     @Override
     public void onClick(DialogInterface dialog, int which) {
         assert which == DialogInterface.BUTTON_POSITIVE;
-        nativeDeletionConfirmed(mNativeAutofillPopup);
+        AutofillPopupBridgeJni.get().deletionConfirmed(
+                mNativeAutofillPopup, AutofillPopupBridge.this);
     }
 
     /**
@@ -109,12 +114,14 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
 
     @CalledByNative
     private void confirmDeletion(String title, String body) {
-        mDeletionDialog = new AlertDialog.Builder(mContext, R.style.Theme_Chromium_AlertDialog)
-                                  .setTitle(title)
-                                  .setMessage(body)
-                                  .setNegativeButton(R.string.cancel, null)
-                                  .setPositiveButton(R.string.ok, this)
-                                  .create();
+        mDeletionDialog =
+                new UiUtils
+                        .CompatibleAlertDialogBuilder(mContext, R.style.Theme_Chromium_AlertDialog)
+                        .setTitle(title)
+                        .setMessage(body)
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.ok, this)
+                        .create();
         mDeletionDialog.show();
     }
 
@@ -170,10 +177,13 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
                 suggestionId, isDeletable, isLabelMultiline, isLabelBold);
     }
 
-    private native void nativeSuggestionSelected(long nativeAutofillPopupViewAndroid,
-            int listIndex);
-    private native void nativeDeletionRequested(long nativeAutofillPopupViewAndroid,
-            int listIndex);
-    private native void nativeDeletionConfirmed(long nativeAutofillPopupViewAndroid);
-    private native void nativePopupDismissed(long nativeAutofillPopupViewAndroid);
+    @NativeMethods
+    interface Natives {
+        void suggestionSelected(
+                long nativeAutofillPopupViewAndroid, AutofillPopupBridge caller, int listIndex);
+        void deletionRequested(
+                long nativeAutofillPopupViewAndroid, AutofillPopupBridge caller, int listIndex);
+        void deletionConfirmed(long nativeAutofillPopupViewAndroid, AutofillPopupBridge caller);
+        void popupDismissed(long nativeAutofillPopupViewAndroid, AutofillPopupBridge caller);
+    }
 }

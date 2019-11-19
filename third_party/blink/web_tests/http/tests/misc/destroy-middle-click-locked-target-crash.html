@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<title>Clear middle click target if target is destroyed when autoscroll is in progress</title>
+<style>
+#target-iframe1 {
+  height: 100px;
+  width: 100px;
+  overflow-y: scroll;
+  position: absolute;
+  left: 100px;
+  top: 100px;
+}
+</style>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src='/js-test-resources/gesture-util.js'></script>
+<script>
+  var container;
+  var iframeScrolled = false;
+  var iframeLoadCount = 0;
+
+  async_test(t => {
+    // On document load, perform middle click on the iframe to start the
+    // autoscroll. When middle click autoscroll is in progress on iframe,
+    // navigate iframe to another cross-domain url and perform mouse move
+    // on root frame. If the bug (crbug.com/1007983) repros, it will crash
+    // the process.
+     window.addEventListener('load', async () => {
+      container = document.getElementById('container');
+      var subFrame = document.getElementsByTagName('iframe')[0];
+      var startx = subFrame.offsetLeft + (subFrame.offsetWidth / 2);
+      var starty = subFrame.offsetTop;
+
+      // move the mouse inside the iframe.
+      await mouseMoveTo(startx + 10 , starty + 10);
+      // middle click in iframe to start autoscroll.
+      await mouseClickOn(startx + 10, starty + 10, 1);
+      await mouseMoveTo(startx + 10, starty + 30);
+
+      //wait for the iframe to scroll.
+      await waitFor(() => {
+          return (iframeScrolled === true);
+      });
+
+      t.step(() => { assert_equals(iframeLoadCount, 1)});
+
+      // Change the source of iframe to naviagate to a cross-domain url,
+      // so it will destory the view.
+      subFrame.src = 'about:blank';
+
+      // Wait for the iframe to load.
+       await waitFor(() => {
+         return (iframeLoadCount === 2);
+       });
+
+      // Peform mouse event on root frame. If the bug repros, renderer will
+      // crash.
+      await mouseMoveTo(10, 10);
+      t.done();
+    });
+  });
+
+  window.addEventListener("message", handleMessage);
+
+  function handleMessage(event){
+    if(event.data.scrollTop > 0) {
+      iframeScrolled = true;
+    }
+  }
+
+  function onIframeLoad(){
+    // Increment the count each time iframe is loaded.
+    iframeLoadCount = iframeLoadCount+1;
+  }
+
+</script>
+<div id="container" style="height: 400px; width: 400px; overflow: auto">
+    <div id="filler" style="height:4000px; width: 4000px"></div>
+<iframe id="target-iframe1" onload="onIframeLoad()"
+  src= "http://localhost:8000/misc/resources/cross-origin-subframe-for-scrolling.html">
+</iframe>
+</div>

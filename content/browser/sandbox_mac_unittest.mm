@@ -25,15 +25,7 @@
 #include "crypto/openssl_util.h"
 #include "sandbox/mac/seatbelt.h"
 #include "sandbox/mac/seatbelt_exec.h"
-#include "services/service_manager/sandbox/mac/audio.sb.h"
-#include "services/service_manager/sandbox/mac/cdm.sb.h"
-#include "services/service_manager/sandbox/mac/common.sb.h"
-#include "services/service_manager/sandbox/mac/gpu_v2.sb.h"
-#include "services/service_manager/sandbox/mac/nacl_loader.sb.h"
-#include "services/service_manager/sandbox/mac/pdf_compositor.sb.h"
-#include "services/service_manager/sandbox/mac/ppapi.sb.h"
-#include "services/service_manager/sandbox/mac/renderer.sb.h"
-#include "services/service_manager/sandbox/mac/utility.sb.h"
+#include "services/service_manager/sandbox/mac/sandbox_mac.h"
 #include "services/service_manager/sandbox/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -61,18 +53,15 @@ class SandboxMacTest : public base::MultiProcessTest {
     return cl;
   }
 
-  std::string ProfileForSandbox(const std::string& sandbox_profile) {
-    return std::string(service_manager::kSeatbeltPolicyString_common) +
-           sandbox_profile + kTempDirSuffix;
-  }
-
   void ExecuteWithParams(const std::string& procname,
-                         const std::string& sub_profile,
-                         void (*setup)(sandbox::SeatbeltExecClient*)) {
-    std::string profile = ProfileForSandbox(sub_profile);
+                         service_manager::SandboxType sandbox_type) {
+    std::string profile =
+        service_manager::SandboxMac::GetSandboxProfile(sandbox_type) +
+        kTempDirSuffix;
     sandbox::SeatbeltExecClient client;
     client.SetProfile(profile);
-    setup(&client);
+    SetupSandboxParameters(sandbox_type,
+                           *base::CommandLine::ForCurrentProcess(), &client);
 
     pipe_ = client.GetReadFD();
     ASSERT_GE(pipe_, 0);
@@ -90,67 +79,21 @@ class SandboxMacTest : public base::MultiProcessTest {
     EXPECT_EQ(0, rv);
   }
 
-  void ExecuteInAudioSandbox(const std::string& procname) {
-    ExecuteWithParams(procname, service_manager::kSeatbeltPolicyString_audio,
-                      &content::SetupCommonSandboxParameters);
-  }
-
-  void ExecuteInCDMSandbox(const std::string& procname) {
-    ExecuteWithParams(procname, service_manager::kSeatbeltPolicyString_cdm,
-                      &content::SetupCDMSandboxParameters);
-  }
-
-  void ExecuteInGPUSandbox(const std::string& procname) {
-    ExecuteWithParams(procname, service_manager::kSeatbeltPolicyString_gpu_v2,
-                      &content::SetupCommonSandboxParameters);
-  }
-
-  void ExecuteInNaClSandbox(const std::string& procname) {
-    ExecuteWithParams(procname,
-                      service_manager::kSeatbeltPolicyString_nacl_loader,
-                      &content::SetupCommonSandboxParameters);
-  }
-
-  void ExecuteInPDFSandbox(const std::string& procname) {
-    ExecuteWithParams(procname,
-                      service_manager::kSeatbeltPolicyString_pdf_compositor,
-                      &content::SetupCommonSandboxParameters);
-  }
-
-  void ExecuteInPpapiSandbox(const std::string& procname) {
-    ExecuteWithParams(procname, service_manager::kSeatbeltPolicyString_ppapi,
-                      &content::SetupPPAPISandboxParameters);
-  }
-
-  void ExecuteInRendererSandbox(const std::string& procname) {
-    ExecuteWithParams(procname, service_manager::kSeatbeltPolicyString_renderer,
-                      &content::SetupCommonSandboxParameters);
-  }
-
-  void ExecuteInUtilitySandbox(const std::string& procname) {
-    ExecuteWithParams(procname, service_manager::kSeatbeltPolicyString_utility,
-                      [](sandbox::SeatbeltExecClient* client) -> void {
-                        content::SetupUtilitySandboxParameters(
-                            client, *base::CommandLine::ForCurrentProcess());
-                      });
-  }
-
   void ExecuteInAllSandboxTypes(const std::string& multiprocess_main,
                                 base::RepeatingClosure after_each) {
-    using ExecuteFuncT = void (SandboxMacTest::*)(const std::string&);
-    constexpr ExecuteFuncT kExecuteFuncs[] = {
-        &SandboxMacTest::ExecuteInAudioSandbox,
-        &SandboxMacTest::ExecuteInCDMSandbox,
-        &SandboxMacTest::ExecuteInGPUSandbox,
-        &SandboxMacTest::ExecuteInNaClSandbox,
-        &SandboxMacTest::ExecuteInPDFSandbox,
-        &SandboxMacTest::ExecuteInPpapiSandbox,
-        &SandboxMacTest::ExecuteInRendererSandbox,
-        &SandboxMacTest::ExecuteInUtilitySandbox,
+    constexpr service_manager::SandboxType kSandboxTypes[] = {
+        service_manager::SandboxType::SANDBOX_TYPE_AUDIO,
+        service_manager::SandboxType::SANDBOX_TYPE_CDM,
+        service_manager::SandboxType::SANDBOX_TYPE_GPU,
+        service_manager::SandboxType::SANDBOX_TYPE_NACL_LOADER,
+        service_manager::SandboxType::SANDBOX_TYPE_PDF_COMPOSITOR,
+        service_manager::SandboxType::SANDBOX_TYPE_PPAPI,
+        service_manager::SandboxType::SANDBOX_TYPE_RENDERER,
+        service_manager::SandboxType::SANDBOX_TYPE_UTILITY,
     };
 
-    for (ExecuteFuncT execute_func : kExecuteFuncs) {
-      (this->*execute_func)(multiprocess_main);
+    for (const auto type : kSandboxTypes) {
+      ExecuteWithParams(multiprocess_main, type);
       if (!after_each.is_null()) {
         after_each.Run();
       }
@@ -198,7 +141,8 @@ MULTIPROCESS_TEST_MAIN(RendererWriteProcess) {
 }
 
 TEST_F(SandboxMacTest, RendererCannotWriteHomeDir) {
-  ExecuteInRendererSandbox("RendererWriteProcess");
+  ExecuteWithParams("RendererWriteProcess",
+                    service_manager::SandboxType::SANDBOX_TYPE_RENDERER);
 }
 
 MULTIPROCESS_TEST_MAIN(ClipboardAccessProcess) {
@@ -307,7 +251,8 @@ TEST_F(SandboxMacTest, FontLoadingTest) {
                             font_data_size);
 
   extra_data_ = temp_file_path.value();
-  ExecuteInRendererSandbox("FontLoadingProcess");
+  ExecuteWithParams("FontLoadingProcess",
+                    service_manager::SandboxType::SANDBOX_TYPE_RENDERER);
   temp_file_closer.reset();
   ASSERT_TRUE(base::DeleteFile(temp_file_path, false));
 }

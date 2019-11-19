@@ -295,42 +295,51 @@ bool NSSDecryptor::ReadAndParseLogins(
     std::vector<autofill::PasswordForm>* forms) {
   std::string json_content;
   base::ReadFileToString(json_file, &json_content);
-  std::unique_ptr<base::Value> parsed_json(
-      base::JSONReader::ReadDeprecated(json_content));
-  const base::DictionaryValue* password_dict;
-  const base::ListValue* password_list;
-  const base::ListValue* blacklist_domains;
-  if (!parsed_json || !parsed_json->GetAsDictionary(&password_dict))
+  base::Optional<base::Value> parsed_json =
+      base::JSONReader::Read(json_content);
+  if (!parsed_json || !parsed_json->is_dict())
     return false;
 
-  if (password_dict->GetList("disabledHosts", &blacklist_domains)) {
-    for (const auto& value : *blacklist_domains) {
-      std::string disabled_host;
-      if (!value.GetAsString(&disabled_host))
+  const base::Value* blacklist_domains =
+      parsed_json->FindListKey("disabledHosts");
+  if (blacklist_domains) {
+    for (const auto& value : blacklist_domains->GetList()) {
+      if (!value.is_string())
         continue;
-      forms->push_back(CreateBlacklistPasswordForm(disabled_host));
+      forms->push_back(CreateBlacklistPasswordForm(value.GetString()));
     }
   }
 
-  if (password_dict->GetList("logins", &password_list)) {
-    for (const auto& value : *password_list) {
-      const base::DictionaryValue* password_detail;
-      if (!value.GetAsDictionary(&password_detail))
+  const base::Value* password_list = parsed_json->FindListKey("logins");
+  if (password_list) {
+    for (const auto& value : password_list->GetList()) {
+      if (!value.is_dict())
         continue;
 
       FirefoxRawPasswordInfo raw_password_info;
-      password_detail->GetString("hostname", &raw_password_info.host);
-      password_detail->GetString("usernameField",
-                                 &raw_password_info.username_element);
-      password_detail->GetString("passwordField",
-                                 &raw_password_info.password_element);
-      password_detail->GetString("encryptedUsername",
-                                 &raw_password_info.encrypted_username);
-      password_detail->GetString("encryptedPassword",
-                                 &raw_password_info.encrypted_password);
-      password_detail->GetString("formSubmitURL",
-                                 &raw_password_info.form_action);
-      password_detail->GetString("httpRealm", &raw_password_info.realm);
+
+      if (const std::string* hostname = value.FindStringKey("hostname"))
+        raw_password_info.host = *hostname;
+
+      if (const std::string* username = value.FindStringKey("usernameField"))
+        raw_password_info.username_element = base::UTF8ToUTF16(*username);
+
+      if (const std::string* password = value.FindStringKey("passwordField"))
+        raw_password_info.password_element = base::UTF8ToUTF16(*password);
+
+      if (const std::string* username =
+              value.FindStringKey("encryptedUsername"))
+        raw_password_info.encrypted_username = *username;
+
+      if (const std::string* password =
+              value.FindStringKey("encryptedPassword"))
+        raw_password_info.encrypted_password = *password;
+
+      if (const std::string* submit_url = value.FindStringKey("formSubmitURL"))
+        raw_password_info.form_action = *submit_url;
+
+      if (const std::string* realm = value.FindStringKey("httpRealm"))
+        raw_password_info.realm = *realm;
 
       autofill::PasswordForm form;
       if (CreatePasswordFormFromRawInfo(raw_password_info, &form))
@@ -369,7 +378,7 @@ bool NSSDecryptor::CreatePasswordFormFromRawInfo(
     // Non-empty realm indicates that it's not html form authentication entry.
     // Extracted data doesn't allow us to distinguish basic_auth entry from
     // digest_auth entry, so let's assume basic_auth.
-    form->scheme = autofill::PasswordForm::SCHEME_BASIC;
+    form->scheme = autofill::PasswordForm::Scheme::kBasic;
   }
   form->username_element = raw_password_info.username_element;
   form->username_value = Decrypt(raw_password_info.encrypted_username);

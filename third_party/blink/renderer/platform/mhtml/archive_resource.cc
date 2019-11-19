@@ -45,13 +45,4 @@ ArchiveResource::ArchiveResource(scoped_refptr<SharedBuffer> data,
 
 ArchiveResource::~ArchiveResource() = default;
 
-ArchiveResource* ArchiveResource::Create(scoped_refptr<SharedBuffer> data,
-                                         const KURL& url,
-                                         const String& content_id,
-                                         const AtomicString& mime_type,
-                                         const AtomicString& text_encoding) {
-  return MakeGarbageCollected<ArchiveResource>(std::move(data), url, content_id,
-                                               mime_type, text_encoding);
-}
-
 }  // namespace blink

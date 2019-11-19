@@ -1,10 +1,10 @@
 This is a testharness.js-based test.
-FAIL If new effect is null and old effect is not null the animation becomes finish-pending assert_true: expected true got undefined
-FAIL If animation has a pending pause task, reschedule that task to run as soon as animation is ready. assert_true: expected true got undefined
-FAIL If animation has a pending play task, reschedule that task to run as soon as animation is ready to play new effect. assert_true: expected true got undefined
-FAIL The pending play task should be rescheduled even after temporarily setting the effect to null assert_equals: expected "running" but got "pending"
+PASS If new effect is null and old effect is not null the animation becomes finish-pending
+PASS If animation has a pending pause task, reschedule that task to run as soon as animation is ready.
+PASS If animation has a pending play task, reschedule that task to run as soon as animation is ready to play new effect.
+PASS The pending play task should be rescheduled even after temporarily setting the effect to null
 FAIL When setting the effect of an animation to the effect of an existing animation, the existing animation's target effect should be set to null. assert_equals: expected "finished" but got "idle"
 PASS After setting the target effect of animation to the target effect of an existing animation, the target effect's timing is updated to reflect the current time of the new animation.
-FAIL Setting the target effect to null causes a pending playback rate to be applied promise_test: Unhandled rejection with value: object "TypeError: anim.updatePlaybackRate is not a function"
+PASS Setting the target effect to null causes a pending playback rate to be applied
 Harness: the test ran to completion.
 

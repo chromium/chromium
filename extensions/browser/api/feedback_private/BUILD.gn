@@ -36,6 +36,9 @@ source_set("feedback_private") {
       "log_source_resource.h",
     ]
 
-    deps += [ "//ash/public/cpp" ]
+    deps += [
+      "//ash/public/cpp",
+      "//chromeos/services/assistant/public/mojom",
+    ]
   }
 }

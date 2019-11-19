@@ -22,15 +22,6 @@
     async function testInvalidEventName() {
       const setResponse = await dp.DOMDebugger.setInstrumentationBreakpoint({ eventName: 'badEventName' });
       testRunner.log(setResponse);
-    },
-    async function testScriptFirstStatementAndPause() {
-      await dp.DOMDebugger.setInstrumentationBreakpoint({ eventName: 'scriptFirstStatement' });
-      await dp.Debugger.pause();
-      dp.Page.navigate({ url: targetPageUrl });
-      const pauseMessage = await dp.Debugger.oncePaused();
-      testRunner.log(pauseMessage.params.data);
-      await dp.DOMDebugger.removeInstrumentationBreakpoint({ eventName: 'scriptFirstStatement' });
-      await dp.Debugger.resume();
     }
   ]);
 })

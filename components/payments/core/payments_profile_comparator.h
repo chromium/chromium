@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "components/autofill/core/browser/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 
 // Utility functions used for processing and filtering address profiles
 // (AutofillProfile).
@@ -31,8 +31,13 @@ class PaymentOptionsProvider;
 // it is properly evaluated.
 class PaymentsProfileComparator : public autofill::AutofillProfileComparator {
  public:
-  // Bitmask of potentially-required fields used in evaluating completeness.
+  // Bitmask of potentially-required fields used in evaluating completeness. Bit
+  // field values are identical to CompletionStatus in AutofillAddress.java and
+  // ContactEditor.java. Please also modify java files after changing these bits
+  // since missing fields on both Android and Desktop are recorded in the same
+  // UMA metric: PaymentRequest.Missing[Shipping|Contact]Fields.
   using ProfileFields = uint32_t;
+  const static ProfileFields kNone = 0;
   const static ProfileFields kName = 1 << 0;
   const static ProfileFields kPhone = 1 << 1;
   const static ProfileFields kEmail = 1 << 2;
@@ -106,6 +111,11 @@ class PaymentsProfileComparator : public autofill::AutofillProfileComparator {
   // shipping address.
   base::string16 GetTitleForMissingShippingFields(
       const autofill::AutofillProfile& profile) const;
+
+  void RecordMissingFieldsOfShippingProfile(
+      const autofill::AutofillProfile* profile) const;
+  void RecordMissingFieldsOfContactProfile(
+      const autofill::AutofillProfile* profile) const;
 
   // Clears the cached evaluation result for |profile|. Must be called when a
   // profile is modified and saved during the course of a PaymentRequest.

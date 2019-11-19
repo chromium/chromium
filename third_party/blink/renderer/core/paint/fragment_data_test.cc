@@ -16,20 +16,20 @@ TEST_F(FragmentDataTest, SelectionVisualRect) {
   FragmentData fragment;
 
   // Default SelectionVisualRect should not create RareData.
-  fragment.SetVisualRect(LayoutRect(10, 20, 30, 400));
-  fragment.SetSelectionVisualRect(LayoutRect());
+  fragment.SetVisualRect(IntRect(10, 20, 30, 400));
+  fragment.SetSelectionVisualRect(IntRect());
   EXPECT_FALSE(HasRareData(fragment));
-  EXPECT_EQ(LayoutRect(), fragment.SelectionVisualRect());
+  EXPECT_EQ(IntRect(), fragment.SelectionVisualRect());
 
   // Non-Default SelectionVisualRect creates RareData.
-  fragment.SetSelectionVisualRect(LayoutRect(1, 2, 3, 4));
+  fragment.SetSelectionVisualRect(IntRect(1, 2, 3, 4));
   EXPECT_TRUE(HasRareData(fragment));
-  EXPECT_EQ(LayoutRect(1, 2, 3, 4), fragment.SelectionVisualRect());
+  EXPECT_EQ(IntRect(1, 2, 3, 4), fragment.SelectionVisualRect());
 
   // PaintProperties should store default SelectionVisualRect once it's created.
-  fragment.SetSelectionVisualRect(LayoutRect());
+  fragment.SetSelectionVisualRect(IntRect());
   EXPECT_TRUE(HasRareData(fragment));
-  EXPECT_EQ(LayoutRect(), fragment.SelectionVisualRect());
+  EXPECT_EQ(IntRect(), fragment.SelectionVisualRect());
 }
 
 TEST_F(FragmentDataTest, PreEffectClipProperties) {

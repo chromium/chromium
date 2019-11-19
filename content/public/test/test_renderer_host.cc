@@ -8,17 +8,18 @@
 
 #include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/task/post_task.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/compositor/test/test_image_transport_factory.h"
 #include "content/browser/frame_host/frame_tree_node.h"
 #include "content/browser/frame_host/navigation_entry_impl.h"
-#include "content/browser/frame_host/navigation_handle_impl.h"
 #include "content/browser/frame_host/navigation_request.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/web_contents.h"
@@ -34,9 +35,8 @@
 #include "content/test/test_render_view_host_factory.h"
 #include "content/test/test_render_widget_host_factory.h"
 #include "content/test/test_web_contents.h"
-#include "net/base/network_change_notifier.h"
+#include "net/base/mock_network_change_notifier.h"
 #include "ui/base/material_design/material_design_controller.h"
-#include "ui/events/devices/input_device_manager.h"
 
 #if defined(OS_ANDROID)
 #include "ui/android/dummy_screen_android.h"
@@ -49,8 +49,6 @@
 
 #if defined(USE_AURA)
 #include "ui/aura/test/aura_test_helper.h"
-#include "ui/aura/test/aura_test_utils.h"
-#include "ui/compositor/test/context_factories_for_test.h"
 #include "ui/wm/core/default_activation_client.h"
 #endif
 
@@ -115,12 +113,14 @@ RenderViewHostTestEnabler::RenderViewHostTestEnabler()
       rvh_factory_(new TestRenderViewHostFactory(rph_factory_.get())),
       rfh_factory_(new TestRenderFrameHostFactory()),
       rwhi_factory_(new TestRenderWidgetHostFactory()) {
-  // A MessageLoop is needed for Mojo bindings to graphics services. Some
-  // tests have their own, so this only creates one when none exists. This
-  // means tests must ensure any MessageLoop they make is created before
-  // the RenderViewHostTestEnabler.
-  if (!base::MessageLoopCurrent::Get())
-    task_environment_ = std::make_unique<base::test::ScopedTaskEnvironment>();
+  // A TaskEnvironment is needed on the main thread for Mojo bindings to
+  // graphics services. Some tests have their own, so this only creates one
+  // (single-threaded) when none exists. This means tests must ensure any
+  // TaskEnvironment they make is created before the RenderViewHostTestEnabler.
+  if (!base::MessageLoopCurrent::Get()) {
+    task_environment_ =
+        std::make_unique<base::test::SingleThreadTaskEnvironment>();
+  }
 #if !defined(OS_ANDROID)
   ImageTransportFactory::SetFactory(
       std::make_unique<TestImageTransportFactory>());
@@ -133,9 +133,6 @@ RenderViewHostTestEnabler::RenderViewHostTestEnabler()
   if (base::ThreadTaskRunnerHandle::IsSet())
     ui::WindowResizeHelperMac::Get()->Init(base::ThreadTaskRunnerHandle::Get());
 #endif  // OS_MACOSX
-#if defined(USE_AURA)
-  input_device_client_ = aura::test::CreateTestInputDeviceManager();
-#endif
 }
 
 RenderViewHostTestEnabler::~RenderViewHostTestEnabler() {
@@ -227,17 +224,14 @@ void RenderViewHostTestHarness::FocusWebContentsOnMainFrame() {
       root, root->current_frame_host()->GetSiteInstance());
 }
 
-void RenderViewHostTestHarness::NavigateAndCommit(const GURL& url) {
-  static_cast<TestWebContents*>(web_contents())->NavigateAndCommit(url);
+void RenderViewHostTestHarness::NavigateAndCommit(
+    const GURL& url,
+    ui::PageTransition transition) {
+  static_cast<TestWebContents*>(web_contents())
+      ->NavigateAndCommit(url, transition);
 }
 
 void RenderViewHostTestHarness::SetUp() {
-  // Create and own a NetworkChangeNotifier so that it will not be created
-  // during the initialization of the global leaky singleton NetworkService. The
-  // global NetworkService's NetworkChangeNotifier can affect subsequent unit
-  // tests.
-  network_change_notifier_.reset(net::NetworkChangeNotifier::CreateMock());
-
   ui::MaterialDesignController::Initialize();
 
   rvh_test_enabler_.reset(new RenderViewHostTestEnabler);
@@ -260,8 +254,12 @@ void RenderViewHostTestHarness::SetUp() {
 
   sanity_checker_.reset(new ContentBrowserSanityChecker());
 
+#if !defined(OS_ANDROID)
+  network_change_notifier_ = net::test::MockNetworkChangeNotifier::Create();
+#endif
+
   DCHECK(!browser_context_);
-  browser_context_.reset(CreateBrowserContext());
+  browser_context_ = CreateBrowserContext();
 
   SetContents(CreateTestWebContents());
   BrowserSideNavigationSetUp();
@@ -272,7 +270,6 @@ void RenderViewHostTestHarness::TearDown() {
   DeleteContents();
 #if defined(USE_AURA)
   aura_test_helper_->TearDown();
-  ui::TerminateContextFactoryForTests();
 #endif
   // Make sure that we flush any messages related to WebContentsImpl destruction
   // before we destroy the browser context.
@@ -296,18 +293,18 @@ void RenderViewHostTestHarness::TearDown() {
   // queue. This is preferable to immediate deletion because it will behave
   // properly if the |rph_factory_| reset above enqueued any tasks which
   // depend on |browser_context_|.
-  BrowserThread::DeleteSoon(content::BrowserThread::UI,
-                            FROM_HERE,
-                            browser_context_.release());
+  base::DeleteSoon(FROM_HERE, {content::BrowserThread::UI},
+                   browser_context_.release());
 
   // Although this isn't required by many, some subclasses members require that
   // the task environment is gone by the time that they are destroyed (akin to
   // browser shutdown).
-  thread_bundle_.reset();
+  task_environment_.reset();
 }
 
-BrowserContext* RenderViewHostTestHarness::CreateBrowserContext() {
-  return new TestBrowserContext();
+std::unique_ptr<BrowserContext>
+RenderViewHostTestHarness::CreateBrowserContext() {
+  return std::make_unique<TestBrowserContext>();
 }
 
 BrowserContext* RenderViewHostTestHarness::GetBrowserContext() {
@@ -323,7 +320,7 @@ void RenderViewHostTestHarness::SetRenderProcessHostFactory(
 }
 
 RenderViewHostTestHarness::RenderViewHostTestHarness(
-    std::unique_ptr<TestBrowserThreadBundle> thread_bundle)
-    : thread_bundle_(std::move(thread_bundle)) {}
+    std::unique_ptr<BrowserTaskEnvironment> task_environment)
+    : task_environment_(std::move(task_environment)) {}
 
 }  // namespace content

@@ -34,7 +34,7 @@ rootWebArea focusable
 ++++++genericContainer
 ++++++++staticText name='Value'
 ++++++++++inlineTextBox name='Value'
-++++textField focusable description='Description' name='Name' value='value' descriptionFrom=attribute
+++++textField focusable description='Description' name='Name' value='value' descriptionFrom=title
 ++++++genericContainer
 ++++++++staticText name='value'
 ++++++++++inlineTextBox name='value'

@@ -31,6 +31,7 @@ class MEDIA_EXPORT AudioTrackOutputStream : public MuteableAudioOutputStream {
   void SetVolume(double volume) override;
   void GetVolume(double* volume) override;
   void Close() override;
+  void Flush() override;
 
   // MuteableAudioOutputStream implementation.
   void SetMute(bool muted) override;

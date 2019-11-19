@@ -62,9 +62,8 @@ class MockImageProvider : public ImageProvider {
 TEST(PaintShaderTest, RasterizationRectForRecordShaders) {
   SkMatrix local_matrix = SkMatrix::MakeScale(0.5f, 0.5f);
   auto record_shader = PaintShader::MakePaintRecord(
-      sk_make_sp<PaintOpBuffer>(), SkRect::MakeWH(100, 100),
-      SkShader::TileMode::kClamp_TileMode, SkShader::TileMode::kClamp_TileMode,
-      &local_matrix);
+      sk_make_sp<PaintOpBuffer>(), SkRect::MakeWH(100, 100), SkTileMode::kClamp,
+      SkTileMode::kClamp, &local_matrix);
 
   SkRect tile_rect;
   SkMatrix ctm = SkMatrix::MakeScale(0.5f, 0.5f);
@@ -88,8 +87,8 @@ TEST(PaintShaderTest, DecodePaintRecord) {
   record->push<DrawImageOp>(paint_image, 0.f, 0.f, nullptr);
   SkMatrix local_matrix = SkMatrix::MakeScale(0.5f, 0.5f);
   auto record_shader = PaintShader::MakePaintRecord(
-      record, SkRect::MakeWH(100, 100), SkShader::TileMode::kClamp_TileMode,
-      SkShader::TileMode::kClamp_TileMode, &local_matrix);
+      record, SkRect::MakeWH(100, 100), SkTileMode::kClamp, SkTileMode::kClamp,
+      &local_matrix);
   record_shader->set_has_animated_images(true);
 
   PaintOpBuffer buffer;
@@ -106,7 +105,7 @@ TEST(PaintShaderTest, DecodePaintRecord) {
   SkShader* shader = canvas.paint_.getShader();
   ASSERT_TRUE(shader);
   SkMatrix decoded_local_matrix;
-  SkShader::TileMode xy[2];
+  SkTileMode xy[2];
   SkImage* skia_image = shader->isAImage(&decoded_local_matrix, xy);
   ASSERT_TRUE(skia_image);
   EXPECT_TRUE(skia_image->isLazyGenerated());

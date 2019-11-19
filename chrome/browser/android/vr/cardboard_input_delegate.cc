@@ -63,7 +63,7 @@ CardboardInputDelegate::GetInputSourceState() {
 
   // It's a gaze-cursor-based device.
   state->description->target_ray_mode = device::mojom::XRTargetRayMode::GAZING;
-  state->description->emulated_position = true;
+  state->emulated_position = true;
 
   // No implicit handedness
   state->description->handedness = device::mojom::XRHandedness::NONE;

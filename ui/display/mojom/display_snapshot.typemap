@@ -1,0 +1,17 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/display/mojom/display_snapshot.mojom"
+public_headers = [ "//ui/display/types/display_snapshot.h" ]
+traits_headers = [ "//ui/display/mojom/display_snapshot_mojom_traits.h" ]
+sources = [
+  "//ui/display/mojom/display_snapshot_mojom_traits.cc",
+]
+public_deps = [
+  "//ui/display",
+]
+deps = [
+  "//ui/gfx/geometry",
+]
+type_mappings = [ "display.mojom.DisplaySnapshot=::std::unique_ptr<::display::DisplaySnapshot>[move_only]" ]

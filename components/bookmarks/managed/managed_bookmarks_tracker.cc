@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -58,16 +59,13 @@ int64_t ManagedBookmarksTracker::LoadInitial(BookmarkNode* folder,
     if (!LoadBookmark(list, i, &title, &url, &children))
       continue;
 
-    BookmarkNode* child =
-        folder->Add(std::make_unique<BookmarkNode>(next_node_id++, url),
-                    folder->child_count());
+    BookmarkNode* child = folder->Add(std::make_unique<BookmarkNode>(
+        next_node_id++, base::GenerateGUID(), url));
     child->SetTitle(title);
     if (children) {
-      child->set_type(BookmarkNode::FOLDER);
       child->set_date_folder_modified(base::Time::Now());
       next_node_id = LoadInitial(child, children, next_node_id);
     } else {
-      child->set_type(BookmarkNode::URL);
       child->set_date_added(base::Time::Now());
     }
   }
@@ -112,12 +110,12 @@ void ManagedBookmarksTracker::ReloadManagedBookmarks() {
   UpdateBookmarks(managed_node_, list);
 
   // The managed bookmarks folder isn't visible when that pref isn't present.
-  managed_node_->set_visible(!managed_node_->empty());
+  managed_node_->set_visible(!managed_node_->children().empty());
 }
 
 void ManagedBookmarksTracker::UpdateBookmarks(const BookmarkNode* folder,
                                               const base::ListValue* list) {
-  int folder_index = 0;
+  size_t folder_index = 0;
   for (size_t i = 0; i < list->GetSize(); ++i) {
     // Extract the data for the next bookmark from the |list|.
     base::string16 title;
@@ -130,32 +128,23 @@ void ManagedBookmarksTracker::UpdateBookmarks(const BookmarkNode* folder,
 
     // Look for a bookmark at |folder_index| or ahead that matches the current
     // bookmark from the pref.
-    const BookmarkNode* existing = nullptr;
-    for (int k = folder_index; k < folder->child_count(); ++k) {
-      const BookmarkNode* node = folder->GetChild(k);
-      if (node->GetTitle() == title &&
-          ((children && node->is_folder()) ||
-           (!children && node->url() == url))) {
-        existing = node;
-        break;
-      }
-    }
-
-    if (existing) {
+    const auto matches_current = [&title, &url, children](const auto& node) {
+      return node->GetTitle() == title &&
+             (children ? node->is_folder() : (node->url() == url));
+    };
+    const auto j = std::find_if(folder->children().cbegin() + folder_index,
+                                folder->children().cend(), matches_current);
+    if (j != folder->children().cend()) {
       // Reuse the existing node. The Move() is a nop if |existing| is already
       // at |folder_index|.
+      const BookmarkNode* existing = j->get();
       model_->Move(existing, folder, folder_index);
       if (children)
         UpdateBookmarks(existing, children);
+    } else if (children) {
+      UpdateBookmarks(model_->AddFolder(folder, folder_index, title), children);
     } else {
-      // Create a new node for this bookmark now.
-      if (children) {
-        const BookmarkNode* sub =
-            model_->AddFolder(folder, folder_index, title);
-        UpdateBookmarks(sub, children);
-      } else {
-        model_->AddURL(folder, folder_index, title, url);
-      }
+      model_->AddURL(folder, folder_index, title, url);
     }
 
     // The |folder_index| index of |folder| has been updated, so advance it.
@@ -163,8 +152,8 @@ void ManagedBookmarksTracker::UpdateBookmarks(const BookmarkNode* folder,
   }
 
   // Remove any extra children of |folder| that haven't been reused.
-  while (folder->child_count() != folder_index)
-    model_->Remove(folder->GetChild(folder_index));
+  while (folder->children().size() != folder_index)
+    model_->Remove(folder->children()[folder_index].get());
 }
 
 // static

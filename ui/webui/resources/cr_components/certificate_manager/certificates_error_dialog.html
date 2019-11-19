@@ -1,14 +1,13 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="certificate_shared_css.html">
 
 <dom-module id="certificates-error-dialog">
   <template>
-    <style include="certificate-shared paper-button-style"></style>
+    <style include="certificate-shared"></style>
     <cr-dialog id="dialog" close-text="[[i18n('close')]]">
       <div slot="title">[[model.title]]</div>
       <div slot="body">
@@ -20,9 +19,9 @@
         </template>
       </div>
       <div slot="button-container">
-        <paper-button id="ok" class="action-button" on-tap="onOkTap_">
+        <cr-button id="ok" class="action-button" on-click="onOkTap_">
           [[i18n('ok')]]
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
   </template>

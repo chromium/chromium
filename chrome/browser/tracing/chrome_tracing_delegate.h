@@ -50,8 +50,6 @@ class ChromeTracingDelegate : public content::TracingDelegate,
 
   std::unique_ptr<base::DictionaryValue> GenerateMetadataDict() override;
 
-  content::MetadataFilterPredicate GetMetadataFilterPredicate() override;
-
  private:
 #if defined(OS_ANDROID)
   // TabModelListObserver implementation.

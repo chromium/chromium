@@ -15,3 +15,9 @@
     [CallWith=ScriptState] Promise<PushSubscription?> getSubscription();
     [CallWith=ScriptState, RaisesException] Promise<PushPermissionState> permissionState(optional PushSubscriptionOptionsInit options);
 };
+
+enum PushPermissionState {
+  "denied",
+  "granted",
+  "prompt",
+};

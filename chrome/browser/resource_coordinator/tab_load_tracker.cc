@@ -15,7 +15,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "services/resource_coordinator/public/cpp/resource_coordinator_features.h"
 
 namespace resource_coordinator {
 
@@ -120,7 +119,7 @@ TabLoadTracker::TabLoadTracker() = default;
 
 void TabLoadTracker::StartTracking(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::ContainsKey(tabs_, web_contents));
+  DCHECK(!base::Contains(tabs_, web_contents));
 
   LoadingState loading_state = DetermineLoadingState(web_contents);
 
@@ -190,13 +189,6 @@ void TabLoadTracker::DidReceiveResponse(content::WebContents* web_contents) {
   TransitionState(it, LOADING, true);
 }
 
-void TabLoadTracker::DidStopLoading(content::WebContents* web_contents) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (resource_coordinator::IsPageAlmostIdleSignalEnabled())
-    return;
-  MaybeTransitionToLoaded(web_contents);
-}
-
 void TabLoadTracker::DidFailLoad(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   MaybeTransitionToLoaded(web_contents);
@@ -229,11 +221,12 @@ void TabLoadTracker::RenderProcessGone(content::WebContents* web_contents,
 
 void TabLoadTracker::OnPageAlmostIdle(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(resource_coordinator::IsPageAlmostIdleSignalEnabled());
   // TabManager::ResourceCoordinatorSignalObserver filters late notifications
   // so here we can assume the event pertains to a live web_contents and
-  // its most recent navigation.
-  DCHECK(base::ContainsKey(tabs_, web_contents));
+  // its most recent navigation. However, the graph tracks contents that aren't
+  // tracked by this object.
+  if (!base::Contains(tabs_, web_contents))
+    return;
 
   MaybeTransitionToLoaded(web_contents);
 }

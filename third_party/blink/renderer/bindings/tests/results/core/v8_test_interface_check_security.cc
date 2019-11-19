@@ -10,6 +10,8 @@
 // clang-format off
 #include "third_party/blink/renderer/bindings/tests/results/core/v8_test_interface_check_security.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -20,9 +22,10 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
-#include "third_party/blink/renderer/platform/bindings/v8_cross_origin_setter_info.h"
+#include "third_party/blink/renderer/platform/bindings/v8_cross_origin_callback_info.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 
 namespace blink {
@@ -149,7 +152,7 @@ static void DoNotCheckSecurityOnSetterLongAttributeAttributeGetter(const v8::Pro
 }
 
 static void DoNotCheckSecurityOnSetterLongAttributeAttributeSetter(
-    v8::Local<v8::Value> v8_value, const V8CrossOriginSetterInfo& info
+    v8::Local<v8::Value> v8_value, const V8CrossOriginCallbackInfo& info
 ) {
   v8::Isolate* isolate = info.GetIsolate();
   ALLOW_UNUSED_LOCAL(isolate);
@@ -190,13 +193,16 @@ static void DoNotCheckSecurityVoidMethodMethod(const v8::FunctionCallbackInfo<v8
 }
 
 static void DoNotCheckSecurityVoidMethodOriginSafeMethodGetter(const v8::PropertyCallbackInfo<v8::Value>& info) {
-  static int dom_template_key; // This address is used for a key to look up the dom template.
-  V8PerIsolateData* data = V8PerIsolateData::From(info.GetIsolate());
-  const DOMWrapperWorld& world = DOMWrapperWorld::World(info.GetIsolate()->GetCurrentContext());
+  v8::Isolate* isolate = info.GetIsolate();
+  V8PerIsolateData* data = V8PerIsolateData::From(isolate);
+  const DOMWrapperWorld& world =
+      DOMWrapperWorld::World(isolate->GetCurrentContext());
   v8::Local<v8::FunctionTemplate> interface_template =
       data->FindInterfaceTemplate(world, V8TestInterfaceCheckSecurity::GetWrapperTypeInfo());
-  v8::Local<v8::Signature> signature = v8::Signature::New(info.GetIsolate(), interface_template);
+  v8::Local<v8::Signature> signature =
+      v8::Signature::New(isolate, interface_template);
 
+  static int dom_template_key; // This address is used for a key to look up the dom template.
   v8::Local<v8::FunctionTemplate> method_template =
       data->FindOrCreateOperationTemplate(
           world,
@@ -205,25 +211,11 @@ static void DoNotCheckSecurityVoidMethodOriginSafeMethodGetter(const v8::Propert
           v8::Local<v8::Value>(),
           signature,
           0);
-  // Return the function by default, unless the user script has overwritten it.
-  V8SetReturnValue(info, method_template->GetFunction(info.GetIsolate()->GetCurrentContext())
-                   .ToLocalChecked());
 
-  TestInterfaceCheckSecurity* impl = V8TestInterfaceCheckSecurity::ToImpl(info.Holder());
-  if (!BindingSecurity::ShouldAllowAccessTo(
-          CurrentDOMWindow(info.GetIsolate()), impl,
-          BindingSecurity::ErrorReportOption::kDoNotReport)) {
-    return;
-  }
-
-  // {{method.name}} must be same with |methodName| (=name) in
-  // {{cpp_class}}OriginSafeMethodSetter defined in interface.cc.tmpl.
-  V8PrivateProperty::Symbol property_symbol =
-      V8PrivateProperty::GetSymbol(info.GetIsolate(), "doNotCheckSecurityVoidMethod");
-  v8::Local<v8::Object> holder = v8::Local<v8::Object>::Cast(info.Holder());
-  if (property_symbol.HasValue(holder)) {
-    V8SetReturnValue(info, property_symbol.GetOrUndefined(holder));
-  }
+  V8SetReturnValue(
+      info,
+      method_template->GetFunction(
+          isolate->GetCurrentContext()).ToLocalChecked());
 }
 
 static void DoNotCheckSecurityPerWorldBindingsVoidMethodMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -233,13 +225,16 @@ static void DoNotCheckSecurityPerWorldBindingsVoidMethodMethod(const v8::Functio
 }
 
 static void DoNotCheckSecurityPerWorldBindingsVoidMethodOriginSafeMethodGetter(const v8::PropertyCallbackInfo<v8::Value>& info) {
-  static int dom_template_key; // This address is used for a key to look up the dom template.
-  V8PerIsolateData* data = V8PerIsolateData::From(info.GetIsolate());
-  const DOMWrapperWorld& world = DOMWrapperWorld::World(info.GetIsolate()->GetCurrentContext());
+  v8::Isolate* isolate = info.GetIsolate();
+  V8PerIsolateData* data = V8PerIsolateData::From(isolate);
+  const DOMWrapperWorld& world =
+      DOMWrapperWorld::World(isolate->GetCurrentContext());
   v8::Local<v8::FunctionTemplate> interface_template =
       data->FindInterfaceTemplate(world, V8TestInterfaceCheckSecurity::GetWrapperTypeInfo());
-  v8::Local<v8::Signature> signature = v8::Signature::New(info.GetIsolate(), interface_template);
+  v8::Local<v8::Signature> signature =
+      v8::Signature::New(isolate, interface_template);
 
+  static int dom_template_key; // This address is used for a key to look up the dom template.
   v8::Local<v8::FunctionTemplate> method_template =
       data->FindOrCreateOperationTemplate(
           world,
@@ -248,25 +243,11 @@ static void DoNotCheckSecurityPerWorldBindingsVoidMethodOriginSafeMethodGetter(c
           v8::Local<v8::Value>(),
           signature,
           0);
-  // Return the function by default, unless the user script has overwritten it.
-  V8SetReturnValue(info, method_template->GetFunction(info.GetIsolate()->GetCurrentContext())
-                   .ToLocalChecked());
 
-  TestInterfaceCheckSecurity* impl = V8TestInterfaceCheckSecurity::ToImpl(info.Holder());
-  if (!BindingSecurity::ShouldAllowAccessTo(
-          CurrentDOMWindow(info.GetIsolate()), impl,
-          BindingSecurity::ErrorReportOption::kDoNotReport)) {
-    return;
-  }
-
-  // {{method.name}} must be same with |methodName| (=name) in
-  // {{cpp_class}}OriginSafeMethodSetter defined in interface.cc.tmpl.
-  V8PrivateProperty::Symbol property_symbol =
-      V8PrivateProperty::GetSymbol(info.GetIsolate(), "doNotCheckSecurityPerWorldBindingsVoidMethod");
-  v8::Local<v8::Object> holder = v8::Local<v8::Object>::Cast(info.Holder());
-  if (property_symbol.HasValue(holder)) {
-    V8SetReturnValue(info, property_symbol.GetOrUndefined(holder));
-  }
+  V8SetReturnValue(
+      info,
+      method_template->GetFunction(
+          isolate->GetCurrentContext()).ToLocalChecked());
 }
 
 static void DoNotCheckSecurityPerWorldBindingsVoidMethodMethodForMainWorld(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -276,13 +257,16 @@ static void DoNotCheckSecurityPerWorldBindingsVoidMethodMethodForMainWorld(const
 }
 
 static void DoNotCheckSecurityPerWorldBindingsVoidMethodOriginSafeMethodGetterForMainWorld(const v8::PropertyCallbackInfo<v8::Value>& info) {
-  static int dom_template_key; // This address is used for a key to look up the dom template.
-  V8PerIsolateData* data = V8PerIsolateData::From(info.GetIsolate());
-  const DOMWrapperWorld& world = DOMWrapperWorld::World(info.GetIsolate()->GetCurrentContext());
+  v8::Isolate* isolate = info.GetIsolate();
+  V8PerIsolateData* data = V8PerIsolateData::From(isolate);
+  const DOMWrapperWorld& world =
+      DOMWrapperWorld::World(isolate->GetCurrentContext());
   v8::Local<v8::FunctionTemplate> interface_template =
       data->FindInterfaceTemplate(world, V8TestInterfaceCheckSecurity::GetWrapperTypeInfo());
-  v8::Local<v8::Signature> signature = v8::Signature::New(info.GetIsolate(), interface_template);
+  v8::Local<v8::Signature> signature =
+      v8::Signature::New(isolate, interface_template);
 
+  static int dom_template_key; // This address is used for a key to look up the dom template.
   v8::Local<v8::FunctionTemplate> method_template =
       data->FindOrCreateOperationTemplate(
           world,
@@ -291,25 +275,11 @@ static void DoNotCheckSecurityPerWorldBindingsVoidMethodOriginSafeMethodGetterFo
           v8::Local<v8::Value>(),
           signature,
           0);
-  // Return the function by default, unless the user script has overwritten it.
-  V8SetReturnValue(info, method_template->GetFunction(info.GetIsolate()->GetCurrentContext())
-                   .ToLocalChecked());
 
-  TestInterfaceCheckSecurity* impl = V8TestInterfaceCheckSecurity::ToImpl(info.Holder());
-  if (!BindingSecurity::ShouldAllowAccessTo(
-          CurrentDOMWindow(info.GetIsolate()), impl,
-          BindingSecurity::ErrorReportOption::kDoNotReport)) {
-    return;
-  }
-
-  // {{method.name}} must be same with |methodName| (=name) in
-  // {{cpp_class}}OriginSafeMethodSetter defined in interface.cc.tmpl.
-  V8PrivateProperty::Symbol property_symbol =
-      V8PrivateProperty::GetSymbol(info.GetIsolate(), "doNotCheckSecurityPerWorldBindingsVoidMethod");
-  v8::Local<v8::Object> holder = v8::Local<v8::Object>::Cast(info.Holder());
-  if (property_symbol.HasValue(holder)) {
-    V8SetReturnValue(info, property_symbol.GetOrUndefined(holder));
-  }
+  V8SetReturnValue(
+      info,
+      method_template->GetFunction(
+          isolate->GetCurrentContext()).ToLocalChecked());
 }
 
 static void DoNotCheckSecurityUnforgeableVoidMethodMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -319,13 +289,16 @@ static void DoNotCheckSecurityUnforgeableVoidMethodMethod(const v8::FunctionCall
 }
 
 static void DoNotCheckSecurityUnforgeableVoidMethodOriginSafeMethodGetter(const v8::PropertyCallbackInfo<v8::Value>& info) {
-  static int dom_template_key; // This address is used for a key to look up the dom template.
-  V8PerIsolateData* data = V8PerIsolateData::From(info.GetIsolate());
-  const DOMWrapperWorld& world = DOMWrapperWorld::World(info.GetIsolate()->GetCurrentContext());
+  v8::Isolate* isolate = info.GetIsolate();
+  V8PerIsolateData* data = V8PerIsolateData::From(isolate);
+  const DOMWrapperWorld& world =
+      DOMWrapperWorld::World(isolate->GetCurrentContext());
   v8::Local<v8::FunctionTemplate> interface_template =
       data->FindInterfaceTemplate(world, V8TestInterfaceCheckSecurity::GetWrapperTypeInfo());
-  v8::Local<v8::Signature> signature = v8::Signature::New(info.GetIsolate(), interface_template);
+  v8::Local<v8::Signature> signature =
+      v8::Signature::New(isolate, interface_template);
 
+  static int dom_template_key; // This address is used for a key to look up the dom template.
   v8::Local<v8::FunctionTemplate> method_template =
       data->FindOrCreateOperationTemplate(
           world,
@@ -334,25 +307,11 @@ static void DoNotCheckSecurityUnforgeableVoidMethodOriginSafeMethodGetter(const 
           v8::Local<v8::Value>(),
           signature,
           0);
-  // Return the function by default, unless the user script has overwritten it.
-  V8SetReturnValue(info, method_template->GetFunction(info.GetIsolate()->GetCurrentContext())
-                   .ToLocalChecked());
 
-  TestInterfaceCheckSecurity* impl = V8TestInterfaceCheckSecurity::ToImpl(info.Holder());
-  if (!BindingSecurity::ShouldAllowAccessTo(
-          CurrentDOMWindow(info.GetIsolate()), impl,
-          BindingSecurity::ErrorReportOption::kDoNotReport)) {
-    return;
-  }
-
-  // {{method.name}} must be same with |methodName| (=name) in
-  // {{cpp_class}}OriginSafeMethodSetter defined in interface.cc.tmpl.
-  V8PrivateProperty::Symbol property_symbol =
-      V8PrivateProperty::GetSymbol(info.GetIsolate(), "doNotCheckSecurityUnforgeableVoidMethod");
-  v8::Local<v8::Object> holder = v8::Local<v8::Object>::Cast(info.Holder());
-  if (property_symbol.HasValue(holder)) {
-    V8SetReturnValue(info, property_symbol.GetOrUndefined(holder));
-  }
+  V8SetReturnValue(
+      info,
+      method_template->GetFunction(
+          isolate->GetCurrentContext()).ToLocalChecked());
 }
 
 static void DoNotCheckSecurityVoidOverloadMethod1Method(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -400,18 +359,20 @@ static void DoNotCheckSecurityVoidOverloadMethod2Method(const v8::FunctionCallba
 }
 
 static int DoNotCheckSecurityVoidOverloadMethodMethodLength() {
-  if (RuntimeEnabledFeatures::FeatureNameEnabled()) {
+  if (RuntimeEnabledFeatures::RuntimeFeatureEnabled()) {
     return 1;
   }
   return 2;
 }
 
 static void DoNotCheckSecurityVoidOverloadMethodMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  scheduler::CooperativeSchedulingManager::Instance()->Safepoint();
+
   bool is_arity_error = false;
 
   switch (std::min(2, info.Length())) {
     case 1:
-      if (RuntimeEnabledFeatures::FeatureNameEnabled()) {
+      if (RuntimeEnabledFeatures::RuntimeFeatureEnabled()) {
         if (true) {
           DoNotCheckSecurityVoidOverloadMethod2Method(info);
           return;
@@ -419,13 +380,13 @@ static void DoNotCheckSecurityVoidOverloadMethodMethod(const v8::FunctionCallbac
       }
       break;
     case 2:
-      if (RuntimeEnabledFeatures::FeatureNameEnabled()) {
+      if (RuntimeEnabledFeatures::RuntimeFeatureEnabled()) {
         if (info[1]->IsUndefined()) {
           DoNotCheckSecurityVoidOverloadMethod2Method(info);
           return;
         }
       }
-      if (RuntimeEnabledFeatures::FeatureNameEnabled()) {
+      if (RuntimeEnabledFeatures::RuntimeFeatureEnabled()) {
         if (info[1]->IsNumber()) {
           DoNotCheckSecurityVoidOverloadMethod2Method(info);
           return;
@@ -435,7 +396,7 @@ static void DoNotCheckSecurityVoidOverloadMethodMethod(const v8::FunctionCallbac
         DoNotCheckSecurityVoidOverloadMethod1Method(info);
         return;
       }
-      if (RuntimeEnabledFeatures::FeatureNameEnabled()) {
+      if (RuntimeEnabledFeatures::RuntimeFeatureEnabled()) {
         if (true) {
           DoNotCheckSecurityVoidOverloadMethod2Method(info);
           return;
@@ -457,13 +418,16 @@ static void DoNotCheckSecurityVoidOverloadMethodMethod(const v8::FunctionCallbac
 }
 
 static void DoNotCheckSecurityVoidOverloadMethodOriginSafeMethodGetter(const v8::PropertyCallbackInfo<v8::Value>& info) {
-  static int dom_template_key; // This address is used for a key to look up the dom template.
-  V8PerIsolateData* data = V8PerIsolateData::From(info.GetIsolate());
-  const DOMWrapperWorld& world = DOMWrapperWorld::World(info.GetIsolate()->GetCurrentContext());
+  v8::Isolate* isolate = info.GetIsolate();
+  V8PerIsolateData* data = V8PerIsolateData::From(isolate);
+  const DOMWrapperWorld& world =
+      DOMWrapperWorld::World(isolate->GetCurrentContext());
   v8::Local<v8::FunctionTemplate> interface_template =
       data->FindInterfaceTemplate(world, V8TestInterfaceCheckSecurity::GetWrapperTypeInfo());
-  v8::Local<v8::Signature> signature = v8::Signature::New(info.GetIsolate(), interface_template);
+  v8::Local<v8::Signature> signature =
+      v8::Signature::New(isolate, interface_template);
 
+  static int dom_template_key; // This address is used for a key to look up the dom template.
   v8::Local<v8::FunctionTemplate> method_template =
       data->FindOrCreateOperationTemplate(
           world,
@@ -472,25 +436,11 @@ static void DoNotCheckSecurityVoidOverloadMethodOriginSafeMethodGetter(const v8:
           v8::Local<v8::Value>(),
           signature,
           test_interface_check_security_v8_internal::DoNotCheckSecurityVoidOverloadMethodMethodLength());
-  // Return the function by default, unless the user script has overwritten it.
-  V8SetReturnValue(info, method_template->GetFunction(info.GetIsolate()->GetCurrentContext())
-                   .ToLocalChecked());
 
-  TestInterfaceCheckSecurity* impl = V8TestInterfaceCheckSecurity::ToImpl(info.Holder());
-  if (!BindingSecurity::ShouldAllowAccessTo(
-          CurrentDOMWindow(info.GetIsolate()), impl,
-          BindingSecurity::ErrorReportOption::kDoNotReport)) {
-    return;
-  }
-
-  // {{method.name}} must be same with |methodName| (=name) in
-  // {{cpp_class}}OriginSafeMethodSetter defined in interface.cc.tmpl.
-  V8PrivateProperty::Symbol property_symbol =
-      V8PrivateProperty::GetSymbol(info.GetIsolate(), "doNotCheckSecurityVoidOverloadMethod");
-  v8::Local<v8::Object> holder = v8::Local<v8::Object>::Cast(info.Holder());
-  if (property_symbol.HasValue(holder)) {
-    V8SetReturnValue(info, property_symbol.GetOrUndefined(holder));
-  }
+  V8SetReturnValue(
+      info,
+      method_template->GetFunction(
+          isolate->GetCurrentContext()).ToLocalChecked());
 }
 
 static void SecureContextRuntimeEnabledMethodMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -511,37 +461,9 @@ static void SecureContextRuntimeEnabledMethodMethod(const v8::FunctionCallbackIn
   impl->secureContextRuntimeEnabledMethod(arg);
 }
 
-static void TestInterfaceCheckSecurityOriginSafeMethodSetter(
-    v8::Local<v8::Name> name,
-    v8::Local<v8::Value> v8_value,
-    const v8::PropertyCallbackInfo<void>& info) {
-  if (!name->IsString())
-    return;
-  v8::Local<v8::Object> holder =
-      V8TestInterfaceCheckSecurity::FindInstanceInPrototypeChain(info.Holder(), info.GetIsolate());
-  if (holder.IsEmpty())
-    return;
-  TestInterfaceCheckSecurity* impl = V8TestInterfaceCheckSecurity::ToImpl(holder);
-  v8::String::Utf8Value name_in_utf8(info.GetIsolate(), name);
-  ExceptionState exception_state(
-      info.GetIsolate(),
-      ExceptionState::kSetterContext,
-      "TestInterfaceCheckSecurity",
-      *name_in_utf8);
-  if (!BindingSecurity::ShouldAllowAccessTo(
-          CurrentDOMWindow(info.GetIsolate()), impl, exception_state)) {
-    return;
-  }
-
-  // |methodName| must be same with {{method.name}} in
-  // {{method.name}}OriginSafeMethodGetter{{world_suffix}} defined in
-  // methods.cc.tmpl
-  V8PrivateProperty::GetSymbol(info.GetIsolate(), *name_in_utf8)
-      .Set(v8::Local<v8::Object>::Cast(info.Holder()), v8_value);
-}
 static const struct {
   using GetterCallback = void(*)(const v8::PropertyCallbackInfo<v8::Value>&);
-  using SetterCallback = void(*)(v8::Local<v8::Value>, const V8CrossOriginSetterInfo&);
+  using SetterCallback = void(*)(v8::Local<v8::Value>, const V8CrossOriginCallbackInfo&);
 
   const char* const name;
   const GetterCallback getter;
@@ -567,10 +489,18 @@ static const struct {
     test_interface_check_security_v8_internal::DoNotCheckSecurityReplaceableReadonlyLongAttributeAttributeGetter,
     nullptr,
   },
-  {"doNotCheckSecurityVoidMethod", &test_interface_check_security_v8_internal::DoNotCheckSecurityVoidMethodOriginSafeMethodGetter, nullptr},
-  {"doNotCheckSecurityPerWorldBindingsVoidMethod", &test_interface_check_security_v8_internal::DoNotCheckSecurityPerWorldBindingsVoidMethodOriginSafeMethodGetter, nullptr},
-  {"doNotCheckSecurityUnforgeableVoidMethod", &test_interface_check_security_v8_internal::DoNotCheckSecurityUnforgeableVoidMethodOriginSafeMethodGetter, nullptr},
-  {"doNotCheckSecurityVoidOverloadMethod", &test_interface_check_security_v8_internal::DoNotCheckSecurityVoidOverloadMethodOriginSafeMethodGetter, nullptr},
+};
+
+static const struct {
+  using ValueCallback = void(*)(const v8::PropertyCallbackInfo<v8::Value>&);
+
+  const char* const name;
+  const ValueCallback value;
+} kCrossOriginOperationTable[] = {
+  {"doNotCheckSecurityVoidMethod", &test_interface_check_security_v8_internal::DoNotCheckSecurityVoidMethodOriginSafeMethodGetter},
+  {"doNotCheckSecurityPerWorldBindingsVoidMethod", &test_interface_check_security_v8_internal::DoNotCheckSecurityPerWorldBindingsVoidMethodOriginSafeMethodGetter},
+  {"doNotCheckSecurityUnforgeableVoidMethod", &test_interface_check_security_v8_internal::DoNotCheckSecurityUnforgeableVoidMethodOriginSafeMethodGetter},
+  {"doNotCheckSecurityVoidOverloadMethod", &test_interface_check_security_v8_internal::DoNotCheckSecurityVoidOverloadMethodOriginSafeMethodGetter},
 };
 }  // namespace test_interface_check_security_v8_internal
 
@@ -627,7 +557,7 @@ void V8TestInterfaceCheckSecurity::DoNotCheckSecurityOnSetterLongAttributeAttrib
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceCheckSecurity_doNotCheckSecurityOnSetterLongAttribute_Setter");
 
   test_interface_check_security_v8_internal::DoNotCheckSecurityOnSetterLongAttributeAttributeSetter(
-      v8_value, V8CrossOriginSetterInfo(info.GetIsolate(), info.Holder()));
+      v8_value, V8CrossOriginCallbackInfo(info));
 }
 
 void V8TestInterfaceCheckSecurity::DoNotCheckSecurityReplaceableReadonlyLongAttributeAttributeGetterCallback(v8::Local<v8::Name>, const v8::PropertyCallbackInfo<v8::Value>& info) {
@@ -708,13 +638,6 @@ void V8TestInterfaceCheckSecurity::SecureContextRuntimeEnabledMethodMethodCallba
   test_interface_check_security_v8_internal::SecureContextRuntimeEnabledMethodMethod(info);
 }
 
-void V8TestInterfaceCheckSecurity::TestInterfaceCheckSecurityOriginSafeMethodSetterCallback(
-    v8::Local<v8::Name> name,
-    v8::Local<v8::Value> v8_value,
-    const v8::PropertyCallbackInfo<void>& info) {
-  test_interface_check_security_v8_internal::TestInterfaceCheckSecurityOriginSafeMethodSetter(name, v8_value, info);
-}
-
 bool V8TestInterfaceCheckSecurity::SecurityCheck(v8::Local<v8::Context> accessing_context, v8::Local<v8::Object> accessed_object, v8::Local<v8::Value> data) {
   #error "Unexpected security check for interface TestInterfaceCheckSecurity"
 }
@@ -729,6 +652,12 @@ void V8TestInterfaceCheckSecurity::CrossOriginNamedGetter(v8::Local<v8::Name> na
   for (const auto& attribute : test_interface_check_security_v8_internal::kCrossOriginAttributeTable) {
     if (property_name == attribute.name && attribute.getter) {
       attribute.getter(info);
+      return;
+    }
+  }
+  for (const auto& operation : test_interface_check_security_v8_internal::kCrossOriginOperationTable) {
+    if (property_name == operation.name) {
+      operation.value(info);
       return;
     }
   }
@@ -759,7 +688,7 @@ void V8TestInterfaceCheckSecurity::CrossOriginNamedSetter(v8::Local<v8::Name> na
 
   for (const auto& attribute : test_interface_check_security_v8_internal::kCrossOriginAttributeTable) {
     if (property_name == attribute.name && attribute.setter) {
-      attribute.setter(value, V8CrossOriginSetterInfo(info.GetIsolate(), info.Holder()));
+      attribute.setter(value, V8CrossOriginCallbackInfo(info));
       return;
     }
   }
@@ -774,6 +703,8 @@ void V8TestInterfaceCheckSecurity::CrossOriginNamedEnumerator(const v8::Property
   Vector<String> names;
   for (const auto& attribute : test_interface_check_security_v8_internal::kCrossOriginAttributeTable)
     names.push_back(attribute.name);
+  for (const auto& operation : test_interface_check_security_v8_internal::kCrossOriginOperationTable)
+    names.push_back(operation.name);
 
   // Use the current context as the creation context, as a cross-origin access
   // may involve an object that does not have a creation context.
@@ -781,27 +712,6 @@ void V8TestInterfaceCheckSecurity::CrossOriginNamedEnumerator(const v8::Property
                    ToV8(names, info.GetIsolate()->GetCurrentContext()->Global(),
                         info.GetIsolate()).As<v8::Array>());
 }
-
-// Suppress warning: global constructors, because AttributeConfiguration is trivial
-// and does not depend on another global objects.
-#if defined(COMPONENT_BUILD) && defined(WIN32) && defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wglobal-constructors"
-#endif
-static constexpr V8DOMConfiguration::AttributeConfiguration kV8TestInterfaceCheckSecurityAttributes[] = {
-    { "doNotCheckSecurityLongAttribute", V8TestInterfaceCheckSecurity::DoNotCheckSecurityLongAttributeAttributeGetterCallback, V8TestInterfaceCheckSecurity::DoNotCheckSecurityLongAttributeAttributeSetterCallback, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-    { "doNotCheckSecurityReadonlyLongAttribute", V8TestInterfaceCheckSecurity::DoNotCheckSecurityReadonlyLongAttributeAttributeGetterCallback, nullptr, static_cast<v8::PropertyAttribute>(v8::ReadOnly), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-    { "doNotCheckSecurityOnSetterLongAttribute", V8TestInterfaceCheckSecurity::DoNotCheckSecurityOnSetterLongAttributeAttributeGetterCallback, V8TestInterfaceCheckSecurity::DoNotCheckSecurityOnSetterLongAttributeAttributeSetterCallback, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-    { "doNotCheckSecurityReplaceableReadonlyLongAttribute", V8TestInterfaceCheckSecurity::DoNotCheckSecurityReplaceableReadonlyLongAttributeAttributeGetterCallback, nullptr, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-};
-#if defined(COMPONENT_BUILD) && defined(WIN32) && defined(__clang__)
-#pragma clang diagnostic pop
-#endif
-
-static constexpr V8DOMConfiguration::AccessorConfiguration kV8TestInterfaceCheckSecurityAccessors[] = {
-    { "readonlyLongAttribute", V8TestInterfaceCheckSecurity::ReadonlyLongAttributeAttributeGetterCallback, nullptr, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::ReadOnly), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-    { "longAttribute", V8TestInterfaceCheckSecurity::LongAttributeAttributeGetterCallback, V8TestInterfaceCheckSecurity::LongAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-};
 
 static constexpr V8DOMConfiguration::MethodConfiguration kV8TestInterfaceCheckSecurityMethods[] = {
     {"voidMethod", V8TestInterfaceCheckSecurity::VoidMethodMethodCallback, 0, v8::None, V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds},
@@ -828,12 +738,25 @@ static void InstallV8TestInterfaceCheckSecurityTemplate(
   instance_template->SetImmutableProto();
 
   // Register IDL constants, attributes and operations.
+  static constexpr V8DOMConfiguration::AttributeConfiguration
+  kAttributeConfigurations[] = {
+      { "doNotCheckSecurityLongAttribute", V8TestInterfaceCheckSecurity::DoNotCheckSecurityLongAttributeAttributeGetterCallback, V8TestInterfaceCheckSecurity::DoNotCheckSecurityLongAttributeAttributeSetterCallback, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+      { "doNotCheckSecurityReadonlyLongAttribute", V8TestInterfaceCheckSecurity::DoNotCheckSecurityReadonlyLongAttributeAttributeGetterCallback, nullptr, static_cast<v8::PropertyAttribute>(v8::ReadOnly), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+      { "doNotCheckSecurityOnSetterLongAttribute", V8TestInterfaceCheckSecurity::DoNotCheckSecurityOnSetterLongAttributeAttributeGetterCallback, V8TestInterfaceCheckSecurity::DoNotCheckSecurityOnSetterLongAttributeAttributeSetterCallback, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+      { "doNotCheckSecurityReplaceableReadonlyLongAttribute", V8TestInterfaceCheckSecurity::DoNotCheckSecurityReplaceableReadonlyLongAttributeAttributeGetterCallback, nullptr, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+  };
   V8DOMConfiguration::InstallAttributes(
       isolate, world, instance_template, prototype_template,
-      kV8TestInterfaceCheckSecurityAttributes, base::size(kV8TestInterfaceCheckSecurityAttributes));
+      kAttributeConfigurations, base::size(kAttributeConfigurations));
+  static constexpr V8DOMConfiguration::AccessorConfiguration
+  kAccessorConfigurations[] = {
+      { "readonlyLongAttribute", V8TestInterfaceCheckSecurity::ReadonlyLongAttributeAttributeGetterCallback, nullptr, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::ReadOnly), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+      { "longAttribute", V8TestInterfaceCheckSecurity::LongAttributeAttributeGetterCallback, V8TestInterfaceCheckSecurity::LongAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+  };
   V8DOMConfiguration::InstallAccessors(
       isolate, world, instance_template, prototype_template, interface_template,
-      signature, kV8TestInterfaceCheckSecurityAccessors, base::size(kV8TestInterfaceCheckSecurityAccessors));
+      signature, kAccessorConfigurations,
+      base::size(kAccessorConfigurations));
   V8DOMConfiguration::InstallMethods(
       isolate, world, instance_template, prototype_template, interface_template,
       signature, kV8TestInterfaceCheckSecurityMethods, base::size(kV8TestInterfaceCheckSecurityMethods));
@@ -851,27 +774,77 @@ static void InstallV8TestInterfaceCheckSecurityTemplate(
       v8::External::New(isolate, const_cast<WrapperTypeInfo*>(V8TestInterfaceCheckSecurity::GetWrapperTypeInfo())));
 
   // Custom signature
-  static const V8DOMConfiguration::AttributeConfiguration doNotCheckSecurityVoidMethodOriginSafeAttributeConfiguration[] = {
-      {"doNotCheckSecurityVoidMethod", V8TestInterfaceCheckSecurity::DoNotCheckSecurityVoidMethodOriginSafeMethodGetterCallback, V8TestInterfaceCheckSecurity::TestInterfaceCheckSecurityOriginSafeMethodSetterCallback, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds}
+  static const V8DOMConfiguration::MethodConfiguration kDoNotCheckSecurityVoidMethodOriginSafeMethodConfiguration[] = {
+      {
+          "doNotCheckSecurityVoidMethod",
+          V8TestInterfaceCheckSecurity::DoNotCheckSecurityVoidMethodMethodCallback,
+          0,
+          static_cast<v8::PropertyAttribute>(v8::None),
+          V8DOMConfiguration::kOnInstance,
+          V8DOMConfiguration::kCheckHolder,
+          V8DOMConfiguration::kCheckAccess,
+          V8DOMConfiguration::kHasSideEffect,
+          V8DOMConfiguration::kAllWorlds,
+      }
   };
-   for (const auto& attributeConfig : doNotCheckSecurityVoidMethodOriginSafeAttributeConfiguration)
-    V8DOMConfiguration::InstallAttribute(isolate, world, instance_template, prototype_template, attributeConfig);
-  static const V8DOMConfiguration::AttributeConfiguration doNotCheckSecurityPerWorldBindingsVoidMethodOriginSafeAttributeConfiguration[] = {
-      {"doNotCheckSecurityPerWorldBindingsVoidMethod", V8TestInterfaceCheckSecurity::DoNotCheckSecurityPerWorldBindingsVoidMethodOriginSafeMethodGetterCallbackForMainWorld, V8TestInterfaceCheckSecurity::TestInterfaceCheckSecurityOriginSafeMethodSetterCallbackForMainWorld, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::MainWorld},
-      {"doNotCheckSecurityPerWorldBindingsVoidMethod", V8TestInterfaceCheckSecurity::DoNotCheckSecurityPerWorldBindingsVoidMethodOriginSafeMethodGetterCallback, V8TestInterfaceCheckSecurity::TestInterfaceCheckSecurityOriginSafeMethodSetterCallback, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::NonMainWorlds}}
+  for (const auto& method_config : kDoNotCheckSecurityVoidMethodOriginSafeMethodConfiguration)
+    V8DOMConfiguration::InstallMethod(isolate, world, instance_template, prototype_template, interface_template, signature, method_config);
+  static const V8DOMConfiguration::MethodConfiguration kDoNotCheckSecurityPerWorldBindingsVoidMethodOriginSafeMethodConfiguration[] = {
+      {
+          "doNotCheckSecurityPerWorldBindingsVoidMethod",
+          V8TestInterfaceCheckSecurity::DoNotCheckSecurityPerWorldBindingsVoidMethodMethodCallbackForMainWorld,
+          0,
+          static_cast<v8::PropertyAttribute>(v8::None),
+          V8DOMConfiguration::kOnInstance,
+          V8DOMConfiguration::kCheckHolder,
+          V8DOMConfiguration::kCheckAccess,
+          V8DOMConfiguration::kHasSideEffect,
+          V8DOMConfiguration::MainWorld,
+      },
+      {
+          "doNotCheckSecurityPerWorldBindingsVoidMethod",
+          V8TestInterfaceCheckSecurity::DoNotCheckSecurityPerWorldBindingsVoidMethodMethodCallback,
+          0,
+          static_cast<v8::PropertyAttribute>(v8::None),
+          V8DOMConfiguration::kOnInstance,
+          V8DOMConfiguration::kCheckHolder,
+          V8DOMConfiguration::kCheckAccess,
+          V8DOMConfiguration::kHasSideEffect,
+          V8DOMConfiguration::NonMainWorlds,
+      }
   };
-   for (const auto& attributeConfig : doNotCheckSecurityPerWorldBindingsVoidMethodOriginSafeAttributeConfiguration)
-    V8DOMConfiguration::InstallAttribute(isolate, world, instance_template, prototype_template, attributeConfig);
-  static const V8DOMConfiguration::AttributeConfiguration doNotCheckSecurityUnforgeableVoidMethodOriginSafeAttributeConfiguration[] = {
-      {"doNotCheckSecurityUnforgeableVoidMethod", V8TestInterfaceCheckSecurity::DoNotCheckSecurityUnforgeableVoidMethodOriginSafeMethodGetterCallback, nullptr, static_cast<v8::PropertyAttribute>(v8::ReadOnly | v8::DontDelete), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds}
+  for (const auto& method_config : kDoNotCheckSecurityPerWorldBindingsVoidMethodOriginSafeMethodConfiguration)
+    V8DOMConfiguration::InstallMethod(isolate, world, instance_template, prototype_template, interface_template, signature, method_config);
+  static const V8DOMConfiguration::MethodConfiguration kDoNotCheckSecurityUnforgeableVoidMethodOriginSafeMethodConfiguration[] = {
+      {
+          "doNotCheckSecurityUnforgeableVoidMethod",
+          V8TestInterfaceCheckSecurity::DoNotCheckSecurityUnforgeableVoidMethodMethodCallback,
+          0,
+          static_cast<v8::PropertyAttribute>(v8::ReadOnly | v8::DontDelete),
+          V8DOMConfiguration::kOnInstance,
+          V8DOMConfiguration::kCheckHolder,
+          V8DOMConfiguration::kCheckAccess,
+          V8DOMConfiguration::kHasSideEffect,
+          V8DOMConfiguration::kAllWorlds,
+      }
   };
-   for (const auto& attributeConfig : doNotCheckSecurityUnforgeableVoidMethodOriginSafeAttributeConfiguration)
-    V8DOMConfiguration::InstallAttribute(isolate, world, instance_template, prototype_template, attributeConfig);
-  static const V8DOMConfiguration::AttributeConfiguration doNotCheckSecurityVoidOverloadMethodOriginSafeAttributeConfiguration[] = {
-      {"doNotCheckSecurityVoidOverloadMethod", V8TestInterfaceCheckSecurity::DoNotCheckSecurityVoidOverloadMethodOriginSafeMethodGetterCallback, V8TestInterfaceCheckSecurity::TestInterfaceCheckSecurityOriginSafeMethodSetterCallback, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds}
+  for (const auto& method_config : kDoNotCheckSecurityUnforgeableVoidMethodOriginSafeMethodConfiguration)
+    V8DOMConfiguration::InstallMethod(isolate, world, instance_template, prototype_template, interface_template, signature, method_config);
+  static const V8DOMConfiguration::MethodConfiguration kDoNotCheckSecurityVoidOverloadMethodOriginSafeMethodConfiguration[] = {
+      {
+          "doNotCheckSecurityVoidOverloadMethod",
+          V8TestInterfaceCheckSecurity::DoNotCheckSecurityVoidOverloadMethodMethodCallback,
+          test_interface_check_security_v8_internal::DoNotCheckSecurityVoidOverloadMethodMethodLength(),
+          static_cast<v8::PropertyAttribute>(v8::None),
+          V8DOMConfiguration::kOnInstance,
+          V8DOMConfiguration::kCheckHolder,
+          V8DOMConfiguration::kCheckAccess,
+          V8DOMConfiguration::kHasSideEffect,
+          V8DOMConfiguration::kAllWorlds,
+      }
   };
-   for (const auto& attributeConfig : doNotCheckSecurityVoidOverloadMethodOriginSafeAttributeConfiguration)
-    V8DOMConfiguration::InstallAttribute(isolate, world, instance_template, prototype_template, attributeConfig);
+  for (const auto& method_config : kDoNotCheckSecurityVoidOverloadMethodOriginSafeMethodConfiguration)
+    V8DOMConfiguration::InstallMethod(isolate, world, instance_template, prototype_template, interface_template, signature, method_config);
 
   V8TestInterfaceCheckSecurity::InstallRuntimeEnabledFeaturesOnTemplate(
       isolate, world, interface_template);
@@ -945,7 +918,7 @@ void V8TestInterfaceCheckSecurity::InstallConditionalFeatures(
 
   if (!instance_object.IsEmpty()) {
     if (is_secure_context) {
-      if (RuntimeEnabledFeatures::FeatureNameEnabled()) {
+      if (RuntimeEnabledFeatures::RuntimeFeatureEnabled()) {
         {
           // Install secureContextRuntimeEnabledMethod configuration
           const V8DOMConfiguration::MethodConfiguration kConfigurations[] = {

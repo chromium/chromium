@@ -23,8 +23,8 @@
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_observer.h"
 #include "chrome/browser/chromeos/file_system_provider/watcher.h"
-#include "storage/browser/fileapi/async_file_util.h"
-#include "storage/browser/fileapi/watcher_manager.h"
+#include "storage/browser/file_system/async_file_util.h"
+#include "storage/browser/file_system/watcher_manager.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -186,7 +186,7 @@ class FakeProvidedFileSystem : public ProvidedFileSystemInterface {
   base::ObserverList<ProvidedFileSystemObserver>::Unchecked observers_;
   Watchers watchers_;
 
-  base::WeakPtrFactory<FakeProvidedFileSystem> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeProvidedFileSystem> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(FakeProvidedFileSystem);
 };
 

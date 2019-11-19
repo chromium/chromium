@@ -46,8 +46,8 @@ SafeBrowsingPrivateGetReferrerChainFunction::Run() {
   content::WebContents* contents = nullptr;
 
   if (!ExtensionTabUtil::GetTabById(params->tab_id, browser_context(),
-                                    include_incognito_information(), nullptr,
-                                    nullptr, &contents, nullptr)) {
+                                    include_incognito_information(),
+                                    &contents)) {
     return RespondNow(Error(
         base::StringPrintf("Could not find tab with id %d.", params->tab_id)));
   }

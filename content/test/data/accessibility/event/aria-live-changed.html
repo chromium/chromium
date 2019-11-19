@@ -1,0 +1,30 @@
+<!--
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:AriaProperties*
+@UIA-WIN-ALLOW:LiveSetting*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <h4 id="d1" aria-live="off">Item1</h4>
+  <h4 id="d2" aria-live="polite">Item2</h4>
+  <h4 id="d3" aria-live="polite">Item3</h4>
+  <h4 id="d4">Item4</h4>
+  <button onclick="go()">go</button>
+  <script>
+    function go() {
+      // set live from 'off' to 'off', so this shouldn't fire an event
+      document.getElementById('d1').setAttribute('aria-live', 'off');
+
+      // set live from 'polite'->'assertive'; should fire an event
+      document.getElementById('d2').setAttribute('aria-live', 'assertive');
+
+      // set live from 'polite'->[removed]; should fire event
+      document.getElementById('d3').removeAttribute('aria-live');
+
+      // set live to 'polite'; should fire an event
+      document.getElementById('d4').setAttribute('aria-live', 'polite');
+    }
+  </script>
+</body>
+</html>

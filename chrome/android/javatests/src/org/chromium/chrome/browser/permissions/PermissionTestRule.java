@@ -4,18 +4,16 @@
 
 package org.chromium.chrome.browser.permissions;
 
-import android.content.DialogInterface;
 import android.support.test.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.infobar.InfoBar;
+import org.chromium.chrome.browser.modaldialog.ModalDialogTestUtils;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
@@ -23,8 +21,12 @@ import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -47,11 +49,6 @@ import java.util.concurrent.ExecutionException;
  * JS call with a gesture, and whether an infobar or a dialog is expected.
  */
 public class PermissionTestRule extends ChromeActivityTestRule<ChromeActivity> {
-    public static final String MODAL_FLAG = ChromeFeatureList.MODAL_PERMISSION_PROMPTS;
-    public static final String TOGGLE_FLAG = "DisplayPersistenceToggleInPermissionPrompts";
-    public static final String MODAL_TOGGLE_FLAG = MODAL_FLAG + "," + TOGGLE_FLAG;
-    public static final String PERMISSION_REQUEST_MANAGER_FLAG = "UseGroupedPermissionInfobars";
-
     private InfoBarTestAnimationListener mListener;
     private EmbeddedTestServer mTestServer;
 
@@ -101,27 +98,29 @@ public class PermissionTestRule extends ChromeActivityTestRule<ChromeActivity> {
      * Criteria class to detect whether the permission dialog is shown.
      */
     protected static class DialogShownCriteria extends Criteria {
-        private PermissionDialogView mDialog;
+        private ModalDialogManager mModalDialogManager;
         private boolean mExpectDialog;
 
-        public DialogShownCriteria(String error, boolean expectDialog) {
+        public DialogShownCriteria(
+                ModalDialogManager modalDialogManager, String error, boolean expectDialog) {
             super(error);
+            mModalDialogManager = modalDialogManager;
             mExpectDialog = expectDialog;
-        }
-
-        public PermissionDialogView getDialog() {
-            return mDialog;
         }
 
         @Override
         public boolean isSatisfied() {
             try {
-                return ThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
+                return TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
                     @Override
                     public Boolean call() {
-                        mDialog = PermissionDialogController.getInstance()
-                                          .getCurrentDialogForTesting();
-                        return (mDialog != null) == mExpectDialog;
+                        boolean isDialogShownForTest =
+                                PermissionDialogController.getInstance().isDialogShownForTest();
+                        if (isDialogShownForTest) {
+                            ModalDialogTestUtils.checkCurrentPresenter(
+                                    mModalDialogManager, ModalDialogType.TAB);
+                        }
+                        return isDialogShownForTest == mExpectDialog;
                     }
                 });
             } catch (ExecutionException e) {
@@ -134,7 +133,7 @@ public class PermissionTestRule extends ChromeActivityTestRule<ChromeActivity> {
         super(ChromeActivity.class);
     }
 
-    private void ruleSetUp() throws Throwable {
+    private void ruleSetUp() {
         // TODO(https://crbug.com/867446): Refactor to use EmbeddedTestServerRule.
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
     }
@@ -148,11 +147,11 @@ public class PermissionTestRule extends ChromeActivityTestRule<ChromeActivity> {
         getInfoBarContainer().addAnimationListener(mListener);
     }
 
-    private void ruleTearDown() throws Exception {
+    private void ruleTearDown() {
         mTestServer.stopAndDestroyServer();
     }
 
-    protected void setUpUrl(final String url) throws InterruptedException {
+    protected void setUpUrl(final String url) {
         loadUrl(getURL(url));
     }
 
@@ -162,17 +161,6 @@ public class PermissionTestRule extends ChromeActivityTestRule<ChromeActivity> {
 
     public String getOrigin() {
         return mTestServer.getURL("/");
-    }
-    /**
-     * Simulates clicking a button on an PermissionDialogView.
-     */
-    private void clickButton(final PermissionDialogView dialog, final int button) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                dialog.getButton(button).performClick();
-            }
-        });
     }
 
     /**
@@ -226,16 +214,17 @@ public class PermissionTestRule extends ChromeActivityTestRule<ChromeActivity> {
     private void replyToPromptAndWaitForUpdates(PermissionUpdateWaiter updateWaiter, boolean allow,
             int nUpdates, boolean isDialog) throws Exception {
         if (isDialog) {
-            DialogShownCriteria criteria = new DialogShownCriteria("Dialog not shown", true);
+            DialogShownCriteria criteria = new DialogShownCriteria(
+                    getActivity().getModalDialogManager(), "Dialog not shown", true);
             CriteriaHelper.pollUiThread(criteria);
-            replyToDialogAndWaitForUpdates(updateWaiter, criteria.getDialog(), nUpdates, allow);
+            replyToDialogAndWaitForUpdates(updateWaiter, nUpdates, allow);
         } else {
             replyToInfoBarAndWaitForUpdates(updateWaiter, nUpdates, allow);
         }
     }
 
     private void runJavaScriptCodeInCurrentTabWithGesture(String javascript)
-            throws InterruptedException, java.util.concurrent.TimeoutException {
+            throws java.util.concurrent.TimeoutException {
         runJavaScriptCodeInCurrentTab("functionToRun = '" + javascript + "'");
         TouchCommon.singleClickView(getActivity().getActivityTab().getView());
     }
@@ -263,13 +252,16 @@ public class PermissionTestRule extends ChromeActivityTestRule<ChromeActivity> {
      * Replies to a dialog permission prompt and waits for a provided number of
      * updates to the page title in response.
      */
-    private void replyToDialogAndWaitForUpdates(PermissionUpdateWaiter updateWaiter,
-            PermissionDialogView dialog, int nUpdates, boolean allow) throws Exception {
-        if (allow) {
-            clickButton(dialog, DialogInterface.BUTTON_POSITIVE);
-        } else {
-            clickButton(dialog, DialogInterface.BUTTON_NEGATIVE);
-        }
+    private void replyToDialogAndWaitForUpdates(
+            PermissionUpdateWaiter updateWaiter, int nUpdates, boolean allow) throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(new Runnable() {
+            @Override
+            public void run() {
+                PermissionDialogController.getInstance().clickButtonForTest(allow
+                                ? ModalDialogProperties.ButtonType.POSITIVE
+                                : ModalDialogProperties.ButtonType.NEGATIVE);
+            }
+        });
         updateWaiter.waitForNumUpdates(nUpdates);
     }
 }

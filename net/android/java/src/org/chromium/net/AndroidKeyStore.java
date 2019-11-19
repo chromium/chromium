@@ -8,9 +8,13 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Signature;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  * Specifies all the dependencies from the native OpenSSL engine on an Android KeyStore.
@@ -22,6 +26,48 @@ public class AndroidKeyStore {
     @CalledByNative
     private static String getPrivateKeyClassName(PrivateKey privateKey) {
         return privateKey.getClass().getName();
+    }
+
+    /**
+     * Check if a given PrivateKey object supports a signature algorithm.
+     *
+     * @param privateKey The PrivateKey handle.
+     * @param algorithm The signature algorithm to use.
+     * @return whether the algorithm is supported.
+     */
+    @CalledByNative
+    private static boolean privateKeySupportsSignature(PrivateKey privateKey, String algorithm) {
+        try {
+            Signature signature = Signature.getInstance(algorithm);
+            signature.initSign(privateKey);
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            return false;
+        } catch (Exception e) {
+            Log.e(TAG, "Exception while checking support for " + algorithm + ": " + e);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Check if a given PrivateKey object supports an encryption algorithm.
+     *
+     * @param privateKey The PrivateKey handle.
+     * @param algorithm The signature algorithm to use.
+     * @return whether the algorithm is supported.
+     */
+    @CalledByNative
+    private static boolean privateKeySupportsCipher(PrivateKey privateKey, String algorithm) {
+        try {
+            Cipher cipher = Cipher.getInstance(algorithm);
+            cipher.init(Cipher.ENCRYPT_MODE, privateKey);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
+            return false;
+        } catch (Exception e) {
+            Log.e(TAG, "Exception while checking support for " + algorithm + ": " + e);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -55,6 +101,40 @@ public class AndroidKeyStore {
         } catch (Exception e) {
             Log.e(TAG,
                     "Exception while signing message with " + algorithm + " and "
+                            + privateKey.getAlgorithm() + " private key ("
+                            + privateKey.getClass().getName() + "): " + e);
+            return null;
+        }
+    }
+
+    /**
+     * Encrypts a given input with a given PrivateKey object.
+     *
+     * @param privateKey The PrivateKey handle.
+     * @param algorithm The cipher to use.
+     * @param input The input to encrypt.
+     * @return ciphertext as a byte buffer.
+     *
+     * Note: NONEwithRSA is not implemented in Android < 4.2. See
+     * getOpenSSLHandleForPrivateKey() below for a work-around.
+     */
+    @CalledByNative
+    private static byte[] encryptWithPrivateKey(
+            PrivateKey privateKey, String algorithm, byte[] message) {
+        Cipher cipher = null;
+        try {
+            cipher = Cipher.getInstance(algorithm);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            Log.e(TAG, "Cipher " + algorithm + " not supported: " + e);
+            return null;
+        }
+
+        try {
+            cipher.init(Cipher.ENCRYPT_MODE, privateKey);
+            return cipher.doFinal(message);
+        } catch (Exception e) {
+            Log.e(TAG,
+                    "Exception while encrypting input with " + algorithm + " and "
                             + privateKey.getAlgorithm() + " private key ("
                             + privateKey.getClass().getName() + "): " + e);
             return null;

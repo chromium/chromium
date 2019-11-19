@@ -12,14 +12,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
-import org.chromium.chrome.browser.widget.EmptyAlertEditText;
-import org.chromium.chrome.browser.widget.TintedDrawable;
+import org.chromium.chrome.browser.ui.widget.TintedDrawable;
 import org.chromium.components.bookmarks.BookmarkId;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class BookmarkAddEditFolderActivity extends SynchronousInitializationActi
     private BookmarkId mParentId;
     private BookmarkModel mModel;
     private TextView mParentTextView;
-    private EmptyAlertEditText mFolderTitle;
+    private BookmarkTextInputLayout mFolderTitle;
 
     // Add mode member variable
     private List<BookmarkId> mBookmarksToMove;
@@ -89,6 +90,7 @@ public class BookmarkAddEditFolderActivity extends SynchronousInitializationActi
      * Starts an edit folder activity. Require the context to fire an intent.
      */
     public static void startEditFolderActivity(Context context, BookmarkId idToEdit) {
+        RecordUserAction.record("MobileBookmarkManagerEditFolder");
         Intent intent = new Intent(context, BookmarkAddEditFolderActivity.class);
         intent.putExtra(INTENT_IS_ADD_MODE, false);
         intent.putExtra(INTENT_BOOKMARK_ID, idToEdit.toString());
@@ -133,8 +135,8 @@ public class BookmarkAddEditFolderActivity extends SynchronousInitializationActi
         }
         setContentView(R.layout.bookmark_add_edit_folder_activity);
 
-        mParentTextView = (TextView) findViewById(R.id.parent_folder);
-        mFolderTitle = (EmptyAlertEditText) findViewById(R.id.folder_title);
+        mParentTextView = findViewById(R.id.parent_folder);
+        mFolderTitle = findViewById(R.id.folder_title);
 
         mParentTextView.setOnClickListener(this);
 
@@ -150,8 +152,9 @@ public class BookmarkAddEditFolderActivity extends SynchronousInitializationActi
             getSupportActionBar().setTitle(R.string.edit_folder);
             BookmarkItem bookmarkItem = mModel.getBookmarkById(mFolderId);
             updateParent(bookmarkItem.getParentId());
-            mFolderTitle.setText(bookmarkItem.getTitle());
-            mFolderTitle.setSelection(mFolderTitle.getText().length());
+            final EditText editText = mFolderTitle.getEditText();
+            editText.setText(bookmarkItem.getTitle());
+            editText.setSelection(editText.getText().length());
             mParentTextView.setEnabled(bookmarkItem.isMovable());
         }
 
@@ -179,9 +182,11 @@ public class BookmarkAddEditFolderActivity extends SynchronousInitializationActi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (mIsAddMode) {
-            mSaveButton = menu.add(R.string.save)
-                    .setIcon(R.drawable.bookmark_check_gray)
-                    .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            mSaveButton =
+                    menu.add(R.string.save)
+                            .setIcon(TintedDrawable.constructTintedDrawable(this,
+                                    R.drawable.bookmark_check_gray, R.color.default_icon_color))
+                            .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         } else {
             mDeleteButton = menu.add(R.string.bookmark_action_bar_delete)
                                     .setIcon(TintedDrawable.constructTintedDrawable(

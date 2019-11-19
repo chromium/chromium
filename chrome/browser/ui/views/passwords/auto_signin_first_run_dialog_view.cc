@@ -6,11 +6,12 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/passwords/password_dialog_controller.h"
+#include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -18,9 +19,14 @@
 #include "ui/views/widget/widget.h"
 
 AutoSigninFirstRunDialogView::AutoSigninFirstRunDialogView(
-    PasswordDialogController* controller,
+    CredentialManagerDialogController* controller,
     content::WebContents* web_contents)
     : controller_(controller), web_contents_(web_contents) {
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_AUTO_SIGNIN_FIRST_RUN_OK));
+  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_CANCEL,
+                                   l10n_util::GetStringUTF16(IDS_TURN_OFF));
   chrome::RecordDialogCreation(chrome::DialogIdentifier::AUTO_SIGNIN_FIRST_RUN);
 }
 
@@ -84,27 +90,21 @@ bool AutoSigninFirstRunDialogView::Close() {
   return true;
 }
 
-base::string16 AutoSigninFirstRunDialogView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  return l10n_util::GetStringUTF16(button == ui::DIALOG_BUTTON_OK
-                                       ? IDS_AUTO_SIGNIN_FIRST_RUN_OK
-                                       : IDS_AUTO_SIGNIN_FIRST_RUN_TURN_OFF);
-}
-
 void AutoSigninFirstRunDialogView::InitWindow() {
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::TEXT));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  auto label =
-      std::make_unique<views::Label>(controller_->GetAutoSigninText(),
-                                     CONTEXT_BODY_TEXT_LARGE, STYLE_SECONDARY);
+  auto label = std::make_unique<views::Label>(controller_->GetAutoSigninText(),
+                                              CONTEXT_BODY_TEXT_LARGE,
+                                              views::style::STYLE_SECONDARY);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(label.release());
 }
 
 AutoSigninFirstRunPrompt* CreateAutoSigninPromptView(
-    PasswordDialogController* controller, content::WebContents* web_contents) {
+    CredentialManagerDialogController* controller,
+    content::WebContents* web_contents) {
   return new AutoSigninFirstRunDialogView(controller, web_contents);
 }

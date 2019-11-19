@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/strings/string_split.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -29,7 +30,7 @@ namespace leveldb_proto {
 // Interacts with the LevelDB third party module.
 // Once constructed, function calls and destruction should all occur on the
 // same thread (not necessarily the same as the constructor).
-class LevelDB {
+class COMPONENT_EXPORT(LEVELDB_PROTO) LevelDB {
  public:
   // Constructor. Does *not* open a leveldb - only initialize this class.
   // |client_name| is the name of the "client" that owns this instance. Used

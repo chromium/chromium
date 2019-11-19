@@ -16,7 +16,7 @@ public class AndroidNetworkLibraryTestUtil {
      * Helper for tests that simulates an app controlling cleartext traffic on M and newer.
      */
     @CalledByNative
-    public static void setUpSecurityPolicyForTesting(boolean cleartextPermitted) throws Exception {
+    public static void setUpSecurityPolicyForTesting(boolean cleartextPermitted) {
         sDefaultCleartextCheckCount = 0;
         sPerHostCleartextCheckCount = 0;
         AndroidNetworkLibrary.NetworkSecurityPolicyProxy.setInstanceForTesting(

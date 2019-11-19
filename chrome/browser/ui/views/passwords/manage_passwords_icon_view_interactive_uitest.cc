@@ -7,37 +7,50 @@
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller_mock.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_container_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_account_icon_container_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_utils.h"
 
-class ManagePasswordsIconViewTest : public ManagePasswordsTest {
+// The param indicates if the feature showing password icon in the new toolbar
+// status chip is enabled.
+class ManagePasswordsIconViewTest : public ManagePasswordsTest,
+                                    public ::testing::WithParamInterface<bool> {
  public:
   ManagePasswordsIconViewTest() {}
   ~ManagePasswordsIconViewTest() override {}
 
   password_manager::ui::State ViewState() { return GetView()->state_; }
 
+  void SetUp() override {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          autofill::features::kAutofillEnableToolbarStatusChip);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          autofill::features::kAutofillEnableToolbarStatusChip);
+    }
+    ManagePasswordsTest::SetUp();
+  }
+
   ManagePasswordsIconViews* GetView() {
-    views::View* view =
+    views::View* const view =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar_button_provider()
-            ->GetPageActionIconContainerView()
             ->GetPageActionIconView(PageActionIconType::kManagePasswords);
     DCHECK_EQ(view->GetClassName(), ManagePasswordsIconViews::kClassName);
     return static_cast<ManagePasswordsIconViews*>(view);
   }
 
   base::string16 GetTooltipText() {
-    base::string16 tooltip;
-    GetView()->GetTooltipText(gfx::Point(), &tooltip);
-    return tooltip;
+    return GetView()->GetTooltipText(gfx::Point());
   }
 
   const gfx::ImageSkia& GetImage() {
@@ -45,34 +58,36 @@ class ManagePasswordsIconViewTest : public ManagePasswordsTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   DISALLOW_COPY_AND_ASSIGN(ManagePasswordsIconViewTest);
 };
 
-IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, DefaultStateIsInactive) {
+IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTest, DefaultStateIsInactive) {
   EXPECT_EQ(password_manager::ui::INACTIVE_STATE, ViewState());
-  EXPECT_FALSE(GetView()->visible());
+  EXPECT_FALSE(GetView()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, PendingState) {
+IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTest, PendingState) {
   SetupPendingPassword();
   EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE, ViewState());
-  EXPECT_TRUE(GetView()->visible());
+  EXPECT_TRUE(GetView()->GetVisible());
   // No tooltip because the bubble is showing.
   EXPECT_EQ(base::string16(), GetTooltipText());
   const gfx::ImageSkia active_image = GetImage();
 }
 
-IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, ManageState) {
+IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTest, ManageState) {
   SetupManagingPasswords();
   EXPECT_EQ(password_manager::ui::MANAGE_STATE, ViewState());
-  EXPECT_TRUE(GetView()->visible());
+  EXPECT_TRUE(GetView()->GetVisible());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MANAGE),
             GetTooltipText());
 }
 
-IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, CloseOnClick) {
+IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTest, CloseOnClick) {
   SetupPendingPassword();
-  EXPECT_TRUE(GetView()->visible());
+  EXPECT_TRUE(GetView()->GetVisible());
   ui::MouseEvent mouse_down(ui::ET_MOUSE_PRESSED, gfx::Point(10, 10),
                             gfx::Point(900, 60), ui::EventTimeForNow(),
                             ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
@@ -80,3 +95,13 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsIconViewTest, CloseOnClick) {
   // Wait for the command execution to close the bubble.
   content::RunAllPendingInMessageLoop();
 }
+
+// TODO(crbug.com/932818): Remove the condition once the experiment is enabled
+// on ChromeOS. For now, on ChromeOS, we only test the non-experimental branch.
+#if defined(OS_CHROMEOS)
+INSTANTIATE_TEST_SUITE_P(,
+                         ManagePasswordsIconViewTest,
+                         ::testing::Values(false));
+#else
+INSTANTIATE_TEST_SUITE_P(, ManagePasswordsIconViewTest, ::testing::Bool());
+#endif  // defined(OS_CHROMEOS)

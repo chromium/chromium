@@ -13,7 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,7 +44,7 @@ class TextLogUploadListTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
 
   DISALLOW_COPY_AND_ASSIGN(TextLogUploadListTest);
@@ -209,7 +209,7 @@ TEST_F(TextLogUploadListTest, ParseMultipleEntries) {
     test_entry += ",";
     test_entry.append(kTestUploadId);
     test_entry += ",";
-    test_entry.append(kTestLocalID);
+    test_entry.append(base::NumberToString(i));
     test_entry += ",";
     test_entry.append(kTestCaptureTime);
     test_entry += "\n";
@@ -227,11 +227,12 @@ TEST_F(TextLogUploadListTest, ParseMultipleEntries) {
   upload_list->GetUploads(999, &uploads);
 
   EXPECT_EQ(4u, uploads.size());
+  // The entries order should be reversed during the parsing.
   for (size_t i = 0; i < uploads.size(); ++i) {
     double time_double = uploads[i].upload_time.ToDoubleT();
     EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
     EXPECT_STREQ(kTestUploadId, uploads[i].upload_id.c_str());
-    EXPECT_STREQ(kTestLocalID, uploads[i].local_id.c_str());
+    EXPECT_EQ(base::NumberToString(uploads.size() - i), uploads[i].local_id);
     time_double = uploads[i].capture_time.ToDoubleT();
     EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
   }
@@ -274,6 +275,69 @@ TEST_F(TextLogUploadListTest, ParseWithState) {
     EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
     EXPECT_EQ(UploadList::UploadInfo::State::Uploaded, uploads[i].state);
   }
+}
+
+TEST_F(TextLogUploadListTest, ClearUsingUploadTime) {
+  constexpr time_t kTestTime = 1234u;
+  constexpr char kOtherEntry[] = "4567,def\n";
+  std::string test_entry = base::NumberToString(kTestTime);
+  test_entry.append(",abc\n");
+  test_entry.append(kOtherEntry);
+  WriteUploadLog(test_entry);
+
+  scoped_refptr<TextLogUploadList> upload_list =
+      new TextLogUploadList(log_path());
+
+  base::RunLoop run_loop;
+  upload_list->Clear(base::Time::FromTimeT(kTestTime),
+                     base::Time::FromTimeT(kTestTime + 1),
+                     run_loop.QuitClosure());
+  run_loop.Run();
+
+  std::string contents;
+  base::ReadFileToString(log_path(), &contents);
+  EXPECT_EQ(kOtherEntry, contents);
+}
+
+TEST_F(TextLogUploadListTest, ClearUsingCaptureTime) {
+  constexpr time_t kTestTime = 1234u;
+  constexpr char kOtherEntry[] = "4567,def,def,7890\n";
+  std::string test_entry = kOtherEntry;
+  test_entry.append("4567,abc,abc,");
+  test_entry.append(base::NumberToString(kTestTime));
+  test_entry.append("\n");
+  WriteUploadLog(test_entry);
+
+  scoped_refptr<TextLogUploadList> upload_list =
+      new TextLogUploadList(log_path());
+
+  base::RunLoop run_loop;
+  upload_list->Clear(base::Time::FromTimeT(kTestTime),
+                     base::Time::FromTimeT(kTestTime + 1),
+                     run_loop.QuitClosure());
+  run_loop.Run();
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(log_path(), &contents));
+  EXPECT_EQ(kOtherEntry, contents);
+}
+
+TEST_F(TextLogUploadListTest, ClearingAllDataDeletesFile) {
+  constexpr time_t kTestTime = 1234u;
+  std::string test_entry = base::NumberToString(kTestTime);
+  test_entry.append(",abc\n");
+  WriteUploadLog(test_entry);
+
+  scoped_refptr<TextLogUploadList> upload_list =
+      new TextLogUploadList(log_path());
+
+  base::RunLoop run_loop;
+  upload_list->Clear(base::Time::FromTimeT(kTestTime),
+                     base::Time::FromTimeT(kTestTime + 1),
+                     run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(base::PathExists(log_path()));
 }
 
 // https://crbug.com/597384

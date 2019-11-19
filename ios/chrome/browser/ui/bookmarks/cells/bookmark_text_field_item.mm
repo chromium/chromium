@@ -9,10 +9,10 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/ui/text_field_styling.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -159,7 +159,7 @@
 }
 
 + (UIColor*)textColorForEditing:(BOOL)editing {
-  return editing ? [UIColor blackColor] : [UIColor lightGrayColor];
+  return editing ? UIColor.cr_labelColor : UIColor.cr_secondaryLabelColor;
 }
 
 - (void)prepareForReuse {

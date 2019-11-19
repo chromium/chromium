@@ -7,6 +7,7 @@
 #include <limits.h>
 #include <windows.h>
 
+#include "ui/base/idle/idle_internal.h"
 #include "ui/base/win/lock_state.h"
 
 namespace ui {
@@ -51,6 +52,9 @@ int CalculateIdleTime() {
 }
 
 bool CheckIdleStateIsLocked() {
+  if (IdleStateForTesting().has_value())
+    return IdleStateForTesting().value() == IDLE_STATE_LOCKED;
+
   return ui::IsWorkstationLocked() || IsScreensaverRunning();
 }
 

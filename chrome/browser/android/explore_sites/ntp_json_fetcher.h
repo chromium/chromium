@@ -12,11 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/explore_sites/catalog.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}  // namespace base
+#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace content {
 class BrowserContext;
@@ -46,14 +42,14 @@ class NTPJsonFetcher {
  private:
   // Invoked from SimpleURLLoader after download is complete.
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
-  // Callbacks for SafeJsonParser.
-  void OnJsonParseSuccess(std::unique_ptr<base::Value> parsed_json);
+  // Callback for DataDecoder.
+  void OnJsonParse(data_decoder::DataDecoder::ValueOrError result);
   void OnJsonParseError(const std::string& error);
 
   Callback callback_;
   content::BrowserContext* browser_context_;
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
-  base::WeakPtrFactory<NTPJsonFetcher> weak_factory_;
+  base::WeakPtrFactory<NTPJsonFetcher> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NTPJsonFetcher);
 };

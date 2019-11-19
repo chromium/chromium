@@ -6,6 +6,9 @@
   {
     "namespace": "action",
     "description": "Use actions to put icons in the main Google Chrome toolbar, to the right of the address bar. Actions can be set to take action on all pages (default_state: enabled) or only the current page (default_state: disabled). If an action is default disabled, the action appears grayed out when inactive. In addition to its <a href='action#icon'>icon</a>, an action can also have a <a href='action#tooltip'>tooltip</a>, a <a href='action#badge'>badge</a>, and a <a href='action#popups'>popup</a>.",
+    "compiler_options": {
+      "implemented_in": "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+    },
     "functions": [{
       "name": "setTitle",
       "type": "function",

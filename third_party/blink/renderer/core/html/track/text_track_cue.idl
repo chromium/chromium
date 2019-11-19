@@ -25,6 +25,7 @@
 
 // https://html.spec.whatwg.org/C/#texttrackcue
 
+[Exposed=Window]
 interface TextTrackCue : EventTarget {
     readonly attribute TextTrack? track;
 

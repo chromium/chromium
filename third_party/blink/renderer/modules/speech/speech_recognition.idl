@@ -23,16 +23,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://dvcs.w3.org/hg/speech-api/raw-file/tip/webspeechapi.html#dfn-speechreco
+// https://w3c.github.io/speech-api/#speechrecognition
 
 [
     ActiveScriptWrappable,
     Constructor,
     ConstructorCallWith=ExecutionContext,
+    Measure,
     NoInterfaceObject
 ] interface SpeechRecognition : EventTarget {
     // recognition parameters
-    attribute SpeechGrammarList grammars;
+    [Measure] attribute SpeechGrammarList grammars;
     attribute DOMString lang;
     attribute boolean continuous;
     attribute boolean interimResults;

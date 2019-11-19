@@ -27,12 +27,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_MEMORY_CACHE_H_
 
 #include "base/macros.h"
+#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/memory_cache_dump_provider.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
-#include "third_party/blink/renderer/platform/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -49,35 +49,28 @@ class KURL;
 // when the prefinalizer is executed.
 class MemoryCacheEntry final : public GarbageCollected<MemoryCacheEntry> {
  public:
-  static MemoryCacheEntry* Create(Resource* resource) {
-    return MakeGarbageCollected<MemoryCacheEntry>(resource);
-  }
-
   explicit MemoryCacheEntry(Resource* resource) : resource_(resource) {}
 
   void Trace(blink::Visitor*);
   Resource* GetResource() const { return resource_; }
 
  private:
-  void ClearResourceWeak(Visitor*);
+  void ClearResourceWeak(const WeakCallbackInfo&);
 
-  WeakMember<Resource> resource_;
+  UntracedMember<Resource> resource_;
 };
 
 // This cache holds subresources used by Web pages: images, scripts,
 // stylesheets, etc.
-class PLATFORM_EXPORT MemoryCache final
-    : public GarbageCollectedFinalized<MemoryCache>,
-      public MemoryCacheDumpClient,
-      public MemoryPressureListener {
+class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
+                                          public MemoryCacheDumpClient,
+                                          public MemoryPressureListener {
   USING_GARBAGE_COLLECTED_MIXIN(MemoryCache);
 
  public:
-  static MemoryCache* Create(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
   explicit MemoryCache(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~MemoryCache() override;
+
   void Trace(blink::Visitor*) override;
 
   struct TypeStatistic {
@@ -134,11 +127,8 @@ class PLATFORM_EXPORT MemoryCache final
   //  - totalBytes: The maximum number of bytes that the cache should consume
   //    overall.
   void SetCapacity(size_t total_bytes);
-  void SetDelayBeforeLiveDecodedPrune(double seconds) {
+  void SetDelayBeforeLiveDecodedPrune(base::TimeDelta seconds) {
     delay_before_live_decoded_prune_ = seconds;
-  }
-  void SetMaxPruneDeferralDelay(double seconds) {
-    max_prune_deferral_delay_ = seconds;
   }
 
   void EvictResources();
@@ -189,14 +179,14 @@ class PLATFORM_EXPORT MemoryCache final
 
   bool in_prune_resources_;
   bool prune_pending_;
-  double max_prune_deferral_delay_;
-  double prune_time_stamp_;
-  double prune_frame_time_stamp_;
-  double last_frame_paint_time_stamp_;  // used for detecting decoded resource
-                                        // thrash in the cache
+  base::TimeDelta max_prune_deferral_delay_;
+  base::TimeTicks prune_time_stamp_;
+  base::TimeTicks prune_frame_time_stamp_;
+  base::TimeTicks last_frame_paint_time_stamp_;  // used for detecting decoded
+                                                 // resource thrash in the cache
 
   size_t capacity_;
-  double delay_before_live_decoded_prune_;
+  base::TimeDelta delay_before_live_decoded_prune_;
 
   // The number of bytes currently consumed by resources in the cache.
   size_t size_;

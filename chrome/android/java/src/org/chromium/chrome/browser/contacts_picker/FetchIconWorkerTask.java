@@ -51,6 +51,8 @@ class FetchIconWorkerTask extends AsyncTask<Bitmap> {
     public FetchIconWorkerTask(
             String id, ContentResolver contentResolver, IconRetrievedCallback callback) {
         mContactId = id;
+        // Avatar icon for own info should not be obtained through the contacts list.
+        assert !id.equals(ContactDetails.SELF_CONTACT_ID);
         mContentResolver = contentResolver;
         mCallback = callback;
     }

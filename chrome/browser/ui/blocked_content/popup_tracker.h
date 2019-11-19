@@ -8,16 +8,15 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/blocked_content/scoped_visibility_tracker.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "ui/base/scoped_visibility_tracker.h"
 
 namespace content {
 class WebContents;
 }
 
-class ScopedVisibilityTracker;
 
 // This class tracks new popups, and is used to log metrics on the visibility
 // time of the first document in the popup.
@@ -51,7 +50,7 @@ class PopupTracker : public content::WebContentsObserver,
   // contents is visible while the first document is loading (after commit).
   base::Optional<base::TimeDelta> first_load_visible_time_;
 
-  ScopedVisibilityTracker visibility_tracker_;
+  ui::ScopedVisibilityTracker visibility_tracker_;
 
   // The number of user interactions occuring in this popup tab.
   int num_interactions_ = 0;

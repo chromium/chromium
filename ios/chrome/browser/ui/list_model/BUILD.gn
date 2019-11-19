@@ -28,7 +28,6 @@ source_set("unit_tests") {
     ":list_model",
     "//base",
     "//ios/chrome/test:test_support",
-    "//ios/chrome/test/base",
     "//testing/gtest",
   ]
 }

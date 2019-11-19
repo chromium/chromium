@@ -23,11 +23,12 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/sys_byteorder.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
+#include "build/build_config.h"
 #include "media/base/audio_bus.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/base/video_frame.h"
@@ -89,11 +90,9 @@ std::string ConvertFromBase16String(const std::string& base_16) {
   DCHECK_EQ(base_16.size() % 2, 0u) << "Must be a multiple of 2";
   compressed.reserve(base_16.size() / 2);
 
-  std::vector<uint8_t> v;
-  if (!base::HexStringToBytes(base_16, &v)) {
+  if (!base::HexStringToString(base_16, &compressed)) {
     NOTREACHED();
   }
-  compressed.assign(reinterpret_cast<const char*>(&v[0]), v.size());
   return compressed;
 }
 
@@ -251,7 +250,7 @@ class TestReceiverAudioCallback
   }
 
   void AddExpectedResult(const AudioBus& audio_bus,
-                         const base::TimeTicks& playout_time) {
+                         base::TimeTicks playout_time) {
     std::unique_ptr<ExpectedAudioFrame> expected_audio_frame(
         new ExpectedAudioFrame());
     expected_audio_frame->audio_bus =
@@ -262,13 +261,13 @@ class TestReceiverAudioCallback
   }
 
   void IgnoreAudioFrame(std::unique_ptr<AudioBus> audio_bus,
-                        const base::TimeTicks& playout_time,
+                        base::TimeTicks playout_time,
                         bool is_continuous) {
     ++num_called_;
   }
 
   void CheckAudioFrame(std::unique_ptr<AudioBus> audio_bus,
-                       const base::TimeTicks& playout_time,
+                       base::TimeTicks playout_time,
                        bool is_continuous) {
     ++num_called_;
 
@@ -330,7 +329,7 @@ class TestReceiverVideoCallback
 
   void AddExpectedResult(int frame_number,
                          const gfx::Size& size,
-                         const base::TimeTicks& playout_time,
+                         base::TimeTicks playout_time,
                          bool should_be_continuous) {
     ExpectedVideoFrame expected_video_frame;
     expected_video_frame.frame_number = frame_number;
@@ -341,12 +340,12 @@ class TestReceiverVideoCallback
   }
 
   void CheckVideoFrame(bool examine_content,
-                       const scoped_refptr<media::VideoFrame>& video_frame,
-                       const base::TimeTicks& playout_time,
+                       scoped_refptr<media::VideoFrame> video_frame,
+                       base::TimeTicks playout_time,
                        bool is_continuous) {
     ++num_called_;
 
-    ASSERT_TRUE(video_frame.get());
+    ASSERT_TRUE(video_frame);
     ASSERT_FALSE(expected_frame_.empty());
     ExpectedVideoFrame expected_video_frame = expected_frame_.front();
     expected_frame_.pop_front();
@@ -364,7 +363,8 @@ class TestReceiverVideoCallback
               base::TimeDelta());
       PopulateVideoFrame(expected_I420_frame.get(),
                          expected_video_frame.frame_number);
-      EXPECT_LE(kVideoAcceptedPSNR, I420PSNR(expected_I420_frame, video_frame));
+      EXPECT_LE(kVideoAcceptedPSNR,
+                I420PSNR(*expected_I420_frame, *video_frame));
     }
 
     EXPECT_NEAR(
@@ -528,8 +528,7 @@ class End2EndTest : public ::testing::Test {
     }
   }
 
-  void FeedAudioFramesWithExpectedDelay(int count,
-                                        const base::TimeDelta& delay) {
+  void FeedAudioFramesWithExpectedDelay(int count, base::TimeDelta delay) {
     for (int i = 0; i < count; ++i) {
       std::unique_ptr<AudioBus> audio_bus(audio_bus_factory_->NextAudioBus(
           base::TimeDelta::FromMilliseconds(kAudioFrameDurationMs)));
@@ -572,7 +571,7 @@ class End2EndTest : public ::testing::Test {
       return gfx::Size(kVideoWidth, kVideoHeight);
   }
 
-  void SendVideoFrame(int frame_number, const base::TimeTicks& reference_time) {
+  void SendVideoFrame(int frame_number, base::TimeTicks reference_time) {
     if (start_time_.is_null())
       start_time_ = reference_time;
     const base::TimeDelta time_diff = reference_time - start_time_;
@@ -770,9 +769,9 @@ class End2EndTest : public ::testing::Test {
     }
   }
 
-  void BasicPlayerGotVideoFrame(
-      const scoped_refptr<media::VideoFrame>& video_frame,
-      const base::TimeTicks& playout_time, bool continuous) {
+  void BasicPlayerGotVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
+                                base::TimeTicks playout_time,
+                                bool continuous) {
     // The following tests that the sender and receiver clocks can be
     // out-of-sync, drift, and jitter with respect to one another; and depsite
     // this, the receiver will produce smoothly-progressing playout times.
@@ -805,7 +804,7 @@ class End2EndTest : public ::testing::Test {
   }
 
   void BasicPlayerGotAudioFrame(std::unique_ptr<AudioBus> audio_bus,
-                                const base::TimeTicks& playout_time,
+                                base::TimeTicks playout_time,
                                 bool is_continuous) {
     VLOG_IF(1, !last_audio_playout_time_.is_null())
         << "Audio frame playout time delta (compared to last frame) is "
@@ -879,7 +878,7 @@ class End2EndTest : public ::testing::Test {
   std::vector<std::pair<base::TimeTicks, base::TimeTicks> > video_ticks_;
 
   // |transport_sender_| has a RepeatingTimer which needs a MessageLoop.
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 namespace {
@@ -1218,7 +1217,9 @@ TEST_F(End2EndTest, MAYBE_EvilNetwork) {
 // Tests that a system configured for 30 FPS drops frames when input is provided
 // at a much higher frame rate.
 // Fails consistently on official builds: crbug.com/612496
-#ifdef OFFICIAL_BUILD
+// crbug.com/997944. Flaky on multiple platforms.
+#if defined(OFFICIAL_BUILD) || defined(OS_LINUX) || defined(OS_MACOSX) || \
+    defined(OS_WIN)
 #define MAYBE_ShoveHighFrameRateDownYerThroat \
   DISABLED_ShoveHighFrameRateDownYerThroat
 #else

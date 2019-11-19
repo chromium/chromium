@@ -1,0 +1,1842 @@
+[
+{"category": "Lu",
+ "names": [],
+ "key": "00C0",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter a with grave",
+   "alternative": "latin capital letter a grave",
+   "short": "cap a grave"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00C1",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter a with acute",
+   "alternative": "latin capital letter a acute",
+   "short": "cap a acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00C2",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter a with circumflex",
+   "alternative": "latin capital letter a hat",
+   "short": "cap a hat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00C3",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter a with tilde",
+   "alternative": "latin capital letter a tilde",
+   "short": "cap a tilde"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00C4",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter a with diaeresis",
+   "alternative": "latin capital letter a double overdot",
+   "short": "cap a double overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00C5",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter a with ring above",
+   "alternative": "latin capital letter a ring",
+   "short": "cap a ring"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00C7",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter c cedilla",
+   "alternative": "latin capital letter c cedilla",
+   "short": "cap c cedilla"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00C8",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with grave",
+   "alternative": "latin capital letter e grave",
+   "short": "cap e grave"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00C9",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with acute",
+   "alternative": "latin capital letter e acute",
+   "short": "cap e acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00CA",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with circumflex",
+   "alternative": "latin capital letter e hat",
+   "short": "cap e hat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00CB",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with diaeresis",
+   "alternative": "latin capital letter e double overdot",
+   "short": "cap e double overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00CC",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter i with grave",
+   "alternative": "latin capital letter i grave",
+   "short": "cap i grave"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00CD",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter i with acute",
+   "alternative": "latin capital letter i acute",
+   "short": "cap i acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00CE",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter i with circumflex",
+   "alternative": "latin capital letter i hat",
+   "short": "cap i hat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00CF",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter i with diaeresis",
+   "alternative": "latin capital letter i double overdot",
+   "short": "cap i double overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00D1",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter n tilde",
+   "alternative": "latin capital letter n tilde",
+   "short": "cap n tilde"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00D2",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter o with grave",
+   "alternative": "latin capital letter o grave",
+   "short": "cap o grave"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00D3",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter o with acute",
+   "alternative": "latin capital letter o acute",
+   "short": "cap o acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00D4",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter o with circumflex",
+   "alternative": "latin capital letter o hat",
+   "short": "cap o hat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00D5",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter o with tilde",
+   "alternative": "latin capital letter o tilde",
+   "short": "cap o tilde"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00D6",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter o with diaeresis",
+   "alternative": "latin capital letter o double overdot",
+   "short": "cap o double overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00D9",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with grave",
+   "alternative": "latin capital letter u grave",
+   "short": "cap u grave"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00DA",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with acute",
+   "alternative": "latin capital letter u acute",
+   "short": "cap u acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00DB",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with circumflex",
+   "alternative": "latin capital letter u hat",
+   "short": "cap u hat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00DC",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with diaeresis",
+   "alternative": "latin capital letter u double overdot",
+   "short": "cap u double overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "00DD",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter y with acute",
+   "alternative": "latin capital letter y acute",
+   "short": "cap y acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0100",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter a macron",
+   "alternative": "latin capital letter a overbar",
+   "short": "cap a overbar"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0102",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter a with breve",
+   "alternative": "latin capital letter a breve",
+   "short": "cap a breve"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0104",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter a with ogonek",
+   "alternative": "latin capital letter a ogonek",
+   "short": "cap a ogonek"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0106",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter c with acute",
+   "alternative": "latin capital letter c acute",
+   "short": "cap c acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0108",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter c with circumflex",
+   "alternative": "latin capital letter c hat",
+   "short": "cap c hat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "010A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter c with dot above",
+   "alternative": "latin capital letter c overdot",
+   "short": "cap c overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "010C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter c with caron",
+   "alternative": "latin capital letter c hacek",
+   "short": "cap c caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "010E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter d with caron",
+   "alternative": "latin capital letter d hacek",
+   "short": "cap d caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0112",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with macron",
+   "alternative": "latin capital letter e overbar",
+   "short": "cap e overbar"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0114",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with breve",
+   "alternative": "latin capital letter e breve",
+   "short": "cap e breve"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0116",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with dot above",
+   "alternative": "latin capital letter e overdot",
+   "short": "cap e overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0118",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with ogonek",
+   "alternative": "latin capital letter e ogonek",
+   "short": "cap e ogonek"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "011A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with caron",
+   "alternative": "latin capital letter e hacek",
+   "short": "cap e caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "011C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter g with circumflex",
+   "alternative": "latin capital letter g hat",
+   "short": "cap g hat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "011E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter g with breve",
+   "alternative": "latin capital letter g breve",
+   "short": "cap g breve"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0120",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter g with dot above",
+   "alternative": "latin capital letter g overdot",
+   "short": "cap g overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0122",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter g with cedilla",
+   "alternative": "latin capital letter g cedilla",
+   "short": "cap g cedilla"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0124",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter h with circumflex",
+   "alternative": "latin capital letter h hat",
+   "short": "cap h hat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0128",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter i with tilde",
+   "alternative": "latin capital letter i tilde",
+   "short": "cap i tilde"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "012A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter i with macron",
+   "alternative": "latin capital letter i overbar",
+   "short": "cap i overbar"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "012C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter i with breve",
+   "alternative": "latin capital letter i breve",
+   "short": "cap i breve"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "012E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter i with ogonek",
+   "alternative": "latin capital letter i ogonek",
+   "short": "cap i ogonek"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0130",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter i with dot above",
+   "alternative": "latin capital letter i overdot",
+   "short": "cap i overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0134",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter j circumflex",
+   "alternative": "latin capital letter j hat",
+   "short": "cap j hat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0136",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter k with cedilla",
+   "alternative": "latin capital letter k cedilla",
+   "short": "cap k cedilla"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0139",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter l with acute",
+   "alternative": "latin capital letter l acute",
+   "short": "cap l acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "013B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter l with cedilla",
+   "alternative": "latin capital letter l cedilla",
+   "short": "cap l cedilla"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "013D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter l with caron",
+   "alternative": "latin capital letter l hacek",
+   "short": "cap l caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "013F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter l with middle dot",
+   "alternative": "latin capital letter l middle dot",
+   "short": "cap l middle dot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0143",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter n with acute",
+   "alternative": "latin capital letter n acute",
+   "short": "cap n acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0145",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter n with cedilla",
+   "alternative": "latin capital letter n cedilla",
+   "short": "cap n cedilla"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0147",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter n with caron",
+   "alternative": "latin capital letter n hacek",
+   "short": "cap n caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "014C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter o macron",
+   "alternative": "latin capital letter o overbar",
+   "short": "cap o overbar"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "014E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter o with breve",
+   "alternative": "latin capital letter o breve",
+   "short": "cap o breve"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0150",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter o with double acute",
+   "alternative": "latin capital letter o double acute",
+   "short": "cap o double acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0154",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter r acute",
+   "alternative": "latin capital letter r acute",
+   "short": "cap r acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0156",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter r with cedilla",
+   "alternative": "latin capital letter r cedilla",
+   "short": "cap r cedilla"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0158",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter r with caron",
+   "alternative": "latin capital letter r hacek",
+   "short": "cap r caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "015A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter s with acute",
+   "alternative": "latin capital letter s acute",
+   "short": "cap s acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "015C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter s with circumflex",
+   "alternative": "latin capital letter s hat",
+   "short": "cap s hat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "015E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter s with cedilla",
+   "alternative": "latin capital letter s cedilla",
+   "short": "cap s cedilla"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0160",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter s with caron",
+   "alternative": "latin capital letter s hacek",
+   "short": "cap s caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0162",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter t with cedilla",
+   "alternative": "latin capital letter t cedilla",
+   "short": "cap t cedilla"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0164",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter t with caron",
+   "alternative": "latin capital letter t hacek",
+   "short": "cap t caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0168",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with tilde",
+   "alternative": "latin capital letter u tilde",
+   "short": "cap u tilde"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "016A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with macron",
+   "alternative": "latin capital letter u overbar",
+   "short": "cap u overbar"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "016C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with breve",
+   "alternative": "latin capital letter u breve",
+   "short": "cap u breve"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "016E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with ring above",
+   "alternative": "latin capital letter u ring",
+   "short": "cap u ring"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0170",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with double acute",
+   "alternative": "latin capital letter u double acute",
+   "short": "cap u double acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0172",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with ogonek",
+   "alternative": "latin capital letter u ogonek",
+   "short": "cap u ogonek"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0174",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter w with circumflex",
+   "alternative": "latin capital letter w hat",
+   "short": "cap w hat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0176",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter y with circumflex",
+   "alternative": "latin capital letter y hat",
+   "short": "cap y hat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0178",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter y with diaeresis",
+   "alternative": "latin capital letter y double overdot",
+   "short": "cap y double overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0179",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter z with acute",
+   "alternative": "latin capital letter z acute",
+   "short": "cap z acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "017B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter z with dot above",
+   "alternative": "latin capital letter z overdot",
+   "short": "cap z overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "017D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter z with caron",
+   "alternative": "latin capital letter z hacek",
+   "short": "cap z caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "01CD",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter a with caron",
+   "alternative": "latin capital letter a hacek",
+   "short": "cap a caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "01CF",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter i with caron",
+   "alternative": "latin capital letter i hacek",
+   "short": "cap i caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "01D1",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter o with caron",
+   "alternative": "latin capital letter o hacek",
+   "short": "cap o caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "01D3",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with caron",
+   "alternative": "latin capital letter u hacek",
+   "short": "cap u caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "01E6",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter g with caron",
+   "alternative": "latin capital letter g hacek",
+   "short": "cap g caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "01E8",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter k with caron",
+   "alternative": "latin capital letter k hacek",
+   "short": "cap k caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "01EA",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter o with ogonek",
+   "alternative": "latin capital letter o ogonek",
+   "short": "cap o ogonek"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "01F4",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter g with acute",
+   "alternative": "latin capital letter g acute",
+   "short": "cap g acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "01F8",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter n with grave",
+   "alternative": "latin capital letter n grave",
+   "short": "cap n grave"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0200",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter a with double grave",
+   "alternative": "latin capital letter a double grave",
+   "short": "cap a double grave"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0202",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter a with inverted breve",
+   "alternative": "latin capital letter a inverted breve",
+   "short": "cap a inverted breve"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0204",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with double grave",
+   "alternative": "latin capital letter e double grave",
+   "short": "cap e double grave"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0206",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with inverted breve",
+   "alternative": "latin capital letter e inverted breve",
+   "short": "cap e inverted breve"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0208",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter i with double grave",
+   "alternative": "latin capital letter i double grave",
+   "short": "cap i double grave"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "020A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter i with inverted breve",
+   "alternative": "latin capital letter i inverted breve",
+   "short": "cap i inverted breve"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "020C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter o with double grave",
+   "alternative": "latin capital letter o double grave",
+   "short": "cap o double grave"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "020E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter o with inverted breve",
+   "alternative": "latin capital letter o inverted breve",
+   "short": "cap o inverted breve"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0210",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter r with double grave",
+   "alternative": "latin capital letter r double grave",
+   "short": "cap r double grave"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0212",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter r with inverted breve",
+   "alternative": "latin capital letter r inverted breve",
+   "short": "cap r inverted breve"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0214",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with double grave",
+   "alternative": "latin capital letter u double grave",
+   "short": "cap u double grave"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0216",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with inverted breve",
+   "alternative": "latin capital letter u inverted breve",
+   "short": "cap u inverted breve"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0218",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter s with comma below",
+   "alternative": "latin capital letter s comma below",
+   "short": "cap s comma below"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "021A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter t with comma below",
+   "alternative": "latin capital letter t comma below",
+   "short": "cap t comma below"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "021E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter h caron",
+   "alternative": "",
+   "short": "cap h caron"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0226",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter a with dot above",
+   "alternative": "latin capital letter a overdot",
+   "short": "cap a overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0228",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with cedilla",
+   "alternative": "latin capital letter e cedilla",
+   "short": "cap e cedilla"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "022E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter o with dot above",
+   "alternative": "latin capital letter o overdot",
+   "short": "cap o overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "0232",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter y with macron",
+   "alternative": "latin capital letter y overbar",
+   "short": "cap y overbar"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E00",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter a with ring below",
+   "alternative": "latin capital letter a ring below",
+   "short": "cap a ring below"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E02",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter b with dot above",
+   "alternative": "latin capital letter b overdot",
+   "short": "cap b overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E04",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter b with dot below",
+   "alternative": "latin capital letter b underdot",
+   "short": "cap b underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E06",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter b with line below",
+   "alternative": "latin capital letter b underbar",
+   "short": "cap b underbar"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E0A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter d with dot above",
+   "alternative": "latin capital letter d overdot",
+   "short": "cap d overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E0C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter d with dot below",
+   "alternative": "latin capital letter d underdot",
+   "short": "cap d underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E0E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter d with line below",
+   "alternative": "latin capital letter d underbar",
+   "short": "cap d underbar"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E10",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter d with cedilla",
+   "alternative": "latin capital letter d cedilla",
+   "short": "cap d cedilla"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E12",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter d with circumflex below",
+   "alternative": "latin capital letter d underhat",
+   "short": "cap d underhat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E18",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with circumflex below",
+   "alternative": "latin capital letter e underhat",
+   "short": "cap e underhat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E1A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with tilde below",
+   "alternative": "latin capital letter e tilde below",
+   "short": "cap e tilde below"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E1E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter f with dot above",
+   "alternative": "latin capital letter f overdot",
+   "short": "cap f overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E20",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter g with macron",
+   "alternative": "latin capital letter g overbar",
+   "short": "cap g overbar"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E22",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter h with dot above",
+   "alternative": "latin capital letter h overdot",
+   "short": "cap h overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E24",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter h with dot below",
+   "alternative": "latin capital letter h underdot",
+   "short": "cap h underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E26",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter h with diaeresis",
+   "alternative": "latin capital letter h double overdot",
+   "short": "cap h double overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E28",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter h with cedilla",
+   "alternative": "latin capital letter h cedilla",
+   "short": "cap h cedilla"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E2A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter h with breve below",
+   "alternative": "latin capital letter h breve below",
+   "short": "cap h breve below"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E2C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter i with tilde below",
+   "alternative": "latin capital letter i tilde below",
+   "short": "cap i tilde below"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E30",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter k with acute",
+   "alternative": "latin capital letter k acute",
+   "short": "cap k acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E32",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter k with dot below",
+   "alternative": "latin capital letter k underdot",
+   "short": "cap k underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E34",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter k with line below",
+   "alternative": "latin capital letter k underbar",
+   "short": "cap k underbar"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E36",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter l with dot below",
+   "alternative": "latin capital letter l underdot",
+   "short": "cap l underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E3A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter l with line below",
+   "alternative": "latin capital letter l underbar",
+   "short": "cap l underbar"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E3C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter l with circumflex below",
+   "alternative": "latin capital letter l underhat",
+   "short": "cap l underhat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E3E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter m with acute",
+   "alternative": "latin capital letter m acute",
+   "short": "cap m acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E40",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter m with dot above",
+   "alternative": "latin capital letter m overdot",
+   "short": "cap m overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E42",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter m with dot below",
+   "alternative": "latin capital letter m underdot",
+   "short": "cap m underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E44",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter n with dot above",
+   "alternative": "latin capital letter n overdot",
+   "short": "cap n overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E46",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter n with dot below",
+   "alternative": "latin capital letter n underdot",
+   "short": "cap n underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E48",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter n with line below",
+   "alternative": "latin capital letter n underbar",
+   "short": "cap n underbar"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E4A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter n with circumflex below",
+   "alternative": "latin capital letter n underhat",
+   "short": "cap n underhat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E54",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter p with acute",
+   "alternative": "latin capital letter p acute",
+   "short": "cap p acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E56",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter p with dot above",
+   "alternative": "latin capital letter p overdot",
+   "short": "cap p overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E58",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter r with dot above",
+   "alternative": "latin capital letter r overdot",
+   "short": "cap r overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E5A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter r with dot below",
+   "alternative": "latin capital letter r underdot",
+   "short": "cap r underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E5E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter r with line below",
+   "alternative": "latin capital letter r underbar",
+   "short": "cap r underbar"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E60",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter s with dot above",
+   "alternative": "latin capital letter s overdot",
+   "short": "cap s overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E62",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter s with dot below",
+   "alternative": "latin capital letter s underdot",
+   "short": "cap s underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E6A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter t with dot above",
+   "alternative": "latin capital letter t overdot",
+   "short": "cap t overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E6C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter t with dot below",
+   "alternative": "latin capital letter t underdot",
+   "short": "cap t underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E6E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter t with line below",
+   "alternative": "latin capital letter t underbar",
+   "short": "cap t underbar"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E70",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter t with circumflex below",
+   "alternative": "latin capital letter t underhat",
+   "short": "cap t underhat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E72",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with diaeresis below",
+   "alternative": "latin capital letter u double underdot",
+   "short": "cap u double underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E74",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with tilde below",
+   "alternative": "latin capital letter u tilde below",
+   "short": "cap u tilde below"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E76",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with circumflex below",
+   "alternative": "latin capital letter u underhat",
+   "short": "cap u underhat"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E7C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter v with tilde",
+   "alternative": "latin capital letter v tilde",
+   "short": "cap v tilde"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E7E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter v with dot below",
+   "alternative": "latin capital letter v underdot",
+   "short": "cap v underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E80",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter w with grave",
+   "alternative": "latin capital letter w grave",
+   "short": "cap w grave"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E82",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter w with acute",
+   "alternative": "latin capital letter w acute",
+   "short": "cap w acute"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E84",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter w with diaeresis",
+   "alternative": "latin capital letter w double overdot",
+   "short": "cap w double overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E86",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter w with dot above",
+   "alternative": "latin capital letter w overdot",
+   "short": "cap w overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E88",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter w with dot below",
+   "alternative": "latin capital letter w underdot",
+   "short": "cap w underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E8A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter x with dot above",
+   "alternative": "latin capital letter x overdot",
+   "short": "cap x overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E8C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter x with diaeresis",
+   "alternative": "latin capital letter x double overdot",
+   "short": "cap x double overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E8E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter y with dot above",
+   "alternative": "latin capital letter y overdot",
+   "short": "cap y overdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E90",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter z with circumflex",
+   "alternative": "latin capital letter z circumflex",
+   "short": "cap z circumflex"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E92",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter z with dot below",
+   "alternative": "latin capital letter z underdot",
+   "short": "cap z underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1E94",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter z with line below",
+   "alternative": "latin capital letter z underbar",
+   "short": "cap z underbar"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1EA0",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter with a dot below",
+   "alternative": "latin capital letter with a underdot",
+   "short": "cap a underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1EA2",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter a with hook above",
+   "alternative": "latin capital letter a hook",
+   "short": "cap a hook"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1EB8",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with dot below",
+   "alternative": "latin capital letter e underdot",
+   "short": "cap e underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1EBA",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with hook above",
+   "alternative": "latin capital letter e hook",
+   "short": "cap e hook"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1EBC",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter e with tilde",
+   "alternative": "latin capital letter e tilde",
+   "short": "cap e tilde"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1EC8",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter i with hook above",
+   "alternative": "latin capital letter i hook",
+   "short": "cap i hook"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1ECA",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter i with dot below",
+   "alternative": "latin capital letter i underdot",
+   "short": "cap i underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1ECC",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter o with dot below",
+   "alternative": "latin capital letter o underdot",
+   "short": "cap o underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1ECE",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter o with hook above",
+   "alternative": "latin capital letter o hook",
+   "short": "cap o hook"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1EE4",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with dot below",
+   "alternative": "latin capital letter u underdot",
+   "short": "cap u underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1EE6",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter u with hook above",
+   "alternative": "latin capital letter u hook",
+   "short": "cap u hook"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1EF2",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter y with grave",
+   "alternative": "latin capital letter y grave",
+   "short": "cap y grave"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1EF4",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter y with dot below",
+   "alternative": "latin capital letter y underdot",
+   "short": "cap y underdot"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1EF6",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter y with hook above",
+   "alternative": "latin capital letter y hook",
+   "short": "cap y hook"
+  }}},
+{"category": "Lu",
+ "names": [],
+ "key": "1EF8",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin capital letter y with tilde",
+   "alternative": "latin capital letter y tilde",
+   "short": "cap y tilde"
+  }}}
+]

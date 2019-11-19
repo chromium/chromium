@@ -9,14 +9,10 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DimenRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.Px;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewCompat;
@@ -24,13 +20,21 @@ import android.support.v7.content.res.AppCompatResources;
 import android.util.StateSet;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.Px;
+
 import org.chromium.ui.R;
 
 /**
  * A helper class to create and maintain a background drawable with customized background color,
  * ripple color, and corner radius.
  */
-class RippleBackgroundHelper {
+// TODO(jdemeulenaere): Make this class package-private once it is not accessed by {@link
+// org.chromium.chrome.browser.autofill_assistant.carousel.ButtonView} anymore.
+public class RippleBackgroundHelper {
     private static final int[] STATE_SET_PRESSED = {android.R.attr.state_pressed};
     private static final int[] STATE_SET_SELECTED = {android.R.attr.state_selected};
     private static final int[] STATE_SET_SELECTED_PRESSED = {
@@ -52,11 +56,13 @@ class RippleBackgroundHelper {
      * @param backgroundColorResId The resource id of the background color.
      * @param rippleColorResId The resource id of the ripple color.
      * @param cornerRadius The corner radius in pixels of the background drawable.
+     * @param verticalInset The vertical inset of the background drawable.
      */
     RippleBackgroundHelper(View view, @ColorRes int backgroundColorResId,
-            @ColorRes int rippleColorResId, @Px int cornerRadius) {
+            @ColorRes int rippleColorResId, @Px int cornerRadius, @Px int verticalInset) {
         this(view, backgroundColorResId, rippleColorResId, cornerRadius,
-                android.R.color.transparent, R.dimen.default_ripple_background_border_size);
+                android.R.color.transparent, R.dimen.default_ripple_background_border_size,
+                verticalInset);
     }
 
     /**
@@ -66,10 +72,13 @@ class RippleBackgroundHelper {
      * @param cornerRadius The corner radius in pixels of the background drawable.
      * @param borderColorResId The resource id of the border color.
      * @param borderSizeDimenId The resource id of the border size.
+     * @param verticalInset The vertical inset of the background drawable.
      */
-    RippleBackgroundHelper(View view, @ColorRes int backgroundColorResId,
+    // TODO(jdemeulenaere): Make this constructor package-private once it is not accessed by {@link
+    // org.chromium.chrome.browser.autofill_assistant.carousel.ButtonView} anymore.
+    public RippleBackgroundHelper(View view, @ColorRes int backgroundColorResId,
             @ColorRes int rippleColorResId, @Px int cornerRadius, @ColorRes int borderColorResId,
-            @DimenRes int borderSizeDimenId) {
+            @DimenRes int borderSizeDimenId, @Px int verticalInset) {
         mView = view;
 
         int paddingStart = ViewCompat.getPaddingStart(mView);
@@ -79,7 +88,8 @@ class RippleBackgroundHelper {
         mView.setBackground(createBackgroundDrawable(
                 AppCompatResources.getColorStateList(view.getContext(), rippleColorResId),
                 AppCompatResources.getColorStateList(view.getContext(), borderColorResId),
-                view.getResources().getDimensionPixelSize(borderSizeDimenId), cornerRadius));
+                view.getResources().getDimensionPixelSize(borderSizeDimenId), cornerRadius,
+                verticalInset));
         setBackgroundColor(
                 AppCompatResources.getColorStateList(view.getContext(), backgroundColorResId));
 
@@ -97,10 +107,12 @@ class RippleBackgroundHelper {
      * @param borderColorList A {@link ColorStateList} that is used for the border.
      * @param borderSize The border width in pixels.
      * @param cornerRadius The corner radius in pixels.
+     * @param verticalInset The vertical inset of the background drawable.
      * @return The {@link GradientDrawable}/{@link LayerDrawable} to be used as ripple background.
      */
     private Drawable createBackgroundDrawable(ColorStateList rippleColorList,
-            ColorStateList borderColorList, @Px int borderSize, @Px int cornerRadius) {
+            ColorStateList borderColorList, @Px int borderSize, @Px int cornerRadius,
+            @Px int verticalInset) {
         mBackgroundGradient = new GradientDrawable();
         mBackgroundGradient.setCornerRadius(cornerRadius);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -108,8 +120,10 @@ class RippleBackgroundHelper {
             GradientDrawable mask = new GradientDrawable();
             mask.setCornerRadius(cornerRadius);
             mask.setColor(Color.WHITE);
-            return new RippleDrawable(
-                    convertToRippleDrawableColorList(rippleColorList), mBackgroundGradient, mask);
+            return wrapDrawableWithInsets(
+                    new RippleDrawable(convertToRippleDrawableColorList(rippleColorList),
+                            mBackgroundGradient, mask),
+                    verticalInset);
         }
 
         // Pre-L, create a background drawable and overlay it by a ripple drawable.
@@ -119,7 +133,9 @@ class RippleBackgroundHelper {
         mRippleDrawablePreL = DrawableCompat.wrap(rippleGradient);
         DrawableCompat.setTintList(mRippleDrawablePreL, rippleColorList);
         if (borderSize == 0) {
-            return new LayerDrawable(new Drawable[] {mBackgroundDrawablePreL, mRippleDrawablePreL});
+            return wrapDrawableWithInsets(new LayerDrawable(new Drawable[] {
+                                                  mBackgroundDrawablePreL, mRippleDrawablePreL}),
+                    verticalInset);
         }
 
         // If the background is overlaid by a border. The border is in a separate GradientDrawable
@@ -132,8 +148,19 @@ class RippleBackgroundHelper {
                         mView.getDrawableState(), borderColorList.getDefaultColor()));
         mBorderDrawablePreL = DrawableCompat.wrap(borderGradient);
         DrawableCompat.setTintList(mBorderDrawablePreL, borderColorList);
-        return new LayerDrawable(
-                new Drawable[] {mBackgroundDrawablePreL, mBorderDrawablePreL, mRippleDrawablePreL});
+        return wrapDrawableWithInsets(new LayerDrawable(new Drawable[] {mBackgroundDrawablePreL,
+                                              mBorderDrawablePreL, mRippleDrawablePreL}),
+                verticalInset);
+    }
+
+    /**
+     * @param drawable The {@link Drawable} that needs to be wrapped with insets.
+     * @param verticalInset The vertical inset for the specified drawable.
+     * @return A {@link Drawable} that wraps the specified drawable with the specified inset.
+     */
+    private static Drawable wrapDrawableWithInsets(Drawable drawable, @Px int verticalInset) {
+        if (verticalInset == 0) return drawable;
+        return new InsetDrawable(drawable, 0, verticalInset, 0, verticalInset);
     }
 
     /**
@@ -155,7 +182,9 @@ class RippleBackgroundHelper {
      * Called from the view when drawable state is changed to update the state of the background
      * color and the ripple color for pre-L versions.
      */
-    void onDrawableStateChanged() {
+    // TODO(jdemeulenaere): Make this method package-private once it is not accessed by {@link
+    // org.chromium.chrome.browser.autofill_assistant.carousel.ButtonView} anymore.
+    public void onDrawableStateChanged() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) return;
 
         int[] state = mView.getDrawableState();

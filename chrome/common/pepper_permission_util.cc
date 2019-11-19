@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/sha1.h"
+#include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "extensions/common/constants.h"

@@ -6,14 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_V8_INSPECTOR_STRING_H_
 
 #include <memory>
-#include <vector>
 
+#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
@@ -38,11 +38,7 @@ class Value;
 
 using String = WTF::String;
 using StringBuilder = WTF::StringBuilder;
-
-struct ProtocolMessage {
-  String json;
-  std::vector<uint8_t> binary;
-};
+using ProtocolMessage = WebVector<uint8_t>;
 
 class CORE_EXPORT StringUtil {
   STATIC_ONLY(StringUtil);
@@ -83,14 +79,12 @@ class CORE_EXPORT StringUtil {
     return builder.ToString();
   }
   static std::unique_ptr<protocol::Value> parseJSON(const String&);
-  static ProtocolMessage jsonToMessage(const String& message);
-  static ProtocolMessage binaryToMessage(std::vector<uint8_t> message);
 
   static String fromUTF8(const uint8_t* data, size_t length) {
     return String::FromUTF8(reinterpret_cast<const char*>(data), length);
   }
 
-  static String fromUTF16(const uint16_t* data, size_t length);
+  static String fromUTF16LE(const uint16_t* data, size_t length);
 
   static const uint8_t* CharactersLatin1(const String& s) {
     if (!s.Is8Bit())
@@ -134,7 +128,7 @@ class CORE_EXPORT Binary {
       std::unique_ptr<v8::ScriptCompiler::CachedData> data);
 
  private:
-  explicit Binary(scoped_refptr<Impl> impl) : impl_(impl) {}
+  explicit Binary(scoped_refptr<Impl> impl) : impl_(std::move(impl)) {}
   scoped_refptr<Impl> impl_;
 };
 }  // namespace protocol

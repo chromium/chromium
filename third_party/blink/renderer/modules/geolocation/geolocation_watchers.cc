@@ -74,7 +74,7 @@ void GeolocationWatchers::Swap(GeolocationWatchers& other) {
 }
 
 void GeolocationWatchers::CopyNotifiersToVector(
-    HeapVector<TraceWrapperMember<GeoNotifier>>& vector) const {
+    HeapVector<Member<GeoNotifier>>& vector) const {
   CopyValuesToVector(id_to_notifier_map_, vector);
 }
 

@@ -5,9 +5,6 @@
 import("//build/config/android/rules.gni")
 
 android_library("kb_java") {
-  deps = [
-    "//base:base_java",
-  ]
   srcjar_deps = [ ":aidl" ]
 }
 

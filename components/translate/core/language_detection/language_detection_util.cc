@@ -15,9 +15,9 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/language/core/common/language_util.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_metrics.h"
-#include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/chinese_script_classifier.h"
 #include "third_party/cld_3/src/src/nnet_language_identifier.h"
 
@@ -63,7 +63,7 @@ void ApplyLanguageCodeCorrection(std::string* code) {
     return;
   }
 
-  translate::ToTranslateLanguageSynonym(code);
+  language::ToTranslateLanguageSynonym(code);
 }
 
 // Returns the ISO 639 language code of the specified |text|, or 'unknown' if it
@@ -175,7 +175,7 @@ std::string DeterminePageLanguage(const std::string& code,
     *cld_language_p = cld_language;
   if (is_cld_reliable_p != nullptr)
     *is_cld_reliable_p = is_cld_reliable;
-  translate::ToTranslateLanguageSynonym(&cld_language);
+  language::ToTranslateLanguageSynonym(&cld_language);
 
   // Adopt |modified_html_lang| if it is valid. Otherwise, adopt
   // |modified_code|.

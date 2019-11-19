@@ -235,8 +235,8 @@ const QuotesData* QuotesDataForLanguage(const AtomicString& lang) {
 
   // This could be just a hash table, but doing that adds 200k to LayoutQuote.o
   Language* languages_end = g_languages + base::size(g_languages);
-  CString lowercase_lang = lang.DeprecatedLower().Utf8();
-  Language key = {lowercase_lang.data(), 0, 0, 0, 0, nullptr};
+  std::string lowercase_lang = lang.LowerASCII().Utf8();
+  Language key = {lowercase_lang.c_str(), 0, 0, 0, 0, nullptr};
   Language* match = std::lower_bound(g_languages, languages_end, key);
   if (match == languages_end || strcmp(match->lang, key.lang))
     return nullptr;
@@ -267,12 +267,14 @@ void LayoutQuote::UpdateText() {
 
   LayoutTextFragment* fragment = FindFragmentChild();
   if (fragment) {
-    fragment->SetStyle(MutableStyle());
+    fragment->SetStyle(Style());
     fragment->SetContentString(text_.Impl());
   } else {
-    fragment = LayoutTextFragment::CreateAnonymous(*Style(), *owning_pseudo_,
-                                                   text_.Impl());
-    fragment->SetStyle(MutableStyle());
+    LegacyLayout legacy =
+        ForceLegacyLayout() ? LegacyLayout::kForce : LegacyLayout::kAuto;
+    fragment = LayoutTextFragment::CreateAnonymous(*owning_pseudo_,
+                                                   text_.Impl(), legacy);
+    fragment->SetStyle(Style());
     AddChild(fragment);
   }
 }

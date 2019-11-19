@@ -14,13 +14,6 @@ class ChromeTypographyProvider : public views::TypographyProvider {
  public:
   ChromeTypographyProvider() = default;
 
-#if defined(OS_WIN)
-  // Returns the expected platform font height for the current system
-  // configuration. Different configurations can produce slightly different
-  // results.
-  static int GetPlatformFontHeight(int font_context);
-#endif
-
   // TypographyProvider:
   const gfx::FontList& GetFont(int context, int style) const override;
   SkColor GetColor(const views::View& view,

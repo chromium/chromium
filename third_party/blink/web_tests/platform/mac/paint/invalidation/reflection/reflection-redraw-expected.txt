@@ -1,99 +1,88 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "InlineTextBox 'The color of this'",
+          "object": "NGPhysicalTextFragment 'The color of this'",
           "rect": [379, 267, 288, 72],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'green'",
+          "object": "NGPhysicalTextFragment 'green'",
           "rect": [379, 267, 288, 72],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'reflection should be'",
+          "object": "NGPhysicalTextFragment 'reflection should be'",
           "rect": [379, 267, 288, 72],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'text in the'",
+          "object": "NGPhysicalTextFragment 'text in the'",
           "rect": [379, 267, 288, 72],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'The color of this'",
+          "object": "NGPhysicalTextFragment 'The color of this'",
           "rect": [69, 267, 288, 72],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'green'",
+          "object": "NGPhysicalTextFragment 'green'",
           "rect": [69, 267, 288, 72],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'reflection should be'",
+          "object": "NGPhysicalTextFragment 'reflection should be'",
           "rect": [69, 267, 288, 72],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'text in the'",
+          "object": "NGPhysicalTextFragment 'text in the'",
           "rect": [69, 267, 288, 72],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'The color of this'",
+          "object": "NGPhysicalTextFragment 'The color of this'",
           "rect": [304, 21, 128, 208],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'green'",
+          "object": "NGPhysicalTextFragment 'green'",
           "rect": [304, 21, 128, 208],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'reflection should be'",
+          "object": "NGPhysicalTextFragment 'reflection should be'",
           "rect": [304, 21, 128, 208],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'text in the'",
+          "object": "NGPhysicalTextFragment 'text in the'",
           "rect": [304, 21, 128, 208],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'The color of this'",
+          "object": "NGPhysicalTextFragment 'The color of this'",
           "rect": [304, 377, 128, 156],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'green'",
+          "object": "NGPhysicalTextFragment 'green'",
           "rect": [304, 377, 128, 156],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'reflection should be'",
+          "object": "NGPhysicalTextFragment 'reflection should be'",
           "rect": [304, 377, 128, 156],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'text in the'",
+          "object": "NGPhysicalTextFragment 'text in the'",
           "rect": [304, 377, 128, 156],
           "reason": "style change"
         }

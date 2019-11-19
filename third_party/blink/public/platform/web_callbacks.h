@@ -49,27 +49,11 @@ class WebCallbacks {
   virtual void OnError(T) {}
 };
 
-template <typename T>
-class WebCallbacks<void, T> {
- public:
-  virtual ~WebCallbacks() = default;
-  virtual void OnSuccess() {}
-  virtual void OnError(T) {}
-};
-
 template <typename S>
 class WebCallbacks<S, void> {
  public:
   virtual ~WebCallbacks() = default;
   virtual void OnSuccess(S) {}
-  virtual void OnError() {}
-};
-
-template <>
-class WebCallbacks<void, void> {
- public:
-  virtual ~WebCallbacks() = default;
-  virtual void OnSuccess() {}
   virtual void OnError() {}
 };
 

@@ -9,9 +9,9 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_container.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -90,7 +90,7 @@ ServiceWorkerContainer* NavigatorServiceWorker::GetOrCreateContainer(
            ->GetSecurityOrigin()
            ->CanAccessServiceWorkers()) {
     String error_message;
-    if (frame->GetSecurityContext()->IsSandboxed(kSandboxOrigin)) {
+    if (frame->GetSecurityContext()->IsSandboxed(WebSandboxFlags::kOrigin)) {
       error_message =
           "Service worker is disabled because the context is sandboxed and "
           "lacks the 'allow-same-origin' flag.";

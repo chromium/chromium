@@ -18,6 +18,32 @@
 
 #pragma mark - Colors
 
++ (UIColor*)dialogBackgroundColor {
+  return UIColor.whiteColor;
+}
+
++ (UIColor*)dialogTextColor {
+  return UIColor.blackColor;
+}
+
++ (UIColor*)dialogPrimaryButtonTextColor {
+  static UIColor* color;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    color = [UIColor colorWithRed:0.29 green:0.58 blue:0.96 alpha:1.0];
+  });
+  return color;
+}
+
++ (UIColor*)dialogSecondaryButtonTextColor {
+  static UIColor* color;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    color = [UIColor colorWithWhite:0.25f alpha:1.f];
+  });
+  return color;
+}
+
 + (UIColor*)firstLaunchViewBackgroundColor {
   return UIColor.whiteColor;
 }

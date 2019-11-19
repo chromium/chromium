@@ -25,6 +25,12 @@ struct GeneralizedTime;
 NET_EXPORT bool EncodeTimeAsGeneralizedTime(const base::Time& time,
                                             GeneralizedTime* generalized_time);
 
+// Converts a GeneralizedTime struct to a base::Time, returning true on success
+// or false if |generalized| was invalid or cannot be represented by
+// base::Time.
+NET_EXPORT bool GeneralizedTimeToTime(const der::GeneralizedTime& generalized,
+                                      base::Time* result);
+
 static const size_t kGeneralizedTimeLength = 15;
 
 // Encodes |time| to |out| as a DER GeneralizedTime value. Returns true on

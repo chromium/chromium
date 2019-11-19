@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> gestiona aquest dispositiu i és possible que pugui supervisar la teva activitat.</translation>
 <translation id="1510238584712386396">Menú d'aplicacions</translation>
 <translation id="1734367976349034509">Aquest dispositiu està gestionat per una empresa</translation>
+<translation id="1930797645656624981">Servei del mètode d'introducció de text a Chrome OS</translation>
+<translation id="1979103255016296513">Canvi de contrasenya vençut</translation>
 <translation id="2049639323467105390">Aquest dispositiu està gestionat per <ph name="DOMAIN" /></translation>
 <translation id="2083960536266308407">No s'ha trobat res a la pantalla</translation>
 <translation id="2338501278241028356">Activa el Bluetooth per detectar dispositius propers</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2872961005593481000">Apaga</translation>
-<translation id="3147142846278915599">Launcher (s'estan sincronitzant les aplicacions...)</translation>
+<translation id="3008341117444806826">ACTUALITZA</translation>
+<translation id="3838338534323494292">Contrasenya nova</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>
+<translation id="4227825898293920515">La contrasenya caduca d'aquí a <ph name="TIME" /></translation>
+<translation id="4429881212383817840">El tiquet de Kerberos caducarà aviat</translation>
+<translation id="445059817448385655">Contrasenya antiga</translation>
+<translation id="467510802200863975">Les contrasenyes no coincideixen</translation>
 <translation id="4731797938093519117">Accés parental</translation>
+<translation id="4890353053343094602">Tria'n una de nova immediatament</translation>
 <translation id="5212543919916444558">No he trobat res a la pantalla amb què et pugui ajudar.
 Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
+<translation id="5317780077021120954">Desa</translation>
+<translation id="5332948983412042822">Tria'n una de nova ara</translation>
 <translation id="5457599981699367932">Navega com a convidat</translation>
 <translation id="54609108002486618">Gestionat</translation>
 <translation id="5832805196449965646">Afegeix una persona</translation>
 <translation id="5895138241574237353">Reinicia</translation>
+<translation id="6058625436358447366">Per acabar, introdueix la contrasenya antiga i la nova</translation>
+<translation id="6106186594183574873">Per acabar, introdueix la contrasenya antiga</translation>
+<translation id="6146993107019042706">Per acabar, introdueix la contrasenya nova</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
+<translation id="7690294790491645610">Confirma la contrasenya nova</translation>
+<translation id="808894953321890993">Canvia la contrasenya</translation>
+<translation id="8747900814994928677">Confirma el canvi</translation>
+<translation id="910415269708673980">Actualitza el tiquet de: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Desbloqueja</translation>
 </translationbundle>

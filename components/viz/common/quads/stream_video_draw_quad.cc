@@ -12,6 +12,9 @@
 namespace viz {
 
 StreamVideoDrawQuad::StreamVideoDrawQuad() = default;
+StreamVideoDrawQuad::~StreamVideoDrawQuad() = default;
+StreamVideoDrawQuad::StreamVideoDrawQuad(const StreamVideoDrawQuad& quad) =
+    default;
 
 void StreamVideoDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                                  const gfx::Rect& rect,
@@ -21,8 +24,8 @@ void StreamVideoDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                                  gfx::Size resource_size_in_pixels,
                                  const gfx::PointF& uv_top_left,
                                  const gfx::PointF& uv_bottom_right) {
-  DrawQuad::SetAll(shared_quad_state, DrawQuad::STREAM_VIDEO_CONTENT, rect,
-                   visible_rect, needs_blending);
+  DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kStreamVideoContent,
+                   rect, visible_rect, needs_blending);
   resources.ids[kResourceIdIndex] = resource_id;
   overlay_resources.size_in_pixels[kResourceIdIndex] = resource_size_in_pixels;
   resources.count = 1;
@@ -38,8 +41,8 @@ void StreamVideoDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                                  gfx::Size resource_size_in_pixels,
                                  const gfx::PointF& uv_top_left,
                                  const gfx::PointF& uv_bottom_right) {
-  DrawQuad::SetAll(shared_quad_state, DrawQuad::STREAM_VIDEO_CONTENT, rect,
-                   visible_rect, needs_blending);
+  DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kStreamVideoContent,
+                   rect, visible_rect, needs_blending);
   resources.ids[kResourceIdIndex] = resource_id;
   overlay_resources.size_in_pixels[kResourceIdIndex] = resource_size_in_pixels;
   resources.count = 1;
@@ -49,7 +52,7 @@ void StreamVideoDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
 
 const StreamVideoDrawQuad* StreamVideoDrawQuad::MaterialCast(
     const DrawQuad* quad) {
-  DCHECK(quad->material == DrawQuad::STREAM_VIDEO_CONTENT);
+  DCHECK(quad->material == DrawQuad::Material::kStreamVideoContent);
   return static_cast<const StreamVideoDrawQuad*>(quad);
 }
 

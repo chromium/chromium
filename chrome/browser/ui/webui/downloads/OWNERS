@@ -1,6 +1,5 @@
 file://components/download/OWNERS
 
-asanka@chromium.org
 dbeam@chromium.org
 
 per-file *.mojom=set noparent

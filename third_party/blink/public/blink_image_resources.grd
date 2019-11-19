@@ -13,8 +13,6 @@
       <structure type="chrome_scaled_image" name="IDR_BROKENIMAGE" file="blink/broken_image.png" />
       <structure type="chrome_scaled_image" name="IDR_SEARCH_CANCEL" file="blink/search_cancel.png" />
       <structure type="chrome_scaled_image" name="IDR_SEARCH_CANCEL_PRESSED" file="blink/search_cancel_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_PASSWORD_GENERATION_ICON" file="blink/password_generation.png" />
-      <structure type="chrome_scaled_image" name="IDR_PASSWORD_GENERATION_ICON_HOVER" file="blink/password_generation_hover.png" />
       <structure type="chrome_scaled_image" name="IDR_PLACEHOLDER_ICON" file="blink/placeholder_icon.png" />
     </structures>
   </release>

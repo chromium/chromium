@@ -1,0 +1,25 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/native-file-system/#filesystemhandle
+[
+    Exposed=(Window,Worker),
+    SecureContext,
+    Serializable,
+    RuntimeEnabled=NativeFileSystem,
+    ImplementedAs=NativeFileSystemHandle
+] interface FileSystemHandle {
+    // Brand checking APIs because javascript makes it otherwise really hard to
+    // figure out what type an object is when you don't know in which global
+    // (i.e. iframe) the object was created.
+    readonly attribute boolean isFile;
+    readonly attribute boolean isDirectory;
+
+    readonly attribute USVString name;
+
+    [CallWith=ScriptState] Promise<PermissionState> queryPermission(
+        optional FileSystemHandlePermissionDescriptor descriptor);
+    [CallWith=ScriptState] Promise<PermissionState> requestPermission(
+        optional FileSystemHandlePermissionDescriptor descriptor);
+};

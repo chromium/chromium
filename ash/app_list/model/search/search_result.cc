@@ -11,17 +11,18 @@
 #include "ash/public/cpp/app_list/tokenized_string_match.h"
 #include "ui/base/models/menu_model.h"
 
-namespace app_list {
+namespace ash {
 
 SearchResult::SearchResult()
-    : metadata_(ash::mojom::SearchResultMetadata::New()) {}
+    : metadata_(std::make_unique<ash::SearchResultMetadata>()) {}
 
 SearchResult::~SearchResult() {
   for (auto& observer : observers_)
     observer.OnResultDestroying();
 }
 
-void SearchResult::SetMetadata(ash::mojom::SearchResultMetadataPtr metadata) {
+void SearchResult::SetMetadata(
+    std::unique_ptr<ash::SearchResultMetadata> metadata) {
   metadata_ = std::move(metadata);
   for (auto& observer : observers_)
     observer.OnMetadataChanged();
@@ -104,4 +105,4 @@ void SearchResult::Open(int event_flags) {}
 
 void SearchResult::InvokeAction(int action_index, int event_flags) {}
 
-}  // namespace app_list
+}  // namespace ash

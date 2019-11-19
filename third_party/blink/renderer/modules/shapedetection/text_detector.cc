@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/shapedetection/text_detector.h"
 
-#include "services/service_manager/public/cpp/interface_provider.h"
+#include <utility>
+
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
@@ -12,6 +14,7 @@
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/modules/imagecapture/point_2d.h"
 #include "third_party/blink/renderer/modules/shapedetection/detected_text.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -22,12 +25,10 @@ TextDetector* TextDetector::Create(ExecutionContext* context) {
 TextDetector::TextDetector(ExecutionContext* context) : ShapeDetector() {
   // See https://bit.ly/2S0zRAS for task types.
   auto task_runner = context->GetTaskRunner(TaskType::kMiscPlatformAPI);
-  auto request = mojo::MakeRequest(&text_service_, task_runner);
-  if (auto* interface_provider = context->GetInterfaceProvider()) {
-    interface_provider->GetInterface(std::move(request));
-  }
+  context->GetBrowserInterfaceBroker().GetInterface(
+      text_service_.BindNewPipeAndPassReceiver(task_runner));
 
-  text_service_.set_connection_error_handler(WTF::Bind(
+  text_service_.set_disconnect_handler(WTF::Bind(
       &TextDetector::OnTextServiceConnectionError, WrapWeakPersistent(this)));
 }
 
@@ -35,9 +36,9 @@ ScriptPromise TextDetector::DoDetect(ScriptPromiseResolver* resolver,
                                      SkBitmap bitmap) {
   ScriptPromise promise = resolver->Promise();
   if (!text_service_) {
-    resolver->Reject(
-        DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                             "Text detection service unavailable."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "Text detection service unavailable."));
     return promise;
   }
   text_service_requests_.insert(resolver);
@@ -64,7 +65,7 @@ void TextDetector::OnDetectText(
       point->setY(corner_point.y);
       corner_points.push_back(point);
     }
-    detected_text.push_back(DetectedText::Create(
+    detected_text.push_back(MakeGarbageCollected<DetectedText>(
         text->raw_value,
         DOMRectReadOnly::Create(text->bounding_box.x, text->bounding_box.y,
                                 text->bounding_box.width,
@@ -77,8 +78,9 @@ void TextDetector::OnDetectText(
 
 void TextDetector::OnTextServiceConnectionError() {
   for (const auto& request : text_service_requests_) {
-    request->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                         "Text Detection not implemented."));
+    request->Reject(
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
+                                           "Text Detection not implemented."));
   }
   text_service_requests_.clear();
   text_service_.reset();

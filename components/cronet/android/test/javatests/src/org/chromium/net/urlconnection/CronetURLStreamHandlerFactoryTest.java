@@ -8,19 +8,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule;
 
 /**
  * Test for CronetURLStreamHandlerFactory.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 @SuppressWarnings("deprecation")
 public class CronetURLStreamHandlerFactoryTest {
     @Rule

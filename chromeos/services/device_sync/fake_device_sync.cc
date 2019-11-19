@@ -39,12 +39,27 @@ void FakeDeviceSync::InvokePendingSetSoftwareFeatureStateCallback(
   set_software_feature_state_callback_queue_.pop();
 }
 
+void FakeDeviceSync::InvokePendingSetFeatureStatusCallback(
+    mojom::NetworkRequestResult result_code) {
+  std::move(set_feature_status_callback_queue_.front()).Run(result_code);
+  set_feature_status_callback_queue_.pop();
+}
+
 void FakeDeviceSync::InvokePendingFindEligibleDevicesCallback(
     mojom::NetworkRequestResult result_code,
     mojom::FindEligibleDevicesResponsePtr find_eligible_devices_response_ptr) {
   std::move(find_eligible_devices_callback_queue_.front())
       .Run(result_code, std::move(find_eligible_devices_response_ptr));
   find_eligible_devices_callback_queue_.pop();
+}
+
+void FakeDeviceSync::InvokePendingGetDevicesActivityStatusCallback(
+    mojom::NetworkRequestResult result_code,
+    base::Optional<std::vector<mojom::DeviceActivityStatusPtr>>
+        get_devices_activity_status_response) {
+  std::move(get_devices_activity_status_callback_queue_.front())
+      .Run(result_code, std::move(get_devices_activity_status_response));
+  get_devices_activity_status_callback_queue_.pop();
 }
 
 void FakeDeviceSync::InvokePendingGetDebugInfoCallback(
@@ -80,6 +95,13 @@ void FakeDeviceSync::SetSoftwareFeatureState(
   set_software_feature_state_callback_queue_.push(std::move(callback));
 }
 
+void FakeDeviceSync::SetFeatureStatus(const std::string& device_instance_id,
+                                      multidevice::SoftwareFeature feature,
+                                      FeatureStatusChange status_change,
+                                      SetFeatureStatusCallback callback) {
+  set_feature_status_callback_queue_.push(std::move(callback));
+}
+
 void FakeDeviceSync::FindEligibleDevices(
     multidevice::SoftwareFeature software_feature,
     FindEligibleDevicesCallback callback) {
@@ -88,6 +110,11 @@ void FakeDeviceSync::FindEligibleDevices(
 
 void FakeDeviceSync::GetDebugInfo(GetDebugInfoCallback callback) {
   get_debug_info_callback_queue_.push(std::move(callback));
+}
+
+void FakeDeviceSync::GetDevicesActivityStatus(
+    GetDevicesActivityStatusCallback callback) {
+  get_devices_activity_status_callback_queue_.push(std::move(callback));
 }
 
 }  // namespace device_sync

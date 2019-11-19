@@ -1,39 +1,18 @@
-<html>
-<head>
-<script src="../../resources/js-test.js"></script>
-</head>
-<body>
-<p id="description"></p>
-<div id="console"></div>
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
+test(() => {
+  var ev = document.createEvent('AnimationEvent');
+  assert_equals(typeof(ev), 'object');
+  assert_equals(ev.animationName, '');
+  assert_equals(ev.elapsedTime, 0.0);
+}, "Test creation of AnimationEvent");
 
-description("Test dynamic creation of AnimationEvent.");
-
-if (document.createEvent)
-    testPassed("document.createEvent exists");
-else
-    testFailed("document.createEvent missing");
-
-debug("");
-debug("Test creation of AnimationEvent");
-
-var ev = document.createEvent("AnimationEvent");
-
-shouldBe("typeof(ev)", "'object'");
-shouldBe("ev.animationName", "''");
-shouldBe("ev.elapsedTime", "0.0");
-
-debug("");
-debug("Create a MouseEvent and make sure it doesn't have AnimationEvent properties");
-
-ev = document.createEvent("MouseEvent");
-
-shouldBe("typeof(ev)", "'object'");
-shouldBe("ev.animationName", "undefined");
-shouldBe("ev.elapsedTime", "undefined");
-
-debug("");
-
+test(() => {
+  ev = document.createEvent('MouseEvent');
+  assert_equals(typeof(ev), 'object');
+  assert_equals(ev.animationName, undefined);
+  assert_equals(ev.elapsedTime, undefined);
+}, "Create a MouseEvent and make sure it doesn't have AnimationEvent properties");
 </script>
-</body>
-</html>

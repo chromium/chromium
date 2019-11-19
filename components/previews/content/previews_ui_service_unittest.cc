@@ -10,7 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "components/blacklist/opt_out_blacklist/opt_out_blacklist_data.h"
 #include "components/previews/content/previews_decider_impl.h"
@@ -214,7 +214,7 @@ class PreviewsUIServiceTest : public testing::Test {
 
  protected:
   // Run this test on a single thread.
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   TestPreviewsLogger* logger_ptr_;
   network::TestNetworkQualityTracker test_network_quality_tracker_;
 
@@ -233,7 +233,7 @@ TEST_F(PreviewsUIServiceTest, TestInitialization) {
 
 TEST_F(PreviewsUIServiceTest, TestLogPreviewNavigationPassInCorrectParams) {
   const GURL url_a = GURL("http://www.url_a.com/url_a");
-  const PreviewsType type_a = PreviewsType::LOFI;
+  const PreviewsType type_a = PreviewsType::LITE_PAGE;
   const bool opt_out_a = true;
   const base::Time time_a = base::Time::Now();
   const uint64_t page_id_a = 1234;
@@ -298,9 +298,9 @@ TEST_F(PreviewsUIServiceTest, TestLogPreviewDecisionMadePassesCorrectParams) {
       PreviewsEligibilityReason::NETWORK_NOT_SLOW;
   const GURL url_b("http://www.url_b.com/url_b");
   const base::Time time_b = base::Time::Now();
-  PreviewsType type_b = PreviewsType::LOFI;
+  PreviewsType type_b = PreviewsType::OFFLINE;
   std::vector<PreviewsEligibilityReason> passed_reasons_b = {
-      PreviewsEligibilityReason::HOST_NOT_WHITELISTED_BY_SERVER,
+      PreviewsEligibilityReason::NOT_ALLOWED_BY_OPTIMIZATION_GUIDE,
       PreviewsEligibilityReason::NETWORK_QUALITY_UNAVAILABLE,
   };
   const std::vector<PreviewsEligibilityReason> expected_passed_reasons_b(

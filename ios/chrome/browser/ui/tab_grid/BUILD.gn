@@ -12,8 +12,8 @@ source_set("tab_grid") {
     "tab_grid_coordinator.mm",
     "tab_grid_mediator.h",
     "tab_grid_mediator.mm",
-    "tab_grid_url_loader.h",
-    "tab_grid_url_loader.mm",
+    "tab_switcher.h",
+    "view_controller_swapping.h",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -30,20 +30,33 @@ source_set("tab_grid") {
     "//ios/chrome/browser/sessions:serialisation",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/tabs",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/history",
     "//ios/chrome/browser/ui/history/public",
     "//ios/chrome/browser/ui/main",
-    "//ios/chrome/browser/ui/main:tab_switcher",
     "//ios/chrome/browser/ui/recent_tabs",
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
+    "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list/web_usage_enabler",
     "//ios/web",
+    "//ui/base",
     "//ui/gfx",
+  ]
+}
+
+source_set("tab_grid_ui_constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [
+    "tab_grid_constants.h",
+    "tab_grid_constants.mm",
+  ]
+
+  deps = [
+    "resources:grid_background_color",
   ]
 }
 
@@ -51,8 +64,6 @@ source_set("tab_grid_ui") {
   sources = [
     "tab_grid_bottom_toolbar.h",
     "tab_grid_bottom_toolbar.mm",
-    "tab_grid_constants.h",
-    "tab_grid_constants.mm",
     "tab_grid_empty_state_view.h",
     "tab_grid_empty_state_view.mm",
     "tab_grid_new_tab_button.h",
@@ -71,7 +82,9 @@ source_set("tab_grid_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    ":tab_grid_ui_constants",
     "grid:grid_ui",
+    "grid:grid_ui_constants",
     "resources:new_tab_floating_button",
     "resources:new_tab_floating_button_incognito",
     "resources:new_tab_toolbar_button",
@@ -109,13 +122,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/tabs",
-    "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/main:tab_switcher",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:test_support",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/test:block_cleanup_test",
+    "//ios/web/common",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
@@ -123,31 +135,12 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("egtest_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "tab_grid_egtest_util.h",
-    "tab_grid_egtest_util.mm",
-  ]
-
-  deps = [
-    ":tab_grid_ui",
-    "grid:grid_ui",
-    "//base",
-    "//base/test:test_support",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/test/app:test_support",
-    "//ios/chrome/test/earl_grey:test_support",
-    "//ios/third_party/earl_grey:earl_grey+link",
-    "//ui/base",
-  ]
-}
-
 source_set("eg_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+  defines = [ "CHROME_EARL_GREY_1" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
   testonly = true
   sources = [
     "tab_grid_egtest.mm",
@@ -155,25 +148,41 @@ source_set("eg_tests") {
   ]
 
   deps = [
-    ":egtest_support",
+    ":tab_grid_ui_constants",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/tabs:tabs",
     "//ios/chrome/browser/ui/tab_grid:tab_grid_ui",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:test_support",
+    "//ios/testing/earl_grey:earl_grey_support",
     "//ios/web/public/test/http_server",
+    "//net:test_support",
   ]
-  libs = [ "XCTest.framework" ]
+  libs = [ "UIKit.framework" ]
 }
 
-source_set("hooks") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
   testonly = true
   sources = [
-    "tab_grid_egtests_hook.mm",
+    "tab_grid_egtest.mm",
+    "tab_grid_transition_egtest.mm",
   ]
+
   deps = [
-    "//ios/chrome/app:tests_hook",
+    ":tab_grid_ui_constants",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
   ]
+  libs = [ "UIKit.framework" ]
 }

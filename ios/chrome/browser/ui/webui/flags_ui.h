@@ -9,10 +9,15 @@
 #include "base/memory/weak_ptr.h"
 #include "ios/web/public/webui/web_ui_ios_controller.h"
 
+namespace web {
+class WebUIIOSDataSource;
+}
+
 class FlagsUI : public web::WebUIIOSController {
  public:
   explicit FlagsUI(web::WebUIIOS* web_ui);
   ~FlagsUI() override;
+  static void AddFlagsIOSStrings(web::WebUIIOSDataSource* source);
 
  private:
   base::WeakPtrFactory<FlagsUI> weak_factory_;

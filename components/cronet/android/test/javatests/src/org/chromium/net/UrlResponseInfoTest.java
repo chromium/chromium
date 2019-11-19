@@ -5,12 +5,12 @@
 package org.chromium.net;
 
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.impl.UrlResponseInfoImpl;
 
@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * Tests for {@link UrlResponseInfo}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class UrlResponseInfoTest {
     /**
      * Test for public API of {@link UrlResponseInfo}.

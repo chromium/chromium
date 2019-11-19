@@ -1,7 +1,8 @@
 rootWebArea
-++main
-++++staticText name='This is main element.'
-++++++inlineTextBox name='This is main element.'
-++main
-++++staticText name='This is an ARIA role main.'
-++++++inlineTextBox name='This is an ARIA role main.'
+++genericContainer ignored
+++++main
+++++++staticText name='This is main element.'
+++++++++inlineTextBox name='This is main element.'
+++++main
+++++++staticText name='This is an ARIA role main.'
+++++++++inlineTextBox name='This is an ARIA role main.'

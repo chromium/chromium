@@ -49,7 +49,7 @@ class AudioBufferConverterTest : public ::testing::Test {
     output_frames_ = expected_output_frames_ = input_frames_ = 0;
   }
 
-  void AddInput(const scoped_refptr<AudioBuffer>& in) {
+  void AddInput(scoped_refptr<AudioBuffer> in) {
     if (!in->end_of_stream()) {
       input_frames_ += in->frame_count();
       expected_output_frames_ +=
@@ -57,7 +57,7 @@ class AudioBufferConverterTest : public ::testing::Test {
           (static_cast<double>(output_params_.sample_rate()) /
            in->sample_rate());
     }
-    audio_buffer_converter_->AddInput(in);
+    audio_buffer_converter_->AddInput(std::move(in));
   }
 
   void ConsumeOutput() {

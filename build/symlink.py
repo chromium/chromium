@@ -60,7 +60,7 @@ def Main(argv):
                                 stderr=subprocess.STDOUT)
       else:
         os.symlink(s, t)
-    except OSError, e:
+    except OSError as e:
       if e.errno == errno.EEXIST and options.force:
         if os.path.isdir(t):
           shutil.rmtree(t, ignore_errors=True)
@@ -69,7 +69,7 @@ def Main(argv):
         os.symlink(s, t)
       else:
         raise
-    except subprocess.CalledProcessError, e:
+    except subprocess.CalledProcessError as e:
       # Since subprocess.check_output does not return an easily checked error
       # number, in the 'force' case always assume it is 'file already exists'
       # and retry.

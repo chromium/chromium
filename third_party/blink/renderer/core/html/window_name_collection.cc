@@ -12,10 +12,17 @@ WindowNameCollection::WindowNameCollection(ContainerNode& document,
                                            const AtomicString& name)
     : HTMLNameCollection(document, kWindowNamedItems, name) {}
 
+WindowNameCollection::WindowNameCollection(ContainerNode& document,
+                                           CollectionType type,
+                                           const AtomicString& name)
+    : WindowNameCollection(document, name) {
+  DCHECK_EQ(type, kWindowNamedItems);
+}
+
 bool WindowNameCollection::ElementMatches(const Element& element) const {
   // Match only images, forms, embeds and objects by name,
   // but anything by id
-  if (IsHTMLImageElement(element) || IsHTMLFormElement(element) ||
+  if (IsHTMLImageElement(element) || IsA<HTMLFormElement>(element) ||
       IsHTMLEmbedElement(element) || IsHTMLObjectElement(element)) {
     if (element.GetNameAttribute() == name_)
       return true;

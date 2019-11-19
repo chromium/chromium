@@ -5,9 +5,9 @@
 #include <jni.h>
 
 #include "base/android/jni_string.h"
+#include "content/public/android/content_jni_headers/LoadUrlParams_jni.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/common/url_constants.h"
-#include "jni/LoadUrlParams_jni.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;

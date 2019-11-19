@@ -31,8 +31,7 @@ DefaultBrowserInfoBarDelegate::DefaultBrowserInfoBarDelegate(Profile* profile)
     : ConfirmInfoBarDelegate(),
       profile_(profile),
       should_expire_(false),
-      action_taken_(false),
-      weak_factory_(this) {
+      action_taken_(false) {
   // We want the info-bar to stick-around for few seconds and then be hidden
   // on the next navigation after that.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(

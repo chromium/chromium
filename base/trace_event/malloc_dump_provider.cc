@@ -87,7 +87,7 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   size_t resident_size = 0;
   size_t allocated_objects_size = 0;
   size_t allocated_objects_count = 0;
-#if defined(USE_TCMALLOC)
+#if BUILDFLAG(USE_TCMALLOC)
   bool res =
       allocator::GetNumericProperty("generic.heap_size", &total_virtual_size);
   DCHECK(res);
@@ -134,7 +134,10 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
 // TODO(fuchsia): Port, see https://crbug.com/706592.
 #else
   struct mallinfo info = mallinfo();
-  DCHECK_GE(info.arena + info.hblkhd, info.uordblks);
+#if !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER)
+  // Sanitizers override mallinfo.
+  DCHECK_GT(static_cast<int>(info.uordblks), 0);
+#endif
 
   // In case of Android's jemalloc |arena| is 0 and the outer pages size is
   // reported by |hblkhd|. In case of dlmalloc the total is given by

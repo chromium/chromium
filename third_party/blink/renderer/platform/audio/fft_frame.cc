@@ -70,6 +70,13 @@ std::unique_ptr<FFTFrame> FFTFrame::CreateInterpolatedFrame(
   return new_frame;
 }
 
+void FFTFrame::ScaleFFT(float factor) {
+  vector_math::Vsmul(real_data_.Data(), 1, &factor, real_data_.Data(), 1,
+                     real_data_.size());
+  vector_math::Vsmul(imag_data_.Data(), 1, &factor, imag_data_.Data(), 1,
+                     imag_data_.size());
+}
+
 void FFTFrame::InterpolateFrequencyComponents(const FFTFrame& frame1,
                                               const FFTFrame& frame2,
                                               double interp) {

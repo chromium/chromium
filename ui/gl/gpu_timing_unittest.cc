@@ -51,7 +51,7 @@ class GPUTimingTest : public testing::Test {
     ASSERT_FALSE(setup_) << "Cannot setup GL context twice.";
     SetGLGetProcAddressProc(MockGLInterface::GetGLProcAddress);
     GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
-    gl_.reset(new ::testing::StrictMock<MockGLInterface>());
+    gl_ = std::make_unique<::testing::StrictMock<MockGLInterface>>();
     MockGLInterface::SetGLInterface(gl_.get());
 
     context_ = new GLContextStub;

@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
+<translation id="1482734542997480527">Это управляемое устройство. Администратор домена <ph name="ENROLLMENT_DOMAIN" /> может отслеживать ваши действия.</translation>
 <translation id="1510238584712386396">Панель запуска</translation>
 <translation id="1734367976349034509">Это корпоративное устройство</translation>
+<translation id="1930797645656624981">Выбор способа ввода в Chrome OS</translation>
+<translation id="1979103255016296513">Истек срок изменения пароля</translation>
 <translation id="2049639323467105390">Это устройство находится в домене <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">Ничего не найдено</translation>
 <translation id="2338501278241028356">Включите Bluetooth, чтобы найти устройства</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="2872961005593481000">Завершить работу</translation>
-<translation id="3147142846278915599">Панель запуска (синхронизация приложений...)</translation>
+<translation id="3008341117444806826">ОБНОВИТЬ</translation>
+<translation id="3838338534323494292">Новый пароль</translation>
+<translation id="4003259559679196451">Это управляемое устройство. Администратору домена <ph name="ENROLLMENT_DOMAIN" /> доступна информация обо всех действиях пользователя, в том числе о посещенных сайтах, используемом адресе электронной почты и введенных паролях.</translation>
+<translation id="4227825898293920515">Срок действия пароля истекает через <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Срок действия билета Kerberos истекает</translation>
+<translation id="445059817448385655">Старый пароль</translation>
+<translation id="467510802200863975">Пароли не совпадают.</translation>
 <translation id="4731797938093519117">Родительский доступ</translation>
+<translation id="4890353053343094602">Смените пароль как можно скорее.</translation>
 <translation id="5212543919916444558">Я не нашла на экране ничего подходящего.
 Попробуйте озвучить запрос, нажав на значок микрофона.</translation>
 <translation id="5222676887888702881">Выйти</translation>
+<translation id="5317780077021120954">Сохранить</translation>
+<translation id="5332948983412042822">Смените пароль как можно скорее.</translation>
 <translation id="5457599981699367932">Войти в гостевой режим</translation>
 <translation id="54609108002486618">Автоматическое управление</translation>
 <translation id="5832805196449965646">Добавить пользователя</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
+<translation id="6058625436358447366">Для завершения введите старый и новый пароли.</translation>
+<translation id="6106186594183574873">Для завершения введите старый пароль.</translation>
+<translation id="6146993107019042706">Чтобы завершить процедуру, введите новый пароль.</translation>
 <translation id="7658239707568436148">Отмена</translation>
+<translation id="7690294790491645610">Введите новый пароль ещё раз</translation>
+<translation id="808894953321890993">Сменить пароль</translation>
+<translation id="8747900814994928677">Подтверждение изменений</translation>
+<translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9111102763498581341">Разблокировать</translation>
 </translationbundle>

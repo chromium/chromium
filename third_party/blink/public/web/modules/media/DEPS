@@ -1,0 +1,10 @@
+include_rules = [
+    "+media/base/audio_renderer_sink.h",
+    "+media/base/eme_constants.h",
+    "+media/base/pipeline_status.h",
+    "+media/base/ranges.h",
+
+    # Enforce to use mojom-shared.h in blink/public so that it can compile
+    # inside and outside Blink.
+    "+media/mojo/mojom/media_metrics_provider.mojom-shared.h",
+]

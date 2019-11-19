@@ -6,6 +6,7 @@
 <!-- PaymentRequestUI editor dialog. -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/editor_container"
     android:background="@color/modern_primary_color">
 
     <!-- Toolbar -->
@@ -20,7 +21,7 @@
     <include layout="@layout/preferences_action_bar_shadow" />
 
     <!-- All the page content in scrollable form. -->
-    <org.chromium.chrome.browser.widget.FadingEdgeScrollView
+    <org.chromium.chrome.browser.ui.widget.FadingEdgeScrollView
         android:id="@+id/scroll_view"
         android:layout_height="0dp"
         android:layout_width="match_parent"
@@ -37,6 +38,6 @@
             android:paddingEnd="@dimen/pref_autofill_content_spacing"
             android:orientation="vertical" />
 
-    </org.chromium.chrome.browser.widget.FadingEdgeScrollView>
+    </org.chromium.chrome.browser.ui.widget.FadingEdgeScrollView>
 
 </RelativeLayout>

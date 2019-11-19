@@ -10,7 +10,7 @@
  * Launches the PaymentRequest UI with Bob Pay, Alice Pay and credit cards as
  * payment methods.
  */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   try {
     new PaymentRequest(
         [

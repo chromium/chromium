@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<div id="container">
+  x
+  <span style="-webkit-mask:url(#boink);">y</span>
+</div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+requestAnimationFrame(()=> {
+    requestAnimationFrame(()=> {
+        container.style.width = "0";
+    });
+});
+test(()=> { }, "no crash");
+</script>

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL e.style['stroke-dashoffset'] = "0" should set the property value assert_equals: serialization should be canonical expected "0px" but got "0"
+PASS e.style['stroke-dashoffset'] = "10px" should set the property value
+PASS e.style['stroke-dashoffset'] = "-20%" should set the property value
+FAIL e.style['stroke-dashoffset'] = "30" should set the property value assert_equals: serialization should be canonical expected "30px" but got "30"
+PASS e.style['stroke-dashoffset'] = "40Q" should set the property value
+PASS e.style['stroke-dashoffset'] = "calc(2em + 3ex)" should set the property value
+Harness: the test ran to completion.
+

@@ -1,39 +1,36 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
-<translation id="1326317727527857210">Влезте в Chrome, за да получите разделите си от другите си устройства.</translation>
+<translation id="1282031177488366470">Помощ за подобряването на функциите и ефективността на Chrome</translation>
+<translation id="1682483655351012182">Синхронизиране на данните ви в Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1816764564654397850">Съобщение за поверителност на Google Chrome</translation>
 <translation id="1863312987075920112">С използването на това приложение приемате <ph name="BEGIN_LINK_TOS" />Общите условия<ph name="END_LINK_TOS" /> и <ph name="BEGIN_LINK_PRIVACY" />Съобщението за поверителност<ph name="END_LINK_PRIVACY" /> на Chrome.</translation>
-<translation id="1984705450038014246">Синхронизиране на данните ви в Chrome</translation>
 <translation id="2147651015520127414">Chrome потвърди, че сертификатът на този уебсайт е издаден от <ph name="ISSUER" />.</translation>
 <translation id="2199719347983604670">Данни от синхронизирането в Chrome</translation>
-<translation id="2334084861041072223">Авторски права <ph name="YEAR" /> Google Inc. Всички права запазени.</translation>
-<translation id="2342981853652716282">Влезте в Chrome, за да получите отметките, паролите и другите си неща на всичките си устройства.</translation>
 <translation id="2347208864470321755">Когато тази функция е включена, Chrome ще предлага да преведе написаните на други езици страници посредством Google Преводач. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="2441696206556358796">За да запазите изображения, докоснете „Настройки“ и разрешете на Chrome да използва снимките ви</translation>
 <translation id="2576431527583832481">Chrome току-що се подобри! Налице е нова версия.</translation>
 <translation id="257708665678654955">Искате ли следващия път Google Chrome да предложи да преведе от <ph name="LANGUAGE_NAME" /> страниците от този сайт?</translation>
 <translation id="3030414234702425231">Тъй като излизате от профил, управляван от <ph name="SIGNOUT_MANAGED_DOMAIN" />, данните ви в Chrome ще бъдат изтрити от това устройство, но ще останат в профила ви в Google.</translation>
-<translation id="3148434565183091099">Влезте в Chrome, за да получите отметките си на всичките си устройства.</translation>
 <translation id="3148688391461398285">Подобрете практическата си работа в Chrome въз основа на местоположението си.</translation>
 <translation id="3167189358072330585">Профилът ви не е съвместим с Google Chrome. Моля, свържете се с администратора на домейна си или влезте с обикновен профил в Google.</translation>
 <translation id="3196546062792660320">С Chrome спестявате време, като свързвате профилите си с мрежата. Можете да добавяте или премахвате профили от настройките.</translation>
 <translation id="3282568296779691940">Вход в Chrome</translation>
 <translation id="3345341804167540816">Използвайте Chrome навсякъде</translation>
 <translation id="384394811301901750">В момента Google Chrome не може да използва камерата ви</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Заменяте настоящия профил за синхронизиране (<ph name="USER_EMAIL1" />) с друг (<ph name="USER_EMAIL2" />). Съществуващите ви данни в Chrome се управляват от <ph name="DOMAIN" />. Те ще се изтрият от това устройство, но ще останат в профила <ph name="USER_EMAIL1" />.</translation>
 <translation id="3988789688219830639">Google Chrome няма достъп до снимките или видеоклиповете ви. Активирайте го от „Settings“ &gt; „Privacy“ &gt; „Photos“ в iOS.</translation>
 <translation id="4099578267706723511">Помогнете за подобряването на Chrome, като изпращате до Google статистически данни за употребата и сигнали за сривове.</translation>
 <translation id="415767770115540173">Подобрете практическата си работа с Google в Chrome въз основа на местоположението ви.</translation>
 <translation id="424864128008805179">Искате ли да излезете от Chrome?</translation>
-<translation id="447252321002412580">Помощ за подобряването на функциите и ефективността на Chrome</translation>
+<translation id="4249068189593983585">Съвет за Chrome. За да видите още опции за разделите, докоснете и задръжте бутона „Показване на разделите“ в лентата с инструменти в долната или горната част на екрана.</translation>
 <translation id="4523886039239821078">Някои добавки водят до срив на Chrome. Моля, деинсталирайте:</translation>
-<translation id="4615174829807303908">Излизате от профил, управляван от <ph name="SIGNOUT_MANAGED_DOMAIN" />. Данните ви в Chrome ще се изтрият от това устройство, но ще останат в профила ви в Google.</translation>
 <translation id="5389212809648216794">Google Chrome не може да използва камерата ви, защото е заета от друго приложение</translation>
+<translation id="5621912349729388018"><ph name="BEGIN_LINK" />Прегледайте актуализираните Общи условия на Chrome.<ph name="END_LINK" /></translation>
 <translation id="5639704535586432836">Отворете „Settings“ &gt; „Privacy“ &gt; „Camera“ &gt; „Google Chrome“ и включете камерата.</translation>
 <translation id="5642200033778930880">Google Chrome не може да използва камерата ви в режим на разделен изглед</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5854621639439811139">Съвет за Chrome. Някои бутони, например тези за връщане назад, преминаване напред и търсене, вече са в долната част на екрана.</translation>
 <translation id="6036420186814142909">Google Chrome разполага с функции, които ви помагат да управлявате данните си в интернет и времето, за което можете да зареждате уеб страници.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -46,14 +43,12 @@
 <translation id="7172660552945675509">Съвет: <ph name="BEGIN_LINK" />Преместете Chrome в лентата „Dock“<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome използва Face ID, за да обезпечи упълномощен достъп до паролите ви.</translation>
 <translation id="7265369419224458312">Осъществявайте оттук достъп до разделите, които сте отворили на компютъра си. Трябва само да стартирате Chrome на компютъра си и да изберете „Вход в Chrome…“ от менюто.</translation>
-<translation id="728488472449859922">Включване на скенера за QR кодове в Google Chrome</translation>
 <translation id="7400722733683201933">Всичко за Google Chrome</translation>
-<translation id="7437998757836447326">Изход от Chrome</translation>
 <translation id="756809126120519699">Данните в Chrome са изчистени</translation>
 <translation id="7626032353295482388">Добре дошли в Chrome</translation>
+<translation id="7698568245838009292">Chrome иска достъп до камерата</translation>
+<translation id="8370517070665726704">Авторски права <ph name="YEAR" /> г. Google LLC. Всички права запазени.</translation>
 <translation id="840168496893712993">Някои добавки водят до срив на Chrome. Моля, опитайте да ги деинсталирате.</translation>
 <translation id="8459495907675268833">Избраните данни са премахнати от Chrome и синхронизираните устройства. Възможно е в профила ви в Google да има други видове история на сърфиране, съхранявани на адрес history.google.com – например търсения и активност от други наши услуги.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8606668294522778825">Google Chrome може да използва уеб услуги, за да подобри сърфирането ви. Ако искате, можете да ги деактивирате. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
-<translation id="96145293669295453">Съвет за Chrome. За да видите още опции за разделите, натиснете и задръжте бутона „Показване на разделите“ в лентата с инструменти в долната или горната част на екрана.</translation>
 </translationbundle>

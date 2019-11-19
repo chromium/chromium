@@ -56,6 +56,9 @@ DisallowedFeatures AdjustDisallowedFeatures(
     adjusted_disallowed_features.oes_texture_float_linear = true;
     adjusted_disallowed_features.ext_color_buffer_half_float = true;
     adjusted_disallowed_features.oes_texture_half_float_linear = true;
+    adjusted_disallowed_features.ext_texture_filter_anisotropic = true;
+    adjusted_disallowed_features.ext_float_blend = true;
+    adjusted_disallowed_features.oes_fbo_render_mipmap = true;
   }
   return adjusted_disallowed_features;
 }
@@ -371,6 +374,18 @@ gpu::ContextResult ContextGroup::Initialize(
     max_rectangle_texture_size = std::min(
         max_rectangle_texture_size,
         feature_info_->workarounds().max_texture_size);
+    max_cube_map_texture_size =
+        std::min(max_cube_map_texture_size,
+                 feature_info_->workarounds().max_texture_size);
+  }
+
+  if (feature_info_->workarounds().max_3d_array_texture_size) {
+    max_3d_texture_size =
+        std::min(max_3d_texture_size,
+                 feature_info_->workarounds().max_3d_array_texture_size);
+    max_array_texture_layers =
+        std::min(max_array_texture_layers,
+                 feature_info_->workarounds().max_3d_array_texture_size);
   }
 
   texture_manager_.reset(new TextureManager(

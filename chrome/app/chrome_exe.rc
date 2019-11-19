@@ -1,5 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
+#include "build/branding_buildflags.h"
 #include "chrome_exe_resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -35,7 +36,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Note: chrome/installer/util/shell_util.cc depends on the order and number of
 // icons.  To avoid breaking existing shortcuts, add new icons at the end
 // (following the ordering described above).
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 IDR_MAINFRAME           ICON       "theme\\google_chrome\\win\\chrome.ico"
 // These three are no longer used, but remain as placeholders. (They cannot be
 // removed, or existing shortcuts to the later resources will break.)
@@ -54,7 +55,7 @@ IDR_MAINFRAME           ICON       "theme\\chromium\\win\\chromium.ico"
 // should be incremented when a new icon is added. The icon indices in
 // chrome_icon_resources_win.h should also be updated.
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 IDR_X001_APP_LIST       ICON       "theme\\google_chrome\\win\\app_list.ico"
 IDR_X002_APP_LIST_SXS   ICON       "theme\\google_chrome\\win\\app_list_sxs.ico"
 IDR_X003_INCOGNITO      ICON       "theme\\google_chrome\\win\\incognito.ico"

@@ -11,51 +11,42 @@
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 
 #if defined(OS_MACOSX)
 #include "base/mac/foundation_util.h"
 #endif
 
-const char kPythonPathEnv[] = "PYTHONPATH";
-const char kVPythonClearPathEnv[] = "VPYTHON_CLEAR_PYTHONPATH";
+namespace {
+const base::FilePath::CharType kPythonPathEnv[] =
+    FILE_PATH_LITERAL("PYTHONPATH");
+const base::FilePath::CharType kVPythonClearPathEnv[] =
+    FILE_PATH_LITERAL("VPYTHON_CLEAR_PYTHONPATH");
+}  // namespace
 
-void ClearPythonPath() {
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  env->UnSetVar(kPythonPathEnv);
+void SetPythonPathInEnvironment(const std::vector<base::FilePath>& python_path,
+                                base::EnvironmentMap* map) {
+  base::NativeEnvironmentString path_str;
+  for (const auto& path : python_path) {
+    if (!path_str.empty()) {
+#if defined(OS_WIN)
+      path_str.push_back(';');
+#else
+      path_str.push_back(':');
+#endif
+    }
+    path_str += path.value();
+  }
+
+  (*map)[kPythonPathEnv] = path_str;
 
   // vpython has instructions on BuildBot (not swarming or LUCI) to clear
   // PYTHONPATH on invocation. Since we are clearing and manipulating it
   // ourselves, we don't want vpython to throw out our hard work.
-  env->UnSetVar(kVPythonClearPathEnv);
-}
-
-void AppendToPythonPath(const base::FilePath& dir) {
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string old_path;
-  std::string dir_path;
-#if defined(OS_WIN)
-  dir_path = base::UTF16ToUTF8(dir.value());
-#elif defined(OS_POSIX)
-  dir_path = dir.value();
-#endif
-  if (!env->GetVar(kPythonPathEnv, &old_path)) {
-    env->SetVar(kPythonPathEnv, dir_path.c_str());
-  } else if (old_path.find(dir_path) == std::string::npos) {
-    std::string new_path(old_path);
-#if defined(OS_WIN)
-    new_path.append(";");
-#elif defined(OS_POSIX)
-    new_path.append(":");
-#endif
-    new_path.append(dir_path.c_str());
-    env->SetVar(kPythonPathEnv, new_path);
-  }
+  (*map)[kVPythonClearPathEnv] = base::NativeEnvironmentString();
 }
 
 bool GetPyProtoPath(base::FilePath* dir) {

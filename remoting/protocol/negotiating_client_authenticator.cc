@@ -30,8 +30,7 @@ NegotiatingClientAuthenticator::NegotiatingClientAuthenticator(
     : NegotiatingAuthenticatorBase(MESSAGE_READY),
       local_id_(local_id),
       remote_id_(remote_id),
-      config_(config),
-      weak_factory_(this) {
+      config_(config) {
   if (!config_.fetch_third_party_token_callback.is_null()) {
     AddMethod(Method::THIRD_PARTY_SPAKE2_CURVE25519);
     AddMethod(Method::THIRD_PARTY_SPAKE2_P224);

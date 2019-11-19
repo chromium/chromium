@@ -15,11 +15,12 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.annotation.VisibleForTesting;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,7 +72,7 @@ public class LauncherShortcutActivity extends Activity {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) return;
 
         SharedPreferences preferences = ContextUtils.getAppSharedPreferences();
-        if (PrefServiceBridge.getInstance().isIncognitoModeEnabled()) {
+        if (IncognitoUtils.isIncognitoModeEnabled()) {
             boolean success = LauncherShortcutActivity.addIncognitoLauncherShortcut(context);
 
             // Save a shared preference indicating the incognito shortcut has been added.
@@ -79,7 +80,7 @@ public class LauncherShortcutActivity extends Activity {
                 preferences.edit().putBoolean(INCOGNITO_SHORTCUT_ADDED_PREF, true).apply();
             }
         } else if (preferences.getBoolean(INCOGNITO_SHORTCUT_ADDED_PREF, false)
-                && !PrefServiceBridge.getInstance().isIncognitoModeEnabled()) {
+                && !IncognitoUtils.isIncognitoModeEnabled()) {
             LauncherShortcutActivity.removeIncognitoLauncherShortcut(context);
             preferences.edit().putBoolean(INCOGNITO_SHORTCUT_ADDED_PREF, false).apply();
         }
@@ -97,17 +98,12 @@ public class LauncherShortcutActivity extends Activity {
         intent.setPackage(context.getPackageName());
         intent.setClass(context, LauncherShortcutActivity.class);
 
-        boolean useAlternativeIncognitoStrings =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_STRINGS);
         ShortcutInfo shortcut =
                 new ShortcutInfo.Builder(context, DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID)
                         .setShortLabel(context.getResources().getString(
-                                useAlternativeIncognitoStrings
-                                        ? R.string.accessibility_tabstrip_private_identifier
-                                        : R.string.accessibility_tabstrip_incognito_identifier))
-                        .setLongLabel(context.getResources().getString(
-                                useAlternativeIncognitoStrings ? R.string.menu_new_private_tab
-                                                               : R.string.menu_new_incognito_tab))
+                                R.string.accessibility_tabstrip_incognito_identifier))
+                        .setLongLabel(
+                                context.getResources().getString(R.string.menu_new_incognito_tab))
                         .setIcon(Icon.createWithResource(context, R.drawable.shortcut_incognito))
                         .setIntent(intent)
                         .build();

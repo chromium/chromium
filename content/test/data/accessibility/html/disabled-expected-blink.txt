@@ -1,15 +1,24 @@
 rootWebArea
-++checkBox name='Enabled' checkedState=false
-++checkBox name='Disabled' restriction=disabled checkedState=false
-++button name='Enabled'
-++button name='Disabled' restriction=disabled
-++form
-++++staticText name='Enabled form '
-++++++inlineTextBox name='Enabled form '
-++++checkBox name='Checkbox' checkedState=false
-++++button name='Button'
-++form restriction=disabled
-++++staticText name='Disabled form '
-++++++inlineTextBox name='Disabled form '
-++++checkBox name='Checkbox' restriction=disabled checkedState=false
-++++button name='Button' restriction=disabled
+++genericContainer ignored
+++++checkBox name='Enabled' checkedState=false
+++++checkBox name='Disabled' restriction=disabled checkedState=false
+++++button name='Enabled'
+++++++staticText name='Enabled'
+++++++++inlineTextBox name='Enabled'
+++++button name='Disabled' restriction=disabled
+++++++staticText name='Disabled'
+++++++++inlineTextBox name='Disabled'
+++++form
+++++++staticText name='Enabled form '
+++++++++inlineTextBox name='Enabled form '
+++++++checkBox name='Checkbox' checkedState=false
+++++++button name='Button'
+++++++++staticText name='Button'
+++++++++++inlineTextBox name='Button'
+++++form restriction=disabled
+++++++staticText name='Disabled form '
+++++++++inlineTextBox name='Disabled form '
+++++++checkBox name='Checkbox' restriction=disabled checkedState=false
+++++++button name='Button' restriction=disabled
+++++++++staticText name='Button'
+++++++++++inlineTextBox name='Button'

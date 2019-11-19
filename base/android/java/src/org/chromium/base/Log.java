@@ -47,8 +47,8 @@ public class Log {
     }
 
     /** Returns a formatted log message, using the supplied format and arguments.*/
-    private static String formatLog(String messageTemplate, Object... params) {
-        if (params != null && params.length != 0) {
+    private static String formatLog(String messageTemplate, Throwable tr, Object... params) {
+        if ((params != null) && ((tr == null && params.length > 0) || params.length > 1)) {
             messageTemplate = String.format(Locale.US, messageTemplate, params);
         }
 
@@ -77,17 +77,26 @@ public class Log {
      * Returns a formatted log message, using the supplied format and arguments.
      * The message will be prepended with the filename and line number of the call.
      */
-    private static String formatLogWithStack(String messageTemplate, Object... params) {
-        return "[" + getCallOrigin() + "] " + formatLog(messageTemplate, params);
+    private static String formatLogWithStack(
+            String messageTemplate, Throwable tr, Object... params) {
+        return "[" + getCallOrigin() + "] " + formatLog(messageTemplate, tr, params);
+    }
+
+    @RemovableInRelease
+    private static boolean isDebug() {
+        // @RemovableInRelease causes this to return false in release builds.
+        return true;
     }
 
     /**
-     * Convenience function, forwards to {@link android.util.Log#isLoggable(String, int)}.
-     *
-     * Note: Has no effect on whether logs are sent or not. Use a method with
-     * {@link RemovableInRelease} to log something in Debug builds only.
+     * In debug: Forwards to {@link android.util.Log#isLoggable(String, int)}, but alway
+     * In release: Always returns false (via @RemovableInRelease).
      */
     public static boolean isLoggable(String tag, int level) {
+        // Early return helps optimizer eliminate calls to isLoggable().
+        if (!isDebug() && level <= INFO) {
+            return false;
+        }
         return android.util.Log.isLoggable(tag, level);
     }
 
@@ -105,75 +114,15 @@ public class Log {
      * @param args Arguments referenced by the format specifiers in the format string. If the last
      *             one is a {@link Throwable}, its trace will be printed.
      */
-    private static void verbose(String tag, String messageTemplate, Object... args) {
-        String message = formatLogWithStack(messageTemplate, args);
+    @RemovableInRelease
+    public static void v(String tag, String messageTemplate, Object... args) {
         Throwable tr = getThrowableToLog(args);
+        String message = formatLogWithStack(messageTemplate, tr, args);
         if (tr != null) {
             android.util.Log.v(normalizeTag(tag), message, tr);
         } else {
             android.util.Log.v(normalizeTag(tag), message);
         }
-    }
-
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 0 args version. */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void v(String tag, String message) {
-        verbose(tag, message);
-    }
-
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 1 arg version. */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void v(String tag, String messageTemplate, Object arg1) {
-        verbose(tag, messageTemplate, arg1);
-    }
-
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 2 args version */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void v(String tag, String messageTemplate, Object arg1, Object arg2) {
-        verbose(tag, messageTemplate, arg1, arg2);
-    }
-
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 3 args version */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void v(
-            String tag, String messageTemplate, Object arg1, Object arg2, Object arg3) {
-        verbose(tag, messageTemplate, arg1, arg2, arg3);
-    }
-
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 4 args version */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void v(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4) {
-        verbose(tag, messageTemplate, arg1, arg2, arg3, arg4);
-    }
-
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 5 args version */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void v(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4, Object arg5) {
-        verbose(tag, messageTemplate, arg1, arg2, arg3, arg4, arg5);
-    }
-
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 6 args version */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void v(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4, Object arg5, Object arg6) {
-        verbose(tag, messageTemplate, arg1, arg2, arg3, arg4, arg5, arg6);
-    }
-
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 7 args version */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void v(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4, Object arg5, Object arg6, Object arg7) {
-        verbose(tag, messageTemplate, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
     }
 
     /**
@@ -190,73 +139,15 @@ public class Log {
      * @param args Arguments referenced by the format specifiers in the format string. If the last
      *             one is a {@link Throwable}, its trace will be printed.
      */
-    private static void debug(String tag, String messageTemplate, Object... args) {
-        String message = formatLogWithStack(messageTemplate, args);
+    @RemovableInRelease
+    public static void d(String tag, String messageTemplate, Object... args) {
         Throwable tr = getThrowableToLog(args);
+        String message = formatLogWithStack(messageTemplate, tr, args);
         if (tr != null) {
             android.util.Log.d(normalizeTag(tag), message, tr);
         } else {
             android.util.Log.d(normalizeTag(tag), message);
         }
-    }
-
-    /** Sends a {@link android.util.Log#DEBUG} log message. 0 args version. */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void d(String tag, String message) {
-        debug(tag, message);
-    }
-
-    /** Sends a {@link android.util.Log#DEBUG} log message. 1 arg version. */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void d(String tag, String messageTemplate, Object arg1) {
-        debug(tag, messageTemplate, arg1);
-    }
-    /** Sends a {@link android.util.Log#DEBUG} log message. 2 args version */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void d(String tag, String messageTemplate, Object arg1, Object arg2) {
-        debug(tag, messageTemplate, arg1, arg2);
-    }
-    /** Sends a {@link android.util.Log#DEBUG} log message. 3 args version */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void d(
-            String tag, String messageTemplate, Object arg1, Object arg2, Object arg3) {
-        debug(tag, messageTemplate, arg1, arg2, arg3);
-    }
-
-    /** Sends a {@link android.util.Log#DEBUG} log message. 4 args version */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void d(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4) {
-        debug(tag, messageTemplate, arg1, arg2, arg3, arg4);
-    }
-
-    /** Sends a {@link android.util.Log#DEBUG} log message. 5 args version */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void d(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4, Object arg5) {
-        debug(tag, messageTemplate, arg1, arg2, arg3, arg4, arg5);
-    }
-
-    /** Sends a {@link android.util.Log#DEBUG} log message. 6 args version */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void d(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4, Object arg5, Object arg6) {
-        debug(tag, messageTemplate, arg1, arg2, arg3, arg4, arg5, arg6);
-    }
-
-    /** Sends a {@link android.util.Log#DEBUG} log message. 7 args version */
-    @RemovableInRelease
-    @VisibleForTesting
-    public static void d(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4, Object arg5, Object arg6, Object arg7) {
-        debug(tag, messageTemplate, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
     }
 
     /**
@@ -269,10 +160,9 @@ public class Log {
      * @param args Arguments referenced by the format specifiers in the format string. If the last
      *             one is a {@link Throwable}, its trace will be printed.
      */
-    @VisibleForTesting
     public static void i(String tag, String messageTemplate, Object... args) {
-        String message = formatLog(messageTemplate, args);
         Throwable tr = getThrowableToLog(args);
+        String message = formatLog(messageTemplate, tr, args);
         if (tr != null) {
             android.util.Log.i(normalizeTag(tag), message, tr);
         } else {
@@ -290,10 +180,9 @@ public class Log {
      * @param args Arguments referenced by the format specifiers in the format string. If the last
      *             one is a {@link Throwable}, its trace will be printed.
      */
-    @VisibleForTesting
     public static void w(String tag, String messageTemplate, Object... args) {
-        String message = formatLog(messageTemplate, args);
         Throwable tr = getThrowableToLog(args);
+        String message = formatLog(messageTemplate, tr, args);
         if (tr != null) {
             android.util.Log.w(normalizeTag(tag), message, tr);
         } else {
@@ -311,10 +200,9 @@ public class Log {
      * @param args Arguments referenced by the format specifiers in the format string. If the last
      *             one is a {@link Throwable}, its trace will be printed.
      */
-    @VisibleForTesting
     public static void e(String tag, String messageTemplate, Object... args) {
-        String message = formatLog(messageTemplate, args);
         Throwable tr = getThrowableToLog(args);
+        String message = formatLog(messageTemplate, tr, args);
         if (tr != null) {
             android.util.Log.e(normalizeTag(tag), message, tr);
         } else {
@@ -336,10 +224,9 @@ public class Log {
      * @param args Arguments referenced by the format specifiers in the format string. If the last
      *             one is a {@link Throwable}, its trace will be printed.
      */
-    @VisibleForTesting
     public static void wtf(String tag, String messageTemplate, Object... args) {
-        String message = formatLog(messageTemplate, args);
         Throwable tr = getThrowableToLog(args);
+        String message = formatLog(messageTemplate, tr, args);
         if (tr != null) {
             android.util.Log.wtf(normalizeTag(tag), message, tr);
         } else {
@@ -362,22 +249,22 @@ public class Log {
     }
 
     /** Returns a string form of the origin of the log call, to be used as secondary tag.*/
+    @RemovableInRelease
     private static String getCallOrigin() {
         StackTraceElement[] st = Thread.currentThread().getStackTrace();
 
         // The call stack should look like:
         //   n [a variable number of calls depending on the vm used]
         //  +0 getCallOrigin()
-        //  +1 privateLogFunction: verbose or debug
-        //  +2 formatLogWithStack()
-        //  +3 logFunction: v or d
-        //  +4 caller
+        //  +1 formatLogWithStack()
+        //  +2 privateLogFunction: verbose or debug
+        //  +3 caller
 
         int callerStackIndex;
         String logClassName = Log.class.getName();
         for (callerStackIndex = 0; callerStackIndex < st.length; callerStackIndex++) {
             if (st[callerStackIndex].getClassName().equals(logClassName)) {
-                callerStackIndex += 4;
+                callerStackIndex += 3;
                 break;
             }
         }

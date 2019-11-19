@@ -4,25 +4,54 @@
 
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
+#include "base/test/bind_test_util.h"
+#include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/core/css/font_face_descriptors.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
+
+namespace {
+
+Element* GetOrCreateElement(ContainerNode* parent,
+                            const HTMLQualifiedName& tag_name) {
+  HTMLCollection* elements = parent->getElementsByTagNameNS(
+      tag_name.NamespaceURI(), tag_name.LocalName());
+  if (!elements->IsEmpty())
+    return elements->item(0);
+  return parent->ownerDocument()->CreateRawElement(
+      tag_name, CreateElementFlags::ByCreateElement());
+}
+
+}  // namespace
 
 PageTestBase::PageTestBase() = default;
 
 PageTestBase::~PageTestBase() = default;
 
+void PageTestBase::EnableCompositing() {
+  DCHECK(!dummy_page_holder_)
+      << "EnableCompositing() must be called before set up";
+  enable_compositing_ = true;
+}
+
 void PageTestBase::SetUp() {
   DCHECK(!dummy_page_holder_) << "Page should be set up only once";
-  dummy_page_holder_ = DummyPageHolder::Create(IntSize(800, 600));
+  auto setter = base::BindLambdaForTesting([&](Settings& settings) {
+    if (enable_compositing_)
+      settings.SetAcceleratedCompositingEnabled(true);
+  });
+  dummy_page_holder_ = std::make_unique<DummyPageHolder>(
+      IntSize(800, 600), nullptr, nullptr, std::move(setter), GetTickClock());
 
   // Use no-quirks (ake "strict") mode by default.
   GetDocument().SetCompatibilityMode(Document::kNoQuirksMode);
@@ -33,7 +62,12 @@ void PageTestBase::SetUp() {
 
 void PageTestBase::SetUp(IntSize size) {
   DCHECK(!dummy_page_holder_) << "Page should be set up only once";
-  dummy_page_holder_ = DummyPageHolder::Create(size);
+  auto setter = base::BindLambdaForTesting([&](Settings& settings) {
+    if (enable_compositing_)
+      settings.SetAcceleratedCompositingEnabled(true);
+  });
+  dummy_page_holder_ = std::make_unique<DummyPageHolder>(
+      size, nullptr, nullptr, std::move(setter), GetTickClock());
 
   // Use no-quirks (ake "strict") mode by default.
   GetDocument().SetCompatibilityMode(Document::kNoQuirksMode);
@@ -47,8 +81,15 @@ void PageTestBase::SetupPageWithClients(
     LocalFrameClient* local_frame_client,
     FrameSettingOverrideFunction setting_overrider) {
   DCHECK(!dummy_page_holder_) << "Page should be set up only once";
-  dummy_page_holder_ = DummyPageHolder::Create(
-      IntSize(800, 600), clients, local_frame_client, setting_overrider);
+  auto setter = base::BindLambdaForTesting([&](Settings& settings) {
+    if (setting_overrider)
+      setting_overrider(settings);
+    if (enable_compositing_)
+      settings.SetAcceleratedCompositingEnabled(true);
+  });
+  dummy_page_holder_ = std::make_unique<DummyPageHolder>(
+      IntSize(800, 600), clients, local_frame_client, std::move(setter),
+      GetTickClock());
 
   // Use no-quirks (ake "strict") mode by default.
   GetDocument().SetCompatibilityMode(Document::kNoQuirksMode);
@@ -105,13 +146,43 @@ void PageTestBase::SetBodyInnerHTML(const String& body_content) {
 }
 
 void PageTestBase::SetBodyContent(const std::string& body_content) {
-  SetBodyInnerHTML(String::FromUTF8(body_content.c_str()));
+  SetBodyInnerHTML(String::FromUTF8(body_content));
 }
 
 void PageTestBase::SetHtmlInnerHTML(const std::string& html_content) {
   GetDocument().documentElement()->SetInnerHTMLFromString(
-      String::FromUTF8(html_content.c_str()));
+      String::FromUTF8(html_content));
   UpdateAllLifecyclePhasesForTest();
+}
+
+void PageTestBase::InsertStyleElement(const std::string& style_rules) {
+  Element* const head =
+      GetOrCreateElement(&GetDocument(), html_names::kHeadTag);
+  DCHECK_EQ(head, GetOrCreateElement(&GetDocument(), html_names::kHeadTag));
+  Element* const style = GetDocument().CreateRawElement(
+      html_names::kStyleTag, CreateElementFlags::ByCreateElement());
+  style->setTextContent(String(style_rules.data(), style_rules.size()));
+  head->appendChild(style);
+}
+
+void PageTestBase::NavigateTo(const KURL& url,
+                              const String& feature_policy_header,
+                              const String& csp_header) {
+  auto params =
+      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(), url);
+  if (!feature_policy_header.IsEmpty()) {
+    params->response.SetHttpHeaderField(http_names::kFeaturePolicy,
+                                        feature_policy_header);
+  }
+  if (!csp_header.IsEmpty()) {
+    params->response.SetHttpHeaderField(http_names::kContentSecurityPolicy,
+                                        csp_header);
+  }
+  GetFrame().Loader().CommitNavigation(std::move(params),
+                                       nullptr /* extra_data */);
+
+  blink::test::RunPendingTasks();
+  ASSERT_EQ(url.GetString(), GetDocument().Url().GetString());
 }
 
 void PageTestBase::UpdateAllLifecyclePhasesForTest() {
@@ -144,6 +215,11 @@ void PageTestBase::EnablePlatform() {
   DCHECK(!platform_);
   platform_ = std::make_unique<
       ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>>();
+}
+
+const base::TickClock* PageTestBase::GetTickClock() {
+  return platform_ ? platform()->test_task_runner()->GetMockTickClock()
+                   : base::DefaultTickClock::GetInstance();
 }
 
 }  // namespace blink

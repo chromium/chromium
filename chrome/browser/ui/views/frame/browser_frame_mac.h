@@ -53,17 +53,16 @@ class BrowserFrameMac : public views::NativeWidgetMac,
   // Overridden from views::NativeWidgetMac:
   void ValidateUserInterfaceItem(
       int32_t command,
-      views_bridge_mac::mojom::ValidateUserInterfaceItemResult* result)
-      override;
+      remote_cocoa::mojom::ValidateUserInterfaceItemResult* result) override;
   bool ExecuteCommand(int32_t command,
                       WindowOpenDisposition window_open_disposition,
                       bool is_before_first_responder) override;
   void PopulateCreateWindowParams(
       const views::Widget::InitParams& widget_params,
-      views_bridge_mac::mojom::CreateWindowParams* params) override;
+      remote_cocoa::mojom::CreateWindowParams* params) override;
   NativeWidgetMacNSWindow* CreateNSWindow(
-      const views_bridge_mac::mojom::CreateWindowParams* params) override;
-  views::BridgeFactoryHost* GetBridgeFactoryHost() override;
+      const remote_cocoa::mojom::CreateWindowParams* params) override;
+  remote_cocoa::ApplicationHost* GetRemoteCocoaApplicationHost() override;
   void OnWindowInitialized() override;
   void OnWindowDestroying(gfx::NativeWindow window) override;
 

@@ -12,7 +12,7 @@
   BindingsTestRunner.addFooJSFile(fs);
   fs.reportCreated(function() {});
   var fsUISourceCode = await TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.FileSystem);
-  var content = await fsUISourceCode.requestContent();
+  var { content } = await fsUISourceCode.requestContent();
   content = content.replace(/foo/g, 'bar');
   fsUISourceCode.setWorkingCopy(content);
 

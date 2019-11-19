@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NGLayoutTest_h
-#define NGLayoutTest_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LAYOUT_TEST_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LAYOUT_TEST_H_
 
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -22,4 +22,4 @@ class NGLayoutTest : public RenderingTest, private ScopedLayoutNGForTest {
 
 }  // namespace blink
 
-#endif  // NGLayoutTest_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LAYOUT_TEST_H_

@@ -36,7 +36,7 @@ class KioskDiagnosisRunner : public KeyedService {
 
   Profile* profile_;
   std::string app_id_;
-  base::WeakPtrFactory<KioskDiagnosisRunner> weak_factory_;
+  base::WeakPtrFactory<KioskDiagnosisRunner> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(KioskDiagnosisRunner);
 };

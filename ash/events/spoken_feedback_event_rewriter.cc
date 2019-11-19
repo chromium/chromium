@@ -7,23 +7,21 @@
 #include <string>
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/public/cpp/spoken_feedback_event_rewriter_delegate.h"
 #include "ash/shell.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/events/event.h"
 #include "ui/events/event_sink.h"
 
 namespace ash {
 
-SpokenFeedbackEventRewriter::SpokenFeedbackEventRewriter()
-    : continuation_(nullptr) {}
+SpokenFeedbackEventRewriter::SpokenFeedbackEventRewriter(
+    ui::EventRewriterChromeOS* event_rewriter_chromeos)
+    : event_rewriter_chromeos_(event_rewriter_chromeos) {}
 
 SpokenFeedbackEventRewriter::~SpokenFeedbackEventRewriter() = default;
-
-void SpokenFeedbackEventRewriter::SetDelegate(
-    mojom::SpokenFeedbackEventRewriterDelegatePtr delegate) {
-  delegate_ = std::move(delegate);
-}
 
 void SpokenFeedbackEventRewriter::OnUnhandledSpokenFeedbackEvent(
     std::unique_ptr<ui::Event> event) const {
@@ -56,33 +54,41 @@ ui::EventDispatchDetails SpokenFeedbackEventRewriter::RewriteEvent(
   // Save continuation for |OnUnhandledSpokenFeedbackEvent()|.
   continuation_ = continuation;
 
-  if (!delegate_.is_bound() ||
+  if (!delegate_ ||
       !Shell::Get()->accessibility_controller()->spoken_feedback_enabled())
     return SendEvent(continuation, &event);
 
   if (event.IsKeyEvent()) {
     const ui::KeyEvent* key_event = event.AsKeyEvent();
+    ui::EventRewriterChromeOS::MutableKeyState state(key_event);
+    event_rewriter_chromeos_->RewriteModifierKeys(*key_event, &state);
+    std::unique_ptr<ui::Event> rewritten_event;
+    ui::EventRewriterChromeOS::BuildRewrittenKeyEvent(*key_event, state,
+                                                      &rewritten_event);
+    const ui::KeyEvent* rewritten_key_event =
+        rewritten_event.get()->AsKeyEvent();
 
     bool capture = capture_all_keys_;
 
     // Always capture the Search key.
-    capture |= key_event->IsCommandDown();
+    capture |= rewritten_key_event->IsCommandDown() ||
+               rewritten_key_event->key_code() == ui::VKEY_LWIN;
 
     // Don't capture tab as it gets consumed by Blink so never comes back
     // unhandled. In third_party/WebKit/Source/core/input/EventHandler.cpp, a
     // default tab handler consumes tab even when no focusable nodes are found;
     // it sets focus to Chrome and eats the event.
-    if (key_event->GetDomKey() == ui::DomKey::TAB)
+    if (rewritten_key_event->GetDomKey() == ui::DomKey::TAB)
       capture = false;
 
-    delegate_->DispatchKeyEventToChromeVox(ui::Event::Clone(event), capture);
+    delegate_->DispatchKeyEventToChromeVox(
+        ui::Event::Clone(*rewritten_key_event), capture);
     return capture ? DiscardEvent(continuation)
                    : SendEvent(continuation, &event);
   }
 
-  if (send_mouse_events_ && event.IsMouseEvent()) {
+  if (send_mouse_events_ && event.IsMouseEvent())
     delegate_->DispatchMouseEventToChromeVox(ui::Event::Clone(event));
-  }
 
   return SendEvent(continuation, &event);
 }

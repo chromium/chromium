@@ -74,12 +74,6 @@ class NativeAppWindow : public ui::BaseWindow,
   // borders) and the content bounds, if any.
   virtual gfx::Insets GetFrameInsets() const = 0;
 
-  // Hide or show this window as part of hiding or showing the app.
-  // This may have different logic to Hide, Show, and ShowInactive as those are
-  // called via the AppWindow javascript API.
-  virtual void ShowWithApp() = 0;
-  virtual void HideWithApp() = 0;
-
   // Returns the minimum size constraints of the content.
   virtual gfx::Size GetContentMinimumSize() const = 0;
 

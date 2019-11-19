@@ -23,6 +23,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_local.h"
 #include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/thread_instruction_count.h"
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_event_memory_overhead.h"
 #include "build/build_config.h"
@@ -30,12 +31,16 @@
 namespace base {
 namespace trace_event {
 
-typedef base::Callback<bool(const char* arg_name)> ArgumentNameFilterPredicate;
+typedef base::RepeatingCallback<bool(const char* arg_name)>
+    ArgumentNameFilterPredicate;
 
-typedef base::Callback<bool(const char* category_group_name,
-                            const char* event_name,
-                            ArgumentNameFilterPredicate*)>
+typedef base::RepeatingCallback<bool(const char* category_group_name,
+                                     const char* event_name,
+                                     ArgumentNameFilterPredicate*)>
     ArgumentFilterPredicate;
+
+typedef base::RepeatingCallback<bool(const std::string& metadata_name)>
+    MetadataFilterPredicate;
 
 struct TraceEventHandle {
   uint32_t chunk_seq;
@@ -56,6 +61,7 @@ class BASE_EXPORT TraceEvent {
   TraceEvent(int thread_id,
              TimeTicks timestamp,
              ThreadTicks thread_timestamp,
+             ThreadInstructionCount thread_instruction_count,
              char phase,
              const unsigned char* category_group_enabled,
              const char* name,
@@ -84,6 +90,7 @@ class BASE_EXPORT TraceEvent {
   void Reset(int thread_id,
              TimeTicks timestamp,
              ThreadTicks thread_timestamp,
+             ThreadInstructionCount thread_instruction_count,
              char phase,
              const unsigned char* category_group_enabled,
              const char* name,
@@ -93,7 +100,9 @@ class BASE_EXPORT TraceEvent {
              TraceArguments* args,
              unsigned int flags);
 
-  void UpdateDuration(const TimeTicks& now, const ThreadTicks& thread_now);
+  void UpdateDuration(const TimeTicks& now,
+                      const ThreadTicks& thread_now,
+                      ThreadInstructionCount thread_instruction_now);
 
   void EstimateTraceMemoryOverhead(TraceEventMemoryOverhead* overhead);
 
@@ -112,11 +121,17 @@ class BASE_EXPORT TraceEvent {
 
   TimeTicks timestamp() const { return timestamp_; }
   ThreadTicks thread_timestamp() const { return thread_timestamp_; }
+  ThreadInstructionCount thread_instruction_count() const {
+    return thread_instruction_count_;
+  }
   char phase() const { return phase_; }
   int thread_id() const { return thread_id_; }
   int process_id() const { return process_id_; }
   TimeDelta duration() const { return duration_; }
   TimeDelta thread_duration() const { return thread_duration_; }
+  ThreadInstructionDelta thread_instruction_delta() const {
+    return thread_instruction_delta_;
+  }
   const char* scope() const { return scope_; }
   unsigned long long id() const { return id_; }
   unsigned int flags() const { return flags_; }
@@ -158,6 +173,8 @@ class BASE_EXPORT TraceEvent {
   ThreadTicks thread_timestamp_ = ThreadTicks();
   TimeDelta duration_ = TimeDelta::FromInternalValue(-1);
   TimeDelta thread_duration_ = TimeDelta();
+  ThreadInstructionCount thread_instruction_count_ = ThreadInstructionCount();
+  ThreadInstructionDelta thread_instruction_delta_ = ThreadInstructionDelta();
   // scope_ and id_ can be used to store phase-specific data.
   // The following should be default-initialized to the expression
   // trace_event_internal::kGlobalScope, which is nullptr, but its definition

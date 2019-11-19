@@ -8,6 +8,12 @@
  * Tests sharing a file on Drive
  */
 testcase.suggestAppDialog = async () => {
+  await sendTestMessage({
+    name: 'expectFileTask',
+    fileNames: ['unsupported.foo'],
+    openType: 'launch'
+  });
+
   // Fetch the mock CWS page data.
   const data =
       JSON.parse(await sendTestMessage({name: 'getCwsWidgetContainerMockUrl'}));

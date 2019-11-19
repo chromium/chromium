@@ -12,10 +12,6 @@
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "ui/gfx/font_render_params.h"
 
-#if defined(OS_ANDROID)
-#include "content/browser/android/android_ui_constants.h"
-#endif
-
 namespace content {
 
 void UpdateFontRendererPreferencesFromSystemSettings(
@@ -28,24 +24,6 @@ void UpdateFontRendererPreferencesFromSystemSettings(
   prefs->use_autohinter = params->autohinter;
   prefs->use_bitmaps = params->use_bitmaps;
   prefs->subpixel_rendering = params->subpixel_rendering;
-}
-
-void UpdateFocusRingPreferencesFromSystemSettings(
-    blink::mojom::RendererPreferences* prefs) {
-#if defined(OS_ANDROID)
-  prefs->is_focus_ring_outset = AndroidUiConstants::IsFocusRingOutset();
-
-  base::Optional<float> stroke_width =
-      AndroidUiConstants::GetMinimumStrokeWidthForFocusRing();
-  if (stroke_width)
-    prefs->minimum_stroke_width_for_focus_ring = *stroke_width;
-
-  base::Optional<SkColor> color = AndroidUiConstants::GetFocusRingColor();
-  if (color) {
-    prefs->use_custom_colors = true;
-    prefs->focus_ring_color = *color;
-  }
-#endif
 }
 
 }  // namespace content

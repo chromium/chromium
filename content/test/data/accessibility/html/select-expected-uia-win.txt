@@ -1,0 +1,25 @@
+document
+++group
+++++combobox ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='Placeholder option'
+++++++list Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++++listitem Name='Placeholder option' SelectionItem.IsSelected=true
+++++++++listitem Name='Option 1' SelectionItem.IsSelected=false
+++++++++listitem Name='Option 2' SelectionItem.IsSelected=false
+++++combobox ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='Option 2'
+++++++list Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++++listitem Name='Option 1' SelectionItem.IsSelected=false
+++++++++listitem Name='Option 2' SelectionItem.IsSelected=true
+++++++++listitem Name='Option 3' SelectionItem.IsSelected=false
+++++combobox IsRequiredForForm=true ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='Option 1'
+++++++list Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++++listitem Name='Option 1' SelectionItem.IsSelected=true
+++++++++listitem Name='Option 2' SelectionItem.IsSelected=false
+++++++++listitem Name='Option 3' SelectionItem.IsSelected=false
+++++listbox Selection.CanSelectMultiple=true Selection.IsSelectionRequired=false
+++++++option Name='Option 1' SelectionItem.IsSelected=false
+++++++option Name='Option 2' SelectionItem.IsSelected=false
+++++++option Name='Option 3' SelectionItem.IsSelected=false
+++++listbox Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++option Name='Option 1' SelectionItem.IsSelected=false
+++++++option Name='Option 2' SelectionItem.IsSelected=false
+++++++option Name='Option 3' SelectionItem.IsSelected=false

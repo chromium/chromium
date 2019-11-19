@@ -1,0 +1,10 @@
+include_rules = [
+  # Unlike the rest of chrome/chrome_cleaner this might be built on non-Windows
+  # platforms because it's included from the global
+  # chromium_bindings_configuration.gni. So it needs macros from
+  # build/build_config.h to check the platform.
+  '+build',
+
+  # Allow unit tests to set up a mojo embedder.
+  '+mojo/core/embedder',
+]

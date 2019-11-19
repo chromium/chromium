@@ -30,10 +30,9 @@ void ShellJavaScriptDialogManager::RunJavaScriptDialog(
     const base::string16& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
-  if (!dialog_request_callback_.is_null()) {
-    dialog_request_callback_.Run();
+  if (dialog_request_callback_) {
+    std::move(dialog_request_callback_).Run();
     std::move(callback).Run(true, base::string16());
-    dialog_request_callback_.Reset();
     return;
   }
 
@@ -68,14 +67,13 @@ void ShellJavaScriptDialogManager::RunBeforeUnloadDialog(
     DialogClosedCallback callback) {
   // During tests, if the BeforeUnload should not proceed automatically, store
   // the callback and return.
-  if (!dialog_request_callback_.is_null()) {
-    dialog_request_callback_.Run();
+  if (dialog_request_callback_) {
+    std::move(dialog_request_callback_).Run();
 
     if (should_proceed_on_beforeunload_)
       std::move(callback).Run(beforeunload_success_, base::string16());
     else
       before_unload_callback_ = std::move(callback);
-    dialog_request_callback_.Reset();
     return;
   }
 

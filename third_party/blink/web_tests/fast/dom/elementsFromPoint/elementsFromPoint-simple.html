@@ -84,9 +84,6 @@ window.jsTestIsAsync = true;
 if (window.testRunner)
     testRunner.dumpAsText();
 
-if (window.internals)
-    internals.settings.setMockScrollbarsEnabled(true);
-
 onload = function() {
     // Iterate through each of the elements and verify that they are present in
     // elementsFromPoint(x, y) where (x, y) is any of the four corners.

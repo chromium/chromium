@@ -53,11 +53,6 @@ class MODULES_EXPORT DOMFileSystem final
   USING_GARBAGE_COLLECTED_MIXIN(DOMFileSystem);
 
  public:
-  static DOMFileSystem* Create(ExecutionContext*,
-                               const String& name,
-                               mojom::blink::FileSystemType,
-                               const KURL& root_url);
-
   // Creates a new isolated file system for the given filesystemId.
   static DOMFileSystem* CreateIsolatedFileSystem(ExecutionContext*,
                                                  const String& filesystem_id);
@@ -72,21 +67,21 @@ class MODULES_EXPORT DOMFileSystem final
   // DOMFileSystemBase overrides.
   void AddPendingCallbacks() override;
   void RemovePendingCallbacks() override;
-  void ReportError(ErrorCallbackBase*, base::File::Error error) override;
+  void ReportError(ErrorCallback, base::File::Error error) override;
 
   static void ReportError(ExecutionContext*,
-                          ErrorCallbackBase*,
+                          ErrorCallback,
                           base::File::Error error);
 
   // ScriptWrappable overrides.
   bool HasPendingActivity() const final;
 
   void CreateWriter(const FileEntry*,
-                    FileWriterCallbacks::OnDidCreateFileWriterCallback*,
-                    ErrorCallbackBase*);
+                    FileWriterCallbacks::SuccessCallback,
+                    FileWriterCallbacks::ErrorCallback);
   void CreateFile(const FileEntry*,
-                  SnapshotFileCallback::OnDidCreateSnapshotFileCallback*,
-                  ErrorCallbackBase*);
+                  SnapshotFileCallback::SuccessCallback,
+                  SnapshotFileCallback::ErrorCallback);
 
   // Schedule a callback. This should not cross threads (should be called on the
   // same context thread).

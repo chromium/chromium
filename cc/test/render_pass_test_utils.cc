@@ -33,8 +33,10 @@ viz::ResourceId CreateAndImportResource(
     viz::ClientResourceProvider* resource_provider,
     const gpu::SyncToken& sync_token,
     gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB()) {
+  constexpr gfx::Size size(64, 64);
   auto transfer_resource = viz::TransferableResource::MakeGL(
-      gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D, sync_token);
+      gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
+      false /* is_overlay_candidate */);
   transfer_resource.color_space = std::move(color_space);
   return resource_provider->ImportResource(
       transfer_resource, viz::SingleReleaseCallback::Create(base::DoNothing()));
@@ -73,8 +75,8 @@ viz::SolidColorDrawQuad* AddQuad(viz::RenderPass* pass,
                                  const gfx::Rect& rect,
                                  SkColor color) {
   viz::SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(gfx::Transform(), rect, rect, rect, false, false, 1,
-                       SkBlendMode::kSrcOver, 0);
+  shared_state->SetAll(gfx::Transform(), rect, rect, gfx::RRectF(), rect, false,
+                       false, 1, SkBlendMode::kSrcOver, 0);
   auto* quad = pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   quad->SetNew(shared_state, rect, rect, color, false);
   return quad;
@@ -84,8 +86,8 @@ viz::SolidColorDrawQuad* AddClippedQuad(viz::RenderPass* pass,
                                         const gfx::Rect& rect,
                                         SkColor color) {
   viz::SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(gfx::Transform(), rect, rect, rect, true, false, 1,
-                       SkBlendMode::kSrcOver, 0);
+  shared_state->SetAll(gfx::Transform(), rect, rect, gfx::RRectF(), rect, true,
+                       false, 1, SkBlendMode::kSrcOver, 0);
   auto* quad = pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   quad->SetNew(shared_state, rect, rect, color, false);
   return quad;
@@ -96,7 +98,8 @@ viz::SolidColorDrawQuad* AddTransformedQuad(viz::RenderPass* pass,
                                             SkColor color,
                                             const gfx::Transform& transform) {
   viz::SharedQuadState* shared_state = pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(transform, rect, rect, rect, false, false, 1,
+  shared_state->SetAll(transform, rect, rect, gfx::RRectF(), rect, false, false,
+                       1,
 
                        SkBlendMode::kSrcOver, 0);
   auto* quad = pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
@@ -104,17 +107,19 @@ viz::SolidColorDrawQuad* AddTransformedQuad(viz::RenderPass* pass,
   return quad;
 }
 
-void AddRenderPassQuad(viz::RenderPass* to_pass,
-                       viz::RenderPass* contributing_pass) {
+viz::RenderPassDrawQuad* AddRenderPassQuad(viz::RenderPass* to_pass,
+                                           viz::RenderPass* contributing_pass) {
   gfx::Rect output_rect = contributing_pass->output_rect;
   viz::SharedQuadState* shared_state =
       to_pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(gfx::Transform(), output_rect, output_rect, output_rect,
-                       false, false, 1, SkBlendMode::kSrcOver, 0);
+  shared_state->SetAll(gfx::Transform(), output_rect, output_rect,
+                       gfx::RRectF(), output_rect, false, false, 1,
+                       SkBlendMode::kSrcOver, 0);
   auto* quad = to_pass->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
   quad->SetNew(shared_state, output_rect, output_rect, contributing_pass->id, 0,
                gfx::RectF(), gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
                gfx::RectF(), false, 1.0f);
+  return quad;
 }
 
 void AddRenderPassQuad(viz::RenderPass* to_pass,
@@ -125,8 +130,8 @@ void AddRenderPassQuad(viz::RenderPass* to_pass,
   gfx::Rect output_rect = contributing_pass->output_rect;
   viz::SharedQuadState* shared_state =
       to_pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(transform, output_rect, output_rect, output_rect, false,
-                       false, 1, blend_mode, 0);
+  shared_state->SetAll(transform, output_rect, output_rect, gfx::RRectF(),
+                       output_rect, false, false, 1, blend_mode, 0);
   auto* quad = to_pass->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
   gfx::Size arbitrary_nonzero_size(1, 1);
   quad->SetNew(shared_state, output_rect, output_rect, contributing_pass->id,
@@ -171,8 +176,8 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
 
   viz::SharedQuadState* shared_state =
       to_pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(gfx::Transform(), rect, rect, rect, false, false, 1,
-                       SkBlendMode::kSrcOver, 0);
+  shared_state->SetAll(gfx::Transform(), rect, rect, gfx::RRectF(), rect, false,
+                       false, 1, SkBlendMode::kSrcOver, 0);
 
   auto* debug_border_quad =
       to_pass->CreateAndAppendDrawQuad<viz::DebugBorderDrawQuad>();
@@ -202,20 +207,20 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
   texture_quad->SetNew(
       shared_state, rect, visible_rect, needs_blending, resource1, false,
       gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SK_ColorTRANSPARENT,
-      vertex_opacity, false, false, false, ui::ProtectedVideoType::kClear);
+      vertex_opacity, false, false, false, gfx::ProtectedVideoType::kClear);
 
   auto* external_resource_texture_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   external_resource_texture_quad->SetNew(
       shared_state, rect, visible_rect, needs_blending, resource8, false,
       gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SK_ColorTRANSPARENT,
-      vertex_opacity, false, false, false, ui::ProtectedVideoType::kClear);
+      vertex_opacity, false, false, false, gfx::ProtectedVideoType::kClear);
 
   auto* scaled_tile_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
   scaled_tile_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
                            resource2, gfx::RectF(0, 0, 50, 50),
-                           gfx::Size(50, 50), false, false, false, false);
+                           gfx::Size(50, 50), false, false, false);
 
   viz::SharedQuadState* transformed_state =
       to_pass->CreateAndAppendSharedQuadState();
@@ -226,20 +231,19 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
       transformed_state->quad_to_target_transform * rotation;
   auto* transformed_tile_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
-  transformed_tile_quad->SetNew(transformed_state, rect, visible_rect,
-                                needs_blending, resource3,
-                                gfx::RectF(0, 0, 100, 100), gfx::Size(100, 100),
-                                false, false, false, false);
+  transformed_tile_quad->SetNew(
+      transformed_state, rect, visible_rect, needs_blending, resource3,
+      gfx::RectF(0, 0, 100, 100), gfx::Size(100, 100), false, false, false);
 
   viz::SharedQuadState* shared_state2 =
       to_pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(gfx::Transform(), rect, rect, rect, false, false, 1,
-                       SkBlendMode::kSrcOver, 0);
+  shared_state->SetAll(gfx::Transform(), rect, rect, gfx::RRectF(), rect, false,
+                       false, 1, SkBlendMode::kSrcOver, 0);
 
   auto* tile_quad = to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
   tile_quad->SetNew(shared_state2, rect, visible_rect, needs_blending,
                     resource4, gfx::RectF(0, 0, 100, 100), gfx::Size(100, 100),
-                    false, false, false, false);
+                    false, false, false);
 
   auto* yuv_quad = to_pass->CreateAndAppendDrawQuad<viz::YUVVideoDrawQuad>();
   yuv_quad->SetNew(shared_state2, rect, visible_rect, needs_blending,
@@ -349,8 +353,8 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
 
   viz::SharedQuadState* shared_state =
       to_pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(gfx::Transform(), rect, rect, rect, false, false, 1,
-                       SkBlendMode::kSrcOver, 0);
+  shared_state->SetAll(gfx::Transform(), rect, rect, gfx::RRectF(), rect, false,
+                       false, 1, SkBlendMode::kSrcOver, 0);
 
   viz::DebugBorderDrawQuad* debug_border_quad =
       to_pass->CreateAndAppendDrawQuad<viz::DebugBorderDrawQuad>();
@@ -380,20 +384,20 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   texture_quad->SetNew(
       shared_state, rect, visible_rect, needs_blending, mapped_resource1, false,
       gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SK_ColorTRANSPARENT,
-      vertex_opacity, false, false, false, ui::ProtectedVideoType::kClear);
+      vertex_opacity, false, false, false, gfx::ProtectedVideoType::kClear);
 
   viz::TextureDrawQuad* external_resource_texture_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   external_resource_texture_quad->SetNew(
       shared_state, rect, visible_rect, needs_blending, mapped_resource8, false,
       gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SK_ColorTRANSPARENT,
-      vertex_opacity, false, false, false, ui::ProtectedVideoType::kClear);
+      vertex_opacity, false, false, false, gfx::ProtectedVideoType::kClear);
 
   viz::TileDrawQuad* scaled_tile_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
   scaled_tile_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
                            mapped_resource2, gfx::RectF(0, 0, 50, 50),
-                           gfx::Size(50, 50), false, false, false, false);
+                           gfx::Size(50, 50), false, false, false);
 
   viz::SharedQuadState* transformed_state =
       to_pass->CreateAndAppendSharedQuadState();
@@ -404,21 +408,20 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
       transformed_state->quad_to_target_transform * rotation;
   viz::TileDrawQuad* transformed_tile_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
-  transformed_tile_quad->SetNew(transformed_state, rect, visible_rect,
-                                needs_blending, mapped_resource3,
-                                gfx::RectF(0, 0, 100, 100), gfx::Size(100, 100),
-                                false, false, false, false);
+  transformed_tile_quad->SetNew(
+      transformed_state, rect, visible_rect, needs_blending, mapped_resource3,
+      gfx::RectF(0, 0, 100, 100), gfx::Size(100, 100), false, false, false);
 
   viz::SharedQuadState* shared_state2 =
       to_pass->CreateAndAppendSharedQuadState();
-  shared_state->SetAll(gfx::Transform(), rect, rect, rect, false, false, 1,
-                       SkBlendMode::kSrcOver, 0);
+  shared_state2->SetAll(gfx::Transform(), rect, rect, gfx::RRectF(), rect,
+                        false, false, 1, SkBlendMode::kSrcOver, 0);
 
   viz::TileDrawQuad* tile_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
   tile_quad->SetNew(shared_state2, rect, visible_rect, needs_blending,
                     mapped_resource4, gfx::RectF(0, 0, 100, 100),
-                    gfx::Size(100, 100), false, false, false, false);
+                    gfx::Size(100, 100), false, false, false);
 
   viz::YUVVideoDrawQuad* yuv_quad =
       to_pass->CreateAndAppendDrawQuad<viz::YUVVideoDrawQuad>();

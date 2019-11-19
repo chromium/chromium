@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_path_override.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -25,14 +25,13 @@ constexpr base::TimeDelta kDeletionDelay = base::TimeDelta::FromSeconds(12);
 class NotificationImageRetainerTest : public ::testing::Test {
  public:
   NotificationImageRetainerTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME),
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         user_data_dir_override_(chrome::DIR_USER_DATA) {}
 
   ~NotificationImageRetainerTest() override = default;
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
  private:
   base::ScopedPathOverride user_data_dir_override_;
@@ -42,8 +41,8 @@ class NotificationImageRetainerTest : public ::testing::Test {
 
 TEST_F(NotificationImageRetainerTest, RegisterTemporaryImage) {
   auto image_retainer = std::make_unique<NotificationImageRetainer>(
-      scoped_task_environment_.GetMainThreadTaskRunner(),
-      scoped_task_environment_.GetMockTickClock());
+      task_environment_.GetMainThreadTaskRunner(),
+      task_environment_.GetMockTickClock());
 
   SkBitmap icon;
   icon.allocN32Pixels(64, 64);
@@ -56,7 +55,7 @@ TEST_F(NotificationImageRetainerTest, RegisterTemporaryImage) {
 
   // Fast-forward the task runner so that the file deletion task posted in
   // RegisterTemporaryImage() finishes running.
-  scoped_task_environment_.FastForwardBy(kDeletionDelay);
+  task_environment_.FastForwardBy(kDeletionDelay);
 
   // The temp file should be deleted now.
   ASSERT_FALSE(base::PathExists(temp_file));
@@ -69,8 +68,8 @@ TEST_F(NotificationImageRetainerTest, RegisterTemporaryImage) {
 
 TEST_F(NotificationImageRetainerTest, DeleteFilesInBatch) {
   auto image_retainer = std::make_unique<NotificationImageRetainer>(
-      scoped_task_environment_.GetMainThreadTaskRunner(),
-      scoped_task_environment_.GetMockTickClock());
+      task_environment_.GetMainThreadTaskRunner(),
+      task_environment_.GetMockTickClock());
 
   SkBitmap icon;
   icon.allocN32Pixels(64, 64);
@@ -84,7 +83,7 @@ TEST_F(NotificationImageRetainerTest, DeleteFilesInBatch) {
 
   // Simulate ticking of the clock so that the next image file has a different
   // registration time.
-  scoped_task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Create 2nd image file on disk.
   base::FilePath temp_file2 = image_retainer->RegisterTemporaryImage(image);
@@ -93,7 +92,7 @@ TEST_F(NotificationImageRetainerTest, DeleteFilesInBatch) {
 
   // Simulate ticking of the clock so that the next image file has a different
   // registration time.
-  scoped_task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Create 3rd image file on disk.
   base::FilePath temp_file3 = image_retainer->RegisterTemporaryImage(image);
@@ -102,22 +101,22 @@ TEST_F(NotificationImageRetainerTest, DeleteFilesInBatch) {
 
   // Fast-forward the task runner by kDeletionDelay. The first temp file should
   // be deleted now, while the other two should still be around.
-  scoped_task_environment_.FastForwardBy(kDeletionDelay);
+  task_environment_.FastForwardBy(kDeletionDelay);
   ASSERT_FALSE(base::PathExists(temp_file1));
   ASSERT_TRUE(base::PathExists(temp_file2));
   ASSERT_TRUE(base::PathExists(temp_file3));
 
   // Fast-forward the task runner again. The second and the third temp files
   // are deleted simultaneously.
-  scoped_task_environment_.FastForwardBy(kDeletionDelay);
+  task_environment_.FastForwardBy(kDeletionDelay);
   ASSERT_FALSE(base::PathExists(temp_file2));
   ASSERT_FALSE(base::PathExists(temp_file3));
 }
 
 TEST_F(NotificationImageRetainerTest, CleanupFilesFromPrevSessions) {
   auto image_retainer = std::make_unique<NotificationImageRetainer>(
-      scoped_task_environment_.GetMainThreadTaskRunner(),
-      scoped_task_environment_.GetMockTickClock());
+      task_environment_.GetMainThreadTaskRunner(),
+      task_environment_.GetMockTickClock());
 
   const base::FilePath& image_dir = image_retainer->image_dir();
   ASSERT_TRUE(base::CreateDirectory(image_dir));
@@ -147,7 +146,7 @@ TEST_F(NotificationImageRetainerTest, CleanupFilesFromPrevSessions) {
   image_retainer->CleanupFilesFromPrevSessions();
 
   // Now the file cleanup task finishes running.
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // The two temp files from previous sessions should be deleted now.
   ASSERT_FALSE(base::PathExists(temp_file1));
@@ -158,7 +157,7 @@ TEST_F(NotificationImageRetainerTest, CleanupFilesFromPrevSessions) {
 
   // Fast-forward the task runner so that the file deletion task posted in
   // RegisterTemporaryImage() finishes running.
-  scoped_task_environment_.FastForwardBy(kDeletionDelay);
+  task_environment_.FastForwardBy(kDeletionDelay);
 
   // The temp file created in this session should be deleted now.
   ASSERT_FALSE(base::PathExists(temp_file3));

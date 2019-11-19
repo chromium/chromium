@@ -22,8 +22,7 @@ namespace test_runner {
 
 SpellCheckClient::SpellCheckClient(TestRunner* test_runner)
     : last_requested_text_checking_completion_(nullptr),
-      test_runner_(test_runner),
-      weak_factory_(this) {
+      test_runner_(test_runner) {
   DCHECK(test_runner);
 }
 
@@ -65,7 +64,7 @@ void SpellCheckClient::CheckSpelling(
 
 void SpellCheckClient::RequestCheckingOfText(
     const blink::WebString& text,
-    blink::WebTextCheckingCompletion* completion) {
+    std::unique_ptr<blink::WebTextCheckingCompletion> completion) {
   if (!enabled_ || text.IsEmpty()) {
     if (completion) {
       completion->DidCancelCheckingText();
@@ -76,11 +75,11 @@ void SpellCheckClient::RequestCheckingOfText(
 
   if (last_requested_text_checking_completion_) {
     last_requested_text_checking_completion_->DidCancelCheckingText();
-    last_requested_text_checking_completion_ = nullptr;
+    last_requested_text_checking_completion_.reset();
     RequestResolved();
   }
 
-  last_requested_text_checking_completion_ = completion;
+  last_requested_text_checking_completion_ = std::move(completion);
   last_requested_text_check_string_ = text;
   if (spell_check_.HasInCache(text)) {
     FinishLastTextCheck();
@@ -120,10 +119,10 @@ void SpellCheckClient::FinishLastTextCheck() {
                                            &results);
   }
   last_requested_text_checking_completion_->DidFinishCheckingText(results);
-  last_requested_text_checking_completion_ = nullptr;
+  last_requested_text_checking_completion_.reset();
   RequestResolved();
 
-  if (test_runner_->shouldDumpSpellCheckCallbacks())
+  if (test_runner_->ShouldDumpSpellCheckCallbacks())
     delegate_->PrintMessage("SpellCheckEvent: FinishLastTextCheck\n");
 }
 
@@ -143,7 +142,7 @@ void SpellCheckClient::RequestResolved() {
   v8::Isolate* isolate = blink::MainThreadIsolate();
   v8::HandleScope handle_scope(isolate);
 
-  blink::WebFrame* frame = test_runner_->mainFrame();
+  blink::WebFrame* frame = test_runner_->MainFrame();
   if (!frame || frame->IsWebRemoteFrame())
     return;
   blink::WebLocalFrame* local_frame = frame->ToWebLocalFrame();

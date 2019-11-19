@@ -32,10 +32,10 @@ namespace remoting {
 // Each returns a base::Optional value. If it is not set, that indicates the
 // conversion failed.
 
-base::Optional<EncryptionScheme::CipherMode> ToMediaEncryptionSchemeCipherMode(
+base::Optional<EncryptionScheme> ToMediaEncryptionScheme(
     pb::EncryptionScheme::CipherMode value);
 base::Optional<pb::EncryptionScheme::CipherMode>
-ToProtoEncryptionSchemeCipherMode(EncryptionScheme::CipherMode value);
+ToProtoEncryptionSchemeCipherMode(EncryptionScheme value);
 
 base::Optional<AudioCodec> ToMediaAudioCodec(
     pb::AudioDecoderConfig::Codec value);
@@ -64,8 +64,6 @@ ToProtoVideoDecoderConfigProfile(VideoCodecProfile value);
 
 base::Optional<VideoPixelFormat> ToMediaVideoPixelFormat(
     pb::VideoDecoderConfig::Format value);
-base::Optional<pb::VideoDecoderConfig::Format> ToProtoVideoDecoderConfigFormat(
-    VideoPixelFormat value);
 
 base::Optional<BufferingState> ToMediaBufferingState(
     pb::RendererClientOnBufferingStateChange::State value);
@@ -98,8 +96,10 @@ base::Optional<DemuxerStream::Status> ToDemuxerStreamStatus(
 base::Optional<pb::DemuxerStreamReadUntilCallback::Status>
 ToProtoDemuxerStreamStatus(DemuxerStream::Status value);
 
-base::Optional<EncryptionMode> ToMediaEncryptionMode(pb::EncryptionMode value);
-base::Optional<pb::EncryptionMode> ToProtoEncryptionMode(EncryptionMode value);
+base::Optional<EncryptionScheme> ToMediaEncryptionScheme(
+    pb::EncryptionMode value);
+base::Optional<pb::EncryptionMode> ToProtoEncryptionMode(
+    EncryptionScheme value);
 
 }  // namespace remoting
 }  // namespace media

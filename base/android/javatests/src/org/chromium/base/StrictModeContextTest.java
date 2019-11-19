@@ -100,7 +100,7 @@ public class StrictModeContextTest {
     @Test
     @SmallTest
     public void testAllowDiskWrites() {
-        try (StrictModeContext unused = StrictModeContext.allowDiskWrites()) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             writeToDisk();
         }
         assertWriteToDiskThrows();
@@ -109,7 +109,7 @@ public class StrictModeContextTest {
     @Test
     @SmallTest
     public void testAllowDiskReads() {
-        try (StrictModeContext unused = StrictModeContext.allowDiskReads()) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             readFromDisk();
             assertWriteToDiskThrows();
         }

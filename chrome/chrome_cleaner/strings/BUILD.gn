@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
 source_set("strings") {
   sources = [
     "string16_embedded_nulls.cc",
@@ -10,7 +13,7 @@ source_set("strings") {
     "string_util.h",
   ]
   deps = [
-    "//base:base",
+    "//base",
     "//base:i18n",
   ]
 }
@@ -25,7 +28,7 @@ source_set("string_test_helpers") {
 
   deps = [
     ":strings",
-    "//base:base",
+    "//base",
   ]
 }
 

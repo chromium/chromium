@@ -3493,10 +3493,11 @@ xsltDocumentElem(xsltTransformContextPtr ctxt, xmlNodePtr node,
      */
     if (ctxt->sec != NULL) {
 	ret = xsltCheckWrite(ctxt->sec, ctxt, filename);
-	if (ret == 0) {
-	    xsltTransformError(ctxt, NULL, inst,
-		 "xsltDocumentElem: write rights for %s denied\n",
-			     filename);
+	if (ret <= 0) {
+            if (ret == 0)
+                xsltTransformError(ctxt, NULL, inst,
+                     "xsltDocumentElem: write rights for %s denied\n",
+                                 filename);
 	    xmlFree(URL);
 	    xmlFree(filename);
 	    return;

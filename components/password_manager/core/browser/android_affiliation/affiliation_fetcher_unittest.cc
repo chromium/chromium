@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/null_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_api.pb.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -105,21 +105,21 @@ class AffiliationFetcherTest : public testing::Test {
   }
 
   void SetupNetworkErrorResponse() {
-    network::ResourceResponseHead head =
-        network::CreateResourceResponseHead(net::HTTP_INTERNAL_SERVER_ERROR);
-    head.mime_type = "application/protobuf";
+    auto head = network::CreateURLResponseHead(net::HTTP_INTERNAL_SERVER_ERROR);
+    head->mime_type = "application/protobuf";
     network::URLLoaderCompletionStatus status(net::ERR_NETWORK_CHANGED);
-    test_url_loader_factory_.AddResponse(interception_url(), head, "", status);
+    test_url_loader_factory_.AddResponse(interception_url(), std::move(head),
+                                         "", status);
   }
 
-  void WaitForResponse() { scoped_task_environment_.RunUntilIdle(); }
+  void WaitForResponse() { task_environment_.RunUntilIdle(); }
 
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory() {
     return test_shared_loader_factory_;
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::string intercepted_body_;

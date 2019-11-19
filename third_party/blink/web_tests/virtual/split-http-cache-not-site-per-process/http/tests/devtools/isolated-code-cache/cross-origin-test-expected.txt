@@ -1,0 +1,82 @@
+Tests V8 code cache for javascript resources
+
+---First navigation - produce and consume code cache ------
+
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 0
+        lineNumber : 0
+        notStreamedReason : "script too small"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.js
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-script.js:1
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 0
+        lineNumber : 0
+        notStreamedReason : "already used streamed data"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.js
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-script.js:1
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 0
+        lineNumber : 0
+        notStreamedReason : "already used streamed data"
+        producedCacheSize : <number>
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.js
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-script.js:1
+v8.compile Properties:
+{
+    data : {
+        cacheConsumeOptions : "code"
+        cacheRejected : false
+        columnNumber : 0
+        consumedCacheSize : <number>
+        lineNumber : 0
+        notStreamedReason : "already used streamed data"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.js
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-script.js:1
+
+--- Second navigation - from a different origin ------
+
+v8.compile Properties:
+{
+    data : {
+        columnNumber : 0
+        lineNumber : 0
+        notStreamedReason : "script too small"
+        streamed : <boolean>
+        url : .../devtools/resources/v8-cache-script.js
+    }
+    endTime : <number>
+    startTime : <number>
+    type : "v8.compile"
+}
+Text details for v8.compile: v8-cache-script.js:1
+

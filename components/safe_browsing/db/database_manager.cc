@@ -23,8 +23,7 @@ namespace safe_browsing {
 
 SafeBrowsingDatabaseManager::SafeBrowsingDatabaseManager()
     : base::RefCountedDeleteOnSequence<SafeBrowsingDatabaseManager>(
-          base::CreateSingleThreadTaskRunnerWithTraits(
-              {content::BrowserThread::IO})),
+          base::CreateSingleThreadTaskRunner({content::BrowserThread::IO})),
       enabled_(false) {}
 
 SafeBrowsingDatabaseManager::~SafeBrowsingDatabaseManager() {
@@ -140,6 +139,11 @@ void SafeBrowsingDatabaseManager::StopOnIOThread(bool shutdown) {
 
   // This cancels all in-flight GetHash requests.
   v4_get_hash_protocol_manager_.reset();
+}
+
+RealTimeUrlLookupService*
+SafeBrowsingDatabaseManager::GetRealTimeUrlLookupService() {
+  return nullptr;
 }
 
 std::unique_ptr<base::CallbackList<void()>::Subscription>

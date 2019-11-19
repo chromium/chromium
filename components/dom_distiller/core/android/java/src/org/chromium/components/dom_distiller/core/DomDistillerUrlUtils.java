@@ -6,8 +6,10 @@ package org.chromium.components.dom_distiller.core;
 
 import android.text.TextUtils;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Wrapper for the dom_distiller::url_utils.
@@ -28,7 +30,7 @@ public final class DomDistillerUrlUtils {
     public static String getDistillerViewUrlFromUrl(String scheme, String url) {
         assert scheme != null;
         if (TextUtils.isEmpty(url)) return url;
-        return nativeGetDistillerViewUrlFromUrl(scheme, url);
+        return DomDistillerUrlUtilsJni.get().getDistillerViewUrlFromUrl(scheme, url);
     }
 
     /**
@@ -39,7 +41,7 @@ public final class DomDistillerUrlUtils {
      */
     public static String getOriginalUrlFromDistillerUrl(String url) {
         if (TextUtils.isEmpty(url)) return url;
-        return nativeGetOriginalUrlFromDistillerUrl(url);
+        return DomDistillerUrlUtilsJni.get().getOriginalUrlFromDistillerUrl(url);
     }
 
     /**
@@ -50,17 +52,20 @@ public final class DomDistillerUrlUtils {
      */
     public static boolean isDistilledPage(String url) {
         if (TextUtils.isEmpty(url)) return false;
-        return nativeIsDistilledPage(url);
+        return DomDistillerUrlUtilsJni.get().isDistilledPage(url);
     }
 
     public static String getValueForKeyInUrl(String url, String key) {
         assert key != null;
         if (TextUtils.isEmpty(url)) return null;
-        return nativeGetValueForKeyInUrl(url, key);
+        return DomDistillerUrlUtilsJni.get().getValueForKeyInUrl(url, key);
     }
 
-    private static native String nativeGetDistillerViewUrlFromUrl(String scheme, String url);
-    private static native String nativeGetOriginalUrlFromDistillerUrl(String viewerUrl);
-    private static native boolean nativeIsDistilledPage(String url);
-    private static native String nativeGetValueForKeyInUrl(String url, String key);
+    @NativeMethods
+    interface Natives {
+        String getDistillerViewUrlFromUrl(String scheme, String url);
+        String getOriginalUrlFromDistillerUrl(String viewerUrl);
+        boolean isDistilledPage(String url);
+        String getValueForKeyInUrl(String url, String key);
+    }
 }

@@ -6,11 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_INSTALLED_SCRIPTS_MANAGER_H_
 
 #include "base/optional.h"
+#include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_response_headers.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -43,6 +44,9 @@ class InstalledScriptsManager {
     ContentSecurityPolicyResponseHeaders
     GetContentSecurityPolicyResponseHeaders();
     String GetReferrerPolicy();
+    network::mojom::IPAddressSpace GetResponseAddressSpace() const {
+      return response_address_space_;
+    }
     std::unique_ptr<Vector<String>> CreateOriginTrialTokens();
 
    private:
@@ -50,6 +54,7 @@ class InstalledScriptsManager {
     String source_text_;
     std::unique_ptr<Vector<uint8_t>> meta_data_;
     HTTPHeaderMap headers_;
+    network::mojom::IPAddressSpace response_address_space_;
 
     DISALLOW_COPY_AND_ASSIGN(ScriptData);
   };

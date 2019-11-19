@@ -43,7 +43,7 @@ GeneratePageBundleRequest::GeneratePageBundleRequest(
 
   fetcher_ = PrefetchRequestFetcher::CreateForPost(
       GeneratePageBundleRequestURL(channel), upload_data, testing_header_value,
-      url_loader_factory,
+      requested_urls_.empty(), url_loader_factory,
       base::BindOnce(&GeneratePageBundleRequest::OnCompleted,
                      // Fetcher is owned by this instance.
                      base::Unretained(this)));
@@ -67,8 +67,7 @@ void GeneratePageBundleRequest::OnCompleted(PrefetchRequestStatus status,
     return;
   }
 
-  std::move(callback_).Run(PrefetchRequestStatus::kSuccess, operation_name,
-                           pages);
+  std::move(callback_).Run(status, operation_name, pages);
 }
 
 }  // namespace offline_pages

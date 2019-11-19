@@ -45,10 +45,6 @@ namespace blink {
 ValidationMessageClientImpl::ValidationMessageClientImpl(Page& page)
     : page_(&page), current_anchor_(nullptr) {}
 
-ValidationMessageClientImpl* ValidationMessageClientImpl::Create(Page& page) {
-  return MakeGarbageCollected<ValidationMessageClientImpl>(page);
-}
-
 ValidationMessageClientImpl::~ValidationMessageClientImpl() = default;
 
 LocalFrameView* ValidationMessageClientImpl::CurrentView() {
@@ -73,10 +69,10 @@ void ValidationMessageClientImpl::ShowValidationMessage(
   message_ = message;
   page_->GetChromeClient().RegisterPopupOpeningObserver(this);
   constexpr auto kMinimumTimeToShowValidationMessage =
-      TimeDelta::FromSeconds(5);
-  constexpr auto kTimePerCharacter = TimeDelta::FromMilliseconds(50);
+      base::TimeDelta::FromSeconds(5);
+  constexpr auto kTimePerCharacter = base::TimeDelta::FromMilliseconds(50);
   finish_time_ =
-      CurrentTimeTicks() +
+      base::TimeTicks::Now() +
       std::max(kMinimumTimeToShowValidationMessage,
                (message.length() + sub_message.length()) * kTimePerCharacter);
 
@@ -85,10 +81,11 @@ void ValidationMessageClientImpl::ShowValidationMessage(
     target_frame = &anchor.GetDocument().GetFrame()->LocalFrameRoot();
 
   allow_initial_empty_anchor_ = !target_frame->IsMainFrame();
-  auto delegate = ValidationMessageOverlayDelegate::Create(
+  auto delegate = std::make_unique<ValidationMessageOverlayDelegate>(
       *page_, anchor, message_, message_dir, sub_message, sub_message_dir);
   overlay_delegate_ = delegate.get();
-  overlay_ = FrameOverlay::Create(target_frame, std::move(delegate));
+  overlay_ = std::make_unique<FrameOverlay>(target_frame, std::move(delegate));
+  overlay_delegate_->CreatePage(*overlay_);
   bool success =
       target_frame->View()->UpdateLifecycleToCompositingCleanPlusScrolling();
   ValidationMessageVisibilityChanged(anchor);
@@ -117,7 +114,8 @@ void ValidationMessageClientImpl::HideValidationMessage(const Element& anchor) {
       &ValidationMessageClientImpl::Reset);
   // This should be equal to or larger than transition duration of
   // #container.hiding in validation_bubble.css.
-  const TimeDelta kHidingAnimationDuration = TimeDelta::FromSecondsD(0.13333);
+  const base::TimeDelta kHidingAnimationDuration =
+      base::TimeDelta::FromSecondsD(0.13333);
   timer_->StartOneShot(kHidingAnimationDuration, FROM_HERE);
 }
 
@@ -134,7 +132,7 @@ void ValidationMessageClientImpl::Reset(TimerBase*) {
   timer_ = nullptr;
   current_anchor_ = nullptr;
   message_ = String();
-  finish_time_ = TimeTicks();
+  finish_time_ = base::TimeTicks();
   overlay_ = nullptr;
   overlay_delegate_ = nullptr;
   page_->GetChromeClient().UnregisterPopupOpeningObserver(this);
@@ -158,10 +156,15 @@ void ValidationMessageClientImpl::DocumentDetached(const Document& document) {
     HideValidationMessageImmediately(*current_anchor_);
 }
 
+void ValidationMessageClientImpl::DidChangeFocusTo(const Element* new_element) {
+  if (current_anchor_ && current_anchor_ != new_element)
+    HideValidationMessageImmediately(*current_anchor_);
+}
+
 void ValidationMessageClientImpl::CheckAnchorStatus(TimerBase*) {
   DCHECK(current_anchor_);
   if ((!WebTestSupport::IsRunningWebTest() &&
-       CurrentTimeTicks() >= finish_time_) ||
+       base::TimeTicks::Now() >= finish_time_) ||
       !CurrentView()) {
     HideValidationMessage(*current_anchor_);
     return;
@@ -192,18 +195,20 @@ void ValidationMessageClientImpl::WillOpenPopup() {
     HideValidationMessage(*current_anchor_);
 }
 
-void ValidationMessageClientImpl::LayoutOverlay() {
-  if (!overlay_)
-    return;
-  CheckAnchorStatus(nullptr);
+void ValidationMessageClientImpl::ServiceScriptedAnimations(
+    base::TimeTicks monotonic_frame_begin_time) {
   if (overlay_)
-    overlay_->Update();
+    overlay_->ServiceScriptedAnimations(monotonic_frame_begin_time);
 }
 
-void ValidationMessageClientImpl::PaintOverlay() {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  if (overlay_ && overlay_->GetGraphicsLayer())
-    overlay_->GetGraphicsLayer()->Paint();
+void ValidationMessageClientImpl::LayoutOverlay() {
+  if (overlay_)
+    CheckAnchorStatus(nullptr);
+}
+
+void ValidationMessageClientImpl::UpdatePrePaint() {
+  if (overlay_)
+    overlay_->UpdatePrePaint();
 }
 
 void ValidationMessageClientImpl::PaintOverlay(GraphicsContext& context) {

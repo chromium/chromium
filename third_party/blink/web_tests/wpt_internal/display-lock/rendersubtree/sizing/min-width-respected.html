@@ -1,0 +1,45 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: min-width on locked root respected</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="min-width-respected-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+#border {
+  width: max-content;
+  border: 1px solid green;
+}
+#container {
+  intrinsic-size: 123px 456px;
+  min-width: 157px;
+}
+#child {
+  width: 500px;
+  height: 500px;
+  background: red;
+}
+div:not([rendersubtree~="invisible"]) {
+  intrinsic-size: legacy !important;
+}
+</style>
+
+<div id="border">
+  <div id="container">
+    <div id="child"></div>
+  </div>
+</div>
+
+<script>
+async function runTest() {
+  const container = document.getElementById("container");
+  await setInvisible(container);
+  takeScreenshot();
+}
+
+window.onload = runTest;
+</script>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+selection_test(
+  [
+    '<div contenteditable>foo',
+    '<span style="display:inline-block">',
+    '<div>|bar</div><div>baz</div>',
+    '</span>qux</div>'
+  ].join(''),
+  selection => selection.modify('move', 'left', 'character'),
+  [
+    '<div contenteditable>foo|',
+    '<span style="display:inline-block">',
+    '<div>bar</div><div>baz</div>',
+    '</span>qux</div>'
+  ].join(''),
+  'Move left out of inline block with child blocks');
+
+selection_test(
+  [
+    '<div contenteditable>foo',
+    '<span style="display:inline-block">',
+    '<div>bar</div><div>baz|</div>',
+    '</span>qux</div>'
+  ].join(''),
+  selection => selection.modify('move', 'right', 'character'),
+  [
+    '<div contenteditable>foo',
+    '<span style="display:inline-block">',
+    '<div>bar</div><div>baz</div>',
+    '</span>|qux</div>'
+  ].join(''),
+  'Move right out of inline block with child blocks');
+
+selection_test(
+  [
+    '<div contenteditable>foo',
+    '<table style="display:inline"><tbody>',
+    '<tr><td>|bar</td></tr><tr><td>baz</td></tr>',
+    '</tbody></table>qux</div>'
+  ].join(''),
+  selection => selection.modify('move', 'left', 'character'),
+  [
+    '<div contenteditable>foo|',
+    '<table style="display:inline"><tbody>',
+    '<tr><td>bar</td></tr><tr><td>baz</td></tr>',
+    '</tbody></table>qux</div>'
+  ].join(''),
+  'Move left out of inline table');
+
+selection_test(
+  [
+    '<div contenteditable>foo',
+    '<table style="display:inline"><tbody>',
+    '<tr><td>bar</td></tr><tr><td>baz|</td></tr>',
+    '</tbody></table>qux</div>'
+  ].join(''),
+  selection => selection.modify('move', 'right', 'character'),
+  [
+    '<div contenteditable>foo',
+    '<table style="display:inline"><tbody>',
+    '<tr><td>bar</td></tr><tr><td>baz</td></tr>',
+    '</tbody></table>|qux</div>'
+  ].join(''),
+  'Move right out of inline table');
+
+selection_test(
+  [
+    '<div contenteditable>foo',
+    '<div style="display:inline-flex">',
+    '<div>|bar</div><div>baz</div>',
+    '</div>qux</div>'
+  ].join(''),
+  selection => selection.modify('move', 'left', 'character'),
+  [
+    '<div contenteditable>foo|',
+    '<div style="display:inline-flex">',
+    '<div>bar</div><div>baz</div>',
+    '</div>qux</div>'
+  ].join(''),
+  'Move left out of inline flex');
+
+selection_test(
+  [
+    '<div contenteditable>foo',
+    '<div style="display:inline-flex">',
+    '<div>bar</div><div>baz|</div>',
+    '</div>qux</div>'
+  ].join(''),
+  selection => selection.modify('move', 'right', 'character'),
+  [
+    '<div contenteditable>foo',
+    '<div style="display:inline-flex">',
+    '<div>bar</div><div>baz</div>',
+    '</div>|qux</div>'
+  ].join(''),
+  'Move right out of inline flex');
+</script>

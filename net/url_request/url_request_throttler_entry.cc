@@ -51,17 +51,15 @@ const int URLRequestThrottlerEntry::kDefaultMaximumBackoffMs = 15 * 60 * 1000;
 const int URLRequestThrottlerEntry::kDefaultEntryLifetimeMs = 2 * 60 * 1000;
 
 // Returns NetLog parameters when a request is rejected by throttling.
-std::unique_ptr<base::Value> NetLogRejectedRequestCallback(
-    const std::string* url_id,
-    int num_failures,
-    const base::TimeDelta& release_after,
-    NetLogCaptureMode /* capture_mode */) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("url", *url_id);
-  dict->SetInteger("num_failures", num_failures);
-  dict->SetInteger("release_after_ms",
-                   static_cast<int>(release_after.InMilliseconds()));
-  return std::move(dict);
+base::Value NetLogRejectedRequestParams(const std::string* url_id,
+                                        int num_failures,
+                                        const base::TimeDelta& release_after) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("url", *url_id);
+  dict.SetIntKey("num_failures", num_failures);
+  dict.SetIntKey("release_after_ms",
+                 static_cast<int>(release_after.InMilliseconds()));
+  return dict;
 }
 
 URLRequestThrottlerEntry::URLRequestThrottlerEntry(
@@ -148,17 +146,18 @@ void URLRequestThrottlerEntry::DisableBackoffThrottling() {
 }
 
 void URLRequestThrottlerEntry::DetachManager() {
-  manager_ = NULL;
+  manager_ = nullptr;
 }
 
 bool URLRequestThrottlerEntry::ShouldRejectRequest(
     const URLRequest& request) const {
   bool reject_request = false;
   if (!is_backoff_disabled_ && GetBackoffEntry()->ShouldRejectRequest()) {
-    net_log_.AddEvent(NetLogEventType::THROTTLING_REJECTED_REQUEST,
-                      base::Bind(&NetLogRejectedRequestCallback, &url_id_,
-                                 GetBackoffEntry()->failure_count(),
-                                 GetBackoffEntry()->GetTimeUntilRelease()));
+    net_log_.AddEvent(NetLogEventType::THROTTLING_REJECTED_REQUEST, [&] {
+      return NetLogRejectedRequestParams(
+          &url_id_, GetBackoffEntry()->failure_count(),
+          GetBackoffEntry()->GetTimeUntilRelease());
+    });
     reject_request = true;
   }
 

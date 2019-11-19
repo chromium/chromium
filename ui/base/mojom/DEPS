@@ -1,0 +1,6 @@
+include_rules = [
+  "+mojo/public/cpp/base",
+  "+mojo/public/cpp/bindings",
+  "+third_party/blink/public/mojom/clipboard/clipboard.mojom-shared.h",
+  "+skia/public/mojom"
+]

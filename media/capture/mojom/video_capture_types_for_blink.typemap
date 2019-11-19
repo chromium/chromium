@@ -1,0 +1,32 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//media/capture/mojom/video_capture_types.mojom"
+
+public_headers = [
+  "//media/capture/video_capture_types.h",
+  "//media/capture/video/video_capture_device_descriptor.h",
+  "//media/capture/video/video_capture_device_info.h",
+]
+
+traits_headers = [ "//media/capture/mojom/video_capture_types_mojom_traits.h" ]
+
+deps = [
+  "//media",
+  "//media/capture:capture_base",
+]
+
+type_mappings = [
+  "media.mojom.ResolutionChangePolicy=::media::ResolutionChangePolicy",
+  "media.mojom.PowerLineFrequency=::media::PowerLineFrequency",
+  "media.mojom.VideoCapturePixelFormat=::media::VideoPixelFormat",
+  "media.mojom.VideoCaptureBufferType=::media::VideoCaptureBufferType",
+  "media.mojom.VideoCaptureError=::media::VideoCaptureError",
+  "media.mojom.VideoCaptureFrameDropReason=::media::VideoCaptureFrameDropReason",
+  "media.mojom.VideoCaptureFormat=::media::VideoCaptureFormat",
+  "media.mojom.VideoCaptureParams=::media::VideoCaptureParams",
+  "media.mojom.VideoCaptureDeviceDescriptor=::media::VideoCaptureDeviceDescriptor",
+  "media.mojom.VideoCaptureDeviceInfo=::media::VideoCaptureDeviceInfo",
+  "media.mojom.VideoFacingMode=::media::VideoFacingMode",
+]

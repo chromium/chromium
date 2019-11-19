@@ -1,0 +1,5 @@
+AXGroup AXDescription='Page 1'
+++AXGroup
+++++AXGroup AXDescription='Page 1'
+++++++AXGroup
+++++++++AXStaticText AXValue='Hello, world!'

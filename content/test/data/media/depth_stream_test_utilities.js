@@ -61,12 +61,15 @@ function verifyPixels(
     var i = (width * row + column) * 4;
     var calculated = (data[0] + wrap_around +
                       step * ((flip_y ? -row : row) + column)) % wrap_around;
-    if (Math.abs(calculated - data[i]) > tolerance) {
+    var diff = Math.abs(calculated - data[i]);
+    // We reconstruct the values based on top left value. When the reconstructed
+    // value is near |wrap_around|, read value, data[i], could be wrapped
+    // around, and vice versa - "diff > wrap_around - tolerance", in that case.
+    if (diff >= tolerance && diff <= wrap_around - tolerance) {
       return Promise.reject(test_name + ": reference value " + data[i] +
-          " differs from calculated: " + calculated +
-          " at index (row, column) " + i + " (" + row + ", " + column +
-          "). TopLeft value:" + data[0] + ", step:" + step + ", flip_y:" +
-          flip_y);
+          " differs from calculated: " + calculated + " at index (row, column) "
+          + i + " (" + row + ", " + column + "). TopLeft value:" + data[0] +
+          ", step:" + step + ", flip_y:" + flip_y);
     }
   }
   return true;

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL TestDriver generate_test_report method assert_unreached: generate_test_report failed Reached unreachable code
+Harness: the test ran to completion.
+

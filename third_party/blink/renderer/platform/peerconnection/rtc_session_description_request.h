@@ -42,7 +42,7 @@ namespace blink {
 class WebRTCSessionDescription;
 
 class RTCSessionDescriptionRequest
-    : public GarbageCollectedFinalized<RTCSessionDescriptionRequest> {
+    : public GarbageCollected<RTCSessionDescriptionRequest> {
  public:
   virtual ~RTCSessionDescriptionRequest() = default;
 

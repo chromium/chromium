@@ -11,9 +11,8 @@
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #include "ios/chrome/browser/ui/collection_view/cells/collection_view_cell_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -73,7 +72,7 @@ const CGFloat kMinimalHeight = 48;
 
 - (UIColor*)textColor {
   if (!_textColor) {
-    _textColor = UIColorFromRGB(kUIKitMainTextColor);
+    _textColor = [UIColor colorNamed:kTextPrimaryColor];
   }
   return _textColor;
 }
@@ -87,7 +86,7 @@ const CGFloat kMinimalHeight = 48;
 
 - (UIColor*)detailTextColor {
   if (!_detailTextColor) {
-    _detailTextColor = UIColorFromRGB(kUIKitMultilineDetailTextColor);
+    _detailTextColor = [UIColor colorNamed:kTextSecondaryColor];
   }
   return _detailTextColor;
 }

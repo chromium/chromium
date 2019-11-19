@@ -98,7 +98,7 @@ def parse_license_data(userid):
     license['error'] = True
     license['message'] = 'Could not fetch license data'
 
-  if response.has_key('error'):
+  if 'error' in response:
     license['error'] = True
     license['message'] = response['error']['message']
   elif (response['result'] == 'YES'

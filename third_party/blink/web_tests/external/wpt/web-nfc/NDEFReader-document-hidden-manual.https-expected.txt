@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test NDEFReader.onreading is not fired when document is hidden assert_equals: Expected reading event, but got error event instead expected "reading" but got "error"
+Harness: the test ran to completion.
+

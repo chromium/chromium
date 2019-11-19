@@ -7,19 +7,21 @@
 
 #include "base/macros.h"
 #include "chromecast/common/mojom/memory_pressure.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chromecast {
 
 class MemoryPressureObserverImpl : public mojom::MemoryPressureObserver {
  public:
-  MemoryPressureObserverImpl(mojom::MemoryPressureObserverPtr* proxy);
+  MemoryPressureObserverImpl(
+      mojo::PendingRemote<mojom::MemoryPressureObserver>* observer);
   ~MemoryPressureObserverImpl() override;
 
  private:
   void MemoryPressureLevelChanged(int32_t pressure_level) override;
 
-  mojo::Binding<mojom::MemoryPressureObserver> binding_;
+  mojo::Receiver<mojom::MemoryPressureObserver> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(MemoryPressureObserverImpl);
 };

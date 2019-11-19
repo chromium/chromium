@@ -30,7 +30,7 @@ namespace {
 // Number of days to consider when getting the number of visited items.
 const int kVisitedScope = 90;
 
-// The number of visisted results to get.
+// The number of visited results to get.
 const int kVisitedCount = 15;
 
 // The number of recently closed items to get.
@@ -338,10 +338,9 @@ void HistoryMenuBridge::CreateMenu() {
   options.SetRecentDayRange(kVisitedScope);
 
   history_service_->QueryHistory(
-      base::string16(),
-      options,
-      base::Bind(&HistoryMenuBridge::OnVisitedHistoryResults,
-                 base::Unretained(this)),
+      base::string16(), options,
+      base::BindOnce(&HistoryMenuBridge::OnVisitedHistoryResults,
+                     base::Unretained(this)),
       &cancelable_task_tracker_);
 }
 
@@ -351,15 +350,14 @@ void HistoryMenuBridge::OnHistoryChanged() {
   CreateMenu();
 }
 
-void HistoryMenuBridge::OnVisitedHistoryResults(
-    history::QueryResults* results) {
+void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
   NSMenu* menu = HistoryMenu();
   ClearMenuSection(menu, kVisited);
   NSInteger top_item = [menu indexOfItemWithTag:kVisitedTitle] + 1;
 
-  size_t count = results->size();
+  size_t count = results.size();
   for (size_t i = 0; i < count; ++i) {
-    const history::URLResult& result = (*results)[i];
+    const history::URLResult& result = results[i];
 
     HistoryItem* item = new HistoryItem;
     item->title = result.title();

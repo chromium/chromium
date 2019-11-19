@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
@@ -61,6 +62,12 @@ public class AuthenticatorTest {
                 RenderFrameHost frameHost, HandlerResponseCallback callback) {
             callback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
         }
+
+        @Override
+        protected void isUserVerifyingPlatformAuthenticatorAvailable(
+                RenderFrameHost frameHost, HandlerResponseCallback callback) {
+            callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(false);
+        }
     }
 
     /** Waits until the JavaScript code supplies a result. */
@@ -102,7 +109,7 @@ public class AuthenticatorTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTab.removeObserver(mUpdateWaiter);
         mTestServer.stopAndDestroyServer();
     }
@@ -114,6 +121,7 @@ public class AuthenticatorTest {
      * setting up or mocking a real APK.
      */
     @Test
+    @DisableIf.Build(sdk_is_less_than = 24)
     @MediumTest
     @Feature({"WebAuth"})
     public void testCreatePublicKeyCredential() throws Exception {
@@ -130,6 +138,7 @@ public class AuthenticatorTest {
      * setting up or mocking a real APK.
      */
     @Test
+    @DisableIf.Build(sdk_is_less_than = 24)
     @MediumTest
     @Feature({"WebAuth"})
     public void testGetPublicKeyCredential() throws Exception {
@@ -145,10 +154,12 @@ public class AuthenticatorTest {
      * This test currently expects a "false" response.
      */
     @Test
+    @DisableIf.Build(sdk_is_less_than = 24)
     @MediumTest
     @Feature({"WebAuth"})
     public void testIsUserVerifyingPlatformAuthenticatorAvailable() throws Exception {
         mActivityTestRule.loadUrl(mUrl);
+        Fido2ApiHandler.overrideInstanceForTesting(mMockHandler);
         mActivityTestRule.runJavaScriptCodeInCurrentTab(
                 "doIsUserVerifyingPlatformAuthenticatorAvailable()");
         Assert.assertEquals("Success", mUpdateWaiter.waitForUpdate());

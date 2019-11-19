@@ -4,8 +4,10 @@
     <message name="IDS_AUTOFILL_ASSISTANT_DEFAULT_ERROR" desc="Text label that is shown when autofill assistant cannot help anymore, because something went wrong.">
       Sorry, something went wrong.
     </message>
-    <message name="IDS_AUTOFILL_ASSISTANT_GIVE_UP" desc="Text label that is shown when autofill assistant cannot help anymore, because of a user action." formatter_data="android_java">
-      Looks like you navigated off on your own, I’ll leave you to it. Have a nice day :)
+    <message name="IDS_AUTOFILL_ASSISTANT_GIVE_UP"
+             desc="Text label that is shown when autofill assistant cannot help anymore, because of a user action."
+             internal_comment="TODO(wnwen): Remove duplication in chrome/android/features/autofill_assistant/strings/android_chrome_autofill_assistant_strings.grd">
+      Sorry I'm not able to help, please continue on your own.
     </message>
     <message name="IDS_AUTOFILL_ASSISTANT_MAYBE_GIVE_UP" desc="Text label shown next to an UNDO button when user action indicate they want to continue on their own.">
       Continue manually?
@@ -13,17 +15,11 @@
     <message name="IDS_AUTOFILL_ASSISTANT_LOADING" desc="Text label that is shown during the loading of the first page, right after being triggered.">
       Opening <ph name="SITE_NAME">$1<ex>google.com</ex></ph>…
     </message>
-    <message name="IDS_AUTOFILL_ASSISTANT_PAYMENT_INFO_CONFIRM" desc="Text on the payment request primary button to confirm payment information [CHAR-LIMIT=32]" formatter_data="android_java">
+    <message name="IDS_AUTOFILL_ASSISTANT_PAYMENT_INFO_CONFIRM" desc="Text on the payment request primary button to confirm payment information [CHAR-LIMIT=32]">
       Continue
     </message>
     <message name="IDS_AUTOFILL_ASSISTANT_DETAILS_DIFFER" desc="Shown as Status Message when details differ.">
       The screening is different from what you selected. Continue?
-    </message>
-    <message name="IDS_AUTOFILL_ASSISTANT_FIRST_RUN_ACCESSIBILITY" desc="Accessibility description of Autofill Assistant first run screen is shown." formatter_data="android_java">
-      Google Assistant in Chrome first run screen is shown
-    </message>
-    <message name="IDS_AUTOFILL_ASSISTANT_AVAILABLE_ACCESSIBILITY" desc="Accessibility description of Autofill Assistant is available." formatter_data="android_java">
-      Google Assistant in Chrome is available near bottom of the screen
     </message>
     <message name="IDS_AUTOFILL_ASSISTANT_CONTINUE_BUTTON" desc="Generic label for a button to continue to the next screen.">
       Continue

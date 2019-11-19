@@ -88,10 +88,10 @@ void PrefProvider::RegisterProfilePrefs(
 }
 
 PrefProvider::PrefProvider(PrefService* prefs,
-                           bool incognito,
+                           bool off_the_record,
                            bool store_last_modified)
     : prefs_(prefs),
-      is_incognito_(incognito),
+      off_the_record_(off_the_record),
       store_last_modified_(store_last_modified),
       clock_(base::DefaultClock::GetInstance()) {
   TRACE_EVENT_BEGIN0("startup", "PrefProvider::PrefProvider");
@@ -126,20 +126,20 @@ PrefProvider::PrefProvider(PrefService* prefs,
           info->type(),
           std::make_unique<ContentSettingsPref>(
               info->type(), prefs_, &pref_change_registrar_, info->pref_name(),
-              is_incognito_,
+              off_the_record_,
               base::Bind(&PrefProvider::Notify, base::Unretained(this)))));
-    } else if (info->type() == CONTENT_SETTINGS_TYPE_PLUGINS) {
+    } else if (info->type() == ContentSettingsType::PLUGINS) {
       // TODO(https://crbug.com/850062): Remove after M71, two milestones after
       // migration of the Flash permissions to ephemeral provider.
       flash_content_settings_pref_ = std::make_unique<ContentSettingsPref>(
           info->type(), prefs_, &pref_change_registrar_, info->pref_name(),
-          is_incognito_,
+          off_the_record_,
           base::Bind(&PrefProvider::Notify, base::Unretained(this)));
     }
   }
 
   size_t num_exceptions = 0;
-  if (!is_incognito_) {
+  if (!off_the_record_) {
     for (const auto& pref : content_settings_prefs_)
       num_exceptions += pref.second->GetNumExceptions();
 
@@ -158,11 +158,12 @@ PrefProvider::~PrefProvider() {
 std::unique_ptr<RuleIterator> PrefProvider::GetRuleIterator(
     ContentSettingsType content_type,
     const ResourceIdentifier& resource_identifier,
-    bool incognito) const {
+    bool off_the_record) const {
   if (!supports_type(content_type))
     return nullptr;
 
-  return GetPref(content_type)->GetRuleIterator(resource_identifier, incognito);
+  return GetPref(content_type)
+      ->GetRuleIterator(resource_identifier, off_the_record);
 }
 
 bool PrefProvider::SetWebsiteSetting(
@@ -170,7 +171,7 @@ bool PrefProvider::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     const ResourceIdentifier& resource_identifier,
-    base::Value* in_value) {
+    std::unique_ptr<base::Value>&& in_value) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
 
@@ -193,7 +194,8 @@ bool PrefProvider::SetWebsiteSetting(
 
   return GetPref(content_type)
       ->SetWebsiteSetting(primary_pattern, secondary_pattern,
-                          resource_identifier, modified_time, in_value);
+                          resource_identifier, modified_time,
+                          std::move(in_value));
 }
 
 base::Time PrefProvider::GetWebsiteSettingLastModified(
@@ -224,7 +226,7 @@ void PrefProvider::ClearAllContentSettingsRules(
   // migration of the Flash permissions to ephemeral provider.
   // |flash_content_settings_pref_| is not null only if Flash permissions are
   // ephemeral and handled in EphemeralProvider.
-  if (content_type == CONTENT_SETTINGS_TYPE_PLUGINS &&
+  if (content_type == ContentSettingsType::PLUGINS &&
       flash_content_settings_pref_) {
     flash_content_settings_pref_->ClearAllContentSettingsRules();
   }
@@ -264,7 +266,7 @@ void PrefProvider::Notify(
 }
 
 void PrefProvider::DiscardObsoletePreferences() {
-  if (is_incognito_)
+  if (off_the_record_)
     return;
 
   prefs_->ClearPref(kObsoleteDomainToOriginMigrationStatus);

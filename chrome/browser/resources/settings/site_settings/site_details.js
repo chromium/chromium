@@ -45,12 +45,38 @@ Polymer({
       value: '',
     },
 
+    /**
+     * The number of cookies stored for the origin.
+     * @private
+     */
+    numCookies_: {
+      type: String,
+      value: '',
+    },
+
     /** @private */
-    enableSiteSettings_: {
+    enableExperimentalWebPlatformFeatures_: {
       type: Boolean,
       value: function() {
-        return loadTimeData.getBoolean('enableSiteSettings');
+        return loadTimeData.getBoolean('enableExperimentalWebPlatformFeatures');
       },
+    },
+
+    /** @private */
+    enableNativeFileSystemWriteContentSetting_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean(
+            'enableNativeFileSystemWriteContentSetting');
+      }
+    },
+
+    /** @private */
+    enableInsecureContentContentSetting_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('enableInsecureContentContentSetting');
+      }
     },
   },
 
@@ -96,10 +122,7 @@ Polymer({
       if (!valid) {
         settings.navigateToPreviousRoute();
       } else {
-        if (this.enableSiteSettings_) {
-          this.$.usageApi.fetchUsageTotal(this.toUrl(this.origin_).hostname);
-        }
-
+        this.$.usageApi.fetchUsageTotal(this.toUrl(this.origin_).hostname);
         this.updatePermissions_(this.getCategoryList());
       }
     });
@@ -162,7 +185,9 @@ Polymer({
           exceptionList.forEach((exception, i) => {
             // |exceptionList| should be in the same order as
             // |categoryList|.
-            permissionsMap[categoryList[i]].site = exception;
+            if (permissionsMap[categoryList[i]]) {
+              permissionsMap[categoryList[i]].site = exception;
+            }
           });
 
           // The displayName won't change, so just use the first
@@ -217,9 +242,7 @@ Polymer({
    * @private
    */
   onClearStorage_: function(e) {
-    // Since usage is only shown when "Site Settings" is enabled, don't
-    // clear it when it's not shown.
-    if (this.enableSiteSettings_ && this.storedData_ != '') {
+    if (this.hasUsage_(this.storedData_, this.numCookies_)) {
       this.$.usageApi.clearUsage(this.toUrl(this.origin_).href);
     }
 
@@ -235,17 +258,8 @@ Polymer({
   onUsageDeleted_: function(event) {
     if (event.detail.origin == this.toUrl(this.origin_).href) {
       this.storedData_ = '';
+      this.numCookies_ = '';
     }
-  },
-
-  /**
-   * Checks whether the permission list is standalone or has a heading.
-   * @return {string} CSS class applied when the permission list has no
-   *     heading.
-   * @private
-   */
-  permissionListClass_: function(hasHeading) {
-    return hasHeading ? '' : 'without-heading';
   },
 
   /**
@@ -254,8 +268,18 @@ Polymer({
    *     disk or battery).
    * @private
    */
-  hasUsage_: function(storage) {
-    return storage != '';
+  hasUsage_: function(storage, cookies) {
+    return storage != '' || cookies != '';
+  },
+
+  /**
+   * Checks whether this site has both storage and cookies information to show.
+   * @return {boolean} Whether there are both storage and cookies information to
+   *     show.
+   * @private
+   */
+  hasDataAndCookies_: function(storage, cookies) {
+    return storage != '' && cookies != '';
   },
 
   /** @private */

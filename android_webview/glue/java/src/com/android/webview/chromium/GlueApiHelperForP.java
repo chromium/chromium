@@ -9,7 +9,7 @@ import android.os.Build;
 import android.webkit.TracingController;
 import android.webkit.WebViewDelegate;
 
-import org.chromium.base.annotations.DoNotInline;
+import org.chromium.base.annotations.VerifiesOnP;
 
 /**
  * Utility class to use new APIs that were added in P (API level 28). These need to exist in a
@@ -18,7 +18,7 @@ import org.chromium.base.annotations.DoNotInline;
  * in base/, for reasons such as using system APIs or instantiating an adapter class that is
  * specific to glue layer.
  */
-@DoNotInline
+@VerifiesOnP
 @TargetApi(Build.VERSION_CODES.P)
 public final class GlueApiHelperForP {
     private GlueApiHelperForP() {}

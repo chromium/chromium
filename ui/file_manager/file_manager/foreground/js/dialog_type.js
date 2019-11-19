@@ -38,9 +38,9 @@ DialogType.isModal = type => {
  */
 DialogType.isOpenDialog = type => {
   return type == DialogType.SELECT_OPEN_FILE ||
-         type == DialogType.SELECT_OPEN_MULTI_FILE ||
-         type == DialogType.SELECT_FOLDER ||
-         type == DialogType.SELECT_UPLOAD_FOLDER;
+      type == DialogType.SELECT_OPEN_MULTI_FILE ||
+      type == DialogType.SELECT_FOLDER ||
+      type == DialogType.SELECT_UPLOAD_FOLDER;
 };
 
 /**
@@ -49,7 +49,7 @@ DialogType.isOpenDialog = type => {
  */
 DialogType.isOpenFileDialog = type => {
   return type == DialogType.SELECT_OPEN_FILE ||
-         type == DialogType.SELECT_OPEN_MULTI_FILE;
+      type == DialogType.SELECT_OPEN_MULTI_FILE;
 };
 
 /**
@@ -58,5 +58,5 @@ DialogType.isOpenFileDialog = type => {
  */
 DialogType.isFolderDialog = type => {
   return type == DialogType.SELECT_FOLDER ||
-         type == DialogType.SELECT_UPLOAD_FOLDER;
+      type == DialogType.SELECT_UPLOAD_FOLDER;
 };

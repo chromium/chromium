@@ -28,8 +28,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
-
-#include "SkBlurImageFilter.h"
+#include "third_party/skia/include/effects/SkBlurImageFilter.h"
 
 namespace blink {
 
@@ -58,10 +57,6 @@ IntSize CalculateKernelSize(const FloatSize& std) {
 
 FEGaussianBlur::FEGaussianBlur(Filter* filter, float x, float y)
     : FilterEffect(filter), std_x_(x), std_y_(y) {}
-
-FEGaussianBlur* FEGaussianBlur::Create(Filter* filter, float x, float y) {
-  return MakeGarbageCollected<FEGaussianBlur>(filter, x, y);
-}
 
 FloatRect FEGaussianBlur::MapEffect(const FloatSize& std_deviation,
                                     const FloatRect& rect) {

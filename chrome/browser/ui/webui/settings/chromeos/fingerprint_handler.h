@@ -8,8 +8,10 @@
 #include "base/containers/flat_map.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
 
 class Profile;
@@ -17,10 +19,6 @@ class Profile;
 namespace base {
 class ListValue;
 }  // namespace base
-
-namespace session_manager {
-class SessionManager;
-}  // namespace session_manager
 
 namespace chromeos {
 namespace settings {
@@ -79,13 +77,13 @@ class FingerprintHandler : public ::settings::SettingsPageUIHandler,
   std::vector<std::string> fingerprints_paths_;
   std::string user_id_;
 
-  device::mojom::FingerprintPtr fp_service_;
-  mojo::Binding<device::mojom::FingerprintObserver> binding_;
+  mojo::Remote<device::mojom::Fingerprint> fp_service_;
+  mojo::Receiver<device::mojom::FingerprintObserver> receiver_{this};
   ScopedObserver<session_manager::SessionManager,
                  session_manager::SessionManagerObserver>
-      session_observer_;
+      session_observer_{this};
 
-  base::WeakPtrFactory<FingerprintHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<FingerprintHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FingerprintHandler);
 };

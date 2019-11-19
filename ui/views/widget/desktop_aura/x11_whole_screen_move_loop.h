@@ -84,14 +84,14 @@ class X11WholeScreenMoveLoop : public X11MoveLoop,
   // Whether the pointer was grabbed on |grab_input_window_|.
   bool grabbed_pointer_;
 
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
 
   // Keeps track of whether the move-loop is cancled by the user (e.g. by
   // pressing escape).
   bool canceled_;
 
   std::unique_ptr<ui::MouseEvent> last_motion_in_screen_;
-  base::WeakPtrFactory<X11WholeScreenMoveLoop> weak_factory_;
+  base::WeakPtrFactory<X11WholeScreenMoveLoop> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(X11WholeScreenMoveLoop);
 };

@@ -4,7 +4,21 @@
 
 package org.chromium.net;
 
-public class NetError {
-#define NET_ERROR(name, value) public static final int ERR_##name = value;
+import android.support.annotation.IntDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@IntDef({
+#define NET_ERROR(name, value) NetError.ERR_##name,
 #include "net/base/net_error_list.h"
+#undef NET_ERROR
+NetError.OK
+})
+@Retention(RetentionPolicy.SOURCE)
+public @interface NetError {
+int OK = 0;
+#define NET_ERROR(name, value) int ERR_##name = value;
+#include "net/base/net_error_list.h"
+#undef NET_ERROR
 }

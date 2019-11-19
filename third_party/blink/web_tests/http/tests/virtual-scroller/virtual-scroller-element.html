@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<title>Test the virtual-scroller element.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<script type="module">
+  import {VirtualScrollerElement} from 'std:elements/virtual-scroller';
+  import * as helpers from './resources/helpers.mjs';
+  import * as wptHelpers from '/wpt_internal/virtual-scroller/resources/helpers.mjs';
+
+  test(() => {
+    wptHelpers.withElement('virtual-scroller', vc => {
+      assert_not_equals(vc, null);
+      assert_true(vc instanceof VirtualScrollerElement);});
+  }, 'Test no content');
+
+  test(() => {
+    wptHelpers.withElement('virtual-scroller', vc => {
+      helpers.assertElementsEqual(
+        Object.getOwnPropertyNames(vc.__proto__),
+        ['constructor']);
+    });
+  }, 'Only exposes certain properties');
+</script>

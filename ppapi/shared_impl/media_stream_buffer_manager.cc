@@ -25,12 +25,11 @@ MediaStreamBufferManager::MediaStreamBufferManager(Delegate* delegate)
 
 MediaStreamBufferManager::~MediaStreamBufferManager() {}
 
-bool MediaStreamBufferManager::SetBuffers(
-    int32_t number_of_buffers,
-    int32_t buffer_size,
-    std::unique_ptr<base::SharedMemory> shm,
-    bool enqueue_all_buffers) {
-  DCHECK(shm);
+bool MediaStreamBufferManager::SetBuffers(int32_t number_of_buffers,
+                                          int32_t buffer_size,
+                                          base::UnsafeSharedMemoryRegion region,
+                                          bool enqueue_all_buffers) {
+  DCHECK(region.IsValid());
   DCHECK_GT(number_of_buffers, 0);
   DCHECK_GT(buffer_size,
             static_cast<int32_t>(sizeof(MediaStreamBuffer::Header)));
@@ -40,13 +39,14 @@ bool MediaStreamBufferManager::SetBuffers(
   buffer_size_ = buffer_size;
 
   size_t size = number_of_buffers_ * buffer_size;
-  shm_ = std::move(shm);
-  if (!shm_->Map(size))
+  region_ = std::move(region);
+  mapping_ = region_.MapAt(0, size);
+  if (!mapping_.IsValid())
     return false;
 
   buffer_queue_.clear();
   buffers_.clear();
-  uint8_t* p = reinterpret_cast<uint8_t*>(shm_->memory());
+  uint8_t* p = mapping_.GetMemoryAsSpan<uint8_t>().data();
   for (int32_t i = 0; i < number_of_buffers; ++i) {
     if (enqueue_all_buffers)
       buffer_queue_.push_back(i);

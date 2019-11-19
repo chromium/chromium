@@ -72,8 +72,7 @@ std::unique_ptr<em::PolicyFetchResponse> AssembleAndSignPolicy(
 
 OwnerSettingsService::OwnerSettingsService(
     const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util)
-    : owner_key_util_(owner_key_util), weak_factory_(this) {
-}
+    : owner_key_util_(owner_key_util) {}
 
 OwnerSettingsService::~OwnerSettingsService() {
   DCHECK(thread_checker_.CalledOnValidThread());

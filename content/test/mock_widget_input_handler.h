@@ -11,15 +11,17 @@
 #include <utility>
 
 #include "content/common/input/input_handler.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
 class MockWidgetInputHandler : public mojom::WidgetInputHandler {
  public:
   MockWidgetInputHandler();
-  MockWidgetInputHandler(mojom::WidgetInputHandlerRequest request,
-                         mojom::WidgetInputHandlerHostPtr host);
+  MockWidgetInputHandler(
+      mojo::PendingReceiver<mojom::WidgetInputHandler> receiver,
+      mojo::PendingRemote<mojom::WidgetInputHandlerHost> host);
 
   ~MockWidgetInputHandler() override;
 
@@ -197,6 +199,7 @@ class MockWidgetInputHandler : public mojom::WidgetInputHandler {
   void SetEditCommandsForNextKeyEvent(
       const std::vector<content::EditCommand>& commands) override;
   void CursorVisibilityChanged(bool visible) override;
+  void FallbackCursorModeToggled(bool is_on) override;
   void ImeSetComposition(const base::string16& text,
                          const std::vector<ui::ImeTextSpan>& ime_text_spans,
                          const gfx::Range& range,
@@ -218,17 +221,17 @@ class MockWidgetInputHandler : public mojom::WidgetInputHandler {
       std::unique_ptr<content::InputEvent> event) override;
   void WaitForInputProcessed(WaitForInputProcessedCallback callback) override;
   void AttachSynchronousCompositor(
-      mojom::SynchronousCompositorControlHostPtr control_host,
-      mojom::SynchronousCompositorHostAssociatedPtrInfo host,
-      mojom::SynchronousCompositorAssociatedRequest compositor_request)
-      override;
+      mojo::PendingRemote<mojom::SynchronousCompositorControlHost> control_host,
+      mojo::PendingAssociatedRemote<mojom::SynchronousCompositorHost> host,
+      mojo::PendingAssociatedReceiver<mojom::SynchronousCompositor>
+          compositor_request) override;
 
   using MessageVector = std::vector<std::unique_ptr<DispatchedMessage>>;
   MessageVector GetAndResetDispatchedMessages();
 
  private:
-  mojo::Binding<mojom::WidgetInputHandler> binding_;
-  mojom::WidgetInputHandlerHostPtr host_ = nullptr;
+  mojo::Receiver<mojom::WidgetInputHandler> receiver_{this};
+  mojo::Remote<mojom::WidgetInputHandlerHost> host_;
   MessageVector dispatched_messages_;
 
   DISALLOW_COPY_AND_ASSIGN(MockWidgetInputHandler);

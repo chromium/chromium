@@ -13,13 +13,13 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace chromeos {
 
 // Given GCMS and primary account id, this class verifies GAIA credentials
-// (APISID) and rebuild current session's cookie jar for the primary account.
-class OAuth2LoginVerifier : public identity::IdentityManager::Observer {
+// (SAPISID) and rebuild current session's cookie jar for the primary account.
+class OAuth2LoginVerifier : public signin::IdentityManager::Observer {
  public:
   class Delegate {
    public:
@@ -40,8 +40,8 @@ class OAuth2LoginVerifier : public identity::IdentityManager::Observer {
   };
 
   OAuth2LoginVerifier(OAuth2LoginVerifier::Delegate* delegate,
-                      identity::IdentityManager* identity_manager,
-                      const std::string& primary_account_id,
+                      signin::IdentityManager* identity_manager,
+                      const CoreAccountId& primary_account_id,
                       const std::string& oauthlogin_access_token);
   ~OAuth2LoginVerifier() override;
 
@@ -55,18 +55,18 @@ class OAuth2LoginVerifier : public identity::IdentityManager::Observer {
  private:
   // IdentityManager::Observer
   void OnAccountsInCookieUpdated(
-      const identity::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
 
-  void OnAddAccountToCookieCompleted(const std::string& account_id,
+  void OnAddAccountToCookieCompleted(const CoreAccountId& account_id,
                                      const GoogleServiceAuthError& error);
 
   OAuth2LoginVerifier::Delegate* delegate_;
-  identity::IdentityManager* identity_manager_;
-  const std::string primary_account_id_;
+  signin::IdentityManager* identity_manager_;
+  const CoreAccountId primary_account_id_;
   const std::string access_token_;
 
-  base::WeakPtrFactory<OAuth2LoginVerifier> weak_ptr_factory_;
+  base::WeakPtrFactory<OAuth2LoginVerifier> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OAuth2LoginVerifier);
 };

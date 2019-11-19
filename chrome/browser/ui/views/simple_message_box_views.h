@@ -30,7 +30,6 @@ class SimpleMessageBoxViews : public views::DialogDelegate,
 
   // views::DialogDelegate:
   int GetDialogButtons() const override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool Cancel() override;
   bool Accept() override;
   bool Close() override;
@@ -61,8 +60,6 @@ class SimpleMessageBoxViews : public views::DialogDelegate,
 
   const base::string16 window_title_;
   const chrome::MessageBoxType type_;
-  base::string16 yes_text_;
-  base::string16 no_text_;
   chrome::MessageBoxResult result_;
   views::MessageBoxView* message_box_view_;
   MessageBoxResultCallback result_callback_;

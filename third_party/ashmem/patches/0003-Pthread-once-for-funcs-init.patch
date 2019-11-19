@@ -1,0 +1,61 @@
+diff --git a/third_party/ashmem/ashmem-dev.c b/third_party/ashmem/ashmem-dev.c
+index 25a33cdcd0c8..399ea36ce382 100644
+--- a/third_party/ashmem/ashmem-dev.c
++++ b/third_party/ashmem/ashmem-dev.c
+@@ -18,6 +18,7 @@
+ 
+ #include <dlfcn.h>
+ #include <errno.h>
++#include <pthread.h>
+ #include <unistd.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -190,26 +191,30 @@ typedef struct {
+   ASharedMemory_setProtFunc setProt;
+ } ASharedMemoryFuncs;
+ 
+-const ASharedMemoryFuncs* ashmem_get_funcs() {
+-  static ASharedMemoryFuncs s_ashmem_funcs = {};
++static ASharedMemoryFuncs s_ashmem_funcs = {};
++static pthread_once_t s_ashmem_funcs_once = PTHREAD_ONCE_INIT;
++
++static void ashmem_init_funcs() {
+   ASharedMemoryFuncs* funcs = &s_ashmem_funcs;
+-  if (funcs->create == NULL) {
+-    if (device_api_level() >= __ANDROID_API_O__) {
+-      /* Leaked intentionally! */
+-      void* lib = dlopen("libandroid.so", RTLD_NOW);
+-      funcs->create = (ASharedMemory_createFunc)
+-          dlsym(lib, "ASharedMemory_create");
+-      funcs->getSize = (ASharedMemory_getSizeFunc)
+-          dlsym(lib, "ASharedMemory_getSize");
+-      funcs->setProt = (ASharedMemory_setProtFunc)
+-          dlsym(lib, "ASharedMemory_setProt");
+-    } else {
+-      funcs->create = &ashmem_dev_create_region;
+-      funcs->getSize = &ashmem_dev_get_size_region;
+-      funcs->setProt = &ashmem_dev_set_prot_region;
+-    }
++  if (device_api_level() >= __ANDROID_API_O__) {
++    /* Leaked intentionally! */
++    void* lib = dlopen("libandroid.so", RTLD_NOW);
++    funcs->create =
++        (ASharedMemory_createFunc)dlsym(lib, "ASharedMemory_create");
++    funcs->getSize =
++        (ASharedMemory_getSizeFunc)dlsym(lib, "ASharedMemory_getSize");
++    funcs->setProt =
++        (ASharedMemory_setProtFunc)dlsym(lib, "ASharedMemory_setProt");
++  } else {
++    funcs->create = &ashmem_dev_create_region;
++    funcs->getSize = &ashmem_dev_get_size_region;
++    funcs->setProt = &ashmem_dev_set_prot_region;
+   }
+-  return funcs;
++}
++
++static const ASharedMemoryFuncs* ashmem_get_funcs() {
++  pthread_once(&s_ashmem_funcs_once, ashmem_init_funcs);
++  return &s_ashmem_funcs;
+ }
+ 
+ int ashmem_create_region(const char* name, size_t size) {

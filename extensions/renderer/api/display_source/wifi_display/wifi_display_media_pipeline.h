@@ -14,10 +14,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
-#include "extensions/common/mojo/wifi_display_session_service.mojom.h"
+#include "extensions/common/mojom/wifi_display_session_service.mojom.h"
 #include "extensions/renderer/api/display_source/wifi_display/wifi_display_audio_encoder.h"
 #include "extensions/renderer/api/display_source/wifi_display/wifi_display_media_packetizer.h"
 #include "extensions/renderer/api/display_source/wifi_display/wifi_display_video_encoder.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/web_media_stream_track.h"
 #include "third_party/wds/src/libwds/public/media_manager.h"
 
@@ -33,14 +35,14 @@ class WiFiDisplayMediaPipeline {
   using ErrorCallback = base::Callback<void(const std::string&)>;
   using InitCompletionCallback = base::Callback<void(bool)>;
   using RegisterMediaServiceCallback =
-      base::Callback<void(mojom::WiFiDisplayMediaServiceRequest,
+      base::Callback<void(mojo::PendingReceiver<mojom::WiFiDisplayMediaService>,
                           const base::Closure&)>;
 
   static std::unique_ptr<WiFiDisplayMediaPipeline> Create(
       wds::SessionType type,
       const WiFiDisplayVideoEncoder::InitParameters& video_parameters,
       const wds::AudioCodec& audio_codec,
-      const std::string& sink_ip_address,
+      const net::IPAddress& sink_ip_address,
       const std::pair<int, int>& sink_rtp_ports,
       const RegisterMediaServiceCallback& service_callback,
       const ErrorCallback& error_callback);
@@ -48,9 +50,8 @@ class WiFiDisplayMediaPipeline {
   // Note: to be called only once.
   void Initialize(const InitCompletionCallback& callback);
 
-  void InsertRawVideoFrame(
-      const scoped_refptr<media::VideoFrame>& video_frame,
-      base::TimeTicks reference_time);
+  void InsertRawVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
+                           base::TimeTicks reference_time);
 
   void RequestIDRPicture();
 
@@ -64,7 +65,7 @@ class WiFiDisplayMediaPipeline {
       wds::SessionType type,
       const WiFiDisplayVideoEncoder::InitParameters& video_parameters,
       const wds::AudioCodec& audio_codec,
-      const std::string& sink_ip_address,
+      const net::IPAddress& sink_ip_address,
       const std::pair<int, int>& sink_rtp_ports,
       const RegisterMediaServiceCallback& service_callback,
       const ErrorCallback& error_callback);
@@ -94,12 +95,12 @@ class WiFiDisplayMediaPipeline {
   wds::SessionType type_;
   WiFiDisplayVideoEncoder::InitParameters video_parameters_;
   wds::AudioCodec audio_codec_;
-  std::string sink_ip_address_;
+  net::IPAddress sink_ip_address_;
   std::pair<int, int> sink_rtp_ports_;
 
   RegisterMediaServiceCallback service_callback_;
   ErrorCallback error_callback_;
-  mojom::WiFiDisplayMediaServicePtr media_service_;
+  mojo::Remote<mojom::WiFiDisplayMediaService> media_service_;
 
   base::WeakPtrFactory<WiFiDisplayMediaPipeline> weak_factory_;
 

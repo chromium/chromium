@@ -7,10 +7,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:targetApi="21"
-    android:height="24dp" android:viewportHeight="36"
+    android:height="24dp" android:viewportHeight="37"
     android:viewportWidth="36" android:width="24dp">
-    <path android:fillColor="@color/default_icon_color_blue" android:fillType="evenOdd"
-        android:pathData="M18,0L18,0C27.9411,-0 36,8.0589 36,18L36,18C36,27.9411 27.9411,36 18,36L18,36C8.0589,36 0,27.9411 0,18L0,18C-0,8.0589 8.0589,0 18,0Z" />
-    <path android:fillColor="#FFFFFF" android:fillType="nonZero"
-        android:pathData="M24,8L12,8C10.9,8 10,8.9 10,10L10,26C10,27.1 10.9,28 12,28L24,28C25.1,28 26,27.1 26,26L26,10C26,8.9 25.1,8 24,8ZM12,10L17,10L17,18L14.5,16.5L12,18L12,10Z" />
+    <path android:fillColor="@color/light_active_color" android:fillType="evenOdd"
+        android:pathData="M18,1L18,1C27.9411,1 36,9.0589 36,19L36,19C36,28.9411 27.9411,37 18,37L18,37C8.0589,37 0,28.9411 0,19L0,19C-0,9.0589 8.0589,1 18,1Z" />
+    <path android:fillColor="@color/default_icon_color_inverse" android:fillType="nonZero"
+        android:pathData="M24,9L12,9C10.9,9 10,9.9 10,11L10,27C10,28.1 10.9,29 12,29L24,29C25.1,29 26,28.1 26,27L26,11C26,9.9 25.1,9 24,9Z" />
+    <path android:fillColor="@color/light_active_color" android:fillType="nonZero"
+        android:pathData="M24,27l-12,0l0,-16l2,0l0,8l2.5,-1.5l2.5,1.5l0,-8l5,0z" />
 </vector>
+

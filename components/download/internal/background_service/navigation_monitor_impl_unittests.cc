@@ -22,8 +22,7 @@ class TestNavigationMonitorObserver : public NavigationMonitor::Observer {
       NavigationMonitor* monitor)
       : task_runner_(task_runner),
         monitor_(monitor),
-        navigation_in_progress_(false),
-        weak_ptr_factory_(this) {}
+        navigation_in_progress_(false) {}
   ~TestNavigationMonitorObserver() override = default;
 
   void OnNavigationEvent() override {
@@ -46,7 +45,7 @@ class TestNavigationMonitorObserver : public NavigationMonitor::Observer {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   NavigationMonitor* monitor_;
   bool navigation_in_progress_;
-  base::WeakPtrFactory<TestNavigationMonitorObserver> weak_ptr_factory_;
+  base::WeakPtrFactory<TestNavigationMonitorObserver> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestNavigationMonitorObserver);
 };
@@ -54,9 +53,7 @@ class TestNavigationMonitorObserver : public NavigationMonitor::Observer {
 class NavigationMonitorImplTest : public testing::Test {
  public:
   NavigationMonitorImplTest()
-      : task_runner_(new base::TestMockTimeTaskRunner),
-        handle_(task_runner_),
-        weak_ptr_factory_(this) {}
+      : task_runner_(new base::TestMockTimeTaskRunner), handle_(task_runner_) {}
   ~NavigationMonitorImplTest() override = default;
 
   void SetUp() override {
@@ -91,11 +88,20 @@ class NavigationMonitorImplTest : public testing::Test {
   base::ThreadTaskRunnerHandle handle_;
   std::unique_ptr<NavigationMonitorImpl> navigation_monitor_;
   std::unique_ptr<TestNavigationMonitorObserver> observer_;
-  base::WeakPtrFactory<NavigationMonitorImplTest> weak_ptr_factory_;
+  base::WeakPtrFactory<NavigationMonitorImplTest> weak_ptr_factory_{this};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NavigationMonitorImplTest);
 };
+
+TEST_F(NavigationMonitorImplTest, NoObserver) {
+  SendNavigationEventAt(NavigationEvent::START_NAVIGATION, 5);
+
+  observer_->VerifyNavigationStateAt(false, 0);
+  observer_->VerifyNavigationStateAt(false, 10);
+  observer_->VerifyNavigationStateAt(false, 100);
+  WaitUntilDone();
+}
 
 TEST_F(NavigationMonitorImplTest, NavigationTimeout) {
   navigation_monitor_->SetObserver(observer_.get());

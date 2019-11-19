@@ -19,25 +19,25 @@ async_test(function(t) {
         var layerTree = internals.layerTreeAsText(
             document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
         var layers = JSON.parse(layerTree)['layers'];
-        var scrollingContentsLayer = layers[2];
+        var scrollingContentsLayer = layers[0];
         var paintInvalidations = scrollingContentsLayer.paintInvalidations;
         internals.stopTrackingRepaints(document);
 
         // Manually verify the number of repaints instead of using a repaint
         // test since media playback is asynchronous by nature and its threading
         // will cause a variance in the number of repaints on test bots.
-        var minExpected = 5, maxExpected = 15, actual = 0;
+        var minExpected = 5, maxExpected = 20, actual = 0;
 
         t.add_cleanup(function() {
             if (t.status == t.PASS)
                 return;
-            console.log('FAIL! An unexpected number of repaints occurred for the thumb;' +
+            console.log('FAIL! An unexpected number of repaints occurred for the current time display;' +
                         ' expected ' + minExpected + ' to ' + maxExpected + '; actual ' + actual +
                         '. Actual layer tree: ' + layerTree);
         });
 
         for (var i = 0; i < paintInvalidations.length; ++i) {
-            if (paintInvalidations[i].object.includes('thumb'))
+            if (paintInvalidations[i].object.includes('InlineTextBox'))
                 actual++;
         }
         assert_between_inclusive(actual, minExpected, maxExpected);

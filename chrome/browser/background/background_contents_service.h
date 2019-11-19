@@ -20,6 +20,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "net/base/backoff_entry.h"
 #include "ui/base/window_open_disposition.h"
@@ -39,14 +40,13 @@ class SessionStorageNamespace;
 
 namespace extensions {
 class Extension;
-class ExtensionRegistry;
 }  // namespace extensions
 
 namespace gfx {
 class Rect;
 }
 
-struct BackgroundContentsOpenedDetails;
+class BackgroundContentsServiceObserver;
 
 // BackgroundContentsService is owned by the profile, and is responsible for
 // managing the lifetime of BackgroundContents (tracking the set of background
@@ -83,6 +83,9 @@ class BackgroundContentsService : private content::NotificationObserver,
   static void DisableCloseBalloonForTesting(
       bool disable_close_balloon_for_testing);
 
+  void AddObserver(BackgroundContentsServiceObserver* observer);
+  void RemoveObserver(BackgroundContentsServiceObserver* observer);
+
   // Returns the BackgroundContents associated with the passed application id,
   // or NULL if none.
   BackgroundContents* GetAppBackgroundContents(const std::string& appid);
@@ -101,6 +104,12 @@ class BackgroundContentsService : private content::NotificationObserver,
                       WindowOpenDisposition disposition,
                       const gfx::Rect& initial_rect,
                       bool* was_blocked) override;
+  void OnBackgroundContentsNavigated(BackgroundContents* contents) override;
+  void OnBackgroundContentsTerminated(BackgroundContents* contents) override;
+  void OnBackgroundContentsClosed(BackgroundContents* contents) override;
+
+  // KeyedService implementation.
+  void Shutdown() override;
 
   // Gets the parent application id for the passed BackgroundContents. Returns
   // an empty string if no parent application found (e.g. passed
@@ -108,29 +117,26 @@ class BackgroundContentsService : private content::NotificationObserver,
   const std::string& GetParentApplicationId(BackgroundContents* contents) const;
 
   // Creates a new BackgroundContents using the passed |site| and
-  // the |route_id| and begins tracking the object internally so it can be
-  // shutdown if the parent application is uninstalled.
-  // A BACKGROUND_CONTENTS_OPENED notification will be generated with the passed
-  // |frame_name| and |application_id| values, using the passed |profile| as the
-  // Source..
+  // begins tracking the object internally so it can be shutdown if the parent
+  // application is uninstalled.
+  // Observers will receive a OnBackgroundContentsOpened call.
   BackgroundContents* CreateBackgroundContents(
       scoped_refptr<content::SiteInstance> site,
       content::RenderFrameHost* opener,
-      int32_t route_id,
-      int32_t main_frame_route_id,
-      int32_t main_frame_widget_route_id,
-      Profile* profile,
+      bool is_new_browsing_instance,
       const std::string& frame_name,
       const std::string& application_id,
       const std::string& partition_id,
       content::SessionStorageNamespace* session_storage_namespace);
 
+  // Removes |contents| from |contents_map_|, deleting it.
+  void DeleteBackgroundContents(BackgroundContents* contents);
+
   // Load the manifest-specified background page for the specified hosted app.
   // If the manifest doesn't specify one, then load the BackgroundContents
   // registered in the pref. This is typically used to reload a crashed
   // background page.
-  void LoadBackgroundContentsForExtension(Profile* profile,
-                                          const std::string& extension_id);
+  void LoadBackgroundContentsForExtension(const std::string& extension_id);
 
  private:
   friend class BackgroundContentsServiceTest;
@@ -142,7 +148,7 @@ class BackgroundContentsService : private content::NotificationObserver,
                            TestApplicationIDLinkage);
 
   // Registers for various notifications.
-  void StartObserving(Profile* profile);
+  void StartObserving();
 
   // content::NotificationObserver implementation.
   void Observe(int type,
@@ -150,7 +156,7 @@ class BackgroundContentsService : private content::NotificationObserver,
                const content::NotificationDetails& details) override;
 
   // Called when ExtensionSystem is ready.
-  void OnExtensionSystemReady(Profile* profile);
+  void OnExtensionSystemReady();
 
   // extensions::ExtensionRegistryObserver implementation.
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -164,37 +170,32 @@ class BackgroundContentsService : private content::NotificationObserver,
 
   // Restarts a force-installed app/extension after a crash.
   void RestartForceInstalledExtensionOnCrash(
-      const extensions::Extension* extension,
-      Profile* profile);
+      const extensions::Extension* extension);
 
   // Loads all registered BackgroundContents at startup.
-  void LoadBackgroundContentsFromPrefs(Profile* profile);
+  void LoadBackgroundContentsFromPrefs();
 
   // Load a BackgroundContent; the settings are read from the provided
   // dictionary.
   void LoadBackgroundContentsFromDictionary(
-      Profile* profile,
       const std::string& extension_id,
       const base::DictionaryValue* contents);
 
   // Load the manifest-specified BackgroundContents for all apps for the
   // profile.
-  void LoadBackgroundContentsFromManifests(Profile* profile);
+  void LoadBackgroundContentsFromManifests();
 
   // Creates a single BackgroundContents associated with the specified |appid|,
   // creates an associated RenderView with the name specified by |frame_name|,
   // and navigates to the passed |url|.
-  void LoadBackgroundContents(Profile* profile,
-                              const GURL& url,
+  void LoadBackgroundContents(const GURL& url,
                               const std::string& frame_name,
                               const std::string& appid);
 
   // Invoked when a new BackgroundContents is opened.
-  void BackgroundContentsOpened(BackgroundContentsOpenedDetails* details,
-                                Profile* profile);
-
-  // Invoked when a BackgroundContents object is destroyed.
-  void BackgroundContentsShutdown(BackgroundContents* contents);
+  void AddBackgroundContents(std::unique_ptr<BackgroundContents> contents,
+                             const std::string& application_id,
+                             const std::string& frame_name);
 
   // Registers the |contents->GetURL()| to be run at startup. Only happens for
   // the first navigation after window.open() (future calls to
@@ -215,25 +216,34 @@ class BackgroundContentsService : private content::NotificationObserver,
   // Sends out a notification when our association of background contents with
   // apps may have changed (used by BackgroundApplicationListModel to update the
   // set of background apps as new background contents are opened/closed).
-  void SendChangeNotification(Profile* profile);
+  void SendChangeNotification();
 
   // Checks whether there has been additional |extension_id| failures. If not,
   // delete the BackoffEntry corresponding to |extension_id|, if exists.
   void MaybeClearBackoffEntry(const std::string extension_id,
                               int expected_failure_count);
 
+  void HandleExtensionCrashed(const extensions::Extension* extension);
+
   // Delay (in ms) before restarting a force-installed extension that crashed.
   static int restart_delay_in_ms_;
 
+  Profile* profile_;
+
+  base::ObserverList<BackgroundContentsServiceObserver> observers_;
+
   // PrefService used to store list of background pages (or NULL if this is
   // running under an incognito profile).
-  PrefService* prefs_;
+  PrefService* prefs_ = nullptr;
   content::NotificationRegistrar registrar_;
 
   // Information we track about each BackgroundContents.
   struct BackgroundContentsInfo {
+    BackgroundContentsInfo();
+    ~BackgroundContentsInfo();
+
     // The BackgroundContents whose information we are tracking.
-    BackgroundContents* contents;
+    std::unique_ptr<BackgroundContents> contents;
     // The name of the top level frame for this BackgroundContents.
     std::string frame_name;
   };
@@ -253,9 +263,9 @@ class BackgroundContentsService : private content::NotificationObserver,
 
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
-  base::WeakPtrFactory<BackgroundContentsService> weak_ptr_factory_;
+  base::WeakPtrFactory<BackgroundContentsService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundContentsService);
 };

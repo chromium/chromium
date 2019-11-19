@@ -1,6 +1,5 @@
 include_rules = [
-  "+components/user_prefs",
-  "+content/public/browser",
   "+ui/aura",
+  "+ui/events/ozone/gamepad",
   "+ui/wm/public",
 ]

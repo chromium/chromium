@@ -30,7 +30,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "ui/gfx/font_fallback_linux.h"
 
 namespace blink {
@@ -60,8 +59,8 @@ void FontCache::GetFontForCharacter(
     Platform::Current()->GetSandboxSupport()->GetFallbackFontForCharacter(
         c, preferred_locale, &web_fallback_font);
     fallback_font->name = web_fallback_font.name;
-    fallback_font->filename = CString(web_fallback_font.filename.Data(),
-                                      web_fallback_font.filename.size());
+    fallback_font->filename = std::string(web_fallback_font.filename.Data(),
+                                          web_fallback_font.filename.size());
     fallback_font->fontconfig_interface_id =
         web_fallback_font.fontconfig_interface_id;
     fallback_font->ttc_index = web_fallback_font.ttc_index;
@@ -73,8 +72,7 @@ void FontCache::GetFontForCharacter(
         gfx::GetFallbackFontForChar(c, locale);
     fallback_font->name = String::FromUTF8(fallback_data.name.data(),
                                            fallback_data.name.length());
-    fallback_font->filename =
-        CString(fallback_data.filename.data(), fallback_data.filename.length());
+    fallback_font->filename = std::move(fallback_data.filename);
     fallback_font->fontconfig_interface_id = 0;
     fallback_font->ttc_index = fallback_data.ttc_index;
     fallback_font->is_bold = fallback_data.is_bold;
@@ -124,7 +122,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
 
   FontCache::PlatformFallbackFont fallback_font;
   FontCache::GetFontForCharacter(
-      c, font_description.LocaleOrDefault().Ascii().data(), &fallback_font);
+      c, font_description.LocaleOrDefault().Ascii().c_str(), &fallback_font);
   if (fallback_font.name.IsEmpty())
     return nullptr;
 

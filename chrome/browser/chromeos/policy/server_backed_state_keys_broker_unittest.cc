@@ -7,10 +7,10 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
-#include "chromeos/dbus/fake_session_manager_client.h"
+#include "base/test/task_environment.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -33,7 +33,6 @@ class ServerBackedStateKeysBrokerTest : public testing::Test {
   }
 
   void ExpectGood() {
-    EXPECT_FALSE(broker_.pending());
     EXPECT_TRUE(broker_.available());
     EXPECT_EQ(state_keys_, broker_.state_keys());
     EXPECT_EQ(state_keys_.front(), broker_.current_state_key());
@@ -45,7 +44,7 @@ class ServerBackedStateKeysBrokerTest : public testing::Test {
   }
 
  protected:
-  base::MessageLoop loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedMockTimeMessageLoopTaskRunner mocked_main_runner_;
   chromeos::FakeSessionManagerClient fake_session_manager_client_;
   ServerBackedStateKeysBroker broker_;
@@ -59,7 +58,6 @@ class ServerBackedStateKeysBrokerTest : public testing::Test {
 };
 
 TEST_F(ServerBackedStateKeysBrokerTest, Load) {
-  EXPECT_TRUE(broker_.pending());
   EXPECT_FALSE(broker_.available());
   EXPECT_TRUE(broker_.state_keys().empty());
   EXPECT_TRUE(broker_.current_state_key().empty());

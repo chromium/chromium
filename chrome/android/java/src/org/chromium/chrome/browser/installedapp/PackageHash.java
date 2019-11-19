@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.installedapp;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.crypto.ByteArrayGenerator;
 
 import java.io.IOException;

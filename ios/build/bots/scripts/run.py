@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -25,6 +25,7 @@ import sys
 import traceback
 
 import test_runner
+import wpr_runner
 import xcodebuild_runner
 
 
@@ -32,6 +33,8 @@ def main():
   logging.basicConfig(format='[%(asctime)s:%(levelname)s] %(message)s',
     level=logging.DEBUG, datefmt='%I:%M:%S')
 
+  test_runner.defaults_delete('com.apple.CoreSimulator',
+                              'FramebufferServerRendererPolicy')
   args, test_args = parse_args()
 
   summary = {}
@@ -44,6 +47,7 @@ def main():
     if args.xcode_parallelization:
       tr = xcodebuild_runner.SimulatorParallelTestRunner(
           args.app,
+          args.host_app,
           args.iossim,
           args.xcode_build_version,
           args.version,
@@ -58,8 +62,9 @@ def main():
           env_vars=args.env_var
       )
     elif args.replay_path != 'NO_PATH':
-      tr = test_runner.WprProxySimulatorTestRunner(
+      tr = wpr_runner.WprProxySimulatorTestRunner(
           args.app,
+          args.host_app,
           args.iossim,
           args.replay_path,
           args.platform,
@@ -90,11 +95,22 @@ def main():
           shards=args.shards,
           test_args=test_args,
           test_cases=args.test_cases,
-          use_trusted_cert=args.use_trusted_cert,
           wpr_tools_path=args.wpr_tools_path,
           xcode_path=args.xcode_path,
           xctest=args.xctest,
       )
+    elif args.xcodebuild_device_runner and args.xctest:
+      tr = xcodebuild_runner.DeviceXcodeTestRunner(
+          app_path=args.app,
+          host_app_path=args.host_app,
+          xcode_build_version=args.xcode_build_version,
+          out_dir=args.out_dir,
+          mac_toolchain=args.mac_toolchain_cmd,
+          retries=args.retries,
+          xcode_path=args.xcode_path,
+          test_cases=args.test_cases,
+          test_args=test_args,
+          env_vars=args.env_var)
     else:
       tr = test_runner.DeviceTestRunner(
           args.app,
@@ -129,6 +145,8 @@ def main():
     if tr:
       with open(os.path.join(args.out_dir, 'full_results.json'), 'w') as f:
         json.dump(tr.test_results, f)
+    test_runner.defaults_delete('com.apple.CoreSimulator',
+                                'FramebufferServerRendererPolicy')
 
 
 def parse_args():
@@ -143,9 +161,8 @@ def parse_args():
   parser.add_argument(
     '-a',
     '--app',
-    help='Compiled .app to run.',
+    help='Compiled .app to run for EG1, Compiled -Runner.app for EG2',
     metavar='app',
-    required='-x' not in sys.argv and '--xcode-parallelization' not in sys.argv,
   )
   parser.add_argument(
     '-b',
@@ -160,6 +177,12 @@ def parse_args():
     action='append',
     help='Environment variable to pass to the test itself.',
     metavar='ENV=val',
+  )
+  parser.add_argument(
+    '--host-app',
+    help='Compiled host .app to run.',
+    default='NO_PATH',
+    metavar='host_app',
   )
   parser.add_argument(
     '-i',
@@ -257,13 +280,19 @@ def parse_args():
     default='Xcode.app',
   )
   parser.add_argument(
+    '--xcodebuild-device-runner',
+    help='Run tests using xcodebuild\'s on real device.',
+    action='store_true',
+    default=False,
+  )
+  parser.add_argument(
     '--xctest',
     action='store_true',
     help='Whether or not the given app should be run as an XCTest.',
   )
 
   args, test_args = parser.parse_known_args()
-  if not args.xcode_parallelization and (
+  if not (args.xcode_parallelization or args.xcodebuild_device_runner) and (
       args.iossim or args.platform or args.version):
     # If any of --iossim, --platform, or --version
     # are specified then they must all be specified.
@@ -275,6 +304,10 @@ def parse_args():
     parser.error(''.join(['--xcode-parallezation also requires',
                           'both -p/--platform and -v/--version']))
 
+  if args.xcodebuild_device_runner and not (args.platform and args.version):
+    parser.error(''.join(['--xcodebuild-device-runner also requires',
+                          'both -p/--platform and -v/--version']))
+
   args_json = json.loads(args.args_json)
   args.env_var = args.env_var or []
   args.env_var.extend(args_json.get('env_var', []))
@@ -284,6 +317,9 @@ def parse_args():
   args.xctest = args_json.get('xctest', args.xctest)
   args.xcode_parallelization = args_json.get('xcode_parallelization',
                                              args.xcode_parallelization)
+  args.xcodebuild_device_runner = args_json.get('xcodebuild_device_runner',
+                                                args.xcodebuild_device_runner)
+  args.shards = args_json.get('shards', args.shards)
   test_args.extend(args_json.get('test_args', []))
 
   return args, test_args

@@ -30,7 +30,7 @@ class COMPONENTS_DOWNLOAD_EXPORT InputStream {
   virtual void Initialize();
 
   // Returns true if the input stream contains no data, or false otherwise.
-  virtual bool IsEmpty() = 0;
+  virtual bool IsEmpty();
 
   // Register/clear callbacks when data become available.
   virtual void RegisterDataReadyCallback(
@@ -42,11 +42,10 @@ class COMPONENTS_DOWNLOAD_EXPORT InputStream {
 
   // Reads data from the stream into |data|, |length| is the number of bytes
   // returned.
-  virtual StreamState Read(scoped_refptr<net::IOBuffer>* data,
-                           size_t* length) = 0;
+  virtual StreamState Read(scoped_refptr<net::IOBuffer>* data, size_t* length);
 
   // Returns the completion status.
-  virtual DownloadInterruptReason GetCompletionStatus() = 0;
+  virtual DownloadInterruptReason GetCompletionStatus();
 };
 
 }  // namespace download

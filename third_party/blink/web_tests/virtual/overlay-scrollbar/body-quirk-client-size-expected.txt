@@ -1,0 +1,16 @@
+Style recalc when reading clientWidth/clientHeight of body in quirks mode.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS [object Internals] is defined.
+PASS internals.overlayScrollbarsEnabled is true
+PASS internals.updateStyleAndReturnAffectedElementCount() is 1
+PASS 800 is 800
+PASS 600 is 600
+PASS internals.updateStyleAndReturnAffectedElementCount() is 1
+PASS 800 is 800
+PASS 600 is 600
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

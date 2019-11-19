@@ -182,7 +182,7 @@ as a separate entry in the `folders` array:
 ```json
 {
   "name": "blink",
-  "path": "src/third_party/WebKit",
+  "path": "src/third_party/blink",
 }
 ```
 
@@ -262,7 +262,7 @@ mouse shortcuts) can be found on the [Chromium X-Refs
 page](https://github.com/karlinjf/ChromiumXRefs/).
 
 
-## Code Completion, Error Highlighting, Go-to-Definition, and Find References with LSP
+## Code Completion, Error Highlighting, Go-to-Definition, and Find References with LSP (clangd)
 
 Gives Sublime Text 3 rich editing features for languages with Language Server
 Protocol support. It searches the current compilation unit for definitions and
@@ -270,28 +270,15 @@ references and provides super fast code completion.
 
 In this case, we're going to add C/C++ support.
 
-1. Install clangd
+1. Refer to [clangd.md](clangd.md) to install clangd and build a compilation
+   database.
 
-    ```shell 
-    sudo apt-get install clangd
-    ```
+1. Install the [LSP Package](https://github.com/tomv564/LSP) and enable clangd
+   support by following the [link](https://clang.llvm.org/extra/clangd/Installation.html#editor-plugins)
+   and following the instructions for Sublime Text.
 
-1. Build a compilation database (clangd learns how to compile chromium objects
-   with this). You'll need to run this periodically to keep it up to date.
-
-    ```shell 
-    ninja -C out -t compdb cxx > compile_commands.json
-    mv compile_commands.json <path_to_src>
-    ```
-
-1. Install the LSP package in sublime-text
-
-1. Open a source file in your chromium project
-
-1. Ctrl+Shift+P and select "LSP: enable language server in project" and select
-   clangd
-
-To remove sublime text's auto completion and only show LSPs (recommended), set the following LSP preference:
+To remove sublime text's auto completion and only show LSPs (recommended), set
+the following LSP preference:
 
 ```json
 "only_show_lsp_completions": true

@@ -1,0 +1,20 @@
+<html>
+<head>
+<meta charset="utf8">
+<title>Test style element with dynamically updated CSS</title>
+<style id="style1" type="text/css"></style>
+<style id="style2" type="text/css">h1: {color: green;}</style>
+<script>
+function Run() {
+  document.getElementById("style1").sheet.insertRule("div { color: blue; }", 0);
+  document.getElementById("style2").sheet.insertRule("p { color: red; }", 0);
+}
+</script>
+</head>
+<body onload="Run()">
+  <h1>Title</h1>
+  <div>Hello</div>
+  <p>World</p>
+</body>
+</html>
+

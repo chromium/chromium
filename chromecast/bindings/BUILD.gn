@@ -1,0 +1,117 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+
+if (is_fuchsia) {
+  import("//build/config/fuchsia/generate_runner_scripts.gni")
+}
+
+source_set("named_message_port_connector_resources") {
+  data = [
+    "resources/named_message_port_connector.js",
+  ]
+}
+
+grit("bindings_resources") {
+  source = "bindings_resources.grd"
+  outputs = [
+    "grit/resources.h",
+    "bindings_resources.pak",
+  ]
+  resource_ids = ""
+}
+
+source_set("bindings_manager") {
+  sources = [
+    "bindings_manager.cc",
+    "bindings_manager.h",
+  ]
+  deps = [
+    "//base",
+  ]
+  public_deps = [
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+if (is_fuchsia) {
+  source_set("bindings_manager_fuchsia") {
+    sources = [
+      "bindings_manager_fuchsia.cc",
+      "bindings_manager_fuchsia.h",
+    ]
+
+    deps = [
+      "//base",
+      "//fuchsia:cast_fidl",
+      "//fuchsia/base",
+      "//fuchsia/base:message_port",
+    ]
+
+    public_deps = [
+      ":bindings_manager",
+    ]
+  }
+}
+
+if (is_linux || is_android) {
+  source_set("bindings_manager_cast") {
+    sources = [
+      "bindings_manager_cast.cc",
+      "bindings_manager_cast.h",
+    ]
+
+    deps = [
+      ":bindings_resources",
+      "//base",
+      "//chromecast/browser:public",
+      "//mojo/public/cpp/system",
+      "//third_party/blink/public/common",
+    ]
+
+    data = [
+      "named_message_port_connector.js",
+    ]
+
+    public_deps = [
+      ":bindings_manager",
+    ]
+  }
+
+  source_set("browsertests_cast") {
+    testonly = true
+    sources = [
+      "bindings_manager_cast_browsertest.cc",
+    ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    data = [
+      "//chromecast/bindings/testdata",
+    ]
+
+    deps = [
+      "//base",
+      "//chromecast:chromecast_buildflags",
+      "//chromecast/base",
+      "//chromecast/base:chromecast_switches",
+      "//chromecast/bindings:bindings_manager_cast",
+      "//chromecast/bindings:named_message_port_connector_resources",
+      "//chromecast/browser:browser",
+      "//chromecast/browser:public",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net:test_support",
+    ]
+  }
+}
+
+source_set("browsertests") {
+  testonly = true
+  deps = []
+  if (is_linux || is_android) {
+    deps += [ "//chromecast/bindings:browsertests_cast" ]
+  }
+}

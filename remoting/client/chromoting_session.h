@@ -22,7 +22,8 @@
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/cursor_shape_stub.h"
-#include "remoting/signaling/xmpp_signal_strategy.h"
+#include "remoting/signaling/ftl_device_id_provider.h"
+#include "remoting/signaling/signal_strategy.h"
 
 namespace remoting {
 

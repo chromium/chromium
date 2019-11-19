@@ -1,20 +1,5 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
-<link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/cr/ui/command.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
-<link rel="import" href="dialog_focus_manager.html">
-<link rel="import" href="edit_dialog.html">
-<link rel="import" href="shared_style.html">
-<link rel="import" href="store_client.html">
-<link rel="import" href="strings.html">
-
-<dom-module id="bookmarks-command-manager">
-  <template>
-    <style include="shared-style paper-button-style">
+    <style include="shared-style">
       .label {
         flex: 1;
       }
@@ -32,12 +17,13 @@
     </style>
     <cr-lazy-render id="dropdown">
       <template>
-        <cr-action-menu on-mousedown="onMenuMousedown_">
+        <cr-action-menu on-mousedown="onMenuMousedown_"
+            role-description="$i18n{menu}">
           <template is="dom-repeat" items="[[menuCommands_]]" as="command">
             <button class="dropdown-item"
                 command$="[[command]]"
                 hidden$="[[!isCommandVisible_(command, menuIds_)]]"
-                disabled$="[[!isCommandEnabled_(command, menuIds_)]]"
+                disabled$="[[!isCommandEnabled_(command, menuIds_, canPaste_)]]"
                 on-click="onCommandClick_">
               <span class="label">
                 [[getCommandLabel_(command, menuIds_)]]
@@ -63,16 +49,13 @@
           <div slot="title">$i18n{openDialogTitle}</div>
           <div slot="body"></div>
           <div slot="button-container">
-            <paper-button class="cancel-button" on-click="onOpenCancelTap_">
+            <cr-button class="cancel-button" on-click="onOpenCancelTap_">
               $i18n{cancel}
-            </paper-button>
-            <paper-button class="action-button" on-click="onOpenConfirmTap_">
+            </cr-button>
+            <cr-button class="action-button" on-click="onOpenConfirmTap_">
               $i18n{openDialogConfirm}
-            </paper-button>
+            </cr-button>
           </div>
         </cr-dialog>
       </template>
     </cr-lazy-render>
-  </template>
-  <script src="command_manager.js"></script>
-</dom-module>

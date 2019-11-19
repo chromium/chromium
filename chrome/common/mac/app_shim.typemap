@@ -9,8 +9,8 @@ public_headers = [ "//chrome/common/mac/app_shim_launch.h" ]
 traits_headers = [ "//chrome/common/mac/app_shim_param_traits.h" ]
 
 type_mappings = [
-  "chrome.mojom.AppShimLaunchType=apps::AppShimLaunchType",
-  "chrome.mojom.AppShimLaunchResult=apps::AppShimLaunchResult",
-  "chrome.mojom.AppShimFocusType=apps::AppShimFocusType",
-  "chrome.mojom.AppShimAttentionType=apps::AppShimAttentionType",
+  "chrome.mojom.AppShimLaunchType=::apps::AppShimLaunchType",
+  "chrome.mojom.AppShimLaunchResult=::apps::AppShimLaunchResult",
+  "chrome.mojom.AppShimFocusType=::apps::AppShimFocusType",
+  "chrome.mojom.AppShimAttentionType=::apps::AppShimAttentionType",
 ]

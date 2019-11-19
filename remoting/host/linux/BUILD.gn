@@ -60,7 +60,10 @@ if (enable_me2me_host) {
       ":remoting_user_session",
     ]
     if (is_component_build) {
-      sources += [ "$root_build_dir/libbase.so" ]
+      sources += [
+        "$root_build_dir/libbase.so",
+        "$root_build_dir/libboringssl.so",
+      ]
       deps += [ "//base:base" ]
       if (use_custom_libcxx) {
         sources += [ "$root_build_dir/libc++.so" ]
@@ -91,7 +94,7 @@ source_set("linux") {
 
   deps = [
     "//remoting/protocol",
-    "//third_party/webrtc/modules/desktop_capture",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
   public_deps = []
 
@@ -118,7 +121,7 @@ if (use_x11) {
       "x_server_clipboard.h",
     ]
     deps = [
-      "//third_party/webrtc/modules/desktop_capture",
+      "//third_party/webrtc_overrides:webrtc_component",
     ]
   }
 }

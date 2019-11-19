@@ -32,7 +32,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -46,9 +46,7 @@ class CORE_EXPORT FrameLoaderStateMachine {
  public:
   FrameLoaderStateMachine();
 
-  // Once a load has been committed, the state may alternate between
-  // CommittedFirstRealLoad and FirstLayoutDone. Otherwise, the states only go
-  // down the list.
+  // The states only go down the list.
   enum State {
     kCreatingInitialEmptyDocument,
     kDisplayingInitialEmptyDocument,

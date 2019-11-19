@@ -182,7 +182,7 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase {
   // false otherwise.
   // TODO(henrika): possibly extend the scheme to also take input streams into
   // account.
-  bool IncreaseIOBufferSizeIfPossible(AudioDeviceID device_id);
+  void IncreaseIOBufferSizeIfPossible(AudioDeviceID device_id);
 
   std::string GetDefaultDeviceID(bool is_input);
 

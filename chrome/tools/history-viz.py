@@ -236,7 +236,7 @@ def main():
       edgeattrs = []  # Graphviz attributes for the edge.
       # If the edge is from the start and the transitions are fishy, make it
       # display as a dotted line.
-      if src == '0' and len(transitions.keys()) == 1 and transitions.has_key(0):
+      if src == '0' and len(transitions.keys()) == 1 and 0 in transitions:
         edgeattrs.append('style=dashed')
       if len(label) > 0:
         edgeattrs.append('label="%s"' % EscapeDot('\n'.join(label)))

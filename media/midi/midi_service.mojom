@@ -11,26 +11,12 @@ enum Result {
   OK,
   NOT_SUPPORTED,
   INITIALIZATION_ERROR,
-
-  // New code should be inserted here so that existing members keep the same
-  // assigned value. //tools/metrics/histograms/histograms.xml contains a enum
-  // entry that should be consistent with enum Result.
-
-  // |MAX| is used in content/common/media/midi_messages.h with
-  // IPC_ENUM_TRAITS_MAX_VALUE macro. Keep the value up to date. Otherwise
-  // a new value can not be passed to the renderer.
-  // TODO(toyoshim): Remove |MAX| once IPC is replaced with Mojo.
-  // http://crbug.com/582327
-  MAX = INITIALIZATION_ERROR,
 };
 
 enum PortState {
   DISCONNECTED,
   CONNECTED,
   OPENED,
-  // TODO(toyosim): Remove |LAST| once IPC is replaced with Mojo.
-  // http://crbug.com/582327
-  LAST = OPENED,
 };
 
 struct PortInfo {
@@ -74,7 +60,8 @@ interface MidiSessionClient {
 // Interface used by the renderer to start a MIDI session in the browser.
 interface MidiSessionProvider {
   // Start session to access MIDI hardware.
-  StartSession(MidiSession& request, MidiSessionClient client);
+  StartSession(pending_receiver<MidiSession> receiver,
+               pending_remote<MidiSessionClient> client);
 };
 
 // Represents an active MIDI session.

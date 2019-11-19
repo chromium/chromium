@@ -18,11 +18,11 @@ class CacheStorageManager;
 enum class CacheStorageOwner;
 
 // CacheStorageQuotaClient is owned by the QuotaManager. There is one per
-// CacheStorageManager, and therefore one per
-// ServiceWorkerContextCore.
+// CacheStorageManager/CacheStorageOwner tuple.  Created and accessed on
+// the IO thread.
 class CONTENT_EXPORT CacheStorageQuotaClient : public storage::QuotaClient {
  public:
-  CacheStorageQuotaClient(base::WeakPtr<CacheStorageManager> cache_manager,
+  CacheStorageQuotaClient(scoped_refptr<CacheStorageManager> cache_manager,
                           CacheStorageOwner owner);
   ~CacheStorageQuotaClient() override;
 
@@ -45,7 +45,7 @@ class CONTENT_EXPORT CacheStorageQuotaClient : public storage::QuotaClient {
   static ID GetIDFromOwner(CacheStorageOwner owner);
 
  private:
-  base::WeakPtr<CacheStorageManager> cache_manager_;
+  scoped_refptr<CacheStorageManager> cache_manager_;
   CacheStorageOwner owner_;
 
   DISALLOW_COPY_AND_ASSIGN(CacheStorageQuotaClient);

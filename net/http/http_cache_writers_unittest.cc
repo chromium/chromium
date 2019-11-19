@@ -20,7 +20,7 @@
 #include "net/http/mock_http_cache.h"
 #include "net/http/partial_data.h"
 #include "net/test/gtest_util.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -70,7 +70,7 @@ class TestHttpCache : public HttpCache {
   size_t make_readers_size_ = 0u;
 };
 
-class WritersTest : public TestWithScopedTaskEnvironment {
+class WritersTest : public TestWithTaskEnvironment {
  public:
   enum class DeleteTransactionType { NONE, ACTIVE, WAITING, IDLE };
   WritersTest()
@@ -94,7 +94,7 @@ class WritersTest : public TestWithScopedTaskEnvironment {
   void CreateWriters(const std::string& url) {
     cache_.CreateBackendEntry(kSimpleGET_Transaction.url, &disk_entry_,
                               nullptr);
-    entry_ = std::make_unique<HttpCache::ActiveEntry>(disk_entry_);
+    entry_ = std::make_unique<HttpCache::ActiveEntry>(disk_entry_, false);
     (static_cast<MockDiskEntry*>(disk_entry_))->AddRef();
     writers_ = std::make_unique<HttpCache::Writers>(&test_cache_, entry_.get());
   }
@@ -369,7 +369,7 @@ class WritersTest : public TestWithScopedTaskEnvironment {
 
     // Start reading a few more bytes and return.
     buf = base::MakeRefCounted<IOBuffer>(5);
-    rv = writers_->Read(buf.get(), 5, base::BindRepeating([](int rv) {}),
+    rv = writers_->Read(buf.get(), 5, base::BindOnce([](int rv) {}),
                         transaction);
     EXPECT_EQ(ERR_IO_PENDING, rv);
   }
@@ -385,7 +385,7 @@ class WritersTest : public TestWithScopedTaskEnvironment {
       std::vector<TestCompletionCallback> callbacks(results->size());
 
       // Fail the request.
-      cache_.disk_cache()->set_soft_failures(true);
+      cache_.disk_cache()->set_soft_failures_mask(MockDiskEntry::FAIL_ALL);
 
       // We have to open the entry again to propagate the failure flag.
       disk_cache::Entry* en;

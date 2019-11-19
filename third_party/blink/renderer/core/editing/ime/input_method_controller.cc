@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker_properties.h"
 #include "third_party/blink/renderer/core/editing/reveal_selection_scope.h"
@@ -52,8 +53,8 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
-#include "third_party/blink/renderer/core/input_mode_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
@@ -68,7 +69,7 @@ void DispatchCompositionUpdateEvent(LocalFrame& frame, const String& text) {
   if (!target)
     return;
 
-  CompositionEvent* event = CompositionEvent::Create(
+  auto* event = MakeGarbageCollected<CompositionEvent>(
       event_type_names::kCompositionupdate, frame.DomWindow(), text);
   target->DispatchEvent(*event);
 }
@@ -83,7 +84,7 @@ void DispatchCompositionEndEvent(LocalFrame& frame, const String& text) {
   if (!target)
     return;
 
-  CompositionEvent* event = CompositionEvent::Create(
+  auto* event = MakeGarbageCollected<CompositionEvent>(
       event_type_names::kCompositionend, frame.DomWindow(), text);
   EventDispatcher::DispatchScopedEvent(*target, *event);
 }
@@ -160,9 +161,9 @@ void InsertTextDuringCompositionWithEvents(
   if (!frame.GetDocument())
     return;
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
-  frame.GetDocument()->UpdateStyleAndLayoutIgnorePendingStylesheets();
+  frame.GetDocument()->UpdateStyleAndLayout();
 
   const bool is_incremental_insertion = NeedsIncrementalInsertion(frame, text);
 
@@ -174,7 +175,7 @@ void InsertTextDuringCompositionWithEvents(
       // https://crbug.com/693481
       if (text.IsEmpty())
         TypingCommand::DeleteSelection(*frame.GetDocument(), 0);
-      frame.GetDocument()->UpdateStyleAndLayoutIgnorePendingStylesheets();
+      frame.GetDocument()->UpdateStyleAndLayout();
       TypingCommand::InsertText(*frame.GetDocument(), text, options,
                                 composition_type, is_incremental_insertion);
       break;
@@ -211,6 +212,27 @@ AtomicString GetInputModeAttribute(Element* element) {
   // TODO(dtapuska): We may wish to restrict this to a yet to be proposed
   // <contenteditable> or <richtext> element Mozilla discussed at TPAC 2016.
   return element->FastGetAttribute(html_names::kInputmodeAttr).LowerASCII();
+}
+
+AtomicString GetEnterKeyHintAttribute(Element* element) {
+  if (!element)
+    return AtomicString();
+
+  bool query_attribute = false;
+  if (auto* input = ToHTMLInputElementOrNull(*element)) {
+    query_attribute = input->SupportsInputModeAttribute();
+  } else if (IsHTMLTextAreaElement(*element)) {
+    query_attribute = true;
+  } else {
+    element->GetDocument().UpdateStyleAndLayoutTree();
+    if (HasEditableStyle(*element))
+      query_attribute = true;
+  }
+
+  if (!query_attribute)
+    return AtomicString();
+
+  return element->FastGetAttribute(html_names::kEnterkeyhintAttr).LowerASCII();
 }
 
 constexpr int kInvalidDeletionLength = -1;
@@ -296,9 +318,9 @@ Element* RootEditableElementOfSelection(const FrameSelection& frameSelection) {
   // element as editable[1]
   // [1] http://crbug.com/712761
 
-  // TODO(editing-dev): Use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): Use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
-  frameSelection.GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  frameSelection.GetDocument().UpdateStyleAndLayout();
   const VisibleSelection& visibleSeleciton =
       frameSelection.ComputeVisibleSelectionInDOMTree();
   return RootEditableElementOf(visibleSeleciton.Start());
@@ -315,7 +337,7 @@ std::pair<ContainerNode*, PlainTextRange> PlainTextRangeForEphemeralRange(
 }
 
 int ComputeAutocapitalizeFlags(const Element* element) {
-  const HTMLElement* const html_element = ToHTMLElementOrNull(element);
+  const auto* const html_element = DynamicTo<HTMLElement>(element);
   if (!html_element)
     return 0;
 
@@ -364,10 +386,6 @@ int ComputeAutocapitalizeFlags(const Element* element) {
 }  // anonymous namespace
 
 enum class InputMethodController::TypingContinuation { kContinue, kEnd };
-
-InputMethodController* InputMethodController::Create(LocalFrame& frame) {
-  return MakeGarbageCollected<InputMethodController>(frame);
-}
 
 InputMethodController::InputMethodController(LocalFrame& frame)
     : frame_(&frame), has_composition_(false) {}
@@ -453,7 +471,7 @@ bool InputMethodController::FinishComposingText(
 
   // TODO(editing-dev): Use of UpdateStyleAndLayoutIgnorePendingStylesheets
   // needs to be audited. see http://crbug.com/590369 for more details.
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
   const String& composing = ComposingText();
 
   // Suppress input event (if we hit the is_too_long case) and compositionend
@@ -478,7 +496,7 @@ bool InputMethodController::FinishComposingText(
 
     // TODO(editing-dev): Use of updateStyleAndLayoutIgnorePendingStylesheets
     // needs to be audited. see http://crbug.com/590369 for more details.
-    GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+    GetDocument().UpdateStyleAndLayout();
 
     const EphemeralRange& old_selection_range =
         EphemeralRangeForOffsets(old_offsets);
@@ -528,6 +546,22 @@ bool InputMethodController::CommitText(
   }
 
   return InsertTextAndMoveCaret(text, relative_caret_position, ime_text_spans);
+}
+
+bool InputMethodController::ReplaceText(const String& text,
+                                        PlainTextRange range) {
+  EventQueueScope scope;
+  const PlainTextRange old_selection(GetSelectionOffsets());
+  if (!SetSelectionOffsets(range))
+    return false;
+  if (!InsertText(text))
+    return false;
+  wtf_size_t selection_delta = text.length() - range.length();
+  wtf_size_t start = old_selection.Start();
+  wtf_size_t end = old_selection.End();
+  return SetSelectionOffsets(
+      {start >= range.End() ? start + selection_delta : start,
+       end >= range.End() ? end + selection_delta : end});
 }
 
 bool InputMethodController::ReplaceComposition(const String& text) {
@@ -654,9 +688,9 @@ bool InputMethodController::ReplaceCompositionAndMoveCaret(
   if (!ReplaceComposition(text))
     return false;
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
 
   AddImeTextSpans(ime_text_spans, root_editable_element, text_start);
 
@@ -739,7 +773,7 @@ bool InputMethodController::DispatchCompositionStartEvent(const String& text) {
   if (!target)
     return IsAvailable();
 
-  CompositionEvent* event = CompositionEvent::Create(
+  auto* event = MakeGarbageCollected<CompositionEvent>(
       event_type_names::kCompositionstart, GetFrame().DomWindow(), text);
   target->DispatchEvent(*event);
 
@@ -770,9 +804,9 @@ void InputMethodController::SetComposition(
   if (!target)
     return;
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
 
   PlainTextRange selected_range = CreateSelectionRangeForSetComposition(
       selection_start, selection_end, text.length());
@@ -810,9 +844,9 @@ void InputMethodController::SetComposition(
         return;
     }
 
-    // TODO(editing-dev): Use of updateStyleAndLayoutIgnorePendingStylesheets
+    // TODO(editing-dev): Use of UpdateStyleAndLayout
     // needs to be audited. see http://crbug.com/590369 for more details.
-    GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+    GetDocument().UpdateStyleAndLayout();
 
     SetEditableSelectionOffsets(selected_range);
     return;
@@ -839,9 +873,9 @@ void InputMethodController::SetComposition(
   if (!IsAvailable())
     return;
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
 
   // The undo stack could become empty if a JavaScript event handler calls
   // execCommand('undo') to pop elements off the stack. Or, the top element of
@@ -878,9 +912,9 @@ void InputMethodController::SetComposition(
   if (base_node->GetLayoutObject())
     base_node->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
 
   // We shouldn't close typing in the middle of setComposition.
   SetEditableSelectionOffsets(selected_range, TypingContinuation::kContinue);
@@ -912,7 +946,7 @@ void InputMethodController::SetComposition(
   if (ime_text_spans.IsEmpty()) {
     GetDocument().Markers().AddCompositionMarker(
         CompositionEphemeralRange(), Color::kTransparent,
-        ws::mojom::ImeTextSpanThickness::kThin,
+        ui::mojom::ImeTextSpanThickness::kThin,
         LayoutTheme::GetTheme().PlatformDefaultCompositionBackgroundColor());
     return;
   }
@@ -1124,7 +1158,7 @@ bool InputMethodController::DeleteSelection() {
 }
 
 bool InputMethodController::MoveCaret(int new_caret_position) {
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
   PlainTextRange selected_range =
       CreateRangeForSelection(new_caret_position, new_caret_position, 0);
   if (selected_range.IsNull())
@@ -1294,6 +1328,7 @@ WebTextInputInfo InputMethodController::TextInputInfo() const {
   if (!element)
     return info;
 
+  info.action = InputActionOfFocusedElement();
   info.input_mode = InputModeOfFocusedElement();
   info.type = TextInputType();
   info.flags = TextInputFlags();
@@ -1303,9 +1338,9 @@ WebTextInputInfo InputMethodController::TextInputInfo() const {
   if (!GetFrame().GetEditor().CanEdit())
     return info;
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  see http://crbug.com/590369 for more details.
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
 
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       GetDocument().Lifecycle());
@@ -1349,14 +1384,14 @@ int InputMethodController::TextInputFlags() const {
   int flags = 0;
 
   const AtomicString& autocomplete =
-      element->getAttribute(html_names::kAutocompleteAttr);
+      element->FastGetAttribute(html_names::kAutocompleteAttr);
   if (autocomplete == "on")
     flags |= kWebTextInputFlagAutocompleteOn;
   else if (autocomplete == "off")
     flags |= kWebTextInputFlagAutocompleteOff;
 
   const AtomicString& autocorrect =
-      element->getAttribute(html_names::kAutocorrectAttr);
+      element->FastGetAttribute(html_names::kAutocorrectAttr);
   if (autocorrect == "on")
     flags |= kWebTextInputFlagAutocorrectOn;
   else if (autocorrect == "off")
@@ -1402,26 +1437,52 @@ int InputMethodController::ComputeWebTextInputNextPreviousFlags() const {
   return flags;
 }
 
+ui::TextInputAction InputMethodController::InputActionOfFocusedElement() const {
+  if (!RuntimeEnabledFeatures::EnterKeyHintAttributeEnabled())
+    return ui::TextInputAction::kDefault;
+
+  AtomicString action =
+      GetEnterKeyHintAttribute(GetDocument().FocusedElement());
+
+  if (action.IsEmpty())
+    return ui::TextInputAction::kDefault;
+  if (action == keywords::kEnter)
+    return ui::TextInputAction::kEnter;
+  if (action == keywords::kDone)
+    return ui::TextInputAction::kDone;
+  if (action == keywords::kGo)
+    return ui::TextInputAction::kGo;
+  if (action == keywords::kNext)
+    return ui::TextInputAction::kNext;
+  if (action == keywords::kPrevious)
+    return ui::TextInputAction::kPrevious;
+  if (action == keywords::kSearch)
+    return ui::TextInputAction::kSearch;
+  if (action == keywords::kSend)
+    return ui::TextInputAction::kSend;
+  return ui::TextInputAction::kDefault;
+}
+
 WebTextInputMode InputMethodController::InputModeOfFocusedElement() const {
   AtomicString mode = GetInputModeAttribute(GetDocument().FocusedElement());
 
   if (mode.IsEmpty())
     return kWebTextInputModeDefault;
-  if (mode == input_mode_names::kNone)
+  if (mode == keywords::kNone)
     return kWebTextInputModeNone;
-  if (mode == input_mode_names::kText)
+  if (mode == keywords::kText)
     return kWebTextInputModeText;
-  if (mode == input_mode_names::kTel)
+  if (mode == keywords::kTel)
     return kWebTextInputModeTel;
-  if (mode == input_mode_names::kUrl)
+  if (mode == keywords::kUrl)
     return kWebTextInputModeUrl;
-  if (mode == input_mode_names::kEmail)
+  if (mode == keywords::kEmail)
     return kWebTextInputModeEmail;
-  if (mode == input_mode_names::kNumeric)
+  if (mode == keywords::kNumeric)
     return kWebTextInputModeNumeric;
-  if (mode == input_mode_names::kDecimal)
+  if (mode == keywords::kDecimal)
     return kWebTextInputModeDecimal;
-  if (mode == input_mode_names::kSearch)
+  if (mode == keywords::kSearch)
     return kWebTextInputModeSearch;
   return kWebTextInputModeDefault;
 }
@@ -1475,8 +1536,8 @@ WebTextInputType InputMethodController::TextInputType() const {
     return kWebTextInputTypeTextArea;
   }
 
-  if (element->IsHTMLElement()) {
-    if (ToHTMLElement(element)->IsDateTimeFieldElement())
+  if (auto* html_element = DynamicTo<HTMLElement>(element)) {
+    if (html_element->IsDateTimeFieldElement())
       return kWebTextInputTypeDateTimeField;
   }
 
@@ -1494,6 +1555,7 @@ void InputMethodController::WillChangeFocus() {
 void InputMethodController::Trace(Visitor* visitor) {
   visitor->Trace(frame_);
   visitor->Trace(composition_range_);
+  visitor->Trace(active_edit_context_);
   DocumentShutdownObserver::Trace(visitor);
 }
 

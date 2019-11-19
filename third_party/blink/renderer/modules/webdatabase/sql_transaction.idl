@@ -37,8 +37,8 @@ typedef sequence<any> ObjectArray;
     // behavior when null is being passed.
     // TODO(crbug.com/841185): |callback| and |errorCallback| are not
     // nullable in the spec.
-    [RaisesException, CallWith=ScriptState] void executeSql(DOMString sqlStatement,
-                                                            optional ObjectArray? arguments,
-                                                            optional SQLStatementCallback? callback,
-                                                            optional SQLStatementErrorCallback? errorCallback);
+    [Measure, RaisesException, CallWith=ScriptState] void executeSql(DOMString sqlStatement,
+                                                                     optional ObjectArray? arguments,
+                                                                     optional SQLStatementCallback? callback,
+                                                                     optional SQLStatementErrorCallback? errorCallback);
 };

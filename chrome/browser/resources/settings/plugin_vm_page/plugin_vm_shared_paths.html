@@ -1,0 +1,34 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="plugin_vm_browser_proxy.html">
+<link rel="import" href="../settings_shared_css.html">
+
+<dom-module id="settings-plugin-vm-shared-paths">
+  <template>
+    <style include="settings-shared"></style>
+    <div class="settings-box first">
+      <div>
+        $i18n{pluginVmSharedPathsInstructionsAdd}
+        <span id="pluginVmInstructionsRemove"
+            hidden="[[!sharedPaths_.length]]">
+          $i18n{pluginVmSharedPathsInstructionsRemove}
+        </span>
+      </div>
+    </div>
+    <div class="settings-box continuation">
+      <h2 class="start">$i18n{pluginVmSharedPathsListHeading}</h2>
+    </div>
+    <div class="list-frame vertical-list">
+      <template is="dom-repeat" items="[[sharedPaths_]]">
+        <div class="list-item">
+          <div class="start">[[item.pathDisplayText]]</div>
+          <cr-icon-button class="icon-clear"
+              on-click="onRemoveSharedPathClick_"
+              title="$i18n{pluginVmSharedPathsRemoveSharing}"></cr-icon-button>
+        </div>
+      </template>
+    </div>
+  </template>
+  <script src="plugin_vm_shared_paths.js"></script>
+</dom-module>

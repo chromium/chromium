@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!-- XR specific strings (included from generated_resources.grd and android_chrome_strings.grd). -->
+<!-- These strings are used in the consent flow dialog. -->
+<grit-part>
+  <!-- XR consent dialog. -->
+  <message name="IDS_XR_CONSENT_DIALOG_TITLE" desc="Title of the user consent dialog displayed before allowing a website to start a VR presentation">
+    Enter VR from <ph name="DOMAIN">%s<ex>example.com</ex></ph>?
+  </message>
+  <message name="IDS_XR_CONSENT_DIALOG_DESCRIPTION_DEFAULT" desc="This is the header for a bulleted list of potential concerns that we want to ensure the user is aware of before entering VR. This header and the appended items of the bulleted list make up the body of the user consent dialog displayed before a website may start a VR presentation.">
+    While you're in VR, this site may be able to learn about:
+  </message>
+  <message name="IDS_XR_CONSENT_DIALOG_DESCRIPTION_PHYSICAL_FEATURES" desc="Item for the bulleted list of potential concerns in the consent dialog indicating that physical features may be exposed. Preceded with a newline and then two spaces to allow for being appended to the bulleted list at runtime.">
+'''
+  - your physical features, such as height
+  </message>
+  <message name="IDS_XR_CONSENT_DIALOG_DESCRIPTION_FLOOR_PLAN" desc="Item for the bulleted list of potential concerns in the consent dialog indicating that phyiscal features may be exposed. Preceded with a newline and then two spaces to allow for being appended to the bulleted list at runtime.">
+'''
+  - the layout of your room
+  </message>
+  <message name="IDS_XR_CONSENT_DIALOG_BUTTON_ALLOW_AND_ENTER_VR" desc="Text on the button of a user consent dialog which allows a website to start a VR presentation">
+    Enter VR
+  </message>
+</grit-part>

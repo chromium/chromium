@@ -1,4 +1,17 @@
 include_rules = [
+  "-chrome/android/features/keyboard_accessory/internal",
+
+  "+chrome/browser/android/thin_webview/java",
+  "+chrome/browser/share/android",
+  "+chrome/browser/ui/android/appmenu",
+  "-chrome/browser/ui/android/appmenu/internal",
+  "+chrome/browser/ui/android/styles",
+  "+chrome/browser/ui/android/widget",
+  "+chrome/browser/download/android/java",
+  "+chrome/browser/image_fetcher/android/java",
+  "+chrome/browser/preferences/android/java",
+  "+chrome/browser/util/android/java",
+  "+chrome/lib/lifecycle/public",
   "+components/embedder_support/android",
   "+components/autofill/android/java/src/org/chromium/components/autofill",
   "+components/background_task_scheduler/android/java/src/org/chromium/components/background_task_scheduler",
@@ -17,8 +30,8 @@ include_rules = [
   "+components/offline_items_collection/core/android/java",
   "+components/omnibox/browser/android/java",
   "+components/payments/content/android/java/src/org/chromium/components/payments",
+  "+components/search_engines/android/java/src/org/chromium/components/search_engines",
   "+components/sync/android/java/src/org/chromium/components/sync",
-  "+components/web_restrictions",
 
   "-content/public/android",
   "+content/public/android/java/src/org/chromium/content_public",
@@ -29,6 +42,7 @@ include_rules = [
 specific_include_rules = {
   # Special-case where monochrome composes chrome+webview
   "MonochromeApplication\.java": [
+    "+android_webview/nonembedded/java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
     "+android_webview/glue/java/src/com/android/webview/chromium/MonochromeLibraryPreloader.java",
   ]
 }

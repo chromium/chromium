@@ -46,7 +46,6 @@ class FakeLayerTreeHost : public LayerTreeHost {
 
   void SetNeedsCommit() override;
   void SetNeedsUpdateLayers() override {}
-  void SetNeedsFullTreeSync() override {}
 
   LayerImpl* CommitAndCreateLayerImplTree();
   LayerImpl* CommitAndCreatePendingTree();

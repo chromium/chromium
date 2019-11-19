@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 
@@ -21,25 +22,56 @@ class CORE_EXPORT PerformanceElementTiming final : public PerformanceEntry {
 
  public:
   static PerformanceElementTiming* Create(const AtomicString& name,
-                                          const IntRect& intersection_rect,
-                                          DOMHighResTimeStamp start_time);
-
+                                          const String& url,
+                                          const FloatRect& intersection_rect,
+                                          DOMHighResTimeStamp render_time,
+                                          DOMHighResTimeStamp load_time,
+                                          const AtomicString& identifier,
+                                          int naturalWidth,
+                                          int naturalHeight,
+                                          const AtomicString& id,
+                                          Element*);
   PerformanceElementTiming(const AtomicString& name,
-                           const IntRect& intersection_rect,
-                           DOMHighResTimeStamp start_time);
+                           DOMHighResTimeStamp start_time,
+                           const String& url,
+                           const FloatRect& intersection_rect,
+                           DOMHighResTimeStamp render_time,
+                           DOMHighResTimeStamp load_time,
+                           const AtomicString& identifier,
+                           int naturalWidth,
+                           int naturalHeight,
+                           const AtomicString& id,
+                           Element*);
+
   ~PerformanceElementTiming() override;
 
   AtomicString entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
 
   DOMRectReadOnly* intersectionRect() const { return intersection_rect_; }
+  DOMHighResTimeStamp renderTime() const { return render_time_; }
+  DOMHighResTimeStamp loadTime() const { return load_time_; }
+  AtomicString identifier() const { return identifier_; }
+  unsigned naturalWidth() const { return naturalWidth_; }
+  unsigned naturalHeight() const { return naturalHeight_; }
+  AtomicString id() const { return id_; }
+  String url() const { return url_; }
+  Element* element() const;
 
   void Trace(blink::Visitor*) override;
 
  private:
   void BuildJSONValue(V8ObjectBuilder&) const override;
 
+  WeakMember<Element> element_;
   Member<DOMRectReadOnly> intersection_rect_;
+  DOMHighResTimeStamp render_time_;
+  DOMHighResTimeStamp load_time_;
+  AtomicString identifier_;
+  unsigned naturalWidth_;
+  unsigned naturalHeight_;
+  AtomicString id_;
+  String url_;
 };
 
 }  // namespace blink

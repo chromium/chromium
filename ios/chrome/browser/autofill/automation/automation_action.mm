@@ -2,35 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
-
 #import "ios/chrome/browser/autofill/automation/automation_action.h"
 
-#include "base/guid.h"
 #include "base/mac/foundation_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/ios/browser/autofill_driver_ios.h"
-#import "ios/chrome/browser/autofill/form_suggestion_label.h"
+#include "base/values.h"
+#import "ios/chrome/browser/autofill/form_suggestion_constants.h"
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/web/public/test/earl_grey/web_view_actions.h"
-#import "ios/web/public/test/earl_grey/web_view_matchers.h"
-#include "ios/web/public/test/element_selector.h"
-#import "ios/web/public/test/js_test_util.h"
-#include "ios/web/public/web_state/web_frame_util.h"
-#import "ios/web/public/web_state/web_frames_manager.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/public/test/element_selector.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-using web::test::ElementSelector;
 
 @interface AutomationAction () {
   std::unique_ptr<const base::DictionaryValue> actionDictionary_;
@@ -201,37 +190,35 @@ using web::test::ElementSelector;
 
 // A shared flow across many actions, this waits for the target element to be
 // visible, scrolls it into view, then taps on it.
-- (void)tapOnTarget:(web::test::ElementSelector)selector {
-  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
+- (void)tapOnTarget:(ElementSelector*)selector {
 
   // Wait for the element to be visible on the page.
-  [ChromeEarlGrey waitForWebViewContainingElement:selector];
+  [ChromeEarlGrey waitForWebStateContainingElement:selector];
 
   // Potentially scroll into view if below the fold.
-  [[EarlGrey selectElementWithMatcher:web::WebViewInWebState(web_state)]
-      performAction:WebViewScrollElementToVisible(web_state, selector)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::ScrollElementToVisible(selector)];
 
   // Calling WebViewTapElement right after WebViewScrollElement caused flaky
   // issues with the wrong location being provided for the tap target,
   // seemingly caused by the screen not redrawing in-between these two actions.
-  // We force a brief wait here to avoid this issue.
-  [[GREYCondition conditionWithName:@"forced wait to allow for redraw"
-                              block:^BOOL {
-                                return false;
-                              }] waitWithTimeout:0.1];
-
+  // We force a brief wait here to avoid this issue. |waitWithTimeout| requires
+  // its result to be used. Void the result as it's always false.
+  (void)[[GREYCondition conditionWithName:@"forced wait to allow for redraw"
+                                    block:^BOOL {
+                                      return false;
+                                    }] waitWithTimeout:0.1];
   // Tap on the element.
-  [[EarlGrey selectElementWithMatcher:web::WebViewInWebState(web_state)]
-      performAction:web::WebViewTapElement(web_state, selector)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElement(selector)];
 }
 
 // Creates a selector targeting the element specified in the action.
-- (web::test::ElementSelector)selectorForTarget {
+- (ElementSelector*)selectorForTarget {
   const std::string xpath = [self getStringFromDictionaryWithKey:"selector"];
 
   // Creates a selector from the action dictionary.
-  web::test::ElementSelector selector(
-      ElementSelector::ElementSelectorXPath(xpath));
+  ElementSelector* selector = [ElementSelector selectorWithXPathQuery:xpath];
   return selector;
 }
 
@@ -264,29 +251,20 @@ using web::test::ElementSelector;
 // selector passed in. The target element is passed in to the JS function
 // by the name "target", so example JS code is like:
 // return target.value
-- (id)executeJavascript:(std::string)function
-               onTarget:(web::test::ElementSelector)selector {
-  NSError* error;
+- (id)executeJavaScript:(std::string)function
+               onTarget:(ElementSelector*)selector {
+  NSString* javaScript = [NSString
+      stringWithFormat:@"    (function() {"
+                        "      try {"
+                        "        return function(target){%@}(%@);"
+                        "      } catch (ex) {return 'Exception encountered "
+                        "' + ex.message;}"
+                        "     "
+                        "    })();",
+                       base::SysUTF8ToNSString(function),
+                       selector.selectorScript];
 
-  id result = chrome_test_util::ExecuteJavaScript(
-      [NSString
-          stringWithFormat:@"    (function() {"
-                            "      try {"
-                            "        return function(target){%@}(%@);"
-                            "      } catch (ex) {return 'Exception encountered "
-                            "' + ex.message;}"
-                            "     "
-                            "    })();",
-                           base::SysUTF8ToNSString(function),
-                           base::SysUTF8ToNSString(
-                               selector.GetSelectorScript())],
-      &error);
-
-  if (error) {
-    GREYAssert(NO, @"Javascript execution error: %@", result);
-    return nil;
-  }
-  return result;
+  return [ChromeEarlGrey executeJavaScript:javaScript];
 }
 
 @end
@@ -294,7 +272,7 @@ using web::test::ElementSelector;
 @implementation AutomationActionClick
 
 - (void)execute {
-  web::test::ElementSelector selector = [self selectorForTarget];
+  ElementSelector* selector = [self selectorForTarget];
   [self tapOnTarget:selector];
 }
 
@@ -315,7 +293,7 @@ using web::test::ElementSelector;
       "assertions", base::Value::Type::LIST));
   GREYAssert(assertionsValue, @"Assertions key is missing in action.");
 
-  const base::Value::ListStorage& assertionsValues(assertionsValue->GetList());
+  base::span<const base::Value> assertionsValues(assertionsValue->GetList());
   GREYAssert(assertionsValues.size(), @"Assertions list is empty.");
 
   std::vector<std::string> state_assertions;
@@ -326,36 +304,39 @@ using web::test::ElementSelector;
     state_assertions.push_back(assertionString);
   }
 
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForActionTimeout,
-                 ^{
-                   return [self CheckForJsAssertionFailures:state_assertions] ==
-                          nil;
-                 }),
-             @"waitFor State change hasn't completed within timeout.");
+  NSString* conditionDescription =
+      @"waitFor State change hasn't completed within timeout.";
+  GREYCondition* waitForElement = [GREYCondition
+      conditionWithName:conditionDescription
+                  block:^{
+                    return
+                        [self checkForJsAssertionFailures:state_assertions] ==
+                        nil;
+                  }];
+  bool waitForCompleted =
+      [waitForElement waitWithTimeout:base::test::ios::kWaitForActionTimeout];
+  GREYAssertTrue(waitForCompleted, conditionDescription);
 }
 
 // Executes a vector of Javascript assertions on the webpage, returning the
 // first assertion that fails to be true, or nil if all assertions are true.
-- (NSString*)CheckForJsAssertionFailures:
+- (NSString*)checkForJsAssertionFailures:
     (const std::vector<std::string>&)assertions {
   for (std::string const& assertion : assertions) {
-    NSError* error;
     NSString* assertionString = base::SysUTF8ToNSString(assertion);
+    NSString* javascript = [NSString stringWithFormat:@""
+                                                       "    (function() {"
+                                                       "      try {"
+                                                       "        %@"
+                                                       "      } catch (ex) {}"
+                                                       "      return false;"
+                                                       "    })();",
+                                                      assertionString];
 
-    NSNumber* result =
-        base::mac::ObjCCastStrict<NSNumber>(chrome_test_util::ExecuteJavaScript(
-            [NSString stringWithFormat:@""
-                                        "    (function() {"
-                                        "      try {"
-                                        "        %@"
-                                        "      } catch (ex) {}"
-                                        "      return false;"
-                                        "    })();",
-                                       assertionString],
-            &error));
+    NSNumber* result = base::mac::ObjCCastStrict<NSNumber>(
+        [ChromeEarlGrey executeJavaScript:javascript]);
 
-    if (![result boolValue] || error) {
+    if (![result boolValue]) {
       return assertionString;
     }
   }
@@ -370,7 +351,7 @@ using web::test::ElementSelector;
   // The autofill profile is configured in
   // automation_egtest::prepareAutofillProfileWithValues.
 
-  web::test::ElementSelector selector = [self selectorForTarget];
+  ElementSelector* selector = [self selectorForTarget];
   [self tapOnTarget:selector];
 
   // Tap on the autofill suggestion to perform the actual autofill.
@@ -385,10 +366,10 @@ using web::test::ElementSelector;
 @implementation AutomationActionValidateField
 
 - (void)execute {
-  web::test::ElementSelector selector = [self selectorForTarget];
+  ElementSelector* selector = [self selectorForTarget];
 
   // Wait for the element to be visible on the page.
-  [ChromeEarlGrey waitForWebViewContainingElement:selector];
+  [ChromeEarlGrey waitForWebStateContainingElement:selector];
 
   NSString* expectedType = base::SysUTF8ToNSString(
       [self getStringFromDictionaryWithKey:"expectedAutofillType"]);
@@ -396,11 +377,11 @@ using web::test::ElementSelector;
       [self getStringFromDictionaryWithKey:"expectedValue"]);
 
   NSString* predictionType = base::mac::ObjCCastStrict<NSString>([self
-      executeJavascript:"return target.placeholder;"
+      executeJavaScript:"return target.placeholder;"
                onTarget:[self selectorForTarget]]);
 
   NSString* autofilledValue = base::mac::ObjCCastStrict<NSString>(
-      [self executeJavascript:"return target.value;" onTarget:selector]);
+      [self executeJavaScript:"return target.value;" onTarget:selector]);
 
   GREYAssertEqualObjects(predictionType, expectedType,
                          @"Expected prediction type %@ but got %@",
@@ -415,13 +396,13 @@ using web::test::ElementSelector;
 @implementation AutomationActionSelectDropdown
 
 - (void)execute {
-  web::test::ElementSelector selector = [self selectorForTarget];
+  ElementSelector* selector = [self selectorForTarget];
 
   // Wait for the element to be visible on the page.
-  [ChromeEarlGrey waitForWebViewContainingElement:selector];
+  [ChromeEarlGrey waitForWebStateContainingElement:selector];
 
   int selectedIndex = [self getIntFromDictionaryWithKey:"index"];
-  [self executeJavascript:
+  [self executeJavaScript:
             base::SysNSStringToUTF8([NSString
                 stringWithFormat:@"target.options.selectedIndex = %d; "
                                  @"triggerOnChangeEventOnElement(target);",
@@ -446,9 +427,9 @@ using web::test::ElementSelector;
 @implementation AutomationActionType
 
 - (void)execute {
-  web::test::ElementSelector selector = [self selectorForTarget];
+  ElementSelector* selector = [self selectorForTarget];
   std::string value = [self getStringFromDictionaryWithKey:"value"];
-  [self executeJavascript:
+  [self executeJavaScript:
             base::SysNSStringToUTF8([NSString
                 stringWithFormat:
                     @"__gCrWeb.fill.setInputElementValue(\"%s\", target);",

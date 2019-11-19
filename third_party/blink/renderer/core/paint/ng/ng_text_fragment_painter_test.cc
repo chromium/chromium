@@ -4,20 +4,13 @@
 
 #include "third_party/blink/renderer/core/paint/ng/ng_text_fragment_painter.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
-#include "third_party/blink/renderer/core/paint/paint_info.h"
-#include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
-#include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 using testing::ElementsAre;
 
@@ -59,6 +52,17 @@ TEST_P(NGTextFragmentPainterTest, TestTextStyle) {
               ElementsAre(IsSameId(&ViewScrollingBackgroundClient(),
                                    DisplayItem::kDocumentBackground),
                           IsSameId(&text_fragment, kForegroundType)));
+}
+
+TEST_P(NGTextFragmentPainterTest, LineBreak) {
+  SetBodyInnerHTML("<span style='font-size: 20px'>A<br>B<br>C</span>");
+  // 0: view background, 1: A, 2: B, 3: C
+  EXPECT_EQ(4u, RootPaintController().GetDisplayItemList().size());
+
+  GetDocument().GetFrame()->Selection().SelectAll();
+  UpdateAllLifecyclePhasesForTest();
+  // 0: view background, 1: A, 2: <br>, 3: B, 4: <br>, 5: C
+  EXPECT_EQ(6u, RootPaintController().GetDisplayItemList().size());
 }
 
 }  // namespace blink

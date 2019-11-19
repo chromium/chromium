@@ -66,7 +66,7 @@
   window.onload = async () => {
     if (window.internals) {
       internals.settings.setScrollAnimatorEnabled(false);
-      internals.runtimeFlags.noHoverDuringScrollEnabled = true;
+      internals.runtimeFlags.updateHoverAtBeginFrameEnabled = true;
     }
 
     buildPage();

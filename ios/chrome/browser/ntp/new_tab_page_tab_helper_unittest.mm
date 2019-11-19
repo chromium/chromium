@@ -6,10 +6,8 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
@@ -18,14 +16,13 @@
 #include "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/test_navigation_manager.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -63,6 +60,7 @@ class NewTabPageTabHelperTest : public PlatformTest {
         std::make_unique<web::TestNavigationManager>();
     test_navigation_manager_ = test_navigation_manager.get();
     pending_item_ = web::NavigationItem::Create();
+    pending_item_->SetURL(GURL(kChromeUIAboutNewTabURL));
     test_navigation_manager->SetPendingItem(pending_item_.get());
     test_web_state_.SetNavigationManager(std::move(test_navigation_manager));
     test_web_state_.SetBrowserState(chrome_browser_state_.get());
@@ -79,7 +77,7 @@ class NewTabPageTabHelperTest : public PlatformTest {
   }
 
   id delegate_;
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<WebStateList> web_state_list_;
@@ -91,9 +89,6 @@ class NewTabPageTabHelperTest : public PlatformTest {
 
 // Tests a newly created NTP webstate.
 TEST_F(NewTabPageTabHelperTest, TestAlreadyNTP) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(kBrowserContainerContainsNTP);
-
   GURL url(kChromeUINewTabURL);
   test_web_state_.SetVisibleURL(url);
   CreateTabHelper();
@@ -104,9 +99,6 @@ TEST_F(NewTabPageTabHelperTest, TestAlreadyNTP) {
 
 // Tests a newly created NTP webstate using about://newtab.
 TEST_F(NewTabPageTabHelperTest, TestAlreadyAboutNTP) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(kBrowserContainerContainsNTP);
-
   GURL url(kChromeUIAboutNewTabURL);
   test_web_state_.SetVisibleURL(url);
   CreateTabHelper();
@@ -117,9 +109,6 @@ TEST_F(NewTabPageTabHelperTest, TestAlreadyAboutNTP) {
 
 // Tests a newly created non-NTP webstate.
 TEST_F(NewTabPageTabHelperTest, TestNotNTP) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(kBrowserContainerContainsNTP);
-
   GURL url(kTestURL);
   test_web_state_.SetVisibleURL(url);
   CreateTabHelper();
@@ -129,9 +118,6 @@ TEST_F(NewTabPageTabHelperTest, TestNotNTP) {
 
 // Tests navigating back and forth between an NTP and non-NTP page.
 TEST_F(NewTabPageTabHelperTest, TestToggleToAndFromNTP) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(kBrowserContainerContainsNTP);
-
   CreateTabHelper();
   EXPECT_FALSE(tab_helper()->IsActive());
 
@@ -139,26 +125,56 @@ TEST_F(NewTabPageTabHelperTest, TestToggleToAndFromNTP) {
   test_web_state_.SetCurrentURL(url);
   web::FakeNavigationContext context;
   context.SetUrl(url);
+  test_navigation_manager_->SetLastCommittedItem(pending_item_.get());
   test_web_state_.OnNavigationFinished(&context);
   EXPECT_TRUE(tab_helper()->IsActive());
 
   GURL not_ntp_url(kTestURL);
   test_web_state_.SetCurrentURL(not_ntp_url);
   context.SetUrl(not_ntp_url);
+  pending_item_->SetURL(not_ntp_url);
   test_web_state_.OnNavigationStarted(&context);
   EXPECT_FALSE(tab_helper()->IsActive());
+  test_navigation_manager_->SetLastCommittedItem(pending_item_.get());
   test_web_state_.OnNavigationFinished(&context);
   EXPECT_FALSE(tab_helper()->IsActive());
 
   context.SetUrl(url);
+  pending_item_->SetURL(url);
   test_web_state_.SetCurrentURL(url);
+  test_navigation_manager_->SetLastCommittedItem(pending_item_.get());
   test_web_state_.OnNavigationFinished(&context);
   EXPECT_TRUE(tab_helper()->IsActive());
 
   context.SetUrl(not_ntp_url);
+  pending_item_->SetURL(url);
   test_web_state_.SetCurrentURL(not_ntp_url);
   test_web_state_.OnNavigationStarted(&context);
   EXPECT_FALSE(tab_helper()->IsActive());
+  test_navigation_manager_->SetLastCommittedItem(pending_item_.get());
   test_web_state_.OnNavigationFinished(&context);
   EXPECT_FALSE(tab_helper()->IsActive());
+}
+
+// Tests double navigations from an NTP and non-NTP page at the same time.
+TEST_F(NewTabPageTabHelperTest, TestMismatchedPendingItem) {
+  // Test an NTP url with a mismatched pending item.
+  GURL url(kChromeUINewTabURL);
+  GURL not_ntp_url(kTestURL);
+  test_web_state_.SetCurrentURL(url);
+  pending_item_->SetURL(not_ntp_url);
+  CreateTabHelper();
+  // In this edge case, although the NTP is visible, the pending item is not
+  // incorrectly updated
+  EXPECT_EQ(GURL(kTestURL), pending_item_->GetVirtualURL());
+
+  // On commit, the web state url is correct, and the NTP is inactive.
+  web::FakeNavigationContext context;
+  context.SetUrl(not_ntp_url);
+  pending_item_->SetURL(not_ntp_url);
+  test_web_state_.SetCurrentURL(not_ntp_url);
+  test_navigation_manager_->SetLastCommittedItem(pending_item_.get());
+  test_web_state_.OnNavigationFinished(&context);
+  EXPECT_FALSE(tab_helper()->IsActive());
+  EXPECT_EQ(GURL(kTestURL), pending_item_->GetVirtualURL());
 }

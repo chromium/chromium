@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL There should be six entries: 4 scripts, 1 stylesheet, and the worker itself assert_equals: There should be six entries: 4 scripts, 1 stylesheet, and the worker itself expected 6 but got 5
-Harness: the test ran to completion.
-

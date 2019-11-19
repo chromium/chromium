@@ -1,7 +1,6 @@
 include_rules = [
   "+chrome/grit",
   "+chrome/services/printing/public",
-  "+components/data_use_measurement/core",
   "+components/language/core/browser",
   "+components/language/core/common",
   "+components/network_session_configurator/common",

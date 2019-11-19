@@ -1,39 +1,23 @@
 <html>
 <head>
 <title>DOMParser namespace support</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script type="text/javascript">
-function execute()
-{
-  if (window.testRunner) {
-    testRunner.dumpAsText();
-  }
-
+test(() => {
   var parser = new DOMParser();
-  var str = 
+  var str =
     '<?xml version="1.0"?>\n<doc>\n  <foo xmlns="foobar" id="1">One</foo> <x:bar xmlns:x="barfoo" id="2">Two</x:bar>\n  <d id="3">Three</d>\n</doc>\n';
   var doc = parser.parseFromString(str,"text/xml");
-  
-  document.getElementById("id1").firstChild.nodeValue = str;
-  document.getElementById("id2").firstChild.nodeValue = doc.getElementsByTagNameNS("foobar", "foo")[0].getAttribute("id");
-  document.getElementById("id3").firstChild.nodeValue = doc.getElementsByTagNameNS("barfoo", "bar")[0].getAttribute("id");
-  document.getElementById("id4").firstChild.nodeValue = doc.getElementsByTagNameNS("", "d")[0].getAttribute("id");
-  document.getElementById("id5").firstChild.nodeValue = doc.getElementsByTagNameNS(null, "d")[0].getAttribute("id");
-}
+
+  assert_equals(doc.getElementsByTagNameNS("foobar", "foo")[0].getAttribute("id"), "1");
+  assert_equals(doc.getElementsByTagNameNS("barfoo", "bar")[0].getAttribute("id"), "2");
+  assert_equals(doc.getElementsByTagNameNS("", "d")[0].getAttribute("id"), "3");
+  assert_equals(doc.getElementsByTagNameNS(null, "d")[0].getAttribute("id"), "3");
+}, "DOMParser namespace support");
 
 </script>
 </head>
-<body onload="execute();">
-
-<p>text to parse</p>
-<p id="id1">@@No result@@</p>
-<p>foobar:foo element</p>
-<p id="id2">@@No result@@</p>
-<p>barfoo:bar element</p>
-<p id="id3">@@No result@@</p>
-<p>d element (empty namespace)</p>
-<p id="id4">@@No result@@</p>
-<p>d element (null namespace)</p>
-<p id="id5">@@No result@@</p>
-
+<body>
 </body>
 </html>

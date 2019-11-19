@@ -7,7 +7,7 @@ module video_capture.mojom;
 import "media/capture/mojom/video_capture_types.mojom";
 import "services/video_capture/public/mojom/producer.mojom";
 import "services/video_capture/public/mojom/scoped_access_permission.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Interface for a producer to feed video frames into a virtual
 // device. These frames will appear to the consumer of the device
@@ -59,7 +59,7 @@ interface TextureVirtualDevice {
   // of the frame, i.e. using |visible_rect| to crop to subregions of the frame
   // is not supported.
   OnFrameReadyInBuffer(int32 buffer_id,
-                       ScopedAccessPermission access_permission,
+                       pending_remote<ScopedAccessPermission> access_permission,
                        media.mojom.VideoFrameInfo frame_info);
   // Unregisters a set of mailbox holders previously registered via
   // OnNewMailboxHolderBufferHandle(). Note, that this should not be called

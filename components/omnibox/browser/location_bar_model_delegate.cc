@@ -12,9 +12,14 @@ bool LocationBarModelDelegate::ShouldDisplayURL() const {
   return true;
 }
 
-void LocationBarModelDelegate::GetSecurityInfo(
-    security_state::SecurityInfo* result) const {
-  return;
+security_state::SecurityLevel LocationBarModelDelegate::GetSecurityLevel()
+    const {
+  return security_state::NONE;
+}
+
+std::unique_ptr<security_state::VisibleSecurityState>
+LocationBarModelDelegate::GetVisibleSecurityState() const {
+  return std::make_unique<security_state::VisibleSecurityState>();
 }
 
 scoped_refptr<net::X509Certificate> LocationBarModelDelegate::GetCertificate()
@@ -27,6 +32,18 @@ const gfx::VectorIcon* LocationBarModelDelegate::GetVectorIconOverride() const {
 }
 
 bool LocationBarModelDelegate::IsOfflinePage() const {
+  return false;
+}
+
+bool LocationBarModelDelegate::IsInstantNTP() const {
+  return false;
+}
+
+bool LocationBarModelDelegate::IsNewTabPage(const GURL& url) const {
+  return false;
+}
+
+bool LocationBarModelDelegate::IsHomePage(const GURL& url) const {
   return false;
 }
 

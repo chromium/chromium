@@ -1,7 +1,9 @@
 include_rules = [
+    "+base/containers/mru_cache.h",
     "+gpu/GLES2/gl2extchromium.h",
     "+gpu/command_buffer/client/gles2_interface.h",
     "+gpu/command_buffer/common/capabilities.h",
     "+gpu/config/gpu_feature_info.h",
     "+skia/ext",
+    "+ui/gl/gpu_preference.h",
 ]

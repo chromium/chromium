@@ -12,10 +12,10 @@
 #include "ios/chrome/browser/reading_list/reading_list_download_service_factory.h"
 #import "ios/chrome/browser/ui/static_content/static_html_view_controller.h"
 #include "ios/web/public/browser_state.h"
-#import "ios/web/public/navigation_item.h"
-#import "ios/web/public/navigation_manager.h"
-#include "ios/web/public/reload_type.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#include "ios/web/public/navigation/reload_type.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -77,7 +77,7 @@
   [super close];
 }
 
-- (GURL)virtualURL {
+- (const GURL&)virtualURL {
   return _virtualURL;
 }
 

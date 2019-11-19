@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dist="http://schemas.android.com/apk/distribution"
+    featureSplit="extra_icu">
+
+    <!-- Always install extra ICU module on first Chrome install or update. -->
+    <dist:module
+        dist:onDemand="false"
+        dist:title="@string/extra_icu_module_title">
+        <dist:fusing dist:include="false" />
+    </dist:module>
+
+    <application />
+</manifest>

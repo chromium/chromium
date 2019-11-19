@@ -1,19 +1,15 @@
-// Windows Template Library - WTL version 8.0
-// Copyright (C) Microsoft Corporation. All rights reserved.
+// Windows Template Library - WTL version 10.0
+// Copyright (C) Microsoft Corporation, WTL Team. All rights reserved.
 //
 // This file is a part of the Windows Template Library.
 // The use and distribution terms for this software are covered by the
-// Microsoft Permissive License (Ms-PL) which can be found in the file
-// Ms-PL.txt at the root of this distribution.
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
+// which can be found in the file MS-PL.txt at the root folder.
 
 #ifndef __ATLUSER_H__
 #define __ATLUSER_H__
 
 #pragma once
-
-#ifndef __cplusplus
-	#error ATL requires C++ compilation (use a .cpp suffix)
-#endif
 
 #ifndef __ATLAPP_H__
 	#error atluser.h requires atlapp.h to be included first
@@ -32,6 +28,22 @@
 //
 // Global functions:
 //   AtlMessageBox()
+//
+//   AtlLoadAccelerators()
+//   AtlLoadMenu()
+//   AtlLoadBitmap()
+//   AtlLoadSysBitmap()
+//   AtlLoadCursor()
+//   AtlLoadSysCursor()
+//   AtlLoadIcon()
+//   AtlLoadSysIcon()
+//   AtlLoadBitmapImage()
+//   AtlLoadCursorImage()
+//   AtlLoadIconImage()
+//   AtlLoadSysBitmapImage()
+//   AtlLoadSysCursorImage()
+//   AtlLoadSysIconImage()
+//   AtlLoadString()
 
 
 namespace WTL
@@ -42,7 +54,7 @@ namespace WTL
 
 inline int AtlMessageBox(HWND hWndOwner, ATL::_U_STRINGorID message, ATL::_U_STRINGorID title = (LPCTSTR)NULL, UINT uType = MB_OK | MB_ICONINFORMATION)
 {
-	ATLASSERT(hWndOwner == NULL || ::IsWindow(hWndOwner));
+	ATLASSERT((hWndOwner == NULL) || ::IsWindow(hWndOwner));
 
 	LPTSTR lpstrMessage = NULL;
 	if(IS_INTRESOURCE(message.m_lpstr))
@@ -66,7 +78,7 @@ inline int AtlMessageBox(HWND hWndOwner, ATL::_U_STRINGorID message, ATL::_U_STR
 	}
 
 	LPTSTR lpstrTitle = NULL;
-	if(IS_INTRESOURCE(title.m_lpstr) && LOWORD(title.m_lpstr) != 0)
+	if(IS_INTRESOURCE(title.m_lpstr) && (LOWORD(title.m_lpstr) != 0))
 	{
 		for(int nLen = 256; ; nLen *= 2)
 		{
@@ -98,19 +110,6 @@ inline int AtlMessageBox(HWND hWndOwner, ATL::_U_STRINGorID message, ATL::_U_STR
 ///////////////////////////////////////////////////////////////////////////////
 // CMenu
 
-#if (WINVER >= 0x0500)
-  #ifndef MII_SIZEOF_STRUCT
-    #define MII_SIZEOF_STRUCT(structname, member)  (((int)((LPBYTE)(&((structname*)0)->member) - ((LPBYTE)((structname*)0)))) + sizeof(((structname*)0)->member))
-  #endif
-  #define MENUITEMINFO_SIZE_VERSION_400A  MII_SIZEOF_STRUCT(MENUITEMINFOA, cch)
-  #define MENUITEMINFO_SIZE_VERSION_400W  MII_SIZEOF_STRUCT(MENUITEMINFOW, cch)
-  #ifdef UNICODE
-    #define MENUITEMINFO_SIZE_VERSION_400  MENUITEMINFO_SIZE_VERSION_400W
-  #else
-    #define MENUITEMINFO_SIZE_VERSION_400  MENUITEMINFO_SIZE_VERSION_400A
-  #endif // !UNICODE
-#endif // (WINVER >= 0x0500)
-
 class CMenuItemInfo : public MENUITEMINFO
 {
 public:
@@ -118,14 +117,6 @@ public:
 	{
 		memset(this, 0, sizeof(MENUITEMINFO));
 		cbSize = sizeof(MENUITEMINFO);
-#if (WINVER >= 0x0500)
-		// adjust struct size if running on older version of Windows
-		if(AtlIsOldWindows())
-		{
-			ATLASSERT(cbSize > MENUITEMINFO_SIZE_VERSION_400);   // must be
-			cbSize = MENUITEMINFO_SIZE_VERSION_400;
-		}
-#endif // (WINVER >= 0x0500)
 	}
 };
 
@@ -149,7 +140,7 @@ public:
 
 	~CMenuT()
 	{
-		if(t_bManaged && m_hMenu != NULL)
+		if(t_bManaged && (m_hMenu != NULL))
 			DestroyMenu();
 	}
 
@@ -162,7 +153,7 @@ public:
 	void Attach(HMENU hMenuNew)
 	{
 		ATLASSERT(::IsMenu(hMenuNew));
-		if(t_bManaged && m_hMenu != NULL && m_hMenu != hMenuNew)
+		if(t_bManaged && (m_hMenu != NULL) && (m_hMenu != hMenuNew))
 			::DestroyMenu(m_hMenu);
 		m_hMenu = hMenuNew;
 	}
@@ -205,14 +196,12 @@ public:
 		return (m_hMenu != NULL) ? TRUE : FALSE;
 	}
 
-#ifndef _WIN32_WCE
 	BOOL LoadMenuIndirect(const void* lpMenuTemplate)
 	{
 		ATLASSERT(m_hMenu == NULL);
 		m_hMenu = ::LoadMenuIndirect(lpMenuTemplate);
 		return (m_hMenu != NULL) ? TRUE : FALSE;
 	}
-#endif // !_WIN32_WCE
 
 	BOOL DestroyMenu()
 	{
@@ -234,27 +223,17 @@ public:
 	BOOL TrackPopupMenu(UINT nFlags, int x, int y, HWND hWnd, LPCRECT lpRect = NULL)
 	{
 		ATLASSERT(::IsMenu(m_hMenu));
-#ifndef _WIN32_WCE
-#if (WINVER >= 0x0500)
 		x = _FixTrackMenuPopupX(x, y);
-#endif // !(WINVER >= 0x0500)
 		return ::TrackPopupMenu(m_hMenu, nFlags, x, y, 0, hWnd, lpRect);
-#else // CE specific
-		lpRect;
-		return ::TrackPopupMenuEx(m_hMenu, nFlags, x, y, hWnd, NULL);
-#endif // _WIN32_WCE
 	}
 
 	BOOL TrackPopupMenuEx(UINT uFlags, int x, int y, HWND hWnd, LPTPMPARAMS lptpm = NULL)
 	{
 		ATLASSERT(::IsMenu(m_hMenu));
-#if (WINVER >= 0x0500) && !defined(_WIN32_WCE)
 		x = _FixTrackMenuPopupX(x, y);
-#endif // (WINVER >= 0x0500) && !defined(_WIN32_WCE)
 		return ::TrackPopupMenuEx(m_hMenu, uFlags, x, y, hWnd, lptpm);
 	}
 
-#if (WINVER >= 0x0500) && !defined(_WIN32_WCE)
 	// helper that fixes popup menu X position when it's off-screen
 	static int _FixTrackMenuPopupX(int x, int y)
 	{
@@ -265,8 +244,7 @@ public:
 			HMONITOR hMonitorNear = ::MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
 			if(hMonitorNear != NULL)
 			{
-				MONITORINFO mi = { 0 };
-				mi.cbSize = sizeof(MONITORINFO);
+				MONITORINFO mi = { sizeof(MONITORINFO) };
 				if(::GetMonitorInfo(hMonitorNear, &mi) != FALSE)
 				{
 					if(x < mi.rcWork.left)
@@ -291,7 +269,6 @@ public:
 		ATLASSERT(::IsMenu(m_hMenu));
 		return ::SetMenuInfo(m_hMenu, lpMenuInfo);
 	}
-#endif // (WINVER >= 0x0500) && !defined(_WIN32_WCE)
 
 // Menu Item Operations
 	BOOL AppendMenu(UINT nFlags, UINT_PTR nIDNewItem = 0, LPCTSTR lpszNewItem = NULL)
@@ -307,7 +284,6 @@ public:
 		return ::AppendMenu(m_hMenu, nFlags | MF_POPUP, (UINT_PTR)hSubMenu, lpszNewItem);
 	}
 
-#ifndef _WIN32_WCE
 	BOOL AppendMenu(UINT nFlags, UINT_PTR nIDNewItem, HBITMAP hBmp)
 	{
 		ATLASSERT(::IsMenu(m_hMenu));
@@ -320,7 +296,6 @@ public:
 		ATLASSERT(::IsMenu(hSubMenu));
 		return ::AppendMenu(m_hMenu, nFlags | (MF_BITMAP | MF_POPUP), (UINT_PTR)hSubMenu, (LPCTSTR)hBmp);
 	}
-#endif // !_WIN32_WCE
 
 	UINT CheckMenuItem(UINT nIDCheckItem, UINT nCheck)
 	{
@@ -334,7 +309,6 @@ public:
 		return ::EnableMenuItem(m_hMenu, nIDEnableItem, nEnable);
 	}
 
-#ifndef _WIN32_WCE
 	BOOL HiliteMenuItem(HWND hWnd, UINT uIDHiliteItem, UINT uHilite)
 	{
 		ATLASSERT(::IsMenu(m_hMenu));
@@ -371,7 +345,6 @@ public:
 		return ::GetMenuString(m_hMenu, nIDItem, NULL, 0, nFlags);
 	}
 
-#ifndef _ATL_NO_COM
 	BOOL GetMenuString(UINT nIDItem, BSTR& bstrText, UINT nFlags) const
 	{
 		USES_CONVERSION;
@@ -386,7 +359,7 @@ public:
 		}
 
 		nLen++;   // increment to include terminating NULL char
-		CTempBuffer<TCHAR, _WTL_STACK_ALLOC_THRESHOLD> buff;
+		ATL::CTempBuffer<TCHAR, _WTL_STACK_ALLOC_THRESHOLD> buff;
 		LPTSTR lpszText = buff.Allocate(nLen);
 		if(lpszText == NULL)
 			return FALSE;
@@ -397,11 +370,9 @@ public:
 		bstrText = ::SysAllocString(T2OLE(lpszText));
 		return (bstrText != NULL) ? TRUE : FALSE;
 	}
-#endif // !_ATL_NO_COM
-#endif // !_WIN32_WCE
 
-#if defined(_WTL_USE_CSTRING) || defined(__ATLSTR_H__)
-	int GetMenuString(UINT nIDItem, _CSTRING_NS::CString& strText, UINT nFlags) const
+#ifdef __ATLSTR_H__
+	int GetMenuString(UINT nIDItem, ATL::CString& strText, UINT nFlags) const
 	{
 		ATLASSERT(::IsMenu(m_hMenu));
 
@@ -417,7 +388,7 @@ public:
 		strText.ReleaseBuffer();
 		return nRet;
 	}
-#endif // defined(_WTL_USE_CSTRING) || defined(__ATLSTR_H__)
+#endif // __ATLSTR_H__
 
 	CMenuHandle GetSubMenu(int nPos) const
 	{
@@ -438,7 +409,6 @@ public:
 		return ::InsertMenu(m_hMenu, nPosition, nFlags | MF_POPUP, (UINT_PTR)hSubMenu, lpszNewItem);
 	}
 
-#ifndef _WIN32_WCE
 	BOOL InsertMenu(UINT nPosition, UINT nFlags, UINT_PTR nIDNewItem, HBITMAP hBmp)
 	{
 		ATLASSERT(::IsMenu(m_hMenu));
@@ -477,7 +447,6 @@ public:
 		ATLASSERT(::IsMenu(hSubMenu));
 		return ::ModifyMenu(m_hMenu, nPosition, nFlags | (MF_BITMAP | MF_POPUP), (UINT_PTR)hSubMenu, (LPCTSTR)hBmp);
 	}
-#endif // !_WIN32_WCE
 
 	BOOL RemoveMenu(UINT nPosition, UINT nFlags)
 	{
@@ -485,13 +454,11 @@ public:
 		return ::RemoveMenu(m_hMenu, nPosition, nFlags);
 	}
 
-#ifndef _WIN32_WCE
 	BOOL SetMenuItemBitmaps(UINT nPosition, UINT nFlags, HBITMAP hBmpUnchecked, HBITMAP hBmpChecked)
 	{
 		ATLASSERT(::IsMenu(m_hMenu));
 		return ::SetMenuItemBitmaps(m_hMenu, nPosition, nFlags, hBmpUnchecked, hBmpChecked);
 	}
-#endif // !_WIN32_WCE
 
 	BOOL CheckMenuRadioItem(UINT nIDFirst, UINT nIDLast, UINT nIDItem, UINT nFlags)
 	{
@@ -511,7 +478,6 @@ public:
 		return (BOOL)::SetMenuItemInfo(m_hMenu, uItem, bByPosition, lpmii);
 	}
 
-#ifndef _WIN32_WCE
 	BOOL InsertMenuItem(UINT uItem, BOOL bByPosition, LPMENUITEMINFO lpmii)
 	{
 		ATLASSERT(::IsMenu(m_hMenu));
@@ -554,7 +520,6 @@ public:
 		ATLASSERT(::IsMenu(m_hMenu));
 		return ::GetMenuContextHelpId(m_hMenu);
 	}
-#endif // !_WIN32_WCE
 };
 
 
@@ -573,7 +538,7 @@ public:
 
 	~CAcceleratorT()
 	{
-		if(t_bManaged && m_hAccel != NULL)
+		if(t_bManaged && (m_hAccel != NULL))
 			::DestroyAcceleratorTable(m_hAccel);
 	}
 
@@ -585,7 +550,7 @@ public:
 
 	void Attach(HACCEL hAccel)
 	{
-		if(t_bManaged && m_hAccel != NULL)
+		if(t_bManaged && (m_hAccel != NULL))
 			::DestroyAcceleratorTable(m_hAccel);
 		m_hAccel = hAccel;
 	}
@@ -627,7 +592,6 @@ public:
 	}
 
 // Operations
-#ifndef _WIN32_WCE
 	int CopyAcceleratorTable(LPACCEL lpAccelDst, int cEntries)
 	{
 		ATLASSERT(m_hAccel != NULL);
@@ -640,7 +604,6 @@ public:
 		ATLASSERT(m_hAccel != NULL);
 		return ::CopyAcceleratorTable(m_hAccel, NULL, 0);
 	}
-#endif // !_WIN32_WCE
 
 	BOOL TranslateAccelerator(HWND hWnd, LPMSG pMsg)
 	{
@@ -670,7 +633,7 @@ public:
 
 	~CIconT()
 	{
-		if(t_bManaged && m_hIcon != NULL)
+		if(t_bManaged && (m_hIcon != NULL))
 			::DestroyIcon(m_hIcon);
 	}
 
@@ -682,7 +645,7 @@ public:
 
 	void Attach(HICON hIcon)
 	{
-		if(t_bManaged && m_hIcon != NULL)
+		if(t_bManaged && (m_hIcon != NULL))
 			::DestroyIcon(m_hIcon);
 		m_hIcon = hIcon;
 	}
@@ -713,7 +676,6 @@ public:
 		return m_hIcon;
 	}
 
-#ifndef _WIN32_WCE
 	HICON LoadOEMIcon(LPCTSTR lpstrIconName)
 	{
 		ATLASSERT(m_hIcon == NULL);
@@ -747,7 +709,6 @@ public:
 		m_hIcon = ::CreateIconFromResourceEx(pbBits, cbBits, TRUE, dwVersion, cxDesired, cyDesired, uFlags);
 		return m_hIcon;
 	}
-#endif // !_WIN32_WCE
 
 	HICON CreateIconIndirect(PICONINFO pIconInfo)
 	{
@@ -757,7 +718,6 @@ public:
 		return m_hIcon;
 	}
 
-#ifndef _WIN32_WCE
 	HICON ExtractIcon(LPCTSTR lpszExeFileName, UINT nIconIndex)
 	{
 		ATLASSERT(m_hIcon == NULL);
@@ -774,7 +734,6 @@ public:
 		m_hIcon = ::ExtractAssociatedIcon(hInst, lpIconPath, lpiIcon);
 		return m_hIcon;
 	}
-#endif // !_WIN32_WCE
 
 	BOOL DestroyIcon()
 	{
@@ -786,7 +745,6 @@ public:
 	}
 
 // Operations
-#ifndef _WIN32_WCE
 	HICON CopyIcon()
 	{
 		ATLASSERT(m_hIcon != NULL);
@@ -798,26 +756,17 @@ public:
 		ATLASSERT(m_hIcon != NULL);
 		return ::DuplicateIcon(NULL, m_hIcon);
 	}
-#endif // !_WIN32_WCE
 
 	BOOL DrawIcon(HDC hDC, int x, int y)
 	{
 		ATLASSERT(m_hIcon != NULL);
-#ifndef _WIN32_WCE
 		return ::DrawIcon(hDC, x, y, m_hIcon);
-#else // CE specific
-		return ::DrawIconEx(hDC, x, y, m_hIcon, 0, 0, 0, NULL, DI_NORMAL);
-#endif // _WIN32_WCE
 	}
 
 	BOOL DrawIcon(HDC hDC, POINT pt)
 	{
 		ATLASSERT(m_hIcon != NULL);
-#ifndef _WIN32_WCE
 		return ::DrawIcon(hDC, pt.x, pt.y, m_hIcon);
-#else // CE specific
-		return ::DrawIconEx(hDC, pt.x, pt.y, m_hIcon, 0, 0, 0, NULL, DI_NORMAL);
-#endif // _WIN32_WCE
 	}
 
 	BOOL DrawIconEx(HDC hDC, int x, int y, int cxWidth, int cyWidth, UINT uStepIfAniCur = 0, HBRUSH hbrFlickerFreeDraw = NULL, UINT uFlags = DI_NORMAL)
@@ -832,7 +781,6 @@ public:
 		return ::DrawIconEx(hDC, pt.x, pt.y, m_hIcon, size.cx, size.cy, uStepIfAniCur, hbrFlickerFreeDraw, uFlags);
 	}
 
-#ifndef _WIN32_WCE
 	BOOL GetIconInfo(PICONINFO pIconInfo) const
 	{
 		ATLASSERT(m_hIcon != NULL);
@@ -879,22 +827,19 @@ public:
 		return ::LoadIconWithScaleDown(NULL, (LPCWSTR)lpstrIconName, cx, cy, &m_hIcon);
 	}
 #endif // defined(NTDDI_VERSION) && (NTDDI_VERSION >= NTDDI_LONGHORN)
-#endif // !_WIN32_WCE
 
 	// Helper
-#ifndef _WIN32_WCE
 	static bool IsOEMIcon(LPCTSTR lpstrIconName)
 	{
 #if (WINVER >= 0x0600)
-		return (lpstrIconName == IDI_APPLICATION || lpstrIconName == IDI_ASTERISK || lpstrIconName == IDI_EXCLAMATION ||
-		          lpstrIconName == IDI_HAND || lpstrIconName == IDI_QUESTION || lpstrIconName == IDI_WINLOGO ||
-		          lpstrIconName == IDI_SHIELD);
+		return ((lpstrIconName == IDI_APPLICATION) || (lpstrIconName == IDI_ASTERISK) || (lpstrIconName == IDI_EXCLAMATION) ||
+		          (lpstrIconName == IDI_HAND) || (lpstrIconName == IDI_QUESTION) || (lpstrIconName == IDI_WINLOGO) ||
+		          (lpstrIconName == IDI_SHIELD));
 #else // !(WINVER >= 0x0600)
-		return (lpstrIconName == IDI_APPLICATION || lpstrIconName == IDI_ASTERISK || lpstrIconName == IDI_EXCLAMATION ||
-		          lpstrIconName == IDI_HAND || lpstrIconName == IDI_QUESTION || lpstrIconName == IDI_WINLOGO);
+		return ((lpstrIconName == IDI_APPLICATION) || (lpstrIconName == IDI_ASTERISK) || (lpstrIconName == IDI_EXCLAMATION) ||
+		          (lpstrIconName == IDI_HAND) || (lpstrIconName == IDI_QUESTION) || (lpstrIconName == IDI_WINLOGO));
 #endif // !(WINVER >= 0x0600)
 	}
-#endif // !_WIN32_WCE
 };
 
 typedef CIconT<false>   CIconHandle;
@@ -921,7 +866,7 @@ public:
 
 	~CCursorT()
 	{
-		if(t_bManaged && m_hCursor != NULL)
+		if(t_bManaged && (m_hCursor != NULL))
 			DestroyCursor();
 	}
 
@@ -933,7 +878,7 @@ public:
 
 	void Attach(HCURSOR hCursor)
 	{
-		if(t_bManaged && m_hCursor != NULL)
+		if(t_bManaged && (m_hCursor != NULL))
 			DestroyCursor();
 		m_hCursor = hCursor;
 	}
@@ -960,20 +905,12 @@ public:
 	HCURSOR LoadSysCursor(LPCTSTR lpstrCursorName)
 	{
 		ATLASSERT(m_hCursor == NULL);
-#if (WINVER >= 0x0500)
-		ATLASSERT(lpstrCursorName == IDC_ARROW || lpstrCursorName == IDC_IBEAM || lpstrCursorName == IDC_WAIT ||
-			lpstrCursorName == IDC_CROSS || lpstrCursorName == IDC_UPARROW || lpstrCursorName == IDC_SIZE ||
-			lpstrCursorName == IDC_ICON || lpstrCursorName == IDC_SIZENWSE || lpstrCursorName == IDC_SIZENESW ||
-			lpstrCursorName == IDC_SIZEWE || lpstrCursorName == IDC_SIZENS || lpstrCursorName == IDC_SIZEALL ||
-			lpstrCursorName == IDC_NO || lpstrCursorName == IDC_APPSTARTING || lpstrCursorName == IDC_HELP ||
-			lpstrCursorName == IDC_HAND);
-#else // !(WINVER >= 0x0500)
-		ATLASSERT(lpstrCursorName == IDC_ARROW || lpstrCursorName == IDC_IBEAM || lpstrCursorName == IDC_WAIT ||
-			lpstrCursorName == IDC_CROSS || lpstrCursorName == IDC_UPARROW || lpstrCursorName == IDC_SIZE ||
-			lpstrCursorName == IDC_ICON || lpstrCursorName == IDC_SIZENWSE || lpstrCursorName == IDC_SIZENESW ||
-			lpstrCursorName == IDC_SIZEWE || lpstrCursorName == IDC_SIZENS || lpstrCursorName == IDC_SIZEALL ||
-			lpstrCursorName == IDC_NO || lpstrCursorName == IDC_APPSTARTING || lpstrCursorName == IDC_HELP);
-#endif // !(WINVER >= 0x0500)
+		ATLASSERT((lpstrCursorName == IDC_ARROW) || (lpstrCursorName == IDC_IBEAM) || (lpstrCursorName == IDC_WAIT) ||
+			(lpstrCursorName == IDC_CROSS) || (lpstrCursorName == IDC_UPARROW) || (lpstrCursorName == IDC_SIZE) ||
+			(lpstrCursorName == IDC_ICON) || (lpstrCursorName == IDC_SIZENWSE) || (lpstrCursorName == IDC_SIZENESW) ||
+			(lpstrCursorName == IDC_SIZEWE) || (lpstrCursorName == IDC_SIZENS) || (lpstrCursorName == IDC_SIZEALL) ||
+			(lpstrCursorName == IDC_NO) || (lpstrCursorName == IDC_APPSTARTING) || (lpstrCursorName == IDC_HELP) ||
+			(lpstrCursorName == IDC_HAND));
 		m_hCursor = ::LoadCursor(NULL, lpstrCursorName);
 		return m_hCursor;
 	}
@@ -991,7 +928,6 @@ public:
 		return m_hCursor;
 	}
 
-#ifndef _WIN32_WCE
 	HCURSOR LoadCursorFromFile(LPCTSTR pstrFilename)
 	{
 		ATLASSERT(m_hCursor == NULL);
@@ -999,18 +935,14 @@ public:
 		m_hCursor = ::LoadCursorFromFile(pstrFilename);
 		return m_hCursor;
 	}
-#endif // !_WIN32_WCE
 
-#if !defined(_WIN32_WCE) || ((_WIN32_WCE >= 0x400) && !(defined(WIN32_PLATFORM_PSPC) || defined(WIN32_PLATFORM_WFSP)))
 	HCURSOR CreateCursor(int xHotSpot, int yHotSpot, int nWidth, int nHeight, CONST VOID *pvANDPlane, CONST VOID *pvXORPlane)
 	{
 		ATLASSERT(m_hCursor == NULL);
 		m_hCursor = ::CreateCursor(ModuleHelper::GetResourceInstance(), xHotSpot, yHotSpot, nWidth, nHeight, pvANDPlane, pvXORPlane);
 		return m_hCursor;
 	}
-#endif // !defined(_WIN32_WCE) || ((_WIN32_WCE >= 0x400) && !(defined(WIN32_PLATFORM_PSPC) || defined(WIN32_PLATFORM_WFSP)))
 
-#ifndef _WIN32_WCE
 	HCURSOR CreateCursorFromResource(PBYTE pBits, DWORD dwResSize, DWORD dwVersion = 0x00030000)
 	{
 		ATLASSERT(m_hCursor == NULL);
@@ -1027,39 +959,29 @@ public:
 		m_hCursor = (HCURSOR)::CreateIconFromResourceEx(pbBits, cbBits, FALSE, dwVersion, cxDesired, cyDesired, uFlags);
 		return m_hCursor;
 	}
-#endif // !_WIN32_WCE
 
 	BOOL DestroyCursor()
 	{
 		ATLASSERT(m_hCursor != NULL);
-#if !defined(_WIN32_WCE) || ((_WIN32_WCE >= 0x400) && !(defined(WIN32_PLATFORM_PSPC) || defined(WIN32_PLATFORM_WFSP)))
 		BOOL bRet = ::DestroyCursor(m_hCursor);
 		if(bRet != FALSE)
 			m_hCursor = NULL;
 		return bRet;
-#else // !(!defined(_WIN32_WCE) || ((_WIN32_WCE >= 0x400) && !(defined(WIN32_PLATFORM_PSPC) || defined(WIN32_PLATFORM_WFSP))))
-		ATLTRACE2(atlTraceUI, 0, _T("Warning: This version of Windows CE does not have ::DestroyCursor()\n"));
-		return FALSE;
-#endif // !(!defined(_WIN32_WCE) || ((_WIN32_WCE >= 0x400) && !(defined(WIN32_PLATFORM_PSPC) || defined(WIN32_PLATFORM_WFSP))))
 	}
 
 // Operations
-#ifndef _WIN32_WCE
 	HCURSOR CopyCursor()
 	{
 		ATLASSERT(m_hCursor != NULL);
 		return (HCURSOR)::CopyIcon((HICON)m_hCursor);
 	}
-#endif // !_WIN32_WCE
 
-#if (WINVER >= 0x0500) && !defined(_WIN32_WCE)
 	BOOL GetCursorInfo(LPCURSORINFO pCursorInfo)
 	{
 		ATLASSERT(m_hCursor != NULL);
 		ATLASSERT(pCursorInfo != NULL);
 		return ::GetCursorInfo(pCursorInfo);
 	}
-#endif // (WINVER >= 0x0500) && !defined(_WIN32_WCE)
 };
 
 typedef CCursorT<false>   CCursorHandle;
@@ -1106,13 +1028,12 @@ public:
 		return true;
 	}
 
-#ifndef _WIN32_WCE
-	bool LoadEx(ATL::_U_STRINGorID Type, ATL::_U_STRINGorID ID, WORD wLanguage)
+	bool LoadEx(ATL::_U_STRINGorID ID, ATL::_U_STRINGorID Type, WORD wLanguage)
 	{
 		ATLASSERT(m_hResource == NULL);
 		ATLASSERT(m_hGlobal == NULL);
 
-		m_hResource = ::FindResourceEx(ModuleHelper::GetResourceInstance(), ID.m_lpstr, Type.m_lpstr, wLanguage);
+		m_hResource = ::FindResourceEx(ModuleHelper::GetResourceInstance(), Type.m_lpstr, ID.m_lpstr, wLanguage);
 		if(m_hResource == NULL)
 			return false;
 
@@ -1125,7 +1046,6 @@ public:
 
 		return true;
 	}
-#endif // !_WIN32_WCE
 
 // Misc. operations
 	DWORD GetSize() const
@@ -1154,6 +1074,158 @@ public:
 	}
 };
 
-}; // namespace WTL
+
+///////////////////////////////////////////////////////////////////////////////
+// Toolbar resource descriptor
+
+struct _AtlToolBarData
+{
+	WORD wVersion;
+	WORD wWidth;
+	WORD wHeight;
+	WORD wItemCount;
+
+	WORD* items()
+		{ return (WORD*)(this+1); }
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Global functions for loading resources
+
+inline HACCEL AtlLoadAccelerators(ATL::_U_STRINGorID table)
+{
+	return ::LoadAccelerators(ModuleHelper::GetResourceInstance(), table.m_lpstr);
+}
+
+inline HMENU AtlLoadMenu(ATL::_U_STRINGorID menu)
+{
+	return ::LoadMenu(ModuleHelper::GetResourceInstance(), menu.m_lpstr);
+}
+
+inline HBITMAP AtlLoadBitmap(ATL::_U_STRINGorID bitmap)
+{
+	return ::LoadBitmap(ModuleHelper::GetResourceInstance(), bitmap.m_lpstr);
+}
+
+#ifdef OEMRESOURCE
+inline HBITMAP AtlLoadSysBitmap(ATL::_U_STRINGorID bitmap)
+{
+#ifdef _DEBUG
+	WORD wID = LOWORD(bitmap.m_lpstr);
+	ATLASSERT((wID >= 32734) && (wID <= 32767));
+#endif // _DEBUG
+	return ::LoadBitmap(NULL, bitmap.m_lpstr);
+}
+#endif // OEMRESOURCE
+
+inline HCURSOR AtlLoadCursor(ATL::_U_STRINGorID cursor)
+{
+	return ::LoadCursor(ModuleHelper::GetResourceInstance(), cursor.m_lpstr);
+}
+
+inline HCURSOR AtlLoadSysCursor(LPCTSTR lpCursorName)
+{
+	ATLASSERT((lpCursorName == IDC_ARROW) || (lpCursorName == IDC_IBEAM) || (lpCursorName == IDC_WAIT) ||
+		(lpCursorName == IDC_CROSS) || (lpCursorName == IDC_UPARROW) || (lpCursorName == IDC_SIZE) ||
+		(lpCursorName == IDC_ICON) || (lpCursorName == IDC_SIZENWSE) || (lpCursorName == IDC_SIZENESW) ||
+		(lpCursorName == IDC_SIZEWE) || (lpCursorName == IDC_SIZENS) || (lpCursorName == IDC_SIZEALL) ||
+		(lpCursorName == IDC_NO) || (lpCursorName == IDC_APPSTARTING) || (lpCursorName == IDC_HELP) ||
+		(lpCursorName == IDC_HAND));
+	return ::LoadCursor(NULL, lpCursorName);
+}
+
+inline HICON AtlLoadIcon(ATL::_U_STRINGorID icon)
+{
+	return ::LoadIcon(ModuleHelper::GetResourceInstance(), icon.m_lpstr);
+}
+
+inline HICON AtlLoadSysIcon(LPCTSTR lpIconName)
+{
+#if (WINVER >= 0x0600)
+	ATLASSERT((lpIconName == IDI_APPLICATION) || (lpIconName == IDI_ASTERISK) || (lpIconName == IDI_EXCLAMATION) ||
+	          (lpIconName == IDI_HAND) || (lpIconName == IDI_QUESTION) || (lpIconName == IDI_WINLOGO) ||
+	          (lpIconName == IDI_SHIELD));
+#else // !(WINVER >= 0x0600)
+	ATLASSERT((lpIconName == IDI_APPLICATION) || (lpIconName == IDI_ASTERISK) || (lpIconName == IDI_EXCLAMATION) ||
+	          (lpIconName == IDI_HAND) || (lpIconName == IDI_QUESTION) || (lpIconName == IDI_WINLOGO));
+#endif // !(WINVER >= 0x0600)
+	return ::LoadIcon(NULL, lpIconName);
+}
+
+inline HBITMAP AtlLoadBitmapImage(ATL::_U_STRINGorID bitmap, UINT fuLoad = LR_DEFAULTCOLOR)
+{
+	return (HBITMAP)::LoadImage(ModuleHelper::GetResourceInstance(), bitmap.m_lpstr, IMAGE_BITMAP, 0, 0, fuLoad);
+}
+
+inline HCURSOR AtlLoadCursorImage(ATL::_U_STRINGorID cursor, UINT fuLoad = LR_DEFAULTCOLOR | LR_DEFAULTSIZE, int cxDesired = 0, int cyDesired = 0)
+{
+	return (HCURSOR)::LoadImage(ModuleHelper::GetResourceInstance(), cursor.m_lpstr, IMAGE_CURSOR, cxDesired, cyDesired, fuLoad);
+}
+
+inline HICON AtlLoadIconImage(ATL::_U_STRINGorID icon, UINT fuLoad = LR_DEFAULTCOLOR | LR_DEFAULTSIZE, int cxDesired = 0, int cyDesired = 0)
+{
+	return (HICON)::LoadImage(ModuleHelper::GetResourceInstance(), icon.m_lpstr, IMAGE_ICON, cxDesired, cyDesired, fuLoad);
+}
+
+#ifdef OEMRESOURCE
+inline HBITMAP AtlLoadSysBitmapImage(WORD wBitmapID, UINT fuLoad = LR_DEFAULTCOLOR)
+{
+	ATLASSERT((wBitmapID >= 32734) && (wBitmapID <= 32767));
+	ATLASSERT((fuLoad & LR_LOADFROMFILE) == 0);   // this one doesn't load from a file
+	return (HBITMAP)::LoadImage(NULL, MAKEINTRESOURCE(wBitmapID), IMAGE_BITMAP, 0, 0, fuLoad);
+}
+#endif // OEMRESOURCE
+
+inline HCURSOR AtlLoadSysCursorImage(ATL::_U_STRINGorID cursor, UINT fuLoad = LR_DEFAULTCOLOR | LR_DEFAULTSIZE, int cxDesired = 0, int cyDesired = 0)
+{
+#ifdef _DEBUG
+	WORD wID = LOWORD(cursor.m_lpstr);
+	ATLASSERT(((wID >= 32512) && (wID <= 32516)) || ((wID >= 32640) && (wID <= 32648)) || (wID == 32650) || (wID == 32651));
+	ATLASSERT((fuLoad & LR_LOADFROMFILE) == 0);   // this one doesn't load from a file
+#endif // _DEBUG
+	return (HCURSOR)::LoadImage(NULL, cursor.m_lpstr, IMAGE_CURSOR, cxDesired, cyDesired, fuLoad);
+}
+
+inline HICON AtlLoadSysIconImage(ATL::_U_STRINGorID icon, UINT fuLoad = LR_DEFAULTCOLOR | LR_DEFAULTSIZE, int cxDesired = 0, int cyDesired = 0)
+{
+#ifdef _DEBUG
+	WORD wID = LOWORD(icon.m_lpstr);
+	ATLASSERT((wID >= 32512) && (wID <= 32517));
+	ATLASSERT((fuLoad & LR_LOADFROMFILE) == 0);   // this one doesn't load from a file
+#endif // _DEBUG
+	return (HICON)::LoadImage(NULL, icon.m_lpstr, IMAGE_ICON, cxDesired, cyDesired, fuLoad);
+}
+
+inline bool AtlLoadString(UINT uID, BSTR& bstrText)
+{
+	USES_CONVERSION;
+	ATLASSERT(bstrText == NULL);
+
+	LPTSTR lpstrText = NULL;
+	int nRes = 0;
+	for(int nLen = 256; ; nLen *= 2)
+	{
+		ATLTRY(lpstrText = new TCHAR[nLen]);
+		if(lpstrText == NULL)
+			break;
+		nRes = ::LoadString(ModuleHelper::GetResourceInstance(), uID, lpstrText, nLen);
+		if(nRes < nLen - 1)
+			break;
+		delete [] lpstrText;
+		lpstrText = NULL;
+	}
+
+	if(lpstrText != NULL)
+	{
+		if(nRes != 0)
+			bstrText = ::SysAllocString(T2OLE(lpstrText));
+		delete [] lpstrText;
+	}
+
+	return (bstrText != NULL) ? true : false;
+}
+
+} // namespace WTL
 
 #endif // __ATLUSER_H__

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
+<translation id="1036550831858290950">บันทึกแท็บปัจจุบันเป็นบุ๊กมาร์ก</translation>
 <translation id="104962181688258143">เปิดแอปไฟล์</translation>
 <translation id="1122869341872663659">กำลังแสดงผลการค้นหา <ph name="QUERY" /> <ph name="N" /> รายการ</translation>
 <translation id="1195667586424773550">ลากลิงก์ไปยังแถบที่อยู่ของแท็บ</translation>
@@ -12,6 +13,7 @@
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> หรือ <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">ไปที่ท้ายบรรทัด</translation>
+<translation id="1499072997694708844">ปิดหน้าต่างการค้นหาที่เปิดอยู่หรือหยุดการโหลดหน้าปัจจุบัน</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
 <translation id="152892567002884378">เพิ่มระดับเสียง</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> แล้วกด <ph name="ESC" /></translation>
@@ -21,6 +23,7 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">เพิ่ม www. และ .com ในข้อมูลที่คุณป้อนลงในแถบที่อยู่ แล้วเปิดหน้าเว็บนั้น</translation>
+<translation id="1872219238824176091">นำพื้นที่ทำงานปัจจุบันออก</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> แล้วกด <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> หรือ <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">ไปที่แท็บถัดไป</translation>
 <translation id="2010818616644390445">ไปที่แท็บสุดท้ายในหน้าต่าง</translation>
@@ -33,20 +36,23 @@
 <translation id="2185166372312820725">ไปที่แท็บก่อนหน้า</translation>
 <translation id="2194790690264064655">กด <ph name="CTRL" /> แล้วคลิกลิงก์</translation>
 <translation id="2246352309084894470">เปิด/ปิด Launcher แบบเต็มหน้าจอ</translation>
+<translation id="2354531887393764880">มหัพภาค</translation>
 <translation id="2382644247745281995">ไม่รองรับการจัดวางแป้นพิมพ์ปัจจุบัน</translation>
 <translation id="2397416548179033562">แสดงเมนู Chrome</translation>
 <translation id="2424073332829844142">เปิดและปิดใช้งาน Caps Lock</translation>
 <translation id="2441202986792279177">สลับไปมาระหว่างหน้าต่างอย่างรวดเร็ว</translation>
 <translation id="2454251766545114447">ซูมหน้าจอออก</translation>
 <translation id="2478303094958140141">เปิดหรือปิด ChromeVox (อธิบายและอ่านออกเสียง)</translation>
+<translation id="2480851840841871861">เปิด Google Assistant</translation>
+<translation id="2488661730534396940">เปิดใช้งานพื้นที่ทำงานด้านซ้าย</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2530339807289914946">เลื่อนหน้าเว็บลง</translation>
 <translation id="2574014812750545982">รีเซ็ตระดับการซูมในหน้าเว็บ</translation>
 <translation id="2596078834055697711">ถ่ายภาพหน้าจอของหน้าต่าง</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> แล้วกด <ph name="TAB" /> หรือ <ph name="RIGHT" /></translation>
-<translation id="2699509451653686398">บันทึกหน้าเว็บปัจจุบันเป็นบุ๊กมาร์ก</translation>
 <translation id="2750942583782703988">โหลดหน้าเว็บปัจจุบันซ้ำ</translation>
 <translation id="2764005613199379871">วางโฟกัสบนแถบที่อยู่การค้นหา</translation>
+<translation id="2774822903829597107">สร้างพื้นที่ทำงานใหม่</translation>
 <translation id="2789868185375229787">ย่อหน้าเว็บ</translation>
 <translation id="2804480015716812239">กด <ph name="ALT" /> และคลิกลิงก์</translation>
 <translation id="2830827904629746450">จัดวางหน้าต่างทางด้านขวา</translation>
@@ -78,6 +84,7 @@
 <translation id="3792178297143798024">เปิดรายการที่ไฮไลต์บนชั้นวาง</translation>
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 จนถึง 8</translation>
 <translation id="3837047332182291558">เพิ่มแสงแป้นพิมพ์ (เฉพาะแป้นพิมพ์เรืองแสง)</translation>
+<translation id="3949671998904569433">จุลภาค</translation>
 <translation id="3976863468609830880">คลิกไอคอนสุดท้ายบนชั้นวาง</translation>
 <translation id="3994783594793697310">รีเซ็ตระดับการซูมหน้าจอ</translation>
 <translation id="4026843240379844265">ย้ายหน้าต่างที่ใช้งานไปยังหน้าจอต่างๆ</translation>
@@ -97,6 +104,7 @@
 <translation id="4642092649622328492">ถ่ายภาพหน้าจอบางส่วน</translation>
 <translation id="4698850295812410683">แสดงเครื่องมือสไตลัส</translation>
 <translation id="4801989101741319327">ย้ายไปท้ายคำถัดไป</translation>
+<translation id="4866066940972151697">เปิดใช้งานพื้นที่ทำงานด้านขวา</translation>
 <translation id="4916163929714267752">เปิดลิงก์ในหน้าต่างใหม่</translation>
 <translation id="5030659775136592441">แสดงการจัดการบุ๊กมาร์ก</translation>
 <translation id="5034421018520995080">ไปที่ด้านบนสุดของหน้า</translation>
@@ -112,6 +120,7 @@
 <translation id="5554139136362089836">ค้นหาในหน้าปัจจุบัน</translation>
 <translation id="5563050856984839829">กด <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> และคลิกลิงก์</translation>
 <translation id="561814908794220892">เปิดหน้าเว็บในแท็บใหม่</translation>
+<translation id="5620219513321115856">ย้ายหน้าต่างที่เปิดใช้งานอยู่ไปยังพื้นที่ทำงานทางด้านขวา</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> หรือ <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">เปิดลิงก์ในแท็บใหม่</translation>
 <translation id="5757474750054631686">หรี่แสงแป้นพิมพ์ (เฉพาะแป้นพิมพ์เรืองแสง)</translation>
@@ -122,7 +131,6 @@
 <translation id="6045998054441862242">เปิดโหมดคอนทราสต์สูง</translation>
 <translation id="6052614013050385269">คลิกขวาที่ลิงก์</translation>
 <translation id="6129953537138746214">ช่องว่าง</translation>
-<translation id="613146727819833328">ย้ายหน้าต่างไปตรงกลาง</translation>
 <translation id="6143669479988153888">ขยายหน้าเว็บ</translation>
 <translation id="6185696379715117369">เลื่อนหน้าขึ้น</translation>
 <translation id="6228457605945141550">ลดความสว่าง</translation>
@@ -160,18 +168,20 @@
 <translation id="7422707470576323858">เปลี่ยนไปใช้วิธีการป้อนข้อมูลถัดไปที่ใช้ได้</translation>
 <translation id="743754632698445141">เลิกตรึงแอป</translation>
 <translation id="7439718573248533901">ลบอักษรถัดไป (ลบไปข้างหน้า)</translation>
+<translation id="7500368597227394048">ขีดกลาง</translation>
 <translation id="7611271430932669992">ย้ายโฟกัสไปที่ป๊อปอัปและกล่องโต้ตอบ</translation>
 <translation id="766326951329901120">วางเนื้อหาจากคลิปบอร์ดเป็นข้อความธรรมดา</translation>
+<translation id="7703010453515335249">วงเล็บเปิด</translation>
 <translation id="7724603315864178912">ตัด</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> แล้วกด <ph name="SPACE" /> หรือ <ph name="ENTER" /></translation>
 <translation id="7787242579016742662">เปิดไฟล์ในเบราว์เซอร์</translation>
-<translation id="7917881398263220094">หยุดโหลดหน้าเว็บปัจจุบันของคุณ</translation>
 <translation id="7952165122793773711">ไปที่แท็บ 1 ถึง 8</translation>
 <translation id="8026334261755873520">ล้างข้อมูลการท่องเว็บ</translation>
 <translation id="8130528849632411619">ไปที่จุดเริ่มต้นเอกสาร</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> หรือ <ph name="E" /></translation>
 <translation id="8232835244134740473">สลับโฟกัสระหว่างพื้นที่แสดงสถานะ (ตำแหน่งที่รูปสำหรับบัญชีของคุณปรากฏ), Launcher, แถบที่อยู่, แถบบุ๊กมาร์ก (ถ้ามองเห็นได้), หน้าเว็บที่เปิด และแถบดาวน์โหลด (ถ้ามองเห็นได้)</translation>
 <translation id="8234414138295101081">หมุนหน้าจอ 90 องศา</translation>
+<translation id="8241665785394195545">วงเล็บปิด</translation>
 <translation id="8264941229485248811">แสดงหรือซ่อนตัวตรวจสอบเครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="836869401750819675">เปิดหน้าดาวน์โหลด</translation>
 <translation id="8388247778047144397">ลากลิงก์ไปยังพื้นที่ว่างบนแนวแท็บ</translation>
@@ -184,6 +194,7 @@
 <translation id="8717459106217102612">เลือกคำหรืออักษรก่อนหน้า</translation>
 <translation id="8727232706774971183">ดูการแจ้งเตือน</translation>
 <translation id="8855885154700222542">แป้นแสดงเต็มหน้าจอ</translation>
+<translation id="8881584919399569791">ย้ายหน้าต่างที่เปิดใช้งานอยู่ไปยังพื้นที่ทำงานทางด้านซ้าย</translation>
 <translation id="88986195241502842">เลื่อนหน้าลง</translation>
 <translation id="8924883688469390268">เปลี่ยนเป็นผู้ใช้ก่อนหน้า</translation>
 <translation id="8977648847395357314">เลือกเนื้อหาในแถบที่อยู่</translation>

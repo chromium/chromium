@@ -4,14 +4,19 @@
 
 #include "content/browser/indexed_db/indexed_db_connection.h"
 
+#include <utility>
+
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
+#include "content/browser/indexed_db/indexed_db_factory_impl.h"
 #include "content/browser/indexed_db/indexed_db_observer.h"
+#include "content/browser/indexed_db/indexed_db_origin_state.h"
 #include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace content {
 
@@ -22,60 +27,91 @@ static int32_t g_next_indexed_db_connection_id;
 }  // namespace
 
 IndexedDBConnection::IndexedDBConnection(
-    int child_process_id,
-    scoped_refptr<IndexedDBDatabase> database,
+    IndexedDBExecutionContextConnectionTracker::Handle
+        execution_context_connection_handle,
+    IndexedDBOriginStateHandle origin_state_handle,
+    IndexedDBClassFactory* indexed_db_class_factory,
+    base::WeakPtr<IndexedDBDatabase> database,
+    base::RepeatingClosure on_version_change_ignored,
+    base::OnceCallback<void(IndexedDBConnection*)> on_close,
     scoped_refptr<IndexedDBDatabaseCallbacks> callbacks)
     : id_(g_next_indexed_db_connection_id++),
-      child_process_id_(child_process_id),
-      database_(database),
-      callbacks_(callbacks),
-      weak_factory_(this) {
+      execution_context_connection_handle_(
+          std::move(execution_context_connection_handle)),
+      origin_state_handle_(std::move(origin_state_handle)),
+      indexed_db_class_factory_(indexed_db_class_factory),
+      database_(std::move(database)),
+      on_version_change_ignored_(std::move(on_version_change_ignored)),
+      on_close_(std::move(on_close)),
+      callbacks_(callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!execution_context_connection_handle_.is_null());
 }
 
 IndexedDBConnection::~IndexedDBConnection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsConnected())
+    return;
+
+  // TODO(dmurph): Enforce that IndexedDBConnection cannot have any transactions
+  // during destruction. This is likely the case during regular execution, but
+  // is definitely not the case in unit tests.
+
+  leveldb::Status status =
+      AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError);
+  if (!status.ok())
+    origin_state_handle_.origin_state()->tear_down_callback().Run(status);
 }
 
-void IndexedDBConnection::Close() {
+leveldb::Status IndexedDBConnection::AbortTransactionsAndClose(
+    CloseErrorHandling error_handling) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!callbacks_.get())
-    return;
-  base::WeakPtr<IndexedDBConnection> this_obj = weak_factory_.GetWeakPtr();
-  database_->Close(this, false /* forced */);
-  if (this_obj) {
-    database_ = nullptr;
-    callbacks_ = nullptr;
-    active_observers_.clear();
+  if (!IsConnected())
+    return leveldb::Status::OK();
+
+  DCHECK(database_);
+  active_observers_.clear();
+  callbacks_ = nullptr;
+
+  // Finish up any transaction, in case there were any running.
+  IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
+                               "Connection is closing.");
+  leveldb::Status status;
+  switch (error_handling) {
+    case CloseErrorHandling::kReturnOnFirstError:
+      status = AbortAllTransactions(error);
+      break;
+    case CloseErrorHandling::kAbortAllReturnLastError:
+      status = AbortAllTransactionsAndIgnoreErrors(error);
+      break;
   }
+
+  std::move(on_close_).Run(this);
+  origin_state_handle_.Release();
+  active_observers_.clear();
+  return status;
 }
 
-void IndexedDBConnection::ForceClose() {
+leveldb::Status IndexedDBConnection::CloseAndReportForceClose() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!callbacks_.get())
-    return;
+  if (!IsConnected())
+    return leveldb::Status::OK();
 
-  // IndexedDBDatabase::Close() can delete this instance.
-  base::WeakPtr<IndexedDBConnection> this_obj = weak_factory_.GetWeakPtr();
   scoped_refptr<IndexedDBDatabaseCallbacks> callbacks(callbacks_);
-  database_->Close(this, true /* forced */);
-  if (this_obj) {
-    database_ = nullptr;
-    callbacks_ = nullptr;
-    active_observers_.clear();
-  }
+  leveldb::Status last_error =
+      AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError);
   callbacks->OnForcedClose();
+  return last_error;
 }
 
 void IndexedDBConnection::VersionChangeIgnored() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!database_.get())
-    return;
-  database_->VersionChangeIgnored();
+  on_version_change_ignored_.Run();
 }
 
 bool IndexedDBConnection::IsConnected() {
-  return database_.get() != nullptr;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return callbacks_.get();
 }
 
 // The observers begin listening to changes only once they are activated.
@@ -118,39 +154,59 @@ IndexedDBTransaction* IndexedDBConnection::CreateTransaction(
     IndexedDBBackingStore::Transaction* backing_store_transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
+  IndexedDBOriginState* origin_state = origin_state_handle_.origin_state();
   std::unique_ptr<IndexedDBTransaction> transaction =
-      IndexedDBClassFactory::Get()->CreateIndexedDBTransaction(
-          id, this, scope, mode, backing_store_transaction);
+      indexed_db_class_factory_->CreateIndexedDBTransaction(
+          id, this, scope, mode, database()->tasks_available_callback(),
+          origin_state ? origin_state->tear_down_callback()
+                       : IndexedDBTransaction::TearDownCallback(),
+          backing_store_transaction);
   IndexedDBTransaction* transaction_ptr = transaction.get();
   transactions_[id] = std::move(transaction);
   return transaction_ptr;
 }
 
-void IndexedDBConnection::AbortTransaction(
+void IndexedDBConnection::AbortTransactionAndTearDownOnError(
     IndexedDBTransaction* transaction,
     const IndexedDBDatabaseError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   IDB_TRACE1("IndexedDBDatabase::Abort(error)", "txn.id", transaction->id());
-  transaction->Abort(error);
+  leveldb::Status status = transaction->Abort(error);
+  if (!status.ok())
+    origin_state_handle_.origin_state()->tear_down_callback().Run(status);
 }
 
-void IndexedDBConnection::FinishAllTransactions(
+leveldb::Status IndexedDBConnection::AbortAllTransactions(
     const IndexedDBDatabaseError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::unordered_map<int64_t, std::unique_ptr<IndexedDBTransaction>> temp_map;
-  std::swap(temp_map, transactions_);
-  for (const auto& pair : temp_map) {
+  for (const auto& pair : transactions_) {
     auto& transaction = pair.second;
-    if (transaction->is_commit_pending()) {
-      IDB_TRACE1("IndexedDBDatabase::Commit", "transaction.id",
-                 transaction->id());
-      transaction->ForcePendingCommit();
-    } else {
+    if (transaction->state() != IndexedDBTransaction::FINISHED) {
       IDB_TRACE1("IndexedDBDatabase::Abort(error)", "transaction.id",
                  transaction->id());
-      transaction->Abort(error);
+      leveldb::Status status = transaction->Abort(error);
+      if (!status.ok())
+        return status;
     }
   }
+  return leveldb::Status::OK();
+}
+
+leveldb::Status IndexedDBConnection::AbortAllTransactionsAndIgnoreErrors(
+    const IndexedDBDatabaseError& error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  leveldb::Status last_error;
+  for (const auto& pair : transactions_) {
+    auto& transaction = pair.second;
+    if (transaction->state() != IndexedDBTransaction::FINISHED) {
+      IDB_TRACE1("IndexedDBDatabase::Abort(error)", "transaction.id",
+                 transaction->id());
+      leveldb::Status status = transaction->Abort(error);
+      if (!status.ok())
+        last_error = status;
+    }
+  }
+  return last_error;
 }
 
 IndexedDBTransaction* IndexedDBConnection::GetTransaction(int64_t id) const {
@@ -165,7 +221,7 @@ base::WeakPtr<IndexedDBTransaction>
 IndexedDBConnection::AddTransactionForTesting(
     std::unique_ptr<IndexedDBTransaction> transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::ContainsKey(transactions_, transaction->id()));
+  DCHECK(!base::Contains(transactions_, transaction->id()));
   base::WeakPtr<IndexedDBTransaction> transaction_ptr =
       transaction->ptr_factory_.GetWeakPtr();
   transactions_[transaction->id()] = std::move(transaction);
@@ -175,6 +231,12 @@ IndexedDBConnection::AddTransactionForTesting(
 void IndexedDBConnection::RemoveTransaction(int64_t id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   transactions_.erase(id);
+}
+
+void IndexedDBConnection::ClearStateAfterClose() {
+  callbacks_ = nullptr;
+  active_observers_.clear();
+  origin_state_handle_.Release();
 }
 
 }  // namespace content

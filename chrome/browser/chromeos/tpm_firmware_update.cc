@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/tpm_firmware_update.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -19,6 +21,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
@@ -57,6 +60,7 @@ std::set<Mode> GetModesFromSetting(const base::Value* settings) {
 const char kSettingsKeyAllowPowerwash[] = "allow-user-initiated-powerwash";
 const char kSettingsKeyAllowPreserveDeviceState[] =
     "allow-user-initiated-preserve-device-state";
+const char kSettingsKeyAutoUpdateMode[] = "auto-update-mode";
 
 std::unique_ptr<base::DictionaryValue> DecodeSettingsProto(
     const enterprise_management::TPMFirmwareUpdateSettingsProto& settings) {
@@ -71,6 +75,11 @@ std::unique_ptr<base::DictionaryValue> DecodeSettingsProto(
     result->SetKey(
         kSettingsKeyAllowPreserveDeviceState,
         base::Value(settings.allow_user_initiated_preserve_device_state()));
+  }
+
+  if (settings.has_auto_update_mode()) {
+    result->SetKey(kSettingsKeyAutoUpdateMode,
+                   base::Value(settings.auto_update_mode()));
   }
 
   return result;
@@ -109,10 +118,10 @@ class AvailabilityChecker {
   // Don't call this directly, but use Start().
   explicit AvailabilityChecker(ResponseCallback callback)
       : callback_(std::move(callback)),
-        background_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-            {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
-        watcher_(new base::FilePathWatcher()),
-        weak_ptr_factory_(this) {
+        background_task_runner_(base::CreateSequencedTaskRunner(
+            {base::ThreadPool(), base::MayBlock(),
+             base::TaskPriority::USER_VISIBLE})),
+        watcher_(new base::FilePathWatcher()) {
     auto watch_callback = base::BindRepeating(
         &AvailabilityChecker::OnFilePathChanged,
         base::SequencedTaskRunnerHandle::Get(), weak_ptr_factory_.GetWeakPtr());
@@ -200,7 +209,7 @@ class AvailabilityChecker {
   ResponseCallback callback_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   std::unique_ptr<base::FilePathWatcher> watcher_;
-  base::WeakPtrFactory<AvailabilityChecker> weak_ptr_factory_;
+  base::WeakPtrFactory<AvailabilityChecker> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AvailabilityChecker);
 };
@@ -290,6 +299,19 @@ void GetAvailableUpdateModes(
             std::move(callback).Run(std::set<Mode>());
           },
           std::move(modes), std::move(callback)),
+      timeout);
+}
+
+void UpdateAvailable(base::OnceCallback<void(bool)> completion,
+                     base::TimeDelta timeout) {
+  // Verify if we have updates pending.
+  AvailabilityChecker::Start(
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> completion,
+             const AvailabilityChecker::Status& status) {
+            std::move(completion).Run(status.update_available);
+          },
+          std::move(completion)),
       timeout);
 }
 

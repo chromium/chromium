@@ -29,6 +29,8 @@ enum {
                                      // store the uptime at which an update
                                      // became necessary. The file should be
                                      // cleared on boot.
+  FILE_STARTUP_CUSTOMIZATION_MANIFEST,     // Path to OEM partner startup
+                                           // customization manifest.
   DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS,     // Directory under which a cache of
                                            // force-installed extensions is
                                            // maintained for each device-local

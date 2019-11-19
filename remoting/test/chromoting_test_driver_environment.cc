@@ -9,10 +9,11 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
 #include "base/message_loop/message_loop_current.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_executor.h"
 #include "remoting/test/access_token_fetcher.h"
 #include "remoting/test/host_list_fetcher.h"
 #include "remoting/test/test_token_storage.h"
@@ -49,7 +50,8 @@ bool ChromotingTestDriverEnvironment::Initialize(
   }
 
   if (!base::MessageLoopCurrent::Get()) {
-    message_loop_.reset(new base::MessageLoopForIO);
+    executor_ = std::make_unique<base::SingleThreadTaskExecutor>(
+        base::MessagePumpType::IO);
   }
 
   // If a unit test has set |test_test_token_storage_| then we should use it
@@ -199,7 +201,7 @@ void ChromotingTestDriverEnvironment::TearDown() {
   // registered AtExitManager. The AtExitManager is torn down before the test
   // destructor is executed, so we tear down the MessageLoop here, while it is
   // still valid.
-  message_loop_.reset();
+  executor_.reset();
 }
 
 bool ChromotingTestDriverEnvironment::RetrieveAccessToken(
@@ -209,8 +211,8 @@ bool ChromotingTestDriverEnvironment::RetrieveAccessToken(
   access_token_.clear();
 
   AccessTokenCallback access_token_callback =
-      base::Bind(&ChromotingTestDriverEnvironment::OnAccessTokenRetrieved,
-                 base::Unretained(this), run_loop.QuitClosure());
+      base::BindOnce(&ChromotingTestDriverEnvironment::OnAccessTokenRetrieved,
+                     base::Unretained(this), run_loop.QuitClosure());
 
   // If a unit test has set |test_access_token_fetcher_| then we should use it
   // below.  Note that we do not want to destroy the test object at the end of
@@ -225,13 +227,13 @@ bool ChromotingTestDriverEnvironment::RetrieveAccessToken(
   if (!auth_code.empty()) {
     // If the user passed in an authcode, then use it to retrieve an
     // updated access/refresh token.
-    access_token_fetcher->GetAccessTokenFromAuthCode(auth_code,
-                                                     access_token_callback);
+    access_token_fetcher->GetAccessTokenFromAuthCode(
+        auth_code, std::move(access_token_callback));
   } else {
     DCHECK(!refresh_token_.empty());
 
-    access_token_fetcher->GetAccessTokenFromRefreshToken(refresh_token_,
-                                                         access_token_callback);
+    access_token_fetcher->GetAccessTokenFromRefreshToken(
+        refresh_token_, std::move(access_token_callback));
   }
 
   run_loop.Run();

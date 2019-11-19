@@ -10,11 +10,10 @@
 #include "base/atomicops.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/lazy_instance_helpers.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/common/checked_lock.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
-#include "base/task/task_scheduler/scheduler_lock.h"
 #include "base/task/task_traits.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
@@ -26,21 +25,21 @@
 // tasks to the same sequence/thread from pieces of code that don't have a
 // better way of sharing a TaskRunner. It is important to use this class
 // instead of a self-managed global variable or LazyInstance so that the
-// TaskRunners do not outlive the scope of the ScopedTaskEnvironment in unit
+// TaskRunners do not outlive the scope of the TaskEnvironment in unit
 // tests (otherwise the next test in the same process will die in use-after-
 // frees).
 //
 // IMPORTANT: Only use this API as a last resort. Prefer storing a
 // (Sequenced|SingleThread)TaskRunner returned by
-// base::Create(Sequenced|SingleThread|COMSTA)TaskRunnerWithTraits() as a member
-// on an object accessible by all PostTask() call sites.
+// base::Create(Sequenced|SingleThread|COMSTA)TaskRunner() as a member on an
+// object accessible by all PostTask() call sites.
 //
 // Example usage 1:
 //
 // namespace {
 // base::LazySequencedTaskRunner g_sequenced_task_runner =
 //     LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(
-//         base::TaskTraits(base::MayBlock(),
+//         base::TaskTraits(base::ThreadPool(), base::MayBlock(),
 //                          base::TaskPriority::USER_VISIBLE));
 // }  // namespace
 //
@@ -54,7 +53,8 @@
 //
 // namespace {
 // base::LazySequencedTaskRunner g_sequenced_task_task_runner =
-//     LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER({base::MayBlock()});
+//     LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(
+//         base::TaskTraits(base::ThreadPool(), base::MayBlock()));
 // }  // namespace
 //
 // // Code from different files can access the SequencedTaskRunner via this
@@ -204,7 +204,7 @@ class BASE_EXPORT ScopedLazyTaskRunnerListForTesting {
   // Add |callback| to the list of callbacks to run on destruction.
   void AddCallback(OnceClosure callback);
 
-  SchedulerLock lock_;
+  CheckedLock lock_;
 
   // List of callbacks to run on destruction.
   std::vector<OnceClosure> callbacks_ GUARDED_BY(lock_);

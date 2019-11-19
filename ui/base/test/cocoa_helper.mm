@@ -212,8 +212,7 @@ void CocoaTest::TearDown() {
           ([start_date timeIntervalSinceNow] > -kCloseTimeoutSeconds);
 
       // Autorelease anything thrown up by the event loop.
-      {
-        base::mac::ScopedNSAutoreleasePool pool;
+      @autoreleasepool {
         ++spins;
         NSEvent* next_event = [NSApp nextEventMatchingMask:NSAnyEventMask
                                                  untilDate:nil
@@ -253,12 +252,13 @@ std::set<NSWindow*> CocoaTest::ApplicationWindows() {
 
   // Must create a pool here because [NSApp windows] has created an array
   // with retains on all the windows in it.
-  base::mac::ScopedNSAutoreleasePool pool;
-  NSArray* appWindows = [NSApp windows];
-  for (NSWindow* window in appWindows) {
-    windows.insert(window);
+  @autoreleasepool {
+    NSArray* appWindows = [NSApp windows];
+    for (NSWindow* window in appWindows) {
+      windows.insert(window);
+    }
+    return windows;
   }
-  return windows;
 }
 
 std::set<NSWindow*> CocoaTest::WindowsLeft() {

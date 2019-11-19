@@ -24,6 +24,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "ui/gfx/image/image_skia.h"
@@ -43,7 +44,6 @@ namespace extensions {
 
 class CrxInstaller;
 class Extension;
-class ExtensionRegistry;
 class Manifest;
 
 // Downloads and installs extensions from the web store.
@@ -263,7 +263,7 @@ class WebstoreInstaller : public content::NotificationObserver,
 
   content::NotificationRegistrar registrar_;
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
   Profile* profile_;
   Delegate* delegate_;
   std::string id_;

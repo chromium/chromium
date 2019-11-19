@@ -38,21 +38,6 @@ bool StoreFullPagePlugin(content::WebContents** result,
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// If we have a single full-page embedded mime handler view guest, print the
-// guest's WebContents instead.
-content::WebContents* GetWebContentsToUse(content::WebContents* contents) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  guest_view::GuestViewManager* guest_view_manager =
-      guest_view::GuestViewManager::FromBrowserContext(
-          contents->GetBrowserContext());
-  if (guest_view_manager) {
-    guest_view_manager->ForEachGuest(
-        contents, base::BindRepeating(&StoreFullPagePlugin, &contents));
-  }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  return contents;
-}
-
 // Pick the right RenderFrameHost based on the WebContentses.
 content::RenderFrameHost* GetRenderFrameHostToUse(
     content::WebContents* original_contents,
@@ -65,6 +50,7 @@ content::RenderFrameHost* GetRenderFrameHostToUse(
 }  // namespace
 
 void StartPrint(content::WebContents* contents,
+                mojom::PrintRendererAssociatedPtrInfo print_renderer,
                 bool print_preview_disabled,
                 bool has_selection) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -86,7 +72,12 @@ void StartPrint(content::WebContents* contents,
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   if (!print_preview_disabled) {
-    print_view_manager->PrintPreviewNow(rfh_to_use, has_selection);
+    if (print_renderer) {
+      print_view_manager->PrintPreviewWithPrintRenderer(
+          rfh_to_use, std::move(print_renderer));
+    } else {
+      print_view_manager->PrintPreviewNow(rfh_to_use, has_selection);
+    }
     return;
   }
 #endif  // ENABLE_PRINT_PREVIEW
@@ -116,6 +107,19 @@ content::RenderFrameHost* GetFrameToPrint(content::WebContents* contents) {
   return (focused_frame && focused_frame->HasSelection())
              ? focused_frame
              : contents->GetMainFrame();
+}
+
+content::WebContents* GetWebContentsToUse(content::WebContents* contents) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  guest_view::GuestViewManager* guest_view_manager =
+      guest_view::GuestViewManager::FromBrowserContext(
+          contents->GetBrowserContext());
+  if (guest_view_manager) {
+    guest_view_manager->ForEachGuest(
+        contents, base::BindRepeating(&StoreFullPagePlugin, &contents));
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  return contents;
 }
 
 }  // namespace printing

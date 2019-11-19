@@ -19,7 +19,6 @@
 #include "media/base/audio_processing.h"
 #include "media/webrtc/audio_delay_stats_reporter.h"
 #include "media/webrtc/audio_processor_controls.h"
-#include "media/webrtc/echo_information.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 #include "third_party/webrtc/modules/audio_processing/typing_detection.h"
 #include "third_party/webrtc/rtc_base/task_queue.h"
@@ -63,8 +62,6 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor final
                       const AudioParameters& parameters,
                       base::TimeTicks playout_time);
 
-  void UpdateInternalStats();
-
   void set_has_reverse_stream(bool has_reverse_stream) {
     has_reverse_stream_ = has_reverse_stream;
   }
@@ -97,6 +94,10 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor final
   std::atomic<base::TimeDelta> render_delay_ = {base::TimeDelta()};
   bool has_reverse_stream_ = false;
 
+  // Indicates whether the audio processor playout signal has ever had
+  // asymmetric left and right channel content.
+  bool assume_upmixed_mono_playout_ = true;
+
   // The APM writes the processed data here.
   std::unique_ptr<AudioBus> output_bus_;
   std::vector<float*> output_ptrs_;
@@ -108,8 +109,6 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor final
   // out-live |audio_processing_| and be created/destroyed from the same
   // thread.
   std::unique_ptr<rtc::TaskQueue> worker_queue_;
-
-  EchoInformation echo_information_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioProcessor);
 };

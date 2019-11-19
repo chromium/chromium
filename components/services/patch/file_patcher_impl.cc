@@ -9,9 +9,11 @@
 
 namespace patch {
 
+FilePatcherImpl::FilePatcherImpl() = default;
+
 FilePatcherImpl::FilePatcherImpl(
-    std::unique_ptr<service_manager::ServiceContextRef> service_ref)
-    : service_ref_(std::move(service_ref)) {}
+    mojo::PendingReceiver<mojom::FilePatcher> receiver)
+    : receiver_(this, std::move(receiver)) {}
 
 FilePatcherImpl::~FilePatcherImpl() = default;
 

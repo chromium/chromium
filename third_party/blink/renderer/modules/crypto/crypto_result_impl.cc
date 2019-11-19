@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/modules/crypto/normalize_algorithm.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -129,10 +130,6 @@ void CryptoResultImpl::ClearResolver() {
   resolver_ = nullptr;
 }
 
-CryptoResultImpl* CryptoResultImpl::Create(ScriptState* script_state) {
-  return MakeGarbageCollected<CryptoResultImpl>(script_state);
-}
-
 void CryptoResultImpl::CompleteWithError(WebCryptoErrorType error_type,
                                          const WebString& error_details) {
   if (!resolver_)
@@ -145,12 +142,12 @@ void CryptoResultImpl::CompleteWithError(WebCryptoErrorType error_type,
   if (exception_code == ToExceptionCode(ESErrorType::kTypeError)) {
     RejectWithTypeError(error_details, resolver_);
   } else if (IsDOMExceptionCode(exception_code)) {
-    resolver_->Reject(DOMException::Create(
+    resolver_->Reject(MakeGarbageCollected<DOMException>(
         static_cast<DOMExceptionCode>(exception_code), error_details));
   } else {
     NOTREACHED();
-    resolver_->Reject(
-        DOMException::Create(DOMExceptionCode::kUnknownError, error_details));
+    resolver_->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kUnknownError, error_details));
   }
   ClearResolver();
 }
@@ -201,7 +198,7 @@ void CryptoResultImpl::CompleteWithKey(const WebCryptoKey& key) {
   if (!resolver_)
     return;
 
-  resolver_->Resolve(CryptoKey::Create(key));
+  resolver_->Resolve(MakeGarbageCollected<CryptoKey>(key));
   ClearResolver();
 }
 
@@ -216,9 +213,11 @@ void CryptoResultImpl::CompleteWithKeyPair(const WebCryptoKey& public_key,
   V8ObjectBuilder key_pair(script_state);
 
   key_pair.Add("publicKey",
-               ScriptValue::From(script_state, CryptoKey::Create(public_key)));
+               ScriptValue::From(script_state,
+                                 MakeGarbageCollected<CryptoKey>(public_key)));
   key_pair.Add("privateKey",
-               ScriptValue::From(script_state, CryptoKey::Create(private_key)));
+               ScriptValue::From(script_state,
+                                 MakeGarbageCollected<CryptoKey>(private_key)));
 
   resolver_->Resolve(key_pair.V8Value());
   ClearResolver();

@@ -17,6 +17,9 @@ class ASH_EXPORT NetworkRowTitleView : public views::View {
   explicit NetworkRowTitleView(int title_message_id);
   ~NetworkRowTitleView() override;
 
+  // views::View:
+  const char* GetClassName() const override;
+
  private:
   views::Label* const title_;
 

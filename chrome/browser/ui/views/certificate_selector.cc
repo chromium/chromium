@@ -26,6 +26,7 @@
 #include "ui/base/models/table_model.h"
 #include "ui/base/models/table_model_observer.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
@@ -118,6 +119,10 @@ CertificateSelector::CertificateSelector(net::ClientCertIdentityList identities,
     : web_contents_(web_contents) {
   CHECK(web_contents_);
 
+  view_cert_button_ =
+      DialogDelegate::SetExtraView(views::MdTextButton::CreateSecondaryUiButton(
+          this, l10n_util::GetStringUTF16(IDS_PAGE_INFO_CERT_INFO_BUTTON)));
+
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::CONTROL));
 
@@ -162,7 +167,7 @@ CertificateSelector::CertificateSelector(net::ClientCertIdentityList identities,
   identities_ = std::move(identities);
 #endif
 
-  model_.reset(new CertificateTableModel(identities_, provider_names));
+  model_ = std::make_unique<CertificateTableModel>(identities_, provider_names);
 }
 
 CertificateSelector::~CertificateSelector() {
@@ -201,7 +206,7 @@ void CertificateSelector::Show() {
 void CertificateSelector::InitWithText(
     std::unique_ptr<views::View> text_label) {
   views::GridLayout* const layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>(this));
+      SetLayoutManager(std::make_unique<views::GridLayout>());
 
   const int kColumnSetId = 0;
   views::ColumnSet* const column_set = layout->AddColumnSet(kColumnSetId);
@@ -209,7 +214,7 @@ void CertificateSelector::InitWithText(
                         views::GridLayout::USE_PREF, 0, 0);
 
   layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-  layout->AddView(text_label.release());
+  layout->AddView(std::move(text_label));
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   const int vertical_spacing = provider->GetDistanceMetric(
@@ -228,12 +233,13 @@ void CertificateSelector::InitWithText(
   }
   columns.push_back(ui::TableColumn(IDS_CERT_SELECTOR_SERIAL_COLUMN,
                                     ui::TableColumn::LEFT, -1, 0.2f));
-  table_ = new views::TableView(model_.get(), columns, views::TEXT_ONLY,
-                                true /* single_selection */);
-  table_->set_observer(this);
+  auto table = std::make_unique<views::TableView>(
+      model_.get(), columns, views::TEXT_ONLY, true /* single_selection */);
+  table_ = table.get();
+  table->set_observer(this);
   layout->StartRow(1.0, kColumnSetId);
-  layout->AddView(table_->CreateParentIfNecessary(), 1, 1,
-                  views::GridLayout::FILL, views::GridLayout::FILL,
+  layout->AddView(views::TableView::CreateScrollViewWithTable(std::move(table)),
+                  1, 1, views::GridLayout::FILL, views::GridLayout::FILL,
                   kTableViewWidth, kTableViewHeight);
 
   layout->AddPaddingRow(views::GridLayout::kFixedSize, vertical_spacing);
@@ -244,7 +250,7 @@ ui::TableModel* CertificateSelector::table_model_for_testing() const {
 }
 
 net::ClientCertIdentity* CertificateSelector::GetSelectedCert() const {
-  const int selected = table_->FirstSelectedRow();
+  const int selected = table_->GetFirstSelectedRow();
   if (selected < 0)  // Nothing is selected in |table_|.
     return nullptr;
   DCHECK_LT(static_cast<size_t>(selected), identities_.size());
@@ -252,7 +258,7 @@ net::ClientCertIdentity* CertificateSelector::GetSelectedCert() const {
 }
 
 bool CertificateSelector::Accept() {
-  const int selected = table_->FirstSelectedRow();
+  const int selected = table_->GetFirstSelectedRow();
   if (selected < 0)  // Nothing is selected in |table_|.
     return false;
 
@@ -276,13 +282,6 @@ bool CertificateSelector::IsDialogButtonEnabled(ui::DialogButton button) const {
 views::View* CertificateSelector::GetInitiallyFocusedView() {
   DCHECK(table_);
   return table_;
-}
-
-views::View* CertificateSelector::CreateExtraView() {
-  DCHECK(!view_cert_button_);
-  view_cert_button_ = views::MdTextButton::CreateSecondaryUiButton(
-      this, l10n_util::GetStringUTF16(IDS_PAGE_INFO_CERT_INFO_BUTTON));
-  return view_cert_button_;
 }
 
 ui::ModalType CertificateSelector::GetModalType() const {

@@ -9,7 +9,6 @@
 
 #include "base/atomicops.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros_local.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"

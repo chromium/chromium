@@ -5,12 +5,73 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 namespace data_util {
+namespace {
+
+using data_util::bit_field_type_groups::kAddress;
+using data_util::bit_field_type_groups::kEmail;
+using data_util::bit_field_type_groups::kName;
+using data_util::bit_field_type_groups::kPhone;
+
+TEST(AutofillDataUtilTest, DetermineGroupsForHomeNameAndAddress) {
+  const std::vector<ServerFieldType> field_types{
+      NAME_FIRST,        NAME_LAST,          ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP};
+
+  const uint32_t expected_group_bitmask = kName | kAddress;
+  const uint32_t group_bitmask = data_util::DetermineGroups(field_types);
+  EXPECT_EQ(expected_group_bitmask, group_bitmask);
+}
+
+TEST(AutofillDataUtilTest, DetermineGroupsForBillingNameAndAddress) {
+  const std::vector<ServerFieldType> field_types{
+      NAME_BILLING_FULL, ADDRESS_BILLING_LINE1, ADDRESS_BILLING_CITY,
+      ADDRESS_BILLING_STATE, ADDRESS_BILLING_ZIP};
+
+  const uint32_t expected_group_bitmask = kName | kAddress;
+  const uint32_t group_bitmask = data_util::DetermineGroups(field_types);
+  EXPECT_EQ(expected_group_bitmask, group_bitmask);
+}
+
+TEST(AutofillDataUtilTest, DetermineGroupsForHomeNamePhoneAndEmail) {
+  const std::vector<ServerFieldType> field_types{
+      NAME_FULL, PHONE_HOME_CITY_AND_NUMBER, EMAIL_ADDRESS};
+
+  const uint32_t expected_group_bitmask = kName | kPhone | kEmail;
+  const uint32_t group_bitmask = data_util::DetermineGroups(field_types);
+  EXPECT_EQ(expected_group_bitmask, group_bitmask);
+}
+
+TEST(AutofillDataUtilTest, DetermineGroupsForBillingNamePhoneAndEmail) {
+  const std::vector<ServerFieldType> field_types{
+      NAME_BILLING_FULL, PHONE_BILLING_WHOLE_NUMBER, EMAIL_ADDRESS};
+
+  const uint32_t expected_group_bitmask = kName | kPhone | kEmail;
+  const uint32_t group_bitmask = data_util::DetermineGroups(field_types);
+  EXPECT_EQ(expected_group_bitmask, group_bitmask);
+}
+
+TEST(AutofillDataUtilTest, DetermineGroupsForUnknownServerFieldType) {
+  const std::vector<ServerFieldType> field_types{UNKNOWN_TYPE, NAME_FULL,
+                                                 ADDRESS_HOME_ZIP};
+
+  const uint32_t expected_group_bitmask = kName | kAddress;
+  const uint32_t group_bitmask = data_util::DetermineGroups(field_types);
+  EXPECT_EQ(expected_group_bitmask, group_bitmask);
+}
+
+TEST(AutofillDataUtilTest, DetermineGroupsForNoServerFieldTypes) {
+  const std::vector<ServerFieldType> field_types =
+      std::vector<ServerFieldType>();
+  const uint32_t expected_group_bitmask = 0;
+  const uint32_t group_bitmask = data_util::DetermineGroups(field_types);
+  EXPECT_EQ(expected_group_bitmask, group_bitmask);
+}
 
 struct IsCJKNameTestCase {
   const char* full_name;
@@ -172,33 +233,6 @@ INSTANTIATE_TEST_SUITE_P(
         // Has a middle-name, too unusual
         ));
 
-TEST(AutofillDataUtilTest, ProfileMatchesFullName) {
-  autofill::AutofillProfile profile;
-  autofill::test::SetProfileInfo(
-      &profile, "First", "Middle", "Last", "fml@example.com", "Acme inc",
-      "123 Main", "Apt 2", "Laredo", "TX", "77300", "US", "832-555-1000");
-
-  EXPECT_TRUE(ProfileMatchesFullName(base::UTF8ToUTF16("First Last"), profile));
-
-  EXPECT_TRUE(
-      ProfileMatchesFullName(base::UTF8ToUTF16("First Middle Last"), profile));
-
-  EXPECT_TRUE(
-      ProfileMatchesFullName(base::UTF8ToUTF16("First M Last"), profile));
-
-  EXPECT_TRUE(
-      ProfileMatchesFullName(base::UTF8ToUTF16("First M. Last"), profile));
-
-  EXPECT_TRUE(
-      ProfileMatchesFullName(base::UTF8ToUTF16("Last First"), profile));
-
-  EXPECT_TRUE(
-      ProfileMatchesFullName(base::UTF8ToUTF16("LastFirst"), profile));
-
-  EXPECT_FALSE(
-      ProfileMatchesFullName(base::UTF8ToUTF16("Kirby Puckett"), profile));
-}
-
 struct ValidCountryCodeTestCase {
   std::string country_code;
   bool expected_result;
@@ -240,5 +274,6 @@ INSTANTIATE_TEST_SUITE_P(
         ValidCountryCodeTestCase{"Ca", false},
         ValidCountryCodeTestCase{"cN", false}));
 
+}  // namespace
 }  // namespace data_util
 }  // namespace autofill

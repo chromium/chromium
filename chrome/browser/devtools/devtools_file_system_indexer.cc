@@ -43,7 +43,7 @@ using std::set;
 
 base::SequencedTaskRunner* impl_task_runner() {
   constexpr base::TaskTraits kBlockingTraits = {
-      base::MayBlock(), base::TaskPriority::BEST_EFFORT};
+      base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT};
   static base::LazySequencedTaskRunner s_sequenced_task_task_runner =
       LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(kBlockingTraits);
   return s_sequenced_task_task_runner.Get().get();
@@ -322,9 +322,8 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::CollectFilesToIndex() {
   }
 
   if (file_path.empty()) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        BindOnce(total_work_callback_, file_path_times_.size()));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   BindOnce(total_work_callback_, file_path_times_.size()));
     indexing_it_ = file_path_times_.begin();
     IndexFiles();
     return;
@@ -360,7 +359,7 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::IndexFiles() {
     return;
   if (indexing_it_ == file_path_times_.end()) {
     g_trigram_index.Get().NormalizeVectors();
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, done_callback_);
+    base::PostTask(FROM_HERE, {BrowserThread::UI}, done_callback_);
     return;
   }
   FilePath file_path = indexing_it_->first;
@@ -452,8 +451,8 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::ReportWorked() {
   ++files_indexed_;
   if (should_send_worked_nitification) {
     last_worked_notification_time_ = current_time;
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                             BindOnce(worked_callback_, files_indexed_));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   BindOnce(worked_callback_, files_indexed_));
     files_indexed_ = 0;
   }
 }
@@ -516,6 +515,6 @@ void DevToolsFileSystemIndexer::SearchInPathOnImplSequence(
     if (path.IsParent(*it))
       result.push_back(it->AsUTF8Unsafe());
   }
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           BindOnce(callback, std::move(result)));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 BindOnce(callback, std::move(result)));
 }

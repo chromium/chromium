@@ -15,6 +15,8 @@ It performs the following steps:
 4. Creates a new stamp file.
 """
 
+from __future__ import print_function
+
 import os
 import optparse
 import shutil
@@ -41,11 +43,11 @@ def main(argv):
 
   build_utils.CheckOptions(options, parser, ['protoc', 'proto_path'])
   if not options.java_out_dir and not options.srcjar:
-    print 'One of --java-out-dir or --srcjar must be specified.'
+    print('One of --java-out-dir or --srcjar must be specified.')
     return 1
 
   if not options.nano and not options.protoc_javalite_plugin_dir:
-    print 'One of --nano or --protoc-javalite-plugin-dir must be specified.'
+    print('One of --nano or --protoc-javalite-plugin-dir must be specified.')
     return 1
 
   with build_utils.TempDir() as temp_dir:

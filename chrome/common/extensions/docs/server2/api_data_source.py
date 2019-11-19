@@ -11,6 +11,7 @@ from file_system import FileNotFoundError
 from future import All, Future
 from jsc_view import CreateJSCView, GetEventByNameFromEvents
 from platform_util import GetPlatforms
+from third_party.json_schema_compiler.model import CamelName
 
 
 class APIDataSource(DataSource):
@@ -76,12 +77,49 @@ class APIDataSource(DataSource):
       return jsc_view
     return Future(callback=resolve)
 
+  def _NormalizeTemplateAPIName(self, platform, api_name):
+    '''Normalizes the API name used in templates.
+    '''
+    names = self._platform_bundle.GetAPIModels(platform).GetNames()
+    if api_name in names:
+      return api_name
+
+    # API names should be in camel case but many templates use unix_style names.
+    # See if converting helps.
+    camel_case_api_name = CamelName(api_name)
+    if camel_case_api_name in names:
+      return camel_case_api_name
+
+    # Some APIs e.g. devtools ones are specified like
+    # devtools/inspected_windows, devtools/network. Try changing them to their
+    # feature names like devtools.inspectedWindows.
+    camel_case_api_name = camel_case_api_name.replace('/', '.')
+    if camel_case_api_name in names:
+      return camel_case_api_name
+
+    # Some others are used in templates as app_window but their feature name is
+    # app.window.
+    alternate_name = api_name.replace('_', '.')
+    if alternate_name in names:
+      return alternate_name
+
+    # Else schema view for this |api_name| wasn't persisted to the datastore
+    # during Refresh by the Compute Engine datastore. We might serve stale data
+    # for this api without a version update.
+    logging.warning('%s not found in bundle API names.' % api_name)
+    return api_name
+
   def get(self, platform):
     '''Return a getter object so that templates can perform lookups such
     as apis.extensions.runtime.
     '''
     getter = lambda: 0
-    getter.get = lambda api_name: self._GetSchemaView(platform, api_name).Get()
+    def lookup(api_name):
+      # TODO(karandeepb): We should update the template usages to ensure that
+      # normalizing is not needed.
+      api_name = self._NormalizeTemplateAPIName(platform, api_name)
+      return self._GetSchemaView(platform, api_name).Get()
+    getter.get = lookup
     return getter
 
   def Refresh(self):

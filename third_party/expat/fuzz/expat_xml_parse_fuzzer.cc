@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "third_party/expat/files/lib/expat.h"
+#include "third_party/expat/src/expat/lib/expat.h"
 
 #include <vector>
 

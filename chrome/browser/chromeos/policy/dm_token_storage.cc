@@ -32,7 +32,7 @@ std::string DecryptToken(const std::string& system_salt,
 namespace policy {
 
 DMTokenStorage::DMTokenStorage(PrefService* local_state)
-    : local_state_(local_state), weak_ptr_factory_(this) {
+    : local_state_(local_state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   chromeos::SystemSaltGetter::Get()->GetSystemSalt(base::Bind(
       &DMTokenStorage::OnSystemSaltRecevied, weak_ptr_factory_.GetWeakPtr()));
@@ -127,8 +127,9 @@ void DMTokenStorage::EncryptAndStoreToken() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!system_salt_.empty());
   DCHECK(!dm_token_.empty());
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::Bind(&EncryptToken, system_salt_, dm_token_),
       base::Bind(&DMTokenStorage::OnTokenEncrypted,
                  weak_ptr_factory_.GetWeakPtr()));
@@ -150,8 +151,9 @@ void DMTokenStorage::LoadAndDecryptToken() {
   std::string encrypted_dm_token =
       local_state_->GetString(prefs::kDeviceDMToken);
   if (!encrypted_dm_token.empty()) {
-    base::PostTaskWithTraitsAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+    base::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::Bind(&DecryptToken, system_salt_, encrypted_dm_token),
         base::Bind(&DMTokenStorage::FlushRetrieveTokenCallback,
                    weak_ptr_factory_.GetWeakPtr()));

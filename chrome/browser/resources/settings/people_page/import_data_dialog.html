@@ -1,11 +1,11 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/md_select_css.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="../controls/settings_checkbox.html">
 <link rel="import" href="../controls/settings_toggle_button.html">
@@ -35,8 +35,7 @@
         width: 100%;
       }
 
-      /* Prevent focus-outline to be chopped by the bottom of dialog body.
-         TODO(scottchen): find a more general way to solve this. */
+      /* Prevent focus-outline to be chopped by the bottom of dialog body. */
       .md-select {
         margin-top: 2px;
       }
@@ -103,27 +102,27 @@
             hidden="[[hasImportStatus_(
                 importStatusEnum_.SUCCEEDED, importStatus_)]]">
         </paper-spinner-lite>
-        <paper-button id="cancel" class="cancel-button"
+        <cr-button id="cancel" class="cancel-button"
             hidden="[[hasImportStatus_(
                 importStatusEnum_.SUCCEEDED, importStatus_)]]"
             disabled="[[hasImportStatus_(
                 importStatusEnum_.IN_PROGRESS, importStatus_)]]"
             on-click="closeDialog_">
           $i18n{cancel}
-        </paper-button>
-        <paper-button id="import" class="action-button"
+        </cr-button>
+        <cr-button id="import" class="action-button"
             hidden="[[hasImportStatus_(
                 importStatusEnum_.SUCCEEDED, importStatus_)]]"
             disabled="[[shouldDisableImport_(
                 importStatus_, noImportDataTypeSelected_)]]"
             on-click="onActionButtonTap_">
           [[getActionButtonText_(selected_)]]
-        </paper-button>
+        </cr-button>
 
-        <paper-button id="done" class="action-button"
+        <cr-button id="done" class="action-button"
             hidden$="[[!hasImportStatus_(
                 importStatusEnum_.SUCCEEDED, importStatus_)]]"
-            on-click="closeDialog_">$i18n{done}</paper-button>
+            on-click="closeDialog_">$i18n{done}</cr-button>
       </div>
     </cr-dialog>
   </template>

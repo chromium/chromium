@@ -53,7 +53,7 @@ target(link_target_type, "service") {
   }
 
   if (is_mac) {
-    deps += [ "//third_party/webrtc/common_video:common_video" ]
+    deps += [ "//third_party/webrtc_overrides:webrtc_component" ]
   }
 }
 
@@ -68,6 +68,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//media:test_support",
+    "//media/gpu:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

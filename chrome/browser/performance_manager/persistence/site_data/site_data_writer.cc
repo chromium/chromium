@@ -1,0 +1,98 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/performance_manager/persistence/site_data/site_data_writer.h"
+
+#include <utility>
+
+namespace performance_manager {
+
+SiteDataWriter::~SiteDataWriter() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_loaded_)
+    NotifySiteUnloaded();
+}
+
+void SiteDataWriter::NotifySiteLoaded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DCHECK(!is_loaded_);
+  is_loaded_ = true;
+  impl_->NotifySiteLoaded();
+
+  if (tab_visibility_ == performance_manager::TabVisibility::kBackground)
+    impl_->NotifyLoadedSiteBackgrounded();
+}
+
+void SiteDataWriter::NotifySiteUnloaded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(is_loaded_);
+
+  is_loaded_ = false;
+
+  impl_->NotifySiteUnloaded(tab_visibility_);
+}
+
+void SiteDataWriter::NotifySiteVisibilityChanged(
+    performance_manager::TabVisibility visibility) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Ignore this if we receive the same event multiple times.
+  if (tab_visibility_ == visibility)
+    return;
+
+  tab_visibility_ = visibility;
+
+  if (is_loaded_) {
+    if (visibility == performance_manager::TabVisibility::kBackground) {
+      impl_->NotifyLoadedSiteBackgrounded();
+    } else {
+      impl_->NotifyLoadedSiteForegrounded();
+    }
+  }
+}
+
+void SiteDataWriter::NotifyUpdatesFaviconInBackground() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(performance_manager::TabVisibility::kBackground, tab_visibility_);
+  impl_->NotifyUpdatesFaviconInBackground();
+}
+
+void SiteDataWriter::NotifyUpdatesTitleInBackground() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(performance_manager::TabVisibility::kBackground, tab_visibility_);
+  impl_->NotifyUpdatesTitleInBackground();
+}
+
+void SiteDataWriter::NotifyUsesAudioInBackground() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(performance_manager::TabVisibility::kBackground, tab_visibility_);
+  // TODO(sebmarchand): Do not advance the background audio observation time
+  // when the WebContents has never played audio.
+  impl_->NotifyUsesAudioInBackground();
+}
+
+void SiteDataWriter::NotifyUsesNotificationsInBackground() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(performance_manager::TabVisibility::kBackground, tab_visibility_);
+  impl_->NotifyUsesNotificationsInBackground();
+}
+
+void SiteDataWriter::NotifyLoadTimePerformanceMeasurement(
+    base::TimeDelta load_duration,
+    base::TimeDelta cpu_usage_estimate,
+    uint64_t private_footprint_kb_estimate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  impl_->NotifyLoadTimePerformanceMeasurement(load_duration, cpu_usage_estimate,
+                                              private_footprint_kb_estimate);
+}
+
+SiteDataWriter::SiteDataWriter(
+    scoped_refptr<internal::SiteDataImpl> impl,
+    performance_manager::TabVisibility tab_visibility)
+    : impl_(std::move(impl)), tab_visibility_(tab_visibility) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+}  // namespace performance_manager

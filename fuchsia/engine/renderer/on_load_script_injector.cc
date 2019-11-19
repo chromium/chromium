@@ -17,15 +17,15 @@
 OnLoadScriptInjector::OnLoadScriptInjector(content::RenderFrame* frame)
     : RenderFrameObserver(frame), weak_ptr_factory_(this) {
   render_frame()->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&OnLoadScriptInjector::BindToRequest,
+      base::BindRepeating(&OnLoadScriptInjector::BindToReceiver,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 OnLoadScriptInjector::~OnLoadScriptInjector() {}
 
-void OnLoadScriptInjector::BindToRequest(
-    mojom::OnLoadScriptInjectorAssociatedRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void OnLoadScriptInjector::BindToReceiver(
+    mojo::PendingAssociatedReceiver<mojom::OnLoadScriptInjector> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void OnLoadScriptInjector::DidCommitProvisionalLoad(

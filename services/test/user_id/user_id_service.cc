@@ -9,8 +9,8 @@ namespace user_id {
 
 UserIdService::UserIdService(service_manager::mojom::ServiceRequest request)
     : service_binding_(this, std::move(request)) {
-  registry_.AddInterface<mojom::UserId>(
-      base::Bind(&UserIdService::BindUserIdRequest, base::Unretained(this)));
+  registry_.AddInterface<mojom::UserId>(base::BindRepeating(
+      &UserIdService::BindUserIdReceiver, base::Unretained(this)));
 }
 
 UserIdService::~UserIdService() = default;
@@ -22,9 +22,9 @@ void UserIdService::OnBindInterface(
   registry_.BindInterface(interface_name, std::move(interface_pipe));
 }
 
-void UserIdService::BindUserIdRequest(
-    mojom::UserIdRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void UserIdService::BindUserIdReceiver(
+    mojo::PendingReceiver<mojom::UserId> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void UserIdService::GetInstanceGroup(GetInstanceGroupCallback callback) {

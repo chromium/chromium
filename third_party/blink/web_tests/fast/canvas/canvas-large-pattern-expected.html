@@ -1,0 +1,17 @@
+<html><body>
+</body>
+<script>
+    var canvas = document.createElement('canvas');
+    canvas.width = 400;
+    var context = canvas.getContext('2d');
+    context.fillStyle = '#0f0';
+    context.fillRect(0, 0, 10, 10);
+
+    var dstCanvas = document.createElement('canvas');
+    var dstContext = dstCanvas.getContext('2d');
+    var pattern = dstContext.createPattern(canvas, 'repeat');
+    dstContext.fillStyle = pattern;
+    dstContext.fillRect(0, 0, dstCanvas.width, dstCanvas.height);
+    document.body.appendChild(dstCanvas);
+</script>
+</html>

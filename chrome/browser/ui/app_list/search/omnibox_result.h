@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "url/gurl.h"
 
 class AppListControllerDelegate;
 class AutocompleteController;
@@ -38,7 +40,10 @@ class OmniboxResult : public ChromeSearchResult {
   // ChromeSearchResult overrides:
   void Open(int event_flags) override;
   void InvokeAction(int action_index, int event_flags) override;
-  int GetSubType() const override;
+  ash::SearchResultType GetSearchResultType() const override;
+
+  // Returns the URL that will be navigated to by this search result.
+  GURL DestinationURL() const;
 
  private:
   void UpdateIcon();

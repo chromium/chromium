@@ -5,6 +5,8 @@
 module blink.mojom;
 
 import "url/mojom/origin.mojom";
+import "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom";
+import "third_party/blink/public/mojom/feature_policy/policy_value.mojom";
 
 // This mirrors blink::WebSandboxFlags enum bitfield.
 [Extensible]
@@ -26,104 +28,7 @@ enum WebSandboxFlags {
   kPresentationController                =  8192, // 1 << 13
   kTopNavigationByUserActivation         = 16384, // 1 << 14
   kDownloads                             = 32768, // 1 << 15
-};
-
-// These values map to the features which can be controlled by Feature Policy.
-//
-// Features are listed in
-// https://github.com/WICG/feature-policy/blob/master/features.md. Not all
-// listed features are supported in Blink, and many are gated by runtime flags.
-// See renderer/platform/feature_policy/feature_policy.cc for the feature names
-// which will be recognized in policy declarations.
-enum FeaturePolicyFeature {
-  kNotFound = 0,
-  // Controls access to media autoplay.
-  kAutoplay = 1,
-  // Controls access to video input devices.
-  kCamera = 2,
-  // Controls whether navigator.requestMediaKeySystemAccess is allowed.
-  kEncryptedMedia = 3,
-  // Controls whether Element.requestFullscreen is allowed.
-  kFullscreen = 4,
-  // Controls access to Geolocation interface.
-  kGeolocation = 5,
-  // Controls access to audio input devices.
-  kMicrophone = 6,
-  // Controls access to requestMIDIAccess method.
-  kMidiFeature = 7,
-  // Controls access to PaymentRequest interface.
-  kPayment = 8,
-  // Controls access to audio output devices.
-  kSpeaker = 9,
-  // Controls access to document.cookie attribute.
-  kDocumentCookie = 10,
-  // Contols access to document.domain attribute.
-  kDocumentDomain = 11,
-  // Controls whether synchronous script elements will run.
-  kSyncScript = 12,
-  // Controls use of synchronous XMLHTTPRequest API.
-  kSyncXHR = 13,
-  // Controls access to the WebUSB API.
-  kUsb = 14,
-  // Controls access to AOM event listeners.
-  kAccessibilityEvents = 15,
-  // Controls use of WebVR API.
-  kWebVr = 16,
-  // The following features control access to the corresponding sensor classes.
-  // Fusion sensor APIs (e.g. LinearAcceleration, OrientationSensor-based
-  // classes)require all of the features that are inputs into that API to be
-  // enabled for the feature to be allowed.
-  kAccelerometer = 17,
-  kAmbientLightSensor = 18,
-  kGyroscope = 19,
-  kMagnetometer = 20,
-  // Controls the layout size of intrinsically sized images and videos. When
-  // disabled, default size (300 x 150) is used to prevent relayout.
-  kUnsizedMedia = 21,
-  // Controls which image formats are allowed to be used in the document.
-  kLegacyImageFormats = 22,
-  // When disallowed, requires images to have a reasonable byte-to-pixel ratio.
-  kUnoptimizedImages = 23,
-  // When disallowed, restricts source image size to be no more 2x larger than
-  // the image's containing block.
-  kOversizedImages = 25,
-  // Controls access to Picture-in-Picture.
-  kPictureInPicture = 26,
-  // Controls the ability to block and interfere with vertical scrolling.
-  kVerticalScroll = 27,
-  // Controls the ability of the document to use several dynamic markup API
-  // which interfere with document's input stream (document.write(),
-  // document.close(), etc.).
-  kDocumentWrite = 28,
-  // Used to enforce lazyloading for a frame and any nested <iframe> or image.
-  kLazyLoad = 29,
-  // Restricts the usage of layout-causing animations in a document.
-  kLayoutAnimations = 30,
-  // Controls access to WakeLock
-  kWakeLock = 31,
-  // Controls access to font-display attribute in @font-face CSS rule
-  kFontDisplay = 32,
-
-  // These are the defined sandbox features implemented as policy-controlled
-  // features.
-  kTopNavigation = 33,
-  kFormSubmission = 34,
-  kScript = 35,
-  kPopups = 36,
-  kPointerLock = 37,
-  kModals = 38,
-  kOrientationLock = 39,
-  kPresentation = 40,
-  // End of sandbox features.
-
-  // Sample Origin Trial enabled feature. This is used only for testing.
-  kFrobulate = 41,
-  // Controls access to Serial
-  kSerial = 42,
-
-  // Don't change assigned numbers of any item, and don't reuse removed slots.
-  // Also, run update_feature_policy_enum.py in
-  // chromium/src/tools/metrics/histograms/ to update the UMA mapping.
+  kStorageAccessByUserActivation         = 65536, // 1 << 16
 };
 
 // This enum is used to distinguish between report-only directives and enforcing
@@ -131,28 +36,6 @@ enum FeaturePolicyFeature {
 enum FeaturePolicyDisposition {
   kEnforce,
   kReport,
-};
-
-// This enum defines the types of parameters used to specify a feature policy.
-// TODO(loonybear): Add the following types: inc/dec int, inc double, enum, set.
-enum PolicyValueType {
-  kNull,
-  kBool,
-  kDecDouble,
-};
-
-// This union includes all the types that can be used to specify a policy's
-// parameter.
-// TODO(loonybear): Add the following types: inc/dec int, inc double, enum, set.
-union PolicyValueData {
-  bool null_value;
-  bool bool_value;
-  double dec_double_value;
-};
-
-// Defined as a structure so that it can be typemapped with StructTraits.
-struct PolicyValue {
-  PolicyValueData data;
 };
 
 // This struct holds feature policy allowlist data that needs to be replicated

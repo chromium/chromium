@@ -1,20 +1,20 @@
 This is a testharness.js-based test.
 PASS Property overflow value 'visible' computes to 'visible'
 PASS Property overflow value 'hidden' computes to 'hidden'
-FAIL Property overflow value 'clip' computes to 'clip' assert_equals: expected "clip" but got "visible"
+FAIL Property overflow value 'clip' computes to 'clip' assert_true: 'clip' is a supported value for overflow. expected true got false
 PASS Property overflow value 'scroll' computes to 'scroll'
 PASS Property overflow value 'auto' computes to 'auto'
 PASS Property overflow value 'auto auto' computes to 'auto'
-FAIL Property overflow value 'auto clip' computes to 'auto hidden' assert_equals: expected "auto hidden" but got "visible"
+FAIL Property overflow value 'auto clip' computes to 'auto hidden' assert_true: 'auto clip' is a supported value for overflow. expected true got false
 PASS Property overflow value 'auto visible' computes to 'auto'
-FAIL Property overflow value 'clip auto' computes to 'hidden auto' assert_equals: expected "hidden auto" but got "visible"
-FAIL Property overflow value 'clip clip' computes to 'clip' assert_equals: expected "clip" but got "visible"
-FAIL Property overflow value 'clip hidden' computes to 'hidden' assert_equals: expected "hidden" but got "visible"
-FAIL Property overflow value 'clip scroll' computes to 'hidden scroll' assert_equals: expected "hidden scroll" but got "visible"
-FAIL Property overflow value 'hidden clip' computes to 'hidden' assert_equals: expected "hidden" but got "visible"
+FAIL Property overflow value 'clip auto' computes to 'hidden auto' assert_true: 'clip auto' is a supported value for overflow. expected true got false
+FAIL Property overflow value 'clip clip' computes to 'clip' assert_true: 'clip clip' is a supported value for overflow. expected true got false
+FAIL Property overflow value 'clip hidden' computes to 'hidden' assert_true: 'clip hidden' is a supported value for overflow. expected true got false
+FAIL Property overflow value 'clip scroll' computes to 'hidden scroll' assert_true: 'clip scroll' is a supported value for overflow. expected true got false
+FAIL Property overflow value 'hidden clip' computes to 'hidden' assert_true: 'hidden clip' is a supported value for overflow. expected true got false
 PASS Property overflow value 'hidden visible' computes to 'hidden auto'
 PASS Property overflow value 'scroll auto' computes to 'scroll auto'
-FAIL Property overflow value 'scroll clip' computes to 'scroll hidden' assert_equals: expected "scroll hidden" but got "visible"
+FAIL Property overflow value 'scroll clip' computes to 'scroll hidden' assert_true: 'scroll clip' is a supported value for overflow. expected true got false
 PASS Property overflow value 'scroll visible' computes to 'scroll auto'
 PASS Property overflow value 'visible auto' computes to 'auto'
 PASS Property overflow value 'visible hidden' computes to 'auto hidden'
@@ -23,11 +23,11 @@ PASS Property overflow value 'visible visible' computes to 'visible'
 PASS Property overflow-x value 'scroll' computes to 'scroll'
 PASS Property overflow-x value 'hidden' computes to 'hidden'
 PASS Property overflow-x value 'visible' computes to 'visible'
-FAIL Property overflow-y value 'clip' computes to 'clip' assert_equals: expected "clip" but got "visible"
+FAIL Property overflow-y value 'clip' computes to 'clip' assert_true: 'clip' is a supported value for overflow-y. expected true got false
 PASS Property overflow-y value 'auto' computes to 'auto'
 PASS Property overflow-y value 'visible' computes to 'visible'
 PASS Property overflow-block value 'hidden' computes to 'hidden'
-PASS Property overflow-block value 'clip' computes to 'clip'
+FAIL Property overflow-block value 'clip' computes to 'clip' assert_true: 'clip' is a supported value for overflow-block. expected true got false
 PASS Property overflow-block value 'visible' computes to 'visible'
 PASS Property overflow-inline value 'scroll' computes to 'scroll'
 PASS Property overflow-inline value 'visible' computes to 'visible'

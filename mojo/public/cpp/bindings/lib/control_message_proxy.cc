@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/lib/validation_util.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -22,6 +23,8 @@ namespace mojo {
 namespace internal {
 
 namespace {
+
+const char kMessageTag[] = "ControlMessageProxy";
 
 bool ValidateControlResponse(Message* message) {
   ValidationContext validation_context(message->payload(),
@@ -70,20 +73,21 @@ bool RunResponseForwardToCallback::Accept(Message* message) {
   return true;
 }
 
-void SendRunMessage(MessageReceiverWithResponder* receiver,
+void SendRunMessage(InterfaceEndpointClient* endpoint,
                     interface_control::RunInputPtr input_ptr,
                     RunCallback callback) {
   auto params_ptr = interface_control::RunMessageParams::New();
   params_ptr->input = std::move(input_ptr);
   Message message(interface_control::kRunMessageId,
                   Message::kFlagExpectsResponse, 0, 0, nullptr);
+  message.set_heap_profiler_tag(kMessageTag);
   SerializationContext context;
   interface_control::internal::RunMessageParams_Data::BufferWriter params;
   Serialize<interface_control::RunMessageParamsDataView>(
       params_ptr, message.payload_buffer(), &params, &context);
   std::unique_ptr<MessageReceiver> responder =
       std::make_unique<RunResponseForwardToCallback>(std::move(callback));
-  ignore_result(receiver->AcceptWithResponder(&message, std::move(responder)));
+  endpoint->SendControlMessageWithResponder(&message, std::move(responder));
 }
 
 Message ConstructRunOrClosePipeMessage(
@@ -92,6 +96,7 @@ Message ConstructRunOrClosePipeMessage(
   params_ptr->input = std::move(input_ptr);
   Message message(interface_control::kRunOrClosePipeMessageId, 0, 0, 0,
                   nullptr);
+  message.set_heap_profiler_tag(kMessageTag);
   SerializationContext context;
   interface_control::internal::RunOrClosePipeMessageParams_Data::BufferWriter
       params;
@@ -101,19 +106,20 @@ Message ConstructRunOrClosePipeMessage(
 }
 
 void SendRunOrClosePipeMessage(
-    MessageReceiverWithResponder* receiver,
+    InterfaceEndpointClient* endpoint,
     interface_control::RunOrClosePipeInputPtr input_ptr) {
   Message message(ConstructRunOrClosePipeMessage(std::move(input_ptr)));
-  ignore_result(receiver->Accept(&message));
+  message.set_heap_profiler_tag(kMessageTag);
+  endpoint->SendControlMessage(&message);
 }
 
 void RunVersionCallback(
-    const base::Callback<void(uint32_t)>& callback,
+    base::OnceCallback<void(uint32_t)> callback,
     interface_control::RunResponseMessageParamsPtr run_response) {
   uint32_t version = 0u;
   if (run_response->output && run_response->output->is_query_version_result())
     version = run_response->output->get_query_version_result()->version;
-  callback.Run(version);
+  std::move(callback).Run(version);
 }
 
 void RunClosure(base::OnceClosure callback,
@@ -123,9 +129,8 @@ void RunClosure(base::OnceClosure callback,
 
 }  // namespace
 
-ControlMessageProxy::ControlMessageProxy(MessageReceiverWithResponder* receiver)
-    : receiver_(receiver) {
-}
+ControlMessageProxy::ControlMessageProxy(InterfaceEndpointClient* owner)
+    : owner_(owner) {}
 
 ControlMessageProxy::~ControlMessageProxy() {
   // If this is destroyed in the middle of a flush, make sure the callback is
@@ -135,11 +140,11 @@ ControlMessageProxy::~ControlMessageProxy() {
 }
 
 void ControlMessageProxy::QueryVersion(
-    const base::Callback<void(uint32_t)>& callback) {
+    base::OnceCallback<void(uint32_t)> callback) {
   auto input_ptr = interface_control::RunInput::New();
   input_ptr->set_query_version(interface_control::QueryVersion::New());
-  SendRunMessage(receiver_, std::move(input_ptr),
-                 base::BindOnce(&RunVersionCallback, callback));
+  SendRunMessage(owner_, std::move(input_ptr),
+                 base::BindOnce(&RunVersionCallback, std::move(callback)));
 }
 
 void ControlMessageProxy::RequireVersion(uint32_t version) {
@@ -147,7 +152,7 @@ void ControlMessageProxy::RequireVersion(uint32_t version) {
   require_version->version = version;
   auto input_ptr = interface_control::RunOrClosePipeInput::New();
   input_ptr->set_require_version(std::move(require_version));
-  SendRunOrClosePipeMessage(receiver_, std::move(input_ptr));
+  SendRunOrClosePipeMessage(owner_, std::move(input_ptr));
 }
 
 void ControlMessageProxy::FlushForTesting() {
@@ -168,7 +173,7 @@ void ControlMessageProxy::FlushAsyncForTesting(base::OnceClosure callback) {
   DCHECK(!pending_flush_callback_);
   pending_flush_callback_ = std::move(callback);
   SendRunMessage(
-      receiver_, std::move(input_ptr),
+      owner_, std::move(input_ptr),
       base::BindOnce(
           &RunClosure,
           base::BindOnce(&ControlMessageProxy::RunFlushForTestingClosure,
@@ -178,6 +183,25 @@ void ControlMessageProxy::FlushAsyncForTesting(base::OnceClosure callback) {
 void ControlMessageProxy::RunFlushForTestingClosure() {
   DCHECK(!pending_flush_callback_.is_null());
   std::move(pending_flush_callback_).Run();
+}
+
+void ControlMessageProxy::EnableIdleTracking(base::TimeDelta timeout) {
+  auto input = interface_control::RunOrClosePipeInput::New();
+  input->set_enable_idle_tracking(
+      interface_control::EnableIdleTracking::New(timeout.InMicroseconds()));
+  SendRunOrClosePipeMessage(owner_, std::move(input));
+}
+
+void ControlMessageProxy::SendMessageAck() {
+  auto input = interface_control::RunOrClosePipeInput::New();
+  input->set_message_ack(interface_control::MessageAck::New());
+  SendRunOrClosePipeMessage(owner_, std::move(input));
+}
+
+void ControlMessageProxy::NotifyIdle() {
+  auto input = interface_control::RunOrClosePipeInput::New();
+  input->set_notify_idle(interface_control::NotifyIdle::New());
+  SendRunOrClosePipeMessage(owner_, std::move(input));
 }
 
 void ControlMessageProxy::OnConnectionError() {

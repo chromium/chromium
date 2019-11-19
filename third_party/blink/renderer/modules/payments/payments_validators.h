@@ -7,14 +7,17 @@
 
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "v8/include/v8.h"
 
 namespace blink {
 
 class AddressErrors;
+class ExceptionState;
 class PayerErrors;
 class PaymentValidationErrors;
+class ScriptValue;
 
 class MODULES_EXPORT PaymentsValidators final {
   STATIC_ONLY(PaymentsValidators);
@@ -25,8 +28,8 @@ class MODULES_EXPORT PaymentsValidators final {
   static bool IsValidCurrencyCodeFormat(const String& code,
                                         String* optional_error_message);
 
-  // Returns true if |amount| is a valid currency code as defined in ISO 20022
-  // CurrencyAnd30Amount.
+  // Returns true if |amount| is a valid currency code as defined in
+  // PaymentRequest standard.
   static bool IsValidAmountFormat(const String& amount,
                                   const String& item_name,
                                   String* optional_error_message);
@@ -41,19 +44,19 @@ class MODULES_EXPORT PaymentsValidators final {
       const payments::mojom::blink::PaymentAddressPtr&,
       String* optional_error_message);
 
-  // Returns false if |error| is too long (greater than 2048).
+  // Returns false if |error| is too long.
   static bool IsValidErrorMsgFormat(const String& code,
                                     String* optional_error_message);
 
-  // Returns false if |errors| has too long string (greater than 2048).
+  // Returns false if |errors| has too long string.
   static bool IsValidAddressErrorsFormat(const AddressErrors* errors,
                                          String* optional_error_message);
 
-  // Returns false if |errors| has too long string (greater than 2048).
+  // Returns false if |errors| has too long string.
   static bool IsValidPayerErrorsFormat(const PayerErrors* errors,
                                        String* optional_error_message);
 
-  // Returns false if |errors| has too long string (greater than 2048).
+  // Returns false if |errors| has too long string.
   static bool IsValidPaymentValidationErrorsFormat(
       const PaymentValidationErrors* errors,
       String* optional_error_message);
@@ -61,6 +64,19 @@ class MODULES_EXPORT PaymentsValidators final {
   // Implements the PMI validation algorithm from:
   // https://www.w3.org/TR/payment-method-id/#dfn-validate-a-payment-method-identifier
   static bool IsValidMethodFormat(const String& identifier);
+
+  // Validates that |input| is a JavaScript object that can be serialized into
+  // JSON string of a reasonable size.
+  //
+  // If the |input| is valid, the JSON serialization is saved in |output|.
+  //
+  // If the |input| is invalid, throws a TypeError through the |exception_state|
+  // and uses the |input_name| to better describe what was being validated.
+  static void ValidateAndStringifyObject(v8::Isolate* isolate,
+                                         const String& input_name,
+                                         const ScriptValue& input,
+                                         String& output,
+                                         ExceptionState& exception_state);
 };
 
 }  // namespace blink

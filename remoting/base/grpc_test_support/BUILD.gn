@@ -1,0 +1,21 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("grpc_test_support") {
+  testonly = true
+
+  sources = [
+    "grpc_async_test_server.cc",
+    "grpc_async_test_server.h",
+    "grpc_test_server.h",
+    "grpc_test_util.cc",
+    "grpc_test_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//remoting/base/grpc_support",
+    "//third_party/grpc:grpcpp",
+  ]
+}

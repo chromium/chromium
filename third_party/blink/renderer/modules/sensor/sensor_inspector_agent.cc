@@ -48,7 +48,8 @@ void PopulateOrientationReading(double alpha,
                                 double gamma,
                                 device::SensorReading* reading) {
   FillQuaternion(alpha, beta, gamma, &reading->orientation_quat);
-  reading->orientation_quat.timestamp = WTF::CurrentTimeTicksInSeconds();
+  reading->orientation_quat.timestamp =
+      base::TimeTicks::Now().since_origin().InSecondsF();
 }
 
 const char kInspectorConsoleMessage[] =
@@ -79,8 +80,8 @@ void SensorInspectorAgent::SetOrientationSensorOverride(double alpha,
     Document* document = provider_->GetSupplementable();
     if (document) {
       ConsoleMessage* console_message = ConsoleMessage::Create(
-          kJSMessageSource, mojom::ConsoleMessageLevel::kInfo,
-          kInspectorConsoleMessage);
+          mojom::ConsoleMessageSource::kJavaScript,
+          mojom::ConsoleMessageLevel::kInfo, kInspectorConsoleMessage);
       document->AddConsoleMessage(console_message);
     }
     provider_->set_inspector_mode(true);

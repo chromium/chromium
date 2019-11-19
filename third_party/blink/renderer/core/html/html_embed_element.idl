@@ -22,6 +22,7 @@
 
 // TODO(yukishiino): HTMLEmbedElement should not have [OverrideBuiltins].
 [
+    Exposed=Window,
     OverrideBuiltins,
     ActiveScriptWrappable,
     HTMLConstructor

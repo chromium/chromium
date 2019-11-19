@@ -13,7 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -56,7 +56,7 @@ class LeveldbScopedDatabaseUnitTest : public testing::Test {
     return db_->ToValueStoreError(iterator->status());
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir database_dir_;
   scoped_refptr<LeveldbScopedDatabase> db_;
 };
@@ -160,11 +160,11 @@ TEST_F(LeveldbScopedDatabaseUnitTest, TestEmptyValue) {
   values.SetString("s1_key1", "");
   EXPECT_TRUE(db_->Write("scope1", values).ok());
 
-  std::unique_ptr<base::Value> value;
+  base::Optional<base::Value> value;
   ASSERT_TRUE(db_->Read("scope1", "s1_key1", &value).ok());
-  std::string str;
-  EXPECT_TRUE(value->GetAsString(&str));
-  EXPECT_EQ(str, "");
+  ASSERT_TRUE(value.has_value());
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(value->GetString(), "");
 }
 
 TEST_F(LeveldbScopedDatabaseUnitTest, TestValueContainingDelimiter) {
@@ -172,11 +172,11 @@ TEST_F(LeveldbScopedDatabaseUnitTest, TestValueContainingDelimiter) {
   values.SetString("s1_key1", "with:delimiter");
   EXPECT_TRUE(db_->Write("scope1", values).ok());
 
-  std::unique_ptr<base::Value> value;
+  base::Optional<base::Value> value;
   ASSERT_TRUE(db_->Read("scope1", "s1_key1", &value).ok());
-  std::string str;
-  EXPECT_TRUE(value->GetAsString(&str));
-  EXPECT_EQ(str, "with:delimiter");
+  ASSERT_TRUE(value.has_value());
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(value->GetString(), "with:delimiter");
 }
 
 TEST_F(LeveldbScopedDatabaseUnitTest, TestDeleteValues) {

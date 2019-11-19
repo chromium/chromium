@@ -89,6 +89,8 @@ std::unique_ptr<base::DictionaryValue> SessionTabToValue(
       new base::DictionaryValue());
   NewTabUI::SetUrlTitleAndDirection(dictionary.get(),
                                     current_navigation.title(), tab_url);
+  dictionary->SetString("remoteIconUrlForUma",
+                        current_navigation.favicon_url().spec());
   dictionary->SetString("type", "tab");
   dictionary->SetDouble("timestamp",
                         static_cast<double>(tab.timestamp.ToInternalValue()));
@@ -203,8 +205,21 @@ void ForeignSessionHandler::OpenForeignSessionWindows(
           ? std::vector<const ::sessions::SessionWindow*>::const_iterator(
                 windows.end())
           : iter_begin + 1;
+
   SessionRestore::RestoreForeignSessionWindows(Profile::FromWebUI(web_ui),
                                                iter_begin, iter_end);
+
+  size_t total_tabs_opened = 0;
+  for (const ::sessions::SessionWindow* window : windows) {
+    UMA_HISTOGRAM_COUNTS_1000(
+        "HistoryPage.OtherDevicesMenu.OpenAll.TabsPerWindow",
+        window->tabs.size());
+    total_tabs_opened += window->tabs.size();
+  }
+  UMA_HISTOGRAM_COUNTS_1000("HistoryPage.OtherDevicesMenu.OpenAll.TotalTabs",
+                            total_tabs_opened);
+  UMA_HISTOGRAM_COUNTS_100("HistoryPage.OtherDevicesMenu.OpenAll.TotalWindows",
+                           windows.size());
 }
 
 // static

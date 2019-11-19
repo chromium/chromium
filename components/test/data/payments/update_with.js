@@ -60,7 +60,7 @@ function showPaymentRequest(pr) {
 /**
  * Calls updateWith() with {}
  */
-function updateWithEmpty() {  // eslint-disable-line no-unused-vars
+function updateWithEmpty() { // eslint-disable-line no-unused-vars
   var pr = buildPaymentRequest();
   var updatedDetails = {};
   pr.addEventListener('shippingaddresschange', function(e) {
@@ -75,7 +75,7 @@ function updateWithEmpty() {  // eslint-disable-line no-unused-vars
 /**
  * Calls updateWith() with total
  */
-function updateWithTotal() {  // eslint-disable-line no-unused-vars
+function updateWithTotal() { // eslint-disable-line no-unused-vars
   var pr = buildPaymentRequest();
   var updatedDetails = {
     total: {label: 'Updated total', amount: {currency: 'USD', value: '10.00'}},
@@ -92,7 +92,7 @@ function updateWithTotal() {  // eslint-disable-line no-unused-vars
 /**
  * Calls updateWith() with displayItems
  */
-function updateWithDisplayItems() {  // eslint-disable-line no-unused-vars
+function updateWithDisplayItems() { // eslint-disable-line no-unused-vars
   var pr = buildPaymentRequest();
   var updatedDetails = {
     displayItems: [
@@ -112,7 +112,7 @@ function updateWithDisplayItems() {  // eslint-disable-line no-unused-vars
 /**
  * Calls updateWith() with shipping options
  */
-function updateWithShippingOptions() {  // eslint-disable-line no-unused-vars
+function updateWithShippingOptions() { // eslint-disable-line no-unused-vars
   var pr = buildPaymentRequest();
   var updatedDetails = {
     shippingOptions: [{
@@ -134,7 +134,7 @@ function updateWithShippingOptions() {  // eslint-disable-line no-unused-vars
 /**
  * Calls updateWith() with modifiers
  */
-function updateWithModifiers() {  // eslint-disable-line no-unused-vars
+function updateWithModifiers() { // eslint-disable-line no-unused-vars
   var pr = buildPaymentRequest();
   var updatedDetails = {
     modifiers: [{
@@ -161,7 +161,7 @@ function updateWithModifiers() {  // eslint-disable-line no-unused-vars
 /**
  * Calls updateWith() with an error.
  */
-function updateWithError() {  // eslint-disable-line no-unused-vars
+function updateWithError() { // eslint-disable-line no-unused-vars
   var pr = buildPaymentRequest();
   var errorDetails = {
     error: 'This is an error for a browsertest',

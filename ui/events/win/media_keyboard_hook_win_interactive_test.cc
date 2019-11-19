@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 
@@ -15,8 +15,7 @@ namespace ui {
 class MediaKeyboardHookWinInteractiveTest : public testing::Test {
  public:
   MediaKeyboardHookWinInteractiveTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
  protected:
   void SetUp() override {
@@ -81,7 +80,7 @@ class MediaKeyboardHookWinInteractiveTest : public testing::Test {
 
   std::vector<KeyEvent> key_events_;
   std::unique_ptr<KeyboardHook> keyboard_hook_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::RunLoop key_event_wait_loop_;
   uint32_t num_key_events_to_wait_for_ = 0;
   DWORD time_stamp_ = 0;

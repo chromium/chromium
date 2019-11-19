@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/feature_list.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -20,19 +19,20 @@
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_service.h"
@@ -67,6 +67,7 @@ const char kRequireInteraction[] = "RequireInteraction";
 const char kTimeUntilCloseMillis[] = "TimeUntilClose";
 const char kTimeUntilFirstClickMillis[] = "TimeUntilFirstClick";
 const char kTimeUntilLastClickMillis[] = "TimeUntilLastClick";
+const GURL kOrigin = GURL("https://example.com");
 
 }  // namespace
 
@@ -92,8 +93,8 @@ class PlatformNotificationServiceTest : public testing::Test {
 
  protected:
   // Returns the Platform Notification Service these unit tests are for.
-  PlatformNotificationServiceImpl* service() const {
-    return PlatformNotificationServiceImpl::GetInstance();
+  PlatformNotificationServiceImpl* service() {
+    return PlatformNotificationServiceFactory::GetForProfile(&profile_);
   }
 
   size_t GetNotificationCountForType(NotificationHandler::Type type) {
@@ -110,7 +111,7 @@ class PlatformNotificationServiceTest : public testing::Test {
   }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
@@ -126,14 +127,13 @@ TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentThenClose) {
   data.title = base::ASCIIToUTF16("My Notification");
   data.body = base::ASCIIToUTF16("Hello, world!");
 
-  service()->DisplayNotification(&profile_, kNotificationId,
-                                 GURL("https://chrome.com/"), data,
-                                 NotificationResources());
+  service()->DisplayNotification(kNotificationId, GURL("https://chrome.com/"),
+                                 data, NotificationResources());
 
   EXPECT_EQ(1u, GetNotificationCountForType(
                     NotificationHandler::Type::WEB_NON_PERSISTENT));
 
-  service()->CloseNotification(&profile_, kNotificationId);
+  service()->CloseNotification(kNotificationId);
 
   EXPECT_EQ(0u, GetNotificationCountForType(
                     NotificationHandler::Type::WEB_NON_PERSISTENT));
@@ -146,7 +146,7 @@ TEST_F(PlatformNotificationServiceTest, DisplayPersistentThenClose) {
 
   EXPECT_CALL(*mock_logger_, LogPersistentNotificationShown());
   service()->DisplayPersistentNotification(
-      &profile_, kNotificationId, GURL() /* service_worker_scope */,
+      kNotificationId, GURL() /* service_worker_scope */,
       GURL("https://chrome.com/"), data, NotificationResources());
 
   ASSERT_EQ(1u, GetNotificationCountForType(
@@ -160,7 +160,7 @@ TEST_F(PlatformNotificationServiceTest, DisplayPersistentThenClose) {
   EXPECT_EQ("Hello, world!",
       base::UTF16ToUTF8(notification.message()));
 
-  service()->ClosePersistentNotification(&profile_, kNotificationId);
+  service()->ClosePersistentNotification(kNotificationId);
   EXPECT_EQ(0u, GetNotificationCountForType(
                     NotificationHandler::Type::WEB_PERSISTENT));
 }
@@ -177,9 +177,8 @@ TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentPropertiesMatch) {
   data.vibration_pattern = vibration_pattern;
   data.silent = true;
 
-  service()->DisplayNotification(&profile_, kNotificationId,
-                                 GURL("https://chrome.com/"), data,
-                                 NotificationResources());
+  service()->DisplayNotification(kNotificationId, GURL("https://chrome.com/"),
+                                 data, NotificationResources());
 
   ASSERT_EQ(1u, GetNotificationCountForType(
                     NotificationHandler::Type::WEB_NON_PERSISTENT));
@@ -220,7 +219,7 @@ TEST_F(PlatformNotificationServiceTest, DisplayPersistentPropertiesMatch) {
 
   EXPECT_CALL(*mock_logger_, LogPersistentNotificationShown());
   service()->DisplayPersistentNotification(
-      &profile_, kNotificationId, GURL() /* service_worker_scope */,
+      kNotificationId, GURL() /* service_worker_scope */,
       GURL("https://chrome.com/"), data, notification_resources);
 
   ASSERT_EQ(1u, GetNotificationCountForType(
@@ -245,76 +244,17 @@ TEST_F(PlatformNotificationServiceTest, DisplayPersistentPropertiesMatch) {
   EXPECT_TRUE(buttons[1].placeholder);
 }
 
-TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEventHistory) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
-  HistoryServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-      &profile_, base::BindRepeating([](content::BrowserContext* context) {
-        return static_cast<std::unique_ptr<KeyedService>>(
-            std::make_unique<history::HistoryService>());
-      }));
-
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(&profile_,
-                                           ServiceAccessType::EXPLICIT_ACCESS);
-
-  // Initialize the |history_service| based on our |temp_dir|.
-  history_service->Init(
-      history::TestHistoryDatabaseParamsForPath(temp_dir.GetPath()));
-
-  NotificationDatabaseData data;
-  data.closed_reason = NotificationDatabaseData::ClosedReason::USER;
-  data.origin = GURL("https://chrome.com/");
-
-  size_t initial_entries_count = recorder_->entries_count();
-  size_t expected_entries_count = initial_entries_count + 1;
-
-  // First attempt to record an event for |data.origin| before it has been added
-  // to the |history_service|. Nothing should be recorded.
-  service()->RecordNotificationUkmEvent(&profile_, data);
-  {
-    base::RunLoop run_loop;
-    service()->set_history_query_complete_closure_for_testing(
-        run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  EXPECT_EQ(recorder_->entries_count(), initial_entries_count);
-
-  // Now add |data.origin| to the |history_service|. After this, notification
-  // events being logged should end up in UKM.
-  history_service->AddPage(data.origin, base::Time::Now(),
-                           history::SOURCE_BROWSED);
-
-  service()->RecordNotificationUkmEvent(&profile_, data);
-  {
-    base::RunLoop run_loop;
-    service()->set_history_query_complete_closure_for_testing(
-        run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  EXPECT_EQ(recorder_->entries_count(), expected_entries_count);
-
-  // Delete the |data.origin| from the |history_service|. Subsequent events
-  // should not be logged to UKM anymore.
-  history_service->DeleteURL(data.origin);
-
-  service()->RecordNotificationUkmEvent(&profile_, data);
-  {
-    base::RunLoop run_loop;
-    service()->set_history_query_complete_closure_for_testing(
-        run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  EXPECT_EQ(recorder_->entries_count(), expected_entries_count);
-}
-
 TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEvent) {
+  // Set up UKM recording conditions.
+  ASSERT_TRUE(profile_.CreateHistoryService(/* delete_file= */ true,
+                                            /* no_db= */ false));
+  auto* history_service = HistoryServiceFactory::GetForProfile(
+      &profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  history_service->AddPage(kOrigin, base::Time::Now(), history::SOURCE_BROWSED);
+
   NotificationDatabaseData data;
   data.notification_id = "notification1";
+  data.origin = kOrigin;
   data.closed_reason = NotificationDatabaseData::ClosedReason::USER;
   data.replaced_existing_notification = true;
   data.notification_data.icon = GURL("https://icon.com");
@@ -333,17 +273,18 @@ TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEvent) {
   data.time_until_first_click_millis = base::TimeDelta::FromMilliseconds(2222);
   data.time_until_last_click_millis = base::TimeDelta::FromMilliseconds(3333);
 
-  history::URLRow url_row;
-  history::VisitVector visits;
-
-  // The history service does not find the given URL and nothing is recorded.
-  service()->OnUrlHistoryQueryComplete(data, false, url_row, visits);
+  // Initially there are no UKM entries.
   std::vector<const ukm::mojom::UkmEntry*> entries =
       recorder_->GetEntriesByName(ukm::builders::Notification::kEntryName);
   EXPECT_EQ(0u, entries.size());
 
-  // The history service finds the given URL and the notification is logged.
-  service()->OnUrlHistoryQueryComplete(data, true, url_row, visits);
+  {
+    base::RunLoop run_loop;
+    service()->set_ukm_recorded_closure_for_testing(run_loop.QuitClosure());
+    service()->RecordNotificationUkmEvent(data);
+    run_loop.Run();
+  }
+
   entries =
       recorder_->GetEntriesByName(ukm::builders::Notification::kEntryName);
   ASSERT_EQ(1u, entries.size());
@@ -370,16 +311,16 @@ TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEvent) {
 // Expect each call to ReadNextPersistentNotificationId to return a larger
 // value.
 TEST_F(PlatformNotificationServiceTest, NextPersistentNotificationId) {
-  int64_t first_id = service()->ReadNextPersistentNotificationId(&profile_);
-  int64_t second_id = service()->ReadNextPersistentNotificationId(&profile_);
+  int64_t first_id = service()->ReadNextPersistentNotificationId();
+  int64_t second_id = service()->ReadNextPersistentNotificationId();
   EXPECT_LT(first_id, second_id);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(PlatformNotificationServiceTest, DisplayNameForContextMessage) {
-  base::string16 display_name = service()->DisplayNameForContextMessage(
-      &profile_, GURL("https://chrome.com/"));
+  base::string16 display_name =
+      service()->DisplayNameForContextMessage(GURL("https://chrome.com/"));
 
   EXPECT_TRUE(display_name.empty());
 
@@ -400,7 +341,6 @@ TEST_F(PlatformNotificationServiceTest, DisplayNameForContextMessage) {
   EXPECT_TRUE(registry->AddEnabled(extension));
 
   display_name = service()->DisplayNameForContextMessage(
-      &profile_,
       GURL("chrome-extension://honijodknafkokifofgiaalefdiedpko/main.html"));
   EXPECT_EQ("NotificationTest", base::UTF16ToUTF8(display_name));
 }
@@ -412,7 +352,7 @@ TEST_F(PlatformNotificationServiceTest, CreateNotificationFromData) {
   GURL origin("https://chrome.com/");
 
   Notification notification = service()->CreateNotificationFromData(
-      &profile_, origin, "id", notification_data, NotificationResources());
+      origin, "id", notification_data, NotificationResources());
   EXPECT_TRUE(notification.context_message().empty());
 
   // Create a mocked extension.
@@ -432,7 +372,6 @@ TEST_F(PlatformNotificationServiceTest, CreateNotificationFromData) {
   EXPECT_TRUE(registry->AddEnabled(extension));
 
   notification = service()->CreateNotificationFromData(
-      &profile_,
       GURL("chrome-extension://honijodknafkokifofgiaalefdiedpko/main.html"),
       "id", notification_data, NotificationResources());
   EXPECT_EQ("NotificationTest",

@@ -4,8 +4,6 @@
 
 package org.chromium.content_public.browser;
 
-import android.content.Context;
-
 import org.chromium.content.browser.SpeechRecognitionImpl;
 
 /**
@@ -21,7 +19,7 @@ public final class SpeechRecognition {
      * query Android's package manager to find a suitable speech recognition provider that supports
      * continuous recognition.
      */
-    public static boolean initialize(Context context) {
-        return SpeechRecognitionImpl.initialize(context);
+    public static boolean initialize() {
+        return SpeechRecognitionImpl.initialize();
     }
 }

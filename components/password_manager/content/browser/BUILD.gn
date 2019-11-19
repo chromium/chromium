@@ -16,8 +16,8 @@ jumbo_static_library("browser") {
     "content_password_manager_driver_factory.h",
     "form_submission_tracker_util.cc",
     "form_submission_tracker_util.h",
-    "password_manager_internals_service_factory.cc",
-    "password_manager_internals_service_factory.h",
+    "password_manager_log_router_factory.cc",
+    "password_manager_log_router_factory.h",
     "password_requirements_service_factory.cc",
     "password_requirements_service_factory.h",
   ]
@@ -25,7 +25,7 @@ jumbo_static_library("browser") {
   public_deps = [
     "//base",
     "//components/autofill/content/browser",
-    "//components/autofill/content/common:mojo_interfaces",
+    "//components/autofill/content/common/mojom",
     "//components/autofill/core/common",
     "//components/keyed_service/content",
     "//components/password_manager/core/browser",
@@ -43,12 +43,14 @@ source_set("unit_tests") {
   sources = [
     "content_password_manager_driver_unittest.cc",
     "form_submission_tracker_util_unittest.cc",
+    "password_manager_log_router_factory_unittest.cc",
   ]
   deps = [
     ":browser",
     "//components/autofill/core/browser:test_support",
     "//components/password_manager/core/browser:test_support",
     "//components/prefs:test_support",
+    "//components/safe_browsing:buildflags",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

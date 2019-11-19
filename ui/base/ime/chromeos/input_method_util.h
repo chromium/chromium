@@ -11,12 +11,12 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"
-#include "ui/base/ime/ui_base_ime_export.h"
 
 namespace chromeos {
 namespace input_method {
@@ -29,7 +29,7 @@ enum InputMethodType {
 };
 
 // A class which provides miscellaneous input method utility functions.
-class UI_BASE_IME_EXPORT InputMethodUtil {
+class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodUtil {
  public:
   explicit InputMethodUtil(InputMethodDelegate* delegate);
   ~InputMethodUtil();

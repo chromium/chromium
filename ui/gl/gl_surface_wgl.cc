@@ -342,10 +342,6 @@ GLSurfaceFormat NativeViewGLSurfaceWGL::GetFormat() {
   return GLSurfaceFormat();
 }
 
-bool NativeViewGLSurfaceWGL::SupportsPresentationCallback() {
-  return true;
-}
-
 void NativeViewGLSurfaceWGL::SetVSyncEnabled(bool enabled) {
   DCHECK(GLContext::GetCurrent() && GLContext::GetCurrent()->IsCurrent(this));
   if (g_driver_wgl.ext.b_WGL_EXT_swap_control) {

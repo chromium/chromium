@@ -54,14 +54,9 @@ class CORE_EXPORT Range final : public ScriptWrappable {
 
  public:
   static Range* Create(Document&);
-  static Range* Create(Document&,
-                       Node* start_container,
-                       unsigned start_offset,
-                       Node* end_container,
-                       unsigned end_offset);
-  static Range* Create(Document&, const Position&, const Position&);
 
   explicit Range(Document&);
+  Range(Document& owner_document, const Position& start, const Position& end);
   Range(Document&,
         Node* start_container,
         unsigned start_offset,
@@ -227,8 +222,8 @@ using RangeVector = HeapVector<Member<Range>>;
 
 }  // namespace blink
 
-#ifndef NDEBUG
-// Outside the WebCore namespace for ease of invocation from gdb.
+#if DCHECK_IS_ON()
+// Outside the blink namespace for ease of invocation from gdb.
 void showTree(const blink::Range*);
 #endif
 

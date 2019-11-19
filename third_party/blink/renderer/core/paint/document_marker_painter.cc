@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/core/paint/document_marker_painter.h"
 
+#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -80,7 +82,7 @@ sk_sp<PaintRecord> RecordMarker(Color blink_color) {
   flags.setAntiAlias(true);
   flags.setColor(color);
   flags.setShader(PaintShader::MakeLinearGradient(
-      pts, colors, nullptr, ARRAY_SIZE(colors), SkShader::kClamp_TileMode));
+      pts, colors, nullptr, base::size(colors), SkTileMode::kClamp));
   PaintRecorder recorder;
   recorder.beginRecording(kMarkerWidth, kMarkerHeight);
   recorder.getRecordingCanvas()->drawOval(SkRect::MakeWH(2 * kR, 2 * kR),
@@ -129,7 +131,7 @@ void DrawDocumentMarker(GraphicsContext& context,
   flags.setAntiAlias(true);
   flags.setShader(PaintShader::MakePaintRecord(
       sk_ref_sp(marker), FloatRect(0, 0, kMarkerWidth, kMarkerHeight),
-      SkShader::kRepeat_TileMode, SkShader::kClamp_TileMode, &local_matrix));
+      SkTileMode::kRepeat, SkTileMode::kClamp, &local_matrix));
 
   // Apply the origin translation as a global transform.  This ensures that the
   // shader local matrix depends solely on zoom => Skia can reuse the same
@@ -139,11 +141,11 @@ void DrawDocumentMarker(GraphicsContext& context,
   context.DrawRect(rect, flags);
 }
 
-}  // anonymous ns
+}  // namespace
 
 void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
     GraphicsContext& context,
-    const LayoutPoint& box_origin,
+    const PhysicalOffset& box_origin,
     const StyleableMarker& marker,
     const ComputedStyle& style,
     const FloatRect& marker_rect,
@@ -188,17 +190,17 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
   context.SetStrokeThickness(line_thickness);
   context.DrawLineForText(
       FloatPoint(
-          box_origin.X() + start,
-          (box_origin.Y() + logical_height.ToInt() - line_thickness).ToFloat()),
+          box_origin.left + start,
+          (box_origin.top + logical_height.ToInt() - line_thickness).ToFloat()),
       width);
 }
 
 void DocumentMarkerPainter::PaintDocumentMarker(
     GraphicsContext& context,
-    const LayoutPoint& box_origin,
+    const PhysicalOffset& box_origin,
     const ComputedStyle& style,
     DocumentMarker::MarkerType marker_type,
-    const LayoutRect& local_rect) {
+    const PhysicalRect& local_rect) {
   // IMPORTANT: The misspelling underline is not considered when calculating the
   // text bounds, so we have to make sure to fit within those bounds.  This
   // means the top pixel(s) of the underline will overlap the bottom pixel(s) of
@@ -226,16 +228,17 @@ void DocumentMarkerPainter::PaintDocumentMarker(
     underline_offset = baseline + 2 * zoom;
   }
   DrawDocumentMarker(context,
-                     FloatPoint((box_origin.X() + local_rect.X()).ToFloat(),
-                                (box_origin.Y() + underline_offset).ToFloat()),
+                     FloatPoint((box_origin.left + local_rect.X()).ToFloat(),
+                                (box_origin.top + underline_offset).ToFloat()),
                      local_rect.Width().ToFloat(), marker_type, zoom);
 }
 
 TextPaintStyle DocumentMarkerPainter::ComputeTextPaintStyleFrom(
     const ComputedStyle& style,
-    const TextMatchMarker& marker) {
-  const Color text_color =
-      LayoutTheme::GetTheme().PlatformTextSearchColor(marker.IsActiveMatch());
+    const TextMarkerBase& marker,
+    bool in_forced_colors_mode) {
+  const Color text_color = LayoutTheme::GetTheme().PlatformTextSearchColor(
+      marker.IsActiveMatch(), in_forced_colors_mode, style.UsedColorScheme());
   if (style.VisitedDependentColor(GetCSSPropertyColor()) == text_color)
     return {};
 

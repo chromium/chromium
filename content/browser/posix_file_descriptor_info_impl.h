@@ -27,14 +27,13 @@ class PosixFileDescriptorInfoImpl : public PosixFileDescriptorInfo {
                        base::PlatformFile fd,
                        const base::MemoryMappedFile::Region& region) override;
   void Transfer(int id, base::ScopedFD fd) override;
-  const base::FileHandleMappingVector& GetMapping() const override;
-  base::FileHandleMappingVector GetMappingWithIDAdjustment(
-      int delta) const override;
-  base::PlatformFile GetFDAt(size_t i) const override;
-  int GetIDAt(size_t i) const override;
-  const base::MemoryMappedFile::Region& GetRegionAt(size_t i) const override;
-  size_t GetMappingSize() const override;
-  bool OwnsFD(base::PlatformFile file) const override;
+  const base::FileHandleMappingVector& GetMapping() override;
+  base::FileHandleMappingVector GetMappingWithIDAdjustment(int delta) override;
+  base::PlatformFile GetFDAt(size_t i) override;
+  int GetIDAt(size_t i) override;
+  const base::MemoryMappedFile::Region& GetRegionAt(size_t i) override;
+  size_t GetMappingSize() override;
+  bool OwnsFD(base::PlatformFile file) override;
   base::ScopedFD ReleaseFD(base::PlatformFile file) override;
 
  private:

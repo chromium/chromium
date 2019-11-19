@@ -66,8 +66,7 @@ const char kPortForwardingBrowserId[] = "browserId";
 class CancelableTimer {
  public:
   CancelableTimer(base::Closure callback, base::TimeDelta delay)
-      : callback_(callback),
-        weak_factory_(this) {
+      : callback_(callback) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&CancelableTimer::Fire, weak_factory_.GetWeakPtr()),
@@ -78,7 +77,7 @@ class CancelableTimer {
   void Fire() { callback_.Run(); }
 
   base::Closure callback_;
-  base::WeakPtrFactory<CancelableTimer> weak_factory_;
+  base::WeakPtrFactory<CancelableTimer> weak_factory_{this};
 };
 
 // LocalTargetsUIHandler ---------------------------------------------
@@ -103,14 +102,13 @@ private:
 
  Profile* profile_;
  std::unique_ptr<CancelableTimer> timer_;
- base::WeakPtrFactory<LocalTargetsUIHandler> weak_factory_;
+ base::WeakPtrFactory<LocalTargetsUIHandler> weak_factory_{this};
 };
 
 LocalTargetsUIHandler::LocalTargetsUIHandler(const Callback& callback,
                                              Profile* profile)
     : DevToolsTargetsUIHandler(kTargetSourceLocal, callback),
-      profile_(profile),
-      weak_factory_(this) {
+      profile_(profile) {
   DevToolsAgentHost::AddObserver(this);
   UpdateTargets();
 }
@@ -326,7 +324,7 @@ scoped_refptr<DevToolsAgentHost> DevToolsTargetsUIHandler::GetTarget(
   auto it = targets_.find(target_id);
   if (it != targets_.end())
     return it->second;
-  return NULL;
+  return nullptr;
 }
 
 void DevToolsTargetsUIHandler::Open(const std::string& browser_id,
@@ -335,7 +333,7 @@ void DevToolsTargetsUIHandler::Open(const std::string& browser_id,
 
 scoped_refptr<DevToolsAgentHost>
 DevToolsTargetsUIHandler::GetBrowserAgentHost(const std::string& browser_id) {
-  return NULL;
+  return nullptr;
 }
 
 std::unique_ptr<base::DictionaryValue> DevToolsTargetsUIHandler::Serialize(

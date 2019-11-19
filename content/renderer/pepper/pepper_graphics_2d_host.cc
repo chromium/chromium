@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -33,6 +34,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/pp_errors.h"
@@ -44,7 +46,7 @@
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/shared_impl/ppb_view_shared.h"
 #include "ppapi/thunk/enter.h"
-#include "services/ws/public/cpp/gpu/context_provider_command_buffer.h"
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
@@ -203,10 +205,11 @@ PepperGraphics2DHost::~PepperGraphics2DHost() {
   // Delete textures owned by PepperGraphics2DHost, but not those sent to the
   // compositor, since those will be deleted by ReleaseTextureCallback() when it
   // runs.
-  while (main_thread_context_ && !recycled_texture_copies_.empty()) {
-    uint32_t texture_id = recycled_texture_copies_.back().id;
-    main_thread_context_->ContextGL()->DeleteTextures(1, &texture_id);
-    recycled_texture_copies_.pop_back();
+  while (main_thread_context_ && !recycled_shared_images_.empty()) {
+    const auto& shared_image_info = recycled_shared_images_.back();
+    main_thread_context_->SharedImageInterface()->DestroySharedImage(
+        shared_image_info.sync_token, shared_image_info.mailbox);
+    recycled_shared_images_.pop_back();
   }
 
   // Unbind from the instance when destroyed if we're still bound.
@@ -583,46 +586,31 @@ void PepperGraphics2DHost::ReleaseSoftwareCallback(
 void PepperGraphics2DHost::ReleaseTextureCallback(
     base::WeakPtr<PepperGraphics2DHost> host,
     scoped_refptr<viz::ContextProvider> context,
-    uint32_t id,
+    const gfx::Size& size,
+    const gpu::Mailbox& mailbox,
     const gpu::SyncToken& sync_token,
     bool lost) {
-  if (sync_token.HasData())
-    context->ContextGL()->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-  if (host && !lost) {
-    // Recycle the texture to be used in future frames. This moves it from
-    // the busy textures list to the recycled list.
-    auto it = host->texture_copies_.begin();
-    for (; it != host->texture_copies_.end(); ++it) {
-      if (it->id == id) {
-        host->recycled_texture_copies_.push_back(*it);
-        host->texture_copies_.erase(it);
-        break;
-      }
-    }
+  // Only recycle shared images from the same context, otherwise they may be
+  // lost.
+  if (host && !lost && context == host->main_thread_context_) {
+    host->recycled_shared_images_.emplace_back(sync_token, mailbox, size);
     return;
   }
 
-  // The otherwise, the texture can not be reused so remove it from the busy
-  // texture list and delete it.
-  if (host) {
-    auto matches_id = [id](const TextureInfo& info) { return info.id == id; };
-    base::EraseIf(host->texture_copies_, matches_id);
-  }
-  context->ContextGL()->DeleteTextures(1, &id);
+  context->SharedImageInterface()->DestroySharedImage(sync_token, mailbox);
 }
 
 bool PepperGraphics2DHost::PrepareTransferableResource(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* transferable_resource,
     std::unique_ptr<viz::SingleReleaseCallback>* release_callback) {
-  // Reuse the |main_thread_context_| if it is not lost. If it is lost, we
-  // can't reuse the texture ids, they are invalid. If the compositing mode
-  // changed, the context will be lost also, so we get both together.
+  // Reuse the |main_thread_context_| if it is not lost. If it is lost, we can't
+  // reuse the shared images, they are invalid. If the compositing mode changed,
+  // the context will be lost also, so we get both together.
   if (!main_thread_context_ ||
       main_thread_context_->ContextGL()->GetGraphicsResetStatusKHR() !=
           GL_NO_ERROR) {
-    texture_copies_.clear();
-    recycled_texture_copies_.clear();
+    recycled_shared_images_.clear();
     main_thread_context_ = nullptr;
 
     if (!is_gpu_compositing_disabled_) {
@@ -631,11 +619,12 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
       if (!is_gpu_compositing_disabled_) {
         // Using gpu compositing.
         main_thread_context_ = rti->SharedMainThreadContextProvider();
-      } else {
-        // Just switched to software compositing. Force us to send the
-        // frame to the compositor again even if not changed.
-        composited_output_modified_ = true;
       }
+
+      // The last transferable resource is invalid, either coming from a lost
+      // context or because we switched to software compositing. Force us to
+      // send the frame to the compositor again even if not changed.
+      composited_output_modified_ = true;
     }
   }
 
@@ -651,78 +640,52 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
   // |image_data_| into a texture.
   if (main_thread_context_) {
     auto* gl = main_thread_context_->ContextGL();
+    auto* sii = main_thread_context_->SharedImageInterface();
 
     // The bitmap in |image_data_| uses the skia N32 byte order.
     constexpr bool bitmap_is_bgra = kN32_SkColorType == kBGRA_8888_SkColorType;
     const bool texture_can_be_bgra =
         main_thread_context_->ContextCapabilities().texture_format_bgra8888;
     const bool upload_bgra = bitmap_is_bgra && texture_can_be_bgra;
-    const uint32_t format = upload_bgra ? GL_BGRA_EXT : GL_RGBA;
+    const viz::ResourceFormat format =
+        upload_bgra ? viz::BGRA_8888 : viz::RGBA_8888;
 
     RenderThreadImpl* rti = RenderThreadImpl::current();
     bool overlays_supported =
         rti->IsGpuMemoryBufferCompositorResourcesEnabled() &&
         main_thread_context_->ContextCapabilities().texture_storage_image;
-    bool overlay_candidate = false;
     uint32_t texture_target = GL_TEXTURE_2D;
-    uint32_t storage_format = 0;
     if (overlays_supported) {
-      if (upload_bgra) {
-        texture_target = gpu::GetBufferTextureTarget(
-            gfx::BufferUsage::SCANOUT, gfx::BufferFormat::BGRA_8888,
-            main_thread_context_->ContextCapabilities());
-        storage_format = GL_BGRA8_EXT;
-        overlay_candidate = true;
-      } else {
-        texture_target = gpu::GetBufferTextureTarget(
-            gfx::BufferUsage::SCANOUT, gfx::BufferFormat::RGBA_8888,
-            main_thread_context_->ContextCapabilities());
-        storage_format = GL_RGBA8_OES;
-        overlay_candidate = true;
-      }
+      texture_target = gpu::GetBufferTextureTarget(
+          gfx::BufferUsage::SCANOUT, viz::BufferFormat(format),
+          main_thread_context_->ContextCapabilities());
     }
 
     const gfx::Size size(image_data_->width(), image_data_->height());
 
-    uint32_t texture_id = 0;
     gpu::Mailbox gpu_mailbox;
-    while (!recycled_texture_copies_.empty()) {
-      if (recycled_texture_copies_.back().size == size) {
-        texture_id = recycled_texture_copies_.back().id;
-        gpu_mailbox = recycled_texture_copies_.back().mailbox;
-        recycled_texture_copies_.pop_back();
-        gl->BindTexture(texture_target, texture_id);
+    gpu::SyncToken in_sync_token;
+    while (!recycled_shared_images_.empty()) {
+      const auto& shared_image_info = recycled_shared_images_.back();
+      if (shared_image_info.size == size) {
+        in_sync_token = shared_image_info.sync_token;
+        gpu_mailbox = shared_image_info.mailbox;
+        recycled_shared_images_.pop_back();
         break;
       }
-      uint32_t id = recycled_texture_copies_.back().id;
-      main_thread_context_->ContextGL()->DeleteTextures(1, &id);
-      recycled_texture_copies_.pop_back();
+      sii->DestroySharedImage(shared_image_info.sync_token,
+                              shared_image_info.mailbox);
+      recycled_shared_images_.pop_back();
     }
-    if (!texture_id) {
-      gl->GenTextures(1, &texture_id);
-      gl->BindTexture(texture_target, texture_id);
-      gl->TexParameteri(texture_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      gl->TexParameteri(texture_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      gl->TexParameteri(texture_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      gl->TexParameteri(texture_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-      if (overlay_candidate) {
-        gl->TexStorage2DImageCHROMIUM(texture_target, storage_format,
-                                      GL_SCANOUT_CHROMIUM, size.width(),
-                                      size.height());
-      } else {
-        gl->TexImage2D(texture_target, 0, format, size.width(), size.height(),
-                       0, format, GL_UNSIGNED_BYTE, nullptr);
-      }
-
-      gl->ProduceTextureDirectCHROMIUM(texture_id, gpu_mailbox.name);
+    if (gpu_mailbox.IsZero()) {
+      uint32_t usage =
+          gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY;
+      if (overlays_supported)
+        usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      gpu_mailbox =
+          sii->CreateSharedImage(format, size, gfx::ColorSpace(), usage);
+      in_sync_token = sii->GenUnverifiedSyncToken();
     }
-
-    TextureInfo info;
-    info.id = texture_id;
-    info.mailbox = gpu_mailbox;
-    info.size = size;
-    texture_copies_.push_back(std::move(info));
 
     void* src = image_data_->Map();
 
@@ -737,24 +700,30 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
       src = swizzled.get();
     }
 
+    gl->WaitSyncTokenCHROMIUM(in_sync_token.GetConstData());
+    GLuint texture_id =
+        gl->CreateAndTexStorage2DSharedImageCHROMIUM(gpu_mailbox.name);
+    gl->BeginSharedImageAccessDirectCHROMIUM(
+        texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+    gl->BindTexture(texture_target, texture_id);
     gl->TexSubImage2D(texture_target, 0, 0, 0, size.width(), size.height(),
-                      format, GL_UNSIGNED_BYTE, src);
+                      viz::GLDataFormat(format), viz::GLDataType(format), src);
+    gl->BindTexture(texture_target, 0);
+    gl->EndSharedImageAccessDirectCHROMIUM(texture_id);
+    gl->DeleteTextures(1, &texture_id);
+    gpu::SyncToken out_sync_token;
+    gl->GenUnverifiedSyncTokenCHROMIUM(out_sync_token.GetData());
+
     image_data_->Unmap();
     swizzled.reset();
 
-    gpu::SyncToken sync_token;
-    gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-
-    gl->BindTexture(texture_target, 0);
-
-    *transferable_resource = viz::TransferableResource::MakeGLOverlay(
-        std::move(gpu_mailbox), GL_LINEAR, texture_target,
-        std::move(sync_token), size, overlay_candidate);
     *release_callback = viz::SingleReleaseCallback::Create(
         base::BindOnce(&ReleaseTextureCallback, this->AsWeakPtr(),
-                       main_thread_context_, texture_id));
-    transferable_resource->format =
-        upload_bgra ? viz::BGRA_8888 : viz::RGBA_8888;
+                       main_thread_context_, size, gpu_mailbox));
+    *transferable_resource = viz::TransferableResource::MakeGL(
+        std::move(gpu_mailbox), GL_LINEAR, texture_target,
+        std::move(out_sync_token), size, overlays_supported);
+    transferable_resource->format = format;
     composited_output_modified_ = false;
     return true;
   }
@@ -773,15 +742,15 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
   }
   if (!shared_bitmap) {
     viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
-    std::unique_ptr<base::SharedMemory> shm =
-        viz::bitmap_allocation::AllocateMappedBitmap(pixel_image_size,
+    base::MappedReadOnlyRegion shm =
+        viz::bitmap_allocation::AllocateSharedBitmap(pixel_image_size,
                                                      viz::RGBA_8888);
     shared_bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
         id, std::move(shm), pixel_image_size, viz::RGBA_8888);
     registration = bitmap_registrar->RegisterSharedBitmapId(id, shared_bitmap);
   }
   void* src = image_data_->Map();
-  memcpy(shared_bitmap->shared_memory()->memory(), src,
+  memcpy(shared_bitmap->memory(), src,
          viz::ResourceSizes::CheckedSizeInBytes<size_t>(pixel_image_size,
                                                         viz::RGBA_8888));
   image_data_->Unmap();

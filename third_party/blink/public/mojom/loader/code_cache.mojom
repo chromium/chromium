@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -23,12 +24,12 @@ interface CodeCacheHost {
   DidGenerateCacheableMetadata(CodeCacheType cache_type,
                                url.mojom.Url url,
                                mojo_base.mojom.Time expected_response_time,
-                               array<uint8> data);
+                               mojo_base.mojom.BigBuffer data);
 
   // TODO(crbug.com/867848) Pass the data as mojo data_pipe instead of
   // array<unit8>.
   FetchCachedCode(CodeCacheType cache_type, url.mojom.Url url) =>
-      (mojo_base.mojom.Time response_time, array<uint8> data);
+      (mojo_base.mojom.Time response_time, mojo_base.mojom.BigBuffer data);
 
   ClearCodeCacheEntry(CodeCacheType cache_type, url.mojom.Url url);
 
@@ -38,6 +39,6 @@ interface CodeCacheHost {
   // origin's CacheStoragePtr.
   DidGenerateCacheableMetadataInCacheStorage(
       url.mojom.Url url, mojo_base.mojom.Time expected_response_time,
-      array<uint8> data, url.mojom.Origin cache_storage_origin,
+      mojo_base.mojom.BigBuffer data, url.mojom.Origin cache_storage_origin,
       string cache_storage_cache_name);
 };

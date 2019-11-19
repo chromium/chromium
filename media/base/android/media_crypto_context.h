@@ -34,14 +34,14 @@ class MEDIA_EXPORT MediaCryptoContext : public PlayerTracker {
   //                                 Should be ignored if |media_crypto|
   //                                 contains null MediaCrypto object.
   using MediaCryptoReadyCB =
-      base::Callback<void(JavaObjectPtr media_crypto,
-                          bool requires_secure_video_codec)>;
+      base::OnceCallback<void(JavaObjectPtr media_crypto,
+                              bool requires_secure_video_codec)>;
 
   MediaCryptoContext() {}
   ~MediaCryptoContext() override {}
 
   virtual void SetMediaCryptoReadyCB(
-      const MediaCryptoReadyCB& media_crypto_ready_cb) = 0;
+      MediaCryptoReadyCB media_crypto_ready_cb) = 0;
 
   DISALLOW_COPY_AND_ASSIGN(MediaCryptoContext);
 };

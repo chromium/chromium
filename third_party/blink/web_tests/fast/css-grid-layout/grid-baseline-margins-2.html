@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<link href="resources/grid.css" rel="stylesheet">
+<style>
+.inline-block { display: inline-block; }
+.grid, .inline-grid {
+   background-color: lightgrey;
+   grid-auto-flow: column;
+}
+.border { border: 11px solid pink; }
+.padding { padding: 13px; }
+.margin { margin: 8px 0; }
+</style>
+<p>This test ensures that Baseline Alignment works for 1-dimensional Grid like in Flexible Box, even using margins, paddings and borders.</p>
+
+<div>
+Should align with the bottom
+<div class="inline-block border margin padding" style="background-color: pink">
+  <div class="grid border margin padding" style="grid-template-columns: 100px; grid-template-rows: 100px; background-color: pink">
+      <div style="overflow: scroll; background-color: lightgrey; margin: 10px 0px; border-top: 10px solid pink;"></div>
+  </div>
+</div>
+of the horizontal scrollbar.
+</div>
+
+<div>
+Should align 10px below the
+<div class="inline-block" style="background-color: pink">
+  <div class="grid" style="grid-template-columns: 100px; grid-template-rows: 100px; background-color: pink">
+      <div style="overflow: scroll; padding-bottom: 10px; background-color: lightgrey; margin: 10px 0px; border-top: 10px solid pink; border-bottom: 10px solid pink;"></div>
+  </div>
+</div>
+horizontal scrollbar, if one is visible.
+</div>

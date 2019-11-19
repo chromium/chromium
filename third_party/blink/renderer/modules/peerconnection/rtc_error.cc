@@ -9,11 +9,11 @@
 namespace blink {
 
 // static
-RTCError* RTCError::Create(String message, const RTCErrorInit* init) {
-  return MakeGarbageCollected<RTCError>(std::move(message), init);
+RTCError* RTCError::Create(const RTCErrorInit* init, String message) {
+  return MakeGarbageCollected<RTCError>(init, std::move(message));
 }
 
-RTCError::RTCError(String message, const RTCErrorInit* init)
+RTCError::RTCError(const RTCErrorInit* init, String message)
     : DOMException(0u, "RTCError", std::move(message), String()),
       error_detail_(init->errorDetail()),
       sdp_line_number_(init->hasSdpLineNumber()

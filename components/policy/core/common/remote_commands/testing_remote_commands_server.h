@@ -27,6 +27,10 @@ class SingleThreadTaskRunner;
 
 namespace policy {
 
+// Callback called when a command's result is reported back to the server.
+using ResultReportedCallback =
+    base::OnceCallback<void(const enterprise_management::RemoteCommandResult&)>;
+
 // This class implements server-side logic for remote commands service tests. It
 // acts just like a queue, and there are mainly two exposed methods for this
 // purpose. Test authors are expected to call IssueCommand() to add commands to
@@ -45,13 +49,8 @@ class TestingRemoteCommandsServer {
   TestingRemoteCommandsServer();
   virtual ~TestingRemoteCommandsServer();
 
-  using RemoteCommands = std::vector<enterprise_management::RemoteCommand>;
   using RemoteCommandResults =
       std::vector<enterprise_management::RemoteCommandResult>;
-
-  // Callback called when a command's result is reported back to the server.
-  using ResultReportedCallback =
-      base::Callback<void(const enterprise_management::RemoteCommandResult&)>;
 
   // Create and add a command with |type| as command type and |payload| as
   // command payload if it's not empty. |clock_| will be used to get the
@@ -63,8 +62,12 @@ class TestingRemoteCommandsServer {
   // the server and |reported_callback| itself will be called at that time.
   void IssueCommand(enterprise_management::RemoteCommand_Type type,
                     const std::string& payload,
-                    const ResultReportedCallback& reported_callback,
+                    ResultReportedCallback reported_callback,
                     bool skip_next_fetch);
+  void IssueSignedCommand(ResultReportedCallback reported_callback,
+                          enterprise_management::RemoteCommand* command_in,
+                          enterprise_management::PolicyData* policy_data_in,
+                          enterprise_management::SignedData* signed_data_in);
 
   // Fetch commands, acknowledging all commands up to and including
   // |last_command_id|, and provide |previous_job_results| as results for
@@ -74,9 +77,11 @@ class TestingRemoteCommandsServer {
   // and client for remote command fetching.
   // Unlike every other methods in the class, this method can be called from
   // any thread.
-  RemoteCommands FetchCommands(
+  void FetchCommands(
       std::unique_ptr<RemoteCommandJob::UniqueIDType> last_command_id,
-      const RemoteCommandResults& previous_job_results);
+      const RemoteCommandResults& previous_job_results,
+      std::vector<enterprise_management::RemoteCommand>* fetched_commands,
+      std::vector<enterprise_management::SignedData>* signed_commands);
 
   // Set alternative clock for obtaining the command issue time. The default
   // clock uses the system clock.
@@ -90,7 +95,7 @@ class TestingRemoteCommandsServer {
   struct RemoteCommandWithCallback;
 
   void ReportJobResult(
-      const ResultReportedCallback& reported_callback,
+      ResultReportedCallback reported_callback,
       const enterprise_management::RemoteCommandResult& job_result) const;
 
   // The main command queue.
@@ -117,7 +122,7 @@ class TestingRemoteCommandsServer {
   base::WeakPtr<TestingRemoteCommandsServer> weak_ptr_to_this_;
 
   base::ThreadChecker thread_checker_;
-  base::WeakPtrFactory<TestingRemoteCommandsServer> weak_factory_;
+  base::WeakPtrFactory<TestingRemoteCommandsServer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestingRemoteCommandsServer);
 };

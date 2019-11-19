@@ -5,23 +5,25 @@
 #include "third_party/blink/renderer/core/html/media/picture_in_picture_interstitial.h"
 
 #include "cc/layers/layer.h"
-#include "third_party/blink/public/platform/web_localized_string.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace {
 
-constexpr TimeDelta kPictureInPictureStyleChangeTransitionDuration =
-    TimeDelta::FromMilliseconds(200);
-constexpr TimeDelta kPictureInPictureHiddenAnimationSeconds =
-    TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kPictureInPictureStyleChangeTransitionDuration =
+    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kPictureInPictureHiddenAnimationSeconds =
+    base::TimeDelta::FromMilliseconds(300);
 
 }  // namespace
 
@@ -67,18 +69,20 @@ PictureInPictureInterstitial::PictureInPictureInterstitial(
       video_element_(&videoElement) {
   SetShadowPseudoId(AtomicString("-internal-media-interstitial"));
 
-  background_image_ = HTMLImageElement::Create(GetDocument());
+  background_image_ = MakeGarbageCollected<HTMLImageElement>(GetDocument());
   background_image_->SetShadowPseudoId(
       AtomicString("-internal-media-interstitial-background-image"));
-  background_image_->SetSrc(videoElement.getAttribute(html_names::kPosterAttr));
+  background_image_->setAttribute(
+      html_names::kSrcAttr,
+      videoElement.FastGetAttribute(html_names::kPosterAttr));
   ParserAppendChild(background_image_);
 
-  message_element_ = HTMLDivElement::Create(GetDocument());
+  message_element_ = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   message_element_->SetShadowPseudoId(
       AtomicString("-internal-picture-in-picture-interstitial-message"));
   message_element_->setInnerText(
       GetVideoElement().GetLocale().QueryString(
-          WebLocalizedString::kPictureInPictureInterstitialText),
+          IDS_MEDIA_PICTURE_IN_PICTURE_INTERSTITIAL_TEXT),
       ASSERT_NO_EXCEPTION);
   ParserAppendChild(message_element_);
 
@@ -92,12 +96,13 @@ void PictureInPictureInterstitial::Show() {
   if (interstitial_timer_.IsActive())
     interstitial_timer_.Stop();
   should_be_visible_ = true;
-  RemoveInlineStyleProperty(CSSPropertyDisplay);
+  RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
   interstitial_timer_.StartOneShot(
       kPictureInPictureStyleChangeTransitionDuration, FROM_HERE);
 
   DCHECK(GetVideoElement().CcLayer());
   GetVideoElement().CcLayer()->SetIsDrawable(false);
+  GetVideoElement().CcLayer()->SetHitTestable(false);
 }
 
 void PictureInPictureInterstitial::Hide() {
@@ -107,13 +112,15 @@ void PictureInPictureInterstitial::Hide() {
   if (interstitial_timer_.IsActive())
     interstitial_timer_.Stop();
   should_be_visible_ = false;
-  SetInlineStyleProperty(CSSPropertyOpacity, 0,
+  SetInlineStyleProperty(CSSPropertyID::kOpacity, 0,
                          CSSPrimitiveValue::UnitType::kNumber);
   interstitial_timer_.StartOneShot(kPictureInPictureHiddenAnimationSeconds,
                                    FROM_HERE);
 
-  if (GetVideoElement().CcLayer())
+  if (GetVideoElement().CcLayer()) {
     GetVideoElement().CcLayer()->SetIsDrawable(true);
+    GetVideoElement().CcLayer()->SetHitTestable(true);
+  }
 }
 
 Node::InsertionNotificationRequest PictureInPictureInterstitial::InsertedInto(
@@ -142,22 +149,28 @@ void PictureInPictureInterstitial::NotifyElementSizeChanged(
   message_element_->setAttribute(
       "class", MediaControls::GetSizingCSSClass(
                    MediaControls::GetSizingClass(new_size.width())));
+
+  // Force a layout since |LayoutMedia::UpdateLayout()| will sometimes miss a
+  // layout otherwise.
+  if (GetLayoutObject())
+    GetLayoutObject()->SetNeedsLayout(layout_invalidation_reason::kSizeChanged);
 }
 
 void PictureInPictureInterstitial::ToggleInterstitialTimerFired(TimerBase*) {
   interstitial_timer_.Stop();
   if (should_be_visible_) {
-    SetInlineStyleProperty(CSSPropertyBackgroundColor, CSSValueBlack);
-    SetInlineStyleProperty(CSSPropertyOpacity, 1,
+    SetInlineStyleProperty(CSSPropertyID::kBackgroundColor, CSSValueID::kBlack);
+    SetInlineStyleProperty(CSSPropertyID::kOpacity, 1,
                            CSSPrimitiveValue::UnitType::kNumber);
   } else {
-    SetInlineStyleProperty(CSSPropertyDisplay, CSSValueNone);
+    SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
   }
 }
 
 void PictureInPictureInterstitial::OnPosterImageChanged() {
-  background_image_->SetSrc(
-      GetVideoElement().getAttribute(html_names::kPosterAttr));
+  background_image_->setAttribute(
+      html_names::kSrcAttr,
+      GetVideoElement().FastGetAttribute(html_names::kPosterAttr));
 }
 
 void PictureInPictureInterstitial::Trace(Visitor* visitor) {

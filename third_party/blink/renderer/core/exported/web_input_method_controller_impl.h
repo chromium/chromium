@@ -10,7 +10,7 @@
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -48,6 +48,10 @@ class CORE_EXPORT WebInputMethodControllerImpl
   bool GetCompositionCharacterBounds(WebVector<WebRect>& bounds) override;
 
   WebRange GetSelectionOffsets() const override;
+
+  void GetLayoutBounds(WebRect& control_bounds,
+                       WebRect& selection_bounds) override;
+  bool IsEditContextActive() const override;
 
   void Trace(blink::Visitor*);
 

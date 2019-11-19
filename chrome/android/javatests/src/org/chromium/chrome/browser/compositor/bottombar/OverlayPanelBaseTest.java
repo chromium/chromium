@@ -5,11 +5,12 @@
 package org.chromium.chrome.browser.compositor.bottombar;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.annotation.UiThreadTest;
 import android.support.test.filters.SmallTest;
 import android.support.test.rule.UiThreadTestRule;
+
+import androidx.annotation.Nullable;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -95,7 +96,7 @@ public class OverlayPanelBaseTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         OverlayPanelManager panelManager = new OverlayPanelManager();
         mExpandPanel =
                 new MockOverlayPanel(InstrumentationRegistry.getTargetContext(), panelManager);

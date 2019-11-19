@@ -11,11 +11,14 @@
 #include "net/base/load_flags.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/resource_response.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace prerender {
 
 namespace {
+
+const char kPurposeHeaderName[] = "Purpose";
+const char kPurposeHeaderValue[] = "prefetch";
 
 void CancelPrerenderForUnsupportedMethod(
     PrerenderURLLoaderThrottle::CancelerGetterCallback callback) {
@@ -40,7 +43,7 @@ void CancelPrerenderForSyncDeferredRedirect(
 }
 
 // Returns true if the response has a "no-store" cache control header.
-bool IsNoStoreResponse(const network::ResourceResponseHead& response_head) {
+bool IsNoStoreResponse(const network::mojom::URLResponseHead& response_head) {
   return response_head.headers &&
          response_head.headers->HasHeaderValue("cache-control", "no-store");
 }
@@ -80,7 +83,8 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
     bool* defer) {
   if (mode_ == PREFETCH_ONLY) {
     request->load_flags |= net::LOAD_PREFETCH;
-    request->headers.SetHeader(kPurposeHeaderName, kPurposeHeaderValue);
+    request->cors_exempt_headers.SetHeader(kPurposeHeaderName,
+                                           kPurposeHeaderValue);
   }
 
   resource_type_ = static_cast<content::ResourceType>(request->resource_type);
@@ -91,7 +95,7 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
     // invalid requests.  For prefetches, cancel invalid requests but keep the
     // prefetch going.
     delegate_->CancelWithError(net::ERR_ABORTED);
-    if (mode_ == FULL_PRERENDER) {
+    if (mode_ == DEPRECATED_FULL_PRERENDER) {
       canceler_getter_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(CancelPrerenderForUnsupportedMethod,
                                     std::move(canceler_getter_)));
@@ -99,7 +103,8 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
     }
   }
 
-  if (request->resource_type != content::RESOURCE_TYPE_MAIN_FRAME &&
+  if (request->resource_type !=
+          static_cast<int>(content::ResourceType::kMainFrame) &&
       !DoesSubresourceURLHaveValidScheme(request->url)) {
     // Destroying the prerender for unsupported scheme only for non-main
     // resource to allow chrome://crash to actually crash in the
@@ -115,7 +120,8 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
   }
 
 #if defined(OS_ANDROID)
-  if (request->resource_type == content::RESOURCE_TYPE_FAVICON) {
+  if (request->resource_type ==
+      static_cast<int>(content::ResourceType::kFavicon)) {
     // Delay icon fetching until the contents are getting swapped in
     // to conserve network usage in mobile devices.
     *defer = true;
@@ -146,7 +152,7 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
 
 void PrerenderURLLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
-    const network::ResourceResponseHead& response_head,
+    const network::mojom::URLResponseHead& response_head,
     bool* defer,
     std::vector<std::string>* /* to_be_removed_headers */,
     net::HttpRequestHeaders* /* modified_headers */) {
@@ -158,8 +164,11 @@ void PrerenderURLLoaderThrottle::WillRedirectRequest(
   }
 
   std::string follow_only_when_prerender_shown_header;
-  response_head.headers->GetNormalizedHeader(
-      kFollowOnlyWhenPrerenderShown, &follow_only_when_prerender_shown_header);
+  if (response_head.headers) {
+    response_head.headers->GetNormalizedHeader(
+        kFollowOnlyWhenPrerenderShown,
+        &follow_only_when_prerender_shown_header);
+  }
   // Abort any prerenders with requests which redirect to invalid schemes.
   if (!DoesURLHaveValidScheme(redirect_info->new_url)) {
     delegate_->CancelWithError(net::ERR_ABORTED);
@@ -168,7 +177,7 @@ void PrerenderURLLoaderThrottle::WillRedirectRequest(
         base::BindOnce(CancelPrerenderForUnsupportedScheme,
                        std::move(canceler_getter_), redirect_info->new_url));
   } else if (follow_only_when_prerender_shown_header == "1" &&
-             resource_type_ != content::RESOURCE_TYPE_MAIN_FRAME) {
+             resource_type_ != content::ResourceType::kMainFrame) {
     // Only defer redirects with the Follow-Only-When-Prerender-Shown
     // header. Do not defer redirects on main frame loads.
     if (sync_xhr_) {
@@ -188,7 +197,7 @@ void PrerenderURLLoaderThrottle::WillRedirectRequest(
 
 void PrerenderURLLoaderThrottle::WillProcessResponse(
     const GURL& response_url,
-    network::ResourceResponseHead* response_head,
+    network::mojom::URLResponseHead* response_head,
     bool* defer) {
   if (mode_ != PREFETCH_ONLY)
     return;

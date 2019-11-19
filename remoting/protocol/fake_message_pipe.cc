@@ -57,7 +57,7 @@ void FakeMessagePipe::Receive(std::unique_ptr<CompoundBuffer> message) {
             [](FakeMessagePipe* me, std::unique_ptr<CompoundBuffer> message) {
               me->ReceiveImpl(std::move(message));
             },
-            base::Unretained(this), base::Passed(std::move(message))));
+            base::Unretained(this), std::move(message)));
     return;
   }
 

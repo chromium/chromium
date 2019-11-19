@@ -13,6 +13,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/path_service.h"
 #include "base/stl_util.h"
+#include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
@@ -430,12 +431,18 @@ void CheckUiDisplayNameForLocale(const std::string& locale,
 TEST_F(L10nUtilTest, GetDisplayNameForLocale) {
   // TODO(jungshik): Make this test more extensive.
   // Test zh-CN and zh-TW are treated as zh-Hans and zh-Hant.
+  // Displays as "Chinese, Simplified" on iOS 13+ and as "Chinese (Simplified)"
+  // on other platforms.
   base::string16 result =
       l10n_util::GetDisplayNameForLocale("zh-CN", "en", false);
-  EXPECT_EQ(ASCIIToUTF16("Chinese (Simplified)"), result);
+  EXPECT_TRUE(
+      base::MatchPattern(base::UTF16ToUTF8(result), "Chinese*Simplified*"));
 
+  // Displays as "Chinese, Traditional" on iOS 13+ and as
+  // "Chinese (Traditional)" on other platforms.
   result = l10n_util::GetDisplayNameForLocale("zh-TW", "en", false);
-  EXPECT_EQ(ASCIIToUTF16("Chinese (Traditional)"), result);
+  EXPECT_TRUE(
+      base::MatchPattern(base::UTF16ToUTF8(result), "Chinese*Traditional*"));
 
   // tl and fil are not identical to be strict, but we treat them as
   // synonyms.

@@ -19,6 +19,6 @@ cc_component("mojo_embedder") {
     "//components/viz/client",
     "//components/viz/common",
     "//mojo/public/cpp/bindings",
-    "//services/viz/public/interfaces",
+    "//services/viz/public/mojom",
   ]
 }

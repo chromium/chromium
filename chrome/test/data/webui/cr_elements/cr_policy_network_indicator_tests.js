@@ -10,9 +10,6 @@ suite('cr-policy-network-indicator', function() {
   /** @type {!CrTooltipIconElement|undefined} */
   let icon;
 
-  // Prevent 'Cannot read property of undefined' errors in cr_onc_types.js.
-  chrome.networkingPrivate = {};
-
   setup(function() {
     PolymerTest.clearBody();
 

@@ -9,10 +9,6 @@
 
 #include "base/macros.h"
 
-namespace aura {
-class Env;
-}
-
 namespace exo {
 class Display;
 class FileHelper;
@@ -34,8 +30,7 @@ class WaylandServerController {
   // Creates WaylandServerController. Returns null if controller should not be
   // created.
   static std::unique_ptr<WaylandServerController> CreateIfNecessary(
-      std::unique_ptr<exo::FileHelper> file_helper,
-      aura::Env* env);
+      std::unique_ptr<exo::FileHelper> file_helper);
 
   ~WaylandServerController();
 
@@ -44,8 +39,8 @@ class WaylandServerController {
   }
 
  private:
-  WaylandServerController(std::unique_ptr<exo::FileHelper> file_helper,
-                          aura::Env* env);
+  explicit WaylandServerController(
+      std::unique_ptr<exo::FileHelper> file_helper);
 
   std::unique_ptr<exo::WMHelper> wm_helper_;
   std::unique_ptr<exo::Display> display_;

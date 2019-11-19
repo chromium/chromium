@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/input/pointer_event_manager.h"
 
 #include "base/auto_reset.h"
+#include "base/metrics/field_trial_params.h"
 #include "third_party/blink/public/platform/web_touch_event.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
@@ -14,27 +15,36 @@
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 #include "third_party/blink/renderer/core/input/mouse_event_manager.h"
 #include "third_party/blink/renderer/core/input/touch_action_util.h"
 #include "third_party/blink/renderer/core/layout/hit_test_canvas_result.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 namespace {
+
+// Field trial name for skipping touch filtering
+const char kSkipTouchEventFilterTrial[] = "SkipTouchEventFilter";
+const char kSkipTouchEventFilterTrialProcessParamName[] =
+    "skip_filtering_process";
+const char kSkipTouchEventFilterTrialTypeParamName[] = "type";
 
 size_t ToPointerTypeIndex(WebPointerProperties::PointerType t) {
   return static_cast<size_t>(t);
 }
 bool HasPointerEventListener(const EventHandlerRegistry& registry) {
   return registry.HasEventHandlers(EventHandlerRegistry::kPointerEvent) ||
-         registry.HasEventHandlers(EventHandlerRegistry::kPointerRawMoveEvent);
+         registry.HasEventHandlers(
+             EventHandlerRegistry::kPointerRawUpdateEvent);
 }
 
 const AtomicString& MouseEventNameForPointerEventInputType(
@@ -68,6 +78,18 @@ PointerEventManager::PointerEventManager(LocalFrame& frame,
       touch_event_manager_(MakeGarbageCollected<TouchEventManager>(frame)),
       mouse_event_manager_(mouse_event_manager) {
   Clear();
+  if (RuntimeEnabledFeatures::SkipTouchEventFilterEnabled() &&
+      base::GetFieldTrialParamValue(
+          kSkipTouchEventFilterTrial,
+          kSkipTouchEventFilterTrialProcessParamName) ==
+          "browser_and_renderer") {
+    skip_touch_filter_discrete_ = true;
+    if (base::GetFieldTrialParamValue(
+            kSkipTouchEventFilterTrial,
+            kSkipTouchEventFilterTrialTypeParamName) == "all") {
+      skip_touch_filter_all_ = true;
+    }
+  }
 }
 
 void PointerEventManager::Clear() {
@@ -159,25 +181,31 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
 
   const PointerId pointer_id = pointer_event->pointerId();
   const AtomicString& event_type = pointer_event->type();
+  bool should_filter = ShouldFilterEvent(pointer_event);
 
-  if (!frame_ || !HasPointerEventListener(frame_->GetEventHandlerRegistry()))
+  if (should_filter &&
+      !HasPointerEventListener(frame_->GetEventHandlerRegistry()))
     return WebInputEventResult::kNotHandled;
 
   if (event_type == event_type_names::kPointerdown) {
-    Node* node = target->ToNode();
-    if (node && IsHTMLCanvasElement(*node) &&
-        ToHTMLCanvasElement(*node).NeedsUnbufferedInputEvents()) {
+    auto* html_canvas_element = DynamicTo<HTMLCanvasElement>(target->ToNode());
+    if (html_canvas_element &&
+        html_canvas_element->NeedsUnbufferedInputEvents()) {
       frame_->GetChromeClient().RequestUnbufferedInputEvents(frame_);
     }
   }
 
-  if (!check_for_listener || target->HasEventListeners(event_type)) {
+  bool listeners_exist =
+      !check_for_listener || target->HasEventListeners(event_type);
+  if (listeners_exist) {
     UseCounter::Count(frame_->GetDocument(), WebFeature::kPointerEventDispatch);
     if (event_type == event_type_names::kPointerdown) {
       UseCounter::Count(frame_->GetDocument(),
                         WebFeature::kPointerEventDispatchPointerDown);
     }
+  }
 
+  if (!should_filter || listeners_exist) {
     DCHECK(!dispatching_pointer_id_);
     base::AutoReset<PointerId> dispatch_holder(&dispatching_pointer_id_,
                                                pointer_id);
@@ -336,12 +364,14 @@ void PointerEventManager::AdjustTouchPointerEvent(
 
   HitTestRequest::HitTestRequestType hit_type =
       HitTestRequest::kTouchEvent | HitTestRequest::kReadOnly |
-      HitTestRequest::kActive | HitTestRequest::kListBased;
+      HitTestRequest::kActive | HitTestRequest::kListBased |
+      HitTestRequest::kRetargetForInert;
   LocalFrame& root_frame = frame_->LocalFrameRoot();
   // TODO(szager): Shouldn't this be PositionInScreen() ?
-  LayoutPoint hit_test_point((FloatPoint)pointer_event.PositionInWidget());
-  hit_test_point.Move(-hit_rect_size * 0.5f);
-  HitTestLocation location(LayoutRect(hit_test_point, hit_rect_size));
+  PhysicalOffset hit_test_point =
+      PhysicalOffset::FromFloatPointRound(pointer_event.PositionInWidget());
+  hit_test_point -= PhysicalOffset(hit_rect_size * 0.5f);
+  HitTestLocation location(PhysicalRect(hit_test_point, hit_rect_size));
   HitTestResult hit_test_result =
       root_frame.GetEventHandler().HitTestResultAtLocation(location, hit_type);
   Node* adjusted_node = nullptr;
@@ -354,6 +384,27 @@ void PointerEventManager::AdjustTouchPointerEvent(
 
   frame_->GetEventHandler().CacheTouchAdjustmentResult(
       pointer_event.unique_touch_event_id, pointer_event.PositionInWidget());
+}
+
+bool PointerEventManager::ShouldFilterEvent(PointerEvent* pointer_event) {
+  // Filter as normal if the experiment is disabled.
+  if (!skip_touch_filter_discrete_)
+    return true;
+
+  // If the experiment is enabled and the event is pointer up/down, do not
+  // filter.
+  if (pointer_event->type() == event_type_names::kPointerdown ||
+      pointer_event->type() == event_type_names::kPointerup) {
+    return false;
+  }
+  // If the experiment is "all", do not filter pointermove.
+  if (skip_touch_filter_all_ &&
+      pointer_event->type() == event_type_names::kPointermove)
+    return false;
+
+  // Continue filtering other types of events, even thought the experiment is
+  // enabled.
+  return true;
 }
 
 event_handling_util::PointerEventTarget
@@ -370,11 +421,12 @@ PointerEventManager::ComputePointerEventTarget(
   // before firing the event.
   if (web_pointer_event.GetType() == WebInputEvent::kPointerDown ||
       !pending_pointer_capture_target_.Contains(pointer_id)) {
-    HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kTouchEvent |
-                                                  HitTestRequest::kReadOnly |
-                                                  HitTestRequest::kActive;
+    HitTestRequest::HitTestRequestType hit_type =
+        HitTestRequest::kTouchEvent | HitTestRequest::kReadOnly |
+        HitTestRequest::kActive | HitTestRequest::kRetargetForInert;
     HitTestLocation location(frame_->View()->ConvertFromRootFrame(
-        LayoutPoint(web_pointer_event.PositionInWidget())));
+        PhysicalOffset::FromFloatPointRound(
+            web_pointer_event.PositionInWidget())));
     HitTestResult hit_test_tesult =
         frame_->GetEventHandler().HitTestResultAtLocation(location, hit_type);
     Element* target = hit_test_tesult.InnerElement();
@@ -413,6 +465,9 @@ WebInputEventResult PointerEventManager::DispatchTouchPointerEvent(
   WebInputEventResult result = WebInputEventResult::kHandledSystem;
   if (pointer_event_target.target_element &&
       pointer_event_target.target_frame && !non_hovering_pointers_canceled_) {
+    SetLastPointerPositionForFrameBoundary(web_pointer_event,
+                                           pointer_event_target.target_element);
+
     PointerEvent* pointer_event = pointer_event_factory_.Create(
         web_pointer_event, coalesced_events, predicted_events,
         pointer_event_target.target_element
@@ -484,10 +539,10 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
     const WebPointerEvent& event,
     const Vector<WebPointerEvent>& coalesced_events,
     const Vector<WebPointerEvent>& predicted_events) {
-  if (event.GetType() == WebInputEvent::Type::kPointerRawMove) {
-    if (!RuntimeEnabledFeatures::PointerRawMoveEnabled() ||
+  if (event.GetType() == WebInputEvent::Type::kPointerRawUpdate) {
+    if (!RuntimeEnabledFeatures::PointerRawUpdateEnabled() ||
         !frame_->GetEventHandlerRegistry().HasEventHandlers(
-            EventHandlerRegistry::kPointerRawMoveEvent))
+            EventHandlerRegistry::kPointerRawUpdateEvent))
       return WebInputEventResult::kHandledSystem;
 
     // If the page has pointer lock active and the event was from
@@ -543,6 +598,30 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
   event_handling_util::PointerEventTarget pointer_event_target =
       ComputePointerEventTarget(pointer_event);
 
+  bool discard = pointer_event_target.target_frame &&
+                 event_handling_util::ShouldDiscardEventTargetingFrame(
+                     event, *pointer_event_target.target_frame);
+  if (discard) {
+    PointerEvent* pointer_event = pointer_event_factory_.Create(
+        event, coalesced_events, predicted_events,
+        pointer_event_target.target_element
+            ? pointer_event_target.target_element->GetDocument().domWindow()
+            : nullptr);
+    SendTouchPointerEvent(pointer_event_target.target_element,
+                          pointer_event_factory_.CreatePointerCancelEvent(
+                              pointer_event->pointerId(), event.TimeStamp()),
+                          event.hovering);
+
+    WebPointerEvent pointer_cancel_event;
+    pointer_cancel_event.pointer_type = event.pointer_type;
+    pointer_cancel_event.SetTimeStamp(event.TimeStamp());
+    pointer_cancel_event.SetType(WebInputEvent::kPointerCancel);
+    touch_event_manager_->HandleTouchPoint(
+        pointer_cancel_event, coalesced_events, pointer_event_target);
+
+    return WebInputEventResult::kHandledSuppressed;
+  }
+
   // Any finger lifting is a user gesture only when it wasn't associated with a
   // scroll.
   // https://docs.google.com/document/d/1oF1T3O7_E4t1PYHV6gyCwHxOi3ystm0eSL5xZu7nvOg/edit#
@@ -571,7 +650,8 @@ WebInputEventResult PointerEventManager::CreateAndDispatchPointerEvent(
     const AtomicString& mouse_event_name,
     const WebMouseEvent& mouse_event,
     const Vector<WebMouseEvent>& coalesced_events,
-    const Vector<WebMouseEvent>& predicted_events) {
+    const Vector<WebMouseEvent>& predicted_events,
+    const String& canvas_region_id) {
   WebInputEvent::Type event_type;
   // TODO(crbug.com/665924): The following ifs skip the mouseover/leave cases,
   // we should fixed them when further merge the code path.
@@ -595,6 +675,10 @@ WebInputEventResult PointerEventManager::CreateAndDispatchPointerEvent(
   PointerEvent* pointer_event = pointer_event_factory_.Create(
       web_pointer_event, pointer_coalesced_events, pointer_predicted_events,
       target->GetDocument().domWindow());
+
+  ProcessCaptureAndPositionOfPointerEvent(pointer_event, target,
+                                          canvas_region_id, &mouse_event);
+
   return DispatchPointerEvent(target, pointer_event);
 }
 
@@ -607,20 +691,29 @@ WebInputEventResult PointerEventManager::DirectDispatchMousePointerEvent(
     const Vector<WebMouseEvent>& coalesced_events,
     const Vector<WebMouseEvent>& predicted_events,
     const String& canvas_region_id) {
-  // Fetch the last_mouse_position for creating MouseEvent before
-  // pointer_event_factory updates it.
-  FloatPoint last_mouse_position =
-      pointer_event_factory_.GetLastPointerPosition(
-          PointerEventFactory::kMouseId, event);
-  WebInputEventResult result = CreateAndDispatchPointerEvent(
-      target, mouse_event_type, event, coalesced_events, predicted_events);
+  if (!(event.GetModifiers() &
+        WebInputEvent::Modifiers::kRelativeMotionEvent)) {
+    // Fetch the last_mouse_position for creating MouseEvent before
+    // pointer_event_factory updates it.
+    FloatPoint last_mouse_position =
+        pointer_event_factory_.GetLastPointerPosition(
+            PointerEventFactory::kMouseId, event, event.GetType());
 
-  result = event_handling_util::MergeEventResult(
-      result, mouse_event_manager_->DispatchMouseEvent(
-                  target, mouse_event_type, event, canvas_region_id,
-                  &last_mouse_position, nullptr));
+    WebInputEventResult result = CreateAndDispatchPointerEvent(
+        target, mouse_event_type, event, coalesced_events, predicted_events,
+        canvas_region_id);
 
-  return result;
+    result = event_handling_util::MergeEventResult(
+        result, mouse_event_manager_->DispatchMouseEvent(
+                    target, mouse_event_type, event, canvas_region_id,
+                    &last_mouse_position, nullptr));
+    return result;
+  }
+  pointer_event_factory_.SetLastPosition(
+      pointer_event_factory_.GetPointerEventId(event), event.PositionInScreen(),
+      event.GetType());
+
+  return WebInputEventResult::kHandledSuppressed;
 }
 
 WebInputEventResult PointerEventManager::SendMousePointerEvent(
@@ -647,7 +740,8 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
   // pointer_event_factory updates it.
   FloatPoint last_mouse_position =
       pointer_event_factory_.GetLastPointerPosition(
-          PointerEventFactory::kMouseId, mouse_event);
+          pointer_event_factory_.GetPointerEventId(mouse_event), mouse_event,
+          event_type);
 
   PointerEvent* pointer_event = pointer_event_factory_.Create(
       web_pointer_event, pointer_coalesced_events, pointer_predicted_events,
@@ -685,14 +779,14 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
   if ((event_type == WebInputEvent::kPointerDown ||
        event_type == WebInputEvent::kPointerUp) &&
       pointer_event->type() == event_type_names::kPointermove &&
-      RuntimeEnabledFeatures::PointerRawMoveEnabled() &&
+      RuntimeEnabledFeatures::PointerRawUpdateEnabled() &&
       frame_->GetEventHandlerRegistry().HasEventHandlers(
-          EventHandlerRegistry::kPointerRawMoveEvent)) {
+          EventHandlerRegistry::kPointerRawUpdateEvent)) {
     // This is a chorded button move event. We need to also send a
-    // pointerrawmove for it.
+    // pointerrawupdate for it.
     DispatchPointerEvent(
         effective_target,
-        pointer_event_factory_.CreatePointerRawMoveEvent(pointer_event));
+        pointer_event_factory_.CreatePointerRawUpdateEvent(pointer_event));
   }
   WebInputEventResult result =
       DispatchPointerEvent(effective_target, pointer_event);
@@ -716,9 +810,9 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
         pointer_event->HasEventPath()) {
       for (const auto& context :
            pointer_event->GetEventPath().NodeEventContexts()) {
-        if (context.GetNode().IsElementNode() &&
-            event_handling_util::IsInDocument(&context.GetNode())) {
-          mouse_target = ToElement(&context.GetNode());
+        auto* element = DynamicTo<Element>(&context.GetNode());
+        if (element && event_handling_util::IsInDocument(element)) {
+          mouse_target = element;
           break;
         }
       }
@@ -734,7 +828,8 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
     if (!skip_click_dispatch && mouse_target &&
         event_type == WebInputEvent::kPointerUp) {
       mouse_event_manager_->DispatchMouseClickIfNeeded(
-          mouse_target, mouse_event, canvas_region_id);
+          mouse_target, mouse_event, canvas_region_id,
+          pointer_event->pointerId(), pointer_event->pointerType());
     }
   }
 
@@ -745,9 +840,20 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
     // Send got/lostpointercapture rightaway if necessary.
     if (pointer_event->type() == event_type_names::kPointerup) {
       // If pointerup releases the capture we also send boundary events
-      // rightaway when the pointer that supports hover. The following function
-      // does nothing when there was no capture to begin with in the first
-      // place.
+      // rightaway when the pointer that supports hover. Perform a hit
+      // test to find the new target.
+      if (RuntimeEnabledFeatures::UnifiedPointerCaptureInBlinkEnabled()) {
+        if (pointer_capture_target_.find(pointer_event->pointerId()) !=
+            pointer_capture_target_.end()) {
+          HitTestRequest::HitTestRequestType hit_type =
+              HitTestRequest::kRelease | HitTestRequest::kRetargetForInert;
+          HitTestRequest request(hit_type);
+          MouseEventWithHitTestResults mev =
+              event_handling_util::PerformMouseEventHitTest(frame_, request,
+                                                            mouse_event);
+          target = mev.InnerElement();
+        }
+      }
       ProcessCaptureAndPositionOfPointerEvent(pointer_event, target,
                                               canvas_region_id, &mouse_event);
     } else {
@@ -849,15 +955,6 @@ void PointerEventManager::ProcessPendingPointerCapture(
   }
 }
 
-void PointerEventManager::ProcessPendingPointerCaptureForPointerLock(
-    const WebMouseEvent& mouse_event) {
-  PointerEvent* pointer_event = pointer_event_factory_.Create(
-      WebPointerEvent(WebInputEvent::kPointerMove, mouse_event),
-      Vector<WebPointerEvent>(), Vector<WebPointerEvent>(),
-      frame_->GetDocument()->domWindow());
-  ProcessPendingPointerCapture(pointer_event);
-}
-
 void PointerEventManager::RemoveTargetFromPointerCapturingMapping(
     PointerCapturingMap& map,
     const Element* target) {
@@ -892,19 +989,21 @@ void PointerEventManager::ElementRemoved(Element* target) {
                                           target);
 }
 
-void PointerEventManager::SetPointerCapture(PointerId pointer_id,
+bool PointerEventManager::SetPointerCapture(PointerId pointer_id,
                                             Element* target) {
-  UseCounter::Count(frame_, WebFeature::kPointerEventSetCapture);
+  UseCounter::Count(frame_->GetDocument(), WebFeature::kPointerEventSetCapture);
   if (pointer_event_factory_.IsActiveButtonsState(pointer_id)) {
     if (pointer_id != dispatching_pointer_id_) {
-      UseCounter::Count(frame_,
+      UseCounter::Count(frame_->GetDocument(),
                         WebFeature::kPointerEventSetCaptureOutsideDispatch);
     }
     pending_pointer_capture_target_.Set(pointer_id, target);
+    return true;
   }
+  return false;
 }
 
-void PointerEventManager::ReleasePointerCapture(PointerId pointer_id,
+bool PointerEventManager::ReleasePointerCapture(PointerId pointer_id,
                                                 Element* target) {
   // Only the element that is going to get the next pointer event can release
   // the capture. Note that this might be different from
@@ -913,8 +1012,11 @@ void PointerEventManager::ReleasePointerCapture(PointerId pointer_id,
   // but |m_pendingPointerCaptureTarget| indicated the element that gets the
   // very next pointer event. They will be the same if there was no change in
   // capturing of a particular |pointerId|. See crbug.com/614481.
-  if (pending_pointer_capture_target_.at(pointer_id) == target)
+  if (pending_pointer_capture_target_.at(pointer_id) == target) {
     ReleasePointerCapture(pointer_id);
+    return true;
+  }
+  return false;
 }
 
 void PointerEventManager::ReleaseMousePointerCapture() {
@@ -930,6 +1032,12 @@ void PointerEventManager::ReleasePointerCapture(PointerId pointer_id) {
   pending_pointer_capture_target_.erase(pointer_id);
 }
 
+Element* PointerEventManager::GetMouseCaptureTarget() {
+  if (pending_pointer_capture_target_.Contains(PointerEventFactory::kMouseId))
+    return pending_pointer_capture_target_.at(PointerEventFactory::kMouseId);
+  return nullptr;
+}
+
 bool PointerEventManager::IsActive(const PointerId pointer_id) const {
   return pointer_event_factory_.IsActive(pointer_id);
 }
@@ -938,12 +1046,8 @@ bool PointerEventManager::IsActive(const PointerId pointer_id) const {
 // pointer events are the only ones that are directly dispatched from the main
 // page managers to their target (event if target is in an iframe) and only
 // those managers will keep track of these pointer events.
-bool PointerEventManager::IsTouchPointerIdActiveOnFrame(
-    PointerId pointer_id,
-    LocalFrame* frame) const {
-  if (pointer_event_factory_.GetPointerType(pointer_id) !=
-      WebPointerProperties::PointerType::kTouch)
-    return false;
+bool PointerEventManager::IsPointerIdActiveOnFrame(PointerId pointer_id,
+                                                   LocalFrame* frame) const {
   Element* last_element_receiving_event =
       element_under_pointer_.Contains(pointer_id)
           ? element_under_pointer_.at(pointer_id).target
@@ -970,6 +1074,24 @@ bool PointerEventManager::PrimaryPointerdownCanceled(
       return true;
   }
   return false;
+}
+
+void PointerEventManager::SetLastPointerPositionForFrameBoundary(
+    const WebPointerEvent& web_pointer_event,
+    Element* new_target) {
+  PointerId pointer_id =
+      pointer_event_factory_.GetPointerEventId(web_pointer_event);
+  Element* last_target = element_under_pointer_.Contains(pointer_id)
+                             ? element_under_pointer_.at(pointer_id).target
+                             : nullptr;
+  if (!new_target) {
+    pointer_event_factory_.RemoveLastPosition(pointer_id);
+  } else if (!last_target || new_target->GetDocument().GetFrame() !=
+                                 last_target->GetDocument().GetFrame()) {
+    pointer_event_factory_.SetLastPosition(pointer_id,
+                                           web_pointer_event.PositionInScreen(),
+                                           web_pointer_event.GetType());
+  }
 }
 
 void PointerEventManager::RemoveLastMousePosition() {

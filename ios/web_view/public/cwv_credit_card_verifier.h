@@ -35,9 +35,9 @@ typedef NS_ENUM(NSInteger, CWVCreditCardVerificationError) {
   CWVCreditCardVerificationErrorNetworkFailure = -300,
 };
 
-CWV_EXPORT
 // Helps with verifying credit cards for autofill, updating expired expiration
 // dates, and saving the card locally.
+CWV_EXPORT
 @interface CWVCreditCardVerifier : NSObject
 
 // The credit card that is pending verification.
@@ -82,17 +82,18 @@ CWV_EXPORT
 // |shouldRequestUpdateForExpirationDate| is YES. Ignored otherwise.
 // |storeLocally| Whether or not to save |creditCard| locally. If YES, user will
 // not be asked again to verify this card. Ignored if |canSaveLocally| is NO.
-// |dataSource| will be asked to return risk data needed for verification.
-// |delegate| will be passed the verification result.
-// If |delegate| is passed an error object indicating retry is not allowed,
-// additional verifications will be ignored.
+// |riskData| must be provided to integrate with 1P internal payments API.
+// See go/risk-eng.g3doc for more details.
+// |completionHandler| will be called upon completion. |error| is nil when the
+// verification succeeded, and non-nil when verification failed. If failed, the
+// |error| object's userInfo has a key |CWVCreditCardVerifierRetryAllowedKey|
+// with a BOOL value indicating if retries are allowed.
 - (void)verifyWithCVC:(NSString*)CVC
       expirationMonth:(nullable NSString*)expirationMonth
        expirationYear:(nullable NSString*)expirationYear
          storeLocally:(BOOL)storeLocally
-           dataSource:(__weak id<CWVCreditCardVerifierDataSource>)dataSource
-             delegate:
-                 (nullable __weak id<CWVCreditCardVerifierDelegate>)delegate;
+             riskData:(NSString*)riskData
+    completionHandler:(void (^)(NSError* _Nullable error))completionHandler;
 
 // Returns YES if |CVC| is all digits and matches |expectedCVCLength|.
 - (BOOL)isCVCValid:(NSString*)CVC;

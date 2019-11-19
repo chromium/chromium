@@ -17,13 +17,13 @@ suite('history-toolbar', function() {
     app = replaceApp();
     element = app.$.history;
     toolbar = app.$.toolbar;
-    return PolymerTest.flushTasks();
+    return test_util.flushTasks();
   });
 
   test('selecting checkbox causes toolbar to change', function() {
     element.addNewResults(TEST_HISTORY_RESULTS);
 
-    return PolymerTest.flushTasks().then(function() {
+    return test_util.flushTasks().then(function() {
       const item = element.$$('history-item');
       MockInteractions.tap(item.$.checkbox);
 
@@ -58,7 +58,7 @@ suite('history-toolbar', function() {
   test('spinner is active on search', function(done) {
     app.queryState_.queryingDisabled = false;
     registerMessageCallback('queryHistory', this, function(info) {
-      PolymerTest.flushTasks().then(function() {
+      test_util.flushTasks().then(function() {
         assertTrue(toolbar.spinnerActive);
         app.historyResult(createHistoryInfo(), TEST_HISTORY_RESULTS);
         assertFalse(toolbar.spinnerActive);

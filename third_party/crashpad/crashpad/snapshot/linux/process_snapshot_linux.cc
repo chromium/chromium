@@ -43,13 +43,29 @@ bool ProcessSnapshotLinux::Initialize(PtraceConnection* connection) {
 
   InitializeThreads();
   InitializeModules();
+  InitializeAnnotations();
 
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;
 }
 
+pid_t ProcessSnapshotLinux::FindThreadWithStackAddress(
+    VMAddress stack_address) {
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+
+  for (const auto& thread : process_reader_.Threads()) {
+    if (stack_address >= thread.stack_region_address &&
+        stack_address <
+            thread.stack_region_address + thread.stack_region_size) {
+      return thread.tid;
+    }
+  }
+  return -1;
+}
+
 bool ProcessSnapshotLinux::InitializeException(
-    LinuxVMAddress exception_info_address) {
+    LinuxVMAddress exception_info_address,
+    pid_t exception_thread_id) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   DCHECK(!exception_);
 
@@ -58,6 +74,10 @@ bool ProcessSnapshotLinux::InitializeException(
           exception_info_address, sizeof(info), &info)) {
     LOG(ERROR) << "Couldn't read exception info";
     return false;
+  }
+
+  if (exception_thread_id >= 0) {
+    info.thread_id = exception_thread_id;
   }
 
   exception_.reset(new internal::ExceptionSnapshotLinux());
@@ -140,12 +160,12 @@ void ProcessSnapshotLinux::GetCrashpadOptions(
   *options = local_options;
 }
 
-pid_t ProcessSnapshotLinux::ProcessID() const {
+crashpad::ProcessID ProcessSnapshotLinux::ProcessID() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   return process_reader_.ProcessID();
 }
 
-pid_t ProcessSnapshotLinux::ParentProcessID() const {
+crashpad::ProcessID ProcessSnapshotLinux::ParentProcessID() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   return process_reader_.ParentProcessID();
 }
@@ -258,11 +278,21 @@ void ProcessSnapshotLinux::InitializeModules() {
         std::make_unique<internal::ModuleSnapshotElf>(reader_module.name,
                                                       reader_module.elf_reader,
                                                       reader_module.type,
-                                                      &memory_range_);
+                                                      &memory_range_,
+                                                      process_reader_.Memory());
     if (module->Initialize()) {
       modules_.push_back(std::move(module));
     }
   }
+}
+
+void ProcessSnapshotLinux::InitializeAnnotations() {
+#if defined(OS_ANDROID)
+  const std::string& abort_message = process_reader_.AbortMessage();
+  if (!abort_message.empty()) {
+    annotations_simple_map_["abort_message"] = abort_message;
+  }
+#endif
 }
 
 }  // namespace crashpad

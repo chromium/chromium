@@ -25,11 +25,6 @@ class EVENTS_EXPORT EventProcessor : public EventDispatcherDelegate,
   // EventSink overrides:
   EventDispatchDetails OnEventFromSource(Event* event) override;
 
-  // Returns the initial target for the event. A value of null means use the
-  // root and default targeter to find the target. This pass may process the
-  // event.
-  virtual EventTarget* GetInitialEventTarget(Event* event) = 0;
-
   // Returns the EventTarget with the right EventTargeter that we should use for
   // dispatching this |event|.
   virtual EventTarget* GetRootForEvent(Event* event) = 0;
@@ -54,7 +49,7 @@ class EVENTS_EXPORT EventProcessor : public EventDispatcherDelegate,
   virtual void OnEventProcessingFinished(Event* event);
 
  private:
-  base::WeakPtrFactory<EventProcessor> weak_ptr_factory_;
+  base::WeakPtrFactory<EventProcessor> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(EventProcessor);
 };
 

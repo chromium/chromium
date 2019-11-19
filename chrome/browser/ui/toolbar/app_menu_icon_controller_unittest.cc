@@ -8,11 +8,12 @@
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,6 +29,8 @@ class MockAppMenuIconControllerDelegate
  public:
   MOCK_METHOD1(UpdateTypeAndSeverity,
                void(AppMenuIconController::TypeAndSeverity type_and_severity));
+  MOCK_CONST_METHOD0(GetViewThemeProvider, const ui::ThemeProvider*());
+  MOCK_METHOD0(GetViewNativeTheme, ui::NativeTheme*());
 };
 
 // A fake upgrade detector that can broadcast an annoyance level change to its
@@ -91,7 +94,7 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
 
   // Returns true if the test is apparently running as an unstable channel.
   bool IsUnstableChannel() {
-#if !defined(GOOGLE_CHROME_BUILD)
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // Dev and canary channels are specific to Google Chrome branding.
     return false;
 #elif defined(OS_WIN)
@@ -115,7 +118,7 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
   install_static::ScopedInstallDetails install_details_;
 #endif
   FakeUpgradeDetector upgrade_detector_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 
   DISALLOW_COPY_AND_ASSIGN(AppMenuIconControllerTest);

@@ -24,7 +24,7 @@ namespace mojo {
 // This class is not thread safe.
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncEventWatcher {
  public:
-  SyncEventWatcher(base::WaitableEvent* event, const base::Closure& callback);
+  SyncEventWatcher(base::WaitableEvent* event, base::RepeatingClosure callback);
 
   ~SyncEventWatcher();
 
@@ -51,7 +51,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncEventWatcher {
   void DecrementRegisterCount();
 
   base::WaitableEvent* const event_;
-  const base::Closure callback_;
+  const base::RepeatingClosure callback_;
 
   // Whether |event_| has been registered with SyncHandleRegistry.
   bool registered_ = false;

@@ -5,13 +5,13 @@
 #ifndef CHROME_INSTALLER_UTIL_LZMA_UTIL_H_
 #define CHROME_INSTALLER_UTIL_LZMA_UTIL_H_
 
-#include <windows.h>
-
 #include <set>
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
+#include "base/optional.h"
+#include "base/win/windows_types.h"
 
 // The error status of LzmaUtil::Unpack which is used to publish metrics. Do not
 // change the order.
@@ -26,20 +26,23 @@ enum UnPackStatus {
   UNPACK_CREATE_FILE_ERROR = 7,
   UNPACK_WRITE_FILE_ERROR = 8,
   UNPACK_SET_FILE_TIME_ERROR = 9,
-  UNPACK_CLOSE_FILE_ERROR = 10,
+  // UNPACK_CLOSE_FILE_ERROR = 10, Deprecated.
+  UNPACK_ALLOCATE_ERROR = 11,
+  UNPACK_CRC_ERROR = 12,
   UNPACK_STATUS_COUNT,
 };
 
 // Unpacks the contents of |archive| into |output_dir|. |output_file|, if not
 // null, is populated with the name of the last (or only) member extracted from
-// the archive. Returns ERROR_SUCCESS on success. Otherwise, returns a Windows
-// error code and populates |unpack_status| (if not null) with a status value
-// indicating the operation that failed.
-DWORD UnPackArchive(const base::FilePath& archive,
-                    const base::FilePath& output_dir,
-                    base::FilePath* output_file,
-                    UnPackStatus* unpack_status,
-                    int32_t* ntstatus);
+// the archive. Returns UNPACK_NO_ERROR on success. Otherwise, returns a status
+// value indicating the operation that failed, populates |error_code| (if not
+// null) with a Windows error code and |ntstatus| with an exception code, if
+// any.
+UnPackStatus UnPackArchive(const base::FilePath& archive,
+                           const base::FilePath& output_dir,
+                           base::FilePath* output_file,
+                           base::Optional<DWORD>* error_code,
+                           base::Optional<int32_t>* ntstatus);
 
 // A utility class that wraps LZMA SDK library. Prefer UnPackArchive over using
 // this class directly.
@@ -48,29 +51,30 @@ class LzmaUtilImpl {
   LzmaUtilImpl();
   ~LzmaUtilImpl();
 
-  DWORD OpenArchive(const base::FilePath& archivePath);
+  UnPackStatus OpenArchive(const base::FilePath& archivePath);
 
   // Unpacks the archive to the given location
-  DWORD UnPack(const base::FilePath& location);
-
-  void CloseArchive();
+  UnPackStatus UnPack(const base::FilePath& location);
 
   // Unpacks the archive to the given location and returns the last file
   // extracted from archive.
-  DWORD UnPack(const base::FilePath& location, base::FilePath* output_file);
+  UnPackStatus UnPack(const base::FilePath& location,
+                      base::FilePath* output_file);
 
-  UnPackStatus GetUnPackStatus() { return unpack_status_; }
-  int32_t GetNTSTATUSCode() { return ntstatus_; }
+  void CloseArchive();
+
+  base::Optional<DWORD> GetErrorCode() { return error_code_; }
+  base::Optional<int32_t> GetNTSTATUSCode() { return ntstatus_; }
 
  protected:
   bool CreateDirectory(const base::FilePath& dir);
 
  private:
-  HANDLE archive_handle_ = nullptr;
-  std::set<base::string16> directories_created_;
-  UnPackStatus unpack_status_ = UNPACK_NO_ERROR;
+  base::File archive_file_;
+  std::set<base::FilePath> directories_created_;
+  base::Optional<DWORD> error_code_;
   // Can't include ntstatus.h as it's conflicted with winnt.h
-  int32_t ntstatus_ = 0;  // STATUS_SUCCESS.
+  base::Optional<int32_t> ntstatus_;
 
   DISALLOW_COPY_AND_ASSIGN(LzmaUtilImpl);
 };

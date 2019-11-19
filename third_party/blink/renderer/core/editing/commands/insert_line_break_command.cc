@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -67,7 +68,7 @@ void InsertLineBreakCommand::DoApply(EditingState* editing_state) {
   if (!DeleteSelection(editing_state, DeleteSelectionOptions::NormalDelete()))
     return;
 
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
 
   VisibleSelection selection = EndingVisibleSelection();
   if (selection.IsNone() || selection.Start().IsOrphan() ||
@@ -93,18 +94,18 @@ void InsertLineBreakCommand::DoApply(EditingState* editing_state) {
 
   Node* node_to_insert = nullptr;
   if (ShouldUseBreakElement(pos))
-    node_to_insert = HTMLBRElement::Create(GetDocument());
+    node_to_insert = MakeGarbageCollected<HTMLBRElement>(GetDocument());
   else
     node_to_insert = GetDocument().createTextNode("\n");
 
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
 
   // FIXME: Need to merge text nodes when inserting just after or before text.
 
   if (IsEndOfParagraph(CreateVisiblePosition(caret.ToPositionWithAffinity())) &&
       !LineBreakExistsAtVisiblePosition(caret)) {
-    bool need_extra_line_break = !IsHTMLHRElement(*pos.AnchorNode()) &&
-                                 !IsHTMLTableElement(*pos.AnchorNode());
+    bool need_extra_line_break = !IsA<HTMLHRElement>(*pos.AnchorNode()) &&
+                                 !IsA<HTMLTableElement>(*pos.AnchorNode());
 
     InsertNodeAt(node_to_insert, pos, editing_state);
     if (editing_state->IsAborted())
@@ -136,7 +137,7 @@ void InsertLineBreakCommand::DoApply(EditingState* editing_state) {
     InsertNodeAt(node_to_insert, pos, editing_state);
     if (editing_state->IsAborted())
       return;
-    GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+    GetDocument().UpdateStyleAndLayout();
 
     // Insert an extra br or '\n' if the just inserted one collapsed.
     if (!IsStartOfParagraph(VisiblePosition::BeforeNode(*node_to_insert))) {
@@ -162,9 +163,8 @@ void InsertLineBreakCommand::DoApply(EditingState* editing_state) {
         SelectionInDOMTree::Builder()
             .Collapse(Position::InParentAfterNode(*node_to_insert))
             .Build()));
-  } else if (pos.AnchorNode()->IsTextNode()) {
+  } else if (auto* text_node = DynamicTo<Text>(pos.AnchorNode())) {
     // Split a text node
-    Text* text_node = ToText(pos.AnchorNode());
     SplitTextNode(text_node, pos.ComputeOffsetInContainerNode());
     InsertNodeBefore(node_to_insert, text_node, editing_state);
     if (editing_state->IsAborted())
@@ -172,7 +172,7 @@ void InsertLineBreakCommand::DoApply(EditingState* editing_state) {
     Position ending_position = Position::FirstPositionInNode(*text_node);
 
     // Handle whitespace that occurs after the split
-    GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+    GetDocument().UpdateStyleAndLayout();
     if (!IsRenderedCharacter(ending_position)) {
       Position position_before_text_node(
           Position::InParentBeforeNode(*text_node));

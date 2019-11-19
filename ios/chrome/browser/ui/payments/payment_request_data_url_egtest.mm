@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <EarlGrey/EarlGrey.h>
+
 #import "ios/chrome/browser/ui/payments/payment_request_egtest_base.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -34,7 +36,7 @@
                    "e; }\">Data URL Test</button><div "
                    "id='result'></div></body></html>")];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buy"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buy"];
 
   [self waitForWebViewContainingTexts:{"SecurityError",
                                        "Failed to construct 'PaymentRequest': "

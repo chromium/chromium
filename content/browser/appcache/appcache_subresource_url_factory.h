@@ -8,7 +8,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
@@ -36,18 +38,20 @@ class CONTENT_EXPORT AppCacheSubresourceURLFactory
   // requests.
   static void CreateURLLoaderFactory(
       base::WeakPtr<AppCacheHost> host,
-      network::mojom::URLLoaderFactoryPtr* loader_factory);
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>* loader_factory);
 
   // network::mojom::URLLoaderFactory implementation.
-  void CreateLoaderAndStart(network::mojom::URLLoaderRequest url_loader_request,
-                            int32_t routing_id,
-                            int32_t request_id,
-                            uint32_t options,
-                            const network::ResourceRequest& request,
-                            network::mojom::URLLoaderClientPtr client,
-                            const net::MutableNetworkTrafficAnnotationTag&
-                                traffic_annotation) override;
-  void Clone(network::mojom::URLLoaderFactoryRequest request) override;
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
+      int32_t routing_id,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override;
+  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
+      override;
 
   base::WeakPtr<AppCacheSubresourceURLFactory> GetWeakPtr();
 
@@ -59,12 +63,12 @@ class CONTENT_EXPORT AppCacheSubresourceURLFactory
   AppCacheSubresourceURLFactory(
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
       base::WeakPtr<AppCacheHost> host);
-  void OnConnectionError();
+  void OnMojoDisconnect();
 
-  mojo::BindingSet<network::mojom::URLLoaderFactory> bindings_;
+  mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
   scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory_;
   base::WeakPtr<AppCacheHost> appcache_host_;
-  base::WeakPtrFactory<AppCacheSubresourceURLFactory> weak_factory_;
+  base::WeakPtrFactory<AppCacheSubresourceURLFactory> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AppCacheSubresourceURLFactory);
 };
 

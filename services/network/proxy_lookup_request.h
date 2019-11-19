@@ -11,6 +11,8 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
@@ -23,8 +25,9 @@ class NetworkContext;
 // Single-use object to manage a proxy lookup.
 class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyLookupRequest {
  public:
-  ProxyLookupRequest(mojom::ProxyLookupClientPtr proxy_lookup_client,
-                     NetworkContext* network_context);
+  ProxyLookupRequest(
+      mojo::PendingRemote<mojom::ProxyLookupClient> proxy_lookup_client,
+      NetworkContext* network_context);
   ~ProxyLookupRequest();
 
   // Starts looking up what proxy to use for |url|. On completion, will inform
@@ -41,7 +44,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyLookupRequest {
   void DestroySelf();
 
   NetworkContext* const network_context_;
-  mojom::ProxyLookupClientPtr proxy_lookup_client_;
+  mojo::Remote<mojom::ProxyLookupClient> proxy_lookup_client_;
 
   net::ProxyInfo proxy_info_;
   std::unique_ptr<net::ProxyResolutionService::Request> request_;

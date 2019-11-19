@@ -15,9 +15,9 @@ namespace content {
 
 NavigableContentsFactoryImpl::NavigableContentsFactoryImpl(
     Service* service,
-    mojom::NavigableContentsFactoryRequest request)
-    : service_(service), binding_(this, std::move(request)) {
-  binding_.set_connection_error_handler(
+    mojo::PendingReceiver<mojom::NavigableContentsFactory> receiver)
+    : service_(service), receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(
       base::BindOnce(&Service::RemoveNavigableContentsFactory,
                      base::Unretained(service_), this));
 }
@@ -26,10 +26,10 @@ NavigableContentsFactoryImpl::~NavigableContentsFactoryImpl() = default;
 
 void NavigableContentsFactoryImpl::CreateContents(
     mojom::NavigableContentsParamsPtr params,
-    mojom::NavigableContentsRequest request,
-    mojom::NavigableContentsClientPtr client) {
+    mojo::PendingReceiver<mojom::NavigableContents> receiver,
+    mojo::PendingRemote<mojom::NavigableContentsClient> client) {
   service_->AddNavigableContents(std::make_unique<NavigableContentsImpl>(
-      service_, std::move(params), std::move(request), std::move(client)));
+      service_, std::move(params), std::move(receiver), std::move(client)));
 }
 
 }  // namespace content

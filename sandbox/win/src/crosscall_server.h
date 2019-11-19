@@ -12,8 +12,8 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "sandbox/win/src/crosscall_params.h"
+#include "sandbox/win/src/ipc_tags.h"
 
 // This is the IPC server interface for CrossCall: The  IPC for the Sandbox
 // On the server, CrossCall needs two things:
@@ -117,7 +117,7 @@ class CrossCallParamsEx : public CrossCallParams {
 
   // Gets a parameter that is a string. Returns false if the parameter does not
   // exist.
-  bool GetParameterStr(uint32_t index, base::string16* string);
+  bool GetParameterStr(uint32_t index, std::wstring* string);
 
   // Gets a parameter that is an in/out buffer. Returns false is the parameter
   // does not exist or if the size of the actual parameter is not equal to the
@@ -152,14 +152,14 @@ struct ClientInfo {
 
 // All IPC-related information to be passed to the IPC handler.
 struct IPCInfo {
-  int ipc_tag;
+  IpcTag ipc_tag;
   const ClientInfo* client_info;
   CrossCallReturn return_info;
 };
 
 // This structure identifies IPC signatures.
 struct IPCParams {
-  int ipc_tag;
+  IpcTag ipc_tag;
   ArgType args[kMaxIpcParams];
 
   bool Matches(IPCParams* other) const {
@@ -240,7 +240,7 @@ class Dispatcher {
 
   // Called when a target proces is created, to setup the interceptions related
   // with the given service (IPC).
-  virtual bool SetupService(InterceptionManager* manager, int service) = 0;
+  virtual bool SetupService(InterceptionManager* manager, IpcTag service) = 0;
 
   Dispatcher();
   virtual ~Dispatcher();

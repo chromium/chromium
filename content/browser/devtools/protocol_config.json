@@ -10,11 +10,12 @@
         "export_header": "content/common/content_export.h",
         "options": [
             {
-                "domain": "BackgroundService"
+                "domain": "BackgroundService",
+                "async": ["startObserving"]
             },
             {
                 "domain": "Browser",
-                "include": ["getVersion", "getHistograms", "getHistogram", "getBrowserCommandLine", "grantPermissions", "resetPermissions", "crash", "crashGpuProcess"]
+                "include": ["getVersion", "getHistograms", "getHistogram", "getBrowserCommandLine", "grantPermissions", "resetPermissions", "crash", "crashGpuProcess", "setPermission"]
             },
             {
                 "domain": "DOM",
@@ -45,16 +46,20 @@
             {
                 "domain": "Network",
                 "include": ["enable", "disable", "clearBrowserCache", "clearBrowserCookies", "getCookies", "getAllCookies", "deleteCookies", "setCookie", "setCookies", "setExtraHTTPHeaders", "canEmulateNetworkConditions", "emulateNetworkConditions", "setBypassServiceWorker", "setRequestInterception", "continueInterceptedRequest", "getResponseBodyForInterception", "setCacheDisabled", "takeResponseBodyForInterceptionAsStream"],
-                "include_events": ["requestWillBeSent", "responseReceived", "loadingFinished", "loadingFailed", "requestIntercepted", "signedExchangeReceived"],
+                "include_events": ["requestWillBeSent", "responseReceived", "loadingFinished", "loadingFailed", "requestIntercepted", "signedExchangeReceived", "requestWillBeSentExtraInfo", "responseReceivedExtraInfo"],
                 "async": ["clearBrowserCookies", "clearBrowserCache", "getCookies", "getAllCookies", "deleteCookies", "setCookie", "setCookies", "continueInterceptedRequest", "getResponseBodyForInterception", "takeResponseBodyForInterceptionAsStream"]
+            },
+            {
+                "domain": "Overlay",
+                "include": ["setInspectMode", "setPausedInDebuggerMessage"]
             },
             {
                 "domain": "Page",
                 "include": ["enable", "disable", "reload", "navigate", "stopLoading", "getNavigationHistory", "navigateToHistoryEntry", "resetNavigationHistory", "captureScreenshot",
                     "startScreencast", "stopScreencast", "screencastFrameAck", "handleJavaScriptDialog", "setColorPickerEnabled",
-                    "printToPDF", "bringToFront", "setDownloadBehavior", "getAppManifest", "crash", "close", "setWebLifecycleState", "captureSnapshot"],
-                "include_events": ["colorPicked", "interstitialShown", "interstitialHidden", "javascriptDialogOpening", "javascriptDialogClosed", "screencastVisibilityChanged", "screencastFrame"],
-                "async": ["captureScreenshot", "printToPDF", "navigate", "getAppManifest", "reload", "captureSnapshot"]
+                    "printToPDF", "bringToFront", "setDownloadBehavior", "getAppManifest", "crash", "close", "setWebLifecycleState", "captureSnapshot", "getInstallabilityErrors", "setInterceptFileChooserDialog", "handleFileChooser"],
+                "include_events": ["colorPicked", "interstitialShown", "interstitialHidden", "javascriptDialogOpening", "javascriptDialogClosed", "downloadWillBegin", "screencastVisibilityChanged", "screencastFrame", "fileChooserOpened"],
+                "async": ["captureScreenshot", "printToPDF", "navigate", "getAppManifest", "reload", "captureSnapshot", "getInstallabilityErrors"]
             },
             {
                 "domain": "Runtime",
@@ -93,7 +98,11 @@
             },
             {
                 "domain": "Fetch",
-                "async": ["continueRequest", "failRequest", "fulfillRequest", "continueWithAuth", "getResponseBody", "takeResponseBodyAsStream"]
+                "async": ["enable", "continueRequest", "failRequest", "fulfillRequest", "continueWithAuth", "getResponseBody", "takeResponseBodyAsStream"]
+            },
+            {
+                "domain": "WebAuthn",
+                "include": ["enable", "disable", "addVirtualAuthenticator", "removeVirtualAuthenticator", "addCredential", "removeCredential", "clearCredentials", "getCredential", "getCredentials", "setUserVerified"]
             }
         ]
     },
@@ -104,5 +113,9 @@
         "string_header": "content/browser/devtools/protocol/base_string_adapter.h",
         "export_macro": "CONTENT_EXPORT",
         "export_header": "content/common/content_export.h"
+    },
+
+    "crdtp": {
+        "namespace": "crdtp"
     }
 }

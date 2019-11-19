@@ -10,7 +10,9 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/strong_binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/tcp_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -42,26 +44,26 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
   virtual ~SocketFactory();
 
   // These all correspond to the NetworkContext methods of the same name.
-  void CreateUDPSocket(mojom::UDPSocketRequest request,
-                       mojom::UDPSocketReceiverPtr receiver);
+  void CreateUDPSocket(mojo::PendingReceiver<mojom::UDPSocket> receiver,
+                       mojo::PendingRemote<mojom::UDPSocketListener> listener);
   void CreateTCPServerSocket(
       const net::IPEndPoint& local_addr,
       int backlog,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      mojom::TCPServerSocketRequest request,
+      mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
       mojom::NetworkContext::CreateTCPServerSocketCallback callback);
   void CreateTCPConnectedSocket(
       const base::Optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      mojom::TCPConnectedSocketRequest request,
-      mojom::SocketObserverPtr observer,
+      mojo::PendingReceiver<mojom::TCPConnectedSocket> receiver,
+      mojo::PendingRemote<mojom::SocketObserver> observer,
       mojom::NetworkContext::CreateTCPConnectedSocketCallback callback);
   void CreateTCPBoundSocket(
       const net::IPEndPoint& local_addr,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      mojom::TCPBoundSocketRequest request,
+      mojo::PendingReceiver<mojom::TCPBoundSocket> receiver,
       mojom::NetworkContext::CreateTCPBoundSocketCallback callback);
 
   // Destroys the specified BoundSocket object.
@@ -73,7 +75,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
   void OnBoundSocketListening(
       mojo::BindingId bound_socket_id,
       std::unique_ptr<TCPServerSocket> server_socket,
-      mojom::TCPServerSocketRequest server_socket_request);
+      mojo::PendingReceiver<mojom::TCPServerSocket> server_socket_receiver);
 
   // Invoked when a BoundSocket successfully establishes a connection. Destroys
   // the BoundSocket object, adding a binding for the provided
@@ -81,24 +83,26 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
   void OnBoundSocketConnected(
       mojo::BindingId bound_socket_id,
       std::unique_ptr<TCPConnectedSocket> connected_socket,
-      mojom::TCPConnectedSocketRequest connected_socket_request);
+      mojo::PendingReceiver<mojom::TCPConnectedSocket>
+          connected_socket_receiver);
 
   TLSSocketFactory* tls_socket_factory() { return &tls_socket_factory_; }
 
  private:
   // TCPServerSocket::Delegate implementation:
-  void OnAccept(std::unique_ptr<TCPConnectedSocket> socket,
-                mojom::TCPConnectedSocketRequest request) override;
+  void OnAccept(
+      std::unique_ptr<TCPConnectedSocket> socket,
+      mojo::PendingReceiver<mojom::TCPConnectedSocket> receiver) override;
 
   net::NetLog* const net_log_;
 
   net::ClientSocketFactory* client_socket_factory_;
   TLSSocketFactory tls_socket_factory_;
-  mojo::StrongBindingSet<mojom::UDPSocket> udp_socket_bindings_;
-  mojo::StrongBindingSet<mojom::TCPServerSocket> tcp_server_socket_bindings_;
-  mojo::StrongBindingSet<mojom::TCPConnectedSocket>
-      tcp_connected_socket_bindings_;
-  mojo::StrongBindingSet<mojom::TCPBoundSocket> tcp_bound_socket_bindings_;
+  mojo::UniqueReceiverSet<mojom::UDPSocket> udp_socket_receivers_;
+  mojo::UniqueReceiverSet<mojom::TCPServerSocket> tcp_server_socket_receivers_;
+  mojo::UniqueReceiverSet<mojom::TCPConnectedSocket>
+      tcp_connected_socket_receiver_;
+  mojo::UniqueReceiverSet<mojom::TCPBoundSocket> tcp_bound_socket_receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(SocketFactory);
 };

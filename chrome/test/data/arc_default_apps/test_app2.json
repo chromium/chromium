@@ -1,0 +1,7 @@
+{
+  "name": "TestApp2",
+  "package_name": "test.app2",
+  "activity": "test.app2.activity",
+  "system": true,
+  "app_path": "test_app2"
+}

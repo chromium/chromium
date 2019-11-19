@@ -71,8 +71,8 @@ class AudioContextManagerTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AudioContextManagerTest, AudioContextPlaybackRecorded) {
-  NavigateToURL(shell(),
-                content::GetTestUrl("media/webaudio/", "playback-test.html"));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), content::GetTestUrl("media/webaudio/", "playback-test.html")));
 
   // Set gain to 1 to start audible audio and verify we got the
   // playback started message.
@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(AudioContextManagerTest, AudioContextPlaybackTimeUkm) {
 
   GURL url = embedded_test_server()->GetURL(
       "example.com", "/media/webaudio/playback-test.html");
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_EQ(0u, test_ukm_recorder.GetEntriesByName(Entry::kEntryName).size());
 

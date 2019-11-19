@@ -76,8 +76,7 @@ class DomDistillerDistillablePageUtilsTest : public content::ContentBrowserTest,
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  void DocumentLoadedInFrame(
-      content::RenderFrameHost* render_frame_host) override {
+  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override {
     if (!render_frame_host->GetParent())
       main_frame_loaded_callback_.Run();
   }
@@ -107,13 +106,8 @@ class ResultHolder {
 
 }  // namespace
 
-#if defined(OS_WIN)
-#define MAYBE_TestIsDistillablePage DISABLED_TestIsDistillablePage
-#else
-#define MAYBE_TestIsDistillablePage TestIsDistillablePage
-#endif
 IN_PROC_BROWSER_TEST_F(DomDistillerDistillablePageUtilsTest,
-                       MAYBE_TestIsDistillablePage) {
+                       TestIsDistillablePage) {
   std::unique_ptr<AdaBoostProto> proto(new AdaBoostProto);
   proto->set_num_features(kDerivedFeaturesCount);
   proto->set_num_stumps(1);
@@ -137,13 +131,8 @@ IN_PROC_BROWSER_TEST_F(DomDistillerDistillablePageUtilsTest,
   ASSERT_TRUE(holder.GetResult());
 }
 
-#if defined(OS_WIN)
-#define MAYBE_TestIsNotDistillablePage DISABLED_TestIsNotDistillablePage
-#else
-#define MAYBE_TestIsNotDistillablePage TestIsNotDistillablePage
-#endif
 IN_PROC_BROWSER_TEST_F(DomDistillerDistillablePageUtilsTest,
-                       MAYBE_TestIsNotDistillablePage) {
+                       TestIsNotDistillablePage) {
   std::unique_ptr<AdaBoostProto> proto(new AdaBoostProto);
   proto->set_num_features(kDerivedFeaturesCount);
   proto->set_num_stumps(1);

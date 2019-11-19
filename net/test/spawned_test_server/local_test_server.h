@@ -6,10 +6,12 @@
 #define NET_TEST_SPAWNED_TEST_SERVER_LOCAL_TEST_SERVER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/process/process.h"
 #include "net/test/spawned_test_server/base_test_server.h"
 
@@ -46,8 +48,8 @@ class LocalTestServer : public BaseTestServer {
   // Stop the server started by Start().
   bool Stop();
 
-  // Modify PYTHONPATH to contain libraries we need.
-  virtual bool SetPythonPath() const WARN_UNUSED_RESULT;
+  // Returns the directories to use as the PYTHONPATH, or nullopt on error.
+  virtual base::Optional<std::vector<base::FilePath>> GetPythonPath() const;
 
   // Returns true if the base::FilePath for the testserver python script is
   // successfully stored  in |*testserver_path|.
@@ -66,8 +68,12 @@ class LocalTestServer : public BaseTestServer {
  private:
   bool Init(const base::FilePath& document_root);
 
-  // Launches the Python test server. Returns true on success.
-  bool LaunchPython(const base::FilePath& testserver_path) WARN_UNUSED_RESULT;
+  // Launches the Python test server. Returns true on success. |testserver_path|
+  // is the path to the test server script. |python_path| is the list of
+  // directories to use as the PYTHONPATH environment variable.
+  bool LaunchPython(const base::FilePath& testserver_path,
+                    const std::vector<base::FilePath>& python_path)
+      WARN_UNUSED_RESULT;
 
   // Waits for the server to start. Returns true on success.
   bool WaitToStart() WARN_UNUSED_RESULT;

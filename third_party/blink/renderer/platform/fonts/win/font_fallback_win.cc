@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/fonts/win/font_fallback_win.h"
 
 #include <unicode/uchar.h>
+
 #include <limits>
 
 #include "base/stl_util.h"
@@ -47,11 +48,15 @@ namespace blink {
 
 namespace {
 
+const char kArial[] = "Arial";
+const char kCourierNew[] = "Courier New";
+const char kTimesNewRoman[] = "Times New Roman";
+
 static inline bool IsFontPresent(const UChar* font_name,
                                  SkFontMgr* font_manager) {
   String family = font_name;
   sk_sp<SkTypeface> tf(
-      font_manager->matchFamilyStyle(family.Utf8().data(), SkFontStyle()));
+      font_manager->matchFamilyStyle(family.Utf8().c_str(), SkFontStyle()));
   if (!tf)
     return false;
 
@@ -541,6 +546,40 @@ const UChar* GetFallbackFamily(UChar32 character,
   if (script_checked)
     *script_checked = script;
   return family;
+}
+
+bool GetOutOfProcessFallbackFamily(
+    UChar32 character,
+    FontDescription::GenericFamilyType generic_family,
+    String bcp47_language_tag,
+    FontFallbackPriority,
+    const mojo::Remote<mojom::blink::DWriteFontProxy>& service,
+    String* fallback_family,
+    SkFontStyle* fallback_style) {
+  String base_family_name_approximation;
+  switch (generic_family) {
+    case FontDescription::kMonospaceFamily:
+      base_family_name_approximation = kCourierNew;
+      break;
+    case FontDescription::kSansSerifFamily:
+      base_family_name_approximation = kArial;
+      break;
+    default:
+      base_family_name_approximation = kTimesNewRoman;
+  }
+
+  mojom::blink::FallbackFamilyAndStylePtr fallback_family_and_style;
+  bool mojo_result = service->FallbackFamilyAndStyleForCodepoint(
+      base_family_name_approximation, bcp47_language_tag, character,
+      &fallback_family_and_style);
+
+  SECURITY_DCHECK(fallback_family);
+  SECURITY_DCHECK(fallback_style);
+  *fallback_family = fallback_family_and_style->fallback_family_name;
+  *fallback_style = SkFontStyle(
+      fallback_family_and_style->weight, fallback_family_and_style->width,
+      static_cast<SkFontStyle::Slant>(fallback_family_and_style->slant));
+  return mojo_result;
 }
 
 }  // namespace blink

@@ -7,10 +7,6 @@
 
 #include "ash/ash_export.h"
 
-namespace aura {
-class Window;
-}
-
 namespace display {
 class Display;
 class ManagedDisplayInfo;
@@ -24,7 +20,6 @@ namespace ash {
 class RootWindowTransformer;
 
 ASH_EXPORT RootWindowTransformer* CreateRootWindowTransformerForDisplay(
-    aura::Window* root,
     const display::Display& display);
 
 // Creates a RootWindowTransformers for mirror root window.

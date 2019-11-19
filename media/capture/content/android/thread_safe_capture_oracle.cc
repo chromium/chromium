@@ -133,11 +133,10 @@ bool ThreadSafeCaptureOracle::ObserveEventAndDecideCapture(
 
   std::unique_ptr<VideoCaptureBufferHandle> output_buffer_access =
       output_buffer.handle_provider->GetHandleForInProcessAccess();
-  *storage = VideoFrame::WrapExternalSharedMemory(
+  *storage = VideoFrame::WrapExternalData(
       params_.requested_format.pixel_format, coded_size,
       gfx::Rect(visible_size), visible_size, output_buffer_access->data(),
-      output_buffer_access->mapped_size(), base::SharedMemoryHandle(), 0u,
-      base::TimeDelta());
+      output_buffer_access->mapped_size(), base::TimeDelta());
 
   // Note: Passing the |output_buffer_access| in the callback is a bit of a
   // hack. Really, the access should be owned by the VideoFrame so that access
@@ -237,8 +236,8 @@ void ThreadSafeCaptureOracle::DidCaptureFrame(
                                    params_.requested_format.frame_rate,
                                    frame->format());
   client_->OnIncomingCapturedBufferExt(
-      std::move(capture->buffer), format, reference_time, frame->timestamp(),
-      frame->visible_rect(), *frame->metadata());
+      std::move(capture->buffer), format, frame->ColorSpace(), reference_time,
+      frame->timestamp(), frame->visible_rect(), *frame->metadata());
 }
 
 void ThreadSafeCaptureOracle::OnConsumerReportingUtilization(

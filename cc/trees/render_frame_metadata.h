@@ -11,6 +11,7 @@
 #include "cc/cc_export.h"
 #include "components/viz/common/quads/selection.h"
 #include "components/viz/common/surfaces/local_surface_id_allocation.h"
+#include "components/viz/common/vertical_scroll_direction.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -74,6 +75,14 @@ class CC_EXPORT RenderFrameMetadata {
   // position is computed by the renderer compositor.
   float top_controls_height = 0.f;
   float top_controls_shown_ratio = 0.f;
+
+  // Indicates a change in the vertical scroll direction of the root layer since
+  // the last drawn render frame. If no change occurred, this value is |kNull|.
+  // Note that if a scroll in a given direction occurs, the scroll is completed,
+  // and then another scroll in the *same* direction occurs, we will not
+  // consider the second scroll event to have caused a change in direction.
+  viz::VerticalScrollDirection new_vertical_scroll_direction =
+      viz::VerticalScrollDirection::kNull;
 
 #if defined(OS_ANDROID)
   // Used to position Android bottom bar, whose position is computed by the

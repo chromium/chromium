@@ -804,7 +804,9 @@ namespace {
 // Implementation of Cronet_RequestFinishedInfoListener methods for testing.
 void TestCronet_RequestFinishedInfoListener_OnRequestFinished(
     Cronet_RequestFinishedInfoListenerPtr self,
-    Cronet_RequestFinishedInfoPtr request_info) {
+    Cronet_RequestFinishedInfoPtr request_info,
+    Cronet_UrlResponseInfoPtr response_info,
+    Cronet_ErrorPtr error) {
   CHECK(self);
   Cronet_ClientContext client_context =
       Cronet_RequestFinishedInfoListener_GetClientContext(self);

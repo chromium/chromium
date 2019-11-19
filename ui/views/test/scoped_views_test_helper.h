@@ -18,7 +18,7 @@ class ViewsTestHelper;
 
 // Creates a ViewsTestHelper that is destroyed automatically. Acts like
 // ViewsTestBase but allows a test harness to use a different base class, or
-// make use of a TestBrowserThreadBundle, rather than the MessageLoop provided
+// make use of a BrowserTaskEnvironment, rather than the MessageLoop provided
 // by ViewsTestBase.
 class ScopedViewsTestHelper {
  public:

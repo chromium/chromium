@@ -21,7 +21,4 @@ const char kPnaclPluginDescription[] = "Portable Native Client Executable";
 const base::FilePath::CharType kInternalNaClPluginFileName[] =
     FILE_PATH_LITERAL("internal-nacl-plugin");
 
-const char kNaClBrokerServiceName[] = "nacl_broker";
-const char kNaClLoaderServiceName[] = "nacl_loader";
-
 }  // namespace nacl

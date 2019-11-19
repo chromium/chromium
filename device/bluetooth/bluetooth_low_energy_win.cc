@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -458,8 +459,8 @@ bool CollectBluetoothLowEnergyDeviceInfo(
 
   std::unique_ptr<device::win::BluetoothLowEnergyDeviceInfo> result(
       new device::win::BluetoothLowEnergyDeviceInfo());
-  result->path =
-      base::FilePath(std::wstring(device_interface_detail_data->DevicePath));
+  result->path = base::FilePath(
+      base::as_u16cstr(device_interface_detail_data->DevicePath));
   if (!CollectBluetoothLowEnergyDeviceInstanceId(
           device_info_handle, &device_info_data, result, error)) {
     return false;
@@ -653,7 +654,7 @@ BluetoothLowEnergyWrapper::BluetoothLowEnergyWrapper() {}
 BluetoothLowEnergyWrapper::~BluetoothLowEnergyWrapper() {}
 
 bool BluetoothLowEnergyWrapper::IsBluetoothLowEnergySupported() {
-  return base::win::GetVersion() >= base::win::VERSION_WIN8;
+  return base::win::GetVersion() >= base::win::Version::WIN8;
 }
 
 bool BluetoothLowEnergyWrapper::EnumerateKnownBluetoothLowEnergyDevices(

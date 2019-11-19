@@ -5,7 +5,6 @@
 /**
  * @fileoverview Test suite for the Site Engagement WebUI.
  */
-var ROOT_PATH = '../../../../../';
 var EXAMPLE_URL_1 = 'http://example.com/';
 var EXAMPLE_URL_2 = 'http://shmlexample.com/';
 
@@ -33,15 +32,16 @@ SiteEngagementBrowserTest.prototype = {
   },
 
   extraLibraries: [
-    ROOT_PATH + 'third_party/mocha/mocha.js',
-    ROOT_PATH + 'chrome/test/data/webui/mocha_adapter.js',
+    '//third_party/mocha/mocha.js',
+    '//chrome/test/data/webui/mocha_adapter.js',
   ],
 
   /** @override */
   setUp: function() {
     testing.Test.prototype.setUp.call(this);
-    suiteSetup(function() {
-      return whenPageIsPopulatedForTest().then(disableAutoupdateForTests);
+    suiteSetup(async function() {
+      await whenPageIsPopulatedForTest();
+      await disableAutoupdateForTests();
     });
   },
 };
@@ -84,15 +84,14 @@ TEST_F('SiteEngagementBrowserTest', 'All', function() {
         ['10', '3.14'], cells.map((x) => x.totalScore.textContent));
   });
 
-  test('change score', function() {
+  test('change score', async function() {
     var firstRow = cells[0];
     firstRow.scoreInput.value = 50;
     firstRow.scoreInput.dispatchEvent(new Event('change'));
 
-    return uiHandler.getSiteEngagementDetails().then((response) => {
-      assertEquals(firstRow.origin.textContent, response.info[0].origin.url);
-      assertEquals(50, response.info[0].baseScore);
-    });
+    let {info} = await engagementDetailsProvider.getSiteEngagementDetails();
+    assertEquals(firstRow.origin.textContent, info[0].origin.url);
+    assertEquals(50, info[0].baseScore);
   });
   mocha.run();
 });

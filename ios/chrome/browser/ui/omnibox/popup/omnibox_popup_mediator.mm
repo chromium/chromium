@@ -7,20 +7,27 @@
 #include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/sys_string_conversions.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_features.h"
+#import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
-#import "ios/chrome/browser/ui/omnibox/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/ui/omnibox/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/common/favicon/favicon_attributes.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+const CGFloat kOmniboxIconSize = 16;
+}  // namespace
 
 @implementation OmniboxPopupMediator {
   // Fetcher for Answers in Suggest images.
@@ -39,12 +46,14 @@
 - (instancetype)initWithFetcher:
                     (std::unique_ptr<image_fetcher::IOSImageDataFetcherWrapper>)
                         imageFetcher
+                  faviconLoader:(FaviconLoader*)faviconLoader
                        delegate:(OmniboxPopupMediatorDelegate*)delegate {
   self = [super init];
   if (self) {
     DCHECK(delegate);
     _delegate = delegate;
     _imageFetcher = std::move(imageFetcher);
+    _faviconLoader = faviconLoader;
     _open = NO;
   }
   return self;
@@ -58,14 +67,6 @@
   self.hasResults = !_currentResult.empty();
 
   [self.consumer updateMatches:[self wrappedMatches] withAnimation:animation];
-
-  BOOL shortcutsEnabled = base::FeatureList::IsEnabled(
-      omnibox::kOmniboxPopupShortcutIconsInZeroState);
-  BOOL isNTP = IsVisibleURLNewTabPage(self.webStateList->GetActiveWebState());
-
-  if (!self.hasResults && (!shortcutsEnabled || isNTP)) {
-    [self.presenter animateCollapse];
-  }
 }
 
 - (NSArray<id<AutocompleteSuggestion>>*)wrappedMatches {
@@ -80,6 +81,7 @@
         [AutocompleteMatchFormatter formatterWithMatch:match];
     formatter.starred = _delegate->IsStarredMatch(match);
     formatter.incognito = _incognito;
+    formatter.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
     [wrappedMatches addObject:formatter];
   }
 
@@ -98,13 +100,16 @@
   }
   self.open = !result.empty();
 
-  if (self.open) {
-    [self.presenter updateHeightAndAnimateAppearanceIfNecessary];
-  }
+  [self.presenter updatePopup];
 }
 
 - (void)setTextAlignment:(NSTextAlignment)alignment {
   [self.consumer setTextAlignment:alignment];
+}
+
+- (void)setSemanticContentAttribute:
+    (UISemanticContentAttribute)semanticContentAttribute {
+  [self.consumer setSemanticContentAttribute:semanticContentAttribute];
 }
 
 #pragma mark - AutocompleteResultConsumerDelegate
@@ -171,6 +176,21 @@
         }
       };
   _imageFetcher->FetchImageDataWebpDecoded(imageURL, callback);
+}
+
+#pragma mark - FaviconRetriever
+
+- (void)fetchFavicon:(GURL)pageURL completion:(void (^)(UIImage*))completion {
+  if (!self.faviconLoader) {
+    return;
+  }
+
+  self.faviconLoader->FaviconForPageUrl(
+      pageURL, kOmniboxIconSize, kOmniboxIconSize,
+      /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
+        if (attributes.faviconImage && !attributes.usesDefaultImage)
+          completion(attributes.faviconImage);
+      });
 }
 
 @end

@@ -24,17 +24,11 @@ SchedulerSettings LayerTreeSettings::ToSchedulerSettings() const {
   SchedulerSettings scheduler_settings;
   scheduler_settings.main_frame_before_activation_enabled =
       main_frame_before_activation_enabled;
-  scheduler_settings.timeout_and_draw_when_animation_checkerboards =
-      timeout_and_draw_when_animation_checkerboards;
   scheduler_settings.using_synchronous_renderer_compositor =
       using_synchronous_renderer_compositor;
   scheduler_settings.enable_latency_recovery = enable_latency_recovery;
-  scheduler_settings.background_frame_interval =
-      base::TimeDelta::FromSecondsD(1.0 / background_animation_rate);
   scheduler_settings.wait_for_all_pipeline_stages_before_draw =
       wait_for_all_pipeline_stages_before_draw;
-  scheduler_settings.enable_surface_synchronization =
-      enable_surface_synchronization;
   return scheduler_settings;
 }
 

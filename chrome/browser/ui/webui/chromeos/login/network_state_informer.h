@@ -18,9 +18,6 @@
 #include "chrome/browser/chromeos/login/ui/captive_portal_window_proxy.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 
 namespace base {
 class Value;
@@ -34,7 +31,6 @@ namespace chromeos {
 class NetworkStateInformer
     : public chromeos::NetworkStateHandlerObserver,
       public chromeos::NetworkPortalDetector::Observer,
-      public content::NotificationObserver,
       public CaptivePortalWindowProxyDelegate,
       public base::RefCounted<NetworkStateInformer> {
  public:
@@ -74,11 +70,6 @@ class NetworkStateInformer
       const NetworkState* network,
       const NetworkPortalDetector::CaptivePortalState& state) override;
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // CaptivePortalWindowProxyDelegate implementation:
   void OnPortalDetected() override;
 
@@ -102,9 +93,8 @@ class NetworkStateInformer
   std::unique_ptr<base::Value> proxy_config_;
 
   base::ObserverList<NetworkStateInformerObserver>::Unchecked observers_;
-  content::NotificationRegistrar registrar_;
 
-  base::WeakPtrFactory<NetworkStateInformer> weak_ptr_factory_;
+  base::WeakPtrFactory<NetworkStateInformer> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos

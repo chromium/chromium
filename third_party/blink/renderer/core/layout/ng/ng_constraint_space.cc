@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_box_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 
 namespace blink {
@@ -19,7 +20,7 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGConstraintSpace {
-  NGLogicalSize available_size;
+  LogicalSize available_size;
   union {
     NGBfcOffset bfc_offset;
     void* rare_data;
@@ -34,7 +35,8 @@ static_assert(sizeof(NGConstraintSpace) == sizeof(SameSizeAsNGConstraintSpace),
 }  // namespace
 
 NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
-    const LayoutBlock& block) {
+    const LayoutBlock& block,
+    bool is_layout_root) {
   // We should only ever create a constraint space from legacy layout if the
   // object is a new formatting context.
   DCHECK(block.CreatesNewFormattingContext());
@@ -44,9 +46,9 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
       LayoutBoxUtils::AvailableLogicalWidth(block, cb);
   LayoutUnit available_logical_height =
       LayoutBoxUtils::AvailableLogicalHeight(block, cb);
-  NGLogicalSize percentage_size = {available_logical_width,
-                                   available_logical_height};
-  NGLogicalSize available_size = percentage_size;
+  LogicalSize percentage_size = {available_logical_width,
+                                 available_logical_height};
+  LogicalSize available_size = percentage_size;
 
   bool fixed_inline = false, fixed_block = false;
   bool fixed_block_is_definite = true;
@@ -75,7 +77,18 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
                                    /* is_new_fc */ true,
                                    !parallel_containing_block);
 
-  if (!block.IsWritingModeRoot() || block.IsGridItem()) {
+  auto* previous_result = block.GetCachedLayoutResult();
+  if (is_layout_root && previous_result) {
+    // Due to layout-roots (starting layout at an arbirary node, instead of the
+    // |LayoutView|), we can end up with a situation where we'll miss our cache
+    // due to baseline-requests not matching.
+    //
+    // For the case where we start at a layout-root, the baselines don't
+    // particularly matter, so we just request exactly the same as the previous
+    // layout.
+    builder.AddBaselineRequests(
+        previous_result->GetConstraintSpaceForCaching().BaselineRequests());
+  } else if (!block.IsWritingModeRoot() || block.IsGridItem()) {
     // Add all types because we don't know which baselines will be requested.
     FontBaseline baseline_type = style.GetFontBaseline();
     bool synthesize_inline_block_baseline =
@@ -88,39 +101,48 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
         {NGBaselineAlgorithmType::kFirstLine, baseline_type});
   }
 
-  return builder.SetAvailableSize(available_size)
-      .SetPercentageResolutionSize(percentage_size)
-      .SetIsFixedSizeInline(fixed_inline)
-      .SetIsFixedSizeBlock(fixed_block)
-      .SetFixedSizeBlockIsDefinite(fixed_block_is_definite)
-      .SetIsShrinkToFit(
-          block.SizesLogicalWidthToFitContent(style.LogicalWidth()))
-      .SetTextDirection(style.Direction())
-      .ToConstraintSpace();
-}
+  if (block.IsTableCell()) {
+    const LayoutNGTableCellInterface& cell =
+        ToInterface<LayoutNGTableCellInterface>(block);
+    const ComputedStyle& cell_style = cell.ToLayoutObject()->StyleRef();
+    const ComputedStyle& table_style =
+        cell.TableInterface()->ToLayoutObject()->StyleRef();
+    builder.SetIsTableCell(true);
+    builder.SetIsRestrictedBlockSizeTableCell(
+        !cell_style.LogicalHeight().IsAuto() ||
+        !table_style.LogicalHeight().IsAuto());
+    const LayoutBlock& cell_block = To<LayoutBlock>(*cell.ToLayoutObject());
+    builder.SetTableCellBorders(
+        {cell_block.BorderStart(), cell_block.BorderEnd(),
+         cell_block.BorderBefore(), cell_block.BorderAfter()});
+    builder.SetTableCellIntrinsicPadding(
+        {LayoutUnit(), LayoutUnit(), LayoutUnit(cell.IntrinsicPaddingBefore()),
+         LayoutUnit(cell.IntrinsicPaddingAfter())});
+    builder.SetHideTableCellIfEmpty(
+        cell_style.EmptyCells() == EEmptyCells::kHide &&
+        table_style.BorderCollapse() == EBorderCollapse::kSeparate);
+  }
 
-bool NGConstraintSpace::operator==(const NGConstraintSpace& other) const {
-  if (!AreSizesEqual(other))
-    return false;
-
-  if (!MaySkipLayout(other))
-    return false;
-
-  if (!HasRareData() && !other.HasRareData() &&
-      bfc_offset_.block_offset != other.bfc_offset_.block_offset)
-    return false;
-
-  return true;
+  builder.SetAvailableSize(available_size);
+  builder.SetPercentageResolutionSize(percentage_size);
+  builder.SetIsFixedInlineSize(fixed_inline);
+  builder.SetIsFixedBlockSize(fixed_block);
+  builder.SetIsFixedBlockSizeIndefinite(!fixed_block_is_definite);
+  builder.SetIsShrinkToFit(
+      style.LogicalWidth().IsAuto() &&
+      block.SizesLogicalWidthToFitContent(style.LogicalWidth()));
+  builder.SetTextDirection(style.Direction());
+  return builder.ToConstraintSpace();
 }
 
 String NGConstraintSpace::ToString() const {
   return String::Format("Offset: %s,%s Size: %sx%s Clearance: %s",
-                        bfc_offset_.line_offset.ToString().Ascii().data(),
-                        bfc_offset_.block_offset.ToString().Ascii().data(),
-                        AvailableSize().inline_size.ToString().Ascii().data(),
-                        AvailableSize().block_size.ToString().Ascii().data(),
+                        bfc_offset_.line_offset.ToString().Ascii().c_str(),
+                        bfc_offset_.block_offset.ToString().Ascii().c_str(),
+                        AvailableSize().inline_size.ToString().Ascii().c_str(),
+                        AvailableSize().block_size.ToString().Ascii().c_str(),
                         HasClearanceOffset()
-                            ? ClearanceOffset().ToString().Ascii().data()
+                            ? ClearanceOffset().ToString().Ascii().c_str()
                             : "none");
 }
 

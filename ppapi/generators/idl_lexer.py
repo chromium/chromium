@@ -16,6 +16,8 @@
 # PLY can be found at:
 #   http://www.dabeaz.com/ply/
 
+from __future__ import print_function
+
 import os.path
 import re
 import sys
@@ -277,23 +279,23 @@ def TestSame(values1):
   count1 = len(values1)
   count2 = len(values2)
   if count1 != count2:
-    print "Size mismatch original %d vs %d\n" % (count1, count2)
+    print("Size mismatch original %d vs %d\n" % (count1, count2))
     if count1 > count2: count1 = count2
 
   for i in range(count1):
     if values1[i] != values2[i]:
-      print "%d >>%s<< >>%s<<" % (i, values1[i], values2[i])
+      print("%d >>%s<< >>%s<<" % (i, values1[i], values2[i]))
 
   if GetOption('output'):
     sys.stdout.write('Generating original.txt and tokenized.txt\n')
-    open('original.txt', 'w').write(src1)
-    open('tokenized.txt', 'w').write(src2)
+    open('original.txt', 'w').write(values1)
+    open('tokenized.txt', 'w').write(values2)
 
   if values1 == values2:
     sys.stdout.write('Same: Pass\n')
     return 0
 
-  print "****************\n%s\n%s***************\n" % (src1, src2)
+  print("****************\n%s\n%s***************\n" % (values1, values2))
   sys.stdout.write('Same: Failed\n')
   return -1
 

@@ -19,7 +19,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -30,7 +30,7 @@ namespace blink {
 //
 // Work stealing is best effort, i.e., there is no way to inform other tasks
 // of the need of items.
-template <typename _EntryType, int segment_size, int max_tasks = 1>
+template <typename _EntryType, int segment_size, int max_tasks = 2>
 class Worklist {
   USING_FAST_MALLOC(Worklist);
   using WorklistType = Worklist<_EntryType, segment_size, max_tasks>;
@@ -56,9 +56,17 @@ class Worklist {
 
     // Returns true if the worklist is empty. Can only be used from the main
     // thread without concurrent access.
-    bool IsGlobalEmpty() { return worklist_->IsGlobalEmpty(); }
+    bool IsGlobalEmpty() const { return worklist_->IsGlobalEmpty(); }
 
-    bool IsGlobalPoolEmpty() { return worklist_->IsGlobalPoolEmpty(); }
+    bool IsGlobalPoolEmpty() const { return worklist_->IsGlobalPoolEmpty(); }
+
+    // Returns true if the local portion and the global pool are empty (i.e.
+    // whether the current view cannot pop anymore).
+    bool IsLocalViewEmpty() const {
+      return worklist_->IsLocalViewEmpty(task_id_);
+    }
+
+    void FlushToGlobal() { worklist_->FlushToGlobal(task_id_); }
 
     size_t LocalPushSegmentSize() const {
       return worklist_->LocalPushSegmentSize(task_id_);
@@ -126,14 +134,18 @@ class Worklist {
            private_push_segment(task_id)->IsEmpty();
   }
 
-  bool IsGlobalPoolEmpty() { return global_pool_.IsEmpty(); }
+  bool IsGlobalPoolEmpty() const { return global_pool_.IsEmpty(); }
 
-  bool IsGlobalEmpty() {
+  bool IsGlobalEmpty() const {
     for (int i = 0; i < num_tasks_; i++) {
       if (!IsLocalEmpty(i))
         return false;
     }
     return global_pool_.IsEmpty();
+  }
+
+  bool IsLocalViewEmpty(int task_id) const {
+    return IsLocalEmpty(task_id) && IsGlobalPoolEmpty();
   }
 
   size_t LocalSize(int task_id) const {
@@ -187,6 +199,8 @@ class Worklist {
     auto pair = other->global_pool_.Extract();
     global_pool_.MergeList(pair.first, pair.second);
   }
+
+  int num_tasks() const { return num_tasks_; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WorklistTest, SegmentCreate);
@@ -282,9 +296,9 @@ class Worklist {
       return false;
     }
 
-    inline bool IsEmpty() {
+    inline bool IsEmpty() const {
       return base::subtle::NoBarrier_Load(
-                 reinterpret_cast<base::subtle::AtomicWord*>(&top_)) == 0;
+                 reinterpret_cast<const base::subtle::AtomicWord*>(&top_)) == 0;
     }
 
     void Clear() {

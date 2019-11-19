@@ -24,6 +24,8 @@ if (!is_ios) {
       "content/content_serialized_navigation_driver.cc",
       "content/content_serialized_navigation_driver.h",
       "content/extended_info_handler.h",
+      "content/navigation_task_id.cc",
+      "content/navigation_task_id.h",
     ]
 
     configs += [ ":implementation" ]
@@ -46,6 +48,8 @@ if (!is_ios) {
     sources = [
       "ios/ios_live_tab.h",
       "ios/ios_live_tab.mm",
+      "ios/ios_restore_live_tab.h",
+      "ios/ios_restore_live_tab.mm",
       "ios/ios_serialized_navigation_builder.h",
       "ios/ios_serialized_navigation_builder.mm",
       "ios/ios_serialized_navigation_driver.cc",
@@ -59,6 +63,8 @@ if (!is_ios) {
 
     deps = [
       "//base",
+      "//ios/web/common",
+      "//ios/web/public/session",
     ]
   }
 }
@@ -108,6 +114,7 @@ source_set("shared") {
 
   public_deps = [
     "//components/keyed_service/core",
+    "//skia",
   ]
 
   deps = [
@@ -147,6 +154,17 @@ static_library("test_support") {
       "core/base_session_service_test_helper.h",
     ]
   }
+
+  if (!is_ios) {
+    sources += [
+      "content/content_test_helper.cc",
+      "content/content_test_helper.h",
+    ]
+    deps += [
+      "//content/public/browser",
+      "//content/public/common",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -166,6 +184,7 @@ source_set("unit_tests") {
     sources += [
       "content/content_serialized_navigation_builder_unittest.cc",
       "content/content_serialized_navigation_driver_unittest.cc",
+      "content/navigation_task_id_unittest.cc",
     ]
   }
 
@@ -185,5 +204,7 @@ source_set("unit_tests") {
 
   if (!is_ios) {
     deps += [ "//content/public/common" ]
+  } else {
+    deps += [ "//ios/web/public/test" ]
   }
 }

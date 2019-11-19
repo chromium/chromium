@@ -44,19 +44,6 @@ void CreateTextFile(const std::wstring& filename,
   file.close();
 }
 
-bool IsFileInUse(const base::FilePath& path) {
-  if (!base::PathExists(path))
-    return false;
-
-  HANDLE handle = ::CreateFile(path.value().c_str(), FILE_ALL_ACCESS,
-                               NULL, NULL, OPEN_EXISTING, NULL, NULL);
-  if (handle  == INVALID_HANDLE_VALUE)
-    return true;
-
-  CloseHandle(handle);
-  return false;
-}
-
 // Simple function to read text from a file.
 std::wstring ReadTextFile(const std::wstring& filename) {
   WCHAR contents[64];
@@ -398,6 +385,7 @@ TEST_F(CopyTreeWorkItemTest, NewNameAndCopyTest) {
   alternate_to = alternate_to.AppendASCII("Alternate_To");
   base::CopyFile(exe_full_path, file_name_to);
   ASSERT_TRUE(base::PathExists(file_name_to));
+  ASSERT_FALSE(CopyTreeWorkItem::IsFileInUse(file_name_to));
 
   VLOG(1) << "copy ourself from " << exe_full_path.value()
           << " to " << file_name_to.value();
@@ -446,10 +434,10 @@ TEST_F(CopyTreeWorkItemTest, NewNameAndCopyTest) {
   work_item.reset(WorkItem::CreateCopyTreeWorkItem(
       file_name_from, file_name_to, temp_dir_.GetPath(),
       WorkItem::NEW_NAME_IF_IN_USE, alternate_to));
-  if (IsFileInUse(file_name_to))
+  if (CopyTreeWorkItem::IsFileInUse(file_name_to))
     base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(2));
   // If file is still in use, the rest of the test will fail.
-  ASSERT_FALSE(IsFileInUse(file_name_to));
+  ASSERT_FALSE(CopyTreeWorkItem::IsFileInUse(file_name_to));
   EXPECT_TRUE(work_item->Do());
 
   // Get the path of backup file

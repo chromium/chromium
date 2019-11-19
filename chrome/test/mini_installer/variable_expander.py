@@ -101,6 +101,7 @@ class VariableExpander:
         *   Chrome'.
         * $LOCAL_APPDATA: the unquoted path to the Local Application Data
             folder.
+        * $LOG_FILE: "--log-file=FILE" or an empty string.
         * $MINI_INSTALLER: the unquoted path to the mini_installer.
         * $MINI_INSTALLER_BITNESS: the bitness of the mini_installer.
         * $MINI_INSTALLER_FILE_VERSION: the file version of $MINI_INSTALLER.
@@ -161,6 +162,7 @@ class VariableExpander:
         'OUTPUT_DIR': '"--output-dir=%s"' % output_dir if output_dir else '',
         'LOCAL_APPDATA': shell.SHGetFolderPath(0, shellcon.CSIDL_LOCAL_APPDATA,
                                                None, 0),
+        'LOG_FILE': '',
         'MINI_INSTALLER': mini_installer_abspath,
         'MINI_INSTALLER_FILE_VERSION': _GetFileVersion(mini_installer_abspath),
         'MINI_INSTALLER_BITNESS': _GetFileBitness(mini_installer_abspath),
@@ -283,6 +285,12 @@ class VariableExpander:
     else:
       raise KeyError("Unknown mini_installer product name '%s'" %
                      mini_installer_product_name)
+
+
+  def SetLogFile(self, log_file):
+    """Updates the value for the LOG_FILE variable"""
+    self._variable_mapping['LOG_FILE'] = (
+        '"--log-file=%s"' % log_file if log_file else '')
 
 
   def Expand(self, str):

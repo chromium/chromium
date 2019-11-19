@@ -1,0 +1,150 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/decryptor.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// See media::EmeInitDataType.
+[Native]
+enum EmeInitDataType;
+
+// See media::CdmSessionType
+[Native]
+enum CdmSessionType;
+
+// See media::CdmMessageType
+[Native]
+enum CdmMessageType;
+
+// See media::CdmKeyInformation::KeyStatus
+enum CdmKeyStatus {
+    USABLE,
+    INTERNAL_ERROR,
+    EXPIRED,
+    OUTPUT_RESTRICTED,
+    OUTPUT_DOWNSCALED,
+    KEY_STATUS_PENDING,
+    RELEASED,
+};
+
+// See media::HdcpVersion
+[Native]
+enum HdcpVersion;
+
+// See media::CdmConfig
+[Native]
+struct CdmConfig;
+
+// Transport layer of media::CdmPromise (see media/base/cdm_promise.h).
+// - When |success| is true, the promise is resolved and all other fields should
+//   be ignored.
+// - When |success| is false, the promise is rejected with |exception|,
+//   |system_code| and |error_message|.
+struct CdmPromiseResult {
+  // See media::CdmPromise::Exception
+  [Native]
+  enum Exception;
+
+  bool success;
+  Exception exception;
+  uint32 system_code;
+  string error_message;
+};
+
+// Transport layer of media::CdmKeyInformation (see
+// media/base/cdm_key_information.h). It is used to specify a key_id and it's
+// associated status.
+struct CdmKeyInformation {
+  array<uint8> key_id;
+  CdmKeyStatus status;
+  uint32 system_code;
+};
+
+// An interface that represents a CDM in the Encrypted Media Extensions (EME)
+// spec (https://w3c.github.io/encrypted-media/).
+// See media/base/content_decryption_module.h
+interface ContentDecryptionModule {
+
+  // Sets ContentDecryptionModuleClient. Must be called before any other calls.
+  // Use associated interface to ensure ordering, e.g. events on the client
+  // interface and promise fulfillment.
+  SetClient(pending_associated_remote<ContentDecryptionModuleClient> client);
+
+  // Initializes the CDM. If initialization failed (e.g. |key_system| or
+  // |cdm_config| is not supported), |result.success| will be false and |cdm_id|
+  // will be zero. Upon success, |cdm_id| will be non-zero and will later be
+  // used to locate the CDM at the remote side. |decryptor| is the remote
+  // Decryptor.
+  Initialize(string key_system,
+             url.mojom.Origin security_origin,
+             CdmConfig cdm_config)
+      => (CdmPromiseResult result, int32 cdm_id, Decryptor? decryptor);
+
+  // Provides a server certificate to be used to encrypt messages to the
+  // license server.
+  SetServerCertificate(array<uint8> certificate_data)
+      => (CdmPromiseResult result);
+
+  // Gets the key status if there's a hypothetical key that requires the
+  // |min_hdcp_version|. Resolve the |promise| with the |key_status| after the
+  // operation completes. Reject the |promise| if this operation is not
+  // supported or unexpected error happened.
+  GetStatusForPolicy(HdcpVersion min_hdcp_version)
+      => (CdmPromiseResult result, CdmKeyStatus key_status);
+
+  // Creates a session with the |init_data_type|, |init_data| and |session_type|
+  // provided. If |result.success| is false, the output |session_id| will be
+  // empty.
+  CreateSessionAndGenerateRequest(CdmSessionType session_type,
+                                  EmeInitDataType init_data_type,
+                                  array<uint8> init_data)
+      => (CdmPromiseResult result, string session_id);
+
+  // Loads the session associated with |session_id| and |session_type|.
+  // Combinations of |result.success| and |session_id| means:
+  //   (true, non-empty) : Session successfully loaded.
+  //   (true, empty) : Session not found.
+  //   (false, non-empty): N/A; this combination is not allowed.
+  //   (false, empty) : Unexpected error. See other fields in |result|.
+  LoadSession(CdmSessionType session_type, string session_id)
+      => (CdmPromiseResult result, string session_id);
+
+  // Updates a session specified by |session_id| with |response|.
+  UpdateSession(string session_id, array<uint8> response)
+      => (CdmPromiseResult result);
+
+  // Closes the session specified by |session_id|.
+  CloseSession(string session_id) => (CdmPromiseResult result);
+
+  // Removes stored session data associated with the active session specified by
+  // |session_id|.
+  RemoveSession(string session_id) => (CdmPromiseResult result);
+};
+
+// Session callbacks. See media/base/content_decryption_module.h for details.
+interface ContentDecryptionModuleClient {
+  OnSessionMessage(string session_id, CdmMessageType message_type,
+                   array<uint8> message);
+
+  OnSessionClosed(string session_id);
+
+  OnSessionKeysChange(string session_id, bool has_additional_usable_key,
+                      array<CdmKeyInformation> keys_info);
+
+  // Provide session expiration update for |session_id|.
+  // |new_expiry_time_sec| is the number of seconds since epoch (Jan 1, 1970).
+  OnSessionExpirationUpdate(string session_id, double new_expiry_time_sec);
+};
+
+interface CdmFactory {
+  // Creates a CDM based on the |key_system| provided. A |key_system| is a
+  // generic term for a decryption mechanism and/or content protection provider.
+  // It should be a reverse domain name, e.g. "com.example.somesystem". However,
+  // this call may be initiated by an untrusted process (e.g. renderer), so the
+  // implementation must fully validate |key_system| before creating the CDM.
+  CreateCdm(string key_system, pending_receiver<ContentDecryptionModule> cdm);
+};

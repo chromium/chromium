@@ -7,12 +7,12 @@ element.style { ()
 
 [expanded] 
 @media screen and (max-device-width: 100000px)
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 /-- overloaded --/     color: blue;
 
 [expanded] 
 @media screen and (max-device-width: 100000px)
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 /-- overloaded --/     color: green;
 
 [expanded] 
@@ -31,12 +31,12 @@ element.style { ()
 
 [expanded] 
 @media screen and (max-device-width: 99999px)
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 /-- overloaded --/     color: blue;
 
 [expanded] 
 @media screen and (max-device-width: 99999px)
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 /-- overloaded --/     color: green;
 
 [expanded] 
@@ -54,11 +54,11 @@ element.style { ()
     color: red;
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 /-- overloaded --/     color: blue;
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 /-- overloaded --/     color: green;
 
 [expanded] 

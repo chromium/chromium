@@ -16,25 +16,25 @@
 #import "components/signin/ios/browser/account_consistency_service.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/crash_report/crash_report_helper.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
 #import "ios/chrome/browser/history/history_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/itunes_urls_handler_tab_helper.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prerender/preload_controller_delegate.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
-#import "ios/chrome/browser/tabs/legacy_tab_helper.h"
-#import "ios/chrome/browser/tabs/tab.h"
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
-#import "ios/chrome/browser/tabs/tab_private.h"
-#include "ios/chrome/browser/ui/prerender_final_status.h"
-#import "ios/web/public/navigation_item.h"
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/web_state/navigation_context.h"
-#import "ios/web/public/web_state/ui/crw_native_content.h"
-#import "ios/web/public/web_state/web_state.h"
-#include "ios/web/public/web_state/web_state_observer_bridge.h"
-#import "ios/web/public/web_state/web_state_policy_decider_bridge.h"
-#include "ios/web/public/web_thread.h"
+#import "ios/web/public/deprecated/crw_native_content.h"
+#import "ios/web/public/deprecated/crw_native_content_holder.h"
+#import "ios/web/public/deprecated/crw_web_controller_util.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
+#include "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/ui/java_script_dialog_presenter.h"
+#include "ios/web/public/web_client.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "net/base/mac/url_conversions.h"
 #include "ui/base/page_transition_types.h"
@@ -45,7 +45,26 @@
 
 using web::WebStatePolicyDecider;
 
+// Protocol used to cancel a scheduled preload request.
+@protocol PreloadCancelling <NSObject>
+
+// Schedules the current prerender to be cancelled during the next run of the
+// event loop.
+- (void)schedulePrerenderCancel;
+
+@end
+
 namespace {
+
+// PrerenderFinalStatus values are used in the "Prerender.FinalStatus" histogram
+// and new values needs to be kept in sync with histogram.xml.
+enum PrerenderFinalStatus {
+  PRERENDER_FINAL_STATUS_USED = 0,
+  PRERENDER_FINAL_STATUS_MEMORY_LIMIT_EXCEEDED = 12,
+  PRERENDER_FINAL_STATUS_CANCELLED = 32,
+  PRERENDER_FINAL_STATUS_MAX = 52,
+};
+
 // Delay before starting to prerender a URL.
 const NSTimeInterval kPrerenderDelay = 0.5;
 
@@ -70,25 +89,126 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
   return trial && trial->group_name() == kPrerenderTabEvictionTrialGroup;
 }
 
+// Returns whether |url| can be prerendered.
+bool CanPrerenderURL(const GURL& url) {
+  // Prerendering is only enabled for http and https URLs.
+  return url.is_valid() &&
+         (url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme));
+}
+
+// Object used to schedule prerenders.
+class PrerenderRequest {
+ public:
+  PrerenderRequest() {}
+  PrerenderRequest(const GURL& url,
+                   ui::PageTransition transition,
+                   const web::Referrer& referrer)
+      : url_(url), transition_(transition), referrer_(referrer) {}
+
+  const GURL& url() const { return url_; }
+  ui::PageTransition transition() const { return transition_; }
+  const web::Referrer referrer() const { return referrer_; }
+
+ private:
+  const GURL url_;
+  const ui::PageTransition transition_ = ui::PAGE_TRANSITION_LINK;
+  const web::Referrer referrer_;
+};
+
+// A no-op JavaScriptDialogPresenter that cancels prerendering when the
+// prerendered page attempts to show dialogs.
+class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
+ public:
+  explicit PreloadJavaScriptDialogPresenter(
+      id<PreloadCancelling> cancel_handler)
+      : cancel_handler_(cancel_handler) {
+    DCHECK(cancel_handler_);
+  }
+
+  // web::JavaScriptDialogPresenter:
+  void RunJavaScriptDialog(web::WebState* web_state,
+                           const GURL& origin_url,
+                           web::JavaScriptDialogType dialog_type,
+                           NSString* message_text,
+                           NSString* default_prompt_text,
+                           web::DialogClosedCallback callback) override {
+    std::move(callback).Run(NO, nil);
+    [cancel_handler_ schedulePrerenderCancel];
+  }
+
+  void CancelDialogs(web::WebState* web_state) override {}
+
+ private:
+  __weak id<PreloadCancelling> cancel_handler_ = nil;
+};
 }  // namespace
 
-@interface PreloadController (PrivateMethods)
+@interface PreloadController () <CRConnectionTypeObserverBridge,
+                                 CRWWebStateDelegate,
+                                 CRWWebStateObserver,
+                                 CRWWebStatePolicyDecider,
+                                 ManageAccountsDelegate,
+                                 PrefObserverDelegate,
+                                 PreloadCancelling> {
+  std::unique_ptr<web::WebStateDelegateBridge> _webStateDelegate;
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
+  std::unique_ptr<PrefObserverBridge> _observerBridge;
+  std::unique_ptr<ConnectionTypeObserverBridge> _connectionTypeObserver;
+  std::unique_ptr<web::WebStatePolicyDeciderBridge> _policyDeciderBridge;
 
-// Returns YES if prerendering is enabled.
-- (BOOL)isPrerenderingEnabled;
+  // The WebState used for prerendering.
+  std::unique_ptr<web::WebState> _webState;
 
-// Returns YES if the |url| is valid for prerendering.
-- (BOOL)shouldPreloadURL:(const GURL&)url;
+  // The scheduled request.
+  std::unique_ptr<PrerenderRequest> _scheduledRequest;
+
+  // Registrar for pref changes notifications.
+  PrefChangeRegistrar _prefChangeRegistrar;
+
+  // The dialog presenter.
+  std::unique_ptr<web::JavaScriptDialogPresenter> _dialogPresenter;
+}
+
+// The ChromeBrowserState passed on initialization.
+@property(nonatomic) ios::ChromeBrowserState* browserState;
+
+// Redefine property as readwrite.  The URL that is prerendered in |_webState|.
+// This can be different from the value returned by WebState last committed
+// navigation item, for example in cases where there was a redirect.
+//
+// When choosing whether or not to use a prerendered Tab,
+// BrowserViewController compares the URL being loaded by the omnibox with the
+// URL of the prerendered Tab.  Comparing against the Tab's currently URL
+// could return false negatives in cases of redirect, hence the need to store
+// the originally prerendered URL.
+@property(nonatomic, readwrite, assign) GURL prerenderedURL;
+
+// The URL in the currently scheduled prerender request, or an empty one if
+// there is no prerender scheduled.
+@property(nonatomic, readonly) const GURL& scheduledURL;
+
+// Whether or not the preference is enabled.
+@property(nonatomic, getter=isPreferenceEnabled) BOOL preferenceEnabled;
+
+// Whether or not prerendering is only when on wifi.
+@property(nonatomic, getter=isWifiOnly) BOOL wifiOnly;
+
+// Whether or not the current connection is using WWAN.
+@property(nonatomic, getter=isUsingWWAN) BOOL usingWWAN;
+
+// Number of successful prerenders (i.e. the user viewed the prerendered page)
+// during the lifetime of this controller.
+@property(nonatomic) NSUInteger successfulPrerendersPerSessionCount;
+
+// Tracks the time of the last attempt to load a prerender URL. Used for UMA
+// reporting of load durations.
+@property(nonatomic) base::TimeTicks startTime;
 
 // Called to start any scheduled prerendering requests.
 - (void)startPrerender;
 
 // Destroys the preview Tab and resets |prerenderURL_| to the empty URL.
 - (void)destroyPreviewContents;
-
-// Schedules the current prerender to be cancelled during the next run of the
-// event loop.
-- (void)schedulePrerenderCancel;
 
 // Removes any scheduled prerender requests and resets |scheduledURL| to the
 // empty URL.
@@ -99,95 +219,30 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
 
 @end
 
-@interface PreloadController ()<CRWWebStateObserver,
-                                CRWWebStatePolicyDecider,
-                                ManageAccountsDelegate,
-                                PrefObserverDelegate>
-@end
-
-@implementation PreloadController {
-  ios::ChromeBrowserState* browserState_;  // Weak.
-
-  // The WebState used for prerendering.
-  std::unique_ptr<web::WebState> webState_;
-
-  // The WebStateDelegateBridge used to register self as a CRWWebStateDelegate
-  // with the pre-rendered WebState.
-  std::unique_ptr<web::WebStateDelegateBridge> webStateDelegate_;
-
-  // The WebStateObserverBridge used to register self as a WebStateObserver
-  // with the pre-rendered WebState.
-  std::unique_ptr<web::WebStateObserverBridge> webStateObserver_;
-
-  // The URL that is prerendered in |webState_|.  This can be different from
-  // the value returned by WebState last committed navigation item, for example
-  // in cases where there was a redirect.
-  //
-  // When choosing whether or not to use a prerendered Tab,
-  // BrowserViewController compares the URL being loaded by the omnibox with the
-  // URL of the prerendered Tab.  Comparing against the Tab's currently URL
-  // could return false negatives in cases of redirect, hence the need to store
-  // the originally prerendered URL.
-  GURL prerenderedURL_;
-
-  // The URL that is scheduled to be prerendered, its associated transition and
-  // referrer. |scheduledTransition_| and |scheduledReferrer_| are not valid
-  // when |scheduledURL_| is empty.
-  GURL scheduledURL_;
-  ui::PageTransition scheduledTransition_;
-  web::Referrer scheduledReferrer_;
-
-  // Bridge to listen to pref changes.
-  std::unique_ptr<PrefObserverBridge> observerBridge_;
-  // Registrar for pref changes notifications.
-  PrefChangeRegistrar prefChangeRegistrar_;
-  // Observer for the WWAN setting.  Contains a valid object only if the
-  // instant setting is set to wifi-only.
-  std::unique_ptr<ConnectionTypeObserverBridge> connectionTypeObserverBridge_;
-
-  // Whether or not the preference is enabled.
-  BOOL enabled_;
-  // Whether or not prerendering is only when on wifi.
-  BOOL wifiOnly_;
-  // Whether or not the current connection is using WWAN.
-  BOOL usingWWAN_;
-
-  // Number of successful prerenders (i.e. the user viewed the prerendered page)
-  // during the lifetime of this controller.
-  int successfulPrerendersPerSessionCount_;
-
-  // Tracks the last time of the last attempt to load a |prerenderedURL_|. Used
-  // for UMA reporting of load durations.
-  base::TimeTicks startTime_;
-
-  // Bridge to provide navigation policies for |webState_|.
-  std::unique_ptr<web::WebStatePolicyDeciderBridge> policyDeciderBridge_;
-}
-
-@synthesize prerenderedURL = prerenderedURL_;
-@synthesize delegate = delegate_;
+@implementation PreloadController
 
 - (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState {
   DCHECK(browserState);
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   if ((self = [super init])) {
-    browserState_ = browserState;
-    enabled_ =
-        browserState_->GetPrefs()->GetBoolean(prefs::kNetworkPredictionEnabled);
-    wifiOnly_ = browserState_->GetPrefs()->GetBoolean(
+    _browserState = browserState;
+    _preferenceEnabled =
+        _browserState->GetPrefs()->GetBoolean(prefs::kNetworkPredictionEnabled);
+    _wifiOnly = _browserState->GetPrefs()->GetBoolean(
         prefs::kNetworkPredictionWifiOnly);
-    usingWWAN_ = net::NetworkChangeNotifier::IsConnectionCellular(
+    _usingWWAN = net::NetworkChangeNotifier::IsConnectionCellular(
         net::NetworkChangeNotifier::GetConnectionType());
-    webStateDelegate_ = std::make_unique<web::WebStateDelegateBridge>(self);
-    webStateObserver_ = std::make_unique<web::WebStateObserverBridge>(self);
-    observerBridge_ = std::make_unique<PrefObserverBridge>(self);
-    prefChangeRegistrar_.Init(browserState_->GetPrefs());
-    observerBridge_->ObserveChangesForPreference(
-        prefs::kNetworkPredictionEnabled, &prefChangeRegistrar_);
-    observerBridge_->ObserveChangesForPreference(
-        prefs::kNetworkPredictionWifiOnly, &prefChangeRegistrar_);
-    if (enabled_ && wifiOnly_) {
-      connectionTypeObserverBridge_ =
+    _webStateDelegate = std::make_unique<web::WebStateDelegateBridge>(self);
+    _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
+    _observerBridge = std::make_unique<PrefObserverBridge>(self);
+    _prefChangeRegistrar.Init(_browserState->GetPrefs());
+    _observerBridge->ObserveChangesForPreference(
+        prefs::kNetworkPredictionEnabled, &_prefChangeRegistrar);
+    _observerBridge->ObserveChangesForPreference(
+        prefs::kNetworkPredictionWifiOnly, &_prefChangeRegistrar);
+    _dialogPresenter = std::make_unique<PreloadJavaScriptDialogPresenter>(self);
+    if (_preferenceEnabled && _wifiOnly) {
+      _connectionTypeObserver =
           std::make_unique<ConnectionTypeObserverBridge>(self);
     }
 
@@ -200,38 +255,54 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
   return self;
 }
 
-- (void)browserStateDestroyed {
-  [self cancelPrerender];
-  connectionTypeObserverBridge_.reset();
-}
-
 - (void)dealloc {
   UMA_HISTOGRAM_COUNTS_1M(kPrerendersPerSessionCountHistogramName,
-                          successfulPrerendersPerSessionCount_);
+                          self.successfulPrerendersPerSessionCount);
   [self cancelPrerender];
+}
+
+#pragma mark - Accessors
+
+- (const GURL&)scheduledURL {
+  return _scheduledRequest ? _scheduledRequest->url() : GURL::EmptyGURL();
+}
+
+- (BOOL)isEnabled {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  return !IsPrerenderTabEvictionExperimentalGroup() && self.preferenceEnabled &&
+         !ios::device_util::IsSingleCoreDevice() &&
+         ios::device_util::RamIsAtLeast512Mb() &&
+         !net::NetworkChangeNotifier::IsOffline() &&
+         (!self.wifiOnly || !self.usingWWAN);
+}
+
+#pragma mark - Public
+
+- (void)browserStateDestroyed {
+  [self cancelPrerender];
+  _connectionTypeObserver.reset();
 }
 
 - (void)prerenderURL:(const GURL&)url
             referrer:(const web::Referrer&)referrer
           transition:(ui::PageTransition)transition
          immediately:(BOOL)immediately {
-  // TODO(crbug.com/754050): If shouldPrerenderURL returns false, should we
+  // TODO(crbug.com/754050): If CanPrerenderURL() returns false, should we
   // cancel any scheduled prerender requests?
-  if (![self isPrerenderingEnabled] || ![self shouldPreloadURL:url])
+  if (!self.enabled || !CanPrerenderURL(url))
     return;
 
   // Ignore this request if there is already a scheduled request for the same
   // URL; or, if there is no scheduled request, but the currently prerendered
   // page matches this URL.
-  if (url == scheduledURL_ ||
-      (scheduledURL_.is_empty() && url == prerenderedURL_)) {
+  if (url == self.scheduledURL ||
+      (self.scheduledURL.is_empty() && url == self.prerenderedURL)) {
     return;
   }
 
   [self removeScheduledPrerenderRequests];
-  scheduledURL_ = url;
-  scheduledTransition_ = transition;
-  scheduledReferrer_ = referrer;
+  _scheduledRequest =
+      std::make_unique<PrerenderRequest>(url, transition, referrer);
 
   NSTimeInterval delay = immediately ? 0.0 : kPrerenderDelay;
   [self performSelector:@selector(startPrerender)
@@ -249,36 +320,37 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
 }
 
 - (BOOL)isWebStatePrerendered:(web::WebState*)webState {
-  return webState && webState_.get() == webState;
+  return webState && _webState.get() == webState;
 }
 
 - (std::unique_ptr<web::WebState>)releasePrerenderContents {
-  successfulPrerendersPerSessionCount_++;
+  if (!_webState ||
+      _webState->GetNavigationManager()->IsRestoreSessionInProgress())
+    return nullptr;
+
+  self.successfulPrerendersPerSessionCount++;
   [self recordReleaseMetrics];
   [self removeScheduledPrerenderRequests];
-  prerenderedURL_ = GURL();
-  startTime_ = base::TimeTicks();
-  if (!webState_)
-    return nullptr;
+  self.prerenderedURL = GURL();
+  self.startTime = base::TimeTicks();
 
   // Move the pre-rendered WebState to a local variable so that it will no
   // longer be considered as pre-rendering (otherwise tab helpers may early
   // exist when invoked).
-  std::unique_ptr<web::WebState> webState = std::move(webState_);
+  std::unique_ptr<web::WebState> webState = std::move(_webState);
   DCHECK(![self isWebStatePrerendered:webState.get()]);
 
-  Tab* tab = LegacyTabHelper::GetTabForWebState(webState.get());
-  [[tab webController] setNativeProvider:nil];
-
-  webState->RemoveObserver(webStateObserver_.get());
+  web_deprecated::SetNativeProvider(webState.get(), nil);
+  webState->RemoveObserver(_webStateObserver.get());
+  breakpad::StopMonitoringURLsForWebState(webState.get());
   webState->SetDelegate(nullptr);
-  policyDeciderBridge_.reset();
+  _policyDeciderBridge.reset();
   HistoryTabHelper::FromWebState(webState.get())
       ->SetDelayHistoryServiceNotification(false);
 
   if (AccountConsistencyService* accountConsistencyService =
           ios::AccountConsistencyServiceFactory::GetForBrowserState(
-              browserState_)) {
+              self.browserState)) {
     accountConsistencyService->RemoveWebStateHandler(webState.get());
   }
 
@@ -291,171 +363,13 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
   return webState;
 }
 
+#pragma mark - CRConnectionTypeObserverBridge
+
 - (void)connectionTypeChanged:(net::NetworkChangeNotifier::ConnectionType)type {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  usingWWAN_ = net::NetworkChangeNotifier::IsConnectionCellular(type);
-  if (wifiOnly_ && usingWWAN_)
+  self.usingWWAN = net::NetworkChangeNotifier::IsConnectionCellular(type);
+  if (self.wifiOnly && self.usingWWAN)
     [self cancelPrerender];
-}
-
-- (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == prefs::kNetworkPredictionEnabled ||
-      preferenceName == prefs::kNetworkPredictionWifiOnly) {
-    DCHECK_CURRENTLY_ON(web::WebThread::UI);
-    // The logic is simpler if both preferences changes are handled equally.
-    enabled_ =
-        browserState_->GetPrefs()->GetBoolean(prefs::kNetworkPredictionEnabled);
-    wifiOnly_ = browserState_->GetPrefs()->GetBoolean(
-        prefs::kNetworkPredictionWifiOnly);
-
-    if (wifiOnly_ && enabled_) {
-      if (!connectionTypeObserverBridge_.get()) {
-        usingWWAN_ = net::NetworkChangeNotifier::IsConnectionCellular(
-            net::NetworkChangeNotifier::GetConnectionType());
-        connectionTypeObserverBridge_.reset(
-            new ConnectionTypeObserverBridge(self));
-      }
-      if (usingWWAN_) {
-        [self cancelPrerender];
-      }
-    } else if (enabled_) {
-      connectionTypeObserverBridge_.reset();
-    } else {
-      [self cancelPrerender];
-      connectionTypeObserverBridge_.reset();
-    }
-  }
-}
-
-- (void)didReceiveMemoryWarning {
-  [self cancelPrerenderForReason:PRERENDER_FINAL_STATUS_MEMORY_LIMIT_EXCEEDED];
-}
-
-#pragma mark -
-#pragma mark CRWNativeContentProvider implementation
-
-- (BOOL)hasControllerForURL:(const GURL&)url {
-  if (!webState_)
-    return NO;
-
-  return [delegate_ preloadHasNativeControllerForURL:url];
-}
-
-// Override the CRWNativeContentProvider methods to cancel any prerenders that
-// require native content.
-- (id<CRWNativeContent>)controllerForURL:(const GURL&)url
-                                webState:(web::WebState*)webState {
-  [self schedulePrerenderCancel];
-  return nil;
-}
-
-- (UIEdgeInsets)nativeContentInsetForWebState:(web::WebState*)webState {
-  // |-controllerForURL:webState:| short-circuits the native controller
-  // presentation flow, so the insets are never used.
-  return UIEdgeInsetsZero;
-}
-
-#pragma mark -
-#pragma mark Private Methods
-
-- (BOOL)isPrerenderingEnabled {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return !IsPrerenderTabEvictionExperimentalGroup() && enabled_ &&
-         !ios::device_util::IsSingleCoreDevice() &&
-         ios::device_util::RamIsAtLeast512Mb() && (!wifiOnly_ || !usingWWAN_);
-}
-
-- (BOOL)shouldPreloadURL:(const GURL&)url {
-  return url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme);
-}
-
-- (void)startPrerender {
-  // Destroy any existing prerenders before starting a new one.
-  [self destroyPreviewContents];
-  prerenderedURL_ = scheduledURL_;
-  scheduledURL_ = GURL();
-
-  DCHECK(prerenderedURL_.is_valid());
-  if (!prerenderedURL_.is_valid()) {
-    [self destroyPreviewContents];
-    return;
-  }
-
-  web::WebState::CreateParams createParams(browserState_);
-  webState_ = web::WebState::Create(createParams);
-  // Add the preload controller as a policyDecider before other tab helpers, so
-  // that it can block the navigation if needed before other policy deciders
-  // execute thier side effects (eg. AppLauncherTabHelper launching app).
-  policyDeciderBridge_ =
-      std::make_unique<web::WebStatePolicyDeciderBridge>(webState_.get(), self);
-  AttachTabHelpers(webState_.get(), /*for_prerender=*/true);
-
-  Tab* tab = LegacyTabHelper::GetTabForWebState(webState_.get());
-  DCHECK(tab);
-
-  [[tab webController] setNativeProvider:self];
-
-  webState_->SetDelegate(webStateDelegate_.get());
-  webState_->AddObserver(webStateObserver_.get());
-  webState_->SetWebUsageEnabled(true);
-
-  if (AccountConsistencyService* accountConsistencyService =
-          ios::AccountConsistencyServiceFactory::GetForBrowserState(
-              browserState_)) {
-    accountConsistencyService->SetWebStateHandler(webState_.get(), self);
-  }
-
-  HistoryTabHelper::FromWebState(webState_.get())
-      ->SetDelayHistoryServiceNotification(true);
-
-  web::NavigationManager::WebLoadParams loadParams(prerenderedURL_);
-  loadParams.referrer = scheduledReferrer_;
-  loadParams.transition_type = scheduledTransition_;
-  if ([delegate_ preloadShouldUseDesktopUserAgent]) {
-    loadParams.user_agent_override_option =
-        web::NavigationManager::UserAgentOverrideOption::DESKTOP;
-  }
-  webState_->GetNavigationManager()->LoadURLWithParams(loadParams);
-
-  // LoadIfNecessary is needed because the view is not created (but needed) when
-  // loading the page. TODO(crbug.com/705819): Remove this call.
-  webState_->GetNavigationManager()->LoadIfNecessary();
-
-  startTime_ = base::TimeTicks::Now();
-}
-
-- (void)destroyPreviewContents {
-  [self destroyPreviewContentsForReason:PRERENDER_FINAL_STATUS_CANCELLED];
-}
-
-- (void)destroyPreviewContentsForReason:(PrerenderFinalStatus)reason {
-  if (!webState_)
-    return;
-
-  UMA_HISTOGRAM_ENUMERATION(kPrerenderFinalStatusHistogramName, reason,
-                            PRERENDER_FINAL_STATUS_MAX);
-
-  Tab* tab = LegacyTabHelper::GetTabForWebState(webState_.get());
-  [[tab webController] setNativeProvider:nil];
-  webState_->RemoveObserver(webStateObserver_.get());
-  webState_->SetDelegate(nullptr);
-  webState_.reset();
-
-  prerenderedURL_ = GURL();
-  startTime_ = base::TimeTicks();
-}
-
-- (void)schedulePrerenderCancel {
-  // TODO(crbug.com/228550): Instead of cancelling the prerender, should we mark
-  // it as failed instead?  That way, subsequent prerender requests for the same
-  // URL will not kick off new prerenders.
-  [self removeScheduledPrerenderRequests];
-  [self performSelector:@selector(cancelPrerender) withObject:nil afterDelay:0];
-}
-
-- (void)removeScheduledPrerenderRequests {
-  [NSObject cancelPreviousPerformRequestsWithTarget:self];
-  scheduledURL_ = GURL();
 }
 
 #pragma mark - CRWWebStateDelegate
@@ -472,8 +386,7 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
 - (web::JavaScriptDialogPresenter*)javaScriptDialogPresenterForWebState:
     (web::WebState*)webState {
   DCHECK([self isWebStatePrerendered:webState]);
-  [self schedulePrerenderCancel];
-  return nullptr;
+  return _dialogPresenter.get();
 }
 
 - (void)webState:(web::WebState*)webState
@@ -488,47 +401,22 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
   }
 }
 
-- (void)recordReleaseMetrics {
-  UMA_HISTOGRAM_ENUMERATION(kPrerenderFinalStatusHistogramName,
-                            PRERENDER_FINAL_STATUS_USED,
-                            PRERENDER_FINAL_STATUS_MAX);
-
-  DCHECK_NE(base::TimeTicks(), startTime_);
-  UMA_HISTOGRAM_TIMES(kPrerenderStartToReleaseContentsTime,
-                      base::TimeTicks::Now() - startTime_);
-}
-
 #pragma mark - CRWWebStateObserver
 
 - (void)webState:(web::WebState*)webState
-    didStartNavigation:(web::NavigationContext*)navigation {
-  Tab* tab = LegacyTabHelper::GetTabForWebState(webState_.get());
-  [tab notifyTabOfUrlMayStartLoading:navigation->GetUrl()];
+    didFinishNavigation:(web::NavigationContext*)navigation {
+  DCHECK_EQ(webState, _webState.get());
+  if ([self shouldCancelPreloadForMimeType:webState->GetContentsMimeType()])
+    [self schedulePrerenderCancel];
 }
 
 - (void)webState:(web::WebState*)webState
     didLoadPageWithSuccess:(BOOL)loadSuccess {
-  DCHECK_EQ(webState, webState_.get());
-  // Cancel prerendering if response is "application/octet-stream". It can be a
-  // video file which should not be played from preload tab. See issue at
-  // http://crbug.com/436813 for more details.
-  const std::string& mimeType = webState->GetContentsMimeType();
-  if (mimeType == "application/octet-stream")
+  DCHECK_EQ(webState, _webState.get());
+  // The load should have been cancelled when the navigation finishes, but this
+  // makes sure that we didn't miss one.
+  if ([self shouldCancelPreloadForMimeType:webState->GetContentsMimeType()])
     [self schedulePrerenderCancel];
-}
-
-#pragma mark - ManageAccountsDelegate
-
-- (void)onManageAccounts {
-  [self schedulePrerenderCancel];
-}
-
-- (void)onAddAccount {
-  [self schedulePrerenderCancel];
-}
-
-- (void)onGoIncognito:(const GURL&)url {
-  [self schedulePrerenderCancel];
 }
 
 #pragma mark - CRWWebStatePolicyDecider
@@ -545,4 +433,179 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
   }
   return YES;
 }
+
+#pragma mark - ManageAccountsDelegate
+
+- (void)onManageAccounts {
+  [self schedulePrerenderCancel];
+}
+
+- (void)onAddAccount {
+  [self schedulePrerenderCancel];
+}
+
+- (void)onGoIncognito:(const GURL&)url {
+  [self schedulePrerenderCancel];
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == prefs::kNetworkPredictionEnabled ||
+      preferenceName == prefs::kNetworkPredictionWifiOnly) {
+    DCHECK_CURRENTLY_ON(web::WebThread::UI);
+    // The logic is simpler if both preferences changes are handled equally.
+    self.preferenceEnabled = self.browserState->GetPrefs()->GetBoolean(
+        prefs::kNetworkPredictionEnabled);
+    self.wifiOnly = self.browserState->GetPrefs()->GetBoolean(
+        prefs::kNetworkPredictionWifiOnly);
+
+    if (self.wifiOnly && self.preferenceEnabled) {
+      if (!_connectionTypeObserver.get()) {
+        self.usingWWAN = net::NetworkChangeNotifier::IsConnectionCellular(
+            net::NetworkChangeNotifier::GetConnectionType());
+        _connectionTypeObserver.reset(new ConnectionTypeObserverBridge(self));
+      }
+      if (self.usingWWAN) {
+        [self cancelPrerender];
+      }
+    } else if (self.preferenceEnabled) {
+      _connectionTypeObserver.reset();
+    } else {
+      [self cancelPrerender];
+      _connectionTypeObserver.reset();
+    }
+  }
+}
+
+#pragma mark - PreloadCancelling
+
+- (void)schedulePrerenderCancel {
+  // TODO(crbug.com/228550): Instead of cancelling the prerender, should we mark
+  // it as failed instead?  That way, subsequent prerender requests for the same
+  // URL will not kick off new prerenders.
+  [self removeScheduledPrerenderRequests];
+  [self performSelector:@selector(cancelPrerender) withObject:nil afterDelay:0];
+}
+
+#pragma mark - Cancellation Helpers
+
+- (BOOL)shouldCancelPreloadForMimeType:(std::string)mimeType {
+  // Cancel prerendering if response is "application/octet-stream". It can be a
+  // video file which should not be played from preload tab. See issue at
+  // http://crbug.com/436813 for more details.
+  // On iOS 13, PDF are getting focused when loaded, preventing the user from
+  // typing in the omnibox. See crbug.com/1017352.
+  return mimeType == "application/octet-stream" ||
+         mimeType == "application/pdf";
+}
+
+- (void)removeScheduledPrerenderRequests {
+  [NSObject cancelPreviousPerformRequestsWithTarget:self];
+  _scheduledRequest = nullptr;
+}
+
+#pragma mark - Prerender Helpers
+
+- (void)startPrerender {
+  // Destroy any existing prerenders before starting a new one.
+  [self destroyPreviewContents];
+  self.prerenderedURL = self.scheduledURL;
+  std::unique_ptr<PrerenderRequest> request = std::move(_scheduledRequest);
+
+  web::WebState* webStateToReplace = [self.delegate webStateToReplace];
+  if (!self.prerenderedURL.is_valid() || !webStateToReplace) {
+    [self destroyPreviewContents];
+    return;
+  }
+
+  web::WebState::CreateParams createParams(self.browserState);
+  if (web::GetWebClient()->IsSlimNavigationManagerEnabled()) {
+    _webState = web::WebState::CreateWithStorageSession(
+        createParams, webStateToReplace->BuildSessionStorage());
+  } else {
+    _webState = web::WebState::Create(createParams);
+  }
+
+  // Add the preload controller as a policyDecider before other tab helpers, so
+  // that it can block the navigation if needed before other policy deciders
+  // execute thier side effects (eg. AppLauncherTabHelper launching app).
+  _policyDeciderBridge =
+      std::make_unique<web::WebStatePolicyDeciderBridge>(_webState.get(), self);
+  AttachTabHelpers(_webState.get(), /*for_prerender=*/true);
+
+  web_deprecated::SetNativeProvider(_webState.get(), nil);
+
+  _webState->SetDelegate(_webStateDelegate.get());
+  _webState->AddObserver(_webStateObserver.get());
+  breakpad::MonitorURLsForWebState(_webState.get());
+  _webState->SetWebUsageEnabled(true);
+
+  if (AccountConsistencyService* accountConsistencyService =
+          ios::AccountConsistencyServiceFactory::GetForBrowserState(
+              self.browserState)) {
+    accountConsistencyService->SetWebStateHandler(_webState.get(), self);
+  }
+
+  HistoryTabHelper::FromWebState(_webState.get())
+      ->SetDelayHistoryServiceNotification(true);
+
+  web::NavigationManager::WebLoadParams loadParams(self.prerenderedURL);
+  loadParams.referrer = request->referrer();
+  loadParams.transition_type = request->transition();
+  if ([self.delegate preloadShouldUseDesktopUserAgent]) {
+    loadParams.user_agent_override_option =
+        web::NavigationManager::UserAgentOverrideOption::DESKTOP;
+  }
+  _webState->SetKeepRenderProcessAlive(true);
+  _webState->GetNavigationManager()->LoadURLWithParams(loadParams);
+
+  // LoadIfNecessary is needed because the view is not created (but needed) when
+  // loading the page. TODO(crbug.com/705819): Remove this call.
+  _webState->GetNavigationManager()->LoadIfNecessary();
+
+  self.startTime = base::TimeTicks::Now();
+}
+
+#pragma mark - Teardown Helpers
+
+- (void)destroyPreviewContents {
+  [self destroyPreviewContentsForReason:PRERENDER_FINAL_STATUS_CANCELLED];
+}
+
+- (void)destroyPreviewContentsForReason:(PrerenderFinalStatus)reason {
+  if (!_webState)
+    return;
+
+  UMA_HISTOGRAM_ENUMERATION(kPrerenderFinalStatusHistogramName, reason,
+                            PRERENDER_FINAL_STATUS_MAX);
+
+  web_deprecated::SetNativeProvider(_webState.get(), nil);
+  _webState->RemoveObserver(_webStateObserver.get());
+  breakpad::StopMonitoringURLsForWebState(_webState.get());
+  _webState->SetDelegate(nullptr);
+  _webState.reset();
+
+  self.prerenderedURL = GURL();
+  self.startTime = base::TimeTicks();
+}
+
+#pragma mark - Notification Helpers
+
+- (void)didReceiveMemoryWarning {
+  [self cancelPrerenderForReason:PRERENDER_FINAL_STATUS_MEMORY_LIMIT_EXCEEDED];
+}
+
+#pragma mark - Metrics Helpers
+
+- (void)recordReleaseMetrics {
+  UMA_HISTOGRAM_ENUMERATION(kPrerenderFinalStatusHistogramName,
+                            PRERENDER_FINAL_STATUS_USED,
+                            PRERENDER_FINAL_STATUS_MAX);
+
+  DCHECK_NE(base::TimeTicks(), self.startTime);
+  UMA_HISTOGRAM_TIMES(kPrerenderStartToReleaseContentsTime,
+                      base::TimeTicks::Now() - self.startTime);
+}
+
 @end

@@ -9,14 +9,10 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/files/file_path_watcher.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/threading/thread.h"
+#include "base/threading/sequence_bound.h"
 #include "base/values.h"
-
-namespace base {
-class FilePathWatcher;
-class SequencedTaskRunner;
-}  // namespace base
 
 namespace chromecast {
 namespace media {
@@ -48,9 +44,8 @@ class CastAudioJsonProvider {
   virtual std::unique_ptr<base::Value> GetCastAudioConfig() = 0;
 
   // |callback| will be called when a new cast_audio config is available.
-  // |callback| will always be called from the same thread, but not the same
-  // thread on which |SetTuningChangedCallback| is called.
-  // |callback| will never be called after ~CastAudioJsonProvider() is called.
+  // |callback| will always be called from the same thread, but not necessarily
+  // the same thread on which |SetTuningChangedCallback| is called.
   virtual void SetTuningChangedCallback(TuningChangedCallback callback) = 0;
 };
 
@@ -60,17 +55,22 @@ class CastAudioJsonProviderImpl : public CastAudioJsonProvider {
   ~CastAudioJsonProviderImpl() override;
 
  private:
+  class FileWatcher {
+   public:
+    FileWatcher();
+    ~FileWatcher();
+
+    void SetTuningChangedCallback(TuningChangedCallback callback);
+
+   private:
+    base::FilePathWatcher watcher_;
+  };
+
   // CastAudioJsonProvider implementation:
   std::unique_ptr<base::Value> GetCastAudioConfig() override;
   void SetTuningChangedCallback(TuningChangedCallback callback) override;
 
-  void StopWatchingFileOnThread();
-  void OnTuningFileChanged(const base::FilePath& path, bool error);
-
-  TuningChangedCallback callback_;
-  base::Thread thread_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  std::unique_ptr<base::FilePathWatcher> cast_audio_watcher_;
+  base::SequenceBound<FileWatcher> cast_audio_watcher_;
 
   DISALLOW_COPY_AND_ASSIGN(CastAudioJsonProviderImpl);
 };

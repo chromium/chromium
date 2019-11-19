@@ -23,7 +23,7 @@ namespace extensions {
 class Extension;
 
 class DashboardPrivateShowPermissionPromptForDelegatedInstallFunction
-    : public UIThreadExtensionFunction,
+    : public ExtensionFunction,
       public WebstoreInstallHelper::Delegate {
  public:
   DECLARE_EXTENSION_FUNCTION(

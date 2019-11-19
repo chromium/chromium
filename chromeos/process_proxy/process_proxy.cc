@@ -148,7 +148,7 @@ void ProcessProxy::Close() {
   process_launched_ = false;
   callback_set_ = false;
   callback_.Reset();
-  callback_runner_ = NULL;
+  callback_runner_.reset();
 
   process_.Terminate(0, /* wait */ false);
   base::EnsureProcessTerminated(std::move(process_));
@@ -243,8 +243,8 @@ bool ProcessProxy::LaunchProcess(const base::CommandLine& cmdline,
   // TODO(vapier): Ideally we'd just use the env settings from hterm itself.
   // We can't let the user inject any env var they want, but we should be able
   // to filter the $TERM value dynamically.
-  options.environ["TERM"] = "xterm-256color";
-  options.environ["CROS_USER_ID_HASH"] = user_id_hash;
+  options.environment["TERM"] = "xterm-256color";
+  options.environment["CROS_USER_ID_HASH"] = user_id_hash;
 
   // Launch the process.
   process_ = base::LaunchProcess(cmdline, options);

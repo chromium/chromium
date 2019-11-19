@@ -11,19 +11,20 @@ import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Process;
+import android.security.NetworkSecurityPolicy;
 import android.view.ActionMode;
 import android.view.ViewConfiguration;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import org.chromium.base.annotations.DoNotInline;
+import org.chromium.base.annotations.VerifiesOnM;
 
 /**
  * Utility class to use new APIs that were added in M (API level 23). These need to exist in a
  * separate class so that Android framework can successfully verify classes without
  * encountering the new APIs.
  */
-@DoNotInline
+@VerifiesOnM
 @TargetApi(Build.VERSION_CODES.M)
 public final class ApiHelperForM {
     private ApiHelperForM() {}
@@ -80,6 +81,11 @@ public final class ApiHelperForM {
     public static boolean isPermissionRevokedByPolicy(Activity activity, String permission) {
         return activity.getPackageManager().isPermissionRevokedByPolicy(
                 permission, activity.getPackageName());
+    }
+
+    /** See {@link NetworkSecurityPolicy#isCleartextTrafficPermitted()}. */
+    public static boolean isCleartextTrafficPermitted() {
+        return NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted();
     }
 
     /*

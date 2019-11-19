@@ -13,6 +13,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/completion_once_callback.h"
@@ -36,7 +38,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ChunkedDataPipeUploadDataStream
   // life of the UploadDataStream.
   ChunkedDataPipeUploadDataStream(
       scoped_refptr<ResourceRequestBody> resource_request_body,
-      mojom::ChunkedDataPipeGetterPtr chunked_data_pipe_getter);
+      mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
+          chunked_data_pipe_getter);
 
   ~ChunkedDataPipeUploadDataStream() override;
 
@@ -59,7 +62,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ChunkedDataPipeUploadDataStream
   void OnDataPipeGetterClosed();
 
   scoped_refptr<ResourceRequestBody> resource_request_body_;
-  mojom::ChunkedDataPipeGetterPtr chunked_data_pipe_getter_;
+  mojo::Remote<mojom::ChunkedDataPipeGetter> chunked_data_pipe_getter_;
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
   // Watcher for |data_pipe_|. Only armed while there's a pending read.
   mojo::SimpleWatcher handle_watcher_;

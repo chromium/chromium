@@ -31,6 +31,8 @@ source_set("browsing_data") {
     "browsing_data_remover_impl.h",
     "browsing_data_remover_impl.mm",
     "browsing_data_remover_observer.h",
+    "browsing_data_remover_observer_bridge.h",
+    "browsing_data_remover_observer_bridge.mm",
   ]
   deps = [
     ":counters",
@@ -48,13 +50,13 @@ source_set("browsing_data") {
     "//components/password_manager/core/browser",
     "//components/prefs",
     "//components/sessions",
-    "//components/signin/core/browser",
     "//components/signin/ios/browser",
     "//components/translate/core/browser:browser",
     "//ios/chrome/browser",
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/external_files",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/language",
     "//ios/chrome/browser/passwords",
@@ -66,10 +68,10 @@ source_set("browsing_data") {
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/translate:translate",
-    "//ios/chrome/browser/ui:external_files",
+    "//ios/chrome/browser/webdata_services",
     "//ios/net",
     "//ios/public/provider/chrome/browser",
-    "//ios/web",
+    "//ios/web/common:web_view_creation_util",
     "//net",
     "//url",
   ]
@@ -101,11 +103,13 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "browsing_data_remover_impl_unittest.mm",
+    "browsing_data_remover_observer_bridge_unittest.mm",
     "cache_counter_unittest.cc",
   ]
   deps = [
     ":browsing_data",
     ":counters",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/browsing_data/core",
@@ -124,4 +128,21 @@ source_set("unit_tests") {
     "//net",
     "//testing/gtest",
   ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_browsing_data_remover.h",
+    "fake_browsing_data_remover.mm",
+    "fake_browsing_data_remover_observer.h",
+    "fake_browsing_data_remover_observer.mm",
+  ]
+
+  deps = [
+    ":browsing_data",
+    "//base",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
 }

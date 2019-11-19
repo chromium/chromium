@@ -4,23 +4,45 @@
 
 #include "chromecast/media/cma/backend/audio_fader.h"
 
-#include <string.h>
+#include <algorithm>
 
+#include "base/bits.h"
 #include "base/logging.h"
 #include "media/base/audio_bus.h"
 
 namespace chromecast {
 namespace media {
 
-AudioFader::AudioFader(Source* source, int num_channels, int fade_frames)
+AudioFader::AudioFader(Source* source,
+                       base::TimeDelta fade_time,
+                       int num_channels,
+                       int sample_rate,
+                       double playback_rate)
+    : AudioFader(
+          source,
+          std::round(fade_time.InSecondsF() * sample_rate * playback_rate),
+          num_channels,
+          sample_rate,
+          playback_rate) {}
+
+AudioFader::AudioFader(Source* source,
+                       int fade_frames,
+                       int num_channels,
+                       int sample_rate,
+                       double playback_rate)
     : source_(source),
-      fade_frames_(fade_frames),
-      state_(State::kSilent),
-      fade_buffer_(::media::AudioBus::Create(num_channels, fade_frames)),
-      buffered_frames_(0),
-      fade_frames_remaining_(0) {
+      // Ensure that fade_frames_ is a multiple of 4 to keep correct alignment.
+      fade_frames_(base::bits::Align(fade_frames, 4)),
+      num_channels_(num_channels),
+      sample_rate_(sample_rate),
+      playback_rate_(playback_rate) {
   DCHECK(source_);
-  DCHECK_GE(fade_frames_, 0);
+  DCHECK_GT(fade_frames_, 0);
+  DCHECK_GT(num_channels_, 0);
+  DCHECK_GT(sample_rate_, 0);
+
+  fade_buffer_ = ::media::AudioBus::Create(num_channels, fade_frames_);
+  fade_buffer_->Zero();
 }
 
 AudioFader::~AudioFader() = default;
@@ -31,49 +53,65 @@ int AudioFader::FramesNeededFromSource(int num_fill_frames) const {
   return num_fill_frames + fade_frames_ - buffered_frames_;
 }
 
+int64_t AudioFader::FramesToMicroseconds(int64_t frames) {
+  return frames * base::Time::kMicrosecondsPerSecond /
+         (sample_rate_ * playback_rate_);
+}
+
 int AudioFader::FillFrames(int num_frames,
-                           ::media::AudioBus* buffer,
-                           int write_offset) {
-  DCHECK(buffer);
-  DCHECK_EQ(buffer->channels(), fade_buffer_->channels());
-  DCHECK_LE(write_offset + num_frames, buffer->frames());
+                           RenderingDelay rendering_delay,
+                           float* const* channel_data) {
+  DCHECK(channel_data);
 
-  // First, copy data from buffered_frames_.
   int filled_frames = std::min(buffered_frames_, num_frames);
-  fade_buffer_->CopyPartialFramesTo(0, filled_frames, write_offset, buffer);
-  buffered_frames_ -= filled_frames;
-  num_frames -= filled_frames;
+  if (filled_frames > 0) {
+    for (int c = 0; c < num_channels_; ++c) {
+      float* fade_channel = fade_buffer_->channel(c);
+      // First, copy data from buffered_frames_.
+      std::copy_n(fade_channel, filled_frames, channel_data[c]);
+      // Move data in fade_buffer_ to start.
+      std::copy(fade_channel + filled_frames, fade_channel + buffered_frames_,
+                fade_channel);
+    }
 
-  // Move data in fade_buffer_ to start.
-  for (int c = 0; c < fade_buffer_->channels(); ++c) {
-    float* channel_data = fade_buffer_->channel(c);
-    memmove(channel_data, channel_data + filled_frames,
-            buffered_frames_ * sizeof(float));
+    buffered_frames_ -= filled_frames;
+    num_frames -= filled_frames;
   }
 
+  float* fill_channel_data[num_channels_];
   if (num_frames > 0) {
     // Still need more frames; ask source to fill.
-    int extra_fill = source_->FillFaderFrames(
-        buffer, filled_frames + write_offset, num_frames);
-    filled_frames += extra_fill;
-    num_frames -= extra_fill;
+    for (int c = 0; c < num_channels_; ++c) {
+      fill_channel_data[c] = channel_data[c] + filled_frames;
+    }
+    RenderingDelay delay = rendering_delay;
+    delay.delay_microseconds +=
+        FramesToMicroseconds(filled_frames + buffered_frames_);
+    int filled = source_->FillFaderFrames(num_frames, delay, fill_channel_data);
+    filled_frames += filled;
+    num_frames -= filled;
   }
   // Refill fade_buffer_ from source.
-  buffered_frames_ += source_->FillFaderFrames(
-      fade_buffer_.get(), buffered_frames_, fade_frames_ - buffered_frames_);
+  for (int c = 0; c < num_channels_; ++c) {
+    fill_channel_data[c] = fade_buffer_->channel(c) + buffered_frames_;
+  }
+  RenderingDelay delay = rendering_delay;
+  delay.delay_microseconds +=
+      FramesToMicroseconds(filled_frames + buffered_frames_);
+  buffered_frames_ += source_->FillFaderFrames(fade_frames_ - buffered_frames_,
+                                               delay, fill_channel_data);
 
   const bool complete = (num_frames == 0 && buffered_frames_ == fade_frames_);
   if (complete) {
-    CompleteFill(buffer, filled_frames, write_offset);
+    CompleteFill(channel_data, filled_frames);
   } else {
-    IncompleteFill(buffer, filled_frames, write_offset);
+    IncompleteFill(channel_data, filled_frames);
   }
+
   return filled_frames;
 }
 
-void AudioFader::CompleteFill(::media::AudioBus* buffer,
-                              int filled_frames,
-                              int write_offset) {
+void AudioFader::CompleteFill(float* const* channel_data, int filled_frames) {
   switch (state_) {
     case State::kSilent:
       // Fade in.
@@ -93,17 +131,17 @@ void AudioFader::CompleteFill(::media::AudioBus* buffer,
           std::max(0, fade_frames_ - fade_frames_remaining_ - 1);
       break;
   }
-  FadeIn(buffer, filled_frames, write_offset);
+  FadeIn(channel_data, filled_frames);
 }
 
-void AudioFader::IncompleteFill(::media::AudioBus* buffer,
-                                int filled_frames,
-                                int write_offset) {
+void AudioFader::IncompleteFill(float* const* channel_data, int filled_frames) {
   switch (state_) {
     case State::kSilent:
       // Remain silent.
       buffered_frames_ = 0;
-      buffer->ZeroFramesPartial(write_offset, filled_frames);
+      for (int c = 0; c < num_channels_; ++c) {
+        std::fill_n(channel_data[c], filled_frames, 0);
+      }
       return;
     case State::kFadingIn:
       // Fade back out.
@@ -120,59 +158,13 @@ void AudioFader::IncompleteFill(::media::AudioBus* buffer,
       // Continue fading out.
       break;
   }
-  FadeOut(buffer, filled_frames, write_offset);
+  FadeOut(channel_data, filled_frames);
 }
 
-// static
-void AudioFader::FadeInHelper(::media::AudioBus* buffer,
-                              int filled_frames,
-                              int write_offset,
-                              int fade_frames,
-                              int fade_frames_remaining) {
-  const float inverse_fade_frames = 1.0f / static_cast<float>(fade_frames);
-  const int fade_limit = std::min(filled_frames, fade_frames_remaining + 1);
-
-  DCHECK_LE(write_offset + fade_limit, buffer->frames());
-  for (int c = 0; c < buffer->channels(); ++c) {
-    float* channel_data = buffer->channel(c);
-    for (int f = write_offset; f < (write_offset + fade_limit); ++f) {
-      const float fade_multiplier =
-          1.0 - (fade_frames_remaining - f) * inverse_fade_frames;
-      channel_data[f] *= fade_multiplier;
-    }
-  }
-}
-
-// static
-void AudioFader::FadeOutHelper(::media::AudioBus* buffer,
-                               int filled_frames,
-                               int write_offset,
-                               int fade_frames,
-                               int fade_frames_remaining) {
-  const float inverse_fade_frames = 1.0f / static_cast<float>(fade_frames);
-  const int fade_limit = std::min(filled_frames, fade_frames_remaining + 1);
-
-  DCHECK_LE(write_offset + fade_limit, buffer->frames());
-  for (int c = 0; c < buffer->channels(); ++c) {
-    float* channel_data = buffer->channel(c);
-    for (int f = write_offset; f < (write_offset + fade_limit); ++f) {
-      const float fade_multiplier =
-          (fade_frames_remaining - f) * inverse_fade_frames;
-      channel_data[f] *= fade_multiplier;
-    }
-  }
-  if (filled_frames > fade_frames_remaining) {
-    buffer->ZeroFramesPartial(write_offset + fade_frames_remaining,
-                              filled_frames - fade_frames_remaining);
-  }
-}
-
-void AudioFader::FadeIn(::media::AudioBus* buffer,
-                        int filled_frames,
-                        int write_offset) {
+void AudioFader::FadeIn(float* const* channel_data, int filled_frames) {
   DCHECK(state_ == State::kFadingIn);
 
-  FadeInHelper(buffer, filled_frames, write_offset, fade_frames_,
+  FadeInHelper(channel_data, num_channels_, filled_frames, fade_frames_,
                fade_frames_remaining_);
   fade_frames_remaining_ = std::max(0, fade_frames_remaining_ - filled_frames);
 
@@ -181,18 +173,60 @@ void AudioFader::FadeIn(::media::AudioBus* buffer,
   }
 }
 
-void AudioFader::FadeOut(::media::AudioBus* buffer,
-                         int filled_frames,
-                         int write_offset) {
+// static
+void AudioFader::FadeInHelper(float* const* channel_data,
+                              int num_channels,
+                              int filled_frames,
+                              int fade_frames,
+                              int fade_frames_remaining) {
+  const float inverse_fade_frames = 1.0f / static_cast<float>(fade_frames);
+  const int fade_limit = std::min(filled_frames, fade_frames_remaining + 1);
+
+  for (int c = 0; c < num_channels; ++c) {
+    float* channel = channel_data[c];
+    for (int f = 0; f < fade_limit; ++f) {
+      const float fade_multiplier =
+          1.0 - (fade_frames_remaining - f) * inverse_fade_frames;
+      channel[f] *= fade_multiplier;
+    }
+  }
+}
+
+void AudioFader::FadeOut(float* const* channel_data, int filled_frames) {
   DCHECK(state_ == State::kFadingOut);
 
-  FadeOutHelper(buffer, filled_frames, write_offset, fade_frames_,
+  FadeOutHelper(channel_data, num_channels_, filled_frames, fade_frames_,
                 fade_frames_remaining_);
   fade_frames_remaining_ = std::max(0, fade_frames_remaining_ - filled_frames);
 
   if (fade_frames_remaining_ == 0) {
     state_ = State::kSilent;
     buffered_frames_ = 0;
+  }
+}
+
+// static
+void AudioFader::FadeOutHelper(float* const* channel_data,
+                               int num_channels,
+                               int filled_frames,
+                               int fade_frames,
+                               int fade_frames_remaining) {
+  const float inverse_fade_frames = 1.0f / static_cast<float>(fade_frames);
+  const int fade_limit = std::min(filled_frames, fade_frames_remaining + 1);
+
+  for (int c = 0; c < num_channels; ++c) {
+    float* channel = channel_data[c];
+    for (int f = 0; f < fade_limit; ++f) {
+      const float fade_multiplier =
+          (fade_frames_remaining - f) * inverse_fade_frames;
+      channel[f] *= fade_multiplier;
+    }
+  }
+  if (filled_frames > fade_frames_remaining) {
+    for (int c = 0; c < num_channels; ++c) {
+      std::fill_n(channel_data[c] + fade_frames_remaining,
+                  filled_frames - fade_frames_remaining, 0);
+    }
   }
 }
 

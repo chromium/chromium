@@ -45,9 +45,7 @@ const net::BackoffEntry::Policy kPolicyReinstallBackoffPolicy = {
 
 PolicyExtensionReinstaller::PolicyExtensionReinstaller(
     content::BrowserContext* context)
-    : context_(context),
-      backoff_entry_(&kPolicyReinstallBackoffPolicy),
-      weak_factory_(this) {}
+    : context_(context), backoff_entry_(&kPolicyReinstallBackoffPolicy) {}
 
 PolicyExtensionReinstaller::~PolicyExtensionReinstaller() {}
 

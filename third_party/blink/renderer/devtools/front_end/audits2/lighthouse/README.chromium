@@ -1,8 +1,0 @@
-Name: Lighthouse is a performance auditing component written in JavaScript that works in the browser.
-Short Name: lighthouse
-URL: github.com/GoogleChrome/lighthouse
-License: Apache License 2.0
-Security Critical: no
-
-This directory contains Chromium's version of the lighthouse report assets, including renderer.
-

@@ -61,7 +61,7 @@ class OptimizationGuideService {
   base::Optional<HintsComponentInfo> hints_component_info_;
 
   // Used to get |weak_ptr_| to self.
-  base::WeakPtrFactory<OptimizationGuideService> weak_ptr_factory_;
+  base::WeakPtrFactory<OptimizationGuideService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OptimizationGuideService);
 };

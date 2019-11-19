@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
@@ -23,7 +24,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/shortcuts_provider_test_util.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,7 +41,8 @@ namespace {
 struct TestShortcutData shortcut_test_db[] = {
     {"BD85DBA2-8C29-49F9-84AE-48E1E90880F1", "echo echo", "echo echo",
      "chrome-extension://cedabbhfglmiikkmdgcpjdkocfcmbkee/?q=echo",
-     "Run Echo command: echo", "0,0", "Echo", "0,4", ui::PAGE_TRANSITION_TYPED,
+     AutocompleteMatch::DocumentType::NONE, "Run Echo command: echo", "0,0",
+     "Echo", "0,4", ui::PAGE_TRANSITION_TYPED,
      AutocompleteMatchType::EXTENSION_APP_DEPRECATED, "", 1, 1},
 };
 
@@ -56,7 +58,8 @@ class ShortcutsProviderExtensionTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
   ChromeAutocompleteProviderClient client_;
   scoped_refptr<ShortcutsBackend> backend_;
@@ -67,6 +70,9 @@ ShortcutsProviderExtensionTest::ShortcutsProviderExtensionTest()
     : client_(&profile_) {}
 
 void ShortcutsProviderExtensionTest::SetUp() {
+  feature_list_.InitWithFeatures(
+      {history::HistoryService::kHistoryServiceUsesTaskScheduler}, {});
+
   ShortcutsBackendFactory::GetInstance()->SetTestingFactoryAndUse(
       &profile_,
       base::BindRepeating(
@@ -84,6 +90,8 @@ void ShortcutsProviderExtensionTest::TearDown() {
   // Run all pending tasks or else some threads hold on to the message loop
   // and prevent it from being deleted.
   base::RunLoop().RunUntilIdle();
+
+  profile_.BlockUntilHistoryBackendDestroyed();
 }
 
 // Actual tests ---------------------------------------------------------------

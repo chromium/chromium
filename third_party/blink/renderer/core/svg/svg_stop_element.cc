@@ -23,14 +23,16 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_gradient_element.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
-inline SVGStopElement::SVGStopElement(Document& document)
+SVGStopElement::SVGStopElement(Document& document)
     : SVGElement(svg_names::kStopTag, document),
-      offset_(SVGAnimatedNumber::Create(this,
-                                        svg_names::kOffsetAttr,
-                                        SVGNumberAcceptPercentage::Create())) {
+      offset_(MakeGarbageCollected<SVGAnimatedNumber>(
+          this,
+          svg_names::kOffsetAttr,
+          MakeGarbageCollected<SVGNumberAcceptPercentage>())) {
   AddToPropertyMap(offset_);
 
   // Since stop elements don't have corresponding layout objects, we rely on
@@ -43,15 +45,13 @@ void SVGStopElement::Trace(blink::Visitor* visitor) {
   SVGElement::Trace(visitor);
 }
 
-DEFINE_NODE_FACTORY(SVGStopElement)
-
 namespace {
 
 void InvalidateInstancesAndAncestorResources(SVGStopElement* stop_element) {
   SVGElement::InvalidationGuard invalidation_guard(stop_element);
 
   Element* parent = stop_element->parentElement();
-  if (auto* gradient = ToSVGGradientElementOrNull(parent))
+  if (auto* gradient = DynamicTo<SVGGradientElement>(parent))
     gradient->InvalidateGradient(layout_invalidation_reason::kChildChanged);
 }
 

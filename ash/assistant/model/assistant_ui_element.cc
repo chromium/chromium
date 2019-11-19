@@ -6,7 +6,6 @@
 
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "base/base64.h"
-#include "ui/base/ui_base_features.h"
 
 namespace ash {
 
@@ -66,8 +65,6 @@ void AssistantCardElement::Processor::Process() {
 
   contents_ = std::make_unique<content::NavigableContents>(
       contents_factory_, std::move(contents_params));
-  if (features::IsUsingWindowService())
-    contents_->ForceUseWindowService();
 
   // Observe |contents_| so that we are notified when loading is complete.
   contents_->AddObserver(this);

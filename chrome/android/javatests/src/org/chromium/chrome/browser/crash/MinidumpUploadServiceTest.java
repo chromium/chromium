@@ -153,7 +153,7 @@ public class MinidumpUploadServiceTest {
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
-    public void testUploadCrash() throws IOException, InterruptedException {
+    public void testUploadCrash() throws IOException {
         List<CountedMinidumpUploadCallable> callables =
                 new ArrayList<CountedMinidumpUploadCallable>();
         callables.add(new CountedMinidumpUploadCallable(
@@ -164,7 +164,7 @@ public class MinidumpUploadServiceTest {
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
-    public void testUploadCrashWithThreeFails() throws IOException, InterruptedException {
+    public void testUploadCrashWithThreeFails() throws IOException {
         // Create |MAX_TRIES_ALLOWED| callables.
         final List<CountedMinidumpUploadCallable> callables =
                 new ArrayList<CountedMinidumpUploadCallable>();
@@ -178,7 +178,7 @@ public class MinidumpUploadServiceTest {
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
-    public void testUploadCrashWithOneFailWithNetwork() throws IOException, InterruptedException {
+    public void testUploadCrashWithOneFailWithNetwork() throws IOException {
         List<CountedMinidumpUploadCallable> callables =
                 new ArrayList<CountedMinidumpUploadCallable>();
         callables.add(new CountedMinidumpUploadCallable(
@@ -191,7 +191,7 @@ public class MinidumpUploadServiceTest {
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
-    public void testUploadCrashWithOneFailNoNetwork() throws IOException, InterruptedException {
+    public void testUploadCrashWithOneFailNoNetwork() throws IOException {
         List<CountedMinidumpUploadCallable> callables =
                 new ArrayList<CountedMinidumpUploadCallable>();
         callables.add(new CountedMinidumpUploadCallable(
@@ -200,7 +200,7 @@ public class MinidumpUploadServiceTest {
     }
 
     private void runUploadCrashTest(final List<CountedMinidumpUploadCallable> callables)
-            throws IOException, InterruptedException {
+            throws IOException {
         // The JobScheduler API is used on Android M+.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) return;
 
@@ -498,7 +498,7 @@ public class MinidumpUploadServiceTest {
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
-    public void testHandleForceUploadCrash_FileDoesntExist_WithJobScheduler() throws IOException {
+    public void testHandleForceUploadCrash_FileDoesntExist_WithJobScheduler() {
         // The JobScheduler API is only available as of Android M.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
 

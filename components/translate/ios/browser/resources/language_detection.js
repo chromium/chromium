@@ -158,7 +158,7 @@ __gCrWeb.languageDetection['detectLanguage'] = function() {
         'htmlLang': document.documentElement.lang,
         'httpContentLanguage': httpContentLanguage});
   }
-}
+};
 
 /**
  * Retrives the cached text content of a page. Returns it and then purges the
@@ -171,6 +171,5 @@ __gCrWeb.languageDetection['retrieveBufferedTextContent'] = function() {
     __gCrWeb.languageDetection.bufferedTextContent = null;
   }
   return textContent;
-}
-
-}())  // End of anonymous function.
+};
+}());  // End of anonymous function.

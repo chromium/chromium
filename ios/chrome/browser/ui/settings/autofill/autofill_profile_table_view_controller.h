@@ -11,8 +11,6 @@ namespace ios {
 class ChromeBrowserState;
 }  // namespace ios
 
-extern NSString* const kAutofillProfileTableViewID;
-
 // The TableView for the Autofill settings.
 @interface AutofillProfileTableViewController : SettingsRootTableViewController
 

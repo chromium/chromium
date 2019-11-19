@@ -26,7 +26,8 @@
 #include "chrome/browser/sync_file_system/logger.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "components/drive/service/drive_service_interface.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "extensions/browser/extension_registry.h"
+#include "storage/common/file_system/file_system_util.h"
 
 namespace sync_file_system {
 
@@ -48,6 +49,7 @@ SyncWorker::SyncWorker(
     const base::FilePath& base_dir,
     const base::WeakPtr<extensions::ExtensionServiceInterface>&
         extension_service,
+    extensions::ExtensionRegistry* extension_registry,
     leveldb::Env* env_override)
     : base_dir_(base_dir),
       env_override_(env_override),
@@ -57,7 +59,7 @@ SyncWorker::SyncWorker(
       listing_remote_changes_(false),
       sync_enabled_(false),
       extension_service_(extension_service),
-      weak_ptr_factory_(this) {
+      extension_registry_(extension_registry) {
   sequence_checker_.DetachFromSequence();
   DCHECK(base_dir_.IsAbsolute());
 }
@@ -407,6 +409,10 @@ void SyncWorker::UpdateRegisteredApps() {
   context_->GetUITaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&SyncWorker::QueryAppStatusOnUIThread, extension_service_,
+                     // This is protected by checking the extension_service_
+                     // weak pointer, since the underlying ExtensionService
+                     // also relies on the ExtensionRegistry.
+                     base::Unretained(extension_registry_),
                      base::Owned(app_ids.release()), app_status,
                      RelayCallbackToTaskRunner(context_->GetWorkerTaskRunner(),
                                                FROM_HERE, callback)));
@@ -415,6 +421,7 @@ void SyncWorker::UpdateRegisteredApps() {
 void SyncWorker::QueryAppStatusOnUIThread(
     const base::WeakPtr<extensions::ExtensionServiceInterface>&
         extension_service_ptr,
+    extensions::ExtensionRegistry* extension_registry,
     const std::vector<std::string>* app_ids,
     AppStatusMap* status,
     const base::Closure& callback) {
@@ -427,7 +434,7 @@ void SyncWorker::QueryAppStatusOnUIThread(
 
   for (auto itr = app_ids->begin(); itr != app_ids->end(); ++itr) {
     const std::string& app_id = *itr;
-    if (!extension_service->GetInstalledExtension(app_id))
+    if (!extension_registry->GetInstalledExtension(app_id))
       (*status)[app_id] = APP_STATUS_UNINSTALLED;
     else if (!extension_service->IsExtensionEnabled(app_id))
       (*status)[app_id] = APP_STATUS_DISABLED;

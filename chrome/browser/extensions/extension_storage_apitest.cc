@@ -7,13 +7,7 @@
 
 namespace extensions {
 
-#if defined(OS_WIN)
-// Always fails on Windows after r110181: http://crbug.com/104419.
-#define MAYBE_Storage DISABLED_Storage
-#else
-#define MAYBE_Storage Storage
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_Storage) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, Storage) {
   ASSERT_TRUE(RunExtensionTest("storage")) << message_;
 }
 

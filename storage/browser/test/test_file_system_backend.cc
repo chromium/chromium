@@ -16,18 +16,18 @@
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "storage/browser/fileapi/copy_or_move_file_validator.h"
-#include "storage/browser/fileapi/file_observers.h"
-#include "storage/browser/fileapi/file_stream_reader.h"
-#include "storage/browser/fileapi/file_system_operation.h"
-#include "storage/browser/fileapi/file_system_operation_context.h"
-#include "storage/browser/fileapi/file_system_quota_util.h"
-#include "storage/browser/fileapi/local_file_util.h"
-#include "storage/browser/fileapi/native_file_util.h"
-#include "storage/browser/fileapi/quota/quota_reservation.h"
-#include "storage/browser/fileapi/sandbox_file_stream_writer.h"
+#include "storage/browser/file_system/copy_or_move_file_validator.h"
+#include "storage/browser/file_system/file_observers.h"
+#include "storage/browser/file_system/file_stream_reader.h"
+#include "storage/browser/file_system/file_system_operation.h"
+#include "storage/browser/file_system/file_system_operation_context.h"
+#include "storage/browser/file_system/file_system_quota_util.h"
+#include "storage/browser/file_system/local_file_util.h"
+#include "storage/browser/file_system/native_file_util.h"
+#include "storage/browser/file_system/quota/quota_reservation.h"
+#include "storage/browser/file_system/sandbox_file_stream_writer.h"
 #include "storage/browser/quota/quota_manager.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/common/file_system/file_system_util.h"
 
 using storage::FileSystemContext;
 using storage::FileSystemOperation;
@@ -208,9 +208,8 @@ TestFileSystemBackend::CreateFileStreamReader(
     int64_t max_bytes_to_read,
     const base::Time& expected_modification_time,
     FileSystemContext* context) const {
-  return std::unique_ptr<storage::FileStreamReader>(
-      storage::FileStreamReader::CreateForFileSystemFile(
-          context, url, offset, expected_modification_time));
+  return storage::FileStreamReader::CreateForFileSystemFile(
+      context, url, offset, expected_modification_time);
 }
 
 std::unique_ptr<storage::FileStreamWriter>

@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
+@protocol TableViewFaviconDataSource;
+
 // This class presents a list of fallback item in a table view.
 @interface FallbackViewController : ChromeTableViewController
 
@@ -21,7 +23,11 @@
 
 // If set to YES, the controller will add negative content insets inverse to the
 // ones added by UITableViewController to accommodate for the keyboard.
+// Not needed and ignored on iOS >= 13.
 @property(nonatomic, assign) BOOL contentInsetsAlwaysEqualToSafeArea;
+
+// Data source for images.
+@property(nonatomic, weak) id<TableViewFaviconDataSource> imageDataSource;
 
 // Presents given items in 'items' section.
 - (void)presentDataItems:(NSArray<TableViewItem*>*)items;

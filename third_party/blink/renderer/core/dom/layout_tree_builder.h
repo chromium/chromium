@@ -29,14 +29,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_LAYOUT_TREE_BUILDER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -61,123 +58,67 @@ class LayoutTreeBuilder {
   STACK_ALLOCATED();
 
  protected:
-  LayoutTreeBuilder(NodeType& node, LayoutObject* layout_object_parent)
-      : node_(node), layout_object_parent_(layout_object_parent) {
+  LayoutTreeBuilder(NodeType& node,
+                    Node::AttachContext& context,
+                    const ComputedStyle* style)
+      : node_(node), context_(context), style_(style) {
     DCHECK(!node.GetLayoutObject());
     DCHECK(node.GetDocument().InStyleRecalc());
     DCHECK(node.InActiveDocument());
+    DCHECK(context.parent);
   }
 
   LayoutObject* NextLayoutObject() const {
-    DCHECK(layout_object_parent_);
-
-    // Avoid an O(N^2) walk over the children when reattaching all children of a
-    // node.
-    if (layout_object_parent_->GetNode() &&
-        layout_object_parent_->GetNode()->NeedsReattachLayoutTree())
-      return nullptr;
-
-    LayoutObject* next =
-        LayoutTreeBuilderTraversal::NextSiblingLayoutObject(*node_);
-
+    if (!context_.next_sibling_valid) {
+      context_.next_sibling =
+          LayoutTreeBuilderTraversal::NextSiblingLayoutObject(*node_);
+      context_.next_sibling_valid = true;
+    }
+    LayoutObject* next = context_.next_sibling;
     // If a text node is wrapped in an anonymous inline for display:contents
     // (see CreateInlineWrapperForDisplayContents()), use the wrapper as the
     // next layout object. Otherwise we would need to add code to various
     // AddChild() implementations to walk up the tree to find the correct
     // layout tree parent/siblings.
     if (next && next->IsText() && next->Parent()->IsAnonymous() &&
-        next->Parent()->IsInline() &&
-        !ToLayoutInline(next->Parent())->IsFirstLineAnonymous()) {
+        next->Parent()->IsInline()) {
       return next->Parent();
     }
     return next;
   }
 
   Member<NodeType> node_;
-  LayoutObject* layout_object_parent_;
+  Node::AttachContext& context_;
+  const ComputedStyle* style_;
 };
 
 class LayoutTreeBuilderForElement : public LayoutTreeBuilder<Element> {
  public:
-  LayoutTreeBuilderForElement(Element&, ComputedStyle*);
+  LayoutTreeBuilderForElement(Element&,
+                              Node::AttachContext&,
+                              const ComputedStyle*,
+                              LegacyLayout legacy);
 
-  void CreateLayoutObjectIfNeeded() {
-    if (ShouldCreateLayoutObject())
-      CreateLayoutObject();
-  }
+  void CreateLayoutObject();
 
  private:
   LayoutObject* ParentLayoutObject() const;
   LayoutObject* NextLayoutObject() const;
-  bool ShouldCreateLayoutObject() const;
-  void CreateLayoutObject();
 
-  scoped_refptr<ComputedStyle> style_;
+  LegacyLayout legacy_;
 };
 
 class LayoutTreeBuilderForText : public LayoutTreeBuilder<Text> {
  public:
   LayoutTreeBuilderForText(Text& text,
-                           LayoutObject* layout_parent,
-                           ComputedStyle* style_from_parent)
-      : LayoutTreeBuilder(text, layout_parent), style_(style_from_parent) {}
+                           Node::AttachContext& context,
+                           const ComputedStyle* style_from_parent)
+      : LayoutTreeBuilder(text, context, style_from_parent) {}
 
   void CreateLayoutObject();
 
  private:
   LayoutObject* CreateInlineWrapperForDisplayContentsIfNeeded();
-
-  scoped_refptr<ComputedStyle> style_;
-};
-
-// Replaces LayoutNG objects to legacy layout objects when corresponding element
-// returns true for |ShouldForceLegacyLayout()|.
-//
-// This replacement is done by three phases:
-//  1. Collects layout objects establish block formatting context(BFC) and
-//     contain at least one layout object should be legacy layout.
-//  2. Marks descendant LayoutNG objects of collected layout objects to
-//     |NeedsReattachLayoutTree|.
-//  3. Invokes |RebuildLayoutTree()| to replaces to legacy layout objects.
-//
-// See https://goo.gl/8s5h96 for more details.
-class CORE_EXPORT ReattachLegacyLayoutObjectList final {
-  // Note: Make GC-plugin happy, this object doesn't have |STACK_ALLOCATED()|.
-  DISALLOW_NEW();
-
- public:
-  ReattachLegacyLayoutObjectList(Document&);
-  ~ReattachLegacyLayoutObjectList();
-
-  void AddForceLegacyAtBFCAncestor(const LayoutObject&);
-  bool IsCollecting() const;
-  bool IsForcingLegacyLayout() const {
-    return state_ == State::kForcingLegacyLayout;
-  }
-  void ForceLegacyLayoutIfNeeded();
-
-  void Trace(Visitor*);
-
- private:
-  Member<Document> document_;
-
-  // A list of elements establishing a block formatting context which need to
-  // be re-attached to use legacy fallback.
-  HeapVector<Member<Element>> reattach_elements_;
-
-  enum class State {
-    kInvalid,
-    // Building legacy layout tree
-    kBuildingLegacyLayoutTree,
-    // Usage of this list is finished.
-    kClosed,
-    // Collecting block formatting context should be legacy layout.
-    kCollecting,
-    // Replaces LayoutNG objects to legacy layout objects.
-    kForcingLegacyLayout,
-  } state_ = State::kInvalid;
-
-  DISALLOW_COPY_AND_ASSIGN(ReattachLegacyLayoutObjectList);
 };
 
 }  // namespace blink

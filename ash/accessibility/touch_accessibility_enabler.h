@@ -131,7 +131,7 @@ class ASH_EXPORT TouchAccessibilityEnabler : public ui::EventHandler {
   // be removed when TouchExplorationController is running.
   bool event_handler_installed_ = false;
 
-  base::WeakPtrFactory<TouchAccessibilityEnabler> weak_factory_;
+  base::WeakPtrFactory<TouchAccessibilityEnabler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TouchAccessibilityEnabler);
 };

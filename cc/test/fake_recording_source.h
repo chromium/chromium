@@ -68,6 +68,14 @@ class FakeRecordingSource : public RecordingSource {
     client_.set_fill_with_nonsolid_color(nonsolid);
   }
 
+  void set_has_non_aa_paint(bool has_non_aa_paint) {
+    client_.set_has_non_aa_paint(has_non_aa_paint);
+  }
+
+  void set_has_slow_paths(bool slow_paths) {
+    client_.set_contains_slow_paths(slow_paths);
+  }
+
   void Rerecord() {
     SetNeedsDisplayRect(recorded_viewport_);
     Region invalidation;
@@ -141,6 +149,10 @@ class FakeRecordingSource : public RecordingSource {
 
   void SetRecordingScaleFactor(float recording_scale_factor) {
     recording_scale_factor_ = recording_scale_factor;
+  }
+
+  const scoped_refptr<DisplayItemList> GetDisplayItemList() const {
+    return display_list_;
   }
 
  private:

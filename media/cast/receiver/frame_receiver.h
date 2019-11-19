@@ -203,7 +203,7 @@ class FrameReceiver : public RtpPayloadFeedback {
   ClockDriftSmoother lip_sync_drift_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<FrameReceiver> weak_factory_;
+  base::WeakPtrFactory<FrameReceiver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FrameReceiver);
 };

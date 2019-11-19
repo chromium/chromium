@@ -14,7 +14,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
-#include "services/viz/privileged/interfaces/compositing/frame_sink_video_capture.mojom.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -145,7 +145,7 @@ class CONTENT_EXPORT MouseCursorOverlayController {
   // called on the UI BrowserThread.
   SEQUENCE_CHECKER(ui_sequence_checker_);
 
-  base::WeakPtrFactory<MouseCursorOverlayController> weak_factory_;
+  base::WeakPtrFactory<MouseCursorOverlayController> weak_factory_{this};
 
   // Minium movement before the cursor has been considered intentionally moved
   // by the user.

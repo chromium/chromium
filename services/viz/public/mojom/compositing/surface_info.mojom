@@ -1,0 +1,17 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "services/viz/public/mojom/compositing/surface_id.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Holds information about an embeddable surface. This data can be passed
+// across clients to embed the associated surface in another client.
+struct SurfaceInfo {
+  SurfaceId surface_id;
+  float device_scale_factor;
+  gfx.mojom.Size size_in_pixels;
+};
+

@@ -137,7 +137,7 @@ class JingleThreadWrapper
   base::WaitableEvent pending_send_event_;
 
   base::WeakPtr<JingleThreadWrapper> weak_ptr_;
-  base::WeakPtrFactory<JingleThreadWrapper> weak_ptr_factory_;
+  base::WeakPtrFactory<JingleThreadWrapper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(JingleThreadWrapper);
 };

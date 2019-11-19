@@ -16,12 +16,6 @@
 
 void NaClMainPlatformDelegate::EnableSandbox(
     const content::MainFunctionParams& parameters) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          sandbox::switches::kSeatbeltClientName)) {
-    // Make sure the sandbox is actually enabled if the V2 flag is present.
-    CHECK(sandbox::Seatbelt::IsSandboxed());
-  } else {
-    CHECK(content::InitializeSandbox(service_manager::SANDBOX_TYPE_NACL_LOADER))
-        << "Error initializing sandbox for " << switches::kNaClLoaderProcess;
-  }
+  // The sandbox on macOS is enabled as soon as main() executes, so there is
+  // nothing to do here.
 }

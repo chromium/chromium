@@ -88,9 +88,8 @@ std::unique_ptr<HttpResponse> HandlePrefixedRequest(
 RequestQuery ParseQuery(const GURL& url) {
   RequestQuery queries;
   for (QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
-    std::string unescaped_query;
-    UnescapeBinaryURLComponent(
-        it.GetKey(), UnescapeRule::REPLACE_PLUS_WITH_SPACE, &unescaped_query);
+    std::string unescaped_query = UnescapeBinaryURLComponent(
+        it.GetKey(), UnescapeRule::REPLACE_PLUS_WITH_SPACE);
     queries[unescaped_query].push_back(it.GetUnescapedValue());
   }
   return queries;
@@ -162,25 +161,25 @@ std::unique_ptr<HttpResponse> HandleFileRequest(
 
   RequestQuery query = ParseQuery(request_url);
 
-  std::unique_ptr<BasicHttpResponse> failed_response(new BasicHttpResponse);
+  auto failed_response = std::make_unique<BasicHttpResponse>();
   failed_response->set_code(HTTP_NOT_FOUND);
 
   if (query.find("expected_body") != query.end()) {
     if (request.content.find(query["expected_body"].front()) ==
         std::string::npos) {
-      return std::move(failed_response);
+      return failed_response;
     }
   }
 
   if (query.find("expected_headers") != query.end()) {
     for (const auto& header : query["expected_headers"]) {
       if (header.find(":") == std::string::npos)
-        return std::move(failed_response);
+        return failed_response;
       std::string key = header.substr(0, header.find(":"));
       std::string value = header.substr(header.find(":") + 1);
       if (request.headers.find(key) == request.headers.end() ||
           request.headers.at(key) != value) {
-        return std::move(failed_response);
+        return failed_response;
       }
     }
   }
@@ -200,7 +199,7 @@ std::unique_ptr<HttpResponse> HandleFileRequest(
     file_contents = "";
 
   if (!UpdateReplacedText(query, &file_contents))
-    return std::move(failed_response);
+    return failed_response;
 
   base::FilePath::StringPieceType mock_headers_extension;
 #if defined(OS_WIN)
@@ -223,7 +222,7 @@ std::unique_ptr<HttpResponse> HandleFileRequest(
     return std::make_unique<RawHttpResponse>(headers_contents, file_contents);
   }
 
-  std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse);
+  auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_code(HTTP_OK);
 
   if (request.headers.find("Range") != request.headers.end()) {
@@ -249,7 +248,7 @@ std::unique_ptr<HttpResponse> HandleFileRequest(
   http_response->AddCustomHeader("Accept-Ranges", "bytes");
   http_response->AddCustomHeader("ETag", "'" + file_path.MaybeAsASCII() + "'");
   http_response->set_content(file_contents);
-  return std::move(http_response);
+  return http_response;
 }
 
 }  // namespace test_server

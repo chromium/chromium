@@ -6,17 +6,13 @@
 
 #include "base/bind.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/service_manager_connection.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/safe_xml_parser.h"
-#include "services/data_decoder/public/mojom/constants.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace browser_switcher {
 
 namespace {
-
-using namespace data_decoder;  // For |GetXmlElement...()| helper functions.
 
 const char kInvalidRootElement[] = "Invalid XML root element";
 
@@ -37,7 +33,7 @@ const char kSchema2SiteOpenInElement[] = "open-in";
 std::vector<const base::Value*> GetChildrenWithTag(const base::Value& node,
                                                    const std::string& tag) {
   std::vector<const base::Value*> children;
-  GetAllXmlElementChildrenWithTag(node, tag, &children);
+  data_decoder::GetAllXmlElementChildrenWithTag(node, tag, &children);
   return children;
 }
 
@@ -52,20 +48,20 @@ struct Entry {
 };
 
 Entry ParseDomainOrPath(const base::Value& node, ParsedXml* result) {
-  DCHECK(IsXmlElementNamed(node, kSchema1DomainElement) ||
-         IsXmlElementNamed(node, kSchema1PathElement));
+  DCHECK(data_decoder::IsXmlElementNamed(node, kSchema1DomainElement) ||
+         data_decoder::IsXmlElementNamed(node, kSchema1PathElement));
 
   Entry entry;
 
   std::string exclude_attrib =
-      GetXmlElementAttribute(node, kSchema1ExcludeAttribute);
+      data_decoder::GetXmlElementAttribute(node, kSchema1ExcludeAttribute);
   entry.exclude = (exclude_attrib == kSchema1TrueValue);
 
-  std::string do_not_transition_attrib =
-      GetXmlElementAttribute(node, kSchema1DoNotTransitionAttribute);
+  std::string do_not_transition_attrib = data_decoder::GetXmlElementAttribute(
+      node, kSchema1DoNotTransitionAttribute);
   entry.do_not_transition = (do_not_transition_attrib == kSchema1TrueValue);
 
-  GetXmlElementText(node, &entry.text);
+  data_decoder::GetXmlElementText(node, &entry.text);
   base::TrimWhitespaceASCII(entry.text, base::TRIM_ALL, &entry.text);
 
   return entry;
@@ -74,11 +70,12 @@ Entry ParseDomainOrPath(const base::Value& node, ParsedXml* result) {
 // Parses Enterprise Mode schema 1 files according to:
 // https://technet.microsoft.com/itpro/internet-explorer/ie11-deploy-guide/enterprise-mode-schema-version-1-guidance
 void ParseIeFileVersionOne(const base::Value& xml, ParsedXml* result) {
-  DCHECK(IsXmlElementNamed(xml, kSchema1RulesElement));
-  for (const base::Value& node : GetXmlElementChildren(xml)->GetList()) {
+  DCHECK(data_decoder::IsXmlElementNamed(xml, kSchema1RulesElement));
+  for (const base::Value& node :
+       data_decoder::GetXmlElementChildren(xml)->GetList()) {
     // Skip over anything that is not a <emie> or <docMode> element.
-    if (!IsXmlElementNamed(node, kSchema1EmieElement) &&
-        !IsXmlElementNamed(node, kSchema1DocModeElement)) {
+    if (!data_decoder::IsXmlElementNamed(node, kSchema1EmieElement) &&
+        !data_decoder::IsXmlElementNamed(node, kSchema1DocModeElement)) {
       continue;
     }
     // Loop over <domain> elements.
@@ -87,7 +84,7 @@ void ParseIeFileVersionOne(const base::Value& xml, ParsedXml* result) {
       Entry domain = ParseDomainOrPath(*domain_node, result);
       if (!domain.text.empty() && !domain.exclude) {
         std::string prefix = (domain.do_not_transition ? "!" : "");
-        result->sitelist.push_back(prefix + domain.text);
+        result->rules.push_back(prefix + domain.text);
       }
       // Loop over <path> elements.
       for (const base::Value* path_node :
@@ -95,7 +92,7 @@ void ParseIeFileVersionOne(const base::Value& xml, ParsedXml* result) {
         Entry path = ParseDomainOrPath(*path_node, result);
         if (!path.text.empty() && !domain.text.empty() && !path.exclude) {
           std::string prefix = (path.do_not_transition ? "!" : "");
-          result->sitelist.push_back(prefix + domain.text + path.text);
+          result->rules.push_back(prefix + domain.text + path.text);
         }
       }
     }
@@ -105,12 +102,12 @@ void ParseIeFileVersionOne(const base::Value& xml, ParsedXml* result) {
 // Parses Enterprise Mode schema 2 files according to:
 // https://technet.microsoft.com/itpro/internet-explorer/ie11-deploy-guide/enterprise-mode-schema-version-2-guidance
 void ParseIeFileVersionTwo(const base::Value& xml, ParsedXml* result) {
-  DCHECK(IsXmlElementNamed(xml, kSchema2SiteListElement));
+  DCHECK(data_decoder::IsXmlElementNamed(xml, kSchema2SiteListElement));
   // Iterate over <site> elements. Notably, skip <created-by> elements.
   for (const base::Value* site_node :
        GetChildrenWithTag(xml, kSchema2SiteElement)) {
-    std::string url =
-        GetXmlElementAttribute(*site_node, kSchema2SiteUrlAttribute);
+    std::string url = data_decoder::GetXmlElementAttribute(
+        *site_node, kSchema2SiteUrlAttribute);
     base::TrimWhitespaceASCII(url, base::TRIM_ALL, &url);
     if (url.empty())
       continue;
@@ -118,32 +115,33 @@ void ParseIeFileVersionTwo(const base::Value& xml, ParsedXml* result) {
     std::string mode;
     for (const base::Value* open_in_node :
          GetChildrenWithTag(*site_node, kSchema2SiteOpenInElement)) {
-      GetXmlElementText(*open_in_node, &mode);
+      data_decoder::GetXmlElementText(*open_in_node, &mode);
     }
     base::TrimWhitespaceASCII(mode, base::TRIM_ALL, &mode);
-    std::string prefix = (mode.empty() || mode == "none") ? "!" : "";
-    result->sitelist.push_back(prefix + url);
+    std::string prefix =
+        (mode.empty() || !base::CompareCaseInsensitiveASCII(mode, "none")) ? "!"
+                                                                           : "";
+    result->rules.push_back(prefix + url);
   }
 }
 
 void RawXmlParsed(base::OnceCallback<void(ParsedXml)> callback,
-                  std::unique_ptr<base::Value> xml,
-                  const base::Optional<std::string>& error) {
-  if (error) {
+                  data_decoder::DataDecoder::ValueOrError xml) {
+  if (!xml.value) {
     // Copies the string, but it should only be around 20 characters.
-    std::move(callback).Run(ParsedXml({}, {}, *error));
+    std::move(callback).Run(ParsedXml({}, *xml.error));
     return;
   }
-  DCHECK(xml);
   DCHECK(data_decoder::IsXmlElementOfType(
-      *xml, data_decoder::mojom::XmlParser::kElementType));
+      *xml.value, data_decoder::mojom::XmlParser::kElementType));
   ParsedXml result;
-  if (data_decoder::IsXmlElementNamed(*xml, kSchema1RulesElement)) {
+  if (data_decoder::IsXmlElementNamed(*xml.value, kSchema1RulesElement)) {
     // Enterprise Mode schema v.1 has <rules> element at its top level.
-    ParseIeFileVersionOne(*xml, &result);
-  } else if (data_decoder::IsXmlElementNamed(*xml, kSchema2SiteListElement)) {
+    ParseIeFileVersionOne(*xml.value, &result);
+  } else if (data_decoder::IsXmlElementNamed(*xml.value,
+                                             kSchema2SiteListElement)) {
     // Enterprise Mode schema v.2 has <site-list> element at its top level.
-    ParseIeFileVersionTwo(*xml, &result);
+    ParseIeFileVersionTwo(*xml.value, &result);
   } else {
     result.error = kInvalidRootElement;
   }
@@ -154,19 +152,15 @@ void RawXmlParsed(base::OnceCallback<void(ParsedXml)> callback,
 
 ParsedXml::ParsedXml() = default;
 ParsedXml::ParsedXml(ParsedXml&&) = default;
-ParsedXml::ParsedXml(std::vector<std::string>&& sitelist_,
-                     std::vector<std::string>&& greylist_,
+ParsedXml::ParsedXml(std::vector<std::string>&& rules_,
                      base::Optional<std::string>&& error_)
-    : sitelist(std::move(sitelist_)),
-      greylist(std::move(greylist_)),
-      error(std::move(error_)) {}
+    : rules(std::move(rules_)), error(std::move(error_)) {}
 ParsedXml::~ParsedXml() = default;
 
 void ParseIeemXml(const std::string& xml,
                   base::OnceCallback<void(ParsedXml)> callback) {
-  data_decoder::ParseXml(
-      content::ServiceManagerConnection::GetForProcess()->GetConnector(), xml,
-      base::BindOnce(&RawXmlParsed, std::move(callback)));
+  data_decoder::DataDecoder::ParseXmlIsolated(
+      xml, base::BindOnce(&RawXmlParsed, std::move(callback)));
 }
 
 }  // namespace browser_switcher

@@ -68,7 +68,7 @@ class RenderingTest : public testing::Test,
   bool WillDrawOnRT(HardwareRendererDrawParams* params) override;
   void DidDrawOnRT() override {}
 
-  virtual void OnParentDrawConstraintsUpdated() {}
+  virtual void OnParentDrawDataUpdated() {}
   void OnViewTreeForceDarkStateChanged(
       bool view_tree_force_dark_state) override {}
 

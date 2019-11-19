@@ -10,11 +10,6 @@
 
 namespace blink {
 
-MediaValuesInitialViewport* MediaValuesInitialViewport::Create(
-    LocalFrame& frame) {
-  return MakeGarbageCollected<MediaValuesInitialViewport>(frame);
-}
-
 MediaValuesInitialViewport::MediaValuesInitialViewport(LocalFrame& frame)
     : MediaValuesDynamic(&frame) {}
 

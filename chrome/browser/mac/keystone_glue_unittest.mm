@@ -5,7 +5,7 @@
 #import <Foundation/Foundation.h>
 #import <objc/objc-class.h>
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #import "chrome/browser/mac/keystone_glue.h"
 #import "chrome/browser/mac/keystone_registration.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,7 +28,11 @@ namespace ksr = keystone_registration;
 }
 
 - (BOOL)registerWithParameters:(NSDictionary*)args {
-  return NO;
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center postNotificationName:ksr::KSRegistrationDidCompleteNotification
+                        object:nil
+                      userInfo:@{ksr::KSRegistrationStatusKey : @1}];
+  return YES;
 }
 
 - (BOOL)promoteWithParameters:(NSDictionary*)args
@@ -36,12 +40,7 @@ namespace ksr = keystone_registration;
   return NO;
 }
 
-- (BOOL)setActive {
-  return NO;
-}
-
-- (BOOL)setActiveWithReportingAttributes:(NSArray*)reportingAttributes
-                                   error:(NSError**)error {
+- (BOOL)setActiveWithError:(NSError**)error {
   return NO;
 }
 
@@ -75,8 +74,10 @@ namespace ksr = keystone_registration;
 
 - (void)startUpdate {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center postNotificationName:ksr::KSRegistrationStartUpdateNotification
-                        object:nil];
+  [center
+      postNotificationName:ksr::KSRegistrationStartUpdateNotification
+                    object:nil
+                  userInfo:@{ksr::KSUpdateCheckSuccessfullyInstalledKey : @1}];
 }
 
 @end
@@ -130,8 +131,9 @@ namespace ksr = keystone_registration;
   return dict;
 }
 
-// For mocking
 - (BOOL)loadKeystoneRegistration {
+  // The real loadKeystoneRegistration adds a real registration.
+  [self addFakeRegistration];
   return YES;
 }
 
@@ -166,14 +168,6 @@ namespace ksr = keystone_registration;
   }
 }
 
-// Confirm we look like callbacks with nil NSNotifications
-- (BOOL)confirmCallbacks {
-  return (!upToDate_ &&
-          (latestVersion_ == nil) &&
-          !successful_ &&
-          (installs_ == 0));
-}
-
 @end
 
 @interface KeystoneGlue (PrivateMethods)
@@ -187,11 +181,10 @@ namespace {
 
 class KeystoneGlueTest : public PlatformTest {
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
-// DISABLED because the mocking isn't currently working.
-TEST_F(KeystoneGlueTest, DISABLED_BasicGlobalCreate) {
+TEST_F(KeystoneGlueTest, BasicGlobalCreate) {
   // Allow creation of a KeystoneGlue by mocking out a few calls
   SEL ids = @selector(infoDictionary);
   IMP oldInfoImp_ = [[KeystoneGlue class] instanceMethodForSelector:ids];
@@ -205,16 +198,22 @@ TEST_F(KeystoneGlueTest, DISABLED_BasicGlobalCreate) {
   Method loadMethod_ = class_getInstanceMethod([KeystoneGlue class], lks);
   method_setImplementation(loadMethod_, newLoadImp_);
 
+  SEL afr = @selector(addFakeRegistration);
+  IMP oldAddFake_ = [[KeystoneGlue class] instanceMethodForSelector:afr];
+  IMP newAddFake_ = [[FakeKeystoneGlue class] instanceMethodForSelector:afr];
+  Method addMethod_ = class_getInstanceMethod([KeystoneGlue class], afr);
+  method_setImplementation(loadMethod_, newAddFake_);
+
   KeystoneGlue *glue = [KeystoneGlue defaultKeystoneGlue];
   ASSERT_TRUE(glue);
 
   // Fix back up the class to the way we found it.
   method_setImplementation(infoMethod_, oldInfoImp_);
   method_setImplementation(loadMethod_, oldLoadImp_);
+  method_setImplementation(addMethod_, oldAddFake_);
 }
 
-// DISABLED because the mocking isn't currently working.
-TEST_F(KeystoneGlueTest, DISABLED_BasicUse) {
+TEST_F(KeystoneGlueTest, BasicUse) {
   FakeKeystoneGlue* glue = [[[FakeKeystoneGlue alloc] init] autorelease];
   [glue loadParameters];
   ASSERT_TRUE([glue dictReadCorrectly]);
@@ -228,11 +227,15 @@ TEST_F(KeystoneGlueTest, DISABLED_BasicUse) {
   ASSERT_TRUE([glue hasATimer]);
   [glue stopTimer];
 
-  // Brief exercise of callbacks
-  [glue addFakeRegistration];
+  // Checking for an update should succeed, yielding kAutoupdateAvailable:
   [glue checkForUpdate];
+  ASSERT_EQ([glue recentStatus], kAutoupdateAvailable);
+
+  // And applying the update should also succeed:
   [glue installUpdate];
-  ASSERT_TRUE([glue confirmCallbacks]);
+  ASSERT_EQ([glue recentStatus], kAutoupdateInstalling);
+  // The rest of the update install is asynchronous & happens on a worker
+  // thread, so don't check it here.
 }
 
 TEST_F(KeystoneGlueTest, isValidSystemKeystone_Nils) {

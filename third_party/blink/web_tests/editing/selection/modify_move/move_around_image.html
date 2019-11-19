@@ -57,8 +57,8 @@ test(() => assert_selection(
     [
         '<div contenteditable>',
             isMac
-                ? 'foo<img src="../../resources/abe.png">bar| baz'
-                : 'foo<img src="../../resources/abe.png">bar |baz',
+                ? 'foo<img src="../../resources/abe.png">|bar baz'
+                : 'foo<img src="../../resources/abe.png">|bar baz',
         '</div>',
     ].join('')),
     'Move forward word 2');
@@ -102,7 +102,7 @@ test(() => assert_selection(
     selection => selection.modify('move', 'backward', 'word'),
     [
         '<div contenteditable>',
-            'foo |bar<img src="../../resources/abe.png">baz',
+            'foo bar|<img src="../../resources/abe.png">baz',
         '</div>',
     ].join('')),
     'Move backward word 2');

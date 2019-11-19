@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "content/browser/appcache/appcache.h"
 #include "content/browser/appcache/appcache_group.h"
 #include "content/browser/appcache/appcache_response.h"
@@ -85,7 +85,7 @@ class MockAppCacheStorageTest : public testing::Test {
   };
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(MockAppCacheStorageTest, LoadCache_Miss) {
@@ -109,7 +109,7 @@ TEST_F(MockAppCacheStorageTest, LoadCache_NearHit) {
   // Setup some preconditions. Make an 'unstored' cache for
   // us to load. The ctor should put it in the working set.
   int64_t cache_id = service.storage()->NewCacheId();
-  scoped_refptr<AppCache> cache(new AppCache(service.storage(), cache_id));
+  auto cache = base::MakeRefCounted<AppCache>(service.storage(), cache_id);
 
   // Conduct the test.
   MockStorageDelegate delegate;
@@ -174,10 +174,10 @@ TEST_F(MockAppCacheStorageTest, LoadGroupAndCache_FarHit) {
   // Setup some preconditions. Create a group and newest cache that
   // appears to be "stored" and "not currently in use".
   GURL manifest_url("http://blah/");
-  scoped_refptr<AppCacheGroup> group(
-      new AppCacheGroup(service.storage(), manifest_url, 111));
+  auto group =
+      base::MakeRefCounted<AppCacheGroup>(service.storage(), manifest_url, 111);
   int64_t cache_id = storage->NewCacheId();
-  scoped_refptr<AppCache> cache(new AppCache(service.storage(), cache_id));
+  auto cache = base::MakeRefCounted<AppCache>(service.storage(), cache_id);
   cache->set_complete(true);
   group->AddCache(cache.get());
   storage->AddStoredGroup(group.get());
@@ -225,10 +225,10 @@ TEST_F(MockAppCacheStorageTest, StoreNewGroup) {
   // Setup some preconditions. Create a group and newest cache that
   // appears to be "unstored".
   GURL manifest_url("http://blah/");
-  scoped_refptr<AppCacheGroup> group(
-      new AppCacheGroup(service.storage(), manifest_url, 111));
+  auto group =
+      base::MakeRefCounted<AppCacheGroup>(service.storage(), manifest_url, 111);
   int64_t cache_id = storage->NewCacheId();
-  scoped_refptr<AppCache> cache(new AppCache(service.storage(), cache_id));
+  auto cache = base::MakeRefCounted<AppCache>(service.storage(), cache_id);
   // Hold a ref to the cache simulate the UpdateJob holding that ref,
   // and hold a ref to the group to simulate the CacheHost holding that ref.
 
@@ -257,18 +257,18 @@ TEST_F(MockAppCacheStorageTest, StoreExistingGroup) {
   // Setup some preconditions. Create a group and old complete cache
   // that appear to be "stored", and a newest unstored complete cache.
   GURL manifest_url("http://blah/");
-  scoped_refptr<AppCacheGroup> group(
-      new AppCacheGroup(service.storage(), manifest_url, 111));
+  auto group =
+      base::MakeRefCounted<AppCacheGroup>(service.storage(), manifest_url, 111);
   int64_t old_cache_id = storage->NewCacheId();
-  scoped_refptr<AppCache> old_cache(
-      new AppCache(service.storage(), old_cache_id));
+  auto old_cache =
+      base::MakeRefCounted<AppCache>(service.storage(), old_cache_id);
   old_cache->set_complete(true);
   group->AddCache(old_cache.get());
   storage->AddStoredGroup(group.get());
   storage->AddStoredCache(old_cache.get());
   int64_t new_cache_id = storage->NewCacheId();
-  scoped_refptr<AppCache> new_cache(
-      new AppCache(service.storage(), new_cache_id));
+  auto new_cache =
+      base::MakeRefCounted<AppCache>(service.storage(), new_cache_id);
   // Hold our refs to simulate the UpdateJob holding these refs.
 
   // Conduct the test.
@@ -302,10 +302,10 @@ TEST_F(MockAppCacheStorageTest, StoreExistingGroupExistingCache) {
   // Setup some preconditions. Create a group and a complete cache that
   // appear to be "stored".
   GURL manifest_url("http://blah");
-  scoped_refptr<AppCacheGroup> group(
-      new AppCacheGroup(service.storage(), manifest_url, 111));
+  auto group =
+      base::MakeRefCounted<AppCacheGroup>(service.storage(), manifest_url, 111);
   int64_t cache_id = storage->NewCacheId();
-  scoped_refptr<AppCache> cache(new AppCache(service.storage(), cache_id));
+  auto cache = base::MakeRefCounted<AppCache>(service.storage(), cache_id);
   cache->set_complete(true);
   group->AddCache(cache.get());
   storage->AddStoredGroup(group.get());
@@ -344,10 +344,10 @@ TEST_F(MockAppCacheStorageTest, MakeGroupObsolete) {
   // Setup some preconditions. Create a group and newest cache that
   // appears to be "stored" and "currently in use".
   GURL manifest_url("http://blah/");
-  scoped_refptr<AppCacheGroup> group(
-      new AppCacheGroup(service.storage(), manifest_url, 111));
+  auto group =
+      base::MakeRefCounted<AppCacheGroup>(service.storage(), manifest_url, 111);
   int64_t cache_id = storage->NewCacheId();
-  scoped_refptr<AppCache> cache(new AppCache(service.storage(), cache_id));
+  auto cache = base::MakeRefCounted<AppCache>(service.storage(), cache_id);
   cache->set_complete(true);
   group->AddCache(cache.get());
   storage->AddStoredGroup(group.get());
@@ -389,7 +389,7 @@ TEST_F(MockAppCacheStorageTest, MarkEntryAsForeign) {
   // Setup some preconditions. Create a cache with an entry.
   GURL entry_url("http://blah/entry");
   int64_t cache_id = storage->NewCacheId();
-  scoped_refptr<AppCache> cache(new AppCache(service.storage(), cache_id));
+  auto cache = base::MakeRefCounted<AppCache>(service.storage(), cache_id);
   cache->AddEntry(entry_url, AppCacheEntry(AppCacheEntry::EXPLICIT));
 
   // Conduct the test.
@@ -436,12 +436,12 @@ TEST_F(MockAppCacheStorageTest, BasicFindMainResponse) {
   const GURL kEntryUrl("http://blah/entry");
   const GURL kManifestUrl("http://blah/manifest");
   const int64_t kResponseId = 1;
-  scoped_refptr<AppCache> cache(new AppCache(service.storage(), kCacheId));
+  auto cache = base::MakeRefCounted<AppCache>(service.storage(), kCacheId);
   cache->AddEntry(
       kEntryUrl, AppCacheEntry(AppCacheEntry::EXPLICIT, kResponseId));
   cache->set_complete(true);
-  scoped_refptr<AppCacheGroup> group(
-      new AppCacheGroup(service.storage(), kManifestUrl, 111));
+  auto group =
+      base::MakeRefCounted<AppCacheGroup>(service.storage(), kManifestUrl, 111);
   group->AddCache(cache.get());
   storage->AddStoredGroup(group.get());
   storage->AddStoredCache(cache.get());
@@ -485,7 +485,7 @@ TEST_F(MockAppCacheStorageTest, BasicFindMainFallbackResponse) {
       AppCacheNamespace(APPCACHE_FALLBACK_NAMESPACE, kFallbackNamespaceUrl2,
                 kFallbackEntryUrl2, false));
 
-  scoped_refptr<AppCache> cache(new AppCache(service.storage(), kCacheId));
+  auto cache = base::MakeRefCounted<AppCache>(service.storage(), kCacheId);
   cache->InitializeWithManifest(&manifest);
   cache->AddEntry(kFallbackEntryUrl1,
                   AppCacheEntry(AppCacheEntry::FALLBACK, kResponseId1));
@@ -493,8 +493,8 @@ TEST_F(MockAppCacheStorageTest, BasicFindMainFallbackResponse) {
                   AppCacheEntry(AppCacheEntry::FALLBACK, kResponseId2));
   cache->set_complete(true);
 
-  scoped_refptr<AppCacheGroup> group(
-      new AppCacheGroup(service.storage(), kManifestUrl, 111));
+  auto group =
+      base::MakeRefCounted<AppCacheGroup>(service.storage(), kManifestUrl, 111);
   group->AddCache(cache.get());
   storage->AddStoredGroup(group.get());
   storage->AddStoredCache(cache.get());
@@ -536,12 +536,12 @@ TEST_F(MockAppCacheStorageTest, FindMainResponseWithMultipleCandidates) {
   const int64_t kResponseId2 = 2;
 
   // The first cache.
-  scoped_refptr<AppCache> cache(new AppCache(service.storage(), kCacheId1));
+  auto cache = base::MakeRefCounted<AppCache>(service.storage(), kCacheId1);
   cache->AddEntry(
       kEntryUrl, AppCacheEntry(AppCacheEntry::EXPLICIT, kResponseId1));
   cache->set_complete(true);
-  scoped_refptr<AppCacheGroup> group(
-      new AppCacheGroup(service.storage(), kManifestUrl1, 111));
+  auto group = base::MakeRefCounted<AppCacheGroup>(service.storage(),
+                                                   kManifestUrl1, 111);
   group->AddCache(cache.get());
   storage->AddStoredGroup(group.get());
   storage->AddStoredCache(cache.get());
@@ -550,11 +550,12 @@ TEST_F(MockAppCacheStorageTest, FindMainResponseWithMultipleCandidates) {
   group = nullptr;
 
   // The second cache.
-  cache = new AppCache(service.storage(), kCacheId2);
+  cache = base::MakeRefCounted<AppCache>(service.storage(), kCacheId2);
   cache->AddEntry(
       kEntryUrl, AppCacheEntry(AppCacheEntry::EXPLICIT, kResponseId2));
   cache->set_complete(true);
-  group = new AppCacheGroup(service.storage(), kManifestUrl2, 222);
+  group = base::MakeRefCounted<AppCacheGroup>(service.storage(), kManifestUrl2,
+                                              222);
   group->AddCache(cache.get());
   storage->AddStoredGroup(group.get());
   storage->AddStoredCache(cache.get());
@@ -593,15 +594,15 @@ TEST_F(MockAppCacheStorageTest, FindMainResponseExclusions) {
   manifest.online_whitelist_namespaces.push_back(
       AppCacheNamespace(APPCACHE_NETWORK_NAMESPACE, kOnlineNamespaceUrl,
                 GURL(), false));
-  scoped_refptr<AppCache> cache(new AppCache(service.storage(), kCacheId));
+  auto cache = base::MakeRefCounted<AppCache>(service.storage(), kCacheId);
   cache->InitializeWithManifest(&manifest);
   cache->AddEntry(
       kEntryUrl,
       AppCacheEntry(AppCacheEntry::EXPLICIT | AppCacheEntry::FOREIGN,
                     kResponseId));
   cache->set_complete(true);
-  scoped_refptr<AppCacheGroup> group(
-      new AppCacheGroup(service.storage(), kManifestUrl, 111));
+  auto group =
+      base::MakeRefCounted<AppCacheGroup>(service.storage(), kManifestUrl, 111);
   group->AddCache(cache.get());
   storage->AddStoredGroup(group.get());
   storage->AddStoredCache(cache.get());

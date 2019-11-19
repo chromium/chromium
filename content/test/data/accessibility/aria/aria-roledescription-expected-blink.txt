@@ -1,4 +1,11 @@
 rootWebArea
-++button name='Native button'
-++button name='ARIA button'
-++button name='Clicky button' roleDescription='Clicky'
+++genericContainer ignored
+++++button name='Native button'
+++++++staticText name='Native button'
+++++++++inlineTextBox name='Native button'
+++++button name='ARIA button'
+++++++staticText name='ARIA button'
+++++++++inlineTextBox name='ARIA button'
+++++button name='Clicky button' roleDescription='Clicky'
+++++++staticText name='Clicky button'
+++++++++inlineTextBox name='Clicky button'

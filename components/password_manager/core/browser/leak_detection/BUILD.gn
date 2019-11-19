@@ -1,0 +1,103 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/jumbo.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
+
+fuzzable_proto_library("proto") {
+  sources = [
+    "leak_detection_api.proto",
+  ]
+}
+
+source_set("leak_detection_interface_headers") {
+  sources = [
+    "leak_detection_check.h",
+    "leak_detection_check_factory.h",
+    "leak_detection_delegate_interface.h",
+  ]
+  deps = [
+    "//base",
+    "//url",
+  ]
+}
+
+jumbo_source_set("leak_detection") {
+  sources = [
+    "authenticated_leak_check.cc",
+    "authenticated_leak_check.h",
+    "encryption_utils.cc",
+    "encryption_utils.h",
+    "leak_detection_check.h",
+    "leak_detection_check_factory.h",
+    "leak_detection_check_factory_impl.cc",
+    "leak_detection_check_factory_impl.h",
+    "leak_detection_request.cc",
+    "leak_detection_request.h",
+    "leak_detection_request_factory.cc",
+    "leak_detection_request_factory.h",
+    "leak_detection_request_utils.cc",
+    "leak_detection_request_utils.h",
+    "single_lookup_response.cc",
+    "single_lookup_response.h",
+  ]
+
+  public_deps = [
+    ":leak_detection_interface_headers",
+    "//services/network/public/cpp",
+  ]
+
+  deps = [
+    ":proto",
+    "//base",
+    "//components/password_manager/core/common",
+    "//components/signin/public/identity_manager",
+    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+    "//url",
+  ]
+}
+
+jumbo_source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_leak_detection_delegate.cc",
+    "mock_leak_detection_delegate.h",
+  ]
+  deps = [
+    ":leak_detection",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+jumbo_source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "authenticated_leak_check_unittest.cc",
+    "encryption_utils_unittest.cc",
+    "leak_detection_check_factory_impl_unittest.cc",
+    "leak_detection_request_unittest.cc",
+    "leak_detection_request_utils_unittest.cc",
+  ]
+
+  deps = [
+    ":leak_detection",
+    ":proto",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/password_manager/core/common",
+    "//components/signin/public/identity_manager:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
+  ]
+}
+
+group("fuzzers") {
+  deps = [
+    "//components/password_manager/core/browser/leak_detection/fuzzer",
+  ]
+}

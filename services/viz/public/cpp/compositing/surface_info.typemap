@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-mojom = "//services/viz/public/interfaces/compositing/surface_info.mojom"
+mojom = "//services/viz/public/mojom/compositing/surface_info.mojom"
 public_headers = [ "//components/viz/common/surfaces/surface_info.h" ]
 traits_headers =
-    [ "//services/viz/public/cpp/compositing/surface_info_struct_traits.h" ]
+    [ "//services/viz/public/cpp/compositing/surface_info_mojom_traits.h" ]
 deps = [
   "//components/viz/common",
 ]
-type_mappings = [ "viz.mojom.SurfaceInfo=viz::SurfaceInfo" ]
+type_mappings = [ "viz.mojom.SurfaceInfo=::viz::SurfaceInfo" ]

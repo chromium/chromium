@@ -1,0 +1,28 @@
+<a href="#" id="anchor"></a>
+<span id="result">FAIL - did not navigate to ...?done</span>
+
+<script>
+if (window.location.href.indexOf('?') !== -1) {
+  document.getElementById('result').textContent = 'PASS - navigated to ...?done';
+  if (window.testRunner)
+    testRunner.notifyDone();
+} else {
+  if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+  }
+
+  document.getElementById('anchor').addEventListener('click', () => {
+    // Next line should schedule a navigation.
+    location.assign(location.href + '?done');
+    // Default handler should perform fragment scroll
+    // and not cancel scheduled navigation.
+  });
+
+  window.onload = () => {
+    setTimeout(() => {
+      document.getElementById('anchor').click();
+    }, 0);
+  };
+}
+</script>

@@ -52,8 +52,8 @@ class ManualFillingViewInterface {
 
   virtual ~ManualFillingViewInterface() = default;
 
-  // Called with data that should replace the data currently shown on the
-  // accessory sheet.
+  // Called with data that should replace the data currently shown in an
+  // accessory sheet of the same type.
   virtual void OnItemsAvailable(const autofill::AccessorySheetData& data) = 0;
 
   // Called when the generation action should be offered or rescinded

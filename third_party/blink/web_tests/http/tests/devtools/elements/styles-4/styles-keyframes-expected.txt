@@ -27,12 +27,12 @@ html { (user agent stylesheet)
 
 ======== @keyframes animName ========
 [expanded] 
-0%, 20% { (<style>…</style>)
+0%, 20% { (<style>)
     margin-left: 200px;
     color: red;
 
 [expanded] 
-100% { (<style>…</style>)
+100% { (<style>)
     margin-left: 500px;
 
 ======== @keyframes mediaAnim ========
@@ -84,12 +84,12 @@ html { (user agent stylesheet)
 
 ======== @keyframes animName ========
 [expanded] 
-0%, 20% { (<style>…</style>)
+0%, 20% { (<style>)
     margin-left: 200px;
     color: red;
 
 [expanded] 
-1% { (<style>…</style>)
+1% { (<style>)
     margin-left: 500px;
 
 ======== @keyframes mediaAnim ========
@@ -141,12 +141,12 @@ html { (user agent stylesheet)
 
 ======== @keyframes animName ========
 [expanded] 
-0%, 20% { (<style>…</style>)
+0%, 20% { (<style>)
     margin-left: 200px;
     color: red;
 
 [expanded] 
-100% { (<style>…</style>)
+100% { (<style>)
     margin-left: 500px;
 
 ======== @keyframes mediaAnim ========
@@ -198,12 +198,12 @@ html { (user agent stylesheet)
 
 ======== @keyframes animName ========
 [expanded] 
-0%, 20% { (<style>…</style>)
+0%, 20% { (<style>)
     margin-left: 200px;
     color: red;
 
 [expanded] 
-1% { (<style>…</style>)
+1% { (<style>)
     margin-left: 500px;
 
 ======== @keyframes mediaAnim ========
@@ -255,12 +255,12 @@ html { (user agent stylesheet)
 
 ======== @keyframes animName ========
 [expanded] 
-0%, 20% { (<style>…</style>)
+0%, 20% { (<style>)
     margin-left: 200px;
     color: red;
 
 [expanded] 
-1% { (<style>…</style>)
+1% { (<style>)
     margin-left: 500px;
 
 ======== @keyframes mediaAnim ========

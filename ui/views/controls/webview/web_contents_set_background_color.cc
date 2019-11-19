@@ -31,7 +31,7 @@ WebContentsSetBackgroundColor::WebContentsSetBackgroundColor(
     SkColor color)
     : content::WebContentsObserver(web_contents), color_(color) {}
 
-WebContentsSetBackgroundColor::~WebContentsSetBackgroundColor() {}
+WebContentsSetBackgroundColor::~WebContentsSetBackgroundColor() = default;
 
 void WebContentsSetBackgroundColor::RenderViewReady() {
   web_contents()

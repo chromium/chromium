@@ -1,0 +1,19 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+library chromium.cast;
+
+[Discoverable]
+protocol ApplicationControllerReceiver {
+  /// Used by the Agent to receive a controller from the Cast Runner.
+  /// Can only be called at most one time for the lifetime of the Component.
+  SetApplicationController(ApplicationController controller);
+};
+
+/// Allows clients to access and modify certain aspects of the Cast receiver
+/// application runtime.
+protocol ApplicationController {
+  /// Enables or disables touch event processing.
+  SetTouchInputEnabled(bool enable);
+};

@@ -6,11 +6,9 @@ License: Apache 2.0
 Security Critical: Yes
 
 Description:
-ChromeVox is the screen reader for Chrome OS.  This directory contains pars of
-ChromeVox that haven't been migrated to
-chrome/browser/resources/chromeos/chromevox.
+ChromeVox is the screen reader for Chrome OS. This directory contains third
+party js libraries specifically used with ChromeVox (which are not applicable to
+any other part of Chrome).
 
-Local Modifications: ChromeVox lives under trunk/chromevox/ in the upstream
-Google Code repository. The only modification is Chrome uses a different
-manifest. The one checked into the upstream repository should be deleted when
-merging.
+Local Modifications:
+None

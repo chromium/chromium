@@ -11,7 +11,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -25,14 +25,12 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_paths.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#include "ios/chrome/browser/ssl/ios_security_state_tab_helper.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #include "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
-#include "ios/web/public/web_state/web_frame.h"
-#include "ios/web/public/web_state/web_frame_util.h"
-#import "ios/web/public/web_state/web_frames_manager.h"
-#import "ios/web/public/web_state/web_state.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -142,8 +140,6 @@ void FormStructureBrowserTest::SetUp() {
   // Initialize it now as it may DCHECK if it is initialized during the test.
   AddressNormalizerFactory::GetInstance();
 
-  IOSSecurityStateTabHelper::CreateForWebState(web_state());
-
   autofill_agent_ = [[AutofillAgent alloc]
       initWithPrefService:chrome_browser_state_->GetPrefs()
                  webState:web_state()];
@@ -172,8 +168,8 @@ void FormStructureBrowserTest::TearDown() {
 void FormStructureBrowserTest::GenerateResults(const std::string& input,
                                                std::string* output) {
   ASSERT_TRUE(LoadHtmlWithoutSubresources(input));
-  base::TaskScheduler::GetInstance()->FlushForTesting();
-  web::WebFrame* frame = web::GetMainWebFrame(web_state());
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  web::WebFrame* frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
   AutofillManager* autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), frame)
           ->autofill_manager();
@@ -242,7 +238,7 @@ const std::set<std::string>& GetFailingTestNames() {
 // DISABLED_DataDrivenHeuristics.
 TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
   bool is_expected_to_pass =
-      !base::ContainsKey(GetFailingTestNames(), GetParam().BaseName().value());
+      !base::Contains(GetFailingTestNames(), GetParam().BaseName().value());
   RunOneDataDrivenTest(GetParam(), GetIOSOutputDirectory(),
                        is_expected_to_pass);
 }

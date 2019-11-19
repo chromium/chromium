@@ -5,5 +5,5 @@ didConnectToWorker
 Did enable debugger
 Did post message to worker
 Paused in worker
-SUCCESS: evaluated, result: true
+SUCCESS: messageId > 1
 

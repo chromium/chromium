@@ -66,30 +66,27 @@ AudioOutputDelegateImpl::ControllerEventHandler::ControllerEventHandler(
     : delegate_(std::move(delegate)), stream_id_(stream_id) {}
 
 void AudioOutputDelegateImpl::ControllerEventHandler::OnControllerCreated() {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&AudioOutputDelegateImpl::SendCreatedNotification,
                      delegate_));
 }
 
 void AudioOutputDelegateImpl::ControllerEventHandler::OnControllerPlaying() {
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&AudioOutputDelegateImpl::UpdatePlayingState, delegate_,
-                     true));
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(&AudioOutputDelegateImpl::UpdatePlayingState,
+                                delegate_, true));
 }
 
 void AudioOutputDelegateImpl::ControllerEventHandler::OnControllerPaused() {
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&AudioOutputDelegateImpl::UpdatePlayingState, delegate_,
-                     false));
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(&AudioOutputDelegateImpl::UpdatePlayingState,
+                                delegate_, false));
 }
 
 void AudioOutputDelegateImpl::ControllerEventHandler::OnControllerError() {
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&AudioOutputDelegateImpl::OnError, delegate_));
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(&AudioOutputDelegateImpl::OnError, delegate_));
 }
 
 void AudioOutputDelegateImpl::ControllerEventHandler::OnLog(
@@ -100,13 +97,14 @@ void AudioOutputDelegateImpl::ControllerEventHandler::OnLog(
 std::unique_ptr<media::AudioOutputDelegate> AudioOutputDelegateImpl::Create(
     EventHandler* handler,
     media::AudioManager* audio_manager,
-    media::mojom::AudioLogPtr audio_log,
+    mojo::PendingRemote<media::mojom::AudioLog> audio_log,
     MediaObserver* media_observer,
     int stream_id,
     int render_frame_id,
     int render_process_id,
     const media::AudioParameters& params,
-    media::mojom::AudioOutputStreamObserverPtr observer,
+    mojo::PendingRemote<media::mojom::AudioOutputStreamObserver>
+        pending_observer,
     const std::string& output_device_id) {
   auto socket = std::make_unique<base::CancelableSyncSocket>();
   auto reader = media::AudioSyncReader::Create(
@@ -118,7 +116,7 @@ std::unique_ptr<media::AudioOutputDelegate> AudioOutputDelegateImpl::Create(
   return std::make_unique<AudioOutputDelegateImpl>(
       std::move(reader), std::move(socket), handler, audio_manager,
       std::move(audio_log), media_observer, stream_id, render_frame_id,
-      render_process_id, params, std::move(observer), output_device_id);
+      render_process_id, params, std::move(pending_observer), output_device_id);
 }
 
 AudioOutputDelegateImpl::AudioOutputDelegateImpl(
@@ -126,21 +124,21 @@ AudioOutputDelegateImpl::AudioOutputDelegateImpl(
     std::unique_ptr<base::CancelableSyncSocket> foreign_socket,
     EventHandler* handler,
     media::AudioManager* audio_manager,
-    media::mojom::AudioLogPtr audio_log,
+    mojo::PendingRemote<media::mojom::AudioLog> audio_log,
     MediaObserver* media_observer,
     int stream_id,
     int render_frame_id,
     int render_process_id,
     const media::AudioParameters& params,
-    media::mojom::AudioOutputStreamObserverPtr observer,
+    mojo::PendingRemote<media::mojom::AudioOutputStreamObserver>
+        pending_observer,
     const std::string& output_device_id)
     : subscriber_(handler),
       audio_log_(std::move(audio_log)),
       reader_(std::move(reader)),
       foreign_socket_(std::move(foreign_socket)),
       stream_id_(stream_id),
-      observer_(std::move(observer)),
-      weak_factory_(this) {
+      observer_(std::move(pending_observer)) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(subscriber_);
   DCHECK(audio_manager);
@@ -195,6 +193,11 @@ void AudioOutputDelegateImpl::OnPauseStream() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   controller_->Pause();
   audio_log_->OnStopped();
+}
+
+void AudioOutputDelegateImpl::OnFlushStream() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  controller_->Flush();
 }
 
 void AudioOutputDelegateImpl::OnSetVolume(double volume) {

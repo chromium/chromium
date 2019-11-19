@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"
 
@@ -32,9 +33,11 @@ namespace ui {
 //
 // Suppose that the next AXNodeData to be applied is |node|. The following
 // invariants must hold:
-// 1. Either |node.id| is already in the tree, or else the tree is empty,
-//        |node| is the new root of the tree, and
-//        |node.role| == WebAXRoleRootWebArea.
+// 1. Either
+//   a) |node.id| is already in the tree, or
+//   b) the tree is empty, and
+//      |node| is the new root of the tree, and
+//      |node.role| == WebAXRoleRootWebArea.
 // 2. Every child id in |node.child_ids| must either be already a child
 //        of this node, or a new id not previously in the tree. It is not
 //        allowed to "reparent" a child to this node without first removing
@@ -90,12 +93,11 @@ std::string AXTreeUpdateBase<AXNodeData, AXTreeData>::ToString() const {
 
   if (node_id_to_clear != 0) {
     result += "AXTreeUpdate: clear node " +
-        base::IntToString(node_id_to_clear) + "\n";
+              base::NumberToString(node_id_to_clear) + "\n";
   }
 
   if (root_id != 0) {
-    result += "AXTreeUpdate: root id " +
-        base::IntToString(root_id) + "\n";
+    result += "AXTreeUpdate: root id " + base::NumberToString(root_id) + "\n";
   }
 
   // The challenge here is that we want to indent the nodes being updated

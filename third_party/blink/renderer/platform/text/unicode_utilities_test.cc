@@ -35,6 +35,7 @@
 #include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -112,23 +113,25 @@ TEST(UnicodeUtilitiesTest, KanaLetters) {
 
 TEST(UnicodeUtilitiesTest, ContainsKanaLetters) {
   // Non Kana symbols
-  String non_kana_string;
+  StringBuilder non_kana_string;
   for (UChar character = 0; character < 0x3041; ++character)
-    non_kana_string.append(character);
-  EXPECT_FALSE(ContainsKanaLetters(non_kana_string));
+    non_kana_string.Append(character);
+  EXPECT_FALSE(ContainsKanaLetters(non_kana_string.ToString()));
 
   // Hiragana letters.
   for (UChar character = 0x3041; character <= 0x3096; ++character) {
-    String str(non_kana_string);
-    str.append(character);
-    EXPECT_TRUE(ContainsKanaLetters(str));
+    StringBuilder str;
+    str.Append(non_kana_string);
+    str.Append(character);
+    EXPECT_TRUE(ContainsKanaLetters(str.ToString()));
   }
 
   // Katakana letters.
   for (UChar character = 0x30A1; character <= 0x30FA; ++character) {
-    String str(non_kana_string);
-    str.append(character);
-    EXPECT_TRUE(ContainsKanaLetters(str));
+    StringBuilder str;
+    str.Append(non_kana_string);
+    str.Append(character);
+    EXPECT_TRUE(ContainsKanaLetters(str.ToString()));
   }
 }
 

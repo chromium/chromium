@@ -28,6 +28,11 @@ class DataTypeStatusTable {
   // error map based on their |error_type()|.
   void UpdateFailedDataTypes(const TypeErrorMap& errors);
 
+  // Update an individual failed datatype. The type will be added to its
+  // corresponding error map based on |error.error_type()|. Returns true if
+  // there was an actual change.
+  bool UpdateFailedDataType(ModelType type, const SyncError& error);
+
   // Resets the current set of data type errors.
   void Reset();
 
@@ -40,7 +45,7 @@ class DataTypeStatusTable {
   // Removes |type| from the data_type_errors_ set. Returns true if the type
   // was removed from the error set, false if the type did not have a data type
   // error to begin with.
-  bool ResetDataTypeErrorFor(ModelType type);
+  bool ResetDataTypePolicyErrorFor(ModelType type);
 
   // Removes |type| from the unread_errors_ set. Returns true if the type
   // was removed from the error set, false if the type did not have an unready
@@ -81,6 +86,7 @@ class DataTypeStatusTable {
   // disabled. These are different from unrecoverable_errors_ in that
   // ResetDataTypeError can remove them from this list.
   TypeErrorMap data_type_errors_;
+  TypeErrorMap data_type_policy_errors_;
 
   // List of data types that failed due to the cryptographer not being ready.
   TypeErrorMap crypto_errors_;

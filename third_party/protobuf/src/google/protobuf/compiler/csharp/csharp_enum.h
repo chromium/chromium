@@ -35,6 +35,8 @@
 
 #include <google/protobuf/compiler/code_generator.h>
 #include <google/protobuf/compiler/csharp/csharp_source_generator_base.h>
+#include <google/protobuf/descriptor.h>
+#include <google/protobuf/io/printer.h>
 
 namespace google {
 namespace protobuf {
@@ -46,12 +48,13 @@ class EnumGenerator : public SourceGeneratorBase {
   EnumGenerator(const EnumDescriptor* descriptor, const Options* options);
   ~EnumGenerator();
 
+  EnumGenerator(const EnumGenerator&) = delete;
+  EnumGenerator& operator=(const EnumGenerator&) = delete;
+
   void Generate(io::Printer* printer);
 
  private:
   const EnumDescriptor* descriptor_;
-
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(EnumGenerator);
 };
 
 }  // namespace csharp

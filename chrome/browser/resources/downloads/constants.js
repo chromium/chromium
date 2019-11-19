@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('downloads', function() {
   /**
    * Explains why a download is in DANGEROUS state.
    * @enum {string}
    */
-  const DangerType = {
+  export const DangerType = {
     NOT_DANGEROUS: 'NOT_DANGEROUS',
     DANGEROUS_FILE: 'DANGEROUS_FILE',
     DANGEROUS_URL: 'DANGEROUS_URL',
@@ -15,6 +14,12 @@ cr.define('downloads', function() {
     UNCOMMON_CONTENT: 'UNCOMMON_CONTENT',
     DANGEROUS_HOST: 'DANGEROUS_HOST',
     POTENTIALLY_UNWANTED: 'POTENTIALLY_UNWANTED',
+    DEEP_SCANNED_SAFE: 'DEEP_SCANNED_SAFE',
+    DEEP_SCANNED_OPENED_DANGEROUS: 'DEEP_SCANNED_OPENED_DANGEROUS',
+    SENSITIVE_CONTENT_WARNING: 'SENSITIVE_CONTENT_WARNING',
+    SENSITIVE_CONTENT_BLOCK: 'SENSITIVE_CONTENT_BLOCK',
+    BLOCKED_TOO_LARGE: 'BLOCKED_TOO_LARGE',
+    BLOCKED_PASSWORD_PROTECTED: 'BLOCKED_PASSWORD_PROTECTED',
   };
 
   /**
@@ -22,7 +27,7 @@ cr.define('downloads', function() {
    * DownloadsDOMHandler::CreateDownloadItemValue
    * @enum {string}
    */
-  const States = {
+  export const States = {
     IN_PROGRESS: 'IN_PROGRESS',
     CANCELLED: 'CANCELLED',
     COMPLETE: 'COMPLETE',
@@ -30,9 +35,3 @@ cr.define('downloads', function() {
     DANGEROUS: 'DANGEROUS',
     INTERRUPTED: 'INTERRUPTED',
   };
-
-  return {
-    DangerType: DangerType,
-    States: States,
-  };
-});

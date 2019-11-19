@@ -12,7 +12,7 @@
 #include "media/cast/cast_config.h"
 #include "media/cast/net/cast_transport.h"
 #include "media/cast/net/rtcp/rtcp_defines.h"
-#include "media/mojo/interfaces/remoting.mojom.h"
+#include "media/mojo/mojom/remoting.mojom.h"
 #include "mojo/public/cpp/bindings/binding.h"
 
 namespace media {
@@ -217,7 +217,7 @@ class CastRemotingSender : public media::mojom::RemotingDataStreamSender {
   std::vector<media::cast::FrameEvent> recent_frame_events_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<CastRemotingSender> weak_factory_;
+  base::WeakPtrFactory<CastRemotingSender> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CastRemotingSender);
 };

@@ -6,7 +6,7 @@
   TestRunner.addResult(`Tests the filter is properly applied to coverage list view.\n`);
   await TestRunner.loadModule('coverage_test_runner');
 
-  CoverageTestRunner.startCoverage();
+  await CoverageTestRunner.startCoverage(true);
   await TestRunner.navigatePromise(TestRunner.url('resources/basic-coverage.html'));
   await TestRunner.evaluateInPagePromise('performActions()');
   await CoverageTestRunner.stopCoverage();
@@ -25,6 +25,6 @@
   function setFilter(text) {
     coverageView._filterInput.setValue(text);
     coverageView._filterInput._onChangeCallback();
-    TestRunner.addResult(`Filter: ${text}`);
+    TestRunner.addResult(`Filter: '${text}'`);
   }
 })();

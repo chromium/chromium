@@ -1,0 +1,14 @@
+type: MEDIA_SOURCE
+video {
+    content_type: 'video/webm; codecs="vp09.00.10.08"'
+    width: 800
+    height: 600
+    bitrate: 3000
+    framerate: "24"
+  }
+audio {
+    content_type: 'audio/webm; codecs="opus"'
+  }
+key_system_config {
+    key_system: 'org.w3.clearkey'
+  }

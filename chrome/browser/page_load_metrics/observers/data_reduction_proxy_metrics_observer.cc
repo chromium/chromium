@@ -9,9 +9,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
-#include "chrome/browser/page_load_metrics/page_load_metrics_observer.h"
-#include "chrome/browser/page_load_metrics/page_load_metrics_util.h"
-#include "chrome/common/page_load_metrics/page_load_timing.h"
+#include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "components/page_load_metrics/common/page_load_timing.h"
 #include "url/gurl.h"
 
 namespace data_reduction_proxy {
@@ -42,10 +42,11 @@ std::string GetConstHistogramWithSuffix(const char* suffix) {
 
 // Like RECORD_HISTOGRAMS_FOR_SUFFIX, but only records histograms if the event
 // occurred while the page was in the foreground.
-#define RECORD_FOREGROUND_HISTOGRAMS_FOR_SUFFIX(info, data, timing,         \
+#define RECORD_FOREGROUND_HISTOGRAMS_FOR_SUFFIX(delegate, data, timing,     \
                                                 histogram_suffix)           \
   do {                                                                      \
-    if (WasStartedInForegroundOptionalEventInForeground(timing, info)) {    \
+    if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground( \
+            timing, delegate)) {                                            \
       RECORD_HISTOGRAMS_FOR_SUFFIX(data, timing.value(), histogram_suffix); \
     }                                                                       \
   } while (false)
@@ -88,24 +89,22 @@ DataReductionProxyMetricsObserver::~DataReductionProxyMetricsObserver() {}
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 DataReductionProxyMetricsObserver::FlushMetricsOnAppEnterBackground(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // FlushMetricsOnAppEnterBackground is invoked on Android in cases where the
   // app is about to be backgrounded, as part of the Activity.onPause()
   // flow. After this method is invoked, Chrome may be killed without further
   // notification, so we send a pingback with data collected up to this point.
-  if (info.did_commit) {
+  if (GetDelegate().DidCommit()) {
     RecordPageSizeUMA();
   }
   return DataReductionProxyMetricsObserverBase::
-      FlushMetricsOnAppEnterBackground(timing, info);
+      FlushMetricsOnAppEnterBackground(timing);
 }
 
 void DataReductionProxyMetricsObserver::OnComplete(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
-  DataReductionProxyMetricsObserverBase::OnComplete(timing, info);
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  DataReductionProxyMetricsObserverBase::OnComplete(timing);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RecordPageSizeUMA();
 }
@@ -123,7 +122,7 @@ void DataReductionProxyMetricsObserver::RecordPageSizeUMA() const {
   const int64_t original_network_bytes =
       insecure_original_network_bytes() + secure_original_network_bytes();
 
-  // TODO(ryansturm): Evaluate if any of the below histograms are unncessary
+  // TODO(ryansturm): Evaluate if any of the below histograms are unnecessary
   // once data is available. crbug.com/682782
 
   // The percent of resources that went through the data reduction proxy.
@@ -197,85 +196,77 @@ void DataReductionProxyMetricsObserver::RecordPageSizeUMA() const {
 }
 
 void DataReductionProxyMetricsObserver::OnDomContentLoadedEventStart(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RECORD_FOREGROUND_HISTOGRAMS_FOR_SUFFIX(
-      info, data(), timing.document_timing->dom_content_loaded_event_start,
+      GetDelegate(), data(),
+      timing.document_timing->dom_content_loaded_event_start,
       ::internal::kHistogramDOMContentLoadedEventFiredSuffix);
 }
 
 void DataReductionProxyMetricsObserver::OnLoadEventStart(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DataReductionProxyMetricsObserverBase::OnLoadEventStart(timing, info);
+  DataReductionProxyMetricsObserverBase::OnLoadEventStart(timing);
   RECORD_FOREGROUND_HISTOGRAMS_FOR_SUFFIX(
-      info, data(), timing.document_timing->load_event_start,
+      GetDelegate(), data(), timing.document_timing->load_event_start,
       ::internal::kHistogramLoadEventFiredSuffix);
 }
 
 void DataReductionProxyMetricsObserver::OnFirstLayout(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RECORD_FOREGROUND_HISTOGRAMS_FOR_SUFFIX(
-      info, data(), timing.document_timing->first_layout,
+      GetDelegate(), data(), timing.document_timing->first_layout,
       ::internal::kHistogramFirstLayoutSuffix);
 }
 
 void DataReductionProxyMetricsObserver::OnFirstPaintInPage(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RECORD_FOREGROUND_HISTOGRAMS_FOR_SUFFIX(
-      info, data(), timing.paint_timing->first_paint,
+      GetDelegate(), data(), timing.paint_timing->first_paint,
       ::internal::kHistogramFirstPaintSuffix);
 }
 
 void DataReductionProxyMetricsObserver::OnFirstImagePaintInPage(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RECORD_FOREGROUND_HISTOGRAMS_FOR_SUFFIX(
-      info, data(), timing.paint_timing->first_image_paint,
+      GetDelegate(), data(), timing.paint_timing->first_image_paint,
       ::internal::kHistogramFirstImagePaintSuffix);
 }
 
 void DataReductionProxyMetricsObserver::OnFirstContentfulPaintInPage(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RECORD_FOREGROUND_HISTOGRAMS_FOR_SUFFIX(
-      info, data(), timing.paint_timing->first_contentful_paint,
+      GetDelegate(), data(), timing.paint_timing->first_contentful_paint,
       ::internal::kHistogramFirstContentfulPaintSuffix);
 }
 
 void DataReductionProxyMetricsObserver::
     OnFirstMeaningfulPaintInMainFrameDocument(
-        const page_load_metrics::mojom::PageLoadTiming& timing,
-        const page_load_metrics::PageLoadExtraInfo& info) {
+        const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RECORD_FOREGROUND_HISTOGRAMS_FOR_SUFFIX(
-      info, data(), timing.paint_timing->first_meaningful_paint,
+      GetDelegate(), data(), timing.paint_timing->first_meaningful_paint,
       ::internal::kHistogramFirstMeaningfulPaintSuffix);
 }
 
 void DataReductionProxyMetricsObserver::OnParseStart(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RECORD_FOREGROUND_HISTOGRAMS_FOR_SUFFIX(
-      info, data(), timing.parse_timing->parse_start,
+      GetDelegate(), data(), timing.parse_timing->parse_start,
       ::internal::kHistogramParseStartSuffix);
 }
 
 void DataReductionProxyMetricsObserver::OnParseStop(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!WasStartedInForegroundOptionalEventInForeground(
-          timing.parse_timing->parse_stop, info))
+  if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.parse_timing->parse_stop, GetDelegate()))
     return;
 
   base::TimeDelta parse_duration = timing.parse_timing->parse_stop.value() -

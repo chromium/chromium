@@ -57,6 +57,19 @@ class MockGLInterface {
                                       width, height, depth, format, image_size);
     }
   }
+  void ClearTexSubImage(GLuint texture,
+                        GLint level,
+                        GLint xoffset,
+                        GLint yoffset,
+                        GLint zoffset,
+                        GLint width,
+                        GLint height,
+                        GLint depth,
+                        GLenum format,
+                        GLenum type,
+                        const GLvoid* data) {
+    NOTREACHED();
+  }
   MOCK_METHOD10(CompressedTexSubImage3DNoData,
                 void(GLenum target,
                      GLint level,

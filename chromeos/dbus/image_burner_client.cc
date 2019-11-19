@@ -22,7 +22,7 @@ namespace {
 // The ImageBurnerClient implementation.
 class ImageBurnerClientImpl : public ImageBurnerClient {
  public:
-  ImageBurnerClientImpl() : proxy_(NULL), weak_ptr_factory_(this) {}
+  ImageBurnerClientImpl() : proxy_(nullptr) {}
 
   ~ImageBurnerClientImpl() override = default;
 
@@ -131,7 +131,7 @@ class ImageBurnerClientImpl : public ImageBurnerClient {
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<ImageBurnerClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ImageBurnerClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ImageBurnerClientImpl);
 };
@@ -143,8 +143,8 @@ ImageBurnerClient::ImageBurnerClient() = default;
 ImageBurnerClient::~ImageBurnerClient() = default;
 
 // static
-ImageBurnerClient* ImageBurnerClient::Create() {
-  return new ImageBurnerClientImpl();
+std::unique_ptr<ImageBurnerClient> ImageBurnerClient::Create() {
+  return std::make_unique<ImageBurnerClientImpl>();
 }
 
 }  // namespace chromeos

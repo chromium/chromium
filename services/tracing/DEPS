@@ -5,3 +5,9 @@ include_rules = [
   "+third_party/perfetto/protos/perfetto",
   "+third_party/protobuf/src/google/protobuf/io/zero_copy_stream.h",
 ]
+
+specific_include_rules = {
+  'stack_unwinder_android_unittest.cc': [
+    "+services/tracing/jni_headers",
+  ],
+}

@@ -1,6 +1,7 @@
 <link rel="import" href="chrome://oobe/custom_elements.html">
 
-<div id="error-message" class="step hidden show-offline-error no-logo" hidden>
+<div id="error-message" class="step hidden show-offline-error" hidden>
+  <link rel="stylesheet" href="oobe_dialog_host.css">
   <link rel="stylesheet" href="oobe_flex_layout.css">
 
   <iron-iconset-svg name="error-message-24" size="24">
@@ -39,7 +40,7 @@
       </div>
     </h1>
     <div id="error-message-md-footer" slot="footer"
-        class="flex layout vertical">
+        class="flex layout vertical scrollable">
       <div id="error-body-id" class="error-body" aria-live="assertive">
         <div id="kiosk-online-message-body"
             class="error-message-paragraph
@@ -132,7 +133,8 @@
                    show-with-ui-state-signin
                    show-with-ui-state-supervised
                    show-with-ui-state-kiosk-mode
-                   show-with-ui-state-auto-enrollment-error">
+                   show-with-ui-state-auto-enrollment-error
+                   scrollable">
           <network-select-login id="offline-network-control"
               class="layout vertical flex" configure-connected>
           </network-select-login>

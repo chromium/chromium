@@ -1,17 +1,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [785, 2036],
       "contentsOpaque": true,
@@ -19,10 +8,10 @@
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow DIV",
-      "contentsOpaque": true,
-      "drawsContent": false,
-      "transform": 2
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -33,17 +22,6 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -300, 0, 1]
-      ],
-      "flattenInheritedTransform": false
-    },
-    {
-      "id": 2,
-      "parent": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [8, 8, 0, 1]
       ]
     }
   ]

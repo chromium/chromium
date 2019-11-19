@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -27,10 +28,6 @@
 #include "extensions/browser/extension_registry_observer.h"
 #endif
 
-namespace policy {
-struct PolicyStringMap;
-}  // namespace policy
-
 class PolicyStatusProvider;
 
 // The JavaScript message handler for the chrome://policy page.
@@ -44,10 +41,6 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
  public:
   PolicyUIHandler();
   ~PolicyUIHandler() override;
-
-  static void AddLocalizedPolicyStrings(content::WebUIDataSource* source,
-                                        const policy::PolicyStringMap* strings,
-                                        size_t count);
 
   static void AddCommonLocalizedStringsToSource(
       content::WebUIDataSource* source);
@@ -73,7 +66,6 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void OnSchemaRegistryUpdated(bool has_new_schemas) override;
 
  protected:
-
   // ui::SelectFileDialog::Listener implementation.
   void FileSelected(const base::FilePath& path,
                     int index,
@@ -115,7 +107,7 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   std::unique_ptr<PolicyStatusProvider> device_status_provider_;
   std::unique_ptr<PolicyStatusProvider> machine_status_provider_;
 
-  base::WeakPtrFactory<PolicyUIHandler> weak_factory_;
+  base::WeakPtrFactory<PolicyUIHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PolicyUIHandler);
 };

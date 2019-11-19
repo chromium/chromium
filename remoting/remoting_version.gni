@@ -25,11 +25,11 @@ _remoting_version_path = rebase_path(remoting_version_file, root_build_dir)
 _remoting_branding_path =
     rebase_path(_remoting_branding_abspath, root_build_dir)
 
-_template = "mac_host_bundle = \"@MAC_HOST_BUNDLE_NAME@\" "
-_template +=
+_template =
     "mac_native_messaging_bundle = \"@MAC_NATIVE_MESSAGING_HOST_BUNDLE_NAME@\" "
 _template += "mac_remote_assistance_bundle = \"@MAC_REMOTE_ASSISTANCE_HOST_BUNDLE_NAME@\" "
 _template += "host_bundle_name = \"@MAC_HOST_BUNDLE_NAME@\" "
+_template += "host_legacy_bundle_name = \"@MAC_HOST_LEGACY_BUNDLE_NAME@\" "
 _template += "host_name= \"@MAC_HOST_PACKAGE_NAME@\" "
 _template += "host_service_name = \"@DAEMON_FILE_NAME@\" "
 _template += "bundle_prefix = \"@MAC_UNINSTALLER_BUNDLE_PREFIX@\" "
@@ -62,12 +62,12 @@ _result = exec_script(_version_py_abspath,
                       "scope",
                       remoting_version_files)
 
-host_bundle_name = _result.host_bundle_name
 host_name = _result.host_name
 host_service_name = _result.host_service_name
 bundle_prefix = _result.bundle_prefix
 host_uninstaller_name = _result.host_uninstaller_name
-me2me_host_bundle_name = _result.mac_host_bundle
+me2me_host_bundle_name = _result.host_bundle_name
+me2me_host_legacy_bundle_name = _result.host_legacy_bundle_name
 native_messaging_host_bundle_name = _result.mac_native_messaging_bundle
 remote_assistance_host_bundle_name = _result.mac_remote_assistance_bundle
 remoting_version_patch = _result.version_patch

@@ -1,4 +1,3 @@
-set noparent
 file://chromeos/policy/OWNERS
 
 # COMPONENT: Enterprise

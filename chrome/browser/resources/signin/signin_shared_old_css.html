@@ -1,0 +1,45 @@
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+
+<!-- Common styles for signin-related tab modal dialogs. -->
+<dom-module id="signin-dialog-shared">
+  <template>
+    <style>
+      a {
+        color: var(--cr-link-color);
+        text-decoration: none;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        color: var(--cr-primary-text-color);
+        width: 448px;
+      }
+
+      .top-title-bar {
+        align-items: center;
+        border-bottom: var(--cr-separator-line);
+        display: flex;
+        font-size: 16px;
+        height: 52px;
+        padding: 0 24px;
+      }
+
+      .action-container {
+        display: flex;
+        justify-content: flex-end;
+        padding: 16px;
+      }
+
+<if expr="is_macosx or is_linux">
+      .action-container {
+        flex-flow: row-reverse;
+        justify-content: flex-start;
+      }
+</if>
+    </style>
+  </template>
+</dom-module>

@@ -25,7 +25,7 @@
 #include "extensions/common/permissions/api_permission.h"
 
 #if defined(OS_CHROMEOS)
-#include "ui/keyboard/resources/keyboard_resource_util.h"
+#include "ash/keyboard/ui/resources/keyboard_resource_util.h"
 #endif
 
 namespace extensions {

@@ -13,7 +13,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/optional.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "crypto/aead.h"
 #include "device/bluetooth/test/bluetooth_test.h"
@@ -41,10 +41,14 @@ using NiceMockBluetoothAdapter = ::testing::NiceMock<MockBluetoothAdapter>;
 constexpr auto kControlPointLength = std::numeric_limits<uint16_t>::max();
 // Counter value that is larger than FidoCableDevice::kMaxCounter.
 constexpr uint32_t kInvalidCounter = 1 << 24;
-constexpr char kTestSessionKey[] = "00000000000000000000000000000000";
+constexpr std::array<uint8_t, 32> kTestSessionKey = {0};
 constexpr std::array<uint8_t, 8> kTestEncryptionNonce = {
     {1, 1, 1, 1, 1, 1, 1, 1}};
 constexpr uint8_t kTestData[] = {'T', 'E', 'S', 'T'};
+// kCTAPFramingLength is the number of bytes of framing data at the beginning
+// of transmitted BLE messages. See
+// https://fidoalliance.org/specs/fido-v2.0-ps-20190130/fido-client-to-authenticator-protocol-v2.0-ps-20190130.html#ble-client-to-authenticator
+constexpr size_t kCTAPFramingLength = 3;
 
 std::vector<uint8_t> ConstructSerializedOutgoingFragment(
     base::span<const uint8_t> data) {
@@ -120,7 +124,9 @@ class FakeCableAuthenticator {
   }
 
   std::array<uint8_t, 8> nonce_ = kTestEncryptionNonce;
-  std::string session_key_ = kTestSessionKey;
+  std::string session_key_{
+      reinterpret_cast<const char*>(kTestSessionKey.data()),
+      kTestSessionKey.size()};
   uint32_t expected_client_counter_ = 0;
   uint32_t authenticator_counter_ = 0;
 };
@@ -134,7 +140,7 @@ class FidoCableDeviceTest : public Test {
         adapter_.get(), BluetoothTestBase::kTestDeviceAddress1);
     connection_ = connection.get();
     device_ = std::make_unique<FidoCableDevice>(std::move(connection));
-    device_->SetEncryptionData(kTestSessionKey, kTestEncryptionNonce);
+    device_->SetV1EncryptionData(kTestSessionKey, kTestEncryptionNonce);
     connection_->read_callback() = device_->GetReadCallbackForTesting();
   }
 
@@ -154,7 +160,7 @@ class FidoCableDeviceTest : public Test {
   FakeCableAuthenticator* authenticator() { return &authenticator_; }
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
  private:
   scoped_refptr<MockBluetoothAdapter> adapter_ =
@@ -168,70 +174,30 @@ TEST_F(FidoCableDeviceTest, TestCaBleDeviceSendData) {
   ConnectWithLength(kControlPointLength);
 
   EXPECT_CALL(*connection(), WriteControlPointPtr(_, _))
-      .WillOnce(Invoke([this](const auto& data, auto* cb) {
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(*cb), true));
-
-        const auto authenticator_reply = authenticator()->ReplyWithSameMessage(
-            base::make_span(data).subspan(3));
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE, base::BindOnce(connection()->read_callback(),
-                                      ConstructSerializedOutgoingFragment(
-                                          authenticator_reply)));
-      }));
-
-  TestDeviceCallbackReceiver callback_receiver;
-  device()->DeviceTransact(fido_parsing_utils::Materialize(kTestData),
-                           callback_receiver.callback());
-
-  callback_receiver.WaitForCallback();
-  const auto& value = callback_receiver.value();
-  ASSERT_TRUE(value);
-  EXPECT_THAT(*value, ::testing::ElementsAreArray(kTestData));
-}
-
-// Test that FidoCableDevice properly updates counters when sending/receiving
-// multiple requests.
-TEST_F(FidoCableDeviceTest, TestCableDeviceSendMultipleRequests) {
-  ConnectWithLength(kControlPointLength);
-  EXPECT_CALL(*connection(), WriteControlPointPtr(_, _))
-      .Times(2)
       .WillRepeatedly(Invoke([this](const auto& data, auto* cb) {
         base::SequencedTaskRunnerHandle::Get()->PostTask(
             FROM_HERE, base::BindOnce(std::move(*cb), true));
 
         const auto authenticator_reply = authenticator()->ReplyWithSameMessage(
-            base::make_span(data).subspan(3));
+            base::make_span(data).subspan(kCTAPFramingLength));
         base::SequencedTaskRunnerHandle::Get()->PostTask(
             FROM_HERE, base::BindOnce(connection()->read_callback(),
                                       ConstructSerializedOutgoingFragment(
                                           authenticator_reply)));
       }));
 
-  ASSERT_TRUE(device()->encryption_data_);
-  EXPECT_EQ(0u, device()->encryption_data_->write_sequence_num);
-  EXPECT_EQ(0u, device()->encryption_data_->read_sequence_num);
+  for (size_t i = 0; i < 3; i++) {
+    SCOPED_TRACE(i);
 
-  TestDeviceCallbackReceiver callback_receiver1;
-  device()->DeviceTransact(fido_parsing_utils::Materialize(kTestData),
-                           callback_receiver1.callback());
-  callback_receiver1.WaitForCallback();
-  const auto& value1 = callback_receiver1.value();
-  ASSERT_TRUE(value1);
-  EXPECT_THAT(*value1, ::testing::ElementsAreArray(kTestData));
-  EXPECT_EQ(1u, device()->encryption_data_->write_sequence_num);
-  EXPECT_EQ(1u, device()->encryption_data_->read_sequence_num);
+    TestDeviceCallbackReceiver callback_receiver;
+    device()->DeviceTransact(fido_parsing_utils::Materialize(kTestData),
+                             callback_receiver.callback());
 
-  constexpr uint8_t kTestData2[] = {'T', 'E', 'S', 'T', '2'};
-  TestDeviceCallbackReceiver callback_receiver2;
-  device()->DeviceTransact(fido_parsing_utils::Materialize(kTestData2),
-                           callback_receiver2.callback());
-  callback_receiver2.WaitForCallback();
-  const auto& value2 = callback_receiver2.value();
-  ASSERT_TRUE(value2);
-  EXPECT_THAT(*value2, ::testing::ElementsAreArray(kTestData2));
-  EXPECT_EQ(2u, device()->encryption_data_->write_sequence_num);
-  EXPECT_EQ(2u, device()->encryption_data_->read_sequence_num);
+    callback_receiver.WaitForCallback();
+    const auto& value = callback_receiver.value();
+    ASSERT_TRUE(value);
+    EXPECT_THAT(*value, ::testing::ElementsAreArray(kTestData));
+  }
 }
 
 TEST_F(FidoCableDeviceTest, TestCableDeviceFailOnIncorrectSessionKey) {
@@ -246,7 +212,7 @@ TEST_F(FidoCableDeviceTest, TestCableDeviceFailOnIncorrectSessionKey) {
 
         authenticator()->SetSessionKey(kIncorrectSessionKey);
         const auto authenticator_reply = authenticator()->ReplyWithSameMessage(
-            base::make_span(data).subspan(3));
+            base::make_span(data).subspan(kCTAPFramingLength));
 
         base::SequencedTaskRunnerHandle::Get()->PostTask(
             FROM_HERE, base::BindOnce(connection()->read_callback(),
@@ -275,7 +241,7 @@ TEST_F(FidoCableDeviceTest, TestCableDeviceFailOnUnexpectedCounter) {
         authenticator()->SetAuthenticatorCounter(
             kIncorrectAuthenticatorCounter);
         const auto authenticator_reply = authenticator()->ReplyWithSameMessage(
-            base::make_span(data).subspan(3));
+            base::make_span(data).subspan(kCTAPFramingLength));
 
         base::SequencedTaskRunnerHandle::Get()->PostTask(
             FROM_HERE, base::BindOnce(connection()->read_callback(),
@@ -307,7 +273,7 @@ TEST_F(FidoCableDeviceTest, TestCableDeviceErrorOnMaxCounter) {
 
         authenticator()->SetAuthenticatorCounter(kInvalidCounter);
         const auto authenticator_reply = authenticator()->ReplyWithSameMessage(
-            base::make_span(data).subspan(3));
+            base::make_span(data).subspan(kCTAPFramingLength));
 
         base::SequencedTaskRunnerHandle::Get()->PostTask(
             FROM_HERE, base::BindOnce(connection()->read_callback(),
@@ -316,8 +282,7 @@ TEST_F(FidoCableDeviceTest, TestCableDeviceErrorOnMaxCounter) {
       }));
 
   TestDeviceCallbackReceiver callback_receiver;
-  ASSERT_TRUE(device()->encryption_data_);
-  device()->encryption_data_->read_sequence_num = kInvalidCounter;
+  device()->SetSequenceNumbersForTesting(kInvalidCounter, 0);
   device()->DeviceTransact(fido_parsing_utils::Materialize(kTestData),
                            callback_receiver.callback());
 

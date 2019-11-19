@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<title>mojo watch tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+async_test((test) => {
+  let {handle0, handle1} = Mojo.createMessagePipe();
+
+  handle0.watch({readable: true}, test.step_func_done((result) => {
+    assert_equals(result, Mojo.RESULT_OK);
+  }));
+  handle1.writeMessage(new ArrayBuffer(4), []);
+}, "Watch handle readable");
+
+async_test((test) => {
+  let {handle0, handle1} = Mojo.createMessagePipe();
+
+  handle0.watch({writable: true}, test.step_func_done((result) => {
+    assert_equals(result, Mojo.RESULT_OK);
+  }));
+}, "Watch handle writable");
+
+async_test((test) => {
+  let {handle0, handle1} = Mojo.createMessagePipe();
+
+  handle0.watch({peerClosed: true}, test.step_func_done((result) => {
+    assert_equals(result, Mojo.RESULT_OK);
+  }));
+  handle1.close();
+}, "Watch handle peer closed");
+
+async_test((test) => {
+  let {handle0, handle1} = Mojo.createMessagePipe();
+
+  handle0.close();
+  handle0.watch({writable: true}, test.step_func_done((result) => {
+    assert_equals(result, Mojo.RESULT_INVALID_ARGUMENT);
+  }));
+}, "Watch invalid handle");
+
+async_test((test) => {
+  let {handle0, handle1} = Mojo.createMessagePipe();
+
+  handle0.watch({}, test.step_func_done((result) => {
+    assert_equals(result, Mojo.RESULT_FAILED_PRECONDITION);
+  }));
+}, "Watch with default MojoHandleSignals");
+
+async_test((test) => {
+  let {handle0, handle1} = Mojo.createMessagePipe();
+
+  let watcher = handle0.watch(
+      {writable: true},
+      test.unreached_func("callback triggered after canceling watch"));
+  watcher.cancel();
+  setTimeout(() => { test.done(); });
+}, "Cancel watch");
+
+</script>

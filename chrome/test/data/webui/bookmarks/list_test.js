@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestStore} from 'chrome://test/bookmarks/test_store.js';
+import {Command, MenuSource} from 'chrome://bookmarks/bookmarks.js';
+import {createFolder, createItem, customClick, getAllFoldersOpenState, normalizeIterable, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flushTasks} from 'chrome://test/test_util.m.js';
+
 suite('<bookmarks-list>', function() {
   let list;
   let store;
@@ -13,7 +19,7 @@ suite('<bookmarks-list>', function() {
       createItem('5'),
       createItem('7'),
     ]));
-    store = new bookmarks.TestStore({
+    store = new TestStore({
       nodes: nodes,
       folderOpenState: getAllFoldersOpenState(nodes),
       selectedFolder: '10',
@@ -26,7 +32,7 @@ suite('<bookmarks-list>', function() {
     list.style.position = 'absolute';
 
     replaceBody(list);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('renders correct <bookmark-item> elements', function() {
@@ -85,7 +91,7 @@ suite('<bookmarks-list> integration test', function() {
   let items;
 
   setup(function() {
-    store = new bookmarks.TestStore({
+    store = new TestStore({
       nodes: testTree(createFolder(
           '10',
           [
@@ -106,7 +112,7 @@ suite('<bookmarks-list> integration test', function() {
     list.style.position = 'absolute';
 
     replaceBody(list);
-    Polymer.dom.flush();
+    flush();
 
     items = list.root.querySelectorAll('bookmarks-item');
   });
@@ -167,7 +173,7 @@ suite('<bookmarks-list> command manager integration test', function() {
   let store;
 
   setup(function() {
-    store = new bookmarks.TestStore({
+    store = new TestStore({
       nodes: testTree(createFolder('1', [])),
       selectedFolder: '1',
     });
@@ -181,14 +187,20 @@ suite('<bookmarks-list> command manager integration test', function() {
 
     replaceBody(app);
 
-    Polymer.dom.flush();
+    flush();
   });
 
-  test('show context menu', () => {
+  test('show context menu', async () => {
+    const commandManager = app.$$('bookmarks-command-manager');
+    commandManager.updateForPaste_ = function() {
+      this.canPaste_ = true;
+      return Promise.resolve();
+    };
+
     const list = app.$$('bookmarks-list');
     list.fire('contextmenu', {clientX: 0, clientY: 0});
 
-    const commandManager = app.$$('bookmarks-command-manager');
+    await flushTasks();
 
     assertEquals(MenuSource.LIST, commandManager.menuSource_);
     assertDeepEquals(

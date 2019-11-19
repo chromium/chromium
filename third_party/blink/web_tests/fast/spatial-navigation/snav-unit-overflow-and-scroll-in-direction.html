@@ -43,6 +43,7 @@
       testRunner.dumpAsText();
       testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
       testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
+      internals.settings.setScrollAnimatorEnabled(false);
       testRunner.waitUntilDone();
     }
 
@@ -91,7 +92,7 @@
   </head>
   <body id="some-content" xmlns="http://www.w3.org/1999/xhtml">
     <a id="start" href="a">Start</a>
-    <div style='margin-top:100000000px'>
+    <div style='margin-top:100000px'>
         <a id="end" href="a">End</a>
     </div>
     <div id="console"></div>

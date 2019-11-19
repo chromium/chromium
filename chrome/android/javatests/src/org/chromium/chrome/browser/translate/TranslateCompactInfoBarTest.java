@@ -62,7 +62,7 @@ public class TranslateCompactInfoBarTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 
@@ -73,7 +73,7 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
-    public void testTranslateCompactInfoBarAppears() throws InterruptedException, TimeoutException {
+    public void testTranslateCompactInfoBarAppears() throws TimeoutException {
         mActivityTestRule.loadUrl(mTestServer.getURL(TRANSLATE_PAGE));
         mListener.addInfoBarAnimationFinished("InfoBar not opened.");
         InfoBar infoBar = mInfoBarContainer.getInfoBarsForTesting().get(0);
@@ -88,8 +88,7 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
-    public void testTranslateCompactInfoBarOverflowMenus()
-            throws InterruptedException, TimeoutException {
+    public void testTranslateCompactInfoBarOverflowMenus() throws TimeoutException {
         mActivityTestRule.loadUrl(mTestServer.getURL(TRANSLATE_PAGE));
         mListener.addInfoBarAnimationFinished("InfoBar not opened.");
         TranslateCompactInfoBar infoBar =
@@ -140,8 +139,7 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
-    public void testTranslateCompactInfoBarReopenOnTarget()
-            throws InterruptedException, TimeoutException {
+    public void testTranslateCompactInfoBarReopenOnTarget() throws TimeoutException {
         mActivityTestRule.loadUrl(mTestServer.getURL(TRANSLATE_PAGE));
         mListener.addInfoBarAnimationFinished("InfoBar not opened.");
 

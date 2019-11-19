@@ -44,30 +44,13 @@ bool IsIncludedInFREPromoFieldTrial();
 // is in effect.
 bool IsIncludedInHoldbackFieldTrial();
 
-// Returns true if this client is part of a holdback experiment that disables
-// the use of secure data compression proxies. Insecure proxies remain enabled.
-bool IsIncludedInSecureProxyHoldbackFieldTrial();
-
 // The name of the Holdback experiment group, this can return an empty string if
 // not included in a group.
 std::string HoldbackFieldTrialGroup();
 
-// Returns the name of the Lo-Fi field trial.
-// TODO(ryansturm): crbug.com/759052 Cleanup once fully cutover to new blacklist
-const char* GetLoFiFieldTrialName();
-
-// Returns the name of the Lo-Fi field trial that configures LoFi flags when it
-// is force enabled through flags.
-// TODO(ryansturm): crbug.com/759052 Cleanup once fully cutover to new blacklist
-const char* GetLoFiFlagFieldTrialName();
-
-// Returns true if this client is part of the field trial that should enable
-// server experiments for the data reduction proxy.
-bool IsIncludedInServerExperimentsFieldTrial();
-
-// Returns true if Chrome should use on-device safe browsing checks, and
-// disable safe browsing checks provided by data saver proxy.
-bool IsIncludedInOnDeviceSafeBrowsingFieldTrial();
+// Returns true if DRP config service should always be fetched even if DRP
+// holdback is enabled.
+bool ForceEnableClientConfigServiceForAllDataSaverUsers();
 
 // Returns true if this client has the command line switch to enable forced
 // pageload metrics pingbacks on every page load.
@@ -81,9 +64,6 @@ bool WarnIfNoDataReductionProxy();
 // proxy server as quic://proxy.googlezip.net.
 bool IsIncludedInQuicFieldTrial();
 
-// Returns true if QUIC is enabled for non core data reduction proxies.
-bool IsQuicEnabledForNonCoreProxies();
-
 const char* GetQuicFieldTrialName();
 
 // If the Data Reduction Proxy is used for a page load, the URL for the
@@ -93,10 +73,6 @@ GURL GetPingbackURL();
 // If the Data Reduction Proxy config client is being used, the URL for the
 // Data Reduction Proxy config service.
 GURL GetConfigServiceURL();
-
-// Returns true if the Data Reduction Proxy is forced to be enabled from the
-// command line.
-bool ShouldForceEnableDataReductionProxy();
 
 // The current LitePage experiment blacklist version.
 int LitePageVersion();
@@ -115,8 +91,15 @@ int GetFieldTrialParameterAsInteger(const std::string& group,
 bool GetOverrideProxiesForHttpFromCommandLine(
     std::vector<DataReductionProxyServer>* override_proxies_for_http);
 
-// Returns the name of the server side experiment field trial.
-const char* GetServerExperimentsFieldTrialName();
+// Returns the server experiments option name. This name is used in the request
+// headers to the data saver proxy. This name is also used to set the experiment
+// name using finch trial.
+std::string GetDataSaverServerExperimentsOptionName();
+
+// Returns the server experiment. This name is used in the request
+// headers to the data saver proxy. Returned value may be empty indicating no
+// experiment is enabled.
+std::string GetDataSaverServerExperiments();
 
 // Returns the URL to check to decide if the secure proxy origin should be
 // used.
@@ -141,13 +124,6 @@ bool IsWarmupURL(const GURL& url);
 // unsuccessful.
 bool IsWhitelistedHttpResponseCodeForProbes(int http_response_code);
 
-// Returns the experiment parameter name to disable missing via header bypasses.
-const char* GetMissingViaBypassParamName();
-
-// Returns if site-breakdown metrics should be recorded using the page load
-// metrics harness.
-bool IsDataSaverSiteBreakdownUsingPLMEnabled();
-
 // Returns whether network service is enabled and data reduction proxy should be
 // used.
 bool IsEnabledWithNetworkService();
@@ -155,10 +131,6 @@ bool IsEnabledWithNetworkService();
 // Returns the experiment parameter name to discard the cached result for canary
 // check probe.
 const char* GetDiscardCanaryCheckResultParam();
-
-// Returns true if canary check result should not be cached or reused across
-// network changes.
-bool ShouldDiscardCanaryCheckResult();
 
 // Helper function to locate |proxy_server| in |proxies| if it exists. This
 // function is exposed publicly so that DataReductionProxyParams can use it.

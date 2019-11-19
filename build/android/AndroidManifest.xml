@@ -9,12 +9,8 @@
   This is a dummy manifest which is required by:
   1. aapt when generating R.java in java.gypi:
      Nothing in the manifest is used, but it is still required by aapt.
-  2. lint: [min|target]SdkVersion are required by lint and should
-     be kept up to date.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.dummy">
-
-    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="24" />
 
 </manifest>

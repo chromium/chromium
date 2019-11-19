@@ -32,7 +32,15 @@ class GCM_EXPORT HeartbeatManager : public base::PowerObserver {
   typedef base::Callback<void(ConnectionFactory::ConnectionResetReason)>
       ReconnectCallback;
 
-  HeartbeatManager();
+  // |io_task_runner|: for running IO tasks.
+  // |maybe_power_wrapped_io_task_runner|: for running IO tasks, where if the
+  //     feature is provided, it could be a wrapper on top of |io_task_runner|
+  //     to provide power management featueres so that a delayed task posted to
+  //     it can wake the system up from sleep to perform the task.
+  explicit HeartbeatManager(
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+      scoped_refptr<base::SequencedTaskRunner>
+          maybe_power_wrapped_io_task_runner);
   ~HeartbeatManager() override;
 
   // Start the heartbeat logic.
@@ -117,6 +125,8 @@ class GCM_EXPORT HeartbeatManager : public base::PowerObserver {
   // Custom interval requested by the client.
   int client_interval_ms_;
 
+  const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+
   // Timer for triggering heartbeats.
   std::unique_ptr<base::RetainingOneShotTimer> heartbeat_timer_;
 
@@ -127,7 +137,7 @@ class GCM_EXPORT HeartbeatManager : public base::PowerObserver {
   base::Closure send_heartbeat_callback_;
   ReconnectCallback trigger_reconnect_callback_;
 
-  base::WeakPtrFactory<HeartbeatManager> weak_ptr_factory_;
+  base::WeakPtrFactory<HeartbeatManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HeartbeatManager);
 };

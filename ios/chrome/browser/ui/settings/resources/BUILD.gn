@@ -4,6 +4,12 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
+colorset("settings_catalog_example_text") {
+  sources = [
+    "settings_catalog_example_text.colorset/Contents.json",
+  ]
+}
+
 imageset("app_icon_placeholder") {
   sources = [
     "app_icon_placeholder.imageset/Contents.json",
@@ -37,15 +43,6 @@ imageset("settings_error") {
     "settings_error.imageset/settings_error.png",
     "settings_error.imageset/settings_error@2x.png",
     "settings_error.imageset/settings_error@3x.png",
-  ]
-}
-
-imageset("settings_sync") {
-  sources = [
-    "settings_sync.imageset/Contents.json",
-    "settings_sync.imageset/settings_sync.png",
-    "settings_sync.imageset/settings_sync@2x.png",
-    "settings_sync.imageset/settings_sync@3x.png",
   ]
 }
 
@@ -91,6 +88,14 @@ imageset("settings_debug") {
     "settings_debug.imageset/settings_debug.png",
     "settings_debug.imageset/settings_debug@2x.png",
     "settings_debug.imageset/settings_debug@3x.png",
+  ]
+}
+
+imageset("settings_language_settings") {
+  sources = [
+    "settings_language_settings.imageset/Contents.json",
+    "settings_language_settings.imageset/settings_language_settings@2x.png",
+    "settings_language_settings.imageset/settings_language_settings@3x.png",
   ]
 }
 
@@ -151,7 +156,6 @@ imageset("settings_voice_search") {
 imageset("sync_and_google_services") {
   sources = [
     "sync_and_google_services.imageset/Contents.json",
-    "sync_and_google_services.imageset/sync_and_google_services.png",
     "sync_and_google_services.imageset/sync_and_google_services@2x.png",
     "sync_and_google_services.imageset/sync_and_google_services@3x.png",
   ]

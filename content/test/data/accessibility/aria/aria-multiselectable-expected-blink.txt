@@ -1,3 +1,4 @@
 rootWebArea
-++listBox multiselectable
-++listBox
+++genericContainer ignored
+++++listBox multiselectable
+++++listBox

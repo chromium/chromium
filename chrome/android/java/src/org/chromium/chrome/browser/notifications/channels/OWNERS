@@ -2,9 +2,7 @@
 # added or removed lightly, and the proper deprecation and versioning steps must be taken when doing
 # so. Please read the README and speak to one of us when adding/removing a channel.
 per-file ChannelDefinitions.java=set noparent
-per-file ChannelDefinitions.java=peter@chromium.org
-per-file ChannelDefinitions.java=nyquist@chromium.org
-per-file ChannelDefinitions.java=dtrainor@chromium.org
+per-file ChannelDefinitions.java=file://chrome/android/java/src/org/chromium/chrome/browser/notifications/channels/NOTIFICATION_CHANNEL_OWNERS
 
 # TEAM: platform-capabilities@chromium.org
 # COMPONENT: UI>Notifications

@@ -1,0 +1,73 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+group("cpu_features") {
+  public_deps = [
+    "$android_ndk_root:cpu_features",
+  ]
+}
+
+if (enable_java_templates) {
+  android_system_java_prebuilt("public_framework_system_java") {
+    jar_path = "//third_party/android_system_sdk/android_system.jar"
+  }
+
+  android_system_java_prebuilt("android_sdk_java") {
+    jar_path = android_sdk_jar
+  }
+
+  template("android_test_jar_with_manifest") {
+    _manifest_output_path = "$target_gen_dir/$target_name/AndroidManifest.xml"
+    _manifest_target = "${target_name}__manifest"
+    jinja_template(_manifest_target) {
+      testonly = true
+      input = "//third_party/android_sdk/AndroidManifest.xml.jinja2"
+      output = _manifest_output_path
+      variables = [ "library_name=${invoker.library_name}" ]
+    }
+
+    _resources_target = "${target_name}__resources"
+    android_resources(_resources_target) {
+      testonly = true
+      resource_dirs = []
+      android_manifest = _manifest_output_path
+      android_manifest_dep = ":$_manifest_target"
+    }
+
+    java_group(target_name) {
+      testonly = true
+      deps = [
+        ":$_resources_target",
+      ]
+      input_jars_paths = [ "${android_sdk}/optional/${invoker.jar_name}" ]
+    }
+  }
+
+  # The android test libraries below are part of the main SDK jar
+  # and are linked by default on O and below. Starting in P, they
+  # exist in their own libraries that are present on device and are
+  # available to be linked against but aren't linked by default.
+  android_test_jar_with_manifest("android_test_base_java") {
+    library_name = "base"
+    jar_name = "android.test.base.jar"
+  }
+  android_test_jar_with_manifest("android_test_mock_java") {
+    library_name = "mock"
+    jar_name = "android.test.mock.jar"
+  }
+  android_test_jar_with_manifest("android_test_runner_java") {
+    library_name = "runner"
+    jar_name = "android.test.runner.jar"
+  }
+
+  android_library("android_support_chromium_java") {
+    testonly = true
+    java_files = [ "//third_party/android_sdk/public/extras/chromium/support/src/org/chromium/android/support/PackageManagerWrapper.java" ]
+  }
+  android_java_prebuilt("android_gcm_java") {
+    jar_path = "//third_party/android_sdk/public/extras/google/gcm/gcm-client/dist/gcm.jar"
+  }
+}

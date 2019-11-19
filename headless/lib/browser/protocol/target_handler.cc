@@ -27,6 +27,8 @@ Response TargetHandler::CreateTarget(const std::string& url,
                                      Maybe<int> height,
                                      Maybe<std::string> context_id,
                                      Maybe<bool> enable_begin_frame_control,
+                                     Maybe<bool> new_window,
+                                     Maybe<bool> background,
                                      std::string* out_target_id) {
 #if defined(OS_MACOSX)
   if (enable_begin_frame_control.fromMaybe(false))

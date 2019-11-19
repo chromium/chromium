@@ -12,5 +12,5 @@
     </item>
     <item
         android:top="@dimen/infobar_shadow_height"
-        android:drawable="@color/modern_primary_color" />
+        android:drawable="@color/infobar_background_color" />
 </layer-list>

@@ -6,7 +6,6 @@
 #ifndef CC_LAYERS_SOLID_COLOR_LAYER_H_
 #define CC_LAYERS_SOLID_COLOR_LAYER_H_
 
-#include "base/macros.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
 
@@ -18,6 +17,9 @@ class CC_EXPORT SolidColorLayer : public Layer {
  public:
   static scoped_refptr<SolidColorLayer> Create();
 
+  SolidColorLayer(const SolidColorLayer&) = delete;
+  SolidColorLayer& operator=(const SolidColorLayer&) = delete;
+
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
 
   void SetBackgroundColor(SkColor color) override;
@@ -27,8 +29,6 @@ class CC_EXPORT SolidColorLayer : public Layer {
 
  private:
   ~SolidColorLayer() override;
-
-  DISALLOW_COPY_AND_ASSIGN(SolidColorLayer);
 };
 
 }  // namespace cc

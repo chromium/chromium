@@ -21,10 +21,4 @@ void DoNothingCTVerifier::Verify(
   output_scts->clear();
 }
 
-void DoNothingCTVerifier::SetObserver(Observer* observer) {}
-
-CTVerifier::Observer* DoNothingCTVerifier::GetObserver() const {
-  return nullptr;
-}
-
 }  // namespace net

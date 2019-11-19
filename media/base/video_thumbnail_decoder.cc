@@ -17,8 +17,7 @@ VideoThumbnailDecoder::VideoThumbnailDecoder(
     std::vector<uint8_t> encoded_data)
     : decoder_(std::move(decoder)),
       config_(config),
-      encoded_data_(std::move(encoded_data)),
-      weak_factory_(this) {
+      encoded_data_(std::move(encoded_data)) {
   DCHECK(!encoded_data_.empty());
   DCHECK(config_.IsValidConfig());
 }
@@ -70,7 +69,7 @@ void VideoThumbnailDecoder::OnEosBufferDecoded(DecodeStatus status) {
 }
 
 void VideoThumbnailDecoder::OnVideoFrameDecoded(
-    const scoped_refptr<VideoFrame>& frame) {
+    scoped_refptr<VideoFrame> frame) {
   NotifyComplete(std::move(frame));
 }
 

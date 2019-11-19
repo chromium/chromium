@@ -1,5 +1,0 @@
-resources/subframe-notify-done.html - willSendRequest <NSURLRequest URL resources/subframe-notify-done.html, main document URL main-document-url-for-non-http-loads.html, http method GET>
-resources/subframe-notify-done.html - didReceiveResponse <NSURLResponse resources/subframe-notify-done.html, http status code 0>
-Radar 6616664 - Non-HTTP/HTTPS loads need to have their main document URL set.
-When run in DumpRenderTree, this test will dump the resource load callback for the following subframe to make sure it had its main document URL set in its NSURLRequest.
-

@@ -32,6 +32,9 @@ class ServiceMain {
 
   // The following methods are public for the sake of testing.
 
+  // Creates an out-of-proc WRL Module.
+  void CreateWRLModule();
+
   // Registers the Service COM class factory object so other applications can
   // connect to it. Returns the registration status.
   HRESULT RegisterClassObject();
@@ -42,6 +45,9 @@ class ServiceMain {
   // Returns true when the last COM object is released, or if the service is
   // asked to exit.
   bool IsExitSignaled();
+
+  // Resets the state of the |exit_signal_| event.
+  void ResetExitSignaled();
 
  private:
   ServiceMain();

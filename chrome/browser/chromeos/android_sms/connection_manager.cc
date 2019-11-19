@@ -138,6 +138,8 @@ void ConnectionManager::UpdateConnectionStatus() {
     connection_establisher_->TearDownConnection(
         *enabled_pwa_url_, GetCurrentServiceWorkerContext());
     GetCurrentServiceWorkerContext()->RemoveObserver(this);
+    active_version_id_.reset();
+    prev_active_version_id_.reset();
   }
 
   enabled_pwa_url_ = updated_pwa_url;

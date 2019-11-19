@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.previews;
 
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
 import java.net.URI;
@@ -25,11 +26,13 @@ public final class PreviewsAndroidBridge {
     private final long mNativePreviewsAndroidBridge;
 
     private PreviewsAndroidBridge() {
-        mNativePreviewsAndroidBridge = nativeInit();
+        mNativePreviewsAndroidBridge =
+                PreviewsAndroidBridgeJni.get().init(PreviewsAndroidBridge.this);
     }
 
     public boolean shouldShowPreviewUI(WebContents webContents) {
-        return nativeShouldShowPreviewUI(mNativePreviewsAndroidBridge, webContents);
+        return PreviewsAndroidBridgeJni.get().shouldShowPreviewUI(
+                mNativePreviewsAndroidBridge, PreviewsAndroidBridge.this, webContents);
     }
 
     /**
@@ -48,8 +51,8 @@ public final class PreviewsAndroidBridge {
      * Preview. Otherwise, the given visibleURL is returned.
      */
     public String getOriginalURL(String visibleURL) {
-        final String originalURL =
-                nativeGetLitePageRedirectOriginalURL(mNativePreviewsAndroidBridge, visibleURL);
+        final String originalURL = PreviewsAndroidBridgeJni.get().getLitePageRedirectOriginalURL(
+                mNativePreviewsAndroidBridge, PreviewsAndroidBridge.this, visibleURL);
         if (originalURL == null) return visibleURL;
         return originalURL;
     }
@@ -61,7 +64,8 @@ public final class PreviewsAndroidBridge {
     public String getStalePreviewTimestamp(WebContents webContents) {
         assert shouldShowPreviewUI(webContents)
             : "getStalePreviewTimestamp called on a non-preview page";
-        return nativeGetStalePreviewTimestamp(mNativePreviewsAndroidBridge, webContents);
+        return PreviewsAndroidBridgeJni.get().getStalePreviewTimestamp(
+                mNativePreviewsAndroidBridge, PreviewsAndroidBridge.this, webContents);
     }
 
     /**
@@ -69,25 +73,30 @@ public final class PreviewsAndroidBridge {
      */
     public void loadOriginal(WebContents webContents) {
         assert shouldShowPreviewUI(webContents) : "loadOriginal called on a non-preview page";
-        nativeLoadOriginal(mNativePreviewsAndroidBridge, webContents);
+        PreviewsAndroidBridgeJni.get().loadOriginal(
+                mNativePreviewsAndroidBridge, PreviewsAndroidBridge.this, webContents);
     }
 
     /**
      * Returns the committed preview type as a String.
      */
     public String getPreviewsType(WebContents webContents) {
-        return nativeGetPreviewsType(mNativePreviewsAndroidBridge, webContents);
+        return PreviewsAndroidBridgeJni.get().getPreviewsType(
+                mNativePreviewsAndroidBridge, PreviewsAndroidBridge.this, webContents);
     }
 
-    private native long nativeInit();
-    private native boolean nativeShouldShowPreviewUI(
-            long nativePreviewsAndroidBridge, WebContents webContents);
-    private native String nativeGetLitePageRedirectOriginalURL(
-            long nativePreviewsAndroidBridge, String visibleURL);
-    private native String nativeGetStalePreviewTimestamp(
-            long nativePreviewsAndroidBridge, WebContents webContents);
-    private native void nativeLoadOriginal(
-            long nativePreviewsAndroidBridge, WebContents webContents);
-    private native String nativeGetPreviewsType(
-            long nativePreviewsAndroidBridge, WebContents webContents);
+    @NativeMethods
+    interface Natives {
+        long init(PreviewsAndroidBridge caller);
+        boolean shouldShowPreviewUI(long nativePreviewsAndroidBridge, PreviewsAndroidBridge caller,
+                WebContents webContents);
+        String getLitePageRedirectOriginalURL(
+                long nativePreviewsAndroidBridge, PreviewsAndroidBridge caller, String visibleURL);
+        String getStalePreviewTimestamp(long nativePreviewsAndroidBridge,
+                PreviewsAndroidBridge caller, WebContents webContents);
+        void loadOriginal(long nativePreviewsAndroidBridge, PreviewsAndroidBridge caller,
+                WebContents webContents);
+        String getPreviewsType(long nativePreviewsAndroidBridge, PreviewsAndroidBridge caller,
+                WebContents webContents);
+    }
 }

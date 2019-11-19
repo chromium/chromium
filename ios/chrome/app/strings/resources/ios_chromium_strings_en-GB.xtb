@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">About Chromium</translation>
 <translation id="1289966288285062467">Chromium Privacy Notice</translation>
 <translation id="1472013873724362412">Your account does not work on Chromium. Please contact your domain administrator or use a regular Google Account to sign in.</translation>
+<translation id="1507010443238049608">Help improve Chromium's features and performance</translation>
 <translation id="1617663976202781617">Data from Chromium sync</translation>
 <translation id="1736662517232558588">Cleared Chromium Data</translation>
 <translation id="1838412507805038478">Chromium verified that <ph name="ISSUER" /> issued this website's certificate.</translation>
@@ -14,26 +15,18 @@
 <translation id="2168108852149185974">Some add-ons cause Chromium to crash. Please uninstall:</translation>
 <translation id="2178608107313874732">Chromium can't use your camera at the moment</translation>
 <translation id="2195025571279539885">Would you like Chromium to offer to translate <ph name="LANGUAGE_NAME" /> pages from this site next time?</translation>
-<translation id="2517624234762908348">Sync your Chromium data</translation>
-<translation id="2647554856022461007">Chromium may use web services to improve your browsing experience. You may optionally disable these services. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
+<translation id="2590893390871230428">Sync your Chromium data</translation>
 <translation id="2730884209570016437">Chromium can't use your camera because it's in use by another application</translation>
 <translation id="2915596697727466327">Chromium uses Face ID to ensure authorised access to your passwords.</translation>
 <translation id="3256316712990552818">Copied to Chromium</translation>
-<translation id="3413120535237193088">To get your bookmarks on all your devices, sign in to Chromium.</translation>
-<translation id="3473048256428424907">Turn on Chromium QR Scanner</translation>
-<translation id="3605252743693911722">Sign in to Chromium to get your bookmarks, passwords and more on all your devices.</translation>
 <translation id="3805899903892079518">Chromium does not have access to your photos or videos. Enable access in iOS Settings &gt; Privacy &gt; Photos.</translation>
-<translation id="4024541897090868497">To get your tabs on all your devices, sign in to Chromium.</translation>
-<translation id="4157467675761413638">Chromium tip. For more tab options, press and hold the Show Tabs button in the toolbar, which is at the bottom or top of your screen.</translation>
-<translation id="4241912885070669028">You are signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />. This will delete your Chromium data from this device, but your data will remain in your Google account.</translation>
-<translation id="4272892696084633551">Help improve Chromium's features and performance</translation>
 <translation id="4555020257205549924">When this feature is turned on, Chromium will offer to translate pages written in other languages using Google Translate. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
+<translation id="4681781466797808448">Turn on Chromium scanner</translation>
 <translation id="4787850887676698916">Tabs that you've opened in Chromium on your other devices will appear here.</translation>
-<translation id="495292094137889840">Start using Chromium QR Scanner</translation>
-<translation id="4999538639245140991">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chromium data will be deleted from this device. Your data will remain in your Google account.</translation>
-<translation id="5231355151045086930">Sign out of Chromium</translation>
+<translation id="4999538639245140991">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chromium data will be deleted from this device. Your data will remain in your Google Account.</translation>
+<translation id="5573014823074921752">Chromium tip. For more tab options, touch and hold the Show Tabs button in the toolbar, which is at the bottom or top of your screen.</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
-<translation id="5945387852661427312">You are signing in with an account managed by <ph name="DOMAIN" /> and giving its administrator control over your Chromium data. Your data will become permanently tied to this account. Signing out of Chromium will delete your data from this device, but it will remain stored in your Google account.</translation>
+<translation id="5945387852661427312">You are signing in with an account managed by <ph name="DOMAIN" /> and giving its administrator control over your Chromium data. Your data will become permanently tied to this account. Signing out of Chromium will delete your data from this device, but it will remain stored in your Google Account.</translation>
 <translation id="6068866989048414399">Chromium Terms of Service</translation>
 <translation id="6268381023930128611">Sign out of Chromium?</translation>
 <translation id="6424492062988593837">Chromium just got better! A new version is available.</translation>
@@ -43,16 +36,18 @@
 <translation id="7208566199746267865">Chromium saves you time by bringing your accounts to the web. You can add or remove accounts in Settings.</translation>
 <translation id="7269362888766543920">Some add-ons cause Chromium to crash. Please try uninstalling them.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">The selected data has been removed from Chromium and synced devices. Your Google account may have other forms of browsing history such as searches and activity from other Google services at history.google.com.</translation>
+<translation id="7357211569052832586">The selected data has been removed from Chromium and synced devices. Your Google Account may have other forms of browsing history such as searches and activity from other Google services at history.google.com.</translation>
 <translation id="7400689562045506105">Use Chromium Everywhere</translation>
 <translation id="7674213385180944843">Open Settings &gt; Privacy &gt; Camera &gt; Chromium and turn on the camera.</translation>
 <translation id="7746854981345936341">Chromium tip. Some buttons are now at the bottom of your screen, such as Back, Forward and Search.</translation>
 <translation id="786327964234957808">You are switching sync accounts from <ph name="USER_EMAIL1" /> to <ph name="USER_EMAIL2" />. Your existing Chromium data is managed by <ph name="DOMAIN" />. This will delete your data from this device, but your data will remain in <ph name="USER_EMAIL1" />.</translation>
+<translation id="7890287942691234100">Start using Chromium scanner</translation>
 <translation id="8073677936375100957">Clear your Chromium data from this device?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Move Chromium to your dock<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Get a better Google experience in Chromium based on your location.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8809780021347235332">To save images, tap on Settings to let Chromium use your photos</translation>
 <translation id="9022552996538154597">Sign in to Chromium</translation>
+<translation id="9217078088703304241"><ph name="BEGIN_LINK" />Review the updated Chromium Terms of Service.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

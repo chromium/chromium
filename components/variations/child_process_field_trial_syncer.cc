@@ -41,7 +41,7 @@ void ChildProcessFieldTrialSyncer::InitFieldTrialObserving(
   base::FieldTrial::ActiveGroups current_active_trials;
   base::FieldTrialList::GetActiveFieldTrialGroups(&current_active_trials);
   for (const auto& trial : current_active_trials) {
-    if (!base::ContainsKey(initially_active_trials_set, trial.trial_name))
+    if (!base::Contains(initially_active_trials_set, trial.trial_name))
       observer_->OnFieldTrialGroupFinalized(trial.trial_name, trial.group_name);
   }
 }

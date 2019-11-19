@@ -3,6 +3,7 @@ include_rules = [
   "-chrome/test/chromedriver",
 
   "+chrome/test/chromedriver/chrome/status.h",
+  "+chrome/test/chromedriver/constants",
   "+chrome/test/chromedriver/net",
   # LogReplaySocket is a mock out of a chromedriver/net impelementation
   # that logically belongs in chromedriver/log_replay but must be included

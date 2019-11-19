@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Notifications: ServiceWorkerRegistration.getNotifications() within a Service Worker with includeTriggered.</title>
+    <script src="../resources/testharness.js"></script>
+    <script src="../resources/testharnessreport.js"></script>
+    <script src="../serviceworker/resources/test-helpers.js"></script>
+    <script src="resources/test-helpers.js"></script>
+  </head>
+  <body>
+    <script>
+      // Tests that the getNotifications() function when used in a Service Worker
+      // return an array of the notifications which were previously scheduled using
+      // the same Service Worker registration id.
+      async_test(function(test) {
+          var scope = 'resources/scope/' + location.pathname,
+              script = 'instrumentation-service-worker.js';
+
+          testRunner.setPermission('notifications', 'granted', location.origin, location.origin);
+
+          var info = null;
+          getActiveServiceWorkerWithMessagePort(test, script, scope).then(function(workerInfo) {
+              info = workerInfo;
+
+              // Display two notifications in the Document.
+              return info.registration.showNotification('Hello, world!', {
+                body: 'First notification',
+                tag: 'banana',
+              });
+          }).then(function() {
+              return info.registration.showNotification('Hello again, world!', {
+                body: 'Second notification',
+                tag: 'strawberry',
+              });
+          }).then(function() {
+              // Schedule two notifications.
+              return info.registration.showNotification('Hello once again, world!', {
+                body: 'Third notification',
+                tag: 'kiwi',
+                showTrigger: new TimestampTrigger(Date.now() + 10000),
+              });
+          }).then(function() {
+              return info.registration.showNotification('Hello another time, world!', {
+                body: 'Fourth notification',
+                tag: 'lemon',
+                showTrigger: new TimestampTrigger(Date.now() + 10000),
+              });
+          }).then(function() {
+              // Request the Service Worker to give us a filtered list of notifications.
+              return sendCommand(info.port, {
+                  command: 'get',
+                  filter: {
+                    tag: 'lemon',
+                    includeTriggered: true,
+                  }
+              });
+          }).then(function(data) {
+              // Confirm that the Service Worker was able to get the one matching notification.
+              assert_true(data.success);
+
+              var notifications = data.notifications;
+
+              assert_equals(notifications.length, 1);
+
+              assert_equals(notifications[0].title, 'Hello another time, world!');
+              assert_equals(notifications[0].body, 'Fourth notification');
+          }).then(function() {
+              // Request a triggered notification by tag without |includeTriggered|.
+              return sendCommand(info.port, {
+                  command: 'get',
+                  filter: {
+                    tag: 'kiwi',
+                  }
+              });
+          }).then(function(data) {
+              // Confirm that the Service Worker was not able to get the notification.
+              assert_true(data.success);
+
+              var notifications = data.notifications;
+
+              assert_equals(notifications.length, 0);
+          }).then(function() {
+          }).then(function() {
+              // Request the Service Worker to give us all notifications.
+              return sendCommand(info.port, {
+                  command: 'get',
+                  filter: {
+                    includeTriggered: true,
+                  }
+              });
+          }).then(function(data) {
+              // Confirm that the Service Worker was able to get all notification.
+              assert_true(data.success);
+
+              assert_equals(data.notifications.length, 4);
+          }).then(function() {
+              // Request the Service Worker to give us all displayed notifications.
+              return sendCommand(info.port, {
+                  command: 'get'
+              });
+          }).then(function(data) {
+              // Confirm that the Service Worker was able to get all displayed notification.
+              assert_true(data.success);
+
+              assert_equals(data.notifications.length, 2);
+
+              test.done();
+          }).catch(unreached_rejection(test));
+
+      }, 'ServiceWorkerRegistration.getNotifications() returns the triggered notifications within a Service Worker with a filter.');
+    </script>
+  </body>
+</html>

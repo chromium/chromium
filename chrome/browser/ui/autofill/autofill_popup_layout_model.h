@@ -13,8 +13,6 @@
 #include "chrome/browser/ui/autofill/popup_view_common.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
-#include "ui/native_theme/native_theme.h"
 
 namespace gfx {
 class ImageSkia;
@@ -71,11 +69,11 @@ class AutofillPopupLayoutModel {
   const gfx::FontList& GetValueFontListForRow(size_t index) const;
   const gfx::FontList& GetLabelFontListForRow(size_t index) const;
 
-  // Returns the value font color ID of the row item according to its |index|.
-  ui::NativeTheme::ColorId GetValueFontColorIDForRow(size_t index) const;
-
   // Returns the icon image of the item at |index| in the popup.
   gfx::ImageSkia GetIconImage(size_t index) const;
+
+  // Returns the store indicator icon image of the item at |index| in the popup.
+  gfx::ImageSkia GetStoreIndicatorIconImage(size_t index) const;
 #endif
 
   // Convert a y-coordinate to the closest line.
@@ -91,12 +89,6 @@ class AutofillPopupLayoutModel {
   // resource isn't recognized.
   int GetIconResourceID(const std::string& resource_name) const;
 
-  // Returns the string id for an accessible name which should be used to
-  // describe the given resource. Returns 0 if the resource isn't recognized;
-  // note that this doesn't necessarily mean anything went wrong, as some valid
-  // resources are intentionally omitted for screen readers.
-  int GetIconAccessibleNameResourceId(const std::string& resource_name) const;
-
   bool is_credit_card_popup() const { return is_credit_card_popup_; }
 
   // Allows the provision of another implementation of view_common, for use in
@@ -105,9 +97,11 @@ class AutofillPopupLayoutModel {
 
  private:
   // Returns the enclosing rectangle for the element_bounds.
-  const gfx::Rect RoundedElementBounds() const;
+  gfx::Rect RoundedElementBounds() const;
 
 #if !defined(OS_ANDROID)
+  gfx::ImageSkia GetIconImageByName(const std::string& icon_str) const;
+
   // The fonts for the popup text.
   // Normal font (readable size, non bold).
   gfx::FontList normal_font_list_;

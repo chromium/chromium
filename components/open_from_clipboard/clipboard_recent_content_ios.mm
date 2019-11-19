@@ -109,3 +109,8 @@ base::TimeDelta ClipboardRecentContentIOS::GetClipboardContentAge() const {
 void ClipboardRecentContentIOS::SuppressClipboardContent() {
   [implementation_ suppressClipboardContent];
 }
+
+void ClipboardRecentContentIOS::ClearClipboardContent() {
+  NOTIMPLEMENTED();
+  return;
+}

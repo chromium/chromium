@@ -1,8 +1,8 @@
 include_rules = [
+  "+chrome/chrome_elf/chrome_elf_main.h",
   "+chrome/grit",
   "+chrome/install_static",
   "+chrome/services/file_util/public",
-  "+chrome_elf/chrome_elf_main.h",
   "+chromeos",  # For chromeos_switches.h
   "+components/autofill/content/common",
   "+components/autofill/core/common",
@@ -24,7 +24,9 @@ include_rules = [
   "+components/metrics/call_stack_profile_params.h",
   "+components/metrics/child_call_stack_profile_collector.h",
   "+components/metrics/client_info.h",
+  "+components/metrics/metadata_recorder.h",
   "+components/metrics/metrics_pref_names.h",
+  "+components/metrics/public",
   "+components/nacl/common",
   "+components/net_log",
   "+components/network_session_configurator/common",
@@ -35,8 +37,10 @@ include_rules = [
   "+components/policy/core/common",
   "+components/prefs",
   "+components/printing/common",
+  "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/proto/csd.pb.h",
   "+components/safe_browsing/web_ui/constants.h",
+  "+components/services/app_service/public",
   "+components/strings/grit/components_strings.h",
   "+components/translate/core/common",
   "+components/url_formatter",
@@ -54,6 +58,7 @@ include_rules = [
   "+rlz/buildflags/buildflags.h",
   "+sandbox/linux/services/credentials.h",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
   "+third_party/blink/public/mojom",
   "+third_party/boringssl/src/include",
   "+third_party/metrics_proto",  # For heap profiler test.

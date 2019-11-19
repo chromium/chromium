@@ -81,34 +81,10 @@ cr.define('cr.ui', function() {
   Oobe.showOobeUI = function(showOobe) {
     if (showOobe) {
       document.body.classList.add('oobe-display');
-
-      // Callback to animate the header bar in.
-      var showHeaderBar = function() {
-        login.HeaderBar.animateIn(false, function() {
-          chrome.send('headerBarVisible');
-        });
-      };
-      // Start asynchronously so the OOBE welcome screen comes in first.
-      window.setTimeout(showHeaderBar, HEADER_BAR_DELAY_MS);
     } else {
       document.body.classList.remove('oobe-display');
       Oobe.getInstance().prepareForLoginDisplay_();
-      // Ensure header bar is visible when switching to Login UI from oobe.
-      if (Oobe.getInstance().displayType == DISPLAY_TYPE.OOBE)
-        login.HeaderBar.animateIn(true);
     }
-
-    Oobe.getInstance().headerHidden = false;
-  };
-
-  /**
-   * When |showShutdown| is set to "true", the shutdown button is shown and the
-   * reboot button hidden. If set to "false", the reboot button is visible and
-   * the shutdown button hidden.
-   */
-  Oobe.showShutdown = function(showShutdown) {
-    $('login-header-bar').showShutdownButton = showShutdown;
-    $('login-header-bar').showRebootButton = !showShutdown;
   };
 
   /**
@@ -366,11 +342,10 @@ cr.define('cr.ui', function() {
    * attribute screen if it's present.
    */
   Oobe.isEnrollmentSuccessfulForTest = function() {
-    if (document.querySelector('.oauth-enroll-state-attribute-prompt'))
+    if ($('enterprise-enrollment').$$('.oauth-enroll-state-attribute-prompt'))
       chrome.send('oauthEnrollAttributes', ['', '']);
 
-    return $('oauth-enrollment')
-        .classList.contains('oauth-enroll-state-success');
+    return !!$('enterprise-enrollment').$$('.oauth-enroll-state-success');
   };
 
   /**
@@ -378,13 +353,6 @@ cr.define('cr.ui', function() {
    */
   Oobe.setUpOnlineDemoModeForTesting = function() {
     DemoModeTestHelper.setUp('online');
-  };
-
-  /**
-   * Shows/hides login UI control bar with buttons like [Shut down].
-   */
-  Oobe.showControlBar = function(show) {
-    Oobe.getInstance().headerHidden = !show;
   };
 
   /**
@@ -402,6 +370,22 @@ cr.define('cr.ui', function() {
    */
   Oobe.setClientAreaSize = function(width, height) {
     Oobe.getInstance().setClientAreaSize(width, height);
+  };
+
+  /**
+   * Sets the current height of the shelf area.
+   * @param {number} height current shelf height
+   */
+  Oobe.setShelfHeight = function(height) {
+    Oobe.getInstance().setShelfHeight(height);
+  };
+
+  /**
+   * Sets the hint for calculating OOBE dialog margins.
+   * @param {OobeTypes.DialogPaddingMode} mode.
+   */
+  Oobe.setDialogPaddingMode = function(mode) {
+    Oobe.getInstance().setDialogPaddingMode(mode);
   };
 
   /**
@@ -459,6 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Install a global error handler so stack traces are included in logs.
 window.onerror = function(message, file, line, column, error) {
-  console.error(error.stack);
+  if (error && error.stack)
+    console.error(error.stack);
 };
 })();

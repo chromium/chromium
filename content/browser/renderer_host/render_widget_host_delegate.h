@@ -12,13 +12,14 @@
 
 #include "base/callback.h"
 #include "build/build_config.h"
+#include "components/viz/common/vertical_scroll_direction.h"
 #include "content/browser/renderer_host/input_event_shim.h"
 #include "content/common/content_export.h"
 #include "content/common/drag_event_source_info.h"
 #include "content/public/common/drop_data.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/blink/public/common/manifest/web_display_mode.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/platform/web_drag_operation.h"
 #include "third_party/blink/public/platform/web_input_event.h"
 #include "ui/gfx/native_widget_types.h"
@@ -41,13 +42,13 @@ class Sample;
 namespace content {
 
 class BrowserAccessibilityManager;
+class RenderFrameHostImpl;
 class RenderWidgetHostImpl;
 class RenderWidgetHostInputEventRouter;
 class RenderViewHostDelegateView;
 class TextInputManager;
 class WebContents;
 enum class KeyboardEventProcessingResult;
-struct ScreenInfo;
 struct NativeWebKeyboardEvent;
 
 //
@@ -85,7 +86,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
 
   // The RenderWidget was resized.
   virtual void RenderWidgetWasResized(RenderWidgetHostImpl* render_widget_host,
-                                      const ScreenInfo& screen_info,
                                       bool width_changed) {}
 
   // The contents auto-resized and the container should match it.
@@ -104,6 +104,11 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // TODO(carlosil, nasko): remove once committed interstitial pages are
   // fully implemented.
   virtual bool PreHandleMouseEvent(const blink::WebMouseEvent& event);
+
+  // Callback to inform the browser that the renderer did not process the
+  // specified events. This gives an opportunity to the browser to process the
+  // back/forward mouse buttons.
+  virtual bool HandleMouseEvent(const blink::WebMouseEvent& event);
 
   // Callback to inform the browser that the renderer did not process the
   // specified events. This gives an opportunity to the browser to process the
@@ -188,6 +193,12 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // warning shown to the user.
   virtual void RendererResponsive(RenderWidgetHostImpl* render_widget_host) {}
 
+  // Notification that a cross-process subframe on this page has crashed, and a
+  // sad frame is shown if the subframe was visible.  |frame_visibility|
+  // specifies whether the subframe is visible, scrolled out of view, or hidden
+  // (e.g., with "display: none").
+  virtual void SubframeCrashed(blink::mojom::FrameVisibility visibility) {}
+
   // Requests to lock the mouse. Once the request is approved or rejected,
   // GotResponseToLockMouseRequest() will be called on the requesting render
   // widget host. |privileged| means that the request is always granted, used
@@ -206,7 +217,7 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   virtual bool ShouldShowStaleContentOnEviction();
 
   // Returns the display mode for the view.
-  virtual blink::WebDisplayMode GetDisplayMode(
+  virtual blink::mojom::DisplayMode GetDisplayMode(
       RenderWidgetHostImpl* render_widget_host) const;
 
   // Notification that the widget has lost capture.
@@ -296,11 +307,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Note: This is also exposed by the RenderFrameHostDelegate.
   virtual ukm::SourceId GetUkmSourceIdForLastCommittedSource() const;
 
-  // Notifies the delegate that a focused editable element has been touched
-  // inside this RenderWidgetHost. If |editable| is true then the focused
-  // element accepts text input.
-  virtual void FocusedNodeTouched(bool editable) {}
-
   // Return this object cast to a WebContents, if it is one. If the object is
   // not a WebContents, returns nullptr.
   virtual WebContents* GetAsWebContents();
@@ -317,6 +323,18 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Returns an object that will override handling of Text Input and Mouse
   // Lock events from the renderer.
   virtual InputEventShim* GetInputEventShim() const;
+
+  // Returns the focused frame across all delegates, or nullptr if none.
+  virtual RenderFrameHostImpl* GetFocusedFrameFromFocusedDelegate();
+
+  // Invoked when the vertical scroll direction of the root layer changes. Note
+  // that if a scroll in a given direction occurs, the scroll is completed, and
+  // then another scroll in the *same* direction occurs, we will not consider
+  // the second scroll event to have caused a change in direction. Also note
+  // note that this API will *never* be called with |kNull| which only exists to
+  // indicate the absence of a vertical scroll direction.
+  virtual void OnVerticalScrollDirectionChanged(
+      viz::VerticalScrollDirection scroll_direction) {}
 
  protected:
   virtual ~RenderWidgetHostDelegate() {}

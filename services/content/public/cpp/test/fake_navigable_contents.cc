@@ -23,10 +23,11 @@ FakeNavigableContents::FakeNavigableContents() {
 
 FakeNavigableContents::~FakeNavigableContents() = default;
 
-void FakeNavigableContents::Bind(mojom::NavigableContentsRequest request,
-                                 mojom::NavigableContentsClientPtr client) {
-  binding_.Bind(std::move(request));
-  client_ = std::move(client);
+void FakeNavigableContents::Bind(
+    mojo::PendingReceiver<mojom::NavigableContents> receiver,
+    mojo::PendingRemote<mojom::NavigableContentsClient> client) {
+  receiver_.Bind(std::move(receiver));
+  client_.Bind(std::move(client));
 }
 
 void FakeNavigableContents::Navigate(const GURL& url,
@@ -42,8 +43,7 @@ void FakeNavigableContents::GoBack(
   std::move(callback).Run(false /* success */);
 }
 
-void FakeNavigableContents::CreateView(bool in_service_process,
-                                       CreateViewCallback callback) {
+void FakeNavigableContents::CreateView(CreateViewCallback callback) {
   auto token = base::UnguessableToken::Create();
   NavigableContentsView::RegisterInProcessEmbedCallback(token,
                                                         base::DoNothing());

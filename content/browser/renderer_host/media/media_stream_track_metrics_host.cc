@@ -28,9 +28,9 @@ MediaStreamTrackMetricsHost::~MediaStreamTrackMetricsHost() {
   tracks_.clear();
 }
 
-void MediaStreamTrackMetricsHost::BindRequest(
-    blink::mojom::MediaStreamTrackMetricsHostRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void MediaStreamTrackMetricsHost::BindReceiver(
+    mojo::PendingReceiver<blink::mojom::MediaStreamTrackMetricsHost> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void MediaStreamTrackMetricsHost::AddTrack(uint64_t id,

@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -72,10 +73,10 @@ const gfx::VectorIcon& GetBluetoothDeviceIcon(
 
 views::View* CreateDisabledPanel() {
   views::View* container = new views::View;
-  auto box_layout =
-      std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical);
+  auto box_layout = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical);
   box_layout->set_main_axis_alignment(
-      views::BoxLayout::MAIN_AXIS_ALIGNMENT_CENTER);
+      views::BoxLayout::MainAxisAlignment::kCenter);
   container->SetLayoutManager(std::move(box_layout));
 
   TrayPopupItemStyle style(TrayPopupItemStyle::FontStyle::DETAILED_VIEW_LABEL);
@@ -84,7 +85,7 @@ views::View* CreateDisabledPanel() {
   views::ImageView* image_view = new views::ImageView;
   image_view->SetImage(gfx::CreateVectorIcon(kSystemMenuBluetoothDisabledIcon,
                                              style.GetIconColor()));
-  image_view->SetVerticalAlignment(views::ImageView::TRAILING);
+  image_view->SetVerticalAlignment(views::ImageView::Alignment::kTrailing);
   container->AddChildView(image_view);
 
   views::Label* label = new views::Label(
@@ -215,7 +216,11 @@ void BluetoothDetailedView::UpdateDeviceScrollList(
 
 void BluetoothDetailedView::SetToggleIsOn(bool is_on) {
   if (toggle_)
-    toggle_->SetIsOn(is_on, true);
+    toggle_->AnimateIsOn(is_on);
+}
+
+const char* BluetoothDetailedView::GetClassName() const {
+  return "BluetoothDetailedView";
 }
 
 void BluetoothDetailedView::CreateItems() {
@@ -239,7 +244,11 @@ void BluetoothDetailedView::AppendSameTypeDevicesToScrollList(
         SetupConnectingScrollListItem(container);
         break;
       case BluetoothDeviceInfo::ConnectionState::kConnected:
-        SetupConnectedScrollListItem(container);
+        SetupConnectedScrollListItem(
+            container, device->battery_info
+                           ? base::make_optional<uint8_t>(
+                                 device->battery_info->battery_percentage)
+                           : base::nullopt);
         break;
     }
     device_map_[container] = device->address;
@@ -270,8 +279,8 @@ void BluetoothDetailedView::UpdateClickedDevice(
 
 void BluetoothDetailedView::ShowSettings() {
   if (TrayPopupUtils::CanOpenWebUISettings()) {
-    Shell::Get()->system_tray_model()->client_ptr()->ShowBluetoothSettings();
-    CloseBubble();
+    CloseBubble();  // Deletes |this|.
+    Shell::Get()->system_tray_model()->client()->ShowBluetoothSettings();
   }
 }
 
@@ -316,11 +325,10 @@ void BluetoothDetailedView::HandleButtonPressed(views::Button* sender,
                                                 const ui::Event& event) {
   if (sender == toggle_) {
     Shell::Get()->tray_bluetooth_helper()->SetBluetoothEnabled(
-        toggle_->is_on());
-  } else if (sender == settings_) {
-    ShowSettings();
+        toggle_->GetIsOn());
   } else {
-    NOTREACHED();
+    DCHECK_EQ(settings_, sender);
+    ShowSettings();
   }
 }
 
@@ -336,8 +344,7 @@ void BluetoothDetailedView::CreateExtraTitleRowButtons() {
   toggle_ =
       TrayPopupUtils::CreateToggleButton(this, IDS_ASH_STATUS_TRAY_BLUETOOTH);
   toggle_->SetIsOn(Shell::Get()->tray_bluetooth_helper()->GetBluetoothState() ==
-                       BluetoothSystem::State::kPoweredOn,
-                   false /* animate */);
+                   BluetoothSystem::State::kPoweredOn);
   tri_view()->AddView(TriView::Container::END, toggle_);
 
   settings_ = CreateSettingsButton(IDS_ASH_STATUS_TRAY_BLUETOOTH_SETTINGS);

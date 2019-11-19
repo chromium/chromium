@@ -27,7 +27,7 @@ Widget* CreateControlWidget(aura::Window* parent, const gfx::Rect& bounds) {
   params.parent = parent;
   params.bounds = bounds;
   Widget* widget = new Widget();
-  widget->Init(params);
+  widget->Init(std::move(params));
   return widget;
 }
 
@@ -45,8 +45,8 @@ View* CreateViewWithLayer(const gfx::Rect& bounds, const char* layer_name) {
 
 class ViewAuraTest : public ViewsTestBase {
  public:
-  ViewAuraTest() {}
-  ~ViewAuraTest() override {}
+  ViewAuraTest() = default;
+  ~ViewAuraTest() override = default;
 
   const View::Views& GetViewsWithLayers(Widget* widget) {
     return widget->GetViewsWithLayers();

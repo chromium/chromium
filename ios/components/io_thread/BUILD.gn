@@ -15,6 +15,7 @@ component("io_thread") {
     "//components/variations",
     "//components/version_info",
     "//ios/web",
+    "//ios/web/common:user_agent",
     "//ios/web/public",
     "//net",
   ]

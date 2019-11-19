@@ -31,7 +31,8 @@ CrasInputStream::CrasInputStream(const AudioParameters& params,
       is_loopback_(AudioDeviceDescription::IsLoopbackDevice(device_id)),
       mute_system_audio_(device_id ==
                          AudioDeviceDescription::kLoopbackWithMuteDeviceId),
-      mute_done_(false) {
+      mute_done_(false),
+      input_volume_(1.0f) {
   DCHECK(audio_manager_);
   audio_bus_ = AudioBus::Create(params_);
   if (!audio_manager_->IsDefault(device_id, true)) {
@@ -209,6 +210,9 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
     return;
   }
 
+  cras_client_stream_params_set_client_type(stream_params,
+                                            CRAS_CLIENT_TYPE_CHROME);
+
   if (UseCrasAec())
     cras_client_stream_params_enable_aec(stream_params);
 
@@ -316,20 +320,15 @@ void CrasInputStream::NotifyStreamError(int err) {
 }
 
 double CrasInputStream::GetMaxVolume() {
-  DCHECK(client_);
-
-  // Capture gain is returned as dB * 100 (150 => 1.5dBFS).  Convert the dB
-  // value to a ratio before returning.
-  double dB = cras_client_get_system_max_capture_gain(client_) / 100.0;
-  return GetVolumeRatioFromDecibels(dB);
+  return 1.0f;
 }
 
 void CrasInputStream::SetVolume(double volume) {
   DCHECK(client_);
 
-  // Convert from the passed volume ratio, to dB * 100.
-  double dB = GetDecibelsFromVolumeRatio(volume);
-  cras_client_set_system_capture_gain(client_, static_cast<long>(dB * 100.0));
+  // Set the volume ratio to CRAS's softare and stream specific gain.
+  input_volume_ = volume;
+  cras_client_set_stream_volume(client_, stream_id_, input_volume_);
 
   // Update the AGC volume level based on the last setting above. Note that,
   // the volume-level resolution is not infinite and it is therefore not
@@ -343,8 +342,7 @@ double CrasInputStream::GetVolume() {
   if (!client_)
     return 0.0;
 
-  long dB = cras_client_get_system_capture_gain(client_) / 100.0;
-  return GetVolumeRatioFromDecibels(dB);
+  return input_volume_;
 }
 
 bool CrasInputStream::IsMuted() {
@@ -354,14 +352,6 @@ bool CrasInputStream::IsMuted() {
 void CrasInputStream::SetOutputDeviceForAec(
     const std::string& output_device_id) {
   // Not supported. Do nothing.
-}
-
-double CrasInputStream::GetVolumeRatioFromDecibels(double dB) const {
-  return pow(10, dB / 20.0);
-}
-
-double CrasInputStream::GetDecibelsFromVolumeRatio(double volume_ratio) const {
-  return 20 * log10(volume_ratio);
 }
 
 }  // namespace media

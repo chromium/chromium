@@ -1,0 +1,3 @@
+[document web]
+++[entry] single-line selectable-text xml-roles:textbox
+++[entry] multi-line selectable-text xml-roles:textbox

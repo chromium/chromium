@@ -34,8 +34,8 @@ const InterpolableValue& TransitionInterpolation::CurrentInterpolableValue()
   return *cached_interpolable_value_;
 }
 
-NonInterpolableValue* TransitionInterpolation::CurrentNonInterpolableValue()
-    const {
+const NonInterpolableValue*
+TransitionInterpolation::CurrentNonInterpolableValue() const {
   if (cached_fraction_ == 0) {
     return start_.non_interpolable_value.get();
   }
@@ -55,14 +55,8 @@ void TransitionInterpolation::Apply(StyleResolverState& state) const {
 
 std::unique_ptr<TypedInterpolationValue>
 TransitionInterpolation::GetInterpolatedValue() const {
-  return TypedInterpolationValue::Create(
+  return std::make_unique<TypedInterpolationValue>(
       type_, CurrentInterpolableValue().Clone(), CurrentNonInterpolableValue());
-}
-
-AnimatableValue* TransitionInterpolation::GetInterpolatedCompositorValue()
-    const {
-  return AnimatableValue::Interpolate(compositor_start_, compositor_end_,
-                                      cached_fraction_);
 }
 
 }  // namespace blink

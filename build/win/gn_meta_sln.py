@@ -6,6 +6,8 @@
 #   Helper utility to combine GN-generated Visual Studio projects into
 #   a single meta-solution.
 
+from __future__ import print_function
+
 import os
 import glob
 import re
@@ -88,7 +90,7 @@ for config in configs:
         match_obj = re.match(project_pattern, sln_line)
         if match_obj:
             proj_name = match_obj.group(1)
-            if not all_projects.has_key(proj_name):
+            if proj_name not in all_projects:
                 all_projects[proj_name] = []
             all_projects[proj_name].append((config[0], match_obj.group(2),
                                             match_obj.group(3)))

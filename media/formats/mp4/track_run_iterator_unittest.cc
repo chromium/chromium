@@ -97,7 +97,6 @@ const uint8_t kFragmentCencSampleGroupKeyId[] = {
     0x74, 0x43, 0x65, 0x6e, 0x63, 0x53, 0x61, 0x6d,
 };
 
-#if BUILDFLAG(ENABLE_CBCS_ENCRYPTION_SCHEME)
 // Sample encryption data for two samples, using constant IV (defined by 'tenc'
 // or sample group entry).
 const uint8_t kSampleEncryptionDataWithSubsamplesAndConstantIv[] = {
@@ -137,7 +136,6 @@ const char kIv5[] = {
     0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x35,
     0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
 };
-#endif
 
 }  // namespace
 
@@ -425,7 +423,6 @@ class TrackRunIteratorTest : public testing::Test {
     }
   }
 
-#if BUILDFLAG(ENABLE_CBCS_ENCRYPTION_SCHEME)
   // Update the first sample description of a Track to indicate CBCS encryption
   // with a constant IV and pattern.
   void AddEncryptionCbcs(Track* track) {
@@ -487,7 +484,6 @@ class TrackRunIteratorTest : public testing::Test {
     frag->auxiliary_size.sample_info_sizes.push_back(16);
     frag->auxiliary_size.sample_info_sizes.push_back(16);
   }
-#endif
 
   bool InitMoofWithArbitraryAuxInfo(MovieFragment* moof) {
     // Add aux info header (equal sized aux info for every sample).
@@ -1017,7 +1013,6 @@ TEST_F(TrackRunIteratorTest, KeyFrameFlagCombinations) {
   EXPECT_EQ("2 K P P P K P", KeyframeAndRAPInfo(iter_.get()));
 }
 
-#if BUILDFLAG(ENABLE_CBCS_ENCRYPTION_SCHEME)
 TEST_F(TrackRunIteratorTest, DecryptConfigTestWithConstantIvNoAuxInfo) {
   AddEncryptionCbcs(&moov_.tracks[1]);
   iter_.reset(new TrackRunIterator(&moov_, &media_log_));
@@ -1106,8 +1101,6 @@ TEST_F(TrackRunIteratorTest, DecryptConfigTestWithSampleGroupsAndConstantIv) {
   EXPECT_TRUE(iter_->is_encrypted());
   EXPECT_EQ(track_encryption_iv, iter_->GetDecryptConfig()->iv());
 }
-
-#endif
 
 }  // namespace mp4
 }  // namespace media

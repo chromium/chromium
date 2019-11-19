@@ -15,13 +15,7 @@
 namespace switches {
 
 extern const char kAllowExternalPages[];
-#if defined(OS_ANDROID)
-extern const char kAndroidStderrPort[];
-extern const char kAndroidStdinPort[];
-extern const char kAndroidStdoutPort[];
-#endif  // defined(OS_ANDROID)
 extern const char kCrashOnFailure[];
-extern const char kCustomDevToolsFrontend[];
 extern const char kDebugDevTools[];
 extern const char kEnableAccelerated2DCanvas[];
 extern const char kEnableFontAntialiasing[];
@@ -30,7 +24,7 @@ extern const char kEnableLeakDetection[];
 extern const char kEncodeBinary[];
 extern const char kRunWebTests[];
 extern const char kStableReleaseMode[];
-extern const char kEnableDisplayCompositorPixelDump[];
+extern const char kDisableHeadlessMode[];
 
 }  // namespace switches
 

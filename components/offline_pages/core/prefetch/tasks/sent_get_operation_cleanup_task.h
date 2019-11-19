@@ -32,7 +32,7 @@ class SentGetOperationCleanupTask : public Task {
   PrefetchStore* prefetch_store_;                   // Outlives this class.
   PrefetchNetworkRequestFactory* request_factory_;  // Outlives this class.
 
-  base::WeakPtrFactory<SentGetOperationCleanupTask> weak_ptr_factory_;
+  base::WeakPtrFactory<SentGetOperationCleanupTask> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SentGetOperationCleanupTask);
 };

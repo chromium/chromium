@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/media/media_element_parser_helpers.h"
+
+#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -25,42 +27,6 @@ bool IsMediaElement(const Element* element) {
     return true;
   if (IsHTMLVideoElement(element) && !element->GetDocument().IsMediaDocument())
     return true;
-  return false;
-}
-
-bool ParseIntrinsicSizeAttribute(const String& value,
-                                 const Element* element,
-                                 IntSize* intrinsic_size,
-                                 bool* is_default_intrinsic_size,
-                                 String* message) {
-  *is_default_intrinsic_size = false;
-  unsigned new_width = 0, new_height = 0;
-  Vector<String> size;
-  value.Split('x', size);
-  if (!value.IsEmpty() &&
-      (size.size() != 2 ||
-       !ParseHTMLNonNegativeInteger(size.at(0), new_width) ||
-       !ParseHTMLNonNegativeInteger(size.at(1), new_height))) {
-    *message =
-        "Unable to parse intrinsicSize: expected [unsigned] x [unsigned]"
-        ", got " +
-        value;
-    new_width = 0;
-    new_height = 0;
-  }
-  if (new_width == 0 && new_height == 0 && IsMediaElement(element) &&
-      !element->GetDocument().IsFeatureEnabled(
-          mojom::FeaturePolicyFeature::kUnsizedMedia)) {
-    new_width = LayoutReplaced::kDefaultWidth;
-    new_height = LayoutReplaced::kDefaultHeight;
-    *is_default_intrinsic_size = true;
-  }
-
-  IntSize new_size(new_width, new_height);
-  if (*intrinsic_size != new_size) {
-    *intrinsic_size = new_size;
-    return true;
-  }
   return false;
 }
 

@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/dwrite_font_proxy/dwrite_font_proxy.mojom.h"
 
 namespace content {
@@ -38,7 +39,7 @@ class DWriteFontCollectionProxy
   static CONTENT_EXPORT HRESULT
   Create(DWriteFontCollectionProxy** proxy_out,
          IDWriteFactory* dwrite_factory,
-         blink::mojom::DWriteFontProxyPtrInfo proxy);
+         mojo::PendingRemote<blink::mojom::DWriteFontProxy> proxy);
 
   // Use Create() to construct these objects. Direct calls to the constructor
   // are an error - it is only public because a WRL helper function creates the
@@ -69,9 +70,9 @@ class DWriteFontCollectionProxy
                       UINT32 font_file_reference_key_size,
                       IDWriteFontFileStream** font_file_stream) override;
 
-  CONTENT_EXPORT HRESULT STDMETHODCALLTYPE
-  RuntimeClassInitialize(IDWriteFactory* factory,
-                         blink::mojom::DWriteFontProxyPtrInfo proxy);
+  CONTENT_EXPORT HRESULT STDMETHODCALLTYPE RuntimeClassInitialize(
+      IDWriteFactory* factory,
+      mojo::PendingRemote<blink::mojom::DWriteFontProxy> proxy);
 
   CONTENT_EXPORT void Unregister();
 
@@ -91,7 +92,7 @@ class DWriteFontCollectionProxy
   blink::mojom::DWriteFontProxy& GetFontProxy();
 
  private:
-  void SetProxy(blink::mojom::DWriteFontProxyPtrInfo);
+  void SetProxy(mojo::PendingRemote<blink::mojom::DWriteFontProxy> proxy);
 
   Microsoft::WRL::ComPtr<IDWriteFactory> factory_;
   std::vector<Microsoft::WRL::ComPtr<DWriteFontFamilyProxy>> families_;

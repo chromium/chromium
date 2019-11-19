@@ -336,21 +336,27 @@ void ExtensionHost::OnEventAck(int event_id) {
   // events for other extensions have been acked.  Make sure that the event id
   // sent by the renderer is one that this ExtensionHost expects to receive.
   // This way if a renderer _is_ compromised, it can really only affect itself.
-  const auto it = unacked_messages_.find(event_id);
-  if (!is_background_page || it == unacked_messages_.end()) {
+  if (!is_background_page) {
     // Kill this renderer.
     DCHECK(render_process_host());
-    if (!is_background_page) {
-      LOG(ERROR) << "Killing renderer for extension " << extension_id()
-                 << " for sending an EventAck without a lazy background page.";
-    } else {
-      // We have received an unexpected event id from the renderer.  It might
-      // be compromised or it might have some other issue.
-      LOG(ERROR) << "Killing renderer for extension " << extension_id()
-                 << " for sending an EventAck message with a bad event id.";
-    }
+    LOG(ERROR) << "Killing renderer for extension " << extension_id()
+               << " for sending an EventAck without a lazy background page.";
     bad_message::ReceivedBadMessage(render_process_host(),
                                     bad_message::EH_BAD_EVENT_ID);
+    return;
+  }
+
+  const auto it = unacked_messages_.find(event_id);
+  if (it == unacked_messages_.end()) {
+    // Ideally, we'd be able to kill the renderer in the case of it sending an
+    // ack for an event that we haven't seen. However, https://crbug.com/939279
+    // demonstrates that there are cases in which this can happen in other
+    // situations. We should track those down and fix them, but for now
+    // log and gracefully exit.
+    // bad_message::ReceivedBadMessage(render_process_host(),
+    //                                 bad_message::EH_BAD_EVENT_ID);
+    LOG(ERROR) << "Received EventAck for extension " << extension_id()
+               << " for an unknown event.";
     return;
   }
 
@@ -447,7 +453,7 @@ void ExtensionHost::RequestMediaAccessPermission(
 bool ExtensionHost::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
-    blink::MediaStreamType type) {
+    blink::mojom::MediaStreamType type) {
   return delegate_->CheckMediaAccessPermission(
       render_frame_host, security_origin, type, extension());
 }
@@ -457,7 +463,7 @@ bool ExtensionHost::IsNeverVisible(content::WebContents* web_contents) {
   return view_type == extensions::VIEW_TYPE_EXTENSION_BACKGROUND_PAGE;
 }
 
-gfx::Size ExtensionHost::EnterPictureInPicture(
+content::PictureInPictureResult ExtensionHost::EnterPictureInPicture(
     content::WebContents* web_contents,
     const viz::SurfaceId& surface_id,
     const gfx::Size& natural_size) {

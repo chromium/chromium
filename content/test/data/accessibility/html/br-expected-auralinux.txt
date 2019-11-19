@@ -1,8 +1,8 @@
 [document web]
-++[text] name='<newline>'
-++[text] name='Text line 1'
+++[static] name='<newline>'
+++[static] name='Text line 1'
 ++[paragraph]
-++++[text] name='Text line 2'
-++++[text] name='<newline>'
-++++[text] name='Text line 3'
-++[text] name='<newline>'
+++++[static] name='Text line 2'
+++++[static] name='<newline>'
+++++[static] name='Text line 3'
+++[static] name='<newline>'

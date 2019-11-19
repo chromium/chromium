@@ -27,10 +27,9 @@
 
   var model = PerformanceTestRunner.timelineModel();
   var linkifier = new Components.Linkifier();
-  var badgePool = new ProductRegistry.BadgePool();
 
   for (var request of model.networkRequests()) {
-    var element = await Timeline.TimelineUIUtils.buildNetworkRequestDetails(request, model, linkifier, badgePool);
+    var element = await Timeline.TimelineUIUtils.buildNetworkRequestDetails(request, model, linkifier);
     printElement(element);
   }
   TestRunner.completeTest();

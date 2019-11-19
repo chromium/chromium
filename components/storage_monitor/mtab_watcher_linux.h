@@ -56,7 +56,7 @@ class MtabWatcherLinux {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<MtabWatcherLinux> weak_ptr_factory_;
+  base::WeakPtrFactory<MtabWatcherLinux> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MtabWatcherLinux);
 };

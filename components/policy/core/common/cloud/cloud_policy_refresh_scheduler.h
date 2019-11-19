@@ -161,7 +161,7 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
   // its initial status.
   base::Time creation_time_;
 
-  base::WeakPtrFactory<CloudPolicyRefreshScheduler> weak_factory_;
+  base::WeakPtrFactory<CloudPolicyRefreshScheduler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CloudPolicyRefreshScheduler);
 };

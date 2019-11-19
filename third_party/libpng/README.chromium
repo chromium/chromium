@@ -1,25 +1,23 @@
 Name: libpng
 URL: http://libpng.org/
-Version: 1.6.35
+Version: 1.6.37
 Security Critical: yes
 License: libpng license
 License Android Compatible: yes
 
 Description:
-Updated to 1.6.35, stripped all unneeded files.
+Updated to 1.6.37, stripped all unneeded files.
 
 - Use custom configuration file pnglibconf.h, which turns off all features that
   are not in use.
 - Use custom prefix file pngprefix.h, which avoids namespace conflicts with
   pdfium's copy of libpng.
 - Configures custom png chunk user limits (crbug.com/117369) in pnglibconf.h.
-- Applies the patch in patches/0000-plte.patch for ARM NEON optimizations (this
-  change has been accepted to upstream [1] but not yet released).
 - Applies the patch in patches/0001-chunkerror.patch (modify
   png_check_chunk_length to call png_benign_error instead of png_chunk_error --
   see crbug.com/827754).
 - Keeps the fuzz target in contrib/oss-fuzz/ for running on clusterfuzz.
 - Applies the patch in patches/0002-fuzzeroom.patch to prevent clusterfuzz
   running into OOM errors.
-
-[1] https://github.com/glennrp/libpng/pull/203
+- Applies the patch from https://github.com/glennrp/libpng/pull/285 to keep
+  clang-cl build working.

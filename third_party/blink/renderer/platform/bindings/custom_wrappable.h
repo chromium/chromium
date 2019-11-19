@@ -13,7 +13,7 @@ namespace blink {
 
 // See the comment on CustomWrappableAdaptor.
 class PLATFORM_EXPORT CustomWrappable
-    : public GarbageCollectedFinalized<CustomWrappable>,
+    : public GarbageCollected<CustomWrappable>,
       public NameClient {
  public:
   virtual ~CustomWrappable() = default;

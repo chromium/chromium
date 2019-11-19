@@ -26,7 +26,7 @@
 // https://www.w3.org/TR/geolocation-API/#geolocation_interface
 [
     ActiveScriptWrappable,
-    NoInterfaceObject
+    Exposed=Window
 ] interface Geolocation {
     [
         LogActivity,
@@ -50,7 +50,8 @@
 };
 
 // https://www.w3.org/TR/geolocation-API/#position-callback
-callback PositionCallback = void(Position position);
+callback PositionCallback = void(GeolocationPosition position);
 
 // https://www.w3.org/TR/geolocation-API/#error-callback
-callback PositionErrorCallback = void (PositionError positionError);
+callback PositionErrorCallback =
+    void (GeolocationPositionError positionError);

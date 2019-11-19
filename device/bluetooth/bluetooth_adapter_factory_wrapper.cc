@@ -50,10 +50,9 @@ void BluetoothAdapterFactoryWrapper::AcquireAdapter(
   DCHECK(!GetAdapter(observer));
 
   AddAdapterObserver(observer);
-  if (adapter_.get()) {
+  if (adapter_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), base::Unretained(adapter_.get())));
+        FROM_HERE, base::BindOnce(std::move(callback), adapter_));
     return;
   }
 
@@ -89,8 +88,7 @@ void BluetoothAdapterFactoryWrapper::SetBluetoothAdapterForTesting(
   set_adapter(std::move(mock_adapter));
 }
 
-BluetoothAdapterFactoryWrapper::BluetoothAdapterFactoryWrapper()
-    : weak_ptr_factory_(this) {
+BluetoothAdapterFactoryWrapper::BluetoothAdapterFactoryWrapper() {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
 
@@ -100,14 +98,14 @@ void BluetoothAdapterFactoryWrapper::OnGetAdapter(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   set_adapter(adapter);
-  std::move(continuation).Run(adapter_.get());
+  std::move(continuation).Run(adapter_);
 }
 
 bool BluetoothAdapterFactoryWrapper::HasAdapter(
     BluetoothAdapter::Observer* observer) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  return base::ContainsKey(adapter_observers_, observer);
+  return base::Contains(adapter_observers_, observer);
 }
 
 void BluetoothAdapterFactoryWrapper::AddAdapterObserver(

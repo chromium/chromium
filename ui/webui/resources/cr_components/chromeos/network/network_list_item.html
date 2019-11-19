@@ -1,0 +1,93 @@
+<link rel="import" href="../../../html/polymer.html">
+
+<link rel="import" href="../../../html/chromeos/onc_mojo.html">
+<link rel="import" href="network_icon.html">
+<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_strings.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior_mojo.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+
+<dom-module id="network-list-item">
+  <template>
+    <style include="cr-shared-style iron-flex">
+      :host {
+        display: inline-flex;
+        outline: none;
+      }
+
+      #divOuter {
+        padding-inline-end: var(--cr-icon-ripple-padding);
+      }
+
+      #divDetail {
+        display: flex;
+        flex: 1 0 auto;
+        flex-direction: row;
+      }
+
+      #divText {
+        display: flex;
+        flex: 1 0 auto;
+        flex-direction: column;
+        justify-content: center;
+        margin-inline-start: 20px;
+      }
+
+      #networkStateText {
+        color: var(--cr-secondary-text-color);
+        font-size: inherit;
+        font-weight: 400;
+      }
+
+      #networkStateText[active] {
+        color: var(--google-green-500);
+      }
+
+      iron-icon {
+        height: 24px;
+        width: 24px;
+      }
+
+      cr-policy-indicator {
+        padding: 0 var(--cr-controlled-by-spacing);
+      }
+    </style>
+    <div id="divOuter"
+        class="layout horizontal center flex" actionable>
+      <template is="dom-if" if="[[networkState]]">
+        <network-icon is-list-item
+            show-technology-badge="[[showTechnologyBadge]]"
+            network-state="[[networkState]]">
+        </network-icon>
+      </template>
+      <template is="dom-if" if="[[item.polymerIcon]]">
+        <iron-icon icon="[[item.polymerIcon]]"></iron-icon>
+      </template>
+      <div id="divText" class="layout horizontal flex">
+        <div aria-hidden="true">[[getItemName_(item)]]</div>
+        <div id="networkStateText"
+            hidden$="[[!isStateTextVisible_(networkState)]]"
+            active$="[[isStateTextActive_(networkState,
+                         activationUnavailable)]]">
+          [[getNetworkStateText_(networkState, activationUnavailable)]]
+        </div>
+      </div>
+      <template is="dom-if" if="[[isPolicySource(networkState.source)]]">
+        <cr-policy-indicator indicator-type="[[getIndicatorTypeForSource(
+            networkState.source)]]">
+        </cr-policy-indicator>
+      </template>
+      <template is="dom-if"
+          if="[[isSubpageButtonVisible_(networkState, showButtons)]]" restamp>
+        <cr-icon-button class="subpage-arrow" id="subpage-button"
+            on-click="onSubpageArrowClick_" tabindex$="[[tabindex]]"
+            aria-label$="[[ariaLabel]]"></cr-icon-button>
+      </template>
+    </div>
+  </template>
+  <script src="network_list_item.js"></script>
+</dom-module>

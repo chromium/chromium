@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/chromecast_build.gni")
 import("//media/media_options.gni")
 import("//testing/test.gni")
 
@@ -49,6 +50,7 @@ buildflag_header("buildflags") {
   }
 
   flags = [
+    "ENABLE_CAST_RENDERER=$enable_cast_renderer",
     "ENABLE_MOJO_MEDIA=$enable_mojo_media",
     "ENABLE_TEST_MOJO_MEDIA_CLIENT=$enable_test_mojo_media_client",
     "ENABLE_MOJO_RENDERER=$enable_mojo_renderer",
@@ -67,8 +69,8 @@ source_set("test_support") {
     "//media/mojo/clients",
     "//media/mojo/common",
     "//media/mojo/common:mojo_shared_buffer_video_frame",
-    "//media/mojo/interfaces",
-    "//media/mojo/interfaces:test_interfaces",
+    "//media/mojo/mojom",
+    "//media/mojo/mojom:test_interfaces",
     "//media/mojo/services",
   ]
 }
@@ -80,7 +82,7 @@ source_set("unit_tests") {
     "//media/learning/mojo:unit_tests",
     "//media/mojo/clients:unit_tests",
     "//media/mojo/common:unit_tests",
-    "//media/mojo/interfaces:unit_tests",
+    "//media/mojo/mojom:unit_tests",
     "//media/mojo/services:unit_tests",
     "//media/mojo/test:unit_tests",
   ]

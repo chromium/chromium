@@ -34,66 +34,68 @@ never.Deobfuscated -> NOTFOO:
 """
 
 TEST_DATA = [
-    "FOO",
-    "FOO.bar",
-    "Here is a FOO",
-    "Here is a FOO baz",
-    "Here is a \"FOO\" baz",
-    "Here is a \"FOO.bar\" baz",
-    "Here it is: FOO",
-    "Here it is: FOO.bar",
-    "SomeError: SomeFrameworkClass in isTestClass for FOO",
-    "Here is a FOO.bar",
-    "Here is a FOO.bar baz",
-    "END FOO#bar",
-    "new-instance 3810 (LSome/Framework/Class;) in LFOO;",
-    "FOO: Error message",
-    "Caused by: FOO: Error message",
-    "\tat FOO.bar(PG:1)",
-    "\t at\t FOO.bar\t (\t PG:\t 1\t )",
-    ("Unable to start activity ComponentInfo{garbage.in/here.test}:"
-     " java.lang.NullPointerException: Attempt to invoke interface method 'void"
-     " FOO.bar(int,android.os.Bundle)' on a null object reference"),
-    ("Caused by: java.lang.NullPointerException: Attempt to read from field"
-     " 'int[] FOO.a' on a null object reference"),
-    "java.lang.VerifyError: FOO",
+    '',
+    'FOO',
+    'FOO.bar',
+    'Here is a FOO',
+    'Here is a class FOO',
+    'Here is a class FOO baz',
+    'Here is a "FOO" baz',
+    'Here is a type "FOO" baz',
+    'Here is a "FOO.bar" baz',
+    'SomeError: SomeFrameworkClass in isTestClass for FOO',
+    'Here is a FOO.bar',
+    'Here is a FOO.bar baz',
+    'END FOO#bar',
+    'new-instance 3810 (LSome/Framework/Class;) in LFOO;',
+    'FOO: Error message',
+    'Caused by: FOO: Error message',
+    '\tat FOO.bar(PG:1)',
+    '\t at\t FOO.bar\t (\t PG:\t 1\t )',
+    ('Unable to start activity ComponentInfo{garbage.in/here.test}:'
+     ' java.lang.NullPointerException: Attempt to invoke interface method'
+     ' \'void FOO.bar(int,android.os.Bundle)\' on a null object reference'),
+    ('Caused by: java.lang.NullPointerException: Attempt to read from field'
+     ' \'int[] FOO.a\' on a null object reference'),
+    'java.lang.VerifyError: FOO',
     ('java.lang.NoSuchFieldError: No instance field a of type '
      'Ljava/lang/Class; in class LFOO;'),
-    "NOTFOO: Object of type FOO was not destroyed...",
+    'NOTFOO: Object of type FOO was not destroyed...',
 ]
 
 EXPECTED_OUTPUT = [
-    "this.was.Deobfuscated",
-    "this.was.Deobfuscated.someMethod",
-    "Here is a this.was.Deobfuscated",
-    "Here is a FOO baz",
-    "Here is a \"this.was.Deobfuscated\" baz",
-    "Here is a \"this.was.Deobfuscated.someMethod\" baz",
-    "Here it is: this.was.Deobfuscated",
-    "Here it is: this.was.Deobfuscated.someMethod",
-    "SomeError: SomeFrameworkClass in isTestClass for this.was.Deobfuscated",
-    "Here is a this.was.Deobfuscated.someMethod",
-    "Here is a FOO.bar baz",
-    "END this.was.Deobfuscated#someMethod",
-    "new-instance 3810 (LSome/Framework/Class;) in Lthis/was/Deobfuscated;",
-    "this.was.Deobfuscated: Error message",
-    "Caused by: this.was.Deobfuscated: Error message",
-    "\tat this.was.Deobfuscated.someMethod(Deobfuscated.java:65)",
-    ("\t at\t this.was.Deobfuscated.someMethod\t "
-     "(\t Deobfuscated.java:\t 65\t )"),
-    ("Unable to start activity ComponentInfo{garbage.in/here.test}:"
-     " java.lang.NullPointerException: Attempt to invoke interface method"
-     " 'void this.was.Deobfuscated.someMethod(int,android.os.Bundle)' on a null"
-     " object reference"),
-    ("Caused by: java.lang.NullPointerException: Attempt to read from field"
-     " 'int[] this.was.Deobfuscated.mFontFamily' on a null object reference"),
+    '',
+    'this.was.Deobfuscated',
+    'this.was.Deobfuscated.someMethod',
+    'Here is a FOO',
+    'Here is a class this.was.Deobfuscated',
+    'Here is a class FOO baz',
+    'Here is a "FOO" baz',
+    'Here is a type "this.was.Deobfuscated" baz',
+    'Here is a "this.was.Deobfuscated.someMethod" baz',
+    'SomeError: SomeFrameworkClass in isTestClass for this.was.Deobfuscated',
+    'Here is a this.was.Deobfuscated.someMethod',
+    'Here is a FOO.bar baz',
+    'END this.was.Deobfuscated#someMethod',
+    'new-instance 3810 (LSome/Framework/Class;) in Lthis/was/Deobfuscated;',
+    'this.was.Deobfuscated: Error message',
+    'Caused by: this.was.Deobfuscated: Error message',
+    '\tat this.was.Deobfuscated.someMethod(Deobfuscated.java:65)',
+    ('\t at\t this.was.Deobfuscated.someMethod\t '
+     '(\t Deobfuscated.java:\t 65\t )'),
+    ('Unable to start activity ComponentInfo{garbage.in/here.test}:'
+     ' java.lang.NullPointerException: Attempt to invoke interface method'
+     ' \'void this.was.Deobfuscated.someMethod(int,android.os.Bundle)\' on a'
+     ' null object reference'),
+    ('Caused by: java.lang.NullPointerException: Attempt to read from field'
+     ' \'int[] this.was.Deobfuscated.mFontFamily\' on a null object reference'),
     'java.lang.VerifyError: this.was.Deobfuscated',
     ('java.lang.NoSuchFieldError: No instance field mFontFamily of type '
      'Ljava/lang/Class; in class Lthis/was/Deobfuscated;'),
-    "NOTFOO: Object of type this.was.Deobfuscated was not destroyed...",
+    'NOTFOO: Object of type this.was.Deobfuscated was not destroyed...',
 ]
-TEST_DATA = [s + "\n" for s in TEST_DATA]
-EXPECTED_OUTPUT = [s + "\n" for s in EXPECTED_OUTPUT]
+TEST_DATA = [s + '\n' for s in TEST_DATA]
+EXPECTED_OUTPUT = [s + '\n' for s in EXPECTED_OUTPUT]
 
 
 class JavaDeobfuscateTest(unittest.TestCase):

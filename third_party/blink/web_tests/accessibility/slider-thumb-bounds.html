@@ -1,12 +1,11 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <input id="slider" type="range" min=0 max=10 value=0 style="position: absolute; left: 100px; top: 50px; width: 300px; height: 20px;">
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
   var axSlider = accessibilityController.accessibleElementById("slider");
   assert_equals(axSlider.role, "AXRole: AXSlider");
 

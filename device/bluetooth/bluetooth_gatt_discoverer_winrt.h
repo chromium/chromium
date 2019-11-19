@@ -63,6 +63,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDiscovererWinrt {
           ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
               IGattDeviceServicesResult> services_result);
 
+  void OnServiceOpen(
+      Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::
+                                 GenericAttributeProfile::IGattDeviceService3>
+          gatt_service_3,
+      uint16_t service_attribute_handle,
+      ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::GattOpenStatus
+          status);
+
   void OnGetCharacteristics(
       uint16_t service_attribute_handle,
       Microsoft::WRL::ComPtr<
@@ -93,7 +101,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDiscovererWinrt {
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<BluetoothGattDiscovererWinrt> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothGattDiscovererWinrt> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothGattDiscovererWinrt);
 };

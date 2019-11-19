@@ -5,7 +5,7 @@
 module chromecast.mojom;
 
 interface MemoryPressureController {
-  AddObserver(MemoryPressureObserver observer);
+  AddObserver(pending_remote<MemoryPressureObserver> observer);
 };
 
 interface MemoryPressureObserver {

@@ -30,7 +30,9 @@
 
 // https://html.spec.whatwg.org/C/#the-datatransferitemlist-interface
 
-interface DataTransferItemList {
+[
+    Exposed=Window
+] interface DataTransferItemList {
     readonly attribute unsigned long length;
     [ImplementedAs=item] getter DataTransferItem (unsigned long index);
     [RaisesException] DataTransferItem? add(DOMString data, DOMString type);

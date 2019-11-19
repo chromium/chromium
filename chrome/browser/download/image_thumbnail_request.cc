@@ -5,6 +5,7 @@
 #include "chrome/browser/download/image_thumbnail_request.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -25,40 +26,37 @@ namespace {
 // Ignore image files that are too large to avoid long delays.
 const int64_t kMaxImageSize = 10 * 1024 * 1024;  // 10 MB
 
-std::string LoadImageData(const base::FilePath& path) {
+std::vector<uint8_t> LoadImageData(const base::FilePath& path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
+  std::vector<uint8_t> data;
   // Confirm that the file's size is within our threshold.
   base::File file;
 #if defined(OS_ANDROID)
   if (path.IsContentUri()) {
     file = base::OpenContentUriForRead(path);
     if (!file.IsValid())
-      return std::string();
+      return data;
   }
 #endif  // defined(OS_ANDROID)
   if (!file.IsValid())
     file = base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 
   if (!file.IsValid())
-    return std::string();
+    return data;
 
   int64_t file_size = file.GetLength();
-  if (file_size < 0 || file_size > kMaxImageSize) {
+  if (file_size <= 0 || file_size > kMaxImageSize) {
     LOG(ERROR) << "Unexpected file size: " << path.MaybeAsASCII() << ", "
                << file_size;
-    return std::string();
+    return data;
   }
 
-  std::string data;
   data.resize(file_size);
-  int read_bytes = file.Read(0, &data[0], data.size());
-
-  // Make sure the file isn't empty.
-  if (read_bytes < 0 || data.empty()) {
+  if (!file.ReadAndCheck(0, data)) {
     LOG(ERROR) << "Failed to read file: " << path.MaybeAsASCII();
-    return std::string();
+    data.clear();
   }
 
   return data;
@@ -69,9 +67,7 @@ std::string LoadImageData(const base::FilePath& path) {
 ImageThumbnailRequest::ImageThumbnailRequest(
     int icon_size,
     base::OnceCallback<void(const SkBitmap&)> callback)
-    : icon_size_(icon_size),
-      callback_(std::move(callback)),
-      weak_ptr_factory_(this) {
+    : icon_size_(icon_size), callback_(std::move(callback)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -81,8 +77,9 @@ ImageThumbnailRequest::~ImageThumbnailRequest() {
 
 void ImageThumbnailRequest::Start(const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&LoadImageData, path),
       base::BindOnce(&ImageThumbnailRequest::OnLoadComplete,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -101,7 +98,7 @@ void ImageThumbnailRequest::OnDecodeImageFailed() {
   FinishRequest(SkBitmap());
 }
 
-void ImageThumbnailRequest::OnLoadComplete(const std::string& data) {
+void ImageThumbnailRequest::OnLoadComplete(const std::vector<uint8_t>& data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (data.empty()) {
     FinishRequest(SkBitmap());
@@ -113,8 +110,7 @@ void ImageThumbnailRequest::OnLoadComplete(const std::string& data) {
 
 void ImageThumbnailRequest::FinishRequest(SkBitmap thumbnail) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(std::move(callback_), std::move(thumbnail)));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(std::move(callback_), std::move(thumbnail)));
   delete this;
 }

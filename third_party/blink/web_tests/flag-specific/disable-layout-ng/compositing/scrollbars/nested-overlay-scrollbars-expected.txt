@@ -1,0 +1,111 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='outer'",
+      "bounds": [404, 404],
+      "transform": 1
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [2, 2],
+      "bounds": [400, 704],
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='inner'",
+      "bounds": [204, 204],
+      "transform": 3
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [2, 2],
+      "bounds": [5000, 9000],
+      "transform": 3
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='grey'",
+      "bounds": [100, 800],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 4
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='spacer')",
+      "position": [0, 2000],
+      "bounds": [5000, 1000],
+      "transform": 4
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [2, 195],
+      "bounds": [193, 7],
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [195, 2],
+      "bounds": [7, 193],
+      "transform": 3
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [195, 195],
+      "bounds": [7, 7],
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [395, 2],
+      "bounds": [7, 400],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -304, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [2, 502, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [2, 2, 0, 1]
+      ]
+    }
+  ]
+}
+

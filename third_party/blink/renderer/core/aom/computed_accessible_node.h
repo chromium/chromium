@@ -22,10 +22,8 @@ class Document;
 class ScriptState;
 
 class ComputedAccessibleNodePromiseResolver final
-    : public GarbageCollectedFinalized<ComputedAccessibleNodePromiseResolver> {
+    : public GarbageCollected<ComputedAccessibleNodePromiseResolver> {
  public:
-  static ComputedAccessibleNodePromiseResolver* Create(ScriptState*, Element&);
-
   ComputedAccessibleNodePromiseResolver(ScriptState*, Element&);
   ~ComputedAccessibleNodePromiseResolver() {}
 
@@ -49,8 +47,6 @@ class ComputedAccessibleNode : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ComputedAccessibleNode* Create(AXID, WebComputedAXTree*, Document*);
-
   ComputedAccessibleNode(AXID, WebComputedAXTree*, Document*);
   ~ComputedAccessibleNode() override;
 

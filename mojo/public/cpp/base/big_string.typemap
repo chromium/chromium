@@ -14,4 +14,4 @@ public_deps = [
   "//mojo/public/cpp/base:shared_typemap_traits",
 ]
 
-type_mappings = [ "mojo_base.mojom.BigString=std::string" ]
+type_mappings = [ "mojo_base.mojom.BigString=::std::string" ]

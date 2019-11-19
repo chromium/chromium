@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -25,10 +26,6 @@
 
 namespace content {
 class WebContents;
-}
-
-namespace favicon {
-class FaviconDriver;
 }
 
 namespace extensions {
@@ -205,13 +202,14 @@ class TabsEventRouter : public TabStripModelObserver,
   // The main profile that owns this event router.
   Profile* profile_;
 
-  ScopedObserver<favicon::FaviconDriver, TabsEventRouter>
-      favicon_scoped_observer_;
+  ScopedObserver<favicon::FaviconDriver, favicon::FaviconDriverObserver>
+      favicon_scoped_observer_{this};
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 
-  ScopedObserver<resource_coordinator::TabManager, TabsEventRouter>
-      tab_manager_scoped_observer_;
+  ScopedObserver<resource_coordinator::TabManager,
+                 resource_coordinator::TabLifecycleObserver>
+      tab_manager_scoped_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TabsEventRouter);
 };

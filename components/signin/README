@@ -1,9 +1,0 @@
-Signin is in the process of becoming a layered component
-(https://sites.google.com/a/chromium.org/dev/developers/design-documents/layered-components-design)
-to enable it to be shared cleanly on iOS. 
-
-When this process is complete, this component will have the following structure:
-
-- core/: shared code that does not depend on src/content/ or src/ios/
-- content/: Driver for the shared code based on the content layer.
-- ios/: Driver for the shared code based on src/ios.

@@ -7,8 +7,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/invalidation/impl/network_channel.h"
-#include "components/invalidation/impl/per_user_topic_invalidation_client.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/object_id_invalidation_map.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
@@ -21,9 +21,7 @@ FCMInvalidationListener::Delegate::~Delegate() {}
 
 FCMInvalidationListener::FCMInvalidationListener(
     std::unique_ptr<FCMSyncNetworkChannel> network_channel)
-    : network_channel_(std::move(network_channel)),
-      delegate_(nullptr),
-      weak_factory_(this) {
+    : network_channel_(std::move(network_channel)), delegate_(nullptr) {
   network_channel_->AddObserver(this);
 }
 
@@ -34,7 +32,6 @@ FCMInvalidationListener::~FCMInvalidationListener() {
 }
 
 void FCMInvalidationListener::Start(
-    CreateInvalidationClientCallback create_invalidation_client_callback,
     Delegate* delegate,
     std::unique_ptr<PerUserTopicRegistrationManager>
         per_user_topic_registration_manager) {
@@ -45,37 +42,55 @@ void FCMInvalidationListener::Start(
       std::move(per_user_topic_registration_manager);
   per_user_topic_registration_manager_->Init();
   per_user_topic_registration_manager_->AddObserver(this);
-  invalidation_client_ = std::move(create_invalidation_client_callback)
-                             .Run(network_channel_.get(), &logger_, this);
-  invalidation_client_->Start();
+  network_channel_->SetMessageReceiver(base::BindRepeating(
+      &FCMInvalidationListener::Invalidate, weak_factory_.GetWeakPtr()));
+  network_channel_->SetTokenReceiver(
+      base::BindRepeating(&FCMInvalidationListener::InformTokenReceived,
+                          weak_factory_.GetWeakPtr()));
+  subscription_channel_state_ = SubscriptionChannelState::ENABLED;
+
+  network_channel_->StartListening();
+  EmitStateChange();
+  DoRegistrationUpdate();
 }
 
-void FCMInvalidationListener::UpdateRegisteredTopics(const TopicSet& topics) {
+void FCMInvalidationListener::UpdateRegisteredTopics(const Topics& topics) {
   ids_update_requested_ = true;
   registered_topics_ = topics;
   DoRegistrationUpdate();
 }
 
-void FCMInvalidationListener::Ready(InvalidationClient* client) {
-  DCHECK_EQ(client, invalidation_client_.get());
-  subscription_channel_state_ = INVALIDATIONS_ENABLED;
-  EmitStateChange();
-  DoRegistrationUpdate();
-}
-
-void FCMInvalidationListener::Invalidate(InvalidationClient* client,
-                                         const std::string& payload,
-                                         const std::string& private_topic_name,
-                                         const std::string& public_topic_name,
-                                         int64_t version) {
-  DCHECK_EQ(client, invalidation_client_.get());
-
+void FCMInvalidationListener::Invalidate(const std::string& payload,
+                                         const std::string& private_topic,
+                                         const std::string& public_topic,
+                                         const std::string& version) {
+  // TODO(melandory): use |private_topic| in addition to
+  // |registered_topics_| to verify that topic is registered.
+  int64_t v;
+  if (!base::StringToInt64(version, &v)) {
+    // Version must always be in the message and
+    // in addition version must be number.
+    // TODO(melandory): Report error and consider not to process with the
+    // invalidation.
+  }
+  // Note: |public_topic| is empty for some invalidations (e.g. Drive). Prefer
+  // using |*expected_public_topic| over |public_topic|.
+  base::Optional<std::string> expected_public_topic =
+      per_user_topic_registration_manager_
+          ->LookupRegisteredPublicTopicByPrivateTopic(private_topic);
+  if (!expected_public_topic ||
+      (!public_topic.empty() && public_topic != *expected_public_topic)) {
+    DVLOG(1) << "Unexpected invalidation for " << private_topic
+             << " with public topic " << public_topic << ". Expected "
+             << expected_public_topic.value_or("<None>");
+    return;
+  }
   TopicInvalidationMap invalidations;
   Invalidation inv =
-      Invalidation::Init(ConvertTopicToId(public_topic_name), version, payload);
+      Invalidation::Init(ConvertTopicToId(*expected_public_topic), v, payload);
   inv.SetAckHandler(AsWeakPtr(), base::ThreadTaskRunnerHandle::Get());
   DVLOG(1) << "Received invalidation with version " << inv.version() << " for "
-           << public_topic_name;
+           << *expected_public_topic;
 
   invalidations.Insert(inv);
   DispatchInvalidations(invalidations);
@@ -110,9 +125,7 @@ void FCMInvalidationListener::EmitSavedInvalidations(
   delegate_->OnInvalidate(to_emit);
 }
 
-void FCMInvalidationListener::InformTokenRecieved(InvalidationClient* client,
-                                                  const std::string& token) {
-  DCHECK_EQ(client, invalidation_client_.get());
+void FCMInvalidationListener::InformTokenReceived(const std::string& token) {
   token_ = token;
   DoRegistrationUpdate();
 }
@@ -176,7 +189,20 @@ void FCMInvalidationListener::StopForTest() {
   Stop();
 }
 
-TopicSet FCMInvalidationListener::GetRegisteredIdsForTest() const {
+void FCMInvalidationListener::StartForTest(Delegate* delegate) {
+  delegate_ = delegate;
+}
+
+void FCMInvalidationListener::EmitStateChangeForTest(InvalidatorState state) {
+  delegate_->OnInvalidatorStateChange(state);
+}
+
+void FCMInvalidationListener::EmitSavedInvalidationsForTest(
+    const TopicInvalidationMap& to_emit) {
+  EmitSavedInvalidations(to_emit);
+}
+
+Topics FCMInvalidationListener::GetRegisteredIdsForTest() const {
   return registered_topics_;
 }
 
@@ -185,39 +211,30 @@ base::WeakPtr<FCMInvalidationListener> FCMInvalidationListener::AsWeakPtr() {
 }
 
 void FCMInvalidationListener::Stop() {
-  if (!invalidation_client_) {
-    return;
-  }
-
-  invalidation_client_->Stop();
-
-  invalidation_client_.reset();
   delegate_ = nullptr;
 
   if (per_user_topic_registration_manager_) {
     per_user_topic_registration_manager_->RemoveObserver(this);
   }
   per_user_topic_registration_manager_.reset();
+  network_channel_->StopListening();
 
-  subscription_channel_state_ = DEFAULT_INVALIDATION_ERROR;
+  subscription_channel_state_ = SubscriptionChannelState::NOT_STARTED;
   fcm_network_state_ = FcmChannelState::NOT_STARTED;
 }
 
 InvalidatorState FCMInvalidationListener::GetState() const {
-  if (subscription_channel_state_ == INVALIDATION_CREDENTIALS_REJECTED) {
-    // If either the ticl or the push client rejected our credentials,
-    // return INVALIDATION_CREDENTIALS_REJECTED.
+  if (subscription_channel_state_ ==
+      SubscriptionChannelState::ACCESS_TOKEN_FAILURE) {
     return INVALIDATION_CREDENTIALS_REJECTED;
   }
-  if (subscription_channel_state_ == INVALIDATIONS_ENABLED &&
+  if (subscription_channel_state_ == SubscriptionChannelState::ENABLED &&
       fcm_network_state_ == FcmChannelState::ENABLED) {
     // If the ticl is ready and the push client notifications are
     // enabled, return INVALIDATIONS_ENABLED.
     return INVALIDATIONS_ENABLED;
   }
-  if (subscription_channel_state_ == SUBSCRIPTION_FAILURE) {
-    return SUBSCRIPTION_FAILURE;
-  }
+
   // Otherwise, we have a transient error.
   return TRANSIENT_INVALIDATION_ERROR;
 }
@@ -232,8 +249,8 @@ void FCMInvalidationListener::OnFCMChannelStateChanged(FcmChannelState state) {
 }
 
 void FCMInvalidationListener::OnSubscriptionChannelStateChanged(
-    InvalidatorState invalidator_state) {
-  subscription_channel_state_ = invalidator_state;
+    SubscriptionChannelState state) {
+  subscription_channel_state_ = state;
   EmitStateChange();
 }
 
@@ -242,11 +259,12 @@ base::DictionaryValue FCMInvalidationListener::CollectDebugData() const {
       per_user_topic_registration_manager_->CollectDebugData();
   status.SetString("InvalidationListener.FCM-channel-state",
                    FcmChannelStateToString(fcm_network_state_));
-  status.SetString("InvalidationListener.Subscription-channel-state",
-                   InvalidatorStateToString(subscription_channel_state_));
-  for (const Topic& topic : registered_topics_) {
-    if (!status.HasKey(topic)) {
-      status.SetString(topic, "Unregistered");
+  status.SetString(
+      "InvalidationListener.Subscription-channel-state",
+      SubscriptionChannelStateToString(subscription_channel_state_));
+  for (const auto& topic : registered_topics_) {
+    if (!status.HasKey(topic.first)) {
+      status.SetString(topic.first, "Unregistered");
     }
   }
   return status;

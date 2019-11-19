@@ -17,7 +17,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/http/http_auth.h"
-#include "net/http/http_negotiate_auth_system.h"
+#include "net/http/http_auth_mechanism.h"
 
 namespace base {
 class TaskRunner;
@@ -64,8 +64,7 @@ class NET_EXPORT_PRIVATE JavaNegotiateResultWrapper {
 // provides a bridge to the Java code, and hence to the service. See
 // https://drive.google.com/open?id=1G7WAaYEKMzj16PTHT_cIYuKXJG6bBcrQ7QQBQ6ihOcQ&authuser=1
 // for the full details.
-class NET_EXPORT_PRIVATE HttpAuthNegotiateAndroid
-    : public HttpNegotiateAuthSystem {
+class NET_EXPORT_PRIVATE HttpAuthNegotiateAndroid : public HttpAuthMechanism {
  public:
   // Creates an object for one negotiation session. |prefs| are the
   // authentication preferences. In particular they include the Android account
@@ -73,8 +72,8 @@ class NET_EXPORT_PRIVATE HttpAuthNegotiateAndroid
   explicit HttpAuthNegotiateAndroid(const HttpAuthPreferences* prefs);
   ~HttpAuthNegotiateAndroid() override;
 
-  // HttpNegotiateAuthSystem implementation:
-  bool Init() override;
+  // HttpAuthMechanism implementation:
+  bool Init(const NetLogWithSource& net_log) override;
   bool NeedsIdentity() const override;
   bool AllowsExplicitCredentials() const override;
   HttpAuth::AuthorizationResult ParseChallenge(
@@ -83,8 +82,19 @@ class NET_EXPORT_PRIVATE HttpAuthNegotiateAndroid
                         const std::string& spn,
                         const std::string& channel_bindings,
                         std::string* auth_token,
+                        const NetLogWithSource& net_log,
                         CompletionOnceCallback callback) override;
-  void Delegate() override;
+  void SetDelegation(HttpAuth::DelegationType delegation_type) override;
+
+  // Unlike the platform agnostic GenerateAuthToken(), the Android specific
+  // version doesn't require a NetLogWithSource. The call is made across service
+  // boundaries, so currently the goings-on within the GenerateAuthToken()
+  // handler is outside the scope of the NetLog.
+  int GenerateAuthTokenAndroid(const AuthCredentials* credentials,
+                               const std::string& spn,
+                               const std::string& channel_bindings,
+                               std::string* auth_token,
+                               CompletionOnceCallback callback);
 
   bool can_delegate() const { return can_delegate_; }
   void set_can_delegate(bool can_delegate) { can_delegate_ = can_delegate; }
@@ -99,15 +109,15 @@ class NET_EXPORT_PRIVATE HttpAuthNegotiateAndroid
  private:
   void SetResultInternal(int result, const std::string& token);
 
-  const HttpAuthPreferences* prefs_;
-  bool can_delegate_;
-  bool first_challenge_;
+  const HttpAuthPreferences* prefs_ = nullptr;
+  bool can_delegate_ = false;
+  bool first_challenge_ = true;
   std::string server_auth_token_;
-  std::string* auth_token_;
+  std::string* auth_token_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> java_authenticator_;
   net::CompletionOnceCallback completion_callback_;
 
-  base::WeakPtrFactory<HttpAuthNegotiateAndroid> weak_factory_;
+  base::WeakPtrFactory<HttpAuthNegotiateAndroid> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HttpAuthNegotiateAndroid);
 };

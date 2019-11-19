@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <body contenteditable aria-hidden="true">
   &nbsp;
 
   <script>
-  test_after_layout_and_paint(function() {
+  test(function() {
     var axDocument = accessibilityController.rootElement;
     assert_equals(axDocument.childrenCount, 1);
 
@@ -15,7 +14,7 @@
     assert_false(axDocument.isRichlyEditable);
   }, 'The document should not be marked editable because the body is aria-hidden.');
 
-  test_after_layout_and_paint(function() {
+  test(function() {
     document.body.setAttribute('aria-hidden', 'false');
     var axDocument = accessibilityController.rootElement;
     assert_equals(axDocument.childrenCount, 1);

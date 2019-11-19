@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- The attributes in this XML file provide configuration information -->
+<!-- for the ContentProvider. -->
+
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <files-path name="images" path="images/"/>
+</paths>

@@ -66,6 +66,10 @@ using base::UserMetricsAction;
       RecordAction(UserMetricsAction("MobileMenuAddToBookmarks"));
       [self.dispatcher bookmarkPage];
       break;
+    case PopupMenuActionTranslate:
+      base::RecordAction(UserMetricsAction("MobileMenuTranslate"));
+      [self.dispatcher showTranslate];
+      break;
     case PopupMenuActionFindInPage:
       RecordAction(UserMetricsAction("MobileMenuFindInPage"));
       [self.dispatcher showFindInPage];
@@ -132,18 +136,14 @@ using base::UserMetricsAction;
     case PopupMenuActionPasteAndGo: {
       RecordAction(UserMetricsAction("MobileMenuPasteAndGo"));
       NSString* query;
-      if (base::FeatureList::IsEnabled(kCopiedContentBehavior)) {
-        ClipboardRecentContent* clipboardRecentContent =
-            ClipboardRecentContent::GetInstance();
-        if (base::Optional<GURL> optional_url =
-                clipboardRecentContent->GetRecentURLFromClipboard()) {
-          query = base::SysUTF8ToNSString(optional_url.value().spec());
-        } else if (base::Optional<base::string16> optional_text =
-                       clipboardRecentContent->GetRecentTextFromClipboard()) {
-          query = base::SysUTF16ToNSString(optional_text.value());
-        }
-      } else {
-        query = [UIPasteboard generalPasteboard].string;
+      ClipboardRecentContent* clipboardRecentContent =
+          ClipboardRecentContent::GetInstance();
+      if (base::Optional<GURL> optional_url =
+              clipboardRecentContent->GetRecentURLFromClipboard()) {
+        query = base::SysUTF8ToNSString(optional_url.value().spec());
+      } else if (base::Optional<base::string16> optional_text =
+                     clipboardRecentContent->GetRecentTextFromClipboard()) {
+        query = base::SysUTF16ToNSString(optional_text.value());
       }
       [self.dispatcher loadQuery:query immediately:YES];
       break;
@@ -152,12 +152,25 @@ using base::UserMetricsAction;
       RecordAction(UserMetricsAction("MobileMenuVoiceSearch"));
       [self.dispatcher startVoiceSearch];
       break;
+    case PopupMenuActionSearch: {
+      RecordAction(UserMetricsAction("MobileMenuSearch"));
+      OpenNewTabCommand* command = [OpenNewTabCommand commandWithIncognito:NO];
+      command.shouldFocusOmnibox = YES;
+      [self.dispatcher openURLInNewTab:command];
+      break;
+    }
+    case PopupMenuActionIncognitoSearch: {
+      RecordAction(UserMetricsAction("MobileMenuIncognitoSearch"));
+      OpenNewTabCommand* command = [OpenNewTabCommand commandWithIncognito:YES];
+      command.shouldFocusOmnibox = YES;
+      [self.dispatcher openURLInNewTab:command];
+      break;
+    }
     case PopupMenuActionQRCodeSearch:
       RecordAction(UserMetricsAction("MobileMenuScanQRCode"));
       [self.dispatcher showQRScanner];
       break;
     case PopupMenuActionSearchCopiedImage: {
-      DCHECK(base::FeatureList::IsEnabled(kCopiedContentBehavior));
       RecordAction(UserMetricsAction("MobileMenuSearchCopiedImage"));
       ClipboardRecentContent* clipboardRecentContent =
           ClipboardRecentContent::GetInstance();

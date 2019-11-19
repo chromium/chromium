@@ -25,10 +25,6 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace service_manager {
-class Connector;
-}
-
 // This provides a simple static interface for constructing an
 // ExtensionDownloader suitable for use from within Chrome.
 class ChromeExtensionDownloaderFactory {
@@ -47,7 +43,6 @@ class ChromeExtensionDownloaderFactory {
   CreateForURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       extensions::ExtensionDownloaderDelegate* delegate,
-      service_manager::Connector* connector,
       crx_file::VerifierFormat required_verifier_format,
       const base::FilePath& profile_path = base::FilePath());
 

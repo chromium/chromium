@@ -33,13 +33,12 @@ class BrowserDMTokenStorageLinux : public BrowserDMTokenStorage {
   std::string InitDMToken() override;
   bool InitEnrollmentErrorOption() override;
   void SaveDMToken(const std::string& token) override;
-  void DeletePolicyDirectory() override;
 
   // Returns the content of "/etc/machine-id". Virtual for tests.
   virtual std::string ReadMachineIdFile();
 
   // This should always be the last member of the class.
-  base::WeakPtrFactory<BrowserDMTokenStorageLinux> weak_factory_;
+  base::WeakPtrFactory<BrowserDMTokenStorageLinux> weak_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageLinuxTest, InitClientId);
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageLinuxTest, InitEnrollmentToken);
@@ -50,19 +49,6 @@ class BrowserDMTokenStorageLinux : public BrowserDMTokenStorage {
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageLinuxTest,
                            InitDMTokenWithoutDirectory);
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageLinuxTest, SaveDMToken);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageLinuxCleanupTest, Success);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageLinuxCleanupTest,
-                           TokenDirNotEmpty);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageLinuxCleanupTest,
-                           TokenDirNotExist);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageLinuxCleanupTest,
-                           TokenDirIsNotDir);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageLinuxCleanupTest,
-                           PolicyDirIsNotExist);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageLinuxCleanupTest,
-                           PolicyDirIsNotEmpty);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageLinuxCleanupTest,
-                           PolicyDirIsNotDir);
 
   DISALLOW_COPY_AND_ASSIGN(BrowserDMTokenStorageLinux);
 };

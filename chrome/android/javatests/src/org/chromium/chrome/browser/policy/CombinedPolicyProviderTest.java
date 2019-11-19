@@ -12,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
@@ -21,6 +20,7 @@ import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.policy.CombinedPolicyProvider;
 import org.chromium.policy.PolicyProvider;
 
@@ -47,7 +47,7 @@ public class CombinedPolicyProviderTest {
     @Feature({"Policy"})
     @SmallTest
     @RetryOnFailure
-    public void testTerminateIncognitoSon() throws InterruptedException {
+    public void testTerminateIncognitoSon() {
         final boolean incognitoMode = true;
 
         TabModel incognitoTabModel =
@@ -57,17 +57,12 @@ public class CombinedPolicyProviderTest {
         Assert.assertEquals(2, incognitoTabModel.getCount());
 
         final CombinedPolicyProvider provider = CombinedPolicyProvider.get();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> provider.registerProvider(new PolicyProvider() {
             @Override
-            public void run() {
-                provider.registerProvider(new PolicyProvider() {
-                    @Override
-                    public void refresh() {
-                        terminateIncognitoSession();
-                    }
-                });
+            public void refresh() {
+                terminateIncognitoSession();
             }
-        });
+        }));
 
         Assert.assertEquals(0, incognitoTabModel.getCount());
     }

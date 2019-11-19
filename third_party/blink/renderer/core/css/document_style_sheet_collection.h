@@ -43,10 +43,6 @@ class ViewportStyleResolver;
 class DocumentStyleSheetCollection final
     : public TreeScopeStyleSheetCollection {
  public:
-  static DocumentStyleSheetCollection* Create(TreeScope& tree_scope) {
-    return MakeGarbageCollected<DocumentStyleSheetCollection>(tree_scope);
-  }
-
   explicit DocumentStyleSheetCollection(TreeScope&);
 
   void UpdateActiveStyleSheets(StyleEngine& master_engine);

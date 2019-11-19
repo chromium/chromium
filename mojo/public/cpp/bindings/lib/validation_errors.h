@@ -87,7 +87,9 @@ void ReportValidationError(ValidationContext* context,
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 void ReportValidationErrorForMessage(mojo::Message* message,
                                      ValidationError error,
-                                     const char* description = nullptr);
+                                     const char* interface_name,
+                                     unsigned int method_ordinal,
+                                     bool is_response);
 
 // This class may be used by tests to suppress validation error logging. This is
 // not thread-safe and must only be instantiated on the main thread with no
@@ -109,7 +111,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
     ValidationErrorObserverForTesting {
  public:
-  explicit ValidationErrorObserverForTesting(const base::Closure& callback);
+  explicit ValidationErrorObserverForTesting(base::RepeatingClosure callback);
   ~ValidationErrorObserverForTesting();
 
   ValidationError last_error() const { return last_error_; }
@@ -120,7 +122,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 
  private:
   ValidationError last_error_;
-  base::Closure callback_;
+  base::RepeatingClosure callback_;
 
   DISALLOW_COPY_AND_ASSIGN(ValidationErrorObserverForTesting);
 };

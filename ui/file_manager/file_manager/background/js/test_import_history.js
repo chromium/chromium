@@ -9,149 +9,139 @@ var importer = importer || {};
  * importer.ImportHistory and importer.HistoryLoader test double.
  * ONE STOP SHOPPING!
  *
- * @constructor
- * @struct
  * @implements {importer.HistoryLoader}
  * @implements {importer.ImportHistory}
  */
-importer.TestImportHistory = function() {
-  /** @type {!Object<!Object<!importer.Destination, string>>} */
-  this.copiedPaths = {};
+importer.TestImportHistory = class {
+  constructor() {
+    /** @type {!Object<!Object<!importer.Destination, string>>} */
+    this.copiedPaths = {};
 
-  /** @type {!Object<Array<string>>} */
-  this.importedPaths = {};
+    /** @type {!Object<Array<string>>} */
+    this.importedPaths = {};
+
+    /**
+     * If null, history has been loaded and listeners notified.
+     *
+     * @private {Array<!function(!importer.ImportHistory)>}
+     */
+    this.loadListeners_ = [];
+  }
+
+  /** @override */
+  getHistory() {
+    Promise.resolve().then(() => {
+      if (this.loadListeners_) {
+        this.loadListeners_.forEach((listener) => listener(this));
+        // Null out listeners...this is our signal that history has
+        // been loaded ... resulting in all future listener added
+        // being notified immediately
+        this.loadListeners_ = null;
+      }
+    });
+
+    return Promise.resolve(this);
+  }
+
+  /** @override */
+  addHistoryLoadedListener(listener) {
+    assertTrue(typeof listener === 'function');
+    // Notify listener immediately if history is already loaded.
+    if (this.loadListeners_ === null) {
+      setTimeout(listener, 0, this);
+    } else {
+      this.loadListeners_.push(listener);
+    }
+  }
 
   /**
-   * If null, history has been loaded and listeners notified.
-   *
-   * @private {Array<!function(!importer.ImportHistory)>}
+   * @param {!FileEntry} entry
+   * @param {!importer.Destination} destination
    */
-  this.loadListeners_ = [];
-};
+  assertCopied(entry, destination) {
+    assertTrue(this.wasCopied_(entry, destination));
+  }
 
-/** @override */
-importer.TestImportHistory.prototype.getHistory = function() {
-  Promise.resolve().then(() => {
-    if (this.loadListeners_) {
-      this.loadListeners_.forEach((listener) => listener(this));
-      // Null out listeners...this is our signal that history has
-      // been loaded ... resulting in all future listener added
-      // being notified immediately
-      this.loadListeners_ = null;
+  /**
+   * Fully synchronous version of wasCopied.
+   * @param {!FileEntry} entry
+   * @param {!importer.Destination} destination
+   * @return {boolean}
+   */
+  wasCopied_(entry, destination) {
+    const path = entry.fullPath;
+    return path in this.copiedPaths &&
+        this.copiedPaths[path].indexOf(destination) > -1;
+  }
+
+  /** @override */
+  wasCopied(entry, destination) {
+    const path = entry.fullPath;
+    return Promise.resolve(this.wasCopied_(entry, destination));
+  }
+
+  /** @override */
+  markCopied(entry, destination, destinationUrl) {
+    const path = entry.fullPath;
+    if (path in this.copiedPaths) {
+      this.copiedPaths[path].push(destination);
+    } else {
+      this.copiedPaths[path] = [destination];
     }
-  });
-
-  return Promise.resolve(this);
-};
-
-/** @override */
-importer.TestImportHistory.prototype.addHistoryLoadedListener = function(
-    listener) {
-  assertTrue(typeof listener === 'function');
-  // Notify listener immediately if history is already loaded.
-  if (this.loadListeners_ === null) {
-    setTimeout(listener, 0, this);
-  } else {
-    this.loadListeners_.push(listener);
+    return Promise.resolve();
   }
-};
 
-/**
- * @param {!FileEntry} entry
- * @param {!importer.Destination} destination
- */
-importer.TestImportHistory.prototype.assertCopied =
-    function(entry, destination) {
-  assertTrue(this.wasCopied_(entry, destination));
-};
-
-/**
- * Fully synchronous version of wasCopied.
- * @param {!FileEntry} entry
- * @param {!importer.Destination} destination
- * @return {boolean}
- */
-importer.TestImportHistory.prototype.wasCopied_ =
-    function(entry, destination) {
-  const path = entry.fullPath;
-  return path in this.copiedPaths &&
-      this.copiedPaths[path].indexOf(destination) > -1;
-};
-
-/** @override */
-importer.TestImportHistory.prototype.wasCopied =
-    function(entry, destination) {
-  const path = entry.fullPath;
-  return Promise.resolve(this.wasCopied_(entry, destination));
-};
-
-/** @override */
-importer.TestImportHistory.prototype.markCopied =
-    function(entry, destination, destinationUrl) {
-  const path = entry.fullPath;
-  if (path in this.copiedPaths) {
-    this.copiedPaths[path].push(destination);
-  } else {
-    this.copiedPaths[path] = [destination];
+  /** @override */
+  listUnimportedUrls(destination) {
+    return Promise.resolve([]);
   }
-  return Promise.resolve();
-};
 
-/** @override */
-importer.TestImportHistory.prototype.listUnimportedUrls =
-    destination => {
-  return Promise.resolve([]);
-};
-
-/**
- * @param {!FileEntry} entry
- * @param {!importer.Destination} destination
- */
-importer.TestImportHistory.prototype.assertImported =
-    function(entry, destination) {
-  assertTrue(this.wasImported_(entry, destination));
-};
-
-/**
- * Fully synchronous version of wasImported.
- * @param {!FileEntry} entry
- * @param {!importer.Destination} destination
- * @return {boolean}
- */
-importer.TestImportHistory.prototype.wasImported_ =
-    function(entry, destination) {
-  const path = entry.fullPath;
-  return path in this.importedPaths &&
-      this.importedPaths[path].indexOf(destination) > -1;
-};
-
-/** @override */
-importer.TestImportHistory.prototype.wasImported =
-    function(entry, destination) {
-  const path = entry.fullPath;
-  return Promise.resolve(this.wasImported_(entry, destination));
-};
-
-/** @override */
-importer.TestImportHistory.prototype.markImported =
-    function(entry, destination) {
-  const path = entry.fullPath;
-  if (path in this.importedPaths) {
-    this.importedPaths[path].push(destination);
-  } else {
-    this.importedPaths[path] = [destination];
+  /**
+   * @param {!FileEntry} entry
+   * @param {!importer.Destination} destination
+   */
+  assertImported(entry, destination) {
+    assertTrue(this.wasImported_(entry, destination));
   }
-  return Promise.resolve();
+
+  /**
+   * Fully synchronous version of wasImported.
+   * @param {!FileEntry} entry
+   * @param {!importer.Destination} destination
+   * @return {boolean}
+   */
+  wasImported_(entry, destination) {
+    const path = entry.fullPath;
+    return path in this.importedPaths &&
+        this.importedPaths[path].indexOf(destination) > -1;
+  }
+
+  /** @override */
+  wasImported(entry, destination) {
+    const path = entry.fullPath;
+    return Promise.resolve(this.wasImported_(entry, destination));
+  }
+
+  /** @override */
+  markImported(entry, destination) {
+    const path = entry.fullPath;
+    if (path in this.importedPaths) {
+      this.importedPaths[path].push(destination);
+    } else {
+      this.importedPaths[path] = [destination];
+    }
+    return Promise.resolve();
+  }
+
+  /** @override */
+  whenReady() {}
+
+  /** @override */
+  markImportedByUrl() {}
+
+  /** @override */
+  addObserver() {}
+
+  /** @override */
+  removeObserver() {}
 };
-
-/** @override */
-importer.TestImportHistory.prototype.whenReady = () => {};
-
-/** @override */
-importer.TestImportHistory.prototype.markImportedByUrl = () => {};
-
-/** @override */
-importer.TestImportHistory.prototype.addObserver = () => {};
-
-/** @override */
-importer.TestImportHistory.prototype.removeObserver = () => {};

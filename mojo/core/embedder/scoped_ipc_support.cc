@@ -15,8 +15,8 @@ namespace core {
 
 namespace {
 
-void ShutdownIPCSupport(const base::Closure& callback) {
-  Core::Get()->RequestShutdown(callback);
+void ShutdownIPCSupport(base::OnceClosure callback) {
+  Core::Get()->RequestShutdown(std::move(callback));
 }
 
 }  // namespace
@@ -37,8 +37,8 @@ ScopedIPCSupport::~ScopedIPCSupport() {
   base::WaitableEvent shutdown_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
-  ShutdownIPCSupport(base::Bind(&base::WaitableEvent::Signal,
-                                base::Unretained(&shutdown_event)));
+  ShutdownIPCSupport(base::BindOnce(&base::WaitableEvent::Signal,
+                                    base::Unretained(&shutdown_event)));
 
   base::ScopedAllowBaseSyncPrimitives allow_io;
   shutdown_event.Wait();

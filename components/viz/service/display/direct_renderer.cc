@@ -22,9 +22,12 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/quads/draw_quad.h"
+#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/service/display/bsp_tree.h"
 #include "components/viz/service/display/bsp_walk_action.h"
 #include "components/viz/service/display/output_surface.h"
+#include "components/viz/service/display/overlay_candidate_validator.h"
+#include "components/viz/service/display/skia_output_surface.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/transform.h"
@@ -68,10 +71,35 @@ static gfx::Transform window_matrix(int x, int y, int width, int height) {
   return canvas;
 }
 
+#if defined(OS_WIN)
 // Switching between enabling DC layers and not is expensive, so only
 // switch away after a large number of frames not needing DC layers have
 // been produced.
 constexpr int kNumberOfFramesBeforeDisablingDCLayers = 60;
+#endif  // defined(OS_WIN)
+
+// Returns the bounding box that contains the specified rounded corner.
+gfx::RectF ComputeRoundedCornerBoundingBox(const gfx::RRectF& rrect,
+                                           const gfx::RRectF::Corner corner) {
+  auto radii = rrect.GetCornerRadii(corner);
+  gfx::RectF bounding_box(radii.x(), radii.y());
+  switch (corner) {
+    case gfx::RRectF::Corner::kUpperLeft:
+      bounding_box.Offset(rrect.rect().x(), rrect.rect().y());
+      break;
+    case gfx::RRectF::Corner::kUpperRight:
+      bounding_box.Offset(rrect.rect().right() - radii.x(), rrect.rect().y());
+      break;
+    case gfx::RRectF::Corner::kLowerRight:
+      bounding_box.Offset(rrect.rect().right() - radii.x(),
+                          rrect.rect().bottom() - radii.y());
+      break;
+    case gfx::RRectF::Corner::kLowerLeft:
+      bounding_box.Offset(rrect.rect().x(), rrect.rect().bottom() - radii.y());
+      break;
+  }
+  return bounding_box;
+}
 
 }  // namespace
 
@@ -85,23 +113,31 @@ DirectRenderer::DirectRenderer(const RendererSettings* settings,
                                DisplayResourceProvider* resource_provider)
     : settings_(settings),
       output_surface_(output_surface),
-      resource_provider_(resource_provider),
-      overlay_processor_(std::make_unique<OverlayProcessor>(output_surface)) {}
+      resource_provider_(resource_provider) {
+  DCHECK(output_surface_);
+}
 
 DirectRenderer::~DirectRenderer() = default;
 
 void DirectRenderer::Initialize() {
-  overlay_processor_->Initialize();
+  // Create an overlay validator based on the platform and set it on the newly
+  // created processor. This would initialize the strategies on the validator as
+  // well.
+  overlay_processor_ = OverlayProcessor::CreateOverlayProcessor(
+      output_surface_->AsSkiaOutputSurface(),
+      output_surface_->GetSurfaceHandle(), output_surface_->capabilities(),
+      *settings_);
 
   auto* context_provider = output_surface_->context_provider();
 
   use_partial_swap_ = settings_->partial_swap_enabled && CanPartialSwap();
   allow_empty_swap_ = use_partial_swap_;
+#if defined(OS_WIN)
+  supports_dc_layers_ = output_surface_->capabilities().supports_dc_layers;
+#endif
   if (context_provider) {
     if (context_provider->ContextCapabilities().commit_overlay_planes)
       allow_empty_swap_ = true;
-    if (context_provider->ContextCapabilities().dc_layers)
-      supports_dc_layers_ = true;
     if (context_provider->ContextCapabilities()
             .disable_non_empty_post_sub_buffers) {
       use_partial_swap_ = false;
@@ -165,65 +201,7 @@ gfx::Rect DirectRenderer::MoveFromDrawToWindowSpace(
   return window_rect;
 }
 
-// static
-const TileDrawQuad* DirectRenderer::CanPassBeDrawnDirectly(
-    const RenderPass* pass,
-    DisplayResourceProvider* const resource_provider) {
-#if defined(OS_MACOSX)
-  // On Macs, this path can sometimes lead to all black output.
-  // TODO(enne): investigate this and remove this hack.
-  return nullptr;
-#endif
-
-  // Can only collapse a single tile quad.
-  if (pass->quad_list.size() != 1)
-    return nullptr;
-  // If we need copy requests, then render pass has to exist.
-  if (!pass->copy_requests.empty())
-    return nullptr;
-
-  const DrawQuad* quad = *pass->quad_list.BackToFrontBegin();
-  // Hack: this could be supported by concatenating transforms, but
-  // in practice if there is one quad, it is at the origin of the render pass
-  // and has the same size as the pass.
-  if (!quad->shared_quad_state->quad_to_target_transform.IsIdentity() ||
-      quad->rect != pass->output_rect)
-    return nullptr;
-  // The quad is expected to be the entire layer so that AA edges are correct.
-  if (quad->shared_quad_state->quad_layer_rect != quad->rect)
-    return nullptr;
-  if (quad->material != DrawQuad::TILED_CONTENT)
-    return nullptr;
-
-  // TODO(chrishtr): support could be added for opacity, but care needs
-  // to be taken to make sure it is correct w.r.t. non-commutative filters etc.
-  if (quad->shared_quad_state->opacity != 1.0f)
-    return nullptr;
-
-  if (quad->shared_quad_state->blend_mode != SkBlendMode::kSrcOver)
-    return nullptr;
-
-  const TileDrawQuad* tile_quad = TileDrawQuad::MaterialCast(quad);
-  // Hack: this could be supported by passing in a subrectangle to draw
-  // render pass, although in practice if there is only one quad there
-  // will be no border texels on the input.
-  if (tile_quad->tex_coord_rect != gfx::RectF(tile_quad->rect))
-    return nullptr;
-  // Tile quad features not supported in render pass shaders.
-  if (tile_quad->swizzle_contents || tile_quad->nearest_neighbor)
-    return nullptr;
-  // BUG=skia:3868, Skia currently doesn't support texture rectangle inputs.
-  // See also the DCHECKs about GL_TEXTURE_2D in DrawRenderPassQuad.
-  GLenum target =
-      resource_provider->GetResourceTextureTarget(tile_quad->resource_id());
-  if (target != GL_TEXTURE_2D)
-    return nullptr;
-
-  return tile_quad;
-}
-
-const TileDrawQuad* DirectRenderer::CanPassBeDrawnDirectly(
-    const RenderPass* pass) {
+const DrawQuad* DirectRenderer::CanPassBeDrawnDirectly(const RenderPass* pass) {
   return nullptr;
 }
 
@@ -237,29 +215,36 @@ void DirectRenderer::SetVisible(bool visible) {
 
 void DirectRenderer::DecideRenderPassAllocationsForFrame(
     const RenderPassList& render_passes_in_draw_order) {
-  render_pass_bypass_quads_.clear();
+  DCHECK(render_pass_bypass_quads_.empty());
 
   auto& root_render_pass = render_passes_in_draw_order.back();
 
   base::flat_map<RenderPassId, RenderPassRequirements> render_passes_in_frame;
   for (const auto& pass : render_passes_in_draw_order) {
-    if (pass != root_render_pass) {
-      if (const TileDrawQuad* tile_quad = CanPassBeDrawnDirectly(pass.get())) {
+    // If there's a copy request, we need an explicit renderpass backing so
+    // only try to draw directly if there are no copy requests.
+    if (pass != root_render_pass && pass->copy_requests.empty()) {
+      if (const DrawQuad* quad = CanPassBeDrawnDirectly(pass.get())) {
         // If the render pass is drawn directly, it will not be drawn from as
         // a render pass so it's not added to the map.
-        render_pass_bypass_quads_[pass->id] = *tile_quad;
+        render_pass_bypass_quads_[pass->id] = quad;
         continue;
       }
     }
     render_passes_in_frame[pass->id] = {
         CalculateTextureSizeForRenderPass(pass.get()), pass->generate_mipmap};
   }
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Compositing.Display.FlattenedRenderPassCount",
+      base::saturated_cast<int>(render_passes_in_draw_order.size() -
+                                render_pass_bypass_quads_.size()));
   UpdateRenderPassTextures(render_passes_in_draw_order, render_passes_in_frame);
 }
 
 void DirectRenderer::DrawFrame(RenderPassList* render_passes_in_draw_order,
                                float device_scale_factor,
-                               const gfx::Size& device_viewport_size) {
+                               const gfx::Size& device_viewport_size,
+                               float sdr_white_level) {
   DCHECK(visible_);
   TRACE_EVENT0("viz,benchmark", "DirectRenderer::DrawFrame");
   UMA_HISTOGRAM_COUNTS_1M(
@@ -294,6 +279,7 @@ void DirectRenderer::DrawFrame(RenderPassList* render_passes_in_draw_order,
       overlay_processor_->GetAndResetOverlayDamage());
   current_frame()->root_damage_rect.Intersect(gfx::Rect(device_viewport_size));
   current_frame()->device_viewport_size = device_viewport_size;
+  current_frame()->sdr_white_level = sdr_white_level;
 
   // Only reshape when we know we are going to draw. Otherwise, the reshape
   // can leave the window at the wrong size if we never draw and the proper
@@ -316,6 +302,7 @@ void DirectRenderer::DrawFrame(RenderPassList* render_passes_in_draw_order,
     output_surface_->Reshape(
         reshape_surface_size_, reshape_device_scale_factor_,
         reshape_device_color_space_, reshape_has_alpha_, reshape_use_stencil_);
+    overlay_processor_->SetValidatorViewportSize(reshape_surface_size_);
     did_reshape = true;
   }
 
@@ -328,28 +315,35 @@ void DirectRenderer::DrawFrame(RenderPassList* render_passes_in_draw_order,
       render_pass_filters_[pass->id] = &pass->filters;
     if (!pass->backdrop_filters.IsEmpty()) {
       render_pass_backdrop_filters_[pass->id] = &pass->backdrop_filters;
-      // |backdrop_filter_bounds| only apply if there is a non-empty
-      // backdrop-filter to apply.
-      if (!pass->backdrop_filter_bounds.IsEmpty()) {
-        render_pass_backdrop_filter_bounds_[pass->id] =
-            &pass->backdrop_filter_bounds;
+      render_pass_backdrop_filter_bounds_[pass->id] =
+          pass->backdrop_filter_bounds;
+      if (pass->backdrop_filters.HasFilterThatMovesPixels()) {
+        backdrop_filter_output_rects_[pass->id] =
+            cc::MathUtil::MapEnclosingClippedRect(
+                pass->transform_to_root_target, pass->output_rect);
       }
     }
   }
 
-  // Create the overlay candidate for the output surface, and mark it as
-  // always handled.
+  // Display transform is needed for overlay validator on Android
+  // SurfaceControl. This needs to called before ProcessForOverlays.
+  overlay_processor_->SetDisplayTransformHint(
+      output_surface_->GetDisplayTransform());
+
+  // Only used for pre-OOP-D code path.
+  // TODO(weiliangc): Remove once reflector code is removed.
+  overlay_processor_->SetSoftwareMirrorMode(
+      output_surface_->IsSoftwareMirrorMode());
+
+  // Before ProcessForOverlay calls into the hardware to ask about whether the
+  // overlay setup can be handled, we need to set up the primary plane.
+  OverlayProcessor::OutputSurfaceOverlayPlane* primary_plane = nullptr;
   if (output_surface_->IsDisplayedAsOverlayPlane()) {
-    OverlayCandidate output_surface_plane;
-    output_surface_plane.display_rect =
-        gfx::RectF(device_viewport_size.width(), device_viewport_size.height());
-    output_surface_plane.resource_size_in_pixels = device_viewport_size;
-    output_surface_plane.format = output_surface_->GetOverlayBufferFormat();
-    output_surface_plane.color_space = reshape_device_color_space_;
-    output_surface_plane.use_output_surface_for_resource = true;
-    output_surface_plane.overlay_handled = true;
-    output_surface_plane.is_opaque = true;
-    current_frame()->overlay_list.push_back(output_surface_plane);
+    current_frame()->output_surface_plane =
+        overlay_processor_->ProcessOutputSurfaceAsOverlay(
+            device_viewport_size, output_surface_->GetOverlayBufferFormat(),
+            reshape_device_color_space_, reshape_has_alpha_);
+    primary_plane = &(current_frame()->output_surface_plane.value());
   }
 
   // Attempt to replace some or all of the quads of the root render pass with
@@ -357,11 +351,27 @@ void DirectRenderer::DrawFrame(RenderPassList* render_passes_in_draw_order,
   overlay_processor_->ProcessForOverlays(
       resource_provider_, render_passes_in_draw_order,
       output_surface_->color_matrix(), render_pass_filters_,
-      render_pass_backdrop_filters_, &current_frame()->overlay_list,
-      &current_frame()->ca_layer_overlay_list,
-      &current_frame()->dc_layer_overlay_list,
-      &current_frame()->root_damage_rect,
+      render_pass_backdrop_filters_, primary_plane,
+      &current_frame()->overlay_list, &current_frame()->root_damage_rect,
       &current_frame()->root_content_bounds);
+
+  overlay_processor_->AdjustOutputSurfaceOverlay(
+      &(current_frame()->output_surface_plane));
+
+#if defined(OS_WIN)
+  bool was_using_dc_layers = using_dc_layers_;
+  if (!current_frame()->overlay_list.empty()) {
+    DCHECK(supports_dc_layers_);
+    using_dc_layers_ = true;
+    frames_since_using_dc_layers_ = 0;
+  } else if (++frames_since_using_dc_layers_ >=
+             kNumberOfFramesBeforeDisablingDCLayers) {
+    using_dc_layers_ = false;
+  }
+
+  if (supports_dc_layers_ && (was_using_dc_layers != using_dc_layers_))
+    SetEnableDCLayers(using_dc_layers_);
+#endif
 
   // Draw all non-root render passes except for the root render pass.
   for (const auto& pass : *render_passes_in_draw_order) {
@@ -370,15 +380,7 @@ void DirectRenderer::DrawFrame(RenderPassList* render_passes_in_draw_order,
     DrawRenderPassAndExecuteCopyRequests(pass.get());
   }
 
-  bool was_using_dc_layers = using_dc_layers_;
-  if (!current_frame()->dc_layer_overlay_list.empty()) {
-    DCHECK(supports_dc_layers_);
-    using_dc_layers_ = true;
-    frames_since_using_dc_layers_ = 0;
-  } else if (++frames_since_using_dc_layers_ >=
-             kNumberOfFramesBeforeDisablingDCLayers) {
-    using_dc_layers_ = false;
-  }
+#if defined(OS_WIN)
   if (supports_dc_layers_ &&
       (did_reshape || (was_using_dc_layers != using_dc_layers_))) {
     // The entire surface has to be redrawn if it was reshaped or if switching
@@ -386,6 +388,7 @@ void DirectRenderer::DrawFrame(RenderPassList* render_passes_in_draw_order,
     // discarded and some contents would otherwise be undefined.
     current_frame()->root_damage_rect = gfx::Rect(device_viewport_size);
   }
+#endif
 
   // We can skip all drawing if the damage rect is now empty.
   bool skip_drawing_root_render_pass =
@@ -405,18 +408,18 @@ void DirectRenderer::DrawFrame(RenderPassList* render_passes_in_draw_order,
   // through other means on the service side.
   // TODO(afrantzis): Consider using per-overlay fences instead of the one
   // associated with the output surface when possible.
-  if (!current_frame()->overlay_list.empty()) {
-    for (auto& overlay : current_frame()->overlay_list) {
-      if (overlay.use_output_surface_for_resource)
-        overlay.gpu_fence_id = output_surface_->UpdateGpuFence();
-    }
-  }
+  if (current_frame()->output_surface_plane)
+    current_frame()->output_surface_plane->gpu_fence_id =
+        output_surface_->UpdateGpuFence();
 
   FinishDrawingFrame();
+
   render_passes_in_draw_order->clear();
   render_pass_filters_.clear();
   render_pass_backdrop_filters_.clear();
   render_pass_backdrop_filter_bounds_.clear();
+  render_pass_bypass_quads_.clear();
+  backdrop_filter_output_rects_.clear();
 
   current_frame_valid_ = false;
 }
@@ -504,16 +507,18 @@ const cc::FilterOperations* DirectRenderer::FiltersForPass(
   return it == render_pass_filters_.end() ? nullptr : it->second;
 }
 
-const cc::FilterOperations* DirectRenderer::BackgroundFiltersForPass(
+const cc::FilterOperations* DirectRenderer::BackdropFiltersForPass(
     RenderPassId render_pass_id) const {
   auto it = render_pass_backdrop_filters_.find(render_pass_id);
   return it == render_pass_backdrop_filters_.end() ? nullptr : it->second;
 }
 
-const gfx::RRectF* DirectRenderer::BackgroundFilterBoundsForPass(
+const base::Optional<gfx::RRectF> DirectRenderer::BackdropFilterBoundsForPass(
     RenderPassId render_pass_id) const {
   auto it = render_pass_backdrop_filter_bounds_.find(render_pass_id);
-  return it == render_pass_backdrop_filter_bounds_.end() ? nullptr : it->second;
+  return it == render_pass_backdrop_filter_bounds_.end()
+             ? base::Optional<gfx::RRectF>()
+             : it->second;
 }
 
 void DirectRenderer::FlushPolygons(
@@ -593,8 +598,9 @@ void DirectRenderer::DrawRenderPass(const RenderPass* render_pass) {
   const gfx::Rect surface_rect_in_draw_space = OutputSurfaceRectInDrawSpace();
   gfx::Rect render_pass_scissor_in_draw_space = surface_rect_in_draw_space;
 
-  if (current_frame()->current_render_pass ==
-      current_frame()->root_render_pass) {
+  bool is_root_render_pass =
+      current_frame()->current_render_pass == current_frame()->root_render_pass;
+  if (is_root_render_pass) {
     render_pass_scissor_in_draw_space.Intersect(
         DeviceViewportRectInDrawSpace());
   }
@@ -604,9 +610,6 @@ void DirectRenderer::DrawRenderPass(const RenderPass* render_pass) {
         ComputeScissorRectForRenderPass(current_frame()->current_render_pass));
   }
 
-  bool is_root_render_pass =
-      current_frame()->current_render_pass == current_frame()->root_render_pass;
-
   bool render_pass_is_clipped =
       !render_pass_scissor_in_draw_space.Contains(surface_rect_in_draw_space);
 
@@ -614,8 +617,10 @@ void DirectRenderer::DrawRenderPass(const RenderPass* render_pass) {
   // set on the root framebuffer or else the rendering may modify something
   // outside the damage rectangle, even if the damage rectangle is the size of
   // the full backbuffer.
-  bool render_pass_requires_scissor =
-      (supports_dc_layers_ && is_root_render_pass) || render_pass_is_clipped;
+  bool render_pass_requires_scissor = render_pass_is_clipped;
+#if defined(OS_WIN)
+  render_pass_requires_scissor |= (supports_dc_layers_ && is_root_render_pass);
+#endif
   bool has_external_stencil_test =
       is_root_render_pass && output_surface_->HasExternalStencilTest();
   bool should_clear_surface =
@@ -638,6 +643,9 @@ void DirectRenderer::DrawRenderPass(const RenderPass* render_pass) {
 
   PrepareSurfaceForPass(
       mode, MoveFromDrawToWindowSpace(render_pass_scissor_in_draw_space));
+
+  if (is_root_render_pass)
+    last_root_render_pass_scissor_rect_ = render_pass_scissor_in_draw_space;
 
   const QuadList& quad_list = render_pass->quad_list;
   base::circular_deque<std::unique_ptr<DrawPolygon>> poly_list;
@@ -683,6 +691,9 @@ void DirectRenderer::DrawRenderPass(const RenderPass* render_pass) {
                 render_pass_requires_scissor);
   FinishDrawingQuadList();
 
+  if (is_root_render_pass && overdraw_feedback_)
+    FlushOverdrawFeedback(render_pass_scissor_in_draw_space);
+
   if (render_pass->generate_mipmap)
     GenerateMipmap();
 }
@@ -720,10 +731,10 @@ void DirectRenderer::UseRenderPass(const RenderPass* render_pass) {
   current_frame()->current_render_pass = render_pass;
   if (render_pass == current_frame()->root_render_pass) {
     BindFramebufferToOutputSurface();
-
+#if defined(OS_WIN)
     if (supports_dc_layers_)
-      SetEnableDCLayers(using_dc_layers_);
-    output_surface_->SetDrawRectangle(current_frame()->root_damage_rect);
+      output_surface_->SetDrawRectangle(current_frame()->root_damage_rect);
+#endif
     InitializeViewport(current_frame(), render_pass->output_rect,
                        gfx::Rect(current_frame()->device_viewport_size),
                        current_frame()->device_viewport_size);
@@ -753,10 +764,28 @@ void DirectRenderer::UseRenderPass(const RenderPass* render_pass) {
 gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
     const RenderPass* render_pass) const {
   const RenderPass* root_render_pass = current_frame()->root_render_pass;
-  const gfx::Rect root_damage_rect = current_frame()->root_damage_rect;
+  gfx::Rect root_damage_rect = current_frame()->root_damage_rect;
 
-  if (render_pass == root_render_pass)
+  if (render_pass == root_render_pass) {
+    root_damage_rect.Union(output_surface_->GetCurrentFramebufferDamage());
+    // If the root damage rect intersects any child render pass that has a
+    // pixel-moving backdrop-filter, expand the damage to include the entire
+    // child pass. See crbug.com/986206 for context.
+    if (!backdrop_filter_output_rects_.empty() && !root_damage_rect.IsEmpty()) {
+      for (auto* quad : render_pass->quad_list) {
+        if (quad->material == DrawQuad::Material::kRenderPass) {
+          auto iter = backdrop_filter_output_rects_.find(
+              RenderPassDrawQuad::MaterialCast(quad)->render_pass_id);
+          if (iter != backdrop_filter_output_rects_.end()) {
+            auto this_output_rect = iter->second;
+            if (root_damage_rect.Intersects(this_output_rect))
+              root_damage_rect.Union(this_output_rect);
+          }
+        }
+      }
+    }
     return root_damage_rect;
+  }
 
   // If the root damage rect has been expanded due to overlays, all the other
   // damage rect calculations are incorrect.
@@ -791,6 +820,33 @@ void DirectRenderer::SetCurrentFrameForTesting(const DrawingFrame& frame) {
 bool DirectRenderer::HasAllocatedResourcesForTesting(
     const RenderPassId& render_pass_id) const {
   return IsRenderPassResourceAllocated(render_pass_id);
+}
+
+bool DirectRenderer::OverlayNeedsSurfaceOccludingDamageRect() const {
+  return overlay_processor_->NeedsSurfaceOccludingDamageRect();
+}
+
+bool DirectRenderer::ShouldApplyRoundedCorner(const DrawQuad* quad) const {
+  const SharedQuadState* sqs = quad->shared_quad_state;
+  const gfx::RRectF& rounded_corner_bounds = sqs->rounded_corner_bounds;
+
+  // There is no rounded corner set.
+  if (rounded_corner_bounds.IsEmpty())
+    return false;
+
+  const gfx::RectF target_quad = cc::MathUtil::MapClippedRect(
+      sqs->quad_to_target_transform, gfx::RectF(quad->visible_rect));
+
+  const gfx::RRectF::Corner corners[] = {
+      gfx::RRectF::Corner::kUpperLeft, gfx::RRectF::Corner::kUpperRight,
+      gfx::RRectF::Corner::kLowerRight, gfx::RRectF::Corner::kLowerLeft};
+  for (auto c : corners) {
+    if (ComputeRoundedCornerBoundingBox(rounded_corner_bounds, c)
+            .Intersects(target_quad)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace viz

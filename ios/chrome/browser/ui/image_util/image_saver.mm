@@ -124,9 +124,9 @@
 - (void)saveImage:(NSData*)data
     withFileExtension:(NSString*)fileExtension
            completion:(void (^)(BOOL, NSError*))completion {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(^{
         base::ScopedBlockingCall scoped_blocking_call(
@@ -145,14 +145,16 @@
           return;
         }
 
-        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-          [PHAssetChangeRequest
-              creationRequestForAssetFromImageAtFileURL:fileURL];
-        }
+        [[PHPhotoLibrary sharedPhotoLibrary]
+            performChanges:^{
+              [PHAssetChangeRequest
+                  creationRequestForAssetFromImageAtFileURL:fileURL];
+            }
             completionHandler:^(BOOL success, NSError* error) {
-              base::PostTaskWithTraits(
+              base::PostTask(
                   FROM_HERE,
-                  {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                  {base::ThreadPool(), base::MayBlock(),
+                   base::TaskPriority::BEST_EFFORT,
                    base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
                   base::BindOnce(^{
                     base::ScopedBlockingCall scoped_blocking_call(

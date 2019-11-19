@@ -1,7 +1,14 @@
 <!--
-@BLINK-ALLOW:pageLocation*
 @BLINK-ALLOW:pageSize=(300, 100)
 @BLINK-ALLOW:pageSize=(250, 50)
+
+Only allow these locations, which are not the locations of button's children
+inside an iframe. The locations of button's children inside an iframe have
+slight variances across different platforms.
+@BLINK-ALLOW:pageLocation=(0, 0)
+@BLINK-ALLOW:pageLocation=(25, 25)
+@BLINK-ALLOW:pageLocation=(30, 230)
+@BLINK-ALLOW:pageLocation=(55, 255)
 -->
 <!DOCTYPE html>
 <html>

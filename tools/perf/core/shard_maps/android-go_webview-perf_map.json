@@ -1,240 +1,155 @@
 {
     "0": {
         "benchmarks": {
-            "memory.top_10_mobile": {
-                "end": 9
+            "speedometer": {
+                "abridged": false
+            },
+            "speedometer2": {
+                "abridged": false
+            },
+            "startup.mobile": {
+                "abridged": false
+            },
+            "system_health.common_mobile": {
+                "end": 16,
+                "abridged": false
             }
         }
     },
     "1": {
         "benchmarks": {
-            "memory.top_10_mobile": {
-                "begin": 9,
-                "end": 15
+            "system_health.common_mobile": {
+                "begin": 16,
+                "end": 33,
+                "abridged": false
             }
         }
     },
     "2": {
         "benchmarks": {
-            "memory.top_10_mobile": {
-                "begin": 15
-            },
-            "power.typical_10_mobile": {
-                "end": 3
+            "system_health.common_mobile": {
+                "begin": 33,
+                "end": 73,
+                "abridged": false
             }
         }
     },
     "3": {
         "benchmarks": {
-            "power.typical_10_mobile": {
-                "begin": 3
-            },
-            "speedometer": {},
-            "speedometer2": {},
-            "startup.mobile": {},
             "system_health.common_mobile": {
-                "end": 6
+                "begin": 73,
+                "abridged": false
+            },
+            "system_health.memory_mobile": {
+                "end": 7,
+                "abridged": false
             }
         }
     },
     "4": {
         "benchmarks": {
-            "system_health.common_mobile": {
-                "begin": 6,
-                "end": 16
+            "system_health.memory_mobile": {
+                "begin": 7,
+                "end": 15,
+                "abridged": false
             }
         }
     },
     "5": {
         "benchmarks": {
-            "system_health.common_mobile": {
-                "begin": 16,
-                "end": 23
+            "system_health.memory_mobile": {
+                "begin": 15,
+                "end": 21,
+                "abridged": false
             }
         }
     },
     "6": {
         "benchmarks": {
-            "system_health.common_mobile": {
-                "begin": 23,
-                "end": 45
+            "system_health.memory_mobile": {
+                "begin": 21,
+                "end": 28,
+                "abridged": false
             }
         }
     },
     "7": {
         "benchmarks": {
-            "system_health.common_mobile": {
-                "begin": 45,
-                "end": 73
+            "system_health.memory_mobile": {
+                "begin": 28,
+                "end": 37,
+                "abridged": false
             }
         }
     },
     "8": {
         "benchmarks": {
-            "system_health.common_mobile": {
-                "begin": 73
-            },
             "system_health.memory_mobile": {
-                "end": 5
+                "begin": 37,
+                "end": 51,
+                "abridged": false
             }
         }
     },
     "9": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 5,
-                "end": 12
+                "begin": 51,
+                "end": 63,
+                "abridged": false
             }
         }
     },
     "10": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 12,
-                "end": 17
+                "begin": 63,
+                "end": 73,
+                "abridged": false
             }
         }
     },
     "11": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 17,
-                "end": 22
+                "begin": 73,
+                "end": 79,
+                "abridged": false
             }
         }
     },
     "12": {
         "benchmarks": {
             "system_health.memory_mobile": {
-                "begin": 22,
-                "end": 26
-            }
-        }
-    },
-    "13": {
-        "benchmarks": {
-            "system_health.memory_mobile": {
-                "begin": 26,
-                "end": 36
-            }
-        }
-    },
-    "14": {
-        "benchmarks": {
-            "system_health.memory_mobile": {
-                "begin": 36,
-                "end": 46
-            }
-        }
-    },
-    "15": {
-        "benchmarks": {
-            "system_health.memory_mobile": {
-                "begin": 46,
-                "end": 55
-            }
-        }
-    },
-    "16": {
-        "benchmarks": {
-            "system_health.memory_mobile": {
-                "begin": 55,
-                "end": 64
-            }
-        }
-    },
-    "17": {
-        "benchmarks": {
-            "system_health.memory_mobile": {
-                "begin": 64,
-                "end": 73
-            }
-        }
-    },
-    "18": {
-        "benchmarks": {
-            "system_health.memory_mobile": {
-                "begin": 73,
-                "end": 78
-            }
-        }
-    },
-    "19": {
-        "benchmarks": {
-            "system_health.memory_mobile": {
-                "begin": 78
+                "begin": 79,
+                "abridged": false
             },
-            "system_health.webview_startup": {}
-        }
-    },
-    "20": {
-        "benchmarks": {
+            "system_health.webview_startup": {
+                "abridged": false
+            },
             "v8.browsing_mobile": {
-                "end": 7
-            }
-        }
-    },
-    "21": {
-        "benchmarks": {
-            "v8.browsing_mobile": {
-                "begin": 7,
-                "end": 13
-            }
-        }
-    },
-    "22": {
-        "benchmarks": {
-            "v8.browsing_mobile": {
-                "begin": 13,
-                "end": 14
-            }
-        }
-    },
-    "23": {
-        "benchmarks": {
-            "v8.browsing_mobile": {
-                "begin": 14,
-                "end": 20
-            }
-        }
-    },
-    "24": {
-        "benchmarks": {
-            "v8.browsing_mobile": {
-                "begin": 20
+                "abridged": false
             }
         }
     },
     "extra_infos": {
-        "num_stories": 223,
-        "predicted_min_shard_time": 1262.0,
-        "predicted_min_shard_index": 22,
-        "predicted_max_shard_time": 1656.0,
-        "predicted_max_shard_index": 24,
-        "shard #0": 1510.0,
-        "shard #1": 1410.0,
-        "shard #2": 1560.0,
-        "shard #3": 1396.0,
-        "shard #4": 1448.0,
-        "shard #5": 1588.0,
-        "shard #6": 1404.0,
-        "shard #7": 1518.0,
-        "shard #8": 1440.0,
-        "shard #9": 1422.0,
-        "shard #10": 1512.0,
-        "shard #11": 1632.0,
-        "shard #12": 1356.0,
-        "shard #13": 1530.0,
-        "shard #14": 1512.0,
-        "shard #15": 1386.0,
-        "shard #16": 1518.0,
-        "shard #17": 1518.0,
-        "shard #18": 1374.0,
-        "shard #19": 1544.0,
-        "shard #20": 1516.0,
-        "shard #21": 1524.0,
-        "shard #22": 1262.0,
-        "shard #23": 1398.0,
-        "shard #24": 1656.0
+        "num_stories": 204,
+        "predicted_min_shard_time": 1914.0,
+        "predicted_min_shard_index": 5,
+        "predicted_max_shard_time": 2388.0,
+        "predicted_max_shard_index": 6,
+        "shard #0": 2094.0,
+        "shard #1": 2156.0,
+        "shard #2": 2130.0,
+        "shard #3": 2320.0,
+        "shard #4": 2100.0,
+        "shard #5": 1914.0,
+        "shard #6": 2388.0,
+        "shard #7": 1962.0,
+        "shard #8": 2160.0,
+        "shard #9": 2100.0,
+        "shard #10": 2094.0,
+        "shard #11": 1980.0,
+        "shard #12": 2308.0
     }
 }

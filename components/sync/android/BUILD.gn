@@ -8,14 +8,16 @@ import("//build/config/android/rules.gni")
 android_library("sync_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//components/signin/core/browser/android:java",
     "//net/android:net_java",
-    "//third_party/android_deps:android_support_annotations_java",
-    "//third_party/android_tools:android_gcm_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_sdk:android_gcm_java",
     "//third_party/cacheinvalidation:cacheinvalidation_javalib",
     "//third_party/cacheinvalidation:cacheinvalidation_proto_java",
     "//third_party/jsr-305:jsr_305_javalib",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   srcjar_deps = [ ":java_enums" ]
   java_files = [
     "java/src/org/chromium/components/sync/AndroidSyncSettings.java",
@@ -59,7 +61,6 @@ java_cpp_enum("java_enums") {
     "//components/sync/base/model_type.h",
     "//components/sync/base/stop_source.h",
     "//components/sync/driver/sync_service_utils.h",
-    "//components/sync/protocol/sync_protocol_error.h",
   ]
 }
 
@@ -67,5 +68,4 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/sync/ModelTypeHelper.java",
   ]
-  jni_package = "syncer"
 }

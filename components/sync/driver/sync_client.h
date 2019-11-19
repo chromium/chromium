@@ -23,10 +23,11 @@ class InvalidationService;
 
 namespace syncer {
 
-class DeviceInfoSyncService;
 class SyncApiComponentFactory;
 class SyncableService;
 class SyncService;
+class SyncTypePreferenceProvider;
+class TrustedVaultClient;
 
 // Interface for clients of the Sync API to plumb through necessary dependent
 // components. This interface is purely for abstracting dependencies, and
@@ -48,14 +49,12 @@ class SyncClient {
   // It is only used when sync is running against a local backend.
   virtual base::FilePath GetLocalSyncBackendFolder() = 0;
 
-  // TODO(crbug.com/922971): Move this away elsewhere.
-  virtual syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() = 0;
-
   // Returns a vector with all supported datatypes and their controllers.
   virtual DataTypeController::TypeVector CreateDataTypeControllers(
       SyncService* sync_service) = 0;
 
   virtual invalidation::InvalidationService* GetInvalidationService() = 0;
+  virtual TrustedVaultClient* GetTrustedVaultClient() = 0;
   virtual scoped_refptr<ExtensionsActivity> GetExtensionsActivity() = 0;
 
   // Returns a weak pointer to the syncable service specified by |type|.
@@ -72,6 +71,9 @@ class SyncClient {
 
   // Returns the current SyncApiComponentFactory instance.
   virtual SyncApiComponentFactory* GetSyncApiComponentFactory() = 0;
+
+  // Returns the preference provider, or null if none exists.
+  virtual SyncTypePreferenceProvider* GetPreferenceProvider() = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SyncClient);

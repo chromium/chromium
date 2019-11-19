@@ -17,7 +17,7 @@
 #include "base/task_runner_util.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/brightness_monitor.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 
 namespace chromeos {
 namespace power {
@@ -29,26 +29,29 @@ class BrightnessMonitorImpl : public BrightnessMonitor,
                               public PowerManagerClient::Observer {
  public:
   // Once a user brightness adjustment is received, we wait for
-  // |kBrightnessSampleDelay| to record the final brightness.
-  // TODO(jiameng): revise this delay.
+  // |brightness_sample_delay_| to record the final brightness. It can be
+  // configured from finch with default value set to |kBrightnessSampleDelay|.
   static constexpr base::TimeDelta kBrightnessSampleDelay =
-      base::TimeDelta::FromSeconds(5);
+      base::TimeDelta::FromSeconds(3);
 
-  // PowerManagerClient must outlive BrightnessMonitorImpl.
-  explicit BrightnessMonitorImpl(
-      chromeos::PowerManagerClient* power_manager_client);
+  BrightnessMonitorImpl();
   ~BrightnessMonitorImpl() override;
+
+  // Must be called before the BrightnessMonitorImpl is used.
+  void Init();
 
   // BrightnessMonitor overrides:
   void AddObserver(BrightnessMonitor::Observer* observer) override;
   void RemoveObserver(BrightnessMonitor::Observer* observer) override;
 
   // chromeos::PowerManagerClient::Observer overrides:
+  void PowerManagerBecameAvailable(bool service_is_ready) override;
   void ScreenBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
 
+  base::TimeDelta GetBrightnessSampleDelayForTesting() const;
+
  private:
-  void OnPowerManagerServiceAvailable(bool service_is_ready);
 
   // Sets initial brightness obtained from powerd. If nullopt is received from
   // powerd, the monitor status will be set to kDisabled.
@@ -73,8 +76,10 @@ class BrightnessMonitorImpl : public BrightnessMonitor,
 
   ScopedObserver<chromeos::PowerManagerClient,
                  chromeos::PowerManagerClient::Observer>
-      power_manager_client_observer_;
-  chromeos::PowerManagerClient* const power_manager_client_;
+      power_manager_client_observer_{this};
+
+  // Delay after user brightness adjustment before we record the brightness.
+  base::TimeDelta brightness_sample_delay_;
 
   // This timer is started when we receive the 1st user-requested brightness
   // change and times out after kBrightnessSampleDelay if there are no more
@@ -99,7 +104,7 @@ class BrightnessMonitorImpl : public BrightnessMonitor,
 
   base::ObserverList<BrightnessMonitor::Observer> observers_;
 
-  base::WeakPtrFactory<BrightnessMonitorImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<BrightnessMonitorImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BrightnessMonitorImpl);
 };

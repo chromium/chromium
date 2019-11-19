@@ -4,7 +4,7 @@
 
 #include "chrome/services/printing/public/mojom/pdf_render_settings_mojom_traits.h"
 
-#include "ui/gfx/geometry/mojo/geometry_struct_traits.h"
+#include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
 namespace mojo {
 

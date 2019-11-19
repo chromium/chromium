@@ -378,12 +378,6 @@ class HTMLToken {
     return nullptr;
   }
 
-  // Used by the XSSAuditor to nuke XSS-laden attributes.
-  void EraseValueOfAttribute(wtf_size_t i) {
-    DCHECK(type_ == kStartTag || type_ == kEndTag);
-    attributes_[i].ClearValue();
-  }
-
   /* Character Tokens */
 
   // Starting a character token works slightly differently than starting
@@ -431,13 +425,6 @@ class HTMLToken {
     DCHECK_EQ(type_, kComment);
     data_.push_back(character);
     or_all_data_ |= character;
-  }
-
-  // Only for XSSAuditor
-  void EraseCharacters() {
-    DCHECK_EQ(type_, kCharacter);
-    data_.clear();
-    or_all_data_ = 0;
   }
 
  private:

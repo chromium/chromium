@@ -36,50 +36,49 @@ class InstanceIDImpl : public InstanceID {
   void GetToken(const std::string& authorized_entity,
                 const std::string& scope,
                 const std::map<std::string, std::string>& options,
-                bool is_lazy,
-                const GetTokenCallback& callback) override;
+                std::set<Flags> flags,
+                GetTokenCallback callback) override;
   void ValidateToken(const std::string& authorized_entity,
                      const std::string& scope,
                      const std::string& token,
                      const ValidateTokenCallback& callback) override;
   void DeleteTokenImpl(const std::string& authorized_entity,
                        const std::string& scope,
-                       const DeleteTokenCallback& callback) override;
-  void DeleteIDImpl(const DeleteIDCallback& callback) override;
+                       DeleteTokenCallback callback) override;
+  void DeleteIDImpl(DeleteIDCallback callback) override;
 
  private:
   void EnsureIDGenerated();
 
-  void OnGetTokenCompleted(const GetTokenCallback& callback,
+  void OnGetTokenCompleted(GetTokenCallback callback,
                            const std::string& token,
                            gcm::GCMClient::Result result);
-  void OnDeleteTokenCompleted(const DeleteTokenCallback& callback,
+  void OnDeleteTokenCompleted(DeleteTokenCallback callback,
                               gcm::GCMClient::Result result);
-  void OnDeleteIDCompleted(const DeleteIDCallback& callback,
+  void OnDeleteIDCompleted(DeleteIDCallback callback,
                            gcm::GCMClient::Result result);
   void GetInstanceIDDataCompleted(const std::string& instance_id,
                                   const std::string& extra_data);
 
   void DoGetID(const GetIDCallback& callback);
   void DoGetCreationTime(const GetCreationTimeCallback& callback);
-  void DoGetToken(
-      const std::string& authorized_entity,
-      const std::string& scope,
-      const std::map<std::string, std::string>& options,
-      const GetTokenCallback& callback);
+  void DoGetToken(const std::string& authorized_entity,
+                  const std::string& scope,
+                  const std::map<std::string, std::string>& options,
+                  GetTokenCallback callback);
   void DoValidateToken(const std::string& authorized_entity,
                        const std::string& scope,
                        const std::string& token,
                        const ValidateTokenCallback& callback);
   void DoDeleteToken(const std::string& authorized_entity,
                      const std::string& scope,
-                     const DeleteTokenCallback& callback);
-  void DoDeleteID(const DeleteIDCallback& callback);
+                     DeleteTokenCallback callback);
+  void DoDeleteID(DeleteIDCallback callback);
 
   gcm::InstanceIDHandler* Handler();
 
   // Asynchronously runs task once delayed_task_controller_ is ready.
-  void RunWhenReady(base::Closure task);
+  void RunWhenReady(base::OnceClosure task);
 
   gcm::GCMDelayedTaskController delayed_task_controller_;
 
@@ -89,7 +88,7 @@ class InstanceIDImpl : public InstanceID {
   // The time when the Instance ID has been generated.
   base::Time creation_time_;
 
-  base::WeakPtrFactory<InstanceIDImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<InstanceIDImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InstanceIDImpl);
 };

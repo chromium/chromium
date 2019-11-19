@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS e.style['border-spacing'] = "0px" should set the property value
+PASS e.style['border-spacing'] = "10px 20px" should set the property value
+FAIL e.style['border-spacing'] = "calc(10px + 0.5em) calc(10px - 0.5em)" should set the property value assert_equals: serialization should be canonical expected "calc(0.5em + 10px) calc(-0.5em + 10px)" but got "calc(10px + 0.5em) calc(10px - 0.5em)"
+Harness: the test ran to completion.
+

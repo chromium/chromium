@@ -7,8 +7,9 @@ package org.chromium.chrome.browser.notifications.channels;
 import android.content.SharedPreferences;
 import android.os.Build;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.notifications.NotificationManagerProxyImpl;
 
 /**
@@ -17,6 +18,8 @@ import org.chromium.chrome.browser.notifications.NotificationManagerProxyImpl;
 public class ChannelsUpdater {
     @VisibleForTesting
     static final String CHANNELS_VERSION_KEY = "channels_version_key";
+
+    private static final Object sLock = new Object();
 
     private final ChannelsInitializer mChannelsInitializer;
     private final SharedPreferences mSharedPreferences;
@@ -54,17 +57,21 @@ public class ChannelsUpdater {
     }
 
     public void updateChannels() {
-        if (!mIsAtLeastO) return;
-        assert mChannelsInitializer != null;
-        mChannelsInitializer.deleteLegacyChannels();
-        mChannelsInitializer.initializeStartupChannels();
-        storeChannelVersionInPrefs();
+        synchronized (sLock) {
+            if (!mIsAtLeastO) return;
+            assert mChannelsInitializer != null;
+            mChannelsInitializer.deleteLegacyChannels();
+            mChannelsInitializer.initializeStartupChannels();
+            storeChannelVersionInPrefs();
+        }
     }
 
     public void updateLocale() {
-        if (!mIsAtLeastO) return;
-        assert mChannelsInitializer != null;
-        mChannelsInitializer.updateLocale(ContextUtils.getApplicationContext().getResources());
+        synchronized (sLock) {
+            if (!mIsAtLeastO) return;
+            assert mChannelsInitializer != null;
+            mChannelsInitializer.updateLocale(ContextUtils.getApplicationContext().getResources());
+        }
     }
 
     private void storeChannelVersionInPrefs() {

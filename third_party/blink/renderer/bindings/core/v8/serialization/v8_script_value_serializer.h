@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
 
@@ -68,6 +68,12 @@ class CORE_EXPORT V8ScriptValueSerializer
         "Only enums backed by uint32_t are accepted.");
     WriteUint32(static_cast<uint32_t>(value));
   }
+
+  SerializedScriptValue* GetSerializedScriptValue() {
+    return serialized_script_value_.get();
+  }
+
+  bool IsForStorage() const { return for_storage_; }
 
  private:
   // Transfer is split into two phases: scanning the transferables so that we

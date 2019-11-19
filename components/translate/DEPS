@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/data_use_measurement/core",
   "+components/grit/components_resources.h",
   "+components/infobars",
   "+components/language",
@@ -14,6 +13,7 @@ include_rules = [
   "+google_apis",
   "+net",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
   "+ui",
   "+third_party/metrics_proto",
 

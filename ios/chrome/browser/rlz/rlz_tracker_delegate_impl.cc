@@ -15,7 +15,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/google/google_brand.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 RLZTrackerDelegateImpl::RLZTrackerDelegateImpl() {}

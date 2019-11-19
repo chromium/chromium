@@ -46,6 +46,7 @@ class MEDIA_EXPORT CrasUnifiedStream : public AudioOutputStream {
   // Implementation of AudioOutputStream.
   bool Open() override;
   void Close() override;
+  void Flush() override;
   void Start(AudioSourceCallback* callback) override;
   void Stop() override;
   void SetVolume(double volume) override;

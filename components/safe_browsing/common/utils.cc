@@ -31,10 +31,6 @@ std::string ShortURLForReporting(const GURL& url) {
   return spec;
 }
 
-void LogNoUserActionResourceLoadingDelay(base::TimeDelta time) {
-  UMA_HISTOGRAM_LONG_TIMES("SB2.NoUserActionResourceLoadingDelay", time);
-}
-
 ChromeUserPopulation::ProfileManagementStatus GetProfileManagementStatus(
     const policy::BrowserPolicyConnector* bpc) {
 #if defined(OS_WIN)

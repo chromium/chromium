@@ -9,12 +9,12 @@
 
 #include "base/optional.h"
 #include "net/base/net_export.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/http/http_request_headers.h"
 #include "net/socket/socket_tag.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace net {
 
@@ -31,8 +31,9 @@ struct NET_EXPORT HttpRequestInfo {
   // The method to use (GET, POST, etc.).
   std::string method;
 
-  // The URL of the top frame of the request (if applicable)
-  base::Optional<url::Origin> top_frame_origin;
+  // This key is used to isolate requests from different contexts in accessing
+  // shared network resources like the cache.
+  NetworkIsolationKey network_isolation_key;
 
   // Any extra request headers (including User-Agent).
   HttpRequestHeaders extra_headers;
@@ -46,6 +47,9 @@ struct NET_EXPORT HttpRequestInfo {
   // If enabled, then request must be sent over connection that cannot be
   // tracked by the server (e.g. without channel id).
   PrivacyMode privacy_mode;
+
+  // Whether secure DNS should be disabled for the request.
+  bool disable_secure_dns;
 
   // Tag applied to all sockets used to service request.
   SocketTag socket_tag;

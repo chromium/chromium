@@ -35,7 +35,6 @@ class ConnectionHelpTabHelper
   ~ConnectionHelpTabHelper() override;
 
   // WebContentsObserver:
-  void DidAttachInterstitialPage() override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 

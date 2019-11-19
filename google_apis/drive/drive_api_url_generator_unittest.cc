@@ -29,7 +29,7 @@ class DriveApiUrlGeneratorTest : public testing::Test {
     url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
   }
 
-  ~DriveApiUrlGeneratorTest() override { url::Shutdown(); }
+  ~DriveApiUrlGeneratorTest() override { url::ResetForTests(); }
 
  protected:
   DriveApiUrlGenerator url_generator_;

@@ -11,10 +11,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/shared_memory_handle.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
+#include "base/util/type_safety/id_type.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message.h"
@@ -443,18 +443,6 @@ struct FuzzTraits<base::NullableString16> {
   }
 };
 
-#if defined(OS_WIN) || defined(OS_MACOSX)
-template <>
-struct FuzzTraits<base::SharedMemoryHandle> {
-  static bool Fuzz(base::SharedMemoryHandle* p, Fuzzer* fuzzer) {
-    // This generates an invalid SharedMemoryHandle. Generating a valid
-    // SharedMemoryHandle requires setting/knowing state in both the sending and
-    // receiving process, which is not currently possible.
-    return true;
-  }
-};
-#endif  // defined(OS_WIN) || defined(OS_MACOSX)
-
 template <>
 struct FuzzTraits<base::Time> {
   static bool Fuzz(base::Time* p, Fuzzer* fuzzer) {
@@ -748,8 +736,7 @@ struct FuzzTraits<content::PageState> {
 template <>
 struct FuzzTraits<content::WebCursor> {
   static bool Fuzz(content::WebCursor* p, Fuzzer* fuzzer) {
-    content::CursorInfo info;
-    p->GetCursorInfo(&info);
+    content::CursorInfo info = p->info();
 
     // |type| enum is not validated on de-serialization, so pick random value.
     if (!FuzzParam(reinterpret_cast<int*>(&info.type), fuzzer))
@@ -768,8 +755,7 @@ struct FuzzTraits<content::WebCursor> {
     if (!(info.image_scale_factor > 0.0))
       info.image_scale_factor = 1;
 
-    *p = content::WebCursor();
-    p->InitFromCursorInfo(info);
+    *p = content::WebCursor(info);
     return true;
   }
 };
@@ -949,8 +935,8 @@ struct FuzzTraits<gfx::Vector2dF> {
 };
 
 template <typename TypeMarker, typename WrappedType, WrappedType kInvalidValue>
-struct FuzzTraits<gpu::IdType<TypeMarker, WrappedType, kInvalidValue>> {
-  using param_type = gpu::IdType<TypeMarker, WrappedType, kInvalidValue>;
+struct FuzzTraits<util::IdType<TypeMarker, WrappedType, kInvalidValue>> {
+  using param_type = util::IdType<TypeMarker, WrappedType, kInvalidValue>;
   static bool Fuzz(param_type* id, Fuzzer* fuzzer) {
     WrappedType raw_value = id->GetUnsafeValue();
     if (!FuzzParam(&raw_value, fuzzer))
@@ -1081,9 +1067,6 @@ struct FuzzTraits<std::unique_ptr<IPC::Message>> {
   }
 };
 
-#if !defined(OS_WIN)
-// PlatformfileForTransit is just SharedMemoryHandle on Windows, which already
-// has a trait, see ipc/ipc_platform_file.h
 template <>
 struct FuzzTraits<IPC::PlatformFileForTransit> {
   static bool Fuzz(IPC::PlatformFileForTransit* p, Fuzzer* fuzzer) {
@@ -1092,7 +1075,6 @@ struct FuzzTraits<IPC::PlatformFileForTransit> {
     return true;
   }
 };
-#endif
 
 template <>
 struct FuzzTraits<IPC::ChannelHandle> {
@@ -1223,15 +1205,6 @@ struct FuzzTraits<net::IPEndPoint> {
       return false;
     net::IPEndPoint ip_endpoint(ip_address, port);
     *p = ip_endpoint;
-    return true;
-  }
-};
-
-template <>
-struct FuzzTraits<network_hints::LookupRequest> {
-  static bool Fuzz(network_hints::LookupRequest* p, Fuzzer* fuzzer) {
-    if (!FuzzParam(&p->hostname_list, fuzzer))
-      return false;
     return true;
   }
 };

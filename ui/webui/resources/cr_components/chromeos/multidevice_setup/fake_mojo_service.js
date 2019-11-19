@@ -52,6 +52,21 @@ class FakeMojoService {
   }
 
   /** @override */
+  getEligibleActiveHostDevices() {
+    const deviceNames = ['Pixel', 'Pixel XL', 'Nexus 5', 'Nexus 6P'];
+    const devices = [];
+    for (let i = 0; i < this.deviceCount; i++) {
+      const deviceName = deviceNames[i % 4];
+      devices.push({
+        remoteDevice: {deviceName: deviceName, deviceId: deviceName + '--' + i}
+      });
+    }
+    return new Promise(function(resolve, reject) {
+      resolve({eligibleHostDevices: devices});
+    });
+  }
+
+  /** @override */
   setHostDevice(deviceId) {
     if (this.shouldSetHostSucceed) {
       console.log(

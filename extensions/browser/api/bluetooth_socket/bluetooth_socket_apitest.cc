@@ -9,7 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "device/bluetooth/test/mock_bluetooth_socket.h"
@@ -81,19 +81,19 @@ class BluetoothSocketApiTest : public extensions::ShellApiTest {
 ACTION_TEMPLATE(InvokeCallbackArgument,
                 HAS_1_TEMPLATE_PARAMS(int, k),
                 AND_0_VALUE_PARAMS()) {
-  std::get<k>(args).Run();
+  std::move(std::get<k>(args)).Run();
 }
 
 ACTION_TEMPLATE(InvokeCallbackArgument,
                 HAS_1_TEMPLATE_PARAMS(int, k),
                 AND_1_VALUE_PARAMS(p0)) {
-  std::get<k>(args).Run(p0);
+  std::move(std::get<k>(args)).Run(p0);
 }
 
 ACTION_TEMPLATE(InvokeCallbackArgument,
                 HAS_1_TEMPLATE_PARAMS(int, k),
                 AND_2_VALUE_PARAMS(p0, p1)) {
-  std::get<k>(args).Run(p0, p1);
+  std::move(std::get<k>(args)).Run(p0, p1);
 }
 
 }  // namespace

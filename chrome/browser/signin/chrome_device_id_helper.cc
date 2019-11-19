@@ -7,7 +7,7 @@
 #include <string>
 
 #include "chrome/browser/profiles/profile.h"
-#include "components/signin/core/browser/device_id_helper.h"
+#include "components/signin/public/base/device_id_helper.h"
 
 #if defined(OS_CHROMEOS)
 #include "base/command_line.h"
@@ -15,8 +15,8 @@
 #include "base/logging.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/signin_pref_names.h"
-#include "components/signin/core/browser/signin_switches.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #endif

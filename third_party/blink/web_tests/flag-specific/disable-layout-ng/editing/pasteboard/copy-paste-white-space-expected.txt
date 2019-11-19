@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS pre
+PASS pre-wrap
+PASS normal
+PASS nowrap
+FAIL pre-line assert_equals: expected "\nTesting\nCSS white-space property\n" but got "\nTesting \nCSS white-space property\n"
+Harness: the test ran to completion.
+

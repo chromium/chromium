@@ -15,8 +15,8 @@
 #include "net/base/escape.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_util.h"
-#include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
+#include "net/log/net_log_values.h"
 
 namespace net {
 
@@ -184,19 +184,19 @@ std::string HttpRequestHeaders::ToString() const {
   return output;
 }
 
-std::unique_ptr<base::Value> HttpRequestHeaders::NetLogCallback(
-    const std::string* request_line,
+base::Value HttpRequestHeaders::NetLogParams(
+    const std::string& request_line,
     NetLogCaptureMode capture_mode) const {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetKey("line", NetLogStringValue(*request_line));
+  base::DictionaryValue dict;
+  dict.SetKey("line", NetLogStringValue(request_line));
   auto headers = std::make_unique<base::ListValue>();
   for (auto it = headers_.begin(); it != headers_.end(); ++it) {
     std::string log_value =
         ElideHeaderValueForNetLog(capture_mode, it->key, it->value);
-    headers->GetList().push_back(
+    headers->Append(
         NetLogStringValue(base::StrCat({it->key, ": ", log_value})));
   }
-  dict->Set("headers", std::move(headers));
+  dict.Set("headers", std::move(headers));
   return std::move(dict);
 }
 

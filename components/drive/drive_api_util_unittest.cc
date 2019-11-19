@@ -5,7 +5,7 @@
 #include "components/drive/drive_api_util.h"
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/md5.h"
+#include "base/hash/md5.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "google_apis/drive/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"

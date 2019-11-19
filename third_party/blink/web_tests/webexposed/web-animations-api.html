@@ -11,10 +11,6 @@ test(function() {
 }, 'Element.getAnimations() should not be exposed without experimental web platform features enabled.\nThis test is expected to fail in LayoutTests/webexposed.')
 
 test(function() {
-    assert_false('Animation' in window);
-},'Animation constructor should not be exposed without experimental web platform features enabled.\nThis test is expected to fail in LayoutTests/webexposed.');
-
-test(function() {
     assert_false('AnimationTimeline' in window);
 },'Timeline should not be exposed without experimental web platform features enabled.\nThis test is expected to fail in LayoutTests/webexposed.');
 

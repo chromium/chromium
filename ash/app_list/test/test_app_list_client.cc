@@ -8,26 +8,20 @@
 
 namespace ash {
 
-TestAppListClient::TestAppListClient() : binding_(this) {}
-
-TestAppListClient::~TestAppListClient() {}
-
-mojom::AppListClientPtr TestAppListClient::CreateInterfacePtrAndBind() {
-  mojom::AppListClientPtr ptr;
-  binding_.Bind(mojo::MakeRequest(&ptr));
-  return ptr;
-}
+TestAppListClient::TestAppListClient() = default;
+TestAppListClient::~TestAppListClient() = default;
 
 void TestAppListClient::GetSearchResultContextMenuModel(
     const std::string& result_id,
     GetContextMenuModelCallback callback) {
-  std::move(callback).Run({});
+  std::move(callback).Run(nullptr);
 }
 
 void TestAppListClient::GetContextMenuModel(
+    int profile_id,
     const std::string& id,
     GetContextMenuModelCallback callback) {
-  std::move(callback).Run({});
+  std::move(callback).Run(nullptr);
 }
 
 }  // namespace ash

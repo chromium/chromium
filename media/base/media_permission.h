@@ -14,7 +14,7 @@ namespace media {
 // Interface to handle media related permission checks and requests.
 class MEDIA_EXPORT MediaPermission {
  public:
-  typedef base::Callback<void(bool)> PermissionStatusCB;
+  using PermissionStatusCB = base::OnceCallback<void(bool)>;
 
   enum Type {
     PROTECTED_MEDIA_IDENTIFIER,
@@ -28,15 +28,13 @@ class MEDIA_EXPORT MediaPermission {
   // Checks whether |type| is permitted without triggering user interaction
   // (e.g. permission prompt). The status will be |false| if the permission
   // has never been set.
-  virtual void HasPermission(
-      Type type,
-      const PermissionStatusCB& permission_status_cb) = 0;
+  virtual void HasPermission(Type type,
+                             PermissionStatusCB permission_status_cb) = 0;
 
   // Requests |type| permission. This may trigger user interaction
   // (e.g. permission prompt) if the permission has never been set.
-  virtual void RequestPermission(
-      Type type,
-      const PermissionStatusCB& permission_status_cb) = 0;
+  virtual void RequestPermission(Type type,
+                                 PermissionStatusCB permission_status_cb) = 0;
 
   // Whether to allow the use of Encrypted Media Extensions (EME), except for
   // the use of Clear Key key systems, which is always allowed as required by

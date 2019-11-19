@@ -11,7 +11,6 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/driver/sync_service_utils.h"
-#include "components/unified_consent/feature.h"
 #include "components/unified_consent/pref_names.h"
 
 #include <map>
@@ -149,14 +148,8 @@ std::unique_ptr<UrlKeyedDataCollectionConsentHelper>
 UrlKeyedDataCollectionConsentHelper::NewAnonymizedDataCollectionConsentHelper(
     PrefService* pref_service,
     syncer::SyncService* sync_service) {
-  if (IsUnifiedConsentFeatureEnabled()) {
-    return std::make_unique<PrefBasedUrlKeyedDataCollectionConsentHelper>(
-        pref_service);
-  }
-
-  return std::make_unique<SyncBasedUrlKeyedDataCollectionConsentHelper>(
-      sync_service, std::set<syncer::ModelType>(
-                        {syncer::ModelType::HISTORY_DELETE_DIRECTIVES}));
+  return std::make_unique<PrefBasedUrlKeyedDataCollectionConsentHelper>(
+      pref_service);
 }
 
 // static

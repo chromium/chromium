@@ -1,0 +1,18 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("web_time_limit_error_page") {
+  sources = [
+    "web_time_limit_error_page.cc",
+    "web_time_limit_error_page.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/app:chromium_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:resources_grit",
+    "//ui/base",
+  ]
+}

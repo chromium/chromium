@@ -11,7 +11,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/json_schema_compiler/test/simple_api.h"
 
-using namespace test::api;
+namespace crossref = test::api::crossref;
+namespace simple_api = test::api::simple_api;
 
 namespace {
 
@@ -51,7 +52,7 @@ TEST(JsonSchemaCompilerCrossrefTest, CrossrefTypePopulateAndToValue) {
 }
 
 TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamCreate) {
-  std::unique_ptr<base::ListValue> params_value(new base::ListValue());
+  auto params_value = std::make_unique<base::ListValue>();
   params_value->Append(CreateTestTypeValue());
   std::unique_ptr<crossref::TestTypeOptionalParam::Params> params(
       crossref::TestTypeOptionalParam::Params::Create(*params_value));
@@ -62,7 +63,7 @@ TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamCreate) {
 }
 
 TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamFail) {
-  std::unique_ptr<base::ListValue> params_value(new base::ListValue());
+  auto params_value = std::make_unique<base::ListValue>();
   std::unique_ptr<base::DictionaryValue> test_type_value =
       CreateTestTypeValue();
   test_type_value->RemoveWithoutPathExpansion("number", NULL);
@@ -74,7 +75,7 @@ TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamFail) {
 
 TEST(JsonSchemaCompilerCrossrefTest, GetTestType) {
   std::unique_ptr<base::DictionaryValue> value = CreateTestTypeValue();
-  std::unique_ptr<simple_api::TestType> test_type(new simple_api::TestType());
+  auto test_type = std::make_unique<simple_api::TestType>();
   EXPECT_TRUE(simple_api::TestType::Populate(*value, test_type.get()));
 
   std::unique_ptr<base::ListValue> results =

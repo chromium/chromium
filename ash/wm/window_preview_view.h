@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/window_mirror_view.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/aura/window.h"
@@ -15,7 +16,6 @@
 #include "ui/views/view.h"
 
 namespace ash {
-namespace wm {
 
 // A view that mirrors the client area of a window and all its transient
 // descendants.
@@ -43,6 +43,8 @@ class ASH_EXPORT WindowPreviewView
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowParentChanged(aura::Window* window,
+                             aura::Window* parent) override;
 
   aura::Window* window() { return window_; }
 
@@ -61,10 +63,15 @@ class ASH_EXPORT WindowPreviewView
 
   base::flat_map<aura::Window*, WindowMirrorView*> mirror_views_;
 
+  // Transient children of |window_| may be added as transients before they're
+  // actually parented; i.e. `OnTransientChildWindowAdded()` is called before
+  // `transient_child->parent()` is set. We track those here so that we can add
+  // them to the view once they're parented.
+  base::flat_set<aura::Window*> unparented_transient_children_;
+
   DISALLOW_COPY_AND_ASSIGN(WindowPreviewView);
 };
 
-}  // namespace wm
 }  // namespace ash
 
 #endif  // ASH_WM_WINDOW_PREVIEW_VIEW_H_

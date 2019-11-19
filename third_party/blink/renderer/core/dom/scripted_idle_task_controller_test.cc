@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/scoped_scheduler_overrider.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 namespace {
@@ -45,6 +44,11 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
                     Thread::IdleTask idle_task) override {
     idle_task_ = std::move(idle_task);
   }
+  void PostDelayedIdleTask(const base::Location&,
+                           base::TimeDelta,
+                           Thread::IdleTask) override {
+    NOTIMPLEMENTED();
+  }
   void PostNonNestableIdleTask(const base::Location&,
                                Thread::IdleTask) override {}
   std::unique_ptr<PageScheduler> CreatePageScheduler(
@@ -63,13 +67,17 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
 
   void RemoveTaskObserver(Thread::TaskObserver* task_observer) override {}
 
-  void AddRAILModeObserver(scheduler::WebRAILModeObserver*) override {}
+  void AddRAILModeObserver(RAILModeObserver*) override {}
+
+  void RemoveRAILModeObserver(RAILModeObserver const*) override {}
 
   scheduler::NonMainThreadSchedulerImpl* AsNonMainThreadScheduler() override {
     return nullptr;
   }
 
-  void RunIdleTask() { std::move(idle_task_).Run(TimeTicks()); }
+  void SetV8Isolate(v8::Isolate* isolate) override {}
+
+  void RunIdleTask() { std::move(idle_task_).Run(base::TimeTicks()); }
   bool HasIdleTask() const { return !!idle_task_; }
 
  private:

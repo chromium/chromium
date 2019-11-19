@@ -15,7 +15,7 @@ MockAndroidOverlay::Callbacks::Callbacks() = default;
 MockAndroidOverlay::Callbacks::Callbacks(const Callbacks&) = default;
 MockAndroidOverlay::Callbacks::~Callbacks() = default;
 
-MockAndroidOverlay::MockAndroidOverlay() : weak_factory_(this) {}
+MockAndroidOverlay::MockAndroidOverlay() {}
 
 MockAndroidOverlay::~MockAndroidOverlay() {}
 

@@ -25,39 +25,46 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_radial_gradient.h"
 #include "third_party/blink/renderer/core/svg/radial_gradient_attributes.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
-inline SVGRadialGradientElement::SVGRadialGradientElement(Document& document)
+SVGRadialGradientElement::SVGRadialGradientElement(Document& document)
     : SVGGradientElement(svg_names::kRadialGradientTag, document),
       // Spec: If the cx/cy/r attribute is not specified, the effect is as if a
       // value of "50%" were specified.
-      cx_(SVGAnimatedLength::Create(this,
-                                    svg_names::kCxAttr,
-                                    SVGLengthMode::kWidth,
-                                    SVGLength::Initial::kPercent50)),
-      cy_(SVGAnimatedLength::Create(this,
-                                    svg_names::kCyAttr,
-                                    SVGLengthMode::kHeight,
-                                    SVGLength::Initial::kPercent50)),
-      r_(SVGAnimatedLength::Create(this,
-                                   svg_names::kRAttr,
-                                   SVGLengthMode::kOther,
-                                   SVGLength::Initial::kPercent50)),
-      fx_(SVGAnimatedLength::Create(this,
-                                    svg_names::kFxAttr,
-                                    SVGLengthMode::kWidth,
-                                    SVGLength::Initial::kPercent50)),
-      fy_(SVGAnimatedLength::Create(this,
-                                    svg_names::kFyAttr,
-                                    SVGLengthMode::kHeight,
-                                    SVGLength::Initial::kPercent50)),
+      cx_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kCxAttr,
+          SVGLengthMode::kWidth,
+          SVGLength::Initial::kPercent50)),
+      cy_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kCyAttr,
+          SVGLengthMode::kHeight,
+          SVGLength::Initial::kPercent50)),
+      r_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kRAttr,
+          SVGLengthMode::kOther,
+          SVGLength::Initial::kPercent50)),
+      fx_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kFxAttr,
+          SVGLengthMode::kWidth,
+          SVGLength::Initial::kPercent50)),
+      fy_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kFyAttr,
+          SVGLengthMode::kHeight,
+          SVGLength::Initial::kPercent50)),
       // SVG2-Draft Spec: If the fr attribute is not specified, the effect is as
       // if a value of "0%" were specified.
-      fr_(SVGAnimatedLength::Create(this,
-                                    svg_names::kFrAttr,
-                                    SVGLengthMode::kOther,
-                                    SVGLength::Initial::kPercent0)) {
+      fr_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kFrAttr,
+          SVGLengthMode::kOther,
+          SVGLength::Initial::kPercent0)) {
   AddToPropertyMap(cx_);
   AddToPropertyMap(cy_);
   AddToPropertyMap(r_);
@@ -76,8 +83,6 @@ void SVGRadialGradientElement::Trace(blink::Visitor* visitor) {
   SVGGradientElement::Trace(visitor);
 }
 
-DEFINE_NODE_FACTORY(SVGRadialGradientElement)
-
 void SVGRadialGradientElement::SvgAttributeChanged(
     const QualifiedName& attr_name) {
   if (attr_name == svg_names::kCxAttr || attr_name == svg_names::kCyAttr ||
@@ -92,8 +97,8 @@ void SVGRadialGradientElement::SvgAttributeChanged(
   SVGGradientElement::SvgAttributeChanged(attr_name);
 }
 
-LayoutObject* SVGRadialGradientElement::CreateLayoutObject(
-    const ComputedStyle&) {
+LayoutObject* SVGRadialGradientElement::CreateLayoutObject(const ComputedStyle&,
+                                                           LegacyLayout) {
   return new LayoutSVGResourceRadialGradient(this);
 }
 

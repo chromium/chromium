@@ -19,7 +19,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -97,11 +97,9 @@ class PhishingTermFeatureExtractorTest : public ::testing::Test {
                        std::set<uint32_t>* shingle_hashes) {
     success_ = false;
     extractor_->ExtractFeatures(
-        page_text,
-        features,
-        shingle_hashes,
-        base::Bind(&PhishingTermFeatureExtractorTest::ExtractionDone,
-                   base::Unretained(this)));
+        page_text, features, shingle_hashes,
+        base::BindOnce(&PhishingTermFeatureExtractorTest::ExtractionDone,
+                       base::Unretained(this)));
     active_run_loop_ = std::make_unique<base::RunLoop>();
     active_run_loop_->Run();
     return success_;
@@ -111,11 +109,9 @@ class PhishingTermFeatureExtractorTest : public ::testing::Test {
                               FeatureMap* features,
                               std::set<uint32_t>* shingle_hashes) {
     extractor_->ExtractFeatures(
-        page_text,
-        features,
-        shingle_hashes,
-        base::Bind(&PhishingTermFeatureExtractorTest::ExtractionDone,
-                   base::Unretained(this)));
+        page_text, features, shingle_hashes,
+        base::BindOnce(&PhishingTermFeatureExtractorTest::ExtractionDone,
+                       base::Unretained(this)));
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&PhishingTermFeatureExtractorTest::QuitExtraction,
@@ -135,7 +131,7 @@ class PhishingTermFeatureExtractorTest : public ::testing::Test {
     active_run_loop_->QuitWhenIdle();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> active_run_loop_;
   MockFeatureExtractorClock clock_;
   std::unique_ptr<PhishingTermFeatureExtractor> extractor_;

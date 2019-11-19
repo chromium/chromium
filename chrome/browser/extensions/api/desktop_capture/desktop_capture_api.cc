@@ -9,7 +9,6 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/origin_util.h"
@@ -42,8 +41,8 @@ bool DesktopCaptureChooseDesktopMediaFunction::RunAsync() {
   EXTENSION_FUNCTION_VALIDATE(args_->GetSize() > 0);
 
   EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(0, &request_id_));
-  DesktopCaptureRequestsRegistry::GetInstance()->AddRequest(
-      render_frame_host()->GetProcess()->GetID(), request_id_, this);
+  DesktopCaptureRequestsRegistry::GetInstance()->AddRequest(source_process_id(),
+                                                            request_id_, this);
 
   args_->Remove(0, NULL);
 
@@ -84,7 +83,7 @@ bool DesktopCaptureChooseDesktopMediaFunction::RunAsync() {
     }
 
     if (!ExtensionTabUtil::GetTabById(*(params->target_tab->id), GetProfile(),
-                                      true, NULL, NULL, &web_contents, NULL)) {
+                                      true, &web_contents)) {
       error_ = kDesktopCaptureApiInvalidTabIdError;
       return false;
     }

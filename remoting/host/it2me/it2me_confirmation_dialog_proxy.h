@@ -37,7 +37,7 @@ class It2MeConfirmationDialogProxy : public It2MeConfirmationDialog {
 
   std::unique_ptr<Core> core_;
   It2MeConfirmationDialog::ResultCallback callback_;
-  base::WeakPtrFactory<It2MeConfirmationDialogProxy> weak_factory_;
+  base::WeakPtrFactory<It2MeConfirmationDialogProxy> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(It2MeConfirmationDialogProxy);
 };

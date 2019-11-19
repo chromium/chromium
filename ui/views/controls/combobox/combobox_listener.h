@@ -24,7 +24,7 @@ class VIEWS_EXPORT ComboboxListener {
   virtual void OnPerformAction(Combobox* combobox) = 0;
 
  protected:
-  virtual ~ComboboxListener() {}
+  virtual ~ComboboxListener() = default;
 };
 
 }  // namespace views

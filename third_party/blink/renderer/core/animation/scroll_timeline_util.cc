@@ -57,8 +57,10 @@ std::unique_ptr<CompositorScrollTimeline> ToCompositorScrollTimeline(
 
 base::Optional<CompositorElementId> GetCompositorScrollElementId(
     const Node* node) {
-  if (!node || !node->GetLayoutObject() || !node->GetLayoutObject()->UniqueId())
+  if (!node || !node->GetLayoutObject() ||
+      !node->GetLayoutObject()->FirstFragment().PaintProperties()) {
     return base::nullopt;
+  }
   return CompositorElementIdFromUniqueObjectId(
       node->GetLayoutObject()->UniqueId(),
       CompositorElementIdNamespace::kScroll);

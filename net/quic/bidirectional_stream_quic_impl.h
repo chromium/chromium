@@ -128,7 +128,7 @@ class NET_EXPORT_PRIVATE BidirectionalStreamQuicImpl
   // True when callbacks to the delegate may be invoked synchronously.
   bool may_invoke_callbacks_;
 
-  base::WeakPtrFactory<BidirectionalStreamQuicImpl> weak_factory_;
+  base::WeakPtrFactory<BidirectionalStreamQuicImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BidirectionalStreamQuicImpl);
 };

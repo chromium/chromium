@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
+#include "components/dom_distiller/core/distiller_ui_handle.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -24,10 +25,10 @@ class DomDistillerContextKeyedService : public KeyedService,
                                         public DomDistillerService {
  public:
   DomDistillerContextKeyedService(
-      std::unique_ptr<DomDistillerStoreInterface> store,
       std::unique_ptr<DistillerFactory> distiller_factory,
       std::unique_ptr<DistillerPageFactory> distiller_page_factory,
-      std::unique_ptr<DistilledPagePrefs> distilled_page_prefs);
+      std::unique_ptr<DistilledPagePrefs> distilled_page_prefs,
+      std::unique_ptr<DistillerUIHandle> distiller_ui_handle);
   ~DomDistillerContextKeyedService() override {}
 
  private:

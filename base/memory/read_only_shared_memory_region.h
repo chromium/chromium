@@ -39,6 +39,7 @@ class BASE_EXPORT ReadOnlySharedMemoryRegion {
   // mojo/public/cpp/base/shared_memory_utils.h for creating a shared memory
   // region from a an unprivileged process where a broker must be used.
   static MappedReadOnlyRegion Create(size_t size);
+  using CreateFunction = decltype(Create);
 
   // Returns a ReadOnlySharedMemoryRegion built from a platform-specific handle
   // that was taken from another ReadOnlySharedMemoryRegion instance. Returns an
@@ -101,20 +102,22 @@ class BASE_EXPORT ReadOnlySharedMemoryRegion {
     return handle_.GetGUID();
   }
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest,
-                           SerializeSharedMemoryRegionMetadata);
-  friend class FieldTrialList;
-
-  explicit ReadOnlySharedMemoryRegion(
-      subtle::PlatformSharedMemoryRegion handle);
-
   // Returns a platform shared memory handle. |this| remains the owner of the
   // handle.
   subtle::PlatformSharedMemoryRegion::PlatformHandle GetPlatformHandle() const {
     DCHECK(IsValid());
     return handle_.GetPlatformHandle();
   }
+
+ private:
+  friend class SharedMemoryHooks;
+
+  explicit ReadOnlySharedMemoryRegion(
+      subtle::PlatformSharedMemoryRegion handle);
+
+  static void set_create_hook(CreateFunction* hook) { create_hook_ = hook; }
+
+  static CreateFunction* create_hook_;
 
   subtle::PlatformSharedMemoryRegion handle_;
 
@@ -128,7 +131,7 @@ struct MappedReadOnlyRegion {
   // Helper function to check return value of
   // ReadOnlySharedMemoryRegion::Create(). |region| and |mapping| either both
   // valid or invalid.
-  bool IsValid() {
+  bool IsValid() const {
     DCHECK_EQ(region.IsValid(), mapping.IsValid());
     return region.IsValid() && mapping.IsValid();
   }

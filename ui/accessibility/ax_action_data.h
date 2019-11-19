@@ -5,7 +5,7 @@
 #ifndef UI_ACCESSIBILITY_AX_ACTION_DATA_H_
 #define UI_ACCESSIBILITY_AX_ACTION_DATA_H_
 
-#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect.h"
@@ -19,17 +19,14 @@ struct AX_EXPORT AXActionData {
   AXActionData(const AXActionData& other);
   ~AXActionData();
 
-  // Return a string representation of this data, for debugging.
-  std::string ToString() const;
-
   // This is a simple serializable struct. All member variables should be
   // public and copyable.
 
-  // See the ax::mojom::Action enums in ax_enums.idl for explanations of which
+  // See the ax::mojom::Action enums in ax_enums.mojom for explanations of which
   // parameters apply.
 
   // The action to take.
-  ax::mojom::Action action = ax::mojom::Action::kNone;
+  ax::mojom::Action action;
 
   // The ID of the tree that this action should be performed on.
   ui::AXTreeID target_tree_id = ui::AXTreeIDUnknown();
@@ -73,7 +70,12 @@ struct AX_EXPORT AXActionData {
   std::string value;
 
   // The event to fire in response to a HIT_TEST action.
-  ax::mojom::Event hit_test_event_to_fire = ax::mojom::Event::kNone;
+  ax::mojom::Event hit_test_event_to_fire;
+
+  // The scroll alignment to use for a SCROLL_TO_MAKE_VISIBLE action. The
+  // scroll alignment controls where a node is scrolled within the viewport.
+  ax::mojom::ScrollAlignment horizontal_scroll_alignment;
+  ax::mojom::ScrollAlignment vertical_scroll_alignment;
 };
 
 }  // namespace ui

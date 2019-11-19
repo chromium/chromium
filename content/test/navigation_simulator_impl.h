@@ -10,18 +10,19 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
-#include "content/browser/frame_host/navigation_handle_impl.h"
+#include "content/browser/frame_host/navigation_request.h"
 #include "content/common/content_security_policy/csp_disposition_enum.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/referrer.h"
 #include "content/public/test/navigation_simulator.h"
-#include "mojo/public/cpp/bindings/associated_interface_request.h"
+#include "content/test/test_render_frame_host.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/blink/public/mojom/frame/document_interface_broker.mojom.h"
+#include "third_party/blink/public/mojom/referrer.mojom.h"
 #include "url/gurl.h"
 
 struct FrameHostMsg_DidCommitProvisionalLoad_Params;
@@ -29,7 +30,6 @@ struct FrameHostMsg_DidCommitProvisionalLoad_Params;
 namespace content {
 
 class FrameTreeNode;
-class NavigationHandleImpl;
 class NavigationRequest;
 class TestRenderFrameHost;
 class WebContentsImpl;
@@ -58,12 +58,18 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   static std::unique_ptr<NavigationSimulatorImpl> CreateFromPending(
       WebContents* contents);
 
+  // Creates a NavigationSimulator for an already-started navigation happening
+  // in |frame_tree_node|. Can be used to drive the navigation to completion.
+  static std::unique_ptr<NavigationSimulatorImpl> CreateFromPendingInFrame(
+      FrameTreeNode* frame_tree_node);
+
   // NavigationSimulator implementation.
   void Start() override;
   void Redirect(const GURL& new_url) override;
   void ReadyToCommit() override;
   void Commit() override;
   void AbortCommit() override;
+  void AbortFromRenderer() override;
   void FailWithResponseHeaders(
       int error_code,
       scoped_refptr<net::HttpResponseHeaders> response_headers) override;
@@ -79,18 +85,27 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void SetReloadType(ReloadType reload_type) override;
   void SetMethod(const std::string& method) override;
   void SetIsFormSubmission(bool is_form_submission) override;
-  void SetReferrer(const Referrer& referrer) override;
+  void SetWasInitiatedByLinkClick(bool was_initiated_by_link_click) override;
+  void SetReferrer(blink::mojom::ReferrerPtr referrer) override;
   void SetSocketAddress(const net::IPEndPoint& remote_endpoint) override;
+  void SetWasFetchedViaCache(bool was_fetched_via_cache) override;
   void SetIsSignedExchangeInnerResponse(
       bool is_signed_exchange_inner_response) override;
   void SetInterfaceProviderRequest(
       service_manager::mojom::InterfaceProviderRequest request) override;
   void SetContentsMimeType(const std::string& contents_mime_type) override;
   void SetAutoAdvance(bool auto_advance) override;
+  void SetSSLInfo(const net::SSLInfo& ssl_info) override;
 
   NavigationThrottle::ThrottleCheckResult GetLastThrottleCheckResult() override;
-  NavigationHandleImpl* GetNavigationHandle() const override;
-  content::GlobalRequestID GetGlobalRequestID() const override;
+  NavigationRequest* GetNavigationHandle() override;
+  content::GlobalRequestID GetGlobalRequestID() override;
+
+  void SetKeepLoading(bool keep_loading) override;
+  void StopLoading() override;
+  void FailLoading(const GURL& url,
+                   int error_code,
+                   const base::string16& error_description) override;
 
   // Additional utilites usable only inside content/.
 
@@ -110,15 +125,45 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // Set DidCommit*Params history_list_was_cleared flag to |history_cleared|.
   void set_history_list_was_cleared(bool history_cleared);
 
-  // Manually force the value of did_create_new__entry flag in DidCommit*Params
+  // Manually force the value of did_create_new_entry flag in DidCommit*Params
   // to |did_create_new_entry|.
   void set_did_create_new_entry(bool did_create_new_entry);
+
+  // Manually force the value of should_replace_current_entry flag in
+  // DidCommit*Params to |should_replace_current_entry|.
+  void set_should_replace_current_entry(bool should_replace_current_entry) {
+    should_replace_current_entry_ = should_replace_current_entry;
+  }
+
+  // Manually force the value of intended_as_new_entry flag in DidCommit*Params
+  // to |intended_as_new_entry|.
+  void set_intended_as_new_entry(bool intended_as_new_entry) {
+    intended_as_new_entry_ = intended_as_new_entry;
+  }
 
   void set_http_connection_info(net::HttpResponseInfo::ConnectionInfo info) {
     http_connection_info_ = info;
   }
 
-  void set_ssl_info(net::SSLInfo ssl_info) { ssl_info_ = ssl_info; }
+  // Whether to drop the swap out ack of the previous RenderFrameHost during
+  // cross-process navigations. By default this is false, set to true if you
+  // want the old RenderFrameHost to be left in a pending swap out state.
+  void set_drop_swap_out_ack(bool drop_swap_out_ack) {
+    drop_swap_out_ack_ = drop_swap_out_ack;
+  }
+
+  // Whether to drop the BeforeUnloadACK of the current RenderFrameHost at the
+  // beginning of a browser-initiated navigation. By default this is false, set
+  // to true if you want to simulate the BeforeUnloadACK manually.
+  void set_block_on_before_unload_ack(bool block_on_before_unload_ack) {
+    block_on_before_unload_ack_ = block_on_before_unload_ack;
+  }
+
+  void set_page_state(const PageState& page_state) { page_state_ = page_state; }
+
+  void set_origin(const url::Origin& origin) { origin_ = origin; }
+
+  void SetIsPostWithId(int64_t post_id);
 
  private:
   NavigationSimulatorImpl(const GURL& original_url,
@@ -126,9 +171,9 @@ class NavigationSimulatorImpl : public NavigationSimulator,
                           WebContentsImpl* web_contents,
                           TestRenderFrameHost* render_frame_host);
 
-  // Adds a test navigation throttle to |handle| which sanity checks various
+  // Adds a test navigation throttle to |request| which sanity checks various
   // callbacks have been properly called.
-  void RegisterTestThrottle(NavigationHandle* handle);
+  void RegisterTestThrottle(NavigationRequest* request);
 
   // Initializes a NavigationSimulator from an existing NavigationRequest. This
   // should only be needed if a navigation was started without a valid
@@ -171,8 +216,8 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void OnThrottleChecksComplete(NavigationThrottle::ThrottleCheckResult result);
 
   // Helper method to set the OnThrottleChecksComplete callback on the
-  // NavigationHandle.
-  void PrepareCompleteCallbackOnHandle(NavigationHandleImpl* handle);
+  // NavigationRequest.
+  void PrepareCompleteCallbackOnRequest();
 
   // Check if the navigation corresponds to a same-document navigation.
   // Only use on renderer-initiated navigations.
@@ -220,37 +265,49 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   // Note: additional parameters to modify the navigation should be properly
   // initialized (if needed) in InitializeFromStartedRequest.
+  GURL original_url_;
   GURL navigation_url_;
   net::IPEndPoint remote_endpoint_;
+  bool was_fetched_via_cache_ = false;
   bool is_signed_exchange_inner_response_ = false;
   std::string initial_method_;
   bool is_form_submission_ = false;
+  bool was_initiated_by_link_click_ = false;
   bool browser_initiated_;
   bool same_document_ = false;
-  Referrer referrer_;
+  TestRenderFrameHost::LoadingScenario loading_scenario_ =
+      TestRenderFrameHost::LoadingScenario::kOther;
+  blink::mojom::ReferrerPtr referrer_;
   ui::PageTransition transition_;
   ReloadType reload_type_ = ReloadType::NONE;
   int session_history_offset_ = 0;
   bool has_user_gesture_ = true;
   service_manager::mojom::InterfaceProviderRequest interface_provider_request_;
-  blink::mojom::DocumentInterfaceBrokerRequest
-      document_interface_broker_content_request_;
-  blink::mojom::DocumentInterfaceBrokerRequest
-      document_interface_broker_blink_request_;
+  mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
+      browser_interface_broker_receiver_;
   std::string contents_mime_type_;
   CSPDisposition should_check_main_world_csp_ = CSPDisposition::CHECK;
   net::HttpResponseInfo::ConnectionInfo http_connection_info_ =
       net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN;
   base::Optional<net::SSLInfo> ssl_info_;
+  base::Optional<PageState> page_state_;
+  base::Optional<url::Origin> origin_;
+  int64_t post_id_ = -1;
 
   bool auto_advance_ = true;
+  bool drop_swap_out_ack_ = false;
+  bool block_on_before_unload_ack_ = false;
+  bool keep_loading_ = false;
 
   // Generic params structure used for fully customized browser initiated
   // navigation requests. Only valid if explicitely provided.
   NavigationController::LoadURLParams* load_url_params_;
 
   bool history_list_was_cleared_ = false;
+  bool should_replace_current_entry_ = false;
   base::Optional<bool> did_create_new_entry_;
+  base::Optional<bool> intended_as_new_entry_;
+  bool was_aborted_ = false;
 
   // These are used to sanity check the content/public/ API calls emitted as
   // part of the navigation.
@@ -286,10 +343,10 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // cancellation coming from the renderer process side. This member interface
   // will never be bound.
   // Only used when PerNavigationMojoInterface is enabled.
-  mojo::AssociatedInterfaceRequest<mojom::NavigationClient>
-      navigation_client_request_;
+  mojo::PendingAssociatedReceiver<mojom::NavigationClient>
+      navigation_client_receiver_;
 
-  base::WeakPtrFactory<NavigationSimulatorImpl> weak_factory_;
+  base::WeakPtrFactory<NavigationSimulatorImpl> weak_factory_{this};
 };
 
 }  // namespace content

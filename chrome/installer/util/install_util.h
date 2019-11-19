@@ -16,6 +16,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/version.h"
@@ -80,9 +81,6 @@ class InstallUtil {
   // Test to see if a Start menu shortcut exists with the right toast activator
   // CLSID registered.
   static bool IsStartMenuShortcutWithActivatorGuidInstalled();
-
-  // Returns a string representation of |guid|.
-  static base::string16 String16FromGUID(const GUID& guid);
 
   // Returns the toast activator registry path.
   static base::string16 GetToastActivatorRegistryPath();
@@ -166,9 +164,8 @@ class InstallUtil {
   static base::string16 GetCurrentDate();
 
   // Returns the highest Chrome version that was installed prior to a downgrade,
-  // or an invalid Version if Chrome was not previously downgraded from a newer
-  // version.
-  static base::Version GetDowngradeVersion();
+  // or no value if Chrome was not previously downgraded from a newer version.
+  static base::Optional<base::Version> GetDowngradeVersion();
 
   // Adds or removes downgrade version registry value. This function should only
   // be used for Chrome install.

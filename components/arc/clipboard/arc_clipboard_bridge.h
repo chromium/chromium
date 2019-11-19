@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
-#include "components/arc/common/clipboard.mojom.h"
+#include "components/arc/mojom/clipboard.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 
+#include <memory>
+
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
@@ -55,7 +57,7 @@ bool ProtocolHandlerRegistryFactory::ServiceIsNULLWhileTesting() const {
 KeyedService* ProtocolHandlerRegistryFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   ProtocolHandlerRegistry* registry = new ProtocolHandlerRegistry(
-      context, new ProtocolHandlerRegistry::Delegate());
+      context, std::make_unique<ProtocolHandlerRegistry::Delegate>());
 
 #if defined(OS_CHROMEOS)
   // If installing defaults, they must be installed prior calling

@@ -84,45 +84,45 @@ ChildListMutationAccumulator* ChildListMutationAccumulator::GetOrCreate(
   return accumulator;
 }
 
-inline bool ChildListMutationAccumulator::IsAddedNodeInOrder(Node* child) {
-  return IsEmpty() || (last_added_ == child->previousSibling() &&
-                       next_sibling_ == child->nextSibling());
+inline bool ChildListMutationAccumulator::IsAddedNodeInOrder(Node& child) {
+  return IsEmpty() || (last_added_ == child.previousSibling() &&
+                       next_sibling_ == child.nextSibling());
 }
 
-void ChildListMutationAccumulator::ChildAdded(Node* child) {
+void ChildListMutationAccumulator::ChildAdded(Node& child) {
   DCHECK(HasObservers());
 
   if (!IsAddedNodeInOrder(child))
     EnqueueMutationRecord();
 
   if (IsEmpty()) {
-    previous_sibling_ = child->previousSibling();
-    next_sibling_ = child->nextSibling();
+    previous_sibling_ = child.previousSibling();
+    next_sibling_ = child.nextSibling();
   }
 
-  last_added_ = child;
-  added_nodes_.push_back(child);
+  last_added_ = &child;
+  added_nodes_.push_back(&child);
 }
 
-inline bool ChildListMutationAccumulator::IsRemovedNodeInOrder(Node* child) {
-  return IsEmpty() || next_sibling_ == child;
+inline bool ChildListMutationAccumulator::IsRemovedNodeInOrder(Node& child) {
+  return IsEmpty() || next_sibling_ == &child;
 }
 
-void ChildListMutationAccumulator::WillRemoveChild(Node* child) {
+void ChildListMutationAccumulator::WillRemoveChild(Node& child) {
   DCHECK(HasObservers());
 
   if (!added_nodes_.IsEmpty() || !IsRemovedNodeInOrder(child))
     EnqueueMutationRecord();
 
   if (IsEmpty()) {
-    previous_sibling_ = child->previousSibling();
-    next_sibling_ = child->nextSibling();
-    last_added_ = child->previousSibling();
+    previous_sibling_ = child.previousSibling();
+    next_sibling_ = child.nextSibling();
+    last_added_ = child.previousSibling();
   } else {
-    next_sibling_ = child->nextSibling();
+    next_sibling_ = child.nextSibling();
   }
 
-  removed_nodes_.push_back(child);
+  removed_nodes_.push_back(&child);
 }
 
 void ChildListMutationAccumulator::EnqueueMutationRecord() {

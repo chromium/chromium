@@ -68,10 +68,14 @@ struct ShortcutMatch {
         type(static_cast<AutocompleteMatch::Type>(shortcut->match_core.type)) {}
 
   int relevance;
+  // To satisfy |CompareWithDemoteByType<>::operator()|.
+  size_t subrelevance = 0;
   GURL stripped_destination_url;
   const ShortcutsDatabase::Shortcut* shortcut;
   base::string16 contents;
   AutocompleteMatch::Type type;
+
+  AutocompleteMatch::Type GetDemotionType() const { return type; }
 };
 
 // Sorts |matches| by destination, taking into account demotions based on
@@ -118,7 +122,7 @@ void ShortcutsProvider::Start(const AutocompleteInput& input,
   matches_.clear();
 
   if (input.from_omnibox_focus() ||
-      (input.type() == metrics::OmniboxInputType::INVALID) ||
+      (input.type() == metrics::OmniboxInputType::EMPTY) ||
       input.text().empty() || !initialized_)
     return;
 
@@ -153,7 +157,7 @@ void ShortcutsProvider::DeleteMatch(const AutocompleteMatch& match) {
   // second call to DeleteShortcutsWithURL(), which is harmless.
   history::HistoryService* const history_service = client_->GetHistoryService();
   DCHECK(history_service);
-  history_service->DeleteURL(url);
+  history_service->DeleteURLs({url});
 }
 
 ShortcutsProvider::~ShortcutsProvider() {
@@ -203,7 +207,7 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input) {
   // Remove duplicates.  This is important because it's common to have multiple
   // shortcuts pointing to the same URL, e.g., ma, mai, and mail all pointing
   // to mail.google.com, so typing "m" will return them all.  If we then simply
-  // clamp to kMaxMatches and let the SortAndDedupMatches take care of
+  // clamp to provider_max_matches_ and let the SortAndDedupMatches take care of
   // collapsing the duplicates, we'll effectively only be returning one match,
   // instead of several possibilities.
   //
@@ -217,7 +221,7 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input) {
   std::partial_sort(
       shortcut_matches.begin(),
       shortcut_matches.begin() +
-          std::min(AutocompleteProvider::kMaxMatches, shortcut_matches.size()),
+          std::min(provider_max_matches_, shortcut_matches.size()),
       shortcut_matches.end(),
       [](const ShortcutMatch& elem1, const ShortcutMatch& elem2) {
         // Ensure a stable sort by sorting equal-relevance matches
@@ -226,21 +230,18 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input) {
                    ? elem1.contents < elem2.contents
                    : elem1.relevance > elem2.relevance;
       });
-  if (shortcut_matches.size() > AutocompleteProvider::kMaxMatches) {
-    shortcut_matches.erase(
-        shortcut_matches.begin() + AutocompleteProvider::kMaxMatches,
-        shortcut_matches.end());
+  if (shortcut_matches.size() > provider_max_matches_) {
+    shortcut_matches.erase(shortcut_matches.begin() + provider_max_matches_,
+                           shortcut_matches.end());
   }
   // Create and initialize autocomplete matches from shortcut matches.
   // Also guarantee that all relevance scores are decreasing (but do not assign
   // any scores below 1).
-  WordMap terms_map(CreateWordMapForString(term_string));
   matches_.reserve(shortcut_matches.size());
   for (ShortcutMatch& match : shortcut_matches) {
     max_relevance = std::min(max_relevance, match.relevance);
     matches_.push_back(ShortcutToACMatch(*match.shortcut, max_relevance, input,
-                                         fixed_up_input, term_string,
-                                         terms_map));
+                                         fixed_up_input, term_string));
     if (max_relevance > 1)
       --max_relevance;
   }
@@ -251,8 +252,7 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
     int relevance,
     const AutocompleteInput& input,
     const base::string16& fixed_up_input_text,
-    const base::string16 term_string,
-    const WordMap& terms_map) {
+    const base::string16 term_string) {
   DCHECK(!input.text().empty());
   AutocompleteMatch match;
   match.provider = this;
@@ -261,6 +261,8 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
   match.fill_into_edit = shortcut.match_core.fill_into_edit;
   match.destination_url = shortcut.match_core.destination_url;
   DCHECK(match.destination_url.is_valid());
+  match.document_type = static_cast<AutocompleteMatch::DocumentType>(
+      shortcut.match_core.document_type);
   match.contents = shortcut.match_core.contents;
   match.contents_class = AutocompleteMatch::ClassificationsFromString(
       shortcut.match_core.contents_class);
@@ -295,7 +297,18 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
       base::StartsWith(base::UTF16ToUTF8(input.text()),
                        base::StrCat({base::UTF16ToUTF8(match.keyword), " "}),
                        base::CompareCase::INSENSITIVE_ASCII);
-
+  if (is_search_type) {
+    const TemplateURL* template_url =
+        client_->GetTemplateURLService()->GetDefaultSearchProvider();
+    match.from_keyword =
+        // Either the default search provider is disabled,
+        !template_url ||
+        // or the match is not from the default search provider,
+        match.keyword != template_url->keyword() ||
+        // or keyword mode was invoked explicitly and the keyword in the input
+        // is also of the default search provider.
+        (input.prefer_keyword() && keyword_matches);
+  }
   // True if input is in keyword mode and the match is a URL suggestion or the
   // match has a different keyword.
   bool would_cause_leaving_keyword_mode =
@@ -322,20 +335,18 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
         match.inline_autocompletion =
             match.fill_into_edit.substr(inline_autocomplete_offset);
         match.allowed_to_be_default_match =
-            !HistoryProvider::PreventInlineAutocomplete(input) ||
-            match.inline_autocompletion.empty();
+            AutocompleteMatch::AllowedToBeDefault(input, match);
       }
     }
   }
 
   // Try to mark pieces of the contents and description as matches if they
   // appear in |input.text()|.
-  if (!terms_map.empty()) {
-    match.contents_class =
-        ClassifyAllMatchesInString(term_string, terms_map, match.contents,
-                                   is_search_type, match.contents_class);
+  if (!term_string.empty()) {
+    match.contents_class = ClassifyAllMatchesInString(
+        term_string, match.contents, is_search_type, match.contents_class);
     match.description_class = ClassifyAllMatchesInString(
-        term_string, terms_map, match.description,
+        term_string, match.description,
         /*text_is_search_query=*/false, match.description_class);
   }
   return match;

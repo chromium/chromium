@@ -33,18 +33,16 @@
 
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_options_collection.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
-inline HTMLDataListElement::HTMLDataListElement(Document& document)
-    : HTMLElement(html_names::kDatalistTag, document) {}
-
-HTMLDataListElement* HTMLDataListElement::Create(Document& document) {
+HTMLDataListElement::HTMLDataListElement(Document& document)
+    : HTMLElement(html_names::kDatalistTag, document) {
   UseCounter::Count(document, WebFeature::kDataListElement);
-  return MakeGarbageCollected<HTMLDataListElement>(document);
 }
 
 HTMLDataListOptionsCollection* HTMLDataListElement::options() {
@@ -61,6 +59,7 @@ void HTMLDataListElement::ChildrenChanged(const ChildrenChange& change) {
 }
 
 void HTMLDataListElement::FinishParsingChildren() {
+  HTMLElement::FinishParsingChildren();
   GetTreeScope().GetIdTargetObserverRegistry().NotifyObservers(
       GetIdAttribute());
 }

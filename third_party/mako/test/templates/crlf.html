@@ -1,0 +1,19 @@
+<html>
+
+<%page args="a=['foo',
+                'bar']"/>
+
+like the name says.
+
+    % for x in [1,2,3]:
+        ${x}\
+    % endfor
+
+${trumpeter == 'Miles' and trumpeter or \
+      'Dizzy'}
+
+<%def name="hi()">
+    hi!
+</%def>
+
+</html>

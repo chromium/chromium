@@ -14,7 +14,7 @@
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_chooser.h"
-#include "third_party/blink/public/platform/modules/bluetooth/web_bluetooth.mojom.h"
+#include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 namespace device {
 class BluetoothAdapter;
@@ -48,7 +48,7 @@ class CONTENT_EXPORT BluetoothDeviceChooserController final {
   BluetoothDeviceChooserController(
       WebBluetoothServiceImpl* web_bluetooth_service_,
       RenderFrameHost* render_frame_host,
-      device::BluetoothAdapter* adapter);
+      scoped_refptr<device::BluetoothAdapter> adapter);
   ~BluetoothDeviceChooserController();
 
   // This function performs the following checks before starting a discovery
@@ -127,7 +127,7 @@ class CONTENT_EXPORT BluetoothDeviceChooserController final {
   static int64_t scan_duration_;
 
   // The adapter used to get existing devices and start a discovery session.
-  device::BluetoothAdapter* adapter_;
+  scoped_refptr<device::BluetoothAdapter> adapter_;
   // The WebBluetoothServiceImpl that owns this instance.
   WebBluetoothServiceImpl* web_bluetooth_service_;
   // The RenderFrameHost that owns web_bluetooth_service_.
@@ -165,7 +165,8 @@ class CONTENT_EXPORT BluetoothDeviceChooserController final {
   // than we do.
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<BluetoothDeviceChooserController> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothDeviceChooserController> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace content

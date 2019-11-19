@@ -1,0 +1,85 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/permissions/permission_status.mojom";
+
+enum PermissionName {
+  GEOLOCATION,
+  NOTIFICATIONS,
+  MIDI,
+  PROTECTED_MEDIA_IDENTIFIER,
+  DURABLE_STORAGE,
+  AUDIO_CAPTURE,
+  VIDEO_CAPTURE,
+  BACKGROUND_SYNC,
+  SENSORS,
+  ACCESSIBILITY_EVENTS,
+  CLIPBOARD_READ,
+  CLIPBOARD_WRITE,
+  PAYMENT_HANDLER,
+  BACKGROUND_FETCH,
+  IDLE_DETECTION,
+  PERIODIC_BACKGROUND_SYNC,
+  WAKE_LOCK,
+  NFC,
+};
+
+// This is similar to WakeLockType in modules/wake_lock/wake_lock.idl.
+// We also have device.mojom.WakeLockType, but it has more types than what we
+// handle in the Wake Lock API.
+enum WakeLockType {
+  kScreen,
+  kSystem,
+};
+
+struct MidiPermissionDescriptor {
+  bool sysex;
+};
+
+struct ClipboardPermissionDescriptor {
+  bool allowWithoutGesture;
+};
+
+struct WakeLockPermissionDescriptor {
+  WakeLockType type;
+};
+
+// Union of possible extensions to the base PermissionDescriptor type.
+union PermissionDescriptorExtension {
+  MidiPermissionDescriptor midi;
+  ClipboardPermissionDescriptor clipboard;
+  WakeLockPermissionDescriptor wake_lock;
+};
+
+// This struct roughly corresponds to the PermissionDescriptor dictionary as
+// defined by the Permissions API.
+struct PermissionDescriptor {
+  PermissionName name;
+  PermissionDescriptorExtension? extension;
+};
+
+// Interface a client can implement to observe permission changes.
+interface PermissionObserver {
+  OnPermissionStatusChange(PermissionStatus status);
+};
+
+// The Permission service provides permission handling capabilities by exposing
+// methods to check, request, and revoke permissions. It also allows a client to
+// start listening to permission changes.
+interface PermissionService {
+  HasPermission(PermissionDescriptor permission) => (PermissionStatus status);
+  RequestPermission(PermissionDescriptor permission, bool user_gesture)
+      => (PermissionStatus status);
+  RequestPermissions(array<PermissionDescriptor> permission, bool user_gesture)
+      => (array<PermissionStatus> statuses);
+  RevokePermission(PermissionDescriptor permission)
+      => (PermissionStatus status);
+  // Subscribes |observer| to updates about changes to the current origin's
+  // access to |permission|. Closing the pipe will cancel the subscription.
+  AddPermissionObserver(PermissionDescriptor permission,
+                        PermissionStatus last_known_status,
+                        pending_remote<PermissionObserver> observer);
+};

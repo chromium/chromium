@@ -1,42 +1,60 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from .extended_attribute import ExtendedAttributeList
-from .utilities import assert_no_extra_args
+from .composition_parts import WithIdentifier
+from .composition_parts import WithOwner
+from .idl_type import IdlType
+from .literal_constant import LiteralConstant
+from .make_copy import make_copy
 
 
-class Argument(object):
+class Argument(WithIdentifier, WithOwner):
+    class IR(WithIdentifier):
+        def __init__(self, identifier, index, idl_type, default_value=None):
+            assert isinstance(index, int)
+            assert isinstance(idl_type, IdlType)
+            assert (default_value is None
+                    or isinstance(default_value, LiteralConstant))
 
-    def __init__(self, **kwargs):
-        self._identifier = kwargs.pop('identifier')
-        self._type = kwargs.pop('type')
-        self._is_optional = kwargs.pop('is_optional', False)
-        self._is_variadic = kwargs.pop('is_variadic', False)
-        self._default_value = kwargs.pop('default_value', None)
-        self._extended_attribute_list = kwargs.pop('extended_attribute_list', ExtendedAttributeList())
-        assert_no_extra_args(kwargs)
+            WithIdentifier.__init__(self, identifier)
+
+            self.index = index
+            self.idl_type = idl_type
+            self.default_value = default_value
+
+    def __init__(self, ir, owner):
+        assert isinstance(ir, Argument.IR)
+
+        ir = make_copy(ir)
+        WithIdentifier.__init__(self, ir.identifier)
+        WithOwner.__init__(self, owner)
+
+        self._index = ir.index
+        self._idl_type = ir.idl_type
+        self._default_value = ir.default_value
 
     @property
-    def identifier(self):
-        return self._identifier
+    def index(self):
+        """Returns the argument index."""
+        return self._index
 
     @property
-    def type(self):
-        return self._type
+    def idl_type(self):
+        """Returns the type of the argument."""
+        return self._idl_type
 
     @property
     def is_optional(self):
-        return self._is_optional
+        """Returns True if this is an optional argument."""
+        return self.idl_type.is_optional
 
     @property
     def is_variadic(self):
-        return self._is_variadic
+        """Returns True if this is a variadic argument."""
+        return self.idl_type.is_variadic
 
     @property
     def default_value(self):
+        """Returns the default value or None."""
         return self._default_value
-
-    @property
-    def extended_attribute_list(self):
-        return self._extended_attribute_list

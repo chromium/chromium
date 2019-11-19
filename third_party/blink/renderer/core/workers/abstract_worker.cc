@@ -38,7 +38,7 @@
 namespace blink {
 
 AbstractWorker::AbstractWorker(ExecutionContext* context)
-    : ContextLifecycleObserver(context) {}
+    : ContextLifecycleStateObserver(context) {}
 
 AbstractWorker::~AbstractWorker() = default;
 

@@ -6,7 +6,7 @@
           if (!suggestion)
               TestRunner.addResult('No item selected.')
           else
-              TestRunner.addResult((isIntermediateSuggestion ? "Intermediate " : "") + "Suggestion Applied: " + suggestion);
+              TestRunner.addResult((isIntermediateSuggestion ? "Intermediate " : "") + "Suggestion Applied: " + suggestion.text);
       },
       acceptSuggestion: function() {
           TestRunner.addResult("Suggestion accepted");

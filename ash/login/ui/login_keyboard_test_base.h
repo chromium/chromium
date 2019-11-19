@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/login/ui/login_test_base.h"
-#include "ash/public/interfaces/login_user_info.mojom.h"
 #include "ash/test/ash_test_base.h"
 
 namespace ash {
@@ -36,7 +35,7 @@ class LoginKeyboardTestBase : public LoginTestBase {
   void SetUp() override;
 
  private:
-  std::vector<mojom::LoginUserInfoPtr> users_;
+  std::vector<LoginUserInfo> users_;
 
   DISALLOW_COPY_AND_ASSIGN(LoginKeyboardTestBase);
 };

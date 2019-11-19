@@ -17,14 +17,12 @@
 namespace views {
 namespace {
 void PrintViewHierarchyImp(const View* view,
-                           int indent,
+                           size_t indent,
                            std::ostringstream* out) {
-  int ind = indent;
-  while (ind-- > 0)
-    *out << ' ';
+  *out << std::string(indent, ' ');
   *out << view->GetClassName();
   *out << ' ';
-  *out << view->id();
+  *out << view->GetID();
   *out << ' ';
   *out << view->x() << "," << view->y() << ",";
   *out << view->bounds().right() << "," << view->bounds().bottom();
@@ -32,27 +30,25 @@ void PrintViewHierarchyImp(const View* view,
   *out << view;
   *out << '\n';
 
-  for (int i = 0, count = view->child_count(); i < count; ++i)
-    PrintViewHierarchyImp(view->child_at(i), indent + 2, out);
+  for (const View* child : view->children())
+    PrintViewHierarchyImp(child, indent + 2, out);
 }
 
 void PrintFocusHierarchyImp(const View* view,
-                            int indent,
+                            size_t indent,
                             std::ostringstream* out) {
-  int ind = indent;
-  while (ind-- > 0)
-    *out << ' ';
+  *out << std::string(indent, ' ');
   *out << view->GetClassName();
   *out << ' ';
-  *out << view->id();
+  *out << view->GetID();
   *out << ' ';
   *out << view->GetClassName();
   *out << ' ';
   *out << view;
   *out << '\n';
 
-  if (view->child_count() > 0)
-    PrintFocusHierarchyImp(view->child_at(0), indent + 2, out);
+  if (!view->children().empty())
+    PrintFocusHierarchyImp(view->children().front(), indent + 2, out);
 
   const View* next_focusable = view->GetNextFocusableView();
   if (next_focusable)
@@ -137,8 +133,8 @@ std::string PrintViewGraphImpl(const View* view) {
     result.append("\n");
   }
 
-  for (int i = 0; i < view->child_count(); ++i)
-    result.append(PrintViewGraphImpl(view->child_at(i)));
+  for (const View* child : view->children())
+    result.append(PrintViewGraphImpl(child));
 
   return result;
 }

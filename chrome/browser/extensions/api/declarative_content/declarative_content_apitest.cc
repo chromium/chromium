@@ -154,10 +154,10 @@ void DeclarativeContentApiTest::CheckIncognito(IncognitoMode mode,
   ASSERT_TRUE(extension);
 
   Browser* incognito_browser = CreateIncognitoBrowser();
-  const ExtensionAction* incognito_page_action =
-      ExtensionActionManager::Get(incognito_browser->profile())->
-      GetPageAction(*extension);
-  ASSERT_TRUE(incognito_page_action);
+  const ExtensionAction* incognito_action =
+      ExtensionActionManager::Get(incognito_browser->profile())
+          ->GetExtensionAction(*extension);
+  ASSERT_TRUE(incognito_action);
 
   ASSERT_TRUE(ready.WaitUntilSatisfied());
   if (is_enabled_in_incognito && mode == SPLIT)
@@ -167,39 +167,39 @@ void DeclarativeContentApiTest::CheckIncognito(IncognitoMode mode,
       incognito_browser->tab_strip_model()->GetWebContentsAt(0);
   const int incognito_tab_id = ExtensionTabUtil::GetTabId(incognito_tab);
 
-  EXPECT_FALSE(incognito_page_action->GetIsVisible(incognito_tab_id));
+  EXPECT_FALSE(incognito_action->GetIsVisible(incognito_tab_id));
 
   NavigateInRenderer(incognito_tab, GURL("http://test_split/"));
   if (mode == SPLIT) {
     EXPECT_EQ(is_enabled_in_incognito,
-              incognito_page_action->GetIsVisible(incognito_tab_id));
+              incognito_action->GetIsVisible(incognito_tab_id));
   } else {
-    EXPECT_FALSE(incognito_page_action->GetIsVisible(incognito_tab_id));
+    EXPECT_FALSE(incognito_action->GetIsVisible(incognito_tab_id));
   }
 
   NavigateInRenderer(incognito_tab, GURL("http://test_normal/"));
   if (mode != SPLIT) {
     EXPECT_EQ(is_enabled_in_incognito,
-              incognito_page_action->GetIsVisible(incognito_tab_id));
+              incognito_action->GetIsVisible(incognito_tab_id));
   } else {
-    EXPECT_FALSE(incognito_page_action->GetIsVisible(incognito_tab_id));
+    EXPECT_FALSE(incognito_action->GetIsVisible(incognito_tab_id));
   }
 
   // Verify that everything works as expected in the non-incognito browser.
-  const ExtensionAction* page_action =
-      ExtensionActionManager::Get(browser()->profile())->
-      GetPageAction(*extension);
+  const ExtensionAction* action =
+      ExtensionActionManager::Get(browser()->profile())
+          ->GetExtensionAction(*extension);
   content::WebContents* const tab =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   const int tab_id = ExtensionTabUtil::GetTabId(tab);
 
-  EXPECT_FALSE(page_action->GetIsVisible(tab_id));
+  EXPECT_FALSE(action->GetIsVisible(tab_id));
 
   NavigateInRenderer(tab, GURL("http://test_normal/"));
-  EXPECT_TRUE(page_action->GetIsVisible(tab_id));
+  EXPECT_TRUE(action->GetIsVisible(tab_id));
 
   NavigateInRenderer(tab, GURL("http://test_split/"));
-  EXPECT_FALSE(page_action->GetIsVisible(tab_id));
+  EXPECT_FALSE(action->GetIsVisible(tab_id));
 }
 
 void DeclarativeContentApiTest::CheckBookmarkEvents(bool match_is_bookmarked) {
@@ -212,12 +212,13 @@ void DeclarativeContentApiTest::CheckBookmarkEvents(bool match_is_bookmarked) {
 
   const Extension* extension = LoadExtension(ext_dir_.UnpackedPath());
   ASSERT_TRUE(extension);
-  const ExtensionAction* page_action = ExtensionActionManager::Get(
-      browser()->profile())->GetPageAction(*extension);
-  ASSERT_TRUE(page_action);
+  const ExtensionAction* action =
+      ExtensionActionManager::Get(browser()->profile())
+          ->GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
 
   NavigateInRenderer(tab, GURL("http://test1/"));
-  EXPECT_FALSE(page_action->GetIsVisible(tab_id));
+  EXPECT_FALSE(action->GetIsVisible(tab_id));
 
   static const char kSetIsBookmarkedRule[] =
       "setRules([{\n"
@@ -229,7 +230,7 @@ void DeclarativeContentApiTest::CheckBookmarkEvents(bool match_is_bookmarked) {
       extension->id(),
       base::StringPrintf(kSetIsBookmarkedRule,
                          match_is_bookmarked ? "true" : "false")));
-  EXPECT_EQ(!match_is_bookmarked, page_action->GetIsVisible(tab_id));
+  EXPECT_EQ(!match_is_bookmarked, action->GetIsVisible(tab_id));
 
   // Check rule evaluation on add/remove bookmark.
   bookmarks::BookmarkModel* bookmark_model =
@@ -238,10 +239,10 @@ void DeclarativeContentApiTest::CheckBookmarkEvents(bool match_is_bookmarked) {
       bookmark_model->AddURL(bookmark_model->other_node(), 0,
                              base::ASCIIToUTF16("title"),
                              GURL("http://test1/"));
-  EXPECT_EQ(match_is_bookmarked, page_action->GetIsVisible(tab_id));
+  EXPECT_EQ(match_is_bookmarked, action->GetIsVisible(tab_id));
 
   bookmark_model->Remove(node);
-  EXPECT_EQ(!match_is_bookmarked, page_action->GetIsVisible(tab_id));
+  EXPECT_EQ(!match_is_bookmarked, action->GetIsVisible(tab_id));
 
   // Check rule evaluation on navigate to bookmarked and non-bookmarked URL.
   bookmark_model->AddURL(bookmark_model->other_node(), 0,
@@ -249,10 +250,10 @@ void DeclarativeContentApiTest::CheckBookmarkEvents(bool match_is_bookmarked) {
                          GURL("http://test2/"));
 
   NavigateInRenderer(tab, GURL("http://test2/"));
-  EXPECT_EQ(match_is_bookmarked, page_action->GetIsVisible(tab_id));
+  EXPECT_EQ(match_is_bookmarked, action->GetIsVisible(tab_id));
 
   NavigateInRenderer(tab, GURL("http://test3/"));
-  EXPECT_EQ(!match_is_bookmarked, page_action->GetIsVisible(tab_id));
+  EXPECT_EQ(!match_is_bookmarked, action->GetIsVisible(tab_id));
 }
 
 // Disabled due to flake. https://crbug.com/606574.
@@ -283,10 +284,10 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, DISABLED_Overview) {
   ExtensionTestMessageListener ready("ready", false);
   const Extension* extension = LoadExtension(ext_dir_.UnpackedPath());
   ASSERT_TRUE(extension);
-  const ExtensionAction* page_action =
-      ExtensionActionManager::Get(browser()->profile())->
-      GetPageAction(*extension);
-  ASSERT_TRUE(page_action);
+  const ExtensionAction* action =
+      ExtensionActionManager::Get(browser()->profile())
+          ->GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
 
   ASSERT_TRUE(ready.WaitUntilSatisfied());
   content::WebContents* const tab =
@@ -297,11 +298,11 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, DISABLED_Overview) {
 
   // The declarative API should show the page action instantly, rather
   // than waiting for the extension to run.
-  EXPECT_TRUE(page_action->GetIsVisible(tab_id));
+  EXPECT_TRUE(action->GetIsVisible(tab_id));
 
   // Make sure leaving a matching page unshows the page action.
   NavigateInRenderer(tab, GURL("http://not_checked/"));
-  EXPECT_FALSE(page_action->GetIsVisible(tab_id));
+  EXPECT_FALSE(action->GetIsVisible(tab_id));
 
   // Insert a password field to make sure that's noticed.
   // Notice that we touch offsetTop to force a synchronous layout.
@@ -313,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, DISABLED_Overview) {
   // update.
   ASSERT_TRUE(content::ExecuteScript(tab, std::string()));
 
-  EXPECT_TRUE(page_action->GetIsVisible(tab_id))
+  EXPECT_TRUE(action->GetIsVisible(tab_id))
       << "Adding a matching element should show the page action.";
 
   // Remove it again to make sure that reverts the action.
@@ -326,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, DISABLED_Overview) {
   // update.
   ASSERT_TRUE(content::ExecuteScript(tab, std::string()));
 
-  EXPECT_FALSE(page_action->GetIsVisible(tab_id))
+  EXPECT_FALSE(action->GetIsVisible(tab_id))
       << "Removing the matching element should hide the page action again.";
 }
 
@@ -366,10 +367,10 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, ReusedActionInstance) {
   // Wait for declarative rules to be set up.
   content::BrowserContext::GetDefaultStoragePartition(profile())
       ->FlushNetworkInterfaceForTesting();
-  const ExtensionAction* page_action =
+  const ExtensionAction* action =
       ExtensionActionManager::Get(browser()->profile())
-          ->GetPageAction(*extension);
-  ASSERT_TRUE(page_action);
+          ->GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
 
   ASSERT_TRUE(ready.WaitUntilSatisfied());
   content::WebContents* const tab =
@@ -379,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, ReusedActionInstance) {
   // This navigation matches both rules.
   NavigateInRenderer(tab, GURL("http://test1/"));
 
-  EXPECT_TRUE(page_action->GetIsVisible(tab_id));
+  EXPECT_TRUE(action->GetIsVisible(tab_id));
 }
 
 // Tests that the rules are evaluated at the time they are added or removed.
@@ -388,10 +389,10 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, RulesEvaluatedOnAddRemove) {
   ext_dir_.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundHelpers);
   const Extension* extension = LoadExtension(ext_dir_.UnpackedPath());
   ASSERT_TRUE(extension);
-  const ExtensionAction* page_action =
-      ExtensionActionManager::Get(browser()->profile())->
-      GetPageAction(*extension);
-  ASSERT_TRUE(page_action);
+  const ExtensionAction* action =
+      ExtensionActionManager::Get(browser()->profile())
+          ->GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
 
   content::WebContents* const tab =
       browser()->tab_strip_model()->GetWebContentsAt(0);
@@ -414,23 +415,23 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, RulesEvaluatedOnAddRemove) {
   EXPECT_EQ("add_rules",
             ExecuteScriptInBackgroundPage(extension->id(), kAddTestRules));
 
-  EXPECT_TRUE(page_action->GetIsVisible(tab_id));
+  EXPECT_TRUE(action->GetIsVisible(tab_id));
 
   const std::string kRemoveTestRule1 = "removeRule('1', 'remove_rule1');\n";
   EXPECT_EQ("remove_rule1",
             ExecuteScriptInBackgroundPage(extension->id(), kRemoveTestRule1));
 
-  EXPECT_FALSE(page_action->GetIsVisible(tab_id));
+  EXPECT_FALSE(action->GetIsVisible(tab_id));
 
   NavigateInRenderer(tab, GURL("http://test2/"));
 
-  EXPECT_TRUE(page_action->GetIsVisible(tab_id));
+  EXPECT_TRUE(action->GetIsVisible(tab_id));
 
   const std::string kRemoveTestRule2 = "removeRule('2', 'remove_rule2');\n";
   EXPECT_EQ("remove_rule2",
             ExecuteScriptInBackgroundPage(extension->id(), kRemoveTestRule2));
 
-  EXPECT_FALSE(page_action->GetIsVisible(tab_id));
+  EXPECT_FALSE(action->GetIsVisible(tab_id));
 }
 
 class ParameterizedShowActionDeclarativeContentApiTest
@@ -458,8 +459,9 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
       case ActionInfo::TYPE_PAGE:
         action_key = R"("page_action": {},)";
         break;
-      case ActionInfo::TYPE_SYSTEM_INDICATOR:
-        NOTREACHED();
+      case ActionInfo::TYPE_ACTION:
+        action_key = R"("action": {},)";
+        break;
     }
   }
 
@@ -482,11 +484,8 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
   // (for visibility reasons).
   ASSERT_TRUE(action);
 
-  // Ensure browser actions are hidden (so that the ShowAction() rule has an
-  // effect).
-  bool has_browser_action =
-      action_type && *action_type == ActionInfo::TYPE_BROWSER;
-  if (has_browser_action)
+  // Ensure actions are hidden (so that the ShowAction() rule has an effect).
+  if (action->default_state() == ActionInfo::STATE_DISABLED)
     action->SetIsVisible(ExtensionAction::kDefaultTabId, false);
 
   const char kScript[] =
@@ -512,15 +511,11 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
   const int tab_id = SessionTabHelper::IdForTab(tab).id();
   EXPECT_TRUE(action->GetIsVisible(tab_id));
 
-  // Even an extension with no specified action with have a (synthesized) page
-  // action. Only browser action extensions are expected to not have a page
-  // action.
-  bool expect_page_action = !has_browser_action;
-  ExtensionAction* page_action =
-      ExtensionActionManager::Get(browser()->profile())
-          ->GetPageAction(*extension);
-  EXPECT_EQ(expect_page_action, page_action != nullptr);
-  EXPECT_EQ(expect_page_action ? 1u : 0u,
+  // If an extension had no action specified in the manifest, it will get a
+  // synthesized page action.
+  ActionInfo::Type expected_type = action_type.value_or(ActionInfo::TYPE_PAGE);
+  EXPECT_EQ(expected_type, action->action_type());
+  EXPECT_EQ(expected_type == ActionInfo::TYPE_PAGE ? 1u : 0u,
             extension_action_test_util::GetVisiblePageActionCount(tab));
 }
 
@@ -537,6 +532,11 @@ IN_PROC_BROWSER_TEST_P(ParameterizedShowActionDeclarativeContentApiTest,
 IN_PROC_BROWSER_TEST_P(ParameterizedShowActionDeclarativeContentApiTest,
                        BrowserActionInManifest) {
   TestShowAction(ActionInfo::TYPE_BROWSER);
+}
+
+IN_PROC_BROWSER_TEST_P(ParameterizedShowActionDeclarativeContentApiTest,
+                       ActionInManifest) {
+  TestShowAction(ActionInfo::TYPE_ACTION);
 }
 
 // Tests that rules from manifest are added and evaluated properly.
@@ -565,21 +565,21 @@ IN_PROC_BROWSER_TEST_P(ParameterizedShowActionDeclarativeContentApiTest,
   ext_dir_.WriteManifest(base::StringPrintf(manifest, GetParam()));
   const Extension* extension = LoadExtension(ext_dir_.UnpackedPath());
   ASSERT_TRUE(extension);
-  const ExtensionAction* page_action =
+  const ExtensionAction* action =
       ExtensionActionManager::Get(browser()->profile())
-          ->GetPageAction(*extension);
-  ASSERT_TRUE(page_action);
+          ->GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
 
   content::WebContents* const tab =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   const int tab_id = ExtensionTabUtil::GetTabId(tab);
 
   NavigateInRenderer(tab, GURL("http://blank/"));
-  EXPECT_FALSE(page_action->GetIsVisible(tab_id));
+  EXPECT_FALSE(action->GetIsVisible(tab_id));
   NavigateInRenderer(tab, GURL("http://test1/"));
-  EXPECT_TRUE(page_action->GetIsVisible(tab_id));
+  EXPECT_TRUE(action->GetIsVisible(tab_id));
   NavigateInRenderer(tab, GURL("http://test2/"));
-  EXPECT_FALSE(page_action->GetIsVisible(tab_id));
+  EXPECT_FALSE(action->GetIsVisible(tab_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(LegacyShowActionKey,
@@ -633,13 +633,13 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   ASSERT_TRUE(extension);
   ASSERT_TRUE(ready.WaitUntilSatisfied());
 
-  const ExtensionAction* incognito_page_action =
-      ExtensionActionManager::Get(incognito_browser->profile())->
-      GetPageAction(*extension);
-  ASSERT_TRUE(incognito_page_action);
+  const ExtensionAction* incognito_action =
+      ExtensionActionManager::Get(incognito_browser->profile())
+          ->GetExtensionAction(*extension);
+  ASSERT_TRUE(incognito_action);
 
   // The page action should be shown.
-  EXPECT_TRUE(incognito_page_action->GetIsVisible(incognito_tab_id));
+  EXPECT_TRUE(incognito_action->GetIsVisible(incognito_tab_id));
 }
 
 // Sets up rules matching http://test1/ in a normal and incognito browser.
@@ -679,17 +679,17 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, DISABLED_RulesPersistence) {
       browser()->tab_strip_model()->GetWebContentsAt(0);
   const int tab_id = ExtensionTabUtil::GetTabId(tab);
 
-  const ExtensionAction* page_action =
-      ExtensionActionManager::Get(browser()->profile())->
-      GetPageAction(*extension);
-  ASSERT_TRUE(page_action);
-  EXPECT_FALSE(page_action->GetIsVisible(tab_id));
+  const ExtensionAction* action =
+      ExtensionActionManager::Get(browser()->profile())
+          ->GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
+  EXPECT_FALSE(action->GetIsVisible(tab_id));
 
   NavigateInRenderer(tab, GURL("http://test_normal/"));
-  EXPECT_TRUE(page_action->GetIsVisible(tab_id));
+  EXPECT_TRUE(action->GetIsVisible(tab_id));
 
   NavigateInRenderer(tab, GURL("http://test_split/"));
-  EXPECT_FALSE(page_action->GetIsVisible(tab_id));
+  EXPECT_FALSE(action->GetIsVisible(tab_id));
 
   // Check incognito browser.
   Browser* incognito_browser = CreateIncognitoBrowser();
@@ -698,16 +698,16 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, DISABLED_RulesPersistence) {
       incognito_browser->tab_strip_model()->GetWebContentsAt(0);
   const int incognito_tab_id = ExtensionTabUtil::GetTabId(incognito_tab);
 
-  const ExtensionAction* incognito_page_action =
-      ExtensionActionManager::Get(incognito_browser->profile())->
-      GetPageAction(*extension);
-  ASSERT_TRUE(incognito_page_action);
+  const ExtensionAction* incognito_action =
+      ExtensionActionManager::Get(incognito_browser->profile())
+          ->GetExtensionAction(*extension);
+  ASSERT_TRUE(incognito_action);
 
   NavigateInRenderer(incognito_tab, GURL("http://test_split/"));
-  EXPECT_TRUE(incognito_page_action->GetIsVisible(incognito_tab_id));
+  EXPECT_TRUE(incognito_action->GetIsVisible(incognito_tab_id));
 
   NavigateInRenderer(incognito_tab, GURL("http://test_normal/"));
-  EXPECT_FALSE(incognito_page_action->GetIsVisible(incognito_tab_id));
+  EXPECT_FALSE(incognito_action->GetIsVisible(incognito_tab_id));
 }
 
 // http://crbug.com/304373
@@ -728,9 +728,10 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   content::BrowserContext::GetDefaultStoragePartition(profile())
       ->FlushNetworkInterfaceForTesting();
   const std::string extension_id = extension->id();
-  const ExtensionAction* page_action = ExtensionActionManager::Get(
-      browser()->profile())->GetPageAction(*extension);
-  ASSERT_TRUE(page_action);
+  const ExtensionAction* action =
+      ExtensionActionManager::Get(browser()->profile())
+          ->GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
 
   const std::string kTestRule =
       "setRules([{\n"
@@ -747,12 +748,12 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
 
   NavigateInRenderer(tab, GURL("http://test/"));
 
-  EXPECT_TRUE(page_action->GetIsVisible(tab_id));
+  EXPECT_TRUE(action->GetIsVisible(tab_id));
   EXPECT_TRUE(WaitForPageActionVisibilityChangeTo(1));
   EXPECT_EQ(1u, extension_action_test_util::GetVisiblePageActionCount(tab));
   EXPECT_EQ(1u, extension_action_test_util::GetTotalPageActionCount(tab));
 
-  ReloadExtension(extension_id);  // Invalidates page_action and extension.
+  ReloadExtension(extension_id);  // Invalidates action and extension.
   // Wait for declarative rules to be removed.
   content::BrowserContext::GetDefaultStoragePartition(profile())
       ->FlushNetworkInterfaceForTesting();
@@ -792,10 +793,11 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
 
   const Extension* extension = LoadExtension(ext_dir_.UnpackedPath());
   ASSERT_TRUE(extension);
-  const ExtensionAction* page_action = ExtensionActionManager::Get(
-      browser()->profile())->GetPageAction(*extension);
-  ASSERT_TRUE(page_action);
-  EXPECT_FALSE(page_action->GetIsVisible(tab_id));
+  const ExtensionAction* action =
+      ExtensionActionManager::Get(browser()->profile())
+          ->GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
+  EXPECT_FALSE(action->GetIsVisible(tab_id));
 
   EXPECT_EQ("rule0", ExecuteScriptInBackgroundPage(
                          extension->id(),
@@ -812,7 +814,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   ASSERT_TRUE(content::ExecuteScript(tab, std::string()));
 
   EXPECT_FALSE(tab->IsCrashed());
-  EXPECT_TRUE(page_action->GetIsVisible(tab_id))
+  EXPECT_TRUE(action->GetIsVisible(tab_id))
       << "Loading an extension when an open page matches its rules "
       << "should show the page action.";
 
@@ -822,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
                 "onPageChanged.removeRules(undefined, function() {\n"
                 "  window.domAutomationController.send('removed');\n"
                 "});\n"));
-  EXPECT_FALSE(page_action->GetIsVisible(tab_id));
+  EXPECT_FALSE(action->GetIsVisible(tab_id));
 }
 
 IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
@@ -921,9 +923,10 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   ext_dir_.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundHelpers);
   const Extension* extension = LoadExtension(ext_dir_.UnpackedPath());
   ASSERT_TRUE(extension);
-  const ExtensionAction* page_action = ExtensionActionManager::Get(
-      browser()->profile())->GetPageAction(*extension);
-  ASSERT_TRUE(page_action);
+  const ExtensionAction* action =
+      ExtensionActionManager::Get(browser()->profile())
+          ->GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
 
   // Create two tabs.
   content::WebContents* const tab1 =
@@ -948,7 +951,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
       "}], 'add_rules');\n";
   EXPECT_EQ("add_rules",
             ExecuteScriptInBackgroundPage(extension->id(), kAddTestRules));
-  EXPECT_TRUE(page_action->GetIsVisible(ExtensionTabUtil::GetTabId(tab2)));
+  EXPECT_TRUE(action->GetIsVisible(ExtensionTabUtil::GetTabId(tab2)));
 
   // Remove the rule.
   const std::string kRemoveTestRule1 = "removeRule('2', 'remove_rule1');\n";
@@ -960,20 +963,14 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   browser()->tab_strip_model()->DetachWebContentsAt(
       browser()->tab_strip_model()->GetIndexOfWebContents(tab2));
   NavigateInRenderer(tab1, GURL("http://test1/"));
-  EXPECT_TRUE(page_action->GetIsVisible(ExtensionTabUtil::GetTabId(tab1)));
+  EXPECT_TRUE(action->GetIsVisible(ExtensionTabUtil::GetTabId(tab1)));
 }
 
 // https://crbug.com/517492
-#if defined(OS_WIN)
 // Fails on XP: http://crbug.com/515717
-#define MAYBE_RemoveAllRulesAfterExtensionUninstall \
-  DISABLED_RemoveAllRulesAfterExtensionUninstall
-#else
-#define MAYBE_RemoveAllRulesAfterExtensionUninstall \
-  RemoveAllRulesAfterExtensionUninstall
-#endif
+// Fails on other platfomrs: http://crbug.com/1013457
 IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
-                       MAYBE_RemoveAllRulesAfterExtensionUninstall) {
+                       DISABLED_RemoveAllRulesAfterExtensionUninstall) {
   ext_dir_.WriteManifest(kDeclarativeContentManifest);
   ext_dir_.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundHelpers);
 
@@ -1011,7 +1008,6 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   EXPECT_EQ("remove_rule1",
             ExecuteScriptInBackgroundPage(extension->id(), kRemoveTestRule1));
 }
-
 
 // TODO(wittman): Once ChromeContentRulesRegistry operates on condition and
 // action interfaces, add a test that checks that a navigation always evaluates

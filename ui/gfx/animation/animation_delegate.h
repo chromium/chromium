@@ -10,6 +10,7 @@
 namespace gfx {
 
 class Animation;
+class AnimationContainer;
 
 // AnimationDelegate
 //
@@ -27,6 +28,10 @@ class ANIMATION_EXPORT AnimationDelegate {
 
   // Called when an animation has been canceled.
   virtual void AnimationCanceled(const Animation* animation) {}
+
+  // Called when an animation container has been set. This gives a chance to
+  // set a custom animation runner.
+  virtual void AnimationContainerWasSet(AnimationContainer* container) {}
 };
 
 }  // namespace gfx

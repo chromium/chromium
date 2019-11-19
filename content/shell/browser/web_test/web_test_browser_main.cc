@@ -33,48 +33,22 @@
 #include "gpu/config/gpu_switches.h"
 #include "net/base/filename_util.h"
 
-#if defined(OS_ANDROID)
-#include "base/run_loop.h"
-#include "content/shell/browser/web_test/scoped_android_configuration.h"
-#endif
-
 namespace {
 
-bool RunOneTest(
-    const content::TestInfo& test_info,
-    bool* ran_at_least_once,
-    content::BlinkTestController* blink_test_controller,
-    const std::unique_ptr<content::BrowserMainRunner>& main_runner) {
-  DCHECK(ran_at_least_once);
+bool RunOneTest(const content::TestInfo& test_info,
+                content::BlinkTestController* blink_test_controller,
+                content::BrowserMainRunner* main_runner) {
   DCHECK(blink_test_controller);
 
   if (!blink_test_controller->PrepareForWebTest(test_info))
     return false;
 
-  *ran_at_least_once = true;
-#if defined(OS_ANDROID)
-  // The message loop on Android is provided by the system, and does not
-  // offer a blocking Run() method. For web tests, use a nested loop
-  // together with a base::RunLoop so it can block until a QuitClosure.
-  base::RunLoop run_loop;
-  content::Shell::SetMainMessageLoopQuitClosure(run_loop.QuitClosure());
-  run_loop.Run();
-#else
   main_runner->Run();
-#endif
 
-  if (!blink_test_controller->ResetAfterWebTest())
-    return false;
-
-#if defined(OS_ANDROID)
-  // There will be left-over tasks in the queue for Android because the
-  // main window is being destroyed. Run them before starting the next test.
-  base::RunLoop().RunUntilIdle();
-#endif
-  return true;
+  return blink_test_controller->ResetAfterWebTest();
 }
 
-int RunTests(const std::unique_ptr<content::BrowserMainRunner>& main_runner) {
+void RunTests(content::BrowserMainRunner* main_runner) {
   content::BlinkTestController test_controller;
   {
     // We're outside of the message loop here, and this is a test.
@@ -92,10 +66,9 @@ int RunTests(const std::unique_ptr<content::BrowserMainRunner>& main_runner) {
   bool ran_at_least_once = false;
   std::unique_ptr<content::TestInfo> test_info;
   while ((test_info = test_extractor.GetNextTest())) {
-    if (!RunOneTest(*test_info, &ran_at_least_once, &test_controller,
-                    main_runner)) {
+    ran_at_least_once = true;
+    if (!RunOneTest(*test_info, &test_controller, main_runner))
       break;
-    }
   }
   if (!ran_at_least_once) {
     // CloseAllWindows will cause the |main_runner| loop to quit.
@@ -103,23 +76,15 @@ int RunTests(const std::unique_ptr<content::BrowserMainRunner>& main_runner) {
         FROM_HERE, base::BindOnce(&content::Shell::CloseAllWindows));
     main_runner->Run();
   }
-
-#if defined(OS_ANDROID)
-  // We need to execute 'main_runner->Shutdown()' before the test_controller
-  // destructs when running on Android, and after it destructs when running
-  // anywhere else.
-  main_runner->Shutdown();
-#endif
-
-  return 0;
 }
 
 }  // namespace
 
 // Main routine for running as the Browser process.
-int WebTestBrowserMain(
-    const content::MainFunctionParams& parameters,
-    const std::unique_ptr<content::BrowserMainRunner>& main_runner) {
+void WebTestBrowserMain(const content::MainFunctionParams& parameters) {
+  std::unique_ptr<content::BrowserMainRunner> main_runner =
+      content::BrowserMainRunner::Create();
+
   base::ScopedTempDir browser_context_path_for_web_tests;
 
   CHECK(browser_context_path_for_web_tests.CreateUniqueTempDir());
@@ -131,34 +96,19 @@ int WebTestBrowserMain(
       browser_context_path_for_web_tests.GetPath().MaybeAsASCII());
 
   // Always disable the unsandbox GPU process for DX12 and Vulkan Info
-  // collection to avoid interference. This GPU process is launched 15
+  // collection to avoid interference. This GPU process is launched 120
   // seconds after chrome starts.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableGpuProcessForDX12VulkanInfoCollection);
 
-#if defined(OS_ANDROID)
-  content::ScopedAndroidConfiguration android_configuration;
-#endif
-
-  int exit_code = main_runner->Initialize(parameters);
-  DCHECK_LT(exit_code, 0)
+  int initialize_exit_code = main_runner->Initialize(parameters);
+  DCHECK_LT(initialize_exit_code, 0)
       << "BrowserMainRunner::Initialize failed in WebTestBrowserMain";
 
-  if (exit_code >= 0)
-    return exit_code;
-
-#if defined(OS_ANDROID)
-  main_runner->SynchronouslyFlushStartupTasks();
-  android_configuration.RedirectStreams();
-#endif
-
-  exit_code = RunTests(main_runner);
+  RunTests(main_runner.get());
   base::RunLoop().RunUntilIdle();
 
   content::Shell::CloseAllWindows();
-#if !defined(OS_ANDROID)
-  main_runner->Shutdown();
-#endif
 
-  return exit_code;
+  main_runner->Shutdown();
 }

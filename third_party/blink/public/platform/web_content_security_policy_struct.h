@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CONTENT_SECURITY_POLICY_STRUCT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CONTENT_SECURITY_POLICY_STRUCT_H_
 
-#include "third_party/blink/public/mojom/csp/content_security_policy.mojom-shared.h"
+#include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "third_party/blink/public/platform/web_content_security_policy.h"
 #include "third_party/blink/public/platform/web_source_location.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -67,7 +67,7 @@ struct WebContentSecurityPolicyDirective {
 };
 
 struct WebContentSecurityPolicy {
-  mojom::ContentSecurityPolicyType disposition;
+  network::mojom::ContentSecurityPolicyType disposition;
   WebContentSecurityPolicySource source;
   WebVector<WebContentSecurityPolicyDirective> directives;
   WebVector<WebString> report_endpoints;
@@ -108,7 +108,7 @@ struct WebContentSecurityPolicyViolation {
 
   // Each policy has an associated disposition, which is either "enforce" or
   // "report".
-  mojom::ContentSecurityPolicyType disposition;
+  network::mojom::ContentSecurityPolicyType disposition;
 
   // Whether or not the violation happens after a redirect.
   bool after_redirect;

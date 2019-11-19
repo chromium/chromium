@@ -99,18 +99,6 @@ constexpr const char kDocumentLoadRulesetIsAvailable[] =
     "SubresourceFilter.DocumentLoad.RulesetIsAvailable";
 constexpr const char kDocumentLoadActivationLevel[] =
     "SubresourceFilter.DocumentLoad.ActivationState";
-constexpr const char kSubresourcesEvaluated[] =
-    "SubresourceFilter.DocumentLoad.NumSubresourceLoads.Evaluated";
-constexpr const char kSubresourcesTotal[] =
-    "SubresourceFilter.DocumentLoad.NumSubresourceLoads.Total";
-constexpr const char kSubresourcesMatchedRules[] =
-    "SubresourceFilter.DocumentLoad.NumSubresourceLoads.MatchedRules";
-constexpr const char kSubresourcesDisallowed[] =
-    "SubresourceFilter.DocumentLoad.NumSubresourceLoads.Disallowed";
-constexpr const char kEvaluationTotalWallDuration[] =
-    "SubresourceFilter.DocumentLoad.SubresourceEvaluation.TotalWallDuration";
-constexpr const char kEvaluationTotalCPUDuration[] =
-    "SubresourceFilter.DocumentLoad.SubresourceEvaluation.TotalCPUDuration";
 
 }  // namespace
 
@@ -246,13 +234,6 @@ TEST_F(SubresourceFilterAgentTest, DisabledByDefault_NoFilterIsInjected) {
       static_cast<int>(mojom::ActivationLevel::kDisabled), 1);
   histogram_tester.ExpectTotalCount(kDocumentLoadRulesetIsAvailable, 0);
 
-  histogram_tester.ExpectTotalCount(kSubresourcesTotal, 0);
-  histogram_tester.ExpectTotalCount(kSubresourcesEvaluated, 0);
-  histogram_tester.ExpectTotalCount(kSubresourcesMatchedRules, 0);
-  histogram_tester.ExpectTotalCount(kSubresourcesDisallowed, 0);
-
-  histogram_tester.ExpectTotalCount(kEvaluationTotalWallDuration, 0);
-  histogram_tester.ExpectTotalCount(kEvaluationTotalCPUDuration, 0);
 }
 
 TEST_F(SubresourceFilterAgentTest, MmapFailure_FailsToInjectSubresourceFilter) {
@@ -291,14 +272,6 @@ TEST_F(SubresourceFilterAgentTest,
       kDocumentLoadActivationLevel,
       static_cast<int>(mojom::ActivationLevel::kEnabled), 1);
   histogram_tester.ExpectUniqueSample(kDocumentLoadRulesetIsAvailable, 0, 1);
-
-  histogram_tester.ExpectTotalCount(kSubresourcesTotal, 0);
-  histogram_tester.ExpectTotalCount(kSubresourcesEvaluated, 0);
-  histogram_tester.ExpectTotalCount(kSubresourcesMatchedRules, 0);
-  histogram_tester.ExpectTotalCount(kSubresourcesDisallowed, 0);
-
-  histogram_tester.ExpectTotalCount(kEvaluationTotalWallDuration, 0);
-  histogram_tester.ExpectTotalCount(kEvaluationTotalCPUDuration, 0);
 }
 
 // Never inject a filter for main frame about:blank loads, even though we do for
@@ -315,14 +288,6 @@ TEST_F(SubresourceFilterAgentTest, EmptyDocumentLoad_NoFilterIsInjected) {
 
   histogram_tester.ExpectTotalCount(kDocumentLoadActivationLevel, 0);
   histogram_tester.ExpectTotalCount(kDocumentLoadRulesetIsAvailable, 0);
-
-  histogram_tester.ExpectTotalCount(kSubresourcesTotal, 0);
-  histogram_tester.ExpectTotalCount(kSubresourcesEvaluated, 0);
-  histogram_tester.ExpectTotalCount(kSubresourcesMatchedRules, 0);
-  histogram_tester.ExpectTotalCount(kSubresourcesDisallowed, 0);
-
-  histogram_tester.ExpectTotalCount(kEvaluationTotalWallDuration, 0);
-  histogram_tester.ExpectTotalCount(kEvaluationTotalCPUDuration, 0);
 }
 
 TEST_F(SubresourceFilterAgentTest, Enabled_FilteringIsInEffectForOneLoad) {
@@ -357,10 +322,6 @@ TEST_F(SubresourceFilterAgentTest, Enabled_FilteringIsInEffectForOneLoad) {
   // the figures below, as they came after the original page load event. There
   // should be no samples recorded into subresource count histograms during the
   // final load where there is no activation.
-  histogram_tester.ExpectUniqueSample(kSubresourcesTotal, 2, 1);
-  histogram_tester.ExpectUniqueSample(kSubresourcesEvaluated, 2, 1);
-  histogram_tester.ExpectUniqueSample(kSubresourcesMatchedRules, 1, 1);
-  histogram_tester.ExpectUniqueSample(kSubresourcesDisallowed, 1, 1);
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kDocumentLoadActivationLevel),
       ::testing::ElementsAre(
@@ -410,22 +371,6 @@ TEST_F(SubresourceFilterAgentTest, Enabled_HistogramSamplesOverTwoLoads) {
         kDocumentLoadActivationLevel,
         static_cast<int>(mojom::ActivationLevel::kEnabled), 2);
     histogram_tester.ExpectUniqueSample(kDocumentLoadRulesetIsAvailable, 1, 2);
-
-    EXPECT_THAT(histogram_tester.GetAllSamples(kSubresourcesTotal),
-                ::testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1)));
-    EXPECT_THAT(histogram_tester.GetAllSamples(kSubresourcesEvaluated),
-                ::testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1)));
-    EXPECT_THAT(histogram_tester.GetAllSamples(kSubresourcesMatchedRules),
-                ::testing::ElementsAre(base::Bucket(1, 1), base::Bucket(2, 1)));
-    EXPECT_THAT(histogram_tester.GetAllSamples(kSubresourcesDisallowed),
-                ::testing::ElementsAre(base::Bucket(1, 1), base::Bucket(2, 1)));
-
-    base::HistogramBase::Count expected_total_count =
-        measure_performance && base::ThreadTicks::IsSupported() ? 2 : 0;
-    histogram_tester.ExpectTotalCount(kEvaluationTotalWallDuration,
-                                      expected_total_count);
-    histogram_tester.ExpectTotalCount(kEvaluationTotalCPUDuration,
-                                      expected_total_count);
   }
 }
 
@@ -474,8 +419,7 @@ TEST_F(SubresourceFilterAgentTest,
   state->measure_performance = true;
   agent()->ActivateForNextCommittedLoad(std::move(state),
                                         AdFrameType::kNonAd /* ad_type */);
-  agent_as_rfo()->DidFailProvisionalLoad(
-      blink::WebURLError(net::ERR_FAILED, blink::WebURL()));
+  agent_as_rfo()->DidFailProvisionalLoad();
   agent_as_rfo()->DidStartNavigation(GURL(), base::nullopt);
   agent_as_rfo()->ReadyToCommitNavigation(nullptr);
   agent_as_rfo()->DidCommitProvisionalLoad(
@@ -506,15 +450,6 @@ TEST_F(SubresourceFilterAgentTest, DryRun_ResourcesAreEvaluatedButNotFiltered) {
       kDocumentLoadActivationLevel,
       static_cast<int>(mojom::ActivationLevel::kDryRun), 1);
   histogram_tester.ExpectUniqueSample(kDocumentLoadRulesetIsAvailable, 1, 1);
-
-  histogram_tester.ExpectUniqueSample(kSubresourcesTotal, 3, 1);
-  histogram_tester.ExpectUniqueSample(kSubresourcesEvaluated, 3, 1);
-  histogram_tester.ExpectUniqueSample(kSubresourcesMatchedRules, 2, 1);
-  histogram_tester.ExpectUniqueSample(kSubresourcesDisallowed, 0, 1);
-
-  // Performance measurement is switched off.
-  histogram_tester.ExpectTotalCount(kEvaluationTotalWallDuration, 0);
-  histogram_tester.ExpectTotalCount(kEvaluationTotalCPUDuration, 0);
 
   EXPECT_FALSE(agent()->IsAdSubframe());
 }

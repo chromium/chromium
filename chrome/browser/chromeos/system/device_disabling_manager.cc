@@ -37,12 +37,11 @@ DeviceDisablingManager::DeviceDisablingManager(
     CrosSettings* cros_settings,
     user_manager::UserManager* user_manager)
     : delegate_(delegate),
-      browser_policy_connector_(g_browser_process->platform_part()->
-          browser_policy_connector_chromeos()),
+      browser_policy_connector_(g_browser_process->platform_part()
+                                    ->browser_policy_connector_chromeos()),
       cros_settings_(cros_settings),
       user_manager_(user_manager),
-      device_disabled_(false),
-      weak_factory_(this) {
+      device_disabled_(false) {
   CHECK(delegate_);
 }
 

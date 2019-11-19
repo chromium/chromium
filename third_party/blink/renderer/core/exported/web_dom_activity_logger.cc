@@ -95,11 +95,11 @@ class DOMActivityLoggerContainer : public V8DOMActivityLogger {
   std::unique_ptr<WebDOMActivityLogger> dom_activity_logger_;
 };
 
-bool HasDOMActivityLogger(int world_id, const WebString& extension_id) {
+bool HasDOMActivityLogger(int32_t world_id, const WebString& extension_id) {
   return V8DOMActivityLogger::ActivityLogger(world_id, extension_id);
 }
 
-void SetDOMActivityLogger(int world_id,
+void SetDOMActivityLogger(int32_t world_id,
                           const WebString& extension_id,
                           WebDOMActivityLogger* logger) {
   DCHECK(logger);

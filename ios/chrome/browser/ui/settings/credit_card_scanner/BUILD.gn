@@ -1,0 +1,54 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("credit_card_scanner") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "credit_card_consumer.h",
+    "credit_card_scanned_image_delegate.h",
+    "credit_card_scanner_camera_controller.h",
+    "credit_card_scanner_camera_controller.mm",
+    "credit_card_scanner_camera_controller_delegate.h",
+    "credit_card_scanner_coordinator.h",
+    "credit_card_scanner_coordinator.mm",
+    "credit_card_scanner_image_processor.h",
+    "credit_card_scanner_image_processor.mm",
+    "credit_card_scanner_mediator.h",
+    "credit_card_scanner_mediator.mm",
+    "credit_card_scanner_mediator_delegate.h",
+    "credit_card_scanner_string_util.h",
+    "credit_card_scanner_string_util.mm",
+    "credit_card_scanner_view.h",
+    "credit_card_scanner_view.mm",
+    "credit_card_scanner_view_controller.h",
+    "credit_card_scanner_view_controller.mm",
+  ]
+  deps = [
+    "//components/autofill/core/browser",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/qr_scanner",
+    "//ios/chrome/browser/ui/scanner",
+    "//ios/chrome/browser/ui/util",
+    "//ui/base",
+  ]
+  libs = [
+    "UIKit.framework",
+    "Vision.framework",
+    "CoreMedia.framework",
+    "CoreVideo.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "credit_card_scanner_string_util_unittest.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/settings/credit_card_scanner",
+    "//testing/gtest",
+  ]
+}

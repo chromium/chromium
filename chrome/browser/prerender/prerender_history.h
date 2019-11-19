@@ -30,7 +30,7 @@ class PrerenderHistory {
   // Entry is an individual entry in the history list. It corresponds to a
   // specific prerendered page.
   struct Entry {
-    Entry() : final_status(FINAL_STATUS_MAX), origin(ORIGIN_MAX) {}
+    Entry() : final_status(FINAL_STATUS_UNKNOWN), origin(ORIGIN_MAX) {}
 
     Entry(const GURL& url_arg,
           FinalStatus final_status_arg,

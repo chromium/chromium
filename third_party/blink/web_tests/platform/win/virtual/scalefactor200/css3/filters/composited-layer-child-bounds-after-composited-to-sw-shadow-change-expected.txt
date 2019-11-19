@@ -1,0 +1,93 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [1600, 1200],
+      "drawsContent": false,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Scrolling Layer",
+      "bounds": [1600, 1200],
+      "drawsContent": false
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1600, 1200],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='composited-parent' class='compositor-painted-shadow'",
+      "bounds": [200, 200],
+      "contentsOpaque": true,
+      "backgroundColor": "#FF0000",
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='absolutely-positioned-composited-child'",
+      "bounds": [200, 200],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [200, 200, 0, 1]
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [1600, 1200],
+      "drawsContent": false,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Scrolling Layer",
+      "bounds": [1570, 1170],
+      "drawsContent": false
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1712, 1376],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='composited-parent' class='software-painted-shadow'",
+      "bounds": [200, 200],
+      "contentsOpaque": true,
+      "backgroundColor": "#FF0000",
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='absolutely-positioned-composited-child'",
+      "bounds": [200, 200],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [200, 200, 0, 1]
+      ]
+    }
+  ]
+}
+

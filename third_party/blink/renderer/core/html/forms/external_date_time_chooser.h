@@ -26,40 +26,42 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_EXTERNAL_DATE_TIME_CHOOSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_EXTERNAL_DATE_TIME_CHOOSER_H_
 
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser.h"
 
 namespace blink {
 
-class ChromeClient;
 class DateTimeChooserClient;
-class WebString;
-class WebViewClient;
+class LocalFrame;
 
 class CORE_EXPORT ExternalDateTimeChooser final : public DateTimeChooser {
  public:
-  static ExternalDateTimeChooser* Create(ChromeClient*,
-                                         WebViewClient*,
-                                         DateTimeChooserClient*,
-                                         const DateTimeChooserParameters&);
+  static ExternalDateTimeChooser* Create(DateTimeChooserClient*);
 
-  ExternalDateTimeChooser(DateTimeChooserClient*);
+  explicit ExternalDateTimeChooser(DateTimeChooserClient*);
   ~ExternalDateTimeChooser() override;
   void Trace(Visitor*) override;
 
-  // The following functions are for DateTimeChooserCompletion.
-  void DidChooseValue(const WebString&);
-  void DidChooseValue(double);
-  void DidCancelChooser();
+  // |frame| must not be null.
+  void OpenDateTimeChooser(LocalFrame* frame, const DateTimeChooserParameters&);
+
+  void ResponseHandler(bool success, double dialog_value);
+
+  bool IsShowingDateTimeChooserUI() const;
 
  private:
-  bool OpenDateTimeChooser(ChromeClient*,
-                           WebViewClient*,
-                           const DateTimeChooserParameters&);
+  void DidChooseValue(double);
+  void DidCancelChooser();
 
   // DateTimeChooser function:
   void EndChooser() override;
   AXObject* RootAXObject() override;
+
+  mojom::blink::DateTimeChooser& GetDateTimeChooser(LocalFrame* frame);
+
+  mojo::Remote<mojom::blink::DateTimeChooser> date_time_chooser_;
 
   Member<DateTimeChooserClient> client_;
 };

@@ -5,34 +5,10 @@
 #ifndef ASH_SYSTEM_UNIFIED_COLLAPSE_BUTTON_H_
 #define ASH_SYSTEM_UNIFIED_COLLAPSE_BUTTON_H_
 
-#include "ui/views/controls/button/image_button.h"
+#include "ash/system/unified/custom_shape_button.h"
+#include "base/bind.h"
 
 namespace ash {
-
-// Abstract base class of buttons that have custom shape with Material Design
-// ink drop.
-class CustomShapeButton : public views::ImageButton {
- public:
-  explicit CustomShapeButton(views::ButtonListener* listener);
-  ~CustomShapeButton() override;
-
-  // Return the custom shape for the button in SkPath.
-  virtual SkPath CreateCustomShapePath(const gfx::Rect& bounds) const = 0;
-
-  // views::ImageButton:
-  void PaintButtonContents(gfx::Canvas* canvas) override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
-  std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
-
- protected:
-  void PaintCustomShapePath(gfx::Canvas* canvas);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CustomShapeButton);
-};
 
 // Collapse button shown in TopShortcutsView with TopShortcutButtons.
 // UnifiedSystemTrayBubble will support collapsed state where the height of the
@@ -47,13 +23,19 @@ class CollapseButton : public CustomShapeButton {
   void SetExpandedAmount(double expanded_amount);
 
   // CustomShapeButton:
-  void OnEnabledChanged() override;
   gfx::Size CalculatePreferredSize() const override;
   SkPath CreateCustomShapePath(const gfx::Rect& bounds) const override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
+  const char* GetClassName() const override;
 
  private:
+  void OnEnabledChanged();
+
   double expanded_amount_ = 1.0;
+  views::PropertyChangedSubscription enabled_changed_subscription_ =
+      AddEnabledChangedCallback(
+          base::BindRepeating(&CollapseButton::OnEnabledChanged,
+                              base::Unretained(this)));
 
   DISALLOW_COPY_AND_ASSIGN(CollapseButton);
 };

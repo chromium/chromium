@@ -51,15 +51,8 @@ void FakeAppInstance::InitDeprecated(mojom::AppHostPtr host_ptr) {
 }
 
 void FakeAppInstance::Init(mojom::AppHostPtr host_ptr, InitCallback callback) {
-  // ARC app instance calls RefreshAppList after Init() successfully. Call
-  // RefreshAppList() here to keep the same behavior.
-  RefreshAppList();
   host_ = std::move(host_ptr);
   std::move(callback).Run();
-}
-
-void FakeAppInstance::RefreshAppList() {
-  ++refresh_app_list_count_;
 }
 
 void FakeAppInstance::LaunchAppDeprecated(
@@ -330,6 +323,10 @@ void FakeAppInstance::InstallPackage(mojom::ArcPackageInfoPtr arcPackageInfo) {
   app_host_->OnPackageAdded(std::move(arcPackageInfo));
 }
 
+void FakeAppInstance::GetAndroidId(GetAndroidIdCallback callback) {
+  std::move(callback).Run(android_id_);
+}
+
 void FakeAppInstance::GetRecentAndSuggestedAppsFromPlayStore(
     const std::string& query,
     int32_t max_results,
@@ -486,6 +483,11 @@ void FakeAppInstance::StartFastAppReinstallFlow(
 void FakeAppInstance::RequestAssistStructure(
     RequestAssistStructureCallback callback) {
   std::move(callback).Run(nullptr, nullptr);
+}
+
+void FakeAppInstance::IsInstallable(const std::string& package_name,
+                                    IsInstallableCallback callback) {
+  std::move(callback).Run(is_installable_);
 }
 
 void FakeAppInstance::LaunchIntentDeprecated(

@@ -13,9 +13,9 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/hash/md5.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
-#include "base/md5.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -264,8 +264,7 @@ FakeDriveService::FakeDriveService()
       blocked_file_list_load_count_(0),
       start_page_token_load_count_(0),
       offline_(false),
-      never_return_all_file_list_(false),
-      weak_ptr_factory_(this) {
+      never_return_all_file_list_(false) {
   UpdateLatestChangelistId(largest_changestamp_, std::string());
   about_resource_->set_quota_bytes_total(9876543210);
   about_resource_->set_quota_bytes_used_aggregate(6789012345);
@@ -305,7 +304,7 @@ void FakeDriveService::SetQuotaValue(int64_t used, int64_t total) {
   about_resource_->set_quota_bytes_total(total);
 }
 
-void FakeDriveService::Initialize(const std::string& account_id) {
+void FakeDriveService::Initialize(const CoreAccountId& account_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
 
@@ -540,20 +539,12 @@ CancelCallback FakeDriveService::GetRemainingChangeList(
       if (parameters[i].first == "changestamp") {
         base::StringToInt64(parameters[i].second, &start_changestamp);
       } else if (parameters[i].first == "q") {
-        search_query = net::UnescapeURLComponent(
-            parameters[i].second,
-            net::UnescapeRule::PATH_SEPARATORS |
-                net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+        search_query = net::UnescapeBinaryURLComponent(parameters[i].second);
       } else if (parameters[i].first == "parent") {
-        directory_resource_id = net::UnescapeURLComponent(
-            parameters[i].second,
-            net::UnescapeRule::PATH_SEPARATORS |
-                net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+        directory_resource_id =
+            net::UnescapeBinaryURLComponent(parameters[i].second);
       } else if (parameters[i].first == "team-drive-id") {
-        team_drive_id = net::UnescapeURLComponent(
-            parameters[i].second,
-            net::UnescapeRule::PATH_SEPARATORS |
-                net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+        team_drive_id = net::UnescapeBinaryURLComponent(parameters[i].second);
       } else if (parameters[i].first == "start-offset") {
         base::StringToInt(parameters[i].second, &start_offset);
       } else if (parameters[i].first == "max-results") {

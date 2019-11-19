@@ -1,24 +1,10 @@
 Name: Windows Template Library (WTL)
-URL: http://wtl.sourceforge.net/
-Version: 8.0
+URL: https://sourceforge.net/projects/wtl/files/WTL%2010/
+Version: 10.0.9163
+Commit: commit 57a7c4e2629cb85c6f27faa91650e047c4220e15
 License: Microsoft Permissive License
 License File: Ms-PL.txt
 Security Critical: yes
 
-With min and max replaced respectively with __min and __max. See below for an explanation.
-
----
-
-These headers are almost the equivalent of WTL 8.0 from http://sourceforge.net/projects/wtl/
-with patch #1871358 applied.
-http://sourceforge.net/tracker/index.php?func=detail&aid=1871358&group_id=109071&atid=652374
-
-"Fixes support for building with NOMINMAX defined.
-When defining NOMINMAX before including windows.h, min and max aren't
-defined. __min and __max are always defined though. So use them instead.
-
-This patch simply consist of a search of replace for both term."
-
----
-
-Cherry pick of http://sourceforge.net/tracker/index.php?func=detail&aid=1871358&group_id=109071&atid=652374
+Local changes (all part of wtl10.patch):
+- Fix calls to ATLVERIFY to avoid the error: expression result unused.

@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBUSB_USB_CONFIGURATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBUSB_USB_CONFIGURATION_H_
 
-#include "device/usb/public/mojom/device.mojom-blink.h"
+#include "services/device/public/mojom/usb_device.mojom-blink.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 

@@ -8,6 +8,9 @@ import hashlib
 import os
 import re
 import struct
+from ukm_model import _EVENT_TYPE
+from ukm_model import _METRIC_TYPE
+
 
 def sanitize_name(name):
   s = re.sub('[^0-9a-zA-Z_]', '_', name)
@@ -57,8 +60,9 @@ class Template(object):
 
   def _StampEventCode(self, file_info, event):
     event_info = EventInfo(event)
-    metric_code = "".join(self._StampMetricCode(file_info, event_info, metric)
-                          for metric in event['metrics'])
+    metric_code = "".join(
+        self._StampMetricCode(file_info, event_info, metric)
+        for metric in event[_METRIC_TYPE.tag])
     return self.event_template.format(
         file=file_info,
         event=event_info,
@@ -66,8 +70,9 @@ class Template(object):
 
   def _StampFileCode(self, relpath, data):
     file_info = FileInfo(relpath, self.basename)
-    event_code = "".join(self._StampEventCode(file_info, event)
-                         for event in data['events'])
+    event_code = "".join(
+        self._StampEventCode(file_info, event)
+        for event in data[_EVENT_TYPE.tag])
     return self.file_template.format(
         file=file_info,
         event_code=event_code)

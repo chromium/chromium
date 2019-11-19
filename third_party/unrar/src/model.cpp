@@ -5,8 +5,6 @@
  *  Contents: model description and encoding/decoding routines              *
  ****************************************************************************/
 
-namespace third_party_unrar {
-
 static const int MAX_O=64; /* maximum allowed model order */
 const uint TOP=1 << 24, BOT=1 << 15;
 
@@ -653,5 +651,3 @@ int ModelPPM::DecodeChar()
   ARI_DEC_NORMALIZE(Coder.code,Coder.low,Coder.range,Coder.UnpackRead);
   return(Symbol);
 }
-
-}  // namespace third_party_unrar

@@ -288,5 +288,11 @@
               false)
           .then(searchCallback.bind(this, next));
     },
+
+    function testSearchClosingTag(next) {
+        TestRunner.domModel
+            .performSearch('</textarea>', false)
+            .then(searchCallback.bind(this, next));
+      },
   ]);
 })();

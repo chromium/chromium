@@ -27,7 +27,7 @@ scoped_refptr<net::CRLSet> ParseCRLSet(std::string crl_set) {
 
 }  // namespace
 
-CRLSetDistributor::CRLSetDistributor() : weak_factory_(this) {}
+CRLSetDistributor::CRLSetDistributor() {}
 
 CRLSetDistributor::~CRLSetDistributor() = default;
 
@@ -45,8 +45,8 @@ void CRLSetDistributor::OnNewCRLSet(base::span<const uint8_t> crl_set) {
   std::string crl_set_string(reinterpret_cast<const char*>(crl_set.data()),
                              crl_set.size());
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::ThreadPool(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&ParseCRLSet, std::move(crl_set_string)),
       base::BindOnce(&CRLSetDistributor::OnCRLSetParsed,
                      weak_factory_.GetWeakPtr()));

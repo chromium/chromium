@@ -1,0 +1,19 @@
+<body>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.setDumpConsoleMessages(false);
+  testRunner.waitUntilDone();
+  testRunner.setCanOpenWindows();
+}
+
+window.onmessage = e => {
+  document.body.appendChild(document.createTextNode(e.data));
+  if (window.testRunner)
+    testRunner.notifyDone();
+}
+
+name = "target";
+window.open("http://localhost:8000/navigation/resources/javascript-url-cross-origin-window.html");
+</script>
+</body>

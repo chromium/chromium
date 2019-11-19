@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace blink {
 namespace mojom {
@@ -37,7 +37,7 @@ class UsbTabHelper : public content::WebContentsObserver,
 
   void CreateWebUsbService(
       content::RenderFrameHost* render_frame_host,
-      mojo::InterfaceRequest<blink::mojom::WebUsbService> request);
+      mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
 
   void IncrementConnectionCount(content::RenderFrameHost* render_frame_host);
   void DecrementConnectionCount(content::RenderFrameHost* render_frame_host);

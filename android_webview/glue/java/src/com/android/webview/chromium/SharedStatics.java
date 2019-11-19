@@ -65,7 +65,7 @@ public class SharedStatics {
 
     public void clearClientCertPreferences(Runnable onCleared) {
         // clang-format off
-        ThreadUtils.runOnUiThread(() ->
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () ->
                 AwContentsStatics.clearClientCertPreferences(onCleared));
         // clang-format on
     }
@@ -96,15 +96,15 @@ public class SharedStatics {
      */
     public void initSafeBrowsing(Context context, Callback<Boolean> callback) {
         // clang-format off
-        ThreadUtils.runOnUiThread(() -> AwContentsStatics.initSafeBrowsing(context,
-                    callback));
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                () -> AwContentsStatics.initSafeBrowsing(context, callback));
         // clang-format on
     }
 
     public void setSafeBrowsingWhitelist(List<String> urls, Callback<Boolean> callback) {
         // clang-format off
-        ThreadUtils.runOnUiThread(() -> AwContentsStatics.setSafeBrowsingWhitelist(
-                urls, callback));
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                () -> AwContentsStatics.setSafeBrowsingWhitelist(urls, callback));
         // clang-format on
     }
 
@@ -115,7 +115,11 @@ public class SharedStatics {
      * to users.
      */
     public Uri getSafeBrowsingPrivacyPolicyUrl() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT,
                 () -> AwContentsStatics.getSafeBrowsingPrivacyPolicyUrl());
+    }
+
+    public boolean isMultiProcessEnabled() {
+        return AwContentsStatics.isMultiProcessEnabled();
     }
 }

@@ -23,24 +23,20 @@ source_set("input_monitor") {
     "local_keyboard_input_monitor_mac.mm",
     "local_keyboard_input_monitor_win.cc",
     "local_keyboard_input_monitor_x11.cc",
-    "local_mouse_input_monitor.h",
-    "local_mouse_input_monitor_chromeos.cc",
     "local_mouse_input_monitor_mac.mm",
     "local_mouse_input_monitor_win.cc",
     "local_mouse_input_monitor_x11.cc",
+    "local_pointer_input_monitor.h",
+    "local_pointer_input_monitor_chromeos.cc",
   ]
 
   deps = [
     "//remoting/proto",
-    "//third_party/webrtc/modules/desktop_capture",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
-  }
-
-  if (is_mac) {
-    deps += [ "//third_party/google_toolbox_for_mac" ]
   }
 
   if (!use_x11 || (is_chromeos && !use_ozone)) {

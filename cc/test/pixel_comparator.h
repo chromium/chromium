@@ -45,7 +45,8 @@ class FuzzyPixelComparator : public PixelComparator {
                        float small_error_pixels_percentage_limit,
                        float avg_abs_error_limit,
                        int max_abs_error_limit,
-                       int small_error_threshold);
+                       int small_error_threshold,
+                       bool check_critical_error = true);
   ~FuzzyPixelComparator() override {}
 
   // Computes error metrics and returns true if the errors don't exceed the
@@ -67,6 +68,9 @@ class FuzzyPixelComparator : public PixelComparator {
   int max_abs_error_limit_;
   // Threshold for small errors.
   int small_error_threshold_;
+  // If true, comparator will report critical errors. For example:
+  // alpha value goes from 0 to 1 or 256 to 255.
+  bool check_critical_error_;
 };
 
 // All pixels can be off by one, but any more than that is an error.

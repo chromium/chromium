@@ -13,8 +13,10 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
+#include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -41,31 +43,9 @@ const char kApkMimeType[] = "application/vnd.android.package-archive";
 // The number of user gestures to trace back for the referrer chain.
 const int kAndroidTelemetryUserGestureLimit = 2;
 
-bool IsFeatureEnabled() {
-  return base::FeatureList::IsEnabled(safe_browsing::kTelemetryForApkDownloads);
+bool CanCaptureSafetyNetId() {
+  return base::FeatureList::IsEnabled(safe_browsing::kCaptureSafetyNetId);
 }
-
-// Enumerates the possibilities for whether the CSBRR report was sent (or not).
-enum class ApkDownloadTelemetryOutcome {
-  NOT_SENT_SAFE_BROWSING_NOT_ENABLED = 0,
-  // |web_contents| was nullptr. This happens sometimes when downloads are
-  // resumed but it's not clear exactly when.
-  NOT_SENT_MISSING_WEB_CONTENTS = 1,
-  // No ping sent because the user is in Incognito mode.
-  NOT_SENT_INCOGNITO = 2,
-  // No ping sent because the user hasn't enabled extended reporting.
-  NOT_SENT_EXTENDED_REPORTING_DISABLED = 3,
-  // Download was cancelled.
-  NOT_SENT_DOWNLOAD_CANCELLED = 4,
-  // Failed to serialize the report.
-  NOT_SENT_FAILED_TO_SERIALIZE = 5,
-  // Feature not enabled so don't send.
-  NOT_SENT_FEATURE_NOT_ENABLED = 6,
-  // Download completed. Ping sent.
-  SENT = 7,
-
-  kMaxValue = SENT
-};
 
 void RecordApkDownloadTelemetryOutcome(ApkDownloadTelemetryOutcome outcome) {
   UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.AndroidTelemetry.ApkDownload.Outcome",
@@ -95,43 +75,34 @@ void RecordApkDownloadTelemetryIncompleteReason(
 AndroidTelemetryService::AndroidTelemetryService(
     SafeBrowsingService* sb_service,
     Profile* profile)
-    : TelemetryService(),
-      profile_(profile),
-      sb_service_(sb_service),
-      weak_ptr_factory_(this) {
+    : TelemetryService(), profile_(profile), sb_service_(sb_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile_);
   DCHECK(sb_service_);
 
-  content::DownloadManager* download_manager =
-      BrowserContext::GetDownloadManager(profile_);
-  if (download_manager) {
-    // Look for new downloads being created.
-    download_manager->AddObserver(this);
-  }
+  download::SimpleDownloadManagerCoordinator* coordinator =
+      SimpleDownloadManagerCoordinatorFactory::GetForKey(
+          profile_->GetProfileKey());
+  coordinator->AddObserver(this);
 }
 
 AndroidTelemetryService::~AndroidTelemetryService() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::DownloadManager* download_manager =
-      BrowserContext::GetDownloadManager(profile_);
-  if (download_manager) {
-    download_manager->RemoveObserver(this);
-  }
+  download::SimpleDownloadManagerCoordinator* coordinator =
+      SimpleDownloadManagerCoordinatorFactory::GetForKey(
+          profile_->GetProfileKey());
+  coordinator->RemoveObserver(this);
 }
 
 void AndroidTelemetryService::OnDownloadCreated(
-    content::DownloadManager* manager,
     download::DownloadItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!BrowserContext::GetDownloadManager(profile_)->IsManagerInitialized()) {
+  download::SimpleDownloadManagerCoordinator* coordinator =
+      SimpleDownloadManagerCoordinatorFactory::GetForKey(
+          profile_->GetProfileKey());
+  if (!coordinator->has_all_history_downloads())
     return;
-  }
-
-  if (item->GetMimeType() != kApkMimeType) {
-    return;
-  }
 
   if (!CanSendPing(item)) {
     return;
@@ -146,12 +117,12 @@ void AndroidTelemetryService::OnDownloadCreated(
 
 void AndroidTelemetryService::OnDownloadUpdated(download::DownloadItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(IsFeatureEnabled());
   DCHECK_EQ(kApkMimeType, item->GetMimeType());
 
   if (item->GetState() == download::DownloadItem::COMPLETE) {
     // Download completed. Send report.
-    MaybeSendApkDownloadReport(item);
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report = GetReport(item);
+    MaybeSendApkDownloadReport(std::move(report));
     // No longer interested in this |DownloadItem| since the report has been
     // sent so remove the observer.
     item->RemoveObserver(this);
@@ -165,13 +136,9 @@ void AndroidTelemetryService::OnDownloadUpdated(download::DownloadItem* item) {
 }
 
 bool AndroidTelemetryService::CanSendPing(download::DownloadItem* item) {
-  content::WebContents* web_contents =
-      content::DownloadItemUtils::GetWebContents(item);
-  if (!web_contents) {
-    // TODO(vakh): This can happen sometimes when a download resumes on a
-    // browser re-launch. Identify this case and document it better.
-    RecordApkDownloadTelemetryOutcome(
-        ApkDownloadTelemetryOutcome::NOT_SENT_MISSING_WEB_CONTENTS);
+  if (item->GetMimeType() != kApkMimeType) {
+    // This case is not recorded since we are not interested here in finding out
+    // how often people download non-APK files.
     return false;
   }
 
@@ -181,7 +148,7 @@ bool AndroidTelemetryService::CanSendPing(download::DownloadItem* item) {
     return false;
   }
 
-  if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
+  if (profile_->IsOffTheRecord()) {
     RecordApkDownloadTelemetryOutcome(
         ApkDownloadTelemetryOutcome::NOT_SENT_INCOGNITO);
     return false;
@@ -190,12 +157,6 @@ bool AndroidTelemetryService::CanSendPing(download::DownloadItem* item) {
   if (!IsExtendedReportingEnabled(*GetPrefs())) {
     RecordApkDownloadTelemetryOutcome(
         ApkDownloadTelemetryOutcome::NOT_SENT_EXTENDED_REPORTING_DISABLED);
-    return false;
-  }
-
-  if (!IsFeatureEnabled()) {
-    RecordApkDownloadTelemetryOutcome(
-        ApkDownloadTelemetryOutcome::NOT_SENT_FEATURE_NOT_ENABLED);
     return false;
   }
 
@@ -246,30 +207,14 @@ void AndroidTelemetryService::FillReferrerChain(
       recent_navigations_to_collect, report->mutable_referrer_chain());
 }
 
-void AndroidTelemetryService::MaybeCaptureSafetyNetId() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(sb_service_->database_manager());
-  if (!safety_net_id_on_ui_thread_.empty()) {
-    return;
-  }
-
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {content::BrowserThread::IO},
-      base::BindOnce(&SafeBrowsingDatabaseManager::GetSafetyNetId,
-                     sb_service_->database_manager()),
-      base::BindOnce(&AndroidTelemetryService::SetSafetyNetIdOnUIThread,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void AndroidTelemetryService::MaybeSendApkDownloadReport(
-    download::DownloadItem* item) {
+std::unique_ptr<ClientSafeBrowsingReportRequest>
+AndroidTelemetryService::GetReport(download::DownloadItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(item->IsDone());
 
   std::unique_ptr<ClientSafeBrowsingReportRequest> report(
       new ClientSafeBrowsingReportRequest());
-  report->set_type(
-      safe_browsing::ClientSafeBrowsingReportRequest::APK_DOWNLOAD);
+  report->set_type(ClientSafeBrowsingReportRequest::APK_DOWNLOAD);
   report->set_url(item->GetOriginalUrl().spec());
   report->set_page_url(item->GetTabUrl().spec());
 
@@ -288,6 +233,27 @@ void AndroidTelemetryService::MaybeSendApkDownloadReport(
       item->GetTargetFilePath().BaseName().value());
   report->set_safety_net_id(safety_net_id_on_ui_thread_);
 
+  return report;
+}
+
+void AndroidTelemetryService::MaybeCaptureSafetyNetId() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(sb_service_->database_manager());
+  if (!CanCaptureSafetyNetId() || !safety_net_id_on_ui_thread_.empty() ||
+      !sb_service_->database_manager()->IsSupported()) {
+    return;
+  }
+
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE, {content::BrowserThread::IO},
+      base::BindOnce(&SafeBrowsingDatabaseManager::GetSafetyNetId,
+                     sb_service_->database_manager()),
+      base::BindOnce(&AndroidTelemetryService::SetSafetyNetIdOnUIThread,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AndroidTelemetryService::MaybeSendApkDownloadReport(
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
   std::string serialized;
   if (!report->SerializeToString(&serialized)) {
     DLOG(ERROR) << "Unable to serialize the APK download telemetry report.";
@@ -297,7 +263,7 @@ void AndroidTelemetryService::MaybeSendApkDownloadReport(
   }
   sb_service_->ping_manager()->ReportThreatDetails(serialized);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&WebUIInfoSingleton::AddToCSBRRsSent,
                      base::Unretained(WebUIInfoSingleton::GetInstance()),

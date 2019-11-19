@@ -71,6 +71,55 @@ void URLDatabase::FillURLRow(const sql::Statement& s, URLRow* i) {
   i->set_hidden(s.ColumnInt(6) != 0);
 }
 
+bool URLDatabase::MigrateKeywordsSearchTermsLowerTermColumn() {
+  // Create a temporary keyword search terms table.
+  if (!GetDB().Execute(
+          "CREATE TABLE temp_keyword_search_terms ("
+          "keyword_id INTEGER NOT NULL,"  // ID of the TemplateURL.
+          "url_id INTEGER NOT NULL,"      // ID of the url.
+          "term LONGVARCHAR NOT NULL,"    // The actual search term.
+          // The search term, in lower case, and with whitespaces collapsed.
+          "normalized_term LONGVARCHAR NOT NULL)")) {
+    return false;
+  }
+
+  // Extract rows from the keyword search terms table, convert lower_term to
+  // normalized_term, and insert them into the temporary table.
+  sql::Statement select_statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "SELECT keyword_id, url_id, lower_term, term "
+                                 "FROM keyword_search_terms"));
+  while (select_statement.Step()) {
+    sql::Statement insert_statement(GetDB().GetCachedStatement(
+        SQL_FROM_HERE,
+        "INSERT INTO temp_keyword_search_terms "
+        "(keyword_id, url_id, term, normalized_term) VALUES (?,?,?,?)"));
+    insert_statement.BindInt64(0, select_statement.ColumnInt64(0));
+    insert_statement.BindInt64(1, select_statement.ColumnInt64(1));
+    insert_statement.BindString16(2, select_statement.ColumnString16(3));
+    insert_statement.BindString16(
+        3, base::CollapseWhitespace(select_statement.ColumnString16(2), false));
+    if (!insert_statement.Run())
+      return false;
+  }
+  if (!select_statement.Succeeded())
+    return false;
+
+  // Replace the keyword search terms table with the temporary one.
+  if (!GetDB().Execute("DROP TABLE keyword_search_terms"))
+    return false;
+  if (!GetDB().Execute("ALTER TABLE temp_keyword_search_terms RENAME TO "
+                       "keyword_search_terms")) {
+    return false;
+  }
+
+  // Index the table, this is faster than creating the index first and then
+  // inserting into it.
+  CreateKeywordSearchTermsIndices();
+
+  return true;
+}
+
 bool URLDatabase::GetURLRow(URLID url_id, URLRow* info) {
   // TODO(brettw) We need check for empty URLs to handle the case where
   // there are old URLs in the database that are empty that got in before
@@ -412,12 +461,16 @@ bool URLDatabase::GetTextMatchesWithAlgorithm(
 bool URLDatabase::InitKeywordSearchTermsTable() {
   has_keyword_search_terms_ = true;
   if (!GetDB().DoesTableExist("keyword_search_terms")) {
-    if (!GetDB().Execute("CREATE TABLE keyword_search_terms ("
-        "keyword_id INTEGER NOT NULL,"      // ID of the TemplateURL.
-        "url_id INTEGER NOT NULL,"          // ID of the url.
-        "lower_term LONGVARCHAR NOT NULL,"  // The search term, in lower case.
-        "term LONGVARCHAR NOT NULL)"))      // The actual search term.
+    if (!GetDB().Execute(
+            "CREATE TABLE keyword_search_terms ("
+            "keyword_id INTEGER NOT NULL,"  // ID of the TemplateURL.
+            "url_id INTEGER NOT NULL,"      // ID of the url.
+            "term LONGVARCHAR NOT NULL,"    // The actual search term.
+            // The search term, in lower case, and with whitespaces collapsed.
+            "normalized_term LONGVARCHAR NOT NULL)") ||
+        !CreateKeywordSearchTermsIndices()) {
       return false;
+    }
   }
   return true;
 }
@@ -426,7 +479,7 @@ bool URLDatabase::CreateKeywordSearchTermsIndices() {
   // For searching.
   if (!GetDB().Execute(
           "CREATE INDEX IF NOT EXISTS keyword_search_terms_index1 ON "
-          "keyword_search_terms (keyword_id, lower_term)")) {
+          "keyword_search_terms (keyword_id, normalized_term)")) {
     return false;
   }
 
@@ -468,21 +521,25 @@ bool URLDatabase::SetKeywordSearchTermsForURL(URLID url_id,
   if (!exist_statement.Succeeded())
     return false;
 
-  sql::Statement statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
-      "INSERT INTO keyword_search_terms (keyword_id, url_id, lower_term, term) "
-      "VALUES (?,?,?,?)"));
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT INTO keyword_search_terms (keyword_id, url_id, term, "
+      "normalized_term) VALUES (?,?,?,?)"));
   statement.BindInt64(0, keyword_id);
   statement.BindInt64(1, url_id);
-  statement.BindString16(2, base::i18n::ToLower(term));
-  statement.BindString16(3, term);
+  statement.BindString16(2, term);
+  statement.BindString16(
+      3, base::i18n::ToLower(base::CollapseWhitespace(term, false)));
   return statement.Run();
 }
 
 bool URLDatabase::GetKeywordSearchTermRow(URLID url_id,
                                           KeywordSearchTermRow* row) {
   DCHECK(url_id);
-  sql::Statement statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
-      "SELECT keyword_id, term FROM keyword_search_terms WHERE url_id=?"));
+  sql::Statement statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "SELECT keyword_id, term, normalized_term "
+                                 "FROM keyword_search_terms WHERE url_id=?"));
   statement.BindInt64(0, url_id);
 
   if (!statement.Step())
@@ -492,6 +549,7 @@ bool URLDatabase::GetKeywordSearchTermRow(URLID url_id,
     row->url_id = url_id;
     row->keyword_id = statement.ColumnInt64(0);
     row->term = statement.ColumnString16(1);
+    row->normalized_term = statement.ColumnString16(2);
   }
   return true;
 }
@@ -499,8 +557,10 @@ bool URLDatabase::GetKeywordSearchTermRow(URLID url_id,
 bool URLDatabase::GetKeywordSearchTermRows(
     const base::string16& term,
     std::vector<KeywordSearchTermRow>* rows) {
-  sql::Statement statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
-      "SELECT keyword_id, url_id FROM keyword_search_terms WHERE term=?"));
+  sql::Statement statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "SELECT keyword_id, url_id, normalized_term "
+                                 "FROM keyword_search_terms WHERE term=?"));
   statement.BindString16(0, term);
 
   if (!statement.is_valid())
@@ -511,6 +571,7 @@ bool URLDatabase::GetKeywordSearchTermRows(
     row.url_id = statement.ColumnInt64(1);
     row.keyword_id = statement.ColumnInt64(0);
     row.term = term;
+    row.normalized_term = statement.ColumnInt64(2);
     rows->push_back(row);
   }
   return true;
@@ -538,20 +599,24 @@ void URLDatabase::GetMostRecentKeywordSearchTerms(
     return;
 
   DCHECK(!prefix.empty());
-  sql::Statement statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
       "SELECT DISTINCT kv.term, u.visit_count, u.last_visit_time "
       "FROM keyword_search_terms kv "
       "JOIN urls u ON kv.url_id = u.id "
-      "WHERE kv.keyword_id = ? AND kv.lower_term >= ? AND kv.lower_term < ? "
+      "WHERE kv.keyword_id = ? AND kv.normalized_term >= ? AND "
+      "kv.normalized_term < ? "
       "ORDER BY u.last_visit_time DESC LIMIT ?"));
 
-  // NOTE: Keep this ToLower() call in sync with search_provider.cc.
-  base::string16 lower_prefix = base::i18n::ToLower(prefix);
+  // NOTE: Keep these CollapseWhitespace() and ToLower() calls in sync with
+  // search_provider.cc.
+  base::string16 normalized_prefix =
+      base::CollapseWhitespace(base::i18n::ToLower(prefix), false);
   // This magic gives us a prefix search.
-  base::string16 next_prefix = lower_prefix;
+  base::string16 next_prefix = normalized_prefix;
   next_prefix.back() = next_prefix.back() + 1;
   statement.BindInt64(0, keyword_id);
-  statement.BindString16(1, lower_prefix);
+  statement.BindString16(1, normalized_prefix);
   statement.BindString16(2, next_prefix);
   statement.BindInt(3, max_count);
 
@@ -564,10 +629,55 @@ void URLDatabase::GetMostRecentKeywordSearchTerms(
   }
 }
 
+std::vector<KeywordSearchTermVisit>
+URLDatabase::GetMostRecentKeywordSearchTerms(KeywordID keyword_id,
+                                             int max_count) {
+  // NOTE: the keyword_id can be zero if on first run the user does a query
+  // before the TemplateURLService has finished loading. As the chances of this
+  // occurring are small, we ignore it.
+  if (!keyword_id)
+    return {};
+
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT DISTINCT "
+      "kv.term, kv.normalized_term, u.visit_count, u.last_visit_time "
+      "FROM keyword_search_terms kv JOIN urls u ON kv.url_id = u.id "
+      "WHERE kv.keyword_id = ? "
+      "ORDER BY u.last_visit_time DESC LIMIT ?"));
+
+  statement.BindInt64(0, keyword_id);
+  statement.BindInt(1, max_count);
+
+  std::vector<KeywordSearchTermVisit> visits;
+  while (statement.Step()) {
+    KeywordSearchTermVisit visit;
+    visit.term = statement.ColumnString16(0);
+    visit.normalized_term = statement.ColumnString16(1);
+    visit.visits = statement.ColumnInt(2);
+    visit.time = base::Time::FromInternalValue(statement.ColumnInt64(3));
+    visits.push_back(visit);
+  }
+  return visits;
+}
+
 bool URLDatabase::DeleteKeywordSearchTerm(const base::string16& term) {
   sql::Statement statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
       "DELETE FROM keyword_search_terms WHERE term=?"));
   statement.BindString16(0, term);
+
+  return statement.Run();
+}
+
+bool URLDatabase::DeleteKeywordSearchTermForNormalizedTerm(
+    KeywordID keyword_id,
+    const base::string16& normalized_term) {
+  sql::Statement statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "DELETE FROM keyword_search_terms WHERE "
+                                 "keyword_id = ? AND normalized_term=?"));
+  statement.BindInt64(0, keyword_id);
+  statement.BindString16(1, normalized_term);
 
   return statement.Run();
 }

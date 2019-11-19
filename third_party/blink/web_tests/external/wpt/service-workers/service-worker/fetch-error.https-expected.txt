@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Setup service worker
+FAIL Make sure a load that makes progress does not time out assert_true: expected true got false
+PASS Unregister service worker
+Harness: the test ran to completion.
+

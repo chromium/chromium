@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#include "components/signin/core/browser/signin_buildflags.h"
 
 // static
 AccountConsistencyModeManagerFactory*
@@ -36,11 +35,19 @@ AccountConsistencyModeManagerFactory::~AccountConsistencyModeManagerFactory() =
 KeyedService* AccountConsistencyModeManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   DCHECK(!context->IsOffTheRecord());
-  return new AccountConsistencyModeManager(
-      Profile::FromBrowserContext(context));
+  Profile* profile = Profile::FromBrowserContext(context);
+
+  return AccountConsistencyModeManager::ShouldBuildServiceForProfile(profile)
+             ? new AccountConsistencyModeManager(profile)
+             : nullptr;
 }
 
 void AccountConsistencyModeManagerFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   AccountConsistencyModeManager::RegisterProfilePrefs(registry);
+}
+
+bool AccountConsistencyModeManagerFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return true;
 }

@@ -1,9 +1,0 @@
-include_rules = [
-  # Allow the typemaps to access their dependencies.
-  '+mojo/public/cpp/bindings',
-  '+mojo/public/cpp/base',
-  '+mojo/public/cpp/system/platform_handle.h',
-
-  # Allow unit tests to set up a mojo embedder.
-  '+mojo/core/embedder',
-]

@@ -18,7 +18,9 @@ Description: Chrome Remote Desktop has been updated. Please save your work and l
 NOTIFIER_DIR="/var/lib/update-notifier/user.d"
 VAR_DIR="/var/lib/chrome-remote-desktop"
 HASHES_FILE="$VAR_DIR/hashes"
-USER_SESSION_PATH="/opt/google/chrome-remote-desktop/user-session"
+INSTALL_DIR="/opt/google/chrome-remote-desktop"
+USER_SESSION_PATH="$INSTALL_DIR/user-session"
+HOST_PATH="$INSTALL_DIR/chrome-remote-desktop-host"
 CRD_GROUP="chrome-remote-desktop"
 
 case "$1" in
@@ -35,11 +37,12 @@ case "$1" in
       chown root:"$CRD_GROUP" "$USER_SESSION_PATH"
       chmod u=srwx,g=rx,o=r "$USER_SESSION_PATH"
     fi
-    # Kill host processes. The wrapper script will restart them.
-    # TODO(lambroslambrou): Remove the '-9' when the underlying problem with
-    # hosts not responding to SIGTERM has been fixed - http://crbug.com/420090
+    # Kill host processes. SIGKILL is used because the wrapper script will
+    # restart the host immediately (so any cleanup that might otherwise happen
+    # is not useful), and this ensures that hosts restart even if they are
+    # deadlocked.
     echo "Shutting down Chrome Remote Desktop hosts (they will restart automatically)..."
-    killall -9 -q chrome-remote-desktop-host || true
+    pkill -KILL -f "^$HOST_PATH" || true
     # If any files have changed that require the user to restart their virtual
     # desktops (eg, the wrapper script itself) then notify them but don't do
     # anything that would result in them losing state.

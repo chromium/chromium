@@ -4,18 +4,39 @@
 
 /**
  * Mock thumbnail loader.
- *
- * @param {Entry} entry An entry.
- * @param {ThumbnailLoader.LoaderType=} opt_loaderType Loader type.
- * @param {Object=} opt_metadata Metadata.
- * @param {string=} opt_mediaType Media type.
- * @param {Array<ThumbnailLoader.LoadTarget>=} opt_loadTargets Load targets.
- * @param {number=} opt_priority Priority.
- * @constructor
  */
-function MockThumbnailLoader(entry, opt_loaderType, opt_metadata, opt_mediaType,
-    opt_loadTargets, opt_priority) {
-  this.entry_ = entry;
+class MockThumbnailLoader {
+  /**
+   * @param {Entry} entry An entry.
+   * @param {ThumbnailLoader.LoaderType=} opt_loaderType Loader type.
+   * @param {Object=} opt_metadata Metadata.
+   * @param {string=} opt_mediaType Media type.
+   * @param {Array<ThumbnailLoader.LoadTarget>=} opt_loadTargets Load targets.
+   * @param {number=} opt_priority Priority.
+   */
+  constructor(
+      entry, opt_loaderType, opt_metadata, opt_mediaType, opt_loadTargets,
+      opt_priority) {
+    this.entry_ = entry;
+  }
+
+  /**
+   * Loads thumbnail as data url.
+   *
+   * @return {!Promise<{data:?string, width:number, height:number}>} A
+   *     promise which is resolved with data url.
+   */
+  loadAsDataUrl() {
+    if (MockThumbnailLoader.errorUrls.indexOf(this.entry_.toURL()) !== -1) {
+      throw new Error('Failed to load thumbnail.');
+    }
+
+    return Promise.resolve({
+      data: MockThumbnailLoader.testImageDataUrl,
+      width: MockThumbnailLoader.testImageWidth,
+      height: MockThumbnailLoader.testImageHeight
+    });
+  }
 }
 
 /**
@@ -26,36 +47,18 @@ MockThumbnailLoader.testImageDataUrl = null;
 
 /**
  * Width of test image.
- * @private {number}
+ * @type {number}
  */
 MockThumbnailLoader.testImageWidth = 0;
 
 /**
  * Height of test image.
- * @private {number}
+ * @type {number}
  */
 MockThumbnailLoader.testImageHeight = 0;
 
 /**
  * Error urls.
- * @private {Array<string>}
+ * @type {Array<string>}
  */
 MockThumbnailLoader.errorUrls = [];
-
-/**
- * Loads thumbnail as data url.
- *
- * @return {!Promise<{data:?string, width:number, height:number}>} A
- *     promise which is resolved with data url.
- */
-MockThumbnailLoader.prototype.loadAsDataUrl = function() {
-  if (MockThumbnailLoader.errorUrls.indexOf(this.entry_.toURL()) !== -1) {
-    throw new Error('Failed to load thumbnail.');
-  }
-
-  return Promise.resolve({
-    data: MockThumbnailLoader.testImageDataUrl,
-    width: MockThumbnailLoader.testImageWidth,
-    height: MockThumbnailLoader.testImageHeight
-  });
-};

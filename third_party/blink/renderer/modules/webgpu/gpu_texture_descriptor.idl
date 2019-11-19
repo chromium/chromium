@@ -1,0 +1,69 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/
+
+dictionary GPUTextureDescriptor : GPUObjectDescriptorBase {
+    required GPUExtent3D size;
+    unsigned long arrayLayerCount = 1;
+    unsigned long mipLevelCount = 1;
+    unsigned long sampleCount = 1;
+    GPUTextureDimension dimension = "2d";
+    required GPUTextureFormat format;
+    required GPUTextureUsageFlags usage;
+};
+
+enum GPUTextureDimension {
+    "1d",
+    "2d",
+    "3d"
+};
+
+enum GPUTextureFormat {
+    /* Normal 8 bit formats */
+    "r8unorm",
+    "r8snorm",
+    "r8uint",
+    "r8sint",
+    /* Normal 16 bit formats */
+    "r16uint",
+    "r16sint",
+    "r16float",
+    "rg8unorm",
+    "rg8snorm",
+    "rg8uint",
+    "rg8sint",
+    /* Normal 32 bit formats */
+    "r32uint",
+    "r32sint",
+    "r32float",
+    "rg16uint",
+    "rg16sint",
+    "rg16float",
+    "rgba8unorm",
+    "rgba8unorm-srgb",
+    "rgba8snorm",
+    "rgba8uint",
+    "rgba8sint",
+    "bgra8unorm",
+    "bgra8unorm-srgb",
+    /* Packed 32 bit formats */
+    "rgb10a2unorm",
+    "rg11b10float",
+    /* Normal 64 bit formats */
+    "rg32uint",
+    "rg32sint",
+    "rg32float",
+    "rgba16uint",
+    "rgba16sint",
+    "rgba16float",
+    /* Normal 128 bit formats */
+    "rgba32uint",
+    "rgba32sint",
+    "rgba32float",
+    /* Depth / Stencil formats */
+    "depth32float",
+    "depth24plus",
+    "depth24plus-stencil8"
+};

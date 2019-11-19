@@ -29,7 +29,7 @@
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -149,7 +149,7 @@ class BookmarksObserver : public BookmarksExportObserver {
 // Tests bookmark_html_writer by populating a BookmarkModel, writing it out by
 // way of bookmark_html_writer, then using the importer to read it back in.
 TEST_F(BookmarkHTMLWriterTest, Test) {
-  content::TestBrowserThreadBundle thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
 
   TestingProfile profile;
   ASSERT_TRUE(profile.CreateHistoryService(true, false));
@@ -204,7 +204,7 @@ TEST_F(BookmarkHTMLWriterTest, Test) {
   base::Time t4(t1 + base::TimeDelta::FromHours(1));
   const BookmarkNode* f1 = model->AddFolder(
       model->bookmark_bar_node(), 0, f1_title);
-  model->AddURLWithCreationTimeAndMetaInfo(f1, 0, url1_title, url1, t1, NULL);
+  model->AddURL(f1, 0, url1_title, url1, nullptr, t1);
   HistoryServiceFactory::GetForProfile(&profile,
                                        ServiceAccessType::EXPLICIT_ACCESS)
       ->AddPage(url1, base::Time::Now(), history::SOURCE_BROWSED);
@@ -213,27 +213,18 @@ TEST_F(BookmarkHTMLWriterTest, Test) {
       ->SetFavicons({url1}, url1_favicon, favicon_base::IconType::kFavicon,
                     gfx::Image::CreateFrom1xBitmap(bitmap));
   const BookmarkNode* f2 = model->AddFolder(f1, 1, f2_title);
-  model->AddURLWithCreationTimeAndMetaInfo(f2, 0, url2_title, url2, t2, NULL);
-  model->AddURLWithCreationTimeAndMetaInfo(
-      model->bookmark_bar_node(), 1, url3_title, url3, t3, NULL);
+  model->AddURL(f2, 0, url2_title, url2, nullptr, t2);
+  model->AddURL(model->bookmark_bar_node(), 1, url3_title, url3, nullptr, t3);
 
-  model->AddURLWithCreationTimeAndMetaInfo(
-      model->other_node(), 0, url1_title, url1, t1, NULL);
-  model->AddURLWithCreationTimeAndMetaInfo(
-      model->other_node(), 1, url2_title, url2, t2, NULL);
+  model->AddURL(model->other_node(), 0, url1_title, url1, nullptr, t1);
+  model->AddURL(model->other_node(), 1, url2_title, url2, nullptr, t2);
   const BookmarkNode* f3 = model->AddFolder(model->other_node(), 2, f3_title);
   const BookmarkNode* f4 = model->AddFolder(f3, 0, f4_title);
-  model->AddURLWithCreationTimeAndMetaInfo(f4, 0, url1_title, url1, t1, NULL);
-  model->AddURLWithCreationTimeAndMetaInfo(
-      model->bookmark_bar_node(), 2, url4_title, url4, t4, NULL);
-  model->AddURLWithCreationTimeAndMetaInfo(
-      model->mobile_node(), 0, url1_title, url1, t1, NULL);
-  model->AddURLWithCreationTimeAndMetaInfo(model->mobile_node(),
-                                           1,
-                                           unnamed_bookmark_title,
-                                           unnamed_bookmark_url,
-                                           t2,
-                                           NULL);
+  model->AddURL(f4, 0, url1_title, url1, nullptr, t1);
+  model->AddURL(model->bookmark_bar_node(), 2, url4_title, url4, nullptr, t4);
+  model->AddURL(model->mobile_node(), 0, url1_title, url1, nullptr, t1);
+  model->AddURL(model->mobile_node(), 1, unnamed_bookmark_title,
+                unnamed_bookmark_url, nullptr, t2);
 
   base::RunLoop run_loop;
 

@@ -6,8 +6,10 @@
 
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/sanitizer_buildflags.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info_values.h"
 
@@ -27,7 +29,7 @@ std::string GetVersionNumber() {
 
 std::string GetMajorVersionNumber() {
   DCHECK(version_info::GetVersion().IsValid());
-  return base::UintToString(version_info::GetVersion().components()[0]);
+  return base::NumberToString(version_info::GetVersion().components()[0]);
 }
 
 const base::Version& GetVersion() {
@@ -51,7 +53,7 @@ std::string GetOSType() {
 #elif defined(OS_MACOSX)
   return "Mac OS X";
 #elif defined(OS_CHROMEOS)
-# if defined(GOOGLE_CHROME_BUILD)
+# if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return "Chrome OS";
 # else
   return "Chromium OS";
@@ -86,6 +88,29 @@ std::string GetChannelString(Channel channel) {
   }
   NOTREACHED();
   return std::string();
+}
+
+std::string GetSanitizerList() {
+  std::string sanitizers;
+#if defined(ADDRESS_SANITIZER)
+  sanitizers += "address ";
+#endif
+#if BUILDFLAG(IS_HWASAN)
+  sanitizers += "hwaddress ";
+#endif
+#if defined(LEAK_SANITIZER)
+  sanitizers += "leak ";
+#endif
+#if defined(MEMORY_SANITIZER)
+  sanitizers += "memory ";
+#endif
+#if defined(THREAD_SANITIZER)
+  sanitizers += "thread ";
+#endif
+#if defined(UNDEFINED_SANITIZER)
+  sanitizers += "undefined ";
+#endif
+  return sanitizers;
 }
 
 }  // namespace version_info

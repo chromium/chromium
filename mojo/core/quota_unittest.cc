@@ -256,6 +256,108 @@ TEST_F(QuotaTest, ReceiveQueueMemorySizeLimitExceeded) {
   MojoClose(b);
 }
 
+TEST_F(QuotaTest, BasicUnreadMessageCount) {
+  MojoHandle a, b;
+  CreateMessagePipe(&a, &b);
+
+  uint64_t limit = 0;
+  uint64_t usage = 0;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            MojoQueryQuota(a, MOJO_QUOTA_TYPE_UNREAD_MESSAGE_COUNT, nullptr,
+                           &limit, &usage));
+  EXPECT_EQ(MOJO_QUOTA_LIMIT_NONE, limit);
+  EXPECT_EQ(0u, usage);
+
+  const uint64_t kTestLimit = 42;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            MojoSetQuota(a, MOJO_QUOTA_TYPE_UNREAD_MESSAGE_COUNT, kTestLimit,
+                         nullptr));
+
+  EXPECT_EQ(MOJO_RESULT_OK,
+            MojoQueryQuota(a, MOJO_QUOTA_TYPE_UNREAD_MESSAGE_COUNT, nullptr,
+                           &limit, &usage));
+  EXPECT_EQ(kTestLimit, limit);
+  EXPECT_EQ(0u, usage);
+
+  const std::string kTestMessage = "doot";
+  WriteMessage(a, kTestMessage);
+
+  EXPECT_EQ(MOJO_RESULT_OK,
+            MojoQueryQuota(a, MOJO_QUOTA_TYPE_UNREAD_MESSAGE_COUNT, nullptr,
+                           &limit, &usage));
+  EXPECT_EQ(kTestLimit, limit);
+  EXPECT_EQ(usage, 1u);
+
+  MojoClose(a);
+  MojoClose(b);
+}
+
+TEST_F(QuotaTest, UnreadMessageCountLimitExceeded) {
+  MojoHandle a, b;
+  CreateMessagePipe(&a, &b);
+
+  const uint64_t kMaxUnreadMessageCount = 4;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            MojoSetQuota(a, MOJO_QUOTA_TYPE_UNREAD_MESSAGE_COUNT,
+                         kMaxUnreadMessageCount, nullptr));
+
+  MojoHandleSignalsState signals;
+  EXPECT_EQ(MOJO_RESULT_OK, MojoQueryHandleSignalsState(a, &signals));
+  EXPECT_FALSE(signals.satisfied_signals & MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED);
+
+  const std::string kTestMessage = "msg";
+  WriteMessage(a, kTestMessage);
+
+  uint64_t limit = 0;
+  uint64_t usage = 0;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            MojoQueryQuota(a, MOJO_QUOTA_TYPE_UNREAD_MESSAGE_COUNT, nullptr,
+                           &limit, &usage));
+  EXPECT_EQ(kMaxUnreadMessageCount, limit);
+  EXPECT_EQ(1u, usage);
+
+  EXPECT_EQ(MOJO_RESULT_OK, MojoQueryHandleSignalsState(a, &signals));
+  EXPECT_FALSE(signals.satisfied_signals & MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED);
+
+  // Push the endpoint over quota and ensure that it signals accordingly.
+  WriteMessage(a, kTestMessage);
+  WriteMessage(a, kTestMessage);
+  WriteMessage(a, kTestMessage);
+  WriteMessage(a, kTestMessage);
+  WaitForSignals(a, MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED);
+
+  EXPECT_EQ(MOJO_RESULT_OK, MojoQueryHandleSignalsState(a, &signals));
+  EXPECT_TRUE(signals.satisfied_signals & MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED);
+
+  EXPECT_EQ(MOJO_RESULT_OK,
+            MojoQueryQuota(a, MOJO_QUOTA_TYPE_UNREAD_MESSAGE_COUNT, nullptr,
+                           &limit, &usage));
+  EXPECT_EQ(kMaxUnreadMessageCount, limit);
+  EXPECT_EQ(5u, usage);
+
+  // Read the messages and wait for QUOTA_EXCEEDED on the other end to go back
+  // low. There's some hysteresis in the signaling, so it's not sufficient to
+  // read a single packet, but reading below the quota size should work.
+  EXPECT_EQ(kTestMessage, ReadMessage(b));
+  EXPECT_EQ(kTestMessage, ReadMessage(b));
+  EXPECT_EQ(kTestMessage, ReadMessage(b));
+  EXPECT_EQ(kTestMessage, ReadMessage(b));
+  WaitForSignals(a, MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED,
+                 MOJO_TRIGGER_CONDITION_SIGNALS_UNSATISFIED);
+
+  EXPECT_EQ(MOJO_RESULT_OK, MojoQueryHandleSignalsState(a, &signals));
+  EXPECT_FALSE(signals.satisfied_signals & MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED);
+
+  EXPECT_EQ(MOJO_RESULT_OK,
+            MojoQueryQuota(a, MOJO_QUOTA_TYPE_UNREAD_MESSAGE_COUNT, nullptr,
+                           &limit, &usage));
+  EXPECT_EQ(kMaxUnreadMessageCount, limit);
+  EXPECT_LE(1u, usage);
+
+  MojoClose(a);
+  MojoClose(b);
+}
+
 TEST_F(QuotaTest, TrapQuotaExceeded) {
   // Simple sanity check to verify that QUOTA_EXCEEDED signals can be trapped
   // like any other signals.

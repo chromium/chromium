@@ -76,7 +76,7 @@ void terminate_execution(v8::Isolate* isolate,
                          time_point<steady_clock>& start_time) {
   while (true) {
     std::this_thread::sleep_for(kSleepSeconds);
-    mtx.lock();
+    lock_guard<mutex> mtx_locker(mtx);
     if (is_running) {
       if (duration_cast<seconds>(steady_clock::now() - start_time) >
           kMaxExecutionSeconds) {
@@ -86,7 +86,6 @@ void terminate_execution(v8::Isolate* isolate,
         fflush(0);
       }
     }
-    mtx.unlock();
   }
 }
 
@@ -111,7 +110,7 @@ struct Environment {
   v8::Isolate* isolate;
   std::unique_ptr<v8::Platform> platform_;
   time_point<steady_clock> start_time;
-  bool is_running;
+  bool is_running = true;
 };
 
 // Explicitly specify some attributes to avoid issues with the linker dead-
@@ -155,7 +154,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   auto local_script = script.ToLocalChecked();
   env->mtx.lock();
   env->start_time = steady_clock::now();
-  env->is_running = true;
   env->mtx.unlock();
 
   ALLOW_UNUSED_LOCAL(local_script->Run(context));

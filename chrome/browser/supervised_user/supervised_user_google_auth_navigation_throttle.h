@@ -53,7 +53,7 @@ class SupervisedUserGoogleAuthNavigationThrottle
 #endif
 
   base::WeakPtrFactory<SupervisedUserGoogleAuthNavigationThrottle>
-      weak_ptr_factory_;
+      weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserGoogleAuthNavigationThrottle);
 };

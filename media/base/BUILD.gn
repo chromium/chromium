@@ -28,6 +28,11 @@ jumbo_source_set("base") {
     visibility += [ "//media/base/mac" ]
   }
 
+  if (is_android) {
+    visibility +=
+        [ "//gpu/command_buffer/service:android_texture_owner_unittests" ]
+  }
+
   sources = [
     "android_overlay_config.cc",
     "android_overlay_config.h",
@@ -106,6 +111,8 @@ jumbo_source_set("base") {
     "channel_mixer.h",
     "channel_mixing_matrix.cc",
     "channel_mixing_matrix.h",
+    "color_plane_layout.cc",
+    "color_plane_layout.h",
     "container_names.cc",
     "container_names.h",
     "content_decryption_module.cc",
@@ -144,6 +151,8 @@ jumbo_source_set("base") {
     "fallback_video_decoder.h",
     "feedback_signal_accumulator.h",
     "flinging_controller.h",
+    "format_utils.cc",
+    "format_utils.h",
     "hdr_metadata.cc",
     "hdr_metadata.h",
     "key_system_names.cc",
@@ -187,6 +196,7 @@ jumbo_source_set("base") {
     "media_types.h",
     "media_url_demuxer.cc",
     "media_url_demuxer.h",
+    "media_url_params.cc",
     "media_url_params.h",
     "media_util.cc",
     "media_util.h",
@@ -220,6 +230,7 @@ jumbo_source_set("base") {
     "reentrancy_checker.h",
     "renderer.cc",
     "renderer.h",
+    "renderer_client.cc",
     "renderer_client.h",
     "renderer_factory.cc",
     "renderer_factory.h",
@@ -238,6 +249,8 @@ jumbo_source_set("base") {
     "silent_sink_suspender.h",
     "simple_sync_token_client.cc",
     "simple_sync_token_client.h",
+    "simple_watch_timer.cc",
+    "simple_watch_timer.h",
     "sinc_resampler.cc",
     "sinc_resampler.h",
     "stream_parser.cc",
@@ -285,10 +298,10 @@ jumbo_source_set("base") {
     "video_frame_pool.h",
     "video_renderer.cc",
     "video_renderer.h",
-    "video_rotation.cc",
-    "video_rotation.h",
     "video_thumbnail_decoder.cc",
     "video_thumbnail_decoder.h",
+    "video_transformation.cc",
+    "video_transformation.h",
     "video_types.cc",
     "video_types.h",
     "video_util.cc",
@@ -306,19 +319,20 @@ jumbo_source_set("base") {
     ":video_facing",
     "//media:media_buildflags",
     "//media:shared_memory_support",
-    "//third_party/libaom:av1_buildflags",
     "//ui/gfx:color_space",
   ]
   deps = [
     "//base/allocator:buildflags",
+    "//components/system_media_controls/linux/buildflags",
     "//gpu/command_buffer/common",
-    "//skia",
+    "//gpu/ipc/common:common",
     "//third_party/libyuv",
     "//third_party/widevine/cdm:headers",
     "//ui/display:display",
     "//ui/events:events_base",
     "//url:url",
   ]
+
   libs = []
   configs += [
     "//build/config:precompiled_headers",
@@ -382,7 +396,7 @@ jumbo_source_set("base") {
     public_deps += [ "//media/base/win:d3d11" ]
   }
 
-  if (is_chromecast) {
+  if (is_chromecast || is_fuchsia) {
     sources += [ "demuxer_memory_limit_low.cc" ]
   } else if (is_android) {
     sources += [ "demuxer_memory_limit_android.cc" ]
@@ -431,7 +445,6 @@ static_library("test_support") {
     "fake_single_thread_task_runner.h",
     "fake_text_track_stream.cc",
     "fake_text_track_stream.h",
-    "gmock_callback_support.h",
     "mock_audio_renderer_sink.cc",
     "mock_audio_renderer_sink.h",
     "mock_demuxer_host.cc",
@@ -506,7 +519,6 @@ source_set("unit_tests") {
     "fake_demuxer_stream_unittest.cc",
     "fallback_video_decoder_unittest.cc",
     "feedback_signal_accumulator_unittest.cc",
-    "gmock_callback_support_unittest.cc",
     "key_systems_unittest.cc",
     "media_log_unittest.cc",
     "media_url_demuxer_unittest.cc",
@@ -550,9 +562,9 @@ source_set("unit_tests") {
   ]
   deps = [
     "//base/test:test_support",
+    "//components/viz/common",
     "//gpu/command_buffer/common",
     "//media:test_support",
-    "//skia",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libyuv",

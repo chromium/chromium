@@ -1,0 +1,53 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutIFrame IFRAME",
+      "bounds": [300, 100]
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [300, 100],
+      "backgroundColor": "#FFFF00"
+    },
+    {
+      "name": "LayoutBlockFlow BODY",
+      "bounds": [284, 84],
+      "backgroundColor": "#FFFF00",
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV",
+      "bounds": [300, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "transform": 2
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [151, 0, 0, 1]
+      ]
+    }
+  ]
+}
+

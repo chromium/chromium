@@ -1,0 +1,4 @@
+include_rules = [
+  "+cc/layers",
+  "+content/public/android/java/src/org/chromium/content_public",
+]

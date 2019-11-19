@@ -7,14 +7,17 @@ source_set("google_services") {
   sources = [
     "accounts_table_view_controller.h",
     "accounts_table_view_controller.mm",
-    "google_services_navigation_coordinator.h",
-    "google_services_navigation_coordinator.mm",
+    "advanced_signin_settings_coordinator.h",
+    "advanced_signin_settings_coordinator.mm",
+    "advanced_signin_settings_navigation_controller.h",
+    "advanced_signin_settings_navigation_controller.mm",
     "google_services_settings_command_handler.h",
     "google_services_settings_consumer.h",
     "google_services_settings_coordinator.h",
     "google_services_settings_coordinator.mm",
     "google_services_settings_mediator.h",
     "google_services_settings_mediator.mm",
+    "google_services_settings_mode.h",
     "google_services_settings_service_delegate.h",
     "google_services_settings_view_controller.h",
     "google_services_settings_view_controller.mm",
@@ -31,6 +34,7 @@ source_set("google_services") {
     "manage_sync_settings_view_controller_model_delegate.h",
   ]
   deps = [
+    "resources:google_services_enterprise",
     "resources:google_services_sync_error",
     "//base",
     "//components/autofill/core/common",
@@ -38,12 +42,16 @@ source_set("google_services") {
     "//components/google/core/common",
     "//components/metrics",
     "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//components/sync",
+    "//components/ukm/ios:features",
     "//components/unified_consent",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui:feature_flags",
@@ -62,12 +70,14 @@ source_set("google_services") {
     "//ios/chrome/browser/ui/signin_interaction",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/colors",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/images",
     "//ios/public/provider/chrome/browser/signin",
-    "//services/identity/public/objc",
     "//ui/base",
   ]
+  allow_circular_includes_from =
+      [ "//ios/chrome/browser/ui/signin_interaction" ]
 }
 
 source_set("eg_tests") {
@@ -75,49 +85,28 @@ source_set("eg_tests") {
   testonly = true
   sources = [
     "accounts_table_egtest.mm",
+    "google_services_settings_egtest.mm",
   ]
   deps = [
     ":google_services",
     "//components/browser_sync",
+    "//components/prefs",
     "//components/strings",
     "//components/sync",
+    "//ios/chrome/app:app_internal",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/ntp_snippets",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/authentication:eg_test_support",
     "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/web_state_list",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:test_support",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ui/base",
-  ]
-}
-
-source_set("unified_consent_eg_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "google_services_settings_egtest.mm",
-  ]
-
-  deps = [
-    ":google_services",
-    "//base",
-    "//base/test:test_support",
-    "//components/prefs",
-    "//ios/chrome/app/strings:ios_chromium_strings_grit",
-    "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/ui/authentication:eg_test_support",
-    "//ios/chrome/test/app:test_support",
-    "//ios/chrome/test/earl_grey:test_support",
-    "//ui/base",
-  ]
-  libs = [
-    "UIKit.framework",
-    "XCTest.framework",
   ]
 }

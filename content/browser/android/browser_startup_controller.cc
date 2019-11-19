@@ -10,7 +10,7 @@
 #include "content/browser/browser_main_loop.h"
 #include "ppapi/buildflags/buildflags.h"
 
-#include "jni/BrowserStartupControllerImpl_jni.h"
+#include "content/public/android/content_jni_headers/BrowserStartupControllerImpl_jni.h"
 
 using base::android::JavaParamRef;
 

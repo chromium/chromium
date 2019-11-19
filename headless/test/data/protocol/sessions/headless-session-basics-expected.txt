@@ -1,0 +1,3 @@
+Tests headless session basics.
+
+SUCCESS: Target.createTarget returned sessionId.

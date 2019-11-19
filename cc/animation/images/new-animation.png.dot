@@ -1,0 +1,53 @@
+// dot -Tpng cc/animation/images/new-animation.png.dot > cc/animation/images/new-animation.png
+// When making modifications run the above command to regenerate the diagram.
+
+digraph G {
+  label = "Starting a new composited animation";
+
+  subgraph cluster_main {
+    label = "Main thread";
+
+    subgraph cluster_blink {
+      node [style=filled];
+      ScheduleVisualUpdate
+      UpdateLifecycle -> RunPaintLifecyclePhase -> UpdateAnimations -> PreCommit -> CreateCompositorAnimation -> AttachCompositorTimeline;
+      RunPaintLifecyclePhase -> PushPaintArtifactToCompositor;
+      label = "third_party/blink/";
+    }
+
+    subgraph cluster_cc_main {
+      node [style=filled];
+      AttachAnimation -> SetAnimationTimeline -> RegisterKeyframeEffect;
+      RegisterElement -> UpdateKeyframeEffectsTickingState;
+      BeginMainFrame -> RequestMainFrameUpdate -> UpdateLifecycle;
+      label = "cc/";
+    }
+    color=red;
+  }
+
+  subgraph cluster_impl {
+    label = "Compositor thread";
+
+    subgraph cluster_cc_impl {
+      node [style=filled];
+      ScheduledActionCommit -> FinishCommitOnImplThread -> PushPropertiesTo -> PushAttachedAnimationsToImplThread;
+      ScheduledActionCommit -> CommitComplete -> ActivateAnimations;
+      label = "cc/";
+    }
+    color=blue
+  }
+
+  ScheduleVisualUpdate -> BeginMainFrame [style=dashed];
+  AttachCompositorTimeline -> AttachAnimation;
+  PushPaintArtifactToCompositor -> RegisterElement;
+  BeginMainFrame -> ScheduledActionCommit [style=dashed];
+
+  subgraph cluster_legend {
+    label = "Legend";
+    node [shape=plaintext];
+    sync -> L1;
+    async -> L2 [style=dashed];
+    L1 [label = ""];
+    L2 [label = ""];
+  }
+}

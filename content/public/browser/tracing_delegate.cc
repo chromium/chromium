@@ -28,8 +28,4 @@ std::unique_ptr<base::DictionaryValue> TracingDelegate::GenerateMetadataDict() {
   return nullptr;
 }
 
-MetadataFilterPredicate TracingDelegate::GetMetadataFilterPredicate() {
-  return MetadataFilterPredicate();
-}
-
 }  // namespace content

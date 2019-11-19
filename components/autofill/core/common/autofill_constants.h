@@ -36,19 +36,15 @@ enum ShowPasswordSuggestionsOptions {
   IS_PASSWORD_FIELD = 1 << 1 /* input field is a password field */
 };
 
-// Autofill LegacyStrikeDatabase: Maximum strikes allowed for the credit card
-// save project. If the LegacyStrikeDatabase returns this many strikes for a
-// given card, it will not show the offer-to-save bubble on Desktop or infobar
-// on Android. On Desktop, however, the omnibox icon will still be available.
-// TODO(crbug.com/884817): Remove once StrikeDatabase v2 moves this constant to
-// its own credit card save policy.
-const int kMaxStrikesToPreventPoppingUpOfferToSavePrompt = 3;
-
 // Constants for the soft/hard deletion of Autofill data.
 constexpr base::TimeDelta kDisusedDataModelTimeDelta =
     base::TimeDelta::FromDays(180);
 constexpr base::TimeDelta kDisusedDataModelDeletionTimeDelta =
     base::TimeDelta::FromDays(395);
+
+// Returns if the entry with the given |use_date| is deletable? (i.e. has not
+// been used for a long time).
+bool IsAutofillEntryWithUseDateDeletable(const base::Time& use_date);
 
 // The period after which autocomplete entries should be cleaned-up in days.
 // Equivalent to roughly 14 months.

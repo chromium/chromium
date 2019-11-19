@@ -1,0 +1,52 @@
+This test checks that changing the transform on an element triggers a correct invalidation.
+The paint invalidations below should match the transformed element's coordinates.
+Tested locations: 1200,1500
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1600, 585],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "Scrolling background of LayoutView #document",
+          "rect": [1300, 0, 300, 585],
+          "reason": "incremental"
+        },
+        {
+          "object": "Scrolling background of LayoutView #document",
+          "rect": [1000, 0, 300, 585],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutBlockFlow DIV id='box'",
+          "rect": [1500, 0, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutBlockFlow DIV id='box'",
+          "rect": [1200, 0, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutBlockFlow DIV id='box'",
+          "rect": [1200, 0, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutBlockFlow DIV id='box'",
+          "rect": [900, 0, 100, 100],
+          "reason": "paint property change"
+        }
+      ]
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 585],
+      "bounds": [800, 15],
+      "contentsOpaque": true
+    }
+  ]
+}
+

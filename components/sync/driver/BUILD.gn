@@ -1,0 +1,208 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//build/config/jumbo.gni")
+import("//tools/grit/grit_rule.gni")
+
+declare_args() {
+  # Controls the product part of the user agent calculated in sync_util.cc.
+  sync_user_agent_product = "Chrome"
+}
+
+jumbo_static_library("driver") {
+  sources = [
+    "about_sync_util.cc",
+    "about_sync_util.h",
+    "async_directory_type_controller.cc",
+    "async_directory_type_controller.h",
+    "backend_migrator.cc",
+    "backend_migrator.h",
+    "configure_context.h",
+    "data_type_controller.cc",
+    "data_type_controller.h",
+    "data_type_encryption_handler.cc",
+    "data_type_encryption_handler.h",
+    "data_type_manager.cc",
+    "data_type_manager.h",
+    "data_type_manager_impl.cc",
+    "data_type_manager_impl.h",
+    "data_type_manager_observer.h",
+    "data_type_status_table.cc",
+    "data_type_status_table.h",
+    "directory_data_type_controller.cc",
+    "directory_data_type_controller.h",
+    "file_based_trusted_vault_client.cc",
+    "file_based_trusted_vault_client.h",
+    "generic_change_processor.cc",
+    "generic_change_processor.h",
+    "generic_change_processor_factory.cc",
+    "generic_change_processor_factory.h",
+    "glue/sync_engine_backend.cc",
+    "glue/sync_engine_backend.h",
+    "glue/sync_engine_impl.cc",
+    "glue/sync_engine_impl.h",
+    "model_association_manager.cc",
+    "model_association_manager.h",
+    "model_type_controller.cc",
+    "model_type_controller.h",
+    "non_ui_syncable_service_based_model_type_controller.cc",
+    "non_ui_syncable_service_based_model_type_controller.h",
+    "profile_sync_service.cc",
+    "profile_sync_service.h",
+    "shared_change_processor.cc",
+    "shared_change_processor.h",
+    "shared_change_processor_ref.cc",
+    "shared_change_processor_ref.h",
+    "startup_controller.cc",
+    "startup_controller.h",
+    "sync_api_component_factory.h",
+    "sync_auth_manager.cc",
+    "sync_auth_manager.h",
+    "sync_auth_util.cc",
+    "sync_auth_util.h",
+    "sync_client.cc",
+    "sync_client.h",
+    "sync_driver_switches.cc",
+    "sync_driver_switches.h",
+    "sync_service.cc",
+    "sync_service.h",
+    "sync_service_crypto.cc",
+    "sync_service_crypto.h",
+    "sync_service_observer.cc",
+    "sync_service_observer.h",
+    "sync_service_utils.cc",
+    "sync_service_utils.h",
+    "sync_session_durations_metrics_recorder.cc",
+    "sync_session_durations_metrics_recorder.h",
+    "sync_stopped_reporter.cc",
+    "sync_stopped_reporter.h",
+    "sync_token_status.cc",
+    "sync_token_status.h",
+    "sync_type_preference_provider.h",
+    "sync_user_settings.h",
+    "sync_user_settings_impl.cc",
+    "sync_user_settings_impl.h",
+    "sync_util.cc",
+    "sync_util.h",
+    "syncable_service_based_model_type_controller.cc",
+    "syncable_service_based_model_type_controller.h",
+    "trusted_vault_client.h",
+  ]
+
+  configs += [ "//build/config:precompiled_headers" ]
+
+  public_deps = [
+    "//base",
+    "//components/invalidation/public",
+    "//components/sync:rest_of_sync",
+    "//components/sync/base",
+    "//components/sync/js",
+    "//components/sync/protocol",
+    "//components/sync/protocol:util",
+    "//net",
+    "//third_party/metrics_proto",
+    "//url",
+  ]
+  deps = [
+    "//base:i18n",
+    "//components/data_use_measurement/core",
+    "//components/invalidation/impl:feature_list",
+    "//components/keyed_service/core",
+    "//components/os_crypt",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/version_info",
+    "//components/version_info:generate_version_info",
+
+    # TODO(crbug.com/1012226): Remove when VAPID migration is over.
+    "//crypto",
+    "//services/network/public/cpp",
+    "//ui/base",
+  ]
+
+  if (!is_ios) {
+    sources += [
+      "sync_policy_handler.cc",
+      "sync_policy_handler.h",
+    ]
+    deps += [
+      "//components/policy:generated",
+      "//components/policy/core/browser",
+    ]
+  }
+
+  defines = [ "SYNC_USER_AGENT_PRODUCT=$sync_user_agent_product" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+grit("resources") {
+  source = "resources.grd"
+
+  # The .grd contains references to generated files.
+  source_is_generated = true
+  outputs = [
+    "grit/sync_driver_resources.h",
+    "sync_driver_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/components"
+  depfile_dir = target_gen_dir
+  grit_flags = [
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "async_directory_type_controller_mock.cc",
+    "async_directory_type_controller_mock.h",
+    "data_type_controller_mock.cc",
+    "data_type_controller_mock.h",
+    "data_type_manager_mock.cc",
+    "data_type_manager_mock.h",
+    "fake_data_type_controller.cc",
+    "fake_data_type_controller.h",
+    "fake_generic_change_processor.cc",
+    "fake_generic_change_processor.h",
+    "fake_sync_service.cc",
+    "fake_sync_service.h",
+    "mock_sync_service.cc",
+    "mock_sync_service.h",
+    "profile_sync_service_bundle.cc",
+    "profile_sync_service_bundle.h",
+    "sync_api_component_factory_mock.cc",
+    "sync_api_component_factory_mock.h",
+    "sync_client_mock.cc",
+    "sync_client_mock.h",
+    "sync_user_settings_mock.cc",
+    "sync_user_settings_mock.h",
+    "test_sync_service.cc",
+    "test_sync_service.h",
+    "test_sync_user_settings.cc",
+    "test_sync_user_settings.h",
+  ]
+
+  public_deps = [
+    "//components/sync/base:test_support",
+  ]
+
+  deps = [
+    "//components/invalidation/impl:test_support",
+    "//components/pref_registry",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync",
+    "//components/sync:test_support_engine",
+    "//components/sync:test_support_model",
+    "//components/sync/driver",
+    "//components/sync_preferences:test_support",
+    "//components/version_info",
+    "//components/version_info:generate_version_info",
+    "//google_apis",
+    "//services/network:test_support",
+  ]
+}

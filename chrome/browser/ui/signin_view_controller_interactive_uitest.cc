@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "components/signin/core/browser/signin_metrics.h"
-#include "content/public/browser/notification_service.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "content/public/test/test_utils.h"
 
 class SignInViewControllerBrowserTest : public InProcessBrowserTest {
@@ -32,9 +31,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
       profiles::BUBBLE_VIEW_MODE_GAIA_SIGNIN, browser(),
       signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 
-  content::WindowedNotificationObserver wait_for_new_tab(
-      chrome::NOTIFICATION_TAB_PARENTED,
-      content::NotificationService::AllSources());
+  ui_test_utils::TabAddedWaiter wait_for_new_tab(browser());
 // Press Ctrl/Cmd+T, which will open a new tab.
 #if defined(OS_MACOSX)
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(

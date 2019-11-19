@@ -18,22 +18,22 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/message_loop/message_loop_current.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "components/cronet/android/buildflags.h"
+#include "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h"
 #include "components/cronet/cronet_global_state.h"
 #include "components/cronet/version.h"
-#include "jni/CronetLibraryLoader_jni.h"
 #include "net/android/network_change_notifier_factory_android.h"
 #include "net/base/network_change_notifier.h"
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "third_party/zlib/zlib.h"
 #include "url/buildflags.h"
-#include "url/url_util.h"
 
 #if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
 #include "base/i18n/icu_util.h"  // nogncheck
@@ -50,12 +50,12 @@ using base::android::ScopedJavaLocalRef;
 namespace cronet {
 namespace {
 
-// MessageLoop on the init thread, which is where objects that receive Java
-// notifications generally live.
-base::MessageLoop* g_init_message_loop = nullptr;
+// SingleThreadTaskExecutor on the init thread, which is where objects that
+// receive Java notifications generally live.
+base::SingleThreadTaskExecutor* g_init_task_executor = nullptr;
 
 #if !BUILDFLAG(INTEGRATED_MODE)
-net::NetworkChangeNotifier* g_network_change_notifier = nullptr;
+std::unique_ptr<net::NetworkChangeNotifier> g_network_change_notifier;
 #endif
 
 base::WaitableEvent g_init_thread_init_done(
@@ -71,16 +71,15 @@ void NativeInit() {
   base::FeatureList::InitializeInstance(std::string(), std::string());
 #endif
 
-  if (!base::TaskScheduler::GetInstance())
-    base::TaskScheduler::CreateAndStartWithDefaultParams("Cronet");
-  url::Initialize();
+  if (!base::ThreadPoolInstance::Get())
+    base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Cronet");
 }
 
 }  // namespace
 
 bool OnInitThread() {
-  DCHECK(g_init_message_loop);
-  return g_init_message_loop->IsBoundToCurrentThread();
+  DCHECK(g_init_task_executor);
+  return g_init_task_executor->task_runner()->RunsTasksInCurrentSequence();
 }
 
 // In integrated mode, Cronet native library is built and loaded together with
@@ -100,30 +99,31 @@ jint CronetOnLoad(JavaVM* vm, void* reserved) {
 }
 
 void CronetOnUnLoad(JavaVM* jvm, void* reserved) {
-  if (base::TaskScheduler::GetInstance())
-    base::TaskScheduler::GetInstance()->Shutdown();
+  if (base::ThreadPoolInstance::Get())
+    base::ThreadPoolInstance::Get()->Shutdown();
 
   base::android::LibraryLoaderExitHook();
 }
 #endif
 
 void JNI_CronetLibraryLoader_CronetInitOnInitThread(JNIEnv* env) {
-  // Initialize message loop for init thread.
+  // Initialize SingleThreadTaskExecutor for init thread.
   DCHECK(!base::MessageLoopCurrent::IsSet());
-  DCHECK(!g_init_message_loop);
-  g_init_message_loop =
-      new base::MessageLoop(base::MessageLoop::Type::TYPE_JAVA);
+  DCHECK(!g_init_task_executor);
+  g_init_task_executor =
+      new base::SingleThreadTaskExecutor(base::MessagePumpType::JAVA);
 
 // In integrated mode, NetworkChangeNotifier has been initialized by the host.
 #if BUILDFLAG(INTEGRATED_MODE)
-  CHECK(net::NetworkChangeNotifier::HasNetworkChangeNotifier());
+  CHECK(!net::NetworkChangeNotifier::CreateIfNeeded());
 #else
   DCHECK(!g_network_change_notifier);
   if (!net::NetworkChangeNotifier::GetFactory()) {
     net::NetworkChangeNotifier::SetFactory(
         new net::NetworkChangeNotifierFactoryAndroid());
   }
-  g_network_change_notifier = net::NetworkChangeNotifier::Create();
+  g_network_change_notifier = net::NetworkChangeNotifier::CreateIfNeeded();
+  DCHECK(g_network_change_notifier);
 #endif
 
   g_init_thread_init_done.Signal();
@@ -145,11 +145,11 @@ ScopedJavaLocalRef<jstring> JNI_CronetLibraryLoader_GetCronetVersion(
 void PostTaskToInitThread(const base::Location& posted_from,
                           base::OnceClosure task) {
   g_init_thread_init_done.Wait();
-  g_init_message_loop->task_runner()->PostTask(posted_from, std::move(task));
+  g_init_task_executor->task_runner()->PostTask(posted_from, std::move(task));
 }
 
 void EnsureInitialized() {
-  if (g_init_message_loop) {
+  if (g_init_task_executor) {
     // Ensure that init is done on the init thread.
     g_init_thread_init_done.Wait();
     return;

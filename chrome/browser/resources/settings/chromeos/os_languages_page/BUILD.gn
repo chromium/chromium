@@ -1,0 +1,58 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":os_add_languages_dialog",
+    ":os_languages_page",
+    ":os_languages_section",
+    "../../languages_page:languages",
+    "../../languages_page:languages_browser_proxy",
+    "../../languages_page:languages_types",
+    "../../languages_page:manage_input_methods_page",
+  ]
+}
+
+js_library("os_languages_section") {
+  deps = [
+    ":os_languages_page",
+    "../..:route",
+    "../../languages_page:languages",
+    "../../languages_page:languages_types",
+    "../../languages_page:manage_input_methods_page",
+    "../../settings_page:settings_animated_pages",
+    "../../settings_page:settings_subpage",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:load_time_data",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink",
+  ]
+}
+
+js_library("os_languages_page") {
+  deps = [
+    "../..:lifetime_browser_proxy",
+    "../..:route",
+    "../../languages_page:languages_types",
+    "../../settings_page:settings_animated_pages",
+    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
+    "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button",
+    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:load_time_data",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink",
+  ]
+}
+
+js_library("os_add_languages_dialog") {
+  deps = [
+    "../../languages_page:languages",
+    "//ui/webui/resources/cr_elements:cr_scrollable_behavior",
+    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
+    "//ui/webui/resources/js:find_shortcut_behavior",
+  ]
+}

@@ -8,9 +8,8 @@ from telemetry.page import page as page_module
 from telemetry.page import shared_page_state
 
 class LeakDetectionSharedState(shared_page_state.SharedDesktopPageState):
-  def ShouldStopBrowserAfterStoryRun(self, story):
-    del story # unused
-    return False  # Keep the same browser instance open across stories.
+  def ShouldReuseBrowserForAllStoryRuns(self):
+    return True
 
 
 class LeakDetectionPage(page_module.Page):
@@ -56,7 +55,6 @@ class LeakDetectionStorySet(story_module.StorySet):
       'https://www.facebook.com',
       'https://www.baidu.com',
       'https://www.wikipedia.org',
-      'http://www.qq.com',
       'https://world.taobao.com/',
       'https://www.tmall.com/',
       'http://www.amazon.com',
@@ -78,9 +76,12 @@ class LeakDetectionStorySet(story_module.StorySet):
       'https://www.csdn.net/',
       'https://www.alipay.com/',
       'https://www.twitch.tv/',
-      'https://www.ebay.com/',
-      'https://www.microsoft.com/',
-      'https://www.xvideos.com/',
+      # TODO(keishi): Memory dump fails flakily crbug.com/963273
+      #'https://www.ebay.com/',
+      # TODO(keishi): Memory dump fails flakily crbug.com/963273
+      #'https://www.microsoft.com/',
+      # TODO(keishi): Memory dump fails flakily crbug.com/963273
+      #'https://www.xvideos.com/',
       'https://mail.ru/',
       'https://www.bing.com/',
       'http://www.wikia.com/',
@@ -91,12 +92,14 @@ class LeakDetectionStorySet(story_module.StorySet):
       'https://news.google.com/',
       'https://www.theguardian.com/',
       'https://www.indiatimes.com/',
-      'http://www.foxnews.com/',
+      # TODO(keishi): Memory dump fails flakily crbug.com/963273
+      #'http://www.foxnews.com/',
       'https://weather.com/',
       'https://www.shutterstock.com/',
       'https://docs.google.com/',
       'https://wordpress.com/',
-      'https://www.apple.com/',
+      # TODO(yuzus): This test crashes.
+      # 'https://www.apple.com/',
       'https://play.google.com/store',
       'https://www.dropbox.com/',
       'https://soundcloud.com/',
@@ -107,7 +110,8 @@ class LeakDetectionStorySet(story_module.StorySet):
       'https://www.ikea.com/',
       'https://www.bestbuy.com/',
       'https://www.homedepot.com/',
-      'https://www.target.com/',
+      # TODO(keishi): Memory dump fails flakily crbug.com/963273
+      #'https://www.target.com/',
       'https://www.booking.com/',
       'https://www.tripadvisor.com/',
       'https://9gag.com/',
@@ -115,7 +119,8 @@ class LeakDetectionStorySet(story_module.StorySet):
       'https://www.roblox.com/',
       'https://www.gamespot.com/',
       'https://www.blizzard.com',
-      'https://ign.com/',
+      # TODO(keishi): Memory dump fails flakily crbug.com/963273
+      #'https://ign.com/',
       'https://www.yelp.com/',
       # Times out waiting for HasReachedQuiescence - crbug.com/927427
       # 'https://gizmodo.com/',
@@ -125,7 +130,8 @@ class LeakDetectionStorySet(story_module.StorySet):
       'https://archive.org/',
       'https://www.udemy.com/',
       'https://answers.yahoo.com/',
-      'https://www.goodreads.com/',
+      # TODO(crbug.com/985552): Memory dump fails flakily.
+      # 'https://www.goodreads.com/',
       'https://www.cricbuzz.com/',
       'http://www.goal.com/',
       'http://siteadvisor.com/',
@@ -149,7 +155,8 @@ class LeakDetectionStorySet(story_module.StorySet):
       'https://www.hotstar.com/',
       'https://www.incometaxindiaefiling.gov.in/',
       'https://stackoverflow.com/',
-      'https://www.irctc.co.in/nget/',
+      # TODO(crbug.com/1005035) Memory dump fails flakily.
+      # 'https://www.irctc.co.in/nget/',
       'https://www.hdfcbank.com/',
       'https://www.whatsapp.com/',
       'https://uidai.gov.in/',
@@ -163,10 +170,12 @@ class LeakDetectionStorySet(story_module.StorySet):
       # https://crbug.com/892352
       # 'https://www.tumblr.com/',
       'https://www.paypal.com/',
-      'http://www.espn.com/',
+      # TODO(yuzus): espn.com is flaky. https://crbug.com/959796
+      #'http://www.espn.com/',
       'https://edition.cnn.com/',
       'https://www.pinterest.com/',
-      'https://www.nytimes.com/',
+      # TODO(keishi): Memory dump fails flakily crbug.com/963273
+      #'https://www.nytimes.com/',
       'https://github.com/',
       'https://www.salesforce.com/',
       # Japan Alexa top websites
@@ -179,7 +188,8 @@ class LeakDetectionStorySet(story_module.StorySet):
       'https://www.pixiv.net/',
       # websites which were found to be leaking in the past
       'https://www.prezi.com',
-      'http://www.time.com',
+      # TODO(keishi): Memory dump fails flakily crbug.com/963273
+      #'http://www.time.com',
       'http://www.cheapoair.com',
       'http://www.onlinedown.net',
       'http://www.dailypost.ng',
@@ -188,9 +198,9 @@ class LeakDetectionStorySet(story_module.StorySet):
       'http://www.airbnb.ch',
       'http://www.livedoor.jp',
       'http://www.blu-ray.com',
-      'http://www.block.io',
+      # TODO(953195): Test times out.
+      # 'http://www.block.io',
       'http://www.hockeybuzz.com',
-      'http://www.benzworld.org',
       'http://www.silverpop.com',
       'http://www.ansa.it',
       'http://www.gulfair.com',
@@ -247,19 +257,22 @@ class LeakDetectionStorySet(story_module.StorySet):
       'http://makfax.com.mk',
       'http://game.co.za',
       'http://www.savaari.com',
-      'http://www.520mojing.com',
       'http://www.railsguides.jp',
     ]
     resource_loading_urls_list = [
       'https://www.hotels.com/',
       'https://www.livejournal.com/',
-      'https://www.yahoo.com',
+      # TODO(keishi): Memory dump fails flakily crbug.com/963273
+      #'https://www.yahoo.com',
       'http://www.quora.com',
       'https://www.macys.com',
       'http://infomoney.com.br',
       'http://www.listindiario.com',
       'https://www.engadget.com/',
       'https://www.sohu.com/',
+      'http://www.qq.com',
+      'http://www.benzworld.org',
+      'http://www.520mojing.com',
     ]
     for url in urls_list:
       self.AddStory(LeakDetectionPage(url, self, url))

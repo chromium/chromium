@@ -22,6 +22,8 @@ const char* PaintInvalidationReasonToString(PaintInvalidationReason reason) {
       return "full";
     case PaintInvalidationReason::kStyle:
       return "style change";
+    case PaintInvalidationReason::kBackplate:
+      return "backplate";
     case PaintInvalidationReason::kGeometry:
       return "geometry";
     case PaintInvalidationReason::kCompositing:

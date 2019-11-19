@@ -1,0 +1,126 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// This file is the Mojo version of the media::VideoEncodeAccelerator interface
+// and describes the communication between a Client and a remote "service"
+// VideoEncodeAccelerator (VEA) with the purpose of encoding Video Frames by
+// means of hardware accelerated features.
+//
+//   Client                                    VideoEncodeAccelerator
+//      | ---> Initialize                                       |
+//      |                     RequireBitstreamBuffers(N) <---   |
+//      | ---> UseOutputBitstreamBuffer(0)                      |
+//      | ---> UseOutputBitstreamBuffer(1)                      |
+//      |  ...                                                  |
+//      =                                                       =
+// The Client requests a remote Encode() and eventually the VEA will leave the
+// encoded results in a pre-shared BitstreamBuffer, that is then restored to the
+// VEA when the Client is finished with it. Note that there might not be a 1:1
+// relationship between Encode() and BitstreamBufferReady() calls.
+//      | ---> Encode()                                         |
+//      |                        BitstreamBufferReady(k) <---   |
+//      | ---> UseOutputBitstreamBuffer(k)                      |
+//      =                                                       =
+// At any time the VEA can send a NotifyError() to the Client. Similarly at any
+// time the Client can send a RequestEncodingParametersChange() to the VEA. None
+// of these messages are acknowledged.
+
+interface VideoEncodeAcceleratorProvider {
+  // Creates a VideoEncodeAccelerator bound to |receiver|.
+  CreateVideoEncodeAccelerator(
+        pending_receiver<VideoEncodeAccelerator> receiver);
+};
+
+// Class that describes how video bitrate, in bps, is allocated across temporal
+// and spatial layers. See media::VideoBitrateAllocation for more details.
+struct VideoBitrateAllocation {
+  array<int32> bitrates;
+};
+
+// This defines a mojo transport format for
+// media::VideoEncodeAccelerator::Config.
+struct VideoEncodeAcceleratorConfig {
+  // See media::VideoEncodeAccelerator::Config::ContentType
+  enum ContentType {
+    kCamera,
+    kDisplay
+  };
+
+  // See media::VideoEncodeAccelerator::Config::StorageType
+  enum StorageType {
+    kShmem,
+    kDmabuf
+  };
+
+  VideoPixelFormat input_format;
+  gfx.mojom.Size input_visible_size;
+  VideoCodecProfile output_profile;
+  uint32 initial_bitrate;
+  uint32 initial_framerate;
+  bool has_initial_framerate;  // Whether or not config has initial framerate
+  uint32 gop_length;
+  bool has_gop_length;  // Whether or not config has group of picture length
+  uint8 h264_output_level;
+  bool has_h264_output_level;  // Whether or not config has H264 output level
+  StorageType storage_type;
+  bool has_storage_type;  // Whether or not config has storage type config
+  ContentType content_type;
+};
+
+interface VideoEncodeAccelerator {
+  // See media::VideoEncodeAccelerator::Error
+  enum Error {
+    ILLEGAL_STATE,
+    INVALID_ARGUMENT,
+    PLATFORM_FAILURE
+  };
+
+  // Responded by VideoEncodeAcceleratorClient.RequireBitstreamBuffers().
+  // TODO(mcasas): Update to asynchronous, https://crbug.com/744210.
+  [Sync]
+  Initialize(VideoEncodeAcceleratorConfig config,
+             pending_remote<VideoEncodeAcceleratorClient> client)
+      => (bool result);
+
+  // Encodes a |frame|, being completely done with it after its callback.
+  Encode(VideoFrame frame, bool force_keyframe) => ();
+
+  UseOutputBitstreamBuffer(int32 bitstream_buffer_id,
+                           handle<shared_buffer> buffer);
+
+  RequestEncodingParametersChange(
+    VideoBitrateAllocation bitrate_allocation,
+    uint32 framerate);
+};
+
+struct Vp8Metadata {
+  bool non_reference;
+  uint8 temporal_idx;
+  bool layer_sync;
+};
+
+struct BitstreamBufferMetadata {
+  uint32 payload_size_bytes;
+  bool key_frame;
+  mojo_base.mojom.TimeDelta timestamp;
+  Vp8Metadata? vp8;
+};
+
+interface VideoEncodeAcceleratorClient {
+  // Response to VideoEncodeAccelerator.Initialize().
+  RequireBitstreamBuffers(uint32 input_count,
+                          gfx.mojom.Size input_coded_size,
+                          uint32 output_buffer_size);
+
+  BitstreamBufferReady(int32 bitstream_buffer_id,
+                       BitstreamBufferMetadata metadata);
+
+  NotifyError(VideoEncodeAccelerator.Error error);
+};

@@ -12,23 +12,27 @@
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/translate/translate_infobar_language_tab_strip_view.h"
 #import "ios/chrome/browser/ui/translate/translate_infobar_language_tab_strip_view_delegate.h"
 #import "ios/chrome/browser/ui/translate/translate_infobar_view_delegate.h"
 #import "ios/chrome/browser/ui/util/label_link_controller.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#import "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 const CGFloat kInfobarHeight = 54;
+
+NSString* const kTranslateInfobarViewId = @"kTranslateInfobarViewId";
 
 namespace {
 
@@ -95,9 +99,16 @@ const CGFloat kIconTrailingMargin = 12;
   if (!self.superview)
     return;
 
-  [NamedGuide guideWithName:kTranslateInfobarOptionsGuide
-                       view:self.optionsButton]
-      .constrainedView = self.optionsButton;
+  // Constrain the options button named guide to its corresponding view. Reset
+  // the named guide's existing constrained view beforehand. Otherwise this will
+  // be a no-op if the new constrained view is the same as the existing one,
+  // even though the existing constraints are invalid (e.g., when the infobar is
+  // removed from the view hierarchy and added again after a tab switch).
+  NamedGuide* namedGuide =
+      [NamedGuide guideWithName:kTranslateInfobarOptionsGuide
+                           view:self.optionsButton];
+  [namedGuide resetConstraints];
+  namedGuide.constrainedView = self.optionsButton;
 
   // The initial bottom padding should be the current height of the secondary
   // toolbar or the bottom safe area inset, whichever is greater.
@@ -193,6 +204,7 @@ const CGFloat kIconTrailingMargin = 12;
 #pragma mark - Private
 
 - (void)setupSubviews {
+  self.accessibilityIdentifier = kTranslateInfobarViewId;
   [self setAccessibilityViewIsModal:YES];
   NSString* a11yAnnoucement =
       [self a11yAnnouncementFromTranslateInfobarViewState:self.state
@@ -204,12 +216,21 @@ const CGFloat kIconTrailingMargin = 12;
                                     a11yAnnoucement);
   }
 
-  if (IsUIRefreshPhase1Enabled()) {
-    self.backgroundColor = UIColorFromRGB(kInfobarBackgroundColor);
-  } else {
-    self.backgroundColor = [UIColor whiteColor];
-  }
+  self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   id<LayoutGuideProvider> safeAreaLayoutGuide = self.safeAreaLayoutGuide;
+
+  UIView* separator = [[UIView alloc] init];
+  separator.translatesAutoresizingMaskIntoConstraints = NO;
+  separator.backgroundColor = [UIColor colorNamed:kToolbarShadowColor];
+
+  [self addSubview:separator];
+  CGFloat toolbarHeight = ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
+  [NSLayoutConstraint activateConstraints:@[
+    [separator.heightAnchor constraintEqualToConstant:toolbarHeight],
+    [self.topAnchor constraintEqualToAnchor:separator.bottomAnchor],
+    [self.leadingAnchor constraintEqualToAnchor:separator.leadingAnchor],
+    [self.trailingAnchor constraintEqualToAnchor:separator.trailingAnchor],
+  ]];
 
   // The Content view. Holds all the other subviews.
   UIView* contentView = [[UIView alloc] init];
@@ -227,8 +248,7 @@ const CGFloat kIconTrailingMargin = 12;
   ]];
 
   UIImage* icon = [[UIImage imageNamed:@"translate_icon"]
-      resizableImageWithCapInsets:UIEdgeInsetsZero
-                     resizingMode:UIImageResizingModeStretch];
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   UIImageView* iconView = [[UIImageView alloc] initWithImage:icon];
   self.iconView = iconView;
   self.iconView.translatesAutoresizingMaskIntoConstraints = NO;

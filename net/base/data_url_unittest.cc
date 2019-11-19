@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 #include "net/base/data_url.h"
+
+#include "base/memory/ref_counted.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -15,7 +20,7 @@ struct ParseTestData {
   bool is_valid;
   const char* mime_type;
   const char* charset;
-  const char* data;
+  const std::string data;
 };
 
 }  // namespace
@@ -131,21 +136,173 @@ TEST(DataURLTest, Parse) {
       {"data:text/plain,this/is/a/test/%23include/#dontinclude", true,
        "text/plain", "", "this/is/a/test/#include/"},
 
-      // TODO(darin): add more interesting tests
+      // More unescaping tests and tests with nulls.
+      {"data:%00text/plain%41,foo", true, "%00text/plain%41", "", "foo"},
+      {"data:text/plain;charset=%00US-ASCII%41,foo", true, "text/plain",
+       "%00US-ASCII%41", "foo"},
+      {"data:text/plain,%00_%41", true, "text/plain", "",
+       std::string("\x00_A", 3)},
+      {"data:text/plain;base64,AA//", true, "text/plain", "",
+       std::string("\x00\x0F\xFF", 3)},
+      // "%62ase64" unescapes to base64, but should not be treated as such.
+      {"data:text/plain;%62ase64,AA//", true, "text/plain", "", "AA//"},
   };
 
   for (const auto& test : tests) {
+    SCOPED_TRACE(test.url);
+
     std::string mime_type;
     std::string charset;
     std::string data;
     bool ok = DataURL::Parse(GURL(test.url), &mime_type, &charset, &data);
     EXPECT_EQ(ok, test.is_valid);
-    if (test.is_valid) {
-      EXPECT_EQ(test.mime_type, mime_type);
-      EXPECT_EQ(test.charset, charset);
-      EXPECT_EQ(test.data, data);
-    }
+    EXPECT_EQ(test.mime_type, mime_type);
+    EXPECT_EQ(test.charset, charset);
+    EXPECT_EQ(test.data, data);
   }
+}
+
+TEST(DataURLTest, BuildResponseSimple) {
+  std::string mime_type;
+  std::string charset;
+  std::string data;
+  scoped_refptr<HttpResponseHeaders> headers;
+
+  ASSERT_EQ(OK, DataURL::BuildResponse(GURL("data:,Hello"), "GET", &mime_type,
+                                       &charset, &data, &headers));
+
+  EXPECT_EQ("text/plain", mime_type);
+  EXPECT_EQ("US-ASCII", charset);
+  EXPECT_EQ("Hello", data);
+
+  ASSERT_TRUE(headers);
+  const HttpVersion& version = headers->GetHttpVersion();
+  EXPECT_EQ(1, version.major_value());
+  EXPECT_EQ(1, version.minor_value());
+  EXPECT_EQ("OK", headers->GetStatusText());
+  std::string value;
+  EXPECT_TRUE(headers->GetNormalizedHeader("Content-Type", &value));
+  EXPECT_EQ(value, "text/plain;charset=US-ASCII");
+  value.clear();
+}
+
+TEST(DataURLTest, BuildResponseHead) {
+  for (const char* method : {"HEAD", "head", "hEaD"}) {
+    SCOPED_TRACE(method);
+
+    std::string mime_type;
+    std::string charset;
+    std::string data;
+    scoped_refptr<HttpResponseHeaders> headers;
+    ASSERT_EQ(OK,
+              DataURL::BuildResponse(GURL("data:,Hello"), method, &mime_type,
+                                     &charset, &data, &headers));
+
+    EXPECT_EQ("text/plain", mime_type);
+    EXPECT_EQ("US-ASCII", charset);
+    EXPECT_EQ("", data);
+
+    ASSERT_TRUE(headers);
+    HttpVersion version = headers->GetHttpVersion();
+    EXPECT_EQ(1, version.major_value());
+    EXPECT_EQ(1, version.minor_value());
+    EXPECT_EQ("OK", headers->GetStatusText());
+    std::string content_type;
+    EXPECT_TRUE(headers->GetNormalizedHeader("Content-Type", &content_type));
+    EXPECT_EQ(content_type, "text/plain;charset=US-ASCII");
+  }
+}
+
+TEST(DataURLTest, BuildResponseInput) {
+  std::string mime_type;
+  std::string charset;
+  std::string data;
+  scoped_refptr<HttpResponseHeaders> headers;
+
+  ASSERT_EQ(ERR_INVALID_URL,
+            DataURL::BuildResponse(GURL("bogus"), "GET", &mime_type, &charset,
+                                   &data, &headers));
+  EXPECT_FALSE(headers);
+  EXPECT_TRUE(mime_type.empty());
+  EXPECT_TRUE(charset.empty());
+  EXPECT_TRUE(data.empty());
+}
+
+TEST(DataURLTest, BuildResponseInvalidMimeType) {
+  std::string mime_type;
+  std::string charset;
+  std::string data;
+  scoped_refptr<HttpResponseHeaders> headers;
+
+  // MIME type contains delimiters. Must be accepted but Content-Type header
+  // should be generated as if the mediatype was text/plain.
+  ASSERT_EQ(OK, DataURL::BuildResponse(GURL("data:f(o/b)r,test"), "GET",
+                                       &mime_type, &charset, &data, &headers));
+
+  ASSERT_TRUE(headers);
+  std::string value;
+  EXPECT_TRUE(headers->GetNormalizedHeader("Content-Type", &value));
+  EXPECT_EQ(value, "text/plain;charset=US-ASCII");
+}
+
+TEST(DataURLTest, InvalidCharset) {
+  std::string mime_type;
+  std::string charset;
+  std::string data;
+  scoped_refptr<HttpResponseHeaders> headers;
+
+  // MIME type contains delimiters. Must be rejected.
+  ASSERT_EQ(ERR_INVALID_URL, DataURL::BuildResponse(
+                                 GURL("data:text/html;charset=(),test"), "GET",
+                                 &mime_type, &charset, &data, &headers));
+  EXPECT_FALSE(headers);
+  EXPECT_TRUE(mime_type.empty());
+  EXPECT_TRUE(charset.empty());
+  EXPECT_TRUE(data.empty());
+}
+
+// Test a slightly larger data URL.
+TEST(DataURLTest, Image) {
+  // Use our nice little Chrome logo.
+  GURL image_url(
+      "data:image/png;base64,"
+      "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAADVklEQVQ4jX2TfUwUB"
+      "BjG3w1y+HGcd9dxhXR8T4awOccJGgOSWclHImznLkTlSw0DDQXkrmgYgbUYnlQTqQ"
+      "xIEVxitD5UMCATRA1CEEg+Qjw3bWDxIauJv/5oumqs39/P827vnucRmYN0gyF01GI"
+      "5MpCVdW0gO7tvNC+vqSEtbZefk5NuLv1jdJ46p/zw0HeH4+PHr3h7c1mjoV2t5rKz"
+      "Mx1+fg9bAgK6zHq9cU5z+LpA3xOtx34+vTeT21onRuzssC3zxbbSwC13d/pFuC7Ck"
+      "IMDxQpF7r/MWq12UctI1dWWm99ypqSYmRUBdKem8MkrO/kgaTt1O7YzlpzE5GIVd0"
+      "WYUqt57yWf2McHTObYPbVD+ZwbtlLTVMZ3BW+TnLyXLaWtmEq6WJVbT3HBh3Svj2H"
+      "QQcm43XwmtoYM6vVKleh0uoWvnzW3v3MpidruPTQPf0bia7sJOtBM0ufTWNvus/nk"
+      "DFHF9ZS+uYVjRUasMeHUmyLYtcklTvzWGFZnNOXczThvpKIzjcahSqIzkvDLayDq6"
+      "D3eOjtBbNUEIZYyqsvj4V4wY92eNJ4IoyhTbxXX1T5xsV9tm9r4TQwHLiZw/pdDZJ"
+      "ea8TKmsmR/K0uLh/GwnCHghTja6lPhphezPfO5/5MrVvMzNaI3+ERHfrFzPKQukrQ"
+      "GI4d/3EFD/3E2mVNYvi4at7CXWREaxZGD+3hg28zD3gVMd6q5c8GdosynKmSeRuGz"
+      "pjyl1/9UDGtPR5HeaKT8Wjo17WXk579BXVUhN64ehF9fhRtq/uxxZKzNiZFGD0wRC"
+      "3NFROZ5mwIPL/96K/rKMMLrIzF9uhHr+/sYH7DAbwlgC4J+R2Z7FUx1qLnV7MGF40"
+      "smVSoJ/jvHRfYhQeUJd/SnYtGWhPHR0Sz+GE2F2yth0B36Vcz2KpnufBJbsysjjW4"
+      "kblBUiIjiURUWqJY65zxbnTy57GQyH58zgy0QBtTQv5gH15XMdKkYu+TGaJMnlm2O"
+      "34uI4b9tflqp1+QEFGzoW/ulmcofcpkZCYJhDfSpme7QcrHa+Xfji8paEQkTkSfmm"
+      "oRWRNZr/F1KfVMjW+IKEnv2FwZfKdzt0BQR6lClcZR0EfEXEfv/G6W9iLiIyCoReV"
+      "5EnhORIBHx+ufPj/gLB/zGI/G4Bk0AAAAASUVORK5CYII=");
+
+  std::string mime_type;
+  std::string charset;
+  std::string data;
+  scoped_refptr<HttpResponseHeaders> headers;
+
+  EXPECT_EQ(OK, DataURL::BuildResponse(image_url, "GET", &mime_type, &charset,
+                                       &data, &headers));
+
+  EXPECT_EQ(911u, data.size());
+  EXPECT_EQ("image/png", mime_type);
+  EXPECT_TRUE(charset.empty());
+
+  ASSERT_TRUE(headers);
+  std::string value;
+  EXPECT_EQ(headers->GetStatusLine(), "HTTP/1.1 200 OK");
+  EXPECT_TRUE(headers->GetNormalizedHeader("Content-Type", &value));
+  EXPECT_EQ(value, "image/png");
 }
 
 }  // namespace net

@@ -14,6 +14,7 @@ import android.support.test.uiautomator.UiDevice;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.Log;
+import org.chromium.base.StrictModeContext;
 
 import java.io.File;
 
@@ -65,32 +66,34 @@ public class ScreenshotOnFailureStatement extends Statement {
                             screenshotFile));
             return;
         }
-        if (!screenshotDir.exists()) {
-            if (!screenshotDir.mkdirs()) {
-                Log.d(TAG,
-                        String.format(
-                                "Failed to create %s. Can't save screenshot.", screenshotDir));
+        try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
+            if (!screenshotDir.exists()) {
+                if (!screenshotDir.mkdirs()) {
+                    Log.d(TAG,
+                            String.format(
+                                    "Failed to create %s. Can't save screenshot.", screenshotDir));
+                    return;
+                }
+            }
+
+            // The Vega standalone VR headset can't take screenshots normally (they just show a
+            // black screen with the VR overlay), so instead, use VrCore's RecorderService.
+            if (Build.DEVICE.equals("vega")) {
+                takeScreenshotVega(screenshotFile);
                 return;
             }
-        }
 
-        // The Vega standalone VR headset can't take screenshots normally (they just show a black
-        // screen with the VR overlay), so instead, use VrCore's RecorderService.
-        if (Build.DEVICE.equals("vega")) {
-            takeScreenshotVega(screenshotFile);
-            return;
-        }
+            UiDevice uiDevice = null;
+            try {
+                uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+            } catch (RuntimeException ex) {
+                Log.d(TAG, "Failed to initialize UiDevice", ex);
+                return;
+            }
 
-        UiDevice uiDevice = null;
-        try {
-            uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        } catch (RuntimeException ex) {
-            Log.d(TAG, "Failed to initialize UiDevice", ex);
-            return;
+            Log.d(TAG, String.format("Saving screenshot of test failure, %s", screenshotFile));
+            uiDevice.takeScreenshot(screenshotFile);
         }
-
-        Log.d(TAG, String.format("Saving screenshot of test failure, %s", screenshotFile));
-        uiDevice.takeScreenshot(screenshotFile);
     }
 
     private void takeScreenshotVega(final File screenshotFile) {

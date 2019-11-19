@@ -5,14 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_SCRIPT_FETCH_OPTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_SCRIPT_FETCH_OPTIONS_H_
 
-#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -37,7 +38,7 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
   // https://github.com/whatwg/html/pull/3656.
   ScriptFetchOptions()
       : parser_state_(ParserDisposition::kNotParserInserted),
-        credentials_mode_(network::mojom::FetchCredentialsMode::kOmit),
+        credentials_mode_(network::mojom::CredentialsMode::kOmit),
         referrer_policy_(network::mojom::ReferrerPolicy::kDefault),
         importance_(mojom::FetchImportanceMode::kImportanceAuto) {}
 
@@ -45,7 +46,7 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
                      const IntegrityMetadataSet& integrity_metadata,
                      const String& integrity_attribute,
                      ParserDisposition parser_state,
-                     network::mojom::FetchCredentialsMode credentials_mode,
+                     network::mojom::CredentialsMode credentials_mode,
                      network::mojom::ReferrerPolicy referrer_policy,
                      mojom::FetchImportanceMode importance)
       : nonce_(nonce),
@@ -65,7 +66,7 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
     return integrity_attribute_;
   }
   const ParserDisposition& ParserState() const { return parser_state_; }
-  network::mojom::FetchCredentialsMode CredentialsMode() const {
+  network::mojom::CredentialsMode CredentialsMode() const {
     return credentials_mode_;
   }
   network::mojom::ReferrerPolicy GetReferrerPolicy() const {
@@ -93,7 +94,7 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
   const ParserDisposition parser_state_;
 
   // https://html.spec.whatwg.org/C/#concept-script-fetch-options-credentials
-  const network::mojom::FetchCredentialsMode credentials_mode_;
+  const network::mojom::CredentialsMode credentials_mode_;
 
   // https://html.spec.whatwg.org/C/#concept-script-fetch-options-referrer-policy
   const network::mojom::ReferrerPolicy referrer_policy_;

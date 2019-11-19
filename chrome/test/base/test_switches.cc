@@ -11,6 +11,11 @@ namespace switches {
 // Also emit full event trace logs for successful tests.
 const char kAlsoEmitSuccessLogs[] = "also-emit-success-logs";
 
+// Show the mean value of histograms that native performance tests
+// are monitoring. Note that this is only applicable for PerformanceTest
+// subclasses.
+const char kPerfTestPrintUmaMeans[] = "perf-test-print-uma-means";
+
 #if BUILDFLAG(ENABLE_PLUGINS)
 // Makes browser pixel tests overwrite the reference if it does not match.
 const char kRebaselinePixelTests[] = "rebaseline-pixel-tests";

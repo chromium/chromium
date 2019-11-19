@@ -13,6 +13,7 @@ buildflag_header("buildflags") {
   flags = [
     "ENABLE_SPELLCHECK=$enable_spellcheck",
     "USE_BROWSER_SPELLCHECKER=$use_browser_spellchecker",
+    "USE_RENDERER_SPELLCHECKER=$use_renderer_spellchecker",
     "HAS_SPELLCHECK_PANEL=$has_spellcheck_panel",
   ]
 }

@@ -30,7 +30,6 @@ class FakeBluetoothDeviceClient;
 
 namespace chromeos {
 
-class FakeCrasAudioClient;
 class FakePowerManagerClient;
 
 // Handler class for the Device Emulator page operations.
@@ -70,11 +69,11 @@ class DeviceEmulatorMessageHandler :
   // that there can be multiple current active nodes.
   void HandleRequestAudioNodes(const base::ListValue* args);
 
-  // Create a node and add the node to the current AudioNodeList in
-  // |fake_cras_audio_client_|.
+  // Create a node and add the node to the current AudioNodeList in the
+  // FakeCrasAudioClient.
   void HandleInsertAudioNode(const base::ListValue* args);
 
-  // Removes an AudioNode from the current list in |fake_cras_audio_client_|.
+  // Removes an AudioNode from the current list in the FakeCrasAudioClient
   // based on the node id.
   void HandleRemoveAudioNode(const base::ListValue* args);
 
@@ -88,7 +87,6 @@ class DeviceEmulatorMessageHandler :
   // asynchronously.
   void UpdateBatteryPercent(const base::ListValue* args);
   void UpdateBatteryState(const base::ListValue* args);
-  void UpdateExternalPower(const base::ListValue* args);
   void UpdateTimeToEmpty(const base::ListValue* args);
   void UpdateTimeToFull(const base::ListValue* args);
   void UpdatePowerSources(const base::ListValue* args);
@@ -132,7 +130,6 @@ class DeviceEmulatorMessageHandler :
   bluez::FakeBluetoothDeviceClient* fake_bluetooth_device_client_;
   std::unique_ptr<BluetoothObserver> bluetooth_observer_;
 
-  FakeCrasAudioClient* fake_cras_audio_client_;
   std::unique_ptr<CrasAudioObserver> cras_audio_observer_;
 
   FakePowerManagerClient* fake_power_manager_client_;
@@ -140,7 +137,7 @@ class DeviceEmulatorMessageHandler :
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 
-  base::WeakPtrFactory<DeviceEmulatorMessageHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<DeviceEmulatorMessageHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceEmulatorMessageHandler);
 };

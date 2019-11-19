@@ -1,8 +1,8 @@
 # App-y stuff
 benwells@chromium.org
-per-file hosted_app_*=alancutter@chromium.org
-per-file hosted_app_*=mgiuca@chromium.org
-per-file hosted_app_*=ortuno@chromium.org
+per-file bookmark_app_*=file://chrome/browser/web_applications/UI_OWNERS
+per-file hosted_app_*=file://chrome/browser/web_applications/UI_OWNERS
+per-file pwa_*=file://chrome/browser/web_applications/UI_OWNERS
 
 # Extension-y stuff
 finnur@chromium.org

@@ -85,7 +85,7 @@ void BookmarkExpandedStateTracker::BookmarkModelBeingDeleted(
 void BookmarkExpandedStateTracker::BookmarkNodeRemoved(
     BookmarkModel* model,
     const BookmarkNode* parent,
-    int old_index,
+    size_t old_index,
     const BookmarkNode* node,
     const std::set<GURL>& removed_urls) {
   if (!node->is_folder())

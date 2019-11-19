@@ -17,10 +17,6 @@ class UnionTypesTest final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static UnionTypesTest* Create() {
-    return MakeGarbageCollected<UnionTypesTest>();
-  }
-
   UnionTypesTest() : attribute_type_(kSpecificTypeNone) {}
   ~UnionTypesTest() override = default;
 

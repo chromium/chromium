@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/logging.h"
+
 namespace syncer {
 
 // This class describes all the possible results of a sync cycle. It should be
@@ -23,6 +25,7 @@ class SyncerError {
     SYNC_AUTH_ERROR,                 // HTTP auth error.
 
     // Based on values returned by server.  Most are defined in sync.proto.
+    // TODO(crbug.com/951350): Unused, remove.
     SERVER_RETURN_INVALID_CREDENTIAL,
     SERVER_RETURN_UNKNOWN_ERROR,
     SERVER_RETURN_THROTTLED,
@@ -33,6 +36,7 @@ class SyncerError {
     SERVER_RETURN_CONFLICT,
     SERVER_RESPONSE_VALIDATION_FAILED,
     SERVER_RETURN_DISABLED_BY_ADMIN,
+    // TODO(crbug.com/951350): Unused, remove.
     SERVER_RETURN_USER_ROLLBACK,
     SERVER_RETURN_PARTIAL_FAILURE,
     SERVER_RETURN_CLIENT_DATA_OBSOLETE,
@@ -45,15 +49,14 @@ class SyncerError {
     SYNCER_OK
   };
 
-  constexpr SyncerError() : value_(UNSET), net_error_code_(0) {}
+  constexpr SyncerError() {}
+  // Note: NETWORK_CONNECTION_UNAVAILABLE, SYNC_SERVER_ERROR, and
+  // SYNC_AUTH_ERROR are *not* valid inputs for this constructor. These types
+  // of errors must be created via the factory functions below.
+  explicit SyncerError(Value value);
 
-  explicit constexpr SyncerError(Value value)
-      : value_(value), net_error_code_(0) {}
-
-  static constexpr SyncerError NetworkConnectionUnavailable(
-      int net_error_code) {
-    return SyncerError(NETWORK_CONNECTION_UNAVAILABLE, net_error_code);
-  }
+  static SyncerError NetworkConnectionUnavailable(int net_error_code);
+  static SyncerError HttpError(int http_status_code);
 
   Value value() const { return value_; }
 
@@ -64,11 +67,14 @@ class SyncerError {
   bool IsActualError() const;
 
  private:
-  constexpr SyncerError(Value value, int net_error_code)
-      : value_(value), net_error_code_(net_error_code) {}
+  constexpr SyncerError(Value value, int net_error_code, int http_status_code)
+      : value_(value),
+        net_error_code_(net_error_code),
+        http_status_code_(http_status_code) {}
 
-  Value value_;
-  int net_error_code_;
+  Value value_ = UNSET;
+  int net_error_code_ = 0;
+  int http_status_code_ = 0;
 };
 
 }  // namespace syncer

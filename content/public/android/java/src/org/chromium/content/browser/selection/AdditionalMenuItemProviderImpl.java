@@ -4,10 +4,11 @@
 
 package org.chromium.content.browser.selection;
 
-import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.app.RemoteAction;
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +17,7 @@ import android.view.View.OnClickListener;
 import android.view.textclassifier.TextClassification;
 
 import org.chromium.base.Log;
+import org.chromium.base.annotations.VerifiesOnP;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,8 +25,11 @@ import java.util.Map;
 // TODO(ctzsm): Add unit tests for this class once this is upstreamed.
 /**
  * Implements AdditionalMenuItemProvider interface.
+ * We prevent inlinings since this uses a number of new Android APIs which would create verification
+ * errors (on older Android versions) which would require a slow re-verification at runtime.
  */
-@SuppressLint("NewApi")
+@VerifiesOnP
+@TargetApi(Build.VERSION_CODES.P)
 public class AdditionalMenuItemProviderImpl implements AdditionalMenuItemProvider {
     private static final String TAG = "MenuItemProvider";
     // We want the secondary assist actions to come after the default actions but before the text

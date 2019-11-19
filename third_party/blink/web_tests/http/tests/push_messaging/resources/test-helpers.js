@@ -30,6 +30,12 @@ function registerAndSubscribePushWithString(test, serverKeyString) {
       new TextEncoder().encode(serverKeyString));
 }
 
+// Registers a service worker and subscribes to push using the given base64url string
+// as an applicationServerKey.
+function registerAndSubscribePushWithBase64urlString(test, serverKeyString) {
+  return registerAndSubscribePush(test, serverKeyString);
+}
+
 // Subscribes to push with the given application server key. serverKey should be
 // a Uint8Array.
 function registerAndSubscribePush(test, serverKey) {

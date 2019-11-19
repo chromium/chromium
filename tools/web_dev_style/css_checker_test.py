@@ -10,52 +10,31 @@ from sys import path as sys_path
 import unittest
 
 _HERE = os_path.dirname(os_path.abspath(__file__))
-sys_path.append(os_path.join(_HERE, '..', '..', 'build'))
+sys_path.append(os_path.join(_HERE, '..', '..'))
 
-import find_depot_tools  # pylint: disable=W0611
-from testing_support.super_mox import SuperMoxTestBase
+from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi, MockFile
 
 
-class CssCheckerTest(SuperMoxTestBase):
+class CssCheckerTest(unittest.TestCase):
   def setUp(self):
-    SuperMoxTestBase.setUp(self)
+    super(CssCheckerTest, self).setUp()
 
-    self.fake_file = self.mox.CreateMockAnything()
-    # Actual calls to NewContents() and LocalPath() are defined in each test.
-    self.mox.StubOutWithMock(self.fake_file, 'LocalPath')
-    self.mox.StubOutWithMock(self.fake_file, 'NewContents')
-
-    self.input_api = self.mox.CreateMockAnything()
-    self.input_api.re = re
-    self.mox.StubOutWithMock(self.input_api, 'AffectedSourceFiles')
-    self.input_api.AffectedFiles(
-        include_deletes=False, file_filter=None).AndReturn([self.fake_file])
-
-    # Actual creations of PresubmitPromptWarning are defined in each test.
-    self.output_api = self.mox.CreateMockAnything()
-    self.mox.StubOutWithMock(self.output_api, 'PresubmitPromptWarning',
-                             use_mock_anything=True)
-
-    self.output_api = self.mox.CreateMockAnything()
-    self.mox.StubOutWithMock(self.output_api, 'PresubmitNotifyResult',
-                             use_mock_anything=True)
+    self.input_api = MockInputApi()
+    self.checker = css_checker.CSSChecker(self.input_api, MockOutputApi())
 
   def _create_file(self, contents, filename):
-    self.fake_file_name = filename
-    self.fake_file.LocalPath().AndReturn(self.fake_file_name)
-    self.fake_file.NewContents().AndReturn(contents.splitlines())
+    self.input_api.files.append(MockFile(filename, contents.splitlines()))
 
   def VerifyContentIsValid(self, contents, filename='fake.css'):
     self._create_file(contents, filename)
-    self.mox.ReplayAll()
-    css_checker.CSSChecker(self.input_api, self.output_api).RunChecks()
+    results = self.checker.RunChecks()
+    self.assertEqual(len(results), 0)
 
   def VerifyContentsProducesOutput(self, contents, output, filename='fake.css'):
     self._create_file(contents, filename)
-    self.output_api.PresubmitPromptWarning(
-        self.fake_file_name + ':\n' + output.strip()).AndReturn(None)
-    self.mox.ReplayAll()
-    css_checker.CSSChecker(self.input_api, self.output_api).RunChecks()
+    results = self.checker.RunChecks()
+    self.assertEqual(len(results), 1)
+    self.assertEqual(results[0].message, filename + ':\n' + output.strip())
 
   def testCssAlphaWithAtBlock(self):
     self.VerifyContentsProducesOutput("""
@@ -88,13 +67,23 @@ class CssCheckerTest(SuperMoxTestBase):
   visibility: hidden;
   opacity: 1; /* TODO(dbeam): Fix this. */
 }
-</if>""", """
+</if>
+
+@media (prefers-color-scheme: dark) {
+  a[href] {
+    z-index: 3;
+    color: blue;
+  }
+}""", """
 - Alphabetize properties and list vendor specific (i.e. -webkit) above standard.
     display: block;
     color: red;
 
     z-index: 5;
-    color: black;""")
+    color: black;
+
+    z-index: 3;
+    color: blue;""")
 
   def testCssStringWithAt(self):
     self.VerifyContentIsValid("""
@@ -196,11 +185,6 @@ blah /* hey! */
 
   def testCssCloseBraceOnNewLine(self):
     self.VerifyContentsProducesOutput("""
-@media { /* TODO(dbeam) Fix this case. */
-  .rule {
-    display: block;
-  }}
-
 @-webkit-keyframe blah {
   from { height: rotate(-10turn); }
   100% { height: 500px; }
@@ -583,7 +567,7 @@ body.alternate-logo #logo {
     flex-direction:column;
 """, filename='test.html')
 
-  def testInlineSTyleInHtmlWithTagsInComments(self):
+  def testInlineStyleInHtmlWithTagsInComments(self):
     self.VerifyContentsProducesOutput("""<!doctype html>
 <html>
   <style>
@@ -597,6 +581,103 @@ body.alternate-logo #logo {
 - Colons (:) should have a space after them.
     flex-direction:column;
 """, filename='test.html')
+
+  def testRemoveAtBlocks(self):
+    self.assertEqual(self.checker.RemoveAtBlocks("""
+@media (prefers-color-scheme: dark) {
+  .magic {
+    color: #000;
+  }
+}"""), """
+  .magic {
+    color: #000;
+  }""")
+
+    self.assertEqual(self.checker.RemoveAtBlocks("""
+@media (prefers-color-scheme: dark) {
+  .magic {
+    --mixin-definition: {
+      color: red;
+    };
+  }
+}"""), """
+  .magic {
+    --mixin-definition: {
+      color: red;
+    };
+  }""")
+
+    self.assertEqual(self.checker.RemoveAtBlocks("""
+@keyframes jiggle {
+  from { left: 0; }
+  50% { left: 100%; }
+  to { left: 10%; }
+}"""), """
+  from { left: 0; }
+  50% { left: 100%; }
+  to { left: 10%; }""")
+
+    self.assertEqual(self.checker.RemoveAtBlocks("""
+@media print {
+  .rule1 {
+    color: black;
+  }
+  .rule2 {
+    margin: 1in;
+  }
+}"""), """
+  .rule1 {
+    color: black;
+  }
+  .rule2 {
+    margin: 1in;
+  }""")
+
+    self.assertEqual(self.checker.RemoveAtBlocks("""
+@media (prefers-color-scheme: dark) {
+  .rule1 {
+    color: gray;
+  }
+  .rule2 {
+    margin: .5in;
+  }
+  @keyframe dark-fade {
+    0% { background: black; }
+    100% { background: darkgray; }
+  }
+}"""), """
+  .rule1 {
+    color: gray;
+  }
+  .rule2 {
+    margin: .5in;
+  }
+    0% { background: black; }
+    100% { background: darkgray; }""")
+
+    self.assertEqual(self.checker.RemoveAtBlocks("""
+@-webkit-keyframe anim {
+  0% { /* Ignore key frames */
+    width: 0px;
+  }
+  10% {
+    width: 10px;
+  }
+  50% { background-image: url(blah.svg); }
+  100% {
+    width: 100px;
+  }
+}"""), """
+  0% { /* Ignore key frames */
+    width: 0px;
+  }
+  10% {
+    width: 10px;
+  }
+  50% { background-image: url(blah.svg); }
+  100% {
+    width: 100px;
+  }""")
 
 
 if __name__ == '__main__':

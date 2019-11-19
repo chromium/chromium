@@ -6,6 +6,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_tracing.h"
 #include "base/metrics/histogram.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 
@@ -96,6 +97,29 @@ void File::Initialize(const FilePath& path, uint32_t flags) {
 }
 #endif
 
+bool File::ReadAndCheck(int64_t offset, span<uint8_t> data) {
+  int size = checked_cast<int>(data.size());
+  return Read(offset, reinterpret_cast<char*>(data.data()), size) == size;
+}
+
+bool File::ReadAtCurrentPosAndCheck(span<uint8_t> data) {
+  int size = checked_cast<int>(data.size());
+  return ReadAtCurrentPos(reinterpret_cast<char*>(data.data()), size) == size;
+}
+
+bool File::WriteAndCheck(int64_t offset, span<const uint8_t> data) {
+  int size = checked_cast<int>(data.size());
+  return Write(offset, reinterpret_cast<const char*>(data.data()), size) ==
+         size;
+}
+
+bool File::WriteAtCurrentPosAndCheck(span<const uint8_t> data) {
+  int size = checked_cast<int>(data.size());
+  return WriteAtCurrentPos(reinterpret_cast<const char*>(data.data()), size) ==
+         size;
+}
+
+// static
 std::string File::ErrorToString(Error error) {
   switch (error) {
     case FILE_OK:

@@ -11,10 +11,10 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/common/console_message_level.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "extensions/common/view_type.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "v8/include/v8.h"
 
 struct ExtensionMsg_ExternalConnectionInfo;
@@ -125,9 +125,12 @@ class ExtensionFrameHelper
   void DidCreateNewDocument() override;
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override;
+  void DidCommitProvisionalLoad(bool is_same_document_navigation,
+                                ui::PageTransition transition) override;
   void DidCreateScriptContext(v8::Local<v8::Context>,
-                              int world_id) override;
-  void WillReleaseScriptContext(v8::Local<v8::Context>, int world_id) override;
+                              int32_t world_id) override;
+  void WillReleaseScriptContext(v8::Local<v8::Context>,
+                                int32_t world_id) override;
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnDestruct() override;
   void DraggableRegionsChanged() override;
@@ -192,7 +195,7 @@ class ExtensionFrameHelper
   // navigation happens, it is either the initial one or a reload.
   bool has_started_first_navigation_ = false;
 
-  base::WeakPtrFactory<ExtensionFrameHelper> weak_ptr_factory_;
+  base::WeakPtrFactory<ExtensionFrameHelper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionFrameHelper);
 };

@@ -40,6 +40,9 @@ class NativeMessagingHostManifest {
   HostInterface host_interface() const { return interface_; }
   const base::FilePath& path() const { return path_; }
   const URLPatternSet& allowed_origins() const { return allowed_origins_; }
+  bool supports_native_initiated_connections() const {
+    return supports_native_initiated_connections_;
+  }
 
  private:
   NativeMessagingHostManifest();
@@ -53,6 +56,7 @@ class NativeMessagingHostManifest {
   HostInterface interface_;
   base::FilePath path_;
   URLPatternSet allowed_origins_;
+  bool supports_native_initiated_connections_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(NativeMessagingHostManifest);
 };

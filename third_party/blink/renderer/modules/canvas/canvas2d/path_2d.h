@@ -67,7 +67,10 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
                ExceptionState& exception_state) {
     DOMMatrixReadOnly* matrix =
         DOMMatrixReadOnly::fromMatrix2D(transform, exception_state);
-    if (!matrix)
+    if (!matrix || !std::isfinite(matrix->m11()) ||
+        !std::isfinite(matrix->m12()) || !std::isfinite(matrix->m21()) ||
+        !std::isfinite(matrix->m22()) || !std::isfinite(matrix->m41()) ||
+        !std::isfinite(matrix->m42()))
       return;
     path_.AddPath(path->GetPath(), matrix->GetAffineTransform());
   }

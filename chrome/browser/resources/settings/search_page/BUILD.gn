@@ -13,7 +13,7 @@ js_type_check("closure_compile") {
 js_library("search_page") {
   deps = [
     "..:route",
-    "../prefs:prefs",
+    "../prefs",
     "../search_engines_page:search_engines_browser_proxy",
     "../settings_page:settings_animated_pages",
     "//ui/webui/resources/js:cr",

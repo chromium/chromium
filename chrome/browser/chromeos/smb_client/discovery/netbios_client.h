@@ -11,7 +11,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/smb_client/discovery/netbios_client_interface.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
 
@@ -48,7 +49,7 @@ namespace smb_client {
 // The socket remains open and receives response as long as the instance of this
 // class is alive. Upon destruction, the socket and corresponding firewall hole
 // are closed.
-class NetBiosClient : public network::mojom::UDPSocketReceiver,
+class NetBiosClient : public network::mojom::UDPSocketListener,
                       public NetBiosClientInterface,
                       public base::SupportsWeakPtr<NetBiosClient> {
  public:
@@ -90,7 +91,7 @@ class NetBiosClient : public network::mojom::UDPSocketReceiver,
   // Callback handler for SendPacket.
   void OnSendCompleted(int32_t result);
 
-  // network::mojom::UDPSocketReceiver implementation.
+  // network::mojom::UDPSocketListener implementation.
   void OnReceived(int32_t result,
                   const base::Optional<net::IPEndPoint>& src_ip,
                   base::Optional<base::span<const uint8_t>> data) override;
@@ -106,8 +107,8 @@ class NetBiosClient : public network::mojom::UDPSocketReceiver,
   uint16_t transaction_id_;
   NetBiosResponseCallback callback_;
   std::unique_ptr<FirewallHole> firewall_hole_;
-  network::mojom::UDPSocketPtr server_socket_;
-  mojo::Binding<network::mojom::UDPSocketReceiver> receiver_binding_;
+  mojo::Remote<network::mojom::UDPSocket> server_socket_;
+  mojo::Receiver<network::mojom::UDPSocketListener> listener_receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetBiosClient);
 };

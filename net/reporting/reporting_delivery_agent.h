@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "net/base/net_export.h"
+#include "net/base/rand_callback.h"
 
 namespace base {
 class OneShotTimer;
@@ -51,7 +52,8 @@ class NET_EXPORT ReportingDeliveryAgent {
  public:
   // Creates a ReportingDeliveryAgent. |context| must outlive the agent.
   static std::unique_ptr<ReportingDeliveryAgent> Create(
-      ReportingContext* context);
+      ReportingContext* context,
+      const RandIntCallback& rand_callback);
 
   virtual ~ReportingDeliveryAgent();
 

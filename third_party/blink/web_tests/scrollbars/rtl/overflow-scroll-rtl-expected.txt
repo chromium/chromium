@@ -1,3 +1,0 @@
-All the digits from 0 to 9 should be visible.
-
-0123456789

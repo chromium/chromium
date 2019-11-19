@@ -1,0 +1,25 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_activation_delegate.cc",
+    "fake_activation_delegate.h",
+    "fake_carrier_portal_handler.cc",
+    "fake_carrier_portal_handler.h",
+    "fake_cellular_setup.cc",
+    "fake_cellular_setup.h",
+  ]
+
+  public_deps = [
+    "//chromeos/services/cellular_setup",
+    "//chromeos/services/cellular_setup/public/mojom",
+  ]
+
+  deps = [
+    "//base",
+  ]
+}

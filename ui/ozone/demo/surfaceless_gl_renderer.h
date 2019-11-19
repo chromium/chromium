@@ -17,10 +17,12 @@ class GLImage;
 
 namespace ui {
 class OverlayCandidatesOzone;
+class PlatformWindowSurface;
 
 class SurfacelessGlRenderer : public RendererBase {
  public:
   SurfacelessGlRenderer(gfx::AcceleratedWidget widget,
+                        std::unique_ptr<PlatformWindowSurface> window_surface,
                         const scoped_refptr<gl::GLSurface>& surface,
                         const gfx::Size& size);
   ~SurfacelessGlRenderer() override;
@@ -66,10 +68,12 @@ class SurfacelessGlRenderer : public RendererBase {
 
   int back_buffer_ = 0;
 
-  scoped_refptr<gl::GLSurface> surface_;
+  std::unique_ptr<PlatformWindowSurface> window_surface_;
+
+  scoped_refptr<gl::GLSurface> gl_surface_;
   scoped_refptr<gl::GLContext> context_;
 
-  base::WeakPtrFactory<SurfacelessGlRenderer> weak_ptr_factory_;
+  base::WeakPtrFactory<SurfacelessGlRenderer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SurfacelessGlRenderer);
 };

@@ -232,7 +232,7 @@ TEST_F(EtwTraceControllerTest, DISABLED_EnableDisable) {
 
   // Windows 7 does not call the callback when Stop() is called so we
   // can't wait, and enable_level and enable_flags are not zeroed.
-  if (GetVersion() >= VERSION_WIN8) {
+  if (GetVersion() >= Version::WIN8) {
     provider.WaitForCallback();
 
     // Session should have wound down.

@@ -6,13 +6,10 @@
 #define GPU_IPC_SERVICE_IMAGE_TRANSPORT_SURFACE_DELEGATE_H_
 
 #include "base/callback.h"
+#include "components/viz/common/gpu/gpu_vsync_callback.h"
 #include "gpu/command_buffer/common/texture_in_use_response.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
-
-namespace IPC {
-class MessageFilter;
-}
 
 namespace gfx {
 struct PresentationFeedback;
@@ -46,10 +43,12 @@ class GPU_IPC_SERVICE_EXPORT ImageTransportSurfaceDelegate {
 
   // Tells the delegate a buffer has been presented.
   virtual void BufferPresented(const gfx::PresentationFeedback& feedback) = 0;
-  // Add IPC message filter.
-  virtual void AddFilter(IPC::MessageFilter* message_filter) = 0;
-  // Gets route ID for sending / receiving IPC messages.
-  virtual int32_t GetRouteID() const = 0;
+
+  // Callback for GPU vsync signal.  May be called on a different thread.
+  virtual viz::GpuVSyncCallback GetGpuVSyncCallback() = 0;
+
+  // Returns how long GpuThread was blocked since last swap. Used for metrics.
+  virtual base::TimeDelta GetGpuBlockedTimeSinceLastSwap() = 0;
 
  protected:
   virtual ~ImageTransportSurfaceDelegate() = default;

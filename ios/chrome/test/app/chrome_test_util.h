@@ -1,3 +1,4 @@
+
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -5,9 +6,9 @@
 #ifndef IOS_CHROME_TEST_APP_CHROME_TEST_UTIL_H_
 #define IOS_CHROME_TEST_APP_CHROME_TEST_UTIL_H_
 
+#include "base/compiler_specific.h"
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
-#import "ios/web/public/web_state/web_state.h"
 
 namespace ios {
 class ChromeBrowserState;
@@ -27,21 +28,11 @@ MainController* GetMainController();
 // Returns the DeviceSharingManager object.
 DeviceSharingManager* GetDeviceSharingManager();
 
-// Returns the |NewTabPageController| of the current tab if the current tab is
-// a new tab and nil otherwise.
-NewTabPageController* GetCurrentNewTabPageController();
-
-// Returns the current WebState.
-web::WebState* GetCurrentWebState();
-
 // Returns the current, non-incognito ChromeBrowserState.
 ios::ChromeBrowserState* GetOriginalBrowserState();
 
 // Returns the current incognito ChromeBrowserState
 ios::ChromeBrowserState* GetCurrentIncognitoBrowserState();
-
-// Returns the number of key commands currently registered with the main BVC.
-NSUInteger GetRegisteredKeyCommandsCount();
 
 // Returns the dispatcher for the main BVC.
 // TODO(crbug.com/738881): Use DispatcherForActiveBrowserViewController()

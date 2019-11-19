@@ -25,7 +25,7 @@
 namespace button_drag_utils {
 
 // Maximum width of the link drag image in pixels.
-static const int kLinkDragImageMaxWidth = 150;
+static constexpr int kLinkDragImageMaxWidth = 150;
 
 void SetURLAndDragImage(const GURL& url,
                         const base::string16& title,
@@ -46,9 +46,8 @@ void SetDragImage(const GURL& url,
                   const views::Widget& widget,
                   ui::OSExchangeData* data) {
   // Create a button to render the drag image for us.
-  views::LabelButton button(NULL,
-                            title.empty() ? base::UTF8ToUTF16(url.spec())
-                                          : title);
+  views::LabelButton button(
+      nullptr, title.empty() ? base::UTF8ToUTF16(url.spec()) : title);
   button.SetTextSubpixelRenderingEnabled(false);
   const ui::NativeTheme* theme = widget.GetNativeTheme();
   button.SetTextColor(views::Button::STATE_NORMAL,

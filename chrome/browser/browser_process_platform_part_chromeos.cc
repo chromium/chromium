@@ -6,14 +6,15 @@
 
 #include <utility>
 
-#include "ash/public/interfaces/constants.mojom.h"
+#include "ash/public/mojom/constants.mojom.h"
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/singleton.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
-#include "chrome/browser/ash_service_registry.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/chrome_service_name.h"
+#include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager.h"
+#include "chrome/browser/chromeos/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/chromeos/login/session/chrome_session_manager.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/chromeos/net/delay_network_call.h"
@@ -30,11 +31,12 @@
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/account_manager/account_manager_factory.h"
+#include "chromeos/components/account_manager/account_manager_factory.h"
 #include "chromeos/geolocation/simple_geolocation_provider.h"
 #include "chromeos/timezone/timezone_resolver.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/common/service_manager_connection.h"
@@ -43,10 +45,30 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "services/service_manager/public/cpp/service.h"
-#include "services/ws/public/cpp/input_devices/input_device_controller.h"
-#include "services/ws/public/cpp/input_devices/input_device_controller_client.h"
-#include "services/ws/public/mojom/constants.mojom.h"
-#include "ui/base/ui_base_features.h"
+
+namespace {
+
+class PrimaryProfileServicesShutdownNotifierFactory
+    : public BrowserContextKeyedServiceShutdownNotifierFactory {
+ public:
+  static PrimaryProfileServicesShutdownNotifierFactory* GetInstance() {
+    return base::Singleton<
+        PrimaryProfileServicesShutdownNotifierFactory>::get();
+  }
+
+ private:
+  friend struct base::DefaultSingletonTraits<
+      PrimaryProfileServicesShutdownNotifierFactory>;
+
+  PrimaryProfileServicesShutdownNotifierFactory()
+      : BrowserContextKeyedServiceShutdownNotifierFactory(
+            "PrimaryProfileServices") {}
+  ~PrimaryProfileServicesShutdownNotifierFactory() override {}
+
+  DISALLOW_COPY_AND_ASSIGN(PrimaryProfileServicesShutdownNotifierFactory);
+};
+
+}  // namespace
 
 BrowserProcessPlatformPart::BrowserProcessPlatformPart()
     : created_profile_helper_(false),
@@ -86,8 +108,7 @@ void BrowserProcessPlatformPart::InitializeDeviceDisablingManager() {
   device_disabling_manager_delegate_.reset(
       new chromeos::system::DeviceDisablingManagerDefaultDelegate);
   device_disabling_manager_.reset(new chromeos::system::DeviceDisablingManager(
-      device_disabling_manager_delegate_.get(),
-      chromeos::CrosSettings::Get(),
+      device_disabling_manager_delegate_.get(), chromeos::CrosSettings::Get(),
       user_manager::UserManager::Get()));
   device_disabling_manager_->Init();
 }
@@ -126,6 +147,33 @@ void BrowserProcessPlatformPart::ShutdownCrosComponentManager() {
     return;
 
   cros_component_manager_.reset();
+}
+
+void BrowserProcessPlatformPart::InitializePrimaryProfileServices(
+    Profile* primary_profile) {
+  DCHECK(primary_profile);
+
+  DCHECK(!kerberos_credentials_manager_);
+  kerberos_credentials_manager_ =
+      std::make_unique<chromeos::KerberosCredentialsManager>(
+          g_browser_process->local_state(), primary_profile);
+
+  DCHECK(!in_session_password_change_manager_);
+  in_session_password_change_manager_ =
+      chromeos::InSessionPasswordChangeManager::CreateIfEnabled(
+          primary_profile);
+
+  primary_profile_shutdown_subscription_ =
+      PrimaryProfileServicesShutdownNotifierFactory::GetInstance()
+          ->Get(primary_profile)
+          ->Subscribe(base::Bind(
+              &BrowserProcessPlatformPart::ShutdownPrimaryProfileServices,
+              base::Unretained(this)));
+}
+
+void BrowserProcessPlatformPart::ShutdownPrimaryProfileServices() {
+  kerberos_credentials_manager_.reset();
+  in_session_password_change_manager_.reset();
 }
 
 void BrowserProcessPlatformPart::RegisterKeepAlive() {
@@ -197,20 +245,6 @@ chromeos::system::SystemClock* BrowserProcessPlatformPart::GetSystemClock() {
 
 void BrowserProcessPlatformPart::DestroySystemClock() {
   system_clock_.reset();
-}
-
-ws::InputDeviceControllerClient*
-BrowserProcessPlatformPart::GetInputDeviceControllerClient() {
-  if (!input_device_controller_client_) {
-    const std::string service_name = !features::IsMultiProcessMash()
-                                         ? chromeos::kChromeServiceName
-                                         : ws::mojom::kServiceName;
-    input_device_controller_client_ =
-        std::make_unique<ws::InputDeviceControllerClient>(
-            content::ServiceManagerConnection::GetForProcess()->GetConnector(),
-            service_name);
-  }
-  return input_device_controller_client_.get();
 }
 
 void BrowserProcessPlatformPart::CreateProfileHelper() {

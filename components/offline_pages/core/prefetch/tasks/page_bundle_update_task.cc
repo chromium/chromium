@@ -176,8 +176,7 @@ PageBundleUpdateTask::PageBundleUpdateTask(
     : store_(store),
       dispatcher_(dispatcher),
       operation_name_(operation_name),
-      pages_(pages),
-      weak_factory_(this) {
+      pages_(pages) {
   DCHECK(store_);
 }
 

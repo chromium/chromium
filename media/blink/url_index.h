@@ -67,6 +67,8 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
   // Cross-origin access mode
   CorsMode cors_mode() const { return cors_mode_; }
 
+  bool has_access_control() const { return has_access_control_; }
+
   // Are HTTP range requests supported?
   bool range_supported() const { return range_supported_; }
 
@@ -122,6 +124,7 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
   void set_last_modified(base::Time last_modified);
   void set_etag(const std::string& etag);
   void set_is_cors_cross_origin(bool is_cors_cross_origin);
+  void set_has_access_control();
 
   // A redirect has occured (or we've found a better UrlData for the same
   // resource).
@@ -146,17 +149,8 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
   // Virtual so we can override it for testing.
   virtual ResourceMultiBuffer* multibuffer();
 
-  // Callback for reporting number of bytes received by the network.
-  using BytesReceivedCB = base::RepeatingCallback<void(uint64_t)>;
-
-  // Register a BytesReceivedCallback for this UrlData. These callbacks will be
-  // copied to another UrlData if there is a redirect.
-  void AddBytesReceivedCallback(BytesReceivedCB bytes_received_cb);
-
   void AddBytesRead(int64_t b) { bytes_read_from_cache_ += b; }
   int64_t BytesReadFromCache() const { return bytes_read_from_cache_; }
-  void AddBytesReadFromNetwork(int64_t b);
-  int64_t BytesReadFromNetwork() const { return bytes_read_from_network_; }
 
  protected:
   UrlData(const GURL& url, CorsMode cors_mode, UrlIndex* url_index);
@@ -182,6 +176,7 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
 
   // Cross-origin access mode.
   const CorsMode cors_mode_;
+  bool has_access_control_;
 
   UrlIndex* const url_index_;
 
@@ -191,13 +186,10 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
   // Number of bytes read from this resource.
   int64_t bytes_read_from_cache_ = 0;
 
-  // Number of bytes read from network into the cache for this resource.
-  int64_t bytes_read_from_network_ = 0;
-
   // Does the server support ranges?
   bool range_supported_;
 
-  // Set to false if we have reason to beleive the chrome disk cache
+  // Set to false if we have reason to believe the chrome disk cache
   // will not cache this url.
   bool cacheable_;
 
@@ -223,8 +215,6 @@ class MEDIA_BLINK_EXPORT UrlData : public base::RefCounted<UrlData> {
 
   ResourceMultiBuffer multibuffer_;
   std::vector<RedirectCB> redirect_callbacks_;
-
-  std::vector<BytesReceivedCB> bytes_received_callbacks_;
 
   std::vector<base::OnceClosure> waiting_load_callbacks_;
 

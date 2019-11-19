@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * A set of {@link ContextualSearchHeuristic}s that support experimentation and logging.

@@ -50,7 +50,7 @@ const EVP_MD* GetEvpAlg(ct::DigitallySigned::HashAlgorithm alg) {
     case ct::DigitallySigned::HASH_ALGO_NONE:
     default:
       NOTREACHED();
-      return NULL;
+      return nullptr;
   }
 }
 
@@ -59,23 +59,19 @@ const EVP_MD* GetEvpAlg(ct::DigitallySigned::HashAlgorithm alg) {
 // static
 scoped_refptr<const CTLogVerifier> CTLogVerifier::Create(
     const base::StringPiece& public_key,
-    std::string description,
-    std::string dns_domain) {
+    std::string description) {
   scoped_refptr<CTLogVerifier> result(
-      new CTLogVerifier(std::move(description), std::move(dns_domain)));
+      new CTLogVerifier(std::move(description)));
   if (!result->Init(public_key))
     return nullptr;
   return result;
 }
 
-CTLogVerifier::CTLogVerifier(std::string description, std::string dns_domain)
+CTLogVerifier::CTLogVerifier(std::string description)
     : description_(std::move(description)),
-      dns_domain_(std::move(dns_domain)),
       hash_algorithm_(ct::DigitallySigned::HASH_ALGO_NONE),
       signature_algorithm_(ct::DigitallySigned::SIG_ALGO_ANONYMOUS),
-      public_key_(NULL) {
-  DCHECK(!dns_domain_.empty());
-}
+      public_key_(nullptr) {}
 
 bool CTLogVerifier::Verify(const ct::SignedEntryData& entry,
                            const ct::SignedCertificateTimestamp& sct) const {
@@ -345,11 +341,12 @@ bool CTLogVerifier::VerifySignature(const base::StringPiece& data_to_sign,
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   const EVP_MD* hash_alg = GetEvpAlg(hash_algorithm_);
-  if (hash_alg == NULL)
+  if (hash_alg == nullptr)
     return false;
 
   bssl::ScopedEVP_MD_CTX ctx;
-  return EVP_DigestVerifyInit(ctx.get(), NULL, hash_alg, NULL, public_key_) &&
+  return EVP_DigestVerifyInit(ctx.get(), nullptr, hash_alg, nullptr,
+                              public_key_) &&
          EVP_DigestVerifyUpdate(ctx.get(), data_to_sign.data(),
                                 data_to_sign.size()) &&
          EVP_DigestVerifyFinal(

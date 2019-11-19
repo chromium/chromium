@@ -18,9 +18,8 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/web/public/url_data_source_ios.h"
+#include "ios/web/public/webui/url_data_source_ios.h"
 #include "net/base/escape.h"
-#include "third_party/brotli/include/brotli/decode.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
@@ -122,32 +121,9 @@ void AboutUIHTMLSource::StartDataRequest(
     int idr = IDR_ABOUT_UI_CREDITS_HTML;
     if (path == kCreditsJsPath)
       idr = IDR_ABOUT_UI_CREDITS_JS;
-    base::StringPiece raw_response =
-        ui::ResourceBundle::GetSharedInstance().GetRawDataResource(idr);
-    if (idr == IDR_ABOUT_UI_CREDITS_HTML) {
-      const uint8_t* next_encoded_byte =
-          reinterpret_cast<const uint8_t*>(raw_response.data());
-      size_t input_size_remaining = raw_response.size();
-      BrotliDecoderState* decoder =
-          BrotliDecoderCreateInstance(nullptr /* no custom allocator */,
-                                      nullptr /* no custom deallocator */,
-                                      nullptr /* no custom memory handle */);
-      CHECK(!!decoder);
-      while (!BrotliDecoderIsFinished(decoder)) {
-        size_t output_size_remaining = 0;
-        CHECK(BrotliDecoderDecompressStream(
-                  decoder, &input_size_remaining, &next_encoded_byte,
-                  &output_size_remaining, nullptr,
-                  nullptr) != BROTLI_DECODER_RESULT_ERROR);
-        const uint8_t* output_buffer =
-            BrotliDecoderTakeOutput(decoder, &output_size_remaining);
-        response.insert(response.end(), output_buffer,
-                        output_buffer + output_size_remaining);
-      }
-      BrotliDecoderDestroyInstance(decoder);
-    } else {
-      response = raw_response.as_string();
-    }
+    ui::ResourceBundle& resource_instance =
+        ui::ResourceBundle::GetSharedInstance();
+    response = resource_instance.LoadDataResourceString(idr);
   } else if (source_name_ == kChromeUIHistogramHost) {
     // Note: On other platforms, this is implemented in //content. If there is
     // ever a need for embedders other than //ios/chrome to use

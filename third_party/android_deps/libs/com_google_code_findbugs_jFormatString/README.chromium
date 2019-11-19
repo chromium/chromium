@@ -1,0 +1,13 @@
+Name: FindBugs-jFormatString
+Short Name: jFormatString
+URL: http://findbugs.sourceforge.net/
+Version: 3.0.0
+License: GNU Lesser Public License
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+jFormatString for Findbugs
+
+Local Modifications:
+No modifications.

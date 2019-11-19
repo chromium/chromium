@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_availability.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_error.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_request.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -19,8 +20,8 @@ DOMException* CreateAvailabilityNotSupportedError() {
       "getAvailability() isn't supported at the moment. It can be due to "
       "a permanent or temporary system limitation. It is recommended to "
       "try to blindly start a presentation in that case.");
-  return DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                              not_supported_error);
+  return MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError, not_supported_error);
 }
 
 }  // namespace
@@ -46,6 +47,10 @@ void PresentationAvailabilityCallbacks::RejectAvailabilityNotSupported() {
       resolver_->GetExecutionContext()->IsContextDestroyed())
     return;
   resolver_->Reject(CreateAvailabilityNotSupportedError());
+}
+
+void PresentationAvailabilityCallbacks::Trace(blink::Visitor* visitor) {
+  visitor->Trace(resolver_);
 }
 
 }  // namespace blink

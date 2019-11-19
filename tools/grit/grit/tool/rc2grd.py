@@ -4,13 +4,15 @@
 
 '''The 'grit rc2grd' tool.'''
 
+from __future__ import print_function
 
 import os.path
 import getopt
 import re
-import StringIO
 import sys
-import types
+
+import six
+from six import StringIO
 
 import grit.node.empty
 from grit.node import include
@@ -31,7 +33,7 @@ from grit import util
 
 
 # Matches files referenced from an .rc file
-_FILE_REF = lazy_re.compile('''
+_FILE_REF = lazy_re.compile(r'''
   ^(?P<id>[A-Z_0-9.]+)[ \t]+
   (?P<type>[A-Z_0-9]+)[ \t]+
   "(?P<file>.*?([^"]|""))"[ \t]*$''', re.VERBOSE | re.MULTILINE)
@@ -39,31 +41,31 @@ _FILE_REF = lazy_re.compile('''
 
 # Matches a dialog section
 _DIALOG = lazy_re.compile(
-    '^(?P<id>[A-Z0-9_]+)\s+DIALOG(EX)?\s.+?^BEGIN\s*$.+?^END\s*$',
+    r'^(?P<id>[A-Z0-9_]+)\s+DIALOG(EX)?\s.+?^BEGIN\s*$.+?^END\s*$',
     re.MULTILINE | re.DOTALL)
 
 
 # Matches a menu section
-_MENU = lazy_re.compile('^(?P<id>[A-Z0-9_]+)\s+MENU.+?^BEGIN\s*$.+?^END\s*$',
+_MENU = lazy_re.compile(r'^(?P<id>[A-Z0-9_]+)\s+MENU.+?^BEGIN\s*$.+?^END\s*$',
                         re.MULTILINE | re.DOTALL)
 
 
 # Matches a versioninfo section
 _VERSIONINFO = lazy_re.compile(
-    '^(?P<id>[A-Z0-9_]+)\s+VERSIONINFO\s.+?^BEGIN\s*$.+?^END\s*$',
+    r'^(?P<id>[A-Z0-9_]+)\s+VERSIONINFO\s.+?^BEGIN\s*$.+?^END\s*$',
     re.MULTILINE | re.DOTALL)
 
 
 # Matches a stringtable
 _STRING_TABLE = lazy_re.compile(
-    ('^STRINGTABLE(\s+(PRELOAD|DISCARDABLE|CHARACTERISTICS.+|LANGUAGE.+|'
-     'VERSION.+))*\s*\nBEGIN\s*$(?P<body>.+?)^END\s*$'),
+    (r'^STRINGTABLE(\s+(PRELOAD|DISCARDABLE|CHARACTERISTICS.+|LANGUAGE.+|'
+     r'VERSION.+))*\s*\nBEGIN\s*$(?P<body>.+?)^END\s*$'),
     re.MULTILINE | re.DOTALL)
 
 
 # Matches each message inside a stringtable, breaking it up into comments,
 # the ID of the message, and the (RC-escaped) message text.
-_MESSAGE = lazy_re.compile('''
+_MESSAGE = lazy_re.compile(r'''
   (?P<comment>(^\s+//.+?)*)  # 0 or more lines of comments preceding the message
   ^\s*
   (?P<id>[A-Za-z0-9_]+)  # id
@@ -73,11 +75,11 @@ _MESSAGE = lazy_re.compile('''
 
 
 # Matches each line of comment text in a multi-line comment.
-_COMMENT_TEXT = lazy_re.compile('^\s*//\s*(?P<text>.+?)$', re.MULTILINE)
+_COMMENT_TEXT = lazy_re.compile(r'^\s*//\s*(?P<text>.+?)$', re.MULTILINE)
 
 
 # Matches a string that is empty or all whitespace
-_WHITESPACE_ONLY = lazy_re.compile('\A\s*\Z', re.MULTILINE)
+_WHITESPACE_ONLY = lazy_re.compile(r'\A\s*\Z', re.MULTILINE)
 
 
 # Finds printf and FormatMessage style format specifiers
@@ -86,9 +88,9 @@ _WHITESPACE_ONLY = lazy_re.compile('\A\s*\Z', re.MULTILINE)
 # replace with placeholders.
 # TODO(joi) Check documentation for printf (and Windows variants) and FormatMessage
 _FORMAT_SPECIFIER = lazy_re.compile(
-  '(%[-# +]?(?:[0-9]*|\*)(?:\.(?:[0-9]+|\*))?(?:h|l|L)?' # printf up to last char
-  '(?:d|i|o|u|x|X|e|E|f|F|g|G|c|r|s|ls|ws)'              # printf last char
-  '|\$[1-9][0-9]*)')                                     # FormatMessage
+  r'(%[-# +]?(?:[0-9]*|\*)(?:\.(?:[0-9]+|\*))?(?:h|l|L)?' # printf up to last char
+  r'(?:d|i|o|u|x|X|e|E|f|F|g|G|c|r|s|ls|ws)'              # printf last char
+  r'|\$[1-9][0-9]*)')                                     # FormatMessage
 
 
 class Rc2Grd(interface.Tool):
@@ -189,8 +191,8 @@ C preprocessor on the .rc file or manually edit it before using this tool.
   def Run(self, opts, args):
     args = self.ParseOptions(args)
     if len(args) != 1:
-      print ('This tool takes a single tool-specific argument, the path to the\n'
-             '.rc file to process.')
+      print('This tool takes a single tool-specific argument, the path to the\n'
+            '.rc file to process.')
       return 2
     self.SetOptions(opts)
 
@@ -199,11 +201,12 @@ C preprocessor on the .rc file or manually edit it before using this tool.
                 os.path.splitext(os.path.basename(path))[0] + '.grd')
 
     rctext = util.ReadFile(path, self.input_encoding)
-    grd_text = unicode(self.Process(rctext, path))
+    grd_text = six.text_type(self.Process(rctext, path))
     with util.WrapOutputStream(file(out_path, 'w'), 'utf-8') as outfile:
       outfile.write(grd_text)
 
-    print 'Wrote output file %s.\nPlease check for TODO items in the file.' % out_path
+    print('Wrote output file %s.\nPlease check for TODO items in the file.' %
+          (out_path,))
 
 
   def Process(self, rctext, rc_path):
@@ -227,7 +230,7 @@ C preprocessor on the .rc file or manually edit it before using this tool.
           'PreProcessing class could not be found. Skipping preprocessing.\n')
 
     # Start with a basic skeleton for the .grd file
-    root = grd_reader.Parse(StringIO.StringIO(
+    root = grd_reader.Parse(StringIO(
       '''<?xml version="1.0" encoding="UTF-8"?>
       <grit base_dir="." latest_public_release="0"
           current_release="1" source_lang_id="en">
@@ -338,7 +341,7 @@ C preprocessor on the .rc file or manually edit it before using this tool.
         # Messages that contain only placeholders do not need translation.
         is_translateable = False
         for item in msg_obj.GetContent():
-          if isinstance(item, types.StringTypes):
+          if isinstance(item, six.string_types):
             if not _WHITESPACE_ONLY.match(item):
               is_translateable = True
 
@@ -386,7 +389,7 @@ C preprocessor on the .rc file or manually edit it before using this tool.
       # TODO(joi) Allow use of non-TotalRecall flavors of HTML placeholderizing
       msg = tr_html.HtmlToMessage(text, True)
       for item in msg.GetContent():
-        if not isinstance(item, types.StringTypes):
+        if not isinstance(item, six.string_types):
           return msg  # Contained at least one placeholder, so we're done
 
       # HTML placeholderization didn't do anything, so try to find printf or
@@ -411,5 +414,5 @@ C preprocessor on the .rc file or manually edit it before using this tool.
 
       return msg
     except:
-      print 'Exception processing message with text "%s"' % text
+      print('Exception processing message with text "%s"' % text)
       raise

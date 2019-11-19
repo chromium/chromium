@@ -3,7 +3,7 @@
 Abseil comes with a CMake build script ([CMakeLists.txt](../CMakeLists.txt))
 that can be used on a wide range of platforms ("C" stands for cross-platform.).
 If you don't have CMake installed already, you can download it for free from
-<http://www.cmake.org/>.
+<https://www.cmake.org/>.
 
 CMake works by generating native makefiles or build projects that can
 be used in the compiler environment of your choice.
@@ -37,20 +37,12 @@ section of your executable or of your library.<br>
 Here is a short CMakeLists.txt example of a project file using Abseil.
 
 ```cmake
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.5)
 project(my_project)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ ${CMAKE_CXX_FLAGS}")
-
-if(MSVC)
-  # /wd4005  macro-redefinition
-  # /wd4068  unknown pragma
-  # /wd4244  conversion from 'type1' to 'type2'
-  # /wd4267  conversion from 'size_t' to 'type2'
-  # /wd4800  force value to bool 'true' or 'false' (performance warning)
-  add_compile_options(/wd4005 /wd4068 /wd4244 /wd4267 /wd4800)
-  add_definitions(/DNOMINMAX /DWIN32_LEAN_AND_MEAN=1 /D_CRT_SECURE_NO_WARNINGS)
-endif()
+# Pick the C++ standard to compile with.
+# Abseil currently supports C++11, C++14, and C++17.
+set(CMAKE_CXX_STANDARD 11)
 
 add_subdirectory(abseil-cpp)
 

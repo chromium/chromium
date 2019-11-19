@@ -1,4 +1,5 @@
 rootWebArea
-++graphicsDocument name='graphics-document'
-++graphicsObject name='graphics-object'
-++graphicsSymbol name='graphics-symbol'
+++genericContainer ignored
+++++graphicsDocument name='graphics-document'
+++++graphicsObject name='graphics-object'
+++++graphicsSymbol name='graphics-symbol'

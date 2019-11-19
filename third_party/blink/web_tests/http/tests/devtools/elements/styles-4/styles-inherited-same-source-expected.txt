@@ -4,7 +4,7 @@ Checks that inherited styles from the same source are not duplicated.
 element.style { ()
 
 [expanded] 
-div { (<style>…</style>)
+div { (<style>)
     color: red;
 
 [expanded] 

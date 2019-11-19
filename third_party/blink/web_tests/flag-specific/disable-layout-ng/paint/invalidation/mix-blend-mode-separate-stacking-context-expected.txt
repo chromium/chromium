@@ -1,0 +1,68 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (relative positioned) (floating) DIV",
+          "rect": [128, 28, 80, 80],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutBlockFlow (relative positioned) (floating) DIV",
+          "rect": [28, 28, 80, 80],
+          "reason": "chunk disappeared"
+        },
+        {
+          "object": "LayoutBlockFlow (floating) DIV",
+          "rect": [348, 48, 60, 60],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutBlockFlow (relative positioned) (floating) DIV id='fourth'",
+          "rect": [328, 28, 60, 60],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutBlockFlow HTML",
+          "rect": [328, 28, 60, 60],
+          "reason": "chunk disappeared"
+        },
+        {
+          "object": "LayoutBlockFlow (floating) DIV id='third'",
+          "rect": [248, 48, 60, 60],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutBlockFlow (relative positioned) (floating) DIV",
+          "rect": [228, 28, 60, 60],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutBlockFlow (floating) DIV id='second'",
+          "rect": [148, 48, 60, 60],
+          "reason": "chunk disappeared"
+        },
+        {
+          "object": "LayoutBlockFlow (relative positioned) (floating) DIV",
+          "rect": [128, 28, 60, 60],
+          "reason": "chunk disappeared"
+        },
+        {
+          "object": "LayoutBlockFlow (floating) DIV id='first'",
+          "rect": [48, 48, 60, 60],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutBlockFlow (relative positioned) (floating) DIV",
+          "rect": [28, 28, 60, 60],
+          "reason": "chunk appeared"
+        }
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK" desc="The button to trigger media playback to go to the previous track.">
+    Previous Track
+  </message>
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SEEK_BACKWARD" desc="The button to trigger media playback to seek backwards a few seconds.">
+    Seek Backward
+  </message>
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY" desc="The button to trigger media playback to start.">
+    Play
+  </message>
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE" desc="The button to trigger media playback to pause.">
+    Pause
+  </message>
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SEEK_FORWARD" desc="The button to trigger media playback to seek forwards a few seconds.">
+    Seek Forward
+  </message>
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK" desc="The button to trigger media playback to go to the next track.">
+    Next Track
+  </message>
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME" desc="The accessible name for the media notification to control playback.">
+    Media Controls
+  </message>
+</grit-part>

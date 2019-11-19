@@ -21,6 +21,8 @@ enum PermissionName {
     "gyroscope",
     "magnetometer",
     // "clipboard",
+    "wake-lock",
+    "nfc",
 
     // Non-standard:
     "accessibility-events",
@@ -28,6 +30,7 @@ enum PermissionName {
     "clipboard-write",
     "payment-handler",
     "idle-detection",
+    "periodic-background-sync",
 };
 
 // The PermissionDescriptor dictionary is a base to describe permissions. Some

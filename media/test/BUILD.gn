@@ -42,10 +42,11 @@ source_set("pipeline_integration_test_base") {
     deps = [
       "//base",
       "//base/test:test_support",
+      "//media:media_buildflags",
       "//media:test_support",
       "//testing/gmock",
       "//testing/gtest",
-      "//third_party/libaom:av1_buildflags",
+      "//third_party/libaom:libaom_buildflags",
       "//url",
     ]
   }
@@ -67,9 +68,9 @@ source_set("pipeline_integration_tests") {
     deps = [
       ":pipeline_integration_test_base",
       "//base",
+      "//media:media_buildflags",
       "//media:test_support",
       "//media/mojo/clients",
-      "//third_party/libaom:av1_buildflags",
 
       # Needed for the opus_config
       "//third_party/opus",
@@ -100,43 +101,6 @@ source_set("pipeline_integration_perftests") {
       # TODO(dalecurtis): Required since the gmock header is included in the
       # header for pipeline_integration_test_base.h.  This should be moved into
       # the .cc file to avoid the extra dependency here.
-      "//testing/gmock",
-    ]
-  }
-}
-
-source_set("mojo_pipeline_integration_tests") {
-  testonly = true
-
-  if (media_use_ffmpeg && !is_android) {
-    sources = [
-      "pipeline_integration_test.cc",
-    ]
-
-    defines = [ "MOJO_RENDERER" ]
-
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
-    deps = [
-      ":pipeline_integration_test_base",
-      "//base",
-      "//base/test:test_support",
-      "//media:test_support",
-      "//media/mojo/clients",
-      "//media/mojo/interfaces",
-      "//media/mojo/interfaces:constants",
-      "//media/mojo/services",
-      "//media/mojo/services:media_manifest",
-      "//services/service_manager/public/cpp",
-      "//services/service_manager/public/cpp/test:test_support",
-      "//testing/gtest",
-      "//third_party/libaom:av1_buildflags",
-      "//ui/gfx:test_support",
-      "//ui/gfx/geometry",
-
-      # TODO(dalecurtis): Required since the gmock header is included in the
-      # header for pipeline_integration_test_base.h.  This should be moved
-      # into the .cc file to avoid the extra dependency here.
       "//testing/gmock",
     ]
   }
@@ -219,7 +183,6 @@ foreach(variant, pipeline_integration_fuzzer_variants) {
       # header for pipeline_integration_test_base.h.  This should be
       # moved into the .cc file to avoid the extra dependency here.
       "//testing/gmock",
-      "//third_party/libaom:av1_buildflags",
       "//ui/gfx:test_support",
     ]
 

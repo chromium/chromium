@@ -16,13 +16,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.search_engines.TemplateUrlService;
-import org.chromium.chrome.test.util.ApplicationData;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Locale;
 import java.util.concurrent.Callable;
@@ -38,11 +37,9 @@ public class LocaleManagerReferralTest {
     private String mYandexReferralId = "";
 
     @Before
-    public void setUp() throws ExecutionException, ProcessInitException {
+    public void setUp() throws ExecutionException {
         mDefaultLocale = Locale.getDefault();
         Locale.setDefault(new Locale("ru", "RU"));
-
-        ApplicationData.clearAppData(InstrumentationRegistry.getTargetContext());
 
         LocaleManager.setInstanceForTest(new LocaleManager() {
             @Override
@@ -51,9 +48,9 @@ public class LocaleManagerReferralTest {
             }
         });
 
-        ThreadUtils.runOnUiThreadBlocking(new Callable<Void>() {
+        TestThreadUtils.runOnUiThreadBlocking(new Callable<Void>() {
             @Override
-            public Void call() throws ProcessInitException {
+            public Void call() {
                 ChromeBrowserInitializer.getInstance(InstrumentationRegistry.getTargetContext())
                         .handleSynchronousStartup();
                 return null;
@@ -68,45 +65,39 @@ public class LocaleManagerReferralTest {
 
     @SmallTest
     @Test
-    public void testYandexReferralId() throws InterruptedException, TimeoutException {
+    public void testYandexReferralId() throws TimeoutException {
         final CallbackHelper templateUrlServiceLoaded = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                TemplateUrlService templateUrlService = TemplateUrlService.getInstance();
-                templateUrlService.registerLoadListener(new TemplateUrlService.LoadListener() {
-                    @Override
-                    public void onTemplateUrlServiceLoaded() {
-                        templateUrlServiceLoaded.notifyCalled();
-                    }
-                });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TemplateUrlService templateUrlService = TemplateUrlServiceFactory.get();
+            templateUrlService.registerLoadListener(new TemplateUrlService.LoadListener() {
+                @Override
+                public void onTemplateUrlServiceLoaded() {
+                    templateUrlServiceLoaded.notifyCalled();
+                }
+            });
 
-                templateUrlService.load();
-            }
+            templateUrlService.load();
         });
 
         templateUrlServiceLoaded.waitForCallback("Template URLs never loaded", 0);
 
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                TemplateUrlService.getInstance().setSearchEngine("yandex.ru");
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TemplateUrlServiceFactory.get().setSearchEngine("yandex.ru");
 
-                // The initial param is empty, so ensure no clid param is passed.
-                String url = TemplateUrlService.getInstance().getUrlForSearchQuery("blah");
-                Assert.assertThat(url, not(containsString("&clid=")));
+            // The initial param is empty, so ensure no clid param is passed.
+            String url = TemplateUrlServiceFactory.get().getUrlForSearchQuery("blah");
+            Assert.assertThat(url, not(containsString("&clid=")));
 
-                // Initialize the value to something and verify it is included in the generated
-                // URL.
-                mYandexReferralId = "TESTING_IS_AWESOME";
-                url = TemplateUrlService.getInstance().getUrlForSearchQuery("blah");
-                Assert.assertThat(url, containsString("&clid=TESTING_IS_AWESOME"));
+            // Initialize the value to something and verify it is included in the generated
+            // URL.
+            mYandexReferralId = "TESTING_IS_AWESOME";
+            url = TemplateUrlServiceFactory.get().getUrlForSearchQuery("blah");
+            Assert.assertThat(url, containsString("&clid=TESTING_IS_AWESOME"));
 
-                // Switch to google and ensure the clid param is no longer included.
-                TemplateUrlService.getInstance().setSearchEngine("google.com");
-                url = TemplateUrlService.getInstance().getUrlForSearchQuery("blah");
-                Assert.assertThat(url, not(containsString("&clid=")));
-            }
+            // Switch to google and ensure the clid param is no longer included.
+            TemplateUrlServiceFactory.get().setSearchEngine("google.com");
+            url = TemplateUrlServiceFactory.get().getUrlForSearchQuery("blah");
+            Assert.assertThat(url, not(containsString("&clid=")));
         });
     }
 }

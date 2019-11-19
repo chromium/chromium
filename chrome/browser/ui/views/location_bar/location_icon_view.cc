@@ -19,27 +19,27 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
 
 using content::WebContents;
+using security_state::SecurityLevel;
 
 LocationIconView::LocationIconView(const gfx::FontList& font_list,
                                    Delegate* delegate)
     : IconLabelBubbleView(font_list), delegate_(delegate) {
-  label()->SetElideBehavior(gfx::ELIDE_MIDDLE);
-  set_id(VIEW_ID_LOCATION_ICON);
+  SetID(VIEW_ID_LOCATION_ICON);
   Update(true);
-  SetUpForInOutAnimation();
+  SetUpForAnimation();
 
   // Readability is guaranteed by the omnibox theme.
   label()->SetAutoColorReadabilityEnabled(false);
 }
 
-LocationIconView::~LocationIconView() {
-}
+LocationIconView::~LocationIconView() {}
 
 gfx::Size LocationIconView::GetMinimumSize() const {
   return GetMinimumSizeForPreferredSize(GetPreferredSize());
@@ -58,8 +58,11 @@ bool LocationIconView::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 SkColor LocationIconView::GetTextColor() const {
-  return delegate_->GetSecurityChipColor(
-      delegate_->GetLocationBarModel()->GetSecurityLevel(false));
+  SecurityLevel security_level = SecurityLevel::NONE;
+  if (!delegate_->IsEditingOrEmpty())
+    security_level = delegate_->GetLocationBarModel()->GetSecurityLevel();
+
+  return delegate_->GetSecurityChipColor(security_level);
 }
 
 bool LocationIconView::ShouldShowSeparator() const {
@@ -84,7 +87,7 @@ void LocationIconView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // If no display text exists, ensure that the accessibility label is added.
   auto accessibility_label = base::UTF16ToUTF8(
       delegate_->GetLocationBarModel()->GetSecureAccessibilityText());
-  if (label()->text().empty() && !accessibility_label.empty()) {
+  if (label()->GetText().empty() && !accessibility_label.empty()) {
     node_data->AddStringAttribute(ax::mojom::StringAttribute::kDescription,
                                   accessibility_label);
   }
@@ -102,7 +105,7 @@ int LocationIconView::GetMinimumLabelTextWidth() const {
   int width = 0;
 
   base::string16 text = GetText();
-  if (text == label()->text()) {
+  if (text == label()->GetText()) {
     // Optimize this common case by not creating a new label.
     // GetPreferredSize is not dependent on the label's current
     // width, so this returns the same value as the branch below.
@@ -115,14 +118,15 @@ int LocationIconView::GetMinimumLabelTextWidth() const {
 }
 
 bool LocationIconView::ShouldShowText() const {
-  const auto* location_bar_model = delegate_->GetLocationBarModel();
+  if (delegate_->IsEditingOrEmpty())
+    return false;
 
-  if (!location_bar_model->input_in_progress()) {
-    const GURL& url = location_bar_model->GetURL();
-    if (url.SchemeIs(content::kChromeUIScheme) ||
-        url.SchemeIs(extensions::kExtensionScheme) ||
-        url.SchemeIs(url::kFileScheme))
-      return true;
+  const auto* location_bar_model = delegate_->GetLocationBarModel();
+  const GURL& url = location_bar_model->GetURL();
+  if (url.SchemeIs(content::kChromeUIScheme) ||
+      url.SchemeIs(extensions::kExtensionScheme) ||
+      url.SchemeIs(url::kFileScheme)) {
+    return true;
   }
 
   return !location_bar_model->GetSecureDisplayText().empty();
@@ -133,6 +137,9 @@ const views::InkDrop* LocationIconView::get_ink_drop_for_testing() {
 }
 
 base::string16 LocationIconView::GetText() const {
+  if (delegate_->IsEditingOrEmpty())
+    return base::string16();
+
   if (delegate_->GetLocationBarModel()->GetURL().SchemeIs(
           content::kChromeUIScheme))
     return l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
@@ -158,16 +165,16 @@ base::string16 LocationIconView::GetText() const {
 }
 
 bool LocationIconView::ShouldAnimateTextVisibilityChange() const {
-  using SecurityLevel = security_state::SecurityLevel;
-  SecurityLevel level =
-      delegate_->GetLocationBarModel()->GetSecurityLevel(false);
-  // Do not animate transitions from HTTP_SHOW_WARNING to DANGEROUS, since the
-  // transition can look confusing/messy.
-  if (level == SecurityLevel::DANGEROUS &&
-      last_update_security_level_ == SecurityLevel::HTTP_SHOW_WARNING)
+  if (delegate_->IsEditingOrEmpty())
     return false;
-  return (level == SecurityLevel::DANGEROUS ||
-          level == SecurityLevel::HTTP_SHOW_WARNING);
+
+  SecurityLevel level = delegate_->GetLocationBarModel()->GetSecurityLevel();
+  // Do not animate transitions from WARNING to DANGEROUS, since
+  // the transition can look confusing/messy.
+  if (level == SecurityLevel::DANGEROUS &&
+      last_update_security_level_ == SecurityLevel::WARNING)
+    return false;
+  return (level == SecurityLevel::DANGEROUS || level == SecurityLevel::WARNING);
 }
 
 void LocationIconView::UpdateTextVisibility(bool suppress_animations) {
@@ -182,7 +189,7 @@ void LocationIconView::UpdateTextVisibility(bool suppress_animations) {
     AnimateOut();
 
   // The label text color may have changed.
-  OnNativeThemeChanged(GetNativeTheme());
+  OnThemeChanged();
 }
 
 void LocationIconView::UpdateIcon() {
@@ -232,8 +239,11 @@ void LocationIconView::Update(bool suppress_animations) {
     }
   }
 
-  last_update_security_level_ =
-      delegate_->GetLocationBarModel()->GetSecurityLevel(false);
+  last_update_security_level_ = SecurityLevel::NONE;
+  if (!is_editing_or_empty) {
+    last_update_security_level_ =
+        delegate_->GetLocationBarModel()->GetSecurityLevel();
+  }
   was_editing_or_empty_ = is_editing_or_empty;
 }
 
@@ -251,19 +261,10 @@ bool LocationIconView::IsTriggerableEvent(const ui::Event& event) {
   return IconLabelBubbleView::IsTriggerableEvent(event);
 }
 
-double LocationIconView::WidthMultiplier() const {
-  return GetAnimationValue();
-}
-
 gfx::Size LocationIconView::GetMinimumSizeForPreferredSize(
     gfx::Size size) const {
   const int kMinCharacters = 10;
   size.SetToMin(
       GetSizeForLabelWidth(font_list().GetExpectedTextWidth(kMinCharacters)));
   return size;
-}
-
-int LocationIconView::GetSlideDurationTime() const {
-  constexpr int kSlideDurationTimeMs = 150;
-  return kSlideDurationTimeMs;
 }

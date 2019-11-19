@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ssl/common_name_mismatch_handler.h"
 
+#include <utility>
+
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/ssl_errors/error_classification.h"
@@ -18,6 +19,7 @@
 #include "services/network/public/cpp/resource_response.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 CommonNameMismatchHandler::CommonNameMismatchHandler(
     const GURL& request_url,
@@ -80,7 +82,7 @@ void CommonNameMismatchHandler::CheckSuggestedUrl(
   // since then the connection may be reused without checking the cert.
   resource_request->url = check_url_;
   resource_request->method = "HEAD";
-  resource_request->allow_credentials = false;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
@@ -124,7 +126,7 @@ void CommonNameMismatchHandler::Cancel() {
 
 void CommonNameMismatchHandler::OnSimpleLoaderHandler(
     const GURL& final_url,
-    const network::ResourceResponseHead* head) {
+    const network::mojom::URLResponseHead* head) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsCheckingSuggestedUrl());
   DCHECK(!check_url_callback_.is_null());
@@ -143,19 +145,19 @@ void CommonNameMismatchHandler::OnSimpleLoaderHandler(
     result = SUGGESTED_URL_AVAILABLE;
   }
   simple_url_loader_.reset();
-  base::ResetAndReturn(&check_url_callback_).Run(result, check_url_);
+  std::move(check_url_callback_).Run(result, check_url_);
 }
 
 void CommonNameMismatchHandler::OnSimpleLoaderRedirect(
     const net::RedirectInfo& redirect_info,
-    const network::ResourceResponseHead& response_head,
+    const network::mojom::URLResponseHead& response_head,
     std::vector<std::string>* to_be_removed_headers) {
   OnSimpleLoaderHandler(redirect_info.new_url, &response_head);
 }
 
 void CommonNameMismatchHandler::OnSimpleLoaderResponseStarted(
     const GURL& final_url,
-    const network::ResourceResponseHead& response_head) {
+    const network::mojom::URLResponseHead& response_head) {
   OnSimpleLoaderHandler(final_url, &response_head);
 }
 

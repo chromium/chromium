@@ -17,40 +17,40 @@ namespace blink {
 
 CSSTransformComponent* CSSTransformComponent::FromCSSValue(
     const CSSValue& value) {
-  if (!value.IsFunctionValue())
+  const auto* function_value = DynamicTo<CSSFunctionValue>(value);
+  if (!function_value)
     return nullptr;
 
-  const CSSFunctionValue& function_value = ToCSSFunctionValue(value);
-  switch (function_value.FunctionType()) {
-    case CSSValueMatrix:
-    case CSSValueMatrix3d:
-      return CSSMatrixComponent::FromCSSValue(function_value);
-    case CSSValuePerspective:
-      return CSSPerspective::FromCSSValue(function_value);
-    case CSSValueRotate:
-    case CSSValueRotateX:
-    case CSSValueRotateY:
-    case CSSValueRotateZ:
-    case CSSValueRotate3d:
-      return CSSRotate::FromCSSValue(function_value);
-    case CSSValueScale:
-    case CSSValueScaleX:
-    case CSSValueScaleY:
-    case CSSValueScaleZ:
-    case CSSValueScale3d:
-      return CSSScale::FromCSSValue(function_value);
-    case CSSValueSkew:
-      return CSSSkew::FromCSSValue(function_value);
-    case CSSValueSkewX:
-      return CSSSkewX::FromCSSValue(function_value);
-    case CSSValueSkewY:
-      return CSSSkewY::FromCSSValue(function_value);
-    case CSSValueTranslate:
-    case CSSValueTranslateX:
-    case CSSValueTranslateY:
-    case CSSValueTranslateZ:
-    case CSSValueTranslate3d:
-      return CSSTranslate::FromCSSValue(function_value);
+  switch (function_value->FunctionType()) {
+    case CSSValueID::kMatrix:
+    case CSSValueID::kMatrix3d:
+      return CSSMatrixComponent::FromCSSValue(*function_value);
+    case CSSValueID::kPerspective:
+      return CSSPerspective::FromCSSValue(*function_value);
+    case CSSValueID::kRotate:
+    case CSSValueID::kRotateX:
+    case CSSValueID::kRotateY:
+    case CSSValueID::kRotateZ:
+    case CSSValueID::kRotate3d:
+      return CSSRotate::FromCSSValue(*function_value);
+    case CSSValueID::kScale:
+    case CSSValueID::kScaleX:
+    case CSSValueID::kScaleY:
+    case CSSValueID::kScaleZ:
+    case CSSValueID::kScale3d:
+      return CSSScale::FromCSSValue(*function_value);
+    case CSSValueID::kSkew:
+      return CSSSkew::FromCSSValue(*function_value);
+    case CSSValueID::kSkewX:
+      return CSSSkewX::FromCSSValue(*function_value);
+    case CSSValueID::kSkewY:
+      return CSSSkewY::FromCSSValue(*function_value);
+    case CSSValueID::kTranslate:
+    case CSSValueID::kTranslateX:
+    case CSSValueID::kTranslateY:
+    case CSSValueID::kTranslateZ:
+    case CSSValueID::kTranslate3d:
+      return CSSTranslate::FromCSSValue(*function_value);
     default:
       return nullptr;
   }

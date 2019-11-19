@@ -14,8 +14,8 @@
 #include "components/safe_browsing/common/safe_browsing.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_thread_observer.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -30,13 +30,12 @@ class PhishingClassifierFilter : public mojom::PhishingModelSetter {
   PhishingClassifierFilter();
   ~PhishingClassifierFilter() override;
 
-  static void Create(mojom::PhishingModelSetterRequest request);
+  static void Create(
+      mojo::PendingReceiver<mojom::PhishingModelSetter> receiver);
 
  private:
   // mojom::PhishingModelSetter
   void SetPhishingModel(const std::string& model) override;
-
-  mojo::StrongBindingPtr<mojom::PhishingModelSetter> binding_;
 
   DISALLOW_COPY_AND_ASSIGN(PhishingClassifierFilter);
 };
@@ -86,7 +85,8 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
     CANCEL_CLASSIFICATION_MAX  // Always add new values before this one.
   };
 
-  void PhishingDetectorRequest(mojom::PhishingDetectorRequest request);
+  void PhishingDetectorReceiver(
+      mojo::PendingReceiver<mojom::PhishingDetector> receiver);
 
   // Cancels any pending classification and frees the page text.
   void CancelPendingClassification(CancelClassificationReason reason);
@@ -103,7 +103,8 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   // for the given toplevel URL.  If the URL has been fully loaded into the
   // RenderFrame and a Scorer has been set, this will begin classification,
   // otherwise classification will be deferred until these conditions are met.
-  void StartPhishingDetection(const GURL& url) override;
+  void StartPhishingDetection(const GURL& url,
+                              StartPhishingDetectionCallback callback) override;
 
   // Called when classification for the current page finishes.
   void ClassificationDone(const ClientPhishingRequest& verdict);
@@ -149,7 +150,10 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   // Set to true if the classifier is currently running.
   bool is_classifying_;
 
-  mojo::BindingSet<mojom::PhishingDetector> phishing_detector_bindings_;
+  // The callback from the most recent call to StartPhishingDetection.
+  StartPhishingDetectionCallback callback_;
+
+  mojo::ReceiverSet<mojom::PhishingDetector> phishing_detector_receivers_;
 
   service_manager::BinderRegistry registry_;
 

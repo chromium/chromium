@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
-#include "chromeos/dbus/attestation_constants.h"
+#include "chromeos/dbus/constants/attestation_constants.h"
 
 namespace policy {
 class CloudPolicyClient;
@@ -82,7 +82,7 @@ class EnrollmentPolicyObserver : public DeviceSettingsService::Observer {
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<EnrollmentPolicyObserver> weak_factory_;
+  base::WeakPtrFactory<EnrollmentPolicyObserver> weak_factory_{this};
 
   friend class EnrollmentPolicyObserverTest;
 

@@ -140,6 +140,13 @@ stage_install_common() {
   STRIPPEDFILE="${BUILDDIR}/${PROGNAME}.stripped"
   install -m 755 "${STRIPPEDFILE}" "${STAGEDIR}/${INSTALLDIR}/${PROGNAME}"
 
+  # crashpad
+  buildfile="${BUILDDIR}/crashpad_handler"
+  strippedfile="${buildfile}.stripped"
+  debugfile="${buildfile}.debug"
+  "${BUILDDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+  install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/crashpad_handler"
+
   # resources
   install -m 644 "${BUILDDIR}/resources.pak" "${STAGEDIR}/${INSTALLDIR}/"
   # TODO(mmoss): This has broken a couple times on adding new .pak files. Maybe
@@ -159,7 +166,6 @@ stage_install_common() {
 
   # V8 snapshot files; Necessary when the GN v8_use_external_startup_data flag
   # is true.
-  install -m 644 "${BUILDDIR}/natives_blob.bin" "${STAGEDIR}/${INSTALLDIR}/"
   # Use v8_context_snapshot.bin instead of snapshot_blob.bin if it is available.
   # TODO(crbug.com/764576): Unship snapshot_blob.bin on ChromeOS and drop this branch
   if [ -f "${BUILDDIR}/v8_context_snapshot.bin" ]; then
@@ -194,9 +200,13 @@ stage_install_common() {
   fi
 
   # Widevine CDM.
-  if [ -f "${BUILDDIR}/libwidevinecdm.so" ]; then
+  if [ -d "${BUILDDIR}/WidevineCdm" ]; then
     # No need to strip; libwidevinecdm.so starts out stripped.
-    install -m ${SHLIB_PERMS} "${BUILDDIR}/libwidevinecdm.so" "${STAGEDIR}/${INSTALLDIR}/"
+    cp -a "${BUILDDIR}/WidevineCdm" "${STAGEDIR}/${INSTALLDIR}/"
+    find "${STAGEDIR}/${INSTALLDIR}/WidevineCdm" -type d -exec chmod 755 '{}' \;
+    find "${STAGEDIR}/${INSTALLDIR}/WidevineCdm" -type f -exec chmod 644 '{}' \;
+    find "${STAGEDIR}/${INSTALLDIR}/WidevineCdm" -name libwidevinecdm.so \
+      -exec chmod ${SHLIB_PERMS} '{}' \;
   fi
 
   # ANGLE

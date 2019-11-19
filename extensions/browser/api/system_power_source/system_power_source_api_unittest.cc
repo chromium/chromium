@@ -5,7 +5,7 @@
 #include <limits>
 
 #include "base/bind.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "extensions/browser/api/system_power_source/system_power_source_api.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
@@ -29,7 +29,7 @@ class SystemPowerSourceApiUnitTest : public ApiUnitTest {
 
   void SetUp() override {
     ApiUnitTest::SetUp();
-    chromeos::PowerManagerClient::Initialize();
+    chromeos::PowerManagerClient::InitializeFake();
   }
 
   void TearDown() override {

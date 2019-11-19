@@ -1,0 +1,10 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # Include the //weblayer code in WebView implementation APKs.
+  webview_includes_weblayer = true
+}
+
+weblayer_product_config_java_package = "org.chromium.weblayer_private"

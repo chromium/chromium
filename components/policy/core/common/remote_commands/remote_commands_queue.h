@@ -14,6 +14,7 @@
 #include "components/policy/policy_export.h"
 
 namespace base {
+class Clock;
 class TickClock;
 }  // namespace base
 
@@ -53,8 +54,9 @@ class POLICY_EXPORT RemoteCommandsQueue {
   // Add a |job| to the queue.
   void AddJob(std::unique_ptr<RemoteCommandJob> job);
 
-  // Set an alternative clock for testing.
-  void SetClockForTesting(const base::TickClock* clock);
+  // Set alternative clocks for testing.
+  void SetClocksForTesting(const base::Clock* clock,
+                           const base::TickClock* tick_clock);
 
   // Helper function to get the current time.
   base::TimeTicks GetNowTicks();
@@ -75,7 +77,8 @@ class POLICY_EXPORT RemoteCommandsQueue {
 
   std::unique_ptr<RemoteCommandJob> running_command_;
 
-  const base::TickClock* clock_;
+  const base::Clock* clock_;
+  const base::TickClock* tick_clock_;
   base::OneShotTimer execution_timeout_timer_;
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;

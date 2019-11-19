@@ -13,8 +13,8 @@
   <option class="font2">font 2</option>
 </select>
 <script>
-var face1 = new FontFace("TestFont", "local(Arial)");
-var face2 = new FontFace("TestFont 2", "local(Arial)");
+var face1 = new FontFace("TestFont", "local(Arial), local(Arimo Regular)");
+var face2 = new FontFace("TestFont 2", "local(Arial), local(Arimo Regular)");
 document.fonts.add(face1);
 document.fonts.add(face2);
 
@@ -24,7 +24,7 @@ async_test(function(test) {
     assert_equals(face2.status, "unloaded", "face2 should be unloaded");
 
     openPicker(document.querySelector('select'), function() {
-        setTimeout(test.step_func(function() {
+        document.fonts.ready.then(test.step_func(function() {
             assert_equals(face1.status, "loaded", "face1 should be loaded");
             assert_equals(face2.status, "loaded", "face2 should be loaded");
             test.done();

@@ -26,6 +26,9 @@
 #define COMPONENTS_GWP_ASAN_COMMON_ALLOCATOR_STATE_H_
 
 #include <atomic>
+#include <limits>
+#include <string>
+#include <type_traits>
 
 #include "base/threading/platform_thread.h"
 
@@ -36,13 +39,30 @@ class GuardedPageAllocator;
 
 class AllocatorState {
  public:
-  // Maximum number of pages this class can allocate.
-  static constexpr size_t kGpaMaxPages = 256;
-  // Maximum number of stack trace frames to collect.
-  static constexpr size_t kMaxStackFrames = 60;
-  // Number of bytes to allocate for packed stack traces. This can hold
-  // approximately kMaxStackFrames under normal conditions.
-  static constexpr size_t kMaxPackedTraceLength = 200;
+  using MetadataIdx = uint16_t;
+  using SlotIdx = uint16_t;
+
+  // Maximum number of virtual memory slots (guard-page buffered pages) this
+  // class can allocate.
+  static constexpr size_t kMaxSlots = 4096;
+  // Maximum number of concurrent allocations/metadata this class can allocate.
+  static constexpr size_t kMaxMetadata = 2048;
+  // Invalid metadata index.
+  static constexpr MetadataIdx kInvalidMetadataIdx = kMaxMetadata;
+
+  // Maximum number of stack trace frames to collect for an allocation or
+  // deallocation.
+  static constexpr size_t kMaxStackFrames = 100;
+  // Number of bytes to allocate for both allocation and deallocation packed
+  // stack traces. (Stack trace entries take ~3.5 bytes on average.)
+  static constexpr size_t kMaxPackedTraceLength = 400;
+
+  static_assert(std::numeric_limits<SlotIdx>::max() >= kMaxSlots - 1,
+                "SlotIdx can hold all possible slot index values");
+  static_assert(std::numeric_limits<MetadataIdx>::max() >= kMaxMetadata - 1,
+                "MetadataIdx can hold all possible metadata index values");
+  static_assert(kInvalidMetadataIdx >= kMaxMetadata,
+                "kInvalidMetadataIdx can not reference a real index");
 
   enum class ErrorType {
     kUseAfterFree = 0,
@@ -54,9 +74,11 @@ class AllocatorState {
   };
 
   enum class GetMetadataReturnType {
-    kUnrelatedCrash = 0,
-    kGwpAsanCrash = 1,
+    kGwpAsanCrash = 0,
+    kGwpAsanCrashWithMissingMetadata = 1,
     kErrorBadSlot = 2,
+    kErrorBadMetadataIndex = 3,
+    kErrorOutdatedMetadataIndex = 4,
   };
 
   // Structure for storing data about a slot.
@@ -68,12 +90,14 @@ class AllocatorState {
       // (De)allocation thread id or base::kInvalidThreadId if no (de)allocation
       // occurred.
       uint64_t tid = base::kInvalidThreadId;
-      // Packed stack trace.
-      uint8_t packed_trace[kMaxPackedTraceLength];
       // Length used to encode the packed stack trace.
-      size_t trace_len = 0;
+      uint16_t trace_len = 0;
       // Whether a stack trace has been collected for this (de)allocation.
       bool trace_collected = false;
+
+      static_assert(std::numeric_limits<decltype(trace_len)>::max() >=
+                        kMaxPackedTraceLength - 1,
+                    "trace_len can hold all possible length values.");
     };
 
     // Size of the allocation
@@ -83,6 +107,10 @@ class AllocatorState {
     // Used to synchronize whether a deallocation has occurred (e.g. whether a
     // double free has occurred) between threads.
     std::atomic<bool> deallocation_occurred{false};
+    // Holds the combined allocation/deallocation stack traces. The deallocation
+    // stack trace is stored immediately after the allocation stack trace to
+    // optimize on space.
+    uint8_t stack_trace_pool[kMaxPackedTraceLength];
 
     AllocationInfo alloc;
     AllocationInfo dealloc;
@@ -104,14 +132,19 @@ class AllocatorState {
   bool IsValid() const;
 
   // This method is meant to be called from the crash handler with a validated
-  // AllocatorState object read from the crashed process. This method checks if
-  // exception_address is an address in the GWP-ASan region, and writes the
-  // address of the SlotMetadata to the provided arguments if so.
-  //
-  // Returns an enum indicating an error, unrelated exception, or a GWP-ASan
-  // exception (with slot_address filled out.)
-  GetMetadataReturnType GetMetadataForAddress(uintptr_t exception_address,
-                                              uintptr_t* slot_address) const;
+  // AllocatorState object read from the crashed process and an exception
+  // address known to be in the GWP-ASan allocator region. Given the metadata
+  // and slot to metadata arrays for the allocator, this method returns an enum
+  // indicating an error or a GWP-ASan exception with or without metadata. If
+  // metadata is available, the |metadata_idx| parameter stores the index of the
+  // relevant metadata in the given array. If an error occurs, the |error|
+  // parameter is filled out with an error string.
+  GetMetadataReturnType GetMetadataForAddress(
+      uintptr_t exception_address,
+      const SlotMetadata* metadata_arr,
+      const MetadataIdx* slot_to_metadata,
+      MetadataIdx* metadata_idx,
+      std::string* error) const;
 
   // Returns the likely error type given an exception address and whether its
   // previously been allocated and deallocated.
@@ -126,21 +159,25 @@ class AllocatorState {
   uintptr_t GetNearestValidPage(uintptr_t addr) const;
 
   // Returns the slot number for the page nearest to addr.
-  size_t GetNearestSlot(uintptr_t addr) const;
+  SlotIdx GetNearestSlot(uintptr_t addr) const;
 
-  uintptr_t SlotToAddr(size_t slot) const;
-  size_t AddrToSlot(uintptr_t addr) const;
+  uintptr_t SlotToAddr(SlotIdx slot) const;
+  SlotIdx AddrToSlot(uintptr_t addr) const;
 
   uintptr_t pages_base_addr = 0;  // Points to start of mapped region.
   uintptr_t pages_end_addr = 0;   // Points to the end of mapped region.
   uintptr_t first_page_addr = 0;  // Points to first allocatable page.
-  size_t total_pages = 0;         // Size of the page pool to allocate from.
+  size_t num_metadata = 0;        // Number of entries in |metadata_addr|.
+  size_t total_pages = 0;         // Virtual memory page pool size.
   size_t page_size = 0;           // Page size.
 
   // Pointer to an array of metadata about every allocation, including its size,
   // offset, and pointers to the allocation/deallocation stack traces (if
   // present.)
-  uintptr_t slot_metadata = 0;
+  uintptr_t metadata_addr = 0;
+  // Pointer to an array that maps a slot index to a metadata index (or
+  // kInvalidMetadataIdx if no such mapping exists) in |metadata_addr|.
+  uintptr_t slot_to_metadata_addr;
 
   // Set to the address of a double freed allocation if a double free occurred.
   uintptr_t double_free_address = 0;

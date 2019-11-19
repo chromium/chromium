@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "net/http/http_raw_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_body_drainer.h"
@@ -17,11 +18,8 @@
 namespace net {
 
 HttpBasicStream::HttpBasicStream(std::unique_ptr<ClientSocketHandle> connection,
-                                 bool using_proxy,
-                                 bool http_09_on_non_default_ports_enabled)
-    : state_(std::move(connection),
-             using_proxy,
-             http_09_on_non_default_ports_enabled) {}
+                                 bool using_proxy)
+    : state_(std::move(connection), using_proxy) {}
 
 HttpBasicStream::~HttpBasicStream() = default;
 
@@ -31,8 +29,15 @@ int HttpBasicStream::InitializeStream(const HttpRequestInfo* request_info,
                                       const NetLogWithSource& net_log,
                                       CompletionOnceCallback callback) {
   DCHECK(request_info->traffic_annotation.is_valid());
-  state_.Initialize(request_info, can_send_early, priority, net_log);
-  return OK;
+  state_.Initialize(request_info, priority, net_log);
+  int ret = OK;
+  if (!can_send_early) {
+    // parser() cannot outlive |this|, so we can use base::Unretained().
+    ret = parser()->ConfirmHandshake(
+        base::BindOnce(&HttpBasicStream::OnHandshakeConfirmed,
+                       base::Unretained(this), std::move(callback)));
+  }
+  return ret;
 }
 
 int HttpBasicStream::SendRequest(const HttpRequestHeaders& headers,
@@ -85,8 +90,7 @@ HttpStream* HttpBasicStream::RenewStreamForAuth() {
   // be extra-sure it doesn't touch the connection again, delete it here rather
   // than leaving it until the destructor is called.
   state_.DeleteParser();
-  return new HttpBasicStream(state_.ReleaseConnection(), state_.using_proxy(),
-                             state_.http_09_on_non_default_ports_enabled());
+  return new HttpBasicStream(state_.ReleaseConnection(), state_.using_proxy());
 }
 
 bool HttpBasicStream::IsResponseBodyComplete() const {
@@ -123,6 +127,14 @@ bool HttpBasicStream::GetLoadTimingInfo(
                                               load_timing_info) ||
       !parser()) {
     return false;
+  }
+
+  // If the request waited for handshake confirmation, shift |ssl_end| to
+  // include that time.
+  if (!load_timing_info->connect_timing.ssl_end.is_null() &&
+      !confirm_handshake_end_.is_null()) {
+    load_timing_info->connect_timing.ssl_end = confirm_handshake_end_;
+    load_timing_info->connect_timing.connect_end = confirm_handshake_end_;
   }
 
   load_timing_info->receive_headers_start = parser()->response_start_time();
@@ -178,6 +190,17 @@ void HttpBasicStream::SetPriority(RequestPriority priority) {
 void HttpBasicStream::SetRequestHeadersCallback(
     RequestHeadersCallback callback) {
   request_headers_callback_ = std::move(callback);
+}
+
+void HttpBasicStream::OnHandshakeConfirmed(CompletionOnceCallback callback,
+                                           int rv) {
+  if (rv == OK) {
+    // Note this time is only recorded if ConfirmHandshake() completed
+    // asynchronously. If it was synchronous, GetLoadTimingInfo() assumes the
+    // handshake was already confirmed or there was nothing to confirm.
+    confirm_handshake_end_ = base::TimeTicks::Now();
+  }
+  std::move(callback).Run(rv);
 }
 
 }  // namespace net

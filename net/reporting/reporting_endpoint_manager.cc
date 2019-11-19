@@ -7,18 +7,21 @@
 #include <map>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/containers/mru_cache.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/time/tick_clock.h"
 #include "net/base/backoff_entry.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/rand_callback.h"
 #include "net/reporting/reporting_cache.h"
-#include "net/reporting/reporting_client.h"
 #include "net/reporting/reporting_delegate.h"
+#include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_policy.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -29,94 +32,130 @@ namespace {
 
 class ReportingEndpointManagerImpl : public ReportingEndpointManager {
  public:
-  ReportingEndpointManagerImpl(ReportingContext* context,
+  ReportingEndpointManagerImpl(const ReportingPolicy* policy,
+                               const base::TickClock* tick_clock,
+                               const ReportingDelegate* delegate,
+                               ReportingCache* cache,
                                const RandIntCallback& rand_callback)
-      : context_(context), rand_callback_(rand_callback) {}
+      : policy_(policy),
+        tick_clock_(tick_clock),
+        delegate_(delegate),
+        cache_(cache),
+        rand_callback_(rand_callback),
+        endpoint_backoff_(kMaxEndpointBackoffCacheSize) {
+    DCHECK(policy);
+    DCHECK(tick_clock);
+    DCHECK(delegate);
+    DCHECK(cache);
+  }
 
   ~ReportingEndpointManagerImpl() override = default;
 
-  const ReportingClient* FindClientForOriginAndGroup(
+  const ReportingEndpoint FindEndpointForDelivery(
+      const NetworkIsolationKey& network_isolation_key,
       const url::Origin& origin,
       const std::string& group) override {
-    std::vector<const ReportingClient*> clients;
-    cache()->GetClientsForOriginAndGroup(origin, group, &clients);
+    // Get unexpired endpoints that apply to a delivery to |origin| and |group|.
+    // May have been configured by a superdomain of |origin|.
+    std::vector<ReportingEndpoint> endpoints =
+        cache_->GetCandidateEndpointsForDelivery(network_isolation_key, origin,
+                                                 group);
 
-    // Highest-priority client(s) that are not expired, pending, failing, or
+    // Highest-priority endpoint(s) that are not expired, failing, or
     // forbidden for use by the ReportingDelegate.
-    std::vector<const ReportingClient*> available_clients;
-    // Total weight of clients in available_clients.
+    std::vector<ReportingEndpoint> available_endpoints;
+    // Total weight of endpoints in |available_endpoints|.
     int total_weight = 0;
 
-    base::TimeTicks now = tick_clock()->NowTicks();
-    for (const ReportingClient* client : clients) {
-      if (client->expires < now)
-        continue;
-      if (base::ContainsKey(endpoint_backoff_, client->endpoint) &&
-          endpoint_backoff_[client->endpoint]->ShouldRejectRequest()) {
+    for (const ReportingEndpoint endpoint : endpoints) {
+      if (!delegate_->CanUseClient(endpoint.group_key.origin,
+                                   endpoint.info.url)) {
         continue;
       }
-      if (!delegate()->CanUseClient(client->origin, client->endpoint))
-        continue;
 
       // If this client is lower priority than the ones we've found, skip it.
-      if (!available_clients.empty() &&
-          client->priority > available_clients[0]->priority) {
+      if (!available_endpoints.empty() &&
+          endpoint.info.priority > available_endpoints[0].info.priority) {
+        continue;
+      }
+
+      // This brings each match to the front of the MRU cache, so if an entry
+      // frequently matches requests, it's more likely to stay in the cache.
+      auto endpoint_backoff_it = endpoint_backoff_.Get(
+          EndpointBackoffKey(network_isolation_key, endpoint.info.url));
+      if (endpoint_backoff_it != endpoint_backoff_.end() &&
+          endpoint_backoff_it->second->ShouldRejectRequest()) {
         continue;
       }
 
       // If this client is higher priority than the ones we've found (or we
       // haven't found any), forget about those ones and remember this one.
-      if (available_clients.empty() ||
-          client->priority < available_clients[0]->priority) {
-        available_clients.clear();
+      if (available_endpoints.empty() ||
+          endpoint.info.priority < available_endpoints[0].info.priority) {
+        available_endpoints.clear();
         total_weight = 0;
       }
 
-      available_clients.push_back(client);
-      total_weight += client->weight;
+      available_endpoints.push_back(endpoint);
+      total_weight += endpoint.info.weight;
     }
 
-    if (available_clients.empty()) {
-      return nullptr;
+    if (available_endpoints.empty()) {
+      return ReportingEndpoint();
+    }
+
+    if (total_weight == 0) {
+      int random_index = rand_callback_.Run(0, available_endpoints.size() - 1);
+      return available_endpoints[random_index];
     }
 
     int random_index = rand_callback_.Run(0, total_weight - 1);
     int weight_so_far = 0;
-    for (size_t i = 0; i < available_clients.size(); ++i) {
-      const ReportingClient* client = available_clients[i];
-      weight_so_far += client->weight;
+    for (size_t i = 0; i < available_endpoints.size(); ++i) {
+      const ReportingEndpoint& endpoint = available_endpoints[i];
+      weight_so_far += endpoint.info.weight;
       if (random_index < weight_so_far) {
-        return client;
+        return endpoint;
       }
     }
 
     // TODO(juliatuttle): Can we reach this in some weird overflow case?
     NOTREACHED();
-    return nullptr;
+    return ReportingEndpoint();
   }
 
-  void InformOfEndpointRequest(const GURL& endpoint, bool succeeded) override {
-    if (!base::ContainsKey(endpoint_backoff_, endpoint)) {
-      endpoint_backoff_[endpoint] = std::make_unique<BackoffEntry>(
-          &policy().endpoint_backoff_policy, tick_clock());
+  void InformOfEndpointRequest(const NetworkIsolationKey& network_isolation_key,
+                               const GURL& endpoint,
+                               bool succeeded) override {
+    EndpointBackoffKey endpoint_backoff_key(network_isolation_key, endpoint);
+    // This will bring the entry to the front of the cache, if it exists.
+    auto endpoint_backoff_it = endpoint_backoff_.Get(endpoint_backoff_key);
+    if (endpoint_backoff_it == endpoint_backoff_.end()) {
+      endpoint_backoff_it = endpoint_backoff_.Put(
+          std::move(endpoint_backoff_key),
+          std::make_unique<BackoffEntry>(&policy_->endpoint_backoff_policy,
+                                         tick_clock_));
     }
-    endpoint_backoff_[endpoint]->InformOfRequest(succeeded);
+    endpoint_backoff_it->second->InformOfRequest(succeeded);
   }
 
  private:
-  const ReportingPolicy& policy() { return context_->policy(); }
-  const base::TickClock* tick_clock() { return context_->tick_clock(); }
-  ReportingDelegate* delegate() { return context_->delegate(); }
-  ReportingCache* cache() { return context_->cache(); }
+  using EndpointBackoffKey = std::pair<NetworkIsolationKey, GURL>;
 
-  ReportingContext* context_;
+  const ReportingPolicy* const policy_;
+  const base::TickClock* const tick_clock_;
+  const ReportingDelegate* const delegate_;
+  ReportingCache* const cache_;
 
   RandIntCallback rand_callback_;
 
   // Note: Currently the ReportingBrowsingDataRemover does not clear this data
   // because it's not persisted to disk. If it's ever persisted, it will need
   // to be cleared as well.
-  std::map<GURL, std::unique_ptr<net::BackoffEntry>> endpoint_backoff_;
+  // TODO(chlily): clear this data when endpoints are deleted to avoid unbounded
+  // growth of this map.
+  base::MRUCache<EndpointBackoffKey, std::unique_ptr<net::BackoffEntry>>
+      endpoint_backoff_;
 
   DISALLOW_COPY_AND_ASSIGN(ReportingEndpointManagerImpl);
 };
@@ -125,9 +164,13 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
 
 // static
 std::unique_ptr<ReportingEndpointManager> ReportingEndpointManager::Create(
-    ReportingContext* context,
+    const ReportingPolicy* policy,
+    const base::TickClock* tick_clock,
+    const ReportingDelegate* delegate,
+    ReportingCache* cache,
     const RandIntCallback& rand_callback) {
-  return std::make_unique<ReportingEndpointManagerImpl>(context, rand_callback);
+  return std::make_unique<ReportingEndpointManagerImpl>(
+      policy, tick_clock, delegate, cache, rand_callback);
 }
 
 ReportingEndpointManager::~ReportingEndpointManager() = default;

@@ -23,7 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PSEUDO_STYLE_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PSEUDO_STYLE_REQUEST_H_
 
-#include "third_party/blink/renderer/core/layout/layout_scrollbar.h"
+#include "third_party/blink/renderer/core/layout/custom_scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 
@@ -31,21 +31,21 @@ namespace blink {
 
 class ComputedStyle;
 
-class PseudoStyleRequest {
+class PseudoElementStyleRequest {
   DISALLOW_NEW();
 
  public:
   enum RequestType { kForRenderer, kForComputedStyle };
 
-  PseudoStyleRequest(PseudoId pseudo_id,
-                     LayoutScrollbar* scrollbar = nullptr,
-                     ScrollbarPart scrollbar_part = kNoPart)
+  PseudoElementStyleRequest(PseudoId pseudo_id,
+                            CustomScrollbar* scrollbar = nullptr,
+                            ScrollbarPart scrollbar_part = kNoPart)
       : pseudo_id(pseudo_id),
         type(kForRenderer),
         scrollbar_part(scrollbar_part),
         scrollbar(scrollbar) {}
 
-  PseudoStyleRequest(PseudoId pseudo_id, RequestType request_type)
+  PseudoElementStyleRequest(PseudoId pseudo_id, RequestType request_type)
       : pseudo_id(pseudo_id),
         type(request_type),
         scrollbar_part(kNoPart),
@@ -61,7 +61,7 @@ class PseudoStyleRequest {
   PseudoId pseudo_id;
   RequestType type;
   ScrollbarPart scrollbar_part;
-  Member<LayoutScrollbar> scrollbar;
+  Member<CustomScrollbar> scrollbar;
 };
 
 }  // namespace blink

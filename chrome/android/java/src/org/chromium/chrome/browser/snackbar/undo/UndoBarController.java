@@ -46,7 +46,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
 
     private final TabModelSelector mTabModelSelector;
     private final TabModelObserver mTabModelObserver;
-    private final SnackbarManager mSnackbarManager;
+    private final SnackbarManager.SnackbarManageable mSnackbarManagable;
     private final Context mContext;
 
     /**
@@ -54,11 +54,11 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
      * @param context The {@link Context} in which snackbar is shown.
      * @param selector The {@link TabModelSelector} that will be used to commit and undo tab
      *                 closures.
-     * @param snackbarManager The manager that helps to show up snackbar.
+     * @param snackbarManagable The holder class to get the manager that helps to show up snackbar.
      */
     public UndoBarController(Context context, TabModelSelector selector,
-            SnackbarManager snackbarManager) {
-        mSnackbarManager = snackbarManager;
+            SnackbarManager.SnackbarManageable snackbarManagable) {
+        mSnackbarManagable = snackbarManagable;
         mTabModelSelector = selector;
         mContext = context;
         mTabModelObserver = new EmptyTabModelObserver() {
@@ -76,17 +76,19 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
             @Override
             public void tabClosureUndone(Tab tab) {
                 if (disableUndo()) return;
-                mSnackbarManager.dismissSnackbars(UndoBarController.this, tab.getId());
+                mSnackbarManagable.getSnackbarManager().dismissSnackbars(
+                        UndoBarController.this, tab.getId());
             }
 
             @Override
             public void tabClosureCommitted(Tab tab) {
                 if (disableUndo()) return;
-                mSnackbarManager.dismissSnackbars(UndoBarController.this, tab.getId());
+                mSnackbarManagable.getSnackbarManager().dismissSnackbars(
+                        UndoBarController.this, tab.getId());
             }
 
             @Override
-            public void allTabsPendingClosure(List<Tab> tabs) {
+            public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
                 if (disableUndo()) return;
 
                 if (tabs.size() == 1) {
@@ -94,13 +96,14 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                     return;
                 }
 
-                showUndoCloseAllBar(tabs);
+                // "Undo close all" bar can be reused for undoing close multiple tabs.
+                showUndoCloseMultipleBar(tabs, isAllTabs);
             }
 
             @Override
             public void allTabsClosureCommitted() {
                 if (disableUndo()) return;
-                mSnackbarManager.dismissSnackbars(UndoBarController.this);
+                mSnackbarManagable.getSnackbarManager().dismissSnackbars(UndoBarController.this);
             }
         };
     }
@@ -131,10 +134,11 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
      */
     private void showUndoBar(int tabId, String content) {
         RecordHistogram.recordEnumeratedHistogram("AndroidTabCloseUndo.Toast",
-                mSnackbarManager.isShowing() ? TAB_CLOSE_UNDO_TOAST_SHOWN_WARM
-                                             : TAB_CLOSE_UNDO_TOAST_SHOWN_COLD,
+                mSnackbarManagable.getSnackbarManager().isShowing()
+                        ? TAB_CLOSE_UNDO_TOAST_SHOWN_WARM
+                        : TAB_CLOSE_UNDO_TOAST_SHOWN_COLD,
                 TAB_CLOSE_UNDO_TOAST_COUNT);
-        mSnackbarManager.showSnackbar(
+        mSnackbarManagable.getSnackbarManager().showSnackbar(
                 Snackbar.make(content, this, Snackbar.TYPE_ACTION, Snackbar.UMA_TAB_CLOSE_UNDO)
                         .setTemplateText(mContext.getString(R.string.undo_bar_close_message))
                         .setAction(mContext.getString(R.string.undo), tabId));
@@ -147,11 +151,14 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
      * {@code SnackbarManager#removeFromStackForData(Object)} is called.
      *
      * @param closedTabs A list of tabs that were closed.
+     * @param isAllTabs Whether all tabs were closed.
      */
-    private void showUndoCloseAllBar(List<Tab> closedTabs) {
+    private void showUndoCloseMultipleBar(List<Tab> closedTabs, boolean isAllTabs) {
         String content = String.format(Locale.getDefault(), "%d", closedTabs.size());
-        mSnackbarManager.showSnackbar(
-                Snackbar.make(content, this, Snackbar.TYPE_ACTION, Snackbar.UMA_TAB_CLOSE_ALL_UNDO)
+        mSnackbarManagable.getSnackbarManager().showSnackbar(
+                Snackbar.make(content, this, Snackbar.TYPE_ACTION,
+                                isAllTabs ? Snackbar.UMA_TAB_CLOSE_ALL_UNDO
+                                          : Snackbar.UMA_TAB_CLOSE_MULTIPLE_UNDO)
                         .setTemplateText(mContext.getString(R.string.undo_bar_close_all_message))
                         .setAction(mContext.getString(R.string.undo), closedTabs));
     }

@@ -23,13 +23,12 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/common/buildflags.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/feature_h264_with_openh264_ffmpeg.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/perf/perf_test.h"
+#include "third_party/blink/public/common/features.h"
 
 static const char kMainWebrtcTestHtmlPage[] =
     "/webrtc/webrtc_jsep01_test.html";
@@ -108,6 +107,9 @@ class WebRtcInternalsPerfBrowserTest : public WebRtcTestBase {
     content::WebContents* webrtc_internals_tab =
         browser()->tab_strip_model()->GetActiveWebContents();
 
+    // TODO(https://crbug.com/1004239): Stop relying on the legacy getStats()
+    // API.
+    ChangeToLegacyGetStats(webrtc_internals_tab);
     test::SleepInJavascript(webrtc_internals_tab, duration_msec);
 
     return std::unique_ptr<base::DictionaryValue>(
@@ -122,9 +124,16 @@ class WebRtcInternalsPerfBrowserTest : public WebRtcTestBase {
     ASSERT_TRUE(test::HasReferenceFilesInCheckout());
     ASSERT_TRUE(embedded_test_server()->Start());
 
+    ASSERT_GE(TestTimeouts::test_launcher_timeout().InSeconds(), 100)
+        << "This is a long-running test; you must specify "
+           "--test-launcher-timeout to have a value of at least 100000.";
     ASSERT_GE(TestTimeouts::action_max_timeout().InSeconds(), 100)
         << "This is a long-running test; you must specify "
            "--ui-test-action-max-timeout to have a value of at least 100000.";
+    ASSERT_LT(TestTimeouts::action_max_timeout(),
+              TestTimeouts::test_launcher_timeout())
+        << "action_max_timeout needs to be strictly-less-than "
+           "test_launcher_timeout";
 
     content::WebContents* left_tab =
         OpenTestPageAndGetUserMediaInNewTab(kMainWebrtcTestHtmlPage);
@@ -175,9 +184,16 @@ class WebRtcInternalsPerfBrowserTest : public WebRtcTestBase {
     ASSERT_TRUE(test::HasReferenceFilesInCheckout());
     ASSERT_TRUE(embedded_test_server()->Start());
 
+    ASSERT_GE(TestTimeouts::test_launcher_timeout().InSeconds(), 100)
+        << "This is a long-running test; you must specify "
+           "--test-launcher-timeout to have a value of at least 100000.";
     ASSERT_GE(TestTimeouts::action_max_timeout().InSeconds(), 100)
         << "This is a long-running test; you must specify "
            "--ui-test-action-max-timeout to have a value of at least 100000.";
+    ASSERT_LT(TestTimeouts::action_max_timeout(),
+              TestTimeouts::test_launcher_timeout())
+        << "action_max_timeout needs to be strictly-less-than "
+           "test_launcher_timeout";
 
     content::WebContents* left_tab =
         OpenTestPageAndGetUserMediaInNewTab(kMainWebrtcTestHtmlPage);
@@ -263,7 +279,8 @@ IN_PROC_BROWSER_TEST_F(
     MANUAL_RunsAudioVideoCall60SecsAndLogsInternalMetricsH264) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   // Only run test if run-time feature corresponding to |rtc_use_h264| is on.
-  if (!base::FeatureList::IsEnabled(content::kWebRtcH264WithOpenH264FFmpeg)) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebRtcH264WithOpenH264FFmpeg)) {
     LOG(WARNING)
         << "Run-time feature WebRTC-H264WithOpenH264FFmpeg disabled. "
            "Skipping WebRtcInternalsPerfBrowserTest."

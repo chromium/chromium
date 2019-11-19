@@ -26,12 +26,12 @@
 
 #import <AppKit/AppKit.h>
 
+#include "base/mac/scoped_nsobject.h"
 #import "third_party/blink/renderer/core/layout/layout_theme.h"
 #import "third_party/blink/renderer/core/paint/theme_painter_mac.h"
 #import "third_party/blink/renderer/platform/wtf/hash_map.h"
-#import "third_party/blink/renderer/platform/wtf/retain_ptr.h"
 
-OBJC_CLASS BlinkLayoutThemeNotificationObserver;
+@class BlinkLayoutThemeNotificationObserver;
 
 namespace blink {
 
@@ -43,15 +43,22 @@ class LayoutThemeMac final : public LayoutTheme {
                          const ComputedStyle&,
                          IntRect& border_box) override;
 
-  bool IsControlStyled(const ComputedStyle&) const override;
+  bool IsControlStyled(ControlPart part, const ComputedStyle&) const override;
 
-  Color PlatformActiveSelectionBackgroundColor() const override;
-  Color PlatformInactiveSelectionBackgroundColor() const override;
-  Color PlatformActiveSelectionForegroundColor() const override;
-  Color PlatformActiveListBoxSelectionBackgroundColor() const override;
-  Color PlatformActiveListBoxSelectionForegroundColor() const override;
-  Color PlatformInactiveListBoxSelectionBackgroundColor() const override;
-  Color PlatformInactiveListBoxSelectionForegroundColor() const override;
+  Color PlatformActiveSelectionBackgroundColor(
+      WebColorScheme color_scheme) const override;
+  Color PlatformInactiveSelectionBackgroundColor(
+      WebColorScheme color_scheme) const override;
+  Color PlatformActiveSelectionForegroundColor(
+      WebColorScheme color_scheme) const override;
+  Color PlatformActiveListBoxSelectionBackgroundColor(
+      WebColorScheme color_scheme) const override;
+  Color PlatformActiveListBoxSelectionForegroundColor(
+      WebColorScheme color_scheme) const override;
+  Color PlatformInactiveListBoxSelectionBackgroundColor(
+      WebColorScheme color_scheme) const override;
+  Color PlatformInactiveListBoxSelectionForegroundColor(
+      WebColorScheme color_scheme) const override;
   Color PlatformSpellingMarkerUnderlineColor() const override;
   Color PlatformGrammarMarkerUnderlineColor() const override;
   Color PlatformFocusRingColor() const override;
@@ -77,8 +84,7 @@ class LayoutThemeMac final : public LayoutTheme {
   int SliderTickOffsetFromTrackCenter() const override;
 
   int PopupInternalPaddingStart(const ComputedStyle&) const override;
-  int PopupInternalPaddingEnd(const ChromeClient*,
-                              const ComputedStyle&) const override;
+  int PopupInternalPaddingEnd(LocalFrame*, const ComputedStyle&) const override;
   int PopupInternalPaddingTop(const ComputedStyle&) const override;
   int PopupInternalPaddingBottom(const ComputedStyle&) const override;
 
@@ -86,11 +92,11 @@ class LayoutThemeMac final : public LayoutTheme {
   bool PopsMenuBySpaceKey() const final { return true; }
 
   // Returns the repeat interval of the animation for the progress bar.
-  TimeDelta AnimationRepeatIntervalForProgressBar() const override;
+  base::TimeDelta AnimationRepeatIntervalForProgressBar() const override;
   // Returns the duration of the animation for the progress bar.
-  TimeDelta AnimationDurationForProgressBar() const override;
+  base::TimeDelta AnimationDurationForProgressBar() const override;
 
-  Color SystemColor(CSSValueID) const override;
+  Color SystemColor(CSSValueID, WebColorScheme color_scheme) const override;
 
   bool SupportsSelectionForegroundColors() const override { return false; }
 
@@ -153,8 +159,8 @@ class LayoutThemeMac final : public LayoutTheme {
 
   // We estimate the animation rate of a Mac OS X progress bar is 33 fps.
   // Hard code the value here because we haven't found API for it.
-  static constexpr TimeDelta kProgressAnimationFrameRate =
-      TimeDelta::FromMilliseconds(33);
+  static constexpr base::TimeDelta kProgressAnimationFrameRate =
+      base::TimeDelta::FromMilliseconds(33);
   // Mac OS X progress bar animation seems to have 256 frames.
   static constexpr double kProgressAnimationNumFrames = 256;
 
@@ -170,6 +176,91 @@ class LayoutThemeMac final : public LayoutTheme {
   static const int kSliderThumbBorderWidth = 1;
   static const int kSliderTrackWidth = 5;
   static const int kSliderTrackBorderWidth = 1;
+
+  LayoutUnit BaselinePositionAdjustment(const ComputedStyle&) const override;
+
+  FontDescription ControlFont(ControlPart,
+                              const FontDescription&,
+                              float zoom_factor) const override;
+
+  LengthSize GetControlSize(ControlPart,
+                            const FontDescription&,
+                            const LengthSize&,
+                            float zoom_factor) const override;
+  LengthSize MinimumControlSize(ControlPart,
+                                const FontDescription&,
+                                float zoom_factor,
+                                const ComputedStyle& style) const override;
+
+  LengthBox ControlPadding(ControlPart,
+                           const FontDescription&,
+                           const Length& zoomed_box_top,
+                           const Length& zoomed_box_right,
+                           const Length& zoomed_box_bottom,
+                           const Length& zoomed_box_left,
+                           float zoom_factor) const override;
+  LengthBox ControlBorder(ControlPart,
+                          const FontDescription&,
+                          const LengthBox& zoomed_box,
+                          float zoom_factor) const override;
+
+  bool ControlRequiresPreWhiteSpace(ControlPart part) const override {
+    return part == kPushButtonPart;
+  }
+
+  // Add visual overflow (e.g., the check on an OS X checkbox). The rect passed
+  // in is in zoomed coordinates so the inflation should take that into account
+  // and make sure the inflation amount is also scaled by the zoomFactor.
+  void AddVisualOverflowHelper(ControlPart,
+                               ControlStates,
+                               float zoom_factor,
+                               IntRect& border_box) const;
+
+  // Adjust style as per platform selection.
+  void AdjustControlPartStyle(ComputedStyle&) override;
+
+  // Function for ThemePainter
+  static CORE_EXPORT IntRect InflateRect(const IntRect&,
+                                         const IntSize&,
+                                         const int* margins,
+                                         float zoom_level = 1.0f);
+
+  // Inflate an IntRect to account for its focus ring.
+  // TODO: Consider using computing the focus ring's bounds with
+  // -[NSCell focusRingMaskBoundsForFrame:inView:]).
+  static CORE_EXPORT IntRect InflateRectForFocusRing(const IntRect&);
+
+  static CORE_EXPORT LengthSize CheckboxSize(const FontDescription&,
+                                             const LengthSize& zoomed_size,
+                                             float zoom_factor);
+  static CORE_EXPORT NSButtonCell* Checkbox(ControlStates,
+                                            const IntRect& zoomed_rect,
+                                            float zoom_factor);
+  static CORE_EXPORT const IntSize* CheckboxSizes();
+  static CORE_EXPORT const int* CheckboxMargins(NSControlSize);
+  static CORE_EXPORT NSView* EnsuredView(const IntSize&);
+
+  static CORE_EXPORT const IntSize* RadioSizes();
+  static CORE_EXPORT const int* RadioMargins(NSControlSize);
+  static CORE_EXPORT LengthSize RadioSize(const FontDescription&,
+                                          const LengthSize& zoomed_size,
+                                          float zoom_factor);
+  static CORE_EXPORT NSButtonCell* Radio(ControlStates,
+                                         const IntRect& zoomed_rect,
+                                         float zoom_factor);
+
+  static CORE_EXPORT const IntSize* ButtonSizes();
+  static CORE_EXPORT const int* ButtonMargins(NSControlSize);
+  static CORE_EXPORT NSButtonCell* Button(ControlPart,
+                                          ControlStates,
+                                          const IntRect& zoomed_rect,
+                                          float zoom_factor);
+
+  static CORE_EXPORT NSControlSize
+  ControlSizeFromPixelSize(const IntSize* sizes,
+                           const IntSize& min_zoomed_size,
+                           float zoom_factor);
+  static CORE_EXPORT const IntSize* StepperSizes();
 
  protected:
   String ExtraFullscreenStyleSheet() override;
@@ -194,15 +285,14 @@ class LayoutThemeMac final : public LayoutTheme {
 
   ThemePainter& Painter() override { return painter_; }
 
-  mutable RetainPtr<NSPopUpButtonCell> popup_button_;
-  mutable RetainPtr<NSSearchFieldCell> search_;
-  mutable RetainPtr<NSMenu> search_menu_template_;
-  mutable RetainPtr<NSLevelIndicatorCell> level_indicator_;
-  mutable RetainPtr<NSTextFieldCell> text_field_;
+  mutable base::scoped_nsobject<NSPopUpButtonCell> popup_button_;
+  mutable base::scoped_nsobject<NSSearchFieldCell> search_;
+  mutable base::scoped_nsobject<NSTextFieldCell> text_field_;
 
-  mutable HashMap<int, RGBA32> system_color_cache_;
+  mutable HashMap<CSSValueID, RGBA32> system_color_cache_;
 
-  RetainPtr<BlinkLayoutThemeNotificationObserver> notification_observer_;
+  base::scoped_nsobject<BlinkLayoutThemeNotificationObserver>
+      notification_observer_;
 
   ThemePainterMac painter_;
 };

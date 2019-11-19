@@ -5,7 +5,7 @@
 #include "components/gcm_driver/instance_id/scoped_use_fake_instance_id_android.h"
 
 #include "base/android/jni_android.h"
-#include "jni/FakeInstanceIDWithSubtype_jni.h"
+#include "components/gcm_driver/instance_id/android/test_support_jni_headers/FakeInstanceIDWithSubtype_jni.h"
 
 using base::android::AttachCurrentThread;
 

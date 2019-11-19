@@ -8,6 +8,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/buffer.h"
 
@@ -35,10 +36,28 @@ class SharedImageInterfaceProxy : public SharedImageInterface {
                             uint32_t usage) override;
   void UpdateSharedImage(const SyncToken& sync_token,
                          const Mailbox& mailbox) override;
+  void UpdateSharedImage(const SyncToken& sync_token,
+                         std::unique_ptr<gfx::GpuFence> acquire_fence,
+                         const Mailbox& mailbox) override;
 
   void DestroySharedImage(const SyncToken& sync_token,
                           const Mailbox& mailbox) override;
+  SyncToken GenVerifiedSyncToken() override;
   SyncToken GenUnverifiedSyncToken() override;
+  void Flush() override;
+
+  SwapChainMailboxes CreateSwapChain(viz::ResourceFormat format,
+                                     const gfx::Size& size,
+                                     const gfx::ColorSpace& color_space,
+                                     uint32_t usage) override;
+  void PresentSwapChain(const SyncToken& sync_token,
+                        const Mailbox& mailbox) override;
+
+#if defined(OS_FUCHSIA)
+  void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
+                                      zx::channel token) override;
+  void ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id) override;
+#endif  // defined(OS_FUCHSIA)
 
  private:
   bool GetSHMForPixelData(base::span<const uint8_t> pixel_data,

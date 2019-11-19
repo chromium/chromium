@@ -1,0 +1,8 @@
+rootWebArea
+++genericContainer ignored
+++++layoutTable
+++++++genericContainer ignored
+++++++++layoutTableRow
+++++++++++layoutTableCell name='cat'
+++++++++++++staticText name='cat'
+++++++++++++++inlineTextBox name='cat'

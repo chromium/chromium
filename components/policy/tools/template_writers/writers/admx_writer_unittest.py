@@ -27,6 +27,7 @@ class AdmxWriterUnittest(xml_writer_base_unittest.XmlWriterBaseTest):
     # Writer
     config = {
         'win_supported_os': 'SUPPORTED_TESTOS',
+        'win_supported_os_win7': 'SUPPORTED_TESTOS_2',
         'win_config': {
             'win': {
                 'reg_mandatory_key_name':
@@ -108,6 +109,8 @@ class AdmxWriterUnittest(xml_writer_base_unittest.XmlWriterBaseTest):
         '    <definitions>\n'
         '      <definition displayName="'
         '$(string.SUPPORTED_TESTOS)" name="SUPPORTED_TESTOS"/>\n'
+        '      <definition displayName="'
+        '$(string.SUPPORTED_TESTOS_2)" name="SUPPORTED_TESTOS_2"/>\n'
         '    </definitions>\n'
         '  </supportedOn>\n'
         '  <categories>\n'
@@ -140,6 +143,8 @@ class AdmxWriterUnittest(xml_writer_base_unittest.XmlWriterBaseTest):
         '    <definitions>\n'
         '      <definition displayName="'
         '$(string.SUPPORTED_TESTOS)" name="SUPPORTED_TESTOS"/>\n'
+        '      <definition displayName="'
+        '$(string.SUPPORTED_TESTOS_2)" name="SUPPORTED_TESTOS_2"/>\n'
         '    </definitions>\n'
         '  </supportedOn>\n'
         '  <categories>\n'
@@ -378,6 +383,35 @@ class AdmxWriterUnittest(xml_writer_base_unittest.XmlWriterBaseTest):
         '  </elements>\n'
         '</policy>')
     self.AssertXMLEquals(output, expected_output)
+
+  def testIntPolicyWithWin7Only(self):
+    int_policy = {
+        'name': 'SampleIntPolicy',
+        'type': 'int',
+        'supported_on': [{
+            'platforms': ['win7'],
+        }]
+    }
+    self._initWriterForPolicy(self.writer, int_policy)
+
+    self.writer.WritePolicy(int_policy)
+    output = self.GetXMLOfChildren(self._GetPoliciesElement(self.writer._doc))
+    expected_output = (
+        '<policy class="' + self.writer.GetClass(int_policy) + '"'
+        ' displayName="$(string.SampleIntPolicy)"'
+        ' explainText="$(string.SampleIntPolicy_Explain)"'
+        ' key="Software\\Policies\\' + self._GetKey() + '"'
+        ' name="SampleIntPolicy"'
+        ' presentation="$(presentation.SampleIntPolicy)">\n'
+        '  <parentCategory ref="PolicyGroup"/>\n'
+        '  <supportedOn ref="SUPPORTED_TESTOS_2"/>\n'
+        '  <elements>\n'
+        '    <decimal id="SampleIntPolicy" maxValue="2000000000" minValue="0" '
+        'valueName="SampleIntPolicy"/>\n'
+        '  </elements>\n'
+        '</policy>')
+    self.AssertXMLEquals(output, expected_output)
+
 
   def testIntEnumPolicy(self):
     enum_policy = {

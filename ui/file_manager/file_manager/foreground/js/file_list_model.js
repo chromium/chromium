@@ -76,6 +76,11 @@ class FileListModel extends cr.ui.ArrayDataModel {
    * @return {string} Localized string representation of file type.
    */
   static getFileTypeString(fileType) {
+    // Partitions on removable volumes are treated separately, they don't
+    // have translatable names.
+    if (fileType.type === 'partition') {
+      return fileType.subtype;
+    }
     if (fileType.subtype) {
       return strf(fileType.name, fileType.subtype);
     } else {
@@ -300,8 +305,9 @@ class FileListModel extends cr.ui.ArrayDataModel {
       this.numFiles_++;
     }
 
-    const mimeType = this.metadataModel_.getCache([entry], ['contentMimeType'])[0]
-                       .contentMimeType;
+    const mimeType =
+        this.metadataModel_.getCache([entry], ['contentMimeType'])[0]
+            .contentMimeType;
     if (FileType.isImage(entry, mimeType) || FileType.isRaw(entry, mimeType)) {
       this.numImageFiles_++;
     }
@@ -319,8 +325,9 @@ class FileListModel extends cr.ui.ArrayDataModel {
       this.numFiles_--;
     }
 
-    const mimeType = this.metadataModel_.getCache([entry], ['contentMimeType'])[0]
-                       .contentMimeType;
+    const mimeType =
+        this.metadataModel_.getCache([entry], ['contentMimeType'])[0]
+            .contentMimeType;
     if (FileType.isImage(entry, mimeType) || FileType.isRaw(entry, mimeType)) {
       this.numImageFiles_--;
     }
@@ -441,7 +448,8 @@ class FileListModel extends cr.ui.ArrayDataModel {
       return a.isDirectory === this.isDescendingOrder_ ? 1 : -1;
     }
 
-    const properties = this.metadataModel_.getCache([a, b], ['contentMimeType']);
+    const properties =
+        this.metadataModel_.getCache([a, b], ['contentMimeType']);
     const aType = FileListModel.getFileTypeString(
         FileType.getType(a, properties[0].contentMimeType));
     const bType = FileListModel.getFileTypeString(

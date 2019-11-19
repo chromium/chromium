@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_options.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
-#include "third_party/skia/third_party/skcms/skcms.h"
+#include "third_party/skia/include/third_party/skcms/skcms.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -550,11 +550,11 @@ ScriptPromise ImageData::CreateImageBitmap(ScriptState* script_state,
                                            EventTarget& event_target,
                                            base::Optional<IntRect> crop_rect,
                                            const ImageBitmapOptions* options) {
-  if (BufferBase()->IsNeutered()) {
+  if (BufferBase()->IsDetached()) {
     return ScriptPromise::RejectWithDOMException(
-        script_state,
-        DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                             "The source data has been detached."));
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kInvalidStateError,
+                          "The source data has been detached."));
   }
   return ImageBitmapSource::FulfillImageBitmap(
       script_state, ImageBitmap::Create(this, crop_rect, options));
@@ -674,7 +674,7 @@ unsigned ImageData::StorageFormatDataSize(
 
 DOMArrayBufferView*
 ImageData::ConvertPixelsFromCanvasPixelFormatToImageDataStorageFormat(
-    WTF::ArrayBufferContents& content,
+    ArrayBufferContents& content,
     CanvasPixelFormat pixel_format,
     ImageDataStorageFormat storage_format) {
   if (!content.DataLength())
@@ -683,8 +683,8 @@ ImageData::ConvertPixelsFromCanvasPixelFormatToImageDataStorageFormat(
   if (pixel_format == kRGBA8CanvasPixelFormat &&
       storage_format == kUint8ClampedArrayStorageFormat) {
     DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(content);
-    return DOMUint8ClampedArray::Create(array_buffer, 0,
-                                        array_buffer->ByteLength());
+    return DOMUint8ClampedArray::Create(
+        array_buffer, 0, array_buffer->DeprecatedByteLengthAsUnsigned());
   }
 
   skcms_PixelFormat src_format = skcms_PixelFormat_RGBA_8888;
@@ -746,7 +746,8 @@ CanvasColorParams ImageData::GetCanvasColorParams() {
   CanvasPixelFormat pixel_format = kRGBA8CanvasPixelFormat;
   if (color_settings_->storageFormat() != kUint8ClampedArrayStorageFormatName)
     pixel_format = kF16CanvasPixelFormat;
-  return CanvasColorParams(color_space, pixel_format, kNonOpaque);
+  return CanvasColorParams(color_space, pixel_format, kNonOpaque,
+                           CanvasForceRGBA::kNotForced);
 }
 
 bool ImageData::ImageDataInCanvasColorSettings(
@@ -760,7 +761,8 @@ bool ImageData::ImageDataInCanvasColorSettings(
     return false;
 
   CanvasColorParams canvas_color_params =
-      CanvasColorParams(canvas_color_space, canvas_pixel_format, kNonOpaque);
+      CanvasColorParams(canvas_color_space, canvas_pixel_format, kNonOpaque,
+                        CanvasForceRGBA::kNotForced);
 
   unsigned char* src_data = static_cast<unsigned char*>(BufferBase()->Data());
 

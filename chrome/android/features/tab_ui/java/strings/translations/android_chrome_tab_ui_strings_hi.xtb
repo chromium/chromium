@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="hi">
+<translation id="1075622780330595106">आपके <ph name="NUMBER_OF_TABS" /> टैब का हाल फ़िलहाल में इस्तेमाल नहीं हुआ है. उन्हें बंद करना चाहेंगे?</translation>
+<translation id="1181037720776840403">हटाएं</translation>
+<translation id="125153950246128346">कोई दूसरा टैब देखने के लिए टैप करें</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब}one{<ph name="TABS_COUNT_MANY" /> टैब}other{<ph name="TABS_COUNT_MANY" /> टैब}}</translation>
+<translation id="257674075312929031">समूह</translation>
+<translation id="2613747923081026172">समूह बनाएं</translation>
+<translation id="2671423594960767771">समूह शेयर करें</translation>
+<translation id="2977480621796371840">समूह से हटाएं</translation>
+<translation id="4212246570487010370">लगातार ब्राउज़िंग</translation>
+<translation id="4648718555153979859">यहां पर आपके टैब एक ही समूह में रखे जाते हैं</translation>
+<translation id="5007392906805964215">समीक्षा करें</translation>
+<translation id="5073204694187207510">फ़ुलस्क्रीन ग्रिड को छिपाएं</translation>
+<translation id="5082793167783849073">पेजों की तुलना तुरंत करने के लिए समूह बनाएं. शुरू करने के लिए, लिंक को दबाकर रखें.</translation>
+<translation id="5580090775658607195"><ph name="TAB_COUNT" /> टैब समूह में लगाए गए</translation>
+<translation id="5792534911093536736">और ज़्यादा टैब</translation>
+<translation id="58326064309361797">टैब को समूह में जोड़ने के लिए उन्हें खींचें और छोड़ें</translation>
+<translation id="6040143037577758943">बंद करें</translation>
+<translation id="6193448654517602979">टैब चुनें</translation>
+<translation id="6615455863669487791">मुझे दिखाएं</translation>
+<translation id="6840760312327750441">टैब को ग्रुप करने के लिए, टैब को दबाकर रखें. इसके बाद, इसे दूसरे टैब पर खींचें और छोड़ें.</translation>
+<translation id="7151209024774799310">ग्रुप से टैब हटाएं</translation>
+<translation id="7559245342362162951">समूह के टैब फ़ुलस्क्रीन ग्रिड में दिखाएं</translation>
+<translation id="9150694013019234766">स्क्रीन के सबसे नीचे दिए गए अपने टैब समूह में एक से दूसरे टैब पर जाएं</translation>
+<translation id="9169594135889675189">समूह में नया टैब जोड़ें</translation>
+<translation id="959682366969460160">व्‍यवस्‍थित हों</translation>
+</translationbundle>

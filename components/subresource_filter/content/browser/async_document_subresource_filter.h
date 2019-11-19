@@ -154,7 +154,7 @@ class AsyncDocumentSubresourceFilter {
 
   base::SequenceChecker sequence_checker_;
 
-  base::WeakPtrFactory<AsyncDocumentSubresourceFilter> weak_ptr_factory_;
+  base::WeakPtrFactory<AsyncDocumentSubresourceFilter> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AsyncDocumentSubresourceFilter);
 };

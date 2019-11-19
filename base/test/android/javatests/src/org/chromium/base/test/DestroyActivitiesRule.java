@@ -14,6 +14,9 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -22,6 +25,21 @@ import java.util.concurrent.TimeoutException;
  */
 public class DestroyActivitiesRule extends ExternalResource {
     private static final String TAG = "DestroyActivities";
+    private final Set<Activity> mBlacklistedActivities =
+            Collections.newSetFromMap(new WeakHashMap<>());
+
+    private boolean allActivitiesDestroyedOrBlacklisted() {
+        if (ApplicationStatus.isEveryActivityDestroyed()) {
+            return true;
+        }
+        for (Activity a : ApplicationStatus.getRunningActivities()) {
+            if (!mBlacklistedActivities.contains(a)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public void after() {
         if (!ApplicationStatus.isInitialized()) {
@@ -34,7 +52,7 @@ public class DestroyActivitiesRule extends ExternalResource {
                     public void onActivityStateChange(Activity activity, int newState) {
                         switch (newState) {
                             case ActivityState.DESTROYED:
-                                if (ApplicationStatus.isEveryActivityDestroyed()) {
+                                if (allActivitiesDestroyedOrBlacklisted()) {
                                     allDestroyedCalledback.notifyCalled();
                                     ApplicationStatus.unregisterActivityStateListener(this);
                                 }
@@ -51,28 +69,27 @@ public class DestroyActivitiesRule extends ExternalResource {
                 };
 
         ThreadUtils.runOnUiThread(() -> {
-            if (ApplicationStatus.isEveryActivityDestroyed()) {
+            if (allActivitiesDestroyedOrBlacklisted()) {
                 allDestroyedCalledback.notifyCalled();
             } else {
                 ApplicationStatus.registerStateListenerForAllActivities(activityStateListener);
             }
             for (Activity a : ApplicationStatus.getRunningActivities()) {
-                if (!a.isFinishing()) {
+                if (!a.isFinishing() && !mBlacklistedActivities.contains(a)) {
                     a.finish();
                 }
             }
         });
         try {
-            allDestroyedCalledback.waitForCallback();
-        } catch (InterruptedException | TimeoutException e) {
+            allDestroyedCalledback.waitForFirst();
+        } catch (TimeoutException e) {
             // There appears to be a framework bug on K and L where onStop and onDestroy are not
             // called for a handful of tests. We ignore these exceptions.
             Log.w(TAG, "Activity failed to be destroyed after a test");
 
             ThreadUtils.runOnUiThreadBlocking(() -> {
-                for (Activity a : ApplicationStatus.getRunningActivities()) {
-                    ApplicationStatus.onStateChangeForTesting(a, ActivityState.DESTROYED);
-                }
+                mBlacklistedActivities.addAll(ApplicationStatus.getRunningActivities());
+
                 // Make sure subsequent tests don't have these notifications firing.
                 ApplicationStatus.unregisterActivityStateListener(activityStateListener);
             });

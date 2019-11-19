@@ -9,9 +9,9 @@
 
   await TestRunner.navigatePromise(
       'resources/service-worker-repeat-fetch.html');
+  await TestRunner.evaluateInPageAsync('installSWAndWaitForActivated()');
   await new Promise(
       resolve => ApplicationTestRunner.waitForServiceWorker(resolve));
-
   await TestRunner.reloadPagePromise();
   TestRunner.addResult('');
 

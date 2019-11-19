@@ -10,7 +10,9 @@
 #include "base/containers/queue.h"
 #include "media/audio/audio_logging.h"
 #include "media/audio/fake_audio_log_factory.h"
-#include "media/mojo/interfaces/audio_logging.mojom.h"
+#include "media/mojo/mojom/audio_logging.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/mojom/log_factory_manager.mojom.h"
 
 namespace media {
@@ -27,7 +29,8 @@ class LogFactoryAdapter final : public media::AudioLogFactory {
   LogFactoryAdapter();
   ~LogFactoryAdapter() final;
 
-  void SetLogFactory(media::mojom::AudioLogFactoryPtr log_factory);
+  void SetLogFactory(
+      mojo::PendingRemote<media::mojom::AudioLogFactory> log_factory);
 
   // media::AudioLogFactory implementation
   std::unique_ptr<media::AudioLog> CreateAudioLog(AudioComponent component,
@@ -36,7 +39,7 @@ class LogFactoryAdapter final : public media::AudioLogFactory {
  private:
   struct PendingLogRequest;
 
-  media::mojom::AudioLogFactoryPtr log_factory_;
+  mojo::Remote<media::mojom::AudioLogFactory> log_factory_;
   base::queue<PendingLogRequest> pending_requests_;
   media::FakeAudioLogFactory fake_log_factory_;
 

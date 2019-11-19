@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+test(function(t) {
+  var canNewOffscreen = new OffscreenCanvas(60,60);
+  var ctxNewOffscreen = canNewOffscreen.getContext("bitmaprenderer");
+  //We are not loading a bitmap to this context, so it is empty.
+
+  assert_throws("UnknownError", function () {canNewOffscreen.transferToImageBitmap();});
+}, "Test whether transferToImageBitmap does not works with an empty bitmap");
+</script>
+</body>
+</html>

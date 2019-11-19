@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/core/fetch/request.h"
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/cpp/request_mode.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_request.h"
+#include "third_party/blink/public/common/loader/request_destination.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -25,13 +28,13 @@
 #include "third_party/blink/renderer/core/fetch/request_init.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
-#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/core/url/url_search_params.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -53,16 +56,12 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetURL(original->Url());
   request->SetMethod(original->Method());
   request->SetHeaderList(original->HeaderList()->Clone());
+  request->SetOrigin(ExecutionContext::From(script_state)->GetSecurityOrigin());
   // FIXME: Set client.
   DOMWrapperWorld& world = script_state->World();
-  if (world.IsIsolatedWorld()) {
-    request->SetOrigin(world.IsolatedWorldSecurityOrigin());
-  } else {
-    request->SetOrigin(
-        ExecutionContext::From(script_state)->GetSecurityOrigin());
-  }
+  if (world.IsIsolatedWorld())
+    request->SetIsolatedWorldOrigin(world.IsolatedWorldSecurityOrigin());
   // FIXME: Set ForceOriginHeaderFlag.
-  request->SetSameOriginDataURLFlag(true);
   request->SetReferrerString(original->ReferrerString());
   request->SetReferrerPolicy(original->GetReferrerPolicy());
   request->SetMode(original->Mode());
@@ -75,8 +74,9 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetKeepalive(original->Keepalive());
   request->SetIsHistoryNavigation(original->IsHistoryNavigation());
   if (original->URLLoaderFactory()) {
-    network::mojom::blink::URLLoaderFactoryPtr factory_clone;
-    original->URLLoaderFactory()->Clone(MakeRequest(&factory_clone));
+    mojo::PendingRemote<network::mojom::blink::URLLoaderFactory> factory_clone;
+    original->URLLoaderFactory()->Clone(
+        factory_clone.InitWithNewPipeAndPassReceiver());
     request->SetURLLoaderFactory(std::move(factory_clone));
   }
   request->SetWindowId(original->WindowId());
@@ -264,11 +264,13 @@ Request* Request::CreateRequestWithRequestOrString(
     // Parsing URLs should also resolve blob URLs. This is important because
     // fetching of a blob URL should work even after the URL is revoked as long
     // as the request was created while the URL was still valid.
-    if (parsed_url.ProtocolIs("blob") && BlobUtils::MojoBlobURLsEnabled()) {
-      network::mojom::blink::URLLoaderFactoryPtr url_loader_factory;
+    if (parsed_url.ProtocolIs("blob")) {
+      mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
+          url_loader_factory;
       ExecutionContext::From(script_state)
           ->GetPublicURLManager()
-          .Resolve(parsed_url, MakeRequest(&url_loader_factory));
+          .Resolve(parsed_url,
+                   url_loader_factory.InitWithNewPipeAndPassReceiver());
       request->SetURLLoaderFactory(std::move(url_loader_factory));
     }
 
@@ -280,8 +282,8 @@ Request* Request::CreateRequestWithRequestOrString(
   // "If any of |init|'s members are present, then:"
   if (AreAnyMembersPresent(init)) {
     // "If |request|'s |mode| is "navigate", then set it to "same-origin".
-    if (request->Mode() == network::mojom::FetchRequestMode::kNavigate)
-      request->SetMode(network::mojom::FetchRequestMode::kSameOrigin);
+    if (network::IsNavigationRequestMode(request->Mode()))
+      request->SetMode(network::mojom::RequestMode::kSameOrigin);
 
     // TODO(yhirano): Implement the following substep:
     // "Unset |request|'s reload-navigation flag."
@@ -369,16 +371,16 @@ Request* Request::CreateRequestWithRequestOrString(
     return nullptr;
   }
   if (init->mode() == "same-origin") {
-    request->SetMode(network::mojom::FetchRequestMode::kSameOrigin);
+    request->SetMode(network::mojom::RequestMode::kSameOrigin);
   } else if (init->mode() == "no-cors") {
-    request->SetMode(network::mojom::FetchRequestMode::kNoCors);
+    request->SetMode(network::mojom::RequestMode::kNoCors);
   } else if (init->mode() == "cors") {
-    request->SetMode(network::mojom::FetchRequestMode::kCors);
+    request->SetMode(network::mojom::RequestMode::kCors);
   } else {
     // |inputRequest| is directly checked here instead of setting and
     // checking |fallbackMode| as specified in the spec.
     if (!input_request)
-      request->SetMode(network::mojom::FetchRequestMode::kCors);
+      request->SetMode(network::mojom::RequestMode::kCors);
   }
 
   // This is not yet standardized, but we can assume the following:
@@ -386,7 +388,7 @@ Request* Request::CreateRequestWithRequestOrString(
   // mode to it." For more information see Priority Hints at
   // https://crbug.com/821464.
   DCHECK(init->importance().IsNull() ||
-         origin_trials::PriorityHintsEnabled(execution_context));
+         RuntimeEnabledFeatures::PriorityHintsEnabled(execution_context));
   if (!init->importance().IsNull())
     UseCounter::Count(execution_context, WebFeature::kPriorityHints);
 
@@ -401,11 +403,11 @@ Request* Request::CreateRequestWithRequestOrString(
   // "If |credentials| is non-null, set |request|'s credentials mode to
   // |credentials|."
 
-  network::mojom::FetchCredentialsMode credentials_mode;
+  network::mojom::CredentialsMode credentials_mode;
   if (ParseCredentialsMode(init->credentials(), &credentials_mode)) {
     request->SetCredentials(credentials_mode);
   } else if (!input_request) {
-    request->SetCredentials(network::mojom::FetchCredentialsMode::kSameOrigin);
+    request->SetCredentials(network::mojom::CredentialsMode::kSameOrigin);
   }
 
   // "If |init|'s cache member is present, set |request|'s cache mode to it."
@@ -426,7 +428,7 @@ Request* Request::CreateRequestWithRequestOrString(
   // If |request|’s cache mode is "only-if-cached" and |request|’s mode is not
   // "same-origin", then throw a TypeError.
   if (request->CacheMode() == mojom::FetchCacheMode::kOnlyIfCached &&
-      request->Mode() != network::mojom::FetchRequestMode::kSameOrigin) {
+      request->Mode() != network::mojom::RequestMode::kSameOrigin) {
     exception_state.ThrowTypeError(
         "'only-if-cached' can be set only with 'same-origin' mode");
     return nullptr;
@@ -435,11 +437,11 @@ Request* Request::CreateRequestWithRequestOrString(
   // "If |init|'s redirect member is present, set |request|'s redirect mode
   // to it."
   if (init->redirect() == "follow") {
-    request->SetRedirect(network::mojom::FetchRedirectMode::kFollow);
+    request->SetRedirect(network::mojom::RedirectMode::kFollow);
   } else if (init->redirect() == "error") {
-    request->SetRedirect(network::mojom::FetchRedirectMode::kError);
+    request->SetRedirect(network::mojom::RedirectMode::kError);
   } else if (init->redirect() == "manual") {
-    request->SetRedirect(network::mojom::FetchRedirectMode::kManual);
+    request->SetRedirect(network::mojom::RedirectMode::kManual);
   }
 
   // "If |init|'s integrity member is present, set |request|'s
@@ -493,7 +495,7 @@ Request* Request::CreateRequestWithRequestOrString(
   // "Empty |r|'s request's header list."
   r->request_->HeaderList()->ClearList();
   // "If |r|'s request's mode is "no-cors", run these substeps:
-  if (r->GetRequest()->Mode() == network::mojom::FetchRequestMode::kNoCors) {
+  if (r->GetRequest()->Mode() == network::mojom::RequestMode::kNoCors) {
     // "If |r|'s request's method is not a CORS-safelisted method, throw a
     // TypeError."
     if (!cors::IsCorsSafelistedMethod(r->GetRequest()->Method())) {
@@ -562,7 +564,7 @@ Request* Request::CreateRequestWithRequestOrString(
 
   // "Set |r|'s MIME type to the result of extracting a MIME type from |r|'s
   // request's header list."
-  r->request_->SetMIMEType(r->request_->HeaderList()->ExtractMIMEType());
+  r->request_->SetMimeType(r->request_->HeaderList()->ExtractMIMEType());
 
   // "If |input| is a Request object and |input|'s request's body is
   // non-null, run these substeps:"
@@ -626,33 +628,27 @@ Request* Request::Create(ScriptState* script_state, FetchRequestData* request) {
   return MakeGarbageCollected<Request>(script_state, request);
 }
 
-Request* Request::Create(ScriptState* script_state,
-                         const WebServiceWorkerRequest& web_request) {
-  FetchRequestData* data = FetchRequestData::Create(script_state, web_request);
-  return MakeGarbageCollected<Request>(script_state, data);
-}
-
 Request* Request::Create(
     ScriptState* script_state,
-    const mojom::blink::FetchAPIRequest& fetch_api_request) {
-  FetchRequestData* data =
-      FetchRequestData::Create(script_state, fetch_api_request);
+    const mojom::blink::FetchAPIRequest& fetch_api_request,
+    ForServiceWorkerFetchEvent for_service_worker_fetch_event) {
+  FetchRequestData* data = FetchRequestData::Create(
+      script_state, fetch_api_request, for_service_worker_fetch_event);
   return MakeGarbageCollected<Request>(script_state, data);
 }
 
-bool Request::ParseCredentialsMode(
-    const String& credentials_mode,
-    network::mojom::FetchCredentialsMode* result) {
+bool Request::ParseCredentialsMode(const String& credentials_mode,
+                                   network::mojom::CredentialsMode* result) {
   if (credentials_mode == "omit") {
-    *result = network::mojom::FetchCredentialsMode::kOmit;
+    *result = network::mojom::CredentialsMode::kOmit;
     return true;
   }
   if (credentials_mode == "same-origin") {
-    *result = network::mojom::FetchCredentialsMode::kSameOrigin;
+    *result = network::mojom::CredentialsMode::kSameOrigin;
     return true;
   }
   if (credentials_mode == "include") {
-    *result = network::mojom::FetchCredentialsMode::kInclude;
+    *result = network::mojom::CredentialsMode::kInclude;
     return true;
   }
   return false;
@@ -688,61 +684,7 @@ const KURL& Request::url() const {
 
 String Request::destination() const {
   // "The destination attribute’s getter must return request’s destination."
-  switch (request_->Context()) {
-    case mojom::RequestContextType::UNSPECIFIED:
-    case mojom::RequestContextType::BEACON:
-    case mojom::RequestContextType::DOWNLOAD:
-    case mojom::RequestContextType::EVENT_SOURCE:
-    case mojom::RequestContextType::FETCH:
-    case mojom::RequestContextType::PING:
-    case mojom::RequestContextType::XML_HTTP_REQUEST:
-    case mojom::RequestContextType::SUBRESOURCE:
-    case mojom::RequestContextType::PREFETCH:
-      return "";
-    case mojom::RequestContextType::CSP_REPORT:
-      return "report";
-    case mojom::RequestContextType::AUDIO:
-      return "audio";
-    case mojom::RequestContextType::EMBED:
-      return "embed";
-    case mojom::RequestContextType::FONT:
-      return "font";
-    case mojom::RequestContextType::FRAME:
-    case mojom::RequestContextType::HYPERLINK:
-    case mojom::RequestContextType::IFRAME:
-    case mojom::RequestContextType::LOCATION:
-    case mojom::RequestContextType::FORM:
-      return "document";
-    case mojom::RequestContextType::IMAGE:
-    case mojom::RequestContextType::FAVICON:
-    case mojom::RequestContextType::IMAGE_SET:
-      return "image";
-    case mojom::RequestContextType::MANIFEST:
-      return "manifest";
-    case mojom::RequestContextType::OBJECT:
-      return "object";
-    case mojom::RequestContextType::SCRIPT:
-      return "script";
-    case mojom::RequestContextType::SHARED_WORKER:
-      return "sharedworker";
-    case mojom::RequestContextType::STYLE:
-      return "style";
-    case mojom::RequestContextType::TRACK:
-      return "track";
-    case mojom::RequestContextType::VIDEO:
-      return "video";
-    case mojom::RequestContextType::WORKER:
-      return "worker";
-    case mojom::RequestContextType::XSLT:
-      return "xslt";
-    case mojom::RequestContextType::IMPORT:
-    case mojom::RequestContextType::INTERNAL:
-    case mojom::RequestContextType::PLUGIN:
-    case mojom::RequestContextType::SERVICE_WORKER:
-      return "unknown";
-  }
-  NOTREACHED();
-  return "";
+  return GetRequestDestinationFromContext(request_->Context());
 }
 
 String Request::referrer() const {
@@ -784,14 +726,16 @@ String Request::mode() const {
   // "The mode attribute's getter must return the value corresponding to the
   // first matching statement, switching on request's mode:"
   switch (request_->Mode()) {
-    case network::mojom::FetchRequestMode::kSameOrigin:
+    case network::mojom::RequestMode::kSameOrigin:
       return "same-origin";
-    case network::mojom::FetchRequestMode::kNoCors:
+    case network::mojom::RequestMode::kNoCors:
       return "no-cors";
-    case network::mojom::FetchRequestMode::kCors:
-    case network::mojom::FetchRequestMode::kCorsWithForcedPreflight:
+    case network::mojom::RequestMode::kCors:
+    case network::mojom::RequestMode::kCorsWithForcedPreflight:
       return "cors";
-    case network::mojom::FetchRequestMode::kNavigate:
+    case network::mojom::RequestMode::kNavigate:
+    case network::mojom::RequestMode::kNavigateNestedFrame:
+    case network::mojom::RequestMode::kNavigateNestedObject:
       return "navigate";
   }
   NOTREACHED();
@@ -803,11 +747,11 @@ String Request::credentials() const {
   // to the first matching statement, switching on request's credentials
   // mode:"
   switch (request_->Credentials()) {
-    case network::mojom::FetchCredentialsMode::kOmit:
+    case network::mojom::CredentialsMode::kOmit:
       return "omit";
-    case network::mojom::FetchCredentialsMode::kSameOrigin:
+    case network::mojom::CredentialsMode::kSameOrigin:
       return "same-origin";
-    case network::mojom::FetchCredentialsMode::kInclude:
+    case network::mojom::CredentialsMode::kInclude:
       return "include";
   }
   NOTREACHED();
@@ -841,11 +785,11 @@ String Request::cache() const {
 String Request::redirect() const {
   // "The redirect attribute's getter must return request's redirect mode."
   switch (request_->Redirect()) {
-    case network::mojom::FetchRedirectMode::kFollow:
+    case network::mojom::RedirectMode::kFollow:
       return "follow";
-    case network::mojom::FetchRedirectMode::kError:
+    case network::mojom::RedirectMode::kError:
       return "error";
-    case network::mojom::FetchRedirectMode::kManual:
+    case network::mojom::RedirectMode::kManual:
       return "manual";
   }
   NOTREACHED();

@@ -180,7 +180,7 @@ class DeviceToDeviceAuthenticator : public Authenticator,
   // The derived symmetric keys for the session.
   SessionKeys session_keys_;
 
-  base::WeakPtrFactory<DeviceToDeviceAuthenticator> weak_ptr_factory_;
+  base::WeakPtrFactory<DeviceToDeviceAuthenticator> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceToDeviceAuthenticator);
 };

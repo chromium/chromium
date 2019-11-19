@@ -6,12 +6,11 @@ package org.chromium.chrome.browser.signin;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.ObjectsCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -20,6 +19,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
@@ -112,8 +114,15 @@ public class AccountPickerDialogFragment extends DialogFragment {
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, @ViewType int viewType) {
             LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
             if (viewType == ViewType.NEW_ACCOUNT) {
-                View view =
-                        inflater.inflate(R.layout.account_picker_new_account_row, viewGroup, false);
+                TextView view = (TextView) inflater.inflate(
+                        R.layout.account_picker_new_account_row, viewGroup, false);
+                // Set the vector drawable programmatically because app:drawableStartCompat is only
+                // available after AndroidX appcompat library.
+                // TODO(https://crbug.com/948367): Use app:drawableStartCompat.
+                view.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        AppCompatResources.getDrawable(
+                                viewGroup.getContext(), R.drawable.ic_add_circle_40dp),
+                        null, null, null);
                 return new ViewHolder(view);
             }
             View view = inflater.inflate(R.layout.account_picker_row, viewGroup, false);
@@ -142,7 +151,7 @@ public class AccountPickerDialogFragment extends DialogFragment {
                     return;
                 case ViewType.NEW_ACCOUNT:
                     // "Add account" row is immutable.
-                    holder.itemView.setOnClickListener(view -> getCallback().addAccount());
+                    holder.itemView.setOnClickListener(view -> addAccount());
                     return;
                 default:
                     assert false : "Unexpected view type!";
@@ -250,8 +259,14 @@ public class AccountPickerDialogFragment extends DialogFragment {
     }
 
     private void onAccountSelected(String accountName, boolean isDefaultAccount) {
+        if (!isResumed() || isStateSaved()) return;
         getCallback().onAccountSelected(accountName, isDefaultAccount);
-        dismiss();
+        dismissAllowingStateLoss();
+    }
+
+    private void addAccount() {
+        if (!isResumed() || isStateSaved()) return;
+        getCallback().addAccount();
     }
 
     private void updateAccounts() {
@@ -259,7 +274,7 @@ public class AccountPickerDialogFragment extends DialogFragment {
             mAccounts = AccountManagerFacade.get().getGoogleAccountNames();
         } catch (AccountManagerDelegateException ex) {
             Log.e(TAG, "Can't get account list", ex);
-            dismiss();
+            dismissAllowingStateLoss();
             return;
         }
 

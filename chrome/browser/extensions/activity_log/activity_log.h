@@ -19,9 +19,8 @@
 #include "base/threading/thread.h"
 #include "chrome/browser/extensions/activity_log/activity_actions.h"
 #include "chrome/browser/extensions/activity_log/activity_log_policy.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/dom_action_types.h"
@@ -38,7 +37,6 @@ class PrefRegistrySyncable;
 
 namespace extensions {
 class Extension;
-class ExtensionRegistry;
 class ExtensionSystem;
 
 // A utility for tracing interesting activity for each extension.
@@ -47,8 +45,7 @@ class ExtensionSystem;
 // each profile.
 //
 class ActivityLog : public BrowserContextKeyedAPI,
-                    public ExtensionRegistryObserver,
-                    public content::NotificationObserver {
+                    public ExtensionRegistryObserver {
  public:
   // Observers can listen for activity events. There is probably only one
   // observer: the activityLogPrivate API.
@@ -174,11 +171,6 @@ class ActivityLog : public BrowserContextKeyedAPI,
   // whether or not a consumer is active. Otherwise, checks active_consumers_.
   void CheckActive(bool use_cached);
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // Called once the ExtensionSystem is ready.
   void OnExtensionSystemReady();
 
@@ -217,7 +209,7 @@ class ActivityLog : public BrowserContextKeyedAPI,
   // added or removed, enabled_ may change.
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   // The number of active consumers of the activity log.
   // TODO(kelvinjiang): eliminate this flag if possible and use has_listeners_
@@ -240,9 +232,7 @@ class ActivityLog : public BrowserContextKeyedAPI,
   // reasons.
   bool is_active_;
 
-  content::NotificationRegistrar registrar_;
-
-  base::WeakPtrFactory<ActivityLog> weak_factory_;
+  base::WeakPtrFactory<ActivityLog> weak_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(ActivityLogApiTest, TriggerEvent);
   FRIEND_TEST_ALL_PREFIXES(ActivityLogEnabledTest, AppAndCommandLine);

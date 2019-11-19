@@ -1,16 +1,23 @@
 description("Canonicalization of standard URLs");
 
+// Need to change the base URL to get the results to be consistent
+// across platforms. We can't do it in the HTML because we need the
+// original value in order to load this script.
+let base = document.createElement('base');
+base.href = 'file:///';
+document.head.appendChild(base);
+
 cases = [
   ["http://www.google.com/foo?bar=baz#", "http://www.google.com/foo?bar=baz#"],
   ["http://www.google.com/foo?bar=baz# \u00bb", "http://www.google.com/foo?bar=baz#%20%C2%BB"],
   ["http://[www.google.com]/", "http://[www.google.com]/"],
   ["http://www.google.com", "http://www.google.com/"],
-  // Disabled because whitespace gets treated different in this API.
-  // ["ht\ttp:@www.google.com:80/;p?#", "ht%09tp://www.google.com:80/;p?#"],
+  ["ht\ttp:@www.google.com:80/;p?#", "http://www.google.com/;p?#"],
   ["http:////////user:@google.com:99?foo", "http://user@google.com:99/?foo"],
-  // Disabled because this gets treated as a relative URL.
-  // ["www.google.com", ":www.google.com/"],
+  ["www.google.com", "file:///www.google.com"],
   ["http://192.0x00A80001", "http://192.168.0.1/"],
+  // This test matches Blink's current behaviour, but the URL standard
+  // does not unescape %2E.
   ["http://www/foo%2Ehtml", "http://www/foo.html"],
   ["http://user:pass@/", "http://user:pass@/"],
   ["http://%25DOMAIN:foobar@foodomain.com/", "http://%25DOMAIN:foobar@foodomain.com/"],
@@ -41,7 +48,7 @@ cases = [
   ["ftp:/example.com/", "ftp://example.com/"],
   ["https:/example.com/", "https://example.com/"],
   ["madeupscheme:/example.com/", "madeupscheme:/example.com/"],
-  ["file:/example.com/", "file://localhost/example.com/"],
+  ["file:/example.com/", "file:///example.com/"],
   ["ftps:/example.com/", "ftps:/example.com/"],
   ["gopher:/example.com/", "gopher://example.com/"],
   ["ws:/example.com/", "ws://example.com/"],

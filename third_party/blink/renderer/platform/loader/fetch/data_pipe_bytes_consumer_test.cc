@@ -44,8 +44,7 @@ TEST_F(DataPipeBytesConsumerTest, TwoPhaseRead) {
   auto result = MakeGarbageCollected<BytesConsumerTestReader>(consumer)->Run(
       task_runner_.get());
   EXPECT_EQ(Result::kDone, result.first);
-  EXPECT_EQ(kData,
-            String(result.second.data(), result.second.size()).Utf8().data());
+  EXPECT_EQ(kData, String(result.second.data(), result.second.size()).Utf8());
 }
 
 TEST_F(DataPipeBytesConsumerTest, TwoPhaseRead_SignalError) {

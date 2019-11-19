@@ -9,5 +9,3 @@ void TabStripObserver::OnTabAdded(int index) {}
 void TabStripObserver::OnTabMoved(int from_index, int to_index) {}
 
 void TabStripObserver::OnTabRemoved(int index) {}
-
-void TabStripObserver::OnTabsMaxXChanged() {}

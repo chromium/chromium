@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/tween.h"
 
@@ -23,37 +24,40 @@ class ANIMATION_EXPORT MultiAnimation : public Animation {
  public:
   // Defines part of the animation. Each part consists of the following:
   //
-  // time_ms: the time of the part.
-  // start_time_ms: the amount of time to offset this part by when calculating
-  // the percented completed.
-  // end_time_ms: the end time used to calculate the percentange completed.
+  // part_length: the length of time the part runs.
+  // part_start: the amount of time to offset this part by when calculating the
+  // initial percentage.
+  // total_length: the total length used to calculate the percentange completed.
   //
-  // In most cases |start_time_ms| = 0 and |end_time_ms| = |time_ms|. But you
-  // can adjust the start/end for different effects. For example, to run a part
-  // for 200ms with a % between .25 and .75 use the following three values: 200,
-  // 100, 400.
+  // In most cases |part_start| is empty and |total_length| = |part_length|. But
+  // you can adjust the start/total for different effects. For example, to run a
+  // part for 200ms with a % between .25 and .75 use the following three values:
+  // part_length = 200, part_start = 100, total_length = 400.
   struct Part {
-    Part() : Part(0, Tween::ZERO) {}
-    Part(int time_ms, Tween::Type type) : Part(time_ms, 0, time_ms, type) {}
-    Part(int time_ms, int start_time_ms, int end_time_ms, Tween::Type type)
-        : time_ms(time_ms),
-          start_time_ms(start_time_ms),
-          end_time_ms(end_time_ms),
+    Part() : Part(base::TimeDelta(), Tween::ZERO) {}
+    Part(base::TimeDelta part_length, Tween::Type type)
+        : Part(part_length, base::TimeDelta(), part_length, type) {}
+    Part(base::TimeDelta part_length,
+         base::TimeDelta part_start,
+         base::TimeDelta total_length,
+         Tween::Type type)
+        : part_length(part_length),
+          part_start(part_start),
+          total_length(total_length),
           type(type) {}
 
-    int time_ms;
-    int start_time_ms;
-    int end_time_ms;
+    base::TimeDelta part_length;
+    base::TimeDelta part_start;
+    base::TimeDelta total_length;
     Tween::Type type;
   };
+  using Parts = std::vector<Part>;
 
-  typedef std::vector<Part> Parts;
+  static constexpr auto kDefaultTimerInterval =
+      base::TimeDelta::FromMilliseconds(20);
 
   MultiAnimation(const Parts& parts, base::TimeDelta timer_interval);
   ~MultiAnimation() override;
-
-  // Default interval.
-  static base::TimeDelta GetDefaultTimerInterval();
 
   // Sets whether the animation continues after it reaches the end. If true, the
   // animation runs until explicitly stopped. The default is true.
@@ -72,16 +76,16 @@ class ANIMATION_EXPORT MultiAnimation : public Animation {
   void SetStartTime(base::TimeTicks start_time) override;
 
  private:
-  // Returns the part containing the specified time. |time_ms| is reset to be
+  // Returns the part containing the specified time. |time| is reset to be
   // relative to the part containing the time and |part_index| the index of the
   // part.
-  const Part& GetPart(int* time_ms, size_t* part_index);
+  const Part& GetPart(base::TimeDelta* time, size_t* part_index);
 
   // The parts that make up the animation.
   const Parts parts_;
 
   // Total time of all the parts.
-  const int cycle_time_ms_;
+  const base::TimeDelta cycle_time_;
 
   // Current value for the animation.
   double current_value_;

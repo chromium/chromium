@@ -36,7 +36,6 @@ class Element;
 class ExceptionState;
 class ExecutionContext;
 class MutableCSSPropertyValueSet;
-class PropertyRegistry;
 class StyleSheetContents;
 
 class AbstractPropertySetCSSStyleDeclaration : public CSSStyleDeclaration {
@@ -84,7 +83,6 @@ class AbstractPropertySetCSSStyleDeclaration : public CSSStyleDeclaration {
   virtual void WillMutate() {}
   virtual void DidMutate(MutationType) {}
   virtual MutableCSSPropertyValueSet& PropertySet() const = 0;
-  virtual PropertyRegistry* GetPropertyRegistry() const = 0;
   virtual bool IsKeyframeStyle() const { return false; }
 };
 

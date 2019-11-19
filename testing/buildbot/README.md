@@ -88,9 +88,19 @@ When adding tests or bumping timeouts, care must be taken to ensure the
 infrastructure has capacity to handle the extra load.  This is especially true
 for the established
 [Chromium CQ builders](https://chromium.googlesource.com/chromium/src/+/master/infra/config/branch/cq.cfg),
-as they operate under strict execution requirements. Make sure to get an
-infrastructure engineer on the Crossover Team to sign off that there is both
-buildbot and swarming capacity available.
+as they operate under strict execution requirements. Make sure to get a resource
+owner or a member of Chrome Browser Core EngProd to sign off that there is both
+builder and swarmed test shard capacity available.
+
+In particular, pay attention to the capacity of the builder which compiles and
+then triggers and collects swarming task shards. If you're adding a new test
+suite to a bot, and know that the test suite adds one hour of testing time to
+the swarming shards, and know that you have enough swarmed capacity to handle
+that one hour of testing, that's a good start. But if that test *also* happens
+to run in shards which take 10 minutes longer than any other shards on that
+current bot, that means that the top-level builder will also take 10 minutes
+longer to run -- or 20 minutes longer if there are failures and retries. Ensure
+that the builder pool has enough capacity to handle that increase as well.
 
 ## How to use the generate_buildbot_json tool
 ### Test suites
@@ -127,6 +137,10 @@ generated JSON file. Commonly used arguments include:
 
     * `can_use_on_swarming_builders`: if set to False, disables running this
       test on Swarming on any bot.
+
+    * `idempotent`: if set to False, prevents Swarming from returning the same
+      results of a similar run of the same test. See [task deduplication] for
+      more info.
 
 * `experiment_percentage`: an integer indicating that the test should be run
   as an experiment in the given percentage of builds. Tests running as
@@ -269,11 +283,23 @@ The exceptions file supports the following options per test:
   bot. This can be used to add additional command line arguments, Swarming
   parameters, etc.
 
-* `key_removals`: a dictionary mapping a bot's name to a list of keys which
-  should be removed from the test's specification on that bot. Note that by
-  design, this feature *can not* be used to remove Swarming dictionary entries.
-  This feature was mainly used to match the previously handwritten JSON files,
-  should not be used in the future, and should ideally be removed.
+* `replacements`: a dictionary mapping bot names to a dictionaries of field
+  names to dictionaries of key/value pairs to replace. If the given value is
+  `None`, then the key will simply be removed. For example:
+  ```
+  'foo_tests': {
+    'Foo Tester': {
+      'args': {
+        '--some-flag': None,
+        '--another-flag': 'some-value',
+      },
+    },
+  }
+  ```
+  would remove the `--some-flag` and replace whatever value `--another-flag` was
+  set to with `some-value`. Note that passing `None` only works if the flag
+  being removed either has no value or is in the `--key=value` format. It does
+  not work if the key and value are two separate entries in the args list.
 
 ### Order of application of test changes
 
@@ -334,3 +360,5 @@ the data files. Some examples might include:
 
 `dpranke`, `jbudorick` or `kbr` will be glad to review any improvements you make
 to the tools. Thanks in advance for contributing!
+
+[task deduplication]: https://chromium.googlesource.com/infra/luci/luci-py/+/HEAD/appengine/swarming/doc/Detailed-Design.md#task-deduplication

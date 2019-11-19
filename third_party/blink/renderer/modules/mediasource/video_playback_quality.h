@@ -42,11 +42,6 @@ class VideoPlaybackQuality : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static VideoPlaybackQuality* Create(const Document&,
-                                      unsigned total_video_frames,
-                                      unsigned dropped_video_frames,
-                                      unsigned corrupted_video_frames);
-
   VideoPlaybackQuality(const Document&,
                        unsigned total_video_frames,
                        unsigned dropped_video_frames,

@@ -20,11 +20,14 @@ class MockDeviceInfo : public DeviceInfo {
   MOCK_METHOD0(SdkVersion, int());
   MOCK_METHOD0(IsVp8DecoderAvailable, bool());
   MOCK_METHOD0(IsVp9DecoderAvailable, bool());
+  MOCK_METHOD0(IsAv1DecoderAvailable, bool());
   MOCK_METHOD1(IsDecoderKnownUnaccelerated, bool(VideoCodec codec));
   MOCK_METHOD0(IsSetOutputSurfaceSupported, bool());
   MOCK_METHOD0(SupportsOverlaySurfaces, bool());
   MOCK_METHOD1(CodecNeedsFlushWorkaround, bool(MediaCodecBridge* codec));
   MOCK_METHOD0(IsAsyncApiSupported, bool());
+  MOCK_METHOD1(AddSupportedCodecProfileLevels,
+               bool(std::vector<CodecProfileLevel>*));
 };
 
 }  // namespace media

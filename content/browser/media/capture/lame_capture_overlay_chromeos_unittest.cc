@@ -9,9 +9,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "media/base/video_frame.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -64,12 +65,13 @@ class LameCaptureOverlayChromeOSTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment env_;
+  base::test::TaskEnvironment env_;
 };
 
 TEST_F(LameCaptureOverlayChromeOSTest, UnsetImageNotRenderedOnFrame) {
+  mojo::Remote<viz::mojom::FrameSinkVideoCaptureOverlay> overlay_remote;
   LameCaptureOverlayChromeOS overlay(
-      nullptr, viz::mojom::FrameSinkVideoCaptureOverlayRequest());
+      nullptr, overlay_remote.BindNewPipeAndPassReceiver());
 
   // Bounds set, but no image. → Should not render anything.
   overlay.SetBounds(kSpanOfEntireFrame);
@@ -81,8 +83,9 @@ TEST_F(LameCaptureOverlayChromeOSTest, UnsetImageNotRenderedOnFrame) {
 }
 
 TEST_F(LameCaptureOverlayChromeOSTest, HiddenImageNotRenderedOnFrame) {
+  mojo::Remote<viz::mojom::FrameSinkVideoCaptureOverlay> overlay_remote;
   LameCaptureOverlayChromeOS overlay(
-      nullptr, viz::mojom::FrameSinkVideoCaptureOverlayRequest());
+      nullptr, overlay_remote.BindNewPipeAndPassReceiver());
 
   // Both image and bounds set. → Should render something.
   overlay.SetImageAndBounds(CreateTestBitmap(), kSpanOfEntireFrame);
@@ -94,8 +97,9 @@ TEST_F(LameCaptureOverlayChromeOSTest, HiddenImageNotRenderedOnFrame) {
 }
 
 TEST_F(LameCaptureOverlayChromeOSTest, OutOfBoundsOverlayNotRenderedOnFrame) {
+  mojo::Remote<viz::mojom::FrameSinkVideoCaptureOverlay> overlay_remote;
   LameCaptureOverlayChromeOS overlay(
-      nullptr, viz::mojom::FrameSinkVideoCaptureOverlayRequest());
+      nullptr, overlay_remote.BindNewPipeAndPassReceiver());
 
   // Both image and bounds set. → Should render something.
   overlay.SetImageAndBounds(CreateTestBitmap(), kSpanOfEntireFrame);
@@ -107,8 +111,9 @@ TEST_F(LameCaptureOverlayChromeOSTest, OutOfBoundsOverlayNotRenderedOnFrame) {
 }
 
 TEST_F(LameCaptureOverlayChromeOSTest, ImageRenderedOnFrame) {
+  mojo::Remote<viz::mojom::FrameSinkVideoCaptureOverlay> overlay_remote;
   LameCaptureOverlayChromeOS overlay(
-      nullptr, viz::mojom::FrameSinkVideoCaptureOverlayRequest());
+      nullptr, overlay_remote.BindNewPipeAndPassReceiver());
 
   // Create blank black frame. No non-zero pixels should be present.
   const auto frame = media::VideoFrame::CreateZeroInitializedFrame(
@@ -159,14 +164,14 @@ TEST_F(LameCaptureOverlayChromeOSTest, ReportsLostMojoConnection) {
                  void(LameCaptureOverlayChromeOS* overlay));
   } mock_owner;
 
-  viz::mojom::FrameSinkVideoCaptureOverlayPtr overlay_ptr;
-  LameCaptureOverlayChromeOS overlay(&mock_owner,
-                                     mojo::MakeRequest(&overlay_ptr));
-  ASSERT_TRUE(overlay_ptr);
+  mojo::Remote<viz::mojom::FrameSinkVideoCaptureOverlay> overlay_remote;
+  LameCaptureOverlayChromeOS overlay(
+      &mock_owner, overlay_remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(overlay_remote);
   RunUntilIdle();  // Propagate mojo tasks.
 
   EXPECT_CALL(mock_owner, OnOverlayConnectionLost(&overlay));
-  overlay_ptr.reset();
+  overlay_remote.reset();
   RunUntilIdle();  // Propagate mojo tasks.
 }
 

@@ -51,6 +51,18 @@ void DeleteQueriesEXTImmediate(GLsizei n, const GLuint* queries) {
   }
 }
 
+void QueryCounterEXT(GLuint id,
+                     GLenum target,
+                     uint32_t sync_data_shm_id,
+                     uint32_t sync_data_shm_offset,
+                     GLuint submit_count) {
+  raster::cmds::QueryCounterEXT* c =
+      GetCmdSpace<raster::cmds::QueryCounterEXT>();
+  if (c) {
+    c->Init(id, target, sync_data_shm_id, sync_data_shm_offset, submit_count);
+  }
+}
+
 void BeginQueryEXT(GLenum target,
                    GLuint id,
                    uint32_t sync_data_shm_id,
@@ -76,18 +88,9 @@ void LoseContextCHROMIUM(GLenum current, GLenum other) {
   }
 }
 
-void InsertFenceSyncCHROMIUM(GLuint64 release_count) {
-  raster::cmds::InsertFenceSyncCHROMIUM* c =
-      GetCmdSpace<raster::cmds::InsertFenceSyncCHROMIUM>();
-  if (c) {
-    c->Init(release_count);
-  }
-}
-
 void BeginRasterCHROMIUMImmediate(GLuint sk_color,
                                   GLuint msaa_sample_count,
                                   GLboolean can_use_lcd_text,
-                                  GLuint color_space_transfer_cache_id,
                                   const GLbyte* mailbox) {
   const uint32_t size =
       raster::cmds::BeginRasterCHROMIUMImmediate::ComputeSize();
@@ -95,8 +98,7 @@ void BeginRasterCHROMIUMImmediate(GLuint sk_color,
       GetImmediateCmdSpaceTotalSize<raster::cmds::BeginRasterCHROMIUMImmediate>(
           size);
   if (c) {
-    c->Init(sk_color, msaa_sample_count, can_use_lcd_text,
-            color_space_transfer_cache_id, mailbox);
+    c->Init(sk_color, msaa_sample_count, can_use_lcd_text, mailbox);
   }
 }
 

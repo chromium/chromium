@@ -6,7 +6,7 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/animation/test_animation_delegate.h"
@@ -21,7 +21,7 @@ namespace {
 
 class OwnedDelegate : public gfx::AnimationDelegate {
  public:
-  OwnedDelegate() {}
+  OwnedDelegate() = default;
 
   ~OwnedDelegate() override { deleted_ = true; }
 
@@ -55,9 +55,9 @@ bool OwnedDelegate::canceled_ = false;
 
 class TestView : public View {
  public:
-  TestView() {}
+  TestView() = default;
 
-  void SchedulePaintInRect(const gfx::Rect& r) override {
+  void OnDidSchedulePaint(const gfx::Rect& r) override {
     if (dirty_rect_.IsEmpty())
       dirty_rect_ = r;
     else
@@ -77,12 +77,12 @@ class TestView : public View {
 class BoundsAnimatorTest : public testing::Test {
  public:
   BoundsAnimatorTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI),
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
         child_(new TestView()),
         animator_(&parent_) {
     parent_.AddChildView(child_);
-    animator_.SetAnimationDuration(10);
+    animator_.SetAnimationDuration(base::TimeDelta::FromMilliseconds(10));
   }
 
   TestView* parent() { return &parent_; }
@@ -90,7 +90,7 @@ class BoundsAnimatorTest : public testing::Test {
   BoundsAnimator* animator() { return &animator_; }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   TestView parent_;
   TestView* child_;  // Owned by |parent_|.
   BoundsAnimator animator_;

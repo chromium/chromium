@@ -4,11 +4,11 @@
 
 static_library("router") {
   public_deps = [
-    "//base:base",
+    "//base",
     "//base:i18n",
-    "//net:net",
+    "//net",
     "//third_party/icu",
-    "//url:url",
+    "//url",
   ]
 
   sources = [
@@ -27,10 +27,6 @@ static_library("router") {
     "media_sink.h",
     "media_source.cc",
     "media_source.h",
-    "media_source_helper.cc",
-    "media_source_helper.h",
-    "media_status.cc",
-    "media_status.h",
     "route_request_result.cc",
     "route_request_result.h",
   ]
@@ -54,7 +50,7 @@ static_library("router") {
 static_library("test_support") {
   testonly = true
   deps = [
-    "//base:base",
+    "//base",
     "//chrome/test:test_support",
   ]
   public_deps = [

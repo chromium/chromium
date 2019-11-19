@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/interventions/framebust_block_message_delegate.h"
-#include "jni/FramebustBlockMessageDelegateBridge_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 using base::android::JavaParamRef;

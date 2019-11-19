@@ -72,8 +72,6 @@ namespace ui_devtools {
 // hierarchy is a tree again can be ambiguous and may not follow the tree
 // structure. Current approach of handling these states needs revisiting.
 
-using namespace ui_devtools::protocol;
-
 DOMAgentViz::DOMAgentViz(viz::FrameSinkManagerImpl* frame_sink_manager)
     : frame_sink_manager_(frame_sink_manager),
       surface_manager_(frame_sink_manager->surface_manager()) {}
@@ -88,7 +86,7 @@ void DOMAgentViz::OnFirstSurfaceActivation(
   // it to RootElement. Sometimes OnAddedSurfaceReference is called first, so
   // don't create the element if it already exists.
   const viz::SurfaceId& surface_id = surface_info.id();
-  if (!base::ContainsKey(surface_elements_, surface_id)) {
+  if (!base::Contains(surface_elements_, surface_id)) {
     UIElement* surface_root = GetRootSurfaceElement();
     CreateSurfaceElement(surface_id, surface_root)
         ->AddToParentSorted(surface_root);
@@ -100,7 +98,7 @@ bool DOMAgentViz::OnSurfaceDamaged(const viz::SurfaceId& surface_id,
   return false;
 }
 
-void DOMAgentViz::OnSurfaceDiscarded(const viz::SurfaceId& surface_id) {
+void DOMAgentViz::OnSurfaceDestroyed(const viz::SurfaceId& surface_id) {
   // We may come across the case where we delete element, but its children
   // are still alive. Therefore we should attach children to the RootElement
   // and then delete this element.
@@ -242,10 +240,10 @@ SurfaceElement* DOMAgentViz::GetRootSurfaceElement() {
   return it->second.get();
 }
 
-std::unique_ptr<DOM::Node> DOMAgentViz::BuildTreeForFrameSink(
+std::unique_ptr<protocol::DOM::Node> DOMAgentViz::BuildTreeForFrameSink(
     UIElement* parent_element,
     const viz::FrameSinkId& parent_id) {
-  std::unique_ptr<Array<DOM::Node>> children = Array<DOM::Node>::create();
+  auto children = std::make_unique<protocol::Array<protocol::DOM::Node>>();
 
   // Once the FrameSinkElement is created it calls this function to build its
   // subtree. We iterate through |parent_element|'s children and
@@ -257,18 +255,20 @@ std::unique_ptr<DOM::Node> DOMAgentViz::BuildTreeForFrameSink(
     FrameSinkElement* child_element = CreateFrameSinkElement(
         child_id, parent_element, /*is_root=*/false, has_created_frame_sink);
 
-    children->addItem(BuildTreeForFrameSink(child_element, child_id));
+    children->emplace_back(BuildTreeForFrameSink(child_element, child_id));
     child_element->AddToParentSorted(parent_element);
   }
 
-  return BuildNode("FrameSink", parent_element->GetAttributes(),
+  return BuildNode("FrameSink",
+                   std::make_unique<std::vector<std::string>>(
+                       parent_element->GetAttributes()),
                    std::move(children), parent_element->node_id());
 }
 
-std::unique_ptr<DOM::Node> DOMAgentViz::BuildTreeForSurface(
+std::unique_ptr<protocol::DOM::Node> DOMAgentViz::BuildTreeForSurface(
     UIElement* parent_element,
     const viz::SurfaceId& parent_id) {
-  std::unique_ptr<Array<DOM::Node>> children = Array<DOM::Node>::create();
+  auto children = std::make_unique<protocol::Array<protocol::DOM::Node>>();
 
   // Once the SurfaceElement is created it calls this function to build its
   // subtree. We iterate through |parent_element|'s children and
@@ -286,10 +286,12 @@ std::unique_ptr<DOM::Node> DOMAgentViz::BuildTreeForSurface(
       child_element->AddToParentSorted(parent_element);
     }
 
-    children->addItem(BuildTreeForSurface(child_element, child_id));
+    children->emplace_back(BuildTreeForSurface(child_element, child_id));
   }
 
-  return BuildNode("Surface", parent_element->GetAttributes(),
+  return BuildNode("Surface",
+                   std::make_unique<std::vector<std::string>>(
+                       parent_element->GetAttributes()),
                    std::move(children), parent_element->node_id());
 }
 
@@ -343,7 +345,7 @@ std::vector<UIElement*> DOMAgentViz::CreateChildrenForRoot() {
   return children;
 }
 
-std::unique_ptr<DOM::Node> DOMAgentViz::BuildTreeForUIElement(
+std::unique_ptr<protocol::DOM::Node> DOMAgentViz::BuildTreeForUIElement(
     UIElement* ui_element) {
   if (ui_element->type() == UIElementType::FRAMESINK) {
     return BuildTreeForFrameSink(ui_element,
@@ -391,7 +393,7 @@ FrameSinkElement* DOMAgentViz::CreateFrameSinkElement(
     UIElement* parent,
     bool is_root,
     bool is_client_connected) {
-  DCHECK(!base::ContainsKey(frame_sink_elements_, frame_sink_id));
+  DCHECK(!base::Contains(frame_sink_elements_, frame_sink_id));
   frame_sink_elements_[frame_sink_id] = std::make_unique<FrameSinkElement>(
       frame_sink_id, frame_sink_manager_, this, parent, is_root,
       is_client_connected);
@@ -401,7 +403,7 @@ FrameSinkElement* DOMAgentViz::CreateFrameSinkElement(
 SurfaceElement* DOMAgentViz::CreateSurfaceElement(
     const viz::SurfaceId& surface_id,
     UIElement* parent) {
-  DCHECK(!base::ContainsKey(surface_elements_, surface_id));
+  DCHECK(!base::Contains(surface_elements_, surface_id));
   surface_elements_[surface_id] = std::make_unique<SurfaceElement>(
       surface_id, frame_sink_manager_, this, parent);
   return surface_elements_[surface_id].get();

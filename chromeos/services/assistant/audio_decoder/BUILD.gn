@@ -12,8 +12,6 @@ source_set("lib") {
     "assistant_audio_decoder.h",
     "assistant_audio_decoder_factory.cc",
     "assistant_audio_decoder_factory.h",
-    "assistant_audio_decoder_service.cc",
-    "assistant_audio_decoder_service.h",
     "ipc_data_source.cc",
     "ipc_data_source.h",
   ]
@@ -25,7 +23,6 @@ source_set("lib") {
 
   public_deps = [
     "//media",
-    "//mojo/public/cpp/bindings:bindings",
-    "//services/service_manager/public/cpp:cpp",
+    "//mojo/public/cpp/bindings",
   ]
 }

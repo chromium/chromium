@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_HISTORY_OBSERVER_SERVICE_H_
 
 #include "base/scoped_observer.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -50,7 +51,7 @@ class BrowsingDataHistoryObserverService
   Profile* profile_;
 
   ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_observer_;
+      history_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BrowsingDataHistoryObserverService);
 };

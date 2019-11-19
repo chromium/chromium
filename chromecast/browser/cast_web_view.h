@@ -15,32 +15,19 @@
 #include "base/values.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_contents.h"
-#include "chromecast/graphics/cast_window_manager.h"
+#include "chromecast/ui/mojom/ui_service.mojom.h"
 #include "content/public/browser/bluetooth_chooser.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 namespace chromecast {
 
-class CastWindowManager;
-
-using shell::VisibilityPriority;
-
 // A simplified interface for loading and displaying WebContents in cast_shell.
 class CastWebView {
  public:
   class Delegate : public CastWebContents::Delegate,
-                   public shell::CastContentWindow::Delegate {
+                   public CastContentWindow::Delegate {
    public:
-    // Called when there is console log output from web_contents.
-    // Returning true indicates that the delegate handled the message.
-    // If false is returned the default logging mechanism will be used.
-    virtual bool OnAddMessageToConsoleReceived(
-        int32_t level,
-        const base::string16& message,
-        int32_t line_no,
-        const base::string16& source_id) = 0;
-
     // Invoked by CastWebView when WebContentsDelegate::RunBluetoothChooser is
     // called. Returns a BluetoothChooser, a class used to solicit bluetooth
     // device selection from the user for WebBluetooth applications. If a
@@ -62,31 +49,36 @@ class CastWebView {
     virtual ~Observer() {}
   };
 
+  // When the unique_ptr is reset, the CastWebView may not necessarily be
+  // destroyed. In some cases ownership will be passed to the CastWebService,
+  // which eventually handles destruction.
+  using Scoped =
+      std::unique_ptr<CastWebView, std::function<void(CastWebView*)>>;
+
   // The parameters used to create a CastWebView instance. Passed to
-  // CastWebContentsManager::CreateWebView().
+  // CastWebService::CreateWebView().
   struct CreateParams {
-    // The delegate for the CastWebView. Must be non-null.
-    Delegate* delegate = nullptr;
+    // The delegate for the CastWebView. Must be non-null. If the delegate is
+    // destroyed before CastWebView, the WeakPtr will be invalidated on the main
+    // UI thread.
+    base::WeakPtr<Delegate> delegate = nullptr;
+
+    // Parameters for initializing CastWebContents. These will be passed as-is
+    // to a CastWebContents instance, which should be used by all CastWebView
+    // implementations.
+    CastWebContents::InitParams web_contents_params;
 
     // Parameters for creating the content window for this CastWebView.
-    shell::CastContentWindow::CreateParams window_params;
+    CastContentWindow::CreateParams window_params;
 
     // Identifies the activity that is hosted by this CastWebView.
     std::string activity_id = "";
 
-    // Whether this CastWebView has a transparent background.
-    bool transparent = false;
+    // Sdk version of the application (if available) hosted by this CastWebView.
+    std::string sdk_version = "";
 
     // Whether this CastWebView is granted media access.
     bool allow_media_access = false;
-
-    // Whether this CastWebView will use CMA for media playback.
-    bool use_cma_renderer = true;
-
-    // Enable development mode for this CastWebView. Whitelists certain
-    // functionality for the WebContents, like remote debugging and debugging
-    // interfaces.
-    bool enabled_for_dev = false;
 
     // Enable/Force 720p resolution for this CastWebView instance.
     bool force_720p_resolution = false;
@@ -94,17 +86,30 @@ class CastWebView {
     // Whether this CastWebView should be managed by web ui window manager.
     bool managed = true;
 
+    // Prefix for JS console logs. This can be used to help identify the source
+    // of console log messages.
+    std::string log_prefix = "";
+
+    // Delays CastWebView deletion after CastWebView::Scoped is reset. The
+    // default value is zero, which means the CastWebView will be deleted
+    // immediately and synchronously.
+    base::TimeDelta shutdown_delay = base::TimeDelta();
+
     CreateParams();
+    CreateParams(const CreateParams& other);
+    ~CreateParams();
   };
 
-  CastWebView();
+  explicit CastWebView(const CreateParams& create_params);
   virtual ~CastWebView();
 
-  virtual shell::CastContentWindow* window() const = 0;
+  virtual CastContentWindow* window() const = 0;
 
   virtual content::WebContents* web_contents() const = 0;
 
   virtual CastWebContents* cast_web_contents() = 0;
+
+  base::TimeDelta shutdown_delay() const { return shutdown_delay_; }
 
   // Navigates to |url|. The loaded page will be preloaded if MakeVisible has
   // not been called on the object.
@@ -113,14 +118,17 @@ class CastWebView {
   // Begins the close process for this page (ie. triggering document.onunload).
   // A consumer of the class can be notified when the process has been finished
   // via Delegate::OnPageStopped(). The page will be torn down after
-  // |shutdown_delay| has elapsed, or sooner if required.
-  virtual void ClosePage(const base::TimeDelta& shutdown_delay) = 0;
+  // |CreateParams::shutdown_delay| has elapsed, or immediately if the browser
+  // is shutting down.
+  virtual void ClosePage() = 0;
+
+  // Closes the page immediately, ignoring |CreateParams::shutdown_delay|.
+  void ForceClose();
 
   // Adds the page to the window manager and makes it visible to the user if
   // |is_visible| is true. |z_order| determines how this window is layered in
   // relationt other windows (higher value == more foreground).
-  virtual void InitializeWindow(CastWindowManager* window_manager,
-                                CastWindowManager::WindowId z_order,
+  virtual void InitializeWindow(mojom::ZOrder z_order,
                                 VisibilityPriority initial_priority) = 0;
 
   // Allows the page to be shown on the screen. The page cannot be shown on the
@@ -135,7 +143,12 @@ class CastWebView {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+ protected:
+  base::WeakPtr<Delegate> delegate_;
+
  private:
+  base::TimeDelta shutdown_delay_;
+
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   DISALLOW_COPY_AND_ASSIGN(CastWebView);

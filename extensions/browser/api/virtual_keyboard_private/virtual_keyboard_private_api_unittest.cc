@@ -60,6 +60,14 @@ class MockVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
   }
   const std::vector<gfx::Rect>& GetHitTestBounds() { return hit_test_bounds_; }
 
+  bool SetAreaToRemainOnScreen(const gfx::Rect& bounds) override {
+    area_to_remain_on_screen_ = bounds;
+    return true;
+  }
+  const gfx::Rect& GetAreaToRemainOnScreen() {
+    return area_to_remain_on_screen_;
+  }
+
   api::virtual_keyboard::FeatureRestrictions RestrictFeatures(
       const api::virtual_keyboard::RestrictFeatures::Params& params) override {
     return api::virtual_keyboard::FeatureRestrictions();
@@ -68,6 +76,7 @@ class MockVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
  private:
   std::vector<gfx::Rect> occluded_bounds_;
   std::vector<gfx::Rect> hit_test_bounds_;
+  gfx::Rect area_to_remain_on_screen_;
 
   DISALLOW_COPY_AND_ASSIGN(MockVirtualKeyboardDelegate);
 };
@@ -167,6 +176,16 @@ TEST_F(VirtualKeyboardPrivateApiUnittest, SetHitTestBoundsWithMultipleBounds) {
   ASSERT_EQ(2U, bounds.size());
   EXPECT_EQ(gfx::Rect(0, 10, 20, 30), bounds[0]);
   EXPECT_EQ(gfx::Rect(10, 20, 30, 40), bounds[1]);
+}
+
+TEST_F(VirtualKeyboardPrivateApiUnittest, SetAreaToRemainOnScreenWithBounds) {
+  RunFunction(new VirtualKeyboardPrivateSetAreaToRemainOnScreenFunction(),
+              R"([{ "left": 0, "top": 0, "width": 10, "height": 20 }])");
+
+  const gfx::Rect bounds = client()
+                               .GetDelegateForBrowserContext(browser_context())
+                               ->GetAreaToRemainOnScreen();
+  EXPECT_EQ(gfx::Rect(0, 0, 10, 20), bounds);
 }
 
 }  // namespace extensions

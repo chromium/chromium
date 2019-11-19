@@ -29,13 +29,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
-
 #include <windows.h>
-#include "SkFont.h"
-#include "SkTypeface.h"
+
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/skia/include/core/SkFont.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
 
@@ -53,7 +53,6 @@ void FontPlatformData::SetupSkFont(SkFont* font, float, const Font*) const {
   } else {
     font->setEdging(SkFont::Edging::kAlias);
   }
-  font->setSubpixel(SkToBool(font_flags & kSubpixelMetrics));
 
   // Only use sub-pixel positioning if anti aliasing is enabled. Otherwise,
   // without font smoothing, subpixel text positioning leads to uneven spacing
@@ -71,14 +70,6 @@ void FontPlatformData::SetupSkFont(SkFont* font, float, const Font*) const {
   font->setEmbeddedBitmaps(!avoid_embedded_bitmaps_);
 }
 
-static bool IsWebFont(const String& family_name) {
-  // Web-fonts have artifical names constructed to always be:
-  // 1. 24 characters, followed by a '\0'
-  // 2. the last two characters are '=='
-  return family_name.length() == 24 && '=' == family_name[22] &&
-         '=' == family_name[23];
-}
-
 static int ComputeFontFlags(String font_family_name) {
   if (WebTestSupport::IsRunningWebTest())
     return WebTestSupport::IsFontAntialiasingEnabledForTest()
@@ -92,13 +83,6 @@ static int ComputeFontFlags(String font_family_name) {
                        : 0;
     font_flags = FontPlatformData::kAntiAlias | lcd_flag;
   }
-
-  // Many web-fonts are so poorly hinted that they are terrible to read when
-  // drawn in BW.  In these cases, we have decided to FORCE these fonts to be
-  // drawn with at least grayscale AA, even when the System (getSystemTextFlags)
-  // tells us to draw only in BW.
-  if (IsWebFont(font_family_name))
-    font_flags |= FontPlatformData::kAntiAlias;
 
   return font_flags;
 }

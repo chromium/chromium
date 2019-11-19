@@ -7,13 +7,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 
-typedef TextInputTestBase TextInput_SurroundingTextChangedTest;
+using TextInput_SurroundingTextChangedTest = TextInputTestBase;
 
 IN_PROC_BROWSER_TEST_F(TextInput_SurroundingTextChangedTest,
                        SurroundingTextChangedWithInsertText) {

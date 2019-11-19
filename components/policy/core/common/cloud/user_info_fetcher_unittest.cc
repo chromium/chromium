@@ -4,7 +4,7 @@
 
 #include "components/policy/core/common/cloud/user_info_fetcher.h"
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
@@ -47,7 +47,7 @@ class UserInfoFetcherTest : public testing::Test {
   ~UserInfoFetcherTest() override = default;
 
  protected:
-  base::test::ScopedTaskEnvironment task_env_;
+  base::test::TaskEnvironment task_env_;
   network::TestURLLoaderFactory loader_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(UserInfoFetcherTest);

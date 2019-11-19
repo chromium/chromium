@@ -33,7 +33,7 @@ function testHandleMouseOver() {
     return cr.ui.Menu.prototype.findMenuItem_.apply(this, arguments);
   };
 
-  var over = new MouseEvent('mouseover', {bubbles: true, target: cr.doc.body});
+  var over = new MouseEvent('mouseover', {bubbles: true, target: document.body});
   assertFalse(called);
   menu.dispatchEvent(over);
   assertTrue(called);
@@ -149,6 +149,79 @@ function testSeparators() {
   runSeparatorTest(menuItems, [1], 1);
   runSeparatorTest(menuItems, [2], 1);
   runSeparatorTest(menuItems, [], 2);
+}
+
+/**
+ * Tests that focusSelectedItem() ignores hidden and disabled items.
+ */
+function testFocusSelectedItems() {
+  const menu = document.createElement('div');
+  cr.ui.decorate(menu, cr.ui.Menu);
+  const item1 = menu.addMenuItem({label: 'item1'});
+  menu.addSeparator();
+  const item2 = menu.addMenuItem({label: 'item2'});
+  const item3 = menu.addMenuItem({label: 'item3'});
+  document.body.appendChild(menu);
+
+  // Nothing is selected in the menu it should focus the first item.
+  assertEquals(-1, menu.selectedIndex);
+  menu.focusSelectedItem();
+  // Focus the first item.
+  assertEquals(0, menu.selectedIndex);
+
+  // Hide the first item, it should focus the second item.
+  menu.selectedIndex = -1;
+  item1.hidden = true;
+  menu.focusSelectedItem();
+  // Focus the second item, index=1 is the separator.
+  assertEquals(2, menu.selectedIndex);
+
+  // First item is visible but disabled, it should focus the second item.
+  menu.selectedIndex = -1;
+  item1.hidden = false;
+  item1.disabled = true;
+  menu.focusSelectedItem();
+  // Focus the second item, index=1 is the separator.
+  assertEquals(2, menu.selectedIndex);
+
+  // All items are visible but disabled, it should focus the first item.
+  menu.selectedIndex = -1;
+  item1.disabled = true;
+  item2.disabled = true;
+  item3.disabled = true;
+  menu.focusSelectedItem();
+  // Focus the first item.
+  assertEquals(0, menu.selectedIndex);
+
+  // If selectedIndex is already set, focusSelectedItem doesn't change it.
+  assertEquals(0, menu.selectedIndex);
+  item1.disabled = true
+  item2.disabled = false
+  item3.disabled = false
+  menu.focusSelectedItem();
+  // Focus remains in the first item.
+  assertEquals(0, menu.selectedIndex);
+}
+
+/**
+ * Tests that cr.ui.MenuItem defaults to tabindex=-1.
+ */
+function testMenuItemTabIndex() {
+  // Defaults to -1.
+  const item1 = menu.addMenuItem({label: 'item 1'});
+  assertEquals('-1', item1.getAttribute('tabindex'));
+
+  // Keeps previously set tabindex.
+  const itemDiv = document.createElement('div');
+  itemDiv.setAttribute('tabindex', '0');
+  cr.ui.decorate(itemDiv, cr.ui.MenuItem);
+  assertEquals('0', itemDiv.getAttribute('tabindex'));
+
+  // Separator doesn't get tabindex.
+  menu.addSeparator();
+  const separator = menu.menuItems[menu.menuItems.length - 1];
+  assertTrue(separator.isSeparator());
+  assertFalse(separator.hasAttribute('tabindex'));
 }
 </script>
 </body>

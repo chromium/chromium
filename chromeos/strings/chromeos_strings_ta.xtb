@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
+<translation id="1482734542997480527">இந்தச் சாதனத்தை <ph name="ENROLLMENT_DOMAIN" /> நிர்வகிக்கிறது. இது உங்கள் செயல்பாட்டையும் கண்காணிக்கக்கூடும்.</translation>
 <translation id="1510238584712386396">துவக்கி</translation>
 <translation id="1734367976349034509">இந்தச் சாதனத்தை நிர்வகிப்பது: நிறுவனம்</translation>
+<translation id="1930797645656624981">Chrome OS உள்ளீட்டு முறை சேவை</translation>
+<translation id="1979103255016296513">கடவுச்சொல்லை மாற்ற வேண்டும்</translation>
 <translation id="2049639323467105390"><ph name="DOMAIN" /> ஆல் இந்த சாதனம் நிர்வகிக்கப்படுகிறது.</translation>
 <translation id="2083960536266308407">திரையில் எதுவுமில்லை</translation>
 <translation id="2338501278241028356">அருகிலுள்ள சாதனங்களைக் கண்டறிய, புளூடூத்தை இயக்கவும்</translation>
 <translation id="2805756323405976993">ஆப்ஸ்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
-<translation id="3147142846278915599">துவக்கி (பயன்பாடுகளை ஒத்திசைக்கிறது...)</translation>
+<translation id="3008341117444806826">புதுப்பி</translation>
+<translation id="3838338534323494292">புதிய கடவுச்சொல்</translation>
+<translation id="4003259559679196451">இந்தச் சாதனத்தை <ph name="ENROLLMENT_DOMAIN" /> நிர்வகிக்கிறது. இதற்கு பார்வையிட்ட இணையப்பக்கங்கள், கடவுச்சொற்கள், மின்னஞ்சல் உட்பட எல்லாப் பயனர் செயல்பாட்டுக்கான அணுகலும் உள்ளது.</translation>
+<translation id="4227825898293920515">கடவுச்சொல் காலாவதியாக இன்னும் <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Kerberos டிக்கெட் விரைவில் காலாவதியாகும்</translation>
+<translation id="445059817448385655">தற்போதைய கடவுச்சொல்</translation>
+<translation id="467510802200863975">கடவுச்சொற்கள் பொருந்தவில்லை</translation>
 <translation id="4731797938093519117">பெற்றோர் அணுகல்</translation>
+<translation id="4890353053343094602">புதிய கடவுச்சொல்லை உடனே தேர்ந்தெடுக்கவும்</translation>
 <translation id="5212543919916444558">உங்களுக்கு நான் உதவும் வகையில், உங்கள் திரையில் எதுவுமில்லை.
 என்னிடம் ஏதேனும் கேட்க, மைக்கைத் தட்டவும்.</translation>
 <translation id="5222676887888702881">வெளியேறு</translation>
+<translation id="5317780077021120954">சேமி</translation>
+<translation id="5332948983412042822">புதிய கடவுச்சொல்லை இப்போதே தேர்ந்தெடுக்கவும்</translation>
 <translation id="5457599981699367932">விருந்தினராக உலாவுங்கள்</translation>
 <translation id="54609108002486618">நிர்வகிக்கப்பட்டது</translation>
 <translation id="5832805196449965646">நபரைச் சேர்</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
+<translation id="6058625436358447366">நிறைவுசெய்ய தற்போதைய கடவுச்சொல்லையும் புதிய கடவுச்சொல்லையும் உள்ளிடவும்</translation>
+<translation id="6106186594183574873">நிறைவுசெய்ய தற்போதைய கடவுச்சொல்லை உள்ளிடவும்</translation>
+<translation id="6146993107019042706">நிறைவுசெய்ய புதிய கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
+<translation id="7690294790491645610">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக</translation>
+<translation id="808894953321890993">கடவுச்சொல்லை மாற்று</translation>
+<translation id="8747900814994928677">மாற்றத்தை உறுதிப்படுத்துங்கள்</translation>
+<translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> வலைதளத்திற்கான டிக்கெட்டை ரெஃப்ரெஷ் செய்யவும்</translation>
 <translation id="9111102763498581341">பூட்டைத் திற</translation>
 </translationbundle>

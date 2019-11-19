@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <EarlGrey/EarlGrey.h>
+
 #include "base/ios/ios_util.h"
 #import "ios/chrome/browser/ui/payments/payment_request_egtest_base.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -41,7 +43,7 @@ const char kBobPayPage[] =
 
   [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(kBobPayPage)];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buy"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buy"];
 
   [self waitForWebViewContainingTexts:{"NotSupportedError",
                                        "The payment method is not supported"}];
@@ -52,7 +54,7 @@ const char kBobPayPage[] =
 - (void)testCanMakePaymentPaymentAppNotInstalled {
   [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(kBobPayPage)];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"canMakePayment"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"canMakePayment"];
 
   [self waitForWebViewContainingTexts:{"false"}];
 }

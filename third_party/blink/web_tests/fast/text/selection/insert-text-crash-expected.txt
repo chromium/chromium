@@ -1,3 +1,0 @@
-CONSOLE ERROR: line 60: Uncaught TypeError: Cannot read property 'parentNode' of null
-a:ce#@::l
-Test passes if it does not CRASH.

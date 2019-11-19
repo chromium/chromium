@@ -66,8 +66,9 @@ AppInstallEventLogManager::LogTaskRunnerWrapper::~LogTaskRunnerWrapper() =
 scoped_refptr<base::SequencedTaskRunner>
 AppInstallEventLogManager::LogTaskRunnerWrapper::GetTaskRunner() {
   if (!task_runner_) {
-    task_runner_ = base::CreateSequencedTaskRunnerWithTraits(
-        {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
+    task_runner_ = base::CreateSequencedTaskRunner(
+        {base::ThreadPool(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
+         base::MayBlock()});
   }
 
   return task_runner_;
@@ -78,10 +79,7 @@ AppInstallEventLogManager::AppInstallEventLogManager(
     AppInstallEventLogUploader* uploader,
     Profile* profile)
     : log_task_runner_(log_task_runner_wrapper->GetTaskRunner()),
-      uploader_(uploader),
-      store_weak_factory_(this),
-      upload_weak_factory_(this),
-      log_weak_factory_(this) {
+      uploader_(uploader) {
   uploader_->SetDelegate(this);
   log_ = std::make_unique<Log>();
   base::PostTaskAndReplyWithResult(

@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_IN_PROCESS_GPU_MEMORY_BUFFER_MANAGER_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_IN_PROCESS_GPU_MEMORY_BUFFER_MANAGER_H_
 
+#include <memory>
+
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
@@ -20,7 +24,8 @@ namespace viz {
 // GpuMemoryBufferManager implementation usable from any thread in the GPU
 // process. Must be created and destroyed on the same thread.
 class VIZ_SERVICE_EXPORT InProcessGpuMemoryBufferManager
-    : public gpu::GpuMemoryBufferManager {
+    : public gpu::GpuMemoryBufferManager,
+      public base::trace_event::MemoryDumpProvider {
  public:
   // |gpu_memory_buffer_factory| and |sync_point_manager| must outlive |this|.
   InProcessGpuMemoryBufferManager(
@@ -39,6 +44,10 @@ class VIZ_SERVICE_EXPORT InProcessGpuMemoryBufferManager
   void SetDestructionSyncToken(gfx::GpuMemoryBuffer* buffer,
                                const gpu::SyncToken& sync_token) override;
 
+  // base::trace_event::MemoryDumpProvider:
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
+
  private:
   // Provided as callback when a GpuMemoryBuffer should be destroyed.
   void ShouldDestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
@@ -52,9 +61,12 @@ class VIZ_SERVICE_EXPORT InProcessGpuMemoryBufferManager
   gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
   gpu::SyncPointManager* const sync_point_manager_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  base::WeakPtr<InProcessGpuMemoryBufferManager> weak_ptr_;
 
-  base::WeakPtrFactory<InProcessGpuMemoryBufferManager> weak_ptr_factory_;
+  base::flat_map<gfx::GpuMemoryBufferId, AllocatedBufferInfo>
+      allocated_buffers_;
+
+  base::WeakPtr<InProcessGpuMemoryBufferManager> weak_ptr_;
+  base::WeakPtrFactory<InProcessGpuMemoryBufferManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InProcessGpuMemoryBufferManager);
 };

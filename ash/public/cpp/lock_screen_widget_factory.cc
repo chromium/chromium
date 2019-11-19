@@ -4,11 +4,6 @@
 
 #include "ash/public/cpp/lock_screen_widget_factory.h"
 
-#include "ash/public/cpp/shell_window_ids.h"
-#include "mojo/public/cpp/bindings/type_converter.h"
-#include "services/ws/public/cpp/property_type_converters.h"
-#include "services/ws/public/mojom/window_manager.mojom.h"
-#include "ui/aura/mus/property_converter.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -49,12 +44,7 @@ std::unique_ptr<views::Widget> CreateLockScreenWidget(aura::Window* parent) {
   params.show_state = ui::SHOW_STATE_FULLSCREEN;
   params.opacity = views::Widget::InitParams::TRANSLUCENT_WINDOW;
   params.parent = parent;
-  if (!parent) {
-    params.mus_properties[ws::mojom::WindowManager::kContainerId_InitProperty] =
-        mojo::ConvertTo<std::vector<uint8_t>>(
-            static_cast<int32_t>(ash::kShellWindowId_OverlayContainer));
-  }
-  widget->Init(params);
+  widget->Init(std::move(params));
   widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
   return widget;
 }

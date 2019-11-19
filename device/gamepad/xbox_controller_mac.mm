@@ -136,14 +136,6 @@ struct XboxOneButtonData {
   int16_t stick_right_y;
 };
 
-struct XboxOneEliteButtonData {
-  // The Xbox One Elite controller supports button remapping and exposes both
-  // the mapped and unmapped data in the button state report.
-  XboxOneButtonData button_data;
-  XboxOneButtonData true_button_data;
-  int8_t paddle;
-};
-
 struct XboxOneGuideData {
   uint8_t down;
   uint8_t dummy1;
@@ -169,10 +161,17 @@ struct XboxOneRumbleData {
 static_assert(sizeof(Xbox360ButtonData) == 18, "Xbox360ButtonData wrong size");
 static_assert(sizeof(Xbox360RumbleData) == 8, "Xbox360RumbleData wrong size");
 static_assert(sizeof(XboxOneButtonData) == 14, "XboxOneButtonData wrong size");
-static_assert(sizeof(XboxOneEliteButtonData) == 29,
-              "XboxOneEliteButtonData wrong size");
 static_assert(sizeof(XboxOneGuideData) == 2, "XboxOneGuideData wrong size");
 static_assert(sizeof(XboxOneRumbleData) == 13, "XboxOneRumbleData wrong size");
+
+// Report lengths for the input reports that carry gamepad button and axis data
+// on special Xbox One devices. These devices support input remapping and
+// include both the mapped and unmapped data in the input report, along with
+// additional data specific to the device. This driver only uses the mapped
+// data, which is at the beginning of the report and has the same structure as
+// the standard XboxOneButtonData report.
+const size_t kXboxOneEliteButtonDataBytes = 29;
+const size_t kXboxAdaptiveButtonDataBytes = 50;
 
 // From MSDN:
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ee417001(v=vs.85).aspx#dead_zone
@@ -293,6 +292,8 @@ XboxControllerMac::ControllerType ControllerTypeFromIds(uint16_t vendor_id,
         return XboxControllerMac::XBOX_ONE_ELITE_CONTROLLER;
       case XboxControllerMac::kProductXboxOneSController:
         return XboxControllerMac::XBOX_ONE_S_CONTROLLER;
+      case XboxControllerMac::kProductXboxAdaptiveController:
+        return XboxControllerMac::XBOX_ADAPTIVE_CONTROLLER;
       default:
         break;
     }
@@ -397,6 +398,7 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
     case XBOX_ONE_CONTROLLER_2015:
     case XBOX_ONE_ELITE_CONTROLLER:
     case XBOX_ONE_S_CONTROLLER:
+    case XBOX_ADAPTIVE_CONTROLLER:
       read_endpoint_ = kXboxOneReadEndpoint;
       control_endpoint_ = kXboxOneControlEndpoint;
       request.bInterfaceClass = 255;
@@ -530,7 +532,8 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
       if (controller_type_ == XBOX_ONE_CONTROLLER_2013 ||
           controller_type_ == XBOX_ONE_CONTROLLER_2015 ||
           controller_type_ == XBOX_ONE_ELITE_CONTROLLER ||
-          controller_type_ == XBOX_ONE_S_CONTROLLER)
+          controller_type_ == XBOX_ONE_S_CONTROLLER ||
+          controller_type_ == XBOX_ADAPTIVE_CONTROLLER)
         WriteXboxOneInit();
     }
   }
@@ -573,6 +576,7 @@ uint16_t XboxControllerMac::GetVendorId() const {
     case XBOX_ONE_CONTROLLER_2015:
     case XBOX_ONE_ELITE_CONTROLLER:
     case XBOX_ONE_S_CONTROLLER:
+    case XBOX_ADAPTIVE_CONTROLLER:
       return kVendorMicrosoft;
     default:
       return 0;
@@ -591,6 +595,8 @@ uint16_t XboxControllerMac::GetProductId() const {
       return kProductXboxOneEliteController;
     case XBOX_ONE_S_CONTROLLER:
       return kProductXboxOneSController;
+    case XBOX_ADAPTIVE_CONTROLLER:
+      return kProductXboxAdaptiveController;
     default:
       return 0;
   }
@@ -608,6 +614,7 @@ std::string XboxControllerMac::GetControllerTypeString() const {
     case XBOX_ONE_CONTROLLER_2015:
     case XBOX_ONE_ELITE_CONTROLLER:
     case XBOX_ONE_S_CONTROLLER:
+    case XBOX_ADAPTIVE_CONTROLLER:
       return "Xbox One Controller";
     default:
       return "Unrecognized Controller";
@@ -618,6 +625,11 @@ std::string XboxControllerMac::GetIdString() const {
   return base::StringPrintf("%s (STANDARD GAMEPAD Vendor: %04x Product: %04x)",
                             GetControllerTypeString().c_str(), GetVendorId(),
                             GetProductId());
+}
+
+bool XboxControllerMac::SupportsVibration() const {
+  // The Xbox Adaptive Controller has no vibration actuators.
+  return controller_type_ != XBOX_ADAPTIVE_CONTROLLER;
 }
 
 // static
@@ -715,8 +727,10 @@ void XboxControllerMac::ProcessXboxOnePacket(size_t length) {
   switch (type) {
     case XBOX_ONE_STATUS_MESSAGE_BUTTONS: {
       if (length != sizeof(XboxOneButtonData) &&
-          length != sizeof(XboxOneEliteButtonData))
+          length != kXboxOneEliteButtonDataBytes &&
+          length != kXboxAdaptiveButtonDataBytes) {
         return;
+      }
       XboxOneButtonData* data = reinterpret_cast<XboxOneButtonData*>(buffer);
       Data normalized_data;
       NormalizeXboxOneButtonData(*data, &normalized_data);
@@ -750,7 +764,8 @@ void XboxControllerMac::QueueRead() {
 }
 
 void XboxControllerMac::IOError() {
-  if (delegate_)
+  // Ignore errors that occur while the controller is being shut down.
+  if (delegate_ && !IsShuttingDown())
     delegate_->XboxControllerError(this);
 }
 
@@ -870,6 +885,10 @@ void XboxControllerMac::WriteXboxOneAckGuide(uint8_t sequence_number) {
     IOError();
     return;
   }
+}
+
+base::WeakPtr<AbstractHapticGamepad> XboxControllerMac::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace device

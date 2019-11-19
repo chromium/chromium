@@ -8,7 +8,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-namespace wm {
 
 WindowPreviewViewTestApi::WindowPreviewViewTestApi(
     WindowPreviewView* preview_view)
@@ -27,7 +26,7 @@ WindowPreviewViewTestApi::GetMirrorViews() const {
   return preview_view_->mirror_views_;
 }
 
-wm::WindowMirrorView* WindowPreviewViewTestApi::GetMirrorViewForWidget(
+WindowMirrorView* WindowPreviewViewTestApi::GetMirrorViewForWidget(
     views::Widget* widget) {
   auto it = preview_view_->mirror_views_.find(widget->GetNativeWindow());
   if (it != preview_view_->mirror_views_.end())
@@ -36,5 +35,4 @@ wm::WindowMirrorView* WindowPreviewViewTestApi::GetMirrorViewForWidget(
   return nullptr;
 }
 
-}  // namespace wm
 }  // namespace ash

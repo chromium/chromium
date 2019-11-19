@@ -8,9 +8,9 @@
 
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/metrics/daily_event.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +23,7 @@ class PowerMetricsReporterTest : public testing::Test {
   ~PowerMetricsReporterTest() override = default;
 
   void SetUp() override {
-    PowerManagerClient::Initialize();
+    PowerManagerClient::InitializeFake();
     PowerMetricsReporter::RegisterLocalStatePrefs(pref_service_.registry());
     ResetReporter();
   }
@@ -86,7 +86,7 @@ class PowerMetricsReporterTest : public testing::Test {
         lid_closed_suspend_count, 1);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<PowerMetricsReporter> reporter_;
 

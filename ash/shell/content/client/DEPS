@@ -1,10 +1,10 @@
 include_rules = [
   "+ash/components/shortcut_viewer",
-  "+ash/components/tap_visualizer",
+  "+chromeos/dbus/biod",
+  "+chromeos/services/network_config",
   "+components/discardable_memory/public/interfaces",
   "+content/public",
   "+content/shell",
   "+storage/browser/quota",
   "+services/device/public",
-  "+services/ws/ime/test_ime_driver",
 ]

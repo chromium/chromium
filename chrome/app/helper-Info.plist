@@ -9,11 +9,11 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIdentifier</key>
-	<string>${CHROMIUM_BUNDLE_ID}.helper</string>
+	<string>${CHROMIUM_BUNDLE_ID}.helper${CHROMIUM_HELPER_BUNDLE_ID_SUFFIX}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>${CHROMIUM_SHORT_NAME} Helper</string>
+	<string>${CHROMIUM_SHORT_NAME} Helper${CHROMIUM_HELPER_SUFFIX}</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>

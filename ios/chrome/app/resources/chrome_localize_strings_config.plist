@@ -95,8 +95,8 @@
 					<key>output</key>
 					<string>NSFaceIDUsageDescription</string>
 				</dict>
-				<string>IDS_IOS_APPLICATION_SHORTCUT_NEWTAB_TITLE</string>
-				<string>IDS_IOS_APPLICATION_SHORTCUT_NEWINCOGNITOTAB_TITLE</string>
+				<string>IDS_IOS_APPLICATION_SHORTCUT_NEWSEARCH_TITLE</string>
+				<string>IDS_IOS_APPLICATION_SHORTCUT_INCOGNITOSEARCH_TITLE</string>
 				<string>IDS_IOS_APPLICATION_SHORTCUT_VOICE_SEARCH_TITLE</string>
 				<string>IDS_IOS_APPLICATION_SHORTCUT_QR_SCANNER_TITLE</string>
 			</array>

@@ -108,7 +108,7 @@ class MediaRouterUiForTest
   base::Optional<base::OnceClosure> watch_callback_;
   WatchType watch_type_ = WatchType::kNone;
 
-  base::WeakPtrFactory<MediaRouterUiForTest> weak_factory_;
+  base::WeakPtrFactory<MediaRouterUiForTest> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

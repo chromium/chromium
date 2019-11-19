@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
 #import <XCTest/XCTest.h>
 
-#import "components/handoff/handoff_manager.h"
-#import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/app/tab_test_util.h"
+#import "ios/chrome/browser/device_sharing/handoff_manager_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
 #import "net/base/mac/url_conversions.h"
@@ -21,20 +17,24 @@
 #error "This file requires ARC support."
 #endif
 
+#if defined(CHROME_EARL_GREY_2)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
+GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(HandoffManagerAppInterface);
+#pragma clang diagnostic pop
+#endif  // defined(CHROME_EARL_GREY_2)
+
 namespace {
 
 // Checks that Handoff will report the specified |gurl|.
 void AssertHandoffURL(const GURL& gurl) {
-  HandoffManager* manager =
-      [chrome_test_util::GetDeviceSharingManager() handoffManager];
-  GREYAssertTrue(manager != nil, @"Handoff Manager should not be nil");
+  NSURL* handoffURL =
+      [HandoffManagerAppInterface currentUserActivityWebPageURL];
   if (gurl.is_valid()) {
     NSURL* URL = net::NSURLWithGURL(gurl);
-    GREYAssertTrue([manager.userActivityWebpageURL isEqual:URL],
-                   @"Incorrect Handoff URL.");
+    GREYAssertTrue([handoffURL isEqual:URL], @"Incorrect Handoff URL.");
   } else {
-    GREYAssertTrue(manager.userActivityWebpageURL == nil,
-                   @"Handoff URL is not nil.");
+    GREYAssertTrue(handoffURL == nil, @"Handoff URL is not nil.");
   }
 }
 
@@ -118,7 +118,7 @@ void AssertHandoffURL(const GURL& gurl) {
   AssertHandoffURL(tab2URL);
 
   // Switches back to the first tab.
-  chrome_test_util::SelectTabAtIndexInCurrentMode(0);
+  [ChromeEarlGrey selectTabAtIndex:0];
   AssertHandoffURL(tab1URL);
 }
 

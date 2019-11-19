@@ -19,11 +19,11 @@ source_set("ntp_tiles") {
     "//components/image_fetcher/ios",
     "//components/keyed_service/core",
     "//components/ntp_tiles",
-    "//components/ntp_tiles:json_unsafe_parser",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/json_parser",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/suggestions",
     "//ios/web",
@@ -31,7 +31,28 @@ source_set("ntp_tiles") {
   ]
 }
 
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "ntp_tiles_egtest.mm",
+  ]
+  deps = [
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test/http_server:http_server",
+    "//net",
+  ]
+  libs = [ "UIKit.framework" ]
+}
+
 source_set("eg_tests") {
+  defines = [ "CHROME_EARL_GREY_1" ]
   testonly = true
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -43,6 +64,7 @@ source_set("eg_tests") {
     "//components/ntp_tiles:ntp_tiles",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:test_support",
+    "//ios/testing/earl_grey:earl_grey_support",
     "//ios/web/public/test/http_server:http_server",
   ]
 }

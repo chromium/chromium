@@ -51,6 +51,14 @@ bool AddKnownSidToObject(HANDLE object,
                          ACCESS_MODE access_mode,
                          ACCESS_MASK access);
 
+// Replace package SID in DACL to the "any package" SID. It allows Low-IL
+// tokens to open the object which is important for warm up when using renderer
+// AppContainer.
+bool ReplacePackageSidInDacl(HANDLE object,
+                             SE_OBJECT_TYPE object_type,
+                             const Sid& package_sid,
+                             ACCESS_MASK access);
+
 }  // namespace sandbox
 
 #endif  // SANDBOX_SRC_ACL_H_

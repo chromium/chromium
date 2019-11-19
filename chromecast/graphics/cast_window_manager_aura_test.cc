@@ -11,6 +11,7 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/test/views_test_base.h"
 
 namespace chromecast {
 namespace test {
@@ -53,7 +54,9 @@ class TestWindow {
 
 }  // namespace
 
-using CastWindowManagerAuraTest = aura::test::AuraTestBase;
+// ViewsTestBase needed so that views/widget initialization is setup correctly
+// for test runs.
+using CastWindowManagerAuraTest = views::ViewsTestBase;
 
 TEST_F(CastWindowManagerAuraTest, InitialWindowId) {
   CastTestWindowDelegate window_delegate;

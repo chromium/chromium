@@ -1,4 +1,5 @@
 include_rules = [
-  "+device/base",
-  "+device/usb",
+  "+content/public/common/service_manager_connection.h",
+  "+services/device/public",
+  "+services/service_manager/public",
 ]

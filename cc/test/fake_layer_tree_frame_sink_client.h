@@ -9,6 +9,10 @@
 
 #include "cc/trees/managed_memory_policy.h"
 
+namespace viz {
+struct FrameTimingDetails;
+}
+
 namespace cc {
 
 class FakeLayerTreeFrameSinkClient : public LayerTreeFrameSinkClient {
@@ -19,12 +23,11 @@ class FakeLayerTreeFrameSinkClient : public LayerTreeFrameSinkClient {
   base::Optional<viz::HitTestRegionList> BuildHitTestData() override;
   void DidReceiveCompositorFrameAck() override;
   void DidPresentCompositorFrame(
-      uint32_t presentation_token,
-      const gfx::PresentationFeedback& feedback) override {}
+      uint32_t frame_token,
+      const viz::FrameTimingDetails& details) override {}
   void ReclaimResources(
       const std::vector<viz::ReturnedResource>& resources) override {}
   void DidLoseLayerTreeFrameSink() override;
-  void DidNotNeedBeginFrame() override {}
   void SetExternalTilePriorityConstraints(
       const gfx::Rect& viewport_rect_for_tile_priority,
       const gfx::Transform& transform_for_tile_priority) override {}

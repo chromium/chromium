@@ -1,0 +1,68 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("badges") {
+  sources = [
+    "sc_badge_coordinator.h",
+    "sc_badge_coordinator.mm",
+  ]
+  deps = [
+    ":badges_constants",
+    "//ios/chrome/browser/infobars:badge_public",
+    "//ios/chrome/browser/ui/badges",
+    "//ios/chrome/browser/ui/badges:badges_popup_menu",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui_util",
+    "//ios/showcase/common",
+  ]
+  libs = [ "UIKit.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("badges_constants") {
+  sources = [
+    "sc_badge_constants.h",
+    "sc_badge_constants.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "sc_badge_egtest.mm",
+  ]
+  deps = [
+    ":badges_constants",
+    "//ios/chrome/browser/infobars:badge_public",
+    "//ios/chrome/browser/ui/badges:public",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/showcase/test:eg2_test",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+  libs = [ "UIKit.framework" ]
+}
+
+source_set("eg_tests") {
+  defines = [ "CHROME_EARL_GREY_1" ]
+  testonly = true
+  sources = [
+    "sc_badge_egtest.mm",
+  ]
+  deps = [
+    ":badges_constants",
+    "//ios/chrome/browser/infobars:badge",
+    "//ios/chrome/browser/ui/badges:public",
+    "//ios/chrome/test/earl_grey:test_support",
+    "//ios/showcase/test",
+    "//ios/testing/earl_grey:earl_grey_support",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

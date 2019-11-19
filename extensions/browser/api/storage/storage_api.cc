@@ -51,6 +51,15 @@ ExtensionFunction::ResponseAction SettingsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(settings_namespace_ !=
                               settings_namespace::INVALID);
 
+  if (extension()->is_login_screen_extension() &&
+      settings_namespace_ != settings_namespace::MANAGED) {
+    // Login screen extensions are not allowed to use local/sync storage for
+    // security reasons (see crbug.com/978443).
+    return RespondNow(Error(base::StringPrintf(
+        "\"%s\" is not available for login screen extensions",
+        settings_namespace_string.c_str())));
+  }
+
   StorageFrontend* frontend = StorageFrontend::Get(browser_context());
   if (!frontend->IsStorageEnabled(settings_namespace_)) {
     return RespondNow(Error(
@@ -68,7 +77,7 @@ ExtensionFunction::ResponseAction SettingsFunction::Run() {
 
 void SettingsFunction::AsyncRunWithStorage(ValueStore* storage) {
   ResponseValue response = RunWithStorage(storage);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&SettingsFunction::Respond, this, std::move(response)));
 }

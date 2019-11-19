@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/services/filesystem",
-  "+components/services/leveldb",
-]

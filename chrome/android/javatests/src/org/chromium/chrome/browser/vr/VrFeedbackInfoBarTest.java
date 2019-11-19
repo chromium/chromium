@@ -29,13 +29,12 @@ import org.chromium.chrome.browser.vr.util.VrShellDelegateUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 
-import java.util.concurrent.TimeoutException;
-
 /**
  * Tests for the infobar that prompts the user to enter feedback on their VR browsing experience.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-webvr"})
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
 @Restriction({RESTRICTION_TYPE_DEVICE_DAYDREAM, RESTRICTION_TYPE_SVR})
 public class VrFeedbackInfoBarTest {
     // We explicitly instantiate a rule here instead of using parameterization since this class
@@ -44,20 +43,16 @@ public class VrFeedbackInfoBarTest {
     public ChromeTabbedActivityVrTestRule mTestRule = new ChromeTabbedActivityVrTestRule();
 
     private WebXrVrTestFramework mWebXrVrTestFramework;
-    private WebVrTestFramework mWebVrTestFramework;
     private VrBrowserTestFramework mVrBrowserTestFramework;
 
     private static final String TEST_PAGE_2D_URL =
             VrBrowserTestFramework.getFileUrlForHtmlTestFile("test_navigation_2d_page");
-    private static final String TEST_PAGE_WEBVR_URL =
-            WebVrTestFramework.getFileUrlForHtmlTestFile("generic_webvr_page");
     private static final String TEST_PAGE_WEBXR_URL =
             WebXrVrTestFramework.getFileUrlForHtmlTestFile("generic_webxr_page");
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mWebXrVrTestFramework = new WebXrVrTestFramework(mTestRule);
-        mWebVrTestFramework = new WebVrTestFramework(mTestRule);
         mVrBrowserTestFramework = new VrBrowserTestFramework(mTestRule);
         Assert.assertFalse(
                 "Test started opting out of feedback", VrFeedbackStatus.getFeedbackOptOut());
@@ -81,7 +76,7 @@ public class VrFeedbackInfoBarTest {
     @Test
     @MediumTest
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
-    public void testFeedbackFrequency() throws InterruptedException, TimeoutException {
+    public void testFeedbackFrequency() {
         mVrBrowserTestFramework.loadUrlAndAwaitInitialization(
                 TEST_PAGE_2D_URL, PAGE_LOAD_TIMEOUT_S);
         // Set frequency of infobar to every 2nd time.
@@ -109,7 +104,7 @@ public class VrFeedbackInfoBarTest {
     @Test
     @MediumTest
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
-    public void testFeedbackOptOut() throws InterruptedException, TimeoutException {
+    public void testFeedbackOptOut() {
         mVrBrowserTestFramework.loadUrlAndAwaitInitialization(
                 TEST_PAGE_2D_URL, PAGE_LOAD_TIMEOUT_S);
 
@@ -135,25 +130,12 @@ public class VrFeedbackInfoBarTest {
      */
     @Test
     @MediumTest
-    public void testFeedbackOnlyOnVrBrowsing() throws InterruptedException, TimeoutException {
-        feedbackOnlyOnVrBrowsingImpl(TEST_PAGE_WEBVR_URL, mWebVrTestFramework);
-    }
-
-    /**
-     * Tests that we only show the feedback prompt when the user has actually used the VR browser.
-     */
-    @Test
-    @MediumTest
-    @CommandLineFlags
-            .Remove({"enable-webvr"})
             @CommandLineFlags.Add({"enable-features=WebXR"})
-            public void testFeedbackOnlyOnVrBrowsing_WebXr()
-            throws InterruptedException, TimeoutException {
+            public void testFeedbackOnlyOnVrBrowsing_WebXr() {
         feedbackOnlyOnVrBrowsingImpl(TEST_PAGE_WEBXR_URL, mWebXrVrTestFramework);
     }
 
-    private void feedbackOnlyOnVrBrowsingImpl(String url, WebXrVrTestFramework framework)
-            throws InterruptedException {
+    private void feedbackOnlyOnVrBrowsingImpl(String url, WebXrVrTestFramework framework) {
         // Enter VR presentation mode.
         framework.loadUrlAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         framework.enterSessionWithUserGestureOrFail();
@@ -168,33 +150,18 @@ public class VrFeedbackInfoBarTest {
     }
 
     /**
-     * Tests that we show the prompt if the VR browser is used after exiting presentation mode.
-     */
-    @Test
-    @MediumTest
-    @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
-    public void testExitPresentationInVr() throws InterruptedException, TimeoutException {
-        // Enter VR presentation mode.
-        exitPresentationInVrImpl(TEST_PAGE_WEBVR_URL, mWebVrTestFramework);
-    }
-
-    /**
      * Tests that we show the prompt if the VR browser is used after exiting a WebXR immersive
      * session.
      */
     @Test
     @MediumTest
-    @CommandLineFlags
-            .Remove({"enable-webvr"})
             @CommandLineFlags.Add({"enable-features=WebXR"})
             @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
-            public void testExitPresentationInVr_WebXr()
-            throws InterruptedException, TimeoutException {
+            public void testExitPresentationInVr_WebXr() {
         exitPresentationInVrImpl(TEST_PAGE_WEBXR_URL, mWebXrVrTestFramework);
     }
 
-    private void exitPresentationInVrImpl(String url, final WebXrVrTestFramework framework)
-            throws InterruptedException {
+    private void exitPresentationInVrImpl(String url, final WebXrVrTestFramework framework) {
         // Enter VR presentation mode.
         framework.loadUrlAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         framework.enterSessionWithUserGestureOrFail();

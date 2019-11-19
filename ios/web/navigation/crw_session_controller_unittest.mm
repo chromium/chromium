@@ -12,14 +12,15 @@
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "ios/web/common/features.h"
 #import "ios/web/navigation/crw_session_controller+private_constructors.h"
 #import "ios/web/navigation/legacy_navigation_manager_impl.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
-#include "ios/web/public/features.h"
-#include "ios/web/public/referrer.h"
+#include "ios/web/public/navigation/referrer.h"
 #include "ios/web/public/test/fakes/test_browser_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#import "ios/web/public/test/fakes/test_web_state.h"
+#include "ios/web/public/test/web_task_environment.h"
 #import "ios/web/test/fakes/crw_fake_session_controller_delegate.h"
 #include "ios/web/test/fakes/fake_navigation_manager_delegate.h"
 #import "net/base/mac/url_conversions.h"
@@ -76,6 +77,8 @@ class CRWSessionControllerTest : public PlatformTest {
     navigation_manager->SetDelegate(&navigation_manager_delegate_);
     navigation_manager->SetSessionController(session_controller);
     navigation_managers_.push_back(std::move(navigation_manager));
+
+    navigation_manager_delegate_.SetWebState(&web_state_);
   }
 
   web::Referrer MakeReferrer(const std::string& url) {
@@ -83,8 +86,9 @@ class CRWSessionControllerTest : public PlatformTest {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   web::TestBrowserState browser_state_;
+  web::TestWebState web_state_;
   web::FakeNavigationManagerDelegate navigation_manager_delegate_;
   CRWSessionController* session_controller_;
   CRWFakeSessionControllerDelegate* session_controller_delegate_ = nil;
@@ -102,9 +106,7 @@ TEST_F(CRWSessionControllerTest, Init) {
 // Tests that [session_controller_ pendingItem] returns item provided by the
 // delegate.
 TEST_F(CRWSessionControllerTest, GetPendingItemFromDelegate) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{web::features::kStorePendingItemInContext},
-      /*disabled_features=*/{web::features::kSlimNavigationManager});
+  feature_list_.InitAndDisableFeature(web::features::kSlimNavigationManager);
 
   ASSERT_FALSE([session_controller_ pendingItem]);
   auto item = std::make_unique<web::NavigationItemImpl>();
@@ -508,9 +510,6 @@ TEST_F(CRWSessionControllerTest, commitPendingItemIndex) {
 // Tests that -[CRWSessionController commitPendingItem:] is no-op when called
 // with null.
 TEST_F(CRWSessionControllerTest, CommitNilPendingItem) {
-  if (!web::features::StorePendingItemInContext()) {
-    return;
-  }
   ASSERT_TRUE([session_controller_ items].empty());
   [session_controller_ commitPendingItem:nil];
   EXPECT_TRUE([session_controller_ items].empty());
@@ -518,10 +517,6 @@ TEST_F(CRWSessionControllerTest, CommitNilPendingItem) {
 
 // Tests -[CRWSessionController commitPendingItem:] with a valid pending item.
 TEST_F(CRWSessionControllerTest, CommitNonNilPendingItem) {
-  if (!web::features::StorePendingItemInContext()) {
-    return;
-  }
-
   // Create session controller with a single forward item and no back items.
   [session_controller_
                addPendingItem:GURL("http://www.example.test/0")
@@ -1182,6 +1177,7 @@ TEST_F(CRWSessionControllerTest, VisibleItemWithCommittedAndTransientItems) {
 // Tests that visible URL is the same as pending URL if it was user-initiated.
 TEST_F(CRWSessionControllerTest,
        VisibleItemWithSingleUserInitiatedPendingItem) {
+  web_state_.SetLoading(true);
   [session_controller_
                addPendingItem:GURL("http://www.example.com/0")
                      referrer:MakeReferrer("http://www.example.com/a")
@@ -1197,6 +1193,7 @@ TEST_F(CRWSessionControllerTest,
 // and there is a committed item.
 TEST_F(CRWSessionControllerTest,
        VisibleItemWithCommittedAndUserInitiatedPendingItem) {
+  web_state_.SetLoading(true);
   [session_controller_
                addPendingItem:GURL("http://www.example.com")
                      referrer:MakeReferrer("http://www.example.com/a")

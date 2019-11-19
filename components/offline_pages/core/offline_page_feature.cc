@@ -29,9 +29,6 @@ const base::Feature kOfflinePagesCTFeature{"OfflinePagesCT",
 const base::Feature kOfflinePagesLivePageSharingFeature{
     "OfflinePagesLivePageSharing", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kOfflinePagesSvelteConcurrentLoadingFeature{
-    "OfflinePagesSvelteConcurrentLoading", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kOfflinePagesLoadSignalCollectingFeature{
     "OfflinePagesLoadSignalCollecting", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -41,11 +38,8 @@ const base::Feature kOfflinePagesRenovationsFeature{
 const base::Feature kOfflinePagesResourceBasedSnapshotFeature{
     "OfflinePagesResourceBasedSnapshot", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kBackgroundLoaderForDownloadsFeature{
-    "BackgroundLoadingForDownloads", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kPrefetchingOfflinePagesFeature{
-    "OfflinePagesPrefetching", base::FEATURE_DISABLED_BY_DEFAULT};
+    "OfflinePagesPrefetching", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kOfflinePagesCTV2Feature{"OfflinePagesCTV2",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
@@ -80,21 +74,12 @@ bool IsOffliningRecentPagesEnabled() {
   return base::FeatureList::IsEnabled(kOffliningRecentPagesFeature);
 }
 
-bool IsOfflinePagesSvelteConcurrentLoadingEnabled() {
-  return base::FeatureList::IsEnabled(
-      kOfflinePagesSvelteConcurrentLoadingFeature);
-}
-
 bool IsOfflinePagesCTEnabled() {
   return base::FeatureList::IsEnabled(kOfflinePagesCTFeature);
 }
 
 bool IsOfflinePagesLivePageSharingEnabled() {
   return base::FeatureList::IsEnabled(kOfflinePagesLivePageSharingFeature);
-}
-
-bool IsBackgroundLoaderForDownloadsEnabled() {
-  return base::FeatureList::IsEnabled(kBackgroundLoaderForDownloadsFeature);
 }
 
 bool IsPrefetchingOfflinePagesEnabled() {

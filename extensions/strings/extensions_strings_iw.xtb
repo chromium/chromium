@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">לא ניתן לפענח תמונה: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">‏נעשה שימוש בהתאמה למקום, אך default_locale לא צוין במניפסט.</translation>
 <translation id="2576842806987913196">‏כבר קיים קובץ CRX בשם זה.</translation>
-<translation id="2753617847762399167">נתיב לא חוקי (באופן מוחלט או ביחס אל '..'): '<ph name="IMAGE_PATH" />'</translation>
 <translation id="2785530881066938471">‏אין אפשרות לטעון את הקובץ '<ph name="RELATIVE_PATH" />' עבור סקריפט תוכן. הוא לא בקידוד UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (מזהה תוסף "<ph name="EXTENSION_ID" />") חסום על-ידי מנהל המערכת. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">לא ניתן להתקין את החבילה: '<ph name="ERROR_CODE" />'</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">אין תמיכה בחלונות מעוצבים.</translation>
 <translation id="5456409301717116725">תוסף זה כולל את קובץ המפתח "<ph name="KEY_PATH" />". מומלץ לא לעשות זאת.</translation>
 <translation id="5486326529110362464">חייב להתקיים ערך קלט של מפתח פרטי.</translation>
-<translation id="5627523580512561598">תוסף <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">מנהל המערכת של מכשיר זה דורש התקנה של <ph name="EXTENSION_NAME" />. לא ניתן להסיר את ההתקנה.</translation>
 <translation id="6027032947578871493">מוצר לא ידוע <ph name="PRODUCT_ID" /> מהספק <ph name="VENDOR_NAME" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> מהספק <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">האפליקציה "<ph name="APP_NAME" />" מבקשת גישה לאחד או יותר מהמכשירים שלך:</translation>
 <translation id="657064425229075395">לא ניתן להעלות את סקריפט הרקע '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> מ-<ph name="VENDOR_NAME" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">לא ניתן ליצור ספריה עבור ביטול הדחיסה: '<ph name="DIRECTORY_PATH" />'</translation>
 <translation id="677806580227005219">‏מטפל MIME:‏ <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">התוסף הזה טען את עצמו מחדש בתדירות גבוהה מדי.</translation>
 <translation id="7003844668372540529">מוצר לא ידוע <ph name="PRODUCT_ID" /> מאת <ph name="VENDOR_NAME" /></translation>

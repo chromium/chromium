@@ -80,7 +80,7 @@ class PairingAuthenticatorBase : public Authenticator {
   bool HasErrorMessage(const jingle_xmpp::XmlElement* message) const;
   void CheckForFailedSpakeExchange(const base::Closure& resume_callback);
 
-  base::WeakPtrFactory<PairingAuthenticatorBase> weak_factory_;
+  base::WeakPtrFactory<PairingAuthenticatorBase> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PairingAuthenticatorBase);
 };

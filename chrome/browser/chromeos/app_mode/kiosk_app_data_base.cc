@@ -102,10 +102,9 @@ void KioskAppDataBase::SaveIcon(const SkBitmap& icon,
 
   const base::FilePath icon_path =
       cache_dir.AppendASCII(app_id_).AddExtension(kIconFileExtension);
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&SaveIconToLocalOnBlockingPool, icon_path,
-                     base::Passed(std::move(image_data))));
+  base::PostTask(FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+                 base::BindOnce(&SaveIconToLocalOnBlockingPool, icon_path,
+                                std::move(image_data)));
 
   icon_path_ = icon_path;
 }
@@ -121,8 +120,9 @@ void KioskAppDataBase::ClearCache() {
   dict_update->Remove(app_key, nullptr);
 
   if (!icon_path_.empty()) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+    base::PostTask(
+        FROM_HERE,
+        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(base::IgnoreResult(&base::DeleteFile), icon_path_,
                        false));
   }

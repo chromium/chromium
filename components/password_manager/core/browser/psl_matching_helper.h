@@ -54,18 +54,6 @@ bool IsFederatedPSLMatch(const std::string& form_signon_realm,
 MatchResult GetMatchResult(const autofill::PasswordForm& form,
                            const PasswordStore::FormDigest& form_digest);
 
-// Using the public suffix list for matching the origin is only needed for
-// websites that do not have a single hostname for entering credentials. It
-// would be better for their users if they did, but until then we help them find
-// credentials across different hostnames. We know that accounts.google.com is
-// the only hostname we should be accepting credentials on for any domain under
-// google.com, so we can apply a tighter policy for that domain. For owners of
-// domains where a single hostname is always used when your users are entering
-// their credentials, please contact palmer@chromium.org, nyquist@chromium.org
-// or file a bug at http://crbug.com/ to be added here.
-bool ShouldPSLDomainMatchingApply(
-    const std::string& registry_controlled_domain);
-
 // Two URLs are considered a Public Suffix Domain match if they have the same
 // scheme, ports, and their registry controlled domains are equal. If one or
 // both arguments do not describe valid URLs, returns false.
@@ -75,11 +63,6 @@ bool IsPublicSuffixDomainMatch(const std::string& url1,
 // Two hosts are considered to belong to the same website when they share the
 // registry-controlled domain part.
 std::string GetRegistryControlledDomain(const GURL& signon_realm);
-
-// Returns the organization-identifying name of the host of |url|, that is, the
-// first domain name label below the effective TLD. Returns the empty string for
-// URLs where these concepts are ill-defined, as well as for invalid URLs.
-std::string GetOrganizationIdentifyingName(const GURL& url);
 
 }  // namespace password_manager
 

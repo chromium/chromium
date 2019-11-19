@@ -176,7 +176,7 @@ bool PdfMetafileCg::RenderPage(unsigned int page_number,
   CGRect source_rect = CGPDFPageGetBoxRect(pdf_page, kCGPDFCropBox);
   int pdf_src_rotation = CGPDFPageGetRotationAngle(pdf_page);
   const bool source_is_landscape =
-        (source_rect.size.width > source_rect.size.height);
+      (source_rect.size.width > source_rect.size.height);
   const bool dest_is_landscape = (rect.size.width > rect.size.height);
   const bool rotate =
       params.autorotate ? (source_is_landscape != dest_is_landscape) : false;
@@ -203,13 +203,17 @@ bool PdfMetafileCg::RenderPage(unsigned int page_number,
   const float y_origin_offset = -1 * source_rect.origin.y;
 
   // If the PDF needs to be centered, calculate the offsets here.
-  float x_offset = params.center_horizontally ?
-      ((rect.size.width - (source_width * scaling_factor)) / 2) : 0;
+  float x_offset =
+      params.center_horizontally
+          ? ((rect.size.width - (source_width * scaling_factor)) / 2)
+          : 0;
   if (rotate)
     x_offset = -x_offset;
 
-  float y_offset = params.center_vertically ?
-      ((rect.size.height - (source_height * scaling_factor)) / 2) : 0;
+  float y_offset =
+      params.center_vertically
+          ? ((rect.size.height - (source_height * scaling_factor)) / 2)
+          : 0;
 
   CGContextSaveGState(context);
 

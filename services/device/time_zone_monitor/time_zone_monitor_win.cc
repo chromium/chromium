@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/macros.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
 
 namespace device {
@@ -31,7 +32,7 @@ class TimeZoneMonitorWin : public TimeZoneMonitor {
       return;
     }
 
-    NotifyClients();
+    UpdateIcuAndNotifyClients(DetectHostTimeZoneFromIcu());
   }
 
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;

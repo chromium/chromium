@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Open a popup to a document without COOP, then navigate it to a document with assert_equals: expected 0 but got 36
+Harness: the test ran to completion.
+

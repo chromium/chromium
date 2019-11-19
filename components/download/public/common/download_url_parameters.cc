@@ -35,7 +35,7 @@ DownloadUrlParameters::DownloadUrlParameters(
       frame_tree_node_id_(-1),
       url_(url),
       do_not_prompt_for_login_(false),
-      follow_cross_origin_redirects_(true),
+      cross_origin_redirects_(network::mojom::RedirectMode::kFollow),
       fetch_error_body_(false),
       transient_(false),
       traffic_annotation_(traffic_annotation),

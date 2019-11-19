@@ -4,7 +4,7 @@
 
 package org.chromium.ui.modelutil;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 
@@ -89,6 +89,18 @@ public abstract class ListObservableImpl<P> implements ListObservable<P> {
         assert count > 0; // No spurious notifications
         for (ListObserver<P> observer : mObservers) {
             observer.onItemRangeChanged(this, index, count, payload);
+        }
+    }
+
+    /**
+     * Notifies observers that item at position {@code curIndex} will be moved to {@code newIndex}.
+     *
+     * @param curIndex Current position of the moved item.
+     * @param newIndex New position of the moved item.
+     */
+    protected void notifyItemMoved(int curIndex, int newIndex) {
+        for (ListObserver observer : mObservers) {
+            observer.onItemMoved(this, curIndex, newIndex);
         }
     }
 }

@@ -1,0 +1,67 @@
+Name
+
+    CHROMIUM_command_buffer_query
+
+Name Strings
+
+    GL_CHROMIUM_command_buffer_query
+
+Version
+
+    Last Modified Date: August 19, 2019
+
+Dependencies
+
+    None.
+
+Overview
+
+    This extension provides a query mechanism that allows the client to get
+    timing information from the Chromium command buffer.
+
+    GL_COMMANDS_ISSUED_CHROMIUM can be used to measure the time elapsed in
+    microseconds between a BeginQueryEXT and an EndQueryEXT. This is the time
+    that it takes to issue the enclosed commands to the underlying driver (not
+    the time it takes to complete them). It only counts time during which the
+    associated context is scheduled. The value of the timer can be obtained
+    using GetQueryObjectuivEXT.
+
+    GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM can be used as the target to
+    QueryCounterEXT to obtain the timestamp in microseconds at which the
+    QueryCounterEXT is reached on the service-side command buffer. This is
+    useful to know by what time all the commands prior to the QueryCounterEXT
+    have been issued to the underlying driver (but have not necessarily
+    completed). The timestamp value can be obtained using
+    GetQueryObjectui64vEXT.
+
+New Procedures and Functions
+
+    void BeginQueryEXT(enum target, uint id);
+    void EndQueryEXT(enum target);
+    void QueryCounterEXT(uint id, enum target);
+    void GetQueryivEXT(enum target, enum pname, int *params);
+    void GetQueryObjectuivEXT(uint id, enum pname, uint *params);
+    void GetQueryObjectui64vEXT(uint id, enum pname, uint64 *params);
+
+Errors
+
+    None.
+
+New Tokens
+
+    Accepted by the <target> parameter of BeginQueryEXT, EndQueryEXT,
+    and GetQueryivEXT:
+
+        GL_COMMANDS_ISSUED_CHROMIUM                     0x6004
+
+    Accepted by the <target> parameter of QueryCounterEXT and GetQueryivEXT:
+
+        GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM           0x6005
+
+New State
+
+    None.
+
+Revision History
+
+    8/19/2019   Documented the extension

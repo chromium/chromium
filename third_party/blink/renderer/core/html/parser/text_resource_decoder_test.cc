@@ -8,9 +8,36 @@
 
 namespace blink {
 
+TEST(TextResourceDecoderTest, UTF8Decode) {
+  std::unique_ptr<TextResourceDecoder> decoder =
+      std::make_unique<TextResourceDecoder>(
+          TextResourceDecoderOptions::CreateUTF8Decode());
+  const unsigned char kFooUTF8WithBOM[] = {0xef, 0xbb, 0xbf, 0x66, 0x6f, 0x6f};
+  WTF::String decoded = decoder->Decode(
+      reinterpret_cast<const char*>(kFooUTF8WithBOM), sizeof(kFooUTF8WithBOM));
+  decoded = decoded + decoder->Flush();
+  EXPECT_EQ(WTF::UTF8Encoding(), decoder->Encoding());
+  EXPECT_EQ("foo", decoded);
+}
+
+TEST(TextResourceDecoderTest, UTF8DecodeWithoutBOM) {
+  std::unique_ptr<TextResourceDecoder> decoder =
+      std::make_unique<TextResourceDecoder>(
+          TextResourceDecoderOptions::CreateUTF8DecodeWithoutBOM());
+  const unsigned char kFooUTF8WithBOM[] = {0xef, 0xbb, 0xbf, 0x66, 0x6f, 0x6f};
+  WTF::String decoded = decoder->Decode(
+      reinterpret_cast<const char*>(kFooUTF8WithBOM), sizeof(kFooUTF8WithBOM));
+  decoded = decoded + decoder->Flush();
+  EXPECT_EQ(WTF::UTF8Encoding(), decoder->Encoding());
+  EXPECT_EQ(
+      "\xef\xbb\xbf"
+      "foo",
+      decoded.Utf8());
+}
+
 TEST(TextResourceDecoderTest, BasicUTF16) {
   std::unique_ptr<TextResourceDecoder> decoder =
-      TextResourceDecoder::Create(TextResourceDecoderOptions(
+      std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
           TextResourceDecoderOptions::kPlainTextContent));
   WTF::String decoded;
 
@@ -21,7 +48,7 @@ TEST(TextResourceDecoderTest, BasicUTF16) {
   decoded = decoded + decoder->Flush();
   EXPECT_EQ("foo", decoded);
 
-  decoder = TextResourceDecoder::Create(TextResourceDecoderOptions(
+  decoder = std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
       TextResourceDecoderOptions::kPlainTextContent));
   const unsigned char kFooBE[] = {0xfe, 0xff, 0x00, 0x66,
                                   0x00, 0x6f, 0x00, 0x6f};
@@ -33,7 +60,7 @@ TEST(TextResourceDecoderTest, BasicUTF16) {
 
 TEST(TextResourceDecoderTest, UTF16Pieces) {
   std::unique_ptr<TextResourceDecoder> decoder =
-      TextResourceDecoder::Create(TextResourceDecoderOptions(
+      std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
           TextResourceDecoderOptions::kPlainTextContent));
 
   WTF::String decoded;
@@ -45,10 +72,11 @@ TEST(TextResourceDecoderTest, UTF16Pieces) {
 }
 
 TEST(TextResourceDecoderTest, ContentSniffingStopsAfterSuccess) {
-  std::unique_ptr<TextResourceDecoder> decoder = TextResourceDecoder::Create(
-      TextResourceDecoderOptions::CreateWithAutoDetection(
-          TextResourceDecoderOptions::kPlainTextContent, WTF::UTF8Encoding(),
-          WTF::UTF8Encoding(), KURL("")));
+  std::unique_ptr<TextResourceDecoder> decoder =
+      std::make_unique<TextResourceDecoder>(
+          TextResourceDecoderOptions::CreateWithAutoDetection(
+              TextResourceDecoderOptions::kPlainTextContent,
+              WTF::UTF8Encoding(), WTF::UTF8Encoding(), KURL("")));
 
   std::string utf8_bytes =
       "tnegirjji gosa gii beare s\xC3\xA1htt\xC3\xA1 \xC4\x8D\xC3"

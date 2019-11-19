@@ -23,10 +23,31 @@ class PanelInterface {
   setFocusRing(id, enable) {}
 
   /**
-   * Sets which buttons are enabled/disabled, based on |actions|.
+   * Sets the actions in the menu panel to the actions in |actions| from
+   * the menu with the given |menuId|.
    * @param {!Array<string>} actions
+   * @param {!SAConstants.MenuId} menuId
    */
-  setActions(actions) {}
+  setActions(actions, menuId) {}
+
+  /**
+   * Clears the current menu from the panel.
+   */
+  clear() {}
+
+  /**
+   * Get the id of the current menu being shown in the panel. A null
+   * id indicates that no menu is currently being shown in the panel.
+   * @return {?SAConstants.MenuId}
+   */
+  currentMenuId() {}
+
+
+  /**
+   * Get the HTML element for the back button.
+   * @return {Element}
+   */
+  backButtonElement() {}
 
   /**
    * Tells the menu panel to try to connect to the background page.

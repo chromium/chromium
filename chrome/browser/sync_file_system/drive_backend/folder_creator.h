@@ -56,7 +56,7 @@ class FolderCreator {
   const std::string parent_folder_id_;
   const std::string title_;
 
-  base::WeakPtrFactory<FolderCreator> weak_ptr_factory_;
+  base::WeakPtrFactory<FolderCreator> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FolderCreator);
 };

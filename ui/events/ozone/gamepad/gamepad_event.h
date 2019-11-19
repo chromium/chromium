@@ -6,9 +6,11 @@
 #define UI_EVENTS_OZONE_GAMEPAD_GAMEPAD_EVENT_H_
 
 #include "base/time/time.h"
-#include "ui/events/ozone/gamepad/webgamepad_constants.h"
 
 namespace ui {
+
+// We care about three type of gamepad events.
+enum class GamepadEventType { BUTTON, AXIS, FRAME };
 
 class GamepadEvent {
  public:
@@ -33,6 +35,7 @@ class GamepadEvent {
 
   GamepadEventType type_;
 
+  // Evdev scancode.
   uint16_t code_;
 
   double value_;

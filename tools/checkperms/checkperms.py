@@ -25,6 +25,8 @@ backslashes. All directories should be relative to the source root and all
 file paths should be only lowercase.
 """
 
+from __future__ import print_function
+
 import json
 import logging
 import optparse
@@ -368,7 +370,7 @@ class ApiAllFilesAtOnceBase(ApiBase):
     if self._files is None:
       self._files = sorted(self._get_all_files())
       if not self.bare_output:
-        print 'Found %s files' % len(self._files)
+        print('Found %s files' % len(self._files))
     start_dir = start_dir[len(self.root_dir) + 1:]
     return [
       x[len(start_dir):] for x in self._files if x.startswith(start_dir)
@@ -464,13 +466,13 @@ Examples:
 
   if errors:
     if options.bare:
-      print '\n'.join(e['full_path'] for e in errors)
+      print('\n'.join(e['full_path'] for e in errors))
     else:
-      print '\nFAILED\n'
-      print '\n'.join('%s: %s' % (e['full_path'], e['error']) for e in errors)
+      print('\nFAILED\n')
+      print('\n'.join('%s: %s' % (e['full_path'], e['error']) for e in errors))
     return 1
   if not options.bare:
-    print '\nSUCCESS\n'
+    print('\nSUCCESS\n')
   return 0
 
 

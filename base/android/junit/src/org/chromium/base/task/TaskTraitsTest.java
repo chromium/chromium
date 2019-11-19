@@ -48,7 +48,9 @@ public class TaskTraitsTest {
     @SmallTest
     public void testExtensionPresent() {
         String input = "Blub";
-        TaskTraits traits = new TaskTraits(FakeTaskTraitsExtensionDescriptor.ID, input.getBytes());
+        TaskTraits traits = TaskTraits.USER_VISIBLE.mayBlock();
+        traits.mExtensionId = FakeTaskTraitsExtensionDescriptor.ID;
+        traits.mExtensionData = input.getBytes();
         String extension = traits.getExtension(DESC);
         assertEquals(input, extension);
     }
@@ -57,7 +59,9 @@ public class TaskTraitsTest {
     @SmallTest
     public void testExtensionNotPresent() {
         String input = "Blub";
-        TaskTraits traits = new TaskTraits((byte) 0x3, input.getBytes());
+        TaskTraits traits = TaskTraits.USER_VISIBLE.mayBlock();
+        traits.mExtensionId = 3;
+        traits.mExtensionData = input.getBytes();
         String extension = traits.getExtension(DESC);
         assertNull(extension);
     }
@@ -66,7 +70,7 @@ public class TaskTraitsTest {
     @SmallTest
     public void testSerializeDeserialize() {
         String input = "Blub";
-        TaskTraits traits = new TaskTraits();
+        TaskTraits traits = TaskTraits.USER_VISIBLE;
         String extension = traits.withExtension(DESC, input).getExtension(DESC);
         assertEquals(input, extension);
     }

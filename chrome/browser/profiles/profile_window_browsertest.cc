@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -35,8 +34,6 @@
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/signin/core/browser/account_consistency_method.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -105,7 +102,8 @@ base::FilePath CreateTestingProfile(const std::string& name,
   base::FilePath profile_path =
       manager->user_data_dir().AppendASCII(relative_path);
   storage.AddProfile(profile_path, base::ASCIIToUTF16(name), std::string(),
-                     base::string16(), 0u, std::string(), EmptyAccountId());
+                     base::string16(), false, 0u, std::string(),
+                     EmptyAccountId());
 
   EXPECT_EQ(starting_number_of_profiles + 1u, storage.GetNumberOfProfiles());
   return profile_path;
@@ -130,12 +128,9 @@ Browser* ProfileWindowBrowserTest::OpenGuestBrowser() {
   // Create a guest browser nicely. Using CreateProfile() and CreateBrowser()
   // does incomplete initialization that would lead to
   // SystemUrlRequestContextGetter being leaked.
-  content::WindowedNotificationObserver browser_creation_observer(
-      chrome::NOTIFICATION_BROWSER_OPENED,
-      content::NotificationService::AllSources());
   profiles::SwitchToGuestProfile(ProfileManager::CreateCallback());
+  ui_test_utils::WaitForBrowserToOpen();
 
-  browser_creation_observer.Wait();
   DCHECK_NE(static_cast<Profile*>(nullptr),
             g_browser_process->profile_manager()->GetProfileByPath(
                 ProfileManager::GetGuestProfilePath()));
@@ -208,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsCookies) {
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestCannotSignin) {
   Browser* guest_browser = OpenGuestBrowser();
 
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(guest_browser->profile());
 
   // Guest profiles can't sign in without a IdentityManager.

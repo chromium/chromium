@@ -16,8 +16,7 @@ ChangeRequestsStateTask::ChangeRequestsStateTask(
     : store_(store),
       request_ids_(request_ids.begin(), request_ids.end()),
       new_state_(new_state),
-      callback_(std::move(callback)),
-      weak_ptr_factory_(this) {}
+      callback_(std::move(callback)) {}
 
 ChangeRequestsStateTask::~ChangeRequestsStateTask() {}
 

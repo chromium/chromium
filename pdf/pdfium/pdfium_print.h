@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdfview.h"
 
@@ -28,6 +29,13 @@ class PDFiumPrint {
  public:
   explicit PDFiumPrint(PDFiumEngine* engine);
   ~PDFiumPrint();
+
+#if defined(OS_CHROMEOS)
+  // Flattens the |doc|.
+  // On success, returns the flattened version of |doc| as a vector.
+  // On failure, returns an empty vector.
+  static std::vector<uint8_t> CreateFlattenedPdf(ScopedFPDFDocument doc);
+#endif  // defined(OS_CHROMEOS)
 
   static std::vector<uint32_t> GetPageNumbersFromPrintPageNumberRange(
       const PP_PrintPageNumberRange_Dev* page_ranges,
@@ -76,8 +84,6 @@ class PDFiumPrint {
   ScopedFPDFDocument CreateSinglePageRasterPdf(
       FPDF_PAGE page_to_print,
       const PP_PrintSettings_Dev& print_settings);
-
-  bool FlattenPrintData(FPDF_DOCUMENT doc) const;
 
   PDFiumEngine* const engine_;
 

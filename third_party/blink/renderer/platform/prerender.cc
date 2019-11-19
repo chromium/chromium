@@ -40,8 +40,13 @@ namespace blink {
 Prerender::Prerender(PrerenderClient* client,
                      const KURL& url,
                      const unsigned rel_types,
-                     const Referrer& referrer)
-    : client_(client), url_(url), rel_types_(rel_types), referrer_(referrer) {}
+                     const Referrer& referrer,
+                     const SecurityOrigin* security_origin)
+    : client_(client),
+      url_(url),
+      rel_types_(rel_types),
+      referrer_(referrer),
+      security_origin_(security_origin) {}
 
 Prerender::~Prerender() = default;
 

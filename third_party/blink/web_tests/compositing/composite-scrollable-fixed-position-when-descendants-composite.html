@@ -15,6 +15,6 @@
     assert_not_equals(window.internals, null, 'This test requires window.internals');
     var layers_text = internals.layerTreeAsText(document);
     var layers = JSON.parse(layers_text);
-    assert_equals(layers['layers'].length, 5);
+    assert_equals(layers['layers'].length, 4);
   }, 'Having a composited child should be a position:fixed compositing trigger and should result in the fixed element getting a layer.');
 </script>

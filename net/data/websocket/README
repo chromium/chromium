@@ -19,20 +19,20 @@ Multiple tests may share one resource, or URI handler.
      content::TitleWatcher.
      Used by WorkerTest.WebSocketSharedWorker.
 
+- close_observer.html : A page that creates a WebSocket connection to
+     close-observer_wsh.py with role=observer and checks the contents of the
+     message that is returned.
+     Used by the SendCloseFrameWhenTabIsClosed browser test.
+
+- connect_and_be_observed.html : A page that creates a WebSocket connection to
+     close-observer_wsh.py with role=observed.
+     This file does NOT close the established connection.
+     Used by the SendCloseFrameWhenTabIsClosed browser test.
+
 - connect_to.html : A page which makes a connection to the WebSocket server
      specified in the "url" parameter,
      eg. connect_to.html?url=ws://localhost/echo Sets the title to "PASS" if
      connection succeeds and "FAIL" otherwise.
-
-- counted_connection.html : A page that creates a WebSocket connection
-     to count-connection_wsh.
-     This file does NOT close the established connection.
-     Used by SendCloseFrameWhenTabIsClosed.
-
-- count_connection.html : A page that creates a WebSocket connection
-     to count-connection_wsh and checks the number of open and closed
-     websocket connections to the handler.
-     Used by SendCloseFrameWhenTabIsClosed.
 
 - multiple-connections.html : Verify that HTTP connection limits are not applied
      to WebSockets. Used by WebSocketBrowserTest.SSLConnectionLimit.
@@ -46,6 +46,9 @@ Multiple tests may share one resource, or URI handler.
      frame data dependent tests.
      Used by kinds of PPAPI tests for WebSocket, ExtensionApiTest.WebSocket,
      and WorkerTest.WebSocketSharedWorker.
+
+- close-immediately_wsh.py : A WebSocket URL handler that performs an immediate
+     clean close as soon as the connection is established.
 
 - close_wsh.py : A WebSocket URL handler for testing outgoing close code and
      reason.
@@ -62,10 +65,9 @@ Multiple tests may share one resource, or URI handler.
      Used by WebSocketBrowserTest.WebSocketSplitSegments and
      WebSocketBrowserTest.SecureWebSocketSplitRecords.
 
-- count-connection_wsh.py : counts the number of open and closed websocket
-     connections to this handler.
-     It sends the numbers after each connection establishment.
-     Used by SendCloseFrameWhenTabIsClosed.
+- close-observer_wsh.py : enables observing the close of one WebSocket due to
+     the tab being closed from another page.
+     Used by the SendCloseFrameWhenTabIsClosed browser test.
 
 - protocol-test_wsh.py : A WebSocket URL handler for testing outgoing opening
      handshake protocol.

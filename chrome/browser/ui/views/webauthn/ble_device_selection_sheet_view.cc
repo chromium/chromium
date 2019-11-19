@@ -26,7 +26,7 @@ std::unique_ptr<views::View>
 BleDeviceSelectionSheetView::BuildStepSpecificContent() {
   auto device_selection_view = std::make_unique<views::View>();
   device_selection_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical, gfx::Insets(),
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
   auto device_list_view =

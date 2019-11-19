@@ -228,14 +228,6 @@ namespace autofillPrivate {
     // |callback|: Callback which will be called with the list of credit cards.
     static void getCreditCardList(GetCreditCardListCallback callback);
 
-    // Gets the list of local credit cards.
-    // |callback|: Callback which will be called with the list of credit cards.
-    static void getLocalCreditCardList(GetCreditCardListCallback callback);
-
-    // Gets the list of server credit cards.
-    // |callback|: Callback which will be called with the list of credit cards.
-    static void getServerCreditCardList(GetCreditCardListCallback callback);
-
     // Clears the data associated with a wallet card which was saved
     // locally so that the saved copy is masked (e.g., "Card ending
     // in 1234").
@@ -247,27 +239,16 @@ namespace autofillPrivate {
 
     // Logs that the server cards edit link was clicked.
     static void logServerCardLinkClicked();
+
+    // Enables or disables FIDO Authentication for credit card unmasking.
+    static void setCreditCardFIDOAuthEnabledState(boolean enabled);
   };
 
   interface Events {
-    // Fired when the address list has changed, meaning that an entry has been
-    // added, removed, or changed.
-    // |entries| The updated list of entries.
-    static void onAddressListChanged(AddressEntry[] entries);
-
-    // Fired when the credit card list has changed, meaning that an entry has
+    // Fired when the personal data has changed, meaning that an entry has
     // been added, removed, or changed.
     // |entries| The updated list of entries.
-    static void onCreditCardListChanged(CreditCardEntry[] entries);
-
-    // Fired when the local credit card list has changed, meaning that an entry
-    // has been added, removed, or changed.
-    // |entries| The updated list of entries.
-    static void onLocalCreditCardListChanged(CreditCardEntry[] entries);
-
-    // Fired when the server credit card list has changed, meaning that an entry
-    // has been added, removed, or changed.
-    // |entries| The updated list of entries.
-    static void onServerCreditCardListChanged(CreditCardEntry[] entries);
+    static void onPersonalDataChanged(AddressEntry[] addressEntries,
+        CreditCardEntry[] creditCardEntries);
   };
 };

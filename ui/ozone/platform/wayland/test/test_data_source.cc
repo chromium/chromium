@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/test/test_data_source.h"
 
 #include <wayland-server-core.h>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -30,20 +31,13 @@ std::vector<uint8_t> ReadDataOnWorkerThread(base::ScopedFD fd) {
       bytes.insert(bytes.end(), chunk, chunk + bytes_read);
       continue;
     }
-    if (!bytes_read)
-      return bytes;
     if (bytes_read < 0) {
-      LOG(ERROR) << "Failed to read selection data from clipboard.";
-      return std::vector<uint8_t>();
+      PLOG(ERROR) << "Failed to read data";
+      bytes.clear();
     }
+    break;
   }
-}
-
-void CreatePipe(base::ScopedFD* read_pipe, base::ScopedFD* write_pipe) {
-  int raw_pipe[2];
-  PCHECK(0 == pipe(raw_pipe));
-  read_pipe->reset(raw_pipe[0]);
-  write_pipe->reset(raw_pipe[1]);
+  return bytes;
 }
 
 void DataSourceOffer(wl_client* client,
@@ -69,9 +63,8 @@ const struct wl_data_source_interface kTestDataSourceImpl = {
 
 TestDataSource::TestDataSource(wl_resource* resource)
     : ServerObject(resource),
-      task_runner_(
-          base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()})),
-      read_data_weak_ptr_factory_(this) {}
+      task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock()})) {}
 
 TestDataSource::~TestDataSource() {}
 
@@ -79,24 +72,23 @@ void TestDataSource::Offer(const std::string& mime_type) {
   NOTIMPLEMENTED();
 }
 
-void TestDataSource::ReadData(ReadDataCallback callback) {
+void TestDataSource::ReadData(const std::string& mime_type,
+                              ReadDataCallback callback) {
   base::ScopedFD read_fd;
   base::ScopedFD write_fd;
-  CreatePipe(&read_fd, &write_fd);
+  PCHECK(base::CreatePipe(&read_fd, &write_fd));
 
-  wl_data_source_send_send(resource(), kTextMimeTypeUtf8, write_fd.get());
+  // 1. Send the SEND event to notify client's DataSource that it's time
+  // to send us the drag data thrhough the write_fd file descriptor.
+  wl_data_source_send_send(resource(), mime_type.c_str(), write_fd.get());
+  wl_client_flush(wl_resource_get_client(resource()));
 
-  PostTaskAndReplyWithResult(
+  // 2. Schedule the ReadDataOnWorkerThread task. The result of read
+  // operation will be then passed in to the callback requested by the caller.
+  base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
       base::BindOnce(&ReadDataOnWorkerThread, std::move(read_fd)),
-      base::BindOnce(&TestDataSource::DataReadCb,
-                     read_data_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback)));
-}
-
-void TestDataSource::DataReadCb(ReadDataCallback callback,
-                                const std::vector<uint8_t>& data) {
-  std::move(callback).Run(data);
+      std::move(callback));
 }
 
 void TestDataSource::OnCancelled() {

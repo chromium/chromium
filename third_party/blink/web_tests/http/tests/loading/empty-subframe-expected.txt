@@ -2,6 +2,7 @@ main frame - DidStartNavigation
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
 frame "f1" - didReceiveTitle: 
+frame "f1" - BeginNavigation request to 'about:blank', http method GET
 frame "f1" - DidStartNavigation
 frame "f1" - ReadyToCommitNavigation
 frame "f1" - didCommitLoadForFrame

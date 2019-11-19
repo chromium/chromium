@@ -11,19 +11,18 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/breakpad_helper.h"
 #include "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/first_run/first_run_configuration.h"
 #include "ios/chrome/browser/first_run/first_run_metrics.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/tabs/tab.h"
 #include "ios/chrome/browser/ui/first_run/first_run_histograms.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/web/public/web_thread.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "ios/web/public/thread/web_thread.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -145,15 +144,16 @@ void WriteFirstRunSentinelAndRecordMetrics(
     ios::ChromeBrowserState* browserState,
     BOOL sign_in_attempted,
     BOOL has_sso_account) {
-  base::PostTaskWithTraits(FROM_HERE,
-                           {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-                           base::BindOnce(&CreateSentinel));
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&CreateSentinel));
   RecordFirstRunMetricsInternal(browserState, sign_in_attempted,
                                 has_sso_account);
 }
 
 void FinishFirstRun(ios::ChromeBrowserState* browserState,
-                    Tab* tab,
+                    web::WebState* web_state,
                     FirstRunConfiguration* config,
                     id<SyncPresenter> presenter) {
   [[NSNotificationCenter defaultCenter]
@@ -163,7 +163,7 @@ void FinishFirstRun(ios::ChromeBrowserState* browserState,
                                         config.hasSSOAccount);
 
   // Display the sync errors infobar.
-  DisplaySyncErrors(browserState, tab, presenter);
+  DisplaySyncErrors(browserState, web_state, presenter);
 }
 
 void RecordProductTourTimingMetrics(NSString* timer_name,

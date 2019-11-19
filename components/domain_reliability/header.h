@@ -44,6 +44,8 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityHeader {
 
   std::unique_ptr<DomainReliabilityConfig> ReleaseConfig();
 
+  // Converts the config to a string. This may only be called if IsSetConfig()
+  // returns true.
   std::string ToString() const;
 
  private:

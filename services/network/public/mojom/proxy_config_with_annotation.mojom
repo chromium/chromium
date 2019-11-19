@@ -16,6 +16,9 @@ struct ProxyConfigWithAnnotation {
 // Interface for pushing proxy configuration updates to a NetworkContext.
 interface ProxyConfigClient {
   OnProxyConfigUpdated(ProxyConfigWithAnnotation proxy_config);
+
+  // Flush the ProxyConfig
+  FlushProxyConfig() => ();
 };
 
 // Called periodically when the current ProxyConfig is in use, as a hint that

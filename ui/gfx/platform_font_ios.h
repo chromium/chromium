@@ -28,10 +28,11 @@ class PlatformFontIOS : public PlatformFont {
   int GetExpectedTextWidth(int length) override;
   int GetStyle() const override;
   const std::string& GetFontName() const override;
-  std::string GetActualFontNameForTesting() const override;
+  std::string GetActualFontName() const override;
   int GetFontSize() const override;
   const FontRenderParams& GetFontRenderParams() override;
   NativeFont GetNativeFont() const override;
+  sk_sp<SkTypeface> GetNativeSkTypefaceIfAvailable() const override;
 
  private:
   PlatformFontIOS(const std::string& font_name,

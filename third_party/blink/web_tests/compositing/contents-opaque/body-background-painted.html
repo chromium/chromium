@@ -12,7 +12,7 @@
                 width: 200px;
                 height: 200px;
                 background-color: green;
-                transform: translateZ(0);
+                will-change: transform;
             }
         </style>
         <script type="text/javascript">
@@ -28,7 +28,7 @@
     </head>
     <!-- Composited body over the child div. -->
     <!-- Root <html> element has a background-color. -->
-    <!-- Background for the body element is painted in this case. ->
+    <!-- Background for the body element is painted in this case. -->
     <!-- GraphicsLayer::contentsOpaque for the body layer should be false. -->
     <body>
         <!-- Box under the body. -->

@@ -19,7 +19,6 @@ source_set("providers") {
     "//base",
     "//ios/chrome/browser/providers/images",
     "//ios/chrome/browser/providers/signin",
-    "//ios/chrome/browser/providers/ui",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/distribution",
     "//ios/public/provider/chrome/browser/signin",

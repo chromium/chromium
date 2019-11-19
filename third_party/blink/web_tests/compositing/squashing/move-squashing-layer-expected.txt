@@ -3,44 +3,30 @@ This tests that squashed layers' offset from renderer is updated properly. If no
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='background'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='background'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#FFFF00",
       "transform": 1
     },
     {
-      "name": "Squashing Containment Layer",
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV id='host'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='host'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 2
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV id='squashed')",
-      "position": [8, 8],
-      "bounds": [100, 100]
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (relative positioned) DIV id='squashed')",
+      "position": [-92, -92],
+      "bounds": [100, 100],
+      "transform": 2
     }
   ],
   "transforms": [
@@ -60,8 +46,7 @@ This tests that squashed layers' offset from renderer is updated properly. If no
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [100, 100, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }

@@ -24,7 +24,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_FONT_SIZE_FUNCTIONS_H_
 
 #include "third_party/blink/renderer/core/css_value_keywords.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -46,19 +46,25 @@ class FontSizeFunctions {
       float specified_size,
       ApplyMinimumFontSize = kApplyMinimumForFontSize);
 
-  // Given a CSS keyword in the range (xx-small to -webkit-xxx-large), this
-  // function returns
-  // values from '1' to '8'.
+  // Given a CSS keyword in the range (xx-small to xxx-large), this function
+  // returns values from '1' to '8'.
   static unsigned KeywordSize(CSSValueID value_id) {
     DCHECK(IsValidValueID(value_id));
-    return value_id - CSSValueXxSmall + 1;
+
+    if (value_id == CSSValueID::kWebkitXxxLarge)
+      value_id = CSSValueID::kXxxLarge;
+
+    return static_cast<int>(value_id) - static_cast<int>(CSSValueID::kXxSmall) +
+           1;
   }
 
   static bool IsValidValueID(CSSValueID value_id) {
-    return value_id >= CSSValueXxSmall && value_id <= CSSValueWebkitXxxLarge;
+    return (value_id >= CSSValueID::kXxSmall &&
+            value_id <= CSSValueID::kXxxLarge) ||
+           value_id == CSSValueID::kWebkitXxxLarge;
   }
 
-  static CSSValueID InitialValueID() { return CSSValueMedium; }
+  static CSSValueID InitialValueID() { return CSSValueID::kMedium; }
   static unsigned InitialKeywordSize() { return KeywordSize(InitialValueID()); }
 
   // Given a keyword size in the range (1 to 8), this function will return

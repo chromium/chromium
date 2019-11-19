@@ -4,4 +4,11 @@ specific_include_rules = {
   "chrome_test_case\.mm": [
     "+ios/web/public/test/http_server",
   ],
+  # To compile base::Feature under EG2
+  "chrome_earl_grey_app_interface\.mm":[
+   "+components/autofill/core/common/autofill_features.h",
+   "+components/payments/core/features.h",
+   "+components/ukm/ios/features.h",
+   "+services/metrics/public/cpp/ukm_recorder.h",
+  ],
 }

@@ -14,6 +14,23 @@
 <input id="file" type="file" name="file">
 </form>
 <script>
+// Submits using XHR. Used for the subresource test.
+async function submitXhr() {
+  const xhr = new XMLHttpRequest();
+  const loaded = new Promise(resolve => {
+    xhr.onload = resolve;
+  });
+  const loadEnded = new Promise(resolve => {
+    xhr.onloadend = resolve;
+  });
+
+  xhr.open("post", form.action);
+  xhr.send(new FormData(form));
+  await loaded;
+  await loadEnded;
+  return xhr.responseText;
+}
+
 const fileInput = document.querySelector('#file');
 const form = document.querySelector('#form');
 

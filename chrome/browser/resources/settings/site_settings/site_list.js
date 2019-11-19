@@ -65,6 +65,16 @@ Polymer({
     /** @private */
     hasIncognito_: Boolean,
 
+    /**
+     * Whether to show the Add button next to the header.
+     * @private
+     */
+    showAddSiteButton_: {
+      type: Boolean,
+      computed: 'computeShowAddSiteButton_(readOnlyList, category, ' +
+          'categorySubtype)',
+    },
+
     /** @private */
     showAddSiteDialog_: Boolean,
 
@@ -222,6 +232,20 @@ Polymer({
   },
 
   /**
+   * Whether the Add Site button is shown in the header for the current category
+   * and category subtype.
+   * @return {boolean}
+   * @private
+   */
+  computeShowAddSiteButton_: function() {
+    return !(
+        this.readOnlyList ||
+        (this.category ==
+             settings.ContentSettingsTypes.NATIVE_FILE_SYSTEM_WRITE &&
+         this.categorySubtype == settings.ContentSetting.ALLOW));
+  },
+
+  /**
    * @return {boolean}
    * @private
    */
@@ -339,14 +363,10 @@ Polymer({
                     site.setting == this.categorySubtype)
             .map(site => this.expandSiteException(site));
 
-    // <if expr="not chromeos">
-    this.updateList('sites', (x) => x.origin, sites);
-    // </if>
-
     // <if expr="chromeos">
     sites = this.processExceptionsForAndroidSmsInfo_(sites);
-    this.updateList('sites', (x) => x.origin + x.showAndroidSmsNote, sites);
     // </if>
+    this.updateList('sites', x => x.origin, sites);
   },
 
   /**

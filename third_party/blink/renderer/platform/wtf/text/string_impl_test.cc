@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace WTF {
@@ -55,9 +56,10 @@ TEST(StringImplTest, LowerASCII) {
   EXPECT_TRUE(Equal(test_string_impl.get(),
                     StringImpl::Create("lInk")->LowerASCII().get()));
 
-  EXPECT_TRUE(Equal(StringImpl::Create("LINK")->LowerUnicode().get(),
+  CaseMap case_map("");
+  EXPECT_TRUE(Equal(case_map.ToLower(StringImpl::Create("LINK")).Impl(),
                     StringImpl::Create("LINK")->LowerASCII().get()));
-  EXPECT_TRUE(Equal(StringImpl::Create("lInk")->LowerUnicode().get(),
+  EXPECT_TRUE(Equal(case_map.ToLower(StringImpl::Create("lInk")).Impl(),
                     StringImpl::Create("lInk")->LowerASCII().get()));
 
   EXPECT_TRUE(Equal(StringImpl::Create("a\xE1").get(),
@@ -112,9 +114,10 @@ TEST(StringImplTest, UpperASCII) {
   EXPECT_TRUE(Equal(test_string_impl.get(),
                     StringImpl::Create("lInk")->UpperASCII().get()));
 
-  EXPECT_TRUE(Equal(StringImpl::Create("LINK")->UpperUnicode().get(),
+  CaseMap case_map("");
+  EXPECT_TRUE(Equal(case_map.ToUpper(StringImpl::Create("LINK")).Impl(),
                     StringImpl::Create("LINK")->UpperASCII().get()));
-  EXPECT_TRUE(Equal(StringImpl::Create("lInk")->UpperUnicode().get(),
+  EXPECT_TRUE(Equal(case_map.ToUpper(StringImpl::Create("lInk")).Impl(),
                     StringImpl::Create("lInk")->UpperASCII().get()));
 
   EXPECT_TRUE(Equal(StringImpl::Create("A\xE1").get(),

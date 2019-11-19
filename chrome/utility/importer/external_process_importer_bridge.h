@@ -5,7 +5,6 @@
 #ifndef CHROME_UTILITY_IMPORTER_EXTERNAL_PROCESS_IMPORTER_BRIDGE_H_
 #define CHROME_UTILITY_IMPORTER_EXTERNAL_PROCESS_IMPORTER_BRIDGE_H_
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -15,6 +14,7 @@
 #include "chrome/common/importer/importer_bridge.h"
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "components/favicon_base/favicon_usage_data.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 
 class GURL;
 struct ImportedBookmarkEntry;
@@ -38,8 +38,7 @@ class ExternalProcessImporterBridge : public ImporterBridge {
   // |observer| must outlive this object.
   ExternalProcessImporterBridge(
       const base::flat_map<uint32_t, std::string>& localized_strings,
-      scoped_refptr<chrome::mojom::ThreadSafeProfileImportObserverPtr>
-          observer);
+      mojo::SharedRemote<chrome::mojom::ProfileImportObserver> observer);
 
   // Begin ImporterBridge implementation:
   void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
@@ -79,7 +78,7 @@ class ExternalProcessImporterBridge : public ImporterBridge {
   // bundle isn't available to the external process.
   base::flat_map<uint32_t, std::string> localized_strings_;
 
-  scoped_refptr<chrome::mojom::ThreadSafeProfileImportObserverPtr> observer_;
+  mojo::SharedRemote<chrome::mojom::ProfileImportObserver> observer_;
 
   DISALLOW_COPY_AND_ASSIGN(ExternalProcessImporterBridge);
 };

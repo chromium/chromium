@@ -61,6 +61,11 @@ typedef uint32_t MojoQuotaType;
 // signal on that endpoint. May only be set on message pipe handles.
 #define MOJO_QUOTA_TYPE_RECEIVE_QUEUE_MEMORY_SIZE ((MojoQuotaType)1)
 
+// Limits the number of sent, unread messages which can be queued on a message
+// pipe endpoint before raising a |MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED| signal on
+// that  endpoint. May only be set on message pipe handles.
+#define MOJO_QUOTA_TYPE_UNREAD_MESSAGE_COUNT ((MojoQuotaType)2)
+
 #ifdef __cplusplus
 extern "C" {
 #endif

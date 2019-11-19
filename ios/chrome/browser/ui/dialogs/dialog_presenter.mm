@@ -15,11 +15,14 @@
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/input_alert_coordinator.h"
 #import "ios/chrome/browser/ui/dialogs/completion_block_util.h"
+#import "ios/chrome/browser/ui/dialogs/dialog_constants.h"
 #import "ios/chrome/browser/ui/dialogs/java_script_dialog_blocking_state.h"
 #import "ios/chrome/browser/ui/dialogs/nsurl_protection_space_util.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -36,16 +39,15 @@ using completion_block_util::GetSafeJavaScriptConfirmationCompletion;
 using completion_block_util::GetSafeJavaScriptPromptCompletion;
 using completion_block_util::GetSafeHTTPAuthCompletion;
 
-// Externed accessibility identifier.
-NSString* const kJavaScriptDialogTextFieldAccessibiltyIdentifier =
-    @"JavaScriptDialogTextFieldAccessibiltyIdentifier";
-
-@interface DialogPresenter () {
+@interface DialogPresenter () <CRWWebStateObserver> {
   // Queue of WebStates which correspond to the keys in
   // |_dialogCoordinatorsForWebStates|.
   base::circular_deque<web::WebState*> _queuedWebStates;
   // A map associating queued webStates with their coordinators.
   std::map<web::WebState*, AlertCoordinator*> _dialogCoordinatorsForWebStates;
+  // The WebStateObserver listening for navigation events from the queued
+  // WebStates.
+  std::unique_ptr<web::WebStateObserver> _webStateObserver;
 }
 
 // The delegate passed on initialization.
@@ -123,6 +125,7 @@ NSString* const kJavaScriptDialogTextFieldAccessibiltyIdentifier =
     DCHECK(viewController);
     _delegate = delegate;
     _viewController = viewController;
+    _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
   }
   return self;
 }
@@ -346,19 +349,18 @@ NSString* const kJavaScriptDialogTextFieldAccessibiltyIdentifier =
     auto it =
         std::find(_queuedWebStates.begin(), _queuedWebStates.end(), webState);
     DCHECK(it != _queuedWebStates.end());
+    webState->RemoveObserver(_webStateObserver.get());
     _queuedWebStates.erase(it);
     _dialogCoordinatorsForWebStates.erase(webState);
   }
 }
 
 - (void)cancelAllDialogs {
-  [self.presentedDialogCoordinator executeCancelHandler];
-  [self.presentedDialogCoordinator stop];
-  self.presentedDialogCoordinator = nil;
-  self.presentedDialogWebState = nil;
   while (!_queuedWebStates.empty()) {
     [self cancelDialogForWebState:_queuedWebStates.front()];
   }
+  if (self.presentedDialogWebState)
+    [self cancelDialogForWebState:self.presentedDialogWebState];
 }
 
 - (void)tryToPresent {
@@ -385,6 +387,28 @@ NSString* const kJavaScriptDialogTextFieldAccessibiltyIdentifier =
   return l10n_util::GetNSStringF(IDS_JAVASCRIPT_MESSAGEBOX_TITLE, title);
 }
 
+#pragma mark - CRWWebStateObserver
+
+- (void)webState:(web::WebState*)webState
+    didStartNavigation:(web::NavigationContext*)navigation {
+  [self cancelDialogForWebState:webState];
+}
+
+- (void)webState:(web::WebState*)webState
+    didFinishNavigation:(web::NavigationContext*)navigation {
+  if (navigation->HasCommitted() && !navigation->IsSameDocument())
+    [self cancelDialogForWebState:webState];
+}
+
+- (void)renderProcessGoneForWebState:(web::WebState*)webState {
+  [self cancelDialogForWebState:webState];
+}
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  [self cancelDialogForWebState:webState];
+  webState->RemoveObserver(_webStateObserver.get());
+}
+
 #pragma mark - Private methods.
 
 - (void)addDialogCoordinator:(AlertCoordinator*)coordinator
@@ -395,6 +419,8 @@ NSString* const kJavaScriptDialogTextFieldAccessibiltyIdentifier =
   DCHECK(!_dialogCoordinatorsForWebStates[webState]);
   _queuedWebStates.push_back(webState);
   _dialogCoordinatorsForWebStates[webState] = coordinator;
+
+  webState->AddObserver(_webStateObserver.get());
 
   if (self.active && !self.showingDialog &&
       [self.delegate shouldDialogPresenterPresentDialog:self]) {
@@ -421,6 +447,7 @@ NSString* const kJavaScriptDialogTextFieldAccessibiltyIdentifier =
 - (void)dialogCoordinatorWasStopped:(AlertCoordinator*)coordinator {
   if (coordinator != self.presentedDialogCoordinator)
     return;
+  self.presentedDialogWebState->RemoveObserver(_webStateObserver.get());
   self.presentedDialogWebState = nil;
   self.presentedDialogCoordinator = nil;
   self.blockingConfirmationCoordinator = nil;

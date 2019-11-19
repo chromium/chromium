@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "net/base/completion_callback.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/socket/stream_socket.h"
 
@@ -49,7 +49,7 @@ class AdbClientSocket {
   ~AdbClientSocket();
 
  protected:
-  void Connect(const net::CompletionCallback& callback);
+  void Connect(net::CompletionOnceCallback callback);
 
   void SendCommand(const std::string& command,
                    bool has_output,

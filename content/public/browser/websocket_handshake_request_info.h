@@ -19,13 +19,13 @@ class WebSocketHandshakeRequestInfo {
  public:
   virtual ~WebSocketHandshakeRequestInfo() {}
   // Returns the ID of the child process where the WebSocket connection lives.
-  virtual int GetChildId() const = 0;
+  virtual int GetChildId() = 0;
   // Returns the ID of the renderer frame where the WebSocket connection lives.
-  virtual int GetRenderFrameId() const = 0;
+  virtual int GetRenderFrameId() = 0;
 
   // Returns the WebSocketHandshakeRequestInfo instance attached to the given
   // URLRequest. Returns nullptr when no instance is attached.
-  CONTENT_EXPORT static const WebSocketHandshakeRequestInfo* ForRequest(
+  CONTENT_EXPORT static WebSocketHandshakeRequestInfo* ForRequest(
       const net::URLRequest* request);
 };
 

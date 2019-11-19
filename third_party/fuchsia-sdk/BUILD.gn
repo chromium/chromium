@@ -66,10 +66,10 @@ group("vulkan_base") {
 copy("vulkan_validation_configs") {
   sources = [
     "sdk/pkg/vulkan_layers/data/vulkan/explicit_layer.d/VkLayer_core_validation.json",
-    "sdk/pkg/vulkan_layers/data/vulkan/explicit_layer.d/VkLayer_object_tracker.json",
-    "sdk/pkg/vulkan_layers/data/vulkan/explicit_layer.d/VkLayer_parameter_validation.json",
-    "sdk/pkg/vulkan_layers/data/vulkan/explicit_layer.d/VkLayer_standard_validation.json",
-    "sdk/pkg/vulkan_layers/data/vulkan/explicit_layer.d/VkLayer_threading.json",
+    "sdk/pkg/vulkan_layers/data/vulkan/explicit_layer.d/VkLayer_khronos_validation.json",
+    "sdk/pkg/vulkan_layers/data/vulkan/explicit_layer.d/VkLayer_object_lifetimes.json",
+    "sdk/pkg/vulkan_layers/data/vulkan/explicit_layer.d/VkLayer_stateless_validation.json",
+    "sdk/pkg/vulkan_layers/data/vulkan/explicit_layer.d/VkLayer_thread_safety.json",
     "sdk/pkg/vulkan_layers/data/vulkan/explicit_layer.d/VkLayer_unique_objects.json",
   ]
 
@@ -80,11 +80,12 @@ copy("vulkan_validation_configs") {
 
 copy("vulkan_validation_libs") {
   sources = [
-    "sdk/arch/${target_cpu}/dist/libVkLayer_core_validation.so",
-    "sdk/arch/${target_cpu}/dist/libVkLayer_object_tracker.so",
-    "sdk/arch/${target_cpu}/dist/libVkLayer_parameter_validation.so",
-    "sdk/arch/${target_cpu}/dist/libVkLayer_threading.so",
-    "sdk/arch/${target_cpu}/dist/libVkLayer_unique_objects.so",
+    "sdk/arch/${target_cpu}/dist/VkLayer_core_validation.so",
+    "sdk/arch/${target_cpu}/dist/VkLayer_khronos_validation.so",
+    "sdk/arch/${target_cpu}/dist/VkLayer_object_lifetimes.so",
+    "sdk/arch/${target_cpu}/dist/VkLayer_stateless_validation.so",
+    "sdk/arch/${target_cpu}/dist/VkLayer_thread_safety.so",
+    "sdk/arch/${target_cpu}/dist/VkLayer_unique_objects.so",
   ]
 
   outputs = [

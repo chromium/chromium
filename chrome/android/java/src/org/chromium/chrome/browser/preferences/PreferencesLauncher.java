@@ -5,12 +5,13 @@
 package org.chromium.chrome.browser.preferences;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.common.ConnectionResult;
 
@@ -137,7 +138,8 @@ public class PreferencesLauncher {
             RecordHistogram.recordEnumeratedHistogram(
                     "PasswordManager.ManagePasswordsReferrerSignedInAndSyncing", referrer,
                     ManagePasswordsReferrer.MAX_VALUE + 1);
-            if (!PrefServiceBridge.getInstance().isRememberPasswordsManaged()) {
+            if (!PrefServiceBridge.getInstance().isManagedPreference(
+                        Pref.REMEMBER_PASSWORDS_ENABLED)) {
                 if (tryShowingTheGooglePasswordManager(activity)) return;
             }
         }
@@ -173,7 +175,7 @@ public class PreferencesLauncher {
         launchSettingsPage(currentActivity.get(), fragment);
     }
 
-    private static boolean isSyncingPasswordsWithoutCustomPassphrase() {
+    public static boolean isSyncingPasswordsWithoutCustomPassphrase() {
         ChromeSigninController signInController = ChromeSigninController.get();
         if (signInController == null || !signInController.isSignedIn()) return false;
 
@@ -195,14 +197,15 @@ public class PreferencesLauncher {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return false;
 
-        if (!ChromeFeatureList.isEnabled(GOOGLE_ACCOUNT_PWM_UI)) return false;
-
         int minGooglePlayServicesVersion = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 GOOGLE_ACCOUNT_PWM_UI, MIN_GOOGLE_PLAY_SERVICES_VERSION_PARAM,
                 DEFAULT_MIN_GOOGLE_PLAY_SERVICES_APK_VERSION);
         if (AppHooks.get().isGoogleApiAvailableWithMinApkVersion(minGooglePlayServicesVersion)
-                != ConnectionResult.SUCCESS)
+                != ConnectionResult.SUCCESS) {
             return false;
+        }
+
+        if (!ChromeFeatureList.isEnabled(GOOGLE_ACCOUNT_PWM_UI)) return false;
 
         return googlePasswordManagerUIProvider.showGooglePasswordManager(activity);
     }

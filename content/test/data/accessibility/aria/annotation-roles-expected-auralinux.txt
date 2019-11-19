@@ -1,0 +1,5 @@
+[document web]
+++[section] name='comment' xml-roles:comment
+++[section] name='comment section' xml-roles:commentsection
+++[section] name='revision' xml-roles:revision
+++[section] name='suggestion' xml-roles:suggestion

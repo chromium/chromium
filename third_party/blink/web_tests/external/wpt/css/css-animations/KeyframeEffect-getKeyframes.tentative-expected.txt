@@ -22,6 +22,6 @@ FAIL KeyframeEffect.getKeyframes() returns expected values for animations with b
 FAIL KeyframeEffect.getKeyframes() returns expected values for animations with CSS variables as keyframe values assert_equals: properties on ComputedKeyframe #0 expected "composite,computedOffset,easing,offset,transform" but got "composite,computedOffset,easing,offset"
 FAIL KeyframeEffect.getKeyframes() returns expected values for animations with CSS variables as keyframe values in a shorthand property assert_equals: properties on ComputedKeyframe #0 expected "composite,computedOffset,easing,marginBottom,marginLeft,marginRight,marginTop,offset" but got "composite,computedOffset,easing,offset"
 FAIL KeyframeEffect.getKeyframes() returns expected values for animations with a CSS variable which is overriden by the value in keyframe assert_equals: properties on ComputedKeyframe #0 expected "color,composite,computedOffset,easing,offset" but got "composite,computedOffset,easing,offset"
-FAIL KeyframeEffect.getKeyframes() returns expected values for animations with only custom property in a keyframe assert_equals: properties on ComputedKeyframe #1 expected "composite,computedOffset,easing,offset,transform" but got "--not-used,composite,computedOffset,easing,offset"
+FAIL KeyframeEffect.getKeyframes() returns expected values for animations with only custom property in a keyframe assert_equals: value for 'transform' on ComputedKeyframe #0 expected "translate(100px)" but got "translate(100px, 0px)"
 Harness: the test ran to completion.
 

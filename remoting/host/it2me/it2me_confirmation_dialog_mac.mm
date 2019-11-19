@@ -8,12 +8,12 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
 #include "base/location.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
@@ -75,8 +75,9 @@ It2MeConfirmationDialogMac::~It2MeConfirmationDialogMac() {
   dialog_timer_.Stop();
 
   if (controller_) {
-    base::mac::ScopedNSAutoreleasePool pool;
-    [controller_ hide];
+    @autoreleasepool {
+      [controller_ hide];
+    }
   }
 }
 
@@ -91,24 +92,26 @@ void It2MeConfirmationDialogMac::Show(const std::string& remote_user_email,
   ResultCallback dialog_action_callback = base::Bind(
       &It2MeConfirmationDialogMac::OnDialogAction, base::Unretained(this));
 
-  base::mac::ScopedNSAutoreleasePool pool;
-  controller_.reset([[It2MeConfirmationDialogMacController alloc]
-      initWithCallback:dialog_action_callback
-              username:remote_user_email]);
-  [controller_ show];
+  @autoreleasepool {
+    controller_.reset([[It2MeConfirmationDialogMacController alloc]
+        initWithCallback:dialog_action_callback
+                username:remote_user_email]);
+    [controller_ show];
+  }
 }
 
 void It2MeConfirmationDialogMac::OnDialogAction(Result result) {
   dialog_timer_.Stop();
 
   if (controller_) {
-    base::mac::ScopedNSAutoreleasePool pool;
-    [controller_ hide];
-    controller_.reset();
+    @autoreleasepool {
+      [controller_ hide];
+      controller_.reset();
+    }
   }
 
   if (result_callback_) {
-    base::ResetAndReturn(&result_callback_).Run(result);
+    std::move(result_callback_).Run(result);
   }
 }
 
@@ -170,13 +173,16 @@ It2MeConfirmationDialogFactory::Create() {
 }
 
 - (void)hide {
-  confirmation_alert_.reset();
+  if (confirmation_alert_) {
+    [[confirmation_alert_ window] close];
+    confirmation_alert_.reset();
+  }
 }
 
 - (void)onCancel:(id)sender {
   [self hide];
   if (dialog_action_callback_) {
-    base::ResetAndReturn(&dialog_action_callback_)
+    std::move(dialog_action_callback_)
         .Run(remoting::It2MeConfirmationDialog::Result::CANCEL);
   }
 }
@@ -184,7 +190,7 @@ It2MeConfirmationDialogFactory::Create() {
 - (void)onAccept:(id)sender {
   [self hide];
   if (dialog_action_callback_) {
-    base::ResetAndReturn(&dialog_action_callback_)
+    std::move(dialog_action_callback_)
         .Run(remoting::It2MeConfirmationDialog::Result::OK);
   }
 }

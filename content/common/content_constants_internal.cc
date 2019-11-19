@@ -33,10 +33,4 @@ const int kTraceEventRendererMainThreadSortIndex = -1;
 
 const char kDoNotTrackHeader[] = "DNT";
 
-#if defined(OS_MACOSX)
-const char kMachBootstrapName[] = "rohitfork";
-#endif
-
-const char kCorsExemptRequestedWithHeaderName[] = "X-Requested-With";
-
 } // namespace content

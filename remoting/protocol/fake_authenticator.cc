@@ -9,7 +9,6 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/base/io_buffer.h"
@@ -24,9 +23,7 @@ namespace remoting {
 namespace protocol {
 
 FakeChannelAuthenticator::FakeChannelAuthenticator(bool accept, bool async)
-    : result_(accept ? net::OK : net::ERR_FAILED),
-      async_(async),
-      weak_factory_(this) {}
+    : result_(accept ? net::OK : net::ERR_FAILED), async_(async) {}
 
 FakeChannelAuthenticator::~FakeChannelAuthenticator() = default;
 
@@ -90,7 +87,7 @@ void FakeChannelAuthenticator::OnAuthBytesRead(int result) {
 void FakeChannelAuthenticator::CallDoneCallback() {
   if (result_ != net::OK)
     socket_.reset();
-  base::ResetAndReturn(&done_callback_).Run(result_, std::move(socket_));
+  std::move(done_callback_).Run(result_, std::move(socket_));
 }
 
 FakeAuthenticator::Config::Config() = default;
@@ -120,7 +117,7 @@ void FakeAuthenticator::set_messages_till_started(int messages) {
 }
 
 void FakeAuthenticator::Resume() {
-  base::ResetAndReturn(&resume_closure_).Run();
+  std::move(resume_closure_).Run();
 }
 
 Authenticator::State FakeAuthenticator::state() const {

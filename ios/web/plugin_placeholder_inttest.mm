@@ -67,7 +67,7 @@ TEST_F(PluginPlaceholderTest, AppletFallback) {
       test::WaitForWebViewContainingText(web_state(), kPageDescription));
   EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), kFallbackText));
   EXPECT_TRUE(test::WaitForWebViewNotContainingElement(
-      web_state(), test::ElementSelector::ElementSelectorCss("img")));
+      web_state(), [ElementSelector selectorWithCSSSelector:"img"]));
   EXPECT_TRUE(test::WaitForWebViewNotContainingText(web_state(),
                                                     kPluginNotSupportedText));
 }
@@ -90,7 +90,7 @@ TEST_F(PluginPlaceholderTest, AppletOnly) {
       test::WaitForWebViewContainingText(web_state(), kPageDescription));
   EXPECT_TRUE(test::WaitForWebViewContainingElement(
       web_state(),
-      test::ElementSelector::ElementSelectorCss("img[src*='data']")));
+      [ElementSelector selectorWithCSSSelector:"img[src*='data']"]));
   EXPECT_TRUE(
       test::WaitForWebViewContainingText(web_state(), kPluginNotSupportedText));
 }
@@ -118,7 +118,7 @@ TEST_F(PluginPlaceholderTest, ObjectFlashEmbedFallback) {
       test::WaitForWebViewContainingText(web_state(), kPageDescription));
   EXPECT_TRUE(test::WaitForWebViewContainingElement(
       web_state(),
-      test::ElementSelector::ElementSelectorCss("img[src*='data']")));
+      [ElementSelector selectorWithCSSSelector:"img[src*='data']"]));
   EXPECT_TRUE(
       test::WaitForWebViewContainingText(web_state(), kPluginNotSupportedText));
 }
@@ -145,7 +145,7 @@ TEST_F(PluginPlaceholderTest, ObjectUndefinedEmbedFallback) {
   EXPECT_TRUE(
       test::WaitForWebViewContainingText(web_state(), kPageDescription));
   EXPECT_TRUE(test::WaitForWebViewNotContainingElement(
-      web_state(), test::ElementSelector::ElementSelectorCss("img")));
+      web_state(), [ElementSelector selectorWithCSSSelector:"img"]));
   EXPECT_TRUE(test::WaitForWebViewNotContainingText(web_state(),
                                                     kPluginNotSupportedText));
 }
@@ -172,7 +172,7 @@ TEST_F(PluginPlaceholderTest, ObjectFallback) {
       test::WaitForWebViewContainingText(web_state(), kPageDescription));
   EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), kFallbackText));
   EXPECT_TRUE(test::WaitForWebViewNotContainingElement(
-      web_state(), test::ElementSelector::ElementSelectorCss("img")));
+      web_state(), [ElementSelector selectorWithCSSSelector:"img"]));
   EXPECT_TRUE(test::WaitForWebViewNotContainingText(web_state(),
                                                     kPluginNotSupportedText));
 }
@@ -196,7 +196,7 @@ TEST_F(PluginPlaceholderTest, ObjectOnly) {
       test::WaitForWebViewContainingText(web_state(), kPageDescription));
   EXPECT_TRUE(test::WaitForWebViewContainingElement(
       web_state(),
-      test::ElementSelector::ElementSelectorCss("img[src*='data']")));
+      [ElementSelector selectorWithCSSSelector:"img[src*='data']"]));
   EXPECT_TRUE(
       test::WaitForWebViewContainingText(web_state(), kPluginNotSupportedText));
 }
@@ -218,7 +218,7 @@ TEST_F(PluginPlaceholderTest, PNGObject) {
   EXPECT_TRUE(
       test::WaitForWebViewContainingText(web_state(), kPageDescription));
   EXPECT_TRUE(test::WaitForWebViewNotContainingElement(
-      web_state(), test::ElementSelector::ElementSelectorCss("img")));
+      web_state(), [ElementSelector selectorWithCSSSelector:"img"]));
   EXPECT_TRUE(test::WaitForWebViewNotContainingText(web_state(),
                                                     kPluginNotSupportedText));
 }
@@ -259,7 +259,7 @@ TEST_F(PluginPlaceholderTest, SmallFlash) {
   EXPECT_TRUE(
       test::WaitForWebViewContainingText(web_state(), kPageDescription));
   EXPECT_TRUE(test::WaitForWebViewNotContainingElement(
-      web_state(), test::ElementSelector::ElementSelectorCss("img")));
+      web_state(), [ElementSelector selectorWithCSSSelector:"img"]));
   EXPECT_TRUE(test::WaitForWebViewNotContainingText(web_state(),
                                                     kPluginNotSupportedText));
 }

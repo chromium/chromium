@@ -7,21 +7,20 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_handler_non_null.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 
 namespace blink {
 
 // |JSEventHandler| implements EventHandler in the HTML standard.
-// https://html.spec.whatwg.org/C/webappapis.html#event-handler-attributes
+// https://html.spec.whatwg.org/C/#event-handler-attributes
 class CORE_EXPORT JSEventHandler : public JSBasedEventListener {
  public:
   enum class HandlerType {
     kEventHandler,
     // For kOnErrorEventHandler
-    // https://html.spec.whatwg.org/C/webappapis.html#onerroreventhandler
+    // https://html.spec.whatwg.org/C/#onerroreventhandler
     kOnErrorEventHandler,
     // For OnBeforeUnloadEventHandler
-    // https://html.spec.whatwg.org/C/webappapis.html#onbeforeunloadeventhandler
+    // https://html.spec.whatwg.org/C/#onbeforeunloadeventhandler
     kOnBeforeUnloadEventHandler,
   };
 
@@ -99,12 +98,12 @@ class CORE_EXPORT JSEventHandler : public JSBasedEventListener {
  private:
   // blink::JSBasedEventListener override:
   // Performs "The event handler processing algorithm"
-  // https://html.spec.whatwg.org/C/webappapis.html#the-event-handler-processing-algorithm
+  // https://html.spec.whatwg.org/C/#the-event-handler-processing-algorithm
   void InvokeInternal(EventTarget&,
                       Event&,
                       v8::Local<v8::Value> js_event) override;
 
-  TraceWrapperMember<V8EventHandlerNonNull> event_handler_;
+  Member<V8EventHandlerNonNull> event_handler_;
   const HandlerType type_;
 };
 

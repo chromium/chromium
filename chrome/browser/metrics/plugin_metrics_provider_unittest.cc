@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -21,7 +21,7 @@
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/common/process_type.h"
 #include "content/public/common/webplugininfo.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
@@ -66,7 +66,7 @@ TEST_F(PluginMetricsProviderTest, IsPluginProcess) {
 }
 
 TEST_F(PluginMetricsProviderTest, Plugins) {
-  content::TestBrowserThreadBundle thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
 
   PluginMetricsProvider provider(prefs());
 
@@ -118,23 +118,23 @@ TEST_F(PluginMetricsProviderTest, Plugins) {
 }
 
 TEST_F(PluginMetricsProviderTest, RecordCurrentStateWithDelay) {
-  content::TestBrowserThreadBundle thread_bundle(
-      base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME);
+  content::BrowserTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
   PluginMetricsProvider provider(prefs());
 
   EXPECT_TRUE(provider.RecordCurrentStateWithDelay());
   EXPECT_FALSE(provider.RecordCurrentStateWithDelay());
 
-  thread_bundle.FastForwardBy(PluginMetricsProvider::GetRecordStateDelay());
+  task_environment.FastForwardBy(PluginMetricsProvider::GetRecordStateDelay());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(provider.RecordCurrentStateWithDelay());
 }
 
 TEST_F(PluginMetricsProviderTest, RecordCurrentStateIfPending) {
-  content::TestBrowserThreadBundle thread_bundle(
-      base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME);
+  content::BrowserTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
   PluginMetricsProvider provider(prefs());
 
@@ -152,7 +152,7 @@ TEST_F(PluginMetricsProviderTest, RecordCurrentStateIfPending) {
 }
 
 TEST_F(PluginMetricsProviderTest, ProvideStabilityMetricsWhenPendingTask) {
-  content::TestBrowserThreadBundle thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
 
   PluginMetricsProvider provider(prefs());
 
@@ -168,8 +168,10 @@ TEST_F(PluginMetricsProviderTest, ProvideStabilityMetricsWhenPendingTask) {
 
   // Increase number of process launches which should also start a delayed
   // task.
-  content::ChildProcessTerminationInfo abnormal_termination_info{
-      base::TERMINATION_STATUS_ABNORMAL_TERMINATION, 1};
+  content::ChildProcessTerminationInfo abnormal_termination_info;
+  abnormal_termination_info.status =
+      base::TERMINATION_STATUS_ABNORMAL_TERMINATION;
+  abnormal_termination_info.exit_code = 1;
   content::ChildProcessData child_process_data1(
       content::PROCESS_TYPE_PPAPI_PLUGIN);
   child_process_data1.name = base::UTF8ToUTF16("p1");

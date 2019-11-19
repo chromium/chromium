@@ -1,0 +1,16 @@
+<custom-style>
+<style>
+  html {
+    /* Note: error-color is used for many warnings. There's also an orange-y
+     * warning color in 1 place. */
+    --error-color: var(--google-red-700);
+    --separator-gap: 9px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html {
+      --error-color: var(--google-red-refresh-300);
+    }
+  }
+</style>
+</custom-style>

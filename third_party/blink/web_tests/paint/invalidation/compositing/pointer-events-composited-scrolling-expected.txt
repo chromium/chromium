@@ -1,49 +1,45 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow DIV id='target'",
-      "position": [8, 8],
+      "name": "LayoutNGBlockFlow DIV id='target'",
       "bounds": [100, 100],
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow DIV id='target'",
+          "object": "LayoutNGBlockFlow DIV id='target'",
           "rect": [0, 0, 100, 100],
           "reason": "full layer"
         }
-      ]
-    },
-    {
-      "name": "Overflow Controls Host Layer",
-      "position": [8, 8],
-      "bounds": [100, 100],
-      "drawsContent": false
+      ],
+      "transform": 1
     },
     {
       "name": "Horizontal Scrollbar Layer",
-      "position": [8, 108],
-      "bounds": [100, 0]
+      "position": [0, 100],
+      "bounds": [100, 0],
+      "transform": 1
     },
     {
       "name": "Vertical Scrollbar Layer",
-      "position": [108, 8],
-      "bounds": [0, 100]
+      "position": [100, 0],
+      "bounds": [0, 100],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
     }
   ]
 }

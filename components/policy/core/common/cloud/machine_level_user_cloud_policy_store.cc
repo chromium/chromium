@@ -24,11 +24,15 @@ MachineLevelUserCloudPolicyStore::MachineLevelUserCloudPolicyStore(
     const std::string& machine_client_id,
     const base::FilePath& policy_path,
     const base::FilePath& key_path,
+    bool cloud_policy_has_priority,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : DesktopCloudPolicyStore(policy_path,
                               key_path,
                               background_task_runner,
-                              PolicyScope::POLICY_SCOPE_MACHINE),
+                              PolicyScope::POLICY_SCOPE_MACHINE,
+                              cloud_policy_has_priority
+                                  ? PolicySource::POLICY_SOURCE_PRIORITY_CLOUD
+                                  : PolicySource::POLICY_SOURCE_CLOUD),
       machine_dm_token_(machine_dm_token),
       machine_client_id_(machine_client_id) {}
 
@@ -40,12 +44,13 @@ MachineLevelUserCloudPolicyStore::Create(
     const std::string& machine_dm_token,
     const std::string& machine_client_id,
     const base::FilePath& policy_dir,
+    bool cloud_policy_has_priority,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
   base::FilePath policy_cache_file = policy_dir.Append(kPolicyCache);
   base::FilePath key_cache_file = policy_dir.Append(kKeyCache);
   return std::make_unique<MachineLevelUserCloudPolicyStore>(
       machine_dm_token, machine_client_id, policy_cache_file, key_cache_file,
-      background_task_runner);
+      cloud_policy_has_priority, background_task_runner);
 }
 
 void MachineLevelUserCloudPolicyStore::LoadImmediately() {

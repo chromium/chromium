@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COLLECTED_COOKIES_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_COLLECTED_COOKIES_VIEWS_H_
 
+#include <memory>
+
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/controls/tree/tree_view_controller.h"
@@ -36,23 +37,24 @@ class TreeView;
 // cookies of the current tab contents. To display the dialog, invoke
 // ShowCollectedCookiesDialog() on the delegate of the WebContents's
 // content settings tab helper.
-class CollectedCookiesViews : public views::DialogDelegateView,
-                              public content::NotificationObserver,
-                              public views::ButtonListener,
-                              public views::TabbedPaneListener,
-                              public views::TreeViewController {
+class CollectedCookiesViews
+    : public views::DialogDelegateView,
+      public views::ButtonListener,
+      public views::TabbedPaneListener,
+      public views::TreeViewController,
+      public content::WebContentsUserData<CollectedCookiesViews> {
  public:
+  ~CollectedCookiesViews() override;
+
   // Use BrowserWindow::ShowCollectedCookiesDialog to show.
-  explicit CollectedCookiesViews(content::WebContents* web_contents);
+  static void CreateAndShowForWebContents(content::WebContents* web_contents);
 
   // views::DialogDelegate:
   base::string16 GetWindowTitle() const override;
-  int GetDialogButtons() const override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool Accept() override;
   ui::ModalType GetModalType() const override;
   bool ShouldShowCloseButton() const override;
-  views::View* CreateExtraView() override;
+  void DeleteDelegate() override;
 
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
@@ -66,18 +68,19 @@ class CollectedCookiesViews : public views::DialogDelegateView,
   // views::View:
   gfx::Size GetMinimumSize() const override;
   void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
+      const views::ViewHierarchyChangedDetails& details) override;
 
  private:
   friend class CollectedCookiesViewsTest;
+  friend class content::WebContentsUserData<CollectedCookiesViews>;
 
-  ~CollectedCookiesViews() override;
+  explicit CollectedCookiesViews(content::WebContents* web_contents);
 
   void Init();
 
-  views::View* CreateAllowedPane();
+  std::unique_ptr<views::View> CreateAllowedPane();
 
-  views::View* CreateBlockedPane();
+  std::unique_ptr<views::View> CreateBlockedPane();
 
   // Creates and returns the "buttons pane", which is the view in the
   // bottom-leading edge of this dialog containing the action buttons for the
@@ -85,7 +88,8 @@ class CollectedCookiesViews : public views::DialogDelegateView,
   std::unique_ptr<views::View> CreateButtonsPane();
 
   // Creates and returns a containing ScrollView around the given tree view.
-  views::View* CreateScrollView(views::TreeView* pane);
+  std::unique_ptr<views::View> CreateScrollView(
+      std::unique_ptr<views::TreeView> pane);
 
   void EnableControls();
 
@@ -93,49 +97,45 @@ class CollectedCookiesViews : public views::DialogDelegateView,
 
   void AddContentException(views::TreeView* tree_view, ContentSetting setting);
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
-  content::NotificationRegistrar registrar_;
-
   // The web contents.
   content::WebContents* web_contents_;
 
   // Assorted views.
-  views::Label* allowed_label_;
-  views::Label* blocked_label_;
+  views::Label* allowed_label_ = nullptr;
+  views::Label* blocked_label_ = nullptr;
 
-  views::TreeView* allowed_cookies_tree_;
-  views::TreeView* blocked_cookies_tree_;
+  views::TreeView* allowed_cookies_tree_ = nullptr;
+  views::TreeView* blocked_cookies_tree_ = nullptr;
 
-  views::LabelButton* block_allowed_button_;
-  views::LabelButton* delete_allowed_button_;
-  views::LabelButton* allow_blocked_button_;
-  views::LabelButton* for_session_blocked_button_;
+  views::LabelButton* block_allowed_button_ = nullptr;
+  views::LabelButton* delete_allowed_button_ = nullptr;
+  views::LabelButton* allow_blocked_button_ = nullptr;
+  views::LabelButton* for_session_blocked_button_ = nullptr;
 
   std::unique_ptr<CookiesTreeModel> allowed_cookies_tree_model_;
   std::unique_ptr<CookiesTreeModel> blocked_cookies_tree_model_;
 
-  CookiesTreeViewDrawingProvider* allowed_cookies_drawing_provider_;
-  CookiesTreeViewDrawingProvider* blocked_cookies_drawing_provider_;
+  CookiesTreeViewDrawingProvider* allowed_cookies_drawing_provider_ = nullptr;
+  CookiesTreeViewDrawingProvider* blocked_cookies_drawing_provider_ = nullptr;
 
-  CookieInfoView* cookie_info_view_;
+  CookieInfoView* cookie_info_view_ = nullptr;
 
-  InfobarView* infobar_;
-
-  // The buttons pane is owned by this class until the containing
-  // DialogClientView requests it via |CreateExtraView|, at which point
-  // ownership is handed off and this pointer becomes null.
-  std::unique_ptr<views::View> buttons_pane_;
+  InfobarView* infobar_ = nullptr;
 
   // Weak pointers to the allowed and blocked panes so that they can be
   // shown/hidden as needed.
-  views::View* allowed_buttons_pane_;
-  views::View* blocked_buttons_pane_;
+  views::View* allowed_buttons_pane_ = nullptr;
+  views::View* blocked_buttons_pane_ = nullptr;
 
-  bool status_changed_;
+  bool status_changed_ = false;
+
+  // This bit is set to true when the widget is shutting down or when |this|'s
+  // destructor has been called. Either the Widget or the WebContents may be the
+  // first to shut down, and this prevents double-destruction of this or
+  // double-closing of the widget.
+  bool destroying_ = false;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   DISALLOW_COPY_AND_ASSIGN(CollectedCookiesViews);
 };

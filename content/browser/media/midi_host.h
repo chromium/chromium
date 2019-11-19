@@ -24,7 +24,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "media/midi/midi_manager.h"
 #include "media/midi/midi_service.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace midi {
 class MidiService;
@@ -40,11 +43,12 @@ class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
  public:
   ~MidiHost() override;
 
-  // Creates an instance of MidiHost and binds |request| to the instance using
-  // a strong binding. Should be called on the IO thread.
-  static void BindRequest(int render_process_id,
-                          midi::MidiService* midi_service,
-                          midi::mojom::MidiSessionProviderRequest request);
+  // Creates an instance of MidiHost and binds |receiver| to the instance using
+  // a self owned receiver. Should be called on the IO thread.
+  static void BindReceiver(
+      int render_process_id,
+      midi::MidiService* midi_service,
+      mojo::PendingReceiver<midi::mojom::MidiSessionProvider> receiver);
 
   // MidiManagerClient implementation. These methods can be called on any thread
   // by platform specific implementations of MidiManager, so use locks
@@ -62,8 +66,9 @@ class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
   void Detach() override;
 
   // midi::mojom::MidiSessionProvider implementation.
-  void StartSession(midi::mojom::MidiSessionRequest session_request,
-                    midi::mojom::MidiSessionClientPtr client) override;
+  void StartSession(
+      mojo::PendingReceiver<midi::mojom::MidiSession> session_receiver,
+      mojo::PendingRemote<midi::mojom::MidiSessionClient> client) override;
 
   // midi::mojom::MidiSession implementation.
   void SendData(uint32_t port,
@@ -117,14 +122,14 @@ class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
 
   // Stores a session request sent from the renderer until CompleteStartSession
   // is called.
-  midi::mojom::MidiSessionRequest pending_session_request_;
+  mojo::PendingReceiver<midi::mojom::MidiSession> pending_session_receiver_;
 
   // Bound on the IO thread if a session is successfully started by MidiService.
-  mojo::Binding<midi::mojom::MidiSession> midi_session_;
+  mojo::Receiver<midi::mojom::MidiSession> midi_session_{this};
 
   // Bound on the IO thread and should only be called there. Use CallClient to
   // call midi::mojom::MidiSessionClient methods.
-  midi::mojom::MidiSessionClientPtr midi_client_;
+  mojo::Remote<midi::mojom::MidiSessionClient> midi_client_;
 
   DISALLOW_COPY_AND_ASSIGN(MidiHost);
 };

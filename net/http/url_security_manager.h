@@ -25,20 +25,20 @@ class NET_EXPORT_PRIVATE URLSecurityManager {
 
   // Creates a platform-dependent instance of URLSecurityManager.
   //
-  // A security manager has two whitelists, a "default whitelist" that is a
-  // whitelist of servers with which default credentials can be used, and a
-  // "delegate whitelist" that is the whitelist of servers that are allowed to
+  // A security manager has two allowlists, a "default allowlist" that is a
+  // allowlist of servers with which default credentials can be used, and a
+  // "delegate allowlist" that is the allowlist of servers that are allowed to
   // have delegated Kerberos tickets.
   //
-  // On creation both whitelists are NULL.
+  // On creation both allowlists are empty.
   //
-  // If the default whitelist is NULL and the platform is Windows, it indicates
+  // If the default allowlist is empty and the platform is Windows, it indicates
   // that security zone mapping should be used to determine whether default
-  // credentials should be used. If the default whitelist is NULL and the
+  // credentials should be used. If the default allowlist is empty and the
   // platform is non-Windows, it indicates that no servers should be
-  // whitelisted.
+  // allowlisted.
   //
-  // If the delegate whitelist is NULL no servers can have delegated Kerberos
+  // If the delegate allowlist is empty no servers can have delegated Kerberos
   // tickets.
   //
   static std::unique_ptr<URLSecurityManager> Create();
@@ -51,36 +51,36 @@ class NET_EXPORT_PRIVATE URLSecurityManager {
   // |auth_origin| for HTTP Negotiate authentication.
   virtual bool CanDelegate(const GURL& auth_origin) const = 0;
 
-  virtual void SetDefaultWhitelist(
-      std::unique_ptr<HttpAuthFilter> whitelist_default) = 0;
-  virtual void SetDelegateWhitelist(
-      std::unique_ptr<HttpAuthFilter> whitelist_delegate) = 0;
+  virtual void SetDefaultAllowlist(
+      std::unique_ptr<HttpAuthFilter> allowlist_default) = 0;
+  virtual void SetDelegateAllowlist(
+      std::unique_ptr<HttpAuthFilter> allowlist_delegate) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(URLSecurityManager);
 };
 
-class URLSecurityManagerWhitelist : public URLSecurityManager {
+class URLSecurityManagerAllowlist : public URLSecurityManager {
  public:
-  URLSecurityManagerWhitelist();
-  ~URLSecurityManagerWhitelist() override;
+  URLSecurityManagerAllowlist();
+  ~URLSecurityManagerAllowlist() override;
 
   // URLSecurityManager methods.
   bool CanUseDefaultCredentials(const GURL& auth_origin) const override;
   bool CanDelegate(const GURL& auth_origin) const override;
-  void SetDefaultWhitelist(
-      std::unique_ptr<HttpAuthFilter> whitelist_default) override;
-  void SetDelegateWhitelist(
-      std::unique_ptr<HttpAuthFilter> whitelist_delegate) override;
+  void SetDefaultAllowlist(
+      std::unique_ptr<HttpAuthFilter> allowlist_default) override;
+  void SetDelegateAllowlist(
+      std::unique_ptr<HttpAuthFilter> allowlist_delegate) override;
 
  protected:
-  bool HasDefaultWhitelist() const;
+  bool HasDefaultAllowlist() const;
 
  private:
-  std::unique_ptr<const HttpAuthFilter> whitelist_default_;
-  std::unique_ptr<const HttpAuthFilter> whitelist_delegate_;
+  std::unique_ptr<const HttpAuthFilter> allowlist_default_;
+  std::unique_ptr<const HttpAuthFilter> allowlist_delegate_;
 
-  DISALLOW_COPY_AND_ASSIGN(URLSecurityManagerWhitelist);
+  DISALLOW_COPY_AND_ASSIGN(URLSecurityManagerAllowlist);
 };
 
 }  // namespace net

@@ -150,6 +150,56 @@
     });
   }
 
+  // TODO(crbug.com/988432): This test is a temporary replacement for:
+  // external/wpt/webrtc/RTCRtpReceiver-getSynchronizationSources.https.html
+  async function testEstablishAudioOnlyCallAndVerifyGetSynchronizationSourcesWorks() {
+    const startTime = performance.timeOrigin + performance.now();
+
+    await setupCallAndPromiseAudioPlaying({audio: true});
+
+    const peerConnection = gSecondConnection;
+
+    const receivers = peerConnection.getReceivers();
+    assertEquals(receivers.length, 1);
+    const receiver = receivers[0];
+    assertEquals(receiver.track.kind, 'audio');
+
+    const results = receiver.getSynchronizationSources();
+    assertEquals(results.length, 1);
+    const result = results[0];
+
+    const endTime = performance.timeOrigin + performance.now();
+
+    console.log('getSynchronizationSources() = ' + JSON.stringify(result));
+
+    // timestamp
+    assertEquals(typeof result.timestamp, 'number');
+    assertTrue(result.timestamp >= startTime);
+    assertTrue(result.timestamp <= endTime);
+
+    // source
+    assertEquals(typeof result.source, 'number');
+    assertTrue(result.source >= 0);
+    assertTrue(result.source <= 0xffffffff);
+
+    // rtpTimestamp
+    assertEquals(typeof result.rtpTimestamp, 'number');
+    assertTrue(result.rtpTimestamp >= 0);
+    assertTrue(result.rtpTimestamp <= 0xffffffff);
+
+    // audioLevel
+    assertEquals(typeof result.audioLevel, 'number');
+    assertTrue(result.audioLevel >= 0);
+    assertTrue(result.audioLevel <= 1);
+
+    // voiceActivityFlag
+    if (result.voiceActivityFlag != undefined) {
+      assertEquals(typeof result.voiceActivityFlag, 'boolean');
+    }
+
+    reportTestSuccess();
+  }
+
   function createConnections(constraints) {
     gFirstConnection = createConnection(constraints, 'remote-view-1');
     assertEquals('stable', gFirstConnection.signalingState);

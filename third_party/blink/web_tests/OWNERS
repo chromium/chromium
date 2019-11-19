@@ -1,4 +1,1 @@
 *
-
-per-file SmokeTests=set noparent
-per-file SmokeTests=file://third_party/blink/tools/OWNERS

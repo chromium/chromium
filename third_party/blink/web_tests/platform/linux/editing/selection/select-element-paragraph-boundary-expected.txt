@@ -11,7 +11,7 @@ layer at (0,0) size 800x600
           text run at (326,0) width 423: "The caret should be at the end of the paragraph below, just after the"
           text run at (0,20) width 67: "select box."
       LayoutBlockFlow {DIV} at (0,56) size 784x20
-        LayoutMenuList {SELECT} at (0,0) size 29x20 [bgcolor=#C0C0C0] [border: (1px solid #A9A9A9)]
+        LayoutMenuList {SELECT} at (0,0) size 29x20 [bgcolor=#DDDDDD] [border: (1px solid #A9A9A9)]
           LayoutBlockFlow (anonymous) at (1,1) size 27x18
             LayoutText (anonymous) at (4,1) size 7x16
               text run at (4,1) width 7: "1"

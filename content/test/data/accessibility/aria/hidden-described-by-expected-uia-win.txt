@@ -1,0 +1,4 @@
+document
+++group Name='span-A3' DescribedBy='span-A4'
+++group Name='span-B' DescribedBy='span-A2'
+++group Name='span-C'

@@ -15,7 +15,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
@@ -126,7 +126,7 @@ class UpdateInstallGateTest : public testing::Test {
     fake_user_manager_->LoginUser(account_id);
 #endif
     profile_ = profile_manager_->CreateTestingProfile(kUserProfile);
-    profile_manager_->SetLoggedIn(true);
+    base::RunLoop().RunUntilIdle();
 
     TestExtensionSystem* test_extension_system =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_));
@@ -202,7 +202,7 @@ class UpdateInstallGateTest : public testing::Test {
 
  private:
   // Needed by extension system.
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   // Needed to ensure we don't end up creating actual RenderViewHosts
   // and RenderProcessHosts.

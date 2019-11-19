@@ -8,9 +8,9 @@
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
-#include "third_party/blink/renderer/platform/geometry/layout_point.h"
 
 namespace blink {
 
@@ -39,9 +39,10 @@ ScrollableArea* AssociatedScrollableArea(const PaintLayer*);
 bool IsInDocument(EventTarget*);
 
 ContainerNode* ParentForClickEvent(const Node&);
+ContainerNode* ParentForClickEventInteractiveElementSensitive(const Node&);
 
-LayoutPoint ContentPointFromRootFrame(LocalFrame*,
-                                      const IntPoint& point_in_root_frame);
+PhysicalOffset ContentPointFromRootFrame(LocalFrame*,
+                                         const FloatPoint& point_in_root_frame);
 
 MouseEventWithHitTestResults PerformMouseEventHitTest(LocalFrame*,
                                                       const HitTestRequest&,
@@ -52,6 +53,13 @@ LocalFrame* GetTargetSubframe(const MouseEventWithHitTestResults&,
                               bool* is_remote_frame = nullptr);
 
 LocalFrame* SubframeForTargetNode(Node*, bool* is_remote_frame = nullptr);
+
+// Intervention: if an input event lands on a cross-origin iframe that has
+// moved or resized recently (recent==500ms), and which contains an
+// IntersectionObserver that is tracking visibility, then the event is quietly
+// discarded.
+bool ShouldDiscardEventTargetingFrame(const WebInputEvent& event,
+                                      const LocalFrame& frame);
 
 class PointerEventTarget {
   DISALLOW_NEW();

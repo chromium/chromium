@@ -13,12 +13,9 @@ include_rules = [
     "+net/base",
     "+net/http",
     "+net/nqe",
-    # For URLRequestDataJob::BuildResponse().
-    "+net/url_request/url_request_data_job.h",
 
+    "+services/network/public/cpp/features.h",
     "+third_party/blink/renderer/platform/blob/blob_data.h",
-    "+third_party/blink/renderer/platform/cross_thread_copier.h",
-    "+third_party/blink/renderer/platform/cross_thread_functional.h",
     "+third_party/blink/renderer/platform/crypto.h",
     "+third_party/blink/renderer/platform/file_metadata.h",
     "+third_party/blink/renderer/platform/heap",
@@ -26,7 +23,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/loader",
     "+third_party/blink/renderer/platform/platform_export.h",
     "+third_party/blink/renderer/platform/scheduler",
-    "+third_party/blink/renderer/platform/shared_buffer.h",
+    "+third_party/blink/renderer/platform/wtf/shared_buffer.h",
     "+third_party/blink/renderer/platform/testing",
     "+third_party/blink/renderer/platform/weborigin",
     "+third_party/blink/renderer/platform/web_task_runner.h",

@@ -4,44 +4,16 @@
 
 #include "components/net_log/chrome_net_log.h"
 
-#include <memory>
-#include <utility>
-
-#include "base/callback.h"
 #include "base/command_line.h"
-#include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "components/version_info/version_info.h"
-#include "net/log/file_net_log_observer.h"
 #include "net/log/net_log_util.h"
 
 namespace net_log {
 
-ChromeNetLog::ChromeNetLog() {}
-
-ChromeNetLog::~ChromeNetLog() {
-  ClearFileNetLogObserver();
-}
-
-void ChromeNetLog::StartWritingToFile(
-    const base::FilePath& path,
-    net::NetLogCaptureMode capture_mode,
-    const base::CommandLine::StringType& command_line_string,
-    const std::string& channel_string) {
-  DCHECK(!path.empty());
-
-  // TODO(739485): The log file does not contain about:flags data.
-  file_net_log_observer_ = net::FileNetLogObserver::CreateUnbounded(
-      path, GetConstants(command_line_string, channel_string));
-
-  file_net_log_observer_->StartObserving(this, capture_mode);
-}
-
-// static
-std::unique_ptr<base::Value> ChromeNetLog::GetConstants(
+std::unique_ptr<base::Value> GetConstantsForNetLog(
     const base::CommandLine::StringType& command_line_string,
     const std::string& channel_string) {
   std::unique_ptr<base::DictionaryValue> constants_dict =
@@ -49,13 +21,13 @@ std::unique_ptr<base::Value> ChromeNetLog::GetConstants(
   DCHECK(constants_dict);
 
   auto platform_dict =
-      GetPlatformConstants(command_line_string, channel_string);
+      GetPlatformConstantsForNetLog(command_line_string, channel_string);
   if (platform_dict)
     constants_dict->MergeDictionary(platform_dict.get());
   return constants_dict;
 }
 
-std::unique_ptr<base::DictionaryValue> ChromeNetLog::GetPlatformConstants(
+std::unique_ptr<base::DictionaryValue> GetPlatformConstantsForNetLog(
     const base::CommandLine::StringType& command_line_string,
     const std::string& channel_string) {
   auto constants_dict = std::make_unique<base::DictionaryValue>();
@@ -81,31 +53,6 @@ std::unique_ptr<base::DictionaryValue> ChromeNetLog::GetPlatformConstants(
   constants_dict->Set("clientInfo", std::move(dict));
 
   return constants_dict;
-}
-
-void ChromeNetLog::ShutDownBeforeTaskScheduler() {
-  // TODO(eroman): Stop in-progress net_export_file_writer_ or delete its files?
-
-  ClearFileNetLogObserver();
-}
-
-void ChromeNetLog::ClearFileNetLogObserver() {
-  if (!file_net_log_observer_)
-    return;
-
-  // TODO(739487): The log file does not contain any polled data.
-  //
-  // TODO(eroman): FileNetLogObserver::StopObserving() posts to the file task
-  // runner to finish writing the log file. Despite that sequenced task runner
-  // being marked BLOCK_SHUTDOWN, those tasks are not actually running.
-  //
-  // This isn't a big deal when using the unbounded logger since the log
-  // loading code can handle such truncated logs. But this will need fixing
-  // if switching to log formats that are not so versatile (also if adding
-  // polled data).
-  file_net_log_observer_->StopObserving(nullptr /*polled_data*/,
-                                        base::Closure());
-  file_net_log_observer_.reset();
 }
 
 }  // namespace net_log

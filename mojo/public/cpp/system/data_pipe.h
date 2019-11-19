@@ -131,16 +131,12 @@ inline MojoResult CreateDataPipe(
   return rv;
 }
 
+// DEPRECATED: use |CreateDataPipe| instead.
+//
+// This class is not safe to use in production code as there is no way for it to
+// report failure while creating the pipe and it will CHECK in case of failures.
+//
 // A wrapper class that automatically creates a data pipe and owns both handles.
-//
-// Note that this class is not safe to use in production code, as there is no
-// way for it to report failure while creating the pipe, while in practice
-// creating a new data pipe does fail every now and then. Instead just call
-// CreateDataPipe directly and check its return value.
-//
-// TODO(vtl): Make an even more friendly version? (Maybe templatized for a
-// particular type instead of some "element"? Maybe functions that take
-// vectors?)
 class MOJO_CPP_SYSTEM_EXPORT DataPipe {
  public:
   DataPipe();

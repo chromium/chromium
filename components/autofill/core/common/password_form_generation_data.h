@@ -21,39 +21,22 @@ namespace autofill {
 // which fields password should be generated.
 struct PasswordFormGenerationData {
   PasswordFormGenerationData();
-  PasswordFormGenerationData(FormSignature form_signature,
-                             FieldSignature field_signature);
   PasswordFormGenerationData(const PasswordFormGenerationData& other);
-  ~PasswordFormGenerationData();
-
-  // The unique signature of form where password should be generated
-  // (see components/autofill/core/browser/form_structure.h).
-  FormSignature form_signature;
-
-  // The unique signature of field where password should be generated
-  // (see components/autofill/core/browser/autofill_field.h).
-  FieldSignature field_signature;
-
-  // The unique signature of the confirmation field where the generated password
-  // should be copied to.
-  base::Optional<FieldSignature> confirmation_field_signature;
-};
-
-// Structure used for sending information from browser to renderer about on
-// which fields password should be generated.
-// TODO(https://crbug.com/866444): Remove old PasswordFormGenerationData and
-// rename to PasswordFormGenerationData when the old parser is gone.
-struct NewPasswordFormGenerationData {
+  PasswordFormGenerationData(uint32_t new_password_renderer_id,
+                             uint32_t confirmation_password_renderer_id);
 #if defined(OS_IOS)
+  PasswordFormGenerationData(base::string16 form_name,
+                             base::string16 new_password_element,
+                             base::string16 confirmation_password_element);
+
   base::string16 form_name;
   base::string16 new_password_element;
   base::string16 confirmation_password_element;
-#else
+#endif
   uint32_t new_password_renderer_id =
       FormFieldData::kNotSetFormControlRendererId;
   uint32_t confirmation_password_renderer_id =
       FormFieldData::kNotSetFormControlRendererId;
-#endif
 };
 
 }  // namespace autofill

@@ -42,9 +42,7 @@ std::ostream& operator<<(std::ostream& out, const pb::RpcMessage& message) {
 }  // namespace
 
 RpcBroker::RpcBroker(const SendMessageCallback& send_message_cb)
-    : next_handle_(kFirstHandle),
-      send_message_cb_(send_message_cb),
-      weak_factory_(this) {}
+    : next_handle_(kFirstHandle), send_message_cb_(send_message_cb) {}
 
 RpcBroker::~RpcBroker() {
   DCHECK(thread_checker_.CalledOnValidThread());

@@ -5,18 +5,26 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 #include "ui/gl/init/gl_factory.h"
 
+#if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 static int RunHelper(base::TestSuite* test_suite) {
   base::FeatureList::InitializeInstance(std::string(), std::string());
 #if defined(USE_OZONE)
-  base::MessageLoopForUI main_loop;
+  base::SingleThreadTaskExecutor executor(base::MessagePumpType::UI);
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
+  ui::OzonePlatform::InitializeForGPU(params);
 #else
-  base::MessageLoopForIO message_loop;
+  base::SingleThreadTaskExecutor executor(base::MessagePumpType::IO);
 #endif
   CHECK(gl::init::InitializeGLOneOff());
   return test_suite->Run();

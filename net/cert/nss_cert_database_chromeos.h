@@ -26,7 +26,6 @@ class NET_EXPORT NSSCertDatabaseChromeOS : public NSSCertDatabase {
   void SetSystemSlot(crypto::ScopedPK11Slot system_slot);
 
   // NSSCertDatabase implementation.
-  ScopedCERTCertificateList ListCertsSync() override;
   void ListCerts(NSSCertDatabase::ListCertsCallback callback) override;
   void ListModules(std::vector<crypto::ScopedPK11Slot>* modules,
                    bool need_rw) const override;
@@ -37,7 +36,7 @@ class NET_EXPORT NSSCertDatabaseChromeOS : public NSSCertDatabase {
   // TODO(mattm): handle trust setting correctly for certs in read-only slots.
 
  private:
-  // Certificate listing implementation used by |ListCerts| and |ListCertsSync|.
+  // Certificate listing implementation used by |ListCerts|.
   // The certificate list normally returned by NSSCertDatabase::ListCertsImpl
   // is additionally filtered by |profile_filter|.
   // Static so it may safely be used on the worker thread.

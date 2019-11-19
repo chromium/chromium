@@ -23,8 +23,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FE_COMPOSITE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FE_COMPOSITE_H_
 
-#include "SkBlendMode.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
 
 namespace blink {
 
@@ -41,13 +41,6 @@ enum CompositeOperationType {
 
 class PLATFORM_EXPORT FEComposite final : public FilterEffect {
  public:
-  static FEComposite* Create(Filter*,
-                             const CompositeOperationType&,
-                             float,
-                             float,
-                             float,
-                             float);
-
   FEComposite(Filter*,
               const CompositeOperationType&,
               float,

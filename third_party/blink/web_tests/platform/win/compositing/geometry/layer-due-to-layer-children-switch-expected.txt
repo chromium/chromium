@@ -3,17 +3,6 @@ First dump layer tree:
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
@@ -26,33 +15,17 @@ Second dump layer tree:
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='parent' class='parent'",
-      "position": [8, 8],
-      "bounds": [242, 192]
-    },
-    {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='child' class='child'",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child' class='child'",
       "bounds": [250, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
-      "transform": 2
+      "transform": 3
     }
   ],
   "transforms": [
@@ -62,12 +35,22 @@ Second dump layer tree:
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [129, 49, 0, 1]
+        [8, 8, 0, 1]
       ]
     },
     {
       "id": 2,
       "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [121, 41, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
       "transform": [
         [0.707106781186548, 0, -0.707106781186548, 0.00117851130197758],
         [0, 1, 0, 0],
@@ -82,17 +65,6 @@ Second dump layer tree:
 Third dump layer tree:
 {
   "layers": [
-    {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
     {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],

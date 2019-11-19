@@ -2,56 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @constructor
- * @struct
- * @extends {PolymerElement}
- */
-function FilesToggleRipple() {}
+class FilesToggleRipple extends PolymerElement {
+  constructor() {
+    /**
+     * @type {boolean}
+     */
+    this.activated;
+  }
+}
 
-/**
- * @type {boolean}
- */
-FilesToggleRipple.prototype.activated;
+class FilesToast extends PolymerElement {
+  constructor() {
+    /**
+     * @type {boolean}
+     */
+    this.visible;
 
-/**
- * @constructor
- * @struct
- * @extends {PolymerElement}
- */
-function FilesToast() {}
+    /**
+     * @type {number}
+     */
+    this.timeout;
+  }
+  /**
+   * @param {string} text
+   * @param {{text: string, callback: function()}=} opt_action
+   */
+  show(text, opt_action) {}
 
-/**
- * @type {boolean}
- */
-FilesToast.prototype.visible;
+  /**
+   * @return {!Promise}
+   */
+  hide() {}
+}
 
-/**
- * @type {number}
- */
-FilesToast.prototype.timeout;
 
-/**
- * @param {string} text
- * @param {{text: string, callback: function()}=} opt_action
- */
-FilesToast.prototype.show = function(text, opt_action) {};
+class FilesQuickView extends PolymerElement {}
 
-/**
- * @return {!Promise}
- */
-FilesToast.prototype.hide = function() {};
-
-/**
- * @constructor
- * @struct
- * @extends {PolymerElement}
- */
-function FilesQuickView() {}
-
-/**
- * @constructor
- * @struct
- * @extends {PolymerElement}
- */
-function FilesMetadataBox() {}
+class FilesMetadataBox extends PolymerElement {}

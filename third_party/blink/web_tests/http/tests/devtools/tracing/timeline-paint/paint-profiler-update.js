@@ -7,9 +7,9 @@
   await TestRunner.loadModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.loadHTML(`
-    <script src="../../../resources/run-after-layout-and-paint.js"></script>
     <div id="square" style="width: 40px; height: 40px"></div>
   `);
+  await TestRunner.addScriptTag('../../../resources/run-after-layout-and-paint.js');
   await TestRunner.evaluateInPagePromise(`
       function performActions()
       {

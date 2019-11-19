@@ -16,7 +16,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/common/safe_browsing/client_model.pb.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/safe_browsing/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/proto/csd.pb.h"
 #include "components/variations/variations_associated_data.h"
@@ -92,8 +91,7 @@ ModelLoader::ModelLoader(
     : name_(FillInModelName(is_extended_reporting, GetModelNumber())),
       url_(kClientModelUrlPrefix + name_),
       update_renderers_callback_(update_renderers_callback),
-      url_loader_factory_(url_loader_factory),
-      weak_factory_(this) {
+      url_loader_factory_(url_loader_factory) {
   DCHECK(url_.is_valid());
 }
 
@@ -105,8 +103,7 @@ ModelLoader::ModelLoader(
     : name_(model_name),
       url_(kClientModelUrlPrefix + name_),
       update_renderers_callback_(update_renderers_callback),
-      url_loader_factory_(url_loader_factory),
-      weak_factory_(this) {
+      url_loader_factory_(url_loader_factory) {
   DCHECK(url_.is_valid());
 }
 
@@ -155,8 +152,7 @@ void ModelLoader::StartFetch() {
         })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url_;
-  resource_request->load_flags =
-      net::LOAD_DO_NOT_SAVE_COOKIES | net::LOAD_DO_NOT_SEND_COOKIES;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(

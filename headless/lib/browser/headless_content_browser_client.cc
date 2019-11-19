@@ -13,27 +13,26 @@
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/resource_dispatcher_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/service_names.mojom.h"
 #include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_devtools_manager_delegate.h"
-#include "headless/lib/browser/headless_overlay_manifests.h"
 #include "headless/lib/browser/headless_quota_permission_context.h"
 #include "headless/lib/headless_macros.h"
 #include "net/base/url_util.h"
 #include "net/ssl/client_cert_identity.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/service_manager/sandbox/switches.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/switches.h"
@@ -44,11 +43,6 @@
 #include "components/crash/content/browser/crash_handler_host_linux.h"
 #include "content/public/common/content_descriptors.h"
 #endif  // defined(HEADLESS_USE_BREAKPAD)
-
-#if BUILDFLAG(ENABLE_PRINTING) && !defined(CHROME_MULTIPLE_DLL_CHILD)
-#include "base/strings/utf_string_conversions.h"
-#include "components/services/pdf_compositor/public/interfaces/pdf_compositor.mojom.h"
-#endif
 
 namespace headless {
 
@@ -122,12 +116,15 @@ HeadlessContentBrowserClient::HeadlessContentBrowserClient(
 
 HeadlessContentBrowserClient::~HeadlessContentBrowserClient() = default;
 
-content::BrowserMainParts* HeadlessContentBrowserClient::CreateBrowserMainParts(
-    const content::MainFunctionParams&) {
-  std::unique_ptr<HeadlessBrowserMainParts> browser_main_parts =
-      std::make_unique<HeadlessBrowserMainParts>(browser_);
+std::unique_ptr<content::BrowserMainParts>
+HeadlessContentBrowserClient::CreateBrowserMainParts(
+    const content::MainFunctionParams& parameters) {
+  auto browser_main_parts =
+      std::make_unique<HeadlessBrowserMainParts>(parameters, browser_);
+
   browser_->set_browser_main_parts(browser_main_parts.get());
-  return browser_main_parts.release();
+
+  return browser_main_parts;
 }
 
 void HeadlessContentBrowserClient::OverrideWebkitPrefs(
@@ -146,27 +143,7 @@ HeadlessContentBrowserClient::GetDevToolsManagerDelegate() {
   return new HeadlessDevToolsManagerDelegate(browser_->GetWeakPtr());
 }
 
-base::Optional<service_manager::Manifest>
-HeadlessContentBrowserClient::GetServiceManifestOverlay(
-    base::StringPiece name) {
-  if (name == content::mojom::kBrowserServiceName)
-    return GetHeadlessContentBrowserOverlayManifest();
-
-  if (name == content::mojom::kPackagedServicesServiceName)
-    return GetHeadlessContentPackagedServicesOverlayManifest();
-
-  return base::nullopt;
-}
-
-void HeadlessContentBrowserClient::RegisterOutOfProcessServices(
-    OutOfProcessServiceMap* services) {
-#if BUILDFLAG(ENABLE_PRINTING) && !defined(CHROME_MULTIPLE_DLL_CHILD)
-  (*services)[printing::mojom::kServiceName] =
-      base::BindRepeating(&base::ASCIIToUTF16, "PDF Compositor Service");
-#endif
-}
-
-content::QuotaPermissionContext*
+scoped_refptr<content::QuotaPermissionContext>
 HeadlessContentBrowserClient::CreateQuotaPermissionContext() {
   return new HeadlessQuotaPermissionContext();
 }
@@ -177,7 +154,7 @@ void HeadlessContentBrowserClient::GetQuotaSettings(
     ::storage::OptionalQuotaSettingsCallback callback) {
   ::storage::GetNominalDynamicSettings(
       partition->GetPath(), context->IsOffTheRecord(),
-      ::storage::GetDefaultDiskInfoHelper(), std::move(callback));
+      ::storage::GetDefaultDeviceInfoHelper(), std::move(callback));
 }
 
 content::GeneratedCodeCacheSettings
@@ -259,6 +236,14 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
                                             headless_browser_context_impl,
                                             process_type, child_process_id);
   }
+
+#if defined(OS_LINUX)
+  // Processes may only query perf_event_open with the BPF sandbox disabled.
+  if (old_command_line.HasSwitch(::switches::kEnableThreadInstructionCount) &&
+      old_command_line.HasSwitch(service_manager::switches::kNoSandbox)) {
+    command_line->AppendSwitch(::switches::kEnableThreadInstructionCount);
+  }
+#endif
 }
 
 std::string HeadlessContentBrowserClient::GetAcceptLangs(
@@ -271,9 +256,8 @@ void HeadlessContentBrowserClient::AllowCertificateError(
     int cert_error,
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
-    content::ResourceType resource_type,
+    bool is_main_frame_request,
     bool strict_enforcement,
-    bool expired_previous_decision,
     const base::Callback<void(content::CertificateRequestResultType)>&
         callback) {
   if (!callback.is_null()) {
@@ -290,19 +274,13 @@ void HeadlessContentBrowserClient::AllowCertificateError(
   }
 }
 
-void HeadlessContentBrowserClient::SelectClientCertificate(
+base::OnceClosure HeadlessContentBrowserClient::SelectClientCertificate(
     content::WebContents* web_contents,
     net::SSLCertRequestInfo* cert_request_info,
     net::ClientCertIdentityList client_certs,
     std::unique_ptr<content::ClientCertificateDelegate> delegate) {
   delegate->ContinueWithCertificate(nullptr, nullptr);
-}
-
-void HeadlessContentBrowserClient::ResourceDispatcherHostCreated() {
-  resource_dispatcher_host_delegate_.reset(
-      new HeadlessResourceDispatcherHostDelegate);
-  content::ResourceDispatcherHost::Get()->SetDelegate(
-      resource_dispatcher_host_delegate_.get());
+  return base::OnceClosure();
 }
 
 bool HeadlessContentBrowserClient::ShouldEnableStrictSiteIsolation() {
@@ -314,7 +292,7 @@ bool HeadlessContentBrowserClient::ShouldEnableStrictSiteIsolation() {
   return browser_->options()->site_per_process;
 }
 
-::network::mojom::NetworkContextPtr
+mojo::Remote<::network::mojom::NetworkContext>
 HeadlessContentBrowserClient::CreateNetworkContext(
     content::BrowserContext* context,
     bool in_memory,
@@ -323,11 +301,11 @@ HeadlessContentBrowserClient::CreateNetworkContext(
       in_memory, relative_partition_path);
 }
 
-std::string HeadlessContentBrowserClient::GetProduct() const {
+std::string HeadlessContentBrowserClient::GetProduct() {
   return browser_->options()->product_name_and_version;
 }
 
-std::string HeadlessContentBrowserClient::GetUserAgent() const {
+std::string HeadlessContentBrowserClient::GetUserAgent() {
   return browser_->options()->user_agent;
 }
 

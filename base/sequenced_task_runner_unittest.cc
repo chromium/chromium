@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/gtest_prod_util.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,7 +56,7 @@ class SequencedTaskRunnerTest : public testing::Test {
   Thread foreign_thread_;
 
  private:
-  test::ScopedTaskEnvironment scoped_task_environment_;
+  test::TaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(SequencedTaskRunnerTest);
 };

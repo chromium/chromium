@@ -14,7 +14,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/public/mojom/constants.mojom.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/service_manager/public/cpp/service_binding.h"
@@ -26,7 +26,7 @@ namespace {
 class VibrationTest : public ContentBrowserTest,
                       public device::mojom::VibrationManager {
  public:
-  VibrationTest() : binding_(this) {
+  VibrationTest() {
     // Because Device Service also runs in this process(browser process), here
     // we can directly set our binder to intercept interface requests against
     // it.
@@ -41,8 +41,9 @@ class VibrationTest : public ContentBrowserTest,
         device::mojom::VibrationManager>(device::mojom::kServiceName);
   }
 
-  void BindVibrationManager(device::mojom::VibrationManagerRequest request) {
-    binding_.Bind(std::move(request));
+  void BindVibrationManager(
+      mojo::PendingReceiver<device::mojom::VibrationManager> receiver) {
+    receiver_.Bind(std::move(receiver));
   }
 
  protected:
@@ -70,7 +71,7 @@ class VibrationTest : public ContentBrowserTest,
 
   int64_t vibrate_milliseconds_ = -1;
   base::Closure vibrate_done_;
-  mojo::Binding<device::mojom::VibrationManager> binding_;
+  mojo::Receiver<device::mojom::VibrationManager> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VibrationTest);
 };

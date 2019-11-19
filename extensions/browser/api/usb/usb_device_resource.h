@@ -11,27 +11,29 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "content/public/browser/browser_thread.h"
-#include "device/usb/usb_device_handle.h"
 #include "extensions/browser/api/api_resource.h"
 #include "extensions/browser/api/api_resource_manager.h"
-
-namespace usb_service {
-class UsbDeviceHandle;
-}
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/mojom/usb_device.mojom.h"
 
 namespace extensions {
 
-// A UsbDeviceResource is an ApiResource wrapper for a UsbDevice.
+// A UsbDeviceResource is an ApiResource wrapper for a
+// mojo::Remote<device::mojom::UsbDevice> and its guid.
 class UsbDeviceResource : public ApiResource {
  public:
   static const content::BrowserThread::ID kThreadId =
       content::BrowserThread::UI;
 
   UsbDeviceResource(const std::string& owner_extension_id,
-                    scoped_refptr<device::UsbDeviceHandle> device);
+                    const std::string& guid,
+                    mojo::Remote<device::mojom::UsbDevice> device);
   ~UsbDeviceResource() override;
 
-  scoped_refptr<device::UsbDeviceHandle> device() { return device_; }
+  device::mojom::UsbDevice* device() const {
+    return device_ ? device_.get() : nullptr;
+  }
+  const std::string& guid() const { return guid_; }
 
   bool IsPersistent() const override;
 
@@ -39,7 +41,10 @@ class UsbDeviceResource : public ApiResource {
   friend class ApiResourceManager<UsbDeviceResource>;
   static const char* service_name() { return "UsbDeviceResourceManager"; }
 
-  scoped_refptr<device::UsbDeviceHandle> device_;
+  void OnConnectionError();
+
+  const std::string guid_;
+  mojo::Remote<device::mojom::UsbDevice> device_;
 
   DISALLOW_COPY_AND_ASSIGN(UsbDeviceResource);
 };

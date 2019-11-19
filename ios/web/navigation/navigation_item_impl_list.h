@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_NAVIGATION_NAVIGATION_ITEM_IMPL_LIST_H_
 #define IOS_WEB_NAVIGATION_NAVIGATION_ITEM_IMPL_LIST_H_
 
-#import "ios/web/public/navigation_item_list.h"
+#import "ios/web/public/deprecated/navigation_item_list.h"
 
 namespace web {
 

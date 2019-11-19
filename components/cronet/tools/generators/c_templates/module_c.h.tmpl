@@ -81,7 +81,7 @@ typedef enum {{enum_name}} {
 // Concrete interface {{interface_name}}.
 
 // Create an instance of {{interface_name}}.
-{{export_macro}} {{interface_name}}Ptr {{interface_name}}_Create();
+{{export_macro}} {{interface_name}}Ptr {{interface_name}}_Create(void);
 {%-   endif %}
 // Destroy an instance of {{interface_name}}.
 {{export_macro}} void {{interface_name}}_Destroy({{interface_name}}Ptr self);
@@ -149,7 +149,7 @@ typedef void
 {% set struct_name = struct|get_name_for_kind %}
 ///////////////////////
 // Struct {{struct_name}}.
-{{export_macro}} {{struct_name}}Ptr {{struct_name}}_Create();
+{{export_macro}} {{struct_name}}Ptr {{struct_name}}_Create(void);
 {{export_macro}} void {{struct_name}}_Destroy({{struct_name}}Ptr self);
 // {{struct_name}} setters.
 {%- for packed_field in struct.packed.packed_fields_in_ordinal_order %}

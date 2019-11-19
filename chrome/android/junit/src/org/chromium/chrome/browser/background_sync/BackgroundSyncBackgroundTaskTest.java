@@ -31,13 +31,13 @@ import org.chromium.base.BaseSwitches;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.SysUtils;
+import org.chromium.base.metrics.test.DisableHistogramsRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ShadowDeviceConditions;
 import org.chromium.chrome.browser.background_task_scheduler.NativeBackgroundTask;
-import org.chromium.chrome.test.support.DisableHistogramsRule;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -78,7 +78,7 @@ public class BackgroundSyncBackgroundTaskTest {
     private ArgumentCaptor<TaskInfo> mTaskInfo;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         BackgroundTaskSchedulerFactory.setSchedulerForTesting(mTaskScheduler);
 
@@ -100,7 +100,7 @@ public class BackgroundSyncBackgroundTaskTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         // Clean up static state for subsequent Robolectric tests.
         CommandLine.reset();
         SysUtils.resetForTesting();
@@ -150,7 +150,35 @@ public class BackgroundSyncBackgroundTaskTest {
         new BackgroundSyncBackgroundTask().onStartTaskWithNative(
                 RuntimeEnvironment.application, params, mTaskFinishedCallback);
 
-        verify(mNativeMock).fireBackgroundSyncEvents(any(Runnable.class));
+        verify(mNativeMock).fireOneShotBackgroundSyncEvents(any(Runnable.class));
+        verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
+        verify(mTaskScheduler, times(0)).schedule(any(Context.class), any(TaskInfo.class));
+    }
+
+    @Test
+    @Feature("BackgroundSync")
+    public void onStopTaskBeforeNativeLoaded() {
+        TaskParameters params = TaskParameters.create(TaskIds.BACKGROUND_SYNC_ONE_SHOT_JOB_ID)
+                                        .addExtras(mTaskExtras)
+                                        .build();
+
+        new BackgroundSyncBackgroundTask().onStopTaskBeforeNativeLoaded(
+                RuntimeEnvironment.application, params);
+
+        verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
+        verify(mTaskScheduler, times(0)).schedule(any(Context.class), any(TaskInfo.class));
+    }
+
+    @Test
+    @Feature("BackgroundSync")
+    public void testOnStopTaskWithNative() {
+        TaskParameters params = TaskParameters.create(TaskIds.BACKGROUND_SYNC_ONE_SHOT_JOB_ID)
+                                        .addExtras(mTaskExtras)
+                                        .build();
+
+        new BackgroundSyncBackgroundTask().onStopTaskWithNative(
+                RuntimeEnvironment.application, params);
+
         verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
         verify(mTaskScheduler, times(0)).schedule(any(Context.class), any(TaskInfo.class));
     }

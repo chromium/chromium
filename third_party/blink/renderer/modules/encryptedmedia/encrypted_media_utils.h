@@ -8,18 +8,27 @@
 #include "third_party/blink/public/platform/web_encrypted_media_key_information.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+namespace media {
+enum class EmeInitDataType;
+}
+
 namespace blink {
+
+constexpr const char* kEncryptedMediaFeaturePolicyConsoleWarning =
+    "Encrypted Media access has been blocked because of a Feature Policy "
+    "applied to the current document. See https://goo.gl/EuHzyv for more "
+    "details.";
 
 class EncryptedMediaUtils {
   STATIC_ONLY(EncryptedMediaUtils);
 
  public:
-  static WebEncryptedMediaInitDataType ConvertToInitDataType(
+  static media::EmeInitDataType ConvertToInitDataType(
       const String& init_data_type);
-  static String ConvertFromInitDataType(WebEncryptedMediaInitDataType);
+  static String ConvertFromInitDataType(media::EmeInitDataType init_data_type);
 
   static WebEncryptedMediaSessionType ConvertToSessionType(
       const String& session_type);

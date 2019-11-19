@@ -14,25 +14,18 @@
     </style>
     <script src="../../resources/run-after-layout-and-paint.js"></script>
     <script>
-      if (window.testRunner) {
-        testRunner.dumpAsTextWithPixelResults();
-        testRunner.waitUntilDone();
-      }
-
       function runTest() {
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
         ctx.fillStyle = 'red';
         ctx.fillRect(0, 0, 300, 300);
-        runAfterLayoutAndPaint(repaintTest);
+        runAfterLayoutAndPaint(repaintTest, true);
       }
 
       function repaintTest() {
         var canvas = document.getElementById('canvas');
         // This changes the resolution of the canvas but keeps its layout size constant.
         canvas.width = canvas.width / 2;
-        if (window.testRunner)
-          testRunner.notifyDone();
       }
     </script>
   </head>

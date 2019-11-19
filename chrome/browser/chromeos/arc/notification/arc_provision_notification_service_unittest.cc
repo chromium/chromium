@@ -11,7 +11,9 @@
 #include "base/command_line.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/arc/arc_optin_uma.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
+#include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/chromeos/login/ui/fake_login_display_host.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -44,8 +46,9 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
     ArcSessionManager::SetUiEnabledForTesting(false);
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
-    arc_session_manager_ = std::make_unique<ArcSessionManager>(
-        std::make_unique<ArcSessionRunner>(base::Bind(FakeArcSession::Create)));
+    arc_session_manager_ =
+        std::make_unique<ArcSessionManager>(std::make_unique<ArcSessionRunner>(
+            base::BindRepeating(FakeArcSession::Create)));
 
     // This creates |profile()|, so it has to come after the arc managers.
     BrowserWithTestWindowTest::SetUp();
@@ -216,12 +219,73 @@ TEST_F(ArcProvisionNotificationServiceTest,
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
 }
 
-// The managed provision notification is not displayed when opt-in prefs are not
-// managed.
+// The unmanaged provision notification is not displayed.
 TEST_F(ArcProvisionNotificationServiceTest,
+       UnmanagedProvisionNotification_NotSilent) {
+  // No notifications are expected to be shown in this test.
+
+  // Set ARC to be unmanaged.
+  SetArcPlayStoreEnabledForProfile(profile(), true);
+
+  arc_session_manager_->SetProfile(profile());
+  arc_session_manager_->Initialize();
+
+  // Trigger opt-in flow. The notification is not shown.
+  arc_session_manager_->RequestEnable();
+  EXPECT_FALSE(
+      display_service_->GetNotification(kArcManagedProvisionNotificationId));
+  EXPECT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+            arc_session_manager_->state());
+
+  // Emulate accepting the terms of service.
+  arc_session_manager_->OnTermsOfServiceNegotiatedForTesting(true);
+  arc_session_manager_->StartArcForTesting();
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager_->state());
+
+  // Emulate successful provisioning.
+  EXPECT_FALSE(
+      display_service_->GetNotification(kArcManagedProvisionNotificationId));
+  arc_session_manager_->OnProvisioningFinished(ProvisioningResult::SUCCESS);
+  EXPECT_FALSE(
+      display_service_->GetNotification(kArcManagedProvisionNotificationId));
+}
+
+class ArcProvisionNotificationServiceOobeTest
+    : public ArcProvisionNotificationServiceTest {
+ protected:
+  ArcProvisionNotificationServiceOobeTest() = default;
+  void SetUp() override {
+    ArcProvisionNotificationServiceTest::SetUp();
+
+    GetFakeUserManager()->set_current_user_new(true);
+    CreateLoginDisplayHost();
+  }
+
+  void TearDown() override {
+    fake_login_display_host_.reset();
+    ArcProvisionNotificationServiceTest::TearDown();
+  }
+
+  void CreateLoginDisplayHost() {
+    fake_login_display_host_ =
+        std::make_unique<chromeos::FakeLoginDisplayHost>();
+  }
+
+ private:
+  std::unique_ptr<chromeos::FakeLoginDisplayHost> fake_login_display_host_;
+
+  DISALLOW_COPY_AND_ASSIGN(ArcProvisionNotificationServiceOobeTest);
+};
+
+// For mananged user whose B&R or GLS is not managed, Arc Tos is shown during
+// OOBE and no provision notification is expected.
+// For the cases B&R or GLS are both managed, OOBE opt-in and in-session opt-in
+// have no difference behavior for Arc provision notification.
+TEST_F(ArcProvisionNotificationServiceOobeTest,
        ManagedProvisionNotification_NotSilent) {
   // No notifications are expected to be shown in this test.
 
+  EXPECT_TRUE(IsArcOobeOptInActive());
   // Set ARC to be managed.
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kArcEnabled, std::make_unique<base::Value>(true));

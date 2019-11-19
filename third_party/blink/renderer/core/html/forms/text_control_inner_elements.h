@@ -34,31 +34,27 @@ namespace blink {
 
 class TextControlInnerContainer final : public HTMLDivElement {
  public:
-  static TextControlInnerContainer* Create(Document&);
-
   explicit TextControlInnerContainer(Document&);
 
  protected:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  bool TypeShouldForceLegacyLayout() const final { return true; }
 };
 
 class EditingViewPortElement final : public HTMLDivElement {
  public:
-  static EditingViewPortElement* Create(Document&);
-
   explicit EditingViewPortElement(Document&);
 
  protected:
   scoped_refptr<ComputedStyle> CustomStyleForLayoutObject() override;
 
  private:
+  bool TypeShouldForceLegacyLayout() const final { return true; }
   bool SupportsFocus() const override { return false; }
 };
 
 class TextControlInnerEditorElement final : public HTMLDivElement {
  public:
-  static TextControlInnerEditorElement* Create(Document&);
-
   explicit TextControlInnerEditorElement(Document&);
 
   void DefaultEventHandler(Event&) override;
@@ -67,7 +63,8 @@ class TextControlInnerEditorElement final : public HTMLDivElement {
   scoped_refptr<ComputedStyle> CreateInnerEditorStyle() const;
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  bool TypeShouldForceLegacyLayout() const final { return true; }
   scoped_refptr<ComputedStyle> CustomStyleForLayoutObject() override;
   bool SupportsFocus() const override { return false; }
   bool is_visible_ = true;
@@ -75,9 +72,19 @@ class TextControlInnerEditorElement final : public HTMLDivElement {
 
 class SearchFieldCancelButtonElement final : public HTMLDivElement {
  public:
-  static SearchFieldCancelButtonElement* Create(Document&);
-
   explicit SearchFieldCancelButtonElement(Document&);
+
+  void DefaultEventHandler(Event&) override;
+  bool WillRespondToMouseClickEvents() override;
+
+ private:
+  bool TypeShouldForceLegacyLayout() const final { return true; }
+  bool SupportsFocus() const override { return false; }
+};
+
+class PasswordRevealButtonElement final : public HTMLDivElement {
+ public:
+  explicit PasswordRevealButtonElement(Document&);
 
   void DefaultEventHandler(Event&) override;
   bool WillRespondToMouseClickEvents() override;

@@ -220,6 +220,30 @@ IN_PROC_BROWSER_TEST_F(ExtensionFetchTest,
   EXPECT_EQ("TypeError: Failed to fetch", fetch_result);
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionFetchTest, FetchResponseType) {
+  const std::string script = base::StringPrintf(
+      "fetch(%s).then(function(response) {\n"
+      "  window.domAutomationController.send(response.type);\n"
+      "}).catch(function(err) {\n"
+      "  window.domAutomationController.send(String(err));\n"
+      "});\n",
+      GetQuotedTestServerURL("example.com", "/extensions/test_file.txt")
+          .data());
+  TestExtensionDir dir;
+  dir.WriteManifestWithSingleQuotes(
+      "{"
+      "'background': {'scripts': ['bg.js']},"
+      "'manifest_version': 2,"
+      "'name': 'FetchResponseType',"
+      "'permissions': ['http://example.com/*'],"
+      "'version': '1'"
+      "}");
+  const Extension* extension = WriteFilesAndLoadTestExtension(&dir);
+  ASSERT_TRUE(extension);
+
+  EXPECT_EQ("basic", ExecuteScriptInBackgroundPage(extension->id(), script));
+}
+
 }  // namespace
 
 }  // namespace extensions

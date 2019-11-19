@@ -8,6 +8,7 @@
 
 #include "base/base_switches.h"
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -86,8 +87,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     _flagsStorage =
         std::make_unique<flags_ui::PrefServiceFlagsStorage>(_prefService);
     _flagsState = std::make_unique<flags_ui::FlagsState>(
-        ios_web_view::kFeatureEntries,
-        base::size(ios_web_view::kFeatureEntries));
+        ios_web_view::kFeatureEntries, nullptr);
   }
   return self;
 }

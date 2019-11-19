@@ -45,29 +45,12 @@ class Element;
 class HTMLDocument;
 class HTMLDocumentParser;
 
-class HTMLTreeBuilder final
-    : public GarbageCollectedFinalized<HTMLTreeBuilder> {
+class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
  public:
   // HTMLTreeBuilder can be created for non-HTMLDocument (XHTMLDocument) from
   // editing code.
   // TODO(kouhei): Fix editing code to always invoke HTML parser on
   // HTMLDocument.
-  static HTMLTreeBuilder* Create(HTMLDocumentParser* parser,
-                                 Document& document,
-                                 ParserContentPolicy parser_content_policy,
-                                 const HTMLParserOptions& options) {
-    return MakeGarbageCollected<HTMLTreeBuilder>(
-        parser, document, parser_content_policy, options);
-  }
-  static HTMLTreeBuilder* Create(HTMLDocumentParser* parser,
-                                 DocumentFragment* fragment,
-                                 Element* context_element,
-                                 ParserContentPolicy parser_content_policy,
-                                 const HTMLParserOptions& options) {
-    return MakeGarbageCollected<HTMLTreeBuilder>(
-        parser, fragment, context_element, parser_content_policy, options);
-  }
-
   HTMLTreeBuilder(HTMLDocumentParser*,
                   Document&,
                   ParserContentPolicy,

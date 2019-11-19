@@ -4,8 +4,8 @@
 
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/core/embedder/embedder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -64,7 +64,7 @@ class ChromeMetadataSourceTest : public testing::Test {
     data_.reset(data);
   }
 
-  base::MessageLoop loop_;
+  base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   GURL url_;

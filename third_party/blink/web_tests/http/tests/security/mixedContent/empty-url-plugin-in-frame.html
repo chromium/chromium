@@ -1,8 +1,13 @@
 <html>
 <body>
 <script>
-if (window.testRunner)
+if (window.testRunner) {
     testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+    window.addEventListener("message", _ => {
+      testRunner.notifyDone();
+    });
+}
 </script>
 <p>This test loads a secure iframe that loads a plugin without a URL.  We should
 *not* get a mixed content callback because the plugin cannot be controlled by

@@ -45,6 +45,15 @@ void TextMetrics::Trace(Visitor* visitor) {
 
 TextMetrics::TextMetrics() : baselines_(Baselines::Create()) {}
 
+TextMetrics::TextMetrics(const Font& font,
+                         const TextDirection& direction,
+                         const TextBaseline& baseline,
+                         const TextAlign& align,
+                         const String& text)
+    : TextMetrics() {
+  Update(font, direction, baseline, align, text);
+}
+
 void TextMetrics::Update(const Font& font,
                          const TextDirection& direction,
                          const TextBaseline& baseline,

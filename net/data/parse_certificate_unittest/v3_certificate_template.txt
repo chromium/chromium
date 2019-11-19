@@ -95,16 +95,20 @@ SEQUENCE {
           # subjectKeyIdentifier
           OBJECT_IDENTIFIER { 2.5.29.14 }
           OCTET_STRING {
+#-----BEGIN SUBJECT_KEY_IDENTIFIER-----
             OCTET_STRING { `8b75d5accb08be0e1f65b7fa56be6ca775da85af` }
+#-----END SUBJECT_KEY_IDENTIFIER-----
           }
         }
         SEQUENCE {
           # authorityKeyIdentifier
           OBJECT_IDENTIFIER { 2.5.29.35 }
           OCTET_STRING {
+#-----BEGIN AUTHORITY_KEY_IDENTIFIER-----
             SEQUENCE {
               [0 PRIMITIVE] { `8b75d5accb08be0e1f65b7fa56be6ca775da85af` }
             }
+#-----END AUTHORITY_KEY_IDENTIFIER-----
           }
         }
 

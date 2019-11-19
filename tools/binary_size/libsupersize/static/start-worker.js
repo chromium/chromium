@@ -5,7 +5,14 @@
 // @ts-check
 'use strict';
 
-const _innerWorker = new Worker('tree-worker.js');
+let _innerWorker = null;
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('load_url').endsWith('.size')) {
+  console.log('Using WebAssembly web worker');
+  _innerWorker = new Worker('tree-worker-wasm.js');
+} else {
+  _innerWorker = new Worker('tree-worker.js');
+}
 
 /**
  * We use a worker to keep large tree creation logic off the UI thread.

@@ -6,4 +6,4 @@ and distributed on the Swarming fleet.
 
 Trigger scripts are documented here:
 
-https://cs.chromium.org/chromium/build/scripts/slave/recipe_modules/swarming/api.py?l=1292
+https://cs.chromium.org/search/?q=file:swarming/api.py+%22*+trigger_script:%22&type=cs

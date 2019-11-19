@@ -13,13 +13,14 @@
 
 namespace ash {
 
-class SessionController;
+class SessionControllerImpl;
 
 namespace shell {
 
 class ExampleSessionControllerClient : public TestSessionControllerClient {
  public:
-  explicit ExampleSessionControllerClient(SessionController* controller);
+  ExampleSessionControllerClient(SessionControllerImpl* controller,
+                                 TestPrefServiceProvider* prefs_provider);
   ~ExampleSessionControllerClient() override;
 
   static ExampleSessionControllerClient* Get();

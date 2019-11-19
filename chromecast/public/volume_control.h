@@ -85,6 +85,11 @@ class CHROMECAST_EXPORT VolumeControl {
                         AudioContentType type,
                         float level);
 
+  // Sets a multiplier on the attenuation level for a given audio stream type.
+  // Used for stereo pair balance.
+  static void SetVolumeMultiplier(AudioContentType type, float multiplier)
+      __attribute__((weak));
+
   // Gets/sets the mute state for a given audio stream |type|.
   // AudioContentType::kOther is not a valid |type| for these methods.
   static bool IsMuted(AudioContentType type);
@@ -102,7 +107,9 @@ class CHROMECAST_EXPORT VolumeControl {
   // Called to enable power save mode when no audio is being played
   // (|power_save_on| will be true in this case), and to disable power save mode
   // when audio playback resumes (|power_save_on| will be false).
-  static void SetPowerSaveMode(bool power_save_on);
+  // NOTE: This is optional (therefore a weak symbol) because most platforms
+  // do not have any need to implement it.
+  static void SetPowerSaveMode(bool power_save_on) __attribute__((weak));
 
   // Converts a volume level in the range [0.0, 1.0] to/from a volume in dB.
   // The volume in dB should be full-scale (so a volume level of 1.0 would be

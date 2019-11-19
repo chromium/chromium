@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -94,7 +94,7 @@ It RotateImpl(It first, It middle, It last, std::false_type) {
 // then the predicate is never invoked and the function returns false.
 //
 // This is a C++11-compatible implementation of C++14 `std::equal`.  See
-// http://en.cppreference.com/w/cpp/algorithm/equal for more information.
+// https://en.cppreference.com/w/cpp/algorithm/equal for more information.
 template <typename InputIter1, typename InputIter2, typename Pred>
 bool equal(InputIter1 first1, InputIter1 last1, InputIter2 first2,
            InputIter2 last2, Pred&& pred) {

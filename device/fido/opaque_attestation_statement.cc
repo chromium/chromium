@@ -21,7 +21,7 @@ OpaqueAttestationStatement::OpaqueAttestationStatement(
 OpaqueAttestationStatement::~OpaqueAttestationStatement() = default;
 
 // Returns the deep copied cbor map value of |attestation_statement_map_|.
-Value::MapValue OpaqueAttestationStatement::GetAsCBORMap() const {
+Value OpaqueAttestationStatement::AsCBOR() const {
   DCHECK(attestation_statement_map_.is_map());
   Value::MapValue new_map;
   new_map.reserve(attestation_statement_map_.GetMap().size());
@@ -29,7 +29,7 @@ Value::MapValue OpaqueAttestationStatement::GetAsCBORMap() const {
     new_map.try_emplace(new_map.end(), map_it.first.Clone(),
                         map_it.second.Clone());
   }
-  return new_map;
+  return cbor::Value(std::move(new_map));
 }
 
 bool OpaqueAttestationStatement::IsSelfAttestation() {

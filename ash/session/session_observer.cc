@@ -4,7 +4,7 @@
 
 #include "ash/session/session_observer.h"
 
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 
 namespace ash {

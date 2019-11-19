@@ -96,7 +96,7 @@ class PrerenderHandle : public PrerenderContents::Observer {
   Observer* observer_;
 
   base::WeakPtr<PrerenderManager::PrerenderData> prerender_data_;
-  base::WeakPtrFactory<PrerenderHandle> weak_ptr_factory_;
+  base::WeakPtrFactory<PrerenderHandle> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrerenderHandle);
 };

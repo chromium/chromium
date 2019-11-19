@@ -9,8 +9,10 @@
 
 #include "base/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -27,9 +29,8 @@ class InspectorTaskRunner;
 class WorkerThread;
 struct WorkerDevToolsParams;
 
-class CORE_EXPORT DevToolsAgent
-    : public GarbageCollectedFinalized<DevToolsAgent>,
-      public mojom::blink::DevToolsAgent {
+class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
+                                  public mojom::blink::DevToolsAgent {
  public:
   class Client {
    public:
@@ -58,12 +59,13 @@ class CORE_EXPORT DevToolsAgent
 
   void Dispose();
   void FlushProtocolNotifications();
-  void BindRequest(mojom::blink::DevToolsAgentHostPtrInfo,
-                   mojom::blink::DevToolsAgentRequest,
-                   scoped_refptr<base::SingleThreadTaskRunner>);
-  void BindRequest(mojom::blink::DevToolsAgentHostAssociatedPtrInfo,
-                   mojom::blink::DevToolsAgentAssociatedRequest,
-                   scoped_refptr<base::SingleThreadTaskRunner>);
+  void BindReceiver(mojo::PendingRemote<mojom::blink::DevToolsAgentHost>,
+                    mojo::PendingReceiver<mojom::blink::DevToolsAgent>,
+                    scoped_refptr<base::SingleThreadTaskRunner>);
+  void BindReceiver(
+      mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost>,
+      mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent>,
+      scoped_refptr<base::SingleThreadTaskRunner>);
   virtual void Trace(blink::Visitor*);
 
  private:
@@ -71,10 +73,12 @@ class CORE_EXPORT DevToolsAgent
 
   // mojom::blink::DevToolsAgent implementation.
   void AttachDevToolsSession(
-      mojom::blink::DevToolsSessionHostAssociatedPtrInfo,
-      mojom::blink::DevToolsSessionAssociatedRequest main_session,
-      mojom::blink::DevToolsSessionRequest io_session,
-      mojom::blink::DevToolsSessionStatePtr reattach_session_state) override;
+      mojo::PendingAssociatedRemote<mojom::blink::DevToolsSessionHost>,
+      mojo::PendingAssociatedReceiver<mojom::blink::DevToolsSession>
+          main_session,
+      mojo::PendingReceiver<mojom::blink::DevToolsSession> io_session,
+      mojom::blink::DevToolsSessionStatePtr reattach_session_state,
+      bool client_expects_binary_responses) override;
   void InspectElement(const WebPoint& point) override;
   void ReportChildWorkers(bool report,
                           bool wait_for_debugger,
@@ -82,8 +86,8 @@ class CORE_EXPORT DevToolsAgent
 
   struct WorkerData {
     KURL url;
-    mojom::blink::DevToolsAgentPtr agent_ptr;
-    mojom::blink::DevToolsAgentHostRequest host_request;
+    mojo::PendingRemote<mojom::blink::DevToolsAgent> agent_remote;
+    mojo::PendingReceiver<mojom::blink::DevToolsAgentHost> host_receiver;
     base::UnguessableToken devtools_worker_token;
     bool waiting_for_debugger;
     String name;
@@ -93,10 +97,12 @@ class CORE_EXPORT DevToolsAgent
   void CleanupConnection();
 
   Client* client_;
-  mojo::Binding<mojom::blink::DevToolsAgent> binding_;
-  mojo::AssociatedBinding<mojom::blink::DevToolsAgent> associated_binding_;
-  mojom::blink::DevToolsAgentHostPtr host_ptr_;
-  mojom::blink::DevToolsAgentHostAssociatedPtr associated_host_ptr_;
+  mojo::Receiver<mojom::blink::DevToolsAgent> receiver_{this};
+  mojo::AssociatedReceiver<mojom::blink::DevToolsAgent> associated_receiver_{
+      this};
+  mojo::Remote<mojom::blink::DevToolsAgentHost> host_remote_;
+  mojo::AssociatedRemote<mojom::blink::DevToolsAgentHost>
+      associated_host_remote_;
   Member<InspectedFrames> inspected_frames_;
   Member<CoreProbeSink> probe_sink_;
   HeapHashSet<Member<DevToolsSession>> sessions_;

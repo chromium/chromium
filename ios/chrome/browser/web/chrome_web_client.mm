@@ -10,8 +10,6 @@
 #include "base/mac/bundle_locations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/dom_distiller/core/url_constants.h"
-#include "components/services/unzip/public/interfaces/constants.mojom.h"
-#include "components/services/unzip/unzip_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/application_context.h"
@@ -24,15 +22,15 @@
 #include "ios/chrome/browser/reading_list/features.h"
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
 #include "ios/chrome/browser/ssl/ios_ssl_error_handler.h"
-#include "ios/chrome/browser/web/chrome_overlay_manifests.h"
+#import "ios/chrome/browser/ui/elements/windowed_container_view.h"
 #import "ios/chrome/browser/web/error_page_util.h"
 #include "ios/public/provider/chrome/browser/browser_url_rewriter_provider.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/voice/audio_session_controller.h"
 #include "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
-#include "ios/web/public/browser_url_rewriter.h"
-#include "ios/web/public/service_names.mojom.h"
-#include "ios/web/public/user_agent.h"
+#include "ios/web/common/user_agent.h"
+#include "ios/web/public/navigation/browser_url_rewriter.h"
 #include "net/http/http_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -106,6 +104,20 @@ bool ChromeWebClient::IsAppSpecificURL(const GURL& url) const {
   return url.SchemeIs(kChromeUIScheme);
 }
 
+bool ChromeWebClient::ShouldBlockUrlDuringRestore(
+    const GURL& url,
+    web::WebState* web_state) const {
+  return ios::GetChromeBrowserProvider()->ShouldBlockUrlDuringRestore(
+      url, web_state);
+}
+
+void ChromeWebClient::AddSerializableData(
+    web::SerializableUserDataManager* user_data_manager,
+    web::WebState* web_state) {
+  return ios::GetChromeBrowserProvider()->AddSerializableData(user_data_manager,
+                                                              web_state);
+}
+
 base::string16 ChromeWebClient::GetPluginNotSupportedText() const {
   return l10n_util::GetStringUTF16(IDS_PLUGIN_NOT_SUPPORTED);
 }
@@ -148,15 +160,6 @@ base::RefCountedMemory* ChromeWebClient::GetDataResourceBytes(
       resource_id);
 }
 
-base::Optional<service_manager::Manifest>
-ChromeWebClient::GetServiceManifestOverlay(base::StringPiece name) {
-  if (name == web::mojom::kBrowserServiceName)
-    return GetChromeWebBrowserOverlayManifest();
-  if (name == web::mojom::kPackagedServicesServiceName)
-    return GetChromeWebPackagedServicesOverlayManifest();
-  return base::nullopt;
-}
-
 void ChromeWebClient::GetAdditionalWebUISchemes(
     std::vector<std::string>* additional_schemes) {
   additional_schemes->push_back(dom_distiller::kDomDistillerScheme);
@@ -196,48 +199,72 @@ void ChromeWebClient::AllowCertificateError(
     const net::SSLInfo& info,
     const GURL& request_url,
     bool overridable,
+    int64_t navigation_id,
     const base::Callback<void(bool)>& callback) {
+  base::OnceCallback<void(NSString*)> null_callback;
   // TODO(crbug.com/760873): IOSSSLErrorHandler will present an interstitial
   // for the user to decide if it is safe to proceed.
   // Handle the case of web_state not presenting UI to users like prerender tabs
   // or web_state used to fetch offline content in Reading List.
   IOSSSLErrorHandler::HandleSSLError(web_state, cert_error, info, request_url,
-                                     overridable, callback);
+                                     overridable, navigation_id, callback,
+                                     std::move(null_callback));
 }
 
-void ChromeWebClient::PrepareErrorPage(web::WebState* web_state,
-                                       const GURL& url,
-                                       NSError* error,
-                                       bool is_post,
-                                       bool is_off_the_record,
-                                       NSString** error_html) {
+void ChromeWebClient::PrepareErrorPage(
+    web::WebState* web_state,
+    const GURL& url,
+    NSError* error,
+    bool is_post,
+    bool is_off_the_record,
+    const base::Optional<net::SSLInfo>& info,
+    int64_t navigation_id,
+    base::OnceCallback<void(NSString*)> callback) {
   if (reading_list::IsOfflinePageWithoutNativeContentEnabled()) {
     OfflinePageTabHelper* offline_page_tab_helper =
         OfflinePageTabHelper::FromWebState(web_state);
-    // WebState that are not attached to a tab may not have a
+    // WebState that are not attached to a tab may not have an
     // OfflinePageTabHelper.
     if (offline_page_tab_helper &&
         offline_page_tab_helper->HasDistilledVersionForOnlineUrl(url)) {
       // An offline version of the page will be displayed to replace this error
-      // page. Return an empty error page to avoid having the error page
-      // flash vefore the offline version is loaded.
-      *error_html = @"";
+      // page. Loading an error page here can cause a race between the
+      // navigation to load the error page and the navigation to display the
+      // offline version of the page. If the latter navigation interrupts the
+      // former and causes it to fail, this can incorrectly appear to be a
+      // navigation back to the previous committed URL. To avoid this race,
+      // return a nil error page here to avoid an error page load. See
+      // crbug.com/980912.
+      std::move(callback).Run(nil);
       return;
     }
   }
   DCHECK(error);
-  *error_html = GetErrorPage(url, error, is_post, is_off_the_record);
+  __block NSString* error_html = nil;
+  __block base::OnceCallback<void(NSString*)> error_html_callback =
+      std::move(callback);
+  if (info.has_value()) {
+    base::OnceCallback<void(bool)> proceed_callback;
+    base::OnceCallback<void(NSString*)> blocking_page_callback =
+        base::BindOnce(^(NSString* blocking_page_html) {
+          error_html = blocking_page_html;
+          std::move(error_html_callback).Run(error_html);
+        });
+    IOSSSLErrorHandler::HandleSSLError(
+        web_state, net::MapCertStatusToNetError(info.value().cert_status),
+        info.value(), url, info.value().is_fatal_cert_error, navigation_id,
+        std::move(proceed_callback), std::move(blocking_page_callback));
+  } else {
+    std::move(error_html_callback)
+        .Run(GetErrorPage(url, error, is_post, is_off_the_record));
+  }
 }
 
-std::unique_ptr<service_manager::Service> ChromeWebClient::HandleServiceRequest(
-    const std::string& service_name,
-    service_manager::mojom::ServiceRequest request) {
-  if (service_name == unzip::mojom::kServiceName) {
-    // The Unzip service is used by the component updater.
-    return std::make_unique<unzip::UnzipService>(std::move(request));
+UIView* ChromeWebClient::GetWindowedContainer() {
+  if (!windowed_container_) {
+    windowed_container_ = [[WindowedContainerView alloc] init];
   }
-
-  return nullptr;
+  return windowed_container_;
 }
 
 std::string ChromeWebClient::GetProduct() const {

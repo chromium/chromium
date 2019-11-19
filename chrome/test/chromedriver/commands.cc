@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -26,11 +27,12 @@
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
 #include "chrome/test/chromedriver/chrome/status.h"
+#include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/logging.h"
 #include "chrome/test/chromedriver/session.h"
+#include "chrome/test/chromedriver/session_commands.h"
 #include "chrome/test/chromedriver/session_thread_map.h"
 #include "chrome/test/chromedriver/util.h"
-#include "chrome/test/chromedriver/version.h"
 
 void ExecuteGetStatus(
     const base::DictionaryValue& params,
@@ -41,7 +43,8 @@ void ExecuteGetStatus(
   // so we are always ready.
   base::DictionaryValue info;
   info.SetBoolean("ready", true);
-  info.SetString("message", "ChromeDriver ready for new sessions.");
+  info.SetString("message", base::StringPrintf("%s ready for new sessions.",
+                                               kChromeDriverProductShortName));
 
   // ChromeDriver specific data:
   base::DictionaryValue build;
@@ -68,8 +71,9 @@ void ExecuteCreateSession(
   if (new_id.empty())
     new_id = GenerateId();
   std::unique_ptr<Session> session = std::make_unique<Session>(new_id);
-  std::unique_ptr<base::Thread> thread = std::make_unique<base::Thread>(new_id);
-  if (!thread->Start()) {
+  std::unique_ptr<SessionThreadInfo> threadInfo =
+      std::make_unique<SessionThreadInfo>(new_id, GetW3CSetting(params));
+  if (!threadInfo->thread()->Start()) {
     callback.Run(
         Status(kUnknownError, "failed to start a thread for the new session"),
         std::unique_ptr<base::Value>(), std::string(),
@@ -77,9 +81,9 @@ void ExecuteCreateSession(
     return;
   }
 
-  thread->task_runner()->PostTask(
+  threadInfo->thread()->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&SetThreadLocalSession, std::move(session)));
-  session_thread_map->insert(std::make_pair(new_id, std::move(thread)));
+  session_thread_map->insert(std::make_pair(new_id, std::move(threadInfo)));
   init_session_cmd.Run(params, new_id, callback);
 }
 
@@ -205,6 +209,7 @@ void TerminateSessionThreadOnCommandThread(SessionThreadMap* session_thread_map,
 void ExecuteSessionCommandOnSessionThread(
     const char* command_name,
     const SessionCommand& command,
+    bool w3c_standard_command,
     bool return_ok_without_session,
     std::unique_ptr<base::DictionaryValue> params,
     scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
@@ -237,65 +242,80 @@ void ExecuteSessionCommandOnSessionThread(
   // Will mark |session| for deletion if an error is encountered.
   Status status = NotifyCommandListenersBeforeCommand(session, command_name);
 
-  // Only run the command if we were able to notify all listeners successfully.
-  // Otherwise, pass error to callback, delete |session|, and do not continue.
   std::unique_ptr<base::Value> value;
-  if (status.IsError()) {
-    LOG(ERROR) << status.message();
-  } else {
-    status = command.Run(session, *params, &value);
-
-    if (status.IsError() && session->chrome) {
-      if (!session->quit && session->chrome->HasCrashedWebView()) {
-        session->quit = true;
-        std::string message("session deleted because of page crash");
-        if (!session->detach) {
-          Status quit_status = session->chrome->Quit();
-          if (quit_status.IsError())
-            message += ", but failed to kill browser:" + quit_status.message();
-        }
-        status = Status(kUnknownError, message, status);
-      } else if (status.code() == kDisconnected) {
-        // Some commands, like clicking a button or link which closes the
-        // window, may result in a kDisconnected error code.
-        std::list<std::string> web_view_ids;
-        Status status_tmp = session->chrome->GetWebViewIds(
-          &web_view_ids, session->w3c_compliant);
-        if (status_tmp.IsError() && status_tmp.code() != kChromeNotReachable) {
-          status.AddDetails(
-              "failed to check if window was closed: " + status_tmp.message());
-        } else if (!base::ContainsValue(web_view_ids, session->window)) {
-          status = Status(kOk);
-        }
-      }
-      if (status.IsError()) {
-        const BrowserInfo* browser_info = session->chrome->GetBrowserInfo();
-        status.AddDetails("Session info: " + browser_info->browser_name + "=" +
-                          browser_info->browser_version);
-      }
-    }
-
+  if (session->w3c_compliant && !w3c_standard_command) {
+    status = Status(kUnknownCommand,
+                    "Cannot call non W3C standard command while in W3C mode");
     if (IsVLogOn(0)) {
       std::string result;
-      if (status.IsError()) {
-        result = "ERROR " + status.message();
-      } else if (value) {
-        result = FormatValueForDisplay(*value);
-      }
+      result = "ERROR " + status.message();
       if (!session->driver_log ||
           session->driver_log->min_level() != Log::Level::kOff) {
-        // Note: ChromeDriver log-replay depends on the format of this logging.
-        // see chromedriver/log_replay/client_replay.py
+        // Note: ChromeDriver log-replay depends on the format of this
+        // logging. see chromedriver/log_replay/client_replay.py
         VLOG(0) << "[" << session->id << "] "
                 << "RESPONSE " << command_name
                 << (result.length() ? " " + result : "");
       }
     }
+  } else {
+    // Only run the command if we were able to notify all listeners
+    // successfully.
+    // Otherwise, pass error to callback, delete |session|, and do not continue.
+    if (status.IsError()) {
+      LOG(ERROR) << status.message();
+    } else {
+      status = command.Run(session, *params, &value);
 
-    if (status.IsOk() && session->auto_reporting_enabled) {
-      std::string message = session->GetFirstBrowserError();
-      if (!message.empty())
-        status = Status(kUnknownError, message);
+      if (status.IsError() && session->chrome) {
+        if (!session->quit && session->chrome->HasCrashedWebView()) {
+          session->quit = true;
+          std::string message("session deleted because of page crash");
+          if (!session->detach) {
+            Status quit_status = session->chrome->Quit();
+            if (quit_status.IsError())
+              message +=
+                  ", but failed to kill browser:" + quit_status.message();
+          }
+          status = Status(kUnknownError, message, status);
+        } else if (status.code() == kDisconnected) {
+          // Some commands, like clicking a button or link which closes the
+          // window, may result in a kDisconnected error code.
+          std::list<std::string> web_view_ids;
+          Status status_tmp = session->chrome->GetWebViewIds(
+              &web_view_ids, session->w3c_compliant);
+          if (status_tmp.IsError() &&
+              status_tmp.code() != kChromeNotReachable) {
+            status.AddDetails("failed to check if window was closed: " +
+                              status_tmp.message());
+          } else if (!base::Contains(web_view_ids, session->window)) {
+            status = Status(kOk);
+          }
+        }
+        if (status.IsError()) {
+          const BrowserInfo* browser_info = session->chrome->GetBrowserInfo();
+          status.AddDetails("Session info: " + browser_info->browser_name +
+                            "=" + browser_info->browser_version);
+        }
+      }
+
+      if (IsVLogOn(0)) {
+        std::string result;
+        if (status.IsError()) {
+          result = "ERROR " + status.message();
+        } else if (value) {
+          result = FormatValueForDisplay(*value);
+        }
+        if (!session->driver_log ||
+            session->driver_log->min_level() != Log::Level::kOff) {
+          // Note: ChromeDriver log-replay depends on the format of this
+          // logging. see chromedriver/log_replay/client_replay.py
+          VLOG(0) << "[" << session->id << "] "
+                  << "RESPONSE " << command_name
+                  << (result.length() ? " " + result : "");
+        }
+      }
+
     }
   }
 
@@ -312,24 +332,24 @@ void ExecuteSessionCommandOnSessionThread(
 
 }  // namespace
 
-void ExecuteSessionCommand(
-    SessionThreadMap* session_thread_map,
-    const char* command_name,
-    const SessionCommand& command,
-    bool return_ok_without_session,
-    const base::DictionaryValue& params,
-    const std::string& session_id,
-    const CommandCallback& callback) {
+void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
+                           const char* command_name,
+                           const SessionCommand& command,
+                           bool w3c_standard_command,
+                           bool return_ok_without_session,
+                           const base::DictionaryValue& params,
+                           const std::string& session_id,
+                           const CommandCallback& callback) {
   auto iter = session_thread_map->find(session_id);
   if (iter == session_thread_map->end()) {
     Status status(return_ok_without_session ? kOk : kInvalidSessionId);
     callback.Run(status, std::unique_ptr<base::Value>(), session_id,
                  kW3CDefault);
   } else {
-    iter->second->task_runner()->PostTask(
+    iter->second->thread()->task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&ExecuteSessionCommandOnSessionThread, command_name,
-                       command, return_ok_without_session,
+                       command, w3c_standard_command, return_ok_without_session,
                        base::WrapUnique(params.DeepCopy()),
                        base::ThreadTaskRunnerHandle::Get(), callback,
                        base::Bind(&TerminateSessionThreadOnCommandThread,

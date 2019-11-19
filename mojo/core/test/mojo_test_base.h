@@ -31,7 +31,6 @@ class MojoTestBase : public testing::Test {
   ~MojoTestBase() override;
 
   using LaunchType = MultiprocessTestHelper::LaunchType;
-  using HandlerCallback = base::Callback<void(ScopedMessagePipeHandle)>;
 
   class ClientController {
    public:
@@ -197,8 +196,8 @@ class MojoTestBase : public testing::Test {
       ::mojo::core::test::MultiprocessTestHelper::ChildSetup) {         \
     client_name##_MainFixture test;                                     \
     return ::mojo::core::test::MultiprocessTestHelper::RunClientMain(   \
-        base::Bind(&client_name##_MainFixture::Main,                    \
-                   base::Unretained(&test)));                           \
+        base::BindOnce(&client_name##_MainFixture::Main,                \
+                       base::Unretained(&test)));                       \
   }                                                                     \
   int client_name##_MainFixture::Main(MojoHandle pipe_name)
 
@@ -216,8 +215,8 @@ class MojoTestBase : public testing::Test {
       ::mojo::core::test::MultiprocessTestHelper::ChildSetup) {              \
     client_name##_MainFixture test;                                          \
     return ::mojo::core::test::MultiprocessTestHelper::RunClientTestMain(    \
-        base::Bind(&client_name##_MainFixture::Main,                         \
-                   base::Unretained(&test)));                                \
+        base::BindOnce(&client_name##_MainFixture::Main,                     \
+                       base::Unretained(&test)));                            \
   }                                                                          \
   void client_name##_MainFixture::Main(MojoHandle pipe_name)
 #else  // !defined(OS_IOS)

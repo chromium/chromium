@@ -42,20 +42,20 @@ class VIEWS_EXAMPLES_EXPORT TextfieldExample : public ExampleBase,
   void ButtonPressed(Button* sender, const ui::Event& event) override;
 
   // Textfields for name and password.
-  Textfield* name_;
-  Textfield* password_;
-  Textfield* disabled_;
-  Textfield* read_only_;
-  Textfield* invalid_;
-  Textfield* rtl_;
+  Textfield* name_ = nullptr;
+  Textfield* password_ = nullptr;
+  Textfield* disabled_ = nullptr;
+  Textfield* read_only_ = nullptr;
+  Textfield* invalid_ = nullptr;
+  Textfield* rtl_ = nullptr;
 
   // Various buttons to control textfield.
-  LabelButton* show_password_;
-  LabelButton* set_background_;
-  LabelButton* clear_all_;
-  LabelButton* append_;
-  LabelButton* set_;
-  LabelButton* set_style_;
+  LabelButton* show_password_ = nullptr;
+  LabelButton* set_background_ = nullptr;
+  LabelButton* clear_all_ = nullptr;
+  LabelButton* append_ = nullptr;
+  LabelButton* set_ = nullptr;
+  LabelButton* set_style_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TextfieldExample);
 };

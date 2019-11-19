@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 // https://html.spec.whatwg.org/C/#the-picture-element
-[HTMLConstructor]
-interface HTMLPictureElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLPictureElement : HTMLElement {
 };

@@ -1,0 +1,48 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package content;
+
+message LevelDBScopesKeyRange {
+  bytes begin = 1;
+  bytes end = 2;
+}
+
+message LevelDBScopesMetadata {
+  int64 version = 1;
+}
+
+message LevelDBScopesScopeMetadata {
+  message LevelDBScopesLock {
+    int64 level = 1;
+    LevelDBScopesKeyRange range = 2;
+  }
+  repeated LevelDBScopesLock locks = 1;
+
+  // If this is true, don't execute cleanup tasks when cleaning up this scope.
+  bool ignore_cleanup_tasks = 2;
+}
+
+message LevelDBScopesUndoTask {
+  message Put {
+    bytes key = 1;
+    bytes value = 2;
+  }
+  message Delete { bytes key = 1; }
+  oneof operation {
+    Put put = 1;
+    Delete delete = 2;
+    LevelDBScopesKeyRange delete_range = 3;
+  }
+}
+
+message LevelDBScopesCleanupTask {
+  oneof operation {
+    LevelDBScopesKeyRange delete_range = 1;
+    LevelDBScopesKeyRange delete_range_and_compact = 2;
+  }
+}

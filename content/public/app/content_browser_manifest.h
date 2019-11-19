@@ -10,10 +10,9 @@
 namespace content {
 
 // Returns the service manifest for the "content_browser" service. There are
-// multiple instances of this service embedded within the browser process: a
-// global instance which establishes a process-wide connection to the Service
-// Manager, and one instance per BrowserContext which can be used to connect to
-// service instances isolated on a per-BrowserContext basis.
+// multiple instances of this service embedded within the browser process: one
+// instance per BrowserContext which can be used to connect to service instances
+// isolated on a per-BrowserContext basis.
 //
 // In-process services whose instances should each be bound to the lifetime of
 // some BrowserContext are typically packaged within this manifest. For all

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+
+<style>
+  body,html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+
+  #spacer {
+    height: 1000px;
+  }
+</style>
+
+<div id="spacer"></div>
+
+<script>
+  // This test ensures that, when zoomed in, spatial navigation scrolling will
+  // also cause the visual viewport to be scrolled.
+  snav.assertSnavEnabledAndTestable();
+  t = async_test("Spatial Navigation scrolls visual viewport.");
+
+  addEventListener('load', () => {
+    t.step(() => {
+      const scale = 2;
+      const spacer = document.getElementById('spacer');
+
+      window.internals.setPageScaleFactor(scale);
+
+      assert_equals(window.visualViewport.offsetTop, 0,
+                    "Visual Viewport should start unscrolled.");
+
+      snav.triggerMove('Down');
+
+      assert_greater_than(window.visualViewport.offsetTop, 0,
+                          "Visual Viewport should have been scrolled.");
+
+      // Scroll a bunch and check if we reached the bottom.
+      for(let i = 0; i < 20; ++i)
+        snav.triggerMove('Down');
+
+      assert_equals(window.visualViewport.offsetTop, window.innerHeight / scale,
+                    "Visual viewport should have been fully scrolled.");
+      assert_equals(window.scrollY, spacer.clientHeight - window.innerHeight,
+                    "Layout viewport should have been fully scrolled.");
+
+      t.done();
+    });
+  });
+</script>

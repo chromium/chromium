@@ -14,25 +14,15 @@ extern const CGFloat kAuthenticationHeaderImageHeight;
 extern const UIFontTextStyle kAuthenticationTitleFontStyle;
 extern const UIFontTextStyle kAuthenticationTextFontStyle;
 
-// Color displayed in the non-safe area.
-extern const int kAuthenticationHeaderBackgroundColor;
 // Horizontal margin between the container view and any elements inside.
 extern const CGFloat kAuthenticationHorizontalMargin;
 // Vertical margin between the header image and the main title.
 extern const CGFloat kAuthenticationHeaderTitleMargin;
 
-// Alpha for the title color.
-extern const CGFloat kAuthenticationTitleColorAlpha;
-// Alpha for the text color.
-extern const CGFloat kAuthenticationTextColorAlpha;
-
 // Alpha for the separator color.
 extern const CGFloat kAuthenticationSeparatorColorAlpha;
 // Height of the separator.
 extern const CGFloat kAuthenticationSeparatorHeight;
-
-// Color of the checkmark.
-extern const int kAuthenticationCheckmarkColor;
 
 // Header image name.
 extern NSString* const kAuthenticationHeaderImageName;

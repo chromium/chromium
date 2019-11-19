@@ -168,7 +168,8 @@ bool ShaderTranslator::Init(GLenum shader_type,
   compile_options_ =
       SH_OBJECT_CODE | SH_VARIABLES | SH_ENFORCE_PACKING_RESTRICTIONS |
       SH_LIMIT_EXPRESSION_COMPLEXITY | SH_LIMIT_CALL_STACK_DEPTH |
-      SH_CLAMP_INDIRECT_ARRAY_BOUNDS | SH_EMULATE_GL_DRAW_ID;
+      SH_CLAMP_INDIRECT_ARRAY_BOUNDS | SH_EMULATE_GL_DRAW_ID |
+      SH_EMULATE_GL_BASE_VERTEX_BASE_INSTANCE;
   if (gl_shader_interm_output)
     compile_options_ |= SH_INTERMEDIATE_TREE;
   compile_options_ |= driver_bug_workarounds;

@@ -5,6 +5,8 @@
 #ifndef UI_VIEWS_CONTEXT_MENU_CONTROLLER_H_
 #define UI_VIEWS_CONTEXT_MENU_CONTROLLER_H_
 
+#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/views_export.h"
 
@@ -28,14 +30,32 @@ class View;
 // implementation for mouse processing.
 class VIEWS_EXPORT ContextMenuController {
  public:
-  // Invoked to show the context menu for |source|.
-  // |point| is in screen coordinates.
-  virtual void ShowContextMenuForView(View* source,
-                                      const gfx::Point& point,
-                                      ui::MenuSourceType source_type) = 0;
+  ContextMenuController();
+
+  // Invoked to show the context menu for |source|. |point| is in screen
+  // coordinates. This method also prevents reentrant calls.
+  void ShowContextMenuForView(View* source,
+                              const gfx::Point& point,
+                              ui::MenuSourceType source_type);
 
  protected:
-  virtual ~ContextMenuController() {}
+  virtual ~ContextMenuController();
+
+ private:
+  // Subclasses should override this method.
+  virtual void ShowContextMenuForViewImpl(View* source,
+                                          const gfx::Point& point,
+                                          ui::MenuSourceType source_type) = 0;
+
+  // Used as a flag to prevent a re-entrancy in ShowContextMenuForView().
+  // This is most relevant to Linux, where spawning the textfield context menu
+  // spins a nested message loop that processes input events, which may attempt
+  // to trigger another context menu.
+  bool is_opening_ = false;
+
+  base::WeakPtrFactory<ContextMenuController> weak_factory_{this};
+
+  DISALLOW_COPY_AND_ASSIGN(ContextMenuController);
 };
 
 }  // namespace views

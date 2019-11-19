@@ -55,7 +55,7 @@ void WindowControllerList::RemoveObserver(
 }
 
 WindowController* WindowControllerList::FindWindowForFunctionByIdWithFilter(
-    const UIThreadExtensionFunction* function,
+    const ExtensionFunction* function,
     int id,
     WindowController::TypeFilter filter) const {
   for (auto iter = windows().begin(); iter != windows().end(); ++iter) {
@@ -69,13 +69,13 @@ WindowController* WindowControllerList::FindWindowForFunctionByIdWithFilter(
 }
 
 WindowController* WindowControllerList::CurrentWindowForFunction(
-    const UIThreadExtensionFunction* function) const {
+    const ExtensionFunction* function) const {
   return CurrentWindowForFunctionWithFilter(function,
                                             WindowController::kNoWindowFilter);
 }
 
 WindowController* WindowControllerList::CurrentWindowForFunctionWithFilter(
-    const UIThreadExtensionFunction* function,
+    const ExtensionFunction* function,
     WindowController::TypeFilter filter) const {
   WindowController* result = nullptr;
   // Returns either the focused window (if any), or the last window in the list.

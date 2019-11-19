@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/interfaces/login_screen.mojom.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -19,6 +18,10 @@
 #include "ui/gfx/native_widget_types.h"
 
 class AccountId;
+
+namespace ash {
+enum class OobeDialogState;
+}
 
 namespace content {
 class WebContents;
@@ -49,9 +52,8 @@ class WizardController;
 // - LoginDisplayHostCommon is UI-agnostic code shared between the views and
 //   webui hosts.
 // - MockLoginDisplayHost is for tests.
-// - LoginDisplayHostMojo is for the login screen which is a mojo controller
-//   (ie, ash/public/interfaces/login_screen.mojom,
-//    ash/login/login_screen_controller.h).
+// - LoginDisplayHostMojo is for the login screen which is implemented in Ash.
+//   TODO(estade): rename LoginDisplayHostMojo since it no longer uses Mojo.
 // - LoginDisplayHostWebUI is for OOBE, which is written in HTML/JS/CSS.
 class LoginDisplayHost {
  public:
@@ -90,7 +92,7 @@ class LoginDisplayHost {
   // Starts out-of-box-experience flow or shows other screen handled by
   // Wizard controller i.e. camera, recovery.
   // One could specify start screen with |first_screen|.
-  virtual void StartWizard(OobeScreen first_screen) = 0;
+  virtual void StartWizard(OobeScreenId first_screen) = 0;
 
   // Returns current WizardController, if it exists.
   // Result should not be stored.
@@ -129,20 +131,19 @@ class LoginDisplayHost {
   // Starts ARC kiosk splash screen.
   virtual void StartArcKiosk(const AccountId& account_id) = 0;
 
+  // Starts web kiosk splash screen.
+  virtual void StartWebKiosk(const AccountId& account_id) = 0;
+
   // Show the gaia dialog. |can_close| determines if the user is allowed to
   // close the dialog. If available, |account| is preloaded in the gaia dialog.
-  virtual void ShowGaiaDialog(
-      bool can_close,
-      const base::Optional<AccountId>& prefilled_account) = 0;
+  virtual void ShowGaiaDialog(bool can_close,
+                              const AccountId& prefilled_account) = 0;
 
   // Hide any visible oobe dialog.
   virtual void HideOobeDialog() = 0;
 
-  // Update the size of the oobe dialog.
-  virtual void UpdateOobeDialogSize(int width, int height) = 0;
-
   // Update the state of the oobe dialog.
-  virtual void UpdateOobeDialogState(ash::mojom::OobeDialogState state) = 0;
+  virtual void UpdateOobeDialogState(ash::OobeDialogState state) = 0;
 
   // Get users that are visible in the login screen UI.
   // This is mainly used by views login screen. WebUI login screen will
@@ -202,6 +203,9 @@ class LoginDisplayHost {
 
   // Update status of add user button in the shelf.
   virtual void UpdateAddUserButtonStatus() = 0;
+
+  // Update the system info at login screen.
+  virtual void RequestSystemInfoUpdate() = 0;
 
  protected:
   LoginDisplayHost();

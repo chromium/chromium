@@ -25,6 +25,10 @@ class TestResourceFetcherProperties final : public ResourceFetcherProperties {
 
   void Trace(Visitor* visitor) override;
 
+  DetachableResourceFetcherProperties& MakeDetachable() const {
+    return *MakeGarbageCollected<DetachableResourceFetcherProperties>(*this);
+  }
+
   // ResourceFetcherProperties implementation
   const FetchClientSettingsObject& GetFetchClientSettingsObject()
       const override {
@@ -45,6 +49,9 @@ class TestResourceFetcherProperties final : public ResourceFetcherProperties {
   bool ShouldBlockLoadingSubResource() const override {
     return should_block_loading_sub_resource_;
   }
+  bool IsSubframeDeprioritizationEnabled() const override {
+    return is_subframe_deprioritization_enabled_;
+  }
   scheduler::FrameStatus GetFrameStatus() const override {
     return frame_status_;
   }
@@ -59,6 +66,9 @@ class TestResourceFetcherProperties final : public ResourceFetcherProperties {
   void SetShouldBlockLoadingSubResource(bool value) {
     should_block_loading_sub_resource_ = value;
   }
+  void SetIsSubframeDeprioritizationEnabled(bool value) {
+    is_subframe_deprioritization_enabled_ = value;
+  }
   void SetFrameStatus(scheduler::FrameStatus status) { frame_status_ = status; }
 
  private:
@@ -70,6 +80,7 @@ class TestResourceFetcherProperties final : public ResourceFetcherProperties {
   bool paused_ = false;
   bool load_complete_ = false;
   bool should_block_loading_sub_resource_ = false;
+  bool is_subframe_deprioritization_enabled_ = false;
   scheduler::FrameStatus frame_status_ = scheduler::FrameStatus::kNone;
 };
 

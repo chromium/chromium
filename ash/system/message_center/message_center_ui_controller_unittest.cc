@@ -77,7 +77,7 @@ class MessageCenterUiControllerTest : public testing::Test {
   void TearDown() override {
     ui_controller_.reset();
     delegate_.reset();
-    message_center_ = NULL;
+    message_center_ = nullptr;
     message_center::MessageCenter::Shutdown();
   }
 
@@ -208,7 +208,7 @@ TEST_F(MessageCenterUiControllerTest,
           ASCIIToUTF16("Test Web Notification"),
           ASCIIToUTF16("Notification message body."), gfx::Image(),
           ASCIIToUTF16("www.test.org"), GURL(), DummyNotifierId(),
-          message_center::RichNotificationData(), NULL /* delegate */));
+          message_center::RichNotificationData(), nullptr /* delegate */));
   notification->SetSystemPriority();
   message_center_->AddNotification(std::move(notification));
 

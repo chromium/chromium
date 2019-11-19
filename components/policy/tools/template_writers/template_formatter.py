@@ -8,6 +8,7 @@ writers and emits various template and doc files (admx, html, json etc.).
 
 import codecs
 import collections
+import json
 import optparse
 import os
 import re
@@ -20,7 +21,8 @@ from writers import adm_writer, adml_writer, admx_writer, \
                     chromeos_admx_writer, chromeos_adml_writer, \
                     google_admx_writer, google_adml_writer, \
                     android_policy_writer, reg_writer, doc_writer, \
-                    json_writer, plist_writer, plist_strings_writer
+                    doc_atomic_groups_writer , json_writer, plist_writer, \
+                    plist_strings_writer
 
 
 def MacLanguageMap(lang):
@@ -59,6 +61,7 @@ _WRITER_DESCS = [
     WriterDesc('android_policy', False, 'utf-8', None, False),
     WriterDesc('reg', False, 'utf-16', None, False),
     WriterDesc('doc', True, 'utf-8', None, False),
+    WriterDesc('doc_atomic_groups', True, 'utf-8', None, False),
     WriterDesc('json', False, 'utf-8', None, False),
     WriterDesc('plist', False, 'utf-8', None, False),
     WriterDesc('plist_strings', True, 'utf-8', MacLanguageMap, False)
@@ -109,6 +112,19 @@ def _ParseVersionFile(version_path):
   return None
 
 
+def _JsonToUtf8Encoding(data, ignore_dicts=False):
+  if isinstance(data, unicode):
+    return data.encode('utf-8')
+  elif isinstance(data, list):
+    return [_JsonToUtf8Encoding(item, False) for item in data]
+  elif isinstance(data, dict):
+    return {
+        _JsonToUtf8Encoding(key): _JsonToUtf8Encoding(value)
+        for key, value in data.iteritems()
+    }
+  return data
+
+
 def main(argv):
   '''Main policy template conversion script.
   Usage: template_formatter
@@ -148,6 +164,13 @@ def main(argv):
   parser.add_option('--google_admx', action='append', dest='google_admx')
   parser.add_option('--reg', action='append', dest='reg')
   parser.add_option('--doc', action='append', dest='doc')
+  parser.add_option(
+      '--doc_atomic_groups', action='append', dest='doc_atomic_groups')
+  parser.add_option(
+      '--local',
+      action='store_true',
+      help='If set, the documentation will be built so \
+            that links work locally in the generated path.')
   parser.add_option('--json', action='append', dest='json')
   parser.add_option('--plist', action='append', dest='plist')
   parser.add_option('--plist_strings', action='append', dest='plist_strings')
@@ -165,14 +188,18 @@ def main(argv):
 
   config = _GetWriterConfiguration(options.grit_defines)
   config['major_version'] = _ParseVersionFile(options.version_path)
+  config['local'] = options.local
 
   # For each language, load policy data once and run all writers on it.
   for lang in languages:
     # Load the policy data.
     policy_templates_json_path = options.translations.replace(
         _LANG_PLACEHOLDER, lang)
-    with codecs.open(policy_templates_json_path, 'r', 'utf-16') as policy_file:
-      policy_data = eval(policy_file.read())
+    # Loads the localized policy json file which must be a valid json file
+    # encoded in utf-8.
+    with codecs.open(policy_templates_json_path, 'r', 'utf-8') as policy_file:
+      policy_data = json.loads(
+          policy_file.read(), object_hook=_JsonToUtf8Encoding)
 
     # Preprocess the policy data.
     policy_generator = policy_template_generator.PolicyTemplateGenerator(

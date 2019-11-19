@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "media/base/win/d3d11_create_device_cb.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/windows/d3d11_com_defs.h"
 
 namespace media {
 
@@ -68,8 +69,6 @@ class MEDIA_GPU_EXPORT D3D11CdmProxy : public CdmProxy {
   void SetCreateDeviceCallbackForTesting(D3D11CreateDeviceCB callback);
 
  private:
-  template <typename T>
-  using ComPtr = Microsoft::WRL::ComPtr<T>;
 
   class HardwareEventWatcher;
 
@@ -98,28 +97,26 @@ class MEDIA_GPU_EXPORT D3D11CdmProxy : public CdmProxy {
   Client* client_ = nullptr;
   bool initialized_ = false;
 
-  // These ComPtrs are refcounted pointers.
-  // https://msdn.microsoft.com/en-us/library/br244983.aspx
-  ComPtr<ID3D11Device> device_;
-  ComPtr<ID3D11DeviceContext> device_context_;
+  ComD3D11Device device_;
+  ComD3D11DeviceContext device_context_;
   // TODO(crbug.com/788880): Remove ID3D11VideoDevice and ID3D11VideoContext if
   // they are not required.
-  ComPtr<ID3D11VideoDevice> video_device_;
-  ComPtr<ID3D11VideoDevice1> video_device1_;
-  ComPtr<ID3D11VideoContext> video_context_;
-  ComPtr<ID3D11VideoContext1> video_context1_;
+  ComD3D11VideoDevice video_device_;
+  ComD3D11VideoDevice1 video_device1_;
+  ComD3D11VideoContext video_context_;
+  ComD3D11VideoContext1 video_context1_;
 
   std::unique_ptr<HardwareEventWatcher> hardware_event_watcher_;
 
   // Crypto session ID -> actual crypto session.
-  std::map<uint32_t, ComPtr<ID3D11CryptoSession>> crypto_session_map_;
+  std::map<uint32_t, ComD3D11CryptoSession> crypto_session_map_;
 
   // The values output from ID3D11VideoDevice1::GetCryptoSessionPrivateDataSize.
   // Used when calling NegotiateCryptoSessionKeyExchange.
   UINT private_input_size_ = 0;
   UINT private_output_size_ = 0;
 
-  base::WeakPtrFactory<D3D11CdmProxy> weak_factory_;
+  base::WeakPtrFactory<D3D11CdmProxy> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(D3D11CdmProxy);
 };

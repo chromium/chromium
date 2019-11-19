@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_U2F_U2F_TAB_HELPER_H_
 
 #include "base/macros.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#import "ios/web/public/web_state_user_data.h"
 #include "url/gurl.h"
 
 @class U2FController;

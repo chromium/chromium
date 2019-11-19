@@ -20,7 +20,6 @@
 #include "components/offline_pages/core/background/request_queue_task_test_base.h"
 #include "components/offline_pages/core/background/save_page_request.h"
 #include "components/offline_pages/core/background/test_request_queue_store.h"
-#include "components/offline_pages/core/client_policy_controller.h"
 #include "components/offline_pages/core/offline_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -123,7 +122,6 @@ class PickRequestTaskTest : public RequestQueueTaskTestBase {
   std::unique_ptr<RequestNotifierStub> notifier_;
   std::unique_ptr<SavePageRequest> last_picked_;
   std::unique_ptr<OfflinerPolicy> policy_;
-  ClientPolicyController policy_controller_;
   RequestCoordinatorEventLogger event_logger_;
   std::set<int64_t> disabled_requests_;
   base::circular_deque<int64_t> prioritized_requests_;
@@ -192,7 +190,7 @@ void PickRequestTaskTest::QueueRequests(const SavePageRequest& request1,
 void PickRequestTaskTest::MakePickRequestTask() {
   DeviceConditions conditions;
   task_.reset(new PickRequestTask(
-      &store_, policy_.get(), &policy_controller_,
+      &store_, policy_.get(),
       base::BindOnce(&PickRequestTaskTest::RequestPicked,
                      base::Unretained(this)),
       base::BindOnce(&PickRequestTaskTest::RequestNotPicked,

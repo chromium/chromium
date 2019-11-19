@@ -5,11 +5,12 @@
 #include "components/browsing_data/core/browsing_data_utils.h"
 
 #include <string>
+#include <vector>
 
 #include "base/bind_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browsing_data/core/counters/autofill_counter.h"
@@ -49,7 +50,7 @@ class BrowsingDataUtilsTest : public testing::Test {
   PrefService* prefs() { return &prefs_; }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
 };
 
@@ -109,16 +110,28 @@ TEST_F(BrowsingDataUtilsTest, PasswordsCounterResult) {
   const struct TestCase {
     int num_passwords;
     int is_synced;
+    std::vector<std::string> domain_examples;
     std::string expected_output;
   } kTestCases[] = {
-      {0, false, "None"},        {0, true, "None"},
-      {1, false, "1 password"},  {1, true, "1 password (synced)"},
-      {5, false, "5 passwords"}, {5, true, "5 passwords (synced)"},
+      {0, false, {}, "None"},
+      {0, true, {}, "None"},
+      {1, false, {"domain1.com"}, "1 password (for domain1.com)"},
+      {1, true, {"domain1.com"}, "1 password (for domain1.com, synced)"},
+      {5,
+       false,
+       {"domain1.com", "domain2.com", "domain3.com", "domain4.com"},
+       "5 passwords (for domain1.com, domain2.com, and 3 more)"},
+      {5,
+       true,
+       {"domain1.com", "domain2.com", "domain3.com", "domain4.com",
+        "domain5.com"},
+       "5 passwords (for domain1.com, domain2.com, and 3 more, synced)"},
   };
 
   for (const TestCase& test_case : kTestCases) {
-    BrowsingDataCounter::SyncResult result(&counter, test_case.num_passwords,
-                                           test_case.is_synced);
+    PasswordsCounter::PasswordsResult result(&counter, test_case.num_passwords,
+                                             test_case.is_synced,
+                                             test_case.domain_examples);
     SCOPED_TRACE(base::StringPrintf("Test params: %d password(s), %d is_synced",
                                     test_case.num_passwords,
                                     test_case.is_synced));

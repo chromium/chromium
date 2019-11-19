@@ -4,7 +4,6 @@
 
 source_set("support") {
   sources = [
-    "//third_party/protobuf:protobuf_lite",
     "rule_stream.cc",
     "rule_stream.h",
     "ruleset_converter.cc",

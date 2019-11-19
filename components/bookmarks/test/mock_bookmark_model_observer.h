@@ -18,21 +18,22 @@ class MockBookmarkModelObserver : public BookmarkModelObserver {
 
   MOCK_METHOD2(BookmarkModelLoaded, void(BookmarkModel*, bool));
 
-  MOCK_METHOD5(BookmarkNodeMoved, void(BookmarkModel*,
-                                       const BookmarkNode*,
-                                       int,
-                                       const BookmarkNode*,
-                                       int));
+  MOCK_METHOD5(BookmarkNodeMoved,
+               void(BookmarkModel*,
+                    const BookmarkNode*,
+                    size_t,
+                    const BookmarkNode*,
+                    size_t));
 
-  MOCK_METHOD3(BookmarkNodeAdded, void(BookmarkModel*,
-                                       const BookmarkNode*,
-                                       int));
+  MOCK_METHOD3(BookmarkNodeAdded,
+               void(BookmarkModel*, const BookmarkNode*, size_t));
 
-  MOCK_METHOD5(BookmarkNodeRemoved, void(BookmarkModel*,
-                                         const BookmarkNode*,
-                                         int,
-                                         const BookmarkNode*,
-                                         const std::set<GURL>&));
+  MOCK_METHOD5(BookmarkNodeRemoved,
+               void(BookmarkModel*,
+                    const BookmarkNode*,
+                    size_t,
+                    const BookmarkNode*,
+                    const std::set<GURL>&));
 
   MOCK_METHOD2(BookmarkNodeChanged, void(BookmarkModel*, const BookmarkNode*));
 

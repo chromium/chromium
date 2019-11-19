@@ -76,9 +76,16 @@ FloatQuad HitTestingTransformState::MappedArea() const {
   return accumulated_transform_.Inverse().ProjectQuad(last_planar_area_);
 }
 
-LayoutRect HitTestingTransformState::BoundsOfMappedArea() const {
-  return accumulated_transform_.Inverse().ClampedBoundsOfProjectedQuad(
-      last_planar_area_);
+PhysicalRect HitTestingTransformState::BoundsOfMappedQuad() const {
+  return PhysicalRectToBeNoop(
+      accumulated_transform_.Inverse().ClampedBoundsOfProjectedQuad(
+          last_planar_quad_));
+}
+
+PhysicalRect HitTestingTransformState::BoundsOfMappedArea() const {
+  return PhysicalRectToBeNoop(
+      accumulated_transform_.Inverse().ClampedBoundsOfProjectedQuad(
+          last_planar_area_));
 }
 
 }  // namespace blink

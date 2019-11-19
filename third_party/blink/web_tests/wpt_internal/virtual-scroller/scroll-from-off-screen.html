@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+  <meta charset="utf8">
+  <title>Scroller is off-screen and gets scrolled on-screen.</title>
+  <style>body { overflow:hidden; }</style>
+  <link rel="author" title="Fergal Daly" href="mailto:fergal@chromium.org">
+  <link rel="match" href="scroll-from-off-screen-ref.html">
+  <script type="module">
+    import 'std:elements/virtual-scroller';
+    import * as refTests from './resources/ref-tests.mjs';
+    refTests.withVirtualScroller(refTests.testScrollFromOffScreen);
+  </script>
+</html>

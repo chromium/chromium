@@ -359,6 +359,15 @@ class GLScalerShaderPixelTest
 #endif
   }
 
+  bool IsAndroidMarshmallow() {
+#if defined(OS_ANDROID)
+    return base::android::BuildInfo::GetInstance()->sdk_int() ==
+           base::android::SDK_VERSION_MARSHMALLOW;
+#else
+    return false;
+#endif
+  }
+
   testing::ScopedTrace scoped_trace_;
   std::unique_ptr<GLScaler> scaler_;
   gpu::gles2::GLES2Interface* gl_ = nullptr;
@@ -369,6 +378,10 @@ class GLScalerShaderPixelTest
 // As the BILINEAR shader is used by some of the test helpers, this test is
 // necessary to ensure the correctness of the tools used by all the other tests.
 TEST_P(GLScalerShaderPixelTest, ValidateTestHelpers) {
+  // Disabled on Marshmallow. See crbug.com/933080
+  if (IsAndroidMarshmallow())
+    return;
+
   // Create/validate a SMPTE color bar test image.
   const SkBitmap original = CreateSMPTETestImage(kBaseSize);
   int max_color_diff = GetMaxAllowedColorDifference();
@@ -400,6 +413,10 @@ TEST_P(GLScalerShaderPixelTest, ValidateTestHelpers) {
 // Tests the default, one-pass bilinear shader which can upscale or downscale by
 // up to 2X.
 TEST_P(GLScalerShaderPixelTest, Bilinear) {
+  // Disabled on Marshmallow. See crbug.com/933080
+  if (IsAndroidMarshmallow())
+    return;
+
   constexpr gfx::Rect whole = gfx::Rect(kBaseSize);
   constexpr gfx::Rect quadrant =
       gfx::Rect(kBaseSize.width() / 2, kBaseSize.height() / 2,
@@ -433,6 +450,10 @@ TEST_P(GLScalerShaderPixelTest, TwoTapBilinear) {
 
 // Test the 3-tap bilinear shader, which downscales by 6X in one dimension.
 TEST_P(GLScalerShaderPixelTest, ThreeTapBilinear) {
+  // Disabled on Marshmallow. See crbug.com/933080
+  if (IsAndroidMarshmallow())
+    return;
+
   RunMultiplePassBilinearTest(Shader::BILINEAR3, 6,
                               {SkColorSetARGB(0xff, 0xff, 0x00, 0x00),
                                SkColorSetARGB(0xbf, 0x00, 0x80, 0xff),
@@ -468,6 +489,10 @@ TEST_P(GLScalerShaderPixelTest, TwoByTwoTapBilinear) {
 // Tests the bicubic upscaler for a variety of scaling factors between 1X and
 // 2X, and over the entire source texture versus just its lower-right quadrant.
 TEST_P(GLScalerShaderPixelTest, BicubicUpscale) {
+  // Disabled on Marshmallow. See crbug.com/933080
+  if (IsAndroidMarshmallow())
+    return;
+
   constexpr gfx::Rect whole = gfx::Rect(kBaseSize);
   constexpr gfx::Rect quadrant =
       gfx::Rect(kBaseSize.width() / 2, kBaseSize.height() / 2,
@@ -515,6 +540,10 @@ TEST_P(GLScalerShaderPixelTest, BicubicDownscaleByHalf) {
 // produce a planar texture consisting of just one color channel, packed into
 // RGBA quads.
 TEST_P(GLScalerShaderPixelTest, Export_Planar) {
+  // Disabled on Marshmallow. See crbug.com/933080
+  if (IsAndroidMarshmallow())
+    return;
+
   const std::vector<SkColor> kCycle = {SkColorSetARGB(0xff, 0xff, 0x00, 0x00),
                                        SkColorSetARGB(0x80, 0x00, 0x80, 0x00),
                                        SkColorSetARGB(0x80, 0x00, 0x80, 0x00),

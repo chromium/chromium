@@ -4,6 +4,8 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/frame_host/frame_tree.h"
 #include "content/browser/frame_host/frame_tree_node.h"
@@ -12,6 +14,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
@@ -60,10 +63,10 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeShape) {
   // Load doc without iframes. Verify FrameTree just has root.
   // Frame tree:
   //   Site-A Root
-  NavigateToURL(shell(), base_url.Resolve("blank.html"));
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(shell()->web_contents())->
-      GetFrameTree()->root();
+  EXPECT_TRUE(NavigateToURL(shell(), base_url.Resolve("blank.html")));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
   EXPECT_EQ(0U, root->child_count());
 
   // Add 2 same-site frames. Verify 3 nodes in tree with proper names.
@@ -74,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeShape) {
       content::NOTIFICATION_LOAD_STOP,
       content::Source<NavigationController>(
           &shell()->web_contents()->GetController()));
-  NavigateToURL(shell(), base_url.Resolve("frames-X-X.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), base_url.Resolve("frames-X-X.html")));
   observer1.Wait();
   ASSERT_EQ(2U, root->child_count());
   EXPECT_EQ(0U, root->child_at(0)->child_count());
@@ -84,8 +87,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeShape) {
 // TODO(ajwong): Talk with nasko and merge this functionality with
 // FrameTreeShape.
 IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeShape2) {
-  NavigateToURL(shell(),
-                embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/frame_tree/top.html")));
 
   WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
   FrameTreeNode* root = wc->GetFrameTree()->root();
@@ -101,12 +104,14 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeShape2) {
   ASSERT_EQ(2UL, root->child_at(2)->child_count());
   EXPECT_EQ(1UL, root->child_at(2)->child_at(1)->child_count());
   EXPECT_EQ(0UL, root->child_at(2)->child_at(1)->child_at(0)->child_count());
-  EXPECT_STREQ("3-1-name",
+  EXPECT_STREQ(
+      "3-1-name",
       root->child_at(2)->child_at(1)->child_at(0)->frame_name().c_str());
 
   // Navigate to about:blank, which should leave only the root node of the frame
   // tree in the browser process.
-  NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
 
   root = wc->GetFrameTree()->root();
   EXPECT_EQ(0UL, root->child_count());
@@ -116,15 +121,15 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeShape2) {
 // Test that we can navigate away if the previous renderer doesn't clean up its
 // child frames.
 IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeAfterCrash) {
-  NavigateToURL(shell(),
-                embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/frame_tree/top.html")));
 
   // Ensure the view and frame are live.
   RenderViewHost* rvh = shell()->web_contents()->GetRenderViewHost();
-  RenderFrameHostImpl* rfh =
+  RenderFrameHostImpl* rfh1 =
       static_cast<RenderFrameHostImpl*>(rvh->GetMainFrame());
   EXPECT_TRUE(rvh->IsRenderViewLive());
-  EXPECT_TRUE(rfh->IsRenderFrameLive());
+  EXPECT_TRUE(rfh1->IsRenderFrameLive());
 
   // Crash the renderer so that it doesn't send any FrameDetached messages.
   RenderProcessHostWatcher crash_observer(
@@ -141,32 +146,27 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeAfterCrash) {
 
   // Ensure the view and frame aren't live anymore.
   EXPECT_FALSE(rvh->IsRenderViewLive());
-  EXPECT_FALSE(rfh->IsRenderFrameLive());
+  EXPECT_FALSE(rfh1->IsRenderFrameLive());
 
   // Navigate to a new URL.
   GURL url(embedded_test_server()->GetURL("/title1.html"));
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_EQ(0UL, root->child_count());
   EXPECT_EQ(url, root->current_url());
 
+  RenderFrameHostImpl* rfh2 = root->current_frame_host();
   // Ensure the view and frame are live again.
   EXPECT_TRUE(rvh->IsRenderViewLive());
-  EXPECT_TRUE(rfh->IsRenderFrameLive());
+  EXPECT_TRUE(rfh2->IsRenderFrameLive());
 }
 
 // Test that we can navigate away if the previous renderer doesn't clean up its
 // child frames.
-// Flaky on Mac. http://crbug.com/452018
-#if defined(OS_MACOSX)
-#define MAYBE_NavigateWithLeftoverFrames DISABLED_NavigateWithLeftoverFrames
-#else
-#define MAYBE_NavigateWithLeftoverFrames NavigateWithLeftoverFrames
-#endif
-IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, MAYBE_NavigateWithLeftoverFrames) {
+IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateWithLeftoverFrames) {
   GURL base_url = embedded_test_server()->GetURL("A.com", "/site_isolation/");
 
-  NavigateToURL(shell(),
-                embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/frame_tree/top.html")));
 
   // Hang the renderer so that it doesn't send any FrameDetached messages.
   // (This navigation will never complete, so don't wait for it.)
@@ -190,11 +190,12 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, MAYBE_NavigateWithLeftoverFrames) {
 // Ensure that IsRenderFrameLive is true for main frames and same-site iframes.
 IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, IsRenderFrameLive) {
   GURL main_url(embedded_test_server()->GetURL("/frame_tree/top.html"));
-  NavigateToURL(shell(), main_url);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()->root();
+                            ->GetFrameTree()
+                            ->root();
 
   // The root and subframe should each have a live RenderFrame.
   EXPECT_TRUE(
@@ -517,15 +518,16 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, ChildFrameWithSrcdoc) {
   // Create a new iframe with srcdoc and add it to the main frame. It should
   // be created in the same SiteInstance as the parent.
   {
-    std::string script("var f = document.createElement('iframe');"
-                       "f.srcdoc = 'some content';"
-                       "document.body.appendChild(f)");
+    std::string script(
+        "var f = document.createElement('iframe');"
+        "f.srcdoc = 'some content';"
+        "document.body.appendChild(f)");
     TestNavigationObserver observer(shell()->web_contents());
     EXPECT_TRUE(ExecJs(root, script));
     EXPECT_EQ(2U, root->child_count());
     observer.Wait();
 
-    EXPECT_EQ(GURL(kAboutSrcDocURL), root->child_at(1)->current_url());
+    EXPECT_TRUE(root->child_at(1)->current_url().IsAboutSrcdoc());
     EvalJsResult frame_origin = EvalJs(root->child_at(1), "self.origin");
     EXPECT_EQ(root->current_frame_host()->GetLastCommittedURL().GetOrigin(),
               GURL(frame_origin.ExtractString()));
@@ -536,13 +538,14 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, ChildFrameWithSrcdoc) {
   // Set srcdoc on the existing cross-site frame. It should navigate the frame
   // back to the origin of the parent.
   {
-    std::string script("var f = document.getElementById('child-0');"
-                       "f.srcdoc = 'some content';");
+    std::string script(
+        "var f = document.getElementById('child-0');"
+        "f.srcdoc = 'some content';");
     TestNavigationObserver observer(shell()->web_contents());
     EXPECT_TRUE(ExecJs(root, script));
     observer.Wait();
 
-    EXPECT_EQ(GURL(kAboutSrcDocURL), child->current_url());
+    EXPECT_TRUE(child->current_url().IsAboutSrcdoc());
     EXPECT_EQ(
         url::Origin::Create(root->current_frame_host()->GetLastCommittedURL())
             .Serialize(),
@@ -609,7 +612,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, SandboxFlagsSetForChildFrames) {
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()->root();
+                            ->GetFrameTree()
+                            ->root();
 
   // Verify that sandbox flags are set properly for all FrameTreeNodes.
   // First frame is completely sandboxed; second frame uses "allow-scripts",
@@ -799,11 +803,12 @@ class CrossProcessFrameTreeBrowserTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
                        CreateCrossProcessSubframeProxies) {
   GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
-  NavigateToURL(shell(), main_url);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()->root();
+                            ->GetFrameTree()
+                            ->root();
 
   // There should not be a proxy for the root's own SiteInstance.
   SiteInstance* root_instance = root->current_frame_host()->GetSiteInstance();
@@ -856,7 +861,8 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()->root();
+                            ->GetFrameTree()
+                            ->root();
 
   EXPECT_EQ(root->current_origin().Serialize() + '/',
             main_url.GetOrigin().spec());
@@ -1263,12 +1269,185 @@ IN_PROC_BROWSER_TEST_F(IsolateIcelandFrameTreeBrowserTest,
   WaitForLoadStop(contents);
 
   // Make sure we did a process transfer back to "b.is".
-  EXPECT_EQ(
-      " Site A ------------ proxies for B\n"
-      "   +--Site B ------- proxies for A\n"
-      "Where A = http://a.com/\n"
-      "      B = http://b.is/",
-      FrameTreeVisualizer().DepictFrameTree(root));
+  const std::string kExpectedSiteURL =
+      AreDefaultSiteInstancesEnabled()
+          ? SiteInstanceImpl::GetDefaultSiteURL().spec()
+          : "http://a.com/";
+  EXPECT_EQ(base::StringPrintf(" Site A ------------ proxies for B\n"
+                               "   +--Site B ------- proxies for A\n"
+                               "Where A = %s\n"
+                               "      B = http://b.is/",
+                               kExpectedSiteURL.c_str()),
+            FrameTreeVisualizer().DepictFrameTree(root));
 }
+
+#if !defined(OS_ANDROID)
+// Test transferring the user activation state between nodes in the frame tree.
+class TransferUserActivationFrameTreeBrowserTest : public ContentBrowserTest {
+ public:
+  TransferUserActivationFrameTreeBrowserTest() {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    feature_list_.InitWithFeatures(
+        {features::kUserActivationPostMessageTransfer,
+         features::kUserActivationSameOriginVisibility},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    SetupCrossSiteRedirector(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+
+  DISALLOW_COPY_AND_ASSIGN(TransferUserActivationFrameTreeBrowserTest);
+};
+
+IN_PROC_BROWSER_TEST_F(TransferUserActivationFrameTreeBrowserTest,
+                       PostMessageTransferActivationCrossOrigin) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b,c)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  WebContentsImpl* contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* root = contents->GetFrameTree()->root();
+  FrameTreeNode* child1 = root->child_at(0);
+  FrameTreeNode* child2 = root->child_at(1);
+  EXPECT_FALSE(root->HasBeenActivated());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  EXPECT_FALSE(child1->HasBeenActivated());
+  EXPECT_FALSE(child1->HasTransientUserActivation());
+  EXPECT_FALSE(child2->HasBeenActivated());
+  EXPECT_FALSE(child2->HasTransientUserActivation());
+
+  // Activate the root frame.
+  EXPECT_TRUE(ExecuteScript(shell(), ""));
+  EXPECT_TRUE(root->HasBeenActivated());
+  EXPECT_TRUE(root->HasTransientUserActivation());
+  EXPECT_FALSE(child1->HasBeenActivated());
+  EXPECT_FALSE(child1->HasTransientUserActivation());
+  EXPECT_FALSE(child2->HasBeenActivated());
+  EXPECT_FALSE(child2->HasTransientUserActivation());
+
+  // Post a message from the root frame to the child frame with
+  // |transferUserActivation| true to transfer the user activation state from
+  // root to child.
+  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
+      child1->current_frame_host(),
+      "window.addEventListener('message', function(event) {\n"
+      "  domAutomationController.send('done-' + event.data);\n"
+      "});"));
+  DOMMessageQueue msg_queue;
+  std::string actual_test_reply;
+  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
+      shell(),
+      "window.frames[0].postMessage('Hello', "
+      "{targetOrigin: '*', transferUserActivation: "
+      "true})"));
+  while (msg_queue.WaitForMessage(&actual_test_reply)) {
+    if (actual_test_reply == "\"done-Hello\"")
+      break;
+  }
+  EXPECT_FALSE(root->HasBeenActivated());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  EXPECT_TRUE(child1->HasBeenActivated());
+  EXPECT_TRUE(child1->HasTransientUserActivation());
+  EXPECT_FALSE(child2->HasBeenActivated());
+  EXPECT_FALSE(child2->HasTransientUserActivation());
+
+  // Post a message from one child to another child in a different origin with
+  // |transferUserActivation| true to transfer the user activation state from
+  // one child to another child node in the frame tree.
+  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
+      child2->current_frame_host(),
+      "window.addEventListener('message', function(event) {\n"
+      "  domAutomationController.send('done-' + event.data);\n"
+      "});"));
+  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
+      child1->current_frame_host(),
+      "window.parent.frames[1].postMessage('Hey', "
+      "{targetOrigin: '*', transferUserActivation: "
+      "true})"));
+  while (msg_queue.WaitForMessage(&actual_test_reply)) {
+    if (actual_test_reply == "\"done-Hey\"")
+      break;
+  }
+  EXPECT_FALSE(root->HasBeenActivated());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  EXPECT_FALSE(child1->HasBeenActivated());
+  EXPECT_FALSE(child1->HasTransientUserActivation());
+  EXPECT_TRUE(child2->HasBeenActivated());
+  EXPECT_TRUE(child2->HasTransientUserActivation());
+}
+
+IN_PROC_BROWSER_TEST_F(TransferUserActivationFrameTreeBrowserTest,
+                       PostMessageTransferActivationSameOrigin) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(b))"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  WebContentsImpl* contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* root = contents->GetFrameTree()->root();
+  FrameTreeNode* child1 = root->child_at(0);
+  FrameTreeNode* child2 = child1->child_at(0);
+  EXPECT_FALSE(root->HasBeenActivated());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  EXPECT_FALSE(child1->HasBeenActivated());
+  EXPECT_FALSE(child1->HasTransientUserActivation());
+  EXPECT_FALSE(child2->HasBeenActivated());
+  EXPECT_FALSE(child2->HasTransientUserActivation());
+
+  // Activate the root frame and transfer the user activation state from root
+  // to child1.
+  std::string message_event_listener =
+      "window.addEventListener('message', function(event) {\n"
+      "  domAutomationController.send('done-' + event.data);\n"
+      "});";
+  EXPECT_TRUE(ExecuteScript(shell(), ""));
+  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(child1->current_frame_host(),
+                                              message_event_listener));
+  DOMMessageQueue msg_queue;
+  std::string actual_test_reply;
+  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
+      shell(),
+      "window.frames[0].postMessage('Hello', "
+      "{targetOrigin: '*', transferUserActivation: true})"));
+  while (msg_queue.WaitForMessage(&actual_test_reply)) {
+    if (actual_test_reply == "\"done-Hello\"")
+      break;
+  }
+  EXPECT_FALSE(root->HasBeenActivated());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  EXPECT_TRUE(child1->HasBeenActivated());
+  EXPECT_TRUE(child1->HasTransientUserActivation());
+  EXPECT_FALSE(child2->HasBeenActivated());
+  EXPECT_FALSE(child2->HasTransientUserActivation());
+
+  // Post a message from child1 to its child child2 in the same origin with
+  // |transferUserActivation| true to transfer the user activation state from
+  // one node to its child node in the frame tree.
+  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(child2->current_frame_host(),
+                                              message_event_listener));
+  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
+      child1->current_frame_host(),
+      "window.frames[0].postMessage('Hey', "
+      "{targetOrigin: '*', transferUserActivation: true})"));
+  while (msg_queue.WaitForMessage(&actual_test_reply)) {
+    if (actual_test_reply == "\"done-Hey\"")
+      break;
+  }
+  EXPECT_FALSE(root->HasBeenActivated());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  EXPECT_FALSE(child1->HasBeenActivated());
+  EXPECT_FALSE(child1->HasTransientUserActivation());
+  EXPECT_TRUE(child2->HasBeenActivated());
+  EXPECT_TRUE(child2->HasTransientUserActivation());
+}
+#endif
 
 }  // namespace content

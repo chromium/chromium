@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<script src="../../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../../../fast/forms/resources/common.js"></script>
+<body>
+
+<!-- no style for reference -->
+<ul>
+  <li>Text: <input type="text" /></li>
+  <li>Number: <input type="number" /></li>
+  <li>Search: <input type="search" /></li>
+  <li>Email: <input type="email" /></li>
+  <li>Password: <input type="password" /></li>
+  <li>TextArea: <textarea></textarea></li>
+</ul>
+
+<!-- border -->
+<ul>
+  <li>Text border: <input type="text" style="border: 3px solid lime;"/></li>
+</ul>
+
+<!-- shadow -->
+<ul>
+  <li>Text shadow: <input type="text" style="box-shadow: 4px 4px 10px rgba(255,0,0,0.5), inset 4px 4px 4px rgba(0,255,0,0.5);"/></li>
+</ul>
+
+<!-- disabled -->
+<ul>
+  <li>Text disabled: <input type="text" disabled/></li>
+</ul>
+
+<!-- hover -->
+<ul>
+  <li>Text hover: <input type="text" id="hoverTarget"/></li>
+</ul>
+
+<!-- zoom -->
+<ul>
+  <li>Text zoom: 1.5: <input type="text" style="zoom: 1.5;"/></li>
+  <li>Text zoom: 4: <input type="text" style="zoom: 4;"/></li>
+</ul>
+
+<div style="background-color: blue">
+  <br>
+  <ul>
+    <li>Text: <input type="text /"></li>
+  </ul>
+  <br>
+</div>
+
+<script>
+
+runAfterLayoutAndPaint(function() {
+  var target = document.getElementById('hoverTarget');
+  hoverOverElement(target);
+}, true);
+
+</script>
+
+</body>

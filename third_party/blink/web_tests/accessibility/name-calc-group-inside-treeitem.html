@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 <style>
   li { list-style-type: none; }
 </style>
@@ -29,12 +28,12 @@
 
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axParent1 = accessibilityController.accessibleElementById("parent1");
     assert_equals(axParent1.name.trim(), "Parent1");
 }, "Accessible name does not include display:block descendants with nameFrom:author");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axParent2 = accessibilityController.accessibleElementById("parent2");
     assert_equals(axParent2.name.trim(), "Parent2");
 }, "Accessible name does not include display:inline descendants with nameFrom:author");

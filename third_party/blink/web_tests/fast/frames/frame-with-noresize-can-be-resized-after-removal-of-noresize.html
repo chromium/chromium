@@ -23,6 +23,6 @@ function runTests()
 </head>
 <frameset cols="200,*" border="10">
     <frame id="testFrame" name="testFrame" src="about:blank" noresize>
-    <frame id="results" name="results" src="data:text/html,<p id='description'>This test can only be run using DRT.</p><pre id='console'></pre>">
+    <frame id="results" name="results" src="data:text/html,<p id='description'>This test can only be run using DRT.</p><pre id='console'></pre><script>window.onmessage = e => { if (e.data.type === 'description') { document.getElementById('description').textContent = e.data.message; } else { document.getElementById('console').appendChild(document.createTextNode(e.data.message + '\n')); } }</script>">
 </frameset>
 </html>

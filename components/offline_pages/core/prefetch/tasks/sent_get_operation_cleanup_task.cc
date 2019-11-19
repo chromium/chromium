@@ -104,9 +104,7 @@ const int SentGetOperationCleanupTask::kMaxGetOperationAttempts = 3;
 SentGetOperationCleanupTask::SentGetOperationCleanupTask(
     PrefetchStore* prefetch_store,
     PrefetchNetworkRequestFactory* request_factory)
-    : prefetch_store_(prefetch_store),
-      request_factory_(request_factory),
-      weak_ptr_factory_(this) {}
+    : prefetch_store_(prefetch_store), request_factory_(request_factory) {}
 
 SentGetOperationCleanupTask::~SentGetOperationCleanupTask() {}
 

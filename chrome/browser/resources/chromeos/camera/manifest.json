@@ -1,0 +1,18 @@
+{
+  "name": "Camera",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "src/images/camera_app_icons_128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "src/images/camera_app_icons_48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "src/views/main.html",
+  "theme_color": "#000000"
+}

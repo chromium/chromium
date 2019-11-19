@@ -682,6 +682,14 @@ bool CrashReportDatabaseMac::ReadReportMetadataLocked(
     return false;
   }
 
+  // There are no attachments on Mac so the total size is the main report size.
+  struct stat statbuf;
+  if (stat(path.value().c_str(), &statbuf) != 0) {
+    PLOG(ERROR) << "stat " << path.value();
+    return false;
+  }
+  report->total_size = statbuf.st_size;
+
   return true;
 }
 

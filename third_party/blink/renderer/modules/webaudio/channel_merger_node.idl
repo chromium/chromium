@@ -28,6 +28,7 @@
 
 // See https://webaudio.github.io/web-audio-api/#channelmergernode
 [
+    Exposed=Window,
     Constructor(BaseAudioContext context, optional ChannelMergerOptions options),
     RaisesException=Constructor,
     Measure

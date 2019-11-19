@@ -16,8 +16,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/media/session/media_session_impl.h"
-#include "content/public/common/service_manager_connection.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/browser/system_connector.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_service_manager_context.h"
 #include "content/test/test_web_contents.h"
@@ -25,6 +25,7 @@
 #include "media/base/channel_layout.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/cpp/features.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/constants.mojom.h"
@@ -142,7 +143,7 @@ class MediaInternalsVideoCaptureDeviceTest : public testing::Test,
   }
 
  protected:
-  const content::TestBrowserThreadBundle thread_bundle_;
+  const content::BrowserTaskEnvironment task_environment_;
   MediaInternals::UpdateCallback update_cb_;
 };
 
@@ -255,7 +256,7 @@ class MediaInternalsAudioLogTest
     return params;
   }
 
-  const content::TestBrowserThreadBundle thread_bundle_;
+  const content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_P(MediaInternalsAudioLogTest, AudioLogCreateStartStopErrorClose) {
@@ -341,9 +342,9 @@ class MediaInternalsAudioFocusTest : public RenderViewHostTestHarness,
                             base::Unretained(this));
     run_loop_ = std::make_unique<base::RunLoop>();
 
-    content::ServiceManagerConnection::GetForProcess()
-        ->GetConnector()
-        ->BindInterface(media_session::mojom::kServiceName, &audio_focus_ptr_);
+    content::GetSystemConnector()->Connect(
+        media_session::mojom::kServiceName,
+        audio_focus_.BindNewPipeAndPassReceiver());
 
     content::MediaInternals::GetInstance()->AddUpdateCallback(update_cb_);
   }
@@ -405,14 +406,14 @@ class MediaInternalsAudioFocusTest : public RenderViewHostTestHarness,
   std::string GetRequestIdForTopFocusRequest() {
     std::string result;
 
-    audio_focus_ptr_->GetFocusRequests(base::BindOnce(
+    audio_focus_->GetFocusRequests(base::BindOnce(
         [](std::string* out, std::vector<AudioFocusRequestStatePtr> requests) {
           DCHECK(!requests.empty());
           *out = requests.back()->request_id.value().ToString();
         },
         &result));
 
-    audio_focus_ptr_.FlushForTesting();
+    audio_focus_.FlushForTesting();
     return result;
   }
 
@@ -425,7 +426,7 @@ class MediaInternalsAudioFocusTest : public RenderViewHostTestHarness,
   base::Lock lock_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
-  media_session::mojom::AudioFocusManagerPtr audio_focus_ptr_;
+  mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_;
 };
 
 TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {

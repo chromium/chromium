@@ -13,15 +13,12 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "ppapi/proxy/connection.h"
 #include "ppapi/proxy/plugin_resource.h"
 #include "ppapi/shared_impl/media_stream_buffer_manager.h"
 #include "ppapi/shared_impl/resource.h"
 #include "ppapi/thunk/ppb_video_encoder_api.h"
-
-namespace base {
-class SharedMemory;
-}
 
 namespace ppapi {
 
@@ -43,13 +40,13 @@ class PPAPI_PROXY_EXPORT VideoEncoderResource
 
  private:
   struct ShmBuffer {
-    ShmBuffer(uint32_t id, std::unique_ptr<base::SharedMemory> shm);
+    ShmBuffer(uint32_t id, base::WritableSharedMemoryMapping mapping);
     ~ShmBuffer();
 
     // Index of the buffer in the vector. Buffers have the same id in
     // the plugin and the host.
     uint32_t id;
-    std::unique_ptr<base::SharedMemory> shm;
+    base::WritableSharedMemoryMapping mapping;
   };
 
   struct BitstreamBuffer {

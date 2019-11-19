@@ -1,8 +1,12 @@
-Files related to the Lookalike URL warning.
+Files related to the Lookalike URL and Safety Tip warnings.
 
-This interstitial is triggered when a user visits a domain that is similar to
-that of a domain of a popular site.
+The lookalike interstitial is triggered when a user visits a domain that is
+similar to that of a domain of a popular site.
 
-It does not trigger on sites that are likely to be non-malicious, such as
-popular sites, sites with a higher site engagement scores, or sites whose domain
-names are quite short.
+Safety Tip warnings are an experiment to warn users when Chrome believes a site
+is low reputation, due either to client- or server-side checks. This warning may
+either be a full-page interstitial warning or a pop-up while visiting the page.
+
+Both warnings avoid triggering on sites that are likely to be benign, such as
+popular sites, sites with a high site engagement.
+

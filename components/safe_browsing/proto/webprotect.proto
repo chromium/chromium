@@ -1,0 +1,103 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package safe_browsing;
+
+// Malware-specific scanning information.
+message MalwareDeepScanningClientRequest {
+  enum Population {
+    POPULATION_UNKNOWN = 0;
+    POPULATION_ENTERPRISE = 1;
+    POPULATION_TITANIUM = 2;
+  }
+  // Identifies the type of client.
+  optional Population population = 1;
+
+  // The download token from the original ClientDownloadResponse.
+  optional string download_token = 2;
+}
+
+// DLP-specific scanning information.
+message DlpDeepScanningClientRequest {
+  // Where the content comes from, so that the proper rules can be triggered.
+  enum ContentSource {
+    CONTENT_SOURCE_UNKNOWN = 0;
+    FILE_DOWNLOAD = 1;
+    FILE_UPLOAD = 2;
+    WEB_CONTENT_UPLOAD = 3;
+  }
+  optional ContentSource content_source = 1;
+}
+
+// Scanning configuration sent from Chrome.
+message DeepScanningClientRequest {
+  // The DM Token for Enterprise-enrolled devices
+  optional string dm_token = 1;
+
+  // Firebase Cloud Messaging token used to notify client of verdict.
+  optional string fcm_notification_token = 2;
+
+  // Malware scan specific request info.
+  optional MalwareDeepScanningClientRequest malware_scan_request = 3;
+
+  // DLP scan specific request info.
+  optional DlpDeepScanningClientRequest dlp_scan_request = 4;
+
+  // Token used to correlate requests and responses. This is different than the
+  // FCM token, in that it is unique for each request.
+  optional string request_token = 5;
+}
+
+// Malware-specific response given back for scanned content.
+message MalwareDeepScanningVerdict {
+  enum Verdict {
+    VERDICT_UNSPECIFIED = 0;
+    CLEAN = 1;
+    UWS = 2;
+    MALWARE = 3;
+  }
+  // Verdict given to scanned content.
+  optional Verdict verdict = 1;
+}
+
+message DlpDeepScanningVerdict {
+  // The status of the deep scanning verdict. When status is SUCCESS and
+  // triggered_rules below is empty, then the content is clean.
+  enum Status {
+    STATUS_UNKNOWN = 0;
+    SUCCESS = 1;
+    FAILURE = 2;
+  }
+  optional Status status = 1;
+
+  message TriggeredRule {
+    enum Action {
+      ACTION_UNKNOWN = 0;
+      REPORT_ONLY = 1;
+      WARN = 2;
+      BLOCK = 3;
+    }
+    optional Action action = 1;
+
+    optional string rule_name = 2;
+
+    optional int64 rule_id = 3;
+  }
+  // Only relevant when status is SUCCESS above.
+  repeated TriggeredRule triggered_rules = 2;
+}
+
+message DeepScanningClientResponse {
+  // Token used to correlate requests and responses. This is different than the
+  // FCM token, in that it is unique for each request.
+  optional string token = 1;
+
+  optional MalwareDeepScanningVerdict malware_scan_verdict = 2;
+
+  optional DlpDeepScanningVerdict dlp_scan_verdict = 3;
+}

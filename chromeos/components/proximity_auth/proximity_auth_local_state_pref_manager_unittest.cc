@@ -21,22 +21,16 @@ namespace proximity_auth {
 namespace {
 
 const char kUser1[] = "songttim@gmail.com";
-const ProximityAuthPrefManager::ProximityThreshold kProximityThreshold1 =
-    ProximityAuthPrefManager::ProximityThreshold::kVeryFar;
 const bool kIsChromeOSLoginEnabled1 = true;
 const bool kIsEasyUnlockAllowed1 = true;
 const bool kIsEasyUnlockEnabled1 = true;
 
 const char kUser2[] = "tengs@google.com";
-const ProximityAuthPrefManager::ProximityThreshold kProximityThreshold2 =
-    ProximityAuthPrefManager::ProximityThreshold::kVeryClose;
 const bool kIsChromeOSLoginEnabled2 = false;
 const bool kIsEasyUnlockAllowed2 = false;
 const bool kIsEasyUnlockEnabled2 = false;
 
 const char kUnknownUser[] = "tengs@chromium.org";
-const ProximityAuthPrefManager::ProximityThreshold kProximityThresholdDefault =
-    ProximityAuthPrefManager::ProximityThreshold::kClose;
 const bool kIsChromeOSLoginEnabledDefault = false;
 const bool kIsEasyUnlockAllowedDefault = true;
 const bool kIsEasyUnlockEnabledDefault = false;
@@ -59,8 +53,6 @@ class ProximityAuthLocalStatePrefManagerTest : public testing::Test {
     // ProximityAuthProfilePrefService.
     std::unique_ptr<base::DictionaryValue> user1_prefs(
         new base::DictionaryValue());
-    user1_prefs->SetKey(proximity_auth::prefs::kEasyUnlockProximityThreshold,
-                        base::Value(kProximityThreshold1));
     user1_prefs->SetKey(
         proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
         base::Value(kIsChromeOSLoginEnabled1));
@@ -75,8 +67,6 @@ class ProximityAuthLocalStatePrefManagerTest : public testing::Test {
 
     std::unique_ptr<base::DictionaryValue> user2_prefs(
         new base::DictionaryValue());
-    user2_prefs->SetKey(proximity_auth::prefs::kEasyUnlockProximityThreshold,
-                        base::Value(kProximityThreshold2));
     user2_prefs->SetKey(
         proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
         base::Value(kIsChromeOSLoginEnabled2));
@@ -137,23 +127,6 @@ TEST_F(ProximityAuthLocalStatePrefManagerTest, IsEasyUnlockEnabled) {
   EXPECT_EQ(kIsEasyUnlockEnabled1, pref_manager.IsEasyUnlockEnabled());
   pref_manager.SetActiveUser(user2_);
   EXPECT_EQ(kIsEasyUnlockEnabled2, pref_manager.IsEasyUnlockEnabled());
-}
-
-TEST_F(ProximityAuthLocalStatePrefManagerTest, GetProximityThreshold) {
-  ProximityAuthLocalStatePrefManager pref_manager(&local_state_);
-
-  // If no active user is set, return the default value.
-  EXPECT_EQ(kProximityThresholdDefault, pref_manager.GetProximityThreshold());
-
-  // Unknown users should return the default value.
-  pref_manager.SetActiveUser(unknown_user_);
-  EXPECT_EQ(kProximityThresholdDefault, pref_manager.GetProximityThreshold());
-
-  // Test users with set values.
-  pref_manager.SetActiveUser(user1_);
-  EXPECT_EQ(kProximityThreshold1, pref_manager.GetProximityThreshold());
-  pref_manager.SetActiveUser(user2_);
-  EXPECT_EQ(kProximityThreshold2, pref_manager.GetProximityThreshold());
 }
 
 TEST_F(ProximityAuthLocalStatePrefManagerTest, IsChromeOSLoginEnabled) {

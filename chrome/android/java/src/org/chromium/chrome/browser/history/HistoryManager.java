@@ -11,8 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.Browser;
-import android.support.annotation.VisibleForTesting;
-import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
@@ -21,6 +19,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -31,19 +31,21 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.favicon.LargeIconBridge;
+import org.chromium.chrome.browser.gesturenav.HistoryNavigationDelegate;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar.PrefObserver;
 import org.chromium.chrome.browser.preferences.PreferencesLauncher;
 import org.chromium.chrome.browser.preferences.privacy.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.SigninManager;
+import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.snackbar.Snackbar;
 import org.chromium.chrome.browser.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabLaunchType;
+import org.chromium.chrome.browser.util.AccessibilityUtil;
 import org.chromium.chrome.browser.util.ConversionUtils;
 import org.chromium.chrome.browser.util.IntentUtils;
 import org.chromium.chrome.browser.widget.selection.SelectableListLayout;
@@ -56,7 +58,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Displays and manages the UI for browsing history.
@@ -69,14 +70,26 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
     private static final String METRICS_PREFIX = "Android.HistoryPage.";
     private static final String PREF_SHOW_HISTORY_INFO = "history_home_show_info";
 
+    // Keep consistent with the UMA constants on the WebUI history page (history/constants.js).
+    private static final int UMA_MAX_BUCKET_VALUE = 1000;
+    private static final int UMA_MAX_SUBSET_BUCKET_VALUE = 100;
+
+    // TODO(msramek): The WebUI counterpart computes the bucket count by
+    // dividing by 10 until it gets under 100, reaching 10 for both
+    // UMA_MAX_BUCKET_VALUE and UMA_MAX_SUBSET_BUCKET_VALUE, and adds +1
+    // for overflow. How do we keep that in sync with this code?
+    private static final int UMA_BUCKET_COUNT = 11;
+
     // PageTransition value to use for all URL requests triggered by the history page.
     private static final int PAGE_TRANSITION_TYPE = PageTransition.AUTO_BOOKMARK;
 
     private static HistoryProvider sProviderForTests;
+    private static Boolean sIsScrollToLoadDisabledForTests;
 
     private final Activity mActivity;
     private final boolean mIsIncognito;
     private final boolean mIsSeparateActivity;
+    private final boolean mIsScrollToLoadDisabled;
     private final SelectableListLayout<HistoryItem> mSelectableListLayout;
     private final HistoryAdapter mHistoryAdapter;
     private final SelectionDelegate<HistoryItem> mSelectionDelegate;
@@ -107,6 +120,9 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
         mIsSeparateActivity = isSeparateActivity;
         mSnackbarManager = snackbarManager;
         mIsIncognito = isIncognito;
+        mIsScrollToLoadDisabled = AccessibilityUtil.isAccessibilityEnabled()
+                || AccessibilityUtil.isHardwareKeyboardAttached(
+                        mActivity.getResources().getConfiguration());
 
         mSelectionDelegate = new SelectionDelegate<>();
         mSelectionDelegate.addObserver(this);
@@ -124,7 +140,7 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
 
         // 3. Initialize toolbar.
         mToolbar = (HistoryManagerToolbar) mSelectableListLayout.initializeToolbar(
-                R.layout.history_toolbar, mSelectionDelegate, R.string.menu_history, null,
+                R.layout.history_toolbar, mSelectionDelegate, R.string.menu_history,
                 R.id.normal_menu_group, R.id.selection_mode_menu_group, this, true,
                 isSeparateActivity);
         mToolbar.setManager(this);
@@ -137,8 +153,6 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
 
         // 5. Initialize empty view.
         mEmptyView = mSelectableListLayout.initializeEmptyView(
-                VectorDrawableCompat.create(
-                        mActivity.getResources(), R.drawable.history_big, mActivity.getTheme()),
                 R.string.history_manager_empty, R.string.history_manager_no_results);
 
         // 6. Create large icon bridge.
@@ -152,6 +166,7 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
 
         // 7. Initialize the adapter to load items.
         mHistoryAdapter.generateHeaderItems();
+        mHistoryAdapter.generateFooterItems();
         mHistoryAdapter.initialize();
 
         // 8. Add scroll listener to show/hide info button on scroll and page in more items
@@ -166,7 +181,10 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
                 mToolbar.updateInfoMenuItem(
                         shouldShowInfoButton(), shouldShowInfoHeaderIfAvailable());
 
-                if (!mHistoryAdapter.canLoadMoreItems()) return;
+                if (!mHistoryAdapter.canLoadMoreItems() || isScrollToLoadDisabled()) {
+                    return;
+                }
+
                 // Load more items if the scroll position is close to the bottom of the list.
                 if (layoutManager.findLastVisibleItemPosition()
                         > (mHistoryAdapter.getItemCount() - 25)) {
@@ -176,7 +194,7 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
             }});
 
         // 9. Listen to changes in sign in state.
-        SigninManager.get().addSignInStateObserver(this);
+        IdentityServicesProvider.getSigninManager().addSignInStateObserver(this);
 
         // 10. Create PrefChangeRegistrar to receive notifications on preference changes.
         mPrefChangeRegistrar = new PrefChangeRegistrar();
@@ -219,7 +237,6 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
             mSelectionDelegate.clearSelection();
             return true;
         } else if (item.getItemId() == R.id.selection_mode_delete_menu_id) {
-            recordSelectionCountHistorgram("Remove");
             recordUserActionWithOptionalSearch("RemoveSelected");
 
             int numItemsRemoved = 0;
@@ -276,8 +293,16 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
         mHistoryAdapter.onDestroyed();
         mLargeIconBridge.destroy();
         mLargeIconBridge = null;
-        SigninManager.get().removeSignInStateObserver(this);
+        IdentityServicesProvider.getSigninManager().removeSignInStateObserver(this);
         mPrefChangeRegistrar.destroy();
+    }
+
+    /**
+     * Sets the delegate object needed for history navigation logic.
+     * @param delegate {@link HistoryNavigationDelegate} object.
+     */
+    public void setHistoryNavigationDelegate(HistoryNavigationDelegate delegate) {
+        mSelectableListLayout.setHistoryNavigationDelegate(delegate);
     }
 
     /**
@@ -407,11 +432,11 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
     }
 
     private void openItemsInNewTabs(List<HistoryItem> items, boolean isIncognito) {
-        recordSelectionCountHistorgram("Open");
         recordUserActionWithOptionalSearch("OpenSelected" + (isIncognito ? "Incognito" : ""));
 
         for (HistoryItem item : items) {
             openUrl(item.getUrl(), isIncognito, true);
+            recordOpenedItemMetrics(item);
         }
     }
 
@@ -454,13 +479,22 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
     }
 
     /**
-     * Records the number of selected items when a multi-select action is performed.
-     * @param action The multi-select action that was performed.
+     * Records metrics about the age of an opened history |item|.
+     * @param item The item that has been opened.
      */
-    private void recordSelectionCountHistorgram(String action) {
-        Set<HistoryItem> selectedItems = mSelectionDelegate.getSelectedItems();
-        RecordHistogram.recordCount100Histogram(
-                METRICS_PREFIX + action + "Selected", selectedItems.size());
+    void recordOpenedItemMetrics(HistoryItem item) {
+        int ageInDays = 1
+                + (int) ((System.currentTimeMillis() - item.getTimestamp())
+                        / 1000 /* s/ms */ / 60 /* m/s */ / 60 /* h/m */ / 24 /* d/h */);
+
+        RecordHistogram.recordCustomCountHistogram("HistoryPage.ClickAgeInDays",
+                Math.min(ageInDays, UMA_MAX_BUCKET_VALUE), 1, UMA_MAX_BUCKET_VALUE,
+                UMA_BUCKET_COUNT);
+
+        if (ageInDays <= UMA_MAX_SUBSET_BUCKET_VALUE) {
+            RecordHistogram.recordCustomCountHistogram("HistoryPage.ClickAgeInDaysSubset",
+                    ageInDays, 1, UMA_MAX_SUBSET_BUCKET_VALUE, UMA_BUCKET_COUNT);
+        }
     }
 
     /**
@@ -485,6 +519,19 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
      */
     boolean shouldShowInfoHeaderIfAvailable() {
         return mShouldShowInfoHeader;
+    }
+
+    /**
+     * Check if we want to enable the scrolling to load for recycled view. Noting this function
+     * will be called during testing with RecycledView == null. Will return False in such case.
+     * @return True if accessibility is enabled or a hardware keyboard is attached.
+     */
+    boolean isScrollToLoadDisabled() {
+        if (sIsScrollToLoadDisabledForTests != null) {
+            return sIsScrollToLoadDisabledForTests.booleanValue();
+        }
+
+        return mIsScrollToLoadDisabled;
     }
 
     @Override
@@ -528,5 +575,10 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
     @VisibleForTesting
     public RecyclerView getRecyclerViewForTests() {
         return mRecyclerView;
+    }
+
+    @VisibleForTesting
+    public static void setScrollToLoadDisabledForTesting(boolean isScrollToLoadDisabled) {
+        sIsScrollToLoadDisabledForTests = isScrollToLoadDisabled;
     }
 }

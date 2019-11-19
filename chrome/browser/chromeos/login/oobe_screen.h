@@ -5,80 +5,65 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOGIN_OOBE_SCREEN_H_
 #define CHROME_BROWSER_CHROMEOS_LOGIN_OOBE_SCREEN_H_
 
+#include <iosfwd>
 #include <string>
 
 namespace chromeos {
 
-// TODO(jdufault): Rename to LoginScreen or similar since this is not directly
-// tied to Oobe. See crbug.com/678740.
+struct StaticOobeScreenId;
 
-// Different screens in the Oobe. If you update this enum, *make sure* to
-// update kScreenNames in the cc file as well.
-enum class OobeScreen : unsigned int {
-  SCREEN_OOBE_HID_DETECTION = 0,
-  SCREEN_OOBE_WELCOME,
-  SCREEN_OOBE_NETWORK,
-  SCREEN_OOBE_EULA,
-  SCREEN_OOBE_UPDATE,
-  SCREEN_OOBE_ENABLE_DEBUGGING,
-  SCREEN_OOBE_ENROLLMENT,
-  SCREEN_OOBE_RESET,
-  SCREEN_GAIA_SIGNIN,
-  SCREEN_ACCOUNT_PICKER,
-  SCREEN_KIOSK_AUTOLAUNCH,
-  SCREEN_KIOSK_ENABLE,
-  SCREEN_ERROR_MESSAGE,
-  SCREEN_USER_IMAGE_PICKER,
-  SCREEN_TPM_ERROR,
-  SCREEN_PASSWORD_CHANGED,
-  SCREEN_CREATE_SUPERVISED_USER_FLOW_DEPRECATED,
-  SCREEN_TERMS_OF_SERVICE,
-  SCREEN_ARC_TERMS_OF_SERVICE,
-  SCREEN_WRONG_HWID,
-  SCREEN_AUTO_ENROLLMENT_CHECK,
-  SCREEN_APP_LAUNCH_SPLASH,
-  SCREEN_ARC_KIOSK_SPLASH,
-  SCREEN_CONFIRM_PASSWORD,
-  SCREEN_FATAL_ERROR,
-  SCREEN_DEVICE_DISABLED,
-  SCREEN_UNRECOVERABLE_CRYPTOHOME_ERROR,
-  SCREEN_USER_SELECTION,
-  SCREEN_ACTIVE_DIRECTORY_PASSWORD_CHANGE,
-  SCREEN_ENCRYPTION_MIGRATION,
-  SCREEN_SUPERVISION_TRANSITION,
-  SCREEN_UPDATE_REQUIRED,
-  SCREEN_ASSISTANT_OPTIN_FLOW,
+// Identifiers an OOBE screen.
+struct OobeScreenId {
+  // Create an identifier from a string.
+  explicit OobeScreenId(const std::string& id);
+  // Create an identifier from a statically created identifier. This is implicit
+  // to make StaticOobeScreenId act more like OobeScreenId.
+  OobeScreenId(const StaticOobeScreenId& id);
 
-  // Special "first screen" that initiates login flow.
-  SCREEN_SPECIAL_LOGIN,
-  // Special "first screen" that initiates full OOBE flow.
-  SCREEN_SPECIAL_OOBE,
-  // Special test value that commands not to create any window yet.
-  SCREEN_TEST_NO_WINDOW,
+  // Name of the screen.
+  std::string name;
 
-  SCREEN_SYNC_CONSENT,
-  SCREEN_FINGERPRINT_SETUP,
-  SCREEN_OOBE_DEMO_SETUP,
-  SCREEN_OOBE_DEMO_PREFERENCES,
-
-  SCREEN_RECOMMEND_APPS,
-  SCREEN_APP_DOWNLOADING,
-  SCREEN_DISCOVER,
-
-  SCREEN_MARKETING_OPT_IN,
-  SCREEN_MULTIDEVICE_SETUP,
-
-  SCREEN_UNKNOWN  // This must always be the last element.
+  bool operator==(const OobeScreenId& rhs) const;
+  bool operator!=(const OobeScreenId& rhs) const;
+  bool operator<(const OobeScreenId& rhs) const;
+  friend std::ostream& operator<<(std::ostream& stream, const OobeScreenId& id);
 };
 
-// Returns the JS name for the given screen.
-std::string GetOobeScreenName(OobeScreen screen);
+// A static identifier. An OOBE screen often statically expresses its ID in
+// code. Chrome-style bans static destructors so use a const char* to point to
+// the data in the binary instead of std::string.
+struct StaticOobeScreenId {
+  const char* name;
 
-// Converts the JS name for the given sreen into a Screen instance.
-OobeScreen GetOobeScreenFromName(const std::string& name);
+  OobeScreenId AsId() const;
+};
 
-// Returns true if a command line argument requests |screen| to always be shown.
-bool ForceShowOobeScreen(OobeScreen screen);
+struct OobeScreen {
+  constexpr static StaticOobeScreenId SCREEN_ACCOUNT_PICKER{"account-picker"};
+
+  constexpr static StaticOobeScreenId SCREEN_TPM_ERROR{"tpm-error-message"};
+  constexpr static StaticOobeScreenId SCREEN_PASSWORD_CHANGED{
+      "password-changed"};
+  constexpr static StaticOobeScreenId
+      SCREEN_CREATE_SUPERVISED_USER_FLOW_DEPRECATED{"supervised-user-creation"};
+  constexpr static StaticOobeScreenId SCREEN_CONFIRM_PASSWORD{
+      "confirm-password"};
+  constexpr static StaticOobeScreenId SCREEN_FATAL_ERROR{"fatal-error"};
+  constexpr static StaticOobeScreenId SCREEN_ACTIVE_DIRECTORY_PASSWORD_CHANGE{
+      "ad-password-change"};
+
+  // Special "first screen" that initiates login flow.
+  constexpr static StaticOobeScreenId SCREEN_SPECIAL_LOGIN{"login"};
+  // Special "first screen" that initiates full OOBE flow.
+  constexpr static StaticOobeScreenId SCREEN_SPECIAL_OOBE{"oobe"};
+  // Special "first screen" that initiates enabling ARC adb sideloading flow.
+  constexpr static StaticOobeScreenId SCREEN_ENABLE_ADB_SIDELOADING{
+      "adb-sideloading"};
+  // Special test value that commands not to create any window yet.
+  constexpr static StaticOobeScreenId SCREEN_TEST_NO_WINDOW{"test:nowindow"};
+
+  constexpr static StaticOobeScreenId SCREEN_UNKNOWN{"unknown"};
+};
 
 }  // namespace chromeos
 

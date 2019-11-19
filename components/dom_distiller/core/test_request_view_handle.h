@@ -28,8 +28,7 @@ class TestRequestViewHandle : public DomDistillerRequestViewBase {
 };
 
 TestRequestViewHandle::TestRequestViewHandle(DistilledPagePrefs* prefs)
-    : DomDistillerRequestViewBase(prefs) {
-}
+    : DomDistillerRequestViewBase(prefs) {}
 
 TestRequestViewHandle::~TestRequestViewHandle() {
   distilled_page_prefs_->RemoveObserver(this);

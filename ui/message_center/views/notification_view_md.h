@@ -29,7 +29,6 @@ class Textfield;
 
 namespace message_center {
 
-class BoundedLabel;
 class NotificationHeaderView;
 class ProportionalImageView;
 
@@ -94,7 +93,7 @@ class NotificationButtonMD : public views::LabelButton {
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
 
-  SkColor enabled_color_for_testing() { return label()->enabled_color(); }
+  SkColor enabled_color_for_testing() { return label()->GetEnabledColor(); }
 
   const base::Optional<base::string16>& placeholder() const {
     return placeholder_;
@@ -123,7 +122,7 @@ class NotificationInputContainerMD : public views::InkDropHostView,
   NotificationInputContainerMD(NotificationInputDelegate* delegate);
   ~NotificationInputContainerMD() override;
 
-  void AnimateBackground(const ui::LocatedEvent& event);
+  void AnimateBackground(const ui::Event& event);
 
   // Overridden from views::InkDropHostView:
   void AddInkDropLayer(ui::Layer* ink_drop_layer) override;
@@ -173,7 +172,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
 
   // Overridden from views::View:
   void Layout() override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnFocus() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -184,6 +182,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   // Overridden from views::InkDropHostView:
   void AddInkDropLayer(ui::Layer* ink_drop_layer) override;
   void RemoveInkDropLayer(ui::Layer* ink_drop_layer) override;
+  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
   std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
   SkColor GetInkDropBaseColor() const override;
@@ -208,25 +207,35 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
                                  const base::string16& text) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, AppNameExtension);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, AppNameSystemNotification);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, AppNameWebNotification);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, CreateOrUpdateTest);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestIconSizing);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, UpdateButtonsStateTest);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, UpdateButtonCountTest);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, ExpandLongMessage);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, InlineSettings);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest,
+                           InlineSettingsInkDropAnimation);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, NotificationWithoutIcon);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestAccentColor);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestActionButtonClick);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestClick);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestClickExpanded);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestActionButtonClick);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestInlineReply);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest,
-                           TestInlineReplyRemovedByUpdate);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, ExpandLongMessage);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestAccentColor);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, UseImageAsIcon);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, NotificationWithoutIcon);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, InlineSettings);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, UpdateViewsOrderingTest);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestDeleteOnToggleExpanded);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest,
                            TestDeleteOnDisableNotification);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestDeleteOnToggleExpanded);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestIconSizing);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestInlineReply);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest,
+                           TestInlineReplyActivateWithKeyPress);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest,
+                           TestInlineReplyRemovedByUpdate);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, TestLongTitleAndMessage);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, UpdateAddingIcon);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, UpdateButtonCountTest);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, UpdateButtonsStateTest);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, UpdateInSettings);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, UpdateViewsOrderingTest);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, UseImageAsIcon);
 
   friend class NotificationViewMDTest;
 
@@ -298,7 +307,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
 
   // Views which are dynamically created inside view hierarchy.
   views::Label* title_view_ = nullptr;
-  BoundedLabel* message_view_ = nullptr;
+  views::Label* message_view_ = nullptr;
   views::Label* status_view_ = nullptr;
   ProportionalImageView* icon_view_ = nullptr;
   views::View* image_container_view_ = nullptr;

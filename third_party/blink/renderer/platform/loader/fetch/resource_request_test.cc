@@ -33,26 +33,9 @@ TEST(ResourceRequestTest, SetIsAdResource) {
   std::unique_ptr<ResourceRequest> redirect_request =
       original.CreateRedirectRequest(
           KURL("https://example.test/redirect"), original.HttpMethod(),
-          original.SiteForCookies(), original.TopFrameOrigin(),
-          original.HttpReferrer(), original.GetReferrerPolicy(),
-          original.GetSkipServiceWorker());
+          original.SiteForCookies(), original.HttpReferrer(),
+          original.GetReferrerPolicy(), original.GetSkipServiceWorker());
   EXPECT_TRUE(redirect_request->IsAdResource());
-}
-
-TEST(ResourceRequestTest, SetTopFrameURL) {
-  KURL url("http://example.com");
-  scoped_refptr<SecurityOrigin> origin = SecurityOrigin::Create(url);
-  ResourceRequest original;
-  original.SetTopFrameOrigin(origin);
-
-  // Should persist across redirects.
-  std::unique_ptr<ResourceRequest> redirect_request =
-      original.CreateRedirectRequest(
-          KURL("https://example.test/redirect"), original.HttpMethod(),
-          original.SiteForCookies(), original.TopFrameOrigin(),
-          original.HttpReferrer(), original.GetReferrerPolicy(),
-          original.GetSkipServiceWorker());
-  EXPECT_EQ(origin, redirect_request->TopFrameOrigin());
 }
 
 TEST(ResourceRequestTest, UpgradeIfInsecureAcrossRedirects) {
@@ -65,9 +48,8 @@ TEST(ResourceRequestTest, UpgradeIfInsecureAcrossRedirects) {
   std::unique_ptr<ResourceRequest> redirect_request =
       original.CreateRedirectRequest(
           KURL("https://example.test/redirect"), original.HttpMethod(),
-          original.SiteForCookies(), original.TopFrameOrigin(),
-          original.HttpReferrer(), original.GetReferrerPolicy(),
-          original.GetSkipServiceWorker());
+          original.SiteForCookies(), original.HttpReferrer(),
+          original.GetReferrerPolicy(), original.GetSkipServiceWorker());
   EXPECT_TRUE(redirect_request->UpgradeIfInsecure());
 }
 

@@ -37,7 +37,7 @@ MessageCenterImpl::MessageCenterImpl(
       lock_screen_controller_(std::move(lock_screen_controller)),
       popup_timers_controller_(std::make_unique<PopupTimersController>(this)),
       stats_collector_(this) {
-  notification_list_.reset(new NotificationList(this));
+  notification_list_ = std::make_unique<NotificationList>(this);
 }
 
 MessageCenterImpl::~MessageCenterImpl() {
@@ -55,7 +55,7 @@ void MessageCenterImpl::RemoveObserver(MessageCenterObserver* observer) {
 
 void MessageCenterImpl::AddNotificationBlocker(NotificationBlocker* blocker) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (base::ContainsValue(blockers_, blocker))
+  if (base::Contains(blockers_, blocker))
     return;
 
   blocker->AddObserver(this);
@@ -186,15 +186,16 @@ void MessageCenterImpl::AddNotification(
   // |notification_list| will replace the notification instead of adding new.
   // This is essentially an update rather than addition.
   bool already_exists = (notification_list_->GetNotificationById(id) != NULL);
+  if (already_exists) {
+    UpdateNotification(id, std::move(notification));
+    return;
+  }
+
   notification_list_->AddNotification(std::move(notification));
   visible_notifications_ =
       notification_list_->GetVisibleNotifications(blockers_);
-
   for (auto& observer : observer_list_) {
-    if (already_exists)
-      observer.OnNotificationUpdated(id);
-    else
-      observer.OnNotificationAdded(id);
+    observer.OnNotificationAdded(id);
   }
 }
 
@@ -224,7 +225,7 @@ void MessageCenterImpl::RemoveNotification(const std::string& id,
                                            bool by_user) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  Notification* notification = FindVisibleNotificationById(id);
+  Notification* notification = notification_list_->GetNotificationById(id);
   if (!notification)
     return;
 
@@ -458,12 +459,10 @@ void MessageCenterImpl::EnterQuietModeWithExpire(
     for (auto& observer : observer_list_)
       observer.OnQuietModeChanged(true);
 
-    quiet_mode_timer_.reset(new base::OneShotTimer);
-    quiet_mode_timer_->Start(
-        FROM_HERE,
-        expires_in,
-        base::Bind(
-            &MessageCenterImpl::SetQuietMode, base::Unretained(this), false));
+    quiet_mode_timer_ = std::make_unique<base::OneShotTimer>();
+    quiet_mode_timer_->Start(FROM_HERE, expires_in,
+                             base::BindOnce(&MessageCenterImpl::SetQuietMode,
+                                            base::Unretained(this), false));
   }
 }
 

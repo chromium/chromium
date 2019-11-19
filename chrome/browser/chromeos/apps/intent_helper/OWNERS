@@ -1,4 +1,3 @@
-# For ARC related code
-djacobo@chromium.org
-# For ARC related code, backup reviewers
-file://chrome/browser/chromeos/arc/OWNERS
+mxcai@chromium.org
+
+# COMPONENT: Platform>Apps>Foundation

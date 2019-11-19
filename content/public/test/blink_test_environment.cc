@@ -19,7 +19,6 @@
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/blink.h"
-#include "url/url_util.h"
 
 #if defined(OS_WIN)
 #include "ui/display/win/dpi.h"
@@ -81,10 +80,6 @@ void SetUpBlinkTestEnvironment() {
   display::win::SetDefaultDeviceScaleFactor(1.0f);
 #endif
 
-  // Explicitly initialize the GURL library before spawning any threads.
-  // Otherwise crash may happend when different threads try to create a GURL
-  // at same time.
-  url::Initialize();
   test_environment = new TestEnvironment;
 }
 

@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/translate/cells/translate_popup_menu_item.h"
 
-#import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -19,7 +19,6 @@ const CGFloat kCheckmarkIconSize = 20;
 const CGFloat kMargin = 15;
 const CGFloat kMaxHeight = 100;
 const CGFloat kVerticalMargin = 8;
-const int kContentColorBlue = 0x1A73E8;
 }  // namespace
 
 @implementation TranslatePopupMenuItem
@@ -38,7 +37,7 @@ const int kContentColorBlue = 0x1A73E8;
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   cell.accessibilityTraits = UIAccessibilityTraitButton;
-  cell.selected = self.isSelected;
+  [cell setCheckmark:self.selected];
   [cell setTitle:self.title];
 }
 
@@ -83,7 +82,7 @@ const int kContentColorBlue = 0x1A73E8;
   if (self) {
     UIView* selectedBackgroundView = [[UIView alloc] init];
     selectedBackgroundView.backgroundColor =
-        [UIColor colorWithWhite:0 alpha:kSelectedItemBackgroundAlpha];
+        [UIColor colorNamed:kTableViewRowHighlightColor];
     self.selectedBackgroundView = selectedBackgroundView;
 
     _titleLabel = [[UILabel alloc] init];
@@ -91,7 +90,7 @@ const int kContentColorBlue = 0x1A73E8;
     _titleLabel.numberOfLines = 0;
     _titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     _titleLabel.font = [self titleFont];
-    _titleLabel.textColor = UIColorFromRGB(kContentColorBlue);
+    _titleLabel.textColor = [UIColor colorNamed:kBlueColor];
     _titleLabel.adjustsFontForContentSizeCategory = YES;
 
     [self.contentView addSubview:_titleLabel];
@@ -100,7 +99,6 @@ const int kContentColorBlue = 0x1A73E8;
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _checkmarkView = [[UIImageView alloc] initWithImage:checkmarkIcon];
     _checkmarkView.translatesAutoresizingMaskIntoConstraints = NO;
-    _checkmarkView.tintColor = UIColorFromRGB(kContentColorBlue);
     _checkmarkView.hidden = YES;  // The checkmark is hidden by default.
 
     [self.contentView addSubview:_checkmarkView];
@@ -136,10 +134,8 @@ const int kContentColorBlue = 0x1A73E8;
   self.titleLabel.text = title;
 }
 
-- (void)setSelected:(BOOL)selected {
-  [super setSelected:selected];
-
-  if (selected) {
+- (void)setCheckmark:(BOOL)checkmark {
+  if (checkmark) {
     self.checkmarkView.hidden = NO;
     self.accessibilityTraits |= UIAccessibilityTraitSelected;
   }
@@ -157,7 +153,9 @@ const int kContentColorBlue = 0x1A73E8;
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  // Clear UIAccessibilityTraitSelected from the accessibility traits, if any.
+  // Hide the checkmark and clear UIAccessibilityTraitSelected from the
+  // accessibility traits, if applicable.
+  self.checkmarkView.hidden = YES;
   self.accessibilityTraits &= ~UIAccessibilityTraitSelected;
   self.selected = NO;
   [self setTitle:nil];

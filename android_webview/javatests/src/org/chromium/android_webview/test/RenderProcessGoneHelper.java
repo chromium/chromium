@@ -13,9 +13,8 @@ import java.util.concurrent.TimeUnit;
  * The helper class for test to wait for render process gone related events.
  */
 public class RenderProcessGoneHelper implements RenderProcessGoneObserver {
-    private static final int RENDER_PROCESS_GONE_NOTIFIED_TO_AW_CONTENTS = 1;
-    private static final int RENDER_PROCESS_GONE_NOTIFIED_TO_AW_CONTENTS_CLIENT = 2;
-    private static final int AW_CONTENTS_DESTROYED = 3;
+    private static final int RENDER_PROCESS_GONE_NOTIFIED_TO_AW_CONTENTS_CLIENT = 1;
+    private static final int AW_CONTENTS_DESTROYED = 2;
 
     private int mState;
     private CallbackHelper mCallbackHelper;
@@ -23,10 +22,6 @@ public class RenderProcessGoneHelper implements RenderProcessGoneObserver {
 
     public RenderProcessGoneHelper() {
         mCallbackHelper = new CallbackHelper();
-    }
-
-    public void waitForRenderProcessGone() throws Exception {
-        waitForState(RENDER_PROCESS_GONE_NOTIFIED_TO_AW_CONTENTS);
     }
 
     public void waitForRenderProcessGoneNotifiedToAwContentsClient() throws Exception {
@@ -45,14 +40,6 @@ public class RenderProcessGoneHelper implements RenderProcessGoneObserver {
         if (mState != state) {
             throw new IllegalStateException("AwContents is in state " + mState);
         }
-    }
-
-    @Override
-    public void onRenderProcessGone() {
-        if (mOnRenderProcessGoneTask != null) mOnRenderProcessGoneTask.run();
-
-        mState = RENDER_PROCESS_GONE_NOTIFIED_TO_AW_CONTENTS;
-        mCallbackHelper.notifyCalled();
     }
 
     @Override

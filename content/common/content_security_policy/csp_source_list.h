@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "content/common/content_security_policy/csp_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -20,6 +21,7 @@ struct CONTENT_EXPORT CSPSourceList {
                 bool allow_star,
                 bool allow_response_redirects,
                 std::vector<CSPSource> source_list);
+  explicit CSPSourceList(const network::mojom::CSPSourceList& csp_source_list);
   CSPSourceList(const CSPSourceList&);
   ~CSPSourceList();
 

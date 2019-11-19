@@ -106,7 +106,7 @@ class ExploreSitesFetcher {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
-  base::WeakPtrFactory<ExploreSitesFetcher> weak_factory_;
+  base::WeakPtrFactory<ExploreSitesFetcher> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExploreSitesFetcher);
 };

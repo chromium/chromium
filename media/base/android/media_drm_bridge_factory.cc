@@ -17,8 +17,7 @@ MediaDrmBridgeFactory::MediaDrmBridgeFactory(
     const CreateFetcherCB& create_fetcher_cb,
     const CreateStorageCB& create_storage_cb)
     : create_fetcher_cb_(create_fetcher_cb),
-      create_storage_cb_(create_storage_cb),
-      weak_factory_(this) {
+      create_storage_cb_(create_storage_cb) {
   DCHECK(create_fetcher_cb_);
   DCHECK(create_storage_cb_);
 }
@@ -71,8 +70,8 @@ void MediaDrmBridgeFactory::Create(
   storage_ = std::make_unique<MediaDrmStorageBridge>();
 
   if (!MediaDrmBridge::IsPerOriginProvisioningSupported()) {
-    // Per-origin provisioning isn't supported, so proceed without
-    // specifying an origin ID.
+    // Per-origin provisioning isn't supported, so proceed without specifying an
+    // origin ID.
     CreateMediaDrmBridge("");
     return;
   }
@@ -114,7 +113,7 @@ void MediaDrmBridgeFactory::CreateMediaDrmBridge(const std::string& origin_id) {
     return;
   }
 
-  media_drm_bridge_->SetMediaCryptoReadyCB(base::BindRepeating(
+  media_drm_bridge_->SetMediaCryptoReadyCB(base::BindOnce(
       &MediaDrmBridgeFactory::OnMediaCryptoReady, weak_factory_.GetWeakPtr()));
 }
 

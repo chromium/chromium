@@ -91,7 +91,7 @@ bool ReadMessage(int fd, std::string* message) {
 std::unique_ptr<MetricSample> SerializationUtils::ParseSample(
     const std::string& sample) {
   if (sample.empty())
-    return std::unique_ptr<MetricSample>();
+    return nullptr;
 
   std::vector<std::string> parts = base::SplitString(
       sample, std::string(1, '\0'),
@@ -101,7 +101,7 @@ std::unique_ptr<MetricSample> SerializationUtils::ParseSample(
   if (parts.size() != 3) {
     DLOG(ERROR) << "splitting message on \\0 produced " << parts.size()
                 << " parts (expected 3)";
-    return std::unique_ptr<MetricSample>();
+    return nullptr;
   }
   const std::string& name = parts[0];
   const std::string& value = parts[1];
@@ -117,7 +117,7 @@ std::unique_ptr<MetricSample> SerializationUtils::ParseSample(
   if (base::LowerCaseEqualsASCII(name, "useraction"))
     return MetricSample::UserActionSample(value);
   DLOG(ERROR) << "invalid event type: " << name << ", value: " << value;
-  return std::unique_ptr<MetricSample>();
+  return nullptr;
 }
 
 void SerializationUtils::ReadAndTruncateMetricsFromFile(

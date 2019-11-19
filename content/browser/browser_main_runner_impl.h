@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_main_runner.h"
 
@@ -45,10 +45,10 @@ class BrowserMainRunnerImpl : public BrowserMainRunner {
   // True if the runner has been shut down.
   bool is_shutdown_;
 
-  // Prevents execution of TaskScheduler tasks from the moment content is
+  // Prevents execution of ThreadPool tasks from the moment content is
   // entered. Handed off to |main_loop_| later so it can decide when to release
   // worker threads again.
-  std::unique_ptr<base::TaskScheduler::ScopedExecutionFence>
+  std::unique_ptr<base::ThreadPoolInstance::ScopedExecutionFence>
       scoped_execution_fence_;
 
   std::unique_ptr<NotificationServiceImpl> notification_service_;

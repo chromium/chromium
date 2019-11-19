@@ -40,12 +40,6 @@
 
 namespace blink {
 
-V8CustomXPathNSResolver* V8CustomXPathNSResolver::Create(
-    ScriptState* script_state,
-    v8::Local<v8::Object> resolver) {
-  return MakeGarbageCollected<V8CustomXPathNSResolver>(script_state, resolver);
-}
-
 V8CustomXPathNSResolver::V8CustomXPathNSResolver(ScriptState* script_state,
                                                  v8::Local<v8::Object> resolver)
     : script_state_(script_state), resolver_(resolver) {}
@@ -68,7 +62,8 @@ AtomicString V8CustomXPathNSResolver::lookupNamespaceURI(const String& prefix) {
     LocalFrame* frame = ToLocalFrameIfNotDetached(script_state_->GetContext());
     if (frame)
       frame->Console().AddMessage(ConsoleMessage::Create(
-          kJSMessageSource, mojom::ConsoleMessageLevel::kError,
+          mojom::ConsoleMessageSource::kJavaScript,
+          mojom::ConsoleMessageLevel::kError,
           "XPathNSResolver does not have a lookupNamespaceURI method."));
     return g_null_atom;
   }

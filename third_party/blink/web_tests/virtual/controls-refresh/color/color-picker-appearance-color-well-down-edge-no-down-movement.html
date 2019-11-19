@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.dumpAsText();
+testRunner.waitUntilDone();
+</script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#3D6600'>
+
+<p id='description' style='opacity: 0'></p>
+<div id='console' style='opacity: 0'></div>
+
+<script src='color-picker-appearance-no-movement-helper.js'></script>
+<script>
+let descriptionContainer = document.getElementById('description');
+openPicker(document.getElementById('color'), openPickerCallback, openPickerCallback);
+
+function openPickerCallback() {
+  if (internals.pagePopupWindow) {
+    descriptionContainer.append('Popup opened.', document.createElement('br'));
+    popupWindow.focus();
+    const popupDocument = popupWindow.document;
+    const colorWell = popupDocument.querySelector('color-well');
+    const colorWellRect = colorWell.getBoundingClientRect();
+    const colorWellSelectionRing = popupDocument.querySelector('color-well > color-selection-ring');
+    eventSender.mouseMoveTo(colorWellRect.left + (colorWellRect.width / 2), colorWellRect.bottom);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+
+    let colorWellSelectionRingCurrentLeft = colorWellSelectionRing.left;
+    let colorWellSelectionRingCurrentTop = colorWellSelectionRing.top;
+    eventSender.keyDown('ArrowDown');
+    logKeyboardMovementResult(descriptionContainer, 'ArrowDown', 'color well', colorWellSelectionRing,
+        colorWellSelectionRingCurrentLeft, colorWellSelectionRingCurrentTop);
+
+    colorWellSelectionRingCurrentLeft = colorWellSelectionRing.left;
+    colorWellSelectionRingCurrentTop = colorWellSelectionRing.top;
+    eventSender.keyDown('ArrowDown', ['ctrlKey']);
+    logKeyboardMovementResult(descriptionContainer, 'ctrlKey+ArrowDown', 'color well', colorWellSelectionRing,
+        colorWellSelectionRingCurrentLeft, colorWellSelectionRingCurrentTop);
+  } else {
+    descriptionContainer.append('Popup did not open.', document.createElement('br'));
+  }
+  descriptionContainer.append('TEST COMPLETE');
+  testRunner.notifyDone();
+}
+</script>
+</body>
+</html>

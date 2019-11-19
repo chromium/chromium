@@ -51,10 +51,6 @@ class CORE_EXPORT DOMSelection final : public ScriptWrappable,
   USING_GARBAGE_COLLECTED_MIXIN(DOMSelection);
 
  public:
-  static DOMSelection* Create(const TreeScope* tree_scope) {
-    return MakeGarbageCollected<DOMSelection>(tree_scope);
-  }
-
   explicit DOMSelection(const TreeScope*);
 
   void ClearTreeScope();

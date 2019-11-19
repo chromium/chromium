@@ -34,173 +34,19 @@
 #include "third_party/blink/renderer/core/frame/intervention.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
 namespace {
-
-// These offsets change indicies into the ListenerHistogram
-// enumeration. The addition of a series of offsets then
-// produces the resulting ListenerHistogram value.
-// TODO(dtapuska): Remove all of these histogram counts once
-// https://crbug.com/599609 is fixed.
-const size_t kTouchTargetHistogramRootScrollerOffset = 6;
-const size_t kTouchTargetHistogramScrollableDocumentOffset = 3;
-const size_t kTouchTargetHistogramAlreadyHandledOffset = 0;
-const size_t kTouchTargetHistogramNotHandledOffset = 1;
-const size_t kTouchTargetHistogramHandledOffset = 2;
-const size_t kCapturingOffset = 0;
-const size_t kAtTargetOffset = 12;
-const size_t kBubblingOffset = 24;
-
-enum TouchTargetAndDispatchResultType {
-  // The following enums represent state captured during the CAPTURING_PHASE.
-
-  // Non-root-scroller, non-scrollable document, already handled.
-  kCapturingNonRootScrollerNonScrollableAlreadyHandled,
-  // Non-root-scroller, non-scrollable document, not handled.
-  kCapturingNonRootScrollerNonScrollableNotHandled,
-  // Non-root-scroller, non-scrollable document, handled application.
-  kCapturingNonRootScrollerNonScrollableHandled,
-  // Non-root-scroller, scrollable document, already handled.
-  kCapturingNonRootScrollerScrollableDocumentAlreadyHandled,
-  // Non-root-scroller, scrollable document, not handled.
-  kCapturingNonRootScrollerScrollableDocumentNotHandled,
-  // Non-root-scroller, scrollable document, handled application.
-  kCapturingNonRootScrollerScrollableDocumentHandled,
-  // Root-scroller, non-scrollable document, already handled.
-  kCapturingRootScrollerNonScrollableAlreadyHandled,
-  // Root-scroller, non-scrollable document, not handled.
-  kCapturingRootScrollerNonScrollableNotHandled,
-  // Root-scroller, non-scrollable document, handled.
-  kCapturingRootScrollerNonScrollableHandled,
-  // Root-scroller, scrollable document, already handled.
-  kCapturingRootScrollerScrollableDocumentAlreadyHandled,
-  // Root-scroller, scrollable document, not handled.
-  kCapturingRootScrollerScrollableDocumentNotHandled,
-  // Root-scroller, scrollable document, handled.
-  kCapturingRootScrollerScrollableDocumentHandled,
-
-  // The following enums represent state captured during the AT_TARGET phase.
-
-  // Non-root-scroller, non-scrollable document, already handled.
-  kNonRootScrollerNonScrollableAlreadyHandled,
-  // Non-root-scroller, non-scrollable document, not handled.
-  kNonRootScrollerNonScrollableNotHandled,
-  // Non-root-scroller, non-scrollable document, handled application.
-  kNonRootScrollerNonScrollableHandled,
-  // Non-root-scroller, scrollable document, already handled.
-  kNonRootScrollerScrollableDocumentAlreadyHandled,
-  // Non-root-scroller, scrollable document, not handled.
-  kNonRootScrollerScrollableDocumentNotHandled,
-  // Non-root-scroller, scrollable document, handled application.
-  kNonRootScrollerScrollableDocumentHandled,
-  // Root-scroller, non-scrollable document, already handled.
-  kRootScrollerNonScrollableAlreadyHandled,
-  // Root-scroller, non-scrollable document, not handled.
-  kRootScrollerNonScrollableNotHandled,
-  // Root-scroller, non-scrollable document, handled.
-  kRootScrollerNonScrollableHandled,
-  // Root-scroller, scrollable document, already handled.
-  kRootScrollerScrollableDocumentAlreadyHandled,
-  // Root-scroller, scrollable document, not handled.
-  kRootScrollerScrollableDocumentNotHandled,
-  // Root-scroller, scrollable document, handled.
-  kRootScrollerScrollableDocumentHandled,
-
-  // The following enums represent state captured during the BUBBLING_PHASE.
-
-  // Non-root-scroller, non-scrollable document, already handled.
-  kBubblingNonRootScrollerNonScrollableAlreadyHandled,
-  // Non-root-scroller, non-scrollable document, not handled.
-  kBubblingNonRootScrollerNonScrollableNotHandled,
-  // Non-root-scroller, non-scrollable document, handled application.
-  kBubblingNonRootScrollerNonScrollableHandled,
-  // Non-root-scroller, scrollable document, already handled.
-  kBubblingNonRootScrollerScrollableDocumentAlreadyHandled,
-  // Non-root-scroller, scrollable document, not handled.
-  kBubblingNonRootScrollerScrollableDocumentNotHandled,
-  // Non-root-scroller, scrollable document, handled application.
-  kBubblingNonRootScrollerScrollableDocumentHandled,
-  // Root-scroller, non-scrollable document, already handled.
-  kBubblingRootScrollerNonScrollableAlreadyHandled,
-  // Root-scroller, non-scrollable document, not handled.
-  kBubblingRootScrollerNonScrollableNotHandled,
-  // Root-scroller, non-scrollable document, handled.
-  kBubblingRootScrollerNonScrollableHandled,
-  // Root-scroller, scrollable document, already handled.
-  kBubblingRootScrollerScrollableDocumentAlreadyHandled,
-  // Root-scroller, scrollable document, not handled.
-  kBubblingRootScrollerScrollableDocumentNotHandled,
-  // Root-scroller, scrollable document, handled.
-  kBubblingRootScrollerScrollableDocumentHandled,
-
-  kTouchTargetAndDispatchResultTypeMax,
-};
-
-void LogTouchTargetHistogram(EventTarget* event_target,
-                             uint8_t phase,
-                             bool default_prevented_before_current_target,
-                             bool default_prevented) {
-  int result = 0;
-  Document* document = nullptr;
-
-  switch (phase) {
-    default:
-    case Event::kNone:
-      return;
-    case Event::kCapturingPhase:
-      result += kCapturingOffset;
-      break;
-    case Event::kAtTarget:
-      result += kAtTargetOffset;
-      break;
-    case Event::kBubblingPhase:
-      result += kBubblingOffset;
-      break;
-  }
-
-  if (const LocalDOMWindow* dom_window = event_target->ToLocalDOMWindow()) {
-    // Treat the window as a root scroller as well.
-    document = dom_window->document();
-    result += kTouchTargetHistogramRootScrollerOffset;
-  } else if (Node* node = event_target->ToNode()) {
-    // Report if the target node is the document or body.
-    if (node->IsDocumentNode() ||
-        node->GetDocument().documentElement() == node ||
-        node->GetDocument().body() == node) {
-      result += kTouchTargetHistogramRootScrollerOffset;
-    }
-    document = &node->GetDocument();
-  }
-
-  if (document) {
-    LocalFrameView* view = document->View();
-    if (view && view->LayoutViewport()->ScrollsOverflow())
-      result += kTouchTargetHistogramScrollableDocumentOffset;
-  }
-
-  if (default_prevented_before_current_target)
-    result += kTouchTargetHistogramAlreadyHandledOffset;
-  else if (default_prevented)
-    result += kTouchTargetHistogramHandledOffset;
-  else
-    result += kTouchTargetHistogramNotHandledOffset;
-
-  DEFINE_STATIC_LOCAL(EnumerationHistogram, root_document_listener_histogram,
-                      ("Event.Touch.TargetAndDispatchResult2",
-                       kTouchTargetAndDispatchResultTypeMax));
-  root_document_listener_histogram.Count(
-      static_cast<TouchTargetAndDispatchResultType>(result));
-}
 
 // Helper function to get WebTouchEvent from WebCoalescedInputEvent.
 const WebTouchEvent* GetWebTouchEvent(const WebCoalescedInputEvent& event) {
@@ -209,8 +55,7 @@ const WebTouchEvent* GetWebTouchEvent(const WebCoalescedInputEvent& event) {
 }  // namespace
 
 TouchEvent::TouchEvent()
-    : default_prevented_before_current_target_(false),
-      current_touch_action_(TouchAction::kTouchActionAuto) {}
+    : current_touch_action_(TouchAction::kTouchActionAuto) {}
 
 TouchEvent::TouchEvent(const WebCoalescedInputEvent& event,
                        TouchList* touches,
@@ -236,7 +81,6 @@ TouchEvent::TouchEvent(const WebCoalescedInputEvent& event,
       touches_(touches),
       target_touches_(target_touches),
       changed_touches_(changed_touches),
-      default_prevented_before_current_target_(false),
       current_touch_action_(current_touch_action) {
   DCHECK(WebInputEvent::IsTouchEventType(event.Event().GetType()));
   native_event_.reset(new WebCoalescedInputEvent(event));
@@ -312,7 +156,7 @@ void TouchEvent::preventDefault() {
           break;
         case PassiveMode::kPassiveForcedDocumentLevel:
           UseCounter::Count(
-              local_frame,
+              local_dom_window->document(),
               WebFeature::
                   kTouchEventPreventedForcedDocumentPassiveNoTouchAction);
           break;
@@ -327,20 +171,6 @@ bool TouchEvent::IsTouchStartOrFirstTouchMove() const {
   if (!native_event_)
     return false;
   return GetWebTouchEvent(*native_event_)->touch_start_or_first_touch_move;
-}
-
-void TouchEvent::DoneDispatchingEventAtCurrentTarget() {
-  // Do not log for non-cancelable events, events that don't block
-  // scrolling, have more than one touch point or aren't on the main frame.
-  if (!cancelable() || !IsTouchStartOrFirstTouchMove() ||
-      !(touches_ && touches_->length() == 1) ||
-      !(view() && view()->GetFrame() && view()->GetFrame()->IsMainFrame()))
-    return;
-
-  bool canceled = defaultPrevented();
-  LogTouchTargetHistogram(currentTarget(), eventPhase(),
-                          default_prevented_before_current_target_, canceled);
-  default_prevented_before_current_target_ = canceled;
 }
 
 void TouchEvent::Trace(blink::Visitor* visitor) {

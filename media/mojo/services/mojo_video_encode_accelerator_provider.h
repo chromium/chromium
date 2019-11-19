@@ -7,9 +7,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "media/mojo/interfaces/video_encode_accelerator.mojom.h"
+#include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/mojo/services/mojo_video_encode_accelerator_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace gpu {
 struct GpuPreferences;
@@ -26,10 +27,11 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
       MojoVideoEncodeAcceleratorService::
           CreateAndInitializeVideoEncodeAcceleratorCallback;
 
-  static void Create(mojom::VideoEncodeAcceleratorProviderRequest request,
-                     const CreateAndInitializeVideoEncodeAcceleratorCallback&
-                         create_vea_callback,
-                     const gpu::GpuPreferences& gpu_preferences);
+  static void Create(
+      mojo::PendingReceiver<mojom::VideoEncodeAcceleratorProvider> receiver,
+      const CreateAndInitializeVideoEncodeAcceleratorCallback&
+          create_vea_callback,
+      const gpu::GpuPreferences& gpu_preferences);
 
   MojoVideoEncodeAcceleratorProvider(
       const CreateAndInitializeVideoEncodeAcceleratorCallback&
@@ -39,7 +41,7 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
 
   // mojom::VideoEncodeAcceleratorProvider impl.
   void CreateVideoEncodeAccelerator(
-      mojom::VideoEncodeAcceleratorRequest request) override;
+      mojo::PendingReceiver<mojom::VideoEncodeAccelerator> receiver) override;
 
  private:
   const CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback_;

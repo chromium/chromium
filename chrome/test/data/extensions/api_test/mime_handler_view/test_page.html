@@ -7,7 +7,7 @@
     const token = "?next=";
     if (!query.startsWith(token))
       return false;
-    window.location.href = query.substr(query_index + token.length);
+    window.location.href = query.substr(token.length);
     return true;
   }
 

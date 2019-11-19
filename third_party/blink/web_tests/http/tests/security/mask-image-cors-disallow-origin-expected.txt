@@ -1,0 +1,1 @@
+CONSOLE ERROR: Access to image at 'http://localhost:8080/security/resources/image-access-control.php?file=../../resources/square100.png&allow=false' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.

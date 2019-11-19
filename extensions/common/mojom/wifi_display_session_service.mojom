@@ -1,0 +1,65 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+import "services/network/public/mojom/ip_address.mojom";
+import "services/network/public/mojom/ip_endpoint.mojom";
+
+struct WiFiDisplayMediaPacket {
+  array<uint8> data;
+};
+
+// WiFiDisplaySessionService class provides access to the network for
+// the render-hosted Wi-Fi Display session.
+interface WiFiDisplaySessionService {
+  // Sets the client whose methods are invoked in order to to notify the client
+  // and to transmit controlling messages.
+  SetClient(pending_remote<WiFiDisplaySessionServiceClient> client);
+
+  // Requires connection to a sink using the given authentication information.
+  // Note: 'auth_method' values must correspond to 'enum AuthenticationMethod'
+  // from display_source.idl
+  Connect(int32 sink_id, int32 auth_method, string auth_data);
+
+  // Drops the established connection to the connected sink.
+  Disconnect();
+
+  // Sends a controlling message to the connected sink.
+  SendMessage(string message);
+};
+
+interface WiFiDisplaySessionServiceClient {
+  // Notification of a successfull connection to a sink.
+  OnConnected(network.mojom.IPAddress local_ip_address,
+              network.mojom.IPAddress sink_ip_address);
+
+  // Notification of a handled connection request.
+  OnConnectRequestHandled(bool success, string error_message);
+
+  // Notification of a session termination.
+  OnTerminated();
+
+  // Notification of a handled termination request.
+  OnDisconnectRequestHandled(bool success, string error_message);
+
+  // Notification of an error occurred during the session.
+  // Note: 'type' values must correspond to 'enum ErrorType'
+  // from display_source.idl
+  OnError(int32 type, string description);
+
+  // Invoked to transmit a controlling message from
+  // the connected sink.
+  OnMessage(string data);
+};
+
+// This interface is used to send media stream to the
+// connected sink.
+interface WiFiDisplayMediaService {
+  // Sets the destination point for sending media stream.
+  SetDestinationPoint(network.mojom.IPEndPoint ip_end_point) => (bool success);
+
+  // Sends media packet to the destination point.
+  SendMediaPacket(WiFiDisplayMediaPacket packet);
+};

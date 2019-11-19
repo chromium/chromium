@@ -20,10 +20,6 @@ struct DefaultSingletonTraits;
 class PrefRegistrySimple;
 class Profile;
 
-namespace network {
-class CertVerifierWithTrustAnchors;
-}
-
 namespace policy {
 
 class PolicyCertService;
@@ -34,17 +30,6 @@ class PolicyCertServiceFactory : public BrowserContextKeyedServiceFactory {
   // Returns an existing PolicyCertService for |profile|. See
   // CreateForProfile.
   static PolicyCertService* GetForProfile(Profile* profile);
-
-  // Creates a new PolicyCertService and returns the associated
-  // PolicyCertVerifier. Returns nullptr if this service isn't allowed for
-  // |profile|, i.e. if NetworkConfigurationUpdater doesn't exist.
-  // This service is created separately for the original profile and the
-  // incognito profile.
-  // Note: NetworkConfigurationUpdater is currently only created for the primary
-  // user's profile.
-  // This should  only be called if the network service is disabled.
-  static std::unique_ptr<network::CertVerifierWithTrustAnchors>
-  CreateForProfile(Profile* profile);
 
   // Creates (if it's not already created) a PolicyCertService and gets it to
   // start listening for trust anchors for the profile. Returns false if this

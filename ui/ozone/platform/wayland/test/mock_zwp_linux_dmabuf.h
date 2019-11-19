@@ -18,6 +18,8 @@ namespace wl {
 
 extern const struct zwp_linux_dmabuf_v1_interface kMockZwpLinuxDmabufV1Impl;
 
+class TestZwpLinuxBufferParamsV1;
+
 // Manage zwp_linux_dmabuf_v1 object.
 class MockZwpLinuxDmabufV1 : public GlobalObject {
  public:
@@ -30,7 +32,17 @@ class MockZwpLinuxDmabufV1 : public GlobalObject {
                     wl_resource* resource,
                     uint32_t params_id));
 
+  const std::vector<TestZwpLinuxBufferParamsV1*>& buffer_params() const {
+    return buffer_params_;
+  }
+
+  void StoreBufferParams(TestZwpLinuxBufferParamsV1* params);
+
+  void OnBufferParamsDestroyed(TestZwpLinuxBufferParamsV1* params);
+
  private:
+  std::vector<TestZwpLinuxBufferParamsV1*> buffer_params_;
+
   DISALLOW_COPY_AND_ASSIGN(MockZwpLinuxDmabufV1);
 };
 

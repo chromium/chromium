@@ -6,8 +6,5 @@ We are currently running an experiment upgrading mixed content (insecure content
 ## Scope
 Currently subresources loaded over HTTP and Websocket URLs are autoupgraded for users who are part of the experiment. Form submissions are not currently part of the experiment.
 
-## Fallback
-A subset of users who are part of the experiment have fallback enabled, that is, if the resources fail to load over HTTPS or the load hangs, they retry the load over HTTP.
-
 ## Opt-out
 You can opt out of having mixed content autoupgraded in your site by including an HTTP header with type 'mixed-content' and value 'noupgrade', this will disable autoupgrades for subresources. Since mixed content websockets are automatically blocked, autoupgrades cannot be disabled for those.

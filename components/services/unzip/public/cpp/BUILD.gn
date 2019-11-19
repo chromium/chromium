@@ -12,35 +12,6 @@ source_set("cpp") {
 
   public_deps = [
     "//components/services/filesystem:lib",
-    "//components/services/unzip/public/interfaces",
-    "//services/service_manager/public/cpp",
-  ]
-}
-
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "test_unzip_service.cc",
-    "test_unzip_service.h",
-  ]
-
-  deps = [
-    ":cpp",
-    "//base",
-    "//components/services/unzip:lib",
-    "//services/service_manager/public/cpp/test:test_support",
-  ]
-}
-
-source_set("manifest") {
-  sources = [
-    "manifest.cc",
-    "manifest.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/services/unzip/public/interfaces",
-    "//services/service_manager/public/cpp",
+    "//components/services/unzip/public/mojom",
   ]
 }

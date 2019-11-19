@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="cs">
+<translation id="1075622780330595106">Tento počet vašich karet v poslední době nebyl použit: <ph name="NUMBER_OF_TABS" />. Chcete je zavřít?</translation>
+<translation id="1181037720776840403">Odebrat</translation>
+<translation id="125153950246128346">Další kartu zobrazíte klepnutím</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> karty}other{<ph name="TABS_COUNT_MANY" /> karet}}</translation>
+<translation id="257674075312929031">Skupina</translation>
+<translation id="2613747923081026172">Vytvořit skupinu</translation>
+<translation id="2671423594960767771">Sdílet skupinu</translation>
+<translation id="2977480621796371840">Odebrat ze skupiny</translation>
+<translation id="4212246570487010370">Pokračovat v prohlížení</translation>
+<translation id="4648718555153979859">Zde jsou seskupeny vaše karty</translation>
+<translation id="5007392906805964215">Zkontrolovat</translation>
+<translation id="5073204694187207510">Skrýt celoobrazovkovou mřížku</translation>
+<translation id="5082793167783849073">Rychle stránky porovnejte tím, že vytvoříte skupinu. Chcete-li začít, podržte odkaz.</translation>
+<translation id="5580090775658607195">Byl seskupen tento počet karet: <ph name="TAB_COUNT" /></translation>
+<translation id="5792534911093536736">Další karty</translation>
+<translation id="58326064309361797">Přetažením můžete karty uspořádat do skupin</translation>
+<translation id="6040143037577758943">Zavřít</translation>
+<translation id="6193448654517602979">Vyberte karty</translation>
+<translation id="6615455863669487791">Ukázat</translation>
+<translation id="6840760312327750441">Chcete-li karty seskupit, podržte některou kartu. Potom ji přetáhněte na jinou kartu.</translation>
+<translation id="7151209024774799310">Odstranit karty ze skupiny</translation>
+<translation id="7559245342362162951">Zobrazit karty skupiny v mřížce na celou obrazovku</translation>
+<translation id="9150694013019234766">Ve skupině karet v dolní části obrazovky můžete přepínat mezi kartami</translation>
+<translation id="9169594135889675189">Přidat do skupiny novou kartu</translation>
+<translation id="959682366969460160">Uspořádejte si položky</translation>
+</translationbundle>

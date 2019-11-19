@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
 static_library("test_support") {
   testonly = true
   sources = [
@@ -85,4 +87,16 @@ static_library("test_support_impl") {
     "test_support_impl.cc",
     "test_support_impl.h",
   ]
+}
+
+if (is_mac) {
+  proto_library("channel_mac_proto") {
+    sources = [
+      "data/channel_mac/channel_mac.proto",
+    ]
+    deps = [
+      "//testing/libfuzzer/fuzzers/mach:proto",
+    ]
+    import_dirs = [ "//testing/libfuzzer/fuzzers/mach" ]
+  }
 }

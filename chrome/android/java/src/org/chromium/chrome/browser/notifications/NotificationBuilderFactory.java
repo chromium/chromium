@@ -8,7 +8,8 @@ import static org.chromium.chrome.browser.ChromeFeatureList.ALLOW_REMOTE_CONTEXT
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.ChromeFeatureList;

@@ -90,6 +90,9 @@ class ConnectionToHost {
                        scoped_refptr<TransportContext> transport_context,
                        HostEventCallback* event_callback) = 0;
 
+  // Disconnects the host connection.
+  virtual void Disconnect(ErrorCode error) = 0;
+
   // Returns the session configuration that was negotiated with the host.
   virtual const SessionConfig& config() = 0;
 

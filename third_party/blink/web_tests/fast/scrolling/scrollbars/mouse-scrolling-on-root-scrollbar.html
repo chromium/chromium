@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<title>Tests mouse interactions on a non-custom composited root scrollbar.</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/scrollbar-util.js"></script>
+<body style="height: 1000px; width: 1000px">
+<script>
+if (window.internals)
+    internals.settings.setScrollAnimatorEnabled(false);
+
+window.onload = () => {
+  const TRACK_WIDTH = calculateScrollbarThickness();
+  const BUTTON_WIDTH = TRACK_WIDTH;
+  const SCROLL_CORNER = TRACK_WIDTH;
+  const SCROLL_DELTA = 100;
+
+  promise_test (async () => {
+    await waitForCompositorCommit();
+    resetScrollOffset(document.scrollingElement);
+
+    // Click on the Down arrow of the viewport.
+    let x = window.innerWidth - BUTTON_WIDTH / 2;
+    let y = window.innerHeight - SCROLL_CORNER - BUTTON_WIDTH / 2;
+    await mouseClickOn(x, y);
+    assert_equals(window.scrollY, 40, "Pressing the down arrow didn't scroll.");
+
+    // Click on the Up arrow of the viewport.
+    x = window.innerWidth - BUTTON_WIDTH / 2;
+    y = BUTTON_WIDTH / 2;
+	await mouseClickOn(x, y);
+    assert_equals(window.scrollY, 0, "Pressing the up arrow didn't scroll.");
+
+    // Click on the Right arrow of the viewport.
+    x = window.innerWidth - SCROLL_CORNER - BUTTON_WIDTH / 2;
+    y = window.innerHeight - BUTTON_WIDTH / 2;
+	await mouseClickOn(x, y);
+    assert_equals(window.scrollX, 40, "Pressing the right arrow didn't scroll.");
+
+    // Click on the Left arrow of the viewport.
+    x = BUTTON_WIDTH / 2;
+    y = window.innerHeight - BUTTON_WIDTH / 2;
+	await mouseClickOn(x, y);
+    assert_equals(window.scrollX, 0, "Pressing the left arrow didn't scroll.");
+  }, "Test mouse click on non-custom composited root scrollbar arrows.");
+
+  promise_test (async () => {
+    await waitForCompositorCommit();
+    resetScrollOffset(document.scrollingElement);
+
+    // Click on the track part just above the down arrow.
+    let x = window.innerWidth - BUTTON_WIDTH / 2;
+    let y = window.innerHeight - SCROLL_CORNER - BUTTON_WIDTH - 2;
+    await mouseClickOn(x, y);
+    assert_equals(window.scrollY, 431, "Pressing the down trackpart didn't scroll.");
+
+    // Click on the track part just below the up arrow.
+    x = window.innerWidth - BUTTON_WIDTH / 2;
+    y = BUTTON_WIDTH + 2;
+	await mouseClickOn(x, y);
+    assert_equals(window.scrollY, 0, "Pressing the up trackpart didn't scroll.");
+
+    // Click on the track part just to the left of the right arrow.
+    x = window.innerWidth - SCROLL_CORNER - BUTTON_WIDTH - 2;
+    y = window.innerHeight - BUTTON_WIDTH / 2;
+	await mouseClickOn(x, y);
+    assert_equals(window.scrollX, 223, "Pressing the right trackpart didn't scroll.");
+
+    // Click on the track part just to the right of the left arrow.
+    x = BUTTON_WIDTH + 2;
+    y = window.innerHeight - BUTTON_WIDTH / 2;
+	await mouseClickOn(x, y);
+    assert_equals(window.scrollX, 0, "Pressing the left trackpart didn't scroll.");
+  }, "Test mouse click on non-custom composited root scrollbar empty trackparts.");
+
+  promise_test (async () => {
+    await waitForCompositorCommit();
+    resetScrollOffset(document.scrollingElement);
+
+    // Testing the vertical scrollbar thumb.
+    let x = window.innerWidth - TRACK_WIDTH / 2;
+    let y = BUTTON_WIDTH + 10;
+
+    await mouseMoveTo(x, y);
+    await mouseDownAt(x, y);
+    assert_equals(window.scrollY, 0, "Mousedown on vertical scrollbar thumb is not expected to scroll.");
+
+    await mouseMoveTo(x, y-10);
+    assert_equals(window.scrollY, 0, "Vertical thumb drag beyond the track should not cause a scroll.");
+
+    await mouseMoveTo(x, y);
+    assert_equals(window.scrollY, 0, "Vertical thumb drag beyond the track and back should not cause a scroll.");
+
+    y += SCROLL_DELTA;
+    await mouseMoveTo(x, y);
+    assert_equals(window.scrollY, 183, 1, "Vertical thumb drag downwards did not scroll as expected.");
+
+    y -= SCROLL_DELTA;
+    await mouseMoveTo(x, y);
+    assert_equals(window.scrollY, 0, "Vertical thumb drag upwards did not scroll as expected.");
+
+    await mouseUpAt(x, y);
+    assert_equals(window.scrollY, 0, "Mouseup on vertical scrollbar thumb is not expected to scroll.");
+
+    // Testing the horizontal scrollbar thumb.
+    x = BUTTON_WIDTH + 10;
+    y = window.innerHeight - TRACK_WIDTH / 2;
+
+    await mouseMoveTo(x, y);
+    await mouseDownAt(x, y);
+    assert_equals(window.scrollX, 0, "Mousedown on horizontal scrollbar thumb is not expected to scroll.");
+
+    await mouseMoveTo(x-10, y);
+    assert_equals(window.scrollX, 0, "Horizontal thumb drag beyond the track should not cause a scroll.");
+
+    await mouseMoveTo(x, y);
+    assert_equals(window.scrollX, 0, "Horizontal thumb drag beyond the track and back should not cause a scroll.");
+
+    x += SCROLL_DELTA;
+    await mouseMoveTo(x, y);
+    assert_equals(window.scrollX, 133, 1, "Horizontal thumb drag towards the right did not scroll as expected.");
+
+    x -= SCROLL_DELTA;
+    await mouseMoveTo(x, y);
+    assert_equals(window.scrollX, 0, "Horizontal thumb drag towards the left did not scroll as expected.");
+
+    await mouseUpAt(x, y);
+    assert_equals(window.scrollX, 0, "Mouseup on horizontal scrollbar thumb is not expected to scroll.");
+  }, "Test mouse drags on non-custom composited root scrollbar thumb.");
+
+  promise_test (async () => {
+    await waitForCompositorCommit();
+    resetScrollOffset(document.scrollingElement);
+
+    // Testing the vertical scrollbar thumb.
+    let x = window.innerWidth - TRACK_WIDTH / 2;
+    let y = BUTTON_WIDTH + 10;
+    let asc_increments = [25, 10, 35, 7, 23];
+    let asc_offsets = [45, 64, 128, 141, 183];
+    let desc_increments = [33, 11, 21, 5, 30];
+    let desc_offsets = [122, 102, 64, 55, 0];
+
+    await mouseMoveTo(x, y);
+    await mouseDownAt(x, y);
+
+     // Scroll down
+    for (var i = 0; i < 5; i++){
+      y += asc_increments[i];
+      await mouseMoveTo(x, y);
+      assert_equals(window.scrollY, asc_offsets[i], "Vertical thumb drag downwards did not scroll as expected at "+asc_increments[i]+" - ");
+    };
+
+    // Scroll up
+    for (var i = 0; i < 5; i++){
+      y -= desc_increments[i];
+      await mouseMoveTo(x, y);
+      assert_equals(window.scrollY, desc_offsets[i], "Vertical thumb drag upwards did not scroll as expected at "+desc_increments[i]+" - ");
+    };
+
+    await mouseUpAt(x, y);
+    assert_equals(window.scrollY, 0, "Mouseup on vertical scrollbar thumb is not expected to scroll.");
+
+    // Testing the horizontal scrollbar thumb.
+    // TODO(sahir.vellani) test fails only on linux without resetScrollOffset,
+    // probably due to crbug.com/979408.
+    resetScrollOffset(document.scrollingElement);
+    x = BUTTON_WIDTH + 10;
+    y = window.innerHeight - TRACK_WIDTH / 2;
+    asc_offsets = [33, 46, 93, 102, 133];
+    desc_offsets = [89, 74, 46, 40, 0];
+
+    await mouseMoveTo(x, y);
+    await mouseDownAt(x, y);
+    assert_equals(window.scrollX, 0, "Mousedown on horizontal scrollbar thumb is not expected to scroll.");
+
+    // Scroll right
+    for (var i = 0; i < 5; i++){
+      x += asc_increments[i];
+      await mouseMoveTo(x, y);
+      assert_equals(window.scrollX, asc_offsets[i], "Horizontal thumb drag to the right did not scroll as expected at "+asc_increments[i]+" - ");
+    };
+
+    // Scroll left
+    for (var i = 0; i < 5; i++){
+      x -= desc_increments[i];
+      await mouseMoveTo(x, y);
+      assert_equals(window.scrollX, desc_offsets[i], "Horizontal thumb drag to the left did not scroll as expected at "+desc_increments[i]+" - ");
+    };
+
+    await mouseUpAt(x, y);
+    assert_equals(window.scrollX, 0, "Mouseup on horizontal scrollbar thumb is not expected to scroll.");
+  }, "Test mouse drags in increments on non-custom composited root scrollbar thumb.");
+}
+</script>
+</body>

@@ -19,8 +19,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-caption-element
-[HTMLConstructor]
-interface HTMLTableCaptionElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLTableCaptionElement : HTMLElement {
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLTableCaptionElement-partial
     [CEReactions, Reflect] attribute DOMString align;

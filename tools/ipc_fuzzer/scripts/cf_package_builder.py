@@ -6,6 +6,8 @@ the packages into chrome build directory. See fuzzer_list below for the list of
 fuzzers.
 """
 
+from __future__ import print_function
+
 import argparse
 import distutils.archive_util
 import os
@@ -68,7 +70,7 @@ class CFPackageBuilder:
     package_name = fuzzer + '.zip'
     shutil.copy(package_name, self.build_dir)
     final_package_path = os.path.join(self.build_dir, package_name)
-    print 'Built %s.' % final_package_path
+    print('Built %s.' % final_package_path)
 
   def main(self):
     self.parse_arguments()

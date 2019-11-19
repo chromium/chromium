@@ -214,21 +214,21 @@ bool ClipboardUtil::URLsAndTitlesFromPasteboard(NSPasteboard* pboard,
 }
 
 // static
-NSPasteboard* ClipboardUtil::PasteboardFromType(ui::ClipboardType type) {
-  NSString* type_string = nil;
-  switch (type) {
-    case ui::CLIPBOARD_TYPE_COPY_PASTE:
-      type_string = NSGeneralPboard;
+NSPasteboard* ClipboardUtil::PasteboardFromBuffer(ui::ClipboardBuffer buffer) {
+  NSString* buffer_type = nil;
+  switch (buffer) {
+    case ui::ClipboardBuffer::kCopyPaste:
+      buffer_type = NSGeneralPboard;
       break;
-    case ui::CLIPBOARD_TYPE_DRAG:
-      type_string = NSDragPboard;
+    case ui::ClipboardBuffer::kDrag:
+      buffer_type = NSDragPboard;
       break;
-    case ui::CLIPBOARD_TYPE_SELECTION:
+    case ui::ClipboardBuffer::kSelection:
       NOTREACHED();
       break;
   }
 
-  return [NSPasteboard pasteboardWithName:type_string];
+  return [NSPasteboard pasteboardWithName:buffer_type];
 }
 
 // static

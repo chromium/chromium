@@ -18,6 +18,7 @@
 #import "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
 #import "media/capture/video/mac/video_capture_device_decklink_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
+#include "services/video_capture/public/uma/video_capture_service_event.h"
 
 namespace {
 
@@ -36,6 +37,8 @@ void EnsureRunsOnCFRunLoopEnabledThread() {
 // Blacklisted devices are identified by a characteristic trailing substring of
 // uniqueId. At the moment these are just Blackmagic devices.
 const char* kBlacklistedCamerasIdSignature[] = {"-01FDA82C8A9C"};
+
+int32_t get_device_descriptors_retry_count = 0;
 
 }  // anonymous namespace
 
@@ -62,6 +65,17 @@ VideoCaptureDeviceFactoryMac::VideoCaptureDeviceFactoryMac() {
 }
 
 VideoCaptureDeviceFactoryMac::~VideoCaptureDeviceFactoryMac() {
+}
+
+// static
+void VideoCaptureDeviceFactoryMac::SetGetDeviceDescriptorsRetryCount(
+    int count) {
+  get_device_descriptors_retry_count = count;
+}
+
+// static
+int VideoCaptureDeviceFactoryMac::GetGetDeviceDescriptorsRetryCount() {
+  return get_device_descriptors_retry_count;
 }
 
 std::unique_ptr<VideoCaptureDevice> VideoCaptureDeviceFactoryMac::CreateDevice(
@@ -116,6 +130,11 @@ void VideoCaptureDeviceFactoryMac::GetDeviceDescriptors(
   }
   // Also retrieve Blackmagic devices, if present, via DeckLink SDK API.
   VideoCaptureDeviceDeckLinkMac::EnumerateDevices(device_descriptors);
+
+  if ([capture_devices count] > 0 && device_descriptors->empty()) {
+    video_capture::uma::LogMacbookRetryGetDeviceInfosEvent(
+        video_capture::uma::AVF_DROPPED_DESCRIPTORS_AT_FACTORY);
+  }
 }
 
 void VideoCaptureDeviceFactoryMac::GetSupportedFormats(

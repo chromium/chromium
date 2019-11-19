@@ -74,7 +74,7 @@ public class AwTestTouchUtils {
      *
      * @param view The view the coordinates are relative to.
      */
-    public static void simulateTouchCenterOfView(final View view) throws Throwable {
+    public static void simulateTouchCenterOfView(final View view) {
         view.post(() -> {
             long eventTime = SystemClock.uptimeMillis();
             float x = (float) (view.getRight() - view.getLeft()) / 2;

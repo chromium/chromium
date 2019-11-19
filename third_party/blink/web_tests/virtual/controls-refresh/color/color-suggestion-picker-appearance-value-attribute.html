@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#ff0000' list='colors'>
+<datalist id='colors'>
+    <option value='#ff00ff'>F</option>
+    <option value='#eee00e'>E</option>
+    <option value='#d00ddd'>D</option>
+    <option value='#00cccc'>C</option>
+    <option value='#bbbb00'>B</option>
+    <option value='#aa00aa'>A</option>
+    <option value='#009999'>9</option>
+    <option value='#800888'>8</option>
+    <option value='#777700'>7</option>
+    <option value='#006666'>6</option>
+    <option value='#550055'>5</option>
+    <option value='#444004'>4</option>
+    <option value='#333300'>3</option>
+    <option value='#200222'>2</option>
+    <option value='#111001'>1</option>
+    <option value='#000000'>0</option>
+    <option value='#F00'>f00</option> <!--invalid-->
+    <option value='red'>red</option> <!--invalid-->
+</datalist>
+<script>
+openPicker(document.getElementById('color'), () => testRunner.notifyDone(), () => testRunner.notifyDone());
+</script>
+</body>
+</html>

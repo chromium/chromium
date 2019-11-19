@@ -38,7 +38,7 @@ interface TCPBoundSocket {
   // NetworkContext::CreateServerSocket, except it operates on an already bound
   // socket. The TCPBoundSocket will be destroyed on completion, whether the
   // call succeeds or not.
-  Listen(uint32 backlog, TCPServerSocket& socket)
+  Listen(uint32 backlog, pending_receiver<TCPServerSocket> socket)
       => (int32 net_error);
 
   // Attempts to connect the socket to |remote_addr_list|. |net_error| is set to
@@ -49,8 +49,8 @@ interface TCPBoundSocket {
   Connect(
       AddressList remote_addr_list,
       TCPConnectedSocketOptions? tcp_connected_socket_options,
-      TCPConnectedSocket& socket,
-      SocketObserver? observer)
+      pending_receiver<TCPConnectedSocket> socket,
+      pending_remote<SocketObserver>? observer)
       => (int32 net_error,
           IPEndPoint? local_addr,
           IPEndPoint? peer_addr,
@@ -77,8 +77,8 @@ interface TCPConnectedSocket {
   UpgradeToTLS(HostPortPair host_port_pair,
                TLSClientSocketOptions? options,
                MutableNetworkTrafficAnnotationTag traffic_annotation,
-               TLSClientSocket& request,
-               SocketObserver? observer)
+               pending_receiver<TLSClientSocket> receiver,
+               pending_remote<SocketObserver>? observer)
       => (int32 net_error,
           handle<data_pipe_consumer>? receive_stream,
           handle<data_pipe_producer>? send_stream,
@@ -142,10 +142,10 @@ interface TCPServerSocket {
   //
   // Accepted sockets may not be upgraded to TLS by invoking UpgradeToTLS, as
   // UpgradeToTLS only supports the client part of the TLS handshake.
-  Accept(SocketObserver? observer)
+  Accept(pending_remote<SocketObserver>? observer)
       => (int32 net_error,
           IPEndPoint? remote_addr,
-          TCPConnectedSocket? connected_socket,
+          pending_remote<TCPConnectedSocket>? connected_socket,
           handle<data_pipe_consumer>? send_stream,
           handle<data_pipe_producer>? receive_stream);
 };

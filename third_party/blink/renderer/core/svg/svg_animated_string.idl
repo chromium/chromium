@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/types.html#InterfaceSVGAnimatedString
 
+[Exposed=Window]
 interface SVGAnimatedString {
     [RaisesException=Setter] attribute DOMString baseVal;
     readonly attribute DOMString animVal;

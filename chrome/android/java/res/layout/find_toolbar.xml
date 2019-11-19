@@ -5,7 +5,7 @@
 
 <!-- Width and height are 0 because things inflated from a ViewStub inherit the ViewStub's
      LayoutParams.  Making these 0 so that it's explicit that setting these does nothing. -->
-<org.chromium.chrome.browser.widget.findinpage.FindToolbarPhone
+<org.chromium.chrome.browser.findinpage.FindToolbarPhone
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/find_toolbar"
     android:layout_width="0dp"
@@ -16,4 +16,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         layout="@layout/find_in_page" />
-</org.chromium.chrome.browser.widget.findinpage.FindToolbarPhone>
+</org.chromium.chrome.browser.findinpage.FindToolbarPhone>

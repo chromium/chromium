@@ -19,13 +19,14 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/password_manager/core/browser/mock_password_feature_manager.h"
+#include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "content/public/browser/browser_thread.h"
@@ -40,6 +41,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 
@@ -67,20 +69,31 @@ class PasswordStoreResultsObserver
 class CustomPasswordManagerClient : public ChromePasswordManagerClient {
  public:
   using ChromePasswordManagerClient::ChromePasswordManagerClient;
+  CustomPasswordManagerClient(content::WebContents* contents,
+                              autofill::AutofillClient* autofill_client)
+      : ChromePasswordManagerClient(contents, autofill_client) {
+    ON_CALL(password_feature_manager_, IsGenerationEnabled())
+        .WillByDefault(testing::Return(true));
+  }
 
   static void CreateForWebContentsWithAutofillClient(
       content::WebContents* contents,
       autofill::AutofillClient* autofill_client) {
     ASSERT_FALSE(FromWebContents(contents));
     contents->SetUserData(UserDataKey(),
-                          base::WrapUnique(new CustomPasswordManagerClient(
-                              contents, autofill_client)));
+                          std::make_unique<CustomPasswordManagerClient>(
+                              contents, autofill_client));
   }
 
   // PasswordManagerClient:
-  password_manager::SyncState GetPasswordSyncState() const override {
-    return password_manager::SYNCING_NORMAL_ENCRYPTION;
+  const password_manager::PasswordFeatureManager* GetPasswordFeatureManager()
+      const override {
+    return &password_feature_manager_;
   }
+
+ private:
+  testing::NiceMock<password_manager::MockPasswordFeatureManager>
+      password_feature_manager_;
 };
 
 // ManagePasswordsUIController subclass to capture the UI events.
@@ -117,8 +130,7 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
       const GURL& origin,
       const ManagePasswordsState::CredentialsCallback& callback) override;
   void OnPasswordAutofilled(
-      const std::map<base::string16, const autofill::PasswordForm*>&
-          password_form_map,
+      const std::vector<const autofill::PasswordForm*>& password_forms,
       const GURL& origin,
       const std::vector<const autofill::PasswordForm*>* federated_matches)
       override;
@@ -247,13 +259,12 @@ bool CustomManagePasswordsUIController::OnChooseCredentials(
 }
 
 void CustomManagePasswordsUIController::OnPasswordAutofilled(
-    const std::map<base::string16, const autofill::PasswordForm*>&
-        password_form_map,
+    const std::vector<const autofill::PasswordForm*>& password_forms,
     const GURL& origin,
     const std::vector<const autofill::PasswordForm*>* federated_matches) {
   ProcessStateExpectations(password_manager::ui::MANAGE_STATE);
   return ManagePasswordsUIController::OnPasswordAutofilled(
-      password_form_map, origin, federated_matches);
+      password_forms, origin, federated_matches);
 }
 
 void CustomManagePasswordsUIController::DidFinishNavigation(
@@ -411,6 +422,12 @@ void BubbleObserver::WaitForAutomaticSavePrompt() const {
   controller->WaitForState(password_manager::ui::PENDING_PASSWORD_STATE);
 }
 
+void BubbleObserver::WaitForAutomaticUpdatePrompt() const {
+  CustomManagePasswordsUIController* controller =
+      static_cast<CustomManagePasswordsUIController*>(passwords_ui_controller_);
+  controller->WaitForState(password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
+}
+
 bool BubbleObserver::WaitForFallbackForSaving(
     const base::TimeDelta timeout) const {
   CustomManagePasswordsUIController* controller =
@@ -449,10 +466,6 @@ void PasswordManagerBrowserTestBase::SetUpOnMainThread() {
 
 void PasswordManagerBrowserTestBase::TearDownOnMainThread() {
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-}
-
-void PasswordManagerBrowserTestBase::TearDownInProcessBrowserTestFixture() {
-  ProfileIOData::SetCertVerifierForTesting(nullptr);
 }
 
 void PasswordManagerBrowserTestBase::SetUpOnMainThreadAndGetNewTab(
@@ -501,8 +514,7 @@ void PasswordManagerBrowserTestBase::WaitForPasswordStore(Browser* browser) {
       PasswordStoreFactory::GetForProfile(browser->profile(),
                                           ServiceAccessType::IMPLICIT_ACCESS);
   PasswordStoreResultsObserver syncer;
-  password_store->GetAutofillableLoginsWithAffiliationAndBrandingInformation(
-      &syncer);
+  password_store->GetAllLoginsWithAffiliationAndBrandingInformation(&syncer);
   syncer.Wait();
 }
 
@@ -684,6 +696,7 @@ void PasswordManagerBrowserTestBase::AddHSTSHost(const std::string& host) {
 void PasswordManagerBrowserTestBase::CheckThatCredentialsStored(
     const std::string& username,
     const std::string& password) {
+  SCOPED_TRACE(::testing::Message() << username << ", " << password);
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       static_cast<password_manager::TestPasswordStore*>(
           PasswordStoreFactory::GetForProfile(

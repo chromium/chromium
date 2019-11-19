@@ -64,7 +64,7 @@ class FakeConnectionAttempt : public ConnectionAttempt<FailureDetailType> {
       std::unique_ptr<PendingConnectionRequest<FailureDetailType>> request)
       override {
     DCHECK(request);
-    DCHECK(!base::ContainsKey(id_to_request_map_, request->GetRequestId()));
+    DCHECK(!base::Contains(id_to_request_map_, request->GetRequestId()));
 
     id_to_request_map_[request->GetRequestId()] = std::move(request);
   }

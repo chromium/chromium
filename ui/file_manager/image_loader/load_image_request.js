@@ -34,7 +34,8 @@ class LoadImageResponse {
   /**
    * @param {!LoadImageResponseStatus} status
    * @param {?number} taskId or null if fulfilled by the client-side cache.
-   * @param {{width:number, height:number, data:string}=} opt_result
+   * @param {{width:number, height:number, ifd:?string, data:string}=}
+   *    opt_result
    */
   constructor(status, taskId, opt_result) {
     /** @type {!LoadImageResponseStatus} */
@@ -46,14 +47,16 @@ class LoadImageResponse {
       return;
     }
 
+    // Response result defined only when status == SUCCESS.
     assert(opt_result);
-
-    // Properties only defined when status == SUCCESS.
 
     /** @type {number|undefined} */
     this.width = opt_result.width;
     /** @type {number|undefined} */
     this.height = opt_result.height;
+    /** @type {?string} */
+    this.ifd = opt_result.ifd;
+
     /**
      * The (compressed) image data as a data URL.
      * @type {string|undefined}
@@ -69,24 +72,30 @@ class LoadImageResponse {
    *        then null is used. Currently this disables any caching in the
    *        ImageLoader, but disables only *expiration* in the client unless a
    *        timestamp is presented on a later request.
-   * @return {?{timestamp: ?number,
-   *            width: number,
-   *            height: number,
-   *            data:!string}}
+   * @return {?{
+   *   timestamp: ?number,
+   *   width: number,
+   *   height: number,
+   *   ifd: ?string,
+   *   data: string
+   * }}
    */
   static cacheValue(response, timestamp) {
     if (response.status === LoadImageResponseStatus.ERROR) {
       return null;
     }
 
+    // Response result defined only when status == SUCCESS.
     assert(response.width);
     assert(response.height);
     assert(response.data);
+
     return {
-      timestamp: timestamp ? timestamp : null,
+      timestamp: timestamp || null,
       width: response.width,
       height: response.height,
-      data: response.data
+      ifd: response.ifd,
+      data: response.data,
     };
   }
 }

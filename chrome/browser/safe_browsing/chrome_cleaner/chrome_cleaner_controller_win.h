@@ -11,12 +11,14 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results_win.h"
-#include "chrome/browser/safe_browsing/chrome_cleaner/reporter_runner_win.h"
-#include "components/chrome_cleaner/public/interfaces/chrome_prompt.mojom.h"
+#include "chrome/browser/safe_browsing/chrome_cleaner/sw_reporter_invocation_win.h"
 
 class Profile;
+
+namespace extensions {
+class ExtensionService;
+}
 
 namespace safe_browsing {
 

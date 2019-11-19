@@ -1,0 +1,22 @@
+<!doctype html>
+<style>
+  #scroller {background: yellow; width: 130px; height: 80px; overflow: scroll;}
+  #insider-at-top {background: purple; width: 130px; height: 20px; margin-bottom: 300px}
+</style>
+
+<div id="scroller">
+  <div id="insider-at-top" class="top" tabindex="0">at top of scroller</div>
+</div>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Down", "scroller"],
+    ["Down", "insider-at-top"]
+  ];
+  snav.assertFocusMoves(resultMap);
+</script>
+
+<p><em>Manual test instruction: Ensure the insider is reachable even though it sits at the very top of the scroller.</em></p>

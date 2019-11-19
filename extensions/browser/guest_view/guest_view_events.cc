@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "extensions/browser/guest_view/extension_options/extension_options_constants.h"
-#include "extensions/browser/guest_view/extension_view/extension_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/common/api/extension_options_internal.h"
 
@@ -34,8 +33,6 @@ class EventMap {
          events::EXTENSION_OPTIONS_INTERNAL_ON_LOAD},
         {api::extension_options_internal::OnPreferredSizeChanged::kEventName,
          events::EXTENSION_OPTIONS_INTERNAL_ON_PREFERRED_SIZE_CHANGED},
-        {extensionview::kEventLoadCommit,
-         events::EXTENSION_VIEW_INTERNAL_ON_LOAD_COMMIT},
         {guest_view::kEventResize, events::GUEST_VIEW_INTERNAL_ON_RESIZE},
         {webview::kEventAudioStateChanged,
          events::WEB_VIEW_INTERNAL_ON_AUDIO_STATE_CHANGED},

@@ -1,7 +1,0 @@
-Test for bug 34231: Nodes in XPathResult should keep JS wrappers alive.
-For this test to PASS you should see 2 PASS below.
-
-
-PASS
-PASS
-

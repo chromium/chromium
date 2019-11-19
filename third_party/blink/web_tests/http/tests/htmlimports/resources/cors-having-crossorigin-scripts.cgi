@@ -12,7 +12,7 @@ var scriptListToLoad = [
     'http://127.0.0.1:8000/htmlimports/resources/external-script.js',
     'http://127.0.0.1:8000/htmlimports/resources/cors-js.cgi',
     'http://127.0.0.1:8000/htmlimports/resources/cors-js-for-localhost.cgi',
-    'run-check.js'
+    'http://127.0.0.1:8000/htmlimports/resources/run-check.js'
 ];
 
 thisDocument = document.currentScript.ownerDocument;

@@ -1,0 +1,39 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//chrome/android/features/dev_ui/public:java",
+    "//components/module_installer/android:module_installer_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  java_files = [
+    "java/src/org/chromium/chrome/features/dev_ui/DevUiInstallListener.java",
+    "java/src/org/chromium/chrome/features/dev_ui/DevUiModuleProvider.java",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/features/dev_ui/DevUiInstallListener.java",
+    "java/src/org/chromium/chrome/features/dev_ui/DevUiModuleProvider.java",
+  ]
+}
+
+source_set("native") {
+  deps = [
+    ":jni_headers",
+    "//base",
+  ]
+  sources = [
+    "dev_ui_install_listener.cc",
+    "dev_ui_install_listener.h",
+    "dev_ui_module_provider.cc",
+    "dev_ui_module_provider.h",
+  ]
+}

@@ -69,7 +69,7 @@ TEST_F(VideoFramePoolTest, SimpleFrameReuse) {
   const uint8_t* old_y_data = frame->data(VideoFrame::kYPlane);
 
   // Clear frame reference to return the frame to the pool.
-  frame = NULL;
+  frame.reset();
 
   // Verify that the next frame from the pool uses the same memory.
   scoped_refptr<VideoFrame> new_frame = CreateFrame(PIXEL_FORMAT_I420, 20);
@@ -81,8 +81,8 @@ TEST_F(VideoFramePoolTest, SimpleFormatChange) {
   scoped_refptr<VideoFrame> frame_b = CreateFrame(PIXEL_FORMAT_I420, 10);
 
   // Clear frame references to return the frames to the pool.
-  frame_a = NULL;
-  frame_b = NULL;
+  frame_a.reset();
+  frame_b.reset();
 
   // Verify that both frames are in the pool.
   CheckPoolSize(2u);

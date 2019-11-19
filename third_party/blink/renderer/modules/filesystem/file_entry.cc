@@ -31,8 +31,10 @@
 #include "third_party/blink/renderer/modules/filesystem/file_entry.h"
 
 #include "third_party/blink/renderer/core/fileapi/file.h"
+#include "third_party/blink/renderer/modules/filesystem/async_callback_helper.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
 #include "third_party/blink/renderer/modules/filesystem/file_system_callbacks.h"
+#include "third_party/blink/renderer/modules/filesystem/file_writer.h"
 
 namespace blink {
 
@@ -41,20 +43,33 @@ FileEntry::FileEntry(DOMFileSystemBase* file_system, const String& full_path)
 
 void FileEntry::createWriter(V8FileWriterCallback* success_callback,
                              V8ErrorCallback* error_callback) {
-  filesystem()->CreateWriter(
-      this,
-      FileWriterCallbacks::OnDidCreateFileWriterV8Impl::Create(
-          success_callback),
-      ScriptErrorCallback::Wrap(error_callback));
+  auto success_callback_wrapper =
+      success_callback
+          ? WTF::Bind(
+                [](V8FileWriterCallback* persistent_callback,
+                   FileWriterBase* file_writer) {
+                  // The call sites must pass a FileWriter in |file_writer|.
+                  persistent_callback->InvokeAndReportException(
+                      nullptr, static_cast<FileWriter*>(file_writer));
+                },
+                WrapPersistent(success_callback))
+          : FileWriterCallbacks::SuccessCallback();
+  auto error_callback_wrapper =
+      AsyncCallbackHelper::ErrorCallback(error_callback);
+
+  filesystem()->CreateWriter(this, std::move(success_callback_wrapper),
+                             std::move(error_callback_wrapper));
 }
 
 void FileEntry::file(V8FileCallback* success_callback,
                      V8ErrorCallback* error_callback) {
-  filesystem()->CreateFile(
-      this,
-      SnapshotFileCallback::OnDidCreateSnapshotFileV8Impl::Create(
-          success_callback),
-      ScriptErrorCallback::Wrap(error_callback));
+  auto success_callback_wrapper =
+      AsyncCallbackHelper::SuccessCallback<File>(success_callback);
+  auto error_callback_wrapper =
+      AsyncCallbackHelper::ErrorCallback(error_callback);
+
+  filesystem()->CreateFile(this, std::move(success_callback_wrapper),
+                           std::move(error_callback_wrapper));
 }
 
 void FileEntry::Trace(blink::Visitor* visitor) {

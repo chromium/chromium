@@ -12,7 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/values.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -65,7 +65,7 @@ class ArcSupportMessageHostTest : public testing::Test {
 
   void SetUp() override {
     client_ = std::make_unique<TestClient>();
-    message_host_ = ArcSupportMessageHost::Create();
+    message_host_ = ArcSupportMessageHost::Create(nullptr);
     message_host_->Start(client_.get());
   }
 
@@ -86,7 +86,7 @@ class ArcSupportMessageHostTest : public testing::Test {
 
  private:
   // Fake as if the current testing thread is UI thread.
-  content::TestBrowserThreadBundle bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestClient> client_;
   std::unique_ptr<extensions::NativeMessageHost> message_host_;

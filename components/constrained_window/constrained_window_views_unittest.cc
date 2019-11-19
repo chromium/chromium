@@ -211,7 +211,13 @@ TEST_F(ConstrainedWindowViewsTest, MaximumWebContentsDialogSize) {
 }
 
 // Ensure CreateBrowserModalDialogViews() works correctly with a null parent.
-TEST_F(ConstrainedWindowViewsTest, NullModalParent) {
+// Flaky on Win10. https://crbug.com/1009182
+#if defined(OS_WIN)
+#define MAYBE_NullModalParent DISABLED_NullModalParent
+#else
+#define MAYBE_NullModalParent NullModalParent
+#endif
+TEST_F(ConstrainedWindowViewsTest, MAYBE_NullModalParent) {
   // Use desktop widgets (except on ChromeOS) for extra coverage.
   test_views_delegate()->set_use_desktop_native_widgets(true);
 

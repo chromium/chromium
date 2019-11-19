@@ -31,7 +31,7 @@ namespace em = enterprise_management;
 namespace chromeos {
 
 SessionManagerOperation::SessionManagerOperation(const Callback& callback)
-    : callback_(callback), weak_factory_(this) {}
+    : callback_(callback) {}
 
 SessionManagerOperation::~SessionManagerOperation() {}
 
@@ -89,9 +89,9 @@ void SessionManagerOperation::ReportResult(
 
 void SessionManagerOperation::EnsurePublicKey(const base::Closure& callback) {
   if (force_key_load_ || !public_key_ || !public_key_->is_loaded()) {
-    base::PostTaskWithTraitsAndReplyWithResult(
+    base::PostTaskAndReplyWithResult(
         FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
         base::BindOnce(&SessionManagerOperation::LoadPublicKey, owner_key_util_,
                        force_key_load_ ? nullptr : public_key_),
@@ -162,8 +162,9 @@ void SessionManagerOperation::ValidateDeviceSettings(
   }
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   std::unique_ptr<policy::DeviceCloudPolicyValidator> validator =
@@ -241,9 +242,7 @@ void LoadSettingsOperation::Run() {
 StoreSettingsOperation::StoreSettingsOperation(
     const Callback& callback,
     std::unique_ptr<em::PolicyFetchResponse> policy)
-    : SessionManagerOperation(callback),
-      policy_(std::move(policy)),
-      weak_factory_(this) {
+    : SessionManagerOperation(callback), policy_(std::move(policy)) {
   if (policy_->has_new_public_key())
     force_key_load_ = true;
 }

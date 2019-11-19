@@ -1,0 +1,43 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "services/viz/public/mojom/compositing/paint_filter.mojom";
+import "skia/public/mojom/blur_image_filter_tile_mode.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+enum FilterType {
+  GRAYSCALE,
+  SEPIA,
+  SATURATE,
+  HUE_ROTATE,
+  INVERT,
+  BRIGHTNESS,
+  CONTRAST,
+  OPACITY,
+  BLUR,
+  DROP_SHADOW,
+  COLOR_MATRIX,
+  ZOOM,
+  REFERENCE,
+  SATURATING_BRIGHTNESS,
+  ALPHA_THRESHOLD,
+  FILTER_TYPE_LAST = ALPHA_THRESHOLD
+};
+
+// See cc/paint/filter_operation.h.
+struct FilterOperation {
+  FilterType type;
+  float amount;
+  float outer_threshold;
+  gfx.mojom.Point drop_shadow_offset;
+  uint32 drop_shadow_color;
+  PaintFilter image_filter;
+  array<float, 20>? matrix;
+  int32 zoom_inset;
+  skia.mojom.BlurTileMode blur_tile_mode;
+  array<gfx.mojom.Rect>? shape;
+};
+

@@ -34,13 +34,7 @@ bool IsValidPrintableArea(const gfx::Size& page_size,
 }  // namespace
 
 PageMargins::PageMargins()
-    : header(0),
-      footer(0),
-      left(0),
-      right(0),
-      top(0),
-      bottom(0) {
-}
+    : header(0), footer(0), left(0), right(0), top(0), bottom(0) {}
 
 void PageMargins::Clear() {
   header = 0;
@@ -52,12 +46,8 @@ void PageMargins::Clear() {
 }
 
 bool PageMargins::Equals(const PageMargins& rhs) const {
-  return header == rhs.header &&
-      footer == rhs.footer &&
-      left == rhs.left &&
-      top == rhs.top &&
-      right == rhs.right &&
-      bottom == rhs.bottom;
+  return header == rhs.header && footer == rhs.footer && left == rhs.left &&
+         top == rhs.top && right == rhs.right && bottom == rhs.bottom;
 }
 
 PageSetup::PageSetup() {
@@ -100,12 +90,12 @@ void PageSetup::Clear() {
 
 bool PageSetup::Equals(const PageSetup& rhs) const {
   return physical_size_ == rhs.physical_size_ &&
-      printable_area_ == rhs.printable_area_ &&
-      overlay_area_ == rhs.overlay_area_ &&
-      content_area_ == rhs.content_area_ &&
-      effective_margins_.Equals(rhs.effective_margins_) &&
-      requested_margins_.Equals(rhs.requested_margins_) &&
-      text_height_ == rhs.text_height_;
+         printable_area_ == rhs.printable_area_ &&
+         overlay_area_ == rhs.overlay_area_ &&
+         content_area_ == rhs.content_area_ &&
+         effective_margins_.Equals(rhs.effective_margins_) &&
+         requested_margins_.Equals(rhs.requested_margins_) &&
+         text_height_ == rhs.text_height_;
 }
 
 void PageSetup::Init(const gfx::Size& physical_size,
@@ -140,8 +130,7 @@ void PageSetup::FlipOrientation() {
     gfx::Size new_size(physical_size_.height(), physical_size_.width());
     int new_y = physical_size_.width() -
                 (printable_area_.width() + printable_area_.x());
-    gfx::Rect new_printable_area(printable_area_.y(),
-                                 new_y,
+    gfx::Rect new_printable_area(printable_area_.y(), new_y,
                                  printable_area_.height(),
                                  printable_area_.width());
     Init(new_size, new_printable_area, text_height_);
@@ -162,49 +151,39 @@ void PageSetup::SetRequestedMarginsAndCalculateSizes(
 void PageSetup::CalculateSizesWithinRect(const gfx::Rect& bounds,
                                          int text_height) {
   // Calculate the effective margins. The tricky part.
-  effective_margins_.header = std::max(requested_margins_.header,
-                                       bounds.y());
-  effective_margins_.footer = std::max(requested_margins_.footer,
-                                       physical_size_.height() -
-                                           bounds.bottom());
-  effective_margins_.left = std::max(requested_margins_.left,
-                                     bounds.x());
-  effective_margins_.top = std::max(std::max(requested_margins_.top,
-                                             bounds.y()),
-                                    effective_margins_.header + text_height);
+  effective_margins_.header = std::max(requested_margins_.header, bounds.y());
+  effective_margins_.footer = std::max(
+      requested_margins_.footer, physical_size_.height() - bounds.bottom());
+  effective_margins_.left = std::max(requested_margins_.left, bounds.x());
+  effective_margins_.top = std::max({requested_margins_.top, bounds.y(),
+                                     effective_margins_.header + text_height});
   effective_margins_.right = std::max(requested_margins_.right,
-                                      physical_size_.width() -
-                                          bounds.right());
-  effective_margins_.bottom =
-      std::max(std::max(requested_margins_.bottom,
-                        physical_size_.height() - bounds.bottom()),
-               effective_margins_.footer + text_height);
+                                      physical_size_.width() - bounds.right());
+  effective_margins_.bottom = std::max(
+      {requested_margins_.bottom, physical_size_.height() - bounds.bottom(),
+       effective_margins_.footer + text_height});
 
   // Calculate the overlay area. If the margins are excessive, the overlay_area
   // size will be (0, 0).
   overlay_area_.set_x(effective_margins_.left);
   overlay_area_.set_y(effective_margins_.header);
-  overlay_area_.set_width(std::max(0,
-                                   physical_size_.width() -
-                                       effective_margins_.right -
-                                       overlay_area_.x()));
-  overlay_area_.set_height(std::max(0,
-                                    physical_size_.height() -
-                                        effective_margins_.footer -
-                                        overlay_area_.y()));
+  overlay_area_.set_width(std::max(
+      0,
+      physical_size_.width() - effective_margins_.right - overlay_area_.x()));
+  overlay_area_.set_height(std::max(
+      0,
+      physical_size_.height() - effective_margins_.footer - overlay_area_.y()));
 
   // Calculate the content area. If the margins are excessive, the content_area
   // size will be (0, 0).
   content_area_.set_x(effective_margins_.left);
   content_area_.set_y(effective_margins_.top);
-  content_area_.set_width(std::max(0,
-                                   physical_size_.width() -
-                                       effective_margins_.right -
-                                       content_area_.x()));
-  content_area_.set_height(std::max(0,
-                                    physical_size_.height() -
-                                        effective_margins_.bottom -
-                                        content_area_.y()));
+  content_area_.set_width(std::max(
+      0,
+      physical_size_.width() - effective_margins_.right - content_area_.x()));
+  content_area_.set_height(std::max(
+      0,
+      physical_size_.height() - effective_margins_.bottom - content_area_.y()));
 }
 
 }  // namespace printing

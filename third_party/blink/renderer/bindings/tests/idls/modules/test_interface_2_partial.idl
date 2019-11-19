@@ -9,10 +9,10 @@
 // TestInterface2Partial2.idl).
 //
 // This test ensures that TestInterface2Partial2 is NOT conditional on the
-// Interface2PartialFeatureName runtime flag.
+// Interface2PartialRuntimeFeature runtime flag.
 [
     ImplementedAs=TestInterface2Partial,
-    RuntimeEnabled=Interface2PartialFeatureName
+    RuntimeEnabled=Interface2PartialRuntimeFeature
 ]
 partial interface TestInterface2 {
     void voidMethodPartial1(DOMString value);

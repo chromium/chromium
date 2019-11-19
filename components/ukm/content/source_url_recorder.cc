@@ -73,8 +73,10 @@ class SourceUrlRecorderWebContentsObserver
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
+  void WebContentsDestroyed() override;
 
   ukm::SourceId GetLastCommittedSourceId() const;
+  ukm::SourceId GetLastCommittedFullNavigationOrSameDocumentSourceId() const;
 
   // blink::mojom::UkmSourceIdFrameHost
   void SetDocumentSourceId(int64_t source_id) override;
@@ -97,7 +99,7 @@ class SourceUrlRecorderWebContentsObserver
   void MaybeRecordUrl(content::NavigationHandle* navigation_handle,
                       const GURL& initial_url);
 
-  // Recieves document source IDs from the renderer.
+  // Receives document source IDs from the renderer.
   content::WebContentsFrameBindingSet<blink::mojom::UkmSourceIdFrameHost>
       bindings_;
 
@@ -186,6 +188,17 @@ void SourceUrlRecorderWebContentsObserver::DidFinishNavigation(
     return;
   }
 
+  // Inform the UKM recorder that the previous source is no longer needed to
+  // be kept alive in memory since we had navigated away. In case of same-
+  // document navigation, a new source id would have been created similarly to
+  // full-navigation, thus we are marking the last committed source id
+  // regardless of which case it came from.
+  ukm::DelegatingUkmRecorder* ukm_recorder = ukm::DelegatingUkmRecorder::Get();
+  if (ukm_recorder) {
+    ukm_recorder->MarkSourceForDeletion(
+        GetLastCommittedFullNavigationOrSameDocumentSourceId());
+  }
+
   if (navigation_handle->IsSameDocument()) {
     DCHECK(it == pending_navigations_.end());
     HandleSameDocumentNavigation(navigation_handle);
@@ -266,9 +279,27 @@ void SourceUrlRecorderWebContentsObserver::DidOpenRequestedURL(
   new_recorder->opener_source_id_ = GetLastCommittedSourceId();
 }
 
+void SourceUrlRecorderWebContentsObserver::WebContentsDestroyed() {
+  // Inform the UKM recorder that the previous source is no longer needed to
+  // be kept alive in memory since the tab has been closed or discarded. In case
+  // of same-document navigation, a new source id would have been created
+  // similarly to full-navigation, thus we are marking the last committed source
+  // id regardless of which case it came from.
+  ukm::DelegatingUkmRecorder* ukm_recorder = ukm::DelegatingUkmRecorder::Get();
+  if (ukm_recorder) {
+    ukm_recorder->MarkSourceForDeletion(
+        GetLastCommittedFullNavigationOrSameDocumentSourceId());
+  }
+}
+
 ukm::SourceId SourceUrlRecorderWebContentsObserver::GetLastCommittedSourceId()
     const {
   return last_committed_full_navigation_source_id_;
+}
+
+ukm::SourceId SourceUrlRecorderWebContentsObserver::
+    GetLastCommittedFullNavigationOrSameDocumentSourceId() const {
+  return last_committed_full_navigation_or_same_document_source_id_;
 }
 
 void SourceUrlRecorderWebContentsObserver::SetDocumentSourceId(
@@ -331,6 +362,8 @@ void SourceUrlRecorderWebContentsObserver::MaybeRecordUrl(
       navigation_handle->IsSameDocument();
   navigation_data.previous_source_id =
       last_committed_full_navigation_source_id_;
+
+  navigation_data.navigation_time = navigation_handle->NavigationStart();
 
   // If the last_committed_full_navigation_or_same_document_source_id_ isn't
   // equal to the last_committed_full_navigation_source_id_, it indicates the

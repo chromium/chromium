@@ -1,0 +1,10 @@
+[document web]
+++[section]
+++++[section] label-for
+++++++[static] name='Choose one:'
+++++[push button] name='Choose one: Foo' labelled-by
+++++++[static] name='Foo'
+++++[list box] name='Choose one:' labelled-by
+++++++[list item] name='Baz' selectable
+++++++[list item] name='Bar' selectable
+++++++[list item] name='Foo' selectable

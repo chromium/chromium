@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
@@ -71,22 +72,26 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
   // Let each platform do its own initialization.
   PlatformInitialize();
 
-#if defined(OS_WIN) || defined(OS_ANDROID)
+  // Schedule calls to update histograms after a delay.
+  //
   // The delay is necessary because assistive technology sometimes isn't
   // detected until after the user interacts in some way, so a reasonable delay
   // gives us better numbers.
-  base::PostDelayedTaskWithTraits(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&BrowserAccessibilityStateImpl::UpdateHistograms, this),
+
+  // Some things can be done on another thread safely.
+  base::PostDelayedTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          &BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread, this),
       base::TimeDelta::FromSeconds(ACCESSIBILITY_HISTOGRAM_DELAY_SECS));
-#else
-  // On MacOS, UpdateHistograms should be called on the UI thread because it
-  // needs to be able to access PrefService.
-  base::PostDelayedTaskWithTraits(
+
+  // Other things must be done on the UI thread (e.g. to access PrefService).
+  base::PostDelayedTask(
       FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&BrowserAccessibilityStateImpl::UpdateHistograms, this),
+      base::BindOnce(&BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread,
+                     this),
       base::TimeDelta::FromSeconds(ACCESSIBILITY_HISTOGRAM_DELAY_SECS));
-#endif
 }
 
 BrowserAccessibilityStateImpl::~BrowserAccessibilityStateImpl() {
@@ -136,24 +141,34 @@ bool BrowserAccessibilityStateImpl::IsAccessibleBrowser() {
   return accessibility_mode_ == ui::kAXModeComplete;
 }
 
-void BrowserAccessibilityStateImpl::AddHistogramCallback(
-    base::Closure callback) {
-  histogram_callbacks_.push_back(std::move(callback));
+void BrowserAccessibilityStateImpl::AddUIThreadHistogramCallback(
+    base::OnceClosure callback) {
+  ui_thread_histogram_callbacks_.push_back(std::move(callback));
+}
+
+void BrowserAccessibilityStateImpl::AddOtherThreadHistogramCallback(
+    base::OnceClosure callback) {
+  other_thread_histogram_callbacks_.push_back(std::move(callback));
 }
 
 void BrowserAccessibilityStateImpl::UpdateHistogramsForTesting() {
-  UpdateHistograms();
+  UpdateHistogramsOnUIThread();
+  UpdateHistogramsOnOtherThread();
 }
 
-void BrowserAccessibilityStateImpl::UpdateHistograms() {
-  UpdatePlatformSpecificHistograms();
+bool BrowserAccessibilityStateImpl::IsCaretBrowsingEnabled() const {
+  // TODO(crbug.com/1018947): Refine this check once UX provided to toggle caret
+  // browsing mode.
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnableCaretBrowsing);
+}
 
-  for (size_t i = 0; i < histogram_callbacks_.size(); ++i)
-    histogram_callbacks_[i].Run();
+void BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread() {
+  UpdatePlatformSpecificHistogramsOnUIThread();
 
-  // TODO(dmazzoni): remove this in M59 since Accessibility.ModeFlag
-  // supercedes it.  http://crbug.com/672205
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.State", IsAccessibleBrowser());
+  for (auto& callback : ui_thread_histogram_callbacks_)
+    std::move(callback).Run();
+  ui_thread_histogram_callbacks_.clear();
 
   UMA_HISTOGRAM_BOOLEAN("Accessibility.InvertedColors",
                         color_utils::IsInvertedColorScheme());
@@ -162,18 +177,30 @@ void BrowserAccessibilityStateImpl::UpdateHistograms() {
                             switches::kForceRendererAccessibility));
 }
 
+void BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread() {
+  UpdatePlatformSpecificHistogramsOnOtherThread();
+
+  for (auto& callback : other_thread_histogram_callbacks_)
+    std::move(callback).Run();
+  other_thread_histogram_callbacks_.clear();
+}
+
 void BrowserAccessibilityStateImpl::OnAXModeAdded(ui::AXMode mode) {
   AddAccessibilityModeFlags(mode);
 }
 
-ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityMode() const {
+ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityMode() {
   return accessibility_mode_;
 }
 
 #if !defined(OS_ANDROID) && !defined(OS_WIN) && !defined(OS_MACOSX)
 void BrowserAccessibilityStateImpl::PlatformInitialize() {}
 
-void BrowserAccessibilityStateImpl::UpdatePlatformSpecificHistograms() {}
+void BrowserAccessibilityStateImpl::
+    UpdatePlatformSpecificHistogramsOnUIThread() {}
+void BrowserAccessibilityStateImpl::
+    UpdatePlatformSpecificHistogramsOnOtherThread() {}
+void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {}
 #endif
 
 void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {

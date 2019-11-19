@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+  CSS.registerProperty({
+    name: '--my-font-size',
+    syntax: '<length>',
+    inherits: false,
+    initialValue: '0px'
+  });
+
+  CSS.registerProperty({
+    name: '--my-color',
+    syntax: '<color>',
+    inherits: false,
+    initialValue: 'white'
+  });
+</script>
+<style>
+#target1 {
+  --my-font-size: 10px;
+  font-size: var(--my-font-size);
+  width: 10em;
+  transition: --my-font-size 3600s steps(2, start);
+}
+#target1.test {
+  --my-font-size: 20px;
+}
+
+#target2 {
+  --my-color: rgb(0, 0, 0);
+  transition: --my-color 3600s steps(2, start);
+  color: var(--my-color);
+  background-color: currentColor;
+}
+#target2.test {
+  --my-color: rgb(100, 100, 100);
+}
+</style>
+<div id="target1"></div>
+<div id="target2"></div>
+<script>
+
+test(() => {
+  target1.offsetTop;
+  target1.classList.toggle('test');
+  let style = getComputedStyle(target1);
+  assert_equals(style.getPropertyValue('--my-font-size'), '15px');
+  assert_equals(style.getPropertyValue('font-size'), '15px');
+  assert_equals(style.getPropertyValue('width'), '150px');
+}, 'Transitioning var() used in font-size causes em unit to change');
+
+test(() => {
+  target2.offsetTop;
+  target2.classList.toggle('test');
+  let style = getComputedStyle(target2);
+  assert_equals(style.getPropertyValue('--my-color'), 'rgb(50, 50, 50)');
+  assert_equals(style.getPropertyValue('color'), 'rgb(50, 50, 50)');
+  assert_equals(style.getPropertyValue('background-color'), 'rgb(50, 50, 50)');
+}, 'Transitioning var() used in color causes currentColor to change');
+
+</script>

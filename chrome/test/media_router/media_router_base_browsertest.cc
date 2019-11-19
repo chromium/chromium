@@ -40,9 +40,6 @@ MediaRouterBaseBrowserTest::~MediaRouterBaseBrowserTest() {
 
 void MediaRouterBaseBrowserTest::SetUp() {
   ParseCommandLine();
-  // The integration and E2E tests depend on the WebUI Cast dialog, so the Views
-  // dialog must be disabled.
-  feature_list_.InitAndEnableFeature(features::kViewsCastDialog);
   ExtensionBrowserTest::SetUp();
 }
 

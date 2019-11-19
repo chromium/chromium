@@ -9,6 +9,7 @@
 #include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -168,45 +169,45 @@ std::unique_ptr<TrialToken> TrialToken::Parse(
     return nullptr;
   }
 
-  std::unique_ptr<base::DictionaryValue> datadict = base::DictionaryValue::From(
-      base::JSONReader::ReadDeprecated(token_payload));
-  if (!datadict) {
+  base::Optional<base::Value> datadict = base::JSONReader::Read(token_payload);
+  if (!datadict || !datadict->is_dict()) {
     return nullptr;
   }
 
-  std::string origin_string;
-  std::string feature_name;
-  int expiry_timestamp = 0;
-  datadict->GetString("origin", &origin_string);
-  datadict->GetString("feature", &feature_name);
-  datadict->GetInteger("expiry", &expiry_timestamp);
-
   // Ensure that the origin is a valid (non-opaque) origin URL.
-  url::Origin origin = url::Origin::Create(GURL(origin_string));
+  std::string* origin_string = datadict->FindStringKey("origin");
+  if (!origin_string) {
+    return nullptr;
+  }
+  url::Origin origin = url::Origin::Create(GURL(*origin_string));
   if (origin.opaque()) {
     return nullptr;
   }
 
   // The |isSubdomain| flag is optional. If found, ensure it is a valid boolean.
   bool is_subdomain = false;
-  if (datadict->HasKey("isSubdomain")) {
-    if (!datadict->GetBoolean("isSubdomain", &is_subdomain)) {
+  base::Value* is_subdomain_value = datadict->FindKey("isSubdomain");
+  if (is_subdomain_value) {
+    if (!is_subdomain_value->is_bool()) {
       return nullptr;
     }
+    is_subdomain = is_subdomain_value->GetBool();
   }
 
   // Ensure that the feature name is a valid string.
-  if (feature_name.empty()) {
+  std::string* feature_name = datadict->FindStringKey("feature");
+  if (!feature_name || feature_name->empty()) {
     return nullptr;
   }
 
   // Ensure that the expiry timestamp is a valid (positive) integer.
+  int expiry_timestamp = datadict->FindIntKey("expiry").value_or(0);
   if (expiry_timestamp <= 0) {
     return nullptr;
   }
 
   return base::WrapUnique(
-      new TrialToken(origin, is_subdomain, feature_name, expiry_timestamp));
+      new TrialToken(origin, is_subdomain, *feature_name, expiry_timestamp));
 }
 
 bool TrialToken::ValidateOrigin(const url::Origin& origin) const {

@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
@@ -31,6 +31,7 @@
 #include "gpu/command_buffer/service/logger.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
@@ -56,10 +57,6 @@
 #include "base/win/win_util.h"
 #endif
 
-#if defined(OS_ANDROID)
-#include "gpu/ipc/service/stream_texture_android.h"
-#endif
-
 namespace gpu {
 
 GLES2CommandBufferStub::GLES2CommandBufferStub(
@@ -75,8 +72,7 @@ GLES2CommandBufferStub::GLES2CommandBufferStub(
                         sequence_id,
                         stream_id,
                         route_id),
-      gles2_decoder_(nullptr),
-      weak_ptr_factory_(this) {}
+      gles2_decoder_(nullptr) {}
 
 GLES2CommandBufferStub::~GLES2CommandBufferStub() {}
 
@@ -85,7 +81,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     const GPUCreateCommandBufferConfig& init_params,
     base::UnsafeSharedMemoryRegion shared_state_shm) {
   TRACE_EVENT0("gpu", "GLES2CommandBufferStub::Initialize");
-  FastSetActiveURL(active_url_, active_url_hash_, channel_);
+  UpdateActiveUrl();
 
   GpuChannelManager* manager = channel_->gpu_channel_manager();
   DCHECK(manager);
@@ -123,10 +119,10 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   }
 
 #if defined(OS_MACOSX)
-  // Virtualize PreferIntegratedGpu contexts by default on OS X to prevent
+  // Virtualize GpuPreference::kLowPower contexts by default on OS X to prevent
   // performance regressions when enabling FCM.
   // http://crbug.com/180463
-  if (init_params.attribs.gpu_preference == gl::PreferIntegratedGpu)
+  if (init_params.attribs.gpu_preference == gl::GpuPreference::kLowPower)
     use_virtualized_gl_context_ = true;
 #endif
 
@@ -329,7 +325,11 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     return gpu::ContextResult::kTransientFailure;
   }
 
-  if (!context->GetGLStateRestorer()) {
+  // The GLStateRestorer is not used with the passthrough command decoder
+  // because not all state is tracked in the decoder. Virtualized contexts are
+  // also not used.
+  if (!context->GetGLStateRestorer() &&
+      !context_group_->use_passthrough_cmd_decoder()) {
     context->SetGLStateRestorer(
         new GLStateRestorerImpl(gles2_decoder_->AsWeakPtr()));
   }
@@ -364,7 +364,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
       std::move(shared_state_shm), std::move(shared_state_mapping)));
 
   if (offscreen && !active_url_.is_empty())
-    manager->delegate()->DidCreateOffscreenContext(active_url_);
+    manager->delegate()->DidCreateOffscreenContext(active_url_.url());
 
   if (use_virtualized_gl_context_) {
     // If virtualized GL contexts are in use, then real GL context state
@@ -420,16 +420,21 @@ void GLES2CommandBufferStub::BufferPresented(
                                                feedback));
 }
 
-void GLES2CommandBufferStub::AddFilter(IPC::MessageFilter* message_filter) {
-  return channel_->AddFilter(message_filter);
+viz::GpuVSyncCallback GLES2CommandBufferStub::GetGpuVSyncCallback() {
+  return viz::GpuVSyncCallback();
 }
 
-int32_t GLES2CommandBufferStub::GetRouteID() const {
-  return route_id_;
+base::TimeDelta GLES2CommandBufferStub::GetGpuBlockedTimeSinceLastSwap() {
+  return channel_->scheduler()->TakeTotalBlockingTime();
 }
 
 MemoryTracker* GLES2CommandBufferStub::GetMemoryTracker() const {
   return context_group_->memory_tracker();
+}
+
+void GLES2CommandBufferStub::OnGpuSwitched(
+    gl::GpuPreference active_gpu_heuristic) {
+  Send(new GpuCommandBufferMsg_GpuSwitched(route_id_, active_gpu_heuristic));
 }
 
 bool GLES2CommandBufferStub::HandleMessage(const IPC::Message& message) {
@@ -440,8 +445,6 @@ bool GLES2CommandBufferStub::HandleMessage(const IPC::Message& message) {
                         OnReturnFrontBuffer);
     IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_CreateImage, OnCreateImage);
     IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_DestroyImage, OnDestroyImage);
-    IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_CreateStreamTexture,
-                        OnCreateStreamTexture)
     IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_CreateGpuFenceFromHandle,
                         OnCreateGpuFenceFromHandle)
     IPC_MESSAGE_HANDLER(GpuCommandBufferMsg_GetGpuFenceHandle,
@@ -554,16 +557,6 @@ void GLES2CommandBufferStub::OnDestroyImage(int32_t id) {
   }
 
   image_manager->RemoveImage(id);
-}
-
-void GLES2CommandBufferStub::OnCreateStreamTexture(uint32_t texture_id,
-                                                   int32_t stream_id,
-                                                   bool* succeeded) {
-#if defined(OS_ANDROID)
-  *succeeded = StreamTexture::Create(this, texture_id, stream_id);
-#else
-  *succeeded = false;
-#endif
 }
 
 void GLES2CommandBufferStub::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {

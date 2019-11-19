@@ -37,7 +37,9 @@ class ParsedSpecifier final {
   // https://html.spec.whatwg.org/#resolve-a-module-specifier
   // but doesn't reject bare specifiers, which should be rejected by callers
   // if needed.
-  static ParsedSpecifier Create(const String& specifier, const KURL& base_url);
+  static ParsedSpecifier Create(const String& specifier,
+                                const KURL& base_url,
+                                bool support_builtin_modules);
 
   enum class Type { kInvalid, kBare, kURL };
 

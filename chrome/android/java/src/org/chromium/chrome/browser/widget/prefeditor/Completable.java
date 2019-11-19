@@ -11,4 +11,7 @@ package org.chromium.chrome.browser.widget.prefeditor;
 public interface Completable {
     /** @return Whether the data is complete and can be sent to the merchant as-is */
     boolean isComplete();
+
+    /** @return the completeness score of the data, used to sort multiple options */
+    int getCompletenessScore();
 }

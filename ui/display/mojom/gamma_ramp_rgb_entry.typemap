@@ -1,0 +1,15 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/display/mojom/gamma_ramp_rgb_entry.mojom"
+public_headers = [ "//ui/display/types/gamma_ramp_rgb_entry.h" ]
+traits_headers = [ "//ui/display/mojom/gamma_ramp_rgb_entry_mojom_traits.h" ]
+sources = [
+  "//ui/display/mojom/gamma_ramp_rgb_entry_mojom_traits.cc",
+]
+public_deps = [
+  "//ui/display",
+]
+type_mappings =
+    [ "display.mojom.GammaRampRGBEntry=::display::GammaRampRGBEntry" ]

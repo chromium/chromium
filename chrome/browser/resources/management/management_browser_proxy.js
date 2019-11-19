@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.exportPath('management');
+import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+
 /**
  * @typedef {{
- *    name: string,
- *    permissions: !Array<string>
+ *   name: string,
+ *   permissions: !Array<string>
  * }}
  */
-management.Extension;
+export let Extension;
 
 /** @enum {string} */
-management.ReportingType = {
+export const ReportingType = {
   SECURITY: 'security',
   DEVICE: 'device',
   USER: 'user',
@@ -22,91 +23,135 @@ management.ReportingType = {
 
 /**
  * @typedef {{
- *    messageId: string,
- *    reportingType: !management.ReportingType,
+ *   messageId: string,
+ *   reportingType: !ReportingType,
  * }}
  */
-management.BrowserReportingResponse;
+export let BrowserReportingResponse;
+
+/**
+ * @typedef {{
+ *   browserManagementNotice: string,
+ *   extensionReportingTitle: string,
+ *   pageSubtitle: string,
+ *   managed: boolean,
+ *   overview: string,
+ *   customerLogo: string,
+ *   threatProtectionDescription: string
+ * }}
+ */
+let ManagedDataResponse;
+
+/**
+ * @typedef {{
+ *  title: string,
+ *  permission: string
+ * }}
+ */
+let ThreatProtectionPermission;
+
+/**
+ * @typedef {{
+ *   info: !Array<!ThreatProtectionPermission>,
+ *   description: string
+ * }}
+ */
+export let ThreatProtectionInfo;
 
 // <if expr="chromeos">
 /**
  * @enum {string} Look at ToJSDeviceReportingType usage in
  *    management_ui_handler.cc for more details.
  */
-management.DeviceReportingType = {
+export const DeviceReportingType = {
   SUPERVISED_USER: 'supervised user',
   DEVICE_ACTIVITY: 'device activity',
   STATISTIC: 'device statistics',
   DEVICE: 'device',
-  LOGS: 'logs'
+  LOGS: 'logs',
+  PRINT: 'print',
+  CROSTINI: 'crostini'
 };
 
 
 /**
  * @typedef {{
- *    messageId: string,
- *    reportingType: !management.DeviceReportingType,
+ *   messageId: string,
+ *   reportingType: !DeviceReportingType,
  * }}
  */
-management.DeviceReportingResponse;
+export let DeviceReportingResponse;
 // </if>
 
-cr.define('management', function() {
-  /** @interface */
-  class ManagementBrowserProxy {
-    /** @return {!Promise<!Array<!management.Extension>>} */
-    getExtensions() {}
+/** @interface */
+export class ManagementBrowserProxy {
+  /** @return {!Promise<!Array<!Extension>>} */
+  getExtensions() {}
 
-    // <if expr="chromeos">
-    /**
-     * @return {!Promise<boolean>} Boolean describing trust root configured
-     *     or not.
-     */
-    getLocalTrustRootsInfo() {}
+  // <if expr="chromeos">
+  /**
+   * @return {!Promise<boolean>} Boolean describing trust root configured
+   *     or not.
+   */
+  getLocalTrustRootsInfo() {}
 
-    /**
-     * @return {!Promise<!Array<management.DeviceReportingResponse>>} List of
-     *     items to display in device reporting section.
-     */
-    getDeviceReportingInfo() {}
-    // </if>
+  /**
+   * @return {!Promise<!Array<DeviceReportingResponse>>} List of
+   *     items to display in device reporting section.
+   */
+  getDeviceReportingInfo() {}
+  // </if>
 
-    /**
-     * @return {!Promise<!Array<!management.BrowserReportingResponse>>} The list
-     *     of browser reporting info messages.
-     */
-    initBrowserReportingInfo() {}
+  /** @return {!Promise<!ManagedDataResponse>} */
+  getContextualManagedData() {}
+
+  /** @return {!Promise<!ThreatProtectionInfo>} */
+  getThreatProtectionInfo() {}
+
+  /**
+   * @return {!Promise<!Array<!BrowserReportingResponse>>} The list
+   *     of browser reporting info messages.
+   */
+  initBrowserReportingInfo() {}
+}
+
+/** @implements {ManagementBrowserProxy} */
+export class ManagementBrowserProxyImpl {
+  /** @override */
+  getExtensions() {
+    return sendWithPromise('getExtensions');
   }
 
-  /** @implements {management.ManagementBrowserProxy} */
-  class ManagementBrowserProxyImpl {
-    /** @override */
-    getExtensions() {
-      return cr.sendWithPromise('getExtensions');
-    }
-
-    // <if expr="chromeos">
-    /** @override */
-    getLocalTrustRootsInfo() {
-      return cr.sendWithPromise('getLocalTrustRootsInfo');
-    }
-
-    /** @override */
-    getDeviceReportingInfo() {
-      return cr.sendWithPromise('getDeviceReportingInfo');
-    }
-    // </if>
-
-    /** @override */
-    initBrowserReportingInfo() {
-      return cr.sendWithPromise('initBrowserReportingInfo');
-    }
+  // <if expr="chromeos">
+  /** @override */
+  getLocalTrustRootsInfo() {
+    return sendWithPromise('getLocalTrustRootsInfo');
   }
 
-  cr.addSingletonGetter(ManagementBrowserProxyImpl);
+  /** @override */
+  getDeviceReportingInfo() {
+    return sendWithPromise('getDeviceReportingInfo');
+  }
+  // </if>
 
-  return {
-    ManagementBrowserProxy: ManagementBrowserProxy,
-    ManagementBrowserProxyImpl: ManagementBrowserProxyImpl
-  };
-});
+  /** @override */
+  getContextualManagedData() {
+    return sendWithPromise('getContextualManagedData');
+  }
+
+  /** @override */
+  getThreatProtectionInfo() {
+    return sendWithPromise('getThreatProtectionInfo');
+  }
+
+  /** @override */
+  initBrowserReportingInfo() {
+    return sendWithPromise('initBrowserReportingInfo');
+  }
+}
+
+addSingletonGetter(ManagementBrowserProxyImpl);
+
+// Export |ManagementBrowserProxyImpl| on |window| so that it can be accessed by
+// management_ui_browsertest.cc
+window.ManagementBrowserProxyImpl = ManagementBrowserProxyImpl;

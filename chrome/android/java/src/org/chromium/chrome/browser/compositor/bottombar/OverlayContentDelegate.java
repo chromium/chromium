@@ -23,9 +23,23 @@ public class OverlayContentDelegate {
      * Called when a page navigation results in an error page.
      * @param url The URL that caused the failure.
      * @param isExternalUrl Whether the URL is different from the initially loaded URL.
-     * @param isFailure Whether the loaded page is an error page.
+     * @param isFailure Whether the loaded page is a page with an error response.
+     * @param isError Whether the loaded page is an error (interstitial) page.
      */
-    public void onMainFrameNavigation(String url, boolean isExternalUrl, boolean isFailure) {}
+    public void onMainFrameNavigation(
+            String url, boolean isExternalUrl, boolean isFailure, boolean isError) {}
+
+    /**
+     * Called when a page title gets updated.
+     * @param title Title string
+     */
+    public void onTitleUpdated(String title) {}
+
+    /*
+     * Called when the URL is requested to be opened in a new, separate tab.
+     * @param url The URL associated with this request.
+     */
+    public void onOpenNewTabRequested(String url) {}
 
     /**
      * Called when content started loading in the panel.
@@ -58,6 +72,12 @@ public class OverlayContentDelegate {
      * @param isVisible True if the content is visible.
      */
     public void onVisibilityChanged(boolean isVisible) {}
+
+    /**
+     * Called when the SSL state changes.
+     */
+
+    public void onSSLStateUpdated() {}
 
     /**
      * Called once the WebContents has been seen.

@@ -21,6 +21,7 @@ namespace net {
 class ClientSocketHandle;
 class DrainableIOBuffer;
 class GrowableIOBuffer;
+class IOBuffer;
 class IOBufferWithSize;
 struct WebSocketFrame;
 struct WebSocketFrameChunk;
@@ -138,18 +139,14 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream : public WebSocketStream {
   // returned frame will be NULL. Otherwise, |current_frame_header_->opcode| is
   // set to Continuation after use if it was Text or Binary, in accordance with
   // WebSocket RFC6455 section 5.4.
-  std::unique_ptr<WebSocketFrame> CreateFrame(
-      bool is_final_chunk,
-      const scoped_refptr<IOBufferWithSize>& data);
+  std::unique_ptr<WebSocketFrame> CreateFrame(bool is_final_chunk,
+                                              base::span<const char> data);
 
   // Adds |data_buffer| to the end of |incomplete_control_frame_body_|, applying
   // bounds checks.
-  void AddToIncompleteControlFrameBody(
-      const scoped_refptr<IOBufferWithSize>& data_buffer);
+  void AddToIncompleteControlFrameBody(base::span<const char> data);
 
-  // Storage for pending reads. All active WebSockets spend all the time with a
-  // call to ReadFrames() pending, so there is no benefit in trying to share
-  // this between sockets.
+  // Storage for pending reads.
   scoped_refptr<IOBufferWithSize> read_buffer_;
 
   // The connection, wrapped in a ClientSocketHandle so that we can prevent it
@@ -165,14 +162,19 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream : public WebSocketStream {
 
   // Although it should rarely happen in practice, a control frame can arrive
   // broken into chunks. This variable provides storage for a partial control
-  // frame until the rest arrives. It will be NULL the rest of the time.
-  scoped_refptr<GrowableIOBuffer> incomplete_control_frame_body_;
+  // frame until the rest arrives. It will be empty the rest of the time.
+  std::vector<char> incomplete_control_frame_body_;
+  // Storage for payload of combined (see |incomplete_control_frame_body_|)
+  // control frame.
+  std::vector<char> complete_control_frame_body_;
 
   // Only used during handshake. Some data may be left in this buffer after the
   // handshake, in which case it will be picked up during the first call to
   // ReadFrames(). The type is GrowableIOBuffer for compatibility with
   // net::HttpStreamParser, which is used to parse the handshake.
   scoped_refptr<GrowableIOBuffer> http_read_buffer_;
+  // Flag to keep above buffer until next ReadFrames() after decoding.
+  bool is_http_read_buffer_decoded_ = false;
 
   // This keeps the current parse state (including any incomplete headers) and
   // parses frames.
@@ -193,6 +195,8 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream : public WebSocketStream {
   CompletionOnceCallback write_callback_;
   CompletionOnceCallback read_callback_;
 };
+
+NET_EXPORT extern const char kWebSocketReadBufferSize[];
 
 }  // namespace net
 

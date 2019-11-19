@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/startup_app_launcher.h"
@@ -110,8 +111,7 @@ class AppLaunchController::AppWindowWatcher
       : controller_(controller),
         app_id_(app_id),
         window_registry_(
-            extensions::AppWindowRegistry::Get(controller->profile_)),
-        weak_factory_(this) {
+            extensions::AppWindowRegistry::Get(controller->profile_)) {
     if (!window_registry_->GetAppWindowsForApp(app_id).empty()) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&AppWindowWatcher::NotifyAppWindowCreated,
@@ -137,7 +137,7 @@ class AppLaunchController::AppWindowWatcher
   AppLaunchController* controller_;
   std::string app_id_;
   extensions::AppWindowRegistry* window_registry_;
-  base::WeakPtrFactory<AppWindowWatcher> weak_factory_;
+  base::WeakPtrFactory<AppWindowWatcher> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppWindowWatcher);
 };
@@ -153,8 +153,8 @@ AppLaunchController::AppLaunchController(const std::string& app_id,
       diagnostic_mode_(diagnostic_mode),
       host_(host),
       oobe_ui_(oobe_ui),
-      app_launch_splash_screen_view_(oobe_ui_->GetAppLaunchSplashScreenView()) {
-}
+      app_launch_splash_screen_view_(
+          oobe_ui_->GetView<AppLaunchSplashScreenHandler>()) {}
 
 AppLaunchController::~AppLaunchController() {
   if (app_launch_splash_screen_view_)
@@ -183,7 +183,7 @@ void AppLaunchController::StartAppLaunch(bool is_auto_launch) {
 
   // TODO(tengs): Add a loading profile app launch state.
   app_launch_splash_screen_view_->SetDelegate(this);
-  app_launch_splash_screen_view_->Show(app_id_);
+  app_launch_splash_screen_view_->Show();
 
   KioskAppManager::App app;
   CHECK(KioskAppManager::Get());
@@ -288,15 +288,18 @@ void AppLaunchController::OnCancelAppLaunch() {
   OnLaunchFailed(KioskAppLaunchError::USER_CANCEL);
 }
 
-void AppLaunchController::OnNetworkConfigRequested(bool requested) {
-  network_config_requested_ = requested;
-  if (requested) {
-    MaybeShowNetworkConfigureUI();
-  } else {
-    app_launch_splash_screen_view_->UpdateAppLaunchState(
-        AppLaunchSplashScreenView::APP_LAUNCH_STATE_PREPARING_NETWORK);
-    startup_app_launcher_->RestartLauncher();
-  }
+void AppLaunchController::OnNetworkConfigRequested() {
+  DCHECK(!network_config_requested_);
+  network_config_requested_ = true;
+  MaybeShowNetworkConfigureUI();
+}
+
+void AppLaunchController::OnNetworkConfigFinished() {
+  DCHECK(network_config_requested_);
+  network_config_requested_ = false;
+  app_launch_splash_screen_view_->UpdateAppLaunchState(
+      AppLaunchSplashScreenView::APP_LAUNCH_STATE_PREPARING_NETWORK);
+  startup_app_launcher_->RestartLauncher();
 }
 
 void AppLaunchController::OnNetworkStateChanged(bool online) {
@@ -311,6 +314,13 @@ void AppLaunchController::OnNetworkStateChanged(bool online) {
 
 void AppLaunchController::OnDeletingSplashScreenView() {
   app_launch_splash_screen_view_ = nullptr;
+}
+
+KioskAppManagerBase::App AppLaunchController::GetAppData() {
+  KioskAppManagerBase::App app;
+  bool app_found = KioskAppManager::Get()->GetApp(app_id_, &app);
+  DCHECK(app_found);
+  return app;
 }
 
 void AppLaunchController::OnProfileLoaded(Profile* profile) {
@@ -343,6 +353,9 @@ void AppLaunchController::ClearNetworkWaitTimer() {
 }
 
 void AppLaunchController::CleanUp() {
+  DCHECK(!cleaned_up_);
+  cleaned_up_ = true;
+
   ClearNetworkWaitTimer();
   kiosk_profile_loader_.reset();
   startup_app_launcher_.reset();
@@ -371,6 +384,9 @@ void AppLaunchController::OnNetworkWaitTimedout() {
 }
 
 void AppLaunchController::OnAppWindowCreated() {
+  if (cleaned_up_)
+    return;
+
   SYSLOG(INFO) << "App window created, closing splash screen.";
   CleanUp();
 }
@@ -474,7 +490,7 @@ void AppLaunchController::OnInstallingApp() {
   // We have connectivity at this point, so we can skip the network
   // configuration dialog if it is being shown and not explicitly requested.
   if (showing_network_dialog_ && !network_config_requested_) {
-    app_launch_splash_screen_view_->Show(app_id_);
+    app_launch_splash_screen_view_->Show();
     showing_network_dialog_ = false;
     launch_splash_start_time_ = base::TimeTicks::Now().ToInternalValue();
   }
@@ -528,6 +544,9 @@ void AppLaunchController::OnLaunchSucceeded() {
 }
 
 void AppLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
+  if (cleaned_up_)
+    return;
+
   DCHECK_NE(KioskAppLaunchError::NONE, error);
   SYSLOG(ERROR) << "Kiosk launch failed, error=" << error;
 

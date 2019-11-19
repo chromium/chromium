@@ -19,23 +19,8 @@ namespace url {
 
 // Init ------------------------------------------------------------------------
 
-// Initialization is NOT required, it will be implicitly initialized when first
-// used. However, this implicit initialization is NOT threadsafe. If you are
-// using this library in a threaded environment and don't have a consistent
-// "first call" (an example might be calling Add*Scheme with your special
-// application-specific schemes) then you will want to call initialize before
-// spawning any threads.
-//
-// It is OK to call this function more than once, subsequent calls will be
-// no-ops, unless Shutdown was called in the mean time. This will also be a
-// no-op if other calls to the library have forced an initialization beforehand.
-COMPONENT_EXPORT(URL) void Initialize();
-
-// Cleanup is not required, except some strings may leak. For most user
-// applications, this is fine. If you're using it in a library that may get
-// loaded and unloaded, you'll want to unload to properly clean up your
-// library.
-COMPONENT_EXPORT(URL) void Shutdown();
+// Resets all custom schemes to the default values.  Not thread-safe.
+COMPONENT_EXPORT(URL) void ResetForTests();
 
 // Schemes ---------------------------------------------------------------------
 
@@ -45,6 +30,8 @@ COMPONENT_EXPORT(URL) void Shutdown();
 // compatibility, which allows the use of custom schemes: content hosted in
 // Android WebView assumes that one URL with a non-standard scheme will be
 // same-origin to another URL with the same non-standard scheme.
+//
+// Not thread-safe.
 COMPONENT_EXPORT(URL) void EnableNonStandardSchemesForAndroidWebView();
 
 // Whether or not SchemeHostPort and Origin allow non-standard schemes.
@@ -103,7 +90,7 @@ COMPONENT_EXPORT(URL) void AddWebStorageScheme(const char* new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetWebStorageSchemes();
 
 // Adds an application-defined scheme to the list of schemes that can bypass the
-// Content-Security-Policy(CSP) checks.
+// Content-Security-Policy (CSP) checks.
 COMPONENT_EXPORT(URL) void AddCSPBypassingScheme(const char* new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetCSPBypassingSchemes();
 

@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/policy_namespace.h"
 
 namespace policy {
@@ -85,7 +85,7 @@ class ComponentActiveDirectoryPolicyRetriever {
   bool start_was_called_ = false;
 
   base::WeakPtrFactory<ComponentActiveDirectoryPolicyRetriever>
-      weak_ptr_factory_;
+      weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(ComponentActiveDirectoryPolicyRetriever);
 };
 

@@ -30,9 +30,9 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
 
@@ -132,7 +132,7 @@ class PLATFORM_EXPORT ImageFrame final {
   PixelFormat GetPixelFormat() const { return pixel_format_; }
   const IntRect& OriginalFrameRect() const { return original_frame_rect_; }
   Status GetStatus() const { return status_; }
-  TimeDelta Duration() const { return duration_; }
+  base::TimeDelta Duration() const { return duration_; }
   DisposalMethod GetDisposalMethod() const { return disposal_method_; }
   AlphaBlendSource GetAlphaBlendSource() const { return alpha_blend_source_; }
   bool PremultiplyAlpha() const { return premultiply_alpha_; }
@@ -156,7 +156,7 @@ class PLATFORM_EXPORT ImageFrame final {
   void SetPixelFormat(PixelFormat format) { pixel_format_ = format; }
   void SetOriginalFrameRect(const IntRect& r) { original_frame_rect_ = r; }
   void SetStatus(Status);
-  void SetDuration(TimeDelta duration) { duration_ = duration; }
+  void SetDuration(base::TimeDelta duration) { duration_ = duration; }
   void SetDisposalMethod(DisposalMethod disposal_method) {
     disposal_method_ = disposal_method;
   }
@@ -313,7 +313,7 @@ class PLATFORM_EXPORT ImageFrame final {
   // frames whose original rect was smaller than the overall image size.
   IntRect original_frame_rect_;
   Status status_;
-  TimeDelta duration_;
+  base::TimeDelta duration_;
   DisposalMethod disposal_method_;
   AlphaBlendSource alpha_blend_source_;
   bool premultiply_alpha_;

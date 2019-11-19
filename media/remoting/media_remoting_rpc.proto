@@ -189,6 +189,8 @@ message VideoDecoderConfig {
     AV1PROFILE_PROFILE_MAIN = 24;
     AV1PROFILE_PROFILE_HIGH = 25;
     AV1PROFILE_PROFILE_PRO = 26;
+    DOLBYVISION_PROFILE8 = 27;
+    DOLBYVISION_PROFILE9 = 28;
   };
 
   // Proto version of media::VideoPixelFormat.
@@ -202,14 +204,13 @@ message VideoDecoderConfig {
     PIXEL_FORMAT_I444 = 5;
     PIXEL_FORMAT_NV12 = 6;
     PIXEL_FORMAT_NV21 = 7;
-    PIXEL_FORMAT_UYVY = 8;
+    PIXEL_FORMAT_UYVY = 8 [deprecated = true];
     PIXEL_FORMAT_YUY2 = 9;
     PIXEL_FORMAT_ARGB = 10;
     PIXEL_FORMAT_XRGB = 11;
     PIXEL_FORMAT_RGB24 = 12;
     PIXEL_FORMAT_RGB32 = 13;
     PIXEL_FORMAT_MJPEG = 14;
-    PIXEL_FORMAT_MT21 = 15;
     PIXEL_FORMAT_YUV420P9 = 16;
     PIXEL_FORMAT_YUV420P10 = 17;
     PIXEL_FORMAT_YUV422P9 = 18;
@@ -224,6 +225,8 @@ message VideoDecoderConfig {
     PIXEL_FORMAT_ABGR = 27;
     PIXEL_FORMAT_XBGR = 28;
     PIXEL_FORMAT_P016LE = 29;
+    PIXEL_FORMAT_XR30 = 30;
+    PIXEL_FORMAT_XB30 = 31;
   };
 
   // Proto version of media::ColorSpace.
@@ -268,6 +271,12 @@ message DecryptConfig {
   optional uint32 skip_byte_block = 6;
 }
 
+message PipelineDecoderInfo {
+  optional string decoder_name = 1;
+  optional bool is_platform_decoder = 2;
+  optional bool has_decrypting_demuxer_stream = 3;
+};
+
 message PipelineStatistics {
   optional uint64 audio_bytes_decoded = 1;
   optional uint64 video_bytes_decoded = 2;
@@ -276,8 +285,8 @@ message PipelineStatistics {
   optional int64 audio_memory_usage = 5;
   optional int64 video_memory_usage = 6;
   optional int64 video_frame_duration_average_usec = 7;
-  optional string audio_decoder_name = 8;
-  optional string video_decoder_name = 9;
+  optional PipelineDecoderInfo audio_decoder_info = 8;
+  optional PipelineDecoderInfo video_decoder_info = 9;
 };
 
 message CdmKeyInformation {
@@ -506,7 +515,7 @@ message RpcMessage {
     RPC_RC_ONVIDEOOPACITYCHANGE = 2005;
     RPC_RC_ONSTATISTICSUPDATE = 2006;
     RPC_RC_ONWAITINGFORDECRYPTIONKEY = 2007;
-    RPC_RC_ONDURATIONCHANGE = 2008;
+    RPC_RC_ONDURATIONCHANGE = 2008 [deprecated = true];  // Never actually used
     RPC_RC_ONAUDIOCONFIGCHANGE = 2009;
     RPC_RC_ONVIDEOCONFIGCHANGE = 2010;
     // DemuxerStream message

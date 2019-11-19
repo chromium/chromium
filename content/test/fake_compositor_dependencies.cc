@@ -8,7 +8,9 @@
 
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/test_ukm_recorder_factory.h"
+#include "content/renderer/frame_swap_message_queue.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "ui/gfx/buffer_types.h"
 
@@ -62,6 +64,11 @@ FakeCompositorDependencies::GetCompositorImplThreadTaskRunner() {
   return nullptr;  // Currently never threaded compositing in unit tests.
 }
 
+scoped_refptr<base::SingleThreadTaskRunner>
+FakeCompositorDependencies::GetCleanupTaskRunner() {
+  return base::ThreadTaskRunnerHandle::Get();
+}
+
 blink::scheduler::WebThreadScheduler*
 FakeCompositorDependencies::GetWebMainThreadScheduler() {
   return &main_thread_scheduler_;
@@ -78,6 +85,19 @@ bool FakeCompositorDependencies::IsScrollAnimatorEnabled() {
 std::unique_ptr<cc::UkmRecorderFactory>
 FakeCompositorDependencies::CreateUkmRecorderFactory() {
   return std::make_unique<cc::TestUkmRecorderFactory>();
+}
+
+void FakeCompositorDependencies::RequestNewLayerTreeFrameSink(
+    RenderWidget* render_widget,
+    scoped_refptr<FrameSwapMessageQueue> frame_swap_message_queue,
+    const GURL& url,
+    LayerTreeFrameSinkCallback callback,
+    mojo::PendingReceiver<mojom::RenderFrameMetadataObserverClient>
+        render_frame_metadata_observer_client_receiver,
+    mojo::PendingRemote<mojom::RenderFrameMetadataObserver>
+        render_frame_metadata_observer_remote,
+    const char* client_name) {
+  std::move(callback).Run(cc::FakeLayerTreeFrameSink::Create3d());
 }
 
 #ifdef OS_ANDROID

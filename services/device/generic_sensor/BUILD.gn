@@ -54,6 +54,7 @@ source_set("generic_sensor") {
     "platform_sensor_reader_linux.h",
     "platform_sensor_reader_win.cc",
     "platform_sensor_reader_win.h",
+    "platform_sensor_reader_win_base.h",
     "platform_sensor_win.cc",
     "platform_sensor_win.h",
     "relative_orientation_euler_angles_fusion_algorithm_using_accelerometer.cc",
@@ -104,6 +105,13 @@ source_set("generic_sensor") {
   }
 
   if (is_win) {
+    sources += [
+      "platform_sensor_provider_winrt.cc",
+      "platform_sensor_provider_winrt.h",
+      "platform_sensor_reader_winrt.cc",
+      "platform_sensor_reader_winrt.h",
+    ]
+
     libs = [
       "portabledeviceguids.lib",
       "sensorsapi.lib",
@@ -121,7 +129,6 @@ if (is_android) {
     visibility = [ ":generic_sensor" ]
 
     sources = device_sensors_jni_sources
-    jni_package = "device"
   }
 
   android_library("java") {
@@ -133,7 +140,9 @@ if (is_android) {
     java_files = device_sensors_jni_sources
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//services/device/public/mojom:generic_sensor_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }

@@ -5,22 +5,25 @@
 package org.chromium.chrome.browser.ntp.cards;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
 import android.text.format.DateUtils;
+
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromePreferenceManager;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.signin.ProfileDataCache;
-import org.chromium.chrome.browser.signin.SigninAccessPoint;
 import org.chromium.chrome.browser.signin.SigninManager;
 import org.chromium.chrome.browser.signin.SigninManager.SignInAllowedObserver;
 import org.chromium.chrome.browser.signin.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.SigninPromoController;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
  * Shows a card prompting the user to sign in. This item is also an {@link OptionalLeaf}, and sign
@@ -46,6 +49,13 @@ public class SignInPromo extends OptionalLeaf {
     private boolean mCanSignIn;
 
     /**
+     * Whether the list of accounts is ready to be displayed. An attempt to display SignInPromo
+     * while accounts are not ready may cause ANR since the UI thread would be synchronously waiting
+     * for the accounts list.
+     */
+    private boolean mAccountsReady;
+
+    /**
      * Whether personalized suggestions can be shown. If it's not the case, we have no reason to
      * offer the user to sign in.
      */
@@ -55,11 +65,13 @@ public class SignInPromo extends OptionalLeaf {
     protected final SigninPromoController mSigninPromoController;
     protected final ProfileDataCache mProfileDataCache;
 
-    protected SignInPromo() {
+    protected SignInPromo(SigninManager signinManager) {
         Context context = ContextUtils.getApplicationContext();
-        SigninManager signinManager = SigninManager.get();
 
-        mCanSignIn = signinManager.isSignInAllowed() && !signinManager.isSignedInOnNative();
+        // TODO(bsazonov): Signin manager should check for native status in isSignInAllowed
+        mCanSignIn = signinManager.isSignInAllowed()
+                && !signinManager.getIdentityManager().hasPrimaryAccount();
+        mAccountsReady = AccountManagerFacade.get().isCachePopulated();
         updateVisibility();
 
         int imageSize = context.getResources().getDimensionPixelSize(R.dimen.user_picture_size);
@@ -97,8 +109,8 @@ public class SignInPromo extends OptionalLeaf {
     /** @return Whether the {@link SignInPromo} should be created. */
     public static boolean shouldCreatePromo() {
         return !sDisablePromoForTests
-                && !ChromePreferenceManager.getInstance().readBoolean(
-                           ChromePreferenceManager.NTP_SIGNIN_PROMO_DISMISSED, false)
+                && !SharedPreferencesManager.getInstance().readBoolean(
+                        ChromePreferenceKeys.NTP_SIGNIN_PROMO_DISMISSED, false)
                 && !getSuppressionStatus();
     }
 
@@ -138,7 +150,8 @@ public class SignInPromo extends OptionalLeaf {
     }
 
     private void updateVisibility() {
-        setVisibilityInternal(!mDismissed && mCanSignIn && mCanShowPersonalizedSuggestions);
+        setVisibilityInternal(
+                !mDismissed && mCanSignIn && mCanShowPersonalizedSuggestions && mAccountsReady);
     }
 
     @Override
@@ -152,8 +165,8 @@ public class SignInPromo extends OptionalLeaf {
         mDismissed = true;
         updateVisibility();
 
-        ChromePreferenceManager.getInstance().writeBoolean(
-                ChromePreferenceManager.NTP_SIGNIN_PROMO_DISMISSED, true);
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.NTP_SIGNIN_PROMO_DISMISSED, true);
 
         final @StringRes int promoHeader = mSigninPromoController.getDescriptionStringId();
 
@@ -171,6 +184,9 @@ public class SignInPromo extends OptionalLeaf {
         return mSigninObserver;
     }
 
+    /**
+     * Observer to get notifications about various sign-in events.
+     */
     @VisibleForTesting
     public class SigninObserver implements SignInStateObserver, SignInAllowedObserver,
                                            ProfileDataCache.Observer, AccountsChangeObserver {
@@ -224,6 +240,9 @@ public class SignInPromo extends OptionalLeaf {
         // AccountsChangeObserver implementation.
         @Override
         public void onAccountsChanged() {
+            mAccountsReady = AccountManagerFacade.get().isCachePopulated();
+            // We don't change the visibility here to avoid the promo popping up in the feed
+            // unexpectedly. If accounts are ready, the promo will be shown up on the next reload.
             notifyDataChanged();
         }
 

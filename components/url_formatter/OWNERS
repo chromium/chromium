@@ -1,5 +1,6 @@
 pkasting@chromium.org
 tommycli@chromium.org
+meacer@chromium.org
 
 # Changes to FormatUrlForSecurityDisplay and FormatOriginForSecurityDisplay
 # require a security review to avoid introducing security bugs.

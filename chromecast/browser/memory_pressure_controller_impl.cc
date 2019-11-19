@@ -17,21 +17,20 @@ MemoryPressureControllerImpl::MemoryPressureControllerImpl() {
 
 MemoryPressureControllerImpl::~MemoryPressureControllerImpl() = default;
 
-void MemoryPressureControllerImpl::AddBinding(
-    mojom::MemoryPressureControllerRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void MemoryPressureControllerImpl::AddReceiver(
+    mojo::PendingReceiver<mojom::MemoryPressureController> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void MemoryPressureControllerImpl::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
-  observers_.ForAllPtrs([level](mojom::MemoryPressureObserver* observer) {
+  for (auto& observer : observers_)
     observer->MemoryPressureLevelChanged(level);
-  });
 }
 
 void MemoryPressureControllerImpl::AddObserver(
-    mojom::MemoryPressureObserverPtr observer) {
-  observers_.AddPtr(std::move(observer));
+    mojo::PendingRemote<mojom::MemoryPressureObserver> observer) {
+  observers_.Add(std::move(observer));
 }
 
 }  // namespace chromecast

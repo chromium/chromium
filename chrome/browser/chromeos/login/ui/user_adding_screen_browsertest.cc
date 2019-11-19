@@ -25,8 +25,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 
-using namespace testing;
-
 namespace chromeos {
 
 class UserAddingScreenTest : public LoginManagerTest,
@@ -75,11 +73,11 @@ class UserAddingScreenTest : public LoginManagerTest,
   }
 
   void CheckScreenIsVisible() {
-    views::View* web_view =
-        LoginDisplayHost::default_host()->GetWebUILoginView()->child_at(0);
+    auto* login_view = LoginDisplayHost::default_host()->GetWebUILoginView();
+    views::View* web_view = login_view->children().front();
     for (views::View* current_view = web_view; current_view;
          current_view = current_view->parent()) {
-      EXPECT_TRUE(current_view->visible());
+      EXPECT_TRUE(current_view->GetVisible());
       if (current_view->layer())
         EXPECT_EQ(current_view->layer()->GetCombinedOpacity(), 1.f);
     }
@@ -258,8 +256,8 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, PRE_ScreenVisibility) {
   StartupUtils::MarkOobeCompleted();
 }
 
-// Trying to catch http://crbug.com/362153.
-IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, ScreenVisibility) {
+// http://crbug.com/978267
+IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, DISABLED_ScreenVisibility) {
   LoginUser(test_users_[0]);
 
   UserAddingScreen::Get()->Start();

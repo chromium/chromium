@@ -5,21 +5,23 @@
 #ifndef CHROME_BROWSER_UI_ASH_SYSTEM_TRAY_CLIENT_H_
 #define CHROME_BROWSER_UI_ASH_SYSTEM_TRAY_CLIENT_H_
 
-#include "ash/public/interfaces/system_tray.mojom.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "base/macros.h"
 #include "chrome/browser/chromeos/system/system_clock_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
-#include "mojo/public/cpp/bindings/binding.h"
 
 namespace ash {
+struct LocaleInfo;
+class SystemTray;
 enum class LoginStatus;
+enum class NotificationStyle;
 }
 
 // Handles method calls delegated back to chrome from ash. Also notifies ash of
 // relevant state changes in chrome.
-// TODO: Consider renaming this to SystemTrayClientChromeOS.
-class SystemTrayClient : public ash::mojom::SystemTrayClient,
+// TODO: Consider renaming this to SystemTrayClientImpl.
+class SystemTrayClient : public ash::SystemTrayClient,
                          public chromeos::system::SystemClockObserver,
                          public policy::CloudPolicyStore::Observer,
                          public UpgradeObserver {
@@ -35,7 +37,7 @@ class SystemTrayClient : public ash::mojom::SystemTrayClient,
 
   // Specifies if notification is recommended or required by administrator and
   // triggers the notification to be shown with the given body and title.
-  void SetUpdateNotificationState(ash::mojom::NotificationStyle style,
+  void SetUpdateNotificationState(ash::NotificationStyle style,
                                   const base::string16& notification_title,
                                   const base::string16& notification_body);
 
@@ -43,10 +45,10 @@ class SystemTrayClient : public ash::mojom::SystemTrayClient,
   void SetPrimaryTrayEnabled(bool enabled);
   void SetPrimaryTrayVisible(bool visible);
   void SetPerformanceTracingIconVisible(bool visible);
-  void SetLocaleList(std::vector<ash::mojom::LocaleInfoPtr> locale_list,
+  void SetLocaleList(std::vector<ash::LocaleInfo> locale_list,
                      const std::string& current_locale_iso_code);
 
-  // ash::mojom::SystemTrayClient:
+  // ash::SystemTrayClient:
   void ShowSettings() override;
   void ShowBluetoothSettings() override;
   void ShowBluetoothPairingDialog(const std::string& address,
@@ -99,18 +101,14 @@ class SystemTrayClient : public ash::mojom::SystemTrayClient,
 
   void UpdateEnterpriseDisplayDomain();
 
-  // System tray mojo service in ash.
-  ash::mojom::SystemTrayPtr system_tray_;
-
-  // Binds this object to the client interface.
-  mojo::Binding<ash::mojom::SystemTrayClient> binding_;
+  // The system tray model in ash.
+  ash::SystemTray* const system_tray_;
 
   // Whether an Adobe Flash component update is available.
   bool flash_update_available_ = false;
 
   // Tells update notification style, for example required by administrator.
-  ash::mojom::NotificationStyle update_notification_style_ =
-      ash::mojom::NotificationStyle::DEFAULT;
+  ash::NotificationStyle update_notification_style_;
 
   // Update notification title to be overwritten.
   base::string16 update_notification_title_;

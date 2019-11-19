@@ -14,7 +14,7 @@ IDropTargetHelper* DropTargetWin::cached_drop_target_helper_ = nullptr;
 
 DropTargetWin::DropTargetWin() : hwnd_(nullptr), ref_count_(0) {}
 
-DropTargetWin::~DropTargetWin() {}
+DropTargetWin::~DropTargetWin() = default;
 
 void DropTargetWin::Init(HWND hwnd) {
   DCHECK(!hwnd_);

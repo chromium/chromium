@@ -24,25 +24,11 @@ class GIN_EXPORT Debug {
   static void SetJitCodeEventHandler(v8::JitCodeEventHandler event_handler);
 
 #if defined(OS_WIN)
-  typedef void (__cdecl *CodeRangeCreatedCallback)(void*, size_t);
-
-  /* Sets a callback that is invoked for every new code range being created.
-   *
-   * On Win64, exception handling in jitted code is broken due to the fact
-   * that JS stack frames are not ABI compliant. It is possible to install
-   * custom handlers for the code range which holds the jitted code to work
-   * around this issue.
-   *
-   * https://code.google.com/p/v8/issues/detail?id=3598
+  /* Sets a callback that is invoked for exceptions that arise in V8-generated
+   * code (jitted code or embedded builtins).
    */
-  static void SetCodeRangeCreatedCallback(CodeRangeCreatedCallback callback);
-
-  typedef void (__cdecl *CodeRangeDeletedCallback)(void*);
-
-  /* Sets a callback that is invoked for every previously registered code range
-   * when it is deleted.
-   */
-  static void SetCodeRangeDeletedCallback(CodeRangeDeletedCallback callback);
+  static void SetUnhandledExceptionCallback(
+      v8::UnhandledExceptionCallback callback);
 #endif
 };
 

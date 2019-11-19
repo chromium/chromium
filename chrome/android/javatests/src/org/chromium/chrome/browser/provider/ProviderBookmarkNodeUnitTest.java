@@ -28,7 +28,7 @@ public class ProviderBookmarkNodeUnitTest {
     byte[][] mImageBlobs;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mImageBlobs = new byte[][] {
             { 1, 2, 3 },
             { 4, 5, 6, 7 },
@@ -132,21 +132,21 @@ public class ProviderBookmarkNodeUnitTest {
     @Test
     @SmallTest
     @Feature({"Android-ContentProvider"})
-    public void testBookmarkNodeParceling() throws InterruptedException {
+    public void testBookmarkNodeParceling() {
         Assert.assertTrue(internalTestNodeHierarchyParceling(createMockHierarchy()));
     }
 
     @Test
     @SmallTest
     @Feature({"Android-ContentProvider"})
-    public void testBookmarkNodeParcelingWithImages() throws InterruptedException {
+    public void testBookmarkNodeParcelingWithImages() {
         Assert.assertTrue(internalTestNodeHierarchyParceling(createMockHierarchyWithImages()));
     }
 
     @Test
     @SmallTest
     @Feature({"Android-ContentProvider"})
-    public void testSingleNodeParceling() throws InterruptedException {
+    public void testSingleNodeParceling() {
         BookmarkNode node = new BookmarkNode(1, Type.URL, "Google", "http://www.google.com/", null);
         Assert.assertTrue(internalTestNodeHierarchyParceling(node));
     }
@@ -154,7 +154,7 @@ public class ProviderBookmarkNodeUnitTest {
     @Test
     @SmallTest
     @Feature({"Android-ContentProvider"})
-    public void testInvalidHierarchy() throws InterruptedException {
+    public void testInvalidHierarchy() {
         BookmarkNode root = new BookmarkNode(1, Type.FOLDER, "Bookmarks", null, null);
         root.addChild(new BookmarkNode(2, Type.URL, "Google", "http://www.google.com/", root));
         root.addChild(new BookmarkNode(2, Type.URL, "GoogleMaps", "http://maps.google.com/", root));

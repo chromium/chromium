@@ -31,7 +31,7 @@ class VIEWS_EXPORT WordLookupClient {
       gfx::Point* baseline_point) = 0;
 
  protected:
-  virtual ~WordLookupClient() {}
+  virtual ~WordLookupClient() = default;
 };
 
 }  // namespace views

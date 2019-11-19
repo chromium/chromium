@@ -21,16 +21,7 @@ namespace blink {
 
 namespace {
 
-// Web platform tests test WritableStream more thoroughly from scripts.
-class WritableStreamTest : public testing::TestWithParam<bool> {
- public:
-  WritableStreamTest() : feature_(GetParam()) {}
-
- private:
-  ScopedStreamsNativeForTest feature_;
-};
-
-TEST_P(WritableStreamTest, CreateWithoutArguments) {
+TEST(WritableStreamTest, CreateWithoutArguments) {
   V8TestingScope scope;
 
   WritableStream* stream =
@@ -40,7 +31,7 @@ TEST_P(WritableStreamTest, CreateWithoutArguments) {
 }
 
 // Testing getWriter, locked and IsLocked.
-TEST_P(WritableStreamTest, GetWriter) {
+TEST(WritableStreamTest, GetWriter) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -52,20 +43,14 @@ TEST_P(WritableStreamTest, GetWriter) {
   EXPECT_EQ(stream->IsLocked(script_state, ASSERT_NO_EXCEPTION),
             base::make_optional(false));
 
-  ScriptValue writer = stream->getWriter(script_state, ASSERT_NO_EXCEPTION);
+  stream->getWriter(script_state, ASSERT_NO_EXCEPTION);
 
   EXPECT_TRUE(stream->locked(script_state, ASSERT_NO_EXCEPTION));
   EXPECT_EQ(stream->IsLocked(script_state, ASSERT_NO_EXCEPTION),
             base::make_optional(true));
 }
 
-TEST_P(WritableStreamTest, Serialize) {
-  // Disable the test when StreamsNative is enabled as WritableStreamNative
-  // doesn't support serialization yet.
-  // TODO(ricea): Re-enable this test when serialization is supported.
-  if (GetParam())
-    return;
-
+TEST(WritableStreamTest, Serialize) {
   ScopedTransferableStreamsForTest enable_transferable_streams(true);
 
   V8TestingScope scope;
@@ -86,7 +71,8 @@ underlying_sink)JS";
                                         ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(stream);
 
-  MessageChannel* channel = MessageChannel::Create(scope.GetExecutionContext());
+  auto* channel =
+      MakeGarbageCollected<MessageChannel>(scope.GetExecutionContext());
 
   stream->Serialize(script_state, channel->port1(), ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(stream->locked(script_state, ASSERT_NO_EXCEPTION));
@@ -115,8 +101,6 @@ underlying_sink)JS";
   ASSERT_TRUE(result->IsString());
   EXPECT_EQ(ToCoreString(result.As<v8::String>()), "a");
 }
-
-INSTANTIATE_TEST_SUITE_P(, WritableStreamTest, ::testing::Values(false, true));
 
 }  // namespace
 

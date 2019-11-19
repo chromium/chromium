@@ -15,3 +15,4 @@ per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
 # For Fuchsia-specific changes:
 per-file *fuchsia*=file://build/fuchsia/OWNERS
 per-file *scenic*=file://build/fuchsia/OWNERS
+# COMPONENT: UI

@@ -7,6 +7,10 @@ Polymer({
 
   properties: {content: {type: String, observer: 'contentChanged_'}},
 
+  /**
+   * @param {string} content
+   * @private
+   */
   contentChanged_: function(content) {
     this.innerHTML = content;
   }

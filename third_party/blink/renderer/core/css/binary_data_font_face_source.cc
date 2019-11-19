@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
@@ -31,8 +31,8 @@ scoped_refptr<SimpleFontData> BinaryDataFontFaceSource::CreateFontData(
           font_description.IsSyntheticBold(),
           font_description.IsSyntheticItalic(),
           font_description.GetFontSelectionRequest(),
-          font_selection_capabilities, font_description.Orientation(),
-          font_description.VariationSettings()),
+          font_selection_capabilities, font_description.FontOpticalSizing(),
+          font_description.Orientation(), font_description.VariationSettings()),
       CustomFontData::Create());
 }
 

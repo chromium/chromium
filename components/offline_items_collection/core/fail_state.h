@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_FAIL_STATE_H_
 #define COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_FAIL_STATE_H_
 
+#include <iosfwd>
+
 namespace offline_items_collection {
 
+// Warning: These enumeration values are saved to a database, enumeration values
+// should not be changed.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.offline_items_collection
 enum class FailState {
@@ -125,6 +129,8 @@ enum class FailState {
   // The browser crashed.
   CRASH,
 };
+
+bool ToFailState(int value, FailState* fail_state);
 
 // Implemented for testing only. See test_support/offline_item_test_support.cc.
 std::ostream& operator<<(std::ostream& os, FailState state);

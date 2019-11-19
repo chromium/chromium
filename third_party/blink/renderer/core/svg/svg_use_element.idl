@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/struct.html#InterfaceSVGUseElement
 
+[Exposed=Window]
 interface SVGUseElement : SVGGraphicsElement {
     [MeasureAs=SVG1DOMUseElement] readonly attribute SVGAnimatedLength   x;
     [MeasureAs=SVG1DOMUseElement] readonly attribute SVGAnimatedLength   y;
@@ -32,4 +33,4 @@ interface SVGUseElement : SVGGraphicsElement {
     [MeasureAs=SVG1DOMUseElement] readonly attribute SVGAnimatedLength   height;
 };
 
-SVGUseElement implements SVGURIReference;
+SVGUseElement includes SVGURIReference;

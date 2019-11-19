@@ -5,9 +5,10 @@
 package org.chromium.chrome.browser.display_cutout;
 
 import android.graphics.Rect;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.view.WindowManager.LayoutParams;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;

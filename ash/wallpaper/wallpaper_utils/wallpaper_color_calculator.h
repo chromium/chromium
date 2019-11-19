@@ -80,7 +80,7 @@ class ASH_EXPORT WallpaperColorCalculator {
 
   base::ObserverList<WallpaperColorCalculatorObserver>::Unchecked observers_;
 
-  base::WeakPtrFactory<WallpaperColorCalculator> weak_ptr_factory_;
+  base::WeakPtrFactory<WallpaperColorCalculator> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WallpaperColorCalculator);
 };

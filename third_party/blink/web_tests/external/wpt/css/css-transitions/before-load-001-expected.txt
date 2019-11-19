@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS transition height from 10px to 100px / values
-FAIL transition height from 10px to 100px / events assert_false: load may not have happened yet expected false got true
-Harness: the test ran to completion.
-

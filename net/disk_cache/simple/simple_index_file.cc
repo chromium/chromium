@@ -10,14 +10,10 @@
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/files/memory_mapped_file.h"
-#include "base/hash.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
-#include "base/task_runner_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "net/disk_cache/simple/simple_entry_format.h"
 #include "net/disk_cache/simple/simple_histogram_macros.h"
@@ -329,7 +325,7 @@ void SimpleIndexFile::SyncWriteToDisk(net::CacheType cache_type,
   }
 
   // Atomically rename the temporary index file to become the real one.
-  if (!base::ReplaceFile(temp_index_filename, index_filename, NULL))
+  if (!base::ReplaceFile(temp_index_filename, index_filename, nullptr))
     return;
 
   if (app_on_background) {

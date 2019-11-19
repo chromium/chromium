@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import android.support.annotation.IntDef;
+import android.text.TextWatcher;
 import android.view.ActionMode;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.WindowDelegate;
@@ -55,8 +57,13 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider {
     }
 
     /** @see UrlBarMediator#setDelegate(UrlBarDelegate) */
-    public void setUrlTextChangeListener(UrlTextChangeListener listener) {
-        mMediator.setUrlTextChangeListener(listener);
+    public void addUrlTextChangeListener(UrlTextChangeListener listener) {
+        mMediator.addUrlTextChangeListener(listener);
+    }
+
+    /** @see TextWatcher */
+    public void addTextChangedListener(TextWatcher textWatcher) {
+        mMediator.addTextChangedListener(textWatcher);
     }
 
     /** @see UrlBarMediator#setUrlBarData(UrlBarData, int, int) */

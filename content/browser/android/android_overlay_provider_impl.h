@@ -17,7 +17,7 @@ class AndroidOverlayProviderImpl : public AndroidOverlayProvider {
  public:
   AndroidOverlayProviderImpl();
 
-  bool AreOverlaysSupported() const override;
+  bool AreOverlaysSupported() override;
 
  private:
   ~AndroidOverlayProviderImpl() override;

@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/process_manager_delegate.h"
@@ -19,12 +20,13 @@ namespace extensions {
 // Support for ProcessManager. Controls cases where Chrome wishes to disallow
 // extension background pages or defer their creation.
 class ChromeProcessManagerDelegate : public ProcessManagerDelegate,
-                                     public content::NotificationObserver {
+                                     public content::NotificationObserver,
+                                     public BrowserListObserver {
  public:
   ChromeProcessManagerDelegate();
   ~ChromeProcessManagerDelegate() override;
 
-  // ProcessManagerDelegate implementation:
+  // ProcessManagerDelegate:
   bool AreBackgroundPagesAllowedForContext(
       content::BrowserContext* context) const override;
   bool IsExtensionBackgroundPageAllowed(
@@ -33,14 +35,16 @@ class ChromeProcessManagerDelegate : public ProcessManagerDelegate,
   bool DeferCreatingStartupBackgroundHosts(
       content::BrowserContext* context) const override;
 
-  // content::NotificationObserver implementation:
+  // content::NotificationObserver:
   void Observe(int type,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override;
+
  private:
   // Notification handlers.
-  void OnBrowserOpened(Browser* browser);
   void OnProfileCreated(Profile* profile);
   void OnProfileDestroyed(Profile* profile);
 

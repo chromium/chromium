@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_KEY_SYSTEM_CONFIGURATION_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_KEY_SYSTEM_CONFIGURATION_H_
 
+#include "media/base/eme_constants.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_media_key_system_media_capability.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -19,7 +20,7 @@ struct WebMediaKeySystemConfiguration {
   };
 
   WebString label;
-  WebVector<WebEncryptedMediaInitDataType> init_data_types;
+  WebVector<media::EmeInitDataType> init_data_types;
   WebVector<WebMediaKeySystemMediaCapability> audio_capabilities;
   WebVector<WebMediaKeySystemMediaCapability> video_capabilities;
   Requirement distinctive_identifier = Requirement::kOptional;

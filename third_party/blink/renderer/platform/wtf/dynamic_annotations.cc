@@ -28,8 +28,8 @@
 
 #include "third_party/blink/renderer/platform/wtf/dynamic_annotations.h"
 
-#if defined(WTF_USE_DYNAMIC_ANNOTATIONS) && \
-    !defined(WTF_USE_DYNAMIC_ANNOTATIONS_NOIMPL)
+#if defined(DYNAMIC_ANNOTATIONS_ENABLED) && \
+    !defined(DYNAMIC_ANNOTATIONS_EXTERNAL_IMPL)
 
 // Identical code folding(-Wl,--icf=all) countermeasures.
 // This makes all Annotate* functions different, which prevents the linker from
@@ -47,18 +47,12 @@
 void WTFAnnotateBenignRaceSized(const char*,
                                 int,
                                 const volatile void*,
-                                long,
+                                size_t,
                                 const char*) {
+  // The TSan runtime hardcodes the function namem "WTFAnnotateBenignRaceSized",
+  // that's how it knows this function is magic.
   DYNAMIC_ANNOTATIONS_IMPL
 }
 
-void WTFAnnotateHappensBefore(const char*, int, const volatile void*) {
-  DYNAMIC_ANNOTATIONS_IMPL
-}
-
-void WTFAnnotateHappensAfter(const char*, int, const volatile void*) {
-  DYNAMIC_ANNOTATIONS_IMPL
-}
-
-#endif  // defined(WTF_USE_DYNAMIC_ANNOTATIONS) &&
-        // !defined(WTF_USE_DYNAMIC_ANNOTATIONS_NOIMPL)
+#endif  // defined(DYNAMIC_ANNOTATIONS_ENABLED) &&
+        // !defined(DYNAMIC_ANNOTATIONS_EXTERNAL_IMPL)

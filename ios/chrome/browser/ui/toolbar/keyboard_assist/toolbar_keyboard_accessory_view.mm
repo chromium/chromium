@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/toolbar/keyboard_assist/toolbar_assistive_keyboard_views_utils.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -120,7 +121,8 @@
                forState:UIControlStateHighlighted];
 
   [button setTitle:title forState:UIControlStateNormal];
-  [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+  [button setTitleColor:[UIColor colorNamed:kTextPrimaryColor]
+               forState:UIControlStateNormal];
   button.contentEdgeInsets =
       UIEdgeInsetsMake(0, kHorizontalEdgeInset, 0, kHorizontalEdgeInset);
   button.clipsToBounds = YES;

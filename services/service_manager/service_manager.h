@@ -5,17 +5,21 @@
 #ifndef SERVICES_SERVICE_MANAGER_SERVICE_MANAGER_H_
 #define SERVICES_SERVICE_MANAGER_SERVICE_MANAGER_H_
 
-#include <map>
 #include <memory>
+#include <set>
 #include <vector>
 
+#include "base/containers/unique_ptr_adapters.h"
+#include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/process/process.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "base/token.h"
 #include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/service_manager/catalog.h"
-#include "services/service_manager/connect_params.h"
 #include "services/service_manager/public/cpp/identity.h"
 #include "services/service_manager/public/cpp/manifest.h"
 #include "services/service_manager/public/cpp/service.h"
@@ -23,30 +27,96 @@
 #include "services/service_manager/public/mojom/connector.mojom.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
-#include "services/service_manager/public/mojom/service_factory.mojom.h"
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
-#include "services/service_manager/service_process_launcher_factory.h"
+#include "services/service_manager/sandbox/sandbox_type.h"
+#include "services/service_manager/service_instance_registry.h"
+#include "services/service_manager/service_process_host.h"
 
 namespace service_manager {
 
+class ServiceInstance;
+
 class ServiceManager : public Service {
  public:
-  // Constructs a new ServiceManager instance which exclusively uses |manifests|
-  // as its source of truth regarding what services exist and how they should
-  // be configured.
+  // This is an interface a ServiceManager instance can use to delegate certain
+  // operations (like launching in-process services) to its embedding runtime
+  // environment.
+  class Delegate {
+   public:
+    virtual ~Delegate() {}
+
+    // Asks for a new concrete instance of the service identified by |identity|
+    // to be created in the calling (i.e. the Service Manager's) process. If
+    // created, the instance should bind to |receiver|. Returns |true| if the
+    // instance was created or |false| otherwise (e.g. the service was unknown
+    // or in-process instances are not supported by the runtime environment).
+    //
+    // This is only called for services with the ExecutionMode
+    // |kInProcessBuiltin|.
+    virtual bool RunBuiltinServiceInstanceInCurrentProcess(
+        const Identity& identity,
+        mojo::PendingReceiver<mojom::Service> receiver) = 0;
+
+    // Creates a new ServiceProcessHost to host an out-of-process service
+    // instance for a service using ExecuteMode |kOutOfProcessBuiltin|.
+    //
+    // May return null if builtin out-of-process services are not supported by
+    // the runtime environment.
+    //
+    // TODO(https://crbug.com/895615): Process launching should be fully the
+    // responsibility of the Service Manager. This exists because much of the
+    // Chromium process launching logic today is still buried in the Content
+    // layer.
+    virtual std::unique_ptr<ServiceProcessHost>
+    CreateProcessHostForBuiltinServiceInstance(const Identity& identity) = 0;
+
+    // Creates a new ServiceProcessHost to host an out-of-process service
+    // instance for a service using a standalone executable (i.e. ExecuteMode in
+    // the manifest is |kStandaloneExecutable|).
+    //
+    // May return null if service executables are not supported by the runtime
+    // environment.
+    //
+    // TODO(https://crbug.com/895615): Process launching should be fully the
+    // responsibility of the Service Manager. This exists because much of the
+    // Chromium process launching logic today is still buried in the Content
+    // layer.
+    virtual std::unique_ptr<ServiceProcessHost>
+    CreateProcessHostForServiceExecutable(
+        const base::FilePath& executable_path) = 0;
+  };
+
+  // Indicates whether standalone service executables are supported by this
+  // ServiceManager instance. Only used when an explicit Delegate is not
+  // specified at construction time.
+  enum class ServiceExecutablePolicy {
+    kSupported,
+    kNotSupported,
+  };
+
+  // Constructs a new ServiceManager instance. |delegate| is used to augment
+  // default Service Manager behavior.
   //
-  // |service_process_launcher_factory| is an instance of an object capable of
-  // vending implementations of ServiceProcessLauncher, e.g. for out-of-process
-  // execution.
-  explicit ServiceManager(std::unique_ptr<ServiceProcessLauncherFactory>
-                              service_process_launcher_factory,
-                          const std::vector<Manifest>& manifests);
+  // |manifests| is the complete list of manifests for all services available to
+  // the runtime environment.
+  ServiceManager(const std::vector<Manifest>& manifests,
+                 std::unique_ptr<Delegate> delegate);
+
+  // Like above but uses a default internal Delegate implementation. With the
+  // default implementation, only packaged services, manually registered service
+  // instances, or (policy permitting) service executables are supported. No
+  // builtin (in-process or out-of-process) services are supported unless
+  // manually registered with |RegisterService()| below.
+  ServiceManager(const std::vector<Manifest>& manifests,
+                 ServiceExecutablePolicy service_executable_policy);
+
   ~ServiceManager() override;
 
   // Provide a callback to be notified whenever an instance is destroyed.
   // Typically the creator of the Service Manager will use this to determine
   // when some set of services it created are destroyed, so it can shut down.
-  void SetInstanceQuitCallback(base::Callback<void(const Identity&)> callback);
+  void SetInstanceQuitCallback(
+      base::OnceCallback<void(const Identity&)> callback);
 
   // Directly requests that the Service Manager start a new instance for
   // |service_name| if one is not already running.
@@ -58,11 +128,14 @@ class ServiceManager : public Service {
   // Service Manager's embedder to register instances directly, without
   // requiring a Connector.
   //
-  // |pid_receiver_request| may be null, in which case the service manager
-  // assumes the new service is running in this process.
-  void RegisterService(const Identity& identity,
-                       mojom::ServicePtr service,
-                       mojom::PIDReceiverRequest pid_receiver_request);
+  // |metadata_receiver| may be null, in which case the Service Manager assumes
+  // the new service is running in the calling process.
+  //
+  // Returns |true| if registration succeeded, or |false| otherwise.
+  bool RegisterService(
+      const Identity& identity,
+      mojo::PendingRemote<mojom::Service> service,
+      mojo::PendingReceiver<mojom::ProcessMetadata> metadata_receiver);
 
   // Determine information about |service_name| from its manifests. Returns
   // false if the identity does not have a catalog entry.
@@ -70,105 +143,76 @@ class ServiceManager : public Service {
                     const base::Token& instance_group,
                     std::string* sandbox_type);
 
-  // Completes a connection between a source and target application as defined
-  // by |params|. If no existing instance of the target service is running, one
-  // will be loaded.
-  void Connect(std::unique_ptr<ConnectParams> params);
+  // Attempts to locate a ServiceInstance as a target for a connection request
+  // from |source_instance| by matching against |partial_target_filter|. If a
+  // suitable instance exists it is returned, otherwise the Service Manager
+  // attempts to create a new suitable instance.
+  //
+  // Returns null if a matching instance did not exist and could not be created,
+  // otherwise returns a valid ServiceInstance which matches
+  // |partial_target_filter| from |source_instance|'s perspective.
+  ServiceInstance* FindOrCreateMatchingTargetInstance(
+      const ServiceInstance& source_instance,
+      const ServiceFilter& partial_target_filter);
 
  private:
-  class Instance;
-  class IdentityToInstanceMap;
-  class ServiceImpl;
+  friend class ServiceInstance;
 
-  // Used in CreateInstance to specify how an instance should be shared between
-  // various identities.
-  enum class InstanceType {
-    // All fields of the instance's identity are relevant, so instances are
-    // generally isolated to their own instance group, and there may be multiple
-    // instances of the service within each instance group.
-    kRegular,
+  // Erases |instance| from the instance registry. Following this call it is
+  // impossible for any call to GetExistingInstance() to return |instance| even
+  // though the instance may continue to exist and send requests to the Service
+  // Manager.
+  void MakeInstanceUnreachable(ServiceInstance* instance);
 
-    // There may be multiple instances of the service qualified by instance ID,
-    // but all such instances are shared across instance group boundaries. The
-    // instance group is therefore effectively ignored when resolving an
-    // Identity to a running instance.
-    kSharedAcrossInstanceGroups,
+  // Called when |instance| no longer has any connections to the remote service
+  // instance, or when some other fatal error is encountered in managing the
+  // instance. Deletes |instance|.
+  void DestroyInstance(ServiceInstance* instance);
 
-    // A single instance of the service exists globally. For all connections to
-    // the service, both instance group and instance ID are ignored when
-    // resolving the Identity.
-    kSingleton,
-  };
-
-  // Called when |instance| encounters an error. Deletes |instance|.
-  void OnInstanceError(Instance* instance);
-
-  // Called when |instance| becomes unreachable to new connections because it
-  // no longer has any pipes to the ServiceManager.
-  void OnInstanceUnreachable(Instance* instance);
-
-  // Called by an Instance as it's being destroyed.
+  // Called by a ServiceInstance as it's being destroyed.
   void OnInstanceStopped(const Identity& identity);
 
   // Returns a running instance identified by |identity|.
-  Instance* GetExistingInstance(const Identity& identity) const;
+  ServiceInstance* GetExistingInstance(const Identity& identity) const;
 
-  // Erases any identities mapping to |instance|. Following this call it is
-  // impossible for any call to GetExistingInstance() to return |instance|.
-  void EraseInstanceIdentity(Instance* instance);
-
-  void NotifyServiceCreated(Instance* instance);
+  void NotifyServiceCreated(const ServiceInstance& instance);
   void NotifyServiceStarted(const Identity& identity, base::ProcessId pid);
   void NotifyServiceFailedToStart(const Identity& identity);
 
   void NotifyServicePIDReceived(const Identity& identity, base::ProcessId pid);
 
-  Instance* CreateInstance(const Identity& identity,
-                           InstanceType instance_type,
-                           const Manifest& manifest);
+  ServiceInstance* CreateServiceInstance(const Identity& identity,
+                                         const Manifest& manifest);
 
   // Called from the instance implementing mojom::ServiceManager.
-  void AddListener(mojom::ServiceManagerListenerPtr listener);
-
-  void CreateServiceWithFactory(const ServiceFilter& service_factory_filter,
-                                const std::string& name,
-                                mojom::ServiceRequest request,
-                                mojom::PIDReceiverPtr pid_receiver);
-
-  // Returns a running ServiceFactory for |filter|. If there is not one running,
-  // one is started.
-  mojom::ServiceFactory* GetServiceFactory(const ServiceFilter& filter);
-  void OnServiceFactoryLost(const ServiceFilter& which);
-
-  base::WeakPtr<ServiceManager> GetWeakPtr();
+  void AddListener(mojo::PendingRemote<mojom::ServiceManagerListener> listener);
 
   // Service:
   void OnBindInterface(const BindSourceInfo& source_info,
                        const std::string& interface_name,
-                       mojo::ScopedMessagePipeHandle interface_pipe) override;
+                       mojo::ScopedMessagePipeHandle receiving_pipe) override;
+
+  const std::unique_ptr<Delegate> delegate_;
 
   ServiceBinding service_binding_{this};
 
-  // Ownership of all Instances.
-  using InstanceMap = std::map<Instance*, std::unique_ptr<Instance>>;
+  // Ownership of all ServiceInstances.
+  using InstanceMap =
+      std::set<std::unique_ptr<ServiceInstance>, base::UniquePtrComparator>;
   InstanceMap instances_;
 
   Catalog catalog_;
 
-  // Maps service identities to reachable instances. Note that the Instance
-  // values stored in that map are NOT owned by this map.
-  std::unique_ptr<IdentityToInstanceMap> identity_to_instance_;
+  // Maps service identities to reachable instances, allowing for lookup of
+  // running instances by ServiceFilter.
+  ServiceInstanceRegistry instance_registry_;
 
   // Always points to the ServiceManager's own Instance. Note that this
-  // Instance still has an entry in |instances_|.
-  Instance* service_manager_instance_;
+  // ServiceInstance still has an entry in |instances_|.
+  ServiceInstance* service_manager_instance_;
 
-  std::map<ServiceFilter, mojom::ServiceFactoryPtr> service_factories_;
-  mojo::InterfacePtrSet<mojom::ServiceManagerListener> listeners_;
-  base::Callback<void(const Identity&)> instance_quit_callback_;
-  std::unique_ptr<ServiceProcessLauncherFactory>
-      service_process_launcher_factory_;
-  base::WeakPtrFactory<ServiceManager> weak_ptr_factory_{this};
+  mojo::RemoteSet<mojom::ServiceManagerListener> listeners_;
+  base::OnceCallback<void(const Identity&)> instance_quit_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceManager);
 };

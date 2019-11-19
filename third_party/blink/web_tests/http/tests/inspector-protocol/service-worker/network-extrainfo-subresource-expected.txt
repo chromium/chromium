@@ -1,0 +1,4 @@
+Verifies that subresource requests made by service workers get Network.*ExtraInfo events for them.
+requestWillBeSent url: http://127.0.0.1:8000/inspector-protocol/service-worker/resources/hello-world.txt
+requestIds match: true
+

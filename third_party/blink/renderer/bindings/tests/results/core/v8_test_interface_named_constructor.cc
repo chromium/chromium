@@ -10,6 +10,8 @@
 // clang-format off
 #include "third_party/blink/renderer/bindings/tests/results/core/v8_test_interface_named_constructor.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -23,6 +25,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
+#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 
 namespace blink {
@@ -75,19 +78,6 @@ void V8TestInterfaceNamedConstructor::TestNamedConstructorConstructorAttributeCo
 
   V8TestNamedConstructor::NamedConstructorAttributeGetter(property, info);
 }
-
-// Suppress warning: global constructors, because AttributeConfiguration is trivial
-// and does not depend on another global objects.
-#if defined(COMPONENT_BUILD) && defined(WIN32) && defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wglobal-constructors"
-#endif
-static constexpr V8DOMConfiguration::AttributeConfiguration kV8TestInterfaceNamedConstructorAttributes[] = {
-    { "testNamedConstructorConstructorAttribute", V8TestInterfaceNamedConstructor::TestNamedConstructorConstructorAttributeConstructorGetterCallback, nullptr, static_cast<v8::PropertyAttribute>(v8::DontEnum), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kReplaceWithDataProperty, V8DOMConfiguration::kAllWorlds },
-};
-#if defined(COMPONENT_BUILD) && defined(WIN32) && defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 // Suppress warning: global constructors, because struct WrapperTypeInfo is trivial
 // and does not depend on another global objects.
@@ -223,8 +213,10 @@ void V8TestInterfaceNamedConstructorConstructor::NamedConstructorAttributeGetter
       per_context_data->ConstructorForType(V8TestInterfaceNamedConstructorConstructor::GetWrapperTypeInfo());
 
   // Set the prototype of named constructors to the regular constructor.
+  static const V8PrivateProperty::SymbolKey kPrivatePropertyInitialized;
   auto private_property =
-      V8PrivateProperty::GetNamedConstructorInitialized(info.GetIsolate());
+      V8PrivateProperty::GetSymbol(
+          info.GetIsolate(), kPrivatePropertyInitialized);
   v8::Local<v8::Context> current_context = info.GetIsolate()->GetCurrentContext();
   v8::Local<v8::Value> private_value;
 
@@ -267,9 +259,13 @@ static void InstallV8TestInterfaceNamedConstructorTemplate(
   ALLOW_UNUSED_LOCAL(prototype_template);
 
   // Register IDL constants, attributes and operations.
+  static constexpr V8DOMConfiguration::AttributeConfiguration
+  kAttributeConfigurations[] = {
+      { "testNamedConstructorConstructorAttribute", V8TestInterfaceNamedConstructor::TestNamedConstructorConstructorAttributeConstructorGetterCallback, nullptr, static_cast<v8::PropertyAttribute>(v8::DontEnum), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kReplaceWithDataProperty, V8DOMConfiguration::kAllWorlds },
+  };
   V8DOMConfiguration::InstallAttributes(
       isolate, world, instance_template, prototype_template,
-      kV8TestInterfaceNamedConstructorAttributes, base::size(kV8TestInterfaceNamedConstructorAttributes));
+      kAttributeConfigurations, base::size(kAttributeConfigurations));
 
   // Custom signature
 

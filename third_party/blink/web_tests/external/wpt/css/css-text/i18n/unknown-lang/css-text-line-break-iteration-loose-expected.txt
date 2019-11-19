@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL 3005  IDEOGRAPHIC ITERATION MARK may appear at line start if lang unknown and loose assert_true: expected true got false
+FAIL 303B  VERTICAL IDEOGRAPHIC ITERATION MARK may appear at line start if lang unknown and loose assert_true: expected true got false
+FAIL 309D  HIRAGANA ITERATION MARK may appear at line start if lang unknown and loose assert_true: expected true got false
+FAIL 309E  HIRAGANA VOICED ITERATION MARK may appear at line start if lang unknown and loose assert_true: expected true got false
+FAIL 30FD  KATAKANA ITERATION MARK may appear at line start if lang unknown and loose assert_true: expected true got false
+FAIL 30FE  KATAKANA VOICED ITERATION MARK may appear at line start if lang unknown and loose assert_true: expected true got false
+Harness: the test ran to completion.
+

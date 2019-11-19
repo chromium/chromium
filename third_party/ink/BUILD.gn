@@ -8,6 +8,8 @@ if (is_chromeos) {
   grit("ink_resources") {
     source = "ink_resources.grd"
 
+    use_brotli = true
+
     outputs = [
       "grit/ink_resources.h",
       "grit/ink_resources_map.cc",

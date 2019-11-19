@@ -34,7 +34,6 @@
 namespace base {
 
 class TimeDelta;
-class TimeTicks;
 
 // A WaitableEvent can be a useful thread synchronization tool when you want to
 // allow one thread to wait for another thread to finish some work. For
@@ -97,17 +96,13 @@ class BASE_EXPORT WaitableEvent {
   //   delete e;
   void Wait();
 
-  // Wait up until wait_delta has passed for the event to be signaled.  Returns
-  // true if the event was signaled.
+  // Wait up until wait_delta has passed for the event to be signaled
+  // (real-time; ignores time overrides).  Returns true if the event was
+  // signaled. Handles spurious wakeups and guarantees that |wait_delta| will
+  // have elapsed if this returns false.
   //
   // TimedWait can synchronise its own destruction like |Wait|.
   bool TimedWait(const TimeDelta& wait_delta);
-
-  // Wait up until end_time deadline has passed for the event to be signaled.
-  // Return true if the event was signaled.
-  //
-  // TimedWaitUntil can synchronise its own destruction like |Wait|.
-  bool TimedWaitUntil(const TimeTicks& end_time);
 
 #if defined(OS_WIN)
   HANDLE handle() const { return handle_.Get(); }

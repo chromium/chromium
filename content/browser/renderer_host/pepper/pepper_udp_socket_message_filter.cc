@@ -92,13 +92,7 @@ PepperUDPSocketMessageFilter::PepperUDPSocketMessageFilter(
       render_process_id_(0),
       render_frame_id_(0),
       is_potentially_secure_plugin_context_(
-          host->IsPotentiallySecurePluginContext(instance)),
-      binding_(this)
-#if defined(OS_CHROMEOS)
-      ,
-      firewall_hole_weak_ptr_factory_(this)
-#endif  //  defined(OS_CHROMEOS)
-{
+          host->IsPotentiallySecurePluginContext(instance)) {
   ++g_num_udp_filter_instances;
   DCHECK(host);
 
@@ -111,7 +105,7 @@ PepperUDPSocketMessageFilter::PepperUDPSocketMessageFilter(
 PepperUDPSocketMessageFilter::~PepperUDPSocketMessageFilter() {
   DCHECK(closed_);
   DCHECK(!socket_);
-  DCHECK(!binding_);
+  DCHECK(!receiver_.is_bound());
   --g_num_udp_filter_instances;
 }
 
@@ -133,9 +127,8 @@ void PepperUDPSocketMessageFilter::OnFilterDestroyed() {
   // that future messages will be ignored, so the mojo pipes won't be
   // re-created, so after Close() runs, |this| can be safely deleted on the IO
   // thread.
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&PepperUDPSocketMessageFilter::Close, this));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&PepperUDPSocketMessageFilter::Close, this));
 }
 
 scoped_refptr<base::TaskRunner>
@@ -149,7 +142,7 @@ PepperUDPSocketMessageFilter::OverrideTaskRunnerForMessage(
     case PpapiHostMsg_UDPSocket_SendTo::ID:
     case PpapiHostMsg_UDPSocket_JoinGroup::ID:
     case PpapiHostMsg_UDPSocket_LeaveGroup::ID:
-      return base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI});
+      return base::CreateSingleThreadTaskRunner({BrowserThread::UI});
   }
   return nullptr;
 }
@@ -386,12 +379,12 @@ int32_t PepperUDPSocketMessageFilter::OnMsgBind(
   if (!render_frame_host)
     return PP_ERROR_NOACCESS;
 
-  network::mojom::UDPSocketReceiverPtr udp_socket_receiver;
-  // Avoid binding the receiver until the socket has been successfully Bound (in
+  mojo::PendingRemote<network::mojom::UDPSocketListener> udp_socket_listener;
+  // Avoid binding the listener until the socket has been successfully Bound (in
   // a socket sense), to avoid providing read data to the caller until it has
   // been told that the socket was bound.
-  network::mojom::UDPSocketReceiverRequest receiver_request =
-      mojo::MakeRequest(&udp_socket_receiver);
+  mojo::PendingReceiver<network::mojom::UDPSocketListener> listener_receiver =
+      udp_socket_listener.InitWithNewPipeAndPassReceiver();
 
   SiteInstance* site_instance = render_frame_host->GetSiteInstance();
   network::mojom::NetworkContext* network_context =
@@ -400,17 +393,17 @@ int32_t PepperUDPSocketMessageFilter::OnMsgBind(
           ->GetNetworkContext();
   if (g_create_udp_socket_callback_for_testing) {
     g_create_udp_socket_callback_for_testing->Run(
-        network_context, mojo::MakeRequest(&socket_),
-        std::move(udp_socket_receiver));
+        network_context, socket_.BindNewPipeAndPassReceiver(),
+        std::move(udp_socket_listener));
   } else {
-    network_context->CreateUDPSocket(mojo::MakeRequest(&socket_),
-                                     std::move(udp_socket_receiver));
+    network_context->CreateUDPSocket(socket_.BindNewPipeAndPassReceiver(),
+                                     std::move(udp_socket_listener));
   }
 
   ppapi::host::ReplyMessageContext reply_context =
       context->MakeReplyMessageContext();
   // Watch the socket for errors during the the Bind call.
-  socket_.set_connection_error_handler(
+  socket_.set_disconnect_handler(
       base::BindOnce(&PepperUDPSocketMessageFilter::SendBindError,
                      base::Unretained(this), reply_context, PP_ERROR_FAILED));
 
@@ -418,7 +411,7 @@ int32_t PepperUDPSocketMessageFilter::OnMsgBind(
   socket_->Bind(end_point, std::move(udp_socket_options),
                 base::BindOnce(&PepperUDPSocketMessageFilter::DoBindCallback,
                                base::Unretained(this),
-                               std::move(receiver_request), reply_context));
+                               std::move(listener_receiver), reply_context));
 
   return PP_OK_COMPLETIONPENDING;
 }
@@ -430,9 +423,9 @@ int32_t PepperUDPSocketMessageFilter::OnMsgSendTo(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(context);
 
-  // Check |binding_| instead of |socket_| because |binding_| is only set
+  // Check |receiver_| instead of |socket_| because |receiver_| is only set
   // after the Bind() call completes.
-  if (closed_ || !binding_)
+  if (closed_ || !receiver_.is_bound())
     return PP_ERROR_FAILED;
 
   SocketPermissionRequest request =
@@ -494,7 +487,7 @@ int32_t PepperUDPSocketMessageFilter::OnMsgRecvSlotAvailable(
       UDPSocketResourceConstants::kPluginReceiveBufferSlots) {
     // If the pipe was closed, but the consumer has not yet closed the UDP
     // socket, keep the read buffer filled with errors.
-    if (!binding_) {
+    if (!receiver_.is_bound()) {
       PepperUDPSocketMessageFilter::SendRecvFromError(PP_ERROR_FAILED);
       return PP_OK;
     }
@@ -557,7 +550,7 @@ int32_t PepperUDPSocketMessageFilter::OnMsgLeaveGroup(
 }
 
 void PepperUDPSocketMessageFilter::DoBindCallback(
-    network::mojom::UDPSocketReceiverRequest receiver_request,
+    mojo::PendingReceiver<network::mojom::UDPSocketListener> listener_receiver,
     const ppapi::host::ReplyMessageContext& context,
     int result,
     const base::Optional<net::IPEndPoint>& local_addr_out) {
@@ -581,15 +574,15 @@ void PepperUDPSocketMessageFilter::DoBindCallback(
       *local_addr_out,
       base::BindRepeating(&PepperUDPSocketMessageFilter::OnFirewallHoleOpened,
                           firewall_hole_weak_ptr_factory_.GetWeakPtr(),
-                          base::Passed(std::move(receiver_request)), context,
+                          base::Passed(std::move(listener_receiver)), context,
                           net_address));
 #else   // !defined(OS_CHROMEOS)
-  OnBindComplete(std::move(receiver_request), context, net_address);
+  OnBindComplete(std::move(listener_receiver), context, net_address);
 #endif  // !defined(OS_CHROMEOS)
 }
 
 void PepperUDPSocketMessageFilter::OnBindComplete(
-    network::mojom::UDPSocketReceiverRequest receiver_request,
+    mojo::PendingReceiver<network::mojom::UDPSocketListener> listener_receiver,
     const ppapi::host::ReplyMessageContext& context,
     const PP_NetAddress_Private& net_address) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -597,17 +590,17 @@ void PepperUDPSocketMessageFilter::OnBindComplete(
 
   SendBindReply(context, PP_OK, net_address);
 
-  binding_.Bind(std::move(receiver_request));
-  binding_.set_connection_error_handler(base::BindOnce(
+  receiver_.Bind(std::move(listener_receiver));
+  receiver_.set_disconnect_handler(base::BindOnce(
       &PepperUDPSocketMessageFilter::PipeClosed, base::Unretained(this)));
-  socket_.set_connection_error_handler(base::BindOnce(
+  socket_.set_disconnect_handler(base::BindOnce(
       &PepperUDPSocketMessageFilter::PipeClosed, base::Unretained(this)));
   socket_->ReceiveMore(UDPSocketResourceConstants::kPluginReceiveBufferSlots);
 }
 
 #if defined(OS_CHROMEOS)
 void PepperUDPSocketMessageFilter::OnFirewallHoleOpened(
-    network::mojom::UDPSocketReceiverRequest receiver_request,
+    mojo::PendingReceiver<network::mojom::UDPSocketListener> listener_receiver,
     const ppapi::host::ReplyMessageContext& context,
     const PP_NetAddress_Private& net_address,
     std::unique_ptr<chromeos::FirewallHole> hole) {
@@ -616,7 +609,7 @@ void PepperUDPSocketMessageFilter::OnFirewallHoleOpened(
   LOG_IF(WARNING, !hole.get()) << "Firewall hole could not be opened.";
   firewall_hole_.reset(hole.release());
 
-  OnBindComplete(std::move(receiver_request), context, net_address);
+  OnBindComplete(std::move(listener_receiver), context, net_address);
 }
 #endif  // defined(OS_CHROMEOS)
 
@@ -638,7 +631,7 @@ void PepperUDPSocketMessageFilter::StartPendingSend() {
 void PepperUDPSocketMessageFilter::Close() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   socket_.reset();
-  binding_.Close();
+  receiver_.reset();
   closed_ = true;
 }
 
@@ -720,7 +713,7 @@ void PepperUDPSocketMessageFilter::SendRecvFromResult(
     const PP_NetAddress_Private& addr) {
   // Unlike SendReply, which is safe to call on any thread, SendUnsolicitedReply
   // calls are only safe to make on the IO thread.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &PepperUDPSocketMessageFilter::SendRecvFromResultOnIOThread, this,

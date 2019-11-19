@@ -64,7 +64,7 @@ class MEDIA_EXPORT PowerObserverHelper : public base::PowerObserver {
   // Flag if we are suspending.
   bool is_suspending_ = false;
 
-  base::WeakPtrFactory<PowerObserverHelper> weak_factory_;
+  base::WeakPtrFactory<PowerObserverHelper> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PowerObserverHelper);
 };

@@ -207,7 +207,7 @@ TEST_F(FeedbackPrivateApiUnittest, Anonymize) {
   EXPECT_TRUE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
   EXPECT_EQ(*params.reader_id, result_reader_id);
-  EXPECT_EQ("11:22:33:00:00:01", result_string);
+  EXPECT_EQ("[MAC OUI=11:22:33 IFACE=1]", result_string);
 }
 
 TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceMultipleSources) {

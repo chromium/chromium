@@ -35,6 +35,11 @@
     padding-left: 10px;
 }
 
+.serviceworker-client {
+    padding-bottom: 3px;
+    padding-left: 10px;
+}
+
 .controls a {
     -webkit-margin-end: 16px;
     color: #777;

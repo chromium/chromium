@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/payments/contact_info_selection_coordinator.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/payments/core/strings_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/payments/payment_request.h"

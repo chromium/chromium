@@ -1,0 +1,32 @@
+Tests the order in which not finished asynchronous Runtime.evaluate calls are temintated on navigation.
+promise created (100021)
+promise created (100013)
+promise created (100017)
+receiving result 100021:
+{
+    error : {
+        code : -32000
+        message : Inspected target navigated or closed
+    }
+    id : 100021
+    sessionId : <string>
+}
+receiving result 100013:
+{
+    error : {
+        code : -32000
+        message : Inspected target navigated or closed
+    }
+    id : 100013
+    sessionId : <string>
+}
+receiving result 100017:
+{
+    error : {
+        code : -32000
+        message : Inspected target navigated or closed
+    }
+    id : 100017
+    sessionId : <string>
+}
+

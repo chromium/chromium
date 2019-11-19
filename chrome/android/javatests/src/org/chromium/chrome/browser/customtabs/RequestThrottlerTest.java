@@ -36,14 +36,14 @@ public class RequestThrottlerTest {
     public UiThreadTestRule mRule = new UiThreadTestRule();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContext = InstrumentationRegistry.getTargetContext();
-        RequestThrottler.purgeAllEntriesForTesting(mContext);
+        RequestThrottler.purgeAllEntriesForTesting();
     }
 
     @After
-    public void tearDown() throws Exception {
-        RequestThrottler.purgeAllEntriesForTesting(mContext);
+    public void tearDown() {
+        RequestThrottler.purgeAllEntriesForTesting();
     }
 
     /** Tests that a client starts not banned. */
@@ -51,7 +51,7 @@ public class RequestThrottlerTest {
     @SmallTest
     @UiThreadTest
     public void testIsInitiallyNotBanned() {
-        Assert.assertTrue(RequestThrottler.getForUid(mContext, UID).isPrerenderingAllowed());
+        Assert.assertTrue(RequestThrottler.getForUid(UID).isPrerenderingAllowed());
     }
 
     /** Tests that a misbehaving client gets banned. */
@@ -59,7 +59,7 @@ public class RequestThrottlerTest {
     @SmallTest
     @UiThreadTest
     public void testBansUid() {
-        RequestThrottler throttler = RequestThrottler.getForUid(mContext, UID);
+        RequestThrottler throttler = RequestThrottler.getForUid(UID);
         Assert.assertTrue(throttler.isPrerenderingAllowed());
         for (int i = 0; i < 100; i++) throttler.registerPrerenderRequest(URL);
         Assert.assertFalse(throttler.isPrerenderingAllowed());
@@ -70,7 +70,7 @@ public class RequestThrottlerTest {
     @SmallTest
     @UiThreadTest
     public void testBanningMatchesUrls() {
-        RequestThrottler throttler = RequestThrottler.getForUid(mContext, UID);
+        RequestThrottler throttler = RequestThrottler.getForUid(UID);
         Assert.assertTrue(throttler.isPrerenderingAllowed());
         for (int i = 0; i < 100; i++) {
             throttler.registerPrerenderRequest(URL);
@@ -85,7 +85,7 @@ public class RequestThrottlerTest {
     @SmallTest
     @UiThreadTest
     public void testDontBanAccurateClients() {
-        RequestThrottler throttler = RequestThrottler.getForUid(mContext, UID);
+        RequestThrottler throttler = RequestThrottler.getForUid(UID);
         Assert.assertTrue(throttler.isPrerenderingAllowed());
         for (int i = 0; i < 100; i++) {
             throttler.registerPrerenderRequest(URL);
@@ -99,7 +99,7 @@ public class RequestThrottlerTest {
     @SmallTest
     @UiThreadTest
     public void testDontBanPartiallyAccurateClients() {
-        RequestThrottler throttler = RequestThrottler.getForUid(mContext, UID);
+        RequestThrottler throttler = RequestThrottler.getForUid(UID);
         Assert.assertTrue(throttler.isPrerenderingAllowed());
         for (int j = 0; j < 10; j++) {
             throttler.registerPrerenderRequest(URL);
@@ -115,10 +115,10 @@ public class RequestThrottlerTest {
     @SmallTest
     @UiThreadTest
     public void testThrottlingBanIsByUid() {
-        RequestThrottler throttler = RequestThrottler.getForUid(mContext, UID);
+        RequestThrottler throttler = RequestThrottler.getForUid(UID);
         Assert.assertTrue(throttler.isPrerenderingAllowed());
         for (int i = 0; i < 100; i++) throttler.registerPrerenderRequest(URL);
         Assert.assertFalse(throttler.isPrerenderingAllowed());
-        Assert.assertTrue(RequestThrottler.getForUid(mContext, UID2).isPrerenderingAllowed());
+        Assert.assertTrue(RequestThrottler.getForUid(UID2).isPrerenderingAllowed());
     }
 }

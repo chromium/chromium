@@ -13,8 +13,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::Contains;
-
 namespace base {
 
 // It has been observed that calling
@@ -26,9 +24,7 @@ namespace base {
 // behavior which we suspect is a Windows kernel bug. If this test starts
 // failing, the mitigation for https://crbug.com/901483 in
 // PlatformThread::SetCurrentThreadPriority() should be revisited.
-// Fails on various windows bots: https://crbug.com/931720.
-TEST(PlatformThreadWinTest,
-     DISABLED_SetBackgroundThreadModeFailsInIdlePriorityProcess) {
+TEST(PlatformThreadWinTest, SetBackgroundThreadModeFailsInIdlePriorityProcess) {
   PlatformThreadHandle::Handle thread_handle =
       PlatformThread::CurrentHandle().platform_handle();
 
@@ -55,23 +51,19 @@ TEST(PlatformThreadWinTest,
   EXPECT_TRUE(::SetThreadPriority(thread_handle, THREAD_MODE_BACKGROUND_BEGIN));
 
   // On Win8, GetThreadPriority() stays NORMAL. On Win7, it can stay NORMAL or
-  // switch to one of the 2 priorities that are usually observed after entering
+  // switch to one of the various priorities that are observed after entering
   // thread mode background in a NORMAL_PRIORITY_CLASS process. On all Windows
-  // verisons, memory priority becomes VERY_LOW.
+  // versions, memory priority becomes VERY_LOW.
   //
   // Note: this documents the aforementioned kernel bug. Ideally this would
   // *not* be the case.
   const float priority_after_thread_mode_background_begin =
       ::GetThreadPriority(thread_handle);
-  if (win::GetVersion() == win::VERSION_WIN7) {
-    constexpr std::array<int, 3> kExpectedWin7Priorities(
-        {// Priority if GetThreadPriority() is not affected.
-         THREAD_PRIORITY_NORMAL,
-         // Priorities if GetThreadPriority() behaves like in a
-         // NORMAL_PRIORITY_CLASS process.
-         THREAD_PRIORITY_IDLE, internal::kWin7BackgroundThreadModePriority});
-    EXPECT_THAT(kExpectedWin7Priorities,
-                Contains(priority_after_thread_mode_background_begin));
+  if (win::GetVersion() == win::Version::WIN7) {
+    if (priority_after_thread_mode_background_begin != THREAD_PRIORITY_NORMAL) {
+      EXPECT_EQ(ThreadPriority::BACKGROUND,
+                base::PlatformThread::GetCurrentThreadPriority());
+    }
   } else {
     EXPECT_EQ(priority_after_thread_mode_background_begin,
               THREAD_PRIORITY_NORMAL);

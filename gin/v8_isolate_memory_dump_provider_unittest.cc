@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -31,8 +32,7 @@ TEST_F(V8MemoryDumpProviderTest, DumpStatistics) {
   // not set before V8::InitializePlatform the sizes will not be accurate, but
   // this serves the purpose of this test.
   const char track_objects_flag[] = "--track-gc-object-stats";
-  v8::V8::SetFlagsFromString(track_objects_flag,
-                             static_cast<int>(strlen(track_objects_flag)));
+  v8::V8::SetFlagsFromString(track_objects_flag, strlen(track_objects_flag));
 
   base::trace_event::MemoryDumpArgs dump_args = {
       base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
@@ -158,6 +158,31 @@ TEST_F(V8MemoryDumpProviderTest, DumpCodeStatistics) {
   ASSERT_TRUE(did_dump_bytecode_size);
   ASSERT_TRUE(did_dump_code_size);
   ASSERT_TRUE(did_dump_external_scripts_size);
+}
+
+// Tests that a deterministic memory dump request performs a GC.
+TEST_F(V8MemoryDumpProviderTest, Deterministic) {
+  base::trace_event::MemoryDumpArgs dump_args = {
+      base::trace_event::MemoryDumpLevelOfDetail::LIGHT,
+      base::trace_event::MemoryDumpDeterminism::FORCE_GC};
+  std::unique_ptr<base::trace_event::ProcessMemoryDump> process_memory_dump(
+      new base::trace_event::ProcessMemoryDump(dump_args));
+
+  // Allocate an object that has only a weak reference.
+  v8::Global<v8::Object> weak_ref;
+  {
+    v8::HandleScope scope(instance_->isolate());
+    v8::Local<v8::Object> object = v8::Object::New(instance_->isolate());
+    weak_ref.Reset(instance_->isolate(), object);
+    weak_ref.SetWeak();
+  }
+
+  // Deterministic memory dump should trigger GC.
+  instance_->isolate_memory_dump_provider_for_testing()->OnMemoryDump(
+      dump_args, process_memory_dump.get());
+
+  // GC reclaimed the object.
+  ASSERT_TRUE(weak_ref.IsEmpty());
 }
 
 }  // namespace gin

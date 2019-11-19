@@ -8,10 +8,13 @@
 #include <string>
 
 #include "third_party/blink/renderer/core/css/parser/css.pb.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace css_proto_converter {
 
 class Converter {
+  STACK_ALLOCATED();
+
  public:
   Converter();
   std::string Convert(const StyleSheet&);

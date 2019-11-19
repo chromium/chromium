@@ -25,7 +25,7 @@ CHROME_SPECIFIC = BuildFileMatchRegex(
     r'lib/.*/libchrome\.\d{4}\.\d{2,3}\.so', # libchrome placeholders
     r'lib/.*/libchromium_android_linker\.so',
     r'lib/.*/libchromeview\.so', # placeholder library
-    r'lib/.*/libcrashpad_handler\.so',
+    r'lib/.*/libchrome_crashpad_handler\.so',
     r'lib/.*/crazy\.libchrome\.so',
     r'lib/.*/crazy\.libchrome\.align',
     r'lib/.*/gdbserver',
@@ -41,7 +41,7 @@ CHROME_SPECIFIC = BuildFileMatchRegex(
 WEBVIEW_SPECIFIC = BuildFileMatchRegex(
     r'lib/.*/libwebviewchromium\.so',
     r'assets/webview_licenses.notice',
-    r'res/.*/icon_webview.webp',
+    r'res/.*/icon_webview(.webp)?',
     r'META-INF/.*',
      # Monochrome doesn't have any res directories
      # whose api level is less than v24.
@@ -132,16 +132,19 @@ def DumpAPK(apk):
   apk_entries = []
   with closing(StringIO.StringIO(content)) as f:
     for line in f:
-       match = ZIP_ENTRY.match(line)
-       if match:
-         apk_entries.append(APKEntry(match.group('name'),
-                                     match.group('crc'),
-                                     match.group('cmpr') == 0))
+      match = ZIP_ENTRY.match(line)
+      if match:
+        apk_entries.append(
+            APKEntry(
+                match.group('name'), match.group('crc'),
+                match.group('cmpr') == 0))
   return apk_entries
 
 def VerifySameFile(monochrome_dict, apk, changes):
-  """ Verify files from apk are same as those in monochrome except files
-      in changes
+  """Verify apk file content matches same files in monochrome.
+
+  Verify files from apk are same as those in monochrome except files
+  in changes.
   """
   diff = []
   for a in apk:
@@ -155,8 +158,10 @@ def VerifySameFile(monochrome_dict, apk, changes):
 
 
 def VerifyUncompressed(monochrome, apk):
-  """ Verify files not being compressed in apk are also uncompressed in
-      Monochrome APK
+  """Verify uncompressed files in apk are a subset of those in monochrome.
+
+  Verify files not being compressed in apk are also uncompressed in
+  Monochrome APK.
   """
   uncompressed = [i.filename for i in apk if i.uncompressed ]
   monochrome_uncompressed = [i.filename for i in monochrome if i.uncompressed]
@@ -166,8 +171,8 @@ def VerifyUncompressed(monochrome, apk):
                     '\n'.join(compressed))
 
 def SuperSetOf(monochrome, apk):
-  """ Verify Monochrome is super set of apk.
-  """
+  """Verify Monochrome is super set of apk."""
+
   def exists_in_some_form(f):
     if f in monochrome:
       return True
@@ -183,13 +188,37 @@ def SuperSetOf(monochrome, apk):
 
   missing_files = [f for f in apk if not exists_in_some_form(f)]
   if len(missing_files):
-    raise Exception("The following files are missing in Monochrome:\n %s" %
+    raise Exception('The following files are missing in Monochrome:\n %s' %
                     '\n'.join(missing_files))
 
 
 def RemoveSpecific(apk_entries, specific):
   return [i for i in apk_entries
           if not specific.search(i.filename) ]
+
+
+def LoadPathmap(pathmap_path):
+  """Load the pathmap of obfuscated resource paths.
+
+  Returns: A dict mapping from obfuscated paths to original paths or an
+           empty dict if passed a None |pathmap_path|.
+  """
+  if pathmap_path is None:
+    return {}
+
+  pathmap = {}
+  with open(pathmap_path, 'r') as f:
+    for line in f:
+      line = line.strip()
+      if line.startswith('#') or line == '':
+        continue
+      original, renamed = line.split(' -> ')
+      pathmap[renamed] = original
+  return pathmap
+
+
+def DeobfuscateFilename(obfuscated_filename, pathmap):
+  return pathmap.get(obfuscated_filename, obfuscated_filename)
 
 
 def ParseArgs(args):
@@ -200,43 +229,56 @@ def ParseArgs(args):
   """
   parser = argparse.ArgumentParser(prog='monochrome_apk_checker')
 
-  parser.add_argument('--monochrome-apk',
-                      required=True,
-                      help='The monochrome APK path')
+  parser.add_argument(
+      '--monochrome-apk', required=True, help='The monochrome APK path.')
+  parser.add_argument(
+      '--monochrome-pathmap', help='The monochrome APK resources pathmap path.')
   parser.add_argument('--chrome-apk',
                       required=True,
                       help='The chrome APK path.')
+  parser.add_argument(
+      '--chrome-pathmap', help='The chrome APK resources pathmap path.')
   parser.add_argument('--system-webview-apk',
                       required=True,
                       help='The system webview APK path.')
+  parser.add_argument(
+      '--system-webview-pathmap',
+      help='The system webview APK resources pathmap path.')
   return parser.parse_args(args)
 
 
 def main():
   options = ParseArgs(sys.argv[1:])
   monochrome = DumpAPK(options.monochrome_apk)
-  monochrome_files = [f.filename for f in monochrome]
-  monochrome_dict = dict([(i.filename, i) for i in monochrome])
+  monochrome_pathmap = LoadPathmap(options.monochrome_pathmap)
+  monochrome_files = [
+      DeobfuscateFilename(f.filename, monochrome_pathmap) for f in monochrome
+  ]
+  monochrome_dict = dict([(DeobfuscateFilename(i.filename, monochrome_pathmap),
+                           i) for i in monochrome])
 
   chrome = RemoveSpecific(DumpAPK(options.chrome_apk),
                           CHROME_SPECIFIC)
   if len(chrome) == 0:
-    raise Exception("Chrome should have common files with Monochrome")
+    raise Exception('Chrome should have common files with Monochrome')
 
   webview = RemoveSpecific(DumpAPK(options.system_webview_apk),
                            WEBVIEW_SPECIFIC)
   if len(webview) == 0:
-    raise Exception("WebView should have common files with Monochrome")
+    raise Exception('WebView should have common files with Monochrome')
 
-  def check_apk(apk):
-    apk_files = [f.filename for f in apk]
+  def check_apk(apk, pathmap):
+    apk_files = [DeobfuscateFilename(f.filename, pathmap) for f in apk]
     SuperSetOf(monochrome_files, apk_files)
     VerifyUncompressed(monochrome, apk)
     VerifySameFile(monochrome_dict, chrome, CHROME_CHANGES)
     VerifySameFile(monochrome_dict, webview, WEBVIEW_CHANGES)
 
-  check_apk(chrome)
-  check_apk(webview)
+  chrome_pathmap = LoadPathmap(options.chrome_pathmap)
+  check_apk(chrome, chrome_pathmap)
+
+  webview_pathmap = LoadPathmap(options.system_webview_pathmap)
+  check_apk(webview, webview_pathmap)
 
 if __name__ == '__main__':
   sys.exit(main())

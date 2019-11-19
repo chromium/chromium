@@ -12,6 +12,27 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_UNITTEST_3_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_UNITTEST_3_AUTOGEN_H_
 
+TEST_P(GLES2DecoderTest3, Uniform4fvImmediateValidArgs) {
+  cmds::Uniform4fvImmediate& cmd = *GetImmediateAs<cmds::Uniform4fvImmediate>();
+  SpecializedSetup<cmds::Uniform4fvImmediate, 0>(true);
+  GLfloat temp[4 * 2] = {
+      0,
+  };
+  EXPECT_CALL(*gl_, Uniform4fv(1, 2, PointsToArray(temp, 4)));
+  cmd.Init(1, 2, &temp[0]);
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(temp)));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
+
+TEST_P(GLES2DecoderTest3, Uniform4iValidArgs) {
+  EXPECT_CALL(*gl_, Uniform4iv(1, 1, _));
+  SpecializedSetup<cmds::Uniform4i, 0>(true);
+  cmds::Uniform4i cmd;
+  cmd.Init(1, 2, 3, 4, 5);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
+
 TEST_P(GLES2DecoderTest3, Uniform4ivImmediateValidArgs) {
   cmds::Uniform4ivImmediate& cmd = *GetImmediateAs<cmds::Uniform4ivImmediate>();
   SpecializedSetup<cmds::Uniform4ivImmediate, 0>(true);

@@ -77,12 +77,12 @@ bool IsEdgeFavoritesLegacyMode() {
   // If the registry key is missing, check the Windows version.
   // Edge switched to ESE in Windows 10 Build 10565 (somewhere between
   // Windows 10 RTM and Windows 10 November 1511 Update).
-  return base::win::GetVersion() < base::win::VERSION_WIN10_TH2;
+  return base::win::GetVersion() < base::win::Version::WIN10_TH2;
 }
 
 bool EdgeImporterCanImport() {
   base::File::Info file_info;
-  if (base::win::GetVersion() < base::win::VERSION_WIN10)
+  if (base::win::GetVersion() < base::win::Version::WIN10)
     return false;
   return base::GetFileInfo(GetEdgeDataFilePath(), &file_info) &&
          file_info.is_directory;

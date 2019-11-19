@@ -13,29 +13,12 @@
 
 namespace media {
 
-namespace {
-
-const char* EncryptionModeAsString(EncryptionMode mode) {
-  switch (mode) {
-    case EncryptionMode::kUnencrypted:
-      return "Unencrypted";
-    case EncryptionMode::kCenc:
-      return "CENC";
-    case EncryptionMode::kCbcs:
-      return "CBCS";
-    default:
-      return "Unknown";
-  }
-}
-
-}  // namespace
-
 // static
 std::unique_ptr<DecryptConfig> DecryptConfig::CreateCencConfig(
     const std::string& key_id,
     const std::string& iv,
     const std::vector<SubsampleEntry>& subsamples) {
-  return std::make_unique<DecryptConfig>(EncryptionMode::kCenc, key_id, iv,
+  return std::make_unique<DecryptConfig>(EncryptionScheme::kCenc, key_id, iv,
                                          subsamples, base::nullopt);
 }
 
@@ -45,29 +28,29 @@ std::unique_ptr<DecryptConfig> DecryptConfig::CreateCbcsConfig(
     const std::string& iv,
     const std::vector<SubsampleEntry>& subsamples,
     base::Optional<EncryptionPattern> encryption_pattern) {
-  return std::make_unique<DecryptConfig>(EncryptionMode::kCbcs, key_id, iv,
+  return std::make_unique<DecryptConfig>(EncryptionScheme::kCbcs, key_id, iv,
                                          subsamples,
                                          std::move(encryption_pattern));
 }
 
 DecryptConfig::DecryptConfig(
-    const EncryptionMode& encryption_mode,
+    EncryptionScheme encryption_scheme,
     const std::string& key_id,
     const std::string& iv,
     const std::vector<SubsampleEntry>& subsamples,
     base::Optional<EncryptionPattern> encryption_pattern)
-    : encryption_mode_(encryption_mode),
+    : encryption_scheme_(encryption_scheme),
       key_id_(key_id),
       iv_(iv),
       subsamples_(subsamples),
       encryption_pattern_(std::move(encryption_pattern)) {
   // Unencrypted blocks should not have a DecryptConfig.
-  DCHECK_NE(encryption_mode_, EncryptionMode::kUnencrypted);
+  DCHECK_NE(encryption_scheme_, EncryptionScheme::kUnencrypted);
   CHECK_GT(key_id_.size(), 0u);
   CHECK_EQ(iv_.size(), static_cast<size_t>(DecryptConfig::kDecryptionKeySize));
 
-  // Pattern not allowed for non-'cbcs' modes.
-  DCHECK(encryption_mode_ == EncryptionMode::kCbcs || !encryption_pattern_);
+  // Pattern not allowed for non-'cbcs' schemes.
+  DCHECK(encryption_scheme_ == EncryptionScheme::kCbcs || !encryption_pattern_);
 }
 
 DecryptConfig::~DecryptConfig() = default;
@@ -79,7 +62,7 @@ std::unique_ptr<DecryptConfig> DecryptConfig::Clone() const {
 std::unique_ptr<DecryptConfig> DecryptConfig::CopyNewSubsamplesIV(
     const std::vector<SubsampleEntry>& subsamples,
     const std::string& iv) {
-  return std::make_unique<DecryptConfig>(encryption_mode_, key_id_, iv,
+  return std::make_unique<DecryptConfig>(encryption_scheme_, key_id_, iv,
                                          subsamples, encryption_pattern_);
 }
 
@@ -90,7 +73,7 @@ bool DecryptConfig::HasPattern() const {
 bool DecryptConfig::Matches(const DecryptConfig& config) const {
   if (key_id() != config.key_id() || iv() != config.iv() ||
       subsamples().size() != config.subsamples().size() ||
-      encryption_mode_ != config.encryption_mode_ ||
+      encryption_scheme_ != config.encryption_scheme_ ||
       encryption_pattern_ != config.encryption_pattern_) {
     return false;
   }
@@ -108,7 +91,7 @@ bool DecryptConfig::Matches(const DecryptConfig& config) const {
 std::ostream& DecryptConfig::Print(std::ostream& os) const {
   os << "key_id:'" << base::HexEncode(key_id_.data(), key_id_.size()) << "'"
      << " iv:'" << base::HexEncode(iv_.data(), iv_.size()) << "'"
-     << " mode:" << EncryptionModeAsString(encryption_mode_);
+     << " scheme:" << encryption_scheme_;
 
   if (encryption_pattern_) {
     os << " pattern:" << encryption_pattern_->crypt_byte_block() << ":"

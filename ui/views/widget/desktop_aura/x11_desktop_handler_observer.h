@@ -23,4 +23,4 @@ class VIEWS_EXPORT X11DesktopHandlerObserver {
 
 }  // namespace views
 
-#endif  // UI_DISPLAY_DESKTOP_OBSERVER_H_
+#endif  // UI_VIEWS_WIDGET_DESKTOP_AURA_X11_DESKTOP_HANDLER_OBSERVER_H_

@@ -10,6 +10,8 @@
 // clang-format off
 #include "third_party/blink/renderer/bindings/tests/results/core/v8_test_interface_constructor.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -20,12 +22,14 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 
 namespace blink {
@@ -123,7 +127,7 @@ static void Constructor2(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
   test_interface_empty_arg = V8TestInterfaceEmpty::ToImplWithTypeCheck(info.GetIsolate(), info[2]);
   if (!test_interface_empty_arg) {
-    exception_state.ThrowTypeError("parameter 3 is not of type 'TestInterfaceEmpty'.");
+    exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(2, "TestInterfaceEmpty"));
     return;
   }
 
@@ -175,7 +179,7 @@ static void Constructor2(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
   optional_test_interface_empty_arg = V8TestInterfaceEmpty::ToImplWithTypeCheck(info.GetIsolate(), info[9]);
   if (!optional_test_interface_empty_arg) {
-    exception_state.ThrowTypeError("parameter 10 is not of type 'TestInterfaceEmpty'.");
+    exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(9, "TestInterfaceEmpty"));
     return;
   }
 
@@ -478,8 +482,10 @@ void V8TestInterfaceConstructorConstructor::NamedConstructorAttributeGetter(
       per_context_data->ConstructorForType(V8TestInterfaceConstructorConstructor::GetWrapperTypeInfo());
 
   // Set the prototype of named constructors to the regular constructor.
+  static const V8PrivateProperty::SymbolKey kPrivatePropertyInitialized;
   auto private_property =
-      V8PrivateProperty::GetNamedConstructorInitialized(info.GetIsolate());
+      V8PrivateProperty::GetSymbol(
+          info.GetIsolate(), kPrivatePropertyInitialized);
   v8::Local<v8::Context> current_context = info.GetIsolate()->GetCurrentContext();
   v8::Local<v8::Value> private_value;
 

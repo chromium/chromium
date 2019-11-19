@@ -30,13 +30,13 @@ bool g_disable_extension_loading = false;
 
 class InputMethodConfiguration {
  public:
-  InputMethodConfiguration() {}
-  virtual ~InputMethodConfiguration() {}
+  InputMethodConfiguration() = default;
+  virtual ~InputMethodConfiguration() = default;
 
   void Initialize() {
     ui::IMEBridge::Initialize();
 
-    InputMethodManagerImpl* impl = new InputMethodManagerImpl(
+    auto* impl = new InputMethodManagerImpl(
         std::unique_ptr<InputMethodDelegate>(new InputMethodDelegateImpl),
         !g_disable_extension_loading);
     InputMethodManager::Initialize(impl);

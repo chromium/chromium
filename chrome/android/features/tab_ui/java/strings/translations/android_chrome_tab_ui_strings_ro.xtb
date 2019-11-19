@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ro">
+<translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dintre file nu au fost folosite în ultima vreme. Vrei să le închizi?</translation>
+<translation id="1181037720776840403">Elimină</translation>
+<translation id="125153950246128346">Atinge pentru a vedea altă filă</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> filă}few{<ph name="TABS_COUNT_MANY" /> file}other{<ph name="TABS_COUNT_MANY" /> de file}}</translation>
+<translation id="257674075312929031">Grup</translation>
+<translation id="2613747923081026172">Creează grupul</translation>
+<translation id="2671423594960767771">Distribuie grupul</translation>
+<translation id="2977480621796371840">Elimină din grup</translation>
+<translation id="4212246570487010370">Continuă navigarea</translation>
+<translation id="4648718555153979859">Filele tale sunt grupate aici</translation>
+<translation id="5007392906805964215">Examinează</translation>
+<translation id="5073204694187207510">Ascunde grila pe ecran complet</translation>
+<translation id="5082793167783849073">Compară rapid paginile făcând un grup. Pentru a începe, atinge lung un link.</translation>
+<translation id="5580090775658607195"><ph name="TAB_COUNT" /> file au fost grupate</translation>
+<translation id="5792534911093536736">Mai multe file</translation>
+<translation id="58326064309361797">Trage filele pentru a le grupa</translation>
+<translation id="6040143037577758943">Închide</translation>
+<translation id="6193448654517602979">Selectează file</translation>
+<translation id="6615455863669487791">Afișați</translation>
+<translation id="6840760312327750441">Pentru a grupa filele, atinge lung o filă. Apoi trage-o peste o altă filă.</translation>
+<translation id="7151209024774799310">Elimină file din grup</translation>
+<translation id="7559245342362162951">Arată filele grupului în grilă pe ecran complet</translation>
+<translation id="9150694013019234766">Comută între filele din grupul de file în partea de jos a ecranului</translation>
+<translation id="9169594135889675189">Adaugă o filă nouă în grup</translation>
+<translation id="959682366969460160">Organizează-te</translation>
+</translationbundle>

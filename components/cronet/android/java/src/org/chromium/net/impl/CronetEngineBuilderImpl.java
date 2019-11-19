@@ -6,8 +6,9 @@ package org.chromium.net.impl;
 import static android.os.Process.THREAD_PRIORITY_LOWEST;
 
 import android.content.Context;
-import android.support.annotation.IntDef;
-import android.support.annotation.VisibleForTesting;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetEngine.Builder;

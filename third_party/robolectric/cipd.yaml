@@ -3,14 +3,13 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:$(cat version.txt)
+# cipd create --pkg-def cipd.yaml
 package: chromium/third_party/robolectric
 description: robolectric modified Android SDKs
 data:
-  - file: lib/android-all-4.1.2_r1-robolectric-r1.jar
-  - file: lib/android-all-4.3_r2-robolectric-r1.jar
+  - file: lib/android-all-4.4_r1-robolectric-r2.jar
   - file: lib/android-all-5.0.2_r3-robolectric-r0.jar
   - file: lib/android-all-7.1.0_r7-robolectric-r1.jar
   - file: lib/android-all-8.0.0_r4-robolectric-r1.jar
-  - file: lib/android-all-8.1.0-robolectric-r4402310.jar
+  - file: lib/android-all-8.1.0-robolectric-4611349.jar
   - file: lib/android-all-9-robolectric-4913185-2.jar

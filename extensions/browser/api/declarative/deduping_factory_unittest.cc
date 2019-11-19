@@ -62,13 +62,13 @@ scoped_refptr<const BaseClass> CreateFoo(const std::string& /*instance_type*/,
                                          const base::Value* value,
                                          std::string* error,
                                          bool* bad_message) {
-  const base::DictionaryValue* dict = NULL;
+  const base::DictionaryValue* dict = nullptr;
   CHECK(value->GetAsDictionary(&dict));
   int parameter = 0;
   if (!dict->GetInteger("parameter", &parameter)) {
     *error = "No parameter";
     *bad_message = true;
-    return scoped_refptr<const BaseClass>(NULL);
+    return nullptr;
   }
   return scoped_refptr<const BaseClass>(new Foo(parameter));
 }

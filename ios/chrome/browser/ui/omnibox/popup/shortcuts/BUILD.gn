@@ -46,7 +46,6 @@ source_set("shortcuts_internal") {
     "//components/reading_list/core",
     "//components/reading_list/ios",
     "//ios/chrome/browser/ntp_tiles",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui/commands:commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/favicon",
@@ -75,34 +74,53 @@ source_set("unit_tests") {
 }
 
 source_set("eg_tests") {
+  defines = [ "CHROME_EARL_GREY_1" ]
   testonly = true
   sources = [
     "shortcuts_egtest.mm",
   ]
   deps = [
-    ":shortcuts",
     "//base",
     "//base/test:test_support",
-    "//components/keyed_service/ios",
-    "//components/reading_list/core",
     "//components/strings",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/reading_list",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
     "//ios/chrome/test/app:test_support",
-    "//ios/chrome/test/base:base",
     "//ios/chrome/test/earl_grey:test_support",
     "//ios/testing/earl_grey:earl_grey_support",
     "//ios/third_party/earl_grey:earl_grey+link",
-    "//testing/gmock",
-    "//ui/strings",
+    "//net:test_support",
   ]
   libs = [
     "UIKit.framework",
     "XCTest.framework",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+
+  testonly = true
+  sources = [
+    "shortcuts_egtest.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/strings",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//net:test_support",
+  ]
+  libs = [ "UIKit.framework" ]
 }

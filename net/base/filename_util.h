@@ -29,9 +29,9 @@ NET_EXPORT GURL FilePathToFileURL(const base::FilePath& path);
 // invalid or the file path cannot be extracted from |url|.
 // On failure, *file_path will be empty.
 //
-// It is not a requirement that |url| have a file scheme as other URLs may
-// still convert to a file path. One example is on the Windows platform where
-// https://hostname/path/to/file.txt will return \\hostname\path\to\file.txt.
+// Do not call this with a |url| that doesn't have a file:// scheme.
+// The implementation is specific to the platform filesystem, and not
+// applicable to other schemes.
 NET_EXPORT bool FileURLToFilePath(const GURL& url, base::FilePath* file_path);
 
 // Generates a filename using the first successful method from the following (in

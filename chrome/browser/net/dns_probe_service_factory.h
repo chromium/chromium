@@ -11,6 +11,7 @@
 #include "base/memory/singleton.h"
 #include "base/time/tick_clock.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 
 class KeyedService;
@@ -33,8 +34,8 @@ class DnsProbeServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   using NetworkContextGetter =
       base::RepeatingCallback<network::mojom::NetworkContext*(void)>;
-  using DnsConfigChangeManagerGetter =
-      base::RepeatingCallback<network::mojom::DnsConfigChangeManagerPtr(void)>;
+  using DnsConfigChangeManagerGetter = base::RepeatingCallback<
+      mojo::Remote<network::mojom::DnsConfigChangeManager>(void)>;
 
   // Returns the DnsProbeService that supports NetworkContexts for
   // |browser_context|.

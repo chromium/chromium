@@ -75,6 +75,7 @@ struct RendererContentSettingRules {
   ContentSettingsForOneType autoplay_rules;
   ContentSettingsForOneType client_hints_rules;
   ContentSettingsForOneType popup_redirect_rules;
+  ContentSettingsForOneType mixed_content_rules;
 };
 
 namespace content_settings {
@@ -92,6 +93,7 @@ enum SettingSource {
   SETTING_SOURCE_USER,
   SETTING_SOURCE_WHITELIST,
   SETTING_SOURCE_SUPERVISED,
+  SETTING_SOURCE_INSTALLED_WEBAPP,
 };
 
 // |SettingInfo| provides meta data for content setting values. |source|

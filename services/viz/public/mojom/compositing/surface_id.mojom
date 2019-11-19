@@ -1,0 +1,20 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "services/viz/public/mojom/compositing/local_surface_id.mojom";
+
+// A surface ID is composed of two parts: a FrameSinkID, and a LocalSurfaceId.
+// The FrameSinkId uniquely identifies the FrameSink associated with the
+// surface. This corresponds to a SurfaceFactory in the display compositor
+// service. The FrameSinkId is partially allocated by the display compositor
+// and partially allocated by the frame source.
+// The LocalSurfaceId are allocated by the client using any scheme
+// that avoids duplicates and makes IDs unguessable respectively.
+struct SurfaceId {
+  FrameSinkId frame_sink_id;
+  LocalSurfaceId local_surface_id;
+};

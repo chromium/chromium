@@ -65,11 +65,12 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/sequenced_task_runner.h"
+#include "base/task/post_task.h"
+#include "base/task/task_traits.h"
 #include "base/threading/thread.h"
 #include "net/base/address_tracker_linux.h"
-#include "net/dns/dns_config_service.h"
 
 namespace net {
 
@@ -86,29 +87,18 @@ enum NetId {
 
 // Thread on which we can run DnsConfigService, which requires a TYPE_IO
 // message loop to monitor /system/etc/hosts.
-class NetworkChangeNotifierAndroid::DnsConfigServiceThread
-    : public base::Thread {
+class NetworkChangeNotifierAndroid::BlockingThreadObjects {
  public:
-  DnsConfigServiceThread()
-      : base::Thread("DnsConfigService"),
-        address_tracker_(base::DoNothing(),
+  BlockingThreadObjects()
+      : address_tracker_(base::DoNothing(),
                          base::DoNothing(),
                          // We're only interested in tunnel interface changes.
                          base::Bind(NotifyNetworkChangeNotifierObservers),
                          std::unordered_set<std::string>()) {}
 
-  ~DnsConfigServiceThread() override {
-    Stop();
-  }
-
-  void Init() override {
+  void Init() {
     address_tracker_.Init();
-    dns_config_service_ = DnsConfigService::CreateSystemService();
-    dns_config_service_->WatchConfig(
-        base::Bind(&NetworkChangeNotifier::SetDnsConfig));
   }
-
-  void CleanUp() override { dns_config_service_.reset(); }
 
   static void NotifyNetworkChangeNotifierObservers() {
     NetworkChangeNotifier::NotifyObserversOfIPAddressChange();
@@ -116,14 +106,14 @@ class NetworkChangeNotifierAndroid::DnsConfigServiceThread
   }
 
  private:
-  std::unique_ptr<DnsConfigService> dns_config_service_;
   // Used to detect tunnel state changes.
   internal::AddressTrackerLinux address_tracker_;
 
-  DISALLOW_COPY_AND_ASSIGN(DnsConfigServiceThread);
+  DISALLOW_COPY_AND_ASSIGN(BlockingThreadObjects);
 };
 
 NetworkChangeNotifierAndroid::~NetworkChangeNotifierAndroid() {
+  ClearGlobalPointer();
   delegate_->RemoveObserver(this);
 }
 
@@ -175,7 +165,7 @@ NetworkChangeNotifierAndroid::GetCurrentDefaultNetwork() const {
 }
 
 void NetworkChangeNotifierAndroid::OnConnectionTypeChanged() {
-  DnsConfigServiceThread::NotifyNetworkChangeNotifierObservers();
+  BlockingThreadObjects::NotifyNetworkChangeNotifierObservers();
 }
 
 void NetworkChangeNotifierAndroid::OnMaxBandwidthChanged(
@@ -211,13 +201,25 @@ NetworkChangeNotifierAndroid::NetworkChangeNotifierAndroid(
     NetworkChangeNotifierDelegateAndroid* delegate)
     : NetworkChangeNotifier(NetworkChangeCalculatorParamsAndroid()),
       delegate_(delegate),
-      dns_config_service_thread_(new DnsConfigServiceThread()),
+      blocking_thread_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock()})),
+      blocking_thread_objects_(
+          new BlockingThreadObjects(),
+          // Ensure |blocking_thread_objects_| lives on
+          // |blocking_thread_runner_| to prevent races where
+          // NetworkChangeNotifierAndroid outlives
+          // TaskEnvironment. https://crbug.com/938126
+          base::OnTaskRunnerDeleter(blocking_thread_runner_)),
       force_network_handles_supported_for_testing_(false) {
   CHECK_EQ(NetId::INVALID, NetworkChangeNotifier::kInvalidNetworkHandle)
       << "kInvalidNetworkHandle doesn't match NetId::INVALID";
   delegate_->AddObserver(this);
-  dns_config_service_thread_->StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+  blocking_thread_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BlockingThreadObjects::Init,
+                     // The Unretained pointer is safe here because it's
+                     // posted before the deleter can post.
+                     base::Unretained(blocking_thread_objects_.get())));
 }
 
 // static
@@ -232,21 +234,6 @@ NetworkChangeNotifierAndroid::NetworkChangeCalculatorParamsAndroid() {
   params.connection_type_offline_delay_ = base::TimeDelta::FromSeconds(0);
   params.connection_type_online_delay_ = base::TimeDelta::FromSeconds(0);
   return params;
-}
-
-void NetworkChangeNotifierAndroid::OnFinalizingMetricsLogRecord() {
-  // Metrics logged here will be included in every metrics log record.  It's not
-  // yet clear if these metrics are generally useful enough to warrant being
-  // added to the SystemProfile proto, so they are logged here as histograms for
-  // now.
-  const NetworkChangeNotifier::ConnectionType type =
-      NetworkChangeNotifier::GetConnectionType();
-  NetworkChangeNotifier::LogOperatorCodeHistogram(type);
-  if (NetworkChangeNotifier::IsConnectionCellular(type)) {
-    UMA_HISTOGRAM_ENUMERATION("NCN.CellularConnectionSubtype",
-                              delegate_->GetCurrentConnectionSubtype(),
-                              SUBTYPE_LAST + 1);
-  }
 }
 
 }  // namespace net

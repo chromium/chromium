@@ -106,7 +106,7 @@ class CONTENT_EXPORT PepperVpnProviderMessageFilter
 
   base::queue<std::vector<char>> received_packets_;
 
-  base::WeakPtrFactory<PepperVpnProviderMessageFilter> weak_factory_;
+  base::WeakPtrFactory<PepperVpnProviderMessageFilter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperVpnProviderMessageFilter);
 };

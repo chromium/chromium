@@ -46,6 +46,8 @@ class RemoteCommandsInvalidator : public syncer::InvalidationHandler {
   invalidation::InvalidationService* invalidation_service() {
     return invalidation_service_;
   }
+
+  // Whether the invalidator currently has the ability to receive invalidations.
   bool invalidations_enabled() { return invalidations_enabled_; }
 
   // syncer::InvalidationHandler:
@@ -53,6 +55,7 @@ class RemoteCommandsInvalidator : public syncer::InvalidationHandler {
   void OnIncomingInvalidation(
       const syncer::ObjectIdInvalidationMap& invalidation_map) override;
   std::string GetOwnerName() const override;
+  bool IsPublicTopic(const syncer::Topic& topic) const override;
 
  protected:
   virtual void OnInitialize() = 0;

@@ -53,7 +53,7 @@ void AccountMigrationRunner::Step::RunInternal(
   Run();
 }
 
-AccountMigrationRunner::AccountMigrationRunner() : weak_factory_(this) {}
+AccountMigrationRunner::AccountMigrationRunner() {}
 
 AccountMigrationRunner::~AccountMigrationRunner() = default;
 

@@ -10,10 +10,14 @@ import org.chromium.base.metrics.RecordHistogram;
 
 /**
  * Disables histogram recording for the duration of the tests.
+ *
+ * Replaced with org.chromium.base.metrics.test.DisableHistogramsRule.
+ * TODO(twellington): Remove this class once downstream CL to remove dependency cycles through.
  */
+@Deprecated
 public class DisableHistogramsRule extends ExternalResource {
     @Override
-    protected void before() throws Throwable {
+    protected void before() {
         RecordHistogram.setDisabledForTests(true);
     }
 

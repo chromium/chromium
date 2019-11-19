@@ -16,16 +16,13 @@ namespace payments {
 // should be used.
 bool IsPaymentsProductionEnabled();
 
-// Returns the base URL to use for all Google Payments activity (RPCs and/or
-// navigation).
+// Returns the base URL to use for calls to Google Payments endpoints.
 GURL GetBaseSecureUrl();
 
 // Returns the URL to navigate to in order to allow the user to edit or delete
-// payment instruments (credit cards) or addresses, respectively. |user_index|
-// is the index into the list of signed-in GAIA profiles for which this request
-// is being made.
-GURL GetManageInstrumentsUrl(size_t user_index);
-GURL GetManageAddressesUrl(size_t user_index);
+// payment instruments (credit cards) or addresses, respectively.
+GURL GetManageInstrumentsUrl();
+GURL GetManageAddressesUrl();
 
 }  // namespace payments
 }  // namespace autofill

@@ -12,7 +12,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
+#include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/resources/returned_resource.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/common/content_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -60,9 +62,10 @@ class CONTENT_EXPORT SynchronousCompositor {
 
   class FrameFuture : public base::RefCountedThreadSafe<FrameFuture> {
    public:
-    FrameFuture();
+    explicit FrameFuture(viz::LocalSurfaceId local_surface_id);
     void SetFrame(std::unique_ptr<Frame> frame);
     std::unique_ptr<Frame> GetFrame();
+    const viz::LocalSurfaceId& local_surface_id() { return local_surface_id_; }
 
    private:
     friend class base::RefCountedThreadSafe<FrameFuture>;
@@ -70,6 +73,7 @@ class CONTENT_EXPORT SynchronousCompositor {
 
     base::WaitableEvent waitable_event_;
     std::unique_ptr<Frame> frame_;
+    viz::LocalSurfaceId local_surface_id_;
 #if DCHECK_IS_ON()
     bool waited_ = false;
 #endif
@@ -89,6 +93,10 @@ class CONTENT_EXPORT SynchronousCompositor {
   virtual void ReturnResources(
       uint32_t layer_tree_frame_sink_id,
       const std::vector<viz::ReturnedResource>& resources) = 0;
+
+  virtual void DidPresentCompositorFrames(
+      viz::FrameTimingDetailsMap timing_details,
+      uint32_t frame_token) = 0;
 
   // "On demand" SW draw, into the supplied canvas (observing the transform
   // and clip set there-in).

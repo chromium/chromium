@@ -7,34 +7,47 @@
 #include <functional>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/common/chrome_constants.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;
 
+namespace web_app {
+
 namespace {
 
-void DeleteShortcutInfoOnUIThread(
-    std::unique_ptr<web_app::ShortcutInfo> shortcut_info,
-    base::OnceClosure callback) {
+void DeleteShortcutInfoOnUIThread(std::unique_ptr<ShortcutInfo> shortcut_info,
+                                  base::OnceClosure callback) {
   shortcut_info.reset();
   if (callback)
     std::move(callback).Run();
 }
 
+void CreatePlatformShortcutsAndPostCallback(
+    const base::FilePath& shortcut_data_path,
+    const ShortcutLocations& creation_locations,
+    ShortcutCreationReason creation_reason,
+    CreateShortcutsCallback callback,
+    const ShortcutInfo& shortcut_info) {
+  bool shortcut_created = internals::CreatePlatformShortcuts(
+      shortcut_data_path, creation_locations, creation_reason, shortcut_info);
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(std::move(callback), shortcut_created));
+}
+
 }  // namespace
 
-namespace web_app {
-
-ShortcutInfo::ShortcutInfo() {}
+ShortcutInfo::ShortcutInfo() = default;
 
 ShortcutInfo::~ShortcutInfo() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 ShortcutLocations::ShortcutLocations()
@@ -85,6 +98,20 @@ void PostShortcutIOTask(base::OnceCallback<void(const ShortcutInfo&)> task,
                              base::OnceClosure());
 }
 
+void ScheduleCreatePlatformShortcuts(
+    const base::FilePath& shortcut_data_path,
+    const ShortcutLocations& creation_locations,
+    ShortcutCreationReason reason,
+    std::unique_ptr<ShortcutInfo> shortcut_info,
+    CreateShortcutsCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  PostShortcutIOTask(base::BindOnce(&CreatePlatformShortcutsAndPostCallback,
+                                    shortcut_data_path, creation_locations,
+                                    reason, std::move(callback)),
+                     std::move(shortcut_info));
+}
+
 void PostShortcutIOTaskAndReply(
     base::OnceCallback<void(const ShortcutInfo&)> task,
     std::unique_ptr<ShortcutInfo> shortcut_info,
@@ -93,7 +120,7 @@ void PostShortcutIOTaskAndReply(
 
   // Ownership of |shortcut_info| moves to the Reply, which is guaranteed to
   // outlive the const reference.
-  const web_app::ShortcutInfo& shortcut_info_ref = *shortcut_info;
+  const ShortcutInfo& shortcut_info_ref = *shortcut_info;
   GetShortcutIOTaskRunner()->PostTaskAndReply(
       FROM_HERE, base::BindOnce(std::move(task), std::cref(shortcut_info_ref)),
       base::BindOnce(&DeleteShortcutInfoOnUIThread, std::move(shortcut_info),
@@ -102,14 +129,14 @@ void PostShortcutIOTaskAndReply(
 
 scoped_refptr<base::TaskRunner> GetShortcutIOTaskRunner() {
   constexpr base::TaskTraits traits = {
-      base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
       base::TaskShutdownBehavior::BLOCK_SHUTDOWN};
 
 #if defined(OS_WIN)
-  return base::CreateCOMSTATaskRunnerWithTraits(
+  return base::CreateCOMSTATaskRunner(
       traits, base::SingleThreadTaskRunnerThreadMode::SHARED);
 #else
-  return base::CreateTaskRunnerWithTraits(traits);
+  return base::CreateTaskRunner(traits);
 #endif
 }
 
@@ -123,10 +150,9 @@ base::FilePath GetSanitizedFileName(const base::string16& name) {
   return base::FilePath(file_name);
 }
 
-base::FilePath GetShortcutDataDir(const web_app::ShortcutInfo& shortcut_info) {
-  return web_app::GetWebAppDataDirectory(shortcut_info.profile_path,
-                                         shortcut_info.extension_id,
-                                         shortcut_info.url);
+base::FilePath GetShortcutDataDir(const ShortcutInfo& shortcut_info) {
+  return GetWebAppDataDirectory(shortcut_info.profile_path,
+                                shortcut_info.extension_id, shortcut_info.url);
 }
 
 }  // namespace internals

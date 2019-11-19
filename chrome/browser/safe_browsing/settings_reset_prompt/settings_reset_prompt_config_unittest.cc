@@ -10,14 +10,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "components/variations/variations_params_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
 
-const char kTrialName[] = "trial";
 // A SHA256 hash for "mydomain.com".
 const char kDomainHash[] =
     "0a79eaf6adb7b1e60d3fa548aa63105f525a00448efbb59ee965b9351a90ac31";
@@ -30,16 +28,14 @@ bool IsPromptEnabled() {
 // start off with all features disabled.
 class SettingsResetPromptConfigTest : public ::testing::Test {
  protected:
-  typedef std::map<std::string, std::string> Parameters;
+  typedef base::FieldTrialParams Parameters;
 
   // Sets the settings reset prompt feature parameters, which has the
   // side-effect of also enabling the feature.
   void SetFeatureParams(const Parameters& params) {
-    static std::set<std::string> features = {kSettingsResetPrompt.name};
-
-    params_manager_.ClearAllVariationParams();
-    params_manager_.SetVariationParamsWithFeatureAssociations(kTrialName,
-                                                              params, features);
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kSettingsResetPrompt, params);
   }
 
   Parameters GetDefaultFeatureParams() {
@@ -50,7 +46,6 @@ class SettingsResetPromptConfigTest : public ::testing::Test {
         {"time_between_prompts_seconds", "3600"}};
   }
 
-  variations::testing::VariationParamsManager params_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

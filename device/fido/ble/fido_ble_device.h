@@ -5,6 +5,7 @@
 #ifndef DEVICE_FIDO_BLE_FIDO_BLE_DEVICE_H_
 #define DEVICE_FIDO_BLE_FIDO_BLE_DEVICE_H_
 
+#include <list>
 #include <memory>
 #include <string>
 #include <utility>
@@ -31,44 +32,52 @@ class FidoBleFrame;
 class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleDevice : public FidoDevice {
  public:
   using FrameCallback = FidoBleTransaction::FrameCallback;
+
   FidoBleDevice(BluetoothAdapter* adapter, std::string address);
   explicit FidoBleDevice(std::unique_ptr<FidoBleConnection> connection);
   ~FidoBleDevice() override;
 
+  // Returns FidoDevice::GetId() for a given FidoBleConnection address.
+  static std::string GetIdForAddress(const std::string& ble_address);
+
   void Connect();
   void SendPing(std::vector<uint8_t> data, DeviceCallback callback);
-  static std::string GetId(base::StringPiece address);
+  FidoBleConnection::ReadCallback GetReadCallbackForTesting();
 
   // FidoDevice:
-  void TryWink(WinkCallback callback) override;
-  void Cancel() override;
+  void Cancel(CancelToken token) override;
   std::string GetId() const override;
   base::string16 GetDisplayName() const override;
   FidoTransportProtocol DeviceTransport() const override;
-
-  // Returns whether or not the underlying BLE device is currently in pairing
-  // mode by investigating the advertisement payload.
   bool IsInPairingMode() const override;
-
   bool IsPaired() const override;
-
-  FidoBleConnection::ReadCallback GetReadCallbackForTesting();
+  bool RequiresBlePairingPin() const override;
 
  protected:
   // FidoDevice:
-  void DeviceTransact(std::vector<uint8_t> command,
-                      DeviceCallback callback) override;
+  CancelToken DeviceTransact(std::vector<uint8_t> command,
+                             DeviceCallback callback) override;
   base::WeakPtr<FidoDevice> GetWeakPtr() override;
 
   virtual void OnResponseFrame(FrameCallback callback,
                                base::Optional<FidoBleFrame> frame);
   void Transition();
-  void AddToPendingFrames(FidoBleDeviceCommand cmd,
-                          std::vector<uint8_t> request,
-                          DeviceCallback callback);
+  CancelToken AddToPendingFrames(FidoBleDeviceCommand cmd,
+                                 std::vector<uint8_t> request,
+                                 DeviceCallback callback);
   void ResetTransaction();
 
  private:
+  struct PendingFrame {
+    PendingFrame(FidoBleFrame frame, FrameCallback callback, CancelToken token);
+    PendingFrame(PendingFrame&&);
+    ~PendingFrame();
+
+    FidoBleFrame frame;
+    FrameCallback callback;
+    CancelToken token;
+  };
+
   void OnConnected(bool success);
   void OnStatusMessage(std::vector<uint8_t> data);
 
@@ -91,10 +100,15 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleDevice : public FidoDevice {
   std::unique_ptr<FidoBleConnection> connection_;
   uint16_t control_point_length_ = 0;
 
-  base::queue<std::pair<FidoBleFrame, FrameCallback>> pending_frames_;
+  // pending_frames_ contains frames that have not yet been sent, i.e. the
+  // current frame is not included at the head of the list.
+  std::list<PendingFrame> pending_frames_;
+  // current_token_ contains the cancelation token of the currently running
+  // request, or else is empty if no request is currently pending.
+  base::Optional<CancelToken> current_token_;
   base::Optional<FidoBleTransaction> transaction_;
 
-  base::WeakPtrFactory<FidoBleDevice> weak_factory_;
+  base::WeakPtrFactory<FidoBleDevice> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FidoBleDevice);
 };

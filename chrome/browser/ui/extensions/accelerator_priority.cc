@@ -16,7 +16,7 @@ ui::AcceleratorManager::HandlerPriority GetAcceleratorPriority(
   // Extensions overriding the bookmark shortcut need normal priority to
   // preserve the built-in processing order of the key and not override
   // WebContents key handling.
-  if (accelerator == chrome::GetPrimaryChromeAcceleratorForBookmarkPage() &&
+  if (accelerator == chrome::GetPrimaryChromeAcceleratorForBookmarkTab() &&
       extensions::UIOverrides::RemovesBookmarkShortcut(extension))
     return ui::AcceleratorManager::kNormalPriority;
 

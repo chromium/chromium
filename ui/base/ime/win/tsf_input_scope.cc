@@ -9,7 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_loop_current.h"
 #include "base/stl_util.h"
 #include "base/win/windows_version.h"
 
@@ -24,7 +24,7 @@ void AppendNonTrivialInputScope(std::vector<InputScope>* input_scopes,
   if (input_scope == IS_DEFAULT)
     return;
 
-  if (base::ContainsValue(*input_scopes, input_scope))
+  if (base::Contains(*input_scopes, input_scope))
     return;
 
   input_scopes->push_back(input_scope);
@@ -188,8 +188,18 @@ std::vector<InputScope> GetInputScopes(TextInputType text_input_type,
 }
 
 ITfInputScope* CreateInputScope(TextInputType text_input_type,
-                                TextInputMode text_input_mode) {
-  return new TSFInputScope(GetInputScopes(text_input_type, text_input_mode));
+                                TextInputMode text_input_mode,
+                                bool should_do_learning) {
+  std::vector<InputScope> input_scopes;
+  // Should set input scope to IS_PRIVATE if we are in "incognito" or "guest"
+  // mode. Note that the IS_PRIVATE input scope is only support from WIN10.
+  if (!should_do_learning &&
+      (base::win::GetVersion() >= base::win::Version::WIN10)) {
+    input_scopes.push_back(IS_PRIVATE);
+  } else {
+    input_scopes = GetInputScopes(text_input_type, text_input_mode);
+  }
+  return new TSFInputScope(input_scopes);
 }
 
 void SetInputScopeForTsfUnawareWindow(HWND window_handle,

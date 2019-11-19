@@ -37,6 +37,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_unittest_helpers.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -48,14 +49,21 @@
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
+
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
+#endif
 
 namespace webrtc_event_logging {
 
@@ -286,6 +294,15 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
     SetLocalLogsObserver(&local_observer_);
     SetRemoteLogsObserver(&remote_observer_);
     LoadMainTestProfile();
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+    policy::BrowserPolicyConnectorBase::SetPolicyProviderForTesting(&provider_);
+#endif
+  }
+
+  void TearDown() override {
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+    TestingBrowserProcess::GetGlobal()->ShutdownBrowserPolicyConnector();
+#endif
   }
 
   void SetUpNetworkConnection(bool respond_synchronously,
@@ -586,11 +603,15 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   }
   virtual std::unique_ptr<TestingProfile> CreateBrowserContext(
       std::string profile_name) {
-    return CreateBrowserContext(profile_name, true);
+    return CreateBrowserContext(profile_name, true /* is_managed_profile */,
+                                false /* has_device_level_policies */,
+                                true /* policy_allows_remote_logging */);
   }
   virtual std::unique_ptr<TestingProfile> CreateBrowserContext(
       std::string profile_name,
-      bool policy_allows_remote_logging) {
+      bool is_managed_profile,
+      bool has_device_level_policies,
+      base::Optional<bool> policy_allows_remote_logging) {
     // If profile name not specified, select a unique name.
     if (profile_name.empty()) {
       static size_t index = 0;
@@ -618,15 +639,36 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
     // Set the preference associated with the policy for WebRTC remote-bound
     // event logging.
     RegisterUserProfilePrefs(registry.get());
-    regular_prefs->SetBoolean(prefs::kWebRtcEventLogCollectionAllowed,
-                              policy_allows_remote_logging);
+    if (policy_allows_remote_logging.has_value()) {
+      regular_prefs->SetBoolean(prefs::kWebRtcEventLogCollectionAllowed,
+                                policy_allows_remote_logging.value());
+    }
+
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+    policy::PolicyMap policy_map;
+    if (has_device_level_policies) {
+      policy_map.Set("test-policy", policy::POLICY_LEVEL_MANDATORY,
+                     policy::POLICY_SCOPE_MACHINE,
+                     policy::POLICY_SOURCE_PLATFORM,
+                     std::make_unique<base::Value>("test"), nullptr);
+    }
+    provider_.UpdateChromePolicy(policy_map);
+#else
+    if (has_device_level_policies) {
+      // This should never happen.
+      // Device level policies cannot be set on Chrome OS and Android.
+      EXPECT_TRUE(false);
+    }
+#endif
 
     // Build the profile.
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName(profile_name);
     profile_builder.SetPath(profile_path);
     profile_builder.SetPrefService(base::WrapUnique(regular_prefs));
-    std::unique_ptr<TestingProfile> browser_context = profile_builder.Build();
+    profile_builder.OverridePolicyConnectorIsManagedForTesting(
+        is_managed_profile);
+    std::unique_ptr<TestingProfile> profile = profile_builder.Build();
 
     // Blocks on the unit under test's task runner, so that we won't proceed
     // with the test (e.g. check that files were created) before finished
@@ -634,11 +676,10 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
     //  BrowserContext::EnableForBrowserContext).
     WaitForPendingTasks();
 
-    return browser_context;
+    return profile;
   }
 
-  base::FilePath RemoteBoundLogsDir(
-      const BrowserContext* browser_context) const {
+  base::FilePath RemoteBoundLogsDir(BrowserContext* browser_context) const {
     return RemoteBoundLogsDir(browser_context->GetPath());
   }
 
@@ -737,13 +778,17 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   }
 
   // Testing utilities.
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::ScopedCommandLine scoped_command_line_;
   base::SimpleTestClock frozen_clock_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
+
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+  policy::MockConfigurationPolicyProvider provider_;
+#endif
 
   // The main loop, which allows waiting for the operations invoked on the
   // unit-under-test to be completed. Do not use this object directly from the
@@ -941,14 +986,19 @@ class WebRtcEventLogManagerTestWithRemoteLoggingDisabled
   }
   std::unique_ptr<TestingProfile> CreateBrowserContext(
       std::string profile_name) override {
-    return CreateBrowserContext(profile_name, policy_enabled_);
+    return CreateBrowserContext(profile_name, policy_enabled_,
+                                false /* has_device_level_policies */,
+                                policy_enabled_);
   }
   std::unique_ptr<TestingProfile> CreateBrowserContext(
       std::string profile_name,
-      bool policy_allows_remote_logging) override {
-    DCHECK_EQ(policy_enabled_, policy_allows_remote_logging);
+      bool is_managed_profile,
+      bool has_device_level_policies,
+      base::Optional<bool> policy_allows_remote_logging) override {
+    DCHECK_EQ(policy_enabled_, policy_allows_remote_logging.value());
     return WebRtcEventLogManagerTestBase::CreateBrowserContext(
-        profile_name, policy_allows_remote_logging);
+        profile_name, is_managed_profile, has_device_level_policies,
+        policy_allows_remote_logging);
   }
 
  private:
@@ -2539,7 +2589,8 @@ TEST_F(WebRtcEventLogManagerTest,
   // impossible to write the log to a file.
   std::string error_message;
   EXPECT_FALSE(StartRemoteLogging(key, nullptr, &error_message));
-  EXPECT_EQ(error_message, kStartRemoteLoggingFailureGeneric);
+  EXPECT_EQ(error_message,
+            kStartRemoteLoggingFailureLoggingDisabledBrowserContext);
 
   // Graceful handling of OnWebRtcEventLogWrite: False returned because the
   // log could not be written at all, let alone in its entirety.
@@ -2569,7 +2620,7 @@ TEST_F(WebRtcEventLogManagerTest, GracefullyHandleFailureToStartRemoteLogFile) {
   ASSERT_TRUE(PeerConnectionSessionIdSet(key));
   std::string error_message;
   EXPECT_FALSE(StartRemoteLogging(key, nullptr, &error_message));
-  EXPECT_EQ(error_message, kStartRemoteLoggingFailureGeneric);
+  EXPECT_EQ(error_message, kStartRemoteLoggingFailureFileCreationError);
   EXPECT_EQ(OnWebRtcEventLogWrite(key, "abc"), std::make_pair(false, false));
   EXPECT_TRUE(base::IsDirectoryEmpty(remote_logs_path));
 }
@@ -2668,7 +2719,8 @@ TEST_F(WebRtcEventLogManagerTest,
   ASSERT_TRUE(PeerConnectionSessionIdSet(forbidden));
   std::string error_message;
   EXPECT_FALSE(StartRemoteLogging(forbidden, nullptr, &error_message));
-  EXPECT_EQ(error_message, kStartRemoteLoggingFailureGeneric);
+  EXPECT_EQ(error_message,
+            kStartRemoteLoggingFailureNoAdditionalActiveLogsAllowed);
 }
 
 TEST_F(WebRtcEventLogManagerTest,
@@ -2702,7 +2754,8 @@ TEST_F(WebRtcEventLogManagerTest,
   ASSERT_TRUE(PeerConnectionSessionIdSet(key0));
   std::string error_message;
   EXPECT_FALSE(StartRemoteLogging(key0, nullptr, &error_message));
-  EXPECT_EQ(error_message, kStartRemoteLoggingFailureGeneric);
+  EXPECT_EQ(error_message,
+            kStartRemoteLoggingFailureNoAdditionalActiveLogsAllowed);
 
   // Other BrowserContexts aren't limit by the previous one's limit.
   const auto key1 = GetPeerConnectionKey(rphs[1].get(), 0);
@@ -3022,7 +3075,7 @@ TEST_F(WebRtcEventLogManagerTest,
   ASSERT_TRUE(PeerConnectionSessionIdSet(without_permissions_key));
   std::string error;
   ASSERT_FALSE(StartRemoteLogging(without_permissions_key, nullptr, &error));
-  EXPECT_EQ(error, kStartRemoteLoggingFailureGeneric);
+  EXPECT_EQ(error, kStartRemoteLoggingFailureFileCreationError);
 
   // Show that this was not counted towards the limit of active files.
   for (int i = 0; i < kMaxActiveRemoteLogFiles; ++i) {
@@ -3374,7 +3427,7 @@ TEST_F(WebRtcEventLogManagerTest,
   rph_.reset();
   std::string error_message;
   EXPECT_FALSE(StartRemoteLogging(key, nullptr, &error_message));
-  EXPECT_EQ(error_message, kStartRemoteLoggingFailureGeneric);
+  EXPECT_EQ(error_message, kStartRemoteLoggingFailureDeadRenderProcessHost);
 }
 
 TEST_F(WebRtcEventLogManagerTest,
@@ -3392,13 +3445,19 @@ TEST_F(WebRtcEventLogManagerTest,
 }
 
 TEST_F(WebRtcEventLogManagerTest, DifferentProfilesCanHaveDifferentPolicies) {
-  auto policy_disabled_profile = CreateBrowserContext("disabled", false);
+  auto policy_disabled_profile =
+      CreateBrowserContext("disabled", true /* is_managed_profile */,
+                           false /* has_device_level_policies */,
+                           false /* policy_allows_remote_logging */);
   auto policy_disabled_rph =
       std::make_unique<MockRenderProcessHost>(policy_disabled_profile.get());
   const auto disabled_key =
       GetPeerConnectionKey(policy_disabled_rph.get(), kLid);
 
-  auto policy_enabled_profile = CreateBrowserContext("enabled", true);
+  auto policy_enabled_profile =
+      CreateBrowserContext("enabled", true /* is_managed_profile */,
+                           false /* has_device_level_policies */,
+                           true /* policy_allows_remote_logging */);
   auto policy_enabled_rph =
       std::make_unique<MockRenderProcessHost>(policy_enabled_profile.get());
   const auto enabled_key = GetPeerConnectionKey(policy_enabled_rph.get(), kLid);
@@ -3852,7 +3911,9 @@ TEST_F(WebRtcEventLogManagerTestPolicy, StartsEnabledAllowsRemoteLogging) {
   SetUp(true);  // Feature generally enabled (kill-switch not engaged).
 
   const bool allow_remote_logging = true;
-  auto browser_context = CreateBrowserContext("name", allow_remote_logging);
+  auto browser_context = CreateBrowserContext(
+      "name", true /* is_managed_profile */,
+      false /* has_device_level_policies */, allow_remote_logging);
 
   auto rph = std::make_unique<MockRenderProcessHost>(browser_context.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
@@ -3867,7 +3928,9 @@ TEST_F(WebRtcEventLogManagerTestPolicy, StartsDisabledRejectsRemoteLogging) {
   SetUp(true);  // Feature generally enabled (kill-switch not engaged).
 
   const bool allow_remote_logging = false;
-  auto browser_context = CreateBrowserContext("name", allow_remote_logging);
+  auto browser_context = CreateBrowserContext(
+      "name", true /* is_managed_profile */,
+      false /* has_device_level_policies */, allow_remote_logging);
 
   auto rph = std::make_unique<MockRenderProcessHost>(browser_context.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
@@ -3877,6 +3940,58 @@ TEST_F(WebRtcEventLogManagerTestPolicy, StartsDisabledRejectsRemoteLogging) {
   EXPECT_EQ(StartRemoteLogging(key), allow_remote_logging);
 }
 
+TEST_F(WebRtcEventLogManagerTestPolicy, NotManagedRejectsRemoteLogging) {
+  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
+
+  const bool allow_remote_logging = false;
+  auto browser_context = CreateBrowserContext(
+      "name", false /* is_managed_profile */,
+      false /* has_device_level_policies */, base::nullopt);
+
+  auto rph = std::make_unique<MockRenderProcessHost>(browser_context.get());
+  const auto key = GetPeerConnectionKey(rph.get(), kLid);
+
+  ASSERT_TRUE(PeerConnectionAdded(key));
+  ASSERT_TRUE(PeerConnectionSessionIdSet(key));
+  EXPECT_EQ(StartRemoteLogging(key), allow_remote_logging);
+}
+
+TEST_F(WebRtcEventLogManagerTestPolicy,
+       ManagedProfileAllowsRemoteLoggingByDefault) {
+  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
+
+  const bool allow_remote_logging = true;
+  auto browser_context = CreateBrowserContext(
+      "name", true /* is_managed_profile */,
+      false /* has_device_level_policies */, base::nullopt);
+
+  auto rph = std::make_unique<MockRenderProcessHost>(browser_context.get());
+  const auto key = GetPeerConnectionKey(rph.get(), kLid);
+
+  ASSERT_TRUE(PeerConnectionAdded(key));
+  ASSERT_TRUE(PeerConnectionSessionIdSet(key));
+  EXPECT_EQ(StartRemoteLogging(key), allow_remote_logging);
+}
+
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+TEST_F(WebRtcEventLogManagerTestPolicy,
+       ManagedByPlatformPoliciesAllowsRemoteLoggingByDefault) {
+  SetUp(true);  // Feature generally enabled (kill-switch not engaged).
+
+  const bool allow_remote_logging = true;
+  auto browser_context =
+      CreateBrowserContext("name", false /* is_managed_profile */,
+                           true /* has_device_level_policies */, base::nullopt);
+
+  auto rph = std::make_unique<MockRenderProcessHost>(browser_context.get());
+  const auto key = GetPeerConnectionKey(rph.get(), kLid);
+
+  ASSERT_TRUE(PeerConnectionAdded(key));
+  ASSERT_TRUE(PeerConnectionSessionIdSet(key));
+  EXPECT_EQ(StartRemoteLogging(key), allow_remote_logging);
+}
+#endif
+
 // #1 and #2 differ in the order of AddPeerConnection and the changing of
 // the pref value.
 TEST_F(WebRtcEventLogManagerTestPolicy,
@@ -3884,7 +3999,9 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
   SetUp(true);  // Feature generally enabled (kill-switch not engaged).
 
   bool allow_remote_logging = true;
-  auto profile = CreateBrowserContext("name", allow_remote_logging);
+  auto profile = CreateBrowserContext("name", true /* is_managed_profile */,
+                                      false /* has_device_level_policies */,
+                                      allow_remote_logging);
 
   auto rph = std::make_unique<MockRenderProcessHost>(profile.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
@@ -3906,7 +4023,9 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
   SetUp(true);  // Feature generally enabled (kill-switch not engaged).
 
   bool allow_remote_logging = true;
-  auto profile = CreateBrowserContext("name", allow_remote_logging);
+  auto profile = CreateBrowserContext("name", true /* is_managed_profile */,
+                                      false /* has_device_level_policies */,
+                                      allow_remote_logging);
 
   auto rph = std::make_unique<MockRenderProcessHost>(profile.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
@@ -3928,7 +4047,9 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
   SetUp(true);  // Feature generally enabled (kill-switch not engaged).
 
   bool allow_remote_logging = false;
-  auto profile = CreateBrowserContext("name", allow_remote_logging);
+  auto profile = CreateBrowserContext("name", true /* is_managed_profile */,
+                                      false /* has_device_level_policies */,
+                                      allow_remote_logging);
 
   auto rph = std::make_unique<MockRenderProcessHost>(profile.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
@@ -3950,7 +4071,9 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
   SetUp(true);  // Feature generally enabled (kill-switch not engaged).
 
   bool allow_remote_logging = false;
-  auto profile = CreateBrowserContext("name", allow_remote_logging);
+  auto profile = CreateBrowserContext("name", true /* is_managed_profile */,
+                                      false /* has_device_level_policies */,
+                                      allow_remote_logging);
 
   auto rph = std::make_unique<MockRenderProcessHost>(profile.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
@@ -3970,7 +4093,9 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
   SetUp(true);  // Feature generally enabled (kill-switch not engaged).
 
   bool allow_remote_logging = false;
-  auto profile = CreateBrowserContext("name", allow_remote_logging);
+  auto profile = CreateBrowserContext("name", true /* is_managed_profile */,
+                                      false /* has_device_level_policies */,
+                                      allow_remote_logging);
 
   auto rph = std::make_unique<MockRenderProcessHost>(profile.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
@@ -4014,7 +4139,9 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
           &empty_list, true, &run_loop));
 
   bool allow_remote_logging = true;
-  auto profile = CreateBrowserContext("name", allow_remote_logging);
+  auto profile = CreateBrowserContext("name", true /* is_managed_profile */,
+                                      false /* has_device_level_policies */,
+                                      allow_remote_logging);
 
   auto rph = std::make_unique<MockRenderProcessHost>(profile.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
@@ -4048,7 +4175,9 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
           &empty_list, true, &run_loop));
 
   bool allow_remote_logging = true;
-  auto profile = CreateBrowserContext("name", allow_remote_logging);
+  auto profile = CreateBrowserContext("name", true /* is_managed_profile */,
+                                      false /* has_device_level_policies */,
+                                      allow_remote_logging);
 
   auto rph = std::make_unique<MockRenderProcessHost>(profile.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
@@ -4090,7 +4219,9 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
       std::make_unique<NullWebRtcEventLogUploader::Factory>(true, 1));
 
   bool allow_remote_logging = true;
-  auto profile = CreateBrowserContext("name", allow_remote_logging);
+  auto profile = CreateBrowserContext("name", true /* is_managed_profile */,
+                                      false /* has_device_level_policies */,
+                                      allow_remote_logging);
 
   auto rph = std::make_unique<MockRenderProcessHost>(profile.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
@@ -4137,7 +4268,9 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
       std::make_unique<NullWebRtcEventLogUploader::Factory>(true, 0));
 
   bool allow_remote_logging = true;
-  auto browser_context = CreateBrowserContext("name", allow_remote_logging);
+  auto browser_context = CreateBrowserContext(
+      "name", true /* is_managed_profile */,
+      false /* has_device_level_policies */, allow_remote_logging);
 
   const base::FilePath browser_context_dir =
       RemoteBoundLogsDir(browser_context.get());
@@ -4161,7 +4294,9 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
   browser_context.reset();
   ASSERT_TRUE(base::DirectoryExists(browser_context_dir));  // Test sanity
   allow_remote_logging = false;
-  browser_context = CreateBrowserContext("name", allow_remote_logging);
+  browser_context = CreateBrowserContext("name", true /* is_managed_profile */,
+                                         false /* has_device_level_policies */,
+                                         allow_remote_logging);
 
   // Test focus - pending log files removed, as well as any potential metadata
   // associated with remote-bound logging for |browser_context|.
@@ -4196,7 +4331,9 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
   file.Close();
 
   const bool allow_remote_logging = true;
-  auto browser_context = CreateBrowserContext(name, allow_remote_logging);
+  auto browser_context = CreateBrowserContext(
+      "name", true /* is_managed_profile */,
+      false /* has_device_level_policies */, allow_remote_logging);
   ASSERT_EQ(browser_context->GetPath(), browser_context_dir);  // Test sanity
 
   WaitForPendingTasks();
@@ -4357,7 +4494,8 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Bool(),
         // The upload-supporting network type to be used.
         ::testing::Values(network::mojom::ConnectionType::CONNECTION_ETHERNET,
-                          network::mojom::ConnectionType::CONNECTION_WIFI),
+                          network::mojom::ConnectionType::CONNECTION_WIFI,
+                          network::mojom::ConnectionType::CONNECTION_UNKNOWN),
         // The upload-unsupporting network type to be used.
         ::testing::Values(network::mojom::ConnectionType::CONNECTION_NONE,
                           network::mojom::ConnectionType::CONNECTION_4G)));

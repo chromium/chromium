@@ -14,12 +14,6 @@ import("//build/toolchain/toolchain.gni")
 assert(is_win)
 
 declare_args() {
-  # Set this to true to enable static analysis through Visual Studio's
-  # /analyze. This dramatically slows compiles and reports thousands of
-  # warnings, so normally this is done on a build machine and only the new
-  # warnings are examined.
-  use_vs_code_analysis = false
-
   # Turn this on to have the linker output extra timing information.
   win_linker_timing = false
 
@@ -66,7 +60,12 @@ config("compiler") {
     "/Gy",  # Enable function-level linking.
     "/FS",  # Preserve previous PDB behavior.
     "/bigobj",  # Some of our files are bigger than the regular limits.
+    "/utf-8",  # Assume UTF-8 by default to avoid code page dependencies.
   ]
+
+  if (is_clang) {
+    cflags += [ "/Zc:twoPhase" ]
+  }
 
   # Force C/C++ mode for the given GN detected file type. This is necessary
   # for precompiled headers where the same source file is compiled in both
@@ -75,16 +74,26 @@ config("compiler") {
   cflags_cc = [ "/TP" ]
 
   cflags += [
-    # Tell the compiler to crash on failures. This is undocumented
-    # and unsupported but very handy.
-    "/d2FastFail",
-
     # Work around crbug.com/526851, bug in VS 2015 RTM compiler.
     "/Zc:sizedDealloc-",
   ]
 
   if (is_clang) {
-    cflags += [ "-fmsc-version=1911" ]
+    # Don't look for includes in %INCLUDE%.
+    cflags += [ "/X" ]
+
+    # Tell clang which version of MSVC to emulate.
+    cflags += [ "-fmsc-version=1916" ]
+
+    # Emit table of address-taken functions for Control-Flow Guard (CFG). We
+    # don't emit the CFG checks themselves, but this enables the functions to
+    # be called by code that is built with those checks enabled, such as system
+    # libraries.
+    if (!is_debug && !is_component_build) {
+      # CFG isn't needed on debug or component builds, adds a bit of bloat to
+      # .obj files, and caused link errors once - https://crbug.com/1019970
+      cflags += [ "/guard:cf,nochecks" ]
+    }
 
     if (is_component_build) {
       cflags += [
@@ -96,8 +105,12 @@ config("compiler") {
 
     if (current_cpu == "x86") {
       cflags += [ "-m32" ]
-    } else {
+    } else if (current_cpu == "x64") {
       cflags += [ "-m64" ]
+    } else if (current_cpu == "arm64") {
+      cflags += [ "--target=arm64-windows" ]
+    } else {
+      assert(false, "unknown current_cpu " + current_cpu)
     }
 
     if (exec_script("//build/win/use_ansi_codes.py", [], "trim string") ==
@@ -110,12 +123,7 @@ config("compiler") {
     }
 
     if (use_clang_diagnostics_format) {
-      cflags += [
-        "-Xclang",
-        "-fdiagnostics-format",
-        "-Xclang",
-        "clang",
-      ]
+      cflags += [ "/clang:-fdiagnostics-format=clang" ]
     }
 
     # Clang runtime libraries, such as the sanitizer runtimes, live here.
@@ -141,6 +149,9 @@ config("compiler") {
     # (link.exe also writes the current time, but it doesn't have a flag to
     # override that behavior.)
     ldflags += [ "/TIMESTAMP:" + build_timestamp ]
+
+    # Don't look for libpaths in %LIB%, similar to /X in cflags above.
+    ldflags += [ "/lldignoreenv" ]
   }
 
   if (!is_debug && !is_component_build) {
@@ -184,46 +195,6 @@ config("compiler") {
   ]
 }
 
-config("vs_code_analysis") {
-  if (use_vs_code_analysis && !is_clang) {
-    # When use_vs_code_analysis is specified add the /analyze switch to enable
-    # static analysis. Specifying /analyze:WX- says that /analyze warnings
-    # should not be treated as errors.
-    cflags = [ "/analyze:WX-" ]
-
-    # Also, disable various noisy warnings that have low value.
-    cflags += [
-      "/wd6011",  # Dereferencing NULL pointer
-
-      # C6285 is ~16% of raw warnings and has low value
-      "/wd6285",  # non-zero constant || non-zero constant
-      "/wd6308",  # realloc might return null pointer
-
-      # Possible infinite loop: use of the constant
-      # EXCEPTION_CONTINUE_EXECUTION in the exception-filter
-      "/wd6312",
-
-      "/wd6322",  # Empty _except block
-      "/wd6330",  # 'char' used instead of 'unsigned char' for istype() call
-
-      # C6334 is ~80% of raw warnings and has low value
-      "/wd6334",  # sizeof applied to an expression with an operator
-      "/wd6326",  # Potential comparison of constant with constant
-      "/wd6340",  # Sign mismatch in function parameter
-      "/wd28159",  # Consider using 'GetTickCount64'
-      "/wd28196",  # The precondition is not satisfied
-      "/wd28204",  # Inconsistent SAL annotations
-      "/wd28251",  # Inconsistent SAL annotations
-      "/wd28252",  # Inconsistent SAL annotations
-      "/wd28253",  # Inconsistent SAL annotations
-      "/wd28278",  # Function appears with no prototype in scope
-      "/wd28285",  # syntax error in SAL annotation (in algorithm)
-      "/wd28301",  # Inconsistent SAL annotations
-      "/wd28182",  # Dereferencing NULL pointer
-    ]
-  }
-}
-
 # This is included by reference in the //build/config/compiler:runtime_library
 # config that is applied to all targets. It is here to separate out the logic
 # that is Windows-only. Please see that target for advice on what should go in
@@ -250,11 +221,9 @@ config("runtime_library") {
     "_SECURE_ATL",
   ]
 
-  if (!use_vs_code_analysis) {
-    # This is required for ATL to use XP-safe versions of its functions.
-    # However it is prohibited when using /analyze
-    defines += [ "_USING_V110_SDK71_" ]
-  }
+  # This is required for ATL to use XP-safe versions of its functions.
+  # TODO(thakis): We no longer support XP; try removing this.
+  defines += [ "_USING_V110_SDK71_" ]
 
   if (current_os == "winuwp") {
     # When targeting Windows Runtime, certain compiler/linker flags are
@@ -301,11 +270,20 @@ config("runtime_library") {
   }
 }
 
-# Sets the default Windows build version. This is separated because some
-# targets need to manually override it for their compiles.
+# Chromium supports running on Windows 7, but if these constants are set to
+# Windows 7, then newer APIs aren't made available by the Windows SDK.
+# So we set this to Windows 10 and then are careful to check at runtime
+# to only call newer APIs when they're available.
+# Some third-party libraries assume that these defines set what version of
+# Windows is available at runtime. Targets using these libraries need to
+# manually override this config for their compiles.
 config("winver") {
   defines = [
-    "NTDDI_VERSION=0x0A000003",  # NTDDI_WIN10_RS2
+    "NTDDI_VERSION=NTDDI_WIN10_RS2",
+
+    # We can't say `=_WIN32_WINNT_WIN10` here because some files do
+    # `#if WINVER < 0x0600` without including windows.h before,
+    # and then _WIN32_WINNT_WIN10 isn't yet known to be 0x0A00.
     "_WIN32_WINNT=0x0A00",
     "WINVER=0x0A00",
   ]
@@ -361,7 +339,6 @@ config("sdk_link") {
 # their own.
 config("common_linker_setup") {
   ldflags = [
-    "/fastfail",
     "/FIXED:NO",
     "/ignore:4199",
     "/ignore:4221",
@@ -388,11 +365,89 @@ config("cfi_linker") {
   # lots of child processes, so this means things are really slow. Disable CFG
   # for now. https://crbug.com/846966
   if (!is_debug && !is_component_build && !is_asan) {
-    # Turn on CFG in msvc linker, regardless of compiler used. Turn off CFG for
-    # longjmp (new in VS 2017) because it relies on compiler support which we do
-    # not have enabled.
+    # Turn on CFG, except for longjmp because it relies on compiler support
+    # which clang doesn't have yet.
     ldflags = [ "/guard:cf,nolongjmp" ]
   }
+}
+
+# This is a superset of all the delayloads needed for chrome.exe, chrome.dll,
+# chrome_child.dll, and chrome_elf.dll. The linker will automatically ignore
+# anything which is not linked to the binary at all.
+# Most of the dlls are simply not required at startup (or at all, depending
+# on how the browser is used). The following dlls are interconnected and need to
+# be delayloaded together to ensure user32 does not load too early or at all,
+# depending on the process type: user32, gdi32, comctl32, comdlg32, cryptui,
+# d3d9, dwmapi, imm32, msi, ole32, oleacc, rstrtmgr, shell32, shlwapi, and
+# uxtheme.
+# There are some exceptions to this list which need to be declared separately.
+# Some dlls cannot be delayloaded by chrome_child.dll due to the sandbox
+# restrictions that prevent them from being loaded properly. Those dlls are
+# specified in the separate config below.
+# This config should also be used for any test binary whose goal is to run
+# tests with the full browser.
+config("delayloads") {
+  ldflags = [
+    "/DELAYLOAD:api-ms-win-core-winrt-error-l1-1-0.dll",
+    "/DELAYLOAD:api-ms-win-core-winrt-l1-1-0.dll",
+    "/DELAYLOAD:api-ms-win-core-winrt-string-l1-1-0.dll",
+    "/DELAYLOAD:comctl32.dll",
+    "/DELAYLOAD:comdlg32.dll",
+    "/DELAYLOAD:credui.dll",
+    "/DELAYLOAD:cryptui.dll",
+    "/DELAYLOAD:d3d11.dll",
+    "/DELAYLOAD:d3d9.dll",
+    "/DELAYLOAD:dwmapi.dll",
+    "/DELAYLOAD:dxgi.dll",
+    "/DELAYLOAD:dxva2.dll",
+    "/DELAYLOAD:esent.dll",
+    "/DELAYLOAD:gdi32.dll",
+    "/DELAYLOAD:hid.dll",
+    "/DELAYLOAD:imagehlp.dll",
+    "/DELAYLOAD:imm32.dll",
+    "/DELAYLOAD:msi.dll",
+    "/DELAYLOAD:netapi32.dll",
+    "/DELAYLOAD:ncrypt.dll",
+    "/DELAYLOAD:ole32.dll",
+    "/DELAYLOAD:oleacc.dll",
+    "/DELAYLOAD:propsys.dll",
+    "/DELAYLOAD:psapi.dll",
+    "/DELAYLOAD:rpcrt4.dll",
+    "/DELAYLOAD:rstrtmgr.dll",
+    "/DELAYLOAD:setupapi.dll",
+    "/DELAYLOAD:shell32.dll",
+    "/DELAYLOAD:shlwapi.dll",
+    "/DELAYLOAD:urlmon.dll",
+    "/DELAYLOAD:user32.dll",
+    "/DELAYLOAD:usp10.dll",
+    "/DELAYLOAD:uxtheme.dll",
+    "/DELAYLOAD:wer.dll",
+    "/DELAYLOAD:wevtapi.dll",
+    "/DELAYLOAD:wininet.dll",
+    "/DELAYLOAD:winusb.dll",
+    "/DELAYLOAD:wsock32.dll",
+    "/DELAYLOAD:wtsapi32.dll",
+  ]
+}
+
+config("delayloads_not_for_child_dll") {
+  ldflags = [
+    "/DELAYLOAD:advapi32.dll",
+    "/DELAYLOAD:crypt32.dll",
+    "/DELAYLOAD:dbghelp.dll",
+    "/DELAYLOAD:dhcpcsvc.dll",
+    "/DELAYLOAD:dwrite.dll",
+    "/DELAYLOAD:iphlpapi.dll",
+    "/DELAYLOAD:oleaut32.dll",
+    "/DELAYLOAD:secur32.dll",
+    "/DELAYLOAD:uiautomationcore.dll",
+    "/DELAYLOAD:userenv.dll",
+    "/DELAYLOAD:winhttp.dll",
+    "/DELAYLOAD:winmm.dll",
+    "/DELAYLOAD:winspool.drv",
+    "/DELAYLOAD:wintrust.dll",
+    "/DELAYLOAD:ws2_32.dll",
+  ]
 }
 
 # CRT --------------------------------------------------------------------------

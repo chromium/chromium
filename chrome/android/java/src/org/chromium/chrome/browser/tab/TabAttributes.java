@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;

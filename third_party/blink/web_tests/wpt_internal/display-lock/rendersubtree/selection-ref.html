@@ -1,0 +1,37 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: activatable allows selections (reference)</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<style>
+  div {
+    contain: style layout;
+  }
+  #nonActivatable {
+    width: 20px; height: 20px;
+  }
+  #userSelectNone {
+    user-select: none;
+  }
+</style>
+<div id="container">
+  <div id="notLocked">
+    not locked!
+  </div>
+  <div id="nonActivatable">
+  </div>
+  <div id="userSelectNone">
+    activatable user-select is none
+  </div>
+  <div id="nested">
+    nested activatable locked
+  </div>
+</div>
+<script>
+  window.getSelection().removeAllRanges();
+  const selectionRange = document.createRange();
+  selectionRange.setStart(notLocked.firstChild, 4);
+  selectionRange.setEnd(nested.firstChild, 7);
+  window.getSelection().addRange(selectionRange);
+</script>

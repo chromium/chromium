@@ -130,6 +130,8 @@ class WebViewPlugin : public blink::WebPlugin,
   void UpdatePluginForNewGeometry(const blink::WebRect& window_rect,
                                   const blink::WebRect& unobscured_rect);
 
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
+
   // Manages its own lifetime.
   Delegate* delegate_;
 
@@ -178,13 +180,13 @@ class WebViewPlugin : public blink::WebPlugin,
                        const gfx::Point&) override;
     void DidChangeCursor(const blink::WebCursorInfo& cursor) override;
     void ScheduleAnimation() override;
-    std::unique_ptr<blink::WebURLLoaderFactory> CreateURLLoaderFactory()
-        override;
 
     // WebLocalFrameClient methods:
     void BindToFrame(blink::WebNavigationControl* frame) override;
     void DidClearWindowObject() override;
     void FrameDetached(DetachType) override;
+    std::unique_ptr<blink::WebURLLoaderFactory> CreateURLLoaderFactory()
+        override;
 
    private:
     WebViewPlugin* plugin_;
@@ -196,7 +198,7 @@ class WebViewPlugin : public blink::WebPlugin,
   WebViewHelper web_view_helper_;
 
   // Should be invalidated when destroy() is called.
-  base::WeakPtrFactory<WebViewPlugin> weak_factory_;
+  base::WeakPtrFactory<WebViewPlugin> weak_factory_{this};
 };
 
 #endif  // COMPONENTS_PLUGINS_RENDERER_WEBVIEW_PLUGIN_H_

@@ -1,0 +1,13 @@
+{
+  "name": "Service worker scope is narrower than manifest scope",
+  "icons": [
+    {
+      "src": "/banners/image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "scope": "/banners/",
+  "start_url": "/banners/scope_c/scope_c.html",
+  "display": "standalone"
+}

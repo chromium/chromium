@@ -30,6 +30,8 @@ class MultiDrawManagerTest : public testing::TestWithParam<Param> {
                    GLenum mode = GL_TRIANGLES,
                    GLenum type = GL_UNSIGNED_INT) {
     std::vector<GLsizei> data(count);
+    std::vector<GLint> basevertices(count);
+    std::vector<GLuint> baseinstances(count);
     switch (std::get<1>(GetParam())) {
       case MultiDrawManager::DrawFunction::DrawArrays:
         return multi_draw_manager_->MultiDrawArrays(mode, data.data(),
@@ -39,6 +41,11 @@ class MultiDrawManagerTest : public testing::TestWithParam<Param> {
         return multi_draw_manager_->MultiDrawArraysInstanced(
             mode, data.data(), data.data(), data.data(), count);
 
+      case MultiDrawManager::DrawFunction::DrawArraysInstancedBaseInstance:
+        return multi_draw_manager_->MultiDrawArraysInstancedBaseInstance(
+            mode, data.data(), data.data(), data.data(), baseinstances.data(),
+            count);
+
       case MultiDrawManager::DrawFunction::DrawElements:
         return multi_draw_manager_->MultiDrawElements(mode, data.data(), type,
                                                       data.data(), count);
@@ -46,6 +53,13 @@ class MultiDrawManagerTest : public testing::TestWithParam<Param> {
       case MultiDrawManager::DrawFunction::DrawElementsInstanced:
         return multi_draw_manager_->MultiDrawElementsInstanced(
             mode, data.data(), type, data.data(), data.data(), count);
+
+      case MultiDrawManager::DrawFunction::
+          DrawElementsInstancedBaseVertexBaseInstance:
+        return multi_draw_manager_
+            ->MultiDrawElementsInstancedBaseVertexBaseInstance(
+                mode, data.data(), type, data.data(), data.data(),
+                basevertices.data(), baseinstances.data(), count);
     }
   }
 
@@ -55,6 +69,9 @@ class MultiDrawManagerTest : public testing::TestWithParam<Param> {
     EXPECT_TRUE(draw_function == result.draw_function);
 
     switch (draw_function) {
+      case MultiDrawManager::DrawFunction::DrawArraysInstancedBaseInstance:
+        EXPECT_TRUE(result.baseinstances.size() == count);
+        FALLTHROUGH;
       case MultiDrawManager::DrawFunction::DrawArraysInstanced:
         EXPECT_TRUE(result.instance_counts.size() == count);
         FALLTHROUGH;
@@ -62,6 +79,11 @@ class MultiDrawManagerTest : public testing::TestWithParam<Param> {
         EXPECT_TRUE(result.firsts.size() == count);
         EXPECT_TRUE(result.counts.size() == count);
         break;
+      case MultiDrawManager::DrawFunction::
+          DrawElementsInstancedBaseVertexBaseInstance:
+        EXPECT_TRUE(result.basevertices.size() == count);
+        EXPECT_TRUE(result.baseinstances.size() == count);
+        FALLTHROUGH;
       case MultiDrawManager::DrawFunction::DrawElementsInstanced:
         EXPECT_TRUE(result.instance_counts.size() == count);
         FALLTHROUGH;
@@ -225,8 +247,11 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             MultiDrawManager::DrawFunction::DrawArrays,
             MultiDrawManager::DrawFunction::DrawArraysInstanced,
+            MultiDrawManager::DrawFunction::DrawArraysInstancedBaseInstance,
             MultiDrawManager::DrawFunction::DrawElements,
-            MultiDrawManager::DrawFunction::DrawElementsInstanced)));
+            MultiDrawManager::DrawFunction::DrawElementsInstanced,
+            MultiDrawManager::DrawFunction::
+                DrawElementsInstancedBaseVertexBaseInstance)));
 
 }  // namespace gles2
 }  // namespace gpu

@@ -6,8 +6,9 @@
 #define ASH_SYSTEM_UNIFIED_UNIFIED_SYSTEM_TRAY_MODEL_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 
 namespace ash {
 
@@ -35,7 +36,7 @@ class ASH_EXPORT UnifiedSystemTrayModel {
     virtual void OnKeyboardBrightnessChanged(bool by_user) {}
   };
 
-  UnifiedSystemTrayModel();
+  explicit UnifiedSystemTrayModel(views::View* owner_view);
   ~UnifiedSystemTrayModel();
 
   void AddObserver(Observer* observer);
@@ -82,6 +83,8 @@ class ASH_EXPORT UnifiedSystemTrayModel {
     return notification_target_id_;
   }
 
+  PaginationModel* pagination_model() { return pagination_model_.get(); }
+
  private:
   class DBusObserver;
 
@@ -114,6 +117,8 @@ class ASH_EXPORT UnifiedSystemTrayModel {
   std::unique_ptr<DBusObserver> dbus_observer_;
 
   base::ObserverList<Observer>::Unchecked observers_;
+
+  std::unique_ptr<PaginationModel> pagination_model_;
 
   DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTrayModel);
 };

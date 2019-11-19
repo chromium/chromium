@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
-#include "chromeos/dbus/shill_property_changed_observer.h"
+#include "chromeos/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/network/managed_state.h"
 #include "chromeos/network/network_handler_callbacks.h"
 
@@ -115,6 +115,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   bool IsTechnologyAvailable(const std::string& technology) const;
   bool IsTechnologyEnabled(const std::string& technology) const;
   bool IsTechnologyEnabling(const std::string& technology) const;
+  bool IsTechnologyDisabling(const std::string& technology) const;
   bool IsTechnologyProhibited(const std::string& technology) const;
   bool IsTechnologyUninitialized(const std::string& technology) const;
 
@@ -202,6 +203,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
       const std::string& dbus_error_name,
       const std::string& dbus_error_message);
 
+  void DisableTechnologyFailed(
+      const std::string& technology,
+      const network_handler::ErrorCallback& error_callback,
+      const std::string& dbus_error_name,
+      const std::string& dbus_error_message);
+
   // Called when Shill returns the properties for a service or device.
   void GetPropertiesCallback(ManagedState::ManagedType type,
                              const std::string& path,
@@ -264,6 +271,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   std::set<std::string> available_technologies_;
   std::set<std::string> enabled_technologies_;
   std::set<std::string> enabling_technologies_;
+  std::set<std::string> disabling_technologies_;
   std::set<std::string> prohibited_technologies_;
   std::set<std::string> uninitialized_technologies_;
 

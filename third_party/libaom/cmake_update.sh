@@ -77,7 +77,6 @@ function gen_config_files {
   cp config/aom_config.{h,c,asm} "${CFG}/${1}/config/"
 
   cp config/*_rtcd.h "${CFG}/${1}/config/"
-  clang-format -i "${CFG}/${1}/config/"*_rtcd.h
 }
 
 function update_readme {
@@ -99,6 +98,21 @@ Commit: ${vals[1]}
 EOF
 }
 
+# Update aom_config.h to support Windows instead of linux because cmake doesn't
+# generate VS project files on linux.
+#
+# $1 - File to modify.
+function convert_to_windows {
+  sed -i.bak \
+    -e 's/\(#define[[:space:]]INLINE[[:space:]]*\)inline/\1 __inline/' \
+    -e 's/\(#define[[:space:]]HAVE_PTHREAD_H[[:space:]]*\)1/\1 0/' \
+    -e 's/\(#define[[:space:]]HAVE_UNISTD_H[[:space:]]*\)1/\1 0/' \
+    -e 's/\(#define[[:space:]]CONFIG_GCC[[:space:]]*\)1/\1 0/' \
+    -e 's/\(#define[[:space:]]CONFIG_MSVS[[:space:]]*\)0/\1 1/' \
+    "${1}"
+  rm "${1}.bak"
+}
+
 # Scope 'trap' error reporting to configuration generation.
 (
 TMP=$(mktemp -d "${BASE}/build.XXXX")
@@ -115,6 +129,7 @@ all_platforms+=" -DCONFIG_AV1_ENCODER=0"
 all_platforms+=" -DCONFIG_LOWBITDEPTH=1"
 all_platforms+=" -DCONFIG_MAX_DECODE_PROFILE=0"
 all_platforms+=" -DCONFIG_NORMAL_TILE_MODE=1"
+all_platforms+=" -DCONFIG_LIBYUV=0"
 # avx2 optimizations account for ~0.3mb of the decoder.
 #all_platforms+=" -DENABLE_AVX2=0"
 toolchain="-DCMAKE_TOOLCHAIN_FILE=${SRC}/build/cmake/toolchains"
@@ -133,33 +148,18 @@ gen_config_files linux/ia32 "${toolchain}/x86-linux.cmake ${all_platforms} \
 reset_dirs linux/x64
 gen_config_files linux/x64 "${all_platforms}"
 
-# Windows looks like linux but with some minor tweaks. Cmake doesn't generate VS
-# project files on linux otherwise we would not resort to these hacks.
-
+# Copy linux configurations and modify for Windows.
 reset_dirs win/ia32
 cp "${CFG}/linux/ia32/config"/* "${CFG}/win/ia32/config/"
-sed -i.bak \
-  -e 's/\(#define[[:space:]]INLINE[[:space:]]*\)inline/#define INLINE __inline/' \
-  -e 's/\(#define[[:space:]]HAVE_PTHREAD_H[[:space:]]*\)1/#define HAVE_PTHREAD_H 0/' \
-  -e 's/\(#define[[:space:]]HAVE_UNISTD_H[[:space:]]*\)1/#define HAVE_UNISTD_H 0/' \
-  -e 's/\(#define[[:space:]]CONFIG_GCC[[:space:]]*\)1/#define CONFIG_GCC 0/' \
-  -e 's/\(#define[[:space:]]CONFIG_MSVS[[:space:]]*\)0/#define CONFIG_MSVS 1/' \
-  "${CFG}/win/ia32/config/aom_config.h"
-rm "${CFG}/win/ia32/config/aom_config.h.bak"
-egrep "#define [A-Z0-9_]+ [01]" "${CFG}/win/ia32/config/aom_config.h" \
+convert_to_windows "${CFG}/win/ia32/config/aom_config.h"
+egrep "#define [A-Z0-9_]+[[:space:]]+[01]" "${CFG}/win/ia32/config/aom_config.h" \
   | awk '{print "%define " $2 " " $3}' > "${CFG}/win/ia32/config/aom_config.asm"
 
+# Copy linux configurations and modify for Windows.
 reset_dirs win/x64
 cp "${CFG}/linux/x64/config"/* "${CFG}/win/x64/config/"
-sed -i.bak \
-  -e 's/\(#define[[:space:]]INLINE[[:space:]]*\)inline/#define INLINE __inline/' \
-  -e 's/\(#define[[:space:]]HAVE_PTHREAD_H[[:space:]]*\)1/#define HAVE_PTHREAD_H 0/' \
-  -e 's/\(#define[[:space:]]HAVE_UNISTD_H[[:space:]]*\)1/#define HAVE_UNISTD_H 0/' \
-  -e 's/\(#define[[:space:]]CONFIG_GCC[[:space:]]*\)1/#define CONFIG_GCC 0/' \
-  -e 's/\(#define[[:space:]]CONFIG_MSVS[[:space:]]*\)0/#define CONFIG_MSVS 1/' \
-  "${CFG}/win/x64/config/aom_config.h"
-rm "${CFG}/win/x64/config/aom_config.h.bak"
-egrep "#define [A-Z0-9_]+ [01]" "${CFG}/win/x64/config/aom_config.h" \
+convert_to_windows "${CFG}/win/x64/config/aom_config.h"
+egrep "#define [A-Z0-9_]+[[:space:]]+[01]" "${CFG}/win/x64/config/aom_config.h" \
   | awk '{print "%define " $2 " " $3}' > "${CFG}/win/x64/config/aom_config.asm"
 
 reset_dirs linux/arm
@@ -175,6 +175,11 @@ gen_config_files linux/arm-neon-cpu-detect \
 
 reset_dirs linux/arm64
 gen_config_files linux/arm64 "${toolchain}/arm64-linux-gcc.cmake ${all_platforms}"
+
+# Copy linux configurations and modify for Windows.
+reset_dirs win/arm64
+cp "${CFG}/linux/arm64/config"/* "${CFG}/win/arm64/config/"
+convert_to_windows "${CFG}/win/arm64/config/aom_config.h"
 )
 
 update_readme

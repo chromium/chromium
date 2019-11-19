@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DOUBLY_LINKED_LIST_H_
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace WTF {
@@ -35,6 +35,8 @@ namespace WTF {
 // This class allows nodes to share code without dictating data member layout.
 template <typename T>
 class DoublyLinkedListNode {
+  USING_FAST_MALLOC(DoublyLinkedListNode);
+
  public:
   DoublyLinkedListNode();
 
@@ -126,11 +128,9 @@ class DoublyLinkedList {
 template <typename T, typename PointerType>
 inline DoublyLinkedList<T, PointerType>::DoublyLinkedList()
     : head_(nullptr), tail_(nullptr) {
-  static_assert(
-      !IsGarbageCollectedType<T>::value ||
-          !std::is_same<PointerType, T*>::value,
-      "Cannot use DoublyLinkedList<> with garbage collected types, use "
-      "HeapDoublyLinkedList<> instead.");
+  static_assert(!IsGarbageCollectedType<T>::value ||
+                    !std::is_same<PointerType, T*>::value,
+                "Cannot use DoublyLinkedList<> with garbage collected types.");
 }
 
 template <typename T, typename PointerType>

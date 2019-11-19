@@ -50,11 +50,8 @@ class PRINTING_EXPORT CupsOptionProvider {
 // share an http connection which the CupsConnection closes on destruction.
 class PRINTING_EXPORT CupsPrinter : public CupsOptionProvider {
  public:
-  // Create a printer with a connection defined by |http| and |dest|.  |info|
-  // can be null and will be lazily initialized when needed.
-  CupsPrinter(http_t* http,
-              std::unique_ptr<cups_dest_t, DestinationDeleter> dest,
-              std::unique_ptr<cups_dinfo_t, DestInfoDeleter> info);
+  // Create a printer with a connection defined by |http| and |dest|.
+  CupsPrinter(http_t* http, ScopedDestination dest);
 
   CupsPrinter(CupsPrinter&& printer);
 
@@ -80,27 +77,30 @@ class PRINTING_EXPORT CupsPrinter : public CupsOptionProvider {
 
   std::string GetMakeAndModel() const;
 
-  // Returns true if the printer is currently reachable and working.
-  bool IsAvailable() const;
+  // Lazily initialize dest info as it can require a network call
+  bool EnsureDestInfo() const;
 
   // Populates |basic_info| with the relevant information about the printer
   bool ToPrinterInfo(PrinterBasicInfo* basic_info) const;
 
   // Start a print job.  Writes the id of the started job to |job_id|.  |job_id|
-  // is 0 if there is an error.  Check availability before using this operation.
-  // Usage on an unavailable printer is undefined.
+  // is 0 if there is an error.  |title| is not sent if empty.  |username| is
+  // not sent if empty.  Check availability before using this operation.  Usage
+  // on an unavailable printer is undefined.
   ipp_status_t CreateJob(int* job_id,
                          const std::string& title,
+                         const std::string& username,
                          const std::vector<cups_option_t>& options);
 
   // Add a document to a print job.  |job_id| must be non-zero and refer to a
-  // job started with CreateJob.  |document_name| will be displayed in print
-  // status.  |last_doc| should be true if this is the last document for this
-  // print job.  |options| should be IPP key value pairs for the Send-Document
-  // operation.
+  // job started with CreateJob.  |docname| will be displayed in print status
+  // if not empty.  |last_doc| should be true if this is the last document for
+  // this print job.  |username| is not sent if empty.  |options| should be IPP
+  // key value pairs for the Send-Document operation.
   bool StartDocument(int job_id,
-                     const std::string& document_name,
+                     const std::string& docname,
                      bool last_doc,
+                     const std::string& username,
                      const std::vector<cups_option_t>& options);
 
   // Add data to the current document started by StartDocument.  Calling this
@@ -112,25 +112,23 @@ class PRINTING_EXPORT CupsPrinter : public CupsOptionProvider {
   bool FinishDocument();
 
   // Close the job.  If the job is not closed, the documents will not be
-  // printed.  |job_id| should match the id from CreateJob.
-  ipp_status_t CloseJob(int job_id);
+  // printed.  |job_id| should match the id from CreateJob.  |username| is not
+  // sent if empty.
+  ipp_status_t CloseJob(int job_id, const std::string& username);
 
   // Cancel the print job |job_id|.  Returns true if the operation succeeded.
   // Returns false if it failed for any reason.
   bool CancelJob(int job_id);
 
  private:
-  // Lazily initialize dest info as it can require a network call
-  bool InitializeDestInfo() const;
-
   // http connection owned by the CupsConnection which created this object
   http_t* const cups_http_;
 
   // information to identify a printer
-  std::unique_ptr<cups_dest_t, DestinationDeleter> destination_;
+  ScopedDestination destination_;
 
   // opaque object containing printer attributes and options
-  mutable std::unique_ptr<cups_dinfo_t, DestInfoDeleter> dest_info_;
+  mutable ScopedDestInfo dest_info_;
 
   DISALLOW_COPY_AND_ASSIGN(CupsPrinter);
 };

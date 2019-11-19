@@ -4,9 +4,17 @@
 
 package org.chromium.chrome.browser.metrics;
 
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.CachedMetrics;
-import org.chromium.blink_public.platform.WebDisplayMode;
+import org.chromium.chrome.browser.ShortcutSource;
+import org.chromium.chrome.browser.webapps.WebApkInfo;
+import org.chromium.chrome.browser.webapps.WebApkUkmRecorder;
+import org.chromium.chrome.browser.webapps.WebDisplayMode;
+import org.chromium.chrome.browser.webapps.WebappDataStorage;
+import org.chromium.chrome.browser.webapps.WebappInfo;
+import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
@@ -24,31 +32,36 @@ public class LaunchMetrics {
         public final boolean mIsShortcut;
         // Corresponds to C++ ShortcutInfo::Source
         public final int mSource;
-        @WebDisplayMode
-        public final int mDisplayMode;
+        public final WebappInfo mWebappInfo;
 
-        public HomeScreenLaunch(
-                String url, boolean isShortcut, int source, @WebDisplayMode int displayMode) {
+        public HomeScreenLaunch(String url, boolean isShortcut, int source, WebappInfo webappInfo) {
             mUrl = url;
             mIsShortcut = isShortcut;
             mSource = source;
-            mDisplayMode = displayMode;
+            mWebappInfo = webappInfo;
         }
     }
 
     private static final List<HomeScreenLaunch> sHomeScreenLaunches = new ArrayList<>();
-    private static final List<Long> sWebappHistogramTimes = new ArrayList<>();
 
     /**
      * Records the launch of a standalone Activity for a URL (i.e. a WebappActivity)
      * added from a specific source.
-     * @param url URL that kicked off the Activity's creation.
-     * @param source integer id of the source from where the URL was added.
-     * @param displayMode integer id of the {@link WebDisplayMode} of the web app.
+     * @param webappInfo WebappInfo for launched activity.
      */
-    public static void recordHomeScreenLaunchIntoStandaloneActivity(
-            String url, int source, @WebDisplayMode int displayMode) {
-        sHomeScreenLaunches.add(new HomeScreenLaunch(url, false, source, displayMode));
+    public static void recordHomeScreenLaunchIntoStandaloneActivity(WebappInfo webappInfo) {
+        int source = webappInfo.source();
+
+        if (webappInfo.isForWebApk() && source == ShortcutSource.UNKNOWN) {
+            // WebApkInfo#source() identifies how the WebAPK was launched (e.g. via deep link).
+            // When the WebAPK is launched from the app list (ShortcutSource#UNKNOWN), query
+            // WebappDataStorage to determine how the WebAPK was installed (SOURCE_APP_BANNER_WEBAPK
+            // vs SOURCE_ADD_TO_HOMESCREEN_PWA). WebAPKs set WebappDataStorage#getSource() at
+            // install time.
+            source = getSourceForWebApkFromWebappDataStorage(webappInfo);
+        }
+
+        sHomeScreenLaunches.add(new HomeScreenLaunch(webappInfo.url(), false, source, webappInfo));
     }
 
     /**
@@ -57,15 +70,7 @@ public class LaunchMetrics {
      * @param source integer id of the source from where the URL was added.
      */
     public static void recordHomeScreenLaunchIntoTab(String url, int source) {
-        sHomeScreenLaunches.add(new HomeScreenLaunch(url, true, source, WebDisplayMode.UNDEFINED));
-    }
-
-    /**
-     * Records the time it took to look up from disk whether a MAC is valid during webapp startup.
-     * @param time the number of milliseconds it took to finish.
-     */
-    public static void recordWebappHistogramTimes(long time) {
-        sWebappHistogramTimes.add(time);
+        sHomeScreenLaunches.add(new HomeScreenLaunch(url, true, source, null));
     }
 
     /**
@@ -76,8 +81,17 @@ public class LaunchMetrics {
      */
     public static void commitLaunchMetrics(WebContents webContents) {
         for (HomeScreenLaunch launch : sHomeScreenLaunches) {
-            nativeRecordLaunch(launch.mIsShortcut, launch.mUrl, launch.mSource, launch.mDisplayMode,
-                    webContents);
+            WebappInfo webappInfo = launch.mWebappInfo;
+            @WebDisplayMode
+            int displayMode =
+                    (webappInfo == null) ? WebDisplayMode.UNDEFINED : webappInfo.displayMode();
+            LaunchMetricsJni.get().recordLaunch(
+                    launch.mIsShortcut, launch.mUrl, launch.mSource, displayMode, webContents);
+            if (webappInfo != null && webappInfo.isForWebApk()) {
+                WebApkInfo webApkInfo = (WebApkInfo) webappInfo;
+                WebApkUkmRecorder.recordWebApkLaunch(webApkInfo.manifestUrl(),
+                        webApkInfo.distributor(), webApkInfo.webApkVersionCode(), launch.mSource);
+            }
         }
         sHomeScreenLaunches.clear();
 
@@ -97,11 +111,35 @@ public class LaunchMetrics {
             homepageUrl = "";
             assert !showHomeButton : "Homepage should be disabled for a null URL";
         }
-        nativeRecordHomePageLaunchMetrics(showHomeButton, homepageIsNtp, homepageUrl);
+        LaunchMetricsJni.get().recordHomePageLaunchMetrics(
+                showHomeButton, homepageIsNtp, homepageUrl);
     }
 
-    private static native void nativeRecordLaunch(boolean isShortcut, String url, int source,
-            @WebDisplayMode int displayMode, WebContents webContents);
-    private static native void nativeRecordHomePageLaunchMetrics(
-            boolean showHomeButton, boolean homepageIsNtp, String homepageUrl);
+    /**
+     * Returns the source from the WebappDataStorage if the source has been stored before. Returns
+     * {@link ShortcutSource.WEBAPK_UNKNOWN} otherwise.
+     */
+    private static int getSourceForWebApkFromWebappDataStorage(WebappInfo webappInfo) {
+        WebappDataStorage storage = null;
+
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+            WebappRegistry.warmUpSharedPrefsForId(webappInfo.id());
+            storage = WebappRegistry.getInstance().getWebappDataStorage(webappInfo.id());
+        }
+
+        if (storage == null) {
+            return ShortcutSource.WEBAPK_UNKNOWN;
+        }
+
+        int source = storage.getSource();
+        return (source == ShortcutSource.UNKNOWN) ? ShortcutSource.WEBAPK_UNKNOWN : source;
+    }
+
+    @NativeMethods
+    interface Natives {
+        void recordLaunch(boolean isShortcut, String url, int source,
+                @WebDisplayMode int displayMode, WebContents webContents);
+        void recordHomePageLaunchMetrics(
+                boolean showHomeButton, boolean homepageIsNtp, String homepageUrl);
+    }
 }

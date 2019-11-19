@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.chrome.browser.tasks.TasksView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/task_surface_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
+        <include layout="@layout/fake_search_box_layout"/>
+        <HorizontalScrollView android:id="@+id/mv_tiles_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/modern_primary_color"
+            android:visibility="gone"
+            android:scrollbars="none"
+            app:layout_scrollFlags="scroll">
+            <LinearLayout android:id="@+id/mv_tiles_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:paddingBottom="@dimen/tasks_view_items_vertical_spacing" />
+        </HorizontalScrollView>
+        <LinearLayout
+            android:id="@+id/tab_switcher_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="4dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:visibility="gone"
+            android:background="@color/modern_primary_color"
+            android:orientation="horizontal"
+            app:layout_scrollFlags="scroll">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:paddingStart="6dp"
+                android:singleLine="true"
+                android:textAppearance="@style/TextAppearance.BlackTitle2"
+                android:text="@string/tab_switcher_carousel_title" />
+            <org.chromium.ui.widget.ChromeImageView
+                android:id="@+id/more_tabs"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical|end"
+                android:layout_marginTop="-16dp"
+                android:layout_marginBottom="-16dp"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_arrow_right"
+                android:tint="@color/default_icon_color"
+                android:tintMode="src_in"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:contentDescription="@string/accessibility_tab_switcher_carousel_more_tabs"/>
+        </LinearLayout>
+        <!-- TODO(crbug.com/982018): Make view stub to inflate only when needed. -->
+        <FrameLayout
+            android:id="@+id/carousel_tab_switcher_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/tab_carousel_start_margin"
+            android:visibility="gone"
+            app:layout_scrollFlags="scroll"/>
+    </android.support.design.widget.AppBarLayout>
+    <FrameLayout
+        android:id="@+id/tasks_surface_body"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+</org.chromium.chrome.browser.tasks.TasksView>

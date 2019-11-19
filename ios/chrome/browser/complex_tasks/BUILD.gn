@@ -1,0 +1,31 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("complex_tasks") {
+  sources = [
+    "ios_content_record_task_id.h",
+    "ios_content_record_task_id.mm",
+    "ios_task_tab_helper.h",
+    "ios_task_tab_helper.mm",
+  ]
+  deps = [
+    "//ios/web",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "ios_task_tab_helper_unittest.mm",
+  ]
+  deps = [
+    ":complex_tasks",
+    "//ios/web/public:public",
+    "//ios/web/public/test:test",
+    "//ios/web/public/test:util",
+    "//ios/web/public/test/fakes:fakes",
+  ]
+}

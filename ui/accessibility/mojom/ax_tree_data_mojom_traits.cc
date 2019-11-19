@@ -27,6 +27,7 @@ bool StructTraits<ax::mojom::AXTreeDataDataView, ui::AXTreeData>::Read(
   if (!data.ReadUrl(&out->url))
     return false;
   out->focus_id = data.focus_id();
+  out->sel_is_backward = data.sel_is_backward();
   out->sel_anchor_object_id = data.sel_anchor_object_id();
   out->sel_anchor_offset = data.sel_anchor_offset();
   out->sel_anchor_affinity = data.sel_anchor_affinity();

@@ -5,11 +5,11 @@ import sys
 from collections import OrderedDict
 from distutils.spawn import find_executable
 from datetime import timedelta
+from six import iterkeys, itervalues, iteritems
 
-import config
-import wpttest
-from formatters import wptreport, wptscreenshot
-
+from . import config
+from . import wpttest
+from .formatters import chromium, wptreport, wptscreenshot
 
 def abs_path(path):
     return os.path.abspath(os.path.expanduser(path))
@@ -54,6 +54,8 @@ scheme host and port.""")
                         help="Prevent regeneration of the test manifest.")
     parser.add_argument("--manifest-download", action="store_true", default=None,
                         help="Attempt to download a preexisting manifest when updating.")
+    parser.add_argument("--no-manifest-download", action="store_false", dest="manifest_download",
+                        help="Prevent download of the test manifest.")
 
     parser.add_argument("--timeout-multiplier", action="store", type=float, default=None,
                         help="Multiplier relative to standard test timeout to use")
@@ -255,16 +257,18 @@ scheme host and port.""")
                              help="Path to the folder containing browser prefs")
     gecko_group.add_argument("--disable-e10s", dest="gecko_e10s", action="store_false", default=True,
                              help="Run tests without electrolysis preferences")
+    gecko_group.add_argument("--enable-webrender", dest="enable_webrender", action="store_true", default=None,
+                             help="Enable the WebRender compositor in Gecko (defaults to disabled).")
+    gecko_group.add_argument("--no-enable-webrender", dest="enable_webrender", action="store_false",
+                             help="Disable the WebRender compositor in Gecko.")
     gecko_group.add_argument("--stackfix-dir", dest="stackfix_dir", action="store",
                              help="Path to directory containing assertion stack fixing scripts")
-    gecko_group.add_argument("--lsan-dir", dest="lsan_dir", action="store",
-                             help="Path to directory containing LSAN suppressions file")
     gecko_group.add_argument("--setpref", dest="extra_prefs", action='append',
                              default=[], metavar="PREF=VALUE",
                              help="Defines an extra user preference (overrides those in prefs_root)")
     gecko_group.add_argument("--leak-check", dest="leak_check", action="store_true", default=None,
                              help="Enable leak checking (enabled by default for debug builds, "
-                             "silently ignored for opt)")
+                             "silently ignored for opt, mobile)")
     gecko_group.add_argument("--no-leak-check", dest="leak_check", action="store_false", default=None,
                              help="Disable leak checking")
     gecko_group.add_argument("--stylo-threads", action="store", type=int, default=1,
@@ -326,6 +330,15 @@ scheme host and port.""")
                         help="List of URLs for tests to run, or paths including tests to run. "
                              "(equivalent to --include)")
 
+    def screenshot_api_wrapper(formatter, api):
+        formatter.api = api
+        return formatter
+
+    commandline.fmt_options["api"] = (screenshot_api_wrapper,
+                                      "Cache API (default: %s)" % wptscreenshot.DEFAULT_API,
+                                      {"wptscreenshot"}, "store")
+
+    commandline.log_formatters["chromium"] = (chromium.ChromiumFormatter, "Chromium Layout Tests format")
     commandline.log_formatters["wptreport"] = (wptreport.WptreportFormatter, "wptreport format")
     commandline.log_formatters["wptscreenshot"] = (wptscreenshot.WptscreenshotFormatter, "wpt.fyi screenshots")
 
@@ -354,7 +367,7 @@ def set_from_config(kwargs):
                     ("host_cert_path", "host_cert_path", True),
                     ("host_key_path", "host_key_path", True)]}
 
-    for section, values in keys.iteritems():
+    for section, values in iteritems(keys):
         for config_value, kw_value, is_path in values:
             if kw_value in kwargs and kwargs[kw_value] is None:
                 if not is_path:
@@ -390,7 +403,7 @@ def get_test_paths(config):
     # Set up test_paths
     test_paths = OrderedDict()
 
-    for section in config.iterkeys():
+    for section in iterkeys(config):
         if section.startswith("manifest:"):
             manifest_opts = config.get(section)
             url_base = manifest_opts.get("url_base", "/")
@@ -416,7 +429,7 @@ def exe_path(name):
 
 
 def check_paths(kwargs):
-    for test_paths in kwargs["test_paths"].itervalues():
+    for test_paths in itervalues(kwargs["test_paths"]):
         if not ("tests_path" in test_paths and
                 "metadata_path" in test_paths):
             print("Fatal: must specify both a test path and metadata path")
@@ -424,7 +437,7 @@ def check_paths(kwargs):
         if "manifest_path" not in test_paths:
             test_paths["manifest_path"] = os.path.join(test_paths["metadata_path"],
                                                        "MANIFEST.json")
-        for key, path in test_paths.iteritems():
+        for key, path in iteritems(test_paths):
             name = key.split("_", 1)[0]
 
             if name == "manifest":
@@ -534,11 +547,11 @@ def check_args(kwargs):
     if kwargs["reftest_internal"] is None:
         kwargs["reftest_internal"] = True
 
-    if kwargs["lsan_dir"] is None:
-        kwargs["lsan_dir"] = kwargs["prefs_root"]
-
     if kwargs["reftest_screenshot"] is None:
         kwargs["reftest_screenshot"] = "unexpected"
+
+    if kwargs["enable_webrender"] is None:
+        kwargs["enable_webrender"] = False
 
     return kwargs
 
@@ -562,7 +575,7 @@ def check_args_update(kwargs):
 def create_parser_update(product_choices=None):
     from mozlog.structured import commandline
 
-    import products
+    from . import products
 
     if product_choices is None:
         config_data = config.load()
@@ -592,11 +605,15 @@ def create_parser_update(product_choices=None):
                         help="Don't create a VCS commit containing the changes.")
     parser.add_argument("--sync", dest="sync", action="store_true", default=False,
                         help="Sync the tests with the latest from upstream (implies --patch)")
-    parser.add_argument("--ignore-existing", action="store_true",
-                        help="When updating test results only consider results from the logfiles provided, not existing expectations.")
-    parser.add_argument("--stability", nargs="?", action="store", const="unstable", default=None,
+    parser.add_argument("--full", action="store_true", default=False,
+                        help=("For all tests that are updated, remove any existing conditions and missing subtests"))
+    parser.add_argument("--disable-intermittent", nargs="?", action="store", const="unstable", default=None,
         help=("Reason for disabling tests. When updating test results, disable tests that have "
               "inconsistent results across many runs with the given reason."))
+    parser.add_argument("--update-intermittent", action="store_true", default=False,
+                        help=("Update test metadata with expected intermittent statuses."))
+    parser.add_argument("--remove-intermittent", action="store_true", default=False,
+                        help=("Remove obsolete intermittent statuses from expected statuses."))
     parser.add_argument("--no-remove-obsolete", action="store_false", dest="remove_obsolete", default=True,
                         help=("Don't remove metadata files that no longer correspond to a test file"))
     parser.add_argument("--no-store-state", action="store_false", dest="store_state",

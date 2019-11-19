@@ -28,10 +28,9 @@
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
@@ -67,7 +66,7 @@ class CORE_EXPORT TypeAhead {
  private:
   TypeAheadDataSource* data_source_;
   // platform timestamp of last keyboard event in seconds
-  base::Optional<TimeTicks> last_type_time_;
+  base::Optional<base::TimeTicks> last_type_time_;
   UChar repeating_char_;
   StringBuilder buffer_;
 };

@@ -33,7 +33,7 @@ IndividualSettings::IndividualSettings() {
 IndividualSettings::IndividualSettings(
     const IndividualSettings* default_settings) {
   installation_mode = default_settings->installation_mode;
-  update_url = default_settings->installation_mode;
+  update_url = default_settings->update_url;
   blocked_permissions = default_settings->blocked_permissions.Clone();
   // We are not initializing |minimum_version_required| from |default_settings|
   // here since it's not applicable to default settings.
@@ -55,6 +55,8 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
       installation_mode = ExtensionManagement::INSTALLATION_FORCED;
     } else if (installation_mode_str == schema_constants::kNormalInstalled) {
       installation_mode = ExtensionManagement::INSTALLATION_RECOMMENDED;
+    } else if (installation_mode_str == schema_constants::kRemoved) {
+      installation_mode = ExtensionManagement::INSTALLATION_REMOVED;
     } else {
       // Invalid value for 'installation_mode'.
       LOG(WARNING) << kMalformedPreferenceWarning;
@@ -123,22 +125,20 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
         LOG(WARNING) << "Exceeded maximum number of URL match patterns ("
                      << schema_constants::kMaxItemsURLPatternSet
                      << ") for attribute '" << key << "'";
-        return false;
       }
 
       out_value->ClearPatterns();
       const int extension_scheme_mask =
           URLPattern::GetValidSchemeMaskForExtensions();
-      for (size_t i = 0; i < host_list_value->GetSize(); ++i) {
+      auto numItems = std::min(host_list_value->GetSize(),
+                               schema_constants::kMaxItemsURLPatternSet);
+      for (size_t i = 0; i < numItems; ++i) {
         std::string unparsed_str;
         host_list_value->GetString(i, &unparsed_str);
         URLPattern pattern(extension_scheme_mask);
         if (unparsed_str != URLPattern::kAllUrlsPattern)
           unparsed_str.append("/*");
-        // TODO(nrpeter): Remove effective TLD wildcard capability from
-        // URLPattern.
-        URLPattern::ParseResult parse_result = pattern.Parse(
-            unparsed_str, URLPattern::DENY_WILDCARD_FOR_EFFECTIVE_TLD);
+        URLPattern::ParseResult parse_result = pattern.Parse(unparsed_str);
         if (parse_result != URLPattern::ParseResult::kSuccess) {
           LOG(WARNING) << kMalformedPreferenceWarning;
           LOG(WARNING) << "Invalid URL pattern '" + unparsed_str +

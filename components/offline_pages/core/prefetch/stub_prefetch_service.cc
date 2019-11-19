@@ -18,6 +18,12 @@ void StubPrefetchService::NewSuggestionsAvailable() {}
 
 void StubPrefetchService::RemoveSuggestion(GURL url) {}
 
+void StubPrefetchService::ForceRefreshSuggestions() {}
+
+std::string StubPrefetchService::GetCachedGCMToken() const {
+  return "";
+}
+
 PrefetchGCMHandler* StubPrefetchService::GetPrefetchGCMHandler() {
   return nullptr;
 }
@@ -64,7 +70,7 @@ OfflinePageModel* StubPrefetchService::GetOfflinePageModel() {
   return nullptr;
 }
 
-image_fetcher::ImageFetcher* StubPrefetchService::GetThumbnailImageFetcher() {
+image_fetcher::ImageFetcher* StubPrefetchService::GetImageFetcher() {
   return nullptr;
 }
 
@@ -72,5 +78,8 @@ SuggestedArticlesObserver*
 StubPrefetchService::GetSuggestedArticlesObserverForTesting() {
   return nullptr;
 }
+
+void StubPrefetchService::SetEnabledByServer(PrefService* pref_service,
+                                             bool enabled) {}
 
 }  // namespace offline_pages

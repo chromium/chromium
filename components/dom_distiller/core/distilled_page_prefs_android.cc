@@ -6,7 +6,7 @@
 
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
-#include "jni/DistilledPagePrefs_jni.h"
+#include "components/dom_distiller/core/jni_headers/DistilledPagePrefs_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -18,11 +18,9 @@ DistilledPagePrefsAndroid::DistilledPagePrefsAndroid(
     JNIEnv* env,
     jobject obj,
     DistilledPagePrefs* distilled_page_prefs_ptr)
-    : distilled_page_prefs_(distilled_page_prefs_ptr) {
-}
+    : distilled_page_prefs_(distilled_page_prefs_ptr) {}
 
-DistilledPagePrefsAndroid::~DistilledPagePrefsAndroid() {
-}
+DistilledPagePrefsAndroid::~DistilledPagePrefsAndroid() {}
 
 void DistilledPagePrefsAndroid::SetFontFamily(JNIEnv* env,
                                               const JavaParamRef<jobject>& obj,
@@ -34,7 +32,7 @@ void DistilledPagePrefsAndroid::SetFontFamily(JNIEnv* env,
 jint DistilledPagePrefsAndroid::GetFontFamily(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  return (int) distilled_page_prefs_->GetFontFamily();
+  return (int)distilled_page_prefs_->GetFontFamily();
 }
 
 void DistilledPagePrefsAndroid::SetTheme(JNIEnv* env,
@@ -46,7 +44,7 @@ void DistilledPagePrefsAndroid::SetTheme(JNIEnv* env,
 
 jint DistilledPagePrefsAndroid::GetTheme(JNIEnv* env,
                                          const JavaParamRef<jobject>& obj) {
-  return (int) distilled_page_prefs_->GetTheme();
+  return (int)distilled_page_prefs_->GetTheme();
 }
 
 void DistilledPagePrefsAndroid::SetFontScaling(JNIEnv* env,
@@ -95,9 +93,7 @@ DistilledPagePrefsObserverAndroid::DistilledPagePrefsObserverAndroid(
 
 DistilledPagePrefsObserverAndroid::~DistilledPagePrefsObserverAndroid() {}
 
-void DistilledPagePrefsObserverAndroid::DestroyObserverAndroid(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void DistilledPagePrefsObserverAndroid::DestroyObserverAndroid(JNIEnv* env) {
   delete this;
 }
 
@@ -115,8 +111,7 @@ void DistilledPagePrefsObserverAndroid::OnChangeTheme(
                                                        (int)new_theme);
 }
 
-void DistilledPagePrefsObserverAndroid::OnChangeFontScaling(
-    float scaling) {
+void DistilledPagePrefsObserverAndroid::OnChangeFontScaling(float scaling) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_DistilledPagePrefsObserverWrapper_onChangeFontScaling(env, java_ref_,
                                                              scaling);

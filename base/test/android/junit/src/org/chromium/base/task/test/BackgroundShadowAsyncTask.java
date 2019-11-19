@@ -34,7 +34,7 @@ public class BackgroundShadowAsyncTask<Result> extends ShadowAsyncTask<Result> {
             return sExecutorService
                     .submit(new Callable<AsyncTask<Result>>() {
                         @Override
-                        public AsyncTask<Result> call() throws Exception {
+                        public AsyncTask<Result> call() {
                             return BackgroundShadowAsyncTask.super.executeInRobolectric();
                         }
                     })

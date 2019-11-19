@@ -79,7 +79,7 @@ class ShellNetworkController : public chromeos::NetworkStateHandlerObserver {
   // True if the preferred network is connected or connecting.
   bool preferred_network_is_active_;
 
-  base::WeakPtrFactory<ShellNetworkController> weak_ptr_factory_;
+  base::WeakPtrFactory<ShellNetworkController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ShellNetworkController);
 };

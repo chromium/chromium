@@ -39,9 +39,9 @@
 namespace blink {
 
 class SVGElement;
-class SVGAnimationElement;
+class SVGAnimateElement;
 
-class SVGPropertyBase : public GarbageCollectedFinalized<SVGPropertyBase> {
+class SVGPropertyBase : public GarbageCollected<SVGPropertyBase> {
  public:
   // Properties do not have a primitive type by default
   typedef void PrimitiveType;
@@ -65,7 +65,7 @@ class SVGPropertyBase : public GarbageCollectedFinalized<SVGPropertyBase> {
   // WebAnimations transition.
   virtual void Add(SVGPropertyBase*, SVGElement*) = 0;
   virtual void CalculateAnimatedValue(
-      SVGAnimationElement*,
+      const SVGAnimateElement&,
       float percentage,
       unsigned repeat_count,
       SVGPropertyBase* from,

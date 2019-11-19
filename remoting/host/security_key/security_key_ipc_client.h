@@ -111,7 +111,7 @@ class SecurityKeyIpcClient : public IPC::Listener {
 
   base::ThreadChecker thread_checker_;
 
-  base::WeakPtrFactory<SecurityKeyIpcClient> weak_factory_;
+  base::WeakPtrFactory<SecurityKeyIpcClient> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SecurityKeyIpcClient);
 };

@@ -7,7 +7,7 @@
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
+#include "chrome/browser/web_applications/components/web_app_tab_helper.h"
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/notification_service.h"
@@ -75,8 +75,7 @@ class WebAppAudioFocusBrowserTest : public extensions::ExtensionBrowserTest {
 
   const base::UnguessableToken& GetAudioFocusGroupId(
       content::WebContents* web_contents) {
-    WebAppTabHelperBase* helper =
-        WebAppTabHelperBase::FromWebContents(web_contents);
+    WebAppTabHelper* helper = WebAppTabHelper::FromWebContents(web_contents);
     return helper->audio_focus_group_id_;
   }
 
@@ -177,6 +176,15 @@ IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
     EXPECT_TRUE(content::WaitForLoadStop(new_contents));
 
     EXPECT_EQ(group_id, GetAudioFocusGroupId(new_contents));
+  }
+
+  // Clone the web contents and make sure it has a different group id since it
+  // is not in an app window.
+  {
+    std::unique_ptr<content::WebContents> new_contents = web_contents->Clone();
+    EXPECT_TRUE(content::WaitForLoadStop(new_contents.get()));
+    EXPECT_EQ(base::UnguessableToken::Null(),
+              GetAudioFocusGroupId(new_contents.get()));
   }
 
   // Navigate away and check that the group id is still the same because we are

@@ -12,8 +12,8 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/hash/md5.h"
 #include "base/location.h"
-#include "base/md5.h"
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -39,8 +39,7 @@ CloudPrintConnector::CloudPrintConnector(
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation)
     : client_(client),
       next_response_handler_(NULL),
-      partial_traffic_annotation_(partial_traffic_annotation),
-      stats_ptr_factory_(this) {
+      partial_traffic_annotation_(partial_traffic_annotation) {
   settings_.CopyFrom(settings);
 }
 
@@ -55,7 +54,7 @@ bool CloudPrintConnector::InitPrintSystem() {
   }
   PrintSystem::PrintSystemResult result = print_system_->Init();
   if (!result.succeeded()) {
-    print_system_ = NULL;
+    print_system_.reset();
     // We could not initialize the print system. We need to notify the server.
     ReportUserMessage(kPrintSystemFailedMessageId, result.message());
     return false;
@@ -103,8 +102,8 @@ void CloudPrintConnector::Stop() {
   // Do uninitialization here.
   stats_ptr_factory_.InvalidateWeakPtrs();
   pending_tasks_.clear();
-  print_server_watcher_ = NULL;
-  request_ = NULL;
+  print_server_watcher_.reset();
+  request_.reset();
 }
 
 bool CloudPrintConnector::IsRunning() {
@@ -407,7 +406,7 @@ void CloudPrintConnector::InitJobHandlerForPrinter(
   DCHECK(!printer_info_cloud.printer_id.empty());
   VLOG(1) << "CP_CONNECTOR: Init job handler"
           << ", printer id: " << printer_info_cloud.printer_id;
-  if (ContainsKey(job_handler_map_, printer_info_cloud.printer_id))
+  if (base::Contains(job_handler_map_, printer_info_cloud.printer_id))
     return;  // Nothing to do if we already have a job handler for this printer.
 
   printing::PrinterBasicInfo printer_info;
@@ -574,8 +573,8 @@ void CloudPrintConnector::OnPrinterRegister(
   // continue in OnReceivePrinterCaps.
   print_system_->GetPrinterCapsAndDefaults(
       info.printer_name.c_str(),
-      base::Bind(&CloudPrintConnector::OnReceivePrinterCaps,
-                 base::Unretained(this)));
+      base::BindOnce(&CloudPrintConnector::OnReceivePrinterCaps,
+                     base::Unretained(this)));
 }
 
 void CloudPrintConnector::OnPrinterDelete(const std::string& printer_id) {

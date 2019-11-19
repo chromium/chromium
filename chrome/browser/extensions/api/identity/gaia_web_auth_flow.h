@@ -89,7 +89,7 @@ class GaiaWebAuthFlow : public WebAuthFlow::Delegate {
 
   Delegate* delegate_;
   Profile* profile_;
-  std::string account_id_;
+  CoreAccountId account_id_;
   std::string redirect_scheme_;
   std::string redirect_path_prefix_;
   GURL auth_url_;

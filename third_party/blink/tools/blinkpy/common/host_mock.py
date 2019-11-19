@@ -27,7 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from blinkpy.common.checkout.git_mock import MockGit
-from blinkpy.common.net.buildbot_mock import MockBuildBot
+from blinkpy.common.net.results_fetcher_mock import MockTestResultsFetcher
 from blinkpy.common.net.web_mock import MockWeb
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.system_host_mock import MockSystemHost
@@ -36,6 +36,7 @@ from blinkpy.common.system.system_host_mock import MockSystemHost
 from blinkpy.web_tests.builder_list import BuilderList
 from blinkpy.web_tests.port.factory import PortFactory
 from blinkpy.web_tests.port.test import add_unit_tests_to_mock_filesystem
+from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
 
 
 class MockHost(MockSystemHost):
@@ -58,7 +59,7 @@ class MockHost(MockSystemHost):
         self.web = web or MockWeb()
         self._git = git
 
-        self.buildbot = MockBuildBot()
+        self.results_fetcher = MockTestResultsFetcher()
 
         # Note: We're using a real PortFactory here. Tests which don't wish to depend
         # on the list of known ports should override this with a MockPortFactory.
@@ -93,7 +94,7 @@ class MockHost(MockSystemHost):
                 'is_try_builder': True,
             },
             'android_blink_rel': {
-                'bucket': 'luci.chromium.try',
+                'bucket': 'luci.chromium.android',
                 'port_name': 'android-kitkat',
                 'specifiers': ['KitKat', 'Release'],
                 'is_try_builder': True,
@@ -116,6 +117,5 @@ class MockHost(MockSystemHost):
         external_dir = path_finder.path_from_web_tests('external')
         filesystem.maybe_make_directory(filesystem.join(external_dir, 'wpt'))
 
-        # This filename should match the constant BASE_MANIFEST_NAME.
-        manifest_base_path = filesystem.join(external_dir, 'WPT_BASE_MANIFEST_5.json')
+        manifest_base_path = filesystem.join(external_dir, BASE_MANIFEST_NAME)
         filesystem.files[manifest_base_path] = '{"manifest": "base"}'

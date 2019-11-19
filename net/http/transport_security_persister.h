@@ -131,7 +131,7 @@ class NET_EXPORT TransportSecurityPersister
   scoped_refptr<base::SequencedTaskRunner> foreground_runner_;
   scoped_refptr<base::SequencedTaskRunner> background_runner_;
 
-  base::WeakPtrFactory<TransportSecurityPersister> weak_ptr_factory_;
+  base::WeakPtrFactory<TransportSecurityPersister> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TransportSecurityPersister);
 };

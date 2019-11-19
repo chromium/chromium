@@ -9,8 +9,8 @@
 
 #include "base/macros.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "components/arc/common/cast_receiver.mojom.h"
-#include "components/arc/connection_observer.h"
+#include "components/arc/mojom/cast_receiver.mojom.h"
+#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

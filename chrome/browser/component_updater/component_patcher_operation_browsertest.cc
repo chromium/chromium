@@ -17,19 +17,18 @@
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/services/patch/content/patch_service.h"
 #include "components/services/patch/public/cpp/patch.h"
 #include "components/update_client/component_patcher_operation.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/service_manager_connection.h"
 #include "courgette/courgette.h"
 #include "courgette/third_party/bsdiff/bsdiff.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace {
 
 constexpr base::TaskTraits kTaskTraits = {
-    base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+    base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
 }  // namespace
@@ -56,7 +55,7 @@ class PatchTest : public InProcessBrowserTest {
     base::FilePath path = installed_dir_.GetPath().AppendASCII(name);
 
     base::RunLoop run_loop;
-    base::PostTaskWithTraitsAndReply(
+    base::PostTaskAndReply(
         FROM_HERE, kTaskTraits,
         base::BindOnce(&PatchTest::CopyFile, TestFile(name), path),
         run_loop.QuitClosure());
@@ -69,7 +68,7 @@ class PatchTest : public InProcessBrowserTest {
     base::FilePath path = input_dir_.GetPath().AppendASCII(name);
 
     base::RunLoop run_loop;
-    base::PostTaskWithTraitsAndReply(
+    base::PostTaskAndReply(
         FROM_HERE, kTaskTraits,
         base::BindOnce(&PatchTest::CopyFile, TestFile(name), path),
         run_loop.QuitClosure());
@@ -95,29 +94,23 @@ class PatchTest : public InProcessBrowserTest {
     quit_closure_ = run_loop.QuitClosure();
     done_called_ = false;
 
-    std::unique_ptr<service_manager::Connector> connector =
-        content::ServiceManagerConnection::GetForProcess()
-            ->GetConnector()
-            ->Clone();
-    base::CreateSequencedTaskRunnerWithTraits(kTaskTraits)
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(&PatchTest::PatchAsyncSequencedTaskRunner,
-                           base::Unretained(this), std::move(connector),
-                           operation, input, patch, output, expected_result));
+    base::CreateSequencedTaskRunner(kTaskTraits)
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&PatchTest::PatchAsyncSequencedTaskRunner,
+                                  base::Unretained(this), operation, input,
+                                  patch, output, expected_result));
     run_loop.Run();
     EXPECT_TRUE(done_called_);
   }
 
  private:
   void PatchAsyncSequencedTaskRunner(
-      std::unique_ptr<service_manager::Connector> connector,
       const std::string& operation,
       const base::FilePath& input,
       const base::FilePath& patch,
       const base::FilePath& output,
       int expected_result) {
-    patch::Patch(connector.get(), operation, input, patch, output,
+    patch::Patch(patch::LaunchFilePatcher(), operation, input, patch, output,
                  base::BindOnce(&PatchTest::PatchDone, base::Unretained(this),
                                 expected_result));
   }
@@ -125,7 +118,7 @@ class PatchTest : public InProcessBrowserTest {
   void PatchDone(int expected, int result) {
     EXPECT_EQ(expected, result);
     done_called_ = true;
-    base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::UI})
+    base::CreateSingleThreadTaskRunner({content::BrowserThread::UI})
         ->PostTask(FROM_HERE, std::move(quit_closure_));
   }
 

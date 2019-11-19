@@ -4,7 +4,7 @@
 
 package org.chromium.content.browser.remoteobjects;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 import org.chromium.blink.mojom.RemoteInvocationArgument;
 import org.chromium.blink.mojom.RemoteInvocationError;

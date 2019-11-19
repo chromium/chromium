@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "chrome/browser/chromeos/settings/device_oauth2_token_service.h"
-#include "chrome/browser/chromeos/settings/device_oauth2_token_service_delegate.h"
 #include "chrome/browser/chromeos/settings/token_encryptor.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "content/public/browser/browser_thread.h"
@@ -33,9 +32,8 @@ void DeviceOAuth2TokenServiceFactory::Initialize(
     PrefService* local_state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!g_device_oauth2_token_service_);
-  g_device_oauth2_token_service_ = new DeviceOAuth2TokenService(
-      std::make_unique<DeviceOAuth2TokenServiceDelegate>(url_loader_factory,
-                                                         local_state));
+  g_device_oauth2_token_service_ =
+      new DeviceOAuth2TokenService(url_loader_factory, local_state);
 }
 
 // static

@@ -12,7 +12,7 @@
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/unguessable_token.h"
@@ -26,8 +26,8 @@ class LockImplTest : public testing::Test {
  protected:
   LockImplTest()
       : lock_(std::make_unique<LockImpl>()),
-        different_thread_task_runner_(
-            base::CreateSingleThreadTaskRunnerWithTraits(base::MayBlock())) {}
+        different_thread_task_runner_(base::CreateSingleThreadTaskRunner(
+            {base::ThreadPool(), base::MayBlock()})) {}
 
   // testing::Test
   void SetUp() override {
@@ -49,7 +49,7 @@ class LockImplTest : public testing::Test {
     // Makes sure that outstanding LockAndUnlockFromDifferentThread() tasks in
     // |different_thread_task_runner_| finish running after the test thread
     // relinquishes its ownership of |lock_|.
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     base::AutoLock al(lock_->bookkeeping_lock_);
     EXPECT_EQ(0u, lock_->num_acquisitions_);
@@ -74,15 +74,14 @@ class LockImplTest : public testing::Test {
   bool HasSuccessfullyLockedWithAttemptId(
       const base::UnguessableToken& attempt_id) {
     lock_->lock();
-    bool contains_key =
-        base::ContainsKey(successful_lock_attempts_, attempt_id);
+    bool contains_key = base::Contains(successful_lock_attempts_, attempt_id);
     lock_->unlock();
     return contains_key;
   }
 
   location::nearby::Lock* lock() { return lock_.get(); }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
  private:
   // Only meant to be posted via PostLockAndUnlockFromDifferentThread() on
@@ -135,7 +134,7 @@ TEST_F(LockImplTest,
 
   // Outstanding lock attempt succeed after unlocking from current thread.
   lock()->unlock();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(HasSuccessfullyLockedWithAttemptId(attempt_id));
 }
 
@@ -159,7 +158,7 @@ TEST_F(
   lock()->unlock();
   lock()->unlock();
   lock()->unlock();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(HasSuccessfullyLockedWithAttemptId(attempt_id));
 }
 
@@ -183,7 +182,7 @@ TEST_F(LockImplTest, InterweavedLocking) {
   lock()->unlock();
   lock()->unlock();
   lock()->unlock();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(HasSuccessfullyLockedWithAttemptId(attempt_id1));
   EXPECT_TRUE(HasSuccessfullyLockedWithAttemptId(attempt_id2));
   EXPECT_TRUE(HasSuccessfullyLockedWithAttemptId(attempt_id3));

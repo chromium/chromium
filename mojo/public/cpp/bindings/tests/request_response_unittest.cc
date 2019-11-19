@@ -7,7 +7,9 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "base/test/bind_test_util.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/interfaces/bindings/tests/sample_import.mojom.h"
@@ -20,8 +22,8 @@ namespace {
 
 class ProviderImpl : public sample::Provider {
  public:
-  explicit ProviderImpl(InterfaceRequest<sample::Provider> request)
-      : binding_(this, std::move(request)) {}
+  explicit ProviderImpl(PendingReceiver<sample::Provider> receiver)
+      : receiver_(this, std::move(receiver)) {}
 
   void EchoString(const std::string& a, EchoStringCallback callback) override {
     std::move(callback).Run(a);
@@ -46,103 +48,76 @@ class ProviderImpl : public sample::Provider {
     std::move(callback).Run(a);
   }
 
-  Binding<sample::Provider> binding_;
+ private:
+  Receiver<sample::Provider> receiver_;
 };
 
-void RecordString(std::string* storage,
-                  const base::Closure& closure,
-                  const std::string& str) {
-  *storage = str;
-  closure.Run();
-}
-
-void RecordStrings(std::string* storage,
-                   const base::Closure& closure,
-                   const std::string& a,
-                   const std::string& b) {
-  *storage = a + b;
-  closure.Run();
-}
-
-void WriteToMessagePipe(const char* text,
-                        const base::Closure& closure,
-                        ScopedMessagePipeHandle handle) {
-  WriteTextMessage(handle.get(), text);
-  closure.Run();
-}
-
-void RecordEnum(sample::Enum* storage,
-                const base::Closure& closure,
-                sample::Enum value) {
-  *storage = value;
-  closure.Run();
-}
-
-class RequestResponseTest : public BindingsTestBase {
- public:
-  RequestResponseTest() {}
-  ~RequestResponseTest() override { base::RunLoop().RunUntilIdle(); }
-
-  void PumpMessages() { base::RunLoop().RunUntilIdle(); }
-};
+using RequestResponseTest = BindingsTestBase;
 
 TEST_P(RequestResponseTest, EchoString) {
-  sample::ProviderPtr provider;
-  ProviderImpl provider_impl(MakeRequest(&provider));
+  Remote<sample::Provider> provider;
+  ProviderImpl provider_impl(provider.BindNewPipeAndPassReceiver());
 
-  std::string buf;
   base::RunLoop run_loop;
-  provider->EchoString("hello",
-                       base::Bind(&RecordString, &buf, run_loop.QuitClosure()));
-
+  constexpr const char kTestMessage[] = "hello";
+  provider->EchoString(kTestMessage, base::BindLambdaForTesting(
+                                         [&](const std::string& response) {
+                                           EXPECT_EQ(kTestMessage, response);
+                                           run_loop.Quit();
+                                         }));
   run_loop.Run();
-
-  EXPECT_EQ(std::string("hello"), buf);
 }
 
 TEST_P(RequestResponseTest, EchoStrings) {
-  sample::ProviderPtr provider;
-  ProviderImpl provider_impl(MakeRequest(&provider));
+  Remote<sample::Provider> provider;
+  ProviderImpl provider_impl(provider.BindNewPipeAndPassReceiver());
 
   std::string buf;
   base::RunLoop run_loop;
-  provider->EchoStrings("hello", " world", base::Bind(&RecordStrings, &buf,
-                                                      run_loop.QuitClosure()));
-
+  constexpr const char kTestMessage1[] = "hello";
+  constexpr const char kTestMessage2[] = "hello";
+  provider->EchoStrings(
+      kTestMessage1, kTestMessage2,
+      base::BindLambdaForTesting(
+          [&](const std::string& response1, const std::string& response2) {
+            EXPECT_EQ(kTestMessage1, response1);
+            EXPECT_EQ(kTestMessage2, response2);
+            run_loop.Quit();
+          }));
   run_loop.Run();
-
-  EXPECT_EQ(std::string("hello world"), buf);
 }
 
 TEST_P(RequestResponseTest, EchoMessagePipeHandle) {
-  sample::ProviderPtr provider;
-  ProviderImpl provider_impl(MakeRequest(&provider));
+  Remote<sample::Provider> provider;
+  ProviderImpl provider_impl(provider.BindNewPipeAndPassReceiver());
 
-  MessagePipe pipe2;
+  MessagePipe pipe;
   base::RunLoop run_loop;
+  constexpr const char kTestMessage[] = "hello";
   provider->EchoMessagePipeHandle(
-      std::move(pipe2.handle1),
-      base::Bind(&WriteToMessagePipe, "hello", run_loop.QuitClosure()));
+      std::move(pipe.handle1),
+      base::BindLambdaForTesting([&](ScopedMessagePipeHandle handle) {
+        WriteTextMessage(handle.get(), kTestMessage);
 
+        std::string value;
+        ReadTextMessage(pipe.handle0.get(), &value);
+        EXPECT_EQ(kTestMessage, value);
+        run_loop.Quit();
+      }));
   run_loop.Run();
-
-  std::string value;
-  ReadTextMessage(pipe2.handle0.get(), &value);
-
-  EXPECT_EQ(std::string("hello"), value);
 }
 
 TEST_P(RequestResponseTest, EchoEnum) {
-  sample::ProviderPtr provider;
-  ProviderImpl provider_impl(MakeRequest(&provider));
+  Remote<sample::Provider> provider;
+  ProviderImpl provider_impl(provider.BindNewPipeAndPassReceiver());
 
-  sample::Enum value;
   base::RunLoop run_loop;
   provider->EchoEnum(sample::Enum::VALUE,
-                     base::Bind(&RecordEnum, &value, run_loop.QuitClosure()));
+                     base::BindLambdaForTesting([&](sample::Enum value) {
+                       EXPECT_EQ(sample::Enum::VALUE, value);
+                       run_loop.Quit();
+                     }));
   run_loop.Run();
-
-  EXPECT_EQ(sample::Enum::VALUE, value);
 }
 
 INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(RequestResponseTest);

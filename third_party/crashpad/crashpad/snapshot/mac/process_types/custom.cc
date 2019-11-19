@@ -19,6 +19,7 @@
 #include <sys/types.h>
 
 #include <algorithm>
+#include <limits>
 #include <type_traits>
 
 #include "base/logging.h"
@@ -26,6 +27,7 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "snapshot/mac/process_types/internal.h"
+#include "util/mac/mac_util.h"
 #include "util/process/process_memory_mac.h"
 
 #if !DOXYGEN
@@ -140,8 +142,8 @@ size_t dyld_all_image_infos<Traits>::ExpectedSizeForVersion(
       offsetof(dyld_all_image_infos<Traits>, sharedCacheSlide),  // 11
       offsetof(dyld_all_image_infos<Traits>, sharedCacheUUID),  // 12
       offsetof(dyld_all_image_infos<Traits>, infoArrayChangeTimestamp),  // 13
-      offsetof(dyld_all_image_infos<Traits>, end_14_15),  // 14
-      offsetof(dyld_all_image_infos<Traits>, end_14_15),  // 15
+      offsetof(dyld_all_image_infos<Traits>, end_14),  // 14
+      std::numeric_limits<size_t>::max(),  // 15, see below
       sizeof(dyld_all_image_infos<Traits>),  // 16
   };
 
@@ -151,7 +153,27 @@ size_t dyld_all_image_infos<Traits>::ExpectedSizeForVersion(
 
   static_assert(std::is_unsigned<decltype(version)>::value,
                 "version must be unsigned");
-  return kSizeForVersion[version];
+
+  if (version == 15) {
+    // Disambiguate between the two different layouts for version 15. The
+    // original one introduced in macOS 10.12 had the same size as version 14.
+    // The revised one in macOS 10.13 grew. It’s safe to assume that the
+    // dyld_all_image_infos structure came from the same system that’s now
+    // interpreting it, so use an OS version check.
+    int mac_os_x_minor_version = MacOSXMinorVersion();
+    if (mac_os_x_minor_version == 12) {
+      return offsetof(dyld_all_image_infos<Traits>, end_14);
+    }
+
+    DCHECK_GE(mac_os_x_minor_version, 13);
+    DCHECK_LE(mac_os_x_minor_version, 14);
+    return offsetof(dyld_all_image_infos<Traits>, platform);
+  }
+
+  size_t size = kSizeForVersion[version];
+  DCHECK_NE(size, std::numeric_limits<size_t>::max());
+
+  return size;
 }
 
 // static

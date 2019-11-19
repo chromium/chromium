@@ -223,7 +223,10 @@ function getStartAndEndOfOrderedText(codePages) {
 function createGraph(codePages, reachedPerPage, residency) {
   const PAGE_SIZE = 4096;
 
+  // Offset is relative to the start of libmonochrome.so not to .text
+  // All offsets are aligned down to page size.
   let offsets = codePages.map((x) => x.offset).sort((a, b) => a - b);
+  // |minOffset| is equal to start of text aligned down to page size.
   let minOffset = +offsets[0];
   let maxOffset = +offsets[offsets.length - 1] + PAGE_SIZE;
   let startEndOfOrderedText = getStartAndEndOfOrderedText(codePages);
@@ -239,15 +242,20 @@ function createGraph(codePages, reachedPerPage, residency) {
   }
 
   if (residency) {
-    let timestamps = Object.keys(
-        residency).map((x) => +x).sort((a, b) => a - b);
-    let lastTimestamp = +timestamps[timestamps.length - 1];
-    let residencyData = residency[lastTimestamp];
-    // Other offsets are relative to start of the native library.
-    let typedResidencyData = residencyData.map(
+    let typedResidencyData = residency.map(
         (page) => (
-            {"type": RESIDENCY, "data": {"offset": page.offset + minOffset,
+            {"type": RESIDENCY, "data": {"offset": page.page_num * PAGE_SIZE
+                                                   + minOffset,
                                          "resident": page.resident}}));
+    nextResidencyOffset
+      = (residency[residency.length - 1].page_num + 1) * PAGE_SIZE
+        + minOffset;
+
+    for(let i = nextResidencyOffset; i < maxOffset; i+=PAGE_SIZE) {
+      typedResidencyData.push(
+          {"type": RESIDENCY, "data": {"offset": i, "resident": 0}});
+    }
+
     flatData = flatData.concat(typedResidencyData);
   }
 

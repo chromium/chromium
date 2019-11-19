@@ -2,171 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdint.h>
-
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/bind_test_util.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
+#include "chrome/browser/sync/test/integration/bookmarks_helper.h"
+#include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/sync/test/integration/user_events_helper.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
-#include "components/sync/driver/sync_driver_switches.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
-#include "components/sync/user_events/user_event_service.h"
-#include "components/variations/variations_associated_data.h"
+#include "components/sync_user_events/user_event_service.h"
 
-using fake_server::FakeServer;
-using sync_pb::UserEventSpecifics;
-using sync_pb::SyncEntity;
 using sync_pb::CommitResponse;
+using sync_pb::SyncEntity;
+using sync_pb::UserEventSpecifics;
+using user_events_helper::CreateTestEvent;
 
 namespace {
-
-UserEventSpecifics CreateTestEvent(int microseconds) {
-  UserEventSpecifics specifics;
-  specifics.set_event_time_usec(microseconds);
-  specifics.set_navigation_id(microseconds);
-  specifics.mutable_test_event();
-  return specifics;
-}
 
 CommitResponse::ResponseType BounceType(
     CommitResponse::ResponseType type,
     const syncer::LoopbackServerEntity& entity) {
   return type;
 }
-
-CommitResponse::ResponseType TransientErrorFirst(
-    bool* first,
-    UserEventSpecifics* retry_specifics,
-    const syncer::LoopbackServerEntity& entity) {
-  if (*first) {
-    *first = false;
-    SyncEntity sync_entity;
-    entity.SerializeAsProto(&sync_entity);
-    *retry_specifics = sync_entity.specifics().user_event();
-    return CommitResponse::TRANSIENT_ERROR;
-  } else {
-    return CommitResponse::SUCCESS;
-  }
-}
-
-class UserEventEqualityChecker : public SingleClientStatusChangeChecker {
- public:
-  UserEventEqualityChecker(browser_sync::ProfileSyncService* service,
-                           FakeServer* fake_server,
-                           std::vector<UserEventSpecifics> expected_specifics)
-      : SingleClientStatusChangeChecker(service), fake_server_(fake_server) {
-    for (const UserEventSpecifics& specifics : expected_specifics) {
-      expected_specifics_.insert(std::pair<int64_t, UserEventSpecifics>(
-          specifics.event_time_usec(), specifics));
-    }
-  }
-
-  bool IsExitConditionSatisfied() override {
-    std::vector<SyncEntity> entities =
-        fake_server_->GetSyncEntitiesByModelType(syncer::USER_EVENTS);
-
-    // |entities.size()| is only going to grow, if |entities.size()| ever
-    // becomes bigger then all hope is lost of passing, stop now.
-    EXPECT_GE(expected_specifics_.size(), entities.size());
-
-    if (expected_specifics_.size() > entities.size()) {
-      return false;
-    }
-
-    // Number of events on server matches expected, exit condition is satisfied.
-    // Let's verify that content matches as well. It is safe to modify
-    // |expected_specifics_|.
-    for (const SyncEntity& entity : entities) {
-      UserEventSpecifics server_specifics = entity.specifics().user_event();
-      auto iter = expected_specifics_.find(server_specifics.event_time_usec());
-      // We don't expect to encounter id matching events with different values,
-      // this isn't going to recover so fail the test case now.
-      EXPECT_TRUE(expected_specifics_.end() != iter);
-      if (expected_specifics_.end() == iter) {
-        return false;
-      }
-      // TODO(skym): This may need to change if we start updating navigation_id
-      // based on what sessions data is committed, and end up committing the
-      // same event multiple times.
-      EXPECT_EQ(iter->second.navigation_id(), server_specifics.navigation_id());
-      EXPECT_EQ(iter->second.event_case(), server_specifics.event_case());
-
-      expected_specifics_.erase(iter);
-    }
-
-    return true;
-  }
-
-  std::string GetDebugMessage() const override {
-    return "Waiting server side USER_EVENTS to match expected.";
-  }
-
- private:
-  FakeServer* fake_server_;
-  std::multimap<int64_t, UserEventSpecifics> expected_specifics_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserEventEqualityChecker);
-};
-
-// A more simplistic version of UserEventEqualityChecker that only checks the
-// case of the events. This is helpful if you do not know (or control) some of
-// the fields of the events that are created.
-class UserEventCaseChecker : public SingleClientStatusChangeChecker {
- public:
-  UserEventCaseChecker(
-      browser_sync::ProfileSyncService* service,
-      FakeServer* fake_server,
-      std::multiset<UserEventSpecifics::EventCase> expected_cases)
-      : SingleClientStatusChangeChecker(service),
-        fake_server_(fake_server),
-        expected_cases_(expected_cases) {}
-
-  bool IsExitConditionSatisfied() override {
-    std::vector<SyncEntity> entities =
-        fake_server_->GetSyncEntitiesByModelType(syncer::USER_EVENTS);
-
-    // |entities.size()| is only going to grow, if |entities.size()| ever
-    // becomes bigger then all hope is lost of passing, stop now.
-    EXPECT_GE(expected_cases_.size(), entities.size());
-
-    if (expected_cases_.size() > entities.size()) {
-      return false;
-    }
-
-    // Number of events on server matches expected, exit condition is satisfied.
-    // Let's verify that content matches as well. It is safe to modify
-    // |expected_specifics_|.
-    for (const SyncEntity& entity : entities) {
-      UserEventSpecifics::EventCase actual =
-          entity.specifics().user_event().event_case();
-      auto iter = expected_cases_.find(actual);
-      if (iter != expected_cases_.end()) {
-        expected_cases_.erase(iter);
-      } else {
-        ADD_FAILURE() << actual;
-      }
-    }
-
-    return true;
-  }
-
-  std::string GetDebugMessage() const override {
-    return "Waiting server side USER_EVENTS to match expected.";
-  }
-
- private:
-  FakeServer* fake_server_;
-  std::multiset<UserEventSpecifics::EventCase> expected_cases_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserEventCaseChecker);
-};
 
 class SingleClientUserEventsSyncTest : public SyncTest {
  public:
@@ -191,15 +56,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Sanity) {
       GetFakeServer()->GetSyncEntitiesByModelType(syncer::USER_EVENTS).size());
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
-  const UserEventSpecifics specifics = CreateTestEvent(0);
+  const UserEventSpecifics specifics = CreateTestEvent(base::Time());
   event_service->RecordUserEvent(specifics);
   EXPECT_TRUE(ExpectUserEvents({specifics}));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetrySequential) {
   ASSERT_TRUE(SetupSync());
-  const UserEventSpecifics specifics1 = CreateTestEvent(1);
-  const UserEventSpecifics specifics2 = CreateTestEvent(2);
+  const UserEventSpecifics specifics1 =
+      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+  const UserEventSpecifics specifics2 =
+      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
 
@@ -222,32 +89,61 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetrySequential) {
   EXPECT_TRUE(ExpectUserEvents({specifics1, specifics1, specifics2}));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetryParallel) {
+// Flaky (mostly) on ASan/TSan. http://crbug.com/998130
+#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
+#define MAYBE_RetryParallel DISABLED_RetryParallel
+#else
+#define MAYBE_RetryParallel RetryParallel
+#endif
+IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, MAYBE_RetryParallel) {
   ASSERT_TRUE(SetupSync());
-  bool first = true;
-  const UserEventSpecifics specifics1 = CreateTestEvent(1);
-  const UserEventSpecifics specifics2 = CreateTestEvent(2);
-  UserEventSpecifics retry_specifics;
+
+  const UserEventSpecifics specifics1 =
+      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+  const UserEventSpecifics specifics2 =
+      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
 
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
 
+  // Set up the server so that the first entity that arrives results in a
+  // transient error.
   // We're not really sure if |specifics1| or |specifics2| is going to see the
   // error, so record the one that does into |retry_specifics| and use it in
   // expectations.
-  GetFakeServer()->OverrideResponseType(
-      base::Bind(&TransientErrorFirst, &first, &retry_specifics));
+  bool first = true;
+  UserEventSpecifics retry_specifics;
+  GetFakeServer()->OverrideResponseType(base::BindLambdaForTesting(
+      [&](const syncer::LoopbackServerEntity& entity) {
+        if (first) {
+          first = false;
+          SyncEntity sync_entity;
+          entity.SerializeAsProto(&sync_entity);
+          retry_specifics = sync_entity.specifics().user_event();
+          return CommitResponse::TRANSIENT_ERROR;
+        }
+        return CommitResponse::SUCCESS;
+      }));
 
   event_service->RecordUserEvent(specifics2);
   event_service->RecordUserEvent(specifics1);
+  // First wait for these two events to arrive on the server - only after this
+  // has happened will |retry_specifics| actually be populated.
+  // Note: The entity that got the transient error is still considered
+  // "committed" by the fake server.
   EXPECT_TRUE(ExpectUserEvents({specifics1, specifics2}));
+  // Now that |retry_specifics| got populated by the lambda above, make sure it
+  // also arrives on the server.
   EXPECT_TRUE(ExpectUserEvents({specifics1, specifics2, retry_specifics}));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoHistory) {
-  const UserEventSpecifics test_event1 = CreateTestEvent(1);
-  const UserEventSpecifics test_event2 = CreateTestEvent(2);
-  const UserEventSpecifics test_event3 = CreateTestEvent(3);
+  const UserEventSpecifics test_event1 =
+      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+  const UserEventSpecifics test_event2 =
+      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
+  const UserEventSpecifics test_event3 =
+      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(3));
 
   ASSERT_TRUE(SetupSync());
   syncer::UserEventService* event_service =
@@ -256,13 +152,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoHistory) {
   event_service->RecordUserEvent(test_event1);
 
   // Wait until the first events is committed before disabling sync,
-  // because disabled TYPED_URLS also disables user event sync, dropping all
+  // because disabled kHistory also disables user event sync, dropping all
   // uncommitted events.
   EXPECT_TRUE(ExpectUserEvents({test_event1}));
-  ASSERT_TRUE(GetClient(0)->DisableSyncForDatatype(syncer::TYPED_URLS));
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
 
   event_service->RecordUserEvent(test_event2);
-  ASSERT_TRUE(GetClient(0)->EnableSyncForDatatype(syncer::TYPED_URLS));
+  ASSERT_TRUE(
+      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kHistory));
   event_service->RecordUserEvent(test_event3);
 
   // No |test_event2| because it was recorded while history was disabled.
@@ -270,9 +168,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoHistory) {
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoSessions) {
-  const UserEventSpecifics specifics = CreateTestEvent(1);
+  const UserEventSpecifics specifics =
+      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(GetClient(0)->DisableSyncForDatatype(syncer::PROXY_TABS));
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kTabs));
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
 
@@ -283,15 +183,18 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoSessions) {
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Encryption) {
-  const UserEventSpecifics test_event1 = CreateTestEvent(1);
-  const UserEventSpecifics test_event2 = CreateTestEvent(2);
+  const UserEventSpecifics test_event1 =
+      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+  const UserEventSpecifics test_event2 =
+      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
 
   ASSERT_TRUE(SetupSync());
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
   event_service->RecordUserEvent(test_event1);
-  ASSERT_TRUE(EnableEncryption(0));
   EXPECT_TRUE(ExpectUserEvents({test_event1}));
+  GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase("passphrase");
+  ASSERT_TRUE(PassphraseAcceptedChecker(GetSyncService(0)).Wait());
   event_service->RecordUserEvent(test_event2);
 
   // Just checking that we don't see test_event2 isn't very convincing yet,
@@ -304,19 +207,36 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Encryption) {
   EXPECT_TRUE(ExpectUserEvents({test_event1}));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, FieldTrial) {
-  const std::string trial_name = "TrialName";
-  const std::string group_name = "GroupName";
+IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest,
+                       ShouldNotUploadInSyncPausedState) {
+  const UserEventSpecifics test_event =
+      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
 
   ASSERT_TRUE(SetupSync());
-  variations::AssociateGoogleVariationID(variations::CHROME_SYNC_EVENT_LOGGER,
-                                         trial_name, group_name, 123);
-  base::FieldTrialList::CreateFieldTrial(trial_name, group_name);
-  base::FieldTrialList::FindFullName(trial_name);
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
 
-  UserEventCaseChecker(GetSyncService(0), GetFakeServer(),
-                       {UserEventSpecifics::kFieldTrialEvent})
-      .Wait();
+  // Enter the sync paused state.
+  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  ASSERT_TRUE(GetSyncService(0)->GetAuthError().IsPersistentError());
+
+  syncer::UserEventService* event_service =
+      browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
+  event_service->RecordUserEvent(test_event);
+
+  // Clear the "Sync paused" state again.
+  GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
+
+  // Just checking that we don't see test_event isn't very convincing yet,
+  // because it may simply not have reached the server yet. So let's send
+  // something else through the system that we can wait on before checking.
+  ASSERT_TRUE(
+      bookmarks_helper::AddURL(0, "What are you syncing about?",
+                               GURL("https://google.com/synced-bookmark-1")));
+  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::BOOKMARKS, 1).Wait());
+
+  // No event should get synced up.
+  EXPECT_TRUE(ExpectUserEvents({}));
 }
 
 }  // namespace

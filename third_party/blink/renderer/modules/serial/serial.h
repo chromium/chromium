@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SERIAL_SERIAL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SERIAL_SERIAL_H_
 
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/serial/serial.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -28,19 +29,26 @@ class Serial final : public EventTargetWithInlineData,
   USING_GARBAGE_COLLECTED_MIXIN(Serial);
 
  public:
-  static Serial* Create(ExecutionContext& executionContext);
-
   explicit Serial(ExecutionContext&);
 
   // EventTarget
   ExecutionContext* GetExecutionContext() const override;
   const AtomicString& InterfaceName() const override;
 
+  // ContextLifecycleObserver
+  void ContextDestroyed(ExecutionContext*) override;
+
+  // Web-exposed interfaces
   DEFINE_ATTRIBUTE_EVENT_LISTENER(connect, kConnect)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(disconnect, kDisconnect)
-  ScriptPromise getPorts(ScriptState*);
-  ScriptPromise requestPort(ScriptState*, const SerialPortRequestOptions*);
+  ScriptPromise getPorts(ScriptState*, ExceptionState&);
+  ScriptPromise requestPort(ScriptState*,
+                            const SerialPortRequestOptions*,
+                            ExceptionState&);
 
+  void GetPort(
+      const base::UnguessableToken& token,
+      mojo::PendingReceiver<device::mojom::blink::SerialPort> receiver);
   void Trace(Visitor*) override;
 
  private:
@@ -51,7 +59,7 @@ class Serial final : public EventTargetWithInlineData,
                   Vector<mojom::blink::SerialPortInfoPtr>);
   void OnRequestPort(ScriptPromiseResolver*, mojom::blink::SerialPortInfoPtr);
 
-  mojom::blink::SerialServicePtr service_;
+  mojo::Remote<mojom::blink::SerialService> service_;
   HeapHashSet<Member<ScriptPromiseResolver>> get_ports_promises_;
   HeapHashSet<Member<ScriptPromiseResolver>> request_port_promises_;
   HeapHashMap<String, WeakMember<SerialPort>> port_cache_;

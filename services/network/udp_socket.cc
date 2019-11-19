@@ -153,11 +153,12 @@ UDPSocket::PendingSendRequest::PendingSendRequest() {}
 
 UDPSocket::PendingSendRequest::~PendingSendRequest() {}
 
-UDPSocket::UDPSocket(mojom::UDPSocketReceiverPtr receiver, net::NetLog* net_log)
+UDPSocket::UDPSocket(mojo::PendingRemote<mojom::UDPSocketListener> listener,
+                     net::NetLog* net_log)
     : net_log_(net_log),
       is_bound_(false),
       is_connected_(false),
-      receiver_(std::move(receiver)),
+      listener_(std::move(listener)),
       remaining_recv_slots_(0) {}
 
 UDPSocket::~UDPSocket() {}
@@ -259,10 +260,10 @@ void UDPSocket::ReceiveMore(uint32_t num_additional_datagrams) {
 
 void UDPSocket::ReceiveMoreWithBufferSize(uint32_t num_additional_datagrams,
                                           uint32_t buffer_size) {
-  if (!receiver_)
+  if (!listener_)
     return;
   if (!IsConnectedOrBound()) {
-    receiver_->OnReceived(net::ERR_UNEXPECTED, base::nullopt, base::nullopt);
+    listener_->OnReceived(net::ERR_UNEXPECTED, base::nullopt, base::nullopt);
     return;
   }
   if (num_additional_datagrams == 0)
@@ -331,7 +332,7 @@ bool UDPSocket::IsConnectedOrBound() const {
 }
 
 void UDPSocket::DoRecvFrom(uint32_t buffer_size) {
-  DCHECK(receiver_);
+  DCHECK(listener_);
   DCHECK(!recvfrom_buffer_);
   DCHECK_GT(remaining_recv_slots_, 0u);
   DCHECK_GE(kMaxReadSize, buffer_size);
@@ -417,14 +418,14 @@ void UDPSocket::OnRecvFromCompleted(uint32_t buffer_size, int net_result) {
   DCHECK(recvfrom_buffer_);
 
   if (net_result >= 0) {
-    receiver_->OnReceived(
+    listener_->OnReceived(
         net::OK,
         is_bound_ ? base::make_optional(recvfrom_address_) : base::nullopt,
         base::span<const uint8_t>(
             reinterpret_cast<const uint8_t*>(recvfrom_buffer_->data()),
             static_cast<size_t>(net_result)));
   } else {
-    receiver_->OnReceived(net_result, base::nullopt, base::nullopt);
+    listener_->OnReceived(net_result, base::nullopt, base::nullopt);
   }
   recvfrom_buffer_ = nullptr;
   DCHECK_GT(remaining_recv_slots_, 0u);

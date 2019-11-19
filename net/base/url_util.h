@@ -172,6 +172,10 @@ NET_EXPORT_PRIVATE void GetIdentityFromURL(const GURL& url,
 // for histograms and shouldn't be used to affect behavior.
 NET_EXPORT_PRIVATE bool HasGoogleHost(const GURL& url);
 
+// Returns true if |host| is the hostname of a Google server. This should only
+// be used for histograms and shouldn't be used to affect behavior.
+NET_EXPORT_PRIVATE bool IsGoogleHost(base::StringPiece host);
+
 // This function tests |host| to see if its one used in the initial TLS 1.3
 // deployment. TLS connections to them form the basis of our comparisons.
 NET_EXPORT_PRIVATE bool IsTLS13ExperimentHost(base::StringPiece host);

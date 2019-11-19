@@ -17,10 +17,12 @@ repack("packed_resources") {
   sources = [
     "$root_gen_dir/ios/web/ios_web_resources.pak",
     "$root_gen_dir/ios/web/test/test_resources.pak",
+    "$root_gen_dir/ui/resources/webui_resources.pak",
   ]
   deps = [
     ":resources",
     "//ios/web:resources",
+    "//ui/resources",
   ]
   output = "$target_gen_dir/resources.pak"
   copy_data_to_bundle = true
@@ -56,7 +58,9 @@ source_set("test_support") {
     ":test_constants",
     "//base",
     "//base/test:test_support",
+    "//ios/testing:verify_custom_webkit",
     "//ios/web",
+    "//ios/web/common:web_view_creation_util",
     "//ios/web/navigation:core",
     "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",
@@ -70,10 +74,10 @@ source_set("test_support") {
 
   sources = [
     "test_web_thread.cc",
-    "test_web_thread_bundle.cc",
     "url_test_util.mm",
     "web_int_test.h",
     "web_int_test.mm",
+    "web_task_environment.cc",
     "web_test_suite.mm",
     "web_test_with_web_controller.h",
     "web_test_with_web_controller.mm",

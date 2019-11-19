@@ -38,7 +38,7 @@ void SVGModelObjectPainter::RecordHitTestData(
   if (paint_info.GetGlobalPaintFlags() & kGlobalPaintFlattenCompositingLayers)
     return;
 
-  auto touch_action = layout_svg_model_object.EffectiveWhitelistedTouchAction();
+  auto touch_action = layout_svg_model_object.EffectiveAllowedTouchAction();
   if (touch_action == TouchAction::kTouchActionAuto)
     return;
 
@@ -60,7 +60,8 @@ void SVGModelObjectPainter::PaintOutline(const PaintInfo& paint_info) {
   outline_paint_info.phase = PaintPhase::kSelfOutlineOnly;
   auto visual_rect = layout_svg_model_object_.VisualRectInLocalSVGCoordinates();
   ObjectPainter(layout_svg_model_object_)
-      .PaintOutline(outline_paint_info, LayoutPoint(visual_rect.Location()));
+      .PaintOutline(outline_paint_info, PhysicalOffset::FromFloatPointRound(
+                                            visual_rect.Location()));
 }
 
 }  // namespace blink

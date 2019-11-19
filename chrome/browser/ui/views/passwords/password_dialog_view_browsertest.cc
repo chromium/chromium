@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/passwords/account_chooser_dialog_view.h"
 #include "chrome/browser/ui/views/passwords/auto_signin_first_run_dialog_view.h"
+#include "chrome/browser/ui/views/passwords/credential_leak_dialog_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -32,10 +33,12 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
-using ::testing::Field;
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
+using password_manager::CredentialLeakFlags;
+using password_manager::CredentialLeakType;
+using ::testing::Field;
 
 namespace {
 
@@ -46,9 +49,11 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
 
   void OnDialogHidden() override;
   AccountChooserPrompt* CreateAccountChooser(
-      PasswordDialogController* controller) override;
+      CredentialManagerDialogController* controller) override;
   AutoSigninFirstRunPrompt* CreateAutoSigninPrompt(
-      PasswordDialogController* controller) override;
+      CredentialManagerDialogController* controller) override;
+  CredentialLeakPrompt* CreateCredentialLeakPrompt(
+      CredentialLeakDialogController* controller) override;
 
   AccountChooserDialogView* current_account_chooser() const {
     return static_cast<AccountChooserDialogView*>(current_account_chooser_);
@@ -59,11 +64,17 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
         current_autosignin_prompt_);
   }
 
+  CredentialLeakDialogView* current_credential_leak_prompt() const {
+    return static_cast<CredentialLeakDialogView*>(
+        current_credential_leak_prompt_);
+  }
+
   MOCK_METHOD0(OnDialogClosed, void());
 
  private:
   AccountChooserPrompt* current_account_chooser_;
   AutoSigninFirstRunPrompt* current_autosignin_prompt_;
+  CredentialLeakPrompt* current_credential_leak_prompt_;
 
   DISALLOW_COPY_AND_ASSIGN(TestManagePasswordsUIController);
 };
@@ -72,7 +83,8 @@ TestManagePasswordsUIController::TestManagePasswordsUIController(
     content::WebContents* web_contents)
     : ManagePasswordsUIController(web_contents),
       current_account_chooser_(nullptr),
-      current_autosignin_prompt_(nullptr) {
+      current_autosignin_prompt_(nullptr),
+      current_credential_leak_prompt_(nullptr) {
   // Attach TestManagePasswordsUIController to |web_contents| so the default
   // ManagePasswordsUIController isn't created.
   // Do not silently replace an existing ManagePasswordsUIController because it
@@ -87,7 +99,7 @@ void TestManagePasswordsUIController::OnDialogHidden() {
 }
 
 AccountChooserPrompt* TestManagePasswordsUIController::CreateAccountChooser(
-    PasswordDialogController* controller) {
+    CredentialManagerDialogController* controller) {
   current_account_chooser_ =
       ManagePasswordsUIController::CreateAccountChooser(controller);
   return current_account_chooser_;
@@ -95,10 +107,18 @@ AccountChooserPrompt* TestManagePasswordsUIController::CreateAccountChooser(
 
 AutoSigninFirstRunPrompt*
 TestManagePasswordsUIController::CreateAutoSigninPrompt(
-    PasswordDialogController* controller) {
+    CredentialManagerDialogController* controller) {
   current_autosignin_prompt_ =
       ManagePasswordsUIController::CreateAutoSigninPrompt(controller);
   return current_autosignin_prompt_;
+}
+
+CredentialLeakPrompt*
+TestManagePasswordsUIController::CreateCredentialLeakPrompt(
+    CredentialLeakDialogController* controller) {
+  current_credential_leak_prompt_ =
+      ManagePasswordsUIController::CreateCredentialLeakPrompt(controller);
+  return current_credential_leak_prompt_;
 }
 
 class PasswordDialogViewTest : public DialogBrowserTest {
@@ -405,6 +425,21 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, PopupAutoSigninPrompt) {
           browser()->profile()->GetPrefs()));
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, PopupCredentialsLeakedPrompt) {
+  CredentialLeakType leak_type = CredentialLeakFlags::kPasswordSaved |
+                                 CredentialLeakFlags::kPasswordUsedOnOtherSites;
+  GURL origin("https://example.com");
+  controller()->OnCredentialLeak(leak_type, origin);
+  ASSERT_TRUE(controller()->current_credential_leak_prompt());
+  EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
+  CredentialLeakDialogView* dialog =
+      controller()->current_credential_leak_prompt();
+  views::test::WidgetClosingObserver bubble_observer(dialog->GetWidget());
+  ui::Accelerator esc(ui::VKEY_ESCAPE, 0);
+  EXPECT_TRUE(dialog->GetWidget()->client_view()->AcceleratorPressed(esc));
+  EXPECT_TRUE(bubble_observer.widget_closed());
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
                        PopupAutoSigninPromptAfterBlockedZeroclick) {
   EXPECT_TRUE(
@@ -428,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
   ASSERT_FALSE(controller()->current_autosignin_prompt());
 
   // Successful login with a distinct form after block will not prompt:
-  blocked_form.reset(new autofill::PasswordForm(form));
+  blocked_form = std::make_unique<autofill::PasswordForm>(form);
   client()->NotifyUserCouldBeAutoSignedIn(std::move(blocked_form));
   form.username_value = base::ASCIIToUTF16("notpeter@pan.test");
   client()->NotifySuccessfulLoginWithExistingPassword(form);
@@ -438,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
   // sign-in is off:
   browser()->profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kCredentialsEnableAutosignin, false);
-  blocked_form.reset(new autofill::PasswordForm(form));
+  blocked_form = std::make_unique<autofill::PasswordForm>(form);
   client()->NotifyUserCouldBeAutoSignedIn(std::move(blocked_form));
   client()->NotifySuccessfulLoginWithExistingPassword(form);
   ASSERT_FALSE(controller()->current_autosignin_prompt());
@@ -446,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
       password_manager::prefs::kCredentialsEnableAutosignin, true);
 
   // Successful login with the same form after block will prompt:
-  blocked_form.reset(new autofill::PasswordForm(form));
+  blocked_form = std::make_unique<autofill::PasswordForm>(form);
   client()->NotifyUserCouldBeAutoSignedIn(std::move(blocked_form));
   client()->NotifySuccessfulLoginWithExistingPassword(form);
   ASSERT_TRUE(controller()->current_autosignin_prompt());

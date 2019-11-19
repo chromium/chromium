@@ -118,7 +118,7 @@ class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
   // TODO(mastiz): We should rather rename this to |syncing_state_|.
   base::Optional<SyncingState> syncing_;
 
-  base::WeakPtrFactory<SessionSyncBridge> weak_ptr_factory_;
+  base::WeakPtrFactory<SessionSyncBridge> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SessionSyncBridge);
 };

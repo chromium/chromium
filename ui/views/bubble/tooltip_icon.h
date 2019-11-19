@@ -14,6 +14,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/mouse_watcher.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
@@ -25,12 +26,13 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
                                  public MouseWatcherListener,
                                  public WidgetObserver {
  public:
+  METADATA_HEADER(TooltipIcon);
+
   explicit TooltipIcon(const base::string16& tooltip,
                        int tooltip_icon_size = 16);
   ~TooltipIcon() override;
 
   // ImageView:
-  const char* GetClassName() const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -88,7 +90,7 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
   // A watcher that keeps |bubble_| open if the user's mouse enters it.
   std::unique_ptr<MouseWatcher> mouse_watcher_;
 
-  ScopedObserver<Widget, TooltipIcon> observer_;
+  ScopedObserver<Widget, WidgetObserver> observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TooltipIcon);
 };

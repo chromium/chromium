@@ -87,7 +87,10 @@ def _DeleteDir(path):
   for root, dirs, files in os.walk(path, topdown=False):
     for name in files:
       filename = os.path.join(root, name)
-      os.chmod(filename, stat.S_IWRITE)
+      try:
+        os.chmod(filename, stat.S_IWRITE)
+      except OSError:
+        pass
       os.remove(filename)
     for name in dirs:
       os.rmdir(os.path.join(root, name))
@@ -163,10 +166,11 @@ def Kill(pid):
     os.kill(pid, signal.SIGTERM)
 
 
-def RunCommand(cmd, cwd=None):
+def RunCommand(cmd, cwd=None, fileName=None):
   """Runs the given command and returns the exit code.
 
   Args:
+    fileName: file name to redirect output
     cmd: list of command arguments.
     cwd: working directory to execute the command, or None if the current
          working directory should be used.
@@ -175,7 +179,11 @@ def RunCommand(cmd, cwd=None):
     The exit code of the command.
   """
   sys.stdout.flush()
-  process = subprocess.Popen(cmd, cwd=cwd)
+  if fileName is not None:
+    with open(fileName,"wb") as out:
+      process = subprocess.Popen(cmd, cwd=cwd,stdout=out,stderr=out)
+  else:
+    process = subprocess.Popen(cmd, cwd=cwd)
   process.wait()
   sys.stdout.flush()
   return process.returncode

@@ -36,10 +36,6 @@ class ImageResource;
 
 class CORE_EXPORT ImageDocument final : public HTMLDocument {
  public:
-  static ImageDocument* Create(const DocumentInit& initializer) {
-    return MakeGarbageCollected<ImageDocument>(initializer);
-  }
-
   explicit ImageDocument(const DocumentInit&);
 
   ImageResourceContent* CachedImage();

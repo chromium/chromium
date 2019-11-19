@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
-#include "third_party/blink/renderer/core/animation/element_animation.h"
 #include "third_party/blink/renderer/core/css/cssom/element_computed_style_map.h"
 #include "third_party/blink/renderer/core/dom/child_node.h"
 #include "third_party/blink/renderer/core/dom/non_document_type_child_node.h"

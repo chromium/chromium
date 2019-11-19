@@ -7,6 +7,7 @@
 
 // Identifies a feature that has in-product help.
 enum class InProductHelpFeature {
+  kGlobalMediaControls,
   kIncognitoWindow,
   kReopenTab,
 };

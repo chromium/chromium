@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ui/views/cocoa/bridged_native_widget_host_impl.h"
+#include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -27,16 +27,12 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegateMac::GetNSWindow() {
   if (!widget)
     return nil;
 
-  auto* top_level_widget = widget->GetTopLevelWidget();
-  if (!top_level_widget)
+  auto* window_host = NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+      widget->GetNativeWindow());
+  if (!window_host)
     return nil;
 
-  auto* bridge_host = BridgedNativeWidgetHostImpl::GetFromNativeWindow(
-      top_level_widget->GetNativeWindow());
-  if (!bridge_host)
-    return nil;
-
-  return bridge_host->GetNativeViewAccessibleForNSWindow();
+  return window_host->GetNativeViewAccessibleForNSWindow();
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegateMac::GetParent() {
@@ -47,12 +43,12 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegateMac::GetParent() {
   if (!widget)
     return nil;
 
-  auto* bridge_host = BridgedNativeWidgetHostImpl::GetFromNativeWindow(
+  auto* window_host = NativeWidgetMacNSWindowHost::GetFromNativeWindow(
       view()->GetWidget()->GetNativeWindow());
-  if (!bridge_host)
+  if (!window_host)
     return nil;
 
-  return bridge_host->GetNativeViewAccessibleForNSView();
+  return window_host->GetNativeViewAccessibleForNSView();
 }
 
 }  // namespace views

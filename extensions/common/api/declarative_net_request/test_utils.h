@@ -22,13 +22,19 @@ class Value;
 namespace extensions {
 namespace declarative_net_request {
 
+struct DictionarySource {
+  DictionarySource() = default;
+  virtual ~DictionarySource() = default;
+  virtual std::unique_ptr<base::DictionaryValue> ToValue() const = 0;
+};
+
 // Helper structs to simplify building base::Values which can later be used to
 // serialize to JSON. The generated implementation for the JSON rules schema is
 // not used since it's not flexible enough to generate the base::Value/JSON we
 // want for tests.
-struct TestRuleCondition {
+struct TestRuleCondition : public DictionarySource {
   TestRuleCondition();
-  ~TestRuleCondition();
+  ~TestRuleCondition() override;
   TestRuleCondition(const TestRuleCondition&);
   TestRuleCondition& operator=(const TestRuleCondition&);
 
@@ -39,23 +45,82 @@ struct TestRuleCondition {
   base::Optional<std::vector<std::string>> resource_types;
   base::Optional<std::vector<std::string>> excluded_resource_types;
   base::Optional<std::string> domain_type;
-  std::unique_ptr<base::DictionaryValue> ToValue() const;
+
+  std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
 
-struct TestRuleAction {
+struct TestRuleQueryKeyValue : public DictionarySource {
+  TestRuleQueryKeyValue();
+  ~TestRuleQueryKeyValue() override;
+  TestRuleQueryKeyValue(const TestRuleQueryKeyValue&);
+  TestRuleQueryKeyValue& operator=(const TestRuleQueryKeyValue&);
+
+  base::Optional<std::string> key;
+  base::Optional<std::string> value;
+
+  std::unique_ptr<base::DictionaryValue> ToValue() const override;
+};
+
+struct TestRuleQueryTransform : public DictionarySource {
+  TestRuleQueryTransform();
+  ~TestRuleQueryTransform() override;
+  TestRuleQueryTransform(const TestRuleQueryTransform&);
+  TestRuleQueryTransform& operator=(const TestRuleQueryTransform&);
+
+  base::Optional<std::vector<std::string>> remove_params;
+  base::Optional<std::vector<TestRuleQueryKeyValue>> add_or_replace_params;
+
+  std::unique_ptr<base::DictionaryValue> ToValue() const override;
+};
+
+struct TestRuleTransform : public DictionarySource {
+  TestRuleTransform();
+  ~TestRuleTransform() override;
+  TestRuleTransform(const TestRuleTransform&);
+  TestRuleTransform& operator=(const TestRuleTransform&);
+
+  base::Optional<std::string> scheme;
+  base::Optional<std::string> host;
+  base::Optional<std::string> port;
+  base::Optional<std::string> path;
+  base::Optional<std::string> query;
+  base::Optional<TestRuleQueryTransform> query_transform;
+  base::Optional<std::string> fragment;
+  base::Optional<std::string> username;
+  base::Optional<std::string> password;
+
+  std::unique_ptr<base::DictionaryValue> ToValue() const override;
+};
+
+struct TestRuleRedirect : public DictionarySource {
+  TestRuleRedirect();
+  ~TestRuleRedirect() override;
+  TestRuleRedirect(const TestRuleRedirect&);
+  TestRuleRedirect& operator=(const TestRuleRedirect&);
+
+  base::Optional<std::string> extension_path;
+  base::Optional<TestRuleTransform> transform;
+  base::Optional<std::string> url;
+
+  std::unique_ptr<base::DictionaryValue> ToValue() const override;
+};
+
+struct TestRuleAction : public DictionarySource {
   TestRuleAction();
-  ~TestRuleAction();
+  ~TestRuleAction() override;
   TestRuleAction(const TestRuleAction&);
   TestRuleAction& operator=(const TestRuleAction&);
 
   base::Optional<std::string> type;
-  base::Optional<std::string> redirect_url;
-  std::unique_ptr<base::DictionaryValue> ToValue() const;
+  base::Optional<std::vector<std::string>> remove_headers_list;
+  base::Optional<TestRuleRedirect> redirect;
+
+  std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
 
-struct TestRule {
+struct TestRule : public DictionarySource {
   TestRule();
-  ~TestRule();
+  ~TestRule() override;
   TestRule(const TestRule&);
   TestRule& operator=(const TestRule&);
 
@@ -63,7 +128,8 @@ struct TestRule {
   base::Optional<int> priority;
   base::Optional<TestRuleCondition> condition;
   base::Optional<TestRuleAction> action;
-  std::unique_ptr<base::DictionaryValue> ToValue() const;
+
+  std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
 
 // Helper function to build a generic TestRule.

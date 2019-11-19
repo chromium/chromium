@@ -13,7 +13,7 @@ https://www.imperialviolet.org/2014/06/20/boringssl.html
 Note: when rolling DEPS forward, remember to run
 
   cd third_party/boringssl
-  python src/util/generate_build_files.py gn
+  python src/util/generate_build_files.py --embed_test_data=false gn
 
 from a system with both Perl and Go installed. Alternatively, use the
 roll_boringssl.py script.

@@ -1,8 +1,6 @@
 #ifndef _RAR_ARCMEM_
 #define _RAR_ARCMEM_
 
-namespace third_party_unrar {
-
 // Memory interface for software fuzzers.
 
 class ArcMemory
@@ -20,7 +18,5 @@ class ArcMemory
     bool Seek(int64 Offset,int Method);
     bool Tell(int64 *Pos);
 };
-
-}  // namespace third_party_unrar
 
 #endif

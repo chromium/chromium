@@ -9,9 +9,9 @@
 <script>
 
 promise_test(function(t) {
-  const url = 'resources/empty_worker.js';
+  const url = '/resources/empty-worker.js';
   const iframe_scope = 'oneshot.html';
-  const scope = 'resources/scope/background_sync/' + iframe_scope;
+  const scope = '/resources/scope/background_sync/' + iframe_scope;
   var sync_manager;
 
   // This test verifies that registration of one-shots fails from an iframe.
@@ -45,8 +45,8 @@ promise_test(function(t) {
      'from an iframe');
 
 promise_test(function(t) {
-  const url = 'resources/empty_worker.js';
-  const scope = 'resources/scope/background_sync/oneshot-uncontrolled.html';
+  const url = '/resources/empty-worker.js';
+  const scope = '/resources/scope/background_sync/oneshot-uncontrolled.html';
   var sync_manager;
 
   // This test verifies that one-shot syncs can be registered from uncontrolled

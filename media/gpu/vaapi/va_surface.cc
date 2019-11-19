@@ -9,16 +9,16 @@ namespace media {
 VASurface::VASurface(VASurfaceID va_surface_id,
                      const gfx::Size& size,
                      unsigned int format,
-                     const ReleaseCB& release_cb)
+                     ReleaseCB release_cb)
     : va_surface_id_(va_surface_id),
       size_(size),
       format_(format),
-      release_cb_(release_cb) {
+      release_cb_(std::move(release_cb)) {
   DCHECK(release_cb_);
 }
 
 VASurface::~VASurface() {
-  release_cb_.Run(va_surface_id_);
+  std::move(release_cb_).Run(va_surface_id_);
 }
 
 }  // namespace media

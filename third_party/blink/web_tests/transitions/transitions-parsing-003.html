@@ -97,27 +97,27 @@ test(() => {
 
   style.transitionTimingFunction = "step-start";
   assert_equals(style.transitionTimingFunction, 'step-start');
-  assert_equals(computedStyle.transitionTimingFunction, 'step-start');
+  assert_equals(computedStyle.transitionTimingFunction, 'steps(1, start)');
   assert_equals(style.webkitTransitionTimingFunction, 'step-start');
-  assert_equals(computedStyle.webkitTransitionTimingFunction, 'step-start');
+  assert_equals(computedStyle.webkitTransitionTimingFunction, 'steps(1, start)');
 
   style.transitionTimingFunction = "step-end";
   assert_equals(style.transitionTimingFunction, 'step-end');
-  assert_equals(computedStyle.transitionTimingFunction, 'step-end');
+  assert_equals(computedStyle.transitionTimingFunction, 'steps(1)');
   assert_equals(style.webkitTransitionTimingFunction, 'step-end');
-  assert_equals(computedStyle.webkitTransitionTimingFunction, 'step-end');
+  assert_equals(computedStyle.webkitTransitionTimingFunction, 'steps(1)');
 
   style.transitionTimingFunction = "steps(3)";
-  assert_equals(style.transitionTimingFunction, 'steps(3, end)');
-  assert_equals(computedStyle.transitionTimingFunction, 'steps(3, end)');
-  assert_equals(style.webkitTransitionTimingFunction, 'steps(3, end)');
-  assert_equals(computedStyle.webkitTransitionTimingFunction, 'steps(3, end)');
+  assert_equals(style.transitionTimingFunction, 'steps(3)');
+  assert_equals(computedStyle.transitionTimingFunction, 'steps(3)');
+  assert_equals(style.webkitTransitionTimingFunction, 'steps(3)');
+  assert_equals(computedStyle.webkitTransitionTimingFunction, 'steps(3)');
 
   style.transitionTimingFunction = "steps(4, end)";
-  assert_equals(style.transitionTimingFunction, 'steps(4, end)');
-  assert_equals(computedStyle.transitionTimingFunction, 'steps(4, end)');
-  assert_equals(style.webkitTransitionTimingFunction, 'steps(4, end)');
-  assert_equals(computedStyle.webkitTransitionTimingFunction, 'steps(4, end)');
+  assert_equals(style.transitionTimingFunction, 'steps(4)');
+  assert_equals(computedStyle.transitionTimingFunction, 'steps(4)');
+  assert_equals(style.webkitTransitionTimingFunction, 'steps(4)');
+  assert_equals(computedStyle.webkitTransitionTimingFunction, 'steps(4)');
 
   style.transitionTimingFunction = "steps(5, start)";
   assert_equals(style.transitionTimingFunction, 'steps(5, start)');
@@ -125,11 +125,17 @@ test(() => {
   assert_equals(style.webkitTransitionTimingFunction, 'steps(5, start)');
   assert_equals(computedStyle.webkitTransitionTimingFunction, 'steps(5, start)');
 
-  style.transitionTimingFunction = "frames(5)";
-  assert_equals(style.transitionTimingFunction, 'frames(5)');
-  assert_equals(computedStyle.transitionTimingFunction, 'frames(5)');
-  assert_equals(style.webkitTransitionTimingFunction, 'frames(5)');
-  assert_equals(computedStyle.webkitTransitionTimingFunction, 'frames(5)');
+  style.transitionTimingFunction = "steps(6, jump-start)";
+  assert_equals(style.transitionTimingFunction, 'steps(6, jump-start)');
+  assert_equals(computedStyle.transitionTimingFunction, 'steps(6, jump-start)');
+  assert_equals(style.webkitTransitionTimingFunction, 'steps(6, jump-start)');
+  assert_equals(computedStyle.webkitTransitionTimingFunction, 'steps(6, jump-start)');
+
+  style.transitionTimingFunction = "steps(7, jump-end)";
+  assert_equals(style.transitionTimingFunction, 'steps(7)');
+  assert_equals(computedStyle.transitionTimingFunction, 'steps(7)');
+  assert_equals(style.webkitTransitionTimingFunction, 'steps(7)');
+  assert_equals(computedStyle.webkitTransitionTimingFunction, 'steps(7)');
 
   style.transitionProperty = "opacity, width";
 
@@ -217,30 +223,6 @@ test(() => {
   assert_equals(computedStyle.webkitTransitionTimingFunction, 'ease');
 
   style.transitionTimingFunction = "step(5)";
-  assert_equals(style.transitionTimingFunction, '');
-  assert_equals(computedStyle.transitionTimingFunction, 'ease');
-  assert_equals(style.webkitTransitionTimingFunction, '');
-  assert_equals(computedStyle.webkitTransitionTimingFunction, 'ease');
-
-  style.transitionTimingFunction = "frame(5)";
-  assert_equals(style.transitionTimingFunction, '');
-  assert_equals(computedStyle.transitionTimingFunction, 'ease');
-  assert_equals(style.webkitTransitionTimingFunction, '');
-  assert_equals(computedStyle.webkitTransitionTimingFunction, 'ease');
-
-  style.transitionTimingFunction = "frames()";
-  assert_equals(style.transitionTimingFunction, '');
-  assert_equals(computedStyle.transitionTimingFunction, 'ease');
-  assert_equals(style.webkitTransitionTimingFunction, '');
-  assert_equals(computedStyle.webkitTransitionTimingFunction, 'ease');
-
-  style.transitionTimingFunction = "frames(1)";
-  assert_equals(style.transitionTimingFunction, '');
-  assert_equals(computedStyle.transitionTimingFunction, 'ease');
-  assert_equals(style.webkitTransitionTimingFunction, '');
-  assert_equals(computedStyle.webkitTransitionTimingFunction, 'ease');
-
-  style.transitionTimingFunction = "frames(5, end)";
   assert_equals(style.transitionTimingFunction, '');
   assert_equals(computedStyle.transitionTimingFunction, 'ease');
   assert_equals(style.webkitTransitionTimingFunction, '');

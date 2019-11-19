@@ -1,0 +1,5 @@
+CONSOLE ERROR: line 3017: Uncaught Error: assert_equals: Normal script execution order comparison expected "Inline1;Sync1;EndOfBody;DOMContentLoaded;Async1;" but got "EndOfBody;Inline1;Sync1;DOMContentLoaded;Async1;"
+This is a testharness.js-based test.
+FAIL Async Script Execution Order (wrt possibly deferred Synchronous Script) Uncaught Error: assert_equals: Normal script execution order comparison expected "Inline1;Sync1;EndOfBody;DOMContentLoaded;Async1;" but got "EndOfBody;Inline1;Sync1;DOMContentLoaded;Async1;"
+Harness: the test ran to completion.
+

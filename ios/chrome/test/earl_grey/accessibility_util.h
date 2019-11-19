@@ -5,10 +5,16 @@
 #ifndef IOS_CHROME_TEST_EARL_GREY_ACCESSIBILITY_UTIL_H_
 #define IOS_CHROME_TEST_EARL_GREY_ACCESSIBILITY_UTIL_H_
 
+#import <Foundation/Foundation.h>
+
 namespace chrome_test_util {
 
 // Verifies that all interactive elements on screen (or at least one of their
 // descendants) are accessible.
+BOOL VerifyAccessibilityForCurrentScreen(NSError* error);
+
+// TODO(crbug.com/922813): Remove the method after update tests in
+// "//ios_internal"
 void VerifyAccessibilityForCurrentScreen();
 
 }  // namespace chrome_test_util

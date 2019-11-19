@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_physical_offset.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_physical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -26,7 +26,7 @@ class NGRelativeUtilsTest : public testing::Test {
   void SetUp() override {
     style_ = ComputedStyle::Create();
     style_->SetPosition(EPosition::kRelative);
-    container_size_ = NGPhysicalSize{kHorizontalSize, kVerticalSize};
+    container_size_ = PhysicalSize{kHorizontalSize, kVerticalSize};
   }
 
   void SetTRBL(LayoutUnit top,
@@ -43,11 +43,11 @@ class NGRelativeUtilsTest : public testing::Test {
   }
 
   scoped_refptr<ComputedStyle> style_;
-  NGPhysicalSize container_size_;
+  PhysicalSize container_size_;
 };
 
 TEST_F(NGRelativeUtilsTest, HorizontalTB) {
-  NGPhysicalOffset offset;
+  PhysicalOffset offset;
 
   // Everything auto defaults to kZero,kZero
   SetTRBL(kAuto, kAuto, kAuto, kAuto);
@@ -80,7 +80,7 @@ TEST_F(NGRelativeUtilsTest, HorizontalTB) {
 }
 
 TEST_F(NGRelativeUtilsTest, VerticalRightLeft) {
-  NGPhysicalOffset offset;
+  PhysicalOffset offset;
 
   // Set all sides
   SetTRBL(kTop, kRight, kBottom, kLeft);
@@ -106,7 +106,7 @@ TEST_F(NGRelativeUtilsTest, VerticalRightLeft) {
 }
 
 TEST_F(NGRelativeUtilsTest, VerticalLeftRight) {
-  NGPhysicalOffset offset;
+  PhysicalOffset offset;
 
   // Set all sides
   SetTRBL(kTop, kRight, kBottom, kLeft);

@@ -41,6 +41,8 @@ class ChromeWebContentsViewDelegateViews
   bool TakeFocus(bool reverse) override;
   void ShowContextMenu(content::RenderFrameHost* render_frame_host,
                        const content::ContextMenuParams& params) override;
+  void OnPerformDrop(const content::DropData& drop_data,
+                     DropCompletionCallback callback) override;
 
   // Overridden from ContextMenuDelegate.
   std::unique_ptr<RenderViewContextMenuBase> BuildMenu(

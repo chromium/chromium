@@ -159,7 +159,7 @@ class PartialData {
   bool truncated_;  // We have an incomplete 200 stored.
   bool initial_validation_;  // Only used for truncated entries.
   CompletionOnceCallback callback_;
-  base::WeakPtrFactory<PartialData> weak_factory_;
+  base::WeakPtrFactory<PartialData> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PartialData);
 };

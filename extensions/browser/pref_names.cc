@@ -31,22 +31,21 @@ const char kAlertsInitialized[] = "extensions.alerts.initialized";
 const char kAllowedInstallSites[] = "extensions.allowed_install_sites";
 const char kAllowedTypes[] = "extensions.allowed_types";
 const char kAppFullscreenAllowed[] = "apps.fullscreen.allowed";
-const char kBookmarkAppCreationLaunchType[] =
-    "extensions.bookmark_app_creation_launch_type";
+const char kBlockExternalExtensions[] = "extensions.block_external_extensions";
 const char kExtensions[] = "extensions.settings";
+const char kExtensionCheckupOnStartup[] = "extensions.checkup_on_startup";
 const char kExtensionManagement[] = "extensions.management";
-const char kInsecureExtensionUpdatesEnabled[] =
-    "extension_updates.insecure_extension_updates_enabled";
 const char kInstallAllowList[] = "extensions.install.allowlist";
 const char kInstallDenyList[] = "extensions.install.denylist";
 const char kInstallForceList[] = "extensions.install.forcelist";
-const char kInstallLoginScreenAppList[] =
-    "extensions.install.login_screen_app_list";
+const char kLoginScreenExtensions[] =
+    "extensions.install.login_screen_extensions";
 const char kLastChromeVersion[] = "extensions.last_chrome_version";
 const char kNativeMessagingBlacklist[] = "native_messaging.blacklist";
 const char kNativeMessagingWhitelist[] = "native_messaging.whitelist";
 const char kNativeMessagingUserLevelHosts[] =
     "native_messaging.user_level_hosts";
+const char kPinnedExtensions[] = "extensions.pinned_extensions";
 const char kStorageGarbageCollect[] = "extensions.storage.garbagecollect";
 const char kToolbar[] = "extensions.toolbar";
 const char kToolbarSize[] = "extensions.toolbarsize";

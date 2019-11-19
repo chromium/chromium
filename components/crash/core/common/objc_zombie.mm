@@ -19,6 +19,11 @@
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/gwp_asan/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
+#include "components/gwp_asan/client/sampling_malloc_shims.h"  // nogncheck
+#endif
 
 // Deallocated objects are re-classed as |CrZombie|.  No superclass
 // because then the class would have to override many/most of the
@@ -51,7 +56,17 @@ namespace {
 const size_t kBacktraceDepth = 20;
 
 // The original implementation for |-[NSObject dealloc]|.
-IMP g_originalDeallocIMP = NULL;
+#if OBJC_OLD_DISPATCH_PROTOTYPES
+using RealIMP = IMP;
+#else
+// With !OBJC_OLD_DISPATCH_PROTOTYPES the runtime hasn't changed and IMP is
+// still what it always was, but the SDK is hiding the details now outside the
+// objc runtime. It is safe to define |RealIMP| to match the older definition of
+// |IMP|.
+using RealIMP = id (*)(id, SEL, ...);
+#endif
+
+RealIMP g_originalDeallocIMP = NULL;
 
 // Classes which freed objects become.  |g_fatZombieSize| is the
 // minimum object size which can be made into a fat zombie (which can
@@ -92,8 +107,14 @@ void ZombieDealloc(id self, SEL _cmd) {
   DCHECK_EQ(_cmd, @selector(dealloc));
 
   // Use the original |-dealloc| if the object doesn't wish to be
-  // zombied.
-  if (!g_zombieAllObjects && ![self shouldBecomeCrZombie]) {
+  // zombied or GWP-ASan is the backing allocator.
+#if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
+  bool gwp_asan_allocation = gwp_asan::IsGwpAsanMallocAllocation(self);
+#else
+  bool gwp_asan_allocation = false;
+#endif
+  if ((!g_zombieAllObjects && ![self shouldBecomeCrZombie]) ||
+      gwp_asan_allocation) {
     g_originalDeallocIMP(self, _cmd);
     return;
   }
@@ -241,8 +262,8 @@ BOOL ZombieInit() {
     return YES;
 
   Class rootClass = [NSObject class];
-  g_originalDeallocIMP =
-      class_getMethodImplementation(rootClass, @selector(dealloc));
+  g_originalDeallocIMP = reinterpret_cast<RealIMP>(
+      class_getMethodImplementation(rootClass, @selector(dealloc)));
   // objc_getClass() so CrZombie doesn't need +class.
   g_zombieClass = objc_getClass("CrZombie");
   g_fatZombieClass = objc_getClass("CrFatZombie");
@@ -335,9 +356,10 @@ bool ZombieEnable(bool zombieAllObjects,
   if (!m)
     return false;
 
-  const IMP prevDeallocIMP = method_setImplementation(m, (IMP)ZombieDealloc);
+  const RealIMP prevDeallocIMP = reinterpret_cast<RealIMP>(
+      method_setImplementation(m, reinterpret_cast<IMP>(ZombieDealloc)));
   DCHECK(prevDeallocIMP == g_originalDeallocIMP ||
-         prevDeallocIMP == (IMP)ZombieDealloc);
+         prevDeallocIMP == reinterpret_cast<RealIMP>(ZombieDealloc));
 
   // Grab the current set of zombies.  This is thread-safe because
   // only the main thread can change these.
@@ -409,7 +431,7 @@ void ZombieDisable() {
   // Put back the original implementation of -[NSObject dealloc].
   Method m = class_getInstanceMethod([NSObject class], @selector(dealloc));
   DCHECK(m);
-  method_setImplementation(m, g_originalDeallocIMP);
+  method_setImplementation(m, reinterpret_cast<IMP>(g_originalDeallocIMP));
 
   // Can safely grab this because it only happens on the main thread.
   const size_t oldCount = g_zombieCount;

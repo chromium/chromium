@@ -13,39 +13,41 @@ from overload_set_algorithm import effective_overload_set
 class EffectiveOverloadSetTest(unittest.TestCase):
     def test_example_in_comments(self):
         operation_list = [
-            {'arguments': [{'idl_type_object': 'long',  # f1(optional long x)
+            # f1: f(optional long x)
+            {'arguments': [{'idl_type_object': 'long',
                             'is_optional': True,
                             'is_variadic': False}]},
-            {'arguments': [{'idl_type_object': 'DOMString',  # f2(DOMString s)
+            # f2: f(DOMString s)
+            {'arguments': [{'idl_type_object': 'DOMString',
                             'is_optional': False,
                             'is_variadic': False}]}]
 
         overload_set = [
-            ({'arguments': [{'idl_type_object': 'long',  # f1(long)
+            # <f1, (long), (optional)>
+            ({'arguments': [{'idl_type_object': 'long',
                              'is_optional': True,
                              'is_variadic': False}]},
              ('long',),
-             (True,)),
-            ({'arguments': [{'idl_type_object': 'long',  # f1()
+             ('optional',)),
+            # <f1, (), ()>
+            ({'arguments': [{'idl_type_object': 'long',
                              'is_optional': True,
                              'is_variadic': False}]},
              (),
              ()),
-            ({'arguments': [{'idl_type_object': 'DOMString',  # f2(DOMString)
+            # <f2, (DOMString), (required)>
+            ({'arguments': [{'idl_type_object': 'DOMString',
                              'is_optional': False,
                              'is_variadic': False}]},
              ('DOMString',),
-             (False,))]
+             ('required',))]
 
         self.assertEqual(effective_overload_set(operation_list), overload_set)
 
     def test_example_in_spec(self):
         """Tests the example provided in Web IDL spec:
            https://heycam.github.io/webidl/#dfn-effective-overload-set,
-           look for example right after the algorithm.
-
-           The output differs from spec because we don't implement the part
-           of the algorithm that handles variadic arguments."""
+           look for example right after the algorithm."""
         operation_list = [
             # f1: f(DOMString a)
             {'arguments': [{'idl_type_object': 'DOMString',
@@ -76,13 +78,14 @@ class EffectiveOverloadSetTest(unittest.TestCase):
                            {'idl_type_object': 'double',
                             'is_optional': False,
                             'is_variadic': True}]}]
+
         overload_set = [
             # <f1, (DOMString), (required)>
             ({'arguments': [{'idl_type_object': 'DOMString',
                              'is_optional': False,
                              'is_variadic': False}]},
              ('DOMString',),
-             (False,)),
+             ('required',)),
             # <f2, (Node, DOMString, double), (required, required, variadic)>
             ({'arguments': [{'idl_type_object': 'Node',
                              'is_optional': False,
@@ -94,7 +97,20 @@ class EffectiveOverloadSetTest(unittest.TestCase):
                              'is_optional': False,
                              'is_variadic': True}]},
              ('Node', 'DOMString', 'double'),
-             (False, False, True)),
+             ('required', 'required', 'variadic')),
+            # <f2, (Node, DOMString, double, double),
+            #      (required, required, variadic, variadic)>
+            ({'arguments': [{'idl_type_object': 'Node',
+                             'is_optional': False,
+                             'is_variadic': False},
+                            {'idl_type_object': 'DOMString',
+                             'is_optional': False,
+                             'is_variadic': False},
+                            {'idl_type_object': 'double',
+                             'is_optional': False,
+                             'is_variadic': True}]},
+             ('Node', 'DOMString', 'double', 'double'),
+             ('required', 'required', 'variadic', 'variadic')),
             # <f2, (Node, DOMString), (required, required)>
             ({'arguments': [{'idl_type_object': 'Node',
                              'is_optional': False,
@@ -106,12 +122,11 @@ class EffectiveOverloadSetTest(unittest.TestCase):
                              'is_optional': False,
                              'is_variadic': True}]},
              ('Node', 'DOMString'),
-             (False, False)),
-            # Missing from the output:
-            # <f2, (Node, DOMString, double, double),
-            #       (required, required, variadic, variadic)>,
+             ('required', 'required')),
             # <f3, (), ()>
-            ({'arguments': []}, (), ()),
+            ({'arguments': []},
+             (),
+             ()),
             # <f4, (Event, DOMString, DOMString, double),
             #      (required, required, optional, variadic)>
             ({'arguments': [{'idl_type_object': 'Event',
@@ -127,7 +142,7 @@ class EffectiveOverloadSetTest(unittest.TestCase):
                              'is_optional': False,
                              'is_variadic': True}]},
              ('Event', 'DOMString', 'DOMString', 'double'),
-             (False, False, True, True)),
+             ('required', 'required', 'optional', 'variadic')),
             # <f4, (Event, DOMString, DOMString),
             #      (required, required, optional)>
             ({'arguments': [{'idl_type_object': 'Event',
@@ -143,7 +158,7 @@ class EffectiveOverloadSetTest(unittest.TestCase):
                              'is_optional': False,
                              'is_variadic': True}]},
              ('Event', 'DOMString', 'DOMString'),
-             (False, False, True)),
+             ('required', 'required', 'optional')),
             # <f4, (Event, DOMString), (required, required)>
             ({'arguments': [{'idl_type_object': 'Event',
                              'is_optional': False,
@@ -158,6 +173,164 @@ class EffectiveOverloadSetTest(unittest.TestCase):
                              'is_optional': False,
                              'is_variadic': True}]},
              ('Event', 'DOMString'),
-             (False, False))]
+             ('required', 'required'))]
+
+        self.assertEqual(effective_overload_set(operation_list), overload_set)
+
+    def test_element_create_proposed_syntax(self):
+        """Tests the proposed syntax for the convenience method Element.create.
+           Github issue: https://github.com/whatwg/dom/issues/477"""
+        operation_list = [
+            # f1: f(DOMString tag, Record<DOMString, DOMString> attrs, (Node or DOMString)... children)
+            {'arguments': [{'idl_type_object': 'DOMString',
+                            'is_optional': False,
+                            'is_variadic': False},
+                           {'idl_type_object': 'record<DOMString, DOMString>',
+                            'is_optional': False,
+                            'is_variadic': False},
+                           {'idl_type_object': 'NodeOrDOMString',
+                            'is_optional': False,
+                            'is_variadic': True}]},
+            # f2: f(DOMString tag, (Node or DOMString)... children)
+            {'arguments': [{'idl_type_object': 'DOMString',
+                            'is_optional': False,
+                            'is_variadic': False},
+                           {'idl_type_object': 'NodeOrDOMString',
+                            'is_optional': False,
+                            'is_variadic': True}]}]
+
+        overload_set = [
+            # <f1, (DOMString, Record, NodeOrDOMString), (required, required, variadic)>
+            ({'arguments': [{'idl_type_object': 'DOMString',
+                             'is_optional': False,
+                             'is_variadic': False},
+                            {'idl_type_object': 'record<DOMString, DOMString>',
+                             'is_optional': False,
+                             'is_variadic': False},
+                            {'idl_type_object': 'NodeOrDOMString',
+                             'is_optional': False,
+                             'is_variadic': True}]},
+             ('DOMString', 'record<DOMString, DOMString>', 'NodeOrDOMString'),
+             ('required', 'required', 'variadic')),
+            # <f1, (DOMString, Record), (required, required)>
+            ({'arguments': [{'idl_type_object': 'DOMString',
+                             'is_optional': False,
+                             'is_variadic': False},
+                            {'idl_type_object': 'record<DOMString, DOMString>',
+                             'is_optional': False,
+                             'is_variadic': False},
+                            {'idl_type_object': 'NodeOrDOMString',
+                             'is_optional': False,
+                             'is_variadic': True}]},
+             ('DOMString', 'record<DOMString, DOMString>'),
+             ('required', 'required')),
+            # <f2, (DOMString, NodeOrDOMString), (required, variadic)>
+            ({'arguments': [{'idl_type_object': 'DOMString',
+                             'is_optional': False,
+                             'is_variadic': False},
+                            {'idl_type_object': 'NodeOrDOMString',
+                             'is_optional': False,
+                             'is_variadic': True}]},
+             ('DOMString', 'NodeOrDOMString'),
+             ('required', 'variadic')),
+            # <f2, (DOMString, NodeOrDOMString, NodeOrDOMString), (required, variadic, variadic)>
+            ({'arguments': [{'idl_type_object': 'DOMString',
+                             'is_optional': False,
+                             'is_variadic': False},
+                            {'idl_type_object': 'NodeOrDOMString',
+                             'is_optional': False,
+                             'is_variadic': True}]},
+             ('DOMString', 'NodeOrDOMString', 'NodeOrDOMString'),
+             ('required', 'variadic', 'variadic')),
+            # <f2, (DOMString), (required)>
+            ({'arguments': [{'idl_type_object': 'DOMString',
+                             'is_optional': False,
+                             'is_variadic': False},
+                            {'idl_type_object': 'NodeOrDOMString',
+                             'is_optional': False,
+                             'is_variadic': True}]},
+             ('DOMString',),
+             ('required',))]
+
+        self.assertEqual(effective_overload_set(operation_list), overload_set)
+
+    def test_optional_preceding_variadic(self):
+        operation_list = [
+            # f1: f(Node a, optional long b, DOMString... c)
+            {'arguments': [{'idl_type_object': 'Node',
+                            'is_optional': False,
+                            'is_variadic': False},
+                           {'idl_type_object': 'long',
+                            'is_optional': True,
+                            'is_variadic': False},
+                           {'idl_type_object': 'DOMString',
+                            'is_optional': False,
+                            'is_variadic': True}]},
+            # f2: f(DOMString... a)
+            {'arguments': [{'idl_type_object': 'DOMString',
+                            'is_optional': False,
+                            'is_variadic': True}]}]
+
+        overload_set = [
+            # <f1, (Node, long, DOMString), (required, optional, variadic)>
+            ({'arguments': [{'idl_type_object': 'Node',
+                             'is_optional': False,
+                             'is_variadic': False},
+                            {'idl_type_object': 'long',
+                             'is_optional': True,
+                             'is_variadic': False},
+                            {'idl_type_object': 'DOMString',
+                             'is_optional': False,
+                             'is_variadic': True}]},
+             ('Node', 'long', 'DOMString'),
+             ('required', 'optional', 'variadic')),
+            # <f1, (Node, long), (required, optional)>
+            ({'arguments': [{'idl_type_object': 'Node',
+                             'is_optional': False,
+                             'is_variadic': False},
+                            {'idl_type_object': 'long',
+                             'is_optional': True,
+                             'is_variadic': False},
+                            {'idl_type_object': 'DOMString',
+                             'is_optional': False,
+                             'is_variadic': True}]},
+             ('Node', 'long'),
+             ('required', 'optional')),
+            # <f1, (Node), (required)>
+            ({'arguments': [{'idl_type_object': 'Node',
+                             'is_optional': False,
+                             'is_variadic': False},
+                            {'idl_type_object': 'long',
+                             'is_optional': True,
+                             'is_variadic': False},
+                            {'idl_type_object': 'DOMString',
+                             'is_optional': False,
+                             'is_variadic': True}]},
+             ('Node',),
+             ('required',)),
+            # <f2, (DOMString), (variadic)>
+            ({'arguments': [{'idl_type_object': 'DOMString',
+                             'is_optional': False,
+                             'is_variadic': True}]},
+             ('DOMString',),
+             ('variadic',)),
+            # <f2, (DOMString, DOMString), (variadic, variadic)>
+            ({'arguments': [{'idl_type_object': 'DOMString',
+                             'is_optional': False,
+                             'is_variadic': True}]},
+             ('DOMString', 'DOMString'),
+             ('variadic', 'variadic')),
+            # <f2, (DOMString, DOMString, DOMString), (variadic, variadic, variadic)>
+            ({'arguments': [{'idl_type_object': 'DOMString',
+                             'is_optional': False,
+                             'is_variadic': True}]},
+             ('DOMString', 'DOMString', 'DOMString'),
+             ('variadic', 'variadic', 'variadic')),
+            # <f2, (), ()>
+            ({'arguments': [{'idl_type_object': 'DOMString',
+                             'is_optional': False,
+                             'is_variadic': True}]},
+             (),
+             ())]
 
         self.assertEqual(effective_overload_set(operation_list), overload_set)

@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "ui/ozone/ozone_base_export.h"
+#include "base/component_export.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
 
 namespace ui {
@@ -15,7 +15,7 @@ namespace ui {
 // This class can be used to answer questions about possible overlay
 // configurations for a particular output device. We get an instance of this
 // class from SurfaceFactoryOzone given an AcceleratedWidget.
-class OZONE_BASE_EXPORT OverlayCandidatesOzone {
+class COMPONENT_EXPORT(OZONE_BASE) OverlayCandidatesOzone {
  public:
   using OverlaySurfaceCandidateList = std::vector<OverlaySurfaceCandidate>;
 

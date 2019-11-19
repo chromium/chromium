@@ -40,19 +40,25 @@ class MockMediaKeysListener : public ui::MediaKeysListener {
   void StopWatchingMediaKey(ui::KeyboardCode key_code) override {
     key_codes_.erase(key_code);
   }
+  void SetIsMediaPlaying(bool is_playing) override {
+    is_media_playing_ = is_playing;
+  }
 
   void SimulateAccelerator(ui::Accelerator accelerator) {
     if (IsWatching(accelerator.key_code()))
       delegate_->OnMediaKeysAccelerator(accelerator);
   }
 
-  bool IsWatching(ui::KeyboardCode key_code) {
+  bool IsWatching(ui::KeyboardCode key_code) const {
     return key_codes_.contains(key_code);
   }
+
+  bool is_media_playing() const { return is_media_playing_; }
 
  private:
   ui::MediaKeysListener::Delegate* delegate_;
   base::flat_set<ui::KeyboardCode> key_codes_;
+  bool is_media_playing_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(MockMediaKeysListener);
 };
@@ -110,7 +116,7 @@ class MediaKeysListenerManagerImplTest : public ContentBrowserTest {
     media_controller_ = std::make_unique<TestMediaController>();
     media_keys_listener_manager_->hardware_key_media_controller_for_testing()
         ->SetMediaControllerForTesting(
-            media_controller_->CreateMediaControllerPtr());
+            media_controller_->CreateMediaControllerRemote());
 
     ContentBrowserTest::SetUpOnMainThread();
   }
@@ -158,6 +164,9 @@ IN_PROC_BROWSER_TEST_F(MediaKeysListenerManagerImplTest, PressPlayPauseKey) {
   EXPECT_EQ(0, media_controller()->suspend_count());
   EXPECT_EQ(0, media_controller()->resume_count());
 
+  // The MediaKeysListener should know that media is playing.
+  EXPECT_TRUE(media_keys_listener()->is_media_playing());
+
   // Press the play/pause media key.
   media_keys_listener()->SimulateAccelerator(
       ui::Accelerator(ui::VKEY_MEDIA_PLAY_PAUSE, 0));
@@ -175,6 +184,9 @@ IN_PROC_BROWSER_TEST_F(MediaKeysListenerManagerImplTest, PressPlayPauseKey) {
     SetMediaSessionInfo(std::move(session_info));
     SetSupportedMediaSessionActions({MediaSessionAction::kPlay});
   }
+
+  // The MediaKeysListener should know that media is paused.
+  EXPECT_FALSE(media_keys_listener()->is_media_playing());
 
   // Press play/pause.
   media_keys_listener()->SimulateAccelerator(

@@ -8,9 +8,8 @@
 module proxy_resolver.mojom;
 
 import "services/network/public/mojom/ip_address.mojom";
+import "services/network/public/mojom/network_isolation_key.mojom";
 import "url/mojom/url.mojom";
-
-const string kProxyResolverServiceName = "proxy_resolver";
 
 // Mirror of net::ProxyResolveDnsOperation.
 enum HostResolveOperation {
@@ -54,7 +53,12 @@ struct ProxyInfo {
 interface ProxyResolver {
   // Use a ProxyResolverRequestClient instead of returning a result so we can
   // cancel in-flight requests by destroying the client.
-  GetProxyForUrl(url.mojom.Url url, ProxyResolverRequestClient client);
+  //
+  // |network_isolation_key| is the NetworkIsolationKey used by the DNS cache
+  // to separate requests made in different contexts.
+  GetProxyForUrl(url.mojom.Url url,
+                 network.mojom.NetworkIsolationKey network_isolation_key,
+                 pending_remote<ProxyResolverRequestClient> client);
 };
 
 interface ProxyResolverRequestClient {
@@ -63,9 +67,17 @@ interface ProxyResolverRequestClient {
   Alert(string error);
   OnError(int32 line_number, string error);
 
+  // Does a DNS lookup for |host|, and invokes |client|'s ReportResult() method
+  // with the result.
+  //
+  // |network_isolation_key| is the NetworkIsolationKey used by the DNS cache
+  // to separate requests made in different contexts. An IP address received
+  // from a resolution using one NetworkIsolationKey must not be used for a
+  // request made with a different NetworkIsolationKey.
   ResolveDns(string host,
              HostResolveOperation operation,
-             HostResolverRequestClient client);
+             network.mojom.NetworkIsolationKey network_isolation_key,
+             pending_remote<HostResolverRequestClient> client);
 };
 
 // Creates a ProxyResolver that uses the provided PAC script. The ProxyResolver
@@ -75,8 +87,8 @@ interface ProxyResolverRequestClient {
 // creation of the ProxyResolverFactory.
 interface ProxyResolverFactory {
   CreateResolver(string pac_script,
-                 ProxyResolver& resolver,
-                 ProxyResolverFactoryRequestClient client);
+                 pending_receiver<ProxyResolver> receiver,
+                 pending_remote<ProxyResolverFactoryRequestClient> client);
 };
 
 interface ProxyResolverFactoryRequestClient {
@@ -87,5 +99,6 @@ interface ProxyResolverFactoryRequestClient {
 
   ResolveDns(string host,
              HostResolveOperation operation,
-             HostResolverRequestClient client);
+             network.mojom.NetworkIsolationKey network_isolation_key,
+             pending_remote<HostResolverRequestClient> client);
 };

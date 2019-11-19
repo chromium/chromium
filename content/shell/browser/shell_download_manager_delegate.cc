@@ -37,9 +37,7 @@
 namespace content {
 
 ShellDownloadManagerDelegate::ShellDownloadManagerDelegate()
-    : download_manager_(nullptr),
-      suppress_prompting_(false),
-      weak_ptr_factory_(this) {}
+    : download_manager_(nullptr), suppress_prompting_(false) {}
 
 ShellDownloadManagerDelegate::~ShellDownloadManagerDelegate() {
   if (download_manager_) {
@@ -81,21 +79,19 @@ bool ShellDownloadManagerDelegate::DetermineDownloadTarget(
     return true;
   }
 
-  FilenameDeterminedCallback filename_determined_callback =
-      base::Bind(&ShellDownloadManagerDelegate::OnDownloadPathGenerated,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 download->GetId(),
-                 callback);
+  FilenameDeterminedCallback filename_determined_callback = base::BindOnce(
+      &ShellDownloadManagerDelegate::OnDownloadPathGenerated,
+      weak_ptr_factory_.GetWeakPtr(), download->GetId(), callback);
 
-  PostTaskWithTraits(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
-       base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ShellDownloadManagerDelegate::GenerateFilename,
-                     download->GetURL(), download->GetContentDisposition(),
-                     download->GetSuggestedFilename(), download->GetMimeType(),
-                     default_download_path_,
-                     std::move(filename_determined_callback)));
+  PostTask(FROM_HERE,
+           {base::ThreadPool(), base::MayBlock(),
+            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+            base::TaskPriority::USER_VISIBLE},
+           base::BindOnce(&ShellDownloadManagerDelegate::GenerateFilename,
+                          download->GetURL(), download->GetContentDisposition(),
+                          download->GetSuggestedFilename(),
+                          download->GetMimeType(), default_download_path_,
+                          std::move(filename_determined_callback)));
   return true;
 }
 
@@ -118,7 +114,7 @@ void ShellDownloadManagerDelegate::GenerateFilename(
     const std::string& suggested_filename,
     const std::string& mime_type,
     const base::FilePath& suggested_directory,
-    const FilenameDeterminedCallback& callback) {
+    FilenameDeterminedCallback callback) {
   base::FilePath generated_name = net::GenerateFileName(url,
                                                         content_disposition,
                                                         std::string(),
@@ -130,8 +126,8 @@ void ShellDownloadManagerDelegate::GenerateFilename(
     base::CreateDirectory(suggested_directory);
 
   base::FilePath suggested_path(suggested_directory.Append(generated_name));
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(callback, suggested_path));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(std::move(callback), suggested_path));
 }
 
 void ShellDownloadManagerDelegate::OnDownloadPathGenerated(
@@ -169,10 +165,12 @@ void ShellDownloadManagerDelegate::ChooseDownloadPath(
   OPENFILENAME save_as;
   ZeroMemory(&save_as, sizeof(save_as));
   save_as.lStructSize = sizeof(OPENFILENAME);
-  save_as.hwndOwner = DownloadItemUtils::GetWebContents(item)
-                          ->GetNativeView()
-                          ->GetHost()
-                          ->GetAcceleratedWidget();
+  WebContents* web_contents = DownloadItemUtils::GetWebContents(item);
+  // |web_contents| could be null if the tab was quickly closed.
+  if (!web_contents)
+    return;
+  save_as.hwndOwner =
+      web_contents->GetNativeView()->GetHost()->GetAcceleratedWidget();
   save_as.lpstrFile = file_name;
   save_as.nMaxFile = base::size(file_name);
 

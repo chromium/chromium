@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 FAIL A transceiver added and stopped before the initial offer generation should not trigger an offer m-section generation promise_test: Unhandled rejection with value: object "TypeError: pc1.getTransceivers(...)[0].stop is not a function"
 FAIL During renegotiation, adding and stopping a transceiver should not trigger a renegotiated offer m-section generation promise_test: Unhandled rejection with value: object "TypeError: pc1.getTransceivers(...)[0].stop is not a function"
-FAIL A stopped sendonly transceiver should generate an inactive m-section in the offer promise_test: Unhandled rejection with value: object "TypeError: pc1.getTransceivers(...)[0].stop is not a function"
+FAIL A stopped sendonly transceiver should generate a sendonly m-section in the offer promise_test: Unhandled rejection with value: object "TypeError: pc1.getTransceivers(...)[0].stop is not a function"
 FAIL A stopped inactive transceiver should generate an inactive m-section in the offer promise_test: Unhandled rejection with value: object "TypeError: pc1.getTransceivers(...)[0].stop is not a function"
 Harness: the test ran to completion.
 

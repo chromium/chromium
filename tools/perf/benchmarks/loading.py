@@ -25,6 +25,7 @@ class _LoadingBase(perf_benchmark.PerfBenchmark):
 
 
 @benchmark.Info(emails=['kouhei@chromium.org', 'ksakamoto@chromium.org'],
+                component='Blink>Loader',
                 documentation_url='https://bit.ly/loading-benchmarks')
 class LoadingDesktop(_LoadingBase):
   """ A benchmark measuring loading performance of desktop sites. """
@@ -40,6 +41,7 @@ class LoadingDesktop(_LoadingBase):
 
 
 @benchmark.Info(emails=['kouhei@chromium.org', 'ksakamoto@chromium.org'],
+                component='Blink>Loader',
                 documentation_url='https://bit.ly/loading-benchmarks')
 class LoadingMobile(_LoadingBase):
   """ A benchmark measuring loading performance of mobile sites. """

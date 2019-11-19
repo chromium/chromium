@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// See hhttps://webaudio.github.io/web-audio-api/#dictdef-audiobuffersourceoptions
+// See https://webaudio.github.io/web-audio-api/#dictdef-audiobuffersourceoptions
 dictionary AudioBufferSourceOptions {
     AudioBuffer? buffer;
     float detune = 0;

@@ -10,8 +10,12 @@
 #include "base/run_loop.h"
 #include "base/test/power_monitor_test_base.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/device_service_test_base.h"
 #include "services/device/public/cpp/power_monitor/power_monitor_broadcast_source.h"
+#include "services/device/public/mojom/constants.mojom.h"
+#include "services/device/public/mojom/power_monitor.mojom.h"
+#include "services/service_manager/public/cpp/connector.h"
 
 namespace device {
 
@@ -50,15 +54,21 @@ class PowerMonitorMessageBroadcasterTest : public DeviceServiceTestBase {
     DeviceServiceTestBase::SetUp();
 
     power_monitor_source_ = new base::PowerMonitorTestSource();
-    power_monitor_.reset(new base::PowerMonitor(
-        std::unique_ptr<base::PowerMonitorSource>(power_monitor_source_)));
+    base::PowerMonitor::Initialize(
+        std::unique_ptr<base::PowerMonitorSource>(power_monitor_source_));
+  }
+
+  void TearDown() override {
+    // The DeviceService must be destroyed before shutting down the
+    // PowerMonitor, which the DeviceService is observing.
+    DestroyDeviceService();
+    base::PowerMonitor::ShutdownForTesting();
   }
 
   base::PowerMonitorTestSource* source() { return power_monitor_source_; }
 
  private:
   base::PowerMonitorTestSource* power_monitor_source_;
-  std::unique_ptr<base::PowerMonitor> power_monitor_;
 
   DISALLOW_COPY_AND_ASSIGN(PowerMonitorMessageBroadcasterTest);
 };
@@ -70,7 +80,10 @@ TEST_F(PowerMonitorMessageBroadcasterTest, PowerMessageBroadcast) {
       new PowerMonitorBroadcastSource(
           std::make_unique<MockClient>(run_loop.QuitClosure()),
           base::SequencedTaskRunnerHandle::Get()));
-  broadcast_source->Init(connector());
+  mojo::PendingRemote<mojom::PowerMonitor> remote_monitor;
+  connector()->Connect(mojom::kServiceName,
+                       remote_monitor.InitWithNewPipeAndPassReceiver());
+  broadcast_source->Init(std::move(remote_monitor));
   run_loop.Run();
 
   MockClient* client =

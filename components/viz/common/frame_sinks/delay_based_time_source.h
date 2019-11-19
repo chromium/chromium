@@ -80,7 +80,7 @@ class VIZ_COMMON_EXPORT DelayBasedTimeSource {
 
   base::SingleThreadTaskRunner* task_runner_;
 
-  base::WeakPtrFactory<DelayBasedTimeSource> weak_factory_;
+  base::WeakPtrFactory<DelayBasedTimeSource> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DelayBasedTimeSource);
 };

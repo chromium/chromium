@@ -19,7 +19,7 @@ REPOSITORY_ROOT = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..'))
 
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'components'))
-from cronet.tools import api_static_checks
+from cronet.tools import api_static_checks  # pylint: disable=wrong-import-position
 
 
 ERROR_PREFIX_CHECK_API_CALLS = (

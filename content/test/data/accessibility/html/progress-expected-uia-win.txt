@@ -1,0 +1,4 @@
+document
+++group
+++++progressbar RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=100.00 RangeValue.Minimum=0.00 RangeValue.Value=22.00 Value.Value='22'
+++++progressbar RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=1.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00

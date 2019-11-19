@@ -7,6 +7,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -23,7 +24,7 @@ class AttrTest : public testing::Test {
 };
 
 void AttrTest::SetUp() {
-  document_ = Document::CreateForTest();
+  document_ = MakeGarbageCollected<Document>();
   value_ = "value";
 }
 
@@ -42,7 +43,7 @@ TEST_F(AttrTest, InitialValueState) {
 TEST_F(AttrTest, SetValue) {
   Attr* attr = CreateAttribute();
   Node* node = attr;
-  attr->setValue(Value());
+  attr->setValue(Value(), ASSERT_NO_EXCEPTION);
   EXPECT_EQ(Value(), attr->value());
   EXPECT_EQ(Value(), node->nodeValue());
   EXPECT_EQ(Value(), attr->textContent());

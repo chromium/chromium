@@ -23,8 +23,7 @@ bool EncodeBarcode(const std::vector<bool>& bits,
 // Decode a barcode (encoded by EncodeBarCode) into |output|.
 // |output| should already be sized to contain the right number
 // of bits.
-bool DecodeBarcode(const scoped_refptr<media::VideoFrame>& frame,
-                   std::vector<bool>* output);
+bool DecodeBarcode(const media::VideoFrame& frame, std::vector<bool>* output);
 
 // Convenience templates that allows you to encode/decode numeric
 // types directly.
@@ -37,8 +36,8 @@ bool EncodeBarcode(T data, scoped_refptr<media::VideoFrame> output_frame) {
   return EncodeBarcode(bits, output_frame);
 }
 
-template<class T>
-bool DecodeBarcode(scoped_refptr<media::VideoFrame> output_frame, T* data) {
+template <class T>
+bool DecodeBarcode(const media::VideoFrame& output_frame, T* data) {
   std::vector<bool> bits(sizeof(T) * 8);
   bool ret = DecodeBarcode(output_frame, &bits);
   if (!ret) return false;

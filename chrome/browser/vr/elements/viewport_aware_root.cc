@@ -42,8 +42,36 @@ ViewportAwareRoot::ViewportAwareRoot() {
 ViewportAwareRoot::~ViewportAwareRoot() = default;
 
 bool ViewportAwareRoot::OnBeginFrame(const gfx::Transform& head_pose) {
+  // head_pose is head_from_world.  Invert to get world_from_head.
   gfx::Vector3dF look_at = vr::GetForwardVector(head_pose);
-  return AdjustRotationForHeadPose(look_at);
+  bool changed = AdjustRotationForHeadPose(look_at);
+  if (recenter_on_rotate_) {
+    gfx::Transform world_from_head;
+    bool invertable = head_pose.GetInverse(&world_from_head);
+    DCHECK(invertable);  // Pose data has been validated already.
+    gfx::Point3F head_pos_in_world_space{0.f, 0.f, 0.f};
+    world_from_head.TransformPoint(&head_pos_in_world_space);
+    changed = AdjustTranslation(head_pos_in_world_space.x(),
+                                head_pos_in_world_space.z(), changed);
+  }
+  return changed;
+}
+
+bool ViewportAwareRoot::AdjustTranslation(float head_in_world_x,
+                                          float head_in_world_z,
+                                          bool did_rotate) {
+  gfx::Point3F center_point_in_world{0.f, 0.f, 0.f};
+  LocalTransform().TransformPoint(&center_point_in_world);
+  gfx::Vector2dF offset = {head_in_world_x - center_point_in_world.x(),
+                           head_in_world_z - center_point_in_world.z()};
+
+  const float kMinTranslationLength =
+      1.2f;  // If you move 1.2m, we'll recenter.
+  if (did_rotate || offset.Length() > kMinTranslationLength) {
+    SetTranslate(head_in_world_x, center_point_in_world.y(), head_in_world_z);
+    return true;
+  }
+  return false;
 }
 
 bool ViewportAwareRoot::AdjustRotationForHeadPose(
@@ -83,6 +111,8 @@ bool ViewportAwareRoot::AdjustRotationForHeadPose(
 
 void ViewportAwareRoot::Reset() {
   viewport_aware_total_rotation_ = 0.f;
+  x_center = 0;
+  z_center = 0;
   SetRotate(0.f, 1.f, 0.f, gfx::DegToRad(viewport_aware_total_rotation_));
 }
 

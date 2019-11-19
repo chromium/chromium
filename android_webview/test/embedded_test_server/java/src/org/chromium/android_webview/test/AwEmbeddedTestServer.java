@@ -42,8 +42,7 @@ public class AwEmbeddedTestServer extends EmbeddedTestServer {
      *  @param context The context in which the server will run.
      *  @return The created server.
      */
-    public static AwEmbeddedTestServer createAndStartServer(Context context)
-            throws InterruptedException {
+    public static AwEmbeddedTestServer createAndStartServer(Context context) {
         return initializeAndStartServer(new AwEmbeddedTestServer(), context, 0 /* port */);
     }
 }

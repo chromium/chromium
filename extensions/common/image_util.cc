@@ -8,11 +8,11 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -64,9 +64,9 @@ bool ParseHexColorString(const std::string& color_string, SkColor* result) {
       formatted_color += color_string[i];
     }
   } else if (color_string.length() == 7) {
-    formatted_color = color_string.substr(1, 6);
+    formatted_color.assign(color_string, 1, 6);
   } else if (color_string.length() == 9) {
-    formatted_color = color_string.substr(1, 8);
+    formatted_color.assign(color_string, 1, 8);
   } else {
     return false;
   }
@@ -76,10 +76,9 @@ bool ParseHexColorString(const std::string& color_string, SkColor* result) {
     formatted_color += "FF";
   }
 
-  // Convert the string to an integer and make sure it is in the correct value
-  // range.
-  std::vector<uint8_t> color_bytes;
-  if (!base::HexStringToBytes(formatted_color, &color_bytes))
+  // Convert the hex string to an integer.
+  std::array<uint8_t, 4> color_bytes;
+  if (!base::HexStringToSpan(formatted_color, color_bytes))
     return false;
 
   *result = SkColorSetARGB(color_bytes[3], color_bytes[0], color_bytes[1],
@@ -160,10 +159,10 @@ bool ParseHslColorString(const std::string& color_string, SkColor* result) {
   color_utils::HSL hsl;
   // Normalize the value between 0.0 and 1.0.
   hsl.h = (((static_cast<int>(hue) % 360) + 360) % 360) / 360.0;
-  hsl.s = std::max(0.0, std::min(100.0, saturation)) / 100.0;
-  hsl.l = std::max(0.0, std::min(100.0, lightness)) / 100.0;
+  hsl.s = base::ClampToRange(saturation, 0.0, 100.0) / 100.0;
+  hsl.l = base::ClampToRange(lightness, 0.0, 100.0) / 100.0;
 
-  SkAlpha sk_alpha = std::max(0.0, std::min(1.0, alpha)) * 255;
+  SkAlpha sk_alpha = base::ClampToRange(alpha, 0.0, 1.0) * 255;
 
   *result = color_utils::HSLToSkColor(hsl, sk_alpha);
   return true;

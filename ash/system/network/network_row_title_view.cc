@@ -33,4 +33,9 @@ NetworkRowTitleView::NetworkRowTitleView(int title_message_id)
 }
 
 NetworkRowTitleView::~NetworkRowTitleView() = default;
+
+const char* NetworkRowTitleView::GetClassName() const {
+  return "NetworkRowTitleView";
+}
+
 }  // namespace ash

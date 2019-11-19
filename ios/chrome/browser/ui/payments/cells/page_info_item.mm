@@ -4,13 +4,11 @@
 
 #import "ios/chrome/browser/ui/payments/cells/page_info_item.h"
 
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/payments/cells/accessibility_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
-#import "ios/third_party/material_roboto_font_loader_ios/src/src/MaterialRobotoFontLoader.h"
 #include "url/url_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -66,7 +64,7 @@ const CGFloat kFaviconDimension = 16;
     NSMutableAttributedString* text = [[NSMutableAttributedString alloc]
         initWithString:cell.pageHostLabel.text];
     [text addAttribute:NSForegroundColorAttributeName
-                 value:[[MDCPalette cr_greenPalette] tint700]
+                 value:[UIColor colorNamed:kGreenColor]
                  range:NSMakeRange(0, strlen(url::kHttpsScheme))];
     // We need to set the font to the attributed portion, or the field doesn't
     // asjust with dynamic types.
@@ -116,7 +114,7 @@ const CGFloat kFaviconDimension = 16;
     _pageTitleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     SetUILabelScaledFont(_pageTitleLabel,
                          [[MDCTypography fontLoader] mediumFontOfSize:12]);
-    _pageTitleLabel.textColor = [[MDCPalette greyPalette] tint900];
+    _pageTitleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _pageTitleLabel.backgroundColor = [UIColor clearColor];
     _pageTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:_pageTitleLabel];
@@ -125,7 +123,7 @@ const CGFloat kFaviconDimension = 16;
     _pageHostLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     SetUILabelScaledFont(_pageHostLabel,
                          [[MDCTypography fontLoader] regularFontOfSize:12]);
-    _pageHostLabel.textColor = [[MDCPalette greyPalette] tint600];
+    _pageHostLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     // Truncate host name from the leading side if it is too long. This is
     // according to Eliding Origin Names and Hostnames guideline found here:
     // https://www.chromium.org/Home/chromium-security/enamel#TOC-Presenting-Origins
@@ -146,8 +144,7 @@ const CGFloat kFaviconDimension = 16;
     _pageLockIndicatorView.accessibilityIdentifier =
         kPageInfoLockIndicatorImageViewID;
     _pageLockIndicatorView.contentMode = UIViewContentModeScaleAspectFit;
-    [_pageLockIndicatorView
-        setTintColor:[[MDCPalette cr_greenPalette] tint700]];
+    [_pageLockIndicatorView setTintColor:[UIColor colorNamed:kGreenColor]];
     [self.contentView addSubview:_pageLockIndicatorView];
 
     // Layout

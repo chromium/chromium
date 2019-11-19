@@ -12,11 +12,12 @@ import android.os.Build;
 
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
-import org.chromium.chrome.browser.preferences.ChromePreferenceManager;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
-import org.chromium.chrome.browser.suggestions.TileSectionType;
-import org.chromium.chrome.browser.suggestions.TileSource;
-import org.chromium.chrome.browser.suggestions.TileTitleSource;
+import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
+import org.chromium.chrome.browser.suggestions.tile.TileSource;
+import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.test.util.AccountHolder;
@@ -98,8 +99,8 @@ public class NewTabPageTestUtils {
         AccountManagerFacade.overrideAccountManagerFacadeForTests(fakeAccountManager);
         Account account = AccountManagerFacade.createAccountFromName("test@gmail.com");
         fakeAccountManager.addAccountHolderExplicitly(new AccountHolder.Builder(account).build());
-        assertFalse(AccountManagerFacade.get().isUpdatePending());
-        assertFalse(ChromePreferenceManager.getInstance().readBoolean(
-                ChromePreferenceManager.NTP_SIGNIN_PROMO_DISMISSED, false));
+        assertFalse(AccountManagerFacade.get().isUpdatePending().get());
+        assertFalse(SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.NTP_SIGNIN_PROMO_DISMISSED, false));
     }
 }

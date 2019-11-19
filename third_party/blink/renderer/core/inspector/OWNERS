@@ -2,11 +2,14 @@ alph@chromium.org
 caseq@chromium.org
 dgozman@chromium.org
 pfeldman@chromium.org
+yangguo@chromium.org
 
 # Changes to remote debugging protocol require devtools review to
 # ensure backwards compatibility and committment to maintain.
 per-file browser_protocol.pdl=set noparent
+per-file browser_protocol.pdl=alph@chromium.org
 per-file browser_protocol.pdl=dgozman@chromium.org
+per-file browser_protocol.pdl=caseq@chromium.org
 per-file browser_protocol.pdl=pfeldman@chromium.org
 
 # COMPONENT: Platform>DevTools

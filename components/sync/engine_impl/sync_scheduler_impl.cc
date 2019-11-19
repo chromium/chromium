@@ -4,15 +4,12 @@
 
 #include "components/sync/engine_impl/sync_scheduler_impl.h"
 
-#include <algorithm>
 #include <cstring>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
@@ -20,7 +17,6 @@
 #include "components/sync/base/logging.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/engine_impl/backoff_delay_provider.h"
-#include "components/sync/protocol/proto_enum_conversions.h"
 #include "components/sync/protocol/sync.pb.h"
 
 using base::TimeDelta;
@@ -66,10 +62,6 @@ bool ShouldRequestEarlyExit(const SyncProtocolError& error) {
       // notification wouldnt be sent either. Then the UI layer would be left
       // waiting forever. So assert we would send something.
       DCHECK_NE(error.action, UNKNOWN_ACTION);
-      return true;
-    case INVALID_CREDENTIAL:
-      // The notification for this is handled by PostAndProcessHeaders|.
-      // Server does no have to send any action for this.
       return true;
     // Make UNKNOWN_ERROR a NOTREACHED. All the other error should be explicitly
     // handled.
@@ -121,15 +113,13 @@ SyncSchedulerImpl::SyncSchedulerImpl(const std::string& name,
                                      bool ignore_auth_credentials)
     : name_(name),
       started_(false),
-      syncer_short_poll_interval_seconds_(context->short_poll_interval()),
-      syncer_long_poll_interval_seconds_(context->long_poll_interval()),
+      syncer_poll_interval_seconds_(context->poll_interval()),
       mode_(CONFIGURATION_MODE),
       delay_provider_(delay_provider),
       syncer_(syncer),
       cycle_context_(context),
       next_sync_cycle_job_priority_(NORMAL_PRIORITY),
-      ignore_auth_credentials_(ignore_auth_credentials),
-      weak_ptr_factory_(this) {}
+      ignore_auth_credentials_(ignore_auth_credentials) {}
 
 SyncSchedulerImpl::~SyncSchedulerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -140,8 +130,12 @@ SyncSchedulerImpl::~SyncSchedulerImpl() {
 void SyncSchedulerImpl::OnCredentialsUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (HttpResponse::SYNC_AUTH_ERROR ==
-      cycle_context_->connection_manager()->server_status()) {
+  // If this is the first time we got credentials, or we were previously in an
+  // auth error state, then try connecting to the server now.
+  HttpResponse::ServerConnectionCode server_status =
+      cycle_context_->connection_manager()->server_status();
+  if (server_status == HttpResponse::NONE ||
+      server_status == HttpResponse::SYNC_AUTH_ERROR) {
     OnServerConnectionErrorFixed();
   }
 }
@@ -164,7 +158,7 @@ void SyncSchedulerImpl::OnServerConnectionErrorFixed() {
   //
   // 1. We're in exponential backoff.
   // 2. We're silenced / throttled.
-  // 3. A nudge was saved previously due to not having a valid auth token.
+  // 3. A nudge was saved previously due to not having a valid access token.
   // 4. A nudge was scheduled + saved while in configuration mode.
   //
   // In all cases except (2), we want to retry contacting the server. We
@@ -297,8 +291,8 @@ bool SyncSchedulerImpl::CanRunJobNow(JobPriority priority) {
   }
 
   if (!ignore_auth_credentials_ &&
-      cycle_context_->connection_manager()->HasInvalidAuthToken()) {
-    SDVLOG(1) << "Unable to run a job because we have no valid auth token.";
+      cycle_context_->connection_manager()->HasInvalidAccessToken()) {
+    SDVLOG(1) << "Unable to run a job because we have no valid access token.";
     return false;
   }
 
@@ -550,10 +544,7 @@ void SyncSchedulerImpl::DoPollSyncCycleJob() {
 }
 
 TimeDelta SyncSchedulerImpl::GetPollInterval() {
-  return (!cycle_context_->notifications_enabled() ||
-          !cycle_context_->ShouldFetchUpdatesBeforeCommit())
-             ? syncer_short_poll_interval_seconds_
-             : syncer_long_poll_interval_seconds_;
+  return syncer_poll_interval_seconds_;
 }
 
 void SyncSchedulerImpl::AdjustPolling(PollAdjustType type) {
@@ -682,13 +673,7 @@ void SyncSchedulerImpl::TrySyncCycleJobImpl() {
   JobPriority priority = next_sync_cycle_job_priority_;
   next_sync_cycle_job_priority_ = NORMAL_PRIORITY;
 
-  TimeTicks now = TimeTicks::Now();
-  if (!last_sync_cycle_start_.is_null()) {
-    UMA_HISTOGRAM_LONG_TIMES("Sync.SyncCycleInterval",
-                             now - last_sync_cycle_start_);
-  }
-  last_sync_cycle_start_ = now;
-  nudge_tracker_.SetSyncCycleStartTime(now);
+  nudge_tracker_.SetSyncCycleStartTime(TimeTicks::Now());
 
   if (mode_ == CONFIGURATION_MODE) {
     if (pending_configure_params_) {
@@ -707,7 +692,7 @@ void SyncSchedulerImpl::TrySyncCycleJobImpl() {
     // We must be in an error state. Transitioning out of each of these
     // error states should trigger a canary job.
     DCHECK(IsGlobalThrottle() || IsGlobalBackoff() ||
-           cycle_context_->connection_manager()->HasInvalidAuthToken());
+           cycle_context_->connection_manager()->HasInvalidAccessToken());
   }
 
   RestartWaiting();
@@ -852,27 +837,15 @@ bool SyncSchedulerImpl::IsAnyThrottleOrBackoff() {
   return wait_interval_ || nudge_tracker_.IsAnyTypeBlocked();
 }
 
-void SyncSchedulerImpl::OnReceivedShortPollIntervalUpdate(
+void SyncSchedulerImpl::OnReceivedPollIntervalUpdate(
     const TimeDelta& new_interval) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (new_interval == syncer_short_poll_interval_seconds_)
+  if (new_interval == syncer_poll_interval_seconds_)
     return;
-  SDVLOG(1) << "Updating short poll interval to " << new_interval.InMinutes()
+  SDVLOG(1) << "Updating poll interval to " << new_interval.InMinutes()
             << " minutes.";
-  syncer_short_poll_interval_seconds_ = new_interval;
-  AdjustPolling(UPDATE_INTERVAL);
-}
-
-void SyncSchedulerImpl::OnReceivedLongPollIntervalUpdate(
-    const TimeDelta& new_interval) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (new_interval == syncer_long_poll_interval_seconds_)
-    return;
-  SDVLOG(1) << "Updating long poll interval to " << new_interval.InMinutes()
-            << " minutes.";
-  syncer_long_poll_interval_seconds_ = new_interval;
+  syncer_poll_interval_seconds_ = new_interval;
   AdjustPolling(UPDATE_INTERVAL);
 }
 

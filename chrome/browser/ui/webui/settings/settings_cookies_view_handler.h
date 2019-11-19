@@ -34,20 +34,27 @@ class CookiesViewHandler : public SettingsPageUIHandler,
   // CookiesTreeModel::Observer:
   void TreeNodesAdded(ui::TreeModel* model,
                       ui::TreeModelNode* parent,
-                      int start,
-                      int count) override;
+                      size_t start,
+                      size_t count) override;
   void TreeNodesRemoved(ui::TreeModel* model,
                         ui::TreeModelNode* parent,
-                        int start,
-                        int count) override;
+                        size_t start,
+                        size_t count) override;
   void TreeNodeChanged(ui::TreeModel* model, ui::TreeModelNode* node) override {
   }
   void TreeModelBeginBatch(CookiesTreeModel* model) override;
   void TreeModelEndBatch(CookiesTreeModel* model) override;
 
  private:
+  friend class CookiesViewHandlerTest;
+  FRIEND_TEST_ALL_PREFIXES(CookiesViewHandlerTest,
+                           HandleReloadCookiesAndGetDisplayList);
+
   // Creates the CookiesTreeModel if necessary.
   void EnsureCookiesTreeModelCreated();
+
+  // Resets the CookiesTreeModel, the current |filter_|, and the site list.
+  void RecreateCookiesTreeModel();
 
   // Set |filter_| and get a portion (or all) of the list items.
   void HandleGetDisplayList(const base::ListValue* args);
@@ -69,6 +76,9 @@ class CookiesViewHandler : public SettingsPageUIHandler,
 
   // Remove selected sites data.
   void HandleRemove(const base::ListValue* args);
+
+  // Removes cookies and site data available in third-party contexts.
+  void HandleRemoveThirdParty(const base::ListValue* args);
 
   // Get children nodes data and pass it to 'CookiesView.loadChildren' to
   // update the WebUI.
@@ -106,10 +116,13 @@ class CookiesViewHandler : public SettingsPageUIHandler,
   Request request_;
 
   // Sorted index list, by site. Indexes refer to |model->GetRoot()| children.
-  typedef std::pair<base::string16, int> LabelAndIndex;
+  typedef std::pair<base::string16, size_t> LabelAndIndex;
   std::vector<LabelAndIndex> sorted_sites_;
 
   std::unique_ptr<CookiesTreeModelUtil> model_util_;
+
+  // Used to cancel callbacks when JavaScript becomes disallowed.
+  base::WeakPtrFactory<CookiesViewHandler> callback_weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CookiesViewHandler);
 };

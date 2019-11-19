@@ -5,6 +5,7 @@
 '''Container nodes that don't have any logic.
 '''
 
+from __future__ import print_function
 
 from grit.node import base
 from grit.node import include

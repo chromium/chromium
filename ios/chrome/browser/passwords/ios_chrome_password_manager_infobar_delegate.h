@@ -26,7 +26,19 @@ class IOSChromePasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Getter for the message displayed in addition to the title. If no message
   // was set, this returns an empty string.
-  base::string16 GetDetailsMessageText() const;
+  NSString* GetDetailsMessageText() const;
+
+  // The Username being saved or updated by the Infobar.
+  NSString* GetUserNameText() const;
+
+  // The Password being saved or updated by the Infobar.
+  NSString* GetPasswordText() const;
+
+  // The URL host for which the credentials are being saved for.
+  NSString* GetURLHostText() const;
+
+  // Sets the dispatcher for this delegate.
+  void set_dispatcher(id<ApplicationCommands> dispatcher);
 
  protected:
   IOSChromePasswordManagerInfoBarDelegate(
@@ -48,17 +60,13 @@ class IOSChromePasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
     return infobar_response_;
   }
 
-  void set_dispatcher(id<ApplicationCommands> dispatcher) {
-    dispatcher_ = dispatcher;
-  }
-
  private:
-  // ConfirmInfoBarDelegate implementation.
-  int GetIconId() const override;
-
   // The password_manager::PasswordFormManager managing the form we're asking
   // the user about, and should save as per their decision.
   std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save_;
+
+  // ConfirmInfoBarDelegate implementation.
+  int GetIconId() const override;
 
   // Used to track the results we get from the info bar.
   password_manager::metrics_util::UIDismissalReason infobar_response_;

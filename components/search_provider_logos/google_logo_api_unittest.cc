@@ -163,11 +163,13 @@ TEST(GoogleNewLogoApiTest, AcceptsHttpForContainedUrlsIfBaseInsecure) {
 TEST(GoogleNewLogoApiTest, ParsesStaticImage) {
   const GURL base_url("https://base.doo/");
   // Note: The base64 encoding of "abc" is "YWJj".
+  // Note: The base64 encoding of "xyz" is "eHl6".
   const std::string json = R"json()]}'
 {
   "ddljson": {
     "target_url": "/target",
-    "data_uri": "data:image/png;base64,YWJj"
+    "data_uri": "data:image/png;base64,YWJj",
+    "dark_data_uri": "data:image/png;base64,eHl6"
   }
 })json";
 
@@ -178,6 +180,7 @@ TEST(GoogleNewLogoApiTest, ParsesStaticImage) {
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
   EXPECT_EQ("abc", logo->encoded_image->data());
+  EXPECT_EQ("xyz", logo->dark_encoded_image->data());
   EXPECT_EQ(LogoType::SIMPLE, logo->metadata.type);
 }
 
@@ -196,6 +199,13 @@ TEST(GoogleNewLogoApiTest, ParsesShareButtonForSimpleDoodle) {
       "offset_x": 111,
       "offset_y": 222,
       "opacity": 0.5
+    },
+    "dark_share_button": {
+      "background_color": "#ee22bb",
+      "icon_image": "dark_test_img",
+      "offset_x": 99,
+      "offset_y": 191,
+      "opacity": 0.7
     }
   }
 })json";
@@ -215,6 +225,11 @@ TEST(GoogleNewLogoApiTest, ParsesShareButtonForSimpleDoodle) {
   EXPECT_EQ(111, logo->metadata.share_button_x);
   EXPECT_EQ(222, logo->metadata.share_button_y);
   EXPECT_EQ(0.5, logo->metadata.share_button_opacity);
+  EXPECT_EQ("#ee22bb", logo->metadata.dark_share_button_bg);
+  EXPECT_EQ("dark_test_img", logo->metadata.dark_share_button_icon);
+  EXPECT_EQ(99, logo->metadata.dark_share_button_x);
+  EXPECT_EQ(191, logo->metadata.dark_share_button_y);
+  EXPECT_EQ(0.7, logo->metadata.dark_share_button_opacity);
 }
 
 TEST(GoogleNewLogoApiTest, ParsesNoShareButtonIfWrongShortLinkFormat) {
@@ -232,6 +247,13 @@ TEST(GoogleNewLogoApiTest, ParsesNoShareButtonIfWrongShortLinkFormat) {
       "offset_x": 111,
       "offset_y": 222,
       "opacity": 0.5
+    },
+    "dark_share_button": {
+      "background_color": "#ee22bb",
+      "icon_image": "dark_test_img",
+      "offset_x": 99,
+      "offset_y": 191,
+      "opacity": 0.7
     }
   }
 })json";
@@ -249,6 +271,10 @@ TEST(GoogleNewLogoApiTest, ParsesNoShareButtonIfWrongShortLinkFormat) {
   EXPECT_EQ(-1, logo->metadata.share_button_x);
   EXPECT_EQ(-1, logo->metadata.share_button_y);
   EXPECT_EQ(0, logo->metadata.share_button_opacity);
+  ASSERT_TRUE(logo->metadata.dark_share_button_icon.empty());
+  EXPECT_EQ(-1, logo->metadata.dark_share_button_x);
+  EXPECT_EQ(-1, logo->metadata.dark_share_button_y);
+  EXPECT_EQ(0, logo->metadata.dark_share_button_opacity);
 }
 
 TEST(GoogleNewLogoApiTest, ParsesNoShareButtonIfShortLinkInvalid) {
@@ -266,6 +292,13 @@ TEST(GoogleNewLogoApiTest, ParsesNoShareButtonIfShortLinkInvalid) {
       "offset_x": 111,
       "offset_y": 222,
       "opacity": 0.5
+    },
+    "dark_share_button": {
+      "background_color": "#ee22bb",
+      "icon_image": "dark_test_img",
+      "offset_x": 99,
+      "offset_y": 191,
+      "opacity": 0.7
     }
   }
 })json";
@@ -283,6 +316,10 @@ TEST(GoogleNewLogoApiTest, ParsesNoShareButtonIfShortLinkInvalid) {
   EXPECT_EQ(-1, logo->metadata.share_button_x);
   EXPECT_EQ(-1, logo->metadata.share_button_y);
   EXPECT_EQ(0, logo->metadata.share_button_opacity);
+  ASSERT_TRUE(logo->metadata.dark_share_button_icon.empty());
+  EXPECT_EQ(-1, logo->metadata.dark_share_button_x);
+  EXPECT_EQ(-1, logo->metadata.dark_share_button_y);
+  EXPECT_EQ(0, logo->metadata.dark_share_button_opacity);
 }
 
 TEST(GoogleNewLogoApiTest, ParsesShareButtonForAnimatedDoodle) {
@@ -305,6 +342,13 @@ TEST(GoogleNewLogoApiTest, ParsesShareButtonForAnimatedDoodle) {
       "offset_x": 111,
       "offset_y": 222,
       "opacity": 0.5
+    },
+    "dark_share_button": {
+      "background_color": "#ee22bb",
+      "icon_image": "dark_test_img",
+      "offset_x": 99,
+      "offset_y": 191,
+      "opacity": 0.7
     }
   }
 })json";
@@ -326,11 +370,17 @@ TEST(GoogleNewLogoApiTest, ParsesShareButtonForAnimatedDoodle) {
   EXPECT_EQ(111, logo->metadata.share_button_x);
   EXPECT_EQ(222, logo->metadata.share_button_y);
   EXPECT_EQ(0.5, logo->metadata.share_button_opacity);
+  EXPECT_EQ("#ee22bb", logo->metadata.dark_share_button_bg);
+  EXPECT_EQ("dark_test_img", logo->metadata.dark_share_button_icon);
+  EXPECT_EQ(99, logo->metadata.dark_share_button_x);
+  EXPECT_EQ(191, logo->metadata.dark_share_button_y);
+  EXPECT_EQ(0.7, logo->metadata.dark_share_button_opacity);
 }
 
 TEST(GoogleNewLogoApiTest, ParsesAnimatedImage) {
   const GURL base_url("https://base.doo/");
   // Note: The base64 encoding of "abc" is "YWJj".
+  // Note: The base64 encoding of "xyz" is "eHl6".
   const std::string json = R"json()]}'
 {
   "ddljson": {
@@ -340,7 +390,12 @@ TEST(GoogleNewLogoApiTest, ParsesAnimatedImage) {
       "is_animated_gif": true,
       "url": "https://www.doodle.com/image.gif"
     },
-    "cta_data_uri": "data:image/png;base64,YWJj"
+    "dark_large_image": {
+      "is_animated_gif": true,
+      "url": "https://www.doodle.com/dark_image.gif"
+    },
+    "cta_data_uri": "data:image/png;base64,YWJj",
+    "dark_cta_data_uri": "data:image/png;base64,eHl6"
   }
 })json";
 
@@ -352,7 +407,10 @@ TEST(GoogleNewLogoApiTest, ParsesAnimatedImage) {
   ASSERT_TRUE(logo);
   EXPECT_EQ(GURL("https://www.doodle.com/image.gif"),
             logo->metadata.animated_url);
+  EXPECT_EQ(GURL("https://www.doodle.com/dark_image.gif"),
+            logo->metadata.dark_animated_url);
   EXPECT_EQ("abc", logo->encoded_image->data());
+  EXPECT_EQ("xyz", logo->dark_encoded_image->data());
   EXPECT_EQ(LogoType::ANIMATED, logo->metadata.type);
 }
 

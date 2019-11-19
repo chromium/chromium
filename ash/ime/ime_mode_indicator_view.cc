@@ -9,8 +9,6 @@
 #include "ash/wm/window_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "services/ws/public/cpp/property_type_converters.h"
-#include "services/ws/public/mojom/window_manager.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -70,7 +68,7 @@ void ImeModeIndicatorView::ShowAndFadeOut() {
 void ImeModeIndicatorView::OnBeforeBubbleWidgetInit(
     views::Widget::InitParams* params,
     views::Widget* widget) const {
-  aura::Window* window = wm::GetActiveWindow();
+  aura::Window* window = window_util::GetActiveWindow();
   if (window) {  // Null check for tests.
     params->parent = Shell::GetContainer(window->GetRootWindow(),
                                          kShellWindowId_SettingBubbleContainer);

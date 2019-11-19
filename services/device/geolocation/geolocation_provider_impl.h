@@ -15,7 +15,8 @@
 #include "base/macros.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/geolocation/geolocation_provider.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
@@ -73,7 +74,8 @@ class GeolocationProviderImpl : public GeolocationProvider,
       const CustomLocationProviderCallback& custom_location_provider_getter,
       bool use_gms_core_location_provider = false);
 
-  void BindGeolocationControlRequest(mojom::GeolocationControlRequest request);
+  void BindGeolocationControlReceiver(
+      mojo::PendingReceiver<mojom::GeolocationControl> receiver);
 
   // mojom::GeolocationControl implementation:
   void UserDidOptIntoLocationServices() override;
@@ -134,7 +136,7 @@ class GeolocationProviderImpl : public GeolocationProvider,
   // Only to be used on the geolocation thread.
   std::unique_ptr<LocationProvider> arbitrator_;
 
-  mojo::Binding<mojom::GeolocationControl> binding_;
+  mojo::Receiver<mojom::GeolocationControl> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GeolocationProviderImpl);
 };

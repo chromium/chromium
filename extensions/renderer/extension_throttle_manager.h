@@ -13,23 +13,17 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "extensions/renderer/extension_throttle_entry.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace blink {
+class URLLoaderThrottle;
 class WebURLRequest;
 }  // namespace blink
-
-namespace content {
-class URLLoaderThrottle;
-}  // namespace content
 
 namespace net {
 struct RedirectInfo;
 }  // namespace net
-
-namespace network {
-struct ResourceResponseHead;
-}  // namespace network
 
 namespace extensions {
 
@@ -49,23 +43,21 @@ class ExtensionThrottleManager {
 
   // Creates a throttle which uses this class to prevent extensions from
   // requesting a URL too often, if such a throttle is needed.
-  std::unique_ptr<content::URLLoaderThrottle> MaybeCreateURLLoaderThrottle(
+  std::unique_ptr<blink::URLLoaderThrottle> MaybeCreateURLLoaderThrottle(
       const blink::WebURLRequest& request);
 
-  // Determine if a request to |request_url| with the given |request_load_flags|
-  // (see net/base/load_flags.h) should be rejected.
-  bool ShouldRejectRequest(const GURL& request_url, int request_load_flags);
+  // Determine if a request to |request_url| should be rejected.
+  bool ShouldRejectRequest(const GURL& request_url);
 
-  // Determine if a redirect from the original |request_url| with the original
-  // |request_load_flags| (see net/base/load_flags.h) should be allowed to be
-  // redirected as specified by |redirect_info|.
+  // Determine if a redirect from the original |request_url| should be allowed
+  // to be redirected as specified by |redirect_info|.
   bool ShouldRejectRedirect(const GURL& request_url,
-                            int request_load_flags,
                             const net::RedirectInfo& redirect_info);
 
   // Must be called when the |response_head| for a request has been received.
-  void WillProcessResponse(const GURL& response_url,
-                           const network::ResourceResponseHead& response_head);
+  void WillProcessResponse(
+      const GURL& response_url,
+      const network::mojom::URLResponseHead& response_head);
 
   // Set the network status online state as specified in |is_online|.
   void SetOnline(bool is_online);
@@ -78,13 +70,6 @@ class ExtensionThrottleManager {
   // It is only used by unit tests.
   void OverrideEntryForTests(const GURL& url,
                              std::unique_ptr<ExtensionThrottleEntry> entry);
-
-  // Sets whether to ignore net::LOAD_MAYBE_USER_GESTURE of the request for
-  // testing. Otherwise, requests will not be throttled when they may have been
-  // throttled in response to a recent user gesture, though they're still
-  // counted for the purpose of throttling other requests.
-  void SetIgnoreUserGestureLoadFlagForTests(
-      bool ignore_user_gesture_load_flag_for_tests);
 
   int GetNumberOfEntriesForTests() const { return url_entries_.size(); }
 
@@ -135,8 +120,6 @@ class ExtensionThrottleManager {
 
   // Valid after construction.
   GURL::Replacements url_id_replacements_;
-
-  bool ignore_user_gesture_load_flag_for_tests_;
 
   // This is null when it is not set for tests.
   std::unique_ptr<net::BackoffEntry::Policy> backoff_policy_for_tests_;

@@ -29,10 +29,6 @@ source_set("video") {
     "h264_poc.h",
     "half_float_maker.cc",
     "half_float_maker.h",
-    "jpeg_decode_accelerator.cc",
-    "jpeg_decode_accelerator.h",
-    "jpeg_encode_accelerator.cc",
-    "jpeg_encode_accelerator.h",
     "picture.cc",
     "picture.h",
     "supported_video_decoder_config.cc",
@@ -45,7 +41,7 @@ source_set("video") {
     "video_encode_accelerator.h",
   ]
 
-  if (proprietary_codecs && enable_hevc_demuxing) {
+  if (proprietary_codecs && enable_platform_hevc) {
     sources += [
       "h265_parser.cc",
       "h265_parser.h",
@@ -78,6 +74,8 @@ static_library("test_support") {
   visibility = [ "//media:test_support" ]
   testonly = true
   sources = [
+    "fake_gpu_memory_buffer.cc",
+    "fake_gpu_memory_buffer.h",
     "fake_video_encode_accelerator.cc",
     "fake_video_encode_accelerator.h",
     "mock_gpu_memory_buffer_video_frame_pool.cc",
@@ -95,7 +93,7 @@ static_library("test_support") {
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/common",
     "//media/base:test_support",
-    "//services/ws/public/cpp/gpu",
+    "//services/viz/public/cpp/gpu",
     "//testing/gmock",
     "//ui/gfx",
   ]
@@ -111,7 +109,7 @@ source_set("unit_tests") {
     "half_float_maker_unittest.cc",
     "supported_video_decoder_config_unittest.cc",
   ]
-  if (enable_hevc_demuxing) {
+  if (enable_platform_hevc) {
     sources += [ "h265_parser_unittest.cc" ]
   }
 

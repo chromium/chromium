@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/js/js_event_details.h"
@@ -31,7 +31,7 @@ class JsMutationEventObserverTest : public testing::Test {
  private:
   // This must be destroyed after the member variables below in order
   // for WeakHandles to be destroyed properly.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
  protected:
   StrictMock<MockJsEventHandler> mock_js_event_handler_;
@@ -46,8 +46,8 @@ TEST_F(JsMutationEventObserverTest, OnChangesApplied) {
   // We don't test with passwords as that requires additional setup.
 
   // Build a list of example ChangeRecords.
-  ChangeRecord changes[MODEL_TYPE_COUNT];
-  for (int i = AUTOFILL_PROFILE; i < MODEL_TYPE_COUNT; ++i) {
+  ChangeRecord changes[ModelType::NUM_ENTRIES];
+  for (int i = AUTOFILL_PROFILE; i < ModelType::NUM_ENTRIES; ++i) {
     changes[i].id = i;
     switch (i % 3) {
       case 0:
@@ -67,13 +67,13 @@ TEST_F(JsMutationEventObserverTest, OnChangesApplied) {
   // starting from changes[i].
 
   // Set expectations for each data type.
-  for (int i = AUTOFILL_PROFILE; i < MODEL_TYPE_COUNT; ++i) {
+  for (int i = AUTOFILL_PROFILE; i < ModelType::NUM_ENTRIES; ++i) {
     const std::string& model_type_str = ModelTypeToString(ModelTypeFromInt(i));
     base::DictionaryValue expected_details;
     expected_details.SetString("modelType", model_type_str);
     expected_details.SetString("writeTransactionId", "0");
     auto expected_changes = std::make_unique<base::ListValue>();
-    for (int j = i; j < MODEL_TYPE_COUNT; ++j) {
+    for (int j = i; j < ModelType::NUM_ENTRIES; ++j) {
       expected_changes->Append(changes[j].ToValue());
     }
     expected_details.Set("changes", std::move(expected_changes));
@@ -83,7 +83,7 @@ TEST_F(JsMutationEventObserverTest, OnChangesApplied) {
   }
 
   // Fire OnChangesApplied() for each data type.
-  for (int i = AUTOFILL_PROFILE; i < MODEL_TYPE_COUNT; ++i) {
+  for (int i = AUTOFILL_PROFILE; i < ModelType::NUM_ENTRIES; ++i) {
     ChangeRecordList local_changes(std::begin(changes) + i, std::end(changes));
     js_mutation_event_observer_.OnChangesApplied(
         ModelTypeFromInt(i), 0, ImmutableChangeRecordList(&local_changes));
@@ -95,7 +95,7 @@ TEST_F(JsMutationEventObserverTest, OnChangesApplied) {
 TEST_F(JsMutationEventObserverTest, OnChangesComplete) {
   InSequence dummy;
 
-  for (int i = FIRST_REAL_MODEL_TYPE; i < MODEL_TYPE_COUNT; ++i) {
+  for (int i = FIRST_REAL_MODEL_TYPE; i < ModelType::NUM_ENTRIES; ++i) {
     base::DictionaryValue expected_details;
     expected_details.SetString("modelType",
                                ModelTypeToString(ModelTypeFromInt(i)));
@@ -104,7 +104,7 @@ TEST_F(JsMutationEventObserverTest, OnChangesComplete) {
                               HasDetailsAsDictionary(expected_details)));
   }
 
-  for (int i = FIRST_REAL_MODEL_TYPE; i < MODEL_TYPE_COUNT; ++i) {
+  for (int i = FIRST_REAL_MODEL_TYPE; i < ModelType::NUM_ENTRIES; ++i) {
     js_mutation_event_observer_.OnChangesComplete(ModelTypeFromInt(i));
   }
   PumpLoop();

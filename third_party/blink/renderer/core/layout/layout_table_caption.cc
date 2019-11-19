@@ -46,7 +46,7 @@ void LayoutTableCaption::WillBeRemovedFromTree() {
 }
 
 LayoutTable* LayoutTableCaption::Table() const {
-  return ToLayoutTable(Parent());
+  return To<LayoutTable>(Parent());
 }
 
 }  // namespace blink

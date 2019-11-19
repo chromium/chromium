@@ -6,17 +6,22 @@ include_rules = [
 
   "+components/autofill/content/renderer",
   "+components/cdm/renderer",
+  "+components/page_load_metrics/renderer",
   "+components/printing/common",
   "+components/printing/renderer",
   "+components/safe_browsing/common",
   "+components/safe_browsing/features.h",
   "+components/safe_browsing/renderer",
+  "+components/security_interstitials/core",
+  "+components/security_interstitials/content/renderer",
   "+components/spellcheck/renderer",
   "+components/visitedlink/renderer",
 
   "+content/public/child",
   "+content/public/common",
   "+content/public/renderer",
+
+  "+gin",
 
   "+media/base",
 

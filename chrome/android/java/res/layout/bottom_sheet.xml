@@ -14,35 +14,23 @@
         android:id="@+id/bottom_sheet_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/toolbar_shadow_height"
-        android:visibility="invisible" />
+        android:background="@drawable/top_round" />
 
     <FrameLayout
         android:id="@+id/bottom_sheet_control_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <ImageView
-            android:id="@+id/bottom_sheet_toolbar_top_shadow"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_shadow_height"
-            android:src="@drawable/modern_toolbar_shadow"
-            android:scaleType="fitXY"
-            android:scaleY="-1"
-            tools:ignore="ContentDescription" />
-
         <view
             class="org.chromium.chrome.browser.widget.bottomsheet.TouchRestrictingFrameLayout"
             android:id="@+id/bottom_sheet_toolbar_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/toolbar_shadow_height" >
+            android:layout_height="wrap_content" >
 
             <View
                 android:id="@+id/bottom_sheet_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/bottom_sheet_peek_height"
-                android:background="@color/modern_primary_color" />
+                android:layout_height="@dimen/bottom_sheet_peek_height" />
         </view>
 
     </FrameLayout>

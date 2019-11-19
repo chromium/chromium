@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_temporary_storage_evictor.h"
 #include "storage/browser/test/mock_storage_client.h"
@@ -70,7 +70,6 @@ class MockQuotaEvictionHandler : public storage::QuotaEvictionHandler {
   }
 
   void GetEvictionOrigin(StorageType type,
-                         const std::set<url::Origin>& exceptions,
                          int64_t global_quota,
                          storage::GetOriginCallback callback) override {
     if (origin_order_.empty())
@@ -127,7 +126,7 @@ class MockQuotaEvictionHandler : public storage::QuotaEvictionHandler {
  private:
   int64_t EnsureOriginRemoved(const url::Origin& origin) {
     int64_t origin_usage;
-    if (!base::ContainsKey(origins_, origin))
+    if (!base::Contains(origins_, origin))
       return -1;
     else
       origin_usage = origins_[origin];
@@ -152,8 +151,7 @@ class MockQuotaEvictionHandler : public storage::QuotaEvictionHandler {
 class QuotaTemporaryStorageEvictorTest : public testing::Test {
  public:
   QuotaTemporaryStorageEvictorTest()
-      : num_get_usage_and_quota_for_eviction_(0),
-        weak_factory_(this) {}
+      : num_get_usage_and_quota_for_eviction_(0) {}
 
   void SetUp() override {
     quota_eviction_handler_.reset(new MockQuotaEvictionHandler(this));
@@ -216,11 +214,11 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
     return num_get_usage_and_quota_for_eviction_;
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockQuotaEvictionHandler> quota_eviction_handler_;
   std::unique_ptr<QuotaTemporaryStorageEvictor> temporary_storage_evictor_;
   int num_get_usage_and_quota_for_eviction_;
-  base::WeakPtrFactory<QuotaTemporaryStorageEvictorTest> weak_factory_;
+  base::WeakPtrFactory<QuotaTemporaryStorageEvictorTest> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(QuotaTemporaryStorageEvictorTest);
 };
 
@@ -236,7 +234,6 @@ TEST_F(QuotaTemporaryStorageEvictorTest, SimpleEvictionTest) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(200 + 500, quota_eviction_handler()->GetUsage());
 
-  EXPECT_EQ(0, statistics().num_errors_on_evicting_origin);
   EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
   EXPECT_EQ(1, statistics().num_evicted_origins);
   EXPECT_EQ(1, statistics().num_eviction_rounds);
@@ -256,7 +253,6 @@ TEST_F(QuotaTemporaryStorageEvictorTest, MultipleEvictionTest) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(450 + 400, quota_eviction_handler()->GetUsage());
 
-  EXPECT_EQ(0, statistics().num_errors_on_evicting_origin);
   EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
   EXPECT_EQ(2, statistics().num_evicted_origins);
   EXPECT_EQ(1, statistics().num_eviction_rounds);
@@ -291,7 +287,6 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionTest) {
             quota_eviction_handler()->GetUsage());
   EXPECT_EQ(5, num_get_usage_and_quota_for_eviction());
 
-  EXPECT_EQ(0, statistics().num_errors_on_evicting_origin);
   EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
   EXPECT_EQ(3, statistics().num_evicted_origins);
   EXPECT_EQ(2, statistics().num_eviction_rounds);
@@ -324,7 +319,6 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionSkippedTest) {
   EXPECT_EQ(initial_total_size - d_size, quota_eviction_handler()->GetUsage());
   EXPECT_EQ(4, num_get_usage_and_quota_for_eviction());
 
-  EXPECT_EQ(0, statistics().num_errors_on_evicting_origin);
   EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
   EXPECT_EQ(1, statistics().num_evicted_origins);
   EXPECT_EQ(3, statistics().num_eviction_rounds);
@@ -359,7 +353,6 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionWithAccessOriginTest) {
             quota_eviction_handler()->GetUsage());
   EXPECT_EQ(5, num_get_usage_and_quota_for_eviction());
 
-  EXPECT_EQ(0, statistics().num_errors_on_evicting_origin);
   EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
   EXPECT_EQ(3, statistics().num_evicted_origins);
   EXPECT_EQ(2, statistics().num_eviction_rounds);
@@ -380,7 +373,6 @@ TEST_F(QuotaTemporaryStorageEvictorTest, DiskSpaceNonEvictionTest) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(10 + 20, quota_eviction_handler()->GetUsage());
 
-  EXPECT_EQ(0, statistics().num_errors_on_evicting_origin);
   EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
   EXPECT_EQ(0, statistics().num_evicted_origins);
   EXPECT_EQ(1, statistics().num_eviction_rounds);
@@ -401,7 +393,6 @@ TEST_F(QuotaTemporaryStorageEvictorTest, DiskSpaceEvictionTest) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(150 + 300, quota_eviction_handler()->GetUsage());
 
-  EXPECT_EQ(0, statistics().num_errors_on_evicting_origin);
   EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
   EXPECT_EQ(2, statistics().num_evicted_origins);
   EXPECT_EQ(1, statistics().num_eviction_rounds);

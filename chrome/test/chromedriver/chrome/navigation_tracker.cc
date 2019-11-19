@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/chrome/navigation_tracker.h"
 
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
@@ -14,14 +15,12 @@
 
 namespace {
 
-const char kDummyFrameName[] = "chromedriver dummy frame";
-const char kDummyFrameUrl[] = "about:blank";
-
-const char kUnreachableWebDataURL[] = "chrome-error://chromewebdata/";
-
 const char kAutomationExtensionBackgroundPage[] =
     "chrome-extension://aapnijgdinlhnhlmodcfapnahmbfebeb/"
     "_generated_background_page.html";
+
+// Match to content/browser/devtools/devTools_session const of same name
+const char kTargetClosedMessage[] = "Inspected target navigated or closed";
 
 Status MakeNavigationCheckFailedStatus(Status command_status) {
   if (command_status.code() == kUnexpectedAlertOpen)
@@ -38,12 +37,13 @@ Status MakeNavigationCheckFailedStatus(Status command_status) {
 NavigationTracker::NavigationTracker(
     DevToolsClient* client,
     const BrowserInfo* browser_info,
-    const JavaScriptDialogManager* dialog_manager)
+    const JavaScriptDialogManager* dialog_manager,
+    const bool is_eager)
     : client_(client),
       loading_state_(kUnknown),
+      top_frame_id_(client->GetId()),
       dialog_manager_(dialog_manager),
-      dummy_execution_context_id_(0),
-      load_event_fired_(true),
+      is_eager_(is_eager),
       timed_out_(false) {
   client_->AddListener(this);
 }
@@ -52,12 +52,13 @@ NavigationTracker::NavigationTracker(
     DevToolsClient* client,
     LoadingState known_state,
     const BrowserInfo* browser_info,
-    const JavaScriptDialogManager* dialog_manager)
+    const JavaScriptDialogManager* dialog_manager,
+    const bool is_eager)
     : client_(client),
       loading_state_(known_state),
+      top_frame_id_(client->GetId()),
       dialog_manager_(dialog_manager),
-      dummy_execution_context_id_(0),
-      load_event_fired_(true),
+      is_eager_(is_eager),
       timed_out_(false) {
   client_->AddListener(this);
 }
@@ -117,7 +118,6 @@ Status NavigationTracker::IsPendingNavigation(const std::string& frame_id,
     if (status.IsError() || !result->GetString("root.baseURL", &base_url) ||
         !result->GetString("root.documentURL", &doc_url))
       return MakeNavigationCheckFailedStatus(status);
-
     if (doc_url != "about:blank" && base_url == "about:blank") {
       *is_pending = true;
       loading_state_ = kLoading;
@@ -133,44 +133,11 @@ Status NavigationTracker::IsPendingNavigation(const std::string& frame_id,
         return MakeNavigationCheckFailedStatus(status);
       loading_state_ = function_exists ? kNotLoading : kLoading;
     }
-
-    // If the loading state is unknown (which happens after first connecting),
-    // force loading to start and set the state to loading. This will cause a
-    // frame start event to be received, and the frame stop event will not be
-    // received until all frames are loaded.  Loading is forced to start by
-    // attaching a temporary iframe.
-    const std::string kStartLoadingIfMainFrameNotLoading = base::StringPrintf(
-        "var frame = document.createElement('iframe');"
-        "frame.name = '%s';"
-        "frame.src = '%s';"
-        "document.body.appendChild(frame);"
-        "window.setTimeout(function() {"
-        "  document.body.removeChild(frame);"
-        "}, 0);",
-        kDummyFrameName, kDummyFrameUrl);
-    base::DictionaryValue params;
-    params.SetString("expression", kStartLoadingIfMainFrameNotLoading);
-    status = client_->SendCommandAndGetResultWithTimeout(
-        "Runtime.evaluate", params, timeout, &result);
+    status = DetermineUnknownLoadingState();
     if (status.IsError())
       return MakeNavigationCheckFailedStatus(status);
-
-    // Between the time the JavaScript is evaluated and
-    // SendCommandAndGetResult returns, OnEvent may have received info about
-    // the loading state.  This is only possible during a nested command. Only
-    // set the loading state if the loading state is still unknown.
-    if (loading_state_ == kUnknown)
-      loading_state_ = kLoading;
   }
   *is_pending = loading_state_ == kLoading;
-
-  if (frame_id.empty()) {
-    *is_pending |= scheduled_frame_set_.size() > 0;
-    *is_pending |= pending_frame_set_.size() > 0;
-  } else {
-    *is_pending |= scheduled_frame_set_.count(frame_id) > 0;
-    *is_pending |= pending_frame_set_.count(frame_id) > 0;
-  }
   return Status(kOk);
 }
 
@@ -197,8 +164,7 @@ bool NavigationTracker::IsNonBlocking() const {
 }
 
 Status NavigationTracker::OnConnected(DevToolsClient* client) {
-  ResetLoadingState(kUnknown);
-
+  loading_state_ = kUnknown;
   // Enable page domain notifications to allow tracking navigation state.
   base::DictionaryValue empty_params;
   return client_->SendCommand("Page.enable", empty_params);
@@ -207,123 +173,52 @@ Status NavigationTracker::OnConnected(DevToolsClient* client) {
 Status NavigationTracker::OnEvent(DevToolsClient* client,
                                   const std::string& method,
                                   const base::DictionaryValue& params) {
-  if (method == "Page.frameStartedLoading") {
+  if (method == "Page.loadEventFired" ||
+      (is_eager_ && method == "Page.domContentEventFired")) {
+    loading_state_ = kNotLoading;
+  } else if (method == "Page.frameStartedLoading") {
+    // If frame that started loading is the top frame
+    // set loading_state_ to loading. If it is a subframe
+    // the loading state should not change
     std::string frame_id;
     if (!params.GetString("frameId", &frame_id))
       return Status(kUnknownError, "missing or invalid 'frameId'");
-    pending_frame_set_.insert(frame_id);
-    loading_state_ = kLoading;
+    if (frame_id == top_frame_id_) {
+      loading_state_ = kLoading;
+    }
   } else if (method == "Page.frameStoppedLoading") {
+    // Sometimes Page.frameStoppedLoading fires without
+    // an associated Page.loadEventFired. If this happens
+    // for the top frame, assume loading has finished.
     std::string frame_id;
     if (!params.GetString("frameId", &frame_id))
       return Status(kUnknownError, "missing or invalid 'frameId'");
-
-    scheduled_frame_set_.erase(frame_id);
-    pending_frame_set_.erase(frame_id);
-    if (pending_frame_set_.empty() &&
-        (load_event_fired_ || timed_out_ || execution_context_set_.empty()))
+    if (frame_id == top_frame_id_) {
       loading_state_ = kNotLoading;
-  } else if (method == "Page.frameScheduledNavigation") {
-    double delay;
-    if (!params.GetDouble("delay", &delay))
-      return Status(kUnknownError, "missing or invalid 'delay'");
-
-    std::string frame_id;
-    if (!params.GetString("frameId", &frame_id))
-      return Status(kUnknownError, "missing or invalid 'frameId'");
-
-    // WebDriver spec says to ignore redirects over 1s.
-    if (delay > 1)
-      return Status(kOk);
-    scheduled_frame_set_.insert(frame_id);
-
-    // A normal Page.loadEventFired event isn't expected after a scheduled
-    // navigation, so set load_event_fired_ flag.
-    load_event_fired_ = true;
-  } else if (method == "Page.frameClearedScheduledNavigation") {
-    std::string frame_id;
-    if (!params.GetString("frameId", &frame_id))
-      return Status(kUnknownError, "missing or invalid 'frameId'");
-
-    scheduled_frame_set_.erase(frame_id);
-  } else if (method == "Page.frameNavigated") {
-    // Note: in some cases Page.frameNavigated may be received for subframes
-    // without a frameStoppedLoading (for example cnn.com).
-
-    const base::Value* unused_value;
-    if (!params.Get("frame.parentId", &unused_value)) {
-      // Discard pending and scheduled frames, except for the root frame,
-      // which just navigated (and which we should consider pending until we
-      // receive a Page.frameStoppedLoading event for it).
-      std::string frame_id;
-      if (!params.GetString("frame.id", &frame_id))
-        return Status(kUnknownError, "missing or invalid 'frame.id'");
-      bool frame_was_pending = pending_frame_set_.count(frame_id) > 0;
-      pending_frame_set_.clear();
-      scheduled_frame_set_.clear();
-      if (frame_was_pending)
-        pending_frame_set_.insert(frame_id);
-      // If the URL indicates that the web page is unreachable (the sad tab
-      // page) then discard all pending navigations.
-      std::string frame_url;
-      if (!params.GetString("frame.url", &frame_url))
-        return Status(kUnknownError, "missing or invalid 'frame.url'");
-      if (frame_url == kUnreachableWebDataURL)
-        pending_frame_set_.clear();
-    } else {
-      // If a child frame just navigated, check if it is the dummy frame that
-      // was attached by IsPendingNavigation(). We don't want to track execution
-      // contexts created and destroyed for this dummy frame.
-      std::string name;
-      if (!params.GetString("frame.name", &name))
-        // https://bugs.chromium.org/p/chromium/issues/detail?id=823579
-        // OOPIF frames might not have names. Ignore them.
-        return Status(kOk);
-      std::string url;
-      if (!params.GetString("frame.url", &url))
-        return Status(kUnknownError, "missing or invalid 'frame.url'");
-      if (name == kDummyFrameName && url == kDummyFrameUrl)
-        params.GetString("frame.id", &dummy_frame_id_);
     }
-  } else if (method == "Runtime.executionContextsCleared") {
-    execution_context_set_.clear();
-    load_event_fired_ = false;
-    // As of crrev.com/382211, DevTools sends an executionContextsCleared
-    // event right before the first execution context is created, but after
-    // Page.loadEventFired. Set the loading state to loading, but do not
-    // clear the pending and scheduled frame sets, since they may contain
-    // frames that we're still waiting for.
-    loading_state_ = kLoading;
-  } else if (method == "Runtime.executionContextCreated") {
-    int execution_context_id;
-    if (!params.GetInteger("context.id", &execution_context_id))
-      return Status(kUnknownError, "missing or invalid 'context.id'");
-    std::string frame_id;
-    if (!params.GetString("context.auxData.frameId", &frame_id)) {
-      return Status(kUnknownError,
-                    "missing or invalid 'context.auxData.frameId'");
-    }
-    if (frame_id == dummy_frame_id_)
-      dummy_execution_context_id_ = execution_context_id;
-    else
-      execution_context_set_.insert(execution_context_id);
-  } else if (method == "Runtime.executionContextDestroyed") {
-    int execution_context_id;
-    if (!params.GetInteger("executionContextId", &execution_context_id))
-      return Status(kUnknownError, "missing or invalid 'context.id'");
-    execution_context_set_.erase(execution_context_id);
-    if (execution_context_id != dummy_execution_context_id_) {
-      if (execution_context_set_.empty()) {
-        loading_state_ = kLoading;
-        load_event_fired_ = false;
-        dummy_frame_id_ = std::string();
-        dummy_execution_context_id_ = 0;
-      }
-    }
-  } else if (method == "Page.loadEventFired") {
-    load_event_fired_ = true;
   } else if (method == "Inspector.targetCrashed") {
-    ResetLoadingState(kNotLoading);
+    loading_state_ = kNotLoading;
+  }
+  if (timed_out_)
+    loading_state_ = kNotLoading;
+  return Status(kOk);
+}
+
+Status NavigationTracker::DetermineUnknownLoadingState() {
+  base::DictionaryValue params;
+  params.SetString("expression", "document.readyState");
+  std::unique_ptr<base::DictionaryValue> result;
+  Status status =
+      client_->SendCommandAndGetResult("Runtime.evaluate", params, &result);
+  std::string ready_state;
+  if (status.IsError() || !result->GetString("result.value", &ready_state)) {
+    return MakeNavigationCheckFailedStatus(status);
+  }
+  if (ready_state == "complete" ||
+      (is_eager_ && ready_state == "interactive")) {
+    loading_state_ = kNotLoading;
+  } else {
+    loading_state_ = kLoading;
   }
   return Status(kOk);
 }
@@ -367,8 +262,18 @@ Status NavigationTracker::OnCommandSuccess(
     base::DictionaryValue params;
     params.SetString("expression", "document.URL");
     std::unique_ptr<base::DictionaryValue> result;
-    Status status = client_->SendCommandAndGetResultWithTimeout(
-        "Runtime.evaluate", params, &command_timeout, &result);
+    Status status(kOk);
+    for (int attempt = 0; attempt < 3; attempt++) {
+      status = client_->SendCommandAndGetResultWithTimeout(
+          "Runtime.evaluate", params, &command_timeout, &result);
+      if (status.code() == kUnknownError &&
+          status.message().find(kTargetClosedMessage) != std::string::npos) {
+        continue;
+      } else {
+        break;
+      }
+    }
+
     std::string url;
     if (status.IsError() || !result->GetString("result.value", &url))
       return MakeNavigationCheckFailedStatus(status);
@@ -376,10 +281,4 @@ Status NavigationTracker::OnCommandSuccess(
       loading_state_ = kLoading;
   }
   return Status(kOk);
-}
-
-void NavigationTracker::ResetLoadingState(LoadingState loading_state) {
-  loading_state_ = loading_state;
-  pending_frame_set_.clear();
-  scheduled_frame_set_.clear();
 }

@@ -10,6 +10,7 @@
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/common/input/input_injector.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
@@ -20,7 +21,7 @@ class CONTENT_EXPORT InputInjectorImpl : public mojom::InputInjector {
   ~InputInjectorImpl() override;
 
   static void Create(base::WeakPtr<RenderFrameHostImpl> frame_host,
-                     mojom::InputInjectorRequest request);
+                     mojo::PendingReceiver<mojom::InputInjector> receiver);
 
   // mojom::InputInjector overrides.
   void QueueSyntheticSmoothDrag(

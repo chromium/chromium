@@ -34,6 +34,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -198,28 +199,27 @@ void Locale::ResetDefaultLocale() {
 
 Locale::~Locale() = default;
 
-String Locale::QueryString(WebLocalizedString::Name name) {
+String Locale::QueryString(int resource_id) {
   // FIXME: Returns a string locazlied for this locale.
-  return Platform::Current()->QueryLocalizedString(name);
+  return Platform::Current()->QueryLocalizedString(resource_id);
 }
 
-String Locale::QueryString(WebLocalizedString::Name name,
-                           const String& parameter) {
+String Locale::QueryString(int resource_id, const String& parameter) {
   // FIXME: Returns a string locazlied for this locale.
-  return Platform::Current()->QueryLocalizedString(name, parameter);
+  return Platform::Current()->QueryLocalizedString(resource_id, parameter);
 }
 
-String Locale::QueryString(WebLocalizedString::Name name,
+String Locale::QueryString(int resource_id,
                            const String& parameter1,
                            const String& parameter2) {
   // FIXME: Returns a string locazlied for this locale.
-  return Platform::Current()->QueryLocalizedString(name, parameter1,
+  return Platform::Current()->QueryLocalizedString(resource_id, parameter1,
                                                    parameter2);
 }
 
 String Locale::ValidationMessageTooLongText(unsigned value_length,
                                             int max_length) {
-  return QueryString(WebLocalizedString::kValidationTooLong,
+  return QueryString(IDS_FORM_VALIDATION_TOO_LONG,
                      ConvertToLocalizedNumber(String::Number(value_length)),
                      ConvertToLocalizedNumber(String::Number(max_length)));
 }
@@ -227,18 +227,18 @@ String Locale::ValidationMessageTooLongText(unsigned value_length,
 String Locale::ValidationMessageTooShortText(unsigned value_length,
                                              int min_length) {
   if (value_length == 1) {
-    return QueryString(WebLocalizedString::kValidationTooShort,
+    return QueryString(IDS_FORM_VALIDATION_TOO_SHORT,
                        ConvertToLocalizedNumber(String::Number(value_length)),
                        ConvertToLocalizedNumber(String::Number(min_length)));
   }
 
-  return QueryString(WebLocalizedString::kValidationTooShortPlural,
+  return QueryString(IDS_FORM_VALIDATION_TOO_SHORT_PLURAL,
                      ConvertToLocalizedNumber(String::Number(value_length)),
                      ConvertToLocalizedNumber(String::Number(min_length)));
 }
 
 String Locale::WeekFormatInLDML() {
-  String templ = QueryString(WebLocalizedString::kWeekFormatTemplate);
+  String templ = QueryString(IDS_FORM_INPUT_WEEK_TEMPLATE);
   // Converts a string like "Week $2, $1" to an LDML date format pattern like
   // "'Week 'ww', 'yyyy".
   StringBuilder builder;
@@ -473,7 +473,6 @@ String Locale::FormatDateTime(const DateComponents& date,
     case DateComponents::kWeek:
       builder.Build(WeekFormatInLDML());
       break;
-    case DateComponents::kDateTime:
     case DateComponents::kDateTimeLocal:
       builder.Build(format_type == kFormatTypeShort
                         ? DateTimeFormatWithoutSeconds()

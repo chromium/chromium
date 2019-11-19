@@ -95,8 +95,9 @@ RankerModelLoaderImpl::RankerModelLoaderImpl(
     base::FilePath model_path,
     GURL model_url,
     std::string uma_prefix)
-    : background_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+    : background_task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       validate_model_cb_(std::move(validate_model_cb)),
       on_model_available_cb_(std::move(on_model_available_cb)),
@@ -104,8 +105,7 @@ RankerModelLoaderImpl::RankerModelLoaderImpl(
       model_path_(std::move(model_path)),
       model_url_(std::move(model_url)),
       uma_prefix_(std::move(uma_prefix)),
-      url_fetcher_(std::make_unique<RankerURLFetcher>()),
-      weak_ptr_factory_(this) {}
+      url_fetcher_(std::make_unique<RankerURLFetcher>()) {}
 
 RankerModelLoaderImpl::~RankerModelLoaderImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

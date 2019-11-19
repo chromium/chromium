@@ -108,15 +108,6 @@ std::string SerializeSeed(const VariationsSeed& seed) {
   seed.SerializeToString(&serialized_seed);
   return serialized_seed;
 }
-
-// Returns the |time| formatted as a UTC string.
-std::string ToUTCString(base::Time time) {
-  base::Time::Exploded exploded;
-  time.UTCExplode(&exploded);
-  return base::StringPrintf("%d-%d-%d %d:%d:%d UTC", exploded.year,
-                            exploded.month, exploded.day_of_month,
-                            exploded.hour, exploded.minute, exploded.second);
-}
 #endif  // OS_ANDROID
 
 class TestPlatformFieldTrials : public PlatformFieldTrials {
@@ -177,21 +168,20 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override {
     return nullptr;
   }
-  version_info::Channel GetChannel() override {
-    return version_info::Channel::UNKNOWN;
-  }
   bool OverridesRestrictParameter(std::string* parameter) override {
     if (restrict_parameter_.empty())
       return false;
     *parameter = restrict_parameter_;
     return true;
   }
-
-  void set_restrict_parameter(const std::string& value) {
-    restrict_parameter_ = value;
-  }
+  bool IsEnterprise() override { return false; }
 
  private:
+  // VariationsServiceClient:
+  version_info::Channel GetChannel() override {
+    return version_info::Channel::UNKNOWN;
+  }
+
   std::string restrict_parameter_;
 
   DISALLOW_COPY_AND_ASSIGN(TestVariationsServiceClient);
@@ -258,7 +248,8 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
     TestPlatformFieldTrials platform_field_trials;
     return VariationsFieldTrialCreator::SetupFieldTrials(
         "", "", "", std::set<std::string>(), std::vector<std::string>(),
-        nullptr, std::make_unique<base::FeatureList>(), &platform_field_trials,
+        std::vector<base::FeatureList::FeatureOverrideInfo>(), nullptr,
+        std::make_unique<base::FeatureList>(), &platform_field_trials,
         safe_seed_manager_);
   }
 
@@ -277,7 +268,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
 
 class FieldTrialCreatorTest : public ::testing::Test {
  protected:
-  FieldTrialCreatorTest() : field_trial_list_(nullptr) {
+  FieldTrialCreatorTest() {
     VariationsService::RegisterPrefs(prefs_.registry());
     global_feature_list_ = base::FeatureList::ClearInstanceForTesting();
   }
@@ -296,9 +287,6 @@ class FieldTrialCreatorTest : public ::testing::Test {
  private:
   // The global feature list, which is ignored by tests in this suite.
   std::unique_ptr<base::FeatureList> global_feature_list_;
-
-  // A local FieldTrialList to hold any field trials created in this suite.
-  base::FieldTrialList field_trial_list_;
 
   DISALLOW_COPY_AND_ASSIGN(FieldTrialCreatorTest);
 };
@@ -487,7 +475,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
   initial_seed->data = SerializeSeed(CreateTestSeedWithCountryFilter());
   initial_seed->signature = kTestSeedSignature;
   initial_seed->country = kTestSeedCountry;
-  initial_seed->date = ToUTCString(one_day_ago);
+  initial_seed->date = one_day_ago.ToJavaTime();
   initial_seed->is_gzip_compressed = false;
 
   TestVariationsServiceClient variations_service_client;
@@ -510,12 +498,31 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
   // |initial_seed| included the country code for India, this study should be
   // active.
   EXPECT_TRUE(field_trial_creator.SetupFieldTrials(
-      "", "", "", std::set<std::string>(), std::vector<std::string>(), nullptr,
+      "", "", "", std::set<std::string>(), std::vector<std::string>(),
+      std::vector<base::FeatureList::FeatureOverrideInfo>(), nullptr,
       std::make_unique<base::FeatureList>(), &platform_field_trials,
       &safe_seed_manager));
 
   EXPECT_EQ(kTestSeedExperimentName,
             base::FieldTrialList::FindFullName(kTestSeedStudyName));
+}
+
+// Tests that the hardware class is set on Android.
+TEST_F(FieldTrialCreatorTest, ClientFilterableState_HardwareClass) {
+  testing::NiceMock<MockSafeSeedManager> safe_seed_manager(&prefs_);
+  ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
+      .WillByDefault(Return(false));
+
+  TestVariationsServiceClient variations_service_client;
+  TestVariationsFieldTrialCreator field_trial_creator(
+      &prefs_, &variations_service_client, &safe_seed_manager);
+
+  const base::Version& current_version = version_info::GetVersion();
+  EXPECT_TRUE(current_version.IsValid());
+
+  std::unique_ptr<ClientFilterableState> client_filterable_state =
+      field_trial_creator.GetClientFilterableStateForVersion(current_version);
+  EXPECT_NE(client_filterable_state->hardware_class, std::string());
 }
 #endif  // OS_ANDROID
 

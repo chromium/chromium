@@ -39,7 +39,7 @@ class SyncedExtensionInstaller : public content::NotificationObserver {
   Profile* profile_;
   content::NotificationRegistrar registrar_;
 
-  base::WeakPtrFactory<SyncedExtensionInstaller> weak_ptr_factory_;
+  base::WeakPtrFactory<SyncedExtensionInstaller> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyncedExtensionInstaller);
 };

@@ -62,6 +62,7 @@ TabFeatures GetFullTabFeaturesForTesting() {
   tab.window_type = 4;
 
   tab.host = "www.google.com";
+  tab.frecency_score = 0.1234f;
   return tab;
 }
 

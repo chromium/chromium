@@ -57,7 +57,7 @@ class GlCanvas : public Canvas {
   GLuint tex_cord_location_;
 
   base::ThreadChecker thread_checker_;
-  base::WeakPtrFactory<Canvas> weak_factory_;
+  base::WeakPtrFactory<Canvas> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GlCanvas);
 };

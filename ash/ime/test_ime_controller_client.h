@@ -5,9 +5,10 @@
 #ifndef ASH_IME_TEST_IME_CONTROLLER_CLIENT_H_
 #define ASH_IME_TEST_IME_CONTROLLER_CLIENT_H_
 
-#include "ash/public/interfaces/ime_controller.mojom.h"
+#include "ash/public/mojom/ime_controller.mojom.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ash {
 
@@ -16,7 +17,7 @@ class TestImeControllerClient : public mojom::ImeControllerClient {
   TestImeControllerClient();
   ~TestImeControllerClient() override;
 
-  mojom::ImeControllerClientPtr CreateInterfacePtr();
+  mojo::PendingRemote<mojom::ImeControllerClient> CreateRemote();
 
   // mojom::ImeControllerClient:
   void SwitchToNextIme() override;
@@ -28,6 +29,7 @@ class TestImeControllerClient : public mojom::ImeControllerClient {
                               OverrideKeyboardKeysetCallback callback) override;
   void UpdateMirroringState(bool enabled) override;
   void UpdateCastingState(bool enabled) override;
+  void ShowModeIndicator() override;
 
   int next_ime_count_ = 0;
   int last_used_ime_count_ = 0;
@@ -39,9 +41,10 @@ class TestImeControllerClient : public mojom::ImeControllerClient {
       chromeos::input_method::mojom::ImeKeyset::kNone;
   bool is_mirroring_ = false;
   bool is_casting_ = false;
+  int show_mode_indicator_count_ = 0;
 
  private:
-  mojo::Binding<mojom::ImeControllerClient> binding_;
+  mojo::Receiver<mojom::ImeControllerClient> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestImeControllerClient);
 };

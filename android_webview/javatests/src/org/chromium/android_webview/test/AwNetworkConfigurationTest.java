@@ -4,8 +4,13 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
+
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
+import android.webkit.JavascriptInterface;
+
+import com.google.common.util.concurrent.SettableFuture;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -23,6 +29,7 @@ import org.chromium.net.test.ServerCertificate;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A test suite for WebView's network-related configuration. This tests WebView's default settings,
@@ -40,7 +47,7 @@ public class AwNetworkConfigurationTest {
     private EmbeddedTestServer mTestServer;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContentsClient = new TestAwContentsClient();
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mTestContainerView.getAwContents();
@@ -59,12 +66,13 @@ public class AwNetworkConfigurationTest {
             String url = mTestServer.getURL("/android_webview/test/data/hello_world.html");
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
-            // TODO(ntfschr): update this assertion whenever
-            // https://android.googlesource.com/platform/external/conscrypt/+/1d6a0b8453054b7dd703693f2ce2896ae061aee3
-            // rolls into an Android release, as this will mean Android intends to distrust SHA1
-            // (http://crbug.com/919749).
-            Assert.assertEquals("We should not have received any SSL errors", count,
-                    onReceivedSslErrorHelper.getCallCount());
+            if (BuildInfo.isAtLeastQ()) {
+                Assert.assertEquals("We should generate an SSL error on >= Q", count + 1,
+                        onReceivedSslErrorHelper.getCallCount());
+            } else {
+                Assert.assertEquals("We should not have received any SSL errors on < Q", count,
+                        onReceivedSslErrorHelper.getCallCount());
+            }
         } finally {
             mTestServer.stopAndDestroyServer();
         }
@@ -189,6 +197,60 @@ public class AwNetworkConfigurationTest {
                     mContentsClient.getShouldInterceptRequestHelper().getRequestsForUrl(url);
             Assert.assertFalse("X-Requested-With should be invisible to shouldInterceptRequest",
                     request.requestHeaders.containsKey("X-Requested-With"));
+        } finally {
+            mTestServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Network"})
+    public void testAccessControlAllowOriginHeader() throws Throwable {
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+
+            final SettableFuture<Boolean> fetchResultFuture = SettableFuture.create();
+            Object injectedObject = new Object() {
+                @JavascriptInterface
+                public void success() {
+                    fetchResultFuture.set(true);
+                }
+                @JavascriptInterface
+                public void error() {
+                    fetchResultFuture.set(false);
+                }
+            };
+            AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                    mAwContents, injectedObject, "injectedObject");
+
+            // The test server will add the Access-Control-Allow-Origin header to the HTTP response
+            // for this resource. We should check WebView correctly respects this.
+            final String fetchWithAllowOrigin =
+                    mTestServer.getURL("/set-header?Access-Control-Allow-Origin:%20*");
+            String html = "<html>"
+                    + "  <head>"
+                    + "  </head>"
+                    + "  <body>"
+                    + "    HTML content does not matter."
+                    + "  </body>"
+                    + "</html>";
+            final String baseUrl = "http://some.origin.test/index.html";
+            mActivityTestRule.loadDataWithBaseUrlSync(mAwContents,
+                    mContentsClient.getOnPageFinishedHelper(), html,
+                    /* mimeType */ null, /* isBase64Encoded */ false, baseUrl,
+                    /* historyUrl */ null);
+
+            String script = "fetch('" + fetchWithAllowOrigin + "')"
+                    + "  .then(() => { injectedObject.success(); })"
+                    + "  .catch(() => { injectedObject.failure(); });";
+            mActivityTestRule.executeJavaScriptAndWaitForResult(
+                    mAwContents, mContentsClient, script);
+            Assert.assertTrue("fetch() should succeed, due to Access-Control-Allow-Origin header",
+                    fetchResultFuture.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+            // If we timeout, this indicates the fetch() was erroneously blocked by CORS (as was the
+            // root cause of https://crbug.com/960165).
         } finally {
             mTestServer.stopAndDestroyServer();
         }

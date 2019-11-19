@@ -1,1 +1,2 @@
+AXSelectedChildrenChanged on AXMenu
 AXValueChanged on AXPopUpButton

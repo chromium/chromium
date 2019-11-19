@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("contacts_picker") {
   sources = [
+    "contact_address.cc",
+    "contact_address.h",
     "contacts_manager.cc",
     "contacts_manager.h",
     "navigator_contacts.cc",

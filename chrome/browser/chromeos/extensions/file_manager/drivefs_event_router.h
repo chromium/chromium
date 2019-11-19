@@ -59,12 +59,15 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
 
   virtual std::string GetDriveFileSystemName() = 0;
 
+  virtual bool IsPathWatched(const base::FilePath& path) = 0;
+
   void DispatchOnFileTransfersUpdatedEventToExtension(
       const std::string& extension_id,
       const extensions::api::file_manager_private::FileTransferStatus& status);
 
   void DispatchOnDirectoryChangedEventToExtension(
       const std::string& extension_id,
+      const base::FilePath& directory,
       const extensions::api::file_manager_private::FileWatchEvent& event);
 
   // Helper method for dispatching an event to an extension.

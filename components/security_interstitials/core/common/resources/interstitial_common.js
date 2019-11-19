@@ -5,8 +5,27 @@
 // This is the shared code for security interstitials. It is used for both SSL
 // interstitials and Safe Browsing interstitials.
 
+/**
+ * @typedef {{
+ *   dontProceed: function(),
+ *   proceed: function(),
+ *   showMoreSection: function(),
+ *   openHelpCenter: function(),
+ *   openDiagnostic: function(),
+ *   reload: function(),
+ *   openDateSettings: function(),
+ *   openLogin: function(),
+ *   doReport: function(),
+ *   dontReport: function(),
+ *   openReportingPrivacy: function(),
+ *   openWhitepaper: function(),
+ *   reportPhishingError: function(),
+ * }}
+ */
+var certificateErrorPageController;
+
 // Should match security_interstitials::SecurityInterstitialCommand
-/** @enum| {string} */
+/** @enum {number} */
 var SecurityInterstitialCommandId = {
   CMD_DONT_PROCEED: 0,
   CMD_PROCEED: 1,
@@ -31,7 +50,7 @@ var HIDDEN_CLASS = 'hidden';
 
 /**
  * A convenience method for sending commands to the parent page.
- * @param {string} cmd  The command to send.
+ * @param {SecurityInterstitialCommandId} cmd  The command to send.
  */
 function sendCommand(cmd) {
   if (window.certificateErrorPageController) {
@@ -100,7 +119,8 @@ function preventDefaultOnPoundLinkClicks() {
       return el.tagName == 'A';
     });
     // Use getAttribute() to prevent URL normalization.
-    if (anchor && anchor.getAttribute('href') == '#')
+    if (anchor && anchor.getAttribute('href') == '#') {
       e.preventDefault();
+    }
   });
 }

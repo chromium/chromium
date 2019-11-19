@@ -4,12 +4,10 @@
 
 #include "chrome/browser/apps/app_service/dip_px_util.h"
 
-#include <cmath>
-
-#include "base/numerics/safe_conversions.h"
 #include "ui/base/layout.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/size.h"
 
 // TODO(crbug.com/826982): plumb through enough information to use one of
 // Screen::GetDisplayNearest{Window/View/Point}. That way in multi-monitor
@@ -26,18 +24,30 @@ float GetPrimaryDisplayScaleFactor() {
   return screen->GetPrimaryDisplay().device_scale_factor();
 }
 
+int ConvertBetweenDipAndPx(int value,
+                           bool quantize_to_supported_scale_factor,
+                           bool invert) {
+  float scale = GetPrimaryDisplayScaleFactor();
+  if (quantize_to_supported_scale_factor) {
+    scale = ui::GetScaleForScaleFactor(ui::GetSupportedScaleFactor(scale));
+  }
+  DCHECK_NE(0.0f, scale);
+  if (invert) {
+    scale = 1 / scale;
+  }
+  return gfx::ScaleToFlooredSize(gfx::Size(value, value), scale).width();
+}
+
 }  // namespace
 
 namespace apps_util {
 
-int ConvertDipToPx(int dip) {
-  return base::saturated_cast<int>(
-      std::floor(static_cast<float>(dip) * GetPrimaryDisplayScaleFactor()));
+int ConvertDipToPx(int dip, bool quantize_to_supported_scale_factor) {
+  return ConvertBetweenDipAndPx(dip, quantize_to_supported_scale_factor, false);
 }
 
-int ConvertPxToDip(int px) {
-  return base::saturated_cast<int>(
-      std::floor(static_cast<float>(px) / GetPrimaryDisplayScaleFactor()));
+int ConvertPxToDip(int px, bool quantize_to_supported_scale_factor) {
+  return ConvertBetweenDipAndPx(px, quantize_to_supported_scale_factor, true);
 }
 
 ui::ScaleFactor GetPrimaryDisplayUIScaleFactor() {

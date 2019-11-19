@@ -133,7 +133,7 @@ class DataItem {
   // when reading it from the storage.
   const std::string crypto_key_;
 
-  base::WeakPtrFactory<DataItem> weak_ptr_factory_;
+  base::WeakPtrFactory<DataItem> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DataItem);
 };

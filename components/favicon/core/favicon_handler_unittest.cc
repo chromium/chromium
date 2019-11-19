@@ -18,7 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/features.h"
@@ -371,18 +371,18 @@ class FakeFaviconService {
       const GURL& icon_url,
       favicon_base::IconType icon_type,
       int desired_size_in_dip,
-      const favicon_base::FaviconResultsCallback& callback,
+      favicon_base::FaviconResultsCallback callback,
       base::CancelableTaskTracker* tracker) {
-    return GetFaviconForPageOrIconURL(icon_url, callback, tracker);
+    return GetFaviconForPageOrIconURL(icon_url, std::move(callback), tracker);
   }
 
   base::CancelableTaskTracker::TaskId GetFaviconForPageURL(
       const GURL& page_url,
       const favicon_base::IconTypeSet& icon_types,
       int desired_size_in_dip,
-      const favicon_base::FaviconResultsCallback& callback,
+      favicon_base::FaviconResultsCallback callback,
       base::CancelableTaskTracker* tracker) {
-    return GetFaviconForPageOrIconURL(page_url, callback, tracker);
+    return GetFaviconForPageOrIconURL(page_url, std::move(callback), tracker);
   }
 
   base::CancelableTaskTracker::TaskId UpdateFaviconMappingsAndFetch(
@@ -390,9 +390,9 @@ class FakeFaviconService {
       const GURL& icon_url,
       favicon_base::IconType icon_type,
       int desired_size_in_dip,
-      const favicon_base::FaviconResultsCallback& callback,
+      favicon_base::FaviconResultsCallback callback,
       base::CancelableTaskTracker* tracker) {
-    return GetFaviconForPageOrIconURL(icon_url, callback, tracker);
+    return GetFaviconForPageOrIconURL(icon_url, std::move(callback), tracker);
   }
 
   // Disables automatic callback for |url|. This is useful for emulating a
@@ -420,12 +420,12 @@ class FakeFaviconService {
  private:
   base::CancelableTaskTracker::TaskId GetFaviconForPageOrIconURL(
       const GURL& page_or_icon_url,
-      const favicon_base::FaviconResultsCallback& callback,
+      favicon_base::FaviconResultsCallback callback,
       base::CancelableTaskTracker* tracker) {
     db_requests_.push_back(page_or_icon_url);
 
-    base::Closure bound_callback =
-        base::Bind(callback, results_[page_or_icon_url]);
+    base::OnceClosure bound_callback =
+        base::BindOnce(std::move(callback), results_[page_or_icon_url]);
 
     // In addition to checking the URL against |manual_callback_url_|, we also
     // defer responses if there are already pending responses (i.e. a previous
@@ -434,14 +434,14 @@ class FakeFaviconService {
     if (page_or_icon_url != manual_callback_url_ &&
         !HasPendingManualCallback()) {
       return tracker->PostTask(base::ThreadTaskRunnerHandle::Get().get(),
-                               FROM_HERE, bound_callback);
+                               FROM_HERE, std::move(bound_callback));
     }
 
     // We use PostTaskAndReply() to cause |callback| being run in the current
     // TaskRunner.
     return tracker->PostTaskAndReply(manual_callback_task_runner_.get(),
                                      FROM_HERE, base::DoNothing(),
-                                     bound_callback);
+                                     std::move(bound_callback));
   }
 
   std::map<GURL, std::vector<favicon_base::FaviconRawBitmapResult>> results_;
@@ -492,8 +492,8 @@ class FaviconHandlerTest : public testing::Test {
   const GURL kIconURL64x64 = GURL("http://www.google.com/favicon64x64");
 
   FaviconHandlerTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {
     // Register various known icon URLs.
     delegate_.fake_image_downloader().Add(kIconURL10x10, IntVector{10});
     delegate_.fake_image_downloader().Add(kIconURL12x12, IntVector{12});
@@ -547,7 +547,7 @@ class FaviconHandlerTest : public testing::Test {
                                     candidates, manifest_url);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<ui::test::ScopedSetSupportedScaleFactors>
       scoped_set_supported_scale_factors_;
   testing::NiceMock<MockFaviconServiceWithFake> favicon_service_;

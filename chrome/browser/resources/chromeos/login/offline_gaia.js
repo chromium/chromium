@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-Polymer((function() {
-  var DEFAULT_EMAIL_DOMAIN = '@gmail.com';
+{
+  const DEFAULT_EMAIL_DOMAIN = '@gmail.com';
 
-  var TRANSITION_TYPE = {FORWARD: 0, BACKWARD: 1, NONE: 2};
+  /** @enum */
+  const TRANSITION_TYPE = {FORWARD: 0, BACKWARD: 1, NONE: 2};
 
-  return {
+  Polymer({
     is: 'offline-gaia',
 
     behaviors: [I18nBehavior, OobeDialogHostBehavior],
@@ -46,11 +47,6 @@ Polymer((function() {
 
     back: function() {
       this.switchToEmailCard(true /* animated */);
-    },
-
-    onAnimationFinish_: function() {
-      this.fire('backButton', !this.isEmailSectionActive_());
-      this.focus();
     },
 
     onForgotPasswordClicked_: function() {
@@ -150,5 +146,13 @@ Polymer((function() {
         this.fire('offline-gaia-cancel');
       }
     },
-  };
-})());
+
+    onNextButtonClicked_: function() {
+      if (this.isEmailSectionActive_()) {
+        this.onEmailSubmitted_();
+        return;
+      }
+      this.onPasswordSubmitted_();
+    },
+  });
+}

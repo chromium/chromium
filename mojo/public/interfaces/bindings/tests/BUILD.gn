@@ -274,8 +274,18 @@ action_foreach("validation_test_data_list") {
   ]
 }
 
+mojom("test_deserializer_interface") {
+  testonly = true
+  generate_java = true
+  sources = [
+    "deserializer.test-mojom",
+  ]
+  js_generate_struct_deserializers = true
+}
+
 mojom("test_interfaces") {
   testonly = true
+  generate_java = true
   sources = [
     "math_calculator.mojom",
     "no_module.mojom",
@@ -299,8 +309,10 @@ mojom("test_interfaces") {
   ]
   public_deps = [
     ":echo",
+    ":test_deserializer_interface",
     ":test_mojom_import",
     ":test_mojom_import2",
+    "//mojo/public/mojom/base",
   ]
 
   support_lazy_serialization = true
@@ -320,7 +332,7 @@ component("test_export_component") {
 if (!is_ios) {
   component("test_export_blink_component") {
     testonly = true
-    deps = [
+    public_deps = [
       ":test_export_blink",
     ]
   }
@@ -390,6 +402,7 @@ mojom("test_export2") {
 
 mojom("test_mojom_import") {
   testonly = true
+  generate_java = true
   sources = [
     "sample_import.mojom",
   ]
@@ -397,6 +410,7 @@ mojom("test_mojom_import") {
 
 mojom("test_mojom_import_wrapper") {
   testonly = true
+  generate_java = true
   public_deps = [
     ":test_mojom_import",
   ]
@@ -404,6 +418,7 @@ mojom("test_mojom_import_wrapper") {
 
 mojom("test_mojom_import_wrapper_wrapper") {
   testonly = true
+  generate_java = true
   public_deps = [
     ":test_mojom_import_wrapper",
   ]
@@ -411,6 +426,7 @@ mojom("test_mojom_import_wrapper_wrapper") {
 
 mojom("test_mojom_import2") {
   testonly = true
+  generate_java = true
   sources = [
     "sample_import2.mojom",
   ]
@@ -447,20 +463,6 @@ mojom("test_associated_interfaces") {
   scramble_message_ids = false
 }
 
-mojom("versioning_test_service_interfaces") {
-  testonly = true
-  sources = [
-    "versioning_test_service.mojom",
-  ]
-}
-
-mojom("versioning_test_client_interfaces") {
-  testonly = true
-  sources = [
-    "versioning_test_client.mojom",
-  ]
-}
-
 mojom("test_wtf_types") {
   testonly = true
 
@@ -479,6 +481,7 @@ mojom("test_no_sources") {
 
 mojom("echo") {
   testonly = true
+  generate_java = true
   sources = [
     "echo.mojom",
     "echo_import/echo_import.mojom",
@@ -488,8 +491,23 @@ mojom("echo") {
 # These could probably be merged with "test_interfaces" at some point.
 mojom("other_test_interfaces") {
   testonly = true
-  cpp_only = true
+  generate_java = true
   sources = [
     "new_endpoint_types.test-mojom",
   ]
+}
+
+# Ensure that some target forces JS and Java bindings generation when all
+# targets are built. This provides a basic generation smoke test for new
+# endpoint types in mojom.
+group("test_generation") {
+  testonly = true
+  deps = [
+    ":other_test_interfaces",
+    ":other_test_interfaces_js",
+  ]
+
+  if (is_android) {
+    deps += [ ":other_test_interfaces_java" ]
+  }
 }

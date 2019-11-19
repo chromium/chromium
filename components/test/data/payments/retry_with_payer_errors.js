@@ -9,7 +9,7 @@ var gPaymentResponse = null;
 /**
  * Launches the PaymentRequest UI
  */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   var options = {
     requestPayerEmail: true,
     requestPayerName: true,
@@ -27,7 +27,7 @@ function buy() {  // eslint-disable-line no-unused-vars
  *
  * @param {PaymentValidationErrors} validationErrors Represent validation errors
  */
-function retry(validationErrors) {  // eslint-disable-line no-unused-vars
+function retry(validationErrors) { // eslint-disable-line no-unused-vars
   if (gPaymentResponse == null) {
     return;
   }

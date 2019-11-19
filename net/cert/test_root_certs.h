@@ -32,6 +32,7 @@ class FilePath;
 namespace net {
 
 class X509Certificate;
+typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
 
 // TestRootCerts is a helper class for unit tests that is used to
 // artificially mark a certificate as trusted, independent of the local
@@ -63,6 +64,7 @@ class NET_EXPORT TestRootCerts {
 
 #if defined(USE_NSS_CERTS)
   bool Contains(CERTCertificate* cert) const;
+  TrustStore* test_trust_store() { return &test_trust_store_; }
 #elif defined(OS_MACOSX)
   CFArrayRef temporary_roots() const { return temporary_roots_; }
 
@@ -121,6 +123,8 @@ class NET_EXPORT TestRootCerts {
   // It is necessary to maintain a cache of the original certificate trust
   // settings, in order to restore them when Clear() is called.
   std::vector<std::unique_ptr<TrustEntry>> trust_cache_;
+
+  TrustStoreInMemory test_trust_store_;
 #elif defined(OS_WIN)
   HCERTSTORE temporary_roots_;
 #elif defined(OS_MACOSX)
@@ -146,17 +150,21 @@ class NET_EXPORT_PRIVATE ScopedTestRoot {
   // TestRootCerts store (if there were existing roots they are
   // cleared).
   explicit ScopedTestRoot(X509Certificate* cert);
+  // Creates a ScopedTestRoot that sets |certs| as the only roots in the
+  // TestRootCerts store (if there were existing roots they are
+  // cleared).
+  explicit ScopedTestRoot(CertificateList certs);
   ~ScopedTestRoot();
 
-  // Assigns |cert| to be the new test root cert. If |cert| is NULL, undoes
+  // Assigns |certs| to be the new test root certs. If |certs| is empty, undoes
   // any work the ScopedTestRoot may have previously done.
-  // If |cert_| contains a certificate (due to a prior call to Reset or due to
-  // a cert being passed at construction), the existing TestRootCerts store is
+  // If |certs_| contains certificates (due to a prior call to Reset or due to
+  // certs being passed at construction), the existing TestRootCerts store is
   // cleared.
-  void Reset(X509Certificate* cert);
+  void Reset(CertificateList certs);
 
  private:
-  scoped_refptr<X509Certificate> cert_;
+  CertificateList certs_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedTestRoot);
 };

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<title>Test the find-element.mjs functions.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<script type="module">
+  import * as findElement from '/gen/third_party/blink/renderer/core/script/resources/layered_api/elements/virtual-scroller/find-element.mjs';
+  import * as helpers from './resources/helpers.mjs';
+  import * as wptHelpers from '/wpt_internal/virtual-scroller/resources/helpers.mjs';
+
+  test(() => {
+    helpers.assertFindsElement([], 100, findElement.BIAS_LOW, null);
+    helpers.assertFindsElement([], 100, findElement.BIAS_HIGH, null);
+  }, 'Test findElement on empty array');
+
+  test(() => {
+    wptHelpers.withElement('div', containerDiv => {
+      // We set up a first and last div and between them there are 100
+      // 0px divs (no height, no margin). Depending on the bias we
+      // should always find either the first or last div, never a 0px
+      // div.
+      const firstDiv = wptHelpers.div('first');
+      firstDiv.style.margin = "0px";
+      containerDiv.appendChild(firstDiv);
+      for (let i = 0; i < 100; i++) {
+        const d = wptHelpers.div('d' + i);
+        d.style.margin = "0px";
+        d.style.height = "0px";
+        containerDiv.appendChild(d);
+      }
+      const lastDiv = wptHelpers.div('lastDiv');
+      lastDiv.style.margin = "0px";
+      containerDiv.appendChild(lastDiv);
+
+      const elements = containerDiv.children;
+      const offset = helpers.bottomOf(firstDiv);  // Also helpers.topOf(lastDiv).
+      helpers.assertFindsElement(elements, offset, findElement.BIAS_LOW, firstDiv);
+      helpers.assertFindsElement(elements, offset, findElement.BIAS_HIGH, lastDiv);
+    });
+  }, 'Test findElement skips 0px elements');
+
+</script>

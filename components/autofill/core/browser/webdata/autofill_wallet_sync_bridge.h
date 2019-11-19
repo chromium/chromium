@@ -35,11 +35,8 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   // Factory method that hides dealing with change_processor and also stores the
   // created bridge within |web_data_service|. This method should only be
   // called on |web_data_service|'s DB thread.
-  // |active_callback| will be called with a boolean describing whether Wallet
-  // data is actively sync whenever the state changes.
   static void CreateForWebDataServiceAndBackend(
       const std::string& app_locale,
-      const base::RepeatingCallback<void(bool)>& active_callback,
       AutofillWebDataBackend* webdata_backend,
       AutofillWebDataService* web_data_service);
 
@@ -47,7 +44,6 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
       AutofillWebDataService* web_data_service);
 
   explicit AutofillWalletSyncBridge(
-      const base::RepeatingCallback<void(bool)>& active_callback,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       AutofillWebDataBackend* web_data_backend);
   ~AutofillWalletSyncBridge() override;
@@ -88,26 +84,28 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   void GetAllDataImpl(DataCallback callback, bool enforce_utf8);
 
   // Sets the wallet data from |entity_data| to this client and records metrics
-  // about added/deleted data.
-  void SetSyncData(const syncer::EntityChangeList& entity_data);
+  // about added/deleted data. If |notify_metadata_bridge|, it also notifies
+  // the metadata sync bridge about individual changes.
+  void SetSyncData(const syncer::EntityChangeList& entity_data,
+                   bool notify_metadata_bridge);
 
   // Sets |customer_data| to this client and returns whether any change has been
-  // applied (i.e., whether |customer_data| was different from local data) and
-  // whether we |should_log_diff|, i.e. metrics for diffs in counts of addresses
-  // and cards.
-  bool SetPaymentsCustomerData(std::vector<PaymentsCustomerData> customer_data,
-                               bool* should_log_diff);
+  // applied (i.e., whether |customer_data| was different from local data).
+  bool SetPaymentsCustomerData(std::vector<PaymentsCustomerData> customer_data);
 
-  // Sets |wallet_cards| to this client, records metrics about added/deleted
-  // data (if |log_diff| is true) and returns whether any change has been
-  // applied (i.e., whether |wallet_cards| was different from local data).
-  bool SetWalletCards(std::vector<CreditCard> wallet_cards, bool log_diff);
+  // Sets |wallet_cards| to this client and returns whether any change has been
+  // applied (i.e., whether |wallet_cards| was different from local data). If
+  // |notify_metadata_bridge|, it also notifies via WebDataBackend about any
+  // individual entity changes.
+  bool SetWalletCards(std::vector<CreditCard> wallet_cards,
+                      bool notify_metadata_bridge);
 
-  // Sets |wallet_addresses| to this client, records metrics about added/deleted
-  // data (if |log_diff| is true) and returns whether any change has been
-  // applied (i.e., whether |wallet_addresses| was different from local data).
+  // Sets |wallet_addresses| to this client and returns whether any change has
+  // been applied (i.e., whether |wallet_addresses| was different from local
+  // data). If |notify_metadata_bridge|, it also notifies via WebDataBackend
+  // about any individual entity changes.
   bool SetWalletAddresses(std::vector<AutofillProfile> wallet_addresses,
-                          bool log_diff);
+                          bool notify_metadata_bridge);
 
   // Computes a "diff" (items added, items removed) of two vectors of items,
   // which should be either CreditCard or AutofillProfile. This is used for
@@ -127,13 +125,6 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   // Synchronously load sync metadata from the autofill table and pass it to the
   // processor so that it can start tracking changes.
   void LoadMetadata();
-
-  // Callback to let the metadata bridge know that whether the card data
-  // is actively syncing.
-  const base::RepeatingCallback<void(bool)> active_callback_;
-
-  // Stores whether initial sync has been done.
-  bool initial_sync_done_;
 
   // AutofillProfileSyncBridge is owned by |web_data_backend_| through
   // SupportsUserData, so it's guaranteed to outlive |this|.

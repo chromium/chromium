@@ -9,13 +9,12 @@
 
 #include "ash/magnifier/magnification_controller.h"
 #include "ash/public/cpp/ash_pref_names.h"
-#include "ash/public/interfaces/constants.mojom.h"
+#include "ash/public/cpp/docked_magnifier_controller.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -26,6 +25,9 @@
 #include "content/public/browser/notification_source.h"
 #include "content/public/common/service_manager_connection.h"
 #include "services/service_manager/public/cpp/connector.h"
+#include "ui/accessibility/ax_role_properties.h"
+#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace chromeos {
 
@@ -94,6 +96,30 @@ double MagnificationManager::GetSavedScreenMagnifierScale() const {
       ash::prefs::kAccessibilityScreenMagnifierScale);
 }
 
+void MagnificationManager::OnProfileWillBeDestroyed(Profile* profile) {
+  DCHECK_EQ(profile_, profile);
+  SetProfile(nullptr);
+}
+
+void MagnificationManager::OnViewEvent(views::View* view,
+                                       ax::mojom::Event event_type) {
+  if (!fullscreen_magnifier_enabled_ && !IsDockedMagnifierEnabled())
+    return;
+
+  if (event_type != ax::mojom::Event::kFocus &&
+      event_type != ax::mojom::Event::kSelection) {
+    return;
+  }
+
+  ui::AXNodeData data;
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+
+  // Disallow focus on large containers, which probably should not move the
+  // magnified viewport to the center of the view.
+  if (ui::IsControl(data.role))
+    HandleFocusChanged(view->GetBoundsInScreen(), false);
+}
+
 void MagnificationManager::SetProfileForTest(Profile* profile) {
   SetProfile(profile);
 }
@@ -101,23 +127,18 @@ void MagnificationManager::SetProfileForTest(Profile* profile) {
 MagnificationManager::MagnificationManager() {
   registrar_.Add(this, chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
                  content::NotificationService::AllSources());
-  registrar_.Add(this, chrome::NOTIFICATION_SESSION_STARTED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this, chrome::NOTIFICATION_PROFILE_DESTROYED,
-                 content::NotificationService::AllSources());
   // TODO(warx): observe focus changed in page notification when either
   // fullscreen magnifier or docked magnifier is enabled.
   registrar_.Add(this, content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
                  content::NotificationService::AllSources());
-
-  // Connect to ash's DockedMagnifierController interface.
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(ash::mojom::kServiceName, &docked_magnifier_controller_);
+  user_manager::UserManager::Get()->AddSessionStateObserver(this);
+  views::AXEventManager::Get()->AddObserver(this);
 }
 
 MagnificationManager::~MagnificationManager() {
   CHECK(this == g_magnification_manager);
+  views::AXEventManager::Get()->RemoveObserver(this);
+  user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
 }
 
 void MagnificationManager::Observe(
@@ -132,22 +153,6 @@ void MagnificationManager::Observe(
         SetProfile(profile);
       break;
     }
-    case chrome::NOTIFICATION_SESSION_STARTED:
-      // Update |profile_| when entering a session.
-      SetProfile(ProfileManager::GetActiveUserProfile());
-
-      // Add a session state observer to be able to monitor session changes.
-      if (!session_state_observer_.get())
-        session_state_observer_.reset(
-            new user_manager::ScopedUserSessionStateObserver(this));
-      break;
-    case chrome::NOTIFICATION_PROFILE_DESTROYED: {
-      // Update |profile_| when exiting a session or shutting down.
-      Profile* profile = content::Source<Profile>(source).ptr();
-      if (profile_ == profile)
-        SetProfile(NULL);
-      break;
-    }
     case content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE: {
       HandleFocusChangedInPage(details);
       break;
@@ -155,13 +160,24 @@ void MagnificationManager::Observe(
   }
 }
 
-void MagnificationManager::ActiveUserChanged(
-    const user_manager::User* active_user) {
-  if (active_user && active_user->is_profile_created())
-    SetProfile(ProfileManager::GetActiveUserProfile());
+void MagnificationManager::ActiveUserChanged(user_manager::User* active_user) {
+  if (!active_user)
+    return;
+
+  active_user->AddProfileCreatedObserver(
+      base::BindOnce(&MagnificationManager::SetProfileByUser,
+                     weak_ptr_factory_.GetWeakPtr(), active_user));
+}
+
+void MagnificationManager::SetProfileByUser(const user_manager::User* user) {
+  SetProfile(ProfileHelper::Get()->GetProfileByUser(user));
 }
 
 void MagnificationManager::SetProfile(Profile* profile) {
+  if (profile_)
+    profile_observer_.Remove(profile_);
+  DCHECK(!profile_observer_.IsObservingSources());
+
   pref_change_registrar_.reset();
 
   if (profile) {
@@ -185,6 +201,8 @@ void MagnificationManager::SetProfile(Profile* profile) {
         base::BindRepeating(
             &MagnificationManager::UpdateDockedMagnifierFromPrefs,
             base::Unretained(this)));
+
+    profile_observer_.Add(profile);
   }
 
   profile_ = profile;
@@ -287,20 +305,24 @@ void MagnificationManager::HandleFocusChangedInPage(
   if (node_details->is_editable_node)
     return;
 
-  const gfx::Rect& bounds_in_screen = node_details->node_bounds_in_screen;
+  HandleFocusChanged(node_details->node_bounds_in_screen,
+                     node_details->is_editable_node);
+}
+
+void MagnificationManager::HandleFocusChanged(const gfx::Rect& bounds_in_screen,
+                                              bool is_editable) {
   if (bounds_in_screen.IsEmpty())
     return;
 
   // Fullscreen magnifier and docked magnifier are mutually exclusive.
   if (fullscreen_magnifier_enabled_) {
     ash::Shell::Get()->magnification_controller()->HandleFocusedNodeChanged(
-        node_details->is_editable_node, node_details->node_bounds_in_screen);
+        is_editable, bounds_in_screen);
     return;
   }
-  DCHECK(docked_magnifier_enabled);
-  // Called when docked magnifier feature is enabled to avoid unnecessary
-  // mojo IPC to ash.
-  docked_magnifier_controller_->CenterOnPoint(bounds_in_screen.CenterPoint());
+  DCHECK(IsDockedMagnifierEnabled());
+  ash::DockedMagnifierController::Get()->CenterOnPoint(
+      bounds_in_screen.CenterPoint());
 }
 
 }  // namespace chromeos

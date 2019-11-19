@@ -29,14 +29,15 @@
  */
 
 #include <atomic>
+#include <cstdint>
 
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 
 namespace blink {
 
-static std::atomic_ulong g_unique_identifier(1);
+static std::atomic<std::uint64_t> g_unique_identifier(1);
 
-unsigned long CreateUniqueIdentifier() {
+uint64_t CreateUniqueIdentifier() {
   return g_unique_identifier.fetch_add(1, std::memory_order_relaxed);
 }
 

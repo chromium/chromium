@@ -67,7 +67,7 @@ typedef base::Callback<void(bool auth_ok,
 // was successful.
 // If authentication was successful, |callback|'s second and third parameters
 // are username and password; if unsuccessful they are empty strings.
-- (void)didRecieveAuthChallenge:(net::AuthChallengeInfo*)authInfo
+- (void)didRecieveAuthChallenge:(const net::AuthChallengeInfo&)authInfo
                   nativeRequest:(const net::URLRequest&)nativeRequest
                        callback:(const network_client::AuthCallback&)callback;
 

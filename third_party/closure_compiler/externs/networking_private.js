@@ -76,7 +76,6 @@ chrome.networkingPrivate.NetworkType = {
   VPN: 'VPN',
   WIRELESS: 'Wireless',
   WI_FI: 'WiFi',
-  WI_MAX: 'WiMAX',
 };
 
 /**
@@ -330,7 +329,10 @@ chrome.networkingPrivate.FoundNetworkProperties;
  * @typedef {{
  *   Gateway: (string|undefined),
  *   IPAddress: (string|undefined),
+ *   ExcludedRoutes: (!Array<string>|undefined),
+ *   IncludedRoutes: (!Array<string>|undefined),
  *   NameServers: (!Array<string>|undefined),
+ *   SearchDomains: (!Array<string>|undefined),
  *   RoutingPrefix: (number|undefined),
  *   Type: (string|undefined),
  *   WebProxyAutoDiscoveryUrl: (string|undefined)
@@ -628,7 +630,6 @@ chrome.networkingPrivate.ManagedThirdPartyVPNProperties;
  *   ActivationType: (string|undefined),
  *   ActivationState: (!chrome.networkingPrivate.ActivationStateType|undefined),
  *   AllowRoaming: (boolean|undefined),
- *   Carrier: (string|undefined),
  *   ESN: (string|undefined),
  *   Family: (string|undefined),
  *   FirmwareRevision: (string|undefined),
@@ -645,15 +646,13 @@ chrome.networkingPrivate.ManagedThirdPartyVPNProperties;
  *   ModelID: (string|undefined),
  *   NetworkTechnology: (string|undefined),
  *   PaymentPortal: (!chrome.networkingPrivate.PaymentPortal|undefined),
- *   PRLVersion: (number|undefined),
  *   RoamingState: (string|undefined),
  *   Scanning: (boolean|undefined),
  *   ServingOperator: (!chrome.networkingPrivate.CellularProviderProperties|undefined),
  *   SIMLockStatus: (!chrome.networkingPrivate.SIMLockStatus|undefined),
  *   SIMPresent: (boolean|undefined),
  *   SignalStrength: (number|undefined),
- *   SupportNetworkScan: (boolean|undefined),
- *   SupportedCarriers: (!Array<string>|undefined)
+ *   SupportNetworkScan: (boolean|undefined)
  * }}
  */
 chrome.networkingPrivate.CellularProperties;
@@ -666,7 +665,6 @@ chrome.networkingPrivate.CellularProperties;
  *   ActivationType: (string|undefined),
  *   ActivationState: (!chrome.networkingPrivate.ActivationStateType|undefined),
  *   AllowRoaming: (boolean|undefined),
- *   Carrier: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   ESN: (string|undefined),
  *   Family: (string|undefined),
  *   FirmwareRevision: (string|undefined),
@@ -683,15 +681,13 @@ chrome.networkingPrivate.CellularProperties;
  *   ModelID: (string|undefined),
  *   NetworkTechnology: (string|undefined),
  *   PaymentPortal: (!chrome.networkingPrivate.PaymentPortal|undefined),
- *   PRLVersion: (number|undefined),
  *   RoamingState: (string|undefined),
  *   Scanning: (boolean|undefined),
  *   ServingOperator: (!chrome.networkingPrivate.CellularProviderProperties|undefined),
  *   SIMLockStatus: (!chrome.networkingPrivate.SIMLockStatus|undefined),
  *   SIMPresent: (boolean|undefined),
  *   SignalStrength: (number|undefined),
- *   SupportNetworkScan: (boolean|undefined),
- *   SupportedCarriers: (!Array<string>|undefined)
+ *   SupportNetworkScan: (boolean|undefined)
  * }}
  */
 chrome.networkingPrivate.ManagedCellularProperties;
@@ -707,6 +703,13 @@ chrome.networkingPrivate.ManagedCellularProperties;
  * }}
  */
 chrome.networkingPrivate.CellularStateProperties;
+
+/**
+ * @typedef {{
+ *   Outer: (string|undefined)
+ * }}
+ */
+chrome.networkingPrivate.EAPStateProperties;
 
 /**
  * @typedef {{
@@ -793,7 +796,8 @@ chrome.networkingPrivate.VPNStateProperties;
  *   RoamThreshold: (number|undefined),
  *   SSID: (string|undefined),
  *   Security: (string|undefined),
- *   SignalStrength: (number|undefined)
+ *   SignalStrength: (number|undefined),
+ *   TetheringState: (string|undefined)
  * }}
  */
 chrome.networkingPrivate.WiFiProperties;
@@ -813,7 +817,8 @@ chrome.networkingPrivate.WiFiProperties;
  *   RoamThreshold: (!chrome.networkingPrivate.ManagedLong|undefined),
  *   SSID: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   Security: !chrome.networkingPrivate.ManagedDOMString,
- *   SignalStrength: (number|undefined)
+ *   SignalStrength: (number|undefined),
+ *   TetheringState: (string|undefined)
  * }}
  */
 chrome.networkingPrivate.ManagedWiFiProperties;
@@ -821,39 +826,16 @@ chrome.networkingPrivate.ManagedWiFiProperties;
 /**
  * @typedef {{
  *   BSSID: (string|undefined),
+ *   EAP: (!chrome.networkingPrivate.EAPStateProperties|undefined),
  *   Frequency: (number|undefined),
  *   HexSSID: (string|undefined),
  *   Security: string,
  *   SignalStrength: (number|undefined),
- *   SSID: (string|undefined)
+ *   SSID: (string|undefined),
+ *   TetheringState: (string|undefined)
  * }}
  */
 chrome.networkingPrivate.WiFiStateProperties;
-
-/**
- * @typedef {{
- *   AutoConnect: (boolean|undefined),
- *   EAP: (!chrome.networkingPrivate.EAPProperties|undefined),
- *   SignalStrength: (number|undefined)
- * }}
- */
-chrome.networkingPrivate.WiMAXProperties;
-
-/**
- * @typedef {{
- *   AutoConnect: (!chrome.networkingPrivate.ManagedBoolean|undefined),
- *   EAP: (!chrome.networkingPrivate.ManagedEAPProperties|undefined),
- *   SignalStrength: (number|undefined)
- * }}
- */
-chrome.networkingPrivate.ManagedWiMAXProperties;
-
-/**
- * @typedef {{
- *   SignalStrength: (number|undefined)
- * }}
- */
-chrome.networkingPrivate.WiMAXStateProperties;
 
 /**
  * @typedef {{
@@ -868,8 +850,7 @@ chrome.networkingPrivate.WiMAXStateProperties;
  *   StaticIPConfig: (!chrome.networkingPrivate.IPConfigProperties|undefined),
  *   Type: (!chrome.networkingPrivate.NetworkType|undefined),
  *   VPN: (!chrome.networkingPrivate.VPNProperties|undefined),
- *   WiFi: (!chrome.networkingPrivate.WiFiProperties|undefined),
- *   WiMAX: (!chrome.networkingPrivate.WiMAXProperties|undefined)
+ *   WiFi: (!chrome.networkingPrivate.WiFiProperties|undefined)
  * }}
  */
 chrome.networkingPrivate.NetworkConfigProperties;
@@ -896,8 +877,7 @@ chrome.networkingPrivate.NetworkConfigProperties;
  *   Tether: (!chrome.networkingPrivate.TetherProperties|undefined),
  *   Type: !chrome.networkingPrivate.NetworkType,
  *   VPN: (!chrome.networkingPrivate.VPNProperties|undefined),
- *   WiFi: (!chrome.networkingPrivate.WiFiProperties|undefined),
- *   WiMAX: (!chrome.networkingPrivate.WiMAXProperties|undefined)
+ *   WiFi: (!chrome.networkingPrivate.WiFiProperties|undefined)
  * }}
  */
 chrome.networkingPrivate.NetworkProperties;
@@ -924,8 +904,7 @@ chrome.networkingPrivate.NetworkProperties;
  *   Tether: (!chrome.networkingPrivate.TetherProperties|undefined),
  *   Type: !chrome.networkingPrivate.NetworkType,
  *   VPN: (!chrome.networkingPrivate.ManagedVPNProperties|undefined),
- *   WiFi: (!chrome.networkingPrivate.ManagedWiFiProperties|undefined),
- *   WiMAX: (!chrome.networkingPrivate.ManagedWiMAXProperties|undefined)
+ *   WiFi: (!chrome.networkingPrivate.ManagedWiFiProperties|undefined)
  * }}
  */
 chrome.networkingPrivate.ManagedProperties;
@@ -944,8 +923,7 @@ chrome.networkingPrivate.ManagedProperties;
  *   Tether: (!chrome.networkingPrivate.TetherProperties|undefined),
  *   Type: !chrome.networkingPrivate.NetworkType,
  *   VPN: (!chrome.networkingPrivate.VPNStateProperties|undefined),
- *   WiFi: (!chrome.networkingPrivate.WiFiStateProperties|undefined),
- *   WiMAX: (!chrome.networkingPrivate.WiMAXStateProperties|undefined)
+ *   WiFi: (!chrome.networkingPrivate.WiFiStateProperties|undefined)
  * }}
  */
 chrome.networkingPrivate.NetworkStateProperties;
@@ -1192,19 +1170,6 @@ chrome.networkingPrivate.startActivate = function(networkGuid, carrier, callback
  * @deprecated Use networking.castPrivate API.
  */
 chrome.networkingPrivate.verifyDestination = function(properties, callback) {};
-
-/**
- * Verifies that the device is a trusted device and retrieves encrypted network
- * credentials.
- * @param {!chrome.networkingPrivate.VerificationProperties} properties
- *     Properties of the destination to use in verifying that it     is a
- *     trusted device.
- * @param {string} networkGuid The GUID of the Cellular network to activate.
- * @param {function(string):void} callback A callback function that receives
- *     base64-encoded encrypted     credential data to send to a trusted device.
- * @deprecated Use networking.castPrivate API.
- */
-chrome.networkingPrivate.verifyAndEncryptCredentials = function(properties, networkGuid, callback) {};
 
 /**
  * Verifies that the device is a trusted device and encrypts supplied data with

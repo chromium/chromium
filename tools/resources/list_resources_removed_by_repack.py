@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
 
 import os
 import re
@@ -78,16 +79,16 @@ def Main():
         resource_id = int(match.group('resource_id'))
         resource_name = match.group('resource_name')
         if resource_id in resource_id_to_name_file_map:
-          print 'Duplicate:', resource_id
-          print (resource_name, f)
-          print resource_id_to_name_file_map[resource_id]
+          print('Duplicate:', resource_id)
+          print(resource_name, f)
+          print(resource_id_to_name_file_map[resource_id])
           raise
         resource_id_to_name_file_map[resource_id] = (resource_name, f)
 
   unused_resources = GetResourceIdsFromRepackMessage(sys.stdin)
   for resource_id in unused_resources:
     if resource_id not in resource_id_to_name_file_map:
-      print 'WARNING: Unknown resource id', resource_id
+      print('WARNING: Unknown resource id', resource_id)
       continue
     (resource_name, filename) = resource_id_to_name_file_map[resource_id]
     sys.stdout.write('%d: %s in %s\n' % (resource_id, resource_name, filename))

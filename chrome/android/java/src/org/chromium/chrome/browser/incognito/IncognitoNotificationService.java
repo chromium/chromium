@@ -13,22 +13,23 @@ import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.text.TextUtils;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.document.DocumentUtils;
 import org.chromium.chrome.browser.notifications.PendingIntentProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.content_public.browser.BrowserStartupController;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -58,14 +59,15 @@ public class IncognitoNotificationService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        ThreadUtils.runOnUiThreadBlocking(IncognitoUtils::closeAllIncognitoTabs);
+        PostTask.runSynchronously(
+                UiThreadTaskTraits.DEFAULT, IncognitoUtils::closeAllIncognitoTabs);
 
         boolean clearedIncognito = IncognitoUtils.deleteIncognitoStateFiles();
 
         // If we failed clearing all of the incognito tabs, then do not dismiss the notification.
         if (!clearedIncognito) return;
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
             if (IncognitoUtils.doIncognitoTabsExist()) {
                 assert false : "Not all incognito tabs closed as expected";
                 return;
@@ -73,14 +75,14 @@ public class IncognitoNotificationService extends IntentService {
             IncognitoNotificationManager.dismissIncognitoNotification();
 
             if (BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                            .isStartupSuccessfullyCompleted()) {
+                            .isFullBrowserStarted()) {
                 if (Profile.getLastUsedProfile().hasOffTheRecordProfile()) {
                     Profile.getLastUsedProfile().getOffTheRecordProfile().destroyWhenAppropriate();
                 }
             }
         });
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
             // Now ensure that the snapshots in recents are all cleared for Tabbed activities
             // to remove any trace of incognito mode.
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -120,12 +122,11 @@ public class IncognitoNotificationService extends IntentService {
         Context context = ContextUtils.getApplicationContext();
         ActivityManager manager =
                 (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        PackageManager pm = getPackageManager();
 
         for (AppTask task : manager.getAppTasks()) {
-            RecentTaskInfo info = DocumentUtils.getTaskInfoFromTask(task);
+            RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
             if (info == null) continue;
-            String componentName = DocumentUtils.getTaskComponentName(task, pm);
+            String componentName = AndroidTaskUtils.getTaskComponentName(task);
 
             // It is not easily possible to distinguish between tasks sitting on top of
             // ChromeLauncherActivity, so we treat them all as likely ChromeTabbedActivities and

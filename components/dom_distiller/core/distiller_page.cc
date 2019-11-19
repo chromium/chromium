@@ -34,9 +34,9 @@ const char* kStringifyPlaceholder = "$$STRINGIFY";
 std::string GetDistillerScriptWithOptions(
     const dom_distiller::proto::DomDistillerOptions& options,
     bool stringify_output) {
-  std::string script = ui::ResourceBundle::GetSharedInstance()
-                           .GetRawDataResource(IDR_DISTILLER_JS)
-                           .as_string();
+  std::string script =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_DISTILLER_JS);
   if (script.empty()) {
     return "";
   }
@@ -59,14 +59,13 @@ std::string GetDistillerScriptWithOptions(
   DCHECK_NE(std::string::npos, stringify_offset);
   DCHECK_EQ(std::string::npos,
             script.find(kStringifyPlaceholder, stringify_offset + 1));
-  script = script.replace(stringify_offset,
-                          strlen(kStringifyPlaceholder),
+  script = script.replace(stringify_offset, strlen(kStringifyPlaceholder),
                           stringify);
 
   return script;
 }
 
-}
+}  // namespace
 
 DistillerPageFactory::~DistillerPageFactory() {}
 
@@ -84,8 +83,8 @@ void DistillerPage::DistillPage(
   ready_ = false;
   distiller_page_callback_ = callback;
   distillation_start_ = base::TimeTicks::Now();
-  DistillPageImpl(gurl, GetDistillerScriptWithOptions(options,
-                                                      StringifyOutput()));
+  DistillPageImpl(gurl,
+                  GetDistillerScriptWithOptions(options, StringifyOutput()));
 }
 
 void DistillerPage::OnDistillationDone(const GURL& page_url,
@@ -119,16 +118,14 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
               base::TimeDelta::FromMillisecondsD(timing.markup_parsing_time()));
         }
         if (timing.has_document_construction_time()) {
-          UMA_HISTOGRAM_TIMES(
-              "DomDistiller.Time.DocumentConstruction",
-              base::TimeDelta::FromMillisecondsD(
-                  timing.document_construction_time()));
+          UMA_HISTOGRAM_TIMES("DomDistiller.Time.DocumentConstruction",
+                              base::TimeDelta::FromMillisecondsD(
+                                  timing.document_construction_time()));
         }
         if (timing.has_article_processing_time()) {
-          UMA_HISTOGRAM_TIMES(
-              "DomDistiller.Time.ArticleProcessing",
-              base::TimeDelta::FromMillisecondsD(
-                  timing.article_processing_time()));
+          UMA_HISTOGRAM_TIMES("DomDistiller.Time.ArticleProcessing",
+                              base::TimeDelta::FromMillisecondsD(
+                                  timing.article_processing_time()));
         }
         if (timing.has_formatting_time()) {
           UMA_HISTOGRAM_TIMES(
@@ -139,18 +136,16 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
           UMA_HISTOGRAM_TIMES(
               "DomDistiller.Time.DistillationTotal",
               base::TimeDelta::FromMillisecondsD(timing.total_time()));
-          VLOG(1) << "DomDistiller.Time.DistillationTotal = " <<
-              base::TimeDelta::FromMillisecondsD(timing.total_time());
+          VLOG(1) << "DomDistiller.Time.DistillationTotal = "
+                  << base::TimeDelta::FromMillisecondsD(timing.total_time());
         }
       }
       if (distiller_result->has_statistics_info()) {
         const dom_distiller::proto::StatisticsInfo& statistics =
             distiller_result->statistics_info();
         if (statistics.has_word_count()) {
-          UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "DomDistiller.Statistics.WordCount",
-            statistics.word_count(),
-            1, 4000, 50);
+          UMA_HISTOGRAM_CUSTOM_COUNTS("DomDistiller.Statistics.WordCount",
+                                      statistics.word_count(), 1, 4000, 50);
         }
       }
     }

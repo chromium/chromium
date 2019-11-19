@@ -1,0 +1,6 @@
+AXWebArea
+++AXTextArea AXDescription='Done'
+++++AXGroup
+++++AXGroup
+++++++AXGroup
+++++AXGroup

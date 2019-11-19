@@ -275,6 +275,27 @@ def CheckForUseOfWrongClock(input_api,
   else:
     return []
 
+def CheckForDisallowMacros(input_api, output_api, white_list=CC_SOURCE_FILES, black_list=None):
+  black_list = tuple(black_list or input_api.DEFAULT_BLACK_LIST)
+  source_file_filter = lambda x: input_api.FilterSourceFile(x, white_list, black_list)
+
+  disallow_macro_files = []
+
+  for f in input_api.AffectedSourceFiles(source_file_filter):
+    contents = input_api.ReadFile(f, 'rb')
+    # DISALLOW macros are not allowed, use deleted constructors instead.
+    if re.search(r"\bDISALLOW_COPY\(", contents) or \
+       re.search(r"\bDISALLOW_ASSIGN\(", contents) or \
+       re.search(r"\bDISALLOW_COPY_AND_ASSIGN\(", contents) or \
+       re.search(r"\bDISALLOW_IMPLICIT_CONSTRUCTORS\(", contents):
+      disallow_macro_files.append(f.LocalPath())
+
+  if disallow_macro_files:
+    return [output_api.PresubmitError(
+      'The following files use DISALLOW* macros. In cc, please use deleted constructors/operators instead.',
+      items=disallow_macro_files)]
+  return []
+
 def CheckChangeOnUpload(input_api, output_api):
   results = []
   results += CheckAsserts(input_api, output_api)
@@ -286,4 +307,5 @@ def CheckChangeOnUpload(input_api, output_api):
   results += CheckNamespace(input_api, output_api)
   results += CheckForUseOfWrongClock(input_api, output_api)
   results += FindUselessIfdefs(input_api, output_api)
+  results += CheckForDisallowMacros(input_api, output_api)
   return results

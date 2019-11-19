@@ -8,13 +8,15 @@
 #include <wayland-server-protocol-core.h>
 
 #include "components/exo/touch.h"
+#include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/server_util.h"
 
 namespace exo {
 namespace wayland {
 
-WaylandTouchDelegate::WaylandTouchDelegate(wl_resource* touch_resource)
-    : touch_resource_(touch_resource) {}
+WaylandTouchDelegate::WaylandTouchDelegate(wl_resource* touch_resource,
+                                           SerialTracker* serial_tracker)
+    : touch_resource_(touch_resource), serial_tracker_(serial_tracker) {}
 
 void WaylandTouchDelegate::OnTouchDestroying(Touch* touch) {
   delete this;
@@ -35,15 +37,18 @@ void WaylandTouchDelegate::OnTouchDown(Surface* surface,
   wl_resource* surface_resource = GetSurfaceResource(surface);
   DCHECK(surface_resource);
   SendTimestamp(time_stamp);
-  wl_touch_send_down(touch_resource_, next_serial(),
-                     TimeTicksToMilliseconds(time_stamp), surface_resource, id,
-                     wl_fixed_from_double(location.x()),
-                     wl_fixed_from_double(location.y()));
+  wl_touch_send_down(
+      touch_resource_,
+      serial_tracker_->GetNextSerial(SerialTracker::EventType::TOUCH_DOWN),
+      TimeTicksToMilliseconds(time_stamp), surface_resource, id,
+      wl_fixed_from_double(location.x()), wl_fixed_from_double(location.y()));
 }
 void WaylandTouchDelegate::OnTouchUp(base::TimeTicks time_stamp, int id) {
   SendTimestamp(time_stamp);
-  wl_touch_send_up(touch_resource_, next_serial(),
-                   TimeTicksToMilliseconds(time_stamp), id);
+  wl_touch_send_up(
+      touch_resource_,
+      serial_tracker_->GetNextSerial(SerialTracker::EventType::TOUCH_UP),
+      TimeTicksToMilliseconds(time_stamp), id);
 }
 void WaylandTouchDelegate::OnTouchMotion(base::TimeTicks time_stamp,
                                          int id,
@@ -69,14 +74,11 @@ void WaylandTouchDelegate::OnTouchFrame() {
 }
 void WaylandTouchDelegate::OnTouchCancel() {
   wl_touch_send_cancel(touch_resource_);
+  serial_tracker_->ResetTouchDownSerial();
 }
 
 wl_client* WaylandTouchDelegate::client() const {
   return wl_resource_get_client(touch_resource_);
-}
-
-uint32_t WaylandTouchDelegate::next_serial() const {
-  return wl_display_next_serial(wl_client_get_display(client()));
 }
 
 }  // namespace wayland

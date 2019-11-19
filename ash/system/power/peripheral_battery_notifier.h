@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_POWER_PERIPHERAL_BATTERY_NOTIFIER_H_
 #define ASH_SYSTEM_POWER_PERIPHERAL_BATTERY_NOTIFIER_H_
 
+#include <cstdint>
 #include <map>
 
 #include "ash/ash_export.h"
@@ -12,8 +13,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/time/tick_clock.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace ash {
@@ -33,9 +35,6 @@ class ASH_EXPORT PeripheralBatteryNotifier
   PeripheralBatteryNotifier();
   ~PeripheralBatteryNotifier() override;
 
-  void set_testing_clock(const base::TickClock* clock) {
-    testing_clock_ = clock;
-  }
 
   // chromeos::PowerManagerClient::Observer:
   void PeripheralBatteryStatusReceived(const std::string& path,
@@ -43,8 +42,13 @@ class ASH_EXPORT PeripheralBatteryNotifier
                                        int level) override;
 
   // device::BluetoothAdapter::Observer:
-  void DeviceChanged(device::BluetoothAdapter* adapter,
-                     device::BluetoothDevice* device) override;
+  void DeviceBatteryChanged(
+      device::BluetoothAdapter* adapter,
+      device::BluetoothDevice* device,
+      base::Optional<uint8_t> new_battery_percentage) override;
+  void DeviceConnectedStateChanged(device::BluetoothAdapter* adapter,
+                                   device::BluetoothDevice* device,
+                                   bool is_now_connected) override;
   void DeviceRemoved(device::BluetoothAdapter* adapter,
                      device::BluetoothDevice* device) override;
 
@@ -57,10 +61,19 @@ class ASH_EXPORT PeripheralBatteryNotifier
   FRIEND_TEST_ALL_PREFIXES(PeripheralBatteryNotifierTest, DeviceRemove);
 
   struct BatteryInfo {
+    BatteryInfo();
+    BatteryInfo(const base::string16& name,
+                base::Optional<uint8_t> level,
+                base::TimeTicks last_notification_timestamp,
+                bool is_stylus,
+                const std::string& bluetooth_address);
+    ~BatteryInfo();
+    BatteryInfo(const BatteryInfo& info);
+
     // Human readable name for the device. It is changeable.
-    std::string name;
-    // Battery level within range [0, 100], and -1 for unknown level.
-    int level = -1;
+    base::string16 name;
+    // Battery level within range [0, 100].
+    base::Optional<uint8_t> level;
     base::TimeTicks last_notification_timestamp;
     bool is_stylus = false;
     // Peripheral's Bluetooth address. Empty for non-Bluetooth devices.
@@ -75,21 +88,39 @@ class ASH_EXPORT PeripheralBatteryNotifier
   // changed or removed.
   void RemoveBluetoothBattery(const std::string& bluetooth_address);
 
-  // Posts a low battery notification with unique id |path|. Returns true
-  // if the notification is posted, false if not.
-  bool PostNotification(const std::string& path, const BatteryInfo& battery);
+  // Updates the battery information of the peripheral with the corresponding
+  // |map_key|, and calls to post a notification if the battery level is under
+  // the threshold.
+  void UpdateBattery(const std::string& map_key,
+                     const BatteryInfo& battery_info);
 
-  void CancelNotification(const std::string& path);
+  // Updates the battery percentage in the corresponding notification.
+  void UpdateBatteryNotificationIfVisible(const std::string& map_key,
+                                          const BatteryInfo& battery);
 
-  // Record of existing battery infomation. The key is the device path.
+  // Calls to display a notification only if kNotificationInterval seconds have
+  // passed since the last notification showed, avoiding the case where the
+  // battery level oscillates around the threshold level.
+  void ShowNotification(const std::string& map_key, const BatteryInfo& battery);
+
+  // Posts a low battery notification with id as |map_key|. If a notification
+  // with the same id exists, its content gets updated.
+  void ShowOrUpdateNotification(const std::string& map_key,
+                                const BatteryInfo& battery);
+
+  void CancelNotification(const std::string& map_key);
+
+  // Record of existing battery information. For Bluetooth Devices, the key is
+  // kBluetoothDeviceIdPrefix + the device's address. For HID devices, the key
+  // is the device path. If a device uses HID over Bluetooth, it is indexed as a
+  // Bluetooth device.
   std::map<std::string, BatteryInfo> batteries_;
 
   // PeripheralBatteryNotifier is an observer of |bluetooth_adapter_| for
   // bluetooth device change/remove events.
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 
-  // Used only for helping test. Not owned and can be nullptr.
-  const base::TickClock* testing_clock_ = nullptr;
+  const base::TickClock* clock_;
 
   std::unique_ptr<base::WeakPtrFactory<PeripheralBatteryNotifier>>
       weakptr_factory_;

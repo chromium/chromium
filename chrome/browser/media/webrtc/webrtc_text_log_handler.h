@@ -10,50 +10,20 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/threading/thread_checker.h"
-#include "chrome/common/media/webrtc_logging_message_data.h"
-#include "components/webrtc_logging/common/partial_circular_buffer.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "net/base/network_interfaces.h"
 
-#if defined(OS_ANDROID)
-const size_t kWebRtcLogSize = 1 * 1024 * 1024;  // 1 MB
-#else
-const size_t kWebRtcLogSize = 6 * 1024 * 1024;  // 6 MB
-#endif
+namespace chrome {
+namespace mojom {
+class WebRtcLoggingMessage;
+}  // namespace mojom
+}  // namespace chrome
 
-typedef std::map<std::string, std::string> MetaDataMap;
+class WebRtcLogBuffer;
 
-class WebRtcLogUploader;
-
-class WebRtcLogBuffer {
- public:
-  WebRtcLogBuffer();
-  ~WebRtcLogBuffer();
-
-  void Log(const std::string& message);
-
-  // Returns a circular buffer instance for reading the internal log buffer.
-  // Must only be called after the log has been marked as complete
-  // (see SetComplete) and the caller must ensure that the WebRtcLogBuffer
-  // instance remains in scope for the lifetime of the returned circular buffer.
-  webrtc_logging::PartialCircularBuffer Read();
-
-  // Switches the buffer to read-only mode, where access to the internal
-  // buffer is allowed from different threads than were used to contribute
-  // to the log.  Calls to Log() won't be allowed after calling
-  // SetComplete() and the call to SetComplete() must be done on the same
-  // thread as constructed the buffer and calls Log().
-  void SetComplete();
-
- private:
-  base::ThreadChecker thread_checker_;
-  uint8_t buffer_[kWebRtcLogSize];
-  webrtc_logging::PartialCircularBuffer circular_;
-  bool read_only_;
-};
-
-class WebRtcTextLogHandler
-    : public base::RefCountedThreadSafe<WebRtcTextLogHandler> {
+class WebRtcTextLogHandler {
  public:
   // States used for protecting from function calls made at non-allowed points
   // in time. For example, StartLogging() is only allowed in CLOSED state.
@@ -77,81 +47,74 @@ class WebRtcTextLogHandler
   typedef base::Callback<void(bool, const std::string&)> GenericDoneCallback;
 
   explicit WebRtcTextLogHandler(int render_process_id);
+  ~WebRtcTextLogHandler();
 
-  // Returns the current state of the log. Must be called on the IO thread.
+  // Returns the current state of the log.
   LoggingState GetState() const;
 
-  // Returns true if channel is closing. Must be called on the IO thread.
+  // Returns true if channel is closing.
   bool GetChannelIsClosing() const;
 
   // Sets meta data for log uploading. Merged with any already set meta data.
   // Values for existing keys are overwritten. The meta data already set at log
   // start is written to the beginning of the log. Meta data set after log start
   // is written to the log at that time.
-  void SetMetaData(std::unique_ptr<MetaDataMap> meta_data,
+  void SetMetaData(std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
                    const GenericDoneCallback& callback);
 
   // Opens a log and starts logging if allowed by the LogUploader.
   // Returns false if logging could not be started.
-  // Must be called on the IO thread.
   bool StartLogging(WebRtcLogUploader* log_uploader,
                     const GenericDoneCallback& callback);
 
   // Stops logging. Log will remain open until UploadLog or DiscardLog is
-  // called. Must be called on the IO thread.
+  // called.
   bool StopLogging(const GenericDoneCallback& callback);
 
   // Called by the WebRtcLoggingHandlerHost when logging has stopped in the
   // renderer. Should only be called in response to a
   // WebRtcLoggingMsg_LoggingStopped IPC message.
-  // Must be called on the IO thread.
   void StopDone();
 
   // Signals that the renderer is closing, which de facto stops logging but
   // keeps the log in memory.
-  // Can be called in any state except CLOSED. Must be called on the IO thread.
+  // Can be called in any state except CLOSED.
   void ChannelClosing();
 
-  // Discards a stopped log. Must be called on the IO thread.
+  // Discards a stopped log.
   void DiscardLog();
 
-  // Releases a stopped log to the caller. Must be called on the IO thread.
+  // Releases a stopped log to the caller.
   void ReleaseLog(std::unique_ptr<WebRtcLogBuffer>* log_buffer,
-                  std::unique_ptr<MetaDataMap>* meta_data);
+                  std::unique_ptr<WebRtcLogMetaDataMap>* meta_data);
 
-  // Adds a message to the log. Must be called on the IO thread.
+  // Adds a message to the log.
   void LogMessage(const std::string& message);
 
-  // Adds a message to the log. Must be called on the IO thread.
-  void LogWebRtcLoggingMessageData(const WebRtcLoggingMessageData& message);
+  // Adds a message to the log.
+  void LogWebRtcLoggingMessage(
+      const chrome::mojom::WebRtcLoggingMessage* message);
 
   // Returns true if the logging state is CLOSED and fires an the callback
-  // with an error message otherwise. Must be called on the IO thread.
+  // with an error message otherwise.
   bool ExpectLoggingStateStopped(const GenericDoneCallback& callback);
 
   void FireGenericDoneCallback(const GenericDoneCallback& callback,
                                bool success,
                                const std::string& error_message);
 
-  // Must be called on the IO thread.
   void SetWebAppId(int web_app_id);
 
  private:
-  friend class base::RefCountedThreadSafe<WebRtcTextLogHandler>;
-  ~WebRtcTextLogHandler();
-
   void StartDone(const GenericDoneCallback& callback);
 
   void LogToCircularBuffer(const std::string& message);
-
-  void GetNetworkInterfaceListOnUIThread(const GenericDoneCallback& callback);
 
   void OnGetNetworkInterfaceList(
       const GenericDoneCallback& callback,
       const base::Optional<net::NetworkInterfaceList>& networks);
 
-  void LogInitialInfoOnIOThread(const GenericDoneCallback& callback,
-                                const net::NetworkInterfaceList& network_list);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // The render process ID this object belongs to.
   const int render_process_id_;
@@ -159,22 +122,15 @@ class WebRtcTextLogHandler
   // Should be created by StartLogging().
   std::unique_ptr<WebRtcLogBuffer> log_buffer_;
 
-  // These are only accessed on the IO thread, except when in STARTING state. In
-  // this state we are protected since entering any function that alters the
-  // state is not allowed.
   // Should be created by StartLogging().
-  std::unique_ptr<MetaDataMap> meta_data_;
+  std::unique_ptr<WebRtcLogMetaDataMap> meta_data_;
 
-  // Only accessed on the IO thread.
   GenericDoneCallback stop_callback_;
-
-  // Only accessed on the IO thread.
   LoggingState logging_state_;
 
   // True if renderer is closing. The log (if there is one) can still be
   // released or discarded (i.e. closed). No new logs can be created. The only
   // state change possible when channel is closing is from any state to CLOSED.
-  // Can only accessed on the IO thread.
   bool channel_is_closing_ = false;
 
   // The system time in ms when logging is started. Reset when logging_state_
@@ -182,9 +138,10 @@ class WebRtcTextLogHandler
   base::Time logging_started_time_;
 
   // Web app id used for statistics. See
-  // |WebRtcLoggingHandlerHost::web_app_id_|. Must only be accessed on the IO
-  // thread.
+  // |WebRtcLoggingHandlerHost::web_app_id_|.
   int web_app_id_ = 0;
+
+  base::WeakPtrFactory<WebRtcTextLogHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebRtcTextLogHandler);
 };

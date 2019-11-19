@@ -19,6 +19,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/policy/policy_export.h"
 
@@ -28,7 +29,6 @@ class SequencedTaskRunner;
 
 namespace policy {
 
-class ExternalPolicyDataFetcherBackend;
 class ResourceCache;
 class SchemaMap;
 
@@ -65,6 +65,11 @@ class POLICY_EXPORT ComponentCloudPolicyService
   // allowed values are: |dm_protocol::kChromeExtensionPolicyType|,
   // |dm_protocol::kChromeSigninExtensionPolicyType|.
   //
+  // |policy_source| specifies where the policy originates from, and can be used
+  // to configure precedence when the same components are configured by policies
+  // from different sources. It only accepts POLICY_SOURCE_CLOUD and
+  // POLICY_SOURCE_PRIORITY_CLOUD now.
+  //
   // The |delegate| is notified of updates to the downloaded policies and must
   // outlive this object.
   //
@@ -89,6 +94,7 @@ class POLICY_EXPORT ComponentCloudPolicyService
   // |backend_task_runner|, which must support file I/O.
   ComponentCloudPolicyService(
       const std::string& policy_type,
+      PolicySource policy_source,
       Delegate* delegate,
       SchemaRegistry* schema_registry,
       CloudPolicyCore* core,
@@ -147,12 +153,6 @@ class POLICY_EXPORT ComponentCloudPolicyService
   CloudPolicyCore* core_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
-  // The |external_policy_data_fetcher_backend_| handles network I/O for the
-  // |backend_| because the system SharedURLLoaderFactory cannot be referenced
-  // from background threads. It is owned by the thread |this| runs on.
-  std::unique_ptr<ExternalPolicyDataFetcherBackend>
-      external_policy_data_fetcher_backend_;
-
   // The |backend_| handles all download scheduling, validation and caching of
   // policies. It is instantiated on the thread |this| runs on but after that,
   // must only be accessed and eventually destroyed via the
@@ -178,7 +178,7 @@ class POLICY_EXPORT ComponentCloudPolicyService
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Must be the last member.
-  base::WeakPtrFactory<ComponentCloudPolicyService> weak_ptr_factory_;
+  base::WeakPtrFactory<ComponentCloudPolicyService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ComponentCloudPolicyService);
 };

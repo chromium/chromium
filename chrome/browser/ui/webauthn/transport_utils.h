@@ -23,6 +23,6 @@ base::string16 GetTransportHumanReadableName(AuthenticatorTransport transport,
 
 // Returns the vector icon to show next to the |transport| in the manual
 // transport selection list.
-const gfx::VectorIcon& GetTransportVectorIcon(AuthenticatorTransport transport);
+const gfx::VectorIcon* GetTransportVectorIcon(AuthenticatorTransport transport);
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_TRANSPORT_UTILS_H_

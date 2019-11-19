@@ -10,11 +10,13 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "chrome/browser/performance_manager/process_resource_coordinator.h"
+#include "base/process/process.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/common/service_manager_connection.h"
 
 namespace performance_manager {
+
+class ProcessNodeImpl;
 
 // Responsible for maintaining the process nodes for the browser and the GPU
 // process.
@@ -22,6 +24,12 @@ class BrowserChildProcessWatcher : public content::BrowserChildProcessObserver {
  public:
   BrowserChildProcessWatcher();
   ~BrowserChildProcessWatcher() override;
+
+  // Initialize this watcher.
+  void Initialize();
+
+  // Tear down this watcher and any state it's gathered.
+  void TearDown();
 
  private:
   // BrowserChildProcessObserver overrides.
@@ -38,15 +46,15 @@ class BrowserChildProcessWatcher : public content::BrowserChildProcessObserver {
 
   void GPUProcessExited(int id, int exit_code);
 
-  performance_manager::ProcessResourceCoordinator browser_node_;
+  static void OnProcessLaunched(const base::Process& process,
+                                ProcessNodeImpl* process_node);
+
+  std::unique_ptr<ProcessNodeImpl> browser_process_node_;
 
   // Apparently more than one GPU process can be existent at a time, though
   // secondaries are very transient. This map keeps track of all GPU processes
   // by their unique ID from |content::ChildProcessData|.
-  base::flat_map<
-      int,
-      std::unique_ptr<performance_manager::ProcessResourceCoordinator>>
-      gpu_process_nodes_;
+  base::flat_map<int, std::unique_ptr<ProcessNodeImpl>> gpu_process_nodes_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserChildProcessWatcher);
 };

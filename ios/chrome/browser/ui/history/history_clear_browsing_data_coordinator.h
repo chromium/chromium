@@ -8,8 +8,9 @@
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_local_commands.h"
 
+enum class UrlLoadStrategy;
+
 @protocol ApplicationCommands;
-@protocol UrlLoader;
 @protocol HistoryLocalCommands;
 @protocol HistoryPresentationDelegate;
 @protocol HistoryClearBrowsingDataLocalCommands;
@@ -25,8 +26,8 @@
 // Dispatcher for view controller.
 @property(nonatomic, weak) id<ApplicationCommands> dispatcher;
 
-// The UrlLoader used by this coordinator.
-@property(nonatomic, weak) id<UrlLoader> loader;
+// Opaque instructions on how to open urls.
+@property(nonatomic) UrlLoadStrategy loadStrategy;
 
 // Delegate used to make the Tab UI visible.
 @property(nonatomic, weak) id<HistoryPresentationDelegate> presentationDelegate;

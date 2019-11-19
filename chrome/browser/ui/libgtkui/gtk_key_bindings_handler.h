@@ -34,10 +34,8 @@ namespace libgtkui {
 // class derived from GtkTextView is used, which overrides all signals related
 // to key bindings, to make sure GtkTextView won't receive them.
 //
-// See third_party/WebKit/Source/WebCore/editing/EditorCommand.cpp for detailed
-// definition of webkit edit commands.
-// See webkit/glue/editor_client_impl.cc for key bindings predefined in our
-// webkit glue.
+// See third_party/blink/renderer/core/editing/commands/editor_command.cc for
+// detailed definition of Blink edit commands.
 class GtkKeyBindingsHandler {
  public:
   GtkKeyBindingsHandler();
@@ -68,10 +66,6 @@ class GtkKeyBindingsHandler {
   // Adds an edit command to the key event.
   void EditCommandMatched(ui::TextEditCommand command,
                           const std::string& value);
-
-  // Builds a fake GdkEventKey from an XEvent.
-  void BuildGdkEventKeyFromXEvent(const ui::PlatformEvent& xevent,
-                                  GdkEventKey* gdk_event);
 
   // Initializes Handler structure.
   static void HandlerInit(Handler* self);
@@ -141,9 +135,6 @@ class GtkKeyBindingsHandler {
 
   // Buffer to store the match results.
   std::vector<ui::TextEditCommandAuraLinux> edit_commands_;
-
-  // Whether the current X server has the XKeyboard extension.
-  bool has_xkb_;
 };
 
 }  // namespace libgtkui

@@ -7,13 +7,10 @@
 namespace syncer {
 
 // Server can overwrite these values via client commands.
-// Standard short poll. This is used when XMPP is off.
 // We use high values here to ensure that failure to receive poll updates from
 // the server doesn't result in rapid-fire polling from the client due to low
 // local limits.
-const int64_t kDefaultShortPollIntervalSeconds = 3600 * 8;
-// Long poll is used when XMPP is on.
-const int64_t kDefaultLongPollIntervalSeconds = 3600 * 12;
+const int64_t kDefaultPollIntervalSeconds = 3600 * 8;
 
 // Maximum interval for exponential backoff.
 const int64_t kMaxBackoffSeconds = 60 * 10;  // 10 minutes.

@@ -12,9 +12,7 @@ namespace ui {
 
 CompositorLockManager::CompositorLockManager(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)),
-      weak_ptr_factory_(this),
-      lock_timeout_weak_ptr_factory_(this) {}
+    : task_runner_(std::move(task_runner)) {}
 
 CompositorLockManager::~CompositorLockManager() = default;
 

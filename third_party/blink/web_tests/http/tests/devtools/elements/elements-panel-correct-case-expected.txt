@@ -4,7 +4,7 @@ Tests that elements panel shows all types of elements in the correct case.
 - <html>
     - <head>
           <base href="http://127.0.0.1:8000/devtools/elements/">
-          <link rel="stylesheet" type="text/css" href="resources/elements-panel-styles.css">
+          <link rel="stylesheet" href="resources/elements-panel-styles.css">
       </head>
     - <body>
         - <svg>

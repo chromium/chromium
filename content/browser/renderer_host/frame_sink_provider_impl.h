@@ -7,7 +7,9 @@
 
 #include "content/common/frame_sink_provider.mojom.h"
 #include "content/common/render_frame_metadata.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {
 
@@ -18,24 +20,26 @@ class FrameSinkProviderImpl : public mojom::FrameSinkProvider {
   explicit FrameSinkProviderImpl(int32_t process_id);
   ~FrameSinkProviderImpl() override;
 
-  void Bind(mojom::FrameSinkProviderRequest request);
+  void Bind(mojo::PendingReceiver<mojom::FrameSinkProvider> receiver);
   void Unbind();
 
   // mojom::FrameSinkProvider implementation.
   void CreateForWidget(
       int32_t widget_id,
-      viz::mojom::CompositorFrameSinkRequest compositor_frame_sink_request,
-      viz::mojom::CompositorFrameSinkClientPtr compositor_frame_sink_client)
-      override;
+      mojo::PendingReceiver<viz::mojom::CompositorFrameSink>
+          compositor_frame_sink_receiver,
+      mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient>
+          compositor_frame_sink_client) override;
   void RegisterRenderFrameMetadataObserver(
       int32_t widget_id,
-      mojom::RenderFrameMetadataObserverClientRequest
-          render_frame_metadata_observer_client_request,
-      mojom::RenderFrameMetadataObserverPtr observer) override;
+      mojo::PendingReceiver<mojom::RenderFrameMetadataObserverClient>
+          render_frame_metadata_observer_client_receiver,
+      mojo::PendingRemote<mojom::RenderFrameMetadataObserver> observer)
+      override;
 
  private:
   const int32_t process_id_;
-  mojo::Binding<mojom::FrameSinkProvider> binding_;
+  mojo::Receiver<mojom::FrameSinkProvider> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FrameSinkProviderImpl);
 };

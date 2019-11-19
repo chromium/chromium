@@ -1,6 +1,0 @@
-CONSOLE WARNING: line 20: The step timing function with step position 'middle' is deprecated and will be removed in M62, around October 2017. See https://www.chromestatus.com/features/5189363944128512 for more details.
-This is a testharness.js-based test.
-PASS The step timing function with step position 'middle' does not function outside of Web Animations.
-PASS The step timing function with step position 'middle' is deprecated in Web Animations.
-Harness: the test ran to completion.
-

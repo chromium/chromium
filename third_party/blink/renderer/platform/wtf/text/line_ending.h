@@ -43,13 +43,13 @@ WTF_EXPORT String NormalizeLineEndingsToCRLF(const String& from);
 
 // Normalize all line-endings in the given string to LF and append the result to
 // the given buffer.
-WTF_EXPORT void NormalizeLineEndingsToLF(const CString& from,
+WTF_EXPORT void NormalizeLineEndingsToLF(const std::string& from,
                                          Vector<char>& result);
 
 // Normalize all line-endings in the given string to the native line-endings and
 // append the result to the given buffer.
 // (Normalize to CRLF on Windows and normalize to LF on all other platforms.)
-WTF_EXPORT void NormalizeLineEndingsToNative(const CString& from,
+WTF_EXPORT void NormalizeLineEndingsToNative(const std::string& from,
                                              Vector<char>& result);
 
 }  // namespace WTF

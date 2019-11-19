@@ -60,15 +60,11 @@ class WebDataServiceWrapper : public KeyedService {
                                    const std::string& diagnostics)>;
 
   // Constructor for WebDataServiceWrapper that initializes the different
-  // WebDataServices and starts the synchronization services using |flare|.
-  // Since |flare| will be copied and called multiple times, it cannot bind
-  // values using base::Owned nor base::Passed; it should only bind simple or
-  // refcounted types.
+  // WebDataServices.
   WebDataServiceWrapper(
       const base::FilePath& context_path,
       const std::string& application_locale,
       const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
-      const syncer::SyncableService::StartSyncFlare& flare,
       const ShowErrorCallback& show_error_callback);
 
   ~WebDataServiceWrapper() override;

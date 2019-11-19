@@ -138,7 +138,7 @@ class CpuDataCollector {
   // hence should be read/written to only from the blocking pool.
   int cpu_count_;
 
-  base::WeakPtrFactory<CpuDataCollector> weak_ptr_factory_;
+  base::WeakPtrFactory<CpuDataCollector> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(CpuDataCollector);
 };
 

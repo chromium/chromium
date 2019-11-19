@@ -2,18 +2,19 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" href="resources/link-highlight-style.css">
-    <script src="../../compositing/overflow/resources/automatically-opt-into-composited-scrolling.js"></script>
+    <script src="resources/link-highlight-helper.js"></script>
     <script>
+      if (window.internals)
+        internals.settings.setPreferCompositingToLCDTextEnabled(true);
       function runTest() {
         var targetDiv = document.getElementById('targetDiv');
         targetDiv.scrollTop += 20;
         createCompositedHighlight(document.getElementById('targetLink'));
       }
     </script>
-    <script src="resources/link-highlight-helper.js"></script>
   </head>
   <body onload="runTest();">
-    <div style="transform: translateZ(0); position: relative; left: 10px; top: 10px"></div>
+    <div style="will-change: transform; position: relative; left: 10px; top: 10px"></div>
     <div id="targetDiv" style="position: relative; left: 10px; top: 40px; width: 200px; height: 100px; overflow-y: scroll; overflow-x: scroll;">
       <a href="">AAAAAA</a><br>
       <a href="">AAAAAA</a><br>

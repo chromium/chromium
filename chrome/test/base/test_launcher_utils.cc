@@ -9,14 +9,17 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/feature_list.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/url_constants.h"
 #include "components/os_crypt/os_crypt_switches.h"
 #include "content/public/common/content_switches.h"
+#include "ui/display/display_switches.h"
 
 #if defined(USE_AURA)
 #include "ui/wm/core/wm_core_switches.h"
@@ -68,6 +71,15 @@ void PrepareBrowserCommandLineForTests(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kDisableComponentUpdate);
 }
 
+void PrepareBrowserCommandLineForBrowserTests(base::CommandLine* command_line,
+                                              bool open_about_blank_on_launch) {
+  // This is a Browser test.
+  command_line->AppendSwitchASCII(switches::kTestType, "browser");
+
+  if (open_about_blank_on_launch && command_line->GetArgs().empty())
+    command_line->AppendArg(url::kAboutBlankURL);
+}
+
 void RemoveCommandLineSwitch(const base::CommandLine& in_command_line,
                              const std::string& switch_to_remove,
                              base::CommandLine* out_command_line) {
@@ -80,6 +92,23 @@ void RemoveCommandLineSwitch(const base::CommandLine& in_command_line,
 
     out_command_line->AppendSwitchNative(switch_name, i->second);
   }
+}
+
+bool CreateUserDataDir(base::ScopedTempDir* temp_dir) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  base::FilePath user_data_dir =
+      command_line->GetSwitchValuePath(switches::kUserDataDir);
+  if (user_data_dir.empty()) {
+    DCHECK(temp_dir);
+    if (temp_dir->CreateUniqueTempDir() && temp_dir->IsValid()) {
+      user_data_dir = temp_dir->GetPath();
+    } else {
+      LOG(ERROR) << "Could not create temporary user data directory \""
+                 << temp_dir->GetPath().value() << "\".";
+      return false;
+    }
+  }
+  return OverrideUserDataDir(user_data_dir);
 }
 
 bool OverrideUserDataDir(const base::FilePath& user_data_dir) {

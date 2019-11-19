@@ -35,23 +35,27 @@ constexpr int kInvalidationBatchIntervalSecs = 15;
 // The sync invalidation object ID for Google Drive.
 const char kDriveInvalidationObjectId[] = "CHANGELOG";
 
+// The sync invalidation object ID for Google Drive.
+const char kFcmDriveInvalidationObjectId[] = "Drive";
+
 // Team drive invalidation ID's are "TD:<team_drive_id>".
 constexpr char kTeamDriveChangePrefix[] = "TD:";
 
-constexpr size_t kTeamDriveChangePrefixLength =
-    base::CharTraits<char>::length(kTeamDriveChangePrefix);
+// Team drive invalidation ID's from FCM are "team-drive-<team_drive_id>".
+constexpr char kFcmTeamDriveChangePrefix[] = "team-drive-";
 
 }  // namespace
 
 DriveNotificationManager::DriveNotificationManager(
     invalidation::InvalidationService* invalidation_service,
+    bool use_fcm_object_ids,
     const base::TickClock* clock)
     : invalidation_service_(invalidation_service),
       push_notification_registered_(false),
       push_notification_enabled_(false),
       observers_notified_(false),
       batch_timer_(clock),
-      weak_ptr_factory_(this) {
+      use_fcm_object_ids_(use_fcm_object_ids) {
   DCHECK(invalidation_service_);
   RegisterDriveNotifications();
   RestartPollingTimer();
@@ -96,11 +100,9 @@ void DriveNotificationManager::OnIncomingInvalidation(
   for (const auto& id : ids) {
     // Empty string indicates default change list.
     std::string unpacked_id;
-    if (id.name() != kDriveInvalidationObjectId) {
-      DCHECK(base::StartsWith(id.name(), kTeamDriveChangePrefix,
-                              base::CompareCase::SENSITIVE))
-          << "Unexpected ID " << id.name();
-      unpacked_id = id.name().substr(kTeamDriveChangePrefixLength);
+    if (id.name() != GetDriveInvalidationObjectId()) {
+      unpacked_id = ExtractTeamDriveId(id.name());
+      DCHECK(!unpacked_id.empty()) << "Unexpected ID " << id.name();
     }
     auto invalidations = invalidation_map.ForObject(id);
     int64_t& invalidation_version =
@@ -128,6 +130,9 @@ void DriveNotificationManager::OnIncomingInvalidation(
 }
 
 std::string DriveNotificationManager::GetOwnerName() const { return "Drive"; }
+bool DriveNotificationManager::IsPublicTopic(const syncer::Topic& topic) const {
+  return base::StringPiece(topic).starts_with(kFcmTeamDriveChangePrefix);
+}
 
 void DriveNotificationManager::AddObserver(
     DriveNotificationObserver* observer) {
@@ -250,12 +255,12 @@ void DriveNotificationManager::UpdateRegisteredDriveNotifications() {
   syncer::ObjectIdSet ids;
   ids.insert(
       invalidation::ObjectId(ipc::invalidation::ObjectSource::COSMO_CHANGELOG,
-                             kDriveInvalidationObjectId));
+                             GetDriveInvalidationObjectId()));
 
   for (const auto& team_drive_id : team_drive_ids_) {
     ids.insert(invalidation::ObjectId(
         ipc::invalidation::ObjectSource::COSMO_CHANGELOG,
-        base::StrCat({kTeamDriveChangePrefix, team_drive_id})));
+        GetTeamDriveInvalidationObjectId(team_drive_id)));
   }
 
   CHECK(invalidation_service_->UpdateRegisteredInvalidationIds(this, ids));
@@ -285,6 +290,28 @@ std::string DriveNotificationManager::NotificationSourceToString(
 
   NOTREACHED();
   return "";
+}
+
+std::string DriveNotificationManager::GetDriveInvalidationObjectId() const {
+  return use_fcm_object_ids_ ? kFcmDriveInvalidationObjectId
+                             : kDriveInvalidationObjectId;
+}
+
+std::string DriveNotificationManager::GetTeamDriveInvalidationObjectId(
+    const std::string& team_drive_id) const {
+  return base::StrCat(
+      {use_fcm_object_ids_ ? kFcmTeamDriveChangePrefix : kTeamDriveChangePrefix,
+       team_drive_id});
+}
+
+std::string DriveNotificationManager::ExtractTeamDriveId(
+    base::StringPiece object_id) const {
+  base::StringPiece prefix =
+      use_fcm_object_ids_ ? kFcmTeamDriveChangePrefix : kTeamDriveChangePrefix;
+  if (!object_id.starts_with(prefix)) {
+    return {};
+  }
+  return object_id.substr(prefix.size()).as_string();
 }
 
 }  // namespace drive

@@ -165,8 +165,7 @@ ComponentActiveDirectoryPolicyService::ComponentActiveDirectoryPolicyService(
       account_type_(account_type),
       account_id_(account_id),
       delegate_(delegate),
-      schema_registry_(schema_registry),
-      weak_ptr_factory_(this) {
+      schema_registry_(schema_registry) {
   // Observe the schema registry for keeping |current_schema_map_| up to date.
   schema_registry_->AddObserver(this);
   UpdateFromSchemaRegistry();

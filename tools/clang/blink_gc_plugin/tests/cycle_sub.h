@@ -14,9 +14,9 @@ class C;
 // This contains a leaking cycle:
 // C -per-> A -sub-> B -ref-> C
 
-class A : public GarbageCollectedFinalized<A> {
-public:
-    virtual void Trace(Visitor*) {}
+class A : public GarbageCollected<A> {
+ public:
+  virtual void Trace(Visitor*) {}
 };
 
 class B : public A {

@@ -110,7 +110,7 @@ class SoftwareFeatureManagerImpl : public SoftwareFeatureManager {
   std::unique_ptr<Request> current_request_;
   base::queue<std::unique_ptr<Request>> pending_requests_;
 
-  base::WeakPtrFactory<SoftwareFeatureManagerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<SoftwareFeatureManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace device_sync

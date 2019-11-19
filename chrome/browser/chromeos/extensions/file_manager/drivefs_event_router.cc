@@ -160,7 +160,8 @@ void DriveFsEventRouter::OnFilesChanged(
                     CHANGE_TYPE_ADD_OR_UPDATE);
     }
     for (auto& event : events) {
-      DispatchOnDirectoryChangedEventToExtension(extension_id, event.second);
+      DispatchOnDirectoryChangedEventToExtension(extension_id, event.first,
+                                                 event.second);
     }
   }
 }
@@ -204,7 +205,11 @@ void DriveFsEventRouter::DispatchOnFileTransfersUpdatedEventToExtension(
 
 void DriveFsEventRouter::DispatchOnDirectoryChangedEventToExtension(
     const std::string& extension_id,
+    const base::FilePath& directory,
     const extensions::api::file_manager_private::FileWatchEvent& event) {
+  if (!IsPathWatched(directory)) {
+    return;
+  }
   DispatchEventToExtension(
       extension_id,
       extensions::events::FILE_MANAGER_PRIVATE_ON_DIRECTORY_CHANGED,

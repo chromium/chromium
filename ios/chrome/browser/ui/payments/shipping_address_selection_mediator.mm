@@ -7,15 +7,15 @@
 #import "ios/chrome/browser/ui/payments/shipping_address_selection_mediator.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/payments/core/strings_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/payments/payment_request.h"
 #import "ios/chrome/browser/payments/payment_request_util.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/payments/cells/autofill_profile_item.h"
 #import "ios/chrome/browser/ui/payments/cells/payments_text_item.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -104,8 +104,9 @@ using ::payment_request_util::GetShippingAddressLabelFromAutofillProfile;
   PaymentsTextItem* addButtonItem = [[PaymentsTextItem alloc] init];
   addButtonItem.text = base::SysUTF16ToNSString(
       GetAddShippingAddressButtonLabel(self.paymentRequest->shipping_type()));
-  addButtonItem.trailingImage = TintImage([UIImage imageNamed:@"ic_add"],
-                                          [[MDCPalette greyPalette] tint400]);
+  addButtonItem.trailingImage = [[UIImage imageNamed:@"ic_add"]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  addButtonItem.trailingImageTintColor = [UIColor colorNamed:kGrey400Color];
   addButtonItem.cellType = PaymentsTextCellTypeCallToAction;
   return addButtonItem;
 }

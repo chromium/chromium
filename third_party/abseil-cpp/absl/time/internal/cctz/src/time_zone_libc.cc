@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
+//   https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,6 @@
 #include <chrono>
 #include <ctime>
 #include <limits>
-#include <tuple>
 #include <utility>
 
 #include "absl/time/internal/cctz/include/cctz/civil_time.h"
@@ -33,57 +32,75 @@ namespace cctz {
 
 namespace {
 
-// .first is seconds east of UTC; .second is the time-zone abbreviation.
-using OffsetAbbr = std::pair<int, const char*>;
-
-// Defines a function that can be called as follows:
-//
-//   std::tm tm = ...;
-//   OffsetAbbr off_abbr = get_offset_abbr(tm);
-//
 #if defined(_WIN32) || defined(_WIN64)
 // Uses the globals: '_timezone', '_dstbias' and '_tzname'.
-OffsetAbbr get_offset_abbr(const std::tm& tm) {
+auto tm_gmtoff(const std::tm& tm) -> decltype(_timezone + _dstbias) {
   const bool is_dst = tm.tm_isdst > 0;
-  const int off = _timezone + (is_dst ? _dstbias : 0);
-  const char* abbr = _tzname[is_dst];
-  return {off, abbr};
+  return _timezone + (is_dst ? _dstbias : 0);
+}
+auto tm_zone(const std::tm& tm) -> decltype(_tzname[0]) {
+  const bool is_dst = tm.tm_isdst > 0;
+  return _tzname[is_dst];
 }
 #elif defined(__sun)
 // Uses the globals: 'timezone', 'altzone' and 'tzname'.
-OffsetAbbr get_offset_abbr(const std::tm& tm) {
+auto tm_gmtoff(const std::tm& tm) -> decltype(timezone) {
   const bool is_dst = tm.tm_isdst > 0;
-  const int off = is_dst ? altzone : timezone;
-  const char* abbr = tzname[is_dst];
-  return {off, abbr};
+  return is_dst ? altzone : timezone;
+}
+auto tm_zone(const std::tm& tm) -> decltype(tzname[0]) {
+  const bool is_dst = tm.tm_isdst > 0;
+  return tzname[is_dst];
 }
 #elif defined(__native_client__) || defined(__myriad2__) || \
     defined(__EMSCRIPTEN__)
 // Uses the globals: 'timezone' and 'tzname'.
-OffsetAbbr get_offset_abbr(const std::tm& tm) {
+auto tm_gmtoff(const std::tm& tm) -> decltype(_timezone + 0) {
   const bool is_dst = tm.tm_isdst > 0;
-  const int off = _timezone + (is_dst ? 60 * 60 : 0);
-  const char* abbr = tzname[is_dst];
-  return {off, abbr};
+  return _timezone + (is_dst ? 60 * 60 : 0);
+}
+auto tm_zone(const std::tm& tm) -> decltype(tzname[0]) {
+  const bool is_dst = tm.tm_isdst > 0;
+  return tzname[is_dst];
 }
 #else
-//
-// Returns an OffsetAbbr using std::tm fields with various spellings.
-//
-#if !defined(tm_gmtoff) && !defined(tm_zone)
-template <typename T>
-OffsetAbbr get_offset_abbr(const T& tm, decltype(&T::tm_gmtoff) = nullptr,
-                           decltype(&T::tm_zone) = nullptr) {
-  return {tm.tm_gmtoff, tm.tm_zone};
+// Adapt to different spellings of the struct std::tm extension fields.
+#if defined(tm_gmtoff)
+auto tm_gmtoff(const std::tm& tm) -> decltype(tm.tm_gmtoff) {
+  return tm.tm_gmtoff;
 }
-#endif  // !defined(tm_gmtoff) && !defined(tm_zone)
-#if !defined(__tm_gmtoff) && !defined(__tm_zone)
-template <typename T>
-OffsetAbbr get_offset_abbr(const T& tm, decltype(&T::__tm_gmtoff) = nullptr,
-                           decltype(&T::__tm_zone) = nullptr) {
-  return {tm.__tm_gmtoff, tm.__tm_zone};
+#elif defined(__tm_gmtoff)
+auto tm_gmtoff(const std::tm& tm) -> decltype(tm.__tm_gmtoff) {
+  return tm.__tm_gmtoff;
 }
-#endif  // !defined(__tm_gmtoff) && !defined(__tm_zone)
+#else
+template <typename T>
+auto tm_gmtoff(const T& tm) -> decltype(tm.tm_gmtoff) {
+  return tm.tm_gmtoff;
+}
+template <typename T>
+auto tm_gmtoff(const T& tm) -> decltype(tm.__tm_gmtoff) {
+  return tm.__tm_gmtoff;
+}
+#endif  // tm_gmtoff
+#if defined(tm_zone)
+auto tm_zone(const std::tm& tm) -> decltype(tm.tm_zone) {
+  return tm.tm_zone;
+}
+#elif defined(__tm_zone)
+auto tm_zone(const std::tm& tm) -> decltype(tm.__tm_zone) {
+  return tm.__tm_zone;
+}
+#else
+template <typename T>
+auto tm_zone(const T& tm) -> decltype(tm.tm_zone) {
+  return tm.tm_zone;
+}
+template <typename T>
+auto tm_zone(const T& tm) -> decltype(tm.__tm_zone) {
+  return tm.__tm_zone;
+}
+#endif  // tm_zone
 #endif
 
 inline std::tm* gm_time(const std::time_t *timep, std::tm *result) {
@@ -126,7 +143,7 @@ bool make_time(const civil_second& cs, int is_dst, std::time_t* t, int* off) {
       return false;
     }
   }
-  *off = get_offset_abbr(tm).first;
+  *off = static_cast<int>(tm_gmtoff(tm));
   return true;
 }
 
@@ -137,7 +154,7 @@ std::time_t find_trans(std::time_t lo, std::time_t hi, int offset) {
   while (lo + 1 != hi) {
     const std::time_t mid = lo + (hi - lo) / 2;
     if (std::tm* tmp = local_time(&mid, &tm)) {
-      if (get_offset_abbr(*tmp).first == offset) {
+      if (tm_gmtoff(*tmp) == offset) {
         hi = mid;
       } else {
         lo = mid;
@@ -147,7 +164,7 @@ std::time_t find_trans(std::time_t lo, std::time_t hi, int offset) {
       // ignoring all failed conversions.  Slow, but never really happens.
       while (++lo != hi) {
         if (std::tm* tmp = local_time(&lo, &tm)) {
-          if (get_offset_abbr(*tmp).first == offset) break;
+          if (tm_gmtoff(*tmp) == offset) break;
         }
       }
       return lo;
@@ -193,8 +210,8 @@ time_zone::absolute_lookup TimeZoneLibC::BreakTime(
   const year_t year = tmp->tm_year + year_t{1900};
   al.cs = civil_second(year, tmp->tm_mon + 1, tmp->tm_mday,
                        tmp->tm_hour, tmp->tm_min, tmp->tm_sec);
-  std::tie(al.offset, al.abbr) = get_offset_abbr(*tmp);
-  if (!local_) al.abbr = "UTC";  // as expected by cctz
+  al.offset = static_cast<int>(tm_gmtoff(*tmp));
+  al.abbr = local_ ? tm_zone(*tmp) : "UTC";  // as expected by cctz
   al.is_dst = tmp->tm_isdst > 0;
   return al;
 }

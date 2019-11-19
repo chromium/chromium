@@ -5,6 +5,8 @@
 #ifndef UI_OZONE_DEMO_SIMPLE_RENDERER_FACTORY_H_
 #define UI_OZONE_DEMO_SIMPLE_RENDERER_FACTORY_H_
 
+#include <memory>
+
 #include "gpu/vulkan/buildflags.h"
 #include "ui/ozone/demo/renderer_factory.h"
 #include "ui/ozone/public/ozone_gpu_test_helper.h"
@@ -38,9 +40,6 @@ class SimpleRendererFactory : public RendererFactory {
 #endif
 
   RendererType type_ = SOFTWARE;
-
-  // Helper for applications that do GL on main thread.
-  OzoneGpuTestHelper gpu_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(SimpleRendererFactory);
 };

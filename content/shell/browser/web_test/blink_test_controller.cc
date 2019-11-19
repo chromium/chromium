@@ -45,7 +45,6 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -54,21 +53,22 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/page_state.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/web_test_support.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_devtools_frontend.h"
-#include "content/shell/browser/shell_network_delegate.h"
 #include "content/shell/browser/web_test/devtools_protocol_test_bindings.h"
 #include "content/shell/browser/web_test/fake_bluetooth_chooser.h"
+#include "content/shell/browser/web_test/mock_client_hints_controller_delegate.h"
 #include "content/shell/browser/web_test/test_info_extractor.h"
 #include "content/shell/browser/web_test/web_test_bluetooth_chooser_factory.h"
 #include "content/shell/browser/web_test/web_test_content_browser_client.h"
 #include "content/shell/browser/web_test/web_test_devtools_bindings.h"
 #include "content/shell/browser/web_test/web_test_first_device_bluetooth_chooser.h"
-#include "content/shell/common/shell_messages.h"
+#include "content/shell/common/web_test/blink_test_messages.h"
 #include "content/shell/common/web_test/web_test_messages.h"
 #include "content/shell/common/web_test/web_test_switches.h"
 #include "content/shell/common/web_test/web_test_utils.h"
@@ -78,14 +78,11 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/gfx/codec/png_codec.h"
 
 #if defined(OS_MACOSX)
 #include "base/mac/foundation_util.h"
-#endif
-
-#if defined(OS_ANDROID)
-#include "ui/android/view_android.h"
 #endif
 
 namespace content {
@@ -328,9 +325,7 @@ BlinkTestController::BlinkTestController()
       devtools_window_(nullptr),
       test_phase_(BETWEEN_TESTS),
       crash_when_leak_found_(false),
-      pending_layout_dumps_(0),
-      render_process_host_observer_(this),
-      weak_factory_(this) {
+      pending_layout_dumps_(0) {
   CHECK(!instance_);
   instance_ = this;
 
@@ -351,6 +346,9 @@ BlinkTestController::BlinkTestController()
   // Print text only (without binary dumps and headers/footers for run_web_tests
   // protocol) until we enter the protocol mode (see TestInfo::protocol_mode).
   printer_->set_capture_text_only(true);
+
+  InjectTestSharedWorkerService(BrowserContext::GetStoragePartition(
+      ShellContentBrowserClient::Get()->browser_context(), nullptr));
 
   registrar_.Add(this, NOTIFICATION_RENDERER_PROCESS_CREATED,
                  NotificationService::AllSources());
@@ -394,8 +392,9 @@ bool BlinkTestController::PrepareForWebTest(const TestInfo& test_info) {
 
   ShellBrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
-  is_compositing_test_ =
-      test_url_.spec().find("compositing/") != std::string::npos;
+
+  browser_context->GetClientHintsControllerDelegate()->ResetForTesting();
+
   initial_size_ = Shell::GetShellDefaultSize();
   if (!main_window_) {
     main_window_ = content::Shell::CreateNewWindow(
@@ -428,7 +427,7 @@ bool BlinkTestController::PrepareForWebTest(const TestInfo& test_info) {
           ->GetRenderViewHost()
           ->GetWidget()
           ->FlushForTesting();
-      GetWebTestControlPtr(
+      GetWebTestControlRemote(
           main_window_->web_contents()->GetRenderViewHost()->GetMainFrame())
           .FlushForTesting();
 
@@ -438,10 +437,9 @@ bool BlinkTestController::PrepareForWebTest(const TestInfo& test_info) {
       // test.
       NavigationController::LoadURLParams params(test_url_);
 
-      // Using PAGE_TRANSITION_LINK avoids a BrowsingInstance/process swap
-      // between web tests.
+      // Using PAGE_TRANSITION_TYPED replicates an omnibox navigation.
       params.transition_type =
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK);
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED);
 
       // Clear history to purge the prior navigation to about:blank.
       params.should_clear_history_list = true;
@@ -452,42 +450,34 @@ bool BlinkTestController::PrepareForWebTest(const TestInfo& test_info) {
     // Shell::SizeTo is not implemented on all platforms.
     main_window_->SizeTo(initial_size_);
 #endif
-    main_window_->web_contents()
-        ->GetRenderViewHost()
-        ->GetWidget()
-        ->GetView()
-        ->SetSize(initial_size_);
-    // Try to reset the window size. This can fail, see crbug.com/772811
-    main_window_->web_contents()
-        ->GetRenderViewHost()
-        ->GetWidget()
-        ->SynchronizeVisualProperties();
     RenderViewHost* render_view_host =
         main_window_->web_contents()->GetRenderViewHost();
+    RenderWidgetHost* render_widget_host = render_view_host->GetWidget();
+    // Set a different size first to reset the possibly inconsistent state
+    // caused by the previous test using unfortunate synchronous resize mode.
+    // This forces SetSize() not to early return which would otherwise happen
+    // when we set the size to initial_size_ which is the same as its current
+    // size. See http://crbug.com/1011191 for more details.
+    render_widget_host->GetView()->SetSize(
+        gfx::Size(initial_size_.width() / 2, initial_size_.height()));
+    render_widget_host->GetView()->SetSize(initial_size_);
+    render_widget_host->SynchronizeVisualProperties();
 
     if (is_devtools_protocol_test) {
       devtools_protocol_test_bindings_.reset(
           new DevToolsProtocolTestBindings(main_window_->web_contents()));
     }
 
-    // Compositing tests override the default preferences (see
-    // BlinkTestController::OverrideWebkitPrefs) so we force them to be
-    // calculated again to ensure is_compositing_test_ changes are picked up.
-    OverrideWebkitPrefs(&default_prefs_);
-
     render_view_host->UpdateWebkitPreferences(default_prefs_);
     HandleNewRenderFrameHost(render_view_host->GetMainFrame());
 
     // Focus the RenderWidgetHost. This will send an IPC message to the
     // renderer to propagate the state change.
-    main_window_->web_contents()->GetRenderViewHost()->GetWidget()->Focus();
+    render_widget_host->Focus();
 
     // Flush various interfaces to ensure a test run begins from a known state.
-    main_window_->web_contents()
-        ->GetRenderViewHost()
-        ->GetWidget()
-        ->FlushForTesting();
-    GetWebTestControlPtr(render_view_host->GetMainFrame()).FlushForTesting();
+    render_widget_host->FlushForTesting();
+    GetWebTestControlRemote(render_view_host->GetMainFrame()).FlushForTesting();
 
     if (is_devtools_js_test) {
       LoadDevToolsJSTest();
@@ -528,7 +518,6 @@ bool BlinkTestController::ResetAfterWebTest() {
   printer_->CloseStderr();
   did_send_initial_test_configuration_ = false;
   test_phase_ = BETWEEN_TESTS;
-  is_compositing_test_ = false;
   expected_pixel_hash_.clear();
   test_url_ = GURL();
   prefs_ = WebPreferences();
@@ -545,12 +534,6 @@ bool BlinkTestController::ResetAfterWebTest() {
   composite_all_frames_node_storage_.clear();
   weak_factory_.InvalidateWeakPtrs();
 
-#if defined(OS_ANDROID)
-  // Re-using the shell's main window on Android causes issues with networking
-  // requests never succeeding. See http://crbug.com/277652.
-  DiscardMainWindow();
-#endif
-
   return true;
 }
 
@@ -560,7 +543,10 @@ void BlinkTestController::SetTempPath(const base::FilePath& temp_path) {
 
 void BlinkTestController::RendererUnresponsive() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LOG(WARNING) << "renderer unresponsive";
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableHangMonitor)) {
+    LOG(WARNING) << "renderer unresponsive";
+  }
 }
 
 void BlinkTestController::OverrideWebkitPrefs(WebPreferences* prefs) {
@@ -568,12 +554,6 @@ void BlinkTestController::OverrideWebkitPrefs(WebPreferences* prefs) {
     *prefs = prefs_;
   } else {
     ApplyWebTestDefaultPreferences(prefs);
-    if (is_compositing_test_) {
-      base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
-      if (!command_line.HasSwitch(switches::kDisableGpu))
-        prefs->accelerated_2d_canvas_enabled = true;
-      prefs->mock_scrollbars_enabled = true;
-    }
   }
 }
 
@@ -589,7 +569,7 @@ void BlinkTestController::OpenURL(const GURL& url) {
 void BlinkTestController::OnTestFinishedInSecondaryRenderer() {
   RenderViewHost* main_render_view_host =
       main_window_->web_contents()->GetRenderViewHost();
-  main_render_view_host->Send(new ShellViewMsg_TestFinishedInSecondaryRenderer(
+  main_render_view_host->Send(new BlinkTestMsg_TestFinishedInSecondaryRenderer(
       main_render_view_host->GetRoutingID()));
 }
 
@@ -625,8 +605,6 @@ void BlinkTestController::OnInitiateCaptureDump(bool capture_navigation_history,
   waiting_for_main_frame_dump_ = true;
 
   if (capture_pixels) {
-    DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
-        switches::kEnableDisplayCompositorPixelDump));
     waiting_for_pixel_results_ = true;
     auto* rwhv = main_window_->web_contents()->GetRenderWidgetHostView();
     // If we're running in threaded mode, then the frames will be produced via a
@@ -646,7 +624,7 @@ void BlinkTestController::OnInitiateCaptureDump(bool capture_navigation_history,
 
   RenderFrameHost* rfh = main_window_->web_contents()->GetMainFrame();
   printer_->StartStateDump();
-  GetWebTestControlPtr(rfh)->CaptureDump(
+  GetWebTestControlRemote(rfh)->CaptureDump(
       base::BindOnce(&BlinkTestController::OnCaptureDumpCompleted,
                      weak_factory_.GetWeakPtr()));
 }
@@ -707,7 +685,7 @@ void BlinkTestController::CompositeNodeQueueThen(
       next_node_host = nullptr;  // This one is now gone
     }
   } while (!next_node_host || !next_node_host->IsRenderFrameLive());
-  GetWebTestControlPtr(next_node_host)
+  GetWebTestControlRemote(next_node_host)
       ->CompositeWithRaster(
           base::BindOnce(&BlinkTestController::CompositeNodeQueueThen,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -797,12 +775,16 @@ std::unique_ptr<BluetoothChooser> BlinkTestController::RunBluetoothChooser(
     return bluetooth_chooser_factory_->RunBluetoothChooser(frame,
                                                            event_handler);
   }
+
   auto next_fake_bluetooth_chooser =
       WebTestContentBrowserClient::Get()->GetNextFakeBluetoothChooser();
   if (next_fake_bluetooth_chooser) {
-    next_fake_bluetooth_chooser->SetEventHandler(event_handler);
+    const url::Origin origin = frame->GetLastCommittedOrigin();
+    DCHECK(!origin.opaque());
+    next_fake_bluetooth_chooser->OnRunBluetoothChooser(event_handler, origin);
     return next_fake_bluetooth_chooser;
   }
+
   return std::make_unique<WebTestFirstDeviceBluetoothChooser>(event_handler);
 }
 
@@ -810,28 +792,28 @@ bool BlinkTestController::OnMessageReceived(const IPC::Message& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(BlinkTestController, message)
-    IPC_MESSAGE_HANDLER(ShellViewHostMsg_PrintMessage, OnPrintMessage)
-    IPC_MESSAGE_HANDLER(ShellViewHostMsg_PrintMessageToStderr,
+    IPC_MESSAGE_HANDLER(BlinkTestHostMsg_PrintMessage, OnPrintMessage)
+    IPC_MESSAGE_HANDLER(BlinkTestHostMsg_PrintMessageToStderr,
                         OnPrintMessageToStderr)
-    IPC_MESSAGE_HANDLER(ShellViewHostMsg_InitiateLayoutDump,
+    IPC_MESSAGE_HANDLER(BlinkTestHostMsg_InitiateLayoutDump,
                         OnInitiateLayoutDump)
-    IPC_MESSAGE_HANDLER(ShellViewHostMsg_OverridePreferences,
+    IPC_MESSAGE_HANDLER(BlinkTestHostMsg_OverridePreferences,
                         OnOverridePreferences)
-    IPC_MESSAGE_HANDLER(ShellViewHostMsg_SetPopupBlockingEnabled,
+    IPC_MESSAGE_HANDLER(BlinkTestHostMsg_SetPopupBlockingEnabled,
                         OnSetPopupBlockingEnabled)
-    IPC_MESSAGE_HANDLER(ShellViewHostMsg_NavigateSecondaryWindow,
+    IPC_MESSAGE_HANDLER(BlinkTestHostMsg_NavigateSecondaryWindow,
                         OnNavigateSecondaryWindow)
-    IPC_MESSAGE_HANDLER(ShellViewHostMsg_GoToOffset, OnGoToOffset)
-    IPC_MESSAGE_HANDLER(ShellViewHostMsg_Reload, OnReload)
-    IPC_MESSAGE_HANDLER(ShellViewHostMsg_LoadURLForFrame, OnLoadURLForFrame)
-    IPC_MESSAGE_HANDLER(ShellViewHostMsg_CloseRemainingWindows,
+    IPC_MESSAGE_HANDLER(BlinkTestHostMsg_GoToOffset, OnGoToOffset)
+    IPC_MESSAGE_HANDLER(BlinkTestHostMsg_Reload, OnReload)
+    IPC_MESSAGE_HANDLER(BlinkTestHostMsg_LoadURLForFrame, OnLoadURLForFrame)
+    IPC_MESSAGE_HANDLER(BlinkTestHostMsg_CloseRemainingWindows,
                         OnCloseRemainingWindows)
-    IPC_MESSAGE_HANDLER(ShellViewHostMsg_ResetDone, OnResetDone)
-    IPC_MESSAGE_HANDLER(ShellViewHostMsg_SetBluetoothManualChooser,
+    IPC_MESSAGE_HANDLER(BlinkTestHostMsg_ResetDone, OnResetDone)
+    IPC_MESSAGE_HANDLER(BlinkTestHostMsg_SetBluetoothManualChooser,
                         OnSetBluetoothManualChooser)
-    IPC_MESSAGE_HANDLER(ShellViewHostMsg_GetBluetoothManualChooserEvents,
+    IPC_MESSAGE_HANDLER(BlinkTestHostMsg_GetBluetoothManualChooserEvents,
                         OnGetBluetoothManualChooserEvents)
-    IPC_MESSAGE_HANDLER(ShellViewHostMsg_SendBluetoothManualChooserEvent,
+    IPC_MESSAGE_HANDLER(BlinkTestHostMsg_SendBluetoothManualChooserEvent,
                         OnSendBluetoothManualChooserEvent)
     IPC_MESSAGE_HANDLER(WebTestHostMsg_BlockThirdPartyCookies,
                         OnBlockThirdPartyCookies)
@@ -971,19 +953,8 @@ void BlinkTestController::HandleNewRenderFrameHost(RenderFrameHost* frame) {
 
   // Is this the 1st time this renderer contains parts of the main test window?
   if (main_window &&
-      !base::ContainsKey(main_window_render_process_hosts_, process_host)) {
+      !base::Contains(main_window_render_process_hosts_, process_host)) {
     main_window_render_process_hosts_.insert(process_host);
-
-#if defined(OS_ANDROID)
-    // On Android the native view doesn't automatically know its size. This
-    // causes problems with Viz, where the view/renderer synchronize sizes
-    // frequently. Make sure the view hosting the renderer has the same size
-    // that we're about to send.
-    main_window_->web_contents()->GetNativeView()->OnSizeChanged(
-        initial_size_.width(), initial_size_.height());
-    main_window_->web_contents()->GetNativeView()->OnPhysicalBackingSizeChanged(
-        initial_size_);
-#endif
 
     // Make sure the new renderer process_host has a test configuration shared
     // with other renderers.
@@ -1001,11 +972,14 @@ void BlinkTestController::HandleNewRenderFrameHost(RenderFrameHost* frame) {
     params->protocol_mode = protocol_mode_;
 
     if (did_send_initial_test_configuration_) {
-      GetWebTestControlPtr(frame)->ReplicateTestConfiguration(
+      GetWebTestControlRemote(frame)->ReplicateTestConfiguration(
           std::move(params));
     } else {
       did_send_initial_test_configuration_ = true;
-      GetWebTestControlPtr(frame)->SetTestConfiguration(std::move(params));
+      GetWebTestControlRemote(frame)->SetTestConfiguration(std::move(params));
+      // Tests should always start with the browser controls hidden.
+      frame->UpdateBrowserControlsState(BROWSER_CONTROLS_STATE_BOTH,
+                                        BROWSER_CONTROLS_STATE_HIDDEN, false);
     }
   }
 
@@ -1015,7 +989,7 @@ void BlinkTestController::HandleNewRenderFrameHost(RenderFrameHost* frame) {
     all_observed_render_process_hosts_.insert(process_host);
 
     if (!main_window) {
-      GetWebTestControlPtr(frame)->SetupSecondaryRenderer();
+      GetWebTestControlRemote(frame)->SetupSecondaryRenderer();
     }
 
     process_host->Send(new WebTestMsg_ReplicateWebTestRuntimeFlagsChanges(
@@ -1047,7 +1021,7 @@ void BlinkTestController::OnTestFinished() {
 
   // TODO(nhiroki): Add a comment about the reason why we terminate all shared
   // workers here.
-  TerminateAllSharedWorkersForTesting(
+  TerminateAllSharedWorkers(
       BrowserContext::GetStoragePartition(
           ShellContentBrowserClient::Get()->browser_context(), nullptr),
       barrier_closure);
@@ -1057,13 +1031,13 @@ void BlinkTestController::OnCleanupFinished() {
   if (main_window_) {
     main_window_->web_contents()->Stop();
     RenderViewHost* rvh = main_window_->web_contents()->GetRenderViewHost();
-    rvh->Send(new ShellViewMsg_Reset(rvh->GetRoutingID()));
+    rvh->Send(new BlinkTestMsg_Reset(rvh->GetRoutingID()));
   }
   if (secondary_window_) {
     secondary_window_->web_contents()->Stop();
     RenderViewHost* rvh =
         secondary_window_->web_contents()->GetRenderViewHost();
-    rvh->Send(new ShellViewMsg_Reset(rvh->GetRoutingID()));
+    rvh->Send(new BlinkTestMsg_Reset(rvh->GetRoutingID()));
   }
 }
 
@@ -1177,7 +1151,7 @@ void BlinkTestController::OnInitiateLayoutDump() {
       continue;
 
     ++number_of_messages;
-    GetWebTestControlPtr(rfh)->DumpFrameLayout(
+    GetWebTestControlRemote(rfh)->DumpFrameLayout(
         base::BindOnce(&BlinkTestController::OnDumpFrameLayoutResponse,
                        weak_factory_.GetWeakPtr(), rfh->GetFrameTreeNodeId()));
   }
@@ -1240,7 +1214,7 @@ void BlinkTestController::OnDumpFrameLayoutResponse(int frame_tree_node_id,
   // Continue finishing the test.
   RenderViewHost* render_view_host =
       main_window_->web_contents()->GetRenderViewHost();
-  render_view_host->Send(new ShellViewMsg_LayoutDumpCompleted(
+  render_view_host->Send(new BlinkTestMsg_LayoutDumpCompleted(
       render_view_host->GetRoutingID(), stitched_layout_dump));
 }
 
@@ -1349,7 +1323,7 @@ void BlinkTestController::OnGetBluetoothManualChooserEvents() {
     return;
   }
   RenderViewHost* rvh = main_window_->web_contents()->GetRenderViewHost();
-  rvh->Send(new ShellViewMsg_ReplyBluetoothManualChooserEvents(
+  rvh->Send(new BlinkTestMsg_ReplyBluetoothManualChooserEvents(
       rvh->GetRoutingID(), bluetooth_chooser_factory_->GetAndResetEvents()));
 }
 
@@ -1379,26 +1353,21 @@ void BlinkTestController::OnSendBluetoothManualChooserEvent(
 }
 
 void BlinkTestController::OnBlockThirdPartyCookies(bool block) {
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-    ShellBrowserContext* browser_context =
-        ShellContentBrowserClient::Get()->browser_context();
-    browser_context->GetDefaultStoragePartition(browser_context)
-        ->GetCookieManagerForBrowserProcess()
-        ->BlockThirdPartyCookies(block);
-  } else {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(ShellNetworkDelegate::SetBlockThirdPartyCookies, block));
-  }
+  ShellBrowserContext* browser_context =
+      ShellContentBrowserClient::Get()->browser_context();
+  browser_context->GetDefaultStoragePartition(browser_context)
+      ->GetCookieManagerForBrowserProcess()
+      ->BlockThirdPartyCookies(block);
 }
 
-mojom::WebTestControlAssociatedPtr& BlinkTestController::GetWebTestControlPtr(
-    RenderFrameHost* frame) {
+mojo::AssociatedRemote<mojom::WebTestControl>&
+BlinkTestController::GetWebTestControlRemote(RenderFrameHost* frame) {
   GlobalFrameRoutingId key(frame->GetProcess()->GetID(), frame->GetRoutingID());
   if (web_test_control_map_.find(key) == web_test_control_map_.end()) {
-    mojom::WebTestControlAssociatedPtr& new_ptr = web_test_control_map_[key];
+    mojo::AssociatedRemote<mojom::WebTestControl>& new_ptr =
+        web_test_control_map_[key];
     frame->GetRemoteAssociatedInterfaces()->GetInterface(&new_ptr);
-    new_ptr.set_connection_error_handler(
+    new_ptr.set_disconnect_handler(
         base::BindOnce(&BlinkTestController::HandleWebTestControlError,
                        weak_factory_.GetWeakPtr(), key));
   }

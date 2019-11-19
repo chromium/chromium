@@ -31,11 +31,29 @@ UI_BASE_EXPORT void TemplateReplacementsFromDictionaryValue(
     TemplateReplacements* replacements);
 
 // Replace $i18n*{foo} in the format string with the value for the foo key in
-// |subst|.  If the key is not found in the |substitutions| that item will
+// |replacements|.  If the key is not found in the |replacements| that item will
 // be unaltered.
 UI_BASE_EXPORT std::string ReplaceTemplateExpressions(
     base::StringPiece source,
     const TemplateReplacements& replacements);
+
+// Replace $i18n*{foo} in the HTML template contained in |source| with the
+// value for the foo key in |replacements| and return the result in |output|.
+// Only $i18n*{...} expressions in the HTML portion of the JS source will be
+// replaced; such expressions in the rest of the JS code will be left unaltered.
+// If no template is found, |source| will be returned in |output| unaltered. If
+// a key is not found in the |replacements| that item will be unaltered. Returns
+// true on success, false on failure. On failure, |output| will not populated.
+// Replacement will fail if a single HTML template string cannot be identified
+// (e.g. not terminated, multiple _template: html`... in a single file), or if
+// executing the replacements would be unsafe (e.g. result in unescaped
+// backticks or "${" within the HTML string).
+// Note: Currently, this only supports the legacy Polymer syntax, i.e.:
+//     _template: html` ... `,
+UI_BASE_EXPORT bool ReplaceTemplateExpressionsInJS(
+    base::StringPiece source,
+    const TemplateReplacements& replacements,
+    std::string* output);
 
 }  // namespace ui
 

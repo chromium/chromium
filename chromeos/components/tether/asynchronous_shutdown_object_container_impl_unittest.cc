@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/tether/fake_disconnect_tethering_request_sender.h"
 #include "chromeos/components/tether/fake_tether_host_fetcher.h"
@@ -97,7 +97,7 @@ class AsynchronousShutdownObjectContainerImplTest : public testing::Test {
 
   void OnShutdownComplete() { was_shutdown_callback_invoked_ = true; }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   const multidevice::RemoteDeviceRef test_device_;
 
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;

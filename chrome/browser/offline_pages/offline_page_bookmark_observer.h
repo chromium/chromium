@@ -33,7 +33,7 @@ class OfflinePageBookmarkObserver
   void BookmarkModelChanged() override;
   void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
                            const bookmarks::BookmarkNode* parent,
-                           int old_index,
+                           size_t old_index,
                            const bookmarks::BookmarkNode* node,
                            const std::set<GURL>& removed_urls) override;
 
@@ -48,7 +48,7 @@ class OfflinePageBookmarkObserver
 
   OfflinePageModel* offline_page_model_;
 
-  base::WeakPtrFactory<OfflinePageBookmarkObserver> weak_ptr_factory_;
+  base::WeakPtrFactory<OfflinePageBookmarkObserver> weak_ptr_factory_{this};
 };
 }  // namespace offline_pages
 

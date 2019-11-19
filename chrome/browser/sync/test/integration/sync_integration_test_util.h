@@ -13,9 +13,9 @@
 
 class Profile;
 
-namespace browser_sync {
+namespace syncer {
 class ProfileSyncService;
-}  // namespace browser_sync
+}  // namespace syncer
 
 // Sets a custom theme and wait until the asynchronous process is done.
 void SetCustomTheme(Profile* profile, int theme_index = 0);
@@ -27,8 +27,7 @@ class ServerCountMatchStatusChecker
   ServerCountMatchStatusChecker(syncer::ModelType type, size_t count);
 
   // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
   const syncer::ModelType type_;
@@ -38,21 +37,19 @@ class ServerCountMatchStatusChecker
 // Checker to block until service is waiting for a passphrase.
 class PassphraseRequiredChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit PassphraseRequiredChecker(browser_sync::ProfileSyncService* service);
+  explicit PassphraseRequiredChecker(syncer::ProfileSyncService* service);
 
   // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 };
 
 // Checker to block until service has accepted a new passphrase.
 class PassphraseAcceptedChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit PassphraseAcceptedChecker(browser_sync::ProfileSyncService* service);
+  explicit PassphraseAcceptedChecker(syncer::ProfileSyncService* service);
 
   // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_INTEGRATION_TEST_UTIL_H_

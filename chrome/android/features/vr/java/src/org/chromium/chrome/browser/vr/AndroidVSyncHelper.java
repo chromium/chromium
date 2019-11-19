@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Helper class for interfacing with the Android Choreographer from native code.
@@ -23,7 +24,8 @@ public class AndroidVSyncHelper {
         @Override
         public void doFrame(long frameTimeNanos) {
             if (mNativeAndroidVSyncHelper == 0) return;
-            nativeOnVSync(mNativeAndroidVSyncHelper, frameTimeNanos);
+            AndroidVSyncHelperJni.get().onVSync(
+                    mNativeAndroidVSyncHelper, AndroidVSyncHelper.this, frameTimeNanos);
         }
     };
 
@@ -54,5 +56,8 @@ public class AndroidVSyncHelper {
         return windowManager.getDefaultDisplay().getRefreshRate();
     }
 
-    private native void nativeOnVSync(long nativeAndroidVSyncHelper, long frameTimeNanos);
+    @NativeMethods
+    interface Natives {
+        void onVSync(long nativeAndroidVSyncHelper, AndroidVSyncHelper caller, long frameTimeNanos);
+    }
 }

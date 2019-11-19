@@ -29,14 +29,14 @@
   top:121px;
   border-style:solid;
   border-width:1px;
-  transform:translateZ(0);
+  will-change:transform;
 }
 
 #container {
   perspective: 1400px;
   /* Without this, container will paint into composited ancestor, and prevent
      us from seeing the bug. */
-  transform: translateZ(0);
+  will-change: transform;
 }
 </style>
 <div id="clipper">

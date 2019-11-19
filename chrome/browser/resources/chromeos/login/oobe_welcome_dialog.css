@@ -2,37 +2,23 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-.vertical-margin {
-  width: calc(64px - 4px); /* = real width - button border */
-}
-
-#bottom-margin {
-  height: 32px;
-}
-
-#titleContainer {
-  height: 157px; /* 150 + baseline to block end size for 28px font */
-  margin-bottom: 93px; /* 100 - baseline to clock end size for 28px font */
-}
 
 #title {
-  color: var(--google-grey-900);
-  font-family: var(--oobe-button-font-family);
-  font-size: 28px;
-  font-weight: 400; /* regular */
+  align-self: center;
+  color: var(--oobe-header-text-color);
   margin: 0;
   user-select: none;
+  @apply --oobe-header-font;
 }
 
 .welcome-illustration {
+  align-items: center;
+  justify-content: center;
+  margin: auto;
   user-select: none;
 }
 
 video {
   height: 200px;
   width: 449px;
-}
-
-#buttons {
-  width: 100%;
 }

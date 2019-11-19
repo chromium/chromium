@@ -36,10 +36,6 @@ tree {
       url(../images/files/ui/2x/expand_more_active.png) 2x);
 }
 
-div[section-start].tree-item {
-    border-top: 1px solid rgba(0, 0, 0, 0.10);
-}
-
 html[dir=rtl] .tree-row > .expand-icon {
   transform: rotate(90deg);
 }

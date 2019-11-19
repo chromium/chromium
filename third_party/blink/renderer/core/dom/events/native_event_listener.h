@@ -23,7 +23,6 @@ class CORE_EXPORT NativeEventListener : public EventListener {
 
   // Helper functions for DowncastTraits.
   bool IsNativeEventListener() const override { return true; }
-  virtual bool IsConditionEventListener() const { return false; }
   virtual bool IsImageEventListener() const { return false; }
 
  protected:

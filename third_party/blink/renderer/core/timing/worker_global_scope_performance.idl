@@ -35,5 +35,5 @@
 [
     ImplementedAs=WorkerGlobalScopePerformance
 ] partial interface WorkerGlobalScope {
-    [Replaceable] readonly attribute WorkerPerformance performance;
+    [Replaceable] readonly attribute Performance performance;
 };

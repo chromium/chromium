@@ -394,6 +394,7 @@ std::string FragmentShader::GetShaderString() const {
     precision = TEX_COORD_PRECISION_MEDIUM;
   std::string shader = GetShaderSource();
   SetBlendModeFunctions(&shader);
+  SetRoundedCornerFunctions(&shader);
   SetFragmentSamplerType(sampler_type_, &shader);
   SetFragmentTexCoordPrecision(precision, &shader);
   return shader;
@@ -459,6 +460,11 @@ void FragmentShader::Init(GLES2Interface* context,
   if (has_tint_color_matrix_)
     uniforms.emplace_back("tint_color_matrix");
 
+  if (has_rounded_corner_) {
+    uniforms.emplace_back("roundedCornerRect");
+    uniforms.emplace_back("roundedCornerRadius");
+  }
+
   locations.resize(uniforms.size());
 
   GetProgramUniformLocations(context, program, uniforms.size(), uniforms.data(),
@@ -521,7 +527,114 @@ void FragmentShader::Init(GLES2Interface* context,
   if (has_tint_color_matrix_)
     tint_color_matrix_location_ = locations[index++];
 
+  if (has_rounded_corner_) {
+    rounded_corner_rect_location_ = locations[index++];
+    rounded_corner_radius_location_ = locations[index++];
+  }
+
   DCHECK_EQ(index, locations.size());
+}
+
+void FragmentShader::SetRoundedCornerFunctions(
+    std::string* shader_string) const {
+  if (!has_rounded_corner_)
+    return;
+
+  static constexpr base::StringPiece kUniforms = SHADER0([]() {
+    uniform vec4 roundedCornerRect;
+    uniform vec4 roundedCornerRadius;
+  });
+
+  static constexpr base::StringPiece kFunctionRcUtility = SHADER0([]() {
+    // Returns a vector of size 4. Each component of a vector is set to 1 or 0
+    // representing whether |rcCoord| is a part of the respective corner or
+    // not.
+    // The component ordering is:
+    //     [Top left, Top right, Bottom right, Bottom left]
+    vec4 IsCorner(vec2 rcCoord) {
+      // Top left corner
+      if (rcCoord.x < roundedCornerRadius.x &&
+          rcCoord.y < roundedCornerRadius.x) {
+        return vec4(1.0, 0.0, 0.0, 0.0);
+      }
+
+      // Top right corner
+      if (rcCoord.x > roundedCornerRect.z - roundedCornerRadius.y &&
+          rcCoord.y < roundedCornerRadius.y) {
+        return vec4(0.0, 1.0, 0.0, 0.0);
+      }
+
+      // Bottom right corner
+      if (rcCoord.x > roundedCornerRect.z - roundedCornerRadius.z &&
+          rcCoord.y > roundedCornerRect.w - roundedCornerRadius.z) {
+        return vec4(0.0, 0.0, 1.0, 0.0);
+      }
+
+      // Bottom left corner
+      if (rcCoord.x < roundedCornerRadius.w &&
+          rcCoord.y > roundedCornerRect.w - roundedCornerRadius.w) {
+        return vec4(0.0, 0.0, 0.0, 1.0);
+      }
+      return vec4(0.0, 0.0, 0.0, 0.0);
+    }
+
+    // Returns the center of the rounded corner. |corner| holds the info on
+    // which corner the center is requested for.
+    vec2 GetCenter(vec4 corner, float radius) {
+      if (corner.x == 1.0) {
+        // Top left corner
+        return vec2(radius, radius);
+      } else if (corner.y == 1.0) {
+        // Top right corner
+        return vec2(roundedCornerRect.z - radius, radius);
+      } else if (corner.z == 1.0) {
+        // Bottom right corner
+        return vec2(roundedCornerRect.z - radius, roundedCornerRect.w - radius);
+      } else {
+        // Bottom left corner
+        return vec2(radius, roundedCornerRect.w - radius);
+      }
+    }
+  });
+
+  static constexpr base::StringPiece kFunctionApplyRoundedCorner =
+      SHADER0([]() {
+        vec4 ApplyRoundedCorner(vec4 src) {
+          vec2 rcCoord = gl_FragCoord.xy - roundedCornerRect.xy;
+
+          vec4 isCorner = IsCorner(rcCoord);
+
+          // Get the radius to use based on the corner this fragment lies in.
+          float r = dot(isCorner, roundedCornerRadius);
+
+          // If the radius is 0, then there is no rounded corner here. We can do
+          // an early return.
+          if (r == 0.0)
+            return src;
+
+          // Vector to the corner's center this frag is in.
+          vec2 cornerCenter = GetCenter(isCorner, r);
+
+          // Vector from the center of the corner to the current fragment center
+          vec2 cxy = rcCoord - cornerCenter;
+
+          // Compute the distance of the fragment's center from the corner's
+          // center.
+          float fragDst = length(cxy);
+
+          float alpha = smoothstep(r - 1.0, r + 1.0, fragDst);
+          return vec4(0.0) * alpha + src * (1.0 - alpha);
+        }
+      });
+
+  std::string shader;
+  shader.reserve(shader_string->size() + 2048);
+  shader += "precision mediump float;";
+  kUniforms.AppendToString(&shader);
+  kFunctionRcUtility.AppendToString(&shader);
+  kFunctionApplyRoundedCorner.AppendToString(&shader);
+  shader += *shader_string;
+  *shader_string = std::move(shader);
 }
 
 void FragmentShader::SetBlendModeFunctions(std::string* shader_string) const {
@@ -999,12 +1112,6 @@ std::string FragmentShader::GetShaderSource() const {
     SRC("texColor += background_color * (1.0 - texColor.a);");
   }
 
-  // Apply swizzle.
-  if (swizzle_mode_ == DO_SWIZZLE) {
-    SRC("// Apply swizzle");
-    SRC("texColor = texColor.bgra;\n");
-  }
-
   // Finally apply the output color matrix to texColor.
   if (has_output_color_matrix_) {
     HDR("uniform mat4 output_color_matrix;");
@@ -1070,6 +1177,10 @@ std::string FragmentShader::GetShaderSource() const {
       }
       break;
   }
+
+  if (has_rounded_corner_)
+    SRC("gl_FragColor = ApplyRoundedCorner(gl_FragColor);");
+
   source += "}\n";
 
   return header + source;

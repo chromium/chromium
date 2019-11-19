@@ -4,8 +4,8 @@
 
 # This file contains rules that are shared between Mac and iOS.
 
-import("//build/toolchain/toolchain.gni")
 import("//build/config/mac/symbols.gni")
+import("//build/toolchain/toolchain.gni")
 
 if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
@@ -38,22 +38,19 @@ template("convert_plist") {
                              "deps",
                            ])
 
-    script = "//build/config/mac/xcrun.py"
+    script = "//build/gn_run_binary.py"
     sources = [
       invoker.source,
     ]
     outputs = [
       invoker.output,
     ]
-    args = []
-    if (!use_system_xcode) {
-      args += [
-        "--developer_dir",
-        hermetic_xcode_path,
-      ]
-    }
-    args += [
-      "plutil",
+
+    # /usr/bin/plutil is present on all images of macOS. If at some point in the
+    # future we need to ship our own copy [e.g. for cross-compile], we can add a
+    # layer of indirection.
+    args = [
+      "/usr/bin/plutil",
       "-convert",
       invoker.format,
       "-o",
@@ -253,56 +250,5 @@ template("info_plist") {
     if (defined(invoker.extra_substitutions)) {
       substitutions += invoker.extra_substitutions
     }
-  }
-}
-
-# Template to compile .xib and .storyboard files.
-#
-# Arguments
-#
-#     sources:
-#         list of string, sources to compile
-#
-#     ibtool_flags:
-#         (optional) list of string, additional flags to pass to the ibtool
-template("compile_ib_files") {
-  action_foreach(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "testonly",
-                             "visibility",
-                           ])
-    assert(defined(invoker.sources),
-           "sources must be specified for $target_name")
-    assert(defined(invoker.output_extension),
-           "output_extension must be specified for $target_name")
-
-    ibtool_flags = []
-    if (defined(invoker.ibtool_flags)) {
-      ibtool_flags = invoker.ibtool_flags
-    }
-
-    _output_extension = invoker.output_extension
-
-    script = "//build/config/mac/compile_ib_files.py"
-    sources = invoker.sources
-    outputs = [
-      "$target_gen_dir/$target_name/{{source_name_part}}.$_output_extension",
-    ]
-    args = [
-      "--input",
-      "{{source}}",
-      "--output",
-      rebase_path(
-          "$target_gen_dir/$target_name/{{source_name_part}}.$_output_extension",
-          root_build_dir),
-    ]
-    if (!use_system_xcode) {
-      args += [
-        "--developer_dir",
-        hermetic_xcode_path,
-      ]
-    }
-    args += ibtool_flags
   }
 }

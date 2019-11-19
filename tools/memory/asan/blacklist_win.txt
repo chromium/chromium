@@ -41,5 +41,6 @@ src:*process_thread_interception.cc
 src:*registry_interception.cc
 src:*resolver_32.cc
 src:*sandbox_nt_util.cc
+src:*signed_interception.cc
 src:*sync_interception.cc
 ################################################################################

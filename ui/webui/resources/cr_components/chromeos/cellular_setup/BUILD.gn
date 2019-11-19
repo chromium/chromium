@@ -1,0 +1,81 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos, "CellularSetup UI is Chrome OS only.")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":base_page",
+    ":button_bar",
+    ":cellular_setup",
+    ":final_page",
+    ":mojo_interface_provider",
+    ":provisioning_page",
+    ":sim_detect_page",
+    ":webview_post_util",
+  ]
+}
+
+js_library("button_bar") {
+  deps = [
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+}
+
+js_library("base_page") {
+}
+
+js_library("sim_detect_page") {
+  deps = [
+    ":base_page",
+  ]
+}
+
+js_library("webview_post_util") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
+}
+
+js_library("provisioning_page") {
+  deps = [
+    ":base_page",
+    ":webview_post_util",
+  ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
+}
+
+js_library("final_page") {
+  deps = [
+    ":base_page",
+  ]
+}
+
+js_library("cellular_setup") {
+  deps = [
+    ":button_bar",
+    ":final_page",
+    ":mojo_interface_provider",
+    ":provisioning_page",
+    ":sim_detect_page",
+    "//chromeos/services/cellular_setup/public/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+}
+
+js_library("mojo_interface_provider") {
+  deps = [
+    "//chromeos/services/cellular_setup/public/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/js:cr",
+  ]
+}

@@ -567,8 +567,9 @@ push(@gCleanup,
 # treated as the volume root itself.  rsync will do this by default, if no
 # trailing '/' is present.  With a trailing '/', $sourceFolder becomes
 # $tempRoot, instead of becoming an entry in $tempRoot.
-if(command($gConfig{'cmd_rsync'}, '-aC', '--include', '*.so',
- '--copy-unsafe-links', $sourceFolder.($sourceFile?'':'/'),$tempRoot) != 0) {
+if(command($gConfig{'cmd_rsync'}, '--archive', '--copy-unsafe-links',
+           '--cvs-exclude', '--include=*.so',
+           $sourceFolder.($sourceFile?'':'/'), $tempRoot) != 0) {
   cleanupDie('rsync failed');
 }
 
@@ -598,8 +599,9 @@ if($gConfig{'create_directly'}) {
 }
 
 if(defined($iconFile)) {
-  if(command($gConfig{'cmd_rsync'}, '-aC', '--include', '*.so',
-   '--copy-unsafe-links', $iconFile, $tempRoot.'/.VolumeIcon.icns') != 0) {
+  if(command($gConfig{'cmd_rsync'}, '--archive', '--copy-unsafe-links',
+             '--cvs-exclude', '--include=*.so',
+             $iconFile, $tempRoot.'/.VolumeIcon.icns') != 0) {
     cleanupDie('rsync failed for volume icon');
   }
 
@@ -898,8 +900,10 @@ sub copyFiles($@) {
       $success = commandInternal('symlink', $source, $target);
     }
     else {
-      $success = !command($gConfig{'cmd_rsync'}, '-aC', '--include', '*.so',
-                          '--copy-unsafe-links', $source, $target);
+      $success = !command($gConfig{'cmd_rsync'}, '--archive',
+                          '--copy-unsafe-links', '--cvs-exclude',
+                          '--include=*.so',
+                          $source, $target);
     }
     if(!$success) {
       cleanupDie('copyFiles failed for method '.$method);
@@ -1163,8 +1167,9 @@ sub diskImageMaker($$$$$$$$) {
       # the volume is mounted, copy the files.  --copy-unsafe-links is
       # unnecessary since it was used to copy everything to the staging
       # area.  There can be no more unsafe links.
-      if(command($gConfig{'cmd_rsync'}, '-aC', '--include', '*.so',
-       $source.'/',$partitionMountPoint) != 0) {
+      if(command($gConfig{'cmd_rsync'}, '--archive', '--cvs-exclude',
+                 '--include=*.so',
+                 $source.'/', $partitionMountPoint) != 0) {
         cleanupDie('rsync to new volume failed');
       }
 

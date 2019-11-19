@@ -4,8 +4,8 @@
 
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 
+#include "base/hash/sha1.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sha1.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/cert/x509_util.h"
 

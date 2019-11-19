@@ -1,0 +1,40 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/content_decryption_module.mojom";
+import "media/mojo/mojom/media_types.mojom";
+
+// TODO(xhwang): Use "set" instead of "array" if supported by mojom.
+// TODO(crbug.com/796725) Find a way to include profiles and levels for
+// supported codecs.
+struct KeySystemCapability {
+  // Software secure codecs and encryption schemes supported by the CDM.
+  array<VideoCodec> video_codecs;
+  bool supports_vp9_profile2;
+  array<EncryptionScheme> encryption_schemes;
+
+  // Hardware secure codecs and encryption schemes supported by the CDM,
+  // directly or indirectly through CdmProxy.
+  array<VideoCodec> hw_secure_video_codecs;
+  array<EncryptionScheme> hw_secure_encryption_schemes;
+
+  // Session types supported in software secure mode if no
+  // |hw_secure_video_codecs| is supported, or in both modes otherwise.
+  array<CdmSessionType> session_types;
+};
+
+interface KeySystemSupport {
+  // Query to determine if the browser supports the |key_system|. If supported,
+  // |key_system_capability| is non-null indicating supported capability.
+  // KeySystemSupport implementation is in the browser process, as it maintains
+  // the list of registered CDMs, and hardware secure support check also needs
+  // to run in the browser process because the render process is sandboxed.
+  // KeySystemSupport clients run in the renderer process.
+  // TODO(crbug.com/853264): Make this an async call.
+  [Sync]
+  IsKeySystemSupported(string key_system)
+    => (bool is_supported, KeySystemCapability? key_system_capability);
+};

@@ -1,30 +1,31 @@
 rootWebArea
-++genericContainer
-++++textField value='Readonly-false input'
-++++++genericContainer
-++++++++staticText name='Readonly-false input'
-++++++++++inlineTextBox name='Readonly-false input'
-++genericContainer
-++++textField value='Readonly-true input' restriction=readOnly
-++++++genericContainer
-++++++++staticText name='Readonly-true input'
-++++++++++inlineTextBox name='Readonly-true input'
-++genericContainer name='Readonly-false plain div'
-++genericContainer name='Readonly-true plain div'
-++genericContainer multiline name='Readonly-false contenteditable div'
-++genericContainer multiline name='Readonly-true contenteditable div'
-++textField name='Readonly-false role unimplemented textbox'
-++textField name='Readonly-true role unimplemented textbox' restriction=readOnly
-++textField name='Readonly-false contenteditable textbox'
-++textField name='Readonly-true contenteditable textbox' restriction=readOnly
-++checkBox name='Readonly checkbox' restriction=readOnly
-++textFieldWithComboBox name='Readonly combobox' restriction=readOnly haspopup=listbox
+++genericContainer ignored
 ++++genericContainer
-++listBox name='Readonly listbox' restriction=readOnly
-++radioGroup name='Readonly radiogroup' restriction=readOnly
-++slider horizontal name='Readonly slider' restriction=readOnly
-++spinButton name='Readonly spinbutton' restriction=readOnly
-++menuItemCheckBox name='Readonly menuitemcheckbox' restriction=readOnly
-++menuItemRadio name='Readonly menuitemradio' restriction=readOnly
-++searchBox name='Readonly searchbox' restriction=readOnly
-++switch name='Readonly switch' restriction=readOnly
+++++++textField value='Readonly-false input'
+++++++++genericContainer
+++++++++++staticText name='Readonly-false input'
+++++++++++++inlineTextBox name='Readonly-false input'
+++++genericContainer
+++++++textField value='Readonly-true input' restriction=readOnly
+++++++++genericContainer
+++++++++++staticText name='Readonly-true input'
+++++++++++++inlineTextBox name='Readonly-true input'
+++++genericContainer name='Readonly-false plain div'
+++++genericContainer name='Readonly-true plain div'
+++++genericContainer multiline name='Readonly-false contenteditable div'
+++++genericContainer multiline name='Readonly-true contenteditable div'
+++++textField name='Readonly-false role unimplemented textbox'
+++++textField name='Readonly-true role unimplemented textbox' restriction=readOnly
+++++textField name='Readonly-false contenteditable textbox'
+++++textField name='Readonly-true contenteditable textbox' restriction=readOnly
+++++checkBox name='Readonly checkbox' restriction=readOnly
+++++textFieldWithComboBox name='Readonly combobox' restriction=readOnly haspopup=listbox
+++++++genericContainer
+++++listBox name='Readonly listbox' restriction=readOnly
+++++radioGroup name='Readonly radiogroup' restriction=readOnly
+++++slider horizontal name='Readonly slider' restriction=readOnly
+++++spinButton name='Readonly spinbutton' restriction=readOnly
+++++menuItemCheckBox name='Readonly menuitemcheckbox' restriction=readOnly
+++++menuItemRadio name='Readonly menuitemradio' restriction=readOnly
+++++searchBox name='Readonly searchbox' restriction=readOnly
+++++switch name='Readonly switch' restriction=readOnly

@@ -8,6 +8,7 @@ group("public") {
   deps = [
     ":sdk",
     "cpp/bindings",
+    "cpp/test:test_mojom",
     "interfaces/bindings/tests:test_interfaces",
   ]
 

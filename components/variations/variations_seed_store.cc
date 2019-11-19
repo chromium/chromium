@@ -151,9 +151,18 @@ bool VariationsSeedStore::StoreSeedData(
     bool is_gzip_compressed,
     bool fetched_insecurely,
     VariationsSeed* parsed_seed) {
-  UMA_HISTOGRAM_BOOLEAN("Variations.StoreSeed.HasCountry",
-                        !country_code.empty());
+  UMA_HISTOGRAM_COUNTS_1000("Variations.StoreSeed.DataSize",
+                            data.length() / 1024);
 
+  if (is_delta_compressed && is_gzip_compressed) {
+    RecordStoreSeedResult(StoreSeedResult::GZIP_DELTA_COUNT);
+  } else if (is_delta_compressed) {
+    RecordStoreSeedResult(StoreSeedResult::NON_GZIP_DELTA_COUNT);
+  } else if (is_gzip_compressed) {
+    RecordStoreSeedResult(StoreSeedResult::GZIP_FULL_COUNT);
+  } else {
+    RecordStoreSeedResult(StoreSeedResult::NON_GZIP_FULL_COUNT);
+  }
   // If the data is gzip compressed, first uncompress it.
   std::string ungzipped_data;
   if (is_gzip_compressed) {
@@ -162,12 +171,6 @@ bool VariationsSeedStore::StoreSeedData(
         RecordStoreSeedResult(StoreSeedResult::FAILED_EMPTY_GZIP_CONTENTS);
         return false;
       }
-
-      int size_reduction = ungzipped_data.length() - data.length();
-      UMA_HISTOGRAM_PERCENTAGE("Variations.StoreSeed.GzipSize.ReductionPercent",
-                               100 * size_reduction / ungzipped_data.length());
-      UMA_HISTOGRAM_COUNTS_1000("Variations.StoreSeed.GzipSize",
-                                data.length() / 1024);
     } else {
       RecordStoreSeedResult(StoreSeedResult::FAILED_UNGZIP);
       return false;
@@ -177,19 +180,12 @@ bool VariationsSeedStore::StoreSeedData(
   }
 
   if (!is_delta_compressed) {
-    const bool result = StoreSeedDataNoDelta(
-        ungzipped_data, base64_seed_signature, country_code, date_fetched,
-        fetched_insecurely, parsed_seed);
-    if (result) {
-      UMA_HISTOGRAM_COUNTS_1000("Variations.StoreSeed.Size",
-                                ungzipped_data.length() / 1024);
-    }
-    return result;
+    return StoreSeedDataNoDelta(ungzipped_data, base64_seed_signature,
+                                country_code, date_fetched, fetched_insecurely,
+                                parsed_seed);
   }
 
   // If the data is delta compressed, first decode it.
-  RecordStoreSeedResult(StoreSeedResult::DELTA_COUNT);
-
   std::string existing_seed_data;
   std::string updated_seed_data;
   LoadSeedResult read_result =
@@ -207,17 +203,8 @@ bool VariationsSeedStore::StoreSeedData(
   const bool result = StoreSeedDataNoDelta(
       updated_seed_data, base64_seed_signature, country_code, date_fetched,
       fetched_insecurely, parsed_seed);
-  if (result) {
-    // Note: |updated_seed_data.length()| is guaranteed to be non-zero, else
-    // result would be false.
-    int size_reduction = updated_seed_data.length() - ungzipped_data.length();
-    UMA_HISTOGRAM_PERCENTAGE("Variations.StoreSeed.DeltaSize.ReductionPercent",
-                             100 * size_reduction / updated_seed_data.length());
-    UMA_HISTOGRAM_COUNTS_1000("Variations.StoreSeed.DeltaSize",
-                              ungzipped_data.length() / 1024);
-  } else {
+  if (!result)
     RecordStoreSeedResult(StoreSeedResult::FAILED_DELTA_STORE);
-  }
   return result;
 }
 
@@ -324,15 +311,14 @@ base::Time VariationsSeedStore::GetLastFetchTime() const {
   return local_state_->GetTime(prefs::kVariationsLastFetchTime);
 }
 
-void VariationsSeedStore::RecordLastFetchTime() {
-  base::Time now = base::Time::Now();
-  local_state_->SetTime(prefs::kVariationsLastFetchTime, now);
+void VariationsSeedStore::RecordLastFetchTime(base::Time fetch_time) {
+  local_state_->SetTime(prefs::kVariationsLastFetchTime, fetch_time);
 
   // If the latest and safe seeds are identical, update the fetch time for the
   // safe seed as well.
   if (local_state_->GetString(prefs::kVariationsCompressedSeed) ==
       kIdenticalToSafeSeedSentinel) {
-    local_state_->SetTime(prefs::kVariationsSafeSeedFetchTime, now);
+    local_state_->SetTime(prefs::kVariationsSafeSeedFetchTime, fetch_time);
   }
 }
 
@@ -432,13 +418,13 @@ void VariationsSeedStore::ImportInitialSeed(
     return;
   }
 
-  base::Time date;
-  if (!base::Time::FromUTCString(initial_seed->date.c_str(), &date)) {
+  if (initial_seed->date == 0) {
     RecordFirstRunSeedImportResult(
         FirstRunSeedImportResult::FAIL_INVALID_RESPONSE_DATE);
-    LOG(WARNING) << "Invalid response date: " << date;
+    LOG(WARNING) << "Missing response date";
     return;
   }
+  base::Time date = base::Time::FromJavaTime(initial_seed->date);
 
   if (!StoreSeedData(initial_seed->data, initial_seed->signature,
                      initial_seed->country, date, false,

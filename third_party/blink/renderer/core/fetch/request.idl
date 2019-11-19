@@ -6,7 +6,7 @@
 
 typedef (Request or USVString) RequestInfo;
 
-enum RequestDestination { "", "audio", "audioworklet", "document", "embed", "font", "image", "manifest", "object", "paintworklet", "report",
+enum RequestDestination { "", "audio", "audioworklet", "document", "embed", "font", "frame", "iframe", "image", "manifest", "object", "paintworklet", "report",
     "script", "sharedworker", "style",  "track", "video", "worker", "xslt" };
 enum RequestMode { "navigate", "same-origin", "no-cors", "cors" };
 enum RequestCredentials { "omit", "same-origin", "include" };
@@ -54,4 +54,4 @@ enum ReferrerPolicy {
     [RaisesException, CallWith=ScriptState, DoNotTestNewObject, NewObject] Request clone();
 };
 
-Request implements Body;
+Request includes Body;

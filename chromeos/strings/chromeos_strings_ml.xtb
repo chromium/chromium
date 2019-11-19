@@ -1,21 +1,40 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, ഒപ്പം നിങ്ങളുടെ ആക്‌റ്റിവിറ്റികൾ നിരീക്ഷിക്കാനുമായേക്കും.</translation>
 <translation id="1510238584712386396">ലോഞ്ചർ</translation>
-<translation id="1734367976349034509">ഈ ഉപകരണം മാനേജുചെയ്യുന്നത് എന്റർപ്രൈസാണ്</translation>
-<translation id="2049639323467105390">ഈ ഉപകരണം നിയന്ത്രിക്കുന്നത് <ph name="DOMAIN" /> ആണ്.</translation>
+<translation id="1734367976349034509">ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നത് എന്റർപ്രൈസാണ്</translation>
+<translation id="1930797645656624981">Chrome OS ഇൻപുട്ട് രീതി സേവനം</translation>
+<translation id="1979103255016296513">പാസ്‌വേഡ് മാറ്റേണ്ട സമയം കഴിഞ്ഞു</translation>
+<translation id="2049639323467105390">ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നത് <ph name="DOMAIN" /> ആണ്.</translation>
 <translation id="2083960536266308407">സ്‌ക്രീനിൽ ഒന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="2338501278241028356">സമീപത്തുള്ള ഉപകരണങ്ങൾ കണ്ടെത്താൻ Bluetooth ഓണാക്കുക</translation>
 <translation id="2805756323405976993">ആപ്സ്</translation>
 <translation id="2872961005593481000">അടയ്ക്കുക</translation>
-<translation id="3147142846278915599">ലോഞ്ചർ (അപ്ലിക്കേഷൻ സമന്വയിപ്പിക്കുന്നു...)</translation>
+<translation id="3008341117444806826">പുതുക്കിയെടുക്കുക</translation>
+<translation id="3838338534323494292">പുതിയ പാസ്‌വേഡ്</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുകയും സന്ദർശിച്ച വെബ്‌പേജുകൾ, പാസ്‌വേഡുകൾ, ഇമെയിൽ എന്നിവയുൾപ്പെടെ ഉപയോക്താവിന്റെ എല്ലാ ആക്‌റ്റിവിറ്റികളിലേക്കും ആക്‌സസും ഉണ്ടായിരിക്കും.</translation>
+<translation id="4227825898293920515">പാസ്‌വേഡ് <ph name="TIME" /> സമയത്തിനുള്ളിൽ കാലഹരണപ്പെടും</translation>
+<translation id="4429881212383817840">Kerberos ടിക്കറ്റ് ഉടൻ കാലഹരണപ്പെടും</translation>
+<translation id="445059817448385655">പഴയ പാസ്‌വേഡ്</translation>
+<translation id="467510802200863975">പാസ്‌വേഡുകൾ പൊരുത്തപ്പെടുന്നില്ല</translation>
 <translation id="4731797938093519117">രക്ഷാകർതൃ ആക്‌സസ്</translation>
+<translation id="4890353053343094602">പുതിയ പാസ്‌വേഡ് പെട്ടെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="5212543919916444558">എനിക്ക് സഹായിക്കാനാവുന്ന ഒന്നും നിങ്ങളുടെ സ്‌ക്രീനിൽ കണ്ടെത്താനാവുന്നില്ല. എന്നോട് എന്തെങ്കിലും ആവശ്യപ്പെടാൻ മൈക്ക് ടാപ്പ് ചെയ്യുന്നത് പരീക്ഷിക്കൂ.</translation>
 <translation id="5222676887888702881">പുറത്തുകടക്കുക</translation>
-<translation id="5457599981699367932">അതിഥിയായി ബ്രൌസുചെയ്യുക</translation>
+<translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
+<translation id="5332948983412042822">പുതിയ പാസ്‌വേഡ് തിരഞ്ഞെടുക്കുക</translation>
+<translation id="5457599981699367932">അതിഥിയായി ബ്രൌസ് ചെയ്യുക</translation>
 <translation id="54609108002486618">നിയന്ത്രിതം</translation>
 <translation id="5832805196449965646">വ്യക്തിയെ ചേർക്കുക</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
+<translation id="6058625436358447366">പൂർത്തിയാക്കാൻ നിങ്ങളുടെ പഴയ പാസ്‌വേഡും പുതിയ പാസ്‌വേഡും നൽകുക</translation>
+<translation id="6106186594183574873">പൂർത്തിയാക്കാൻ നിങ്ങളുടെ പഴയ പാസ്‌വേഡ് നൽകുക</translation>
+<translation id="6146993107019042706">പൂർത്തിയാക്കാൻ നിങ്ങളുടെ പുതിയ പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
+<translation id="7690294790491645610">പുതിയ പാസ്‌വേഡ് സ്ഥിരീകരിക്കുക</translation>
+<translation id="808894953321890993">പാസ്‌വേഡ് മാറ്റുക</translation>
+<translation id="8747900814994928677">മാറ്റം സ്ഥിരീകരിക്കുക</translation>
+<translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> എന്നതിനുള്ള ടിക്കറ്റ് പുതുക്കിയെടുക്കുക</translation>
 <translation id="9111102763498581341">അണ്‍ലോക്ക് ചെയ്യുക</translation>
 </translationbundle>

@@ -1,12 +1,12 @@
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="internet_page_browser_proxy.html">
 
 <!-- Common styles for Internet settings. -->
 <dom-module id="internet-shared">
   <template>
     <style include="settings-shared">
-      cr-network-icon {
-        padding-inline-end: var(--settings-box-row-padding);
+      network-icon {
+        padding-inline-end: var(--cr-section-padding);
       }
 
       iron-icon.policy {
@@ -14,7 +14,7 @@
       }
 
       .indented {
-        margin-inline-start: var(--settings-box-row-padding);
+        margin-inline-start: var(--cr-section-padding);
       }
 
       .stretch {

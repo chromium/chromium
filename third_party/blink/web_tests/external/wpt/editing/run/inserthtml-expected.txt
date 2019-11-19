@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1426 tests; 1368 PASS, 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1462 tests; 1404 PASS, 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("inserthtml", false, "ab<b>c</b>d") return value
 PASS [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" checks for modifications to non-editable content
@@ -942,6 +942,42 @@ PASS [["inserthtml","<ul><li>abc</ul>"]] "<ul><li>f[o]o</ul>" queryCommandValue(
 PASS [["inserthtml","<ul><li>abc</ul>"]] "<ul><li>f[o]o</ul>" queryCommandIndeterm("inserthtml") after
 PASS [["inserthtml","<ul><li>abc</ul>"]] "<ul><li>f[o]o</ul>" queryCommandState("inserthtml") after
 PASS [["inserthtml","<ul><li>abc</ul>"]] "<ul><li>f[o]o</ul>" queryCommandValue("inserthtml") after
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>": execCommand("inserthtml", false, "<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>") return value
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" checks for modifications to non-editable content
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" compare innerHTML
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" queryCommandIndeterm("inserthtml") before
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" queryCommandState("inserthtml") before
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" queryCommandValue("inserthtml") before
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" queryCommandIndeterm("inserthtml") after
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" queryCommandState("inserthtml") after
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" queryCommandValue("inserthtml") after
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>": execCommand("inserthtml", false, "<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>") return value
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" checks for modifications to non-editable content
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" compare innerHTML
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" queryCommandIndeterm("inserthtml") before
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" queryCommandState("inserthtml") before
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" queryCommandValue("inserthtml") before
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" queryCommandIndeterm("inserthtml") after
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" queryCommandState("inserthtml") after
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" queryCommandValue("inserthtml") after
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>": execCommand("inserthtml", false, "<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>") return value
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" checks for modifications to non-editable content
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" compare innerHTML
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" queryCommandIndeterm("inserthtml") before
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" queryCommandState("inserthtml") before
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" queryCommandValue("inserthtml") before
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" queryCommandIndeterm("inserthtml") after
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" queryCommandState("inserthtml") after
+PASS [["inserthtml","<ol id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ol>"]] "<ul id=\"old\"><li id=\"li0\">{}<br></ul>" queryCommandValue("inserthtml") after
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>": execCommand("inserthtml", false, "<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>") return value
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" checks for modifications to non-editable content
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" compare innerHTML
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" queryCommandIndeterm("inserthtml") before
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" queryCommandState("inserthtml") before
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" queryCommandValue("inserthtml") before
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" queryCommandIndeterm("inserthtml") after
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" queryCommandState("inserthtml") after
+PASS [["inserthtml","<ul id=\"new\"><li id=\"li1\">abc</li><li id=\"li2\">def</li></ul>"]] "<ol id=\"old\"><li id=\"li0\">{}<br></ol>" queryCommandValue("inserthtml") after
 PASS [["defaultparagraphseparator","div"],["inserthtml","<li>abc</li>"]] "f[o]o": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["defaultparagraphseparator","div"],["inserthtml","<li>abc</li>"]] "f[o]o": execCommand("inserthtml", false, "<li>abc</li>") return value
 PASS [["defaultparagraphseparator","div"],["inserthtml","<li>abc</li>"]] "f[o]o" checks for modifications to non-editable content

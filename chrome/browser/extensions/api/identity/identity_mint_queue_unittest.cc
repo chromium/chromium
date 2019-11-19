@@ -22,8 +22,8 @@ class MockRequest : public extensions::IdentityMintRequestQueue::Request {
 
 std::unique_ptr<ExtensionTokenKey> ExtensionIdToKey(
     const std::string& extension_id) {
-  return std::unique_ptr<ExtensionTokenKey>(
-      new ExtensionTokenKey(extension_id, "user_id", std::set<std::string>()));
+  return std::unique_ptr<ExtensionTokenKey>(new ExtensionTokenKey(
+      extension_id, CoreAccountId("user_id"), std::set<std::string>()));
 }
 
 }  // namespace

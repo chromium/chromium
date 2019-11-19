@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+var callbackPass = chrome.test.callbackPass;
+
 chrome.tabs.getCurrent(function(tab) {
   runTestsForTab([
     // Opens a WebSocket connection, writes a message to it, and closes the
@@ -78,7 +80,7 @@ chrome.tabs.getCurrent(function(tab) {
         {urls: ['ws://*/*']},  // filter
         ['blocking']  // extraInfoSpec
       );
-      testWebSocketConnection(url, true /* expectedToConnect*/);
+      testWebSocketConnection(url, true /* expectedToConnect */);
     },
 
     // Tries to open a WebSocket connection, with a blocking handler that
@@ -115,7 +117,7 @@ chrome.tabs.getCurrent(function(tab) {
         {urls: ['ws://*/*']},  // filter
         ['blocking']  // extraInfoSpec
       );
-      testWebSocketConnection(url, false /* expectedToConnect*/);
+      testWebSocketConnection(url, false /* expectedToConnect */);
     },
 
     // Opens a WebSocket connection, with a blocking handler that tries to
@@ -195,7 +197,146 @@ chrome.tabs.getCurrent(function(tab) {
         {urls: ['ws://*/*']},  // filter
         ['blocking']  // extraInfoSpec
       );
-      testWebSocketConnection(url, true /* expectedToConnect*/);
+      testWebSocketConnection(url, true /* expectedToConnect */);
+    },
+
+    // Tries to open a WebSocket connection, with a blocking handler that
+    // cancels the request. The connection will not be established.
+    function handshakeRequestCancelledWithExtraHeaders() {
+      var url = getWSTestURL(testWebSocketPort);
+      expect(
+        [  // events
+          { label: 'onBeforeRequest',
+            event: 'onBeforeRequest',
+            details: {
+              url: url,
+              type: 'websocket',
+              frameUrl: 'unknown frame URL',
+              initiator: getDomain(initiators.WEB_INITIATED)
+            },
+            retval: {cancel: true}
+          },
+          // Cancelling is considered an error.
+          { label: 'onErrorOccurred',
+            event: 'onErrorOccurred',
+            details: {
+              url: url,
+              type: 'websocket',
+              fromCache: false,
+              initiator: getDomain(initiators.WEB_INITIATED),
+              error: 'net::ERR_BLOCKED_BY_CLIENT'
+            }
+          },
+        ],
+        [  // event order
+          ['onBeforeRequest', 'onErrorOccurred']
+        ],
+        {urls: ['ws://*/*']},  // filter
+        ['blocking', 'extraHeaders']  // extraInfoSpec
+      );
+      testWebSocketConnection(url, false /* expectedToConnect */);
+    },
+
+    // Tests that all the requests headers that are added by net/ are visible
+    // if extraHeaders is specified.
+    function testExtraRequestHeadersVisible() {
+      var url = getWSTestURL(testWebSocketPort);
+
+      var extraHeadersListener = callbackPass(function(details) {
+        checkHeaders(details.requestHeaders,
+                     ['user-agent', 'accept-language'], []);
+        chrome.webRequest.onBeforeSendHeaders.removeListener(
+            extraHeadersListener);
+      });
+      chrome.webRequest.onBeforeSendHeaders.addListener(extraHeadersListener,
+          {urls: [url]}, ['requestHeaders', 'extraHeaders']);
+
+      var standardListener = callbackPass(function(details) {
+        checkHeaders(details.requestHeaders,
+                     ['user-agent'], ['accept-language']);
+        chrome.webRequest.onBeforeSendHeaders.removeListener(standardListener);
+      });
+      chrome.webRequest.onBeforeSendHeaders.addListener(standardListener,
+          {urls: [url]}, ['requestHeaders']);
+
+      testWebSocketConnection(url, true /* expectedToConnect */);
+    },
+
+    // Ensure that request headers which are added by net/ could be modified if
+    // the listener uses extraHeaders.
+    function testModifyRequestHeaders() {
+      var url = getWSTestURL(testWebSocketPort);
+
+      var beforeSendHeadersListener = callbackPass(function(details) {
+        // Test removal.
+        removeHeader(details.requestHeaders, 'accept-language');
+
+        // Test modification.
+        for (var i = 0; i < details.requestHeaders.length; i++) {
+          if (details.requestHeaders[i].name == 'User-Agent')
+            details.requestHeaders[i].value = 'Foo';
+        }
+
+        // Test addition.
+        details.requestHeaders.push({name: 'X-New-Header',
+                                     value: 'Bar'});
+
+        return {requestHeaders: details.requestHeaders};
+      });
+      chrome.webRequest.onBeforeSendHeaders.addListener(
+          beforeSendHeadersListener,
+          {urls: [url]}, ['requestHeaders', 'blocking', 'extraHeaders']);
+
+      var sendHeadersListener = callbackPass(function(details) {
+        checkHeaders(details.requestHeaders, ['x-new-header'],
+                     ['accept-language']);
+
+        var seen = false;
+        for (var i = 0; i < details.requestHeaders.length; i++) {
+          if (details.requestHeaders[i].name == 'User-Agent') {
+            chrome.test.assertEq(details.requestHeaders[i].value, 'Foo');
+            seen = true;
+          }
+        }
+        chrome.test.assertTrue(seen);
+
+        chrome.webRequest.onBeforeSendHeaders.removeListener(
+            beforeSendHeadersListener);
+        chrome.webRequest.onSendHeaders.removeListener(sendHeadersListener);
+      });
+      chrome.webRequest.onSendHeaders.addListener(sendHeadersListener,
+          {urls: [url]}, ['requestHeaders', 'extraHeaders']);
+
+      testWebSocketConnection(url, true /* expectedToConnect */);
+    },
+
+    // Ensure that response headers can be modified when extraHeaders is used.
+    function testModifyResponseHeaders() {
+      var url = getWSTestURL(testWebSocketPort);
+
+      var onHeadersReceivedHeadersListener = callbackPass(function(details) {
+        // Test addition.
+        details.responseHeaders.push({name: 'X-New-Header',
+                                      value: 'Bar'});
+
+        return {responseHeaders: details.responseHeaders};
+      });
+      chrome.webRequest.onHeadersReceived.addListener(
+          onHeadersReceivedHeadersListener,
+          {urls: [url]}, ['responseHeaders', 'blocking', 'extraHeaders']);
+
+      var onResponseStartedListener = callbackPass(function(details) {
+        checkHeaders(details.responseHeaders, ['x-new-header'], []);
+
+        chrome.webRequest.onHeadersReceived.removeListener(
+            onHeadersReceivedHeadersListener);
+        chrome.webRequest.onResponseStarted.removeListener(
+            onResponseStartedListener);
+      });
+      chrome.webRequest.onResponseStarted.addListener(onResponseStartedListener,
+          {urls: [url]}, ['responseHeaders', 'extraHeaders']);
+
+      testWebSocketConnection(url, true /* expectedToConnect */);
     },
   ], tab);
 });

@@ -4,15 +4,12 @@ div { background: url(#); }
 div { background: -webkit-image-set(url(#) 1x); }
 </style>
 <div style="transition: 1s">This test passes if it does not crash.</div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner) {
-  testRunner.dumpAsText();
-  testRunner.waitUntilDone();
-}
-window.addEventListener('load', function() {
+var test = async_test("Test if it does not crash when it deletes image-set");
+
+window.addEventListener('load', test.step_func_done(() => {
   document.styleSheets[0].deleteRule(1);
-  if (window.testRunner) {
-    testRunner.notifyDone();
-  }
-});
+}));
 </script>

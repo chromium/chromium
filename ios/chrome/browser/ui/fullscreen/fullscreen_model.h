@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 
 class FullscreenModelObserver;
@@ -52,6 +53,11 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   // scrolled to an entirely collapsed position.
   bool can_collapse_toolbar() const {
     return content_height_ > scroll_view_height_ + toolbar_height_delta();
+  }
+
+  // Whether the view is scrolled all the way to the top.
+  bool is_scrolled_to_top() const {
+    return y_content_offset_ <= -expanded_toolbar_height_;
   }
 
   // Whether the view is scrolled all the way to the bottom.

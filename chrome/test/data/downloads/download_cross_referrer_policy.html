@@ -1,9 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="referrer" content="origin-when-crossorigin"/>
 <script>
 function done() {
+  const kPolicy = 1;
+
+  // Set the document's referrer policy given the query param.
+  const re = new RegExp("policy=(.*)");
+  const matches = re.exec(document.location.search);
+  const referrer_policy = matches[kPolicy];
+
+  const meta = document.createElement('meta');
+  meta.name = 'referrer';
+  meta.content = referrer_policy;
+  document.head.appendChild(meta);
+
+  // Set the link's `href` attribute.
   document.getElementById("link").href = "/redirect?http://www.a.com:" + location.port + "/echoreferrer";
 }
 </script>

@@ -16,7 +16,7 @@ namespace cc {
 FakeLayerTreeHostImpl::FakeLayerTreeHostImpl(
     TaskRunnerProvider* task_runner_provider,
     TaskGraphRunner* task_graph_runner)
-    : FakeLayerTreeHostImpl(LayerTreeSettings(),
+    : FakeLayerTreeHostImpl(LayerListSettings(),
                             task_runner_provider,
                             task_graph_runner) {}
 
@@ -41,11 +41,12 @@ FakeLayerTreeHostImpl::FakeLayerTreeHostImpl(
                         task_graph_runner,
                         AnimationHost::CreateForTesting(ThreadInstance::IMPL),
                         0,
-                        std::move(image_worker_task_runner)),
+                        std::move(image_worker_task_runner),
+                        /*scheduling_client=*/nullptr),
       notify_tile_state_changed_called_(false) {
   // Explicitly clear all debug settings.
   SetDebugState(LayerTreeDebugState());
-  active_tree()->SetDeviceViewportSize(gfx::Size(100, 100));
+  active_tree()->SetDeviceViewportRect(gfx::Rect(100, 100));
 
   // Start an impl frame so tests have a valid frame_time to work with.
   base::TimeTicks time_ticks =
@@ -63,6 +64,13 @@ void FakeLayerTreeHostImpl::CreatePendingTree() {
   float arbitrary_large_page_scale = 100000.f;
   pending_tree()->PushPageScaleFromMainThread(
       1.f, 1.f / arbitrary_large_page_scale, arbitrary_large_page_scale);
+  // Normally a pending tree will not be fully painted until the commit has
+  // happened and any PaintWorklets have been resolved. However many of the
+  // unittests never actually commit the pending trees that they create, so to
+  // enable them to still treat the tree as painted we forcibly override the
+  // state here. Note that this marks a distinct departure from reality in the
+  // name of easier testing.
+  set_pending_tree_fully_painted_for_testing(true);
 }
 
 void FakeLayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile) {
@@ -80,16 +88,6 @@ void FakeLayerTreeHostImpl::AdvanceToNextFrame(base::TimeDelta advance_by) {
   next_begin_frame_args.frame_time += advance_by;
   DidFinishImplFrame();
   WillBeginImplFrame(next_begin_frame_args);
-}
-
-void FakeLayerTreeHostImpl::UpdateNumChildrenAndDrawPropertiesForActiveTree() {
-  UpdateNumChildrenAndDrawProperties(active_tree());
-}
-
-void FakeLayerTreeHostImpl::UpdateNumChildrenAndDrawProperties(
-    LayerTreeImpl* layerTree) {
-  layerTree->BuildLayerListAndPropertyTreesForTesting();
-  layerTree->UpdateDrawProperties();
 }
 
 AnimationHost* FakeLayerTreeHostImpl::animation_host() const {

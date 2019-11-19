@@ -48,8 +48,8 @@ ArrayBufferVar* HostVarTracker::CreateArrayBuffer(uint32_t size_in_bytes) {
 
 ArrayBufferVar* HostVarTracker::CreateShmArrayBuffer(
     uint32_t size_in_bytes,
-    base::SharedMemoryHandle handle) {
-  return new HostArrayBufferVar(size_in_bytes, handle);
+    base::UnsafeSharedMemoryRegion region) {
+  return new HostArrayBufferVar(size_in_bytes, region);
 }
 
 void HostVarTracker::AddV8ObjectVar(V8ObjectVar* object_var) {
@@ -152,12 +152,13 @@ HostVarTracker::ObjectMap::iterator HostVarTracker::GetForV8Object(
   return object_map_.end();
 }
 
-int HostVarTracker::TrackSharedMemoryHandle(PP_Instance instance,
-                                            base::SharedMemoryHandle handle,
-                                            uint32_t size_in_bytes) {
+int HostVarTracker::TrackSharedMemoryRegion(
+    PP_Instance instance,
+    base::UnsafeSharedMemoryRegion region,
+    uint32_t size_in_bytes) {
   SharedMemoryMapEntry entry;
   entry.instance = instance;
-  entry.handle = handle;
+  entry.region = std::move(region);
   entry.size_in_bytes = size_in_bytes;
 
   // Find a free id for our map.
@@ -165,14 +166,14 @@ int HostVarTracker::TrackSharedMemoryHandle(PP_Instance instance,
          shared_memory_map_.end()) {
     ++last_shared_memory_map_id_;
   }
-  shared_memory_map_[last_shared_memory_map_id_] = entry;
+  shared_memory_map_[last_shared_memory_map_id_] = std::move(entry);
   return last_shared_memory_map_id_;
 }
 
-bool HostVarTracker::StopTrackingSharedMemoryHandle(
+bool HostVarTracker::StopTrackingSharedMemoryRegion(
     int id,
     PP_Instance instance,
-    base::SharedMemoryHandle* handle,
+    base::UnsafeSharedMemoryRegion* region,
     uint32_t* size_in_bytes) {
   auto it = shared_memory_map_.find(id);
   if (it == shared_memory_map_.end())
@@ -180,7 +181,7 @@ bool HostVarTracker::StopTrackingSharedMemoryHandle(
   if (it->second.instance != instance)
     return false;
 
-  *handle = it->second.handle;
+  *region = std::move(it->second.region);
   *size_in_bytes = it->second.size_in_bytes;
   shared_memory_map_.erase(it);
   return true;

@@ -1,8 +1,6 @@
 #ifndef _RAR_GLOBAL_
 #define _RAR_GLOBAL_
 
-namespace third_party_unrar {
-
 #ifdef INCLUDEGLOBAL
   #define EXTVAR
 #else
@@ -11,6 +9,6 @@ namespace third_party_unrar {
 
 EXTVAR ErrorHandler ErrHandler;
 
-}  // namespace third_party_unrar
+
 
 #endif

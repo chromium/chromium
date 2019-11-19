@@ -57,8 +57,7 @@ namespace blink {
 //    The interpolation's effect at its current timing state is applied to the
 //    element. How this is done depends on the subclass of Interpolation. See
 //    the subclass documentation for more.
-class CORE_EXPORT Interpolation
-    : public GarbageCollectedFinalized<Interpolation> {
+class CORE_EXPORT Interpolation : public GarbageCollected<Interpolation> {
  public:
   virtual ~Interpolation() {}
 

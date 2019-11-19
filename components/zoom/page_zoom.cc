@@ -17,6 +17,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_zoom.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 
 using base::UserMetricsAction;
 
@@ -37,19 +38,21 @@ std::vector<double> PresetZoomValues(PageZoomValueType value_type,
   for (size_t i = 0; i < zoom::kPresetZoomFactorsSize; i++) {
     double zoom_value = zoom::kPresetZoomFactors[i];
     if (value_type == PAGE_ZOOM_VALUE_TYPE_LEVEL)
-      zoom_value = content::ZoomFactorToZoomLevel(zoom_value);
-    if (content::ZoomValuesEqual(zoom_value, custom_value))
+      zoom_value = blink::PageZoomFactorToZoomLevel(zoom_value);
+    if (blink::PageZoomValuesEqual(zoom_value, custom_value))
       found_custom = true;
     zoom_values.push_back(zoom_value);
   }
   // If the preset array did not contain the custom value, append it to the
   // vector and then sort.
-  double min = value_type == PAGE_ZOOM_VALUE_TYPE_LEVEL
-                   ? content::ZoomFactorToZoomLevel(content::kMinimumZoomFactor)
-                   : content::kMinimumZoomFactor;
-  double max = value_type == PAGE_ZOOM_VALUE_TYPE_LEVEL
-                   ? content::ZoomFactorToZoomLevel(content::kMaximumZoomFactor)
-                   : content::kMaximumZoomFactor;
+  double min =
+      value_type == PAGE_ZOOM_VALUE_TYPE_LEVEL
+          ? blink::PageZoomFactorToZoomLevel(blink::kMinimumPageZoomFactor)
+          : blink::kMinimumPageZoomFactor;
+  double max =
+      value_type == PAGE_ZOOM_VALUE_TYPE_LEVEL
+          ? blink::PageZoomFactorToZoomLevel(blink::kMaximumPageZoomFactor)
+          : blink::kMaximumPageZoomFactor;
   if (!found_custom && custom_value > min && custom_value < max) {
     zoom_values.push_back(custom_value);
     std::sort(zoom_values.begin(), zoom_values.end());
@@ -98,7 +101,7 @@ void PageZoom::Zoom(content::WebContents* web_contents,
     // lower level based on the current zoom level for this page.
     for (auto i = zoom_levels.rbegin(); i != zoom_levels.rend(); ++i) {
       double zoom_level = *i;
-      if (content::ZoomValuesEqual(zoom_level, current_zoom_level))
+      if (blink::PageZoomValuesEqual(zoom_level, current_zoom_level))
         continue;
       if (zoom_level < current_zoom_level) {
         zoom_controller->SetZoomLevel(zoom_level);
@@ -113,7 +116,7 @@ void PageZoom::Zoom(content::WebContents* web_contents,
     for (std::vector<double>::const_iterator i = zoom_levels.begin();
          i != zoom_levels.end(); ++i) {
       double zoom_level = *i;
-      if (content::ZoomValuesEqual(zoom_level, current_zoom_level))
+      if (blink::PageZoomValuesEqual(zoom_level, current_zoom_level))
         continue;
       if (zoom_level > current_zoom_level) {
         zoom_controller->SetZoomLevel(zoom_level);

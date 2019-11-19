@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
@@ -24,7 +25,8 @@ class AssistantViewDelegate;
 // The AssistantContainerViewAnimator is the class responsible for smoothly
 // animating bound changes for the AssistantContainerView.
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantContainerViewAnimator
-    : public views::ViewObserver {
+    : public views::ViewObserver,
+      public AssistantUiModelObserver {
  public:
   ~AssistantContainerViewAnimator() override;
 
@@ -36,6 +38,13 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantContainerViewAnimator
   // Invoked when AssistantContainerView has been fully constructed to give the
   // AssistantContainerViewAnimator an opportunity to perform initialization.
   virtual void Init();
+
+  // AssistantUiModelObserver:
+  void OnUiVisibilityChanged(
+      AssistantVisibility new_visibility,
+      AssistantVisibility old_visibility,
+      base::Optional<AssistantEntryPoint> entry_point,
+      base::Optional<AssistantExitPoint> exit_point) override;
 
  protected:
   AssistantContainerViewAnimator(

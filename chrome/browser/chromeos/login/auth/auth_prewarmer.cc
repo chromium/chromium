@@ -16,7 +16,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "net/base/load_flags.h"
+#include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
@@ -58,19 +58,18 @@ void AuthPrewarmer::DefaultNetworkChanged(const NetworkState* network) {
 
 void AuthPrewarmer::DoPrewarm() {
   const int kConnectionsNeeded = 1;
-  const int kLoadFlags = net::LOAD_NORMAL;
-  const bool kShouldUsePrivacyMode = false;
+  const bool kAllowCredentials = true;
   const GURL& url = GaiaUrls::GetInstance()->service_login_url();
   network::mojom::NetworkContext* network_context =
       login::GetSigninNetworkContext();
   if (network_context) {
     // Do nothing if NetworkContext isn't available.
-    network_context->PreconnectSockets(kConnectionsNeeded, url, kLoadFlags,
-                                       kShouldUsePrivacyMode);
+    network_context->PreconnectSockets(
+        kConnectionsNeeded, url, kAllowCredentials, net::NetworkIsolationKey());
   }
   if (!completion_callback_.is_null()) {
-    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                             std::move(completion_callback_));
+    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                   std::move(completion_callback_));
   }
 }
 

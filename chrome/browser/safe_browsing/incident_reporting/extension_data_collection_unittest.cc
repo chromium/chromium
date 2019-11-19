@@ -23,7 +23,7 @@
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/proto/csd.pb.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -145,7 +145,7 @@ class ExtensionDataCollectionTest : public testing::Test {
     // uses it in destructor.
     test_user_manager_.reset();
     // Finish any pending tasks before deleting the TestingBrowserProcess.
-    browser_thread_bundle_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
 #endif
     profile_manager_.reset();
     TestingBrowserProcess::DeleteInstance();
@@ -176,10 +176,13 @@ class ExtensionDataCollectionTest : public testing::Test {
         std::string(),                    // supervised_user_id
         TestingProfile::TestingFactories());
 
-    return std::make_unique<ExtensionTestingProfile>(profile);
+    auto testing_profile = std::make_unique<ExtensionTestingProfile>(profile);
+    task_environment_.RunUntilIdle();
+
+    return testing_profile;
   }
 
-  content::TestBrowserThreadBundle browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
  private:

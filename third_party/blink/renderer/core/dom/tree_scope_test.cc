@@ -8,11 +8,12 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
 TEST(TreeScopeTest, CommonAncestorOfSameTrees) {
-  Document* document = Document::CreateForTest();
+  auto* document = MakeGarbageCollected<Document>();
   EXPECT_EQ(document, document->CommonAncestorTreeScope(*document));
 
   Element* html = document->CreateRawElement(html_names::kHTMLTag);
@@ -26,7 +27,7 @@ TEST(TreeScopeTest, CommonAncestorOfInclusiveTrees) {
   //     |      : Common ancestor is document.
   // shadowRoot
 
-  Document* document = Document::CreateForTest();
+  auto* document = MakeGarbageCollected<Document>();
   Element* html = document->CreateRawElement(html_names::kHTMLTag);
   document->AppendChild(html);
   ShadowRoot& shadow_root = html->CreateV0ShadowRootForTesting();
@@ -40,7 +41,7 @@ TEST(TreeScopeTest, CommonAncestorOfSiblingTrees) {
   //   /    \  : Common ancestor is document.
   //  A      B
 
-  Document* document = Document::CreateForTest();
+  auto* document = MakeGarbageCollected<Document>();
   Element* html = document->CreateRawElement(html_names::kHTMLTag);
   document->AppendChild(html);
   Element* head = document->CreateRawElement(html_names::kHeadTag);
@@ -62,7 +63,7 @@ TEST(TreeScopeTest, CommonAncestorOfTreesAtDifferentDepths) {
   //  /
   // A
 
-  Document* document = Document::CreateForTest();
+  auto* document = MakeGarbageCollected<Document>();
   Element* html = document->CreateRawElement(html_names::kHTMLTag);
   document->AppendChild(html);
   Element* head = document->CreateRawElement(html_names::kHeadTag);
@@ -82,8 +83,8 @@ TEST(TreeScopeTest, CommonAncestorOfTreesAtDifferentDepths) {
 }
 
 TEST(TreeScopeTest, CommonAncestorOfTreesInDifferentDocuments) {
-  Document* document1 = Document::CreateForTest();
-  Document* document2 = Document::CreateForTest();
+  auto* document1 = MakeGarbageCollected<Document>();
+  auto* document2 = MakeGarbageCollected<Document>();
   EXPECT_EQ(nullptr, document1->CommonAncestorTreeScope(*document2));
   EXPECT_EQ(nullptr, document2->CommonAncestorTreeScope(*document1));
 }

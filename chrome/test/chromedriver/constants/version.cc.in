@@ -1,0 +1,25 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// version.cc is generated from version.cc.in. Edit the source!
+
+#include "chrome/test/chromedriver/constants/version.h"
+
+// Version Information
+
+const char kChromeDriverVersion[] = "@MAJOR@.@MINOR@.@BUILD@.@PATCH@ (@LASTCHANGE@)";
+
+// Branding Information
+
+const char kChromeDriverProductFullName[] = "@PRODUCT_FULLNAME@";
+const char kChromeDriverProductShortName[] = "@PRODUCT_SHORTNAME@";
+const char kChromeDriverCompanyPrefix[] = "@COMPANY_PREFIX@";
+
+const char kChromeDriverOptionsKey[] = "@BROWSER_OPTIONS_KEY@";
+const char kChromeDriverOptionsKeyPrefixed[] = "@COMPANY_PREFIX@:@BROWSER_OPTIONS_KEY@";
+
+const char kBrowserShortName[] = "@BROWSER_SHORTNAME@";
+const char kBrowserCapabilityName[] = "@BROWSER_CAPABILITYNAME@";
+const char kUserAgentProductName[] = "@USER_AGENT_PRODUCT_NAME@";
+const char kHeadlessUserAgentProductName[] = "@HEADLESS_USER_AGENT_PRODUCT_NAME@";

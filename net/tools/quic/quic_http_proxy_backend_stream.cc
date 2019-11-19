@@ -12,6 +12,7 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/ssl/ssl_info.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request_context.h"
 
@@ -52,8 +53,7 @@ QuicHttpProxyBackendStream::QuicHttpProxyBackendStream(
       buf_(base::MakeRefCounted<IOBuffer>(kBufferSize)),
       response_completed_(false),
       headers_set_(false),
-      quic_response_(new quic::QuicBackendResponse()),
-      weak_factory_(this) {}
+      quic_response_(new quic::QuicBackendResponse()) {}
 
 QuicHttpProxyBackendStream::~QuicHttpProxyBackendStream() {}
 
@@ -147,7 +147,7 @@ void QuicHttpProxyBackendStream::CopyHeaders(
     // Ignore the spdy headers
     if (!key.empty() && key[0] != ':') {
       // Remove hop-by-hop headers
-      if (base::ContainsKey(kHopHeaders, key)) {
+      if (base::Contains(kHopHeaders, key)) {
         LOG(INFO) << "QUIC Proxy Ignoring Hop-by-hop Request Header: " << key
                   << ":" << value;
       } else {
@@ -188,7 +188,7 @@ void QuicHttpProxyBackendStream::SetUpload(
 void QuicHttpProxyBackendStream::SendRequestOnBackendThread() {
   DCHECK(quic_proxy_task_runner_->BelongsToCurrentThread());
   url_request_ = proxy_context_->GetURLRequestContext()->CreateRequest(
-      url_, net::DEFAULT_PRIORITY, this);
+      url_, net::DEFAULT_PRIORITY, this, MISSING_TRAFFIC_ANNOTATION);
   url_request_->set_method(method_type_);
   url_request_->SetExtraRequestHeaders(request_headers_);
   if (upload_) {
@@ -197,7 +197,6 @@ void QuicHttpProxyBackendStream::SendRequestOnBackendThread() {
   url_request_->Start();
   VLOG(1) << "Quic Proxy Sending Request to Backend for quic_conn_id: "
           << quic_connection_id_ << " quic_stream_id: " << quic_stream_id_
-          << " backend_req_id: " << url_request_->identifier()
           << " url: " << url_;
 }
 
@@ -210,7 +209,7 @@ void QuicHttpProxyBackendStream::OnReceivedRedirect(
   // Do not defer redirect, retry again from the proxy with the new url
   *defer_redirect = false;
   LOG(ERROR) << "Received Redirect from Backend "
-             << " BackendReqId: " << request->identifier() << " redirectUrl: "
+             << " redirectUrl: "
              << redirect_info.new_url.possibly_invalid_spec().c_str()
              << " RespCode " << request->GetResponseCode();
 }
@@ -226,6 +225,7 @@ void QuicHttpProxyBackendStream::OnCertificateRequested(
 
 void QuicHttpProxyBackendStream::OnSSLCertificateError(
     net::URLRequest* request,
+    int net_error,
     const net::SSLInfo& ssl_info,
     bool fatal) {
   request->Cancel();
@@ -240,7 +240,7 @@ void QuicHttpProxyBackendStream::OnResponseStarted(net::URLRequest* request,
   DCHECK_NE(net::ERR_IO_PENDING, net_error);
   if (net_error != net::OK) {
     LOG(ERROR) << "OnResponseStarted Error from Backend "
-               << url_request_->identifier() << " url: "
+               << " url: "
                << url_request_->url().possibly_invalid_spec().c_str()
                << " RespError " << net::ErrorToString(net_error);
     OnResponseCompleted();
@@ -264,9 +264,9 @@ void QuicHttpProxyBackendStream::OnReadCompleted(net::URLRequest* unused,
                                                  int bytes_read) {
   DCHECK_EQ(url_request_.get(), unused);
   LOG(INFO) << "OnReadCompleted Backend with"
-            << " ReqId: " << url_request_->identifier() << " RespCode "
-            << url_request_->GetResponseCode() << " RcvdBytesCount "
-            << bytes_read << " RcvdTotalBytes " << data_received_.size();
+            << " RespCode " << url_request_->GetResponseCode()
+            << " RcvdBytesCount " << bytes_read << " RcvdTotalBytes "
+            << data_received_.size();
 
   if (bytes_read > 0) {
     data_received_.append(buf_->data(), bytes_read);
@@ -287,7 +287,6 @@ void QuicHttpProxyBackendStream::OnResponseCompleted() {
   DCHECK(!response_completed_);
   LOG(INFO) << "Quic Proxy Received Response from Backend for quic_conn_id: "
             << quic_connection_id_ << " quic_stream_id: " << quic_stream_id_
-            << " backend_req_id: " << url_request_->identifier()
             << " url: " << url_;
 
   // ToDo Stream the response
@@ -370,7 +369,7 @@ spdy::SpdyHeaderBlock QuicHttpProxyBackendStream::getAsQuicHeaders(
       if (header_name.compare("status") != 0) {
         if (header_name.compare("content-encoding") != 0) {
           // Remove hop-by-hop headers
-          if (base::ContainsKey(kHopHeaders, header_name)) {
+          if (base::Contains(kHopHeaders, header_name)) {
             LOG(INFO) << "Quic Proxy Ignoring Hop-by-hop Response Header: "
                       << header_name << ":" << header_value;
           } else {

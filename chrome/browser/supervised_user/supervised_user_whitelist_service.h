@@ -78,6 +78,7 @@ class SupervisedUserWhitelistService : public syncer::SyncableService {
                                                   const std::string& name);
 
   // SyncableService implementation:
+  void WaitUntilReadyToSync(base::OnceClosure done) override;
   syncer::SyncMergeResult MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
@@ -136,7 +137,7 @@ class SupervisedUserWhitelistService : public syncer::SyncableService {
   std::map<std::string, scoped_refptr<SupervisedUserSiteList> >
       loaded_whitelists_;
 
-  base::WeakPtrFactory<SupervisedUserWhitelistService> weak_ptr_factory_;
+  base::WeakPtrFactory<SupervisedUserWhitelistService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserWhitelistService);
 };

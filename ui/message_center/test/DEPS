@@ -1,4 +1,4 @@
 include_rules = [
-  "+mojo/core/embedder",
+  "+mojo/core/embedder/embedder.h",
   "+ui/gl/test/gl_surface_test_support.h",  # To initialize GL for tests.
 ]

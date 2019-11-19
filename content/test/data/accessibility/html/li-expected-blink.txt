@@ -1,14 +1,15 @@
 rootWebArea
-++list display='block' setSize=3
-++++listItem display='list-item' setSize=3 posInSet=1
-++++++listMarker name='• '
-++++++staticText display='list-item' name='Item 1'
-++++++++inlineTextBox display='list-item' name='Item 1'
-++++listItem display='list-item' setSize=3 posInSet=2
-++++++listMarker name='• '
-++++++staticText display='list-item' name='Item 2'
-++++++++inlineTextBox display='list-item' name='Item 2'
-++++listItem display='list-item' setSize=3 posInSet=3
-++++++listMarker name='• '
-++++++staticText display='list-item' name='Item 3'
-++++++++inlineTextBox display='list-item' name='Item 3'
+++genericContainer ignored display='block'
+++++list display='block' setSize=3
+++++++listItem display='list-item' setSize=3 posInSet=1
+++++++++listMarker name='• '
+++++++++staticText display='list-item' name='Item 1'
+++++++++++inlineTextBox display='list-item' name='Item 1'
+++++++listItem display='list-item' setSize=3 posInSet=2
+++++++++listMarker name='• '
+++++++++staticText display='list-item' name='Item 2'
+++++++++++inlineTextBox display='list-item' name='Item 2'
+++++++listItem display='list-item' setSize=3 posInSet=3
+++++++++listMarker name='• '
+++++++++staticText display='list-item' name='Item 3'
+++++++++++inlineTextBox display='list-item' name='Item 3'

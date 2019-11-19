@@ -1,0 +1,5 @@
+CONSOLE ERROR: line 69: Uncaught (in promise) Error: assert_equals: https://crbug.com/981819. expected "script-load" but got "script-error"
+This is a testharness.js-based test.
+FAIL about-blank-include-file assert_equals: https://crbug.com/981819. expected "script-load" but got "script-error"
+Harness: the test ran to completion.
+

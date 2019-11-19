@@ -1,0 +1,13 @@
+Name: Software and Algorithms
+Short Name: software-and-algorithms
+URL: https://www.github.com/KevinStern/software-and-algorithms
+Version: 1.0
+License: MIT License
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Neat algorithm implementations in Java
+
+Local Modifications:
+No modifications.

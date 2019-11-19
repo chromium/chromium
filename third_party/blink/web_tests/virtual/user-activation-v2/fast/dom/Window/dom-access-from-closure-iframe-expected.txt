@@ -1,5 +1,0 @@
-document.URL: fast/dom/Window/resources/dom-access-from-closure-iframe-child.html
-window.document.URL: fast/dom/Window/resources/notify-parent-done.html
-name: child
-window.name: child
-

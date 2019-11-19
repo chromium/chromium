@@ -5,7 +5,7 @@
 // https://wicg.github.io/background-fetch/#background-fetch-registration
 [
     Exposed=(Window,Worker),
-    OriginTrialEnabled=BackgroundFetch,
+    RuntimeEnabled=BackgroundFetch,
     ActiveScriptWrappable
 ] interface BackgroundFetchRegistration : EventTarget {
     readonly attribute DOMString id;

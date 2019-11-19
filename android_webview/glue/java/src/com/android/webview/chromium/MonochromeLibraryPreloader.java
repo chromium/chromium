@@ -4,7 +4,7 @@
 
 package com.android.webview.chromium;
 
-import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.webkit.WebViewFactory;
 
 import org.chromium.base.library_loader.NativeLibraryPreloader;
@@ -14,10 +14,9 @@ import org.chromium.base.library_loader.NativeLibraryPreloader;
  * between Chrome and WebView.
  */
 public class MonochromeLibraryPreloader extends NativeLibraryPreloader {
-
     @Override
-    public int loadLibrary(Context context) {
-        return WebViewFactory.loadWebViewNativeLibraryFromPackage(context.getPackageName(),
-                getClass().getClassLoader());
+    public int loadLibrary(ApplicationInfo appInfo) {
+        return WebViewFactory.loadWebViewNativeLibraryFromPackage(
+                appInfo.packageName, getClass().getClassLoader());
     }
 }

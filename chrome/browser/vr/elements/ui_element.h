@@ -267,7 +267,7 @@ class VR_UI_EXPORT UiElement : public cc::AnimationTarget {
   }
 
   // Syntax sugar for setting all corner radii to the same value.
-  void set_corner_radius(float corner_radius) {
+  void SetCornerRadius(float corner_radius) {
     SetCornerRadii(
         {corner_radius, corner_radius, corner_radius, corner_radius});
   }

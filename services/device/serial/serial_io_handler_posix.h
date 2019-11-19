@@ -35,8 +35,6 @@ class SerialIoHandlerPosix : public SerialIoHandler {
   bool SetControlSignals(
       const mojom::SerialHostControlSignals& control_signals) override;
   mojom::SerialConnectionInfoPtr GetPortInfo() const override;
-  bool SetBreak() override;
-  bool ClearBreak() override;
   int CheckReceiveError(char* buffer,
                         int buffer_len,
                         int bytes_read,

@@ -62,10 +62,9 @@ void TraceEventAnalyzerTest::EndTracing() {
   base::WaitableEvent flush_complete_event(
       base::WaitableEvent::ResetPolicy::AUTOMATIC,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
-  base::trace_event::TraceLog::GetInstance()->Flush(
-      base::Bind(&TraceEventAnalyzerTest::OnTraceDataCollected,
-                 base::Unretained(this),
-                 base::Unretained(&flush_complete_event)));
+  base::trace_event::TraceLog::GetInstance()->Flush(base::BindRepeating(
+      &TraceEventAnalyzerTest::OnTraceDataCollected, base::Unretained(this),
+      base::Unretained(&flush_complete_event)));
   flush_complete_event.Wait();
   buffer_.Finish();
 }

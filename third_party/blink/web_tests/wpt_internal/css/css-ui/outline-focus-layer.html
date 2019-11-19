@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<link rel="author" href="mailto:atotic@google.com">
+<link rel="help" href="https://drafts.csswg.org/css-ui-3/#outline-props">
+<link rel="help" href="https://crbug.com/968019">
+<link rel="match" href="outline-focus-layer-ref.html">
+<meta name="assert" content="Outline is displayed correctly on children with paint layers">
+<style>
+body {
+  margin: 50px;
+  font-size: 0;
+}
+.outline {
+  outline-style: auto;
+}
+#container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+#target {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  background: #EEE;
+  transform: translate(120px, 120px);
+}
+.spacer {
+  display: inline-block;
+  height: 50px;
+  width: 200px;
+}
+</style>
+<!-- target outline should be painted as part of container outline -->
+<div id="container" class="outline">
+  <span class="spacer"></span>
+  <span id="target"></span>
+</div>

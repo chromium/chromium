@@ -8,9 +8,6 @@
 
 namespace net {
 
-const base::Feature Socket::kReadIfReadyExperiment{
-    "SocketReadIfReady", base::FEATURE_ENABLED_BY_DEFAULT};
-
 int Socket::ReadIfReady(IOBuffer* buf,
                         int buf_len,
                         CompletionOnceCallback callback) {

@@ -40,7 +40,7 @@ class IpcMouseCursorMonitor : public webrtc::MouseCursorMonitor {
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;
 
   // Used to cancel tasks pending on the capturer when it is stopped.
-  base::WeakPtrFactory<IpcMouseCursorMonitor> weak_factory_;
+  base::WeakPtrFactory<IpcMouseCursorMonitor> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IpcMouseCursorMonitor);
 };

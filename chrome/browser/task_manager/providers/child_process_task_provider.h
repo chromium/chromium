@@ -76,7 +76,7 @@ class ChildProcessTaskProvider
 
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.
-  base::WeakPtrFactory<ChildProcessTaskProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<ChildProcessTaskProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChildProcessTaskProvider);
 };

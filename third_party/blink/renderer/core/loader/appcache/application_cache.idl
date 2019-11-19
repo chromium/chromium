@@ -26,9 +26,9 @@
 // https://html.spec.whatwg.org/C/#application-cache-api
 
 [
+    Exposed=Window,
     DoNotCheckConstants,
     SecureContext=RestrictAppCacheToSecureContexts
-    // TODO(foolip): Exposed=(Window,SharedWorker)
 ] interface ApplicationCache : EventTarget {
     // update status
     const unsigned short UNCACHED = 0;

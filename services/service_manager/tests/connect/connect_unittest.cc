@@ -19,7 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_suite.h"
 #include "base/token.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
@@ -30,15 +30,14 @@
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/cpp/service_binding.h"
 #include "services/service_manager/public/cpp/test/test_service_manager.h"
-#include "services/service_manager/public/mojom/service_factory.mojom.h"
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
 #include "services/service_manager/tests/connect/connect.test-mojom.h"
 #include "services/service_manager/tests/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Tests that multiple services can be packaged in a single service by
-// implementing ServiceFactory; that these services can be specified by
-// the package's manifest and are thus registered with the PackageManager.
+// specifying the packaged service manifests within a parent manifest and
+// implementing Service::CreatePackagedServiceInstance in the parent service.
 
 namespace service_manager {
 
@@ -68,6 +67,9 @@ const std::vector<Manifest>& GetTestManifests() {
            .WithServiceName(kTestAppName)
            .WithOptions(ManifestOptionsBuilder()
                             .CanConnectToInstancesInAnyGroup(true)
+                            .WithExecutionMode(
+                                Manifest::ExecutionMode::kStandaloneExecutable)
+                            .WithSandboxType("none")
                             .Build())
            .ExposeCapability(
                kIdentityTestCapability,
@@ -85,6 +87,11 @@ const std::vector<Manifest>& GetTestManifests() {
            .Build(),
        ManifestBuilder()
            .WithServiceName(kTestClassAppName)
+           .WithOptions(ManifestOptionsBuilder()
+                            .WithExecutionMode(
+                                Manifest::ExecutionMode::kStandaloneExecutable)
+                            .WithSandboxType("none")
+                            .Build())
            .ExposeCapability(
                kConnectClassCapability,
                Manifest::InterfaceList<test::mojom::ClassInterface>())
@@ -92,11 +99,21 @@ const std::vector<Manifest>& GetTestManifests() {
                kConnectTestServiceCapability,
                Manifest::InterfaceList<test::mojom::ConnectTestService>())
            .Build(),
-       ManifestBuilder().WithServiceName(kTestExeName).Build(),
+       ManifestBuilder()
+           .WithServiceName(kTestExeName)
+           .WithOptions(ManifestOptionsBuilder()
+                            .WithExecutionMode(
+                                Manifest::ExecutionMode::kStandaloneExecutable)
+                            .WithSandboxType("none")
+                            .Build())
+           .Build(),
        ManifestBuilder()
            .WithServiceName(kTestPackageName)
-           .ExposeCapability("service_manager:service_factory",
-                             Manifest::InterfaceList<mojom::ServiceFactory>())
+           .WithOptions(ManifestOptionsBuilder()
+                            .WithExecutionMode(
+                                Manifest::ExecutionMode::kStandaloneExecutable)
+                            .WithSandboxType("none")
+                            .Build())
            .ExposeCapability(
                kConnectTestServiceCapability,
                Manifest::InterfaceList<test::mojom::ConnectTestService>())
@@ -132,6 +149,9 @@ const std::vector<Manifest>& GetTestManifests() {
                             .WithInstanceSharingPolicy(
                                 service_manager::Manifest::
                                     InstanceSharingPolicy::kSharedAcrossGroups)
+                            .WithExecutionMode(
+                                Manifest::ExecutionMode::kStandaloneExecutable)
+                            .WithSandboxType("none")
                             .Build())
            .Build(),
        ManifestBuilder()
@@ -301,7 +321,7 @@ class ConnectTest : public testing::Test,
     base::RunLoop run_loop;
     std::string root_name;
     root_service->GetTitle(
-        base::Bind(&ReceiveOneString, &root_name, &run_loop));
+        base::BindOnce(&ReceiveOneString, &root_name, &run_loop));
     run_loop.Run();
   }
 
@@ -319,7 +339,7 @@ class ConnectTest : public testing::Test,
     connection_state_ = std::move(state);
   }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   TestServiceManager test_service_manager_;
   ServiceBinding service_binding_{this};
   mojo::BindingSet<test::mojom::ExposedInterface> bindings_;
@@ -335,7 +355,7 @@ TEST_F(ConnectTest, BindInterface) {
   connector()->BindInterface(kTestAppName, &service);
   base::RunLoop run_loop;
   std::string title;
-  service->GetTitle(base::Bind(&ReceiveOneString, &title, &run_loop));
+  service->GetTitle(base::BindOnce(&ReceiveOneString, &title, &run_loop));
   run_loop.Run();
   EXPECT_EQ("APP", title);
 }
@@ -426,9 +446,17 @@ TEST_F(ConnectTest, ConnectWithGloballyUniqueId) {
   // instance. This request should not be seen by the new instance, and |proxy|
   // should be disconnected when the Service Manager drops the request.
   base::RunLoop wait_for_error_loop;
+  base::RunLoop wait_for_connect_loop;
   target->CallOnNextBindInterface(base::BindOnce([] { NOTREACHED(); }));
-  connector()->BindInterface(specific_identity, &proxy);
+  connector()->BindInterface(
+      specific_identity, mojo::MakeRequest(&proxy),
+      base::BindLambdaForTesting([&](mojom::ConnectResult result,
+                                     const base::Optional<Identity>& identity) {
+        EXPECT_EQ(mojom::ConnectResult::ACCESS_DENIED, result);
+        wait_for_connect_loop.Quit();
+      }));
   proxy.set_connection_error_handler(wait_for_error_loop.QuitClosure());
+  wait_for_connect_loop.Run();
   wait_for_error_loop.Run();
 }
 
@@ -466,9 +494,10 @@ TEST_F(ConnectTest, MAYBE_BlockedInterface) {
   base::RunLoop run_loop;
   test::mojom::BlockedInterfacePtr blocked;
   connector()->BindInterface(kTestAppName, &blocked);
-  blocked.set_connection_error_handler(base::Bind(&QuitLoop, &run_loop));
+  blocked.set_connection_error_handler(base::BindOnce(&QuitLoop, &run_loop));
   std::string title = "unchanged";
-  blocked->GetTitleBlocked(base::Bind(&ReceiveOneString, &title, &run_loop));
+  blocked->GetTitleBlocked(
+      base::BindOnce(&ReceiveOneString, &title, &run_loop));
   run_loop.Run();
   EXPECT_EQ("unchanged", title);
 }
@@ -478,10 +507,11 @@ TEST_F(ConnectTest, AlwaysAllowedInterface) {
   test::mojom::AlwaysAllowedInterfacePtr always_allowed;
   connector()->BindInterface(ServiceFilter::ByName(kTestAppAName),
                              &always_allowed);
-  always_allowed.set_connection_error_handler(base::Bind(&QuitLoop, &run_loop));
+  always_allowed.set_connection_error_handler(
+      base::BindOnce(&QuitLoop, &run_loop));
   std::string title = "unchanged";
   always_allowed->GetTitleAlwaysAllowed(
-      base::Bind(&ReceiveOneString, &title, &run_loop));
+      base::BindOnce(&ReceiveOneString, &title, &run_loop));
   run_loop.Run();
   EXPECT_EQ("always_allowed", title);
 }
@@ -496,7 +526,7 @@ TEST_F(ConnectTest, PackagedApp) {
                              base::BindOnce(&StartServiceResponse, nullptr,
                                             nullptr, &resolved_identity));
   std::string a_name;
-  service_a->GetTitle(base::Bind(&ReceiveOneString, &a_name, &run_loop));
+  service_a->GetTitle(base::BindOnce(&ReceiveOneString, &a_name, &run_loop));
   run_loop.Run();
   EXPECT_EQ("A", a_name);
   ASSERT_TRUE(resolved_identity);
@@ -521,7 +551,7 @@ TEST_F(ConnectTest, MAYBE_BlockedPackage) {
   base::RunLoop run_loop;
   std::string title;
   standalone_app->ConnectToAllowedAppInBlockedPackage(
-      base::Bind(&ReceiveOneString, &title, &run_loop));
+      base::BindOnce(&ReceiveOneString, &title, &run_loop));
   run_loop.Run();
   EXPECT_EQ("A", title);
 }
@@ -539,7 +569,7 @@ TEST_F(ConnectTest, MAYBE_PackagedApp_BlockedInterface) {
   base::RunLoop run_loop;
   test::mojom::BlockedInterfacePtr blocked;
   connector()->BindInterface(kTestAppAName, &blocked);
-  blocked.set_connection_error_handler(base::Bind(&QuitLoop, &run_loop));
+  blocked.set_connection_error_handler(base::BindOnce(&QuitLoop, &run_loop));
   run_loop.Run();
 }
 
@@ -553,15 +583,16 @@ TEST_F(ConnectTest, MAYBE_PackagedApp_BlockedInterface) {
 // Connection to another application provided by the same package, blocked
 // because it's not in the capability filter whitelist.
 TEST_F(ConnectTest, MAYBE_BlockedPackagedApplication) {
-  mojom::ConnectResult result;
   base::RunLoop run_loop;
   test::mojom::ConnectTestServicePtr service_b;
   connector()->BindInterface(
       ServiceFilter::ByName(kTestAppBName), mojo::MakeRequest(&service_b),
-      base::BindOnce(&StartServiceResponse, nullptr, &result, nullptr));
-  service_b.set_connection_error_handler(run_loop.QuitClosure());
+      base::BindLambdaForTesting([&](mojom::ConnectResult result,
+                                     const base::Optional<Identity>& identity) {
+        EXPECT_EQ(mojom::ConnectResult::ACCESS_DENIED, result);
+        run_loop.Quit();
+      }));
   run_loop.Run();
-  EXPECT_EQ(mojom::ConnectResult::ACCESS_DENIED, result);
 }
 
 TEST_F(ConnectTest, CapabilityClasses) {
@@ -570,7 +601,7 @@ TEST_F(ConnectTest, CapabilityClasses) {
   std::string string1, string2;
   base::RunLoop loop;
   standalone_app->ConnectToClassInterface(
-      base::Bind(&ReceiveTwoStrings, &string1, &string2, &loop));
+      base::BindOnce(&ReceiveTwoStrings, &string1, &string2, &loop));
   loop.Run();
   EXPECT_EQ("PONG", string1);
   EXPECT_EQ("CLASS APP", string2);
@@ -592,7 +623,8 @@ TEST_F(ConnectTest, MAYBE_ConnectWithoutExplicitClassBlocked) {
   test::mojom::ClassInterfacePtr class_interface;
   connector()->BindInterface(kTestClassAppName, &class_interface);
   base::RunLoop loop;
-  class_interface.set_connection_error_handler(base::Bind(&QuitLoop, &loop));
+  class_interface.set_connection_error_handler(
+      base::BindOnce(&QuitLoop, &loop));
   loop.Run();
 }
 
@@ -607,8 +639,8 @@ TEST_F(ConnectTest, ConnectToDifferentGroup_Allowed) {
   {
     base::RunLoop loop;
     identity_test->ConnectToClassAppWithFilter(
-        filter,
-        base::Bind(&ReceiveConnectionResult, &result, &result_identity, &loop));
+        filter, base::BindOnce(&ReceiveConnectionResult, &result,
+                               &result_identity, &loop));
     loop.Run();
   }
   EXPECT_EQ(result, mojom::ConnectResult::SUCCEEDED);
@@ -630,8 +662,8 @@ TEST_F(ConnectTest, ConnectToDifferentGroup_Blocked) {
   {
     base::RunLoop loop;
     identity_test->ConnectToClassAppWithFilter(
-        filter,
-        base::Bind(&ReceiveConnectionResult, &result, &result_identity, &loop));
+        filter, base::BindOnce(&ReceiveConnectionResult, &result,
+                               &result_identity, &loop));
     loop.Run();
   }
   EXPECT_EQ(mojom::ConnectResult::ACCESS_DENIED, result);

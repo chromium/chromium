@@ -4,12 +4,4 @@ marq@chromium.org
 
 # TEAM: ios-directory-owners@chromium.org
 # OS: iOS
-
-per-file web_browser_manifest.cc=set noparent
-per-file web_browser_manifest.cc=file://ipc/SECURITY_OWNERS
-per-file web_browser_manifest.h=set noparent
-per-file web_browser_manifest.h=file://ipc/SECURITY_OWNERS
-per-file web_packaged_services_manifest.cc=set noparent
-per-file web_packaged_services_manifest.cc=file://ipc/SECURITY_OWNERS
-per-file web_packaged_services_manifest.h=set noparent
-per-file web_packaged_services_manifest.h=file://ipc/SECURITY_OWNERS
+# COMPONENT: Mobile>iOSWeb

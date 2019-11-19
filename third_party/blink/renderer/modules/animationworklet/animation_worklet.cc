@@ -46,7 +46,7 @@ WorkletGlobalScopeProxy* AnimationWorklet::CreateGlobalScope() {
         AnimationWorkletProxyClient::FromDocument(document, worklet_id_);
   }
 
-  WorkerClients* worker_clients = WorkerClients::Create();
+  auto* worker_clients = MakeGarbageCollected<WorkerClients>();
   ProvideAnimationWorkletProxyClientTo(worker_clients, proxy_client_);
 
   AnimationWorkletMessagingProxy* proxy =
@@ -59,7 +59,7 @@ WorkletGlobalScopeProxy* AnimationWorklet::CreateGlobalScope() {
 WorkletAnimationId AnimationWorklet::NextWorkletAnimationId() {
   // Id starts from 1. This way it safe to use it as key in hashmap with default
   // key traits.
-  return {.worklet_id = worklet_id_, .animation_id = ++last_animation_id_};
+  return WorkletAnimationId(worklet_id_, ++last_animation_id_);
 }
 
 void AnimationWorklet::Trace(blink::Visitor* visitor) {

@@ -35,9 +35,9 @@ PaintRecordPattern::~PaintRecordPattern() = default;
 
 sk_sp<PaintShader> PaintRecordPattern::CreateShader(
     const SkMatrix& local_matrix) {
-  return PaintShader::MakePaintRecord(
-      tile_record_, tile_record_bounds_, SkShader::kRepeat_TileMode,
-      SkShader::kRepeat_TileMode, &local_matrix);
+  return PaintShader::MakePaintRecord(tile_record_, tile_record_bounds_,
+                                      SkTileMode::kRepeat, SkTileMode::kRepeat,
+                                      &local_matrix);
 }
 
 }  // namespace blink

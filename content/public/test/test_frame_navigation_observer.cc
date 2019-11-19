@@ -28,7 +28,8 @@ TestFrameNavigationObserver::TestFrameNavigationObserver(
       frame_tree_node_id_(ToRenderFrameHostImpl(adapter)->GetFrameTreeNodeId()),
       navigation_started_(false),
       has_committed_(false),
-      wait_for_commit_(false) {
+      wait_for_commit_(false),
+      last_navigation_succeeded_(false) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -52,6 +53,7 @@ void TestFrameNavigationObserver::WaitForCommit() {
 
 void TestFrameNavigationObserver::DidStartNavigation(
     NavigationHandle* navigation_handle) {
+  last_navigation_succeeded_ = false;
   if (!navigation_handle->IsSameDocument() &&
       navigation_handle->GetFrameTreeNodeId() == frame_tree_node_id_) {
     navigation_started_ = true;
@@ -64,6 +66,7 @@ void TestFrameNavigationObserver::DidFinishNavigation(
   if (!navigation_started_)
     return;
 
+  last_navigation_succeeded_ = !navigation_handle->IsErrorPage();
   if (!navigation_handle->HasCommitted() ||
       navigation_handle->IsErrorPage() ||
       navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_) {

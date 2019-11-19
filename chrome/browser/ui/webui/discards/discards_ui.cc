@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
-#include "chrome/browser/performance_manager/performance_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
@@ -26,16 +25,21 @@
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/ui/webui/discards/discards.mojom.h"
+#include "chrome/browser/ui/webui/discards/graph_dump_impl.h"
+#include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "components/favicon_base/favicon_url_parser.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/resource_coordinator/public/mojom/service_constants.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -47,19 +51,19 @@ mojom::LifecycleUnitDiscardReason GetDiscardReason(bool urgent) {
                 : mojom::LifecycleUnitDiscardReason::PROACTIVE;
 }
 
-mojom::LifecycleUnitVisibility GetLifecycleUnitVisibility(
+discards::mojom::LifecycleUnitVisibility GetLifecycleUnitVisibility(
     content::Visibility visibility) {
   switch (visibility) {
     case content::Visibility::HIDDEN:
-      return mojom::LifecycleUnitVisibility::HIDDEN;
+      return discards::mojom::LifecycleUnitVisibility::HIDDEN;
     case content::Visibility::OCCLUDED:
-      return mojom::LifecycleUnitVisibility::OCCLUDED;
+      return discards::mojom::LifecycleUnitVisibility::OCCLUDED;
     case content::Visibility::VISIBLE:
-      return mojom::LifecycleUnitVisibility::VISIBLE;
+      return discards::mojom::LifecycleUnitVisibility::VISIBLE;
   }
 #if defined(COMPILER_MSVC)
   NOTREACHED();
-  return mojom::LifecycleUnitVisibility::VISIBLE;
+  return discards::mojom::LifecycleUnitVisibility::VISIBLE;
 #endif
 }
 
@@ -89,10 +93,10 @@ double GetSiteEngagementScore(content::WebContents* contents) {
   return engagement_svc->GetDetails(nav_entry->GetURL()).total_score;
 }
 
-mojom::SiteCharacteristicsFeaturePtr ConvertFeatureFromProto(
-    const SiteCharacteristicsFeatureProto& proto) {
-  mojom::SiteCharacteristicsFeaturePtr feature =
-      mojom::SiteCharacteristicsFeature::New();
+discards::mojom::SiteCharacteristicsFeaturePtr ConvertFeatureFromProto(
+    const SiteDataFeatureProto& proto) {
+  discards::mojom::SiteCharacteristicsFeaturePtr feature =
+      discards::mojom::SiteCharacteristicsFeature::New();
 
   if (proto.has_observation_duration()) {
     feature->observation_duration = proto.observation_duration();
@@ -109,10 +113,10 @@ mojom::SiteCharacteristicsFeaturePtr ConvertFeatureFromProto(
   return feature;
 }
 
-mojom::SiteCharacteristicsDatabaseEntryPtr ConvertEntryFromProto(
-    SiteCharacteristicsProto* proto) {
-  mojom::SiteCharacteristicsDatabaseValuePtr value =
-      mojom::SiteCharacteristicsDatabaseValue::New();
+discards::mojom::SiteCharacteristicsDatabaseEntryPtr ConvertEntryFromProto(
+    SiteDataProto* proto) {
+  discards::mojom::SiteCharacteristicsDatabaseValuePtr value =
+      discards::mojom::SiteCharacteristicsDatabaseValue::New();
 
   if (proto->has_last_loaded()) {
     value->last_loaded = proto->last_loaded();
@@ -133,8 +137,9 @@ mojom::SiteCharacteristicsDatabaseEntryPtr ConvertEntryFromProto(
     DCHECK(load_time_estimates_proto.has_avg_cpu_usage_us());
     DCHECK(load_time_estimates_proto.has_avg_footprint_kb());
 
-    mojom::SiteCharacteristicsPerformanceMeasurementPtr load_time_estimates =
-        mojom::SiteCharacteristicsPerformanceMeasurement::New();
+    discards::mojom::SiteCharacteristicsPerformanceMeasurementPtr
+        load_time_estimates =
+            discards::mojom::SiteCharacteristicsPerformanceMeasurement::New();
     if (load_time_estimates_proto.has_avg_cpu_usage_us()) {
       load_time_estimates->avg_cpu_usage_us =
           load_time_estimates_proto.avg_cpu_usage_us();
@@ -151,32 +156,32 @@ mojom::SiteCharacteristicsDatabaseEntryPtr ConvertEntryFromProto(
     value->load_time_estimates = std::move(load_time_estimates);
   }
 
-  mojom::SiteCharacteristicsDatabaseEntryPtr entry =
-      mojom::SiteCharacteristicsDatabaseEntry::New();
+  discards::mojom::SiteCharacteristicsDatabaseEntryPtr entry =
+      discards::mojom::SiteCharacteristicsDatabaseEntry::New();
   entry->value = std::move(value);
   return entry;
 }
 
-class DiscardsDetailsProviderImpl : public mojom::DiscardsDetailsProvider {
+class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
  public:
   // This instance is deleted when the supplied pipe is destroyed.
   DiscardsDetailsProviderImpl(
       resource_coordinator::LocalSiteCharacteristicsDataStoreInspector*
           data_store_inspector,
-      mojo::InterfaceRequest<mojom::DiscardsDetailsProvider> request)
+      mojo::PendingReceiver<discards::mojom::DetailsProvider> receiver)
       : data_store_inspector_(data_store_inspector),
-        binding_(this, std::move(request)) {}
+        receiver_(this, std::move(receiver)) {}
 
   ~DiscardsDetailsProviderImpl() override {}
 
-  // mojom::DiscardsDetailsProvider overrides:
+  // discards::mojom::DetailsProvider overrides:
   void GetTabDiscardsInfo(GetTabDiscardsInfoCallback callback) override {
     resource_coordinator::TabManager* tab_manager =
         g_browser_process->GetTabManager();
     const resource_coordinator::LifecycleUnitVector lifecycle_units =
         tab_manager->GetSortedLifecycleUnits();
 
-    std::vector<mojom::TabDiscardsInfoPtr> infos;
+    std::vector<discards::mojom::TabDiscardsInfoPtr> infos;
     infos.reserve(lifecycle_units.size());
 
     const base::TimeTicks now = resource_coordinator::NowTicks();
@@ -184,7 +189,8 @@ class DiscardsDetailsProviderImpl : public mojom::DiscardsDetailsProvider {
     // Convert the LifecycleUnits to a vector of TabDiscardsInfos.
     size_t rank = 1;
     for (auto* lifecycle_unit : lifecycle_units) {
-      mojom::TabDiscardsInfoPtr info(mojom::TabDiscardsInfo::New());
+      discards::mojom::TabDiscardsInfoPtr info(
+          discards::mojom::TabDiscardsInfo::New());
 
       resource_coordinator::TabLifecycleUnitExternal*
           tab_lifecycle_unit_external =
@@ -227,6 +233,8 @@ class DiscardsDetailsProviderImpl : public mojom::DiscardsDetailsProvider {
       if (info->has_reactivation_score)
         info->reactivation_score = reactivation_score.value();
       info->site_engagement_score = GetSiteEngagementScore(contents);
+      info->state_change_time =
+          lifecycle_unit->GetStateChangeTime() - base::TimeTicks::UnixEpoch();
       // TODO(crbug.com/876340): The focus is used to compute the page lifecycle
       // state. This should be replaced with the actual page lifecycle state
       // information from Blink, but this depends on implementing the passive
@@ -302,7 +310,7 @@ class DiscardsDetailsProviderImpl : public mojom::DiscardsDetailsProvider {
   OriginToReaderMap requested_origins_;
 
   LocalSiteCharacteristicsDataStoreInspector* data_store_inspector_;
-  mojo::Binding<mojom::DiscardsDetailsProvider> binding_;
+  mojo::Receiver<discards::mojom::DetailsProvider> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(DiscardsDetailsProviderImpl);
 };
@@ -338,14 +346,14 @@ void DiscardsDetailsProviderImpl::GetSiteCharacteristicsDatabase(
     }
   }
 
-  mojom::SiteCharacteristicsDatabasePtr result =
-      mojom::SiteCharacteristicsDatabase::New();
+  discards::mojom::SiteCharacteristicsDatabasePtr result =
+      discards::mojom::SiteCharacteristicsDatabase::New();
   std::vector<url::Origin> in_memory_origins =
       data_store_inspector_->GetAllInMemoryOrigins();
   for (const url::Origin& origin : in_memory_origins) {
     // Get the data for this origin and convert it from proto to the
     // corresponding mojo structure.
-    std::unique_ptr<SiteCharacteristicsProto> proto;
+    std::unique_ptr<SiteDataProto> proto;
     bool is_dirty = false;
     if (data_store_inspector_->GetDataForOrigin(origin, &is_dirty, &proto)) {
       auto entry = ConvertEntryFromProto(proto.get());
@@ -372,8 +380,8 @@ void DiscardsDetailsProviderImpl::GetSiteCharacteristicsDatabaseSize(
       [](GetSiteCharacteristicsDatabaseSizeCallback callback,
          base::Optional<int64_t> num_rows,
          base::Optional<int64_t> on_disk_size_kb) {
-        mojom::SiteCharacteristicsDatabaseSizePtr result =
-            mojom::SiteCharacteristicsDatabaseSize::New();
+        discards::mojom::SiteCharacteristicsDatabaseSizePtr result =
+            discards::mojom::SiteCharacteristicsDatabaseSize::New();
         result->num_rows = num_rows.has_value() ? num_rows.value() : -1;
         result->on_disk_size_kb =
             on_disk_size_kb.has_value() ? on_disk_size_kb.value() : -1;
@@ -392,25 +400,20 @@ DiscardsUI::DiscardsUI(content::WebUI* web_ui)
   std::unique_ptr<content::WebUIDataSource> source(
       content::WebUIDataSource::Create(chrome::kChromeUIDiscardsHost));
 
+  source->OverrideContentSecurityPolicyScriptSrc(
+      "script-src chrome://resources chrome://test 'self';");
+
   source->AddResourcePath("discards.js", IDR_DISCARDS_JS);
 
-  source->AddResourcePath("discards_main.html",
-                          IDR_DISCARDS_DISCARDS_MAIN_HTML);
   source->AddResourcePath("discards_main.js", IDR_DISCARDS_DISCARDS_MAIN_JS);
 
-  source->AddResourcePath("database_tab.html", IDR_DISCARDS_DATABASE_TAB_HTML);
   source->AddResourcePath("database_tab.js", IDR_DISCARDS_DATABASE_TAB_JS);
-  source->AddResourcePath("discards_tab.html", IDR_DISCARDS_DISCARDS_TAB_HTML);
   source->AddResourcePath("discards_tab.js", IDR_DISCARDS_DISCARDS_TAB_JS);
-  source->AddResourcePath("sorted_table_behavior.html",
-                          IDR_DISCARDS_SORTED_TABLE_BEHAVIOR_HTML);
   source->AddResourcePath("sorted_table_behavior.js",
                           IDR_DISCARDS_SORTED_TABLE_BEHAVIOR_JS);
-
-  source->AddResourcePath("graph_tab.html", IDR_DISCARDS_GRAPH_TAB_HTML);
   source->AddResourcePath("graph_tab.js", IDR_DISCARDS_GRAPH_TAB_JS);
 
-  source->AddResourcePath("mojo_api.html", IDR_DISCARDS_MOJO_API_HTML);
+  source->AddResourcePath("mojo_api.js", IDR_DISCARDS_MOJO_API_JS);
 
   // Full paths (relative to src) are important for Mojom generated files.
   source->AddResourcePath(
@@ -419,8 +422,6 @@ DiscardsUI::DiscardsUI(content::WebUI* web_ui)
   source->AddResourcePath(
       "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-lite.js",
       IDR_DISCARDS_LIFECYCLE_UNIT_STATE_MOJOM_LITE_JS);
-  source->AddResourcePath("mojom/webui_graph_dump.mojom-lite.js",
-                          IDR_DISCARDS_WEBUI_GRAPH_DUMP_MOJOM_LITE_JS);
 
   // Add the mojo base dependency for the WebUI Graph Dump.
   source->AddResourcePath(
@@ -428,15 +429,18 @@ DiscardsUI::DiscardsUI(content::WebUI* web_ui)
       IDR_DISCARDS_MOJO_PUBLIC_BASE_PROCESS_ID_MOJOM_LITE_JS);
 
   source->SetDefaultResource(IDR_DISCARDS_HTML);
-  source->UseGzip();
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, source.release());
 
+  content::URLDataSource::Add(
+      profile, std::make_unique<FaviconSource>(
+                   profile, chrome::FaviconUrlFormat::kFavicon2));
+
   AddHandlerToRegistry(base::BindRepeating(
       &DiscardsUI::BindDiscardsDetailsProvider, base::Unretained(this)));
   AddHandlerToRegistry(base::BindRepeating(
-      &DiscardsUI::BindWebUIGraphDumpProvider, base::Unretained(this)));
+      &DiscardsUI::BindDiscardsGraphDumpProvider, base::Unretained(this)));
 
   data_store_inspector_ = resource_coordinator::
       LocalSiteCharacteristicsDataStoreInspector::GetForProfile(profile);
@@ -445,17 +449,17 @@ DiscardsUI::DiscardsUI(content::WebUI* web_ui)
 DiscardsUI::~DiscardsUI() {}
 
 void DiscardsUI::BindDiscardsDetailsProvider(
-    mojom::DiscardsDetailsProviderRequest request) {
+    mojo::PendingReceiver<discards::mojom::DetailsProvider> receiver) {
   ui_handler_ = std::make_unique<DiscardsDetailsProviderImpl>(
-      data_store_inspector_, std::move(request));
+      data_store_inspector_, std::move(receiver));
 }
 
-void DiscardsUI::BindWebUIGraphDumpProvider(
-    resource_coordinator::mojom::WebUIGraphDumpRequest request) {
-  performance_manager::PerformanceManager* performance_manager =
-      performance_manager::PerformanceManager::GetInstance();
-  if (performance_manager) {
-    // Forward the interface request directly to the service.
-    performance_manager->BindInterface(std::move(request));
+void DiscardsUI::BindDiscardsGraphDumpProvider(
+    mojo::PendingReceiver<discards::mojom::GraphDump> receiver) {
+  if (performance_manager::PerformanceManager::IsAvailable()) {
+    // Forward the interface receiver directly to the service.
+    performance_manager::PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindOnce(&DiscardsGraphDumpImpl::CreateAndBind,
+                                  std::move(receiver)));
   }
 }

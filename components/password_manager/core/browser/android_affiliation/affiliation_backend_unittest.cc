@@ -12,7 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/clock.h"
@@ -363,7 +363,7 @@ class AffiliationBackendTest : public testing::Test {
         GetTestEquivalenceClassGamma());
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::TestMockTimeTaskRunner> backend_task_runner_;
   scoped_refptr<base::TestSimpleTaskRunner> consumer_task_runner_;
 

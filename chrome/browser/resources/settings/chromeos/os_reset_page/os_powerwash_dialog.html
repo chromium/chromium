@@ -1,0 +1,32 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="os_reset_browser_proxy.html">
+<link rel="import" href="../../lifetime_browser_proxy.html">
+<link rel="import" href="../../settings_shared_css.html">
+
+<dom-module id="os-settings-powerwash-dialog">
+  <template>
+    <style include="settings-shared"></style>
+    <cr-dialog id="dialog" close-text="$i18n{close}"
+        ignore-enter-key>
+      <div slot="title">$i18n{powerwashDialogTitle}</div>
+      <div slot="body">
+        <span>
+          $i18n{powerwashDialogExplanation}
+          <a href="$i18nRaw{powerwashLearnMoreUrl}" target="_blank">
+            $i18n{learnMore}
+          </a>
+        </span>
+      </div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCancelTap_"
+            id="cancel">$i18n{cancel}</cr-button>
+        <cr-button class="action-button" id="powerwash"
+            on-click="onRestartTap_">$i18n{powerwashDialogButton}</cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="os_powerwash_dialog.js"></script>
+</dom-module>

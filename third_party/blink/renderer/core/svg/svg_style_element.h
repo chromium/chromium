@@ -32,8 +32,6 @@ class SVGStyleElement final : public SVGElement, public StyleElement {
   USING_GARBAGE_COLLECTED_MIXIN(SVGStyleElement);
 
  public:
-  static SVGStyleElement* Create(Document&, const CreateElementFlags);
-
   SVGStyleElement(Document&, const CreateElementFlags);
   ~SVGStyleElement() override;
 

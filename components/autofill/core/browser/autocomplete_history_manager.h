@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_subject.h"
-#include "components/autofill/core/browser/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/form_data.h"
@@ -195,6 +195,10 @@ class AutocompleteHistoryManager : public KeyedService,
   void OnAutofillCleanupReturned(WebDataServiceBase::Handle current_handle,
                                  std::unique_ptr<WDTypedResult> result);
 
+  // Returns true if the given |field| and its value are valid to be saved as a
+  // new or updated Autocomplete entry.
+  bool IsFieldValueSaveable(const FormFieldData& field);
+
   // Must outlive this object.
   scoped_refptr<AutofillWebDataService> profile_database_;
 
@@ -225,7 +229,7 @@ class AutocompleteHistoryManager : public KeyedService,
 
   UMARecorder uma_recorder_;
 
-  base::WeakPtrFactory<AutocompleteHistoryManager> weak_ptr_factory_;
+  base::WeakPtrFactory<AutocompleteHistoryManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutocompleteHistoryManager);
 };

@@ -43,15 +43,6 @@ struct ReceivedMessage {
   std::string payload;
 };
 
-class FakeSecureMessageDelegateFactory
-    : public multidevice::SecureMessageDelegateImpl::Factory {
- public:
-  // multidevice::SecureMessageDelegateImpl::Factory:
-  std::unique_ptr<multidevice::SecureMessageDelegate> BuildInstance() override {
-    return std::make_unique<multidevice::FakeSecureMessageDelegate>();
-  }
-};
-
 class TestObserver final : public SecureChannel::Observer {
  public:
   explicit TestObserver(SecureChannel* secure_channel)
@@ -157,8 +148,7 @@ multidevice::RemoteDeviceRef CreateTestRemoteDevice() {
 
 class SecureChannelConnectionTest : public testing::Test {
  protected:
-  SecureChannelConnectionTest()
-      : test_device_(CreateTestRemoteDevice()), weak_ptr_factory_(this) {}
+  SecureChannelConnectionTest() : test_device_(CreateTestRemoteDevice()) {}
 
   void SetUp() override {
     test_authenticator_factory_ = std::make_unique<TestAuthenticatorFactory>();
@@ -166,7 +156,7 @@ class SecureChannelConnectionTest : public testing::Test {
         test_authenticator_factory_.get());
 
     fake_secure_message_delegate_factory_ =
-        std::make_unique<FakeSecureMessageDelegateFactory>();
+        std::make_unique<multidevice::FakeSecureMessageDelegateFactory>();
     multidevice::SecureMessageDelegateImpl::Factory::SetInstanceForTesting(
         fake_secure_message_delegate_factory_.get());
 
@@ -341,7 +331,7 @@ class SecureChannelConnectionTest : public testing::Test {
   // Owned by secure_channel_.
   FakeConnection* fake_connection_;
 
-  std::unique_ptr<FakeSecureMessageDelegateFactory>
+  std::unique_ptr<multidevice::FakeSecureMessageDelegateFactory>
       fake_secure_message_delegate_factory_;
 
   // Owned by secure_channel_ once authentication has completed successfully.
@@ -361,7 +351,7 @@ class SecureChannelConnectionTest : public testing::Test {
 
   base::Optional<int32_t> rssi_;
 
-  base::WeakPtrFactory<SecureChannelConnectionTest> weak_ptr_factory_;
+  base::WeakPtrFactory<SecureChannelConnectionTest> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SecureChannelConnectionTest);
 };

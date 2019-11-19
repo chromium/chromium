@@ -1,0 +1,64 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file mirrors //components/chrome_cleaner/proto/chrome_prompt.proto but
+// contains added fields to validate that they do not break the parsing. This is
+// to simulate an outdated Chrome handling messages from an updated cleaner.
+
+// This file contains minimal comments. For descriptions of non-test
+// fields/messages please refer to the original file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package chrome_cleaner_test_only;
+
+message CloseConnectionRequest {}
+
+message QueryCapabilityRequest {
+  optional bool FOR_TESTS_ONLY = 255;
+}
+
+message QueryCapabilityResponse {}
+
+message PromptUserRequest {
+  repeated string files_to_delete = 1;
+  repeated string registry_keys = 2;
+  repeated string extension_ids = 3;
+  repeated string FOR_TESTS_ONLY = 255;
+}
+
+message PromptUserResponse {
+  enum PromptAcceptance {
+    UNSPECIFIED = 0;
+    ACCEPTED_WITH_LOGS = 1;
+    ACCEPTED_WITHOUT_LOGS = 2;
+    DENIED = 3;
+    FOR_TESTS_ONLY = 255;
+  };
+
+  optional PromptAcceptance prompt_acceptance = 1 [default = UNSPECIFIED];
+}
+
+message RemoveExtensionsRequest {
+  repeated string extension_ids = 1;
+}
+
+message RemoveExtensionsResponse {
+  optional bool success = 1;
+}
+
+message FOR_TESTS_ONLY {
+  optional bool dummy_value = 1;
+}
+
+message ChromePromptRequest {
+  oneof request {
+    CloseConnectionRequest close_connection = 1;
+    QueryCapabilityRequest query_capability = 2;
+    PromptUserRequest prompt_user = 3;
+    RemoveExtensionsRequest remove_extensions = 4;
+    FOR_TESTS_ONLY test_message = 255;
+  }
+}

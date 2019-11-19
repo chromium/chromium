@@ -6,7 +6,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "jni/MediaMetadata_jni.h"
+#include "services/media_session/public/cpp/android/media_session_jni_headers/MediaMetadata_jni.h"
 #include "services/media_session/public/cpp/media_image.h"
 
 using base::android::ScopedJavaLocalRef;

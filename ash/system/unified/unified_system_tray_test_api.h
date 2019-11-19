@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ash/public/interfaces/system_tray_test_api.test-mojom.h"
+#include "ash/public/cpp/system_tray_test_api.h"
 #include "base/macros.h"
 
 namespace ui {
@@ -18,36 +18,35 @@ namespace views {
 class View;
 }  // namespace views
 
+namespace message_center {
+class MessagePopupView;
+}  // namespace message_center
+
 namespace ash {
 
 class UnifiedSystemTray;
 
 // Use by tests to access private state of UnifiedSystemTray.
-// mojo methods only apply to the system tray on the primary display.
-class UnifiedSystemTrayTestApi : public mojom::SystemTrayTestApi {
+// TODO(jamescook): Rename class to SystemTrayTestApiImpl.
+class UnifiedSystemTrayTestApi : public SystemTrayTestApi {
  public:
   explicit UnifiedSystemTrayTestApi(UnifiedSystemTray* tray);
   ~UnifiedSystemTrayTestApi() override;
 
-  // Creates and binds an instance from a remote request (e.g. from chrome).
-  static void BindRequest(mojom::SystemTrayTestApiRequest request);
+  // SystemTrayTestApi:
+  void DisableAnimations() override;
+  bool IsTrayBubbleOpen() override;
+  void ShowBubble() override;
+  void CloseBubble() override;
+  void ShowAccessibilityDetailedView() override;
+  void ShowNetworkDetailedView() override;
+  bool IsBubbleViewVisible(int view_id, bool open_tray) override;
+  void ClickBubbleView(int view_id) override;
+  base::string16 GetBubbleViewTooltip(int view_id) override;
+  bool Is24HourClock() override;
 
-  // mojom::SystemTrayTestApi:
-  void DisableAnimations(DisableAnimationsCallback cb) override;
-  void IsTrayBubbleOpen(IsTrayBubbleOpenCallback cb) override;
-  void IsTrayViewVisible(int view_id, IsTrayViewVisibleCallback cb) override;
-  void ShowBubble(ShowBubbleCallback cb) override;
-  void CloseBubble(CloseBubbleCallback cb) override;
-  void ShowDetailedView(mojom::TrayItem item,
-                        ShowDetailedViewCallback cb) override;
-  void IsBubbleViewVisible(int view_id,
-                           bool open_tray,
-                           IsBubbleViewVisibleCallback cb) override;
-  void ClickBubbleView(int32_t view_id, ClickBubbleViewCallback cb) override;
-  void GetBubbleViewTooltip(int view_id,
-                            GetBubbleViewTooltipCallback cb) override;
-  void GetBubbleLabelText(int view_id, GetBubbleLabelTextCallback cb) override;
-  void Is24HourClock(Is24HourClockCallback cb) override;
+  message_center::MessagePopupView* GetPopupViewForNotificationID(
+      const std::string& notification_id);
 
  private:
   // Returns a view in the bubble menu (not the tray itself). Returns null if

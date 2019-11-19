@@ -1,0 +1,25 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("translate_internals") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "ios_translate_internals_handler.h",
+    "ios_translate_internals_handler.mm",
+    "translate_internals_ui.h",
+    "translate_internals_ui.mm",
+  ]
+  deps = [
+    "//components/language/ios/browser",
+    "//components/translate/core/common",
+    "//components/translate/translate_internals",
+    "//ios/chrome/app/resources:ios_resources",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/web/public/webui",
+  ]
+}

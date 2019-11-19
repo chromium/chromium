@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-param-element
-[HTMLConstructor]
-interface HTMLParamElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLParamElement : HTMLElement {
     [CEReactions, Reflect] attribute DOMString name;
     [CEReactions, Reflect] attribute DOMString value;
 

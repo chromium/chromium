@@ -17,11 +17,13 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -32,7 +34,11 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class JavaScriptEvalChromeTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public ChromeActivityTestRule<? extends ChromeActivity> mActivityTestRule =
+            new ChromeActivityTestRule(ChromeTabbedActivity.class);
+
+    @Rule
+    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     private static final String JSTEST_URL = UrlUtils.encodeHtmlDataUri(
             "<html><head><script>"
@@ -43,7 +49,7 @@ public class JavaScriptEvalChromeTest {
             + "<body><button id=\"test\">Test button</button></body></html>");
 
     @Before
-    public void setUp() throws InterruptedException {
+    public void setUp() {
         mActivityTestRule.startMainActivityWithURL(JSTEST_URL);
     }
 
@@ -55,15 +61,15 @@ public class JavaScriptEvalChromeTest {
     @LargeTest
     @Feature({"Browser"})
     @RetryOnFailure
-    public void testJavaScriptEvalIsCorrectlyOrderedWithinOneTab()
-            throws InterruptedException, TimeoutException {
+    public void testJavaScriptEvalIsCorrectlyOrderedWithinOneTab() throws TimeoutException {
         Tab tab1 = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab2;
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        Tab tab2 = mActivityTestRule.getActivity().getActivityTab();
+        tab2 = mActivityTestRule.getActivity().getActivityTab();
         mActivityTestRule.loadUrl(JSTEST_URL);
-
         ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), tab1.getId());
+
         Assert.assertFalse("Tab didn't open", tab1 == tab2);
 
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
@@ -74,16 +80,20 @@ public class JavaScriptEvalChromeTest {
         for (int i = 1; i <= 30; ++i) {
             for (int j = 0; j < 5; ++j) {
                 // Start evaluation of a JavaScript script -- we don't need a result.
-                tab1.getWebContents().evaluateJavaScriptForTests("foobar();", null);
-                tab2.getWebContents().evaluateJavaScriptForTests("foobar();", null);
+                TestThreadUtils.runOnUiThreadBlocking(() -> {
+                    tab1.getWebContents().evaluateJavaScriptForTests("foobar();", null);
+                    tab2.getWebContents().evaluateJavaScriptForTests("foobar();", null);
+                });
             }
             Assert.assertEquals("Incorrect JavaScript evaluation result on tab1", i * 2,
                     Integer.parseInt(JavaScriptUtils.executeJavaScriptAndWaitForResult(
                             tab1.getWebContents(), "add2()")));
             for (int j = 0; j < 5; ++j) {
                 // Start evaluation of a JavaScript script -- we don't need a result.
-                tab1.getWebContents().evaluateJavaScriptForTests("foobar();", null);
-                tab2.getWebContents().evaluateJavaScriptForTests("foobar();", null);
+                TestThreadUtils.runOnUiThreadBlocking(() -> {
+                    tab1.getWebContents().evaluateJavaScriptForTests("foobar();", null);
+                    tab2.getWebContents().evaluateJavaScriptForTests("foobar();", null);
+                });
             }
             Assert.assertEquals("Incorrect JavaScript evaluation result on tab2", i * 2 + 1,
                     Integer.parseInt(JavaScriptUtils.executeJavaScriptAndWaitForResult(

@@ -4,9 +4,10 @@
 
 #include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client_impl.h"
-#include "content/public/common/service_manager_connection.h"
+#include "chromeos/services/secure_channel/secure_channel_base.h"
+#include "chromeos/services/secure_channel/secure_channel_initializer.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace chromeos {
 
@@ -18,19 +19,21 @@ SecureChannelClientProvider::~SecureChannelClientProvider() = default;
 
 // static
 SecureChannelClientProvider* SecureChannelClientProvider::GetInstance() {
-  return base::Singleton<SecureChannelClientProvider>::get();
+  static base::NoDestructor<SecureChannelClientProvider> provider;
+  return provider.get();
 }
 
 SecureChannelClient* SecureChannelClientProvider::GetClient() {
   if (!secure_channel_client_) {
-    // ServiceManagerConnection::GetForProcess() returns null in tests.
-    service_manager::Connector* connector =
-        content::ServiceManagerConnection::GetForProcess()
-            ? content::ServiceManagerConnection::GetForProcess()->GetConnector()
-            : nullptr;
+    static base::NoDestructor<std::unique_ptr<SecureChannelBase>> instance{[] {
+      return SecureChannelInitializer::Factory::Get()->BuildInstance();
+    }()};
 
+    mojo::PendingRemote<mojom::SecureChannel> channel;
+    (*instance)->BindReceiver(channel.InitWithNewPipeAndPassReceiver());
     secure_channel_client_ =
-        SecureChannelClientImpl::Factory::Get()->BuildInstance(connector);
+        SecureChannelClientImpl::Factory::Get()->BuildInstance(
+            std::move(channel));
   }
 
   return secure_channel_client_.get();

@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/history_provider.h"
 #include "components/url_formatter/url_fixer.h"
@@ -29,7 +30,7 @@ void BuiltinProvider::Start(const AutocompleteInput& input,
                             bool minimal_changes) {
   matches_.clear();
   if (input.from_omnibox_focus() ||
-      (input.type() == metrics::OmniboxInputType::INVALID) ||
+      (input.type() == metrics::OmniboxInputType::EMPTY) ||
       (input.type() == metrics::OmniboxInputType::QUERY))
     return;
 
@@ -49,18 +50,20 @@ void BuiltinProvider::Start(const AutocompleteInput& input,
                                          base::CompareCase::INSENSITIVE_ASCII);
   if (starting_about ||
       base::StartsWith(kAbout, text, base::CompareCase::INSENSITIVE_ASCII)) {
-    ACMatchClassifications styles;
     // Highlight the input portion matching |embedderAbout|; or if the user has
     // input "about:" (with optional slashes), highlight the whole
     // |embedderAbout|.
-    bool highlight = starting_about || text.length() > kAboutSchemeLength;
-    styles.push_back(ACMatchClassification(0, highlight ? kMatch : kUrl));
-    size_t offset = starting_about ? text.length() : embedderAbout.length();
-    if (highlight)
-      styles.push_back(ACMatchClassification(offset, kUrl));
+    TermMatches style_matches;
+    if (starting_about)
+      style_matches.emplace_back(0, 0, text.length());
+    else if (text.length() > kAboutSchemeLength)
+      style_matches.emplace_back(0, 0, embedderAbout.length());
+    ACMatchClassifications styles =
+        ClassifyTermMatches(style_matches, std::string::npos, kMatch, kUrl);
     // Include some common builtin URLs as the user types the scheme.
     for (base::string16 url : client_->GetBuiltinsToProvideAsUserTypes())
       AddMatch(url, base::string16(), styles);
+
   } else {
     // Match input about: or |embedderAbout| URL input against builtin URLs.
     GURL url = url_formatter::FixupURL(base::UTF16ToUTF8(text), std::string());
@@ -80,13 +83,11 @@ void BuiltinProvider::Start(const AutocompleteInput& input,
           base::StartsWith(blank_host, host,
                            base::CompareCase::INSENSITIVE_ASCII) &&
           (url.path().length() <= 1) && !text_ends_with_slash) {
-        ACMatchClassifications styles;
-        styles.push_back(ACMatchClassification(0, kMatch));
         base::string16 match = base::ASCIIToUTF16(url::kAboutBlankURL);
-        // Measure the length of the matching host after the "about:" scheme.
         const size_t corrected_length = kAboutSchemeLength + 1 + host.length();
-        if (blank_host.length() > host.length())
-          styles.push_back(ACMatchClassification(corrected_length, kUrl));
+        TermMatches style_matches = {{0, 0, corrected_length}};
+        ACMatchClassifications styles =
+            ClassifyTermMatches(style_matches, match.length(), kMatch, kUrl);
         AddMatch(match, match.substr(corrected_length), styles);
       }
 
@@ -95,15 +96,14 @@ void BuiltinProvider::Start(const AutocompleteInput& input,
       base::TrimString(host_and_path, base::ASCIIToUTF16("/"), &host_and_path);
       size_t match_length = embedderAbout.length() + host_and_path.length();
       for (Builtins::const_iterator i(builtins_.begin());
-          (i != builtins_.end()) && (matches_.size() < kMaxMatches); ++i) {
+           (i != builtins_.end()) && (matches_.size() < provider_max_matches_);
+           ++i) {
         if (base::StartsWith(*i, host_and_path,
                              base::CompareCase::INSENSITIVE_ASCII)) {
-          ACMatchClassifications styles;
-          // Highlight |embedderAbout|, even for input "about:foo".
-          styles.push_back(ACMatchClassification(0, kMatch));
           base::string16 match_string = embedderAbout + *i;
-          if (match_string.length() > match_length)
-            styles.push_back(ACMatchClassification(match_length, kUrl));
+          TermMatches style_matches = {{0, 0, match_length}};
+          ACMatchClassifications styles = ClassifyTermMatches(
+              style_matches, match_string.length(), kMatch, kUrl);
           // FixupURL() may have dropped a trailing slash on the user's input.
           // Ensure that in that case, we don't inline autocomplete unless the
           // autocompletion restores the slash.  This prevents us from e.g.
@@ -128,7 +128,14 @@ void BuiltinProvider::Start(const AutocompleteInput& input,
   // appropriate to be the default match, mark it as such and give it a high
   // enough score to beat url-what-you-typed.
   size_t default_match_index;
-  if (!HistoryProvider::PreventInlineAutocomplete(input) &&
+
+  // None of the built in site URLs contain whitespaces so we can safely prevent
+  // autocompletion when the input has a trailing whitespace in order to avoid
+  // autocompleting e.g. 'chrome://s ettings' when the input is 'chrome://s '.
+  bool input_allowed_to_have_default_match =
+      !input.prevent_inline_autocomplete() &&
+      (input.text().empty() || !base::IsUnicodeWhitespace(input.text().back()));
+  if (input_allowed_to_have_default_match &&
       HasMatchThatShouldBeDefault(&default_match_index)) {
     matches_[default_match_index].relevance = 1250;
     matches_[default_match_index].allowed_to_be_default_match = true;

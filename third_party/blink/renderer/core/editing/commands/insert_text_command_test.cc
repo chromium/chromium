@@ -23,8 +23,8 @@ TEST_F(InsertTextCommandTest, WithTypingStyle) {
   // Register typing style to make |InsertTextCommand| to attempt to apply
   // style to inserted text.
   GetDocument().execCommand("fontSizeDelta", false, "+3", ASSERT_NO_EXCEPTION);
-  CompositeEditCommand* const command =
-      InsertTextCommand::Create(GetDocument(), "x");
+  auto* const command =
+      MakeGarbageCollected<InsertTextCommand>(GetDocument(), "x");
   command->Apply();
 
   EXPECT_EQ(

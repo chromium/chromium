@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, RedirectedPrefetch) {
         return nullptr;
       }));
 
-  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   ASSERT_TRUE(https_server.Start());
 
   GURL url = https_server.GetURL("www.google.com", kRedirectPrefetchPage);

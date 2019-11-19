@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.preferences.password;
 
+import android.content.Context;
+
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Production implementation of PasswordManagerHandler, making calls to native C++ code to retrieve
@@ -28,10 +31,11 @@ public final class PasswordUIView implements PasswordManagerHandler {
 
     /**
      * Constructor creates the native object as well. Callers should call destroy() after usage.
+     *
      * @param PasswordListObserver The only observer.
      */
     public PasswordUIView(PasswordListObserver observer) {
-        mNativePasswordUIViewAndroid = nativeInit();
+        mNativePasswordUIViewAndroid = PasswordUIViewJni.get().init(PasswordUIView.this);
         mObserver = observer;
     }
 
@@ -49,43 +53,59 @@ public final class PasswordUIView implements PasswordManagerHandler {
     // passwordListAvailable and passwordExceptionListAvailable.
     @Override
     public void updatePasswordLists() {
-        nativeUpdatePasswordLists(mNativePasswordUIViewAndroid);
+        PasswordUIViewJni.get().updatePasswordLists(
+                mNativePasswordUIViewAndroid, PasswordUIView.this);
     }
 
     @Override
     public SavedPasswordEntry getSavedPasswordEntry(int index) {
-        return nativeGetSavedPasswordEntry(mNativePasswordUIViewAndroid, index);
+        return PasswordUIViewJni.get().getSavedPasswordEntry(
+                mNativePasswordUIViewAndroid, PasswordUIView.this, index);
     }
 
     @Override
     public String getSavedPasswordException(int index) {
-        return nativeGetSavedPasswordException(mNativePasswordUIViewAndroid, index);
+        return PasswordUIViewJni.get().getSavedPasswordException(
+                mNativePasswordUIViewAndroid, PasswordUIView.this, index);
     }
 
     @Override
     public void removeSavedPasswordEntry(int index) {
-        nativeHandleRemoveSavedPasswordEntry(mNativePasswordUIViewAndroid, index);
+        PasswordUIViewJni.get().handleRemoveSavedPasswordEntry(
+                mNativePasswordUIViewAndroid, PasswordUIView.this, index);
     }
 
     @Override
     public void removeSavedPasswordException(int index) {
-        nativeHandleRemoveSavedPasswordException(mNativePasswordUIViewAndroid, index);
+        PasswordUIViewJni.get().handleRemoveSavedPasswordException(
+                mNativePasswordUIViewAndroid, PasswordUIView.this, index);
     }
 
     @Override
     public void serializePasswords(
             String targetPath, IntStringCallback successCallback, Callback<String> errorCallback) {
-        nativeHandleSerializePasswords(
-                mNativePasswordUIViewAndroid, targetPath, successCallback, errorCallback);
+        PasswordUIViewJni.get().handleSerializePasswords(mNativePasswordUIViewAndroid,
+                PasswordUIView.this, targetPath, successCallback, errorCallback);
+    }
+
+    @Override
+    public void showPasswordEntryEditingView(Context context, int index) {
+        PasswordUIViewJni.get().handleShowPasswordEntryEditingView(
+                mNativePasswordUIViewAndroid, PasswordUIView.this, context, index);
     }
 
     /**
      * Returns the URL for the website for managing one's passwords without the need to use Chrome
      * with the user's profile signed in.
+     *
      * @return The string with the URL.
      */
     public static String getAccountDashboardURL() {
-        return nativeGetAccountDashboardURL();
+        return PasswordUIViewJni.get().getAccountDashboardURL();
+    }
+
+    public static boolean hasAccountForLeakCheckRequest() {
+        return PasswordUIViewJni.get().hasAccountForLeakCheckRequest();
     }
 
     /**
@@ -93,31 +113,30 @@ public final class PasswordUIView implements PasswordManagerHandler {
      */
     public void destroy() {
         if (mNativePasswordUIViewAndroid != 0) {
-            nativeDestroy(mNativePasswordUIViewAndroid);
+            PasswordUIViewJni.get().destroy(mNativePasswordUIViewAndroid, PasswordUIView.this);
             mNativePasswordUIViewAndroid = 0;
         }
     }
 
-    private native long nativeInit();
-
-    private native void nativeUpdatePasswordLists(long nativePasswordUIViewAndroid);
-
-    private native SavedPasswordEntry nativeGetSavedPasswordEntry(
-            long nativePasswordUIViewAndroid, int index);
-
-    private native String nativeGetSavedPasswordException(
-            long nativePasswordUIViewAndroid, int index);
-
-    private native void nativeHandleRemoveSavedPasswordEntry(
-            long nativePasswordUIViewAndroid, int index);
-
-    private native void nativeHandleRemoveSavedPasswordException(
-            long nativePasswordUIViewAndroid, int index);
-
-    private static native String nativeGetAccountDashboardURL();
-
-    private native void nativeDestroy(long nativePasswordUIViewAndroid);
-
-    private native void nativeHandleSerializePasswords(long nativePasswordUIViewAndroid,
-            String targetPath, IntStringCallback successCallback, Callback<String> errorCallback);
+    @NativeMethods
+    interface Natives {
+        long init(PasswordUIView caller);
+        void updatePasswordLists(long nativePasswordUIViewAndroid, PasswordUIView caller);
+        SavedPasswordEntry getSavedPasswordEntry(
+                long nativePasswordUIViewAndroid, PasswordUIView caller, int index);
+        String getSavedPasswordException(
+                long nativePasswordUIViewAndroid, PasswordUIView caller, int index);
+        void handleRemoveSavedPasswordEntry(
+                long nativePasswordUIViewAndroid, PasswordUIView caller, int index);
+        void handleRemoveSavedPasswordException(
+                long nativePasswordUIViewAndroid, PasswordUIView caller, int index);
+        String getAccountDashboardURL();
+        boolean hasAccountForLeakCheckRequest();
+        void destroy(long nativePasswordUIViewAndroid, PasswordUIView caller);
+        void handleSerializePasswords(long nativePasswordUIViewAndroid, PasswordUIView caller,
+                String targetPath, IntStringCallback successCallback,
+                Callback<String> errorCallback);
+        void handleShowPasswordEntryEditingView(long nativePasswordUIViewAndroid,
+                PasswordUIView caller, Context context, int index);
+    }
 }

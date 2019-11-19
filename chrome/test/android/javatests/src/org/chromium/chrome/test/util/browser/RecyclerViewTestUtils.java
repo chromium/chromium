@@ -7,10 +7,10 @@ package org.chromium.chrome.test.util.browser;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -54,7 +54,7 @@ public final class RecyclerViewTestUtils {
     }
 
     public static void waitForViewToDetach(final RecyclerView recyclerView, final View view)
-            throws InterruptedException, TimeoutException {
+            throws TimeoutException {
         final CallbackHelper callback = new CallbackHelper();
 
         recyclerView.addOnChildAttachStateChangeListener(
@@ -117,7 +117,7 @@ public final class RecyclerViewTestUtils {
      * @return the ViewHolder for the given {@code position}.
      */
     public static RecyclerView.ViewHolder scrollToView(RecyclerView recyclerView, int position) {
-        ThreadUtils.runOnUiThreadBlocking(() -> recyclerView.scrollToPosition(position));
+        TestThreadUtils.runOnUiThreadBlocking(() -> recyclerView.scrollToPosition(position));
         return waitForView(recyclerView, position);
     }
 
@@ -125,12 +125,9 @@ public final class RecyclerViewTestUtils {
      * Scrolls the {@link RecyclerView} to the bottom.
      */
     public static void scrollToBottom(RecyclerView recyclerView) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                // Scroll to bottom.
-                recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Scroll to bottom.
+            recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
         });
 
         CriteriaHelper.pollUiThread(new Criteria(){

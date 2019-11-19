@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
+#include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -23,11 +24,12 @@
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
 #include "chrome/browser/ui/views/passwords/password_pending_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/common/content_features.h"
+#include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -108,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {
       PasswordBubbleViewBase::manage_password_bubble());
   // A pending password with empty username should initially focus on the
   // username field.
-  EXPECT_EQ(bubble->username_field(),
+  EXPECT_EQ(bubble->GetUsernameTextfieldForTest(),
             bubble->GetFocusManager()->GetFocusedView());
   PasswordBubbleViewBase::CloseCurrentBubble();
   EXPECT_FALSE(IsBubbleShowing());
@@ -226,7 +228,8 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CloseOnClick) {
                    ->GetFocusManager()
                    ->GetFocusedView());
   ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER);
-  EXPECT_FALSE(IsBubbleShowing());
+  EXPECT_EQ(IsBubbleShowing(), base::FeatureList::IsEnabled(
+                                   password_manager::features::kStickyBubble));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CloseOnEsc) {
@@ -234,7 +237,8 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CloseOnEsc) {
   EXPECT_TRUE(IsBubbleShowing());
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
                                               false, false, false));
-  EXPECT_FALSE(IsBubbleShowing());
+  EXPECT_EQ(IsBubbleShowing(), base::FeatureList::IsEnabled(
+                                   password_manager::features::kStickyBubble));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CloseOnKey) {
@@ -256,7 +260,8 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CloseOnKey) {
   EXPECT_TRUE(web_contents->IsFocusedElementEditable());
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_K, false,
                                               false, false, false));
-  EXPECT_FALSE(IsBubbleShowing());
+  EXPECT_EQ(IsBubbleShowing(), base::FeatureList::IsEnabled(
+                                   password_manager::features::kStickyBubble));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
@@ -380,5 +385,18 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, AutoSigninNoFocus) {
   ui_test_utils::BrowserActivationWaiter waiter(browser());
   waiter.WaitForActivation();
 
+  EXPECT_FALSE(IsBubbleShowing());
+}
+
+// Test that triggering the leak detection dialog successfully hides a showing
+// bubble.
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, LeakPromptHidesBubble) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  SetupPendingPassword();
+  EXPECT_TRUE(IsBubbleShowing());
+
+  GetController()->OnCredentialLeak(
+      password_manager::CredentialLeakFlags::kPasswordSaved,
+      GURL("https://example.com"));
   EXPECT_FALSE(IsBubbleShowing());
 }

@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "ash/public/cpp/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -17,10 +16,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -80,12 +76,8 @@ class MockExtensionService : public TestExtensionService {
 class ComponentLoaderTest : public testing::Test {
  public:
   ComponentLoaderTest()
-      // Note: we pass the same pref service here, to stand in for both
-      // user prefs and local state.
       : extension_service_(&profile_),
         component_loader_(&extension_service_,
-                          &prefs_,
-                          &local_state_,
                           &profile_) {
     component_loader_.set_ignore_whitelist_for_testing(true);
   }
@@ -101,20 +93,12 @@ class ComponentLoaderTest : public testing::Test {
     ASSERT_TRUE(base::ReadFileToString(
         extension_path_.Append(kManifestFilename),
         &manifest_contents_));
-
-    // Register the local state prefs.
-#if defined(OS_CHROMEOS)
-    local_state_.registry()->RegisterBooleanPref(
-        ash::prefs::kAccessibilitySpokenFeedbackEnabled, false);
-#endif
   }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   MockExtensionService extension_service_;
-  sync_preferences::TestingPrefServiceSyncable prefs_;
-  TestingPrefServiceSimple local_state_;
   ComponentLoader component_loader_;
 
   // The root directory of the text extension.

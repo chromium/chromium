@@ -8,7 +8,7 @@
  * Launches the PaymentRequest UI including a details.id and prints the
  * resulting requestId.
  */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   try {
     new PaymentRequest(
         [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}],

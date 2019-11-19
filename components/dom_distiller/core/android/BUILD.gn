@@ -7,35 +7,20 @@ import("//build/config/android/rules.gni")
 android_library("dom_distiller_core_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   java_files = [
     "java/src/org/chromium/components/dom_distiller/core/DomDistillerService.java",
     "java/src/org/chromium/components/dom_distiller/core/DomDistillerUrlUtils.java",
     "java/src/org/chromium/components/dom_distiller/core/DistilledPagePrefs.java",
   ]
-
-  srcjar_deps = [
-    ":dom_distiller_core_font_family_javagen",
-    ":dom_distiller_core_theme_javagen",
-  ]
+  srcjar_deps = [ ":jni_enums" ]
 }
 
-java_cpp_template("dom_distiller_core_font_family_javagen") {
-  package_path = "org/chromium/components/dom_distiller/core"
+java_cpp_enum("jni_enums") {
+  visibility = [ ":*" ]
   sources = [
-    "java/src/org/chromium/components/dom_distiller/core/FontFamily.template",
-  ]
-  inputs = [
-    "../font_family_list.h",
-  ]
-}
-
-java_cpp_template("dom_distiller_core_theme_javagen") {
-  package_path = "org/chromium/components/dom_distiller/core"
-  sources = [
-    "java/src/org/chromium/components/dom_distiller/core/Theme.template",
-  ]
-  inputs = [
-    "../theme_list.h",
+    "//components/dom_distiller/core/distilled_page_prefs.h",
   ]
 }

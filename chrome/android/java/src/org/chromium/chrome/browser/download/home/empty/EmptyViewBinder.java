@@ -19,8 +19,6 @@ class EmptyViewBinder implements ViewBinder<PropertyModel, EmptyView, PropertyKe
             view.setState(model.get(EmptyProperties.STATE));
         } else if (propertyKey == EmptyProperties.EMPTY_TEXT_RES_ID) {
             view.setEmptyText(model.get(EmptyProperties.EMPTY_TEXT_RES_ID));
-        } else if (propertyKey == EmptyProperties.EMPTY_ICON_RES_ID) {
-            view.setEmptyIcon(model.get(EmptyProperties.EMPTY_ICON_RES_ID));
         }
     }
 }

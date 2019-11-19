@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<canvas />
+
+<script>
+// This behavior is not in the webxr spec, so this is an internal-only test.
+function detachView(array_buffer_view) {
+  try {
+    postMessage('', '', [array_buffer_view.buffer]);
+  } catch { }
+}
+
+let testFunction = function() {
+  in_canvas = document.body.appendChild(document.createElement('canvas'));
+  webgl = in_canvas.getContext('webgl', { xrCompatible: true });
+
+  return navigator.xr.requestSession('inline').then(session => {
+    session.updateRenderState({
+      baseLayer: new XRWebGLLayer(session, webgl)
+    });
+
+    return session.requestReferenceSpace('viewer').then(space => {
+      return new Promise(resolve => {
+        counter = 0;
+        request_frame_callback = (t, frame) => {
+          webgl.canvas.height += counter % 2 * 2 - 1;
+
+          pose = frame.getViewerPose(space);
+
+          new ArrayBuffer(64);
+          new ArrayBuffer(64);
+
+          if (++counter > 10) {
+            resolve();
+            return;
+          }
+
+          detached_array = pose.views[0].projectionMatrix;
+          detachView(detached_array);
+
+          session.requestAnimationFrame(request_frame_callback);
+        }
+        session.requestAnimationFrame(request_frame_callback);
+      });
+    });
+  });
+}
+
+promise_test(() => testFunction(), "Test that xrview.projection being detached doesn't cause a crash.");
+
+</script>

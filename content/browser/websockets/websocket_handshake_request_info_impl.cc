@@ -31,15 +31,15 @@ void WebSocketHandshakeRequestInfoImpl::CreateInfoAndAssociateWithRequest(
                            child_id, render_frame_id)));
 }
 
-int WebSocketHandshakeRequestInfoImpl::GetChildId() const {
+int WebSocketHandshakeRequestInfoImpl::GetChildId() {
   return child_id_;
 }
 
-int WebSocketHandshakeRequestInfoImpl::GetRenderFrameId() const {
+int WebSocketHandshakeRequestInfoImpl::GetRenderFrameId() {
   return render_frame_id_;
 }
 
-const WebSocketHandshakeRequestInfo* WebSocketHandshakeRequestInfo::ForRequest(
+WebSocketHandshakeRequestInfo* WebSocketHandshakeRequestInfo::ForRequest(
     const net::URLRequest* request) {
   return static_cast<WebSocketHandshakeRequestInfoImpl*>(
       request->GetUserData(&g_tag));

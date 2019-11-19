@@ -25,12 +25,12 @@ blink_platform_sources("blob") {
     "blob_bytes_provider.h",
     "blob_data.cc",
     "blob_data.h",
-    "blob_registry.cc",
-    "blob_registry.h",
     "blob_url.cc",
     "blob_url.h",
-    "serialized_blob_struct_traits.cc",
-    "serialized_blob_struct_traits.h",
+    "blob_url_null_origin_map.cc",
+    "blob_url_null_origin_map.h",
+    "serialized_blob_mojom_traits.cc",
+    "serialized_blob_mojom_traits.h",
   ]
 
   deps = [

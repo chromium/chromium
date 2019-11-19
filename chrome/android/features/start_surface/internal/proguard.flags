@@ -1,0 +1,15 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# To fix crbug/1017396. This is because AppBarLayout$ScrollingViewBehavior
+# is instantiated via java.lang.reflect.Constructor in CoordinatorLayout.java.
+# Note that AppBarLayout$Behavior is needed to keep the scrolling behavior.
+-keep class android.support.design.widget.AppBarLayout$Behavior {
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>();
+}
+-keep class android.support.design.widget.AppBarLayout$ScrollingViewBehavior {
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>();
+}

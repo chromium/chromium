@@ -9,9 +9,10 @@ import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager.FullscreenListener;
 import org.chromium.chrome.browser.snackbar.Snackbar;

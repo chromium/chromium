@@ -28,5 +28,5 @@
 ] interface RTCStatsResponse {
     sequence<RTCLegacyStatsReport> result();
     RTCLegacyStatsReport namedItem([DefaultValue=Undefined] optional DOMString name);
-    [NotEnumerable, ImplementedAs=namedItem] getter RTCLegacyStatsReport ([DefaultValue=Undefined] optional DOMString name);
+    [NotEnumerable, ImplementedAs=namedItem] getter RTCLegacyStatsReport (DOMString name);
 };

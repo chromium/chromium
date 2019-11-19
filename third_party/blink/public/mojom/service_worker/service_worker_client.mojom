@@ -5,7 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
-import "services/network/public/mojom/request_context_frame_type.mojom";
+import "third_party/blink/public/mojom/loader/request_context_frame_type.mojom";
 import "url/mojom/url.mojom";
 
 // Indicates the service worker client type.
@@ -13,8 +13,16 @@ import "url/mojom/url.mojom";
 // and https://w3c.github.io/ServiceWorker/#dom-clientqueryoptions-type.
 enum ServiceWorkerClientType {
   kWindow,
+  kDedicatedWorker,
   kSharedWorker,
   kAll,
+};
+
+// Indicates the service worker client lifecycle state.
+// https://wicg.github.io/page-lifecycle/#serviceworker-client-dfn
+enum ServiceWorkerClientLifecycleState {
+  kActive,
+  kFrozen,
 };
 
 // Indicates the options for the service worker clients matching operation.
@@ -53,6 +61,9 @@ struct ServiceWorkerClientInfo {
   // WindowClient#focused
   // Set to |false| if it's a non-window client.
   bool is_focused = false;
+
+  // Client#lifecycleState
+  ServiceWorkerClientLifecycleState lifecycle_state = ServiceWorkerClientLifecycleState.kActive;
 
   // The time this window was last focused. Set to base::TimeTicks() if it's
   // a non-window client.

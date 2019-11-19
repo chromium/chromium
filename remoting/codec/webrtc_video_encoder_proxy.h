@@ -26,6 +26,8 @@ class WebrtcVideoEncoderProxy : public WebrtcVideoEncoder {
   ~WebrtcVideoEncoderProxy() override;
 
   // WebrtcVideoEncoder interface.
+  void SetLosslessEncode(bool want_lossless) override;
+  void SetLosslessColor(bool want_lossless) override;
   void Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
               const FrameParams& params,
               EncodeCallback done) override;
@@ -39,7 +41,7 @@ class WebrtcVideoEncoderProxy : public WebrtcVideoEncoder {
 
   std::unique_ptr<Core> core_;
   scoped_refptr<base::SequencedTaskRunner> encode_task_runner_;
-  base::WeakPtrFactory<WebrtcVideoEncoderProxy> weak_factory_;
+  base::WeakPtrFactory<WebrtcVideoEncoderProxy> weak_factory_{this};
 };
 
 }  // namespace remoting

@@ -40,7 +40,19 @@
   }
   // Sort alphabetically to make the test robust.
   function toNames(path) {
-    return path.map(node => node.name().includes('::') ? 'InternalNode' : node.name());
+    let names = [];
+    for (node of path) {
+      if (node.name().includes('::')) {
+        names.push('InternalNode');
+      } else if (node.name() == 'Window / file://') {
+        // In MacOS 10.10 it's sometimes just Window, so we always make it
+        // so to avoid flakiness.
+        names.push('Window');
+      } else {
+        names.push(node.name());
+      }
+    }
+    return names;
   }
   retainerPaths.sort((path1, path2) => {
     let s1 = toNames(path1).join('->');

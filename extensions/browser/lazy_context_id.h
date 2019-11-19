@@ -58,11 +58,18 @@ class LazyContextId {
   LazyContextTaskQueue* GetTaskQueue() const;
 
   bool operator<(const LazyContextId& rhs) const {
-    return std::make_tuple(type_, context_, extension_id_,
-                           service_worker_scope_) <
-           std::make_tuple(rhs.type_, rhs.context_, rhs.extension_id_,
-                           rhs.service_worker_scope_);
+    return std::tie(type_, context_, extension_id_, service_worker_scope_) <
+           std::tie(rhs.type_, rhs.context_, rhs.extension_id_,
+                    rhs.service_worker_scope_);
   }
+
+  bool operator==(const LazyContextId& rhs) const {
+    return std::tie(type_, context_, extension_id_, service_worker_scope_) ==
+           std::tie(rhs.type_, rhs.context_, rhs.extension_id_,
+                    rhs.service_worker_scope_);
+  }
+
+  bool operator!=(const LazyContextId& rhs) const { return !(*this == rhs); }
 
  private:
   Type type_;

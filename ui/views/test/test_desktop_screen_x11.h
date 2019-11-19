@@ -24,9 +24,6 @@ class TestDesktopScreenX11 : public DesktopScreenX11 {
  public:
   static TestDesktopScreenX11* GetInstance();
 
-  TestDesktopScreenX11();
-  ~TestDesktopScreenX11() override;
-
   // DesktopScreenX11:
   gfx::Point GetCursorScreenPoint() override;
 
@@ -36,6 +33,9 @@ class TestDesktopScreenX11 : public DesktopScreenX11 {
 
  private:
   friend struct base::DefaultSingletonTraits<TestDesktopScreenX11>;
+
+  TestDesktopScreenX11();
+  ~TestDesktopScreenX11() override;
 
   gfx::Point cursor_screen_point_;
 

@@ -9,8 +9,8 @@ android_library("junit") {
   testonly = true
   proguard_configs = [ "//third_party/junit/proguard.flags" ]
   deps = [
-    "//third_party/android_tools:android_test_base_java",
-    "//third_party/android_tools:android_test_runner_java",
+    "//third_party/android_sdk:android_test_base_java",
+    "//third_party/android_sdk:android_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
   ]
   java_files = [

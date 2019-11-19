@@ -4,25 +4,27 @@
 
 package org.chromium.chrome.browser.customtabs.dynamicmodule;
 
-import static android.support.customtabs.CustomTabsCallback.NAVIGATION_FAILED;
-import static android.support.customtabs.CustomTabsCallback.NAVIGATION_FINISHED;
-import static android.support.customtabs.CustomTabsCallback.NAVIGATION_STARTED;
-import static android.support.customtabs.CustomTabsCallback.TAB_HIDDEN;
-import static android.support.customtabs.CustomTabsCallback.TAB_SHOWN;
+import static androidx.browser.customtabs.CustomTabsCallback.NAVIGATION_FAILED;
+import static androidx.browser.customtabs.CustomTabsCallback.NAVIGATION_FINISHED;
+import static androidx.browser.customtabs.CustomTabsCallback.NAVIGATION_STARTED;
+import static androidx.browser.customtabs.CustomTabsCallback.TAB_HIDDEN;
+import static androidx.browser.customtabs.CustomTabsCallback.TAB_SHOWN;
 
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsCallback;
 import android.text.TextUtils;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsCallback;
+
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabSelectionType;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.NavigationEntry;
+import org.chromium.net.NetError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +33,6 @@ import java.util.List;
  * An observer for firing navigation events to the CCT dynamic module.
  */
 public class DynamicModuleNavigationEventObserver extends EmptyTabObserver {
-    // An operation was aborted (due to user action). Should match the value in net_error_list.h.
-    private static final int NET_ERROR_ABORTED = -3;
-
     @VisibleForTesting
     public static final String URL_KEY = "urlInfo";
 
@@ -106,8 +105,9 @@ public class DynamicModuleNavigationEventObserver extends EmptyTabObserver {
     }
 
     @Override
-    public void onPageLoadFailed(Tab tab, int errorCode) {
-        int navigationEvent = errorCode == NET_ERROR_ABORTED ? CustomTabsCallback.NAVIGATION_ABORTED
+    public void onPageLoadFailed(Tab tab, @NetError int errorCode) {
+        int navigationEvent = errorCode == NetError.ERR_ABORTED
+                ? CustomTabsCallback.NAVIGATION_ABORTED
                 : CustomTabsCallback.NAVIGATION_FAILED;
         notifyOnNavigationEvent(navigationEvent, getExtrasBundleForNavigationEvent(tab));
     }

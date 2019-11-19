@@ -9,6 +9,8 @@ jumbo_static_library("renderer") {
   sources = [
     "pdf_accessibility_tree.cc",
     "pdf_accessibility_tree.h",
+    "pdf_ax_action_target.cc",
+    "pdf_ax_action_target.h",
     "pepper_pdf_host.cc",
     "pepper_pdf_host.h",
   ]
@@ -28,7 +30,21 @@ jumbo_static_library("renderer") {
     "//ppapi/proxy:ipc",
     "//ppapi/shared_impl",
     "//third_party/blink/public:blink",
+    "//third_party/blink/public/strings:strings_grit",
     "//third_party/icu",
     "//v8",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "pdf_accessibility_tree_unittest.cc",
+  ]
+
+  deps = [
+    ":renderer",
+    "//components/pdf/common:interfaces",
+    "//testing/gtest",
   ]
 }

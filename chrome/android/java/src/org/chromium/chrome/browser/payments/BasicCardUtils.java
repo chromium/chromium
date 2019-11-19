@@ -16,9 +16,6 @@ import java.util.Set;
 
 /** Basic-card utils */
 public class BasicCardUtils {
-    /** The 'basic-card' method name. */
-    public static final String BASIC_CARD_METHOD_NAME = "basic-card";
-
     /** The total number of all possible card types (i.e., credit, debit, prepaid, unknown). */
     public static final int TOTAL_NUMBER_OF_CARD_TYPES = 4;
 
@@ -101,6 +98,18 @@ public class BasicCardUtils {
         networks.put(BasicCardNetwork.UNIONPAY, "unionpay");
         networks.put(BasicCardNetwork.VISA, "visa");
         return networks;
+    }
+
+    /**
+     * @return a complete map of string identifiers to BasicCardNetworks.
+     */
+    public static Map<String, Integer> getNetworkIdentifiers() {
+        Map<Integer, String> networksByInt = getNetworks();
+        Map<String, Integer> networksByString = new HashMap<>();
+        for (Map.Entry<Integer, String> entry : networksByInt.entrySet()) {
+            networksByString.put(entry.getValue(), entry.getKey());
+        }
+        return networksByString;
     }
 
     /**

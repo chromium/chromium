@@ -13,6 +13,5 @@ static_library("country_codes") {
     "//base",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/sync",
   ]
 }

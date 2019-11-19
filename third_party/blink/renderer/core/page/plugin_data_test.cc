@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/page/plugin_data.h"
 
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/plugins/plugin_registry.mojom-blink.h"
@@ -40,19 +41,20 @@ TEST(PluginDataTest, NonStandardUrlSchemeRequestsPluginsWithUniqueOrigin) {
   SchemeRegistry::RegisterURLSchemeAsLocal("nonstandard-862282");
 
   MockPluginRegistry mock_plugin_registry;
-  mojo::Binding<mojom::blink::PluginRegistry> registry_binding(
+  mojo::Receiver<mojom::blink::PluginRegistry> registry_receiver(
       &mock_plugin_registry);
   TestingPlatformSupport::ScopedOverrideMojoInterface override_plugin_registry(
       WTF::BindRepeating(
-          [](mojo::Binding<mojom::blink::PluginRegistry>* registry_binding,
+          [](mojo::Receiver<mojom::blink::PluginRegistry>* registry_receiver,
              const char* interface, mojo::ScopedMessagePipeHandle pipe) {
             if (!strcmp(interface, mojom::blink::PluginRegistry::Name_)) {
-              registry_binding->Bind(
-                  mojom::blink::PluginRegistryRequest(std::move(pipe)));
+              registry_receiver->Bind(
+                  mojo::PendingReceiver<mojom::blink::PluginRegistry>(
+                      std::move(pipe)));
               return;
             }
           },
-          WTF::Unretained(&registry_binding)));
+          WTF::Unretained(&registry_receiver)));
 
   EXPECT_CALL(
       mock_plugin_registry,
@@ -61,7 +63,7 @@ TEST(PluginDataTest, NonStandardUrlSchemeRequestsPluginsWithUniqueOrigin) {
   scoped_refptr<SecurityOrigin> non_standard_origin =
       SecurityOrigin::CreateFromString("nonstandard-862282:foo/bar");
   EXPECT_FALSE(non_standard_origin->IsOpaque());
-  auto* plugin_data = PluginData::Create();
+  auto* plugin_data = MakeGarbageCollected<PluginData>();
   plugin_data->UpdatePluginList(non_standard_origin.get());
 }
 

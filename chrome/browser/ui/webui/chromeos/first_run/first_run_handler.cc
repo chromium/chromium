@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/public/interfaces/voice_interaction_controller.mojom.h"
 #include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/assistant/assistant_util.h"

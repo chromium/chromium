@@ -4,18 +4,21 @@
 
 #include "net/quic/quic_stream_factory.h"
 
-#include "base/test/fuzzed_data_provider.h"
+#include <fuzzer/FuzzedDataProvider.h>
 
 #include "base/stl_util.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/x509_certificate.h"
-#include "net/dns/fuzzed_host_resolver.h"
-#include "net/http/http_server_properties_impl.h"
+#include "net/dns/context_host_resolver.h"
+#include "net/dns/fuzzed_host_resolver_util.h"
+#include "net/http/http_server_properties.h"
 #include "net/http/transport_security_state.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
+#include "net/quic/quic_context.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/test_task_runner.h"
 #include "net/socket/fuzzed_datagram_client_socket.h"
@@ -23,8 +26,8 @@
 #include "net/socket/socket_tag.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/gtest_util.h"
-#include "net/third_party/quic/test_tools/mock_clock.h"
-#include "net/third_party/quic/test_tools/mock_random.h"
+#include "net/third_party/quiche/src/quic/test_tools/mock_clock.h"
+#include "net/third_party/quiche/src/quic/test_tools/mock_random.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
 namespace net {
@@ -76,90 +79,83 @@ struct Env {
   quic::QuicTagVector client_connection_options;
   std::unique_ptr<CTVerifier> cert_transparency_verifier;
   DefaultCTPolicyEnforcer ct_policy_enforcer;
+  QuicContext quic_context;
 };
 
 static struct Env* env = new Env();
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::FuzzedDataProvider data_provider(data, size);
+  FuzzedDataProvider data_provider(data, size);
 
-  FuzzedHostResolver host_resolver(HostResolver::Options(), nullptr,
-                                   &data_provider);
+  std::unique_ptr<ContextHostResolver> host_resolver =
+      CreateFuzzedContextHostResolver(HostResolver::ManagerOptions(), nullptr,
+                                      &data_provider,
+                                      true /* enable_caching */);
   FuzzedSocketFactory socket_factory(&data_provider);
 
   // Initialize this on each loop since some options mutate this.
-  HttpServerPropertiesImpl http_server_properties;
+  HttpServerProperties http_server_properties;
 
-  bool store_server_configs_in_properties = data_provider.ConsumeBool();
-  bool close_sessions_on_ip_change = data_provider.ConsumeBool();
-  bool mark_quic_broken_when_network_blackholes = data_provider.ConsumeBool();
-  bool allow_server_migration = data_provider.ConsumeBool();
-  bool race_cert_verification = data_provider.ConsumeBool();
-  bool estimate_initial_rtt = data_provider.ConsumeBool();
-  bool headers_include_h2_stream_dependency = data_provider.ConsumeBool();
-  bool enable_socket_recv_optimization = data_provider.ConsumeBool();
-  bool race_stale_dns_on_connection = data_provider.ConsumeBool();
+  QuicParams params;
+  params.max_server_configs_stored_in_properties =
+      data_provider.ConsumeBool() ? 1 : 0;
+  params.close_sessions_on_ip_change = data_provider.ConsumeBool();
+  params.allow_server_migration = data_provider.ConsumeBool();
+  params.race_cert_verification = data_provider.ConsumeBool();
+  params.estimate_initial_rtt = data_provider.ConsumeBool();
+  params.headers_include_h2_stream_dependency = data_provider.ConsumeBool();
+  params.enable_socket_recv_optimization = data_provider.ConsumeBool();
+  params.race_stale_dns_on_connection = data_provider.ConsumeBool();
 
   env->crypto_client_stream_factory.AddProofVerifyDetails(&env->verify_details);
 
-  bool goaway_sessions_on_ip_change = false;
-  bool migrate_sessions_early_v2 = false;
-  bool migrate_sessions_on_network_change_v2 = false;
-  bool retry_on_alternate_network_before_handshake = false;
-  bool migrate_idle_sessions = false;
-  bool go_away_on_path_degrading = false;
+  params.goaway_sessions_on_ip_change = false;
+  params.migrate_sessions_early_v2 = false;
+  params.migrate_sessions_on_network_change_v2 = false;
+  params.retry_on_alternate_network_before_handshake = false;
+  params.migrate_idle_sessions = false;
+  params.go_away_on_path_degrading = false;
 
-  if (!close_sessions_on_ip_change) {
-    goaway_sessions_on_ip_change = data_provider.ConsumeBool();
-    if (!goaway_sessions_on_ip_change) {
-      migrate_sessions_on_network_change_v2 = data_provider.ConsumeBool();
-      if (migrate_sessions_on_network_change_v2) {
-        migrate_sessions_early_v2 = data_provider.ConsumeBool();
-        retry_on_alternate_network_before_handshake =
+  if (!params.close_sessions_on_ip_change) {
+    params.goaway_sessions_on_ip_change = data_provider.ConsumeBool();
+    if (!params.goaway_sessions_on_ip_change) {
+      params.migrate_sessions_on_network_change_v2 =
+          data_provider.ConsumeBool();
+      if (params.migrate_sessions_on_network_change_v2) {
+        params.migrate_sessions_early_v2 = data_provider.ConsumeBool();
+        params.retry_on_alternate_network_before_handshake =
             data_provider.ConsumeBool();
-        migrate_idle_sessions = data_provider.ConsumeBool();
+        params.migrate_idle_sessions = data_provider.ConsumeBool();
       }
     }
   }
 
-  if (!migrate_sessions_early_v2)
-    go_away_on_path_degrading = data_provider.ConsumeBool();
+  if (!params.migrate_sessions_early_v2) {
+    params.go_away_on_path_degrading = data_provider.ConsumeBool();
+  }
 
   std::unique_ptr<QuicStreamFactory> factory =
       std::make_unique<QuicStreamFactory>(
-          env->net_log.net_log(), &host_resolver, env->ssl_config_service.get(),
-          &socket_factory, &http_server_properties, env->cert_verifier.get(),
+          env->net_log.net_log(), host_resolver.get(),
+          env->ssl_config_service.get(), &socket_factory,
+          &http_server_properties, env->cert_verifier.get(),
           &env->ct_policy_enforcer, &env->transport_security_state,
           env->cert_transparency_verifier.get(), nullptr,
-          &env->crypto_client_stream_factory, &env->random_generator,
-          &env->clock, quic::kDefaultMaxPacketSize, std::string(),
-          store_server_configs_in_properties, close_sessions_on_ip_change,
-          goaway_sessions_on_ip_change,
-          mark_quic_broken_when_network_blackholes,
-          kIdleConnectionTimeoutSeconds, quic::kPingTimeoutSecs,
-          kDefaultRetransmittableOnWireTimeoutMillisecs,
-          quic::kMaxTimeForCryptoHandshakeSecs, quic::kInitialIdleTimeoutSecs,
-          migrate_sessions_on_network_change_v2, migrate_sessions_early_v2,
-          retry_on_alternate_network_before_handshake, migrate_idle_sessions,
-          base::TimeDelta::FromSeconds(
-              kDefaultIdleSessionMigrationPeriodSeconds),
-          base::TimeDelta::FromSeconds(kMaxTimeOnNonDefaultNetworkSecs),
-          kMaxMigrationsToNonDefaultNetworkOnWriteError,
-          kMaxMigrationsToNonDefaultNetworkOnPathDegrading,
-          allow_server_migration, race_stale_dns_on_connection,
-          go_away_on_path_degrading, race_cert_verification,
-          estimate_initial_rtt, headers_include_h2_stream_dependency,
-          env->connection_options, env->client_connection_options,
-          enable_socket_recv_optimization);
+          &env->crypto_client_stream_factory, &env->quic_context, params);
 
+  SetQuicReloadableFlag(quic_supports_tls_handshake, true);
+  SetQuicRestartFlag(quic_coalesce_stream_frames_2, true);
   QuicStreamRequest request(factory.get());
   TestCompletionCallback callback;
   NetErrorDetails net_error_details;
+  quic::ParsedQuicVersionVector versions = quic::AllSupportedVersions();
+  quic::ParsedQuicVersion version =
+      versions[data_provider.ConsumeIntegralInRange<size_t>(
+          0, versions.size() - 1)];
   request.Request(
-      env->host_port_pair,
-      data_provider.PickValueInArray(quic::kSupportedTransportVersions),
-      PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY, SocketTag(), kCertVerifyFlags,
-      GURL(kUrl), env->net_log, &net_error_details,
+      env->host_port_pair, version, PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY,
+      SocketTag(), NetworkIsolationKey(), false /* disable_secure_dns */,
+      kCertVerifyFlags, GURL(kUrl), env->net_log, &net_error_details,
       /*failed_on_default_network_callback=*/CompletionOnceCallback(),
       callback.callback());
 

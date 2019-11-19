@@ -14,6 +14,8 @@ namespace enterprise_management {
 class AppInstallReportRequest;
 }
 
+class Profile;
+
 namespace policy {
 
 // Adapter between the system that captures and stores app push-install event
@@ -45,7 +47,7 @@ class AppInstallEventLogUploader : public CloudPolicyClient::Observer {
   };
 
   // |client| must outlive |this|.
-  explicit AppInstallEventLogUploader(CloudPolicyClient* client);
+  AppInstallEventLogUploader(CloudPolicyClient* client, Profile* profile);
   ~AppInstallEventLogUploader() override;
 
   // Sets the delegate. The delegate must either outlive |this| or be explicitly
@@ -101,6 +103,9 @@ class AppInstallEventLogUploader : public CloudPolicyClient::Observer {
   // The client used to upload logs to the server.
   CloudPolicyClient* client_ = nullptr;
 
+  // Profile used to fetch the context attributes for report request.
+  Profile* profile_ = nullptr;
+
   // The delegate that provides serialized logs to be uploaded.
   Delegate* delegate_ = nullptr;
 
@@ -113,7 +118,7 @@ class AppInstallEventLogUploader : public CloudPolicyClient::Observer {
   // Weak pointer factory for invalidating callbacks passed to the delegate and
   // scheduled retries when the upload request is canceled or |this| is
   // destroyed.
-  base::WeakPtrFactory<AppInstallEventLogUploader> weak_factory_;
+  base::WeakPtrFactory<AppInstallEventLogUploader> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppInstallEventLogUploader);
 };

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "base/macros.h"
 #include "extensions/browser/api/document_scan/document_scan_interface.h"
 
@@ -12,7 +14,6 @@ const char kScanFunctionNotImplementedError[] = "Scan function not implemented";
 }  // namespace
 
 namespace extensions {
-
 namespace api {
 
 class DocumentScanInterfaceImpl : public DocumentScanInterface {
@@ -20,14 +21,14 @@ class DocumentScanInterfaceImpl : public DocumentScanInterface {
   DocumentScanInterfaceImpl() {}
   ~DocumentScanInterfaceImpl() override {}
 
-  void ListScanners(const ListScannersResultsCallback& callback) override {
-    callback.Run(std::vector<ScannerDescription>(), "");
+  void ListScanners(ListScannersResultsCallback callback) override {
+    std::move(callback).Run(std::vector<ScannerDescription>(), "");
   }
   void Scan(const std::string& scanner_name,
             ScanMode mode,
             int resolution_dpi,
-            const ScanResultsCallback& callback) override {
-    callback.Run("", "", kScanFunctionNotImplementedError);
+            ScanResultsCallback callback) override {
+    std::move(callback).Run("", "", kScanFunctionNotImplementedError);
   }
 
  private:
@@ -40,5 +41,4 @@ DocumentScanInterface* DocumentScanInterface::CreateInstance() {
 }
 
 }  // namespace api
-
 }  // namespace extensions

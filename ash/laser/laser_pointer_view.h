@@ -49,7 +49,7 @@ class LaserPointerView : public fast_ink::FastInkView {
   base::OnceClosure fadeout_done_;
   gfx::Rect laser_content_rect_;
   bool pending_update_buffer_ = false;
-  base::WeakPtrFactory<LaserPointerView> weak_ptr_factory_;
+  base::WeakPtrFactory<LaserPointerView> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LaserPointerView);
 };

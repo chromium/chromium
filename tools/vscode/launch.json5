@@ -34,7 +34,7 @@
     "targetArchitecture": "x64",
     "program": "${workspaceRoot}/out/Debug/unit_tests",
     "args": ["--gtest_filter=*",
-              "--single_process",
+              "--single-process-tests",
               "--ui-test-action-max-timeout=1000000",
               "--test-launcher-timeout=1000000"],
     "preLaunchTask": "5-build_test_debug",

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<title>Request the MIDIAccess interface On An Insecure Origin</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/get-host-info.js"></script>
+<script>
+if (window.location.origin != get_host_info().UNAUTHENTICATED_ORIGIN) {
+    window.location = get_host_info().UNAUTHENTICATED_ORIGIN + window.location.pathname;
+} else {
+  test(t => {
+    assert_false('requestMIDIAccess' in navigator, 'navigator.requestMIDIAccess should not be present');
+  }, 'navigator.requestMIDIAccess requires a secure context');
+}
+</script>

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<script src="../resources/text-based-repaint.js"></script>
+<div id="target" style="width: 100px; height: 100px; background: gray;
+                        will-change: opacity; transition: 0.2s">
+</div>
+<script>
+window.testIsAsync = true;
+function repaintTest() {
+  target.addEventListener('transitionend', finishRepaintTest);
+  target.style.opacity = 0.5;
+}
+onload = runRepaintAndPixelTest;
+</script>

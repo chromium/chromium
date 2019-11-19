@@ -1,0 +1,27 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/base/mojom/cursor.mojom"
+public_headers = [
+  "//ui/base/cursor/cursor_size.h",
+  "//ui/base/cursor/cursor.h",
+  "//ui/base/cursor/types/cursor_types.h",
+]
+traits_headers = [ "//ui/base/mojom/cursor_mojom_traits.h" ]
+sources = [
+  "//ui/base/mojom/cursor_mojom_traits.cc",
+]
+public_deps = [
+  "//ui/base",
+]
+deps = [
+  "//ui/gfx/geometry",
+  "//ui/gfx/geometry/mojom:mojom_traits",
+]
+
+type_mappings = [
+  "ui.mojom.Cursor=::ui::Cursor[copyable_pass_by_value]",
+  "ui.mojom.CursorSize=::ui::CursorSize",
+  "ui.mojom.CursorType=::ui::CursorType",
+]

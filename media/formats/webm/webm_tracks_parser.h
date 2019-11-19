@@ -46,12 +46,12 @@ class MEDIA_EXPORT WebMTracksParser : public WebMParserClient {
 
   // If TrackEntry DefaultDuration field existed for the associated audio or
   // video track, returns that value converted from ns to base::TimeDelta with
-  // precision not greater than |timecode_scale_in_us|. Defaults to
+  // precision not greater than |timecode_scale_in_ns|. Defaults to
   // kNoTimestamp.
   base::TimeDelta GetAudioDefaultDuration(
-      const double timecode_scale_in_us) const;
+      const int64_t timecode_scale_in_ns) const;
   base::TimeDelta GetVideoDefaultDuration(
-      const double timecode_scale_in_us) const;
+      const int64_t timecode_scale_in_ns) const;
 
   const std::set<int64_t>& ignored_tracks() const { return ignored_tracks_; }
 
@@ -93,6 +93,19 @@ class MEDIA_EXPORT WebMTracksParser : public WebMParserClient {
   }
 
  private:
+  // To test PrecisionCappedDefaultDuration.
+  FRIEND_TEST_ALL_PREFIXES(WebMTracksParserTest, PrecisionCapping);
+
+  // Returns the conversion of |duration_in_ns| to a microsecond-granularity
+  // TimeDelta with precision no greater than |timecode_scale_in_ns|.
+  // Returns kNoTimestamp if |duration_in_ns| is <= 0, or the capped precision
+  // of the converted |duration_in_ns| is < 1 microsecond.
+  // Commonly, |timecode_scale_in_ns| is 1000000 (1 millisecond), though the
+  // muxed stream could have used a different time scale.
+  base::TimeDelta PrecisionCappedDefaultDuration(
+      const int64_t timecode_scale_in_ns,
+      const int64_t duration_in_ns) const;
+
   void Reset();
   void ResetTrackEntry();
 

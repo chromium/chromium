@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/syncable/base_node.h"
@@ -153,7 +154,7 @@ int64_t SyncDataRemote::GetId() const {
   return id_;
 }
 
-const std::string& SyncDataRemote::GetClientTagHash() const {
+ClientTagHash SyncDataRemote::GetClientTagHash() const {
   // It seems that client_defined_unique_tag has a bit of an overloaded use,
   // holding onto the un-hashed tag while local, and then the hashed value when
   // communicating with the server. This usage is copying the latter of these
@@ -161,7 +162,8 @@ const std::string& SyncDataRemote::GetClientTagHash() const {
   // the server so we wouldn't be able to set this value anyways. The only way
   // to recreate an un-hashed tag is for the service to do so with a specifics.
   DCHECK(!immutable_entity_.Get().client_defined_unique_tag().empty());
-  return immutable_entity_.Get().client_defined_unique_tag();
+  return ClientTagHash::FromHashed(
+      immutable_entity_.Get().client_defined_unique_tag());
 }
 
 }  // namespace syncer

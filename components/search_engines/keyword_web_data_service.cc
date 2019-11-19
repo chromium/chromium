@@ -7,21 +7,57 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_database_service.h"
 
-using base::Bind;
+namespace {
 
-WDKeywordsResult::WDKeywordsResult()
-  : default_search_provider_id(0),
-    builtin_keyword_version(0) {
+WebDatabase::State PerformKeywordOperationsImpl(
+    const KeywordTable::Operations& operations,
+    WebDatabase* db) {
+  return KeywordTable::FromWebDatabase(db)->PerformOperations(operations)
+             ? WebDatabase::COMMIT_NEEDED
+             : WebDatabase::COMMIT_NOT_NEEDED;
 }
 
-WDKeywordsResult::WDKeywordsResult(const WDKeywordsResult& other) = default;
+std::unique_ptr<WDTypedResult> GetKeywordsImpl(WebDatabase* db) {
+  KeywordTable* const keyword_table = KeywordTable::FromWebDatabase(db);
+  WDKeywordsResult result;
+  if (!keyword_table->GetKeywords(&result.keywords))
+    return nullptr;
 
-WDKeywordsResult::~WDKeywordsResult() {}
+  result.default_search_provider_id =
+      keyword_table->GetDefaultSearchProviderID();
+  result.builtin_keyword_version = keyword_table->GetBuiltinKeywordVersion();
+  return std::make_unique<WDResult<WDKeywordsResult>>(KEYWORDS_RESULT, result);
+}
+
+WebDatabase::State SetDefaultSearchProviderIDImpl(TemplateURLID id,
+                                                  WebDatabase* db) {
+  return KeywordTable::FromWebDatabase(db)->SetDefaultSearchProviderID(id)
+             ? WebDatabase::COMMIT_NEEDED
+             : WebDatabase::COMMIT_NOT_NEEDED;
+}
+
+WebDatabase::State SetBuiltinKeywordVersionImpl(int version, WebDatabase* db) {
+  return KeywordTable::FromWebDatabase(db)->SetBuiltinKeywordVersion(version)
+             ? WebDatabase::COMMIT_NEEDED
+             : WebDatabase::COMMIT_NOT_NEEDED;
+}
+
+}  // namespace
+
+WDKeywordsResult::WDKeywordsResult() = default;
+
+WDKeywordsResult::WDKeywordsResult(const WDKeywordsResult&) = default;
+
+WDKeywordsResult& WDKeywordsResult::operator=(const WDKeywordsResult&) =
+    default;
+
+WDKeywordsResult::~WDKeywordsResult() = default;
 
 KeywordWebDataService::BatchModeScoper::BatchModeScoper(
     KeywordWebDataService* service)
@@ -40,7 +76,10 @@ KeywordWebDataService::KeywordWebDataService(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     const ProfileErrorCallback& callback)
     : WebDataServiceBase(wdbs, callback, ui_task_runner),
-      batch_mode_level_(0) {}
+      timer_(FROM_HERE,
+             base::TimeDelta::FromSeconds(5),
+             base::BindRepeating(&KeywordWebDataService::CommitQueuedOperations,
+                                 base::Unretained(this))) {}
 
 void KeywordWebDataService::AddKeyword(const TemplateURLData& data) {
   if (batch_mode_level_) {
@@ -79,25 +118,32 @@ void KeywordWebDataService::UpdateKeyword(const TemplateURLData& data) {
 
 WebDataServiceBase::Handle KeywordWebDataService::GetKeywords(
     WebDataServiceConsumer* consumer) {
+  // Force pending changes to be visible immediately so the results of this call
+  // won't be out of date.
+  CommitQueuedOperations();
+
   return wdbs_->ScheduleDBTaskWithResult(
-      FROM_HERE, Bind(&KeywordWebDataService::GetKeywordsImpl, this), consumer);
+      FROM_HERE, base::Bind(&GetKeywordsImpl), consumer);
 }
 
 void KeywordWebDataService::SetDefaultSearchProviderID(TemplateURLID id) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE,
-      Bind(&KeywordWebDataService::SetDefaultSearchProviderIDImpl, this, id));
+  wdbs_->ScheduleDBTask(FROM_HERE,
+                        base::Bind(&SetDefaultSearchProviderIDImpl, id));
 }
 
 void KeywordWebDataService::SetBuiltinKeywordVersion(int version) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE,
-      Bind(&KeywordWebDataService::SetBuiltinKeywordVersionImpl,
-           this, version));
+  wdbs_->ScheduleDBTask(FROM_HERE,
+                        base::Bind(&SetBuiltinKeywordVersionImpl, version));
+}
+
+void KeywordWebDataService::ShutdownOnUISequence() {
+  CommitQueuedOperations();
+  WebDataServiceBase::ShutdownOnUISequence();
 }
 
 KeywordWebDataService::~KeywordWebDataService() {
   DCHECK(!batch_mode_level_);
+  DCHECK(queued_keyword_operations_.empty());
 }
 
 void KeywordWebDataService::AdjustBatchModeLevel(bool entering_batch_mode) {
@@ -106,47 +152,25 @@ void KeywordWebDataService::AdjustBatchModeLevel(bool entering_batch_mode) {
   } else {
     DCHECK(batch_mode_level_);
     --batch_mode_level_;
-    if (!batch_mode_level_ && !queued_keyword_operations_.empty()) {
-      wdbs_->ScheduleDBTask(
-          FROM_HERE,
-          Bind(&KeywordWebDataService::PerformKeywordOperationsImpl, this,
-               queued_keyword_operations_));
-      queued_keyword_operations_.clear();
+    if (!batch_mode_level_ && !queued_keyword_operations_.empty() &&
+        !timer_.IsRunning()) {
+      // When killing an app on Android/iOS, shutdown isn't guaranteed to be
+      // called. Finishing this task immediately ensures the table is fully
+      // populated even if the app is killed before the timer expires.
+#if defined(OS_ANDROID) || defined(OS_IOS)
+      CommitQueuedOperations();
+#else
+      timer_.Reset();
+#endif
     }
   }
 }
 
-WebDatabase::State KeywordWebDataService::PerformKeywordOperationsImpl(
-    const KeywordTable::Operations& operations,
-    WebDatabase* db) {
-  return KeywordTable::FromWebDatabase(db)->PerformOperations(operations) ?
-      WebDatabase::COMMIT_NEEDED : WebDatabase::COMMIT_NOT_NEEDED;
-}
-
-std::unique_ptr<WDTypedResult> KeywordWebDataService::GetKeywordsImpl(
-    WebDatabase* db) {
-  std::unique_ptr<WDTypedResult> result_ptr;
-  WDKeywordsResult result;
-  if (KeywordTable::FromWebDatabase(db)->GetKeywords(&result.keywords)) {
-    result.default_search_provider_id =
-        KeywordTable::FromWebDatabase(db)->GetDefaultSearchProviderID();
-    result.builtin_keyword_version =
-        KeywordTable::FromWebDatabase(db)->GetBuiltinKeywordVersion();
-    result_ptr.reset(new WDResult<WDKeywordsResult>(KEYWORDS_RESULT, result));
+void KeywordWebDataService::CommitQueuedOperations() {
+  if (!queued_keyword_operations_.empty()) {
+    wdbs_->ScheduleDBTask(FROM_HERE, base::Bind(&PerformKeywordOperationsImpl,
+                                                queued_keyword_operations_));
+    queued_keyword_operations_.clear();
   }
-  return result_ptr;
-}
-
-WebDatabase::State KeywordWebDataService::SetDefaultSearchProviderIDImpl(
-    TemplateURLID id,
-    WebDatabase* db) {
-  return KeywordTable::FromWebDatabase(db)->SetDefaultSearchProviderID(id) ?
-      WebDatabase::COMMIT_NEEDED : WebDatabase::COMMIT_NOT_NEEDED;
-}
-
-WebDatabase::State KeywordWebDataService::SetBuiltinKeywordVersionImpl(
-    int version,
-    WebDatabase* db) {
-  return KeywordTable::FromWebDatabase(db)->SetBuiltinKeywordVersion(version) ?
-      WebDatabase::COMMIT_NEEDED : WebDatabase::COMMIT_NOT_NEEDED;
+  timer_.Stop();
 }

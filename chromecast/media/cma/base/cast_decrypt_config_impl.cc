@@ -10,9 +10,11 @@ namespace media {
 CastDecryptConfigImpl::CastDecryptConfigImpl(
     std::string key_id,
     std::string iv,
+    const EncryptionPattern& pattern,
     std::vector<SubsampleEntry> subsamples)
     : key_id_(std::move(key_id)),
       iv_(std::move(iv)),
+      pattern_(pattern),
       subsamples_(std::move(subsamples)) {}
 
 CastDecryptConfigImpl::~CastDecryptConfigImpl() {}
@@ -23,6 +25,10 @@ const std::string& CastDecryptConfigImpl::key_id() const {
 
 const std::string& CastDecryptConfigImpl::iv() const {
   return iv_;
+}
+
+const EncryptionPattern& CastDecryptConfigImpl::pattern() const {
+  return pattern_;
 }
 
 const std::vector<SubsampleEntry>& CastDecryptConfigImpl::subsamples() const {

@@ -17,8 +17,11 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/lazy_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;
@@ -28,8 +31,9 @@ static constexpr int kDefaultThrottleTimeout = 200;
 
 // DevToolsFileWatcher::SharedFileWatcher --------------------------------------
 
-class DevToolsFileWatcher::SharedFileWatcher :
-    public base::RefCounted<SharedFileWatcher> {
+class DevToolsFileWatcher::SharedFileWatcher
+    : public base::RefCounted<SharedFileWatcher>,
+      public base::trace_event::MemoryDumpProvider {
  public:
   SharedFileWatcher();
 
@@ -38,10 +42,14 @@ class DevToolsFileWatcher::SharedFileWatcher :
   void AddWatch(const base::FilePath& path);
   void RemoveWatch(const base::FilePath& path);
 
+  // base::trace_event::MemoryDumpProvider implementation:
+  bool OnMemoryDump(
+      const base::trace_event::MemoryDumpArgs& args,
+      base::trace_event::ProcessMemoryDump* process_memory_dump) override;
+
  private:
-  friend class base::RefCounted<
-      DevToolsFileWatcher::SharedFileWatcher>;
-  ~SharedFileWatcher();
+  friend class base::RefCounted<SharedFileWatcher>;
+  ~SharedFileWatcher() override;
 
   using FilePathTimesMap = std::unordered_map<base::FilePath, base::Time>;
   FilePathTimesMap GetModificationTimes(const base::FilePath& path);
@@ -61,11 +69,40 @@ DevToolsFileWatcher::SharedFileWatcher::SharedFileWatcher()
     : last_dispatch_cost_(
           base::TimeDelta::FromMilliseconds(kDefaultThrottleTimeout)) {
   DevToolsFileWatcher::s_shared_watcher_ = this;
+  base::trace_event::MemoryDumpManager::GetInstance()
+      ->RegisterDumpProviderWithSequencedTaskRunner(
+          this, "DevTools", base::SequencedTaskRunnerHandle::Get(),
+          base::trace_event::MemoryDumpProvider::Options());
 }
 
 DevToolsFileWatcher::SharedFileWatcher::~SharedFileWatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
   DevToolsFileWatcher::s_shared_watcher_ = nullptr;
+}
+
+bool DevToolsFileWatcher::SharedFileWatcher::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* process_memory_dump) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  int index = 0;
+  for (auto& file_path : file_path_times_) {
+    size_t file_paths_size = 0;
+    for (auto& path_and_time : file_path.second) {
+      file_paths_size += path_and_time.first.value().length() *
+                         sizeof(base::FilePath::StringType::value_type);
+    }
+    auto* dump = process_memory_dump->CreateAllocatorDump(
+        base::StringPrintf("devtools/file_watcher_0x%x", index++));
+    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
+                    base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                    file_path.second.size());
+    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                    base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                    file_paths_size);
+  }
+  return true;
 }
 
 void DevToolsFileWatcher::SharedFileWatcher::AddListener(
@@ -188,17 +225,15 @@ void DevToolsFileWatcher::SharedFileWatcher::DispatchNotifications() {
 namespace {
 base::SequencedTaskRunner* impl_task_runner() {
   constexpr base::TaskTraits kImplTaskTraits = {
-      base::MayBlock(), base::TaskPriority::BEST_EFFORT};
+      base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT};
   static base::LazySequencedTaskRunner s_file_task_runner =
       LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(kImplTaskTraits);
-
   return s_file_task_runner.Get().get();
 }
 }  // namespace
 
 // static
-DevToolsFileWatcher::SharedFileWatcher*
-DevToolsFileWatcher::s_shared_watcher_ = nullptr;
+DevToolsFileWatcher::SharedFileWatcher* DevToolsFileWatcher::s_shared_watcher_;
 
 // static
 void DevToolsFileWatcher::Deleter::operator()(const DevToolsFileWatcher* ptr) {

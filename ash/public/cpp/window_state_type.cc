@@ -4,85 +4,116 @@
 
 #include "ash/public/cpp/window_state_type.h"
 
-#include "ash/public/interfaces/window_state_type.mojom.h"
+#include "base/logging.h"
 
 namespace ash {
 
-mojom::WindowStateType ToWindowStateType(ui::WindowShowState state) {
+std::ostream& operator<<(std::ostream& stream, WindowStateType state) {
+  switch (state) {
+    case WindowStateType::kDefault:
+      return stream << "kDefault";
+    case WindowStateType::kNormal:
+      return stream << "kNormal";
+    case WindowStateType::kMinimized:
+      return stream << "kMinimized";
+    case WindowStateType::kMaximized:
+      return stream << "kMaximized";
+    case WindowStateType::kInactive:
+      return stream << "kInactive";
+    case WindowStateType::kFullscreen:
+      return stream << "kFullscreen";
+    case WindowStateType::kLeftSnapped:
+      return stream << "kLeftSnapped";
+    case WindowStateType::kRightSnapped:
+      return stream << "kRightSnapped";
+    case WindowStateType::kAutoPositioned:
+      return stream << "kAutoPositioned";
+    case WindowStateType::kPinned:
+      return stream << "kPinned";
+    case WindowStateType::kTrustedPinned:
+      return stream << "kTrustedPinned";
+    case WindowStateType::kPip:
+      return stream << "kPip";
+  }
+
+  NOTREACHED();
+  return stream;
+}
+
+WindowStateType ToWindowStateType(ui::WindowShowState state) {
   switch (state) {
     case ui::SHOW_STATE_DEFAULT:
-      return mojom::WindowStateType::DEFAULT;
+      return WindowStateType::kDefault;
     case ui::SHOW_STATE_NORMAL:
-      return mojom::WindowStateType::NORMAL;
+      return WindowStateType::kNormal;
     case ui::SHOW_STATE_MINIMIZED:
-      return mojom::WindowStateType::MINIMIZED;
+      return WindowStateType::kMinimized;
     case ui::SHOW_STATE_MAXIMIZED:
-      return mojom::WindowStateType::MAXIMIZED;
+      return WindowStateType::kMaximized;
     case ui::SHOW_STATE_INACTIVE:
-      return mojom::WindowStateType::INACTIVE;
+      return WindowStateType::kInactive;
     case ui::SHOW_STATE_FULLSCREEN:
-      return mojom::WindowStateType::FULLSCREEN;
+      return WindowStateType::kFullscreen;
     case ui::SHOW_STATE_END:
       NOTREACHED();
-      return mojom::WindowStateType::DEFAULT;
+      return WindowStateType::kDefault;
   }
 }
 
-ui::WindowShowState ToWindowShowState(mojom::WindowStateType type) {
+ui::WindowShowState ToWindowShowState(WindowStateType type) {
   switch (type) {
-    case mojom::WindowStateType::DEFAULT:
+    case WindowStateType::kDefault:
       return ui::SHOW_STATE_DEFAULT;
-    case mojom::WindowStateType::NORMAL:
-    case mojom::WindowStateType::RIGHT_SNAPPED:
-    case mojom::WindowStateType::LEFT_SNAPPED:
-    case mojom::WindowStateType::AUTO_POSITIONED:
-    case mojom::WindowStateType::PIP:
+    case WindowStateType::kNormal:
+    case WindowStateType::kRightSnapped:
+    case WindowStateType::kLeftSnapped:
+    case WindowStateType::kAutoPositioned:
+    case WindowStateType::kPip:
       return ui::SHOW_STATE_NORMAL;
 
-    case mojom::WindowStateType::MINIMIZED:
+    case WindowStateType::kMinimized:
       return ui::SHOW_STATE_MINIMIZED;
-    case mojom::WindowStateType::MAXIMIZED:
+    case WindowStateType::kMaximized:
       return ui::SHOW_STATE_MAXIMIZED;
-    case mojom::WindowStateType::INACTIVE:
+    case WindowStateType::kInactive:
       return ui::SHOW_STATE_INACTIVE;
-    case mojom::WindowStateType::FULLSCREEN:
-    case mojom::WindowStateType::PINNED:
-    case mojom::WindowStateType::TRUSTED_PINNED:
+    case WindowStateType::kFullscreen:
+    case WindowStateType::kPinned:
+    case WindowStateType::kTrustedPinned:
       return ui::SHOW_STATE_FULLSCREEN;
   }
   NOTREACHED();
   return ui::SHOW_STATE_DEFAULT;
 }
 
-bool IsFullscreenOrPinnedWindowStateType(mojom::WindowStateType type) {
-  return type == mojom::WindowStateType::FULLSCREEN ||
-         type == mojom::WindowStateType::PINNED ||
-         type == mojom::WindowStateType::TRUSTED_PINNED;
+bool IsFullscreenOrPinnedWindowStateType(WindowStateType type) {
+  return type == WindowStateType::kFullscreen ||
+         type == WindowStateType::kPinned ||
+         type == WindowStateType::kTrustedPinned;
 }
 
-bool IsMaximizedOrFullscreenOrPinnedWindowStateType(
-    mojom::WindowStateType type) {
-  return type == mojom::WindowStateType::MAXIMIZED ||
+bool IsMaximizedOrFullscreenOrPinnedWindowStateType(WindowStateType type) {
+  return type == WindowStateType::kMaximized ||
          IsFullscreenOrPinnedWindowStateType(type);
 }
 
-bool IsMinimizedWindowStateType(mojom::WindowStateType type) {
-  return type == mojom::WindowStateType::MINIMIZED;
+bool IsMinimizedWindowStateType(WindowStateType type) {
+  return type == WindowStateType::kMinimized;
 }
 
 bool IsValidWindowStateType(int64_t value) {
-  return value == int64_t(mojom::WindowStateType::DEFAULT) ||
-         value == int64_t(mojom::WindowStateType::NORMAL) ||
-         value == int64_t(mojom::WindowStateType::MINIMIZED) ||
-         value == int64_t(mojom::WindowStateType::MAXIMIZED) ||
-         value == int64_t(mojom::WindowStateType::INACTIVE) ||
-         value == int64_t(mojom::WindowStateType::FULLSCREEN) ||
-         value == int64_t(mojom::WindowStateType::LEFT_SNAPPED) ||
-         value == int64_t(mojom::WindowStateType::RIGHT_SNAPPED) ||
-         value == int64_t(mojom::WindowStateType::AUTO_POSITIONED) ||
-         value == int64_t(mojom::WindowStateType::PINNED) ||
-         value == int64_t(mojom::WindowStateType::TRUSTED_PINNED) ||
-         value == int64_t(mojom::WindowStateType::PIP);
+  return value == int64_t(WindowStateType::kDefault) ||
+         value == int64_t(WindowStateType::kNormal) ||
+         value == int64_t(WindowStateType::kMinimized) ||
+         value == int64_t(WindowStateType::kMaximized) ||
+         value == int64_t(WindowStateType::kInactive) ||
+         value == int64_t(WindowStateType::kFullscreen) ||
+         value == int64_t(WindowStateType::kLeftSnapped) ||
+         value == int64_t(WindowStateType::kRightSnapped) ||
+         value == int64_t(WindowStateType::kAutoPositioned) ||
+         value == int64_t(WindowStateType::kPinned) ||
+         value == int64_t(WindowStateType::kTrustedPinned) ||
+         value == int64_t(WindowStateType::kPip);
 }
 
 }  // namespace ash

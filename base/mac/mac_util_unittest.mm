@@ -143,168 +143,90 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
   // - FALSE/TRUE/FALSE (it is not the later version, it is "at most" the later
   //   version, it is not "at least" the later version)
 
-  // TODO(avi): Is there a better way to test this? Maybe with macros? Are
-  // macros a better way to test this?
+#define TEST_FOR_PAST_OS(V)         \
+  EXPECT_FALSE(IsOS10_##V());       \
+  EXPECT_FALSE(IsAtMostOS10_##V()); \
+  EXPECT_TRUE(IsAtLeastOS10_##V());
+
+#define TEST_FOR_SAME_OS(V)        \
+  EXPECT_TRUE(IsOS10_##V());       \
+  EXPECT_TRUE(IsAtMostOS10_##V()); \
+  EXPECT_TRUE(IsAtLeastOS10_##V());
+
+#define TEST_FOR_FUTURE_OS(V)      \
+  EXPECT_FALSE(IsOS10_##V());      \
+  EXPECT_TRUE(IsAtMostOS10_##V()); \
+  EXPECT_FALSE(IsAtLeastOS10_##V());
 
   if (major == 10) {
-    if (minor == 9) {
-      EXPECT_TRUE(IsOS10_9());
-      EXPECT_TRUE(IsAtMostOS10_9());
-      EXPECT_TRUE(IsAtLeastOS10_9());
-
-      EXPECT_FALSE(IsOS10_10());
-      EXPECT_TRUE(IsAtMostOS10_10());
-      EXPECT_FALSE(IsAtLeastOS10_10());
-
-      EXPECT_FALSE(IsOS10_11());
-      EXPECT_TRUE(IsAtMostOS10_11());
-      EXPECT_FALSE(IsAtLeastOS10_11());
-
-      EXPECT_FALSE(IsOS10_12());
-      EXPECT_TRUE(IsAtMostOS10_12());
-      EXPECT_FALSE(IsAtLeastOS10_12());
-
-      EXPECT_FALSE(IsOS10_13());
-      EXPECT_TRUE(IsAtMostOS10_13());
-      EXPECT_FALSE(IsAtLeastOS10_13());
-
-      EXPECT_FALSE(IsOS10_14());
-      EXPECT_TRUE(IsAtMostOS10_14());
-      EXPECT_FALSE(IsAtLeastOS10_14());
-
-      EXPECT_FALSE(IsOSLaterThan10_14_DontCallThis());
-    } else if (minor == 10) {
-      EXPECT_FALSE(IsOS10_9());
-      EXPECT_FALSE(IsAtMostOS10_9());
-      EXPECT_TRUE(IsAtLeastOS10_9());
-
+    if (minor == 10) {
       EXPECT_TRUE(IsOS10_10());
       EXPECT_TRUE(IsAtMostOS10_10());
-      EXPECT_TRUE(IsAtLeastOS10_10());
 
-      EXPECT_FALSE(IsOS10_11());
-      EXPECT_TRUE(IsAtMostOS10_11());
-      EXPECT_FALSE(IsAtLeastOS10_11());
+      TEST_FOR_FUTURE_OS(11);
+      TEST_FOR_FUTURE_OS(12);
+      TEST_FOR_FUTURE_OS(13);
+      TEST_FOR_FUTURE_OS(14);
+      TEST_FOR_FUTURE_OS(15);
 
-      EXPECT_FALSE(IsOS10_12());
-      EXPECT_TRUE(IsAtMostOS10_12());
-      EXPECT_FALSE(IsAtLeastOS10_12());
-
-      EXPECT_FALSE(IsOS10_13());
-      EXPECT_TRUE(IsAtMostOS10_13());
-      EXPECT_FALSE(IsAtLeastOS10_13());
-
-      EXPECT_FALSE(IsOS10_14());
-      EXPECT_TRUE(IsAtMostOS10_14());
-      EXPECT_FALSE(IsAtLeastOS10_14());
-
-      EXPECT_FALSE(IsOSLaterThan10_14_DontCallThis());
+      EXPECT_FALSE(IsOSLaterThan10_15_DontCallThis());
     } else if (minor == 11) {
-      EXPECT_FALSE(IsOS10_9());
-      EXPECT_FALSE(IsAtMostOS10_9());
-      EXPECT_TRUE(IsAtLeastOS10_9());
-
       EXPECT_FALSE(IsOS10_10());
       EXPECT_FALSE(IsAtMostOS10_10());
-      EXPECT_TRUE(IsAtLeastOS10_10());
 
-      EXPECT_TRUE(IsOS10_11());
-      EXPECT_TRUE(IsAtMostOS10_11());
-      EXPECT_TRUE(IsAtLeastOS10_11());
+      TEST_FOR_SAME_OS(11);
+      TEST_FOR_FUTURE_OS(12);
+      TEST_FOR_FUTURE_OS(13);
+      TEST_FOR_FUTURE_OS(14);
+      TEST_FOR_FUTURE_OS(15);
 
-      EXPECT_FALSE(IsOS10_12());
-      EXPECT_TRUE(IsAtMostOS10_12());
-      EXPECT_FALSE(IsAtLeastOS10_12());
-
-      EXPECT_FALSE(IsOS10_13());
-      EXPECT_TRUE(IsAtMostOS10_13());
-      EXPECT_FALSE(IsAtLeastOS10_13());
-
-      EXPECT_FALSE(IsOS10_14());
-      EXPECT_TRUE(IsAtMostOS10_14());
-      EXPECT_FALSE(IsAtLeastOS10_14());
-
-      EXPECT_FALSE(IsOSLaterThan10_14_DontCallThis());
+      EXPECT_FALSE(IsOSLaterThan10_15_DontCallThis());
     } else if (minor == 12) {
-      EXPECT_FALSE(IsOS10_9());
-      EXPECT_FALSE(IsAtMostOS10_9());
-      EXPECT_TRUE(IsAtLeastOS10_9());
-
       EXPECT_FALSE(IsOS10_10());
       EXPECT_FALSE(IsAtMostOS10_10());
-      EXPECT_TRUE(IsAtLeastOS10_10());
 
-      EXPECT_FALSE(IsOS10_11());
-      EXPECT_FALSE(IsAtMostOS10_11());
-      EXPECT_TRUE(IsAtLeastOS10_11());
+      TEST_FOR_PAST_OS(11);
+      TEST_FOR_SAME_OS(12);
+      TEST_FOR_FUTURE_OS(13);
+      TEST_FOR_FUTURE_OS(14);
+      TEST_FOR_FUTURE_OS(15);
 
-      EXPECT_TRUE(IsOS10_12());
-      EXPECT_TRUE(IsAtMostOS10_12());
-      EXPECT_TRUE(IsAtLeastOS10_12());
-
-      EXPECT_FALSE(IsOS10_13());
-      EXPECT_TRUE(IsAtMostOS10_13());
-      EXPECT_FALSE(IsAtLeastOS10_13());
-
-      EXPECT_FALSE(IsOS10_14());
-      EXPECT_TRUE(IsAtMostOS10_14());
-      EXPECT_FALSE(IsAtLeastOS10_14());
-
-      EXPECT_FALSE(IsOSLaterThan10_14_DontCallThis());
+      EXPECT_FALSE(IsOSLaterThan10_15_DontCallThis());
     } else if (minor == 13) {
-      EXPECT_FALSE(IsOS10_9());
-      EXPECT_FALSE(IsAtMostOS10_9());
-      EXPECT_TRUE(IsAtLeastOS10_9());
-
       EXPECT_FALSE(IsOS10_10());
       EXPECT_FALSE(IsAtMostOS10_10());
-      EXPECT_TRUE(IsAtLeastOS10_10());
 
-      EXPECT_FALSE(IsOS10_11());
-      EXPECT_FALSE(IsAtMostOS10_11());
-      EXPECT_TRUE(IsAtLeastOS10_11());
+      TEST_FOR_PAST_OS(11);
+      TEST_FOR_PAST_OS(12);
+      TEST_FOR_SAME_OS(13);
+      TEST_FOR_FUTURE_OS(14);
+      TEST_FOR_FUTURE_OS(15);
 
-      EXPECT_FALSE(IsOS10_12());
-      EXPECT_FALSE(IsAtMostOS10_12());
-      EXPECT_TRUE(IsAtLeastOS10_12());
-
-      EXPECT_TRUE(IsOS10_13());
-      EXPECT_TRUE(IsAtMostOS10_13());
-      EXPECT_TRUE(IsAtLeastOS10_13());
-
-      EXPECT_FALSE(IsOS10_14());
-      EXPECT_TRUE(IsAtMostOS10_14());
-      EXPECT_FALSE(IsAtLeastOS10_14());
-
-      EXPECT_FALSE(IsOSLaterThan10_14_DontCallThis());
+      EXPECT_FALSE(IsOSLaterThan10_15_DontCallThis());
     } else if (minor == 14) {
-      EXPECT_FALSE(IsOS10_9());
-      EXPECT_FALSE(IsAtMostOS10_9());
-      EXPECT_TRUE(IsAtLeastOS10_9());
-
       EXPECT_FALSE(IsOS10_10());
       EXPECT_FALSE(IsAtMostOS10_10());
-      EXPECT_TRUE(IsAtLeastOS10_10());
 
-      EXPECT_FALSE(IsOS10_11());
-      EXPECT_FALSE(IsAtMostOS10_11());
-      EXPECT_TRUE(IsAtLeastOS10_11());
+      TEST_FOR_PAST_OS(11);
+      TEST_FOR_PAST_OS(12);
+      TEST_FOR_PAST_OS(13);
+      TEST_FOR_SAME_OS(14);
+      TEST_FOR_FUTURE_OS(15);
 
-      EXPECT_FALSE(IsOS10_12());
-      EXPECT_FALSE(IsAtMostOS10_12());
-      EXPECT_TRUE(IsAtLeastOS10_12());
+      EXPECT_FALSE(IsOSLaterThan10_15_DontCallThis());
+    } else if (minor == 15) {
+      EXPECT_FALSE(IsOS10_10());
+      EXPECT_FALSE(IsAtMostOS10_10());
 
-      EXPECT_FALSE(IsOS10_13());
-      EXPECT_FALSE(IsAtMostOS10_13());
-      EXPECT_TRUE(IsAtLeastOS10_13());
+      TEST_FOR_PAST_OS(11);
+      TEST_FOR_PAST_OS(12);
+      TEST_FOR_PAST_OS(13);
+      TEST_FOR_PAST_OS(14);
+      TEST_FOR_SAME_OS(15);
 
-      EXPECT_TRUE(IsOS10_14());
-      EXPECT_TRUE(IsAtMostOS10_14());
-      EXPECT_TRUE(IsAtLeastOS10_14());
-
-      EXPECT_FALSE(IsOSLaterThan10_14_DontCallThis());
+      EXPECT_FALSE(IsOSLaterThan10_15_DontCallThis());
     } else {
-      // Not nine, ten, eleven, twelve, thirteen, or fourteen. Ah, ah, ah.
+      // Not ten, eleven, twelve, thirteen, fourteen, or fifteen. Ah, ah, ah.
       EXPECT_TRUE(false);
     }
   } else {
@@ -312,6 +234,10 @@ TEST_F(MacUtilTest, IsOSEllipsis) {
     EXPECT_FALSE(true);
   }
 }
+
+#undef TEST_FOR_PAST_OS
+#undef TEST_FOR_SAME_OS
+#undef TEST_FOR_FUTURE_OS
 
 TEST_F(MacUtilTest, ParseModelIdentifier) {
   std::string model;

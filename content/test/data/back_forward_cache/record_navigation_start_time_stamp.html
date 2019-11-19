@@ -1,0 +1,20 @@
+<html>
+<head></head>
+<body>
+This page records the navigationStart value and the initial and latest timestamp
+of the pageShow event.
+This page also has one same-origin and one cross-origin subframe, both of them
+have an onpageshow() event listener.
+</body>
+  <script>
+    window.addEventListener("pageshow", (e) => {
+      if (typeof window.initialPageShowTimeStamp === 'undefined') {
+        window.initialPageShowTimeStamp = e.timeStamp;
+      }
+      window.latestPageShowTimeStamp = e.timeStamp;
+    });
+    window.initialNavigationStart = performance.timing.navigationStart;
+  </script>
+ <iframe src="/cross-site/bar.com/back_forward_cache/page_with_pageshow.html"/>
+ <iframe src="page_with_pageshow.html"/>
+</html>

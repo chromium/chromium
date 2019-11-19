@@ -12,9 +12,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 
 /**
  * Retrieves app restrictions and provides them to the parent class as Bundles.

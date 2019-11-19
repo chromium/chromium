@@ -5,12 +5,13 @@
 #include "chrome/browser/chromeos/hats/hats_notification_controller.h"
 
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/task/post_task.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/hats/hats_dialog.h"
 #include "chrome/browser/chromeos/hats/hats_finch_helper.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
@@ -25,6 +26,7 @@
 #include "chromeos/network/network_state.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -71,10 +73,6 @@ bool IsNewDevice() {
          kHatsNewDeviceThreshold;
 }
 
-bool IsGoogleUser(std::string username) {
-  return username.find("@google.com") != std::string::npos;
-}
-
 // Returns true if the |kForceHappinessTrackingSystem| flag is enabled.
 bool IsTestingEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -89,11 +87,12 @@ namespace chromeos {
 const char HatsNotificationController::kNotificationId[] = "hats_notification";
 
 HatsNotificationController::HatsNotificationController(Profile* profile)
-    : profile_(profile), weak_pointer_factory_(this) {
+    : profile_(profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&IsNewDevice),
       base::BindOnce(&HatsNotificationController::Initialize,
                      weak_pointer_factory_.GetWeakPtr()));
@@ -143,7 +142,8 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(Profile* profile) {
                                           ->IsEnterpriseManaged();
 
   // Do not show survey if this is a non dogfood enterprise enrolled device.
-  if (is_enterprise_enrolled && !IsGoogleUser(profile->GetProfileUserName()))
+  if (is_enterprise_enrolled &&
+      !gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName()))
     return false;
 
   // In an enterprise enrolled device, the user can never be the owner, hence
@@ -156,9 +156,10 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(Profile* profile) {
   if (!hats_finch_helper.IsDeviceSelectedForCurrentCycle())
     return false;
 
-  base::TimeDelta threshold_time = IsGoogleUser(profile->GetProfileUserName())
-                                       ? kHatsGooglerThreshold
-                                       : kHatsThreshold;
+  base::TimeDelta threshold_time =
+      gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())
+          ? kHatsGooglerThreshold
+          : kHatsThreshold;
   // Do not show survey to user if user has interacted with HaTS within the past
   // |threshold_time| time delta.
   if (DidShowSurveyToProfileRecently(profile, threshold_time))
@@ -175,9 +176,12 @@ void HatsNotificationController::Click(
   UpdateLastInteractionTime();
 
   // The dialog deletes itself on close.
-  HatsDialog::CreateAndShow(IsGoogleUser(profile_->GetProfileUserName()));
+  HatsDialog::CreateAndShow(
+      gaia::IsGoogleInternalAccountEmail(profile_->GetProfileUserName()));
 
   // Remove the notification.
+  network_portal_detector::GetInstance()->RemoveObserver(this);
+  notification_.reset(nullptr);
   NotificationDisplayService::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, kNotificationId);
 }
@@ -186,8 +190,11 @@ void HatsNotificationController::Click(
 void HatsNotificationController::Close(bool by_user) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (by_user)
+  if (by_user) {
     UpdateLastInteractionTime();
+    network_portal_detector::GetInstance()->RemoveObserver(this);
+    notification_.reset(nullptr);
+  }
 }
 
 // NetworkPortalDetector::Observer override:
@@ -199,15 +206,10 @@ void HatsNotificationController::OnPortalDetectionCompleted(
           << "network=" << (network ? network->path() : "") << ", "
           << "state.status=" << state.status << ", "
           << "state.response_code=" << state.response_code;
-  // Return if device is not connected to the internet.
-  if (state.status != NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE)
-    return;
-  // Remove self as an observer to no longer receive network change updates.
-  network_portal_detector::GetInstance()->RemoveObserver(this);
-
-  // Create and display the notification for the user.
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+  if (state.status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
+    // Create and display the notification for the user.
+    if (!notification_) {
+      notification_ = ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
           l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_TITLE),
           l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_BODY),
@@ -215,12 +217,18 @@ void HatsNotificationController::OnPortalDetectionCompleted(
           GURL(kNotificationOriginUrl),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, kNotifierHats),
-          message_center::RichNotificationData(), this,
-          ash::kNotificationGoogleIcon,
+          message_center::RichNotificationData(), this, kNotificationGoogleIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
+    }
 
-  NotificationDisplayService::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification);
+    NotificationDisplayService::GetForProfile(profile_)->Display(
+        NotificationHandler::Type::TRANSIENT, *notification_,
+        /*metadata=*/nullptr);
+  } else if (notification_) {
+    // Hide the notification if device loses its connection to the internet.
+    NotificationDisplayService::GetForProfile(profile_)->Close(
+        NotificationHandler::Type::TRANSIENT, kNotificationId);
+  }
 }
 
 void HatsNotificationController::UpdateLastInteractionTime() {

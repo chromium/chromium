@@ -8,6 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
+#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
 class Browser;
@@ -43,10 +44,16 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
       Browser* browser,
       Profile* profile,
       content::PageNavigator* page_navigator,
+      BookmarkLaunchLocation opened_from,
       const bookmarks::BookmarkNode* parent,
       const std::vector<const bookmarks::BookmarkNode*>& selection,
       bool close_on_remove);
   ~BookmarkContextMenu() override;
+
+  // Installs a callback to be run before the context menu is run. The callback
+  // runs only once, and only one such callback can be set at any time. Once the
+  // installed callback is run, another callback can be installed.
+  static void InstallPreRunCallback(base::OnceClosure callback);
 
   // Shows the context menu at the specified point.
   void RunMenuAt(const gfx::Point& point,

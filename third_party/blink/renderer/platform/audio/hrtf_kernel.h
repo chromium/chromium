@@ -35,7 +35,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -57,18 +57,13 @@ class PLATFORM_EXPORT HRTFKernel {
  public:
   // Note: this is destructive on the passed in AudioChannel.
   // The length of channel must be a power of two.
-  static std::unique_ptr<HRTFKernel> Create(AudioChannel* channel,
-                                            size_t fft_size,
-                                            float sample_rate) {
-    return base::WrapUnique(new HRTFKernel(channel, fft_size, sample_rate));
-  }
-
-  static std::unique_ptr<HRTFKernel> Create(std::unique_ptr<FFTFrame> fft_frame,
-                                            float frame_delay,
-                                            float sample_rate) {
-    return base::WrapUnique(
-        new HRTFKernel(std::move(fft_frame), frame_delay, sample_rate));
-  }
+  HRTFKernel(AudioChannel*, size_t fft_size, float sample_rate);
+  HRTFKernel(std::unique_ptr<FFTFrame> fft_frame,
+             float frame_delay,
+             float sample_rate)
+      : fft_frame_(std::move(fft_frame)),
+        frame_delay_(frame_delay),
+        sample_rate_(sample_rate) {}
 
   // Given two HRTFKernels, and an interpolation factor x: 0 -> 1, returns an
   // interpolated HRTFKernel.
@@ -87,16 +82,6 @@ class PLATFORM_EXPORT HRTFKernel {
   std::unique_ptr<AudioChannel> CreateImpulseResponse();
 
  private:
-  // Note: this is destructive on the passed in AudioChannel.
-  HRTFKernel(AudioChannel*, size_t fft_size, float sample_rate);
-
-  HRTFKernel(std::unique_ptr<FFTFrame> fft_frame,
-             float frame_delay,
-             float sample_rate)
-      : fft_frame_(std::move(fft_frame)),
-        frame_delay_(frame_delay),
-        sample_rate_(sample_rate) {}
-
   std::unique_ptr<FFTFrame> fft_frame_;
   float frame_delay_;
   float sample_rate_;

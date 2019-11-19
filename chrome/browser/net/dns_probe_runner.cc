@@ -28,6 +28,11 @@ DnsProbeRunner::Result EvaluateResponse(
       break;
 
     case net::ERR_FAILED:
+    // ERR_DNS_CACHE_MISS means HostResolver was not able to attempt DNS, e.g.
+    // due to limitations from Chrome build configuration or because of
+    // incompatibilities with the DNS configuration from the system. The result
+    // Chrome would have gotten from DNS if attempted is therefore unknown.
+    case net::ERR_DNS_CACHE_MISS:
       return DnsProbeRunner::UNKNOWN;
 
     // ERR_NAME_NOT_RESOLVED maps to NXDOMAIN, which means the server is working
@@ -68,10 +73,8 @@ DnsProbeRunner::Result EvaluateResponse(
 DnsProbeRunner::DnsProbeRunner(
     net::DnsConfigOverrides dns_config_overrides,
     const NetworkContextGetter& network_context_getter)
-    : binding_(this),
-      dns_config_overrides_(dns_config_overrides),
-      network_context_getter_(network_context_getter),
-      result_(UNKNOWN) {
+    : dns_config_overrides_(dns_config_overrides),
+      network_context_getter_(network_context_getter) {
   CreateHostResolver();
 }
 
@@ -84,12 +87,7 @@ void DnsProbeRunner::RunProbe(base::OnceClosure callback) {
   DCHECK(!callback.is_null());
   DCHECK(host_resolver_);
   DCHECK(callback_.is_null());
-  DCHECK(!binding_);
-
-  network::mojom::ResolveHostClientPtr client_ptr;
-  binding_.Bind(mojo::MakeRequest(&client_ptr));
-  binding_.set_connection_error_handler(base::BindOnce(
-      &DnsProbeRunner::OnMojoConnectionError, base::Unretained(this)));
+  DCHECK(!receiver_.is_bound());
 
   network::mojom::ResolveHostParametersPtr parameters =
       network::mojom::ResolveHostParameters::New();
@@ -98,7 +96,10 @@ void DnsProbeRunner::RunProbe(base::OnceClosure callback) {
   parameters->allow_cached_response = false;
 
   host_resolver_->ResolveHost(net::HostPortPair(kKnownGoodHostname, 80),
-                              std::move(parameters), std::move(client_ptr));
+                              std::move(parameters),
+                              receiver_.BindNewPipeAndPassRemote());
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &DnsProbeRunner::OnMojoConnectionError, base::Unretained(this)));
 
   callback_ = std::move(callback);
 }
@@ -115,7 +116,7 @@ void DnsProbeRunner::OnComplete(
   DCHECK(!callback_.is_null());
 
   result_ = EvaluateResponse(result, resolved_addresses);
-  binding_.Close();
+  receiver_.reset();
 
   // ResolveHost will call OnComplete asynchronously, so callback_ can be
   // invoked directly here.  Clear callback in case it starts a new probe
@@ -126,7 +127,7 @@ void DnsProbeRunner::OnComplete(
 void DnsProbeRunner::CreateHostResolver() {
   host_resolver_.reset();
   network_context_getter_.Run()->CreateHostResolver(
-      dns_config_overrides_, mojo::MakeRequest(&host_resolver_));
+      dns_config_overrides_, host_resolver_.BindNewPipeAndPassReceiver());
 }
 
 void DnsProbeRunner::OnMojoConnectionError() {

@@ -67,10 +67,26 @@ class BASE_EXPORT BigEndianReader {
   bool ReadU32(uint32_t* value);
   bool ReadU64(uint64_t* value);
 
+  // Reads a length-prefixed region:
+  // 1. reads a big-endian length L from the buffer;
+  // 2. sets |*out| to a StringPiece over the next L many bytes
+  // of the buffer (beyond the end of the bytes encoding the length); and
+  // 3. skips the main reader past this L-byte substring.
+  //
+  // Fails if reading a U8 or U16 fails, or if the parsed length is greater
+  // than the number of bytes remaining in the stream.
+  //
+  // On failure, leaves the stream at the same position
+  // as before the call.
+  bool ReadU8LengthPrefixed(base::StringPiece* out);
+  bool ReadU16LengthPrefixed(base::StringPiece* out);
+
  private:
   // Hidden to promote type safety.
   template<typename T>
   bool Read(T* v);
+  template <typename T>
+  bool ReadLengthPrefixed(base::StringPiece* out);
 
   const char* ptr_;
   const char* end_;

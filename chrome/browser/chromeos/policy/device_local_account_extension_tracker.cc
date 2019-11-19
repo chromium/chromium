@@ -28,7 +28,8 @@ DeviceLocalAccountExtensionTracker::DeviceLocalAccountExtensionTracker(
     // This is easy: Just add a component for the app id.
     PolicyNamespace ns(POLICY_DOMAIN_EXTENSIONS, account.kiosk_app_id);
     schema_registry_->RegisterComponent(ns, Schema());
-  } else if (account.type == DeviceLocalAccount::TYPE_PUBLIC_SESSION) {
+  } else if (account.type == DeviceLocalAccount::TYPE_PUBLIC_SESSION ||
+             account.type == DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION) {
     // For public sessions, track the value of the ExtensionInstallForcelist
     // policy.
     store_->AddObserver(this);

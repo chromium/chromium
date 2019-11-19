@@ -31,12 +31,16 @@
 #include "base/base_export.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_piece.h"
 
 struct IPropertyStore;
 struct _tagpropertykey;
 typedef _tagpropertykey PROPERTYKEY;
 
 namespace base {
+
+struct NativeLibraryLoadError;
+
 namespace win {
 
 inline uint32_t HandleToUint32(HANDLE h) {
@@ -89,17 +93,19 @@ BASE_EXPORT bool SetAppIdForPropertyStore(IPropertyStore* property_store,
 
 // Adds the specified |command| using the specified |name| to the AutoRun key.
 // |root_key| could be HKCU or HKLM or the root of any user hive.
-BASE_EXPORT bool AddCommandToAutoRun(HKEY root_key, const string16& name,
-                                     const string16& command);
+BASE_EXPORT bool AddCommandToAutoRun(HKEY root_key,
+                                     const std::wstring& name,
+                                     const std::wstring& command);
 // Removes the command specified by |name| from the AutoRun key. |root_key|
 // could be HKCU or HKLM or the root of any user hive.
-BASE_EXPORT bool RemoveCommandFromAutoRun(HKEY root_key, const string16& name);
+BASE_EXPORT bool RemoveCommandFromAutoRun(HKEY root_key,
+                                          const std::wstring& name);
 
 // Reads the command specified by |name| from the AutoRun key. |root_key|
 // could be HKCU or HKLM or the root of any user hive. Used for unit-tests.
 BASE_EXPORT bool ReadCommandFromAutoRun(HKEY root_key,
-                                        const string16& name,
-                                        string16* command);
+                                        const std::wstring& name,
+                                        std::wstring* command);
 
 // Sets whether to crash the process during exit. This is inspected by DLLMain
 // and used to intercept unexpected terminations of the process (via calls to
@@ -143,14 +149,14 @@ BASE_EXPORT bool IsDeviceUsedAsATablet(std::string* reason);
 // A slate is a touch device that may have a keyboard attached. This function
 // returns true if a keyboard is attached and optionally will set the |reason|
 // parameter to the detection method that was used to detect the keyboard.
-BASE_EXPORT bool IsKeyboardPresentOnSlate(std::string* reason, HWND hwnd);
+BASE_EXPORT bool IsKeyboardPresentOnSlate(HWND hwnd, std::string* reason);
 
 // Get the size of a struct up to and including the specified member.
 // This is necessary to set compatible struct sizes for different versions
 // of certain Windows APIs (e.g. SystemParametersInfo).
 #define SIZEOF_STRUCT_WITH_SPECIFIED_LAST_MEMBER(struct_name, member) \
-    offsetof(struct_name, member) + \
-    (sizeof static_cast<struct_name*>(NULL)->member)
+  offsetof(struct_name, member) +                                     \
+      (sizeof static_cast<struct_name*>(NULL)->member)
 
 // Returns true if the machine is enrolled to a domain.
 BASE_EXPORT bool IsEnrolledToDomain();
@@ -160,9 +166,17 @@ BASE_EXPORT bool IsDeviceRegisteredWithManagement();
 
 // Returns true if the current process can make USER32 or GDI32 calls such as
 // CreateWindow and CreateDC. Windows 8 and above allow the kernel component
-// of these calls to be disabled which can cause undefined behaviour such as
-// crashes. This function can be used to guard areas of code using these calls
-// and provide a fallback path if necessary.
+// of these calls to be disabled (also known as win32k lockdown) which can
+// cause undefined behaviour such as crashes. This function can be used to
+// guard areas of code using these calls and provide a fallback path if
+// necessary.
+// Because they are not always needed (and not needed at all in processes that
+// have the win32k lockdown), USER32 and GDI32 are delayloaded. Attempts to
+// load them in those processes will cause a crash. Any code which uses USER32
+// or GDI32 and may run in a locked-down process MUST be guarded using this
+// method. Before the dlls were delayloaded, method calls into USER32 and GDI32
+// did not work, so adding calls to this method to guard them simply avoids
+// unnecessary method calls.
 BASE_EXPORT bool IsUser32AndGdi32Available();
 
 // Takes a snapshot of the modules loaded in the |process|. The returned
@@ -183,6 +197,35 @@ BASE_EXPORT bool IsProcessPerMonitorDpiAware();
 
 // Enable high-DPI support for the current process.
 BASE_EXPORT void EnableHighDPISupport();
+
+// Returns a string representation of |rguid|.
+BASE_EXPORT string16 String16FromGUID(REFGUID rguid);
+
+// Attempts to pin user32.dll to ensure it remains loaded. If it isn't loaded
+// yet, the module will first be loaded and then the pin will be attempted. If
+// pinning is successful, returns true. If the module cannot be loaded and/or
+// pinned, |error| is set and the method returns false.
+BASE_EXPORT bool PinUser32(NativeLibraryLoadError* error = nullptr);
+
+// Gets a pointer to a function within user32.dll, if available. If user32.dll
+// cannot be loaded or the function cannot be found, this function returns
+// nullptr and sets |error|. Once loaded, user32.dll is pinned, and therefore
+// the function pointer returned by this function will never change and can be
+// cached.
+BASE_EXPORT void* GetUser32FunctionPointer(
+    const char* function_name,
+    NativeLibraryLoadError* error = nullptr);
+
+// Returns the name of a desktop or a window station.
+BASE_EXPORT std::wstring GetWindowObjectName(HANDLE handle);
+
+// Checks if the calling thread is running under a desktop with the name
+// given by |desktop_name|. |desktop_name| is ASCII case insensitive (non-ASCII
+// characters will be compared with exact matches).
+BASE_EXPORT bool IsRunningUnderDesktopName(WStringPiece desktop_name);
+
+// Returns true if current session is a remote session.
+BASE_EXPORT bool IsCurrentSessionRemote();
 
 // Allows changing the domain enrolled state for the life time of the object.
 // The original state is restored upon destruction.

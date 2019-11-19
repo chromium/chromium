@@ -6,9 +6,8 @@ package org.chromium.chrome.browser.preferences.autofill;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceFragment;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
@@ -22,15 +21,14 @@ import org.chromium.chrome.browser.preferences.PreferenceUtils;
  * Fragment for settings page that allows user to view and edit a single server-provided address.
  */
 public class AutofillServerProfilePreferences
-        extends PreferenceFragment implements OnPreferenceClickListener {
+        extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
     private String mGUID;
 
     private static final String PREF_SERVER_PROFILE_DESCRIPTION = "server_profile_description";
     private static final String PREF_SERVER_PROFILE_EDIT_LINK = "server_profile_edit_link";
 
     @Override
-    public void onCreate(Bundle savedState) {
-        super.onCreate(savedState);
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         PreferenceUtils.addPreferencesFromResource(this, R.xml.autofill_server_profile_preferences);
         getActivity().setTitle(R.string.autofill_edit_profile);
 

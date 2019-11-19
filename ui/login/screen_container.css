@@ -6,7 +6,7 @@
 #outer-container {
   -webkit-box-align: center;
   -webkit-box-pack: center;
-  bottom: 57px;  /* Leave space for the header bar */
+  bottom: var(--shelf-area-height);  /* Leave space for the header bar */
   display: -webkit-box;
   left: 0;
   min-height: 717px; /* This enables scrolling. Min resolution: 1024x768 */
@@ -106,10 +106,6 @@
 
 .oobe-display #inner-container.down {
   transform: translateY(50px) rotateX(-2.5deg);
-}
-
-#oobe #step-logo {
-  display: none;
 }
 
 #account-picker-dot,

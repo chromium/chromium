@@ -5,7 +5,7 @@
 #include "device/bluetooth/android/wrappers.h"
 
 #include "base/android/jni_android.h"
-#include "jni/Wrappers_jni.h"
+#include "device/bluetooth/jni_headers/Wrappers_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;

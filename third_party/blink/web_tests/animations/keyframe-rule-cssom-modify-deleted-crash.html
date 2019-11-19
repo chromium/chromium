@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<style>
+  @keyframes anim {
+    50% { color: pink }
+  }
+</style>
+<script>
+  const anim = document.styleSheets[0].cssRules[0];
+  const fifty = anim.cssRules[0];
+
+  test(() => {
+    assert_equals(anim.cssRules.length, 1);
+    anim.deleteRule("50%");
+    assert_equals(anim.cssRules.length, 0);
+  }, "");
+
+  test(() => {
+    fifty.keyText = "10%";
+  }, "Setting keyText on a removed keyframe should not crash.");
+
+  test(() => {
+    fifty.style.color = "green";
+  }, "Setting style properties on a removed keyframe should not crash.");
+</script>

@@ -110,6 +110,9 @@ def _CategorizeByChromeComponent(symbols):
 def _CategorizeGenerated(symbols):
   g = _Grouper()
 
+  # Don't count other symbols or prebuilts.
+  symbols = symbols.Filter(lambda s: s.section_name != models.SECTION_OTHER and
+                           not s.source_path.endswith('.class'))
   # JNI is generated into .h files then #included, so the symbols don't actaully
   # appear as "SourceIsGenerated".
   # Note: String literals within symbols like "kBaseRegisteredMethods" are not
@@ -122,7 +125,9 @@ def _CategorizeGenerated(symbols):
       symbols.WherePathMatches('gl_bindings_autogen'))
 
   symbols = symbols.WhereSourceIsGenerated()
-  symbols = g.Add('Protocol Buffers', symbols.Filter(lambda s: (
+  symbols = g.Add('Java Protocol Buffers', symbols.Filter(lambda s: (
+      s.source_path.endswith('Proto.java'))))
+  symbols = g.Add('C++ Protocol Buffers', symbols.Filter(lambda s: (
       '/protobuf/' in s.object_path or
       s.object_path.endswith('.pbzero.o') or
       s.object_path.endswith('.pb.o'))))
@@ -132,13 +137,12 @@ def _CategorizeGenerated(symbols):
       s.name.startswith('mojo::'))))
   symbols = g.Add('DevTools', symbols.WhereSourcePathMatches(
       r'\b(?:protocol|devtools)\b'))
-  symbols = g.Add('Blink (bindings)', symbols.Filter(lambda s: (
-      'blink/bindings' in s.source_path or
-      ('WebKit/' in s.object_path and '/bindings/' in s.object_path))))
-  symbols = g.Add('Blink (IDL)', symbols.Filter(lambda s: (
-      'WebKit/Source/core' in s.object_path)))
-  symbols = g.Add('Blink (Other)', symbols.Filter(lambda s: (
+  symbols = g.Add('Blink (bindings)', symbols.WherePathMatches(
+      r'(?:blink|WebKit)/.*bindings'))
+  symbols = g.Add('Blink (other)', symbols.Filter(lambda s: (
       'WebKit' in s.object_path or 'blink/' in s.object_path)))
+  symbols = g.Add('V8 Builtins', symbols.Filter(lambda s: (
+      s.source_path.endswith('embedded.S'))))
   symbols = g.Add('prepopulated_engines.cc', symbols.Filter(lambda s: (
       'prepopulated_engines' in s.object_path)))
   symbols = g.Add('Metrics-related code', symbols.Filter(lambda s: (

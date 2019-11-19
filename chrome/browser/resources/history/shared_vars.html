@@ -4,7 +4,7 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 
 <custom-style>
-<style is="custom-style">
+<style>
   html {
     --card-border-color: rgba(0, 0, 0, 0.14);
     --card-first-last-item-padding: 8px;
@@ -23,8 +23,6 @@
     --history-item-time-color: #646464;
     --interactive-color: var(--google-blue-500);
     --item-height: 44px;
-    --iron-icon-height: var(--cr-icon-size);
-    --iron-icon-width: var(--cr-icon-size);
     --separator-color: rgba(0, 0, 0, 0.08);
     --side-bar-width: 256px;
     --sidebar-footer-text-color: var(--google-grey-refresh-700);
@@ -32,13 +30,15 @@
     --toolbar-height: 56px;
   }
 
-  html[dark] {
-    --card-border-color: var(--cr-separator-color);
-    --history-item-time-color: var(--cr-secondary-text-color);
-    --interactive-color: var(--google-blue-refresh-300);
-    --separator-color: var(--cr-separator-color);
-    --sidebar-footer-text-color: rgba(255, 255, 255, 0.6);
-    --sidebar-unselected-color: var(--cr-secondary-text-color);
+  @media (prefers-color-scheme: dark) {
+    html {
+      --card-border-color: var(--cr-separator-color);
+      --history-item-time-color: var(--cr-secondary-text-color);
+      --interactive-color: var(--google-blue-refresh-300);
+      --separator-color: var(--cr-separator-color);
+      --sidebar-footer-text-color: rgba(255, 255, 255, 0.6);
+      --sidebar-unselected-color: var(--cr-secondary-text-color);
+    }
   }
 </style>
 </custom-style>

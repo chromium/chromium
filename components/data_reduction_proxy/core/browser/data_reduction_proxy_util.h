@@ -9,7 +9,6 @@
 #include <string>
 
 #include "components/data_reduction_proxy/proto/client_config.pb.h"
-#include "components/data_reduction_proxy/proto/pageload_metrics.pb.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_server.h"
 #include "net/nqe/effective_connection_type.h"
@@ -21,15 +20,7 @@ class Time;
 class TimeDelta;
 }  // namespace base
 
-namespace net {
-class ProxyConfig;
-class ProxyInfo;
-class URLRequest;
-}  // namespace net
-
 namespace data_reduction_proxy {
-
-class LoFiDecider;
 
 enum class Client {
   UNKNOWN,
@@ -71,43 +62,6 @@ const char* GetStringForClient(Client client);
 
 GURL AddApiKeyToUrl(const GURL& url);
 
-// Returns whether this is valid for data reduction proxy use. |proxy_info|
-// should contain a single DIRECT ProxyServer, |url| should not be WS or WSO,
-// and the |method| should be idempotent for this to be eligible.
-bool EligibleForDataReductionProxy(const net::ProxyInfo& proxy_info,
-                                   const GURL& url,
-                                   const std::string& method);
-
-// Determines if |proxy_config| would override a direct. |proxy_config| should
-// be a data reduction proxy config with proxy servers mapped in the
-// rules, or DIRECT to indicate DRP is not to be used. |proxy_retry_info|
-// contains the list of bad proxies. |url| is used to determine whether it is
-// HTTP or HTTPS. |data_reduction_proxy_info| is an out param that will contain
-// the proxies that should be used.
-bool ApplyProxyConfigToProxyInfo(const net::ProxyConfig& proxy_config,
-                                 const net::ProxyRetryInfoMap& proxy_retry_info,
-                                 const GURL& url,
-                                 net::ProxyInfo* data_reduction_proxy_info);
-
-// Calculates the original content length (OCL) of the |request|, from the OFCL
-// value in the Chrome-Proxy header. |request| must not be cached. This does not
-// account for partial failed responses.
-int64_t CalculateOCLFromOFCL(const net::URLRequest& request);
-
-// Calculates the effective original content length of the |request|. For
-// successful requests OCL will be obtained from OFCL if available or from
-// received response length. For partial failed responses an estimate is
-// provided by scaling received response length based on OFCL and Content-Length
-// header.
-int64_t EstimateOriginalBodySize(const net::URLRequest& request,
-                                 const LoFiDecider* lofi_decider);
-
-// Given a |request| that went through the Data Reduction Proxy; this function
-// estimates how many bytes would have been received if the response had been
-// received directly from the origin without any data saver optimizations.
-int64_t EstimateOriginalReceivedBytes(const net::URLRequest& request,
-                                      const LoFiDecider* lofi_decider);
-
 // Returns the hostname used for the other bucket to record datause not scoped
 // to a page load such as chrome-services traffic, service worker, Downloads.
 const char* GetSiteBreakdownOtherHostName();
@@ -119,17 +73,6 @@ namespace protobuf_parser {
 static_assert(net::EFFECTIVE_CONNECTION_TYPE_LAST == 6,
               "If net::EFFECTIVE_CONNECTION_TYPE changes, "
               "PageloadMetrics_EffectiveConnectionType needs to be updated.");
-
-// Returns the PageloadMetrics_EffectiveConnectionType equivalent of
-// |effective_connection_type|.
-PageloadMetrics_EffectiveConnectionType
-ProtoEffectiveConnectionTypeFromEffectiveConnectionType(
-    net::EffectiveConnectionType effective_connection_type);
-
-// Returns the PageloadMetrics_ConnectionType equivalent of
-// |connection_type|.
-PageloadMetrics_ConnectionType ProtoConnectionTypeFromConnectionType(
-    net::NetworkChangeNotifier::ConnectionType connection_type);
 
 // Returns the |net::ProxyServer::Scheme| for a ProxyServer_ProxyScheme.
 net::ProxyServer::Scheme SchemeFromProxyScheme(

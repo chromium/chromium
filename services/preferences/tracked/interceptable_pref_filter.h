@@ -24,31 +24,30 @@ class InterceptablePrefFilter
   // hand back the |prefs| it was handed for early filtering. |prefs_altered|
   // indicates whether the |prefs| were actually altered by the
   // FilterOnLoadInterceptor before being handed back.
-  typedef base::Callback<void(std::unique_ptr<base::DictionaryValue> prefs,
-                              bool prefs_altered)>
-      FinalizeFilterOnLoadCallback;
+  using FinalizeFilterOnLoadCallback =
+      base::OnceCallback<void(std::unique_ptr<base::DictionaryValue> prefs,
+                              bool prefs_altered)>;
 
   // A callback to be invoked from FilterOnLoad. It takes ownership of prefs
   // and may modify them before handing them back to this
   // InterceptablePrefFilter via |finalize_filter_on_load|.
-  typedef base::Callback<void(
-      const FinalizeFilterOnLoadCallback& finalize_filter_on_load,
-      std::unique_ptr<base::DictionaryValue> prefs)>
-      FilterOnLoadInterceptor;
+  using FilterOnLoadInterceptor = base::OnceCallback<void(
+      FinalizeFilterOnLoadCallback finalize_filter_on_load,
+      std::unique_ptr<base::DictionaryValue> prefs)>;
 
   InterceptablePrefFilter();
   ~InterceptablePrefFilter() override;
 
   // PrefFilter partial implementation.
   void FilterOnLoad(
-      const PostFilterOnLoadCallback& post_filter_on_load_callback,
+      PostFilterOnLoadCallback post_filter_on_load_callback,
       std::unique_ptr<base::DictionaryValue> pref_store_contents) override;
 
   // Registers |filter_on_load_interceptor| to intercept the next FilterOnLoad
   // event. At most one FilterOnLoadInterceptor should be registered per
   // PrefFilter.
   void InterceptNextFilterOnLoad(
-      const FilterOnLoadInterceptor& filter_on_load_interceptor);
+      FilterOnLoadInterceptor filter_on_load_interceptor);
 
   void OnStoreDeletionFromDisk() override;
 
@@ -57,7 +56,7 @@ class InterceptablePrefFilter
   // InterceptablePrefFilter and hands back the |pref_store_contents| to the
   // initial caller of FilterOnLoad.
   virtual void FinalizeFilterOnLoad(
-      const PostFilterOnLoadCallback& post_filter_on_load_callback,
+      PostFilterOnLoadCallback post_filter_on_load_callback,
       std::unique_ptr<base::DictionaryValue> pref_store_contents,
       bool prefs_altered) = 0;
 

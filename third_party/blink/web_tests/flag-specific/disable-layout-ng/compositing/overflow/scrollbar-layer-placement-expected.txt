@@ -1,0 +1,260 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='outer A'",
+      "position": [-21, -21],
+      "bounds": [352, 294],
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='scroller'",
+      "position": [-30, -30],
+      "bounds": [290, 230],
+      "backgroundColor": "#FFFFFF",
+      "transform": 2
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [5, 5],
+      "bounds": [220, 236],
+      "backgroundColor": "#FFFFFF",
+      "transform": 2
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [218, 5],
+      "bounds": [7, 160],
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='outer B'",
+      "position": [-21, -21],
+      "bounds": [352, 294],
+      "transform": 3
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='scroller'",
+      "position": [-30, -30],
+      "bounds": [290, 230],
+      "backgroundColor": "#FFFFFF",
+      "transform": 4
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [5, 5],
+      "bounds": [220, 236],
+      "backgroundColor": "#FFFFFF",
+      "transform": 4
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='content'",
+      "bounds": [196, 212],
+      "contentsOpaque": true,
+      "backgroundColor": "#DDDDDD",
+      "transform": 5
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [218, 5],
+      "bounds": [7, 160],
+      "transform": 4
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='outer C'",
+      "position": [-21, -21],
+      "bounds": [352, 294],
+      "transform": 6
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='scroller'",
+      "position": [-30, -30],
+      "bounds": [290, 230],
+      "backgroundColor": "#FFFFFF",
+      "transform": 7
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [5, 5],
+      "bounds": [220, 236],
+      "backgroundColor": "#FFFFFF",
+      "transform": 7
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='content'",
+      "bounds": [196, 212],
+      "contentsOpaque": true,
+      "backgroundColor": "#DDDDDD",
+      "transform": 8
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [218, 5],
+      "bounds": [7, 160],
+      "transform": 7
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='outer D'",
+      "position": [-21, -21],
+      "bounds": [352, 294],
+      "transform": 9
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='clipper'",
+      "position": [-7, -7],
+      "bounds": [292, 200],
+      "transform": 10
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='scroller'",
+      "position": [-30, -30],
+      "bounds": [290, 230],
+      "backgroundColor": "#FFFFFF",
+      "transform": 11
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [5, 5],
+      "bounds": [220, 236],
+      "backgroundColor": "#FFFFFF",
+      "transform": 11
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='content'",
+      "bounds": [196, 212],
+      "contentsOpaque": true,
+      "backgroundColor": "#DDDDDD",
+      "transform": 12
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [218, 5],
+      "bounds": [7, 160],
+      "transform": 11
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [21, 21, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [41, 41, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [370, 21, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [41, 41, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [17, 17, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [21, 312, 0, 1]
+      ]
+    },
+    {
+      "id": 7,
+      "parent": 6,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [40, 40, 0, 1]
+      ]
+    },
+    {
+      "id": 8,
+      "parent": 7,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [17, 17, 0, 1]
+      ]
+    },
+    {
+      "id": 9,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [370, 312, 0, 1]
+      ]
+    },
+    {
+      "id": 10,
+      "parent": 9,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [16, 16, 0, 1]
+      ]
+    },
+    {
+      "id": 11,
+      "parent": 10,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [24, 24, 0, 1]
+      ]
+    },
+    {
+      "id": 12,
+      "parent": 11,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [17, 17, 0, 1]
+      ]
+    }
+  ]
+}
+

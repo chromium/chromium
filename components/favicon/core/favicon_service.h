@@ -24,12 +24,6 @@ namespace favicon {
 
 class FaviconService : public KeyedService {
  public:
-  // We usually pass parameters with pointer to avoid copy. This function is a
-  // helper to run FaviconResultsCallback with pointer parameters.
-  static void FaviconResultsCallbackRunner(
-      const favicon_base::FaviconResultsCallback& callback,
-      const std::vector<favicon_base::FaviconRawBitmapResult>* results);
-
   //////////////////////////////////////////////////////////////////////////////
   // Methods to request favicon bitmaps from the history backend for |icon_url|.
   // |icon_url| is the URL of the icon itself.
@@ -42,7 +36,7 @@ class FaviconService : public KeyedService {
   // the bitmaps with the best matching sizes are resized.
   virtual base::CancelableTaskTracker::TaskId GetFaviconImage(
       const GURL& icon_url,
-      const favicon_base::FaviconImageCallback& callback,
+      favicon_base::FaviconImageCallback callback,
       base::CancelableTaskTracker* tracker) = 0;
 
   // Requests the favicon at |icon_url| of |icon_type| of size
@@ -54,7 +48,7 @@ class FaviconService : public KeyedService {
       const GURL& icon_url,
       favicon_base::IconType icon_type,
       int desired_size_in_pixel,
-      const favicon_base::FaviconRawBitmapCallback& callback,
+      favicon_base::FaviconRawBitmapCallback callback,
       base::CancelableTaskTracker* tracker) = 0;
 
   // The first argument for |callback| is the set of bitmaps for the passed in
@@ -68,7 +62,7 @@ class FaviconService : public KeyedService {
       const GURL& icon_url,
       favicon_base::IconType icon_type,
       int desired_size_in_dip,
-      const favicon_base::FaviconResultsCallback& callback,
+      favicon_base::FaviconResultsCallback callback,
       base::CancelableTaskTracker* tracker) = 0;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -84,7 +78,7 @@ class FaviconService : public KeyedService {
   // are resized.
   virtual base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(
       const GURL& page_url,
-      const favicon_base::FaviconImageCallback& callback,
+      favicon_base::FaviconImageCallback callback,
       base::CancelableTaskTracker* tracker) = 0;
 
   // Requests the favicon for the page at |page_url| with one of |icon_types|
@@ -102,7 +96,7 @@ class FaviconService : public KeyedService {
       const favicon_base::IconTypeSet& icon_types,
       int desired_size_in_pixel,
       bool fallback_to_host,
-      const favicon_base::FaviconRawBitmapCallback& callback,
+      favicon_base::FaviconRawBitmapCallback callback,
       base::CancelableTaskTracker* tracker) = 0;
 
   // See HistoryService::GetLargestFaviconForPageURL().
@@ -110,14 +104,14 @@ class FaviconService : public KeyedService {
       const GURL& page_url,
       const std::vector<favicon_base::IconTypeSet>& icon_types,
       int minimum_size_in_pixels,
-      const favicon_base::FaviconRawBitmapCallback& callback,
+      favicon_base::FaviconRawBitmapCallback callback,
       base::CancelableTaskTracker* tracker) = 0;
 
   virtual base::CancelableTaskTracker::TaskId GetFaviconForPageURL(
       const GURL& page_url,
       const favicon_base::IconTypeSet& icon_types,
       int desired_size_in_dip,
-      const favicon_base::FaviconResultsCallback& callback,
+      favicon_base::FaviconResultsCallback callback,
       base::CancelableTaskTracker* tracker) = 0;
 
   // Maps |page_urls| to the favicon at |icon_url| if there is an entry in the
@@ -131,7 +125,7 @@ class FaviconService : public KeyedService {
       const GURL& icon_url,
       favicon_base::IconType icon_type,
       int desired_size_in_dip,
-      const favicon_base::FaviconResultsCallback& callback,
+      favicon_base::FaviconResultsCallback callback,
       base::CancelableTaskTracker* tracker) = 0;
 
   // Deletes favicon mappings for each URL in |page_urls| and their redirects.
@@ -144,7 +138,7 @@ class FaviconService : public KeyedService {
   // returned.
   virtual base::CancelableTaskTracker::TaskId GetLargestRawFaviconForID(
       favicon_base::FaviconID favicon_id,
-      const favicon_base::FaviconRawBitmapCallback& callback,
+      favicon_base::FaviconRawBitmapCallback callback,
       base::CancelableTaskTracker* tracker) = 0;
 
   // Marks all types of favicon for the page as being out of date.

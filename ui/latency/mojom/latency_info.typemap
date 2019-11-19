@@ -1,0 +1,21 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/latency/mojom/latency_info.mojom"
+public_headers = [ "//ui/latency/latency_info.h" ]
+traits_headers = [ "//ui/latency/mojom/latency_info_mojom_traits.h" ]
+sources = [
+  "latency_info_mojom_traits.cc",
+  "latency_info_mojom_traits.h",
+]
+public_deps = [
+  "//ui/latency",
+]
+deps = [
+  "//ipc:param_traits",
+]
+type_mappings = [
+  "ui.mojom.LatencyComponentType=::ui::LatencyComponentType",
+  "ui.mojom.LatencyInfo=::ui::LatencyInfo",
+]

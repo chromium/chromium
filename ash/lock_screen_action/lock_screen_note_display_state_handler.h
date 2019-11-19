@@ -85,7 +85,8 @@ class LockScreenNoteDisplayStateHandler
   ScopedObserver<BacklightsForcedOffSetter, BacklightsForcedOffSetter::Observer>
       backlights_forced_off_observer_;
 
-  base::WeakPtrFactory<LockScreenNoteDisplayStateHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<LockScreenNoteDisplayStateHandler> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(LockScreenNoteDisplayStateHandler);
 };

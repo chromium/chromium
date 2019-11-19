@@ -24,7 +24,8 @@ class DeviceMonitorMessageWindow;
 
 namespace {
 
-const wchar_t kWindowClassName[] = L"DeviceMonitorMessageWindow";
+const base::char16 kWindowClassName[] =
+    STRING16_LITERAL("DeviceMonitorMessageWindow");
 DeviceMonitorMessageWindow* g_message_window;
 
 // Provides basic comparability for GUIDs so that they can be used as keys to an

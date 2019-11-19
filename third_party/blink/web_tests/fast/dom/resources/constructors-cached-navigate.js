@@ -47,7 +47,8 @@ window.onload = function () {
         if (window.testRunner)
             testRunner.notifyDone();
     };
-    testFrame.src = 'data:text/html,<script>var constructors = ["Image", "MessageChannel", "Option", "XMLHttpRequest", "Audio"];'
-                  + 'for(var i = 0; i < constructors.length; i++) if(window[constructors[i]])'
-                  + 'window[constructors[i]].cachedOnOwnerDocument = true;</script>';
+    testFrame.srcdoc =
+        '<script>var constructors = ["Image", "MessageChannel", "Option", "XMLHttpRequest", "Audio"];' +
+        'for(var i = 0; i < constructors.length; i++) if(window[constructors[i]])' +
+        'window[constructors[i]].cachedOnOwnerDocument = true;</script>';
 }

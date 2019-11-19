@@ -92,11 +92,11 @@ class InterstitialPage {
   // notifications (e.g. RenderFrameDeleted). The only sensible use of this
   // returned WebContents is to add a WebContentObserver and listen for the
   // DidAttachInterstitialPage or DidDetachInterstitialPage notifications.
-  virtual WebContents* GetWebContents() const = 0;
+  virtual WebContents* GetWebContents() = 0;
 
   // Gets the RenderFrameHost associated with the interstitial page's main
   // frame. May return nullptr if the interstitial is already hidden.
-  virtual RenderFrameHost* GetMainFrame() const = 0;
+  virtual RenderFrameHost* GetMainFrame() = 0;
 
   virtual InterstitialPageDelegate* GetDelegateForTesting() = 0;
   virtual void DontCreateViewForTesting() = 0;

@@ -7,7 +7,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #include "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -28,8 +29,6 @@
 #error "This file requires ARC support."
 #endif
 
-NSString* const kAutofillProfileEditTableViewId =
-    @"kAutofillProfileEditTableViewId";
 
 namespace {
 using ::AutofillTypeFromAutofillUIType;
@@ -131,7 +130,7 @@ static const AutofillFieldDisplayInfo kFieldsToDisplay[] = {
   // In the case of server profiles, open the Payments editing page instead.
   if (_autofillProfile.record_type() ==
       autofill::AutofillProfile::SERVER_PROFILE) {
-    GURL paymentsURL = autofill::payments::GetManageAddressesUrl(0);
+    GURL paymentsURL = autofill::payments::GetManageAddressesUrl();
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
     [self.dispatcher closeSettingsUIAndOpenURL:command];
@@ -204,6 +203,7 @@ static const AutofillFieldDisplayInfo kFieldsToDisplay[] = {
         autofill::AutofillType(field.autofillType), locale));
     item.autofillUIType = AutofillUITypeFromAutofillType(field.autofillType);
     item.textFieldEnabled = self.tableView.editing;
+    item.hideIcon = !self.tableView.editing;
     item.autoCapitalizationType = field.autoCapitalizationType;
     item.returnKeyType = field.returnKeyType;
     item.keyboardType = field.keyboardType;
@@ -220,8 +220,8 @@ static const AutofillFieldDisplayInfo kFieldsToDisplay[] = {
 
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-  AutofillEditCell* textFieldCell =
-      base::mac::ObjCCastStrict<AutofillEditCell>(cell);
+  TableViewTextEditCell* textFieldCell =
+      base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
   textFieldCell.accessibilityIdentifier = textFieldCell.textLabel.text;
   textFieldCell.textField.delegate = self;
   return textFieldCell;
@@ -231,16 +231,28 @@ static const AutofillFieldDisplayInfo kFieldsToDisplay[] = {
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   if (self.tableView.editing) {
     UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    AutofillEditCell* textFieldCell =
-        base::mac::ObjCCastStrict<AutofillEditCell>(cell);
+    TableViewTextEditCell* textFieldCell =
+        base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
     [textFieldCell.textField becomeFirstResponder];
   }
 }
 
+#pragma mark - UITableViewDelegate
+
 - (BOOL)tableView:(UITableView*)tableView
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
-  // Items in this collection view are not deletable, so should not be seen
-  // as editable by the table view.
+  // If we don't allow the edit of the cell, the selection of the cell isn't
+  // forwarded.
+  return YES;
+}
+
+- (UITableViewCellEditingStyle)tableView:(UITableView*)tableView
+           editingStyleForRowAtIndexPath:(NSIndexPath*)indexPath {
+  return UITableViewCellEditingStyleNone;
+}
+
+- (BOOL)tableView:(UITableView*)tableview
+    shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath*)indexPath {
   return NO;
 }
 

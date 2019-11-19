@@ -78,6 +78,22 @@ struct MEDIA_SHMEM_EXPORT AudioOutputBuffer {
   int8_t audio[1];
 };
 
+struct MEDIA_SHMEM_EXPORT AudioRendererAlgorithmParameters {
+  // The maximum size for the audio buffer.
+  base::TimeDelta max_capacity;
+
+  // The minimum size for the audio buffer.
+  base::TimeDelta starting_capacity;
+
+  // The minimum size for the audio buffer for encrypted streams.
+  // Set this to be larger than |max_capacity| because the
+  // performance of encrypted playback is always worse than clear playback, due
+  // to decryption and potentially IPC overhead. For the context, see
+  // https://crbug.com/403462, https://crbug.com/718161 and
+  // https://crbug.com/879970.
+  base::TimeDelta starting_capacity_for_encrypted;
+};
+
 // These convenience function safely computes the size required for
 // |shared_memory_count| AudioInputBuffers, with enough memory for AudioBus
 // data, using |paremeters| (or alternatively |channels| and |frames|). The
@@ -136,16 +152,17 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   // effects should be enabled.
   enum PlatformEffectsMask {
     NO_EFFECTS = 0x0,
-    ECHO_CANCELLER = 0x1,
-    DUCKING = 0x2,  // Enables ducking if the OS supports it.
-    KEYBOARD_MIC = 0x4,
-    HOTWORD = 0x8,
-    NOISE_SUPPRESSION = 0x10,
-    AUTOMATIC_GAIN_CONTROL = 0x20,
-    EXPERIMENTAL_ECHO_CANCELLER = 0x40,  // Indicates an echo canceller is
-                                         // available that should only
-                                         // experimentally be enabled.
-    MULTIZONE = 0x80,
+    ECHO_CANCELLER = 1 << 0,
+    DUCKING = 1 << 1,  // Enables ducking if the OS supports it.
+    KEYBOARD_MIC = 1 << 2,
+    HOTWORD = 1 << 3,
+    NOISE_SUPPRESSION = 1 << 4,
+    AUTOMATIC_GAIN_CONTROL = 1 << 5,
+    EXPERIMENTAL_ECHO_CANCELLER = 1 << 6,  // Indicates an echo canceller is
+                                           // available that should only
+                                           // experimentally be enabled.
+    MULTIZONE = 1 << 7,
+    AUDIO_PREFETCH = 1 << 8,
   };
 
   struct HardwareCapabilities {

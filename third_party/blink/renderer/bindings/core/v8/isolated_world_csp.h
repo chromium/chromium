@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -34,16 +34,16 @@ class CORE_EXPORT IsolatedWorldCSP {
   // policy to be applied correctly.
   // Note: If |policy| is null, the PolicyInfo for |world_id| is cleared. If
   // |policy| is specified, |self_origin| must not be null.
-  void SetContentSecurityPolicy(int world_id,
+  void SetContentSecurityPolicy(int32_t world_id,
                                 const String& policy,
                                 scoped_refptr<SecurityOrigin> self_origin);
-  bool HasContentSecurityPolicy(int world_id) const;
+  bool HasContentSecurityPolicy(int32_t world_id) const;
 
   // Creates a ContentSecurityPolicy instance for the given isolated |world_id|
   // and |document|. Returns null if no ContentSecurityPolicy is defined for the
   // given isolated |world_id|.
   ContentSecurityPolicy* CreateIsolatedWorldCSP(Document& document,
-                                                int world_id);
+                                                int32_t world_id);
 
  private:
   struct PolicyInfo {

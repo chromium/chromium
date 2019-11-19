@@ -61,10 +61,7 @@ ExtensionFunction::ResponseAction InstanceIDApiFunction::Run() {
         "chrome.instanceID not supported in incognito mode"));
   }
 
-  bool isInstanceIDEnabled = IsEnabled();
-  UMA_HISTOGRAM_BOOLEAN("InstanceID.Enabled", isInstanceIDEnabled);
-
-  if (!isInstanceIDEnabled) {
+  if (!IsEnabled()) {
     return RespondNow(Error(
         InstanceIDResultToError(instance_id::InstanceID::DISABLED)));
   }
@@ -135,7 +132,7 @@ ExtensionFunction::ResponseAction InstanceIDGetTokenFunction::DoWork() {
   GetInstanceID()->GetToken(
       params->get_token_params.authorized_entity,
       params->get_token_params.scope, options,
-      /*is_lazy=*/false,
+      /*flags=*/{},
       base::Bind(&InstanceIDGetTokenFunction::GetTokenCompleted, this));
 
   return RespondLater();

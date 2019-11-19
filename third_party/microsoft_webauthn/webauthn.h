@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef THIRD_PARTY_MICROSOFT_WEBAUTHN_WEBAUTHN_H_
-#define THIRD_PARTY_MICROSOFT_WEBAUTHN_WEBAUTHN_H_
+#ifndef __WEBAUTHN_H_
+#define __WEBAUTHN_H_
 
 #pragma once
 
@@ -66,7 +66,13 @@ extern "C" {
 //          - WebAuthNGetErrorName
 //          - WebAuthNGetW3CExceptionDOMError
 
-#define WEBAUTHN_API_CURRENT_VERSION    WEBAUTHN_API_VERSION_1
+#define WEBAUTHN_API_VERSION_2 2
+// WEBAUTHN_API_VERSION_2 : Delta From WEBAUTHN_API_VERSION_1
+//      Added Extensions:
+//          - WEBAUTHN_EXTENSIONS_IDENTIFIER_CRED_PROTECT
+//
+
+#define WEBAUTHN_API_CURRENT_VERSION WEBAUTHN_API_VERSION_2
 
 //+------------------------------------------------------------------------------------------
 // Information about an RP Entity
@@ -267,6 +273,39 @@ typedef const WEBAUTHN_CREDENTIAL_LIST *PCWEBAUTHN_CREDENTIAL_LIST;
 //      - pvExtension will point to a BOOL with the value TRUE if credential
 //        was successfully created with HMAC_SECRET.
 //      - cbExtension will contain the sizeof(BOOL).
+// GetAssertion Input Type:     Not Supported
+// GetAssertion Output Type:    Not Supported
+
+//+------------------------------------------------------------------------------------------
+//  credProtect  extension
+//-------------------------------------------------------------------------------------------
+
+#define WEBAUTHN_USER_VERIFICATION_ANY 0
+#define WEBAUTHN_USER_VERIFICATION_OPTIONAL 1
+#define WEBAUTHN_USER_VERIFICATION_OPTIONAL_WITH_CREDENTIAL_ID_LIST 2
+#define WEBAUTHN_USER_VERIFICATION_REQUIRED 3
+
+typedef struct _WEBAUTHN_CRED_PROTECT_EXTENSION_IN {
+  // One of the above WEBAUTHN_USER_VERIFICATION_* values
+  DWORD dwCredProtect;
+  // Set the following to TRUE to require authenticator support for the
+  // credProtect extension
+  BOOL bRequireCredProtect;
+} WEBAUTHN_CRED_PROTECT_EXTENSION_IN, *PWEBAUTHN_CRED_PROTECT_EXTENSION_IN;
+typedef const WEBAUTHN_CRED_PROTECT_EXTENSION_IN*
+    PCWEBAUTHN_CRED_PROTECT_EXTENSION_IN;
+
+#define WEBAUTHN_EXTENSIONS_IDENTIFIER_CRED_PROTECT L"credProtect"
+// Below type definitions is for WEBAUTHN_EXTENSIONS_IDENTIFIER_CRED_PROTECT
+// MakeCredential Input Type:   WEBAUTHN_CRED_PROTECT_EXTENSION_IN.
+//      - pvExtension must point to a WEBAUTHN_CRED_PROTECT_EXTENSION_IN struct
+//      - cbExtension will contain the
+//      sizeof(WEBAUTHN_CRED_PROTECT_EXTENSION_IN).
+// MakeCredential Output Type:  DWORD.
+//      - pvExtension will point to a DWORD with one of the above
+//      WEBAUTHN_USER_VERIFICATION_* values
+//        if credential was successfully created with CRED_PROTECT.
+//      - cbExtension will contain the sizeof(DWORD).
 // GetAssertion Input Type:     Not Supported
 // GetAssertion Output Type:    Not Supported
 
@@ -667,4 +706,4 @@ WebAuthNGetW3CExceptionDOMError(
 #endif // WINAPI_FAMILY_PARTITION
 #pragma endregion
 
-#endif  // THIRD_PARTY_MICROSOFT_WEBAUTHN_WEBAUTHN_H_
+#endif  // __WEBAUTHN_H_

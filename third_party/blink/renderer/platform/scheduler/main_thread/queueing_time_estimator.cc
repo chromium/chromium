@@ -6,16 +6,10 @@
 
 #include <algorithm>
 
-#include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
-#include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
-
 namespace blink {
 namespace scheduler {
 
 namespace {
-
-#define FRAME_STATUS_PREFIX \
-  "RendererScheduler.ExpectedQueueingTimeByFrameStatus2."
 
 // On Windows, when a computer sleeps, we may end up getting extremely long
 // tasks or idling. We'll ignore tasks longer than |kInvalidPeriodThreshold|.
@@ -72,13 +66,11 @@ QueueingTimeEstimator::QueueingTimeEstimator(Client* client,
   DCHECK_GE(steps_per_window, 1);
 }
 
-void QueueingTimeEstimator::OnExecutionStarted(base::TimeTicks now,
-                                               MainThreadTaskQueue* queue) {
+void QueueingTimeEstimator::OnExecutionStarted(base::TimeTicks now) {
   DCHECK(!busy_);
   AdvanceTime(now);
   busy_ = true;
   busy_period_start_time_ = now;
-  calculator_.UpdateStatusFromTaskQueue(queue);
 }
 
 void QueueingTimeEstimator::OnExecutionStopped(base::TimeTicks now) {
@@ -142,18 +134,9 @@ bool QueueingTimeEstimator::TimePastStepEnd(base::TimeTicks time) {
 QueueingTimeEstimator::Calculator::Calculator(int steps_per_window)
     : steps_per_window_(steps_per_window), sliding_window_(steps_per_window) {}
 
-void QueueingTimeEstimator::Calculator::UpdateStatusFromTaskQueue(
-    MainThreadTaskQueue* queue) {
-  FrameScheduler* scheduler = queue ? queue->GetFrameScheduler() : nullptr;
-  current_frame_status_ =
-      scheduler ? GetFrameStatus(scheduler) : FrameStatus::kNone;
-}
-
 void QueueingTimeEstimator::Calculator::AddQueueingTime(
     base::TimeDelta queueing_time) {
   step_expected_queueing_time_ += queueing_time;
-  eqt_by_frame_status_[static_cast<int>(current_frame_status_)] +=
-      queueing_time;
 }
 
 void QueueingTimeEstimator::Calculator::EndStep(Client* client) {
@@ -169,44 +152,6 @@ void QueueingTimeEstimator::Calculator::EndStep(Client* client) {
   client->OnQueueingTimeForWindowEstimated(sliding_window_.GetAverage(),
                                            sliding_window_.IndexIsZero());
   ResetStep();
-  if (!sliding_window_.IndexIsZero())
-    return;
-
-// Report splits by frame status.
-#define REPORT_BY_FRAME_TYPE(frame)                                            \
-  client->OnReportFineGrainedExpectedQueueingTime(                             \
-      FRAME_STATUS_PREFIX #frame "Visible",                                    \
-      (eqt_by_frame_status_[static_cast<int>(                                  \
-           FrameStatus::k##frame##Visible)] +                                  \
-       eqt_by_frame_status_[static_cast<int>(                                  \
-           FrameStatus::k##frame##VisibleService)]) /                          \
-          steps_per_window_);                                                  \
-  client->OnReportFineGrainedExpectedQueueingTime(                             \
-      FRAME_STATUS_PREFIX #frame "Hidden",                                     \
-      (eqt_by_frame_status_[static_cast<int>(FrameStatus::k##frame##Hidden)] + \
-       eqt_by_frame_status_[static_cast<int>(                                  \
-           FrameStatus::k##frame##HiddenService)]) /                           \
-          steps_per_window_);                                                  \
-  client->OnReportFineGrainedExpectedQueueingTime(                             \
-      FRAME_STATUS_PREFIX #frame "Background",                                 \
-      (eqt_by_frame_status_[static_cast<int>(                                  \
-           FrameStatus::k##frame##Background)] +                               \
-       eqt_by_frame_status_[static_cast<int>(                                  \
-           FrameStatus::k##frame##BackgroundExemptSelf)] +                     \
-       eqt_by_frame_status_[static_cast<int>(                                  \
-           FrameStatus::k##frame##BackgroundExemptOther)]) /                   \
-          steps_per_window_);
-  REPORT_BY_FRAME_TYPE(MainFrame)
-  REPORT_BY_FRAME_TYPE(SameOrigin)
-  REPORT_BY_FRAME_TYPE(CrossOrigin)
-#undef REPORT_BY_FRAME_TYPE
-  client->OnReportFineGrainedExpectedQueueingTime(
-      FRAME_STATUS_PREFIX "Other",
-      (eqt_by_frame_status_[static_cast<int>(FrameStatus::kNone)] +
-       eqt_by_frame_status_[static_cast<int>(FrameStatus::kDetached)]) /
-          steps_per_window_);
-  std::fill(eqt_by_frame_status_.begin(), eqt_by_frame_status_.end(),
-            base::TimeDelta());
 }
 
 void QueueingTimeEstimator::Calculator::ResetStep() {

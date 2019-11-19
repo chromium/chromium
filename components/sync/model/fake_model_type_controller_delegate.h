@@ -33,7 +33,7 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
 
  private:
   const ModelType type_;
-  base::WeakPtrFactory<FakeModelTypeControllerDelegate> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeModelTypeControllerDelegate> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeModelTypeControllerDelegate);
 };

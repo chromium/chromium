@@ -5,6 +5,7 @@
 package org.chromium.base;
 
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Helper to get field trial information.
@@ -20,7 +21,7 @@ public class FieldTrialList {
      *         not exist.
      */
     public static String findFullName(String trialName) {
-        return nativeFindFullName(trialName);
+        return FieldTrialListJni.get().findFullName(trialName);
     }
 
     /**
@@ -28,7 +29,7 @@ public class FieldTrialList {
      * @return Whether the trial exists or not.
      */
     public static boolean trialExists(String trialName) {
-        return nativeTrialExists(trialName);
+        return FieldTrialListJni.get().trialExists(trialName);
     }
 
     /**
@@ -37,7 +38,7 @@ public class FieldTrialList {
      * @return The value of the parameter or an empty string if not found.
      */
     public static String getVariationParameter(String trialName, String parameterKey) {
-        return nativeGetVariationParameter(trialName, parameterKey);
+        return FieldTrialListJni.get().getVariationParameter(trialName, parameterKey);
     }
 
     /**
@@ -45,11 +46,14 @@ public class FieldTrialList {
      * prtinting new trials as they become active. This should be called at most once.
      */
     public static void logActiveTrials() {
-        nativeLogActiveTrials();
+        FieldTrialListJni.get().logActiveTrials();
     }
 
-    private static native String nativeFindFullName(String trialName);
-    private static native boolean nativeTrialExists(String trialName);
-    private static native String nativeGetVariationParameter(String trialName, String parameterKey);
-    private static native void nativeLogActiveTrials();
+    @NativeMethods
+    interface Natives {
+        String findFullName(String trialName);
+        boolean trialExists(String trialName);
+        String getVariationParameter(String trialName, String parameterKey);
+        void logActiveTrials();
+    }
 }

@@ -154,8 +154,4 @@ void SyncError::PrintLogError() const {
       << message_;
 }
 
-void PrintTo(const SyncError& sync_error, std::ostream* os) {
-  *os << sync_error.ToString();
-}
-
 }  // namespace syncer

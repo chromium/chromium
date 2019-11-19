@@ -21,8 +21,12 @@ const char kServiceName[] = SERVICE_NAME;
 const char kHostConfigFileName[] = SERVICE_NAME ".json";
 const char kHostConfigFilePath[] = HELPER_TOOLS_DIR SERVICE_NAME ".json";
 
-const char kHostHelperScriptPath[] = HELPER_TOOLS_DIR SERVICE_NAME ".me2me.sh";
+const char kHostServiceBinaryPath[] = HELPER_TOOLS_DIR HOST_BUNDLE_NAME
+    "/Contents/MacOS/remoting_me2me_host_service";
+const char kOldHostHelperScriptPath[] =
+    HELPER_TOOLS_DIR SERVICE_NAME ".me2me.sh";
 const char kHostBinaryPath[] = HELPER_TOOLS_DIR HOST_BUNDLE_NAME;
+const char kHostLegacyBinaryPath[] = HELPER_TOOLS_DIR HOST_LEGACY_BUNDLE_NAME;
 const char kHostEnabledPath[] = HELPER_TOOLS_DIR SERVICE_NAME ".me2me_enabled";
 
 const char kServicePlistPath[] = LAUNCH_AGENTS_DIR SERVICE_NAME ".plist";

@@ -23,8 +23,7 @@ ThirdPartyClientAuthenticator::ThirdPartyClientAuthenticator(
     const FetchThirdPartyTokenCallback& fetch_token_callback)
     : ThirdPartyAuthenticatorBase(WAITING_MESSAGE),
       create_base_authenticator_callback_(create_base_authenticator_callback),
-      fetch_token_callback_(std::move(fetch_token_callback)),
-      weak_factory_(this) {}
+      fetch_token_callback_(std::move(fetch_token_callback)) {}
 
 ThirdPartyClientAuthenticator::~ThirdPartyClientAuthenticator() = default;
 

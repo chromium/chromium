@@ -6,9 +6,10 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/threading/thread_task_runner_handle.h"
 
 namespace offline_pages {
-ModelTaskTestBase::ModelTaskTestBase() : store_test_util_(task_runner()) {}
+ModelTaskTestBase::ModelTaskTestBase() {}
 ModelTaskTestBase::~ModelTaskTestBase() {}
 
 void ModelTaskTestBase::SetUp() {
@@ -17,7 +18,8 @@ void ModelTaskTestBase::SetUp() {
   ASSERT_TRUE(private_dir_.CreateUniqueTempDir());
   ASSERT_TRUE(public_dir_.CreateUniqueTempDir());
   archive_manager_ = std::make_unique<ArchiveManager>(
-      TemporaryDir(), PrivateDir(), PublicDir(), task_runner());
+      TemporaryDir(), PrivateDir(), PublicDir(),
+      base::ThreadTaskRunnerHandle::Get());
   generator()->SetArchiveDirectory(TemporaryDir());
   store_test_util_.BuildStoreInMemory();
 }

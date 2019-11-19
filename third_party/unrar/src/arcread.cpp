@@ -1,7 +1,5 @@
 #include "rar.hpp"
 
-namespace third_party_unrar {
-
 size_t Archive::ReadHeader()
 {
   // Once we failed to decrypt an encrypted block, there is no reason to
@@ -12,7 +10,10 @@ size_t Archive::ReadHeader()
 
   CurBlockPos=Tell();
 
-  size_t ReadSize = 0;
+  // Other developers asked us to initialize it to suppress "may be used
+  // uninitialized" warning in code below in some compilers.
+  size_t ReadSize=0;
+
   switch(Format)
   {
 #ifndef SFX_MODULE
@@ -25,9 +26,6 @@ size_t Archive::ReadHeader()
       break;
     case RARFMT50:
       ReadSize=ReadHeader50();
-      break;
-    case RARFMT_NONE:
-    case RARFMT_FUTURE:
       break;
   }
 
@@ -118,9 +116,9 @@ void Archive::BrokenHeaderMsg()
 }
 
 
-void Archive::UnkEncVerMsg(const wchar *Name)
+void Archive::UnkEncVerMsg(const wchar *Name,const wchar *Info)
 {
-  uiMsg(UIERROR_UNKNOWNENCMETHOD,FileName,Name);
+  uiMsg(UIERROR_UNKNOWNENCMETHOD,FileName,Name,Info);
   ErrHandler.SetErrorCode(RARX_WARNING);
 }
 
@@ -193,7 +191,6 @@ size_t Archive::ReadHeader15()
     case HEAD3_FILE:    ShortBlock.HeaderType=HEAD_FILE;     break;
     case HEAD3_SERVICE: ShortBlock.HeaderType=HEAD_SERVICE;  break;
     case HEAD3_ENDARC:  ShortBlock.HeaderType=HEAD_ENDARC;   break;
-    default:                                                 break;
   }
   CurHeaderType=ShortBlock.HeaderType;
 
@@ -709,7 +706,9 @@ size_t Archive::ReadHeader50()
         uint CryptVersion=(uint)Raw.GetV();
         if (CryptVersion>CRYPT_VERSION)
         {
-          UnkEncVerMsg(FileName);
+          wchar Info[20];
+          swprintf(Info,ASIZE(Info),L"h%u",CryptVersion);
+          UnkEncVerMsg(FileName,Info);
           return 0;
         }
         uint EncFlags=(uint)Raw.GetV();
@@ -717,7 +716,9 @@ size_t Archive::ReadHeader50()
         CryptHead.Lg2Count=Raw.Get1();
         if (CryptHead.Lg2Count>CRYPT5_KDF_LG2_COUNT_MAX)
         {
-          UnkEncVerMsg(FileName);
+          wchar Info[20];
+          swprintf(Info,ASIZE(Info),L"hc%u",CryptHead.Lg2Count);
+          UnkEncVerMsg(FileName,Info);
           return 0;
         }
         Raw.GetB(CryptHead.Salt,SIZE_SALT50);
@@ -897,8 +898,6 @@ size_t Archive::ReadHeader50()
         EndArcHead.RevSpace=false;
       }
       break;
-    default:
-      break;
   }
 
   return Raw.Size();
@@ -1000,8 +999,12 @@ void Archive::ProcessExtra50(RawRead *Raw,size_t ExtraSize,BaseBlock *bb)
           {
             FileHeader *hd=(FileHeader *)bb;
             uint EncVersion=(uint)Raw->GetV();
-            if (EncVersion > CRYPT_VERSION)
-              UnkEncVerMsg(hd->FileName);
+            if (EncVersion>CRYPT_VERSION)
+            {
+              wchar Info[20];
+              swprintf(Info,ASIZE(Info),L"x%u",EncVersion);
+              UnkEncVerMsg(hd->FileName,Info);
+            }
             else
             {
               uint Flags=(uint)Raw->GetV();
@@ -1009,7 +1012,11 @@ void Archive::ProcessExtra50(RawRead *Raw,size_t ExtraSize,BaseBlock *bb)
               hd->UseHashKey=(Flags & FHEXTRA_CRYPT_HASHMAC)!=0;
               hd->Lg2Count=Raw->Get1();
               if (hd->Lg2Count>CRYPT5_KDF_LG2_COUNT_MAX)
-                UnkEncVerMsg(hd->FileName);
+              {
+                wchar Info[20];
+                swprintf(Info,ASIZE(Info),L"xc%u",hd->Lg2Count);
+                UnkEncVerMsg(hd->FileName,Info);
+              }
               Raw->GetB(hd->Salt,SIZE_SALT50);
               Raw->GetB(hd->InitV,SIZE_INITV);
               if (hd->UsePswCheck)
@@ -1063,26 +1070,20 @@ void Archive::ProcessExtra50(RawRead *Raw,size_t ExtraSize,BaseBlock *bb)
             byte Flags=(byte)Raw->GetV();
             bool UnixTime=(Flags & FHEXTRA_HTIME_UNIXTIME)!=0;
             if ((Flags & FHEXTRA_HTIME_MTIME)!=0)
-            {
               if (UnixTime)
                 hd->mtime.SetUnix(Raw->Get4());
               else
                 hd->mtime.SetWin(Raw->Get8());
-            }
             if ((Flags & FHEXTRA_HTIME_CTIME)!=0)
-            {
               if (UnixTime)
                 hd->ctime.SetUnix(Raw->Get4());
               else
                 hd->ctime.SetWin(Raw->Get8());
-            }
             if ((Flags & FHEXTRA_HTIME_ATIME)!=0)
-            {
               if (UnixTime)
                 hd->atime.SetUnix((time_t)Raw->Get4());
               else
                 hd->atime.SetWin(Raw->Get8());
-            }
             if (UnixTime && (Flags & FHEXTRA_HTIME_UNIX_NS)!=0) // Add nanoseconds.
             {
               uint ns;
@@ -1356,12 +1357,10 @@ void Archive::ConvertAttributes()
 void Archive::ConvertFileHeader(FileHeader *hd)
 {
   if (hd->HSType==HSYS_UNKNOWN)
-  {
     if (hd->Dir)
       hd->FileAttr=0x10;
     else
       hd->FileAttr=0x20;
-  }
 
 #ifdef _WIN_ALL
   if (hd->HSType==HSYS_UNIX) // Convert Unix, OS X and Android decomposed chracters to Windows precomposed.
@@ -1399,7 +1398,7 @@ void Archive::ConvertFileHeader(FileHeader *hd)
     // Still, RAR 4.x uses backslashes as path separator even in Unix.
     // Forward slash is not allowed in both systems. In RAR 5.0 we use
     // the forward slash as universal path separator.
-    if (*s=='/' || (*s=='\\' && Format!=RARFMT50))
+    if (*s=='/' || *s=='\\' && Format!=RARFMT50)
       *s=CPATHDIVIDER;
   }
 }
@@ -1454,14 +1453,12 @@ bool Archive::ReadSubData(Array<byte> *UnpData,File *DestFile)
     }
   }
   if (SubHead.Encrypted)
-  {
     if (Cmd->Password.IsSet())
       SubDataIO.SetEncryption(false,SubHead.CryptMethod,&Cmd->Password,
                 SubHead.SaltSet ? SubHead.Salt:NULL,SubHead.InitV,
                 SubHead.Lg2Count,SubHead.HashKey,SubHead.PswCheck);
     else
       return false;
-  }
   SubDataIO.UnpHash.Init(SubHead.FileHash.Type,1);
   SubDataIO.SetPackedSizeToRead(SubHead.PackSize);
   SubDataIO.EnableShowProgress(false);
@@ -1484,5 +1481,3 @@ bool Archive::ReadSubData(Array<byte> *UnpData,File *DestFile)
   }
   return true;
 }
-
-}  // namespace third_party_unrar

@@ -1,0 +1,24 @@
+Check that the WebAuthn removeVirtualAuthenticator command works
+{
+    error : {
+        code : -32000
+        message : The Virtual Authenticator Environment has not been enabled for this session
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Could not find a Virtual Authenticator matching the ID
+    }
+    id : <number>
+    sessionId : <string>
+}
+

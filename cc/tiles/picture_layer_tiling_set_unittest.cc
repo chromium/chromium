@@ -281,8 +281,7 @@ class PictureLayerTilingSetTestWithResources : public testing::Test {
       ASSERT_TRUE(remaining.Contains(geometry_rect));
       remaining.Subtract(geometry_rect);
 
-      float scale = iter.CurrentTiling()->contents_scale_key();
-      EXPECT_EQ(expected_scale, scale);
+      EXPECT_EQ(expected_scale, iter.CurrentTiling()->contents_scale_key());
 
       if (num_tilings)
         EXPECT_TRUE(*iter);
@@ -834,7 +833,6 @@ TEST(PictureLayerTilingTest, ViewportDistanceWithScale) {
   // We can verify that the content rect (with borders) is one pixel off
   // 41,9 8x8 on all sides.
   EXPECT_EQ(tiling->TileAt(5, 1)->content_rect().ToString(), "40,8 10x10");
-
   TilePriority priority = prioritized_tiles[tiling->TileAt(5, 1)].priority();
   EXPECT_FLOAT_EQ(68.f, priority.distance_to_visible);
 
@@ -876,7 +874,7 @@ TEST(PictureLayerTilingTest, ViewportDistanceWithScale) {
   for (int i = 0; i < 47; ++i) {
     for (int j = 0; j < 47; ++j) {
       Tile* tile = tiling->TileAt(i, j);
-      TilePriority priority = prioritized_tiles[tile].priority();
+      priority = prioritized_tiles[tile].priority();
 
       gfx::Rect tile_rect = tiling->TilingDataForTesting().TileBounds(i, j);
       if (viewport_in_content_space.Intersects(tile_rect)) {

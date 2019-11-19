@@ -11,7 +11,6 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "chrome/installer/util/duplicate_tree_detector.h"
-#include "chrome/installer/util/installer_util_test_common.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -57,7 +56,7 @@ class DuplicateTreeDetectorTest : public testing::Test {
     CreateTextFile(f2.MaybeAsASCII(), text_content_2_);
     ASSERT_TRUE(base::PathExists(f2));
 
-    ASSERT_TRUE(installer::test::CopyFileHierarchy(d1, second_root));
+    ASSERT_TRUE(base::CopyDirectory(d1, second_root, true));
   }
 
   base::ScopedTempDir temp_source_dir_;
@@ -148,7 +147,7 @@ TEST_F(DuplicateTreeDetectorTest, TestSingleFiles) {
   // This file should be the same.
   base::FilePath dest_file(temp_dest_dir_.GetPath());
   dest_file = dest_file.AppendASCII("F1");
-  ASSERT_TRUE(installer::test::CopyFileHierarchy(source_file, dest_file));
+  ASSERT_TRUE(base::CopyFile(source_file, dest_file));
 
   // This file should be different.
   base::FilePath other_file(temp_dest_dir_.GetPath());

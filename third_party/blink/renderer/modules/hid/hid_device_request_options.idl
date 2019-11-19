@@ -1,0 +1,10 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Options dictionary for HID.deviceRequest.
+// https://wicg.github.io/webhid/index.html#enumeration
+
+dictionary HIDDeviceRequestOptions {
+    required sequence<HIDDeviceFilter> filters;
+};

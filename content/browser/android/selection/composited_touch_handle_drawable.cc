@@ -7,6 +7,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/numerics/ranges.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "content/public/browser/android/compositor.h"
 #include "ui/android/handle_view_resources.h"
@@ -84,10 +85,9 @@ void CompositedTouchHandleDrawable::SetOrigin(const gfx::PointF& origin) {
 
 void CompositedTouchHandleDrawable::SetAlpha(float alpha) {
   DCHECK(layer_->parent());
-  alpha = std::max(0.f, std::min(1.f, alpha));
-  bool hidden = alpha <= 0;
+  alpha = base::ClampToRange(alpha, 0.0f, 1.0f);
   layer_->SetOpacity(alpha);
-  layer_->SetHideLayerAndSubtree(hidden);
+  layer_->SetHideLayerAndSubtree(!alpha);
 }
 
 gfx::RectF CompositedTouchHandleDrawable::GetVisibleBounds() const {

@@ -25,6 +25,9 @@ CryptoModulePasswordDialogView::CryptoModulePasswordDialogView(
     const std::string& hostname,
     const CryptoModulePasswordCallback& callback)
     : callback_(callback) {
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_CRYPTO_MODULE_AUTH_DIALOG_OK_BUTTON_LABEL));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::CONTROL));
   Init(hostname, slot_name, reason);
@@ -49,12 +52,6 @@ base::string16 CryptoModulePasswordDialogView::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_CRYPTO_MODULE_AUTH_DIALOG_TITLE);
 }
 
-base::string16 CryptoModulePasswordDialogView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  return l10n_util::GetStringUTF16(button == ui::DIALOG_BUTTON_OK ?
-      IDS_CRYPTO_MODULE_AUTH_DIALOG_OK_BUTTON_LABEL : IDS_CANCEL);
-}
-
 bool CryptoModulePasswordDialogView::Cancel() {
   callback_.Run(std::string());
   const base::string16 empty;
@@ -63,7 +60,7 @@ bool CryptoModulePasswordDialogView::Cancel() {
 }
 
 bool CryptoModulePasswordDialogView::Accept() {
-  callback_.Run(base::UTF16ToUTF8(password_entry_->text()));
+  callback_.Run(base::UTF16ToUTF8(password_entry_->GetText()));
   const base::string16 empty;
   password_entry_->SetText(empty);
   return true;
@@ -113,20 +110,20 @@ void CryptoModulePasswordDialogView::Init(const std::string& hostname,
     default:
       NOTREACHED();
   }
-  reason_label_ = new views::Label(base::UTF8ToUTF16(text));
-  reason_label_->SetMultiLine(true);
+  auto reason_label = std::make_unique<views::Label>(base::UTF8ToUTF16(text));
+  reason_label->SetMultiLine(true);
 
-  password_label_ = new views::Label(l10n_util::GetStringUTF16(
-      IDS_CRYPTO_MODULE_AUTH_DIALOG_PASSWORD_FIELD));
+  auto password_label = std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_CRYPTO_MODULE_AUTH_DIALOG_PASSWORD_FIELD));
 
-  password_entry_ = new views::Textfield();
-  password_entry_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
-  password_entry_->set_controller(this);
+  auto password_entry = std::make_unique<views::Textfield>();
+  password_entry->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+  password_entry->set_controller(this);
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
   views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>(this));
+      SetLayoutManager(std::make_unique<views::GridLayout>());
 
   views::ColumnSet* reason_column_set = layout->AddColumnSet(0);
   reason_column_set->AddColumn(views::GridLayout::LEADING,
@@ -144,14 +141,14 @@ void CryptoModulePasswordDialogView::Init(const std::string& hostname,
                         views::GridLayout::USE_PREF, 0, 0);
 
   layout->StartRow(views::GridLayout::kFixedSize, 0);
-  layout->AddView(reason_label_);
+  reason_label_ = layout->AddView(std::move(reason_label));
   layout->AddPaddingRow(
       views::GridLayout::kFixedSize,
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
   layout->StartRow(views::GridLayout::kFixedSize, 1);
-  layout->AddView(password_label_);
-  layout->AddView(password_entry_);
+  password_label_ = layout->AddView(std::move(password_label));
+  password_entry_ = layout->AddView(std::move(password_entry));
 }
 
 void ShowCryptoModulePasswordDialog(

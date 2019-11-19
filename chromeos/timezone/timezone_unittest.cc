@@ -7,8 +7,8 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "chromeos/geolocation/geoposition.h"
 #include "chromeos/timezone/timezone_provider.h"
 #include "chromeos/timezone/timezone_resolver.h"
@@ -113,12 +113,12 @@ class TestTimeZoneAPILoaderFactory : public network::TestURLLoaderFactory {
 
  private:
   void AddResponseWithCode(int error_code) {
-    network::ResourceResponseHead response_head;
-    response_head.headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
-    response_head.headers->AddHeader("Content-Type: application/json");
+    auto response_head = network::mojom::URLResponseHead::New();
+    response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    response_head->headers->AddHeader("Content-Type: application/json");
     // If AddResponse() is called multiple times for the same URL, the last
     // one is the one used so there is no need for ClearResponses().
-    AddResponse(url_, response_head, response_,
+    AddResponse(url_, std::move(response_head), response_,
                 network::URLLoaderCompletionStatus(error_code));
   }
 
@@ -159,7 +159,7 @@ class TimeZoneReceiver {
 
 class TimeZoneTest : public testing::Test {
  private:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(TimeZoneTest, ResponseOK) {

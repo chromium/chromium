@@ -7,7 +7,8 @@
 
 #include "base/macros.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace chromeos {
 
@@ -18,15 +19,15 @@ class SecureChannelBase : public mojom::SecureChannel {
  public:
   ~SecureChannelBase() override;
 
-  // Binds a request to this implementation. Should be called each time that the
-  // service receives a request.
-  void BindRequest(mojom::SecureChannelRequest request);
+  // Binds a receiver to this implementation. Should be called each time that
+  // the service receives a receiver.
+  void BindReceiver(mojo::PendingReceiver<mojom::SecureChannel> receiver);
 
  protected:
   SecureChannelBase();
 
  private:
-  mojo::BindingSet<mojom::SecureChannel> bindings_;
+  mojo::ReceiverSet<mojom::SecureChannel> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(SecureChannelBase);
 };

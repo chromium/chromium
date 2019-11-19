@@ -12,7 +12,7 @@
 
 #include "base/bind.h"
 #include "base/strings/string16.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -123,7 +123,7 @@ TEST(ExtensionsMetricsProvider, HashExtension) {
 // TestExtensionsMetricsProvider is encoded properly.
 TEST(ExtensionsMetricsProvider, SystemProtoEncoding) {
   metrics::SystemProfileProto system_profile;
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   TestingProfileManager testing_profile_manager(
       TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(testing_profile_manager.SetUp());

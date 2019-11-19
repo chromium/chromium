@@ -16,6 +16,7 @@
 #include "ios/chrome/browser/ui/history/history_table_view_controller.h"
 #import "ios/chrome/browser/ui/history/history_transitioning_delegate.h"
 #include "ios/chrome/browser/ui/history/ios_browsing_history_driver.h"
+#import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 
@@ -54,7 +55,6 @@
     _historyClearBrowsingDataCoordinator;
 @synthesize historyNavigationController = _historyNavigationController;
 @synthesize historyTransitioningDelegate = _historyTransitioningDelegate;
-@synthesize loader = _loader;
 @synthesize mediator = _mediator;
 @synthesize presentationDelegate = _presentationDelegate;
 
@@ -62,7 +62,7 @@
   // Initialize and configure HistoryTableViewController.
   self.historyTableViewController = [[HistoryTableViewController alloc] init];
   self.historyTableViewController.browserState = self.browserState;
-  self.historyTableViewController.loader = self.loader;
+  self.historyTableViewController.loadStrategy = self.loadStrategy;
 
   // Initialize and set HistoryMediator
   self.mediator =
@@ -87,12 +87,26 @@
   self.historyTableViewController.localDispatcher = self;
   self.historyTableViewController.presentationDelegate =
       self.presentationDelegate;
-  self.historyTransitioningDelegate =
-      [[HistoryTransitioningDelegate alloc] init];
-  self.historyNavigationController.transitioningDelegate =
-      self.historyTransitioningDelegate;
-  [self.historyNavigationController
-      setModalPresentationStyle:UIModalPresentationCustom];
+
+  BOOL useCustomPresentation = YES;
+  if (IsCollectionsCardPresentationStyleEnabled()) {
+    if (@available(iOS 13, *)) {
+      [self.historyNavigationController
+          setModalPresentationStyle:UIModalPresentationFormSheet];
+      self.historyNavigationController.presentationController.delegate =
+          self.historyTableViewController;
+      useCustomPresentation = NO;
+    }
+  }
+
+  if (useCustomPresentation) {
+    self.historyTransitioningDelegate =
+        [[HistoryTransitioningDelegate alloc] init];
+    self.historyNavigationController.transitioningDelegate =
+        self.historyTransitioningDelegate;
+    [self.historyNavigationController
+        setModalPresentationStyle:UIModalPresentationCustom];
+  }
   [self.baseViewController
       presentViewController:self.historyNavigationController
                    animated:YES
@@ -147,7 +161,7 @@
     self.historyClearBrowsingDataCoordinator.localDispatcher = self;
     self.historyClearBrowsingDataCoordinator.presentationDelegate =
         self.presentationDelegate;
-    self.historyClearBrowsingDataCoordinator.loader = self.loader;
+    self.historyClearBrowsingDataCoordinator.loadStrategy = self.loadStrategy;
     self.historyClearBrowsingDataCoordinator.dispatcher = self.dispatcher;
     [self.historyClearBrowsingDataCoordinator start];
 }

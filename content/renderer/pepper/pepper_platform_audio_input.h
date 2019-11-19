@@ -77,7 +77,7 @@ class PepperPlatformAudioInput
                   PepperAudioInputHost* client);
 
   // I/O thread backends to above functions.
-  void InitializeOnIOThread(int session_id);
+  void InitializeOnIOThread(const base::UnguessableToken& session_id);
   void StartCaptureOnIOThread();
   void StopCaptureOnIOThread();
   void ShutDownOnIOThread();

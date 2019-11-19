@@ -59,7 +59,7 @@ namespace disk_cache {
 // s_trace_buffer and s_trace_object are not singletons because I want the
 // buffer to be destroyed and re-created when the last user goes away, and it
 // must be straightforward to access the buffer from the debugger.
-static TraceObject* s_trace_object = NULL;
+static TraceObject* s_trace_object = nullptr;
 
 // Static.
 TraceObject* TraceObject::GetTraceObject() {
@@ -87,7 +87,7 @@ void TraceObject::EnableTracing(bool enable) {
 
 #if ENABLE_TRACING
 
-static TraceBuffer* s_trace_buffer = NULL;
+static TraceBuffer* s_trace_buffer = nullptr;
 
 void InitTrace(void) {
   s_trace_enabled = true;
@@ -102,8 +102,8 @@ void DestroyTrace(void) {
   base::AutoLock lock(s_lock.Get());
 
   delete s_trace_buffer;
-  s_trace_buffer = NULL;
-  s_trace_object = NULL;
+  s_trace_buffer = nullptr;
+  s_trace_object = nullptr;
 }
 
 void Trace(const char* format, ...) {

@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.MediumTest;
 import android.view.View;
@@ -25,23 +24,21 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.blink_public.platform.WebDisplayMode;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.ShortcutSource;
+import org.chromium.chrome.browser.document.ChromeIntentUtil;
 import org.chromium.chrome.browser.tab.TabIdManager;
-import org.chromium.chrome.browser.util.IntentUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.util.ApplicationTestUtils;
+import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
-import org.chromium.content_public.common.ScreenOrientationValues;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Tests that WebappActivities are launched correctly.
@@ -76,7 +73,7 @@ public class WebappModeTest {
             + "ggR0lNUFeBDhcAAAAMSURBVAjXY2AUawEAALcAnI/TkI8AAAAASUVORK5CYII=";
 
     private Intent createIntent(String id, String url, String title, String icon, boolean addMac) {
-        Intent intent = new Intent();
+        Intent intent = WebappTestHelper.createMinimalWebappIntent(id, url);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setPackage(InstrumentationRegistry.getTargetContext().getPackageName());
         intent.setAction(WebappLauncherActivity.ACTION_START_WEBAPP);
@@ -87,13 +84,8 @@ public class WebappModeTest {
             intent.putExtra(ShortcutHelper.EXTRA_MAC, mac);
         }
 
-        WebappInfo webappInfo = WebappInfo.create(id, url, null, new WebappInfo.Icon(icon), title,
-                null, WebDisplayMode.STANDALONE, ScreenOrientationValues.PORTRAIT,
-                ShortcutSource.UNKNOWN, ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING,
-                ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING, null, false /* isIconGenerated */,
-                false /* isIconAdaptive */, false /* forceNavigation */);
-        webappInfo.setWebappIntentExtras(intent);
-
+        intent.putExtra(ShortcutHelper.EXTRA_ICON, icon);
+        intent.putExtra(ShortcutHelper.EXTRA_NAME, title);
         return intent;
     }
 
@@ -107,28 +99,32 @@ public class WebappModeTest {
     }
 
     @Before
-    public void setUp() throws Exception {
-        WebappRegistry.refreshSharedPrefsForTesting();
+    public void setUp() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            WebappRegistry.refreshSharedPrefsForTesting();
 
-        // Register the webapps so when the data storage is opened, the test doesn't crash. There is
-        // no race condition with the retrieval as AsyncTasks are run sequentially on the background
-        // thread.
-        WebappRegistry.getInstance().register(
-                WEBAPP_1_ID, new WebappRegistry.FetchWebappDataStorageCallback() {
-                    @Override
-                    public void onWebappDataStorageRetrieved(WebappDataStorage storage) {
-                        storage.updateFromShortcutIntent(createIntent(
-                                WEBAPP_1_ID, WEBAPP_1_URL, WEBAPP_1_TITLE, WEBAPP_ICON, true));
-                    }
-                });
-        WebappRegistry.getInstance().register(
-                WEBAPP_2_ID, new WebappRegistry.FetchWebappDataStorageCallback() {
-                    @Override
-                    public void onWebappDataStorageRetrieved(WebappDataStorage storage) {
-                        storage.updateFromShortcutIntent(createIntent(
-                                WEBAPP_1_ID, WEBAPP_1_URL, WEBAPP_1_TITLE, WEBAPP_ICON, true));
-                    }
-                });
+            // Register the webapps so when the data storage is opened, the test doesn't crash.
+            // There is no race condition with the retrieval as AsyncTasks are run sequentially on
+            // the background thread.
+            WebappRegistry.getInstance().register(
+                    WEBAPP_1_ID, new WebappRegistry.FetchWebappDataStorageCallback() {
+                        @Override
+                        public void onWebappDataStorageRetrieved(WebappDataStorage storage) {
+                            WebappInfo webappInfo = WebappInfo.create(createIntent(
+                                    WEBAPP_1_ID, WEBAPP_1_URL, WEBAPP_1_TITLE, WEBAPP_ICON, true));
+                            storage.updateFromWebappInfo(webappInfo);
+                        }
+                    });
+            WebappRegistry.getInstance().register(
+                    WEBAPP_2_ID, new WebappRegistry.FetchWebappDataStorageCallback() {
+                        @Override
+                        public void onWebappDataStorageRetrieved(WebappDataStorage storage) {
+                            WebappInfo webappInfo = WebappInfo.create(createIntent(
+                                    WEBAPP_1_ID, WEBAPP_1_URL, WEBAPP_1_TITLE, WEBAPP_ICON, true));
+                            storage.updateFromWebappInfo(webappInfo);
+                        }
+                    });
+        });
     }
 
     /**
@@ -195,7 +191,7 @@ public class WebappModeTest {
     @Test
     @MediumTest
     @Feature({"Webapps"})
-    public void testBringTabToFront() throws Exception {
+    public void testBringTabToFront() {
         // Start the WebappActivity.
         final WebappActivity firstActivity =
                 startWebappActivity(WEBAPP_1_ID, WEBAPP_1_URL, WEBAPP_1_TITLE, WEBAPP_ICON);
@@ -207,7 +203,7 @@ public class WebappModeTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Bring the WebappActivity back via an Intent.
-        Intent intent = IntentUtils.createBringTabToFrontIntent(webappTabId);
+        Intent intent = ChromeIntentUtil.createBringTabToFrontIntent(webappTabId);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
 
@@ -266,7 +262,7 @@ public class WebappModeTest {
     @Test
     @MediumTest
     @Feature({"Webapps"})
-    public void testWebappInfoReuse() throws Exception {
+    public void testWebappInfoReuse() {
         Intent intent = createIntent(
                 WebappActivityTestRule.WEBAPP_ID, WEBAPP_2_URL, WEBAPP_2_TITLE, WEBAPP_ICON, true);
         Intent newIntent = createIntent(
@@ -288,7 +284,7 @@ public class WebappModeTest {
         WebappActivity lastWebappActivity = (WebappActivity) lastActivity;
 
         Assert.assertEquals(webappInfo, lastWebappActivity.getWebappInfo());
-        Assert.assertTrue(lastWebappActivity.getWebappInfo().uri().equals(Uri.parse(WEBAPP_2_URL)));
+        Assert.assertTrue(lastWebappActivity.getWebappInfo().url().equals(WEBAPP_2_URL));
     }
 
     /** Test that on first launch {@link WebappDataStorage#hasBeenLaunched()} is set. */
@@ -297,7 +293,7 @@ public class WebappModeTest {
     @Test
     //    @MediumTest
     //    @Feature({"Webapps"})
-    public void testSetsHasBeenLaunchedOnFirstLaunch() throws Exception {
+    public void testSetsHasBeenLaunchedOnFirstLaunch() {
         WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorage(WEBAPP_1_ID);
         Assert.assertFalse(storage.hasBeenLaunched());
 
@@ -310,7 +306,7 @@ public class WebappModeTest {
             public boolean isSatisfied() {
                 return DeferredStartupHandler.getInstance().isDeferredStartupCompleteForApp();
             }
-        }, ScalableTimeout.scaleTimeout(5000), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        }, 5000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
         Assert.assertTrue(storage.hasBeenLaunched());
     }
@@ -328,7 +324,7 @@ public class WebappModeTest {
                 Activity lastActivity = ApplicationStatus.getLastTrackedFocusedActivity();
                 return isWebappActivityReady(lastActivity);
             }
-        });
+        }, 10000, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         return (WebappActivity) ApplicationStatus.getLastTrackedFocusedActivity();
     }
 

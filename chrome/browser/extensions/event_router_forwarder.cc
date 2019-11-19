@@ -33,9 +33,10 @@ void EventRouterForwarder::BroadcastEventToRenderers(
     events::HistogramValue histogram_value,
     const std::string& event_name,
     std::unique_ptr<base::ListValue> event_args,
-    const GURL& event_url) {
+    const GURL& event_url,
+    bool dispatch_to_off_the_record_profiles) {
   HandleEvent(std::string(), histogram_value, event_name, std::move(event_args),
-              0, true, event_url);
+              0, true, event_url, dispatch_to_off_the_record_profiles);
 }
 
 void EventRouterForwarder::DispatchEventToRenderers(
@@ -44,11 +45,13 @@ void EventRouterForwarder::DispatchEventToRenderers(
     std::unique_ptr<base::ListValue> event_args,
     void* profile,
     bool use_profile_to_restrict_events,
-    const GURL& event_url) {
+    const GURL& event_url,
+    bool dispatch_to_off_the_record_profiles) {
   if (!profile)
     return;
   HandleEvent(std::string(), histogram_value, event_name, std::move(event_args),
-              profile, use_profile_to_restrict_events, event_url);
+              profile, use_profile_to_restrict_events, event_url,
+              dispatch_to_off_the_record_profiles);
 }
 
 void EventRouterForwarder::HandleEvent(
@@ -58,13 +61,15 @@ void EventRouterForwarder::HandleEvent(
     std::unique_ptr<base::ListValue> event_args,
     void* profile_ptr,
     bool use_profile_to_restrict_events,
-    const GURL& event_url) {
+    const GURL& event_url,
+    bool dispatch_to_off_the_record_profiles) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&EventRouterForwarder::HandleEvent, this, extension_id,
                        histogram_value, event_name, std::move(event_args),
-                       profile_ptr, use_profile_to_restrict_events, event_url));
+                       profile_ptr, use_profile_to_restrict_events, event_url,
+                       dispatch_to_off_the_record_profiles));
     return;
   }
 
@@ -78,21 +83,42 @@ void EventRouterForwarder::HandleEvent(
       return;
     profile = reinterpret_cast<Profile*>(profile_ptr);
   }
+  std::set<Profile*> profiles_to_dispatch_to;
   if (profile) {
-    CallEventRouter(profile, extension_id, histogram_value, event_name,
-                    std::move(event_args),
-                    use_profile_to_restrict_events ? profile : NULL, event_url);
+    profiles_to_dispatch_to.insert(profile);
   } else {
-    std::vector<Profile*> profiles(profile_manager->GetLoadedProfiles());
-    for (size_t i = 0; i < profiles.size(); ++i) {
-      std::unique_ptr<base::ListValue> per_profile_event_args(
-          event_args->DeepCopy());
-      CallEventRouter(profiles[i], extension_id, histogram_value, event_name,
-                      std::move(per_profile_event_args),
-                      use_profile_to_restrict_events ? profiles[i] : NULL,
-                      event_url);
+    std::vector<Profile*> on_the_record_profiles =
+        profile_manager->GetLoadedProfiles();
+    profiles_to_dispatch_to.insert(on_the_record_profiles.begin(),
+                                   on_the_record_profiles.end());
+  }
+
+  if (dispatch_to_off_the_record_profiles) {
+    for (Profile* profile : profiles_to_dispatch_to) {
+      if (profile->HasOffTheRecordProfile())
+        profiles_to_dispatch_to.insert(profile->GetOffTheRecordProfile());
     }
   }
+
+  DCHECK_GT(profiles_to_dispatch_to.size(), 0u)
+      << "There should always be at least one profile!";
+
+  std::vector<std::unique_ptr<base::ListValue>> per_profile_args;
+  per_profile_args.reserve(profiles_to_dispatch_to.size());
+  for (size_t i = 0; i < profiles_to_dispatch_to.size() - 1; ++i)
+    per_profile_args.emplace_back(event_args->DeepCopy());
+  per_profile_args.emplace_back(std::move(event_args));
+  DCHECK_EQ(per_profile_args.size(), profiles_to_dispatch_to.size());
+
+  size_t profile_args_index = 0;
+  for (Profile* profile_to_dispatch_to : profiles_to_dispatch_to) {
+    CallEventRouter(
+        profile_to_dispatch_to, extension_id, histogram_value, event_name,
+        std::move(per_profile_args[profile_args_index++]),
+        use_profile_to_restrict_events ? profile_to_dispatch_to : nullptr,
+        event_url);
+  }
+  DCHECK_EQ(per_profile_args.size(), profile_args_index);
 }
 
 void EventRouterForwarder::CallEventRouter(

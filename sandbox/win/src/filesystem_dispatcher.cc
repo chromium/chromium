@@ -22,29 +22,29 @@ namespace sandbox {
 FilesystemDispatcher::FilesystemDispatcher(PolicyBase* policy_base)
     : policy_base_(policy_base) {
   static const IPCCall create_params = {
-      {IPC_NTCREATEFILE_TAG,
+      {IpcTag::NTCREATEFILE,
        {WCHAR_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE,
         UINT32_TYPE, UINT32_TYPE}},
       reinterpret_cast<CallbackGeneric>(&FilesystemDispatcher::NtCreateFile)};
 
   static const IPCCall open_file = {
-      {IPC_NTOPENFILE_TAG,
+      {IpcTag::NTOPENFILE,
        {WCHAR_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE}},
       reinterpret_cast<CallbackGeneric>(&FilesystemDispatcher::NtOpenFile)};
 
   static const IPCCall attribs = {
-      {IPC_NTQUERYATTRIBUTESFILE_TAG, {WCHAR_TYPE, UINT32_TYPE, INOUTPTR_TYPE}},
+      {IpcTag::NTQUERYATTRIBUTESFILE, {WCHAR_TYPE, UINT32_TYPE, INOUTPTR_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &FilesystemDispatcher::NtQueryAttributesFile)};
 
   static const IPCCall full_attribs = {
-      {IPC_NTQUERYFULLATTRIBUTESFILE_TAG,
+      {IpcTag::NTQUERYFULLATTRIBUTESFILE,
        {WCHAR_TYPE, UINT32_TYPE, INOUTPTR_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &FilesystemDispatcher::NtQueryFullAttributesFile)};
 
   static const IPCCall set_info = {
-      {IPC_NTSETINFO_RENAME_TAG,
+      {IpcTag::NTSETINFO_RENAME,
        {VOIDPTR_TYPE, INOUTPTR_TYPE, INOUTPTR_TYPE, UINT32_TYPE, UINT32_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &FilesystemDispatcher::NtSetInformationFile)};
@@ -57,23 +57,23 @@ FilesystemDispatcher::FilesystemDispatcher(PolicyBase* policy_base)
 }
 
 bool FilesystemDispatcher::SetupService(InterceptionManager* manager,
-                                        int service) {
+                                        IpcTag service) {
   switch (service) {
-    case IPC_NTCREATEFILE_TAG:
+    case IpcTag::NTCREATEFILE:
       return INTERCEPT_NT(manager, NtCreateFile, CREATE_FILE_ID, 48);
 
-    case IPC_NTOPENFILE_TAG:
+    case IpcTag::NTOPENFILE:
       return INTERCEPT_NT(manager, NtOpenFile, OPEN_FILE_ID, 28);
 
-    case IPC_NTQUERYATTRIBUTESFILE_TAG:
+    case IpcTag::NTQUERYATTRIBUTESFILE:
       return INTERCEPT_NT(manager, NtQueryAttributesFile, QUERY_ATTRIB_FILE_ID,
                           12);
 
-    case IPC_NTQUERYFULLATTRIBUTESFILE_TAG:
+    case IpcTag::NTQUERYFULLATTRIBUTESFILE:
       return INTERCEPT_NT(manager, NtQueryFullAttributesFile,
                           QUERY_FULL_ATTRIB_FILE_ID, 12);
 
-    case IPC_NTSETINFO_RENAME_TAG:
+    case IpcTag::NTSETINFO_RENAME:
       return INTERCEPT_NT(manager, NtSetInformationFile, SET_INFO_FILE_ID, 24);
 
     default:
@@ -82,7 +82,7 @@ bool FilesystemDispatcher::SetupService(InterceptionManager* manager,
 }
 
 bool FilesystemDispatcher::NtCreateFile(IPCInfo* ipc,
-                                        base::string16* name,
+                                        std::wstring* name,
                                         uint32_t attributes,
                                         uint32_t desired_access,
                                         uint32_t file_attributes,
@@ -109,7 +109,7 @@ bool FilesystemDispatcher::NtCreateFile(IPCInfo* ipc,
   // are just middlemen in the operation since is the FileSystemPolicy which
   // knows what to do.
   EvalResult result =
-      policy_base_->EvalPolicy(IPC_NTCREATEFILE_TAG, params.GetBase());
+      policy_base_->EvalPolicy(IpcTag::NTCREATEFILE, params.GetBase());
   HANDLE handle;
   ULONG_PTR io_information = 0;
   NTSTATUS nt_status;
@@ -128,7 +128,7 @@ bool FilesystemDispatcher::NtCreateFile(IPCInfo* ipc,
 }
 
 bool FilesystemDispatcher::NtOpenFile(IPCInfo* ipc,
-                                      base::string16* name,
+                                      std::wstring* name,
                                       uint32_t attributes,
                                       uint32_t desired_access,
                                       uint32_t share_access,
@@ -154,7 +154,7 @@ bool FilesystemDispatcher::NtOpenFile(IPCInfo* ipc,
   // are just middlemen in the operation since is the FileSystemPolicy which
   // knows what to do.
   EvalResult result =
-      policy_base_->EvalPolicy(IPC_NTOPENFILE_TAG, params.GetBase());
+      policy_base_->EvalPolicy(IpcTag::NTOPENFILE, params.GetBase());
   HANDLE handle;
   ULONG_PTR io_information = 0;
   NTSTATUS nt_status;
@@ -172,7 +172,7 @@ bool FilesystemDispatcher::NtOpenFile(IPCInfo* ipc,
 }
 
 bool FilesystemDispatcher::NtQueryAttributesFile(IPCInfo* ipc,
-                                                 base::string16* name,
+                                                 std::wstring* name,
                                                  uint32_t attributes,
                                                  CountedBuffer* info) {
   if (sizeof(FILE_BASIC_INFORMATION) != info->Size())
@@ -194,7 +194,7 @@ bool FilesystemDispatcher::NtQueryAttributesFile(IPCInfo* ipc,
   // are just middlemen in the operation since is the FileSystemPolicy which
   // knows what to do.
   EvalResult result =
-      policy_base_->EvalPolicy(IPC_NTQUERYATTRIBUTESFILE_TAG, params.GetBase());
+      policy_base_->EvalPolicy(IpcTag::NTQUERYATTRIBUTESFILE, params.GetBase());
 
   FILE_BASIC_INFORMATION* information =
       reinterpret_cast<FILE_BASIC_INFORMATION*>(info->Buffer());
@@ -212,7 +212,7 @@ bool FilesystemDispatcher::NtQueryAttributesFile(IPCInfo* ipc,
 }
 
 bool FilesystemDispatcher::NtQueryFullAttributesFile(IPCInfo* ipc,
-                                                     base::string16* name,
+                                                     std::wstring* name,
                                                      uint32_t attributes,
                                                      CountedBuffer* info) {
   if (sizeof(FILE_NETWORK_OPEN_INFORMATION) != info->Size())
@@ -234,7 +234,7 @@ bool FilesystemDispatcher::NtQueryFullAttributesFile(IPCInfo* ipc,
   // are just middlemen in the operation since is the FileSystemPolicy which
   // knows what to do.
   EvalResult result = policy_base_->EvalPolicy(
-      IPC_NTQUERYFULLATTRIBUTESFILE_TAG, params.GetBase());
+      IpcTag::NTQUERYFULLATTRIBUTESFILE, params.GetBase());
 
   FILE_NETWORK_OPEN_INFORMATION* information =
       reinterpret_cast<FILE_NETWORK_OPEN_INFORMATION*>(info->Buffer());
@@ -268,7 +268,7 @@ bool FilesystemDispatcher::NtSetInformationFile(IPCInfo* ipc,
   if (!IsSupportedRenameCall(rename_info, length, info_class))
     return false;
 
-  base::string16 name;
+  std::wstring name;
   name.assign(rename_info->FileName,
               rename_info->FileNameLength / sizeof(rename_info->FileName[0]));
   if (!PreProcessName(&name)) {
@@ -287,7 +287,7 @@ bool FilesystemDispatcher::NtSetInformationFile(IPCInfo* ipc,
   // are just middlemen in the operation since is the FileSystemPolicy which
   // knows what to do.
   EvalResult result =
-      policy_base_->EvalPolicy(IPC_NTSETINFO_RENAME_TAG, params.GetBase());
+      policy_base_->EvalPolicy(IpcTag::NTSETINFO_RENAME, params.GetBase());
 
   IO_STATUS_BLOCK* io_status =
       reinterpret_cast<IO_STATUS_BLOCK*>(status->Buffer());

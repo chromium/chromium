@@ -35,12 +35,16 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
+
+// TODO(crbug.com/940846): Consider using double-type without casting and
+// DoublePoint & DoubleRect instead of FloatPoint & FloatRect.
 
 void CanvasPath::closePath() {
   if (path_.IsEmpty())
@@ -51,7 +55,9 @@ void CanvasPath::closePath() {
     path_.CloseSubpath();
 }
 
-void CanvasPath::moveTo(float x, float y) {
+void CanvasPath::moveTo(double double_x, double double_y) {
+  float x = base::saturated_cast<float>(double_x);
+  float y = base::saturated_cast<float>(double_y);
   if (!std::isfinite(x) || !std::isfinite(y))
     return;
   if (!IsTransformInvertible()) {
@@ -61,7 +67,9 @@ void CanvasPath::moveTo(float x, float y) {
   path_.MoveTo(FloatPoint(x, y));
 }
 
-void CanvasPath::lineTo(float x, float y) {
+void CanvasPath::lineTo(double double_x, double double_y) {
+  float x = base::saturated_cast<float>(double_x);
+  float y = base::saturated_cast<float>(double_y);
   if (!std::isfinite(x) || !std::isfinite(y))
     return;
   FloatPoint p1 = FloatPoint(x, y);
@@ -76,7 +84,15 @@ void CanvasPath::lineTo(float x, float y) {
   path_.AddLineTo(p1);
 }
 
-void CanvasPath::quadraticCurveTo(float cpx, float cpy, float x, float y) {
+void CanvasPath::quadraticCurveTo(double double_cpx,
+                                  double double_cpy,
+                                  double double_x,
+                                  double double_y) {
+  float cpx = base::saturated_cast<float>(double_cpx);
+  float cpy = base::saturated_cast<float>(double_cpy);
+  float x = base::saturated_cast<float>(double_x);
+  float y = base::saturated_cast<float>(double_y);
+
   if (!std::isfinite(cpx) || !std::isfinite(cpy) || !std::isfinite(x) ||
       !std::isfinite(y))
     return;
@@ -94,12 +110,18 @@ void CanvasPath::quadraticCurveTo(float cpx, float cpy, float x, float y) {
   path_.AddQuadCurveTo(cp, p1);
 }
 
-void CanvasPath::bezierCurveTo(float cp1x,
-                               float cp1y,
-                               float cp2x,
-                               float cp2y,
-                               float x,
-                               float y) {
+void CanvasPath::bezierCurveTo(double double_cp1x,
+                               double double_cp1y,
+                               double double_cp2x,
+                               double double_cp2y,
+                               double double_x,
+                               double double_y) {
+  float cp1x = base::saturated_cast<float>(double_cp1x);
+  float cp1y = base::saturated_cast<float>(double_cp1y);
+  float cp2x = base::saturated_cast<float>(double_cp2x);
+  float cp2y = base::saturated_cast<float>(double_cp2y);
+  float x = base::saturated_cast<float>(double_x);
+  float y = base::saturated_cast<float>(double_y);
   if (!std::isfinite(cp1x) || !std::isfinite(cp1y) || !std::isfinite(cp2x) ||
       !std::isfinite(cp2y) || !std::isfinite(x) || !std::isfinite(y))
     return;
@@ -119,12 +141,17 @@ void CanvasPath::bezierCurveTo(float cp1x,
   path_.AddBezierCurveTo(cp1, cp2, p1);
 }
 
-void CanvasPath::arcTo(float x1,
-                       float y1,
-                       float x2,
-                       float y2,
-                       float r,
+void CanvasPath::arcTo(double double_x1,
+                       double double_y1,
+                       double double_x2,
+                       double double_y2,
+                       double double_r,
                        ExceptionState& exception_state) {
+  float x1 = base::saturated_cast<float>(double_x1);
+  float y1 = base::saturated_cast<float>(double_y1);
+  float x2 = base::saturated_cast<float>(double_x2);
+  float y2 = base::saturated_cast<float>(double_y2);
+  float r = base::saturated_cast<float>(double_r);
   if (!std::isfinite(x1) || !std::isfinite(y1) || !std::isfinite(x2) ||
       !std::isfinite(y2) || !std::isfinite(r))
     return;
@@ -313,13 +340,18 @@ void DegenerateEllipse(CanvasPath* path,
 
 }  // namespace
 
-void CanvasPath::arc(float x,
-                     float y,
-                     float radius,
-                     float start_angle,
-                     float end_angle,
+void CanvasPath::arc(double double_x,
+                     double double_y,
+                     double double_radius,
+                     double double_start_angle,
+                     double double_end_angle,
                      bool anticlockwise,
                      ExceptionState& exception_state) {
+  float x = base::saturated_cast<float>(double_x);
+  float y = base::saturated_cast<float>(double_y);
+  float radius = base::saturated_cast<float>(double_radius);
+  float start_angle = base::saturated_cast<float>(double_start_angle);
+  float end_angle = base::saturated_cast<float>(double_end_angle);
   if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(radius) ||
       !std::isfinite(start_angle) || !std::isfinite(end_angle))
     return;
@@ -345,15 +377,22 @@ void CanvasPath::arc(float x,
                AdjustEndAngle(start_angle, end_angle, anticlockwise));
 }
 
-void CanvasPath::ellipse(float x,
-                         float y,
-                         float radius_x,
-                         float radius_y,
-                         float rotation,
-                         float start_angle,
-                         float end_angle,
+void CanvasPath::ellipse(double double_x,
+                         double double_y,
+                         double double_radius_x,
+                         double double_radius_y,
+                         double double_rotation,
+                         double double_start_angle,
+                         double double_end_angle,
                          bool anticlockwise,
                          ExceptionState& exception_state) {
+  float x = base::saturated_cast<float>(double_x);
+  float y = base::saturated_cast<float>(double_y);
+  float radius_x = base::saturated_cast<float>(double_radius_x);
+  float radius_y = base::saturated_cast<float>(double_radius_y);
+  float rotation = base::saturated_cast<float>(double_rotation);
+  float start_angle = base::saturated_cast<float>(double_start_angle);
+  float end_angle = base::saturated_cast<float>(double_end_angle);
   if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(radius_x) ||
       !std::isfinite(radius_y) || !std::isfinite(rotation) ||
       !std::isfinite(start_angle) || !std::isfinite(end_angle))
@@ -392,7 +431,14 @@ void CanvasPath::ellipse(float x,
                    adjusted_end_angle);
 }
 
-void CanvasPath::rect(float x, float y, float width, float height) {
+void CanvasPath::rect(double double_x,
+                      double double_y,
+                      double double_width,
+                      double double_height) {
+  float x = base::saturated_cast<float>(double_x);
+  float y = base::saturated_cast<float>(double_y);
+  float width = base::saturated_cast<float>(double_width);
+  float height = base::saturated_cast<float>(double_height);
   if (!IsTransformInvertible())
     return;
 

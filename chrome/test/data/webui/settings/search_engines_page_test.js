@@ -72,16 +72,6 @@ cr.define('settings_search_engines_page', function() {
       });
 
       // Tests that the dialog calls 'searchEngineEditStarted' and
-      // 'searchEngineEditCancelled' when closed from the 'x' button.
-      test('DialogOpenAndClose', function() {
-        return browserProxy.whenCalled('searchEngineEditStarted')
-            .then(function() {
-              dialog.$.dialog.getCloseButton().click();
-              return browserProxy.whenCalled('searchEngineEditCancelled');
-            });
-      });
-
-      // Tests that the dialog calls 'searchEngineEditStarted' and
       // 'searchEngineEditCancelled' when closed from the 'cancel' button.
       test('DialogOpenAndCancel', function() {
         return browserProxy.whenCalled('searchEngineEditStarted')
@@ -208,7 +198,7 @@ cr.define('settings_search_engines_page', function() {
 
       test('Remove_Enabled', function() {
         // Open action menu.
-        entry.$$('button').click();
+        entry.$$('cr-icon-button').click();
         const menu = entry.$$('cr-action-menu');
         assertTrue(menu.open);
 
@@ -225,7 +215,7 @@ cr.define('settings_search_engines_page', function() {
 
       test('MakeDefault_Enabled', function() {
         // Open action menu.
-        entry.$$('button').click();
+        entry.$$('cr-icon-button').click();
         const menu = entry.$$('cr-action-menu');
         assertTrue(menu.open);
 
@@ -242,7 +232,7 @@ cr.define('settings_search_engines_page', function() {
       // Test that clicking the "edit" fires edit event.
       test('Edit_Enabled', function() {
         // Open action menu.
-        entry.$$('button').click();
+        entry.$$('cr-icon-button').click();
         const menu = entry.$$('cr-action-menu');
         assertTrue(menu.open);
 
@@ -254,9 +244,7 @@ cr.define('settings_search_engines_page', function() {
         const promise =
             test_util.eventToPromise('edit-search-engine', entry).then(e => {
               assertEquals(engine, e.detail.engine);
-              assertEquals(
-                  entry.$$('paper-icon-button-light button'),
-                  e.detail.anchorElement);
+              assertEquals(entry.$$('cr-icon-button'), e.detail.anchorElement);
             });
         editButton.click();
         return promise;
@@ -352,14 +340,13 @@ cr.define('settings_search_engines_page', function() {
         // if IronList.items instead of the child nodes.
         Polymer.dom.flush();
         const defaultsList = searchEnginesLists[0];
-        const defaultsEntries = Polymer.dom(defaultsList.shadowRoot)
-                                    .querySelector('iron-list')
-                                    .items;
+        const defaultsEntries =
+            defaultsList.shadowRoot.querySelector('iron-list').items;
         assertEquals(searchEnginesInfo.defaults.length, defaultsEntries.length);
 
         const othersList = searchEnginesLists[1];
         const othersEntries =
-            Polymer.dom(othersList.shadowRoot).querySelector('iron-list').items;
+            othersList.shadowRoot.querySelector('iron-list').items;
         assertEquals(searchEnginesInfo.others.length, othersEntries.length);
 
         // Ensure that the search engines have reverse alphabetical order in the
@@ -372,7 +359,7 @@ cr.define('settings_search_engines_page', function() {
         assertEquals(searchEnginesInfo.others[0].name, othersEntries[1].name);
 
         const extensionEntries =
-            Polymer.dom(page.shadowRoot).querySelector('iron-list').items;
+            page.shadowRoot.querySelector('iron-list').items;
         assertEquals(
             searchEnginesInfo.extensions.length, extensionEntries.length);
       });
@@ -516,7 +503,7 @@ cr.define('settings_search_engines_page', function() {
         document.body.appendChild(entry);
 
         // Open action menu.
-        entry.$$('button').click();
+        entry.$$('cr-icon-button').click();
       });
 
       teardown(function() {

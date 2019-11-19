@@ -486,10 +486,7 @@ const struct PersistData persistence_tests[] = {
     {HttpResponseHeaders::PERSIST_SANS_SECURITY_STATE,
      "HTTP/1.1 200 OK\n"
      "Strict-Transport-Security: max-age=1576800\n"
-     "Bar: 1\n"
-     "Public-Key-Pins: max-age=100000; "
-     "pin-sha256=\"1111111111111111111111111111111111111111111=\";"
-     "pin-sha256=\"2222222222222222222222222222222222222222222=\"",
+     "Bar: 1\n",
 
      "HTTP/1.1 200 OK\n"
      "Bar: 1\n"},
@@ -559,9 +556,9 @@ TEST(HttpResponseHeadersTest, EnumerateHeader_DateValued) {
   scoped_refptr<HttpResponseHeaders> parsed(new HttpResponseHeaders(headers));
 
   std::string value;
-  EXPECT_TRUE(parsed->EnumerateHeader(NULL, "date", &value));
+  EXPECT_TRUE(parsed->EnumerateHeader(nullptr, "date", &value));
   EXPECT_EQ("Tue, 07 Aug 2007 23:10:55 GMT", value);
-  EXPECT_TRUE(parsed->EnumerateHeader(NULL, "last-modified", &value));
+  EXPECT_TRUE(parsed->EnumerateHeader(nullptr, "last-modified", &value));
   EXPECT_EQ("Wed, 01 Aug 2007 23:23:45 GMT", value);
 }
 

@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
-
 /**
  * Enumeration of page fitting types.
  * @enum {string}
  */
-const FittingType = {
+export const FittingType = {
   NONE: 'none',
   FIT_TO_PAGE: 'fit-to-page',
   FIT_TO_WIDTH: 'fit-to-width',

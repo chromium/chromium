@@ -3,7 +3,7 @@
 # we don't want them.
 set noparent
 
-file://ui/android/java/res/OWNERS
+file://ui/android/java/res/LAYOUT_OWNERS
 
 # COMPONENT: Content>Core
 # OS: Android

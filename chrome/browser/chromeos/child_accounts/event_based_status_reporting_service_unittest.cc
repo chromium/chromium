@@ -9,22 +9,24 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/child_accounts/consumer_status_reporting_service.h"
-#include "chrome/browser/chromeos/child_accounts/consumer_status_reporting_service_factory.h"
+#include "chrome/browser/chromeos/child_accounts/child_status_reporting_service.h"
+#include "chrome/browser/chromeos/child_accounts/child_status_reporting_service_factory.h"
 #include "chrome/browser/chromeos/child_accounts/screen_time_controller.h"
 #include "chrome/browser/chromeos/child_accounts/screen_time_controller_factory.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/common/app.mojom.h"
+#include "components/arc/mojom/app.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/session_manager/core/session_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,11 +35,11 @@ namespace chromeos {
 namespace {
 
 class TestingConsumerStatusReportingService
-    : public ConsumerStatusReportingService {
+    : public ChildStatusReportingService {
  public:
   explicit TestingConsumerStatusReportingService(
       content::BrowserContext* context)
-      : ConsumerStatusReportingService(context) {}
+      : ChildStatusReportingService(context) {}
   ~TestingConsumerStatusReportingService() override = default;
 
   bool RequestImmediateStatusReport() override {
@@ -87,8 +89,13 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   ~EventBasedStatusReportingServiceTest() override = default;
 
   void SetUp() override {
-    PowerManagerClient::Initialize();
-    SystemClockClient::Initialize(nullptr /* bus */);
+    PowerManagerClient::InitializeFake();
+    SystemClockClient::InitializeFake();
+
+    // TODO(agawronska): To enable this we need LoginScreenClient, but it causes
+    // test crashes on network connection change.
+    scoped_feature_list_.InitAndDisableFeature(features::kParentAccessCode);
+
     profile_ = std::make_unique<TestingProfile>();
     profile_.get()->SetSupervisedUserId(supervised_users::kChildAccountSUID);
     arc_test_.SetUp(profile());
@@ -101,11 +108,11 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     session_manager_.SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
 
-    ConsumerStatusReportingServiceFactory::GetInstance()->SetTestingFactory(
+    ChildStatusReportingServiceFactory::GetInstance()->SetTestingFactory(
         profile(),
         base::BindRepeating(&CreateTestingConsumerStatusReportingService));
-    ConsumerStatusReportingService* consumer_status_reporting_service =
-        ConsumerStatusReportingServiceFactory::GetForBrowserContext(profile());
+    ChildStatusReportingService* consumer_status_reporting_service =
+        ChildStatusReportingServiceFactory::GetForBrowserContext(profile());
     test_consumer_status_reporting_service_ =
         static_cast<TestingConsumerStatusReportingService*>(
             consumer_status_reporting_service);
@@ -124,13 +131,14 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     service_->Shutdown();
     arc_test_.TearDown();
     profile_.reset();
+    SystemClockClient::Shutdown();
     PowerManagerClient::Shutdown();
   }
 
   void SetConnectionType(network::mojom::ConnectionType type) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         type);
-    thread_bundle_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   arc::mojom::AppHost* app_host() { return arc_test_.arc_app_list_prefs(); }
@@ -161,13 +169,14 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   ArcAppTest arc_test_;
   std::unique_ptr<TestingProfile> profile_;
   TestingConsumerStatusReportingService*
       test_consumer_status_reporting_service_;
   TestingScreenTimeController* test_screen_time_controller_;
   session_manager::SessionManager session_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<EventBasedStatusReportingService> service_;
 
   DISALLOW_COPY_AND_ASSIGN(EventBasedStatusReportingServiceTest);

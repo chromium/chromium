@@ -58,7 +58,7 @@ class AppInfoHeaderPanel : public AppInfoPanel,
 
   std::unique_ptr<extensions::ChromeAppIcon> app_icon_;
 
-  base::WeakPtrFactory<AppInfoHeaderPanel> weak_ptr_factory_;
+  base::WeakPtrFactory<AppInfoHeaderPanel> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppInfoHeaderPanel);
 };

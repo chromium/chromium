@@ -4,9 +4,14 @@
 
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
+#endif
 
 ProfileNetworkContextService*
 ProfileNetworkContextServiceFactory::GetForContext(
@@ -23,7 +28,11 @@ ProfileNetworkContextServiceFactory::GetInstance() {
 ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "ProfileNetworkContextService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+#if defined(OS_CHROMEOS)
+  DependsOn(chromeos::CertificateProviderServiceFactory::GetInstance());
+#endif
+}
 
 ProfileNetworkContextServiceFactory::~ProfileNetworkContextServiceFactory() {}
 

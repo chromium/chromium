@@ -201,7 +201,7 @@ class ComponentInfoProviderModules(ComponentInfoProvider):
 
 
 def load_interfaces_info_overall_pickle(info_dir):
-    with open(os.path.join(info_dir, 'modules', 'InterfacesInfoOverall.pickle')) as interface_info_file:
+    with open(os.path.join(info_dir, 'interfaces_info.pickle')) as interface_info_file:
         return pickle.load(interface_info_file)
 
 
@@ -227,16 +227,16 @@ def merge_dict_recursively(target, diff):
 
 def create_component_info_provider_core(info_dir):
     interfaces_info = load_interfaces_info_overall_pickle(info_dir)
-    with open(os.path.join(info_dir, 'core', 'ComponentInfoCore.pickle')) as component_info_file:
+    with open(os.path.join(info_dir, 'core', 'component_info_core.pickle')) as component_info_file:
         component_info = pickle.load(component_info_file)
     return ComponentInfoProviderCore(interfaces_info, component_info)
 
 
 def create_component_info_provider_modules(info_dir):
     interfaces_info = load_interfaces_info_overall_pickle(info_dir)
-    with open(os.path.join(info_dir, 'core', 'ComponentInfoCore.pickle')) as component_info_file:
+    with open(os.path.join(info_dir, 'core', 'component_info_core.pickle')) as component_info_file:
         component_info_core = pickle.load(component_info_file)
-    with open(os.path.join(info_dir, 'modules', 'ComponentInfoModules.pickle')) as component_info_file:
+    with open(os.path.join(info_dir, 'modules', 'component_info_modules.pickle')) as component_info_file:
         component_info_modules = pickle.load(component_info_file)
     return ComponentInfoProviderModules(
         interfaces_info, component_info_core, component_info_modules)
@@ -350,6 +350,12 @@ def is_non_legacy_callback_interface_from_idl(file_contents):
     return bool(match) and not re.search(r'\s+const\b', file_contents)
 
 
+def is_interface_mixin_from_idl(file_contents):
+    """Returns True if the specified IDL is an interface mixin."""
+    match = re.search(r'interface\s+mixin\s+\w+\s*{', file_contents)
+    return bool(match)
+
+
 def should_generate_impl_file_from_idl(file_contents):
     """True when a given IDL file contents could generate .h/.cpp files."""
     # FIXME: This would be error-prone and we should use AST rather than
@@ -368,7 +374,7 @@ def match_interface_extended_attributes_and_name_from_idl(file_contents):
 
     match = re.search(
         r'(?:\[([^{};]*)\]\s*)?'
-        r'(interface|callback\s+interface|partial\s+interface|dictionary)\s+'
+        r'(interface|interface\s+mixin|callback\s+interface|partial\s+interface|dictionary)\s+'
         r'(\w+)\s*'
         r'(:\s*\w+\s*)?'
         r'{',
@@ -424,7 +430,6 @@ def get_interface_exposed_arguments(file_contents):
 
 
 def get_first_interface_name_from_idl(file_contents):
-    # TODO(peria): This function returns 'mixin' for interface mixins.
     match = match_interface_extended_attributes_and_name_from_idl(file_contents)
     if match:
         return match.group(3)
@@ -440,18 +445,18 @@ def shorten_union_name(union_type):
         'CSSImageValueOrHTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrImageBitmapOrOffscreenCanvas': 'CanvasImageSource',
         # modules/canvas/htmlcanvas/html_canvas_element_module_support_webgl2_compute.idl
         # Due to html_canvas_element_module_support_webgl2_compute.idl and html_canvas_element_module.idl are exclusive in modules_idl_files.gni, they have same shorten name.
-        'CanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrWebGL2ComputeRenderingContextOrImageBitmapRenderingContextOrXRPresentationContext': 'RenderingContext',
+        'CanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrWebGL2ComputeRenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext': 'RenderingContext',
         # modules/canvas/htmlcanvas/html_canvas_element_module.idl
-        'CanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrXRPresentationContext': 'RenderingContext',
+        'CanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext': 'RenderingContext',
         # core/frame/window_or_worker_global_scope.idl
         'HTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrBlobOrImageDataOrImageBitmapOrOffscreenCanvas': 'ImageBitmapSource',
         # bindings/tests/idls/core/TestTypedefs.idl
         'NodeOrLongSequenceOrEventOrXMLHttpRequestOrStringOrStringByteStringOrNodeListRecord': 'NestedUnionType',
         # modules/canvas/offscreencanvas/offscreen_canvas_module_support_webgl2_compute.idl.
         # Due to offscreen_canvas_module_support_webgl2_compute.idl and offscreen_canvas_module.idl are exclusive in modules_idl_files.gni, they have same shorten name.
-        'OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrWebGL2ComputeRenderingContext': 'OffscreenRenderingContext',
+        'OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrWebGL2ComputeRenderingContextOrImageBitmapRenderingContext': 'OffscreenRenderingContext',
         # modules/canvas/offscreencanvas/offscreen_canvas_module.idl
-        'OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContext': 'OffscreenRenderingContext',
+        'OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContext': 'OffscreenRenderingContext',
     }
 
     idl_type = union_type

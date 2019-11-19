@@ -30,6 +30,7 @@ class ToughFiltersCasesPage(rendering_story.RenderingStory):
 class FilterTerrainSVGPage(ToughFiltersCasesPage):
   BASE_NAME = 'filter_terrain_svg'
   URL = 'http://letmespellitoutforyou.com/samples/svg/filter_terrain.svg'
+  TAGS = ToughFiltersCasesPage.TAGS + [story_tags.REPRESENTATIVE_WIN_DESKTOP]
 
 
 class AnalogClockSVGPage(ToughFiltersCasesPage):

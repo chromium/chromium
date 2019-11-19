@@ -18,6 +18,7 @@
 #include "content/public/browser/background_fetch_response.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/service_worker_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
@@ -40,7 +41,7 @@ class FakeBackgroundFetchDelegate : public BackgroundFetchDelegate {
   }
   void GetPermissionForOrigin(
       const url::Origin& origin,
-      const ResourceRequestInfo::WebContentsGetter& wc_getter,
+      const WebContents::Getter& wc_getter,
       GetPermissionForOriginCallback callback) override {
     std::move(callback).Run(BackgroundFetchPermission::ALLOWED);
   }
@@ -70,8 +71,9 @@ class FakeBackgroundFetchDelegate : public BackgroundFetchDelegate {
     job_id_to_client_[job_unique_id]->OnDownloadStarted(job_unique_id, guid,
                                                         std::move(response));
     if (complete_downloads_) {
-      base::PostTaskWithTraits(
-          FROM_HERE, {BrowserThread::IO},
+      // Post a task so that Abort() can cancel this download before completing.
+      base::PostTask(
+          FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
           base::BindOnce(&FakeBackgroundFetchDelegate::CompleteDownload,
                          base::Unretained(this), job_unique_id, guid));
     }
@@ -140,7 +142,7 @@ class FakeTestBrowserContext : public TestBrowserContext {
 
 class FakeController : public BackgroundFetchDelegateProxy::Controller {
  public:
-  FakeController() : weak_ptr_factory_(this) {}
+  FakeController() {}
 
   void DidStartRequest(
       const std::string& guid,
@@ -167,7 +169,7 @@ class FakeController : public BackgroundFetchDelegateProxy::Controller {
 
   bool request_started_ = false;
   bool request_completed_ = false;
-  base::WeakPtrFactory<FakeController> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeController> weak_ptr_factory_{this};
 };
 
 class BackgroundFetchDelegateProxyTest : public BackgroundFetchTestBase {

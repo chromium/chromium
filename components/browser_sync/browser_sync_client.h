@@ -14,10 +14,6 @@
 
 class BookmarkUndoService;
 
-namespace autofill {
-class PersonalDataManager;
-}  // namespace autofill
-
 namespace bookmarks {
 class BookmarkModel;
 }  // namespace bookmarks
@@ -30,11 +26,16 @@ namespace history {
 class HistoryService;
 }  // namespace history
 
+namespace send_tab_to_self {
+class SendTabToSelfSyncService;
+}  // namespace send_tab_to_self
+
 namespace sync_sessions {
 class SessionSyncService;
 }  // namespace sync_sessions
 
 namespace syncer {
+class DeviceInfoSyncService;
 class ModelTypeStoreService;
 }  // namespace syncer
 
@@ -58,11 +59,13 @@ class BrowserSyncClient : public syncer::SyncClient {
   GetControllerDelegateForModelType(syncer::ModelType type) = 0;
 
   // DataType specific service getters.
+  virtual syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() = 0;
   virtual bookmarks::BookmarkModel* GetBookmarkModel() = 0;
   virtual favicon::FaviconService* GetFaviconService() = 0;
   virtual history::HistoryService* GetHistoryService() = 0;
   virtual sync_sessions::SessionSyncService* GetSessionSyncService() = 0;
-  virtual autofill::PersonalDataManager* GetPersonalDataManager() = 0;
+  virtual send_tab_to_self::SendTabToSelfSyncService*
+  GetSendTabToSelfSyncService() = 0;
   virtual BookmarkUndoService* GetBookmarkUndoService() = 0;
   virtual base::RepeatingClosure GetPasswordStateChangedCallback() = 0;
 

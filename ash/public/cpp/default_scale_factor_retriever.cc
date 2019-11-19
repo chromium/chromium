@@ -3,17 +3,20 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/default_scale_factor_retriever.h"
-#include "ash/public/interfaces/constants.mojom.h"
+
+#include <utility>
+
+#include "ash/public/mojom/constants.mojom.h"
 #include "base/bind.h"
 
 namespace ash {
 
-DefaultScaleFactorRetriever::DefaultScaleFactorRetriever()
-    : weak_ptr_factory_(this) {}
+DefaultScaleFactorRetriever::DefaultScaleFactorRetriever() {}
 
 void DefaultScaleFactorRetriever::Start(
-    ash::mojom::CrosDisplayConfigControllerPtr cros_display_config) {
-  cros_display_config_ = std::move(cros_display_config);
+    mojo::PendingRemote<ash::mojom::CrosDisplayConfigController>
+        cros_display_config) {
+  cros_display_config_.Bind(std::move(cros_display_config));
   auto callback = base::BindOnce(
       &DefaultScaleFactorRetriever::OnDefaultScaleFactorRetrieved,
       weak_ptr_factory_.GetWeakPtr());

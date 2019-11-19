@@ -73,8 +73,7 @@ class LocationArbitrator : public LocationProvider {
   // Provider will either be added to |providers_| or
   // deleted on error (e.g. it fails to start).
   void RegisterProvider(std::unique_ptr<LocationProvider> provider);
-  void RegisterSystemProvider();
-  void RegisterNetworkProvider();
+  void RegisterProviders();
 
   // Tells all registered providers to start.
   // If |providers_| is empty, immediately provides

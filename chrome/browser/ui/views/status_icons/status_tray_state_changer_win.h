@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_TRAY_STATE_CHANGER_WIN_H_
 
 #include <wrl/client.h>
+#include <wrl/implements.h>
 
 #include <memory>
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
-#include "base/win/iunknown_impl.h"
 
 // The known values for NOTIFYITEM's dwPreference member.
 enum NOTIFYITEM_PREFERENCE {
@@ -53,8 +53,10 @@ class __declspec(uuid("D782CCBA-AFB0-43F1-94DB-FDA3779EACCB")) INotificationCB
 // area in the Windows taskbar.  It is used to promote a tray icon from the
 // overflow area to the taskbar, and refuses to do anything if the user has
 // explicitly marked an icon to be always hidden.
-class StatusTrayStateChangerWin : public INotificationCB,
-                                  public base::win::IUnknownImpl {
+class StatusTrayStateChangerWin
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          INotificationCB> {
  public:
   StatusTrayStateChangerWin(UINT icon_id, HWND window);
 
@@ -64,17 +66,12 @@ class StatusTrayStateChangerWin : public INotificationCB,
   // the explicit wishes/configuration of the user.
   void EnsureTrayIconVisible();
 
-  // IUnknown.
-  ULONG STDMETHODCALLTYPE AddRef() override;
-  ULONG STDMETHODCALLTYPE Release() override;
-  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID, PVOID*) override;
-
   // INotificationCB.
   // Notify is called in response to RegisterCallback for each current
   // entry in Explorer's list of notification area icons, and ever time
   // one of them changes, until UnregisterCallback is called or |this|
   // is destroyed.
-  HRESULT STDMETHODCALLTYPE Notify(ULONG, NOTIFYITEM*) override;
+  IFACEMETHODIMP Notify(ULONG, NOTIFYITEM*) override;
 
  protected:
   ~StatusTrayStateChangerWin() override;

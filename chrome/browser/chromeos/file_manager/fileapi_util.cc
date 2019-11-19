@@ -13,11 +13,9 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/filesystem_api_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/drive/file_system_core_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -27,10 +25,10 @@
 #include "extensions/common/extension.h"
 #include "google_apis/drive/task_util.h"
 #include "net/base/escape.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/isolated_context.h"
-#include "storage/browser/fileapi/open_file_system_mode.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/isolated_context.h"
+#include "storage/browser/file_system/open_file_system_mode.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
@@ -304,12 +302,19 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
         return;
       }
 
-      const GURL url = CreateIsolatedURLFromVirtualPath(
-                           *context_, origin, virtual_path).ToGURL();
+      FileSystemURLAndHandle isolated_file_system_url_and_handle =
+          CreateIsolatedURLFromVirtualPath(*context_, origin, virtual_path);
+      const GURL url = isolated_file_system_url_and_handle.url.ToGURL();
       if (!url.is_valid()) {
         NotifyError(std::move(lifetime));
         return;
       }
+
+      // Increase ref count of file system to keep it alive after |file_system|
+      // goes out of scope. Our destructor will eventually revoke the file
+      // system.
+      storage::IsolatedContext::GetInstance()->AddReference(
+          isolated_file_system_url_and_handle.handle.id());
 
       auto fs_info = FileSystemFileInfo::New();
       fs_info->url = url;
@@ -321,7 +326,7 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
     // If the list includes at least one non-native file (wihtout a snapshot
     // file), move to IO thread to obtian metadata for the non-native file.
     if (need_fill_metadata) {
-      base::PostTaskWithTraits(
+      base::PostTask(
           FROM_HERE, {BrowserThread::IO},
           base::BindOnce(
               &ConvertSelectedFileInfoListToFileChooserFileInfoListImpl::
@@ -351,7 +356,7 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
     if (it == chooser_info_list_.end()) {
-      base::PostTaskWithTraits(
+      base::PostTask(
           FROM_HERE, {BrowserThread::UI},
           base::BindOnce(
               &ConvertSelectedFileInfoListToFileChooserFileInfoListImpl::
@@ -384,7 +389,7 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
     if (result != base::File::FILE_OK) {
-      base::PostTaskWithTraits(
+      base::PostTask(
           FROM_HERE, {BrowserThread::UI},
           base::BindOnce(
               &ConvertSelectedFileInfoListToFileChooserFileInfoListImpl::
@@ -462,34 +467,6 @@ storage::FileSystemContext* GetFileSystemContextForRenderFrameHost(
   content::SiteInstance* site_instance = render_frame_host->GetSiteInstance();
   return content::BrowserContext::GetStoragePartition(profile, site_instance)->
       GetFileSystemContext();
-}
-
-base::FilePath ConvertDrivePathToRelativeFileSystemPath(
-    Profile* profile,
-    const std::string& extension_id,
-    const base::FilePath& drive_path) {
-  // "/special/drive-xxx"
-  base::FilePath path = drive::util::GetDriveMountPointPath(profile);
-  // appended with (|drive_path| - "drive").
-  drive::util::GetDriveGrandRootPath().AppendRelativePath(drive_path, &path);
-
-  base::FilePath relative_path;
-  ConvertAbsoluteFilePathToRelativeFileSystemPath(profile,
-                                                  extension_id,
-                                                  path,
-                                                  &relative_path);
-  return relative_path;
-}
-
-GURL ConvertDrivePathToFileSystemUrl(Profile* profile,
-                                     const base::FilePath& drive_path,
-                                     const std::string& extension_id) {
-  const base::FilePath relative_path =
-      ConvertDrivePathToRelativeFileSystemPath(profile, extension_id,
-                                               drive_path);
-  if (relative_path.empty())
-    return GURL();
-  return ConvertRelativeFilePathToFileSystemUrl(relative_path, extension_id);
 }
 
 bool ConvertAbsoluteFilePathToFileSystemUrl(Profile* profile,
@@ -600,7 +577,7 @@ void CheckIfDirectoryExists(
   const storage::FileSystemURL internal_url =
       backend->CreateInternalURL(file_system_context.get(), directory_path);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&CheckIfDirectoryExistsOnIoThread, file_system_context,
                      internal_url,
@@ -620,14 +597,14 @@ void GetMetadataForPath(
   const storage::FileSystemURL internal_url =
       backend->CreateInternalURL(file_system_context.get(), entry_path);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&GetMetadataForPathOnIoThread, file_system_context,
                      internal_url, fields,
                      google_apis::CreateRelayCallback(std::move(callback))));
 }
 
-storage::FileSystemURL CreateIsolatedURLFromVirtualPath(
+FileSystemURLAndHandle CreateIsolatedURLFromVirtualPath(
     const storage::FileSystemContext& context,
     const GURL& origin,
     const base::FilePath& virtual_path) {
@@ -636,18 +613,14 @@ storage::FileSystemURL CreateIsolatedURLFromVirtualPath(
           origin, storage::kFileSystemTypeExternal, virtual_path);
 
   std::string register_name;
-  const std::string isolated_file_system_id =
+  storage::IsolatedContext::ScopedFSHandle file_system =
       storage::IsolatedContext::GetInstance()->RegisterFileSystemForPath(
-          original_url.type(),
-          original_url.filesystem_id(),
-          original_url.path(),
-          &register_name);
-  const storage::FileSystemURL isolated_url =
-      context.CreateCrackedFileSystemURL(
-          origin,
-          storage::kFileSystemTypeIsolated,
-          base::FilePath(isolated_file_system_id).Append(register_name));
-  return isolated_url;
+          original_url.type(), original_url.filesystem_id(),
+          original_url.path(), &register_name);
+  storage::FileSystemURL isolated_url = context.CreateCrackedFileSystemURL(
+      origin, storage::kFileSystemTypeIsolated,
+      base::FilePath(file_system.id()).Append(register_name));
+  return {isolated_url, file_system};
 }
 
 }  // namespace util

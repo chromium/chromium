@@ -25,40 +25,13 @@ unsigned CharactersInShapeResult(
 
 }  // namespace
 
-// TODO(eae): This is a bit of a hack to allow reuse of the implementation
-// for both ShapeResultBuffer and single ShapeResult use cases. Ideally the
-// logic should move into ShapeResult itself and then the ShapeResultBuffer
-// implementation may wrap that.
 CharacterRange ShapeResultBuffer::GetCharacterRange(
-    scoped_refptr<const ShapeResult> result,
-    const StringView& text,
-    TextDirection direction,
-    float total_width,
-    unsigned from,
-    unsigned to) {
-  Vector<scoped_refptr<const ShapeResult>, 64> results;
-  results.push_back(result);
-  return GetCharacterRangeInternal(results, text, direction, total_width, from,
-                                   to);
-}
-
-CharacterRange ShapeResultBuffer::GetCharacterRange(const StringView& text,
-                                                    TextDirection direction,
-                                                    float total_width,
-                                                    unsigned from,
-                                                    unsigned to) const {
-  return GetCharacterRangeInternal(results_, text, direction, total_width, from,
-                                   to);
-}
-
-CharacterRange ShapeResultBuffer::GetCharacterRangeInternal(
-    const Vector<scoped_refptr<const ShapeResult>, 64>& results,
     const StringView& text,
     TextDirection direction,
     float total_width,
     unsigned absolute_from,
-    unsigned absolute_to) {
-  DCHECK_EQ(CharactersInShapeResult(results), text.length());
+    unsigned absolute_to) const {
+  DCHECK_EQ(CharactersInShapeResult(results_), text.length());
 
   float current_x = 0;
   float from_x = 0;
@@ -78,8 +51,8 @@ CharacterRange ShapeResultBuffer::GetCharacterRangeInternal(
   int to = absolute_to;
 
   unsigned total_num_characters = 0;
-  for (unsigned j = 0; j < results.size(); j++) {
-    const scoped_refptr<const ShapeResult> result = results[j];
+  for (unsigned j = 0; j < results_.size(); j++) {
+    const scoped_refptr<const ShapeResult> result = results_[j];
     result->EnsureGraphemes(
         StringView(text, total_num_characters, result->NumCharacters()));
     if (direction == TextDirection::kRtl) {
@@ -117,8 +90,8 @@ CharacterRange ShapeResultBuffer::GetCharacterRangeInternal(
       }
 
       if (found_from_x || found_to_x) {
-        min_y = std::min(min_y, result->Bounds().Y());
-        max_y = std::max(max_y, result->Bounds().MaxY());
+        min_y = std::min(min_y, result->DeprecatedInkBounds().Y());
+        max_y = std::max(max_y, result->DeprecatedInkBounds().MaxY());
       }
 
       if (found_from_x && found_to_x)

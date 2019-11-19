@@ -1710,4 +1710,30 @@ TEST_F(HidReportDescriptorTest, HighlyNestedReportLimitsDepth) {
                       kHighlyNestedReportDescriptorSize);
 }
 
+TEST_F(HidReportDescriptorTest, ExtraEndCollectionIgnored) {
+  // When the report descriptor parser encounters an End Collection item,
+  // it should decrement the collection depth only if a matching Collection
+  // item was previously encountered. If no Collection item was encountered,
+  // the End Collection item should be ignored.
+  static const uint8_t kExtraEndCollectionDescriptor[] = {
+      0xC0,  // End Collection
+
+      0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0,
+      0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0,
+      0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0,
+      0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0,
+      0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0};
+  static const size_t kExtraEndCollectionDescriptorSize =
+      base::size(kExtraEndCollectionDescriptor);
+
+  // Construct nested collections up to the depth limit. If the extra End
+  // Collection item was ignored, the depth limit should have prevented the
+  // innermost collection from being created.
+  auto* parent = AddTopCollection(0, kCollectionTypePhysical);
+  for (size_t i = 1; i < 50; ++i)
+    parent = AddChild(parent, 0, kCollectionTypePhysical);
+  ValidateCollections(kExtraEndCollectionDescriptor,
+                      kExtraEndCollectionDescriptorSize);
+}
+
 }  // namespace device

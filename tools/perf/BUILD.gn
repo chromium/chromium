@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Keep in sync with group("perf_without_chrome").
 group("perf") {
   testonly = true
   deps = [
@@ -18,6 +19,7 @@ group("perf") {
     # Field trial dependencies
     "//tools/json_comment_eater/",
     "//tools/json_to_struct/",
+    "//components/variations/service/generate_ui_string_overrider.py",
 
     # For blink_perf benchmarks.
     "//third_party/blink/perf_tests/",
@@ -27,9 +29,6 @@ group("perf") {
 
     # For image_decoding.measurement
     "//chrome/test/data/image_decoding/",
-
-    # For ad tagging ruleset
-    "$root_gen_dir/components/subresource_filter/tools/",
 
     # For Pylib used by VR tests
     "//build/android/pylib/",
@@ -44,15 +43,20 @@ group("perf") {
 }
 
 if (is_android) {
-  import("//build/config/android/rules.gni")
+  import("//build/util/generate_wrapper.gni")
 
-  wrapper_script("run_benchmark_wrapper") {
-    target = "run_benchmark"
-    flag_name = "--chromium-output-directory"
+  generate_wrapper("run_benchmark_wrapper") {
+    executable = "run_benchmark"
+    wrapper_script = "$root_build_dir/bin/run_benchmark"
+    executable_args = [
+      "--chromium-output-directory",
+      "@WrappedPath(.)",
+    ]
   }
 }
 
-# Group for running benchmarks without building Chrome
+# Group for running benchmarks without building Chrome. Keep in sync with
+# group("perf").
 group("perf_without_chrome") {
   testonly = true
   deps = [
@@ -69,6 +73,7 @@ group("perf_without_chrome") {
     # Field trial dependencies
     "//tools/json_comment_eater/",
     "//tools/json_to_struct/",
+    "//components/variations/service/generate_ui_string_overrider.py",
 
     # For blink_perf benchmarks.
     "//third_party/blink/perf_tests/",
@@ -78,9 +83,6 @@ group("perf_without_chrome") {
 
     # For image_decoding.measurement
     "//chrome/test/data/image_decoding/",
-
-    # For ad tagging ruleset
-    "$root_gen_dir/components/subresource_filter/tools/",
 
     # For Pylib used by VR tests
     "//build/android/pylib/",

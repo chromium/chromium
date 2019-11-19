@@ -34,36 +34,42 @@ struct PrefsForManagedContentSettingsMapEntry {
 
 const PrefsForManagedContentSettingsMapEntry
     kPrefsForManagedContentSettingsMap[] = {
-        {prefs::kManagedCookiesAllowedForUrls, CONTENT_SETTINGS_TYPE_COOKIES,
+        {prefs::kManagedCookiesAllowedForUrls, ContentSettingsType::COOKIES,
          CONTENT_SETTING_ALLOW},
-        {prefs::kManagedCookiesBlockedForUrls, CONTENT_SETTINGS_TYPE_COOKIES,
+        {prefs::kManagedCookiesBlockedForUrls, ContentSettingsType::COOKIES,
          CONTENT_SETTING_BLOCK},
-        {prefs::kManagedCookiesSessionOnlyForUrls,
-         CONTENT_SETTINGS_TYPE_COOKIES, CONTENT_SETTING_SESSION_ONLY},
-        {prefs::kManagedImagesAllowedForUrls, CONTENT_SETTINGS_TYPE_IMAGES,
+        {prefs::kManagedCookiesSessionOnlyForUrls, ContentSettingsType::COOKIES,
+         CONTENT_SETTING_SESSION_ONLY},
+        {prefs::kManagedImagesAllowedForUrls, ContentSettingsType::IMAGES,
          CONTENT_SETTING_ALLOW},
-        {prefs::kManagedImagesBlockedForUrls, CONTENT_SETTINGS_TYPE_IMAGES,
+        {prefs::kManagedImagesBlockedForUrls, ContentSettingsType::IMAGES,
          CONTENT_SETTING_BLOCK},
+        {prefs::kManagedInsecureContentAllowedForUrls,
+         ContentSettingsType::MIXEDSCRIPT, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedInsecureContentBlockedForUrls,
+         ContentSettingsType::MIXEDSCRIPT, CONTENT_SETTING_BLOCK},
         {prefs::kManagedJavaScriptAllowedForUrls,
-         CONTENT_SETTINGS_TYPE_JAVASCRIPT, CONTENT_SETTING_ALLOW},
+         ContentSettingsType::JAVASCRIPT, CONTENT_SETTING_ALLOW},
         {prefs::kManagedJavaScriptBlockedForUrls,
-         CONTENT_SETTINGS_TYPE_JAVASCRIPT, CONTENT_SETTING_BLOCK},
+         ContentSettingsType::JAVASCRIPT, CONTENT_SETTING_BLOCK},
         {prefs::kManagedNotificationsAllowedForUrls,
-         CONTENT_SETTINGS_TYPE_NOTIFICATIONS, CONTENT_SETTING_ALLOW},
+         ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW},
         {prefs::kManagedNotificationsBlockedForUrls,
-         CONTENT_SETTINGS_TYPE_NOTIFICATIONS, CONTENT_SETTING_BLOCK},
-        {prefs::kManagedPluginsAllowedForUrls, CONTENT_SETTINGS_TYPE_PLUGINS,
+         ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedPluginsAllowedForUrls, ContentSettingsType::PLUGINS,
          CONTENT_SETTING_ALLOW},
-        {prefs::kManagedPluginsBlockedForUrls, CONTENT_SETTINGS_TYPE_PLUGINS,
+        {prefs::kManagedPluginsBlockedForUrls, ContentSettingsType::PLUGINS,
          CONTENT_SETTING_BLOCK},
-        {prefs::kManagedPopupsAllowedForUrls, CONTENT_SETTINGS_TYPE_POPUPS,
+        {prefs::kManagedPopupsAllowedForUrls, ContentSettingsType::POPUPS,
          CONTENT_SETTING_ALLOW},
-        {prefs::kManagedPopupsBlockedForUrls, CONTENT_SETTINGS_TYPE_POPUPS,
+        {prefs::kManagedPopupsBlockedForUrls, ContentSettingsType::POPUPS,
          CONTENT_SETTING_BLOCK},
-        {prefs::kManagedWebUsbAskForUrls, CONTENT_SETTINGS_TYPE_USB_GUARD,
+        {prefs::kManagedWebUsbAskForUrls, ContentSettingsType::USB_GUARD,
          CONTENT_SETTING_ASK},
-        {prefs::kManagedWebUsbBlockedForUrls, CONTENT_SETTINGS_TYPE_USB_GUARD,
-         CONTENT_SETTING_BLOCK}};
+        {prefs::kManagedWebUsbBlockedForUrls, ContentSettingsType::USB_GUARD,
+         CONTENT_SETTING_BLOCK},
+        {prefs::kManagedLegacyCookieAccessAllowedForDomains,
+         ContentSettingsType::LEGACY_COOKIE_ACCESS, CONTENT_SETTING_ALLOW}};
 
 }  // namespace
 
@@ -79,26 +85,29 @@ struct PolicyProvider::PrefsForManagedDefaultMapEntry {
 // static
 const PolicyProvider::PrefsForManagedDefaultMapEntry
     PolicyProvider::kPrefsForManagedDefault[] = {
-        {CONTENT_SETTINGS_TYPE_ADS, prefs::kManagedDefaultAdsSetting},
-        {CONTENT_SETTINGS_TYPE_COOKIES, prefs::kManagedDefaultCookiesSetting},
-        {CONTENT_SETTINGS_TYPE_IMAGES, prefs::kManagedDefaultImagesSetting},
-        {CONTENT_SETTINGS_TYPE_GEOLOCATION,
+        {ContentSettingsType::ADS, prefs::kManagedDefaultAdsSetting},
+        {ContentSettingsType::COOKIES, prefs::kManagedDefaultCookiesSetting},
+        {ContentSettingsType::IMAGES, prefs::kManagedDefaultImagesSetting},
+        {ContentSettingsType::GEOLOCATION,
          prefs::kManagedDefaultGeolocationSetting},
-        {CONTENT_SETTINGS_TYPE_JAVASCRIPT,
+        {ContentSettingsType::JAVASCRIPT,
          prefs::kManagedDefaultJavaScriptSetting},
-        {CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA,
+        {ContentSettingsType::MEDIASTREAM_CAMERA,
          prefs::kManagedDefaultMediaStreamSetting},
-        {CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC,
+        {ContentSettingsType::MEDIASTREAM_MIC,
          prefs::kManagedDefaultMediaStreamSetting},
-        {CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+        {ContentSettingsType::MIXEDSCRIPT,
+         prefs::kManagedDefaultInsecureContentSetting},
+        {ContentSettingsType::NOTIFICATIONS,
          prefs::kManagedDefaultNotificationsSetting},
-        {CONTENT_SETTINGS_TYPE_PLUGINS, prefs::kManagedDefaultPluginsSetting},
-        {CONTENT_SETTINGS_TYPE_POPUPS, prefs::kManagedDefaultPopupsSetting},
-        {CONTENT_SETTINGS_TYPE_BLUETOOTH_GUARD,
+        {ContentSettingsType::PLUGINS, prefs::kManagedDefaultPluginsSetting},
+        {ContentSettingsType::POPUPS, prefs::kManagedDefaultPopupsSetting},
+        {ContentSettingsType::BLUETOOTH_GUARD,
          prefs::kManagedDefaultWebBluetoothGuardSetting},
-        {CONTENT_SETTINGS_TYPE_USB_GUARD,
+        {ContentSettingsType::USB_GUARD,
          prefs::kManagedDefaultWebUsbGuardSetting},
-};
+        {ContentSettingsType::LEGACY_COOKIE_ACCESS,
+         prefs::kManagedDefaultLegacyCookieAccessSetting}};
 
 // static
 void PolicyProvider::RegisterProfilePrefs(
@@ -109,6 +118,8 @@ void PolicyProvider::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kManagedCookiesSessionOnlyForUrls);
   registry->RegisterListPref(prefs::kManagedImagesAllowedForUrls);
   registry->RegisterListPref(prefs::kManagedImagesBlockedForUrls);
+  registry->RegisterListPref(prefs::kManagedInsecureContentAllowedForUrls);
+  registry->RegisterListPref(prefs::kManagedInsecureContentBlockedForUrls);
   registry->RegisterListPref(prefs::kManagedJavaScriptAllowedForUrls);
   registry->RegisterListPref(prefs::kManagedJavaScriptBlockedForUrls);
   registry->RegisterListPref(prefs::kManagedNotificationsAllowedForUrls);
@@ -120,6 +131,8 @@ void PolicyProvider::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kManagedWebUsbAllowDevicesForUrls);
   registry->RegisterListPref(prefs::kManagedWebUsbAskForUrls);
   registry->RegisterListPref(prefs::kManagedWebUsbBlockedForUrls);
+  registry->RegisterListPref(
+      prefs::kManagedLegacyCookieAccessAllowedForDomains);
   // Preferences for default content setting policies. If a policy is not set of
   // the corresponding preferences below is set to CONTENT_SETTING_DEFAULT.
   registry->RegisterIntegerPref(prefs::kManagedDefaultAdsSetting,
@@ -129,6 +142,8 @@ void PolicyProvider::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kManagedDefaultGeolocationSetting,
                                 CONTENT_SETTING_DEFAULT);
   registry->RegisterIntegerPref(prefs::kManagedDefaultImagesSetting,
+                                CONTENT_SETTING_DEFAULT);
+  registry->RegisterIntegerPref(prefs::kManagedDefaultInsecureContentSetting,
                                 CONTENT_SETTING_DEFAULT);
   registry->RegisterIntegerPref(prefs::kManagedDefaultJavaScriptSetting,
                                 CONTENT_SETTING_DEFAULT);
@@ -143,6 +158,8 @@ void PolicyProvider::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kManagedDefaultWebBluetoothGuardSetting,
                                 CONTENT_SETTING_DEFAULT);
   registry->RegisterIntegerPref(prefs::kManagedDefaultWebUsbGuardSetting,
+                                CONTENT_SETTING_DEFAULT);
+  registry->RegisterIntegerPref(prefs::kManagedDefaultLegacyCookieAccessSetting,
                                 CONTENT_SETTING_DEFAULT);
 }
 
@@ -161,6 +178,10 @@ PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
       prefs::kManagedCookiesSessionOnlyForUrls, callback);
   pref_change_registrar_.Add(prefs::kManagedImagesAllowedForUrls, callback);
   pref_change_registrar_.Add(prefs::kManagedImagesBlockedForUrls, callback);
+  pref_change_registrar_.Add(prefs::kManagedInsecureContentAllowedForUrls,
+                             callback);
+  pref_change_registrar_.Add(prefs::kManagedInsecureContentBlockedForUrls,
+                             callback);
   pref_change_registrar_.Add(prefs::kManagedJavaScriptAllowedForUrls, callback);
   pref_change_registrar_.Add(prefs::kManagedJavaScriptBlockedForUrls, callback);
   pref_change_registrar_.Add(
@@ -173,6 +194,8 @@ PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
   pref_change_registrar_.Add(prefs::kManagedPopupsBlockedForUrls, callback);
   pref_change_registrar_.Add(prefs::kManagedWebUsbAskForUrls, callback);
   pref_change_registrar_.Add(prefs::kManagedWebUsbBlockedForUrls, callback);
+  pref_change_registrar_.Add(prefs::kManagedLegacyCookieAccessAllowedForDomains,
+                             callback);
   // The following preferences are only used to indicate if a default content
   // setting is managed and to hold the managed default setting value. If the
   // value for any of the following preferences is set then the corresponding
@@ -185,6 +208,8 @@ PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
   pref_change_registrar_.Add(
       prefs::kManagedDefaultGeolocationSetting, callback);
   pref_change_registrar_.Add(prefs::kManagedDefaultImagesSetting, callback);
+  pref_change_registrar_.Add(prefs::kManagedDefaultInsecureContentSetting,
+                             callback);
   pref_change_registrar_.Add(prefs::kManagedDefaultJavaScriptSetting, callback);
   pref_change_registrar_.Add(
       prefs::kManagedDefaultNotificationsSetting, callback);
@@ -195,6 +220,8 @@ PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
   pref_change_registrar_.Add(prefs::kManagedDefaultWebBluetoothGuardSetting,
                              callback);
   pref_change_registrar_.Add(prefs::kManagedDefaultWebUsbGuardSetting,
+                             callback);
+  pref_change_registrar_.Add(prefs::kManagedDefaultLegacyCookieAccessSetting,
                              callback);
 }
 
@@ -250,7 +277,7 @@ void PolicyProvider::GetContentSettingsFromPreferences(
 
       ContentSettingsType content_type =
           kPrefsForManagedContentSettingsMap[i].content_type;
-      DCHECK_NE(content_type, CONTENT_SETTINGS_TYPE_AUTO_SELECT_CERTIFICATE);
+      DCHECK_NE(content_type, ContentSettingsType::AUTO_SELECT_CERTIFICATE);
       // If only one pattern was defined auto expand it to a pattern pair.
       ContentSettingsPattern secondary_pattern =
           !pattern_pair.second.IsValid() ? ContentSettingsPattern::Wildcard()
@@ -346,8 +373,7 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
 
     // Don't pass removed values from |value|, because base::Values read with
     // JSONReader use a shared string buffer. Instead, Clone() here.
-    filters_map[pattern_str].FindKey("filters")->GetList().push_back(
-        filter->Clone());
+    filters_map[pattern_str].FindKey("filters")->Append(filter->Clone());
   }
 
   for (const auto& it : filters_map) {
@@ -365,7 +391,7 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
     }
 
     value_map->SetValue(pattern, ContentSettingsPattern::Wildcard(),
-                        CONTENT_SETTINGS_TYPE_AUTO_SELECT_CERTIFICATE,
+                        ContentSettingsType::AUTO_SELECT_CERTIFICATE,
                         std::string(), base::Time(), setting.Clone());
   }
 }
@@ -429,7 +455,7 @@ bool PolicyProvider::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     const ResourceIdentifier& resource_identifier,
-    base::Value* value) {
+    std::unique_ptr<base::Value>&& value) {
   return false;
 }
 
@@ -460,6 +486,8 @@ void PolicyProvider::OnPreferenceChanged(const std::string& name) {
       name == prefs::kManagedCookiesSessionOnlyForUrls ||
       name == prefs::kManagedImagesAllowedForUrls ||
       name == prefs::kManagedImagesBlockedForUrls ||
+      name == prefs::kManagedInsecureContentAllowedForUrls ||
+      name == prefs::kManagedInsecureContentBlockedForUrls ||
       name == prefs::kManagedJavaScriptAllowedForUrls ||
       name == prefs::kManagedJavaScriptBlockedForUrls ||
       name == prefs::kManagedNotificationsAllowedForUrls ||
@@ -467,15 +495,14 @@ void PolicyProvider::OnPreferenceChanged(const std::string& name) {
       name == prefs::kManagedPluginsAllowedForUrls ||
       name == prefs::kManagedPluginsBlockedForUrls ||
       name == prefs::kManagedPopupsAllowedForUrls ||
-      name == prefs::kManagedPopupsBlockedForUrls) {
+      name == prefs::kManagedPopupsBlockedForUrls ||
+      name == prefs::kManagedLegacyCookieAccessAllowedForDomains) {
     ReadManagedContentSettings(true);
     ReadManagedDefaultSettings();
   }
 
-  NotifyObservers(ContentSettingsPattern(),
-                  ContentSettingsPattern(),
-                  CONTENT_SETTINGS_TYPE_DEFAULT,
-                  std::string());
+  NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
+                  ContentSettingsType::DEFAULT, std::string());
 }
 
 }  // namespace content_settings

@@ -10,7 +10,8 @@ import android.view.View;
 import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityNodeProvider;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl;
 
 /**
@@ -46,6 +47,12 @@ public interface WebContentsAccessibility {
      */
     @VisibleForTesting
     void setAccessibilityEnabledForTesting();
+
+    /**
+     *  Add a spelling error.
+     */
+    @VisibleForTesting
+    void addSpellingErrorForTesting(int virtualViewId, int startOffset, int endOffset);
 
     /**
      * Attempts to perform an accessibility action on the web content.  If the accessibility action

@@ -96,7 +96,7 @@ class SyncSchedulerImpl : public SyncScheduler {
   // Timer firing for the next sync request.
   std::unique_ptr<base::OneShotTimer> timer_;
 
-  base::WeakPtrFactory<SyncSchedulerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<SyncSchedulerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyncSchedulerImpl);
 };

@@ -8,7 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/threading/thread_restrictions.h"
-#include "ios/web/public/web_thread_delegate.h"
+#include "ios/web/public/thread/web_thread_delegate.h"
 #include "ios/web/web_thread_impl.h"
 #include "net/url_request/url_fetcher.h"
 

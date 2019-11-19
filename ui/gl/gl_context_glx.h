@@ -31,7 +31,7 @@ class GL_EXPORT GLContextGLX : public GLContextReal {
   void ReleaseCurrent(GLSurface* surface) override;
   bool IsCurrent(GLSurface* surface) override;
   void* GetHandle() override;
-  bool WasAllocatedUsingRobustnessExtension() override;
+  unsigned int CheckStickyGraphicsResetStatus() override;
 
  protected:
   ~GLContextGLX() override;
@@ -41,6 +41,7 @@ class GL_EXPORT GLContextGLX : public GLContextReal {
 
   void* context_;
   XDisplay* display_;
+  unsigned int graphics_reset_status_ = 0;  // GL_NO_ERROR
 
   DISALLOW_COPY_AND_ASSIGN(GLContextGLX);
 };

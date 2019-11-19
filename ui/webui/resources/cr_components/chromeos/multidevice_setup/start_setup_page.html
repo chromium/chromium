@@ -5,7 +5,6 @@
 <link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/ui_page.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/ui_page_container_behavior.html">
 <link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
@@ -25,6 +24,10 @@
 
       #deviceDropdown {
         margin-top: 16px;
+      }
+
+      .offline-device-name {
+        color: var(--google-grey-600);
       }
 
       #page-icon-container {
@@ -47,8 +50,8 @@
       #feature-details-container {
         @apply --layout-vertical;
         @apply --layout-center-justified;
-        border-left: 1px solid rgb(218, 220, 224);
-        padding-left: 24px;
+        border-inline-start: 1px solid rgb(218, 220, 224);
+        padding-inline-start: 24px;
       }
 
       #feature-details-container-header {
@@ -70,17 +73,24 @@
       }
 
       .feature-detail span {
-        margin-left: 8px;
+        margin-inline-start: 8px;
       }
 
       #footnote {
         color: var(--paper-grey-600);
         margin-top: 12px;
       }
+
+      #multidevice-summary-message a {
+        display: inline-block;
+      }
     </style>
 
-    <ui-page header-text="[[headerText]]" icon-name="google-g">
-      <span slot="message" id="multidevice-summary-message" inner-h-t-m-l="[[messageHtml]]"></span>
+    <ui-page header-text="[[i18nDynamic(locale, 'startSetupPageHeader')]]"
+        icon-name="google-g">
+      <span slot="message" id="multidevice-summary-message" inner-h-t-m-l=
+          "[[i18nAdvancedDynamic_(locale, 'startSetupPageMessage')]]">
+      </span>
       <div slot="additional-content">
         <div id="selector-and-details-container">
           <div id="deviceSelectionContainer" class="flex">
@@ -95,8 +105,10 @@
                   class="md-select"
                   on-change="onDeviceDropdownSelectionChanged_">
                 <template is="dom-repeat" items="[[devices]]">
-                  <option value$="[[item.deviceId]]">
-                    [[item.deviceName]]
+                  <option
+                      class$="[[getDeviceOptionClass_(item.connectivityStatus)]]"
+                      value$="[[item.remoteDevice.deviceId]]">
+                    [[getDeviceNameWithConnectivityStatus_(item)]]
                   </option>
                 </template>
               </select>
@@ -107,26 +119,33 @@
           </div>
           <div id="feature-details-container" class="flex">
             <div id="feature-details-container-header">
-              [[i18n('startSetupPageFeatureListHeader')]]
+              [[i18nDynamic(locale, 'startSetupPageFeatureListHeader')]]
             </div>
             <div class="feature-detail">
               <iron-icon icon="multidevice-setup-icons-20:messages"></iron-icon>
               <span id="awm-summary-message" inner-h-t-m-l="
-                  [[i18nAdvanced('startSetupPageFeatureListAwm')]]">
+                  [[i18nAdvancedDynamic_(
+                      locale, 'startSetupPageFeatureListAwm')]]">
               </span>
             </div>
             <div class="feature-detail">
               <iron-icon icon="multidevice-setup-icons-20:downloads">
               </iron-icon>
-              <span>[[i18n('startSetupPageFeatureListInstallApps')]]</span>
+              <span>
+                [[i18nDynamic(locale, 'startSetupPageFeatureListInstallApps')]]
+              </span>
             </div>
             <div class="feature-detail">
               <iron-icon icon="multidevice-setup-icons-20:features"></iron-icon>
-              <span>[[i18n('startSetupPageFeatureListAddFeatures')]]</span>
+              <span>
+                [[i18nDynamic(locale, 'startSetupPageFeatureListAddFeatures')]]
+              </span>
             </div>
           </div>
         </div>
-        <div id="footnote">[[i18n('startSetupPageFootnote')]]</div>
+        <div id="footnote">
+          [[i18nAdvancedDynamic_(locale, 'startSetupPageFootnote')]]
+        </div>
       </div>
     </ui-page>
   </template>

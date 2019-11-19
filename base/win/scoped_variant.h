@@ -61,6 +61,9 @@ class BASE_EXPORT ScopedVariant {
   // Copies the variant.
   explicit ScopedVariant(const VARIANT& var);
 
+  // Moves the wrapped variant into another ScopedVariant.
+  ScopedVariant(ScopedVariant&& var);
+
   ~ScopedVariant();
 
   inline VARTYPE type() const {
@@ -125,6 +128,9 @@ class BASE_EXPORT ScopedVariant {
   // work properly but still doesn't allow modifications since we want control
   // over that.
   const VARIANT* ptr() const { return &var_; }
+
+  // Moves the ScopedVariant to another instance.
+  ScopedVariant& operator=(ScopedVariant&& var);
 
   // Like other scoped classes (e.g. scoped_refptr, ScopedBstr,
   // Microsoft::WRL::ComPtr) we support the assignment operator for the type we

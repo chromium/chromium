@@ -62,9 +62,11 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
     return search_results_;
   }
 
-  void OnFolderCreated(ash::mojom::AppListItemMetadataPtr folder) override;
-  void OnFolderDeleted(ash::mojom::AppListItemMetadataPtr item) override {}
-  void OnItemUpdated(ash::mojom::AppListItemMetadataPtr item) override {}
+  void OnFolderCreated(
+      std::unique_ptr<ash::AppListItemMetadata> folder) override;
+  void OnFolderDeleted(
+      std::unique_ptr<ash::AppListItemMetadata> item) override {}
+  void OnItemUpdated(std::unique_ptr<ash::AppListItemMetadata> item) override {}
   void OnPageBreakItemAdded(const std::string& id,
                             const syncer::StringOrdinal& position) override {}
   void OnPageBreakItemDeleted(const std::string& id) override {}
@@ -79,7 +81,7 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   base::ObserverList<AppListModelUpdaterObserver> observers_;
   Profile* profile_;
 
-  ash::mojom::AppListItemMetadataPtr FindOrCreateOemFolder(
+  void FindOrCreateOemFolder(
       const std::string& oem_folder_name,
       const syncer::StringOrdinal& preferred_oem_position);
   syncer::StringOrdinal GetOemFolderPos();

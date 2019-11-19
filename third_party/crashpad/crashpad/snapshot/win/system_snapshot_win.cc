@@ -28,6 +28,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "util/win/module_version.h"
+#include "util/win/scoped_registry_key.h"
 
 namespace crashpad {
 
@@ -76,11 +77,9 @@ SystemSnapshotWin::SystemSnapshotWin()
       os_version_minor_(0),
       os_version_bugfix_(0),
       os_server_(false),
-      initialized_() {
-}
+      initialized_() {}
 
-SystemSnapshotWin::~SystemSnapshotWin() {
-}
+SystemSnapshotWin::~SystemSnapshotWin() {}
 
 void SystemSnapshotWin::Initialize(ProcessReaderWin* process_reader) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
@@ -158,9 +157,10 @@ uint32_t SystemSnapshotWin::CPURevision() const {
   uint8_t adjusted_model = model + (extended_model << 4);
   return (adjusted_family << 16) | (adjusted_model << 8) | stepping;
 #elif defined(ARCH_CPU_ARM64)
-  // TODO(jperaza): do this. https://crashpad.chromium.org/bug/30
-  // This is the same as SystemSnapshotLinux::CPURevision.
-  return 0;
+  SYSTEM_INFO system_info;
+  GetSystemInfo(&system_info);
+
+  return system_info.wProcessorRevision;
 #else
 #error Unsupported Windows Arch
 #endif
@@ -190,9 +190,38 @@ std::string SystemSnapshotWin::CPUVendor() const {
   *reinterpret_cast<int*>(vendor + 8) = cpu_info[2];
   return std::string(vendor, sizeof(vendor));
 #elif defined(ARCH_CPU_ARM64)
-  // TODO(jperaza): do this. https://crashpad.chromium.org/bug/30
-  // This is the same as SystemSnapshotLinux::CPURevision.
-  return std::string();
+  HKEY key;
+
+  if (RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+                   L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
+                   0,
+                   KEY_QUERY_VALUE,
+                   &key) != ERROR_SUCCESS) {
+    return std::string();
+  }
+
+  crashpad::ScopedRegistryKey scoped_key(key);
+  DWORD type;
+  wchar_t vendor_identifier[1024];
+  DWORD vendor_identifier_size = sizeof(vendor_identifier);
+
+  if (RegQueryValueEx(key,
+                      L"VendorIdentifier",
+                      nullptr,
+                      &type,
+                      reinterpret_cast<BYTE*>(vendor_identifier),
+                      &vendor_identifier_size) != ERROR_SUCCESS ||
+      type != REG_SZ) {
+    return std::string();
+  }
+
+  std::string return_value;
+  DCHECK_EQ(vendor_identifier_size % sizeof(wchar_t), 0u);
+  base::UTF16ToUTF8(vendor_identifier,
+                    vendor_identifier_size / sizeof(wchar_t),
+                    &return_value);
+
+  return return_value.c_str();
 #else
 #error Unsupported Windows Arch
 #endif

@@ -10,46 +10,17 @@
 
 namespace media {
 
-EncryptionScheme::EncryptionScheme() = default;
-
-EncryptionScheme::EncryptionScheme(CipherMode mode,
-                                   const EncryptionPattern& pattern)
-    : mode_(mode), pattern_(pattern) {}
-
-EncryptionScheme::~EncryptionScheme() = default;
-
-bool EncryptionScheme::is_encrypted() const {
-  return mode_ != CIPHER_MODE_UNENCRYPTED;
-}
-
-EncryptionScheme::CipherMode EncryptionScheme::mode() const {
-  return mode_;
-}
-
-const EncryptionPattern& EncryptionScheme::pattern() const {
-  return pattern_;
-}
-
-bool EncryptionScheme::Matches(const EncryptionScheme& other) const {
-  return mode_ == other.mode_ && pattern_ == other.pattern_;
-}
-
-std::ostream& operator<<(std::ostream& os,
-                         const EncryptionScheme& encryption_scheme) {
-  if (!encryption_scheme.is_encrypted())
-    return os << "Unencrypted";
-
-  if (encryption_scheme.mode() == EncryptionScheme::CIPHER_MODE_AES_CTR)
-    return os << "CENC";
-
-  if (encryption_scheme.mode() == EncryptionScheme::CIPHER_MODE_AES_CBC) {
-    return os << "CBCS with pattern ("
-              << encryption_scheme.pattern().crypt_byte_block() << ","
-              << encryption_scheme.pattern().skip_byte_block() << ")";
+std::ostream& operator<<(std::ostream& os, EncryptionScheme scheme) {
+  switch (scheme) {
+    case EncryptionScheme::kUnencrypted:
+      return os << "Unencrypted";
+    case EncryptionScheme::kCenc:
+      return os << "CENC";
+    case EncryptionScheme::kCbcs:
+      return os << "CBCS";
+    default:
+      return os << "Unknown";
   }
-
-  NOTREACHED();
-  return os << "Unknown EncryptionScheme, mode = " << encryption_scheme.mode();
 }
 
 }  // namespace media

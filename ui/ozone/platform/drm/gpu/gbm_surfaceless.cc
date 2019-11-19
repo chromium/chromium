@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/drm/gpu/gbm_surfaceless.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -39,7 +40,8 @@ GbmSurfaceless::GbmSurfaceless(GbmSurfaceFactory* surface_factory,
       widget_(widget),
       has_implicit_external_sync_(
           HasEGLExtension("EGL_ARM_implicit_external_sync")),
-      weak_factory_(this) {
+      has_image_flush_external_(
+          HasEGLExtension("EGL_EXT_image_flush_external")) {
   surface_factory_->RegisterSurface(window_->widget(), this);
   supports_plane_gpu_fences_ = window_->SupportsGpuFences();
   unsubmitted_frames_.push_back(std::make_unique<PendingFrame>());
@@ -79,10 +81,6 @@ bool GbmSurfaceless::IsOffscreen() {
   return false;
 }
 
-bool GbmSurfaceless::SupportsPresentationCallback() {
-  return true;
-}
-
 bool GbmSurfaceless::SupportsAsyncSwap() {
   return true;
 }
@@ -117,9 +115,11 @@ void GbmSurfaceless::SwapBuffersAsync(
     return;
   }
 
-  // TODO(dcastagna): remove glFlush since eglImageFlushExternalEXT called on
-  // the image should be enough (crbug.com/720045).
-  glFlush();
+  if ((!has_image_flush_external_ && !supports_plane_gpu_fences_) ||
+      requires_gl_flush_on_swap_buffers_) {
+    glFlush();
+  }
+
   unsubmitted_frames_.back()->Flush();
 
   PendingFrame* frame = unsubmitted_frames_.back().get();
@@ -154,10 +154,11 @@ void GbmSurfaceless::SwapBuffersAsync(
   base::OnceClosure fence_retired_callback = base::BindOnce(
       &GbmSurfaceless::FenceRetired, weak_factory_.GetWeakPtr(), frame);
 
-  base::PostTaskWithTraitsAndReply(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      std::move(fence_wait_task), std::move(fence_retired_callback));
+  base::PostTaskAndReply(FROM_HERE,
+                         {base::ThreadPool(), base::MayBlock(),
+                          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+                         std::move(fence_wait_task),
+                         std::move(fence_retired_callback));
 }
 
 void GbmSurfaceless::PostSubBufferAsync(
@@ -196,6 +197,10 @@ EGLConfig GbmSurfaceless::GetConfig() {
 
 void GbmSurfaceless::SetRelyOnImplicitSync() {
   use_egl_fence_sync_ = false;
+}
+
+void GbmSurfaceless::SetForceGlFlushOnSwapBuffers() {
+  requires_gl_flush_on_swap_buffers_ = true;
 }
 
 GbmSurfaceless::~GbmSurfaceless() {

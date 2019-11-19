@@ -22,34 +22,20 @@ QueueMessageSwapPromise::QueueMessageSwapPromise(
     : message_sender_(message_sender),
       message_queue_(message_queue),
       source_frame_number_(source_frame_number)
-#if DCHECK_IS_ON()
-      ,
-      completed_(false)
-#endif
 {
   DCHECK(message_sender_.get());
   DCHECK(message_queue_.get());
 }
 
 QueueMessageSwapPromise::~QueueMessageSwapPromise() {
-  // The promise should have either been kept or broken before it's deleted.
-#if DCHECK_IS_ON()
-  DCHECK(completed_);
-#endif
 }
 
 void QueueMessageSwapPromise::DidActivate() {
-#if DCHECK_IS_ON()
-  DCHECK(!completed_);
-#endif
   message_queue_->DidActivate(source_frame_number_);
   // The OutputSurface will take care of the Drain+Send.
 }
 
 void QueueMessageSwapPromise::WillSwap(viz::CompositorFrameMetadata* metadata) {
-#if DCHECK_IS_ON()
-  DCHECK(!completed_);
-#endif
   message_queue_->DidSwap(source_frame_number_);
 
   if (!message_queue_->AreFramesDiscarded()) {
@@ -67,30 +53,21 @@ void QueueMessageSwapPromise::WillSwap(viz::CompositorFrameMetadata* metadata) {
           messages_to_send));
     }
   }
-
-  PromiseCompleted();
 }
 
 void QueueMessageSwapPromise::DidSwap() {}
 
-void QueueMessageSwapPromise::DidNotSwap(DidNotSwapReason reason) {
-#if DCHECK_IS_ON()
-  DCHECK(!completed_);
-#endif
+cc::SwapPromise::DidNotSwapAction QueueMessageSwapPromise::DidNotSwap(
+    DidNotSwapReason reason) {
   // TODO(eseckler): Deliver messages with the next swap instead of sending
   // them here directly.
   std::vector<std::unique_ptr<IPC::Message>> messages;
-  message_queue_->DidNotSwap(source_frame_number_, reason, &messages);
+  cc::SwapPromise::DidNotSwapAction action =
+      message_queue_->DidNotSwap(source_frame_number_, reason, &messages);
   for (auto& msg : messages) {
     message_sender_->Send(msg.release());
   }
-  PromiseCompleted();
-}
-
-void QueueMessageSwapPromise::PromiseCompleted() {
-#if DCHECK_IS_ON()
-  completed_ = true;
-#endif
+  return action;
 }
 
 int64_t QueueMessageSwapPromise::TraceId() const {

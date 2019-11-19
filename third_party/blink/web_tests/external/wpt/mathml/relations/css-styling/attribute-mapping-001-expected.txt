@@ -1,0 +1,164 @@
+This is a testharness.js-based test.
+Found 160 tests; 158 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS dir on the math element is mapped to CSS direction
+PASS mathcolor on the math element is mapped to CSS color
+PASS mathbackground on the math element is mapped to CSS background-color
+PASS mathsize on the math element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the math element are not mapped to CSS
+PASS dir on the annotation element is mapped to CSS direction
+PASS mathcolor on the annotation element is mapped to CSS color
+PASS mathbackground on the annotation element is mapped to CSS background-color
+PASS mathsize on the annotation element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the annotation element are not mapped to CSS
+PASS dir on the annotation-xml element is mapped to CSS direction
+PASS mathcolor on the annotation-xml element is mapped to CSS color
+PASS mathbackground on the annotation-xml element is mapped to CSS background-color
+PASS mathsize on the annotation-xml element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the annotation-xml element are not mapped to CSS
+PASS dir on the maction element is mapped to CSS direction
+PASS mathcolor on the maction element is mapped to CSS color
+PASS mathbackground on the maction element is mapped to CSS background-color
+PASS mathsize on the maction element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the maction element are not mapped to CSS
+PASS dir on the menclose element is mapped to CSS direction
+PASS mathcolor on the menclose element is mapped to CSS color
+PASS mathbackground on the menclose element is mapped to CSS background-color
+PASS mathsize on the menclose element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the menclose element are not mapped to CSS
+PASS dir on the merror element is mapped to CSS direction
+FAIL mathcolor on the merror element is mapped to CSS color assert_equals: no attribute expected "rgb(255, 0, 0)" but got "rgb(0, 0, 255)"
+FAIL mathbackground on the merror element is mapped to CSS background-color assert_equals: no attribute expected "rgb(255, 255, 224)" but got "rgba(0, 0, 0, 0)"
+PASS mathsize on the merror element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the merror element are not mapped to CSS
+PASS dir on the mfrac element is mapped to CSS direction
+PASS mathcolor on the mfrac element is mapped to CSS color
+PASS mathbackground on the mfrac element is mapped to CSS background-color
+PASS mathsize on the mfrac element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mfrac element are not mapped to CSS
+PASS dir on the mi element is mapped to CSS direction
+PASS mathcolor on the mi element is mapped to CSS color
+PASS mathbackground on the mi element is mapped to CSS background-color
+PASS mathsize on the mi element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mi element are not mapped to CSS
+PASS dir on the mmultiscripts element is mapped to CSS direction
+PASS mathcolor on the mmultiscripts element is mapped to CSS color
+PASS mathbackground on the mmultiscripts element is mapped to CSS background-color
+PASS mathsize on the mmultiscripts element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mmultiscripts element are not mapped to CSS
+PASS dir on the mn element is mapped to CSS direction
+PASS mathcolor on the mn element is mapped to CSS color
+PASS mathbackground on the mn element is mapped to CSS background-color
+PASS mathsize on the mn element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mn element are not mapped to CSS
+PASS dir on the mo element is mapped to CSS direction
+PASS mathcolor on the mo element is mapped to CSS color
+PASS mathbackground on the mo element is mapped to CSS background-color
+PASS mathsize on the mo element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mo element are not mapped to CSS
+PASS dir on the mover element is mapped to CSS direction
+PASS mathcolor on the mover element is mapped to CSS color
+PASS mathbackground on the mover element is mapped to CSS background-color
+PASS mathsize on the mover element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mover element are not mapped to CSS
+PASS dir on the mpadded element is mapped to CSS direction
+PASS mathcolor on the mpadded element is mapped to CSS color
+PASS mathbackground on the mpadded element is mapped to CSS background-color
+PASS mathsize on the mpadded element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mpadded element are not mapped to CSS
+PASS dir on the mphantom element is mapped to CSS direction
+PASS mathcolor on the mphantom element is mapped to CSS color
+PASS mathbackground on the mphantom element is mapped to CSS background-color
+PASS mathsize on the mphantom element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mphantom element are not mapped to CSS
+PASS dir on the mprescripts element is mapped to CSS direction
+PASS mathcolor on the mprescripts element is mapped to CSS color
+PASS mathbackground on the mprescripts element is mapped to CSS background-color
+PASS mathsize on the mprescripts element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mprescripts element are not mapped to CSS
+PASS dir on the mroot element is mapped to CSS direction
+PASS mathcolor on the mroot element is mapped to CSS color
+PASS mathbackground on the mroot element is mapped to CSS background-color
+PASS mathsize on the mroot element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mroot element are not mapped to CSS
+PASS dir on the mrow element is mapped to CSS direction
+PASS mathcolor on the mrow element is mapped to CSS color
+PASS mathbackground on the mrow element is mapped to CSS background-color
+PASS mathsize on the mrow element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mrow element are not mapped to CSS
+PASS dir on the ms element is mapped to CSS direction
+PASS mathcolor on the ms element is mapped to CSS color
+PASS mathbackground on the ms element is mapped to CSS background-color
+PASS mathsize on the ms element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the ms element are not mapped to CSS
+PASS dir on the mspace element is mapped to CSS direction
+PASS mathcolor on the mspace element is mapped to CSS color
+PASS mathbackground on the mspace element is mapped to CSS background-color
+PASS mathsize on the mspace element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mspace element are not mapped to CSS
+PASS dir on the msqrt element is mapped to CSS direction
+PASS mathcolor on the msqrt element is mapped to CSS color
+PASS mathbackground on the msqrt element is mapped to CSS background-color
+PASS mathsize on the msqrt element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the msqrt element are not mapped to CSS
+PASS dir on the mstyle element is mapped to CSS direction
+PASS mathcolor on the mstyle element is mapped to CSS color
+PASS mathbackground on the mstyle element is mapped to CSS background-color
+PASS mathsize on the mstyle element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mstyle element are not mapped to CSS
+PASS dir on the msub element is mapped to CSS direction
+PASS mathcolor on the msub element is mapped to CSS color
+PASS mathbackground on the msub element is mapped to CSS background-color
+PASS mathsize on the msub element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the msub element are not mapped to CSS
+PASS dir on the msubsup element is mapped to CSS direction
+PASS mathcolor on the msubsup element is mapped to CSS color
+PASS mathbackground on the msubsup element is mapped to CSS background-color
+PASS mathsize on the msubsup element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the msubsup element are not mapped to CSS
+PASS dir on the msup element is mapped to CSS direction
+PASS mathcolor on the msup element is mapped to CSS color
+PASS mathbackground on the msup element is mapped to CSS background-color
+PASS mathsize on the msup element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the msup element are not mapped to CSS
+PASS dir on the mtable element is mapped to CSS direction
+PASS mathcolor on the mtable element is mapped to CSS color
+PASS mathbackground on the mtable element is mapped to CSS background-color
+PASS mathsize on the mtable element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mtable element are not mapped to CSS
+PASS dir on the mtd element is mapped to CSS direction
+PASS mathcolor on the mtd element is mapped to CSS color
+PASS mathbackground on the mtd element is mapped to CSS background-color
+PASS mathsize on the mtd element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mtd element are not mapped to CSS
+PASS dir on the mtext element is mapped to CSS direction
+PASS mathcolor on the mtext element is mapped to CSS color
+PASS mathbackground on the mtext element is mapped to CSS background-color
+PASS mathsize on the mtext element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mtext element are not mapped to CSS
+PASS dir on the mtr element is mapped to CSS direction
+PASS mathcolor on the mtr element is mapped to CSS color
+PASS mathbackground on the mtr element is mapped to CSS background-color
+PASS mathsize on the mtr element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the mtr element are not mapped to CSS
+PASS dir on the munder element is mapped to CSS direction
+PASS mathcolor on the munder element is mapped to CSS color
+PASS mathbackground on the munder element is mapped to CSS background-color
+PASS mathsize on the munder element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the munder element are not mapped to CSS
+PASS dir on the munderover element is mapped to CSS direction
+PASS mathcolor on the munderover element is mapped to CSS color
+PASS mathbackground on the munderover element is mapped to CSS background-color
+PASS mathsize on the munderover element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the munderover element are not mapped to CSS
+PASS dir on the none element is mapped to CSS direction
+PASS mathcolor on the none element is mapped to CSS color
+PASS mathbackground on the none element is mapped to CSS background-color
+PASS mathsize on the none element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the none element are not mapped to CSS
+PASS dir on the semantics element is mapped to CSS direction
+PASS mathcolor on the semantics element is mapped to CSS color
+PASS mathbackground on the semantics element is mapped to CSS background-color
+PASS mathsize on the semantics element is mapped to CSS font-size
+PASS deprecated MathML3 attributes on the semantics element are not mapped to CSS
+Harness: the test ran to completion.
+

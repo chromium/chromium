@@ -27,6 +27,7 @@
 // https://svgwg.org/svg2-draft/types.html#InterfaceSVGNumberList
 
 [
+    Exposed=Window,
     ImplementedAs=SVGNumberListTearOff
 ] interface SVGNumberList {
     readonly attribute unsigned long length;

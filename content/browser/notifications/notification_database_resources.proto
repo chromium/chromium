@@ -1,0 +1,21 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package content;
+
+// Stores resources of a Web Notification. This message is the protocol buffer
+// meant to serialize the blink::NotificationResources structure.
+// The images are stored as serialized PNGs.
+//
+// Next tag: 5
+message NotificationDatabaseResourcesProto {
+  optional bytes image = 1;
+  optional bytes notification_icon = 2;
+  optional bytes badge = 3;
+  repeated bytes action_icons = 4;
+}

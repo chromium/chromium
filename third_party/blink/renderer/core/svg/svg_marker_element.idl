@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/painting.html#InterfaceSVGMarkerElement
 
+[Exposed=Window]
 interface SVGMarkerElement : SVGElement {
 
     // Marker Unit Types
@@ -50,4 +51,4 @@ interface SVGMarkerElement : SVGElement {
     [MeasureAs=SVG1DOMMarkerElement] void setOrientToAngle(SVGAngle angle);
 };
 
-SVGMarkerElement implements SVGFitToViewBox;
+SVGMarkerElement includes SVGFitToViewBox;

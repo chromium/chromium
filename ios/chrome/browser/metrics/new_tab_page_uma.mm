@@ -8,10 +8,10 @@
 #include "components/google/core/common/google_util.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#import "ios/chrome/browser/tabs/tab.h"
 #import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/chrome/browser/tabs/tab_model_list.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/web/public/web_state.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -21,10 +21,12 @@
 namespace new_tab_page_uma {
 
 bool IsCurrentlyOnNTP(ios::ChromeBrowserState* browser_state) {
-  TabModel* tab_model =
-      TabModelList::GetLastActiveTabModelForChromeBrowserState(browser_state);
-  return tab_model.currentTab.webState &&
-         tab_model.currentTab.webState->GetVisibleURL() == kChromeUINewTabURL;
+  WebStateList* webStateList =
+      TabModelList::GetLastActiveTabModelForChromeBrowserState(browser_state)
+          .webStateList;
+  return webStateList->GetActiveWebState() &&
+         webStateList->GetActiveWebState()->GetVisibleURL() ==
+             kChromeUINewTabURL;
 }
 
 void RecordAction(ios::ChromeBrowserState* browserState, ActionType type) {

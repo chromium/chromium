@@ -105,7 +105,7 @@ const NOT_MOUNTED_DEVICE_PROVIDING_EXTENSION = {
 
 function addProvidedVolume(volumeManager, providerId, volumeId) {
   let fileSystem = new MockFileSystem(volumeId, 'filesystem:' + volumeId);
-  fileSystem.entries['/'] = new MockDirectoryEntry(fileSystem, '');
+  fileSystem.entries['/'] = MockDirectoryEntry.create(fileSystem, '');
 
   let volumeInfo = new VolumeInfoImpl(
       VolumeManagerCommon.VolumeType.PROVIDED, volumeId, fileSystem,

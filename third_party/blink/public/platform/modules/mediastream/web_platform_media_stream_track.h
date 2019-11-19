@@ -14,19 +14,19 @@
 namespace blink {
 
 // WebPlatformMediaStreamTrack is a low-level object backing a
-// blink::WebMediaStreamTrack.
+// WebMediaStreamTrack.
 class BLINK_PLATFORM_EXPORT WebPlatformMediaStreamTrack {
  public:
   explicit WebPlatformMediaStreamTrack(bool is_local_track);
   virtual ~WebPlatformMediaStreamTrack();
 
   static WebPlatformMediaStreamTrack* GetTrack(
-      const blink::WebMediaStreamTrack& track);
+      const WebMediaStreamTrack& track);
 
   virtual void SetEnabled(bool enabled) = 0;
 
   virtual void SetContentHint(
-      blink::WebMediaStreamTrack::ContentHintType content_hint) = 0;
+      WebMediaStreamTrack::ContentHintType content_hint) = 0;
 
   // If |callback| is not null, it is invoked when the track has stopped.
   virtual void StopAndNotify(base::OnceClosure callback) = 0;
@@ -34,7 +34,7 @@ class BLINK_PLATFORM_EXPORT WebPlatformMediaStreamTrack {
   void Stop() { StopAndNotify(base::OnceClosure()); }
 
   // TODO(hta): Make method pure virtual when all tracks have the method.
-  virtual void GetSettings(blink::WebMediaStreamTrack::Settings& settings) {}
+  virtual void GetSettings(WebMediaStreamTrack::Settings& settings) {}
 
   bool is_local_track() const { return is_local_track_; }
 

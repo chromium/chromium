@@ -16,16 +16,13 @@
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 class ExtensionEnableFlowDelegate;
 
 namespace content {
 class WebContents;
-}
-
-namespace extensions {
-class ExtensionRegistry;
 }
 
 // ExtensionEnableFlow performs an UI flow to enable a disabled/terminated
@@ -96,11 +93,11 @@ class ExtensionEnableFlow : public content::NotificationObserver,
 
   // Parent web contents for ExtensionInstallPrompt that may be created during
   // the flow. Note this is mutually exclusive with |parent_window_| below.
-  content::WebContents* parent_contents_;
+  content::WebContents* parent_contents_ = nullptr;
 
   // Parent native window for ExtensionInstallPrompt. Note this is mutually
   // exclusive with |parent_contents_| above.
-  gfx::NativeWindow parent_window_;
+  gfx::NativeWindow parent_window_ = nullptr;
 
   // Called to acquire a parent window for the prompt. This is used for clients
   // who only want to create a window if it is required.
@@ -112,9 +109,9 @@ class ExtensionEnableFlow : public content::NotificationObserver,
   // Listen to extension load notification.
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
-  base::WeakPtrFactory<ExtensionEnableFlow> weak_ptr_factory_;
+  base::WeakPtrFactory<ExtensionEnableFlow> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionEnableFlow);
 };

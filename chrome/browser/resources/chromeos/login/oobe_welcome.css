@@ -2,7 +2,7 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-:root {
+:host {
   --oobe-dialog-list-item-border: 1px solid rgb(235,235,235); /* #EBEBEB */
   --oobe-a11y-dialog-list-item-border: 1px solid var(--google-grey-200);
 }

@@ -36,7 +36,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/device/screen_orientation/ScreenOrientationListener.java",
     ]
-    jni_package = "screen_orientation"
   }
 
   android_library("java") {

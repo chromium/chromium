@@ -28,21 +28,23 @@ namespace chromeos {
 SlowTraceSource::SlowTraceSource() {
 }
 
-std::string SlowTraceSource::GetSource() const {
+std::string SlowTraceSource::GetSource() {
   return chrome::kChromeUISlowTraceHost;
 }
 
 void SlowTraceSource::StartDataRequest(
-    const std::string& path,
-    const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
+    const GURL& url,
+    const content::WebContents::Getter& wc_getter,
     const content::URLDataSource::GotDataCallback& callback) {
   int trace_id = 0;
+  // TODO(crbug/1009127): Simplify usages of |path| since |url| is available.
+  const std::string path = content::URLDataSource::URLToRequestPath(url);
   size_t pos = path.find('#');
   TracingManager* manager = TracingManager::Get();
   if (!manager ||
       pos == std::string::npos ||
       !base::StringToInt(path.substr(pos + 1), &trace_id)) {
-    callback.Run(NULL);
+    callback.Run(nullptr);
     return;
   }
   manager->GetTraceData(trace_id,
@@ -51,7 +53,7 @@ void SlowTraceSource::StartDataRequest(
                                    callback));
 }
 
-std::string SlowTraceSource::GetMimeType(const std::string& path) const {
+std::string SlowTraceSource::GetMimeType(const std::string& path) {
   return "application/zip";
 }
 
@@ -63,7 +65,7 @@ void SlowTraceSource::OnGetTraceData(
   callback.Run(trace_data.get());
 }
 
-bool SlowTraceSource::AllowCaching() const {
+bool SlowTraceSource::AllowCaching() {
   // Should not be cached to reflect dynamically-generated contents that may
   // depend on current settings.
   return false;

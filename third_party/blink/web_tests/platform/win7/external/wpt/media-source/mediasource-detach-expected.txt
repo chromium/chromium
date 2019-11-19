@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Test media.load() before appending data will trigger MediaSource detaching from a media element.
+PASS Test media.load() after appending data will trigger MediaSource detaching from a media element.
+Harness: the test ran to completion.
+

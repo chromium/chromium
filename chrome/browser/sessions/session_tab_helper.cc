@@ -5,14 +5,17 @@
 #include "chrome/browser/sessions/session_tab_helper.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sessions/session_service.h"
-#include "chrome/browser/sessions/session_service_factory.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension_messages.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+#include "chrome/browser/sessions/session_service.h"
+#include "chrome/browser/sessions/session_service_factory.h"
 #endif
 
 SessionTabHelper::SessionTabHelper(content::WebContents* contents)

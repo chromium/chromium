@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Property scrollbar-color has initial value auto assert_true: scrollbar-color doesn't seem to be supported in the computed style expected true got false
+FAIL Property scrollbar-color inherits assert_true: scrollbar-color doesn't seem to be supported in the computed style expected true got false
+FAIL Property scrollbar-width has initial value auto assert_true: scrollbar-width doesn't seem to be supported in the computed style expected true got false
+FAIL Property scrollbar-width does not inherit assert_true: expected true got false
+Harness: the test ran to completion.
+

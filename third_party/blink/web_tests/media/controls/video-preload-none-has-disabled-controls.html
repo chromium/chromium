@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<title>Test that videos have disabled mute/fullscreen buttons before preload.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video controls width=400 preload=none src="../content/60_sec_video.webm"></video>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+  const fullscreenBtn = fullscreenButton(video);
+  const muteBtn = muteButton(video);
+
+  window.onload = t.step_func(() => {
+    // Test that the controls are visible and look disabled.
+    assert_true(isControlVisible(fullscreenBtn));
+    assert_true(fullscreenBtn.disabled);
+    assert_true(isControlVisible(muteBtn));
+    assert_true(muteBtn.disabled);
+
+    // Test that the fullscreen button is actually disabled.
+    video.addEventListener("webkitfullscreenchange", t.unreached_func());
+    singleTapOnControl(fullscreenBtn, t.step_func(() => {
+      // Test that the mute button is actually disabled.
+      assert_false(video.muted);
+      singleTapOnControl(muteBtn, t.step_func_done(() => {
+        assert_false(video.muted);
+      }));
+    }));
+  });
+});
+</script>
+</html>

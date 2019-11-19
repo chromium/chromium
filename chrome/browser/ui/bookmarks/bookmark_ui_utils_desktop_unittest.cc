@@ -5,10 +5,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
@@ -18,7 +19,7 @@ using bookmarks::BookmarkNode;
 namespace {
 
 class BookmarkUIUtilsTest : public testing::Test {
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(BookmarkUIUtilsTest, HasBookmarkURLs) {
@@ -53,7 +54,7 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLs) {
   // folder to create a two level hierarchy.
 
   // But first we have to remove the URL from |folder1|.
-  model->Remove(folder1->GetChild(0));
+  model->Remove(folder1->children().front().get());
 
   const BookmarkNode* subfolder1 =
       model->AddFolder(folder1, 0, ASCIIToUTF16("Subfolder1"));
@@ -71,10 +72,9 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLsAllowedInIncognitoMode) {
   std::vector<const BookmarkNode*> nodes;
 
   // This tests that |nodes| contains an disabled-in-incognito URL.
-  const BookmarkNode* page1 = model->AddURL(model->bookmark_bar_node(),
-                                            0,
-                                            ASCIIToUTF16("BookmarkManager"),
-                                            GURL("chrome://bookmarks"));
+  const BookmarkNode* page1 = model->AddURL(
+      model->bookmark_bar_node(), 0, ASCIIToUTF16("BookmarkManager"),
+      GURL(chrome::kChromeUIBookmarksURL));
   nodes.push_back(page1);
   EXPECT_FALSE(chrome::HasBookmarkURLsAllowedInIncognitoMode(nodes, &profile));
   nodes.clear();
@@ -99,7 +99,8 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLsAllowedInIncognitoMode) {
   // This verifies if HasBookmarkURLsAllowedInIncognitoMode iterates through
   // immediate children.
   // Add disabled-in-incognito url.
-  model->AddURL(folder1, 0, ASCIIToUTF16("Foo"), GURL("chrome://bookmarks"));
+  model->AddURL(folder1, 0, ASCIIToUTF16("Foo"),
+                GURL(chrome::kChromeUIBookmarksURL));
   EXPECT_FALSE(chrome::HasBookmarkURLsAllowedInIncognitoMode(nodes, &profile));
   // Add normal url.
   model->AddURL(folder1, 0, ASCIIToUTF16("Foo"), GURL("http://randomsite.com"));
@@ -112,7 +113,7 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLsAllowedInIncognitoMode) {
   // folder to create a two level hierarchy.
 
   // But first we have to remove the URL from |folder1|.
-  model->Remove(folder1->GetChild(0));
+  model->Remove(folder1->children().front().get());
 
   const BookmarkNode* subfolder1 =
       model->AddFolder(folder1, 0, ASCIIToUTF16("Subfolder1"));

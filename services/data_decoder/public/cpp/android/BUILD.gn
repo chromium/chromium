@@ -9,14 +9,15 @@ _jni_sources =
 
 generate_jni("safe_json_jni_headers") {
   sources = _jni_sources
-  jni_package = "data_decoder"
 }
 
 if (current_toolchain == default_toolchain) {
   android_library("safe_json_java") {
     deps = [
       "//base:base_java",
+      "//base:jni_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
     java_files = [] + _jni_sources
   }
 }

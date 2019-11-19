@@ -4,6 +4,8 @@
 
 #include "components/open_from_clipboard/clipboard_recent_content_generic.h"
 
+#include <string>
+
 #include "base/strings/string_util.h"
 #include "ui/base/clipboard/clipboard.h"
 
@@ -14,8 +16,7 @@ const char* kAuthorizedSchemes[] = {
     // TODO(mpearson): add support for chrome:// URLs.  Right now the scheme
     // for that lives in content and is accessible via
     // GetEmbedderRepresentationOfAboutScheme() or content::kChromeUIScheme
-    // TODO(mpearson): when adding desktop support, add kFileScheme, kFtpScheme,
-    // and kGopherScheme.
+    // TODO(mpearson): when adding desktop support, add kFileScheme, kFtpScheme.
 };
 
 }  // namespace
@@ -30,7 +31,7 @@ ClipboardRecentContentGeneric::GetRecentURLFromClipboard() {
   // Get and clean up the clipboard before processing.
   std::string gurl_string;
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  clipboard->ReadAsciiText(ui::CLIPBOARD_TYPE_COPY_PASTE, &gurl_string);
+  clipboard->ReadAsciiText(ui::ClipboardBuffer::kCopyPaste, &gurl_string);
   base::TrimWhitespaceASCII(gurl_string, base::TrimPositions::TRIM_ALL,
                             &gurl_string);
 
@@ -48,7 +49,7 @@ ClipboardRecentContentGeneric::GetRecentURLFromClipboard() {
     // Fall back to unicode / UTF16, as some URLs may use international domain
     // names, not punycode.
     base::string16 gurl_string16;
-    clipboard->ReadText(ui::CLIPBOARD_TYPE_COPY_PASTE, &gurl_string16);
+    clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, &gurl_string16);
     base::TrimWhitespace(gurl_string16, base::TrimPositions::TRIM_ALL,
                          &gurl_string16);
     if (gurl_string16.find_first_of(base::kWhitespaceUTF16) !=
@@ -65,7 +66,19 @@ ClipboardRecentContentGeneric::GetRecentURLFromClipboard() {
 
 base::Optional<base::string16>
 ClipboardRecentContentGeneric::GetRecentTextFromClipboard() {
-  return base::nullopt;
+  if (GetClipboardContentAge() > MaximumAgeOfClipboard())
+    return base::nullopt;
+
+  base::string16 text_from_clipboard;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, &text_from_clipboard);
+  base::TrimWhitespace(text_from_clipboard, base::TrimPositions::TRIM_ALL,
+                       &text_from_clipboard);
+  if (text_from_clipboard.empty()) {
+    return base::nullopt;
+  }
+
+  return text_from_clipboard;
 }
 
 base::Optional<gfx::Image>
@@ -89,6 +102,10 @@ void ClipboardRecentContentGeneric::SuppressClipboardContent() {
   // omnibox list.  Do this by pretending the current clipboard is ancient,
   // not recent.
   ui::Clipboard::GetForCurrentThread()->ClearLastModifiedTime();
+}
+
+void ClipboardRecentContentGeneric::ClearClipboardContent() {
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
 }
 
 // static

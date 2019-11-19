@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/loader/resource/xsl_style_sheet_resource.h"
 
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"

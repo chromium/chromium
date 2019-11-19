@@ -4,12 +4,14 @@
 
 #include "third_party/blink/renderer/core/paint/view_painter.h"
 
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 #include "third_party/blink/renderer/core/paint/block_painter.h"
+#include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
@@ -35,29 +37,37 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   if (layout_view_.StyleRef().Visibility() != EVisibility::kVisible)
     return;
 
-  bool has_touch_action_rect =
-      layout_view_.HasEffectiveWhitelistedTouchAction();
-  if (!layout_view_.HasBoxDecorationBackground() && !has_touch_action_rect)
+  bool has_touch_action_rect = layout_view_.HasEffectiveAllowedTouchAction();
+  bool paints_scroll_hit_test =
+      layout_view_.GetScrollableArea() &&
+      layout_view_.GetScrollableArea()->ScrollsOverflow();
+  if (!layout_view_.HasBoxDecorationBackground() && !has_touch_action_rect &&
+      !paints_scroll_hit_test)
     return;
 
   // The background rect always includes at least the visible content size.
-  IntRect background_rect(PixelSnappedIntRect(layout_view_.BackgroundRect()));
+  PhysicalRect background_rect(layout_view_.BackgroundRect());
 
-  // When printing, paint the entire unclipped scrolling content area.
-  if (paint_info.IsPrinting())
+  // When printing or painting a preview, paint the entire unclipped scrolling
+  // content area.
+  if (paint_info.IsPrinting() ||
+      !layout_view_.GetFrameView()->GetFrame().ClipsContent()) {
     background_rect.Unite(layout_view_.DocumentRect());
+  }
 
   const DisplayItemClient* background_client = &layout_view_;
 
   base::Optional<ScopedPaintChunkProperties> scoped_scroll_property;
-  if (BoxModelObjectPainter::IsPaintingScrollingBackground(&layout_view_,
-                                                           paint_info)) {
+  bool painting_scrolling_background =
+      BoxDecorationData::IsPaintingScrollingBackground(paint_info,
+                                                       layout_view_);
+  if (painting_scrolling_background) {
     // Layout overflow, combined with the visible content size.
     auto document_rect = layout_view_.DocumentRect();
     // DocumentRect is relative to ScrollOrigin. Add ScrollOrigin to let it be
     // in the space of ContentsProperties(). See ScrollTranslation in
     // object_paint_properties.h for details.
-    document_rect.MoveBy(layout_view_.ScrollOrigin());
+    document_rect.Move(PhysicalOffset(layout_view_.ScrollOrigin()));
     background_rect.Unite(document_rect);
     background_client = &layout_view_.GetScrollableArea()
                              ->GetScrollingBackgroundDisplayItemClient();
@@ -68,13 +78,40 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   }
 
   if (layout_view_.HasBoxDecorationBackground()) {
-    PaintBoxDecorationBackgroundInternal(paint_info, background_rect,
-                                         *background_client);
+    PaintBoxDecorationBackgroundInternal(
+        paint_info, PixelSnappedIntRect(background_rect), *background_client);
   }
   if (has_touch_action_rect) {
     BoxPainter(layout_view_)
-        .RecordHitTestData(paint_info, LayoutRect(background_rect),
+        .RecordHitTestData(paint_info,
+                           PhysicalRect(PixelSnappedIntRect(background_rect)),
                            *background_client);
+  }
+
+  bool needs_scroll_hit_test = true;
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    // Pre-CompositeAfterPaint, there is no need to emit scroll hit test
+    // display items for composited scrollers because these display items are
+    // only used to create non-fast scrollable regions for non-composited
+    // scrollers. With CompositeAfterPaint, we always paint the scroll hit
+    // test display items but ignore the non-fast region if the scroll was
+    // composited in PaintArtifactCompositor::UpdateNonFastScrollableRegions.
+    if (layout_view_.HasLayer() &&
+        layout_view_.Layer()->GetCompositedLayerMapping() &&
+        layout_view_.Layer()
+            ->GetCompositedLayerMapping()
+            ->HasScrollingLayer()) {
+      needs_scroll_hit_test = false;
+    }
+  }
+
+  // Record the scroll hit test after the non-scrolling background so
+  // background squashing is not affected. Hit test order would be equivalent
+  // if this were immediately before the non-scrolling background.
+  if (paints_scroll_hit_test && !painting_scrolling_background &&
+      needs_scroll_hit_test) {
+    BoxPainter(layout_view_)
+        .RecordScrollHitTestData(paint_info, *background_client);
   }
 }
 
@@ -147,16 +184,16 @@ void ViewPainter::PaintBoxDecorationBackgroundInternal(
   if (!root_object || !root_object->IsBox()) {
     background_renderable = false;
   } else if (root_object->HasLayer()) {
-    if (BoxModelObjectPainter::IsPaintingScrollingBackground(&layout_view_,
-                                                             paint_info)) {
+    if (BoxDecorationData::IsPaintingScrollingBackground(paint_info,
+                                                         layout_view_)) {
       transform.Translate(layout_view_.ScrolledContentOffset().Width(),
                           layout_view_.ScrolledContentOffset().Height());
     }
     const PaintLayer& root_layer =
         *ToLayoutBoxModelObject(root_object)->Layer();
-    LayoutPoint offset;
+    PhysicalOffset offset;
     root_layer.ConvertToLayerCoords(nullptr, offset);
-    transform.Translate(offset.X(), offset.Y());
+    transform.Translate(offset.left, offset.top);
     transform.Multiply(
         root_layer.RenderableTransform(paint_info.GetGlobalPaintFlags()));
 
@@ -237,23 +274,20 @@ void ViewPainter::PaintBoxDecorationBackgroundInternal(
 
   BackgroundImageGeometry geometry(layout_view_);
   BoxModelObjectPainter box_model_painter(layout_view_);
-  for (auto it = reversed_paint_list.rbegin(); it != reversed_paint_list.rend();
-       ++it) {
-    DCHECK((*it)->Clip() == EFillBox::kBorder);
+  for (const auto* fill_layer : base::Reversed(reversed_paint_list)) {
+    DCHECK(fill_layer->Clip() == EFillBox::kBorder);
 
-    bool should_paint_in_viewport_space =
-        (*it)->Attachment() == EFillAttachment::kFixed;
-    if (should_paint_in_viewport_space) {
-      box_model_painter.PaintFillLayer(paint_info, Color(), **it,
-                                       LayoutRect(background_rect),
+    if (BackgroundImageGeometry::ShouldUseFixedAttachment(*fill_layer)) {
+      box_model_painter.PaintFillLayer(paint_info, Color(), *fill_layer,
+                                       PhysicalRect(background_rect),
                                        kBackgroundBleedNone, geometry);
     } else {
       context.Save();
       // TODO(trchen): We should be able to handle 3D-transformed root
       // background with slimming paint by using transform display items.
       context.ConcatCTM(transform.ToAffineTransform());
-      box_model_painter.PaintFillLayer(paint_info, Color(), **it,
-                                       LayoutRect(paint_rect),
+      box_model_painter.PaintFillLayer(paint_info, Color(), *fill_layer,
+                                       PhysicalRect(paint_rect),
                                        kBackgroundBleedNone, geometry);
       context.Restore();
     }

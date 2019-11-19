@@ -30,8 +30,6 @@ TEST(ServiceProcessControlMac, TestJobSubmitRemove) {
   options.label = label;
   options.executable_path = "/bin/sh";
   options.arguments = {"sh", "-c", "sleep 10; echo TestJobSubmitRemove"};
-  options.socket_name = "";
-  options.socket_key = "";
   options.run_at_load = true;
   options.auto_launch = false;
   ASSERT_TRUE(mac::services::SubmitJob(options));

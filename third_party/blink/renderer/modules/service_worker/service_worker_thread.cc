@@ -37,20 +37,24 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope_proxy.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_installed_scripts_manager.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 
 namespace blink {
 
 ServiceWorkerThread::ServiceWorkerThread(
-    ServiceWorkerGlobalScopeProxy* global_scope_proxy,
+    std::unique_ptr<ServiceWorkerGlobalScopeProxy> global_scope_proxy,
     std::unique_ptr<ServiceWorkerInstalledScriptsManager>
         installed_scripts_manager,
-    mojom::blink::CacheStoragePtrInfo cache_storage_info)
-    : WorkerThread(*global_scope_proxy),
-      global_scope_proxy_(global_scope_proxy),
-      worker_backing_thread_(
-          WorkerBackingThread::Create(ThreadCreationParams(GetThreadType()))),
+    mojo::PendingRemote<mojom::blink::CacheStorage> cache_storage_remote,
+    scoped_refptr<base::SingleThreadTaskRunner>
+        parent_thread_default_task_runner)
+    : WorkerThread(*global_scope_proxy,
+                   std::move(parent_thread_default_task_runner)),
+      global_scope_proxy_(std::move(global_scope_proxy)),
+      worker_backing_thread_(std::make_unique<WorkerBackingThread>(
+          ThreadCreationParams(GetThreadType()))),
       installed_scripts_manager_(std::move(installed_scripts_manager)),
-      cache_storage_info_(std::move(cache_storage_info)) {}
+      cache_storage_remote_(std::move(cache_storage_remote)) {}
 
 ServiceWorkerThread::~ServiceWorkerThread() {
   global_scope_proxy_->Detach();
@@ -60,10 +64,6 @@ void ServiceWorkerThread::ClearWorkerBackingThread() {
   worker_backing_thread_ = nullptr;
 }
 
-InstalledScriptsManager* ServiceWorkerThread::GetInstalledScriptsManager() {
-  return installed_scripts_manager_.get();
-}
-
 void ServiceWorkerThread::TerminateForTesting() {
   global_scope_proxy_->TerminateWorkerContext();
   WorkerThread::TerminateForTesting();
@@ -71,9 +71,9 @@ void ServiceWorkerThread::TerminateForTesting() {
 
 WorkerOrWorkletGlobalScope* ServiceWorkerThread::CreateWorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params) {
-  return ServiceWorkerGlobalScope::Create(this, std::move(creation_params),
-                                          std::move(cache_storage_info_),
-                                          time_origin_);
+  return ServiceWorkerGlobalScope::Create(
+      this, std::move(creation_params), std::move(installed_scripts_manager_),
+      std::move(cache_storage_remote_), time_origin_);
 }
 
 }  // namespace blink

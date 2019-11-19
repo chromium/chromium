@@ -57,16 +57,6 @@ void StyleRuleCSSStyleDeclaration::Reattach(
   property_set_ = &property_set;
 }
 
-PropertyRegistry* StyleRuleCSSStyleDeclaration::GetPropertyRegistry() const {
-  CSSStyleSheet* sheet = parent_rule_->parentStyleSheet();
-  if (!sheet)
-    return nullptr;
-  Node* node = sheet->ownerNode();
-  if (!node)
-    return nullptr;
-  return node->GetDocument().GetPropertyRegistry();
-}
-
 void StyleRuleCSSStyleDeclaration::Trace(blink::Visitor* visitor) {
   visitor->Trace(parent_rule_);
   PropertySetCSSStyleDeclaration::Trace(visitor);

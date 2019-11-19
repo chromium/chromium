@@ -156,7 +156,7 @@ void TestUkmRecorder::ExpectEntryMetric(const mojom::UkmEntry* entry,
   EXPECT_EQ(expected_value, *metric) << " for metric:" << metric_name;
 }
 
-TestAutoSetUkmRecorder::TestAutoSetUkmRecorder() : self_ptr_factory_(this) {
+TestAutoSetUkmRecorder::TestAutoSetUkmRecorder() {
   DelegatingUkmRecorder::Get()->AddDelegate(self_ptr_factory_.GetWeakPtr());
 }
 

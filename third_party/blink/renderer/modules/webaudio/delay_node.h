@@ -65,7 +65,12 @@ class DelayNode final : public AudioNode {
   DelayNode(BaseAudioContext&, double max_delay_time);
 
   void Trace(blink::Visitor*) override;
+
   AudioParam* delayTime();
+
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
 
  private:
   Member<AudioParam> delay_time_;

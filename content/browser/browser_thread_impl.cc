@@ -21,6 +21,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/scheduler/browser_task_executor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/content_browser_client.h"
 
@@ -42,11 +43,11 @@ enum BrowserThreadState {
 
 struct BrowserThreadGlobals {
   BrowserThreadGlobals() {
-    // A few unit tests which do not use a TestBrowserThreadBundle still invoke
+    // A few unit tests which do not use a BrowserTaskEnvironment still invoke
     // code that reaches into CurrentlyOn()/IsThreadInitialized(). This can
     // result in instantiating BrowserThreadGlobals off the main thread.
     // |main_thread_checker_| being bound incorrectly would then result in a
-    // flake in the next test that instantiates a TestBrowserThreadBundle in the
+    // flake in the next test that instantiates a BrowserTaskEnvironment in the
     // same process. Detaching here postpones binding |main_thread_checker_| to
     // the first invocation of BrowserThreadImpl::BrowserThreadImpl() and works
     // around this issue.
@@ -112,7 +113,7 @@ BrowserThreadImpl::BrowserThreadImpl(
     // if the UI thread is running a MessageLoopForIO.
     if (!base::MessageLoopCurrentForIO::IsSet()) {
       file_descriptor_watcher_.emplace(
-          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}));
+          base::CreateSingleThreadTaskRunner({BrowserThread::IO}));
     }
     base::FileDescriptorWatcher::AssertAllowed();
 #endif
@@ -159,15 +160,6 @@ const char* BrowserThreadImpl::GetThreadName(BrowserThread::ID thread) {
   if (thread == BrowserThread::UI)
     return "Chrome_UIThread";
   return "Unknown Thread";
-}
-
-// static
-void BrowserThread::PostAfterStartupTask(
-    const base::Location& from_here,
-    const scoped_refptr<base::TaskRunner>& task_runner,
-    base::OnceClosure task) {
-  GetContentClient()->browser()->PostAfterStartupTask(from_here, task_runner,
-                                                      std::move(task));
 }
 
 // static
@@ -233,25 +225,23 @@ scoped_refptr<base::SingleThreadTaskRunner>
 BrowserThread::GetTaskRunnerForThread(ID identifier) {
   DCHECK_GE(identifier, 0);
   DCHECK_LT(identifier, ID_COUNT);
+  return base::CreateSingleThreadTaskRunner({identifier});
+}
 
-  BrowserThreadGlobals& globals = GetBrowserThreadGlobals();
+// static
+void BrowserThread::RunAllPendingTasksOnThreadForTesting(ID identifier) {
+  BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(identifier);
+}
 
-  // Tasks should always be posted while the BrowserThread is in a RUNNING or
-  // SHUTDOWN state (will return false if SHUTDOWN).
-  //
-  // Posting tasks before BrowserThreads are initialized is incorrect as it
-  // would silently no-op. If you need to support posting early, gate it on
-  // BrowserThread::IsThreadInitialized(). If you hit this check in unittests,
-  // you most likely posted a task outside the scope of a
-  // TestBrowserThreadBundle (which also completely resets the state after
-  // shutdown in ~TestBrowserThreadBundle(), ref. ResetGlobalsForTesting(),
-  // making sure TestBrowserThreadBundle is the first member of your test
-  // fixture and thus outlives everything is usually the right solution).
-  DCHECK_GE(base::subtle::NoBarrier_Load(&globals.states[identifier]),
-            BrowserThreadState::RUNNING);
-  DCHECK(globals.task_runners[identifier]);
-
-  return globals.task_runners[identifier];
+// static
+void BrowserThread::PostBestEffortTask(
+    const base::Location& from_here,
+    scoped_refptr<base::TaskRunner> task_runner,
+    base::OnceClosure task) {
+  base::PostTask(
+      FROM_HERE, {content::BrowserThread::IO, base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
+                     std::move(task_runner), from_here, std::move(task)));
 }
 
 }  // namespace content

@@ -15,7 +15,7 @@ js_library("settings_main") {
     "..:page_visibility",
     "..:route",
     "..:search_settings",
-    "../about_page:about_page",
+    "../about_page",
     "../basic_page:basic_page",
     "../settings_page:main_page_behavior",
     "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",

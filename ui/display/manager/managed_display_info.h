@@ -153,17 +153,12 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   Display::TouchSupport touch_support() const { return touch_support_; }
 
   // Gets/Sets the device scale factor of the display.
+  // TODO(oshima): Rename this to |default_device_scale_factor|.
   float device_scale_factor() const { return device_scale_factor_; }
   void set_device_scale_factor(float scale) { device_scale_factor_ = scale; }
 
   float zoom_factor() const { return zoom_factor_; }
   void set_zoom_factor(float zoom_factor) { zoom_factor_ = zoom_factor; }
-  void set_is_zoom_factor_from_ui_scale(bool is_zoom_factor_from_ui_scale) {
-    is_zoom_factor_from_ui_scale_ = is_zoom_factor_from_ui_scale;
-  }
-  bool is_zoom_factor_from_ui_scale() const {
-    return is_zoom_factor_from_ui_scale_;
-  }
 
   float refresh_rate() const { return refresh_rate_; }
   void set_refresh_rate(float refresh_rate) { refresh_rate_ = refresh_rate; }
@@ -174,12 +169,22 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   float device_dpi() const { return device_dpi_; }
   void set_device_dpi(float dpi) { device_dpi_ = dpi; }
 
+  PanelOrientation panel_orientation() const { return panel_orientation_; }
+  void set_panel_orientation(PanelOrientation panel_orientation) {
+    panel_orientation_ = panel_orientation;
+  }
+
   // The native bounds for the display. The size of this can be
   // different from the |size_in_pixel| when overscan insets are set.
   const gfx::Rect& bounds_in_native() const { return bounds_in_native_; }
 
-  // The size for the display in pixels.
+  // The size for the display in pixels with the rotation taking into
+  // account.
   const gfx::Size& size_in_pixel() const { return size_in_pixel_; }
+
+  // The original size for the display in pixel, without rotation, but
+  // |panel_orientation_| taking into account.
+  gfx::Size GetSizeInPixelWithPanelOrientation() const;
 
   // The overscan insets for the display in DIP.
   const gfx::Insets& overscan_insets_in_dip() const {
@@ -192,6 +197,14 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
 
   // Returns the currently active rotation for this display.
   Display::Rotation GetActiveRotation() const;
+
+  // Returns the currently active rotation for this display with the panel
+  // orientation adjustment applied.
+  Display::Rotation GetLogicalActiveRotation() const;
+
+  // Returns the natural orientation rotation with the panel orientation
+  // adjustment applied.
+  Display::Rotation GetNaturalOrientationRotation() const;
 
   // Returns the source which set the active rotation for this display.
   Display::RotationSource active_rotation_source() const {
@@ -206,11 +219,8 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   float GetDensityRatio() const;
 
   // Returns the ui scale and device scale factor actually used to create
-  // display that chrome sees. This can be different from one obtained
-  // from dispaly or one specified by a user in following situation.
-  // 1) DSF is 2.0f and UI scale is 2.0f. (Returns 1.0f and 1.0f respectiely)
-  // 2) A user specified 0.8x on the device that has 1.25 DSF. 1.25 DSF device
-  //    uses 1.0f DFS unless 0.8x UI scaling is specified.
+  // display that chrome sees. This is |device_scale_factor| x |zoom_factor_|.
+  // TODO(oshima): Rename to |GetDeviceScaleFactor()|.
   float GetEffectiveDeviceScaleFactor() const;
 
   // Copy the display info except for fields that can be modified by a user
@@ -237,6 +247,11 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   void set_native(bool native) { native_ = native; }
   bool native() const { return native_; }
 
+  void set_from_native_platform(bool from_native_platform) {
+    from_native_platform_ = from_native_platform;
+  }
+  bool from_native_platform() const { return from_native_platform_; }
+
   const ManagedDisplayModeList& display_modes() const { return display_modes_; }
   // Sets the display mode list. The mode list will be sorted for the
   // display.
@@ -249,6 +264,11 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   const gfx::ColorSpace& color_space() const { return color_space_; }
   void set_color_space(const gfx::ColorSpace& color_space) {
     color_space_ = color_space;
+  }
+
+  uint32_t bits_per_channel() const { return bits_per_channel_; }
+  void set_bits_per_channel(uint32_t bits_per_channel) {
+    bits_per_channel_ = bits_per_channel;
   }
 
   bool is_aspect_preserving_scaling() const {
@@ -283,6 +303,10 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   std::string ToFullString() const;
 
  private:
+  // Return the rotation with the panel orientation applied.
+  Display::Rotation GetRotationWithPanelOrientation(
+      Display::Rotation rotation) const;
+
   int64_t id_;
   std::string name_;
   std::string manufacturer_id_;
@@ -304,9 +328,13 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   // This specifies the device's DPI.
   float device_dpi_;
 
+  // Orientation of the panel relative to natural device orientation.
+  display::PanelOrientation panel_orientation_;
+
   // The size of the display in use. The size can be different from the size
   // of |bounds_in_native_| if the display has overscan insets and/or rotation.
   gfx::Size size_in_pixel_;
+  // TODO(oshima): Change this to store pixel.
   gfx::Insets overscan_insets_in_dip_;
 
   // The zoom level currently applied to the display. This value is appended
@@ -321,12 +349,10 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   // and even lines are scanned alternately in two interwoven rasterized lines).
   bool is_interlaced_;
 
-  // True if the |zoom_factor_| currently set is a port of the ui-scale. This is
-  // needed to correctly compute zoom values and effective device scale factor
-  // for FHD devices with 1.25 device scale factor.
-  bool is_zoom_factor_from_ui_scale_;
-
   // True if this comes from native platform (DisplayChangeObserver).
+  bool from_native_platform_;
+
+  // True if current mode is native mode of the display.
   bool native_;
 
   // True if the display is configured to preserve the aspect ratio. When the
@@ -347,6 +373,9 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   // Colorimetry information of the Display (if IsValid()), including e.g.
   // transfer and primaries information, retrieved from its EDID.
   gfx::ColorSpace color_space_;
+  // Bit depth of every channel, extracted from its EDID, usually 8, but can be
+  // 0 if EDID says so or if the EDID (retrieval) was faulty.
+  uint32_t bits_per_channel_;
 
   // If you add a new member, you need to update Copy().
 };

@@ -53,8 +53,15 @@ class POLICY_EXPORT ProxyPolicyProvider
   // ConfigurationPolicyProvider::Observer:
   void OnUpdatePolicy(ConfigurationPolicyProvider* provider) override;
 
+  // When set to true, this ProxyPolicyProvider will ignore subsequent policy
+  // updates.
+  void SetBlockPolicyUpdatesForTesting(bool block_policy_updates_for_testing) {
+    block_policy_updates_for_testing_ = block_policy_updates_for_testing;
+  }
+
  private:
   ConfigurationPolicyProvider* delegate_;
+  bool block_policy_updates_for_testing_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ProxyPolicyProvider);
 };

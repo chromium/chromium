@@ -13,13 +13,6 @@ extern const int kSearchFieldBackgroundColor;
 
 extern const CGFloat kHintTextScale;
 
-// Returns the spacing between tiles, based on the device.
-CGFloat horizontalSpacingBetweenTiles();
-CGFloat verticalSpacingBetweenTiles();
-
-// Returns x-offset in order to have the tiles centered in a view with a
-// |width|.
-CGFloat centeredTilesMarginForWidth(CGFloat width);
 // Returns the proper height for the doodle. |logoIsShowing| refers to the
 // Google logo or the doodle.
 CGFloat doodleHeight(BOOL logoIsShowing);

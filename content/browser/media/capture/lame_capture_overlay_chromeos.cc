@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "base/bind.h"
+#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "content/browser/media/capture/lame_window_capturer_chromeos.h"
 #include "media/base/video_frame.h"
@@ -22,10 +23,10 @@ LameCaptureOverlayChromeOS::Owner::~Owner() = default;
 
 LameCaptureOverlayChromeOS::LameCaptureOverlayChromeOS(
     Owner* owner,
-    viz::mojom::FrameSinkVideoCaptureOverlayRequest request)
-    : binding_(this, std::move(request)) {
+    mojo::PendingReceiver<viz::mojom::FrameSinkVideoCaptureOverlay> receiver)
+    : receiver_(this, std::move(receiver)) {
   if (owner) {
-    binding_.set_connection_error_handler(base::BindOnce(
+    receiver_.set_disconnect_handler(base::BindOnce(
         &Owner::OnOverlayConnectionLost, base::Unretained(owner), this));
   }
 }
@@ -81,12 +82,9 @@ gfx::Rect ToAbsoluteBoundsForI420(const gfx::RectF& relative,
                    std::max(0, snapped_bottom - snapped_top));
 }
 
-inline int clip_byte(int x) {
-  return std::max(0, std::min(x, 255));
-}
-
 inline int alpha_blend(int alpha, int src, int dst) {
-  return (src * alpha + dst * (255 - alpha)) / 255;
+  alpha = (src * alpha + dst * (255 - alpha)) / 255;
+  return base::ClampToRange(alpha, 0, 255);
 }
 
 }  // namespace
@@ -155,7 +153,7 @@ LameCaptureOverlayChromeOS::MakeRenderer(const gfx::Rect& region_in_frame) {
             const int color_b = SkColorGetB(color);
             const int color_y =
                 ((color_r * 66 + color_g * 129 + color_b * 25 + 128) >> 8) + 16;
-            yplane[x] = clip_byte(alpha_blend(alpha, color_y, yplane[x]));
+            yplane[x] = alpha_blend(alpha, color_y, yplane[x]);
 
             // Only sample U and V at even coordinates.
             if ((x % 2 == 0) && (y % 2 == 0)) {
@@ -165,10 +163,8 @@ LameCaptureOverlayChromeOS::MakeRenderer(const gfx::Rect& region_in_frame) {
               const int color_v =
                   ((color_r * 112 + color_g * -94 + color_b * -18 + 128) >> 8) +
                   128;
-              uplane[x / 2] =
-                  clip_byte(alpha_blend(alpha, color_u, uplane[x / 2]));
-              vplane[x / 2] =
-                  clip_byte(alpha_blend(alpha, color_v, vplane[x / 2]));
+              uplane[x / 2] = alpha_blend(alpha, color_u, uplane[x / 2]);
+              vplane[x / 2] = alpha_blend(alpha, color_v, vplane[x / 2]);
             }
           }
         }

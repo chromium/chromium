@@ -7,32 +7,32 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/app_banner/before_install_prompt_event_init.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
 BeforeInstallPromptEvent::BeforeInstallPromptEvent(
     const AtomicString& name,
     LocalFrame& frame,
-    mojom::blink::AppBannerServicePtr service_ptr,
-    mojom::blink::AppBannerEventRequest event_request,
-    const Vector<String>& platforms,
-    bool require_gesture)
+    mojo::PendingRemote<mojom::blink::AppBannerService> service_remote,
+    mojo::PendingReceiver<mojom::blink::AppBannerEvent> event_receiver,
+    const Vector<String>& platforms)
     : Event(name, Bubbles::kNo, Cancelable::kYes),
       ContextClient(&frame),
-      banner_service_(std::move(service_ptr)),
-      binding_(this,
-               std::move(event_request),
-               frame.GetTaskRunner(TaskType::kApplicationLifeCycle)),
+      banner_service_remote_(std::move(service_remote)),
+      receiver_(this,
+                std::move(event_receiver),
+                frame.GetTaskRunner(TaskType::kApplicationLifeCycle)),
       platforms_(platforms),
       user_choice_(MakeGarbageCollected<UserChoiceProperty>(
           frame.GetDocument(),
           this,
-          UserChoiceProperty::kUserChoice)),
-      require_gesture_(require_gesture) {
-  DCHECK(banner_service_);
-  DCHECK(binding_.is_bound());
+          UserChoiceProperty::kUserChoice)) {
+  DCHECK(banner_service_remote_);
+  DCHECK(receiver_.is_bound());
   UseCounter::Count(frame.GetDocument(), WebFeature::kBeforeInstallPromptEvent);
 }
 
@@ -40,10 +40,7 @@ BeforeInstallPromptEvent::BeforeInstallPromptEvent(
     ExecutionContext* execution_context,
     const AtomicString& name,
     const BeforeInstallPromptEventInit* init)
-    : Event(name, init),
-      ContextClient(execution_context),
-      binding_(this),
-      require_gesture_(true) {
+    : Event(name, init), ContextClient(execution_context) {
   if (init->hasPlatforms())
     platforms_ = init->platforms();
 }
@@ -51,8 +48,8 @@ BeforeInstallPromptEvent::BeforeInstallPromptEvent(
 BeforeInstallPromptEvent::~BeforeInstallPromptEvent() = default;
 
 void BeforeInstallPromptEvent::Dispose() {
-  banner_service_.reset();
-  binding_.Close();
+  banner_service_remote_.reset();
+  receiver_.reset();
 }
 
 Vector<String> BeforeInstallPromptEvent::platforms() const {
@@ -64,39 +61,39 @@ ScriptPromise BeforeInstallPromptEvent::userChoice(ScriptState* script_state) {
                     WebFeature::kBeforeInstallPromptEventUserChoice);
   // |m_binding| must be bound to allow the AppBannerService to resolve the
   // userChoice promise.
-  if (user_choice_ && binding_.is_bound())
+  if (user_choice_ && receiver_.is_bound())
     return user_choice_->Promise(script_state->World());
   return ScriptPromise::RejectWithDOMException(
-      script_state,
-      DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                           "userChoice cannot be accessed on this event."));
+      script_state, MakeGarbageCollected<DOMException>(
+                        DOMExceptionCode::kInvalidStateError,
+                        "userChoice cannot be accessed on this event."));
 }
 
 ScriptPromise BeforeInstallPromptEvent::prompt(ScriptState* script_state) {
   // |m_bannerService| must be bound to allow us to inform the AppBannerService
   // to display the banner now.
-  if (!banner_service_.is_bound()) {
+  if (!banner_service_remote_.is_bound()) {
     return ScriptPromise::RejectWithDOMException(
-        script_state,
-        DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                             "The prompt() method cannot be called."));
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kInvalidStateError,
+                          "The prompt() method cannot be called."));
   }
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   Document* doc = To<Document>(context);
 
-  if (require_gesture_ && !LocalFrame::ConsumeTransientUserActivation(
-                              doc ? doc->GetFrame() : nullptr)) {
+  if (!LocalFrame::ConsumeTransientUserActivation(doc ? doc->GetFrame()
+                                                      : nullptr)) {
     return ScriptPromise::RejectWithDOMException(
         script_state,
-        DOMException::Create(
+        MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
             "The prompt() method must be called with a user gesture"));
   }
 
   UseCounter::Count(context, WebFeature::kBeforeInstallPromptEventPrompt);
-  banner_service_->DisplayAppBanner();
-  return ScriptPromise::CastUndefined(script_state);
+  banner_service_remote_->DisplayAppBanner();
+  return user_choice_->Promise(script_state->World());
 }
 
 const AtomicString& BeforeInstallPromptEvent::InterfaceName() const {

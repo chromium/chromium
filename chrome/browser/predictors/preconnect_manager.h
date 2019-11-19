@@ -17,6 +17,7 @@
 #include "chrome/browser/predictors/proxy_lookup_client_impl.h"
 #include "chrome/browser/predictors/resolve_host_client_impl.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
+#include "net/base/network_isolation_key.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -32,12 +33,11 @@ namespace predictors {
 struct PreconnectRequest;
 
 struct PreconnectedRequestStats {
-  PreconnectedRequestStats(const GURL& origin,
-                           bool was_preconnected);
+  PreconnectedRequestStats(const url::Origin& origin, bool was_preconnected);
   PreconnectedRequestStats(const PreconnectedRequestStats& other);
   ~PreconnectedRequestStats();
 
-  GURL origin;
+  url::Origin origin;
   bool was_preconnected;
 };
 
@@ -75,7 +75,9 @@ struct PreresolveJob {
   PreresolveJob(const GURL& url,
                 int num_sockets,
                 bool allow_credentials,
+                net::NetworkIsolationKey network_isolation_key,
                 PreresolveInfo* info);
+  PreresolveJob(PreconnectRequest preconnect_request, PreresolveInfo* info);
   PreresolveJob(PreresolveJob&& other);
   ~PreresolveJob();
   bool need_preconnect() const {
@@ -85,8 +87,9 @@ struct PreresolveJob {
   GURL url;
   int num_sockets;
   bool allow_credentials;
+  net::NetworkIsolationKey network_isolation_key;
   // Raw pointer usage is fine here because even though PreresolveJob can
-  // outlive PreresolveInfo it's only accessed on PreconnectManager class
+  // outlive PreresolveInfo. It's only accessed on PreconnectManager class
   // context and PreresolveInfo lifetime is tied to PreconnectManager.
   // May be equal to nullptr in case of detached job.
   PreresolveInfo* info;
@@ -145,7 +148,13 @@ class PreconnectManager {
   // than trackable requests thus they are put in the front of the jobs queue.
   virtual void StartPreresolveHost(const GURL& url);
   virtual void StartPreresolveHosts(const std::vector<std::string>& hostnames);
-  virtual void StartPreconnectUrl(const GURL& url, bool allow_credentials);
+  // |network_isolation_key| specifies the key that network requests for the
+  // preconnected URL are expected to use. If a request is issued with a
+  // different key, it may not use the preconnected socket.
+  virtual void StartPreconnectUrl(
+      const GURL& url,
+      bool allow_credentials,
+      net::NetworkIsolationKey network_isolation_key);
 
   // No additional jobs keyed by the |url| will be queued after this.
   virtual void Stop(const GURL& url);
@@ -166,9 +175,11 @@ class PreconnectManager {
   using PreresolveJobId = PreresolveJobMap::KeyType;
   friend class PreconnectManagerTest;
 
-  void PreconnectUrl(const GURL& url,
-                     int num_sockets,
-                     bool allow_credentials) const;
+  void PreconnectUrl(
+      const GURL& url,
+      int num_sockets,
+      bool allow_credentials,
+      const net::NetworkIsolationKey& network_isolation_key) const;
   std::unique_ptr<ResolveHostClientImpl> PreresolveUrl(
       const GURL& url,
       ResolveHostCallback callback) const;
@@ -194,7 +205,7 @@ class PreconnectManager {
   network::mojom::NetworkContext* network_context_ = nullptr;
   Observer* observer_ = nullptr;
 
-  base::WeakPtrFactory<PreconnectManager> weak_factory_;
+  base::WeakPtrFactory<PreconnectManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PreconnectManager);
 };

@@ -425,10 +425,6 @@ class NET_EXPORT_PRIVATE SpdyStream {
     TRAILERS_RECEIVED
   };
 
-  // Update the histograms.  Can safely be called repeatedly, but should only
-  // be called after the stream has completed.
-  void UpdateHistograms();
-
   // When a server-push stream is claimed by SetDelegate(), this function is
   // posted on the current MessageLoop to replay everything the server has sent.
   // From the perspective of SpdyStream's state machine, headers, data, and
@@ -523,9 +519,8 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // overhead and headers.
   int64_t raw_sent_bytes_;
 
-  // Number of data bytes that have been sent/received on this stream, not
-  // including frame overhead. Note that this does not count headers.
-  int send_bytes_;
+  // Number of data bytes that have been received on this stream, not including
+  // frame overhead. Note that this does not count headers.
   int recv_bytes_;
 
   // Guards calls of delegate write handlers ensuring |this| is not destroyed.
@@ -535,7 +530,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
   const NetworkTrafficAnnotationTag traffic_annotation_;
 
-  base::WeakPtrFactory<SpdyStream> weak_ptr_factory_;
+  base::WeakPtrFactory<SpdyStream> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SpdyStream);
 };

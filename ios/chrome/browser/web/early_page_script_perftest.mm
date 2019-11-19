@@ -8,8 +8,8 @@
 #include "base/timer/elapsed_timer.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/test/base/perf_test_ios.h"
+#import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/test/js_test_util.h"
-#import "ios/web/public/web_view_creation_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

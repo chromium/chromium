@@ -15,30 +15,25 @@ const service_manager::Manifest& GetContentGpuManifest() {
       service_manager::ManifestBuilder()
           .WithServiceName(mojom::kGpuServiceName)
           .WithDisplayName("Content (GPU process)")
-          .ExposeCapability("service_manager:service_factory",
-                            std::set<const char*>{
-                                "service_manager.mojom.ServiceFactory",
-                            })
           .ExposeCapability("browser",
                             std::set<const char*>{
                                 "content.mojom.Child",
-                                "content.mojom.ChildControl",
                                 "content.mojom.ChildHistogramFetcher",
                                 "content.mojom.ChildHistogramFetcherFactory",
+                                "content.mojom.ChildProcess",
                                 "content.mojom.ResourceUsageReporter",
                                 "IPC.mojom.ChannelBootstrap",
-                                "service_manager.mojom.ServiceFactory",
                                 "ui.ozone.mojom.DeviceCursor",
                                 "ui.ozone.mojom.DrmDevice",
-                                "ui.ozone.mojom.WaylandConnectionClient",
+                                "ui.ozone.mojom.WaylandBufferManagerGpu",
                                 "ui.mojom.ScenicGpuService",
                                 "viz.mojom.CompositingModeReporter",
                                 "viz.mojom.VizMain",
                             })
           .RequireCapability("device", "device:power_monitor")
-          .RequireCapability(mojom::kBrowserServiceName, "dwrite_font_proxy")
-          .RequireCapability(mojom::kBrowserServiceName, "field_trials")
-          .RequireCapability(mojom::kBrowserServiceName, "gpu")
+          .RequireCapability(mojom::kSystemServiceName, "dwrite_font_proxy")
+          .RequireCapability(mojom::kSystemServiceName, "field_trials")
+          .RequireCapability(mojom::kSystemServiceName, "gpu")
           .RequireCapability("ui", "discardable_memory")
           .RequireCapability("*", "app")
           .RequireCapability("metrics", "url_keyed_metrics")

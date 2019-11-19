@@ -8,9 +8,8 @@
 #include <utility>
 
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
-#include "third_party/blink/public/common/manifest/web_display_mode_mojom_traits.h"
 #include "third_party/blink/public/common/screen_orientation/web_screen_orientation_mojom_traits.h"
-#include "ui/gfx/geometry/mojo/geometry_struct_traits.h"
+#include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
@@ -83,9 +82,6 @@ bool StructTraits<blink::mojom::ManifestDataView, ::blink::Manifest>::Read(
 
   if (data.has_background_color())
     out->background_color = data.background_color();
-
-  if (!data.ReadSplashScreenUrl(&out->splash_screen_url))
-    return false;
 
   if (!data.ReadDisplay(&out->display))
     return false;
@@ -199,6 +195,16 @@ bool StructTraits<blink::mojom::ManifestShareTargetDataView,
     return false;
 
   return data.ReadParams(&out->params);
+}
+
+bool StructTraits<blink::mojom::ManifestFileHandlerDataView,
+                  ::blink::Manifest::FileHandler>::
+    Read(blink::mojom::ManifestFileHandlerDataView data,
+         ::blink::Manifest::FileHandler* out) {
+  if (!data.ReadAction(&out->action))
+    return false;
+
+  return data.ReadFiles(&out->files);
 }
 
 }  // namespace mojo

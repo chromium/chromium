@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 #if defined(OS_CHROMEOS)
@@ -114,9 +115,9 @@ class ChromeAppIconService : public KeyedService,
 
   IconMap icon_map_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver> observer_;
+  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver> observer_{this};
 
-  base::WeakPtrFactory<ChromeAppIconService> weak_ptr_factory_;
+  base::WeakPtrFactory<ChromeAppIconService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeAppIconService);
 };

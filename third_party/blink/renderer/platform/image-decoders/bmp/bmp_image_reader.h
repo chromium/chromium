@@ -36,8 +36,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/cpu.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -65,12 +64,10 @@ class PLATFORM_EXPORT BMPImageReader final {
                  size_t decoded_and_header_offset,
                  size_t img_data_offset,
                  bool is_in_ico);
+  ~BMPImageReader();
 
   void SetBuffer(ImageFrame* buffer) { buffer_ = buffer; }
-  void SetData(SegmentReader* data) {
-    data_ = data;
-    fast_reader_.SetData(data);
-  }
+  void SetData(SegmentReader* data);
 
   // Does the actual decoding.  If |only_size| is true, decoding only
   // progresses as far as necessary to get the image size.  Returns
@@ -79,12 +76,6 @@ class PLATFORM_EXPORT BMPImageReader final {
 
  private:
   friend class PixelChangedScoper;
-
-  // Helper for DecodeBMP() which will call either ProcessRLEData() or
-  // ProcessNonRLEData(), depending on the value of |non_rle|, call any
-  // appropriate notifications to deal with the result, then return whether
-  // decoding succeeded.
-  bool DecodePixelData(bool non_rle);
 
   // The various BMP compression types.  We don't currently decode all
   // these.
@@ -97,6 +88,7 @@ class PLATFORM_EXPORT BMPImageReader final {
     BITFIELDS = 3,
     JPEG = 4,
     PNG = 5,
+    ALPHABITFIELDS = 6,  // Windows CE only
     // OS/2 2.x-only
     HUFFMAN1D,  // Stored in file as 3
     RLE24,      // Stored in file as 4
@@ -107,16 +99,18 @@ class PLATFORM_EXPORT BMPImageReader final {
     kInsufficientData,
   };
 
-  // These are based on the Windows BITMAPINFOHEADER and RGBTRIPLE
-  // structs, but with unnecessary entries removed.
+  // These are based on the Windows BITMAPINFOHEADER and RGBTRIPLE structs, but
+  // with unnecessary entries removed.
   struct BitmapInfoHeader {
     DISALLOW_NEW();
-    uint32_t bi_size;
-    int32_t bi_width;
-    int32_t bi_height;
-    uint16_t bi_bit_count;
-    CompressionType bi_compression;
-    uint32_t bi_clr_used;
+    uint32_t size;
+    int32_t width;
+    int32_t height;
+    uint16_t bit_count;
+    CompressionType compression;
+    uint32_t clr_used;
+    uint32_t profile_data;
+    uint32_t profile_size;
   };
   struct RGBTriple {
     DISALLOW_NEW();
@@ -155,16 +149,41 @@ class PLATFORM_EXPORT BMPImageReader final {
   // of header values from the byte stream.  Returns false on error.
   bool ReadInfoHeader();
 
-  // Returns true if this is a Windows V4+ BMP.
-  inline bool IsWindowsV4Plus() const {
-    // Windows V4 info header is 108 bytes.  V5 is 124 bytes.
-    return (info_header_.bi_size == 108) || (info_header_.bi_size == 124);
+  // Returns true if this BMP has color space information in the info header
+  // (BITMAPV4HEADER+).  See comments in ReadInfoHeader() for more.
+  inline bool HasColorSpaceInfoInHeader() const {
+    return (info_header_.size == 108) ||  // BITMAPV4HEADER
+           (info_header_.size == 124);    // BITMAPV5HEADER
+  }
+
+  // Returns true if this BMP has an alpha mask in the info header
+  // (BITMAPV3HEADER+).  See comments in ReadInfoHeader() for more.
+  inline bool HasAlphaMaskInHeader() const {
+    // BITMAPV3HEADER is 56 bytes; this is also a valid OS/2 2.x header size, so
+    // exclude that case.
+    return (info_header_.size == 56 && !is_os22x_) ||  // BITMAPV3HEADER
+           HasColorSpaceInfoInHeader();                // BITMAPV4HEADER+
+  }
+
+  // Returns true if this BMP has RGB masks in the info header
+  // (BITMAPV2HEADER+).  See comments in ReadInfoHeader() for more.
+  inline bool HasRGBMasksInHeader() const {
+    // BITMAPV2HEADER is 52 bytes; this is also a valid OS/2 2.x header size, so
+    // exclude that case.
+    return (info_header_.size == 52 && !is_os22x_) ||  // BITMAPV2HEADER
+           HasAlphaMaskInHeader();                     // BITMAPV3HEADER+
   }
 
   // Returns false if consistency errors are found in the info header.
   bool IsInfoHeaderValid() const;
 
-  // For BI_BITFIELDS images, initializes the bit_masks_[] and
+  // Processes any embedded ICC color profile.
+  bool ProcessEmbeddedColorProfile();
+
+  // Decodes the image data for compression types JPEG and PNG.
+  bool DecodeAlternateFormat();
+
+  // For BI_[ALPHA]BITFIELDS images, initializes the bit_masks_[] and
   // bit_offsets_[] arrays.  ProcessInfoHeader() will initialize these for
   // other compression types where needed.
   bool ProcessBitmasks();
@@ -172,6 +191,15 @@ class PLATFORM_EXPORT BMPImageReader final {
   // For paletted images, allocates and initializes the color_table_[]
   // array.
   bool ProcessColorTable();
+
+  // Allocates and initializes the frame buffer and sets up variables for
+  // decoding.
+  bool InitFrame();
+
+  // Calls either ProcessRLEData() or ProcessNonRLEData(), depending on the
+  // value of |non_rle|, call any appropriate notifications to deal with the
+  // result.  Returns whether decoding succeeded.
+  bool DecodePixelData(bool non_rle);
 
   // The next two functions return a ProcessingResult instead of a bool so
   // they can avoid calling parent_->SetFailed(), which could lead to memory
@@ -274,20 +302,24 @@ class PLATFORM_EXPORT BMPImageReader final {
       SetRGBA(red, green, blue, alpha);
   }
 
-  // Resets the relevant local variables to start drawing at the left edge
-  // of the "next" row, where "next" is above or below the current row
-  // depending on the value of |is_top_down_|.
+  // Resets the relevant local variables to start drawing at the left edge of
+  // the "next" row, where "next" is above or below the current row depending on
+  // the value of |is_top_down_|.
   void MoveBufferToNextRow();
+
+  // Applies color profile correction to the pixel data for the current row, if
+  // desired.
+  void ColorCorrectCurrentRow();
 
   // The decoder that owns us.
   ImageDecoder* parent_;
 
   // The destination for the pixel data.
-  ImageFrame* buffer_;
+  ImageFrame* buffer_ = nullptr;
 
   // The file to decode.
   scoped_refptr<SegmentReader> data_;
-  FastSharedBufferReader fast_reader_;
+  FastSharedBufferReader fast_reader_{nullptr};
 
   // An index into |data_| representing how much we've already decoded.
   size_t decoded_offset_;
@@ -304,25 +336,28 @@ class PLATFORM_EXPORT BMPImageReader final {
   // The BMP info header.
   BitmapInfoHeader info_header_;
 
+  // Used only for bitmaps with compression types JPEG or PNG.
+  std::unique_ptr<ImageDecoder> alternate_decoder_;
+
   // True if this is an OS/2 1.x (aka Windows 2.x) BMP.  The struct
   // layouts for this type of BMP are slightly different from the later,
   // more common formats.
-  bool is_os21x_;
+  bool is_os21x_ = false;
 
   // True if this is an OS/2 2.x BMP.  The meanings of compression types 3
   // and 4 for this type of BMP differ from Windows V3+ BMPs.
   //
   // This will be falsely negative in some cases, but only ones where the
   // way we misinterpret the data is irrelevant.
-  bool is_os22x_;
+  bool is_os22x_ = false;
 
   // True if the BMP is not vertically flipped, that is, the first line of
   // raster data in the file is the top line of the image.
-  bool is_top_down_;
+  bool is_top_down_ = false;
 
   // These flags get set to false as we finish each processing stage.
-  bool need_to_process_bitmasks_;
-  bool need_to_process_color_table_;
+  bool need_to_process_bitmasks_ = false;
+  bool need_to_process_color_table_ = false;
 
   // Masks/offsets for the color values for non-palette formats. These are
   // bitwise, with array entries 0, 1, 2, 3 corresponding to R, G, B, A.
@@ -348,8 +383,8 @@ class PLATFORM_EXPORT BMPImageReader final {
   // Variables that track whether we've seen pixels with alpha values != 0
   // and == 0, respectively.  See comments in ProcessNonRLEData() on how
   // these are used.
-  bool seen_non_zero_alpha_pixel_;
-  bool seen_zero_alpha_pixel_;
+  bool seen_non_zero_alpha_pixel_ = false;
+  bool seen_zero_alpha_pixel_ = false;
 
   // BMPs-in-ICOs have a few differences from standalone BMPs, so we need to
   // know if we're in an ICO container.
@@ -359,7 +394,7 @@ class PLATFORM_EXPORT BMPImageReader final {
   // (and, confusingly, add its height to the biHeight value in the info
   // header, thus doubling it). If |is_in_ico_| is true, this variable tracks
   // whether we've begun decoding this mask yet.
-  bool decoding_and_mask_;
+  bool decoding_and_mask_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(BMPImageReader);
 };

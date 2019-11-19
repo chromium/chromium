@@ -66,11 +66,11 @@ class TabLoadTracker {
   // loading, and will only transition to loading once the throttle has been
   // removed. Can transition from LOADING to UNLOADED or LOADED.
   //
-  // A WebContents with a committed navigation whose DidStopLoading/
-  // PageAlmostIdle event (depending on mode) or DidFailLoad event has fired is
-  // no longer considered to be LOADING. If any content has been rendered prior
-  // to the failure the document is considered LOADED, otherwise it is
-  // considered UNLOADED. Can transition from LOADED to LOADING.
+  // A WebContents with a committed navigation whose PageAlmostIdle event or
+  // DidFailLoad event has fired is no longer considered to be LOADING. If any
+  // content has been rendered prior to the failure the document is considered
+  // LOADED, otherwise it is considered UNLOADED. Can transition from LOADED to
+  // LOADING.
 
   ~TabLoadTracker();
 
@@ -147,14 +147,12 @@ class TabLoadTracker {
   // the TabManager.
   void DidStartLoading(content::WebContents* web_contents);
   void DidReceiveResponse(content::WebContents* web_contents);
-  void DidStopLoading(content::WebContents* web_contents);
   void DidFailLoad(content::WebContents* web_contents);
   void RenderProcessGone(content::WebContents* web_contents,
                          base::TerminationStatus status);
 
-  // This is an analog of a PageSignalObserver function. This class is not
-  // actually a PageSignalObserver, but these notifications are forwarded to it
-  // from the TabManager.
+  // Notifications to this are driven by the
+  // TabManager::ResourceCoordinatorSignalObserver.
   void OnPageAlmostIdle(content::WebContents* web_contents);
 
   // Returns true if |web_contents| is a UI tab and false otherwise. This is

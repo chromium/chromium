@@ -9,6 +9,15 @@
 #include "ui/events/keycodes/dom_us_layout_data.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 
+namespace {
+enum ReturnCodes {  // Possible results of the JavaScript code.
+  RETURN_CODE_OK,
+  RETURN_CODE_NO_ELEMENT,
+  RETURN_CODE_WRONG_VALUE,
+  RETURN_CODE_INVALID,
+};
+}  // namespace
+
 PasswordManagerInteractiveTestBase::PasswordManagerInteractiveTestBase() =
     default;
 
@@ -17,7 +26,8 @@ PasswordManagerInteractiveTestBase::~PasswordManagerInteractiveTestBase() =
 
 void PasswordManagerInteractiveTestBase::FillElementWithValue(
     const std::string& element_id,
-    const std::string& value) {
+    const std::string& value,
+    const std::string& expected_value) {
   ASSERT_TRUE(content::ExecuteScript(
       RenderFrameHost(),
       base::StringPrintf("document.getElementById('%s').focus();",
@@ -37,6 +47,54 @@ void PasswordManagerInteractiveTestBase::FillElementWithValue(
                               ui::DomCodeToUsLayoutKeyboardCode(dom_code),
                               false, shift, false, false);
   }
+  // Enforce that the keystroke were processed. It's very important because
+  // keystrokes aren't synchronized with JS and they take longer to process. The
+  // test could move the focus later and divert the keystrokes to another input.
+  WaitForElementValue(element_id, expected_value);
+}
+
+void PasswordManagerInteractiveTestBase::FillElementWithValue(
+    const std::string& element_id,
+    const std::string& value) {
+  CheckElementValue(element_id, std::string());
+  FillElementWithValue(element_id, value, value);
+}
+
+void PasswordManagerInteractiveTestBase::WaitForElementValue(
+    const std::string& element_id,
+    const std::string& expected_value) {
+  const std::string value_check_function = base::StringPrintf(
+      "function valueCheck() {"
+      "  var element = document.getElementById('%s');"
+      "  return element && element.value == '%s';"
+      "}",
+      element_id.c_str(), expected_value.c_str());
+  const std::string script =
+      value_check_function +
+      base::StringPrintf(
+          "if (valueCheck()) {"
+          "  /* Spin the event loop with setTimeout. */"
+          "  setTimeout(window.domAutomationController.send(%d), 0);"
+          "} else {"
+          "  var element = document.getElementById('%s');"
+          "  if (!element)"
+          "    window.domAutomationController.send(%d);"
+          "  element.oninput = function() {"
+          "    if (valueCheck()) {"
+          "      /* Spin the event loop with setTimeout. */"
+          "      setTimeout(window.domAutomationController.send(%d), 0);"
+          "      element.oninput = undefined;"
+          "    }"
+          "  };"
+          "}",
+          RETURN_CODE_OK, element_id.c_str(), RETURN_CODE_NO_ELEMENT,
+          RETURN_CODE_OK);
+  int return_value = RETURN_CODE_INVALID;
+  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
+      RenderFrameHost(), script, &return_value));
+  EXPECT_EQ(RETURN_CODE_OK, return_value)
+      << "element_id = " << element_id
+      << ", expected_value = " << expected_value;
 }
 
 void PasswordManagerInteractiveTestBase::VerifyPasswordIsSavedAndFilled(
@@ -91,4 +149,6 @@ void PasswordManagerInteractiveTestBase::SimulateUserDeletingFieldContent(
   content::SimulateKeyPress(WebContents(), ui::DomKey::BACKSPACE,
                             ui::DomCode::BACKSPACE, ui::VKEY_BACK, false, false,
                             false, false);
+  // A test may rely on empty field value.
+  WaitForElementValue(field_id, std::string());
 }

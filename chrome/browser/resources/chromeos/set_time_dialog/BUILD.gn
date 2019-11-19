@@ -1,0 +1,44 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [
+    ":set_time_browser_proxy",
+    ":set_time_dialog",
+  ]
+}
+
+js_library("set_time_dialog") {
+  deps = [
+    ":set_time_browser_proxy",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+}
+
+js_library("set_time_browser_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+polymer_modulizer("set_time_dialog") {
+  js_file = "set_time_dialog.js"
+  html_file = "set_time_dialog.html"
+  html_type = "v3-ready"
+}
+
+group("polymer3_elements") {
+  deps = [
+    ":set_time_dialog_module",
+  ]
+}

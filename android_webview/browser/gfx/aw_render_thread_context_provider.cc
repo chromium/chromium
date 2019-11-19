@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/lazy_instance.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
@@ -28,13 +27,13 @@ namespace android_webview {
 scoped_refptr<AwRenderThreadContextProvider>
 AwRenderThreadContextProvider::Create(
     scoped_refptr<gl::GLSurface> surface,
-    scoped_refptr<gpu::CommandBufferTaskExecutor> task_executor) {
-  return new AwRenderThreadContextProvider(surface, std::move(task_executor));
+    gpu::CommandBufferTaskExecutor* task_executor) {
+  return new AwRenderThreadContextProvider(surface, task_executor);
 }
 
 AwRenderThreadContextProvider::AwRenderThreadContextProvider(
     scoped_refptr<gl::GLSurface> surface,
-    scoped_refptr<gpu::CommandBufferTaskExecutor> task_executor) {
+    gpu::CommandBufferTaskExecutor* task_executor) {
   DCHECK(main_thread_checker_.CalledOnValidThread());
 
   // This is an onscreen context, wrapping the GLSurface given to us from
@@ -66,9 +65,9 @@ AwRenderThreadContextProvider::AwRenderThreadContextProvider(
   limits.min_transfer_buffer_size = 64 * 1024;
 
   context_ = std::make_unique<gpu::GLInProcessContext>();
-  context_->Initialize(std::move(task_executor), surface,
-                       surface->IsOffscreen(), gpu::kNullSurfaceHandle,
-                       attributes, limits, nullptr, nullptr, nullptr);
+  context_->Initialize(task_executor, surface, surface->IsOffscreen(),
+                       gpu::kNullSurfaceHandle, attributes, limits, nullptr,
+                       nullptr, nullptr);
 
   context_->GetImplementation()->SetLostContextCallback(base::BindOnce(
       &AwRenderThreadContextProvider::OnLostContext, base::Unretained(this)));

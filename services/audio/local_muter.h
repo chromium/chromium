@@ -9,7 +9,8 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
-#include "mojo/public/cpp/bindings/associated_binding_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/audio/loopback_coordinator.h"
 #include "services/audio/public/mojom/stream_factory.mojom.h"
 
@@ -33,7 +34,7 @@ class LocalMuter : public mojom::LocalMuter,
   // SetAllBindingsLostCallback() must be called before the first call to
   // AddBinding().
   void SetAllBindingsLostCallback(base::OnceClosure callback);
-  void AddBinding(mojom::LocalMuterAssociatedRequest request);
+  void AddReceiver(mojo::PendingAssociatedReceiver<mojom::LocalMuter> receiver);
 
   // LoopbackCoordinator::Observer implementation.
   void OnMemberJoinedGroup(LoopbackGroupMember* member) final;
@@ -46,7 +47,7 @@ class LocalMuter : public mojom::LocalMuter,
   LoopbackCoordinator* const coordinator_;
   const base::UnguessableToken group_id_;
 
-  mojo::AssociatedBindingSet<mojom::LocalMuter> bindings_;
+  mojo::AssociatedReceiverSet<mojom::LocalMuter> receivers_;
   base::OnceClosure all_bindings_lost_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);

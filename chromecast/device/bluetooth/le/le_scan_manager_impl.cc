@@ -114,6 +114,58 @@ void LeScanManagerImpl::ClearScanResults() {
   addr_to_scan_results_.clear();
 }
 
+void LeScanManagerImpl::PauseScan() {
+  MAKE_SURE_IO_THREAD(PauseScan);
+  if (scan_handle_ids_.empty()) {
+    LOG(ERROR) << "Can't pause scan, no scan handle";
+    return;
+  }
+
+  if (!le_scanner_->StopScan()) {
+    LOG(ERROR) << "Failed to pause scanning";
+  }
+}
+
+void LeScanManagerImpl::RestartScan() {
+  MAKE_SURE_IO_THREAD(RestartScan);
+  if (scan_handle_ids_.empty()) {
+    LOG(ERROR) << "Can't restart scan, no scan handle";
+    return;
+  }
+
+  if (!le_scanner_->StartScan()) {
+    LOG(ERROR) << "Failed to restart scanning";
+  }
+}
+
+void LeScanManagerImpl::SetScanParameters(int scan_interval_ms,
+                                          int scan_window_ms) {
+  MAKE_SURE_IO_THREAD(SetScanParameters, scan_interval_ms, scan_window_ms);
+  if (scan_handle_ids_.empty()) {
+    LOG(ERROR) << "Can't set scan parameters, no scan handle";
+    return;
+  }
+
+  // We could only set scan parameters when scan is paused.
+  if (!le_scanner_->StopScan()) {
+    LOG(ERROR) << "Failed to pause scanning before setting scan parameters";
+    return;
+  }
+
+  if (!le_scanner_->SetScanParameters(scan_interval_ms, scan_window_ms)) {
+    LOG(ERROR) << "Failed to set scan parameters";
+    return;
+  }
+
+  if (!le_scanner_->StartScan()) {
+    LOG(ERROR) << "Failed to restart scanning after setting scan parameters";
+    return;
+  }
+
+  LOG(INFO) << __func__ << " scan_interval: " << scan_interval_ms
+            << "ms scan_window: " << scan_window_ms << "ms";
+}
+
 void LeScanManagerImpl::OnScanResult(
     const bluetooth_v2_shlib::LeScanner::ScanResult& scan_result_shlib) {
   LeScanResult scan_result;

@@ -4,10 +4,10 @@
 
 #include "chrome/browser/data_reduction_proxy/data_reduction_promo_infobar_delegate_android.h"
 
+#include "chrome/android/chrome_jni_headers/DataReductionPromoInfoBarDelegate_jni.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/DataReductionPromoInfoBarDelegate_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

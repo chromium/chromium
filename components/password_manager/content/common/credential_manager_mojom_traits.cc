@@ -91,11 +91,17 @@ bool EnumTraits<blink::mojom::CredentialManagerError,
     case blink::mojom::CredentialManagerError::
         ANDROID_USER_VERIFICATION_UNSUPPORTED:
     case blink::mojom::CredentialManagerError::INVALID_DOMAIN:
+    case blink::mojom::CredentialManagerError::INVALID_ICON_URL:
     case blink::mojom::CredentialManagerError::CREDENTIAL_EXCLUDED:
     case blink::mojom::CredentialManagerError::CREDENTIAL_NOT_RECOGNIZED:
     case blink::mojom::CredentialManagerError::NOT_IMPLEMENTED:
     case blink::mojom::CredentialManagerError::NOT_FOCUSED:
     case blink::mojom::CredentialManagerError::RESIDENT_CREDENTIALS_UNSUPPORTED:
+    case blink::mojom::CredentialManagerError::PROTECTION_POLICY_INCONSISTENT:
+    case blink::mojom::CredentialManagerError::ABORT:
+    case blink::mojom::CredentialManagerError::OPAQUE_DOMAIN:
+    case blink::mojom::CredentialManagerError::INVALID_PROTOCOL:
+    case blink::mojom::CredentialManagerError::BAD_RELYING_PARTY_ID:
     case blink::mojom::CredentialManagerError::UNKNOWN:
       *output = password_manager::CredentialManagerError::UNKNOWN;
       return true;

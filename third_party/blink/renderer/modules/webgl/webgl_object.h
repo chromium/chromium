@@ -57,13 +57,19 @@ GLuint ObjectNonZero(const T* object) {
 }
 
 class WebGLObject : public ScriptWrappable {
+  // WebGLObjects are pre-finalized, and the WebGLRenderingContextBase
+  // is specifically not. This is done in order to allow WebGLObjects to
+  // refer back to their owning context in their destructor to delete their
+  // resources if they are GC'd before the context is.
+  USING_PRE_FINALIZER(WebGLObject, Dispose);
+
  public:
   // We can't call virtual functions like deleteObjectImpl in this class's
   // destructor; doing so results in a pure virtual function call. Further,
   // making this destructor non-virtual is complicated with respect to
   // Oilpan tracing. Therefore this destructor is declared virtual, but is
   // empty, and the code that would have gone into its body is called by
-  // subclasses via runDestructor().
+  // subclasses via Dispose().
   ~WebGLObject() override;
 
   // deleteObject may not always delete the OpenGL resource.  For programs and
@@ -83,13 +89,6 @@ class WebGLObject : public ScriptWrappable {
   virtual bool Validate(const WebGLContextGroup*,
                         const WebGLRenderingContextBase*) const = 0;
   virtual bool HasObject() const = 0;
-
-  // WebGLObjects are eagerly finalized, and the WebGLRenderingContextBase
-  // is specifically not. This is done in order to allow WebGLObjects to
-  // refer back to their owning context in their destructor to delete their
-  // resources if they are GC'd before the context is.
-  EAGERLY_FINALIZE();
-  DEFINE_INLINE_EAGER_FINALIZATION_OPERATOR_NEW()
 
  protected:
   explicit WebGLObject(WebGLRenderingContextBase*);
@@ -112,10 +111,9 @@ class WebGLObject : public ScriptWrappable {
 
   virtual gpu::gles2::GLES2Interface* GetAGLInterface() const = 0;
 
-  // Used by leaf subclasses to run the destruction sequence -- what would
-  // be in the destructor of the base class, if it could be. Must be called
-  // no more than once.
-  void RunDestructor();
+  // Runs the pre-finalization sequence -- what would be in the destructor
+  // of the base class, if it could be. Must be called no more than once.
+  void Dispose();
 
   // Indicates to subclasses that the destructor is being run.
   bool DestructionInProgress() const;

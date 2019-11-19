@@ -6,8 +6,8 @@
 
 namespace video_capture {
 
-MockProducer::MockProducer(mojom::ProducerRequest request)
-    : binding_(this, std::move(request)) {}
+MockProducer::MockProducer(mojo::PendingReceiver<mojom::Producer> receiver)
+    : receiver_(this, std::move(receiver)) {}
 
 MockProducer::~MockProducer() = default;
 

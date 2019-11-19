@@ -16,5 +16,5 @@ int main(int argc, char** argv) {
   // with each other if they run in parallel. Therefore, run the tests serially.
   return base::LaunchUnitTestsSerially(
       argc, argv,
-      base::Bind(&base::TestSuite::Run, base::Unretained(&test_suite)));
+      base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
 }

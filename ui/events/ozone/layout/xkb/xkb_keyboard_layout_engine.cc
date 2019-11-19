@@ -687,12 +687,12 @@ bool XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
   }
   LoadKeymapCallback reply_callback = base::BindOnce(
       &XkbKeyboardLayoutEngine::OnKeymapLoaded, weak_ptr_factory_.GetWeakPtr());
-  base::PostTaskWithTraits(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&LoadKeymap, layout_name,
-                     base::ThreadTaskRunnerHandle::Get(),
-                     std::move(reply_callback)));
+  base::PostTask(FROM_HERE,
+                 {base::ThreadPool(), base::MayBlock(),
+                  base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+                 base::BindOnce(&LoadKeymap, layout_name,
+                                base::ThreadTaskRunnerHandle::Get(),
+                                std::move(reply_callback)));
 #else
   NOTIMPLEMENTED();
 #endif  // defined(OS_CHROMEOS)

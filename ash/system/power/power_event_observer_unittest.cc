@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/root_window_controller.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_event_observer_test_api.h"
 #include "ash/test/ash_test_base.h"
@@ -16,9 +16,8 @@
 #include "ash/wm/lock_state_controller_test_api.h"
 #include "ash/wm/test_session_state_animator.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
-#include "chromeos/dbus/power_manager_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
@@ -33,7 +32,6 @@ class PowerEventObserverTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
     AshTestBase::SetUp();
     observer_.reset(new PowerEventObserver());
   }
@@ -41,7 +39,6 @@ class PowerEventObserverTest : public AshTestBase {
   void TearDown() override {
     observer_.reset();
     AshTestBase::TearDown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
  protected:
@@ -57,10 +54,8 @@ class PowerEventObserverTest : public AshTestBase {
 
   bool GetLockedState() {
     // LockScreen is an async mojo call.
-    SessionController* const session_controller =
-        Shell::Get()->session_controller();
-    session_controller->FlushMojoForTest();
-    return session_controller->IsScreenLocked();
+    GetSessionControllerClient()->FlushForTest();
+    return Shell::Get()->session_controller()->IsScreenLocked();
   }
 
   std::unique_ptr<PowerEventObserver> observer_;
@@ -70,15 +65,16 @@ class PowerEventObserverTest : public AshTestBase {
 };
 
 TEST_F(PowerEventObserverTest, LockBeforeSuspend) {
-  chromeos::PowerManagerClient* client = chromeos::PowerManagerClient::Get();
-  ASSERT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  chromeos::FakePowerManagerClient* client =
+      chromeos::FakePowerManagerClient::Get();
+  ASSERT_EQ(0, client->num_pending_suspend_readiness_callbacks());
 
   // Check that the observer requests a suspend-readiness callback when it hears
   // that the system is about to suspend.
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
   observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
 
   // It should run the callback when it hears that the screen is locked and the
   // lock screen animations have completed.
@@ -96,21 +92,21 @@ TEST_F(PowerEventObserverTest, LockBeforeSuspend) {
   // CompositingDidCommit are ignored.
   test_api.CompositingStarted(compositor);
   test_api.CompositingEnded(compositor);
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(1, GetNumVisibleCompositors());
 
   // Suspend should remain delayed after first compositing cycle ends.
   test_api.CompositeFrame(compositor);
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(1, GetNumVisibleCompositors());
 
   test_api.CompositingDidCommit(compositor);
   test_api.CompositingStarted(compositor);
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(1, GetNumVisibleCompositors());
 
   test_api.CompositingEnded(compositor);
-  EXPECT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(0, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(0, GetNumVisibleCompositors());
 
   // If the system is already locked, no callback should be requested.
@@ -128,7 +124,7 @@ TEST_F(PowerEventObserverTest, LockBeforeSuspend) {
   test_api.CompositeFrame(compositor);
 
   observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
-  EXPECT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(0, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(0, GetNumVisibleCompositors());
 
   // It also shouldn't request a callback if it isn't instructed to lock the
@@ -138,7 +134,7 @@ TEST_F(PowerEventObserverTest, LockBeforeSuspend) {
   SetShouldLockScreenAutomatically(false);
   EXPECT_EQ(1, GetNumVisibleCompositors());
   observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
-  EXPECT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(0, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(0, GetNumVisibleCompositors());
 }
 
@@ -202,9 +198,10 @@ TEST_F(PowerEventObserverTest, DelayResuspendForLockAnimations) {
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
 
-  chromeos::PowerManagerClient* client = chromeos::PowerManagerClient::Get();
+  chromeos::FakePowerManagerClient* client =
+      chromeos::FakePowerManagerClient::Get();
   observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
 
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
   observer_->SuspendDone(base::TimeDelta());
@@ -214,15 +211,15 @@ TEST_F(PowerEventObserverTest, DelayResuspendForLockAnimations) {
   // observer has not run the callback that it got from the first suspend
   // request.  The real PowerManagerClient would reset its internal counter in
   // this situation but the stub client is not that smart.
-  EXPECT_EQ(2, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(2, client->num_pending_suspend_readiness_callbacks());
 
   observer_->OnLockAnimationsComplete();
-  EXPECT_EQ(2, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(2, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(1, GetNumVisibleCompositors());
 
   ASSERT_TRUE(PowerEventObserverTestApi(observer_.get())
                   .SimulateCompositorsReadyForSuspend());
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(0, GetNumVisibleCompositors());
 }
 
@@ -234,9 +231,10 @@ TEST_F(PowerEventObserverTest, DelaySuspendForCompositing_MultiDisplay) {
 
   UpdateDisplay("100x100,200x200");
 
-  chromeos::PowerManagerClient* client = chromeos::PowerManagerClient::Get();
+  chromeos::FakePowerManagerClient* client =
+      chromeos::FakePowerManagerClient::Get();
   observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
 
   aura::Window::Windows windows = Shell::GetAllRootWindows();
   ASSERT_EQ(2u, windows.size());
@@ -244,7 +242,7 @@ TEST_F(PowerEventObserverTest, DelaySuspendForCompositing_MultiDisplay) {
   ui::Compositor* primary_compositor = windows[0]->GetHost()->compositor();
   ui::Compositor* secondary_compositor = windows[1]->GetHost()->compositor();
   ASSERT_EQ(2, GetNumVisibleCompositors());
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
 
   PowerEventObserverTestApi test_api(observer_.get());
 
@@ -256,7 +254,7 @@ TEST_F(PowerEventObserverTest, DelaySuspendForCompositing_MultiDisplay) {
   test_api.CompositingStarted(secondary_compositor);
   test_api.CompositingEnded(secondary_compositor);
 
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(2, GetNumVisibleCompositors());
 
   test_api.CompositeFrame(primary_compositor);
@@ -267,11 +265,11 @@ TEST_F(PowerEventObserverTest, DelaySuspendForCompositing_MultiDisplay) {
   // Even though compositing for one display is done, changes to compositor
   // visibility, and suspend readines state should be delayed until compositing
   // for the other display finishes.
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(2, GetNumVisibleCompositors());
 
   test_api.CompositeFrame(secondary_compositor);
-  EXPECT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(0, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(0, GetNumVisibleCompositors());
 }
 
@@ -282,16 +280,17 @@ TEST_F(PowerEventObserverTest,
 
   UpdateDisplay("100x100,200x200");
 
-  chromeos::PowerManagerClient* client = chromeos::PowerManagerClient::Get();
+  chromeos::FakePowerManagerClient* client =
+      chromeos::FakePowerManagerClient::Get();
   observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
 
   aura::Window::Windows windows = Shell::GetAllRootWindows();
   ASSERT_EQ(2u, windows.size());
 
   ui::Compositor* primary_compositor = windows[0]->GetHost()->compositor();
   ASSERT_EQ(2, GetNumVisibleCompositors());
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   observer_->OnLockAnimationsComplete();
 
   PowerEventObserverTestApi test_api(observer_.get());
@@ -302,7 +301,7 @@ TEST_F(PowerEventObserverTest,
   // Even though compositing for one display is done, changes to compositor
   // visibility, and suspend readines state should be delayed until compositing
   // for the other display finishes.
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(2, GetNumVisibleCompositors());
 
   // Remove the second display, and verify the remaining compositor is hidden
@@ -310,7 +309,7 @@ TEST_F(PowerEventObserverTest,
   UpdateDisplay("100x100");
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(0, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(0, GetNumVisibleCompositors());
 }
 
@@ -318,17 +317,18 @@ TEST_F(PowerEventObserverTest, CompositorNotVisibleAtLockAnimationsComplete) {
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
 
-  chromeos::PowerManagerClient* client = chromeos::PowerManagerClient::Get();
+  chromeos::FakePowerManagerClient* client =
+      chromeos::FakePowerManagerClient::Get();
   observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
 
   Shell::GetPrimaryRootWindow()->GetHost()->compositor()->SetVisible(false);
 
   observer_->OnLockAnimationsComplete();
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(0, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(0, GetNumVisibleCompositors());
 }
 
@@ -384,8 +384,9 @@ TEST_F(PowerEventObserverTest, ImmediateLockAnimations) {
 // another wallpaper after the screen is locked).
 TEST_F(PowerEventObserverTest,
        DisplaysNotReadyForSuspendUntilWallpaperAnimationEnds) {
-  chromeos::PowerManagerClient* client = chromeos::PowerManagerClient::Get();
-  ASSERT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  chromeos::FakePowerManagerClient* client =
+      chromeos::FakePowerManagerClient::Get();
+  ASSERT_EQ(0, client->num_pending_suspend_readiness_callbacks());
 
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
@@ -423,19 +424,20 @@ TEST_F(PowerEventObserverTest,
   // and displays get suspended.
   test_api.CompositeFrame(compositor);
   observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(1, GetNumVisibleCompositors());
 
   test_api.CompositeFrame(compositor);
-  EXPECT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(0, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(0, GetNumVisibleCompositors());
 }
 
 // Tests that animated wallpaper changes will be finished immediately when
 // suspend starts (if the screen was locked when suspend started).
 TEST_F(PowerEventObserverTest, EndWallpaperAnimationOnSuspendWhileLocked) {
-  chromeos::PowerManagerClient* client = chromeos::PowerManagerClient::Get();
-  ASSERT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  chromeos::FakePowerManagerClient* client =
+      chromeos::FakePowerManagerClient::Get();
+  ASSERT_EQ(0, client->num_pending_suspend_readiness_callbacks());
 
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
@@ -464,19 +466,20 @@ TEST_F(PowerEventObserverTest, EndWallpaperAnimationOnSuspendWhileLocked) {
   // Expect that two compositing cycles are completed before suspend continues,
   // and displays get suspended.
   test_api.CompositeFrame(compositor);
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(1, GetNumVisibleCompositors());
 
   test_api.CompositeFrame(compositor);
-  EXPECT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(0, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(0, GetNumVisibleCompositors());
 }
 
 // Tests that animated wallpaper changes will be finished immediately when
 // suspend starts (if the screen lock started before suspend).
 TEST_F(PowerEventObserverTest, EndWallpaperAnimationOnSuspendWhileLocking) {
-  chromeos::PowerManagerClient* client = chromeos::PowerManagerClient::Get();
-  ASSERT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  chromeos::FakePowerManagerClient* client =
+      chromeos::FakePowerManagerClient::Get();
+  ASSERT_EQ(0, client->num_pending_suspend_readiness_callbacks());
 
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
@@ -506,19 +509,20 @@ TEST_F(PowerEventObserverTest, EndWallpaperAnimationOnSuspendWhileLocking) {
   // Expect that two compositing cycles are completed before suspend continues,
   // and displays get suspended.
   test_api.CompositeFrame(compositor);
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(1, GetNumVisibleCompositors());
 
   test_api.CompositeFrame(compositor);
-  EXPECT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(0, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(0, GetNumVisibleCompositors());
 }
 
 // Tests that animated wallpaper changes will be finished immediately when
 // suspend starts and causes a screen lock.
 TEST_F(PowerEventObserverTest, EndWallpaperAnimationAfterLockDueToSuspend) {
-  chromeos::PowerManagerClient* client = chromeos::PowerManagerClient::Get();
-  ASSERT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  chromeos::FakePowerManagerClient* client =
+      chromeos::FakePowerManagerClient::Get();
+  ASSERT_EQ(0, client->num_pending_suspend_readiness_callbacks());
 
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
@@ -544,19 +548,20 @@ TEST_F(PowerEventObserverTest, EndWallpaperAnimationAfterLockDueToSuspend) {
   // Expect that two compositing cycles are completed before suspend continues,
   // and displays get suspended.
   test_api.CompositeFrame(compositor);
-  EXPECT_EQ(1, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(1, GetNumVisibleCompositors());
 
   test_api.CompositeFrame(compositor);
-  EXPECT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(0, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(0, GetNumVisibleCompositors());
 }
 
 // Tests that removing a display while power event observer is waiting for the
 // wallpaper animation does not cause suspend to hang.
 TEST_F(PowerEventObserverTest, DisplayRemovedDuringWallpaperAnimation) {
-  chromeos::PowerManagerClient* client = chromeos::PowerManagerClient::Get();
-  ASSERT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  chromeos::FakePowerManagerClient* client =
+      chromeos::FakePowerManagerClient::Get();
+  ASSERT_EQ(0, client->num_pending_suspend_readiness_callbacks());
 
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
@@ -589,7 +594,7 @@ TEST_F(PowerEventObserverTest, DisplayRemovedDuringWallpaperAnimation) {
   // and displays get suspended.
   test_api.CompositeFrame(compositor);
   test_api.CompositeFrame(compositor);
-  EXPECT_EQ(0, client->GetNumPendingSuspendReadinessCallbacks());
+  EXPECT_EQ(0, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(0, GetNumVisibleCompositors());
 }
 

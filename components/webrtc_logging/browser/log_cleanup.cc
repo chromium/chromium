@@ -12,34 +12,144 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/optional.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/time/time.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
 
 namespace webrtc_logging {
 
+const base::TimeDelta kTimeToKeepLogs = base::TimeDelta::FromDays(5);
+
 namespace {
 
-const int kDaysToKeepLogs = 5;
+// Tokenize a line from the log index. Return true/false to indicate if
+// the line was valid/invalid. If valid, |capture_time| and |upload_time| will
+// be populated with the relevant values. Note that |upload_time| is optional.
+bool ReadLineFromIndex(const std::string& line,
+                       base::Time* capture_time,
+                       base::Optional<base::Time>* upload_time) {
+  DCHECK(capture_time);
+  DCHECK(upload_time);
 
-// Remove any empty entries from the log list. One line is one log entry, see
-// WebRtcLogUploader::AddLocallyStoredLogInfoToUploadListFile for more
-// information about the format.
-void RemoveEmptyEntriesFromLogList(std::string* log_list) {
-  // TODO(crbug.com/826253): Make this more robust to errors; corrupt entries
-  // should also be removed. (Better to move away from a .csv altogether.)
-  static const char kEmptyLineStart[] = ",,,";  // And a timestamp after it.
-  size_t pos = 0;
-  do {
-    pos = log_list->find(kEmptyLineStart, pos);
-    if (pos == std::string::npos)
+  // Parse |upload_time|. (May be empty.)
+  size_t token_start = 0;
+  size_t token_end = line.find(",");
+  if (token_end == std::string::npos) {
+    return false;
+  }
+  const bool has_upload_time = (token_end > token_start);
+  double upload_time_double;
+  if (has_upload_time &&
+      !base::StringToDouble(line.substr(token_start, token_end - token_start),
+                            &upload_time_double)) {
+    return false;
+  }
+
+  // Skip |report_id|. (May be empty.)
+  token_start = token_end + 1;  // Start beyond the previous token.
+  if (token_start >= line.length()) {
+    return false;
+  }
+  token_end = line.find(",", token_start);
+  if (token_end == std::string::npos) {
+    return false;
+  }
+  // TODO(crbug.com/826253): Validate report ID (length and characters).
+
+  // Skip |local_id|. (May be empty.)
+  token_start = token_end + 1;  // Start beyond the previous token.
+  if (token_start >= line.length()) {
+    return false;
+  }
+  token_end = line.find(",", token_start);
+  if (token_end == std::string::npos) {
+    return false;
+  }
+  // TODO(crbug.com/826253): Validate local ID (length and characters).
+
+  // Parse |capture_time|. (May NOT be empty.)
+  token_start = token_end + 1;  // Start beyond the previous token.
+  if (token_start >= line.length()) {
+    return false;
+  }
+  token_end = line.length();
+  double capture_time_double;
+  if (token_end == std::string::npos ||
+      !base::StringToDouble(line.substr(token_start, token_end - token_start),
+                            &capture_time_double)) {
+    return false;
+  }
+
+  *capture_time = base::Time::FromDoubleT(capture_time_double);
+  *upload_time =
+      has_upload_time
+          ? base::make_optional(base::Time::FromDoubleT(upload_time_double))
+          : base::nullopt;
+
+  return true;
+}
+
+// Remove entries of obsolete logs from the log-index.
+// * If delete_begin_time.is_max(), older entries are removed and newer ones
+//   are retained. The length of time to keep logs is |kTimeToKeepLogs|.
+// * If !delete_begin_time.is_max(), logs are deleted within a time range
+//   starting at |delete_begin_time| and ending at the present moment.
+//   (In practice, we assume no logs were sent back in time from the future,
+//   so the actual range is from |delete_begin_time| and until the end of time.)
+std::string RemoveObsoleteEntriesFromLogIndex(
+    const std::string& log_index,
+    const base::Time& delete_begin_time,
+    const base::Time& now) {
+  std::string new_log_index;
+
+  // Only copy over lines which are (1) valid and (2) not obsolete.
+  for (size_t pos = 0; pos < log_index.length();) {
+    // Get |pos| to the beginning of the next non-empty line.
+    pos = log_index.find_first_not_of("\n", pos);
+    if (pos == std::string::npos) {
       break;
-    const size_t line_end = log_list->find("\n", pos);
-    DCHECK(line_end == std::string::npos || pos < line_end);
-    const size_t delete_len =
-        line_end == std::string::npos ? std::string::npos : line_end - pos + 1;
-    log_list->erase(pos, delete_len);
-  } while (pos < log_list->size());
+    }
+    DCHECK_LT(pos, log_index.length());
+
+    size_t line_end = log_index.find("\n", pos);
+    DCHECK(line_end == std::string::npos ||
+           (pos < line_end && line_end < log_index.length()));
+    if (line_end == std::string::npos) {
+      line_end = log_index.length();
+    }
+
+    const std::string line = log_index.substr(pos, line_end - pos);
+
+    base::Time capture_time;
+    base::Optional<base::Time> upload_time;
+    if (ReadLineFromIndex(line, &capture_time, &upload_time)) {
+      bool line_retained;
+      if (delete_begin_time.is_max()) {
+        // Sentinel value for deleting old files.
+        const base::Time older_timestamp =
+            upload_time.has_value() ? std::min(capture_time, *upload_time)
+                                    : capture_time;
+        base::TimeDelta file_age = now - older_timestamp;
+        line_retained = (file_age <= kTimeToKeepLogs);
+      } else {
+        const base::Time newer_timestamp =
+            upload_time.has_value() ? std::max(capture_time, *upload_time)
+                                    : capture_time;
+        line_retained = (newer_timestamp < delete_begin_time);
+      }
+
+      if (line_retained) {
+        // Only valid and not-to-be-deleted lines will be copied.
+        new_log_index += line;
+        new_log_index += "\n";
+      }
+    }
+
+    pos = line_end + 1;
+  }
+
+  return new_log_index;
 }
 
 }  // namespace
@@ -60,8 +170,6 @@ void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
   }
 
   const base::Time now = base::Time::Now();
-  const base::TimeDelta time_to_keep_logs =
-      base::TimeDelta::FromDays(kDaysToKeepLogs);
 
   base::FilePath log_list_path =
       TextLogList::GetWebRtcLogListFileForDirectory(log_dir);
@@ -81,7 +189,6 @@ void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
 
   // Delete relevant logs files (and their associated entries in the index).
   base::FileEnumerator log_files(log_dir, false, base::FileEnumerator::FILES);
-  bool delete_ok = true;
   for (base::FilePath name = log_files.Next(); !name.empty();
        name = log_files.Next()) {
     if (name == log_list_path)
@@ -90,11 +197,13 @@ void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
     // TODO(crbug.com/827167): Handle mismatch between timestamps of the .gz
     // file and the .meta file, as well as with the index.
     base::TimeDelta file_age = now - file_info.GetLastModifiedTime();
-    if (file_age > time_to_keep_logs ||
+    if (file_age > kTimeToKeepLogs ||
         (!delete_begin_time.is_max() &&
          file_info.GetLastModifiedTime() > delete_begin_time)) {
-      if (!base::DeleteFile(name, false))
-        delete_ok = false;
+      if (!base::DeleteFile(name, false)) {
+        LOG(WARNING) << "Could not delete WebRTC text log file ("
+                     << file_info.GetName() << ").";
+      }
 
       // Remove the local ID from the log list file. The ID is guaranteed to be
       // unique.
@@ -106,16 +215,9 @@ void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
     }
   }
 
-  if (!delete_ok)
-    LOG(WARNING) << "Could not delete all old WebRTC logs.";
-
-  // TODO(crbug.com/826254): Purge index file separately, too, to ensure
-  // entries for logs whose files were manually removed, are also subject
-  // to expiry and browsing data clearing.
-
-  RemoveEmptyEntriesFromLogList(&log_list);
-
   if (update_log_list) {
+    log_list =
+        RemoveObsoleteEntriesFromLogIndex(log_list, delete_begin_time, now);
     int written = base::WriteFile(log_list_path, &log_list[0], log_list.size());
     DPCHECK(written == static_cast<int>(log_list.size()));
   }

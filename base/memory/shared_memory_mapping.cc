@@ -33,7 +33,7 @@ namespace base {
 
 SharedMemoryMapping::SharedMemoryMapping() = default;
 
-SharedMemoryMapping::SharedMemoryMapping(SharedMemoryMapping&& mapping)
+SharedMemoryMapping::SharedMemoryMapping(SharedMemoryMapping&& mapping) noexcept
     : memory_(mapping.memory_),
       size_(mapping.size_),
       mapped_size_(mapping.mapped_size_),
@@ -42,7 +42,7 @@ SharedMemoryMapping::SharedMemoryMapping(SharedMemoryMapping&& mapping)
 }
 
 SharedMemoryMapping& SharedMemoryMapping::operator=(
-    SharedMemoryMapping&& mapping) {
+    SharedMemoryMapping&& mapping) noexcept {
   Unmap();
   memory_ = mapping.memory_;
   size_ = mapping.size_;
@@ -90,9 +90,9 @@ void SharedMemoryMapping::Unmap() {
 
 ReadOnlySharedMemoryMapping::ReadOnlySharedMemoryMapping() = default;
 ReadOnlySharedMemoryMapping::ReadOnlySharedMemoryMapping(
-    ReadOnlySharedMemoryMapping&&) = default;
+    ReadOnlySharedMemoryMapping&&) noexcept = default;
 ReadOnlySharedMemoryMapping& ReadOnlySharedMemoryMapping::operator=(
-    ReadOnlySharedMemoryMapping&&) = default;
+    ReadOnlySharedMemoryMapping&&) noexcept = default;
 ReadOnlySharedMemoryMapping::ReadOnlySharedMemoryMapping(
     void* address,
     size_t size,
@@ -102,9 +102,9 @@ ReadOnlySharedMemoryMapping::ReadOnlySharedMemoryMapping(
 
 WritableSharedMemoryMapping::WritableSharedMemoryMapping() = default;
 WritableSharedMemoryMapping::WritableSharedMemoryMapping(
-    WritableSharedMemoryMapping&&) = default;
+    WritableSharedMemoryMapping&&) noexcept = default;
 WritableSharedMemoryMapping& WritableSharedMemoryMapping::operator=(
-    WritableSharedMemoryMapping&&) = default;
+    WritableSharedMemoryMapping&&) noexcept = default;
 WritableSharedMemoryMapping::WritableSharedMemoryMapping(
     void* address,
     size_t size,

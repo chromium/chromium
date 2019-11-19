@@ -13,7 +13,7 @@ cr.exportPath('settings');
  * All possible actions to take on an incompatible application.
  *
  * Must be kept in sync with BlacklistMessageType in
- * chrome/browser/conflicts/proto/module_list.proto
+ * chrome/browser/win/conflicts/proto/module_list.proto
  * @readonly
  * @enum {number}
  */

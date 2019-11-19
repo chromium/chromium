@@ -4,8 +4,11 @@
 
 #include "ui/ozone/platform/scenic/scenic_window_manager.h"
 
+#include <lib/sys/cpp/component_context.h>
+#include <memory>
+
+#include "base/fuchsia/default_context.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/service_directory_client.h"
 #include "ui/ozone/platform/scenic/ozone_platform_scenic.h"
 
 namespace ui {
@@ -22,8 +25,9 @@ std::unique_ptr<PlatformScreen> ScenicWindowManager::CreateScreen() {
 
 fuchsia::ui::scenic::Scenic* ScenicWindowManager::GetScenic() {
   if (!scenic_) {
-    scenic_ = base::fuchsia::ServiceDirectoryClient::ForCurrentProcess()
-                  ->ConnectToService<fuchsia::ui::scenic::Scenic>();
+    scenic_ = base::fuchsia::ComponentContextForCurrentProcess()
+                  ->svc()
+                  ->Connect<fuchsia::ui::scenic::Scenic>();
     scenic_.set_error_handler(
         [](zx_status_t status) { ZX_LOG(FATAL, status) << " Scenic lost."; });
   }

@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "base/observer_list_types.h"
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
@@ -19,11 +19,11 @@ class IdentityManagerFactoryObserver : public base::CheckedObserver {
   ~IdentityManagerFactoryObserver() override {}
 
   // Called when an IdentityManager instance is created.
-  virtual void IdentityManagerCreated(identity::IdentityManager* manager) {}
+  virtual void IdentityManagerCreated(signin::IdentityManager* manager) {}
 
   // Called when a IdentityManager instance is being shut down. Observers
   // of |manager| should remove themselves at this point.
-  virtual void IdentityManagerShutdown(identity::IdentityManager* manager) {}
+  virtual void IdentityManagerShutdown(signin::IdentityManager* manager) {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(IdentityManagerFactoryObserver);

@@ -50,8 +50,8 @@ class CONTENT_EXPORT NotificationStorage {
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
 
-  base::WeakPtrFactory<NotificationStorage>
-      weak_ptr_factory_;  // Must be last member.
+  base::WeakPtrFactory<NotificationStorage> weak_ptr_factory_{
+      this};  // Must be last member.
 };
 
 }  // namespace content

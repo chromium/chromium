@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "net/base/net_export.h"
+#include "net/reporting/reporting_cache.h"
 
 class GURL;
 
@@ -31,10 +32,12 @@ class NET_EXPORT ReportingService {
   virtual ~ReportingService();
 
   // Creates a ReportingService. |policy| will be copied. |request_context| must
-  // outlive the ReportingService.
+  // outlive the ReportingService. |store| must outlive the ReportingService.
+  // If |store| is null, the ReportingCache will be in-memory only.
   static std::unique_ptr<ReportingService> Create(
       const ReportingPolicy& policy,
-      URLRequestContext* request_context);
+      URLRequestContext* request_context,
+      ReportingCache::PersistentReportingStore* store);
 
   // Creates a ReportingService for testing purposes using an
   // already-constructed ReportingContext. The ReportingService will take

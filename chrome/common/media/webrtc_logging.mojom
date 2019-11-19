@@ -1,0 +1,33 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Represents a log message sent from the agent.
+struct WebRtcLoggingMessage {
+  mojo_base.mojom.Time timestamp;
+  string data;
+};
+
+// Used to listen for new log messages and events from the agent.
+interface WebRtcLoggingClient {
+  // New log messages are sent in batches to limit the frequency of calls.
+  OnAddMessages(array<WebRtcLoggingMessage> messages);
+
+  // Called in response to |Stop| being called on the agent. Any pending
+  // log messages will be sent via |OnAddMessages| first.
+  OnStopped();
+};
+
+// Used to control the renderer-side agent to start / stop logging.
+interface WebRtcLoggingAgent {
+  // Enables logging to the given |client|.
+  Start(pending_remote<WebRtcLoggingClient> client);
+
+  // Stops logging, resulting in any pending messages being sent via
+  // |OnAddMessages| and then |OnStopped| being called on the client.
+  Stop();
+};

@@ -147,7 +147,7 @@ bool KioskModeHandler::Parse(Extension* extension, base::string16* error) {
       return false;
     }
 
-    const base::Value::ListStorage& list = secondary_apps_value->GetList();
+    base::span<const base::Value> list = secondary_apps_value->GetList();
     const bool allow_enabled_on_launch =
         AllowSecondaryAppEnabledOnLaunch(extension);
 

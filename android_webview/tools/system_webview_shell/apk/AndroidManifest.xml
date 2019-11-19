@@ -10,8 +10,6 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="28" />
-
     <!-- "Normal" permissions which do not require user prompt -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -31,7 +29,7 @@
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.Light"
+        android:theme="@style/ShellTheme"
         android:networkSecurityConfig="@xml/network_security_config"
         android:debuggable="true" >
         <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing"
@@ -71,9 +69,11 @@
             android:label="@string/title_activity_browser"
             android:exported="true"
             android:windowSoftInputMode="adjustResize"
+            android:colorMode="wideColorGamut"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <!-- Catch intents which do not specify a MIME type -->
@@ -125,6 +125,12 @@
 
         <activity
             android:name="org.chromium.webview_shell.WebViewAnimationTestActivity"
+            android:noHistory="true"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name="org.chromium.webview_shell.WebPlatformTestsActivity"
             android:noHistory="true"
             android:exported="true">
         </activity>

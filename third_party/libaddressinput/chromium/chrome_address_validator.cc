@@ -50,8 +50,7 @@ AddressValidator::AddressValidator(std::unique_ptr<Source> source,
       validator_(new ::i18n::addressinput::AddressValidator(supplier_.get())),
       validated_(BuildCallback(this, &AddressValidator::Validated)),
       rules_loaded_(BuildCallback(this, &AddressValidator::RulesLoaded)),
-      load_rules_listener_(load_rules_listener),
-      weak_factory_(this) {}
+      load_rules_listener_(load_rules_listener) {}
 
 AddressValidator::~AddressValidator() {}
 
@@ -161,8 +160,7 @@ bool AddressValidator::AreRulesLoadedForRegion(const std::string& region_code) {
   return supplier_->IsLoaded(region_code);
 }
 
-AddressValidator::AddressValidator()
-    : load_rules_listener_(NULL), weak_factory_(this) {}
+AddressValidator::AddressValidator() : load_rules_listener_(nullptr) {}
 
 base::TimeDelta AddressValidator::GetBaseRetryPeriod() const {
   return base::TimeDelta::FromSeconds(8);
@@ -185,8 +183,9 @@ void AddressValidator::RulesLoaded(bool success,
     return;
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, base::Bind(&AddressValidator::RetryLoadRules,
-                            weak_factory_.GetWeakPtr(), region_code),
+      FROM_HERE,
+      base::BindOnce(&AddressValidator::RetryLoadRules,
+                     weak_factory_.GetWeakPtr(), region_code),
       GetBaseRetryPeriod() * pow(2, attempts_number_[region_code]++));
 }
 

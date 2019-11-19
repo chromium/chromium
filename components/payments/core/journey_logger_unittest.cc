@@ -7,7 +7,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -25,13 +25,15 @@ TEST(JourneyLoggerTest,
   base::HistogramTester histogram_tester;
   JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
 
-  logger.SetCompleted();
+  logger.SetEventOccurred(JourneyLogger::EVENT_SKIPPED_SHOW);
+  logger.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_MERCHANT);
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events");
   ASSERT_EQ(1U, buckets.size());
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
 }
@@ -93,6 +95,11 @@ TEST(JourneyLoggerTest,
   // user completes it.
   logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
   logger.SetRequestedInformation(true, false, false, false);
+  logger.SetRequestedPaymentMethodTypes(
+      /*requested_basic_card=*/true, /*requested_method_google=*/false,
+      /*requested_method_other=*/false);
+  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
+  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -205,7 +212,12 @@ TEST(JourneyLoggerTest,
   // completed.
   logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
   logger.SetRequestedInformation(true, false, false, false);
+  logger.SetRequestedPaymentMethodTypes(
+      /*requested_basic_card=*/true, /*requested_method_google=*/false,
+      /*requested_method_other=*/false);
   logger.SetCanMakePaymentValue(false);
+  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
+  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -277,7 +289,12 @@ TEST(JourneyLoggerTest,
   // the checkout.
   logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
   logger.SetRequestedInformation(true, false, false, false);
+  logger.SetRequestedPaymentMethodTypes(
+      /*requested_basic_card=*/true, /*requested_method_google=*/false,
+      /*requested_method_other=*/false);
   logger.SetCanMakePaymentValue(true);
+  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
+  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -301,7 +318,12 @@ TEST(JourneyLoggerTest,
   // the checkout.
   logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
   logger.SetRequestedInformation(true, false, false, false);
+  logger.SetRequestedPaymentMethodTypes(
+      /*requested_basic_card=*/true, /*requested_method_google=*/false,
+      /*requested_method_other=*/false);
   logger.SetCanMakePaymentValue(true);
+  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
+  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -337,6 +359,8 @@ TEST(JourneyLoggerTest,
   logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
 
   // Simulate that the user completes the checkout.
+  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
+  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -473,6 +497,8 @@ TEST(JourneyLoggerTest,
   logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
 
   // Simulate that the user completes the checkout.
+  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
+  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -518,6 +544,8 @@ TEST(JourneyLoggerTest,
   logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
 
   // Simulate that the user completes the checkout.
+  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
+  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
   logger.SetCompleted();
 
   // Make sure the correct events were logged.
@@ -852,6 +880,8 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_TwoPaymentRequests) {
                                       /*has_complete_suggestion=*/false);
 
   // Simulate that the user completes one checkout and aborts the other.
+  logger1.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
+  logger1.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
   logger1.SetCompleted();
   logger2.SetAborted(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
 
@@ -901,7 +931,7 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_TwoPaymentRequests) {
 // the Payment Request.
 TEST(JourneyLoggerTest,
      RecordJourneyStatsHistograms_CheckoutFunnelUkm_UserAborted) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   using UkmEntry = ukm::builders::PaymentRequest_CheckoutEvents;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   char test_url[] = "http://www.google.com/";
@@ -952,7 +982,7 @@ TEST(JourneyLoggerTest,
 // completes the Payment Request.
 TEST(JourneyLoggerTest,
      RecordJourneyStatsHistograms_CheckoutFunnelUkm_Completed) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   using UkmEntry = ukm::builders::PaymentRequest_CheckoutEvents;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   char test_url[] = "http://www.google.com/";
@@ -972,6 +1002,8 @@ TEST(JourneyLoggerTest,
   logger.SetNumberOfSuggestionsShown(JourneyLogger::SECTION_PAYMENT_METHOD, 1,
                                      /*has_complete_suggestion=*/true);
   logger.SetEventOccurred(JourneyLogger::EVENT_SHOWN);
+  logger.SetEventOccurred(JourneyLogger::EVENT_PAY_CLICKED);
+  logger.SetEventOccurred(JourneyLogger::EVENT_SELECTED_CREDIT_CARD);
   logger.SetCompleted();
 
   int64_t expected_step_metric =
@@ -980,7 +1012,9 @@ TEST(JourneyLoggerTest,
       JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD |
       JourneyLogger::EVENT_COMPLETED |
       JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT |
-      JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS;
+      JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS |
+      JourneyLogger::EVENT_PAY_CLICKED |
+      JourneyLogger::EVENT_SELECTED_CREDIT_CARD;
 
   // Make sure the UKM was logged correctly.
   auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);

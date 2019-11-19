@@ -38,7 +38,7 @@ class TopSitesBackend : public base::RefCountedThreadSafe<TopSitesBackend> {
   };
 
   using GetMostVisitedSitesCallback =
-      base::OnceCallback<void(const scoped_refptr<MostVisitedThreadSafe>&)>;
+      base::OnceCallback<void(MostVisitedURLList)>;
 
   TopSitesBackend();
 
@@ -47,7 +47,7 @@ class TopSitesBackend : public base::RefCountedThreadSafe<TopSitesBackend> {
   // Schedules the db to be shutdown.
   void Shutdown();
 
-  // Fetches MostVisitedThreadSafe.
+  // Fetches MostVisitedURLList.
   void GetMostVisitedSites(GetMostVisitedSitesCallback callback,
                            base::CancelableTaskTracker* tracker);
 
@@ -70,8 +70,7 @@ class TopSitesBackend : public base::RefCountedThreadSafe<TopSitesBackend> {
   void ShutdownDBOnDBThread();
 
   // Does the work of getting the most visited sites.
-  void GetMostVisitedSitesOnDBThread(
-      scoped_refptr<MostVisitedThreadSafe> sites);
+  MostVisitedURLList GetMostVisitedSitesOnDBThread();
 
   // Updates top sites.
   void UpdateTopSitesOnDBThread(const TopSitesDelta& delta,

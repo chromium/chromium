@@ -5,8 +5,25 @@
 # Fragments loaded by name via Fragment.instantiate(Context,String)
 # Not all fragments in this package are PreferenceFragments. E.g. HomepageEditor
 # is a normal Fragment.
--keep public class org.chromium.chrome.browser.** extends android.app.Fragment {
+-keep public class org.chromium.chrome.browser.preferences.** extends android.support.v4.app.Fragment {
   public <init>();
+}
+
+# Referenced by android.support.v7.preference.PreferenceInflater
+-keep public class android.support.v14.preference.SwitchPreference {}
+
+# Inflated via reflection
+-keep public class android.support.v7.preference.Preference {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep public class android.support.v7.preference.PreferenceScreen {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep public class android.support.v7.preference.PreferenceCategory {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep public class android.support.v7.preference.ListPreference {
+    public <init>(android.content.Context, android.util.AttributeSet);
 }
 
 # These classes aren't themselves referenced, but __ProcessService[0,1,2...] are
@@ -33,6 +50,30 @@
     boolean mShiftingMode;
 }
 
-# Trichrome builds don't include a native library list in the main APK; it's
-# picked up from the library APK at runtime.
--dontwarn org.chromium.base.library_loader.NativeLibraries
+# Let proguard know CastMediaOptions in CastOptions is always null, so it can
+# trim unused MediaNotificationService methods. This saves about 170 methods in
+# the dex file. https://crbug.com/855081
+-assumenosideeffects class com.google.android.gms.cast.framework.CastOptions {
+  *** getCastMediaOptions() return null;
+}
+
+# Also, because CastOptions creates a default CastMediaOptions object upon
+# construction, we need to trim out the its builder as well, so we are truly
+# assuming there's no CastMediaOptions instances anywhere. This is to avoid
+# CastMediaOptions to reference resources upon construction.
+-assumenosideeffects class com.google.android.gms.cast.framework.media.CastMediaOptions$Builder {
+  public <init>();
+  public <clinit>();
+  *** build() return null;
+}
+
+# Workaround for crbug/1002847. Methods of BaseGmsClient are incorrectly
+# removed even though they are required for the derived class GmsClient
+# to correctly implement Api$Client.
+# TODO: remove once crbug/1002847 resolved.
+-keep public class com.google.android.gms.common.internal.BaseGmsClient {
+  public void disconnect();
+  public void dump(java.lang.String,java.io.FileDescriptor,java.io.PrintWriter,java.lang.String[]);
+  public int getMinApkVersion();
+  public boolean requiresSignIn();
+}

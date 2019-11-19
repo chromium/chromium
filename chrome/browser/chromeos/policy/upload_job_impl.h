@@ -14,7 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/chromeos/policy/upload_job.h"
-#include "google_apis/gaia/oauth2_token_service.h"
+#include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
@@ -33,10 +33,11 @@ class SimpleURLLoader;
 
 namespace policy {
 
-// This implementation of UploadJob uses the OAuth2TokenService to acquire
+// This implementation of UploadJob uses the OAuth2AccessTokenManager to acquire
 // access tokens for the device management (cloud-based policy) server scope and
 // uses a SimpleURLLoader to upload data to the specified upload url.
-class UploadJobImpl : public UploadJob, public OAuth2TokenService::Consumer {
+class UploadJobImpl : public UploadJob,
+                      public OAuth2AccessTokenManager::Consumer {
  public:
   // UploadJobImpl uses a MimeBoundaryGenerator to generate strings which
   // mark the boundaries between data segments.
@@ -64,7 +65,7 @@ class UploadJobImpl : public UploadJob, public OAuth2TokenService::Consumer {
   UploadJobImpl(
       const GURL& upload_url,
       const std::string& account_id,
-      OAuth2TokenService* token_service,
+      OAuth2AccessTokenManager* access_token_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Delegate* delegate,
       std::unique_ptr<MimeBoundaryGenerator> boundary_generator,
@@ -102,11 +103,11 @@ class UploadJobImpl : public UploadJob, public OAuth2TokenService::Consumer {
     ERROR               // Upload failed.
   };
 
-  // OAuth2TokenService::Consumer:
+  // OAuth2AccessTokenManager::Consumer:
   void OnGetTokenSuccess(
-      const OAuth2TokenService::Request* request,
+      const OAuth2AccessTokenManager::Request* request,
       const OAuth2AccessTokenConsumer::TokenResponse& token_response) override;
-  void OnGetTokenFailure(const OAuth2TokenService::Request* request,
+  void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
                          const GoogleServiceAuthError& error) override;
 
   // Called when the SimpleURLLoader is finished.
@@ -138,8 +139,8 @@ class UploadJobImpl : public UploadJob, public OAuth2TokenService::Consumer {
   // The account ID that will be used for the access token fetch.
   const std::string account_id_;
 
-  // The token service used to retrieve the access token.
-  OAuth2TokenService* const token_service_;
+  // The token manager used to retrieve the access token.
+  OAuth2AccessTokenManager* const access_token_manager_;
 
   // This is used to initialize the network::SimpleURLLoader object.
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -169,7 +170,7 @@ class UploadJobImpl : public UploadJob, public OAuth2TokenService::Consumer {
   int retry_;
 
   // The OAuth request to receive the access token.
-  std::unique_ptr<OAuth2TokenService::Request> access_token_request_;
+  std::unique_ptr<OAuth2AccessTokenManager::Request> access_token_request_;
 
   // The OAuth access token.
   std::string access_token_;
@@ -187,7 +188,7 @@ class UploadJobImpl : public UploadJob, public OAuth2TokenService::Consumer {
 
   // Should remain the last member so it will be destroyed first and
   // invalidate all weak pointers.
-  base::WeakPtrFactory<UploadJobImpl> weak_factory_;
+  base::WeakPtrFactory<UploadJobImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UploadJobImpl);
 };

@@ -11,11 +11,6 @@ per-file content_gpu_manifest.cc=file://ipc/SECURITY_OWNERS
 per-file content_gpu_manifest.h=set noparent
 per-file content_gpu_manifest.h=file://ipc/SECURITY_OWNERS
 
-per-file content_packaged_services_manifest.cc=set noparent
-per-file content_packaged_services_manifest.cc=file://ipc/SECURITY_OWNERS
-per-file content_packaged_services_manifest.h=set noparent
-per-file content_packaged_services_manifest.h=file://ipc/SECURITY_OWNERS
-
 per-file content_plugin_manifest.cc=set noparent
 per-file content_plugin_manifest.cc=file://ipc/SECURITY_OWNERS
 per-file content_plugin_manifest.h=set noparent

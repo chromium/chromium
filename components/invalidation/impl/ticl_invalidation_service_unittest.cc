@@ -9,9 +9,8 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/invalidation/impl/fake_invalidation_state_tracker.h"
@@ -21,39 +20,13 @@
 #include "components/invalidation/impl/invalidation_state_tracker.h"
 #include "components/invalidation/impl/invalidator.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/url_request/url_request_context_getter.h"
-#include "services/identity/public/cpp/identity_test_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace invalidation {
-
-namespace {
-
-class FakeTiclSettingsProvider : public TiclSettingsProvider {
- public:
-  FakeTiclSettingsProvider();
-  ~FakeTiclSettingsProvider() override;
-
-  // TiclSettingsProvider:
-  bool UseGCMChannel() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeTiclSettingsProvider);
-};
-
-FakeTiclSettingsProvider::FakeTiclSettingsProvider() {
-}
-
-FakeTiclSettingsProvider::~FakeTiclSettingsProvider() {
-}
-
-bool FakeTiclSettingsProvider::UseGCMChannel() const {
-  return false;
-}
-
-}  // namespace
 
 class TiclInvalidationServiceTestDelegate {
  public:
@@ -73,19 +46,18 @@ class TiclInvalidationServiceTestDelegate {
         identity_test_env_.identity_manager());
     DCHECK(identity_provider_);
     invalidation_service_ = std::make_unique<TiclInvalidationService>(
-        "TestUserAgent", identity_provider_.get(),
-        std::unique_ptr<TiclSettingsProvider>(new FakeTiclSettingsProvider),
-        gcm_driver_.get(),
+        "TestUserAgent", identity_provider_.get(), gcm_driver_.get(),
         base::RepeatingCallback<void(
             base::WeakPtr<TiclInvalidationService>,
-            network::mojom::ProxyResolvingSocketFactoryRequest)>(),
+            mojo::PendingReceiver<
+                network::mojom::ProxyResolvingSocketFactory>)>(),
         nullptr, nullptr, network::TestNetworkConnectionTracker::GetInstance());
   }
 
   void InitializeInvalidationService() {
     fake_invalidator_ = new syncer::FakeInvalidator();
     invalidation_service_->InitForTest(
-        base::WrapUnique(new syncer::FakeInvalidationStateTracker),
+        std::make_unique<syncer::FakeInvalidationStateTracker>(),
         fake_invalidator_);
   }
 
@@ -106,8 +78,8 @@ class TiclInvalidationServiceTestDelegate {
     fake_invalidator_->EmitOnIncomingInvalidation(invalidation_map);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
-  identity::IdentityTestEnvironment identity_test_env_;
+  base::test::TaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<gcm::GCMDriver> gcm_driver_;
   std::unique_ptr<invalidation::IdentityProvider> identity_provider_;
   syncer::FakeInvalidator* fake_invalidator_;  // Owned by the service.
@@ -125,15 +97,12 @@ namespace internal {
 
 class FakeCallbackContainer {
   public:
-    FakeCallbackContainer() : called_(false),
-                              weak_ptr_factory_(this) {}
+   FakeCallbackContainer() : called_(false) {}
 
-    void FakeCallback(const base::DictionaryValue& value) {
-      called_ = true;
-    }
+   void FakeCallback(const base::DictionaryValue& value) { called_ = true; }
 
-    bool called_;
-    base::WeakPtrFactory<FakeCallbackContainer> weak_ptr_factory_;
+   bool called_;
+   base::WeakPtrFactory<FakeCallbackContainer> weak_ptr_factory_{this};
 };
 
 }  // namespace internal

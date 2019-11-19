@@ -14,7 +14,7 @@ namespace blink {
 
 base::Optional<IntRect> CSSMaskPainter::MaskBoundingBox(
     const LayoutObject& object,
-    const LayoutPoint& paint_offset) {
+    const PhysicalOffset& paint_offset) {
   if (!object.IsBoxModelObject() && !object.IsSVGChild())
     return base::nullopt;
 
@@ -35,25 +35,23 @@ base::Optional<IntRect> CSSMaskPainter::MaskBoundingBox(
   if (!style.HasMask())
     return base::nullopt;
 
-  LayoutRect maximum_mask_region;
+  PhysicalRect maximum_mask_region;
   // For HTML/CSS objects, the extent of the mask is known as "mask
   // painting area", which is determined by CSS mask-clip property.
   // We don't implement mask-clip:margin-box or no-clip currently,
   // so the maximum we can get is border-box.
   if (object.IsBox()) {
-    maximum_mask_region = ToLayoutBox(object).BorderBoxRect();
+    maximum_mask_region = ToLayoutBox(object).PhysicalBorderBoxRect();
   } else {
     // For inline elements, depends on the value of box-decoration-break
     // there could be one box in multiple fragments or multiple boxes.
     // Either way here we are only interested in the bounding box of them.
     DCHECK(object.IsLayoutInline());
-    maximum_mask_region = ToLayoutInline(object).LinesBoundingBox();
-    if (object.HasFlippedBlocksWritingMode())
-      object.ContainingBlock()->FlipForWritingMode(maximum_mask_region);
+    maximum_mask_region = ToLayoutInline(object).PhysicalLinesBoundingBox();
   }
   if (style.HasMaskBoxImageOutsets())
     maximum_mask_region.Expand(style.MaskBoxImageOutsets());
-  maximum_mask_region.MoveBy(paint_offset);
+  maximum_mask_region.offset += paint_offset;
   return PixelSnappedIntRect(maximum_mask_region);
 }
 

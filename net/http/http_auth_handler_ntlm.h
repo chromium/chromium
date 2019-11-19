@@ -32,6 +32,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/macros.h"
 #include "base/strings/string16.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -64,17 +65,17 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNTLM : public HttpAuthHandler {
     // this are unit tests which pass in a mocked-out version of the SSPI
     // library.  After the call |sspi_library| will be owned by this Factory and
     // will be destroyed when the Factory is destroyed.
-    void set_sspi_library(SSPILibrary* sspi_library) {
-      sspi_library_.reset(sspi_library);
+    void set_sspi_library(std::unique_ptr<SSPILibrary> sspi_library) {
+      sspi_library_ = std::move(sspi_library);
     }
 #endif  // defined(NTLM_SSPI)
 
    private:
 #if defined(NTLM_SSPI)
-    ULONG max_token_length_;
-    bool is_unsupported_;
     std::unique_ptr<SSPILibrary> sspi_library_;
 #endif  // defined(NTLM_SSPI)
+
+    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
 #if defined(NTLM_PORTABLE)
@@ -111,6 +112,8 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNTLM : public HttpAuthHandler {
     GetMSTimeProc old_ms_time_proc_;
     GenerateRandomProc old_random_proc_;
     HostNameProc old_host_name_proc_;
+
+    DISALLOW_COPY_AND_ASSIGN(ScopedProcSetter);
   };
 #endif
 
@@ -120,28 +123,26 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNTLM : public HttpAuthHandler {
 #endif
 #if defined(NTLM_SSPI)
   HttpAuthHandlerNTLM(SSPILibrary* sspi_library,
-                      ULONG max_token_length,
                       const HttpAuthPreferences* http_auth_preferences);
 #endif
 
+  // HttpAuthHandler
   bool NeedsIdentity() override;
-
   bool AllowsDefaultCredentials() override;
-
-  HttpAuth::AuthorizationResult HandleAnotherChallenge(
-      HttpAuthChallengeTokenizer* challenge) override;
 
  protected:
   // This function acquires a credentials handle in the SSPI implementation.
   // It does nothing in the portable implementation.
   int InitializeBeforeFirstChallenge();
 
+  // HttpAuthHandler
   bool Init(HttpAuthChallengeTokenizer* tok, const SSLInfo& ssl_info) override;
-
   int GenerateAuthTokenImpl(const AuthCredentials* credentials,
                             const HttpRequestInfo* request,
                             CompletionOnceCallback callback,
                             std::string* auth_token) override;
+  HttpAuth::AuthorizationResult HandleAnotherChallengeImpl(
+      HttpAuthChallengeTokenizer* challenge) override;
 
  private:
   ~HttpAuthHandlerNTLM() override;
@@ -181,13 +182,15 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNTLM : public HttpAuthHandler {
   AuthCredentials credentials_;
   std::string channel_bindings_;
 
-  // The base64-encoded string following "NTLM" in the "WWW-Authenticate" or
-  // "Proxy-Authenticate" response header.
-  std::string auth_data_;
+  // Decoded authentication token that the server returned as part of an NTLM
+  // challenge.
+  std::string challenge_token_;
 
 #if defined(NTLM_SSPI)
   const HttpAuthPreferences* http_auth_preferences_;
 #endif
+
+  DISALLOW_COPY_AND_ASSIGN(HttpAuthHandlerNTLM);
 };
 
 }  // namespace net

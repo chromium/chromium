@@ -69,7 +69,7 @@ class MimeTypeCollector {
   std::unique_ptr<std::vector<std::string>> result_;
   size_t left_;
   CompletionCallback callback_;
-  base::WeakPtrFactory<MimeTypeCollector> weak_ptr_factory_;
+  base::WeakPtrFactory<MimeTypeCollector> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MimeTypeCollector);
 };

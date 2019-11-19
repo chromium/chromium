@@ -29,7 +29,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "storage/common/blob_storage/blob_storage_constants.h"
+#include "storage/browser/blob/blob_storage_constants.h"
 
 namespace base {
 class TaskRunner;
@@ -317,7 +317,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
 
   base::MemoryPressureListener memory_pressure_listener_;
 
-  base::WeakPtrFactory<BlobMemoryController> weak_factory_;
+  base::WeakPtrFactory<BlobMemoryController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BlobMemoryController);
 };

@@ -30,7 +30,7 @@
     // NOTE: enable tap on <html> to workaround Polymer/polymer#4459
     // Pass no-op function because MSEdge 15 doesn't handle null as 2nd argument
     // https://github.com/Microsoft/ChakraCore/issues/3863
-    Polymer.Gestures.add(document.documentElement, 'tap', function() {});
+    Polymer.Gestures.addListener(document.documentElement, 'tap', function() {});
     document.addEventListener('tap', this._onCaptureClick.bind(this), true);
     document.addEventListener('focus', this._onCaptureFocus.bind(this), true);
     document.addEventListener('keydown', this._onCaptureKeyDown.bind(this), true);

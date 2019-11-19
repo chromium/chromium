@@ -270,11 +270,11 @@ MediaControlsRotateToFullscreenDelegate::ComputeVideoOrientation() const {
 
 MediaControlsRotateToFullscreenDelegate::SimpleOrientation
 MediaControlsRotateToFullscreenDelegate::ComputeScreenOrientation() const {
-  Frame* frame = video_element_->GetDocument().GetFrame();
+  LocalFrame* frame = video_element_->GetDocument().GetFrame();
   if (!frame)
     return SimpleOrientation::kUnknown;
 
-  switch (frame->GetChromeClient().GetScreenInfo().orientation_type) {
+  switch (frame->GetChromeClient().GetScreenInfo(*frame).orientation_type) {
     case kWebScreenOrientationPortraitPrimary:
     case kWebScreenOrientationPortraitSecondary:
       return SimpleOrientation::kPortrait;

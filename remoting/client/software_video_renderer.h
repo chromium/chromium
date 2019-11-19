@@ -85,7 +85,7 @@ class SoftwareVideoRenderer : public protocol::VideoRenderer,
 
   base::ThreadChecker thread_checker_;
 
-  base::WeakPtrFactory<SoftwareVideoRenderer> weak_factory_;
+  base::WeakPtrFactory<SoftwareVideoRenderer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SoftwareVideoRenderer);
 };

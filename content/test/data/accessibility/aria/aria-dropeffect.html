@@ -1,13 +1,18 @@
 <!--
 @MAC-ALLOW:AXDropEffects*
 @WIN-ALLOW:dropeffect*
+@AURALINUX-ALLOW:dropeffect*
+@BLINK-ALLOW:dropeffect*
 -->
-<ul>
-  <li aria-dropeffect="copy">copy</li>
-  <li aria-dropeffect="move">move</li>
-  <li aria-dropeffect="link">link</li>
-  <li aria-dropeffect="execute">execute</li>
-  <li aria-dropeffect="popup">popup</li>
-  <li aria-dropeffect="none">none(default)</li>
-  <li aria-dropeffect="link|popup">link</li>
-</ul>
+<!DOCTYPE HTML>
+<html>
+<body>
+  <div aria-dropeffect="copy">copy</div>
+  <div aria-dropeffect="move">move</div>
+  <div aria-dropeffect="link">link</div>
+  <div aria-dropeffect="execute">execute</div>
+  <div aria-dropeffect="popup">popup</div>
+  <div aria-dropeffect="none">none(default)</div>
+  <div aria-dropeffect="link popup">link popup</div>
+</body>
+</html>

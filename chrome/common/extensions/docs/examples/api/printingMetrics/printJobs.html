@@ -1,0 +1,41 @@
+<!--
+ * Copyright 2019 The Chromium Authors. All rights reserved.  Use of this
+ * source code is governed by a BSD-style license that can be found in the
+ * LICENSE file.
+-->
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Recent print jobs</title>
+    <link href="printJobs.css" rel="stylesheet" type="text/css">
+    <script src="printJobs.js"></script>
+  </head>
+
+  <body>
+    <h2>Recent print jobs:</h2>
+    <div id="printJobs">
+      <table id="printJobsTable">
+        <thead>
+          <tr>
+            <th rowspan="2">Title</th>
+            <th rowspan="2">Status</th>
+            <th rowspan="2">Time</th>
+            <th rowspan="2">Number of pages</th>
+            <th colspan="3">Printer</th>
+            <th colspan="5">Settings</th>
+          </tr>
+          <tr>
+            <th>Name</th>
+            <th>URI</th>
+            <th>Source</th>
+            <th>Color</th>
+            <th>Duplex</th>
+            <th>Paper width</th>
+            <th>Paper height</th>
+            <th>Copies</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </body>
+</html>

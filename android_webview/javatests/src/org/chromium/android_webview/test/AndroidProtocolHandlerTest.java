@@ -12,9 +12,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AndroidProtocolHandler;
+import org.chromium.base.FileUtils;
 import org.chromium.base.test.util.Feature;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -26,6 +26,37 @@ public class AndroidProtocolHandlerTest {
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testOpenNullUrl() {
+        Assert.assertNull(AndroidProtocolHandler.open(null));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testOpenEmptyUrl() {
+        Assert.assertNull(AndroidProtocolHandler.open(""));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testOpenMalformedUrl() {
+        Assert.assertNull(AndroidProtocolHandler.open("abcdefg"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testOpenPathlessUrl() {
+        // These URLs are interesting because android.net.Uri parses them unintuitively:
+        // Uri.getPath() returns "/" but Uri.getLastPathSegment() returns null.
+        Assert.assertNull(AndroidProtocolHandler.open("file:///"));
+        Assert.assertNull(AndroidProtocolHandler.open("content:///"));
+    }
+
     // star.svg and star.svgz contain the same data. AndroidProtocolHandler should decompress the
     // svgz automatically. Load both from assets and assert that they're equal.
     @Test
@@ -36,10 +67,10 @@ public class AndroidProtocolHandlerTest {
         InputStream svgzStream = null;
         try {
             svgStream = assertOpen("file:///android_asset/star.svg");
-            byte[] expectedData = readFully(svgStream);
+            byte[] expectedData = FileUtils.readStream(svgStream);
 
             svgzStream = assertOpen("file:///android_asset/star.svgz");
-            byte[] actualData = readFully(svgzStream);
+            byte[] actualData = FileUtils.readStream(svgzStream);
 
             Assert.assertArrayEquals(
                     "Decompressed star.svgz doesn't match star.svg", expectedData, actualData);
@@ -53,16 +84,5 @@ public class AndroidProtocolHandlerTest {
         InputStream stream = AndroidProtocolHandler.open(url);
         Assert.assertNotNull("Failed top open \"" + url + "\"", stream);
         return stream;
-    }
-
-    private byte[] readFully(InputStream stream) throws IOException {
-        ByteArrayOutputStream data = new ByteArrayOutputStream();
-        byte[] buf = new byte[4096];
-        for (;;) {
-            int len = stream.read(buf);
-            if (len < 1) break;
-            data.write(buf, 0, len);
-        }
-        return data.toByteArray();
     }
 }

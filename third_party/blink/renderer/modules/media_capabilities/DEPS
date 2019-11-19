@@ -1,8 +1,13 @@
 include_rules = [
     "+media/base/mime_util.h",
     "+media/base/supported_types.h",
+    "+media/base/video_codecs.h",
     "+media/filters/stream_parser_factory.h",
+    "+media/mojo/mojom/media_types.mojom-blink.h",
+    "+media/mojo/mojom/video_decode_perf_history.mojom-blink.h",
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/encryptedmedia",
     "+third_party/blink/renderer/modules/media_capabilities",
+    "+third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h",
+    "+third_party/blink/renderer/modules/modules_export.h",
 ]

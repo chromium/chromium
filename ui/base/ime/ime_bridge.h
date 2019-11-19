@@ -5,15 +5,15 @@
 #ifndef UI_BASE_IME_IME_BRIDGE_H_
 #define UI_BASE_IME_IME_BRIDGE_H_
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/base/ime/ime_bridge_observer.h"
 #include "ui/base/ime/ime_engine_handler_interface.h"
 #include "ui/base/ime/ime_input_context_handler_interface.h"
-#include "ui/base/ime/ui_base_ime_export.h"
 
 #if defined(OS_CHROMEOS)
-#include "ui/base/ime/chromeos/ime_candidate_window_handler_interface.h"
+#include "ui/base/ime/ime_candidate_window_handler_interface.h"
 
 namespace chromeos {
 class IMECandidateWindowHandlerInterface;
@@ -24,7 +24,7 @@ namespace ui {
 
 // IMEBridge provides access of each IME related handler. This class
 // is used for IME implementation.
-class UI_BASE_IME_EXPORT IMEBridge {
+class COMPONENT_EXPORT(UI_BASE_IME) IMEBridge {
  public:
   virtual ~IMEBridge();
 

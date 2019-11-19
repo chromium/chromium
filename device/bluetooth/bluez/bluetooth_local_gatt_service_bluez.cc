@@ -43,8 +43,7 @@ BluetoothLocalGattServiceBlueZ::BluetoothLocalGattServiceBlueZ(
                               "/service")),
       uuid_(uuid),
       is_primary_(is_primary),
-      delegate_(delegate),
-      weak_ptr_factory_(this) {
+      delegate_(delegate) {
   VLOG(1) << "Creating local GATT service with identifier: " << GetIdentifier();
   adapter->AddLocalGattService(base::WrapUnique(this));
 }

@@ -11,20 +11,17 @@
 #include "ui/gfx/image/image_skia.h"
 
 TestTableModel::TestTableModel(int row_count)
-    : row_count_(row_count),
-      observer_(NULL) {
-}
+    : row_count_(row_count), observer_(nullptr) {}
 
-TestTableModel::~TestTableModel() {
-}
+TestTableModel::~TestTableModel() = default;
 
 int TestTableModel::RowCount() {
   return row_count_;
 }
 
 base::string16 TestTableModel::GetText(int row, int column_id) {
-  return base::ASCIIToUTF16(base::IntToString(row) + "x" +
-                            base::IntToString(column_id));
+  return base::ASCIIToUTF16(base::NumberToString(row) + "x" +
+                            base::NumberToString(column_id));
 }
 
 gfx::ImageSkia TestTableModel::GetIcon(int row) {

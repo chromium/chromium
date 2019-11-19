@@ -49,9 +49,6 @@ class ReadTransaction : public BaseTransaction {
   void GetDataTypeContext(ModelType type,
                           sync_pb::DataTypeContext* context) const;
 
-  // Return the current (opaque) store birthday.
-  std::string GetStoreBirthday() const;
-
  private:
   void* operator new(size_t size);  // Transaction is meant for stack use only.
 

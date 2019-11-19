@@ -16,18 +16,19 @@ FakeNavigableContentsFactory::FakeNavigableContentsFactory() = default;
 
 FakeNavigableContentsFactory::~FakeNavigableContentsFactory() = default;
 
-void FakeNavigableContentsFactory::BindRequest(
-    mojom::NavigableContentsFactoryRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void FakeNavigableContentsFactory::BindReceiver(
+    mojo::PendingReceiver<mojom::NavigableContentsFactory> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void FakeNavigableContentsFactory::WaitForAndBindNextContentsRequest(
     FakeNavigableContents* contents) {
   base::RunLoop loop;
   next_create_contents_callback_ = base::BindLambdaForTesting(
-      [&loop, contents](mojom::NavigableContentsRequest request,
-                        mojom::NavigableContentsClientPtr client) {
-        contents->Bind(std::move(request), std::move(client));
+      [&loop, contents](
+          mojo::PendingReceiver<mojom::NavigableContents> receiver,
+          mojo::PendingRemote<mojom::NavigableContentsClient> client) {
+        contents->Bind(std::move(receiver), std::move(client));
         loop.Quit();
       });
   loop.Run();
@@ -35,15 +36,15 @@ void FakeNavigableContentsFactory::WaitForAndBindNextContentsRequest(
 
 void FakeNavigableContentsFactory::CreateContents(
     mojom::NavigableContentsParamsPtr params,
-    mojom::NavigableContentsRequest request,
-    mojom::NavigableContentsClientPtr client) {
+    mojo::PendingReceiver<mojom::NavigableContents> receiver,
+    mojo::PendingRemote<mojom::NavigableContentsClient> client) {
   if (!next_create_contents_callback_) {
     LOG(ERROR) << "Dropping unexpected CreateContents() request.";
     return;
   }
 
   std::move(next_create_contents_callback_)
-      .Run(std::move(request), std::move(client));
+      .Run(std::move(receiver), std::move(client));
 }
 
 }  // namespace content

@@ -70,7 +70,7 @@ void FlingSchedulerAndroid::ProgressFlingOnBeginFrameIfneeded(
 }
 
 ui::WindowAndroid* FlingSchedulerAndroid::GetRootWindow() {
-  if (!host_->GetView())
+  if (!host_->GetView() || !host_->GetView()->GetNativeView())
     return nullptr;
   return host_->GetView()->GetNativeView()->GetWindowAndroid();
 }

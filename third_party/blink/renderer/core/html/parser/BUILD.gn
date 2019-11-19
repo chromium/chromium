@@ -73,10 +73,6 @@ blink_core_sources("parser") {
     "text_document_parser.h",
     "text_resource_decoder.cc",
     "text_resource_decoder.h",
-    "xss_auditor.cc",
-    "xss_auditor.h",
-    "xss_auditor_delegate.cc",
-    "xss_auditor_delegate.h",
   ]
 
   # Optimizing the HTML parser for speed yields significant gains in performance

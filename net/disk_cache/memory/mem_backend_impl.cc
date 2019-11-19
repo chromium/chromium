@@ -57,13 +57,13 @@ base::LinkNode<MemEntryImpl>* NextSkippingChildren(
 }  // namespace
 
 MemBackendImpl::MemBackendImpl(net::NetLog* net_log)
-    : max_size_(0),
+    : Backend(net::MEMORY_CACHE),
+      max_size_(0),
       current_size_(0),
       net_log_(net_log),
       memory_pressure_listener_(
           base::BindRepeating(&MemBackendImpl::OnMemoryPressure,
-                              base::Unretained(this))),
-      weak_factory_(this) {}
+                              base::Unretained(this))) {}
 
 MemBackendImpl::~MemBackendImpl() {
   DCHECK(CheckLRUListOrder(lru_list_));
@@ -160,60 +160,46 @@ void MemBackendImpl::SetPostCleanupCallback(base::OnceClosure cb) {
   post_cleanup_callback_ = std::move(cb);
 }
 
-net::CacheType MemBackendImpl::GetCacheType() const {
-  return net::MEMORY_CACHE;
-}
-
 int32_t MemBackendImpl::GetEntryCount() const {
   return static_cast<int32_t>(entries_.size());
 }
 
-net::Error MemBackendImpl::OpenOrCreateEntry(const std::string& key,
-                                             net::RequestPriority priority,
-                                             EntryWithOpened* entry_struct,
-                                             CompletionOnceCallback callback) {
-  net::Error rv = OpenEntry(key, priority, &(entry_struct->entry),
-                            CompletionOnceCallback());
-  if (rv == net::OK) {
-    entry_struct->opened = true;
-    return rv;
-  }
+EntryResult MemBackendImpl::OpenOrCreateEntry(const std::string& key,
+                                              net::RequestPriority priority,
+                                              EntryResultCallback callback) {
+  EntryResult result = OpenEntry(key, priority, EntryResultCallback());
+  if (result.net_error() == net::OK)
+    return result;
+
   // Key was not opened, try creating it instead.
-  rv = CreateEntry(key, priority, &(entry_struct->entry),
-                   CompletionOnceCallback());
-  entry_struct->opened = false;
-  return rv;
+  return CreateEntry(key, priority, EntryResultCallback());
 }
 
-net::Error MemBackendImpl::OpenEntry(const std::string& key,
-                                     net::RequestPriority request_priority,
-                                     Entry** entry,
-                                     CompletionOnceCallback callback) {
+EntryResult MemBackendImpl::OpenEntry(const std::string& key,
+                                      net::RequestPriority request_priority,
+                                      EntryResultCallback callback) {
   auto it = entries_.find(key);
   if (it == entries_.end())
-    return net::ERR_FAILED;
+    return EntryResult::MakeError(net::ERR_FAILED);
 
   it->second->Open();
 
-  *entry = it->second;
-  return net::OK;
+  return EntryResult::MakeOpened(it->second);
 }
 
-net::Error MemBackendImpl::CreateEntry(const std::string& key,
-                                       net::RequestPriority request_priority,
-                                       Entry** entry,
-                                       CompletionOnceCallback callback) {
+EntryResult MemBackendImpl::CreateEntry(const std::string& key,
+                                        net::RequestPriority request_priority,
+                                        EntryResultCallback callback) {
   std::pair<EntryMap::iterator, bool> create_result =
       entries_.insert(EntryMap::value_type(key, nullptr));
   const bool did_insert = create_result.second;
   if (!did_insert)
-    return net::ERR_FAILED;
+    return EntryResult::MakeError(net::ERR_FAILED);
 
   MemEntryImpl* cache_entry =
       new MemEntryImpl(weak_factory_.GetWeakPtr(), key, net_log_);
   create_result.first->second = cache_entry;
-  *entry = cache_entry;
-  return net::OK;
+  return EntryResult::MakeCreated(cache_entry);
 }
 
 net::Error MemBackendImpl::DoomEntry(const std::string& key,
@@ -285,10 +271,9 @@ class MemBackendImpl::MemIterator final : public Backend::Iterator {
   explicit MemIterator(base::WeakPtr<MemBackendImpl> backend)
       : backend_(backend) {}
 
-  net::Error OpenNextEntry(Entry** next_entry,
-                           CompletionOnceCallback callback) override {
+  EntryResult OpenNextEntry(EntryResultCallback callback) override {
     if (!backend_)
-      return net::ERR_FAILED;
+      return EntryResult::MakeError(net::ERR_FAILED);
 
     if (!backend_keys_) {
       backend_keys_ = std::make_unique<Strings>(backend_->entries_.size());
@@ -301,9 +286,8 @@ class MemBackendImpl::MemIterator final : public Backend::Iterator {
 
     while (true) {
       if (current_ == backend_keys_->end()) {
-        *next_entry = nullptr;
         backend_keys_.reset();
-        return net::ERR_FAILED;
+        return EntryResult::MakeError(net::ERR_FAILED);
       }
 
       const auto& entry_iter = backend_->entries_.find(*current_);
@@ -314,8 +298,7 @@ class MemBackendImpl::MemIterator final : public Backend::Iterator {
       }
 
       entry_iter->second->Open();
-      *next_entry = entry_iter->second;
-      return net::OK;
+      return EntryResult::MakeOpened(entry_iter->second);
     }
   }
 

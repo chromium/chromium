@@ -111,7 +111,7 @@ bool UIOverrides::RemovesBookmarkShortcut(const Extension* extension) {
       *ui_overrides->bookmarks_ui->remove_bookmark_shortcut;
 }
 
-bool UIOverrides::RemovesBookmarkOpenPagesShortcut(const Extension* extension) {
+bool UIOverrides::RemovesBookmarkAllTabsShortcut(const Extension* extension) {
   const UIOverrides* ui_overrides = Get(extension);
   return ui_overrides && ui_overrides->bookmarks_ui &&
       ui_overrides->bookmarks_ui->remove_bookmark_open_pages_shortcut &&

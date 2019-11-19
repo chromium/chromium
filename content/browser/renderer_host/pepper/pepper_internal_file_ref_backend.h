@@ -15,9 +15,9 @@
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/c/pp_time.h"
 #include "ppapi/host/ppapi_host.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_operation.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 namespace content {
 
@@ -81,7 +81,7 @@ class PepperInternalFileRefBackend : public PepperFileRefBackend {
 
   mutable storage::FileSystemURL fs_url_;
 
-  base::WeakPtrFactory<PepperInternalFileRefBackend> weak_factory_;
+  base::WeakPtrFactory<PepperInternalFileRefBackend> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperInternalFileRefBackend);
 };

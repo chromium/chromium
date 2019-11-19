@@ -10,9 +10,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
-import android.support.annotation.ColorRes;
 import android.support.test.filters.SmallTest;
 import android.view.ViewGroup;
+
+import androidx.annotation.ColorRes;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeSwitches;
@@ -29,14 +29,19 @@ import org.chromium.chrome.browser.omnibox.LocationBarVoiceRecognitionHandler.Vo
 import org.chromium.chrome.browser.omnibox.LocationBarVoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinatorImpl;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionListEmbedder;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsResult;
 import org.chromium.chrome.test.util.OmniboxTestUtils.TestAutocompleteController;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.PermissionCallback;
@@ -126,7 +131,7 @@ public class LocationBarVoiceRecognitionHandlerTest {
         }
 
         @Override
-        protected boolean isRecognitionIntentPresent(Context context, boolean useCachedValue) {
+        protected boolean isRecognitionIntentPresent(boolean useCachedValue) {
             return true;
         }
 
@@ -195,6 +200,16 @@ public class LocationBarVoiceRecognitionHandlerTest {
         }
 
         @Override
+        public boolean shouldShowLocationBarInOverviewMode() {
+            return false;
+        }
+
+        @Override
+        public boolean isInOverviewAndShowingOmnibox() {
+            return false;
+        }
+
+        @Override
         public Profile getProfile() {
             return null;
         }
@@ -243,10 +258,21 @@ public class LocationBarVoiceRecognitionHandlerTest {
         public @ColorRes int getSecurityIconColorStateList() {
             return 0;
         }
+    }
+
+    /**
+     * TODO(crbug.com/962527): Remove this dependency on {@link AutocompleteCoordinatorImpl}.
+     */
+    private class TestAutocompleteCoordinatorImpl extends AutocompleteCoordinatorImpl {
+        public TestAutocompleteCoordinatorImpl(ViewGroup parent, AutocompleteDelegate delegate,
+                OmniboxSuggestionListEmbedder listEmbedder,
+                UrlBarEditingTextStateProvider urlBarEditingTextProvider) {
+            super(parent, delegate, listEmbedder, urlBarEditingTextProvider);
+        }
 
         @Override
-        public boolean shouldDisplaySearchTerms() {
-            return false;
+        public void onVoiceResults(List<VoiceResult> results) {
+            mAutocompleteVoiceResults = results;
         }
     }
 
@@ -255,18 +281,14 @@ public class LocationBarVoiceRecognitionHandlerTest {
      */
     private class TestDelegate implements LocationBarVoiceRecognitionHandler.Delegate {
         private boolean mUpdatedMicButtonState;
-        private AutocompleteCoordinator mCoordinator;
+        private AutocompleteCoordinator mAutocompleteCoordinator;
 
         TestDelegate() {
             ViewGroup parent =
                     (ViewGroup) mActivityTestRule.getActivity().findViewById(android.R.id.content);
             Assert.assertNotNull(parent);
-            mCoordinator = new AutocompleteCoordinator(parent, null, null, null) {
-                @Override
-                public void onVoiceResults(List<VoiceResult> results) {
-                    mAutocompleteVoiceResults = results;
-                }
-            };
+            mAutocompleteCoordinator =
+                    new TestAutocompleteCoordinatorImpl(parent, null, null, null);
         }
 
         @Override
@@ -287,7 +309,7 @@ public class LocationBarVoiceRecognitionHandlerTest {
 
         @Override
         public AutocompleteCoordinator getAutocompleteCoordinator() {
-            return mCoordinator;
+            return mAutocompleteCoordinator;
         }
 
         @Override
@@ -403,16 +425,16 @@ public class LocationBarVoiceRecognitionHandlerTest {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         mDataProvider = new TestDataProvider();
-        mDelegate = ThreadUtils.runOnUiThreadBlocking(() -> new TestDelegate());
+        mDelegate = TestThreadUtils.runOnUiThreadBlocking(() -> new TestDelegate());
         mHandler = new TestLocationBarVoiceRecognitionHandler(mDelegate);
         mPermissionDelegate = new TestAndroidPermissionDelegate();
         mAutocomplete = new TestAutocompleteController(null /* view */, sEmptySuggestionListener,
                 new HashMap<String, List<SuggestionsResult>>());
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             mWindowAndroid = new TestWindowAndroid(mActivityTestRule.getActivity());
             mWindowAndroid.setAndroidPermissionDelegate(mPermissionDelegate);
-            mTab = new Tab(0, false /* incognito */, mWindowAndroid);
+            mTab = new MockTab(0, false);
         });
     }
 
@@ -550,7 +572,7 @@ public class LocationBarVoiceRecognitionHandlerTest {
     @Test
     @SmallTest
     public void testCallback_noVoiceSearchResultWithNoMatch() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             mWindowAndroid.setVoiceResults(createDummyBundle("", 1f));
             startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
             Assert.assertEquals(
@@ -562,7 +584,7 @@ public class LocationBarVoiceRecognitionHandlerTest {
     @Test
     @SmallTest
     public void testCallback_successWithLowConfidence() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             float confidence =
                     LocationBarVoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD
                     - 0.01f;
@@ -583,7 +605,7 @@ public class LocationBarVoiceRecognitionHandlerTest {
     @SmallTest
     public void testCallback_successWithHighConfidence() {
         // Needs to run on the UI thread because we use the TemplateUrlService on success.
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             mWindowAndroid.setVoiceResults(createDummyBundle("testing",
                     LocationBarVoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD));
             startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
@@ -604,29 +626,27 @@ public class LocationBarVoiceRecognitionHandlerTest {
     @Test
     @SmallTest
     public void testParseResults_EmptyBundle() {
-        Assert.assertNull(
-                LocationBarVoiceRecognitionHandler.convertBundleToVoiceResults(new Bundle()));
+        Assert.assertNull(mHandler.convertBundleToVoiceResults(new Bundle()));
     }
 
     @Test
     @SmallTest
     public void testParseResults_MismatchedTextAndConfidenceScores() {
-        Assert.assertNull(LocationBarVoiceRecognitionHandler.convertBundleToVoiceResults(
+        Assert.assertNull(mHandler.convertBundleToVoiceResults(
                 createDummyBundle(new String[] {"blah"}, new float[] {0f, 1f})));
-        Assert.assertNull(LocationBarVoiceRecognitionHandler.convertBundleToVoiceResults(
+        Assert.assertNull(mHandler.convertBundleToVoiceResults(
                 createDummyBundle(new String[] {"blah", "foo"}, new float[] {7f})));
     }
 
     @Test
     @SmallTest
     public void testParseResults_ValidBundle() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             String[] texts = new String[] {"a", "b", "c"};
             float[] confidences = new float[] {0.8f, 1.0f, 1.0f};
 
             List<VoiceResult> results =
-                    LocationBarVoiceRecognitionHandler.convertBundleToVoiceResults(
-                            createDummyBundle(texts, confidences));
+                    mHandler.convertBundleToVoiceResults(createDummyBundle(texts, confidences));
 
             assertVoiceResultsAreEqual(results, texts, confidences);
         });
@@ -635,13 +655,12 @@ public class LocationBarVoiceRecognitionHandlerTest {
     @Test
     @SmallTest
     public void testParseResults_VoiceResponseURLConversion() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             String[] texts =
                     new String[] {"a", "www. b .co .uk", "engadget .com", "www.google.com"};
             float[] confidences = new float[] {1.0f, 1.0f, 1.0f, 1.0f};
             List<VoiceResult> results =
-                    LocationBarVoiceRecognitionHandler.convertBundleToVoiceResults(
-                            createDummyBundle(texts, confidences));
+                    mHandler.convertBundleToVoiceResults(createDummyBundle(texts, confidences));
 
             assertVoiceResultsAreEqual(results,
                     new String[] {"a", "www.b.co.uk", "engadget.com", "www.google.com"},

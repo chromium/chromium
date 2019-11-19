@@ -7,10 +7,9 @@
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/service_manager_connection.h"
-#include "content/public/common/service_names.mojom.h"
 #include "content/public/test/network_service_test_helper.h"
 #include "extensions/browser/api/sockets_tcp/sockets_tcp_api.h"
 #include "extensions/browser/api_test_utils.h"
@@ -20,11 +19,10 @@
 #include "extensions/shell/test/shell_test.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
-#include "services/network/public/cpp/features.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace extensions {
 
@@ -33,10 +31,8 @@ const char kHostname[] = "www.foo.com";
 class SocketsTcpApiTest : public ShellApiTest {
  public:
   SocketsTcpApiTest() {
-    if (base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-      base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          switches::kUseMockCertVerifierForTesting);
-    }
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kUseMockCertVerifierForTesting);
   }
 
   void SetUpOnMainThread() override {
@@ -94,18 +90,14 @@ IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, SocketTcpExtension) {
 }
 
 IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, SocketTcpExtensionTLS) {
-  network::mojom::NetworkServiceTestPtr network_service_test;
-  // If network service is running in a utility process, the cert of the
+  // Because the network service runs in a utility process, the cert of the
   // SpawnedTestServer won't be recognized, so inject mock cert verifier through
   // the test helper interface.
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-    content::ServiceManagerConnection::GetForProcess()
-        ->GetConnector()
-        ->BindInterface(content::mojom::kNetworkServiceName,
-                        &network_service_test);
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    network_service_test->MockCertVerifierSetDefaultResult(net::OK);
-  }
+  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
+  content::GetNetworkService()->BindTestInterface(
+      network_service_test.BindNewPipeAndPassReceiver());
+  mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+  network_service_test->MockCertVerifierSetDefaultResult(net::OK);
 
   std::unique_ptr<net::SpawnedTestServer> test_https_server(
       new net::SpawnedTestServer(

@@ -1,80 +1,50 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='scroller'",
-      "position": [10, 60],
-      "bounds": [300, 400]
-    },
-    {
-      "name": "Scrolling Layer",
-      "position": [10, 60],
-      "bounds": [285, 385],
-      "drawsContent": false
+      "name": "LayoutNGBlockFlow (positioned) DIV id='scroller'",
+      "bounds": [300, 400],
+      "transform": 1
     },
     {
       "name": "Scrolling Contents Layer",
-      "position": [10, 60],
       "bounds": [285, 900],
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow (positioned) DIV id='block'",
+          "object": "LayoutNGBlockFlow (positioned) DIV id='block'",
           "rect": [50, 310, 200, 50],
           "reason": "geometry"
         },
         {
-          "object": "LayoutBlockFlow (positioned) DIV id='block'",
+          "object": "LayoutNGBlockFlow (positioned) DIV id='block'",
           "rect": [50, 200, 200, 50],
           "reason": "geometry"
         }
       ],
+      "transform": 2
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 385],
+      "bounds": [285, 15],
       "transform": 1
     },
     {
-      "name": "Overflow Controls Host Layer",
-      "position": [10, 60],
-      "bounds": [300, 400],
-      "drawsContent": false
-    },
-    {
-      "name": "Horizontal Scrollbar Layer",
-      "position": [10, 445],
-      "bounds": [285, 15],
-      "drawsContent": false
-    },
-    {
-      "name": "Vertical Scrollbar Layer",
-      "position": [295, 60],
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [285, 0],
       "bounds": [15, 385],
-      "drawsContent": false,
-      "paintInvalidations": [
-        {
-          "object": "Vertical Scrollbar Layer",
-          "rect": [0, 0, 15, 385],
-          "reason": "full layer"
-        }
-      ]
+      "transform": 1
     },
     {
       "name": "Scroll Corner Layer",
-      "position": [295, 445],
-      "bounds": [15, 15]
+      "position": [285, 385],
+      "bounds": [15, 15],
+      "transform": 1
     }
   ],
   "transforms": [
@@ -84,9 +54,18 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
+        [10, 60, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
         [0, -150, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }

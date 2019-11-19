@@ -8,7 +8,6 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "extensions/browser/extension_registry.h"
 
 namespace extensions {
 
@@ -27,12 +26,12 @@ class TestExtensionRegistryObserver::Waiter {
     extension_ = extension;
   }
 
-  const Extension* extension() const { return extension_; }
+  const Extension* extension() const { return extension_.get(); }
 
  private:
   bool observed_;
   base::RunLoop run_loop_;
-  const Extension* extension_;
+  scoped_refptr<const Extension> extension_;
 
   DISALLOW_COPY_AND_ASSIGN(Waiter);
 };
@@ -51,7 +50,6 @@ TestExtensionRegistryObserver::TestExtensionRegistryObserver(
       loaded_waiter_(std::make_unique<Waiter>()),
       ready_waiter_(std::make_unique<Waiter>()),
       unloaded_waiter_(std::make_unique<Waiter>()),
-      extension_registry_observer_(this),
       extension_id_(extension_id) {
   extension_registry_observer_.Add(registry);
 }
@@ -59,7 +57,8 @@ TestExtensionRegistryObserver::TestExtensionRegistryObserver(
 TestExtensionRegistryObserver::~TestExtensionRegistryObserver() {
 }
 
-const Extension* TestExtensionRegistryObserver::WaitForExtensionUninstalled() {
+scoped_refptr<const Extension>
+TestExtensionRegistryObserver::WaitForExtensionUninstalled() {
   return Wait(&uninstalled_waiter_);
 }
 
@@ -76,7 +75,8 @@ const Extension* TestExtensionRegistryObserver::WaitForExtensionLoaded() {
   return Wait(&loaded_waiter_);
 }
 
-const Extension* TestExtensionRegistryObserver::WaitForExtensionUnloaded() {
+scoped_refptr<const Extension>
+TestExtensionRegistryObserver::WaitForExtensionUnloaded() {
   return Wait(&unloaded_waiter_);
 }
 

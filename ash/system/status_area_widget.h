@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/shelf/shelf_background_animator_observer.h"
 #include "base/macros.h"
 #include "ui/views/widget/widget.h"
 
@@ -17,10 +16,9 @@ class Window;
 }
 
 namespace ash {
-class AutoclickTray;
-class FlagWarningTray;
 class ImeMenuTray;
 class LogoutButtonTray;
+class StatusAreaOverflowButtonTray;
 class OverviewButtonTray;
 class DictationButtonTray;
 class PaletteTray;
@@ -35,9 +33,12 @@ class VirtualKeyboardTray;
 // the bottom-right of the screen. Exists separately from ShelfView/ShelfWidget
 // so that it can be shown in cases where the rest of the shelf is hidden (e.g.
 // on secondary monitors at the login screen).
-class ASH_EXPORT StatusAreaWidget : public views::Widget,
-                                    public ShelfBackgroundAnimatorObserver {
+class ASH_EXPORT StatusAreaWidget : public views::Widget {
  public:
+  // Whether the status area is collapsed or expanded. Currently, this is only
+  // applicable in in-app tablet mode. Otherwise the state is NOT_COLLAPSIBLE.
+  enum class CollapseState { NOT_COLLAPSIBLE, COLLAPSED, EXPANDED };
+
   StatusAreaWidget(aura::Window* status_container, Shelf* shelf);
   ~StatusAreaWidget() override;
 
@@ -53,6 +54,10 @@ class ASH_EXPORT StatusAreaWidget : public views::Widget,
   // and calls UpdateAfterLoginStatusChange for the system tray and the web
   // notification tray.
   void UpdateAfterLoginStatusChange(LoginStatus login_status);
+
+  // Updates the collapse state of the status area after the state of the shelf
+  // changes.
+  void UpdateCollapseState();
 
   // Sets system tray visibility. Shows or hides widget if needed.
   void SetSystemTrayVisibility(bool visible);
@@ -72,6 +77,9 @@ class ASH_EXPORT StatusAreaWidget : public views::Widget,
   DictationButtonTray* dictation_button_tray() {
     return dictation_button_tray_.get();
   }
+  StatusAreaOverflowButtonTray* overflow_button_tray() {
+    return overflow_button_tray_.get();
+  }
   OverviewButtonTray* overview_button_tray() {
     return overview_button_tray_.get();
   }
@@ -80,7 +88,6 @@ class ASH_EXPORT StatusAreaWidget : public views::Widget,
   SelectToSpeakTray* select_to_speak_tray() {
     return select_to_speak_tray_.get();
   }
-  AutoclickTray* autoclick_tray() { return autoclick_tray_.get(); }
 
   Shelf* shelf() { return shelf_; }
 
@@ -109,9 +116,8 @@ class ASH_EXPORT StatusAreaWidget : public views::Widget,
   VirtualKeyboardTray* virtual_keyboard_tray_for_testing() {
     return virtual_keyboard_tray_.get();
   }
-  FlagWarningTray* flag_warning_tray_for_testing() {
-    return flag_warning_tray_.get();
-  }
+
+  CollapseState collapse_state() const { return collapse_state_; }
 
  private:
   friend class StatusAreaWidgetTestApi;
@@ -122,6 +128,7 @@ class ASH_EXPORT StatusAreaWidget : public views::Widget,
 
   StatusAreaWidgetDelegate* status_area_widget_delegate_;
 
+  std::unique_ptr<StatusAreaOverflowButtonTray> overflow_button_tray_;
   std::unique_ptr<OverviewButtonTray> overview_button_tray_;
   std::unique_ptr<DictationButtonTray> dictation_button_tray_;
   std::unique_ptr<UnifiedSystemTray> unified_system_tray_;
@@ -130,10 +137,10 @@ class ASH_EXPORT StatusAreaWidget : public views::Widget,
   std::unique_ptr<VirtualKeyboardTray> virtual_keyboard_tray_;
   std::unique_ptr<ImeMenuTray> ime_menu_tray_;
   std::unique_ptr<SelectToSpeakTray> select_to_speak_tray_;
-  std::unique_ptr<AutoclickTray> autoclick_tray_;
-  std::unique_ptr<FlagWarningTray> flag_warning_tray_;
 
   LoginStatus login_status_ = LoginStatus::NOT_LOGGED_IN;
+
+  CollapseState collapse_state_ = CollapseState::NOT_COLLAPSIBLE;
 
   Shelf* shelf_;
 

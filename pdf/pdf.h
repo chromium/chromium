@@ -27,6 +27,13 @@ class Size;
 
 namespace chrome_pdf {
 
+#if defined(OS_CHROMEOS)
+// Create a flattened PDF document from an existing PDF document.
+// |input_buffer| is the buffer that contains the entire PDF document to be
+// flattened.
+std::vector<uint8_t> CreateFlattenedPdf(base::span<const uint8_t> input_buffer);
+#endif  // defined(OS_CHROMEOS)
+
 #if defined(OS_WIN)
 // Printing modes - type to convert PDF to for printing
 enum PrintingMode {

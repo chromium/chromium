@@ -17,8 +17,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
-import org.chromium.chrome.browser.widget.EmptyAlertEditText;
-import org.chromium.chrome.browser.widget.TintedDrawable;
+import org.chromium.chrome.browser.ui.widget.TintedDrawable;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.url_formatter.UrlFormatter;
 
@@ -33,8 +32,8 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
 
     private BookmarkModel mModel;
     private BookmarkId mBookmarkId;
-    private EmptyAlertEditText mTitleEditText;
-    private EmptyAlertEditText mUrlEditText;
+    private BookmarkTextInputLayout mTitleEditText;
+    private BookmarkTextInputLayout mUrlEditText;
     private TextView mFolderTextView;
 
     private MenuItem mDeleteButton;
@@ -67,9 +66,9 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
         }
 
         setContentView(R.layout.bookmark_edit);
-        mTitleEditText = (EmptyAlertEditText) findViewById(R.id.title_text);
+        mTitleEditText = findViewById(R.id.title_text);
         mFolderTextView = (TextView) findViewById(R.id.folder_text);
-        mUrlEditText = (EmptyAlertEditText) findViewById(R.id.url_text);
+        mUrlEditText = findViewById(R.id.url_text);
 
         mFolderTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,8 +98,8 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
         BookmarkItem bookmarkItem = mModel.getBookmarkById(mBookmarkId);
         // While the user is editing the bookmark, do not override user's input.
         if (!modelChanged) {
-            mTitleEditText.setText(bookmarkItem.getTitle());
-            mUrlEditText.setText(bookmarkItem.getUrl());
+            mTitleEditText.getEditText().setText(bookmarkItem.getTitle());
+            mUrlEditText.getEditText().setText(bookmarkItem.getUrl());
         }
         mFolderTextView.setText(mModel.getBookmarkTitle(bookmarkItem.getParentId()));
         mTitleEditText.setEnabled(bookmarkItem.isEditable());

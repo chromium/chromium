@@ -117,7 +117,7 @@ TEST_F(EventWithLatencyInfoTest, LatencyInfoCoalescing) {
   MouseEventWithLatencyInfo mouse_0 =
       CreateMouseEvent(WebInputEvent::kMouseMove, 5.0);
   mouse_0.latency.AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, base::TimeTicks(), 1);
+      ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, base::TimeTicks());
   MouseEventWithLatencyInfo mouse_1 =
       CreateMouseEvent(WebInputEvent::kMouseMove, 10.0);
 
@@ -325,13 +325,10 @@ TEST_F(EventWithLatencyInfoTest, WebMouseWheelEventCoalescing) {
   EXPECT_TRUE(CanCoalesce(mouse_wheel_0, mouse_wheel_1));
   EXPECT_EQ(mouse_wheel_0.event.GetModifiers(),
             mouse_wheel_1.event.GetModifiers());
-  EXPECT_EQ(mouse_wheel_0.event.scroll_by_page,
-            mouse_wheel_1.event.scroll_by_page);
+  EXPECT_EQ(mouse_wheel_0.event.delta_units, mouse_wheel_1.event.delta_units);
   EXPECT_EQ(mouse_wheel_0.event.phase, mouse_wheel_1.event.phase);
   EXPECT_EQ(mouse_wheel_0.event.momentum_phase,
             mouse_wheel_1.event.momentum_phase);
-  EXPECT_EQ(mouse_wheel_0.event.has_precise_scrolling_deltas,
-            mouse_wheel_1.event.has_precise_scrolling_deltas);
   Coalesce(mouse_wheel_0, &mouse_wheel_1);
 
   // Coalesced event has the position of the most recent event.

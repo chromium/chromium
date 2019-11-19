@@ -9,13 +9,13 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/signin/core/browser/list_accounts_test_utils.h"
-#include "components/signin/core/browser/test_signin_client.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "components/signin/public/base/list_accounts_test_utils.h"
+#include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "services/identity/public/cpp/accounts_cookie_mutator.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/identity_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -43,10 +43,10 @@ class ChildAccountServiceTest : public ::testing::Test {
     auto* signin_client =
         ChromeSigninClientFactory::GetForProfile(profile_.get());
     return static_cast<TestSigninClient*>(signin_client)
-        ->test_url_loader_factory();
+        ->GetTestURLLoaderFactory();
   }
 
-  identity::AccountsCookieMutator* GetAccountsCookieMutator() {
+  signin::AccountsCookieMutator* GetAccountsCookieMutator() {
     IdentityTestEnvironmentProfileAdaptor identity_test_env_profile_adaptor(
         profile_.get());
     return identity_test_env_profile_adaptor.identity_test_env()
@@ -54,7 +54,7 @@ class ChildAccountServiceTest : public ::testing::Test {
         ->GetAccountsCookieMutator();
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
 };

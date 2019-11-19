@@ -3,59 +3,59 @@
 <grit base_dir="." current_release="1" latest_public_release="0"
       output_all_resource_defines="false" enc_check="möl" source_lang_id="en">
   <outputs>
-    <output filename="_locales/am/messages.json" type="chrome_messages_json" lang="am"/>
-    <output filename="_locales/ar/messages.json" type="chrome_messages_json" lang="ar"/>
-    <output filename="_locales/bg/messages.json" type="chrome_messages_json" lang="bg"/>
-    <output filename="_locales/bn/messages.json" type="chrome_messages_json" lang="bn"/>
-    <output filename="_locales/ca/messages.json" type="chrome_messages_json" lang="ca"/>
-    <output filename="_locales/cs/messages.json" type="chrome_messages_json" lang="cs"/>
-    <output filename="_locales/da/messages.json" type="chrome_messages_json" lang="da"/>
-    <output filename="_locales/de/messages.json" type="chrome_messages_json" lang="de"/>
-    <output filename="_locales/el/messages.json" type="chrome_messages_json" lang="el"/>
-    <output filename="_locales/en_GB/messages.json" type="chrome_messages_json" lang="en-GB"/>
-    <output filename="_locales/en/messages.json" type="chrome_messages_json" lang="en"/>
-    <output filename="_locales/es/messages.json" type="chrome_messages_json" lang="es"/>
-    <output filename="_locales/es_419/messages.json" type="chrome_messages_json" lang="es-419"/>
-    <output filename="_locales/et/messages.json" type="chrome_messages_json" lang="et"/>
-    <output filename="_locales/fa/messages.json" type="chrome_messages_json" lang="fa"/>
-    <output filename="_locales/fi/messages.json" type="chrome_messages_json" lang="fi"/>
-    <output filename="_locales/fil/messages.json" type="chrome_messages_json" lang="fil"/>
-    <output filename="_locales/fr/messages.json" type="chrome_messages_json" lang="fr"/>
-    <output filename="_locales/gu/messages.json" type="chrome_messages_json" lang="gu"/>
-    <output filename="_locales/he/messages.json" type="chrome_messages_json" lang="he"/>
-    <output filename="_locales/hi/messages.json" type="chrome_messages_json" lang="hi"/>
-    <output filename="_locales/hr/messages.json" type="chrome_messages_json" lang="hr"/>
-    <output filename="_locales/hu/messages.json" type="chrome_messages_json" lang="hu"/>
-    <output filename="_locales/id/messages.json" type="chrome_messages_json" lang="id"/>
-    <output filename="_locales/it/messages.json" type="chrome_messages_json" lang="it"/>
-    <output filename="_locales/ja/messages.json" type="chrome_messages_json" lang="ja"/>
-    <output filename="_locales/kn/messages.json" type="chrome_messages_json" lang="kn"/>
-    <output filename="_locales/ko/messages.json" type="chrome_messages_json" lang="ko"/>
-    <output filename="_locales/lt/messages.json" type="chrome_messages_json" lang="lt"/>
-    <output filename="_locales/lv/messages.json" type="chrome_messages_json" lang="lv"/>
-    <output filename="_locales/ml/messages.json" type="chrome_messages_json" lang="ml"/>
-    <output filename="_locales/mr/messages.json" type="chrome_messages_json" lang="mr"/>
-    <output filename="_locales/ms/messages.json" type="chrome_messages_json" lang="ms"/>
-    <output filename="_locales/nl/messages.json" type="chrome_messages_json" lang="nl"/>
-    <output filename="_locales/nb/messages.json" type="chrome_messages_json" lang="no"/>
-    <output filename="_locales/pl/messages.json" type="chrome_messages_json" lang="pl"/>
-    <output filename="_locales/pt_BR/messages.json" type="chrome_messages_json" lang="pt-BR"/>
-    <output filename="_locales/pt_PT/messages.json" type="chrome_messages_json" lang="pt-PT"/>
-    <output filename="_locales/ro/messages.json" type="chrome_messages_json" lang="ro"/>
-    <output filename="_locales/ru/messages.json" type="chrome_messages_json" lang="ru"/>
-    <output filename="_locales/sk/messages.json" type="chrome_messages_json" lang="sk"/>
-    <output filename="_locales/sl/messages.json" type="chrome_messages_json" lang="sl"/>
-    <output filename="_locales/sr/messages.json" type="chrome_messages_json" lang="sr"/>
-    <output filename="_locales/sv/messages.json" type="chrome_messages_json" lang="sv"/>
-    <output filename="_locales/sw/messages.json" type="chrome_messages_json" lang="sw"/>
-    <output filename="_locales/ta/messages.json" type="chrome_messages_json" lang="ta"/>
-    <output filename="_locales/te/messages.json" type="chrome_messages_json" lang="te"/>
-    <output filename="_locales/th/messages.json" type="chrome_messages_json" lang="th"/>
-    <output filename="_locales/tr/messages.json" type="chrome_messages_json" lang="tr"/>
-    <output filename="_locales/uk/messages.json" type="chrome_messages_json" lang="uk"/>
-    <output filename="_locales/vi/messages.json" type="chrome_messages_json" lang="vi"/>
-    <output filename="_locales/zh_CN/messages.json" type="chrome_messages_json" lang="zh-CN"/>
-    <output filename="_locales/zh_TW/messages.json" type="chrome_messages_json" lang="zh-TW"/>
+    <output filename="_locales/am/messages.json.gz" type="chrome_messages_json_gzip" lang="am"/>
+    <output filename="_locales/ar/messages.json.gz" type="chrome_messages_json_gzip" lang="ar"/>
+    <output filename="_locales/bg/messages.json.gz" type="chrome_messages_json_gzip" lang="bg"/>
+    <output filename="_locales/bn/messages.json.gz" type="chrome_messages_json_gzip" lang="bn"/>
+    <output filename="_locales/ca/messages.json.gz" type="chrome_messages_json_gzip" lang="ca"/>
+    <output filename="_locales/cs/messages.json.gz" type="chrome_messages_json_gzip" lang="cs"/>
+    <output filename="_locales/da/messages.json.gz" type="chrome_messages_json_gzip" lang="da"/>
+    <output filename="_locales/de/messages.json.gz" type="chrome_messages_json_gzip" lang="de"/>
+    <output filename="_locales/el/messages.json.gz" type="chrome_messages_json_gzip" lang="el"/>
+    <output filename="_locales/en_GB/messages.json.gz" type="chrome_messages_json_gzip" lang="en-GB"/>
+    <output filename="_locales/en/messages.json.gz" type="chrome_messages_json_gzip" lang="en"/>
+    <output filename="_locales/es/messages.json.gz" type="chrome_messages_json_gzip" lang="es"/>
+    <output filename="_locales/es_419/messages.json.gz" type="chrome_messages_json_gzip" lang="es-419"/>
+    <output filename="_locales/et/messages.json.gz" type="chrome_messages_json_gzip" lang="et"/>
+    <output filename="_locales/fa/messages.json.gz" type="chrome_messages_json_gzip" lang="fa"/>
+    <output filename="_locales/fi/messages.json.gz" type="chrome_messages_json_gzip" lang="fi"/>
+    <output filename="_locales/fil/messages.json.gz" type="chrome_messages_json_gzip" lang="fil"/>
+    <output filename="_locales/fr/messages.json.gz" type="chrome_messages_json_gzip" lang="fr"/>
+    <output filename="_locales/gu/messages.json.gz" type="chrome_messages_json_gzip" lang="gu"/>
+    <output filename="_locales/he/messages.json.gz" type="chrome_messages_json_gzip" lang="he"/>
+    <output filename="_locales/hi/messages.json.gz" type="chrome_messages_json_gzip" lang="hi"/>
+    <output filename="_locales/hr/messages.json.gz" type="chrome_messages_json_gzip" lang="hr"/>
+    <output filename="_locales/hu/messages.json.gz" type="chrome_messages_json_gzip" lang="hu"/>
+    <output filename="_locales/id/messages.json.gz" type="chrome_messages_json_gzip" lang="id"/>
+    <output filename="_locales/it/messages.json.gz" type="chrome_messages_json_gzip" lang="it"/>
+    <output filename="_locales/ja/messages.json.gz" type="chrome_messages_json_gzip" lang="ja"/>
+    <output filename="_locales/kn/messages.json.gz" type="chrome_messages_json_gzip" lang="kn"/>
+    <output filename="_locales/ko/messages.json.gz" type="chrome_messages_json_gzip" lang="ko"/>
+    <output filename="_locales/lt/messages.json.gz" type="chrome_messages_json_gzip" lang="lt"/>
+    <output filename="_locales/lv/messages.json.gz" type="chrome_messages_json_gzip" lang="lv"/>
+    <output filename="_locales/ml/messages.json.gz" type="chrome_messages_json_gzip" lang="ml"/>
+    <output filename="_locales/mr/messages.json.gz" type="chrome_messages_json_gzip" lang="mr"/>
+    <output filename="_locales/ms/messages.json.gz" type="chrome_messages_json_gzip" lang="ms"/>
+    <output filename="_locales/nl/messages.json.gz" type="chrome_messages_json_gzip" lang="nl"/>
+    <output filename="_locales/nb/messages.json.gz" type="chrome_messages_json_gzip" lang="no"/>
+    <output filename="_locales/pl/messages.json.gz" type="chrome_messages_json_gzip" lang="pl"/>
+    <output filename="_locales/pt_BR/messages.json.gz" type="chrome_messages_json_gzip" lang="pt-BR"/>
+    <output filename="_locales/pt_PT/messages.json.gz" type="chrome_messages_json_gzip" lang="pt-PT"/>
+    <output filename="_locales/ro/messages.json.gz" type="chrome_messages_json_gzip" lang="ro"/>
+    <output filename="_locales/ru/messages.json.gz" type="chrome_messages_json_gzip" lang="ru"/>
+    <output filename="_locales/sk/messages.json.gz" type="chrome_messages_json_gzip" lang="sk"/>
+    <output filename="_locales/sl/messages.json.gz" type="chrome_messages_json_gzip" lang="sl"/>
+    <output filename="_locales/sr/messages.json.gz" type="chrome_messages_json_gzip" lang="sr"/>
+    <output filename="_locales/sv/messages.json.gz" type="chrome_messages_json_gzip" lang="sv"/>
+    <output filename="_locales/sw/messages.json.gz" type="chrome_messages_json_gzip" lang="sw"/>
+    <output filename="_locales/ta/messages.json.gz" type="chrome_messages_json_gzip" lang="ta"/>
+    <output filename="_locales/te/messages.json.gz" type="chrome_messages_json_gzip" lang="te"/>
+    <output filename="_locales/th/messages.json.gz" type="chrome_messages_json_gzip" lang="th"/>
+    <output filename="_locales/tr/messages.json.gz" type="chrome_messages_json_gzip" lang="tr"/>
+    <output filename="_locales/uk/messages.json.gz" type="chrome_messages_json_gzip" lang="uk"/>
+    <output filename="_locales/vi/messages.json.gz" type="chrome_messages_json_gzip" lang="vi"/>
+    <output filename="_locales/zh_CN/messages.json.gz" type="chrome_messages_json_gzip" lang="zh-CN"/>
+    <output filename="_locales/zh_TW/messages.json.gz" type="chrome_messages_json_gzip" lang="zh-TW"/>
   </outputs>
   <translations>
     <file path="chromevox_strings_am.xtb" lang="am" />
@@ -595,6 +595,12 @@
       <message desc="Hide event stream filters options for event stream logging." name="IDS_CHROMEVOX_OPTIONS_HIDE_EVENT_STREAM_FILTERS">
         Hide event stream filters
       </message>
+      <message desc="Set all event stream logging filters to on." name="IDS_CHROMEVOX_OPTIONS_ENABLE_ALL_EVENT_STREAM_FILTERS">
+        Enable all event filters
+      </message>
+      <message desc="Set all event stream logging filters to off." name="IDS_CHROMEVOX_OPTIONS_DISABLE_ALL_EVENT_STREAM_FILTERS">
+        Disable all event filters
+      </message>
       <message desc="Enable chromevox braille logging." name="IDS_CHROMEVOX_OPTIONS_DEVELOPER_BRAILLE_LOGGING">
         Enable braille logging
       </message>
@@ -1087,6 +1093,12 @@
       <message desc="Describes an element with the ARIA role combobox." name="IDS_CHROMEVOX_ROLE_COMBOBOX">
         Combo box
       </message>
+      <message desc="Accessibility role description for a single comment" name="IDS_CHROMEVOX_ROLE_COMMENT">
+        Comment
+      </message>
+      <message desc="Accessibility role description for a comment section" name="IDS_CHROMEVOX_ROLE_COMMENT_SECTION">
+        Comment section
+      </message>
       <message desc="Accessibility role description for content deletion, meaning content that is has been or is suggested to be removed from a document, such as in a revision review" name="IDS_CHROMEVOX_ROLE_CONTENT_DELETION">
         Deletion
       </message>
@@ -1327,6 +1339,9 @@
       <message desc="This is an abbreviated ARIA widget role name shown on a braille display. When translating, try to find a contracted form of the translation for 'radio button group' according to local conventions. If reasonable, use all lowercase and avoid punctuation to keep the number of characters as low as possible." name="IDS_CHROMEVOX_ROLE_RADIOGROUP_BRL">
         rdgrp
       </message>
+      <message desc="Accessibility role description for revision, meaning historical change info tied to this content" name="IDS_CHROMEVOX_ROLE_REVISION">
+        Revision
+      </message>
       <message desc="Describes an element with the ARIA role scrollbar." name="IDS_CHROMEVOX_ROLE_SCROLLBAR">
         Scroll bar
       </message>
@@ -1350,6 +1365,9 @@
       </message>
       <message desc="This is an abbreviated ARIA widget role name shown on a braille display. When translating, try to find a contracted form of the translation for 'status' according to local conventions. If reasonable, use all lowercase and avoid punctuation to keep the number of characters as low as possible." name="IDS_CHROMEVOX_ROLE_STATUS_BRL">
         sts
+      </message>
+      <message desc="Accessibility role description for suggestion, meaning a suggested change to some content" name="IDS_CHROMEVOX_ROLE_SUGGESTION" >
+        Suggestion
       </message>
       <message desc="Describes an element with the ARIA role tab." name="IDS_CHROMEVOX_ROLE_TAB" meaning="UI element">
         Tab
@@ -1900,6 +1918,8 @@
       <message desc="In an editable text box, describes a line with only whitespace." name="IDS_CHROMEVOX_TEXT_BOX_WHITESPACE" meaning="UI element">
         Space
       </message>
+      <!-- TODO(crbug.com/999781): The following 3 messages are combined with other message fragments. -->
+      <!-- Combining message fragments is a I18N code-smell.  Combine fragments into a single message. -->
       <message desc="Further describes a list-like element with a number of items. e.g. This will be combined with other messages to produce: List with 3 items." name="IDS_CHROMEVOX_LIST_WITH_ITEMS_NOT_PLURALIZED">
         with <ph name="num">$1</ph> items
       </message>
@@ -1907,10 +1927,11 @@
         +<ph name="num">$1</ph>
       </message>
       <message desc="Further describes a list-like element with a number of items. e.g. This will be combined with other messages to produce: List with 3 items." name="IDS_CHROMEVOX_LIST_WITH_ITEMS">
-        with {COUNT, plural, =1 {# item}other {# items}}
+        {COUNT, plural, =1{with # item} other{with # items}}
       </message>
+      <!-- TODO(crbug.com/999781): This should not need ICU msg format. Fix where the message is used. -->
       <message desc="Further describes a list-like element with a number of items in braille." name="IDS_CHROMEVOX_LIST_WITH_ITEMS_BRL">
-        +{COUNT, plural, =1 {#}other {#}}
+        {COUNT, plural, =1{+#} other{+#}}
       </message>
       <message desc="Describes the state of a progress bar, in percent." name="IDS_CHROMEVOX_STATE_PERCENT">
         <ph name="num">$1</ph>%
@@ -2274,6 +2295,12 @@
       </message>
       <message desc="The description of the next group command.  Displayed in the Options page." name="IDS_CHROMEVOX_NEXT_GROUP">
         Next Group
+      </message>
+      <message desc="The description of the previous similar command." name="IDS_CHROMEVOX_PREVIOUS_SIMILAR_ITEM">
+        Previous similar item
+      </message>
+      <message desc="The description of the next similar item command." name="IDS_CHROMEVOX_NEXT_SIMILAR_ITEM">
+        Next similar item
       </message>
       <message desc="Describes nodes or anything describing them as a landmark." name="IDS_CHROMEVOX_ROLE_LANDMARK">
         Landmark
@@ -2971,25 +2998,18 @@ If you're done with the tutorial, use ChromeVox to navigate to the Close button 
       <message desc="Description of a command that toggles between 6 and 8 dot braille." name="IDS_CHROMEVOX_TOGGLE_BRAILLE_TABLE">
         Toggle between 6 and 8 dot braille
       </message>
-      <message desc="Spoken when a user navigates to the beginning of a misspelled word." name="IDS_CHROMEVOX_MISSPELLING_START">
-        Misspelling start
+      <message desc="Spoken when a user navigates into a misspelled word." name="IDS_CHROMEVOX_MISSPELLING_START">
+        Misspelled
       </message>
-      <message desc="Spoken when a user navigates to the end of a misspelled word." name="IDS_CHROMEVOX_MISSPELLING_END">
-        Misspelling end
+      <message desc="Spoken when a user navigates out of a misspelled word." name="IDS_CHROMEVOX_MISSPELLING_END">
+        Leaving misspelled
       </message>
-      <message desc="Spoken when a user navigates to the beginning of a grammar error." name="IDS_CHROMEVOX_GRAMMAR_START">
-        Grammar error start
+      <message desc="Spoken when a user navigates into a grammar error." name="IDS_CHROMEVOX_GRAMMAR_START">
+        Grammar error
       </message>
-      <message desc="Spoken when a user navigates to the end of a grammar error." name="IDS_CHROMEVOX_GRAMMAR_END">
-        Grammar error end
+      <message desc="Spoken when a user navigates out of a grammar error." name="IDS_CHROMEVOX_GRAMMAR_END">
+        Leaving grammar error
       </message>
-      <message desc="Spoken when a user navigates to the beginning of a text match from a find in page." name="IDS_CHROMEVOX_TEXT_MATCH_START">
-        Text match start
-      </message>
-      <message desc="Spoken when a user navigates to the end of a text match from a find in page." name="IDS_CHROMEVOX_TEXT_MATCH_END">
-        Text match end
-      </message>
-
       <message desc="Spoken to describe text that is superscript." name="IDS_CHROMEVOX_SUPERSCRIPT">
         Superscript
       </message>
@@ -3221,9 +3241,8 @@ If you're done with the tutorial, use ChromeVox to navigate to the Close button 
       </message>
       <message desc="The text label for ChromeVox language switching checkbox."
         name="IDS_CHROMEVOX_OPTIONS_LANG_SWITCHING_CHECKBOX_LABEL">
-        Automatically detect and switch ChromeVox language.
+        Automatically switch ChromeVox voice based on language
       </message>
-
       <message desc="Spoken to describe all rich text attributes of a node." name="IDS_CHROMEVOX_RICH_TEXT_ATTRIBUTES">
         Text formatting.
         <ph name="font_size_string">$1<ex>Size 12</ex></ph>
@@ -3655,6 +3674,100 @@ If you're done with the tutorial, use ChromeVox to navigate to the Close button 
       </message>
       <message desc="Spoken to describe color of text" name="IDS_CHROMEVOX_COLOR_DODGER_BLUE">
         Dodger Blue
+      </message>
+      <message desc="An options page section header for options about ChromeVox rich text behavior. This section lets users set preferences on how rich text attributes should be indicated." name="IDS_CHROMEVOX_OPTIONS_RICH_TEXT_HEADER">
+        Formatting
+      </message>
+      <message desc="The text label for ChromeVox automatic rich text indication checkbox." name="IDS_CHROMEVOX_OPTIONS_RICH_TEXT_CHECKBOX_LABEL">
+        Announce text styling
+      </message>
+      <message desc="Labels the misspell list box." name="IDS_CHROMEVOX_OPTIONS_MISSPELL_DESCRIPTION">
+        Indicate misspell:
+      </message>
+      <message desc="Labels the bold list box." name="IDS_CHROMEVOX_OPTIONS_BOLD_DESCRIPTION">
+        Indicate bold:
+      </message>
+      <message desc="Labels the italic list box." name="IDS_CHROMEVOX_OPTIONS_ITALIC_DESCRIPTION">
+        Indicate italic:
+      </message>
+      <message desc="Labels the underline list box." name="IDS_CHROMEVOX_OPTIONS_UNDERLINE_DESCRIPTION">
+        Indicate underline:
+      </message>
+      <message desc="A menulist option in ChromeVox rich text settings to do nothing to indicate rich text" name="IDS_CHROMEVOX_RICH_TEXT_DO_NOTHING">
+        Do nothing
+      </message>
+      <message desc="A menulist option in ChromeVox rich text settings to announce rich text" name="IDS_CHROMEVOX_RICH_TEXT_ANNOUNCE">
+        Announce
+      </message>
+
+      <message desc="An option to announce download notifications." name="IDS_CHROMEVOX_OPTIONS_ANNOUNCE_DOWNLOAD">
+        Announce download notifications
+      </message>
+      <message desc="Spoken when a download is started" name="IDS_CHROMEVOX_DOWNLOAD_STARTED">
+        Download started <ph name="file_name">$1<ex>test.pdf</ex></ph>
+      </message>
+      <message desc="Spoken when a download is completed" name="IDS_CHROMEVOX_DOWNLOAD_COMPLETED">
+        Download completed <ph name="file_name">$1<ex>test.pdf</ex></ph>
+      </message>
+      <message desc="Spoken when a download is stopped" name="IDS_CHROMEVOX_DOWNLOAD_STOPPED">
+        Download stopped <ph name="file_name">$1<ex>test.pdf</ex></ph>
+      </message>
+      <message desc="Spoken when a download is paused" name="IDS_CHROMEVOX_DOWNLOAD_PAUSED">
+        Download paused <ph name="file_name">$1<ex>test.pdf</ex></ph>
+      </message>
+      <message desc="Spoken when a download is resumed" name="IDS_CHROMEVOX_DOWNLOAD_RESUMED">
+        Download resumed <ph name="file_name">$1<ex>test.pdf</ex></ph>
+      </message>
+      <message desc="Spoken to give progress on a current download, specifying percent complete and time remaining." name="IDS_CHROMEVOX_DOWNLOAD_PROGRESS">
+        Download <ph name="progress">$1<ex>50</ex></ph>% complete <ph name="file_name">$2<ex>test.pdf</ex></ph>. About <ph name="time">$3<ex>30</ex></ph> <ph name="units">$4<ex>minutes</ex></ph> remaining.
+      </message>
+      <message desc="A string to specify time units in seconds." name="IDS_CHROMEVOX_SECONDS">
+        {COUNT, plural, =1 {second}other {seconds}}
+      </message>
+      <message desc="A string to specify time units in minutes." name="IDS_CHROMEVOX_MINUTES">
+        {COUNT, plural, =1 {minute}other {minutes}}
+      </message>
+      <message desc="A string to specify time units in hours." name="IDS_CHROMEVOX_HOURS">
+        {COUNT, plural, =1 {hour}other {hours}}
+      </message>
+      <message desc="Appends language in front of content." name="IDS_CHROMEVOX_LANGUAGE_SWITCH">
+        <ph name="language">$1<ex>English</ex></ph>: <ph name="content">$2<ex>This is example content</ex></ph>
+      </message>
+      <message desc="The description of the readPhoneticPronunciation key. Displayed in the ChromeVox menu." name="IDS_CHROMEVOX_READ_PHONETIC_PRONUNCIATION">
+        Announce phonetic pronunciation for word
+      </message>
+      <message desc="Spoken to inform the user that the node's name is empty" name="IDS_CHROMEVOX_EMPTY_NAME">
+        No available text for this item
+      </message>
+      <message desc="The description of the announceBatteryDescription key. Displayed in the ChromeVox menu." name="IDS_CHROMEVOX_ANNOUNCE_BATTERY_DESCRIPTION">
+        Announce current battery status
+      </message>
+      <message desc="The description of the announceRichTextDescription key. Displayed in the ChromeVox menu." name="IDS_CHROMEVOX_ANNOUNCE_RICH_TEXT_DESCRIPTION">
+        Announce formatting for current item
+      </message>
+      <message desc="Announced when there is no available voice for a language." name="IDS_CHROMEVOX_VOICE_UNAVAILABLE_FOR_LANGUAGE">
+        No voice available for language: <ph name="language">$1<ex>English</ex></ph>
+      </message>
+      <message desc="Used to describe the link behind a url." name="IDS_CHROMEVOX_URL_BEHIND_LINK">
+        Link URL: <ph name="link_url">$1</ph>
+      </message>
+      <message desc="Describes an HTML description list element." name="IDS_CHROMEVOX_ROLE_DESCRIPTION_LIST">
+        Description list
+      </message>
+      <message desc="Describes an HTML description list detail element." name="IDS_CHROMEVOX_ROLE_DESCRIPTION_LIST_DETAIL">
+        Description list detail
+      </message>
+      <message desc="This is an abbreviated HTML description list element shown on a braille display. When translating, try to find a contracted form of the translation for 'description list' according to local conventions. If reasonable, use all lowercase and avoid punctuation to keep the number of characters as low as possible."  name="IDS_CHROMEVOX_ROLE_DESCRIPTION_LIST_BRL">
+        dscrplst
+      </message>
+      <message desc="This is an abbreviated HTML description list detail element shown on a braille display. When translating, try to find a contracted form of the translation for 'description list detail' according to local conventions. If reasonable, use all lowercase and avoid punctuation to keep the number of characters as low as possible." name="IDS_CHROMEVOX_ROLE_DESCRIPTION_LIST_DETAIL_BRL">
+        dscrplst dtl
+      </message>
+      <message desc="Spoken if the user attempts to jump to the next paragraph when none exists." name="IDS_CHROMEVOX_NO_NEXT_PARAGRAPH">
+        No next paragraph.
+      </message>
+      <message desc="Spoken if the user attempts to jump to the previous paragraph when none exists." name="IDS_CHROMEVOX_NO_PREVIOUS_PARAGRAPH">
+        No previous paragraph.
       </message>
     </messages>
   </release>

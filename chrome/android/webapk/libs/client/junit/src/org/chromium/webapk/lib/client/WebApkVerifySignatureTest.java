@@ -43,7 +43,7 @@ public class WebApkVerifySignatureTest {
     }
 
     @Test
-    public void testHexToBytes() throws Exception {
+    public void testHexToBytes() {
         byte[] empty = {};
         assertArrayEquals(empty, WebApkVerifySignature.hexToBytes(""));
         byte[] test = {(byte) 0xFF, (byte) 0xFE, 0x00, 0x01};
@@ -53,7 +53,7 @@ public class WebApkVerifySignatureTest {
     }
 
     @Test
-    public void testCommentHash() throws Exception {
+    public void testCommentHash() {
         byte[] bytes = {(byte) 0xde, (byte) 0xca, (byte) 0xfb, (byte) 0xad};
         assertEquals(null, WebApkVerifySignature.parseCommentSignature("weapk:decafbad"));
         assertEquals(null, WebApkVerifySignature.parseCommentSignature("webapk:"));

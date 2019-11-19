@@ -22,15 +22,7 @@ extern const char kPrefetchingOfflinePagesAppId[];
 class PrefetchGCMAppHandler : public gcm::GCMAppHandler,
                               public PrefetchGCMHandler {
  public:
-  class TokenFactory {
-   public:
-    virtual ~TokenFactory() = default;
-
-    virtual void GetGCMToken(
-        instance_id::InstanceID::GetTokenCallback callback) = 0;
-  };
-
-  explicit PrefetchGCMAppHandler(std::unique_ptr<TokenFactory> token_factory);
+  explicit PrefetchGCMAppHandler();
   ~PrefetchGCMAppHandler() override;
 
   // gcm::GCMAppHandler implementation.
@@ -50,12 +42,10 @@ class PrefetchGCMAppHandler : public gcm::GCMAppHandler,
   void SetService(PrefetchService* service) override;
   gcm::GCMAppHandler* AsGCMAppHandler() override;
   std::string GetAppId() const override;
-  void GetGCMToken(instance_id::InstanceID::GetTokenCallback callback) override;
 
  private:
   // Not owned, PrefetchService owns |this.
-  PrefetchService* prefetch_service_;
-  std::unique_ptr<TokenFactory> token_factory_;
+  PrefetchService* prefetch_service_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PrefetchGCMAppHandler);
 };

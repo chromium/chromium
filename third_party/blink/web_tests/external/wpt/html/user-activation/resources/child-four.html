@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <body style="background: lightgrey;">
-  <script>
+<script>
     window.parent.postMessage(JSON.stringify({"type": "child-four-loaded", "isActive": navigator.userActivation.isActive,
                                               "hasBeenActive": navigator.userActivation.hasBeenActive}), "*");
 
     window.addEventListener("message", event => {
-        if (event.source === window.parent && event.data == "transfer_user_activation") {
+        if (event.source === window.parent && event.data == "report") {
             window.parent.postMessage(JSON.stringify({"type": "child-four-report", "isActive": navigator.userActivation.isActive,
                                                       "hasBeenActive": navigator.userActivation.hasBeenActive}), "*");
         }

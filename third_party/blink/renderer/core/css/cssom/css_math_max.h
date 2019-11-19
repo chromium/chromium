@@ -30,10 +30,7 @@ class CORE_EXPORT CSSMathMax final : public CSSMathVariadic {
   // From CSSStyleValue.
   StyleValueType GetType() const final { return CSSStyleValue::kMaxType; }
 
-  CSSCalcExpressionNode* ToCalcExpressionNode() const final {
-    // TODO(crbug.com/): Implement
-    return nullptr;
-  }
+  CSSMathExpressionNode* ToCalcExpressionNode() const final;
 
  private:
   void BuildCSSText(Nested, ParenLess, StringBuilder&) const final;

@@ -1,0 +1,7 @@
+Tests reasons for client-requested navigation are properly reported.
+Frame requested navigation to http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html: metaTagRefresh
+Frame requested navigation to http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=1: scriptInitiated
+Frame requested navigation to http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=2: formSubmissionPost
+Frame requested navigation to http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=3: formSubmissionGet
+Frame requested navigation to http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=3: reload
+

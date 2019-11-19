@@ -65,8 +65,7 @@ ArcNotificationItemImpl::ArcNotificationItemImpl(
       message_center_(message_center),
       profile_id_(profile_id),
       notification_key_(notification_key),
-      notification_id_(kArcNotificationIdPrefix + notification_key_),
-      weak_ptr_factory_(this) {}
+      notification_id_(kArcNotificationIdPrefix + notification_key_) {}
 
 ArcNotificationItemImpl::~ArcNotificationItemImpl() {
   for (auto& observer : observers_)
@@ -208,6 +207,10 @@ void ArcNotificationItemImpl::ToggleExpansion() {
   }
 
   manager_->SendNotificationToggleExpansionOnChrome(notification_key_);
+}
+
+void ArcNotificationItemImpl::OnWindowActivated(bool activated) {
+  manager_->SendNotificationActivatedInChrome(notification_key_, activated);
 }
 
 void ArcNotificationItemImpl::OnRemoteInputActivationChanged(bool activated) {

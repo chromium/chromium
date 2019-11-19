@@ -37,7 +37,7 @@ class ProfileStatistics : public KeyedService {
 
   Profile* profile_;
   std::unique_ptr<ProfileStatisticsAggregator> aggregator_;
-  base::WeakPtrFactory<ProfileStatistics> weak_ptr_factory_;
+  base::WeakPtrFactory<ProfileStatistics> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_STATISTICS_H_

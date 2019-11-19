@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_TEXT_SIZE_ADJUST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_TEXT_SIZE_ADJUST_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 

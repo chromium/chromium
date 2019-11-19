@@ -21,8 +21,9 @@ class SyncedTabDelegate;
 class TabModelSyncedWindowDelegate : public sync_sessions::SyncedWindowDelegate,
                                      public WebStateListObserver {
  public:
+  // This constructor does not add the constructed object as an observere of
+  // |web_state_list|; calling code is expected to do that.
   explicit TabModelSyncedWindowDelegate(WebStateList* web_state_list);
-  ~TabModelSyncedWindowDelegate() override;
 
   // Return the tab id for the tab at |index|.
   SessionID GetTabIdAt(int index) const override;
@@ -34,8 +35,7 @@ class TabModelSyncedWindowDelegate : public sync_sessions::SyncedWindowDelegate,
   SessionID GetSessionId() const override;
   int GetTabCount() const override;
   int GetActiveIndex() const override;
-  bool IsApp() const override;
-  bool IsTypeTabbed() const override;
+  bool IsTypeNormal() const override;
   bool IsTypePopup() const override;
   bool IsTabPinned(const sync_sessions::SyncedTabDelegate* tab) const override;
   sync_sessions::SyncedTabDelegate* GetTabAt(int index) const override;

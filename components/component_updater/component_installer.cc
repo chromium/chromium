@@ -64,8 +64,8 @@ void ComponentInstaller::Register(ComponentUpdateService* cus,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Some components may affect user visible features, hence USER_VISIBLE.
-  task_runner_ = base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+  task_runner_ = base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   if (!installer_policy_) {
@@ -114,7 +114,7 @@ Result ComponentInstaller::InstallHelper(
       local_install_path.Append(installer_policy_->GetRelativeInstallDir())
           .AppendASCII(manifest_version.GetString());
   if (base::PathExists(local_install_path)) {
-    if (!base::DeleteFile(local_install_path, true))
+    if (!base::DeleteFileRecursively(local_install_path))
       return Result(InstallError::CLEAN_INSTALL_DIR_FAILED);
   }
 
@@ -123,7 +123,7 @@ Result ComponentInstaller::InstallHelper(
 
   if (!base::Move(unpack_path, local_install_path)) {
     PLOG(ERROR) << "Move failed.";
-    base::DeleteFile(local_install_path, true);
+    base::DeleteFileRecursively(local_install_path);
     return Result(InstallError::MOVE_FILES_ERROR);
   }
 
@@ -166,7 +166,7 @@ void ComponentInstaller::Install(const base::FilePath& unpack_path,
   base::FilePath install_path;
   const Result result =
       InstallHelper(unpack_path, &manifest, &version, &install_path);
-  base::DeleteFile(unpack_path, true);
+  base::DeleteFileRecursively(unpack_path);
   if (result.error) {
     main_task_runner_->PostTask(FROM_HERE,
                                 base::BindOnce(std::move(callback), result));
@@ -176,13 +176,6 @@ void ComponentInstaller::Install(const base::FilePath& unpack_path,
   current_version_ = version;
   current_install_dir_ = install_path;
 
-  // Invoke |ComponentReady| on the main thread, then after this task has
-  // completed, post a task to call the lamda below using the task scheduler.
-  // The task scheduler PostTaskAndReply call requires the caller to run on
-  // a sequence. This code is not running on a sequence, therefore, there
-  // are two tasks posted to the main thread runner, to ensure that
-  // the |callback| is invoked by the task scheduler after |ComponentReady| has
-  // returned.
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ComponentInstaller::ComponentReady, this,
                                 std::move(manifest)));
@@ -352,7 +345,7 @@ void ComponentInstaller::StartRegistration(
   // Remove older versions of the component. None should be in use during
   // browser startup.
   for (const auto& older_path : older_paths)
-    base::DeleteFile(older_path, true);
+    base::DeleteFileRecursively(older_path);
 }
 
 void ComponentInstaller::UninstallOnTaskRunner() {
@@ -378,7 +371,7 @@ void ComponentInstaller::UninstallOnTaskRunner() {
     if (!version.IsValid())
       continue;
 
-    if (!base::DeleteFile(path, true))
+    if (!base::DeleteFileRecursively(path))
       DLOG(ERROR) << "Couldn't delete " << path.value();
   }
 
@@ -405,6 +398,7 @@ void ComponentInstaller::FinishRegistration(
 
   update_client::CrxComponent crx;
   installer_policy_->GetHash(&crx.pk_hash);
+  crx.app_id = update_client::GetCrxIdFromPublicKeyHash(crx.pk_hash);
   crx.installer = this;
   crx.version = current_version_;
   crx.fingerprint = current_fingerprint_;

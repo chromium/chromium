@@ -16,7 +16,7 @@ public class DeviceUtilsImpl {
     private DeviceUtilsImpl() {}
 
     public static void addDeviceSpecificUserAgentSwitch() {
-        try (StrictModeContext unused = StrictModeContext.allowDiskReads()) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             if (!DeviceFormFactor.isTablet()) {
                 CommandLine.getInstance().appendSwitch(ContentSwitches.USE_MOBILE_UA);
             }

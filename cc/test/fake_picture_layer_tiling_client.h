@@ -29,7 +29,7 @@ class FakePictureLayerTilingClient : public PictureLayerTilingClient {
 
   // PictureLayerTilingClient implementation.
   std::unique_ptr<Tile> CreateTile(const Tile::CreateInfo& info) override;
-  gfx::Size CalculateTileSize(const gfx::Size& content_bounds) const override;
+  gfx::Size CalculateTileSize(const gfx::Size& content_bounds) override;
   bool HasValidTilePriorities() const override;
 
   void SetTileSize(const gfx::Size& tile_size);
@@ -39,6 +39,7 @@ class FakePictureLayerTilingClient : public PictureLayerTilingClient {
   const PictureLayerTiling* GetPendingOrActiveTwinTiling(
       const PictureLayerTiling* tiling) const override;
   bool RequiresHighResToDraw() const override;
+  const PaintWorkletRecordMap& GetPaintWorkletRecords() const override;
 
   void set_twin_tiling_set(PictureLayerTilingSet* set) {
     twin_set_ = set;
@@ -70,6 +71,7 @@ class FakePictureLayerTilingClient : public PictureLayerTilingClient {
   gfx::Rect text_rect_;
   Region invalidation_;
   bool has_valid_tile_priorities_;
+  PaintWorkletRecordMap paint_worklet_records_;
 };
 
 }  // namespace cc

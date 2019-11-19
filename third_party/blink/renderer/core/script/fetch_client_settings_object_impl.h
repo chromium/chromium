@@ -5,14 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_FETCH_CLIENT_SETTINGS_OBJECT_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_FETCH_CLIENT_SETTINGS_OBJECT_IMPL_H_
 
-#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
 #include "third_party/blink/renderer/platform/loader/fetch/https_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
 namespace blink {
 
@@ -42,7 +42,12 @@ class CORE_EXPORT FetchClientSettingsObjectImpl final
   AllowedByNosniff::MimeTypeCheck MimeTypeCheckForClassicWorkerScript()
       const override;
 
-  base::Optional<mojom::IPAddressSpace> GetAddressSpace() const override;
+  network::mojom::IPAddressSpace GetAddressSpace() const override;
+
+  WebInsecureRequestPolicy GetInsecureRequestsPolicy() const override;
+  const InsecureNavigationsSet& GetUpgradeInsecureNavigationsSet()
+      const override;
+  bool GetMixedAutoUpgradeOptOut() const override;
 
   void Trace(Visitor* visitor) override;
 

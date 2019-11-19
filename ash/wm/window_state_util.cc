@@ -9,9 +9,8 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
-namespace wm {
 
-void ToggleFullScreen(wm::WindowState* window_state,
+void ToggleFullScreen(WindowState* window_state,
                       WindowStateDelegate* delegate) {
   // Window which cannot be maximized should not be full screen'ed.
   // It can, however, be restored if it was full screen'ed.
@@ -24,5 +23,4 @@ void ToggleFullScreen(wm::WindowState* window_state,
   ::wm::SetWindowFullscreen(window_state->window(), !is_fullscreen);
 }
 
-}  // namespace wm
 }  // namespace ash

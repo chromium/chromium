@@ -8,7 +8,9 @@
 #include <limits>
 
 #include "base/bind.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "services/image_annotation/image_annotation_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/src/core/SkEndian.h"
@@ -53,8 +55,7 @@ SkBitmap GenCheckerboardBitmap(const int dim) {
 // in the original and compressed images.
 double CalcImageError(const SkBitmap& orig, const SkBitmap& comp) {
   // Only valid to call on images of matching size.
-  if (orig.width() != comp.width() || orig.height() != comp.height())
-    return std::numeric_limits<double>::infinity();
+  CHECK(orig.width() == comp.width() && orig.height() == comp.height());
 
   double sum = 0;
   for (int row = 0; row < orig.width(); ++row) {
@@ -75,18 +76,23 @@ double CalcImageError(const SkBitmap& orig, const SkBitmap& comp) {
 // mean sum of squared distance between their pixels.
 void OutputImageError(double* const error,
                       const SkBitmap& expected,
-                      const std::vector<uint8_t>& result) {
+                      const std::vector<uint8_t>& result,
+                      const int32_t width,
+                      const int32_t height) {
   const std::unique_ptr<SkBitmap> comp =
       gfx::JPEGCodec::Decode(result.data(), result.size());
   CHECK(comp);
 
-  *error = CalcImageError(expected, *comp);
+  *error = width == expected.width() && height == expected.height()
+               ? CalcImageError(expected, *comp)
+               : std::numeric_limits<double>::infinity();
 }
 
 }  // namespace
 
 TEST(ImageProcessorTest, NullImage) {
-  base::test::ScopedTaskEnvironment test_task_env;
+  base::test::TaskEnvironment test_task_env;
+  base::HistogramTester histogram_tester;
 
   bool empty_bytes = false;
 
@@ -94,17 +100,22 @@ TEST(ImageProcessorTest, NullImage) {
   // pixels.
   ImageProcessor(base::BindRepeating([]() { return SkBitmap(); }))
       .GetJpgImageData(base::BindOnce(
-          [](bool* const empty_bytes, const std::vector<uint8_t>& bytes) {
-            *empty_bytes = bytes.empty();
+          [](bool* const empty_bytes, const std::vector<uint8_t>& bytes,
+             const int32_t w, const int32_t h) {
+            *empty_bytes = bytes.empty() && w == 0 && h == 0;
           },
           &empty_bytes));
   test_task_env.RunUntilIdle();
 
   EXPECT_THAT(empty_bytes, Eq(true));
+
+  histogram_tester.ExpectUniqueSample(metrics_internal::kSourcePixelCount,
+                                      0 /* sample */, 1 /* count */);
 }
 
 TEST(ImageProcessorTest, ImageContent) {
-  base::test::ScopedTaskEnvironment test_task_env;
+  base::test::TaskEnvironment test_task_env;
+  base::HistogramTester histogram_tester;
 
   // Create one image that doesn't need scaling and one image that does.
   const int max_dim = static_cast<int>(std::sqrt(ImageProcessor::kMaxPixels));
@@ -128,6 +139,14 @@ TEST(ImageProcessorTest, ImageContent) {
           base::BindOnce(&OutputImageError, &scale_error, small_orig));
   test_task_env.RunUntilIdle();
   EXPECT_THAT(scale_error, Lt(kMaxError));
+
+  histogram_tester.ExpectBucketCount(metrics_internal::kSourcePixelCount,
+                                     max_dim * max_dim /* sample */,
+                                     1 /* count */);
+  histogram_tester.ExpectBucketCount(metrics_internal::kSourcePixelCount,
+                                     4 * max_dim * max_dim /* sample */,
+                                     1 /* count */);
+  histogram_tester.ExpectTotalCount(metrics_internal::kSourcePixelCount, 2);
 }
 
 }  // namespace image_annotation

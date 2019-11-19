@@ -33,6 +33,9 @@ class SharedMemory {
                                        unsigned offset,
                                        int stride);
 
+  size_t GetSize() const;
+  bool Resize(const size_t new_size);
+
  private:
   base::UnsafeSharedMemoryRegion shared_memory_region_;
 

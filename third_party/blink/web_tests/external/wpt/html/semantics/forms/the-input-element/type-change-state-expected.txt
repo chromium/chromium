@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 462 tests; 441 PASS, 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 462 tests; 446 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS change state from hidden to text
 PASS change state from hidden to search
 PASS change state from hidden to tel
@@ -106,11 +106,11 @@ PASS change state from url to image
 PASS change state from url to reset
 PASS change state from url to button
 PASS change state from email to hidden
-FAIL change state from email to text assert_equals: selectionStart should be 0 expected 0 but got 6
-FAIL change state from email to search assert_equals: selectionStart should be 0 expected 0 but got 6
-FAIL change state from email to tel assert_equals: selectionStart should be 0 expected 0 but got 6
-FAIL change state from email to url assert_equals: selectionStart should be 0 expected 0 but got 6
-FAIL change state from email to password assert_equals: selectionStart should be 0 expected 0 but got 6
+PASS change state from email to text
+PASS change state from email to search
+PASS change state from email to tel
+PASS change state from email to url
+PASS change state from email to password
 PASS change state from email to datetime-local
 PASS change state from email to date
 PASS change state from email to month

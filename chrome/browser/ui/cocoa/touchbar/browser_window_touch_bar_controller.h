@@ -32,9 +32,6 @@ API_AVAILABLE(macos(10.12.2))
 // nil.
 - (void)invalidateTouchBar;
 
-- (void)updateWebContents:(content::WebContents*)contents;
-
-- (content::WebContents*)webContents;
 @end
 
 @interface BrowserWindowTouchBarController (ExposedForTesting)

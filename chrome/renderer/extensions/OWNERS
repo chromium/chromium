@@ -4,3 +4,4 @@ per-file automation_ax_tree_wrapper*=file://ui/accessibility/OWNERS
 per-file automation_internal_custom_bindings*=file://ui/accessibility/OWNERS
 
 # COMPONENT: Platform>Extensions
+# TEAM: extensions-reviews@chromium.org

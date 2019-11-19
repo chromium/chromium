@@ -13,21 +13,13 @@
 #include "net/proxy_resolution/proxy_resolver.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
-namespace net {
-class ProxyResolverV8Tracing;
-}  // namespace net
-
-namespace service_manager {
-class ServiceKeepaliveRef;
-}  // namespace service_manager
-
 namespace proxy_resolver {
+
+class ProxyResolverV8Tracing;
 
 class ProxyResolverImpl : public mojom::ProxyResolver {
  public:
-  ProxyResolverImpl(
-      std::unique_ptr<net::ProxyResolverV8Tracing> resolver,
-      std::unique_ptr<service_manager::ServiceKeepaliveRef> service_ref);
+  explicit ProxyResolverImpl(std::unique_ptr<ProxyResolverV8Tracing> resolver);
 
   ~ProxyResolverImpl() override;
 
@@ -35,14 +27,15 @@ class ProxyResolverImpl : public mojom::ProxyResolver {
   class Job;
 
   // mojom::ProxyResolver overrides.
-  void GetProxyForUrl(const GURL& url,
-                      mojom::ProxyResolverRequestClientPtr client) override;
+  void GetProxyForUrl(
+      const GURL& url,
+      const net::NetworkIsolationKey& network_isolation_key,
+      mojo::PendingRemote<mojom::ProxyResolverRequestClient> client) override;
 
   void DeleteJob(Job* job);
 
-  std::unique_ptr<net::ProxyResolverV8Tracing> resolver_;
+  std::unique_ptr<ProxyResolverV8Tracing> resolver_;
   std::map<Job*, std::unique_ptr<Job>> resolve_jobs_;
-  std::unique_ptr<service_manager::ServiceKeepaliveRef> service_ref_;
 
   DISALLOW_COPY_AND_ASSIGN(ProxyResolverImpl);
 };

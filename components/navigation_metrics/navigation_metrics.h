@@ -7,6 +7,10 @@
 
 class GURL;
 
+namespace profile_metrics {
+enum class BrowserProfileType;
+}
+
 namespace navigation_metrics {
 
 // A Scheme is an C++ enum type loggable in UMA for a histogram of UMA enum type
@@ -39,9 +43,11 @@ enum class Scheme {
 
 Scheme GetScheme(const GURL& url);
 
-void RecordMainFrameNavigation(const GURL& url,
-                               bool is_same_document,
-                               bool is_off_the_record);
+void RecordMainFrameNavigation(
+    const GURL& url,
+    bool is_same_document,
+    bool is_off_the_record,
+    profile_metrics::BrowserProfileType profile_type);
 
 void RecordOmniboxURLNavigation(const GURL& url);
 

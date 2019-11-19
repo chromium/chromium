@@ -54,7 +54,7 @@ class PairingLostNotifier
   multidevice_setup::AndroidSmsAppHelperDelegate*
       android_sms_app_helper_delegate_;
 
-  base::WeakPtrFactory<PairingLostNotifier> weak_ptr_factory_;
+  base::WeakPtrFactory<PairingLostNotifier> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PairingLostNotifier);
 };

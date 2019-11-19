@@ -20,16 +20,18 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/animation_util.h"
+#import "ios/chrome/browser/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/ui/util/reversed_animation.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/material_timing.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #include "skia/ext/skia_utils_ios.h"
-#include "third_party/google_toolbox_for_mac/src/iPhone/GTMFadeTruncatingLabel.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -48,7 +50,7 @@ const CGFloat kUILabelUITextfieldBaselineDeltaInPoints = 1.0;
 
 // The default omnibox text color (used while editing).
 UIColor* TextColor() {
-  return [UIColor colorWithWhite:(51 / 255.0) alpha:1.0];
+  return [UIColor colorNamed:kTextPrimaryColor];
 }
 
 NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
@@ -93,11 +95,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   UIColor* _displayedTintColor;
 }
 
-@synthesize preEditText = _preEditText;
-@synthesize clearingPreEditText = _clearingPreEditText;
-@synthesize placeholderTextColor = _placeholderTextColor;
-@synthesize incognito = _incognito;
-@synthesize suggestionCommandsEndpoint = _suggestionCommandsEndpoint;
+@dynamic delegate;
 
 #pragma mark - Public methods
 // Overload to allow for code-based initialization.
@@ -224,10 +222,61 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   return NSTextAlignmentNatural;
 }
 
+- (UISemanticContentAttribute)bestSemanticContentAttribute {
+  // This method will be called in response to
+  // UITextInputCurrentInputModeDidChangeNotification. At this
+  // point, the baseWritingDirectionForPosition doesn't yet return the correct
+  // direction if the text field is empty. Instead, treat this as a special case
+  // and calculate the direction from the keyboard locale if there is no text.
+  if (self.text.length == 0) {
+    NSLocaleLanguageDirection direction = [NSLocale
+        characterDirectionForLanguage:self.textInputMode.primaryLanguage];
+    return direction == NSLocaleLanguageDirectionRightToLeft
+               ? UISemanticContentAttributeForceRightToLeft
+               : UISemanticContentAttributeForceLeftToRight;
+  }
+
+  [self setTextAlignment:NSTextAlignmentNatural];
+
+  UITextWritingDirection textDirection =
+      [self baseWritingDirectionForPosition:[self beginningOfDocument]
+                                inDirection:UITextStorageDirectionForward];
+  NSLocaleLanguageDirection currentLocaleDirection = [NSLocale
+      characterDirectionForLanguage:NSLocale.currentLocale.languageCode];
+
+  if ((textDirection == UITextWritingDirectionLeftToRight &&
+       currentLocaleDirection == NSLocaleLanguageDirectionLeftToRight) ||
+      (textDirection == UITextWritingDirectionRightToLeft &&
+       currentLocaleDirection == NSLocaleLanguageDirectionRightToLeft)) {
+    return UISemanticContentAttributeUnspecified;
+  }
+
+  return textDirection == UITextWritingDirectionRightToLeft
+             ? UISemanticContentAttributeForceRightToLeft
+             : UISemanticContentAttributeForceLeftToRight;
+}
+
 // Normally NSTextAlignmentNatural would handle text alignment automatically,
 // but there are numerous edge case issues with it, so it's simpler to just
 // manually update the text alignment and writing direction of the UITextField.
 - (void)updateTextDirection {
+  // If the flag is enabled, we want to use the default text alignment.
+  if (base::FeatureList::IsEnabled(kNewOmniboxPopupLayout)) {
+    // If the keyboard language direction does not match the device
+    // language direction, the alignment of the placeholder text will be off.
+    if (self.text.length == 0) {
+      NSLocaleLanguageDirection direction = [NSLocale
+          characterDirectionForLanguage:self.textInputMode.primaryLanguage];
+      if (direction == NSLocaleLanguageDirectionRightToLeft) {
+        [self setTextAlignment:NSTextAlignmentRight];
+      } else {
+        [self setTextAlignment:NSTextAlignmentLeft];
+      }
+    } else {
+      [self setTextAlignment:NSTextAlignmentNatural];
+    }
+    return;
+  }
   // Setting the empty field to Natural seems to let iOS update the cursor
   // position when the keyboard language is changed.
   if (![self text].length) {
@@ -320,7 +369,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   DCHECK(!_preEditStaticLabel);
   CGRect rect = [self preEditLabelRectForBounds:self.bounds];
   _preEditStaticLabel = [[UILabel alloc] initWithFrame:rect];
-  _preEditStaticLabel.backgroundColor = [UIColor clearColor];
+  _preEditStaticLabel.backgroundColor = UIColor.clearColor;
   _preEditStaticLabel.opaque = YES;
   _preEditStaticLabel.font = self.currentFont;
   _preEditStaticLabel.textColor = _displayedTextColor;
@@ -368,20 +417,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 #pragma mark - Properties
 
-// Enforces that the delegate is an OmniboxTextFieldDelegate.
-- (id<OmniboxTextFieldDelegate>)delegate {
-  id delegate = [super delegate];
-  DCHECK(delegate == nil ||
-         [[delegate class]
-             conformsToProtocol:@protocol(OmniboxTextFieldDelegate)]);
-  return delegate;
-}
-
-// Overridden to require an OmniboxTextFieldDelegate.
-- (void)setDelegate:(id<OmniboxTextFieldDelegate>)delegate {
-  [super setDelegate:delegate];
-}
-
 - (UIFont*)largerFont {
   return PreferredFontForTextStyleWithMaxCategory(
       UIFontTextStyleBody, self.traitCollection.preferredContentSizeCategory,
@@ -416,8 +451,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   // When editing, use the default text color for all text.
   if (self.editing) {
     // Hide the text when the |_selection| label is displayed.
-    UIColor* textColor =
-        _selection ? [UIColor clearColor] : _displayedTextColor;
+    UIColor* textColor = _selection ? UIColor.clearColor : _displayedTextColor;
     [mutableText addAttribute:NSForegroundColorAttributeName
                         value:textColor
                         range:entireString];
@@ -581,15 +615,22 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-  // If there is selected text, show copy and cut.
+  // If the text is not empty and there is selected text, show copy and cut.
   if ([self textInRange:self.selectedTextRange].length > 0 &&
       (action == @selector(cut:) || action == @selector(copy:))) {
     return YES;
   }
 
-  // If there is no selected text, show select and selectAll.
-  if ([self textInRange:self.selectedTextRange].length == 0 &&
-      (action == @selector(select:) || action == @selector(selectAll:))) {
+  // If the text is not empty and there is no selected text, show select
+  if (self.text.length > 0 &&
+      [self textInRange:self.selectedTextRange].length == 0 &&
+      action == @selector(select:)) {
+    return YES;
+  }
+
+  // If selected text is les than the text length, show selectAll.
+  if ([self textInRange:self.selectedTextRange].length != self.text.length &&
+      action == @selector(selectAll:)) {
     return YES;
   }
 
@@ -607,15 +648,16 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     return YES;
   }
 
+  // Handle pre-edit shortcuts.
+  if ([self isPreEditing]) {
+    // Allow cut and copy in preedit.
+    if ((action == @selector(copy:)) || (action == @selector(cut:))) {
+      return YES;
+    }
+  }
+
   // Note that this NO does not keep other elements in the responder chain from
   // adding actions they handle to the menu.
-  // No special handling is necessary for pre-edit and autocomplete states.
-  // In pre-edit, the text in the textfield is selected even though it is not
-  // shown. so the behavior is correct. As an aside, the only way to access the
-  // editing menu without exiting the pre-edit state is via accessibility
-  // features. For inline autocomplete, any action on the textfield first
-  // accepts the autocompletion and unselects the text. It is therefore not
-  // possible to open the editing menu in this state.
   return NO;
 }
 
@@ -625,16 +667,13 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 // preprending http:// to the copied URL if needed.
 - (void)copy:(id)sender {
   id<OmniboxTextFieldDelegate> delegate = [self delegate];
-  BOOL handled = NO;
 
   // Must test for the onCopy method, since it's optional.
-  if ([delegate respondsToSelector:@selector(onCopy)])
-    handled = [delegate onCopy];
-
-  // iOS 4 doesn't expose an API that allows the delegate to handle the copy
-  // operation, so let the superclass perform the copy if the delegate couldn't.
-  if (!handled)
+  if ([delegate respondsToSelector:@selector(onCopy)]) {
+    [delegate onCopy];
+  } else {
     [super copy:sender];
+  }
 }
 
 - (void)cut:(id)sender {
@@ -818,7 +857,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   [_selection setFont:self.currentFont];
   [_selection setTextColor:_displayedTextColor];
   [_selection setOpaque:NO];
-  [_selection setBackgroundColor:[UIColor clearColor]];
+  [_selection setBackgroundColor:UIColor.clearColor];
   _selection.lineBreakMode = NSLineBreakByClipping;
   [self addSubview:_selection];
   [self hideTextAndCursor];
@@ -890,7 +929,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (BOOL)isColorHidden:(UIColor*)color {
-  return ([color isEqual:[UIColor clearColor]] ||
+  return ([color isEqual:UIColor.clearColor] ||
           CGColorGetAlpha(color.CGColor) < 0.05);
 }
 
@@ -908,8 +947,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 // Set the text field's text and cursor to clear so that they don't show up
 // behind any overlaid views.
 - (void)hideTextAndCursor {
-  [self setTintColor:[UIColor clearColor]];
-  [self setTextColor:[UIColor clearColor]];
+  [self setTintColor:UIColor.clearColor];
+  [self setTextColor:UIColor.clearColor];
 }
 
 - (NSArray*)fadeAnimationLayers {

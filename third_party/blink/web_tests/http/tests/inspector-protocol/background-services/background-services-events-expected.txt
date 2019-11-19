@@ -1,0 +1,254 @@
+Tests that the expected events are received.
+Background Fetch Success:
+[
+    [0] : {
+        eventMetadata : [
+            [0] : {
+                key : Start Paused
+                value : No
+            }
+            [1] : {
+                key : Total Requests
+                value : 1
+            }
+        ]
+        eventName : Background Fetch registered
+        instanceId : my-fetch-success
+        origin : http://127.0.0.1:8000/
+        service : backgroundFetch
+        timestamp : <number>
+    }
+    [1] : {
+        eventMetadata : [
+        ]
+        eventName : Background Fetch started
+        instanceId : my-fetch-success
+        origin : http://127.0.0.1:8000/
+        service : backgroundFetch
+        timestamp : <number>
+    }
+    [2] : {
+        eventMetadata : [
+            [0] : {
+                key : Request Index
+                value : 0
+            }
+            [1] : {
+                key : URL
+                value : http://127.0.0.1:8000/inspector-protocol/background-services/resources/background-fetch.txt
+            }
+        ]
+        eventName : Request processing started
+        instanceId : my-fetch-success
+        origin : http://127.0.0.1:8000/
+        service : backgroundFetch
+        timestamp : <number>
+    }
+    [3] : {
+        eventMetadata : [
+            [0] : {
+                key : Request Index
+                value : 0
+            }
+            [1] : {
+                key : Response Size (bytes)
+                value : 16
+            }
+            [2] : {
+                key : Response Status
+                value : 200
+            }
+            [3] : {
+                key : URL
+                value : http://127.0.0.1:8000/inspector-protocol/background-services/resources/background-fetch.txt
+            }
+        ]
+        eventName : Request processing completed
+        instanceId : my-fetch-success
+        origin : http://127.0.0.1:8000/
+        service : backgroundFetch
+        timestamp : <number>
+    }
+    [4] : {
+        eventMetadata : [
+            [0] : {
+                key : Event Type
+                value : BackgroundFetchSuccessEvent
+            }
+        ]
+        eventName : Background Fetch completed
+        instanceId : my-fetch-success
+        origin : http://127.0.0.1:8000/
+        service : backgroundFetch
+        timestamp : <number>
+    }
+]
+Background Fetch Failure:
+[
+    [0] : {
+        eventMetadata : [
+            [0] : {
+                key : Start Paused
+                value : No
+            }
+            [1] : {
+                key : Total Requests
+                value : 1
+            }
+        ]
+        eventName : Background Fetch registered
+        instanceId : my-fetch-failure
+        origin : http://127.0.0.1:8000/
+        service : backgroundFetch
+        timestamp : <number>
+    }
+    [1] : {
+        eventMetadata : [
+        ]
+        eventName : Background Fetch started
+        instanceId : my-fetch-failure
+        origin : http://127.0.0.1:8000/
+        service : backgroundFetch
+        timestamp : <number>
+    }
+    [2] : {
+        eventMetadata : [
+            [0] : {
+                key : Request Index
+                value : 0
+            }
+            [1] : {
+                key : URL
+                value : http://127.0.0.1:8000/missing/
+            }
+        ]
+        eventName : Request processing started
+        instanceId : my-fetch-failure
+        origin : http://127.0.0.1:8000/
+        service : backgroundFetch
+        timestamp : <number>
+    }
+    [3] : {
+        eventMetadata : [
+            [0] : {
+                key : Request Index
+                value : 0
+            }
+            [1] : {
+                key : Response Size (bytes)
+                value : 0
+            }
+            [2] : {
+                key : Response Status
+                value : 404
+            }
+            [3] : {
+                key : URL
+                value : http://127.0.0.1:8000/missing/
+            }
+        ]
+        eventName : Request processing completed
+        instanceId : my-fetch-failure
+        origin : http://127.0.0.1:8000/
+        service : backgroundFetch
+        timestamp : <number>
+    }
+    [4] : {
+        eventMetadata : [
+            [0] : {
+                key : Event Type
+                value : BackgroundFetchFailEvent
+            }
+            [1] : {
+                key : Failure Reason
+                value : BackgroundFetchFailureReason::BAD_STATUS
+            }
+        ]
+        eventName : Background Fetch completed
+        instanceId : my-fetch-failure
+        origin : http://127.0.0.1:8000/
+        service : backgroundFetch
+        timestamp : <number>
+    }
+]
+Background Sync Success:
+[
+    [0] : {
+        eventMetadata : [
+        ]
+        eventName : Registered sync
+        instanceId : background-sync-resolve
+        origin : http://127.0.0.1:8000/
+        service : backgroundSync
+        timestamp : <number>
+    }
+    [1] : {
+        eventMetadata : [
+            [0] : {
+                key : Last Chance
+                value : No
+            }
+        ]
+        eventName : Dispatched sync event
+        instanceId : background-sync-resolve
+        origin : http://127.0.0.1:8000/
+        service : backgroundSync
+        timestamp : <number>
+    }
+    [2] : {
+        eventMetadata : [
+            [0] : {
+                key : Status
+                value : succeeded
+            }
+        ]
+        eventName : Sync completed
+        instanceId : background-sync-resolve
+        origin : http://127.0.0.1:8000/
+        service : backgroundSync
+        timestamp : <number>
+    }
+]
+Background Sync Failure:
+[
+    [0] : {
+        eventMetadata : [
+        ]
+        eventName : Registered sync
+        instanceId : background-sync-reject
+        origin : http://127.0.0.1:8000/
+        service : backgroundSync
+        timestamp : <number>
+    }
+    [1] : {
+        eventMetadata : [
+            [0] : {
+                key : Last Chance
+                value : No
+            }
+        ]
+        eventName : Dispatched sync event
+        instanceId : background-sync-reject
+        origin : http://127.0.0.1:8000/
+        service : backgroundSync
+        timestamp : <number>
+    }
+    [2] : {
+        eventMetadata : [
+            [0] : {
+                key : Failure Reason
+                value : waitUntil rejected
+            }
+            [1] : {
+                key : Next Attempt Delay (ms)
+                value : 300000
+            }
+        ]
+        eventName : sync event failed
+        instanceId : background-sync-reject
+        origin : http://127.0.0.1:8000/
+        service : backgroundSync
+        timestamp : <number>
+    }
+]
+

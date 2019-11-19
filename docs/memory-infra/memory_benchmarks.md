@@ -34,15 +34,12 @@ System health memory benchmarks are:
 *   [system_health.memory_desktop][system_health] -
     user stories running on desktop platforms.
 
-These benchmarks are run continuously on the [chromium.perf][] waterfall,
+These benchmarks are run continuously on the [chrome.perf][] waterfall,
 collecting and reporting results on the
 [Chrome Performance Dashboard][chromeperf].
 
-Other benchmarks maintained by the memory-infra team are discussed in the
-[appendix](#Other-benchmarks).
-
 [system_health]: https://chromium.googlesource.com/chromium/src/+/master/tools/perf/page_sets/system_health/
-[chromium.perf]: https://build.chromium.org/p/chromium.perf/waterfall
+[chrome.perf]: https://ci.chromium.org/p/chrome/g/chrome.perf/console
 [chromeperf]: https://chromeperf.appspot.com/report
 
 ### User stories
@@ -138,7 +135,7 @@ create a new job, and fill in the required details:
 If you have more specific needs, or need to automate the creation of jobs, you
 can also consider using [pinpoint_cli][].
 
-[pinpoint_cli]: https://cs.chromium.org/chromium/src/third_party/catapult/experimental/soundwave/bin/pinpoint_cli
+[pinpoint_cli]: https://cs.chromium.org/chromium/src/tools/perf/pinpoint_cli
 
 ### How to run locally
 
@@ -204,61 +201,3 @@ where:
     `private_dirty_size`).
 
 [memory-infra]: /docs/memory-infra/README.md
-
-## Appendix
-
-There are a few other benchmarks maintained by the memory-infra team.
-These also use the same set of metrics as system health, but have differences
-on the kind of stories that they run.
-
-### memory.top_10_mobile
-
-The [memory.top_10_mobile][memory_py] benchmark is in the process of being deprecated
-in favor of system health benchmarks. This process, however, hasn't been
-finalized and currently they are still the reference benchmark used for
-decision making in the Android release process. Therefore, **it is important
-to diagnose and fix regressions caught by this benchmark**.
-
-The benchmark's work flow is:
-
-- Cycle between:
-
-  - load a page on Chrome, wait for it to load, [force garbage collection
-    and measure memory][measure];
-  - push Chrome to the background, force garbage collection and measure
-    memory again.
-
-- Repeat for each of 10 pages *without closing the browser*.
-
-- Close the browser, re-open and repeat the full page set a total of 5 times.
-
-- Story groups are either `foreground` or `background` depending on the state
-  of the browser at the time of measurement.
-
-The main difference to watch out between this and system health benchmarks is
-that, since a single browser instance is kept open and shared by many
-individual stories, they are not independent of each other. In particular, **do
-not use the `--story-filter` argument when trying to reproduce regressions**
-on these benchmarks, as doing so will affect the results.
-
-[memory_py]: https://cs.chromium.org/chromium/src/tools/perf/benchmarks/memory.py
-[measure]: https://github.com/catapult-project/catapult/blob/master/telemetry/telemetry/internal/actions/action_runner.py#L133
-
-### Dual browser benchmarks
-
-Dual browser benchmarks are intended to assess the memory implications of
-shared resources between Chrome and WebView.
-
-*   [memory.dual_browser_test][memory_extra_py] - cycle between doing Google
-    searches on a WebView-based browser (a stand-in for the Google Search app)
-    and loading pages on Chrome. Runs on Android devices only.
-
-    Story groups are either `on_chrome` or `on_webview`, indicating the browser
-    in foreground at the moment when the memory measurement was made.
-
-*   [memory.long_running_dual_browser_test][memory_extra_py] - same as above,
-    but the test is run for 60 iterations keeping both browsers alive for the
-    whole duration of the test and without forcing garbage collection. Intended
-    as a last-resort net to catch memory leaks not apparent on shorter tests.
-
-[memory_extra_py]: https://cs.chromium.org/chromium/src/tools/perf/contrib/memory_extras/memory_extras.py

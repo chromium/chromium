@@ -10,13 +10,13 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/material_design/material_design_controller_observer.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/widget/widget.h"
 
+class BrowserNonClientFrameView;
 class BrowserRootView;
 class BrowserView;
 class NativeBrowserFrame;
@@ -32,7 +32,6 @@ class Rect;
 }
 
 namespace ui {
-class EventHandler;
 class MenuModel;
 }
 
@@ -56,9 +55,9 @@ class BrowserFrame : public views::Widget,
   // left edge of the window. Used in our Non-Client View's Layout.
   int GetMinimizeButtonOffset() const;
 
-  // Retrieves the bounds, in non-client view coordinates for the specified
-  // TabStrip view.
-  gfx::Rect GetBoundsForTabStrip(const views::View* tabstrip) const;
+  // Retrieves the bounds in non-client view coordinates for the
+  // TabStripRegionView that contains the specified TabStrip view.
+  gfx::Rect GetBoundsForTabStripRegion(const views::View* tabstrip) const;
 
   // Returns the inset of the topmost view in the client view from the top of
   // the non-client view. The topmost view depends on the window type. The
@@ -111,12 +110,12 @@ class BrowserFrame : public views::Widget,
   const ui::ThemeProvider* GetThemeProvider() const override;
   const ui::NativeTheme* GetNativeTheme() const override;
   void OnNativeWidgetWorkspaceChanged() override;
-  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+  void PropagateNativeThemeChanged() override;
 
   // views::ContextMenuController:
-  void ShowContextMenuForView(views::View* source,
-                              const gfx::Point& p,
-                              ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(views::View* source,
+                                  const gfx::Point& p,
+                                  ui::MenuSourceType source_type) override;
 
   // Returns the menu model. BrowserFrame owns the returned model.
   // Note that in multi user mode this will upon each call create a new model.
@@ -152,8 +151,6 @@ class BrowserFrame : public views::Widget,
   // Used to show the system menu. Only used if
   // NativeBrowserFrame::UsesNativeSystemMenu() returns false.
   std::unique_ptr<views::MenuRunner> menu_runner_;
-
-  std::unique_ptr<ui::EventHandler> browser_command_handler_;
 
   ScopedObserver<ui::MaterialDesignController,
                  ui::MaterialDesignControllerObserver>

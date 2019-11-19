@@ -26,9 +26,7 @@ UninstallAppTask::UninstallAppTask(SyncEngineContext* sync_context,
     : sync_context_(sync_context),
       app_id_(app_id),
       uninstall_flag_(uninstall_flag),
-      app_root_tracker_id_(0),
-      weak_ptr_factory_(this) {
-}
+      app_root_tracker_id_(0) {}
 
 UninstallAppTask::~UninstallAppTask() {
 }

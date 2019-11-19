@@ -23,9 +23,9 @@
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
@@ -158,8 +158,6 @@ base::FilePath InstallExtension(const base::FilePath& unpacked_source_dir,
     return base::FilePath();
   }
 
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
   // Flush the source dir completely before moving to make sure everything is
   // on disk. Otherwise a sudden power loss could cause the newly installed
   // extension to be in a corrupted state. Note that empty sub-directories
@@ -181,9 +179,6 @@ base::FilePath InstallExtension(const base::FilePath& unpacked_source_dir,
   // data loss ExtensionPrefs should be pointing to the previous version which
   // is still fine.
   FlushFilesInDir(version_dir, ONE_FILE_ONLY);
-
-  UMA_HISTOGRAM_TIMES("Extensions.FileInstallation",
-                      base::TimeTicks::Now() - start_time);
 
   return version_dir;
 }
@@ -211,20 +206,21 @@ scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_path,
   std::unique_ptr<base::DictionaryValue> manifest =
       LoadManifest(extension_path, error);
   if (!manifest.get())
-    return NULL;
+    return nullptr;
   if (!extension_l10n_util::LocalizeExtension(
-          extension_path, manifest.get(), error)) {
-    return NULL;
+          extension_path, manifest.get(),
+          extension_l10n_util::GzippedMessagesPermission::kDisallow, error)) {
+    return nullptr;
   }
 
   scoped_refptr<Extension> extension(Extension::Create(
       extension_path, location, *manifest, flags, extension_id, error));
   if (!extension.get())
-    return NULL;
+    return nullptr;
 
   std::vector<InstallWarning> warnings;
   if (!ValidateExtension(extension.get(), error, &warnings))
-    return NULL;
+    return nullptr;
   extension->AddInstallWarnings(std::move(warnings));
 
   return extension;
@@ -243,11 +239,11 @@ std::unique_ptr<base::DictionaryValue> LoadManifest(
   base::FilePath manifest_path = extension_path.Append(manifest_filename);
   if (!base::PathExists(manifest_path)) {
     *error = l10n_util::GetStringUTF8(IDS_EXTENSION_MANIFEST_UNREADABLE);
-    return NULL;
+    return nullptr;
   }
 
   JSONFileValueDeserializer deserializer(manifest_path);
-  std::unique_ptr<base::Value> root(deserializer.Deserialize(NULL, error));
+  std::unique_ptr<base::Value> root(deserializer.Deserialize(nullptr, error));
   if (!root.get()) {
     if (error->empty()) {
       // If |error| is empty, than the file could not be read.
@@ -259,12 +255,12 @@ std::unique_ptr<base::DictionaryValue> LoadManifest(
       *error = base::StringPrintf(
           "%s  %s", manifest_errors::kManifestParseError, error->c_str());
     }
-    return NULL;
+    return nullptr;
   }
 
   if (!root->is_dict()) {
     *error = l10n_util::GetStringUTF8(IDS_EXTENSION_MANIFEST_INVALID);
-    return NULL;
+    return nullptr;
   }
 
   return base::DictionaryValue::From(std::move(root));
@@ -431,15 +427,20 @@ void DeleteFile(const base::FilePath& path, bool recursive) {
 }
 
 base::FilePath ExtensionURLToRelativeFilePath(const GURL& url) {
-  std::string url_path = url.path();
+  base::StringPiece url_path = url.path_piece();
   if (url_path.empty() || url_path[0] != '/')
     return base::FilePath();
 
-  // Drop the leading slashes and convert %-encoded UTF8 to regular UTF8.
-  std::string file_path = net::UnescapeURLComponent(
-      url_path,
-      net::UnescapeRule::SPACES |
-          net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+  // Convert %-encoded UTF8 to regular UTF8.
+  std::string file_path;
+  if (!net::UnescapeBinaryURLComponentSafe(
+          url_path, true /* fail_on_path_separators */, &file_path)) {
+    // There shouldn't be any escaped path separators or control characters in
+    // the path. However, if there are, it's best to just fail.
+    return base::FilePath();
+  }
+
+  // Drop the leading slashes.
   size_t skip = file_path.find_first_not_of("/\\");
   if (skip != file_path.npos)
     file_path = file_path.substr(skip);
@@ -499,12 +500,13 @@ bool ValidateExtensionIconSet(const ExtensionIconSet& icon_set,
 MessageBundle* LoadMessageBundle(
     const base::FilePath& extension_path,
     const std::string& default_locale,
+    extension_l10n_util::GzippedMessagesPermission gzip_permission,
     std::string* error) {
   error->clear();
   // Load locale information if available.
   base::FilePath locale_path = extension_path.Append(kLocaleFolder);
   if (!base::PathExists(locale_path))
-    return NULL;
+    return nullptr;
 
   std::set<std::string> chrome_locales;
   extension_l10n_util::GetAllLocales(&chrome_locales);
@@ -515,14 +517,11 @@ MessageBundle* LoadMessageBundle(
       !base::PathExists(default_locale_path)) {
     *error = l10n_util::GetStringUTF8(
         IDS_EXTENSION_LOCALES_NO_DEFAULT_LOCALE_SPECIFIED);
-    return NULL;
+    return nullptr;
   }
 
-  MessageBundle* message_bundle =
-      extension_l10n_util::LoadMessageCatalogs(
-          locale_path,
-          default_locale,
-          error);
+  MessageBundle* message_bundle = extension_l10n_util::LoadMessageCatalogs(
+      locale_path, default_locale, gzip_permission, error);
 
   return message_bundle;
 }
@@ -560,9 +559,9 @@ MessageBundle::SubstitutionMap* LoadMessageBundleSubstitutionMapFromPaths(
 
   std::string error;
   for (const base::FilePath& path : paths) {
-    std::unique_ptr<MessageBundle> bundle(
-        LoadMessageBundle(path, default_locale, &error));
-
+    std::unique_ptr<MessageBundle> bundle(LoadMessageBundle(
+        path, default_locale,
+        extension_l10n_util::GzippedMessagesPermission::kDisallow, &error));
     if (bundle) {
       for (const auto& iter : *bundle->dictionary()) {
         // |insert| only adds new entries, and does not replace entries in

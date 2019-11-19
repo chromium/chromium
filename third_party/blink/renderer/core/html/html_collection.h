@@ -76,8 +76,9 @@ class CORE_EXPORT HTMLCollection : public ScriptWrappable,
     kDoesNotOverrideItemAfter,
   };
 
-  static HTMLCollection* Create(ContainerNode& base, CollectionType);
-  HTMLCollection(ContainerNode& base, CollectionType, ItemAfterOverrideType);
+  HTMLCollection(ContainerNode& base,
+                 CollectionType,
+                 ItemAfterOverrideType = kDoesNotOverrideItemAfter);
   ~HTMLCollection() override;
   void InvalidateCache(Document* old_document = nullptr) const override;
   void InvalidateCacheForAttribute(const QualifiedName*) const;
@@ -117,10 +118,6 @@ class CORE_EXPORT HTMLCollection : public ScriptWrappable,
  protected:
   class NamedItemCache final : public GarbageCollected<NamedItemCache> {
    public:
-    static NamedItemCache* Create() {
-      return MakeGarbageCollected<NamedItemCache>();
-    }
-
     NamedItemCache();
 
     const HeapVector<Member<Element>>* GetElementsById(

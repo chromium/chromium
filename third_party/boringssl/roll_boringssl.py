@@ -28,7 +28,6 @@ import generate_build_files
 GENERATED_FILES = [
     'BUILD.generated.gni',
     'BUILD.generated_tests.gni',
-    'crypto_test_data.cc',
     'err_data.c',
 ]
 
@@ -88,6 +87,13 @@ def Log(repo, revspec):
   return commits
 
 
+def FormatCommit(commit):
+  """Returns a commit formatted into a single line."""
+  rev = commit['commit'][:9]
+  line, _ = commit['message'].split('\n', 1)
+  return '%s %s' % (rev, line)
+
+
 def main():
   if len(sys.argv) > 2:
     sys.stderr.write('Usage: %s [COMMIT]' % sys.argv[0])
@@ -116,9 +122,11 @@ def main():
   # Look for commits with associated Chromium bugs.
   crbugs = set()
   crbug_commits = []
+  update_note_commits = []
   log = Log(BORINGSSL_SRC_PATH, '%s..%s' % (old_head, new_head))
   for commit in log:
     has_bugs = False
+    has_update_note = False
     for line in commit['message'].split('\n'):
       lower = line.lower()
       if lower.startswith('bug:') or lower.startswith('bug='):
@@ -127,8 +135,12 @@ def main():
           if bug.startswith('chromium:'):
             crbugs.add(int(bug[len('chromium:'):]))
             has_bugs = True
+      if lower.startswith('update-note:'):
+        has_update_note = True
     if has_bugs:
       crbug_commits.append(commit)
+    if has_update_note:
+      update_note_commits.append(commit)
 
   UpdateDEPS(DEPS_PATH, old_head, new_head)
 
@@ -147,6 +159,7 @@ def main():
   subprocess.check_call(['python',
                          os.path.join(BORINGSSL_SRC_PATH, 'util',
                                       'generate_build_files.py'),
+                         '--embed_test_data=false',
                          'gn'],
                         cwd=BORINGSSL_PATH)
 
@@ -167,9 +180,12 @@ https://boringssl.googlesource.com/boringssl/+log/%s..%s
   if crbug_commits:
     message += 'The following commits have Chromium bugs associated:\n'
     for commit in crbug_commits:
-      rev = commit['commit'][:9]
-      line, _ = commit['message'].split('\n', 1)
-      message += '  %s %s\n' % (rev, line)
+      message += '  ' + FormatCommit(commit)
+    message += '\n'
+  if update_note_commits:
+    message += 'The following commits have update notes:\n'
+    for commit in update_note_commits:
+      message += '  ' + FormatCommit(commit)
     message += '\n'
   if crbugs:
     message += 'Bug: %s\n' % (', '.join(str(bug) for bug in sorted(crbugs)),)

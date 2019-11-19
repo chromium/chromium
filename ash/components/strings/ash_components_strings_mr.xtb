@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1036550831858290950">तुमचा सध्याचा टॅब बुकमार्क म्हणून सेव्ह करा</translation>
 <translation id="104962181688258143">फायली अ‍ॅप उघडा</translation>
 <translation id="1122869341872663659"><ph name="QUERY" /> साठी <ph name="N" /> शोध परिणाम दाखवत आहे</translation>
 <translation id="1195667586424773550">लिंक ड्रॅग करून टॅबच्या अ‍ॅड्रेस बारवर आणा</translation>
@@ -12,6 +13,7 @@
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> किंवा <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">ओळीच्या शेवटी जा</translation>
+<translation id="1499072997694708844">कोणतीही उघडी असलेली शोध विंडो बंद करा किंवा तुमचे सध्याचे पेज लोड करणे थांबवा</translation>
 <translation id="1510238584712386396">लाँचर</translation>
 <translation id="152892567002884378">आवाज मोठा करा</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, नंतर <ph name="ESC" /></translation>
@@ -21,6 +23,7 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">अ‍ॅड्रेस बारमधील तुमच्या इनपुटमध्ये www. आणि .com जोडा, त्यानंतर पेज उघडा</translation>
+<translation id="1872219238824176091">सध्याचा डेस्क काढून टाका</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, त्यानंतर <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> किंवा <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">पुढील टॅबवर जा</translation>
 <translation id="2010818616644390445">विंडोमधील अंतिम टॅबवर जा</translation>
@@ -33,20 +36,23 @@
 <translation id="2185166372312820725">आधीच्या टॅबवर जा</translation>
 <translation id="2194790690264064655"><ph name="CTRL" /> दाबा आणि एखाद्या लिंकवर क्लिक करा</translation>
 <translation id="2246352309084894470">फुलस्क्रीन लाँचर उघडा/बंद करा</translation>
+<translation id="2354531887393764880">पूर्णविरामचिन्‍ह</translation>
 <translation id="2382644247745281995">सद्य कीबोर्ड लेआउटने सपोर्ट करत नाही</translation>
 <translation id="2397416548179033562">Chrome मेनू दर्शवा</translation>
 <translation id="2424073332829844142">कॅप्स लॉक चालू करा आणि बंद करा</translation>
 <translation id="2441202986792279177">विंडोंदरम्यान झटपट स्विच करा</translation>
 <translation id="2454251766545114447">झूम आउट प्रदर्शित करा</translation>
-<translation id="2478303094958140141">ChromeVox (वाचिक फीडबॅक) चालू किंवा बंद करा</translation>
+<translation id="2478303094958140141">ChromeVox (वाचिक फीडबॅक) सुरू किंवा बंद करा</translation>
+<translation id="2480851840841871861">Google Assistant उघडा</translation>
+<translation id="2488661730534396940">डावीकडील डेस्क सुरू करा</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2530339807289914946">वेब पेज खालच्या दिशेला स्क्रोल करा</translation>
 <translation id="2574014812750545982">पेजवर झूम स्तर रीसेट करा</translation>
 <translation id="2596078834055697711">विंडो स्क्रीनशॉट घ्या</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, त्यानंतर <ph name="TAB" /> किंवा <ph name="RIGHT" /></translation>
-<translation id="2699509451653686398">बुकमार्क म्हणून तुमचे हे वेबपेज सेव्ह करा</translation>
 <translation id="2750942583782703988">तुमचे हे पेज रीलोड करा</translation>
 <translation id="2764005613199379871">अ‍ॅड्रेस बार शोधण्यावर फोकस करा</translation>
+<translation id="2774822903829597107">नवीन डेस्क तयार करा</translation>
 <translation id="2789868185375229787">पेजवर झूम आउट करा</translation>
 <translation id="2804480015716812239"><ph name="ALT" /> दाबा आणि एखाद्या लिंकवर क्लिक करा</translation>
 <translation id="2830827904629746450">एखादी विंडो उजवीकडे डॉक करा</translation>
@@ -78,9 +84,10 @@
 <translation id="3792178297143798024">तुमच्या शेल्फवरील हायलाइट केलेला आयटम उघडा</translation>
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> एक ते आठ</translation>
 <translation id="3837047332182291558">कीबोर्ड उजळ करा (फक्त बॅकलिट कीबोर्डसाठी)</translation>
+<translation id="3949671998904569433">स्वल्पविराम</translation>
 <translation id="3976863468609830880">तुमच्या शेल्फवरील शेवटच्या आयकनवर क्लिक करा</translation>
 <translation id="3994783594793697310">डिस्प्ले झूम स्तर रीसेट करा</translation>
-<translation id="4026843240379844265">डिस्प्ले दरम्यान अॅक्टिव्ह विंडो हलवा</translation>
+<translation id="4026843240379844265">डिस्प्ले दरम्यान ॲक्टिव्ह विंडो हलवा</translation>
 <translation id="4035482366624727273">पेजवरील प्रत्येक गोष्ट निवडा</translation>
 <translation id="4060703249685950734">तुम्ही याआधी बंद केलेला टॅब किंवा विंडो पुन्हा उघडा</translation>
 <translation id="4090342722461256974"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="SHIFT" /> दाबा आणि धरून ठेवा, तुम्हाला उघडायची असलेल्या विंडोवर तुम्ही पोहोचेपर्यंत <ph name="TAB" /> वर टॅप करत राहा, मग सोडा.</translation>
@@ -95,8 +102,9 @@
 <translation id="4556221320735744018">कीबोर्ड शॉर्टकट मदतनीस पाहा</translation>
 <translation id="4628718545549558538">स्थिती क्षेत्र (जेथे तुमच्या खात्यावरील फोटो दिसतो) उघडा</translation>
 <translation id="4642092649622328492">अर्धा स्क्रीनशॉट घ्या</translation>
-<translation id="4698850295812410683">स्टायलस साधने दाखवा</translation>
+<translation id="4698850295812410683">स्टायलस टूल दाखवा</translation>
 <translation id="4801989101741319327">पुढील शब्दाच्या शेवटी हलवा</translation>
+<translation id="4866066940972151697">उजवीकडील डेस्क सुरू करा</translation>
 <translation id="4916163929714267752">लिंक एका नवीन विंडोमध्ये उघडा</translation>
 <translation id="5030659775136592441">बुकमार्क व्यवस्थापक दाखवा</translation>
 <translation id="5034421018520995080">पेजच्या सर्वात वर जा</translation>
@@ -112,21 +120,21 @@
 <translation id="5554139136362089836">सध्याचे पेज शोधा</translation>
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> दाबा आणि एखाद्या लिंकवर क्लिक करा</translation>
 <translation id="561814908794220892">वेबपेज एखाद्या नवीन टॅबमध्ये उघडा</translation>
+<translation id="5620219513321115856">सुरू असलेली विंडो डेस्कच्या उजव्या बाजूला हलवा</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> किंवा <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">लिंक टॅबमध्ये उघडा</translation>
 <translation id="5757474750054631686">कीबोर्डचा प्रकाश मंद करा (फक्त बॅकलिट कीबोर्डसाठी)</translation>
 <translation id="587531134027443617">आधीचा शब्द हटवा</translation>
-<translation id="5899919361772749550">डेव्हलपर साधने कन्सोल दाखवा किंवा लपवा</translation>
+<translation id="5899919361772749550">डेव्हलपर टूल कन्सोल दाखवा किंवा लपवा</translation>
 <translation id="5921745308587794300">विंडो फिरवा</translation>
 <translation id="6022924867608035986">शोध बॉक्स मजकूर साफ करा</translation>
 <translation id="6045998054441862242">उच्च तीव्रता मोड चालू करा</translation>
 <translation id="6052614013050385269">एखाद्या लिंकवर राइट क्लिक करा</translation>
 <translation id="6129953537138746214">जागा</translation>
-<translation id="613146727819833328">विंडो मध्यभागी हलवा</translation>
 <translation id="6143669479988153888">पेजवर झूम इन करा</translation>
 <translation id="6185696379715117369">पृष्ठ वर</translation>
 <translation id="6228457605945141550">उजळपणा कमी करा</translation>
-<translation id="6276708887952587684">पेज स्त्रोत पहा</translation>
+<translation id="6276708887952587684">पेज स्रोत पहा</translation>
 <translation id="6321940490215594447">इतिहास पेज उघडा</translation>
 <translation id="6340769215862220182">झूम इन प्रदर्शित करा</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
@@ -135,7 +143,7 @@
 <translation id="6425378783626925378">तुमच्या शेल्फवरील १-८ आयकनवर क्लिक करा</translation>
 <translation id="6435207348963613811">तुमच्या शेल्फवरील आधीचे आयटम हायलाइट करा</translation>
 <translation id="6445033640292336367">टॅबला त्याच्या मूळ स्थितीत परत न्या</translation>
-<translation id="6474744297082284761">झूम अाउट करा (डॉक केलेले असताना किंवा क्षेत्रे मॅग्निफायर सुरू केलेले असताना)</translation>
+<translation id="6474744297082284761">झूम आउट करा (डॉक केलेले असताना किंवा क्षेत्रे मॅग्निफायर सुरू केलेले असताना)</translation>
 <translation id="649811797655257835">फाइल निवडा, त्यानंतर <ph name="SPACE" /> दाबा</translation>
 <translation id="6556040137485212400">सर्वाधिक काळासाठी न वापरली गेलेली विंडो उघडा</translation>
 <translation id="666343722268997814">हायलाइट केलेल्या आयटमसाठी राइट क्लिक मेनू उघडा</translation>
@@ -149,30 +157,32 @@
 <translation id="6755851152783057058">शेवटी वापरलेल्या इनपुट पद्धतीवर स्विच करा</translation>
 <translation id="6760706756348334449">आवाज कमी करा</translation>
 <translation id="6941333068993625698">फीडबॅक सबमिट करा</translation>
-<translation id="6981982820502123353">प्रवेशयोग्यता</translation>
+<translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
 <translation id="7020813747703216897">जुळणारे परिणाम आढळले नाहीत</translation>
 <translation id="7025325401470358758">पुढील उपखंड</translation>
 <translation id="7076878155205969899">ध्वनी म्यूट करा</translation>
 <translation id="7077383985738259936">बुकमार्क बारवर फोकस करा किंवा हायलाइट करा (दाखवले असल्यास)</translation>
-<translation id="7237562915163138771">अॅड्रेस बारमध्ये वेब अ‍ॅड्रेस टाइप करा आणि त्यानंतर <ph name="ALT" /><ph name="SEPARATOR" /><ph name="ENTER" /> दाबा</translation>
+<translation id="7237562915163138771">ॲड्रेस बारमध्ये वेब अ‍ॅड्रेस टाइप करा आणि त्यानंतर <ph name="ALT" /><ph name="SEPARATOR" /><ph name="ENTER" /> दाबा</translation>
 <translation id="7254764037241667478">डिव्हाइसला स्लीप मोड मध्ये ठेवा (निलंबित)</translation>
 <translation id="7379254767514753910"><ph name="ALT" /> किंवा <ph name="SEARCH" /><ph name="SEPARATOR" /><ph name="UP" /></translation>
 <translation id="7422707470576323858">पुढील उपलब्ध इनपुट पद्धतीवर स्विच करा</translation>
 <translation id="743754632698445141">ॲप अनपिन करा</translation>
 <translation id="7439718573248533901">पुढील अक्षर हटवा (फॉरवर्ड करा हटवा)</translation>
+<translation id="7500368597227394048">हायफन</translation>
 <translation id="7611271430932669992">फोकस पॉपअप आणि संवाद वर हलवा</translation>
 <translation id="766326951329901120">आशय एक साधा मजकूर म्हणून क्लिपबोर्डवरून पेस्ट करा</translation>
+<translation id="7703010453515335249">डावा कंस</translation>
 <translation id="7724603315864178912">कट करा</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, त्यानंतर <ph name="SPACE" /> किंवा <ph name="ENTER" /></translation>
 <translation id="7787242579016742662">ब्राउझरमध्ये एक फाइल उघडा</translation>
-<translation id="7917881398263220094">तुमचे हे पेज लोड करणे थांबवा</translation>
 <translation id="7952165122793773711">एक ते आठ टॅबवर जा</translation>
 <translation id="8026334261755873520">ब्राउझिंग डेटा साफ करा</translation>
 <translation id="8130528849632411619">दस्तऐवजाच्या सुरूवातीला जा</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> किंवा <ph name="E" /></translation>
 <translation id="8232835244134740473">फोकसला स्थिती भाग (जेथे तुमच्या खात्यावरील फोटो दिसतो), लॉंचर अ‍ॅड्रेस बार, बुकमार्क बार (दिसत असल्यास), उघडलेले वेबपेज, डाउनलोड बार (दिसत असल्यास) च्या दरम्यान स्विच करा</translation>
 <translation id="8234414138295101081">स्क्रीन ९० अंशात फिरवा</translation>
-<translation id="8264941229485248811">डेव्हलपर साधने परीक्षक दाखवा किंवा लपवा</translation>
+<translation id="8241665785394195545">उजवा कंस</translation>
+<translation id="8264941229485248811">डेव्हलपर टूल परीक्षक दाखवा किंवा लपवा</translation>
 <translation id="836869401750819675">डाउनलोड पेज उघडा</translation>
 <translation id="8388247778047144397">टॅब स्ट्रिपवरील एका रिक्त भागावर एखादी लिंक ड्रॅग करा</translation>
 <translation id="8389638407792712197">नवीन विंडो उघडा</translation>
@@ -184,9 +194,10 @@
 <translation id="8717459106217102612">आधीचा शब्द किंवा अक्षर निवडा</translation>
 <translation id="8727232706774971183">तुमच्या सूचना पाहा</translation>
 <translation id="8855885154700222542">क्षेत्रे की</translation>
+<translation id="8881584919399569791">सुरू असलेली विंडो डेस्कच्या डाव्या बाजूला हलवा</translation>
 <translation id="88986195241502842">पृष्ठ खाली</translation>
 <translation id="8924883688469390268">मागील वापरकर्त्यावर स्विच करा</translation>
-<translation id="8977648847395357314">अॅड्रेस बारमध्ये आशय निवडा</translation>
+<translation id="8977648847395357314">ॲड्रेस बारमध्ये आशय निवडा</translation>
 <translation id="8982190978301344584">उपलब्ध IME ची सूची प्रदर्शित करणारा मेनू दाखवा</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> १ ते ८</translation>
 <translation id="9005984960510803406">क्रॉश विंडो उघडा</translation>

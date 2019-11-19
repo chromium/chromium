@@ -17,13 +17,14 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/service_executable/switches.h"
 #include "services/service_manager/public/mojom/connector.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
-#include "services/service_manager/public/mojom/service_factory.mojom.h"
 
 namespace service_manager {
 namespace test {
@@ -69,15 +70,14 @@ mojom::ConnectResult LaunchAndConnectToProcess(
   child_command_line.AppendSwitchASCII(switches::kServiceRequestAttachmentName,
                                        pipe_name);
 
-  service_manager::mojom::ServicePtr client;
-  client.Bind(mojo::InterfacePtrInfo<service_manager::mojom::Service>(
-      std::move(pipe), 0u));
-  service_manager::mojom::PIDReceiverPtr receiver;
+  mojo::Remote<service_manager::mojom::ProcessMetadata> metadata;
 
   mojom::ConnectResult result;
   base::RunLoop loop(base::RunLoop::Type::kNestableTasksAllowed);
   connector->RegisterServiceInstance(
-      target, std::move(client), MakeRequest(&receiver),
+      target,
+      mojo::PendingRemote<service_manager::mojom::Service>(std::move(pipe), 0),
+      metadata.BindNewPipeAndPassReceiver(),
       base::BindOnce(&GrabConnectResult, &loop, &result));
   loop.Run();
 
@@ -85,15 +85,16 @@ mojom::ConnectResult LaunchAndConnectToProcess(
 #if defined(OS_WIN)
   options.handles_to_inherit = handle_passing_info;
 #elif defined(OS_FUCHSIA)
-
   options.handles_to_transfer = handle_passing_info;
+#elif defined(OS_MACOSX)
+  options.mach_ports_for_rendezvous = handle_passing_info;
 #elif defined(OS_POSIX)
   options.fds_to_remap = handle_passing_info;
 #endif
   *process = base::LaunchProcess(child_command_line, options);
   DCHECK(process->IsValid());
   channel.RemoteProcessLaunchAttempted();
-  receiver->SetPID(process->Pid());
+  metadata->SetPID(process->Pid());
   mojo::OutgoingInvitation::Send(std::move(invitation), process->Handle(),
                                  channel.TakeLocalEndpoint());
   return result;

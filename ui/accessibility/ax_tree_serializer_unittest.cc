@@ -53,13 +53,13 @@ void AXTreeSerializerTest::CreateTreeSerializer() {
   if (serializer_)
     return;
 
-  tree0_.reset(new AXSerializableTree(treedata0_));
-  tree1_.reset(new AXSerializableTree(treedata1_));
+  tree0_ = std::make_unique<AXSerializableTree>(treedata0_);
+  tree1_ = std::make_unique<AXSerializableTree>(treedata1_);
 
   // Serialize tree0 so that AXTreeSerializer thinks that its client
   // is totally in sync.
   tree0_source_.reset(tree0_->CreateTreeSource());
-  serializer_.reset(new BasicAXTreeSerializer(tree0_source_.get()));
+  serializer_ = std::make_unique<BasicAXTreeSerializer>(tree0_source_.get());
   AXTreeUpdate unused_update;
   ASSERT_TRUE(serializer_->SerializeChanges(tree0_->root(), &unused_update));
 
@@ -256,11 +256,14 @@ class AXTreeSourceWithInvalidId
   int32_t GetId(const AXNode* node) const override { return node->id(); }
   void GetChildren(const AXNode* node,
                    std::vector<const AXNode*>* out_children) const override {
-    for (int i = 0; i < node->child_count(); ++i)
-      out_children->push_back(node->ChildAtIndex(i));
+    *out_children = std::vector<const AXNode*>(node->children().cbegin(),
+                                               node->children().cend());
   }
   AXNode* GetParent(const AXNode* node) const override {
     return node->parent();
+  }
+  bool IsIgnored(const AXNode* node) const override {
+    return node->IsIgnored();
   }
   bool IsValid(const AXNode* node) const override {
     return node != nullptr && node->id() != invalid_id_;
@@ -325,9 +328,9 @@ TEST_F(AXTreeSerializerTest, MaximumSerializedNodeCount) {
   treedata0_.nodes[5].id = 6;
   treedata0_.nodes[6].id = 7;
 
-  tree0_.reset(new AXSerializableTree(treedata0_));
+  tree0_ = std::make_unique<AXSerializableTree>(treedata0_);
   tree0_source_.reset(tree0_->CreateTreeSource());
-  serializer_.reset(new BasicAXTreeSerializer(tree0_source_.get()));
+  serializer_ = std::make_unique<BasicAXTreeSerializer>(tree0_source_.get());
   serializer_->set_max_node_count(4);
   AXTreeUpdate update;
   ASSERT_TRUE(serializer_->SerializeChanges(tree0_->root(), &update));

@@ -22,13 +22,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Process;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.io.IOException;
 
@@ -101,7 +103,8 @@ public class HttpNegotiateAuthenticator {
                 accounts = future.getResult();
             } catch (OperationCanceledException | AuthenticatorException | IOException e) {
                 Log.w(TAG, "ERR_UNEXPECTED: Error while attempting to retrieve accounts.", e);
-                nativeSetResult(mRequestData.nativeResultObject, NetError.ERR_UNEXPECTED, null);
+                HttpNegotiateAuthenticatorJni.get().setResult(mRequestData.nativeResultObject,
+                        HttpNegotiateAuthenticator.this, NetError.ERR_UNEXPECTED, null);
                 return;
             }
 
@@ -109,8 +112,9 @@ public class HttpNegotiateAuthenticator {
                 Log.w(TAG, "ERR_MISSING_AUTH_CREDENTIALS: No account provided for the kerberos "
                                 + "authentication. Please verify the configuration policies and "
                                 + "that the CONTACTS runtime permission is granted. ");
-                nativeSetResult(mRequestData.nativeResultObject,
-                        NetError.ERR_MISSING_AUTH_CREDENTIALS, null);
+                HttpNegotiateAuthenticatorJni.get().setResult(mRequestData.nativeResultObject,
+                        HttpNegotiateAuthenticator.this, NetError.ERR_MISSING_AUTH_CREDENTIALS,
+                        null);
                 return;
             }
 
@@ -119,8 +123,9 @@ public class HttpNegotiateAuthenticator {
                                 + "kerberos authentication. Please fix the configuration by "
                                 + "providing a single account.",
                         accounts.length);
-                nativeSetResult(mRequestData.nativeResultObject,
-                        NetError.ERR_MISSING_AUTH_CREDENTIALS, null);
+                HttpNegotiateAuthenticatorJni.get().setResult(mRequestData.nativeResultObject,
+                        HttpNegotiateAuthenticator.this, NetError.ERR_MISSING_AUTH_CREDENTIALS,
+                        null);
                 return;
             }
 
@@ -131,7 +136,8 @@ public class HttpNegotiateAuthenticator {
                 // API >= 23 USE_CREDENTIALS permission is removed
                 Log.e(TAG, "ERR_MISCONFIGURED_AUTH_ENVIRONMENT: USE_CREDENTIALS permission not "
                                 + "granted. Aborting authentication.");
-                nativeSetResult(mRequestData.nativeResultObject,
+                HttpNegotiateAuthenticatorJni.get().setResult(mRequestData.nativeResultObject,
+                        HttpNegotiateAuthenticator.this,
                         NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT, null);
                 return;
             }
@@ -157,7 +163,8 @@ public class HttpNegotiateAuthenticator {
                 result = future.getResult();
             } catch (OperationCanceledException | AuthenticatorException | IOException e) {
                 Log.w(TAG, "ERR_UNEXPECTED: Error while attempting to obtain a token.", e);
-                nativeSetResult(mRequestData.nativeResultObject, NetError.ERR_UNEXPECTED, null);
+                HttpNegotiateAuthenticatorJni.get().setResult(mRequestData.nativeResultObject,
+                        HttpNegotiateAuthenticator.this, NetError.ERR_UNEXPECTED, null);
                 return;
             }
 
@@ -206,7 +213,8 @@ public class HttpNegotiateAuthenticator {
 
     /**
      * @param nativeResultObject The C++ object used to return the result. For correct C++ memory
-     *            management we must call nativeSetResult precisely once with this object.
+     *            management we must call HttpNegotiateAuthenticatorJni.get().setResult precisely
+     * once with this object.
      * @param principal The principal (must be host based).
      * @param authToken The incoming auth token.
      * @param canDelegate True if we can delegate.
@@ -249,11 +257,12 @@ public class HttpNegotiateAuthenticator {
      */
     private void processResult(Bundle result, RequestData requestData) {
         mSpnegoContext = result.getBundle(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT);
+        @NetError
         int status;
         switch (result.getInt(
                 HttpNegotiateConstants.KEY_SPNEGO_RESULT, HttpNegotiateConstants.ERR_UNEXPECTED)) {
             case HttpNegotiateConstants.OK:
-                status = 0;
+                status = NetError.OK;
                 break;
             case HttpNegotiateConstants.ERR_UNEXPECTED:
                 status = NetError.ERR_UNEXPECTED;
@@ -285,7 +294,8 @@ public class HttpNegotiateAuthenticator {
             default:
                 status = NetError.ERR_UNEXPECTED;
         }
-        nativeSetResult(requestData.nativeResultObject, status,
+        HttpNegotiateAuthenticatorJni.get().setResult(requestData.nativeResultObject,
+                HttpNegotiateAuthenticator.this, status,
                 result.getString(AccountManager.KEY_AUTHTOKEN));
     }
 
@@ -309,8 +319,9 @@ public class HttpNegotiateAuthenticator {
             //           don't require it on M+
             Log.e(TAG, "ERR_MISCONFIGURED_AUTH_ENVIRONMENT: GET_ACCOUNTS permission not "
                             + "granted. Aborting authentication.");
-            nativeSetResult(requestData.nativeResultObject,
-                    NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT, null);
+            HttpNegotiateAuthenticatorJni.get().setResult(requestData.nativeResultObject,
+                    HttpNegotiateAuthenticator.this, NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT,
+                    null);
             return;
         }
         requestData.accountManager.getAccountsByTypeAndFeatures(mAccountType, features,
@@ -348,8 +359,9 @@ public class HttpNegotiateAuthenticator {
         if (lacksPermission(ctx, permission, isPreM)) {
             Log.e(TAG, "ERR_MISCONFIGURED_AUTH_ENVIRONMENT: %s permission not granted. "
                        + "Aborting authentication", permission);
-            nativeSetResult(requestData.nativeResultObject,
-                    NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT, null);
+            HttpNegotiateAuthenticatorJni.get().setResult(requestData.nativeResultObject,
+                    HttpNegotiateAuthenticator.this, NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT,
+                    null);
             return;
         }
 
@@ -371,7 +383,9 @@ public class HttpNegotiateAuthenticator {
         return permissionResult != PackageManager.PERMISSION_GRANTED;
     }
 
-    @VisibleForTesting
-    native void nativeSetResult(
-            long nativeJavaNegotiateResultWrapper, int status, String authToken);
+    @NativeMethods
+    interface Natives {
+        void setResult(long nativeJavaNegotiateResultWrapper, HttpNegotiateAuthenticator caller,
+                int status, String authToken);
+    }
 }

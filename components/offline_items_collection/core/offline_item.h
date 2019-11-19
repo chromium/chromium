@@ -116,11 +116,22 @@ struct OfflineItem {
   // Whether this item is going through accelerated download.
   bool is_accelerated;
 
-  // Whether there are new visuals available.
-  bool refresh_visuals;
-
   // Whether the origin should be displayed.
   bool promote_origin;
+
+  // Whether or not this item can be renamed.
+  bool can_rename;
+
+  // Whether or not to bother querying for visuals.  Querying is not guaranteed
+  // to return anything, but if this is |true| the UI layers can make
+  // optimizations without waiting for the asynchronous query for visual
+  // information.
+  bool ignore_visuals;
+
+  // A score in the range of 0 to 1.0 showing how relevant the content is for
+  // the user. Higher score is an indication that the item will be ranked higher
+  // in the UI surfaces.
+  double content_quality_score;
 
   // TODO(dtrainor): Build out custom per-item icon support.
 
@@ -161,6 +172,9 @@ struct OfflineItem {
 
   // Whether or not this item is off the record.
   bool is_off_the_record;
+
+  // Identifies the item's publisher.
+  std::string attribution;
 
   // In Progress Metadata.
   // ---------------------------------------------------------------------------
@@ -213,6 +227,7 @@ std::ostream& operator<<(std::ostream& os, const OfflineItem& item);
 // an OfflineItem update to let us know about an update to the visuals.
 struct OfflineItemVisuals {
   OfflineItemVisuals();
+  OfflineItemVisuals(const gfx::Image& icon, const gfx::Image& custom_favicon);
   OfflineItemVisuals(const OfflineItemVisuals& other);
 
   ~OfflineItemVisuals();
@@ -221,6 +236,9 @@ struct OfflineItemVisuals {
   // TODO(dtrainor): Suggest icon size based on the icon size supported by the
   // current OS.
   gfx::Image icon;
+
+  // Favicon to be shown with the item; optional.
+  gfx::Image custom_favicon;
 };
 
 // This struct holds additional information related to sharing a particular

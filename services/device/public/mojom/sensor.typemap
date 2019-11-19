@@ -15,4 +15,4 @@ sources = [
   "//services/device/public/cpp/generic_sensor/sensor_mojom_traits.cc",
 ]
 type_mappings =
-    [ "device.mojom.SensorConfiguration=device::PlatformSensorConfiguration" ]
+    [ "device.mojom.SensorConfiguration=::device::PlatformSensorConfiguration" ]

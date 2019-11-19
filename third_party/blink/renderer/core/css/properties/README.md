@@ -36,7 +36,8 @@ implementation is not reached.
 Alias classes, longhand classes, and shorthand classes each represent a single
 CSS property and are named after that property. These property classes are
 partially generated (<PropertyName\>.h and for some properties
-<PropertyName\>.cpp), and partially hand written (<PropertyName\>Custom.cpp).
+<PropertyName\>.cpp), and partially hand written (in shorthands_custom.cc or
+longhands_custom.cc).
 
 
 ## Special property classes

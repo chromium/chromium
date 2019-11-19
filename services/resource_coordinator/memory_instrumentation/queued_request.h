@@ -8,12 +8,14 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/optional.h"
 #include "base/trace_event/memory_dump_request_args.h"
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/coordinator.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
+using base::trace_event::MemoryDumpDeterminism;
 using base::trace_event::MemoryDumpLevelOfDetail;
 using base::trace_event::MemoryDumpType;
 
@@ -31,6 +33,7 @@ struct QueuedRequest {
   struct Args {
     Args(MemoryDumpType dump_type,
          MemoryDumpLevelOfDetail level_of_detail,
+         MemoryDumpDeterminism determinism,
          const std::vector<std::string>& allocator_dump_names,
          bool add_to_trace,
          base::ProcessId pid,
@@ -40,6 +43,7 @@ struct QueuedRequest {
 
     const MemoryDumpType dump_type;
     const MemoryDumpLevelOfDetail level_of_detail;
+    const MemoryDumpDeterminism determinism;
     const std::vector<std::string> allocator_dump_names;
     const bool add_to_trace;
     const base::ProcessId pid;
@@ -54,20 +58,22 @@ struct QueuedRequest {
       kChromeDump,
       kOSDump,
     };
-    PendingResponse(const mojom::ClientProcess* client, const Type type);
+    PendingResponse(base::ProcessId, const Type type);
 
     bool operator<(const PendingResponse& other) const;
 
-    const mojom::ClientProcess* client;
+    const base::ProcessId process_id;
     const Type type;
   };
 
   struct Response {
     Response();
+    Response(Response&& other);
     ~Response();
 
     base::ProcessId process_id = base::kNullProcessId;
     mojom::ProcessType process_type = mojom::ProcessType::OTHER;
+    base::Optional<std::string> service_name;
     std::unique_ptr<base::trace_event::ProcessMemoryDump> chrome_dump;
     OSMemDumpMap os_dumps;
   };
@@ -99,7 +105,7 @@ struct QueuedRequest {
   // |RequestOSMemoryDump| call that has not yet replied or been canceled (due
   // to the client disconnecting).
   std::set<PendingResponse> pending_responses;
-  std::map<mojom::ClientProcess*, Response> responses;
+  std::map<base::ProcessId, Response> responses;
   int failed_memory_dump_count = 0;
   bool dump_in_progress = false;
 
@@ -127,10 +133,11 @@ struct QueuedVmRegionRequest {
 
     base::ProcessId process_id = base::kNullProcessId;
     OSMemDumpMap os_dumps;
+    base::Optional<std::string> service_name;
   };
 
-  std::set<mojom::ClientProcess*> pending_responses;
-  std::map<mojom::ClientProcess*, Response> responses;
+  std::set<base::ProcessId> pending_responses;
+  std::map<base::ProcessId, Response> responses;
 };
 
 }  // namespace memory_instrumentation

@@ -4,6 +4,9 @@
 
 #include "ui/views/accessible_pane_view.h"
 
+#include <memory>
+
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/view_tracker.h"
@@ -41,17 +44,8 @@ class AccessiblePaneViewFocusSearch : public FocusSearch {
 };
 
 AccessiblePaneView::AccessiblePaneView()
-    : pane_has_focus_(false),
-      allow_deactivate_on_esc_(false),
-      focus_manager_(nullptr),
-      home_key_(ui::VKEY_HOME, ui::EF_NONE),
-      end_key_(ui::VKEY_END, ui::EF_NONE),
-      escape_key_(ui::VKEY_ESCAPE, ui::EF_NONE),
-      left_key_(ui::VKEY_LEFT, ui::EF_NONE),
-      right_key_(ui::VKEY_RIGHT, ui::EF_NONE),
-      last_focused_view_tracker_(std::make_unique<ViewTracker>()),
-      method_factory_(this) {
-  focus_search_.reset(new AccessiblePaneViewFocusSearch(this));
+    : last_focused_view_tracker_(std::make_unique<ViewTracker>()) {
+  focus_search_ = std::make_unique<AccessiblePaneViewFocusSearch>(this);
 }
 
 AccessiblePaneView::~AccessiblePaneView() {
@@ -61,7 +55,7 @@ AccessiblePaneView::~AccessiblePaneView() {
 }
 
 bool AccessiblePaneView::SetPaneFocus(views::View* initial_focus) {
-  if (!visible())
+  if (!GetVisible())
     return false;
 
   if (!focus_manager_)
@@ -73,10 +67,8 @@ bool AccessiblePaneView::SetPaneFocus(views::View* initial_focus) {
 
   // Use the provided initial focus if it's visible and enabled, otherwise
   // use the first focusable child.
-  if (!initial_focus ||
-      !ContainsForFocusSearch(this, initial_focus) ||
-      !initial_focus->visible() ||
-      !initial_focus->enabled()) {
+  if (!initial_focus || !ContainsForFocusSearch(this, initial_focus) ||
+      !initial_focus->GetVisible() || !initial_focus->GetEnabled()) {
     initial_focus = GetFirstFocusableChild();
   }
 
@@ -85,6 +77,15 @@ bool AccessiblePaneView::SetPaneFocus(views::View* initial_focus) {
     return false;
 
   focus_manager_->SetFocusedView(initial_focus);
+
+  // TODO(pbos): Move this behavior into FocusManager. Focusing an unfocusable
+  // view should do something smart (move focus to its children or clear focus).
+  // DownloadItemView is an example (isn't focusable, has focusable children).
+  // See https://crbug.com/1000998.
+  // The initially-focused view may not be focusable (but one of its children
+  // might). We may need to advance focus here to make sure focus is on
+  // something focusable.
+  focus_manager_->AdvanceFocusIfNecessary();
 
   // If we already have pane focus, we're done.
   if (pane_has_focus_)
@@ -170,6 +171,7 @@ bool AccessiblePaneView::AcceleratorPressed(
   if (!ContainsForFocusSearch(this, focused_view))
     return false;
 
+  using FocusChangeReason = views::FocusManager::FocusChangeReason;
   switch (accelerator.key_code()) {
     case ui::VKEY_ESCAPE: {
       RemovePaneFocus();
@@ -179,7 +181,7 @@ bool AccessiblePaneView::AcceleratorPressed(
         last_focused_view = nullptr;
       if (last_focused_view) {
         focus_manager_->SetFocusedViewWithReason(
-            last_focused_view, FocusManager::kReasonFocusRestore);
+            last_focused_view, FocusChangeReason::kFocusRestore);
       } else if (allow_deactivate_on_esc_) {
         focused_view->GetWidget()->Deactivate();
       }
@@ -193,11 +195,11 @@ bool AccessiblePaneView::AcceleratorPressed(
       return true;
     case ui::VKEY_HOME:
       focus_manager_->SetFocusedViewWithReason(
-          GetFirstFocusableChild(), views::FocusManager::kReasonFocusTraversal);
+          GetFirstFocusableChild(), FocusChangeReason::kFocusTraversal);
       return true;
     case ui::VKEY_END:
       focus_manager_->SetFocusedViewWithReason(
-          GetLastFocusableChild(), views::FocusManager::kReasonFocusTraversal);
+          GetLastFocusableChild(), FocusChangeReason::kFocusTraversal);
       return true;
     default:
       return false;
@@ -205,7 +207,7 @@ bool AccessiblePaneView::AcceleratorPressed(
 }
 
 void AccessiblePaneView::SetVisible(bool flag) {
-  if (visible() && !flag && pane_has_focus_) {
+  if (GetVisible() && !flag && pane_has_focus_) {
     RemovePaneFocus();
     focus_manager_->RestoreFocusedView();
   }
@@ -237,7 +239,7 @@ void AccessiblePaneView::OnDidChangeFocus(views::View* focused_before,
       focus_manager_->focus_change_reason();
 
   if (!ContainsForFocusSearch(this, focused_now) ||
-      reason == views::FocusManager::kReasonDirectFocusChange) {
+      reason == views::FocusManager::FocusChangeReason::kDirectFocusChange) {
     // We should remove pane focus (i.e. make most of the controls
     // not focusable again) because the focus has left the pane,
     // or because the focus changed within the pane due to the user
@@ -263,5 +265,9 @@ views::View* AccessiblePaneView::GetFocusTraversableParentView() {
   DCHECK(pane_has_focus_);
   return nullptr;
 }
+
+BEGIN_METADATA(AccessiblePaneView)
+METADATA_PARENT_CLASS(View)
+END_METADATA()
 
 }  // namespace views

@@ -22,7 +22,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.webview_shell.WebViewLayoutTestActivity;
@@ -83,7 +82,7 @@ public class WebViewLayoutTest {
             new ActivityTestRule<>(WebViewLayoutTestActivity.class, false, false);
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mTestActivity = mActivityTestRule.launchActivity(new Intent());
         Bundle arguments = InstrumentationRegistry.getArguments();
         if (arguments != null) {
@@ -93,7 +92,7 @@ public class WebViewLayoutTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestActivity.finish();
     }
 
@@ -303,17 +302,17 @@ public class WebViewLayoutTest {
     }
 
     /*
-    currently failing on aosp bots, see crbug.com/607350
+    TODO(aluo): Investigate why this is failing on google devices too and not
+    just aosp per crbug.com/607350
     */
     @Test
     @MediumTest
-    @DisableIf.Build(product_name_includes = "aosp")
+    @DisabledTest(message = "crbug.com/607350")
     public void testEMEPermission() throws Exception {
         mTestActivity.setGrantPermission(true);
         runWebViewLayoutTest("blink-apis/eme/eme.html", "blink-apis/eme/eme-expected.txt");
         mTestActivity.setGrantPermission(false);
     }
-
 
     // test helper methods
 

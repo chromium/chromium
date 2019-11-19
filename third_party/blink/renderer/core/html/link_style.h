@@ -29,8 +29,6 @@ class LinkStyle final : public LinkResource, ResourceClient {
   USING_GARBAGE_COLLECTED_MIXIN(LinkStyle);
 
  public:
-  static LinkStyle* Create(HTMLLinkElement* owner);
-
   explicit LinkStyle(HTMLLinkElement* owner);
   ~LinkStyle() override;
 

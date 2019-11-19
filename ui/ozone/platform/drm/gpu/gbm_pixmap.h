@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_DRM_GPU_GBM_BUFFER_H_
 #define UI_OZONE_PLATFORM_DRM_GPU_GBM_BUFFER_H_
 
+#include <memory>
 #include <vector>
 
 #include "ui/gfx/native_pixmap.h"
@@ -26,9 +27,11 @@ class GbmPixmap : public gfx::NativePixmap {
   // NativePixmap:
   bool AreDmaBufFdsValid() const override;
   int GetDmaBufFd(size_t plane) const override;
-  int GetDmaBufPitch(size_t plane) const override;
-  int GetDmaBufOffset(size_t plane) const override;
-  uint64_t GetDmaBufModifier(size_t plane) const override;
+  uint32_t GetDmaBufPitch(size_t plane) const override;
+  size_t GetDmaBufOffset(size_t plane) const override;
+  size_t GetDmaBufPlaneSize(size_t plane) const override;
+  size_t GetNumberOfPlanes() const override;
+  uint64_t GetBufferFormatModifier() const override;
   gfx::BufferFormat GetBufferFormat() const override;
   gfx::Size GetBufferSize() const override;
   uint32_t GetUniqueId() const override;
@@ -41,7 +44,7 @@ class GbmPixmap : public gfx::NativePixmap {
                             std::unique_ptr<gfx::GpuFence> gpu_fence) override;
   gfx::NativePixmapHandle ExportHandle() override;
 
-  GbmBuffer* buffer() { return buffer_.get(); }
+  GbmBuffer* buffer() const { return buffer_.get(); }
   const scoped_refptr<DrmFramebuffer>& framebuffer() const {
     return framebuffer_;
   }

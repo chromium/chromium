@@ -107,10 +107,5 @@ static_library("apr") {
     "src/include",
     "src/include/arch/unix",
   ]
-  cflags = [
-    "-isystem" +
-        rebase_path("$android_ndk_root/sources/android/support/include",
-                    root_build_dir),
-    "-w",
-  ]
+  cflags = [ "-w" ]
 }

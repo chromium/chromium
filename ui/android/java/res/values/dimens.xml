@@ -18,10 +18,17 @@
 
     <!-- Common alpha values -->
     <item name="default_disabled_alpha" format="float" type="dimen">0.38</item>
-    <item name="default_pressed_alpha" format="float" type="dimen">0.10</item>
-    <item name="default_focused_hovered_alpha" format="float" type="dimen">0.10</item>
+    <item name="default_pressed_alpha" format="float" type="dimen">0.06</item>
+    <item name="default_focused_hovered_alpha" format="float" type="dimen">0.06</item>
     <item name="default_focused_alpha" format="float" type="dimen">0.06</item>
     <item name="default_hovered_alpha" format="float" type="dimen">0.04</item>
+
+    <!-- Minimum height/width for a touchable item -->
+    <dimen name="min_touch_target_size">48dp</dimen>
+
+    <!-- Button default measures -->
+    <dimen name="button_min_width">88dp</dimen>
+    <dimen name="button_bg_vertical_inset">6dp</dimen>
 
     <!-- Chips default measures -->
     <dimen name="chip_border_width">1dp</dimen>
@@ -29,6 +36,7 @@
     <dimen name="chip_default_height">32dp</dimen>
     <dimen name="chip_end_padding">16dp</dimen>
     <dimen name="chip_element_leading_padding">8dp</dimen>
+    <dimen name="chip_bg_vertical_inset">8dp</dimen>
     <item name="chip_background_selected_focused_alpha" format="float" type="dimen">0.12</item>
     <item name="chip_background_selected_alpha" format="float" type="dimen">0.06</item>
     <dimen name="chip_icon_size">20dp</dimen>
@@ -51,6 +59,7 @@
 
     <!-- Misc -->
     <dimen name="default_ripple_background_border_size">0dp</dimen>
+    <dimen name="popup_bg_corner_radius">4dp</dimen>
 
     <!--
          Fallback values if the corresponding com.android.internal.R dimensions

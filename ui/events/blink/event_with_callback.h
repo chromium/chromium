@@ -50,7 +50,8 @@ class EventWithCallback {
 
   const blink::WebInputEvent& event() const { return *event_; }
   blink::WebInputEvent* event_pointer() { return event_.get(); }
-  const LatencyInfo latency_info() const { return latency_; }
+  const LatencyInfo& latency_info() const { return latency_; }
+  LatencyInfo* mutable_latency_info() { return &latency_; }
   base::TimeTicks creation_timestamp() const { return creation_timestamp_; }
   base::TimeTicks last_coalesced_timestamp() const {
     return last_coalesced_timestamp_;

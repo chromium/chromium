@@ -2,6 +2,7 @@
 # where possible.
 
 # Reviewers (in CET):
+blundell@chromium.org
 droger@chromium.org
 treib@chromium.org
 vasilii@chromium.org
@@ -9,10 +10,14 @@ vasilii@chromium.org
 # Reviewers (in EST):
 avi@chromium.org
 thakis@chromium.org
+yfriedman@chromium.org
 
 # Reviewers (in PST):
+dtrainor@chromium.org
+nyquist@chromium.org
 sky@chromium.org
 thestig@chromium.org
+twellington@chromium.org
 
 # per-file rules:
 # These are for the common case of adding or renaming files. If you're doing
@@ -23,3 +28,5 @@ per-file VERSION=amineer@chromium.org
 per-file VERSION=anantha@chromium.org
 per-file VERSION=govind@chromium.org
 per-file VERSION=mmoss@chromium.org
+# COMPONENT: Build
+# TEAM: chromium-reviews@chromium.org

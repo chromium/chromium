@@ -123,10 +123,12 @@ int MojoPerfTestClient::Run(MojoHandle handle) {
 ReflectorImpl::ReflectorImpl(mojo::ScopedMessagePipeHandle handle,
                              const base::Closure& quit_closure)
     : quit_closure_(quit_closure),
-      binding_(this, IPC::mojom::ReflectorRequest(std::move(handle))) {}
+      receiver_(
+          this,
+          mojo::PendingReceiver<IPC::mojom::Reflector>(std::move(handle))) {}
 
 ReflectorImpl::~ReflectorImpl() {
-  ignore_result(binding_.Unbind().PassMessagePipe().release());
+  ignore_result(receiver_.Unbind().PassPipe().release());
 }
 
 void ReflectorImpl::Ping(const std::string& value, PingCallback callback) {

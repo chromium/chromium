@@ -27,7 +27,9 @@ import devil_chromium
 
 
 _KEYS = ['url', 'warmup', 'skip_launcher_activity', 'speculation_mode',
-         'delay_to_may_launch_url', 'delay_to_launch_url', 'cold']
+         'delay_to_may_launch_url', 'delay_to_launch_url', 'cold',
+         'pinning_benchmark', 'extra_brief_memory_mb', 'pin_filename',
+         'pin_offset', 'pin_length']
 
 
 def _ParseConfiguration(filename):
@@ -84,6 +86,7 @@ def _CreateOptionParser():
                     'output file is prefix_<device ID>.csv', default='result')
   parser.add_option('--once', help='Run only once.', default=False,
                     action='store_true')
+  parser.add_option('--adb_path', help='Path to ADB', default=None)
   return parser
 
 
@@ -121,7 +124,7 @@ def main():
   if options.config is None:
     logging.error('A configuration file must be provided.')
     sys.exit(0)
-  devil_chromium.Initialize()
+  devil_chromium.Initialize(adb_path=options.adb_path)
   configs = _ParseConfiguration(options.config)
   if options.once:
     device = device_utils.DeviceUtils.HealthyDevices()[0]

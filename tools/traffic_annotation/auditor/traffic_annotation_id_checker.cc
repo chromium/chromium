@@ -55,7 +55,7 @@ void TrafficAnnotationIDChecker::CheckForInvalidValues(
     std::vector<AuditorResult>* errors) {
   for (AnnotationItem& item : annotations_) {
     for (int i = 0; i < item.ids_count; i++) {
-      if (base::ContainsKey(invalid_set, item.ids[i].hash_code)) {
+      if (base::Contains(invalid_set, item.ids[i].hash_code)) {
         errors->push_back(AuditorResult(error_type, item.ids[i].text,
                                         item.file_path, item.line_number));
       }
@@ -83,7 +83,7 @@ void TrafficAnnotationIDChecker::CheckForHashCollisions(
   std::map<int, std::string> collisions;
   for (AnnotationItem& item : annotations_) {
     for (int i = 0; i < item.ids_count; i++) {
-      if (!base::ContainsKey(collisions, item.ids[i].hash_code)) {
+      if (!base::Contains(collisions, item.ids[i].hash_code)) {
         // If item is loaded from archive, and it is the second id, do not keep
         // the id for checks. Archive just keeps the hash code of the second id
         // and the text value of it is not correct.
@@ -112,7 +112,7 @@ void TrafficAnnotationIDChecker::CheckForInvalidRepeatedIDs(
 
   // Check if first ids are unique.
   for (AnnotationItem& item : annotations_) {
-    if (!base::ContainsKey(first_ids, item.ids[0].hash_code)) {
+    if (!base::Contains(first_ids, item.ids[0].hash_code)) {
       first_ids[item.ids[0].hash_code] = &item;
     } else {
       errors->push_back(CreateRepeatedIDError(
@@ -124,7 +124,7 @@ void TrafficAnnotationIDChecker::CheckForInvalidRepeatedIDs(
   // type PARTIAL and owner of the first id should be of type COMPLETING.
   for (AnnotationItem& item : annotations_) {
     if (item.ids_count == 2 &&
-        base::ContainsKey(first_ids, item.ids[1].hash_code)) {
+        base::Contains(first_ids, item.ids[1].hash_code)) {
       if (item.type != AnnotationInstance::Type::ANNOTATION_PARTIAL ||
           first_ids[item.ids[1].hash_code]->type !=
               AnnotationInstance::Type::ANNOTATION_COMPLETING) {
@@ -139,7 +139,7 @@ void TrafficAnnotationIDChecker::CheckForInvalidRepeatedIDs(
   for (AnnotationItem& item : annotations_) {
     if (item.ids_count != 2)
       continue;
-    if (!base::ContainsKey(second_ids, item.ids[1].hash_code)) {
+    if (!base::Contains(second_ids, item.ids[1].hash_code)) {
       second_ids[item.ids[1].hash_code] = &item;
     } else {
       AnnotationInstance::Type other_type =

@@ -1,8 +1,6 @@
 #ifndef _RAR_OPTIONS_
 #define _RAR_OPTIONS_
 
-namespace third_party_unrar {
-
 #define DEFAULT_RECOVERY     -3
 
 #define DEFAULT_RECVOLUMES  -10
@@ -61,10 +59,19 @@ enum SAVECOPY_MODE {
   SAVECOPY_DUPLISTEXIT
 };
 
+enum APPENDARCNAME_MODE
+{
+  APPENDARCNAME_NONE=0,APPENDARCNAME_DESTPATH,APPENDARCNAME_OWNDIR
+};
+
 enum POWER_MODE {
   POWERMODE_KEEP=0,POWERMODE_OFF,POWERMODE_HIBERNATE,POWERMODE_SLEEP,
   POWERMODE_RESTART
 };
+
+
+// Need "forced off" state to turn off sound in GUI command line.
+enum SOUND_NOTIFY_MODE {SOUND_NOTIFY_DEFAULT=0,SOUND_NOTIFY_ON,SOUND_NOTIFY_OFF};
 
 struct FilterMode
 {
@@ -110,7 +117,7 @@ class RAROptions
 
     wchar LogName[NM];
     MESSAGE_TYPE MsgStream;
-    bool Sound;
+    SOUND_NOTIFY_MODE Sound;
     OVERWRITE_MODE Overwrite;
     int Method;
     HASH_TYPE HashType;
@@ -161,8 +168,10 @@ class RAROptions
     bool SaveStreams;
     bool SetCompressedAttr;
     bool IgnoreGeneralAttr;
-    RarTime FileTimeBefore;
-    RarTime FileTimeAfter;
+    RarTime FileMtimeBefore,FileCtimeBefore,FileAtimeBefore;
+    bool FileMtimeBeforeOR,FileCtimeBeforeOR,FileAtimeBeforeOR;
+    RarTime FileMtimeAfter,FileCtimeAfter,FileAtimeAfter;
+    bool FileMtimeAfterOR,FileCtimeAfterOR,FileAtimeAfterOR;
     int64 FileSizeLess;
     int64 FileSizeMore;
     bool Lock;
@@ -171,9 +180,9 @@ class RAROptions
     FilterMode FilterModes[MAX_FILTER_TYPES];
     wchar EmailTo[NM];
     uint VersionControl;
-    bool AppendArcNameToPath;
+    APPENDARCNAME_MODE AppendArcNameToPath;
     POWER_MODE Shutdown;
-    EXTTIME_MODE xmtime;
+    EXTTIME_MODE xmtime; // Extended time modes (time precision to store).
     EXTTIME_MODE xctime;
     EXTTIME_MODE xatime;
     wchar CompressStdin[NM];
@@ -194,7 +203,4 @@ class RAROptions
     PROCESSDATAPROC ProcessDataProc;
 #endif
 };
-
-}  // namespace third_party_unrar
-
 #endif

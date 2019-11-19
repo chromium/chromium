@@ -147,17 +147,12 @@ class MEDIA_SHMEM_EXPORT AudioBus {
       int num_frames_to_read,
       typename TargetSampleTypeTraits::ValueType* dest_buffer) const;
 
-  // DEPRECATED (https://crbug.com/580391)
-  // Please use the version templated with TargetSampleTypeTraits instead.
-  // TODO(chfremer): Remove (https://crbug.com/619623)
-  void ToInterleavedPartial(int start_frame,
-                            int frames,
-                            int bytes_per_sample,
-                            void* dest) const;
-
   // Helper method for copying channel data from one AudioBus to another.  Both
   // AudioBus object must have the same frames() and channels().
   void CopyTo(AudioBus* dest) const;
+
+  // Similar to above, but clips values to [-1, 1] during the copy process.
+  void CopyAndClipTo(AudioBus* dest) const;
 
   // Helper method to copy frames from one AudioBus to another. Both AudioBus
   // objects must have the same number of channels(). |source_start_frame| is

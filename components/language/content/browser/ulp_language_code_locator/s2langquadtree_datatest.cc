@@ -51,8 +51,15 @@ const std::map<S2LatLng, std::string> GetData(int rank) {
 
 void ExpectTreeContainsData(const S2LangQuadTreeNode& root,
                             const std::map<S2LatLng, std::string>& data) {
+  int face = -1;
   for (const auto& latlng_lang : data) {
     S2CellId cell(latlng_lang.first);
+
+    // All data is not on the same face, tree will fail.
+    if (face != -1)
+      EXPECT_EQ(face, cell.face());
+    face = cell.face();
+
     EXPECT_EQ(latlng_lang.second, root.Get(cell));
   }
 }

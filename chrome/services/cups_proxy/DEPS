@@ -1,0 +1,6 @@
+include_rules = [
+  "+chromeos/printing",
+  "+chrome/services/ipp_parser",
+  "+chromeos/dbus/cups_proxy",
+  "+third_party/cros_system_api/dbus",
+]

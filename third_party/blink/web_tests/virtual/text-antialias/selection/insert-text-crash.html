@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+ span {
+  float: left !important;
+  width: 0;
+}
+table { float: none !important; }
+span:first-letter { color: green; }
+</style>
+
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+var DOMNodeRemoved_active = false;
+var iteration = 0;
+function DOMNodeRemoved() {
+  if (DOMNodeRemoved_active) return ;
+  DOMNodeRemoved_active = true;
+
+  iteration += 1;
+
+  var oElement = event.srcElement;
+  oElement.insertAdjacentHTML('afterend', "<svg id='svg'></svg>");
+  oElement.contentEditable = "true";
+
+  var tref = document.createElementNS("http://www.w3.org/2000/svg", "tref")
+  tref.id = 'tref' + iteration;
+  oElement.appendChild(tref);
+
+  var oSelection = window.getSelection();
+  if (!oSelection.rangeCount) {
+    document.execCommand("SelectAll", false)
+  }
+  oSelection.collapseToStart();
+
+  var oRange = oSelection.getRangeAt(0);
+  if (iteration == 1)
+    var oParentElement = document.getElementById('table');
+  else if (iteration == 2)
+    var oParentElement = document.getElementById('button');
+  else if (iteration == 3)
+    var oParentElement = document.getElementById('tref2');
+  oRange.surroundContents(oParentElement);
+
+  document.execCommand('InsertText', false, 'a:ce#@::l');
+
+  DOMNodeRemoved_active = false;
+}
+document.addEventListener("DOMNodeRemoved", DOMNodeRemoved, true);
+
+window.onload = function() {
+  test(function() {
+    assert_throws(new TypeError, function() {
+      document.designMode = "on";
+
+      var oElement = document.getElementById('col');
+      oElement.parentNode.replaceChild(document.createElementNS('http://www.w3.org/2000/svg', 'feSpecularLighting'), oElement);
+
+      document.execCommand('InsertOrderedList');
+      var oElement = document.getElementById('svg');
+      oElement.parentNode.replaceChild(document.createElementNS('http://www.w3.org/2000/svg', 'animateTransform'), oElement);
+    });
+  });
+};
+</script>
+
+
+<button id='button'></button>
+<hr />
+<table id='table'>
+  <col id='col'></col>
+</table>
+Test passes if it does not CRASH.

@@ -35,12 +35,7 @@ class CORE_EXPORT HTMLFrameElement final : public HTMLFrameElementBase {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLFrameElement);
-
   explicit HTMLFrameElement(Document&);
-
-  // Returns attributes that should be checked against Trusted Types
-  const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
 
   bool HasFrameBorder() const { return frame_border_; }
 
@@ -57,7 +52,7 @@ class CORE_EXPORT HTMLFrameElement final : public HTMLFrameElementBase {
   void AttachLayoutTree(AttachContext&) override;
 
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override;
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 
   void ParseAttribute(const AttributeModificationParams&) override;
 

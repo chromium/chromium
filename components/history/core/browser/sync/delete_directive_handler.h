@@ -10,12 +10,14 @@
 #include <memory>
 #include <set>
 
+#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/threading/thread_checker.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_data.h"
+#include "components/sync/model/syncable_service.h"
 
 class GURL;
 
@@ -25,21 +27,25 @@ class HistoryDeleteDirectiveSpecifics;
 
 namespace history {
 
-class HistoryService;
+class HistoryDBTask;
 
 // DeleteDirectiveHandler sends delete directives created locally to sync
 // engine to propagate to other clients. It also expires local history entries
 // according to given delete directives from server.
-class DeleteDirectiveHandler {
+class DeleteDirectiveHandler : public syncer::SyncableService {
  public:
-  DeleteDirectiveHandler();
-  ~DeleteDirectiveHandler();
+  // This allows injecting HistoryService::ScheduleDBTask().
+  using BackendTaskScheduler =
+      base::RepeatingCallback<void(const base::Location& location,
+                                   std::unique_ptr<HistoryDBTask> task,
+                                   base::CancelableTaskTracker* tracker)>;
 
-  // Start/stop processing delete directives when sync is enabled/disabled.
-  void Start(HistoryService* history_service,
-             const syncer::SyncDataList& initial_sync_data,
-             std::unique_ptr<syncer::SyncChangeProcessor> sync_processor);
-  void Stop();
+  explicit DeleteDirectiveHandler(BackendTaskScheduler backend_task_scheduler);
+  ~DeleteDirectiveHandler() override;
+
+  // Notifies that HistoryBackend has been fully loaded and hence is ready to
+  // handle sync events.
+  void OnBackendLoaded();
 
   // Create delete directives for the deletion of visits identified by
   // |global_ids| (which may be empty), in the time range specified by
@@ -59,10 +65,18 @@ class DeleteDirectiveHandler {
   syncer::SyncError ProcessLocalDeleteDirective(
       const sync_pb::HistoryDeleteDirectiveSpecifics& delete_directive);
 
-  // Expires local history entries according to delete directives from server.
+  // syncer::SyncableService implementation.
+  void WaitUntilReadyToSync(base::OnceClosure done) override;
+  syncer::SyncMergeResult MergeDataAndStartSyncing(
+      syncer::ModelType type,
+      const syncer::SyncDataList& initial_sync_data,
+      std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
+      std::unique_ptr<syncer::SyncErrorFactory> error_handler) override;
+  void StopSyncing(syncer::ModelType type) override;
+  syncer::SyncDataList GetAllSyncData(syncer::ModelType type) const override;
   syncer::SyncError ProcessSyncChanges(
-      HistoryService* history_service,
-      const syncer::SyncChangeList& change_list);
+      const base::Location& from_here,
+      const syncer::SyncChangeList& change_list) override;
 
  private:
   class DeleteDirectiveTask;
@@ -76,10 +90,13 @@ class DeleteDirectiveHandler {
   void FinishProcessing(PostProcessingAction post_processing_action,
                         const syncer::SyncDataList& delete_directives);
 
+  const BackendTaskScheduler backend_task_scheduler_;
+  bool backend_loaded_ = false;
+  base::OnceClosure wait_until_ready_to_sync_cb_;
   base::CancelableTaskTracker internal_tracker_;
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
   base::ThreadChecker thread_checker_;
-  base::WeakPtrFactory<DeleteDirectiveHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<DeleteDirectiveHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeleteDirectiveHandler);
 };

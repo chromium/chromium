@@ -1,15 +1,12 @@
 dalecurtis@chromium.org
 dcastagna@chromium.org
-hiroh@chromium.org
-acourbot@chromium.org
-jcliang@chromium.org
-kcwu@chromium.org
-posciak@chromium.org
+liberato@chromium.org
 sandersd@chromium.org
 
-# For Android media gpu files.
-per-file *android*=liberato@chromium.org
-per-file *avda*=liberato@chromium.org
-
-# For Mac encoder files.
-per-file *vt_video_encode*=emircan@chromium.org
+# For chromeos/, linux/, v4l2/, and vaapi/ -specific changes.
+acourbot@chromium.org
+hiroh@chromium.org
+jcliang@chromium.org
+kcwu@chromium.org
+mcasas@chromium.org
+posciak@chromium.org

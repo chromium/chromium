@@ -16,9 +16,12 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/vulkan/buildflags.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/handle.h"
+#include "ui/ozone/platform/scenic/sysmem_buffer_manager.h"
 #include "ui/ozone/public/gl_ozone.h"
-#include "ui/ozone/public/interfaces/scenic_gpu_host.mojom.h"
+#include "ui/ozone/public/mojom/scenic_gpu_host.mojom.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
 namespace ui {
@@ -27,7 +30,8 @@ class ScenicSurface;
 
 class ScenicSurfaceFactory : public SurfaceFactoryOzone {
  public:
-  explicit ScenicSurfaceFactory(mojom::ScenicGpuHost* gpu_host);
+  explicit ScenicSurfaceFactory(
+      mojo::PendingRemote<mojom::ScenicGpuHost> gpu_host);
   ~ScenicSurfaceFactory() override;
 
   // SurfaceFactoryOzone implementation.
@@ -36,15 +40,24 @@ class ScenicSurfaceFactory : public SurfaceFactoryOzone {
   std::unique_ptr<PlatformWindowSurface> CreatePlatformWindowSurface(
       gfx::AcceleratedWidget widget) override;
   std::unique_ptr<SurfaceOzoneCanvas> CreateCanvasForWidget(
-      gfx::AcceleratedWidget widget) override;
+      gfx::AcceleratedWidget widget,
+      base::TaskRunner* task_runner) override;
   scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
       gfx::AcceleratedWidget widget,
+      VkDevice vk_device,
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage) override;
+  void CreateNativePixmapAsync(gfx::AcceleratedWidget widget,
+                               VkDevice vk_device,
+                               gfx::Size size,
+                               gfx::BufferFormat format,
+                               gfx::BufferUsage usage,
+                               NativePixmapCallback callback) override;
 #if BUILDFLAG(ENABLE_VULKAN)
-  std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation()
-      override;
+  std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation(
+      bool allow_protected_memory,
+      bool enforce_protected_memory) override;
 #endif
 
   // Registers a surface for a |widget|.
@@ -74,21 +87,23 @@ class ScenicSurfaceFactory : public SurfaceFactoryOzone {
       fidl::InterfaceRequest<fuchsia::ui::scenic::Session> session_request,
       fidl::InterfaceHandle<fuchsia::ui::scenic::SessionListener> listener);
 
-  // Links a surface to its parent in the host process.
-  void LinkSurfaceToParent(gfx::AcceleratedWidget widget,
-                           mojo::ScopedHandle export_token_mojo);
+  // Links a surface to its parent window in the host process.
+  void AttachSurfaceToWindow(gfx::AcceleratedWidget window,
+                             mojo::ScopedHandle surface_view_holder_token_mojo);
 
   base::flat_map<gfx::AcceleratedWidget, ScenicSurface*> surface_map_
       GUARDED_BY(surface_lock_);
   base::Lock surface_lock_;
 
-  mojom::ScenicGpuHost* const gpu_host_;
+  mojo::Remote<mojom::ScenicGpuHost> const gpu_host_;
   std::unique_ptr<GLOzone> egl_implementation_;
 
   fuchsia::ui::scenic::ScenicPtr scenic_;
 
   // Task runner for thread that |scenic_| and |gpu_host_| are bound on.
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
+
+  SysmemBufferManager sysmem_buffer_manager_;
 
   THREAD_CHECKER(thread_checker_);
 

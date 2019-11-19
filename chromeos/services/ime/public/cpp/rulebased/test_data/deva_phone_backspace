@@ -1,0 +1,62 @@
+# Created from RulebasedImeTest.DevaPhone_Backspace
+engine_id: DEVA_PHONE
+key_events {
+  code: KEY_N
+  shift: false
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: BACKSPACE
+  shift: false
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: KEY_N
+  shift: false
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: KEY_C
+  shift: false
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: BACKSPACE
+  shift: false
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: KEY_C
+  shift: false
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: KEY_H
+  shift: false
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: BACKSPACE
+  shift: false
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: BACKSPACE
+  shift: false
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: BACKSPACE
+  shift: false
+  altgr: false
+  caps_lock: false
+}

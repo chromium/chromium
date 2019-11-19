@@ -8,6 +8,7 @@ import android.content.Intent;
 
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /**
  * A holder of {@link Intent} object to be used to bring back the parent {@link Activity}
@@ -40,7 +41,7 @@ public final class TabParentIntent extends EmptyTabObserver implements UserData 
 
     @Override
     public void onCloseContents(Tab tab) {
-        boolean isSelected = mTab.getTabModelSelector().getCurrentTab() == tab;
+        boolean isSelected = TabModelSelector.from(mTab).getCurrentTab() == tab;
 
         // If the parent Tab belongs to another Activity, fire the Intent to bring it back.
         if (isSelected && mParentIntent != null && tab.getActivity().getIntent() != mParentIntent) {

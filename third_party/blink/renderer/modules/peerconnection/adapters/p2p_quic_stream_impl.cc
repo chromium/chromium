@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_stream_impl.h"
 
 #include <utility>
-#include "net/third_party/quic/core/quic_error_codes.h"
+#include "net/third_party/quiche/src/quic/core/quic_error_codes.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
@@ -21,11 +21,13 @@ P2PQuicStreamImpl::P2PQuicStreamImpl(quic::QuicStreamId id,
   DCHECK_GT(write_buffer_size_, 0u);
 }
 
-P2PQuicStreamImpl::P2PQuicStreamImpl(quic::PendingStream pending,
+P2PQuicStreamImpl::P2PQuicStreamImpl(quic::PendingStream* pending,
                                      quic::QuicSession* session,
                                      uint32_t delegate_read_buffer_size,
                                      uint32_t write_buffer_size)
-    : quic::QuicStream(std::move(pending), quic::BIDIRECTIONAL),
+    : quic::QuicStream(pending,
+                       quic::BIDIRECTIONAL,
+                       /*is_static=*/false),
       delegate_read_buffer_size_(delegate_read_buffer_size),
       write_buffer_size_(write_buffer_size) {
   DCHECK_GT(delegate_read_buffer_size_, 0u);

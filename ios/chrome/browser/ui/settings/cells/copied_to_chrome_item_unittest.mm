@@ -6,7 +6,6 @@
 
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
-#import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"

@@ -34,12 +34,12 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "services/service_manager/public/mojom/interface_provider.mojom-blink.h"
-#include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
+#include "services/service_manager/public/mojom/interface_provider.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_embedded_worker.h"
 #include "third_party/blink/public/web/web_embedded_worker_start_data.h"
-#include "third_party/blink/renderer/core/exported/worker_shadow_page.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -48,91 +48,63 @@
 
 namespace blink {
 
-class FetchClientSettingsObjectSnapshot;
 class ServiceWorkerInstalledScriptsManager;
-class WorkerClassicScriptLoader;
-class WorkerThread;
+class ServiceWorkerThread;
+struct CrossThreadFetchClientSettingsObjectData;
 
-class MODULES_EXPORT WebEmbeddedWorkerImpl final
-    : public WebEmbeddedWorker,
-      public WorkerShadowPage::Client {
+// The implementation of WebEmbeddedWorker. This is responsible for starting
+// and terminating a service worker thread.
+//
+// Currently this starts the worker thread on the main thread. Future plan is to
+// start the worker thread off the main thread. This means that
+// WebEmbeddedWorkerImpl shouldn't create garbage-collected objects during
+// worker startup. See https://crbug.com/988335 for details.
+class MODULES_EXPORT WebEmbeddedWorkerImpl final : public WebEmbeddedWorker {
  public:
-  WebEmbeddedWorkerImpl(
-      std::unique_ptr<WebServiceWorkerContextClient>,
-      std::unique_ptr<WebServiceWorkerInstalledScriptsManagerParams>,
-      std::unique_ptr<ServiceWorkerContentSettingsProxy>,
-      mojom::blink::CacheStoragePtrInfo,
-      service_manager::mojom::blink::InterfaceProviderPtrInfo);
+  explicit WebEmbeddedWorkerImpl(WebServiceWorkerContextClient*);
   ~WebEmbeddedWorkerImpl() override;
 
   // WebEmbeddedWorker overrides.
-  void StartWorkerContext(const WebEmbeddedWorkerStartData&) override;
+  void StartWorkerContext(
+      std::unique_ptr<WebEmbeddedWorkerStartData>,
+      std::unique_ptr<WebServiceWorkerInstalledScriptsManagerParams>,
+      mojo::ScopedMessagePipeHandle content_settings_handle,
+      mojo::ScopedMessagePipeHandle cache_storage,
+      mojo::ScopedMessagePipeHandle interface_provider,
+      mojo::ScopedMessagePipeHandle browser_interface_broker,
+      scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner)
+      override;
   void TerminateWorkerContext() override;
   void ResumeAfterDownload() override;
-  void AddMessageToConsole(const WebConsoleMessage&) override;
-  void BindDevToolsAgent(
-      mojo::ScopedInterfaceEndpointHandle devtools_agent_host_ptr_info,
-      mojo::ScopedInterfaceEndpointHandle devtools_agent_request) override;
 
-  // WorkerShadowPage::Client overrides.
-  std::unique_ptr<WebApplicationCacheHost> CreateApplicationCacheHost(
-      WebApplicationCacheHostClient*) override;
-  void OnShadowPageInitialized() override;
-
-  static std::unique_ptr<WebEmbeddedWorkerImpl> CreateForTesting(
-      std::unique_ptr<WebServiceWorkerContextClient>,
-      std::unique_ptr<ServiceWorkerInstalledScriptsManager>);
+  void WaitForShutdownForTesting();
 
  private:
-  // WebDevToolsAgentImpl::Client overrides.
-  void ResumeStartup() override;
-  const base::UnguessableToken& GetDevToolsWorkerToken() override;
+  void StartWorkerThread(
+      std::unique_ptr<WebEmbeddedWorkerStartData> worker_start_data,
+      std::unique_ptr<ServiceWorkerInstalledScriptsManager>,
+      std::unique_ptr<ServiceWorkerContentSettingsProxy>,
+      mojo::PendingRemote<mojom::blink::CacheStorage>,
+      service_manager::mojom::blink::InterfaceProviderPtrInfo,
+      mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>,
+      scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner);
 
-  void OnScriptLoaderFinished();
-  void StartWorkerThread();
+  // Creates a cross-thread copyable outside settings object for top-level
+  // worker script fetch.
+  std::unique_ptr<CrossThreadFetchClientSettingsObjectData>
+  CreateFetchClientSettingsObjectData(
+      const KURL& script_url,
+      const SecurityOrigin*,
+      const HttpsState&,
+      network::mojom::IPAddressSpace,
+      const WebFetchClientSettingsObject& passed_settings_object);
 
-  // Creates an outside settings object from the worker shadow page for
-  // top-level worker script fetch.
-  FetchClientSettingsObjectSnapshot* CreateFetchClientSettingsObject();
+  // Client must remain valid through the entire life time of the worker.
+  WebServiceWorkerContextClient* const worker_context_client_;
 
-  WebEmbeddedWorkerStartData worker_start_data_;
-
-  std::unique_ptr<WebServiceWorkerContextClient> worker_context_client_;
-
-  // These are valid until StartWorkerThread() is called. After the worker
-  // thread is created, these are passed to the worker thread.
-  std::unique_ptr<ServiceWorkerInstalledScriptsManager>
-      installed_scripts_manager_;
-  std::unique_ptr<ServiceWorkerContentSettingsProxy> content_settings_client_;
-
-  // Kept around only while main script loading is ongoing.
-  Persistent<WorkerClassicScriptLoader> main_script_loader_;
-
-  std::unique_ptr<WorkerThread> worker_thread_;
-
-  std::unique_ptr<WorkerShadowPage> shadow_page_;
+  std::unique_ptr<ServiceWorkerThread> worker_thread_;
 
   bool asked_to_terminate_ = false;
-
-  enum WaitingForDebuggerState { kWaitingForDebugger, kNotWaitingForDebugger };
-
-  enum {
-    kDontPauseAfterDownload,
-    kDoPauseAfterDownload,
-    kIsPausedAfterDownload
-  } pause_after_download_state_;
-
-  // Whether to pause the initialization and wait for debugger to attach
-  // before proceeding. This technique allows debugging worker startup.
-  WaitingForDebuggerState waiting_for_debugger_state_;
-  // Unique worker token used by DevTools to attribute different instrumentation
-  // to the same worker.
-  base::UnguessableToken devtools_worker_token_;
-
-  mojom::blink::CacheStoragePtrInfo cache_storage_info_;
-
-  service_manager::mojom::blink::InterfaceProviderPtrInfo
-      interface_provider_info_;
 
   DISALLOW_COPY_AND_ASSIGN(WebEmbeddedWorkerImpl);
 };

@@ -182,8 +182,8 @@ To specify these options for ClusterFuzz, list all parameters in
 fuzzer_test("my_fuzzer") {
   ...
   libfuzzer_options = [
-    "max_len=2048",
-    "use_traces=1",
+    # Suppress stdout and stderr output (not recommended, as it may silence useful info).
+    "close_fd_mask=3",
   ]
 }
 ```

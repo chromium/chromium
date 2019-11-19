@@ -29,8 +29,9 @@ PrerendererClient::~PrerendererClient() {
 void PrerendererClient::WillAddPrerender(blink::WebPrerender* prerender) {
   DVLOG(3) << "PrerendererClient::willAddPrerender url = "
            << prerender->Url().GetString().Utf8();
-  prerender->SetExtraData(new PrerenderExtraData(
-      ++s_last_prerender_id, routing_id(), render_view()->GetSize()));
+  prerender->SetExtraData(
+      new PrerenderExtraData(++s_last_prerender_id, routing_id(),
+                             render_view()->GetWebView()->GetSize()));
 }
 
 bool PrerendererClient::IsPrefetchOnly() {

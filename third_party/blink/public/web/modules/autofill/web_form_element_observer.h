@@ -7,24 +7,25 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
 
 class WebFormControlElement;
 class WebFormElement;
-class WebFormElementObserverCallback;
 
+// TODO(tonikitoo): This uses BLINK_EXPORT instead of BLINK_MODULES_EXPORT
+// because it is implemented by renderer/core/autofill code, where
+// BLINK_MODULES_IMPLEMENTATION is not defined and compilation fails on win-dbg.
+//
 class BLINK_EXPORT WebFormElementObserver {
  public:
   // Creates a WebFormElementObserver. Delete this WebFormElementObsrver by
   // calling WebFormElementObserver::Disconnect.
-  static WebFormElementObserver* Create(
-      WebFormElement&,
-      std::unique_ptr<WebFormElementObserverCallback>);
-  static WebFormElementObserver* Create(
-      WebFormControlElement&,
-      std::unique_ptr<WebFormElementObserverCallback>);
+  static WebFormElementObserver* Create(WebFormElement&, base::OnceClosure);
+  static WebFormElementObserver* Create(WebFormControlElement&,
+                                        base::OnceClosure);
 
   virtual void Disconnect() = 0;
 

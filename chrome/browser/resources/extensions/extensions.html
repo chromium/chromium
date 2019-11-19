@@ -1,0 +1,62 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}"
+    class="loading $i18n{loadTimeClasses}" $i18n{a11yenhanced}>
+<head>
+  <meta charset="utf8">
+  <title>$i18n{title}</title>
+  <base href="chrome://extensions">
+  <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+  <style>
+    html {
+      background: var(--md-background-color);
+      /* Remove 300ms delay for 'click' event, when using touch interface. */
+      touch-action: manipulation;
+    }
+
+    html.loading::before,
+    html.loading body::before {
+      box-sizing: border-box;
+      content: '';
+      display: block;
+    }
+
+    html.loading::before {
+      background: var(--md-toolbar-color);
+      height: var(--md-toolbar-height);
+    }
+
+    /* Mimics the developer mode toolbar until the real one loads. Note:
+     * .in-dev-mode is applied by i18n{loadTimeClasses}. */
+    html.loading.in-dev-mode body::before {
+      background-color: #fff;
+      border-bottom: 1px solid #e0e0e0;  /* --google-grey-300 */
+      height: 54px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html.loading.in-dev-mode body::before {
+        background: none;
+      }
+
+      html.loading::before,
+      html.loading.in-dev-mode body::before {
+        border-bottom: var(--md-toolbar-border);
+      }
+    }
+
+    html,
+    body {
+      height: 100%;
+      line-height: 154%;
+      margin: 0;
+      overflow: hidden;
+      width: 100%;
+    }
+  </style>
+  <script type="module" src="extensions.js"></script>
+</head>
+<body>
+  <extensions-manager></extensions-manager>
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+</body>
+</html>

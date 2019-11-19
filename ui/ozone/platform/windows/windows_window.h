@@ -8,11 +8,10 @@
 #include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/win/win_window.h"
 
 namespace ui {
-
-class PlatformWindowDelegate;
 
 class WindowsWindow : public WinWindow {
  public:

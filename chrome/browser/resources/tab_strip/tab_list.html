@@ -1,0 +1,66 @@
+<style>
+  :host {
+    --tabstrip-tab-height: calc(var(--tabstrip-tab-title-height) +
+                                var(--tabstrip-tab-thumbnail-height));
+    --tabstrip-tab-width: var(--tabstrip-tab-thumbnail-width);
+    --tabstrip-tab-margin-inline-end: 16px;
+
+    background: var(--tabstrip-background-color);
+    box-sizing: border-box;
+    display: flex;
+    min-width: fit-content;
+    padding: 16px;
+    width: 100%;
+  }
+
+  #pinnedTabsContainer {
+    /* 4 pinned tabs should fit in the same space vertically as 1 unpinned
+     * tab. 30px is subtracted from the height of an unpinned tab as there
+     * are three 10px gaps to separate each of the 4 pinned tabs. */
+    --tabstrip-pinned-tab-size: calc((var(--tabstrip-tab-height) - 30px) / 4);
+
+    display: grid;
+    grid-auto-columns: var(--tabstrip-pinned-tab-size);
+    grid-auto-flow: column;
+    grid-gap: 10px;
+    grid-template-rows: repeat(4, var(--tabstrip-pinned-tab-size));
+    margin-inline-end: var(--tabstrip-tab-margin-inline-end);
+  }
+
+  #pinnedTabsContainer:empty {
+    display: none;
+  }
+
+  #tabsContainer {
+    display: flex;
+  }
+
+  #tabsContainer tabstrip-tab {
+    margin-inline-end: var(--tabstrip-tab-margin-inline-end);
+  }
+
+  #tabsContainer tabstrip-tab:last-child {
+    --tabstrip-tab-margin-inline-end: 0;
+  }
+
+  #demoOptions {
+    bottom: 15px;
+    display: none;
+    font-size: 16px;
+    position: fixed;
+    right: 15px;
+  }
+</style>
+
+<div id="pinnedTabsContainer"></div>
+<div id="tabsContainer"></div>
+
+<div id="demoOptions">
+  <label>
+    <input type="checkbox" id="mruCheckbox">MRU model
+  </label>
+
+  <label>
+    <input type="checkbox" id="autoCloseCheckbox">Auto-close
+  </label>
+</div>

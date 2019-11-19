@@ -73,7 +73,7 @@ Polymer({
   /** @private */
   onDotsTap_: function() {
     /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu'))
-        .showAt(assert(this.$$('paper-icon-button-light button')), {
+        .showAt(assert(this.$$('cr-icon-button')), {
           anchorAlignmentY: AnchorAlignment.AFTER_END,
         });
   },
@@ -87,7 +87,7 @@ Polymer({
     this.closePopupMenu_();
     this.fire('edit-search-engine', {
       engine: this.engine,
-      anchorElement: assert(this.$$('paper-icon-button-light button')),
+      anchorElement: assert(this.$$('cr-icon-button')),
     });
   },
 

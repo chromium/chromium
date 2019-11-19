@@ -7,35 +7,30 @@
 #include <vector>
 
 #include "apps/test/app_window_waiter.h"
-#include "base/base64.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/app_mode/fake_cws.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/login/app_launch_controller.h"
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
+#include "chrome/browser/chromeos/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
-#include "chrome/browser/chromeos/policy/device_policy_builder.h"
-#include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
-#include "chrome/browser/chromeos/settings/stub_install_attributes.h"
 #include "chrome/browser/extensions/browsertest_util.h"
-#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/cryptohome_client.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_session_manager_client.h"
-#include "chromeos/dbus/shill_manager_client.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/dbus/shill/shill_manager_client.h"
+#include "chromeos/tpm/stub_install_attributes.h"
+#include "components/crx_file/crx_verifier.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_service.h"
@@ -43,11 +38,10 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
-#include "extensions/common/value_builder.h"
+#include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
-#include "third_party/cros_system_api/switches/chrome_switches.h"
 
 namespace em = enterprise_management;
 
@@ -93,168 +87,6 @@ constexpr char kTestManagementApiSecondaryApp[] =
 
 constexpr char kTestAccountId[] = "enterprise-kiosk-app@localhost";
 
-constexpr char kSessionManagerStateCache[] = "test_session_manager_state.json";
-
-// Keys for values in dictionary used to preserve session manager state.
-constexpr char kLoginArgsKey[] = "login_args";
-constexpr char kExtraArgsKey[] = "extra_args";
-constexpr char kArgNameKey[] = "name";
-constexpr char kArgValueKey[] = "value";
-
-// Default set policy switches.
-constexpr struct {
-  const char* name;
-  const char* value;
-} kDefaultPolicySwitches[] = {{"test_switch_1", ""},
-                              {"test_switch_2", "test_switch_2_value"}};
-
-// Fake session manager implementation that persists its state in local file.
-// It can be used to preserve session state in PRE_ browser tests.
-// Primarily used for testing user/login switches.
-class PersistentSessionManagerClient : public FakeSessionManagerClient {
- public:
-  PersistentSessionManagerClient() {}
-
-  ~PersistentSessionManagerClient() override {
-    PersistFlagsToFile(backing_file_);
-  }
-
-  // Initializes session state (primarily session flags)- if |backing_file|
-  // exists, the session state is restored from the file value. Otherwise it's
-  // set to the default session state.
-  void Initialize(const base::FilePath& backing_file) {
-    backing_file_ = backing_file;
-
-    if (ExtractFlagsFromFile(backing_file_))
-      return;
-
-    // Failed to extract ached flags - set the default values.
-    login_args_ = {{"login-manager", ""}};
-
-    extra_args_ = {{switches::kPolicySwitchesBegin, ""}};
-    for (size_t i = 0; i < base::size(kDefaultPolicySwitches); ++i) {
-      extra_args_.push_back(
-          {kDefaultPolicySwitches[i].name, kDefaultPolicySwitches[i].value});
-    }
-    extra_args_.push_back({switches::kPolicySwitchesEnd, ""});
-  }
-
-  void AppendSwitchesToCommandLine(base::CommandLine* command_line) {
-    for (const auto& flag : login_args_)
-      command_line->AppendSwitchASCII(flag.name, flag.value);
-    for (const auto& flag : extra_args_)
-      command_line->AppendSwitchASCII(flag.name, flag.value);
-  }
-
-  void StartSession(
-      const cryptohome::AccountIdentifier& cryptohome_id) override {
-    FakeSessionManagerClient::StartSession(cryptohome_id);
-
-    std::string user_id_hash =
-        CryptohomeClient::GetStubSanitizedUsername(cryptohome_id);
-    login_args_ = {{"login-user", cryptohome_id.account_id()},
-                   {"login-profile", user_id_hash}};
-  }
-
-  void StopSession() override {
-    FakeSessionManagerClient::StopSession();
-
-    login_args_ = {{"login-manager", ""}};
-  }
-
-  bool SupportsRestartToApplyUserFlags() const override { return true; }
-
-  void SetFlagsForUser(const cryptohome::AccountIdentifier& identification,
-                       const std::vector<std::string>& flags) override {
-    extra_args_.clear();
-    FakeSessionManagerClient::SetFlagsForUser(identification, flags);
-
-    std::vector<std::string> argv = {"" /* Empty program */};
-    argv.insert(argv.end(), flags.begin(), flags.end());
-
-    // Parse flag name-value pairs using command line initialization.
-    base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
-    cmd_line.InitFromArgv(argv);
-
-    for (const auto& flag : cmd_line.GetSwitches())
-      extra_args_.push_back({flag.first, flag.second});
-  }
-
- private:
-  // Keeps information about a switch - its name and value.
-  struct Switch {
-    std::string name;
-    std::string value;
-  };
-
-  bool ExtractFlagsFromFile(const base::FilePath& backing_file) {
-    JSONFileValueDeserializer deserializer(backing_file);
-
-    int error_code = 0;
-    std::unique_ptr<base::Value> value =
-        deserializer.Deserialize(&error_code, nullptr);
-    if (error_code != JSONFileValueDeserializer::JSON_NO_ERROR)
-      return false;
-
-    std::unique_ptr<base::DictionaryValue> value_dict =
-        base::DictionaryValue::From(std::move(value));
-    CHECK(value_dict);
-
-    CHECK(InitArgListFromCachedValue(*value_dict, kLoginArgsKey, &login_args_));
-    CHECK(InitArgListFromCachedValue(*value_dict, kExtraArgsKey, &extra_args_));
-    return true;
-  }
-
-  bool PersistFlagsToFile(const base::FilePath& backing_file) {
-    base::DictionaryValue cached_state;
-    cached_state.Set(kLoginArgsKey, GetArgListValue(login_args_));
-    cached_state.Set(kExtraArgsKey, GetArgListValue(extra_args_));
-
-    JSONFileValueSerializer serializer(backing_file);
-    return serializer.Serialize(cached_state);
-  }
-
-  std::unique_ptr<base::ListValue> GetArgListValue(
-      const std::vector<Switch>& args) {
-    std::unique_ptr<base::ListValue> result(new base::ListValue());
-    for (const auto& arg : args) {
-      result->Append(extensions::DictionaryBuilder()
-                         .Set(kArgNameKey, arg.name)
-                         .Set(kArgValueKey, arg.value)
-                         .Build());
-    }
-    return result;
-  }
-
-  bool InitArgListFromCachedValue(const base::DictionaryValue& cache_value,
-                                  const std::string& list_key,
-                                  std::vector<Switch>* arg_list_out) {
-    arg_list_out->clear();
-    const base::ListValue* arg_list_value;
-    if (!cache_value.GetList(list_key, &arg_list_value))
-      return false;
-    for (size_t i = 0; i < arg_list_value->GetSize(); ++i) {
-      const base::DictionaryValue* arg_value;
-      if (!arg_list_value->GetDictionary(i, &arg_value))
-        return false;
-      Switch arg;
-      if (!arg_value->GetStringASCII(kArgNameKey, &arg.name) ||
-          !arg_value->GetStringASCII(kArgValueKey, &arg.value)) {
-        return false;
-      }
-      arg_list_out->push_back(arg);
-    }
-    return true;
-  }
-
-  std::vector<Switch> login_args_;
-  std::vector<Switch> extra_args_;
-
-  base::FilePath backing_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentSessionManagerClient);
-};
-
 // Used to listen for app termination notification.
 class TerminationObserver : public content::NotificationObserver {
  public:
@@ -284,15 +116,11 @@ class TerminationObserver : public content::NotificationObserver {
 
 }  // namespace
 
-class AutoLaunchedKioskTest : public extensions::ExtensionApiTest {
+class AutoLaunchedKioskTest : public MixinBasedInProcessBrowserTest {
  public:
   AutoLaunchedKioskTest()
-      : install_attributes_(
-            chromeos::StubInstallAttributes::CreateCloudManaged("domain.com",
-                                                                "device_id")),
-        fake_session_manager_(new PersistentSessionManagerClient()),
-        fake_cws_(new FakeCWS) {
-    set_chromeos_user_ = false;
+      : verifier_format_override_(crx_file::VerifierFormat::CRX3) {
+    device_state_.set_domain("domain.com");
   }
 
   ~AutoLaunchedKioskTest() override = default;
@@ -303,57 +131,51 @@ class AutoLaunchedKioskTest : public extensions::ExtensionApiTest {
   }
 
   void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     AppLaunchController::SkipSplashWaitForTesting();
-
-    extensions::ExtensionApiTest::SetUp();
+    login_manager_.set_session_restore_enabled();
+    login_manager_.SetDefaultLoginSwitches(
+        {std::make_pair("test_switch_1", ""),
+         std::make_pair("test_switch_2", "test_switch_2_value")});
+    MixinBasedInProcessBrowserTest::SetUp();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    fake_cws_->Init(embedded_test_server());
-    fake_cws_->SetUpdateCrx(GetTestAppId(), GetTestAppId() + ".crx", "1.0.0");
+    fake_cws_.Init(embedded_test_server());
+    fake_cws_.SetUpdateCrx(GetTestAppId(), GetTestAppId() + ".crx", "1.0.0");
+
     std::vector<std::string> secondary_apps = GetTestSecondaryAppIds();
     for (const auto& secondary_app : secondary_apps)
-      fake_cws_->SetUpdateCrx(secondary_app, secondary_app + ".crx", "1.0.0");
-    extensions::ExtensionApiTest::SetUpCommandLine(command_line);
-  }
+      fake_cws_.SetUpdateCrx(secondary_app, secondary_app + ".crx", "1.0.0");
 
-  bool SetUpUserDataDirectory() override {
-    InitDevicePolicy();
-
-    base::FilePath user_data_path;
-    if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_path)) {
-      ADD_FAILURE() << "Unable to get used data dir";
-      return false;
-    }
-
-    if (!CacheDevicePolicyToLocalState(user_data_path))
-      return false;
-
-    // Restore session_manager state and ensure session manager flags are
-    // applied.
-    fake_session_manager_->Initialize(
-        user_data_path.Append(kSessionManagerStateCache));
-    fake_session_manager_->AppendSwitchesToCommandLine(
-        base::CommandLine::ForCurrentProcess());
-
-    return true;
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    fake_session_manager_->set_device_policy(
-        device_policy_helper_.device_policy()->GetBlob());
-    fake_session_manager_->set_device_local_account_policy(
-        kTestAccountId, device_local_account_policy_.GetBlob());
+    SessionManagerClient::InitializeFakeInMemory();
 
-    // Arbitrary non-empty state keys.
-    fake_session_manager_->set_server_backed_state_keys({"1"});
-    DBusThreadManager::GetSetterForTesting()->SetSessionManagerClient(
-        std::move(fake_session_manager_));
+    FakeSessionManagerClient::Get()->set_supports_browser_restart(true);
 
-    extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
+    std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
+        device_state_.RequestDevicePolicyUpdate();
+    em::DeviceLocalAccountsProto* const device_local_accounts =
+        device_policy_update->policy_payload()->mutable_device_local_accounts();
+    device_local_accounts->set_auto_login_id(kTestAccountId);
+
+    em::DeviceLocalAccountInfoProto* const account =
+        device_local_accounts->add_account();
+    account->set_account_id(kTestAccountId);
+    account->set_type(em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_KIOSK_APP);
+    account->mutable_kiosk_app()->set_app_id(GetTestAppId());
+
+    device_policy_update.reset();
+
+    std::unique_ptr<ScopedUserPolicyUpdate> device_local_account_policy_update =
+        device_state_.RequestDeviceLocalAccountPolicyUpdate(kTestAccountId);
+    device_local_account_policy_update.reset();
+
+    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
   void PreRunTestOnMainThread() override {
@@ -370,73 +192,14 @@ class AutoLaunchedKioskTest : public extensions::ExtensionApiTest {
 
   void SetUpOnMainThread() override {
     extensions::browsertest_util::CreateAndInitializeLocalCache();
-
-    embedded_test_server()->StartAcceptingConnections();
-
-    extensions::ExtensionApiTest::SetUpOnMainThread();
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     app_window_loaded_listener_.reset();
     termination_observer_.reset();
 
-    extensions::ExtensionApiTest::TearDownOnMainThread();
-  }
-
-  void InitDevicePolicy() {
-    device_policy_helper_.InstallOwnerKey();
-    device_policy_helper_.MarkAsEnterpriseOwned();
-
-    // Create device policy, and cache it to local state.
-    em::DeviceLocalAccountsProto* const device_local_accounts =
-        device_policy_helper_.device_policy()
-            ->payload()
-            .mutable_device_local_accounts();
-
-    em::DeviceLocalAccountInfoProto* const account =
-        device_local_accounts->add_account();
-    account->set_account_id(kTestAccountId);
-    account->set_type(em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_KIOSK_APP);
-    account->mutable_kiosk_app()->set_app_id(GetTestAppId());
-
-    device_local_accounts->set_auto_login_id(kTestAccountId);
-
-    device_policy_helper_.device_policy()->Build();
-
-    device_local_account_policy_.policy_data().set_username(kTestAccountId);
-    device_local_account_policy_.policy_data().set_policy_type(
-        policy::dm_protocol::kChromePublicAccountPolicyType);
-    device_local_account_policy_.policy_data().set_settings_entity_id(
-        kTestAccountId);
-    device_local_account_policy_.Build();
-  }
-
-  bool CacheDevicePolicyToLocalState(const base::FilePath& user_data_path) {
-    em::PolicyData policy_data;
-    if (!device_policy_helper_.device_policy()->payload().SerializeToString(
-            policy_data.mutable_policy_value())) {
-      ADD_FAILURE() << "Failed to serialize device policy.";
-      return false;
-    }
-    const std::string policy_data_str = policy_data.SerializeAsString();
-    std::string policy_data_encoded;
-    base::Base64Encode(policy_data_str, &policy_data_encoded);
-
-    std::unique_ptr<base::DictionaryValue> local_state =
-        extensions::DictionaryBuilder()
-            .Set(prefs::kDeviceSettingsCache, policy_data_encoded)
-            .Set("PublicAccounts",
-                 extensions::ListBuilder().Append(GetTestAppUserId()).Build())
-            .Build();
-    local_state->SetKey(prefs::kOobeComplete, base::Value(true));
-
-    JSONFileValueSerializer serializer(
-        user_data_path.Append(chrome::kLocalStateFilename));
-    if (!serializer.Serialize(*local_state)) {
-      ADD_FAILURE() << "Failed to write local state.";
-      return false;
-    }
-    return true;
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
   const std::string GetTestAppUserId() const {
@@ -479,13 +242,11 @@ class AutoLaunchedKioskTest : public extensions::ExtensionApiTest {
 
   void ExpectCommandLineHasDefaultPolicySwitches(
       const base::CommandLine& cmd_line) {
-    for (size_t i = 0u; i < base::size(kDefaultPolicySwitches); ++i) {
-      EXPECT_TRUE(cmd_line.HasSwitch(kDefaultPolicySwitches[i].name))
-          << "Missing flag " << kDefaultPolicySwitches[i].name;
-      EXPECT_EQ(kDefaultPolicySwitches[i].value,
-                cmd_line.GetSwitchValueASCII(kDefaultPolicySwitches[i].name))
-          << "Invalid value for switch " << kDefaultPolicySwitches[i].name;
-    }
+    EXPECT_TRUE(cmd_line.HasSwitch("test_switch_1"));
+    EXPECT_EQ("", cmd_line.GetSwitchValueASCII("test_switch_1"));
+    EXPECT_TRUE(cmd_line.HasSwitch("test_switch_2"));
+    EXPECT_EQ("test_switch_2_value",
+              cmd_line.GetSwitchValueASCII("test_switch_2"));
   }
 
  protected:
@@ -493,11 +254,16 @@ class AutoLaunchedKioskTest : public extensions::ExtensionApiTest {
   std::unique_ptr<TerminationObserver> termination_observer_;
 
  private:
-  chromeos::ScopedStubInstallAttributes install_attributes_;
-  policy::UserPolicyBuilder device_local_account_policy_;
-  policy::DevicePolicyCrosTestHelper device_policy_helper_;
-  std::unique_ptr<PersistentSessionManagerClient> fake_session_manager_;
-  std::unique_ptr<FakeCWS> fake_cws_;
+  FakeCWS fake_cws_;
+  extensions::SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
+      verifier_format_override_;
+
+  EmbeddedTestServerSetupMixin embedded_test_server_setup_{
+      &mixin_host_, embedded_test_server()};
+  LoginManagerMixin login_manager_{&mixin_host_, {}};
+
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   DISALLOW_COPY_AND_ASSIGN(AutoLaunchedKioskTest);
 };

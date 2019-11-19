@@ -127,9 +127,10 @@ void AudioEncoderOpus::FetchBytesToResample(int resampler_frame_delay,
   int samples_left = (resampling_data_size_ - resampling_data_pos_) /
       kBytesPerSample / channels_;
   DCHECK_LE(audio_bus->frames(), samples_left);
-  audio_bus->FromInterleaved(
-      resampling_data_ + resampling_data_pos_,
-      audio_bus->frames(), kBytesPerSample);
+  static_assert(kBytesPerSample == 2, "FromInterleaved expects 2 bytes.");
+  audio_bus->FromInterleaved<media::SignedInt16SampleTypeTraits>(
+      reinterpret_cast<const int16_t*>(resampling_data_ + resampling_data_pos_),
+      audio_bus->frames());
   resampling_data_pos_ += audio_bus->frames() * kBytesPerSample * channels_;
   DCHECK_LE(resampling_data_pos_, static_cast<int>(resampling_data_size_));
 }
@@ -186,8 +187,9 @@ std::unique_ptr<AudioPacket> AudioEncoderOpus::Encode(
       resampling_data_ = nullptr;
       samples_consumed = resampling_data_pos_ / channels_ / kBytesPerSample;
 
-      resampler_bus_->ToInterleaved(kFrameSamples, kBytesPerSample,
-                                    resample_buffer_.get());
+      static_assert(kBytesPerSample == 2, "ToInterleaved expects 2 bytes.");
+      resampler_bus_->ToInterleaved<media::SignedInt16SampleTypeTraits>(
+          kFrameSamples, reinterpret_cast<int16_t*>(resample_buffer_.get()));
       pcm_buffer = reinterpret_cast<int16_t*>(resample_buffer_.get());
     } else {
       samples_consumed = frame_size_;

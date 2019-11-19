@@ -59,42 +59,40 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   virtual void AddRegisterableDomain(const std::string& registrable_domain) = 0;
 
   // Returns true if we're an empty blacklist, where we delete everything.
-  virtual bool IsEmptyBlacklist() const = 0;
+  virtual bool IsEmptyBlacklist() = 0;
 
   // Builds a filter that matches URLs that are in the whitelist,
   // or aren't in the blacklist.
-  virtual base::RepeatingCallback<bool(const GURL&)>
-      BuildGeneralFilter() const = 0;
+  virtual base::RepeatingCallback<bool(const GURL&)> BuildGeneralFilter() = 0;
 
   // Builds a filter that can be used with the network service. This uses a Mojo
   // struct rather than a predicate function (as used by the rest of the filters
   // built by this class) because we need to be able to pass the filter to the
   // network service via IPC. Returns nullptr if |IsEmptyBlacklist()| is true.
-  virtual network::mojom::ClearDataFilterPtr BuildNetworkServiceFilter()
-      const = 0;
+  virtual network::mojom::ClearDataFilterPtr BuildNetworkServiceFilter() = 0;
 
   // Builds a CookieDeletionInfo object that matches cookies whose sources are
   // in the whitelist, or aren't in the blacklist.
-  virtual network::mojom::CookieDeletionFilterPtr BuildCookieDeletionFilter()
-      const = 0;
+  virtual network::mojom::CookieDeletionFilterPtr
+  BuildCookieDeletionFilter() = 0;
 
   // Builds a filter that matches the |site| of a plugin.
   virtual base::RepeatingCallback<bool(const std::string& site)>
-      BuildPluginFilter() const = 0;
+  BuildPluginFilter() = 0;
 
   // A convenience method to produce an empty blacklist, a filter that matches
   // everything.
-  static base::Callback<bool(const GURL&)> BuildNoopFilter();
+  static base::RepeatingCallback<bool(const GURL&)> BuildNoopFilter();
 
   // The mode of the filter.
-  virtual Mode GetMode() const = 0;
+  virtual Mode GetMode() = 0;
 
   // Create a new filter builder with the same set of origins, set of domains,
   // and mode.
-  virtual std::unique_ptr<BrowsingDataFilterBuilder> Copy() const = 0;
+  virtual std::unique_ptr<BrowsingDataFilterBuilder> Copy() = 0;
 
   // Comparison.
-  virtual bool operator==(const BrowsingDataFilterBuilder& other) const = 0;
+  virtual bool operator==(const BrowsingDataFilterBuilder& other) = 0;
 };
 
 }  // namespace content

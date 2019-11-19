@@ -4,6 +4,9 @@
 
 #include "ui/ozone/demo/window_manager.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/threading/thread_task_runner_handle.h"

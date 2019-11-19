@@ -43,8 +43,8 @@ bool TestTextInputClientMessageFilter::OnMessageReceived(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (message.type() == TextInputClientReplyMsg_GotStringForRange::ID) {
     if (!string_for_range_callback_.is_null()) {
-      base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                               string_for_range_callback_);
+      base::PostTask(FROM_HERE, {BrowserThread::UI},
+                     string_for_range_callback_);
     }
 
     received_string_from_range_ = true;
@@ -60,8 +60,8 @@ bool TestTextInputClientMessageFilter::OnMessageReceived(
 
     // Stop the message loop if it is running.
     if (message_loop_runner_) {
-      base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                               message_loop_runner_->QuitClosure());
+      base::PostTask(FROM_HERE, {BrowserThread::UI},
+                     message_loop_runner_->QuitClosure());
     }
   }
 

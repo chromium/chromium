@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "base/numerics/math_constants.h"
+#include "base/numerics/ranges.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
@@ -60,8 +61,7 @@ Quaternion::Quaternion(const Vector3dF& from, const Vector3dF& to) {
 Quaternion Quaternion::Slerp(const Quaternion& q, double t) const {
   double dot = x_ * q.x_ + y_ * q.y_ + z_ * q.z_ + w_ * q.w_;
 
-  // Clamp dot to -1.0 <= dot <= 1.0.
-  dot = std::min(std::max(dot, -1.0), 1.0);
+  dot = base::ClampToRange(dot, -1.0, 1.0);
 
   // Quaternions are facing the same direction.
   if (std::abs(dot - 1.0) < kEpsilon || std::abs(dot + 1.0) < kEpsilon)

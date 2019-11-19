@@ -28,7 +28,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/shortcut.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -39,14 +38,12 @@
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/shell_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "skia/ext/image_operations.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -76,90 +73,10 @@ const base::char16 kReservedCharacters[] =
 // differently than it was when a shortcut was originally created.
 const int kMaxProfileShortcutFileNameLength = 64;
 
-// The avatar badge size needs to be half of the shortcut icon size because
-// the Windows taskbar icon is 32x32 and the avatar icon overlay is 16x16. So to
-// get the shortcut avatar badge and the avatar icon overlay to match up, we
-// need to preserve those ratios when creating the shortcut icon.
-const int kShortcutIconSize = 48;
-const int kProfileAvatarBadgeSize = kShortcutIconSize / 2;
-
 // Incrementing this number will cause profile icons to be regenerated on
 // profile startup (it should be incremented whenever the product/avatar icons
 // change, etc).
-const int kCurrentProfileIconVersion = 5;
-
-// 2x sized profile avatar icons. Mirrors |kDefaultAvatarIconResources| in
-// profile_info_cache.cc.
-const int kProfileAvatarIconResources2x[] = {
-    IDR_PROFILE_AVATAR_2X_0,  IDR_PROFILE_AVATAR_2X_1,
-    IDR_PROFILE_AVATAR_2X_2,  IDR_PROFILE_AVATAR_2X_3,
-    IDR_PROFILE_AVATAR_2X_4,  IDR_PROFILE_AVATAR_2X_5,
-    IDR_PROFILE_AVATAR_2X_6,  IDR_PROFILE_AVATAR_2X_7,
-    IDR_PROFILE_AVATAR_2X_8,  IDR_PROFILE_AVATAR_2X_9,
-    IDR_PROFILE_AVATAR_2X_10, IDR_PROFILE_AVATAR_2X_11,
-    IDR_PROFILE_AVATAR_2X_12, IDR_PROFILE_AVATAR_2X_13,
-    IDR_PROFILE_AVATAR_2X_14, IDR_PROFILE_AVATAR_2X_15,
-    IDR_PROFILE_AVATAR_2X_16, IDR_PROFILE_AVATAR_2X_17,
-    IDR_PROFILE_AVATAR_2X_18, IDR_PROFILE_AVATAR_2X_19,
-    IDR_PROFILE_AVATAR_2X_20, IDR_PROFILE_AVATAR_2X_21,
-    IDR_PROFILE_AVATAR_2X_22, IDR_PROFILE_AVATAR_2X_23,
-    IDR_PROFILE_AVATAR_2X_24, IDR_PROFILE_AVATAR_2X_25,
-    IDR_PROFILE_AVATAR_2X_26,
-};
-
-// Badges |app_icon_bitmap| with |avatar_bitmap| at the bottom right corner and
-// returns the resulting SkBitmap.
-SkBitmap BadgeIcon(const SkBitmap& app_icon_bitmap,
-                   const SkBitmap& avatar_bitmap,
-                   int scale_factor) {
-  // TODO(dfried): This function often doesn't actually do the thing it claims
-  // to. We should probably fix it.
-  SkBitmap source_bitmap =
-      profiles::GetAvatarIconAsSquare(avatar_bitmap, scale_factor);
-
-  int avatar_badge_width = kProfileAvatarBadgeSize;
-  if (app_icon_bitmap.width() != kShortcutIconSize) {
-    avatar_badge_width =
-        std::ceilf(app_icon_bitmap.width() *
-                   (float{kProfileAvatarBadgeSize} / float{kShortcutIconSize}));
-  }
-
-  // Resize the avatar image down to the desired badge size, maintaining aspect
-  // ratio (but prefer more square than rectangular when rounding).
-  const int avatar_badge_height =
-      std::ceilf(avatar_badge_width * (float{source_bitmap.height()} /
-                                       float{source_bitmap.width()}));
-  SkBitmap sk_icon = skia::ImageOperations::Resize(
-      source_bitmap, skia::ImageOperations::RESIZE_LANCZOS3,
-      avatar_badge_height, avatar_badge_width);
-
-  // Sanity check - avatars shouldn't be taller than they are wide.
-  DCHECK_GE(avatar_badge_width, avatar_badge_height);
-
-  // Overlay the avatar on the icon, anchoring it to the bottom-right of the
-  // icon.
-  SkBitmap badged_bitmap;
-  badged_bitmap.allocN32Pixels(app_icon_bitmap.width(),
-                               app_icon_bitmap.height());
-  SkCanvas offscreen_canvas(badged_bitmap);
-  offscreen_canvas.clear(SK_ColorTRANSPARENT);
-  offscreen_canvas.drawBitmap(app_icon_bitmap, 0, 0);
-
-  // Render the avatar in a cutout circle. If the avatar is not square, center
-  // it in the circle but favor pushing it further down.
-  const int cutout_size = avatar_badge_width;
-  const int cutout_left = app_icon_bitmap.width() - cutout_size;
-  const int cutout_top = app_icon_bitmap.height() - cutout_size;
-  const int icon_left = cutout_left;
-  const int icon_top =
-      cutout_top + int{std::ceilf((cutout_size - avatar_badge_height) / 2.0f)};
-  const SkRRect clip_circle = SkRRect::MakeOval(
-      SkRect::MakeXYWH(cutout_left, cutout_top, cutout_size, cutout_size));
-
-  offscreen_canvas.clipRRect(clip_circle, true);
-  offscreen_canvas.drawBitmap(sk_icon, icon_left, icon_top);
-  return badged_bitmap;
-}
+const int kCurrentProfileIconVersion = 6;
 
 // Updates the preferences with the current icon version on icon creation
 // success.
@@ -202,15 +119,18 @@ base::FilePath CreateOrUpdateShortcutIconForProfile(
   // ImageFamily (scaling the badge to the correct size), and then re-export the
   // family (as opposed to making a family with just 48 and 256, then scaling
   // those images to about a dozen different sizes).
-  SkBitmap app_icon_bitmap =
-      family->CreateExact(kShortcutIconSize, kShortcutIconSize).AsBitmap();
+  SkBitmap app_icon_bitmap = family
+                                 ->CreateExact(profiles::kShortcutIconSizeWin,
+                                               profiles::kShortcutIconSizeWin)
+                                 .AsBitmap();
   if (app_icon_bitmap.isNull())
     return base::FilePath();
 
   gfx::ImageFamily badged_bitmaps;
   if (!avatar_bitmap_1x.empty()) {
     badged_bitmaps.Add(gfx::Image::CreateFrom1xBitmap(
-        BadgeIcon(app_icon_bitmap, avatar_bitmap_1x, 1)));
+        profiles::GetBadgedWinIconBitmapForAvatar(app_icon_bitmap,
+                                                  avatar_bitmap_1x, 1)));
   }
 
   SkBitmap large_app_icon_bitmap =
@@ -218,7 +138,8 @@ base::FilePath CreateOrUpdateShortcutIconForProfile(
           .AsBitmap();
   if (!large_app_icon_bitmap.isNull() && !avatar_bitmap_2x.empty()) {
     badged_bitmaps.Add(gfx::Image::CreateFrom1xBitmap(
-        BadgeIcon(large_app_icon_bitmap, avatar_bitmap_2x, 2)));
+        profiles::GetBadgedWinIconBitmapForAvatar(large_app_icon_bitmap,
+                                                  avatar_bitmap_2x, 2)));
   }
 
   // If we have no badged bitmaps, we should just use the default chrome icon.
@@ -247,9 +168,8 @@ base::FilePath CreateOrUpdateShortcutIconForProfile(
   } else {
     SHChangeNotify(SHCNE_CREATE, SHCNF_PATH, icon_path.value().c_str(), NULL);
   }
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&OnProfileIconCreateSuccess, profile_path));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&OnProfileIconCreateSuccess, profile_path));
   return icon_path;
 }
 
@@ -465,8 +385,12 @@ struct CreateOrUpdateShortcutsParams {
   CreateOrUpdateShortcutsParams(
       base::FilePath profile_path,
       ProfileShortcutManagerWin::CreateOrUpdateMode create_mode,
-      ProfileShortcutManagerWin::NonProfileShortcutAction action)
-      : create_mode(create_mode), action(action), profile_path(profile_path) {}
+      ProfileShortcutManagerWin::NonProfileShortcutAction action,
+      bool single_profile)
+      : create_mode(create_mode),
+        action(action),
+        profile_path(profile_path),
+        single_profile(single_profile) {}
   ~CreateOrUpdateShortcutsParams() {}
 
   ProfileShortcutManagerWin::CreateOrUpdateMode create_mode;
@@ -478,6 +402,11 @@ struct CreateOrUpdateShortcutsParams {
   base::string16 old_profile_name;
   // The new profile name.
   base::string16 profile_name;
+
+  // If true, this is for a shortcut to a single profile, which won't have a
+  // badged icon or the name of profile in the shortcut name.
+  bool single_profile;
+
   // Avatar images for this profile.
   SkBitmap avatar_image_1x;
   SkBitmap avatar_image_2x;
@@ -522,26 +451,28 @@ void CreateOrUpdateDesktopShortcutsAndIconForProfile(
   std::copy_if(desktop_contents.begin(), desktop_contents.end(),
                std::inserter(shortcuts, shortcuts.begin()), filter);
 
-  if (params.old_profile_name != params.profile_name) {
-    RenameChromeDesktopShortcutForProfile(params.old_profile_name,
-                                          params.profile_name, &shortcuts,
+  if (params.old_profile_name != params.profile_name || params.single_profile) {
+    RenameChromeDesktopShortcutForProfile(
+        params.old_profile_name,
+        params.single_profile ? L"" : params.profile_name, &shortcuts,
+        &desktop_contents);
+  }
+  // Rename default named profile shortcuts as well, e.g., Chrome.lnk, by
+  // passing "" for the old profile name.
+  if (params.action ==
+      ProfileShortcutManagerWin::UPDATE_NON_PROFILE_SHORTCUTS) {
+    RenameChromeDesktopShortcutForProfile(L"", params.profile_name, &shortcuts,
                                           &desktop_contents);
   }
 
   ShellUtil::ShortcutProperties properties(ShellUtil::CURRENT_USER);
   ShellUtil::AddDefaultShortcutProperties(chrome_exe, &properties);
 
-  // Only set the profile-specific properties when |profile_name| is non empty.
-  // If it is empty, it means the shortcut being created should be a regular,
-  // non-profile Chrome shortcut.
-  if (!params.profile_name.empty()) {
-    properties.set_arguments(command_line);
+  // All shortcuts will point to a profile, but only set the shortcut icon
+  // if we're not generating a shortcut in the single profile case.
+  properties.set_arguments(command_line);
+  if (!params.single_profile)
     properties.set_icon(shortcut_icon, 0);
-  } else {
-    // Set the arguments explicitly to the empty string to ensure that
-    // |ShellUtil::CreateOrUpdateShortcut| updates that part of the shortcut.
-    properties.set_arguments(base::string16());
-  }
 
   properties.set_app_id(shell_integration::win::GetChromiumModelIdForProfile(
       params.profile_path));
@@ -553,7 +484,8 @@ void CreateOrUpdateDesktopShortcutsAndIconForProfile(
       shortcuts.empty()) {
     const base::string16 shortcut_name =
         profiles::internal::GetUniqueShortcutFilenameForProfile(
-            params.profile_name, desktop_contents);
+            params.single_profile ? L"" : params.profile_name,
+            desktop_contents);
     shortcuts.insert(base::FilePath(shortcut_name));
     operation = ShellUtil::SHELL_SHORTCUT_CREATE_IF_NO_SYSTEM_LEVEL;
   }
@@ -588,8 +520,13 @@ bool ChromeDesktopShortcutsExist(const base::FilePath& chrome_exe) {
 // |ensure_shortcuts_remain| is true, then a regular non-profile shortcut will
 // be created if this function would otherwise delete the last Chrome desktop
 // shortcut(s). File and COM operations must be allowed on the calling thread.
-void DeleteDesktopShortcuts(const base::FilePath& profile_path,
-                            bool ensure_shortcuts_remain) {
+// |default_profile_path| is used to create the command line for the shortcut
+// created if |ensure_shortcuts_remain| is true and the last desktop shortcut
+// was deleted.
+void DeleteDesktopShortcuts(
+    const base::FilePath& profile_path,
+    const base::Optional<base::FilePath>& default_profile_path,
+    bool ensure_shortcuts_remain) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -616,12 +553,17 @@ void DeleteDesktopShortcuts(const base::FilePath& profile_path,
   }
 
   // If |ensure_shortcuts_remain| is true and deleting this profile caused the
-  // last shortcuts to be removed, re-create a regular non-profile shortcut.
+  // last shortcuts to be removed, re-create a regular single profile shortcut
+  // pointing at the default profile.
   const bool had_shortcuts = !shortcuts.empty();
   if (ensure_shortcuts_remain && had_shortcuts &&
       !ChromeDesktopShortcutsExist(chrome_exe)) {
     ShellUtil::ShortcutProperties properties(ShellUtil::CURRENT_USER);
     ShellUtil::AddDefaultShortcutProperties(chrome_exe, &properties);
+    if (default_profile_path.has_value()) {
+      properties.set_arguments(profiles::internal::CreateProfileShortcutFlags(
+          default_profile_path.value()));
+    }
     properties.set_shortcut_name(
         profiles::internal::GetShortcutFilenameForProfile(base::string16()));
     ShellUtil::CreateOrUpdateShortcut(
@@ -670,26 +612,6 @@ base::string16 SanitizeShortcutProfileNameString(
   base::TrimWhitespace(sanitized, base::TRIM_TRAILING, &sanitized);
 
   return sanitized;
-}
-
-// Returns a copied SkBitmap for the given image that can be safely passed to
-// another thread.
-SkBitmap GetSkBitmapCopy(const gfx::Image& image) {
-  DCHECK(!image.IsEmpty());
-  const SkBitmap* image_bitmap = image.ToSkBitmap();
-  SkBitmap bitmap_copy;
-  if (bitmap_copy.tryAllocPixels(image_bitmap->info()))
-    image_bitmap->readPixels(bitmap_copy.info(), bitmap_copy.getPixels(),
-                             bitmap_copy.rowBytes(), 0, 0);
-  return bitmap_copy;
-}
-
-// Returns a copied SkBitmap for the given resource id that can be safely passed
-// to another thread.
-SkBitmap GetImageResourceSkBitmapCopy(int resource_id) {
-  const gfx::Image image =
-      ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(resource_id);
-  return GetSkBitmapCopy(image);
 }
 
 }  // namespace
@@ -807,16 +729,12 @@ std::unique_ptr<ProfileShortcutManager> ProfileShortcutManager::Create(
 
 ProfileShortcutManagerWin::ProfileShortcutManagerWin(ProfileManager* manager)
     : profile_manager_(manager) {
-  DCHECK_EQ(base::size(kProfileAvatarIconResources2x),
-            profiles::GetDefaultAvatarIconCount());
-
-  registrar_.Add(this, chrome::NOTIFICATION_PROFILE_CREATED,
-                 content::NotificationService::AllSources());
-
   profile_manager_->GetProfileAttributesStorage().AddObserver(this);
+  profile_manager_->AddObserver(this);
 }
 
 ProfileShortcutManagerWin::~ProfileShortcutManagerWin() {
+  profile_manager_->RemoveObserver(this);
   profile_manager_->GetProfileAttributesStorage().RemoveObserver(this);
 }
 
@@ -834,16 +752,17 @@ void ProfileShortcutManagerWin::CreateProfileShortcut(
 
 void ProfileShortcutManagerWin::RemoveProfileShortcuts(
     const base::FilePath& profile_path) {
-  base::CreateCOMSTATaskRunnerWithTraits({base::MayBlock()})
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(&DeleteDesktopShortcuts, profile_path, false));
+  base::CreateCOMSTATaskRunner({base::ThreadPool(), base::MayBlock()})
+      ->PostTask(FROM_HERE, base::BindOnce(&DeleteDesktopShortcuts,
+                                           profile_path, base::nullopt, false));
 }
 
 void ProfileShortcutManagerWin::HasProfileShortcuts(
     const base::FilePath& profile_path,
     const base::Callback<void(bool)>& callback) {
   base::PostTaskAndReplyWithResult(
-      base::CreateCOMSTATaskRunnerWithTraits({base::MayBlock()}).get(),
+      base::CreateCOMSTATaskRunner({base::ThreadPool(), base::MayBlock()})
+          .get(),
       FROM_HERE, base::Bind(&HasAnyProfileShortcuts, profile_path), callback);
 }
 
@@ -864,7 +783,7 @@ void ProfileShortcutManagerWin::GetShortcutProperties(
   bool has_entry = storage.GetProfileAttributesWithPath(profile_path, &entry);
   DCHECK(has_entry);
 
-  // The used profile name should be empty if there is only 1 profile.
+  // The shortcut shouldn't include the profile name if there is only 1 profile.
   base::string16 shortcut_profile_name;
   if (storage.GetNumberOfProfiles() > 1u)
     shortcut_profile_name = entry->GetName();
@@ -886,8 +805,9 @@ void ProfileShortcutManagerWin::OnProfileAdded(
   CreateOrUpdateProfileIcon(profile_path);
   if (profile_manager_->GetProfileAttributesStorage().GetNumberOfProfiles() ==
       2u) {
-    // When the second profile is added, make existing non-profile shortcuts
-    // point to the first profile and be badged/named appropriately.
+    // When the second profile is added, make existing non-profile and
+    // non-badged shortcuts point to the first profile and be badged/named
+    // appropriately.
     CreateOrUpdateShortcutsForProfileAtPath(GetOtherProfilePath(profile_path),
                                             UPDATE_EXISTING_ONLY,
                                             UPDATE_NON_PROFILE_SHORTCUTS);
@@ -910,10 +830,16 @@ void ProfileShortcutManagerWin::OnProfileWasRemoved(
         UPDATE_EXISTING_ONLY, IGNORE_NON_PROFILE_SHORTCUTS);
   }
 
-  base::CreateCOMSTATaskRunnerWithTraits({base::MayBlock()})
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(&DeleteDesktopShortcuts, profile_path,
-                                deleting_down_to_last_profile));
+  base::FilePath first_profile_path;
+  std::vector<ProfileAttributesEntry*> all_profiles =
+      storage.GetAllProfilesAttributes();
+  if (all_profiles.size() > 0)
+    first_profile_path = all_profiles[0]->GetPath();
+
+  base::CreateCOMSTATaskRunner({base::ThreadPool(), base::MayBlock()})
+      ->PostTask(FROM_HERE, base::BindOnce(&DeleteDesktopShortcuts,
+                                           profile_path, first_profile_path,
+                                           deleting_down_to_last_profile));
 }
 
 void ProfileShortcutManagerWin::OnProfileNameChanged(
@@ -926,6 +852,14 @@ void ProfileShortcutManagerWin::OnProfileNameChanged(
 void ProfileShortcutManagerWin::OnProfileAvatarChanged(
     const base::FilePath& profile_path) {
   CreateOrUpdateProfileIcon(profile_path);
+}
+
+void ProfileShortcutManagerWin::OnProfileAdded(Profile* profile) {
+  if (profile->GetPrefs()->GetInteger(prefs::kProfileIconVersion) <
+      kCurrentProfileIconVersion) {
+    // Ensure the profile's icon file has been created.
+    CreateOrUpdateProfileIcon(profile->GetPath());
+  }
 }
 
 base::FilePath ProfileShortcutManagerWin::GetOtherProfilePath(
@@ -954,8 +888,6 @@ void ProfileShortcutManagerWin::CreateOrUpdateShortcutsForProfileAtPath(
     NonProfileShortcutAction action) {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
          BrowserThread::CurrentlyOn(BrowserThread::UI));
-  CreateOrUpdateShortcutsParams params(profile_path, create_mode, action);
-
   ProfileAttributesStorage& storage =
       profile_manager_->GetProfileAttributesStorage();
   ProfileAttributesEntry* entry;
@@ -963,7 +895,10 @@ void ProfileShortcutManagerWin::CreateOrUpdateShortcutsForProfileAtPath(
 
   if (!has_entry)
     return;
-  bool remove_badging = (storage.GetNumberOfProfiles() == 1u);
+  bool remove_badging = storage.GetNumberOfProfiles() == 1u;
+
+  CreateOrUpdateShortcutsParams params(profile_path, create_mode, action,
+                                       /*single_profile=*/remove_badging);
 
   params.old_profile_name = entry->GetShortcutName();
 
@@ -975,56 +910,21 @@ void ProfileShortcutManagerWin::CreateOrUpdateShortcutsForProfileAtPath(
     return;
   }
 
-  if (!remove_badging) {
+  if (remove_badging) {
+    // Only one profile left, so make the shortcut point at it.
+    std::vector<ProfileAttributesEntry*> all_profiles =
+        storage.GetAllProfilesAttributes();
+    if (all_profiles.size() == 1)
+      params.profile_name = all_profiles[0]->GetName();
+  } else {
     params.profile_name = entry->GetName();
-
-    // The profile might be using the Gaia avatar, which is not in the
-    // resources array.
-    bool has_gaia_image = false;
-    if (entry->IsUsingGAIAPicture()) {
-      const gfx::Image* image = entry->GetGAIAPicture();
-      if (image) {
-        params.avatar_image_1x = GetSkBitmapCopy(*image);
-        // Gaia images are 256px, which makes them big enough to use in the
-        // large icon case as well.
-        DCHECK_GE(image->Width(), IconUtil::kLargeIconSize);
-        params.avatar_image_2x = params.avatar_image_1x;
-        has_gaia_image = true;
-      }
-    }
-
-    // If the profile isn't using a Gaia image, or if the Gaia image did not
-    // exist, revert to the previously used avatar icon.
-    if (!has_gaia_image) {
-      const size_t icon_index = entry->GetAvatarIconIndex();
-      const int resource_id_1x =
-          profiles::GetDefaultAvatarIconResourceIDAtIndex(icon_index);
-      const int resource_id_2x = kProfileAvatarIconResources2x[icon_index];
-      // Make a copy of the SkBitmaps to ensure that we can safely use the image
-      // data on the thread we post to.
-      params.avatar_image_1x = GetImageResourceSkBitmapCopy(resource_id_1x);
-      params.avatar_image_2x = GetImageResourceSkBitmapCopy(resource_id_2x);
-    }
+    profiles::GetWinAvatarImages(entry, &params.avatar_image_1x,
+                                 &params.avatar_image_2x);
   }
-  base::CreateCOMSTATaskRunnerWithTraits({base::MayBlock()})
+  base::CreateCOMSTATaskRunner({base::ThreadPool(), base::MayBlock()})
       ->PostTask(FROM_HERE,
                  base::BindOnce(
                      &CreateOrUpdateDesktopShortcutsAndIconForProfile, params));
 
   entry->SetShortcutName(params.profile_name);
-}
-
-void ProfileShortcutManagerWin::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_PROFILE_CREATED, type);
-
-  Profile* profile =
-      content::Source<Profile>(source).ptr()->GetOriginalProfile();
-  if (profile->GetPrefs()->GetInteger(prefs::kProfileIconVersion) <
-      kCurrentProfileIconVersion) {
-    // Ensure the profile's icon file has been created.
-    CreateOrUpdateProfileIcon(profile->GetPath());
-  }
 }

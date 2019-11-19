@@ -6,18 +6,13 @@
 #define UI_SURFACE_TRANSPORT_DIB_H_
 
 #include <stddef.h>
-#include <stdint.h>
+#include <memory>
 
 #include "base/macros.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "build/build_config.h"
 #include "ui/surface/surface_export.h"
-
-#if defined(OS_WIN)
-#include <windows.h>
-#endif
-
-#include <memory>
 
 class SkCanvas;
 
@@ -30,20 +25,15 @@ class SURFACE_EXPORT TransportDIB {
  public:
   ~TransportDIB();
 
-  // A Handle is the type which can be sent over the wire so that the remote
-  // side can map the transport DIB.
-  typedef base::SharedMemoryHandle Handle;
+  // Creates and maps a new TransportDIB with a shared memory region.
+  // Returns nullptr on failure.
+  static std::unique_ptr<TransportDIB> Map(
+      base::UnsafeSharedMemoryRegion region);
 
-  // Map the referenced transport DIB.  The caller owns the returned object.
-  // Returns NULL on failure.
-  static TransportDIB* Map(Handle transport_dib);
-
-  // Create a new |TransportDIB| with a handle to the shared memory. This
-  // always returns a valid pointer. The DIB is not mapped.
-  static TransportDIB* CreateWithHandle(Handle handle);
-
-  // Returns true if the handle is valid.
-  static bool is_valid_handle(Handle dib);
+  // Creates a new TransportDIB with a shared memory region. This always returns
+  // a valid pointer. The DIB is not mapped.
+  static std::unique_ptr<TransportDIB> CreateWithHandle(
+      base::UnsafeSharedMemoryRegion region);
 
   // Returns a canvas using the memory of this TransportDIB. The returned
   // pointer will be owned by the caller. The bitmap will be of the given size,
@@ -70,18 +60,19 @@ class SURFACE_EXPORT TransportDIB {
   // the maximum amount that /could/ be valid.
   size_t size() const { return size_; }
 
-  // Returns a pointer to the SharedMemory object that backs the transport dib.
-  base::SharedMemory* shared_memory();
+  // Returns a pointer to the UnsafeSharedMemoryRegion object that backs the
+  // transport dib.
+  base::UnsafeSharedMemoryRegion* shared_memory_region();
 
  private:
-  TransportDIB();
-
   // Verifies that the dib can hold a canvas of the requested dimensions.
   bool VerifyCanvasSize(int w, int h);
 
-  explicit TransportDIB(base::SharedMemoryHandle dib);
-  base::SharedMemory shared_memory_;
-  size_t size_;  // length, in bytes
+  explicit TransportDIB(base::UnsafeSharedMemoryRegion region);
+
+  base::UnsafeSharedMemoryRegion shm_region_;
+  base::WritableSharedMemoryMapping shm_mapping_;
+  size_t size_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TransportDIB);
 };

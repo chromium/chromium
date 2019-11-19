@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.common.crash.AwCrashReporterClient;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
 
@@ -111,11 +112,13 @@ public class AwUncaughtExceptionTest {
     }
 
     private void expectUncaughtException(Thread onThread, Class<? extends Exception> exceptionClass,
-            String message, Runnable onException) {
+            String message, boolean reportable, Runnable onException) {
         Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
             if ((onThread == null || onThread.equals(thread))
                     && (exceptionClass == null || exceptionClass.isInstance(exception))
                     && (message == null || exception.getMessage().equals(message))) {
+                Assert.assertEquals(
+                        reportable, AwCrashReporterClient.stackTraceContainsWebViewCode(exception));
                 onException.run();
             } else {
                 mDefaultUncaughtExceptionHandler.uncaughtException(thread, exception);
@@ -126,14 +129,52 @@ public class AwUncaughtExceptionTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    public void testUncaughtReportedException() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final String msg = "dies.";
+
+        expectUncaughtException(mBackgroundThread, RuntimeException.class, msg,
+                true /* reportable */, () -> { latch.countDown(); });
+
+        ThreadUtils.postOnUiThread(() -> {
+            RuntimeException exception = new RuntimeException(msg);
+            exception.setStackTrace(new StackTraceElement[] {
+                    new StackTraceElement("android.webkit.WebView", "loadUrl", "<none>", 0)});
+            throw exception;
+        });
+        Assert.assertTrue(latch.await(WAIT_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testUncaughtUnreportedException() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final String msg = "dies.";
+
+        expectUncaughtException(mBackgroundThread, RuntimeException.class, msg,
+                false /* reportable */, () -> { latch.countDown(); });
+
+        ThreadUtils.postOnUiThread(() -> {
+            RuntimeException exception = new RuntimeException(msg);
+            exception.setStackTrace(new StackTraceElement[] {
+                    new StackTraceElement("java.lang.Object", "equals", "<none>", 0)});
+            throw exception;
+        });
+        Assert.assertTrue(latch.await(WAIT_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
     public void testShouldOverrideUrlLoading() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final String msg = "dies.";
 
-        expectUncaughtException(
-                mBackgroundThread, RuntimeException.class, msg, () -> { latch.countDown(); });
+        expectUncaughtException(mBackgroundThread, RuntimeException.class, msg,
+                true /* reportable */, () -> { latch.countDown(); });
 
-        ThreadUtils.runOnUiThread(() -> {
+        ThreadUtils.postOnUiThread(() -> {
             mContentsClient = new TestAwContentsClient() {
                 @Override
                 public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {

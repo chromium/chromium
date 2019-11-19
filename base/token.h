@@ -11,7 +11,8 @@
 #include <tuple>
 
 #include "base/base_export.h"
-#include "base/hash.h"
+#include "base/hash/hash.h"
+#include "base/optional.h"
 
 namespace base {
 
@@ -66,6 +67,14 @@ struct TokenHash {
     return base::HashInts64(token.high(), token.low());
   }
 };
+
+class Pickle;
+class PickleIterator;
+
+// For serializing and deserializing Token values.
+BASE_EXPORT void WriteTokenToPickle(Pickle* pickle, const Token& token);
+BASE_EXPORT Optional<Token> ReadTokenFromPickle(
+    PickleIterator* pickle_iterator);
 
 }  // namespace base
 

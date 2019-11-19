@@ -26,8 +26,7 @@ MasterHostScanCache::MasterHostScanCache(
       active_host_(active_host),
       network_host_scan_cache_(network_host_scan_cache),
       persistent_host_scan_cache_(persistent_host_scan_cache),
-      is_initializing_(false),
-      weak_ptr_factory_(this) {
+      is_initializing_(false) {
   InitializeFromPersistentCache();
 }
 

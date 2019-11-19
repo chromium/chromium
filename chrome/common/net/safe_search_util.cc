@@ -17,7 +17,6 @@
 #include "components/google/core/common/google_util.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_request_headers.h"
-#include "net/url_request/url_request.h"
 #include "url/gurl.h"
 
 namespace {

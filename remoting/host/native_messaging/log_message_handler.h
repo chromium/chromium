@@ -47,7 +47,7 @@ class LogMessageHandler {
   bool suppress_logging_;
   scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
   logging::LogMessageHandlerFunction previous_log_message_handler_;
-  base::WeakPtrFactory<LogMessageHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<LogMessageHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace remoting

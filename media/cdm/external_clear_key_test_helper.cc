@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/cdm_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,6 +31,10 @@ ExternalClearKeyTestHelper::~ExternalClearKeyTestHelper() {
 }
 
 void ExternalClearKeyTestHelper::LoadLibrary() {
+#if defined(OS_FUCHSIA)
+  library_path_ =
+      base::FilePath(base::GetLoadableModuleName(kClearKeyCdmLibraryName));
+#else   // defined(OS_FUCHSIA)
   // Determine the location of the CDM. It is expected to be in the same
   // directory as the current module.
   base::FilePath cdm_base_path;
@@ -39,11 +44,11 @@ void ExternalClearKeyTestHelper::LoadLibrary() {
   library_path_ = cdm_base_path.AppendASCII(
       base::GetLoadableModuleName(kClearKeyCdmLibraryName));
   ASSERT_TRUE(base::PathExists(library_path_)) << library_path_.value();
+#endif  // defined(OS_FUCHSIA)
 
   // Now load the CDM library.
-  base::NativeLibraryLoadError error;
-  library_.Reset(base::LoadNativeLibrary(library_path_, &error));
-  ASSERT_TRUE(library_.is_valid()) << error.ToString();
+  library_ = base::ScopedNativeLibrary(library_path_);
+  ASSERT_TRUE(library_.is_valid()) << library_.GetError()->ToString();
 
   // Call INITIALIZE_CDM_MODULE()
   typedef void (*InitializeCdmFunc)();

@@ -10,7 +10,6 @@
 #include <iomanip>
 
 #include "base/bind.h"
-#include "base/memory/singleton.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task_runner_util.h"
@@ -22,23 +21,21 @@
 
 namespace device {
 
-// static
-PlatformSensorProviderWin* PlatformSensorProviderWin::GetInstance() {
-  return base::Singleton<
-      PlatformSensorProviderWin,
-      base::LeakySingletonTraits<PlatformSensorProviderWin>>::get();
-}
+PlatformSensorProviderWin::PlatformSensorProviderWin()
+    : com_sta_task_runner_(base::CreateCOMSTATaskRunner(
+          {base::ThreadPool(), base::TaskPriority::USER_VISIBLE})) {}
+
+PlatformSensorProviderWin::~PlatformSensorProviderWin() = default;
 
 void PlatformSensorProviderWin::SetSensorManagerForTesting(
     Microsoft::WRL::ComPtr<ISensorManager> sensor_manager) {
   sensor_manager_ = sensor_manager;
 }
 
-PlatformSensorProviderWin::PlatformSensorProviderWin()
-    : com_sta_task_runner_(base::CreateCOMSTATaskRunnerWithTraits(
-          base::TaskPriority::USER_VISIBLE)) {}
-
-PlatformSensorProviderWin::~PlatformSensorProviderWin() = default;
+scoped_refptr<base::SingleThreadTaskRunner>
+PlatformSensorProviderWin::GetComStaTaskRunnerForTesting() {
+  return com_sta_task_runner_;
+}
 
 void PlatformSensorProviderWin::CreateSensorInternal(
     mojom::SensorType type,
@@ -116,7 +113,7 @@ void PlatformSensorProviderWin::SensorReaderCreated(
     mojom::SensorType type,
     SensorReadingSharedBuffer* reading_buffer,
     const CreateSensorCallback& callback,
-    std::unique_ptr<PlatformSensorReaderWin> sensor_reader) {
+    std::unique_ptr<PlatformSensorReaderWinBase> sensor_reader) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!sensor_reader) {
     // Fallback options for sensors that can be implemented using sensor
@@ -143,12 +140,12 @@ void PlatformSensorProviderWin::SensorReaderCreated(
   callback.Run(sensor);
 }
 
-std::unique_ptr<PlatformSensorReaderWin>
+std::unique_ptr<PlatformSensorReaderWinBase>
 PlatformSensorProviderWin::CreateSensorReader(mojom::SensorType type) {
   DCHECK(com_sta_task_runner_->RunsTasksInCurrentSequence());
   if (!sensor_manager_)
     return nullptr;
-  return PlatformSensorReaderWin::Create(type, sensor_manager_);
+  return PlatformSensorReaderWin32::Create(type, sensor_manager_);
 }
 
 }  // namespace device

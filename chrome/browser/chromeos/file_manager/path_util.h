@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 class GURL;
 class Profile;
@@ -114,9 +114,9 @@ void ConvertToContentUrls(
 // Replacements:
 // * /home/chronos/user/Downloads                => Downloads
 // * /home/chronos/u-<hash>/Downloads            => Downloads
-// * /special/drive-<hash>/root                  => Google Drive
-// * /special/drive-<hash>/team_drives           => Team Drives
-// * /special/drive-<hash>/Computers             => Computers
+// * /media/fuse/drivefs-<hash>/root             => Google Drive
+// * /media/fuse/drivefs-<hash>/team_drives      => Team Drives
+// * /media/fuse/drivefs-<hash>/Computers        => Computers
 // * /run/arc/sdcard/write/emulated/0            => Play files
 // * /media/fuse/crostini_<hash>_termina_penguin => Linux files
 // * '/' with ' \u203a ' (angled quote sign) for display purposes.

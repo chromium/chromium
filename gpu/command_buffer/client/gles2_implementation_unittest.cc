@@ -3367,10 +3367,11 @@ TEST_F(GLES2ImplementationTest, SetDisjointSync) {
 }
 
 TEST_F(GLES2ImplementationTest, QueryCounterEXT) {
-  GLuint expected_ids[2] = { 1, 2 }; // These must match what's actually genned.
+  // These must match what's actually genned.
+  GLuint expected_ids[3] = {1, 2, 3};
   struct GenCmds {
     cmds::GenQueriesEXTImmediate gen;
-    GLuint data[2];
+    GLuint data[3];
   };
   GenCmds expected_gen_cmds;
   expected_gen_cmds.gen.Init(base::size(expected_ids), &expected_ids[0]);
@@ -3382,6 +3383,7 @@ TEST_F(GLES2ImplementationTest, QueryCounterEXT) {
       &expected_gen_cmds, commands_, sizeof(expected_gen_cmds)));
   GLuint id1 = ids[0];
   GLuint id2 = ids[1];
+  GLuint id3 = ids[2];
   ClearCommands();
 
   // Make sure disjoint value is synchronized already.
@@ -3414,7 +3416,12 @@ TEST_F(GLES2ImplementationTest, QueryCounterEXT) {
       query->submit_count());
   EXPECT_EQ(0, memcmp(&expected_query_counter_cmds, commands,
                       sizeof(expected_query_counter_cmds)));
+
+  // Test QueryCounterEXT fails if id is reused with different target.
   ClearCommands();
+  gl_->QueryCounterEXT(id1, GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM);
+  EXPECT_TRUE(NoCommandsWritten());
+  EXPECT_EQ(GL_INVALID_OPERATION, CheckError());
 
   // Test 2nd QueryCounterEXT succeeds.
   commands = GetPut();
@@ -3425,6 +3432,19 @@ TEST_F(GLES2ImplementationTest, QueryCounterEXT) {
   expected_query_counter_cmds.query_counter.Init(
       id2, GL_TIMESTAMP_EXT, query2->shm_id(), query2->shm_offset(),
       query2->submit_count());
+  EXPECT_EQ(0, memcmp(&expected_query_counter_cmds, commands,
+                      sizeof(expected_query_counter_cmds)));
+  ClearCommands();
+
+  // Test 3rd QueryCounterEXT succeeds.
+  commands = GetPut();
+  gl_->QueryCounterEXT(id3, GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM);
+  EXPECT_EQ(GL_NO_ERROR, CheckError());
+  QueryTracker::Query* query3 = GetQuery(id3);
+  ASSERT_TRUE(query3 != nullptr);
+  expected_query_counter_cmds.query_counter.Init(
+      id3, GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM, query3->shm_id(),
+      query3->shm_offset(), query3->submit_count());
   EXPECT_EQ(0, memcmp(&expected_query_counter_cmds, commands,
                       sizeof(expected_query_counter_cmds)));
   ClearCommands();
@@ -3442,16 +3462,26 @@ TEST_F(GLES2ImplementationTest, QueryCounterEXT) {
                       sizeof(expected_query_counter_cmds)));
   ClearCommands();
 
-  // Test GetQueryObjectuivEXT CheckResultsAvailable
+  // Test GetQueryObjectuivEXT CheckResultsAvailable.
   GLuint available = 0xBDu;
   ClearCommands();
   gl_->GetQueryObjectuivEXT(id1, GL_QUERY_RESULT_AVAILABLE_EXT, &available);
   EXPECT_EQ(0u, available);
 
-  // Test GetQueryObjectui64vEXT CheckResultsAvailable
+  available = 0xBDu;
+  ClearCommands();
+  gl_->GetQueryObjectuivEXT(id3, GL_QUERY_RESULT_AVAILABLE_EXT, &available);
+  EXPECT_EQ(0u, available);
+
+  // Test GetQueryObjectui64vEXT CheckResultsAvailable.
   GLuint64 available2 = 0xBDu;
   ClearCommands();
   gl_->GetQueryObjectui64vEXT(id1, GL_QUERY_RESULT_AVAILABLE_EXT, &available2);
+  EXPECT_EQ(0u, available2);
+
+  available2 = 0xBDu;
+  ClearCommands();
+  gl_->GetQueryObjectui64vEXT(id3, GL_QUERY_RESULT_AVAILABLE_EXT, &available2);
   EXPECT_EQ(0u, available2);
 }
 
@@ -3586,9 +3616,9 @@ TEST_F(GLES2ImplementationTest, CreateAndTexStorage2DSharedImageCHROMIUM) {
     GLbyte data[GL_MAILBOX_SIZE_CHROMIUM];
   };
 
-  Mailbox mailbox = Mailbox::Generate();
+  Mailbox mailbox = Mailbox::GenerateForSharedImage();
   Cmds expected;
-  expected.cmd.Init(kTexturesStartId, mailbox.name, GL_NONE);
+  expected.cmd.Init(kTexturesStartId, GL_NONE, mailbox.name);
   GLuint id = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   EXPECT_EQ(kTexturesStartId, id);
@@ -3601,10 +3631,10 @@ TEST_F(GLES2ImplementationTest,
     GLbyte data[GL_MAILBOX_SIZE_CHROMIUM];
   };
 
-  Mailbox mailbox = Mailbox::Generate();
+  Mailbox mailbox = Mailbox::GenerateForSharedImage();
   const GLenum kFormat = GL_RGBA;
   Cmds expected;
-  expected.cmd.Init(kTexturesStartId, mailbox.name, kFormat);
+  expected.cmd.Init(kTexturesStartId, kFormat, mailbox.name);
   GLuint id = gl_->CreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM(
       mailbox.name, kFormat);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
@@ -3851,7 +3881,7 @@ TEST_F(GLES2ImplementationTest, GenSyncTokenCHROMIUM) {
   EXPECT_EQ(GL_INVALID_VALUE, CheckError());
 
   const void* commands = GetPut();
-  cmds::InsertFenceSyncCHROMIUM insert_fence_sync;
+  cmd::InsertFenceSync insert_fence_sync;
   insert_fence_sync.Init(kFenceSync);
 
   EXPECT_CALL(*gpu_control_, GenerateFenceSyncRelease())
@@ -3884,7 +3914,7 @@ TEST_F(GLES2ImplementationTest, GenUnverifiedSyncTokenCHROMIUM) {
   EXPECT_EQ(GL_INVALID_VALUE, CheckError());
 
   const void* commands = GetPut();
-  cmds::InsertFenceSyncCHROMIUM insert_fence_sync;
+  cmd::InsertFenceSync insert_fence_sync;
   insert_fence_sync.Init(kFenceSync);
 
   EXPECT_CALL(*gpu_control_, GenerateFenceSyncRelease())
@@ -4034,7 +4064,7 @@ TEST_F(GLES2ImplementationTest, WaitSyncTokenCHROMIUM) {
   GLbyte* sync_token_data = sync_token.GetData();
 
   struct Cmds {
-    cmds::InsertFenceSyncCHROMIUM insert_fence_sync;
+    cmd::InsertFenceSync insert_fence_sync;
   };
   Cmds expected;
   expected.insert_fence_sync.Init(kFenceSync);

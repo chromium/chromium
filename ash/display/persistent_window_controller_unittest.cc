@@ -92,7 +92,7 @@ TEST_F(PersistentWindowControllerTest, DisconnectDisplay) {
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
   // Sets |w2|'s bounds changed by user and then reconnects secondary display.
-  wm::WindowState* w2_state = wm::GetWindowState(w2);
+  WindowState* w2_state = WindowState::Get(w2);
   w2_state->set_bounds_changed_by_user(true);
   display_info_list.push_back(secondary_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);

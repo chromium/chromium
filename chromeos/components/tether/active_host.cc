@@ -78,9 +78,7 @@ ActiveHost::ActiveHostChangeInfo::~ActiveHostChangeInfo() = default;
 
 ActiveHost::ActiveHost(TetherHostFetcher* tether_host_fetcher,
                        PrefService* pref_service)
-    : tether_host_fetcher_(tether_host_fetcher),
-      pref_service_(pref_service),
-      weak_ptr_factory_(this) {}
+    : tether_host_fetcher_(tether_host_fetcher), pref_service_(pref_service) {}
 
 ActiveHost::~ActiveHost() = default;
 

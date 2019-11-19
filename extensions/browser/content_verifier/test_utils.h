@@ -8,9 +8,11 @@
 #include "base/files/file_path.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/sequenced_task_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/content_verifier.h"
+#include "extensions/browser/content_verifier/content_hash.h"
 #include "extensions/browser/content_verifier_delegate.h"
 #include "extensions/browser/content_verify_job.h"
 #include "extensions/common/extension_id.h"
@@ -111,8 +113,7 @@ class MockContentVerifierDelegate : public ContentVerifierDelegate {
   ~MockContentVerifierDelegate() override;
 
   // ContentVerifierDelegate:
-  ContentVerifierDelegate::Mode ShouldBeVerified(
-      const Extension& extension) override;
+  VerifierSourceType GetVerifierSourceType(const Extension& extension) override;
   ContentVerifierKey GetPublicKey() override;
   GURL GetSignatureFetchUrl(const ExtensionId& extension_id,
                             const base::Version& version) override;
@@ -122,7 +123,12 @@ class MockContentVerifierDelegate : public ContentVerifierDelegate {
                     ContentVerifyJob::FailureReason reason) override;
   void Shutdown() override;
 
+  // Modifier.
+  void SetVerifierSourceType(VerifierSourceType type);
+
  private:
+  VerifierSourceType verifier_source_type_ = VerifierSourceType::SIGNED_HASHES;
+
   DISALLOW_COPY_AND_ASSIGN(MockContentVerifierDelegate);
 };
 
@@ -151,6 +157,46 @@ class VerifierObserver : public ContentVerifier::TestObserver {
   content::BrowserThread::ID creation_thread_;
 
   DISALLOW_COPY_AND_ASSIGN(VerifierObserver);
+};
+
+// Used to hold the result of a callback from the ContentHash creation.
+struct ContentHashResult {
+  ContentHashResult(const ExtensionId& extension_id,
+                    bool success,
+                    bool was_cancelled,
+                    const std::set<base::FilePath> mismatch_paths);
+  ~ContentHashResult();
+
+  ExtensionId extension_id;
+  bool success;
+  bool was_cancelled;
+  std::set<base::FilePath> mismatch_paths;
+};
+
+// Allows waiting for the callback from a ContentHash, returning the
+// data that was passed to that callback.
+class ContentHashWaiter {
+ public:
+  ContentHashWaiter();
+  ~ContentHashWaiter();
+
+  std::unique_ptr<ContentHashResult> CreateAndWaitForCallback(
+      ContentHash::FetchKey key,
+      ContentVerifierDelegate::VerifierSourceType source_type);
+
+ private:
+  void CreatedCallback(scoped_refptr<ContentHash> content_hash,
+                       bool was_cancelled);
+
+  void CreateContentHash(
+      ContentHash::FetchKey key,
+      ContentVerifierDelegate::VerifierSourceType source_type);
+
+  scoped_refptr<base::SequencedTaskRunner> reply_task_runner_;
+  base::RunLoop run_loop_;
+  std::unique_ptr<ContentHashResult> result_;
+
+  DISALLOW_COPY_AND_ASSIGN(ContentHashWaiter);
 };
 
 namespace content_verifier_test_utils {

@@ -163,8 +163,8 @@ module storage.mojom;
 
 interface BlockAllocator {
   // Allocates a new block of persistent storage for the client. If allocation
-  // fails, |request| is discarded.
-  Allocate(uint64 num_bytes, Block& request);
+  // fails, |receiver| is discarded.
+  Allocate(uint64 num_bytes, pending_receiver<Block> receiver);
 };
 
 interface Block {
@@ -197,25 +197,25 @@ class StorageService : public service_manager::Service,
 
  private:
   // service_manager::Service:
-  void OnBindInterface(const service_mangaer::BindSourceInfo& source,
+  void OnBindInterface(const service_manager::BindSourceInfo& source,
                        const std::string& interface_name,
                        mojo::ScopedMessagePipeHandle interface_pipe) override {
     if (interface_name == mojom::BlockAllocator::Name_) {
       // If the Service Manager sends us a request with BlockAllocator's
       // interface name, we should treat |interface_pipe| as a
-      // BlockAllocatorRequest that we can bind.
-      allocator_bindings_.AddBinding(
-          this, mojom::BlockAllocatorRequest(std::move(interface_pipe)));
+      // PendingReceiver<BlockAllocator> that we can bind.
+      allocator_receivers_.Add(
+          this, mojo::PendingReceiver<mojom::BlockAllocator>(std::move(interface_pipe)));
     }
   }
 
   // mojom::BlockAllocator:
-  void Allocate(uint64_t num_bytes, mojom::BlockRequest request) override {
+  void Allocate(uint64_t num_bytes, mojo::PendingReceiver<mojom::Block> receiver) override {
     // This space intentionally left blank.
   }
 
   service_manager::ServiceBinding service_binding_;
-  mojo::BindingSet<mojom::BlockAllocator> allocator_bindings_;
+  mojo::ReceiverSet<mojom::BlockAllocator> allocator_receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(StorageService);
 };
@@ -245,8 +245,8 @@ Here we recognize only incoming `BlockAllocator` requests and drop anything
 else.
 
 *** aside
-NOTE: Because interface requests are just strongly-type message pipe endpoint
-wrappers, you can freely construct any kind of interface request over a raw
+NOTE: Because interface receivers are just strongly-type message pipe endpoint
+wrappers, you can freely construct any kind of interface receiver over a raw
 message pipe handle. If you're planning to pass the endpoint around, it's good
 to do this as early as possible (i.e. as soon as you know the intended interface
 type) to benefit from your compiler's type-checking and avoid having to pass
@@ -389,12 +389,12 @@ Now `some_other_pretty_cool_service` can use its [Connector](#Connectors) to ask
 the Service Manager for a `BlockAllocator` from us, like so:
 
 ``` cpp
-storage::mojom::BlockAllocatorPtr allocator;
-connector->BindInterface(storage::mojom::kServiceName,
-                         mojo::MakeRequest(&allocator));
+mojo::Remote<storage::mojom::BlockAllocator> allocator;
+connector->Connect(storage::mojom::kServiceName,
+                         allocator.BindNewPipeAndPassReceiver());
 
-storage::mojom::BlockPtr block;
-allocator->Allocate(42, mojo::MakeRequest(&block));
+mojo::Remote<storage::mojom::Block> block;
+allocator->Allocate(42, block.BindNewPipeAndPassReceiver());
 
 // etc..
 ```
@@ -475,7 +475,7 @@ entry point for your service:
 #include "services/storage/storage_service.h"
 
 void ServiceMain(service_manager::ServiceRequest request) {
-  base::MessageLoop message_loop;
+  base::SingleThreadTaskExecutor main_task_executor;
   storage::StorageService(std::move(request)).RunUntilTermination();
 }
 ```
@@ -542,17 +542,17 @@ TEST(StorageServiceTest, AllocateBlock) {
   service_manager::TestService test_service(
       service_manager.RegisterTestInstance(kTestServiceName));
 
-  storage::mojom::BlockAllocatorPtr allocator;
+  mojo::Remote<storage::mojom::BlockAllocator> allocator;
 
   // This Connector belongs to the test service instance and can reach the
   // storage service through the Service Manager by virtue of the required
   // capability above.
-  test_service.connector()->BindInterface(storage::mojom::kServiceName,
-                                          mojo::MakeRequest(&allocator));
+  test_service.connector()->Connect(storage::mojom::kServiceName,
+                                          allocator.BindNewPipeAndPassReceiver());
 
   // Verify that we can request a small block of storage.
-  storage::mojom::BlockPtr block;
-  allocator->Allocate(64, mojo::MakeRequest(&block));
+  mojo::Remote<storage::mojom::Block> block;
+  allocator->Allocate(64, block.BindNewPipeAndPassReceiver());
 
   // Do some stuff with the block, etc...
 }
@@ -580,13 +580,13 @@ namespace storage {
 
 // This helper function can be used by any service which is granted the
 // |kAllocationCapability| capability.
-mojom::BlockPtr AllocateBlock(service_manager::Connector* connector,
+mojo::Remote<mojom::Block> AllocateBlock(service_manager::Connector* connector,
                               uint64_t size) {
-  mojom::BlockAllocatorPtr allocator;
-  connector->BindInterface(mojom::kServiceName, mojo::MakeRequest(&allocator));
+  mojo::Remote<mojom::BlockAllocator> allocator;
+  connector->Connect(mojom::kServiceName, allocator.BindNewPipeAndPassReceiver());
 
-  mojom::BlockPtr block;
-  allocator->Allocate(size, mojo::MakeRequest(block));
+  mojo::Remote<mojom::Block> block;
+  allocator->Allocate(size, block.BindNewPipeAndPassReceiver());
   return block;
 }
 
@@ -602,7 +602,7 @@ TEST(StorageTest, AllocateBlock) {
       test_connector_factory.RegisterInstance(storage::mojom::kServiceName));
 
   constexpr uint64_t kTestBlockSize = 64;
-  storage::mojom::BlockPtr block = storage::AllocateBlock(
+  mojo::Remote<storage::mojom::Block> block = storage::AllocateBlock(
       test_connector_factory.GetDefaultConnector(), kTestBlockSize);
   block.FlushForTesting();
 
@@ -625,10 +625,10 @@ maintains and
 [exposes](https://cs.chromium.org/chromium/src/services/service_manager/public/cpp/service_binding.h?rcl=887b934e0d979f3da81c41cadc396b4ef587257a&l=66)
 it on your behalf.
 
-#### Sending Interface Requests
+#### Sending Interface Receivers
 
-By far the most common and useful method on `Connector` is `BindInterface`,
-which allows your service to send an interface request to another service in the
+By far the most common and useful method on `Connector` is `Connect`,
+which allows your service to send an interface receiver to another service in the
 system, configuration permitting.
 
 Supposing the `storage` service actually depended on an even lower-level storage
@@ -636,14 +636,14 @@ service to get at its disk, you could imagine its block allocation code doing
 something like:
 
 ``` cpp
-  real_storage::mojom::ReallyRealStoragePtr storage;
-  service_binding_.GetConnector()->BindInterface(
-      real_storage::mojom::kServiceName, mojo::MakeRequest(&storage));
+  mojo::Remote<real_storage::mojom::ReallyRealStorage> storage;
+  service_binding_.GetConnector()->Connect(
+      real_storage::mojom::kServiceName, storage.BindNewPipeAndPassReceiver());
   storage->AllocateBytes(...);
 ```
 
-Note that the first argument to this particular overload of `BindInterface` is
-a string, but the more generalized form of `BindInterface` takes a
+Note that the first argument to this particular overload of `Connect` is
+a string, but the more generalized form of `Connect` takes a
 `ServiceFilter`. See more about these in the section on
 [Service Filters](#Service-Filters).
 
@@ -666,27 +666,28 @@ another thread:
 
 ``` cpp
 std::unique_ptr<service_manager::Connector> new_connector = connector->Clone();
-base::PostTaskWithTraits(...[elsewhere]...,
-                         base::BindOnce(..., std::move(new_connector)));
+base::PostTask(...[elsewhere]...,
+               base::BindOnce(..., std::move(new_connector)));
 ```
 
 Or you can fabricate a brand new `Connector` right from where you're standing,
 and asynchronously associate it with one on another thread:
 
 ``` cpp
-service_manager::mojom::ConnectorRequest request;
+mojo::PendingReceiver<service_manager::mojom::Connector> receiver;
 std::unique_ptr<service_manager::Connector> new_connector =
-    service_manager::Connector::Create(&request);
+    service_manager::Connector::Create(&receiver);
 
 // |new_connector| can be used to start issuing calls immediately, despite not
 // yet being associated with the establshed Connector. The calls will queue as
 // long as necessary.
 
-base::PostTaskWithTraits(
+base::PostTask(
     ...[over to the correct thread]...,
-    base::BindOnce([](service_manager::ConnectorRequest request) {
+    base::BindOnce([](
+      mojo::PendingReceiver<service_manager::Connector> receiver) {
       service_manager::Connector* connector = GetMyConnectorForThisThread();
-      connector->BindConnectorRequest(std::move(request));
+      connector->BindConnectorReceiver(std::move(receiver));
     }));
 ```
 
@@ -784,9 +785,9 @@ various kinds of security boundaries.
 
 Most services in the system do not have the privilege of specifying the
 instance group they want to connect into when passing a `ServiceFilter` to
-`Connector::BindInterface` (see
+`Connector::Connect` (see
 [Additional Capabilities](#Additional-Capabilities)). As such, most
-`BindInterface` calls implicitly inherit the group ID of the caller and only
+`Connect` calls implicitly inherit the group ID of the caller and only
 cross outside of the caller's instance group when targeting a service which
 adopts either a singleton or shared-across-groups
 [sharing policy](#Instance-Sharing) in its manifest.
@@ -796,7 +797,7 @@ own isolated groups.
 
 ### Service Filters
 
-The most common form of `BindInterface` calls passes a simple string as the
+The most common form of `Connect` calls passes a simple string as the
 first argument. This is essentially telling the Service Manager that the caller
 doesn't care about any details regarding the target instance's identity -- it
 only cares about talking to *some* instance of the named service.
@@ -830,9 +831,9 @@ boolean options controlling their Service Manager privileges:
   `RegisterServiceInstance` on its `Connector` to forcibly introduce new service
   instances into the environment.
 - `CanConnectToInstancesWithAnyId` - If this is `true` the service can specify
-  an instance ID in any `ServiceFilter` it passes to `BindInterface`.
+  an instance ID in any `ServiceFilter` it passes to `Connect`.
 - `CanConnectToInstancesInAnyGroup` - If this is `true` the service can specify
-  an instance group ID in any `ServiceFilter` it passes to `BindInterface`.
+  an instance group ID in any `ServiceFilter` it passes to `Connect`.
 
 ### Packaging
 

@@ -265,7 +265,6 @@ TEST_F(SynchronizedMinidumpManagerTest,
   // Sample parameters.
   base::Time now = base::Time::Now();
   MinidumpParams params;
-  params.process_name = "process";
 
   // Write the first entry.
   SynchronizedMinidumpManagerSimple manager;
@@ -294,7 +293,6 @@ TEST_F(SynchronizedMinidumpManagerTest, AcquireLockFile_WaitsForOtherThread) {
   // Create some parameters for a minidump.
   base::Time now = base::Time::Now();
   MinidumpParams params;
-  params.process_name = "process";
 
   // Create a manager that grabs the lock then sleeps. Post a DoWork task to
   // another thread. |sleepy_manager| will grab the lock and hold it for
@@ -344,7 +342,6 @@ TEST_F(SynchronizedMinidumpManagerTest,
   // Create some parameters for a minidump.
   base::Time now = base::Time::Now();
   MinidumpParams params;
-  params.process_name = "process";
 
   // Fork the process.
   pid_t pid = base::ForkWithFlags(0u, nullptr, nullptr);
@@ -388,7 +385,6 @@ TEST_F(SynchronizedMinidumpManagerTest,
   // Sample parameters.
   base::Time now = base::Time::Now();
   MinidumpParams params;
-  params.process_name = "process";
 
   FakeSynchronizedMinidumpUploader uploader;
   SynchronizedMinidumpManagerSimple producer;
@@ -404,7 +400,6 @@ TEST_F(SynchronizedMinidumpManagerTest, Upload_FailsWhenTooManyRecentDumps) {
   // Sample parameters.
   base::Time now = base::Time::Now();
   MinidumpParams params;
-  params.process_name = "process";
 
   FakeSynchronizedMinidumpUploader uploader;
   SynchronizedMinidumpManagerSimple producer;
@@ -424,7 +419,6 @@ TEST_F(SynchronizedMinidumpManagerTest, UploadSucceedsAfterRateLimitPeriodEnd) {
   // Sample parameters.
   base::Time now = base::Time::Now();
   MinidumpParams params;
-  params.process_name = "process";
 
   FakeSynchronizedMinidumpUploader uploader;
   SynchronizedMinidumpManagerSimple producer;
@@ -469,7 +463,6 @@ TEST_F(SynchronizedMinidumpManagerTest, HasDumpsWithDumps) {
   // Sample parameters.
   base::Time now = base::Time::Now();
   MinidumpParams params;
-  params.process_name = "process";
 
   SynchronizedMinidumpManagerSimple producer;
   FakeSynchronizedMinidumpUploader uploader;

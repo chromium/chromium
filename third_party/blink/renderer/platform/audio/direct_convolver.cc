@@ -63,22 +63,16 @@ void DirectConvolver::Process(const float* source_p,
                               float* dest_p,
                               uint32_t frames_to_process) {
   DCHECK_EQ(frames_to_process, input_block_size_);
-  if (frames_to_process != input_block_size_)
-    return;
 
-  // Only support kernelSize <= m_inputBlockSize
   size_t kernel_size = ConvolutionKernelSize();
   DCHECK_LE(kernel_size, input_block_size_);
-  if (kernel_size > input_block_size_)
-    return;
 
   float* kernel_p = convolution_kernel_->Data();
 
-  // Sanity check
-  bool is_copy_good = kernel_p && source_p && dest_p && buffer_.Data();
-  DCHECK(is_copy_good);
-  if (!is_copy_good)
-    return;
+  DCHECK(kernel_p);
+  DCHECK(source_p);
+  DCHECK(dest_p);
+  DCHECK(buffer_.Data());
 
   float* input_p = buffer_.Data() + input_block_size_;
 

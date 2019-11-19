@@ -8,7 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -47,13 +47,6 @@ class PLATFORM_EXPORT ShapeResultBuffer {
                                              TextDirection,
                                              float total_width) const;
 
-  static CharacterRange GetCharacterRange(scoped_refptr<const ShapeResult>,
-                                          const StringView& text,
-                                          TextDirection,
-                                          float total_width,
-                                          unsigned from,
-                                          unsigned to);
-
   Vector<ShapeResult::RunFontData> GetRunFontData() const;
 
   GlyphData EmphasisMarkGlyphData(const FontDescription&) const;
@@ -62,13 +55,6 @@ class PLATFORM_EXPORT ShapeResultBuffer {
 
  private:
   friend class ShapeResultBloberizer;
-  static CharacterRange GetCharacterRangeInternal(
-      const Vector<scoped_refptr<const ShapeResult>, 64>&,
-      const StringView& text,
-      TextDirection,
-      float total_width,
-      unsigned from,
-      unsigned to);
 
   static void AddRunInfoAdvances(const ShapeResult::RunInfo& run_info,
                                  double offset,

@@ -21,109 +21,128 @@ class InputMethodEngine;
 
 namespace extensions {
 
-class InputImeClearCompositionFunction : public UIThreadExtensionFunction {
+class InputImeClearCompositionFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("input.ime.clearComposition",
                              INPUT_IME_CLEARCOMPOSITION)
 
  protected:
-  ~InputImeClearCompositionFunction() override {}
+  ~InputImeClearCompositionFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
 };
 
-class InputImeSetCandidateWindowPropertiesFunction
-    : public UIThreadExtensionFunction {
+class InputImeSetCandidateWindowPropertiesFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("input.ime.setCandidateWindowProperties",
                              INPUT_IME_SETCANDIDATEWINDOWPROPERTIES)
 
  protected:
-  ~InputImeSetCandidateWindowPropertiesFunction() override {}
+  ~InputImeSetCandidateWindowPropertiesFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
 };
 
-class InputImeSetCandidatesFunction : public UIThreadExtensionFunction {
+class InputImeSetCandidatesFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("input.ime.setCandidates", INPUT_IME_SETCANDIDATES)
 
  protected:
-  ~InputImeSetCandidatesFunction() override {}
+  ~InputImeSetCandidatesFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
 };
 
-class InputImeSetCursorPositionFunction : public UIThreadExtensionFunction {
+class InputImeSetCursorPositionFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("input.ime.setCursorPosition",
                              INPUT_IME_SETCURSORPOSITION)
 
  protected:
-  ~InputImeSetCursorPositionFunction() override {}
+  ~InputImeSetCursorPositionFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
 };
 
-class InputImeSetMenuItemsFunction : public UIThreadExtensionFunction {
+class InputImeSetMenuItemsFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("input.ime.setMenuItems", INPUT_IME_SETMENUITEMS)
 
  protected:
-  ~InputImeSetMenuItemsFunction() override {}
+  ~InputImeSetMenuItemsFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
 };
 
-class InputImeUpdateMenuItemsFunction : public UIThreadExtensionFunction {
+class InputImeUpdateMenuItemsFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("input.ime.updateMenuItems",
                              INPUT_IME_UPDATEMENUITEMS)
 
  protected:
-  ~InputImeUpdateMenuItemsFunction() override {}
+  ~InputImeUpdateMenuItemsFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
 };
 
-class InputImeDeleteSurroundingTextFunction : public UIThreadExtensionFunction {
+class InputImeDeleteSurroundingTextFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("input.ime.deleteSurroundingText",
                              INPUT_IME_DELETESURROUNDINGTEXT)
  protected:
-  ~InputImeDeleteSurroundingTextFunction() override {}
+  ~InputImeDeleteSurroundingTextFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
 };
 
-class InputImeHideInputViewFunction : public UIThreadExtensionFunction {
+class InputImeHideInputViewFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("input.ime.hideInputView",
                              INPUT_IME_HIDEINPUTVIEW)
 
  protected:
-  ~InputImeHideInputViewFunction() override {}
+  ~InputImeHideInputViewFunction() override = default;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 };
 
-class InputMethodPrivateNotifyImeMenuItemActivatedFunction
-    : public UIThreadExtensionFunction {
+class InputMethodPrivateFinishComposingTextFunction : public ExtensionFunction {
  public:
-  InputMethodPrivateNotifyImeMenuItemActivatedFunction() {}
+  InputMethodPrivateFinishComposingTextFunction(
+      const InputMethodPrivateFinishComposingTextFunction&) = delete;
+  InputMethodPrivateFinishComposingTextFunction& operator=(
+      const InputMethodPrivateFinishComposingTextFunction&) = delete;
+
+  InputMethodPrivateFinishComposingTextFunction() = default;
 
  protected:
-  ~InputMethodPrivateNotifyImeMenuItemActivatedFunction() override {}
+  ~InputMethodPrivateFinishComposingTextFunction() override = default;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.finishComposingText",
+                             INPUTMETHODPRIVATE_FINISHCOMPOSINGTEXT)
+};
+
+class InputMethodPrivateNotifyImeMenuItemActivatedFunction
+    : public ExtensionFunction {
+ public:
+  InputMethodPrivateNotifyImeMenuItemActivatedFunction() = default;
+
+ protected:
+  ~InputMethodPrivateNotifyImeMenuItemActivatedFunction() override = default;
+
+  // ExtensionFunction:
   ResponseAction Run() override;
 
  private:
@@ -134,13 +153,13 @@ class InputMethodPrivateNotifyImeMenuItemActivatedFunction
 };
 
 class InputMethodPrivateGetCompositionBoundsFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.getCompositionBounds",
                              INPUTMETHODPRIVATE_GETCOMPOSITIONBOUNDS)
 
  protected:
-  ~InputMethodPrivateGetCompositionBoundsFunction() override {}
+  ~InputMethodPrivateGetCompositionBoundsFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -157,7 +176,7 @@ class InputImeEventRouter : public InputImeEventRouterBase {
   void UnregisterAllImes(const std::string& extension_id);
 
   chromeos::InputMethodEngine* GetEngine(const std::string& extension_id);
-  input_method::InputMethodEngineBase* GetActiveEngine(
+  input_method::InputMethodEngineBase* GetEngineIfActive(
       const std::string& extension_id) override;
 
   std::string GetUnloadedExtensionId() const {
@@ -170,7 +189,8 @@ class InputImeEventRouter : public InputImeEventRouterBase {
 
  private:
   // The engine map from extension_id to an engine.
-  std::map<std::string, chromeos::InputMethodEngine*> engine_map_;
+  std::map<std::string, std::unique_ptr<chromeos::InputMethodEngine>>
+      engine_map_;
   // The first party ime extension which is unloaded unexpectedly.
   std::string unloaded_component_extension_id_;
 

@@ -4,9 +4,9 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "chrome/android/chrome_jni_headers/PhoneNumberUtil_jni.h"
 #include "chrome/browser/browser_process.h"
-#include "components/autofill/core/browser/autofill_country.h"
-#include "jni/PhoneNumberUtil_jni.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
 
 namespace autofill {

@@ -1,0 +1,21 @@
+Tests that the url fragment is reported by Page.frameNavigated.
+No Fragment
+url = simple-iframe.html
+urlFragment = undefined
+UnreachableUrl = undefined
+
+Empty Fragment
+url = simple-iframe.html
+urlFragment = #
+UnreachableUrl = undefined
+
+Normal Fragment
+url = simple-iframe.html
+urlFragment = #fragment
+UnreachableUrl = undefined
+
+Unreachable Fragment
+url = chrome-error://chromewebdata/
+urlFragment = undefined
+UnreachableUrl = idont_exist.html#fragment
+

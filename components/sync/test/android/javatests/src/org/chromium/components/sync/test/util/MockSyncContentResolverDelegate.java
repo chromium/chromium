@@ -9,10 +9,11 @@ import android.content.ContentResolver;
 import android.content.SyncStatusObserver;
 import android.os.Bundle;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.junit.Assert;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.components.sync.SyncContentResolverDelegate;
 

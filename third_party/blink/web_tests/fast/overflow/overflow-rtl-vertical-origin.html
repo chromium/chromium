@@ -4,7 +4,7 @@
         <div style="height: 300px; width: 100px;"></div>
     </div>
     <pre id="console"></pre>
-    
+
     <script>
         function log(msg)
         {
@@ -16,12 +16,12 @@
 
         var t = document.getElementById("test");
         var initialTop = t.scrollTop;
-        
-        // Scroll as far as you can.
-        t.scrollTop = 1000;
-        
+
+        // Scroll to the top edge.
+        t.scrollTop = 0;
+
         var newTop = t.scrollTop
-        
+
         if (initialTop == newTop)
             log("PASS: test.scrollTop is correct.")
         else

@@ -1,0 +1,16 @@
+Tests basic function of the BackgroundService domain.
+Found error: Invalid service name
+Enabled successfully: true
+{
+    isRecording : false
+    service : backgroundSync
+}
+{
+    isRecording : true
+    service : backgroundSync
+}
+{
+    isRecording : false
+    service : backgroundSync
+}
+

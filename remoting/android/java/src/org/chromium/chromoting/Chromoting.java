@@ -40,8 +40,10 @@ import org.chromium.chromoting.help.HelpContext;
 import org.chromium.chromoting.help.HelpSingleton;
 import org.chromium.chromoting.jni.Client;
 import org.chromium.chromoting.jni.ConnectionListener;
-import org.chromium.chromoting.jni.ConnectionListener.State;
+import org.chromium.chromoting.jni.DirectoryService;
+import org.chromium.chromoting.jni.DirectoryServiceRequestError;
 import org.chromium.chromoting.jni.JniOAuthTokenGetter;
+import org.chromium.chromoting.jni.NotificationPresenter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,16 +52,19 @@ import java.util.Arrays;
  * The user interface for querying and displaying a user's host list from the directory server. It
  * also requests and renews authentication tokens using the system account manager.
  */
-public class Chromoting extends AppCompatActivity implements ConnectionListener,
-        AccountSwitcher.Callback, HostListManager.Callback, View.OnClickListener {
+public class Chromoting extends AppCompatActivity
+        implements ConnectionListener, AccountSwitcher.Callback, DirectoryService.HostListCallback,
+                   DirectoryService.DeleteCallback, View.OnClickListener {
     private static final String TAG = "Chromoting";
 
     /** Only accounts of this type will be selectable for authentication. */
     private static final String ACCOUNT_TYPE = "com.google";
 
     /** Scope to use when fetching the OAuth token. */
+    // To use these scopes in a debug build, your development account will need to be whitelisted.
     private static final String TOKEN_SCOPE = "oauth2:https://www.googleapis.com/auth/chromoting "
-            + "https://www.googleapis.com/auth/googletalk";
+            + "https://www.googleapis.com/auth/chromoting.directory "
+            + "https://www.googleapis.com/auth/tachyon";
 
     /** Result code used for starting {@link DesktopActivity}. */
     public static final int DESKTOP_ACTIVITY = 0;
@@ -73,7 +78,7 @@ public class Chromoting extends AppCompatActivity implements ConnectionListener,
     private String mAccount;
 
     /** Helper for fetching the host list. */
-    private HostListManager mHostListManager;
+    private DirectoryService mDirectoryService;
 
     /** List of hosts. */
     private HostInfo[] mHosts = new HostInfo[0];
@@ -92,6 +97,9 @@ public class Chromoting extends AppCompatActivity implements ConnectionListener,
 
     /** Dialog for reporting connection progress. */
     private ProgressDialog mProgressIndicator;
+
+    /** Helper for fetching notification and presenting it. */
+    private NotificationPresenter mNotificationPresenter;
 
     /**
      * Helper used by SessionConnection for session authentication. Receives onNewIntent()
@@ -231,7 +239,8 @@ public class Chromoting extends AppCompatActivity implements ConnectionListener,
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mHostListManager = new HostListManager();
+        mDirectoryService = new DirectoryService();
+        mNotificationPresenter = new NotificationPresenter(this);
 
         // Get ahold of our view widgets.
         mHostListView = (ListView) findViewById(R.id.hostList_chooser);
@@ -556,7 +565,7 @@ public class Chromoting extends AppCompatActivity implements ConnectionListener,
                 });
 
         final SessionConnector connector =
-                new SessionConnector(mClient, this, this, mHostListManager);
+                new SessionConnector(mClient, this, this, mDirectoryService);
         mAuthenticator = new SessionAuthenticator(this, mClient, host);
         mHostConnectingConsumer.consume(mAccount, new OAuthTokenFetcher.Callback() {
             @Override
@@ -585,7 +594,7 @@ public class Chromoting extends AppCompatActivity implements ConnectionListener,
         mHostListRetrievingConsumer.consume(mAccount, new OAuthTokenFetcher.Callback() {
             @Override
             public void onTokenFetched(String token) {
-                mHostListManager.retrieveHostList(token, Chromoting.this);
+                mDirectoryService.retrieveHostList(Chromoting.this);
             }
 
             @Override
@@ -602,7 +611,7 @@ public class Chromoting extends AppCompatActivity implements ConnectionListener,
         mHostDeletingConsumer.consume(mAccount, new OAuthTokenFetcher.Callback() {
             @Override
             public void onTokenFetched(String token) {
-                mHostListManager.deleteHost(token, hostId, Chromoting.this);
+                mDirectoryService.deleteHost(hostId, Chromoting.this);
             }
 
             @Override
@@ -622,6 +631,7 @@ public class Chromoting extends AppCompatActivity implements ConnectionListener,
         }
         mAccount = accountName;
         JniOAuthTokenGetter.setAccount(accountName);
+        mNotificationPresenter.presentIfNecessary(accountName);
 
         // The current host list is no longer valid for the new account, so clear the list.
         mHosts = new HostInfo[0];
@@ -648,7 +658,7 @@ public class Chromoting extends AppCompatActivity implements ConnectionListener,
 
     @Override
     public void onHostListReceived(HostInfo[] hosts) {
-        // Store a copy of the array, so that it can't be mutated by the HostListManager. HostInfo
+        // Store a copy of the array, so that it can't be mutated by the DirectoryService. HostInfo
         // is an immutable type, so a shallow copy of the array is sufficient here.
         mHosts = Arrays.copyOf(hosts, hosts.length);
         updateHostListView();
@@ -656,29 +666,24 @@ public class Chromoting extends AppCompatActivity implements ConnectionListener,
     }
 
     @Override
-    public void onHostUpdated() {
-        // Not implemented Yet.
-    }
-
-    @Override
     public void onHostDeleted() {
         // Refresh the host list. there is no need to refetch the auth token again.
         // onHostListReceived is in charge to hide the progress indicator.
-        mHostListManager.retrieveHostList(mHostDeletingConsumer.getLatestToken(), this);
+        mDirectoryService.retrieveHostList(this);
     }
 
     @Override
-    public void onError(@HostListManager.Error int error) {
+    public void onError(@DirectoryServiceRequestError int error) {
         String explanation = null;
         switch (error) {
-            case HostListManager.Error.AUTH_FAILED:
+            case DirectoryServiceRequestError.AUTH_FAILED:
                 break;
-            case HostListManager.Error.NETWORK_ERROR:
+            case DirectoryServiceRequestError.NETWORK_ERROR:
                 explanation = getString(R.string.error_network_error);
                 break;
-            case HostListManager.Error.UNEXPECTED_RESPONSE:
-            case HostListManager.Error.SERVICE_UNAVAILABLE:
-            case HostListManager.Error.UNKNOWN:
+            case DirectoryServiceRequestError.UNEXPECTED_RESPONSE:
+            case DirectoryServiceRequestError.SERVICE_UNAVAILABLE:
+            case DirectoryServiceRequestError.UNKNOWN:
                 explanation = getString(R.string.error_unexpected);
                 break;
             default:

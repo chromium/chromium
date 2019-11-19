@@ -7,3 +7,9 @@
       url(images/1x/captive_portal_page_icon.png) 1x,
       url(images/2x/captive_portal_page_icon.png) 2x);
 }
+
+@media (prefers-color-scheme: dark) {
+  .captive-portal .icon {
+    filter: invert(1);
+  }
+}

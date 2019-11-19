@@ -306,7 +306,7 @@ public class TestTabModelDirectory {
      *                         subdirectories of the base data directory.
      */
     public TestTabModelDirectory(
-            Context context, String baseDirectoryName, String subdirectoryName) throws Exception {
+            Context context, String baseDirectoryName, String subdirectoryName) {
         mTestingDirectory = new File(context.getCacheDir(), baseDirectoryName);
         if (mTestingDirectory.exists()) FileUtils.recursivelyDeleteFile(mTestingDirectory);
         if (!mTestingDirectory.mkdirs()) {
@@ -324,7 +324,7 @@ public class TestTabModelDirectory {
     }
 
     /** Nukes all the testing data. */
-    public void tearDown() throws Exception {
+    public void tearDown() {
         FileUtils.recursivelyDeleteFile(mTestingDirectory);
     }
 

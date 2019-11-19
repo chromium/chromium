@@ -6,15 +6,15 @@ mojom = "//components/content_capture/common/content_capture_data.mojom"
 public_headers =
     [ "//components/content_capture/common/content_capture_data.h" ]
 traits_headers =
-    [ "//components/content_capture/common/content_capture_struct_traits.h" ]
+    [ "//components/content_capture/common/content_capture_mojom_traits.h" ]
 sources = [
-  "//components/content_capture/common/content_capture_struct_traits.cc",
-  "//components/content_capture/common/content_capture_struct_traits.h",
+  "//components/content_capture/common/content_capture_mojom_traits.cc",
+  "//components/content_capture/common/content_capture_mojom_traits.h",
 ]
 deps = [
   "//base",
   "//components/content_capture/common:common",
-  "//ui/gfx/geometry/mojo:struct_traits",
+  "//ui/gfx/geometry/mojom:mojom_traits",
 ]
 
-type_mappings = [ "content_capture.mojom.ContentCaptureData=content_capture::ContentCaptureData" ]
+type_mappings = [ "content_capture.mojom.ContentCaptureData=::content_capture::ContentCaptureData" ]

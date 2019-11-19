@@ -11,6 +11,7 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/platform/web_media_stream.h"
 #include "third_party/blink/public/platform/web_media_stream_track.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 namespace {
 
@@ -37,7 +38,6 @@ TestMediaStreamRendererFactory::~TestMediaStreamRendererFactory() {}
 scoped_refptr<blink::WebMediaStreamVideoRenderer>
 TestMediaStreamRendererFactory::GetVideoRenderer(
     const blink::WebMediaStream& web_stream,
-    const base::Closure& error_cb,
     const blink::WebMediaStreamVideoRenderer::RepaintCB& repaint_cb,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner) {
@@ -47,15 +47,15 @@ TestMediaStreamRendererFactory::GetVideoRenderer(
   return new TestMediaStreamVideoRenderer(
       std::move(io_task_runner),
       gfx::Size(kVideoCaptureWidth, kVideoCaptureHeight),
-      base::TimeDelta::FromMilliseconds(kVideoCaptureFrameDurationMs), error_cb,
+      base::TimeDelta::FromMilliseconds(kVideoCaptureFrameDurationMs),
       repaint_cb);
 }
 
 scoped_refptr<blink::WebMediaStreamAudioRenderer>
 TestMediaStreamRendererFactory::GetAudioRenderer(
     const blink::WebMediaStream& web_stream,
-    int render_frame_id,
-    const std::string& device_id) {
+    blink::WebLocalFrame* web_frame,
+    const blink::WebString& device_id) {
   return nullptr;
 }
 

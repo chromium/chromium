@@ -10,11 +10,6 @@
 #include "chrome/test/base/web_ui_browser_test.h"
 #include "chrome/test/data/webui/web_ui_test.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
-
-namespace {
-class WebUITestPageHandler;
-}
 
 // The runner of Mojo WebUI javascript based tests. The main difference between
 // this and WebUIBrowserTest is that tests subclassing from this class use a
@@ -32,18 +27,10 @@ class MojoWebUIBrowserTest : public BaseWebUIBrowserTest,
   void SetUpOnMainThread() override;
   void SetupHandlers() override;
 
-  // content::WebContentsObserver:
-  void OnInterfaceRequestFromFrame(
-      content::RenderFrameHost* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedMessagePipeHandle* interface_pipe) override;
-
  private:
-  void BindTestRunner(web_ui_test::mojom::TestRunnerRequest request);
+  class WebUITestContentBrowserClient;
+  std::unique_ptr<WebUITestContentBrowserClient> test_content_browser_client_;
 
-  WebUITestPageHandler* test_page_handler_;
-
-  service_manager::BinderRegistry registry_;
   bool use_mojo_lite_bindings_ = false;
 };
 

@@ -301,7 +301,7 @@ class JSONResultsGeneratorBase(object):
               "JSON upload failed, %d: '%s'", response.code, response.read())
       else:
         _log.error('JSON upload failed; no response returned')
-    except Exception, err: # pylint: disable=broad-except
+    except Exception as err: # pylint: disable=broad-except
       _log.error('Upload failed: %s', err)
       return
 
@@ -385,12 +385,12 @@ class JSONResultsGeneratorBase(object):
       # FIXME: We should talk to the network via a Host object.
       results_file = urllib2.urlopen(results_file_url)
       old_results = results_file.read()
-    except urllib2.HTTPError, http_error:
+    except urllib2.HTTPError as http_error:
       # A non-4xx status code means the bot is hosed for some reason
       # and we can't grab the results.json file off of it.
       if http_error.code < 400 and http_error.code >= 500:
         error = http_error
-    except urllib2.URLError, url_error:
+    except urllib2.URLError as url_error:
       error = url_error
     # pylint: enable=redefined-variable-type
 

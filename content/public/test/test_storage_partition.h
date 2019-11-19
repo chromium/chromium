@@ -10,16 +10,18 @@
 #include "build/build_config.h"
 #include "content/public/browser/storage_partition.h"
 
-namespace net {
-class URLRequestContextGetter;
+namespace leveldb_proto {
+class ProtoDatabaseProvider;
 }
 
 namespace content {
 
 class AppCacheService;
 class BackgroundSyncContext;
+class DevToolsBackgroundServicesContext;
 class DOMStorageContext;
 class IndexedDBContext;
+class NativeFileSystemEntryFactory;
 class PlatformNotificationContext;
 class ServiceWorkerContext;
 
@@ -42,16 +44,6 @@ class TestStoragePartition : public StoragePartition {
   void set_path(base::FilePath file_path) { file_path_ = file_path; }
   base::FilePath GetPath() override;
 
-  void set_url_request_context(net::URLRequestContextGetter* getter) {
-    url_request_context_getter_ = getter;
-  }
-  net::URLRequestContextGetter* GetURLRequestContext() override;
-
-  void set_media_url_request_context(net::URLRequestContextGetter* getter) {
-    media_url_request_context_getter_ = getter;
-  }
-  net::URLRequestContextGetter* GetMediaURLRequestContext() override;
-
   void set_network_context(network::mojom::NetworkContext* context) {
     network_context_ = context;
   }
@@ -59,6 +51,9 @@ class TestStoragePartition : public StoragePartition {
 
   scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactoryForBrowserProcess() override;
+
+  scoped_refptr<network::SharedURLLoaderFactory>
+  GetURLLoaderFactoryForBrowserProcessWithCORBEnabled() override;
 
   std::unique_ptr<network::SharedURLLoaderFactoryInfo>
   GetURLLoaderFactoryForBrowserProcessIOThread() override;
@@ -68,6 +63,16 @@ class TestStoragePartition : public StoragePartition {
     cookie_manager_for_browser_process_ = cookie_manager_for_browser_process;
   }
   network::mojom::CookieManager* GetCookieManagerForBrowserProcess() override;
+  void CreateRestrictedCookieManager(
+      network::mojom::RestrictedCookieManagerRole role,
+      const url::Origin& origin,
+      const GURL& site_for_cookies,
+      const url::Origin& top_frame_origin,
+      bool is_service_worker,
+      int process_id,
+      int routing_id,
+      mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver)
+      override;
 
   void set_quota_manager(storage::QuotaManager* manager) {
     quota_manager_ = manager;
@@ -103,6 +108,7 @@ class TestStoragePartition : public StoragePartition {
     indexed_db_context_ = context;
   }
   IndexedDBContext* GetIndexedDBContext() override;
+  NativeFileSystemEntryFactory* GetNativeFileSystemEntryFactory() override;
 
   void set_service_worker_context(ServiceWorkerContext* context) {
     service_worker_context_ = context;
@@ -128,6 +134,23 @@ class TestStoragePartition : public StoragePartition {
     platform_notification_context_ = context;
   }
   PlatformNotificationContext* GetPlatformNotificationContext() override;
+
+  void set_devtools_background_services_context(
+      DevToolsBackgroundServicesContext* context) {
+    devtools_background_services_context_ = context;
+  }
+  DevToolsBackgroundServicesContext* GetDevToolsBackgroundServicesContext()
+      override;
+
+  leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider() override;
+  void SetProtoDatabaseProvider(
+      std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> proto_db_provider)
+      override;
+
+  void set_content_index_context(ContentIndexContext* context) {
+    content_index_context_ = context;
+  }
+  ContentIndexContext* GetContentIndexContext() override;
 
 #if !defined(OS_ANDROID)
   void set_host_zoom_map(HostZoomMap* map) { host_zoom_map_ = map; }
@@ -164,12 +187,6 @@ class TestStoragePartition : public StoragePartition {
                  const base::Time end,
                  base::OnceClosure callback) override;
 
-  void ClearHttpAndMediaCaches(
-      const base::Time begin,
-      const base::Time end,
-      const base::Callback<bool(const GURL&)>& url_matcher,
-      base::OnceClosure callback) override;
-
   void ClearCodeCaches(
       const base::Time begin,
       const base::Time end,
@@ -183,11 +200,10 @@ class TestStoragePartition : public StoragePartition {
   void ClearBluetoothAllowedDevicesMapForTesting() override;
   void FlushNetworkInterfaceForTesting() override;
   void WaitForDeletionTasksForTesting() override;
+  void WaitForCodeCacheShutdownForTesting() override;
 
  private:
   base::FilePath file_path_;
-  net::URLRequestContextGetter* url_request_context_getter_ = nullptr;
-  net::URLRequestContextGetter* media_url_request_context_getter_ = nullptr;
   network::mojom::NetworkContext* network_context_ = nullptr;
   network::mojom::CookieManager* cookie_manager_for_browser_process_ = nullptr;
   storage::QuotaManager* quota_manager_ = nullptr;
@@ -202,6 +218,9 @@ class TestStoragePartition : public StoragePartition {
   CacheStorageContext* cache_storage_context_ = nullptr;
   GeneratedCodeCacheContext* generated_code_cache_context_ = nullptr;
   PlatformNotificationContext* platform_notification_context_ = nullptr;
+  DevToolsBackgroundServicesContext* devtools_background_services_context_ =
+      nullptr;
+  ContentIndexContext* content_index_context_ = nullptr;
 #if !defined(OS_ANDROID)
   HostZoomMap* host_zoom_map_ = nullptr;
   HostZoomLevelContext* host_zoom_level_context_ = nullptr;

@@ -9,13 +9,6 @@
 login.createScreen('AutolaunchScreen', 'autolaunch', function() {
   return {
     EXTERNAL_API: ['updateApp', 'confirmAutoLaunchForTesting'],
-    /**
-     * Header text of the screen.
-     * @type {string}
-     */
-    get header() {
-      return loadTimeData.getString('autolaunchTitle');
-    },
 
     /**
      * Buttons in oobe wizard's button strip.
@@ -85,7 +78,7 @@ login.createScreen('AutolaunchScreen', 'autolaunch', function() {
     confirmAutoLaunchForTesting: function(confirm) {
       var button = confirm ? $('autolaunch-confirm-button') :
                              $('autolaunch-cancel-button');
-      var clickEvent = cr.doc.createEvent('Event');
+      var clickEvent = document.createEvent('Event');
       clickEvent.initEvent('click', true, true);
       button.dispatchEvent(clickEvent);
     }

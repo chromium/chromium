@@ -93,6 +93,7 @@ Additions to the OpenGL ES 2.0 Specification
        BGRA8_EXT               (R, G, B, A)
        RGB_YCBCR_420V_CHROMIUM (R, G, B, 1)
        RGB_YCBCR_422_CHROMIUM  (R, G, B, 1)
+       RGB_YCBCR_P010_CHROMIUM (R, G, B, 1)
 
     The format type of the destination texture is converted to that specified
     by <destType>.
@@ -225,7 +226,8 @@ Additions to the OpenGL ES 2.0 Specification
         BGRA_EXT
         BGRA8_EXT
         RGB_YCBCR_420V_CHROMIUM
-        RGB_YCBCR_422_CHROMIUM.
+        RGB_YCBCR_422_CHROMIUM
+        RGB_YCBCR_P010_CHROMIUM
 
 Dependencies on ARB_texture_rg
 
@@ -262,3 +264,5 @@ Revision History
     18/1/2017   Supported source_level and dest_level.
     19/1/2017   Added TEXTURE_CUBE_MAP as valid dest_id target.
     24/3/2017   Clean up naming and move formats into tables.
+    12/06/2019   Added RGB_YCBCR_P010_CHROMIUM
+

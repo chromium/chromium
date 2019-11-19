@@ -14,6 +14,10 @@ namespace media {
 
 class DecoderConfigAdapter {
  public:
+  static ChannelLayout ToChannelLayout(::media::ChannelLayout channel_layout);
+  static ::media::ChannelLayout ToMediaChannelLayout(
+      ChannelLayout channel_layout);
+
   // Converts ::media::AudioDecoderConfig to chromecast::media::AudioConfig.
   static AudioConfig ToCastAudioConfig(
       StreamId id,

@@ -120,6 +120,9 @@
   </translations>
   <release seq="1" allow_pseudo="false">
     <messages fallback_to_english="true">
+      <!-- Files app strings. It's shared with ARC++ (//components/arc). -->
+      <part file="file_manager_strings.grdp" />
+
       <!-- Default user profile images. -->
       <!-- User Image default image accessible descriptions -->
       <message name="IDS_LOGIN_DEFAULT_USER_DESC_19" desc="Description of the default user icon with a picture of a bicycle">
@@ -763,8 +766,8 @@
       <message name="IDS_IME_NAME_KEYBOARD_ITALIAN" desc="The input method name shows in system tray menu, this shows [Italian keyboard].">
         Italian keyboard
       </message>
-      <message name="IDS_IME_NAME_KEYBOARD_JAPANESE" desc="The input method name shows in system tray menu, this shows [Japanese keyboard].">
-        Japanese keyboard
+      <message name="IDS_IME_NAME_KEYBOARD_JAPANESE" desc="The input method name shows in system tray menu, this shows [Alphanumeric input (for Japanese keyboard)]. Native name in Japanese is '英数入力（日本語キーボード用）'. This refers to the keyboard with Japanese JIS layout that types Latin alphanumeric and symbol characters.">
+        Alphanumeric input (for Japanese keyboard)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_KAZAKH" desc="The input method name shows in system tray menu, this shows [Kazakh keyboard].">
         Kazakh keyboard
@@ -890,11 +893,11 @@
       <message name="IDS_IME_NAME_INPUTMETHOD_DAYI" desc="The input method name shows in system tray menu, this is Dayi (\u5927\u6613) input method for Traditional Chinese.">
         Dayi input method
       </message>
-      <message name="IDS_IME_NAME_INPUTMETHOD_MOZC_JP" desc="The input method name shows in system tray menu, this is Japanese input method for Japanese keyboard.">
-        Google Japanese Input (for Japanese keyboard)
+      <message name="IDS_IME_NAME_INPUTMETHOD_MOZC_JP" desc="The input method name shows in system tray menu, this is Google Japanese input method on Japanese JIS keyboard layout. Native name in Japanese is '日本語入力（日本語キーボード用）'.">
+        Japanese input (for Japanese keyboard)
       </message>
-      <message name="IDS_IME_NAME_INPUTMETHOD_MOZC_US" desc="The input method name shows in system tray menu, this is Japanese input method for US keyboard.">
-        Google Japanese Input (for US keyboard)
+      <message name="IDS_IME_NAME_INPUTMETHOD_MOZC_US" desc="The input method name shows in system tray menu, this is Google Japanese input method on US ANSI keyboard layout. Native name in Japanese is '日本語入力（USキーボード用）'">
+        Japanese input (for US keyboard)
       </message>
       <message name="IDS_IME_NAME_INPUTMETHOD_PINYIN" desc="The input method name shows in system tray menu, this is Pinyin input method for Simplified Chinese.">
         Pinyin input method
@@ -1095,11 +1098,6 @@
       </message>
       <message name="IDS_IME_NAME_TRANSLITERATION_UR" desc="The input method name shows in system tray menu. Please translate only for 'transliteration'.">
         Transliteration (salam &#x2190; &#x0633;&#x0644;&#x0627;&#x0645;)
-      </message>
-
-      <!-- Strings shared between ARC++ (//components/arc) and Files app (//chrome/browser/chromeos/file_manager)  -->
-      <message name="IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL" desc="A label for the 'My files' root which is parent of Downloads, Linux and Android files. Use sentence case.">
-        My files
       </message>
     </messages>
   </release>

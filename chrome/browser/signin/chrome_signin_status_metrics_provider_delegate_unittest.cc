@@ -8,13 +8,13 @@
 
 #include "build/build_config.h"
 #include "components/signin/core/browser/signin_status_metrics_provider.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(OS_ANDROID)
 TEST(ChromeSigninStatusMetricsProviderDelegateTest,
      UpdateStatusWhenBrowserAdded) {
-  content::TestBrowserThreadBundle thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
 
   std::unique_ptr<ChromeSigninStatusMetricsProviderDelegate> delegate(
       new ChromeSigninStatusMetricsProviderDelegate);

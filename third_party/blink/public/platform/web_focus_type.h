@@ -46,6 +46,8 @@ enum WebFocusType {
   kWebFocusTypeSpatialNavigation,
   // Mouse press
   kWebFocusTypeMouse,
+  // Access key
+  kWebFocusTypeAccessKey,
   // Re-focus by a page focus
   kWebFocusTypePage,
 

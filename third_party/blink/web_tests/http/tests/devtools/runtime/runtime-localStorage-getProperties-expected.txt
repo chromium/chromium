@@ -4,6 +4,7 @@ Tests RemoteObject.getProperties on localStorage object. 66215
     enumerable : true
     isOwn : true
     name : "testProperty"
+    private : false
     synthetic : false
     value : {
         description : "testPropertyValue"

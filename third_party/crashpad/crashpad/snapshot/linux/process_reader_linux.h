@@ -153,15 +153,23 @@ class ProcessReaderLinux {
   //!     `0`) corresponds to the main executable.
   const std::vector<Module>& Modules();
 
+  //! \return On Android, the abort message that was passed to
+  //!     android_set_abort_message(). This is only available on Q or later.
+  const std::string& AbortMessage();
+
  private:
   void InitializeThreads();
   void InitializeModules();
+  void InitializeAbortMessage();
+  template <bool Is64Bit>
+  void ReadAbortMessage(const MemoryMap::Mapping* mapping);
 
   PtraceConnection* connection_;  // weak
   ProcessInfo process_info_;
   MemoryMap memory_map_;
   std::vector<Thread> threads_;
   std::vector<Module> modules_;
+  std::string abort_message_;
   std::vector<std::unique_ptr<ElfImageReader>> elf_readers_;
   bool is_64_bit_;
   bool initialized_threads_;

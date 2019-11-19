@@ -9,18 +9,20 @@
 <dom-module id="cr-shared-style">
   <template>
     <style include="cr-hidden-style cr-icons">
+      html,
+      :host {
+        --scrollable-border-color: var(--google-grey-refresh-300);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        html,
+        :host {
+          --scrollable-border-color: var(--google-grey-refresh-700);
+        }
+      }
+
       [actionable] {
-        @apply --cr-actionable;
-      }
-
-      .subpage-arrow,
-      .icon-external {
-        display: none;
-      }
-
-      [actionable] :-webkit-any(.subpage-arrow, .icon-external),
-      [actionable]:-webkit-any(.subpage-arrow, .icon-external) {
-        display: block;
+        cursor: pointer;
       }
 
       /* Horizontal rule line. */
@@ -39,10 +41,10 @@
         overflow-y: auto;
       }
       [scrollable].is-scrolled {
-        border-top-color: var(--google-grey-300);
+        border-top-color: var(--scrollable-border-color);
       }
       [scrollable].can-scroll:not(.scrolled-to-bottom) {
-        border-bottom-color: var(--google-grey-300);
+        border-bottom-color: var(--scrollable-border-color);
       }
       [scrollable] iron-list > :not(.no-outline):focus {
         @apply --cr-list-item-focus;
@@ -55,21 +57,56 @@
         min-height: 1px;
       }
 
-      [selectable]:not(cr-radio-group):focus,
-      [selectable]:not(cr-radio-group) > :focus {
+      [selectable]:focus,
+      [selectable] > :focus {
         @apply --cr-selectable-focus;
       }
-      [selectable]:not(cr-radio-group) > * {
-        @apply --cr-actionable;
+      [selectable] > * {
+        cursor: pointer;
+      }
+
+      .cr-container-shadow {
+        box-shadow: inset 0 5px 6px -3px rgba(0, 0, 0, .4);
+        height: var(--cr-container-shadow-height);
+        left: 0;
+        margin: 0 0 var(--cr-container-shadow-margin);
+        opacity: 0;
+        pointer-events: none;
+        position: relative;
+        right: 0;
+        top: 0;
+        transition: opacity 500ms;
+        z-index: 1;
       }
 
       /** Styles for elements that implement the CrContainerShadowBehavior */
-      #cr-container-shadow {
-        @apply --cr-container-shadow;
+      #cr-container-shadow-bottom {
+        margin-bottom: 0;
+        margin-top: var(--cr-container-shadow-margin);
+        transform: scaleY(-1);
       }
 
-      #cr-container-shadow.has-shadow {
+      #cr-container-shadow-top.has-shadow,
+      #cr-container-shadow-bottom.has-shadow {
         opacity: var(--cr-container-shadow-max-opacity);
+      }
+
+      /* Typography */
+
+      .cr-title-text {
+        color: var(--cr-title-text-color);
+        font-size: 107.6923%; /* Go to 14px from 13px. */
+        font-weight: 500;
+      }
+
+      .cr-form-field-label {
+        color: var(--cr-form-field-label-color);
+        display: block;
+        font-size: var(--cr-form-field-label-font-size);
+        font-weight: 500;
+        letter-spacing: .4px;
+        line-height: var(--cr-form-field-label-line-height);
+        margin-bottom: 8px;
       }
     </style>
   </template>

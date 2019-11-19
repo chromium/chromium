@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 namespace content {
@@ -37,12 +38,12 @@ class UninstallPingSender : public ExtensionRegistryObserver {
                               const Extension* extension,
                               UninstallReason reason) override;
 
+ private:
   // Callback for determining whether to send uninstall pings.
   Filter filter_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver> observer_;
+  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver> observer_{this};
 
- private:
   DISALLOW_COPY_AND_ASSIGN(UninstallPingSender);
 };
 

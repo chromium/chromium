@@ -2,56 +2,35 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//testing/libfuzzer/fuzzer_test.gni")
-
 static_library("heap_profiling") {
   sources = [
-    "address.h",
-    "allocation_event.cc",
-    "allocation_event.h",
-    "allocation_tracker.cc",
-    "allocation_tracker.h",
-    "backtrace.cc",
-    "backtrace.h",
-    "backtrace_storage.cc",
-    "backtrace_storage.h",
+    "allocation.cc",
+    "allocation.h",
     "connection_manager.cc",
     "connection_manager.h",
     "heap_profiling_service.cc",
     "heap_profiling_service.h",
     "json_exporter.cc",
     "json_exporter.h",
-    "receiver.h",
-    "receiver_pipe.cc",
-    "receiver_pipe.h",
-    "receiver_pipe_win.cc",
-    "receiver_pipe_win.h",
-    "stream_parser.cc",
-    "stream_parser.h",
-    "stream_receiver.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/services/heap_profiling/public/mojom",
+    "//mojo/public/cpp/bindings",
+    "//services/resource_coordinator/public/mojom",
   ]
 
   deps = [
-    "//base",
     "//components/services/heap_profiling/public/cpp",
     "//services/resource_coordinator/public/cpp:resource_coordinator_cpp",
-    "//third_party/zlib",
   ]
-
-  if (is_posix) {
-    sources += [
-      "receiver_pipe_posix.cc",
-      "receiver_pipe_posix.h",
-    ]
-  }
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "backtrace_storage_unittest.cc",
     "json_exporter_unittest.cc",
-    "stream_parser_unittest.cc",
   ]
   deps = [
     ":heap_profiling",
@@ -59,16 +38,4 @@ source_set("unit_tests") {
     "//services/resource_coordinator/public/cpp:resource_coordinator_cpp",
     "//testing/gtest",
   ]
-}
-
-fuzzer_test("profiling_fuzzer") {
-  sources = [
-    "stream_fuzzer.cc",
-  ]
-  deps = [
-    ":heap_profiling",
-    "//base",
-  ]
-  libfuzzer_options = [ "max_len = 64000" ]
-  dict = "stream_fuzzer.dict"
 }

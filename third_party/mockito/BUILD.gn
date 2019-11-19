@@ -11,6 +11,7 @@ java_library("mockito_java") {
   testonly = true
   proguard_configs = [ "//third_party/mockito/proguard.flags" ]
   deps = [
+    "//third_party/android_sdk:android_test_base_java",
     "//third_party/byte_buddy:byte_buddy_agent_java",
     "//third_party/byte_buddy:byte_buddy_android_java",
     "//third_party/byte_buddy:byte_buddy_java",

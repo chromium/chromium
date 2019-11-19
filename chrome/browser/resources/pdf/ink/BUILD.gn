@@ -4,18 +4,18 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 
-group("closure_compile") {
+js_type_check("closure_compile") {
   deps = [
     ":ink_api",
   ]
 }
 
 js_library("ink_api") {
-  externs_list = [ "//third_party/ink/build/ink_lib_externs.js" ]
-}
-
-js_type_check("ink") {
   deps = [
-    ":ink_api",
+    "..:annotation_tool",
+  ]
+  externs_list = [
+    "//third_party/ink/build/ink_lib_externs.js",
+    "$externs_path/pending.js",
   ]
 }

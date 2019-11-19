@@ -20,6 +20,10 @@ class FilePath;
 class Clock;
 }  // namespace base
 
+namespace leveldb_proto {
+class ProtoDatabaseProvider;
+}  // namespace leveldb_proto
+
 namespace media {
 
 class DecodeStatsProto;
@@ -31,11 +35,14 @@ class MEDIA_EXPORT VideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
  public:
   static const char kMaxFramesPerBufferParamName[];
   static const char kMaxDaysToKeepStatsParamName[];
+  static const char kEnableUnweightedEntriesParamName[];
 
   // Create an instance! |db_dir| specifies where to store LevelDB files to
   // disk. LevelDB generates a handful of files, so its recommended to provide a
   // dedicated directory to keep them isolated.
-  static std::unique_ptr<VideoDecodeStatsDBImpl> Create(base::FilePath db_dir);
+  static std::unique_ptr<VideoDecodeStatsDBImpl> Create(
+      base::FilePath db_dir,
+      leveldb_proto::ProtoDatabaseProvider* db_provider);
 
   ~VideoDecodeStatsDBImpl() override;
 
@@ -54,8 +61,7 @@ class MEDIA_EXPORT VideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
   // Private constructor only called by tests (friends). Production code
   // should always use the static Create() method.
   VideoDecodeStatsDBImpl(
-      std::unique_ptr<leveldb_proto::ProtoDatabase<DecodeStatsProto>> db,
-      const base::FilePath& dir);
+      std::unique_ptr<leveldb_proto::ProtoDatabase<DecodeStatsProto>> db);
 
   // Default |last_write_time| for DB entries that lack a time stamp due to
   // using an earlier version of DecodeStatsProto. Date chosen so old stats from
@@ -72,9 +78,13 @@ class MEDIA_EXPORT VideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
   // been due to one-off circumstances.
   static int GetMaxDaysToKeepStats();
 
+  // When true, each playback entry in the DB should be given equal weight
+  // regardless of how many frames were decoded.
+  static bool GetEnableUnweightedEntries();
+
   // Called when the database has been initialized. Will immediately call
   // |init_cb| to forward |success|.
-  void OnInit(InitializeCB init_cb, bool success);
+  void OnInit(InitializeCB init_cb, leveldb_proto::Enums::InitStatus status);
 
   // Returns true if the DB is successfully initialized.
   bool IsInitialized();
@@ -109,8 +119,12 @@ class MEDIA_EXPORT VideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
   void OnStatsCleared(base::OnceClosure clear_done_cb, bool success);
 
   // Return true if:
-  //     "now" - stats_proto.last_write_date > GeMaxDaysToKeepStats()
-  bool AreStatsExpired(const DecodeStatsProto* const stats_proto);
+  //    values aren't corrupted nonsense (e.g. way more frames dropped than
+  //    decoded, or number of frames_decoded < frames_power_efficient)
+  // &&
+  //    stats aren't expired.
+  //       ("now" - stats_proto.last_write_date > GeMaxDaysToKeepStats())
+  bool AreStatsUsable(const DecodeStatsProto* const stats_proto);
 
   void set_wall_clock_for_test(const base::Clock* tick_clock) {
     wall_clock_ = tick_clock;
@@ -125,9 +139,6 @@ class MEDIA_EXPORT VideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
   // encountered.
   std::unique_ptr<leveldb_proto::ProtoDatabase<DecodeStatsProto>> db_;
 
-  // Directory where levelDB should store database files.
-  base::FilePath db_dir_;
-
   // For getting wall-clock time. Tests may override via SetClockForTest().
   const base::Clock* wall_clock_ = nullptr;
 
@@ -140,7 +151,7 @@ class MEDIA_EXPORT VideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
   // callbacks to this happen on the checked sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<VideoDecodeStatsDBImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<VideoDecodeStatsDBImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoDecodeStatsDBImpl);
 };

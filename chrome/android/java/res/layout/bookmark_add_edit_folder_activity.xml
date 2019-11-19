@@ -21,18 +21,22 @@
             android:orientation="vertical"
             android:clipToPadding="false" >
 
-            <org.chromium.chrome.browser.widget.EmptyAlertEditText
+            <org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout
                 android:id="@+id/folder_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="24dp"
-                android:hint="@string/title"
-                android:imeOptions="flagNoExtractUi"
-                android:inputType="textCapSentences|textAutoCorrect"
-                android:textAppearance="@style/TextAppearance.BlackHeadline"
-                app:alertMessage="@string/bookmark_missing_title" />
+                app:hint="@string/title"
+                app:emptyErrorMessage="@string/bookmark_missing_title">
+
+                <android.support.design.widget.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="flagNoExtractUi"
+                    android:inputType="textCapSentences|textAutoCorrect" />
+            </org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout>
 
             <TextView
                 android:layout_width="wrap_content"

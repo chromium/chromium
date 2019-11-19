@@ -10,10 +10,9 @@
 namespace blink {
 
 TEST(FontSelectionTypesTest, HashCollisions) {
-  std::vector<int> weights = {100, 200, 300, 400, 500, 600, 700, 800, 900};
-  std::vector<float> slopes = {-90, -67.5, -30, -20,  -10, 0,
-                               10,  20,    30,  67.5, 90};
-  std::vector<float> widths = {50, 67.5, 75, 100, 125, 150, 167.5, 175, 200};
+  Vector<int> weights = {100, 200, 300, 400, 500, 600, 700, 800, 900};
+  Vector<float> slopes = {-90, -67.5, -30, -20, -10, 0, 10, 20, 30, 67.5, 90};
+  Vector<float> widths = {50, 67.5, 75, 100, 125, 150, 167.5, 175, 200};
 
   HashSet<unsigned> hashes;
   for (auto weight : weights) {

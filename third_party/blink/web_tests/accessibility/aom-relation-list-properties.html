@@ -2,7 +2,6 @@
 <script src="../resources/gc.js"></script>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <!--
 
@@ -13,7 +12,7 @@ Spec: https://wicg.github.io/aom/spec/
 -->
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     assert_true(internals.runtimeFlags.accessibilityObjectModelEnabled);
 }, "Make sure that Accessibility Object Model is enabled");
 </script>
@@ -26,7 +25,7 @@ test_after_layout_and_paint(function(t) {
 <label id="l4">L4</label>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var input = document.getElementById("input");
     var axInput = accessibilityController.accessibleElementById("input");
     assert_equals(axInput.name, "L1 L2");
@@ -50,35 +49,32 @@ test_after_layout_and_paint(function(t) {
     assert_equals(input2.accessibleNode.labeledBy[1], l4.accessibleNode);
     assert_equals(input2.accessibleNode.labeledBy[2], undefined);
 
-    assert_equals(axInput.name, "L3");
-    assert_equals(axInput2.name, "L3 L4");
+    // No change observed in accessibility tree.
+    assert_equals(axInput.name, "L1 L2");
+    assert_equals(axInput2.name, "L1 L3");
 
     input.accessibleNode.labeledBy = null;
     assert_equals(axInput.name, "L1 L2");
 
     input2.accessibleNode.labeledBy.remove(l3.accessibleNode);
-    assert_equals(axInput2.name, "L4");
+    assert_equals(axInput2.name, "L1 L3");
 
     input2.accessibleNode.labeledBy[0] = l2.accessibleNode;
-    assert_equals(axInput2.name, "L2");
+    assert_equals(axInput2.name, "L1 L3");
     input2.accessibleNode.labeledBy[2] = l4.accessibleNode;
-    assert_equals(axInput2.name, "L2 L4");
+    assert_equals(axInput2.name, "L1 L3");
 }, "AccessibleNode.labeledBy");
 </script>
-
 <input id="input3" aria-describedby="l1 l2">
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var input = document.getElementById("input3");
     var axInput = accessibilityController.accessibleElementById("input3");
     assert_equals(axInput.description, "L1 L2");
 
     var l3 = document.getElementById("l3");
     var l4 = document.getElementById("l4");
-
-    input.accessibleNode.describedBy = new AccessibleNodeList();
-    input.accessibleNode.describedBy.add(l3.accessibleNode);
 
     input.accessibleNode.describedBy = new AccessibleNodeList();
     input.accessibleNode.describedBy.add(l3.accessibleNode);
@@ -89,15 +85,15 @@ test_after_layout_and_paint(function(t) {
     assert_equals(input.accessibleNode.describedBy[1], l4.accessibleNode);
     assert_equals(input.accessibleNode.describedBy[2], undefined);
 
-    assert_equals(axInput.description, "L3 L4");
+    assert_equals(axInput.description, "L1 L2");
 
     input.accessibleNode.describedBy.remove(l3.accessibleNode);
-    assert_equals(axInput.description, "L4");
+    assert_equals(axInput.description, "L1 L2");
 
     input.accessibleNode.describedBy[0] = l2.accessibleNode;
-    assert_equals(axInput.description, "L2");
+    assert_equals(axInput.description, "L1 L2");
     input.accessibleNode.describedBy[2] = l4.accessibleNode;
-    assert_equals(axInput.description, "L2 L4");
+    assert_equals(axInput.description, "L1 L2");
 
     input.accessibleNode.describedBy = null;
     assert_equals(axInput.description, "L1 L2");
@@ -117,7 +113,7 @@ test_after_layout_and_paint(function(t) {
 <div id="console"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTab1 = accessibilityController.accessibleElementById("tablist_1").childAtIndex(0);
     var axPanel1 = accessibilityController.accessibleElementById("panel_1");
     var axPanel2 = accessibilityController.accessibleElementById("panel_2");
@@ -133,13 +129,13 @@ test_after_layout_and_paint(function(t) {
     tab1.accessibleNode.controls = new AccessibleNodeList();
     tab1.accessibleNode.controls[0] = panel3.accessibleNode;
 
-    assert_true(axTab1.ariaControlsElementAtIndex(0).isEqual(axPanel3));
-    assert_equals(axTab1.ariaControlsElementAtIndex(1), undefined);
+    assert_true(axTab1.ariaControlsElementAtIndex(0).isEqual(axPanel1));
+    assert_true(axTab1.ariaControlsElementAtIndex(1).isEqual(axPanel2));
 
     tab1.accessibleNode.controls[1] = panel4.accessibleNode;
 
-    assert_true(axTab1.ariaControlsElementAtIndex(0).isEqual(axPanel3));
-    assert_true(axTab1.ariaControlsElementAtIndex(1).isEqual(axPanel4));
+    assert_true(axTab1.ariaControlsElementAtIndex(0).isEqual(axPanel1));
+    assert_true(axTab1.ariaControlsElementAtIndex(1).isEqual(axPanel2));
 
     tab1.accessibleNode.controls = null;
 
@@ -158,7 +154,7 @@ test_after_layout_and_paint(function(t) {
 <div id="console"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axItem1 = accessibilityController.accessibleElementById("item1");
     var axItem2 = accessibilityController.accessibleElementById("item2");
     var axItem3 = accessibilityController.accessibleElementById("item3");
@@ -175,12 +171,12 @@ test_after_layout_and_paint(function(t) {
     item1.accessibleNode.flowTo = new AccessibleNodeList();
     item1.accessibleNode.flowTo.add(item4.accessibleNode);
 
-    assert_true(axItem1.ariaFlowToElementAtIndex(0).isEqual(axItem4));
-    assert_equals(axItem1.ariaFlowToElementAtIndex(1), undefined);
+    assert_true(axItem1.ariaFlowToElementAtIndex(0).isEqual(axItem2));
+    assert_true(axItem1.ariaFlowToElementAtIndex(1).isEqual(axItem3));
 
     item1.accessibleNode.flowTo.add(item2.accessibleNode);
 
-    assert_true(axItem1.ariaFlowToElementAtIndex(1).isEqual(axItem2));
+    assert_true(axItem1.ariaFlowToElementAtIndex(1).isEqual(axItem3));
 
     item1.accessibleNode.flowTo = null;
 
@@ -201,7 +197,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t)
+test(function(t)
 {
     var axList1 = accessibilityController.accessibleElementById("list1");
     assert_equals(axList1.role, "AXRole: AXListBox");
@@ -219,7 +215,7 @@ test_after_layout_and_paint(function(t)
     var list1 = document.getElementById("list1");
 
     list1.accessibleNode.owns = new AccessibleNodeList();
-    assert_equals(axList1.childrenCount, 2);
+    assert_equals(axList1.childrenCount, 3);
 }, "AccessibleNode.owns");
 </script>
 

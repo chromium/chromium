@@ -1,0 +1,125 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='willChangeOpacity' class='shouldComposite'",
+      "bounds": [30, 30],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='willChangeTransform' class='shouldComposite'",
+      "bounds": [30, 30],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV id='willChangeLeft' class='positioned shouldComposite'",
+      "bounds": [30, 30],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 3
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV id='willChangeRight' class='positioned shouldComposite'",
+      "bounds": [30, 30],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 4
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV id='willChangeTop' class='positioned shouldComposite'",
+      "bounds": [30, 30],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 5
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV id='willChangeBottom' class='positioned shouldComposite'",
+      "bounds": [30, 30],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 6
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='willChangeCombinationThatComposites' class='shouldComposite'",
+      "bounds": [30, 30],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 7
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 42, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 76, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 144, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 212, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 280, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 348, 0, 1]
+      ]
+    },
+    {
+      "id": 7,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 416, 0, 1]
+      ]
+    }
+  ]
+}
+

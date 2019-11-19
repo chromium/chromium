@@ -43,8 +43,11 @@ WM_CORE_EXPORT void SetWindowState(aura::Window* window,
 // Changes a window's state to its pre-minimized state.
 WM_CORE_EXPORT void Unminimize(aura::Window* window);
 
-// Retrieves the activatable window for |window|. The ActivationClient makes
-// this determination.
+// Retrieves the activatable window for |window|. If |window| is activatable,
+// this will just return it, otherwise it will climb the parent/transient parent
+// chain looking for a window that is activatable, per the ActivationClient.
+// If you're looking for a function to get the activatable "top level" window,
+// this is probably the function you're looking for.
 WM_CORE_EXPORT aura::Window* GetActivatableWindow(aura::Window* window);
 
 // Retrieves the toplevel window for |window|. The ActivationClient makes this
@@ -75,7 +78,7 @@ WM_CORE_EXPORT std::unique_ptr<ui::LayerTreeOwner> RecreateLayersWithClosure(
 
 // Returns a layer tree that mirrors |root|. Used for live window previews. If
 // |sync_bounds| is true, the bounds of all mirror layers except the root are
-// synchronized. See |sync_bounds_| in ui::Layer.
+// synchronized. See |sync_bounds_with_source_| in ui::Layer.
 WM_CORE_EXPORT std::unique_ptr<ui::LayerTreeOwner> MirrorLayers(
     ui::LayerOwner* root,
     bool sync_bounds);

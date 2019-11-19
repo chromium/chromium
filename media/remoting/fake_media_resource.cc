@@ -22,15 +22,17 @@ FakeDemuxerStream::FakeDemuxerStream(bool is_audio) {
   type_ = is_audio ? DemuxerStream::AUDIO : DemuxerStream::VIDEO;
   if (is_audio) {
     audio_config_.Initialize(kCodecAAC, kSampleFormatS16, CHANNEL_LAYOUT_STEREO,
-                             38400, std::vector<uint8_t>(), Unencrypted(),
-                             base::TimeDelta(), 0);
+                             38400, std::vector<uint8_t>(),
+                             EncryptionScheme::kUnencrypted, base::TimeDelta(),
+                             0);
   } else {
     gfx::Size size(640, 480);
     gfx::Rect rect(0, 0, 640, 480);
     video_config_.Initialize(kCodecH264, H264PROFILE_BASELINE,
-                             PIXEL_FORMAT_I420, VideoColorSpace::REC601(),
-                             VIDEO_ROTATION_0, size, rect, size,
-                             std::vector<uint8_t>(), Unencrypted());
+                             VideoDecoderConfig::AlphaMode::kIsOpaque,
+                             VideoColorSpace::REC601(), kNoTransformation, size,
+                             rect, size, std::vector<uint8_t>(),
+                             EncryptionScheme::kUnencrypted);
   }
   ON_CALL(*this, Read(_))
       .WillByDefault(Invoke(this, &FakeDemuxerStream::FakeRead));
@@ -38,15 +40,19 @@ FakeDemuxerStream::FakeDemuxerStream(bool is_audio) {
 
 FakeDemuxerStream::~FakeDemuxerStream() = default;
 
-void FakeDemuxerStream::FakeRead(const ReadCB& read_cb) {
+void FakeDemuxerStream::FakeRead(ReadCB read_cb) {
   if (buffer_queue_.empty()) {
     // Silent return to simulate waiting for buffer available.
-    pending_read_cb_ = read_cb;
+    pending_read_cb_ = std::move(read_cb);
     return;
   }
   scoped_refptr<DecoderBuffer> buffer = buffer_queue_.front();
   buffer_queue_.pop_front();
-  read_cb.Run(kOk, buffer);
+  std::move(read_cb).Run(kOk, buffer);
+}
+
+bool FakeDemuxerStream::IsReadPending() const {
+  return !pending_read_cb_.is_null();
 }
 
 AudioDecoderConfig FakeDemuxerStream::audio_decoder_config() {

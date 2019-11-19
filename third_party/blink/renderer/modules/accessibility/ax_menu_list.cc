@@ -36,11 +36,6 @@ AXMenuList::AXMenuList(LayoutMenuList* layout_object,
                        AXObjectCacheImpl& ax_object_cache)
     : AXLayoutObject(layout_object, ax_object_cache) {}
 
-AXMenuList* AXMenuList::Create(LayoutMenuList* layout_object,
-                               AXObjectCacheImpl& ax_object_cache) {
-  return MakeGarbageCollected<AXMenuList>(layout_object, ax_object_cache);
-}
-
 ax::mojom::Role AXMenuList::DetermineAccessibilityRole() {
   if ((aria_role_ = DetermineAriaRoleAttribute()) != ax::mojom::Role::kUnknown)
     return aria_role_;
@@ -61,6 +56,7 @@ bool AXMenuList::OnNativeClickAction() {
 }
 
 void AXMenuList::ClearChildren() {
+  children_dirty_ = false;
   if (children_.IsEmpty())
     return;
 
@@ -69,7 +65,6 @@ void AXMenuList::ClearChildren() {
   // so call it on our popup.
   DCHECK(children_.size() == 1);
   children_[0]->ClearChildren();
-  children_dirty_ = false;
 }
 
 void AXMenuList::AddChildren() {
@@ -78,19 +73,19 @@ void AXMenuList::AddChildren() {
 
   AXObjectCacheImpl& cache = AXObjectCache();
 
-  AXObject* list = cache.GetOrCreate(ax::mojom::Role::kMenuListPopup);
-  if (!list)
+  AXObject* popup = cache.GetOrCreate(ax::mojom::Role::kMenuListPopup);
+  if (!popup)
     return;
 
-  ToAXMockObject(list)->SetParent(this);
-  if (list->AccessibilityIsIgnored()) {
-    cache.Remove(list->AXObjectID());
+  ToAXMockObject(popup)->SetParent(this);
+  if (!popup->AccessibilityIsIncludedInTree()) {
+    cache.Remove(popup->AXObjectID());
     return;
   }
 
-  children_.push_back(list);
+  children_.push_back(popup);
 
-  list->AddChildren();
+  popup->AddChildren();
 }
 
 bool AXMenuList::IsCollapsed() const {

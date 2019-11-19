@@ -28,7 +28,7 @@ TEST(HttpProxyClientSocketTest, Tag) {
   // pointer to it.
   HttpProxyClientSocket socket(std::unique_ptr<StreamSocket>(tagging_sock), "",
                                HostPortPair(), ProxyServer(), nullptr, false,
-                               false, NextProto(), nullptr, false,
+                               false, NextProto(), nullptr,
                                TRAFFIC_ANNOTATION_FOR_TESTS);
 
   EXPECT_EQ(tagging_sock->tag(), SocketTag());

@@ -1,0 +1,127 @@
+Tests DOMSnapshot.getSnapshot reports offset, scroll, and client rects of each node.
+{
+  "documents": [
+    {
+      "documentURL": 0,
+      "title": -1,
+      "baseURL": 0,
+      "contentLanguage": -1,
+      "encodingName": 1,
+      "publicId": -1,
+      "systemId": -1,
+      "frameId": 2,
+      "nodes": "<object>",
+      "layout": {
+        "nodeIndex": "<object>",
+        "styles": "<object>",
+        "bounds": [
+          [
+            0,
+            0,
+            800,
+            600
+          ],
+          [
+            0,
+            0,
+            800,
+            0
+          ],
+          [
+            0,
+            0,
+            800,
+            0
+          ],
+          [
+            100,
+            100,
+            100,
+            100
+          ],
+          [
+            100,
+            100,
+            96,
+            16
+          ]
+        ],
+        "text": "<object>",
+        "stackingContexts": "<object>",
+        "offsetRects": [
+          [],
+          [
+            0,
+            0,
+            800,
+            0
+          ],
+          [
+            0,
+            0,
+            800,
+            0
+          ],
+          [
+            100,
+            100,
+            100,
+            100
+          ],
+          []
+        ],
+        "scrollRects": [
+          [],
+          [
+            0,
+            0,
+            800,
+            600
+          ],
+          [
+            0,
+            0,
+            800,
+            0
+          ],
+          [
+            0,
+            0,
+            100,
+            100
+          ],
+          []
+        ],
+        "clientRects": [
+          [],
+          [
+            0,
+            0,
+            800,
+            600
+          ],
+          [
+            0,
+            0,
+            800,
+            0
+          ],
+          [
+            0,
+            0,
+            100,
+            100
+          ],
+          []
+        ]
+      },
+      "textBoxes": "<object>",
+      "scrollOffsetX": 0,
+      "scrollOffsetY": 0,
+      "contentWidth": 800,
+      "contentHeight": 600
+    }
+  ],
+  "strings": "<object>"
+}
+

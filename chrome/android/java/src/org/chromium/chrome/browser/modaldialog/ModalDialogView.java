@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.modaldialog;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -15,16 +17,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.BoundedLinearLayout;
-import org.chromium.chrome.browser.widget.FadingEdgeScrollView;
+import org.chromium.chrome.browser.ui.widget.BoundedLinearLayout;
+import org.chromium.chrome.browser.ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+
+import java.lang.reflect.Field;
 
 /**
  * Generic dialog view for app modal or tab modal alert dialogs.
  */
 public class ModalDialogView extends BoundedLinearLayout implements View.OnClickListener {
+    private static final String TAG = "ModalDialogView";
+
     private ModalDialogProperties.Controller mController;
 
     private FadingEdgeScrollView mScrollView;
@@ -38,6 +45,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private Button mNegativeButton;
     private Callback<Integer> mOnButtonClickedCallback;
     private boolean mTitleScrollable;
+    private boolean mFilterTouchForSecurity;
 
     /**
      * Constructor for inflating from XML.
@@ -157,6 +165,45 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mCustomViewContainer.setLayoutParams(layoutParams);
     }
 
+    /**
+     * @param filterTouchForSecurity Whether button touch events should be filtered when buttons are
+     *                               obscured by another visible window.
+     */
+    void setFilterTouchForSecurity(boolean filterTouchForSecurity) {
+        if (mFilterTouchForSecurity == filterTouchForSecurity) return;
+
+        mFilterTouchForSecurity = filterTouchForSecurity;
+        if (filterTouchForSecurity) {
+            setupFilterTouchForSecurity();
+        } else {
+            assert false : "Shouldn't remove touch filter after setting it up";
+        }
+    }
+
+    /** Setup touch filters to block events when buttons are obscured by another window. */
+    private void setupFilterTouchForSecurity() {
+        Button positiveButton = getButton(ModalDialogProperties.ButtonType.POSITIVE);
+        Button negativeButton = getButton(ModalDialogProperties.ButtonType.NEGATIVE);
+        View.OnTouchListener onTouchListener = (View v, MotionEvent ev) -> {
+            // Filter touch events based MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED which is
+            // introduced on M+.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false;
+
+            try {
+                Field field = MotionEvent.class.getField("FLAG_WINDOW_IS_PARTIALLY_OBSCURED");
+                if ((ev.getFlags() & field.getInt(null)) != 0) return true;
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                Log.e(TAG, "Reflection failure: " + e);
+            }
+            return false;
+        };
+
+        positiveButton.setFilterTouchesWhenObscured(true);
+        positiveButton.setOnTouchListener(onTouchListener);
+        negativeButton.setFilterTouchesWhenObscured(true);
+        negativeButton.setOnTouchListener(onTouchListener);
+    }
+
     /** @param message The message in the dialog content. */
     void setMessage(String message) {
         mMessageView.setText(message);
@@ -200,6 +247,16 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     void setButtonText(@ModalDialogProperties.ButtonType int buttonType, String buttonText) {
         getButton(buttonType).setText(buttonText);
         updateButtonVisibility();
+    }
+
+    /**
+     * Sets content description for the specified button.
+     * @param buttonType The {@link ModalDialogProperties.ButtonType} of the button.
+     * @param contentDescription The content description to be set for the specified button.
+     */
+    void setButtonContentDescription(
+            @ModalDialogProperties.ButtonType int buttonType, String contentDescription) {
+        getButton(buttonType).setContentDescription(contentDescription);
     }
 
     /**

@@ -183,8 +183,6 @@ void KeywordExtensionsDelegateImpl::Observe(
       const TemplateURL* template_url =
           model->GetTemplateURLForKeyword(keyword);
 
-      // TODO(mpcomplete): consider clamping the number of suggestions to
-      // AutocompleteProvider::kMaxMatches.
       for (size_t i = 0; i < suggestions.suggest_results.size(); ++i) {
         const omnibox_api::SuggestResult& suggestion =
             suggestions.suggest_results[i];

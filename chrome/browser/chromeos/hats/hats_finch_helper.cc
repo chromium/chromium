@@ -4,15 +4,13 @@
 
 #include "chrome/browser/chromeos/hats/hats_finch_helper.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/variations/variations_associated_data.h"
 
 namespace chromeos {
 
@@ -48,35 +46,30 @@ HatsFinchHelper::HatsFinchHelper(Profile* profile) : profile_(profile) {
 HatsFinchHelper::~HatsFinchHelper() {}
 
 void HatsFinchHelper::LoadFinchParamValues() {
-  if (!base::FeatureList::IsEnabled(features::kHappinessTrackingSystem))
+  const auto& feature = features::kHappinessTrackingSystem;
+  if (!base::FeatureList::IsEnabled(feature))
     return;
 
-  std::string study_name(features::kHappinessTrackingSystem.name);
+  probability_of_pick_ = base::GetFieldTrialParamByFeatureAsDouble(
+      feature, kProbabilityParam, -1.0);
 
-  std::string value =
-      variations::GetVariationParamValue(study_name, kProbabilityParam);
-
-  if (!base::StringToDouble(value, &probability_of_pick_) ||
-      (probability_of_pick_ < 0.0 || probability_of_pick_ > 1.0)) {
+  if (probability_of_pick_ < 0.0 || probability_of_pick_ > 1.0) {
     LOG(ERROR) << "Invalid value for probability: " << probability_of_pick_;
     probability_of_pick_ = 0;
   }
 
-  value =
-      variations::GetVariationParamValue(study_name, kSurveyCycleLengthParam);
+  survey_cycle_length_ = base::GetFieldTrialParamByFeatureAsInt(
+      feature, kSurveyCycleLengthParam, 0);
 
-  if (!base::StringToInt(value, &survey_cycle_length_) ||
-      survey_cycle_length_ <= 0) {
+  if (survey_cycle_length_ <= 0) {
     LOG(ERROR) << "Invalid value for survey cycle length: "
                << survey_cycle_length_;
     survey_cycle_length_ = INT_MAX;
   }
 
-  value =
-      variations::GetVariationParamValue(study_name, kSurveyStartDateMsParam);
-  double first_survey_start_date_ms;
-  if (!base::StringToDouble(value, &first_survey_start_date_ms) ||
-      first_survey_start_date_ms < 0) {
+  double first_survey_start_date_ms = base::GetFieldTrialParamByFeatureAsDouble(
+      feature, kSurveyStartDateMsParam, -1.0);
+  if (first_survey_start_date_ms < 0) {
     LOG(ERROR) << "Invalid timestamp for survey start date: "
                << first_survey_start_date_ms;
     // Set a random date in the distant future so that the survey never starts
@@ -86,12 +79,11 @@ void HatsFinchHelper::LoadFinchParamValues() {
   first_survey_start_date_ =
       base::Time().FromJsTime(first_survey_start_date_ms);
 
-  value =
-      variations::GetVariationParamValue(study_name, kResetSurveyCycleParam);
-  reset_survey_cycle_ = base::ToLowerASCII(value) == "true";
+  reset_survey_cycle_ = base::GetFieldTrialParamByFeatureAsBool(
+      feature, kResetSurveyCycleParam, false);
 
-  value = variations::GetVariationParamValue(study_name, kResetAllParam);
-  reset_hats_ = base::ToLowerASCII(value) == "true";
+  reset_hats_ =
+      base::GetFieldTrialParamByFeatureAsBool(feature, kResetAllParam, false);
 
   // Set every property to no op values if this is a reset finch seed.
   if (reset_survey_cycle_ || reset_hats_) {

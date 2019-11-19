@@ -105,7 +105,7 @@ class CustomLinksManagerImpl : public CustomLinksManager,
   // ourselves when updating the preferences.
   bool updating_preferences_ = false;
 
-  base::WeakPtrFactory<CustomLinksManagerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<CustomLinksManagerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CustomLinksManagerImpl);
 };

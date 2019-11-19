@@ -39,24 +39,30 @@
 namespace blink {
 
 class BLINK_PLATFORM_EXPORT WebRTCICECandidate final
-    : public base::RefCounted<WebRTCICECandidate> {
+    : public base::RefCountedThreadSafe<WebRTCICECandidate> {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
-  // TODO(guidou): Support setting sdp_m_line_index to -1 to indicate the
-  // absence of a value for sdp_m_line_index. crbug.com/614958
+  // Creates a new WebRTCICECandidate using |candidate|, |sdp_mid| and
+  // |sdp_m_line_index|. If |sdp_m_line_index| is negative, it is
+  // considered as having no value.
   static scoped_refptr<WebRTCICECandidate> Create(WebString candidate,
                                                   WebString sdp_mid,
-                                                  uint16_t sdp_m_line_index);
+                                                  int sdp_m_line_index);
 
-  static scoped_refptr<WebRTCICECandidate> Create(WebString candidate,
-                                                  WebString sdp_mid,
-                                                  uint16_t sdp_m_line_index,
-                                                  WebString username_fragment);
+  // Creates a new WebRTCICECandidate using |candidate|, |sdp_mid|,
+  // |sdp_m_line_index|, and |username_fragment|.
+  static scoped_refptr<WebRTCICECandidate> Create(
+      WebString candidate,
+      WebString sdp_mid,
+      base::Optional<uint16_t> sdp_m_line_index,
+      WebString username_fragment);
 
   const WebString& Candidate() const { return candidate_; }
   const WebString& SdpMid() const { return sdp_mid_; }
-  uint16_t SdpMLineIndex() const { return sdp_m_line_index_; }
+  const base::Optional<uint16_t>& SdpMLineIndex() const {
+    return sdp_m_line_index_;
+  }
   const WebString& Foundation() const { return foundation_; }
   const WebString& Component() const { return component_; }
   const base::Optional<uint32_t>& Priority() const { return priority_; }
@@ -70,15 +76,15 @@ class BLINK_PLATFORM_EXPORT WebRTCICECandidate final
   const WebString& UsernameFragment() const { return username_fragment_; }
 
  private:
-  friend class base::RefCounted<WebRTCICECandidate>;
+  friend class base::RefCountedThreadSafe<WebRTCICECandidate>;
 
   WebRTCICECandidate(WebString candidate,
                      WebString sdp_mid,
-                     uint16_t sdp_m_line_index);
+                     base::Optional<uint16_t> sdp_m_line_index);
 
   WebRTCICECandidate(WebString candidate,
                      WebString sdp_mid,
-                     uint16_t sdp_m_line_index,
+                     base::Optional<uint16_t> sdp_m_line_index,
                      WebString username_fragment);
 
   void PopulateFields(bool use_username_from_candidate);
@@ -87,7 +93,7 @@ class BLINK_PLATFORM_EXPORT WebRTCICECandidate final
 
   WebString candidate_;
   WebString sdp_mid_;
-  uint16_t sdp_m_line_index_;
+  base::Optional<uint16_t> sdp_m_line_index_;
   WebString foundation_;
   WebString component_;
   base::Optional<uint32_t> priority_;

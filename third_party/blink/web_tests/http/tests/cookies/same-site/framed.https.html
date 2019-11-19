@@ -1,0 +1,166 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/cookies/resources/testharness-helpers.js"></script>
+<body>
+<script>
+function addFrame(url) {
+  var i = document.createElement('iframe');
+  i.src = url;
+  document.body.appendChild(i);
+  return i;
+}
+
+// Set cookies on ORIGINAL_HOST, then move ourselves to TEST_ROOT so
+// we can verify registrable domain and cross-origin behavior.
+if (window.location.hostname == "127.0.0.1") {
+    window.location.hostname = ORIGINAL_HOST;
+} else if (window.location.hostname == ORIGINAL_HOST) {
+    clearKnownCookies();
+    document.cookie = STRICT_DOM + "=1; SameSite=Strict; Max-Age=100; path=/";
+    document.cookie = LAX_DOM + "=1; SameSite=Lax; Max-Age=100; path=/";
+    document.cookie = UNSPECIFIED_DOM + "=1; Max-Age=100; path=/";
+    // SameSite=None cookies must be Secure.
+    document.cookie = NONE_DOM + "=1; SameSite=None; Secure; Max-Age=100; path=/";
+    window.location.hostname = TEST_HOST;
+} else {
+    test(_ => {
+        clearKnownCookies();
+        assert_equals(document.cookie, "");
+
+        document.cookie = STRICT_DOM + "=2; SameSite=Strict; domain=" + TEST_HOST + "; path=/";
+        document.cookie = LAX_DOM + "=2; SameSite=Lax; domain=" + TEST_HOST + "; path=/";
+        document.cookie = UNSPECIFIED_DOM + "=2; domain=" + TEST_HOST + "; path=/";
+        document.cookie = NONE_DOM + "=2; SameSite=None; Secure; domain=" + TEST_HOST + "; path=/";
+        assert_equals(document.cookie, STRICT_DOM + "=2; " + LAX_DOM + "=2; " + UNSPECIFIED_DOM + "=2; " + NONE_DOM + "=2");
+    }, "Set cookies for TEST_HOST");
+
+    // Framed
+    promise_test(_ => {
+      var frame;
+      return new Promise(r => {
+        window.onmessage = e => {
+          var http_cookies = e.data.http;
+          assert_equals(http_cookies[STRICT_DOM], "2", "strict http");
+          assert_equals(http_cookies[LAX_DOM], "2", "lax http");
+          assert_equals(http_cookies[UNSPECIFIED_DOM], "2", "unspecified http");
+          assert_equals(http_cookies[NONE_DOM], "2", "none http");
+
+          var dom_cookies = e.data.document;
+          assert_equals(dom_cookies, STRICT_DOM + "=2; " + LAX_DOM + "=2; " + UNSPECIFIED_DOM + "=2; " + NONE_DOM + "=2");
+
+          r();
+        };
+        frame = addFrame("https://" + TEST_HOST + ":8443/cookies/resources/post-cookies-to-top.php");
+      });
+    }, "Same-origin frame receives all SameSite cookies.");
+
+    promise_test(_ => {
+      var frame;
+      return new Promise(r => {
+        window.onmessage = e => {
+          var http_cookies = e.data.http;
+          assert_equals(http_cookies[STRICT_DOM], undefined, "strict http");
+          assert_equals(http_cookies[LAX_DOM], undefined, "lax http");
+          assert_equals(http_cookies[UNSPECIFIED_DOM], undefined, "unspecified http");
+          assert_equals(http_cookies[NONE_DOM], "1", "none http");
+
+          var dom_cookies = e.data.document;
+          assert_equals(dom_cookies, NONE_DOM + "=1");
+
+          r();
+        };
+        frame = addFrame("https://" + ORIGINAL_HOST + ":8443/cookies/resources/post-cookies-to-top.php");
+      });
+    }, "Cross-origin frame receives no SameSite cookies.");
+
+    // Nested Frames
+    promise_test(_ => {
+      var frame;
+      return new Promise(r => {
+        window.onmessage = e => {
+          var http_cookies = e.data.http;
+          assert_equals(http_cookies[STRICT_DOM], "2", "strict http");
+          assert_equals(http_cookies[LAX_DOM], "2", "lax http");
+          assert_equals(http_cookies[UNSPECIFIED_DOM], "2", "unspecified http");
+          assert_equals(http_cookies[NONE_DOM], "2", "none http");
+
+          var dom_cookies = e.data.document;
+          assert_equals(dom_cookies, STRICT_DOM + "=2; " + LAX_DOM + "=2; " + UNSPECIFIED_DOM + "=2; " + NONE_DOM + "=2");
+
+          r();
+        };
+        frame = addFrame(
+            "https://" + TEST_HOST + ":8443/cookies/resources/frame.php?url=" +
+            encodeURIComponent("https://" + TEST_HOST + ":8443/cookies/resources/post-cookies-to-top.php")
+        );
+      });
+    }, "Same-origin frame nested in same-origin frame receives all SameSite cookies.");
+
+    promise_test(_ => {
+      var frame;
+      return new Promise(r => {
+        window.onmessage = e => {
+          var http_cookies = e.data.http;
+          assert_equals(http_cookies[STRICT_DOM], undefined, "strict http");
+          assert_equals(http_cookies[LAX_DOM], undefined, "lax http");
+          assert_equals(http_cookies[UNSPECIFIED_DOM], undefined, "unspecified http");
+          assert_equals(http_cookies[NONE_DOM], "2", "none http");
+
+          var dom_cookies = e.data.document;
+          assert_equals(dom_cookies, NONE_DOM + "=2");
+
+          r();
+        };
+        frame = addFrame(
+            "https://" + ORIGINAL_HOST + ":8443/cookies/resources/frame.php?url=" +
+            encodeURIComponent("https://" + TEST_HOST + ":8443/cookies/resources/post-cookies-to-top.php")
+        );
+      });
+    }, "Same-origin frame nested in cross-origin frame receives no SameSite cookies.");
+
+    promise_test(_ => {
+      var frame;
+      return new Promise(r => {
+        window.onmessage = e => {
+          var http_cookies = e.data.http;
+          assert_equals(http_cookies[STRICT_DOM], undefined, "strict http");
+          assert_equals(http_cookies[LAX_DOM], undefined, "lax http");
+          assert_equals(http_cookies[UNSPECIFIED_DOM], undefined, "unspecified http");
+          assert_equals(http_cookies[NONE_DOM], "1", "none http");
+
+          var dom_cookies = e.data.document;
+          assert_equals(dom_cookies, NONE_DOM + "=1");
+
+          r();
+        };
+        frame = addFrame(
+            "https://" + TEST_HOST + ":8443/cookies/resources/frame.php?url=" +
+            encodeURIComponent("https://" + ORIGINAL_HOST + ":8443/cookies/resources/post-cookies-to-top.php")
+        );
+      });
+    }, "Cross-origin frame nested in same-origin frame receives no SameSite cookies.");
+
+    promise_test(_ => {
+      var frame;
+      return new Promise(r => {
+        window.onmessage = e => {
+          var http_cookies = e.data.http;
+          assert_equals(http_cookies[STRICT_DOM], undefined, "strict http");
+          assert_equals(http_cookies[LAX_DOM], undefined, "lax http");
+          assert_equals(http_cookies[UNSPECIFIED_DOM], undefined, "unspecified http");
+          assert_equals(http_cookies[NONE_DOM], "1", "none http");
+
+          var dom_cookies = e.data.document;
+          assert_equals(dom_cookies, NONE_DOM + "=1");
+
+          r();
+        };
+        frame = addFrame(
+            "https://" + ORIGINAL_HOST + ":8443/cookies/resources/frame.php?url=" +
+            encodeURIComponent("https://" + ORIGINAL_HOST + ":8443/cookies/resources/post-cookies-to-top.php")
+        );
+      });
+    }, "Cross-origin frame nested in cross-origin frame receives no SameSite cookies.");
+}
+</script>

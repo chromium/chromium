@@ -6,7 +6,8 @@
 
 #include <numeric>
 
-#include "third_party/blink/renderer/core/css/css_calculation_value.h"
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_invert.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_max.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -79,34 +81,38 @@ CSSUnitValue* MaybeMultiplyAsUnitValue(const CSSNumericValueVector& values) {
   return CSSUnitValue::Create(final_value, unit_other_than_number);
 }
 
-CalcOperator CanonicalOperator(CalcOperator op) {
-  if (op == kCalcAdd || op == kCalcSubtract)
-    return kCalcAdd;
-  return kCalcMultiply;
+CSSMathOperator CanonicalOperator(CSSMathOperator op) {
+  if (op == CSSMathOperator::kAdd || op == CSSMathOperator::kSubtract)
+    return CSSMathOperator::kAdd;
+  return CSSMathOperator::kMultiply;
 }
 
-bool CanCombineNodes(const CSSCalcExpressionNode& root,
-                     const CSSCalcExpressionNode& node) {
-  DCHECK_EQ(root.GetType(), CSSCalcExpressionNode::kCssCalcBinaryOperation);
-  if (node.GetType() == CSSCalcExpressionNode::kCssCalcPrimitiveValue)
+bool CanCombineNodes(const CSSMathExpressionNode& root,
+                     const CSSMathExpressionNode& node) {
+  DCHECK(root.IsBinaryOperation());
+  if (!node.IsBinaryOperation())
     return false;
-  return !node.IsNestedCalc() && CanonicalOperator(root.OperatorType()) ==
-                                     CanonicalOperator(node.OperatorType());
+  if (node.IsNestedCalc())
+    return false;
+  return CanonicalOperator(
+             To<CSSMathExpressionBinaryOperation>(root).OperatorType()) ==
+         CanonicalOperator(
+             To<CSSMathExpressionBinaryOperation>(node).OperatorType());
 }
 
-CSSNumericValue* NegateOrInvertIfRequired(CalcOperator parent_op,
+CSSNumericValue* NegateOrInvertIfRequired(CSSMathOperator parent_op,
                                           CSSNumericValue* value) {
   DCHECK(value);
-  if (parent_op == kCalcSubtract)
+  if (parent_op == CSSMathOperator::kSubtract)
     return CSSMathNegate::Create(value);
-  if (parent_op == kCalcDivide)
+  if (parent_op == CSSMathOperator::kDivide)
     return CSSMathInvert::Create(value);
   return value;
 }
 
-CSSNumericValue* CalcToNumericValue(const CSSCalcExpressionNode& root) {
-  if (root.GetType() == CSSCalcExpressionNode::kCssCalcPrimitiveValue) {
-    const CSSPrimitiveValue::UnitType unit = root.TypeWithCalcResolved();
+CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
+  if (root.IsNumericLiteral()) {
+    const CSSPrimitiveValue::UnitType unit = root.ResolvedUnitType();
     auto* value = CSSUnitValue::Create(
         root.DoubleValue(), unit == CSSPrimitiveValue::UnitType::kInteger
                                 ? CSSPrimitiveValue::UnitType::kNumber
@@ -122,11 +128,23 @@ CSSNumericValue* CalcToNumericValue(const CSSCalcExpressionNode& root) {
     return CSSMathSum::Create(std::move(values));
   }
 
-  // When the node is a binary operator, we return either a CSSMathSum or a
-  // CSSMathProduct.
-  DCHECK_EQ(root.GetType(), CSSCalcExpressionNode::kCssCalcBinaryOperation);
   CSSNumericValueVector values;
 
+  // When the node is a variadic operation, we return either a CSSMathMin or a
+  // CSSMathMax.
+  if (root.IsVariadicOperation()) {
+    const auto& node = To<CSSMathExpressionVariadicOperation>(root);
+    for (const auto& operand : node.GetOperands())
+      values.push_back(CalcToNumericValue(*operand));
+    if (node.OperatorType() == CSSMathOperator::kMin)
+      return CSSMathMin::Create(std::move(values));
+    DCHECK(node.OperatorType() == CSSMathOperator::kMax);
+    return CSSMathMax::Create(std::move(values));
+  }
+
+  DCHECK(root.IsBinaryOperation());
+  // When the node is a binary operator, we return either a CSSMathSum or a
+  // CSSMathProduct.
   // For cases like calc(1 + 2 + 3), the calc expression tree looks like:
   //       +     //
   //      / \    //
@@ -143,17 +161,21 @@ CSSNumericValue* CalcToNumericValue(const CSSCalcExpressionNode& root) {
   // the two nodes. We keep moving down the left side of the tree as long as the
   // current node and the root can be combined, collecting the right child of
   // the nodes that we encounter.
-  const CSSCalcExpressionNode* cur_node = &root;
+  const CSSMathExpressionNode* cur_node = &root;
   do {
-    DCHECK(cur_node->LeftExpressionNode());
-    DCHECK(cur_node->RightExpressionNode());
+    DCHECK(cur_node->IsBinaryOperation());
+    const CSSMathExpressionBinaryOperation* binary_op =
+        To<CSSMathExpressionBinaryOperation>(cur_node);
+    DCHECK(binary_op->LeftExpressionNode());
+    DCHECK(binary_op->RightExpressionNode());
 
-    auto* const value = CalcToNumericValue(*cur_node->RightExpressionNode());
+    auto* const value = CalcToNumericValue(*binary_op->RightExpressionNode());
 
     // If the current node is a '-' or '/', it's really just a '+' or '*' with
     // the right child negated or inverted, respectively.
-    values.push_back(NegateOrInvertIfRequired(cur_node->OperatorType(), value));
-    cur_node = cur_node->LeftExpressionNode();
+    values.push_back(
+        NegateOrInvertIfRequired(binary_op->OperatorType(), value));
+    cur_node = binary_op->LeftExpressionNode();
   } while (CanCombineNodes(root, *cur_node));
 
   DCHECK(cur_node);
@@ -162,7 +184,10 @@ CSSNumericValue* CalcToNumericValue(const CSSCalcExpressionNode& root) {
   // Our algorithm collects the children in reverse order, so we have to reverse
   // the values.
   std::reverse(values.begin(), values.end());
-  if (root.OperatorType() == kCalcAdd || root.OperatorType() == kCalcSubtract)
+  CSSMathOperator operator_type =
+      To<CSSMathExpressionBinaryOperation>(root).OperatorType();
+  if (operator_type == CSSMathOperator::kAdd ||
+      operator_type == CSSMathOperator::kSubtract)
     return CSSMathSum::Create(std::move(values));
   return CSSMathProduct::Create(std::move(values));
 }
@@ -224,14 +249,16 @@ CSSNumericValue* CSSNumericValue::parse(const String& css_text,
       return CSSUnitValue::Create(token.NumericValue(), token.GetUnitType());
     }
     case kFunctionToken:
-      if (range.Peek().FunctionId() == CSSValueCalc ||
-          range.Peek().FunctionId() == CSSValueWebkitCalc) {
-        CSSCalcValue* calc_value = CSSCalcValue::Create(range, kValueRangeAll);
-        if (!calc_value)
-          break;
-
-        DCHECK(calc_value->ExpressionNode());
-        return CalcToNumericValue(*calc_value->ExpressionNode());
+      if (range.Peek().FunctionId() == CSSValueID::kCalc ||
+          range.Peek().FunctionId() == CSSValueID::kWebkitCalc ||
+          (RuntimeEnabledFeatures::CSSComparisonFunctionsEnabled() &&
+           (range.Peek().FunctionId() == CSSValueID::kMin ||
+            range.Peek().FunctionId() == CSSValueID::kMax ||
+            range.Peek().FunctionId() == CSSValueID::kClamp))) {
+        CSSMathExpressionNode* expression =
+            CSSMathExpressionNode::ParseCalc(range);
+        if (expression)
+          return CalcToNumericValue(*expression);
       }
       break;
     default:
@@ -244,9 +271,11 @@ CSSNumericValue* CSSNumericValue::parse(const String& css_text,
 }
 
 CSSNumericValue* CSSNumericValue::FromCSSValue(const CSSPrimitiveValue& value) {
-  if (value.IsCalculated())
-    return CalcToNumericValue(*value.CssCalcValue()->ExpressionNode());
-  return CSSUnitValue::FromCSSValue(value);
+  if (value.IsCalculated()) {
+    return CalcToNumericValue(
+        *To<CSSMathFunctionValue>(value).ExpressionNode());
+  }
+  return CSSUnitValue::FromCSSValue(To<CSSNumericLiteralValue>(value));
 }
 
 /* static */
@@ -315,8 +344,8 @@ CSSMathSum* CSSNumericValue::toSum(const Vector<String>& unit_strings,
 
   if (unit_strings.size() == 0) {
     std::sort(values.begin(), values.end(), [](const auto& a, const auto& b) {
-      return WTF::CodePointCompareLessThan(To<CSSUnitValue>(a.Get())->unit(),
-                                           To<CSSUnitValue>(b.Get())->unit());
+      return WTF::CodeUnitCompareLessThan(To<CSSUnitValue>(a.Get())->unit(),
+                                          To<CSSUnitValue>(b.Get())->unit());
     });
 
     // We got 'values' from a sum value, so it must be a valid CSSMathSum.

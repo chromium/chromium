@@ -16,6 +16,7 @@
 #include "base/stl_util.h"
 #include "components/subresource_filter/content/browser/subframe_navigation_filtering_throttle.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
+#include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -33,7 +34,6 @@ namespace subresource_filter {
 class AsyncDocumentSubresourceFilter;
 class ActivationStateComputingNavigationThrottle;
 class PageLoadStatistics;
-class SubresourceFilterObserverManager;
 class SubresourceFilterClient;
 
 // The ContentSubresourceFilterThrottleManager manages NavigationThrottles in
@@ -80,7 +80,7 @@ class ContentSubresourceFilterThrottleManager
   bool CalculateIsAdSubframe(content::RenderFrameHost* frame_host,
                              LoadPolicy load_policy) override;
 
-  bool IsFrameTaggedAsAdForTesting(content::RenderFrameHost* frame_host) const;
+  bool IsFrameTaggedAsAd(const content::RenderFrameHost* frame_host) const;
 
  protected:
   // content::WebContentsObserver:
@@ -168,12 +168,12 @@ class ContentSubresourceFilterThrottleManager
   // 3. The RenderFrame declares the frame is an ad (see AdTracker in Blink)
   // 4. It's the result of moving an old ad subframe RFH to a new RFH (e.g.,
   //    OOPIF)
-  std::set<content::RenderFrameHost*> ad_frames_;
+  std::set<const content::RenderFrameHost*> ad_frames_;
 
   content::WebContentsFrameBindingSet<mojom::SubresourceFilterHost> binding_;
 
   ScopedObserver<SubresourceFilterObserverManager, SubresourceFilterObserver>
-      scoped_observer_;
+      scoped_observer_{this};
 
   // Lazily instantiated in EnsureRulesetHandle when the first page level
   // activation is triggered. Will go away when there are no more activated
@@ -192,7 +192,7 @@ class ContentSubresourceFilterThrottleManager
   SubresourceFilterClient* client_;
 
   base::WeakPtrFactory<ContentSubresourceFilterThrottleManager>
-      weak_ptr_factory_;
+      weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ContentSubresourceFilterThrottleManager);
 };

@@ -12,6 +12,11 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/usage_stats/usage_stats_database.h"
+#include "components/history/core/browser/history_service_observer.h"
+
+namespace history {
+class HistoryService;
+}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -27,11 +32,13 @@ using base::android::ScopedJavaGlobalRef;
  * native implementation to which operations are delegated. This bridge is
  * instantiated, owned, and destroyed from Java.
  */
-class UsageStatsBridge {
+class UsageStatsBridge : public history::HistoryServiceObserver {
  public:
   explicit UsageStatsBridge(
-      std::unique_ptr<UsageStatsDatabase> usage_stats_database);
-  ~UsageStatsBridge();
+      std::unique_ptr<UsageStatsDatabase> usage_stats_database,
+      Profile* profile,
+      const JavaRef<jobject>& j_this);
+  ~UsageStatsBridge() override;
 
   void Destroy(JNIEnv* j_env, const JavaRef<jobject>& j_this);
 
@@ -84,6 +91,10 @@ class UsageStatsBridge {
                         const JavaRef<jobjectArray>& j_fqdns,
                         const JavaRef<jobject>& j_callback);
 
+  // Overridden from history::HistoryServiceObserver.
+  void OnURLsDeleted(history::HistoryService* history_service,
+                     const history::DeletionInfo& deletion_info) override;
+
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
@@ -104,7 +115,11 @@ class UsageStatsBridge {
 
   std::unique_ptr<UsageStatsDatabase> usage_stats_database_;
 
-  base::WeakPtrFactory<UsageStatsBridge> weak_ptr_factory_;
+  Profile* profile_;
+
+  base::android::ScopedJavaGlobalRef<jobject> j_this_;
+
+  base::WeakPtrFactory<UsageStatsBridge> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UsageStatsBridge);
 };

@@ -85,14 +85,14 @@ var arrayBuffer = new ArrayBuffer(30);
 var int8View = new Int8Array(arrayBuffer, 2, 10);
 tryPostMessageFunction(window.postMessage, arrayBuffer, '*', [arrayBuffer]);
 if (!(arrayBuffer.byteLength === 0))
-    testFailed("arrayBuffer not neutered; byteLength = " + arrayBuffer.byteLength);
+    testFailed("arrayBuffer not detached; byteLength = " + arrayBuffer.byteLength);
 else
-    testPassed("arrayBuffer neutered");
+    testPassed("arrayBuffer detached");
 
 if (!(int8View.length == 0))
-    testFailed("view was not neutered; length = " + int8View.length);
+    testFailed("view was not detached; length = " + int8View.length);
 else
-    testPassed("view neutered");
+    testPassed("view detached");
 
 tryPostMessageFunction(window.postMessage, arrayBuffer, '*', [], true);
 tryPostMessageFunction(window.postMessage, 'data', '*', [arrayBuffer], true);

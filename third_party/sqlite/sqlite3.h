@@ -38,6 +38,24 @@
 #endif  // !defined(sqlite3_complete)
 #endif  // defined(SQLITE_OMIT_COMPLETE)
 
+#if defined(SQLITE_OMIT_COMPILEOPTION_DIAGS)
+// When SQLITE_OMIT_COMPILEOPTION_DIAGS is defined, sqlite3.h emits macros
+// instead of declarations for sqlite3_compileoption_{get,used}().
+//
+// In order to avoid a macro redefinition warning, we must undo the #define in
+// rename_exports.h.
+#if defined(sqlite3_compileoption_get)
+#undef sqlite3_compileoption_get
+#else
+#error "This workaround is no longer needed."
+#endif  // !defined(sqlite3_compileoption_get)
+#if defined(sqlite3_compileoption_used)
+#undef sqlite3_compileoption_used
+#else
+#error "This workaround is no longer needed."
+#endif  // !defined(sqlite3_compileoption_used)
+#endif  // defined(SQLITE_OMIT_COMPILEOPTION_DIAGS)
+
 #include "third_party/sqlite/amalgamation/sqlite3.h"
 
 #endif  // THIRD_PARTY_SQLITE_SQLITE3_H_

@@ -58,8 +58,9 @@ Note: MODE_SPECIFIC_STRINGS cannot be specified if STRING_IDS is not specified.
 # and IDS_L10N_OFFSET_* for the language we are interested in.
 #
 
+from __future__ import print_function
+
 import argparse
-import exceptions
 import glob
 import io
 import os
@@ -271,20 +272,20 @@ class StringRcMaker(object):
       self.language = language
       self.translation = translation
 
-    def __cmp__(self, other):
+    def __lt__(self, other):
       """Allow __TranslationDatas to be sorted by id then by language."""
-      id_result = cmp(self.resource_id_str, other.resource_id_str)
-      return cmp(self.language, other.language) if id_result == 0 else id_result
+      return (self.resource_id_str, self.language) < (other.resource_id_str,
+                                                      other.language)
 
   def __AddModeSpecificStringIds(self):
     """Adds the mode-specific strings for all of the current brand's install
     modes to self.string_id_set."""
-    for string_id, brands in self.mode_specific_strings.iteritems():
+    for string_id, brands in self.mode_specific_strings.items():
       brand_strings = brands.get(self.brand)
       if not brand_strings:
-        raise exceptions.RuntimeError(
-          'No strings declared for brand \'%s\' in MODE_SPECIFIC_STRINGS for '
-          'message %s' % (self.brand, string_id))
+        raise RuntimeError(
+            'No strings declared for brand \'%s\' in MODE_SPECIFIC_STRINGS for '
+            'message %s' % (self.brand, string_id))
       self.string_id_set.update(brand_strings)
 
   def __ReadSourceAndTranslatedStrings(self):
@@ -318,8 +319,9 @@ Missing input files:
 Extra input files:
 {}
 '''
-      print error.format('\n'.join(self.expected_xtb_input_files),
-        '\n'.join(all_xtb_files), '\n'.join(missing), '\n'.join(extra))
+      print(error.format('\n'.join(self.expected_xtb_input_files),
+                         '\n'.join(all_xtb_files), '\n'.join(missing),
+                         '\n'.join(extra)))
       sys.exit(1)
     return translated_strings
 
@@ -356,7 +358,7 @@ Extra input files:
     # Manually put the source strings as en-US in the list of translated
     # strings.
     translated_strings = []
-    for string_id, message_text in source_strings.iteritems():
+    for string_id, message_text in source_strings.items():
       translated_strings.append(self.__TranslationData(string_id,
                                                        'EN_US',
                                                        message_text))
@@ -366,7 +368,7 @@ Extra input files:
     # message text; hence the message id is mapped to a list of string ids
     # instead of a single value.
     translation_ids = {}
-    for (string_id, message_text) in source_strings.iteritems():
+    for (string_id, message_text) in source_strings.items():
       message_id = tclib.GenerateMessageId(message_text)
       translation_ids.setdefault(message_id, []).append(string_id);
 
@@ -381,7 +383,7 @@ Extra input files:
       if not xtb_filename in source_xtb_files:
         extra_xtb_files.append(xtb_filename)
       sax_parser.parse(xtb_filename)
-      for string_id, message_text in source_strings.iteritems():
+      for string_id, message_text in source_strings.items():
         translated_string = xtb_handler.translations.get(string_id,
                                                          message_text)
         translated_strings.append(self.__TranslationData(string_id,
@@ -391,12 +393,12 @@ Extra input files:
       if missing_xtb_files:
         missing_error = ("There were files that were found in the .grd file "
                          "'{}' but do not exist on disk:\n{}")
-        print missing_error.format(grd_file, '\n'.join(missing_xtb_files))
+        print(missing_error.format(grd_file, '\n'.join(missing_xtb_files)))
 
       if extra_xtb_files:
         extra_error = ("There were files that exist on disk but were not found "
                        "in the .grd file '{}':\n{}")
-        print extra_error.format(grd_file, '\n'.join(extra_xtb_files))
+        print(extra_error.format(grd_file, '\n'.join(extra_xtb_files)))
 
       sys.exit(1)
     return translated_strings
@@ -461,13 +463,13 @@ Extra input files:
       resource_id += 1
 
     # Handle mode-specific strings.
-    for string_id, brands in self.mode_specific_strings.iteritems():
+    for string_id, brands in self.mode_specific_strings.items():
       # Populate the DO_MODE_STRINGS macro.
       brand_strings = brands.get(self.brand)
       if not brand_strings:
-        raise exceptions.RuntimeError(
-          'No strings declared for brand \'%s\' in MODE_SPECIFIC_STRINGS for '
-          'message %s' % (self.brand, string_id))
+        raise RuntimeError(
+            'No strings declared for brand \'%s\' in MODE_SPECIFIC_STRINGS for '
+            'message %s' % (self.brand, string_id))
       do_mode_strings_lines.append(
         '  HANDLE_MODE_STRING(%s_BASE, %s)'
         % (string_id, ', '.join([ ('%s_BASE' % s) for s in brand_strings])))
@@ -487,7 +489,7 @@ Extra input files:
       installer_string_mapping_lines.append('  HANDLE_STRING(%s_BASE, %s)'
                                             % (string_id, string_id))
 
-    with open(self.header_file, 'wb') as outfile:
+    with open(self.header_file, 'w') as outfile:
       outfile.write('\n'.join(lines))
       outfile.write('\n#ifndef RC_INVOKED')
       outfile.write(' \\\n'.join(do_languages_lines))
@@ -573,7 +575,7 @@ def main():
       parser.error('A brand was specified (' + brand + ') but no mode '
         'specific strings were given.')
     valid_brands = [b for b in
-      mode_specific_strings.itervalues().next().iterkeys()]
+      next(iter(mode_specific_strings.values())).keys()]
     if not brand in valid_brands:
       parser.error('A brand was specified (' + brand + ') but it is not '
         'a valid brand [' + ', '.join(valid_brands) + '].')
@@ -585,8 +587,8 @@ def main():
   xtb_relative_paths = args.input_xtb_relative_paths
 
   if len(grd_files) != len(xtb_relative_paths):
-     parser.error('Mismatch in number of grd files ({}) and xtb relative '
-       'paths ({})'.format(len(grd_files), len(xtb_relative_paths)))
+    parser.error('Mismatch in number of grd files ({}) and xtb relative '
+                 'paths ({})'.format(len(grd_files), len(xtb_relative_paths)))
 
   inputs = zip(grd_files, xtb_relative_paths)
 

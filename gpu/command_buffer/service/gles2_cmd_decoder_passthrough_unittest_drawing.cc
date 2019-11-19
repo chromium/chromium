@@ -8,10 +8,8 @@
 namespace gpu {
 namespace gles2 {
 
-using namespace cmds;
-
 TEST_F(GLES2WebGLDecoderPassthroughTest, DrawArraysInstancedANGLEEnablement) {
-  DrawArraysInstancedANGLE cmd;
+  cmds::DrawArraysInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES, 0, 3, 1);
   EXPECT_EQ(error::kUnknownCommand, ExecuteCmd(cmd));
 
@@ -20,7 +18,7 @@ TEST_F(GLES2WebGLDecoderPassthroughTest, DrawArraysInstancedANGLEEnablement) {
 }
 
 TEST_F(GLES2WebGLDecoderPassthroughTest, VertexAttribDivisorANGLEEnablement) {
-  VertexAttribDivisorANGLE cmd;
+  cmds::VertexAttribDivisorANGLE cmd;
   cmd.Init(0, 1);
   EXPECT_EQ(error::kUnknownCommand, ExecuteCmd(cmd));
 
@@ -29,7 +27,7 @@ TEST_F(GLES2WebGLDecoderPassthroughTest, VertexAttribDivisorANGLEEnablement) {
 }
 
 TEST_F(GLES2WebGLDecoderPassthroughTest, DrawElementsInstancedANGLEEnablement) {
-  DrawElementsInstancedANGLE cmd;
+  cmds::DrawElementsInstancedANGLE cmd;
   cmd.Init(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, 1);
   EXPECT_EQ(error::kUnknownCommand, ExecuteCmd(cmd));
 

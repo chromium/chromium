@@ -35,7 +35,6 @@ public class FakeSuggestionsSource implements SuggestionsSource {
     private ObserverList<Observer> mObserverList = new ObserverList<>();
     private final List<Integer> mCategories = new ArrayList<>();
     private final Map<Integer, List<SnippetArticle>> mSuggestions = new HashMap<>();
-    private final List<SnippetArticle> mContextualSuggestions = new ArrayList<>();
     private final Map<Integer, Integer> mCategoryStatus = new LinkedHashMap<>();
     private final Map<Integer, SuggestionsCategoryInfo> mCategoryInfo = new HashMap<>();
 
@@ -52,14 +51,6 @@ public class FakeSuggestionsSource implements SuggestionsSource {
     private final Map<Integer, SuggestionsCategoryInfo> mDismissedCategoryInfo = new HashMap<>();
 
     private boolean mRemoteSuggestionsEnabled = true;
-
-    /**
-     * Sets contextual suggestions to be shown in the suggestions carousel.
-     */
-    public void setContextualSuggestions(List<SnippetArticle> suggestions) {
-        mContextualSuggestions.clear();
-        mContextualSuggestions.addAll(suggestions);
-    }
 
     /**
      * Sets the status to be returned for a given category.
@@ -267,17 +258,6 @@ public class FakeSuggestionsSource implements SuggestionsSource {
     @Override
     public void fetchSuggestions(@CategoryInt int category, String[] displayedSuggestionIds,
             Callback<List<SnippetArticle>> successCallback, Runnable failureRunnable) {
-    }
-
-    @Override
-    public void fetchContextualSuggestions(String url, Callback<List<SnippetArticle>> callback) {
-        callback.onResult(mContextualSuggestions);
-    }
-
-    @Override
-    public void fetchContextualSuggestionImage(
-            SnippetArticle suggestion, Callback<Bitmap> callback) {
-        fetchSuggestionImage(suggestion, callback);
     }
 
     @Override

@@ -41,16 +41,12 @@ const v8::FunctionCallbackInfo<v8::Value>& info
 
   {% if attribute.is_save_same_object %}
   // [SaveSameObject]
-  {% set same_object_private_key = interface_name + attribute.camel_case_name %}
-  // If you see a compile error that
-  //   V8PrivateProperty::GetSameObject{{same_object_private_key}}
-  // is not defined, then you need to register your attribute at
-  // V8_PRIVATE_PROPERTY_FOR_EACH defined in V8PrivateProperty.h as
-  //   X(SameObject, {{same_object_private_key}})
-  auto privateSameObject = V8PrivateProperty::GetSameObject{{same_object_private_key}}(info.GetIsolate());
+  static const V8PrivateProperty::SymbolKey kSaveSameObjectKey;
+  auto private_same_object =
+      V8PrivateProperty::GetSymbol(info.GetIsolate(), kSaveSameObjectKey);
   {
     v8::Local<v8::Value> v8_value;
-    if (privateSameObject.GetOrUndefined(holder).ToLocal(&v8_value) && !v8_value->IsUndefined()) {
+    if (private_same_object.GetOrUndefined(holder).ToLocal(&v8_value) && !v8_value->IsUndefined()) {
       V8SetReturnValue(info, v8_value);
       return;
     }
@@ -75,9 +71,18 @@ const v8::FunctionCallbackInfo<v8::Value>& info
 
   {% if attribute.cached_attribute_validation_method %}
   // [CachedAttribute]
+  {% if cpp_class == 'History' and attribute.camel_case_name == 'State' %}
+  V8PrivateProperty::Symbol property_symbol =
+      V8PrivateProperty::GetHistoryStateSymbol(info.GetIsolate());
+  {% else %}
+  {% if not attribute.private_property_is_shared_between_getter_and_setter %}
+  static const V8PrivateProperty::SymbolKey kPrivateProperty{{attribute.camel_case_name}};
+
+  {% endif %}
   V8PrivateProperty::Symbol property_symbol =
       V8PrivateProperty::GetSymbol(info.GetIsolate(),
-          "{{cpp_class}}#{{attribute.camel_case_name}}");
+          kPrivateProperty{{attribute.camel_case_name}});
+  {% endif %}
   if (!static_cast<const {{cpp_class}}*>(impl)->{{attribute.cached_attribute_validation_method}}()) {
     v8::Local<v8::Value> v8_value;
     if (property_symbol.GetOrUndefined(holder).ToLocal(&v8_value) && !v8_value->IsUndefined()) {
@@ -177,8 +182,8 @@ const v8::FunctionCallbackInfo<v8::Value>& info
   if ({{attribute.cpp_value}} && DOMDataStore::SetReturnValue{{world_suffix}}(info.GetReturnValue(), {{attribute.cpp_value_to_script_wrappable}}))
     return;
   v8::Local<v8::Value> v8_value(ToV8({{attribute.cpp_value_to_script_wrappable}}, holder, info.GetIsolate()));
-  V8PrivateProperty::GetSymbol(
-      info.GetIsolate(), "KeepAlive#{{interface_name}}#{{attribute.name}}")
+  static const V8PrivateProperty::SymbolKey kKeepAliveKey;
+  V8PrivateProperty::GetSymbol(info.GetIsolate(), kKeepAliveKey)
       .Set(holder, v8_value);
   {% endif %}
 
@@ -190,7 +195,7 @@ const v8::FunctionCallbackInfo<v8::Value>& info
 
   {% if attribute.is_save_same_object %}
   // [SaveSameObject]
-  privateSameObject.Set(holder, info.GetReturnValue().Get());
+  private_same_object.Set(holder, info.GetReturnValue().Get());
   {% endif %}
   {% endfilter %}{# format_remove_duplicates #}
 }
@@ -203,30 +208,33 @@ const v8::FunctionCallbackInfo<v8::Value>& info
 {# Attribute is limited to only known values: check that the attribute value is
    one of those. If not, set it to the empty string.
    http://www.whatwg.org/specs/web-apps/current-work/#limited-to-only-known-values #}
+{% if reflect_only_values %}
+AtomicString atomic_{{cpp_value}}({{cpp_value}}.LowerASCII());
+{% endif %}
 {% if reflect_empty %}
 if ({{cpp_value}}.IsNull()) {
 {% if reflect_missing %}
-  {{cpp_value}} = "{{reflect_missing}}";
+  {{cpp_value}} = {{reflect_missing}};
 {% else %}
   ;
 {% endif %}
 } else if ({{cpp_value}}.IsEmpty()) {
-  {{cpp_value}} = "{{reflect_empty}}";
+  {{cpp_value}} = {{reflect_empty}};
 {% else %}
 if ({{cpp_value}}.IsEmpty()) {
 {# FIXME: should use [ReflectEmpty] instead; need to change IDL files #}
 {% if reflect_missing %}
-  {{cpp_value}} = "{{reflect_missing}}";
+  {{cpp_value}} = {{reflect_missing}};
 {% else %}
   ;
 {% endif %}
 {% endif %}
 {% for value in reflect_only_values %}
-} else if (EqualIgnoringASCIICase({{cpp_value}}, "{{value}}")) {
-  {{cpp_value}} = "{{value}}";
+} else if (atomic_{{cpp_value}} == {{value}}) {
+  {{cpp_value}} = {{value}};
 {% endfor %}
 } else {
-  {{cpp_value}} = "{{reflect_invalid}}";
+  {{cpp_value}} = {{reflect_invalid}};
 }
 {% endmacro %}
 
@@ -310,9 +318,10 @@ void {{v8_class_or_partial}}::{{attribute.camel_case_name}}ConstructorGetterCall
 
 {##############################################################################}
 {% macro attribute_setter(attribute, world_suffix) %}
+{% if not attribute.use_common_reflection_setter %}
 static void {{attribute.camel_case_name}}AttributeSetter{{world_suffix}}(
     {% if attribute.has_cross_origin_setter %}
-    v8::Local<v8::Value> v8_value, const V8CrossOriginSetterInfo& info
+    v8::Local<v8::Value> v8_value, const V8CrossOriginCallbackInfo& info
     {% elif attribute.is_data_type_property %}
     v8::Local<v8::Value> v8_value, const v8::PropertyCallbackInfo<void>& info
     {% else %}
@@ -427,7 +436,8 @@ static void {{attribute.camel_case_name}}AttributeSetter{{world_suffix}}(
     if (!IsValidEnum(cpp_value, kValidValues, base::size(kValidValues),
                      "{{attribute.enum_type}}", dummy_exception_state)) {
       ExecutionContext::ForCurrentRealm(info)->AddConsoleMessage(
-          ConsoleMessage::Create(kJSMessageSource, mojom::ConsoleMessageLevel::kWarning,
+          ConsoleMessage::Create(mojom::ConsoleMessageSource::kJavaScript,
+                                 mojom::ConsoleMessageLevel::kWarning,
                                  dummy_exception_state.Message()));
       return;
     }
@@ -464,12 +474,14 @@ static void {{attribute.camel_case_name}}AttributeSetter{{world_suffix}}(
   // [CachedAttribute]
   // Invalidate the cached value.
   V8PrivateProperty::GetSymbol(
-      isolate, "{{cpp_class}}#{{attribute.camel_case_name}}")
-      .DeleteProperty(holder, v8::Undefined(isolate));
+      isolate,
+      kPrivateProperty{{attribute.camel_case_name}})
+      .DeleteProperty(holder);
   {% endif %}
   {% endif %}{# attribute.is_put_forwards #}
   {% endfilter %}{# format_remove_duplicates #}
 }
+{% endif %}
 {% endmacro %}
 
 
@@ -490,7 +502,7 @@ void {{v8_class_or_partial}}::{{attribute.camel_case_name}}AttributeSetterCallba
   {{ runtime_timer_scope_disabled_by_default(attribute.runtime_call_stats.setter_counter) }}
   {% endif %}
 
-  {% if not attribute.is_data_type_property %}
+  {% if not attribute.is_data_type_property and not attribute.use_common_reflection_setter %}
   v8::Local<v8::Value> v8_value = info[0];
   {% endif %}
 
@@ -522,7 +534,9 @@ void {{v8_class_or_partial}}::{{attribute.camel_case_name}}AttributeSetterCallba
   {{v8_class}}::{{attribute.camel_case_name}}AttributeSetterCustom(v8_value, info);
   {% elif attribute.has_cross_origin_setter %}
   {{internal_namespace}}::{{attribute.camel_case_name}}AttributeSetter(
-      v8_value, V8CrossOriginSetterInfo(info.GetIsolate(), info.Holder()));
+      v8_value, V8CrossOriginCallbackInfo(info));
+  {% elif attribute.use_common_reflection_setter %}
+  {{attribute.cpp_setter}};
   {% else %}
   {{internal_namespace}}::{{attribute.camel_case_name}}AttributeSetter{{world_suffix}}(v8_value, info);
   {% endif %}
@@ -611,7 +625,7 @@ void {{v8_class_or_partial}}::{{attribute.camel_case_name}}AttributeSetterCallba
 
 
 {##############################################################################}
-{# This macro installs |attributes_to_install| on v8::Object/v8::Function, not on v8::ObjectTemplate/v8::FunctionTemplate. #}
+{# This macro installs |attributes_to_install| conditionally based on Exposed, SecureContext, and RuntimeEnabled checks. #}
 {% macro install_conditional_attributes(attributes_to_install) %}
 {% for exposed_test, exposed_attribute_list in attributes_to_install | groupby('exposed_test') %}
 {% filter exposed(exposed_test) %}
@@ -619,15 +633,7 @@ void {{v8_class_or_partial}}::{{attribute.camel_case_name}}AttributeSetterCallba
 {% filter secure_context(secure_context_test) %}
 {% for feature_name, attribute_list in secure_context_attribute_list | groupby('runtime_enabled_feature_name') %}
 {% filter runtime_enabled(feature_name) %}
-static const V8DOMConfiguration::AccessorConfiguration accessor_configurations[] = {
-    {% for attribute in attribute_list | sort %}
-    {{accessor_configuration(attribute) | trim | indent(4)}},
-    {% endfor %}
-};
-V8DOMConfiguration::InstallAccessors(
-    isolate, world, instance_object, prototype_object, interface_object,
-    signature, accessor_configurations,
-    base::size(accessor_configurations));
+{{install_attributes(attribute_list | sort, 'instance_object', 'prototype_object', 'interface_object')}}
 {% endfilter %}{# runtime_enabled #}
 {% endfor %}{# secure_context_attribute_list grouped by runtime_enabled #}
 {% endfilter %}{# secure_context #}
@@ -638,6 +644,23 @@ V8DOMConfiguration::InstallAccessors(
 
 
 {##############################################################################}
+{# This macro installs |attributes_to_install| unconditionally. #}
+{% macro install_attributes(attributes_to_install, instance_variable, prototype_variable, interface_variable) %}
+static constexpr V8DOMConfiguration::AccessorConfiguration
+kAccessorConfigurations[] = {
+    {% for attribute in attributes_to_install %}
+    {{accessor_configuration(attribute) | trim | indent(4)}},
+    {% endfor %}
+};
+V8DOMConfiguration::InstallAccessors(
+    isolate, world, {{instance_variable}}, {{prototype_variable}}, {{interface_variable}},
+    signature, kAccessorConfigurations,
+    base::size(kAccessorConfigurations));
+{% endmacro %}
+
+
+{##############################################################################}
+{# This macro installs |attributes_to_install| conditionally based on Exposed, SecureContext, and RuntimeEnabled checks. #}
 {% macro install_conditional_interface_objects(attributes_to_install) %}
 {% for exposed_test, exposed_attribute_list in attributes_to_install | groupby('exposed_test') %}
 {% filter exposed(exposed_test) %}
@@ -645,18 +668,26 @@ V8DOMConfiguration::InstallAccessors(
 {% filter secure_context(secure_context_test) %}
 {% for feature_name, attribute_list in secure_context_attribute_list | groupby('runtime_enabled_feature_name') %}
 {% filter runtime_enabled(feature_name) %}
-static const V8DOMConfiguration::AttributeConfiguration attribute_configurations[] = {
-    {% for attribute in attribute_list | sort %}
-    {{attribute_configuration(attribute) | trim | indent(4)}},
-    {% endfor %}
-};
-V8DOMConfiguration::InstallAttributes(
-    isolate, world, instance_object, prototype_object,
-    attribute_configurations, base::size(attribute_configurations));
+{{install_interface_objects(attribute_list | sort, 'instance_object', 'prototype_object')}}
 {% endfilter %}{# runtime_enabled #}
 {% endfor %}{# secure_context_attribute_list grouped by runtime_enabled #}
 {% endfilter %}{# secure_context #}
 {% endfor %}{# exposed_attribute_list grouped by secure_context_text #}
 {% endfilter %}{# exposed #}
 {% endfor %}{# attributes grouped by exposed_test #}
+{% endmacro %}
+
+
+{##############################################################################}
+{# This macro installs |attributes_to_install| unconditionally. #}
+{% macro install_interface_objects(attributes_to_install, instance_variable, prototype_variable) %}
+static constexpr V8DOMConfiguration::AttributeConfiguration
+kAttributeConfigurations[] = {
+    {% for attribute in attributes_to_install %}
+    {{attribute_configuration(attribute) | trim | indent(4)}},
+    {% endfor %}
+};
+V8DOMConfiguration::InstallAttributes(
+    isolate, world, {{instance_variable}}, {{prototype_variable}},
+    kAttributeConfigurations, base::size(kAttributeConfigurations));
 {% endmacro %}

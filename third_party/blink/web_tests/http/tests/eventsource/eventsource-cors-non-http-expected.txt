@@ -1,5 +1,5 @@
-CONSOLE ERROR: Access to resource at 'ftp://127.0.0.1/' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
-CONSOLE ERROR: Access to resource at '127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
+CONSOLE WARNING: Subresource requests using legacy protocols (like `ftp:`) are blocked. Please deliver web-accessible resources over modern protocols like HTTPS. See https://www.chromestatus.com/feature/5709390967472128 for details.
+CONSOLE ERROR: Not allowed to load local resource: motd
 CONSOLE ERROR: Access to resource at 'localhost:8080/' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
 CONSOLE ERROR: Access to resource at 'tel:1234' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
 Test EventSource with non-HTTP protocol schemes in the URL.

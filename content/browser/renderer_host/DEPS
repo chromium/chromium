@@ -3,7 +3,7 @@ include_rules = [
   "+components/viz/common",
   "+components/viz/host",
   "+components/viz/service",
-  "+services/ws/public",
+  "+jni",
   "+third_party/blink/public/platform/web_gesture_curve.h",
   "+third_party/zlib",
   "+ui/events/gestures/blink/web_gesture_curve_impl.h",
@@ -27,15 +27,16 @@ specific_include_rules = {
     "+content/public/browser/web_contents_delegate.h",
     "+content/public/browser/web_contents_view.h",
   ],
+  ".*_mac.*": [
+    "+content/app_shim_remote_cocoa",
+    "+components/remote_cocoa",
+  ],
   "render_process_host_impl\.cc": [
     "+content/browser/frame_host/render_frame_message_filter.h",
+    "+google_apis/gaia/gaia_switches.h",
     # TODO(crbug.com/734668): Dependencies on ozone should be removed, as content
     # embedded in mus won't be able to talk to the native ozone.
     "+ui/ozone/public/ozone_switches.h",
-  ],
-  "render_widget_host_view_cocoa\.mm": [
-    "+content/browser/frame_host",
-    "+content/public/browser/web_contents.h",
   ],
   "render_widget_host_view_mac\.mm": [
     "+content/browser/frame_host",

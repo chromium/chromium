@@ -20,8 +20,12 @@ enum InvalidateTypes {
                                            // state changed.
   INVALIDATE_TYPE_LOAD          = 1 << 2,  // The loading state has changed.
   INVALIDATE_TYPE_TITLE         = 1 << 3,  // The title changed.
+  INVALIDATE_TYPE_AUDIO         = 1 << 4,  // The tab became audible or
+                                           // inaudible.
+                                           // TODO(crbug.com/846374):
+                                           // remove this.
 
-  INVALIDATE_TYPE_ALL           = (1 << 4) - 1,
+  INVALIDATE_TYPE_ALL           = (1 << 5) - 1,
 };
 
 }

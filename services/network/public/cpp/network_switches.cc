@@ -40,18 +40,38 @@ const char kIgnoreCertificateErrorsSPKIList[] =
 // user data directory.
 const char kLogNetLog[] = "log-net-log";
 
+// Sets the granularity of events to capture in the network log. The mode can be
+// set to one of the following values:
+//   "Default"
+//   "IncludeSensitive"
+//   "Everything"
+//
+// See the enums of the corresponding name in net_log_capture_mode.h for a
+// description of their meanings.
+const char kNetLogCaptureMode[] = "net-log-capture-mode";
+
 // Causes SSL key material to be logged to the specified file for debugging
 // purposes. See
 // https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format
 // for the format.
 const char kSSLKeyLogFile[] = "ssl-key-log-file";
 
-// Don't send HTTP-Referer headers.
-const char kNoReferrers[] = "no-referrers";
-
 // Allows overriding the list of restricted ports by passing a comma-separated
 // list of port numbers.
 const char kExplicitlyAllowedPorts[] = "explicitly-allowed-ports";
+
+// Treat given (insecure) origins as secure origins. Multiple origins can be
+// supplied as a comma-separated list. For the definition of secure contexts,
+// see https://w3c.github.io/webappsec-secure-contexts/ and
+// https://www.w3.org/TR/powerful-features/#is-origin-trustworthy
+//
+// Example:
+// --unsafely-treat-insecure-origin-as-secure=http://a.test,http://b.test
+const char kUnsafelyTreatInsecureOriginAsSecure[] =
+    "unsafely-treat-insecure-origin-as-secure";
+
+// Disable OOR-CORS in child processes regardless of the base::Feature flag.
+const char kForceToDisableOutOfBlinkCors[] = "disable-oor-cors";
 
 }  // namespace switches
 

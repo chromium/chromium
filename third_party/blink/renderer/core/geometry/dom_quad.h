@@ -51,6 +51,10 @@ class CORE_EXPORT DOMQuad : public ScriptWrappable {
     ScriptWrappable::Trace(visitor);
   }
 
+  void set_needs_bounds_calculation(bool value) {
+    needs_bounds_calculation_ = value;
+  }
+
  private:
   void CalculateBounds();
 
@@ -59,10 +63,11 @@ class CORE_EXPORT DOMQuad : public ScriptWrappable {
   Member<DOMPoint> p3_;
   Member<DOMPoint> p4_;
 
-  double left_;
-  double right_;
-  double top_;
-  double bottom_;
+  double x_;
+  double y_;
+  double width_;
+  double height_;
+  bool needs_bounds_calculation_;
 };
 
 }  // namespace blink

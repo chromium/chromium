@@ -1,39 +1,36 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
-<translation id="1326317727527857210">Käytä välilehtiä muilta laitteiltasi kirjautumalla Chromeen.</translation>
+<translation id="1282031177488366470">Auta parantamaan Chromen ominaisuuksia ja suorituskykyä</translation>
+<translation id="1682483655351012182">Chrome-datan synkronointi</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1816764564654397850">Google Chromen tietosuojailmoitus</translation>
 <translation id="1863312987075920112">Käyttämällä tätä sovellusta hyväksyt Chromen <ph name="BEGIN_LINK_TOS" />käyttöehdot<ph name="END_LINK_TOS" /> ja <ph name="BEGIN_LINK_PRIVACY" />tietosuojailmoituksen<ph name="END_LINK_PRIVACY" />.</translation>
-<translation id="1984705450038014246">Chrome-datan synkronointi</translation>
 <translation id="2147651015520127414">Chrome vahvisti, että <ph name="ISSUER" /> on myöntänyt tämän sivuston varmenteen.</translation>
 <translation id="2199719347983604670">Chromen synkronoinnista saatu data</translation>
-<translation id="2334084861041072223">Copyright <ph name="YEAR" /> Google Inc. Kaikki oikeudet pidätetään.</translation>
-<translation id="2342981853652716282">Kirjaudu sisään Chromeen, jotta voit käyttää kirjanmerkkejäsi, salasanojasi ja muita asetuksiasi kaikilla laitteillasi.</translation>
 <translation id="2347208864470321755">Kun tämä ominaisuus on käytössä, Chrome tarjoaa vierailla kielillä kirjoitettujen sivujen käännöksiä Google-kääntäjän kautta. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="2441696206556358796">Anna Chromelle asetuksissa lupa käyttää kuviasi, niin kuvia voi tallentaa.</translation>
 <translation id="2576431527583832481">Chromesta tuli juuri entistä parempi! Uusi versio on saatavilla.</translation>
 <translation id="257708665678654955">Haluatko Google Chromen ehdottavan sivuston kielellä <ph name="LANGUAGE_NAME" /> kirjoitettujen sivujen kääntämistä seuraavalla kerralla?</translation>
 <translation id="3030414234702425231">Koska kirjaudut ulos verkkotunnuksen <ph name="SIGNOUT_MANAGED_DOMAIN" /> ylläpitämältä tililtä, Chrome-datasi poistetaan tältä laitteelta. Se säilyy edelleen Google-tililläsi.</translation>
-<translation id="3148434565183091099">Kirjaudu sisään Chromeen, niin voit käyttää kirjanmerkkejäsi kaikilla laitteilla.</translation>
 <translation id="3148688391461398285">Parannamme Chrome-käyttökokemustasi sijaintisi perusteella.</translation>
 <translation id="3167189358072330585">Tilisi ei toimi Google Chromen kanssa. Ota yhteyttä verkkotunnuksesi järjestelmänvalvojaan tai kirjaudu sisään tavallisella Google-tilillä.</translation>
 <translation id="3196546062792660320">Chrome säästää aikaasi tuomalla tilisi verkkoon. Voit lisätä tai poistaa tilejä asetuksissa.</translation>
 <translation id="3282568296779691940">Kirjaudu Chromeen</translation>
 <translation id="3345341804167540816">Käytä Chromea missä tahansa</translation>
 <translation id="384394811301901750">Google Chrome ei voi käyttää kameraa tällä hetkellä.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Muutoksen jälkeen synkronointi käyttää tilin <ph name="USER_EMAIL1" /> sijaan tiliä <ph name="USER_EMAIL2" />. Nykyisiä Chrome-tietojasi hallinnoi <ph name="DOMAIN" />. Tietosi poistetaan tältä laitteelta, mutta ne jäävät tilille <ph name="USER_EMAIL1" />.</translation>
 <translation id="3988789688219830639">Google Chrome ei voi käyttää kuviasi tai videoitasi. Anna käyttöoikeus kohdassa iOS-asetukset &gt; Tietosuoja &gt; Kuvat.</translation>
 <translation id="4099578267706723511">Auta parantamaan Chromea lähettämällä käyttötilastoja ja virheraportteja Googlelle.</translation>
 <translation id="415767770115540173">Saat paremman Googlen käyttökokemuksen Chromessa sijaintisi perusteella.</translation>
 <translation id="424864128008805179">Kirjaudutaanko ulos Chromesta?</translation>
-<translation id="447252321002412580">Auta parantamaan Chromen ominaisuuksia ja suorituskykyä</translation>
+<translation id="4249068189593983585">Chrome-vinkki: Voit avata välilehtien lisäasetukset painamalla pitkään ylä- tai alapalkissa olevaa Näytä välilehdet ‑painiketta.</translation>
 <translation id="4523886039239821078">Jokin laajennus kaataa Chromen. Kokeile poistaa seuraavat:</translation>
-<translation id="4615174829807303908">Olet kirjautumassa ulos verkkotunnuksen <ph name="SIGNOUT_MANAGED_DOMAIN" /> hallinnoimalta tililtä. Chrome-tietosi poistetaan tältä laitteelta, mutta tietosi säilyvät Google-tililläsi.</translation>
 <translation id="5389212809648216794">Google Chrome ei voi käyttää kameraa, koska se on toisen sovelluksen käytössä.</translation>
+<translation id="5621912349729388018"><ph name="BEGIN_LINK" />Lue Chromen päivitetyt käyttöehdot.<ph name="END_LINK" /></translation>
 <translation id="5639704535586432836">Avaa Asetukset &gt; Tietosuoja &gt; Kamera &gt; Google Chrome ja ota kamera käyttöön.</translation>
 <translation id="5642200033778930880">Google Chrome ei voi käyttää kameraa jaetussa näkymässä.</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5854621639439811139">Chrome-vinkki: Takaisin, Seuraava, Haku ja jotkin muut painikkeet löytyvät nyt näytön alareunasta.</translation>
 <translation id="6036420186814142909">Google Chrome sisältää ominaisuuksia, joiden avulla voit hallita tiedonsiirtoasi ja verkkosivujen latausnopeutta.
 <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
@@ -46,14 +43,12 @@
 <translation id="7172660552945675509">Vinkki: <ph name="BEGIN_LINK" />Siirrä Chrome Dockiin.<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome varmistaa Face ID:llä, että sinulla on lupa käyttää salasanoja.</translation>
 <translation id="7265369419224458312">Voit käyttää tietokoneella avoinna olevia välilehtiä myös täällä. Avaa Chrome tietokoneella, siirry valikkoon ja valitse Kirjaudu Chromeen…</translation>
-<translation id="728488472449859922">Ota käyttöön Google Chromen QR-lukija</translation>
 <translation id="7400722733683201933">Tietoja Google Chromesta</translation>
-<translation id="7437998757836447326">Uloskirjautuminen Chromesta</translation>
 <translation id="756809126120519699">Chrome-tiedot tyhjennetty</translation>
 <translation id="7626032353295482388">Tervetuloa Chromeen</translation>
+<translation id="7698568245838009292">Chrome pyytää kameran käyttöoikeutta</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="840168496893712993">Jokin laajennus kaataa Chromen. Kokeile poistaa laajennuksia.</translation>
 <translation id="8459495907675268833">Valitut tiedot on poistettu Chromesta ja synkronoiduilta laitteilta. Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toimintaa muista Google-palveluista, osoitteessa history.google.com.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8606668294522778825">Google Chrome voi käyttää verkkopalveluita selauskokemuksesi parantamiseen. Voit halutessasi poistaa nämä palvelut käytöstä. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
-<translation id="96145293669295453">Chrome-vinkki: Voit avata välilehtien lisäasetukset painamalla ylä- tai alapalkissa olevaa Näytä välilehdet ‑painiketta pitkään.</translation>
 </translationbundle>

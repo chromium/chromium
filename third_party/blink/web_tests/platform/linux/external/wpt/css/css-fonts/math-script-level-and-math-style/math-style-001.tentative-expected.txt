@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Initial value of math-style assert_equals: expected "inline" but got ""
+FAIL Specified values of math-style assert_equals: expected "inline" but got ""
+FAIL Inherited values of math-style assert_equals: expected "inline" but got ""
+Harness: the test ran to completion.
+

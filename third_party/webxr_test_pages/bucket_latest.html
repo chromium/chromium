@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <title>WebXR - Latest test pages redirector</title>
+  </head>
+  <body>
+    <main class='main' id='main'>
+      <script>
+        // Grab url parameters
+        let urlParams = new URLSearchParams(window.location.search);
+        let target = "index.html"
+        if(urlParams.has('target')) {
+          target = urlParams.get('target');
+        }
+
+        console.debug("Target:", target);
+
+        const revisionString = "r{{ revisionString }}";
+        let destination = "https://storage.googleapis.com/chromium-webxr-test/" + revisionString + "/" + target;
+
+        console.debug(destination);
+        window.location.replace(destination);
+      </script>
+    </main>
+  </body>
+</html>

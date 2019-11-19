@@ -6,7 +6,6 @@
 // https://w3c.github.io/orientation-sensor/#absoluteorientationsensor-interface
 
 [
-    RuntimeEnabled=Sensor,
     Constructor(optional SpatialSensorOptions sensorOptions),
     ConstructorCallWith=ExecutionContext,
     SecureContext,

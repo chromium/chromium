@@ -1,0 +1,6 @@
+Filter List Converter is a tool to convert filter list files in the text format
+to a JSON file in a format supported by the Declarative Net Request API. It can
+either output the complete extension or just the JSON ruleset.
+
+This is based on the ruleset converter module in the subresource_filter
+component.

@@ -40,10 +40,10 @@ Other section sizes:
     .strtab: 0 bytes (0 bytes)
     .symtab: 0 bytes (0 bytes)
 
-2 symbols added (+), 2 changed (~), 3 removed (-), 245 unchanged (not shown)
+2 symbols added (+), 2 changed (~), 3 removed (-), 243 unchanged (not shown)
 Added/Removed by section: .data: +2 .pak.translations: -3
 Of changed symbols, 3 grew, 4 shrank
-Number of unique symbols 256 -> 255 (-1)
+Number of unique symbols 252 -> 251 (-1)
 0 paths added, 0 removed, 2 changed
 Changed files:
   

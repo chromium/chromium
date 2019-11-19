@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div role="main">
   <div id="comboBox"
@@ -30,7 +29,7 @@
     document.querySelector('ul').style.display = 'block';
   });
 
-  async_test_after_layout_and_paint((t) => {
+  async_test((t) => {
     t.step_timeout(() => {
       assert_true(window.comboBoxInput.isFocused, 'Combo box should be focused.');
       let state1 = accessibilityController.accessibleElementById('state1');
@@ -48,7 +47,7 @@
     }, 0);
   }, 'An option with an activedescendant pointing to it is selected.');
 
-  async_test_after_layout_and_paint((t) => {
+  async_test((t) => {
     t.step_timeout(() => {
       document.querySelector('input').setAttribute('aria-activedescendant', 'state1');
 

@@ -1,3 +1,5 @@
+'use strict';
+
 const mouseMoveToCenter = (element) => {
   const clientRect = element.getBoundingClientRect();
   const centerX = (clientRect.left + clientRect.right) / 2;
@@ -10,7 +12,7 @@ const runLinkDraggingTest = (t, params) => {
   let dragStartEffect = null;
   let dragStartUriList = null;
   let dragStartTypes = null;
-  let dragSource = null;
+  let dragStartTarget = null;
 
   // Enables the Ahem font, which makes the drag image platform-independent.
   if (window.testRunner)

@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/strings/string16.h"
 #include "chrome/chrome_cleaner/constants/uws_id.h"
+#include "chrome/chrome_cleaner/os/digest_verifier.h"
 #include "chrome/chrome_cleaner/os/file_path_set.h"
 #include "components/chrome_cleaner/public/constants/result_codes.h"
 
@@ -56,7 +57,8 @@ class MainDialogAPI {
 
   // Checks if |found_pups| contains any files to clean. If so, calls
   // ConfirmCleanupWithFiles, otherwise calls NoPUPsFound.
-  void ConfirmCleanupIfNeeded(const std::vector<UwSId>& found_pups);
+  void ConfirmCleanupIfNeeded(const std::vector<UwSId>& found_pups,
+                              scoped_refptr<DigestVerifier> digest_verifier);
 
  protected:
   // Ask the user to confirm the cleanup of the PUPs in |found_pups|, which

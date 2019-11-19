@@ -39,14 +39,14 @@ public class TypeOfflineItemFilterTest {
 
     @Test
     public void testTypeFiltering() {
-        OfflineItem item1 = buildItem(OfflineItemFilter.FILTER_PAGE, false);
-        OfflineItem item2 = buildItem(OfflineItemFilter.FILTER_VIDEO, false);
-        OfflineItem item3 = buildItem(OfflineItemFilter.FILTER_AUDIO, false);
-        OfflineItem item4 = buildItem(OfflineItemFilter.FILTER_IMAGE, false);
-        OfflineItem item5 = buildItem(OfflineItemFilter.FILTER_OTHER, false);
-        OfflineItem item6 = buildItem(OfflineItemFilter.FILTER_DOCUMENT, false);
-        OfflineItem item7 = buildItem(OfflineItemFilter.FILTER_PAGE, true);
-        OfflineItem item8 = buildItem(OfflineItemFilter.FILTER_VIDEO, true);
+        OfflineItem item1 = buildItem(OfflineItemFilter.PAGE, false);
+        OfflineItem item2 = buildItem(OfflineItemFilter.VIDEO, false);
+        OfflineItem item3 = buildItem(OfflineItemFilter.AUDIO, false);
+        OfflineItem item4 = buildItem(OfflineItemFilter.IMAGE, false);
+        OfflineItem item5 = buildItem(OfflineItemFilter.OTHER, false);
+        OfflineItem item6 = buildItem(OfflineItemFilter.DOCUMENT, false);
+        OfflineItem item7 = buildItem(OfflineItemFilter.PAGE, true);
+        OfflineItem item8 = buildItem(OfflineItemFilter.VIDEO, true);
         Collection<OfflineItem> sourceItems =
                 CollectionUtil.newHashSet(item1, item2, item3, item4, item5, item6, item7, item8);
         when(mSource.getItems()).thenReturn(sourceItems);

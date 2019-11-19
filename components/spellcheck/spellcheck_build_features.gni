@@ -8,7 +8,11 @@ enable_spellcheck = !is_ios
 # Use the operating system's spellchecker rather than hunspell. This does
 # not affect the "red underline" spellchecker which can consult Google's
 # server-based spellcheck service.
-use_browser_spellchecker = is_android || is_mac
+use_browser_spellchecker = is_android || is_mac || is_win
+
+# Use hunspell. Windows is switching between OS's spellchecker and hunspell.
+# Therefore, include Windows in both build flags.
+use_renderer_spellchecker = !use_browser_spellchecker || is_win
 
 # Only Mac has a spellcheck panel.
 has_spellcheck_panel = is_mac

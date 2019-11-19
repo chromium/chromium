@@ -8,11 +8,12 @@ interface PerformanceEventTiming : PerformanceEntry {
     readonly attribute DOMHighResTimeStamp processingStart;
     readonly attribute DOMHighResTimeStamp processingEnd;
     readonly attribute boolean cancelable;
+    [Default] object toJSON();
 };
 
 [Exposed=Window]
 interface EventCounts {
-    readonly maplike<DOMString, unsigned long>;
+    readonly maplike<DOMString, unsigned long long>;
 };
 
 [Exposed=Window]

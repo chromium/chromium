@@ -2,12 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("unit_tests") {
+import("//testing/test.gni")
+
+# Defined as a separate target so that on Android tests can be launched in a
+# sub-thread instead of on the main thread to support multi-process tests.
+# Can be removed after minSdkVersion >= Q
+test("gwp_asan_unittests") {
   testonly = true
   deps = [
+    "//base/test:run_all_unittests",
     "//components/gwp_asan/common:unit_tests",
+    "//testing/gtest",
   ]
-  if (is_win || is_mac) {
+  if (is_win || is_mac || is_linux || is_android) {
     deps += [
       "//components/gwp_asan/client:unit_tests",
       "//components/gwp_asan/crash_handler:unit_tests",

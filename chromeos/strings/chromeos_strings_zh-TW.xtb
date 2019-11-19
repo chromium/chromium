@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> 會管理這個裝置，也或許可以監控你的活動。</translation>
 <translation id="1510238584712386396">啟動器</translation>
 <translation id="1734367976349034509">這個裝置受到企業管理</translation>
+<translation id="1930797645656624981">Chrome 作業系統輸入法服務</translation>
+<translation id="1979103255016296513">已超過密碼變更期限</translation>
 <translation id="2049639323467105390">這個裝置由 <ph name="DOMAIN" /> 管理。</translation>
 <translation id="2083960536266308407">在畫面上找不到任何相符內容</translation>
 <translation id="2338501278241028356">開啟藍牙即可偵測附近的裝置</translation>
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2872961005593481000">關閉</translation>
-<translation id="3147142846278915599">啟動器 (正在同步處理應用程式...)</translation>
+<translation id="3008341117444806826">更新</translation>
+<translation id="3838338534323494292">新密碼</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> 會管理這個裝置並可存取所有使用者活動，包括網頁造訪記錄、密碼和電子郵件。</translation>
+<translation id="4227825898293920515">密碼將在 <ph name="TIME" />後到期</translation>
+<translation id="4429881212383817840">Kerberos 票證即將到期</translation>
+<translation id="445059817448385655">舊密碼</translation>
+<translation id="467510802200863975">密碼不相符</translation>
 <translation id="4731797938093519117">家長存取</translation>
+<translation id="4890353053343094602">立即選擇新密碼</translation>
 <translation id="5212543919916444558">系統在你的畫面上找不到任何能提供協助的內容。
 請輕觸麥克風圖示，直接說出你的問題。</translation>
 <translation id="5222676887888702881">登出</translation>
+<translation id="5317780077021120954">儲存</translation>
+<translation id="5332948983412042822">立即選擇新密碼</translation>
 <translation id="5457599981699367932">以訪客身分瀏覽</translation>
-<translation id="54609108002486618">管理</translation>
+<translation id="54609108002486618">受管理</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="5895138241574237353">重新啟動</translation>
+<translation id="6058625436358447366">如要完成變更，請輸入你的舊密碼和新密碼</translation>
+<translation id="6106186594183574873">如要完成變更，請輸入你的舊密碼</translation>
+<translation id="6146993107019042706">如要完成變更，請輸入你的新密碼</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7690294790491645610">確認新密碼</translation>
+<translation id="808894953321890993">變更密碼</translation>
+<translation id="8747900814994928677">確認變更</translation>
+<translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>
 <translation id="9111102763498581341">解除鎖定</translation>
 </translationbundle>

@@ -14,4 +14,4 @@ public_deps = [
   "//base",
 ]
 type_mappings =
-    [ "mojo_base.mojom.ApplicationState=base::android::ApplicationState" ]
+    [ "mojo_base.mojom.ApplicationState=::base::android::ApplicationState" ]

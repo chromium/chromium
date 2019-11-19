@@ -101,7 +101,10 @@ function checkPlaceContentValuesJS(value, alignValue, justifyValue)
    element = document.createElement("div");
    document.body.appendChild(element);
    element.style.placeContent = value;
-   checkValues(element, "placeContent", "place-content", value, alignValue + ' ' + justifyValue)
+  if (alignValue == justifyValue)
+    checkValues(element, "placeContent", "place-content", value, alignValue);
+  else
+    checkValues(element, "placeContent", "place-content", value, alignValue + ' ' + justifyValue);
    checkPlaceContentValues(element, value, alignValue, justifyValue)
 }
 
@@ -116,11 +119,11 @@ function checkPlaceContentInitialValue()
 {
    element = document.createElement("div");
    document.body.appendChild(element);
-   checkValues(element, "placeContent", "place-content", "", "normal normal");
+   checkValues(element, "placeContent", "place-content", "", "normal");
    element.style.placeContent = "center";
    checkPlaceContentValues(element, "center", "center", "center");
    element.style.placeContent = "initial";
-   checkValues(element, "placeContent", "place-content", "initial", "normal normal");
+   checkValues(element, "placeContent", "place-content", "initial", "normal");
    checkPlaceContentValues(element, "initial", "normal", "normal");
 }
 
@@ -136,32 +139,32 @@ function checkPlaceContentInheritValue()
 
 
 test(function() {
-    checkValues(placeContentNormal, "placeContent", "place-content", "", "normal normal");
+    checkValues(placeContentNormal, "placeContent", "place-content", "", "normal");
     checkPlaceContentValues(placeContentNormal, "", "normal", "normal");
 }, "Test getting the Computed Value of place-content's longhand properties when setting 'normal' value through CSS.");
 
 test(function() {
-    checkValues(placeContentStart, "placeContent", "place-content", "", "start start");
+    checkValues(placeContentStart, "placeContent", "place-content", "", "start");
     checkPlaceContentValues(placeContentStart, "", "start", "start");
 }, "Test getting the Computed Value of place-content's longhand properties when setting 'start' value through CSS.");
 
 test(function() {
-    checkValues(placeContentFlexStart, "placeContent", "place-content", "", "flex-start flex-start");
+    checkValues(placeContentFlexStart, "placeContent", "place-content", "", "flex-start");
     checkPlaceContentValues(placeContentFlexStart, "", "flex-start", "flex-start");
 }, "Test getting the Computed Value of place-content's longhand properties when setting 'flex-start' value through CSS.");
 
 test(function() {
-    checkValues(placeContentEnd, "placeContent", "place-content", "", "end end");
+    checkValues(placeContentEnd, "placeContent", "place-content", "", "end");
     checkPlaceContentValues(placeContentEnd, "", "end", "end");
 }, "Test getting the Computed Value of place-content's longhand properties when setting 'end' value through CSS.");
 
 test(function() {
-    checkValues(placeContentSpaceBetween, "placeContent", "place-content", "", "space-between space-between");
+    checkValues(placeContentSpaceBetween, "placeContent", "place-content", "", "space-between");
     checkPlaceContentValues(placeContentSpaceBetween, "", "space-between", "space-between");
 }, "Test getting the Computed Value of place-content's longhand properties when setting 'space-between' value through CSS.");
 
 test(function() {
-    checkValues(placeContentStretch, "placeContent", "place-content", "", "stretch stretch");
+    checkValues(placeContentStretch, "placeContent", "place-content", "", "stretch");
     checkPlaceContentValues(placeContentStretch, "", "stretch", "stretch");
 }, "Test getting the Computed Value of place-content's longhand properties when setting 'stretch' value through CSS.");
 
@@ -181,47 +184,47 @@ test(function() {
 }, "Test getting the Computed Value of place-content's longhand properties when setting 'baseline start' value through CSS.");
 
 test(function() {
-    checkValues(placeContentAuto, "placeContent", "place-content", "", "normal normal");
+    checkValues(placeContentAuto, "placeContent", "place-content", "", "normal");
     checkPlaceContentValues(placeContentAuto, "", "normal", "normal");
 }, "Test setting '' as incorrect value through CSS.");
 
 test(function() {
-    checkValues(placeContentAuto, "placeContent", "place-content", "", "normal normal");
+    checkValues(placeContentAuto, "placeContent", "place-content", "", "normal");
     checkPlaceContentValues(placeContentAuto, "", "normal", "normal");
 }, "Test setting 'auto' as incorrect value through CSS.");
 
 test(function() {
-    checkValues(placeContentNone, "placeContent", "place-content", "", "normal normal");
+    checkValues(placeContentNone, "placeContent", "place-content", "", "normal");
     checkPlaceContentValues(placeContentNone, "", "normal", "normal");
 }, "Test setting 'none' as incorrect value through CSS.");
 
 test(function() {
-    checkValues(placeContentSafe, "placeContent", "place-content", "", "normal normal");
+    checkValues(placeContentSafe, "placeContent", "place-content", "", "normal");
     checkPlaceContentValues(placeContentSafe, "", "normal", "normal");
 }, "Test setting 'safe' as incorrect value through CSS.");
 
 test(function() {
-    checkValues(placeContentStartSafe, "placeContent", "place-content", "", "normal normal");
+    checkValues(placeContentStartSafe, "placeContent", "place-content", "", "normal");
     checkPlaceContentValues(placeContentStartSafe, "", "normal", "normal");
 }, "Test setting 'start safe' as incorrect value through CSS.");
 
 test(function() {
-    checkValues(placeContentBaseline, "placeContent", "place-content", "", "normal normal");
-    checkPlaceContentValues(placeContentBaseline, "", "normal", "normal");
-}, "Test setting 'baseline' as incorrect value through CSS.");
+    checkValues(placeContentBaseline, "placeContent", "place-content", "", "baseline start");
+    checkPlaceContentValues(placeContentBaseline, "", "baseline", "start");
+}, "Test setting 'baseline' as 'baseline start'.");
 
 test(function() {
-    checkValues(placeContentBaselineSafe, "placeContent", "place-content", "", "normal normal");
+    checkValues(placeContentBaselineSafe, "placeContent", "place-content", "", "normal");
     checkPlaceContentValues(placeContentBaselineSafe, "", "normal", "normal");
 }, "Test setting 'baseline safe' as incorrect value through CSS.");
 
 test(function() {
-    checkValues(placeContentStartBaseline, "placeContent", "place-content", "", "normal normal");
+    checkValues(placeContentStartBaseline, "placeContent", "place-content", "", "normal");
     checkPlaceContentValues(placeContentStartBaseline, "", "normal", "normal");
 }, "Test setting 'start baseline' as incorrect value through CSS.");
 
 test(function() {
-    checkValues(placeContentStartEndLeft, "placeContent", "place-content", "", "normal normal");
+    checkValues(placeContentStartEndLeft, "placeContent", "place-content", "", "normal");
     checkPlaceContentValues(placeContentStartEndLeft, "", "normal", "normal");
 }, "Test setting 'start end left' as incorrect value through CSS.");
 

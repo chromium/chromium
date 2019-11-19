@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import argparse
 import os
 import subprocess
@@ -34,14 +36,9 @@ def FindValidIdentity(identity_description):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser('codesign iOS bundles')
   parser.add_argument(
-      '--developer_dir', required=False,
-      help='Path to Xcode.')
-  parser.add_argument(
       '--identity-description', required=True,
       help='Text description used to select the code signing identity.')
   args = parser.parse_args()
-  if args.developer_dir:
-    os.environ['DEVELOPER_DIR'] = args.developer_dir
 
   for identity in FindValidIdentity(args.identity_description):
-    print identity
+    print(identity)

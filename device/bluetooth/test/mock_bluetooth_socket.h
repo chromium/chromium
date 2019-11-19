@@ -8,7 +8,7 @@
 #include <string>
 
 #include "device/bluetooth/bluetooth_socket.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "net/base/io_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

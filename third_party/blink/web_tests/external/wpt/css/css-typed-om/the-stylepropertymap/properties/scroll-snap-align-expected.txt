@@ -1,10 +1,10 @@
 This is a testharness.js-based test.
 PASS Can set 'scroll-snap-align' to CSS-wide keywords
 PASS Can set 'scroll-snap-align' to var() references
-FAIL Can set 'scroll-snap-align' to the 'none' keyword assert_equals: expected "[object CSSStyleValue]" but got "[object CSSKeywordValue]"
-FAIL Can set 'scroll-snap-align' to the 'start' keyword assert_equals: expected "[object CSSStyleValue]" but got "[object CSSKeywordValue]"
-FAIL Can set 'scroll-snap-align' to the 'end' keyword assert_equals: expected "[object CSSStyleValue]" but got "[object CSSKeywordValue]"
-FAIL Can set 'scroll-snap-align' to the 'center' keyword assert_equals: expected "[object CSSStyleValue]" but got "[object CSSKeywordValue]"
+FAIL Can set 'scroll-snap-align' to the 'none' keyword assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSKeywordValue]"
+FAIL Can set 'scroll-snap-align' to the 'start' keyword assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSKeywordValue]"
+FAIL Can set 'scroll-snap-align' to the 'end' keyword assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSKeywordValue]"
+FAIL Can set 'scroll-snap-align' to the 'center' keyword assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSKeywordValue]"
 PASS Setting 'scroll-snap-align' to a length throws TypeError
 PASS Setting 'scroll-snap-align' to a percent throws TypeError
 PASS Setting 'scroll-snap-align' to a time throws TypeError

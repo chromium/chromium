@@ -5,7 +5,7 @@
 #include "chrome/common/media_router/media_route.h"
 
 #include "chrome/common/media_router/media_sink.h"
-#include "chrome/common/media_router/media_source_helper.h"
+#include "chrome/common/media_router/media_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
@@ -20,7 +20,7 @@ namespace media_router {
 
 TEST(MediaRouteTest, TestEquals) {
   const MediaSource& media_source =
-      MediaSourceForPresentationUrl(GURL(kPresentationUrl));
+      MediaSource::ForPresentationUrl(GURL(kPresentationUrl));
   MediaRoute route1(kRouteId1, media_source, "sinkId", "Description", false,
                     false);
 

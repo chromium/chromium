@@ -9,7 +9,10 @@
 
 #include "base/macros.h"
 #include "chrome/app/chrome_main_delegate.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"
+
+class MainThreadStackSamplingProfiler;
 
 namespace safe_browsing {
 class SafeBrowsingApiHandler;
@@ -31,10 +34,13 @@ class ChromeMainDelegateAndroid : public ChromeMainDelegate {
   void ProcessExiting(const std::string& process_type) override;
 
  private:
+  std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler_;
   std::unique_ptr<content::BrowserMainRunner> browser_runner_;
 
+#if BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
   std::unique_ptr<safe_browsing::SafeBrowsingApiHandler>
       safe_browsing_api_handler_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(ChromeMainDelegateAndroid);
 };

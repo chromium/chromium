@@ -10,7 +10,8 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -33,8 +34,9 @@ class ImageProcessor : public mojom::ImageProcessor {
   // the service if pixel data is needed.
   void GetJpgImageData(GetJpgImageDataCallback callback) override;
 
-  // Returns a new pointer to the Mojo interface for this image processor.
-  mojom::ImageProcessorPtr GetPtr();
+  // Returns a new pending remote to the Mojo interface for this image
+  // processor.
+  mojo::PendingRemote<mojom::ImageProcessor> GetPendingRemote();
 
  private:
   // TODO(crbug.com/916420): tune these values.
@@ -50,7 +52,7 @@ class ImageProcessor : public mojom::ImageProcessor {
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
-  mojo::BindingSet<mojom::ImageProcessor> bindings_;
+  mojo::ReceiverSet<mojom::ImageProcessor> receivers_;
 
   FRIEND_TEST_ALL_PREFIXES(ImageProcessorTest, ImageContent);
 

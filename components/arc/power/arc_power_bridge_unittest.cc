@@ -7,11 +7,12 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
+#include "base/test/task_environment.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
-#include "components/arc/arc_bridge_service.h"
-#include "components/arc/common/power.mojom.h"
+#include "components/arc/mojom/power.mojom.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_power_instance.h"
 #include "content/public/common/service_manager_connection.h"
@@ -33,7 +34,7 @@ class ArcPowerBridgeTest : public testing::Test {
   ~ArcPowerBridgeTest() override = default;
 
   void SetUp() override {
-    chromeos::PowerManagerClient::Initialize();
+    chromeos::PowerManagerClient::InitializeFake();
     power_manager_client()->set_screen_brightness_percent(kInitialBrightness);
 
     wake_lock_provider_ = std::make_unique<device::TestWakeLockProvider>(
@@ -102,7 +103,7 @@ class ArcPowerBridgeTest : public testing::Test {
     return chromeos::FakePowerManagerClient::Get();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   service_manager::TestConnectorFactory connector_factory_;
 
@@ -128,12 +129,12 @@ TEST_F(ArcPowerBridgeTest, SuspendAndResume) {
   EXPECT_EQ(1, power_instance_->num_suspend());
   EXPECT_EQ(0, power_instance_->num_resume());
   EXPECT_EQ(1,
-            power_manager_client()->GetNumPendingSuspendReadinessCallbacks());
+            power_manager_client()->num_pending_suspend_readiness_callbacks());
 
   // Simulate Android acknowledging that it's ready for the system to suspend.
   power_instance_->GetSuspendCallback().Run();
   EXPECT_EQ(0,
-            power_manager_client()->GetNumPendingSuspendReadinessCallbacks());
+            power_manager_client()->num_pending_suspend_readiness_callbacks());
 
   power_manager_client()->SendSuspendDone();
   EXPECT_EQ(1, power_instance_->num_suspend());
@@ -144,7 +145,7 @@ TEST_F(ArcPowerBridgeTest, SuspendAndResume) {
   power_manager_client()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
   EXPECT_EQ(0,
-            power_manager_client()->GetNumPendingSuspendReadinessCallbacks());
+            power_manager_client()->num_pending_suspend_readiness_callbacks());
   power_manager_client()->SendSuspendDone();
 }
 
@@ -188,6 +189,20 @@ TEST_F(ArcPowerBridgeTest, ScreenBrightness) {
   EXPECT_DOUBLE_EQ(kUpdatedBrightness, power_instance_->screen_brightness());
   ASSERT_TRUE(power_bridge_->TriggerNotifyBrightnessTimerForTesting());
   EXPECT_DOUBLE_EQ(kAndroidBrightness, power_instance_->screen_brightness());
+}
+
+TEST_F(ArcPowerBridgeTest, PowerSupplyInfoChanged) {
+  base::Optional<power_manager::PowerSupplyProperties> prop =
+      power_manager_client()->GetLastStatus();
+  ASSERT_TRUE(prop.has_value());
+  prop->set_battery_state(power_manager::PowerSupplyProperties::FULL);
+  power_manager_client()->UpdatePowerProperties(prop.value());
+
+  // Check that Chrome OS power changes are passed to Android.
+  const int prev_call_count = power_instance_->num_power_supply_info();
+  prop->set_battery_state(power_manager::PowerSupplyProperties::DISCHARGING);
+  power_manager_client()->UpdatePowerProperties(prop.value());
+  EXPECT_EQ(1 + prev_call_count, power_instance_->num_power_supply_info());
 }
 
 TEST_F(ArcPowerBridgeTest, DifferentWakeLocks) {

@@ -2,25 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
-
-'use strict';
+import {FittingType} from './pdf_fitting_type.js';
 
 /**
  * Parses the open pdf parameters passed in the url to set initial viewport
  * settings for opening the pdf.
  */
-window.OpenPDFParamsParser = class {
+export class OpenPdfParamsParser {
   /**
-   * @param {function(Object)} postMessageCallback
+   * @param {function(string):void} getNamedDestinationCallback
    *     Function called to fetch information for a named destination.
    */
-  constructor(postMessageCallback) {
+  constructor(getNamedDestinationCallback) {
     /** @private {!Array<!Object>} */
     this.outstandingRequests_ = [];
 
-    /** @private {!function(Object)} */
-    this.postMessageCallback_ = postMessageCallback;
+    /** @private {!function(string):void} */
+    this.getNamedDestinationCallback_ = getNamedDestinationCallback;
   }
 
   /**
@@ -183,10 +181,7 @@ window.OpenPDFParamsParser = class {
 
     if (params.page === undefined && 'nameddest' in urlParams) {
       this.outstandingRequests_.push({callback: callback, params: params});
-      this.postMessageCallback_({
-        type: 'getNamedDestination',
-        namedDestination: urlParams['nameddest']
-      });
+      this.getNamedDestinationCallback_(urlParams['nameddest']);
     } else {
       callback(params);
     }
@@ -206,6 +201,4 @@ window.OpenPDFParamsParser = class {
     }
     outstandingRequest.callback(outstandingRequest.params);
   }
-};
-
-}());
+}

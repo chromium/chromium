@@ -11,6 +11,8 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "libassistant/shared/public/platform_system.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "services/device/public/mojom/battery_status.mojom.h"
 
@@ -26,7 +28,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) SystemProviderImpl
   // platform power manager provider is available.
   SystemProviderImpl(
       std::unique_ptr<PowerManagerProviderImpl> power_manager_provider,
-      device::mojom::BatteryMonitorPtr battery_monitor);
+      mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor);
   ~SystemProviderImpl() override;
 
   // assistant_client::SystemProvider implementation:
@@ -45,7 +47,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) SystemProviderImpl
 
   std::unique_ptr<PowerManagerProviderImpl> power_manager_provider_;
 
-  device::mojom::BatteryMonitorPtr battery_monitor_;
+  mojo::Remote<device::mojom::BatteryMonitor> battery_monitor_;
   device::mojom::BatteryStatusPtr current_battery_status_;
 
   DISALLOW_COPY_AND_ASSIGN(SystemProviderImpl);

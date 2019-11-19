@@ -176,7 +176,7 @@ metricsBase.recordEnum = (name, value, opt_validValues) => {
     'metricName': metrics.convertName_(name),
     'type': chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
     'min': 1,
-    'max': boundaryValue,
+    'max': boundaryValue - 1,
     'buckets': boundaryValue
   };
   metrics.call_('recordValue', [metricDescr, index]);

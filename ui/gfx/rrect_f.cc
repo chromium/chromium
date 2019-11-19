@@ -12,6 +12,24 @@
 
 namespace gfx {
 
+// Sets all x radii to x_rad, and all y radii to y_rad. If one of x_rad or
+// y_rad are zero, sets ALL radii to zero.
+RRectF::RRectF(float x,
+               float y,
+               float width,
+               float height,
+               float x_rad,
+               float y_rad)
+    : skrrect_(SkRRect::MakeRectXY(SkRect::MakeXYWH(x, y, width, height),
+                                   x_rad,
+                                   y_rad)) {
+  if (IsEmpty()) {
+    // Make sure that empty rects are created fully empty, not with some
+    // non-zero dimensions.
+    skrrect_ = SkRRect::MakeEmpty();
+  }
+}
+
 // Directly sets all four corners.
 RRectF::RRectF(float x,
                float y,
@@ -24,11 +42,19 @@ RRectF::RRectF(float x,
                float lower_right_x,
                float lower_right_y,
                float lower_left_x,
-               float lower_left_y)
-    : RRectF(x, y, width, height, upper_left_x, upper_left_y) {
-  SetCornerRadii(RRectF::Corner::kUpperRight, upper_right_x, upper_right_y);
-  SetCornerRadii(RRectF::Corner::kLowerRight, lower_right_x, lower_right_y);
-  SetCornerRadii(RRectF::Corner::kLowerLeft, lower_left_x, lower_left_y);
+               float lower_left_y) {
+  SkVector radii[4] = {
+      {upper_left_x, upper_left_y},
+      {upper_right_x, upper_right_y},
+      {lower_right_x, lower_right_y},
+      {lower_left_x, lower_left_y},
+  };
+  skrrect_.setRectRadii(SkRect::MakeXYWH(x, y, width, height), radii);
+  if (IsEmpty()) {
+    // Make sure that empty rects are created fully empty, not with some
+    // non-zero dimensions.
+    skrrect_ = SkRRect::MakeEmpty();
+  }
 }
 
 gfx::Vector2dF RRectF::GetSimpleRadii() const {
@@ -91,6 +117,15 @@ void RRectF::SetCornerRadii(Corner corner, float x_rad, float y_rad) {
 }
 
 void RRectF::Scale(float x_scale, float y_scale) {
+  if (IsEmpty()) {
+    // SkRRect doesn't support scaling of empty rects.
+    return;
+  }
+  if (!x_scale || !y_scale) {
+    // SkRRect doesn't support scaling TO an empty rect.
+    skrrect_ = SkRRect::MakeEmpty();
+    return;
+  }
   SkMatrix scale = SkMatrix::MakeScale(x_scale, y_scale);
   SkRRect result;
   bool success = skrrect_.transform(scale, &result);

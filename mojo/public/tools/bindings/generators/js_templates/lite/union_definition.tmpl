@@ -1,3 +1,6 @@
+{%  if generate_closure_exports -%}
+goog.provide('{{module.namespace}}.{{union.name}}');
+{% endif %}
 
 mojo.internal.Union(
     {{module.namespace}}.{{union.name}}Spec.$, '{{union.name}}',

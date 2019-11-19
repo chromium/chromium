@@ -31,8 +31,7 @@
 
 namespace crashpad {
 
-MinidumpModuleCodeViewRecordWriter::~MinidumpModuleCodeViewRecordWriter() {
-}
+MinidumpModuleCodeViewRecordWriter::~MinidumpModuleCodeViewRecordWriter() {}
 
 namespace internal {
 
@@ -45,8 +44,7 @@ MinidumpModuleCodeViewRecordPDBLinkWriter<
 
 template <typename CodeViewRecordType>
 MinidumpModuleCodeViewRecordPDBLinkWriter<
-    CodeViewRecordType>::~MinidumpModuleCodeViewRecordPDBLinkWriter() {
-}
+    CodeViewRecordType>::~MinidumpModuleCodeViewRecordPDBLinkWriter() {}
 
 template <typename CodeViewRecordType>
 size_t
@@ -82,8 +80,7 @@ template class internal::MinidumpModuleCodeViewRecordPDBLinkWriter<
     CodeViewRecordPDB20>;
 
 MinidumpModuleCodeViewRecordPDB20Writer::
-    ~MinidumpModuleCodeViewRecordPDB20Writer() {
-}
+    ~MinidumpModuleCodeViewRecordPDB20Writer() {}
 
 void MinidumpModuleCodeViewRecordPDB20Writer::SetTimestampAndAge(
     time_t timestamp,
@@ -100,8 +97,7 @@ template class internal::MinidumpModuleCodeViewRecordPDBLinkWriter<
     CodeViewRecordPDB70>;
 
 MinidumpModuleCodeViewRecordPDB70Writer::
-    ~MinidumpModuleCodeViewRecordPDB70Writer() {
-}
+    ~MinidumpModuleCodeViewRecordPDB70Writer() {}
 
 void MinidumpModuleCodeViewRecordPDB70Writer::InitializeFromSnapshot(
     const ModuleSnapshot* module_snapshot) {
@@ -115,15 +111,52 @@ void MinidumpModuleCodeViewRecordPDB70Writer::InitializeFromSnapshot(
   SetUUIDAndAge(uuid, age);
 }
 
+MinidumpModuleCodeViewRecordBuildIDWriter::
+    MinidumpModuleCodeViewRecordBuildIDWriter()
+    : MinidumpModuleCodeViewRecordWriter(), build_id_() {}
+
+MinidumpModuleCodeViewRecordBuildIDWriter::
+    ~MinidumpModuleCodeViewRecordBuildIDWriter() {}
+
+size_t MinidumpModuleCodeViewRecordBuildIDWriter::SizeOfObject() {
+  DCHECK_GE(state(), kStateFrozen);
+  return offsetof(CodeViewRecordBuildID, build_id) + build_id_.size();
+}
+
+void MinidumpModuleCodeViewRecordBuildIDWriter::SetBuildID(
+    const std::vector<uint8_t>& build_id) {
+  DCHECK_EQ(state(), kStateMutable);
+  build_id_ = build_id;
+}
+
+bool MinidumpModuleCodeViewRecordBuildIDWriter::WriteObject(
+    FileWriterInterface* file_writer) {
+  DCHECK_EQ(state(), kStateWritable);
+
+  CodeViewRecordBuildID cv;
+  cv.signature = CodeViewRecordBuildID::kSignature;
+
+  WritableIoVec iov;
+  iov.iov_base = &cv;
+  iov.iov_len = offsetof(CodeViewRecordBuildID, build_id);
+  std::vector<WritableIoVec> iovecs(1, iov);
+
+  if (!build_id_.empty()) {
+    iov.iov_base = build_id_.data();
+    iov.iov_len = build_id_.size();
+    iovecs.push_back(iov);
+  }
+
+  return file_writer->WriteIoVec(&iovecs);
+}
+
 MinidumpModuleMiscDebugRecordWriter::MinidumpModuleMiscDebugRecordWriter()
     : internal::MinidumpWritable(),
       image_debug_misc_(),
       data_(),
-      data_utf16_() {
-}
+      data_utf16_() {}
 
-MinidumpModuleMiscDebugRecordWriter::~MinidumpModuleMiscDebugRecordWriter() {
-}
+MinidumpModuleMiscDebugRecordWriter::~MinidumpModuleMiscDebugRecordWriter() {}
 
 void MinidumpModuleMiscDebugRecordWriter::SetData(const std::string& data,
                                                   bool utf16) {
@@ -203,8 +236,7 @@ MinidumpModuleWriter::MinidumpModuleWriter()
   module_.VersionInfo.dwStrucVersion = VS_FFI_STRUCVERSION;
 }
 
-MinidumpModuleWriter::~MinidumpModuleWriter() {
-}
+MinidumpModuleWriter::~MinidumpModuleWriter() {}
 
 void MinidumpModuleWriter::InitializeFromSnapshot(
     const ModuleSnapshot* module_snapshot) {
@@ -242,9 +274,21 @@ void MinidumpModuleWriter::InitializeFromSnapshot(
   }
   SetFileTypeAndSubtype(file_type, VFT2_UNKNOWN);
 
-  auto codeview_record =
-      std::make_unique<MinidumpModuleCodeViewRecordPDB70Writer>();
-  codeview_record->InitializeFromSnapshot(module_snapshot);
+  auto build_id = module_snapshot->BuildID();
+
+  std::unique_ptr<MinidumpModuleCodeViewRecordWriter> codeview_record;
+  if (!build_id.empty()) {
+    auto cv_record_build_id =
+        std::make_unique<MinidumpModuleCodeViewRecordBuildIDWriter>();
+    cv_record_build_id->SetBuildID(build_id);
+    codeview_record = std::move(cv_record_build_id);
+  } else {
+    auto cv_record_pdb70 =
+        std::make_unique<MinidumpModuleCodeViewRecordPDB70Writer>();
+    cv_record_pdb70->InitializeFromSnapshot(module_snapshot);
+    codeview_record = std::move(cv_record_pdb70);
+  }
+
   SetCodeViewRecord(std::move(codeview_record));
 }
 
@@ -372,11 +416,9 @@ bool MinidumpModuleWriter::WriteObject(FileWriterInterface* file_writer) {
 }
 
 MinidumpModuleListWriter::MinidumpModuleListWriter()
-    : MinidumpStreamWriter(), modules_(), module_list_base_() {
-}
+    : MinidumpStreamWriter(), modules_(), module_list_base_() {}
 
-MinidumpModuleListWriter::~MinidumpModuleListWriter() {
-}
+MinidumpModuleListWriter::~MinidumpModuleListWriter() {}
 
 void MinidumpModuleListWriter::InitializeFromSnapshot(
     const std::vector<const ModuleSnapshot*>& module_snapshots) {

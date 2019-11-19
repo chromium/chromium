@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <utility>
 
@@ -12,77 +13,21 @@
 #include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
+#include "components/password_manager/core/browser/multi_store_form_fetcher.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/statistics_table.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 
 using autofill::PasswordForm;
 
-// Shorten the name to spare line breaks. The code provides enough context
-// already.
 using Logger = autofill::SavePasswordProgressLogger;
 
 namespace password_manager {
 
 namespace {
-
-// Splits |store_results| into a vector of non-federated and federated matches.
-// Returns the federated matches and keeps the non-federated in |store_results|.
-std::vector<std::unique_ptr<PasswordForm>> SplitFederatedMatches(
-    std::vector<std::unique_ptr<PasswordForm>>* store_results) {
-  const auto first_federated = std::partition(
-      store_results->begin(), store_results->end(),
-      [](const std::unique_ptr<PasswordForm>& form) {
-        return form->federation_origin.opaque();  // False means federated.
-      });
-
-  // Move out federated matches.
-  std::vector<std::unique_ptr<PasswordForm>> federated_matches;
-  federated_matches.resize(store_results->end() - first_federated);
-  std::move(first_federated, store_results->end(), federated_matches.begin());
-
-  store_results->erase(first_federated, store_results->end());
-  return federated_matches;
-}
-
-void SplitSuppressedFormsAndAssignTo(
-    const PasswordStore::FormDigest& observed_form_digest,
-    std::vector<std::unique_ptr<PasswordForm>> suppressed_forms,
-    std::vector<std::unique_ptr<PasswordForm>>* same_origin_https_forms,
-    std::vector<std::unique_ptr<PasswordForm>>* psl_matching_forms,
-    std::vector<std::unique_ptr<PasswordForm>>* same_organization_name_forms) {
-  DCHECK(same_origin_https_forms);
-  DCHECK(psl_matching_forms);
-  DCHECK(same_organization_name_forms);
-  same_origin_https_forms->clear();
-  psl_matching_forms->clear();
-  same_organization_name_forms->clear();
-  for (auto& form : suppressed_forms) {
-    switch (GetMatchResult(*form, observed_form_digest)) {
-      case MatchResult::PSL_MATCH:
-        psl_matching_forms->push_back(std::move(form));
-        break;
-      case MatchResult::NO_MATCH:
-        if (form->origin.host() != observed_form_digest.origin.host()) {
-          same_organization_name_forms->push_back(std::move(form));
-        } else if (form->origin.SchemeIs(url::kHttpsScheme) &&
-                   observed_form_digest.origin.SchemeIs(url::kHttpScheme)) {
-          same_origin_https_forms->push_back(std::move(form));
-        } else {
-          // HTTP form suppressed on HTTPS observed page: The HTTP->HTTPS
-          // migration can leave tons of such HTTP forms behind, ignore these.
-        }
-        break;
-      case MatchResult::EXACT_MATCH:
-      case MatchResult::FEDERATED_MATCH:
-      case MatchResult::FEDERATED_PSL_MATCH:
-        NOTREACHED() << "Suppressed match cannot be exact or federated.";
-        break;
-    }
-  }
-}
 
 // Create a vector of const PasswordForm from a vector of
 // unique_ptr<PasswordForm> by applying get() item-wise.
@@ -109,27 +54,39 @@ std::vector<std::unique_ptr<PasswordForm>> MakeCopies(
 
 }  // namespace
 
+// static
+std::unique_ptr<FormFetcherImpl> FormFetcherImpl::CreateFormFetcherImpl(
+    PasswordStore::FormDigest form_digest,
+    const PasswordManagerClient* client,
+    bool should_migrate_http_passwords) {
+  return base::FeatureList::IsEnabled(
+             password_manager::features::kEnablePasswordsAccountStorage)
+             ? std::make_unique<MultiStoreFormFetcher>(
+                   std::move(form_digest), client,
+                   should_migrate_http_passwords)
+             : std::make_unique<FormFetcherImpl>(std::move(form_digest), client,
+                                                 should_migrate_http_passwords);
+}
+
 FormFetcherImpl::FormFetcherImpl(PasswordStore::FormDigest form_digest,
                                  const PasswordManagerClient* client,
-                                 bool should_migrate_http_passwords,
-                                 bool should_query_suppressed_forms)
+                                 bool should_migrate_http_passwords)
     : form_digest_(std::move(form_digest)),
       client_(client),
-      should_migrate_http_passwords_(should_migrate_http_passwords),
-      should_query_suppressed_forms_(should_query_suppressed_forms) {}
+      should_migrate_http_passwords_(should_migrate_http_passwords) {}
 
 FormFetcherImpl::~FormFetcherImpl() = default;
 
 void FormFetcherImpl::AddConsumer(FormFetcher::Consumer* consumer) {
   DCHECK(consumer);
-  consumers_.insert(consumer);
+  consumers_.AddObserver(consumer);
   if (state_ == State::NOT_WAITING)
-    consumer->ProcessMatches(weak_non_federated_, filtered_count_);
+    consumer->OnFetchCompleted();
 }
 
 void FormFetcherImpl::RemoveConsumer(FormFetcher::Consumer* consumer) {
-  size_t removed_consumers = consumers_.erase(consumer);
-  DCHECK_EQ(1u, removed_consumers);
+  DCHECK(consumers_.HasObserver(consumer));
+  consumers_.RemoveObserver(consumer);
 }
 
 FormFetcherImpl::State FormFetcherImpl::GetState() const {
@@ -141,33 +98,31 @@ const std::vector<InteractionsStats>& FormFetcherImpl::GetInteractionsStats()
   return interactions_stats_;
 }
 
-const std::vector<const PasswordForm*>&
-FormFetcherImpl::GetNonFederatedMatches() const {
-  return weak_non_federated_;
-}
-
-const std::vector<const PasswordForm*>& FormFetcherImpl::GetFederatedMatches()
+std::vector<const PasswordForm*> FormFetcherImpl::GetNonFederatedMatches()
     const {
-  return weak_federated_;
+  return MakeWeakCopies(non_federated_);
 }
 
-const std::vector<const PasswordForm*>&
-FormFetcherImpl::GetSuppressedHTTPSForms() const {
-  return weak_suppressed_same_origin_https_forms_;
+std::vector<const PasswordForm*> FormFetcherImpl::GetFederatedMatches() const {
+  return MakeWeakCopies(federated_);
 }
 
-const std::vector<const PasswordForm*>&
-FormFetcherImpl::GetSuppressedPSLMatchingForms() const {
-  return weak_suppressed_psl_matching_forms_;
+bool FormFetcherImpl::IsBlacklisted() const {
+  return is_blacklisted_;
 }
 
-const std::vector<const PasswordForm*>&
-FormFetcherImpl::GetSuppressedSameOrganizationNameForms() const {
-  return weak_suppressed_same_organization_name_forms_;
+const std::vector<const PasswordForm*>& FormFetcherImpl::GetAllRelevantMatches()
+    const {
+  return non_federated_same_scheme_;
 }
 
-bool FormFetcherImpl::DidCompleteQueryingSuppressedForms() const {
-  return did_complete_querying_suppressed_forms_;
+const std::vector<const PasswordForm*>& FormFetcherImpl::GetBestMatches()
+    const {
+  return best_matches_;
+}
+
+const PasswordForm* FormFetcherImpl::GetPreferredMatch() const {
+  return preferred_match_;
 }
 
 void FormFetcherImpl::OnGetPasswordStoreResults(
@@ -190,17 +145,6 @@ void FormFetcherImpl::OnGetPasswordStoreResults(
     logger->LogNumber(Logger::STRING_NUMBER_RESULTS, results.size());
   }
 
-  // Kick off the discovery of suppressed credentials, regardless of whether
-  // there are some precisely matching |results|. These results are used only
-  // for recording metrics at PasswordFormManager desctruction time, this is why
-  // they are requested this late.
-  if (should_query_suppressed_forms_ &&
-      form_digest_.scheme == PasswordForm::SCHEME_HTML &&
-      GURL(form_digest_.signon_realm).SchemeIsHTTPOrHTTPS()) {
-    suppressed_form_fetcher_ = std::make_unique<SuppressedFormFetcher>(
-        form_digest_.signon_realm, client_, this);
-  }
-
   if (should_migrate_http_passwords_ && results.empty() &&
       form_digest_.origin.SchemeIs(url::kHttpsScheme)) {
     http_migrator_ = std::make_unique<HttpPasswordStoreMigrator>(
@@ -219,23 +163,8 @@ void FormFetcherImpl::OnGetSiteStatistics(
 }
 
 void FormFetcherImpl::ProcessMigratedForms(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> forms) {
+    std::vector<std::unique_ptr<PasswordForm>> forms) {
   ProcessPasswordStoreResults(std::move(forms));
-}
-
-void FormFetcherImpl::ProcessSuppressedForms(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> forms) {
-  did_complete_querying_suppressed_forms_ = true;
-  SplitSuppressedFormsAndAssignTo(form_digest_, std::move(forms),
-                                  &suppressed_same_origin_https_forms_,
-                                  &suppressed_psl_matching_forms_,
-                                  &suppressed_same_organization_name_forms_);
-  weak_suppressed_same_origin_https_forms_ =
-      MakeWeakCopies(suppressed_same_origin_https_forms_);
-  weak_suppressed_psl_matching_forms_ =
-      MakeWeakCopies(suppressed_psl_matching_forms_);
-  weak_suppressed_same_organization_name_forms_ =
-      MakeWeakCopies(suppressed_same_organization_name_forms_);
 }
 
 void FormFetcherImpl::Fetch() {
@@ -255,7 +184,7 @@ void FormFetcherImpl::Fetch() {
     return;
   }
 
-  PasswordStore* password_store = client_->GetPasswordStore();
+  PasswordStore* password_store = client_->GetProfilePasswordStore();
   if (!password_store) {
     if (logger)
       logger->LogMessage(Logger::STRING_NO_STORE);
@@ -276,8 +205,7 @@ void FormFetcherImpl::Fetch() {
 std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
   // Create the copy without the "HTTPS migration" activated. If it was needed,
   // then it was done by |this| already.
-  auto result = std::make_unique<FormFetcherImpl>(
-      form_digest_, client_, false, should_query_suppressed_forms_);
+  auto result = std::make_unique<FormFetcherImpl>(form_digest_, client_, false);
 
   if (state_ != State::NOT_WAITING) {
     // There are no store results to copy, trigger a Fetch on the clone instead.
@@ -285,48 +213,53 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
     return std::move(result);
   }
 
-  result->non_federated_ = MakeCopies(this->non_federated_);
-  result->federated_ = MakeCopies(this->federated_);
-  result->interactions_stats_ = this->interactions_stats_;
-  result->suppressed_same_origin_https_forms_ =
-      MakeCopies(this->suppressed_same_origin_https_forms_);
-  result->suppressed_psl_matching_forms_ =
-      MakeCopies(this->suppressed_psl_matching_forms_);
-  result->suppressed_same_organization_name_forms_ =
-      MakeCopies(this->suppressed_same_organization_name_forms_);
+  result->non_federated_ = MakeCopies(non_federated_);
+  result->federated_ = MakeCopies(federated_);
+  result->is_blacklisted_ = is_blacklisted_;
+  password_manager_util::FindBestMatches(
+      MakeWeakCopies(result->non_federated_), form_digest_.scheme,
+      sort_matches_by_date_last_used_, &result->non_federated_same_scheme_,
+      &result->best_matches_, &result->preferred_match_);
 
-  result->weak_non_federated_ = MakeWeakCopies(result->non_federated_);
-  result->weak_federated_ = MakeWeakCopies(result->federated_);
-  result->weak_suppressed_same_origin_https_forms_ =
-      MakeWeakCopies(result->suppressed_same_origin_https_forms_);
-  result->weak_suppressed_psl_matching_forms_ =
-      MakeWeakCopies(result->suppressed_psl_matching_forms_);
-  result->weak_suppressed_same_organization_name_forms_ =
-      MakeWeakCopies(result->suppressed_same_organization_name_forms_);
-
-  result->filtered_count_ = this->filtered_count_;
-  result->state_ = this->state_;
-  result->need_to_refetch_ = this->need_to_refetch_;
+  result->interactions_stats_ = interactions_stats_;
+  result->state_ = state_;
+  result->need_to_refetch_ = need_to_refetch_;
 
   return std::move(result);
 }
 
 void FormFetcherImpl::ProcessPasswordStoreResults(
-    std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
+    std::vector<std::unique_ptr<PasswordForm>> results) {
   DCHECK_EQ(State::WAITING, state_);
   state_ = State::NOT_WAITING;
-  federated_ = SplitFederatedMatches(&results);
-  non_federated_ = std::move(results);
+  SplitResults(std::move(results));
 
-  const size_t original_count = non_federated_.size();
+  password_manager_util::FindBestMatches(
+      MakeWeakCopies(non_federated_), form_digest_.scheme,
+      sort_matches_by_date_last_used_, &non_federated_same_scheme_,
+      &best_matches_, &preferred_match_);
 
-  filtered_count_ = original_count - non_federated_.size();
+  for (auto& consumer : consumers_)
+    consumer.OnFetchCompleted();
+}
 
-  weak_non_federated_ = MakeWeakCopies(non_federated_);
-  weak_federated_ = MakeWeakCopies(federated_);
-
-  for (FormFetcher::Consumer* consumer : consumers_)
-    consumer->ProcessMatches(weak_non_federated_, filtered_count_);
+void FormFetcherImpl::SplitResults(
+    std::vector<std::unique_ptr<PasswordForm>> forms) {
+  is_blacklisted_ = false;
+  non_federated_.clear();
+  federated_.clear();
+  for (auto& form : forms) {
+    if (form->blacklisted_by_user) {
+      // Ignore PSL matches for blacklisted entries.
+      if (!form->is_public_suffix_match) {
+        is_blacklisted_ = true;
+      }
+    } else if (form->IsFederatedCredential()) {
+      federated_.push_back(std::move(form));
+    } else {
+      non_federated_.push_back(std::move(form));
+    }
+  }
 }
 
 }  // namespace password_manager

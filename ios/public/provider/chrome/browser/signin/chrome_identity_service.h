@@ -25,6 +25,7 @@
 @class UIApplication;
 @class UIImage;
 @class UINavigationController;
+@class UIViewController;
 
 namespace ios {
 
@@ -45,12 +46,22 @@ typedef void (^ForgetIdentityCallback)(NSError* error);
 typedef void (^GetAvatarCallback)(UIImage* avatar);
 
 // Callback passed to method |GetHostedDomainForIdentity()|.
+// |hosted_domain|:
+//   + nil, if error.
+//   + an empty string, if this is a consumer account (e.g. foo@gmail.com).
+//   + non-empty string, if the hosted domain was fetched and this account
+//     has a hosted domain.
+// |error|: Error if failed to fetch the identity profile.
 typedef void (^GetHostedDomainCallback)(NSString* hosted_domain,
                                         NSError* error);
 
 // Callback passed to method |HandleMDMNotification()|. |is_blocked| is true if
 // the device is blocked.
 typedef void (^MDMStatusCallback)(bool is_blocked);
+
+// Callback to dismiss ASM view. No-op, if this block is more than once.
+// |animated| the view will be dismissed with animation if the value is YES.
+typedef void (^DismissASMViewControllerBlock)(BOOL animated);
 
 // Opaque type representing the MDM (Mobile Device Management) status of the
 // device. Checking for equality is guaranteed to be valid.
@@ -99,16 +110,27 @@ class ChromeIdentityService {
   // Dismisses all the dialogs created by the abstracted flows.
   virtual void DismissDialogs();
 
-  // Returns a new account details controller to present. A cancel button is
-  // present as leading navigation item.
-  virtual UINavigationController* CreateAccountDetailsController(
+  // Presents a new Account Details view.
+  // |identity| the identity used to present the view.
+  // |view_controller| the view to present the details view.
+  // |animated| the view is presented with animation if YES.
+  // Returns a block to dismiss the presented view. This block can be ignored if
+  // not needed.
+  virtual ios::DismissASMViewControllerBlock PresentAccountDetailsController(
       ChromeIdentity* identity,
-      id<ChromeIdentityBrowserOpener> browser_opener);
+      UIViewController* view_controller,
+      BOOL animated);
 
-  // Returns a new Web and App Setting Details controller to present.
-  virtual UINavigationController* CreateWebAndAppSettingDetailsController(
-      ChromeIdentity* identity,
-      id<ChromeIdentityBrowserOpener> browser_opener);
+  // Presents a new Web and App Setting Details view.
+  // |identity| the identity used to present the view.
+  // |view_controller| the view to present the setting details.
+  // |animated| the view is presented with animation if YES.
+  // Returns a block to dismiss the presented view. This block can be ignored if
+  // not needed.
+  virtual DismissASMViewControllerBlock
+  PresentWebAndAppSettingDetailsController(ChromeIdentity* identity,
+                                           UIViewController* view_controller,
+                                           BOOL animated);
 
   // Returns a new ChromeIdentityInteractionManager with |delegate| as its
   // delegate.
@@ -167,7 +189,7 @@ class ChromeIdentityService {
 
   // Fetches the profile avatar, from the cache or the network.
   // For high resolution iPads, returns large images (200 x 200) to avoid
-  // pixelization. Calls back on the main thread.
+  // pixelization. Calls back on the main thread. |callback| may be nil.
   virtual void GetAvatarForIdentity(ChromeIdentity* identity,
                                     GetAvatarCallback callback);
 
@@ -179,6 +201,14 @@ class ChromeIdentityService {
   // back on the main thread.
   virtual void GetHostedDomainForIdentity(ChromeIdentity* identity,
                                           GetHostedDomainCallback callback);
+
+  // Returns the identity hosted domain, for the cache only. This method
+  // returns:
+  //   + nil, if the hosted domain value was yet not fetched from the server.
+  //   + an empty string, if this is a consumer account (e.g. foo@gmail.com).
+  //   + non-empty string, if the hosted domain was fetched and this account
+  //     has a hosted domain.
+  virtual NSString* GetCachedHostedDomainForIdentity(ChromeIdentity* identity);
 
   // Retuns the MDM device status associated with |user_info|.
   virtual MDMDeviceStatus GetMDMDeviceStatus(NSDictionary* user_info);

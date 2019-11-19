@@ -232,7 +232,7 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
   Delegate* delegate_;
 
   base::WeakPtr<BidirectionalStream> weak_this_;
-  base::WeakPtrFactory<BidirectionalStream> weak_factory_;
+  base::WeakPtrFactory<BidirectionalStream> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BidirectionalStream);
 };

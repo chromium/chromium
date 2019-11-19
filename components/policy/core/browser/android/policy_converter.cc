@@ -15,12 +15,12 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/policy/android/jni_headers/PolicyConverter_jni.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
-#include "jni/PolicyConverter_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaRef;
@@ -31,8 +31,9 @@ namespace android {
 PolicyConverter::PolicyConverter(const Schema* policy_schema)
     : policy_schema_(policy_schema), policy_bundle_(new PolicyBundle) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_obj_.Reset(env, Java_PolicyConverter_create(
-                           env, reinterpret_cast<long>(this)).obj());
+  java_obj_.Reset(
+      env,
+      Java_PolicyConverter_create(env, reinterpret_cast<intptr_t>(this)).obj());
   DCHECK(!java_obj_.is_null());
 }
 
@@ -90,13 +91,12 @@ PolicyConverter::ConvertJavaStringArrayToListValue(
     JNIEnv* env,
     const JavaRef<jobjectArray>& array) {
   DCHECK(!array.is_null());
-  int length = static_cast<int>(env->GetArrayLength(array.obj()));
-  DCHECK_GE(length, 0) << "Invalid array length: " << length;
+  base::android::JavaObjectArrayReader<jstring> array_reader(array);
+  DCHECK_GE(array_reader.size(), 0)
+      << "Invalid array length: " << array_reader.size();
 
   std::unique_ptr<base::ListValue> list_value(new base::ListValue());
-  for (int i = 0; i < length; ++i) {
-    base::android::ScopedJavaLocalRef<jstring> j_str(
-        env, static_cast<jstring>(env->GetObjectArrayElement(array.obj(), i)));
+  for (auto j_str : array_reader) {
     list_value->AppendString(ConvertJavaStringToUTF8(env, j_str));
   }
 
@@ -175,10 +175,17 @@ std::unique_ptr<base::Value> PolicyConverter::ConvertValueToSchema(
       }
       return value;
     }
+
+    // TODO(crbug.com/859477): Remove after root cause is found.
+    case base::Value::Type::DEAD: {
+      CHECK(false);
+      return nullptr;
+    }
   }
 
-  NOTREACHED();
-  return std::unique_ptr<base::Value>();
+  // TODO(crbug.com/859477): Revert to NOTREACHED() after root cause is found.
+  CHECK(false);
+  return nullptr;
 }
 
 void PolicyConverter::SetPolicyValue(const std::string& key,

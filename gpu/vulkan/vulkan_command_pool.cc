@@ -19,13 +19,16 @@ VulkanCommandPool::~VulkanCommandPool() {
   DCHECK_EQ(static_cast<VkCommandPool>(VK_NULL_HANDLE), handle_);
 }
 
-bool VulkanCommandPool::Initialize() {
+bool VulkanCommandPool::Initialize(bool use_protected_memory) {
   VkCommandPoolCreateInfo command_pool_create_info = {};
   command_pool_create_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
   command_pool_create_info.flags =
       VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
   command_pool_create_info.queueFamilyIndex =
       device_queue_->GetVulkanQueueIndex();
+  if (use_protected_memory) {
+    command_pool_create_info.flags |= VK_COMMAND_POOL_CREATE_PROTECTED_BIT;
+  }
 
   VkResult result =
       vkCreateCommandPool(device_queue_->GetVulkanDevice(),
@@ -34,6 +37,8 @@ bool VulkanCommandPool::Initialize() {
     DLOG(ERROR) << "vkCreateCommandPool() failed: " << result;
     return false;
   }
+
+  use_protected_memory_ = use_protected_memory;
 
   return true;
 }
@@ -48,8 +53,8 @@ void VulkanCommandPool::Destroy() {
 
 std::unique_ptr<VulkanCommandBuffer>
 VulkanCommandPool::CreatePrimaryCommandBuffer() {
-  std::unique_ptr<VulkanCommandBuffer> command_buffer(
-      new VulkanCommandBuffer(device_queue_, this, true));
+  std::unique_ptr<VulkanCommandBuffer> command_buffer(new VulkanCommandBuffer(
+      device_queue_, this, true, use_protected_memory_));
   if (!command_buffer->Initialize())
     return nullptr;
 
@@ -58,8 +63,8 @@ VulkanCommandPool::CreatePrimaryCommandBuffer() {
 
 std::unique_ptr<VulkanCommandBuffer>
 VulkanCommandPool::CreateSecondaryCommandBuffer() {
-  std::unique_ptr<VulkanCommandBuffer> command_buffer(
-      new VulkanCommandBuffer(device_queue_, this, false));
+  auto command_buffer = std::make_unique<VulkanCommandBuffer>(
+      device_queue_, this, false, use_protected_memory_);
   if (!command_buffer->Initialize())
     return nullptr;
 

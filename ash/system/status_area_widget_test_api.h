@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ash/public/interfaces/status_area_widget_test_api.test-mojom.h"
+#include "ash/public/mojom/status_area_widget_test_api.test-mojom.h"
 #include "ash/system/status_area_widget.h"
 #include "base/macros.h"
 
@@ -23,6 +23,8 @@ class StatusAreaWidgetTestApi : public mojom::StatusAreaWidgetTestApi {
 
   // mojom::StatusAreaWidgetTestApi:
   void TapSelectToSpeakTray(TapSelectToSpeakTrayCallback callback) override;
+
+  void SetCollapseState(StatusAreaWidget::CollapseState collapse_state);
 
  private:
   StatusAreaWidget* const widget_;

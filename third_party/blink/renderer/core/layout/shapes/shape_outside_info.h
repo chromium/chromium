@@ -43,6 +43,7 @@ namespace blink {
 class LayoutBox;
 class LineLayoutBlockFlow;
 class FloatingObject;
+struct PhysicalRect;
 
 class ShapeOutsideDeltas final {
   DISALLOW_NEW();
@@ -97,34 +98,10 @@ class ShapeOutsideInfo final {
   void SetReferenceBoxLogicalSize(LayoutSize);
   void SetPercentageResolutionInlineSize(LayoutUnit);
 
-  LayoutUnit ShapeLogicalTop() const {
-    return ComputedShape().ShapeMarginLogicalBoundingBox().Y() +
-           LogicalTopOffset();
-  }
   LayoutUnit ShapeLogicalBottom() const {
     return ComputedShape().ShapeMarginLogicalBoundingBox().MaxY() +
            LogicalTopOffset();
   }
-  LayoutUnit ShapeLogicalLeft() const {
-    return ComputedShape().ShapeMarginLogicalBoundingBox().X() +
-           LogicalLeftOffset();
-  }
-  LayoutUnit ShapeLogicalRight() const {
-    return ComputedShape().ShapeMarginLogicalBoundingBox().MaxX() +
-           LogicalLeftOffset();
-  }
-  LayoutUnit ShapeLogicalWidth() const {
-    return ComputedShape().ShapeMarginLogicalBoundingBox().Width();
-  }
-  LayoutUnit ShapeLogicalHeight() const {
-    return ComputedShape().ShapeMarginLogicalBoundingBox().Height();
-  }
-
-  static std::unique_ptr<ShapeOutsideInfo> CreateInfo(
-      const LayoutBox& layout_box) {
-    return base::WrapUnique(new ShapeOutsideInfo(layout_box));
-  }
-  static bool IsEnabledFor(const LayoutBox&);
 
   ShapeOutsideDeltas ComputeDeltasForContainingBlockLine(
       const LineLayoutBlockFlow&,
@@ -137,24 +114,22 @@ class ShapeOutsideInfo final {
     if (ShapeOutsideInfo* info = info_map.at(&key))
       return *info;
     InfoMap::AddResult result =
-        info_map.insert(&key, ShapeOutsideInfo::CreateInfo(key));
+        info_map.insert(&key, base::WrapUnique(new ShapeOutsideInfo(key)));
     return *result.stored_value->value;
   }
   static void RemoveInfo(const LayoutBox& key) { GetInfoMap().erase(&key); }
   static ShapeOutsideInfo* Info(const LayoutBox& key) {
+    if (!IsEnabledFor(key))
+      return nullptr;
     return GetInfoMap().at(&key);
   }
 
-  static bool IsEmpty() { return GetInfoMap().IsEmpty(); }
-
   void MarkShapeAsDirty() { shape_.reset(); }
   bool IsShapeDirty() { return !shape_.get(); }
-  LayoutSize ShapeSize() const { return reference_box_logical_size_; }
   bool IsComputingShape() const { return is_computing_shape_; }
 
-  LayoutRect ComputedShapePhysicalBoundingBox() const;
+  PhysicalRect ComputedShapePhysicalBoundingBox() const;
   FloatPoint ShapeToLayoutObjectPoint(FloatPoint) const;
-  FloatSize ShapeToLayoutObjectSize(FloatSize) const;
   const Shape& ComputedShape() const;
 
  protected:
@@ -162,6 +137,8 @@ class ShapeOutsideInfo final {
       : layout_box_(layout_box), is_computing_shape_(false) {}
 
  private:
+  static bool IsEnabledFor(const LayoutBox&);
+
   std::unique_ptr<Shape> CreateShapeForImage(StyleImage*,
                                              float shape_image_threshold,
                                              WritingMode,

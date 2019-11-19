@@ -1,0 +1,143 @@
+document
+++banner
+++++description Name='This is a header element.'
+++complementary
+++++description Name='This is an aside element.'
+++group
+++++description Name='This is an address element.'
+++contentinfo
+++++description Name='This is a footer element.'
+++form
+++++description Name='This is a form element.'
+++main
+++++description Name='This is a main element.'
+++navigation
+++++description Name='This is a nav element.'
+++application
+++++description Name='This is an ARIA application landmark.'
+++banner
+++++description Name='This is an ARIA banner landmark.'
+++complementary
+++++description Name='This is an ARIA complementary landmark.'
+++contentinfo
+++++description Name='This is an ARIA contentinfo landmark.'
+++form
+++++description Name='This is an ARIA form landmark.'
+++main
+++++description Name='This is an ARIA main landmark.'
+++navigation
+++++description Name='This is an ARIA navigation landmark.'
+++search
+++++description Name='This is an ARIA search landmark.'
+++article
+++++group
+++++++description Name='This should NOT banner role.'
+++complementary
+++++group
+++++++description Name='This should NOT have banner role.'
+++navigation
+++++group
+++++++description Name='This should NOT have banner role.'
+++group
+++++group
+++++++description Name='This should NOT have banner role.'
+++group
+++++group
+++++++description Name='This should NOT have banner role.'
+++group
+++++button Name='Details' ExpandCollapse.ExpandCollapseState='LeafNode'
+++++++description Name='Details'
+++group
+++++group
+++group
+++++group
+++++++description Name='This should NOT have banner role.'
+++group
+++++group
+++main
+++++group
+++++++description Name='This should NOT have banner role.'
+++article
+++++group
+++++++description Name='This should NOT banner role.'
+++complementary
+++++group
+++++++description Name='This should NOT have banner role.'
+++navigation
+++++group
+++++++description Name='This should NOT have banner role.'
+++group
+++++group
+++++++description Name='This should NOT have banner role.'
+++group
+++++group
+++++++description Name='This should NOT have banner role.'
+++group
+++++button Name='Details' ExpandCollapse.ExpandCollapseState='LeafNode'
+++++++description Name='Details'
+++group
+++++group
+++group
+++++group
+++++++description Name='This should NOT have banner role.'
+++group
+++++description Name='This should NOT have banner role.'
+++main
+++++group
+++++++description Name='This should NOT have banner role.'
+++article
+++++group
+++++++description Name='This should NOT footer role.'
+++complementary
+++++group
+++++++description Name='This should NOT have footer role.'
+++navigation
+++++group
+++++++description Name='This should NOT have footer role.'
+++group
+++++group
+++++++description Name='This should NOT have footer role.'
+++group
+++++group
+++++++description Name='This should NOT have footer role.'
+++group
+++++button Name='Details' ExpandCollapse.ExpandCollapseState='LeafNode'
+++++++description Name='Details'
+++group
+++++group
+++group
+++++group
+++++++description Name='This should NOT have footer role.'
+++group
+++++description Name='This should NOT have footer role.'
+++main
+++++group
+++++++description Name='This should NOT have footer role.'
+++article
+++++group
+++++++description Name='This should NOT footer role.'
+++complementary
+++++group
+++++++description Name='This should NOT have footer role.'
+++navigation
+++++group
+++++++description Name='This should NOT have footer role.'
+++group
+++++group
+++++++description Name='This should NOT have footer role.'
+++group
+++++group
+++++++description Name='This should NOT have footer role.'
+++group
+++++button Name='Details' ExpandCollapse.ExpandCollapseState='LeafNode'
+++++++description Name='Details'
+++group
+++++group
+++group
+++++group
+++++++description Name='This should NOT have footer role.'
+++group
+++++group
+++main
+++++group
+++++++description Name='This should NOT have footer role.'

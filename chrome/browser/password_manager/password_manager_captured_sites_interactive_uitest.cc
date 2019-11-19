@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/autofill/automated_tests/cache_replayer.h"
 #include "chrome/browser/autofill/captured_sites_test_utils.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -16,17 +17,18 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/test/test_utils.h"
+
+using captured_sites_test_utils::CapturedSiteParams;
+using captured_sites_test_utils::GetCapturedSites;
+using captured_sites_test_utils::GetParamAsString;
 
 namespace {
 
 constexpr base::TimeDelta kWaitForSaveFallbackInterval =
     base::TimeDelta::FromSeconds(5);
 
-struct TestParams {
-  std::string scenarioDir;
-  std::string siteName;
-};
 
 // Return path to the Password Manager captured sites test root directory. The
 // directory contains subdirectories for different password manager test
@@ -35,8 +37,11 @@ struct TestParams {
 base::FilePath GetReplayFilesRootDirectory() {
   base::FilePath src_dir;
   if (base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir)) {
-    return src_dir.Append(
-        FILE_PATH_LITERAL("chrome/test/data/password/captured_sites"));
+    return src_dir.AppendASCII("chrome")
+        .AppendASCII("test")
+        .AppendASCII("data")
+        .AppendASCII("password")
+        .AppendASCII("captured_sites");
   }
 
   ADD_FAILURE() << "Unable to obtain the Chromium src directory!";
@@ -44,47 +49,13 @@ base::FilePath GetReplayFilesRootDirectory() {
   return src_dir;
 }
 
-// Iterate through Password Manager's Web Page Replay capture file directory to
-// look for captures sites and automation recipe files. Return a list of sites
-// for which recipe-based testing is available.
-std::vector<TestParams> GetCapturedSites() {
-  std::vector<TestParams> sites;
-  base::FileEnumerator sub_dirs(GetReplayFilesRootDirectory(), false,
-                                base::FileEnumerator::DIRECTORIES);
-  for (base::FilePath dir = sub_dirs.Next(); !dir.empty();
-       dir = sub_dirs.Next()) {
-    base::FileEnumerator capture_files(dir, false, base::FileEnumerator::FILES);
-    for (base::FilePath file = capture_files.Next(); !file.empty();
-         file = capture_files.Next()) {
-      // If a site capture file is found, also look to see if the directory has
-      // a corresponding recorded action recipe log file.
-      // A site capture file has no extension. A recorded action recipe log file
-      // has the '.test' extension.
-      if (file.Extension().empty() &&
-          base::PathExists(file.AddExtension(FILE_PATH_LITERAL(".test")))) {
-        TestParams params;
-        params.scenarioDir =
-            captured_sites_test_utils::FilePathToUTF8(dir.BaseName().value());
-        params.siteName =
-            captured_sites_test_utils::FilePathToUTF8(file.BaseName().value());
-        sites.push_back(params);
-      }
-    }
-  }
-  return sites;
-}
-
-struct GetParamAsString {
-  template <class ParamType>
-  std::string operator()(const testing::TestParamInfo<ParamType>& info) const {
-    return base::StringPrintf("%s_%s", info.param.scenarioDir.c_str(),
-                              info.param.siteName.c_str());
-  }
-};
-
 }  // namespace
 
 namespace password_manager {
+
+using autofill::test::ServerCacheReplayer;
+using autofill::test::ServerUrlLoader;
+
 // Harness for running password manager scenarios on captured real-world sites.
 // Test params:
 //  - string Recipe: the name of the captured site file and the test recipe
@@ -93,7 +64,7 @@ class CapturedSitesPasswordManagerBrowserTest
     : public InProcessBrowserTest,
       public captured_sites_test_utils::
           TestRecipeReplayChromeFeatureActionExecutor,
-      public ::testing::WithParamInterface<TestParams> {
+      public ::testing::WithParamInterface<CapturedSiteParams> {
  public:
   // TestRecipeReplayChromeFeatureActionExecutor:
   bool AddCredential(const std::string& origin,
@@ -195,15 +166,34 @@ class CapturedSitesPasswordManagerBrowserTest
         std::make_unique<captured_sites_test_utils::TestRecipeReplayer>(
             browser(), this);
     recipe_replayer()->Setup();
+    SetServerUrlLoader(
+        std::make_unique<ServerUrlLoader>(std::make_unique<ServerCacheReplayer>(
+            GetParam().capture_file_path,
+            ServerCacheReplayer::kOptionFailOnInvalidJsonRecord |
+                ServerCacheReplayer::kOptionSplitRequestsByForm)));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kUsernameFirstFlow}, {});
     InProcessBrowserTest::SetUpCommandLine(command_line);
     captured_sites_test_utils::TestRecipeReplayer::SetUpCommandLine(
         command_line);
   }
 
-  void TearDownOnMainThread() override { recipe_replayer()->Cleanup(); }
+  void SetServerUrlLoader(std::unique_ptr<ServerUrlLoader> server_url_loader) {
+    server_url_loader_ = std::move(server_url_loader);
+  }
+
+  void TearDownOnMainThread() override {
+    recipe_replayer()->Cleanup();
+    // Need to delete the URL loader and its underlying interceptor on the main
+    // thread. Will result in a fatal crash otherwise. The pointer  has its
+    // memory cleaned up twice: first time in that single thread, a second time
+    // when the fixture's destructor is called, which will have no effect since
+    // the raw pointer will be nullptr.
+    server_url_loader_.reset(nullptr);
+  }
 
   captured_sites_test_utils::TestRecipeReplayer* recipe_replayer() {
     return recipe_replayer_.get();
@@ -217,33 +207,26 @@ class CapturedSitesPasswordManagerBrowserTest
  private:
   std::unique_ptr<captured_sites_test_utils::TestRecipeReplayer>
       recipe_replayer_;
+  base::test::ScopedFeatureList feature_list_;
   content::WebContents* web_contents_ = nullptr;
+  std::unique_ptr<ServerUrlLoader> server_url_loader_;
 
   DISALLOW_COPY_AND_ASSIGN(CapturedSitesPasswordManagerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(CapturedSitesPasswordManagerBrowserTest, Recipe) {
-  // Craft the capture file path.
   base::FilePath src_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir));
-  base::FilePath capture_file_path =
-      GetReplayFilesRootDirectory()
-          .AppendASCII(GetParam().scenarioDir.c_str())
-          .AppendASCII(GetParam().siteName.c_str());
 
-  // Craft the recipe file path.
-  base::FilePath recipe_file_path =
-      GetReplayFilesRootDirectory()
-          .AppendASCII(GetParam().scenarioDir.c_str())
-          .AppendASCII(
-              base::StringPrintf("%s.test", GetParam().siteName.c_str()));
-
-  ASSERT_TRUE(
-      recipe_replayer()->ReplayTest(capture_file_path, recipe_file_path));
+  bool test_completed = recipe_replayer()->ReplayTest(
+      GetParam().capture_file_path, GetParam().recipe_file_path);
+  if (!test_completed)
+    ADD_FAILURE() << "Full execution was unable to complete.";
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         CapturedSitesPasswordManagerBrowserTest,
-                         testing::ValuesIn(GetCapturedSites()),
-                         GetParamAsString());
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CapturedSitesPasswordManagerBrowserTest,
+    testing::ValuesIn(GetCapturedSites(GetReplayFilesRootDirectory())),
+    GetParamAsString());
 }  // namespace password_manager

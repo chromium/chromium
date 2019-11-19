@@ -14,12 +14,12 @@ async_test(t => {
   var timeline = timelineElement(video);
   assert_not_equals(timeline, null);
 
-  assert_equals(timeline.getAttribute('aria-valuetext'), '0:00');
+  assert_equals(timeline.getAttribute('aria-valuetext'), 'elapsed time: 0:00');
 
   // Trigger events that will update the timeline internal state.
   video.currentTime = 3;
   video.addEventListener('timeupdate', t.step_func_done(() => {
-    assert_equals(timeline.getAttribute('aria-valuetext'), '0:03');
+    assert_equals(timeline.getAttribute('aria-valuetext'), 'elapsed time: 0:03');
   }), { once: true });
 });
 </script>

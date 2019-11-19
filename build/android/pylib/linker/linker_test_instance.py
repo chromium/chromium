@@ -27,10 +27,7 @@ class LinkerTestInstance(test_instance.TestInstance):
     return self._test_filter
 
   def GetTests(self):
-    tests = [
-      test_case.LinkerSharedRelroTest(is_low_memory=False),
-      test_case.LinkerSharedRelroTest(is_low_memory=True)
-    ]
+    tests = [test_case.LinkerSharedRelroTest()]
 
     if self._test_filter:
       filtered_names = unittest_util.FilterTestNames(

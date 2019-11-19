@@ -7,7 +7,6 @@
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -15,7 +14,7 @@
         android:background="@color/modern_primary_color"
         android:fillViewport="true"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
         android:paddingTop="24dp"
@@ -44,22 +43,24 @@
             android:layout_gravity="start"
             android:text="@string/usage_stats_site_paused" />
 
-        <TextView
+        <org.chromium.ui.widget.TextViewWithLeading
             android:id="@+id/suspended_tab_explanation"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:paddingBottom="16dp"
             android:textAppearance="@style/TextAppearance.BlackBody"
-            android:layout_gravity="start" />
+            android:layout_gravity="start"
+            app:leading="@dimen/text_size_large_leading" />
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/suspended_tab_settings_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:gravity="center_horizontal"
+            android:gravity="center"
             android:text="@string/preferences"
+            app:verticalInset="0dp"
             style="@style/TextButton" />
     </LinearLayout>
 </ScrollView>

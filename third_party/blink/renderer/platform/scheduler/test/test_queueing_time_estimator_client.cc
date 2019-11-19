@@ -13,53 +13,6 @@
 namespace blink {
 namespace scheduler {
 
-// This is a duplicate of the defines in queueing_time_estimator.cc.
-#define FRAME_STATUS_PREFIX \
-  "RendererScheduler.ExpectedQueueingTimeByFrameStatus2."
-
-const char* GetReportingMessageFromFrameStatus(FrameStatus frame_status) {
-  switch (frame_status) {
-    case FrameStatus::kMainFrameVisible:
-    case FrameStatus::kMainFrameVisibleService:
-      return FRAME_STATUS_PREFIX "MainFrameVisible";
-    case FrameStatus::kMainFrameHidden:
-    case FrameStatus::kMainFrameHiddenService:
-      return FRAME_STATUS_PREFIX "MainFrameHidden";
-    case FrameStatus::kMainFrameBackground:
-    case FrameStatus::kMainFrameBackgroundExemptSelf:
-    case FrameStatus::kMainFrameBackgroundExemptOther:
-      return FRAME_STATUS_PREFIX "MainFrameBackground";
-    case FrameStatus::kSameOriginVisible:
-    case FrameStatus::kSameOriginVisibleService:
-      return FRAME_STATUS_PREFIX "SameOriginVisible";
-    case FrameStatus::kSameOriginHidden:
-    case FrameStatus::kSameOriginHiddenService:
-      return FRAME_STATUS_PREFIX "SameOriginHidden";
-    case FrameStatus::kSameOriginBackground:
-    case FrameStatus::kSameOriginBackgroundExemptSelf:
-    case FrameStatus::kSameOriginBackgroundExemptOther:
-      return FRAME_STATUS_PREFIX "SameOriginBackground";
-    case FrameStatus::kCrossOriginVisible:
-    case FrameStatus::kCrossOriginVisibleService:
-      return FRAME_STATUS_PREFIX "CrossOriginVisible";
-    case FrameStatus::kCrossOriginHidden:
-    case FrameStatus::kCrossOriginHiddenService:
-      return FRAME_STATUS_PREFIX "CrossOriginHidden";
-    case FrameStatus::kCrossOriginBackground:
-    case FrameStatus::kCrossOriginBackgroundExemptSelf:
-    case FrameStatus::kCrossOriginBackgroundExemptOther:
-      return FRAME_STATUS_PREFIX "CrossOriginBackground";
-    case FrameStatus::kNone:
-    case FrameStatus::kDetached:
-      return FRAME_STATUS_PREFIX "Other";
-    case FrameStatus::kCount:
-      NOTREACHED();
-      return "";
-  }
-  NOTREACHED();
-  return "";
-}
-
 void TestQueueingTimeEstimatorClient::OnQueueingTimeForWindowEstimated(
     base::TimeDelta queueing_time,
     bool is_disjoint_window) {
@@ -76,27 +29,6 @@ void TestQueueingTimeEstimatorClient::OnQueueingTimeForWindowEstimated(
         MainThreadSchedulerImpl::kMaxExpectedQueueingTimeBucket,
         MainThreadSchedulerImpl::kNumberExpectedQueueingTimeBuckets);
   }
-}
-
-void TestQueueingTimeEstimatorClient::OnReportFineGrainedExpectedQueueingTime(
-    const char* split_description,
-    base::TimeDelta queueing_time) {
-  if (split_eqts_.find(split_description) == split_eqts_.end())
-    split_eqts_[split_description] = std::vector<base::TimeDelta>();
-  split_eqts_[split_description].push_back(queueing_time);
-  // Mimic MainThreadSchedulerImpl::OnReportFineGrainedExpectedQueueingTime.
-  base::UmaHistogramCustomCounts(
-      split_description,
-      base::saturated_cast<base::HistogramBase::Sample>(
-          queueing_time.InMicroseconds()),
-      MainThreadSchedulerImpl::kMinExpectedQueueingTimeBucket,
-      MainThreadSchedulerImpl::kMaxExpectedQueueingTimeBucket,
-      MainThreadSchedulerImpl::kNumberExpectedQueueingTimeBuckets);
-}
-
-const std::vector<base::TimeDelta>&
-TestQueueingTimeEstimatorClient::FrameStatusValues(FrameStatus frame_status) {
-  return split_eqts_[GetReportingMessageFromFrameStatus(frame_status)];
 }
 
 QueueingTimeEstimatorForTest::QueueingTimeEstimatorForTest(

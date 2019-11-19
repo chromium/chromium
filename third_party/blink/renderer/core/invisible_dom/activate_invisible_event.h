@@ -15,10 +15,6 @@ class ActivateInvisibleEvent : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ActivateInvisibleEvent* Create(Element* activated_element) {
-    return MakeGarbageCollected<ActivateInvisibleEvent>(activated_element);
-  }
-
   explicit ActivateInvisibleEvent(Element* activated_element);
 
   Element* activatedElement() const { return activated_element_.Get(); }

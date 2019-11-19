@@ -1,0 +1,9 @@
+Text should be in the regular Segoe UI font.
+#regular-weight:
+"Segoe UI" : 44
+
+Text should be Segoe UI Semilight on Win10+, else Segoe UI Light.
+#semilight-weight:
+"Segoe UI Light" : 65
+
+

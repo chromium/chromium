@@ -14,6 +14,8 @@ window.runTest = function(testName) {
     testBlobInWebviewAccessibleResource();
   } else if (testName == 'testLoadWebviewInaccessibleResource') {
     testLoadWebviewInaccessibleResource();
+  } else if (testName == 'testNavigateGuestToWebviewAccessibleResource') {
+    testNavigateGuestToWebviewAccessibleResource();
   } else {
     window.console.log('Incorrect testName: ' + testName);
     chrome.test.sendMessage('TEST_FAILED');
@@ -36,6 +38,25 @@ function testLoadWebviewAccessibleResource() {
   });
 
   webview.src = embedder.guestURL;
+};
+
+function testNavigateGuestToWebviewAccessibleResource() {
+  var webview = document.querySelector('webview');
+
+  webview.addEventListener('loadstop', function() {
+    webview.executeScript(
+        {code: 'document.body.innerText'}, function(result) {
+          // If the test html loads successfully, it will have a body
+          // containing the text "Foo" (and the test passes in this case).
+          if (result == "Foo")
+            chrome.test.sendMessage('TEST_PASSED');
+          else
+            chrome.test.sendMessage('TEST_FAILED');
+        });
+  });
+
+  webview.src =
+      'chrome-extension://lmnhajohhbenlbinimlfhbpnciehhmao/assets/foo.html';
 };
 
 function testReloadWebviewAccessibleResource() {
@@ -124,10 +145,12 @@ function testLoadWebviewInaccessibleResource() {
 
 onload = function() {
   chrome.test.getConfig(function(config) {
-    embedder.guestURL =
-        'http://localhost:' + config.testServer.port +
-        '/extensions/platform_apps/web_view/load_webview_accessible_resource/' +
-        'guest.html';
+    if (config.testServer) {
+      embedder.guestURL =
+          'http://localhost:' + config.testServer.port +
+          '/extensions/platform_apps/web_view/' +
+          'load_webview_accessible_resource/guest.html';
+    }
     chrome.test.sendMessage('Launched');
   });
 };

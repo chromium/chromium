@@ -16,39 +16,49 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.RemoteException;
-import android.support.annotation.Nullable;
-import android.support.customtabs.trusted.TrustedWebActivityService;
-import android.support.customtabs.trusted.TrustedWebActivityServiceConnectionManager;
-import android.support.customtabs.trusted.TrustedWebActivityServiceWrapper;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityUmaRecorder.DelegatedNotificationSmallIconFallback;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.NotificationPermissionUpdater;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
+import org.chromium.chrome.browser.notifications.NotificationMetadata;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
+import org.chromium.chrome.browser.util.UrlConstants;
 
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import androidx.annotation.Nullable;
+import androidx.browser.trusted.TrustedWebActivityService;
+import androidx.browser.trusted.TrustedWebActivityServiceConnectionManager;
+import androidx.browser.trusted.TrustedWebActivityServiceWrapper;
+
 /**
  * Uses a Trusted Web Activity client to display notifications.
  */
+@Singleton
 public class TrustedWebActivityClient {
     private final TrustedWebActivityServiceConnectionManager mConnection;
     private final TrustedWebActivityUmaRecorder mRecorder;
-    private final NotificationUmaTracker mNotificationUmaTracker;
+
+    /** Interface for callbacks to {@link #checkNotificationPermission}. */
+    public interface NotificationPermissionCheckCallback {
+        /** May be called as a result of {@link #checkNotificationPermission}. */
+        void onPermissionCheck(ComponentName answeringApp, boolean enabled);
+    }
 
     /**
      * Creates a TrustedWebActivityService.
      */
+    @Inject
     public TrustedWebActivityClient(TrustedWebActivityServiceConnectionManager connection,
-            TrustedWebActivityUmaRecorder recorder, NotificationUmaTracker notificationUmaTracker) {
+            TrustedWebActivityUmaRecorder recorder) {
         mConnection = connection;
         mRecorder = recorder;
-        mNotificationUmaTracker = notificationUmaTracker;
     }
 
     /**
@@ -58,7 +68,23 @@ public class TrustedWebActivityClient {
      * @return Whether a Trusted Web Activity client was found to show the notification.
      */
     public boolean twaExistsForScope(Uri scope) {
-        return mConnection.serviceExistsForScope(scope, new Origin(scope).toString());
+        Origin origin = Origin.create(scope);
+        if (origin == null) return false;
+        return mConnection.serviceExistsForScope(scope, origin.toString());
+    }
+
+    /**
+     * Checks whether the TWA of the given origin has the notification permission granted.
+     * @param callback Will be called on a background thread with whether the permission is granted.
+     * @return {@code false} if no such TWA exists (in which case the callback will not be called).
+     */
+    public boolean checkNotificationPermission(Origin origin,
+            NotificationPermissionCheckCallback callback) {
+        Resources res = ContextUtils.getApplicationContext().getResources();
+        String channelDisplayName = res.getString(R.string.notification_category_group_general);
+        return mConnection.execute(origin.uri(), origin.toString(), service ->
+                callback.onPermissionCheck(service.getComponentName(),
+                        service.areNotificationsEnabled(channelDisplayName)));
     }
 
     /**
@@ -68,20 +94,34 @@ public class TrustedWebActivityClient {
      * @param platformId A notification id.
      * @param builder A builder for the notification to display.
      *                The Trusted Web Activity client may override the small icon.
+     * @param notificationUmaTracker To log Notification UMA.
      */
     public void notifyNotification(Uri scope, String platformTag, int platformId,
-            NotificationBuilderBase builder) {
+            NotificationBuilderBase builder, NotificationUmaTracker notificationUmaTracker) {
         Resources res = ContextUtils.getApplicationContext().getResources();
         String channelDisplayName = res.getString(R.string.notification_category_group_general);
+        Origin origin = Origin.createOrThrow(scope);
 
-        mConnection.execute(scope, new Origin(scope).toString(), service -> {
+        mConnection.execute(scope, origin.toString(), service -> {
+            if (!service.areNotificationsEnabled(channelDisplayName)) {
+                NotificationPermissionUpdater.onDelegatedNotificationDisabled(origin,
+                        service.getComponentName());
+
+                // Attempting to notify when notifications are disabled won't have any effect, but
+                // returning here just saves us from doing unnecessary work.
+                return;
+            }
+
             fallbackToIconFromServiceIfNecessary(builder, service);
 
-            Notification notification = builder.build();
+            NotificationMetadata metadata = new NotificationMetadata(
+                    NotificationUmaTracker.SystemNotificationType.TRUSTED_WEB_ACTIVITY_SITES,
+                    platformTag, platformId);
+            Notification notification = builder.build(metadata).getNotification();
 
             service.notify(platformTag, platformId, notification, channelDisplayName);
 
-            mNotificationUmaTracker.onNotificationShown(
+            notificationUmaTracker.onNotificationShown(
                     NotificationUmaTracker.SystemNotificationType.TRUSTED_WEB_ACTIVITY_SITES,
                     notification);
         });
@@ -95,7 +135,7 @@ public class TrustedWebActivityClient {
         }
 
         int id = service.getSmallIconId();
-        if (id == TrustedWebActivityService.NO_ID) {
+        if (id == TrustedWebActivityService.SMALL_ICON_NOT_SET) {
             recordFallback(FALLBACK_ICON_NOT_PROVIDED);
             return;
         }
@@ -125,7 +165,8 @@ public class TrustedWebActivityClient {
      * @param platformId The id of the notification to cancel.
      */
     public void cancelNotification(Uri scope, String platformTag, int platformId) {
-        mConnection.execute(scope, new Origin(scope).toString(),
+        Origin origin = Origin.createOrThrow(scope);
+        mConnection.execute(scope, origin.toString(),
                 service -> service.cancel(platformTag, platformId));
     }
 
@@ -151,12 +192,10 @@ public class TrustedWebActivityClient {
      */
     public static @Nullable Intent createLaunchIntentForTwa(Context appContext, String url,
             List<ResolveInfo> resolveInfosForUrl) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TRUSTED_WEB_ACTIVITY)) return null;
-
-        Origin origin = new Origin(url);
+        Origin origin = Origin.createOrThrow(url);
 
         // Trusted Web Activities only work with https so we can shortcut here.
-        if (!origin.uri().getScheme().equals(UrlConstants.HTTPS_SCHEME)) return null;
+        if (!UrlConstants.HTTPS_SCHEME.equals(origin.uri().getScheme())) return null;
 
         Set<String> verifiedPackages = TrustedWebActivityServiceConnectionManager
                 .getVerifiedPackages(appContext, origin.toString());
@@ -180,7 +219,6 @@ public class TrustedWebActivityClient {
         intent.setData(Uri.parse(url));
         intent.setAction(Intent.ACTION_VIEW);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | ApiCompatibilityUtils.getActivityNewDocumentFlag()
                 | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.setComponent(new ComponentName(twaPackageName, twaActivityName));
         return intent;

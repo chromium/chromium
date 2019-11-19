@@ -112,6 +112,14 @@ config("config") {
       "blink-gc-plugin",
     ]
 
+    # Don't perform checks for GarbageCollectedFinalized.
+    cflags += [
+      "-Xclang",
+      "-plugin-arg-blink-gc-plugin",
+      "-Xclang",
+      "no-gc-finalized",
+    ]
+
     # Add arguments for enabled GC plugin options:
     if (blink_gc_plugin_option_do_dump_graph) {
       cflags += [

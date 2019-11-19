@@ -11,7 +11,7 @@
 
 namespace extensions {
 
-class VpnThreadExtensionFunction : public UIThreadExtensionFunction {
+class VpnThreadExtensionFunction : public ExtensionFunction {
  public:
   void SignalCallCompletionSuccess();
   void SignalCallCompletionSuccessWithId(const std::string& configuration_id);

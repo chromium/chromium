@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
@@ -449,6 +450,8 @@ static LayoutUnit BoundingBoxLogicalHeight(LayoutObject* o,
 // the text node. It seems weird to return false in this case.
 bool HasRenderedNonAnonymousDescendantsWithHeight(
     const LayoutObject* layout_object) {
+  if (DisplayLockUtilities::NearestLockedInclusiveAncestor(*layout_object))
+    return false;
   const LayoutObject* stop = layout_object->NextInPreOrderAfterChildren();
   // TODO(editing-dev): Avoid single-character parameter names.
   for (LayoutObject* o = layout_object->SlowFirstChild(); o && o != stop;
@@ -459,7 +462,9 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
           (o->IsLayoutInline() && IsEmptyInline(LineLayoutItem(o)) &&
            // TODO(crbug.com/771398): Find alternative ways to check whether an
            // empty LayoutInline is rendered, without checking InlineBox.
-           BoundingBoxLogicalHeight(o, ToLayoutInline(o)->LinesBoundingBox())))
+           BoundingBoxLogicalHeight(
+               o,
+               ToLayoutInline(o)->PhysicalLinesBoundingBox().ToLayoutRect())))
         return true;
     }
   }
@@ -471,7 +476,8 @@ PositionWithAffinity PositionForContentsPointRespectingEditingBoundary(
     LocalFrame* frame) {
   HitTestRequest request = HitTestRequest::kMove | HitTestRequest::kReadOnly |
                            HitTestRequest::kActive |
-                           HitTestRequest::kIgnoreClipping;
+                           HitTestRequest::kIgnoreClipping |
+                           HitTestRequest::kRetargetForInert;
   HitTestLocation location(contents_point);
   HitTestResult result(request, location);
   frame->GetDocument()->GetLayoutView()->HitTest(location, result);
@@ -549,12 +555,12 @@ bool EndsOfNodeAreVisuallyDistinctPositions(const Node* node) {
     return true;
 
   // Don't include inline tables.
-  if (IsHTMLTableElement(*node))
+  if (IsA<HTMLTableElement>(*node))
     return false;
 
   // A Marquee elements are moving so we should assume their ends are always
   // visibily distinct.
-  if (IsHTMLMarqueeElement(*node))
+  if (IsA<HTMLMarqueeElement>(*node))
     return true;
 
   // There is a VisiblePosition inside an empty inline-block container.
@@ -651,6 +657,9 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
         layout_object->Style()->Visibility() != EVisibility::kVisible)
       continue;
 
+    if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object))
+      continue;
+
     if (rule == kCanCrossEditingBoundary && boundary_crossed) {
       last_visible = current_pos;
       break;
@@ -726,7 +735,8 @@ bool HasInvisibleFirstLetter(const Node* node) {
       ToLayoutTextFragmentOrNull(AssociatedLayoutObjectOf(*node, 0));
   if (!first_letter || first_letter == remaining_text)
     return false;
-  return first_letter->StyleRef().Visibility() != EVisibility::kVisible;
+  return first_letter->StyleRef().Visibility() != EVisibility::kVisible ||
+         DisplayLockUtilities::NearestLockedExclusiveAncestor(*first_letter);
 }
 }  // namespace
 
@@ -772,7 +782,7 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
 
     // stop before going above the body, up into the head
     // return the last visible streamer position
-    if (IsHTMLBodyElement(*current_node) && current_pos.AtEndOfNode())
+    if (IsA<HTMLBodyElement>(*current_node) && current_pos.AtEndOfNode())
       break;
 
     // There is no caret position in non-text svg elements.
@@ -795,6 +805,9 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
         AssociatedLayoutObjectOf(*current_node, current_pos.OffsetInLeafNode());
     if (!layout_object ||
         layout_object->Style()->Visibility() != EVisibility::kVisible)
+      continue;
+
+    if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object))
       continue;
 
     if (rule == kCanCrossEditingBoundary && boundary_crossed)
@@ -891,6 +904,9 @@ static bool IsVisuallyEquivalentCandidateAlgorithm(
   if (layout_object->Style()->Visibility() != EVisibility::kVisible)
     return false;
 
+  if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object))
+    return false;
+
   if (layout_object->IsBR()) {
     // TODO(leviw) The condition should be
     // anchor_type_ == PositionAnchorType::kBeforeAnchor, but for now we
@@ -934,7 +950,7 @@ static bool IsVisuallyEquivalentCandidateAlgorithm(
   if (layout_object->IsLayoutBlockFlow() ||
       layout_object->IsFlexibleBoxIncludingNG() ||
       layout_object->IsLayoutGrid()) {
-    if (ToLayoutBlock(layout_object)->LogicalHeight() ||
+    if (To<LayoutBlock>(layout_object)->LogicalHeight() ||
         anchor_node->GetDocument().body() == anchor_node) {
       if (!HasRenderedNonAnonymousDescendantsWithHeight(layout_object))
         return position.AtFirstEditingPositionForNode();
@@ -995,11 +1011,10 @@ static UChar32 CharacterAfterAlgorithm(
       MostForwardCaretPosition(visible_position.DeepEquivalent());
   if (!pos.IsOffsetInAnchor())
     return 0;
-  Node* container_node = pos.ComputeContainerNode();
-  if (!container_node || !container_node->IsTextNode())
+  auto* text_node = DynamicTo<Text>(pos.ComputeContainerNode());
+  if (!text_node)
     return 0;
   unsigned offset = static_cast<unsigned>(pos.OffsetInContainerNode());
-  Text* text_node = ToText(container_node);
   unsigned length = text_node->length();
   if (offset >= length)
     return 0;
@@ -1258,14 +1273,14 @@ IntRect FirstRectForRange(const EphemeralRange& range) {
       CreateVisiblePosition(range.StartPosition()).DeepEquivalent(),
       TextAffinity::kDownstream);
   const IntRect start_caret_rect =
-      AbsoluteCaretRectOfPosition(start_position, &extra_width_to_end_of_line);
+      AbsoluteCaretBoundsOf(start_position, &extra_width_to_end_of_line);
   if (start_caret_rect.IsEmpty())
     return IntRect();
 
   const PositionWithAffinity end_position(
       CreateVisiblePosition(range.EndPosition()).DeepEquivalent(),
       TextAffinity::kUpstream);
-  const IntRect end_caret_rect = AbsoluteCaretRectOfPosition(end_position);
+  const IntRect end_caret_rect = AbsoluteCaretBoundsOf(end_position);
   if (end_caret_rect.IsEmpty())
     return IntRect();
 

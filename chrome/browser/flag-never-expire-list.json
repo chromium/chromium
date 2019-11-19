@@ -1,0 +1,90 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// This file contains a list of flags that are permitted to have the
+// never-expire flag set (i.e., expiration milestone set to -1). This is a
+// separate file from flag-metadata.json so that that file can have per-file
+// owners set to * while still having flags-team policy about unexpiring flags
+// applied via ownership of this file. Note that these flags are not *required*
+// to have never-expire set; they are simply permitted to (i.e., there is no
+// enforcement the other direction).
+//
+// The format of this file is a list of flag names; it is validated by a unit
+// test (AboutFlagsTest.OnlyPermittedFlagsNeverExpire).
+[
+  "allow-previews",
+  "arc-native-bridge-toggle",
+  "ash-debug-shortcuts",
+  "ash-enable-unified-desktop",
+  "data-saver-server-previews",
+  "dcheck-is-fatal",
+  "disable-accelerated-2d-canvas",
+  "disable-accelerated-mjpeg-decode",
+  "disable-accelerated-video-decode",
+  "disable-accelerated-video-encode",
+  "disable-explicit-dma-fences",
+  "disable-javascript-harmony-shipping",
+  "disable-threaded-scrolling",
+  "disable-webrtc-hw-decoding",
+  "disable-webrtc-hw-encoding",
+  "disallow-doc-written-script-loads",
+  "enable-autofill-credit-card-upload",
+  "enable-command-line-on-non-rooted-devices",
+  "enable-data-reduction-proxy-server-experiment",
+  "enable-devtools-experiments",
+  "enable-experimental-web-platform-features",
+  "enable-experimental-webassembly-features",
+  "enable-future-v8-vm-features",
+  "enable-gpu-rasterization",
+  "enable-gpu-service-logging",
+  "enable-javascript-harmony",
+  "enable-lite-page-server-previews",
+  "enable-logging-js-console-messages",
+  "enable-network-logging-to-file",
+  "enable-noscript-previews",
+  "enable-offline-previews",
+  "enable-parallel-downloading",
+  "enable-resource-loading-hints",
+  "enable-save-data",
+  "enable-show-autofill-signatures",
+  "enable-site-per-process",
+  "enable-touchscreen-calibration",
+  "enable-ui-devtools",
+  "enable-virtual-keyboard",
+  "enable-web-authentication-testing-api",
+  "enable-web-payments-experimental-features",
+  "enable-webgl-draft-extensions",
+  "enable-zero-copy",
+  "extensions-on-chrome-urls",
+  "force-effective-connection-type",
+  "force-show-update-menu-badge",
+  "force-text-direction",
+  "force-ui-direction",
+  "force-update-menu-type",
+  "gesture-properties-dbus-service",
+  "ignore-gpu-blacklist",
+  "ignore-previews-blocklist",
+  "in-product-help-demo-mode-choice",
+  "list-all-display-modes",
+  "load-media-router-component-extension",
+  "media-router-cast-allow-all-ips",
+  "memlog",
+  "memlog-sampling-rate",
+  "memlog-stack-mode",
+  "overlay-strategies",
+  "set-market-url-for-testing",
+  "show-autofill-type-predictions",
+  "show-bluetooth-debug-log-toggle",
+  "show-taps",
+  "show-touch-hud",
+  "tint-gl-composited-content",
+  "translate-android-manual-trigger",
+  "ui-disable-partial-swap",
+  "ui-slow-animations",
+  "update-menu-item-custom-summary",
+  "use-angle",
+  "use_messages_staging_url",
+  "use-sync-sandbox",
+  "wallet-service-use-sandbox"
+]

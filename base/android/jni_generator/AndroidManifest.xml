@@ -7,7 +7,6 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.jni.generator">
 
-    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="24" />
     <application></application>
 
 </manifest>

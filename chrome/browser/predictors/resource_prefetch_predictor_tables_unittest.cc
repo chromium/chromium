@@ -9,13 +9,14 @@
 
 #include "base/bind.h"
 #include "base/sequenced_task_runner.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/predictors/loading_test_util.h"
 #include "chrome/browser/predictors/predictor_database.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/request_priority.h"
 #include "sql/statement.h"
@@ -45,7 +46,7 @@ class ResourcePrefetchPredictorTablesTest : public testing::Test {
   void TestDeleteData();
   void TestDeleteAllData();
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   TestingProfile profile_;
   std::unique_ptr<PredictorDatabase> db_;
@@ -69,8 +70,10 @@ class ResourcePrefetchPredictorTablesTest : public testing::Test {
   void TestOriginStatsAreEqual(const std::vector<OriginStat>& lhs,
                                const std::vector<OriginStat>& rhs) const;
 
-  void AddKey(RedirectDataMap* m, const std::string& key) const;
+  void AddKey(RedirectDataMap* m, const GURL& url) const;
   void AddKey(OriginDataMap* m, const std::string& key) const;
+
+  std::string GetKeyForRedirectStat(const RedirectStat& stat) const;
 
   RedirectDataMap test_host_redirect_data_;
   OriginDataMap test_origin_data_;
@@ -125,12 +128,12 @@ void ResourcePrefetchPredictorTablesTest::TestDeleteData() {
                                              "http://google.com"};
   std::vector<std::string> hosts_to_delete = {"microsoft.com"};
   tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
-      &GlowplugKeyValueTable<RedirectData>::DeleteData,
+      &LoadingPredictorKeyValueTable<RedirectData>::DeleteData,
       base::Unretained(tables_->host_redirect_table()), hosts_to_delete));
 
   hosts_to_delete = {"twitter.com"};
   tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
-      &GlowplugKeyValueTable<OriginData>::DeleteData,
+      &LoadingPredictorKeyValueTable<OriginData>::DeleteData,
       base::Unretained(tables_->origin_table()), hosts_to_delete));
 
   RedirectDataMap actual_host_redirect_data;
@@ -140,7 +143,7 @@ void ResourcePrefetchPredictorTablesTest::TestDeleteData() {
 
   RedirectDataMap expected_host_redirect_data;
   OriginDataMap expected_origin_data;
-  AddKey(&expected_host_redirect_data, "bbc.com");
+  AddKey(&expected_host_redirect_data, GURL("http://bbc.com"));
   AddKey(&expected_origin_data, "abc.xyz");
 
   TestRedirectDataAreEqual(expected_host_redirect_data,
@@ -150,13 +153,13 @@ void ResourcePrefetchPredictorTablesTest::TestDeleteData() {
 
 void ResourcePrefetchPredictorTablesTest::TestUpdateData() {
   RedirectData microsoft = CreateRedirectData("microsoft.com", 21);
-  InitializeRedirectStat(microsoft.add_redirect_endpoints(), "m.microsoft.com",
-                         5, 7, 1);
-  InitializeRedirectStat(microsoft.add_redirect_endpoints(), "microsoft.org", 7,
-                         2, 0);
+  InitializeRedirectStat(microsoft.add_redirect_endpoints(),
+                         GURL("https://m.microsoft.com"), 5, 7, 1);
+  InitializeRedirectStat(microsoft.add_redirect_endpoints(),
+                         GURL("https://microsoft.org"), 7, 2, 0);
 
   tables_->ExecuteDBTaskOnDBSequence(
-      base::BindOnce(&GlowplugKeyValueTable<RedirectData>::UpdateData,
+      base::BindOnce(&LoadingPredictorKeyValueTable<RedirectData>::UpdateData,
                      base::Unretained(tables_->host_redirect_table()),
                      microsoft.primary_key(), microsoft));
 
@@ -164,7 +167,7 @@ void ResourcePrefetchPredictorTablesTest::TestUpdateData() {
   InitializeOriginStat(twitter.add_origins(), "https://dogs.twitter.com", 10, 1,
                        0, 12., false, true);
   tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
-      &GlowplugKeyValueTable<OriginData>::UpdateData,
+      &LoadingPredictorKeyValueTable<OriginData>::UpdateData,
       base::Unretained(tables_->origin_table()), twitter.host(), twitter));
 
   RedirectDataMap actual_host_redirect_data;
@@ -174,7 +177,7 @@ void ResourcePrefetchPredictorTablesTest::TestUpdateData() {
   RedirectDataMap expected_host_redirect_data;
   OriginDataMap expected_origin_data;
 
-  AddKey(&expected_host_redirect_data, "bbc.com");
+  AddKey(&expected_host_redirect_data, GURL("https://bbc.com"));
   expected_host_redirect_data.insert(
       std::make_pair("microsoft.com", microsoft));
 
@@ -225,16 +228,19 @@ void ResourcePrefetchPredictorTablesTest::TestRedirectsAreEqual(
 
   std::map<std::string, RedirectStat> lhs_index;
   // Repeated redirects are not allowed.
-  for (const auto& r : lhs)
-    EXPECT_TRUE(lhs_index.insert(std::make_pair(r.url(), r)).second);
+  for (const auto& r : lhs) {
+    EXPECT_TRUE(
+        lhs_index.insert(std::make_pair(GetKeyForRedirectStat(r), r)).second)
+        << " r.url()=" << r.url();
+  }
 
   for (const auto& r : rhs) {
-    auto lhs_it = lhs_index.find(r.url());
+    auto lhs_it = lhs_index.find(GetKeyForRedirectStat(r));
     if (lhs_it != lhs_index.end()) {
       EXPECT_EQ(r, lhs_it->second);
       lhs_index.erase(lhs_it);
     } else {
-      ADD_FAILURE() << r.url();
+      ADD_FAILURE() << r.url() << " " << r.url_scheme();
     }
   }
 
@@ -282,8 +288,8 @@ void ResourcePrefetchPredictorTablesTest::TestOriginStatsAreEqual(
 }
 
 void ResourcePrefetchPredictorTablesTest::AddKey(RedirectDataMap* m,
-                                                 const std::string& key) const {
-  auto it = test_host_redirect_data_.find(key);
+                                                 const GURL& url) const {
+  auto it = test_host_redirect_data_.find(url.host());
   EXPECT_TRUE(it != test_host_redirect_data_.end());
   m->insert(*it);
 }
@@ -295,12 +301,18 @@ void ResourcePrefetchPredictorTablesTest::AddKey(OriginDataMap* m,
   m->insert(*it);
 }
 
+std::string ResourcePrefetchPredictorTablesTest::GetKeyForRedirectStat(
+    const RedirectStat& stat) const {
+  return stat.url() + "," + stat.url_scheme() + "," +
+         base::NumberToString(stat.url_port());
+}
+
 void ResourcePrefetchPredictorTablesTest::DeleteAllData() {
+  tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
+      &LoadingPredictorKeyValueTable<RedirectData>::DeleteAllData,
+      base::Unretained(tables_->host_redirect_table())));
   tables_->ExecuteDBTaskOnDBSequence(
-      base::BindOnce(&GlowplugKeyValueTable<RedirectData>::DeleteAllData,
-                     base::Unretained(tables_->host_redirect_table())));
-  tables_->ExecuteDBTaskOnDBSequence(
-      base::BindOnce(&GlowplugKeyValueTable<OriginData>::DeleteAllData,
+      base::BindOnce(&LoadingPredictorKeyValueTable<OriginData>::DeleteAllData,
                      base::Unretained(tables_->origin_table())));
 }
 
@@ -308,24 +320,32 @@ void ResourcePrefetchPredictorTablesTest::GetAllData(
     RedirectDataMap* host_redirect_data,
     OriginDataMap* origin_data) const {
   tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
-      &GlowplugKeyValueTable<RedirectData>::GetAllData,
+      &LoadingPredictorKeyValueTable<RedirectData>::GetAllData,
       base::Unretained(tables_->host_redirect_table()), host_redirect_data));
   tables_->ExecuteDBTaskOnDBSequence(
-      base::BindOnce(&GlowplugKeyValueTable<OriginData>::GetAllData,
+      base::BindOnce(&LoadingPredictorKeyValueTable<OriginData>::GetAllData,
                      base::Unretained(tables_->origin_table()), origin_data));
 }
 
 void ResourcePrefetchPredictorTablesTest::InitializeSampleData() {
   {  // Host redirect data.
     RedirectData bbc = CreateRedirectData("bbc.com", 9);
-    InitializeRedirectStat(bbc.add_redirect_endpoints(), "www.bbc.com", 8, 4,
-                           1);
-    InitializeRedirectStat(bbc.add_redirect_endpoints(), "m.bbc.com", 5, 8, 0);
-    InitializeRedirectStat(bbc.add_redirect_endpoints(), "bbc.co.uk", 1, 3, 0);
+    InitializeRedirectStat(bbc.add_redirect_endpoints(),
+                           GURL("https://www.bbc.com"), 8, 4, 1);
+    InitializeRedirectStat(bbc.add_redirect_endpoints(),
+                           GURL("https://m.bbc.com"), 5, 8, 0);
+    InitializeRedirectStat(bbc.add_redirect_endpoints(),
+                           GURL("https://bbc.co.uk"), 1, 3, 0);
+    InitializeRedirectStat(bbc.add_redirect_endpoints(),
+                           GURL("http://www.bbc.com"), 8, 4, 1);
+    InitializeRedirectStat(bbc.add_redirect_endpoints(),
+                           GURL("http://m.bbc.com"), 5, 8, 0);
+    InitializeRedirectStat(bbc.add_redirect_endpoints(),
+                           GURL("http://bbc.co.uk"), 1, 3, 0);
 
     RedirectData microsoft = CreateRedirectData("microsoft.com", 10);
     InitializeRedirectStat(microsoft.add_redirect_endpoints(),
-                           "www.microsoft.com", 10, 0, 0);
+                           GURL("https://www.microsoft.com"), 10, 0, 0);
 
     test_host_redirect_data_.clear();
     test_host_redirect_data_.insert(std::make_pair(bbc.primary_key(), bbc));
@@ -333,11 +353,11 @@ void ResourcePrefetchPredictorTablesTest::InitializeSampleData() {
         std::make_pair(microsoft.primary_key(), microsoft));
 
     tables_->ExecuteDBTaskOnDBSequence(
-        base::BindOnce(&GlowplugKeyValueTable<RedirectData>::UpdateData,
+        base::BindOnce(&LoadingPredictorKeyValueTable<RedirectData>::UpdateData,
                        base::Unretained(tables_->host_redirect_table()),
                        bbc.primary_key(), bbc));
     tables_->ExecuteDBTaskOnDBSequence(
-        base::BindOnce(&GlowplugKeyValueTable<RedirectData>::UpdateData,
+        base::BindOnce(&LoadingPredictorKeyValueTable<RedirectData>::UpdateData,
                        base::Unretained(tables_->host_redirect_table()),
                        microsoft.primary_key(), microsoft));
   }
@@ -362,10 +382,10 @@ void ResourcePrefetchPredictorTablesTest::InitializeSampleData() {
     test_origin_data_.insert({"abc.xyz", alphabet});
 
     tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
-        &GlowplugKeyValueTable<OriginData>::UpdateData,
+        &LoadingPredictorKeyValueTable<OriginData>::UpdateData,
         base::Unretained(tables_->origin_table()), twitter.host(), twitter));
     tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
-        &GlowplugKeyValueTable<OriginData>::UpdateData,
+        &LoadingPredictorKeyValueTable<OriginData>::UpdateData,
         base::Unretained(tables_->origin_table()), alphabet.host(), alphabet));
   }
 }

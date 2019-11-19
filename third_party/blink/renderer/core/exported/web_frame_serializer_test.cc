@@ -31,7 +31,6 @@
 #include "third_party/blink/public/web/web_frame_serializer.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
@@ -69,23 +68,23 @@ class WebFrameSerializerTest : public testing::Test {
   WebFrameSerializerTest() { helper_.Initialize(); }
 
   ~WebFrameSerializerTest() override {
-    Platform::Current()
-        ->GetURLLoaderMockFactory()
-        ->UnregisterAllURLsAndClearMemoryCache();
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
   void RegisterMockedImageURLLoad(const String& url) {
     // Image resources need to be mocked, but irrelevant here what image they
     // map to.
-    RegisterMockedFileURLLoad(url_test_helpers::ToKURL(url.Utf8().data()),
+    RegisterMockedFileURLLoad(url_test_helpers::ToKURL(url.Utf8().c_str()),
                               "frameserialization/awesome.png");
   }
 
   void RegisterMockedFileURLLoad(const KURL& url,
                                  const String& file_path,
                                  const String& mime_type = "image/png") {
+    // TODO(crbug.com/751425): We should use the mock functionality
+    // via |helper_|.
     url_test_helpers::RegisterMockedURLLoad(
-        url, test::CoreTestDataPath(file_path.Utf8().data()), mime_type);
+        url, test::CoreTestDataPath(file_path.Utf8().c_str()), mime_type);
   }
 
   class SingleLinkRewritingDelegate
@@ -112,15 +111,17 @@ class WebFrameSerializerTest : public testing::Test {
     const WebString local_path_;
   };
 
-  String SerializeFile(const String& url, const String& file_name) {
+  String SerializeFile(const String& url,
+                       const String& file_name,
+                       bool save_with_empty_url) {
     KURL parsed_url(url);
     String file_path("frameserialization/" + file_name);
     RegisterMockedFileURLLoad(parsed_url, file_path, "text/html");
-    frame_test_helpers::LoadFrame(MainFrameImpl(), url.Utf8().data());
+    frame_test_helpers::LoadFrame(MainFrameImpl(), url.Utf8().c_str());
     SingleLinkRewritingDelegate delegate(parsed_url, WebString("local"));
     SimpleWebFrameSerializerClient serializer_client;
     WebFrameSerializer::Serialize(MainFrameImpl(), &serializer_client,
-                                  &delegate);
+                                  &delegate, save_with_empty_url);
     return serializer_client.ToString();
   }
 
@@ -144,7 +145,7 @@ TEST_F(WebFrameSerializerTest, URLAttributeValues) {
       "script%3E\">external</a>\n"
       "</body></html>";
   String actual_html =
-      SerializeFile("http://www.test.com", "url_attribute_values.html");
+      SerializeFile("http://www.test.com", "url_attribute_values.html", false);
   EXPECT_EQ(expected_html, actual_html);
 }
 
@@ -159,16 +160,32 @@ TEST_F(WebFrameSerializerTest, EncodingAndNormalization) {
       "</head><body>\n"
       "\xe4\xc5\xd1\xe2\n"
       "\n</body></html>";
-  String actual_html =
-      SerializeFile("http://www.test.com", "encoding_normalization.html");
+  String actual_html = SerializeFile("http://www.test.com",
+                                     "encoding_normalization.html", false);
   EXPECT_EQ(expected_html, actual_html);
 }
 
 TEST_F(WebFrameSerializerTest, FromUrlWithMinusMinus) {
   String actual_html =
-      SerializeFile("http://www.test.com?--x--", "text_only_page.html");
+      SerializeFile("http://www.test.com?--x--", "text_only_page.html", false);
   EXPECT_EQ("<!-- saved from url=(0030)http://www.test.com/?-%2Dx-%2D -->",
             actual_html.Substring(1, 60));
+}
+
+TEST_F(WebFrameSerializerTest, WithoutFrameUrl) {
+  const char* expected_html =
+      "<!DOCTYPE html>\n"
+      "<!-- saved from url=(0014)about:internet -->\n"
+      "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; "
+      "charset=EUC-KR\">\n"
+      "<title>Ensure NFC normalization is not performed by frame "
+      "serializer</title>\n"
+      "</head><body>\n"
+      "\xe4\xc5\xd1\xe2\n"
+      "\n</body></html>";
+  String actual_html =
+      SerializeFile("http://www.test.com", "encoding_normalization.html", true);
+  EXPECT_EQ(expected_html, actual_html);
 }
 
 }  // namespace blink

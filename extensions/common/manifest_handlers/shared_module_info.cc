@@ -157,7 +157,7 @@ bool SharedModuleInfo::Parse(const Extension* extension,
         *error = base::ASCIIToUTF16(errors::kInvalidExportAllowlist);
         return false;
       }
-      const base::Value::ListStorage& list_storage = allowlist_value->GetList();
+      base::span<const base::Value> list_storage = allowlist_value->GetList();
       for (size_t i = 0; i < list_storage.size(); ++i) {
         if (!list_storage[i].is_string() ||
             !crx_file::id_util::IdIsValid(list_storage[i].GetString())) {
@@ -176,7 +176,7 @@ bool SharedModuleInfo::Parse(const Extension* extension,
       *error = base::ASCIIToUTF16(errors::kInvalidImport);
       return false;
     }
-    const base::Value::ListStorage& list_storage = import_list->GetList();
+    base::span<const base::Value> list_storage = import_list->GetList();
     for (size_t i = 0; i < list_storage.size(); ++i) {
       const base::Value& import_entry = list_storage[i];
       if (!import_entry.is_dict()) {

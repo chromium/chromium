@@ -4,126 +4,106 @@
 
 /** @fileoverview Tests for the Material Design downloads page. */
 
-/** @const {string} Path to source root. */
-const ROOT_PATH = '../../../../../';
-
 // Polymer BrowserTest fixture.
-GEN_INCLUDE(
-    [ROOT_PATH + 'chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN('#include "services/network/public/cpp/features.h"');
 
-/**
- * @constructor
- * @extends {PolymerTest}
- */
-function DownloadsTest() {}
-
-DownloadsTest.prototype = {
-  __proto__: PolymerTest.prototype,
+// eslint-disable-next-line no-var
+var DownloadsTest = class extends PolymerTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://downloads';
+  }
 
   /** @override */
-  setUp: function() {
+  get extraLibraries() {
+    return [
+      '//third_party/mocha/mocha.js',
+      '//chrome/test/data/webui/mocha_adapter.js',
+    ];
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['network::features::kOutOfBlinkCors']};
+  }
+
+  /** @override */
+  get runAccessibilityChecks() {
+    // TODO(dpapad): Revert this temporarily.
+    return false;
+  }
+
+  /** @override */
+  setUp() {
     PolymerTest.prototype.setUp.call(this);
     this.accessibilityAuditConfig.ignoreSelectors('humanLangMissing', 'html');
-  },
-
-  /** @override */
-  extraLibraries: PolymerTest.getLibraries(ROOT_PATH),
-
-  /** @override */
-  runAccessibilityChecks: true,
+  }
 };
 
-/**
- * @constructor
- * @extends {DownloadsTest}
- */
-function DownloadsItemTest() {}
-
-DownloadsItemTest.prototype = {
-  __proto__: DownloadsTest.prototype,
-
+// eslint-disable-next-line no-var
+var DownloadsItemTest = class extends DownloadsTest {
   /** @override */
-  browsePreload: 'chrome://downloads/item.html',
-
-  /** @override */
-  extraLibraries: DownloadsTest.prototype.extraLibraries.concat([
-    ROOT_PATH + 'ui/webui/resources/js/cr.js',
-    '../test_browser_proxy.js',
-    'test_support.js',
-    'item_tests.js',
-  ]),
+  get browsePreload() {
+    return 'chrome://downloads/test_loader.html?module=downloads/item_tests.js';
+  }
 };
 
 TEST_F('DownloadsItemTest', 'All', function() {
   mocha.run();
 });
 
-/**
- * @constructor
- * @extends {DownloadsTest}
- */
-function DownloadsManagerTest() {}
-
-DownloadsManagerTest.prototype = {
-  __proto__: DownloadsTest.prototype,
-
+// eslint-disable-next-line no-var
+var DownloadsManagerTest = class extends DownloadsTest {
   /** @override */
-  browsePreload: 'chrome://downloads/',
-
-  /** @override */
-  extraLibraries: DownloadsTest.prototype.extraLibraries.concat([
-    ROOT_PATH + 'ui/webui/resources/js/cr.js',
-    ROOT_PATH + 'chrome/browser/resources/downloads/constants.js',
-    '../test_browser_proxy.js',
-    'test_support.js',
-    'manager_tests.js',
-  ]),
+  get browsePreload() {
+    return 'chrome://downloads/test_loader.html?module=downloads/manager_tests.js';
+  }
 };
 
 TEST_F('DownloadsManagerTest', 'All', function() {
   mocha.run();
 });
 
-/**
- * @constructor
- * @extends {DownloadsTest}
- */
-function DownloadsToolbarTest() {}
-
-DownloadsToolbarTest.prototype = {
-  __proto__: DownloadsTest.prototype,
-
+// eslint-disable-next-line no-var
+var DownloadsToolbarTest = class extends DownloadsTest {
   /** @override */
-  browsePreload: 'chrome://downloads/toolbar.html',
-
-  /** @override */
-  extraLibraries: DownloadsTest.prototype.extraLibraries.concat([
-    'toolbar_tests.js',
-  ]),
+  get browsePreload() {
+    return 'chrome://downloads/test_loader.html?module=downloads/toolbar_tests.js';
+  }
 };
 
 TEST_F('DownloadsToolbarTest', 'All', function() {
   mocha.run();
 });
 
-/**
- * @constructor
- * @extends {DownloadsTest}
- */
-function DownloadsUrlTest() {}
-
-DownloadsUrlTest.prototype = {
-  __proto__: DownloadsTest.prototype,
-
+// eslint-disable-next-line no-var
+var DownloadsUrlTest = class extends DownloadsTest {
   /** @override */
-  browsePreload: 'chrome://downloads/a/b/',
+  get browsePreload() {
+    return 'chrome://downloads/a/b/';
+  }
 };
 
 TEST_F('DownloadsUrlTest', 'All', function() {
   suite('loading a nonexistent URL of /a/b/', function() {
-    test('should yield no console errors', function() {
-      assertEquals(location.href, DownloadsUrlTest.prototype.browsePreload);
+    test('should load main page with no console errors', function() {
+      return customElements.whenDefined('downloads-manager').then(() => {
+        assertEquals('chrome://downloads/', location.href);
+      });
     });
   });
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
+var DownloadsSearchServiceTest = class extends DownloadsTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://downloads/test_loader.html?module=downloads/search_service_test.js';
+  }
+};
+
+TEST_F('DownloadsSearchServiceTest', 'All', function() {
   mocha.run();
 });

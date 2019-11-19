@@ -6,7 +6,7 @@
 
 #include <memory>
 #include <utility>
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -19,22 +19,22 @@ AppBannerController::AppBannerController(LocalFrame& frame) : frame_(frame) {}
 
 void AppBannerController::BindMojoRequest(
     LocalFrame* frame,
-    mojom::blink::AppBannerControllerRequest request) {
+    mojo::PendingReceiver<mojom::blink::AppBannerController> receiver) {
   DCHECK(frame);
 
   // See https://bit.ly/2S0zRAS for task types.
-  mojo::MakeStrongBinding(std::make_unique<AppBannerController>(*frame),
-                          std::move(request),
-                          frame->GetTaskRunner(TaskType::kMiscPlatformAPI));
+  mojo::MakeSelfOwnedReceiver(std::make_unique<AppBannerController>(*frame),
+                              std::move(receiver),
+                              frame->GetTaskRunner(TaskType::kMiscPlatformAPI));
 }
 
 void AppBannerController::BannerPromptRequest(
-    mojom::blink::AppBannerServicePtr service_ptr,
-    mojom::blink::AppBannerEventRequest event_request,
+    mojo::PendingRemote<mojom::blink::AppBannerService> service_remote,
+    mojo::PendingReceiver<mojom::blink::AppBannerEvent> event_receiver,
     const Vector<String>& platforms,
-    bool require_gesture,
     BannerPromptRequestCallback callback) {
-  if (!frame_ || !frame_->GetDocument()) {
+  // TODO(hajimehoshi): Add tests for the case the frame is detached.
+  if (!frame_ || !frame_->GetDocument() || !frame_->IsAttached()) {
     std::move(callback).Run(mojom::blink::AppBannerPromptReply::NONE);
     return;
   }
@@ -42,8 +42,8 @@ void AppBannerController::BannerPromptRequest(
   mojom::AppBannerPromptReply reply =
       frame_->DomWindow()->DispatchEvent(*BeforeInstallPromptEvent::Create(
           event_type_names::kBeforeinstallprompt, *frame_,
-          std::move(service_ptr), std::move(event_request), platforms,
-          require_gesture)) == DispatchEventResult::kNotCanceled
+          std::move(service_remote), std::move(event_receiver), platforms)) ==
+              DispatchEventResult::kNotCanceled
           ? mojom::AppBannerPromptReply::NONE
           : mojom::AppBannerPromptReply::CANCEL;
 

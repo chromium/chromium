@@ -19,8 +19,8 @@
 #include "components/offline_pages/core/background/request_notifier.h"
 #include "components/offline_pages/core/background/request_queue_store.h"
 #include "components/offline_pages/core/background/save_page_request.h"
-#include "components/offline_pages/core/client_policy_controller.h"
 #include "components/offline_pages/core/offline_clock.h"
+#include "components/offline_pages/core/offline_page_client_policy.h"
 
 namespace {
 template <typename T>
@@ -42,7 +42,6 @@ const base::TimeDelta PickRequestTask::kDeferInterval =
 PickRequestTask::PickRequestTask(
     RequestQueueStore* store,
     OfflinerPolicy* policy,
-    ClientPolicyController* policy_controller,
     RequestPickedCallback picked_callback,
     RequestNotPickedCallback not_picked_callback,
     RequestCountCallback request_count_callback,
@@ -51,14 +50,12 @@ PickRequestTask::PickRequestTask(
     base::circular_deque<int64_t>* prioritized_requests)
     : store_(store),
       policy_(policy),
-      policy_controller_(policy_controller),
       picked_callback_(std::move(picked_callback)),
       not_picked_callback_(std::move(not_picked_callback)),
       request_count_callback_(std::move(request_count_callback)),
       device_conditions_(std::move(device_conditions)),
       disabled_requests_(disabled_requests),
-      prioritized_requests_(prioritized_requests),
-      weak_ptr_factory_(this) {}
+      prioritized_requests_(prioritized_requests) {}
 
 PickRequestTask::~PickRequestTask() {}
 
@@ -135,7 +132,7 @@ void PickRequestTask::Choose(
       available_requests->push_back(*request);
     if (!RequestConditionsSatisfied(*request))
       continue;
-    if (policy_controller_->GetPolicy(request->client_id().name_space)
+    if (GetPolicy(request->client_id().name_space)
             .defer_background_fetch_while_page_is_active) {
       if (!request->last_attempt_time().is_null() &&
           OfflineTimeNow() - request->last_attempt_time() < kDeferInterval) {

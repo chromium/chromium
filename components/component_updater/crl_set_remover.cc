@@ -11,8 +11,9 @@
 namespace component_updater {
 
 void DeleteLegacyCRLSet(const base::FilePath& user_data_dir) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(base::IgnoreResult(&base::DeleteFile),
                      user_data_dir.Append(
                          FILE_PATH_LITERAL("Certificate Revocation Lists")),

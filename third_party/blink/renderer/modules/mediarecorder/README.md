@@ -53,12 +53,11 @@ recorded `Blob`.
 
 ## Implementation in Chromium
 
-This API is structured around the [MediaRecorder class], which owns a platform's
-`WebMediaRecorderHandler` -- implemented by [`MediaRecorderHandler`] in content
-which in turn owns a number of `VideoTrackRecorder`/`AudioTrackRecorder`s and a
-single `WebmMuxer`.  [`VideoTrackRecorder`]s are codec specific and encapsulate
-the necessary resources to get the job done.  All this is illustrated in the
-[diagram] below.
+This API is structured around the [MediaRecorder class], which owns a
+[`MediaRecorderHandler`] which in turn owns a number of
+`VideoTrackRecorder`/`AudioTrackRecorder`s and a single `WebmMuxer`.
+[`VideoTrackRecorder`]s are codec specific and encapsulate the necessary resources
+to get the job done.  All this is illustrated in the [diagram] below.
 
 
 [MediaRecorder class]: https://w3c.github.io/mediacapture-record/#mediarecorder-api

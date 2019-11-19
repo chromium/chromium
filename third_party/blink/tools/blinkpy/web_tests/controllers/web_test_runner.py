@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import collections
+import copy
 import itertools
 import logging
 import math
@@ -68,7 +69,6 @@ class WebTestRunner(object):
 
         self._expectations = None
         self._test_inputs = []
-        self._retry_attempt = 0
         self._shards_to_redo = []
 
         self._current_run_results = None
@@ -83,10 +83,8 @@ class WebTestRunner(object):
         # prevents content shell reuse.
         if not self._options.must_use_derived_batch_size and retry_attempt >= 1:
             batch_size = 1
-
         self._expectations = expectations
         self._test_inputs = test_inputs
-        self._retry_attempt = retry_attempt
 
         test_run_results = TestRunResults(self._expectations, len(test_inputs) + len(tests_to_skip))
         self._current_run_results = test_run_results
@@ -151,7 +149,6 @@ class WebTestRunner(object):
         return test_run_results
 
     def _reorder_tests_by_args(self, shards):
-        reordered_shards = []
         for shard in shards:
             tests_by_args = collections.OrderedDict()
             for test_input in shard.test_inputs:
@@ -162,17 +159,12 @@ class WebTestRunner(object):
             shard.test_inputs = list(itertools.chain(*tests_by_args.values()))
 
     def _worker_factory(self, worker_connection):
-        results_directory = self._results_directory
-        if self._retry_attempt > 0:
-            results_directory = self._filesystem.join(self._results_directory,
-                                                      'retry_%d' % self._retry_attempt)
-            self._filesystem.maybe_make_directory(results_directory)
-        return Worker(worker_connection, results_directory, self._options)
+        return Worker(worker_connection, self._results_directory, self._options)
 
     def _mark_interrupted_tests_as_skipped(self, test_run_results):
         for test_input in self._test_inputs:
             if test_input.test_name not in test_run_results.results_by_name:
-                result = test_results.TestResult(test_input.test_name, [test_failures.FailureEarlyExit()])
+                result = test_results.TestResult(test_input.test_name, failures=[test_failures.FailureEarlyExit()])
                 # FIXME: We probably need to loop here if there are multiple iterations.
                 # FIXME: Also, these results are really neither expected nor unexpected. We probably
                 # need a third type of result.
@@ -199,8 +191,7 @@ class WebTestRunner(object):
                 test_run_results.unexpected_crashes, test_run_results.unexpected_timeouts))
 
     def _update_summary_with_result(self, test_run_results, result):
-        expected = self._expectations.matches_an_expected_result(
-            result.test_name, result.type, self._options.enable_sanitizer)
+        expected = self._expectations.matches_an_expected_result(result.test_name, result.type)
         expectation_string = self._expectations.get_expectations_string(result.test_name)
         actual_string = self._expectations.expectation_to_string(result.type)
 
@@ -242,15 +233,17 @@ class Worker(object):
         self._worker_number = caller.worker_number
         self._name = caller.name
         self._results_directory = results_directory
-        self._options = options
+        # We have already updated the manifest when collecting tests, so skip it
+        # in the workers (this also prevents race conditions among workers).
+        self._options = copy.copy(options)
+        self._options.manifest_update = False
 
         # The remaining fields are initialized in start()
         self._host = None
         self._port = None
         self._batch_count = None
         self._filesystem = None
-        self._primary_driver = None
-        self._secondary_driver = None
+        self._driver = None
         self._num_tests = 0
 
     def __del__(self):
@@ -264,11 +257,7 @@ class Worker(object):
         self._host = self._caller.host
         self._filesystem = self._host.filesystem
         self._port = self._host.port_factory.get(self._options.platform, self._options)
-        self._primary_driver = self._port.create_driver(self._worker_number)
-
-        if self._port.max_drivers_per_process() > 1:
-            self._secondary_driver = self._port.create_driver(self._worker_number)
-
+        self._driver = self._port.create_driver(self._worker_number)
         self._batch_count = 0
 
     def handle(self, name, source, test_list_name, test_inputs, batch_size):
@@ -280,9 +269,6 @@ class Worker(object):
                 self._caller.stop_running()
                 return
 
-        # Kill the secondary driver at the end of each test shard.
-        self._kill_driver(self._secondary_driver, 'secondary')
-
         self._caller.post('finished_test_list', test_list_name)
 
     def _update_test_input(self, test_input):
@@ -291,10 +277,9 @@ class Worker(object):
             test_input.reference_files = self._port.reference_files(test_input.test_name)
 
     def _run_test(self, test_input, shard_name, batch_size):
-        # If the batch size has been exceeded, kill the drivers.
+        # If the batch size has been exceeded, kill the driver.
         if batch_size > 0 and self._batch_count >= batch_size:
-            self._kill_driver(self._primary_driver, 'primary')
-            self._kill_driver(self._secondary_driver, 'secondary')
+            self._kill_driver()
             self._batch_count = 0
 
         self._batch_count += 1
@@ -306,7 +291,7 @@ class Worker(object):
         self._caller.post('started_test', test_input)
         result = single_test_runner.run_single_test(
             self._port, self._options, self._results_directory, self._name,
-            self._primary_driver, self._secondary_driver, test_input)
+            self._driver, test_input)
 
         result.shard_name = shard_name
         result.worker_name = self._name
@@ -319,49 +304,50 @@ class Worker(object):
 
     def stop(self):
         _log.debug('%s cleaning up', self._name)
-        self._kill_driver(self._primary_driver, 'primary')
-        self._kill_driver(self._secondary_driver, 'secondary')
+        self._kill_driver()
 
-    def _kill_driver(self, driver, label):
+    def _kill_driver(self):
         # Be careful about how and when we kill the driver; if driver.stop()
         # raises an exception, this routine may get re-entered via __del__.
-        if driver:
+        if self._driver:
             # When tracing we need to go through the standard shutdown path to
             # ensure that the trace is recorded properly.
             if any(i in ['--trace-startup', '--trace-shutdown']
                    for i in self._options.additional_driver_flag):
                 _log.debug('%s waiting %d seconds for %s driver to shutdown',
                            self._name, self._port.driver_stop_timeout(), label)
-                driver.stop(timeout_secs=self._port.driver_stop_timeout())
+                self._driver.stop(timeout_secs=self._port.driver_stop_timeout())
                 return
 
             # Otherwise, kill the driver immediately to speed up shutdown.
-            _log.debug('%s killing %s driver', self._name, label)
-            driver.stop()
+            _log.debug('%s killing driver', self._name)
+            self._driver.stop()
 
     def _clean_up_after_test(self, test_input, result):
-        test_name = test_input.test_name
+        test_description = test_input.test_name
+        test_args = self._port.args_for_test(test_input.test_name)
+        if test_args:
+            test_description += ' with args ' + ' '.join(test_args)
 
         if result.failures:
             # Check and kill the driver if we need to.
             if any([f.driver_needs_restart() for f in result.failures]):
                 # FIXME: Need more information in failure reporting so
                 # we know which driver needs to be restarted. For now
-                # we kill both drivers.
-                self._kill_driver(self._primary_driver, 'primary')
-                self._kill_driver(self._secondary_driver, 'secondary')
+                # we kill the driver.
+                self._kill_driver()
 
                 # Reset the batch count since the shell just bounced.
                 self._batch_count = 0
 
             # Print the error message(s).
-            _log.debug('%s %s failed:', self._name, test_name)
+            _log.debug('%s %s failed:', self._name, test_description)
             for f in result.failures:
                 _log.debug('%s  %s', self._name, f.message())
         elif result.type == test_expectations.SKIP:
-            _log.debug('%s %s skipped', self._name, test_name)
+            _log.debug('%s %s skipped', self._name, test_description)
         else:
-            _log.debug('%s %s passed', self._name, test_name)
+            _log.debug('%s %s passed', self._name, test_description)
 
 
 class TestShard(object):

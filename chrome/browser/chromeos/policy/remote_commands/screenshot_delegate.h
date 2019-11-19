@@ -28,19 +28,18 @@ class ScreenshotDelegate : public DeviceCommandScreenshotJob::Delegate {
 
   // DeviceCommandScreenshotJob::Delegate:
   bool IsScreenshotAllowed() override;
-  void TakeSnapshot(
-      gfx::NativeWindow window,
-      const gfx::Rect& source_rect,
-      const ui::GrabWindowSnapshotAsyncPNGCallback& callback) override;
+  void TakeSnapshot(gfx::NativeWindow window,
+                    const gfx::Rect& source_rect,
+                    ui::GrabWindowSnapshotAsyncPNGCallback callback) override;
   std::unique_ptr<UploadJob> CreateUploadJob(
       const GURL& upload_url,
       UploadJob::Delegate* delegate) override;
 
  private:
-  void StoreScreenshot(const ui::GrabWindowSnapshotAsyncPNGCallback& callback,
+  void StoreScreenshot(ui::GrabWindowSnapshotAsyncPNGCallback callback,
                        scoped_refptr<base::RefCountedMemory> png_data);
 
-  base::WeakPtrFactory<ScreenshotDelegate> weak_ptr_factory_;
+  base::WeakPtrFactory<ScreenshotDelegate> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ScreenshotDelegate);
 };

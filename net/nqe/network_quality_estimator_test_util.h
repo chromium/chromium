@@ -91,18 +91,11 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
 
   // Returns the effective connection type that was set using
   // |set_effective_connection_type|. If the connection type has not been set,
-  // then the base implementation is called.
-  EffectiveConnectionType GetRecentEffectiveConnectionType(
-      const base::TimeTicks& start_time) const override;
-
-  // Returns the effective connection type that was set using
-  // |set_effective_connection_type|. If the connection type has not been set,
   // then the base implementation is called. |http_rtt|, |transport_rtt| and
   // |downstream_throughput_kbps| are set to the values that were previously
   // set by calling set_recent_http_rtt(), set_recent_transport_rtt()
   // and set_recent_transport_rtt() methods, respectively.
-  EffectiveConnectionType GetRecentEffectiveConnectionTypeAndNetworkQuality(
-      const base::TimeTicks& start_time,
+  EffectiveConnectionType GetRecentEffectiveConnectionTypeUsingMetrics(
       base::TimeDelta* http_rtt,
       base::TimeDelta* transport_rtt,
       base::TimeDelta* end_to_end_rtt,
@@ -209,6 +202,11 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   void SetAndNotifyObserversOfEffectiveConnectionType(
       EffectiveConnectionType type);
 
+  // Updates the count of active P2P connections to |count| and notifies the
+  // registered observers that the active P2P connection counts has changed to
+  // |count|.
+  void SetAndNotifyObserversOfP2PActiveConnectionsCountChange(uint32_t count);
+
   void SetTransportRTTAtastECTSampleCount(size_t count) {
     transport_rtt_observation_count_last_ect_computation_ = count;
   }
@@ -244,6 +242,8 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   // network id and signal strength (instead of invoking platform APIs).
   nqe::internal::NetworkID GetCurrentNetworkID() const override;
   int32_t GetCurrentSignalStrength() const override;
+
+  base::Optional<net::EffectiveConnectionType> GetOverrideECT() const override;
 
   // Net log provided to network quality estimator.
   std::unique_ptr<net::BoundTestNetLog> net_log_;

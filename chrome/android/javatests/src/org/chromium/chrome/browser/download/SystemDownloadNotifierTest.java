@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.download.DownloadInfo.Builder;
-import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
@@ -36,7 +36,7 @@ public class SystemDownloadNotifierTest {
     private MockDownloadNotificationService mMockDownloadNotificationService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Looper.prepare();
         mMockDownloadNotificationService = new MockDownloadNotificationService();
         mSystemDownloadNotifier.setDownloadNotificationService(mMockDownloadNotificationService);

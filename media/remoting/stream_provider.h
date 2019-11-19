@@ -20,7 +20,7 @@ class MediaStream;
 // The media stream provider for Media Remoting receiver.
 class StreamProvider final : public MediaResource {
  public:
-  StreamProvider(RpcBroker* rpc_broker, const base::Closure& error_callback);
+  StreamProvider(RpcBroker* rpc_broker, base::OnceClosure error_callback);
 
   ~StreamProvider() override;
 
@@ -29,7 +29,7 @@ class StreamProvider final : public MediaResource {
 
   void Initialize(int remote_audio_handle,
                   int remote_video_handle,
-                  const base::Closure& callback);
+                  base::OnceClosure callback);
   void AppendBuffer(DemuxerStream::Type type,
                     scoped_refptr<DecoderBuffer> buffer);
   void FlushUntil(DemuxerStream::Type type, int count);
@@ -48,14 +48,14 @@ class StreamProvider final : public MediaResource {
   bool audio_stream_initialized_ = false;
   bool video_stream_initialized_ = false;
 
-  // Set when Initialize() is called, and will run only once when both video
-  // and audio streams are initialized or error occurs.
-  base::Closure init_done_callback_;
+  // Set when Initialize() is called, and will run when both video and audio
+  // streams are initialized or error occurs.
+  base::OnceClosure init_done_callback_;
 
-  // Run only once when first error occurs;
-  base::Closure error_callback_;
+  // Run when first error occurs;
+  base::OnceClosure error_callback_;
 
-  base::WeakPtrFactory<StreamProvider> weak_factory_;
+  base::WeakPtrFactory<StreamProvider> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(StreamProvider);
 };

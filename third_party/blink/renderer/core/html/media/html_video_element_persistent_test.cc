@@ -194,7 +194,7 @@ TEST_F(HTMLVideoElementPersistentTest, internalPseudoClassOnlyUAStyleSheet) {
 
   DummyExceptionStateForTesting exception_state;
 
-  EXPECT_FALSE(DivElement()->matches(":-webkit-full-screen"));
+  EXPECT_FALSE(DivElement()->matches(":fullscreen"));
   EXPECT_FALSE(DivElement()->matches(":-internal-video-persistent-ancestor",
                                      exception_state));
   EXPECT_TRUE(exception_state.HadException());
@@ -220,7 +220,7 @@ TEST_F(HTMLVideoElementPersistentTest, internalPseudoClassOnlyUAStyleSheet) {
   EXPECT_TRUE(VideoElement()->ContainsPersistentVideo());
 
   // The :internal-* rules apply only from the UA stylesheet.
-  EXPECT_TRUE(DivElement()->matches(":-webkit-full-screen"));
+  EXPECT_TRUE(DivElement()->matches(":fullscreen"));
   EXPECT_FALSE(DivElement()->matches(":-internal-video-persistent-ancestor",
                                      exception_state));
   EXPECT_TRUE(exception_state.HadException());

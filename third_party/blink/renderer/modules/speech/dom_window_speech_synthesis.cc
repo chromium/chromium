@@ -63,6 +63,16 @@ SpeechSynthesis* DOMWindowSpeechSynthesis::speechSynthesis(
   return DOMWindowSpeechSynthesis::From(window).speechSynthesis(script_state);
 }
 
+void DOMWindowSpeechSynthesis::Trace(blink::Visitor* visitor) {
+  visitor->Trace(speech_synthesis_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
+}
+
+void DOMWindowSpeechSynthesis::SetSpeechSynthesisForTesting(
+    SpeechSynthesis* synthesis) {
+  speech_synthesis_ = synthesis;
+}
+
 SpeechSynthesis* DOMWindowSpeechSynthesis::speechSynthesis(
     ScriptState* script_state) {
   if (!speech_synthesis_) {
@@ -70,11 +80,6 @@ SpeechSynthesis* DOMWindowSpeechSynthesis::speechSynthesis(
         SpeechSynthesis::Create(ExecutionContext::From(script_state));
   }
   return speech_synthesis_;
-}
-
-void DOMWindowSpeechSynthesis::Trace(blink::Visitor* visitor) {
-  visitor->Trace(speech_synthesis_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 }  // namespace blink

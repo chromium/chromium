@@ -18,10 +18,8 @@
 #include "cc/trees/layer_tree_host_single_thread_client.h"
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/swap_promise_monitor.h"
-#include "third_party/blink/public/platform/web_layer_tree_view.h"
+#include "content/common/content_export.h"
 #include "ui/gfx/geometry/rect.h"
-
-class GURL;
 
 namespace blink {
 namespace scheduler {
@@ -31,32 +29,19 @@ class WebThreadScheduler;
 
 namespace cc {
 class AnimationHost;
-class InputHandler;
-class Layer;
 class LayerTreeFrameSink;
 class LayerTreeHost;
 class LayerTreeSettings;
-class RenderFrameMetadataObserver;
 class TaskGraphRunner;
 class UkmRecorderFactory;
-class ScopedDeferMainFrameUpdate;
 }  // namespace cc
-
-namespace gfx {
-class ColorSpace;
-class Size;
-}  // namespace gfx
-
-namespace ui {
-class LatencyInfo;
-}
 
 namespace content {
 class LayerTreeViewDelegate;
 
-class LayerTreeView : public blink::WebLayerTreeView,
-                      public cc::LayerTreeHostClient,
-                      public cc::LayerTreeHostSingleThreadClient {
+class CONTENT_EXPORT LayerTreeView : public cc::LayerTreeHostClient,
+                                     public cc::LayerTreeHostSingleThreadClient,
+                                     public cc::LayerTreeHostSchedulingClient {
  public:
   // The |main_thread| is the task runner that the compositor will use for the
   // main thread (where it is constructed). The |compositor_thread| is the task
@@ -74,122 +59,27 @@ class LayerTreeView : public blink::WebLayerTreeView,
   void Initialize(const cc::LayerTreeSettings& settings,
                   std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory);
 
+  // Drops any references back to the delegate in preparation for being
+  // destroyed.
+  void Disconnect();
+
   cc::AnimationHost* animation_host() { return animation_host_.get(); }
 
   void SetVisible(bool visible);
-  const base::WeakPtr<cc::InputHandler>& GetInputHandler();
-  void SetNeedsDisplayOnAllLayers();
-  void SetRasterizeOnlyVisibleContent();
-  void SetNeedsRedrawRect(gfx::Rect damage_rect);
-
-  bool IsSurfaceSynchronizationEnabled() const;
-
-  // Indicates that blink needs a BeginFrame, but that nothing might actually be
-  // dirty. Calls to this should never be done directly, but should go through
-  // WebWidgetClient::ScheduleAnimate() instead, or they can bypass test
-  // overrides.
-  void SetNeedsBeginFrame();
-  // Like SetNeedsRedraw but forces the frame to be drawn, without early-outs.
-  // Redraw will be forced after the next commit
-  void SetNeedsForcedRedraw();
-  // Calling CreateLatencyInfoSwapPromiseMonitor() to get a scoped
-  // LatencyInfoSwapPromiseMonitor. During the life time of the
-  // LatencyInfoSwapPromiseMonitor, if SetNeedsCommit() or
-  // SetNeedsUpdateLayers() is called on LayerTreeHost, the original latency
-  // info will be turned into a LatencyInfoSwapPromise.
-  std::unique_ptr<cc::SwapPromiseMonitor> CreateLatencyInfoSwapPromiseMonitor(
-      ui::LatencyInfo* latency);
-  // Calling QueueSwapPromise() to directly queue a SwapPromise into
-  // LayerTreeHost.
-  void QueueSwapPromise(std::unique_ptr<cc::SwapPromise> swap_promise);
-  int GetSourceFrameNumber() const;
-  void NotifyInputThrottledUntilCommit();
-  const cc::Layer* GetRootLayer() const;
-  int ScheduleMicroBenchmark(
-      const std::string& name,
-      std::unique_ptr<base::Value> value,
-      base::OnceCallback<void(std::unique_ptr<base::Value>)> callback);
-  bool SendMessageToMicroBenchmark(int id, std::unique_ptr<base::Value> value);
-  void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id);
-  void SetRasterColorSpace(const gfx::ColorSpace& color_space);
-  void SetExternalPageScaleFactor(float page_scale_factor);
-  void ClearCachesOnNextCommit();
-  void SetContentSourceId(uint32_t source_id);
-  void SetViewportSizeAndScale(
-      const gfx::Size& device_viewport_size,
-      float device_scale_factor,
-      const viz::LocalSurfaceIdAllocation& local_surface_id_allocation);
-  void RequestNewLocalSurfaceId();
-  void RequestForceSendMetadata();
-  void SetViewportVisibleRect(const gfx::Rect& visible_rect);
-  void SetURLForUkm(const GURL& url);
-  // Call this if the compositor is becoming non-visible in a way that it won't
-  // be used any longer. In this case, becoming visible is longer but this
-  // releases more resources (such as its use of the GpuChannel).
-  // TODO(crbug.com/419087): This is to support a swapped out RenderWidget which
-  // should just be destroyed instead.
-  void ReleaseLayerTreeFrameSink();
-
-  // blink::WebLayerTreeView implementation.
-  viz::FrameSinkId GetFrameSinkId() override;
-  void SetNonBlinkManagedRootLayer(scoped_refptr<cc::Layer> layer);
-  void SetPageScaleFactorAndLimits(float page_scale_factor,
-                                   float minimum,
-                                   float maximum) override;
-  void StartPageScaleAnimation(const gfx::Vector2d& target_offset,
-                               bool use_anchor,
-                               float new_page_scale,
-                               double duration_sec) override;
-  bool HasPendingPageScaleAnimation() const override;
-  void HeuristicsForGpuRasterizationUpdated(bool matches_heuristics) override;
-  void CompositeAndReadbackAsync(
-      base::OnceCallback<void(const SkBitmap&)> callback) override;
-  // Synchronously performs the complete set of document lifecycle phases,
-  // including updates to the compositor state, optionally including
-  // rasterization.
-  void UpdateAllLifecyclePhasesAndCompositeForTesting(bool do_raster) override;
-  std::unique_ptr<cc::ScopedDeferMainFrameUpdate> DeferMainFrameUpdate()
-      override;
-  void StartDeferringCommits(base::TimeDelta timeout) override;
-  void StopDeferringCommits() override;
-  void SetMutatorClient(std::unique_ptr<cc::LayerTreeMutator>) override;
-  void SetPaintWorkletLayerPainterClient(
-      std::unique_ptr<cc::PaintWorkletLayerPainter>) override;
-  void ForceRecalculateRasterScales() override;
-  void SetEventListenerProperties(
-      cc::EventListenerClass eventClass,
-      cc::EventListenerProperties properties) override;
-  cc::EventListenerProperties EventListenerProperties(
-      cc::EventListenerClass eventClass) const override;
-  void SetHaveScrollEventHandlers(bool) override;
-  bool HaveScrollEventHandlers() const override;
-  int LayerTreeId() const override;
-  void NotifySwapTime(ReportTimeCallback callback) override;
-
-  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
-                                  cc::BrowserControlsState current,
-                                  bool animate) override;
-  void SetBrowserControlsHeight(float top_height,
-                                float bottom_height,
-                                bool shrink) override;
-  void SetBrowserControlsShownRatio(float) override;
-  void RequestDecode(const cc::PaintImage& image,
-                     base::OnceCallback<void(bool)> callback) override;
-  void RequestPresentationCallback(base::OnceClosure callback) override;
-
-  void SetOverscrollBehavior(const cc::OverscrollBehavior&) override;
 
   // cc::LayerTreeHostClient implementation.
   void WillBeginMainFrame() override;
   void DidBeginMainFrame() override;
+  void WillUpdateLayers() override;
   void DidUpdateLayers() override;
   void BeginMainFrame(const viz::BeginFrameArgs& args) override;
+  void OnDeferMainFrameUpdatesChanged(bool) override;
+  void OnDeferCommitsChanged(bool) override;
   void BeginMainFrameNotExpectedSoon() override;
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override;
   void UpdateLayerTreeHost() override;
   void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) override;
-  void RecordWheelAndTouchScrollingCount(bool has_scrolled_by_wheel,
-                                         bool has_scrolled_by_touch) override;
+  void RecordManipulationTypeCounts(cc::ManipulationInfo info) override;
   void SendOverscrollEventFromImplSide(
       const gfx::Vector2dF& overscroll_delta,
       cc::ElementId scroll_latched_element_id) override;
@@ -208,30 +98,24 @@ class LayerTreeView : public blink::WebLayerTreeView,
       const gfx::PresentationFeedback& feedback) override;
   void RecordStartOfFrameMetrics() override;
   void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time) override;
-  void DidGenerateLocalSurfaceIdAllocation(
-      const viz::LocalSurfaceIdAllocation& allocation) override {}
+  std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics()
+      override;
 
   // cc::LayerTreeHostSingleThreadClient implementation.
   void DidSubmitCompositorFrame() override;
   void DidLoseLayerTreeFrameSink() override;
-  void RequestBeginMainFrameNotExpected(bool new_state) override;
 
-  const cc::LayerTreeSettings& GetLayerTreeSettings() const;
-
-  // Sets the RenderFrameMetadataObserver, which is sent to the compositor
-  // thread for binding.
-  void SetRenderFrameObserver(
-      std::unique_ptr<cc::RenderFrameMetadataObserver> observer);
+  // cc::LayerTreeHostSchedulingClient implementation.
+  void DidScheduleBeginMainFrame() override;
+  void DidRunBeginMainFrame() override;
 
   void AddPresentationCallback(
       uint32_t frame_token,
       base::OnceCallback<void(base::TimeTicks)> callback);
 
   cc::LayerTreeHost* layer_tree_host() { return layer_tree_host_.get(); }
-
-  // Exposed for the WebTest harness to query.
-  bool CompositeIsSynchronousForTesting() const {
-    return CompositeIsSynchronous();
+  const cc::LayerTreeHost* layer_tree_host() const {
+    return layer_tree_host_.get();
   }
 
  protected:
@@ -240,29 +124,30 @@ class LayerTreeView : public blink::WebLayerTreeView,
  private:
   void SetLayerTreeFrameSink(
       std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink);
-  bool CompositeIsSynchronous() const;
-  void SynchronouslyComposite(bool raster,
-                              std::unique_ptr<cc::SwapPromise> swap_promise);
 
-  LayerTreeViewDelegate* const delegate_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   const scoped_refptr<base::SingleThreadTaskRunner> compositor_thread_;
   cc::TaskGraphRunner* const task_graph_runner_;
   blink::scheduler::WebThreadScheduler* const web_main_thread_scheduler_;
   const std::unique_ptr<cc::AnimationHost> animation_host_;
+
+  // The delegate_ becomes null when Disconnect() is called. After that, the
+  // class should do nothing in calls from the LayerTreeHost, and just wait to
+  // be destroyed. It is not expected to be used at all after Disconnect()
+  // outside of handling/dropping LayerTreeHost client calls.
+  LayerTreeViewDelegate* delegate_;
   std::unique_ptr<cc::LayerTreeHost> layer_tree_host_;
 
+  // This class should do nothing and access no pointers once this value becomes
+  // true.
   bool layer_tree_frame_sink_request_failed_while_invisible_ = false;
 
-  bool in_synchronous_compositor_update_ = false;
-
-  viz::FrameSinkId frame_sink_id_;
   base::circular_deque<
       std::pair<uint32_t,
                 std::vector<base::OnceCallback<void(base::TimeTicks)>>>>
       presentation_callbacks_;
 
-  base::WeakPtrFactory<LayerTreeView> weak_factory_;
+  base::WeakPtrFactory<LayerTreeView> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LayerTreeView);
 };

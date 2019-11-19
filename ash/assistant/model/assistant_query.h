@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
 
 namespace ash {
 
@@ -21,24 +22,13 @@ enum class AssistantQueryType {
   kVoice,  // See AssistantVoiceQuery.
 };
 
-// Defines possible source of an Assistant query. These values are persisted
-// to logs. Entries should not be renumbered and numeric values should never
-// be reused. Only append to this enum is allowed if the possible source grows.
-enum class AssistantQuerySource {
-  kUnspecified = 0,
-  kDeepLink = 1,
-  kDialogPlateTextField = 2,
-  kStylus = 3,
-  kSuggestionChip = 4,
-  kVoiceInput = 5,
-  kMaxValue = kVoiceInput
-};
-
 // AssistantQuery --------------------------------------------------------------
 
 // Base class for an Assistant query.
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantQuery {
  public:
+  using AssistantQuerySource = chromeos::assistant::mojom::AssistantQuerySource;
+
   virtual ~AssistantQuery() = default;
 
   // Returns the type for the query.
@@ -56,7 +46,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantQuery {
 
  private:
   const AssistantQueryType type_;
-
   const AssistantQuerySource source_;
 
   DISALLOW_COPY_AND_ASSIGN(AssistantQuery);
@@ -87,9 +76,7 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantNullQuery
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantTextQuery
     : public AssistantQuery {
  public:
-  AssistantTextQuery(
-      const std::string& text = std::string(),
-      AssistantQuerySource source = AssistantQuerySource::kUnspecified)
+  AssistantTextQuery(const std::string& text, AssistantQuerySource source)
       : AssistantQuery(AssistantQueryType::kText, source), text_(text) {}
 
   ~AssistantTextQuery() override = default;

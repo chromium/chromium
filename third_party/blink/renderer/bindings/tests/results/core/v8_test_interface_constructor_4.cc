@@ -10,6 +10,8 @@
 // clang-format off
 #include "third_party/blink/renderer/bindings/tests/results/core/v8_test_interface_constructor_4.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -20,6 +22,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
+#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 
 namespace blink {
@@ -70,7 +73,7 @@ static void Constructor1(const v8::FunctionCallbackInfo<v8::Value>& info) {
   TestInterfaceConstructor4* test_interface_4_arg;
   test_interface_4_arg = V8TestInterfaceConstructor4::ToImplWithTypeCheck(info.GetIsolate(), info[0]);
   if (!test_interface_4_arg) {
-    V8ThrowException::ThrowTypeError(info.GetIsolate(), ExceptionMessages::FailedToConstruct("TestInterfaceConstructor4", "parameter 1 is not of type 'TestInterfaceConstructor4'."));
+    V8ThrowException::ThrowTypeError(info.GetIsolate(), ExceptionMessages::FailedToConstruct("TestInterfaceConstructor4", ExceptionMessages::ArgumentNotOfType(0, "TestInterfaceConstructor4")));
     return;
   }
 

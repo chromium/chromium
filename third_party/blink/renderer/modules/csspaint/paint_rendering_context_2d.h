@@ -20,25 +20,22 @@ namespace blink {
 class CanvasImageSource;
 class Color;
 
+// In our internal implementation, there are different kinds of canvas such as
+// recording canvas, GPU canvas. The CSS Paint API uses the recording canvas and
+// this class is specifically designed for the recording canvas.
+//
+// The main difference between this class and other contexts is that
+// PaintRenderingContext2D operates on CSS pixels rather than physical pixels.
 class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
                                                public BaseRenderingContext2D {
   DEFINE_WRAPPERTYPEINFO();
   USING_GARBAGE_COLLECTED_MIXIN(PaintRenderingContext2D);
 
  public:
-  static PaintRenderingContext2D* Create(
-      const IntSize& container_size,
-      const CanvasColorParams& color_params,
-      const PaintRenderingContext2DSettings* context_settings,
-      float zoom) {
-    return MakeGarbageCollected<PaintRenderingContext2D>(
-        container_size, color_params, context_settings, zoom);
-  }
-
   PaintRenderingContext2D(const IntSize& container_size,
-                          const CanvasColorParams&,
                           const PaintRenderingContext2DSettings*,
-                          float zoom);
+                          float zoom,
+                          float device_scale_factor);
 
   void Trace(blink::Visitor* visitor) override {
     visitor->Trace(context_settings_);
@@ -59,7 +56,6 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
 
   cc::PaintCanvas* DrawingCanvas() const final;
   cc::PaintCanvas* ExistingDrawingCanvas() const final;
-  void DisableDeferral(DisableDeferralReason) final {}
 
   void DidDraw(const SkIRect&) final;
 
@@ -88,6 +84,14 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   bool CanCreateCanvas2dResourceProvider() const final { return false; }
   bool IsAccelerated() const final { return false; }
 
+  void setTransform(double m11,
+                    double m12,
+                    double m21,
+                    double m22,
+                    double dx,
+                    double dy) final;
+  void setTransform(DOMMatrix2DInit*, ExceptionState&) final;
+
   sk_sp<PaintRecord> GetRecord();
 
  protected:
@@ -101,10 +105,17 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   std::unique_ptr<PaintRecorder> paint_recorder_;
   sk_sp<PaintRecord> previous_frame_;
   IntSize container_size_;
-  const CanvasColorParams& color_params_;
   Member<const PaintRenderingContext2DSettings> context_settings_;
   bool did_record_draw_commands_in_paint_recorder_;
-  float effective_zoom_;
+  // The paint worklet canvas operates on CSS pixels, and that's different than
+  // the HTML canvas which operates on physical pixels. In other words, the
+  // paint worklet canvas needs to handle device scale factor and browser zoom,
+  // and this is designed for that purpose.
+  const float effective_zoom_;
+  // On platforms where zoom_for_dsf is enabled, the |effective_zoom_|
+  // accounts for the device scale factor. For platforms where the feature is
+  // not enabled (currently Mac only), we need this extra variable.
+  const float device_scale_factor_;
 
   DISALLOW_COPY_AND_ASSIGN(PaintRenderingContext2D);
 };

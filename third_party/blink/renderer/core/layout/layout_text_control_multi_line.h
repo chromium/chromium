@@ -40,11 +40,10 @@ class LayoutTextControlMultiLine final : public LayoutTextControl {
   }
 
   bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation& location_in_container,
-                   const LayoutPoint& accumulated_offset,
+                   const HitTestLocation&,
+                   const PhysicalOffset& accumulated_offset,
                    HitTestAction) override;
 
-  float GetAvgCharWidth(const AtomicString& family) const override;
   LayoutUnit PreferredContentLogicalWidth(float char_width) const override;
   LayoutUnit ComputeControlLogicalHeight(
       LayoutUnit line_height,

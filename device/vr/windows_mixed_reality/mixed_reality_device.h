@@ -13,21 +13,21 @@
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/vr_device_base.h"
 #include "device/vr/windows/compositor_base.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace device {
 
 class DEVICE_VR_EXPORT MixedRealityDevice
     : public VRDeviceBase,
       public mojom::XRSessionController,
-      public mojom::IsolatedXRGamepadProviderFactory,
       public mojom::XRCompositorHost {
  public:
   MixedRealityDevice();
   ~MixedRealityDevice() override;
 
-  mojom::IsolatedXRGamepadProviderFactoryPtr BindGamepadFactory();
-  mojom::XRCompositorHostPtr BindCompositorHost();
+  mojo::PendingRemote<mojom::XRCompositorHost> BindCompositorHost();
 
  private:
   // VRDeviceBase
@@ -38,13 +38,9 @@ class DEVICE_VR_EXPORT MixedRealityDevice
   // XRSessionController
   void SetFrameDataRestricted(bool restricted) override;
 
-  // mojom::IsolatedXRGamepadProviderFactory
-  void GetIsolatedXRGamepadProvider(
-      mojom::IsolatedXRGamepadProviderRequest provider_request) override;
-
   // XRCompositorHost
   void CreateImmersiveOverlay(
-      mojom::ImmersiveOverlayRequest overlay_request) override;
+      mojo::PendingReceiver<mojom::ImmersiveOverlay> overlay_receiver) override;
 
   void CreateRenderLoop();
   void Shutdown();
@@ -56,16 +52,13 @@ class DEVICE_VR_EXPORT MixedRealityDevice
 
   std::unique_ptr<XRCompositorCommon> render_loop_;
 
-  mojo::Binding<mojom::IsolatedXRGamepadProviderFactory>
-      gamepad_provider_factory_binding_;
-  mojom::IsolatedXRGamepadProviderRequest provider_request_;
+  mojo::Receiver<mojom::XRCompositorHost> compositor_host_receiver_{this};
+  mojo::PendingReceiver<mojom::ImmersiveOverlay> overlay_receiver_;
 
-  mojo::Binding<mojom::XRCompositorHost> compositor_host_binding_;
-  mojom::ImmersiveOverlayRequest overlay_request_;
+  mojo::Receiver<mojom::XRSessionController> exclusive_controller_receiver_{
+      this};
 
-  mojo::Binding<mojom::XRSessionController> exclusive_controller_binding_;
-
-  base::WeakPtrFactory<MixedRealityDevice> weak_ptr_factory_;
+  base::WeakPtrFactory<MixedRealityDevice> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MixedRealityDevice);
 };

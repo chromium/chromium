@@ -230,7 +230,7 @@ bool GPUTracer::EndDecoding() {
             marker.trace_->End();
 
             finished_traces_.push_back(marker.trace_);
-            marker.trace_ = 0;
+            marker.trace_.reset();
           }
         }
       }
@@ -382,7 +382,7 @@ void GPUTracer::ClearOngoingTraces(bool have_context) {
       TraceMarker& marker = markers_[n][i];
       if (marker.trace_.get()) {
         marker.trace_->Destroy(have_context);
-        marker.trace_ = 0;
+        marker.trace_.reset();
       }
     }
   }

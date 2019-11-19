@@ -14,6 +14,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -39,8 +40,7 @@ class HttpServer {
                                const HttpServerRequestInfo& info) = 0;
     virtual void OnWebSocketRequest(int connection_id,
                                     const HttpServerRequestInfo& info) = 0;
-    virtual void OnWebSocketMessage(int connection_id,
-                                    const std::string& data) = 0;
+    virtual void OnWebSocketMessage(int connection_id, std::string data) = 0;
     virtual void OnClose(int connection_id) = 0;
   };
 
@@ -56,7 +56,7 @@ class HttpServer {
                        const HttpServerRequestInfo& request,
                        NetworkTrafficAnnotationTag traffic_annotation);
   void SendOverWebSocket(int connection_id,
-                         const std::string& data,
+                         base::StringPiece data,
                          NetworkTrafficAnnotationTag traffic_annotation);
   // Sends the provided data directly to the given connection. No validation is
   // performed that data constitutes a valid HTTP response. A valid HTTP
@@ -131,7 +131,7 @@ class HttpServer {
   int last_id_;
   std::map<int, std::unique_ptr<HttpConnection>> id_to_connection_;
 
-  base::WeakPtrFactory<HttpServer> weak_ptr_factory_;
+  base::WeakPtrFactory<HttpServer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HttpServer);
 };

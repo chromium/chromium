@@ -19,7 +19,7 @@ namespace chrome {
 GURL GetTargetTabUrl(SessionID session_id, int index);
 
 // Get the profile that should be used to open the feedback dialog.
-Profile* GetFeedbackProfile(Browser* browser);
+Profile* GetFeedbackProfile(const Browser* browser);
 
 }  // namespace chrome
 

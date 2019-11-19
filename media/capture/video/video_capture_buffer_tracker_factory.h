@@ -17,7 +17,8 @@ class VideoCaptureBufferTracker;
 class CAPTURE_EXPORT VideoCaptureBufferTrackerFactory {
  public:
   virtual ~VideoCaptureBufferTrackerFactory() {}
-  virtual std::unique_ptr<VideoCaptureBufferTracker> CreateTracker() = 0;
+  virtual std::unique_ptr<VideoCaptureBufferTracker> CreateTracker(
+      VideoCaptureBufferType buffer_type) = 0;
 };
 
 }  // namespace media

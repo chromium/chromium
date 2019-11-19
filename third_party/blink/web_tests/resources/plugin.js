@@ -4,7 +4,7 @@ function startAfterLoadAndFinish(f, node) {
         testRunner.waitUntilDone();
     window.addEventListener('load', function() {
         if (window.internals)
-            internals.updateLayoutIgnorePendingStylesheetsAndRunPostLayoutTasks(node);
+            internals.updateLayoutAndRunPostLayoutTasks(node);
         if (f)
             f();
         testRunner.notifyDone();

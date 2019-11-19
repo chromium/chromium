@@ -40,12 +40,8 @@ namespace blink {
 
 class Document;
 
-class VisitedLinkState : public GarbageCollectedFinalized<VisitedLinkState> {
+class VisitedLinkState final : public GarbageCollected<VisitedLinkState> {
  public:
-  static VisitedLinkState* Create(const Document& document) {
-    return MakeGarbageCollected<VisitedLinkState>(document);
-  }
-
   explicit VisitedLinkState(const Document&);
 
   void InvalidateStyleForAllLinks(bool invalidate_visited_link_hashes);

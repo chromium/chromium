@@ -34,7 +34,6 @@ class TestAutofillManager : public AutofillManager {
   ~TestAutofillManager() override;
 
   // AutofillManager overrides.
-  bool IsAutofillEnabled() const override;
   bool IsProfileAutofillEnabled() const override;
   bool IsCreditCardAutofillEnabled() const override;
   void UploadFormData(const FormStructure& submitted_form,
@@ -61,11 +60,9 @@ class TestAutofillManager : public AutofillManager {
 
   const std::string GetSubmittedFormSignature();
 
-  void SetAutofillEnabled(bool autofill_enabled);
+  void SetProfileAutofillEnabled(bool profile_enabled);
 
-  void SetProfileEnabled(bool profile_enabled);
-
-  void SetCreditCardEnabled(bool credit_card_enabled);
+  void SetCreditCardAutofillEnabled(bool credit_card_enabled);
 
   void SetExpectedSubmittedFieldTypes(
       const std::vector<ServerFieldTypeSet>& expected_types);
@@ -78,9 +75,8 @@ class TestAutofillManager : public AutofillManager {
 
  private:
   TestPersonalDataManager* personal_data_;  // Weak reference.
-  bool autofill_enabled_ = true;
-  bool profile_enabled_ = true;
-  bool credit_card_enabled_ = true;
+  bool profile_autofill_enabled_ = true;
+  bool credit_card_autofill_enabled_ = true;
   bool call_parent_upload_form_data_ = false;
   base::Optional<bool> expected_observed_submission_;
 

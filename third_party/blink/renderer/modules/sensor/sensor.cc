@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/sensor/sensor.h"
 
+#include <utility>
+
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 #include "services/device/public/mojom/sensor.mojom-blink.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
@@ -15,6 +17,7 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_error_event.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_provider_proxy.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 
 namespace blink {
@@ -65,8 +68,8 @@ Sensor::Sensor(ExecutionContext* execution_context,
           "Maximum allowed frequency value for this sensor type is %.0f Hz.",
           max_allowed_frequency);
       ConsoleMessage* console_message = ConsoleMessage::Create(
-          kJSMessageSource, mojom::ConsoleMessageLevel::kInfo,
-          std::move(message));
+          mojom::ConsoleMessageSource::kJavaScript,
+          mojom::ConsoleMessageLevel::kInfo, std::move(message));
       execution_context->AddConsoleMessage(console_message);
     }
   }
@@ -233,7 +236,7 @@ void Sensor::OnSensorReadingChanged() {
     pending_reading_notification_ = PostDelayedCancellableTask(
         *GetExecutionContext()->GetTaskRunner(TaskType::kSensor), FROM_HERE,
         std::move(sensor_reading_changed),
-        WTF::TimeDelta::FromSecondsD(waitingTime));
+        base::TimeDelta::FromSecondsD(waitingTime));
   }
 }
 
@@ -330,8 +333,8 @@ void Sensor::HandleError(DOMExceptionCode code,
 
   Deactivate();
 
-  auto* error =
-      DOMException::Create(code, sanitized_message, unsanitized_message);
+  auto* error = MakeGarbageCollected<DOMException>(code, sanitized_message,
+                                                   unsanitized_message);
   pending_error_notification_ = PostCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kSensor), FROM_HERE,
       WTF::Bind(&Sensor::NotifyError, WrapWeakPersistent(this),
@@ -349,12 +352,13 @@ void Sensor::NotifyActivated() {
   state_ = SensorState::kActivated;
 
   if (hasReading()) {
-    // If reading has already arrived, send initial 'reading' notification
-    // right away.
+    // If reading has already arrived, process the reading values (a subclass
+    // may do some filtering, for example) and then send an initial "reading"
+    // event right away.
     DCHECK(!pending_reading_notification_.IsActive());
     pending_reading_notification_ = PostCancellableTask(
         *GetExecutionContext()->GetTaskRunner(TaskType::kSensor), FROM_HERE,
-        WTF::Bind(&Sensor::NotifyReading, WrapWeakPersistent(this)));
+        WTF::Bind(&Sensor::OnSensorReadingChanged, WrapWeakPersistent(this)));
   }
 
   DispatchEvent(*Event::Create(event_type_names::kActivate));

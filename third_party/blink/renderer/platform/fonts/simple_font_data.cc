@@ -35,11 +35,6 @@
 #include <memory>
 #include <utility>
 
-#include "SkFontMetrics.h"
-#include "SkPath.h"
-#include "SkTypeface.h"
-#include "SkTypes.h"
-
 #include "base/memory/ptr_util.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
@@ -51,6 +46,10 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/skia/include/core/SkFontMetrics.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkTypeface.h"
+#include "third_party/skia/include/core/SkTypes.h"
 
 namespace blink {
 
@@ -191,11 +190,9 @@ const SimpleFontData* SimpleFontData::FontDataForCharacter(UChar32) const {
 }
 
 Glyph SimpleFontData::GlyphForCharacter(UChar32 codepoint) const {
-  uint16_t glyph;
   SkTypeface* typeface = PlatformData().Typeface();
   CHECK(typeface);
-  typeface->charsToGlyphs(&codepoint, SkTypeface::kUTF32_Encoding, &glyph, 1);
-  return glyph;
+  return typeface->unicharToGlyph(codepoint);
 }
 
 bool SimpleFontData::IsSegmented() const {
@@ -205,7 +202,7 @@ bool SimpleFontData::IsSegmented() const {
 scoped_refptr<SimpleFontData> SimpleFontData::SmallCapsFontData(
     const FontDescription& font_description) const {
   if (!derived_font_data_)
-    derived_font_data_ = DerivedFontData::Create();
+    derived_font_data_ = std::make_unique<DerivedFontData>();
   if (!derived_font_data_->small_caps)
     derived_font_data_->small_caps =
         CreateScaledFontData(font_description, kSmallCapsFontSizeMultiplier);
@@ -216,17 +213,12 @@ scoped_refptr<SimpleFontData> SimpleFontData::SmallCapsFontData(
 scoped_refptr<SimpleFontData> SimpleFontData::EmphasisMarkFontData(
     const FontDescription& font_description) const {
   if (!derived_font_data_)
-    derived_font_data_ = DerivedFontData::Create();
+    derived_font_data_ = std::make_unique<DerivedFontData>();
   if (!derived_font_data_->emphasis_mark)
     derived_font_data_->emphasis_mark =
         CreateScaledFontData(font_description, kEmphasisMarkFontSizeMultiplier);
 
   return derived_font_data_->emphasis_mark;
-}
-
-std::unique_ptr<SimpleFontData::DerivedFontData>
-SimpleFontData::DerivedFontData::Create() {
-  return base::WrapUnique(new DerivedFontData);
 }
 
 scoped_refptr<SimpleFontData> SimpleFontData::CreateScaledFontData(

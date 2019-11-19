@@ -93,9 +93,14 @@ constexpr int kTerminateSignals[] = {
 bool InstallHandlers(const std::vector<int>& signals,
                      Signals::Handler handler,
                      int flags,
-                     Signals::OldActions* old_actions) {
+                     Signals::OldActions* old_actions,
+                     const std::set<int>* unhandled_signals) {
   bool success = true;
   for (int sig : signals) {
+    if (unhandled_signals &&
+        unhandled_signals->find(sig) != unhandled_signals->end()) {
+      continue;
+    }
     success &= Signals::InstallHandler(
         sig,
         handler,
@@ -151,13 +156,15 @@ bool Signals::InstallDefaultHandler(int sig) {
 // static
 bool Signals::InstallCrashHandlers(Handler handler,
                                    int flags,
-                                   OldActions* old_actions) {
+                                   OldActions* old_actions,
+                                   const std::set<int>* unhandled_signals) {
   return InstallHandlers(
       std::vector<int>(kCrashSignals,
                        kCrashSignals + base::size(kCrashSignals)),
       handler,
       flags,
-      old_actions);
+      old_actions,
+      unhandled_signals);
 }
 
 // static
@@ -169,7 +176,8 @@ bool Signals::InstallTerminateHandlers(Handler handler,
                        kTerminateSignals + base::size(kTerminateSignals)),
       handler,
       flags,
-      old_actions);
+      old_actions,
+      nullptr);
 }
 
 // static

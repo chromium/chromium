@@ -41,10 +41,8 @@
 - (IBAction)newDocument:(id)sender {
   content::ShellBrowserContext* browserContext =
       content::ShellContentBrowserClient::Get()->browser_context();
-  content::Shell::CreateNewWindow(browserContext,
-                                  GURL(url::kAboutBlankURL),
-                                  NULL,
-                                  gfx::Size());
+  content::Shell::CreateNewWindow(browserContext, GURL(url::kAboutBlankURL),
+                                  nullptr, gfx::Size());
 }
 
 - (void)addNativeEventProcessorObserver:

@@ -10,6 +10,9 @@
 #include <math.h>
 
 #include "base/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/stream_algorithms.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -22,38 +25,6 @@
 namespace blink {
 
 namespace {
-
-// ResolveMethod implements part of CreateAlgorithmFromUnderlyingMethod and
-// CallOrNoop1.
-v8::MaybeLocal<v8::Value> ResolveMethod(ScriptState* script_state,
-                                        v8::Local<v8::Object> object,
-                                        const char* method_name,
-                                        const char* name_for_error,
-                                        ExceptionState& exception_state) {
-  auto* isolate = script_state->GetIsolate();
-  v8::TryCatch try_catch(isolate);
-
-  // Algorithm steps from CreateAlgorithmFromUnderlyingMethod in the standard.
-  // https://streams.spec.whatwg.org/#create-algorithm-from-underlying-method
-  // 5. Let method be ? GetV(underlyingObject, methodName).
-  auto method_maybe = object->Get(script_state->GetContext(),
-                                  V8AtomicString(isolate, method_name));
-  v8::Local<v8::Value> method;
-  if (!method_maybe.ToLocal(&method)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
-    return v8::MaybeLocal<v8::Value>();
-  }
-
-  // 6. If method is not undefined,
-  //    a. If ! IsCallable(method) is false, throw a TypeError exception.
-  if (!method->IsFunction() && !method->IsUndefined()) {
-    exception_state.ThrowTypeError(String(name_for_error) +
-                                   " must be a function or undefined");
-    return v8::MaybeLocal<v8::Value>();
-  }
-
-  return method;
-}
 
 // PromiseRejectInternal() implements Promise.reject(_r_) from the ECMASCRIPT
 // standard, https://tc39.github.io/ecma262/#sec-promise.reject.
@@ -267,6 +238,14 @@ class JavaScriptStreamStartAlgorithm : public StreamStartAlgorithm {
   TraceWrapperV8Reference<v8::Value> controller_;
 };
 
+class TrivialStartAlgorithm : public StreamStartAlgorithm {
+ public:
+  v8::MaybeLocal<v8::Promise> Run(ScriptState* script_state,
+                                  ExceptionState&) override {
+    return PromiseResolveWithUndefined(script_state);
+  }
+};
+
 }  // namespace
 
 // TODO(ricea): For optimal performance, method_name should be cached as an
@@ -295,6 +274,47 @@ CORE_EXPORT StreamAlgorithm* CreateAlgorithmFromUnderlyingMethod(
     // 7. Return an algorithm which returns a promise resolved with undefined.
     return MakeGarbageCollected<TrivialStreamAlgorithm>();
   }
+
+  return CreateAlgorithmFromResolvedMethod(script_state, underlying_object,
+                                           method, extra_arg);
+}
+
+CORE_EXPORT v8::MaybeLocal<v8::Value> ResolveMethod(
+    ScriptState* script_state,
+    v8::Local<v8::Object> object,
+    const char* method_name,
+    const char* name_for_error,
+    ExceptionState& exception_state) {
+  auto* isolate = script_state->GetIsolate();
+  v8::TryCatch try_catch(isolate);
+
+  // Algorithm steps from CreateAlgorithmFromUnderlyingMethod in the standard.
+  // https://streams.spec.whatwg.org/#create-algorithm-from-underlying-method
+  // 5. Let method be ? GetV(underlyingObject, methodName).
+  auto method_maybe = object->Get(script_state->GetContext(),
+                                  V8AtomicString(isolate, method_name));
+  v8::Local<v8::Value> method;
+  if (!method_maybe.ToLocal(&method)) {
+    exception_state.RethrowV8Exception(try_catch.Exception());
+    return v8::MaybeLocal<v8::Value>();
+  }
+
+  // 6. If method is not undefined,
+  //    a. If ! IsCallable(method) is false, throw a TypeError exception.
+  if (!method->IsFunction() && !method->IsUndefined()) {
+    exception_state.ThrowTypeError(String(name_for_error) +
+                                   " must be a function or undefined");
+    return v8::MaybeLocal<v8::Value>();
+  }
+
+  return method;
+}
+
+CORE_EXPORT StreamAlgorithm* CreateAlgorithmFromResolvedMethod(
+    ScriptState* script_state,
+    v8::Local<v8::Object> underlying_object,
+    v8::Local<v8::Value> method,
+    v8::MaybeLocal<v8::Value> extra_arg) {
   DCHECK(method->IsFunction());
 
   auto* isolate = script_state->GetIsolate();
@@ -321,6 +341,10 @@ CORE_EXPORT StreamStartAlgorithm* CreateStartAlgorithm(
   return MakeGarbageCollected<JavaScriptStreamStartAlgorithm>(
       script_state->GetIsolate(), underlying_object, method_name_for_error,
       controller);
+}
+
+CORE_EXPORT StreamStartAlgorithm* CreateTrivialStartAlgorithm() {
+  return MakeGarbageCollected<TrivialStartAlgorithm>();
 }
 
 CORE_EXPORT v8::MaybeLocal<v8::Value> CallOrNoop1(
@@ -421,6 +445,10 @@ CORE_EXPORT StrategySizeAlgorithm* MakeSizeAlgorithmFromSizeFunction(
       script_state->GetIsolate(), size.As<v8::Function>());
 }
 
+CORE_EXPORT StrategySizeAlgorithm* CreateDefaultSizeAlgorithm() {
+  return MakeGarbageCollected<DefaultSizeAlgorithm>();
+}
+
 // PromiseResolve implements Promise.resolve(_x_) from the ECMASCRIPT standard,
 // https://tc39.github.io/ecma262/#sec-promise.resolve, except that the
 // Get(_x_, "constructor") step is skipped.
@@ -450,6 +478,310 @@ CORE_EXPORT v8::Local<v8::Promise> PromiseResolveWithUndefined(
 CORE_EXPORT v8::Local<v8::Promise> PromiseReject(ScriptState* script_state,
                                                  v8::Local<v8::Value> value) {
   return PromiseRejectInternal(script_state, value, 0);
+}
+
+CORE_EXPORT void GetReaderValidateOptions(ScriptState* script_state,
+                                          ScriptValue options,
+                                          ExceptionState& exception_state) {
+  // https://streams.spec.whatwg.org/#rs-get-reader
+  // The unpacking of |options| is indicated as part of the signature of the
+  // function in the standard.
+  v8::TryCatch block(script_state->GetIsolate());
+  v8::Local<v8::Value> mode;
+  v8::Local<v8::String> mode_string;
+  v8::Local<v8::Context> context = script_state->GetContext();
+  if (options.V8Value()->IsUndefined()) {
+    mode = v8::Undefined(script_state->GetIsolate());
+  } else {
+    v8::Local<v8::Object> v8_options;
+    if (!options.V8Value()->ToObject(context).ToLocal(&v8_options)) {
+      exception_state.RethrowV8Exception(block.Exception());
+      return;
+    }
+    if (!v8_options->Get(context, V8String(script_state->GetIsolate(), "mode"))
+             .ToLocal(&mode)) {
+      exception_state.RethrowV8Exception(block.Exception());
+      return;
+    }
+  }
+
+  // 3. Set mode to ? ToString(mode).
+  if (!mode->ToString(context).ToLocal(&mode_string)) {
+    exception_state.RethrowV8Exception(block.Exception());
+    return;
+  }
+
+  // 4. If mode is "byob", return ? AcquireReadableStreamBYOBReader(this, true).
+  if (ToCoreString(mode_string) == "byob") {
+    // TODO(ricea): Support BYOB readers.
+    exception_state.ThrowTypeError("invalid mode");
+    return;
+  }
+
+  if (!mode->IsUndefined()) {
+    // 5. Throw a RangeError exception.
+    exception_state.ThrowRangeError("invalid mode");
+    return;
+  }
+}
+
+CORE_EXPORT void PipeThroughExtractReadableWritable(
+    ScriptState* script_state,
+    const ReadableStream* stream,
+    ScriptValue transform_stream,
+    ScriptValue* readable_stream,
+    WritableStream** writable_stream,
+    ExceptionState& exception_state) {
+  DCHECK(readable_stream);
+  DCHECK(writable_stream);
+  // https://streams.spec.whatwg.org/#rs-pipe-through
+  // The first part of this function implements the unpacking of the {readable,
+  // writable} argument to the method.
+  v8::Local<v8::Value> pair_value = transform_stream.V8Value();
+  v8::Local<v8::Context> context = script_state->GetContext();
+
+  constexpr char kWritableIsNotWritableStream[] =
+      "parameter 1's 'writable' property is not a WritableStream.";
+  constexpr char kReadableIsNotReadableStream[] =
+      "parameter 1's 'readable' property is not a ReadableStream.";
+  constexpr char kWritableIsLocked[] = "parameter 1's 'writable' is locked.";
+
+  v8::Local<v8::Object> pair;
+  if (!pair_value->ToObject(context).ToLocal(&pair)) {
+    exception_state.ThrowTypeError(kWritableIsNotWritableStream);
+    return;
+  }
+
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Value> writable, readable;
+  {
+    v8::TryCatch block(isolate);
+    if (!pair->Get(context, V8String(isolate, "writable")).ToLocal(&writable)) {
+      exception_state.RethrowV8Exception(block.Exception());
+      return;
+    }
+    DCHECK(!block.HasCaught());
+
+    if (!pair->Get(context, V8String(isolate, "readable")).ToLocal(&readable)) {
+      exception_state.RethrowV8Exception(block.Exception());
+      return;
+    }
+    DCHECK(!block.HasCaught());
+  }
+
+  // 2. If ! IsWritableStream(_writable_) is *false*, throw a *TypeError*
+  //    exception.
+  WritableStream* dom_writable =
+      V8WritableStream::ToImplWithTypeCheck(isolate, writable);
+  if (!dom_writable) {
+    exception_state.ThrowTypeError(kWritableIsNotWritableStream);
+    return;
+  }
+
+  // 3. If ! IsReadableStream(_readable_) is *false*, throw a *TypeError*
+  //    exception.
+  if (!V8ReadableStream::HasInstance(readable, isolate)) {
+    exception_state.ThrowTypeError(kReadableIsNotReadableStream);
+    return;
+  }
+
+  // TODO(ricea): When aborting pipes is supported, implement step 5:
+  // 5. If _signal_ is not *undefined*, and _signal_ is not an instance of the
+  //    `AbortSignal` interface, throw a *TypeError* exception.
+
+  // 6. If ! IsReadableStreamLocked(*this*) is *true*, throw a *TypeError*
+  //    exception.
+  if (stream->IsLocked(script_state, exception_state).value_or(false)) {
+    exception_state.ThrowTypeError("Cannot pipe a locked stream");
+    return;
+  }
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  // 7. If ! IsWritableStreamLocked(_writable_) is *true*, throw a *TypeError*
+  //    exception.
+  if (dom_writable->IsLocked(script_state, exception_state).value_or(false)) {
+    exception_state.ThrowTypeError(kWritableIsLocked);
+    return;
+  }
+  if (exception_state.HadException()) {
+    return;
+  }
+  *writable_stream = dom_writable;
+  *readable_stream = ScriptValue(script_state->GetIsolate(), readable);
+}
+
+CORE_EXPORT WritableStream* PipeToCheckSourceAndDestination(
+    ScriptState* script_state,
+    ReadableStream* source,
+    ScriptValue destination_value,
+    ExceptionState& exception_state) {
+  // https://streams.spec.whatwg.org/#rs-pipe-to
+
+  // 2. If ! IsWritableStream(dest) is false, return a promise rejected with a
+  // TypeError exception.
+  WritableStream* destination = V8WritableStream::ToImplWithTypeCheck(
+      script_state->GetIsolate(), destination_value.V8Value());
+
+  if (!destination) {
+    exception_state.ThrowTypeError("Illegal invocation");
+    return nullptr;
+  }
+
+  // Step 3. is done separately afterwards.
+
+  // TODO(ricea): When aborting pipes is supported, implement step 4:
+  // 4. If signal is not undefined, and signal is not an instance of the
+  // AbortSignal interface, return a promise rejected with a TypeError
+  // exception.
+
+  // 5. If ! IsReadableStreamLocked(this) is true, return a promise rejected
+  // with a TypeError exception.
+  if (source->locked(script_state, exception_state) &&
+      !exception_state.HadException()) {
+    exception_state.ThrowTypeError("Cannot pipe a locked stream");
+    return nullptr;
+  }
+  if (exception_state.HadException())
+    return nullptr;
+
+  // 6. If ! IsWritableStreamLocked(dest) is true, return a promise rejected
+  // with a TypeError exception.
+  if (destination->locked(script_state, exception_state) &&
+      !exception_state.HadException()) {
+    exception_state.ThrowTypeError("Cannot pipe to a locked stream");
+    return nullptr;
+  }
+  if (exception_state.HadException())
+    return nullptr;
+
+  return destination;
+}
+
+ScriptValue CallTeeAndReturnBranchArray(ScriptState* script_state,
+                                        ReadableStream* readable,
+                                        ExceptionState& exception_state) {
+  // https://streams.spec.whatwg.org/#rs-tee
+  v8::Isolate* isolate = script_state->GetIsolate();
+  ReadableStream* branch1 = nullptr;
+  ReadableStream* branch2 = nullptr;
+
+  // 2. Let branches be ? ReadableStreamTee(this, false).
+  readable->Tee(script_state, &branch1, &branch2, exception_state);
+
+  if (!branch1 || !branch2)
+    return ScriptValue();
+
+  DCHECK(!exception_state.HadException());
+
+  // 3. Return ! CreateArrayFromList(branches).
+  v8::TryCatch block(isolate);
+  v8::Local<v8::Context> context = script_state->GetContext();
+  v8::Local<v8::Array> array = v8::Array::New(isolate, 2);
+  v8::Local<v8::Object> global = context->Global();
+
+  v8::Local<v8::Value> v8_branch1 = ToV8(branch1, global, isolate);
+  if (v8_branch1.IsEmpty()) {
+    exception_state.RethrowV8Exception(block.Exception());
+    return ScriptValue();
+  }
+  v8::Local<v8::Value> v8_branch2 = ToV8(branch2, global, isolate);
+  if (v8_branch1.IsEmpty()) {
+    exception_state.RethrowV8Exception(block.Exception());
+    return ScriptValue();
+  }
+  if (array->Set(context, V8String(isolate, "0"), v8_branch1).IsNothing()) {
+    exception_state.RethrowV8Exception(block.Exception());
+    return ScriptValue();
+  }
+  if (array->Set(context, V8String(isolate, "1"), v8_branch2).IsNothing()) {
+    exception_state.RethrowV8Exception(block.Exception());
+    return ScriptValue();
+  }
+  return ScriptValue(script_state->GetIsolate(), array);
+}
+
+void ScriptValueToObject(ScriptState* script_state,
+                         ScriptValue value,
+                         v8::Local<v8::Object>* object,
+                         ExceptionState& exception_state) {
+  auto* isolate = script_state->GetIsolate();
+  DCHECK(!value.IsEmpty());
+  auto v8_value = value.V8Value();
+  // All the object parameters in the standard are default-initialised to an
+  // empty object.
+  if (v8_value->IsUndefined()) {
+    *object = v8::Object::New(isolate);
+    return;
+  }
+  v8::TryCatch try_catch(isolate);
+  if (!v8_value->ToObject(script_state->GetContext()).ToLocal(object)) {
+    exception_state.RethrowV8Exception(try_catch.Exception());
+    return;
+  }
+}
+
+StrategyUnpacker::StrategyUnpacker(ScriptState* script_state,
+                                   ScriptValue strategy,
+                                   ExceptionState& exception_state) {
+  auto* isolate = script_state->GetIsolate();
+  auto context = script_state->GetContext();
+  v8::Local<v8::Object> strategy_object;
+  ScriptValueToObject(script_state, strategy, &strategy_object,
+                      exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  // This is used in several places. The steps here are taken from
+  // https://streams.spec.whatwg.org/#ws-constructor.
+  // 2. Let size be ? GetV(strategy, "size").
+  v8::TryCatch try_catch(isolate);
+  if (!strategy_object->Get(context, V8AtomicString(isolate, "size"))
+           .ToLocal(&size_)) {
+    exception_state.RethrowV8Exception(try_catch.Exception());
+    return;
+  }
+
+  // 3. Let highWaterMark be ? GetV(strategy, "highWaterMark").
+  if (!strategy_object->Get(context, V8AtomicString(isolate, "highWaterMark"))
+           .ToLocal(&high_water_mark_)) {
+    exception_state.RethrowV8Exception(try_catch.Exception());
+    return;
+  }
+}
+
+StrategySizeAlgorithm* StrategyUnpacker::MakeSizeAlgorithm(
+    ScriptState* script_state,
+    ExceptionState& exception_state) const {
+  DCHECK(!size_.IsEmpty());
+  // 6. Let sizeAlgorithm be ? MakeSizeAlgorithmFromSizeFunction(size).
+  return MakeSizeAlgorithmFromSizeFunction(script_state, size_,
+                                           exception_state);
+}
+
+double StrategyUnpacker::GetHighWaterMark(
+    ScriptState* script_state,
+    int default_value,
+    ExceptionState& exception_state) const {
+  DCHECK(!high_water_mark_.IsEmpty());
+  // 7. If highWaterMark is undefined, let highWaterMark be 1.
+  if (high_water_mark_->IsUndefined()) {
+    return default_value;
+  }
+
+  v8::TryCatch try_catch(script_state->GetIsolate());
+  v8::Local<v8::Number> high_water_mark_as_number;
+  if (!high_water_mark_->ToNumber(script_state->GetContext())
+           .ToLocal(&high_water_mark_as_number)) {
+    exception_state.RethrowV8Exception(try_catch.Exception());
+    return 0.0;
+  }
+
+  // 8. Set highWaterMark to ? ValidateAndNormalizeHighWaterMark(highWaterMark)
+  return ValidateAndNormalizeHighWaterMark(high_water_mark_as_number->Value(),
+                                           exception_state);
 }
 
 }  // namespace blink

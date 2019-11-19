@@ -5,12 +5,14 @@
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 
 #include "base/memory/ref_counted.h"
+#include "chrome/browser/complex_tasks/task_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/buildflags.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_window_delegate.h"
 #include "components/sync_sessions/synced_window_delegates_getter.h"
+#include "components/translate/content/browser/content_record_page_language.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -71,11 +73,13 @@ int TabContentsSyncedTabDelegate::GetEntryCount() const {
 }
 
 GURL TabContentsSyncedTabDelegate::GetVirtualURLAtIndex(int i) const {
+  DCHECK(web_contents_);
   NavigationEntry* entry = GetPossiblyPendingEntryAtIndex(web_contents_, i);
   return entry ? entry->GetVirtualURL() : GURL();
 }
 
 GURL TabContentsSyncedTabDelegate::GetFaviconURLAtIndex(int i) const {
+  DCHECK(web_contents_);
   NavigationEntry* entry = GetPossiblyPendingEntryAtIndex(web_contents_, i);
   return entry ? (entry->GetFavicon().valid ? entry->GetFavicon().url : GURL())
                : GURL();
@@ -83,6 +87,7 @@ GURL TabContentsSyncedTabDelegate::GetFaviconURLAtIndex(int i) const {
 
 ui::PageTransition TabContentsSyncedTabDelegate::GetTransitionAtIndex(
     int i) const {
+  DCHECK(web_contents_);
   NavigationEntry* entry = GetPossiblyPendingEntryAtIndex(web_contents_, i);
   // If we don't have an entry, there's not a coherent PageTransition we can
   // supply. There's no PageTransition::Unknown, so we just use the default,
@@ -91,9 +96,18 @@ ui::PageTransition TabContentsSyncedTabDelegate::GetTransitionAtIndex(
                : ui::PageTransition::PAGE_TRANSITION_LINK;
 }
 
+std::string TabContentsSyncedTabDelegate::GetPageLanguageAtIndex(int i) const {
+  DCHECK(web_contents_);
+  NavigationEntry* entry = GetPossiblyPendingEntryAtIndex(web_contents_, i);
+  // If we don't have an entry, return empty language.
+  return entry ? translate::GetPageLanguageFromNavigation(entry)
+               : std::string();
+}
+
 void TabContentsSyncedTabDelegate::GetSerializedNavigationAtIndex(
     int i,
     sessions::SerializedNavigationEntry* serialized_entry) const {
+  DCHECK(web_contents_);
   NavigationEntry* entry = GetPossiblyPendingEntryAtIndex(web_contents_, i);
   if (entry) {
     // Explicitly exclude page state when serializing the navigation entry.
@@ -149,6 +163,36 @@ bool TabContentsSyncedTabDelegate::ShouldSync(
   return false;
 }
 
+int64_t TabContentsSyncedTabDelegate::GetTaskIdForNavigationId(
+    int nav_id) const {
+  const tasks::TaskTabHelper* task_tab_helper = this->task_tab_helper();
+  if (task_tab_helper &&
+      task_tab_helper->get_task_id_for_navigation(nav_id) != nullptr) {
+    return task_tab_helper->get_task_id_for_navigation(nav_id)->id();
+  }
+  return -1;
+}
+
+int64_t TabContentsSyncedTabDelegate::GetParentTaskIdForNavigationId(
+    int nav_id) const {
+  const tasks::TaskTabHelper* task_tab_helper = this->task_tab_helper();
+  if (task_tab_helper &&
+      task_tab_helper->get_task_id_for_navigation(nav_id) != nullptr) {
+    return task_tab_helper->get_task_id_for_navigation(nav_id)->parent_id();
+  }
+  return -1;
+}
+
+int64_t TabContentsSyncedTabDelegate::GetRootTaskIdForNavigationId(
+    int nav_id) const {
+  const tasks::TaskTabHelper* task_tab_helper = this->task_tab_helper();
+  if (task_tab_helper &&
+      task_tab_helper->get_task_id_for_navigation(nav_id) != nullptr) {
+    return task_tab_helper->get_task_id_for_navigation(nav_id)->root_id();
+  }
+  return -1;
+}
+
 const content::WebContents* TabContentsSyncedTabDelegate::web_contents() const {
   return web_contents_;
 }
@@ -160,4 +204,11 @@ content::WebContents* TabContentsSyncedTabDelegate::web_contents() {
 void TabContentsSyncedTabDelegate::SetWebContents(
     content::WebContents* web_contents) {
   web_contents_ = web_contents;
+}
+
+const tasks::TaskTabHelper* TabContentsSyncedTabDelegate::task_tab_helper()
+    const {
+  if (web_contents_ == nullptr)
+    return nullptr;
+  return tasks::TaskTabHelper::FromWebContents(web_contents_);
 }

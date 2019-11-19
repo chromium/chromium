@@ -18,13 +18,8 @@ namespace gl {
 class GLImage;
 }
 
-namespace gfx {
-class NativePixmap;
-}
-
 namespace media {
 
-class VideoFrame;
 class VaapiWrapper;
 
 // Implementation of VaapiPicture based on NativePixmaps.
@@ -41,18 +36,12 @@ class VaapiPictureNativePixmap : public VaapiPicture {
       uint32_t texture_target);
   ~VaapiPictureNativePixmap() override;
 
-  static gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandleFromVideoFrame(
-      const VideoFrame* const video_frame);
-
   // VaapiPicture implementation.
   bool DownloadFromSurface(const scoped_refptr<VASurface>& va_surface) override;
   bool AllowOverlay() const override;
   VASurfaceID va_surface_id() const override;
 
  protected:
-  // Ozone buffer, the storage of the EGLImage and the VASurface.
-  scoped_refptr<gfx::NativePixmap> pixmap_;
-
   // GLImage bound to the GL textures used by the VDA client.
   scoped_refptr<gl::GLImage> gl_image_;
 

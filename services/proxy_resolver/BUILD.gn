@@ -2,30 +2,42 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//v8/gni/v8.gni")
+
 source_set("lib") {
   sources = [
     "host_resolver_mojo.cc",
     "host_resolver_mojo.h",
     "mojo_proxy_resolver_v8_tracing_bindings.h",
+    "pac_js_library.h",
+    "proxy_host_resolver.h",
     "proxy_resolver_factory_impl.cc",
     "proxy_resolver_factory_impl.h",
     "proxy_resolver_impl.cc",
     "proxy_resolver_impl.h",
-    "proxy_resolver_service.cc",
-    "proxy_resolver_service.h",
+    "proxy_resolver_v8.cc",
+    "proxy_resolver_v8.h",
+    "proxy_resolver_v8_tracing.cc",
+    "proxy_resolver_v8_tracing.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//v8:external_startup_data",
+  ]
 
   deps = [
     "//base",
+    "//gin",
     "//mojo/public/cpp/bindings",
-    "//net",
-    "//net:net_with_v8",
     "//services/service_manager",
+    "//url",
+    "//v8",
   ]
 
   public_deps = [
+    "//net",
+    "//net:constants",
     "//services/network/public/mojom:mojom_ip_address",
     "//services/proxy_resolver/public/mojom",
     "//services/service_manager/public/cpp",
@@ -37,10 +49,13 @@ source_set("tests") {
 
   sources = [
     "host_resolver_mojo_unittest.cc",
+    "mock_proxy_host_resolver.cc",
+    "mock_proxy_host_resolver.h",
     "mojo_proxy_resolver_v8_tracing_bindings_unittest.cc",
     "proxy_resolver_factory_impl_unittest.cc",
     "proxy_resolver_impl_unittest.cc",
-    "proxy_resolver_service_unittest.cc",
+    "proxy_resolver_v8_tracing_unittest.cc",
+    "proxy_resolver_v8_unittest.cc",
   ]
 
   deps = [
@@ -53,5 +68,17 @@ source_set("tests") {
     "//testing/gtest",
   ]
 
+  if (v8_use_external_startup_data) {
+    deps += [ "//gin" ]
+  }
+
+  if (is_android) {
+    deps += [ "//v8:v8_external_startup_data_assets" ]
+  }
+
   configs += [ "//v8:external_startup_data" ]
+
+  data = [
+    "test/data/",
+  ]
 }

@@ -46,7 +46,7 @@ class TtsHandler : public SettingsPageUIHandler,
   int GetVoiceLangMatchScore(const content::VoiceData* voice,
                              const std::string& app_locale);
 
-  base::WeakPtrFactory<TtsHandler> weak_factory_;
+  base::WeakPtrFactory<TtsHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TtsHandler);
 };

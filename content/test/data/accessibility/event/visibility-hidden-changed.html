@@ -1,0 +1,28 @@
+<!--
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:AriaProperties*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <h4 id="d1">Item1</h4>
+  <h4 id="d2" style="visibility: hidden">Item2</h4>
+  <h4 id="d3" style="visibility: visible">Item3</h4>
+  <h4 id="d4" style="visibility: hidden">Item4</h4>
+  <script>
+    function go() {
+      // Set style from [none]->visibility: hidden; should fire an event.
+      document.getElementById('d1').setAttribute('style', 'visibility: hidden');
+
+      // Set style from visibility: hidden->visibility: visible; should fire an event.
+      document.getElementById('d2').setAttribute('style', 'visibility: visible');
+
+      // Set style from visibility: visible->visibility: hidden; should fire an event.
+      document.getElementById('d3').setAttribute('style', 'visibility: hidden');
+
+      // Remove style visibility; should fire an event.
+      document.getElementById('d4').removeAttribute('style');
+    }
+  </script>
+</body>
+</html>

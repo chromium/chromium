@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/stl_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/sync_username_test_base.h"
@@ -19,6 +20,7 @@
 #endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
 
 using autofill::PasswordForm;
+using base::ASCIIToUTF16;
 
 namespace password_manager {
 namespace sync_util {
@@ -31,13 +33,20 @@ PasswordForm SimpleGAIAChangePasswordForm() {
   return form;
 }
 
+PasswordForm SimpleForm(const char* signon_realm, const char* username) {
+  PasswordForm form;
+  form.signon_realm = signon_realm;
+  form.username_value = ASCIIToUTF16(username);
+  return form;
+}
+
 TEST_F(PasswordSyncUtilTest, GetSyncUsernameIfSyncingPasswords) {
   const struct TestCase {
     enum { SYNCING_PASSWORDS, NOT_SYNCING_PASSWORDS } password_sync;
     std::string fake_sync_username;
     std::string expected_result;
     const syncer::SyncService* sync_service;
-    const identity::IdentityManager* identity_manager;
+    const signin::IdentityManager* identity_manager;
   } kTestCases[] = {
       {TestCase::NOT_SYNCING_PASSWORDS, "a@example.org", std::string(),
        sync_service(), identity_manager()},
@@ -82,6 +91,10 @@ TEST_F(PasswordSyncUtilTest, IsSyncAccountCredential) {
       {SimpleGaiaForm(""), "sync_user@example.org", true},
       {SimpleNonGaiaForm(""), "sync_user@example.org", false},
       {SimpleGAIAChangePasswordForm(), "sync_user@example.org", true},
+      {SimpleForm("https://subdomain.google.com/", "sync_user@example.org"),
+       "sync_user@example.org", true},
+      {SimpleForm("https://subdomain.google.com/", ""), "sync_user@example.org",
+       true},
   };
 
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
@@ -136,58 +149,6 @@ class PasswordSyncUtilEnterpriseTest : public SyncUsernameTestBase {
   TestingPrefServiceSimple prefs_;
 };
 
-TEST_F(PasswordSyncUtilEnterpriseTest, ShouldSavePasswordHash) {
-  prefs_.SetString(prefs::kPasswordProtectionChangePasswordURL,
-                   "https://pwchange.mydomain.com/");
-  base::ListValue login_url;
-  login_url.AppendString("https://login.mydomain.com/");
-  prefs_.Set(prefs::kPasswordProtectionLoginURLs, login_url);
-  const struct {
-    PasswordForm form;
-    std::string fake_sync_username;
-    bool expected_result;
-  } kTestCases[] = {
-      {SimpleNonGaiaForm("sync_user@mydomain.com",
-                         "https://pwchange.mydomain.com/"),
-       "sync_user@mydomain.com", true},
-      {SimpleNonGaiaForm("sync_user@mydomain.com",
-                         "https://login.mydomain.com/"),
-       "sync_user@mydomain.com", true},
-      {SimpleNonGaiaForm("non_sync_user@mydomain.com",
-                         "https://pwchange.mydomain.com/"),
-       "sync_user@mydomain.com", false},
-      {SimpleNonGaiaForm("non_sync_user@mydomain.com",
-                         "https://login.mydomain.com/"),
-       "sync_user@mydomain.com", false},
-      {SimpleNonGaiaForm("sync_user", "https://pwchange.mydomain.com/"),
-       "sync_user@mydomain.com", true},
-      {SimpleNonGaiaForm("sync_user", "https://login.mydomain.com/"),
-       "sync_user@mydomain.com", true},
-      {SimpleNonGaiaForm("non_sync_user", "https://pwchange.mydomain.com/"),
-       "sync_user@mydomain.com", false},
-      {SimpleNonGaiaForm("non_sync_user", "https://login.mydomain.com/"),
-       "sync_user@mydomain.com", false},
-      {SimpleNonGaiaForm("", "https://pwchange.mydomain.com/"),
-       "sync_user@mydomain.com", false},
-      {SimpleNonGaiaForm("", "https://login.mydomain.com/"),
-       "sync_user@mydomain.com", false},
-      {SimpleNonGaiaForm("sync_user@mydomain.com", "https://otherdomain.com/"),
-       "sync_user@mydomain.com", false},
-      {SimpleNonGaiaForm("sync_user", "https://otherdomain.com/"),
-       "sync_user@mydomain.com", false},
-  };
-
-  for (bool syncing_passwords : {false, true}) {
-    for (size_t i = 0; i < base::size(kTestCases); ++i) {
-      SCOPED_TRACE(testing::Message() << "i=" << i);
-      SetSyncingPasswords(syncing_passwords);
-      FakeSigninAs(kTestCases[i].fake_sync_username);
-      EXPECT_EQ(kTestCases[i].expected_result,
-                ShouldSavePasswordHash(kTestCases[i].form, identity_manager(),
-                                       &prefs_));
-    }
-  }
-}
 #endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
 
 }  // namespace sync_util

@@ -1,105 +1,77 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <style type="text/css">
-    .target {
-      position: relative;
-      height: 100px;
-      width: 100px;
-      background-color: red;
-      margin-bottom: 10px;
+<style type="text/css">
+  .target {
+    position: relative;
+    height: 100px;
+    width: 100px;
+    background-color: red;
+    margin-bottom: 10px;
+  }
+  .animated {
+    animation: test 10ms linear forwards;
+    animation-play-state: paused;
+  }
+  .running {
+    animation-play-state: running;
+  }
+  #animation1 {
+    animation-delay: -10ms;
+  }
+  #animation2 {
+    animation-delay: 0ms;
+  }
+  #animation3 {
+    animation-delay: 10ms;
+  }
+  @keyframes test {
+      from { left: 100px; }
+      to   { left: 300px; }
+  }
+</style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script type="text/javascript">
+async_test(t => {
+  function startNextAnimation(currentId) {
+    // Running animations serially avoids flakiness due to overlap.
+    if (currentId === 'animation1') {
+      start(document.getElementById('animation2'), true);
+    } else if (currentId === 'animation2') {
+      start(document.getElementById('animation3'), false);
+    } else if (currentId === 'animation3') {
+      t.done();
     }
-    .animated {
-      animation: test 10ms linear forwards;
-      animation-play-state: paused;
-      animation: test 10ms linear forwards;
-      animation-play-state: paused;
-    }
-    .running {
-      animation-play-state: running;
-      animation-play-state: running;
-    }
-    #animation1 {
-      animation-delay: -10ms;
-      animation-delay: -10ms;
-    }
-    #animation2 {
-      animation-delay: 0ms;
-      animation-delay: 0ms;
-    }
-    #animation3 {
-      animation-delay: 10ms;
-      animation-delay: 10ms;
-    }
-    @keyframes test {
-        from { left: 100px; }
-        to   { left: 300px; }
-    }
-    @keyframes test {
-        from { left: 100px; }
-        to   { left: 300px; }
-    }
-  </style>
-  <script type="text/javascript">
-    if (window.testRunner) {
-      testRunner.dumpAsText();
-      testRunner.waitUntilDone();
-    }
+  }
 
-    function log(message) {
-      var div = document.createElement('div');
-      div.textContent = message;
-      document.body.appendChild(div);
-    }
+  var isRunning;
+  function run(element) {
+    element.classList.add('running');
+    isRunning = true;
+  }
 
-    function startNextAnimation(currentId) {
-      // Running animations serially avoids flakiness due to overlap.
-      if (currentId === 'animation1') {
-        start(document.getElementById('animation2'), true);
-      } else if (currentId === 'animation2') {
-        start(document.getElementById('animation3'), false);
-      } else if (currentId === 'animation3' && window.testRunner) {
-        testRunner.notifyDone();
-      }
-    }
-
-    function onStartEventFired(expectStartEventFirst, e) {
+  function start(target, expectImmediateStartEvent) {
+    isRunning = false;
+    target.addEventListener('animationstart', t.step_func((e) => {
       var id = e.target.id;
-      if (expectStartEventFirst) {
-        log('PASS: ' + id + ': Start event fired without setting play state to running');
+
+      if (expectImmediateStartEvent) {
+        assert_false(isRunning, 'Start event should be fired without setting play state to running');
       } else {
-        log((isRunning ? 'PASS' : 'FAIL') + ': ' + id + ': Start event fired ' + (isRunning ? 'after' : 'before') + ' play state was set to running');
+        assert_true(isRunning, 'Start event should be fired after play state was set to running');
       }
       startNextAnimation(id);
+    }));
+    target.classList.add('animated');
+    if (!expectImmediateStartEvent) {
+      t.step_timeout(run.bind(null, target), 100);
     }
+  }
 
-    var isRunning;
-    function run(element) {
-      element.classList.add('running');
-      isRunning = true;
-    }
-
-    function start(target, expectImmediateStartEvent) {
-      isRunning = false;
-      var startEventHandler = onStartEventFired.bind(null, expectImmediateStartEvent);
-      target.addEventListener('animationstart', startEventHandler);
-      target.addEventListener('animationstart', startEventHandler);
-      target.classList.add('animated');
-      if (!expectImmediateStartEvent) {
-        setTimeout(run.bind(null, target), 100);
-      }
-    }
-
-    function go() {
-      start(document.getElementById('animation1'), true);
-    }
-  </script>
-</head>
-<body onload="go()">
-  <p>Tests that an animation which is initially paused fires its start event as soon as its delay expires, not when it transitions to the running state.</p>
-  <div class="target" id="animation1"></div>
-  <div class="target" id="animation2"></div>
-  <div class="target" id="animation3"></div>
-  <div id="result"></div>
-</body>
-</html>
+  window.addEventListener("load", t.step_func(() => {
+    start(document.getElementById('animation1'), true);
+  }));
+}, "Tests that an animation which is initially paused fires its start event as soon as its delay expires, not when it transitions to the running state");
+</script>
+<div class="target" id="animation1"></div>
+<div class="target" id="animation2"></div>
+<div class="target" id="animation3"></div>

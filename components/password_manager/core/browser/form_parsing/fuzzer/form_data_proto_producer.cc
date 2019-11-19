@@ -4,10 +4,12 @@
 
 #include "components/password_manager/core/browser/form_parsing/fuzzer/form_data_proto_producer.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/form_parsing/fuzzer/form_data_essentials.pb.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -21,13 +23,22 @@ namespace password_manager {
 FormData GenerateWithProto(const ::form_data_fuzzer::Form& form_proto) {
   FormData result;
 
+  // |kMaxParseableFields| is the largest number of fields the parser will
+  // accept. Generating significantly more than that is just wasting fuzzing
+  // resources. Allow exceeding this number though, to test that the parser
+  // indeed handles such inputs.
+  if (base::checked_cast<size_t>(form_proto.fields_size()) >
+      FormDataParser::kMaxParseableFields + 1) {
+    return result;
+  }
+
   result.id_attribute = UTF8ToUTF16(form_proto.id());
   result.name_attribute = UTF8ToUTF16(form_proto.name());
   result.is_form_tag = form_proto.is_form_tag();
   result.is_formless_checkout = form_proto.is_formless_checkout();
   result.name = UTF8ToUTF16(form_proto.name());
   result.action = GURL(form_proto.action());
-  result.origin = GURL(form_proto.origin());
+  result.url = GURL(form_proto.origin());
   result.main_frame_origin =
       url::Origin::Create(GURL(form_proto.main_frame_origin()));
 

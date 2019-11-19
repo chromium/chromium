@@ -16,10 +16,25 @@
         --cr-toggle-unchecked-ink-color: var(--google-grey-600);
         cursor: pointer;
         display: block;
+        min-width: 34px;
         outline: none;
+        position: relative;
+        width: 34px;
       }
 
-      :host-context([dark]) {
+      @media (prefers-color-scheme: dark) {
+        :host {
+          --cr-toggle-checked-bar-color: var(--google-blue-refresh-300);
+          --cr-toggle-checked-button-color: var(--google-blue-refresh-300);
+          --cr-toggle-checked-ink-color: var(--google-blue-refresh-300);
+          --cr-toggle-ripple-opacity: .4;
+          --cr-toggle-unchecked-bar-color: var(--google-grey-refresh-500);
+          --cr-toggle-unchecked-button-color: var(--google-grey-refresh-300);
+          --cr-toggle-unchecked-ink-color: var(--google-grey-refresh-300);
+        }
+      }
+      /* Keep the prefers-color-scheme and [dark] rules the same. */
+      :host([dark]) {
         --cr-toggle-checked-bar-color: var(--google-blue-refresh-300);
         --cr-toggle-checked-button-color: var(--google-blue-refresh-300);
         --cr-toggle-checked-ink-color: var(--google-blue-refresh-300);
@@ -33,18 +48,6 @@
         cursor: initial;
         opacity: var(--cr-disabled-opacity);
         pointer-events: none;
-      }
-
-      button {
-        background: none;
-        border: none;
-        cursor: inherit;
-        display: block;
-        outline: inherit;
-        padding: 0;
-        position: relative;
-        width: 34px;
-        z-index: 0;
       }
 
       #bar {
@@ -105,20 +108,14 @@
         color: var(--cr-toggle-checked-ink-color);
       }
 
-      :host-context(html:not([dark])):host([checked]) paper-ripple {
-        --paper-ripple-opacity: 0.2;
+      @media (prefers-color-scheme: light) {
+        :host([checked]) paper-ripple {
+          --paper-ripple-opacity: 0.2;
+        }
       }
     </style>
-    <!-- A <button> is used (instead of a plain <div>) to avoid a corner case
-         when pointerdown is initiated in cr-toggle, but pointerup happens
-         outside the bounds of cr-toggle, which would end up firing a 'click'
-         event on the parent and unexpectedly modify the toggle's state (see
-         context at crbug.com/689158 and crbug.com/768555). The 'click'
-         event is not fired when the <button> wrapper is used. -->
-    <button tabindex="-1" on-focus="onButtonFocus_">
-      <span id="bar"></span>
-      <span id="knob"></span>
-    </button>
+    <span id="bar"></span>
+    <span id="knob"></span>
   </template>
   <script src="cr_toggle.js"></script>
 </dom-module>

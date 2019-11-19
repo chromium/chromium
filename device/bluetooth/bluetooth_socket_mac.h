@@ -19,7 +19,7 @@
 #include "base/threading/thread_checker.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_socket.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 @class BluetoothRfcommConnectionListener;
 @class BluetoothL2capConnectionListener;

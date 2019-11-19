@@ -18,15 +18,8 @@ html {
 <script>
 function changeBackground() {
     document.getElementById("rect").style.background = "green";
-    if (window.testRunner) {
-        testRunner.notifyDone();
-    }
 }
 
-if (window.testRunner) {
-    testRunner.dumpAsTextWithPixelResults();
-    testRunner.waitUntilDone();
-}
-runAfterLayoutAndPaint(changeBackground);
+runAfterLayoutAndPaint(changeBackground, true);
 </script>
 </html>

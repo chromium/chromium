@@ -13,7 +13,7 @@ namespace ntp_tiles {
 // histograms/enums.xml.
 //
 // A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.suggestions
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.suggestions.tile
 enum TileVisualType {
   // The icon or thumbnail hasn't loaded yet.
   NONE = 0,
@@ -26,13 +26,10 @@ enum TileVisualType {
   // Deleted: THUMBNAIL_LOCAL = 4
   // Deleted: THUMBNAIL_SERVER = 5
   // Deleted: THUMBNAIL_DEFAULT = 6
-  // The item displays a thumbnail of the page. Used on desktop.
-  THUMBNAIL = 7,
-  // The item wants to display a thumbnail of the page, but it failed to load.
-  // Used on desktop.
-  THUMBNAIL_FAILED = 8,
+  // Deleted: THUMBNAIL = 7
+  // Deleted: THUMBNAIL_FAILED = 8
   // The maximum tile type value that gets recorded in UMA.
-  LAST_RECORDED_TILE_TYPE = THUMBNAIL_FAILED,
+  LAST_RECORDED_TILE_TYPE = ICON_DEFAULT,
 
   // The tile type has not been determined yet. Used on iOS, until we can detect
   // when all tiles have loaded.

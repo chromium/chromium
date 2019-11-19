@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import argparse
+import codecs
 import plistlib
 import os
 import re
@@ -212,6 +213,10 @@ class SubstituteAction(Action):
 
 
 def Main():
+  # Cache this codec so that plistlib can find it. See
+  # https://crbug.com/1005190#c2 for more details.
+  codecs.lookup('utf-8')
+
   parser = argparse.ArgumentParser(description='manipulate plist files')
   subparsers = parser.add_subparsers()
 

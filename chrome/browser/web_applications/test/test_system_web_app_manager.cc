@@ -9,16 +9,29 @@
 
 namespace web_app {
 
-TestSystemWebAppManager::TestSystemWebAppManager(
-    Profile* profile,
-    PendingAppManager* pending_app_manager)
-    : SystemWebAppManager(profile, pending_app_manager) {}
+TestSystemWebAppManager::TestSystemWebAppManager(Profile* profile)
+    : SystemWebAppManager(profile) {
+  SetSystemApps(base::flat_map<SystemAppType, SystemAppInfo>());
+}
 
 TestSystemWebAppManager::~TestSystemWebAppManager() = default;
 
 void TestSystemWebAppManager::SetSystemApps(
-    base::flat_map<SystemAppType, GURL> system_app_urls) {
-  SetSystemAppsForTesting(std::move(system_app_urls));
+    base::flat_map<SystemAppType, SystemAppInfo> system_apps) {
+  SetSystemAppsForTesting(std::move(system_apps));
+}
+
+void TestSystemWebAppManager::SetUpdatePolicy(
+    SystemWebAppManager::UpdatePolicy policy) {
+  SetUpdatePolicyForTesting(policy);
+}
+
+const base::Version& TestSystemWebAppManager::CurrentVersion() const {
+  return current_version_;
+}
+
+const std::string& TestSystemWebAppManager::CurrentLocale() const {
+  return current_locale_;
 }
 
 }  // namespace web_app

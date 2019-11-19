@@ -1,8 +1,0 @@
-Password manager component is layered, see https://sites.google.com/a/chromium.org/dev/developers/design-documents/layered-components-design for what it means.
-
-Ideal structure of the component:
-- core/: Essentials, not depending on any other layers.
-All other layers may depend on core:
-- content/: Content-specific embedding.
-- sync/: Sync-specific embedding.
-

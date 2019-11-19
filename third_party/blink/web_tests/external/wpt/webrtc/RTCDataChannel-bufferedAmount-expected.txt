@@ -1,7 +1,15 @@
 This is a testharness.js-based test.
-FAIL bufferedAmount should increase to byte length of encoded unicode string sent assert_equals: Expect bufferedAmount to be the byte length of the unicode string expected 12 but got 0
-FAIL bufferedAmount should increase to byte length of buffer sent assert_equals: Expect bufferedAmount to increase to byte length of sent buffer expected 5 but got 0
+PASS bufferedAmount initial value should be 0 for both peers
+PASS bufferedAmount should increase to byte length of encoded unicode string sent
+PASS bufferedAmount should increase to byte length of buffer sent
 FAIL bufferedAmount should increase to size of blob sent promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
-FAIL bufferedAmount should increase by byte length for each message sent assert_unreached: Unexpected promise rejection: Error: assert_equals: Expect bufferedAmount to be the total length of all messages queued to send expected 5 but got 0 Reached unreachable code
+FAIL bufferedAmount should increase by byte length for each message sent promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
+PASS bufferedAmount should not decrease immediately after initiating closure
+PASS bufferedAmount should not decrease after closing the peer connection
+PASS Data channel bufferedamountlow event fires after send() is complete
+PASS Data channel bufferedamount is data.length on send(data)
+PASS Data channel bufferedamount returns the same amount if no more data is sent on the channel
+PASS Data channel bufferedamountlow event fires only once after multiple consecutive send() calls
+PASS Data channel bufferedamountlow event fires after each sent message
 Harness: the test ran to completion.
 

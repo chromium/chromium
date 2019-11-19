@@ -79,6 +79,8 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/js_templates/struct_definition.tmpl",
     "$mojom_generator_root/generators/js_templates/union_definition.tmpl",
     "$mojom_generator_root/generators/js_templates/validation_macros.tmpl",
+    "$mojom_generator_root/generators/ts_templates/module_definition.tmpl",
+    "$mojom_generator_root/generators/ts_templates/mojom.tmpl",
   ]
   script = mojom_generator_script
 
@@ -87,6 +89,7 @@ action("precompile_templates") {
     "$target_gen_dir/cpp_templates.zip",
     "$target_gen_dir/java_templates.zip",
     "$target_gen_dir/js_templates.zip",
+    "$target_gen_dir/ts_templates.zip",
   ]
   args = [
     "--use_bundled_pylibs",

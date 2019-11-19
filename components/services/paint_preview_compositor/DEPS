@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/discardable_memory/client",
+  "+components/paint_preview",
+  "+content/public/child",  # Windows direct write proxy access.
+  "+mojo/public/cpp",
+  "+third_party/skia/include/core",
+  "+ui/gfx/geometry",
+]

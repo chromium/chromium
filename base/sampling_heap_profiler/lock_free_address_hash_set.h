@@ -5,22 +5,23 @@
 #ifndef BASE_SAMPLING_HEAP_PROFILER_LOCK_FREE_ADDRESS_HASH_SET_H_
 #define BASE_SAMPLING_HEAP_PROFILER_LOCK_FREE_ADDRESS_HASH_SET_H_
 
+#include <atomic>
 #include <cstdint>
 #include <vector>
 
-#include "base/atomicops.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 
 namespace base {
 
-// A hash set container that provides lock-free versions of
-// |Insert|, |Remove|, and |Contains| operations.
-// It does not support concurrent write operations |Insert| and |Remove|
-// over the same key. Concurrent writes of distinct keys are ok.
+// A hash set container that provides lock-free version of |Contains| operation.
+// It does not support concurrent write operations |Insert| and |Remove|.
+// All write operations if performed from multiple threads must be properly
+// guarded with a lock.
 // |Contains| method can be executed concurrently with other |Insert|, |Remove|,
 // or |Contains| even over the same key.
 // However, please note the result of concurrent execution of |Contains|
-// with |Insert| or |Remove| is racy.
+// with |Insert| or |Remove| over the same key is racy.
 //
 // The hash set never rehashes, so the number of buckets stays the same
 // for the lifetime of the set.
@@ -46,33 +47,25 @@ class BASE_EXPORT LockFreeAddressHashSet {
 
   // Checks if the |key| is in the set. Can be executed concurrently with
   // |Insert|, |Remove|, and |Contains| operations.
-  bool Contains(void* key) const;
+  ALWAYS_INLINE bool Contains(void* key) const;
 
   // Removes the |key| from the set. The key must be present in the set before
   // the invocation.
-  // Can be concurrent with other |Insert| and |Remove| executions, provided
-  // they operate over distinct keys.
-  // Concurrent |Insert| or |Remove| executions over the same key are not
-  // supported.
-  void Remove(void* key);
+  // Concurrent execution of |Insert|, |Remove|, or |Copy| is not supported.
+  ALWAYS_INLINE void Remove(void* key);
 
   // Inserts the |key| into the set. The key must not be present in the set
   // before the invocation.
-  // Can be concurrent with other |Insert| and |Remove| executions, provided
-  // they operate over distinct keys.
-  // Concurrent |Insert| or |Remove| executions over the same key are not
-  // supported.
+  // Concurrent execution of |Insert|, |Remove|, or |Copy| is not supported.
   void Insert(void* key);
 
   // Copies contents of |other| set into the current set. The current set
   // must be empty before the call.
-  // The operation cannot be executed concurrently with any other methods.
+  // Concurrent execution of |Insert|, |Remove|, or |Copy| is not supported.
   void Copy(const LockFreeAddressHashSet& other);
 
   size_t buckets_count() const { return buckets_.size(); }
-  size_t size() const {
-    return static_cast<size_t>(subtle::NoBarrier_Load(&size_));
-  }
+  size_t size() const { return size_; }
 
   // Returns the average bucket utilization.
   float load_factor() const { return 1.f * size() / buckets_.size(); }
@@ -81,69 +74,60 @@ class BASE_EXPORT LockFreeAddressHashSet {
   friend class LockFreeAddressHashSetTest;
 
   struct Node {
-    Node() : key(0), next(0) {}
-    explicit Node(void* key);
-
-    subtle::AtomicWord key;
-    subtle::AtomicWord next;
+    ALWAYS_INLINE Node(void* key, Node* next);
+    std::atomic<void*> key;
+    Node* next;
   };
 
-  static uint32_t Hash(void* key);
-  Node* FindNode(void* key) const;
-  Node* Bucket(void* key) const;
-  static Node* next_node(Node* node) {
-    return reinterpret_cast<Node*>(subtle::NoBarrier_Load(&node->next));
-  }
+  ALWAYS_INLINE static uint32_t Hash(void* key);
+  ALWAYS_INLINE Node* FindNode(void* key) const;
 
-  std::vector<subtle::AtomicWord> buckets_;
-  size_t bucket_mask_;
-  subtle::AtomicWord size_ = 0;
+  std::vector<std::atomic<Node*>> buckets_;
+  int size_ = 0;
+  const size_t bucket_mask_;
 };
 
-inline LockFreeAddressHashSet::Node::Node(void* a_key) {
-  subtle::NoBarrier_Store(&key, reinterpret_cast<subtle::AtomicWord>(a_key));
-  subtle::NoBarrier_Store(&next, 0);
+ALWAYS_INLINE LockFreeAddressHashSet::Node::Node(void* key, Node* next)
+    : next(next) {
+  this->key.store(key, std::memory_order_relaxed);
 }
 
-inline bool LockFreeAddressHashSet::Contains(void* key) const {
+ALWAYS_INLINE bool LockFreeAddressHashSet::Contains(void* key) const {
   return FindNode(key) != nullptr;
 }
 
-inline void LockFreeAddressHashSet::Remove(void* key) {
+ALWAYS_INLINE void LockFreeAddressHashSet::Remove(void* key) {
   Node* node = FindNode(key);
-  // TODO(alph): Replace with DCHECK.
-  CHECK(node != nullptr);
+  DCHECK_NE(node, nullptr);
   // We can never delete the node, nor detach it from the current bucket
   // as there may always be another thread currently iterating over it.
   // Instead we just mark it as empty, so |Insert| can reuse it later.
-  subtle::NoBarrier_Store(&node->key, 0);
-  subtle::NoBarrier_AtomicIncrement(&size_, -1);
+  node->key.store(nullptr, std::memory_order_relaxed);
+  --size_;
 }
 
-inline LockFreeAddressHashSet::Node* LockFreeAddressHashSet::FindNode(
+ALWAYS_INLINE LockFreeAddressHashSet::Node* LockFreeAddressHashSet::FindNode(
     void* key) const {
-  for (Node* node = Bucket(key); node != nullptr; node = next_node(node)) {
-    void* k = reinterpret_cast<void*>(subtle::NoBarrier_Load(&node->key));
-    if (k == key)
+  DCHECK_NE(key, nullptr);
+  const std::atomic<Node*>& bucket = buckets_[Hash(key) & bucket_mask_];
+  // It's enough to use std::memory_order_consume ordering here, as the
+  // node->next->...->next loads form dependency chain.
+  // However std::memory_order_consume is temporary deprecated in C++17.
+  // See https://isocpp.org/files/papers/p0636r0.html#removed
+  // Make use of more strong std::memory_order_acquire for now.
+  for (Node* node = bucket.load(std::memory_order_acquire); node != nullptr;
+       node = node->next) {
+    if (node->key.load(std::memory_order_relaxed) == key)
       return node;
   }
   return nullptr;
 }
 
-inline LockFreeAddressHashSet::Node* LockFreeAddressHashSet::Bucket(
-    void* key) const {
-  // TODO(alph): Replace with DCHECK.
-  CHECK(key != nullptr);
-  uint32_t h = Hash(key);
-  return reinterpret_cast<Node*>(
-      subtle::NoBarrier_Load(&buckets_[h & bucket_mask_]));
-}
-
 // static
-inline uint32_t LockFreeAddressHashSet::Hash(void* key) {
+ALWAYS_INLINE uint32_t LockFreeAddressHashSet::Hash(void* key) {
   // A simple fast hash function for addresses.
-  uint64_t k = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(key));
-  uint64_t random_bits = 0x4bfdb9df5a6f243bull;
+  constexpr uintptr_t random_bits = static_cast<uintptr_t>(0x4bfdb9df5a6f243b);
+  uint64_t k = reinterpret_cast<uintptr_t>(key);
   return static_cast<uint32_t>((k * random_bits) >> 32);
 }
 

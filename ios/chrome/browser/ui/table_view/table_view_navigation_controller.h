@@ -15,13 +15,17 @@
 
 - (instancetype)initWithTable:(ChromeTableViewController*)table
     NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithRootViewController:(UIViewController*)rootViewController
+    NS_UNAVAILABLE;
+- (instancetype)initWithNavigationBarClass:(Class)navigationBarClass
+                              toolbarClass:(Class)toolbarClass NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 // The ChromeTableViewController owned by this ViewController.
-@property(nonatomic, readonly, strong)
+@property(nonatomic, readonly, weak)
     ChromeTableViewController* tableViewController;
 
 @end

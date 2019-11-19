@@ -11,15 +11,16 @@
 #include <vector>
 
 #include "android_webview/browser/aw_browser_context.h"
-#include "android_webview/browser/aw_browser_policy_connector.h"
-#include "android_webview/browser/aw_metrics_service_client.h"
+#include "android_webview/browser/aw_browser_process.h"
+#include "android_webview/browser/aw_pref_names.h"
 #include "android_webview/browser/aw_variations_seed_bridge.h"
-#include "android_webview/browser/net/aw_url_request_context_getter.h"
+#include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -27,8 +28,6 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
-#include "components/policy/core/browser/configuration_policy_pref_store.h"
-#include "components/policy/core/browser/url_blacklist_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/in_memory_pref_store.h"
 #include "components/prefs/json_pref_store.h"
@@ -39,6 +38,7 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service.h"
+#include "content/public/common/content_switch_dependent_feature_overrides.h"
 #include "services/preferences/tracked/segregated_pref_store.h"
 
 namespace android_webview {
@@ -48,12 +48,24 @@ namespace {
 // These prefs go in the JsonPrefStore, and will persist across runs. Other
 // prefs go in the InMemoryPrefStore, and will be lost when the process ends.
 const char* const kPersistentPrefsWhitelist[] = {
-    // Random seed values for variation's entropy providers, used to assign
+    // Randomly-generated GUID which pseudonymously identifies uploaded metrics.
+    metrics::prefs::kMetricsClientID,
+    // Random seed value for variation's entropy providers. Used to assign
     // experiment groups.
     metrics::prefs::kMetricsLowEntropySource,
-    // Used by CachingPermutedEntropyProvider to cache generated values.
-    // TODO(crbug/912368): Remove this.
-    variations::prefs::kVariationsPermutedEntropyCache,
+    // Logged directly in the ChromeUserMetricsExtension proto.
+    metrics::prefs::kInstallDate,
+    metrics::prefs::kMetricsSessionID,
+    // Current and past country codes, to filter variations studies by country.
+    variations::prefs::kVariationsCountry,
+    variations::prefs::kVariationsPermanentConsistencyCountry,
+    // Last variations seed fetch date/time, used for histograms and to
+    // determine if the seed is expired.
+    variations::prefs::kVariationsLastFetchTime,
+    variations::prefs::kVariationsSeedDate,
+    // Number of consecutive WebView browser process initializations with a
+    // stale variations seed.
+    prefs::kRestartsWithStaleSeed,
 };
 
 // Shows notifications which correspond to PersistentPrefStore's reading errors.
@@ -66,28 +78,14 @@ base::FilePath GetPrefStorePath() {
   return path;
 }
 
-std::unique_ptr<PrefService> CreatePrefService(
-    policy::BrowserPolicyConnectorBase* browser_policy_connector) {
+std::unique_ptr<PrefService> CreatePrefService() {
   auto pref_registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
-  // We only use the autocomplete feature of Autofill, which is controlled via
-  // the manager_delegate. We don't use the rest of Autofill, which is why it is
-  // hardcoded as disabled here.
-  // TODO(crbug.com/873740): The following also disables autocomplete.
-  // Investigate what the intended behavior is.
-  pref_registry->RegisterBooleanPref(autofill::prefs::kAutofillProfileEnabled,
-                                     false);
-  pref_registry->RegisterBooleanPref(
-      autofill::prefs::kAutofillCreditCardEnabled, false);
-  policy::URLBlacklistManager::RegisterProfilePrefs(pref_registry.get());
 
-  pref_registry->RegisterStringPref(
-      android_webview::prefs::kWebRestrictionsAuthority, std::string());
-
-  android_webview::AwURLRequestContextGetter::RegisterPrefs(
-      pref_registry.get());
   metrics::MetricsService::RegisterPrefs(pref_registry.get());
   variations::VariationsService::RegisterPrefs(pref_registry.get());
-  safe_browsing::RegisterProfilePrefs(pref_registry.get());
+  pref_registry->RegisterIntegerPref(prefs::kRestartsWithStaleSeed, 0);
+
+  AwBrowserProcess::RegisterNetworkContextLocalStatePrefs(pref_registry.get());
 
   PrefServiceFactory pref_service_factory;
 
@@ -101,17 +99,26 @@ std::unique_ptr<PrefService> CreatePrefService(
   pref_service_factory.set_user_prefs(base::MakeRefCounted<SegregatedPrefStore>(
       base::MakeRefCounted<InMemoryPrefStore>(),
       base::MakeRefCounted<JsonPrefStore>(GetPrefStorePath()), persistent_prefs,
-      /*validation_delegate=*/nullptr));
-  pref_service_factory.set_managed_prefs(
-      base::MakeRefCounted<policy::ConfigurationPolicyPrefStore>(
-          browser_policy_connector,
-          browser_policy_connector->GetPolicyService(),
-          browser_policy_connector->GetHandlerList(),
-          policy::POLICY_LEVEL_MANDATORY));
+      mojo::Remote<::prefs::mojom::TrackedPreferenceValidationDelegate>()));
+
   pref_service_factory.set_read_error_callback(
       base::BindRepeating(&HandleReadError));
 
   return pref_service_factory.Create(pref_registry);
+}
+
+void CountOrRecordRestartsWithStaleSeed(PrefService* local_state,
+                                        bool is_loaded_seed_fresh) {
+  int restarts = local_state->GetInteger(prefs::kRestartsWithStaleSeed);
+  if (!is_loaded_seed_fresh) {
+    // If the seed isn't fresh, increase the restart count pref.
+    local_state->SetInteger(prefs::kRestartsWithStaleSeed, restarts + 1);
+  } else if (restarts > 0) {
+    // If the seed is fresh and the last restart had a stale seed, record and
+    // reset the restart count.
+    local_state->SetInteger(prefs::kRestartsWithStaleSeed, 0);
+    UMA_HISTOGRAM_COUNTS_100("Variations.RestartsWithStaleSeed", restarts);
+  }
 }
 
 }  // namespace
@@ -136,11 +143,23 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   field_trial_list_ = std::make_unique<base::FieldTrialList>(
       metrics_client->CreateLowEntropyProvider());
 
+  std::unique_ptr<variations::SeedResponse> seed = GetAndClearJavaSeed();
+  base::Time null_time;
+  base::Time seed_date =
+      seed ? base::Time::FromJavaTime(seed->date) : null_time;
   variations::UIStringOverrider ui_string_overrider;
   client_ = std::make_unique<AwVariationsServiceClient>();
   auto seed_store = std::make_unique<variations::VariationsSeedStore>(
-      local_state_.get(), /*initial_seed=*/GetAndClearJavaSeed(),
+      local_state_.get(), /*initial_seed=*/std::move(seed),
       /*on_initial_seed_stored=*/base::DoNothing());
+
+  // We set the seed fetch time to when the service downloaded the seed rather
+  // than base::Time::Now() because we want to compute seed freshness based on
+  // the initial download time, which happened in the service at some earlier
+  // point.
+  if (!seed_date.is_null())
+    seed_store->RecordLastFetchTime(seed_date);
+
   variations_field_trial_creator_ =
       std::make_unique<variations::VariationsFieldTrialCreator>(
           local_state_.get(), client_.get(), std::move(seed_store),
@@ -165,20 +184,22 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   variations_field_trial_creator_->SetupFieldTrials(
       cc::switches::kEnableGpuBenchmarking, switches::kEnableFeatures,
       switches::kDisableFeatures, unforceable_field_trials,
-      std::vector<std::string>(), /*low_entropy_provider=*/nullptr,
-      std::make_unique<base::FeatureList>(), aw_field_trials_.get(),
-      &ignored_safe_seed_manager);
+      std::vector<std::string>(),
+      content::GetSwitchDependentFeatureOverrides(
+          *base::CommandLine::ForCurrentProcess()),
+      /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
+      aw_field_trials_.get(), &ignored_safe_seed_manager);
 
-  // Activate a study which exercises permanent-consistency, to test the launch
-  // of permanent-consistency support in WebView.
-  // TODO(crbug/917537): Remove this after m73.
-  base::FieldTrialList::FindFullName("AndroidWebViewConsistencyTest");
-  base::FieldTrialList::FindFullName("AndroidWebViewSessionConsistencyTest");
+  CountOrRecordRestartsWithStaleSeed(local_state_.get(), IsSeedFresh());
+}
+
+void AwFeatureListCreator::CreateLocalState() {
+  browser_policy_connector_ = std::make_unique<AwBrowserPolicyConnector>();
+  local_state_ = CreatePrefService();
 }
 
 void AwFeatureListCreator::CreateFeatureListAndFieldTrials() {
-  browser_policy_connector_ = std::make_unique<AwBrowserPolicyConnector>();
-  local_state_ = CreatePrefService(browser_policy_connector_.get());
+  CreateLocalState();
   AwMetricsServiceClient::GetInstance()->Initialize(local_state_.get());
   SetUpFieldTrials();
 }

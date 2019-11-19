@@ -5,8 +5,10 @@
 #include "chrome/browser/policy/cloud/remote_commands_invalidator.h"
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "chrome/common/chrome_features.h"
 #include "components/invalidation/impl/deprecated_invalidator_registrar.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/impl/mock_ack_handler.h"
@@ -33,10 +35,15 @@ class MockRemoteCommandInvalidator : public RemoteCommandsInvalidator {
   MOCK_METHOD0(OnStop, void());
   MOCK_METHOD0(DoRemoteCommandsFetch, void());
 
-  void SetInvalidationObjectID(const invalidation::ObjectId& object_id) {
+  void SetInvalidationObjectID(const invalidation::ObjectId& object_id,
+                               bool is_fcm_enabled) {
     em::PolicyData policy_data;
-    policy_data.set_command_invalidation_source(object_id.source());
-    policy_data.set_command_invalidation_name(object_id.name());
+    if (is_fcm_enabled) {
+      policy_data.set_command_invalidation_topic(object_id.name());
+    } else {
+      policy_data.set_command_invalidation_source(object_id.source());
+      policy_data.set_command_invalidation_name(object_id.name());
+    }
     ReloadPolicyData(&policy_data);
   }
 
@@ -49,11 +56,21 @@ class MockRemoteCommandInvalidator : public RemoteCommandsInvalidator {
   DISALLOW_COPY_AND_ASSIGN(MockRemoteCommandInvalidator);
 };
 
-class RemoteCommandsInvalidatorTest : public testing::Test {
+class RemoteCommandsInvalidatorTest : public testing::TestWithParam<bool> {
  public:
-  RemoteCommandsInvalidatorTest()
-      : kTestingObjectId1(123456, "abcdef"),
-        kTestingObjectId2(654321, "defabc") {
+  RemoteCommandsInvalidatorTest() : is_fcm_enabled_(GetParam()) {
+    feature_list_.InitWithFeatureState(features::kPolicyFcmInvalidations,
+                                       is_fcm_enabled_);
+
+    if (is_fcm_enabled_) {
+      kTestingObjectId1 =
+          invalidation::ObjectId(syncer::kDeprecatedSourceForFCM, "abcdef");
+      kTestingObjectId2 =
+          invalidation::ObjectId(syncer::kDeprecatedSourceForFCM, "defabc");
+      return;
+    }
+    kTestingObjectId1 = invalidation::ObjectId(123456, "abcdef");
+    kTestingObjectId2 = invalidation::ObjectId(654321, "defabc");
   }
 
   void EnableInvalidationService() {
@@ -135,10 +152,14 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
     VerifyExpectations();
   }
 
-  const invalidation::ObjectId kTestingObjectId1;
-  const invalidation::ObjectId kTestingObjectId2;
+  invalidation::ObjectId kTestingObjectId1;
+  invalidation::ObjectId kTestingObjectId2;
 
-  base::MessageLoop loop_;
+  const bool is_fcm_enabled_;
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
+  base::test::ScopedFeatureList feature_list_;
 
   invalidation::FakeInvalidationService invalidation_service_;
   StrictMock<MockRemoteCommandInvalidator> invalidator_;
@@ -148,14 +169,14 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
 };
 
 // Verifies that only the fired invalidations will be received.
-TEST_F(RemoteCommandsInvalidatorTest, FiredInvalidation) {
+TEST_P(RemoteCommandsInvalidatorTest, FiredInvalidation) {
   InitializeAndStart();
 
   // Invalidator won't work at this point.
   EXPECT_FALSE(invalidator_.invalidations_enabled());
 
   // Load the policy data, it should work now.
-  invalidator_.SetInvalidationObjectID(kTestingObjectId1);
+  invalidator_.SetInvalidationObjectID(kTestingObjectId1, is_fcm_enabled_);
   EXPECT_TRUE(invalidator_.invalidations_enabled());
 
   base::RunLoop().RunUntilIdle();
@@ -186,7 +207,7 @@ TEST_F(RemoteCommandsInvalidatorTest, FiredInvalidation) {
 }
 
 // Verifies that no invalidation will be received when invalidator is shutdown.
-TEST_F(RemoteCommandsInvalidatorTest, ShutDown) {
+TEST_P(RemoteCommandsInvalidatorTest, ShutDown) {
   EXPECT_FALSE(invalidator_.invalidations_enabled());
   FireInvalidation(kTestingObjectId1);
 
@@ -195,7 +216,7 @@ TEST_F(RemoteCommandsInvalidatorTest, ShutDown) {
 }
 
 // Verifies that no invalidation will be received when invalidator is stopped.
-TEST_F(RemoteCommandsInvalidatorTest, Stopped) {
+TEST_P(RemoteCommandsInvalidatorTest, Stopped) {
   EXPECT_CALL(invalidator_, OnInitialize()).Times(1);
   invalidator_.Initialize(&invalidation_service_);
   VerifyExpectations();
@@ -211,13 +232,13 @@ TEST_F(RemoteCommandsInvalidatorTest, Stopped) {
 }
 
 // Verifies that stated/stopped state changes work as expected.
-TEST_F(RemoteCommandsInvalidatorTest, StartedStateChange) {
+TEST_P(RemoteCommandsInvalidatorTest, StartedStateChange) {
   InitializeAndStart();
 
   // Invalidator requires object id to work.
   VerifyInvalidationDisabled(kTestingObjectId1);
   EXPECT_FALSE(invalidator_.invalidations_enabled());
-  invalidator_.SetInvalidationObjectID(kTestingObjectId1);
+  invalidator_.SetInvalidationObjectID(kTestingObjectId1, is_fcm_enabled_);
   VerifyInvalidationEnabled(kTestingObjectId1);
 
   // Stop and restart invalidator.
@@ -233,24 +254,24 @@ TEST_F(RemoteCommandsInvalidatorTest, StartedStateChange) {
   VerifyExpectations();
 
   // Invalidator requires object id to work.
-  invalidator_.SetInvalidationObjectID(kTestingObjectId1);
+  invalidator_.SetInvalidationObjectID(kTestingObjectId1, is_fcm_enabled_);
   VerifyInvalidationEnabled(kTestingObjectId1);
 
   StopAndShutdown();
 }
 
 // Verifies that registered state changes work as expected.
-TEST_F(RemoteCommandsInvalidatorTest, RegistedStateChange) {
+TEST_P(RemoteCommandsInvalidatorTest, RegistedStateChange) {
   InitializeAndStart();
 
-  invalidator_.SetInvalidationObjectID(kTestingObjectId1);
+  invalidator_.SetInvalidationObjectID(kTestingObjectId1, is_fcm_enabled_);
   VerifyInvalidationEnabled(kTestingObjectId1);
 
-  invalidator_.SetInvalidationObjectID(kTestingObjectId2);
+  invalidator_.SetInvalidationObjectID(kTestingObjectId2, is_fcm_enabled_);
   VerifyInvalidationEnabled(kTestingObjectId2);
   VerifyInvalidationDisabled(kTestingObjectId1);
 
-  invalidator_.SetInvalidationObjectID(kTestingObjectId1);
+  invalidator_.SetInvalidationObjectID(kTestingObjectId1, is_fcm_enabled_);
   VerifyInvalidationEnabled(kTestingObjectId1);
   VerifyInvalidationDisabled(kTestingObjectId2);
 
@@ -259,7 +280,7 @@ TEST_F(RemoteCommandsInvalidatorTest, RegistedStateChange) {
   VerifyInvalidationDisabled(kTestingObjectId2);
   EXPECT_FALSE(invalidator_.invalidations_enabled());
 
-  invalidator_.SetInvalidationObjectID(kTestingObjectId2);
+  invalidator_.SetInvalidationObjectID(kTestingObjectId2, is_fcm_enabled_);
   VerifyInvalidationEnabled(kTestingObjectId2);
   VerifyInvalidationDisabled(kTestingObjectId1);
 
@@ -267,10 +288,10 @@ TEST_F(RemoteCommandsInvalidatorTest, RegistedStateChange) {
 }
 
 // Verifies that invalidation service enabled state changes work as expected.
-TEST_F(RemoteCommandsInvalidatorTest, InvalidationServiceEnabledStateChanged) {
+TEST_P(RemoteCommandsInvalidatorTest, InvalidationServiceEnabledStateChanged) {
   InitializeAndStart();
 
-  invalidator_.SetInvalidationObjectID(kTestingObjectId1);
+  invalidator_.SetInvalidationObjectID(kTestingObjectId1, is_fcm_enabled_);
   VerifyInvalidationEnabled(kTestingObjectId1);
 
   DisableInvalidationService();
@@ -290,5 +311,9 @@ TEST_F(RemoteCommandsInvalidatorTest, InvalidationServiceEnabledStateChanged) {
 
   StopAndShutdown();
 }
+
+INSTANTIATE_TEST_SUITE_P(ToggleIsFcmEnabled,
+                         RemoteCommandsInvalidatorTest,
+                         testing::Bool() /* is_fcm_enabled */);
 
 }  // namespace policy

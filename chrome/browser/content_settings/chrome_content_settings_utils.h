@@ -5,9 +5,15 @@
 #ifndef CHROME_BROWSER_CONTENT_SETTINGS_CHROME_CONTENT_SETTINGS_UTILS_H_
 #define CHROME_BROWSER_CONTENT_SETTINGS_CHROME_CONTENT_SETTINGS_UTILS_H_
 
+#include "build/build_config.h"
+
 // Put utility functions only used by //chrome code here. If a function declared
 // here would be meaningfully shared with other platforms, consider moving it to
 // components/content_settings/core/browser/content_settings_utils.h.
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace content_settings {
 
@@ -53,6 +59,9 @@ enum PopupsAction {
 };
 
 void RecordPopupsAction(PopupsAction action);
+
+// Calls UpdateContentSettingsIcons on the |LocationBar| for |web_contents|.
+void UpdateLocationBarUiForWebContents(content::WebContents* web_contents);
 
 }  // namespace content_settings
 

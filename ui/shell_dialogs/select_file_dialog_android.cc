@@ -12,8 +12,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "jni/SelectFileDialog_jni.h"
 #include "ui/android/window_android.h"
+#include "ui/base/ui_base_jni_headers/SelectFileDialog_jni.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 

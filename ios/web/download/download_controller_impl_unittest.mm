@@ -11,7 +11,7 @@
 #include "ios/web/public/test/fakes/fake_download_controller_delegate.h"
 #include "ios/web/public/test/fakes/test_browser_state.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/test/web_test.h"
 #include "net/url_request/url_fetcher_response_writer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -97,23 +97,19 @@ TEST_F(DownloadControllerImplTest, NullDelegate) {
 // Tests that DownloadController::CreateSession sets cookies correctly into the
 // session's NSURLSessionConfiguration object.
 TEST_F(DownloadControllerImplTest, SessionCookies) {
-  // Pre iOS 11 cookies accept policy is different for sessions. So setting
-  // cookies will not work.
-  if (@available(iOS 11, *)) {
-    NSString* identifier = [NSUUID UUID].UUIDString;
-    NSURL* cookie_url = [NSURL URLWithString:@"https://download.test"];
-    NSHTTPCookie* cookie = [NSHTTPCookie cookieWithProperties:@{
-      NSHTTPCookieName : @"name",
-      NSHTTPCookieValue : @"value",
-      NSHTTPCookiePath : cookie_url.path,
-      NSHTTPCookieDomain : cookie_url.host,
-      NSHTTPCookieVersion : @1,
-    }];
-    NSURLSession* session = download_controller_->CreateSession(
-        identifier, @[ cookie ], /*delegate=*/nil, /*delegate_queue=*/nil);
-    NSArray* cookies = session.configuration.HTTPCookieStorage.cookies;
-    EXPECT_EQ(1U, cookies.count);
-    EXPECT_NSEQ(cookie, cookies.firstObject);
-  }
+  NSString* identifier = [NSUUID UUID].UUIDString;
+  NSURL* cookie_url = [NSURL URLWithString:@"https://download.test"];
+  NSHTTPCookie* cookie = [NSHTTPCookie cookieWithProperties:@{
+    NSHTTPCookieName : @"name",
+    NSHTTPCookieValue : @"value",
+    NSHTTPCookiePath : cookie_url.path,
+    NSHTTPCookieDomain : cookie_url.host,
+    NSHTTPCookieVersion : @1,
+  }];
+  NSURLSession* session = download_controller_->CreateSession(
+      identifier, @[ cookie ], /*delegate=*/nil, /*delegate_queue=*/nil);
+  NSArray* cookies = session.configuration.HTTPCookieStorage.cookies;
+  EXPECT_EQ(1U, cookies.count);
+  EXPECT_NSEQ(cookie, cookies.firstObject);
 }
 }  // namespace web

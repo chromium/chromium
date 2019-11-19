@@ -55,7 +55,7 @@ class TouchpadPinchEventQueueTest : public testing::TestWithParam<bool> {
         blink::WebInputEvent::kGesturePinchBegin,
         blink::WebInputEvent::kNoModifiers,
         blink::WebInputEvent::GetStaticTimeStampForTests(),
-        blink::kWebGestureDeviceTouchpad);
+        blink::WebGestureDevice::kTouchpad);
     event.SetPositionInWidget(gfx::PointF(1, 1));
     event.SetPositionInScreen(gfx::PointF(1, 1));
     event.SetNeedsWheelEvent(true);
@@ -67,7 +67,7 @@ class TouchpadPinchEventQueueTest : public testing::TestWithParam<bool> {
         blink::WebInputEvent::kGesturePinchEnd,
         blink::WebInputEvent::kNoModifiers,
         blink::WebInputEvent::GetStaticTimeStampForTests(),
-        blink::kWebGestureDeviceTouchpad);
+        blink::WebGestureDevice::kTouchpad);
     event.SetPositionInWidget(gfx::PointF(1, 1));
     event.SetPositionInScreen(gfx::PointF(1, 1));
     event.SetNeedsWheelEvent(true);
@@ -79,7 +79,7 @@ class TouchpadPinchEventQueueTest : public testing::TestWithParam<bool> {
         blink::WebInputEvent::kGesturePinchUpdate,
         blink::WebInputEvent::kNoModifiers,
         blink::WebInputEvent::GetStaticTimeStampForTests(),
-        blink::kWebGestureDeviceTouchpad);
+        blink::WebGestureDevice::kTouchpad);
     event.SetPositionInWidget(gfx::PointF(1, 1));
     event.SetPositionInScreen(gfx::PointF(1, 1));
     event.SetNeedsWheelEvent(true);
@@ -93,7 +93,7 @@ class TouchpadPinchEventQueueTest : public testing::TestWithParam<bool> {
         blink::WebInputEvent::kGestureDoubleTap,
         blink::WebInputEvent::kNoModifiers,
         blink::WebInputEvent::GetStaticTimeStampForTests(),
-        blink::kWebGestureDeviceTouchpad);
+        blink::WebGestureDevice::kTouchpad);
     event.SetPositionInWidget(gfx::PointF(1, 1));
     event.SetPositionInScreen(gfx::PointF(1, 1));
     event.data.tap.tap_count = 1;
@@ -103,7 +103,10 @@ class TouchpadPinchEventQueueTest : public testing::TestWithParam<bool> {
 
   void SendWheelEventAck(InputEventAckSource ack_source,
                          InputEventAckState ack_result) {
-    queue_->ProcessMouseWheelAck(ack_source, ack_result, ui::LatencyInfo());
+    const MouseWheelEventWithLatencyInfo mouse_event_with_latency_info(
+        queue_->get_wheel_event_awaiting_ack_for_testing(), ui::LatencyInfo());
+    queue_->ProcessMouseWheelAck(ack_source, ack_result,
+                                 mouse_event_with_latency_info);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -609,6 +612,55 @@ TEST_P(TouchpadPinchEventQueueTest, DoubleTap) {
   QueueDoubleTap();
   SendWheelEventAck(InputEventAckSource::MAIN_THREAD,
                     INPUT_EVENT_ACK_STATE_CONSUMED);
+}
+
+// Ensure that ACKs are only processed when they match the event that is
+// currently awaiting an ACK.
+TEST_P(TouchpadPinchEventQueueTest, IgnoreNonMatchingEvents) {
+  ::testing::InSequence sequence;
+  EXPECT_CALL(mock_client_,
+              OnGestureEventForPinchAck(
+                  EventHasType(blink::WebInputEvent::kGesturePinchBegin),
+                  InputEventAckSource::BROWSER, INPUT_EVENT_ACK_STATE_IGNORED));
+  EXPECT_CALL(mock_client_,
+              SendMouseWheelEventForPinchImmediately(
+                  ::testing::AllOf(EventHasCtrlModifier(), EventIsBlocking())));
+  EXPECT_CALL(
+      mock_client_,
+      OnGestureEventForPinchAck(
+          EventHasType(blink::WebInputEvent::kGesturePinchUpdate),
+          InputEventAckSource::MAIN_THREAD, INPUT_EVENT_ACK_STATE_CONSUMED));
+
+  EXPECT_CALL(mock_client_,
+              SendMouseWheelEventForPinchImmediately(::testing::AllOf(
+                  EventHasCtrlModifier(), ::testing::Not(EventIsBlocking()))));
+
+  EXPECT_CALL(mock_client_,
+              OnGestureEventForPinchAck(
+                  EventHasType(blink::WebInputEvent::kGesturePinchEnd),
+                  InputEventAckSource::BROWSER, INPUT_EVENT_ACK_STATE_IGNORED));
+
+  QueuePinchBegin();
+  QueuePinchUpdate(1.23, false);
+  QueuePinchEnd();
+
+  // Create a fake end event to give to ProcessMouseWheelAck to confirm that
+  // it correctly filters this event out and doesn't start processing the ack.
+  blink::WebMouseWheelEvent fake_end_event(
+      blink::WebInputEvent::kMouseWheel, blink::WebInputEvent::kControlKey,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  fake_end_event.dispatch_type = blink::WebMouseWheelEvent::kBlocking;
+  fake_end_event.phase = blink::WebMouseWheelEvent::kPhaseEnded;
+  const MouseWheelEventWithLatencyInfo fake_end_event_with_latency_info(
+      fake_end_event, ui::LatencyInfo());
+  queue_->ProcessMouseWheelAck(InputEventAckSource::MAIN_THREAD,
+                               INPUT_EVENT_ACK_STATE_NOT_CONSUMED,
+                               fake_end_event_with_latency_info);
+
+  SendWheelEventAck(InputEventAckSource::MAIN_THREAD,
+                    INPUT_EVENT_ACK_STATE_CONSUMED);
+  SendWheelEventAck(InputEventAckSource::BROWSER,
+                    INPUT_EVENT_ACK_STATE_IGNORED);
 }
 
 }  // namespace content

@@ -76,7 +76,7 @@ class GcpUsingChromeTest : public ::testing::Test {
     // correctly on Windows7 and causes all the tests to stall indefinetely.
     // Since GCPW is only targeted for Windows 10 currently, disable these
     // unit tests for now until the problem can be resolved.
-    // return base::win::GetVersion() >= base::win::VERSION_WIN10;
+    // return base::win::GetVersion() >= base::win::Version::WIN10;
   }
   std::unique_ptr<net::test_server::HttpResponse> GaiaHtmlResponseHandler(
       const net::test_server::HttpRequest& request);

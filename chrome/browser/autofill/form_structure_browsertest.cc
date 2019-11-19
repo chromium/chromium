@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
   // Prints the path of the test to be executed.
   LOG(INFO) << GetParam().MaybeAsASCII();
   bool is_expected_to_pass =
-      !base::ContainsKey(GetFailingTestNames(), GetParam().BaseName().value());
+      !base::Contains(GetFailingTestNames(), GetParam().BaseName().value());
   RunOneDataDrivenTest(GetParam(), GetOutputDirectory(kTestName),
                        is_expected_to_pass);
 }

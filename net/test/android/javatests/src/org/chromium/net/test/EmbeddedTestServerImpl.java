@@ -16,7 +16,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.test.util.UrlUtils;
 
 import java.util.concurrent.Callable;
@@ -31,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @JNINamespace("net::test_server")
 public class EmbeddedTestServerImpl extends IEmbeddedTestServerImpl.Stub {
-    private static final String TAG = "cr_TestServer";
+    private static final String TAG = "TestServer";
 
     private static AtomicInteger sCount = new AtomicInteger();
 
@@ -69,12 +68,7 @@ public class EmbeddedTestServerImpl extends IEmbeddedTestServerImpl.Stub {
         // This is necessary as EmbeddedTestServerImpl is in a different process than the tests
         // using it, so it needs to initialize its own application context.
         ContextUtils.initApplicationContext(mContext.getApplicationContext());
-        try {
-            LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_BROWSER);
-        } catch (ProcessInitException e) {
-            Log.e(TAG, "Failed to load native libraries.", e);
-            return false;
-        }
+        LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_BROWSER);
 
         mHandlerThread = new HandlerThread("EmbeddedTestServer" + sCount.getAndIncrement());
         mHandlerThread.start();

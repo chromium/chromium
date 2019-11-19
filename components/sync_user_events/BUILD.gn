@@ -1,0 +1,60 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/jumbo.gni")
+
+jumbo_static_library("sync_user_events") {
+  sources = [
+    "global_id_mapper.h",
+    "no_op_user_event_service.cc",
+    "no_op_user_event_service.h",
+    "user_event_model_type_controller.cc",
+    "user_event_model_type_controller.h",
+    "user_event_service.h",
+    "user_event_service_impl.cc",
+    "user_event_service_impl.h",
+    "user_event_sync_bridge.cc",
+    "user_event_sync_bridge.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/sync",
+    "//components/sync/protocol",
+  ]
+  deps = [
+    "//components/signin/public/base",
+    "//google_apis",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "fake_user_event_service.cc",
+    "fake_user_event_service.h",
+  ]
+
+  public_deps = [
+    ":sync_user_events",
+    "//components/sync:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "user_event_service_impl_unittest.cc",
+    "user_event_sync_bridge_unittest.cc",
+  ]
+
+  configs += [ "//build/config:precompiled_headers" ]
+
+  deps = [
+    ":sync_user_events",
+    ":test_support",
+    "//base/test:test_support",
+  ]
+}

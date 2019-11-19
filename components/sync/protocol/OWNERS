@@ -1,5 +1,6 @@
-set noparent
 markusheintz@chromium.org
 mastiz@chromium.org
 treib@chromium.org
 tschumann@chromium.org
+
+per-file sharing_*=file://chrome/browser/sharing/OWNERS

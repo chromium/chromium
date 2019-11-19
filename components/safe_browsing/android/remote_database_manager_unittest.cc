@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler.h"
 #include "components/variations/variations_associated_data.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
@@ -23,18 +23,21 @@ namespace {
 
 class TestSafeBrowsingApiHandler : public SafeBrowsingApiHandler {
  public:
-  std::string GetSafetyNetId() const override { return ""; }
+  std::string GetSafetyNetId() override { return ""; }
   void StartURLCheck(std::unique_ptr<URLCheckCallbackMeta> callback,
                      const GURL& url,
                      const SBThreatTypeSet& threat_types) override {}
+  bool StartCSDAllowlistCheck(const GURL& url) override { return false; }
+  bool StartHighConfidenceAllowlistCheck(const GURL& url) override {
+    return false;
+  }
 };
 
 }  // namespace
 
 class RemoteDatabaseManagerTest : public testing::Test {
  protected:
-  RemoteDatabaseManagerTest()
-      : field_trials_(new base::FieldTrialList(nullptr)) {}
+  RemoteDatabaseManagerTest() {}
 
   void SetUp() override {
     SafeBrowsingApiHandler::SetInstance(&api_handler_);
@@ -48,10 +51,6 @@ class RemoteDatabaseManagerTest : public testing::Test {
 
   // Setup the two field trial params.  These are read in db_'s ctor.
   void SetFieldTrialParams(const std::string types_to_check_val) {
-    // Destroy the existing FieldTrialList before creating a new one to avoid
-    // a DCHECK.
-    field_trials_.reset();
-    field_trials_.reset(new base::FieldTrialList(nullptr));
     variations::testing::ClearAllVariationIDs();
     variations::testing::ClearAllVariationParams();
 
@@ -68,8 +67,7 @@ class RemoteDatabaseManagerTest : public testing::Test {
                                                      group_name, params));
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
-  std::unique_ptr<base::FieldTrialList> field_trials_;
+  content::BrowserTaskEnvironment task_environment_;
   TestSafeBrowsingApiHandler api_handler_;
   scoped_refptr<RemoteSafeBrowsingDatabaseManager> db_;
 };
@@ -83,13 +81,14 @@ TEST_F(RemoteDatabaseManagerTest, DisabledViaNull) {
 
 TEST_F(RemoteDatabaseManagerTest, TypesToCheckDefault) {
   // Most are true, a few are false.
-  for (int t_int = 0; t_int < content::RESOURCE_TYPE_LAST_TYPE; t_int++) {
+  for (int t_int = 0;
+       t_int <= static_cast<int>(content::ResourceType::kMaxValue); t_int++) {
     content::ResourceType t = static_cast<content::ResourceType>(t_int);
     switch (t) {
-      case content::RESOURCE_TYPE_STYLESHEET:
-      case content::RESOURCE_TYPE_IMAGE:
-      case content::RESOURCE_TYPE_FONT_RESOURCE:
-      case content::RESOURCE_TYPE_FAVICON:
+      case content::ResourceType::kStylesheet:
+      case content::ResourceType::kImage:
+      case content::ResourceType::kFontResource:
+      case content::ResourceType::kFavicon:
         EXPECT_FALSE(db_->CanCheckResourceType(t));
         break;
       default:
@@ -103,14 +102,14 @@ TEST_F(RemoteDatabaseManagerTest, TypesToCheckFromTrial) {
   SetFieldTrialParams("1,2,blah, 9");
   db_ = new RemoteSafeBrowsingDatabaseManager();
   EXPECT_TRUE(db_->CanCheckResourceType(
-      content::RESOURCE_TYPE_MAIN_FRAME));  // defaulted
-  EXPECT_TRUE(db_->CanCheckResourceType(content::RESOURCE_TYPE_SUB_FRAME));
-  EXPECT_TRUE(db_->CanCheckResourceType(content::RESOURCE_TYPE_STYLESHEET));
-  EXPECT_FALSE(db_->CanCheckResourceType(content::RESOURCE_TYPE_SCRIPT));
-  EXPECT_FALSE(db_->CanCheckResourceType(content::RESOURCE_TYPE_IMAGE));
+      content::ResourceType::kMainFrame));  // defaulted
+  EXPECT_TRUE(db_->CanCheckResourceType(content::ResourceType::kSubFrame));
+  EXPECT_TRUE(db_->CanCheckResourceType(content::ResourceType::kStylesheet));
+  EXPECT_FALSE(db_->CanCheckResourceType(content::ResourceType::kScript));
+  EXPECT_FALSE(db_->CanCheckResourceType(content::ResourceType::kImage));
   // ...
-  EXPECT_FALSE(db_->CanCheckResourceType(content::RESOURCE_TYPE_MEDIA));
-  EXPECT_TRUE(db_->CanCheckResourceType(content::RESOURCE_TYPE_WORKER));
+  EXPECT_FALSE(db_->CanCheckResourceType(content::ResourceType::kMedia));
+  EXPECT_TRUE(db_->CanCheckResourceType(content::ResourceType::kWorker));
 }
 
 }  // namespace safe_browsing

@@ -29,6 +29,12 @@ namespace base {
 
 class ThreadTaskRunnerHandle;
 
+// ATTENTION: Prefer using base::test::SingleThreadTaskEnvironment with a
+// base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME trait instead.
+// The only case where TestMockTimeTaskRunner is necessary is when instantiating
+// multiple TestMockTimeTaskRunners in the same test to deterministically
+// exercise the result of a race between two simulated threads.
+//
 // Runs pending tasks in the order of the tasks' post time + delay, and keeps
 // track of a mock (virtual) tick clock time that can be fast-forwarded.
 //
@@ -60,7 +66,6 @@ class ThreadTaskRunnerHandle;
 //     delayed ones), it will block until more are posted. As usual,
 //     RunLoop::RunUntilIdle() is equivalent to RunLoop::Run() followed by an
 //     immediate RunLoop::QuitWhenIdle().
-//    -
 //
 // This is a slightly more sophisticated version of TestSimpleTaskRunner, in
 // that it supports running delayed tasks in the correct temporal order.
@@ -259,7 +264,7 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
                        TestPendingTask* next_task);
 
   // RunLoop::Delegate:
-  void Run(bool application_tasks_allowed) override;
+  void Run(bool application_tasks_allowed, TimeDelta timeout) override;
   void Quit() override;
   void EnsureWorkScheduled() override;
 

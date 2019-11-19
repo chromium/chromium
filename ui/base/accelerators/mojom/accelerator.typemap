@@ -1,0 +1,14 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/base/accelerators/mojom/accelerator.mojom"
+public_headers = [ "//ui/base/accelerators/accelerator.h" ]
+traits_headers = [ "//ui/base/accelerators/mojom/accelerator_mojom_traits.h" ]
+deps = [
+  "//ui/base/accelerators/mojom:mojom_traits",
+]
+type_mappings = [
+  "ui.mojom.Accelerator=::ui::Accelerator",
+  "ui.mojom.AcceleratorKeyState=::ui::Accelerator::KeyState",
+]

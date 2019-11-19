@@ -7,6 +7,7 @@
 #include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
+#include "components/security_interstitials/core/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/net_errors.h"
@@ -61,6 +62,13 @@ void PopulateSSLDebuggingStrings(const net::SSLInfo ssl_info,
   std::vector<std::string> encoded_chain;
   ssl_info.cert->GetPEMEncodedChain(&encoded_chain);
   load_time_data->SetString("pem", base::StrCat(encoded_chain));
+}
+
+void PopulateDarkModeDisplaySetting(base::DictionaryValue* load_time_data) {
+  load_time_data->SetBoolean(
+      "darkModeAvailable",
+      base::FeatureList::IsEnabled(
+          security_interstitials::kSecurityInterstitialsDarkMode));
 }
 
 }  // namespace common_string_util

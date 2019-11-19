@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
-
 import android.support.test.filters.SmallTest;
 import android.view.View;
 
@@ -15,7 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
@@ -28,6 +25,7 @@ import org.chromium.components.autofill.AutofillPopup;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -61,7 +59,7 @@ public class AutofillTest {
         final ViewAndroidDelegate viewDelegate =
                 ViewAndroidDelegate.createBasicDelegate(activity.getActivityTab().getContentView());
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             View anchorView = viewDelegate.acquireView();
             viewDelegate.setViewPosition(anchorView, 50f, 500f, 500f, 500f, 10, 10);
 
@@ -72,7 +70,7 @@ public class AutofillTest {
         });
     }
 
-    private static final long CALLBACK_TIMEOUT_MS = scaleTimeout(4000);
+    private static final long CALLBACK_TIMEOUT_MS = 4000L;
     private static final int CHECK_INTERVAL_MS = 100;
 
     private class MockAutofillCallback implements AutofillDelegate {
@@ -133,7 +131,7 @@ public class AutofillTest {
     }
 
     public void openAutofillPopupAndWaitUntilReady(final AutofillSuggestion[] suggestions) {
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mAutofillPopup.filterAndShow(
                                 suggestions, /* isRtl= */ false, /* isRefresh= */ false));
@@ -148,7 +146,7 @@ public class AutofillTest {
     @Test
     @SmallTest
     @Feature({"autofill"})
-    public void testAutofillWithDifferentNumberSuggestions() throws Exception {
+    public void testAutofillWithDifferentNumberSuggestions() {
         openAutofillPopupAndWaitUntilReady(createTwoAutofillSuggestionArray());
         Assert.assertEquals(2, mAutofillPopup.getListView().getCount());
 
@@ -159,7 +157,7 @@ public class AutofillTest {
     @Test
     @SmallTest
     @Feature({"autofill"})
-    public void testAutofillClickFirstSuggestion() throws Exception {
+    public void testAutofillClickFirstSuggestion() {
         AutofillSuggestion[] suggestions = createTwoAutofillSuggestionArray();
         openAutofillPopupAndWaitUntilReady(suggestions);
         Assert.assertEquals(2, mAutofillPopup.getListView().getCount());

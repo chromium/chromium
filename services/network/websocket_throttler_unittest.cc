@@ -6,8 +6,8 @@
 
 #include <vector>
 
-#include "base/message_loop/message_loop.h"
 #include "base/optional.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -16,7 +16,7 @@ namespace {
 
 class WebSocketThrottlerTest : public ::testing::Test {
  private:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST(WebSocketPerProcessThrottlerTest, InitialState) {

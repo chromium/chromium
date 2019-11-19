@@ -84,7 +84,7 @@ std::uint64_t IpcFileOperations::GetNextFileId() {
 }
 
 IpcFileOperations::SharedState::SharedState(RequestHandler* request_handler)
-    : request_handler(request_handler), weak_ptr_factory(this) {}
+    : request_handler(request_handler) {}
 
 void IpcFileOperations::SharedState::Abort(std::uint64_t file_id) {
   request_handler->Cancel(file_id);

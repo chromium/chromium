@@ -5,6 +5,7 @@
 #include <atlbase.h>
 #include <atlcom.h>
 #include <atlcomcli.h>
+#include <wrl/client.h>
 
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,29 +26,15 @@ namespace credential_provider {
 
 namespace testing {
 
-namespace {
-
-HRESULT CreateGaiaCredentialWithProvider(
-    IGaiaCredentialProvider* provider,
-    IGaiaCredential** gaia_credential,
-    ICredentialProviderCredential** credential) {
-  return CreateBaseInheritedCredentialWithProvider<CGaiaCredential>(
-      provider, gaia_credential, credential);
-}
-
-}  // namespace
-
 class GcpGaiaCredentialTest : public GlsRunnerTestBase {
  protected:
   GcpGaiaCredentialTest();
 
-  FakeGaiaCredentialProvider* provider() { return &provider_; }
   BSTR signin_result() { return signin_result_; }
 
   CComBSTR MakeSigninResult(const std::string& password);
 
  private:
-  FakeGaiaCredentialProvider provider_;
   CComBSTR signin_result_;
 };
 
@@ -69,28 +56,36 @@ CComBSTR GcpGaiaCredentialTest::MakeSigninResult(const std::string& password) {
 TEST_F(GcpGaiaCredentialTest, OnUserAuthenticated) {
   USES_CONVERSION;
 
-  CComPtr<IGaiaCredential> gaia_cred;
-  CComPtr<ICredentialProviderCredential> cred;
-  ASSERT_EQ(S_OK,
-            CreateGaiaCredentialWithProvider(provider(), &gaia_cred, &cred));
+  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+
+  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+
+  Microsoft::WRL::ComPtr<IGaiaCredential> gaia_cred;
+  ASSERT_EQ(S_OK, cred.As(&gaia_cred));
 
   CComBSTR error;
   ASSERT_EQ(S_OK, gaia_cred->OnUserAuthenticated(signin_result(), &error));
-  EXPECT_TRUE(provider()->credentials_changed_fired());
+  Microsoft::WRL::ComPtr<ITestCredentialProvider> test_provider;
+  ASSERT_EQ(S_OK, created_provider().As(&test_provider));
+  EXPECT_TRUE(test_provider->credentials_changed_fired());
 }
 
 TEST_F(GcpGaiaCredentialTest, OnUserAuthenticated_SamePassword) {
   USES_CONVERSION;
 
-  CComPtr<IGaiaCredential> gaia_cred;
-  CComPtr<ICredentialProviderCredential> cred;
-  ASSERT_EQ(S_OK,
-            CreateGaiaCredentialWithProvider(provider(), &gaia_cred, &cred));
+  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+
+  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+
+  Microsoft::WRL::ComPtr<IGaiaCredential> gaia_cred;
+  ASSERT_EQ(S_OK, cred.As(&gaia_cred));
 
   CComBSTR error;
   ASSERT_EQ(S_OK, gaia_cred->OnUserAuthenticated(signin_result(), &error));
 
-  CComBSTR first_sid = provider()->sid();
+  Microsoft::WRL::ComPtr<ITestCredentialProvider> test_provider;
+  ASSERT_EQ(S_OK, created_provider().As(&test_provider));
+  CComBSTR first_sid = test_provider->sid();
 
   // Report to register the user.
   wchar_t* report_status_text = nullptr;
@@ -100,8 +95,9 @@ TEST_F(GcpGaiaCredentialTest, OnUserAuthenticated_SamePassword) {
   // Finishing with the same username+password should succeed.
   CComBSTR error2;
   ASSERT_EQ(S_OK, gaia_cred->OnUserAuthenticated(signin_result(), &error2));
-  EXPECT_TRUE(provider()->credentials_changed_fired());
-  EXPECT_EQ(first_sid, provider()->sid());
+
+  EXPECT_TRUE(test_provider->credentials_changed_fired());
+  EXPECT_EQ(first_sid, test_provider->sid());
 }
 
 TEST_F(GcpGaiaCredentialTest, OnUserAuthenticated_DiffPassword) {
@@ -120,23 +116,28 @@ TEST_F(GcpGaiaCredentialTest, OnUserAuthenticated_DiffPassword) {
           base::UTF8ToUTF16(test_data_storage.GetSuccessId()).c_str(),
           base::UTF8ToUTF16(test_data_storage.GetSuccessEmail()).c_str(),
           &sid));
-  CComPtr<IGaiaCredential> cred;
-  ASSERT_EQ(S_OK, CComCreator<CComObject<CGaiaCredential>>::CreateInstance(
-                      nullptr, IID_IGaiaCredential, (void**)&cred));
-  ASSERT_EQ(S_OK, cred->Initialize(provider()));
+  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+
+  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+
+  Microsoft::WRL::ComPtr<IGaiaCredential> gaia_cred;
+  ASSERT_EQ(S_OK, cred.As(&gaia_cred));
 
   CComBSTR error;
-  ASSERT_EQ(S_OK, cred->OnUserAuthenticated(signin_result(), &error));
-  EXPECT_TRUE(provider()->credentials_changed_fired());
+  ASSERT_EQ(S_OK, gaia_cred->OnUserAuthenticated(signin_result(), &error));
 
-  provider()->ResetCredentialsChangedFired();
+  Microsoft::WRL::ComPtr<ITestCredentialProvider> test_provider;
+  ASSERT_EQ(S_OK, created_provider().As(&test_provider));
+  EXPECT_TRUE(test_provider->credentials_changed_fired());
+
+  test_provider->ResetCredentialsChangedFired();
 
   CComBSTR new_signin_result = MakeSigninResult("password2");
 
   // Finishing with the same username but different password should mark
   // the password as stale and not fire the credentials changed event.
-  EXPECT_EQ(S_FALSE, cred->OnUserAuthenticated(new_signin_result, &error));
-  EXPECT_FALSE(provider()->credentials_changed_fired());
+  EXPECT_EQ(S_FALSE, gaia_cred->OnUserAuthenticated(new_signin_result, &error));
+  EXPECT_FALSE(test_provider->credentials_changed_fired());
 }
 
 class GcpGaiaCredentialGlsRunnerTest : public GlsRunnerTestBase {};
@@ -155,34 +156,29 @@ TEST_F(GcpGaiaCredentialGlsRunnerTest,
                       base_gaia_id, base::string16(), &sid));
 
   ASSERT_EQ(2u, fake_os_user_manager()->GetUserCount());
-  FakeGaiaCredentialProvider provider;
 
   // Start logon.
-  CComPtr<IGaiaCredential> gaia_cred;
-  CComPtr<ICredentialProviderCredential> cred;
-  ASSERT_EQ(S_OK,
-            CreateGaiaCredentialWithProvider(&provider, &gaia_cred, &cred));
+  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
 
-  CComPtr<ITestCredential> test;
-  ASSERT_EQ(S_OK, cred.QueryInterface(&test));
+  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+
+  Microsoft::WRL::ComPtr<IGaiaCredential> gaia_cred;
+  ASSERT_EQ(S_OK, cred.As(&gaia_cred));
+
+  Microsoft::WRL::ComPtr<ITestCredential> test;
+  ASSERT_EQ(S_OK, cred.As(&test));
   ASSERT_EQ(S_OK, test->SetGlsEmailAddress(base::UTF16ToUTF8(base_username) +
                                            "@gmail.com"));
-  ASSERT_EQ(S_OK, run_helper()->StartLogonProcessAndWait(cred));
+  ASSERT_EQ(S_OK, StartLogonProcessAndWait());
 
   // New username should be truncated at the end and have the last character
   // replaced with a new index
   EXPECT_STREQ((base_username.substr(0, base_username.size() - 1) +
                 base::NumberToString16(kInitialDuplicateUsernameIndex))
                    .c_str(),
-               provider.username());
-  EXPECT_NE(0u, provider.password().Length());
-  EXPECT_NE(0u, provider.sid().Length());
-  EXPECT_STREQ(test->GetErrorText(), nullptr);
-  EXPECT_EQ(TRUE, provider.credentials_changed_fired());
+               test->GetFinalUsername());
   // New user should be created.
   EXPECT_EQ(3u, fake_os_user_manager()->GetUserCount());
-
-  EXPECT_EQ(S_OK, gaia_cred->Terminate());
 }
 
 // This test checks the expected success / failure of user creation when
@@ -230,45 +226,38 @@ TEST_P(GcpAssociatedUserRunnableGaiaCredentialTest,
 
   ASSERT_EQ(static_cast<size_t>(1 + last_user_index + 1),
             fake_os_user_manager()->GetUserCount());
-  FakeGaiaCredentialProvider provider;
+
+  // Create provider.
+  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+
+  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+
+  Microsoft::WRL::ComPtr<IGaiaCredential> gaia_cred;
+  ASSERT_EQ(S_OK, cred.As(&gaia_cred));
+  Microsoft::WRL::ComPtr<ITestCredential> test;
+  ASSERT_EQ(S_OK, cred.As(&test));
 
   // Start logon.
-  CComPtr<IGaiaCredential> gaia_cred;
-  CComPtr<ICredentialProviderCredential> cred;
-  ASSERT_EQ(S_OK,
-            CreateGaiaCredentialWithProvider(&provider, &gaia_cred, &cred));
-
-  CComPtr<ITestCredential> test;
-  ASSERT_EQ(S_OK, cred.QueryInterface(&test));
-
-  ASSERT_EQ(S_OK, run_helper()->StartLogonProcessAndWait(cred));
+  ASSERT_EQ(S_OK, StartLogonProcessAndWait());
 
   if (should_succeed) {
     EXPECT_STREQ(
         (base_username + base::NumberToString16(last_user_index +
                                                 kInitialDuplicateUsernameIndex))
             .c_str(),
-        provider.username());
-    EXPECT_NE(0u, provider.password().Length());
-    EXPECT_NE(0u, provider.sid().Length());
-    EXPECT_STREQ(test->GetErrorText(), nullptr);
-    EXPECT_EQ(TRUE, provider.credentials_changed_fired());
+        OLE2CW(test->GetFinalUsername()));
     // New user should be created.
     EXPECT_EQ(static_cast<size_t>(last_user_index + 2 + 1),
               fake_os_user_manager()->GetUserCount());
+
+    ASSERT_EQ(S_OK, FinishLogonProcess(true, true, 0));
+
   } else {
-    EXPECT_EQ(0u, provider.username().Length());
-    EXPECT_EQ(0u, provider.password().Length());
-    EXPECT_EQ(0u, provider.sid().Length());
-    EXPECT_STREQ(test->GetErrorText(),
-                 GetStringResource(IDS_INTERNAL_ERROR_BASE).c_str());
-    EXPECT_EQ(FALSE, provider.credentials_changed_fired());
     // No new user should be created.
     EXPECT_EQ(static_cast<size_t>(last_user_index + 1 + 1),
               fake_os_user_manager()->GetUserCount());
+    ASSERT_EQ(S_OK, FinishLogonProcess(false, false, IDS_INTERNAL_ERROR_BASE));
   }
-  // Expect a different user name with the suffix added.
-  EXPECT_EQ(S_OK, gaia_cred->Terminate());
 }
 
 // For a max retry of 10, it is possible to create users 'username',

@@ -14,9 +14,8 @@ namespace content {
 
 class NavigationEntry;
 
-// Provides the details for a NOTIFICATION_NAV_ENTRY_COMMITTED notification.
-// TODO(brettw) this mostly duplicates ProvisionalLoadDetails, it would be
-// nice to unify these somehow.
+// Provides the details of a committed navigation entry for the
+// WebContentsObserver::NavigationEntryCommitted() notification.
 struct CONTENT_EXPORT LoadCommittedDetails {
   // By default, the entry will be filled according to a new main frame
   // navigation.

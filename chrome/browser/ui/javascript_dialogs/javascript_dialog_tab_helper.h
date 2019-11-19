@@ -126,9 +126,6 @@ class JavaScriptDialogTabHelper
   void OnVisibilityChanged(content::Visibility visibility) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DidStartNavigationToPendingEntry(
-      const GURL& url,
-      content::ReloadType reload_type) override;
 
 #if !defined(OS_ANDROID)
   // BrowserListObserver:

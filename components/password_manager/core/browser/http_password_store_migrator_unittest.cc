@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
+
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -95,7 +96,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   explicit MockPasswordManagerClient(PasswordStore* store) : store_(store) {}
 
   // PasswordManagerClient:
-  PasswordStore* GetPasswordStore() const override { return store_; }
+  PasswordStore* GetProfilePasswordStore() const override { return store_; }
   void PostHSTSQueryForHost(const GURL& gurl,
                             HSTSCallback callback) const override {
     saved_callback_ = std::move(callback);
@@ -130,7 +131,7 @@ class HttpPasswordStoreMigratorTest : public testing::Test {
   MockPasswordStore& store() { return *mock_store_; }
   MockPasswordManagerClient& client() { return client_; }
 
-  void WaitForPasswordStore() { scoped_task_environment_.RunUntilIdle(); }
+  void WaitForPasswordStore() { task_environment_.RunUntilIdle(); }
 
  protected:
   void TestEmptyStore(bool is_hsts);
@@ -138,7 +139,7 @@ class HttpPasswordStoreMigratorTest : public testing::Test {
   void TestMigratorDeletionByConsumer(bool is_hsts);
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   MockConsumer consumer_;
   scoped_refptr<MockPasswordStore> mock_store_;
   MockPasswordManagerClient client_;
@@ -272,17 +273,17 @@ TEST(HttpPasswordStoreMigrator, MigrateHttpFormToHttpsTestSignonRealm) {
     PasswordForm http_html_form;
     http_html_form.origin = kOrigins[origin_has_paths];
     http_html_form.signon_realm = "http://example.org/";
-    http_html_form.scheme = PasswordForm::Scheme::SCHEME_HTML;
+    http_html_form.scheme = PasswordForm::Scheme::kHtml;
 
     PasswordForm non_html_empty_realm_form;
     non_html_empty_realm_form.origin = kOrigins[origin_has_paths];
     non_html_empty_realm_form.signon_realm = "http://example.org/";
-    non_html_empty_realm_form.scheme = PasswordForm::Scheme::SCHEME_BASIC;
+    non_html_empty_realm_form.scheme = PasswordForm::Scheme::kBasic;
 
     PasswordForm non_html_form;
     non_html_form.origin = kOrigins[origin_has_paths];
     non_html_form.signon_realm = "http://example.org/realm";
-    non_html_form.scheme = PasswordForm::Scheme::SCHEME_BASIC;
+    non_html_form.scheme = PasswordForm::Scheme::kBasic;
 
     EXPECT_EQ(HttpPasswordStoreMigrator::MigrateHttpFormToHttps(http_html_form)
                   .signon_realm,

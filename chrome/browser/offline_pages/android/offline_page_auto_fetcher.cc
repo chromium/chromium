@@ -14,7 +14,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "url/gurl.h"
 
 namespace offline_pages {
@@ -40,38 +40,45 @@ TabAndroid* FindTab(content::RenderFrameHost* render_frame_host) {
 
 OfflinePageAutoFetcher::OfflinePageAutoFetcher(
     content::RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host) {}
+    : last_committed_url_(render_frame_host->GetLastCommittedURL()) {
+  TabAndroid* tab = FindTab(render_frame_host);
+  if (!tab) {
+    return;
+  }
+  auto_fetcher_service_ =
+      OfflinePageAutoFetcherServiceFactory::GetForBrowserContext(
+          render_frame_host->GetProcess()->GetBrowserContext());
+  android_tab_id_ = tab->GetAndroidId();
+}
 
 OfflinePageAutoFetcher::~OfflinePageAutoFetcher() = default;
 
 void OfflinePageAutoFetcher::TrySchedule(bool user_requested,
                                          TryScheduleCallback callback) {
-  TabAndroid* tab = FindTab(render_frame_host_);
-  if (!tab) {
+  if (!auto_fetcher_service_) {
     std::move(callback).Run(OfflinePageAutoFetcherScheduleResult::kOtherError);
     return;
   }
-  GetService()->TrySchedule(user_requested,
-                            render_frame_host_->GetLastCommittedURL(),
-                            tab->GetAndroidId(), std::move(callback));
+
+  auto_fetcher_service_->TrySchedule(user_requested, last_committed_url_,
+                                     android_tab_id_, std::move(callback));
 }
 
 void OfflinePageAutoFetcher::CancelSchedule() {
-  GetService()->CancelSchedule(render_frame_host_->GetLastCommittedURL());
+  if (!auto_fetcher_service_)
+    return;
+  auto_fetcher_service_->CancelSchedule(last_committed_url_);
 }
 
 // static
 void OfflinePageAutoFetcher::Create(
-    chrome::mojom::OfflinePageAutoFetcherRequest request,
+    mojo::PendingReceiver<chrome::mojom::OfflinePageAutoFetcher> receiver,
     content::RenderFrameHost* render_frame_host) {
-  mojo::MakeStrongBinding(
+  // Lifetime of the self owned receiver can exceed the render frame host, so
+  // OfflinePageAutoFetcher does not retain a reference.
+  mojo::MakeSelfOwnedReceiver(
       std::make_unique<OfflinePageAutoFetcher>(render_frame_host),
-      std::move(request));
-}
-
-OfflinePageAutoFetcherService* OfflinePageAutoFetcher::GetService() {
-  return OfflinePageAutoFetcherServiceFactory::GetForBrowserContext(
-      render_frame_host_->GetProcess()->GetBrowserContext());
+      std::move(receiver));
 }
 
 }  // namespace offline_pages

@@ -11,7 +11,7 @@ generate_token.py http://127.0.0.1:8000 AutoPictureInPicture --expire-timestamp=
 <script src="/resources/origin-trials-helper.js"></script>
 <script>
 test(t => {
-  OriginTrialsHelper.check_properties(this,
+  OriginTrialsHelper.check_properties_exist(this,
       { 'HTMLVideoElement': ['autoPictureInPicture'] });
 }, 'Auto Picture-in-Picture properties in Origin-Trial enabled document.');
 </script>

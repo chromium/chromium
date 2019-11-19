@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/sysroot.gni")
 import("//build/config/nacl/config.gni")
+import("//build/config/sysroot.gni")
 import("//build/toolchain/nacl_toolchain.gni")
 
 # Add the toolchain revision as a preprocessor define so that sources are
@@ -108,10 +108,6 @@ pnacl_toolchain("newlib_pnacl") {
 pnacl_toolchain("newlib_pnacl_nonsfi") {
   executable_extension = ""
   strip = "strip"
-
-  if (use_clang_static_analyzer) {
-    is_clang_analysis_supported = false
-  }
 }
 
 template("nacl_glibc_toolchain") {

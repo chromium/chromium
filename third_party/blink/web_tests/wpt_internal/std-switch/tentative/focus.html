@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script type="module">
+import 'std:elements/switch';
+
+test(() => {
+  let switchElement = document.createElement('std-switch');
+  document.body.appendChild(switchElement);
+  switchElement.focus();
+  assert_equals(document.activeElement, switchElement);
+  assert_true(switchElement.matches(':focus'));
+}, 'should be focus()-able by default');
+
+test(() => {
+  let switchElement = document.createElement('std-switch');
+  document.body.appendChild(switchElement);
+  assert_false(switchElement.hasAttribute('tabindex'));
+}, 'should have no tabindex by default');
+
+test(() => {
+  let switchElement = document.createElement('std-switch');
+  switchElement.setAttribute('tabindex', 'parse-error');
+  document.body.appendChild(switchElement);
+  switchElement.focus();
+  assert_not_equals(document.activeElement, switchElement);
+}, 'should not be focusable with invalid tabindex');
+
+test(() => {
+  let switchElement = document.createElement('std-switch');
+  switchElement.disabled = true;
+  document.body.appendChild(switchElement);
+  switchElement.focus();
+  assert_not_equals(document.activeElement, switchElement);
+}, 'should not be focusable if disabled');
+</script>
+</body>

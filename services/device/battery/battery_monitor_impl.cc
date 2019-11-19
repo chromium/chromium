@@ -9,16 +9,16 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace device {
 
 // static
-void BatteryMonitorImpl::Create(mojom::BatteryMonitorRequest request) {
+void BatteryMonitorImpl::Create(
+    mojo::PendingReceiver<mojom::BatteryMonitor> receiver) {
   auto* impl = new BatteryMonitorImpl;
-  auto binding =
-      mojo::MakeStrongBinding(base::WrapUnique(impl), std::move(request));
-  impl->binding_ = binding;
+  impl->receiver_ =
+      mojo::MakeSelfOwnedReceiver(base::WrapUnique(impl), std::move(receiver));
 }
 
 BatteryMonitorImpl::BatteryMonitorImpl() : status_to_report_(false) {
@@ -33,7 +33,7 @@ BatteryMonitorImpl::~BatteryMonitorImpl() {}
 void BatteryMonitorImpl::QueryNextStatus(QueryNextStatusCallback callback) {
   if (!callback_.is_null()) {
     DVLOG(1) << "Overlapped call to QueryNextStatus!";
-    binding_->Close();
+    receiver_->Close();
     return;
   }
   callback_ = std::move(callback);

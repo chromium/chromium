@@ -1,0 +1,51 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: acquire removes paint</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="delayed-acquire-removes-painted-output-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="resources/utils.js"></script>
+
+<style>
+#container {
+  width: 150px;
+  height: 150px;
+}
+#checker {
+  width: 50px;
+  height: 50px;
+  background: green;
+}
+#child1 {
+  width: 100%;
+  height: 30px;
+  background: red;
+}
+#child2 {
+  contain: layout;
+  width: 100%;
+  height: 30px;
+  background: red;
+}
+</style>
+
+<div id="container">
+  Lorem ipsum
+  <div id="child1">regular child</div>
+  <div id="child2">new formatting context child</div>
+</div>
+<div id="checker"></div>
+
+<script>
+function runTest() {
+  const container = document.getElementById("container");
+  setInvisible(container).then(takeScreenshot);
+}
+
+window.onload = () => {
+  requestAnimationFrame(() => requestAnimationFrame(runTest));
+};
+</script>
+</html>

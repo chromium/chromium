@@ -6,7 +6,6 @@ module translate.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/string16.mojom";
-import "services/network/public/mojom/url_loader_factory.mojom";
 import "url/mojom/url.mojom";
 
 enum TranslateError {
@@ -40,12 +39,6 @@ interface Page {
   // Requests that the page be translated from |source_lang| to
   // |target_lang|.
   //
-  // |loader_factory_for_translate_script| should provide a factory that the
-  // translation scripts can use for making fetch requests associated with the
-  // "translate" origin (the default factory's |request_initiator_site_lock| is
-  // not compatible with |request_initiator| of fetch requests initiated by the
-  // "translate" origin).
-  //
   // If a Translate request is already in progress with a matching
   // |target_lang|, this request will respond with |cancelled| set
   // to |true|.
@@ -56,10 +49,7 @@ interface Page {
   //
   // If |cancelled| is |true| all other response values should be
   // ignored.
-  Translate(string translate_script,
-            network.mojom.URLLoaderFactory loader_factory_for_translate_script,
-            string source_lang,
-            string target_lang)
+  Translate(string translate_script, string source_lang, string target_lang)
       => (bool cancelled, string original_lang, string translated_lang,
           TranslateError error);
 
@@ -71,6 +61,6 @@ interface Page {
 interface ContentTranslateDriver {
   // Notification that a new page is ready to translate,
   // and the language for it has been determined.
-  RegisterPage(Page page, LanguageDetectionDetails details,
+  RegisterPage(pending_remote<Page> page, LanguageDetectionDetails details,
                bool page_needs_translation);
 };

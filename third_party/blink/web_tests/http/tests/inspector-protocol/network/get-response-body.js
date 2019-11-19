@@ -5,7 +5,7 @@
   await dp.Network.enable();
 
   async function logResponseBody(url) {
-    session.evaluate(`fetch(${JSON.stringify(url)});`);
+    session.evaluate(`fetch(${JSON.stringify(url)}).then(r => r.text());`);
 
     var requestWillBeSent = (await dp.Network.onceRequestWillBeSent()).params;
     testRunner.log(`Request for ${requestWillBeSent.request.url}`);

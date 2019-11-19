@@ -1,0 +1,11 @@
+Verifies that receiving a set-cookie header with invalid syntax sends a Network.ResponseReceivedExtraInfo event with the blocked cookie.
+
+Invalid syntax blocked set-cookies: [
+  {
+    "blockedReasons": [
+      "SyntaxError"
+    ],
+    "cookieLine": "name=val\tue"
+  }
+]
+

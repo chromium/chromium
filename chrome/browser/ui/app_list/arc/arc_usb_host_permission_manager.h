@@ -209,7 +209,7 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
 
   ArcAppListPrefs* const arc_app_list_prefs_;
 
-  base::WeakPtrFactory<ArcUsbHostPermissionManager> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcUsbHostPermissionManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcUsbHostPermissionManager);
 };

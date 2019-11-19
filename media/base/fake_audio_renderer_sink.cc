@@ -51,6 +51,10 @@ void FakeAudioRendererSink::Stop() {
   ChangeState(kStopped);
 }
 
+void FakeAudioRendererSink::Flush() {
+  DCHECK_NE(state_, kPlaying);
+}
+
 void FakeAudioRendererSink::Pause() {
   DCHECK(state_ == kStarted || state_ == kPlaying) << "state_ " << state_;
   ChangeState(kPaused);

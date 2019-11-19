@@ -70,9 +70,9 @@ class VIZ_COMMON_EXPORT RenderPassDrawQuad : public DrawQuad {
 
   gfx::RectF tex_coord_rect;
 
-  bool force_anti_aliasing_off;
-
   float backdrop_filter_quality;
+
+  bool force_anti_aliasing_off;
 
   ResourceId mask_resource_id() const {
     return resources.ids[kMaskResourceIdIndex];

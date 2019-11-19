@@ -31,7 +31,7 @@ class MetricsFinalizationTask : public Task {
 
   PrefetchStore* prefetch_store_;
 
-  base::WeakPtrFactory<MetricsFinalizationTask> weak_factory_;
+  base::WeakPtrFactory<MetricsFinalizationTask> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(MetricsFinalizationTask);
 };
 

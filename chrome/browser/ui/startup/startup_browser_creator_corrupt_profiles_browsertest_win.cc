@@ -418,8 +418,9 @@ bool StartupBrowserCreatorCorruptProfileTest::
   return RemoveCreateDirectoryPermissionForUserDataDirectory();
 }
 
+// Flaky: https://crbug.com/951787
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorCorruptProfileTest,
-                       DeletedProfileFallbackToUserManager) {
+                       DISABLED_DeletedProfileFallbackToUserManager) {
   CheckBrowserWindows({});
   ExpectUserManagerToShow();
 }

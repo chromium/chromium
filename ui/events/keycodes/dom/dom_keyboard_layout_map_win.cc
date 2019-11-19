@@ -129,12 +129,22 @@ ui::DomKey DomKeyboardLayoutMapWin::GetDomKeyFromDomCodeForLayout(
       return ui::DomKey::FromCharacter(0x20a9);  // Korean won symbol.
   }
 
+  ui::DomKey key = ui::DomKey::NONE;
   if (key_type == 1)
-    return ui::DomKey::FromCharacter(char_buffer[0]);
-  if (key_type == -1)
-    return ui::DomKey::DeadKeyFromCombiningCharacter(char_buffer[0]);
+    key = ui::DomKey::FromCharacter(char_buffer[0]);
+  else if (key_type == -1) {
+    key = ui::DomKey::DeadKeyFromCombiningCharacter(char_buffer[0]);
 
-  return ui::DomKey::NONE;
+    // When we query info about dead keys, the system is left in a state
+    // such that the next key queried is in the context of that dead key.
+    // This causes ToUnicodeEx to return an incorrect result for the second
+    // key. To fix this we query a Space key after any dead key to clear out
+    // the dead key state. See crbug/977609 for details on how this problem
+    // exhibits itself to users.
+    ::ToUnicodeEx(0x0020, 0x0039, keyboard_state, char_buffer,
+                  base::size(char_buffer), /*wFlags=*/0, keyboard_layout);
+  }
+  return key;
 }
 
 }  // namespace

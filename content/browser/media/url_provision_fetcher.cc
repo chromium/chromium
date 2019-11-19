@@ -5,9 +5,12 @@
 #include "content/browser/media/url_provision_fetcher.h"
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "content/public/browser/provision_fetcher_factory.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/media_switches.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -29,6 +32,13 @@ void URLProvisionFetcher::Retrieve(
     const std::string& default_url,
     const std::string& request_data,
     const media::ProvisionFetcher::ResponseCB& response_cb) {
+  // For testing, don't actually do provisioning if the feature is enabled,
+  // just indicate that the request failed.
+  if (base::FeatureList::IsEnabled(media::kFailUrlProvisionFetcherForTesting)) {
+    response_cb.Run(false, std::string());
+    return;
+  }
+
   response_cb_ = response_cb;
 
   const std::string request_string =
@@ -67,8 +77,7 @@ void URLProvisionFetcher::Retrieve(
         })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(request_string);
-  resource_request->load_flags =
-      net::LOAD_DO_NOT_SAVE_COOKIES | net::LOAD_DO_NOT_SEND_COOKIES;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->method = "POST";
   resource_request->headers.SetHeader("User-Agent", "Widevine CDM v1.0");
   simple_url_loader_ = network::SimpleURLLoader::Create(
@@ -83,21 +92,28 @@ void URLProvisionFetcher::Retrieve(
 void URLProvisionFetcher::OnSimpleLoaderComplete(
     std::unique_ptr<std::string> response_body) {
   bool success = false;
+  int response_code = simple_url_loader_->NetError();
   std::string response;
+  const auto& headers = simple_url_loader_->ResponseInfo()
+                            ? simple_url_loader_->ResponseInfo()->headers
+                            : nullptr;
+  if (headers) {
+    // If there is a valid header, use the HTTP response code instead of the
+    // net::Error status.
+    response_code =
+        net::HttpUtil::MapStatusCodeForHistogram(headers->response_code());
+  }
+
   if (response_body) {
     success = true;
     response = std::move(*response_body);
   } else {
-    int response_code = -1;
-    if (simple_url_loader_->ResponseInfo() &&
-        simple_url_loader_->ResponseInfo()->headers) {
-      response_code =
-          simple_url_loader_->ResponseInfo()->headers->response_code();
-    }
     DVLOG(1) << "CDM provision: server returned error code " << response_code;
   }
 
   simple_url_loader_.reset();
+  base::UmaHistogramSparse("Media.EME.UrlProvisionFetcher.ResponseCode",
+                           response_code);
   response_cb_.Run(success, response);
 }
 

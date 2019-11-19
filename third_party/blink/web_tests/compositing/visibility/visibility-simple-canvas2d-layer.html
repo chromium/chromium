@@ -15,14 +15,11 @@
       }
 
       .composited {
-        transform: translatez(0);
+        will-change: transform;
       }
     </style>
 
     <script>
-      if (window.testRunner)
-          testRunner.dumpAsTextWithPixelResults();
-
       function drawCanvas(canvasID, color)
       {
           var theCanvas = document.getElementById(canvasID);

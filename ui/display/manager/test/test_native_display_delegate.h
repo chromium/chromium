@@ -47,6 +47,7 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
     set_hdcp_expectation_ = success;
   }
 
+  HDCPState hdcp_state() const { return hdcp_state_; }
   void set_hdcp_state(HDCPState state) { hdcp_state_ = state; }
 
   void set_run_async(bool run_async) { run_async_ = run_async; }
@@ -79,6 +80,10 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
   bool Configure(const DisplaySnapshot& output,
                  const DisplayMode* mode,
                  const gfx::Point& origin);
+
+  void DoSetHDCPState(int64_t display_id,
+                      HDCPState state,
+                      SetHDCPStateCallback callback);
 
   // Outputs to be returned by GetDisplays().
   std::vector<DisplaySnapshot*> outputs_;

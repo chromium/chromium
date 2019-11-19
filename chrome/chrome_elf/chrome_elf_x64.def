@@ -1,0 +1,43 @@
+; Copyright 2013 The Chromium Authors. All rights reserved.
+; Use of this source code is governed by a BSD-style license that can be
+; found in the LICENSE file.
+LIBRARY  "chrome_elf.dll"
+
+EXPORTS
+  ; When functions are added to this file, they must also be added to
+  ; chrome_elf_x86.def and chrome_elf_arm64.def
+
+  ; From components/crash/content/app/crash_export_stubs.cc
+  CrashForException_ExportThunk
+  DumpHungProcessWithPtype_ExportThunk
+  GetCrashpadDatabasePath_ExportThunk
+  ClearReportsBetween_ExportThunk
+  GetCrashReports_ExportThunk
+  InjectDumpForHungInput_ExportThunk
+  RequestSingleCrashUpload_ExportThunk
+  SetUploadConsent_ExportThunk
+
+  ; From chrome/chrome_elf/crash/crash_helper.cc
+  SetMetricsClientId
+
+  ; From chrome/chrome_elf/chrome_elf_main.cc
+  DumpProcessWithoutCrash
+  GetUserDataDirectoryThunk
+  SignalChromeElf
+  SignalInitializeCrashReporting
+
+  ; From chrome/install_static
+  GetInstallDetailsPayload
+
+  ; From chrome/chrome_elf/third_party_dlls/logs.cc
+  DrainLog
+  RegisterLogNotification
+  GetBlockedModulesCount
+  GetUniqueBlockedModulesCount
+
+  ; From chrome/chrome_elf/third_party_dlls/hook.cc
+  DisableHook
+  GetApplyHookResult
+
+  ; From chrome/chrome_elf/third_party_dlls/main.cc
+  IsThirdPartyInitialized

@@ -89,14 +89,19 @@
 
       <!-- Print Job Notification images. -->
       <structure type="chrome_scaled_image" name="IDR_PRINT_NOTIFICATION_CANCEL" file="print_notification/cancel.png" />
-      <structure type="chrome_scaled_image" name="IDR_PRINT_NOTIFICATION_PAUSE" file="print_notification/pause.png" />
-      <structure type="chrome_scaled_image" name="IDR_PRINT_NOTIFICATION_PLAY" file="print_notification/play.png" />
       <structure type="chrome_scaled_image" name="IDR_PRINT_NOTIFICATION_HELP" file="print_notification/help.png" />
 
       <!-- Fingerprint images. -->
-      <structure type="chrome_scaled_image" name="IDR_LOGIN_FINGERPRINT_ICON_ANIMATION" file="fingerprint/fingerprint.png" />
-      <structure type="chrome_scaled_image" name="IDR_LOGIN_FINGERPRINT_ENROLLMENT_COMPLETE_ANIMATION" file="fingerprint/tick.png" />
-      <structure type="chrome_scaled_image" name="IDR_LOGIN_FINGERPRINT_SCANNER_ANIMATION" file="fingerprint/fingerprint_scanner.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_FINGERPRINT_SCANNER_LAPTOP_BOTTOM_RIGHT_ANIMATION" file="fingerprint/fingerprint_scanner_laptop_bottom_right.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_FINGERPRINT_SCANNER_LAPTOP_TOP_RIGHT_ANIMATION" file="fingerprint/fingerprint_scanner_laptop_top_right.png" />
+      <structure type="chrome_html" name="IDR_LOGIN_FINGER_PRINT_TABLET_ANIMATION" file="vector/finger_print.json" compress="gzip" />
+
+      <!-- Kerberos. -->
+      <structure type="chrome_scaled_image" name="IDR_KERBEROS_ICON_KEY" file="kerberos/vpn_key_grey600_24dp.png" />
+
+      <!-- Assistant images. -->
+      <structure type="chrome_html" name="IDR_ASSISTANT_VOICE_MATCH_ANIMATION" file="vector/voice_laptop.json" compress="gzip" />
+      <structure type="chrome_html" name="IDR_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_ANIMATION" file="vector/connecting_loop.json" compress="gzip" />
 
     </structures>
   </release>

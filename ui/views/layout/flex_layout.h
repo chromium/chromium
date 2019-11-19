@@ -9,25 +9,20 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/optional.h"
+#include "ui/base/class_property.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/layout/layout_manager.h"
-
-namespace gfx {
-class Size;
-}  // namespace gfx
+#include "ui/views/layout/layout_manager_base.h"
+#include "ui/views/views_export.h"
 
 namespace views {
 
-namespace internal {
-struct ChildLayoutParams;
-class FlexLayoutInternal;
-}  // namespace internal
-
+class NormalizedSizeBounds;
 class View;
 
 // Provides CSS-like layout for a one-dimensional (vertical or horizontal)
@@ -69,11 +64,11 @@ class View;
 // take up its preferred size in the layout.
 //
 // The core function of this class is contained in
-// GetPreferredSize(maximum_size) and Layout(host). In both cases, a layout will
+// GetPreferredSize(maximum_size) and Layout(). In both cases, a layout will
 // be cached and typically not recalculated as long as none of the layout's
 // properties or the preferred size or visibility of any of its children has
 // changed.
-class VIEWS_EXPORT FlexLayout : public LayoutManager {
+class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
  public:
   FlexLayout();
   ~FlexLayout() override;
@@ -83,55 +78,149 @@ class VIEWS_EXPORT FlexLayout : public LayoutManager {
   //       .SetCrossAxisAlignment()
   //       .SetDefaultFlex(...);
   FlexLayout& SetOrientation(LayoutOrientation orientation);
-  FlexLayout& SetCollapseMargins(bool collapse_margins);
   FlexLayout& SetMainAxisAlignment(LayoutAlignment main_axis_alignment);
   FlexLayout& SetCrossAxisAlignment(LayoutAlignment cross_axis_alignment);
   FlexLayout& SetInteriorMargin(const gfx::Insets& interior_margin);
   FlexLayout& SetMinimumCrossAxisSize(int size);
-  FlexLayout& SetDefaultChildMargins(const gfx::Insets& margins);
-  FlexLayout& SetFlexForView(const View* view,
-                             const FlexSpecification& flex_specification);
-  FlexLayout& ClearFlexForView(const View* view);
-  FlexLayout& SetDefaultFlex(const FlexSpecification& flex_specification);
+  FlexLayout& SetCollapseMargins(bool collapse_margins);
+  FlexLayout& SetIncludeHostInsetsInLayout(bool include_host_insets_in_layout);
+  FlexLayout& SetIgnoreDefaultMainAxisMargins(
+      bool ignore_default_main_axis_margins);
+  FlexLayout& SetBetweenChildSpacing(int between_child_spacing);
 
-  // Set whether a view should be excluded from the layout. Excluded views will
-  // be completely ignored and must be explicitly placed by the host view.
-  FlexLayout& SetViewExcluded(const View* view, bool excluded);
-
-  View* host() { return host_; }
-  const View* host() const { return host_; }
   LayoutOrientation orientation() const { return orientation_; }
   bool collapse_margins() const { return collapse_margins_; }
   LayoutAlignment main_axis_alignment() const { return main_axis_alignment_; }
   LayoutAlignment cross_axis_alignment() const { return cross_axis_alignment_; }
   const gfx::Insets& interior_margin() const { return interior_margin_; }
   int minimum_cross_axis_size() const { return minimum_cross_axis_size_; }
-  const gfx::Insets& default_child_margins() const {
-    return default_child_margins_;
+  bool include_host_insets_in_layout() const {
+    return include_host_insets_in_layout_;
   }
-  const FlexSpecification& default_flex() const { return default_flex_; }
+  bool ignore_default_main_axis_margins() const {
+    return ignore_default_main_axis_margins_;
+  }
+  int between_child_spacing() const { return between_child_spacing_; }
 
-  const FlexSpecification& GetFlexForView(const View* view) const;
-  bool IsViewExcluded(const View* view) const;
-  bool IsHiddenByOwner(const View* view) const;
+  // Moves and uses |value| as the default value for layout property |key|.
+  template <class T, class U>
+  FlexLayout& SetDefault(const ui::ClassProperty<T>* key, U&& value) {
+    layout_defaults_.SetProperty(key, std::forward<U>(value));
+    return *this;
+  }
 
-  // Retrieve the preferred size for the control in the given bounds.
-  gfx::Size GetPreferredSize(const SizeBounds& maximum_size) const;
+  // Copies and uses |value| as the default value for layout property |key|.
+  template <class T, class U>
+  FlexLayout& SetDefault(const ui::ClassProperty<T>* key, const U& value) {
+    layout_defaults_.SetProperty(key, value);
+    return *this;
+  }
 
  protected:
-  // views::LayoutManager:
-  void Installed(View* host) override;
-  void InvalidateLayout() override;
-  void ViewAdded(View* host, View* view) override;
-  void ViewRemoved(View* host, View* view) override;
-  void ViewVisibilitySet(View* host, View* view, bool visible) override;
-  void Layout(View* host) override;
-  gfx::Size GetPreferredSize(const View* host) const override;
-  gfx::Size GetMinimumSize(const View* host) const override;
-  int GetPreferredHeightForWidth(const View* host, int width) const override;
+  // LayoutManagerBase:
+  ProposedLayout CalculateProposedLayout(
+      const SizeBounds& size_bounds) const override;
 
  private:
-  friend class internal::FlexLayoutInternal;
+  struct ChildLayoutParams;
+  class ChildViewSpacing;
+  struct FlexLayoutData;
+
+  class PropertyHandler : public ui::PropertyHandler {
+   public:
+    explicit PropertyHandler(FlexLayout* layout);
+
+   protected:
+    // ui::PropertyHandler:
+    void AfterPropertyChange(const void* key, int64_t old_value) override;
+
+   private:
+    FlexLayout* const layout_;
+  };
+
+  // Maps a flex order (lower = allocated first, and therefore higher priority)
+  // to the indices of child views within that order that can flex.
+  // See FlexSpecification::order().
+  using FlexOrderToViewIndexMap = std::map<int, std::vector<size_t>>;
+
+  // Returns the combined margins across the cross axis of the host view, for a
+  // particular child view.
+  Inset1D GetCrossAxisMargins(const FlexLayoutData& layout,
+                              size_t child_index) const;
+
+  // Calculates a margin between two child views based on each's margin,
+  // inter-child spacing, and any internal padding present in one or both
+  // elements. Uses properties of the layout, like whether adjacent margins
+  // should be collapsed.
+  int CalculateMargin(int margin1,
+                      int margin2,
+                      int internal_padding,
+                      int spacing = 0) const;
+
+  // Calculates the cross-layout space available to a view based on the
+  // available space and margins.
+  base::Optional<int> GetAvailableCrossAxisSize(
+      const FlexLayoutData& layout,
+      size_t child_index,
+      const NormalizedSizeBounds& bounds) const;
+
+  // Calculates the preferred spacing between two child views, or between a
+  // view edge and the first or last visible child views.
+  int CalculateChildSpacing(const FlexLayoutData& layout,
+                            base::Optional<size_t> child1_index,
+                            base::Optional<size_t> child2_index) const;
+
+  // Calculates the position of each child view and the size of the overall
+  // layout based on tentative visibilities and sizes for each child.
+  void UpdateLayoutFromChildren(const NormalizedSizeBounds& bounds,
+                                FlexLayoutData* data,
+                                ChildViewSpacing* child_spacing) const;
+
+  // Applies flex rules to each view in a layout, updating |data| and
+  // |child_spacing|.
+  //
+  // If |expandable_views| is specified, any view requesting more than its
+  // preferred size will be clamped to its preferred size and be added to
+  // |expandable_views| for later processing after all other flex space has been
+  // allocated.
+  //
+  // Typically, this method will be called once with |expandable_views| set and
+  // then again with it null to allocate the remaining space.
+  void AllocateFlexSpace(
+      const NormalizedSizeBounds& bounds,
+      const FlexOrderToViewIndexMap& order_to_index,
+      FlexLayoutData* data,
+      ChildViewSpacing* child_spacing,
+      FlexOrderToViewIndexMap* expandable_views = nullptr) const;
+
+  // Fills out the child entries for |data| and generates some initial size
+  // and visibility data, and stores off information about which views can
+  // expand in |flex_order_to_index|.
+  void InitializeChildData(const NormalizedSizeBounds& bounds,
+                           FlexLayoutData* data,
+                           FlexOrderToViewIndexMap* flex_order_to_index) const;
+
+  // Caclulates the child bounds (in screen coordinates) for each visible child
+  // in the layout.
+  void CalculateChildBounds(const SizeBounds& size_bounds,
+                            FlexLayoutData* data) const;
+
+  // Gets the default value for a particular layout property, which will be used
+  // if the property is not set on a child view being laid out (e.g.
+  // kMarginsKey).
+  template <class T>
+  T* GetDefault(const ui::ClassProperty<T>* key) const {
+    return layout_defaults_.GetProperty(key);
+  }
+
+  // Clears the default value for a particular layout property, which will be
+  // used if the property is not set on a child view being laid out (e.g.
+  // kMarginsKey).
+  template <class T>
+  FlexLayout& ClearDefault(const ui::ClassProperty<T>* key) {
+    layout_defaults_.ClearProperty(key);
+    return *this;
+  }
 
   LayoutOrientation orientation_ = LayoutOrientation::kHorizontal;
 
@@ -140,12 +229,6 @@ class VIEWS_EXPORT FlexLayout : public LayoutManager {
 
   // Spacing between child views and host view border.
   gfx::Insets interior_margin_;
-
-  // Default spacing to put around child views.
-  gfx::Insets default_child_margins_;
-
-  // Child-view-specific details (e.g. hidden status, flex rules, etc.)
-  std::map<const View*, internal::ChildLayoutParams> child_params_;
 
   // The alignment of children in the main axis. This is start by default.
   LayoutAlignment main_axis_alignment_ = LayoutAlignment::kStart;
@@ -156,15 +239,41 @@ class VIEWS_EXPORT FlexLayout : public LayoutManager {
   // The minimum cross axis size for the layout.
   int minimum_cross_axis_size_ = 0;
 
-  // Flex specification for components with no flex set.
-  FlexSpecification default_flex_;
+  // Whether to include host insets in the layout. Use when e.g. the host has an
+  // empty border and you want to treat that empty space as part of the interior
+  // margin of the host view.
+  //
+  // Most useful in conjunction with |collapse_margins| so child margins can
+  // overlap with the host's insets.
+  //
+  // In the future, we might consider putting this as metadata on the host's
+  // border - e.g. an EmptyBorder would be included in host insets but a thick
+  // frame would not be.
+  bool include_host_insets_in_layout_ = false;
 
-  // The view that this FlexLayout is managing the layout for.
-  views::View* host_ = nullptr;
+  // Whether host |interior_margin| overrides default child margins at the
+  // leading and trailing edge of the host view.
+  //
+  // Example:
+  // layout->SetIgnoreDefaultMainAxisMargins(true)
+  //        .SetCollapseMargins(true)
+  //        .SetDefault(kMarginsKey, {5, 10})
+  //        .SetInteriorMargin({5, 5});
+  //
+  // This produces a margin of 5 DIP on all edges of the host view, with 10 DIP
+  // between child views. If SetIgnoreDefaultMainAxisMargins(true) was not
+  // called, the default child margin of 10 would also apply on the leading and
+  // trailing edge of the host view.
+  bool ignore_default_main_axis_margins_ = false;
 
-  // Internal data used to cache layout information, etc. All definitions and
-  // data are module-private.
-  std::unique_ptr<internal::FlexLayoutInternal> internal_;
+  // The spacing between the children along the main axis. This is irrespective
+  // of any margins which are set. If |collapse_margins_| is true, then the max
+  // between this value and the margins is used.
+  int between_child_spacing_ = 0;
+
+  // Default properties for any views that don't have them explicitly set for
+  // this layout.
+  PropertyHandler layout_defaults_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FlexLayout);
 };

@@ -9,11 +9,11 @@
 #include <stdint.h>
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/containers/id_map.h"
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/ozone/ozone_export.h"
 #include "ui/ozone/platform/scenic/scenic_screen.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
@@ -28,7 +28,7 @@ class ScenicWindow;
 //
 // TODO(sergeyu): Consider updating AcceleratedWidget to store ScenicWindow*
 // which would remove the need for the IDMap.
-class OZONE_EXPORT ScenicWindowManager {
+class COMPONENT_EXPORT(OZONE) ScenicWindowManager {
  public:
   ScenicWindowManager();
   ~ScenicWindowManager();

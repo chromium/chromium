@@ -9,6 +9,8 @@
 
 #include "ash/ash_export.h"
 #include "base/macros.h"
+#include "ui/aura/window_observer.h"
+#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/views/view.h"
 
 namespace aura {
@@ -21,10 +23,9 @@ class LayerTreeOwner;
 
 namespace ash {
 
-namespace wm {
-
 // A view that mirrors the client area of a single (source) window.
-class ASH_EXPORT WindowMirrorView : public views::View {
+class ASH_EXPORT WindowMirrorView : public views::View,
+                                    public aura::WindowObserver {
  public:
   WindowMirrorView(aura::Window* source, bool trilinear_filtering_on_init);
   ~WindowMirrorView() override;
@@ -35,27 +36,25 @@ class ASH_EXPORT WindowMirrorView : public views::View {
   // Recreates |layer_owner_|.
   void RecreateMirrorLayers();
 
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
+
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
-  void NativeViewHierarchyChanged() override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
 
- private:
-  void InitLayerOwner();
-
-  // Ensures that the |target_| window is in the list of mirror windows that is
-  // set as a property on the |source_| window. This method triggers the
-  // OnWindowPropertyChanged() on WindowObservers.
-  void UpdateSourceWindowProperty();
+ protected:
+  virtual void InitLayerOwner();
 
   // Gets the root of the layer tree that was lifted from |source_| (and is now
   // a child of |this->layer()|).
-  ui::Layer* GetMirrorLayer();
+  virtual ui::Layer* GetMirrorLayer();
 
+ private:
   // Calculates the bounds of the client area of the Window in the widget
   // coordinate space.
   gfx::Rect GetClientAreaBounds() const;
@@ -74,10 +73,12 @@ class ASH_EXPORT WindowMirrorView : public views::View {
   // InitLayerOwner().
   bool trilinear_filtering_on_init_;
 
+  std::unique_ptr<aura::WindowOcclusionTracker::ScopedForceVisible>
+      force_occlusion_tracker_visible_;
+
   DISALLOW_COPY_AND_ASSIGN(WindowMirrorView);
 };
 
-}  // namespace wm
 }  // namespace ash
 
 #endif  // ASH_WM_WINDOW_MIRROR_VIEW_H_

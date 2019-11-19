@@ -58,7 +58,7 @@ class DBDataOwner {
   std::unique_ptr<DataStore> store_;
   std::unique_ptr<DataUsageStore> data_usage_;
   base::SequenceChecker sequence_checker_;
-  base::WeakPtrFactory<DBDataOwner> weak_factory_;
+  base::WeakPtrFactory<DBDataOwner> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DBDataOwner);
 };

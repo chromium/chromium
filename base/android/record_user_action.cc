@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
+#include "base/base_jni_headers/RecordUserAction_jni.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/metrics/user_metrics.h"
-#include "jni/RecordUserAction_jni.h"
 
 namespace {
 
@@ -37,7 +37,7 @@ static jlong JNI_RecordUserAction_AddActionCallbackForTesting(
     const JavaParamRef<jobject>& callback) {
   // Create a wrapper for the ActionCallback, so it can life on the heap until
   // RemoveActionCallbackForTesting() is called.
-  auto* wrapper = new ActionCallbackWrapper{base::Bind(
+  auto* wrapper = new ActionCallbackWrapper{base::BindRepeating(
       &OnActionRecorded, ScopedJavaGlobalRef<jobject>(env, callback))};
   base::AddActionCallback(wrapper->action_callback);
   return reinterpret_cast<intptr_t>(wrapper);

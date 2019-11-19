@@ -5,8 +5,11 @@
 #include "cc/paint/paint_op_buffer_serializer.h"
 
 #include "base/bind.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/paint/scoped_raster_flags.h"
 #include "ui/gfx/skia_util.h"
+
+#include <utility>
 
 namespace cc {
 namespace {
@@ -43,18 +46,6 @@ PlaybackParams MakeParams(const SkCanvas* canvas) {
   return PlaybackParams(nullptr, canvas->getTotalMatrix());
 }
 
-SkTextBlobCacheDiffCanvas::Settings MakeCanvasSettings(
-    bool context_supports_distance_field_text,
-    int max_texture_size,
-    size_t max_texture_bytes) {
-  SkTextBlobCacheDiffCanvas::Settings settings;
-  settings.fContextSupportsDistanceFieldText =
-      context_supports_distance_field_text;
-  settings.fMaxTextureSize = max_texture_size;
-  settings.fMaxTextureBytes = max_texture_bytes;
-  return settings;
-}
-
 // Use half of the max int as the extent for the SkNoDrawCanvas. The correct
 // clip is applied to the canvas during serialization.
 const int kMaxExtent = std::numeric_limits<int>::max() >> 1;
@@ -67,7 +58,7 @@ PaintOpBufferSerializer::PaintOpBufferSerializer(
     TransferCacheSerializeHelper* transfer_cache,
     ClientPaintCache* paint_cache,
     SkStrikeServer* strike_server,
-    SkColorSpace* color_space,
+    sk_sp<SkColorSpace> color_space,
     bool can_use_lcd_text,
     bool context_supports_distance_field_text,
     int max_texture_size,
@@ -81,14 +72,14 @@ PaintOpBufferSerializer::PaintOpBufferSerializer(
       can_use_lcd_text_(can_use_lcd_text),
       context_supports_distance_field_text_(
           context_supports_distance_field_text),
+      max_texture_size_(max_texture_size),
+      max_texture_bytes_(max_texture_bytes),
       text_blob_canvas_(kMaxExtent,
                         kMaxExtent,
                         ComputeSurfaceProps(can_use_lcd_text),
                         strike_server,
-                        nullptr,  // colorspace
-                        MakeCanvasSettings(context_supports_distance_field_text,
-                                           max_texture_size,
-                                           max_texture_bytes)) {
+                        std::move(color_space),
+                        context_supports_distance_field_text) {
   DCHECK(serialize_cb_);
 }
 
@@ -312,8 +303,9 @@ bool PaintOpBufferSerializer::SerializeOpWithFlags(
     uint8_t alpha) {
   // We use a null |image_provider| here because images are decoded during
   // serialization.
-  const ScopedRasterFlags scoped_flags(
-      &flags_op->flags, nullptr, options->canvas->getTotalMatrix(), alpha);
+  const ScopedRasterFlags scoped_flags(&flags_op->flags, nullptr,
+                                       options->canvas->getTotalMatrix(),
+                                       max_texture_size_, alpha);
   const PaintFlags* flags_to_serialize = scoped_flags.flags();
   if (!flags_to_serialize)
     return true;
@@ -326,6 +318,9 @@ bool PaintOpBufferSerializer::SerializeOp(
     const PaintOp* op,
     const PaintOp::SerializeOptions& options,
     const PlaybackParams& params) {
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+               "PaintOpBufferSerializer::SerializeOp", "op",
+               PaintOpTypeToString(op->GetType()));
   if (!valid_)
     return false;
 
@@ -398,7 +393,7 @@ SimpleBufferSerializer::SimpleBufferSerializer(
     TransferCacheSerializeHelper* transfer_cache,
     ClientPaintCache* paint_cache,
     SkStrikeServer* strike_server,
-    SkColorSpace* color_space,
+    sk_sp<SkColorSpace> color_space,
     bool can_use_lcd_text,
     bool context_supports_distance_field_text,
     int max_texture_size,
@@ -410,7 +405,7 @@ SimpleBufferSerializer::SimpleBufferSerializer(
           transfer_cache,
           paint_cache,
           strike_server,
-          color_space,
+          std::move(color_space),
           can_use_lcd_text,
           context_supports_distance_field_text,
           max_texture_size,

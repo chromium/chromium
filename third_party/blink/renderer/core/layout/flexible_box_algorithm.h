@@ -34,13 +34,13 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/min_max_size.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/order_iterator.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -65,35 +65,80 @@ enum class TransformedWritingMode {
 
 typedef Vector<FlexItem, 8> FlexItemVector;
 
+class AutoClearOverrideLogicalHeight {
+ public:
+  explicit AutoClearOverrideLogicalHeight(LayoutBox* box)
+      : box_(box), old_override_height_(-1) {
+    if (box_ && box_->HasOverrideLogicalHeight()) {
+      old_override_height_ = box_->OverrideLogicalHeight();
+      box_->ClearOverrideLogicalHeight();
+    }
+  }
+  ~AutoClearOverrideLogicalHeight() {
+    if (old_override_height_ != LayoutUnit(-1)) {
+      DCHECK(box_);
+      box_->SetOverrideLogicalHeight(old_override_height_);
+    }
+  }
+
+ private:
+  LayoutBox* box_;
+  LayoutUnit old_override_height_;
+};
+
+class AutoClearOverrideLogicalWidth {
+ public:
+  explicit AutoClearOverrideLogicalWidth(LayoutBox* box)
+      : box_(box), old_override_width_(-1) {
+    if (box_ && box_->HasOverrideLogicalWidth()) {
+      old_override_width_ = box_->OverrideLogicalWidth();
+      box_->ClearOverrideLogicalWidth();
+    }
+  }
+  ~AutoClearOverrideLogicalWidth() {
+    if (old_override_width_ != LayoutUnit(-1)) {
+      DCHECK(box_);
+      box_->SetOverrideLogicalWidth(old_override_width_);
+    }
+  }
+
+ private:
+  LayoutBox* box_;
+  LayoutUnit old_override_width_;
+};
+
 class FlexItem {
   DISALLOW_NEW();
 
  public:
-  // flex_base_content_size includes scrollbar width but not border or padding.
-  // min_max_sizes is the min and max size in the main axis direction.
+  // Parameters:
+  // - |flex_base_content_size| includes scrollbar size but not border/padding.
+  // - |min_max_sizes| is the resolved min and max size properties in the
+  //   main axis direction (not intrinsic widths). It does not include
+  //   border/scrollbar/padding.
   FlexItem(LayoutBox*,
            LayoutUnit flex_base_content_size,
-           MinMaxSize min_max_sizes,
-           LayoutUnit main_axis_border_and_padding,
+           MinMaxSize min_max_main_axis_sizes,
+           // Ignored for legacy, required for NG:
+           base::Optional<MinMaxSize> min_max_cross_axis_sizes,
+           LayoutUnit main_axis_border_padding,
            LayoutUnit main_axis_margin);
 
   LayoutUnit HypotheticalMainAxisMarginBoxSize() const {
-    return hypothetical_main_content_size + main_axis_border_and_padding +
+    return hypothetical_main_content_size + main_axis_border_padding +
            main_axis_margin;
   }
 
   LayoutUnit FlexBaseMarginBoxSize() const {
-    return flex_base_content_size + main_axis_border_and_padding +
-           main_axis_margin;
+    return flex_base_content_size + main_axis_border_padding + main_axis_margin;
   }
 
   LayoutUnit FlexedBorderBoxSize() const {
-    return flexed_content_size + main_axis_border_and_padding;
+    return flexed_content_size + main_axis_border_padding;
   }
 
   LayoutUnit FlexedMarginBoxSize() const {
-    return flexed_content_size + main_axis_border_and_padding +
-           main_axis_margin;
+    return flexed_content_size + main_axis_border_padding + main_axis_margin;
   }
 
   LayoutUnit ClampSizeToMinAndMax(LayoutUnit size) const {
@@ -121,23 +166,40 @@ class FlexItem {
   // it in cross_axis_size. DCHECKs if the item is not stretch aligned.
   void ComputeStretchedSize();
 
+  // Returns true if the margins were adjusted due to auto margin resolution.
+  bool UpdateAutoMarginsInCrossAxis(LayoutUnit available_alignment_space);
+
   inline const FlexLine* Line() const;
+
+  static LayoutUnit AlignmentOffset(LayoutUnit available_free_space,
+                                    ItemPosition position,
+                                    LayoutUnit ascent,
+                                    LayoutUnit max_ascent,
+                                    bool is_wrap_reverse,
+                                    bool is_deprecated_webkit_box);
 
   FlexLayoutAlgorithm* algorithm;
   wtf_size_t line_number;
   LayoutBox* box;
   const LayoutUnit flex_base_content_size;
   const MinMaxSize min_max_sizes;
+  const base::Optional<MinMaxSize> min_max_cross_sizes;
   const LayoutUnit hypothetical_main_content_size;
-  const LayoutUnit main_axis_border_and_padding;
+  const LayoutUnit main_axis_border_padding;
   const LayoutUnit main_axis_margin;
   LayoutUnit flexed_content_size;
 
   // When set by the caller, this should be the size pre-stretching.
   LayoutUnit cross_axis_size;
+  // The algorithm stores the main axis offset in X and cross axis offset in Y.
   LayoutPoint desired_location;
 
   bool frozen;
+
+  // Legacy partially relies on FlexLayoutAlgorithm::AlignChildren to determine
+  // if the child is eligible for stretching (specifically, checking for auto
+  // margins). FlexLayoutAlgorithm uses this flag to report back to legacy.
+  bool needs_relayout_for_stretch;
 
   NGBlockNode ng_input_node;
   scoped_refptr<const NGLayoutResult> layout_result;
@@ -251,12 +313,13 @@ class FlexLine {
   LayoutUnit initial_free_space;
   LayoutUnit remaining_free_space;
 
-  // These get filled in by ComputeLineItemsPosition (for now)
-  // TODO(cbiesinger): Move that to FlexibleBoxAlgorithm.
+  // These get filled in by ComputeLineItemsPosition
+  LayoutUnit main_axis_offset;
   LayoutUnit main_axis_extent;
   LayoutUnit cross_axis_offset;
   LayoutUnit cross_axis_extent;
   LayoutUnit max_ascent;
+  LayoutUnit sum_justify_adjustments;
 };
 
 // This class implements the CSS Flexbox layout algorithm:
@@ -313,6 +376,27 @@ class FlexLayoutAlgorithm {
 
   bool ShouldApplyMinSizeAutoForChild(const LayoutBox& child) const;
 
+  // Returns the intrinsic size of this box in the block direction. Call this
+  // after all flex lines have been created and processed (ie. after the
+  // ComputeLineItemsPosition stage).
+  // For a column flexbox, this will return the max across all flex lines of
+  // the length of the line, minus any added spacing due to justification.
+  // For row flexboxes, this returns the bottom (block axis) of the last flex
+  // line. In both cases, border/padding is not included.
+  LayoutUnit IntrinsicContentBlockSize() const;
+
+  // Positions flex lines by modifying FlexLine::cross_axis_offset, and
+  // FlexItem::desired_position. When lines stretch, also modifies
+  // FlexLine::cross_axis_extent.
+  void AlignFlexLines(LayoutUnit cross_axis_content_extent);
+
+  // Positions flex items by modifying FlexItem::desired_location.
+  // When lines stretch, also modifies FlexItem::cross_axis_size.
+  void AlignChildren();
+
+  void FlipForWrapReverse(LayoutUnit cross_axis_start_edge,
+                          LayoutUnit cross_axis_content_size);
+
   static TransformedWritingMode GetTransformedWritingMode(const ComputedStyle&);
 
   static const StyleContentAlignmentData& ContentAlignmentNormalBehavior();
@@ -322,6 +406,7 @@ class FlexLayoutAlgorithm {
                                         const ComputedStyle& child_style);
 
   static LayoutUnit InitialContentPositionOffset(
+      const ComputedStyle& style,
       LayoutUnit available_free_space,
       const StyleContentAlignmentData&,
       unsigned number_of_items);
@@ -329,6 +414,10 @@ class FlexLayoutAlgorithm {
       LayoutUnit available_free_space,
       const StyleContentAlignmentData&,
       unsigned number_of_items);
+
+  void LayoutColumnReverse(LayoutUnit main_axis_content_size,
+                           LayoutUnit border_scrollbar_padding_before);
+  bool IsNGFlexBox() const;
 
  private:
   EOverflow MainAxisOverflowForChild(const LayoutBox& child) const;

@@ -66,15 +66,6 @@
       "platform_app", "extension", "legacy_packaged_app", "hosted_app"
     ]
   },
-  "bookmarkManagerPrivate": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"],
-    "whitelist": [
-      "D5736E4B5CF695CB93A2FB57E4FDC6E5AFAB6FE2", // http://crbug.com/312900
-      "D57DE394F36DC1C3220E7604C575D29C51A6C495", // http://crbug.com/319444
-      "3F65507A3B39259B38C8173C6FFA3D12DF64CCE9"  // http://crbug.com/371562
-    ]
-  },
   "bookmarks": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
@@ -135,6 +126,7 @@
       "B206D8716769728278D2D300349C6CB7D7DE2EF9",  // http://crbug.com/510270
       "A3E3DE9E9F16B41D4A2FAD106BD6CA76B94A0C94",  // http://crbug.com/590259
       "C2ABD68C33A5B485971C9638B80D6A2E9CBA78C4",  // http://crbug.com/590259
+      "B41E7F08E1179CC03CBD1F49E57CF353A40ADE07",  // http://crbug.com/1019094
       "8EBDF73405D0B84CEABB8C7513C9B9FA9F1DC2CE",  // http://crbug.com/644446
       "72445193EB86716465275D4E2E84DACF47558FCF",  // http://crbug.com/644446
       "51E46A03961884A4BA74CE7CA30A75CC6F360D74",  // http://crbug.com/644446
@@ -148,7 +140,8 @@
       "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7",  // http://crbug.com/839189
       "46578A13607D38F1DC8E280C4F499FB0A2F9565C",  // http://crbug.com/841089
       "898FB5A39687D210766B8998BA4530B99C9E6586",  // http://crbug.com/841089
-      "82F30B65397BC3E4ADE627BBD857AB8A58210648"   // http://crbug.com/841089
+      "82F30B65397BC3E4ADE627BBD857AB8A58210648",  // http://crbug.com/841089
+      "C74B2AF138F9EDECD04D0965AB36CA66C8290466"   // http://crbug.com/957772
     ]
   },
   "clipboardRead": {
@@ -267,12 +260,21 @@
     "channel": "trunk",
     "extension_types": ["extension"]
   },
-  "enterprise.deviceAttributes": {
+  "enterprise.deviceAttributes": [{
     "channel": "stable",
     "platforms": ["chromeos"],
     "extension_types": ["extension", "platform_app"],
     "location": "policy"
-  },
+  }, {
+    "channel": "stable",
+    "extension_types": ["login_screen_extension"],
+    "location": "policy",
+    "platforms": ["chromeos"],
+    "whitelist": [
+      "E219EE36A3B40612FD2A8CD6937B03EF0C97D3FE",  // Imprivata (login screen)
+      "4DBFC1C52D6660DD90791976DF7FEF7B3D360509"   // Imprivata (login screen) DEV
+    ]
+  }],
   "enterprise.hardwarePlatform": {
     "channel": "stable",
     "extension_types": ["extension"],
@@ -310,8 +312,6 @@
     "extension_types": ["extension"],
     "platforms" : ["win", "mac", "linux"],
     "whitelist" : [
-      "FD15C63ABA854733FDCBC1D4D34A71E963A12ABD",  // https://crbug.com/825015
-      "08455FA7CB8734168378F731B00B354CEEE0088F",  // https://crbug.com/825015 - Test Extension
       "86D63D90308742AA65B8B29AE2D39FED2D6DC310",  // https://crbug.com/882461 SecureConnect
       "031E5E4A54C39E4F46E11CE643584E9187915908",  // https://crbug.com/882461 SecureConnect
       "349E89FE0296161007623C0B4096B617D7CECD54",  // https://crbug.com/882461 SecureConnect
@@ -361,12 +361,6 @@
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B"   // http://crbug.com/673004
     ]
   }],
-  "firstRunPrivate": {
-    "channel": "stable",
-    "extension_types": ["platform_app"],
-    "location": "component",
-    "platforms": ["chromeos"]
-  },
   "fontSettings": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
@@ -451,6 +445,47 @@
                                                    // (staging)
     ]
   },
+  "login": {
+    "channel": "stable",
+    "extension_types": ["login_screen_extension", "extension"],
+    "location": "policy",
+    "platforms": ["chromeos"],
+    "whitelist": [
+      "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519",  // Login screen APIs test extension
+      "E219EE36A3B40612FD2A8CD6937B03EF0C97D3FE",  // Imprivata (login screen)
+      "4DBFC1C52D6660DD90791976DF7FEF7B3D360509",  // Imprivata (login screen) DEV
+      "A24DE1B21A67E25FB62AC8491642038FE25DA75B",  // Imprivata (in session)
+      "6B25164FFE2BADB5F1DBBD301CC022170267022D"   // Imprivata (in session) DEV
+    ]
+  },
+  "loginScreenStorage": {
+    "channel": "stable",
+    "extension_types": ["login_screen_extension", "extension"],
+    "location": "policy",
+    "platforms": ["chromeos"],
+    "whitelist": [
+      "E219EE36A3B40612FD2A8CD6937B03EF0C97D3FE",  // Imprivata (login screen)
+      "4DBFC1C52D6660DD90791976DF7FEF7B3D360509",  // Imprivata (login screen) DEV
+      "A24DE1B21A67E25FB62AC8491642038FE25DA75B",  // Imprivata (in session)
+      "6B25164FFE2BADB5F1DBBD301CC022170267022D"   // Imprivata (in session) DEV
+    ]
+  },
+  "loginScreenUi": {
+    "channel": "stable",
+    "extension_types": ["login_screen_extension"],
+    "location": "policy",
+    "platforms": ["chromeos"],
+    "whitelist": [
+      "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
+      "E219EE36A3B40612FD2A8CD6937B03EF0C97D3FE", // Imprivata (login screen)
+      "4DBFC1C52D6660DD90791976DF7FEF7B3D360509"  // Imprivata (login screen) DEV
+    ]
+  },
+  "loginState": {
+    "channel": "stable",
+    "extension_types": ["login_screen_extension", "extension"],
+    "platforms": ["chromeos"]
+  },
   "webcamPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
@@ -502,7 +537,8 @@
         "5F57A9AE8DFF5D6BB09DF8606270402612E871E5",  // http://crbug.com/422624
         "46578A13607D38F1DC8E280C4F499FB0A2F9565C",  // http://crbug.com/819404
         "898FB5A39687D210766B8998BA4530B99C9E6586",  // http://crbug.com/819404
-        "82F30B65397BC3E4ADE627BBD857AB8A58210648"   // http://crbug.com/819404
+        "82F30B65397BC3E4ADE627BBD857AB8A58210648",  // http://crbug.com/819404
+        "C74B2AF138F9EDECD04D0965AB36CA66C8290466"   // http://crbug.com/957772
       ]
     },
     {
@@ -513,7 +549,7 @@
       ]
     },
     {
-      "channel": "dev",
+      "channel": "stable",
       "extension_types": ["platform_app"],
       "session_types": ["kiosk"]
     }
@@ -581,26 +617,17 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
   },
-  "preferencesPrivate": [
-    {
-      "channel": "stable",
-      "extension_types": [
-        "extension"
-      ],
-      "whitelist": [
-        "C41AD9DCD670210295614257EF8C9945AD68D86E",  // Google Now
-        "D5736E4B5CF695CB93A2FB57E4FDC6E5AFAB6FE2",  // http://crbug.com/312900
-        "D57DE394F36DC1C3220E7604C575D29C51A6C495",  // http://crbug.com/319444
-        "3F65507A3B39259B38C8173C6FFA3D12DF64CCE9",  // http://crbug.com/371562
-        "852290F2442EEE45EF673B8DA6090112079012A2"   // http://crbug.com/375484
-      ]
-    },
-    {
-      "channel": "stable",
-      "extension_types": ["platform_app"],
-      "location": "component"
-    }
-  ],
+  "printing": {
+    "channel": "dev",
+    "platforms": ["chromeos"],
+    "extension_types": ["extension"]
+  },
+  "printingMetrics": {
+    "channel": "stable",
+    "platforms": ["chromeos"],
+    "extension_types": ["extension"],
+    "location": "policy"
+  },
   "privacy": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
@@ -751,6 +778,12 @@
   "topSites": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
+  },
+  "transientBackground": {
+    "channel": "dev",
+    "extension_types": [
+      "extension"
+    ]
   },
   "tts": {
     "channel": "stable",

@@ -31,8 +31,7 @@ ReportingService::ReportingService(MetricsServiceClient* client,
       max_retransmit_size_(max_retransmit_size),
       reporting_active_(false),
       log_upload_in_progress_(false),
-      data_use_tracker_(DataUseTracker::Create(local_state)),
-      self_ptr_factory_(this) {
+      data_use_tracker_(DataUseTracker::Create(local_state)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(client_);
   DCHECK(local_state);
@@ -48,7 +47,9 @@ void ReportingService::Initialize() {
   log_store()->LoadPersistedUnsentLogs();
   base::Closure send_next_log_callback = base::Bind(
       &ReportingService::SendNextLog, self_ptr_factory_.GetWeakPtr());
-  upload_scheduler_.reset(new MetricsUploadScheduler(send_next_log_callback));
+  bool fast_startup_for_testing = client_->ShouldStartUpFastForTesting();
+  upload_scheduler_.reset(new MetricsUploadScheduler(send_next_log_callback,
+                                                     fast_startup_for_testing));
 }
 
 void ReportingService::Start() {

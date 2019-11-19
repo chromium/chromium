@@ -1,1 +1,3 @@
 file://components/safe_browsing/OWNERS
+# COMPONENT: Services>Safebrowsing
+# TEAM: safebrowsing@chromium.org

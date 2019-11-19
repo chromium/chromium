@@ -238,7 +238,7 @@ void GetDefaultExtensionsFromParsedJson(
       base::WrapRefCounted(new RefValue(json->Clone()));
   for (const auto& entry : *default_extensions) {
     base::string16 extension_id = base::UTF8ToUTF16(entry.first);
-    if (!base::ContainsValue(default_extension_whitelist, extension_id)) {
+    if (!base::Contains(default_extension_whitelist, extension_id)) {
       policies->emplace_back(extension_id, extensions_file, saved_json);
     }
   }

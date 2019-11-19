@@ -1,0 +1,33 @@
+<!--
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:LayoutInvalidated*
+@UIA-WIN-ALLOW:AriaProperties*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <h4 id="d1">Item1</h4>
+  <h4 id="d2" aria-busy="true">Item2</h4>
+  <h4 id="d3" aria-busy="true">Item3</h4>
+  <h4 id="d4">Item4</h4>
+  <button onclick="go()">go</button>
+  <script>
+    function go() {
+      // default is false, so this shouldn't fire an event
+      document.getElementById('d1').setAttribute('aria-busy', false);
+
+      // set busy from true->false; should fire invalidate-layout and
+      // aria-properties events
+      document.getElementById('d2').setAttribute('aria-busy', false);
+
+      // set busy from true->[removed]; should fire invalidate-layout and
+      // aria-properties events
+      document.getElementById('d3').removeAttribute('aria-busy');
+
+      // setting to true should not fire a invalidate-layout event, but should
+      // fire an aria-properties event
+      document.getElementById('d4').setAttribute('aria-busy', true);
+    }
+  </script>
+</body>
+</html>

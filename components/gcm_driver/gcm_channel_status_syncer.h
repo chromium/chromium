@@ -110,7 +110,7 @@ class GCMChannelStatusSyncer {
   base::TimeDelta current_request_delay_interval_;
 
   // Used to pass a weak pointer to a task.
-  base::WeakPtrFactory<GCMChannelStatusSyncer> weak_ptr_factory_;
+  base::WeakPtrFactory<GCMChannelStatusSyncer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GCMChannelStatusSyncer);
 };

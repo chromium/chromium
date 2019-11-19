@@ -17,9 +17,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/web_history_service_observer.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/sync/driver/sync_util.h"
 #include "components/sync/protocol/history_status.pb.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -28,12 +30,9 @@
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/primary_account_access_token_fetcher.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "ui/base/device_form_factor.h"
 #include "url/gurl.h"
 
 namespace history {
@@ -84,7 +83,7 @@ class RequestImpl : public WebHistoryService::Request {
   friend class history::WebHistoryService;
 
   RequestImpl(
-      identity::IdentityManager* identity_manager,
+      signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& url,
       const WebHistoryService::CompletionCallback& callback,
@@ -103,7 +102,7 @@ class RequestImpl : public WebHistoryService::Request {
   }
 
   void OnAccessTokenFetchComplete(GoogleServiceAuthError error,
-                                  identity::AccessTokenInfo access_token_info) {
+                                  signin::AccessTokenInfo access_token_info) {
     access_token_fetcher_.reset();
 
     if (error.state() != GoogleServiceAuthError::NONE) {
@@ -139,8 +138,7 @@ class RequestImpl : public WebHistoryService::Request {
           })");
     auto resource_request = std::make_unique<network::ResourceRequest>();
     resource_request->url = url_;
-    resource_request->load_flags =
-        net::LOAD_DO_NOT_SEND_COOKIES | net::LOAD_DO_NOT_SAVE_COOKIES;
+    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
     resource_request->method = post_data_ ? "POST" : "GET";
     resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                         "Bearer " + access_token_info.token);
@@ -150,9 +148,6 @@ class RequestImpl : public WebHistoryService::Request {
       resource_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
                                           user_agent_);
     }
-    // TODO(https://crbug.com/808498): Re-add data use measurement once
-    // SimpleURLLoader supports it.
-    // ID=data_use_measurement::DataUseUserData::WEB_HISTORY_SERVICE
     simple_url_loader_ = network::SimpleURLLoader::Create(
         std::move(resource_request), traffic_annotation);
     if (post_data_) {
@@ -173,11 +168,11 @@ class RequestImpl : public WebHistoryService::Request {
     oauth_scopes.insert(kHistoryOAuthScope);
 
     access_token_fetcher_ =
-        std::make_unique<identity::PrimaryAccountAccessTokenFetcher>(
+        std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
             "web_history", identity_manager_, oauth_scopes,
             base::BindOnce(&RequestImpl::OnAccessTokenFetchComplete,
                            base::Unretained(this)),
-            identity::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
+            signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
     is_pending_ = true;
   }
 
@@ -232,7 +227,7 @@ class RequestImpl : public WebHistoryService::Request {
     user_agent_ = user_agent;
   }
 
-  identity::IdentityManager* identity_manager_;
+  signin::IdentityManager* identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // The URL of the API endpoint.
@@ -247,7 +242,7 @@ class RequestImpl : public WebHistoryService::Request {
   // The user agent header used with this request.
   std::string user_agent_;
 
-  std::unique_ptr<identity::PrimaryAccountAccessTokenFetcher>
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
 
   // The current OAuth2 access token.
@@ -352,11 +347,10 @@ WebHistoryService::Request::~Request() {
 }
 
 WebHistoryService::WebHistoryService(
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : identity_manager_(identity_manager),
-      url_loader_factory_(std::move(url_loader_factory)),
-      weak_ptr_factory_(this) {}
+      url_loader_factory_(std::move(url_loader_factory)) {}
 
 WebHistoryService::~WebHistoryService() {
 }
@@ -560,9 +554,7 @@ void WebHistoryService::QueryOtherFormsOfBrowsingHistory(
       CreateRequest(url, completion_callback, partial_traffic_annotation);
 
   // Set the Sync-specific user agent.
-  std::string user_agent = syncer::MakeUserAgentForSync(
-      channel, ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET);
-  request->SetUserAgent(user_agent);
+  request->SetUserAgent(syncer::MakeUserAgentForSync(channel));
 
   pending_other_forms_of_browsing_history_requests_[request] =
       base::WrapUnique(request);

@@ -8,6 +8,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.VSyncMonitor;
 
 /**
@@ -25,16 +26,19 @@ public class ExternalBeginFrameSourceAndroid {
             if (!mVSyncNotificationsEnabled) {
                 return;
             }
-            nativeOnVSync(mNativeExternalBeginFrameSourceAndroid, vsyncTimeMicros,
+            ExternalBeginFrameSourceAndroidJni.get().onVSync(mNativeExternalBeginFrameSourceAndroid,
+                    ExternalBeginFrameSourceAndroid.this, vsyncTimeMicros,
                     mVSyncMonitor.getVSyncPeriodInMicroseconds());
             mVSyncMonitor.requestUpdate();
         }
     };
 
     @CalledByNative
-    private ExternalBeginFrameSourceAndroid(long nativeExternalBeginFrameSourceAndroid) {
+    private ExternalBeginFrameSourceAndroid(
+            long nativeExternalBeginFrameSourceAndroid, float refreshRate) {
         mNativeExternalBeginFrameSourceAndroid = nativeExternalBeginFrameSourceAndroid;
-        mVSyncMonitor = new VSyncMonitor(ContextUtils.getApplicationContext(), mVSyncListener);
+        mVSyncMonitor =
+                new VSyncMonitor(ContextUtils.getApplicationContext(), mVSyncListener, refreshRate);
     }
 
     @CalledByNative
@@ -49,6 +53,15 @@ public class ExternalBeginFrameSourceAndroid {
         }
     }
 
-    private native void nativeOnVSync(long nativeExternalBeginFrameSourceAndroid,
-            long vsyncTimeMicros, long vsyncPeriodMicros);
+    @CalledByNative
+    private void updateRefreshRate(float refreshRate) {
+        mVSyncMonitor.updateRefreshRate(refreshRate);
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onVSync(long nativeExternalBeginFrameSourceAndroid,
+                ExternalBeginFrameSourceAndroid caller, long vsyncTimeMicros,
+                long vsyncPeriodMicros);
+    }
 };

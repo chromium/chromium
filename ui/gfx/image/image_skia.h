@@ -87,7 +87,7 @@ class GFX_EXPORT ImageSkia {
   // If you want to create a deep copy with ImageSkiaReps for supported
   // scale factors, you need to explicitly call
   // |EnsureRepsForSupportedScales()| first.
-  std::unique_ptr<ImageSkia> DeepCopy() const;
+  ImageSkia DeepCopy() const;
 
   // Returns true if this object is backed by the same ImageSkiaStorage as
   // |other|. Will also return true if both images are isNull().

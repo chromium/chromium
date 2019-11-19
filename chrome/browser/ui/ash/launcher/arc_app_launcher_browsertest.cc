@@ -16,9 +16,9 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/arc/arc_service_launcher.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/chromeos/arc/session/arc_service_launcher.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
@@ -30,10 +30,10 @@
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_test_util.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/display/types/display_constants.h"
@@ -229,10 +229,16 @@ class ArcAppLauncherBrowserTest : public extensions::ExtensionBrowserTest {
   void SendPackageUpdated(const std::string& package_name, bool multi_app) {
     app_host()->OnPackageAppListRefreshed(
         package_name, GetTestAppsList(package_name, multi_app));
+
+    // Ensure async callbacks from the resulting observer calls are run.
+    base::RunLoop().RunUntilIdle();
   }
 
   void SendPackageRemoved(const std::string& package_name) {
     app_host()->OnPackageRemoved(package_name);
+
+    // Ensure async callbacks from the resulting observer calls are run.
+    base::RunLoop().RunUntilIdle();
   }
 
   void SendInstallationStarted(const std::string& package_name) {
@@ -325,11 +331,16 @@ IN_PROC_BROWSER_TEST_F(ArcAppDeferredLauncherBrowserTest,
   aura::Window* const root_window = ash::Shell::GetPrimaryRootWindow();
   ash::ShelfViewTestAPI test_api(
       ash::Shelf::ForWindow(root_window)->GetShelfViewForTesting());
+
+  // In this test, we need the shelf button's bounds. The scrollable shelf
+  // is notified of the added shelf button and layouts its child views
+  // during the bounds animation. So wait for the bounds animation to finish
+  // then get the final bounds of the shelf button.
+  test_api.RunMessageLoopUntilAnimationsDone();
+
   const int item_index =
       controller->shelf_model()->ItemIndexByID(ash::ShelfID(app_id));
   ASSERT_GE(item_index, 0);
-
-  controller->FlushForTesting();
 
   ash::ShelfAppButton* const button = test_api.GetButton(item_index);
   ASSERT_TRUE(button);
@@ -343,12 +354,6 @@ IN_PROC_BROWSER_TEST_F(ArcAppDeferredLauncherBrowserTest,
   event_generator.MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
   base::RunLoop().RunUntilIdle();
   event_generator.ClickLeftButton();
-
-  EXPECT_EQ(views::InkDropState::ACTION_PENDING,
-            ink_drop->GetTargetInkDropState());
-
-  // Flush RemoteShelfItemDelegate::ItemSelected and callback mojo messages.
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(views::InkDropState::ACTION_TRIGGERED,
             ink_drop->GetTargetInkDropState());

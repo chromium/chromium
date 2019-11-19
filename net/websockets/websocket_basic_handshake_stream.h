@@ -149,7 +149,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
 
   WebSocketEndpointLockManager* const websocket_endpoint_lock_manager_;
 
-  base::WeakPtrFactory<WebSocketBasicHandshakeStream> weak_ptr_factory_;
+  base::WeakPtrFactory<WebSocketBasicHandshakeStream> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebSocketBasicHandshakeStream);
 };

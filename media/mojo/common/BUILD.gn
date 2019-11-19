@@ -19,17 +19,17 @@ jumbo_source_set("common") {
   deps = [
     ":mojo_shared_buffer_video_frame",
     "//base",
-    "//gpu/ipc/common:struct_traits",
+    "//gpu/ipc/common:mojom_traits",
     "//media",
-    "//media/mojo/interfaces",
+    "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//ui/gfx/geometry",
-    "//ui/gfx/geometry/mojo",
+    "//ui/gfx/geometry/mojom",
   ]
 }
 
-# This is a separate target so that //media/mojo/interfaces can depend on it
+# This is a separate target so that //media/mojo/mojom can depend on it
 # without creating a cycle.
 source_set("mojo_shared_buffer_video_frame") {
   sources = [

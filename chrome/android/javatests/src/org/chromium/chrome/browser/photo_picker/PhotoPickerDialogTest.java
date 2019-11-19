@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.photo_picker;
 
-import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
-
+import android.net.Uri;
 import android.os.Build;
 import android.support.test.filters.LargeTest;
 import android.support.v7.widget.RecyclerView;
@@ -18,7 +17,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
@@ -30,6 +28,7 @@ import org.chromium.chrome.browser.widget.selection.SelectionDelegate.SelectionO
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.RecyclerViewTestUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.PhotoPickerListener;
 
@@ -47,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 public class PhotoPickerDialogTest implements PhotoPickerListener, SelectionObserver<PickerBitmap>,
                                               DecoderServiceHost.ServiceReadyCallback {
     // The timeout (in seconds) to wait for the decoder service to be ready.
-    private static final long WAIT_TIMEOUT_SECONDS = scaleTimeout(30);
+    private static final long WAIT_TIMEOUT_SECONDS = 30L;
 
     @Rule
     public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
@@ -68,7 +67,7 @@ public class PhotoPickerDialogTest implements PhotoPickerListener, SelectionObse
 
     // The final set of photos picked by the dialog. Can be an empty array, if
     // nothing was selected.
-    private String[] mLastSelectedPhotos;
+    private Uri[] mLastSelectedPhotos;
 
     // The list of currently selected photos (built piecemeal).
     private List<PickerBitmap> mCurrentPhotoSelection;
@@ -86,12 +85,12 @@ public class PhotoPickerDialogTest implements PhotoPickerListener, SelectionObse
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTestFiles = new ArrayList<>();
-        mTestFiles.add(new PickerBitmap("a", 5L, PickerBitmap.TileTypes.PICTURE));
-        mTestFiles.add(new PickerBitmap("b", 4L, PickerBitmap.TileTypes.PICTURE));
-        mTestFiles.add(new PickerBitmap("c", 3L, PickerBitmap.TileTypes.PICTURE));
-        mTestFiles.add(new PickerBitmap("d", 2L, PickerBitmap.TileTypes.PICTURE));
-        mTestFiles.add(new PickerBitmap("e", 1L, PickerBitmap.TileTypes.PICTURE));
-        mTestFiles.add(new PickerBitmap("f", 0L, PickerBitmap.TileTypes.PICTURE));
+        mTestFiles.add(new PickerBitmap(Uri.parse("a"), 5L, PickerBitmap.TileTypes.PICTURE));
+        mTestFiles.add(new PickerBitmap(Uri.parse("b"), 4L, PickerBitmap.TileTypes.PICTURE));
+        mTestFiles.add(new PickerBitmap(Uri.parse("c"), 3L, PickerBitmap.TileTypes.PICTURE));
+        mTestFiles.add(new PickerBitmap(Uri.parse("d"), 2L, PickerBitmap.TileTypes.PICTURE));
+        mTestFiles.add(new PickerBitmap(Uri.parse("e"), 1L, PickerBitmap.TileTypes.PICTURE));
+        mTestFiles.add(new PickerBitmap(Uri.parse("f"), 0L, PickerBitmap.TileTypes.PICTURE));
         PickerCategoryView.setTestFiles(mTestFiles);
 
         DecoderServiceHost.setReadyCallback(this);
@@ -100,7 +99,7 @@ public class PhotoPickerDialogTest implements PhotoPickerListener, SelectionObse
     // PhotoPickerDialog.PhotoPickerListener:
 
     @Override
-    public void onPhotoPickerUserAction(@PhotoPickerAction int action, String[] photos) {
+    public void onPhotoPickerUserAction(@PhotoPickerAction int action, Uri[] photos) {
         mLastActionRecorded = action;
         mLastSelectedPhotos = photos != null ? photos.clone() : null;
         if (mLastSelectedPhotos != null) Arrays.sort(mLastSelectedPhotos);
@@ -129,7 +128,7 @@ public class PhotoPickerDialogTest implements PhotoPickerListener, SelectionObse
     private PhotoPickerDialog createDialog(final boolean multiselect, final List<String> mimeTypes)
             throws Exception {
         final PhotoPickerDialog dialog =
-                ThreadUtils.runOnUiThreadBlocking(new Callable<PhotoPickerDialog>() {
+                TestThreadUtils.runOnUiThreadBlocking(new Callable<PhotoPickerDialog>() {
                     @Override
                     public PhotoPickerDialog call() {
                         final PhotoPickerDialog dialog =
@@ -149,7 +148,7 @@ public class PhotoPickerDialogTest implements PhotoPickerListener, SelectionObse
     }
 
     private void waitForDecoder() throws Exception {
-        int callCount = onSelectionCallback.getCallCount();
+        int callCount = onDecoderReadyCallback.getCallCount();
         onDecoderReadyCallback.waitForCallback(
                 callCount, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
@@ -191,16 +190,11 @@ public class PhotoPickerDialogTest implements PhotoPickerListener, SelectionObse
     }
 
     private void dismissDialog() {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mDialog.dismiss();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> mDialog.dismiss());
     }
 
     @Test
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.LOLLIPOP, message = "crbug.com/761060")
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.LOLLIPOP, message = "crbug.com/888931")
     @LargeTest
     public void testNoSelection() throws Throwable {
         createDialog(false, Arrays.asList("image/*")); // Multi-select = false.
@@ -218,7 +212,7 @@ public class PhotoPickerDialogTest implements PhotoPickerListener, SelectionObse
     }
 
     @Test
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.LOLLIPOP, message = "crbug.com/761060")
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.LOLLIPOP, message = "crbug.com/888931")
     @LargeTest
     public void testSingleSelectionPhoto() throws Throwable {
         createDialog(false, Arrays.asList("image/*")); // Multi-select = false.
@@ -233,13 +227,13 @@ public class PhotoPickerDialogTest implements PhotoPickerListener, SelectionObse
 
         Assert.assertEquals(1, mLastSelectedPhotos.length);
         Assert.assertEquals(PhotoPickerAction.PHOTOS_SELECTED, mLastActionRecorded);
-        Assert.assertEquals(mTestFiles.get(1).getFilePath(), mLastSelectedPhotos[0]);
+        Assert.assertEquals(mTestFiles.get(1).getUri().getPath(), mLastSelectedPhotos[0].getPath());
 
         dismissDialog();
     }
 
     @Test
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.LOLLIPOP, message = "crbug.com/761060")
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.LOLLIPOP, message = "crbug.com/888931")
     @LargeTest
     public void testMultiSelectionPhoto() throws Throwable {
         createDialog(true, Arrays.asList("image/*")); // Multi-select = true.
@@ -255,9 +249,9 @@ public class PhotoPickerDialogTest implements PhotoPickerListener, SelectionObse
 
         Assert.assertEquals(3, mLastSelectedPhotos.length);
         Assert.assertEquals(PhotoPickerAction.PHOTOS_SELECTED, mLastActionRecorded);
-        Assert.assertEquals(mTestFiles.get(0).getFilePath(), mLastSelectedPhotos[0]);
-        Assert.assertEquals(mTestFiles.get(2).getFilePath(), mLastSelectedPhotos[1]);
-        Assert.assertEquals(mTestFiles.get(4).getFilePath(), mLastSelectedPhotos[2]);
+        Assert.assertEquals(mTestFiles.get(0).getUri().getPath(), mLastSelectedPhotos[0].getPath());
+        Assert.assertEquals(mTestFiles.get(2).getUri().getPath(), mLastSelectedPhotos[1].getPath());
+        Assert.assertEquals(mTestFiles.get(4).getUri().getPath(), mLastSelectedPhotos[2].getPath());
 
         dismissDialog();
     }

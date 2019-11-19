@@ -4,13 +4,14 @@
 
 #include "chrome/browser/extensions/system_display/display_info_provider_aura.h"
 
+#include "chrome/browser/extensions/system_display/display_info_provider.h"
+
 namespace extensions {
 
 DisplayInfoProviderAura::DisplayInfoProviderAura() = default;
 
-// static
-DisplayInfoProvider* DisplayInfoProvider::Create() {
-  return new DisplayInfoProviderAura();
+std::unique_ptr<DisplayInfoProvider> CreateChromeDisplayInfoProvider() {
+  return std::make_unique<DisplayInfoProviderAura>();
 }
 
 }  // namespace extensions

@@ -13,10 +13,6 @@
 
 class GURL;
 
-namespace net {
-class URLRequest;
-}  // namespace net
-
 namespace content {
 
 class WebContents;
@@ -24,10 +20,6 @@ class WebContents;
 // Utility methods for download requests.
 class CONTENT_EXPORT DownloadRequestUtils {
  public:
-  // Returns the identifier for origin of the download.
-  static std::string GetRequestOriginFromRequest(
-      const net::URLRequest* request);
-
   // Construct download::DownloadUrlParameters for downloading the resource at
   // |url| and associating the download with the main frame of the given
   // WebContents.

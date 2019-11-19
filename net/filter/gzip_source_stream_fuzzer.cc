@@ -4,11 +4,12 @@
 
 #include "net/filter/gzip_source_stream.h"
 
-#include <algorithm>
+#include <fuzzer/FuzzedDataProvider.h>
 
-#include "base/logging.h"
+#include <algorithm>
+#include <memory>
+
 #include "base/memory/ref_counted.h"
-#include "base/test/fuzzed_data_provider.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/filter/fuzzed_source_stream.h"
@@ -17,17 +18,15 @@
 //
 // |data| is used to create a FuzzedSourceStream.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  net::TestCompletionCallback callback;
-  base::FuzzedDataProvider data_provider(data, size);
-  std::unique_ptr<net::FuzzedSourceStream> fuzzed_source_stream(
-      new net::FuzzedSourceStream(&data_provider));
+  FuzzedDataProvider data_provider(data, size);
+  auto fuzzed_source_stream =
+      std::make_unique<net::FuzzedSourceStream>(&data_provider);
 
-  // Gzip has a maximum compression ratio of 1032x. While, strictly speaking,
-  // linear, this means the fuzzer will often get stuck. Stop reading at a more
-  // modest compression ratio of 10x, or 2 MiB, whichever is larger. See
-  // https://crbug.com/921075.
-  size_t max_output =
-      std::max(10u * size, static_cast<size_t>(2 * 1024 * 1024));
+  // Bound the total number of reads. Gzip has a maximum compression ratio of
+  // 1032x. While, strictly speaking, linear, this means the fuzzer will often
+  // get stuck. Bound the number of reads rather than the size of the output
+  // because lots of 1-byte chunks is also a problem.
+  const size_t kMaxReads = 10 * 1024;
 
   const net::SourceStream::SourceType kGzipTypes[] = {
       net::SourceStream::TYPE_GZIP, net::SourceStream::TYPE_DEFLATE};
@@ -35,20 +34,19 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       data_provider.PickValueInArray(kGzipTypes);
   std::unique_ptr<net::GzipSourceStream> gzip_stream =
       net::GzipSourceStream::Create(std::move(fuzzed_source_stream), type);
-  size_t bytes_read = 0;
-  while (true) {
+  size_t num_reads = 0;
+  while (num_reads < kMaxReads) {
     scoped_refptr<net::IOBufferWithSize> io_buffer =
         base::MakeRefCounted<net::IOBufferWithSize>(64);
+    net::TestCompletionCallback callback;
     int result = gzip_stream->Read(io_buffer.get(), io_buffer->size(),
                                    callback.callback());
+    ++num_reads;
+
     // Releasing the pointer to IOBuffer immediately is more likely to lead to a
     // use-after-free.
     io_buffer = nullptr;
-    result = callback.GetResult(result);
-    if (result <= 0)
-      break;
-    bytes_read += static_cast<size_t>(result);
-    if (bytes_read >= max_output)
+    if (callback.GetResult(result) <= 0)
       break;
   }
 

@@ -76,12 +76,12 @@ CdmProxy::KeyType ToMediaKeyType(cdm::CdmProxy::KeyType key_type) {
 
 }  // namespace
 
-MojoCdmProxy::MojoCdmProxy(mojom::CdmProxyPtr cdm_proxy_ptr,
-                           cdm::CdmProxyClient* client)
-    : cdm_proxy_ptr_(std::move(cdm_proxy_ptr)),
+MojoCdmProxy::MojoCdmProxy(
+    mojo::PendingRemote<mojom::CdmProxy> cdm_proxy_remote,
+    cdm::CdmProxyClient* client)
+    : cdm_proxy_remote_(std::move(cdm_proxy_remote)),
       client_(client),
-      client_binding_(this),
-      weak_factory_(this) {
+      client_binding_(this) {
   DVLOG(1) << __func__;
   DCHECK(client);
 }
@@ -100,7 +100,8 @@ void MojoCdmProxy::Initialize() {
       base::BindOnce(&MojoCdmProxy::OnInitialized, weak_factory_.GetWeakPtr()),
       media::CdmProxy::Status::kFail, media::CdmProxy::Protocol::kNone, 0,
       CdmContext::kInvalidCdmId);
-  cdm_proxy_ptr_->Initialize(std::move(client_ptr_info), std::move(callback));
+  cdm_proxy_remote_->Initialize(std::move(client_ptr_info),
+                                std::move(callback));
 }
 
 void MojoCdmProxy::Process(Function function,
@@ -115,7 +116,7 @@ void MojoCdmProxy::Process(Function function,
       base::BindOnce(&MojoCdmProxy::OnProcessed, weak_factory_.GetWeakPtr()),
       media::CdmProxy::Status::kFail, std::vector<uint8_t>());
 
-  cdm_proxy_ptr_->Process(
+  cdm_proxy_remote_->Process(
       ToMediaFunction(function), crypto_session_id,
       std::vector<uint8_t>(input_data, input_data + input_data_size),
       expected_output_data_size, std::move(callback));
@@ -131,7 +132,7 @@ void MojoCdmProxy::CreateMediaCryptoSession(const uint8_t* input_data,
                      weak_factory_.GetWeakPtr()),
       media::CdmProxy::Status::kFail, 0, 0);
 
-  cdm_proxy_ptr_->CreateMediaCryptoSession(
+  cdm_proxy_remote_->CreateMediaCryptoSession(
       std::vector<uint8_t>(input_data, input_data + input_data_size),
       std::move(callback));
 }
@@ -149,7 +150,7 @@ void MojoCdmProxy::SetKey(uint32_t crypto_session_id,
       base::BindOnce(&MojoCdmProxy::OnKeySet, weak_factory_.GetWeakPtr()),
       media::CdmProxy::Status::kFail);
 
-  cdm_proxy_ptr_->SetKey(
+  cdm_proxy_remote_->SetKey(
       crypto_session_id, std::vector<uint8_t>(key_id, key_id + key_id_size),
       ToMediaKeyType(key_type),
       std::vector<uint8_t>(key_blob, key_blob + key_blob_size),
@@ -166,9 +167,9 @@ void MojoCdmProxy::RemoveKey(uint32_t crypto_session_id,
       base::BindOnce(&MojoCdmProxy::OnKeyRemoved, weak_factory_.GetWeakPtr()),
       media::CdmProxy::Status::kFail);
 
-  cdm_proxy_ptr_->RemoveKey(crypto_session_id,
-                            std::vector<uint8_t>(key_id, key_id + key_id_size),
-                            std::move(callback));
+  cdm_proxy_remote_->RemoveKey(
+      crypto_session_id, std::vector<uint8_t>(key_id, key_id + key_id_size),
+      std::move(callback));
 }
 
 void MojoCdmProxy::NotifyHardwareReset() {

@@ -1,4 +1,3 @@
 headless/public/util/http_url_fetcher.cc
-headless::HttpURLFetcher::Delegate::Delegate
 net::URLRequestContext::CreateRequest
 1

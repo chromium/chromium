@@ -14,7 +14,7 @@ declare_args() {
   # symbols are not exported.
   # TODO(thomasanderson): Set this to true by default once rL352899 is available
   # in MacOS's lldb.
-  libcxx_abi_unstable = !(is_mac && is_debug && is_component_build)
+  libcxx_abi_unstable = !((is_mac || is_ios) && is_debug && is_component_build)
 }
 
 # TODO(xiaohuic): https://crbug/917533 Crashes on internal ChromeOS build.
@@ -57,11 +57,7 @@ config("runtime_library") {
     }
   }
 
-  defines += [
-    "CR_LIBCXX_REVISION=$libcxx_svn_revision",
-    "CR_LIBCXXABI_REVISION=$libcxxabi_svn_revision",
-    "_LIBCPP_ENABLE_NODISCARD",
-  ]
+  defines += [ "_LIBCPP_ENABLE_NODISCARD" ]
 
   if (is_win) {
     # Intentionally not using libc++abi on Windows because libc++abi only
@@ -79,6 +75,14 @@ config("runtime_library") {
     # and can also result in build failures if libc++'s name for a library
     # does not match ours.
     defines += [ "_LIBCPP_NO_AUTO_LINK" ]
+
+    # Add a debug visualizer for Microsoft's debuggers so that they can display
+    # libc++ types well.
+    if (libcxx_natvis_include) {
+      # chrome.natvis listed as an input in //buildtools/third_party/libc++ to
+      # guarantee relinking on changes.
+      ldflags += [ "/NATVIS:" + rebase_path("libc++.natvis", root_build_dir) ]
+    }
   } else {
     cflags_cc += [
       "-nostdinc++",
@@ -86,14 +90,11 @@ config("runtime_library") {
       "-isystem" + rebase_path("$libcxxabi_prefix/include", root_build_dir),
     ]
 
+    defines += [ "CR_LIBCXX_REVISION=$libcxx_svn_revision" ]
+
     # Make sure we don't link against the system libstdc++ or libc++.
     if (is_clang) {
-      # //build/config/android:runtime_library adds -nostdlib, which suppresses
-      # linking against all system libraries.  -nostdlib++ would be redundant,
-      # and would generate an unused warning in this case.
-      if (!is_android) {
-        ldflags += [ "-nostdlib++" ]
-      }
+      ldflags += [ "-nostdlib++" ]
     } else {
       # Gcc has a built-in abs() definition with default visibility.
       # If it was not disabled, it would conflict with libc++'s abs()

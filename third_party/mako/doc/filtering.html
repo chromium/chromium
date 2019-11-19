@@ -1,0 +1,477 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        
+        <title>
+            
+    
+                Filtering and Buffering
+             &mdash;
+    Mako 1.0.14 Documentation
+
+        </title>
+
+        
+            <!-- begin iterate through site-imported + sphinx environment css_files -->
+                <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+                <link rel="stylesheet" href="_static/changelog.css" type="text/css" />
+                <link rel="stylesheet" href="_static/sphinx_paramlinks.css" type="text/css" />
+                <link rel="stylesheet" href="_static/docs.css" type="text/css" />
+            <!-- end iterate through site-imported + sphinx environment css_files -->
+        
+
+        
+    
+
+    <!-- begin layout.mako headers -->
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="Mako 1.0.14 Documentation" href="index.html" />
+        <link rel="next" title="The Unicode Chapter" href="unicode.html" />
+        <link rel="prev" title="Inheritance" href="inheritance.html" />
+    <!-- end layout.mako headers -->
+
+
+    </head>
+    <body>
+        
+
+
+
+
+
+
+
+
+
+
+<div id="docs-container">
+
+
+
+<div id="docs-header">
+    <h1>Mako 1.0.14 Documentation</h1>
+
+    <div id="docs-search">
+    Search:
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+
+    <div id="docs-version-header">
+        Release: <span class="version-num">1.0.14</span>
+
+    </div>
+
+</div>
+
+<div id="docs-top-navigation">
+    <div id="docs-top-page-control" class="docs-navigation-links">
+        <ul>
+            <li>Prev:
+            <a href="inheritance.html" title="previous chapter">Inheritance</a>
+            </li>
+            <li>Next:
+            <a href="unicode.html" title="next chapter">The Unicode Chapter</a>
+            </li>
+
+        <li>
+            <a href="index.html">Table of Contents</a> |
+            <a href="genindex.html">Index</a>
+        </li>
+        </ul>
+    </div>
+
+    <div id="docs-navigation-banner">
+        <a href="index.html">Mako 1.0.14 Documentation</a>
+        » 
+                Filtering and Buffering
+            
+
+        <h2>
+            
+                Filtering and Buffering
+            
+        </h2>
+    </div>
+
+</div>
+
+<div id="docs-body-container">
+
+
+    <div id="docs-sidebar">
+    <div id="sidebar-banner">
+        
+    </div>
+
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Filtering and Buffering</a><ul>
+<li><a class="reference internal" href="#expression-filtering">Expression Filtering</a><ul>
+<li><a class="reference internal" href="#the-default-filters-argument">The <code class="docutils literal notranslate"><span class="pre">default_filters</span></code> Argument</a></li>
+<li><a class="reference internal" href="#turning-off-filtering-with-the-n-filter">Turning off Filtering with the <code class="docutils literal notranslate"><span class="pre">n</span></code> Filter</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#filtering-defs-and-blocks">Filtering Defs and Blocks</a></li>
+<li><a class="reference internal" href="#buffering">Buffering</a></li>
+<li><a class="reference internal" href="#decorating">Decorating</a></li>
+</ul>
+</li>
+</ul>
+
+
+    <h4>Previous Topic</h4>
+    <p>
+    <a href="inheritance.html" title="previous chapter">Inheritance</a>
+    </p>
+    <h4>Next Topic</h4>
+    <p>
+    <a href="unicode.html" title="next chapter">The Unicode Chapter</a>
+    </p>
+
+    <h4>Quick Search</h4>
+    <p>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </p>
+
+    </div>
+
+    <div id="docs-body" class="withsidebar" >
+        
+<div class="section" id="filtering-and-buffering">
+<span id="filtering-toplevel"></span><h1>Filtering and Buffering<a class="headerlink" href="#filtering-and-buffering" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="expression-filtering">
+<span id="id1"></span><h2>Expression Filtering<a class="headerlink" href="#expression-filtering" title="Permalink to this headline">¶</a></h2>
+<p>As described in the chapter <a class="reference internal" href="syntax.html"><span class="std std-ref">Syntax</span></a>, the “<code class="docutils literal notranslate"><span class="pre">|</span></code>” operator can be
+applied to a “<code class="docutils literal notranslate"><span class="pre">${}</span></code>” expression to apply escape filters to the
+output:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="s2">&quot;this is some text&quot;</span> <span class="o">|</span> <span class="n">u</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>The above expression applies URL escaping to the expression, and
+produces <code class="docutils literal notranslate"><span class="pre">this+is+some+text</span></code>.</p>
+<p>The built-in escape flags are:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">u</span></code> : URL escaping, provided by
+<code class="docutils literal notranslate"><span class="pre">urllib.quote_plus(string.encode('utf-8'))</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">h</span></code> : HTML escaping, provided by
+<code class="docutils literal notranslate"><span class="pre">markupsafe.escape(string)</span></code></p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.3.4: </span>Prior versions use <code class="docutils literal notranslate"><span class="pre">cgi.escape(string,</span> <span class="pre">True)</span></code>.</p>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x</span></code> : XML escaping</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trim</span></code> : whitespace trimming, provided by <code class="docutils literal notranslate"><span class="pre">string.strip()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">entity</span></code> : produces HTML entity references for applicable
+strings, derived from <code class="docutils literal notranslate"><span class="pre">htmlentitydefs</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unicode</span></code> (<code class="docutils literal notranslate"><span class="pre">str</span></code> on Python 3): produces a Python unicode
+string (this function is applied by default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">decode.&lt;some</span> <span class="pre">encoding&gt;</span></code>: decode input into a Python
+unicode with the specified encoding</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n</span></code> : disable all default filtering; only filters specified
+in the local expression tag will be applied.</p></li>
+</ul>
+<p>To apply more than one filter, separate them by a comma:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="s2">&quot; &lt;tag&gt;some value&lt;/tag&gt; &quot;</span> <span class="o">|</span> <span class="n">h</span><span class="p">,</span><span class="n">trim</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>The above produces <code class="docutils literal notranslate"><span class="pre">&amp;lt;tag&amp;gt;some</span> <span class="pre">value&amp;lt;/tag&amp;gt;</span></code>, with
+no leading or trailing whitespace. The HTML escaping function is
+applied first, the “trim” function second.</p>
+<p>Naturally, you can make your own filters too. A filter is just a
+Python function that accepts a single string argument, and
+returns the filtered result. The expressions after the <code class="docutils literal notranslate"><span class="pre">|</span></code>
+operator draw upon the local namespace of the template in which
+they appear, meaning you can define escaping functions locally:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%!</span>
+    <span class="k">def</span> <span class="nf">myescape</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;TAG&gt;&quot;</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="s2">&quot;&lt;/TAG&gt;&quot;</span>
+<span class="cp">%&gt;</span><span class="x"></span>
+
+<span class="x">Here&#39;s some tagged text: </span><span class="cp">${</span><span class="s2">&quot;text&quot;</span> <span class="o">|</span> <span class="n">myescape</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>Or from any Python module:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%!</span>
+    <span class="kn">import</span> <span class="nn">myfilters</span>
+<span class="cp">%&gt;</span><span class="x"></span>
+
+<span class="x">Here&#39;s some tagged text: </span><span class="cp">${</span><span class="s2">&quot;text&quot;</span> <span class="o">|</span> <span class="n">myfilters</span><span class="o">.</span><span class="n">tagfilter</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>A page can apply a default set of filters to all expression tags
+using the <code class="docutils literal notranslate"><span class="pre">expression_filter</span></code> argument to the <code class="docutils literal notranslate"><span class="pre">%page</span></code> tag:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">page</span> <span class="na">expression_filter=</span><span class="s">&quot;h&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="x">Escaped text:  </span><span class="cp">${</span><span class="s2">&quot;&lt;html&gt;some html&lt;/html&gt;&quot;</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>Result:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>Escaped text: <span class="ni">&amp;lt;</span>html<span class="ni">&amp;gt;</span>some html<span class="ni">&amp;lt;</span>/html<span class="ni">&amp;gt;</span></pre></div>
+</div>
+<div class="section" id="the-default-filters-argument">
+<span id="filtering-default-filters"></span><h3>The <code class="docutils literal notranslate"><span class="pre">default_filters</span></code> Argument<a class="headerlink" href="#the-default-filters-argument" title="Permalink to this headline">¶</a></h3>
+<p>In addition to the <code class="docutils literal notranslate"><span class="pre">expression_filter</span></code> argument, the
+<code class="docutils literal notranslate"><span class="pre">default_filters</span></code> argument to both <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> and
+<a class="reference internal" href="usage.html#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a> can specify filtering for all expression tags
+at the programmatic level. This array-based argument, when given
+its default argument of <code class="docutils literal notranslate"><span class="pre">None</span></code>, will be internally set to
+<code class="docutils literal notranslate"><span class="pre">[&quot;unicode&quot;]</span></code> (or <code class="docutils literal notranslate"><span class="pre">[&quot;str&quot;]</span></code> on Python 3), except when
+<code class="docutils literal notranslate"><span class="pre">disable_unicode=True</span></code> is set in which case it defaults to
+<code class="docutils literal notranslate"><span class="pre">[&quot;str&quot;]</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">TemplateLookup</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/tmp&#39;</span><span class="p">],</span> <span class="n">default_filters</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;unicode&#39;</span><span class="p">])</span></pre></div>
+</div>
+<p>To replace the usual <code class="docutils literal notranslate"><span class="pre">unicode</span></code>/<code class="docutils literal notranslate"><span class="pre">str</span></code> function with a
+specific encoding, the <code class="docutils literal notranslate"><span class="pre">decode</span></code> filter can be substituted:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">TemplateLookup</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/tmp&#39;</span><span class="p">],</span> <span class="n">default_filters</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;decode.utf8&#39;</span><span class="p">])</span></pre></div>
+</div>
+<p>To disable <code class="docutils literal notranslate"><span class="pre">default_filters</span></code> entirely, set it to an empty
+list:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">TemplateLookup</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/tmp&#39;</span><span class="p">],</span> <span class="n">default_filters</span><span class="o">=</span><span class="p">[])</span></pre></div>
+</div>
+<p>Any string name can be added to <code class="docutils literal notranslate"><span class="pre">default_filters</span></code> where it
+will be added to all expressions as a filter. The filters are
+applied from left to right, meaning the leftmost filter is
+applied first.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">templatetext</span><span class="p">,</span> <span class="n">default_filters</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;unicode&#39;</span><span class="p">,</span> <span class="s1">&#39;myfilter&#39;</span><span class="p">])</span></pre></div>
+</div>
+<p>To ease the usage of <code class="docutils literal notranslate"><span class="pre">default_filters</span></code> with custom filters,
+you can also add imports (or other code) to all templates using
+the <code class="docutils literal notranslate"><span class="pre">imports</span></code> argument:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">TemplateLookup</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/tmp&#39;</span><span class="p">],</span>
+                   <span class="n">default_filters</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;unicode&#39;</span><span class="p">,</span> <span class="s1">&#39;myfilter&#39;</span><span class="p">],</span>
+                   <span class="n">imports</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;from mypackage import myfilter&#39;</span><span class="p">])</span></pre></div>
+</div>
+<p>The above will generate templates something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ....</span>
+<span class="kn">from</span> <span class="nn">mypackage</span> <span class="kn">import</span> <span class="n">myfilter</span>
+
+<span class="k">def</span> <span class="nf">render_body</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">myfilter</span><span class="p">(</span><span class="nb">unicode</span><span class="p">(</span><span class="s2">&quot;some text&quot;</span><span class="p">)))</span></pre></div>
+</div>
+</div>
+<div class="section" id="turning-off-filtering-with-the-n-filter">
+<span id="expression-filtering-nfilter"></span><h3>Turning off Filtering with the <code class="docutils literal notranslate"><span class="pre">n</span></code> Filter<a class="headerlink" href="#turning-off-filtering-with-the-n-filter" title="Permalink to this headline">¶</a></h3>
+<p>In all cases the special <code class="docutils literal notranslate"><span class="pre">n</span></code> filter, used locally within an
+expression, will <strong>disable</strong> all filters declared in the
+<code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> tag as well as in <code class="docutils literal notranslate"><span class="pre">default_filters</span></code>. Such as:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="s1">&#39;myexpression&#39;</span> <span class="o">|</span> <span class="n">n</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>will render <code class="docutils literal notranslate"><span class="pre">myexpression</span></code> with no filtering of any kind, and:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="s1">&#39;myexpression&#39;</span> <span class="o">|</span> <span class="n">n</span><span class="p">,</span><span class="n">trim</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>will render <code class="docutils literal notranslate"><span class="pre">myexpression</span></code> using the <code class="docutils literal notranslate"><span class="pre">trim</span></code> filter only.</p>
+<p>Including the <code class="docutils literal notranslate"><span class="pre">n</span></code> filter in a <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> tag will only disable
+<code class="docutils literal notranslate"><span class="pre">default_filters</span></code>. In effect this makes the filters from the tag replace
+default filters instead of adding to them. For example:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">page</span> <span class="na">expression_filter=</span><span class="s">&quot;n, json.dumps&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+<span class="x">data = {a: </span><span class="cp">${</span><span class="mi">123</span><span class="cp">}</span><span class="x">, b: </span><span class="cp">${</span><span class="s2">&quot;123&quot;</span><span class="cp">}</span><span class="x">};</span></pre></div>
+</div>
+<p>will suppress turning the values into strings using the default filter, so that
+<code class="docutils literal notranslate"><span class="pre">json.dumps</span></code> (which requires <code class="docutils literal notranslate"><span class="pre">imports=[&quot;import</span> <span class="pre">json&quot;]</span></code> or something
+equivalent) can take the value type into account, formatting numbers as numeric
+literals and strings as string literals.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.0.14: </span>The <code class="docutils literal notranslate"><span class="pre">n</span></code> filter can now be used in the <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> tag.</p>
+</div>
+</div>
+</div>
+<div class="section" id="filtering-defs-and-blocks">
+<h2>Filtering Defs and Blocks<a class="headerlink" href="#filtering-defs-and-blocks" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">%def</span></code> and <code class="docutils literal notranslate"><span class="pre">%block</span></code> tags have an argument called <code class="docutils literal notranslate"><span class="pre">filter</span></code> which will apply the
+given list of filter functions to the output of the <code class="docutils literal notranslate"><span class="pre">%def</span></code>:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;foo()&quot;</span> <span class="na">filter=</span><span class="s">&quot;h, trim&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    &lt;b&gt;this is bold&lt;/b&gt;</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>When the <code class="docutils literal notranslate"><span class="pre">filter</span></code> attribute is applied to a def as above, the def
+is automatically <strong>buffered</strong> as well. This is described next.</p>
+</div>
+<div class="section" id="buffering">
+<h2>Buffering<a class="headerlink" href="#buffering" title="Permalink to this headline">¶</a></h2>
+<p>One of Mako’s central design goals is speed. To this end, all of
+the textual content within a template and its various callables
+is by default piped directly to the single buffer that is stored
+within the <a class="reference internal" href="runtime.html#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> object. While this normally is easy to
+miss, it has certain side effects. The main one is that when you
+call a def using the normal expression syntax, i.e.
+<code class="docutils literal notranslate"><span class="pre">${somedef()}</span></code>, it may appear that the return value of the
+function is the content it produced, which is then delivered to
+your template just like any other expression substitution,
+except that normally, this is not the case; the return value of
+<code class="docutils literal notranslate"><span class="pre">${somedef()}</span></code> is simply the empty string <code class="docutils literal notranslate"><span class="pre">''</span></code>. By the time
+you receive this empty string, the output of <code class="docutils literal notranslate"><span class="pre">somedef()</span></code> has
+been sent to the underlying buffer.</p>
+<p>You may not want this effect, if for example you are doing
+something like this:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="s2">&quot; results &quot;</span> <span class="o">+</span> <span class="n">somedef</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot; more results &quot;</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>If the <code class="docutils literal notranslate"><span class="pre">somedef()</span></code> function produced the content “<code class="docutils literal notranslate"><span class="pre">somedef's</span>
+<span class="pre">results</span></code>”, the above template would produce this output:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>somedef&#39;s results results more results</pre></div>
+</div>
+<p>This is because <code class="docutils literal notranslate"><span class="pre">somedef()</span></code> fully executes before the
+expression returns the results of its concatenation; the
+concatenation in turn receives just the empty string as its
+middle expression.</p>
+<p>Mako provides two ways to work around this. One is by applying
+buffering to the <code class="docutils literal notranslate"><span class="pre">%def</span></code> itself:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;somedef()&quot;</span> <span class="na">buffered=</span><span class="s">&quot;True&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    somedef&#39;s results</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>The above definition will generate code similar to this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">somedef</span><span class="p">():</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">push_buffer</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;somedef&#39;s results&quot;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">pop_buffer</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">buf</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></pre></div>
+</div>
+<p>So that the content of <code class="docutils literal notranslate"><span class="pre">somedef()</span></code> is sent to a second buffer,
+which is then popped off the stack and its value returned. The
+speed hit inherent in buffering the output of a def is also
+apparent.</p>
+<p>Note that the <code class="docutils literal notranslate"><span class="pre">filter</span></code> argument on <code class="docutils literal notranslate"><span class="pre">%def</span></code> also causes the def to
+be buffered. This is so that the final content of the <code class="docutils literal notranslate"><span class="pre">%def</span></code> can
+be delivered to the escaping function in one batch, which
+reduces method calls and also produces more deterministic
+behavior for the filtering function itself, which can possibly
+be useful for a filtering function that wishes to apply a
+transformation to the text as a whole.</p>
+<p>The other way to buffer the output of a def or any Mako callable
+is by using the built-in <code class="docutils literal notranslate"><span class="pre">capture</span></code> function. This function
+performs an operation similar to the above buffering operation
+except it is specified by the caller.</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="s2">&quot; results &quot;</span> <span class="o">+</span> <span class="n">capture</span><span class="p">(</span><span class="n">somedef</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; more results &quot;</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>Note that the first argument to the <code class="docutils literal notranslate"><span class="pre">capture</span></code> function is
+<strong>the function itself</strong>, not the result of calling it. This is
+because the <code class="docutils literal notranslate"><span class="pre">capture</span></code> function takes over the job of actually
+calling the target function, after setting up a buffered
+environment. To send arguments to the function, just send them
+to <code class="docutils literal notranslate"><span class="pre">capture</span></code> instead:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="n">capture</span><span class="p">(</span><span class="n">somedef</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="s1">&#39;hi&#39;</span><span class="p">,</span> <span class="n">use_paging</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>The above call is equivalent to the unbuffered call:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="n">somedef</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="s1">&#39;hi&#39;</span><span class="p">,</span> <span class="n">use_paging</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+</div>
+<div class="section" id="decorating">
+<h2>Decorating<a class="headerlink" href="#decorating" title="Permalink to this headline">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.2.5.</span></p>
+</div>
+<p>Somewhat like a filter for a <code class="docutils literal notranslate"><span class="pre">%def</span></code> but more flexible, the <code class="docutils literal notranslate"><span class="pre">decorator</span></code>
+argument to <code class="docutils literal notranslate"><span class="pre">%def</span></code> allows the creation of a function that will
+work in a similar manner to a Python decorator. The function can
+control whether or not the function executes. The original
+intent of this function is to allow the creation of custom cache
+logic, but there may be other uses as well.</p>
+<p><code class="docutils literal notranslate"><span class="pre">decorator</span></code> is intended to be used with a regular Python
+function, such as one defined in a library module. Here we’ll
+illustrate the python function defined in the template for
+simplicities’ sake:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%!</span>
+    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">decorate</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;BAR&quot;</span><span class="p">)</span>
+            <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;BAR&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">decorate</span>
+<span class="cp">%&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;foo()&quot;</span> <span class="na">decorator=</span><span class="s">&quot;bar&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    this is foo</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="cp">${</span><span class="n">foo</span><span class="p">()</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>The above template will return, with more whitespace than this,
+<code class="docutils literal notranslate"><span class="pre">&quot;BAR</span> <span class="pre">this</span> <span class="pre">is</span> <span class="pre">foo</span> <span class="pre">BAR&quot;</span></code>. The function is the render callable
+itself (or possibly a wrapper around it), and by default will
+write to the context. To capture its output, use the <a class="reference internal" href="namespaces.html#mako.runtime.capture" title="mako.runtime.capture"><code class="xref py py-func docutils literal notranslate"><span class="pre">capture()</span></code></a>
+callable in the <code class="docutils literal notranslate"><span class="pre">mako.runtime</span></code> module (available in templates
+as just <code class="docutils literal notranslate"><span class="pre">runtime</span></code>):</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%!</span>
+    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">decorate</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;BAR&quot;</span> <span class="o">+</span> <span class="n">runtime</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;BAR&quot;</span>
+        <span class="k">return</span> <span class="n">decorate</span>
+<span class="cp">%&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;foo()&quot;</span> <span class="na">decorator=</span><span class="s">&quot;bar&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    this is foo</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="cp">${</span><span class="n">foo</span><span class="p">()</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>The decorator can be used with top-level defs as well as nested
+defs, and blocks too. Note that when calling a top-level def from the
+<a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> API, i.e. <code class="docutils literal notranslate"><span class="pre">template.get_def('somedef').render()</span></code>,
+the decorator has to write the output to the <code class="docutils literal notranslate"><span class="pre">context</span></code>, i.e.
+as in the first example. The return value gets discarded.</p>
+</div>
+</div>
+
+    </div>
+
+</div>
+
+<div id="docs-bottom-navigation" class="docs-navigation-links">
+        Previous:
+        <a href="inheritance.html" title="previous chapter">Inheritance</a>
+        Next:
+        <a href="unicode.html" title="next chapter">The Unicode Chapter</a>
+
+    <div id="docs-copyright">
+        &copy; Copyright the Mako authors and contributors.
+        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2
+        with Mako templates.
+    </div>
+</div>
+
+</div>
+
+
+
+        
+        
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    './',
+          VERSION:     '1.0.14',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+
+    <!-- begin iterate through sphinx environment script_files -->
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    <!-- end iterate through sphinx environment script_files -->
+
+    <script type="text/javascript" src="_static/detectmobile.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+
+
+    </body>
+</html>
+
+

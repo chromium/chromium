@@ -51,8 +51,8 @@ void BrowserFeatureProvider::AddFeatures(FeatureVector features,
           static_cast<int>(net::NetworkChangeNotifier::GetConnectionType()));
     } else if (desc.name == FeatureLibrary::BatteryPower().name) {
       bool is_battery = false;
-      if (base::PowerMonitor* monitor = base::PowerMonitor::Get())
-        is_battery = monitor->IsOnBatteryPower();
+      if (base::PowerMonitor::IsInitialized())
+        is_battery = base::PowerMonitor::IsOnBatteryPower();
       features[i] = FeatureValue(is_battery);
     }
   }

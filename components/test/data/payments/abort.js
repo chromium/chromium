@@ -11,7 +11,7 @@ var request;
 /**
  * Launches the PaymentRequest UI.
  */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   try {
     request = new PaymentRequest(
         [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}],
@@ -27,7 +27,7 @@ function buy() {  // eslint-disable-line no-unused-vars
 /**
  * Aborts the PaymentRequest UI.
  */
-function abort() {  // eslint-disable-line no-unused-vars
+function abort() { // eslint-disable-line no-unused-vars
   try {
     request.abort()
         .then(function() {

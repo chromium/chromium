@@ -429,33 +429,50 @@ mojom::SerialPortControlSignalsPtr SerialIoHandlerPosix::GetControlSignals()
 
 bool SerialIoHandlerPosix::SetControlSignals(
     const mojom::SerialHostControlSignals& signals) {
-  int status;
-
-  if (ioctl(file().GetPlatformFile(), TIOCMGET, &status) == -1) {
-    VPLOG(1) << "Failed to get port control signals";
-    return false;
-  }
+  // Collect signals that need to be set or cleared on the port.
+  int set = 0;
+  int clear = 0;
 
   if (signals.has_dtr) {
     if (signals.dtr) {
-      status |= TIOCM_DTR;
+      set |= TIOCM_DTR;
     } else {
-      status &= ~TIOCM_DTR;
+      clear |= TIOCM_DTR;
     }
   }
 
   if (signals.has_rts) {
     if (signals.rts) {
-      status |= TIOCM_RTS;
+      set |= TIOCM_RTS;
     } else {
-      status &= ~TIOCM_RTS;
+      clear |= TIOCM_RTS;
     }
   }
 
-  if (ioctl(file().GetPlatformFile(), TIOCMSET, &status) != 0) {
+  if (set && ioctl(file().GetPlatformFile(), TIOCMBIS, &set) != 0) {
     VPLOG(1) << "Failed to set port control signals";
     return false;
   }
+
+  if (clear && ioctl(file().GetPlatformFile(), TIOCMBIC, &clear) != 0) {
+    VPLOG(1) << "Failed to clear port control signals";
+    return false;
+  }
+
+  if (signals.has_brk) {
+    if (signals.brk) {
+      if (ioctl(file().GetPlatformFile(), TIOCSBRK, 0) != 0) {
+        VPLOG(1) << "Failed to set break";
+        return false;
+      }
+    } else {
+      if (ioctl(file().GetPlatformFile(), TIOCCBRK, 0) != 0) {
+        VPLOG(1) << "Failed to clear break";
+        return false;
+      }
+    }
+  }
+
   return true;
 }
 
@@ -505,23 +522,6 @@ mojom::SerialConnectionInfoPtr SerialIoHandlerPosix::GetPortInfo() const {
                                               : mojom::SerialStopBits::ONE;
   info->cts_flow_control = (config.c_cflag & CRTSCTS) != 0;
   return info;
-}
-
-bool SerialIoHandlerPosix::SetBreak() {
-  if (ioctl(file().GetPlatformFile(), TIOCSBRK, 0) != 0) {
-    VPLOG(1) << "Failed to set break";
-    return false;
-  }
-
-  return true;
-}
-
-bool SerialIoHandlerPosix::ClearBreak() {
-  if (ioctl(file().GetPlatformFile(), TIOCCBRK, 0) != 0) {
-    VPLOG(1) << "Failed to clear break";
-    return false;
-  }
-  return true;
 }
 
 // break sequence:

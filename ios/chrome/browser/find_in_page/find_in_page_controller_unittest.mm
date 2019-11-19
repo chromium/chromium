@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/find_in_page/find_in_page_controller.h"
 
+#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
+#include "components/ukm/ios/ukm_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
-#include "ios/chrome/browser/metrics/ukm_url_recorder.h"
+#import "ios/chrome/browser/find_in_page/find_in_page_response_delegate.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,6 +21,17 @@
 
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+
+@interface TestFindInPageResponseDelegate
+    : NSObject <FindInPageResponseDelegate>
+@property(nonatomic, strong) FindInPageModel* model;
+@end
+
+@implementation TestFindInPageResponseDelegate
+- (void)findDidFinishWithUpdatedModel:(FindInPageModel*)model {
+  self.model = model;
+}
+@end
 
 namespace {
 
@@ -35,16 +48,18 @@ class FindInPageControllerTest : public ChromeWebTest {
     ChromeWebTest::SetUp();
     find_in_page_controller_ =
         [[FindInPageController alloc] initWithWebState:web_state()];
+    delegate_ = [[TestFindInPageResponseDelegate alloc] init];
+    find_in_page_controller_.responseDelegate = delegate_;
     ukm::InitializeSourceUrlRecorderForWebState(web_state());
   }
 
   void TearDown() override {
-    [find_in_page_controller_ detachFromWebState];
     test_ukm_recorder_.Purge();
     ChromeWebTest::TearDown();
   }
 
   FindInPageController* find_in_page_controller_ = nil;
+  TestFindInPageResponseDelegate* delegate_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };
 
@@ -53,13 +68,12 @@ class FindInPageControllerTest : public ChromeWebTest {
 TEST_F(FindInPageControllerTest, VerifyUKMLoggedTrue) {
   test_ukm_recorder_.Purge();
   LoadHtml(@"<html><p>some string</p></html>");
-  __block bool completion_handler_finished = false;
   [find_in_page_controller_ findStringInPage:@"some string"
                            completionHandler:^{
-                             completion_handler_finished = true;
                            }];
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return completion_handler_finished;
+    base::RunLoop().RunUntilIdle();
+    return delegate_.model != nil;
   }));
   // Single true entry should be recorded for the interaction above.
   const auto& entries =
@@ -75,13 +89,12 @@ TEST_F(FindInPageControllerTest, VerifyUKMLoggedTrue) {
 TEST_F(FindInPageControllerTest, VerifyUKMLoggedFalse) {
   test_ukm_recorder_.Purge();
   LoadHtml(@"<html><p>some string</p></html>");
-  __block bool completion_handler_finished = false;
   [find_in_page_controller_ findStringInPage:@"nothing"
                            completionHandler:^{
-                             completion_handler_finished = true;
                            }];
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return completion_handler_finished;
+    base::RunLoop().RunUntilIdle();
+    return delegate_.model != nil;
   }));
   // Single false entry should be recorded for the interaction above.
   const auto& entries =

@@ -1,2 +1,0 @@
-test right overflow in RTL page.
-scroll: Success

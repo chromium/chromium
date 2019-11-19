@@ -10,7 +10,10 @@ package org.chromium.components.background_task_scheduler;
  */
 public final class TaskIds {
     // When adding your job id to the list below, remember to make a corresponding update to the
-    // BackgroundTaskSchedulerUma#toUmaEnumValueFromTaskId(int) method.
+    // BackgroundTaskSchedulerUma#toUmaEnumValueFromTaskId(int) method. Also, if the new task id
+    // is related to a BackgroundTask class in //chrome, remember to update
+    // ChromeBackgroundTaskFactory#getBackgroundTaskFromTaskId(int).
+    // Id from 111000000 to 111999999 are reserved for internal usage.
     public static final int TEST = 0x00008378;
     public static final int OMAHA_JOB_ID = 0x00011684;
 
@@ -33,6 +36,8 @@ public final class TaskIds {
     public static final int EXPLORE_SITES_REFRESH_JOB_ID = 101;
     public static final int BACKGROUND_SYNC_ONE_SHOT_JOB_ID = 102;
     public static final int NOTIFICATION_SCHEDULER_JOB_ID = 103;
+    public static final int NOTIFICATION_TRIGGER_JOB_ID = 104;
+    public static final int PERIODIC_BACKGROUND_SYNC_CHROME_WAKEUP_TASK_JOB_ID = 105;
 
     private TaskIds() {}
 }

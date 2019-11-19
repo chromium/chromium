@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,25 +43,19 @@
     cell.imageView.hidden = YES;
   }
 
-  cell.titleLabel.text = self.title;
+  cell.textLabel.text = self.title;
   cell.detailTextLabel.text = self.detailText;
-  UIColor* cellBackgroundColor = styler.cellBackgroundColor
-                                     ? styler.cellBackgroundColor
-                                     : styler.tableViewBackgroundColor;
-  cell.imageView.backgroundColor = cellBackgroundColor;
-  cell.titleLabel.backgroundColor = cellBackgroundColor;
   if (self.textColor) {
-    cell.titleLabel.textColor = self.textColor;
+    cell.textLabel.textColor = self.textColor;
   } else if (styler.cellTitleColor) {
-    cell.titleLabel.textColor = styler.cellTitleColor;
+    cell.textLabel.textColor = styler.cellTitleColor;
   } else {
-    cell.textLabel.textColor = UIColor.blackColor;
+    cell.textLabel.textColor = UIColor.cr_labelColor;
   }
   if (self.detailTextColor) {
     cell.detailTextLabel.textColor = self.detailTextColor;
   } else {
-    cell.detailTextLabel.textColor =
-        UIColorFromRGB(kTableViewSecondaryLabelLightGrayTextColor);
+    cell.detailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
   }
 
   cell.userInteractionEnabled = self.enabled;
@@ -72,6 +67,7 @@
 
 // These properties overrides the ones from UITableViewCell, so this @synthesize
 // cannot be removed.
+@synthesize textLabel = _textLabel;
 @synthesize detailTextLabel = _detailTextLabel;
 @synthesize imageView = _imageView;
 
@@ -79,6 +75,7 @@
               reuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
+    self.isAccessibilityElement = YES;
     _imageView = [[UIImageView alloc] init];
     // The favicon image is smaller than its UIImageView's bounds, so center it.
     _imageView.contentMode = UIViewContentModeCenter;
@@ -86,21 +83,21 @@
                                   forAxis:UILayoutConstraintAxisHorizontal];
 
     // Set font size using dynamic type.
-    _titleLabel = [[UILabel alloc] init];
-    _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    _titleLabel.adjustsFontForContentSizeCategory = YES;
-    [_titleLabel
+    _textLabel = [[UILabel alloc] init];
+    _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _textLabel.adjustsFontForContentSizeCategory = YES;
+    [_textLabel
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
     _detailTextLabel = [[UILabel alloc] init];
     _detailTextLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
     _detailTextLabel.adjustsFontForContentSizeCategory = YES;
     _detailTextLabel.numberOfLines = 0;
 
     UIStackView* verticalStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ _titleLabel, _detailTextLabel ]];
+        initWithArrangedSubviews:@[ _textLabel, _detailTextLabel ]];
     verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
     verticalStack.axis = UILayoutConstraintAxisVertical;
     verticalStack.spacing = 0;
@@ -178,6 +175,33 @@
           previousTraitCollection.preferredContentSizeCategory)) {
     [self configureTextLabelForAccessibility:isCurrentCategoryAccessibility];
   }
+}
+
+#pragma mark - UIAccessibility
+
+- (NSString*)accessibilityLabel {
+  if (self.detailTextLabel.text) {
+    return [NSString stringWithFormat:@"%@, %@", self.textLabel.text,
+                                      self.detailTextLabel.text];
+  }
+  return self.textLabel.text;
+}
+
+- (UIAccessibilityTraits)accessibilityTraits {
+  UIAccessibilityTraits accessibilityTraits = super.accessibilityTraits;
+  if (!self.isUserInteractionEnabled) {
+    accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+  }
+  return accessibilityTraits;
+}
+
+- (NSArray<NSString*>*)accessibilityUserInputLabels {
+  NSMutableArray<NSString*>* userInputLabels = [[NSMutableArray alloc] init];
+  if (self.textLabel.text) {
+    [userInputLabels addObject:self.textLabel.text];
+  }
+
+  return userInputLabels;
 }
 
 @end

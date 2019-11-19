@@ -13,6 +13,8 @@
 namespace gpu {
 
 class DecoderClient;
+class MemoryTracker;
+class SharedImageManager;
 
 namespace gles2 {
 class Outputter;
@@ -25,9 +27,21 @@ class GPU_GLES2_EXPORT WebGPUDecoder : public DecoderContext,
  public:
   static WebGPUDecoder* Create(DecoderClient* client,
                                CommandBufferServiceBase* command_buffer_service,
+                               SharedImageManager* shared_image_manager,
+                               MemoryTracker* memory_tracker,
                                gles2::Outputter* outputter);
 
   ~WebGPUDecoder() override;
+
+  // WebGPU-specific initialization that's different than DecoderContext's
+  // Initialize that is tied to GLES2 concepts and a noop for WebGPU decoders.
+  virtual ContextResult Initialize() = 0;
+
+  ContextResult Initialize(const scoped_refptr<gl::GLSurface>& surface,
+                           const scoped_refptr<gl::GLContext>& context,
+                           bool offscreen,
+                           const gles2::DisallowedFeatures& disallowed_features,
+                           const ContextCreationAttribs& attrib_helper) final;
 
  protected:
   WebGPUDecoder(DecoderClient* client,

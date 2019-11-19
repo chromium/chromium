@@ -8,10 +8,23 @@ WebAssembly Migration Guide
 
 Given the momentum of cross-browser WebAssembly support, we plan to focus our
 native code efforts on WebAssembly going forward and plan to remove support for
-PNaCl in Q2 2019 (except for Chrome Apps). We believe that the vibrant
+PNaCl in Q4 2019 (except for Chrome Apps). We believe that the vibrant
 ecosystem around `WebAssembly <http://webassembly.org>`_
 makes it a better fit for new and existing high-performance
 web apps and that usage of PNaCl is sufficiently low to warrant deprecation.
+
+As of Chrome 76, PNaCl on the open web has been moved behind an
+`Origin Trial
+<https://github.com/GoogleChrome/OriginTrials/blob/gh-pages/developer-guide.md>`_,
+which is a mechanism for web developers to register and get access to a feature that isn't on by default.
+This is usually a new proposed feature but in this case it's a feature being deprecated.
+A developer can register on the `Origin Trial Console
+<https://developers.chrome.com/origintrials/#/view_trial/3553340105995321345>`_
+and receive a token, which can be embedded into a page and will enable the feature without the user needing to use a flag.
+(For more details see the linked guide). The trial is scheduled to last through Chrome 78, approximately until December 2019.
+This change is not intended to affect NaCl or PNaCl in Chrome Apps or extensions, and the "enable-nacl"
+flag in chrome://flags can also be used to enable PNaCl locally for testing
+(this flag also retains its current function of enabling non-PNaCl "native" NaCl on any page).
 
 We also recently announced the deprecation Q1 2018 of
 `Chrome Apps

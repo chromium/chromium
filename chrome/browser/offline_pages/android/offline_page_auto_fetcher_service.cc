@@ -173,12 +173,9 @@ void OfflinePageAutoFetcherService::AutoFetchComplete(
   if (!metadata)
     return;
 
-  const GURL& url =
-      page->original_url.is_empty() ? page->url : page->original_url;
-
-  delegate_->ShowAutoFetchCompleteNotification(page->title, url.spec(),
-                                               metadata.value().android_tab_id,
-                                               page->offline_id);
+  delegate_->ShowAutoFetchCompleteNotification(
+      page->title, page->GetOriginalUrl().spec(), page->url.spec(),
+      metadata.value().android_tab_id, page->offline_id);
 }
 
 }  // namespace offline_pages

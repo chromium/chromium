@@ -137,6 +137,9 @@ class CastAudioMixer::MixerProxyStream
     source_callback_ = nullptr;
   }
 
+  // There is nothing to flush since the proxy stream is removed during Stop().
+  void Flush() override {}
+
   void SetVolume(double volume) override {
     DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
 
@@ -199,7 +202,7 @@ CastAudioMixer::~CastAudioMixer() {}
 
 bool CastAudioMixer::Register(MixerProxyStream* proxy_stream) {
   DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
-  DCHECK(!base::ContainsKey(proxy_streams_, proxy_stream));
+  DCHECK(!base::Contains(proxy_streams_, proxy_stream));
 
   // Do not allow opening new streams while in error state.
   if (error_)
@@ -224,7 +227,7 @@ bool CastAudioMixer::Register(MixerProxyStream* proxy_stream) {
 
 void CastAudioMixer::Unregister(MixerProxyStream* proxy_stream) {
   DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
-  DCHECK(base::ContainsKey(proxy_streams_, proxy_stream));
+  DCHECK(base::Contains(proxy_streams_, proxy_stream));
 
   proxy_streams_.erase(proxy_stream);
 

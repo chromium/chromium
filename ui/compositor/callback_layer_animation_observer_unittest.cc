@@ -256,6 +256,47 @@ CallbackLayerAnimationObserverTest::CreateLayerAnimationSequence() {
   return sequences_.back().get();
 }
 
+class CallbackLayerAnimationObserverTestOverwrite
+    : public CallbackLayerAnimationObserverTest {
+ public:
+  CallbackLayerAnimationObserverTestOverwrite();
+
+ protected:
+  void AnimationStarted(const CallbackLayerAnimationObserver& observer);
+
+  std::unique_ptr<CallbackLayerAnimationObserver> CreateAnimationObserver();
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(CallbackLayerAnimationObserverTestOverwrite);
+};
+
+CallbackLayerAnimationObserverTestOverwrite::
+    CallbackLayerAnimationObserverTestOverwrite() {
+  observer_ = CreateAnimationObserver();
+  observer_test_api_ =
+      std::make_unique<LayerAnimationObserverTestApi>(observer_.get());
+}
+
+void CallbackLayerAnimationObserverTestOverwrite::AnimationStarted(
+    const CallbackLayerAnimationObserver& observer) {
+  observer_->OnLayerAnimationAborted(sequences_.front().get());
+  observer_test_api_.reset();
+  // Replace the current observer with a new observer so that the destructor
+  // gets called on the current observer.
+  observer_ = CreateAnimationObserver();
+}
+
+std::unique_ptr<CallbackLayerAnimationObserver>
+CallbackLayerAnimationObserverTestOverwrite::CreateAnimationObserver() {
+  return std::make_unique<CallbackLayerAnimationObserver>(
+      base::BindRepeating(
+          &CallbackLayerAnimationObserverTestOverwrite::AnimationStarted,
+          base::Unretained(this)),
+      base::BindRepeating([](const CallbackLayerAnimationObserver& observer) {
+        return false;
+      }));
+}
+
 TEST(CallbackLayerAnimationObserverDestructionTest, VerifyFalseAutoDelete) {
   TestCallbacks callbacks;
   callbacks.set_should_delete_observer_on_animations_ended(false);
@@ -325,6 +366,23 @@ TEST(CallbackLayerAnimationObserverDestructionTest, AnimationEndedReturnsTrue) {
   observer->SetActive();
 
   EXPECT_TRUE(is_destroyed);
+}
+
+// Verifies that there are not heap-use-after-free errors when an observer has
+// its animation aborted and it gets destroyed due to a
+// unique_ptr<CallbackLayerAnimationObserver> being assigned a new value.
+TEST_F(CallbackLayerAnimationObserverTestOverwrite,
+       VerifyOverwriteOnAnimationStart) {
+  LayerAnimationSequence* sequence_1 = CreateLayerAnimationSequence();
+  LayerAnimationSequence* sequence_2 = CreateLayerAnimationSequence();
+
+  observer_test_api_->AttachedToSequence(sequence_1);
+  observer_test_api_->AttachedToSequence(sequence_2);
+  observer_->OnLayerAnimationStarted(sequence_1);
+  observer_->OnLayerAnimationStarted(sequence_2);
+  observer_->OnLayerAnimationEnded(sequence_1);
+  observer_->SetActive();
+  EXPECT_FALSE(observer_->active());
 }
 
 TEST_F(CallbackLayerAnimationObserverTest, VerifyInitialState) {

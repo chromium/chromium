@@ -7,13 +7,15 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "media/audio/audio_output_delegate.h"
 #include "media/base/audio_parameters.h"
 #include "mojo/core/embedder/embedder.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,53 +46,58 @@ class FakeObserver : public mojom::AudioOutputStreamObserver {
 
 class FakeDelegate : public AudioOutputDelegate {
  public:
-  explicit FakeDelegate(mojom::AudioOutputStreamObserverPtr observer)
-      : observer_(std::move(observer)) {}
+  explicit FakeDelegate(
+      mojo::PendingRemote<media::mojom::AudioOutputStreamObserver>
+          pending_observer)
+      : observer_(std::move(pending_observer)) {}
   ~FakeDelegate() override = default;
 
   int GetStreamId() override { return 0; }
   void OnPlayStream() override {}
   void OnPauseStream() override {}
+  void OnFlushStream() override {}
   void OnSetVolume(double) override {}
 
  private:
-  mojom::AudioOutputStreamObserverPtr observer_;
+  mojo::PendingRemote<media::mojom::AudioOutputStreamObserver> observer_;
 };
 
 std::unique_ptr<AudioOutputDelegate> CreateFakeDelegate(
     const AudioParameters& params,
-    mojom::AudioOutputStreamObserverPtr observer,
+    mojo::PendingRemote<media::mojom::AudioOutputStreamObserver>
+        pending_observer,
     AudioOutputDelegate::EventHandler*) {
-  return std::make_unique<FakeDelegate>(std::move(observer));
+  return std::make_unique<FakeDelegate>(std::move(pending_observer));
 }
 
 }  // namespace
 
 TEST(MojoAudioOutputStreamProviderTest, AcquireTwice_BadMessage) {
-  base::MessageLoop loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
   bool got_bad_message = false;
   mojo::core::SetDefaultProcessErrorCallback(
       base::BindRepeating([](bool* got_bad_message,
                              const std::string& s) { *got_bad_message = true; },
                           &got_bad_message));
 
-  mojom::AudioOutputStreamProviderPtr provider_ptr;
+  mojo::Remote<mojom::AudioOutputStreamProvider> provider_remote;
   StrictMock<MockDeleter> deleter;
 
   // Freed by deleter.
   auto* provider = new MojoAudioOutputStreamProvider(
-      mojo::MakeRequest(&provider_ptr), base::BindOnce(&CreateFakeDelegate),
-      deleter.Get(), std::make_unique<FakeObserver>());
+      provider_remote.BindNewPipeAndPassReceiver(),
+      base::BindOnce(&CreateFakeDelegate), deleter.Get(),
+      std::make_unique<FakeObserver>());
 
-  mojom::AudioOutputStreamProviderClientPtr client_1;
-  mojo::MakeRequest(&client_1);
-  provider_ptr->Acquire(media::AudioParameters::UnavailableDeviceParams(),
-                        std::move(client_1), base::nullopt);
+  mojo::PendingRemote<mojom::AudioOutputStreamProviderClient> client_1;
+  ignore_result(client_1.InitWithNewPipeAndPassReceiver());
+  provider_remote->Acquire(media::AudioParameters::UnavailableDeviceParams(),
+                           std::move(client_1), base::nullopt);
 
-  mojom::AudioOutputStreamProviderClientPtr client_2;
-  mojo::MakeRequest(&client_2);
-  provider_ptr->Acquire(media::AudioParameters::UnavailableDeviceParams(),
-                        std::move(client_2), base::nullopt);
+  mojo::PendingRemote<mojom::AudioOutputStreamProviderClient> client_2;
+  ignore_result(client_2.InitWithNewPipeAndPassReceiver());
+  provider_remote->Acquire(media::AudioParameters::UnavailableDeviceParams(),
+                           std::move(client_2), base::nullopt);
 
   EXPECT_CALL(deleter, Run(provider)).WillOnce(DeleteArg<0>());
   base::RunLoop().RunUntilIdle();
@@ -103,26 +110,27 @@ TEST(MojoAudioOutputStreamProviderTest, AcquireTwice_BadMessage) {
 
 TEST(MojoAudioOutputStreamProviderTest,
      Bitstream_BadMessageOnNonAndoirdPlatforms) {
-  base::MessageLoop loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
   bool got_bad_message = false;
   mojo::core::SetDefaultProcessErrorCallback(
       base::BindRepeating([](bool* got_bad_message,
                              const std::string& s) { *got_bad_message = true; },
                           &got_bad_message));
 
-  mojom::AudioOutputStreamProviderPtr provider_ptr;
+  mojo::Remote<mojom::AudioOutputStreamProvider> provider_remote;
   StrictMock<MockDeleter> deleter;
   media::AudioParameters params =
       media::AudioParameters::UnavailableDeviceParams();
   params.set_format(AudioParameters::AUDIO_BITSTREAM_AC3);
 
   auto* provider = new MojoAudioOutputStreamProvider(
-      mojo::MakeRequest(&provider_ptr), base::BindOnce(&CreateFakeDelegate),
-      deleter.Get(), std::make_unique<FakeObserver>());
+      provider_remote.BindNewPipeAndPassReceiver(),
+      base::BindOnce(&CreateFakeDelegate), deleter.Get(),
+      std::make_unique<FakeObserver>());
 
-  mojom::AudioOutputStreamProviderClientPtr client;
-  mojo::MakeRequest(&client);
-  provider_ptr->Acquire(params, std::move(client), base::nullopt);
+  mojo::PendingRemote<mojom::AudioOutputStreamProviderClient> client;
+  ignore_result(client.InitWithNewPipeAndPassReceiver());
+  provider_remote->Acquire(params, std::move(client), base::nullopt);
 
 #if defined(OS_ANDROID)
   base::RunLoop().RunUntilIdle();

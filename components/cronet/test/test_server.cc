@@ -184,6 +184,7 @@ bool TestServer::StartServeFilesFromDirectory(
   return true;
 }
 
+/* static */
 bool TestServer::Start() {
   base::FilePath src_root;
   CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root));

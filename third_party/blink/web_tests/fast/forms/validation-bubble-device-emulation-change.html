@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<p>Check if a validation bubble is shown at a correct position in correct scale
+   with device emulation.</p>
+<input pattern="\d{4}" title="Please specify four digits." value="abc"
+       style="position:absolute; top: 100px; left: 50px;">
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<script>
+document.querySelector('input').reportValidity();
+if (window.testRunner && window.internals) {
+  testRunner.waitUntilDone();
+  runAfterLayoutAndPaint(() => {
+    internals.setDeviceEmulationScale(0.5);
+    runAfterLayoutAndPaint(() => {
+      internals.setDeviceEmulationScale(1.25);
+      runAfterLayoutAndPaint(() => {
+        internals.setDeviceEmulationScale(2);
+        runAfterLayoutAndPaint(() => {
+          testRunner.notifyDone();
+        });
+      });
+    });
+  });
+}
+</script>

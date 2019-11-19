@@ -1,15 +1,9 @@
 (async function(testRunner) {
-  var {page, session, dp} = await testRunner.startBlank(`Tests that dedicated worker won't crash on attempt to step into.Bug 232392.`);
+  const {page, session, dp} = await testRunner.startBlank(
+      `Tests that dedicated worker won't crash on attempt to step into. Bug 232392.`);
 
-  var workerId;
-  var workerRequestId = 1;
-  function sendCommandToWorker(method, params) {
-    var message = {method, params, id: workerRequestId};
-    dp.Target.sendMessageToTarget({targetId: workerId, message: JSON.stringify(message)});
-    return workerRequestId++;
-  }
-
-  dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true});
+  dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true,
+                           flatten: true});
   await session.evaluate(`
     window.worker = new Worker('${testRunner.url('resources/dedicated-worker-step-into.js')}');
     window.worker.onmessage = function(event) { };
@@ -17,25 +11,32 @@
   `);
   testRunner.log('Started worker');
 
-  var messageObject = await dp.Target.onceAttachedToTarget();
-  workerId = messageObject.params.targetInfo.targetId;
+  const sessionId = (await dp.Target.onceAttachedToTarget()).params.sessionId;
   testRunner.log('Worker created');
 
-  sendCommandToWorker('Debugger.enable', {});
-  sendCommandToWorker('Runtime.runIfWaitingForDebugger', {});
+  const childSession = session.createChild(sessionId);
 
-  var pauseCount = 0;
-  dp.Target.onReceivedMessageFromTarget(async messageObject => {
-    var message = JSON.parse(messageObject.params.message);
-    if (message.method === 'Debugger.paused') {
-      testRunner.log('SUCCESS: Worker paused');
-      if (++pauseCount === 1) {
-        testRunner.log('Stepping into...');
-        sendCommandToWorker('Debugger.stepInto', {});
-      } else {
-        sendCommandToWorker('Debugger.disable', {});
-        testRunner.completeTest();
-      }
-    }
-  });
+  await childSession.protocol.Debugger.enable();
+  await childSession.protocol.Runtime.runIfWaitingForDebugger();
+
+  // onmessage in dedicated-worker-step-into.js will run into the
+  // debugger statement, pausing itself. Below, we step into a couple of times
+  // while recording the transition into 'doWork' in the worker script.
+  await childSession.protocol.Debugger.oncePaused();
+  testRunner.log('SUCCESS: Worker paused');
+
+  testRunner.log('Stepping into...');
+  await childSession.protocol.Debugger.stepInto();
+
+  const onMessageCallFrame =
+        (await childSession.protocol.Debugger.oncePaused()).params.callFrames[0];
+  testRunner.log('Paused in ' + onMessageCallFrame.functionName);
+
+  await childSession.protocol.Debugger.stepInto();
+  const doWorkCallFrame =
+        (await childSession.protocol.Debugger.oncePaused()).params.callFrames[0];
+  testRunner.log('Paused in ' + doWorkCallFrame.functionName);
+
+  await childSession.protocol.Debugger.disable();
+  testRunner.completeTest();
 })

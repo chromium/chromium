@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "device/vr/openvr/test/test_helper.h"
+
+#include <map>
+#include <memory>
+
 #include "base/debug/debugger.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
@@ -14,7 +18,6 @@
 #include <D3D11_1.h>
 #include <DXGI1_4.h>
 #include <wrl.h>
-#include <memory>
 
 namespace vr {
 
@@ -60,8 +63,8 @@ void TestHelper::OnPresentedFrame(ID3D11Texture2D* texture,
   size_t buffer_size = sizeof(device::SubmittedFrameData::raw_buffer);
   size_t buffer_size_pixels = buffer_size / sizeof(device::Color);
 
-  desc.Width = 1;
-  desc.Height = buffer_size_pixels;
+  desc.Width = buffer_size_pixels;
+  desc.Height = 1;
   desc.MiscFlags = 0;
   desc.BindFlags = 0;
   desc.Usage = D3D11_USAGE_STAGING;
@@ -72,7 +75,9 @@ void TestHelper::OnPresentedFrame(ID3D11Texture2D* texture,
     return;
   }
 
-  D3D11_BOX box = {0, 0, 0, buffer_size_pixels, 1, 1};  // a 1-pixel box
+  // A strip of pixels along the top of the texture, however many will fit into
+  // our buffer.
+  D3D11_BOX box = {0, 0, 0, buffer_size_pixels, 1, 1};
   context->CopySubresourceRegion(texture_copy.Get(), 0, 0, 0, 0, texture, 0,
                                  &box);
 
@@ -100,9 +105,13 @@ namespace {
 vr::TrackedDevicePose_t TranslatePose(device::PoseFrameData pose) {
   vr::TrackedDevicePose_t ret = {};
 
-  for (int i = 0; i < 4; ++i) {
-    for (int j = 0; j < 3; ++j) {
-      ret.mDeviceToAbsoluteTracking.m[j][i] = pose.device_to_origin[j * 4 + i];
+  // We're given the pose in column-major order, with the translation component
+  // in the 4th column. OpenVR uses a 3x4 matrix instead of a 4x4, so copying
+  // as-is will chop off the translation. So, transpose while copying.
+  for (int col = 0; col < 4; ++col) {
+    for (int row = 0; row < 3; ++row) {
+      ret.mDeviceToAbsoluteTracking.m[row][col] =
+          pose.device_to_origin[col * 4 + row];
     }
   }
 
@@ -113,6 +122,62 @@ vr::TrackedDevicePose_t TranslatePose(device::PoseFrameData pose) {
   ret.bDeviceIsConnected = true;
 
   return ret;
+}
+
+static const std::map<device::XrButtonId, vr::EVRButtonId>
+    xr_to_openvr_button_map = {
+        {device::XrButtonId::kSystem, vr::EVRButtonId::k_EButton_System},
+        {device::XrButtonId::kMenu, vr::EVRButtonId::k_EButton_ApplicationMenu},
+        {device::XrButtonId::kGrip, vr::EVRButtonId::k_EButton_Grip},
+        {device::XrButtonId::kDpadLeft, vr::EVRButtonId::k_EButton_DPad_Left},
+        {device::XrButtonId::kDpadUp, vr::EVRButtonId::k_EButton_DPad_Up},
+        {device::XrButtonId::kDpadRight, vr::EVRButtonId::k_EButton_DPad_Right},
+        {device::XrButtonId::kDpadDown, vr::EVRButtonId::k_EButton_DPad_Down},
+        {device::XrButtonId::kA, vr::EVRButtonId::k_EButton_A},
+        {device::XrButtonId::kProximitySensor,
+         vr::EVRButtonId::k_EButton_ProximitySensor},
+        {device::XrButtonId::kAxisTrackpad, vr::EVRButtonId::k_EButton_Axis0},
+        {device::XrButtonId::kAxisTrigger,
+         vr::EVRButtonId::k_EButton_SteamVR_Trigger},
+        {device::XrButtonId::kAxisThumbstick, vr::EVRButtonId::k_EButton_Axis2},
+        {device::XrButtonId::kAxisTertiary, vr::EVRButtonId::k_EButton_Axis3},
+        {device::XrButtonId::kAxisQuaternary, vr::EVRButtonId::k_EButton_Axis4},
+};
+
+// Translates the platform-agnostic button masks to the OpenVR-specific button
+// masks. The platform-agnostic ones were based off OpenVR, so this actually
+// does little to nothing.
+uint64_t TranslateButtonMask(uint64_t xr_mask) {
+  uint64_t ret = 0;
+  for (const auto& pair : xr_to_openvr_button_map) {
+    // Bitwise-and the complete mask with the button-specific mask, shift it all
+    // the way to the right, then shift it to the left however much it needs to
+    // be in the correct location for OpenVR. Then, add that new button-specific
+    // mask to the complete mask that we'll be returning.
+    ret |= ((xr_mask & device::XrButtonMaskFromId(pair.first)) >> pair.first)
+           << pair.second;
+  }
+  return ret;
+}
+
+// Translates the platform-agnostic axis types to the OpenVR-specific axis
+// types. The platform-agnostic ones were based off OpenVR, so this actually
+// does little to nothing.
+vr::EVRControllerAxisType TranslateAxisType(device::XrAxisType type) {
+  switch (type) {
+    case device::XrAxisType::kNone:
+      return vr::EVRControllerAxisType::k_eControllerAxis_None;
+    case device::XrAxisType::kTrackpad:
+      return vr::EVRControllerAxisType::k_eControllerAxis_TrackPad;
+    case device::XrAxisType::kJoystick:
+      return vr::EVRControllerAxisType::k_eControllerAxis_Joystick;
+    case device::XrAxisType::kTrigger:
+      return vr::EVRControllerAxisType::k_eControllerAxis_Trigger;
+  }
+}
+
+vr::EVRControllerAxisType TranslateAxisType(unsigned int type) {
+  return TranslateAxisType(static_cast<device::XrAxisType>(type));
 }
 
 }  // namespace
@@ -175,7 +240,7 @@ vr::ETrackedPropertyError TestHelper::GetInt32TrackedDeviceProperty(
         ret = vr::TrackedProp_WrongDeviceClass;
         break;
       }
-      prop_value = static_cast<vr::EVRControllerAxisType>(
+      prop_value = TranslateAxisType(
           controller_data.axis_data[prop - vr::Prop_Axis0Type_Int32].axis_type);
       break;
     }
@@ -199,7 +264,7 @@ vr::ETrackedPropertyError TestHelper::GetUint64TrackedDeviceProperty(
         ret = vr::TrackedProp_WrongDeviceClass;
         break;
       }
-      prop_value = controller_data.supported_buttons;
+      prop_value = TranslateButtonMask(controller_data.supported_buttons);
       break;
     }
     default:
@@ -261,11 +326,14 @@ bool TestHelper::GetControllerState(unsigned int index,
   if (test_hook_) {
     auto controller_data = test_hook_->WaitGetControllerData(index);
     controller_state->unPacketNum = controller_data.packet_number;
-    controller_state->ulButtonPressed = controller_data.buttons_pressed;
-    controller_state->ulButtonTouched = controller_data.buttons_touched;
+    controller_state->ulButtonPressed =
+        TranslateButtonMask(controller_data.buttons_pressed);
+    controller_state->ulButtonTouched =
+        TranslateButtonMask(controller_data.buttons_touched);
     for (unsigned int i = 0; i < device::kMaxNumAxes; ++i) {
+      // Invert the y axis because -1 is up in the Gamepad API, but down in WMR.
       controller_state->rAxis[i].x = controller_data.axis_data[i].x;
-      controller_state->rAxis[i].y = controller_data.axis_data[i].y;
+      controller_state->rAxis[i].y = -controller_data.axis_data[i].y;
     }
     return controller_data.is_valid;
   }

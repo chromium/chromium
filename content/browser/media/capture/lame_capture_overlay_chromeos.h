@@ -9,8 +9,9 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/viz/privileged/interfaces/compositing/frame_sink_video_capture.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -54,7 +55,7 @@ class CONTENT_EXPORT LameCaptureOverlayChromeOS
 
   LameCaptureOverlayChromeOS(
       Owner* owner,
-      viz::mojom::FrameSinkVideoCaptureOverlayRequest request);
+      mojo::PendingReceiver<viz::mojom::FrameSinkVideoCaptureOverlay> receiver);
   ~LameCaptureOverlayChromeOS() final;
 
   // viz::mojom::FrameSinkVideoCaptureOverlay implementation.
@@ -70,7 +71,7 @@ class CONTENT_EXPORT LameCaptureOverlayChromeOS
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  mojo::Binding<viz::mojom::FrameSinkVideoCaptureOverlay> binding_;
+  mojo::Receiver<viz::mojom::FrameSinkVideoCaptureOverlay> receiver_;
 
   SkBitmap image_;
   gfx::RectF bounds_;

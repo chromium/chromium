@@ -1,0 +1,17 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[JavaPackage="org.chromium.installedapp.mojom"]
+module blink.mojom;
+
+// Represents a system application related to a particular web app.
+// See: https://www.w3.org/TR/appmanifest/#dfn-application-object
+struct RelatedApplication {
+  string platform;
+  // TODO(mgiuca): Change to url.mojom.Url (requires changing
+  // WebRelatedApplication as well).
+  string? url;
+  string? id;
+  string? version;
+};

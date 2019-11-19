@@ -16,11 +16,9 @@ CompositorThread::CompositorThread(const ThreadCreationParams& params)
 CompositorThread::~CompositorThread() = default;
 
 std::unique_ptr<NonMainThreadSchedulerImpl>
-CompositorThread::CreateNonMainThreadScheduler() {
-  return std::make_unique<CompositorThreadScheduler>(
-      base::sequence_manager::CreateSequenceManagerOnCurrentThread(
-          base::sequence_manager::SequenceManager::Settings{
-              .randomised_sampling_enabled = true}));
+CompositorThread::CreateNonMainThreadScheduler(
+    base::sequence_manager::SequenceManager* sequence_manager) {
+  return std::make_unique<CompositorThreadScheduler>(sequence_manager);
 }
 
 }  // namespace scheduler

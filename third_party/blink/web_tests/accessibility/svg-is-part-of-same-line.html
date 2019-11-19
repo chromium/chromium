@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div contenteditable>
+  <p id="paragraph">Some text.
+    <img alt="Square"
+        src="data:image/svg+xml;utf8,
+        <svg xmlns='http://www.w3.org/2000/svg'
+            width='9' height='9'>
+          <rect width='9' height='9' fill='green'/>
+        </svg>">
+    More text.
+  </p>
+</div>
+
+<script>
+  test(() => {
+    let axParagraph = accessibilityController.accessibleElementById('paragraph');
+    assert_not_equals(axParagraph, undefined);
+    assert_equals(axParagraph.childrenCount, 3);
+
+    let axText1 = axParagraph.childAtIndex(0);
+    assert_not_equals(axText1, undefined);
+    assert_equals(axText1.role, 'AXRole: AXStaticText');
+    let axInline1 = axText1.childAtIndex(0);
+    assert_not_equals(axInline1, undefined);
+    assert_equals(axInline1.role, 'AXRole: AXInlineTextBox');
+    assert_equals(axInline1.name, 'Some text. ');
+    let axSvg = axParagraph.childAtIndex(1);
+    assert_not_equals(axSvg, undefined);
+    assert_equals(axSvg.role, 'AXRole: AXImage');
+    let axText2 = axParagraph.childAtIndex(2);
+    assert_not_equals(axText2, undefined);
+    assert_equals(axText2.role, 'AXRole: AXStaticText');
+    let axInline2= axText2.childAtIndex(0);
+    assert_not_equals(axInline2, undefined);
+    assert_equals(axInline2.role, 'AXRole: AXInlineTextBox');
+    assert_equals(axInline2.name, ' ');
+    let axInline3 = axText2.childAtIndex(1);
+    assert_not_equals(axInline3, undefined);
+    assert_equals(axInline3.role, 'AXRole: AXInlineTextBox');
+    assert_equals(axInline3.name, 'More text.');
+
+    assert_equals(axText1.previousOnLine(), undefined, 'axText1.previousOnLine()');
+    assert_equals(axText1.nextOnLine(), axSvg, 'axText1.nextOnLine()');
+    assert_equals(axInline1.previousOnLine(), undefined, 'axInline1.previousOnLine()');
+    assert_equals(axInline1.nextOnLine(), axSvg, 'axInline1.nextOnLine()');
+    assert_equals(axSvg.previousOnLine(), axInline1, 'axSvg.previousOnLine()');
+    assert_equals(axSvg.nextOnLine(), axInline2, 'axSvg.nextOnLine()');
+    assert_equals(axText2.previousOnLine(), axSvg, 'axText2.previousOnLine()');
+    assert_equals(axText2.nextOnLine(), undefined, 'axText2.nextOnLine()');
+    assert_equals(axInline2.previousOnLine(), axSvg, 'axInline2.previousOnLine()');
+    assert_equals(axInline2.nextOnLine(), axInline3, 'axInline2.nextOnLine()');
+    assert_equals(axInline3.previousOnLine(), axInline2, 'axInline3.previousOnLine()');
+    assert_equals(axInline3.nextOnLine(), undefined, 'axInline3.nextOnLine()');
+  }, 'Test that the SVG is on the same line as the static text surrounding it.');
+</script>

@@ -26,6 +26,11 @@ const LANGUAGE_SETTING_IS_SHOWN_UMA_NAME = 'Translate.LanguageSettingsIsShown';
 Polymer({
   is: 'settings-languages-page',
 
+  behaviors: [
+    I18nBehavior,
+    PrefsBehavior,
+  ],
+
   properties: {
     /**
      * Preferences state.
@@ -50,15 +55,6 @@ Polymer({
 
     // <if expr="not is_macosx">
     /** @private */
-    spellCheckSecondaryText_: {
-      type: String,
-      value: '',
-      computed: 'getSpellCheckSecondaryText_(languages.enabled.*, ' +
-          'languages.forcedSpellCheckLanguages.*, ' +
-          'prefs.browser.enable_spellchecking.*)',
-    },
-
-    /** @private */
     spellCheckLanguages_: {
       type: Array,
       value: function() {
@@ -66,11 +62,8 @@ Polymer({
       },
     },
 
-    /** @private */
-    spellCheckDisabled_: {
-      type: Boolean,
-      value: false,
-    },
+    /** @private {string|undefined} */
+    languageSyncedWithBrowserEnableSpellchecking_: String,
     // </if>
 
     /**
@@ -79,6 +72,12 @@ Polymer({
      * @private
      */
     detailLanguage_: Object,
+
+    /** @private */
+    hideSpellCheckLanguages_: {
+      type: Boolean,
+      value: false,
+    },
 
     /**
      * Whether the language settings list is opened.
@@ -101,19 +100,33 @@ Polymer({
         if (settings.routes.EDIT_DICTIONARY) {
           map.set(
               settings.routes.EDIT_DICTIONARY.path,
-              '#spellCheckCollapse .subpage-arrow button');
+              '#spellCheckSubpageTrigger');
         }
         // </if>
         // <if expr="chromeos">
         if (settings.routes.INPUT_METHODS) {
-          map.set(
-              settings.routes.INPUT_METHODS.path,
-              '#inputMethodsCollapse .subpage-arrow button');
+          map.set(settings.routes.INPUT_METHODS.path, '#manageInputMethods');
         }
         // </if>
         return map;
       },
     },
+
+    /**
+     * Dictionary defining page visibility.
+     * @type {!LanguagesPageVisibility}
+     */
+    pageVisibility: Object,
+
+    // <if expr="chromeos">
+    /** @private */
+    isGuest_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('isGuest');
+      },
+    },
+    // </if>
   },
 
   // <if expr="not is_macosx">
@@ -122,7 +135,14 @@ Polymer({
         'languages.forcedSpellCheckLanguages.*)',
     'updateSpellcheckEnabled_(prefs.browser.enable_spellchecking.*)',
   ],
+  // </if>
 
+  // <if expr="chromeos or is_win">
+  /** @private {boolean} */
+  isChangeInProgress_: false,
+  // </if>
+
+  // <if expr="not is_macosx">
   /**
    * Checks if there are any errors downloading the spell check dictionary. This
    * is used for showing/hiding error messages, spell check toggle and retry.
@@ -165,6 +185,22 @@ Polymer({
     return languages == undefined || languages.supported.some(language => {
       return this.languageHelper.canEnableLanguage(language);
     });
+  },
+
+  /**
+   * Used to determine whether to show the separator between checkbox settings
+   * and move buttons in the dialog menu.
+   * @return {boolean} True if there is currently more than one selected
+   *     language.
+   * @private
+   */
+  shouldShowDialogSeparator_: function() {
+    // <if expr="chromeos">
+    if (this.isGuest_) {
+      return false;
+    }
+    // </if>
+    return this.languages != undefined && this.languages.enabled.length > 1;
   },
 
   /**
@@ -219,11 +255,17 @@ Polymer({
 
   /**
    * @param {string} languageCode The language code identifying a language.
-   * @return {boolean} True iff this language is the one used when translating
-   *     pages.
+   * @param {string} translateTarget The target language.
+   * @return {string} 'target' if |languageCode| matches the target language,
+   'non-target' otherwise.
    */
-  isTranslationTarget_: function(languageCode) {
-    return languageCode == this.languages.translateTarget;
+  isTranslationTarget_: function(languageCode, translateTarget) {
+    if (this.languageHelper.convertLanguageCodeForTranslate(languageCode) ==
+        translateTarget) {
+      return 'target';
+    } else {
+      return 'non-target';
+    }
   },
 
   // <if expr="chromeos">
@@ -241,7 +283,7 @@ Polymer({
     }
 
     // The UI language choice doesn't persist for guests.
-    if (loadTimeData.getBoolean('isGuest')) {
+    if (this.isGuest_) {
       menu.querySelector('#uiLanguageItem').hidden = true;
     }
   },
@@ -266,7 +308,7 @@ Polymer({
     // Taps on the button are handled in onInputMethodOptionsTap_.
     // TODO(dschuyler): The row has two operations that are not clearly
     // delineated. crbug.com/740691
-    if (e.target.tagName == 'BUTTON') {
+    if (e.target.tagName == 'CR-ICON-BUTTON') {
       return;
     }
 
@@ -288,6 +330,38 @@ Polymer({
   onInputMethodOptionsTap_: function(e) {
     this.languageHelper.openInputMethodOptions(e.model.item.id);
   },
+
+  /**
+   * @param {string} id The input method ID.
+   * @param {string} currentId The ID of the currently enabled input method.
+   * @return {boolean} True if the IDs match.
+   * @private
+   */
+  isCurrentInputMethod_: function(id, currentId) {
+    assert(cr.isChromeOS);
+    return id == currentId;
+  },
+
+  /**
+   * @param {string} id The input method ID.
+   * @param {string} currentId The ID of the currently enabled input method.
+   * @return {string} The class for the input method item.
+   * @private
+   */
+  getInputMethodItemClass_: function(id, currentId) {
+    assert(cr.isChromeOS);
+    return this.isCurrentInputMethod_(id, currentId) ? 'selected' : '';
+  },
+
+  getInputMethodName_: function(id) {
+    assert(cr.isChromeOS);
+    const inputMethod =
+        this.languages.inputMethods.enabled.find(function(inputMethod) {
+          return inputMethod.id == id;
+        });
+    return inputMethod ? inputMethod.displayName : '';
+  },
+
   // </if>
 
   // <if expr="chromeos or is_win">
@@ -309,6 +383,20 @@ Polymer({
   isRestartRequired_: function(languageCode, prospectiveUILanguage) {
     return prospectiveUILanguage == languageCode &&
         this.languageHelper.requiresRestart();
+  },
+
+  /** @private */
+  onCloseMenu_() {
+    if (!this.isChangeInProgress_) {
+      return;
+    }
+    Polymer.dom.flush();
+    this.isChangeInProgress_ = false;
+    const restartButton = this.$$('#restartButton');
+    if (!restartButton) {
+      return;
+    }
+    cr.ui.focusWithoutInk(restartButton);
   },
 
   /**
@@ -358,10 +446,48 @@ Polymer({
     // We don't support unchecking this checkbox. TODO(michaelpg): Ask for a
     // simpler widget.
     assert(e.target.checked);
+    this.isChangeInProgress_ = true;
     this.languageHelper.setProspectiveUILanguage(
         this.detailLanguage_.language.code);
+    this.languageHelper.moveLanguageToFront(this.detailLanguage_.language.code);
 
     this.closeMenuSoon_();
+  },
+
+  /**
+   * Checks whether the prospective UI language (the pref that indicates what
+   * language to use in Chrome) matches the current language. This pref is used
+   * only on Chrome OS and Windows; we don't control the UI language elsewhere.
+   * @param {string} languageCode The language code identifying a language.
+   * @param {string} prospectiveUILanguage The prospective UI language.
+   * @return {boolean} True if the given language matches the prospective UI
+   *     pref (which may be different from the actual UI language).
+   * @private
+   */
+  isProspectiveUILanguage_: function(languageCode, prospectiveUILanguage) {
+    return languageCode == prospectiveUILanguage;
+  },
+
+  /**
+   * @param {string} prospectiveUILanguage
+   * @return {string}
+   * @private
+   */
+  getProspectiveUILanguageName_: function(prospectiveUILanguage) {
+    return this.languageHelper.getLanguage(prospectiveUILanguage).displayName;
+  },
+
+  /**
+   * Handler for the restart button.
+   * @private
+   */
+  onRestartTap_: function() {
+    // <if expr="chromeos">
+    settings.LifetimeBrowserProxyImpl.getInstance().signOutAndRestart();
+    // </if>
+    // <if expr="is_win">
+    settings.LifetimeBrowserProxyImpl.getInstance().restart();
+    // </if>
   },
   // </if>
 
@@ -452,31 +578,6 @@ Polymer({
     this.languageHelper.disableLanguage(this.detailLanguage_.language.code);
   },
 
-  // <if expr="chromeos or is_win">
-  /**
-   * Checks whether the prospective UI language (the pref that indicates what
-   * language to use in Chrome) matches the current language. This pref is used
-   * only on Chrome OS and Windows; we don't control the UI language elsewhere.
-   * @param {string} languageCode The language code identifying a language.
-   * @param {string} prospectiveUILanguage The prospective UI language.
-   * @return {boolean} True if the given language matches the prospective UI
-   *     pref (which may be different from the actual UI language).
-   * @private
-   */
-  isProspectiveUILanguage_: function(languageCode, prospectiveUILanguage) {
-    return languageCode == prospectiveUILanguage;
-  },
-
-  /**
-   * @param {string} prospectiveUILanguage
-   * @return {string}
-   * @private
-   */
-  getProspectiveUILanguageName_: function(prospectiveUILanguage) {
-    return this.languageHelper.getLanguage(prospectiveUILanguage).displayName;
-  },
-  // </if>
-
   /**
    * @return {string}
    * @private
@@ -487,71 +588,37 @@ Polymer({
 
   // <if expr="not is_macosx">
   /**
-   * Returns the secondary text for the spell check subsection based on the
-   * enabled spell check languages, listing at most 2 languages.
-   * @return {string}
-   * @private
+   * Returns the value to use as the |pref| attribute for the policy indicator
+   * of spellcheck languages, based on whether or not the language is enabled.
+   * @param {boolean} isEnabled Whether the language is enabled or not.
    */
-  getSpellCheckSecondaryText_: function() {
-    if (this.languages == undefined || this.prefs == undefined) {
-      return '';
-    }
-
-    if (this.getSpellCheckDisabledByPolicy_()) {
-      return loadTimeData.getString('spellCheckDisabled');
-    }
-    const enabledSpellCheckLanguages =
-        this.getSpellCheckLanguages_().filter(function(languageState) {
-          return (languageState.spellCheckEnabled || languageState.isManaged) &&
-              languageState.language.supportsSpellcheck;
-        });
-    switch (enabledSpellCheckLanguages.length) {
-      case 0:
-        return '';
-      case 1:
-        return enabledSpellCheckLanguages[0].language.displayName;
-      case 2:
-        return loadTimeData.getStringF(
-            'spellCheckSummaryTwoLanguages',
-            enabledSpellCheckLanguages[0].language.displayName,
-            enabledSpellCheckLanguages[1].language.displayName);
-      case 3:
-        // "foo, bar, and 1 other"
-        return loadTimeData.getStringF(
-            'spellCheckSummaryThreeLanguages',
-            enabledSpellCheckLanguages[0].language.displayName,
-            enabledSpellCheckLanguages[1].language.displayName);
-      default:
-        // "foo, bar, and [N-2] others"
-        return loadTimeData.getStringF(
-            'spellCheckSummaryMultipleLanguages',
-            enabledSpellCheckLanguages[0].language.displayName,
-            enabledSpellCheckLanguages[1].language.displayName,
-            (enabledSpellCheckLanguages.length - 2).toLocaleString());
-    }
-  },
-
-  /**
-   * Returns whether spellcheck is disabled by policy or not.
-   * @return {boolean}
-   * @private
-   */
-  getSpellCheckDisabledByPolicy_: function() {
-    const pref = /** @type {!chrome.settingsPrivate.PrefObject} */ (
-        this.get('browser.enable_spellchecking', this.prefs));
-    return pref.enforcement == chrome.settingsPrivate.Enforcement.ENFORCED &&
-        pref.value === false;
+  getIndicatorPrefForManagedSpellcheckLanguage_(isEnabled) {
+    return isEnabled ?
+        this.get('spellcheck.forced_dictionaries', this.prefs) :
+        this.get('spellcheck.blacklisted_dictionaries', this.prefs);
   },
 
   /**
    * Returns an array of enabled languages, plus spellcheck languages that are
-   * forced by policy.
+   * force-enabled by policy.
    * @return {!Array<!LanguageState|!ForcedLanguageState>}
    * @private
    */
   getSpellCheckLanguages_: function() {
-    return this.languages.enabled.concat(
-        this.languages.forcedSpellCheckLanguages);
+    const supportedSpellcheckLanguages =
+        /** @type {!Array<!LanguageState|!ForcedLanguageState>} */ (
+            this.languages.enabled.filter(
+                (item) => item.language.supportsSpellcheck));
+    const supportedSpellcheckLanguagesSet =
+        new Set(supportedSpellcheckLanguages.map(x => x.language.code));
+
+    this.languages.forcedSpellCheckLanguages.forEach(forcedLanguage => {
+      if (!supportedSpellcheckLanguagesSet.has(forcedLanguage.language.code)) {
+        supportedSpellcheckLanguages.push(forcedLanguage);
+      }
+    });
+
+    return supportedSpellcheckLanguages;
   },
 
   /** @private */
@@ -575,6 +642,41 @@ Polymer({
       this.notifyPath(
           `spellCheckLanguages_.${i}.downloadDictionaryFailureCount`);
     }
+
+    if (this.spellCheckLanguages_.length === 0) {
+      // If there are no supported spell check languages, automatically turn
+      // off spell check to indicate no spell check will happen.
+      this.setPrefValue('browser.enable_spellchecking', false);
+    }
+
+    if (this.spellCheckLanguages_.length === 1) {
+      const singleLanguage = this.spellCheckLanguages_[0];
+
+      // Hide list of spell check languages if there is only 1 language
+      // and we don't need to display any errors for that language
+      this.hideSpellCheckLanguages_ = !singleLanguage.isManaged &&
+          singleLanguage.downloadDictionaryFailureCount === 0;
+
+      // Turn off spell check if spell check for the 1 remaining language is off
+      if (!singleLanguage.spellCheckEnabled) {
+        this.setPrefValue('browser.enable_spellchecking', false);
+        this.languageSyncedWithBrowserEnableSpellchecking_ =
+            singleLanguage.language.code;
+      }
+
+      // Undo the sync if spell check appeared as turned off for the language
+      // because a download was still in progress. This only occurs when
+      // Settings is loaded for the very first time and dictionaries have not
+      // been downloaded yet.
+      if (this.languageSyncedWithBrowserEnableSpellchecking_ ===
+              singleLanguage.language.code &&
+          singleLanguage.spellCheckEnabled) {
+        this.setPrefValue('browser.enable_spellchecking', true);
+      }
+    } else {
+      this.hideSpellCheckLanguages_ = false;
+      this.languageSyncedWithBrowserEnableSpellchecking_ = undefined;
+    }
   },
 
   /** @private */
@@ -583,12 +685,26 @@ Polymer({
       return;
     }
 
-    this.set('spellCheckDisabled_', this.getSpellCheckDisabledByPolicy_());
-
-    // If the spellcheck section was expanded, close it.
-    if (this.spellCheckDisabled_) {
-      this.set('spellCheckOpened_', false);
+    // If there is only 1 language, we hide the list of languages so users
+    // are unable to toggle on/off spell check specifically for the 1 language.
+    // Therefore, we need to treat the toggle for `browser.enable_spellchecking`
+    // as the toggle for the 1 language as well.
+    if (this.spellCheckLanguages_.length === 1) {
+      this.languageHelper.toggleSpellCheck(
+          this.spellCheckLanguages_[0].language.code,
+          !!this.getPref('browser.enable_spellchecking').value);
     }
+
+    // <if expr="_google_chrome">
+    // When spell check is disabled, automatically disable using the spelling
+    // service. This resets the spell check option to 'Use basic spell check'
+    // when spell check is turned off. This check is in an observer so that it
+    // can also correct any users who land on the Settings page and happen
+    // to have spelling service enabled but spell check disabled.
+    if (!this.getPref('browser.enable_spellchecking').value) {
+      this.setPrefValue('spellcheck.use_spelling_service', false);
+    }
+    // </if>
   },
 
   /**
@@ -600,10 +716,10 @@ Polymer({
   },
 
   /**
-   * Handler for enabling or disabling spell check.
+   * Handler for enabling or disabling spell check for a specific language.
    * @param {!{target: Element, model: !{item: !LanguageState}}} e
    */
-  onSpellCheckChange_: function(e) {
+  onSpellCheckLanguageChange_: function(e) {
     const item = e.model.item;
     if (!item.language.supportsSpellcheck) {
       return;
@@ -631,7 +747,7 @@ Polymer({
    */
   onSpellCheckNameClick_: function(e) {
     assert(!this.isSpellCheckNameClickDisabled_(e.model.item));
-    this.onSpellCheckChange_(e);
+    this.onSpellCheckLanguageChange_(e);
   },
 
   /**
@@ -644,14 +760,6 @@ Polymer({
   isSpellCheckNameClickDisabled_: function(item) {
     return item.isManaged || !item.language.supportsSpellcheck ||
         item.downloadDictionaryFailureCount > 0;
-  },
-
-  /**
-   * @return {string}
-   * @private
-   */
-  getSpellCheckListTwoLine_: function() {
-    return this.spellCheckSecondaryText_.length ? 'two-line' : '';
   },
   // </if>
 
@@ -672,38 +780,19 @@ Polymer({
     return '';
   },
 
-  // <if expr="chromeos">
   /**
-   * @param {string} id The input method ID.
-   * @param {string} currentId The ID of the currently enabled input method.
-   * @return {boolean} True if the IDs match.
+   * @return {string|undefined}
    * @private
    */
-  isCurrentInputMethod_: function(id, currentId) {
-    assert(cr.isChromeOS);
-    return id == currentId;
-  },
+  getSpellCheckSubLabel_: function() {
+    // <if expr="not is_macosx">
+    if (this.spellCheckLanguages_.length === 0) {
+      return this.i18n('spellCheckDisabledReason');
+    }
+    // </if>
 
-  /**
-   * @param {string} id The input method ID.
-   * @param {string} currentId The ID of the currently enabled input method.
-   * @return {string} The class for the input method item.
-   * @private
-   */
-  getInputMethodItemClass_: function(id, currentId) {
-    assert(cr.isChromeOS);
-    return this.isCurrentInputMethod_(id, currentId) ? 'selected' : '';
+    return undefined;
   },
-
-  getInputMethodName_: function(id) {
-    assert(cr.isChromeOS);
-    const inputMethod =
-        this.languages.inputMethods.enabled.find(function(inputMethod) {
-          return inputMethod.id == id;
-        });
-    return inputMethod ? inputMethod.displayName : '';
-  },
-  // </if>
 
   /**
    * @param {!Event} e
@@ -754,21 +843,6 @@ Polymer({
       }
     }, settings.kMenuCloseDelay);
   },
-
-  // <if expr="chromeos or is_win">
-  /**
-   * Handler for the restart button.
-   * @private
-   */
-  onRestartTap_: function() {
-    // <if expr="chromeos">
-    settings.LifetimeBrowserProxyImpl.getInstance().signOutAndRestart();
-    // </if>
-    // <if expr="is_win">
-    settings.LifetimeBrowserProxyImpl.getInstance().restart();
-    // </if>
-  },
-  // </if>
 
   /**
    * Toggles the expand button within the element being listened to.

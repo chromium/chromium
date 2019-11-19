@@ -16,6 +16,9 @@ static_library("security_interstitial_page") {
     "security_interstitial_page.h",
     "security_interstitial_tab_helper.cc",
     "security_interstitial_tab_helper.h",
+    "ssl_cert_reporter.h",
+    "ssl_error_navigation_throttle.cc",
+    "ssl_error_navigation_throttle.h",
     "unsafe_resource.cc",
     "unsafe_resource.h",
     "urls.cc",
@@ -37,7 +40,7 @@ static_library("security_interstitial_page") {
     "//components/strings:components_strings_grit",
     "//content/public/browser",
     "//content/public/common",
-    "//third_party/zlib/google:compression_utils",
+    "//services/network/public/cpp:cpp",
   ]
 }
 

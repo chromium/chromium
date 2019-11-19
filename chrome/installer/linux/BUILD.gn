@@ -29,6 +29,7 @@ assert(is_linux)
 packaging_files_executables = [
   "$root_out_dir/chrome",
   "$root_out_dir/chrome_sandbox",
+  "$root_out_dir/crashpad_handler",
 ]
 packaging_files_shlibs = []
 
@@ -164,6 +165,7 @@ action("strip_chrome_binary") {
   ]
   script = "//build/gn_run_binary.py"
   sources = [
+    "//buildtools/third_party/eu-strip/bin/eu-strip",
     prog_name,
   ]
   outputs = [
@@ -278,7 +280,6 @@ copy("theme_files") {
     "$branding_dir/BRANDING",
     "$branding_dir/linux/product_logo_32.xpm",
     "$branding_dir/product_logo_128.png",
-    "$branding_dir/product_logo_22.png",
     "$branding_dir/product_logo_24.png",
     "$branding_dir/product_logo_256.png",
     "$branding_dir/product_logo_48.png",
@@ -292,8 +293,6 @@ copy("theme_files") {
       "$branding_dir/linux/product_logo_32_dev.xpm",
       "$branding_dir/product_logo_128_beta.png",
       "$branding_dir/product_logo_128_dev.png",
-      "$branding_dir/product_logo_22_beta.png",
-      "$branding_dir/product_logo_22_dev.png",
       "$branding_dir/product_logo_24_beta.png",
       "$branding_dir/product_logo_24_dev.png",
       "$branding_dir/product_logo_256_beta.png",
@@ -354,6 +353,7 @@ group("installer_deps") {
     "//chrome:packed_resources",
     "//chrome/browser/resources/media/mei_preload:component",
     "//sandbox/linux:chrome_sandbox",
+    "//third_party/crashpad/crashpad/handler:crashpad_handler",
   ]
   if (enable_nacl) {
     public_deps += [

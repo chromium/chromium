@@ -28,6 +28,25 @@ class PolicyExtensionReinstaller;
 
 class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
  public:
+  // Note that it is important for these to appear in increasing "severity"
+  // order, because we use this to let command line flags increase, but not
+  // decrease, the mode you're running in compared to the experiment group.
+  enum Mode {
+    // Do not try to fetch content hashes if they are missing, and do not
+    // enforce them if they are present.
+    NONE = 0,
+
+    // If content hashes are missing, try to fetch them, but do not enforce.
+    BOOTSTRAP,
+
+    // If hashes are present, enforce them. If they are missing, try to fetch
+    // them.
+    ENFORCE,
+
+    // Treat the absence of hashes the same as a verification failure.
+    ENFORCE_STRICT
+  };
+
   static Mode GetDefaultMode();
   static void SetDefaultModeForTesting(base::Optional<Mode> mode);
 
@@ -36,7 +55,7 @@ class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
   ~ChromeContentVerifierDelegate() override;
 
   // ContentVerifierDelegate:
-  Mode ShouldBeVerified(const Extension& extension) override;
+  VerifierSourceType GetVerifierSourceType(const Extension& extension) override;
   ContentVerifierKey GetPublicKey() override;
   GURL GetSignatureFetchUrl(const std::string& extension_id,
                             const base::Version& version) override;
@@ -47,8 +66,12 @@ class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
   void Shutdown() override;
 
  private:
+  // Returns what action should be taken if given extension fails verification
+  // in some way, or NONE if no verification is needed.
+  Mode GetVerifyMode(const Extension& extension);
+
   content::BrowserContext* context_;
-  ContentVerifierDelegate::Mode default_mode_;
+  Mode default_mode_;
 
   // This maps an extension id to a backoff entry for slowing down
   // redownload/reinstall of corrupt policy extensions if it keeps happening

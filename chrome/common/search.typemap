@@ -9,16 +9,19 @@ public_headers = [
   "//components/ntp_tiles/ntp_tile_impression.h",
   "//components/omnibox/common/omnibox_focus_state.h",
 ]
-traits_headers = [ "//chrome/common/instant_struct_traits.h" ]
+traits_headers = [ "//chrome/common/instant_mojom_traits.h" ]
 deps = [
   "//chrome/common",
   "//ipc",
 ]
 type_mappings = [
+  # TODO(dbeam): NTP -> Ntp.
   "chrome.mojom.NTPLoggingEventType=::NTPLoggingEventType",
+  "chrome.mojom.NTPSuggestionsLoggingEventType=::NTPSuggestionsLoggingEventType",
   "chrome.mojom.NTPTileImpression=::ntp_tiles::NTPTileImpression",
   "chrome.mojom.OmniboxFocusState=::OmniboxFocusState",
   "chrome.mojom.OmniboxFocusChangeReason=::OmniboxFocusChangeReason",
-  "chrome.mojom.InstantMostVisitedItem=::InstantMostVisitedItem",
-  "chrome.mojom.ThemeBackgroundInfo=::ThemeBackgroundInfo",
+  "chrome.mojom.InstantMostVisitedInfo=::InstantMostVisitedInfo",
+  "chrome.mojom.NtpTheme=::NtpTheme",
+  "chrome.mojom.SearchBoxTheme=::SearchBoxTheme",
 ]

@@ -1,0 +1,30 @@
+Tests that audits panel works when only the pwa category is selected.
+
+
+========== Audits Start Audit State ==========
+[ ] Performance
+[x] Progressive Web App
+[ ] Best practices
+[ ] Accessibility
+[ ] SEO
+[x] Clear storage
+Run audits: enabled visible
+
+=============== Audits run ===============
+apple-touch-icon
+content-width
+installable-manifest
+is-on-https
+load-fast-enough-for-pwa
+offline-start-url
+pwa-cross-browser
+pwa-each-page-has-url
+pwa-page-transitions
+redirects-http
+service-worker
+splash-screen
+themed-omnibox
+viewport
+without-javascript
+works-offline
+

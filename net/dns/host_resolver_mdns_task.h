@@ -63,7 +63,7 @@ class HostResolverMdnsTask {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<HostResolverMdnsTask> weak_ptr_factory_;
+  base::WeakPtrFactory<HostResolverMdnsTask> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HostResolverMdnsTask);
 };

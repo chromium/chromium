@@ -1,10 +1,10 @@
 # Please use for OWNERS code reviews
 benwells@chromium.org
+engedy@chromium.org
 estark@chromium.org
 felt@chromium.org
 meacer@chromium.org
 patricialor@chromium.org
-raymes@chromium.org
 
 # COMPONENT: UI>Browser>Bubbles>PageInfo
 # TEAM: security-enamel@chromium.org

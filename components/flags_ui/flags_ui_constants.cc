@@ -20,7 +20,6 @@ const char kRestartBrowser[] = "restartBrowser";
 const char kFlagsRestartButton[] = "flagsRestartButton";
 const char kFlagsRestartNotice[] = "flagsRestartNotice";
 const char kNeedsRestart[] = "needsRestart";
-const char kOwnerEmail[] = "ownerEmail";
 const char kReturnExperimentalFeatures[] = "returnExperimentalFeatures";
 const char kShowBetaChannelPromotion[] = "showBetaChannelPromotion";
 const char kShowDevChannelPromotion[] = "showDevChannelPromotion";

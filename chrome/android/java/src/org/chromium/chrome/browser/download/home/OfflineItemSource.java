@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.download.home.glue.OfflineContentProviderGlue
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
+import org.chromium.components.offline_items_collection.UpdateDelta;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -97,7 +98,7 @@ public class OfflineItemSource implements OfflineItemFilterSource, OfflineConten
         Set<OfflineItem> addedItems = new HashSet<OfflineItem>();
         for (OfflineItem item : items) {
             if (mItems.containsKey(item.id)) {
-                onItemUpdated(item);
+                onItemUpdated(item, null);
             } else {
                 mItems.put(item.id, item);
                 addedItems.add(item);
@@ -119,7 +120,7 @@ public class OfflineItemSource implements OfflineItemFilterSource, OfflineConten
     }
 
     @Override
-    public void onItemUpdated(OfflineItem item) {
+    public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {
         OfflineItem oldItem = mItems.get(item.id);
         if (oldItem == null) {
             onItemsAdded(CollectionUtil.newArrayList(item));

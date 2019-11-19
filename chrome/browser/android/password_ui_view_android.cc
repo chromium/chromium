@@ -23,14 +23,18 @@
 #include "base/strings/string_piece.h"
 #include "base/task/post_task.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "chrome/android/chrome_jni_headers/PasswordUIView_jni.h"
+#include "chrome/browser/android/password_editing_bridge.h"
+#include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
+#include "components/password_manager/core/browser/leak_detection/authenticated_leak_check.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/credential_provider_interface.h"
 #include "content/public/browser/browser_thread.h"
-#include "jni/PasswordUIView_jni.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using base::android::ConvertUTF16ToJavaString;
@@ -40,7 +44,9 @@ using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 PasswordUIViewAndroid::PasswordUIViewAndroid(JNIEnv* env, jobject obj)
-    : password_manager_presenter_(this), weak_java_ui_controller_(env, obj) {}
+    : password_manager_presenter_(this), weak_java_ui_controller_(env, obj) {
+  password_manager_presenter_.Initialize();
+}
 
 PasswordUIViewAndroid::~PasswordUIViewAndroid() {}
 
@@ -169,8 +175,9 @@ void PasswordUIViewAndroid::HandleSerializePasswords(
   // but still long enough not to block the UI thread. The main concern here is
   // not to avoid the background computation if |this| is about to be deleted
   // but to simply avoid use after free from the background task runner.
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(
           &PasswordUIViewAndroid::ObtainAndSerializePasswords,
           base::Unretained(this),
@@ -183,10 +190,29 @@ void PasswordUIViewAndroid::HandleSerializePasswords(
                          env, error_callback.obj())));
 }
 
+void PasswordUIViewAndroid::HandleShowPasswordEntryEditingView(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& context,
+    int index) {
+  PasswordEditingBridge::LaunchPasswordEntryEditor(
+      env, context, GetProfile(),
+      password_manager_presenter_.GetPasswords(index),
+      password_manager_presenter_.GetUsernamesForRealm(index));
+}
+
 ScopedJavaLocalRef<jstring> JNI_PasswordUIView_GetAccountDashboardURL(
     JNIEnv* env) {
   return ConvertUTF16ToJavaString(
       env, l10n_util::GetStringUTF16(IDS_PASSWORDS_WEB_LINK));
+}
+
+jboolean JNI_PasswordUIView_HasAccountForLeakCheckRequest(JNIEnv* env) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(
+          ProfileManager::GetLastUsedProfile());
+  return password_manager::AuthenticatedLeakCheck::HasAccountForRequest(
+      identity_manager);
 }
 
 // static

@@ -53,14 +53,14 @@ bool CheckCustomizedWallpaperFilesExist(
 
 // Resizes and saves the customized default wallpapers.
 bool ResizeAndSaveCustomizedDefaultWallpaper(
-    std::unique_ptr<gfx::ImageSkia> image,
+    gfx::ImageSkia image,
     const base::FilePath& resized_small_path,
     const base::FilePath& resized_large_path) {
-  return SaveResizedWallpaper(*image,
+  return SaveResizedWallpaper(image,
                               gfx::Size(ash::kSmallWallpaperMaxWidth,
                                         ash::kSmallWallpaperMaxHeight),
                               resized_small_path) &&
-         SaveResizedWallpaper(*image,
+         SaveResizedWallpaper(image,
                               gfx::Size(ash::kLargeWallpaperMaxWidth,
                                         ash::kLargeWallpaperMaxHeight),
                               resized_large_path);
@@ -102,14 +102,15 @@ void OnCustomizedDefaultWallpaperDecoded(
   wallpaper->image().EnsureRepsForSupportedScales();
 
   scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   base::PostTaskAndReplyWithResult(
       task_runner.get(), FROM_HERE,
       base::Bind(&ResizeAndSaveCustomizedDefaultWallpaper,
-                 base::Passed(wallpaper->image().DeepCopy()),
-                 resized_small_path, resized_large_path),
+                 wallpaper->image().DeepCopy(), resized_small_path,
+                 resized_large_path),
       base::Bind(&OnCustomizedDefaultWallpaperResizedAndSaved, wallpaper_url,
                  resized_small_path, resized_large_path));
 }
@@ -131,8 +132,9 @@ void SetCustomizedDefaultWallpaperAfterCheck(
     // Either resized images do not exist or cached version is incorrect.
     // Need to start decoding again.
     scoped_refptr<base::SequencedTaskRunner> task_runner =
-        base::CreateSequencedTaskRunnerWithTraits(
-            {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+        base::CreateSequencedTaskRunner(
+            {base::ThreadPool(), base::MayBlock(),
+             base::TaskPriority::USER_BLOCKING,
              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
     user_image_loader::StartWithFilePath(
         task_runner, file_path, ImageDecoder::ROBUST_JPEG_CODEC,
@@ -167,8 +169,9 @@ void StartSettingCustomizedDefaultWallpaper(const GURL& wallpaper_url,
   }
 
   scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   base::PostTaskAndReplyWithResult(
       task_runner.get(), FROM_HERE,

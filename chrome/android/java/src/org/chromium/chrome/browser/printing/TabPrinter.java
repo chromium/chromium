@@ -10,6 +10,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
@@ -46,7 +47,7 @@ public class TabPrinter implements Printable {
         if (!canPrint()) return false;
         Tab tab = mTab.get();
         assert tab != null && tab.isInitialized();
-        return nativePrint(tab.getWebContents(), renderProcessId, renderFrameId);
+        return TabPrinterJni.get().print(tab.getWebContents(), renderProcessId, renderFrameId);
     }
 
     @Override
@@ -74,6 +75,8 @@ public class TabPrinter implements Printable {
         return true;
     }
 
-    private static native boolean nativePrint(
-            WebContents webContents, int renderProcessId, int renderFrameId);
+    @NativeMethods
+    interface Natives {
+        boolean print(WebContents webContents, int renderProcessId, int renderFrameId);
+    }
 }

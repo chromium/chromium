@@ -42,7 +42,7 @@ class RasterInProcessContext {
   // pairs. |gpu_channel_manager| should be non-null when used in the GPU
   // process.
   ContextResult Initialize(
-      scoped_refptr<CommandBufferTaskExecutor> task_executor,
+      CommandBufferTaskExecutor* task_executor,
       const ContextCreationAttribs& attribs,
       const SharedMemoryLimits& memory_limits,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,

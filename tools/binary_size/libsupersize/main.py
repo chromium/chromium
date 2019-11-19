@@ -55,10 +55,10 @@ class _DiffAction(object):
         'count = sis.CountsByDiffStatus()[models.DIFF_STATUS_ADDED]',
         'count += sis.CountsByDiffStatus()[models.DIFF_STATUS_REMOVED]',
         'if count > 0:',
-        '  print "Static Initializers Diff:"',
+        '  print("Static Initializers Diff:")',
         '  Print(sis, summarize=False)',
-        '  print',
-        '  print "Full diff:"',
+        '  print()',
+        '  print("Full diff:")',
         'Print(d, verbose=%s)' % bool(args.all),
     ])
     console.Run(args, parser)

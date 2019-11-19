@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL parsing via attribute change steps of CSS declaration block's owner node assert_equals: expected "none" but got ""
+FAIL parsing via modification of cssText assert_equals: expected "none" but got ""
+FAIL parsing via creation of CSS declaration block assert_equals: expected "none" but got ""
+Harness: the test ran to completion.
+

@@ -11,8 +11,7 @@
 
 namespace extensions {
 
-class VirtualKeyboardRestrictFeaturesFunction
-    : public UIThreadExtensionFunction {
+class VirtualKeyboardRestrictFeaturesFunction : public ExtensionFunction {
  public:
   VirtualKeyboardRestrictFeaturesFunction();
 
@@ -21,7 +20,7 @@ class VirtualKeyboardRestrictFeaturesFunction
 
  protected:
   ~VirtualKeyboardRestrictFeaturesFunction() override = default;
-  // UIThreadExtensionFunction override:
+  // ExtensionFunction override:
   ResponseAction Run() override;
 
  private:

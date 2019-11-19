@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace autofill {
 namespace {
@@ -28,6 +29,24 @@ bool WriteFile(const base::FilePath& file, const std::string& content) {
   int write_size = base::WriteFile(file, content.c_str(),
                                    static_cast<int>(content.length()));
   return write_size == static_cast<int>(content.length());
+}
+
+// Removes lines starting with (optional) whitespace and a #.
+void StripComments(std::string* content) {
+  RE2::GlobalReplace(
+      content,
+      // Enable multi-line mode, ^ and $ match begin/end line in addition to
+      // begin/end text.
+      "(?m)"
+      // Search for start of lines (^), ignore spaces (\\s*), and then look for
+      // '#'.
+      "^\\s*#"
+      // Consume all characters (.*) until end of line ($).
+      ".*$"
+      // Consume the line wrapping so that the entire line is gone.
+      "[\\r\\n]*",
+      // Replace entire line with empty string.
+      "");
 }
 
 }  // namespace
@@ -81,6 +100,8 @@ void DataDrivenTest::RunOneDataDrivenTest(
     ASSERT_TRUE(WriteFile(output_file, output));
     return;
   }
+  // Remove comment lines (lead by '#' character).
+  StripComments(&output_file_contents);
 
   if (is_expected_to_pass) {
     EXPECT_EQ(output_file_contents, output);

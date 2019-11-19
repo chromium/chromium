@@ -63,7 +63,7 @@ const char kTether[] = "Tether";
 const char kType[] = "Type";
 const char kVPN[] = "VPN";
 const char kWiFi[] = "WiFi";
-const char kWimax[] = "WiMAX";
+const char kWimaxDeprecated[] = "WiMAX";
 
 std::string CellularProperty(const std::string& property) {
   return std::string(kCellular) + "." + property;
@@ -90,7 +90,7 @@ const char kEthernet[] = "Ethernet";
 const char kTether[] = "Tether";
 const char kVPN[] = "VPN";
 const char kWiFi[] = "WiFi";
-const char kWimax[] = "WiMAX";
+const char kWimaxDeprecated[] = "WiMAX";
 const char kWireless[] = "Wireless";
 }  // namespace network_type
 
@@ -123,7 +123,6 @@ const char kMIN[] = "MIN";
 const char kModelID[] = "ModelID";
 const char kNetworkTechnology[] = "NetworkTechnology";
 const char kPaymentPortal[] = "PaymentPortal";
-const char kPRLVersion[] = "PRLVersion";
 const char kRoamingHome[] = "Home";
 const char kRoamingRequired[] = "Required";
 const char kRoamingRoaming[] = "Roaming";
@@ -133,7 +132,6 @@ const char kServingOperator[] = "ServingOperator";
 const char kSignalStrength[] = "SignalStrength";
 const char kSIMLockStatus[] = "SIMLockStatus";
 const char kSIMPresent[] = "SIMPresent";
-const char kSupportedCarriers[] = "SupportedCarriers";
 const char kSupportNetworkScan[] = "SupportNetworkScan";
 const char kTechnologyCdma1Xrtt[] = "CDMA1XRTT";
 const char kTechnologyEdge[] = "EDGE";
@@ -241,11 +239,11 @@ const char kWPA_PSK[] = "WPA-PSK";
 const char kWPA2_PSK[] = "WPA2-PSK";
 }  // namespace wifi
 
-namespace wimax {
+// Deprecated, properties exist for ignoring old ONC config entries.
+namespace wimax_deprecated {
 const char kAutoConnect[] = "AutoConnect";
 const char kEAP[] = "EAP";
-const char kSignalStrength[] = "SignalStrength";
-}  // namespace wimax
+}  // namespace wimax_deprecated
 
 namespace client_cert {
 const char kClientCertPattern[] = "ClientCertPattern";
@@ -273,12 +271,20 @@ const char kAuthority[] = "Authority";
 const char kClient[] = "Client";
 const char kGUID[] = "GUID";
 const char kPKCS12[] = "PKCS12";
+const char kScope[] = "Scope";
 const char kServer[] = "Server";
 const char kTrustBits[] = "TrustBits";
 const char kType[] = "Type";
 const char kWeb[] = "Web";
 const char kX509[] = "X509";
 }  // namespace certificate
+
+namespace scope {
+const char kDefault[] = "Default";
+const char kExtension[] = "Extension";
+const char kId[] = "Id";
+const char kType[] = "Type";
+}  // namespace scope
 
 namespace encrypted {
 const char kAES256[] = "AES256";

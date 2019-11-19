@@ -8,7 +8,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/mojom/ax_action_data.mojom-shared.h"
 #include "ui/accessibility/mojom/ax_tree_id_mojom_traits.h"
-#include "ui/gfx/geometry/mojo/geometry_struct_traits.h"
+#include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
 namespace mojo {
 
@@ -52,6 +52,14 @@ struct StructTraits<ax::mojom::AXActionDataDataView, ui::AXActionData> {
   static const std::string& value(const ui::AXActionData& a) { return a.value; }
   static ax::mojom::Event hit_test_event_to_fire(const ui::AXActionData& a) {
     return a.hit_test_event_to_fire;
+  }
+  static ax::mojom::ScrollAlignment horizontal_scroll_alignment(
+      const ui::AXActionData& a) {
+    return a.horizontal_scroll_alignment;
+  }
+  static ax::mojom::ScrollAlignment vertical_scroll_alignment(
+      const ui::AXActionData& a) {
+    return a.vertical_scroll_alignment;
   }
 
   static bool Read(ax::mojom::AXActionDataDataView data, ui::AXActionData* out);

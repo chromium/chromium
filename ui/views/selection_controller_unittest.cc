@@ -26,7 +26,7 @@ const gfx::Point CenterRight(const gfx::Rect& rect) {
 
 class TestSelectionControllerDelegate : public SelectionControllerDelegate {
  public:
-  TestSelectionControllerDelegate(gfx::RenderText* render_text)
+  explicit TestSelectionControllerDelegate(gfx::RenderText* render_text)
       : render_text_(render_text) {}
   ~TestSelectionControllerDelegate() override = default;
 

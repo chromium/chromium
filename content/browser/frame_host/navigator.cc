@@ -5,7 +5,8 @@
 #include "content/browser/frame_host/navigator.h"
 
 #include "base/time/time.h"
-#include "content/public/browser/stream_handle.h"
+#include "content/browser/web_package/bundled_exchanges_handle_tracker.h"
+#include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 
 namespace content {
 
@@ -19,7 +20,7 @@ NavigationController* Navigator::GetController() {
 
 bool Navigator::StartHistoryNavigationInNewSubframe(
     RenderFrameHostImpl* render_frame_host,
-    const GURL& default_url) {
+    mojo::PendingAssociatedRemote<mojom::NavigationClient>* navigation_client) {
   return false;
 }
 
@@ -29,10 +30,14 @@ base::TimeTicks Navigator::GetCurrentLoadStart() {
 
 void Navigator::OnBeginNavigation(
     FrameTreeNode* frame_tree_node,
-    const CommonNavigationParams& common_params,
+    mojom::CommonNavigationParamsPtr common_params,
     mojom::BeginNavigationParamsPtr begin_params,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    mojom::NavigationClientAssociatedPtrInfo navigation_client,
-    blink::mojom::NavigationInitiatorPtr navigation_initiator) {}
+    mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
+    mojo::PendingRemote<blink::mojom::NavigationInitiator> navigation_initiator,
+    scoped_refptr<PrefetchedSignedExchangeCache>
+        prefetched_signed_exchange_cache,
+    std::unique_ptr<BundledExchangesHandleTracker>
+        bundled_exchanges_handle_tracker) {}
 
 }  // namespace content

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "android_webview/browser/aw_contents.h"
+#include "android_webview/browser_jni_headers/AwHttpAuthHandler_jni.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
@@ -15,7 +16,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/AwHttpAuthHandler_jni.h"
 #include "net/base/auth.h"
 
 using base::android::ConvertJavaStringToUTF16;
@@ -24,21 +24,20 @@ using content::BrowserThread;
 
 namespace android_webview {
 
-AwHttpAuthHandler::AwHttpAuthHandler(net::AuthChallengeInfo* auth_info,
+AwHttpAuthHandler::AwHttpAuthHandler(const net::AuthChallengeInfo& auth_info,
                                      content::WebContents* web_contents,
                                      bool first_auth_attempt,
                                      LoginAuthRequiredCallback callback)
     : WebContentsObserver(web_contents),
-      host_(auth_info->challenger.host()),
-      realm_(auth_info->realm),
-      callback_(std::move(callback)),
-      weak_factory_(this) {
+      host_(auth_info.challenger.host()),
+      realm_(auth_info.realm),
+      callback_(std::move(callback)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = base::android::AttachCurrentThread();
   http_auth_handler_.Reset(Java_AwHttpAuthHandler_create(
       env, reinterpret_cast<intptr_t>(this), first_auth_attempt));
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&AwHttpAuthHandler::Start, weak_factory_.GetWeakPtr()));
 }

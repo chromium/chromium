@@ -18,33 +18,38 @@ cca.views = cca.views || {};
  * Creates the Dialog view controller.
  * @extends {cca.views.View}
  * @constructor
+ * @param {string} viewId Root element id of dialog view.
  */
-cca.views.Dialog = function() {
-  cca.views.View.call(this, '#dialog', true);
+cca.views.Dialog = function(viewId) {
+  cca.views.View.call(this, viewId, true);
 
   /**
    * @type {HTMLButtonElement}
    * @private
    */
-  this.positiveButton_ = document.querySelector('#dialog-positive-button');
+  this.positiveButton_ =
+      document.querySelector(`${viewId} .dialog-positive-button`);
 
   /**
-   * @type {HTMLButtonElement}
+   * @type {!HTMLButtonElement}
    * @private
    */
-  this.negativeButton_ = document.querySelector('#dialog-negative-button');
+  this.negativeButton_ =
+      document.querySelector(`${viewId} .dialog-negative-button`);
 
   /**
-   * @type {HTMLElement}
+   * @type {!HTMLElement}
    * @private
    */
-  this.messageElement_ = document.querySelector('#dialog-msg');
+  this.messageHolder_ = document.querySelector(`${viewId} .dialog-msg-holder`);
 
   // End of properties, seal the object.
   Object.seal(this);
 
   this.positiveButton_.addEventListener('click', () => this.leave(true));
-  this.negativeButton_.addEventListener('click', () => this.leave());
+  if (this.negativeButton_) {
+    this.negativeButton_.addEventListener('click', () => this.leave());
+  }
 };
 
 cca.views.Dialog.prototype = {
@@ -56,9 +61,13 @@ cca.views.Dialog.prototype = {
  * @param {boolean} cancellable Whether the dialog is cancellable.
  * @override
  */
-cca.views.Dialog.prototype.entering = function(message, cancellable) {
-  this.messageElement_.textContent = message;
-  this.negativeButton_.hidden = !cancellable;
+cca.views.Dialog.prototype.entering = function({message, cancellable} = {}) {
+  if (this.messageHolder_ && message) {
+    this.messageHolder_.textContent = message;
+  }
+  if (this.negativeButton_) {
+    this.negativeButton_.hidden = !cancellable;
+  }
 };
 
 /**

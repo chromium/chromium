@@ -21,6 +21,7 @@ class LanguageModelManager : public KeyedService {
  public:
   enum class ModelType {
     BASELINE,
+    FLUENT,
     GEO,
     HEURISTIC,
   };
@@ -36,8 +37,6 @@ class LanguageModelManager : public KeyedService {
   // through a call to AddModel.
   void SetPrimaryModel(ModelType type);
   LanguageModel* GetPrimaryModel() const;
-
-  LanguageModel* GetModel(ModelType type) const;
 
  private:
   std::unique_ptr<LanguageModel> default_model_;

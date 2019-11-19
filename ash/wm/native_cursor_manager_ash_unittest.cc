@@ -134,6 +134,28 @@ TEST_F(NativeCursorManagerAshTest, SetDeviceScaleFactorAndRotation) {
   EXPECT_EQ(display::Display::ROTATE_270, test_api.GetCurrentCursorRotation());
 }
 
+TEST_F(NativeCursorManagerAshTest, RotationWithPanelOrientation) {
+  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+
+  display::test::ScopedSetInternalDisplayId set_internal(display_manager(),
+                                                         display_id);
+
+  // The panel is portrait but its orientation is landscape.
+  display::ManagedDisplayInfo native_display_info =
+      display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1920, 1080));
+  native_display_info.set_panel_orientation(
+      display::PanelOrientation::kRightUp);
+  std::vector<display::ManagedDisplayInfo> display_info_list{
+      native_display_info};
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
+  CursorManagerTestApi test_api(cursor_manager);
+  ASSERT_EQ(gfx::Size(1080, 1920),
+            display::Screen::GetScreen()->GetPrimaryDisplay().size());
+  EXPECT_EQ(display::Display::ROTATE_90, test_api.GetCurrentCursorRotation());
+}
+
 TEST_F(NativeCursorManagerAshTest, FractionalScale) {
   ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
   CursorManagerTestApi test_api(cursor_manager);

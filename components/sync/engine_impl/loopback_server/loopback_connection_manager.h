@@ -18,15 +18,14 @@ namespace syncer {
 // always succeed.
 class LoopbackConnectionManager : public ServerConnectionManager {
  public:
-  LoopbackConnectionManager(CancelationSignal* signal,
-                            const base::FilePath& persistent_file);
+  explicit LoopbackConnectionManager(const base::FilePath& persistent_file);
   ~LoopbackConnectionManager() override;
 
  private:
   // Overridden ServerConnectionManager functions.
   bool PostBufferToPath(PostBufferParams* params,
                         const std::string& path,
-                        const std::string& auth_token) override;
+                        const std::string& access_token) override;
 
   // The loopback server that will handle the requests locally.
   LoopbackServer loopback_server_;

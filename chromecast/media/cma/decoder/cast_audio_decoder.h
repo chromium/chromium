@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "media/base/channel_layout.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -57,16 +56,11 @@ class CastAudioDecoder {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const media::AudioConfig& config,
       OutputFormat output_format,
-      ::media::ChannelLayout output_channel_layout,
       InitializedCallback initialized_callback);
 
   // Given a CastAudioDecoder::OutputFormat, return the size of each sample in
   // that OutputFormat in bytes.
   static int OutputFormatSizeInBytes(CastAudioDecoder::OutputFormat format);
-
-  // Get output channel layout to be used by CastAudioDecoder from |config|.
-  static ::media::ChannelLayout OutputChannelLayoutFromConfig(
-      const AudioConfig& config);
 
   virtual ~CastAudioDecoder() = default;
 

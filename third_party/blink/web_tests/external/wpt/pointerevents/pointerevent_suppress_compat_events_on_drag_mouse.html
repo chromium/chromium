@@ -15,6 +15,7 @@
     <script type="text/javascript">
       var test_pointerEvent = async_test("Suppress compat mouse events on drag");
       add_completion_callback(end_of_test);
+      var actions_promise;
 
       var detected_pointertypes = {};
       var event_log = [];
@@ -37,16 +38,19 @@
                   "mousedown@target1, mousemove@target1, mouseup@target1");
           }, "Event log");
 
-          test_pointerEvent.done(); // complete test
+          // Make sure the test finishes after all the input actions are completed.
+          actions_promise.then( () => {
+              test_pointerEvent.done();
+          });
       }
 
       function run() {
-          on_event(document.getElementById("done"), "click", end_of_interaction);
+          var targetDone = document.getElementById('done');
+          on_event(targetDone, "click", end_of_interaction);
 
           var target_list = ["target0", "target1"];
           var pointer_event_list = ["pointerdown" , "pointermove", "pointerup"];
           var mouse_event_list = ["mousedown", "mouseup", "mousemove"];
-          var last_pointer_event = null;
 
           target_list.forEach(function(targetId) {
               var target = document.getElementById(targetId);
@@ -64,8 +68,6 @@
 
                       if (label === "pointerdown@target0")
                           event.preventDefault();
-
-                      last_pointer_event = event;
                   });
               });
 
@@ -77,20 +79,12 @@
                       event_log.push(event.type + "@" + targetId);
 
                       include_next_mousemove = (event.type == "mousedown");
-                      test(function() {
-                          test(function () {
-                              assert_equals(event.timeStamp, last_pointer_event.timeStamp, "The time stamp of the compat mouse event should be the same as its pointerevent");
-                          });
-                      }, event.type + "'s time stamp should be the same as " + last_pointer_event.type + "'s time stamp.");
                   });
               });
           });
 
           // Inject mouse inputs.
-          var target0 = document.getElementById('target0');
-          var target1 = document.getElementById('target1');
-          var targetDone = document.getElementById('done');
-          new test_driver.Actions()
+          actions_promise = new test_driver.Actions()
               .pointerMove(0, 0, {origin: target0})
               .pointerDown()
               .pointerMove(10, 0, {origin: target0})

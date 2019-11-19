@@ -18,13 +18,13 @@
 
 <body>
   <header>
-    <h1>$i18n{title}</h1>
-    <input id="filter" class="search-field-container" type="search"
-        placeholder="$i18n{filterPlaceholder}"
-        aria-label="$i18n{filterPlaceholder}" incremental>
-  </header>
-  <main id="policy-ui">
-    <section class="reload-show-unset-section">
+    <div class="header-row">
+      <h1>$i18n{title}</h1>
+      <input id="filter" class="search-field-container" type="search"
+          placeholder="$i18n{filterPlaceholder}"
+          aria-label="$i18n{filterPlaceholder}" incremental>
+    </div>
+    <div class="header-row">
       <button id="reload-policies">$i18n{reloadPolicies}</button>
       <button id="export-policies">$i18n{exportPoliciesJSON}</button>
       <div id="show-unset-container" class="show-unset-checkbox">
@@ -33,7 +33,9 @@
           <span>$i18n{showUnset}</span>
         </label>
       </div>
-    </section>
+    </div>
+  </header>
+  <main id="policy-ui">
     <section id="status-section" class="status-box-section" hidden>
       <h3>$i18n{status}</h3>
       <div id="status-box-container"></div>
@@ -109,6 +111,14 @@
         <div class="label">$i18n{labelStatus}</div>
         <div class="status"></div>
       </div>
+      <div class="status-entry" hidden>
+        <div class="label">$i18n{labelIsAffiliated}</div>
+        <div class="is-affiliated"></div>
+      </div>
+      <div class="status-entry" hidden>
+        <div class="label">$i18n{labelIsOffHoursActive}</div>
+        <div class="is-offhours-active"></div>
+      </div>
     </fieldset>
 
     <div class="policy-table" id="policy-table-template">
@@ -166,7 +176,11 @@
         <div class="name">$i18n{value}</div>
         <div class="value"></div>
       </div>
-      <div class="messages row" hidden>
+      <div class="errors row" hidden>
+        <div class="name">$i18n{error}</div>
+        <div class="value"></div>
+      </div>
+      <div class="warnings row" hidden>
         <div class="name">$i18n{warning}</div>
         <div class="value"></div>
       </div>

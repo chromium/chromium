@@ -1,0 +1,3 @@
+[document web]
+++[article]
+++++[static] name='This is an ARIA article.'

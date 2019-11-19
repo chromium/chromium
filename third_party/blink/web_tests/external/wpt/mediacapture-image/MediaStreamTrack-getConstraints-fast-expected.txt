@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+PASS MediaStreamTrack.getConstraints(), key: whiteBalanceMode
+FAIL MediaStreamTrack-getConstraints-fast assert_object_equals: constraints expected property "advanced" missing
+PASS MediaStreamTrack.getConstraints(), key: exposureMode
+FAIL MediaStreamTrack-getConstraints-fast 1 assert_object_equals: constraints expected property "advanced" missing
+PASS MediaStreamTrack.getConstraints(), key: focusMode
+FAIL MediaStreamTrack-getConstraints-fast 2 assert_object_equals: constraints expected property "advanced" missing
+PASS MediaStreamTrack.getConstraints(), key: exposureCompensation
+FAIL MediaStreamTrack-getConstraints-fast 3 assert_object_equals: constraints expected property "advanced" missing
+PASS MediaStreamTrack.getConstraints(), key: exposureTime
+FAIL MediaStreamTrack-getConstraints-fast 4 assert_object_equals: constraints expected property "advanced" missing
+PASS MediaStreamTrack.getConstraints(), key: colorTemperature
+FAIL MediaStreamTrack-getConstraints-fast 5 assert_object_equals: constraints expected property "advanced" missing
+PASS MediaStreamTrack.getConstraints(), key: iso
+FAIL MediaStreamTrack-getConstraints-fast 6 assert_object_equals: constraints expected property "advanced" missing
+PASS MediaStreamTrack.getConstraints(), key: brightness
+FAIL MediaStreamTrack-getConstraints-fast 7 assert_object_equals: constraints expected property "advanced" missing
+PASS MediaStreamTrack.getConstraints(), key: contrast
+FAIL MediaStreamTrack-getConstraints-fast 8 assert_object_equals: constraints expected property "advanced" missing
+PASS MediaStreamTrack.getConstraints(), key: saturation
+FAIL MediaStreamTrack-getConstraints-fast 9 assert_object_equals: constraints expected property "advanced" missing
+PASS MediaStreamTrack.getConstraints(), key: sharpness
+FAIL MediaStreamTrack-getConstraints-fast 10 assert_object_equals: constraints expected property "advanced" missing
+PASS MediaStreamTrack.getConstraints(), key: focusDistance
+FAIL MediaStreamTrack-getConstraints-fast 11 assert_object_equals: constraints expected property "advanced" missing
+PASS MediaStreamTrack.getConstraints(), key: pan
+FAIL MediaStreamTrack-getConstraints-fast 12 assert_object_equals: constraints expected property "advanced" missing
+PASS MediaStreamTrack.getConstraints(), key: tilt
+FAIL MediaStreamTrack-getConstraints-fast 13 assert_object_equals: constraints expected property "advanced" missing
+PASS MediaStreamTrack.getConstraints(), key: zoom
+FAIL MediaStreamTrack-getConstraints-fast 14 assert_object_equals: constraints expected property "advanced" missing
+PASS MediaStreamTrack.getConstraints(), complete 
+FAIL MediaStreamTrack-getConstraints-fast 15 assert_object_equals: constraints expected property "advanced" missing
+Harness: the test ran to completion.
+

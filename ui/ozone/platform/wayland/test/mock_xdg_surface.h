@@ -5,10 +5,14 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_XDG_SURFACE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_XDG_SURFACE_H_
 
+#include <memory>
+#include <utility>
+
 #include <xdg-shell-unstable-v5-server-protocol.h>
 #include <xdg-shell-unstable-v6-server-protocol.h>
 
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/ozone/platform/wayland/test/mock_xdg_popup.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
 struct wl_resource;
@@ -49,9 +53,16 @@ class MockXdgSurface : public ServerObject {
   }
   MockXdgTopLevel* xdg_toplevel() const { return xdg_toplevel_.get(); }
 
+  void set_xdg_popup(std::unique_ptr<MockXdgPopup> xdg_popup) {
+    xdg_popup_ = std::move(xdg_popup);
+  }
+  MockXdgPopup* xdg_popup() const { return xdg_popup_.get(); }
+
  private:
   // Used when xdg v6 is used.
   std::unique_ptr<MockXdgTopLevel> xdg_toplevel_;
+
+  std::unique_ptr<MockXdgPopup> xdg_popup_;
 
   DISALLOW_COPY_AND_ASSIGN(MockXdgSurface);
 };

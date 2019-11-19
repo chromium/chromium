@@ -19,10 +19,10 @@ class FakeEncryptor : public Encryptor {
   ~FakeEncryptor() override;
 
   bool EncryptString(const std::string& plaintext,
-                     std::string* ciphertext) override;
+                     std::string* ciphertext) const override;
 
   bool DecryptString(const std::string& ciphertext,
-                     std::string* plaintext) override;
+                     std::string* plaintext) const override;
 };
 
 }  // namespace syncer

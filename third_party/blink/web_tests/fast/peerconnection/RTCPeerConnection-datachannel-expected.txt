@@ -1,4 +1,3 @@
-CONSOLE WARNING: maxRetransmitTime is deprecated and will be removed in M70, around October 2018. Please use maxPacketLifeTime instead. See https://www.chromestatus.com/features/5198350873788416 for more details.
 Tests RTCDataChannel.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
@@ -14,8 +13,10 @@ PASS dc.reliable is true
 PASS dc.ordered is false
 PASS dc = pc.createDataChannel("label3", {maxRetransmits:0}); did not throw exception.
 PASS dc.reliable is false
-PASS dc = pc.createDataChannel("label3", {maxRetransmitTime:0}); did not throw exception.
+PASS dc = pc.createDataChannel("label3", {maxPacketLifeTime:0}); did not throw exception.
 PASS dc.reliable is false
+PASS dc = pc.createDataChannel("label3", {maxRetransmitTime:0}); did not throw exception.
+PASS dc.reliable is true
 PASS dc = pc.createDataChannel("label"); did not throw exception.
 PASS dc.readyState is 'connecting'
 PASS pc is connected

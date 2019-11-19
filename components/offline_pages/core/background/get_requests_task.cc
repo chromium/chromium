@@ -13,7 +13,7 @@ namespace offline_pages {
 GetRequestsTask::GetRequestsTask(
     RequestQueueStore* store,
     RequestQueueStore::GetRequestsCallback callback)
-    : store_(store), callback_(std::move(callback)), weak_ptr_factory_(this) {}
+    : store_(store), callback_(std::move(callback)) {}
 
 GetRequestsTask::~GetRequestsTask() {}
 

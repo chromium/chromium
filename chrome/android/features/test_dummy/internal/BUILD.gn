@@ -1,0 +1,78 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/android/rules.gni")
+import("//chrome/android/modules/buildflags.gni")
+import("//tools/grit/grit_rule.gni")
+
+android_resources("java_resources") {
+  resource_dirs = [ "java/res" ]
+  custom_package = "org.chromium.chrome.features.test_dummy"
+}
+
+android_library("java") {
+  deps = [
+    ":base_module_java",
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/android/features/test_dummy/public:java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+  ]
+  java_files =
+      [ "java/src/org/chromium/chrome/features/test_dummy/TestDummyImpl.java" ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  deps += [ "//base:jni_java" ]
+}
+
+source_set("native") {
+  sources = [
+    "test_dummy_impl.cc",
+  ]
+
+  deps = [
+    ":jni_headers",
+    ":resources_native",
+    "//base",
+    "//ui/base",
+  ]
+}
+
+# Java code that should go into the base module. If this were a normal feature,
+# this target would reside in the client code using the module. Since this is a
+# test dummy module, it has no pre-existing client, and hence the target is
+# squatting here for convenience. The same is true for the corresponding native
+# target.
+android_library("base_module_java") {
+  deps = [
+    "//base:base_java",
+    "//chrome/android/features/test_dummy/public:java",
+    "//chrome/android/modules/test_dummy/provider:java",
+    "//chrome/android/modules/test_dummy/public:java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+  ]
+  java_files = [
+    "java/src/org/chromium/chrome/features/test_dummy/TestDummyActivity.java",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/features/test_dummy/TestDummyImpl.java",
+  ]
+}
+
+# Cannot call this just "resources" since all targets with that name in
+# //chrome/android need a build_config, which grit targets don't have.
+grit("resources_native") {
+  source = "resources/resources.grd"
+  outputs = [
+    "grit/test_dummy_resources.h",
+    "test_dummy_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+  depfile_dir = target_gen_dir
+}

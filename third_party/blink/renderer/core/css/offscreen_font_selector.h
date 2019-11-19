@@ -21,10 +21,6 @@ class FontDescription;
 
 class CORE_EXPORT OffscreenFontSelector : public FontSelector {
  public:
-  static OffscreenFontSelector* Create(ExecutionContext* context) {
-    return MakeGarbageCollected<OffscreenFontSelector>(context);
-  }
-
   explicit OffscreenFontSelector(ExecutionContext*);
   ~OffscreenFontSelector() override;
 

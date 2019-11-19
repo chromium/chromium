@@ -44,11 +44,6 @@ class DirectoryReader : public DirectoryReaderBase {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DirectoryReader* Create(DOMFileSystemBase* file_system,
-                                 const String& full_path) {
-    return MakeGarbageCollected<DirectoryReader>(file_system, full_path);
-  }
-
   DirectoryReader(DOMFileSystemBase*, const String& full_path);
   ~DirectoryReader() override = default;
 
@@ -61,9 +56,6 @@ class DirectoryReader : public DirectoryReaderBase {
   void Trace(blink::Visitor*) override;
 
  private:
-  class EntriesCallbackHelper;
-  class ErrorCallbackHelper;
-
   void AddEntries(const EntryHeapVector& entries);
 
   void OnError(base::File::Error error);
@@ -71,8 +63,8 @@ class DirectoryReader : public DirectoryReaderBase {
   bool is_reading_;
   EntryHeapVector entries_;
   base::File::Error error_ = base::File::FILE_OK;
-  Member<V8PersistentCallbackInterface<V8EntriesCallback>> entries_callback_;
-  Member<V8PersistentCallbackInterface<V8ErrorCallback>> error_callback_;
+  Member<V8EntriesCallback> entries_callback_;
+  Member<V8ErrorCallback> error_callback_;
 };
 
 }  // namespace blink

@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "mojo/public/c/system/data_pipe.h"
-#include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
@@ -39,12 +39,12 @@ class ResourceLoaderTest : public testing::Test {
       : foo_url_("https://foo.test"), bar_url_("https://bar.test") {}
 
  protected:
-  using FetchRequestMode = network::mojom::FetchRequestMode;
+  using RequestMode = network::mojom::RequestMode;
   using FetchResponseType = network::mojom::FetchResponseType;
 
   struct TestCase {
     const KURL url;
-    const FetchRequestMode request_mode;
+    const RequestMode request_mode;
     const From from;
     const scoped_refptr<const SecurityOrigin> allowed_origin;
     const FetchResponseType original_response_type;
@@ -60,8 +60,8 @@ class ResourceLoaderTest : public testing::Test {
     std::unique_ptr<WebURLLoader> CreateURLLoader(
         const ResourceRequest& request,
         const ResourceLoaderOptions& options,
-        scoped_refptr<base::SingleThreadTaskRunner>) override {
-      return std::make_unique<NoopWebURLLoader>();
+        scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
+      return std::make_unique<NoopWebURLLoader>(std::move(task_runner));
     }
     std::unique_ptr<CodeCacheLoader> CreateCodeCacheLoader() override {
       return Platform::Current()->CreateCodeCacheLoader();
@@ -75,6 +75,8 @@ class ResourceLoaderTest : public testing::Test {
  private:
   class NoopWebURLLoader final : public WebURLLoader {
    public:
+    NoopWebURLLoader(scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+        : task_runner_(task_runner) {}
     ~NoopWebURLLoader() override = default;
     void LoadSynchronously(const WebURLRequest&,
                            WebURLLoaderClient*,
@@ -89,11 +91,16 @@ class ResourceLoaderTest : public testing::Test {
     void LoadAsynchronously(const WebURLRequest&,
                             WebURLLoaderClient*) override {}
 
-    void Cancel() override {}
     void SetDefersLoading(bool) override {}
     void DidChangePriority(WebURLRequest::Priority, int) override {
       NOTREACHED();
     }
+    scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() override {
+      return task_runner_;
+    }
+
+   private:
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   };
 };
 
@@ -110,9 +117,6 @@ std::ostream& operator<<(std::ostream& o, const ResourceLoaderTest::From& f) {
 }
 
 TEST_F(ResourceLoaderTest, ResponseType) {
-  // This test will be trivial if EnableOutOfBlinkCors is enabled.
-  WebRuntimeFeatures::EnableOutOfBlinkCors(false);
-
   const scoped_refptr<const SecurityOrigin> origin =
       SecurityOrigin::Create(foo_url_);
   const scoped_refptr<const SecurityOrigin> no_origin = nullptr;
@@ -121,41 +125,40 @@ TEST_F(ResourceLoaderTest, ResponseType) {
 
   TestCase cases[] = {
       // Same origin response:
-      {same_origin_url, FetchRequestMode::kNoCors, From::kNetwork, no_origin,
+      {same_origin_url, RequestMode::kNoCors, From::kNetwork, no_origin,
        FetchResponseType::kDefault, FetchResponseType::kBasic},
-      {same_origin_url, FetchRequestMode::kCors, From::kNetwork, no_origin,
+      {same_origin_url, RequestMode::kCors, From::kNetwork, no_origin,
        FetchResponseType::kDefault, FetchResponseType::kBasic},
 
       // Cross origin, no-cors:
-      {cross_origin_url, FetchRequestMode::kNoCors, From::kNetwork, no_origin,
+      {cross_origin_url, RequestMode::kNoCors, From::kNetwork, no_origin,
        FetchResponseType::kDefault, FetchResponseType::kOpaque},
 
       // Cross origin, cors:
-      {cross_origin_url, FetchRequestMode::kCors, From::kNetwork, origin,
+      {cross_origin_url, RequestMode::kCors, From::kNetwork, origin,
        FetchResponseType::kDefault, FetchResponseType::kCors},
-      {cross_origin_url, FetchRequestMode::kCors, From::kNetwork, no_origin,
+      {cross_origin_url, RequestMode::kCors, From::kNetwork, no_origin,
        FetchResponseType::kDefault, FetchResponseType::kError},
 
       // From service worker, no-cors:
-      {same_origin_url, FetchRequestMode::kNoCors, From::kServiceWorker,
-       no_origin, FetchResponseType::kBasic, FetchResponseType::kBasic},
-      {same_origin_url, FetchRequestMode::kNoCors, From::kServiceWorker,
-       no_origin, FetchResponseType::kCors, FetchResponseType::kCors},
-      {same_origin_url, FetchRequestMode::kNoCors, From::kServiceWorker,
-       no_origin, FetchResponseType::kDefault, FetchResponseType::kDefault},
-      {same_origin_url, FetchRequestMode::kNoCors, From::kServiceWorker,
-       no_origin, FetchResponseType::kOpaque, FetchResponseType::kOpaque},
-      {same_origin_url, FetchRequestMode::kNoCors, From::kServiceWorker,
-       no_origin, FetchResponseType::kOpaqueRedirect,
-       FetchResponseType::kOpaqueRedirect},
+      {same_origin_url, RequestMode::kNoCors, From::kServiceWorker, no_origin,
+       FetchResponseType::kBasic, FetchResponseType::kBasic},
+      {same_origin_url, RequestMode::kNoCors, From::kServiceWorker, no_origin,
+       FetchResponseType::kCors, FetchResponseType::kCors},
+      {same_origin_url, RequestMode::kNoCors, From::kServiceWorker, no_origin,
+       FetchResponseType::kDefault, FetchResponseType::kDefault},
+      {same_origin_url, RequestMode::kNoCors, From::kServiceWorker, no_origin,
+       FetchResponseType::kOpaque, FetchResponseType::kOpaque},
+      {same_origin_url, RequestMode::kNoCors, From::kServiceWorker, no_origin,
+       FetchResponseType::kOpaqueRedirect, FetchResponseType::kOpaqueRedirect},
 
       // From service worker, cors:
-      {same_origin_url, FetchRequestMode::kCors, From::kServiceWorker,
-       no_origin, FetchResponseType::kBasic, FetchResponseType::kBasic},
-      {same_origin_url, FetchRequestMode::kNoCors, From::kServiceWorker,
-       no_origin, FetchResponseType::kCors, FetchResponseType::kCors},
-      {same_origin_url, FetchRequestMode::kNoCors, From::kServiceWorker,
-       no_origin, FetchResponseType::kDefault, FetchResponseType::kDefault},
+      {same_origin_url, RequestMode::kCors, From::kServiceWorker, no_origin,
+       FetchResponseType::kBasic, FetchResponseType::kBasic},
+      {same_origin_url, RequestMode::kNoCors, From::kServiceWorker, no_origin,
+       FetchResponseType::kCors, FetchResponseType::kCors},
+      {same_origin_url, RequestMode::kNoCors, From::kServiceWorker, no_origin,
+       FetchResponseType::kDefault, FetchResponseType::kDefault},
   };
 
   for (const auto& test : cases) {
@@ -171,18 +174,18 @@ TEST_F(ResourceLoaderTest, ResponseType) {
     auto* properties =
         MakeGarbageCollected<TestResourceFetcherProperties>(origin);
     FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-    auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
-        ResourceFetcherInit(*properties, context, CreateTaskRunner(),
-                            MakeGarbageCollected<NoopLoaderFactory>()));
+    auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+        properties->MakeDetachable(), context, CreateTaskRunner(),
+        MakeGarbageCollected<NoopLoaderFactory>()));
     ResourceRequest request;
-    request.SetURL(test.url);
-    request.SetFetchRequestMode(test.request_mode);
+    request.SetUrl(test.url);
+    request.SetMode(test.request_mode);
     request.SetRequestContext(mojom::RequestContextType::FETCH);
 
     FetchParameters fetch_parameters(request);
-    if (test.request_mode == network::mojom::FetchRequestMode::kCors) {
+    if (test.request_mode == network::mojom::RequestMode::kCors) {
       fetch_parameters.SetCrossOriginAccessControl(
-          origin.get(), network::mojom::FetchCredentialsMode::kOmit);
+          origin.get(), network::mojom::CredentialsMode::kOmit);
     }
     Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
     ResourceLoader* loader = resource->Loader();
@@ -192,7 +195,7 @@ TEST_F(ResourceLoaderTest, ResponseType) {
     response.SetType(test.original_response_type);
     response.SetWasFetchedViaServiceWorker(test.from == From::kServiceWorker);
     if (test.allowed_origin) {
-      response.SetHTTPHeaderField("access-control-allow-origin",
+      response.SetHttpHeaderField("access-control-allow-origin",
                                   test.allowed_origin->ToAtomicString());
     }
     response.SetType(test.original_response_type);
@@ -205,9 +208,9 @@ TEST_F(ResourceLoaderTest, ResponseType) {
 TEST_F(ResourceLoaderTest, LoadResponseBody) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
-      ResourceFetcherInit(*properties, context, CreateTaskRunner(),
-                          MakeGarbageCollected<NoopLoaderFactory>()));
+  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+      properties->MakeDetachable(), context, CreateTaskRunner(),
+      MakeGarbageCollected<NoopLoaderFactory>()));
 
   KURL url("https://www.example.com/");
   ResourceRequest request(url);
@@ -233,7 +236,7 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
 
   loader->DidReceiveResponse(WrappedResourceResponse(response));
   loader->DidStartLoadingResponseBody(std::move(consumer));
-  loader->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false, {});
+  loader->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
 
   uint32_t num_bytes = 2;
   result = producer->WriteData("he", &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
@@ -259,19 +262,19 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
 
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
-  String data;
+  StringBuilder data;
   for (const auto& span : *buffer) {
-    data.append(String(span.data(), span.size()));
+    data.Append(span.data(), span.size());
   }
-  EXPECT_EQ(data, "hello");
+  EXPECT_EQ(data.ToString(), "hello");
 }
 
 TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndNonStream) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
-      ResourceFetcherInit(*properties, context, CreateTaskRunner(),
-                          MakeGarbageCollected<NoopLoaderFactory>()));
+  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+      properties->MakeDetachable(), context, CreateTaskRunner(),
+      MakeGarbageCollected<NoopLoaderFactory>()));
 
   // Fetch a data url.
   KURL url("data:text/plain,Hello%20World!");
@@ -286,17 +289,17 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndNonStream) {
   // The resource has a parsed body.
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
-  String data;
+  StringBuilder data;
   for (const auto& span : *buffer) {
-    data.append(String(span.data(), span.size()));
+    data.Append(span.data(), span.size());
   }
-  EXPECT_EQ(data, "Hello World!");
+  EXPECT_EQ(data.ToString(), "Hello World!");
 }
 
 // Helper class which stores a BytesConsumer passed by RawResource and reads the
 // bytes when ReadThroughBytesConsumer is called.
 class TestRawResourceClient final
-    : public GarbageCollectedFinalized<TestRawResourceClient>,
+    : public GarbageCollected<TestRawResourceClient>,
       public RawResourceClient {
   USING_GARBAGE_COLLECTED_MIXIN(TestRawResourceClient);
 
@@ -324,9 +327,9 @@ class TestRawResourceClient final
 TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndStream) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
-      ResourceFetcherInit(*properties, context, CreateTaskRunner(),
-                          MakeGarbageCollected<NoopLoaderFactory>()));
+  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+      properties->MakeDetachable(), context, CreateTaskRunner(),
+      MakeGarbageCollected<NoopLoaderFactory>()));
   scheduler::FakeTaskRunner* task_runner =
       static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get());
 
@@ -363,9 +366,9 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndStream) {
 TEST_F(ResourceLoaderTest, LoadDataURL_AsyncEmptyData) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
-      ResourceFetcherInit(*properties, context, CreateTaskRunner(),
-                          MakeGarbageCollected<NoopLoaderFactory>()));
+  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+      properties->MakeDetachable(), context, CreateTaskRunner(),
+      MakeGarbageCollected<NoopLoaderFactory>()));
 
   // Fetch an empty data url.
   KURL url("data:text/html,");
@@ -386,9 +389,9 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncEmptyData) {
 TEST_F(ResourceLoaderTest, LoadDataURL_Sync) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
-      ResourceFetcherInit(*properties, context, CreateTaskRunner(),
-                          MakeGarbageCollected<NoopLoaderFactory>()));
+  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+      properties->MakeDetachable(), context, CreateTaskRunner(),
+      MakeGarbageCollected<NoopLoaderFactory>()));
 
   // Fetch a data url synchronously.
   KURL url("data:text/plain,Hello%20World!");
@@ -401,19 +404,19 @@ TEST_F(ResourceLoaderTest, LoadDataURL_Sync) {
   // The resource has a parsed body.
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
-  String data;
+  StringBuilder data;
   for (const auto& span : *buffer) {
-    data.append(String(span.data(), span.size()));
+    data.Append(span.data(), span.size());
   }
-  EXPECT_EQ(data, "Hello World!");
+  EXPECT_EQ(data.ToString(), "Hello World!");
 }
 
 TEST_F(ResourceLoaderTest, LoadDataURL_SyncEmptyData) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
-      ResourceFetcherInit(*properties, context, CreateTaskRunner(),
-                          MakeGarbageCollected<NoopLoaderFactory>()));
+  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+      properties->MakeDetachable(), context, CreateTaskRunner(),
+      MakeGarbageCollected<NoopLoaderFactory>()));
 
   // Fetch an empty data url synchronously.
   KURL url("data:text/html,");
@@ -432,9 +435,9 @@ TEST_F(ResourceLoaderTest, LoadDataURL_SyncEmptyData) {
 TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndNonStream) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
-      ResourceFetcherInit(*properties, context, CreateTaskRunner(),
-                          MakeGarbageCollected<NoopLoaderFactory>()));
+  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+      properties->MakeDetachable(), context, CreateTaskRunner(),
+      MakeGarbageCollected<NoopLoaderFactory>()));
   scheduler::FakeTaskRunner* task_runner =
       static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get());
 
@@ -468,19 +471,19 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndNonStream) {
   task_runner->RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
-  String data;
+  StringBuilder data;
   for (const auto& span : *buffer) {
-    data.append(String(span.data(), span.size()));
+    data.Append(span.data(), span.size());
   }
-  EXPECT_EQ(data, "Hello World!");
+  EXPECT_EQ(data.ToString(), "Hello World!");
 }
 
 TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndStream) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
-      ResourceFetcherInit(*properties, context, CreateTaskRunner(),
-                          MakeGarbageCollected<NoopLoaderFactory>()));
+  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+      properties->MakeDetachable(), context, CreateTaskRunner(),
+      MakeGarbageCollected<NoopLoaderFactory>()));
   scheduler::FakeTaskRunner* task_runner =
       static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get());
 
@@ -551,11 +554,11 @@ class ResourceLoaderIsolatedCodeCacheTest : public ResourceLoaderTest {
     auto* properties =
         MakeGarbageCollected<TestResourceFetcherProperties>(origin);
     FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-    auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
-        ResourceFetcherInit(*properties, context, CreateTaskRunner(),
-                            MakeGarbageCollected<NoopLoaderFactory>()));
+    auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+        properties->MakeDetachable(), context, CreateTaskRunner(),
+        MakeGarbageCollected<NoopLoaderFactory>()));
     ResourceRequest request;
-    request.SetURL(foo_url_);
+    request.SetUrl(foo_url_);
     request.SetRequestContext(mojom::RequestContextType::FETCH);
 
     FetchParameters fetch_parameters(request);
@@ -586,7 +589,7 @@ TEST_F(ResourceLoaderIsolatedCodeCacheTest,
   ResourceResponse response(foo_url_);
   response.SetHttpStatusCode(200);
   response.SetWasFetchedViaServiceWorker(true);
-  response.SetURLListViaServiceWorker(Vector<KURL>(1, foo_url_));
+  response.SetUrlListViaServiceWorker(Vector<KURL>(1, foo_url_));
   EXPECT_EQ(true, LoadAndCheckIsolatedCodeCache(response));
 }
 
@@ -595,7 +598,7 @@ TEST_F(ResourceLoaderIsolatedCodeCacheTest,
   ResourceResponse response(foo_url_);
   response.SetHttpStatusCode(200);
   response.SetWasFetchedViaServiceWorker(true);
-  response.SetURLListViaServiceWorker(Vector<KURL>(1, bar_url_));
+  response.SetUrlListViaServiceWorker(Vector<KURL>(1, bar_url_));
   EXPECT_EQ(false, LoadAndCheckIsolatedCodeCache(response));
 }
 

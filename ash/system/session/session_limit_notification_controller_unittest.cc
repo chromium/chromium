@@ -4,7 +4,7 @@
 
 #include "ash/system/session/session_limit_notification_controller.h"
 
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/message_center/message_center.h"

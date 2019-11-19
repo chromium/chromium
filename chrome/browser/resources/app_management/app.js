@@ -13,6 +13,7 @@ Polymer({
     /** @private */
     searchTerm_: {
       type: String,
+      observer: 'onSearchTermChanged_',
     },
 
     /**
@@ -32,6 +33,18 @@ Polymer({
     });
     this.watch('currentPage_', state => state.currentPage);
     this.updateFromStore();
+  },
+
+  /** @return {CrToolbarSearchFieldElement} */
+  get searchField() {
+    return /** @type {CrToolbarElement} */ (this.$$('cr-toolbar'))
+        .getSearchField();
+  },
+
+
+  /** @private */
+  onSearchTermChanged_: function() {
+    this.searchField.setValue(this.searchTerm_ || '');
   },
 
   /**

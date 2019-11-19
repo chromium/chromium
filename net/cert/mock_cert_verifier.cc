@@ -43,7 +43,7 @@ struct MockCertVerifier::Rule {
 class MockCertVerifier::MockRequest : public CertVerifier::Request {
  public:
   MockRequest(CertVerifyResult* result, CompletionOnceCallback callback)
-      : result_(result), callback_(std::move(callback)), weak_factory_(this) {}
+      : result_(result), callback_(std::move(callback)) {}
 
   void ReturnResultLater(int rv, const CertVerifyResult& result) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -59,7 +59,7 @@ class MockCertVerifier::MockRequest : public CertVerifier::Request {
 
   CertVerifyResult* result_;
   CompletionOnceCallback callback_;
-  base::WeakPtrFactory<MockRequest> weak_factory_;
+  base::WeakPtrFactory<MockRequest> weak_factory_{this};
 };
 
 MockCertVerifier::MockCertVerifier()
@@ -97,6 +97,10 @@ void MockCertVerifier::AddResultForCertAndHost(
     const CertVerifyResult& verify_result,
     int rv) {
   rules_.push_back(Rule(std::move(cert), host_pattern, verify_result, rv));
+}
+
+void MockCertVerifier::ClearRules() {
+  rules_.clear();
 }
 
 int MockCertVerifier::VerifyImpl(const RequestParams& params,

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<title>Test that player will behave correctly when scrubbing.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video controls width=400 src="../content/60_sec_video.webm"></video>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+  const timeline = timelineElement(video);
+  const thumb = timelineThumb(video);
+  const scrubbingMessage = scrubbingMessageElement(video);
+
+  let seeked = false;
+
+  video.addEventListener('playing', t.step_func(() => {
+    // Get the coordinates of the thumb and the timeline.
+    const c = elementCoordinates(thumb);
+    const c2 = elementCoordinates(timeline);
+    const leftButton = 0;
+
+    // Add an event listener for when we start playing again after seeking.
+    video.addEventListener('playing', t.step_func_done(() => {
+      assert_true(seeked);
+      checkControlsDoesNotHaveClass(video, 'state-scrubbing');
+
+      // Check the scrubbing message not shown.
+      assert_false(isControlVisible(scrubbingMessage));
+    }), { once: true });
+
+    // Simulate a mouse down on those coordinates.
+    chrome.gpuBenchmarking.pointerActionSequence([
+      {
+        source: 'mouse',
+        actions: [
+          { name: 'pointerMove', x: c[0], y: c[1] },
+          { name: 'pointerDown', x: c[0], y: c[1], button: leftButton },
+          { name: 'pointerMove', x: c2[0], y: c2[1]},
+          { name: 'pause', duration: 5000 },
+          { name: 'pointerUp', button: leftButton }
+        ]
+      }
+    ]);
+  }), { once: true });
+
+  video.addEventListener('seeking', t.step_func(() => {
+    checkControlsHasClass(video, 'state-scrubbing');
+
+    // Check the scrubbing message is not shown since we're scrubbing with the mouse.
+    assert_false(isControlVisible(scrubbingMessage));
+  }), { once: true });
+
+  video.addEventListener('seeked', t.step_func(() => {
+    seeked = true;
+  }), { once: true });
+
+  video.play();
+});
+</script>
+</html>

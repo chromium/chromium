@@ -9,13 +9,17 @@ import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Process;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifierAutoDetect;
 import org.chromium.net.RegistrationPolicyAlwaysRegister;
 
@@ -35,9 +39,10 @@ import java.util.List;
  * This class lives on the main thread.
  */
 @JNINamespace("content")
-class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoDetect.Observer {
-    private static final String TAG = "cr_BgSyncNetObserver";
-
+@VisibleForTesting
+public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoDetect.Observer {
+    private static final String TAG = "BgSyncNetObserver";
+    private static boolean sSetConnectionTypeForTesting;
     private NetworkChangeNotifierAutoDetect mNotifier;
 
     // The singleton instance.
@@ -47,12 +52,19 @@ class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoDetect.O
     // List of native observers. These are each called when the network state changes.
     private List<Long> mNativePtrs;
 
-    private int mLastBroadcastConnectionType;
+    private @ConnectionType int mLastBroadcastConnectionType;
     private boolean mHasBroadcastConnectionType;
+
+    @VisibleForTesting
+    public static void setConnectionTypeForTesting(@ConnectionType int connectionType) {
+        sSetConnectionTypeForTesting = true;
+        getBackgroundSyncNetworkObserver().broadcastNetworkChangeIfNecessary(connectionType);
+    }
 
     private BackgroundSyncNetworkObserver() {
         ThreadUtils.assertOnUiThread();
         mNativePtrs = new ArrayList<Long>();
+        sSetConnectionTypeForTesting = false;
     }
 
     private static boolean canCreateObserver() {
@@ -61,13 +73,18 @@ class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoDetect.O
                 == PackageManager.PERMISSION_GRANTED;
     }
 
-    @CalledByNative
-    private static BackgroundSyncNetworkObserver createObserver(long nativePtr) {
-        ThreadUtils.assertOnUiThread();
+    private static BackgroundSyncNetworkObserver getBackgroundSyncNetworkObserver() {
         if (sInstance == null) {
             sInstance = new BackgroundSyncNetworkObserver();
         }
-        sInstance.registerObserver(nativePtr);
+        return sInstance;
+    }
+
+    @CalledByNative
+    private static BackgroundSyncNetworkObserver createObserver(long nativePtr) {
+        ThreadUtils.assertOnUiThread();
+
+        getBackgroundSyncNetworkObserver().registerObserver(nativePtr);
         return sInstance;
     }
 
@@ -88,8 +105,9 @@ class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoDetect.O
         }
         mNativePtrs.add(nativePtr);
 
-        nativeNotifyConnectionTypeChanged(
-                nativePtr, mNotifier.getCurrentNetworkState().getConnectionType());
+        BackgroundSyncNetworkObserverJni.get().notifyConnectionTypeChanged(nativePtr,
+                BackgroundSyncNetworkObserver.this,
+                mNotifier.getCurrentNetworkState().getConnectionType());
     }
 
     @CalledByNative
@@ -103,20 +121,24 @@ class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoDetect.O
         }
     }
 
-    private void broadcastNetworkChangeIfNecessary(int newConnectionType) {
-        if (mHasBroadcastConnectionType && newConnectionType == mLastBroadcastConnectionType)
+    private void broadcastNetworkChangeIfNecessary(@ConnectionType int newConnectionType) {
+        if (mHasBroadcastConnectionType && newConnectionType == mLastBroadcastConnectionType) {
             return;
+        }
 
         mHasBroadcastConnectionType = true;
         mLastBroadcastConnectionType = newConnectionType;
         for (Long nativePtr : mNativePtrs) {
-            nativeNotifyConnectionTypeChanged(nativePtr, newConnectionType);
+            BackgroundSyncNetworkObserverJni.get().notifyConnectionTypeChanged(
+                    nativePtr, BackgroundSyncNetworkObserver.this, newConnectionType);
         }
     }
 
     @Override
-    public void onConnectionTypeChanged(int newConnectionType) {
+    public void onConnectionTypeChanged(@ConnectionType int newConnectionType) {
         ThreadUtils.assertOnUiThread();
+        if (sSetConnectionTypeForTesting) return;
+
         broadcastNetworkChangeIfNecessary(newConnectionType);
     }
 
@@ -124,8 +146,10 @@ class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoDetect.O
     public void onConnectionSubtypeChanged(int newConnectionSubtype) {}
 
     @Override
-    public void onNetworkConnect(long netId, int connectionType) {
+    public void onNetworkConnect(long netId, @ConnectionType int connectionType) {
         ThreadUtils.assertOnUiThread();
+        if (sSetConnectionTypeForTesting) return;
+
         // If we're in doze mode (N+ devices), onConnectionTypeChanged may not
         // be called, but this function should. So update the connection type
         // if necessary.
@@ -138,6 +162,8 @@ class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoDetect.O
     @Override
     public void onNetworkDisconnect(long netId) {
         ThreadUtils.assertOnUiThread();
+        if (sSetConnectionTypeForTesting) return;
+
         // If we're in doze mode (N+ devices), onConnectionTypeChanged may not
         // be called, but this function should. So update the connection type
         // if necessary.
@@ -147,6 +173,10 @@ class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoDetect.O
     @Override
     public void purgeActiveNetworkList(long[] activeNetIds) {}
 
-    @NativeClassQualifiedName("BackgroundSyncNetworkObserverAndroid::Observer")
-    private native void nativeNotifyConnectionTypeChanged(long nativePtr, int newConnectionType);
+    @NativeMethods
+    interface Natives {
+        @NativeClassQualifiedName("BackgroundSyncNetworkObserverAndroid::Observer")
+        void notifyConnectionTypeChanged(
+                long nativePtr, BackgroundSyncNetworkObserver caller, int newConnectionType);
+    }
 }

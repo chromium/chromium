@@ -187,14 +187,14 @@ void FileStream::Context::InvokeUserCallback() {
     async_in_progress_ = false;
   }
   scoped_refptr<IOBuffer> temp_buf = in_flight_buf_;
-  in_flight_buf_ = NULL;
+  in_flight_buf_ = nullptr;
   std::move(callback_).Run(result_);
 }
 
 void FileStream::Context::DeleteOrphanedContext() {
   async_in_progress_ = false;
   callback_.Reset();
-  in_flight_buf_ = NULL;
+  in_flight_buf_ = nullptr;
   CloseAndDelete();
 }
 

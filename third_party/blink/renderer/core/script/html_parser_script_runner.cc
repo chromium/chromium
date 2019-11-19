@@ -27,6 +27,7 @@
 
 #include <inttypes.h>
 #include <memory>
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document_parser_timing.h"
@@ -39,7 +40,7 @@
 #include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 
@@ -53,7 +54,7 @@ std::unique_ptr<TracedValue> GetTraceArgsForScriptElement(
     Document& document,
     const TextPosition& text_position,
     const KURL& url) {
-  std::unique_ptr<TracedValue> value = TracedValue::Create();
+  auto value = std::make_unique<TracedValue>();
   if (!url.IsNull())
     value->SetString("url", url.GetString());
   if (document.GetFrame()) {
@@ -159,6 +160,11 @@ void HTMLParserScriptRunner::Detach() {
   if (parser_blocking_script_)
     parser_blocking_script_->Dispose();
   parser_blocking_script_ = nullptr;
+
+  while (!force_deferred_scripts_.IsEmpty()) {
+    PendingScript* pending_script = force_deferred_scripts_.TakeFirst();
+    pending_script->Dispose();
+  }
 
   while (!scripts_to_execute_after_parsing_.IsEmpty()) {
     PendingScript* pending_script =
@@ -299,7 +305,14 @@ void HTMLParserScriptRunner::PendingScriptFinished(
     return;
   }
 
-  host_->NotifyScriptLoaded(pending_script);
+  // Posting the script execution part to a new task so that we can allow
+  // yielding for cooperative scheduling. Cooperative scheduling requires that
+  // the Blink C++ stack be thin when it executes JavaScript.
+  document_->GetTaskRunner(TaskType::kInternalContinueScriptLoading)
+      ->PostTask(FROM_HERE,
+                 WTF::Bind(&HTMLParserScriptRunnerHost::NotifyScriptLoaded,
+                           WrapPersistent(host_.Get()),
+                           WrapPersistent(pending_script)));
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#scriptEndTag">
@@ -412,38 +425,61 @@ void HTMLParserScriptRunner::ExecuteScriptsWaitingForResources() {
   ExecuteParsingBlockingScripts();
 }
 
+PendingScript* HTMLParserScriptRunner::TryTakeReadyScriptWaitingForParsing(
+    HeapDeque<Member<PendingScript>>* waiting_scripts) {
+  DCHECK(!waiting_scripts->IsEmpty());
+
+  // <spec step="3.1">Spin the event loop until the first script in the list
+  // of scripts that will execute when the document has finished parsing has
+  // its "ready to be parser-executed" flag set and the parser's Document has
+  // no style sheet that is blocking scripts.</spec>
+  //
+  // TODO(hiroshige): Add check for style sheet blocking defer scripts
+  // https://github.com/whatwg/html/issues/3890
+  if (!waiting_scripts->front()->IsReady()) {
+    waiting_scripts->front()->WatchForLoad(this);
+    TraceParserBlockingScript(waiting_scripts->front().Get(),
+                              !document_->IsScriptExecutionReady());
+    waiting_scripts->front()->MarkParserBlockingLoadStartTime();
+    return nullptr;
+  }
+  return waiting_scripts->TakeFirst();
+}
+
 // <specdef href="https://html.spec.whatwg.org/C/#stop-parsing">
 //
 // <spec step="3">If the list of scripts that will execute when the document has
 // finished parsing is not empty, run these substeps:</spec>
+//
+// This will also run any forced deferred scripts before running any developer
+// deferred scripts.
 bool HTMLParserScriptRunner::ExecuteScriptsWaitingForParsing() {
   TRACE_EVENT0("blink",
                "HTMLParserScriptRunner::executeScriptsWaitingForParsing");
 
-  while (!scripts_to_execute_after_parsing_.IsEmpty()) {
+  while (!force_deferred_scripts_.IsEmpty() ||
+         !scripts_to_execute_after_parsing_.IsEmpty()) {
     DCHECK(!IsExecutingScript());
     DCHECK(!HasParserBlockingScript());
-    DCHECK(scripts_to_execute_after_parsing_.front()->IsExternalOrModule());
-
-    // <spec step="3.1">Spin the event loop until the first script in the list
-    // of scripts that will execute when the document has finished parsing has
-    // its "ready to be parser-executed" flag set and the parser's Document has
-    // no style sheet that is blocking scripts.</spec>
-    //
-    // TODO(hiroshige): Is the latter part checked anywhere?
-    if (!scripts_to_execute_after_parsing_.front()->IsReady()) {
-      scripts_to_execute_after_parsing_.front()->WatchForLoad(this);
-      TraceParserBlockingScript(scripts_to_execute_after_parsing_.front().Get(),
-                                !document_->IsScriptExecutionReady());
-      scripts_to_execute_after_parsing_.front()
-          ->MarkParserBlockingLoadStartTime();
-      return false;
-    }
+    DCHECK(scripts_to_execute_after_parsing_.IsEmpty() ||
+           scripts_to_execute_after_parsing_.front()->IsExternalOrModule());
 
     // <spec step="3.3">Remove the first script element from the list of scripts
     // that will execute when the document has finished parsing (i.e. shift out
     // the first entry in the list).</spec>
-    PendingScript* first = scripts_to_execute_after_parsing_.TakeFirst();
+    PendingScript* first = nullptr;
+
+    // First execute the scripts that were forced-deferred. If no such scripts
+    // are present, then try executing scripts that were deferred by the web
+    // developer.
+    if (!force_deferred_scripts_.IsEmpty()) {
+      first = TryTakeReadyScriptWaitingForParsing(&force_deferred_scripts_);
+    } else {
+      first = TryTakeReadyScriptWaitingForParsing(
+          &scripts_to_execute_after_parsing_);
+    }
+    if (!first)
+      return false;
 
     // <spec step="3.2">Execute the first script in the list of scripts that
     // will execute when the document has finished parsing.</spec>
@@ -456,6 +492,15 @@ bool HTMLParserScriptRunner::ExecuteScriptsWaitingForParsing() {
     // <spec step="3.4">If the list of scripts that will execute when the
     // document has finished parsing is still not empty, repeat these substeps
     // again from substep 1.</spec>
+  }
+
+  // All scripts waiting for parsing have now executed (end of spec step 3),
+  // including any force deferred syncrhonous scripts. Now resume async
+  // script execution if it was suspended by force deferral.
+  if (suspended_async_script_execution_) {
+    DCHECK(force_deferred_scripts_.IsEmpty());
+    document_->GetScriptRunner()->SetForceDeferredExecution(false);
+    suspended_async_script_execution_ = false;
   }
   return true;
 }
@@ -494,6 +539,7 @@ void HTMLParserScriptRunner::RequestDeferredScript(
     pending_script->StartStreamingIfPossible();
   }
 
+  DCHECK(!script_loader->IsForceDeferred());
   DCHECK(pending_script->IsExternalOrModule());
 
   // <spec href="https://html.spec.whatwg.org/C/#prepare-a-script"
@@ -501,6 +547,29 @@ void HTMLParserScriptRunner::RequestDeferredScript(
   // execute when the document has finished parsing associated with the Document
   // of the parser that created the element. ...</spec>
   scripts_to_execute_after_parsing_.push_back(pending_script);
+}
+
+void HTMLParserScriptRunner::RequestForceDeferredScript(
+    ScriptLoader* script_loader) {
+  PendingScript* pending_script =
+      script_loader->TakePendingScript(ScriptSchedulingType::kForceDefer);
+  if (!pending_script)
+    return;
+
+  if (!pending_script->IsReady()) {
+    pending_script->StartStreamingIfPossible();
+  }
+
+  DCHECK(script_loader->IsForceDeferred());
+
+  // Add the element to the end of the list of forced deferred scripts that will
+  // execute when the document has finished parsing associated with the Document
+  // of the parser that created the element.
+  force_deferred_scripts_.push_back(pending_script);
+  if (!suspended_async_script_execution_) {
+    document_->GetScriptRunner()->SetForceDeferredExecution(true);
+    suspended_async_script_execution_ = true;
+  }
 }
 
 // The initial steps for 'An end tag whose tag name is "script"'
@@ -544,7 +613,11 @@ void HTMLParserScriptRunner::ProcessScriptElementInternal(
       return;
 
     if (script_loader->WillExecuteWhenDocumentFinishedParsing()) {
+      // Developer deferred.
       RequestDeferredScript(script_loader);
+    } else if (script_loader->IsForceDeferred()) {
+      // Force defer this otherwise parser-blocking script.
+      RequestForceDeferredScript(script_loader);
     } else if (script_loader->ReadyToBeParserExecuted()) {
       // <spec label="prepare-a-script" step="26.E">... it's an HTML parser
       // whose script nesting level is not greater than one, ...</spec>
@@ -589,10 +662,48 @@ void HTMLParserScriptRunner::ProcessScriptElementInternal(
   }
 }
 
-void HTMLParserScriptRunner::Trace(blink::Visitor* visitor) {
+void HTMLParserScriptRunner::RecordMetricsAtParseEnd() const {
+  // This method is called just before starting execution of force defer
+  // scripts in order to capture the all force deferred scripts in
+  // |force_deferred_scripts_| before any are popped for execution.
+
+  if (!document_->GetFrame())
+    return;
+
+  if (!force_deferred_scripts_.IsEmpty()) {
+    uint32_t force_deferred_external_script_count = 0;
+    for (const auto& pending_script : force_deferred_scripts_) {
+      if (pending_script->IsExternal())
+        force_deferred_external_script_count++;
+    }
+    if (document_->IsInMainFrame()) {
+      UMA_HISTOGRAM_COUNTS_100("Blink.Script.ForceDeferredScripts.Mainframe",
+                               force_deferred_scripts_.size());
+      UMA_HISTOGRAM_COUNTS_100(
+          "Blink.Script.ForceDeferredScripts.Mainframe.External",
+          force_deferred_external_script_count);
+      if (document_->UkmRecorder()) {
+        ukm::builders::PreviewsDeferAllScript(document_->UkmSourceID())
+            .Setforce_deferred_scripts_mainframe(force_deferred_scripts_.size())
+            .Setforce_deferred_scripts_mainframe_external(
+                force_deferred_external_script_count)
+            .Record(document_->UkmRecorder());
+      }
+    } else {
+      UMA_HISTOGRAM_COUNTS_100("Blink.Script.ForceDeferredScripts.Subframe",
+                               force_deferred_scripts_.size());
+      UMA_HISTOGRAM_COUNTS_100(
+          "Blink.Script.ForceDeferredScripts.Subframe.External",
+          force_deferred_external_script_count);
+    }
+  }
+}
+
+void HTMLParserScriptRunner::Trace(Visitor* visitor) {
   visitor->Trace(document_);
   visitor->Trace(host_);
   visitor->Trace(parser_blocking_script_);
+  visitor->Trace(force_deferred_scripts_);
   visitor->Trace(scripts_to_execute_after_parsing_);
   PendingScriptClient::Trace(visitor);
 }

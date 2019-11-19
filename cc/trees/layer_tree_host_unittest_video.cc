@@ -48,7 +48,7 @@ class LayerTreeHostVideoTestSetNeedsDisplay
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
                                    LayerTreeHostImpl::FrameData* frame,
                                    DrawResult draw_result) override {
-    LayerImpl* root_layer = host_impl->active_tree()->root_layer_for_testing();
+    LayerImpl* root_layer = host_impl->active_tree()->root_layer();
     RenderSurfaceImpl* root_surface = GetRenderSurface(root_layer);
     gfx::Rect damage_rect;
     EXPECT_TRUE(

@@ -51,9 +51,9 @@ NaClBrokerHost::~NaClBrokerHost() {
 
 bool NaClBrokerHost::Init() {
   DCHECK(!process_);
-  process_.reset(content::BrowserChildProcessHost::Create(
+  process_ = content::BrowserChildProcessHost::Create(
       static_cast<content::ProcessType>(PROCESS_TYPE_NACL_BROKER), this,
-      kNaClBrokerServiceName));
+      content::ChildProcessHost::IpcMode::kLegacy);
 
   process_->GetHost()->CreateChannelMojo();
 
@@ -89,9 +89,9 @@ bool NaClBrokerHost::OnMessageReceived(const IPC::Message& msg) {
 
 bool NaClBrokerHost::LaunchLoader(
     int launch_id,
-    service_manager::mojom::ServiceRequest service_request) {
+    mojo::ScopedMessagePipeHandle ipc_channel_handle) {
   return process_->Send(new NaClProcessMsg_LaunchLoaderThroughBroker(
-      launch_id, service_request.PassMessagePipe().release()));
+      launch_id, ipc_channel_handle.release()));
 }
 
 void NaClBrokerHost::OnLoaderLaunched(int launch_id,

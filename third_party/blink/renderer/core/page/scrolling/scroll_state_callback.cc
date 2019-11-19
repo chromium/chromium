@@ -17,21 +17,21 @@ void ScrollStateCallbackV8Impl::Invoke(ScrollState* scroll_state) {
   callback_->InvokeAndReportException(nullptr, scroll_state);
 }
 
-WebNativeScrollBehavior ScrollStateCallbackV8Impl::ParseNativeScrollBehavior(
+NativeScrollBehavior ScrollStateCallbackV8Impl::ParseNativeScrollBehavior(
     const String& native_scroll_behavior) {
   static const char kDisable[] = "disable-native-scroll";
   static const char kBefore[] = "perform-before-native-scroll";
   static const char kAfter[] = "perform-after-native-scroll";
 
   if (native_scroll_behavior == kDisable)
-    return WebNativeScrollBehavior::kDisableNativeScroll;
+    return NativeScrollBehavior::kDisableNativeScroll;
   if (native_scroll_behavior == kBefore)
-    return WebNativeScrollBehavior::kPerformBeforeNativeScroll;
+    return NativeScrollBehavior::kPerformBeforeNativeScroll;
   if (native_scroll_behavior == kAfter)
-    return WebNativeScrollBehavior::kPerformAfterNativeScroll;
+    return NativeScrollBehavior::kPerformAfterNativeScroll;
 
   NOTREACHED();
-  return WebNativeScrollBehavior::kDisableNativeScroll;
+  return NativeScrollBehavior::kDisableNativeScroll;
 }
 
 }  // namespace blink

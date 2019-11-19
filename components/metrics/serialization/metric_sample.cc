@@ -99,8 +99,7 @@ int MetricSample::bucket_count() const {
 // static
 std::unique_ptr<MetricSample> MetricSample::CrashSample(
     const std::string& crash_name) {
-  return std::unique_ptr<MetricSample>(
-      new MetricSample(CRASH, crash_name, 0, 0, 0, 0));
+  return std::make_unique<MetricSample>(CRASH, crash_name, 0, 0, 0, 0);
 }
 
 // static
@@ -110,8 +109,8 @@ std::unique_ptr<MetricSample> MetricSample::HistogramSample(
     int min,
     int max,
     int bucket_count) {
-  return std::unique_ptr<MetricSample>(new MetricSample(
-      HISTOGRAM, histogram_name, sample, min, max, bucket_count));
+  return std::make_unique<MetricSample>(HISTOGRAM, histogram_name, sample, min,
+                                        max, bucket_count);
 }
 
 // static
@@ -121,13 +120,13 @@ std::unique_ptr<MetricSample> MetricSample::ParseHistogram(
       serialized_histogram, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (parts.size() != 5)
-    return std::unique_ptr<MetricSample>();
+    return nullptr;
   int sample, min, max, bucket_count;
   if (parts[0].empty() || !base::StringToInt(parts[1], &sample) ||
       !base::StringToInt(parts[2], &min) ||
       !base::StringToInt(parts[3], &max) ||
       !base::StringToInt(parts[4], &bucket_count)) {
-    return std::unique_ptr<MetricSample>();
+    return nullptr;
   }
 
   return HistogramSample(parts[0].as_string(), sample, min, max, bucket_count);
@@ -137,8 +136,8 @@ std::unique_ptr<MetricSample> MetricSample::ParseHistogram(
 std::unique_ptr<MetricSample> MetricSample::SparseHistogramSample(
     const std::string& histogram_name,
     int sample) {
-  return std::unique_ptr<MetricSample>(
-      new MetricSample(SPARSE_HISTOGRAM, histogram_name, sample, 0, 0, 0));
+  return std::make_unique<MetricSample>(SPARSE_HISTOGRAM, histogram_name,
+                                        sample, 0, 0, 0);
 }
 
 // static
@@ -147,10 +146,10 @@ std::unique_ptr<MetricSample> MetricSample::ParseSparseHistogram(
   std::vector<base::StringPiece> parts = base::SplitStringPiece(
       serialized_histogram, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() != 2)
-    return std::unique_ptr<MetricSample>();
+    return nullptr;
   int sample;
   if (parts[0].empty() || !base::StringToInt(parts[1], &sample))
-    return std::unique_ptr<MetricSample>();
+    return nullptr;
 
   return SparseHistogramSample(parts[0].as_string(), sample);
 }
@@ -160,8 +159,8 @@ std::unique_ptr<MetricSample> MetricSample::LinearHistogramSample(
     const std::string& histogram_name,
     int sample,
     int max) {
-  return std::unique_ptr<MetricSample>(
-      new MetricSample(LINEAR_HISTOGRAM, histogram_name, sample, 0, max, 0));
+  return std::make_unique<MetricSample>(LINEAR_HISTOGRAM, histogram_name,
+                                        sample, 0, max, 0);
 }
 
 // static
@@ -171,10 +170,10 @@ std::unique_ptr<MetricSample> MetricSample::ParseLinearHistogram(
       serialized_histogram, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   int sample, max;
   if (parts.size() != 3)
-    return std::unique_ptr<MetricSample>();
+    return nullptr;
   if (parts[0].empty() || !base::StringToInt(parts[1], &sample) ||
       !base::StringToInt(parts[2], &max)) {
-    return std::unique_ptr<MetricSample>();
+    return nullptr;
   }
 
   return LinearHistogramSample(parts[0].as_string(), sample, max);
@@ -183,8 +182,7 @@ std::unique_ptr<MetricSample> MetricSample::ParseLinearHistogram(
 // static
 std::unique_ptr<MetricSample> MetricSample::UserActionSample(
     const std::string& action_name) {
-  return std::unique_ptr<MetricSample>(
-      new MetricSample(USER_ACTION, action_name, 0, 0, 0, 0));
+  return std::make_unique<MetricSample>(USER_ACTION, action_name, 0, 0, 0, 0);
 }
 
 bool MetricSample::IsEqual(const MetricSample& metric) {

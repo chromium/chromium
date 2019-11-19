@@ -16,8 +16,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/utility/importer/importer.h"
@@ -106,8 +108,14 @@ class FirefoxImporter : public Importer {
   void LoadFavicons(const std::vector<ImportedBookmarkEntry>& bookmarks,
                     favicon_base::FaviconUsageDataList* favicons);
 
+  // Copies |source_path_|/|base_file_name| to a temporary directory and returns
+  // the copy's path. Using the copy is safer, ensures we don't modify Firefox's
+  // profile. |base_file_name| must be ASCII. Returns empty path on I/O failure.
+  base::FilePath GetCopiedSourcePath(base::StringPiece base_file_name);
+
   base::FilePath source_path_;
   base::FilePath app_path_;
+  base::ScopedTempDir source_path_copy_;
 
 #if defined(OS_POSIX)
   // Stored because we can only access it from the UI thread.

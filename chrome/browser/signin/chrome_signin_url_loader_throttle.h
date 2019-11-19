@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_SIGNIN_CHROME_SIGNIN_URL_LOADER_THROTTLE_H_
 
 #include "base/macros.h"
-#include "content/public/browser/resource_request_info.h"
-#include "content/public/common/url_loader_throttle.h"
+#include "base/supports_user_data.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/resource_type.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace content {
 class NavigationUIData;
@@ -19,39 +21,39 @@ class HeaderModificationDelegate;
 
 // This class is used to modify the main frame request made when loading the
 // GAIA signin realm.
-class URLLoaderThrottle : public content::URLLoaderThrottle {
+class URLLoaderThrottle : public blink::URLLoaderThrottle,
+                          public base::SupportsUserData {
  public:
   // Creates a new throttle if |delegate| says that this request should be
   // intercepted.
   static std::unique_ptr<URLLoaderThrottle> MaybeCreate(
       std::unique_ptr<HeaderModificationDelegate> delegate,
       content::NavigationUIData* navigation_ui_data,
-      content::ResourceRequestInfo::WebContentsGetter web_contents_getter);
+      content::WebContents::Getter web_contents_getter);
 
   ~URLLoaderThrottle() override;
 
-  // content::URLLoaderThrottle
+  // blink::URLLoaderThrottle
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
   void WillRedirectRequest(net::RedirectInfo* redirect_info,
-                           const network::ResourceResponseHead& response_head,
+                           const network::mojom::URLResponseHead& response_head,
                            bool* defer,
                            std::vector<std::string>* headers_to_remove,
                            net::HttpRequestHeaders* modified_headers) override;
   void WillProcessResponse(const GURL& response_url,
-                           network::ResourceResponseHead* response_head,
+                           network::mojom::URLResponseHead* response_head,
                            bool* defer) override;
 
  private:
   class ThrottleRequestAdapter;
   class ThrottleResponseAdapter;
 
-  URLLoaderThrottle(
-      std::unique_ptr<HeaderModificationDelegate> delegate,
-      content::ResourceRequestInfo::WebContentsGetter web_contents_getter);
+  URLLoaderThrottle(std::unique_ptr<HeaderModificationDelegate> delegate,
+                    content::WebContents::Getter web_contents_getter);
 
   const std::unique_ptr<HeaderModificationDelegate> delegate_;
-  const content::ResourceRequestInfo::WebContentsGetter web_contents_getter_;
+  const content::WebContents::Getter web_contents_getter_;
 
   // Information about the current request.
   GURL request_url_;

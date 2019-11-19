@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-ul-element
-[HTMLConstructor]
-interface HTMLUListElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLUListElement : HTMLElement {
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLUListElement-partial
     [CEReactions, Reflect] attribute boolean compact;

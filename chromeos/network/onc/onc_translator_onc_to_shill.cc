@@ -27,6 +27,7 @@
 #include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/shill_property_util.h"
 #include "components/onc/onc_constants.h"
+#include "net/base/ip_address.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -94,6 +95,7 @@ class LocalTranslator {
   void TranslateVPN();
   void TranslateWiFi();
   void TranslateEAP();
+  void TranslateStaticIPConfig();
   void TranslateNetworkConfiguration();
 
   // Copies all entries from |onc_object_| to |shill_dictionary_| for which a
@@ -144,6 +146,8 @@ void LocalTranslator::TranslateFields() {
     TranslateWiFi();
   else if (onc_signature_ == &kEAPSignature)
     TranslateEAP();
+  else if (onc_signature_ == &kStaticIPConfigSignature)
+    TranslateStaticIPConfig();
   else
     CopyFieldsAccordingToSignature();
 }
@@ -295,7 +299,6 @@ void LocalTranslator::TranslateWiFi() {
 }
 
 void LocalTranslator::TranslateEAP() {
-  // Note: EAP.Outer may be empty for WiMAX configurations.
   std::string outer;
   onc_object_->GetStringWithoutPathExpansion(::onc::eap::kOuter, &outer);
   if (!outer.empty())
@@ -332,10 +335,35 @@ void LocalTranslator::TranslateEAP() {
   CopyFieldsAccordingToSignature();
 }
 
+void LocalTranslator::TranslateStaticIPConfig() {
+  CopyFieldsAccordingToSignature();
+  // Shill expects 4 valid nameserver values. Ensure all values are valid and
+  // replace any invalid values with 0.0.0.0 (which has no effect). See
+  // https://crbug.com/922219 for details.
+  base::Value* name_servers =
+      shill_dictionary_->FindKey(shill::kNameServersProperty);
+  if (name_servers) {
+    static const char kDefaultIpAddr[] = "0.0.0.0";
+    net::IPAddress ip_addr;
+    for (base::Value& value_ref : name_servers->GetList()) {
+      // AssignFromIPLiteral returns true if a string is valid ipv4 or ipv6.
+      if (!ip_addr.AssignFromIPLiteral(value_ref.GetString()))
+        value_ref = base::Value(kDefaultIpAddr);
+    }
+    while (name_servers->GetList().size() < 4)
+      name_servers->Append(base::Value(kDefaultIpAddr));
+  }
+}
+
 void LocalTranslator::TranslateNetworkConfiguration() {
   std::string type;
   onc_object_->GetStringWithoutPathExpansion(::onc::network_config::kType,
                                              &type);
+
+  if (type == ::onc::network_type::kWimaxDeprecated) {
+    NET_LOG(ERROR) << "WiMAX ONC configuration is no longer supported.";
+    return;
+  }
 
   // Note; The Ethernet type might be overridden to EthernetEap in
   // TranslateEthernet if Ethernet specific properties are provided.
@@ -471,7 +499,10 @@ void TranslateONCHierarchy(const OncValueSignature& signature,
 
     const OncFieldSignature* field_signature =
         GetFieldSignature(signature, it.key());
-
+    if (!field_signature) {
+      NET_LOG(ERROR) << "Unexpected or deprecated ONC key: " << it.key();
+      continue;
+    }
     TranslateONCHierarchy(*field_signature->value_signature, *inner_object,
                           shill_dictionary);
   }

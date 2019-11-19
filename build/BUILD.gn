@@ -2,8 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//build/config/chrome_build.gni")
+
 source_set("buildflag_header_h") {
   sources = [
     "buildflag.h",
   ]
+}
+
+buildflag_header("branding_buildflags") {
+  header = "branding_buildflags.h"
+
+  if (is_chrome_branded) {
+    flags = [
+      "CHROMIUM_BRANDING=0",
+      "GOOGLE_CHROME_BRANDING=1",
+    ]
+  } else {
+    flags = [
+      "CHROMIUM_BRANDING=1",
+      "GOOGLE_CHROME_BRANDING=0",
+    ]
+  }
 }

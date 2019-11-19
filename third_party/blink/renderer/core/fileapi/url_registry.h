@@ -31,7 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_URL_REGISTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_URL_REGISTRY_H_
 
-#include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -45,7 +46,8 @@ class CORE_EXPORT URLRegistrable {
  public:
   virtual ~URLRegistrable() = default;
   virtual URLRegistry& Registry() const = 0;
-  virtual mojom::blink::BlobPtr AsMojoBlob() { return nullptr; }
+  virtual bool IsMojoBlob() { return false; }
+  virtual void CloneMojoBlob(mojo::PendingReceiver<mojom::blink::Blob>) {}
 };
 
 class CORE_EXPORT URLRegistry {

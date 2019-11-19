@@ -1,0 +1,8 @@
+document
+++separator Name='<newline>'
+++description Name='Text line 1'
+++group
+++++description Name='Text line 2'
+++++separator Name='<newline>'
+++++description Name='Text line 3'
+++separator Name='<newline>'

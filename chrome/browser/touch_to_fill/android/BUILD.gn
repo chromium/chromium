@@ -1,0 +1,86 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//chrome/android/features/android_library_factory_tmpl.gni")
+
+source_set("android") {
+  visibility = [ "//chrome/browser/touch_to_fill:factory" ]
+
+  sources = [
+    "touch_to_fill_view_impl.cc",
+    "touch_to_fill_view_impl.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//ui/gfx",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "internal/java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillBridge.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/data/Credential.java",
+  ]
+}
+
+android_library("public_java") {
+  deps = [
+    # TODO(crbug.com/1004415): Remove dependency on chrome_java and depend on
+    # bottomsheet directly. Add public_java to chrome_java target instead.
+    "//chrome/android:chrome_java",
+    "//chrome/android:chrome_public_java",
+    "//ui/android:ui_java",
+  ]
+
+  java_files = [
+    "java/src/org/chromium/chrome/browser/touch_to_fill/data/Credential.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillComponent.java",
+  ]
+}
+
+junit_binary("touch_to_fill_junit_tests") {
+  testonly = true
+
+  java_files = [ "junit/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillControllerTest.java" ]
+
+  deps = [
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_test_util_java",
+    "//chrome/browser/touch_to_fill/android/internal:java",
+    "//components/module_installer/android:module_installer_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
+android_library("test_java") {
+  testonly = true
+
+  java_files = [
+    "javatests/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillIntegrationTest.java",
+    "javatests/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillViewTest.java",
+  ]
+
+  deps = [
+    ":public_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/android:chrome_test_java",
+    "//chrome/android:chrome_test_util_java",
+    "//chrome/browser/touch_to_fill/android/internal:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:com_android_support_recyclerview_v7_java",
+    "//third_party/espresso:espresso_all_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_utils_java",
+  ]
+}

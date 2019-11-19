@@ -17,12 +17,11 @@ class LocaleTemplateUrlLoader {
  public:
   LocaleTemplateUrlLoader(const std::string& locale,
                           TemplateURLService* service);
-  void Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj);
-  jboolean LoadTemplateUrls(JNIEnv* env, const JavaParamRef<jobject>& obj);
-  void RemoveTemplateUrls(JNIEnv* env, const JavaParamRef<jobject>& obj);
-  void OverrideDefaultSearchProvider(JNIEnv* env,
-                                     const JavaParamRef<jobject>& obj);
-  void SetGoogleAsDefaultSearch(JNIEnv* env, const JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
+  jboolean LoadTemplateUrls(JNIEnv* env);
+  void RemoveTemplateUrls(JNIEnv* env);
+  void OverrideDefaultSearchProvider(JNIEnv* env);
+  void SetGoogleAsDefaultSearch(JNIEnv* env);
 
   virtual ~LocaleTemplateUrlLoader();
 

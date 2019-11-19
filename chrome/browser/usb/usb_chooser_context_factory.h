@@ -23,7 +23,7 @@ class UsbChooserContextFactory : public BrowserContextKeyedServiceFactory {
   UsbChooserContextFactory();
   ~UsbChooserContextFactory() override;
 
-  // BrowserContextKeyedBaseFactory methods:
+  // BrowserContextKeyedServiceFactory methods:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(

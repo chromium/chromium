@@ -18,20 +18,20 @@ namespace metrics {
 class CallStackProfileMetricsProviderTest : public testing::Test {
  public:
   CallStackProfileMetricsProviderTest() {
-    scoped_feature_list_.InitAndEnableFeature(TestState::kEnableReporting);
     TestState::ResetStaticStateForTesting();
+    scoped_feature_list_.InitAndEnableFeature(
+        TestState::kSamplingProfilerReporting);
   }
 
-  ~CallStackProfileMetricsProviderTest() override {}
-
- private:
+ protected:
   // Exposes the feature from the CallStackProfileMetricsProvider.
   class TestState : public CallStackProfileMetricsProvider {
    public:
-    using CallStackProfileMetricsProvider::kEnableReporting;
+    using CallStackProfileMetricsProvider::kSamplingProfilerReporting;
     using CallStackProfileMetricsProvider::ResetStaticStateForTesting;
   };
 
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(CallStackProfileMetricsProviderTest);
@@ -202,6 +202,71 @@ TEST_F(CallStackProfileMetricsProviderTest,
   provider.OnRecordingEnabled();
   CallStackProfileMetricsProvider::ReceiveProfile(profile_start_time,
                                                   SampledProfile());
+  ChromeUserMetricsExtension uma_proto;
+  provider.ProvideCurrentSessionData(&uma_proto);
+  EXPECT_EQ(0, uma_proto.sampled_profile_size());
+}
+
+// Checks that a heap profile is not reported when Finch experiment is not
+// enabled.
+TEST_F(CallStackProfileMetricsProviderTest,
+       HeapProfileNotProvidedWithoutFinch) {
+  CallStackProfileMetricsProvider provider;
+  base::TimeTicks profile_start_time = base::TimeTicks::Now();
+  SampledProfile profile;
+  profile.set_trigger_event(SampledProfile::PERIODIC_HEAP_COLLECTION);
+  CallStackProfileMetricsProvider::ReceiveProfile(profile_start_time, profile);
+  ChromeUserMetricsExtension uma_proto;
+  provider.ProvideCurrentSessionData(&uma_proto);
+  EXPECT_EQ(0, uma_proto.sampled_profile_size());
+}
+
+// Checks that a heap profile is not reported when recording is disabled.
+TEST_F(CallStackProfileMetricsProviderTest,
+       HeapProfileNotProvidedWhenDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      CallStackProfileMetricsProvider::kHeapProfilerReporting);
+  CallStackProfileMetricsProvider provider;
+  provider.OnRecordingDisabled();
+  base::TimeTicks profile_start_time = base::TimeTicks::Now();
+  SampledProfile profile;
+  profile.set_trigger_event(SampledProfile::PERIODIC_HEAP_COLLECTION);
+  CallStackProfileMetricsProvider::ReceiveProfile(profile_start_time, profile);
+  ChromeUserMetricsExtension uma_proto;
+  provider.ProvideCurrentSessionData(&uma_proto);
+  EXPECT_EQ(0, uma_proto.sampled_profile_size());
+}
+
+// Checks that a heap profile is provided to ProvideCurrentSessionData
+// if recording is enabled.
+TEST_F(CallStackProfileMetricsProviderTest, HeapProfileProvidedWhenEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      CallStackProfileMetricsProvider::kHeapProfilerReporting);
+  CallStackProfileMetricsProvider provider;
+  provider.OnRecordingEnabled();
+  base::TimeTicks profile_start_time = base::TimeTicks::Now();
+  SampledProfile profile;
+  profile.set_trigger_event(SampledProfile::PERIODIC_HEAP_COLLECTION);
+  CallStackProfileMetricsProvider::ReceiveProfile(profile_start_time, profile);
+  ChromeUserMetricsExtension uma_proto;
+  provider.ProvideCurrentSessionData(&uma_proto);
+  EXPECT_EQ(1, uma_proto.sampled_profile_size());
+}
+
+// Checks that a CPU profile is not reported when the heap profiler Finch
+// experiment is enabled, but sampling CPU Finch is disabled.
+TEST_F(CallStackProfileMetricsProviderTest, CpuProfileNotProvidedWithoutFinch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {CallStackProfileMetricsProvider::kHeapProfilerReporting},
+      {TestState::kSamplingProfilerReporting});
+  CallStackProfileMetricsProvider provider;
+  base::TimeTicks profile_start_time = base::TimeTicks::Now();
+  SampledProfile profile;
+  profile.set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
+  CallStackProfileMetricsProvider::ReceiveProfile(profile_start_time, profile);
   ChromeUserMetricsExtension uma_proto;
   provider.ProvideCurrentSessionData(&uma_proto);
   EXPECT_EQ(0, uma_proto.sampled_profile_size());

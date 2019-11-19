@@ -73,7 +73,7 @@
 #define HAVE_FSTATVFS 1
 
 /* Define to 1 if you have the `FT_Done_MM_Var' function. */
-/* #undef HAVE_FT_DONE_MM_VAR */
+#define HAVE_FT_DONE_MM_VAR 1
 
 /* Define to 1 if you have the `FT_Get_BDF_Property' function. */
 #define HAVE_FT_GET_BDF_PROPERTY 1
@@ -270,7 +270,7 @@
 #define PACKAGE_NAME "fontconfig"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "fontconfig 2.13.1"
+#define PACKAGE_STRING "fontconfig 2.13.91"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "fontconfig"
@@ -279,7 +279,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2.13.1"
+#define PACKAGE_VERSION "2.13.91"
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
@@ -332,7 +332,7 @@
 
 
 /* Version number of package */
-#define VERSION "2.13.1"
+#define VERSION "2.13.91"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

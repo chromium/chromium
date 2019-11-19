@@ -153,9 +153,9 @@
 
     return pc.createOffer()
     .then(offer =>
-      promise_rejects(t, 'InvalidStateError',
+      promise_rejects(t, 'InvalidModificationError',
         pc.setLocalDescription({ type: 'answer', sdp: offer.sdp })));
-  }, 'Calling setLocalDescription(answer) from stable state should reject with InvalidStateError');
+  }, 'Calling setLocalDescription(answer) from stable state should reject with InvalidModificationError');
 
   promise_test(t => {
     const pc = new RTCPeerConnection();
@@ -167,8 +167,23 @@
       pc.setLocalDescription(offer)
       .then(() => generateAnswer(offer)))
     .then(answer =>
-      promise_rejects(t, 'InvalidStateError',
+      promise_rejects(t, 'InvalidModificationError',
         pc.setLocalDescription(answer)));
-  }, 'Calling setLocalDescription(answer) from have-local-offer state should reject with InvalidStateError');
+  }, 'Calling setLocalDescription(answer) from have-local-offer state should reject with InvalidModificationError');
+
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
+
+    const offer = await pc1.createOffer({offerToReceiveAudio: true});
+    await pc2.setRemoteDescription(offer);
+    const answer = await pc2.createAnswer(); // [[LastAnswer]] slot set
+    await pc2.setRemoteDescription({type: "rollback"});
+    await pc2.createOffer({offerToReceiveVideo: true}); // [[LastOffer]] slot set
+    await pc2.setRemoteDescription(offer);
+    await pc2.setLocalDescription(answer); // Should check against [[LastAnswer]], not [[LastOffer]]
+  }, "Setting previously generated answer after a call to createOffer should work");
 
 </script>

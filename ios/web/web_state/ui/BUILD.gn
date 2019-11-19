@@ -2,48 +2,45 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//ios/build/config.gni")
-import("//ios/features.gni")
-
-buildflag_header("block_universal_links_buildflags") {
-  header = "block_universal_links_buildflags.h"
-  flags = [ "BLOCK_UNIVERSAL_LINKS_IN_OFF_THE_RECORD_MODE=$block_universal_links_in_off_the_record_mode" ]
-}
 
 source_set("ui") {
   deps = [
-    ":block_universal_links_buildflags",
     ":crw_context_menu_controller",
     ":crw_web_view_navigation_proxy",
-    ":crw_wk_script_message_router",
-    ":favicon_util",
-    ":web_view_js_utils",
     "//base",
     "//ios/net",
+    "//ios/third_party/webkit",
     "//ios/web:core",
     "//ios/web/browsing_data",
+    "//ios/web/common",
+    "//ios/web/favicon",
     "//ios/web/find_in_page",
-    "//ios/web/interstitials",
+    "//ios/web/js_messaging",
     "//ios/web/navigation",
     "//ios/web/navigation:core",
     "//ios/web/navigation:navigation_manager_util",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/net:net",
     "//ios/web/public",
+    "//ios/web/public/deprecated",
     "//ios/web/public/download",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/security",
+    "//ios/web/public/webui",
+    "//ios/web/security",
+    "//ios/web/session",
     "//ios/web/web_state:context_menu",
-    "//ios/web/web_state:error_translation_util",
-    "//ios/web/web_state:navigation_context",
     "//ios/web/web_state:page_viewport_state",
-    "//ios/web/web_state:session_certificate_policy_cache",
-    "//ios/web/web_state:web_frame",
+    "//ios/web/web_state:user_interaction",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state:web_view_internal_creation_util",
-    "//ios/web/web_state:wk_web_view_security_util",
     "//ios/web/web_state/js",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
+    "//ios/web/web_state/ui/controller",
+    "//ios/web/web_view:util",
     "//ios/web/webui:webui",
+    "//net",
     "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",
     "//url",
@@ -57,43 +54,17 @@ source_set("ui") {
     "crw_web_controller.mm",
     "crw_web_controller_container_view.h",
     "crw_web_controller_container_view.mm",
-    "crw_web_view_content_view.mm",
+    "crw_web_request_controller.h",
+    "crw_web_request_controller.mm",
     "crw_web_view_proxy_impl.h",
     "crw_web_view_proxy_impl.mm",
     "crw_web_view_scroll_view_proxy.mm",
-    "crw_wk_navigation_states.h",
-    "crw_wk_navigation_states.mm",
-    "web_kit_constants.cc",
-    "web_kit_constants.h",
-    "wk_back_forward_list_item_holder.h",
-    "wk_back_forward_list_item_holder.mm",
-    "wk_navigation_action_policy_util.h",
-    "wk_navigation_action_policy_util.mm",
-    "wk_navigation_action_util.h",
-    "wk_navigation_action_util.mm",
-    "wk_security_origin_util.h",
-    "wk_security_origin_util.mm",
+    "crw_wk_ui_handler.h",
+    "crw_wk_ui_handler.mm",
+    "crw_wk_ui_handler_delegate.h",
+    "js_window_error_manager.h",
+    "js_window_error_manager.mm",
   ]
-
-  libs = [ "WebKit.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
-source_set("crw_wk_script_message_router") {
-  deps = [
-    "//base",
-    "//ios/web/navigation:core",
-    "//ios/web/navigation:wk_navigation_util",
-    "//net",
-  ]
-
-  sources = [
-    "crw_wk_script_message_router.h",
-    "crw_wk_script_message_router.mm",
-  ]
-
-  libs = [ "WebKit.framework" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -103,7 +74,9 @@ source_set("crw_web_view_navigation_proxy") {
     "crw_web_view_navigation_proxy.h",
   ]
 
-  libs = [ "WebKit.framework" ]
+  deps = [
+    "//ios/third_party/webkit",
+  ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -111,10 +84,12 @@ source_set("crw_web_view_navigation_proxy") {
 source_set("crw_context_menu_controller") {
   deps = [
     "//base",
+    "//ios/web/js_messaging",
     "//ios/web/public",
+    "//ios/web/public/deprecated",
     "//ios/web/web_state:context_menu",
-    "//ios/web/web_state/ui:crw_wk_script_message_router",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
+    "//ui/base",
   ]
 
   sources = [
@@ -129,52 +104,20 @@ source_set("crw_context_menu_controller") {
 
 source_set("wk_web_view_configuration_provider") {
   deps = [
-    ":crw_wk_script_message_router",
     "//base",
+    "//ios/third_party/webkit",
+    "//ios/web/common",
+    "//ios/web/js_messaging",
     "//ios/web/public",
     "//ios/web/web_state/js",
-    "//ios/web/web_state/js:script_util",
     "//ios/web/webui",
   ]
 
   sources = [
     "wk_web_view_configuration_provider.h",
     "wk_web_view_configuration_provider.mm",
+    "wk_web_view_configuration_provider_observer.h",
   ]
-
-  libs = [ "WebKit.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
-source_set("web_view_js_utils") {
-  deps = [
-    "//base",
-    "//ios/web/public",
-  ]
-
-  sources = [
-    "web_view_js_utils.h",
-    "web_view_js_utils.mm",
-  ]
-
-  libs = [ "WebKit.framework" ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
-source_set("favicon_util") {
-  deps = [
-    "//base",
-    "//ios/web/public",
-  ]
-
-  sources = [
-    "favicon_util.h",
-    "favicon_util.mm",
-  ]
-
-  libs = [ "WebKit.framework" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }

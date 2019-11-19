@@ -1,0 +1,4 @@
+file://third_party/blink/renderer/modules/accessibility/OWNERS
+
+# TEAM: chromium-accessibility@chromium.org
+# COMPONENT: Blink>Accessibility

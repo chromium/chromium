@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<title>Tests mouse interactions.</title>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resources/gesture-util.js"></script>
+<script src="../../../../resources/scrollbar-util.js"></script>
+<style>
+.appearance {
+  width: 100px;
+  height: 100px;
+  overflow: scroll;
+  border: 1px solid black;
+}
+.standardLocation {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+}
+.customLocation {
+  position: absolute;
+  top: 250px;
+  left: 100px;
+}
+
+.space {
+  height: 1000px;
+  width: 1000px;
+}
+</style>
+
+<!-- Standard scroller -->
+<div id="standard" class="appearance standardLocation">
+  <div class="space"></div>
+</div>
+
+<script>
+if (window.internals)
+    internals.settings.setScrollAnimatorEnabled(false);
+
+window.onload = () => {
+  // http://crrev.com/c/1856359 disables mock theme and makes tests use the
+  // native theme. Hence, values will differ between platforms for both, main
+  // and compositor thread scrolling.
+  const onLinuxPlatform = navigator.userAgent.search(/\bLinux\b/) != -1;
+  const onMacPlatform =  navigator.userAgent.search(/\bMac OS X\b/) != -1;
+
+  const standardDivFast = document.getElementById("standard");
+  const standardRectFast = standardDivFast.getBoundingClientRect();
+
+  const TRACK_WIDTH = calculateScrollbarThickness();
+  const BUTTON_WIDTH = TRACK_WIDTH;
+  const SCROLL_CORNER = TRACK_WIDTH;
+  const SCROLLBAR_BUTTON_FWD = {
+    x: standardRectFast.right - BUTTON_WIDTH / 2,
+    y: standardRectFast.bottom - SCROLL_CORNER - BUTTON_WIDTH / 2
+  }
+  const SCROLLBAR_THUMB = {
+    x: standardRectFast.right - TRACK_WIDTH / 2,
+    y: standardRectFast.top + BUTTON_WIDTH + 5
+  }
+
+  // TODO (arakeri): This test was moved to the top due to crbug.com/1017568. Delete the
+  // comment once the bug is fixed.
+  promise_test (async () => {
+    resetScrollOffset(standardDivFast);
+
+    // Click on the track part just above the down arrow.
+    await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, SCROLLBAR_BUTTON_FWD.y - 10);
+    assert_equals(standardDivFast.scrollTop, 74, "Pressing the down trackpart didn't scroll.");
+  }, "Test mouse click on non-custom composited div scrollbar empty trackparts.");
+
+  promise_test (async () => {
+    resetScrollOffset(standardDivFast);
+
+    // Testing the vertical scrollbar thumb.
+    await mouseDragAndDrop(SCROLLBAR_THUMB.x, SCROLLBAR_THUMB.y, SCROLLBAR_THUMB.x, SCROLLBAR_THUMB.y + 20);
+    let expected_offset = 0;
+
+    // TODO(arakeri): crbug.com/1016188 has been filed to investigate the differences
+    // in scroll offsets between platforms.
+    if (onLinuxPlatform)
+      expected_offset = window.devicePixelRatio == 1 ? 732 : 457.5;
+    else if (onMacPlatform)
+      expected_offset = 281;
+    else
+      expected_offset = window.devicePixelRatio == 1 ? 481 : 362;
+    assert_equals(standardDivFast.scrollTop, expected_offset, "Vertical thumb drag downwards did not scroll as expected.");
+  }, "Test mouse drags on non-custom composited div scrollbar thumb.");
+
+  promise_test (async (test) => {
+    // Since scrollbars on Mac don't have buttons, this test is irrelevant.
+    if(onMacPlatform)
+      test.done();
+
+    resetScrollOffset(standardDivFast);
+
+    // Click on the Down arrow for standardRectFast.
+    await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, SCROLLBAR_BUTTON_FWD.y);
+    assert_equals(standardDivFast.scrollTop, 40, "Pressing the down arrow didn't scroll.");
+  }, "Test mouse click on non-custom composited div scrollbar arrows.");
+
+  promise_test (async (test) => {
+    resetScrollOffset(standardDivFast);
+
+    // Testing forward scroll on vertical scrollbar. Mac uses "Option" key
+    // instead of "Shift". The Option key is mapped to "Alt" in GPUbenchmarking.
+    await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, standardRectFast.top + 50,
+    /*left_click*/0, /*modifier*/ onMacPlatform ? "Alt" : "Shift");
+    if (onMacPlatform) {
+      // TODO(arakeri): crbug.com/1019076 Option + click is off by 3-4 px.
+      assert_approx_equals(standardDivFast.scrollTop, 549, 3,
+      "Option + click forward didn't scroll.");
+    } else {
+      let expected_offset = 0;
+      if (onLinuxPlatform)
+        expected_offset = window.devicePixelRatio == 1 ? 695 : 606;
+      else
+        expected_offset = window.devicePixelRatio == 1 ? 626 : 579.5;
+        assert_equals(standardDivFast.scrollTop, expected_offset,
+        "Shift + click forward didn't scroll.");
+    }
+  }, "Test non-animated click scroll on non-custom composited scrollbars.");
+}
+</script>

@@ -10,7 +10,9 @@
 namespace ash {
 
 ScopedOverviewHideWindows::ScopedOverviewHideWindows(
-    const std::vector<aura::Window*>& windows) {
+    const std::vector<aura::Window*>& windows,
+    bool force_hidden)
+    : force_hidden_(force_hidden) {
   for (auto* window : windows) {
     window->AddObserver(this);
     window_visibility_.emplace(window, window->IsVisible());
@@ -29,14 +31,24 @@ ScopedOverviewHideWindows::~ScopedOverviewHideWindows() {
 
 void ScopedOverviewHideWindows::OnWindowDestroying(aura::Window* window) {
   window_visibility_.erase(window);
+  window->RemoveObserver(this);
 }
 
 void ScopedOverviewHideWindows::OnWindowVisibilityChanged(aura::Window* window,
                                                           bool visible) {
-  // It's expected that windows hidden in overview should not make them visible
-  // without exiting overview.
-  if (visible)
+  if (!visible)
+    return;
+
+  // It's expected that windows hidden in overview, unless they are forcefully
+  // hidden should not be shown while in overview.
+  if (!force_hidden_)
     NOTREACHED();
+
+  // Do not let |window| change to visible during the lifetime of |this|. Also
+  // update |window_visibility_| so that we can restore the window visibility
+  // correctly.
+  window->Hide();
+  window_visibility_[window] = true;
 }
 
 }  // namespace ash

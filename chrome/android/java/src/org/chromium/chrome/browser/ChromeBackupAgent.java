@@ -11,16 +11,17 @@ import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.ParcelFileDescriptor;
-import android.support.annotation.IntDef;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
-import org.chromium.base.library_loader.ProcessInitException;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.preferences.privacy.PrivacyPreferencesManager;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.ChromeSigninController;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentProcessInfo;
 
 import java.io.FileInputStream;
@@ -158,12 +160,7 @@ public class ChromeBackupAgent extends BackupAgent {
             Log.e(TAG, "Backup agent started from child process");
             return false;
         }
-        try {
-            ChromeBrowserInitializer.getInstance(context).handleSynchronousStartup();
-        } catch (ProcessInitException e) {
-            Log.w(TAG, "Browser launch failed on backup or restore: " + e);
-            return false;
-        }
+        ChromeBrowserInitializer.getInstance(context).handleSynchronousStartup();
         return true;
     }
 
@@ -184,26 +181,24 @@ public class ChromeBackupAgent extends BackupAgent {
         final ArrayList<byte[]> backupValues = new ArrayList<>();
 
         // The native preferences can only be read on the UI thread.
-        Boolean nativePrefsRead =
-                ThreadUtils.runOnUiThreadBlockingNoException(() -> {
+        Boolean nativePrefsRead = PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
+            // Start the browser if necessary, so that Chrome can access the native
+            // preferences. Although Chrome requests the backup, it doesn't happen
+            // immediately, so by the time it does Chrome may not be running.
+            if (!initializeBrowser(backupAgent)) return false;
 
-                    // Start the browser if necessary, so that Chrome can access the native
-                    // preferences. Although Chrome requests the backup, it doesn't happen
-                    // immediately, so by the time it does Chrome may not be running.
-                    if (!initializeBrowser(backupAgent)) return false;
+            String[] nativeBackupNames = ChromeBackupAgentJni.get().getBoolBackupNames(this);
+            boolean[] nativeBackupValues = ChromeBackupAgentJni.get().getBoolBackupValues(this);
+            assert nativeBackupNames.length == nativeBackupValues.length;
 
-                    String[] nativeBackupNames = nativeGetBoolBackupNames();
-                    boolean[] nativeBackupValues = nativeGetBoolBackupValues();
-                    assert nativeBackupNames.length == nativeBackupValues.length;
-
-                    for (String name : nativeBackupNames) {
-                        backupNames.add(NATIVE_PREF_PREFIX + name);
-                    }
-                    for (boolean val : nativeBackupValues) {
-                        backupValues.add(booleanToBytes(val));
-                    }
-                    return true;
-                });
+            for (String name : nativeBackupNames) {
+                backupNames.add(NATIVE_PREF_PREFIX + name);
+            }
+            for (boolean val : nativeBackupValues) {
+                backupValues.add(booleanToBytes(val));
+            }
+            return true;
+        });
         SharedPreferences sharedPrefs = ContextUtils.getAppSharedPreferences();
 
         if (!nativePrefsRead) {
@@ -317,10 +312,10 @@ public class ChromeBackupAgent extends BackupAgent {
         // if it were called from the UI thread the broadcast would not be received until after it
         // exited.
         final CountDownLatch latch = new CountDownLatch(1);
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
             // Chrome library loading depends on PathUtils.
             PathUtils.setPrivateDataDirectorySuffix(
-                    ChromeBrowserInitializer.PRIVATE_DATA_DIRECTORY_SUFFIX);
+                    ChromeApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
             createAsyncInitTaskRunner(latch).startBackgroundTasks(
                     false /* allocateChildConnection */, true /* initVariationSeed */);
         });
@@ -337,11 +332,10 @@ public class ChromeBackupAgent extends BackupAgent {
         // Chrome has to be running before it can check if the account exists. Because the native
         // library is already loaded Chrome startup should be fast.
         final ChromeBackupAgent backupAgent = this;
-        boolean browserStarted =
-                ThreadUtils.runOnUiThreadBlockingNoException(() -> {
-                    // Start the browser if necessary.
-                    return initializeBrowser(backupAgent);
-                });
+        boolean browserStarted = PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
+            // Start the browser if necessary.
+            return initializeBrowser(backupAgent);
+        });
         if (!browserStarted) {
             // Something went wrong starting Chrome, skip the restore.
             setRestoreStatus(RestoreStatus.BROWSER_STARTUP_FAILED);
@@ -356,7 +350,7 @@ public class ChromeBackupAgent extends BackupAgent {
         }
 
         // Restore the native preferences on the UI thread
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
             ArrayList<String> nativeBackupNames = new ArrayList<>();
             boolean[] nativeBackupValues = new boolean[backupNames.size()];
             int count = 0;
@@ -369,7 +363,8 @@ public class ChromeBackupAgent extends BackupAgent {
                     count++;
                 }
             }
-            nativeSetBoolBackupPrefs(nativeBackupNames.toArray(new String[count]),
+            ChromeBackupAgentJni.get().setBoolBackupPrefs(this,
+                    nativeBackupNames.toArray(new String[count]),
                     Arrays.copyOf(nativeBackupValues, count));
         });
 
@@ -455,12 +450,10 @@ public class ChromeBackupAgent extends BackupAgent {
         }
     }
 
-    @VisibleForTesting
-    protected native String[] nativeGetBoolBackupNames();
-
-    @VisibleForTesting
-    protected native boolean[] nativeGetBoolBackupValues();
-
-    @VisibleForTesting
-    protected native void nativeSetBoolBackupPrefs(String[] name, boolean[] value);
+    @NativeMethods
+    interface Natives {
+        String[] getBoolBackupNames(ChromeBackupAgent caller);
+        boolean[] getBoolBackupValues(ChromeBackupAgent caller);
+        void setBoolBackupPrefs(ChromeBackupAgent caller, String[] name, boolean[] value);
+    }
 }

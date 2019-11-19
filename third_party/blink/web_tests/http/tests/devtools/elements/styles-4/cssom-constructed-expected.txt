@@ -1,0 +1,19 @@
+Tests that constructed stylesheets appear properly.
+
+[expanded] 
+element.style { ()
+
+[expanded] 
+div { ()
+    color: red;
+
+[expanded] 
+div { (user agent stylesheet)
+    display: block;
+
+======== Inherited from html ========
+[expanded] 
+html { (user agent stylesheet)
+/-- overloaded --/     color: -internal-root-color;
+
+

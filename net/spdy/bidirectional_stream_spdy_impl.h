@@ -130,7 +130,7 @@ class NET_EXPORT_PRIVATE BidirectionalStreamSpdyImpl
   // Keep a reference here so it is alive until OnDataSent is invoked.
   scoped_refptr<IOBuffer> pending_combined_buffer_;
 
-  base::WeakPtrFactory<BidirectionalStreamSpdyImpl> weak_factory_;
+  base::WeakPtrFactory<BidirectionalStreamSpdyImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BidirectionalStreamSpdyImpl);
 };

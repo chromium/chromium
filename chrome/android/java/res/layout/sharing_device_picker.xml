@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+  <View
+      android:id="@+id/mask"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:background="@android:color/transparent"/>
+
+  <LinearLayout
+      android:id="@+id/device_picker_content"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:background="@color/sheet_bg_color">
+
+    <TextView
+        android:id="@+id/device_picker_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:gravity="center_vertical"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp"
+        android:ellipsize="end"
+        android:visibility="gone"
+        android:textAppearance="@style/TextAppearance.BlackToolbarTitle"
+        android:text="@string/send_tab_to_self_sheet_toolbar"/>
+
+    <ListView
+        android:id="@+id/device_picker_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@null"/>
+
+    <LinearLayout
+        android:id="@+id/empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="32dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+      <ImageView
+          android:id="@+id/empty_state_image"
+          android:layout_height="wrap_content"
+          android:layout_width ="match_parent"
+          android:contentDescription="@string/sharing_no_devices_available_text"
+          app:srcCompat="@drawable/shared_clipboard_zero_state"/>
+
+      <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:gravity="center"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:paddingTop="16dp"
+        android:ellipsize="end"
+        android:textAppearance="@style/TextAppearance.BlackToolbarTitle"
+        android:text="@string/sharing_no_devices_available_title"/>
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="center"
+          android:paddingStart="30dp"
+          android:paddingEnd="30dp"
+          android:paddingTop="16dp"
+          android:ellipsize="end"
+          android:textAppearance="@style/TextAppearance.BlackHint1"
+          android:text="@string/sharing_no_devices_available_text"/>
+
+      <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/chrome_settings"
+          android:layout_height="wrap_content"
+          android:layout_width="wrap_content"
+          android:layout_gravity="center"
+          android:layout_marginTop="16dp"
+          android:text="@string/sharing_chrome_settings"
+          android:visibility="gone"
+          style="@style/FilledButton"/>
+
+    </LinearLayout>
+
+  </LinearLayout>
+
+</LinearLayout>

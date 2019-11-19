@@ -12,8 +12,10 @@ namespace autofill {
 
 // Case-insensitive regular expression matching.
 // Returns true if |pattern| is found in |input|.
+// If |match| is not nullptr, the matched part is assigned to it.
 bool MatchesPattern(const base::string16& input,
-                    const base::string16& pattern);
+                    const base::string16& pattern,
+                    base::string16* match = nullptr);
 
 }  // namespace autofill
 

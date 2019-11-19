@@ -19,7 +19,7 @@ namespace {
 class WebrtcTaskQueue final : public webrtc::TaskQueueBase {
  public:
   explicit WebrtcTaskQueue(const base::TaskTraits& traits)
-      : task_runner_(base::CreateSequencedTaskRunnerWithTraits(traits)),
+      : task_runner_(base::CreateSequencedTaskRunner(traits)),
         is_active_(new base::RefCountedData<bool>(true)) {
     DCHECK(task_runner_);
   }
@@ -102,43 +102,45 @@ base::TaskTraits TaskQueuePriority2Traits(
   switch (priority) {
     case webrtc::TaskQueueFactory::Priority::HIGH:
 #if defined(OS_ANDROID)
-      return {base::WithBaseSyncPrimitives(), base::TaskPriority::HIGHEST};
+      return {base::ThreadPool(), base::WithBaseSyncPrimitives(),
+              base::TaskPriority::HIGHEST};
 #else
-      return {base::TaskPriority::HIGHEST};
+      return {base::ThreadPool(), base::TaskPriority::HIGHEST};
 #endif
       break;
     case webrtc::TaskQueueFactory::Priority::LOW:
-      return {base::MayBlock(), base::TaskPriority::BEST_EFFORT};
+      return {base::ThreadPool(), base::MayBlock(),
+              base::TaskPriority::BEST_EFFORT};
     case webrtc::TaskQueueFactory::Priority::NORMAL:
     default:
 #if defined(OS_ANDROID)
-      return {base::WithBaseSyncPrimitives()};
+      return {base::ThreadPool(), base::WithBaseSyncPrimitives()};
 #else
-      return {};
+      return {base::ThreadPool()};
 #endif
   }
 }
 
 class WebrtcTaskQueueFactory final : public webrtc::TaskQueueFactory {
  public:
-  explicit WebrtcTaskQueueFactory(const base::TaskTraits& traits)
-      : traits_(traits) {}
+  WebrtcTaskQueueFactory() = default;
 
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
   CreateTaskQueue(absl::string_view /*name*/,
                   Priority priority) const override {
     return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
-        new WebrtcTaskQueue(base::TaskTraits::Override(
-            TaskQueuePriority2Traits(priority), traits_)));
+        new WebrtcTaskQueue(TaskQueuePriority2Traits(priority)));
   }
-
- private:
-  base::TaskTraits traits_;
 };
 
 }  // namespace
 
-std::unique_ptr<webrtc::TaskQueueFactory> CreateWebRtcTaskQueueFactory(
-    const base::TaskTraits& traits) {
-  return std::make_unique<WebrtcTaskQueueFactory>(traits);
+std::unique_ptr<webrtc::TaskQueueFactory> CreateWebRtcTaskQueueFactory() {
+  return std::make_unique<WebrtcTaskQueueFactory>();
+}
+
+std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
+CreateWebRtcTaskQueue(webrtc::TaskQueueFactory::Priority priority) {
+  return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
+      new WebrtcTaskQueue(TaskQueuePriority2Traits(priority)));
 }

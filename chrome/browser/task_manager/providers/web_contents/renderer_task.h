@@ -66,7 +66,7 @@ class RendererTask : public Task,
   int64_t GetV8MemoryAllocated() const override;
   int64_t GetV8MemoryUsed() const override;
   bool ReportsWebCacheStats() const override;
-  blink::WebCache::ResourceTypeStats GetWebCacheStats() const override;
+  blink::WebCacheResourceTypeStats GetWebCacheStats() const override;
 
   // favicon::FaviconDriverObserver:
   void OnFaviconUpdated(favicon::FaviconDriver* driver,
@@ -129,7 +129,7 @@ class RendererTask : public Task,
   int64_t v8_memory_used_;
 
   // The WebKit resource cache statistics for this renderer.
-  blink::WebCache::ResourceTypeStats webcache_stats_;
+  blink::WebCacheResourceTypeStats webcache_stats_;
 
   // The profile name associated with the browser context of the render view
   // host.

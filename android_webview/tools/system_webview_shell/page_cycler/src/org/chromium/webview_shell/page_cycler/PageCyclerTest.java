@@ -62,7 +62,7 @@ public class PageCyclerTest {
             new ActivityTestRule<>(PageCyclerTestActivity.class);
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mRule.launchActivity(null);
     }
 
@@ -70,7 +70,7 @@ public class PageCyclerTest {
     @LargeTest
     @UseMethodParameter(WebsiteParams.class)
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
-    public void testVisitPage(String url) throws Throwable {
+    public void testVisitPage(String url) {
         final PageCyclerWebViewClient pageCyclerWebViewClient = new PageCyclerWebViewClient();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
@@ -118,7 +118,7 @@ public class PageCyclerTest {
     }
 
     private void loadUrlSync(final String url, final CallbackHelper pageFinishedCallback,
-            final CallbackHelper errorCallback) throws InterruptedException {
+            final CallbackHelper errorCallback) {
         boolean timeout = false;
         int pageFinishedCount = pageFinishedCallback.getCallCount();
         int errorCount = errorCallback.getCallCount();

@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.ntp.cards;
 
-import android.support.annotation.IntDef;
 import android.support.v7.widget.RecyclerView.Adapter;
+
+import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,7 +18,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @IntDef({ItemViewType.ABOVE_THE_FOLD, ItemViewType.HEADER, ItemViewType.SNIPPET,
         ItemViewType.STATUS, ItemViewType.PROGRESS, ItemViewType.ACTION, ItemViewType.FOOTER,
-        ItemViewType.PROMO, ItemViewType.ALL_DISMISSED})
+        ItemViewType.PROMO})
 @Retention(RetentionPolicy.SOURCE)
 public @interface ItemViewType {
     /**
@@ -68,10 +69,4 @@ public @interface ItemViewType {
      * @see Adapter#getItemViewType(int)
      */
     int PROMO = 8;
-    /**
-     * View type for a {@link AllDismissedItem}.
-     *
-     * @see Adapter#getItemViewType(int)
-     */
-    int ALL_DISMISSED = 9;
 }

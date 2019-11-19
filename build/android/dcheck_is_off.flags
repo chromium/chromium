@@ -1,0 +1,17 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Contains flags that are applied only when ENABLE_DCHECK=false.
+
+-checkdiscard @org.chromium.base.annotations.CheckDiscard class ** {
+  *;
+}
+-checkdiscard class ** {
+  @org.chromium.base.annotations.CheckDiscard *;
+}
+
+# Ensure @RemovableInRelease actually works.
+-checkdiscard class ** {
+  @org.chromium.base.annotations.RemovableInRelease *;
+}

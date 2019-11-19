@@ -11,7 +11,7 @@
 #include <tuple>
 
 #include "base/base_export.h"
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/token.h"
 
@@ -20,26 +20,30 @@ namespace base {
 struct UnguessableTokenHash;
 
 // UnguessableToken is, like Token, a randomly chosen 128-bit value. Unlike
-// Token however, a new UnguessableToken must always be generated at runtime
-// from a cryptographically strong random source (or copied or serialized and
+// Token, a new UnguessableToken is always generated at runtime from a
+// cryptographically strong random source (or copied or serialized and
 // deserialized from another such UnguessableToken). It can be used as part of a
 // larger aggregate type, or as an ID in and of itself.
 //
-// UnguessableToken can be used to implement "Capability-Based Security".
-// In other words, UnguessableToken can be used when the resource associated
-// with the ID needs to be protected against manipulation by other untrusted
-// agents in the system, and there is no other convenient way to verify the
-// authority of the agent to do so (because the resource is part of a table
-// shared across processes, for instance). In such a scheme, knowledge of the
-// token value in and of itself is sufficient proof of authority to carry out
-// an operation against the associated resource.
+// An UnguessableToken is a strong *bearer token*. Bearer tokens are like HTTP
+// cookies: if a caller has the token, the callee thereby considers the caller
+// authorized to request the operation the callee performs.
+//
+// UnguessableToken can be used when the resource associated with the ID needs
+// to be protected against manipulation by other untrusted agents in the system,
+// and there is no other convenient way to verify the authority of the agent to
+// do so (because the resource is part of a table shared across processes, for
+// instance). In such a scheme, knowledge of the token value in and of itself is
+// sufficient proof of authority to carry out an operation on the associated
+// resource.
 //
 // Use Create() for creating new UnguessableTokens.
 //
 // NOTE: It is illegal to send empty UnguessableTokens across processes, and
-// sending/receiving empty tokens should be treated as a security issue.
-// If there is a valid scenario for sending "no token" across processes,
-// base::Optional should be used instead of an empty token.
+// sending/receiving empty tokens should be treated as a security issue. If
+// there is a valid scenario for sending "no token" across processes, use
+// base::Optional instead of an empty token.
+
 class BASE_EXPORT UnguessableToken {
  public:
   // Create a unique UnguessableToken.

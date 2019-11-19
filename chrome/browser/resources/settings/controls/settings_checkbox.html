@@ -33,9 +33,10 @@
     <div id="outerRow" noSubLabel$="[[!hasSubLabel_(subLabel, subLabelHtml)]]">
       <cr-checkbox id="checkbox" checked="{{checked}}"
           on-change="notifyChangedByUserInteraction"
-          disabled="[[controlDisabled(disabled, pref.*)]]">
-        <div class="label">[[label]] <slot></slot></div>
-        <div class="secondary label">
+          disabled="[[controlDisabled(disabled, pref.*)]]"
+          aria-label="[[label]]">
+        <div id="label" class="label">[[label]] <slot></slot></div>
+        <div id="subLabel" class="secondary label">
           <div inner-h-t-m-l="[[subLabelHtml]]"></div>
           [[subLabel]]
         </div>

@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/password_manager/core/browser/new_password_form_manager.h"
+#include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -32,8 +32,8 @@ class PasswordManagerInteractiveTest
   PasswordManagerInteractiveTest() {
     // Turn off waiting for server predictions before filing. It makes filling
     // behaviour more deterministic. Filling with server predictions is tested
-    // in NewPasswordFormManager unit tests.
-    password_manager::NewPasswordFormManager::
+    // in PasswordFormManager unit tests.
+    password_manager::PasswordFormManager::
         set_wait_for_server_predictions_for_filling(false);
   }
   ~PasswordManagerInteractiveTest() override = default;
@@ -65,13 +65,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
 
   // Change username and submit. This should add the characters "orary" to the
   // already autofilled username.
-  FillElementWithValue("username_field", "orary");
-
-  // Move the focus out of the inputs before waiting because WaitForElementValue
-  // uses "onchange" event. The event is triggered only when the control looses
-  // focus.
-  chrome::FocusLocationBar(browser());
-  WaitForElementValue("username_field", "temporary");
+  FillElementWithValue("username_field", "orary", "temporary");
 
   NavigationObserver navigation_observer(WebContents());
   BubbleObserver prompt_observer(WebContents());
@@ -170,6 +164,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 
   NavigateToFile("/password/password_form.html");
 
+  SimulateUserDeletingFieldContent("password_field");
   FillElementWithValue("password_field", "123");
   BubbleObserver prompt_observer(WebContents());
   prompt_observer.WaitForFallbackForSaving();
@@ -179,8 +174,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   prompt_observer.WaitForManagementState();
 }
 
+// Flaky. https://crbug.com/1013743
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       PromptForXHRWithoutOnSubmit) {
+                       DISABLED_PromptForXHRWithoutOnSubmit) {
   NavigateToFile("/password/password_xhr_submit.html");
 
   // Verify that if XHR navigation occurs and the form is properly filled out,
@@ -226,8 +222,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
 }
 
+// Flaky. https://crbug.com/1013743
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       PromptForFetchWithNewPasswordsWithoutOnSubmit) {
+                       DISABLED_PromptForFetchWithNewPasswordsWithoutOnSubmit) {
   NavigateToFile("/password/password_fetch_submit.html");
 
   // Verify that if Fetch navigation occurs and the form is properly filled out,

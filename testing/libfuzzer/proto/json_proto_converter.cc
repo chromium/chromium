@@ -4,7 +4,7 @@
 
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 
-using namespace json_proto;
+namespace json_proto {
 
 void JsonProtoConverter::AppendArray(const ArrayValue& array_value) {
   data_ << '[';
@@ -65,3 +65,5 @@ std::string JsonProtoConverter::Convert(const JsonObject& json_object) {
   AppendObject(json_object);
   return data_.str();
 }
+
+}  // namespace json_proto

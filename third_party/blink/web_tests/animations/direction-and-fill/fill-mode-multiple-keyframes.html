@@ -1,136 +1,106 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
+<title>Test simple animation with fill modes</title>
+<style type="text/css" media="screen">
+.box {
+  position: relative;
+  left: 100px;
+  top: 10px;
+  height: 30px;
+  width: 200px;
+  animation-delay: 0.1s;
+  animation-duration: 0.1s;
+  animation-timing-function: linear;
+}
 
-<html lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Test simple animation with fill modes</title>
-  <style type="text/css" media="screen">
-    .box {
-      position: relative;
-      left: 100px;
-      top: 10px;
-      height: 30px;
-      width: 200px;
-      animation-delay: 0.1s;
-      animation-duration: 0.1s;
-      animation-timing-function: linear;
+.running .two-keyframes {
+  animation-name: anim1;
+}
+
+.running .three-keyframes {
+  animation-name: anim2;
+}
+
+@keyframes anim1 {
+  from { left: 200px; }
+  to   { left: 300px; }
+}
+@keyframes anim2 {
+  from { left: 200px; }
+  50% { left: 250px; }
+  to   { left: 300px; }
+}
+
+#a, #f {
+  background-color: blue;
+  animation-fill-mode: none;
+}
+#b, #g {
+  background-color: red;
+  animation-fill-mode: backwards;
+}
+#c, #h {
+  background-color: green;
+  animation-fill-mode: forwards;
+}
+#d, #i {
+  background-color: yellow;
+  animation-fill-mode: both;
+}
+#e, #j {
+  background-color: #999;
+  animation-fill-mode: both;
+  animation-iteration-count: 2;
+  animation-direction: alternate;
+}
+</style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script type="text/javascript" charset="utf-8">
+const numAnims = 10;
+var animsFinished = 0;
+const allowance = 5;
+const expectedValues = [
+  {id: "a", start: 100, end: 100},
+  {id: "b", start: 200, end: 100},
+  {id: "c", start: 100, end: 300},
+  {id: "d", start: 200, end: 300},
+  {id: "e", start: 200, end: 200},
+  {id: "f", start: 100, end: 100},
+  {id: "g", start: 200, end: 100},
+  {id: "h", start: 100, end: 300},
+  {id: "i", start: 200, end: 300},
+  {id: "j", start: 200, end: 200}
+];
+async_test(t => {
+  function endTest() {
+    for (var i=0; i < expectedValues.length; i++) {
+      var el = document.getElementById(expectedValues[i].id);
+      var expectedValue = expectedValues[i].end;
+      var realValue = parseFloat(window.getComputedStyle(el).left);
+      var diff = Math.abs(expectedValue - realValue);
+      assert_less_than(diff, allowance, "end of animation - id: " + expectedValues[i].id + " expected: " + expectedValue + " actual: " + realValue);
     }
+    t.done();
+  }
 
-    .running .two-keyframes {
-      animation-name: anim1;
+  window.addEventListener("load", t.step_func(() => {
+    document.addEventListener("animationend", t.step_func(() => {
+      if (++animsFinished == numAnims) {
+        requestAnimationFrame(endTest);
+      }
+    }));
+    document.body.classList.add("running");
+    for (var i=0; i < expectedValues.length; i++) {
+      var el = document.getElementById(expectedValues[i].id);
+      var expectedValue = expectedValues[i].start;
+      var realValue = parseFloat(window.getComputedStyle(el).left);
+      var diff = Math.abs(expectedValue - realValue);
+      assert_less_than(diff, allowance, "start of animation - id: " + expectedValues[i].id + " expected: " + expectedValue + " actual: " + realValue);
     }
-
-    .running .three-keyframes {
-      animation-name: anim2;
-    }
-
-    @keyframes anim1 {
-        from { left: 200px; }
-        to   { left: 300px; }
-    }
-    @keyframes anim2 {
-        from { left: 200px; }
-        50% { left: 250px; }
-        to   { left: 300px; }
-    }
-
-    #a, #f {
-      background-color: blue;
-      animation-fill-mode: none;
-    }
-    #b, #g {
-      background-color: red;
-      animation-fill-mode: backwards;
-    }
-    #c, #h {
-      background-color: green;
-      animation-fill-mode: forwards;
-    }
-    #d, #i {
-      background-color: yellow;
-      animation-fill-mode: both;
-    }
-    #e, #j {
-      background-color: #999;
-      animation-fill-mode: both;
-      animation-iteration-count: 2;
-      animation-direction: alternate;
-    }
-  </style>
-  <script type="text/javascript" charset="utf-8">
-    const numAnims = 10;
-    var animsFinished = 0;
-    const allowance = 5;
-    const expectedValues = [
-      {id: "a", start: 100, end: 100},
-      {id: "b", start: 200, end: 100},
-      {id: "c", start: 100, end: 300},
-      {id: "d", start: 200, end: 300},
-      {id: "e", start: 200, end: 200},
-      {id: "f", start: 100, end: 100},
-      {id: "g", start: 200, end: 100},
-      {id: "h", start: 100, end: 300},
-      {id: "i", start: 200, end: 300},
-      {id: "j", start: 200, end: 200}
-    ];
-    var result = "";
-
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-        testRunner.waitUntilDone();
-    }
-
-    function animationEnded(event) {
-        if (++animsFinished == numAnims) {
-            requestAnimationFrame(endTest);
-        }
-    };
-
-    function endTest() {
-
-        for (var i=0; i < expectedValues.length; i++) {
-            var el = document.getElementById(expectedValues[i].id);
-            var expectedValue = expectedValues[i].end;
-            var realValue = parseFloat(window.getComputedStyle(el).left);
-            if (Math.abs(expectedValue - realValue) < allowance) {
-              result += "PASS";
-            } else {
-              result += "FAIL";
-            }
-            result += " - end of animation - id: " + expectedValues[i].id + " expected: " + expectedValue + " actual: " + realValue + "<br>";
-        }
-        document.getElementById('result').innerHTML = result;
-
-        if (window.testRunner)
-            testRunner.notifyDone();
-    }
-
-    window.onload = function () {
-        document.addEventListener("animationend", animationEnded, false);
-        document.body.classList.add("running");
-        for (var i=0; i < expectedValues.length; i++) {
-            var el = document.getElementById(expectedValues[i].id);
-            var expectedValue = expectedValues[i].start;
-            var realValue = parseFloat(window.getComputedStyle(el).left);
-            if (Math.abs(expectedValue - realValue) < allowance) {
-              result += "PASS";
-            } else {
-              result += "FAIL";
-            }
-            result += " - start of animation - id: " + expectedValues[i].id + " expected: " + expectedValue + " actual: " + realValue + "<br>";
-        }
-    };
-
-  </script>
-</head>
-<body>
-This test performs an animation of the left property with four different
-fill modes on two sets of objects. The first set has animations with
-only from and to keyframes. The second set has animations with from, to and
-a third keyframe at 50%. It animates over 0.1 second with a 0.1 second delay.
-It takes snapshots at document load and the end of the animation.
-
+  }));;
+}, "This test performs an animation of the left property with four different fill modes on two sets of objects. The first set has animations with only from and to keyframes. The second set has animations with from, to and a third keyframe at 50%. It animates over 0.1 second with a 0.1 second delay. It takes snapshots at document load and the end of the animation.");
+</script>
 <div id="a" class="box two-keyframes">
   None - 2 keyframes
 </div>
@@ -162,8 +132,3 @@ It takes snapshots at document load and the end of the animation.
 <div id="j" class="box three-keyframes">
   Both iterating - 3 keyframes
 </div>
-
-<div id="result">
-</div>
-</body>
-</html>

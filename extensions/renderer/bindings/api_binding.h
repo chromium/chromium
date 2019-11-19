@@ -108,7 +108,6 @@ class APIBinding {
   // |thread| and matches the arguments against |signature|.
   void HandleCall(const std::string& name,
                   const APISignature* signature,
-                  const binding::RequestThread thread,
                   gin::Arguments* args);
 
   // The root name of the API, e.g. "tabs" for chrome.tabs.
@@ -162,7 +161,7 @@ class APIBinding {
   // unavailable are removed after object instantiation.
   v8::Eternal<v8::ObjectTemplate> object_template_;
 
-  base::WeakPtrFactory<APIBinding> weak_factory_;
+  base::WeakPtrFactory<APIBinding> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(APIBinding);
 };

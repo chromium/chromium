@@ -1,0 +1,37 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/closure_compiler/closure_args.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+mojom("test_mojom") {
+  testonly = true
+  sources = [
+    "module_a.test-mojom",
+    "module_b_1.test-mojom",
+    "module_b_2.test-mojom",
+  ]
+}
+
+if (enable_mojom_closure_compile || closure_compile) {
+  js_binary("compile_test") {
+    outputs = [
+      "$target_gen_dir/compile_test.js",
+    ]
+    deps = [
+      ":test_mojom_js_library_for_compile",
+    ]
+    closure_flags = strict_error_checking_closure_args + [
+                      "compilation_level=ADVANCED_OPTIMIZATIONS",
+                      "language_in=ECMASCRIPT_2017",
+                      "language_out=ECMASCRIPT5_STRICT",
+                      "generate_exports",
+                      "export_local_property_definitions",
+                    ]
+  }
+} else {
+  group("compile_test") {
+  }
+}

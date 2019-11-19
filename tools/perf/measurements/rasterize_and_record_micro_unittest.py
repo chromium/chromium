@@ -2,18 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import logging
-
 from telemetry import decorators
-from telemetry.page import legacy_page_test
-from telemetry.testing import options_for_unittests
-from telemetry.testing import page_test_test_case
-from telemetry.util import wpr_modes
+from telemetry.testing import legacy_page_test_case
 
 from measurements import rasterize_and_record_micro
 
 
-class RasterizeAndRecordMicroUnitTest(page_test_test_case.PageTestTestCase):
+class RasterizeAndRecordMicroUnitTest(legacy_page_test_case.LegacyPageTestCase):
   """Smoke test for rasterize_and_record_micro measurement
 
      Runs rasterize_and_record_micro measurement on a simple page and verifies
@@ -21,87 +16,33 @@ class RasterizeAndRecordMicroUnitTest(page_test_test_case.PageTestTestCase):
      i.e. it only checks if the metrics are present and non-zero.
   """
 
-  def setUp(self):
-    self._options = options_for_unittests.GetCopy()
-    self._options.browser_options.wpr_mode = wpr_modes.WPR_OFF
-
-  @decorators.Disabled('win', 'chromeos')
+  @decorators.Disabled('win', 'chromeos', 'linux')
   def testRasterizeAndRecordMicro(self):
-    ps = self.CreateStorySetFromFileInUnittestDataDir('blank.html')
-    measurement = rasterize_and_record_micro.RasterizeAndRecordMicro(
+    pate_test = rasterize_and_record_micro.RasterizeAndRecordMicro(
         rasterize_repeat=1, record_repeat=1, start_wait_time=0.0,
         report_detailed_results=True)
-    try:
-      results = self.RunMeasurement(measurement, ps, options=self._options)
-    except legacy_page_test.TestNotSupportedOnPlatformError as failure:
-      logging.warning(str(failure))
-      return
-    self.assertFalse(results.had_failures)
+    measurements = self.RunPageTest(pate_test, 'file://blank.html')
 
-    rasterize_time = results.FindAllPageSpecificValuesNamed('rasterize_time')
-    self.assertEquals(len(rasterize_time), 1)
-    self.assertGreater(rasterize_time[0].value, 0)
+    # For these measurements, a single positive scalar value is expected.
+    expected_positve_scalar = [
+        'rasterize_time',
+        'record_time',
+        'pixels_rasterized',
+        'pixels_recorded',
+        'pixels_rasterized_with_non_solid_color',
+        'pixels_rasterized_as_opaque',
+        'total_layers',
+        'total_picture_layers',
+        'total_picture_layers_with_no_content',
+        'painter_memory_usage',
+        'paint_op_memory_usage',
+        'paint_op_count',
+    ]
+    for name in expected_positve_scalar:
+      samples = measurements[name]['samples']
+      self.assertEqual(len(samples), 1)
+      self.assertGreater(samples[0], 0)
 
-    record_time = results.FindAllPageSpecificValuesNamed('record_time')
-    self.assertEquals(len(record_time), 1)
-    self.assertGreater(record_time[0].value, 0)
-
-    rasterized_pixels = results.FindAllPageSpecificValuesNamed(
-        'pixels_rasterized')
-    self.assertEquals(len(rasterized_pixels), 1)
-    self.assertGreater(rasterized_pixels[0].value, 0)
-
-    recorded_pixels = results.FindAllPageSpecificValuesNamed('pixels_recorded')
-    self.assertEquals(len(recorded_pixels), 1)
-    self.assertGreater(recorded_pixels[0].value, 0)
-
-    pixels_rasterized_with_non_solid_color = \
-        results.FindAllPageSpecificValuesNamed(
-            'pixels_rasterized_with_non_solid_color')
-    self.assertEquals(len(pixels_rasterized_with_non_solid_color), 1)
-    self.assertGreater(
-        pixels_rasterized_with_non_solid_color[0].value, 0)
-
-    pixels_rasterized_as_opaque = \
-        results.FindAllPageSpecificValuesNamed('pixels_rasterized_as_opaque')
-    self.assertEquals(len(pixels_rasterized_as_opaque), 1)
-    self.assertGreater(
-        pixels_rasterized_as_opaque[0].value, 0)
-
-    total_layers = results.FindAllPageSpecificValuesNamed('total_layers')
-    self.assertEquals(len(total_layers), 1)
-    self.assertGreater(total_layers[0].value, 0)
-
-    total_picture_layers = \
-        results.FindAllPageSpecificValuesNamed('total_picture_layers')
-    self.assertEquals(len(total_picture_layers), 1)
-    self.assertGreater(total_picture_layers[0].value, 0)
-
-    total_picture_layers_with_no_content = \
-        results.FindAllPageSpecificValuesNamed(
-            'total_picture_layers_with_no_content')
-    self.assertEquals(len(total_picture_layers_with_no_content), 1)
-    self.assertGreater(
-        total_picture_layers_with_no_content[0].value, 0)
-
-    total_picture_layers_off_screen = \
-        results.FindAllPageSpecificValuesNamed(
-            'total_picture_layers_off_screen')
-    self.assertEquals(len(total_picture_layers_off_screen), 1)
-    self.assertEqual(
-        total_picture_layers_off_screen[0].value, 0)
-
-    painter_memory_usage = results.FindAllPageSpecificValuesNamed(
-        'painter_memory_usage')
-    self.assertEquals(len(painter_memory_usage), 1)
-    self.assertGreater(painter_memory_usage[0].value, 0)
-
-    paint_op_memory_usage = results.FindAllPageSpecificValuesNamed(
-        'paint_op_memory_usage')
-    self.assertEquals(len(paint_op_memory_usage), 1)
-    self.assertGreater(paint_op_memory_usage[0].value, 0)
-
-    paint_op_count = results.FindAllPageSpecificValuesNamed(
-        'paint_op_count')
-    self.assertEquals(len(paint_op_count), 1)
-    self.assertGreater(paint_op_count[0].value, 0)
+    samples = measurements['total_picture_layers_off_screen']['samples']
+    self.assertEqual(len(samples), 1)
+    self.assertEqual(samples[0], 0)

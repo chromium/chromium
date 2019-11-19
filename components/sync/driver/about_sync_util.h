@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/signin/core/browser/account_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/version_info/version_info.h"
 
 namespace base {

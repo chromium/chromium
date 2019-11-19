@@ -38,6 +38,8 @@ class WebStateListTestObserver : public WebStateListObserver {
     web_state_replaced_called_ = false;
     web_state_detached_called_ = false;
     web_state_activated_called_ = false;
+    batch_operation_started_ = false;
+    batch_operation_ended_ = false;
   }
 
   // Returns whether WebStateInsertedAt was invoked.
@@ -57,11 +59,18 @@ class WebStateListTestObserver : public WebStateListObserver {
     return web_state_activated_called_;
   }
 
+  // Returns whether WillBeginBatchOperation was invoked.
+  bool batch_operation_started() const { return batch_operation_started_; }
+
+  // Returns whether BatchOperationEnded was invoked.
+  bool batch_operation_ended() const { return batch_operation_ended_; }
+
   // WebStateListObserver implementation.
   void WebStateInsertedAt(WebStateList* web_state_list,
                           web::WebState* web_state,
                           int index,
                           bool activating) override {
+    EXPECT_TRUE(web_state_list->IsMutating());
     web_state_inserted_called_ = true;
   }
 
@@ -69,6 +78,7 @@ class WebStateListTestObserver : public WebStateListObserver {
                      web::WebState* web_state,
                      int from_index,
                      int to_index) override {
+    EXPECT_TRUE(web_state_list->IsMutating());
     web_state_moved_called_ = true;
   }
 
@@ -82,6 +92,7 @@ class WebStateListTestObserver : public WebStateListObserver {
   void WebStateDetachedAt(WebStateList* web_state_list,
                           web::WebState* web_state,
                           int index) override {
+    EXPECT_TRUE(web_state_list->IsMutating());
     web_state_detached_called_ = true;
   }
 
@@ -93,12 +104,22 @@ class WebStateListTestObserver : public WebStateListObserver {
     web_state_activated_called_ = true;
   }
 
+  void WillBeginBatchOperation(WebStateList* web_state_list) override {
+    batch_operation_started_ = true;
+  }
+
+  void BatchOperationEnded(WebStateList* web_state_list) override {
+    batch_operation_ended_ = true;
+  }
+
  private:
   bool web_state_inserted_called_ = false;
   bool web_state_moved_called_ = false;
   bool web_state_replaced_called_ = false;
   bool web_state_detached_called_ = false;
   bool web_state_activated_called_ = false;
+  bool batch_operation_started_ = false;
+  bool batch_operation_ended_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WebStateListTestObserver);
 };
@@ -568,6 +589,25 @@ TEST_F(WebStateListTest, OpenersEmptyList) {
                 nullptr, WebStateList::kInvalidIndex, true));
 }
 
+// Test detaching a webstate which has an invalid opener.  This is a regression
+// test for https://crbug.com/960628.
+TEST_F(WebStateListTest, DetachWebStateWithInvalidOpener) {
+  AppendNewWebState(kURL0);
+  AppendNewWebState(kURL1);
+  // Sanity check before closing WebState.
+  ASSERT_EQ(2, web_state_list_.count());
+  EXPECT_EQ(kURL0, web_state_list_.GetWebStateAt(0)->GetVisibleURL().spec());
+  EXPECT_EQ(kURL1, web_state_list_.GetWebStateAt(1)->GetVisibleURL().spec());
+  web_state_list_.ActivateWebStateAt(1);
+  // Update a WebState to have an invalid opener.
+  web_state_list_.SetOpenerOfWebStateAt(
+      1, WebStateOpener(web_state_list_.GetWebStateAt(1)));
+  // After detaching, the active index should be valid.
+  web_state_list_.DetachWebStateAt(1);
+  EXPECT_EQ(1, web_state_list_.count());
+  EXPECT_TRUE(web_state_list_.ContainsIndex(web_state_list_.active_index()));
+}
+
 // Test finding opended-by indexes when no webstates have been opened.
 TEST_F(WebStateListTest, OpenersNothingOpened) {
   AppendNewWebState(kURL0);
@@ -670,4 +710,63 @@ TEST_F(WebStateListTest, OpenersChildsBeforeOpener) {
   EXPECT_EQ(WebStateList::kInvalidIndex,
             web_state_list_.GetIndexOfLastWebStateOpenedBy(opener, start_index,
                                                            true));
+}
+
+// Test closing all webstates.
+TEST_F(WebStateListTest, CloseAllWebStates) {
+  AppendNewWebState(kURL0);
+  AppendNewWebState(kURL1);
+  AppendNewWebState(kURL2);
+
+  // Sanity check before closing WebStates.
+  EXPECT_EQ(3, web_state_list_.count());
+
+  observer_.ResetStatistics();
+  web_state_list_.CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
+
+  EXPECT_EQ(0, web_state_list_.count());
+
+  EXPECT_TRUE(observer_.web_state_detached_called());
+  EXPECT_TRUE(observer_.batch_operation_started());
+  EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Test closing one webstate.
+TEST_F(WebStateListTest, CloseWebState) {
+  AppendNewWebState(kURL0);
+  AppendNewWebState(kURL1);
+  AppendNewWebState(kURL2);
+
+  // Sanity check before closing WebState.
+  EXPECT_EQ(3, web_state_list_.count());
+
+  observer_.ResetStatistics();
+  web_state_list_.CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
+
+  EXPECT_EQ(2, web_state_list_.count());
+  EXPECT_TRUE(observer_.web_state_detached_called());
+  EXPECT_FALSE(observer_.batch_operation_started());
+  EXPECT_FALSE(observer_.batch_operation_ended());
+}
+
+// Test that batch operation can be empty.
+TEST_F(WebStateListTest, PerformBatchOperation_EmptyCallback) {
+  observer_.ResetStatistics();
+
+  web_state_list_.PerformBatchOperation({});
+
+  EXPECT_TRUE(observer_.batch_operation_started());
+  EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Test that batch operation WebStateList is the correct one.
+TEST_F(WebStateListTest, PerformBatchOperation_CorrectWebStateList) {
+  WebStateList* captured_web_state_list = nullptr;
+  web_state_list_.PerformBatchOperation(base::BindOnce(
+      [](WebStateList** captured_web_state_list, WebStateList* web_state_list) {
+        *captured_web_state_list = web_state_list;
+      },
+      &captured_web_state_list));
+
+  EXPECT_EQ(captured_web_state_list, &web_state_list_);
 }

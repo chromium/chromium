@@ -12,20 +12,19 @@
 #endif
 
 TestUrlLoadingService::TestUrlLoadingService(UrlLoadingNotifier* notifier)
-    : UrlLoadingService(notifier), last_web_params(GURL()) {}
+    : UrlLoadingService(notifier) {}
 
-void TestUrlLoadingService::LoadUrlInCurrentTab(
-    const ChromeLoadParams& chrome_params) {
-  last_web_params = chrome_params.web_params;
-  last_disposition = chrome_params.disposition;
+void TestUrlLoadingService::LoadUrlInCurrentTab(const UrlLoadParams& params) {
+  last_params = params;
+  load_current_tab_call_count++;
 }
 
-void TestUrlLoadingService::SwitchToTab(
-    const web::NavigationManager::WebLoadParams& web_params) {
-  last_web_params = web_params;
-  last_disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+void TestUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
+  last_params = params;
+  load_new_tab_call_count++;
 }
 
-void TestUrlLoadingService::OpenUrlInNewTab(OpenNewTabCommand* command) {
-  last_command = command;
+void TestUrlLoadingService::SwitchToTab(const UrlLoadParams& params) {
+  last_params = params;
+  switch_tab_call_count++;
 }

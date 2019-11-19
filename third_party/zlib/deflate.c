@@ -215,13 +215,23 @@ local INLINE Pos insert_string_c(deflate_state *const s, const Pos str)
 
 local INLINE Pos insert_string(deflate_state *const s, const Pos str)
 {
+/* String dictionary insertion: faster symbol hashing has a positive impact
+ * on data compression speeds (around 20% on Intel and 36% on ARM Cortex big
+ * cores).
+ * A misfeature is that the generated compressed output will differ from
+ * vanilla zlib (even though it is still valid 'DEFLATE-d' content).
+ *
+ * We offer here a way to disable the optimization if there is the expectation
+ * that compressed content should match when compared to vanilla zlib.
+ */
+#if !defined(CHROMIUM_ZLIB_NO_CASTAGNOLI)
 #if defined(CRC32_ARMV8_CRC32)
     if (arm_cpu_enable_crc32)
         return insert_string_arm(s, str);
 #endif
     if (x86_cpu_enable_simd)
         return insert_string_sse(s, str);
-
+#endif
     return insert_string_c(s, str);
 }
 

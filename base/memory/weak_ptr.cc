@@ -46,7 +46,7 @@ WeakReference::WeakReference(const scoped_refptr<Flag>& flag) : flag_(flag) {}
 
 WeakReference::~WeakReference() = default;
 
-WeakReference::WeakReference(WeakReference&& other) = default;
+WeakReference::WeakReference(WeakReference&& other) noexcept = default;
 
 WeakReference::WeakReference(const WeakReference& other) = default;
 

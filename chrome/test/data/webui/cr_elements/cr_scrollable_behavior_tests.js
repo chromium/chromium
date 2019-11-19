@@ -55,7 +55,7 @@ suite('cr-scrollable-behavior', function() {
     // Wait for CrScrollableBehavior to set the initial scrollable class
     // properties.
     window.requestAnimationFrame(() => {
-      test_util.waitForRender().then(done);
+      test_util.waitBeforeNextRender().then(done);
     });
   });
 

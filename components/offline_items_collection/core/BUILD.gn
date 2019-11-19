@@ -9,6 +9,7 @@ if (is_android) {
 
 static_library("core") {
   sources = [
+    "fail_state.cc",
     "fail_state.h",
     "filtered_offline_item_observer.cc",
     "filtered_offline_item_observer.h",
@@ -24,6 +25,8 @@ static_library("core") {
     "rename_result.h",
     "throttled_offline_content_provider.cc",
     "throttled_offline_content_provider.h",
+    "update_delta.cc",
+    "update_delta.h",
   ]
 
   public_deps = [
@@ -85,14 +88,17 @@ if (is_android) {
       "android/java/src/org/chromium/components/offline_items_collection/OfflineItemShareInfo.java",
       "android/java/src/org/chromium/components/offline_items_collection/OfflineItemVisuals.java",
       "android/java/src/org/chromium/components/offline_items_collection/ShareCallback.java",
+      "android/java/src/org/chromium/components/offline_items_collection/UpdateDelta.java",
       "android/java/src/org/chromium/components/offline_items_collection/VisualsCallback.java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
     srcjar_deps = [ ":jni_enums" ]
 
     deps = [
       "//base:base_java",
-      "//third_party/android_deps:android_support_annotations_java",
+      "//base:jni_java",
+      "//third_party/android_deps:androidx_annotation_annotation_java",
     ]
   }
 
@@ -105,8 +111,6 @@ if (is_android) {
       "android/java/src/org/chromium/components/offline_items_collection/bridges/OfflineItemShareInfoBridge.java",
       "android/java/src/org/chromium/components/offline_items_collection/bridges/OfflineItemVisualsBridge.java",
     ]
-
-    jni_package = "components/offline_items_collection/core/android"
   }
 
   java_cpp_enum("jni_enums") {

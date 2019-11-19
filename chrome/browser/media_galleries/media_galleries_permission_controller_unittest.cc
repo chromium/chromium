@@ -21,7 +21,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/test_storage_monitor.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_CHROMEOS)
@@ -47,9 +47,7 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
       : dialog_(NULL),
         dialog_update_count_at_destruction_(0),
         controller_(NULL),
-        profile_(new TestingProfile()),
-        weak_factory_(this) {
-  }
+        profile_(new TestingProfile()) {}
 
   ~MediaGalleriesPermissionControllerTest() override {
     EXPECT_FALSE(controller_);
@@ -141,7 +139,7 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
   }
 
   // Needed for extension service & friends to work.
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   // The dialog is owned by the controller, but this pointer should only be
   // valid while the dialog is live within the controller.
@@ -162,8 +160,8 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<MediaGalleriesPreferences> gallery_prefs_;
 
-  base::WeakPtrFactory<MediaGalleriesPermissionControllerTest>
-      weak_factory_;
+  base::WeakPtrFactory<MediaGalleriesPermissionControllerTest> weak_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaGalleriesPermissionControllerTest);
 };

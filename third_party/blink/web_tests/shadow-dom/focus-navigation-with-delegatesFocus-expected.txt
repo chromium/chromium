@@ -14,7 +14,7 @@ Should move from host-div/inner-input to input-before in backward
 PASS
 (2/8) Testing tab navigation order without tabindex and delegatesFocus=true
 PASS internals.shadowRoot(hostDiv).delegatesFocus is true
-PASS hostDiv.tabIndex is 0
+PASS hostDiv.tabIndex is -1
 Should move from input-before to host-div/inner-input in forward
 PASS
 Should move from host-div/inner-input to input-after in forward
@@ -102,7 +102,7 @@ Should move from host-div/inner-input to input-before in backward
 PASS
 (2/8) Testing tab navigation order without tabindex and delegatesFocus=true
 PASS internals.shadowRoot(hostDiv).delegatesFocus is true
-PASS hostDiv.tabIndex is 0
+PASS hostDiv.tabIndex is -1
 Should move from input-before to host-div/inner-input in forward
 PASS
 Should move from host-div/inner-input to input-after in forward

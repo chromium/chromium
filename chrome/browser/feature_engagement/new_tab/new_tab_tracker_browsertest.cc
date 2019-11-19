@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(NewTabTrackerBrowserTest, TestShowPromo) {
   omnibox_view->OnBeforePossibleChange();
   omnibox_view->SetUserText(base::ASCIIToUTF16("http://www.chromium.org/"));
   omnibox_view->OnAfterPossibleChange(true);
-  omnibox_view->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB, false);
+  omnibox_view->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
 
   // Focus on the omnibox.
   EXPECT_CALL(*feature_engagement_tracker_,

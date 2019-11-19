@@ -2,17 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("../../optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("../../optimize_webui.gni")
 
 optimize_webui("build") {
   host = "internet_detail_dialog"
   html_in_files = [ "internet_detail_dialog.html" ]
   html_out_files = [ "vulcanized.html" ]
-  html_out_files_polymer2 = [ "vulcanized.p2.html" ]
 
   input = rebase_path(".", root_build_dir)
   js_out_files = [ "crisper.js" ]
+  excludes = [ "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom.html" ]
 
   deps = []
 }
@@ -25,14 +25,12 @@ js_type_check("closure_compile") {
 
 js_library("internet_detail_dialog") {
   deps = [
-    "//ui/webui/resources/cr_elements/chromeos/network:cr_onc_types",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_network_behavior",
+    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior",
+    "//ui/webui/resources/cr_elements/chromeos/network:cr_onc_strings",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_network_behavior_mojo",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js/chromeos:onc_mojo",
   ]
-  externs_list = [
-    "$externs_path/chrome_send.js",
-    "$externs_path/networking_private.js",
-  ]
-  extra_sources = [ "$interfaces_path/networking_private_interface.js" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
 }

@@ -101,8 +101,7 @@ URLRequestMockDataJob::URLRequestMockDataJob(URLRequest* request,
                                              bool request_client_certificate)
     : URLRequestJob(request, network_delegate),
       data_offset_(0),
-      request_client_certificate_(request_client_certificate),
-      weak_factory_(this) {
+      request_client_certificate_(request_client_certificate) {
   DCHECK_GT(data_repeat_count, 0);
   for (int i = 0; i < data_repeat_count; ++i) {
     data_.append(data);
@@ -158,8 +157,8 @@ void URLRequestMockDataJob::GetResponseInfoConst(HttpResponseInfo* info) const {
     raw_headers.append(base::StringPrintf("Content-Length: %1d\n",
                                           static_cast<int>(data_.length())));
   }
-  info->headers = new HttpResponseHeaders(HttpUtil::AssembleRawHeaders(
-      raw_headers.c_str(), static_cast<int>(raw_headers.length())));
+  info->headers = base::MakeRefCounted<HttpResponseHeaders>(
+      HttpUtil::AssembleRawHeaders(raw_headers));
 }
 
 void URLRequestMockDataJob::StartAsync() {
@@ -168,7 +167,7 @@ void URLRequestMockDataJob::StartAsync() {
 
   set_expected_content_size(data_.length());
   if (request_client_certificate_) {
-    scoped_refptr<SSLCertRequestInfo> request_all(new SSLCertRequestInfo());
+    auto request_all = base::MakeRefCounted<SSLCertRequestInfo>();
     NotifyCertificateRequested(request_all.get());
     return;
   }

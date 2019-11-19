@@ -4,7 +4,7 @@ Tests that adding new rule in the stylesheet end works as expected.
 element.style { ()
 
 [expanded] 
-#other, div { (different-rule-types.css:48 -> different-rule-types.css:48:14)
+#other, div { (different-r…ypes.css:48 -> different-rule-types.css:48:14)
 
 [expanded] 
 div { (user agent stylesheet)

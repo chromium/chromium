@@ -59,3 +59,5 @@ Local Modifications:
 - patches/tls13_intolerance.patch: Extend the intolerance simulation to TLS 1.3.
 - patches/simulate_tls13_downgrade.patch: Add an option to simulate the TLS 1.3
   downgrade signal.
+- patches/thread_safe_python_rsa_key.patch: Make Python_RSAKey thread safe,
+  inspired by tlslite-ng implementation.

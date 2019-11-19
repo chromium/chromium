@@ -36,7 +36,7 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
   GLES2DecoderTest2() = default;
 
   void TestAcceptedUniform(GLenum uniform_type,
-                           uint32_t accepts_apis,
+                           UniformApiType accepts_apis,
                            bool es3_enabled) {
     SetupShaderForUniform(uniform_type);
     bool valid_uniform = false;
@@ -71,7 +71,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniform1i;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform1i) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform1i cmd;
       cmd.Init(1, 2);
       EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -80,7 +81,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniform1i;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform1i) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform1ivImmediate& cmd =
           *GetImmediateAs<cmds::Uniform1ivImmediate>();
       GLint data[2][1] = {{0}};
@@ -91,7 +93,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniform2i;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform2i) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform2i cmd;
       cmd.Init(1, 2, 3);
       EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -100,7 +103,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniform2i;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform2i) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform2ivImmediate& cmd =
           *GetImmediateAs<cmds::Uniform2ivImmediate>();
       GLint data[2][2] = {{0}};
@@ -111,7 +115,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniform3i;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform3i) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform3i cmd;
       cmd.Init(1, 2, 3, 4);
       EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -120,7 +125,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniform3i;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform3i) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform3ivImmediate& cmd =
           *GetImmediateAs<cmds::Uniform3ivImmediate>();
       GLint data[2][3] = {{0}};
@@ -131,7 +137,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniform4i;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform4i) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform4i cmd;
       cmd.Init(1, 2, 3, 4, 5);
       EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -140,7 +147,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniform4i;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform4i) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform4ivImmediate& cmd =
           *GetImmediateAs<cmds::Uniform4ivImmediate>();
       GLint data[2][4] = {{0}};
@@ -153,7 +161,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     ////////////////////
 
     {
-      valid_uniform = accepts_apis & Program::kUniform1f;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform1f) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform1f cmd;
       cmd.Init(1, 2);
       EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -162,7 +171,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniform1f;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform1f) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform1fvImmediate& cmd =
           *GetImmediateAs<cmds::Uniform1fvImmediate>();
       GLfloat data[2][1] = {{0.0f}};
@@ -173,7 +183,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniform2f;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform2f) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform2f cmd;
       cmd.Init(1, 2, 3);
       EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -182,7 +193,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniform2f;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform2f) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform2fvImmediate& cmd =
           *GetImmediateAs<cmds::Uniform2fvImmediate>();
       GLfloat data[2][2] = {{0.0f}};
@@ -193,7 +205,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniform3f;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform3f) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform3f cmd;
       cmd.Init(1, 2, 3, 4);
       EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -202,7 +215,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniform3f;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform3f) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform3fvImmediate& cmd =
           *GetImmediateAs<cmds::Uniform3fvImmediate>();
       GLfloat data[2][3] = {{0.0f}};
@@ -213,7 +227,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniform4f;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform4f) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform4f cmd;
       cmd.Init(1, 2, 3, 4, 5);
       EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -222,7 +237,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniform4f;
+      valid_uniform = (accepts_apis & UniformApiType::kUniform4f) !=
+                      UniformApiType::kUniformNone;
       cmds::Uniform4fvImmediate& cmd =
           *GetImmediateAs<cmds::Uniform4fvImmediate>();
       GLfloat data[2][4] = {{0.0f}};
@@ -233,7 +249,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniformMatrix2f;
+      valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix2f) !=
+                      UniformApiType::kUniformNone;
       cmds::UniformMatrix2fvImmediate& cmd =
           *GetImmediateAs<cmds::UniformMatrix2fvImmediate>();
       GLfloat data[2][2 * 2] = {{0.0f}};
@@ -245,7 +262,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniformMatrix3f;
+      valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix3f) !=
+                      UniformApiType::kUniformNone;
       cmds::UniformMatrix3fvImmediate& cmd =
           *GetImmediateAs<cmds::UniformMatrix3fvImmediate>();
       GLfloat data[2][3 * 3] = {{0.0f}};
@@ -256,7 +274,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
     }
 
     {
-      valid_uniform = accepts_apis & Program::kUniformMatrix4f;
+      valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix4f) !=
+                      UniformApiType::kUniformNone;
       cmds::UniformMatrix4fvImmediate& cmd =
           *GetImmediateAs<cmds::UniformMatrix4fvImmediate>();
       GLfloat data[2][4 * 4] = {{0.0f}};
@@ -268,7 +287,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
 
     if (!es3_enabled) {
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix2f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix2f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix2fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix2fvImmediate>();
         GLfloat data[2][2 * 2] = {{0.0f}};
@@ -279,7 +299,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix3f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix3f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix3fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix3fvImmediate>();
         GLfloat data[2][3 * 3] = {{0.0f}};
@@ -289,7 +310,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix4f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix4f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix4fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix4fvImmediate>();
         GLfloat data[2][4 * 4] = {{0.0f}};
@@ -301,7 +323,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
 
     if (es3_enabled) {
       {
-        valid_uniform = accepts_apis & Program::kUniform1ui;
+        valid_uniform = (accepts_apis & UniformApiType::kUniform1ui) !=
+                        UniformApiType::kUniformNone;
         cmds::Uniform1ui cmd;
         cmd.Init(1, 2);
         EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -310,7 +333,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniform1ui;
+        valid_uniform = (accepts_apis & UniformApiType::kUniform1ui) !=
+                        UniformApiType::kUniformNone;
         cmds::Uniform1uivImmediate& cmd =
             *GetImmediateAs<cmds::Uniform1uivImmediate>();
         GLuint data[2][1] = {{0}};
@@ -321,7 +345,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniform2ui;
+        valid_uniform = (accepts_apis & UniformApiType::kUniform2ui) !=
+                        UniformApiType::kUniformNone;
         cmds::Uniform2ui cmd;
         cmd.Init(1, 2, 3);
         EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -330,7 +355,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniform2ui;
+        valid_uniform = (accepts_apis & UniformApiType::kUniform2ui) !=
+                        UniformApiType::kUniformNone;
         cmds::Uniform2uivImmediate& cmd =
             *GetImmediateAs<cmds::Uniform2uivImmediate>();
         GLuint data[2][2] = {{0}};
@@ -341,7 +367,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniform3ui;
+        valid_uniform = (accepts_apis & UniformApiType::kUniform3ui) !=
+                        UniformApiType::kUniformNone;
         cmds::Uniform3ui cmd;
         cmd.Init(1, 2, 3, 4);
         EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -350,7 +377,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniform3ui;
+        valid_uniform = (accepts_apis & UniformApiType::kUniform3ui) !=
+                        UniformApiType::kUniformNone;
         cmds::Uniform3uivImmediate& cmd =
             *GetImmediateAs<cmds::Uniform3uivImmediate>();
         GLuint data[2][3] = {{0}};
@@ -361,7 +389,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniform4ui;
+        valid_uniform = (accepts_apis & UniformApiType::kUniform4ui) !=
+                        UniformApiType::kUniformNone;
         cmds::Uniform4ui cmd;
         cmd.Init(1, 2, 3, 4, 5);
         EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -370,7 +399,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniform4ui;
+        valid_uniform = (accepts_apis & UniformApiType::kUniform4ui) !=
+                        UniformApiType::kUniformNone;
         cmds::Uniform4uivImmediate& cmd =
             *GetImmediateAs<cmds::Uniform4uivImmediate>();
         GLuint data[2][4] = {{0}};
@@ -381,7 +411,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix2x3f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix2x3f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix2x3fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix2x3fvImmediate>();
         GLfloat data[2][2 * 3] = {{0.0f}};
@@ -393,7 +424,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix2x4f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix2x4f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix2x4fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix2x4fvImmediate>();
         GLfloat data[2][2 * 4] = {{0.0f}};
@@ -405,7 +437,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix3x2f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix3x2f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix3x2fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix3x2fvImmediate>();
         GLfloat data[2][3 * 2] = {{0.0f}};
@@ -417,7 +450,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix3x4f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix3x4f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix3x4fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix3x4fvImmediate>();
         GLfloat data[2][3 * 4] = {{0.0f}};
@@ -429,7 +463,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix4x2f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix4x2f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix4x2fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix4x2fvImmediate>();
         GLfloat data[2][4 * 2] = {{0.0f}};
@@ -441,7 +476,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix4x3f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix4x3f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix4x3fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix4x3fvImmediate>();
         GLfloat data[2][4 * 3] = {{0.0f}};
@@ -453,7 +489,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix2f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix2f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix2fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix2fvImmediate>();
         GLfloat data[2][2 * 2] = {{0.0f}};
@@ -465,7 +502,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix3f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix3f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix3fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix3fvImmediate>();
         GLfloat data[2][3 * 3] = {{0.0f}};
@@ -476,7 +514,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix4f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix4f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix4fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix4fvImmediate>();
         GLfloat data[2][4 * 4] = {{0.0f}};
@@ -487,7 +526,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix2x3f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix2x3f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix2x3fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix2x3fvImmediate>();
         GLfloat data[2][2 * 3] = {{0.0f}};
@@ -499,7 +539,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix2x4f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix2x4f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix2x4fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix2x4fvImmediate>();
         GLfloat data[2][2 * 4] = {{0.0f}};
@@ -511,7 +552,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix3x2f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix3x2f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix3x2fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix3x2fvImmediate>();
         GLfloat data[2][3 * 2] = {{0.0f}};
@@ -523,7 +565,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix3x4f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix3x4f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix3x4fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix3x4fvImmediate>();
         GLfloat data[2][3 * 4] = {{0.0f}};
@@ -535,7 +578,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix4x2f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix4x2f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix4x2fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix4x2fvImmediate>();
         GLfloat data[2][4 * 2] = {{0.0f}};
@@ -547,7 +591,8 @@ class GLES2DecoderTest2 : public GLES2DecoderTestBase {
       }
 
       {
-        valid_uniform = accepts_apis & Program::kUniformMatrix4x3f;
+        valid_uniform = (accepts_apis & UniformApiType::kUniformMatrix4x3f) !=
+                        UniformApiType::kUniformNone;
         cmds::UniformMatrix4x3fvImmediate& cmd =
             *GetImmediateAs<cmds::UniformMatrix4x3fvImmediate>();
         GLfloat data[2][4 * 3] = {{0.0f}};
@@ -812,18 +857,6 @@ void GLES2DecoderTestBase::SpecializedSetup<cmds::Uniform4f, 0>(
 }
 
 template <>
-void GLES2DecoderTestBase::SpecializedSetup<cmds::Uniform4i, 0>(
-    bool /* valid */) {
-  SetupShaderForUniform(GL_INT_VEC4);
-}
-
-template <>
-void GLES2DecoderTestBase::SpecializedSetup<cmds::Uniform4fvImmediate, 0>(
-    bool /* valid */) {
-  SetupShaderForUniform(GL_FLOAT_VEC4);
-}
-
-template <>
 void GLES2DecoderTestBase::SpecializedSetup<cmds::UniformMatrix2fvImmediate, 0>(
     bool /* valid */) {
   SetupShaderForUniform(GL_FLOAT_MAT2);
@@ -908,137 +941,145 @@ void GLES2DecoderTestBase::SpecializedSetup<cmds::GetVertexAttribIuiv, 0>(
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest_2_autogen.h"
 
 TEST_P(GLES2DecoderTest2, AcceptsUniform_GL_INT) {
-  TestAcceptedUniform(GL_INT, Program::kUniform1i, false);
+  TestAcceptedUniform(GL_INT, UniformApiType::kUniform1i, false);
 }
 
 TEST_P(GLES2DecoderTest2, AcceptsUniform_GL_INT_VEC2) {
-  TestAcceptedUniform(GL_INT_VEC2, Program::kUniform2i, false);
+  TestAcceptedUniform(GL_INT_VEC2, UniformApiType::kUniform2i, false);
 }
 
 TEST_P(GLES2DecoderTest2, AcceptsUniform_GL_INT_VEC3) {
-  TestAcceptedUniform(GL_INT_VEC3, Program::kUniform3i, false);
+  TestAcceptedUniform(GL_INT_VEC3, UniformApiType::kUniform3i, false);
 }
 
 TEST_P(GLES2DecoderTest2, AcceptsUniform_GL_INT_VEC4) {
-  TestAcceptedUniform(GL_INT_VEC4, Program::kUniform4i, false);
+  TestAcceptedUniform(GL_INT_VEC4, UniformApiType::kUniform4i, false);
 }
 
 TEST_P(GLES2DecoderTest2, AcceptsUniform_GL_BOOL) {
   TestAcceptedUniform(
-      GL_BOOL, Program::kUniform1i | Program::kUniform1f, false);
+      GL_BOOL, UniformApiType::kUniform1i | UniformApiType::kUniform1f, false);
 }
 
 TEST_P(GLES3DecoderTest2, AcceptsUniformES3_GL_BOOL) {
-  TestAcceptedUniform(
-      GL_BOOL,
-      Program::kUniform1i | Program::kUniform1f | Program::kUniform1ui,
-      true);
+  TestAcceptedUniform(GL_BOOL,
+                      UniformApiType::kUniform1i | UniformApiType::kUniform1f |
+                          UniformApiType::kUniform1ui,
+                      true);
 }
 
 TEST_P(GLES2DecoderTest2, AcceptsUniform_GL_BOOL_VEC2) {
-  TestAcceptedUniform(
-      GL_BOOL_VEC2, Program::kUniform2i | Program::kUniform2f, false);
+  TestAcceptedUniform(GL_BOOL_VEC2,
+                      UniformApiType::kUniform2i | UniformApiType::kUniform2f,
+                      false);
 }
 
 TEST_P(GLES3DecoderTest2, AcceptsUniformES3_GL_BOOL_VEC2) {
-  TestAcceptedUniform(
-      GL_BOOL_VEC2,
-      Program::kUniform2i | Program::kUniform2f | Program::kUniform2ui,
-      true);
+  TestAcceptedUniform(GL_BOOL_VEC2,
+                      UniformApiType::kUniform2i | UniformApiType::kUniform2f |
+                          UniformApiType::kUniform2ui,
+                      true);
 }
 
 TEST_P(GLES2DecoderTest2, AcceptsUniform_GL_BOOL_VEC3) {
-  TestAcceptedUniform(
-      GL_BOOL_VEC3, Program::kUniform3i | Program::kUniform3f, false);
+  TestAcceptedUniform(GL_BOOL_VEC3,
+                      UniformApiType::kUniform3i | UniformApiType::kUniform3f,
+                      false);
 }
 
 TEST_P(GLES3DecoderTest2, AcceptsUniformES3_GL_BOOL_VEC3) {
-  TestAcceptedUniform(
-      GL_BOOL_VEC3,
-      Program::kUniform3i | Program::kUniform3f | Program::kUniform3ui,
-      true);
+  TestAcceptedUniform(GL_BOOL_VEC3,
+                      UniformApiType::kUniform3i | UniformApiType::kUniform3f |
+                          UniformApiType::kUniform3ui,
+                      true);
 }
 
 TEST_P(GLES2DecoderTest2, AcceptsUniform_GL_BOOL_VEC4) {
-  TestAcceptedUniform(
-      GL_BOOL_VEC4, Program::kUniform4i | Program::kUniform4f, false);
+  TestAcceptedUniform(GL_BOOL_VEC4,
+                      UniformApiType::kUniform4i | UniformApiType::kUniform4f,
+                      false);
 }
 
 TEST_P(GLES3DecoderTest2, AcceptsUniformES3_GL_BOOL_VEC4) {
-  TestAcceptedUniform(
-      GL_BOOL_VEC4,
-      Program::kUniform4i | Program::kUniform4f | Program::kUniform4ui,
-      true);
+  TestAcceptedUniform(GL_BOOL_VEC4,
+                      UniformApiType::kUniform4i | UniformApiType::kUniform4f |
+                          UniformApiType::kUniform4ui,
+                      true);
 }
 
 TEST_P(GLES2DecoderTest2, AcceptsUniformTypeFLOAT) {
-  TestAcceptedUniform(GL_FLOAT, Program::kUniform1f, false);
+  TestAcceptedUniform(GL_FLOAT, UniformApiType::kUniform1f, false);
 }
 
 TEST_P(GLES2DecoderTest2, AcceptsUniform_GL_FLOAT_VEC2) {
-  TestAcceptedUniform(GL_FLOAT_VEC2, Program::kUniform2f, false);
+  TestAcceptedUniform(GL_FLOAT_VEC2, UniformApiType::kUniform2f, false);
 }
 
 TEST_P(GLES2DecoderTest2, AcceptsUniform_GL_FLOAT_VEC3) {
-  TestAcceptedUniform(GL_FLOAT_VEC3, Program::kUniform3f, false);
+  TestAcceptedUniform(GL_FLOAT_VEC3, UniformApiType::kUniform3f, false);
 }
 
 TEST_P(GLES2DecoderTest2, AcceptsUniform_GL_FLOAT_VEC4) {
-  TestAcceptedUniform(GL_FLOAT_VEC4, Program::kUniform4f, false);
+  TestAcceptedUniform(GL_FLOAT_VEC4, UniformApiType::kUniform4f, false);
 }
 
 TEST_P(GLES2DecoderTest2, AcceptsUniform_GL_FLOAT_MAT2) {
-  TestAcceptedUniform(GL_FLOAT_MAT2, Program::kUniformMatrix2f, false);
+  TestAcceptedUniform(GL_FLOAT_MAT2, UniformApiType::kUniformMatrix2f, false);
 }
 
 TEST_P(GLES2DecoderTest2, AcceptsUniform_GL_FLOAT_MAT3) {
-  TestAcceptedUniform(GL_FLOAT_MAT3, Program::kUniformMatrix3f, false);
+  TestAcceptedUniform(GL_FLOAT_MAT3, UniformApiType::kUniformMatrix3f, false);
 }
 
 TEST_P(GLES2DecoderTest2, AcceptsUniform_GL_FLOAT_MAT4) {
-  TestAcceptedUniform(GL_FLOAT_MAT4, Program::kUniformMatrix4f, false);
+  TestAcceptedUniform(GL_FLOAT_MAT4, UniformApiType::kUniformMatrix4f, false);
 }
 
 TEST_P(GLES3DecoderTest2, AcceptsUniform_GL_UNSIGNED_INT) {
-  TestAcceptedUniform(GL_UNSIGNED_INT, Program::kUniform1ui, true);
+  TestAcceptedUniform(GL_UNSIGNED_INT, UniformApiType::kUniform1ui, true);
 }
 
 TEST_P(GLES3DecoderTest2, AcceptsUniform_GL_UNSIGNED_INT_VEC2) {
-  TestAcceptedUniform(GL_UNSIGNED_INT_VEC2, Program::kUniform2ui, true);
+  TestAcceptedUniform(GL_UNSIGNED_INT_VEC2, UniformApiType::kUniform2ui, true);
 }
 
 TEST_P(GLES3DecoderTest2, AcceptsUniform_GL_UNSIGNED_INT_VEC3) {
-  TestAcceptedUniform(GL_UNSIGNED_INT_VEC3, Program::kUniform3ui, true);
+  TestAcceptedUniform(GL_UNSIGNED_INT_VEC3, UniformApiType::kUniform3ui, true);
 }
 
 TEST_P(GLES3DecoderTest2, AcceptsUniform_GL_UNSIGNED_INT_VEC4) {
-  TestAcceptedUniform(GL_UNSIGNED_INT_VEC4, Program::kUniform4ui, true);
+  TestAcceptedUniform(GL_UNSIGNED_INT_VEC4, UniformApiType::kUniform4ui, true);
 }
 
 TEST_P(GLES3DecoderTest2, AcceptsUniform_GL_FLOAT_MAT2x3) {
-  TestAcceptedUniform(GL_FLOAT_MAT2x3, Program::kUniformMatrix2x3f, true);
+  TestAcceptedUniform(GL_FLOAT_MAT2x3, UniformApiType::kUniformMatrix2x3f,
+                      true);
 }
 
 TEST_P(GLES3DecoderTest2, AcceptsUniform_GL_FLOAT_MAT2x4) {
-  TestAcceptedUniform(GL_FLOAT_MAT2x4, Program::kUniformMatrix2x4f, true);
+  TestAcceptedUniform(GL_FLOAT_MAT2x4, UniformApiType::kUniformMatrix2x4f,
+                      true);
 }
 
 TEST_P(GLES3DecoderTest2, AcceptsUniform_GL_FLOAT_MAT3x2) {
-  TestAcceptedUniform(GL_FLOAT_MAT3x2, Program::kUniformMatrix3x2f, true);
+  TestAcceptedUniform(GL_FLOAT_MAT3x2, UniformApiType::kUniformMatrix3x2f,
+                      true);
 }
 
 TEST_P(GLES3DecoderTest2, AcceptsUniform_GL_FLOAT_MAT3x4) {
-  TestAcceptedUniform(GL_FLOAT_MAT3x4, Program::kUniformMatrix3x4f, true);
+  TestAcceptedUniform(GL_FLOAT_MAT3x4, UniformApiType::kUniformMatrix3x4f,
+                      true);
 }
 
 TEST_P(GLES3DecoderTest2, AcceptsUniform_GL_FLOAT_MAT4x2) {
-  TestAcceptedUniform(GL_FLOAT_MAT4x2, Program::kUniformMatrix4x2f, true);
+  TestAcceptedUniform(GL_FLOAT_MAT4x2, UniformApiType::kUniformMatrix4x2f,
+                      true);
 }
 
 TEST_P(GLES3DecoderTest2, AcceptsUniform_GL_FLOAT_MAT4x3) {
-  TestAcceptedUniform(GL_FLOAT_MAT4x3, Program::kUniformMatrix4x3f, true);
+  TestAcceptedUniform(GL_FLOAT_MAT4x3, UniformApiType::kUniformMatrix4x3f,
+                      true);
 }
 
 }  // namespace gles2
 }  // namespace gpu
-

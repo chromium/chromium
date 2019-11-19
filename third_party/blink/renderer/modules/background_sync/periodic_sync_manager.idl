@@ -1,0 +1,15 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(crbug.com/925297): Link to spec.
+// Explainer: https://github.com/beverloo/periodic-background-sync
+
+[
+    Exposed=(Window,Worker),
+    RuntimeEnabled=PeriodicBackgroundSync
+] interface PeriodicSyncManager {
+    [MeasureAs=PeriodicBackgroundSyncRegister,CallWith=ScriptState,ImplementedAs=registerPeriodicSync] Promise<void> register(DOMString tag, optional BackgroundSyncOptions options);
+    [MeasureAs=PeriodicBackgroundSyncGetTags, CallWith=ScriptState] Promise<sequence<DOMString>> getTags();
+    [MeasureAs=PeriodicBackgroundSyncUnregister,CallWith=ScriptState] Promise<void> unregister(DOMString tag);
+};

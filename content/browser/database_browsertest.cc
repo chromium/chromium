@@ -31,7 +31,7 @@ class DatabaseTest : public ContentBrowserTest {
   }
 
   void Navigate(Shell* shell) {
-    NavigateToURL(shell, GetTestUrl("", "simple_database.html"));
+    EXPECT_TRUE(NavigateToURL(shell, GetTestUrl("", "simple_database.html")));
   }
 
   void CreateTable(Shell* shell) {

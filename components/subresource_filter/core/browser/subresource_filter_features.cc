@@ -396,7 +396,7 @@ scoped_refptr<ConfigurationList> GetEnabledConfigurations() {
 }
 
 bool HasEnabledConfiguration(const Configuration& config) {
-  return base::ContainsValue(
+  return base::Contains(
       GetEnabledConfigurations()->configs_by_decreasing_priority(), config);
 }
 

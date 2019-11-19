@@ -9,7 +9,6 @@ optimize_webui("build") {
   host = "bluetooth_pairing_dialog"
   html_in_files = [ "bluetooth_pairing_dialog.html" ]
   html_out_files = [ "vulcanized.html" ]
-  html_out_files_polymer2 = [ "vulcanized.p2.html" ]
 
   input = rebase_path(".", root_build_dir)
   js_out_files = [ "crisper.js" ]
@@ -25,6 +24,7 @@ js_type_check("closure_compile") {
 
 js_library("bluetooth_pairing_dialog") {
   deps = [
+    "//ui/webui/resources/cr_components/chromeos:bluetooth_dialog",
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js:i18n_behavior",
   ]

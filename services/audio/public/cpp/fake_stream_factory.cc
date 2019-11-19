@@ -6,7 +6,7 @@
 
 namespace audio {
 
-FakeStreamFactory::FakeStreamFactory() : binding_(this) {}
+FakeStreamFactory::FakeStreamFactory() = default;
 FakeStreamFactory::~FakeStreamFactory() = default;
 
 }  // namespace audio

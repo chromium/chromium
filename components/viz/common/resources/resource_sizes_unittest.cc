@@ -166,5 +166,31 @@ TEST_F(ResourceUtilTest, SizeInBytesOverflow) {
   EXPECT_TRUE(ResourceSizes::VerifySizeInBytes<int>(size, RGBA_4444));
 }
 
+TEST_F(ResourceUtilTest, WidthOverflowDoesNotCrash) {
+  gfx::Size size(0x20000000, 1);
+  // 0x20000000 * 4 = 0x80000000 which overflows int. Should return false, not
+  // crash.
+  int bytes;
+  EXPECT_FALSE(
+      ResourceSizes::MaybeWidthInBytes<int>(size.width(), BGRA_8888, &bytes));
+  EXPECT_FALSE(ResourceSizes::MaybeSizeInBytes<int>(size, BGRA_8888, &bytes));
+}
+
+// Checks that we do not incorrectly indicate that a size has overflowed when
+// only the size in bits overflows, but not the size in bytes.
+TEST_F(ResourceUtilTest, SizeInBitsOverflowBytesOk) {
+  gfx::Size size(10000, 10000);
+  // 8192 * 8192 * 32 = 0x80000000, overflows int.
+  // Bytes are /8 and do not overflow.
+  EXPECT_TRUE(ResourceSizes::VerifySizeInBytes<int>(size, BGRA_8888));
+}
+
+// Checks that we correctly identify overflow in cases caused by rounding.
+TEST_F(ResourceUtilTest, RoundingOverflows) {
+  gfx::Size size(0x1FFFFFFF, 1);
+  // 0x1FFFFFFF * 4 = 0x7FFFFFFC. Will overflow when rounded up.
+  EXPECT_FALSE(ResourceSizes::VerifySizeInBytes<int>(size, ETC1));
+}
+
 }  // namespace
 }  // namespace viz

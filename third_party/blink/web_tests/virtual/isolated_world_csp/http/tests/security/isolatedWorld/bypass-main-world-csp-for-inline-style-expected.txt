@@ -1,0 +1,30 @@
+CONSOLE MESSAGE: line 74: Injecting in main world: this should fail.
+CONSOLE ERROR: line 20: Refused to apply inline style because it violates the following Content Security Policy directive: "default-src 'none'". Either the 'unsafe-inline' keyword, a hash ('sha256-9mofj90uV/hjdJ1EZ8ch4jBC+3bw4vt8GBxoMUosVmo='), or a nonce ('nonce-...') is required to enable inline execution. Note also that 'style-src' was not explicitly set, so 'default-src' is used as a fallback.
+
+CONSOLE MESSAGE: line 31: PASS: Style assignment in test 6 was blocked by CSP.
+CONSOLE MESSAGE: line 78: Injecting into isolated world without bypass: this should fail.
+CONSOLE ERROR: Refused to apply inline style because it violates the following Content Security Policy directive: "default-src 'none'". Either the 'unsafe-inline' keyword, a hash ('sha256-RMFtATOlfMpeC8MJSEmpniQZnGMRT24P+KNCE5zJg08='), or a nonce ('nonce-...') is required to enable inline execution. Note also that 'style-src' was not explicitly set, so 'default-src' is used as a fallback.
+
+CONSOLE MESSAGE: PASS: Style assignment in test 5 was blocked by CSP.
+CONSOLE ERROR: Refused to apply inline style because it violates the following Content Security Policy directive: "default-src 'none'". Either the 'unsafe-inline' keyword, a hash ('sha256-ZBTj5RHLnrF+IxdRZM2RuLfjTJQXNSi7fLQHr09onfY='), or a nonce ('nonce-...') is required to enable inline execution. Note also that 'style-src' was not explicitly set, so 'default-src' is used as a fallback.
+
+CONSOLE MESSAGE: PASS: Style attribute assignment in test 5 was blocked by CSP.
+CONSOLE MESSAGE: line 86: Have a separate CSP for the isolated world. Allow unsafe-inline. This should pass.
+CONSOLE MESSAGE: PASS: Style assignment in test 4 was not blocked by CSP.
+CONSOLE MESSAGE: PASS: Style attribute assignment in test 4 was not blocked by CSP.
+CONSOLE MESSAGE: line 93: Have a separate CSP for the isolated world. Use an empty CSP. This should pass.
+CONSOLE MESSAGE: PASS: Style assignment in test 3 was not blocked by CSP.
+CONSOLE MESSAGE: PASS: Style attribute assignment in test 3 was not blocked by CSP.
+CONSOLE MESSAGE: line 99: Have a separate CSP for the isolated world. Disallow unsafe-inline.
+CONSOLE MESSAGE: line 103: internals.runtimeFlags.isolatedWorldCSPEnabled is true
+CONSOLE ERROR: Refused to apply inline style because it violates the following Content Security Policy directive: "style-src 'none'". Either the 'unsafe-inline' keyword, a hash ('sha256-0B38VDo0PSzEMTh/bG58xIoc1+UQzjQ8WF/8+v2xP9w='), or a nonce ('nonce-...') is required to enable inline execution.
+
+CONSOLE MESSAGE: PASS: Style assignment in test 2 was blocked by CSP.
+CONSOLE ERROR: Refused to apply inline style because it violates the following Content Security Policy directive: "style-src 'none'". Either the 'unsafe-inline' keyword, a hash ('sha256-ZBTj5RHLnrF+IxdRZM2RuLfjTJQXNSi7fLQHr09onfY='), or a nonce ('nonce-...') is required to enable inline execution.
+
+CONSOLE MESSAGE: PASS: Style attribute assignment in test 2 was blocked by CSP.
+CONSOLE MESSAGE: line 110: Injecting into main world again: this should fail.
+CONSOLE ERROR: line 20: Refused to apply inline style because it violates the following Content Security Policy directive: "default-src 'none'". Either the 'unsafe-inline' keyword, a hash ('sha256-bUBNmssmL79UBWplbQJyN9Hi2tRE9H345W5DVyjdUq4='), or a nonce ('nonce-...') is required to enable inline execution. Note also that 'style-src' was not explicitly set, so 'default-src' is used as a fallback.
+
+CONSOLE MESSAGE: line 31: PASS: Style assignment in test 1 was blocked by CSP.
+This tests the behavior of inline CSS in isolated worlds and its interaction with the page and isolated world CSP.

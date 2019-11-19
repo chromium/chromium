@@ -15,9 +15,9 @@
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/message_loop/message_loop.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "services/shape_detection/face_detection_impl_mac_vision.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,10 +52,8 @@ std::unique_ptr<mojom::FaceDetection> CreateFaceDetectorImplMacVision(
 }
 
 using FaceDetectorFactory =
-    base::Callback<std::unique_ptr<mojom::FaceDetection>(
+    base::RepeatingCallback<std::unique_ptr<mojom::FaceDetection>(
         shape_detection::mojom::FaceDetectorOptionsPtr)>;
-
-}  // anonymous namespace
 
 struct TestParams {
   bool fast_mode;
@@ -66,20 +64,43 @@ struct TestParams {
   size_t num_landmarks;
   size_t num_mouth_points;
   FaceDetectorFactory factory;
-} kTestParams[] = {
-    {false, 120, 120, "services/test/data/mona_lisa.jpg", 1, 3, 1,
-     base::Bind(&CreateFaceDetectorImplMac)},
-    {true, 120, 120, "services/test/data/mona_lisa.jpg", 1, 3, 1,
-     base::Bind(&CreateFaceDetectorImplMac)},
-    {false, 120, 120, "services/test/data/mona_lisa.jpg", 1, 4, 10,
-     base::Bind(&CreateFaceDetectorImplMacVision)},
-    {false, 240, 240, "services/test/data/the_beatles.jpg", 3, 3, 1,
-     base::Bind(&CreateFaceDetectorImplMac)},
-    {true, 240, 240, "services/test/data/the_beatles.jpg", 3, 3, 1,
-     base::Bind(&CreateFaceDetectorImplMac)},
-    {false, 240, 240, "services/test/data/the_beatles.jpg", 4, 4, 10,
-     base::Bind(&CreateFaceDetectorImplMacVision)},
 };
+
+std::vector<TestParams> GetTestParams() {
+  if (@available(macOS 10.14, *)) {
+    return {
+        {false, 120, 120, "services/test/data/mona_lisa.jpg", 1, 3, 1,
+         base::BindRepeating(&CreateFaceDetectorImplMac)},
+        {true, 120, 120, "services/test/data/mona_lisa.jpg", 1, 3, 1,
+         base::BindRepeating(&CreateFaceDetectorImplMac)},
+        {false, 120, 120, "services/test/data/mona_lisa.jpg", 1, 4, 10,
+         base::BindRepeating(&CreateFaceDetectorImplMacVision)},
+        {false, 240, 240, "services/test/data/the_beatles.jpg", 4, 3, 1,
+         base::BindRepeating(&CreateFaceDetectorImplMac)},
+        {true, 240, 240, "services/test/data/the_beatles.jpg", 4, 3, 1,
+         base::BindRepeating(&CreateFaceDetectorImplMac)},
+        {false, 240, 240, "services/test/data/the_beatles.jpg", 4, 4, 10,
+         base::BindRepeating(&CreateFaceDetectorImplMacVision)},
+    };
+  } else {
+    return {
+        {false, 120, 120, "services/test/data/mona_lisa.jpg", 1, 3, 1,
+         base::BindRepeating(&CreateFaceDetectorImplMac)},
+        {true, 120, 120, "services/test/data/mona_lisa.jpg", 1, 3, 1,
+         base::BindRepeating(&CreateFaceDetectorImplMac)},
+        {false, 120, 120, "services/test/data/mona_lisa.jpg", 1, 4, 10,
+         base::BindRepeating(&CreateFaceDetectorImplMacVision)},
+        {false, 240, 240, "services/test/data/the_beatles.jpg", 3, 3, 1,
+         base::BindRepeating(&CreateFaceDetectorImplMac)},
+        {true, 240, 240, "services/test/data/the_beatles.jpg", 3, 3, 1,
+         base::BindRepeating(&CreateFaceDetectorImplMac)},
+        {false, 240, 240, "services/test/data/the_beatles.jpg", 4, 4, 10,
+         base::BindRepeating(&CreateFaceDetectorImplMacVision)},
+    };
+  }
+}
+
+}  // anonymous namespace
 
 class FaceDetectionImplMacTest : public TestWithParam<struct TestParams> {
  public:
@@ -116,7 +137,7 @@ class FaceDetectionImplMacTest : public TestWithParam<struct TestParams> {
   MOCK_METHOD0(Detection, void(void));
 
   std::unique_ptr<mojom::FaceDetection> impl_;
-  const base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   void* vision_framework_;
 };
 
@@ -165,9 +186,8 @@ TEST_P(FaceDetectionImplMacTest, ScanOneFace) {
   ASSERT_EQ(num_bytes, image->computeByteSize());
 
   base::RunLoop run_loop;
-  base::Closure quit_closure = run_loop.QuitClosure();
   // Send the image to Detect() and expect the response in callback.
-  EXPECT_CALL(*this, Detection()).WillOnce(RunClosure(quit_closure));
+  EXPECT_CALL(*this, Detection()).WillOnce(RunClosure(run_loop.QuitClosure()));
   impl_->Detect(
       *image,
       base::BindOnce(&FaceDetectionImplMacTest::DetectCallback,
@@ -177,6 +197,6 @@ TEST_P(FaceDetectionImplMacTest, ScanOneFace) {
   run_loop.Run();
 }
 
-INSTANTIATE_TEST_SUITE_P(, FaceDetectionImplMacTest, ValuesIn(kTestParams));
+INSTANTIATE_TEST_SUITE_P(, FaceDetectionImplMacTest, ValuesIn(GetTestParams()));
 
 }  // shape_detection namespace

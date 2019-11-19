@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/platform/geometry/double_size.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -53,12 +53,13 @@ class CORE_EXPORT CSSToLengthConversionData {
     DISALLOW_NEW();
 
    public:
-    FontSizes() : em_(0), rem_(0), font_(nullptr) {}
-    FontSizes(float em, float rem, const Font*);
+    FontSizes() : em_(0), rem_(0), font_(nullptr), zoom_(1) {}
+    FontSizes(float em, float rem, const Font*, float zoom);
     FontSizes(const ComputedStyle*, const ComputedStyle* root_style);
 
     float Em() const { return em_; }
     float Rem() const { return rem_; }
+    float Zoom() const;
     float Ex() const;
     float Ch() const;
 
@@ -66,6 +67,7 @@ class CORE_EXPORT CSSToLengthConversionData {
     float em_;
     float rem_;
     const Font* font_;
+    float zoom_;
   };
 
   class CORE_EXPORT ViewportSize {
@@ -97,8 +99,9 @@ class CORE_EXPORT CSSToLengthConversionData {
 
   float EmFontSize() const { return font_sizes_.Em(); }
   float RemFontSize() const;
-  float ExFontSize() const { return font_sizes_.Ex(); }
-  float ChFontSize() const { return font_sizes_.Ch(); }
+  float ExFontSize() const;
+  float ChFontSize() const;
+  float FontSizeZoom() const { return font_sizes_.Zoom(); }
 
   // Accessing these marks the style as having viewport units
   double ViewportWidthPercent() const;

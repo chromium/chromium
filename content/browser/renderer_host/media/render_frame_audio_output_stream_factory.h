@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "content/common/content_export.h"
 #include "content/common/media/renderer_audio_output_stream_factory.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace media {
 class AudioSystem;
@@ -45,7 +46,7 @@ class CONTENT_EXPORT RenderFrameAudioOutputStreamFactory final {
       RenderFrameHost* frame,
       media::AudioSystem* audio_system,
       MediaStreamManager* media_stream_manager,
-      mojom::RendererAudioOutputStreamFactoryRequest request);
+      mojo::PendingReceiver<mojom::RendererAudioOutputStreamFactory> receiver);
 
   ~RenderFrameAudioOutputStreamFactory();
 

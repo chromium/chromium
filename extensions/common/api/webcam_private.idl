@@ -52,13 +52,22 @@ namespace webcamPrivate {
     // Close a serial port connection to a webcam.
     static void closeWebcam(DOMString webcamId);
 
+    // Retrieve webcam parameters. Will respond with a config holding the
+    // requested values that are available, or default values for those that
+    // aren't. If none of the requests succeed, will respond with an error.
     static void get(DOMString webcamId, WebcamConfigurationCallback callback);
-    static void set(DOMString webcamId, WebcamConfiguration config);
+
+    // A callback is included here which is invoked when the function responds.
+    // No configuration is returned through it.
+    static void set(DOMString webcamId, WebcamConfiguration config,
+                    WebcamConfigurationCallback callback);
 
     // Reset a webcam. Note: the value of the parameter have no effect, it's the
     // presence of the parameter that matters. E.g.: reset(webcamId, {pan: 0,
     // tilt: 1}); will reset pan & tilt, but not zoom.
-    static void reset(DOMString webcamId, WebcamConfiguration config);
+    // A callback is included here which is invoked when the function responds.
+    // No configuration is returned through it.
+    static void reset(DOMString webcamId, WebcamConfiguration config,
+                      WebcamConfigurationCallback callback);
   };
 };
-

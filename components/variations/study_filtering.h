@@ -45,6 +45,10 @@ bool CheckStudyPlatform(const Study::Filter& filter, Study::Platform platform);
 bool CheckStudyLowEndDevice(const Study::Filter& filter,
                             bool is_low_end_device);
 
+// Checks whether a study is applicable given |is_enterprise| per |filter|.
+bool CheckStudyEnterprise(const Study::Filter& filter,
+                          const ClientFilterableState& client_state);
+
 // Checks whether a study is applicable for the given date/time per |filter|.
 bool CheckStudyStartDate(const Study::Filter& filter,
                          const base::Time& date_time);
@@ -56,6 +60,10 @@ bool CheckStudyEndDate(const Study::Filter& filter,
 // Checks whether a study is applicable for the given version per |filter|.
 bool CheckStudyVersion(const Study::Filter& filter,
                        const base::Version& version);
+
+// Checks whether a study is applicable for the given OS version per |filter|.
+bool CheckStudyOSVersion(const Study::Filter& filter,
+                         const base::Version& os_version);
 
 // Checks whether a study is applicable for the given |country| per |filter|.
 bool CheckStudyCountry(const Study::Filter& filter, const std::string& country);

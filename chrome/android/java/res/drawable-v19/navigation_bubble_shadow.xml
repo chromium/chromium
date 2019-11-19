@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- TODO(crbug.com/1009058): Remove this with KitKiat deprecation. -->
+
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/navigation_bubble_shadow">
+
+    <!-- Drop Shadow -->
+    <item>
+        <shape android:shape="rectangle">
+            <padding
+                android:bottom="@dimen/navigation_bubble_shadow_padding"
+                android:left="@dimen/navigation_bubble_shadow_padding"
+                android:right="@dimen/navigation_bubble_shadow_padding"
+                android:top="@dimen/navigation_bubble_shadow_padding" />
+
+            <corners android:radius="@dimen/navigation_bubble_radius" />
+            <solid android:color="#00CCCCCC" />
+
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <padding
+                android:bottom="@dimen/navigation_bubble_shadow_padding"
+                android:left="@dimen/navigation_bubble_shadow_padding"
+                android:right="@dimen/navigation_bubble_shadow_padding"
+                android:top="@dimen/navigation_bubble_shadow_padding" />
+
+            <corners android:radius="@dimen/navigation_bubble_radius" />
+            <solid android:color="#10CCCCCC" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <padding
+                android:bottom="@dimen/navigation_bubble_shadow_padding"
+                android:left="@dimen/navigation_bubble_shadow_padding"
+                android:right="@dimen/navigation_bubble_shadow_padding"
+                android:top="@dimen/navigation_bubble_shadow_padding" />
+
+            <corners android:radius="@dimen/navigation_bubble_radius" />
+            <solid android:color="#20CCCCCC" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <padding
+                android:bottom="@dimen/navigation_bubble_shadow_padding"
+                android:left="@dimen/navigation_bubble_shadow_padding"
+                android:right="@dimen/navigation_bubble_shadow_padding"
+                android:top="@dimen/navigation_bubble_shadow_padding" />
+
+            <corners android:radius="@dimen/navigation_bubble_radius" />
+            <solid android:color="#30CCCCCC" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <padding
+                android:bottom="@dimen/navigation_bubble_shadow_padding"
+                android:left="@dimen/navigation_bubble_shadow_padding"
+                android:right="@dimen/navigation_bubble_shadow_padding"
+                android:top="@dimen/navigation_bubble_shadow_padding" />
+
+            <corners android:radius="@dimen/navigation_bubble_radius" />
+            <solid android:color="#50CCCCCC" />
+        </shape>
+    </item>
+
+    <!-- Background Color (white) -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/navigation_bubble_radius" />
+            <solid android:color="@color/navigation_bubble_background_color" />
+        </shape>
+    </item>
+</layer-list>

@@ -41,6 +41,11 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   void OnSetVolumeMultiplier(int player_id, double volume_multiplier) override {
   }
 
+  base::Optional<media_session::MediaPosition> GetPosition(
+      int player_id) const override {
+    return base::nullopt;
+  }
+
   RenderFrameHost* render_frame_host() const override {
     return render_frame_host_;
   }

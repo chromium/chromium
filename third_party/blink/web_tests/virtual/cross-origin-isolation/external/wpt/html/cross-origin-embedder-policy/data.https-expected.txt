@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS Cross-Origin-Embedder-Policy and data: URLs
+Harness: the test ran to completion.
+

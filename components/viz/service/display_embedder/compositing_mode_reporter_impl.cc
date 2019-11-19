@@ -10,23 +10,25 @@ CompositingModeReporterImpl::CompositingModeReporterImpl() = default;
 
 CompositingModeReporterImpl::~CompositingModeReporterImpl() = default;
 
-void CompositingModeReporterImpl::BindRequest(
-    mojom::CompositingModeReporterRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void CompositingModeReporterImpl::BindReceiver(
+    mojo::PendingReceiver<mojom::CompositingModeReporter> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void CompositingModeReporterImpl::SetUsingSoftwareCompositing() {
   gpu_ = false;
-  watchers_.ForAllPtrs([](mojom::CompositingModeWatcher* watcher) {
-    watcher->CompositingModeFallbackToSoftware();
-  });
+  for (auto& it : watchers_)
+    it->CompositingModeFallbackToSoftware();
 }
 
 void CompositingModeReporterImpl::AddCompositingModeWatcher(
-    mojom::CompositingModeWatcherPtr watcher) {
+    mojo::PendingRemote<mojom::CompositingModeWatcher> watcher) {
+  mojo::Remote<mojom::CompositingModeWatcher> watcher_remote(
+      std::move(watcher));
   if (!gpu_)
-    watcher->CompositingModeFallbackToSoftware();
-  watchers_.AddPtr(std::move(watcher));
+    watcher_remote->CompositingModeFallbackToSoftware();
+
+  watchers_.Add(std::move(watcher_remote));
 }
 
 }  // namespace viz

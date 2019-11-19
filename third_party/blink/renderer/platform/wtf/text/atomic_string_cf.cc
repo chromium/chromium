@@ -31,7 +31,6 @@
 #if defined(OS_MACOSX)
 
 #include <CoreFoundation/CoreFoundation.h>
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 
 namespace WTF {
 

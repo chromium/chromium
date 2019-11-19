@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_view.h"
 #import "ios/chrome/browser/ui/util/relaxed_bounds_constraints_hittest.h"
-#import "ios/web/public/web_state/ui/crw_web_view_scroll_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
 @protocol CRWWebViewProxy;
 namespace ios {

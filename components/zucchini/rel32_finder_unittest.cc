@@ -122,12 +122,12 @@ class TestRel32Finder : public Rel32Finder {
  public:
   using Rel32Finder::Rel32Finder;
 
-  bool GetNext() { return Rel32Finder::FindNext(); }
-
   // Rel32Finder:
-  ConstBufferView Scan(ConstBufferView region) override { return next_result; }
+  NextIterators Scan(ConstBufferView region) override { return next_result; }
 
-  ConstBufferView next_result;
+  bool GetNext() { return FindNext(); }
+
+  NextIterators next_result;
 };
 
 }  // namespace
@@ -137,47 +137,48 @@ TEST(Rel32FinderTest, Scan) {
   std::vector<uint8_t> buffer(kRegionTotal);
   ConstBufferView image(buffer.data(), buffer.size());
 
-  TestRel32Finder finder(image);
+  TestRel32Finder finder;
+  finder.SetRegion(image);
 
   auto check_finder_state = [&](const TestRel32Finder& finder,
                                 size_t expected_cursor,
-                                size_t expected_next_cursor) {
+                                size_t expected_accept_it) {
     CHECK_LE(expected_cursor, kRegionTotal);
-    CHECK_LE(expected_next_cursor, kRegionTotal);
+    CHECK_LE(expected_accept_it, kRegionTotal);
 
     EXPECT_EQ(image.begin() + expected_cursor, finder.region().begin());
-    EXPECT_EQ(image.begin() + expected_next_cursor, finder.next_cursor());
+    EXPECT_EQ(image.begin() + expected_accept_it, finder.accept_it());
   };
 
   check_finder_state(finder, 0, 0);
 
-  finder.next_result = ConstBufferView(image.begin() + 0, 1);
+  finder.next_result = {image.begin() + 1, image.begin() + 1};
   EXPECT_TRUE(finder.GetNext());
   check_finder_state(finder, 1, 1);
 
-  finder.next_result = ConstBufferView(image.begin() + 1, 1);
+  finder.next_result = {image.begin() + 2, image.begin() + 2};
   EXPECT_TRUE(finder.GetNext());
   check_finder_state(finder, 2, 2);
 
-  finder.next_result = ConstBufferView(image.begin() + 4, 2);
+  finder.next_result = {image.begin() + 5, image.begin() + 6};
   EXPECT_TRUE(finder.GetNext());
   check_finder_state(finder, 5, 6);
   finder.Accept();
   check_finder_state(finder, 6, 6);
 
-  finder.next_result = ConstBufferView(image.begin() + 6, 1);
+  finder.next_result = {image.begin() + 7, image.begin() + 7};
   EXPECT_TRUE(finder.GetNext());
   check_finder_state(finder, 7, 7);
 
-  finder.next_result = ConstBufferView(image.begin() + 7, 1);
+  finder.next_result = {image.begin() + 8, image.begin() + 8};
   EXPECT_TRUE(finder.GetNext());
   check_finder_state(finder, 8, 8);
 
-  finder.next_result = ConstBufferView(image.begin() + 98, 1);
+  finder.next_result = {image.begin() + 99, image.begin() + 99};
   EXPECT_TRUE(finder.GetNext());
   check_finder_state(finder, 99, 99);
 
-  finder.next_result = ConstBufferView(image.end(), 0);
+  finder.next_result = {nullptr, nullptr};
   EXPECT_FALSE(finder.GetNext());
   check_finder_state(finder, 99, 99);
 }
@@ -211,9 +212,10 @@ TEST(Rel32FinderX86Test, FindNext) {
   ConstBufferView image =
       ConstBufferView::FromRange(std::begin(data), std::end(data));
 
-  Rel32FinderX86 rel_finder(image);
+  Rel32FinderX86 rel_finder;
+  rel_finder.SetRegion(image);
 
-  // List of expected locations as pairs of (cursor position, rel32 position).
+  // List of expected locations as pairs of {cursor offset, rel32 offset}.
   std::vector<std::pair<size_t, size_t>> expected_locations = {
       {0x04, 0x04}, {0x09, 0x09}, {0x0E, 0x0F}, {0x14, 0x15}, {0x1A, 0x1B},
       {0x20, 0x21}, {0x26, 0x27}, {0x2C, 0x2D}, {0x32, 0x33}, {0x38, 0x39},
@@ -228,7 +230,7 @@ TEST(Rel32FinderX86Test, FindNext) {
     EXPECT_EQ(location.first,
               size_t(rel_finder.region().begin() - image.begin()));
     EXPECT_EQ(location.second, size_t(result->location - image.begin()));
-    EXPECT_EQ(result->location + 4, rel_finder.next_cursor());
+    EXPECT_EQ(result->location + 4, rel_finder.accept_it());
     EXPECT_FALSE(result->can_point_outside_section);
     rel_finder.Accept();
   }
@@ -245,20 +247,21 @@ TEST(Rel32FinderX86Test, Accept) {
   ConstBufferView image =
       ConstBufferView::FromRange(std::begin(data), std::end(data));
 
-  auto next_location = [&](Rel32FinderX86& rel_finder) {
+  auto next_location = [&](Rel32FinderX86& rel_finder) -> size_t {
     auto result = rel_finder.GetNext();
     EXPECT_TRUE(result.has_value());
     return result->location - image.begin();
   };
 
-  Rel32FinderX86 rel_finder(image);
+  Rel32FinderX86 rel_finder;
+  rel_finder.SetRegion(image);
 
-  EXPECT_EQ(0x05, next_location(rel_finder));  // False positive.
+  EXPECT_EQ(0x05U, next_location(rel_finder));  // False positive.
   rel_finder.Accept();
   // False negative: shadowed by 0x05
   // EXPECT_EQ(0x06, next_location(rel_finder));
-  EXPECT_EQ(0x0A, next_location(rel_finder));  // False positive.
-  EXPECT_EQ(0x0B, next_location(rel_finder));  // Found if 0x0A is discarded.
+  EXPECT_EQ(0x0AU, next_location(rel_finder));  // False positive.
+  EXPECT_EQ(0x0BU, next_location(rel_finder));  // Found if 0x0A is discarded.
 }
 
 TEST(Rel32FinderX64Test, FindNext) {
@@ -308,9 +311,10 @@ TEST(Rel32FinderX64Test, FindNext) {
   ConstBufferView image =
       ConstBufferView::FromRange(std::begin(data), std::end(data));
 
-  Rel32FinderX64 rel_finder(image);
+  Rel32FinderX64 rel_finder;
+  rel_finder.SetRegion(image);
 
-  // Lists of expected locations as pairs of (cursor position, rel32 position).
+  // Lists of expected locations as pairs of {cursor offset, rel32 offset}.
   std::vector<std::pair<size_t, size_t>> expected_locations = {
       {0x04, 0x04}, {0x09, 0x09}, {0x0E, 0x0F}, {0x14, 0x15}, {0x1A, 0x1B},
       {0x20, 0x21}, {0x26, 0x27}, {0x2C, 0x2D}, {0x32, 0x33}, {0x38, 0x39},
@@ -323,25 +327,25 @@ TEST(Rel32FinderX64Test, FindNext) {
       {0xAF, 0xB0}, {0xB6, 0xB7}, {0xBD, 0xBE}, {0xC4, 0xC5}, {0xCB, 0xCC},
       {0xD2, 0xD3}, {0xD9, 0xDA}, {0xE0, 0xE1},
   };
+  // Jump instructions, which cannot point outside section.
   for (auto location : expected_locations) {
     auto result = rel_finder.GetNext();
     EXPECT_TRUE(result.has_value());
-
     EXPECT_EQ(location.first,
               size_t(rel_finder.region().begin() - image.begin()));
     EXPECT_EQ(location.second, size_t(result->location - image.begin()));
-    EXPECT_EQ(result->location + 4, rel_finder.next_cursor());
+    EXPECT_EQ(result->location + 4, rel_finder.accept_it());
     EXPECT_FALSE(result->can_point_outside_section);
     rel_finder.Accept();
   }
+  // PC-relative data access instructions, which can point outside section.
   for (auto location : expected_locations_rip) {
     auto result = rel_finder.GetNext();
     EXPECT_TRUE(result.has_value());
-
     EXPECT_EQ(location.first,
               size_t(rel_finder.region().begin() - image.begin()));
     EXPECT_EQ(location.second, size_t(result->location - image.begin()));
-    EXPECT_EQ(result->location + 4, rel_finder.next_cursor());
+    EXPECT_EQ(result->location + 4, rel_finder.accept_it());
     EXPECT_TRUE(result->can_point_outside_section);
     rel_finder.Accept();
   }

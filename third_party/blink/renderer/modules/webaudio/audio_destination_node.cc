@@ -52,4 +52,12 @@ uint32_t AudioDestinationNode::maxChannelCount() const {
   return GetAudioDestinationHandler().MaxChannelCount();
 }
 
+void AudioDestinationNode::ReportDidCreate() {
+  GraphTracer().DidCreateAudioNode(this);
+}
+
+void AudioDestinationNode::ReportWillBeDestroyed() {
+  GraphTracer().WillDestroyAudioNode(this);
+}
+
 }  // namespace blink

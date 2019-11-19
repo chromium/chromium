@@ -36,7 +36,7 @@ pages.
 
 AppCache aims for comparable ease by automatically updating its locally cached
 copy of the manifest and its resources whenever a page is visited. This comes
-with some significant caveats.
+with some significant caveats:
 
 1. AppCache bails early in the update process if the manifest hasn't changed
    (byte for byte). This behavior is intended to save network bandwidth.
@@ -72,7 +72,7 @@ the same manifest, and therefore use the same cached resources.
 Manifest sharing is particularly complex when combined with implicit caching.
 An AppCache manifest is not required to list the HTML pages that refer to it
 via an `<html manifest>` attribute. (Listing the pages is however recommended.)
-This allowance introduces the following complexities.
+This allowance introduces the following complexities:
 
 1. When a browser encounters an HTML page that refers to a manifest it hasn't
    seen before, the browser creates an implicit resource entry for the HTML
@@ -109,13 +109,20 @@ downloading two manifests and all the resources associated with them.
 
 ## Data Model
 
-AppCache uses the following terms.
+AppCache uses the following terms:
 
 * A **manifest** is a list of URLs to resources. The listed resources should be
   be sufficient for the page to be used while offline.
 * An **application cache** contains one version of a manifest and all the
   resources associated with it. This includes the resources explicitly listed in
   the manifest, and the implicitly cached HTML pages that refer to the manifest.
+  The HTTP responses are stored in a disk_cache (//net term), then all other
+  AppCache information is stored in a per-profile SQLite database that points
+  into the disk_cache.  The disk_cache scope is per-profile.
+* A **response** represents the headers and body for a given server response.
+  This response is first served by a server and may then be stored and retrieved
+  in the disk_cache.  The application cache in the SQLite database updates each
+  entry to track the associated response id in the disk_cache for that entry.
 * An **application cache group** is a collection of all the application caches
   that have the same manifest.
 * A **cache host** is a name used to refer to a Document (HTML page) when the
@@ -124,14 +131,16 @@ AppCache uses the following terms.
 
 ### Application Cache
 
-An application cache has the following components.
+An application cache has the following components:
 
 1. **Entries** that identify resources to be cached.
 2. **Namespaces** that direct the loading of sub-resource URLs for a page
    associated with the cache.
 3. **Flags** that influence the cache's behavior.
 
-Entries have the following types.
+All of these components are stored in and retrieved from a SQLite database.
+
+Entries have the following types:
 
 * **manifest** - the AppCache manifest; the absolute URL of this entry is used
   to identify the group that this application cache belongs to
@@ -145,8 +154,11 @@ Explicit and fallback entries can also be marked as **foreign**. A foreign entry
 indicates a document whose `<html manifest>` attribute does not point to this
 cache's manifest.
 
+Each entry can refer to its response, which allows AppCache to know where to
+find a given entry's cached response data in its disk or memory cache.
+
 Namespaces are conceptually patterns that match resource URLs. AppCache supports
-the following namespaces.
+the following namespaces:
 
 * **fallback** - URLs matching the namespace are first fetched from the network.
   If the fetch fails, a cached fallback resource is used instead. Fallback
@@ -171,7 +183,7 @@ expressions that match URLs. This extension is invoked by adding the `isPattern`
 keyword after the namespace in the manifest.
 ***
 
-An application cache has the following flags.
+An application cache has the following flags:
 
 * **completeness** - the application cache is *complete* when all the resources
   in the manifest have been fetched and cached, and *incomplete* otherwise

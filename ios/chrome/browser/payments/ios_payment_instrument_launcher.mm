@@ -13,13 +13,14 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/payments/core/native_error_strings.h"
+#include "components/payments/core/payment_app.h"
 #include "components/payments/core/payment_details.h"
-#include "components/payments/core/payment_instrument.h"
 #import "ios/chrome/browser/payments/payment_request_constants.h"
-#include "ios/web/public/navigation_item.h"
-#include "ios/web/public/navigation_manager.h"
-#include "ios/web/public/ssl_status.h"
-#import "ios/web/public/web_state/web_state.h"
+#include "ios/web/public/navigation/navigation_item.h"
+#include "ios/web/public/navigation/navigation_manager.h"
+#include "ios/web/public/security/ssl_status.h"
+#import "ios/web/public/web_state.h"
 #include "net/base/mac/url_conversions.h"
 #include "net/base/url_util.h"
 #include "net/cert/x509_certificate.h"
@@ -59,7 +60,7 @@ bool IOSPaymentInstrumentLauncher::LaunchIOSPaymentInstrument(
     payments::PaymentRequest* payment_request,
     web::WebState* active_web_state,
     GURL& universal_link,
-    payments::PaymentInstrument::Delegate* delegate) {
+    payments::PaymentApp::Delegate* delegate) {
   DCHECK(delegate);
 
   // Only one request can be handled at a time.
@@ -77,7 +78,7 @@ bool IOSPaymentInstrumentLauncher::LaunchIOSPaymentInstrument(
   // implementation.
   base::Value method_names(base::Value::Type::LIST);
   for (auto const& pair : payment_request->stringified_method_data())
-    method_names.GetList().emplace_back(pair.first);
+    method_names.Append(pair.first);
 
   base::Value params_to_payment_app(base::Value::Type::DICTIONARY);
   params_to_payment_app.SetKey(kMethodNames, std::move(method_names));
@@ -187,7 +188,7 @@ base::Value IOSPaymentInstrumentLauncher::SerializeMethodData(
       // We insert the stringified data, not the JSON object and only if the
       // corresponding JSON object is valid.
       if (base::JSONReader::Read(data_it))
-        data_list.GetList().emplace_back(data_it);
+        data_list.Append(data_it);
     }
     method_data.SetKey(map_it.first, std::move(data_list));
   }
@@ -215,11 +216,11 @@ base::Value IOSPaymentInstrumentLauncher::SerializeCertificateChain(
     base::Value byte_array(base::Value::Type::LIST);
     byte_array.GetList().reserve(cert_string.size());
     for (const char byte : cert_string)
-      byte_array.GetList().emplace_back(byte);
+      byte_array.Append(byte);
 
     base::Value cert_chain_dict(base::Value::Type::DICTIONARY);
     cert_chain_dict.SetKey(kCertificate, std::move(byte_array));
-    cert_chain_list.GetList().push_back(std::move(cert_chain_dict));
+    cert_chain_list.Append(std::move(cert_chain_dict));
   }
 
   return cert_chain_list;
@@ -230,7 +231,7 @@ base::Value IOSPaymentInstrumentLauncher::SerializeModifiers(
   base::Value modifiers(base::Value::Type::LIST);
   size_t numModifiers = details.modifiers.size();
   for (size_t i = 0; i < numModifiers; ++i) {
-    modifiers.GetList().push_back(base::Value::FromUniquePtrValue(
+    modifiers.Append(base::Value::FromUniquePtrValue(
         details.modifiers[i].ToDictionaryValue()));
   }
   return modifiers;
@@ -239,10 +240,14 @@ base::Value IOSPaymentInstrumentLauncher::SerializeModifiers(
 void IOSPaymentInstrumentLauncher::CompleteLaunchRequest(
     const std::string& method_name,
     const std::string& details) {
-  if (!method_name.empty() && !details.empty())
-    delegate_->OnInstrumentDetailsReady(method_name, details);
-  else
-    delegate_->OnInstrumentDetailsError();
+  if (method_name.empty()) {
+    delegate_->OnInstrumentDetailsError(
+        errors::kMissingMethodNameFromPaymentApp);
+  } else if (details.empty()) {
+    delegate_->OnInstrumentDetailsError(errors::kMissingDetailsFromPaymentApp);
+  } else {
+    delegate_->OnInstrumentDetailsReady(method_name, details, PayerData());
+  }
   delegate_ = nullptr;
   payment_request_id_ = "";
 }

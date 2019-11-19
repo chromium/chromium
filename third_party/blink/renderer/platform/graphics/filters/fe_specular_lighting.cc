@@ -44,18 +44,6 @@ FESpecularLighting::FESpecularLighting(Filter* filter,
                  specular_exponent,
                  std::move(light_source)) {}
 
-FESpecularLighting* FESpecularLighting::Create(
-    Filter* filter,
-    const Color& lighting_color,
-    float surface_scale,
-    float specular_constant,
-    float specular_exponent,
-    scoped_refptr<LightSource> light_source) {
-  return MakeGarbageCollected<FESpecularLighting>(
-      filter, lighting_color, surface_scale, specular_constant,
-      specular_exponent, std::move(light_source));
-}
-
 FESpecularLighting::~FESpecularLighting() = default;
 
 Color FESpecularLighting::LightingColor() const {

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/service/cast_service.h"
@@ -15,7 +16,7 @@
 
 namespace chromecast {
 
-class CastWebContentsManager;
+class CastWebService;
 class CastWebViewFactory;
 class CastWindowManager;
 
@@ -35,30 +36,20 @@ class CastServiceSimple : public CastService, public CastWebView::Delegate {
   void StartInternal() override;
   void StopInternal() override;
 
-  // CastWebView::Delegate implementation:
-  void OnPageStopped(CastWebContents* cast_web_contents,
-                     int error_code) override;
-  void OnPageStateChanged(CastWebContents* cast_web_contents) override;
-  bool OnAddMessageToConsoleReceived(int32_t level,
-                                     const base::string16& message,
-                                     int32_t line_no,
-                                     const base::string16& source_id) override;
-
   // CastContentWindow::Delegate implementation:
   void OnWindowDestroyed() override;
-  void OnKeyEvent(const ui::KeyEvent& key_event) override;
   bool CanHandleGesture(GestureType gesture_type) override;
   bool ConsumeGesture(GestureType gesture_type) override;
   void OnVisibilityChange(VisibilityType visibility_type) override;
   std::string GetId() override;
 
  private:
-  CastWindowManager* const window_manager_;
   const std::unique_ptr<CastWebViewFactory> web_view_factory_;
-  const std::unique_ptr<CastWebContentsManager> web_contents_manager_;
-  std::unique_ptr<CastWebView> cast_web_view_;
+  const std::unique_ptr<CastWebService> web_service_;
+  CastWebView::Scoped cast_web_view_;
   GURL startup_url_;
 
+  base::WeakPtrFactory<CastServiceSimple> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(CastServiceSimple);
 };
 

@@ -20,7 +20,6 @@
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
-#include "chromeos/components/proximity_auth/proximity_auth_profile_pref_manager.h"
 #include "chromeos/components/proximity_auth/proximity_monitor_observer.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
@@ -42,11 +41,6 @@ namespace {
 
 const char kRemoteDeviceUserId[] = "example@gmail.com";
 const char kRemoteDeviceName[] = "LGE Nexus 5";
-
-// The proximity threshold corresponds to a RSSI of -70.
-const ProximityAuthPrefManager::ProximityThreshold
-    kProximityThresholdPrefValue =
-        ProximityAuthPrefManager::ProximityThreshold::kFar;
 const int kRssiThreshold = -70;
 
 class MockProximityMonitorObserver : public ProximityMonitorObserver {
@@ -58,21 +52,6 @@ class MockProximityMonitorObserver : public ProximityMonitorObserver {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockProximityMonitorObserver);
-};
-
-class MockProximityAuthPrefManager : public ProximityAuthProfilePrefManager {
- public:
-  MockProximityAuthPrefManager(
-      chromeos::multidevice_setup::FakeMultiDeviceSetupClient*
-          fake_multidevice_setup_client)
-      : ProximityAuthProfilePrefManager(nullptr,
-                                        fake_multidevice_setup_client) {}
-  ~MockProximityAuthPrefManager() override {}
-  MOCK_CONST_METHOD0(GetProximityThreshold,
-                     ProximityAuthPrefManager::ProximityThreshold(void));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockProximityAuthPrefManager);
 };
 
 // Creates a mock Bluetooth adapter and sets it as the global adapter for
@@ -111,19 +90,15 @@ class ProximityAuthProximityMonitorImplTest : public testing::Test {
   void InitializeTest(bool multidevice_flags_enabled) {
     fake_multidevice_setup_client_ = std::make_unique<
         chromeos::multidevice_setup::FakeMultiDeviceSetupClient>();
-    pref_manager_ = std::make_unique<NiceMock<MockProximityAuthPrefManager>>(
-        fake_multidevice_setup_client_.get());
 
     monitor_ = std::make_unique<ProximityMonitorImpl>(
-        remote_device_, fake_client_channel_.get(), pref_manager_.get());
+        remote_device_, fake_client_channel_.get());
 
     ON_CALL(*bluetooth_adapter_, GetDevice(std::string()))
         .WillByDefault(Return(&remote_bluetooth_device_));
     ON_CALL(remote_bluetooth_device_, GetConnectionInfo(_))
         .WillByDefault(SaveArg<0>(&connection_info_callback_));
     monitor_->AddObserver(&observer_);
-    ON_CALL(*pref_manager_, GetProximityThreshold())
-        .WillByDefault(Return(kProximityThresholdPrefValue));
   }
 
   void RunPendingTasks() { task_runner_->RunPendingTasks(); }
@@ -163,11 +138,8 @@ class ProximityAuthProximityMonitorImplTest : public testing::Test {
   std::unique_ptr<chromeos::secure_channel::FakeClientChannel>
       fake_client_channel_;
   chromeos::multidevice::RemoteDeviceRef remote_device_;
-
-  // ProximityAuthPrefManager mock.
   std::unique_ptr<chromeos::multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
-  std::unique_ptr<NiceMock<MockProximityAuthPrefManager>> pref_manager_;
 
   // The proximity monitor under test.
   std::unique_ptr<ProximityMonitorImpl> monitor_;
@@ -423,8 +395,7 @@ TEST_F(ProximityAuthProximityMonitorImplTest,
           .SetName(std::string())
           .Build();
 
-  ProximityMonitorImpl monitor(remote_device, fake_client_channel_.get(),
-                               pref_manager_.get());
+  ProximityMonitorImpl monitor(remote_device, fake_client_channel_.get());
   monitor.AddObserver(&observer_);
   monitor.Start();
   ProvideRssi(127);

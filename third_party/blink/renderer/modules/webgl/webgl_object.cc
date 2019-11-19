@@ -76,10 +76,10 @@ void WebGLObject::DetachAndDeleteObject() {
   DeleteObject(nullptr);
 }
 
-void WebGLObject::RunDestructor() {
+void WebGLObject::Dispose() {
   DCHECK(!destruction_in_progress_);
-  // This boilerplate destructor is sufficient for all subclasses, as long
-  // as they implement deleteObjectImpl properly, and don't try to touch
+  // This boilerplate pre-finalizer is sufficient for all subclasses, as long
+  // as they implement DeleteObjectImpl properly, and don't try to touch
   // other objects on the Oilpan heap if the destructor's been entered.
   destruction_in_progress_ = true;
   DetachAndDeleteObject();

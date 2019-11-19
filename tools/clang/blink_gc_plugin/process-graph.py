@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
 import argparse, os, sys, json, subprocess, pickle, StringIO
 
 parser = argparse.ArgumentParser(
@@ -65,7 +66,8 @@ def reported_error():
 
 def log(msg):
   if args.verbose:
-    print msg
+    print(msg)
+
 
 global_inc_copy = 0
 def inc_copy():
@@ -167,7 +169,7 @@ def build_graphs_in_dir(dirname):
 
 def build_graph(filename):
   for decl in parse_file(filename):
-    if decl.has_key('name'):
+    if 'name' in decl:
       # Add/update a node entry
       name = decl['name']
       node = get_node(name)
@@ -268,8 +270,8 @@ def detect_cycles():
     if root_edge.dst == "WTF::String":
       continue
     if dst is None:
-      print "\nPersistent root to incomplete destination object:"
-      print root_edge
+      print("\nPersistent root to incomplete destination object:")
+      print(root_edge)
       set_reported_error(True)
       continue
     # Find the shortest path from the root target (dst) to its host (src)
@@ -307,10 +309,11 @@ def report_cycle(root_edge):
       max_loc = len(p.loc)
   out = StringIO.StringIO()
   for p in path[:-1]:
-    print >>out, (p.loc + ':').ljust(max_loc + 1), p
+    print((p.loc + ':').ljust(max_loc + 1), p, file=out)
   sout = out.getvalue()
   if not is_ignored_cycle(sout):
-    print "\nFound a potentially leaking cycle starting from a GC root:\n", sout
+    print("\nFound a potentially leaking cycle starting from a GC root:\n",
+          sout, sep="")
     set_reported_error(True)
 
 def load_graph():
@@ -345,7 +348,6 @@ def read_ignored_cycles():
 
 gc_bases = (
   'blink::GarbageCollected',
-  'blink::GarbageCollectedFinalized',
   'blink::GarbageCollectedMixin',
 )
 ref_bases = (
@@ -384,7 +386,7 @@ def print_stats():
   total = sum([len(g) for (s,g) in groups])
   for (s, g) in groups:
     percent = len(g) * 100 / total
-    print "%2d%% is %s (%d hierarchies)" % (percent, s, len(g))
+    print("%2d%% is %s (%d hierarchies)" % (percent, s, len(g)))
 
   for base in gcref_managed:
     stats = dict({ 'classes': 0, 'ref-mixins': 0 })
@@ -392,21 +394,23 @@ def print_stats():
     hierarchy_stats(base, stats)
     hierarchies.append((base, stats))
 
-  print "\nHierarchies in transition (RefCountedGarbageCollected):"
+  print("\nHierarchies in transition (RefCountedGarbageCollected):")
   hierarchies.sort(key=lambda (n,s): -s['classes'])
   for (node, stats) in hierarchies:
     total = stats['mem'] + stats['ref'] + stats['raw']
-    print (
-      "%s %3d%% of %-30s: %3d cls, %3d mem, %3d ref, %3d raw, %3d ref-mixins" %
-      (stats['ref'] == 0 and stats['ref-mixins'] == 0 and "*" or " ",
-       total == 0 and 100 or stats['mem'] * 100 / total,
-       node.name.replace('blink::', ''),
-       stats['classes'],
-       stats['mem'],
-       stats['ref'],
-       stats['raw'],
-       stats['ref-mixins'],
-     ))
+    print(
+        ("%s %3d%% of %-30s: %3d cls, %3d mem, %3d ref, %3d raw, %3d ref-mixins"
+         % (
+             stats['ref'] == 0 and stats['ref-mixins'] == 0 and "*" or " ",
+             total == 0 and 100 or stats['mem'] * 100 / total,
+             node.name.replace('blink::', ''),
+             stats['classes'],
+             stats['mem'],
+             stats['ref'],
+             stats['raw'],
+             stats['ref-mixins'],
+         )))
+
 
 def hierarchy_stats(node, stats):
   if not node: return
@@ -422,7 +426,7 @@ def main():
   global args
   args = parser.parse_args()
   if not (args.detect_cycles or args.print_stats):
-    print "Please select an operation to perform (eg, -c to detect cycles)"
+    print("Please select an operation to perform (eg, -c to detect cycles)")
     parser.print_help()
     return 1
   if args.pickle_graph and os.path.isfile(args.pickle_graph):
@@ -435,7 +439,7 @@ def main():
     else:
       log("Reading files and directories from command line")
       if len(args.files) == 0:
-        print "Please provide files or directores for building the graph"
+        print("Please provide files or directores for building the graph")
         parser.print_help()
         return 1
       for f in args.files:

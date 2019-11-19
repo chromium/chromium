@@ -1,0 +1,767 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        
+        <title>
+            
+    
+                Namespaces
+             &mdash;
+    Mako 1.0.14 Documentation
+
+        </title>
+
+        
+            <!-- begin iterate through site-imported + sphinx environment css_files -->
+                <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+                <link rel="stylesheet" href="_static/changelog.css" type="text/css" />
+                <link rel="stylesheet" href="_static/sphinx_paramlinks.css" type="text/css" />
+                <link rel="stylesheet" href="_static/docs.css" type="text/css" />
+            <!-- end iterate through site-imported + sphinx environment css_files -->
+        
+
+        
+    
+
+    <!-- begin layout.mako headers -->
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="Mako 1.0.14 Documentation" href="index.html" />
+        <link rel="next" title="Inheritance" href="inheritance.html" />
+        <link rel="prev" title="The Mako Runtime Environment" href="runtime.html" />
+    <!-- end layout.mako headers -->
+
+
+    </head>
+    <body>
+        
+
+
+
+
+
+
+
+
+
+
+<div id="docs-container">
+
+
+
+<div id="docs-header">
+    <h1>Mako 1.0.14 Documentation</h1>
+
+    <div id="docs-search">
+    Search:
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+
+    <div id="docs-version-header">
+        Release: <span class="version-num">1.0.14</span>
+
+    </div>
+
+</div>
+
+<div id="docs-top-navigation">
+    <div id="docs-top-page-control" class="docs-navigation-links">
+        <ul>
+            <li>Prev:
+            <a href="runtime.html" title="previous chapter">The Mako Runtime Environment</a>
+            </li>
+            <li>Next:
+            <a href="inheritance.html" title="next chapter">Inheritance</a>
+            </li>
+
+        <li>
+            <a href="index.html">Table of Contents</a> |
+            <a href="genindex.html">Index</a>
+        </li>
+        </ul>
+    </div>
+
+    <div id="docs-navigation-banner">
+        <a href="index.html">Mako 1.0.14 Documentation</a>
+        » 
+                Namespaces
+            
+
+        <h2>
+            
+                Namespaces
+            
+        </h2>
+    </div>
+
+</div>
+
+<div id="docs-body-container">
+
+
+    <div id="docs-sidebar">
+    <div id="sidebar-banner">
+        
+    </div>
+
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Namespaces</a><ul>
+<li><a class="reference internal" href="#ways-to-call-namespaces">Ways to Call Namespaces</a></li>
+<li><a class="reference internal" href="#namespaces-from-regular-python-modules">Namespaces from Regular Python Modules</a></li>
+<li><a class="reference internal" href="#declaring-defs-in-namespaces">Declaring Defs in Namespaces</a></li>
+<li><a class="reference internal" href="#the-body-method">The <code class="docutils literal notranslate"><span class="pre">body()</span></code> Method</a></li>
+<li><a class="reference internal" href="#built-in-namespaces">Built-in Namespaces</a><ul>
+<li><a class="reference internal" href="#local"><code class="docutils literal notranslate"><span class="pre">local</span></code></a></li>
+<li><a class="reference internal" href="#self"><code class="docutils literal notranslate"><span class="pre">self</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#inheritable-namespaces">Inheritable Namespaces</a></li>
+<li><a class="reference internal" href="#namespace-api-usage-example-static-dependencies">Namespace API Usage Example - Static Dependencies</a><ul>
+<li><a class="reference internal" href="#version-one-use-namespace-attr">Version One - Use <code class="xref py py-attr docutils literal notranslate"><span class="pre">Namespace.attr</span></code></a></li>
+<li><a class="reference internal" href="#version-two-use-a-specific-named-def">Version Two - Use a specific named def</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api-reference">API Reference</a></li>
+</ul>
+</li>
+</ul>
+
+
+    <h4>Previous Topic</h4>
+    <p>
+    <a href="runtime.html" title="previous chapter">The Mako Runtime Environment</a>
+    </p>
+    <h4>Next Topic</h4>
+    <p>
+    <a href="inheritance.html" title="next chapter">Inheritance</a>
+    </p>
+
+    <h4>Quick Search</h4>
+    <p>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </p>
+
+    </div>
+
+    <div id="docs-body" class="withsidebar" >
+        
+<div class="section" id="namespaces">
+<span id="namespaces-toplevel"></span><h1>Namespaces<a class="headerlink" href="#namespaces" title="Permalink to this headline">¶</a></h1>
+<p>Namespaces are used to organize groups of defs into
+categories, and also to “import” defs from other files.</p>
+<p>If the file <code class="docutils literal notranslate"><span class="pre">components.html</span></code> defines these two defs:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## components.html</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;comp1()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    this is comp1</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;comp2(x)&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    this is comp2, x is </span><span class="cp">${</span><span class="n">x</span><span class="cp">}</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>you can make another file, for example <code class="docutils literal notranslate"><span class="pre">index.html</span></code>, that
+pulls those two defs into a namespace called <code class="docutils literal notranslate"><span class="pre">comp</span></code>:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## index.html</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">namespace</span> <span class="na">name=</span><span class="s">&quot;comp&quot;</span> <span class="na">file=</span><span class="s">&quot;components.html&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="x">Here&#39;s comp1:  </span><span class="cp">${</span><span class="n">comp</span><span class="o">.</span><span class="n">comp1</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">Here&#39;s comp2:  </span><span class="cp">${</span><span class="n">comp</span><span class="o">.</span><span class="n">comp2</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">comp</span></code> variable above is an instance of
+<a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>, a <strong>proxy object</strong> which delivers
+method calls to the underlying template callable using the
+current context.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;%namespace&gt;</span></code> also provides an <code class="docutils literal notranslate"><span class="pre">import</span></code> attribute which can
+be used to pull the names into the local namespace, removing the
+need to call it via the “<code class="docutils literal notranslate"><span class="pre">.</span></code>” operator. When <code class="docutils literal notranslate"><span class="pre">import</span></code> is used, the
+<code class="docutils literal notranslate"><span class="pre">name</span></code> attribute is optional.</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">namespace</span> <span class="na">file=</span><span class="s">&quot;components.html&quot;</span> <span class="na">import=</span><span class="s">&quot;comp1, comp2&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="x">Heres comp1:  </span><span class="cp">${</span><span class="n">comp1</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">Heres comp2:  </span><span class="cp">${</span><span class="n">comp2</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">import</span></code> also supports the “<code class="docutils literal notranslate"><span class="pre">*</span></code>” operator:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">namespace</span> <span class="na">file=</span><span class="s">&quot;components.html&quot;</span> <span class="na">import=</span><span class="s">&quot;*&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="x">Heres comp1:  </span><span class="cp">${</span><span class="n">comp1</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">Heres comp2:  </span><span class="cp">${</span><span class="n">comp2</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>The names imported by the <code class="docutils literal notranslate"><span class="pre">import</span></code> attribute take precedence
+over any names that exist within the current context.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In current versions of Mako, usage of <code class="docutils literal notranslate"><span class="pre">import='*'</span></code> is
+known to decrease performance of the template. This will be
+fixed in a future release.</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">file</span></code> argument allows expressions – if looking for
+context variables, the <code class="docutils literal notranslate"><span class="pre">context</span></code> must be named explicitly:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">namespace</span> <span class="na">name=</span><span class="s">&quot;dyn&quot;</span> <span class="na">file=</span><span class="s">&quot;${context[&#39;namespace_name&#39;]}&quot;</span><span class="cp">/&gt;</span><span class="x"></span></pre></div>
+</div>
+<div class="section" id="ways-to-call-namespaces">
+<h2>Ways to Call Namespaces<a class="headerlink" href="#ways-to-call-namespaces" title="Permalink to this headline">¶</a></h2>
+<p>There are essentially four ways to call a function from a
+namespace.</p>
+<p>The “expression” format, as described previously. Namespaces are
+just Python objects with functions on them, and can be used in
+expressions like any other function:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="n">mynamespace</span><span class="o">.</span><span class="n">somefunction</span><span class="p">(</span><span class="s1">&#39;some arg1&#39;</span><span class="p">,</span> <span class="s1">&#39;some arg2&#39;</span><span class="p">,</span> <span class="n">arg3</span><span class="o">=</span><span class="s1">&#39;some arg3&#39;</span><span class="p">,</span> <span class="n">arg4</span><span class="o">=</span><span class="s1">&#39;some arg4&#39;</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>Synonymous with the “expression” format is the “custom tag”
+format, when a “closed” tag is used. This format, introduced in
+Mako 0.2.3, allows the usage of a “custom” Mako tag, with the
+function arguments passed in using named attributes:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">mynamespace:somefunction</span> <span class="na">arg1=</span><span class="s">&quot;some arg1&quot;</span> <span class="na">arg2=</span><span class="s">&quot;some arg2&quot;</span> <span class="na">arg3=</span><span class="s">&quot;some arg3&quot;</span> <span class="na">arg4=</span><span class="s">&quot;some arg4&quot;</span><span class="cp">/&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>When using tags, the values of the arguments are taken as
+literal strings by default. To embed Python expressions as
+arguments, use the embedded expression format:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">mynamespace:somefunction</span> <span class="na">arg1=</span><span class="s">&quot;${someobject.format()}&quot;</span> <span class="na">arg2=</span><span class="s">&quot;${somedef(5, 12)}&quot;</span><span class="cp">/&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>The “custom tag” format is intended mainly for namespace
+functions which recognize body content, which in Mako is known
+as a “def with embedded content”:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">mynamespace:somefunction</span> <span class="na">arg1=</span><span class="s">&quot;some argument&quot;</span> <span class="na">args=</span><span class="s">&quot;x, y&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    Some record: </span><span class="cp">${</span><span class="n">x</span><span class="cp">}</span><span class="x">, </span><span class="cp">${</span><span class="n">y</span><span class="cp">}</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">mynamespace:somefunction</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>The “classic” way to call defs with embedded content is the <code class="docutils literal notranslate"><span class="pre">&lt;%call&gt;</span></code> tag:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">call</span> <span class="na">expr=</span><span class="s">&quot;mynamespace.somefunction(arg1=&#39;some argument&#39;)&quot;</span> <span class="na">args=</span><span class="s">&quot;x, y&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    Some record: </span><span class="cp">${</span><span class="n">x</span><span class="cp">}</span><span class="x">, </span><span class="cp">${</span><span class="n">y</span><span class="cp">}</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">call</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>For information on how to construct defs that embed content from
+the caller, see <a class="reference internal" href="defs.html#defs-with-content"><span class="std std-ref">Calling a Def with Embedded Content and/or Other Defs</span></a>.</p>
+</div>
+<div class="section" id="namespaces-from-regular-python-modules">
+<span id="namespaces-python-modules"></span><h2>Namespaces from Regular Python Modules<a class="headerlink" href="#namespaces-from-regular-python-modules" title="Permalink to this headline">¶</a></h2>
+<p>Namespaces can also import regular Python functions from
+modules. These callables need to take at least one argument,
+<code class="docutils literal notranslate"><span class="pre">context</span></code>, an instance of <a class="reference internal" href="runtime.html#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a>. A module file
+<code class="docutils literal notranslate"><span class="pre">some/module.py</span></code> might contain the callable:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_tag</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span></pre></div>
+</div>
+<p>A template can use this module via:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">namespace</span> <span class="na">name=</span><span class="s">&quot;hw&quot;</span> <span class="na">module=</span><span class="s">&quot;some.module&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="cp">${</span><span class="n">hw</span><span class="o">.</span><span class="n">my_tag</span><span class="p">()</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>Note that the <code class="docutils literal notranslate"><span class="pre">context</span></code> argument is not needed in the call;
+the <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a> tag creates a locally-scoped callable which
+takes care of it. The <code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">''</span></code> is so that the def does not
+dump a <code class="docutils literal notranslate"><span class="pre">None</span></code> into the output stream – the return value of any
+def is rendered after the def completes, in addition to whatever
+was passed to <a class="reference internal" href="runtime.html#mako.runtime.Context.write" title="mako.runtime.Context.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Context.write()</span></code></a> within its body.</p>
+<p>If your def is to be called in an “embedded content” context,
+that is as described in <a class="reference internal" href="defs.html#defs-with-content"><span class="std std-ref">Calling a Def with Embedded Content and/or Other Defs</span></a>, you should use
+the <a class="reference internal" href="#mako.runtime.supports_caller" title="mako.runtime.supports_caller"><code class="xref py py-func docutils literal notranslate"><span class="pre">supports_caller()</span></code></a> decorator, which will ensure that Mako
+will ensure the correct “caller” variable is available when your
+def is called, supporting embedded content:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mako.runtime</span> <span class="kn">import</span> <span class="n">supports_caller</span>
+
+<span class="nd">@supports_caller</span>
+<span class="k">def</span> <span class="nf">my_tag</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;div&gt;&quot;</span><span class="p">)</span>
+    <span class="n">context</span><span class="p">[</span><span class="s1">&#39;caller&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">body</span><span class="p">()</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;/div&gt;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span></pre></div>
+</div>
+<p>Capturing of output is available as well, using the
+outside-of-templates version of the <a class="reference internal" href="#mako.runtime.capture" title="mako.runtime.capture"><code class="xref py py-func docutils literal notranslate"><span class="pre">capture()</span></code></a> function,
+which accepts the “context” as its first argument:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mako.runtime</span> <span class="kn">import</span> <span class="n">supports_caller</span><span class="p">,</span> <span class="n">capture</span>
+
+<span class="nd">@supports_caller</span>
+<span class="k">def</span> <span class="nf">my_tag</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;&lt;div&gt;</span><span class="si">%s</span><span class="s2">&lt;/div&gt;&quot;</span> <span class="o">%</span> \
+            <span class="n">capture</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">context</span><span class="p">[</span><span class="s1">&#39;caller&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span></pre></div>
+</div>
+</div>
+<div class="section" id="declaring-defs-in-namespaces">
+<h2>Declaring Defs in Namespaces<a class="headerlink" href="#declaring-defs-in-namespaces" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;%namespace&gt;</span></code> tag supports the definition of <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code>s
+directly inside the tag. These defs become part of the namespace
+like any other function, and will override the definitions
+pulled in from a remote template or module:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## define a namespace</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">namespace</span> <span class="na">name=</span><span class="s">&quot;stuff&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;comp1()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        comp1</span>
+<span class="x">    </span><span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">namespace</span><span class="cp">&gt;</span>
+
+<span class="cp">## then call it</span><span class="x"></span>
+<span class="cp">${</span><span class="n">stuff</span><span class="o">.</span><span class="n">comp1</span><span class="p">()</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+</div>
+<div class="section" id="the-body-method">
+<span id="namespaces-body"></span><h2>The <code class="docutils literal notranslate"><span class="pre">body()</span></code> Method<a class="headerlink" href="#the-body-method" title="Permalink to this headline">¶</a></h2>
+<p>Every namespace that is generated from a template contains a
+method called <code class="docutils literal notranslate"><span class="pre">body()</span></code>. This method corresponds to the main
+body of the template, and plays its most important roles when
+using inheritance relationships as well as
+def-calls-with-content.</p>
+<p>Since the <code class="docutils literal notranslate"><span class="pre">body()</span></code> method is available from a namespace just
+like all the other defs defined in a template, what happens if
+you send arguments to it? By default, the <code class="docutils literal notranslate"><span class="pre">body()</span></code> method
+accepts no positional arguments, and for usefulness in
+inheritance scenarios will by default dump all keyword arguments
+into a dictionary called <code class="docutils literal notranslate"><span class="pre">pageargs</span></code>. But if you actually want
+to get at the keyword arguments, Mako recommends you define your
+own argument signature explicitly. You do this via using the
+<code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> tag:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">page</span> <span class="na">args=</span><span class="s">&quot;x, y, someval=8, scope=&#39;foo&#39;, **kwargs&quot;</span><span class="cp">/&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>A template which defines the above signature requires that the
+variables <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are defined, defines default values
+for <code class="docutils literal notranslate"><span class="pre">someval</span></code> and <code class="docutils literal notranslate"><span class="pre">scope</span></code>, and sets up <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> to
+receive all other keyword arguments. If <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> or similar
+is not present, the argument <code class="docutils literal notranslate"><span class="pre">**pageargs</span></code> gets tacked on by
+Mako. When the template is called as a top-level template (i.e.
+via <a class="reference internal" href="usage.html#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a>) or via the <code class="docutils literal notranslate"><span class="pre">&lt;%include&gt;</span></code> tag, the
+values for these arguments will be pulled from the <code class="docutils literal notranslate"><span class="pre">Context</span></code>.
+In all other cases, i.e. via calling the <code class="docutils literal notranslate"><span class="pre">body()</span></code> method, the
+arguments are taken as ordinary arguments from the method call.
+So above, the body might be called as:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">someval</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>The <a class="reference internal" href="runtime.html#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> object also supplies a <code class="xref py py-attr docutils literal notranslate"><span class="pre">kwargs</span></code>
+accessor, for cases when you’d like to pass along the top level context
+arguments to a <code class="docutils literal notranslate"><span class="pre">body()</span></code> callable:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="nb">next</span><span class="o">.</span><span class="n">body</span><span class="p">(</span><span class="o">**</span><span class="n">context</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>The usefulness of calls like the above become more apparent when
+one works with inheriting templates. For more information on
+this, as well as the meanings of the names <code class="docutils literal notranslate"><span class="pre">self</span></code> and
+<code class="docutils literal notranslate"><span class="pre">next</span></code>, see <a class="reference internal" href="inheritance.html"><span class="std std-ref">Inheritance</span></a>.</p>
+</div>
+<div class="section" id="built-in-namespaces">
+<span id="namespaces-builtin"></span><h2>Built-in Namespaces<a class="headerlink" href="#built-in-namespaces" title="Permalink to this headline">¶</a></h2>
+<p>The namespace is so great that Mako gives your template one (or
+two) for free. The names of these namespaces are <code class="docutils literal notranslate"><span class="pre">local</span></code> and
+<code class="docutils literal notranslate"><span class="pre">self</span></code>. Other built-in namespaces include <code class="docutils literal notranslate"><span class="pre">parent</span></code> and
+<code class="docutils literal notranslate"><span class="pre">next</span></code>, which are optional and are described in
+<a class="reference internal" href="inheritance.html"><span class="std std-ref">Inheritance</span></a>.</p>
+<div class="section" id="local">
+<span id="namespace-local"></span><h3><code class="docutils literal notranslate"><span class="pre">local</span></code><a class="headerlink" href="#local" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">local</span></code> namespace is basically the namespace for the
+currently executing template. This means that all of the top
+level defs defined in your template, as well as your template’s
+<code class="docutils literal notranslate"><span class="pre">body()</span></code> function, are also available off of the <code class="docutils literal notranslate"><span class="pre">local</span></code>
+namespace.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">local</span></code> namespace is also where properties like <code class="docutils literal notranslate"><span class="pre">uri</span></code>,
+<code class="docutils literal notranslate"><span class="pre">filename</span></code>, and <code class="docutils literal notranslate"><span class="pre">module</span></code> and the <code class="docutils literal notranslate"><span class="pre">get_namespace</span></code> method
+can be particularly useful.</p>
+</div>
+<div class="section" id="self">
+<span id="namespace-self"></span><h3><code class="docutils literal notranslate"><span class="pre">self</span></code><a class="headerlink" href="#self" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">self</span></code> namespace, in the case of a template that does not
+use inheritance, is synonymous with <code class="docutils literal notranslate"><span class="pre">local</span></code>. If inheritance is
+used, then <code class="docutils literal notranslate"><span class="pre">self</span></code> references the topmost template in the
+inheritance chain, where it is most useful for providing the
+ultimate form of various “method” calls which may have been
+overridden at various points in an inheritance chain. See
+<a class="reference internal" href="inheritance.html"><span class="std std-ref">Inheritance</span></a>.</p>
+</div>
+</div>
+<div class="section" id="inheritable-namespaces">
+<h2>Inheritable Namespaces<a class="headerlink" href="#inheritable-namespaces" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;%namespace&gt;</span></code> tag includes an optional attribute
+<code class="docutils literal notranslate"><span class="pre">inheritable=&quot;True&quot;</span></code>, which will cause the namespace to be
+attached to the <code class="docutils literal notranslate"><span class="pre">self</span></code> namespace. Since <code class="docutils literal notranslate"><span class="pre">self</span></code> is globally
+available throughout an inheritance chain (described in the next
+section), all the templates in an inheritance chain can get at
+the namespace imported in a super-template via <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## base.html</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">namespace</span> <span class="na">name=</span><span class="s">&quot;foo&quot;</span> <span class="na">file=</span><span class="s">&quot;foo.html&quot;</span> <span class="na">inheritable=</span><span class="s">&quot;True&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="cp">${</span><span class="nb">next</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span>
+
+<span class="cp">## somefile.html</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;base.html&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="cp">${</span><span class="bp">self</span><span class="o">.</span><span class="n">foo</span><span class="o">.</span><span class="n">bar</span><span class="p">()</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>This allows a super-template to load a whole bunch of namespaces
+that its inheriting templates can get to, without them having to
+explicitly load those namespaces themselves.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">import=&quot;*&quot;</span></code> part of the <code class="docutils literal notranslate"><span class="pre">&lt;%namespace&gt;</span></code> tag doesn’t yet
+interact with the <code class="docutils literal notranslate"><span class="pre">inheritable</span></code> flag, so currently you have to
+use the explicit namespace name off of <code class="docutils literal notranslate"><span class="pre">self</span></code>, followed by the
+desired function name. But more on this in a future release.</p>
+</div>
+<div class="section" id="namespace-api-usage-example-static-dependencies">
+<h2>Namespace API Usage Example - Static Dependencies<a class="headerlink" href="#namespace-api-usage-example-static-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;%namespace&gt;</span></code> tag at runtime produces an instance of
+<a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>.   Programmatic access of <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a> can be used
+to build various kinds of scaffolding in templates and between templates.</p>
+<p>A common request is the ability for a particular template to declare
+“static includes” - meaning, the usage of a particular set of defs requires
+that certain Javascript/CSS files are present.   Using <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a> as the
+object that holds together the various templates present, we can build a variety
+of such schemes.   In particular, the <a class="reference internal" href="runtime.html#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> has a <code class="docutils literal notranslate"><span class="pre">namespaces</span></code>
+attribute, which is a dictionary of all <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a> objects declared.
+Iterating the values of this dictionary will provide a <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>
+object for each time the <code class="docutils literal notranslate"><span class="pre">&lt;%namespace&gt;</span></code> tag was used, anywhere within the
+inheritance chain.</p>
+<div class="section" id="version-one-use-namespace-attr">
+<span id="namespace-attr-for-includes"></span><h3>Version One - Use <a class="reference internal" href="#mako.runtime.Namespace.attr" title="mako.runtime.Namespace.attr"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Namespace.attr</span></code></a><a class="headerlink" href="#version-one-use-namespace-attr" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="#mako.runtime.Namespace.attr" title="mako.runtime.Namespace.attr"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Namespace.attr</span></code></a> attribute allows us to locate any variables declared
+in the <code class="docutils literal notranslate"><span class="pre">&lt;%!</span> <span class="pre">%&gt;</span></code> of a template.</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## base.mako</span><span class="x"></span>
+<span class="cp">## base-most template, renders layout etc.</span><span class="x"></span>
+<span class="x">&lt;html&gt;</span>
+<span class="x">&lt;head&gt;</span>
+<span class="cp">## traverse through all namespaces present,</span><span class="x"></span>
+<span class="cp">## look for an attribute named &#39;includes&#39;</span><span class="x"></span>
+<span class="cp">%</span> <span class="k">for</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">values</span><span class="p">():</span><span class="x"></span>
+    <span class="cp">%</span> <span class="k">for</span> <span class="n">incl</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ns</span><span class="o">.</span><span class="n">attr</span><span class="p">,</span> <span class="s1">&#39;includes&#39;</span><span class="p">,</span> <span class="p">[]):</span><span class="x"></span>
+<span class="x">        </span><span class="cp">${</span><span class="n">incl</span><span class="cp">}</span>
+    <span class="cp">%</span><span class="k"> endfor</span><span class="x"></span>
+<span class="cp">%</span><span class="k"> endfor</span><span class="x"></span>
+<span class="x">&lt;/head&gt;</span>
+<span class="x">&lt;body&gt;</span>
+<span class="cp">${</span><span class="nb">next</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">&lt;/body</span>
+<span class="x">&lt;/html&gt;</span>
+
+<span class="cp">## library.mako</span><span class="x"></span>
+<span class="cp">## library functions.</span><span class="x"></span>
+<span class="cp">&lt;%!</span>
+    <span class="n">includes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;mystyle.css&quot;/&gt;&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;&lt;script type=&quot;text/javascript&quot; src=&quot;functions.js&quot;&gt;&lt;/script&gt;&#39;</span>
+    <span class="p">]</span>
+<span class="cp">%&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;mytag()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    &lt;form&gt;</span>
+<span class="x">        </span><span class="cp">${</span><span class="n">caller</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">    &lt;/form&gt;</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span>
+
+<span class="cp">## index.mako</span><span class="x"></span>
+<span class="cp">## calling template.</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;base.mako&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">namespace</span> <span class="na">name=</span><span class="s">&quot;foo&quot;</span> <span class="na">file=</span><span class="s">&quot;library.mako&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">foo:mytag</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    a form</span>
+<span class="cp">&lt;/%</span><span class="nb">foo:mytag</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Above, the file <code class="docutils literal notranslate"><span class="pre">library.mako</span></code> declares an attribute <code class="docutils literal notranslate"><span class="pre">includes</span></code> inside its global <code class="docutils literal notranslate"><span class="pre">&lt;%!</span> <span class="pre">%&gt;</span></code> section.
+<code class="docutils literal notranslate"><span class="pre">index.mako</span></code> includes this template using the <code class="docutils literal notranslate"><span class="pre">&lt;%namespace&gt;</span></code> tag.  The base template <code class="docutils literal notranslate"><span class="pre">base.mako</span></code>, which is the inherited parent of <code class="docutils literal notranslate"><span class="pre">index.mako</span></code> and is responsible for layout, then locates this attribute and iterates through its contents to produce the includes that are specific to <code class="docutils literal notranslate"><span class="pre">library.mako</span></code>.</p>
+</div>
+<div class="section" id="version-two-use-a-specific-named-def">
+<h3>Version Two - Use a specific named def<a class="headerlink" href="#version-two-use-a-specific-named-def" title="Permalink to this headline">¶</a></h3>
+<p>In this version, we put the includes into a <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> that
+follows a naming convention.</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## base.mako</span><span class="x"></span>
+<span class="cp">## base-most template, renders layout etc.</span><span class="x"></span>
+<span class="x">&lt;html&gt;</span>
+<span class="x">&lt;head&gt;</span>
+<span class="cp">## traverse through all namespaces present,</span><span class="x"></span>
+<span class="cp">## look for a %def named &#39;includes&#39;</span><span class="x"></span>
+<span class="cp">%</span> <span class="k">for</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">values</span><span class="p">():</span><span class="x"></span>
+    <span class="cp">%</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="s1">&#39;includes&#39;</span><span class="p">):</span><span class="x"></span>
+<span class="x">        </span><span class="cp">${</span><span class="n">ns</span><span class="o">.</span><span class="n">includes</span><span class="p">()</span><span class="cp">}</span>
+    <span class="cp">%</span><span class="k"> endif</span><span class="x"></span>
+<span class="cp">%</span><span class="k"> endfor</span><span class="x"></span>
+<span class="x">&lt;/head&gt;</span>
+<span class="x">&lt;body&gt;</span>
+<span class="cp">${</span><span class="nb">next</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">&lt;/body</span>
+<span class="x">&lt;/html&gt;</span>
+
+<span class="cp">## library.mako</span><span class="x"></span>
+<span class="cp">## library functions.</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;includes()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;mystyle.css&quot;/&gt;</span>
+<span class="x">    &lt;script type=&quot;text/javascript&quot; src=&quot;functions.js&quot;&gt;&lt;/script&gt;</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;mytag()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    &lt;form&gt;</span>
+<span class="x">        </span><span class="cp">${</span><span class="n">caller</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">    &lt;/form&gt;</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span>
+
+
+<span class="cp">## index.mako</span><span class="x"></span>
+<span class="cp">## calling template.</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;base.mako&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">namespace</span> <span class="na">name=</span><span class="s">&quot;foo&quot;</span> <span class="na">file=</span><span class="s">&quot;library.mako&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">foo:mytag</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    a form</span>
+<span class="cp">&lt;/%</span><span class="nb">foo:mytag</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>In this version, <code class="docutils literal notranslate"><span class="pre">library.mako</span></code> declares a <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> named <code class="docutils literal notranslate"><span class="pre">includes</span></code>.   The example works
+identically to the previous one, except that <code class="docutils literal notranslate"><span class="pre">base.mako</span></code> looks for defs named <code class="docutils literal notranslate"><span class="pre">include</span></code>
+on each namespace it examines.</p>
+</div>
+</div>
+<div class="section" id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="mako.runtime.Namespace">
+<em class="property">class </em><code class="sig-prename descclassname">mako.runtime.</code><code class="sig-name descname">Namespace</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">context</em>, <em class="sig-param">callables=None</em>, <em class="sig-param">inherits=None</em>, <em class="sig-param">populate_self=True</em>, <em class="sig-param">calling_uri=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Namespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Provides access to collections of rendering methods, which
+can be local, from other templates, or from imported modules.</p>
+<p>To access a particular rendering method referenced by a
+<a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>, use plain attribute access:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="n">some_namespace</span><span class="o">.</span><span class="n">foo</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p><a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a> also contains several built-in attributes
+described here.</p>
+<dl class="attribute">
+<dt id="mako.runtime.Namespace.attr">
+<code class="sig-name descname">attr</code><a class="headerlink" href="#mako.runtime.Namespace.attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access module level attributes by name.</p>
+<p>This accessor allows templates to supply “scalar”
+attributes which are particularly handy in inheritance
+relationships.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="inheritance.html#inheritance-attr"><span class="std std-ref">Inheritable Attributes</span></a></p>
+<p><a class="reference internal" href="#namespace-attr-for-includes"><span class="std std-ref">Version One - Use Namespace.attr</span></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="mako.runtime.Namespace.cache">
+<em class="property">property </em><code class="sig-name descname">cache</code><a class="headerlink" href="#mako.runtime.Namespace.cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the <a class="reference internal" href="caching.html#mako.cache.Cache" title="mako.cache.Cache"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cache</span></code></a> object referenced
+by this <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a> object’s
+<a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mako.runtime.Namespace.context">
+<code class="sig-name descname">context</code><em class="property"> = None</em><a class="headerlink" href="#mako.runtime.Namespace.context" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="runtime.html#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> object for this <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>.</p>
+<p>Namespaces are often created with copies of contexts that
+contain slightly different data, particularly in inheritance
+scenarios. Using the <a class="reference internal" href="runtime.html#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> off of a <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a> one
+can traverse an entire chain of templates that inherit from
+one-another.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mako.runtime.Namespace.filename">
+<code class="sig-name descname">filename</code><em class="property"> = None</em><a class="headerlink" href="#mako.runtime.Namespace.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>The path of the filesystem file used for this
+<a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>’s module or template.</p>
+<p>If this is a pure module-based
+<a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>, this evaluates to <code class="docutils literal notranslate"><span class="pre">module.__file__</span></code>. If a
+template-based namespace, it evaluates to the original
+template file location.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mako.runtime.Namespace.get_cached">
+<code class="sig-name descname">get_cached</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Namespace.get_cached" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a value from the <a class="reference internal" href="caching.html#mako.cache.Cache" title="mako.cache.Cache"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cache</span></code></a> referenced by this
+<a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a> object’s <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a>.</p>
+<p>The advantage to this method versus direct access to the
+<a class="reference internal" href="caching.html#mako.cache.Cache" title="mako.cache.Cache"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cache</span></code></a> is that the configuration parameters
+declared in <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> take effect here, thereby calling
+up the same configured backend as that configured
+by <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mako.runtime.Namespace.get_namespace">
+<code class="sig-name descname">get_namespace</code><span class="sig-paren">(</span><em class="sig-param">uri</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Namespace.get_namespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a> corresponding to the given <code class="docutils literal notranslate"><span class="pre">uri</span></code>.</p>
+<p>If the given <code class="docutils literal notranslate"><span class="pre">uri</span></code> is a relative URI (i.e. it does not
+contain a leading slash <code class="docutils literal notranslate"><span class="pre">/</span></code>), the <code class="docutils literal notranslate"><span class="pre">uri</span></code> is adjusted to
+be relative to the <code class="docutils literal notranslate"><span class="pre">uri</span></code> of the namespace itself. This
+method is therefore mostly useful off of the built-in
+<code class="docutils literal notranslate"><span class="pre">local</span></code> namespace, described in <a class="reference internal" href="#namespace-local"><span class="std std-ref">local</span></a>.</p>
+<p>In
+most cases, a template wouldn’t need this function, and
+should instead use the <code class="docutils literal notranslate"><span class="pre">&lt;%namespace&gt;</span></code> tag to load
+namespaces. However, since all <code class="docutils literal notranslate"><span class="pre">&lt;%namespace&gt;</span></code> tags are
+evaluated before the body of a template ever runs,
+this method can be used to locate namespaces using
+expressions that were generated within the body code of
+the template, or to conditionally use a particular
+namespace.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mako.runtime.Namespace.get_template">
+<code class="sig-name descname">get_template</code><span class="sig-paren">(</span><em class="sig-param">uri</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Namespace.get_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> from the given <code class="docutils literal notranslate"><span class="pre">uri</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">uri</span></code> resolution is relative to the <code class="docutils literal notranslate"><span class="pre">uri</span></code> of this
+<a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a> object’s <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mako.runtime.Namespace.include_file">
+<code class="sig-name descname">include_file</code><span class="sig-paren">(</span><em class="sig-param">uri</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Namespace.include_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Include a file at the given <code class="docutils literal notranslate"><span class="pre">uri</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mako.runtime.Namespace.module">
+<code class="sig-name descname">module</code><em class="property"> = None</em><a class="headerlink" href="#mako.runtime.Namespace.module" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Python module referenced by this <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>.</p>
+<p>If the namespace references a <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a>, then
+this module is the equivalent of <code class="docutils literal notranslate"><span class="pre">template.module</span></code>,
+i.e. the generated module for the template.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mako.runtime.Namespace.template">
+<code class="sig-name descname">template</code><em class="property"> = None</em><a class="headerlink" href="#mako.runtime.Namespace.template" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> object referenced by this
+<a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>, if any.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mako.runtime.Namespace.uri">
+<code class="sig-name descname">uri</code><em class="property"> = None</em><a class="headerlink" href="#mako.runtime.Namespace.uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>The URI for this <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>’s template.</p>
+<p>I.e. whatever was sent to <a class="reference internal" href="usage.html#mako.lookup.TemplateLookup.get_template" title="mako.lookup.TemplateLookup.get_template"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TemplateLookup.get_template()</span></code></a>.</p>
+<p>This is the equivalent of <code class="xref py py-attr docutils literal notranslate"><span class="pre">Template.uri</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mako.runtime.TemplateNamespace">
+<em class="property">class </em><code class="sig-prename descclassname">mako.runtime.</code><code class="sig-name descname">TemplateNamespace</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">context</em>, <em class="sig-param">template=None</em>, <em class="sig-param">templateuri=None</em>, <em class="sig-param">callables=None</em>, <em class="sig-param">inherits=None</em>, <em class="sig-param">populate_self=True</em>, <em class="sig-param">calling_uri=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.TemplateNamespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.runtime.Namespace</span></code></a></p>
+<p>Bases: <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.runtime.Namespace</span></code></a></p>
+<p>A <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a> specific to a <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> instance.</p>
+<dl class="method">
+<dt id="mako.runtime.TemplateNamespace.filename">
+<em class="property">property </em><code class="sig-name descname">filename</code><a class="headerlink" href="#mako.runtime.TemplateNamespace.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>The path of the filesystem file used for this
+<a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>’s module or template.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mako.runtime.TemplateNamespace.module">
+<em class="property">property </em><code class="sig-name descname">module</code><a class="headerlink" href="#mako.runtime.TemplateNamespace.module" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Python module referenced by this <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>.</p>
+<p>If the namespace references a <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a>, then
+this module is the equivalent of <code class="docutils literal notranslate"><span class="pre">template.module</span></code>,
+i.e. the generated module for the template.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mako.runtime.TemplateNamespace.uri">
+<em class="property">property </em><code class="sig-name descname">uri</code><a class="headerlink" href="#mako.runtime.TemplateNamespace.uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>The URI for this <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>’s template.</p>
+<p>I.e. whatever was sent to <a class="reference internal" href="usage.html#mako.lookup.TemplateLookup.get_template" title="mako.lookup.TemplateLookup.get_template"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TemplateLookup.get_template()</span></code></a>.</p>
+<p>This is the equivalent of <code class="xref py py-attr docutils literal notranslate"><span class="pre">Template.uri</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mako.runtime.ModuleNamespace">
+<em class="property">class </em><code class="sig-prename descclassname">mako.runtime.</code><code class="sig-name descname">ModuleNamespace</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">context</em>, <em class="sig-param">module</em>, <em class="sig-param">callables=None</em>, <em class="sig-param">inherits=None</em>, <em class="sig-param">populate_self=True</em>, <em class="sig-param">calling_uri=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.ModuleNamespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.runtime.Namespace</span></code></a></p>
+<p>Bases: <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.runtime.Namespace</span></code></a></p>
+<p>A <a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a> specific to a Python module instance.</p>
+<dl class="method">
+<dt id="mako.runtime.ModuleNamespace.filename">
+<em class="property">property </em><code class="sig-name descname">filename</code><a class="headerlink" href="#mako.runtime.ModuleNamespace.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>The path of the filesystem file used for this
+<a class="reference internal" href="#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a>’s module or template.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="mako.runtime.supports_caller">
+<code class="sig-prename descclassname">mako.runtime.</code><code class="sig-name descname">supports_caller</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.supports_caller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply a caller_stack compatibility decorator to a plain
+Python function.</p>
+<p>See the example in <a class="reference internal" href="#namespaces-python-modules"><span class="std std-ref">Namespaces from Regular Python Modules</span></a>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="mako.runtime.capture">
+<code class="sig-prename descclassname">mako.runtime.</code><code class="sig-name descname">capture</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">callable_</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.capture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the given template def, capturing the output into
+a buffer.</p>
+<p>See the example in <a class="reference internal" href="#namespaces-python-modules"><span class="std std-ref">Namespaces from Regular Python Modules</span></a>.</p>
+</dd></dl>
+
+</div>
+</div>
+
+    </div>
+
+</div>
+
+<div id="docs-bottom-navigation" class="docs-navigation-links">
+        Previous:
+        <a href="runtime.html" title="previous chapter">The Mako Runtime Environment</a>
+        Next:
+        <a href="inheritance.html" title="next chapter">Inheritance</a>
+
+    <div id="docs-copyright">
+        &copy; Copyright the Mako authors and contributors.
+        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2
+        with Mako templates.
+    </div>
+</div>
+
+</div>
+
+
+
+        
+        
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    './',
+          VERSION:     '1.0.14',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+
+    <!-- begin iterate through sphinx environment script_files -->
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    <!-- end iterate through sphinx environment script_files -->
+
+    <script type="text/javascript" src="_static/detectmobile.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+
+
+    </body>
+</html>
+
+

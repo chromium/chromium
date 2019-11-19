@@ -7,14 +7,14 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/launch_service/launch_service.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/extensions/app_launch_params.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -23,6 +23,7 @@
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_names.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -77,8 +78,10 @@ void DemoAppLauncher::OnProfileLoaded(Profile* profile) {
   const std::string extension_id = extension_service->component_loader()->Add(
       IDR_DEMO_APP_MANIFEST, *demo_app_path_);
 
+  extensions::ExtensionRegistry* extension_registry =
+      extensions::ExtensionRegistry::Get(profile);
   const extensions::Extension* extension =
-      extension_service->GetExtensionById(extension_id, true);
+      extension_registry->enabled_extensions().GetByID(extension_id);
   if (!extension) {
     // We've already done too much setup at this point to just return out, it
     // is safer to just restart.
@@ -92,10 +95,10 @@ void DemoAppLauncher::OnProfileLoaded(Profile* profile) {
       NetworkTypePattern::Physical(), false,
       chromeos::network_handler::ErrorCallback());
 
-  OpenApplication(AppLaunchParams(profile, extension,
-                                  extensions::LAUNCH_CONTAINER_WINDOW,
-                                  WindowOpenDisposition::NEW_WINDOW,
-                                  extensions::SOURCE_CHROME_INTERNAL, true));
+  apps::LaunchService::Get(profile)->OpenApplication(apps::AppLaunchParams(
+      extension_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      WindowOpenDisposition::NEW_WINDOW,
+      apps::mojom::AppLaunchSource::kSourceChromeInternal, true));
   KioskAppManager::Get()->InitSession(profile, extension_id);
 
   session_manager::SessionManager::Get()->SessionStarted();

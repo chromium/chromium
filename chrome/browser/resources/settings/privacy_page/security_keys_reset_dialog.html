@@ -1,0 +1,60 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="../i18n_setup.html">
+<link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="security_keys_browser_proxy.html">
+
+<dom-module id="settings-security-keys-reset-dialog">
+  <template>
+    <style include="settings-shared">
+      paper-spinner-lite {
+        padding-bottom: 12px;
+      }
+    </style>
+    <cr-dialog id="dialog" close-text="$i18n{close}" ignore-popstate
+         on-close="closeDialog_">
+      <div slot="title">[[title_]]</div>
+      <div slot="body">
+        <iron-pages attr-for-selected="id" selected="[[shown_]]"
+            on-iron-select="onIronSelect_">
+          <div id="initial">
+            <p>$i18n{securityKeysResetStep1}</p>
+            <paper-spinner-lite active></paper-spinner-lite>
+          </div>
+
+          <div id="noReset">
+            <p>$i18n{securityKeysNoReset}</p>
+          </div>
+
+          <div id="resetFailed">
+            <p>[[resetFailed_(errorCode_)]]</p>
+          </div>
+
+          <div id="resetConfirm">
+            <p>$i18n{securityKeysResetStep2}</p>
+          </div>
+
+          <div id="resetSuccess">
+            <p>$i18n{securityKeysResetSuccess}</p>
+          </div>
+
+          <div id="resetNotAllowed">
+            <p>$i18n{securityKeysResetNotAllowed}</p>
+          </div>
+        </iron-pages>
+      </div>
+      <div slot="button-container">
+        <cr-button id="button" class$="[[maybeActionButton_(complete_)]]"
+             on-click="closeDialog_">
+          [[closeText_(complete_)]]
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="security_keys_reset_dialog.js"></script>
+</dom-module>

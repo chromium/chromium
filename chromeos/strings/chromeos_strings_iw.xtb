@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
+<translation id="1482734542997480527">הניהול של המכשיר הזה נעשה מהדומיין <ph name="ENROLLMENT_DOMAIN" /> וייתכן שאפשר יהיה לעקוב ממנו אחר הפעילות שלך.</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="1734367976349034509">המכשיר הזה מנוהל על ידי ארגון</translation>
+<translation id="1930797645656624981">‏שירות שיטת הקלט של Chrome OS</translation>
+<translation id="1979103255016296513">המועד האחרון לשינוי הסיסמה כבר חלף</translation>
 <translation id="2049639323467105390">מכשיר זה מנוהל על ידי <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">לא נמצא תוכן במסך</translation>
 <translation id="2338501278241028356">‏יש להפעיל את Bluetooth כדי לאתר מכשירים קרובים</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="2872961005593481000">כיבוי</translation>
-<translation id="3147142846278915599">מרכז האפליקציות (האפליקציות מסתנכרנות...)</translation>
+<translation id="3008341117444806826">רענון</translation>
+<translation id="3838338534323494292">סיסמה חדשה</translation>
+<translation id="4003259559679196451">הניהול של המכשיר הזה מתבצע מהדומיין<ph name="ENROLLMENT_DOMAIN" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
+<translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
+<translation id="4429881212383817840">‏התוקף של כרטיס Kerberos עומד לפוג בקרוב</translation>
+<translation id="445059817448385655">סיסמה ישנה</translation>
+<translation id="467510802200863975">הסיסמאות אינן תואמות</translation>
 <translation id="4731797938093519117">גישת הורים</translation>
+<translation id="4890353053343094602">יש לבחור מיד סיסמה חדשה</translation>
 <translation id="5212543919916444558">לא מצאתי במסך משהו שאוכל לעזור בו.
 אפשר להקיש על המיקרופון כדי לשאול אותי משהו.</translation>
 <translation id="5222676887888702881">יציאה</translation>
+<translation id="5317780077021120954">שמור</translation>
+<translation id="5332948983412042822">יש לבחור סיסמה חדשה עכשיו</translation>
 <translation id="5457599981699367932">גלוש כאורח</translation>
 <translation id="54609108002486618">מנוהל</translation>
 <translation id="5832805196449965646">הוספת משתמש</translation>
 <translation id="5895138241574237353">הפעל מחדש</translation>
+<translation id="6058625436358447366">כדי לסיים יש להזין את הסיסמה הישנה והחדשה</translation>
+<translation id="6106186594183574873">כדי לסיים יש להזין את הסיסמה הישנה</translation>
+<translation id="6146993107019042706">כדי לסיים, יש להזין את הסיסמה החדשה</translation>
 <translation id="7658239707568436148">ביטול</translation>
+<translation id="7690294790491645610">אישור הסיסמה החדשה</translation>
+<translation id="808894953321890993">שינוי הסיסמה</translation>
+<translation id="8747900814994928677">אישור השינוי</translation>
+<translation id="910415269708673980">רענון הכרטיס עבור <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">בטל נעילה</translation>
 </translationbundle>

@@ -1,4 +1,0 @@
-Red on white Green on white Blue on white
-Red on black Green on black Blue on black
-Black on red Black on green Black on blue
-White on red White on green White on blue

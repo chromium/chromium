@@ -10,9 +10,10 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/policy/profile_policy_connector_factory.h"
+#include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -33,8 +34,9 @@
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "net/cert/test_root_certs.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/quic_simple_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
@@ -89,15 +91,37 @@ class QuicTestBase : public InProcessBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kOriginToForceQuicOn, "*");
+    mock_cert_verifier_.SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
-    net::TestRootCerts* root_certs = net::TestRootCerts::GetInstance();
-    root_certs->AddFromFile(
-        net::GetTestCertsDirectory().AppendASCII("quic-root.pem"));
+    ConfigureMockCertVerifier();
     net::QuicSimpleTestServer::Start();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
+
+ protected:
+  void ConfigureMockCertVerifier() {
+    auto test_cert =
+        net::ImportCertFromFile(net::GetTestCertsDirectory(), "quic-chain.pem");
+    net::CertVerifyResult verify_result;
+    verify_result.verified_cert = test_cert;
+    verify_result.is_issued_by_known_root = true;
+    mock_cert_verifier_.mock_cert_verifier()->AddResultForCert(
+        test_cert, verify_result, net::OK);
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+ private:
+  content::ContentMockCertVerifier mock_cert_verifier_;
 };
 
 // The tests are based on the assumption that command line flag kEnableQuic
@@ -109,6 +133,7 @@ class QuicAllowedPolicyTestBase : public QuicTestBase {
 
  protected:
   void SetUpInProcessBrowserTestFixture() override {
+    QuicTestBase::SetUpInProcessBrowserTestFixture();
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kEnableQuic);
     EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
         .WillRepeatedly(testing::Return(true));
@@ -131,6 +156,7 @@ class QuicAllowedPolicyTestBase : public QuicTestBase {
       net::QuicSimpleTestServer::Shutdown();
     }
     SimulateNetworkServiceCrash();
+    ConfigureMockCertVerifier();
     ASSERT_TRUE(net::QuicSimpleTestServer::Start());
   }
 
@@ -284,7 +310,8 @@ class QuicAllowedPolicyIsNotSet : public QuicAllowedPolicyTestBase {
   DISALLOW_COPY_AND_ASSIGN(QuicAllowedPolicyIsNotSet);
 };
 
-IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsNotSet, NoQuicRegulations) {
+// Flaky test on Win7. https://crbug.com/961049
+IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsNotSet, DISABLED_NoQuicRegulations) {
   EXPECT_TRUE(IsQuicEnabledForSystem());
   EXPECT_TRUE(IsQuicEnabledForSafeBrowsing());
   EXPECT_TRUE(IsQuicEnabled(browser()->profile()));
@@ -308,11 +335,12 @@ class QuicAllowedPolicyDynamicTest : public QuicTestBase {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
+    QuicTestBase::SetUpInProcessBrowserTestFixture();
     // Set the overriden policy provider for the first Profile (profile_1_).
     EXPECT_CALL(policy_for_profile_1_, IsInitializationComplete(testing::_))
         .WillRepeatedly(testing::Return(true));
-    policy::ProfilePolicyConnectorFactory::GetInstance()
-        ->PushProviderForTesting(&policy_for_profile_1_);
+    policy::PushProfilePolicyConnectorProviderForTesting(
+        &policy_for_profile_1_);
   }
 
   void SetUpOnMainThread() override {
@@ -328,8 +356,8 @@ class QuicAllowedPolicyDynamicTest : public QuicTestBase {
     // Prepare policy provider for second profile.
     EXPECT_CALL(policy_for_profile_2_, IsInitializationComplete(testing::_))
         .WillRepeatedly(testing::Return(true));
-    policy::ProfilePolicyConnectorFactory::GetInstance()
-        ->PushProviderForTesting(&policy_for_profile_2_);
+    policy::PushProfilePolicyConnectorProviderForTesting(
+        &policy_for_profile_2_);
 
     ProfileManager* profile_manager = g_browser_process->profile_manager();
 
@@ -451,7 +479,8 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyDynamicTest, QuicAllowedFalseThenTrue) {
 
 // QUIC is allowed, then disallowed by policy after the profile has been
 // initialized.
-IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyDynamicTest, QuicAllowedTrueThenFalse) {
+IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyDynamicTest,
+                       DISABLED_QuicAllowedTrueThenFalse) {
   // After browser start, QuicAllowed=true comes in dynamically
   SetQuicAllowedPolicy(policy_for_profile_1(), true);
   EXPECT_TRUE(IsQuicEnabledForSystem());
@@ -502,8 +531,17 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyDynamicTest,
 // A second Profile is created when no QuicAllowed policy is in effect for the
 // first profile.
 // Then QuicAllowed=false policy is dynamically set for both profiles.
+//
+// Disabled due to flakiness on windows: https://crbug.com/947931.
+#if defined(OS_WIN)
+#define MAYBE_QuicAllowedFalseAfterTwoProfilesCreated \
+  DISABLED_QuicAllowedFalseAfterTwoProfilesCreated
+#else
+#define MAYBE_QuicAllowedFalseAfterTwoProfilesCreated \
+  QuicAllowedFalseAfterTwoProfilesCreated
+#endif
 IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyDynamicTest,
-                       QuicAllowedFalseAfterTwoProfilesCreated) {
+                       MAYBE_QuicAllowedFalseAfterTwoProfilesCreated) {
   // If multiprofile mode is not enabled, you can't switch between profiles.
   if (!profiles::IsMultipleProfilesEnabled())
     return;

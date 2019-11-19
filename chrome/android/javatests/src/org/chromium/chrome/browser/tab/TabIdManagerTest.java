@@ -30,7 +30,7 @@ public class TabIdManagerTest {
     public UiThreadTestRule mRule = new UiThreadTestRule();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContext = new AdvancedMockContext(InstrumentationRegistry.getTargetContext());
     }
 

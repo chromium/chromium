@@ -43,7 +43,7 @@ public class VideoTest {
     @Feature({"Media", "Media-Video", "Main"})
     @LargeTest
     @RetryOnFailure
-    public void testLoadMediaUrl() throws InterruptedException, TimeoutException {
+    public void testLoadMediaUrl() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         try {

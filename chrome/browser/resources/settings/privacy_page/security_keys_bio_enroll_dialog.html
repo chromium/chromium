@@ -1,0 +1,143 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="../i18n_setup.html">
+<link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="../site_favicon.html">
+<link rel="import" href="security_keys_browser_proxy.html">
+<link rel="import" href="security_keys_pin_field.html">
+
+<dom-module id="settings-security-keys-bio-enroll-dialog">
+  <template>
+    <style include="settings-shared">
+      div[slot='body'] {
+        /* Make the secondary 'Add' button in the body to align with the
+           primary 'Done' button in the body-container. */
+        padding-inline-end: 16px;
+      }
+
+      #header {
+        display: flex;
+      }
+
+      #header .header-label {
+        flex: auto;
+      }
+
+      iron-icon {
+        padding-inline-end: 12px;
+      }
+
+      .list-item .name {
+        word-break: break-word;
+      }
+
+      .name {
+        flex: 3;
+      }
+
+      #container {
+        padding-inline-start: var(--cr-section-padding);
+      }
+    </style>
+
+    <cr-dialog id="dialog" close-text="$i18n{cancel}" ignore-popstate
+        on-close="onDialogClosed_">
+      <div slot="title">[[dialogTitle_(dialogPage_)]]</div>
+
+      <div slot="body">
+        <iron-pages attr-for-selected="id" selected="[[dialogPage_]]"
+            on-iron-select="onIronSelect_">
+          <div id="initial">
+            <p>$i18n{securityKeysTouchToContinue}</p>
+            <paper-spinner-lite style="padding-bottom: 16px;" active>
+            </paper-spinner-lite>
+          </div>
+
+          <div id="pinPrompt">
+            <settings-security-keys-pin-field id="pin">
+            </settings-security-keys-pin-field>
+          </div>
+
+          <div id="enrollments">
+            <div id="header" class="list-item column-header">
+              <h2 class="header-label">[[enrollmentsHeader_(enrollments_)]]</h2>
+
+              <cr-button id="addButton" on-click="addButtonClick_"
+                  class="secondary-button header-aligned-button">
+                $i18n{add}
+              </cr-button>
+            </div>
+
+            <div id="container">
+              <iron-list id="enrollmentList" items="[[enrollments_]]"
+                  class="cr-separators">
+                <template>
+                  <div class="list-item" first$="[[!index]]">
+                    <iron-icon icon="cr-fingerprint-icon:enrollment-done">
+                    </iron-icon>
+                    <div class="name" aria-label="[[item.name]]">
+                      [[item.name]]
+                    </div>
+                    <cr-icon-button class="icon-clear"
+                        aria-label="$i18n{securityKeysBioEnrollmentDelete}"
+                        on-click="deleteEnrollment_"
+                        disabled="[[deleteInProgress_]]">
+                    </cr-icon-button>
+                  </div>
+                </template>
+              </iron-list>
+            </div>
+          </div>
+
+          <div id="enroll">
+            <p>[[progressArcLabel_]]</p>
+            <cr-fingerprint-progress-arc id="arc"></cr-fingerprint-progress-arc>
+          </div>
+
+          <div id="chooseName">
+            <p>$i18n{securityKeysBioEnrollmentChooseName}</p>
+            <cr-input type="text" id="enrollmentName"
+                value="{{recentEnrollmentName_}}"
+                label="$i18n{securityKeysBioEnrollmentNameLabel}"
+                on-input="onEnrollmentNameInput_"
+                spellcheck="false">
+            </cr-input>
+          </div>
+
+          <div id="error">[[errorMsg_]]</div>
+        </iron-pages>
+      </div>
+
+      <div slot="button-container">
+        <cr-button id="cancelButton" class="cancel-button" on-click="cancel_"
+            hidden="[[!cancelButtonVisible_]]"
+            disabled="[[cancelButtonDisabled_]]">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button id="confirmButton" class="action-button"
+            hidden="[[!confirmButtonVisible_]]"
+            disabled="[[confirmButtonDisabled_]]"
+            on-click="confirmButtonClick_">
+          $i18n{continue}
+        </cr-button>
+        <cr-button id="doneButton" class="action-button"
+            on-click="done_" hidden="[[!doneButtonVisible_]]">
+          $i18n{done}
+        </cr-button>
+      </div>
+    </cr-dialog>
+
+  </template>
+  <script src="security_keys_bio_enroll_dialog.js"></script>
+</dom-module>

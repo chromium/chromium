@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src='../../resources/gesture-util.js'></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+#blue {
+    background-color: rgb(0, 0, 255);
+    position: absolute;
+    left: 75px;
+    top: 75px;
+    height: 100px;
+    width: 100px;
+}
+#blue:hover {
+    top: 500px;
+}
+</style>
+<div id="blue"></div>
+<script>
+const x = 100;
+const y = 100;
+var blue = document.getElementById('blue');
+
+window.onload = async () => {
+  if (window.internals) {
+    internals.runtimeFlags.updateHoverAtBeginFrameEnabled = true;
+  }
+
+  promise_test(async () => {
+    // Move the blue element away when it is hovered, so the blue element will oscillates
+    // between 75px and 500px at each animation frame.
+    await mouseMoveTo(x, y);
+    // When the blue element is hovered, it will moved to 500px from the top.
+    await waitFor( () => { return blue.matches(':hover');}, 'wait for move to the blue element');
+    assert_equals(blue.offsetTop, 500, "Check that the blue element is moved to 500px from the top");
+
+    // When the blue element is not hovered, it will set to its default position.
+    await waitFor( () => { return !blue.matches(':hover');}, 'wait for move to the blue element');
+    assert_equals(blue.offsetTop, 75, "The blue element is moved back to 75px from the top");
+  }, 'The hover state is updated at the begin frame after the layout changes which is caused by hover update.');
+}
+</script>

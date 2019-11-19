@@ -36,8 +36,8 @@
     Custom=LegacyCallAsFunction,
     DoNotCheckConstants,
     ImplementedAs=TestInterfaceImplementation,
-    RuntimeEnabled=FeatureName,
-    ContextEnabled=FeatureName,
+    RuntimeEnabled=RuntimeFeature,
+    ContextEnabled=RuntimeFeature,
     Exposed=(Worker,Window)
 ] interface TestInterface : TestInterfaceEmpty {
     // members needed to test [ImplementedAs], as this affect attribute
@@ -58,14 +58,13 @@
     attribute DOMStringOrDouble stringOrDoubleAttribute;
     attribute [EnforceRange] long withExtendedAttributeStringAttribute;
     [ImplementedAs=CapitalImplementation] attribute Implementation uncapitalAttribute;
-    [RuntimeEnabled=FeatureName] attribute long conditionalLongAttribute;
-    [RuntimeEnabled=FeatureName] readonly attribute long conditionalReadOnlyLongAttribute;
+    [RuntimeEnabled=RuntimeFeature] attribute long conditionalLongAttribute;
+    [RuntimeEnabled=RuntimeFeature] readonly attribute long conditionalReadOnlyLongAttribute;
     static attribute DOMString staticStringAttribute;
     static attribute TestInterface staticReturnDOMWrapperAttribute;
     static readonly attribute DOMString staticReadOnlyStringAttribute;
     static readonly attribute TestInterface staticReadOnlyReturnDOMWrapperAttribute;
-    [RuntimeEnabled=FeatureName] static readonly attribute long staticConditionalReadOnlyLongAttribute;
-    [LegacyInterfaceTypeChecking] attribute TestInterfaceEmpty legacyInterfaceTypeCheckingAttribute;
+    [RuntimeEnabled=RuntimeFeature] static readonly attribute long staticConditionalReadOnlyLongAttribute;
 
     attribute [TreatNullAs=EmptyString] DOMString stringNullAsEmptyAttribute;
     attribute USVString? usvStringOrNullAttribute;
@@ -75,6 +74,7 @@
     void voidMethodNullableAndOptionalObjectArgs(object objectArg, object? nullableObjectArg, optional object optionalObjectArg);
     void voidMethodUnrestrictedDoubleArgUnrestrictedFloatArg(unrestricted double unrestrictedDoubleArg, unrestricted float unrestrictedFloatArg);
     void voidMethodTestEnumArg(TestEnum testEnumArg);
+    void voidOptionalDictArgWithEmptyDefault(optional TestDictionary testDict={});
     [PerWorldBindings] void voidMethod();
 
     // Anonymous indexed property operations
@@ -91,7 +91,7 @@
     void alwaysExposedMethod();
     [Exposed=Worker] void workerExposedMethod();
     [Exposed=Window] void windowExposedMethod();
-    [Exposed=Window,OriginTrialEnabled=TestFeature] void originTrialWindowExposedMethod();
+    [Exposed=Window,RuntimeEnabled=TestFeature] void originTrialWindowExposedMethod();
 
     static void alwaysExposedStaticMethod();
     [Exposed=Worker] static void workerExposedStaticMethod();
@@ -102,10 +102,10 @@
     [Exposed=Worker] attribute long workerExposedAttribute;
     [Exposed=Window] attribute long windowExposedAttribute;
 
-    [Exposed=Window, RuntimeEnabled=FeatureName] void methodWithExposedAndRuntimeEnabledFlag();
+    [Exposed=Window, RuntimeEnabled=RuntimeFeature] void methodWithExposedAndRuntimeEnabledFlag();
     [Exposed=Window] void overloadMethodWithExposedAndRuntimeEnabledFlag(long longArg);
-    [Exposed=Window, RuntimeEnabled=FeatureName] void overloadMethodWithExposedAndRuntimeEnabledFlag(DOMString string);
-    [Exposed=Window, RuntimeEnabled=FeatureName2] void overloadMethodWithExposedAndRuntimeEnabledFlag(Window window);
+    [Exposed=Window, RuntimeEnabled=RuntimeFeature] void overloadMethodWithExposedAndRuntimeEnabledFlag(DOMString string);
+    [Exposed=Window, RuntimeEnabled=RuntimeFeature2] void overloadMethodWithExposedAndRuntimeEnabledFlag(Window window);
 
     [Exposed(Window FeatureName, Worker FeatureName2)] void methodWithExposedHavingRuntimeEnabldFlag();
 
@@ -125,8 +125,6 @@
     iterable<ByteString, long>;
 
     [LenientThis] attribute any lenientThisAttribute;
-
-    [LegacyInterfaceTypeChecking] void legacyInterfaceTypeCheckingMethod(TestInterfaceEmpty testInterfaceEmptyArg);
 
     [Affects=Nothing] void sideEffectFreeMethod();
     [Affects=Nothing] attribute boolean attributeWithSideEffectFreeGetter;
@@ -151,6 +149,5 @@
     void methodWithNullableRecords(record<DOMString, double?> numbers, record<DOMString, DOMString?> strings, record<DOMString, Element?> elements, record<DOMString, (double or DOMString)?> unions);
 };
 
-TestInterface implements TestImplements;
-// TestInterface implements TestImplements2; // at implement*ed* interface
-TestInterface implements TestImplements3;
+TestInterface includes TestInterfaceMixin;
+TestInterface includes TestInterfaceMixin3;

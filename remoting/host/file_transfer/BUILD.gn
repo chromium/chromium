@@ -27,6 +27,10 @@ source_set("file_transfer") {
     "//remoting/protocol",
   ]
 
+  if (is_mac) {
+    libs = [ "AppKit.framework" ]
+  }
+
   if (!is_mac && !is_win) {
     sources += [ "ensure_user_no_op.cc" ]
   }

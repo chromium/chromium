@@ -3,7 +3,6 @@
 <head>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 </head>
 <body id="body">
 
@@ -13,11 +12,13 @@
 </div>
 
 <script>
-test_after_layout_and_paint((t) => {
+test((t) => {
     var body = document.getElementById("body");
     body.focus();
 
-    var listBox = accessibilityController.focusedElement.childAtIndex(0);
+    var listBox = accessibilityController.focusedElement.childAtIndex(0).childAtIndex(0);
+    assert_equals(listBox.role, "AXRole: AXListBox");
+
     var firstChild = listBox.childAtIndex(0);
     var secondChild = listBox.childAtIndex(1);
     assert_equals(firstChild.role, "AXRole: AXListBoxOption");

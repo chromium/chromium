@@ -53,6 +53,11 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   // Returns nullptr otherwise.
   static ListedElement* From(Element& element);
 
+  // Cast |this| to HTMLElement, or return the target element associated
+  // to ElementInternals.
+  const HTMLElement& ToHTMLElement() const;
+  HTMLElement& ToHTMLElement();
+
   static HTMLFormElement* FindAssociatedForm(const HTMLElement*,
                                              const AtomicString& form_id,
                                              HTMLFormElement* form_ancestor);
@@ -113,6 +118,8 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
                                                 TextDirection& message_dir,
                                                 String& sub_message,
                                                 TextDirection& sub_message_dir);
+  virtual Element& ValidationAnchor() const;
+  bool ValidationAnchorOrHostIsFocusable() const;
 
   // For Element::IsValidElement(), which is for :valid :invalid selectors.
   bool IsValidElement();
@@ -233,11 +240,6 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   mutable enum DataListAncestorState data_list_ancestor_state_ =
       DataListAncestorState::kUnknown;
 };
-
-CORE_EXPORT HTMLElement* ToHTMLElement(ListedElement*);
-CORE_EXPORT HTMLElement& ToHTMLElement(ListedElement&);
-CORE_EXPORT const HTMLElement* ToHTMLElement(const ListedElement*);
-CORE_EXPORT const HTMLElement& ToHTMLElement(const ListedElement&);
 
 }  // namespace blink
 

@@ -1,7 +1,7 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into reffy-reports
 // (https://github.com/tidoust/reffy-reports)
-// Source: Web Authentication: An API for accessing Public Key Credentials - Level 1 (https://w3c.github.io/webauthn/)
+// Source: Web Authentication: An API for accessing Public Key Credentials - Level 2 (https://w3c.github.io/webauthn/)
 
 [SecureContext, Exposed=Window]
 interface PublicKeyCredential : Credential {
@@ -30,6 +30,7 @@ interface AuthenticatorResponse {
 [SecureContext, Exposed=Window]
 interface AuthenticatorAttestationResponse : AuthenticatorResponse {
     [SameObject] readonly attribute ArrayBuffer      attestationObject;
+    sequence<DOMString>                              getTransports();
 };
 
 [SecureContext, Exposed=Window]
@@ -60,7 +61,6 @@ dictionary PublicKeyCredentialCreationOptions {
 
 dictionary PublicKeyCredentialEntity {
     required DOMString    name;
-    USVString             icon;
 };
 
 dictionary PublicKeyCredentialRpEntity : PublicKeyCredentialEntity {
@@ -75,12 +75,19 @@ dictionary PublicKeyCredentialUserEntity : PublicKeyCredentialEntity {
 dictionary AuthenticatorSelectionCriteria {
     AuthenticatorAttachment      authenticatorAttachment;
     boolean                      requireResidentKey = false;
+    ResidentKeyRequirement       residentKey;
     UserVerificationRequirement  userVerification = "preferred";
 };
 
 enum AuthenticatorAttachment {
     "platform",
     "cross-platform"
+};
+
+enum ResidentKeyRequirement {
+    "discouraged",
+    "preferred",
+    "required"
 };
 
 enum AttestationConveyancePreference {
@@ -110,6 +117,7 @@ dictionary CollectedClientData {
     required DOMString           type;
     required DOMString           challenge;
     required DOMString           origin;
+    boolean                      crossOrigin;
     TokenBinding                 tokenBinding;
 };
 
@@ -127,14 +135,15 @@ enum PublicKeyCredentialType {
 dictionary PublicKeyCredentialDescriptor {
     required PublicKeyCredentialType      type;
     required BufferSource                 id;
-    sequence<AuthenticatorTransport>      transports;
+    sequence<DOMString>                   transports;
 };
 
 enum AuthenticatorTransport {
     "usb",
     "nfc",
     "ble",
-    "internal"
+    "internal",
+    "lightning"
 };
 
 typedef long COSEAlgorithmIdentifier;
@@ -151,6 +160,10 @@ partial dictionary AuthenticationExtensionsClientInputs {
 
 partial dictionary AuthenticationExtensionsClientOutputs {
   boolean appid;
+};
+
+partial dictionary AuthenticationExtensionsClientInputs {
+  USVString appidExclude;
 };
 
 partial dictionary AuthenticationExtensionsClientInputs {
@@ -227,3 +240,15 @@ dictionary authenticatorBiometricPerfBounds{
     float FAR;
     float FRR;
     };
+
+partial dictionary AuthenticationExtensionsClientInputs {
+    boolean credProps;
+};
+
+dictionary CredentialPropertiesOutput {
+    boolean rk;
+};
+
+partial dictionary AuthenticationExtensionsClientOutputs {
+    CredentialPropertiesOutput credProps;
+};

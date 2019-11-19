@@ -4,20 +4,35 @@
 
 /**
  * @fileoverview Define accessibility tests for the MANAGE_TTS_SETTINGS route.
+ * Chrome OS only.
  */
-
-// This is only for Chrome OS.
-GEN('#if defined(OS_CHROMEOS)');
 
 // SettingsAccessibilityTest fixture.
 GEN_INCLUDE([
+  '//chrome/test/data/webui/polymer_browser_test_base.js',
   'settings_accessibility_test.js',
 ]);
 
-TtsAccessibilityTest = class extends SettingsAccessibilityTest {
+GEN('#include "chromeos/constants/chromeos_features.h"');
+
+// TODO(crbug/950007): refactor this into an OSSettingsAccessibilityTest class
+// eslint-disable-next-line no-var
+var TtsAccessibilityTest = class extends PolymerTest {
   /** @override */
   get commandLineSwitches() {
     return ['enable-experimental-a11y-features'];
+  }
+
+  /** @override */
+  get featureList() {
+    // Always test with SplitSettings on because the pages are the same in the
+    // legacy combined settings and we don't want to test everything twice.
+    return {enabled: ['chromeos::features::kSplitSettings']};
+  }
+
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/';
   }
 };
 
@@ -36,5 +51,3 @@ AccessibilityTest.define('TtsAccessibilityTest', {
   /** @override */
   violationFilter: SettingsAccessibilityTest.violationFilter,
 });
-
-GEN('#endif  // defined(OS_CHROMEOS)');

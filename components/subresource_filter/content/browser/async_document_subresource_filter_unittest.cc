@@ -11,7 +11,7 @@
 #include "base/bind_helpers.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter_test_utils.h"
@@ -77,7 +77,7 @@ class AsyncDocumentSubresourceFilterTest : public ::testing::Test {
   // Note: ADSF assumes a task runner is associated with the current thread.
   // Instantiate a MessageLoop on the current thread and use base::RunLoop to
   // handle the replies ADSF tasks generate.
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<base::TestSimpleTaskRunner> blocking_task_runner_ =
       new base::TestSimpleTaskRunner;
 

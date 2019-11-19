@@ -36,6 +36,7 @@ enum DirectionSetting { "" /* horizontal */, "rl", "lr" };
 enum AlignSetting { "start", "center", "end", "left", "right" };
 
 [
+    Exposed=Window,
     Constructor(double startTime, double endTime, DOMString text),
     ConstructorCallWith=Document
 ] interface VTTCue : TextTrackCue {

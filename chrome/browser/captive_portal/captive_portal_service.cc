@@ -131,7 +131,7 @@ bool ShouldDeferToNativeCaptivePortalDetection() {
   // TODO(mmenke): Investigate how well Windows 8's captive portal detection
   // works.
 #if defined(OS_WIN)
-  return base::win::GetVersion() >= base::win::VERSION_WIN8;
+  return base::win::GetVersion() >= base::win::Version::WIN8;
 #else
   return false;
 #endif

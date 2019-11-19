@@ -17,8 +17,8 @@ test(function() {
     test_move_by_word.selectionStart = 0;
     test_move_by_word.selectionEnd = 0;
 
-    var wordBreaks = [5, 10, 17, 27, 27];
-    for (var i = 0; i < 5; ++i) {
+    var wordBreaks = [5, 10, 14, 21, 27, 27];
+    for (var i = 0; i < 6; ++i) {
         var start = test_move_by_word.selectionStart;
         sel.modify('move', 'right', 'word');
         assert_equals(test_move_by_word.selectionStart, wordBreaks[i], 'word break at ' + i);

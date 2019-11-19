@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioPropertySheet
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="10.0"
 	Name="using_wtl"
 	>
 	<Tool

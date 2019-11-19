@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_WEB_TIME_LIMIT_ERROR_PAGE_HTML" file="chromeos/child_accounts/time_limits/web_time_limit_error_page/resources/web_time_limit_error_page.html" flattenhtml="true" type="BINDATA" compress="brotli" />
+</grit-part>
+

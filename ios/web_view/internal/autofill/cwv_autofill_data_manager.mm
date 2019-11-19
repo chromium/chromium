@@ -10,24 +10,34 @@
 #include "base/task/post_task.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_default.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
+#import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/public/cwv_autofill_data_manager_observer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-// Typedefs of |completionHandler| in |fetchProfilesWithCompletionHandler:|
-// and |fetchCreditCardsWithCompletionHandler:|.
+// Typedefs of |completionHandler| in |fetchProfilesWithCompletionHandler:|,
+// |fetchCreditCardsWithCompletionHandler:|, and
+// |fetchPasswordsWithCompletionHandler|.
 typedef void (^CWVFetchProfilesCompletionHandler)(
     NSArray<CWVAutofillProfile*>* profiles);
 typedef void (^CWVFetchCreditCardsCompletionHandler)(
     NSArray<CWVCreditCard*>* creditCards);
+typedef void (^CWVFetchPasswordsCompletionHandler)(
+    NSArray<CWVPassword*>* passwords);
 
 @interface CWVAutofillDataManager ()
+
+// Called when WebViewPasswordStoreConsumer's |OnGetPasswordStoreResults| is
+// invoked.
+- (void)handlePasswordStoreResults:(NSArray<CWVPassword*>*)passwords;
 // Called when WebViewPersonalDataManagerObserverBridge's
 // |OnPersonalDataChanged| is invoked.
 - (void)personalDataDidChange;
@@ -37,6 +47,7 @@ typedef void (^CWVFetchCreditCardsCompletionHandler)(
 // Collects and converts autofill::CreditCards stored internally in
 // |_personalDataManager| to CWVCreditCards.
 - (NSArray<CWVCreditCard*>*)creditCards;
+
 @end
 
 namespace ios_web_view {
@@ -61,6 +72,27 @@ class WebViewPersonalDataManagerObserverBridge
  private:
   __weak CWVAutofillDataManager* data_manager_;
 };
+
+// C++ to ObjC bridge for PasswordStoreConsumer.
+class WebViewPasswordStoreConsumer
+    : public password_manager::PasswordStoreConsumer {
+ public:
+  explicit WebViewPasswordStoreConsumer(CWVAutofillDataManager* data_manager)
+      : data_manager_(data_manager) {}
+  void OnGetPasswordStoreResults(
+      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override {
+    NSMutableArray<CWVPassword*>* passwords = [NSMutableArray array];
+    for (auto& form : results) {
+      CWVPassword* password = [[CWVPassword alloc] initWithPasswordForm:*form];
+      [passwords addObject:password];
+    }
+    [data_manager_ handlePasswordStoreResults:passwords];
+  }
+
+ private:
+  __weak CWVAutofillDataManager* data_manager_;
+};
+
 }  // namespace ios_web_view
 
 @implementation CWVAutofillDataManager {
@@ -73,20 +105,30 @@ class WebViewPersonalDataManagerObserverBridge
       _fetchProfilesCompletionHandlers;
   NSMutableArray<CWVFetchCreditCardsCompletionHandler>*
       _fetchCreditCardsCompletionHandlers;
+  NSMutableArray<CWVFetchPasswordsCompletionHandler>*
+      _fetchPasswordsCompletionHandlers;
   // Holds weak observers.
   NSHashTable<id<CWVAutofillDataManagerObserver>>* _observers;
+
+  password_manager::PasswordStore* _passwordStore;
+  std::unique_ptr<ios_web_view::WebViewPasswordStoreConsumer>
+      _passwordStoreConsumer;
 }
 
 - (instancetype)initWithPersonalDataManager:
-    (autofill::PersonalDataManager*)personalDataManager {
+                    (autofill::PersonalDataManager*)personalDataManager
+                              passwordStore:(password_manager::PasswordStore*)
+                                                passwordStore {
   self = [super init];
   if (self) {
     _personalDataManager = personalDataManager;
+    _passwordStore = passwordStore;
     _personalDataManagerObserverBridge = std::make_unique<
         ios_web_view::WebViewPersonalDataManagerObserverBridge>(self);
     _personalDataManager->AddObserver(_personalDataManagerObserverBridge.get());
     _fetchProfilesCompletionHandlers = [NSMutableArray array];
     _fetchCreditCardsCompletionHandlers = [NSMutableArray array];
+    _fetchPasswordsCompletionHandlers = [NSMutableArray array];
     _observers = [NSHashTable weakObjectsHashTable];
   }
   return self;
@@ -114,9 +156,9 @@ class WebViewPersonalDataManagerObserverBridge
   // |personalDataDidChange| to be invoked.
   if (_personalDataManager->IsDataLoaded()) {
     NSArray<CWVAutofillProfile*>* profiles = [self profiles];
-    base::PostTaskWithTraits(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                               completionHandler(profiles);
-                             }));
+    base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
+                     completionHandler(profiles);
+                   }));
   } else {
     [_fetchProfilesCompletionHandlers addObject:completionHandler];
   }
@@ -137,9 +179,9 @@ class WebViewPersonalDataManagerObserverBridge
   // |personalDataDidChange| to be invoked.
   if (_personalDataManager->IsDataLoaded()) {
     NSArray<CWVCreditCard*>* creditCards = [self creditCards];
-    base::PostTaskWithTraits(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                               completionHandler(creditCards);
-                             }));
+    base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
+                     completionHandler(creditCards);
+                   }));
   } else {
     [_fetchCreditCardsCompletionHandlers addObject:completionHandler];
   }
@@ -155,11 +197,34 @@ class WebViewPersonalDataManagerObserverBridge
   _personalDataManager->RemoveByGUID(creditCard.internalCard->guid());
 }
 
-- (void)clearAllLocalData {
-  _personalDataManager->ClearAllLocalData();
+- (void)fetchPasswordsWithCompletionHandler:
+    (void (^)(NSArray<CWVPassword*>* passwords))completionHandler {
+  [_fetchPasswordsCompletionHandlers addObject:completionHandler];
+
+  // Fetch is already pending.
+  if (_passwordStoreConsumer) {
+    return;
+  }
+
+  _passwordStoreConsumer.reset(
+      new ios_web_view::WebViewPasswordStoreConsumer(self));
+  _passwordStore->GetAllLogins(_passwordStoreConsumer.get());
+}
+
+- (void)deletePassword:(CWVPassword*)password {
+  _passwordStore->RemoveLogin(*[password internalPasswordForm]);
 }
 
 #pragma mark - Private Methods
+
+- (void)handlePasswordStoreResults:(NSArray<CWVPassword*>*)passwords {
+  for (CWVFetchPasswordsCompletionHandler completionHandler in
+           _fetchPasswordsCompletionHandlers) {
+    completionHandler(passwords);
+  }
+  [_fetchPasswordsCompletionHandlers removeAllObjects];
+  _passwordStoreConsumer.reset();
+}
 
 - (void)personalDataDidChange {
   // Invoke completionHandlers if they are still outstanding.

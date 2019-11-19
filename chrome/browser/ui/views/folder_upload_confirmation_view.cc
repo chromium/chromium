@@ -23,11 +23,14 @@ FolderUploadConfirmationView::FolderUploadConfirmationView(
     std::vector<ui::SelectedFileInfo> selected_files)
     : callback_(std::move(callback)),
       selected_files_(std::move(selected_files)) {
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_CONFIRM_FILE_UPLOAD_OK_BUTTON));
   SetLayoutManager(std::make_unique<views::FillLayout>());
   auto label = std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16(IDS_CONFIRM_FILE_UPLOAD_TEXT,
                                  path.BaseName().LossyDisplayName()),
-      CONTEXT_BODY_TEXT_LARGE, STYLE_SECONDARY);
+      CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(label.release());
@@ -59,15 +62,9 @@ base::string16 FolderUploadConfirmationView::GetWindowTitle() const {
       base::saturated_cast<int>(selected_files_.size()));
 }
 
-base::string16 FolderUploadConfirmationView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  if (button == ui::DIALOG_BUTTON_OK)
-    return l10n_util::GetStringUTF16(IDS_CONFIRM_FILE_UPLOAD_OK_BUTTON);
-  return DialogDelegateView::GetDialogButtonLabel(button);
-}
-
 views::View* FolderUploadConfirmationView::GetInitiallyFocusedView() {
-  return GetDialogClientView()->cancel_button();
+  const views::DialogClientView* dcv = GetDialogClientView();
+  return dcv ? dcv->cancel_button() : nullptr;
 }
 
 bool FolderUploadConfirmationView::ShouldShowCloseButton() const {

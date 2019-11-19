@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL absolute inside inline container location should be correct. assert_equals: expected 0 but got 100
+Harness: the test ran to completion.
+

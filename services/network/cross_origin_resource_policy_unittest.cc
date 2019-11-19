@@ -5,9 +5,12 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/test/scoped_feature_list.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/cross_origin_resource_policy.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/resource_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -16,8 +19,7 @@ CrossOriginResourcePolicy::ParsedHeader ParseHeader(
     const std::string& test_headers) {
   std::string all_headers = "HTTP/1.1 200 OK\n" + test_headers + "\n";
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-      net::HttpUtil::AssembleRawHeaders(all_headers.c_str(),
-                                        all_headers.size()));
+      net::HttpUtil::AssembleRawHeaders(all_headers));
   return CrossOriginResourcePolicy::ParseHeaderForTesting(headers.get());
 }
 
@@ -66,6 +68,20 @@ TEST(CrossOriginResourcePolicyTest, ParseHeader) {
                         "Cross-Origin-Resource-Policy: same-origin"));
 }
 
+TEST(CrossOriginResourcePolicyTest, CrossSiteHeaderWithCOEP) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kCrossOriginIsolation);
+  EXPECT_EQ(CrossOriginResourcePolicy::kCrossOrigin,
+            ParseHeader("Cross-Origin-Resource-Policy: cross-origin"));
+}
+
+TEST(CrossOriginResourcePolicyTest, CrossSiteHeaderWithoutCOEP) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kCrossOriginIsolation);
+  EXPECT_EQ(CrossOriginResourcePolicy::kParsingError,
+            ParseHeader("Cross-Origin-Resource-Policy: cross-origin"));
+}
+
 bool ShouldAllowSameSite(const std::string& initiator,
                          const std::string& target) {
   return CrossOriginResourcePolicy::ShouldAllowSameSiteForTesting(
@@ -107,4 +123,74 @@ TEST(CrossOriginResourcePolicyTest, ShouldAllowSameSite) {
   EXPECT_FALSE(ShouldAllowSameSite("http://127.0.0.1", "http://127.0.0.1"));
 }
 
+TEST(CrossOriginResourcePolicyTest, WithCOEP) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kCrossOriginIsolation);
+
+  ResourceResponseInfo corp_none;
+  ResourceResponseInfo corp_same_origin;
+  ResourceResponseInfo corp_cross_origin;
+
+  corp_same_origin.headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 200 OK\n"
+          "cross-origin-resource-policy: same-origin\n"));
+
+  corp_cross_origin.headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 200 OK\n"
+          "cross-origin-resource-policy: cross-origin\n"));
+
+  GURL destination("https://www.example.com/");
+
+  url::Origin destination_origin =
+      url::Origin::Create(GURL("https://www.example.com"));
+  url::Origin another_origin =
+      url::Origin::Create(GURL("https://www2.example.com"));
+
+  constexpr auto kAllow = CrossOriginResourcePolicy::kAllow;
+  constexpr auto kBlock = CrossOriginResourcePolicy::kBlock;
+  using mojom::RequestMode;
+
+  struct TestCase {
+    const RequestMode request_mode;
+    const url::Origin origin;
+    const ResourceResponseInfo response_info;
+    const CrossOriginResourcePolicy::VerificationResult
+        expectation_with_coep_none;
+    const CrossOriginResourcePolicy::VerificationResult
+        expectation_with_coep_require_corp;
+  } test_cases[] = {
+      // We don't have a cross-origin-resource-policy header on a response. That
+      // leads to kBlock when COEP: kRequireCorp is used.
+      {RequestMode::kNoCors, another_origin, corp_none, kAllow, kBlock},
+      // We have "cross-origin-resource-policy: same-origin", so regardless of
+      // COEP the response is blocked.
+      {RequestMode::kNoCors, another_origin, corp_same_origin, kBlock, kBlock},
+      // We have "cross-origin-resource-policy: cross-origin", so regardless of
+      // COEP the response is allowed.
+      {RequestMode::kNoCors, another_origin, corp_cross_origin, kAllow, kAllow},
+      // The origin of the request URL and request's origin match, so regardless
+      // of COEP the response is allowed.
+      {RequestMode::kNoCors, destination_origin, corp_same_origin, kAllow,
+       kAllow},
+      // The request mode is "cors", so so regardless of COEP the response is
+      // allowed.
+      {RequestMode::kCors, another_origin, corp_same_origin, kAllow, kAllow},
+  };
+
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(test_case.expectation_with_coep_none,
+              CrossOriginResourcePolicy::Verify(
+                  destination, test_case.origin, test_case.response_info,
+                  test_case.request_mode, test_case.origin,
+                  mojom::CrossOriginEmbedderPolicy::kNone));
+
+    EXPECT_EQ(test_case.expectation_with_coep_require_corp,
+              CrossOriginResourcePolicy::Verify(
+                  destination, test_case.origin, test_case.response_info,
+                  test_case.request_mode, test_case.origin,
+                  mojom::CrossOriginEmbedderPolicy::kRequireCorp));
+  }
+}
 }  // namespace network

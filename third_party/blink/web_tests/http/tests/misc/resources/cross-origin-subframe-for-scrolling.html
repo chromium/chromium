@@ -19,12 +19,23 @@ function handleMessage(event) {
     frame_id = event.data.frame_id;
     eventSender.mouseMoveTo(event.data.left + 5, event.data.top + 5);
     eventSender.mouseScrollBy(0, event.data.scrollBy);
+  } else if (event.data.hasOwnProperty('clickScrollbar')) {
+    port = event.source;
+    frame_id = event.data.frame_id;
+    console.log('clicking');
+    eventSender.mouseMoveTo(event.data.left + window.innerWidth - 5, event.data.top + window.innerWidth - 5);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
   }
 }
 
 window.onscroll = (() => {
   if (port) {
     port.postMessage({scrolled: frame_id, scrollTop: document.documentElement.scrollTop}, "*");
+  } else{
+    // If parent is performing middle click autoscroll on iframe, send the
+    // scrollTop data back to parent.
+    parent.postMessage({scrolled: frame_id, scrollTop: document.documentElement.scrollTop}, "*");
   }
 });
 

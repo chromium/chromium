@@ -25,7 +25,7 @@ namespace base {
 class DictionaryValue;
 }
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
@@ -97,7 +97,7 @@ class WebHistoryService : public KeyedService {
   typedef base::Callback<void(Request*, bool success)> CompletionCallback;
 
   WebHistoryService(
-      identity::IdentityManager* identity_manager,
+      signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~WebHistoryService() override;
 
@@ -220,7 +220,7 @@ class WebHistoryService : public KeyedService {
 
   // Stores pointer to IdentityManager instance. It must outlive the
   // WebHistoryService and can be null during tests.
-  identity::IdentityManager* identity_manager_;
+  signin::IdentityManager* identity_manager_;
 
   // Request context getter to use.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -250,7 +250,7 @@ class WebHistoryService : public KeyedService {
   // Observers.
   base::ObserverList<WebHistoryServiceObserver, true>::Unchecked observer_list_;
 
-  base::WeakPtrFactory<WebHistoryService> weak_ptr_factory_;
+  base::WeakPtrFactory<WebHistoryService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebHistoryService);
 };

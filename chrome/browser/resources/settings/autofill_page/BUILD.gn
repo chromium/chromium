@@ -9,6 +9,7 @@ js_type_check("closure_compile") {
     ":address_edit_dialog",
     ":autofill_page",
     ":autofill_section",
+    ":blocking_request_manager",
     ":credit_card_edit_dialog",
     ":credit_card_list",
     ":credit_card_list_entry",
@@ -48,6 +49,9 @@ js_library("autofill_section") {
     "//ui/webui/resources/js/cr/ui:focus_without_ink",
   ]
   externs_list = [ "$externs_path/autofill_private.js" ]
+}
+
+js_library("blocking_request_manager") {
 }
 
 js_library("payments_section") {
@@ -113,14 +117,16 @@ js_library("passwords_section") {
     ":password_list_item",
     ":password_manager_proxy",
     "..:global_scroll_target_behavior",
+    "../people_page:sync_browser_proxy",
     "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
     "//third_party/polymer/v1_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior-extracted",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:i18n_behavior",
     "//ui/webui/resources/js:list_property_update_behavior",
     "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
     "//ui/webui/resources/js/cr/ui:focus_without_ink",
   ]
   externs_list = [ "$externs_path/passwords_private.js" ]
@@ -134,5 +140,8 @@ js_library("password_edit_dialog") {
 }
 
 js_library("show_password_behavior") {
+  deps = [
+    ":blocking_request_manager",
+  ]
   externs_list = [ "$externs_path/passwords_private.js" ]
 }

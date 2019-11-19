@@ -29,12 +29,16 @@ AssistantButton::AssistantButton(views::ButtonListener* listener,
   constexpr SkColor kInkDropBaseColor = SK_ColorBLACK;
   constexpr float kInkDropVisibleOpacity = 0.06f;
 
+  // Avoid drawing default focus rings since assistant buttons use
+  // a custom highlight on focus.
+  SetInstallFocusRingOnFocus(false);
+
   // Focus.
   SetFocusForPlatform();
 
   // Image.
-  SetImageAlignment(views::ImageButton::ALIGN_CENTER,
-                    views::ImageButton::ALIGN_MIDDLE);
+  SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
+  SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
 
   // Ink drop.
   SetInkDropMode(InkDropMode::ON);
@@ -42,7 +46,7 @@ AssistantButton::AssistantButton(views::ButtonListener* listener,
   set_ink_drop_base_color(kInkDropBaseColor);
   set_ink_drop_visible_opacity(kInkDropVisibleOpacity);
 
-  set_id(static_cast<int>(button_id));
+  SetID(static_cast<int>(button_id));
 }
 
 AssistantButton::~AssistantButton() = default;
@@ -54,9 +58,14 @@ views::ImageButton* AssistantButton::Create(views::ButtonListener* listener,
                                             int icon_size_in_dip,
                                             int accessible_name_id,
                                             AssistantButtonId button_id,
+                                            base::Optional<int> tooltip_id,
                                             SkColor icon_color) {
   auto* button = new AssistantButton(listener, button_id);
   button->SetAccessibleName(l10n_util::GetStringUTF16(accessible_name_id));
+
+  if (tooltip_id)
+    button->SetTooltipText(l10n_util::GetStringUTF16(tooltip_id.value()));
+
   button->SetImage(views::Button::STATE_NORMAL,
                    gfx::CreateVectorIcon(icon, icon_size_in_dip, icon_color));
   button->SetPreferredSize(gfx::Size(size_in_dip, size_in_dip));
@@ -108,7 +117,7 @@ std::unique_ptr<views::InkDropRipple> AssistantButton::CreateInkDropRipple()
 void AssistantButton::ButtonPressed(views::Button* sender,
                                     const ui::Event& event) {
   assistant::util::IncrementAssistantButtonClickCount(
-      static_cast<AssistantButtonId>(sender->id()));
+      static_cast<AssistantButtonId>(sender->GetID()));
   listener_->ButtonPressed(sender, event);
 }
 

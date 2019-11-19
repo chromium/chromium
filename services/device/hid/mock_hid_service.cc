@@ -10,7 +10,7 @@
 
 namespace device {
 
-MockHidService::MockHidService() : weak_factory_(this) {}
+MockHidService::MockHidService() {}
 
 MockHidService::~MockHidService() = default;
 

@@ -12,6 +12,7 @@ namespace cast_channel {
   case enum:                              \
     return #enum
 
+// TODO(jrw): Replace with EnumTable.
 std::string ReadyStateToString(ReadyState ready_state) {
   switch (ready_state) {
     CAST_CHANNEL_TYPE_TO_STRING(ReadyState::NONE);
@@ -24,6 +25,7 @@ std::string ReadyStateToString(ReadyState ready_state) {
   return "Unknown ready_state";
 }
 
+// TODO(jrw): Replace with EnumTable.
 std::string ChannelErrorToString(ChannelError channel_error) {
   switch (channel_error) {
     CAST_CHANNEL_TYPE_TO_STRING(ChannelError::NONE);

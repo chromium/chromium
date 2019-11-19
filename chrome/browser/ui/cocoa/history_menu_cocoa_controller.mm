@@ -5,6 +5,7 @@
 #import "chrome/browser/ui/cocoa/history_menu_cocoa_controller.h"
 
 #import "base/mac/foundation_util.h"
+#include "base/metrics/user_metrics.h"
 #include "chrome/app/chrome_command_ids.h"  // IDC_HISTORY_MENU
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/profiles/profile.h"
@@ -55,7 +56,18 @@ using content::Referrer;
     DCHECK(node->url.is_valid());
     WindowOpenDisposition disposition =
         ui::WindowOpenDispositionFromNSEvent([NSApp currentEvent]);
-    NavigateParams params(bridge_->profile(), node->url,
+    Profile* target_profile = bridge_->profile();
+
+    // Allow a history menu item to open in an active incognito window.
+    // Specifically, if the active window has the same root profile as the
+    // bridge, target the active profile. Without this, history menu items open
+    // in the nearest non-incognito window, or create one.
+    if (auto* active_browser = chrome::FindBrowserWithActiveWindow()) {
+      if (active_browser->profile()->GetOriginalProfile() == target_profile)
+        target_profile = active_browser->profile();
+    }
+
+    NavigateParams params(target_profile, node->url,
                           ui::PAGE_TRANSITION_AUTO_BOOKMARK);
     params.disposition = disposition;
     Navigate(&params);
@@ -65,6 +77,15 @@ using content::Referrer;
 - (IBAction)openHistoryMenuItem:(id)sender {
   const HistoryMenuBridge::HistoryItem* item =
       bridge_->HistoryItemForMenuItem(sender);
+
+  if ([sender tag] == HistoryMenuBridge::kRecentlyClosed) {
+    base::RecordAction(
+        base::UserMetricsAction("TopMenu_History_RecentlyClosed"));
+  } else if ([sender tag] == HistoryMenuBridge::kVisited) {
+    base::RecordAction(
+        base::UserMetricsAction("TopMenu_History_RecentlyVisited"));
+  }
+
   [self openURLForItem:item];
 }
 

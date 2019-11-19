@@ -12,10 +12,11 @@ FakeHostStatusObserver::FakeHostStatusObserver() = default;
 
 FakeHostStatusObserver::~FakeHostStatusObserver() = default;
 
-mojom::HostStatusObserverPtr FakeHostStatusObserver::GenerateInterfacePtr() {
-  mojom::HostStatusObserverPtr interface_ptr;
-  bindings_.AddBinding(this, mojo::MakeRequest(&interface_ptr));
-  return interface_ptr;
+mojo::PendingRemote<mojom::HostStatusObserver>
+FakeHostStatusObserver::GenerateRemote() {
+  mojo::PendingRemote<mojom::HostStatusObserver> remote;
+  receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+  return remote;
 }
 
 void FakeHostStatusObserver::OnHostStatusChanged(

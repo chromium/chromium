@@ -7,7 +7,7 @@
 #include "base/android/java_handler_thread.h"
 #include "base/message_loop/message_loop_current.h"
 #include "base/synchronization/waitable_event.h"
-#include "jni/JavaHandlerThreadHelpers_jni.h"
+#include "base/test/base_unittests_jni_headers/JavaHandlerThreadHelpers_jni.h"
 
 namespace base {
 namespace android {

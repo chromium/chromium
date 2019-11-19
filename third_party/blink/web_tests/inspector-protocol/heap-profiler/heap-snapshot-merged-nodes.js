@@ -1,4 +1,11 @@
 (async function(testRunner) {
+  function normalizedName(node) {
+    if (node.name().includes("::"))
+      return "Detached InternalNode";
+    if (node.name().startsWith("Window /"))
+      return "Window";
+    return node.name();
+  }
   var {page, session, dp} = await testRunner.startBlank(
       `Test that DOM node and its JS wrapper appear as a single node.`);
 
@@ -31,9 +38,7 @@
   else
     return testRunner.fail('cannot find leaking node');
 
-  var retainers = helper.firstRetainingPath(node).map(
-      node => (node.name().includes("::"))
-          ? "Detached InternalNode" : node.name());
+  var retainers = helper.firstRetainingPath(node).map(normalizedName);
   var actual = retainers.join(', ');
   testRunner.log(`SUCCESS: retaining path = [${actual}]`);
   testRunner.completeTest();

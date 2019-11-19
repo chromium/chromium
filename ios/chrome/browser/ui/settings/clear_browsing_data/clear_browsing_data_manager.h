@@ -5,13 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_CLEAR_BROWSING_DATA_MANAGER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_CLEAR_BROWSING_DATA_MANAGER_H_
 
-#import <Foundation/Foundation.h>
+#include "components/browsing_data/core/counters/browsing_data_counter.h"
+#import "ios/chrome/browser/ui/list_model/list_model.h"
 
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_consumer.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/time_range_selector_collection_view_controller.h"
+namespace ios {
+class ChromeBrowserState;
+}
+class BrowsingDataRemover;
+enum class BrowsingDataRemoveMask;
 
-@class ListModel;
 @class ActionSheetCoordinator;
+@class BrowsingDataCounterWrapperProducer;
+@protocol ClearBrowsingDataConsumer;
+@protocol CollectionViewFooterLinkDelegate;
 
 // Clear Browswing Data Section Identifiers.
 enum ClearBrowsingDataSectionIdentifier {
@@ -67,25 +73,37 @@ enum class ClearBrowsingDataListType {
 
 // Manager that serves as the bulk of the logic for
 // ClearBrowsingDataConsumer.
-@interface ClearBrowsingDataManager
-    : NSObject <TimeRangeSelectorCollectionViewControllerDelegate>
+@interface ClearBrowsingDataManager : NSObject
 
 // The manager's consumer.
-@property(nonatomic, assign) id<ClearBrowsingDataConsumer> consumer;
+@property(nonatomic, weak) id<ClearBrowsingDataConsumer> consumer;
 // Reference to the LinkDelegate for CollectionViewFooterItem.
-@property(nonatomic, strong) id<CollectionViewFooterLinkDelegate> linkDelegate;
+@property(nonatomic, weak) id<CollectionViewFooterLinkDelegate> linkDelegate;
 
 // Default init method. |browserState| can't be nil and
-// |managingList| determines what kind of items to populate model with.
+// |listType| determines what kind of items to populate model with.
 - (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
-                            listType:(ClearBrowsingDataListType)listType
-    NS_DESIGNATED_INITIALIZER;
+                            listType:(ClearBrowsingDataListType)listType;
+
+// Designated initializer to allow dependency injection (in tests).
+- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
+                              listType:(ClearBrowsingDataListType)listType
+                   browsingDataRemover:(BrowsingDataRemover*)remover
+    browsingDataCounterWrapperProducer:
+        (BrowsingDataCounterWrapperProducer*)producer NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 // Fills |model| with appropriate sections and items.
 - (void)loadModel:(ListModel*)model;
+
+// Restarts browsing data counters, which in turn updates UI, with those data
+// types specified by |mask|.
+- (void)restartCounters:(BrowsingDataRemoveMask)mask;
+
 // Returns a ActionSheetCoordinator that has action block to clear data of type
 // |dataTypeMaskToRemove|.
+// When action triggered by a UIButton.
 - (ActionSheetCoordinator*)
     actionSheetCoordinatorWithDataTypesToRemove:
         (BrowsingDataRemoveMask)dataTypeMaskToRemove
@@ -93,6 +111,15 @@ enum class ClearBrowsingDataListType {
                                  (UIViewController*)baseViewController
                                      sourceRect:(CGRect)sourceRect
                                      sourceView:(UIView*)sourceView;
+// When action triggered by a UIBarButtonItem.
+- (ActionSheetCoordinator*)
+    actionSheetCoordinatorWithDataTypesToRemove:
+        (BrowsingDataRemoveMask)dataTypeMaskToRemove
+                             baseViewController:
+                                 (UIViewController*)baseViewController
+                            sourceBarButtonItem:
+                                (UIBarButtonItem*)sourceBarButtonItem;
+
 // Get the text to be displayed by a counter from the given |result|
 - (NSString*)counterTextFromResult:
     (const browsing_data::BrowsingDataCounter::Result&)result;

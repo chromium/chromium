@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.contextualsearch;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.ui.UiUtils;
 
 import java.util.ArrayList;
@@ -16,11 +18,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 
-
 /**
  * Controls how Translation One-box triggering is handled for the {@link ContextualSearchManager}.
  */
-public class ContextualSearchTranslateController  {
+public class ContextualSearchTranslateController implements ContextualSearchTranslation {
     private static final int LOCALE_MIN_LENGTH = 2;
 
     private final ContextualSearchPolicy mPolicy;
@@ -30,19 +31,33 @@ public class ContextualSearchTranslateController  {
     private String mTranslateServiceTargetLanguage;
     private String mAcceptLanguages;
 
-    ContextualSearchTranslateController(
+    /**
+     * Constructs a translation implementation that determines when to trigger translations for
+     * Contextual Search requests.
+     * @param policy The {@link ContextualSearchPolicy} for determining the target language and
+     *        whether translation is disabled.
+     * @param hostInterface A {@link ContextualSearchTranslateInterface} back to the host which
+     *        provides native implementations of this interface.
+     */
+    static public ContextualSearchTranslation getContextualSearchTranslation(
+            ContextualSearchPolicy policy, ContextualSearchTranslateInterface hostInterface) {
+        if (useChromeLanguageModel() && !policy.isTranslationDisabled()) {
+            return new ContextualSearchTranslationImpl(policy);
+        } else {
+            return new ContextualSearchTranslateController(policy, hostInterface);
+        }
+    }
+
+    /** Do not construct directly, call getContextualSearchTranslation static method. */
+    protected ContextualSearchTranslateController(
             ContextualSearchPolicy policy, ContextualSearchTranslateInterface hostInterface) {
         mPolicy = policy;
         mHost = hostInterface;
     }
 
-    /**
-     * Force translation from the given language for the current search request,
-     * unless disabled by a Chrome Variation.  Also log whenever conditions are right to translate.
-     * @param searchRequest The search request to force translation upon.
-     * @param sourceLanguage The language to translate from, or an empty string if not known.
-     */
-    void forceTranslateIfNeeded(ContextualSearchRequest searchRequest, String sourceLanguage) {
+    @Override
+    public void forceTranslateIfNeeded(
+            ContextualSearchRequest searchRequest, String sourceLanguage) {
         if (mPolicy.isTranslationDisabled()) return;
 
         // Force translation if not disabled and server controlled or client logic says required.
@@ -51,20 +66,12 @@ public class ContextualSearchTranslateController  {
             searchRequest.forceTranslation(
                     sourceLanguage, mPolicy.bestTargetLanguage(getProficientLanguageList()));
         }
-        // Log that conditions were right for translation, even though it may be disabled
-        // for an experiment so we can compare with the counter factual data.
-        ContextualSearchUma.logTranslateOnebox(doForceTranslate);
-
         // Log whether or not translate conditions are met
         ContextualSearchUma.logTranslateCondition(doForceTranslate);
     }
 
-    /**
-     * Force auto-detect translation for the current search request unless disabled by experiment.
-     * Also log that conditions are right to translate.
-     * @param searchRequest The search request to force translation upon.
-     */
-    void forceAutoDetectTranslateUnlessDisabled(ContextualSearchRequest searchRequest) {
+    @Override
+    public void forceAutoDetectTranslateUnlessDisabled(ContextualSearchRequest searchRequest) {
         // Always trigger translation using auto-detect when we're not resolving,
         // unless disabled by policy.
         if (mPolicy.isTranslationDisabled()) return;
@@ -75,25 +82,17 @@ public class ContextualSearchTranslateController  {
             searchRequest.forceAutoDetectTranslation(
                     mPolicy.bestTargetLanguage(getProficientLanguageList()));
         }
-        // Log that conditions were right for translation, even though it may be disabled
-        // for an experiment so we can compare with the counter factual data.
-        ContextualSearchUma.logTranslateOnebox(true);
     }
 
-    /**
-     * Caches all the native translate language info, so we can avoid repeated JNI calls.
-     */
-    void cacheNativeTranslateData() {
-        if (mPolicy.isTranslationDisabled()) return;
-
-        getNativeTranslateServiceTargetLanguage();
-        getNativeAcceptLanguages();
-    }
-
-    /** @return Whether the given {@code sourceLanguage} needs translation for the current user. */
-    boolean needsTranslation(@Nullable String sourceLanguage) {
+    @Override
+    public boolean needsTranslation(@Nullable String sourceLanguage) {
         return !mPolicy.isTranslationDisabled() && !TextUtils.isEmpty(sourceLanguage)
                 && mPolicy.needsTranslation(sourceLanguage, getReadableLanguages());
+    }
+
+    @Override
+    public String getTranslateServiceTargetLanguage() {
+        return getNativeTranslateServiceTargetLanguage();
     }
 
     /**
@@ -180,6 +179,11 @@ public class ContextualSearchTranslateController  {
         // TODO(donnd): Shouldn't getLanguage() do this?
         String trimmedLocale = locale.substring(0, LOCALE_MIN_LENGTH);
         return new Locale(trimmedLocale).getLanguage();
+    }
+
+    /** @return whether we should use the Chrome Language Model due to the feature being enabled. */
+    static private boolean useChromeLanguageModel() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATION_MODEL);
     }
 
     /**

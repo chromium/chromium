@@ -91,7 +91,8 @@ class GL_EXPORT GLSurfacePresentationHelper {
   // Callback used by PostDelayedTask for running CheckPendingFrames().
   void CheckPendingFramesCallback();
 
-  void UpdateVSyncCallback(const base::TimeTicks timebase,
+  void UpdateVSyncCallback(bool should_check_pending_frames,
+                           const base::TimeTicks timebase,
                            const base::TimeDelta interval);
 
   void ScheduleCheckPendingFrames(bool align_with_next_vsync);
@@ -106,8 +107,9 @@ class GL_EXPORT GLSurfacePresentationHelper {
   bool check_pending_frame_scheduled_ = false;
   bool gl_fence_supported_ = false;
   EGLTimestampClient* egl_timestamp_client_ = nullptr;
+  bool update_vsync_pending_ = false;
 
-  base::WeakPtrFactory<GLSurfacePresentationHelper> weak_ptr_factory_;
+  base::WeakPtrFactory<GLSurfacePresentationHelper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GLSurfacePresentationHelper);
 };

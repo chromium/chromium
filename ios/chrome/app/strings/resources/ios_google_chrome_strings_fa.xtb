@@ -1,39 +1,36 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
-<translation id="1326317727527857210">‏برای دسترسی به برگه‌هایتان در دستگاه‌های دیگر، به سیستم Chrome وارد شوید.</translation>
+<translation id="1282031177488366470">‏کمک به بهبود ویژگی‌ها و عملکرد Chrome</translation>
+<translation id="1682483655351012182">‏همگام‌سازی داده‌های Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1816764564654397850">‏اعلان حریم خصوصی Google Chrome</translation>
 <translation id="1863312987075920112">‏استفاده از این برنامه به‌معنای اعلام موافقت شما با <ph name="BEGIN_LINK_TOS" />شرایط و ضوابط<ph name="END_LINK_TOS" /> و <ph name="BEGIN_LINK_PRIVACY" />اعلان حریم خصوصی<ph name="END_LINK_PRIVACY" /> Chrome است.</translation>
-<translation id="1984705450038014246">‏همگام‌سازی داده‌های Chrome</translation>
 <translation id="2147651015520127414">‏Chrome تأیید می‌کند که <ph name="ISSUER" /> گواهی‌نامه این وب‌سایت را صادر کرده است.</translation>
 <translation id="2199719347983604670">‏داده‌های مربوط به همگام‌سازی Chrome</translation>
-<translation id="2334084861041072223">‏حق نسخه‌برداری ‪<ph name="YEAR" />‏ Google Inc.‬ کلیه حقوق محفوظ است.</translation>
-<translation id="2342981853652716282">‏برای دریافت نشانک‌ها، گذرواژه‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید.</translation>
 <translation id="2347208864470321755">‏وقتی این ویژگی روشن است، Chrome ترجمه صفحات نوشته شده به دیگر زبان‌ها را با استفاده از ‏‫مترجم Google‬ پیشنهاد می‌دهد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="2441696206556358796">‏برای ذخیره تصاویر، با ضربه زدن روی «تنظیمات» به Chrome اجازه دهید از عکس‌هایتان استفاده کند</translation>
 <translation id="2576431527583832481">‏‫Chrome بهتر شده است! نسخه جدید آن در دسترس است.</translation>
 <translation id="257708665678654955">‏می‌خواهید دفعه بعد Google Chrome ترجمه صفحات <ph name="LANGUAGE_NAME" /> این سایت را به شما پیشنهاد دهد؟</translation>
 <translation id="3030414234702425231">‏ازآنجایی‌که درحال خارج شدن از حسابی هستید که <ph name="SIGNOUT_MANAGED_DOMAIN" /> آن را مدیریت می‌کند، داده‌های Chrome شما از این دستگاه حذف خواهد شد. داده‌هایتان در حساب Google شما باقی می‌ماند.</translation>
-<translation id="3148434565183091099">‏برای اینکه نشانک‌ها را در همه دستگاه‌هایتان دریافت کنید به سیستم Chrome وارد شوید.</translation>
 <translation id="3148688391461398285">‏تجربه بهتری از Chrome بر مبنای مکانتان کسب کنید.</translation>
 <translation id="3167189358072330585">‏حساب شما در Google Chrome کار نمی‌کند. لطفاً با سرپرست دامنه‌تان تماس بگیرید یا از یک حساب Google معمولی برای ثبت ورود استفاده کنید.</translation>
 <translation id="3196546062792660320">‏Chrome با آوردن حساب‌های شما به وب، در وقت شما صرفه‌جویی می‌کند. در «تنظیمات» می‌توانید حساب‌ها را اضافه یا حذف کنید.</translation>
 <translation id="3282568296779691940">‏ورود به Chrome</translation>
 <translation id="3345341804167540816">‏استفاده از Chrome در همه جا</translation>
 <translation id="384394811301901750">‏Google Chrome اکنون نمی‌تواند از دوربین استفاده کند</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">‏هم‌اکنون حساب‌های همگام‌سازی را از <ph name="USER_EMAIL1" /> به <ph name="USER_EMAIL2" /> تغییر می‌دهید. داده‌های موجود Chrome شما توسط <ph name="DOMAIN" /> مدیریت می‌شود. با این کار، داده‌هایتان از این دستگاه حذف می‌شود اما همچنان در <ph name="USER_EMAIL1" /> باقی می‌ماند.</translation>
 <translation id="3988789688219830639">‏Google Chrome به عکس‌ها یا ویدیوهای شما دسترسی ندارد. با رفتن به تنظیمات iOS &gt; حریم خصوصی &gt; عکس‌ها دسترسی را فعال کنید.</translation>
 <translation id="4099578267706723511">‏‫با ارسال آمار کاربرد و گزارش‌های خرابی به Google، به بهتر شدن Chrome کمک کنید.</translation>
 <translation id="415767770115540173">‏با Chrome تجربه بهتری از Google براساس موقعیت مکانی‌تان داشته باشید.</translation>
 <translation id="424864128008805179">‏از سیستم Chrome خارج می شوید؟</translation>
-<translation id="447252321002412580">‏کمک به بهبود ویژگی‌ها و عملکرد Chrome</translation>
+<translation id="4249068189593983585">‏نکته Chrome. برای دیدن گزینه‌های بیشتر برگه، دکمه «نمایش برگه‌ها» را در نوارابزار (واقع در پایین یا بالای صفحه) لمس کنید و نگه دارید.</translation>
 <translation id="4523886039239821078">‏برخی از افزونه‌ها باعث می‌شوند Chrome از کار بیفتد. لطفاً آنها را حذف نصب کنید:</translation>
-<translation id="4615174829807303908">‏هم‌اکنون از حسابی که توسط <ph name="SIGNOUT_MANAGED_DOMAIN" /> مدیریت می‌شود، خارج می‌شوید. با این کار داده‌های Chrome شما از این دستگاه حذف می‌شود اما همچنان در حساب Google شما باقی می‌ماند.</translation>
 <translation id="5389212809648216794">‏Google Chrome نمی‌تواند از دوربین استفاده کند زیرا برنامه دیگری از آن استفاده می‌کند</translation>
+<translation id="5621912349729388018">‏<ph name="BEGIN_LINK" />شرایط خدمات به‌روزشده Chrome را مرور کنید.<ph name="END_LINK" /></translation>
 <translation id="5639704535586432836">‏Settings (تنظیمات) &gt; Privacy (حریم خصوصی) &gt; Camera (دوربین) &gt; Google Chrome را باز کنید و دوربین را روشن کنید.</translation>
 <translation id="5642200033778930880">‏Google Chrome نمی‌تواند از دوربین درحالت Split View (نمای تقسیم) استفاده کند</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5854621639439811139">‏نکته Chrome. بعضی از دکمه‌ها مثل Back (برگشت)، Forward (به جلو) و Search (جستجو) اکنون در پایین صفحه هستند.</translation>
 <translation id="6036420186814142909">‏Google Chrome دارای قابلیت‌هایی است که به شما کمک می‌کند داده‌های اینترنت و سرعت بارگیری صفحه‌های وبتان را مدیریت کنید.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -46,14 +43,12 @@
 <translation id="7172660552945675509">‏نکته: <ph name="BEGIN_LINK" />Chrome را به داکتان انتقال دهید<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">‏Chrome برای اطمینان از دسترسی مجاز به گذرواژه‌هایتان از «شناسه تشخیص چهره» استفاده می‌کند.</translation>
 <translation id="7265369419224458312">‏از اینجا به برگه‌هایی که دررایانه‌تان باز کرده‌اید دسترسی داشته باشید. کافیست Chrome را در رایانه‌تان باز کنید، به منو بروید و «ورود به سیستم Chrome» را انتخاب کنید.</translation>
-<translation id="728488472449859922">‏اسکنر QR در Google Chrome را روشن کنید</translation>
 <translation id="7400722733683201933">‏درباره Google Chrome</translation>
-<translation id="7437998757836447326">‏خروج از سیستم Chrome</translation>
 <translation id="756809126120519699">‏داده‌های Chrome پاک شد</translation>
 <translation id="7626032353295482388">‏به Chrome خوش آمدید</translation>
+<translation id="7698568245838009292">‏Chrome می‌خواهد به «دوربین» دسترسی داشته باشد</translation>
+<translation id="8370517070665726704">‏حق نسخه‌برداری <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
 <translation id="840168496893712993">‏برخی از افزونه‌ها باعث می‌شوند Chrome از کار بیفتد. لطفاً آنها را حذف نصب کنید.</translation>
 <translation id="8459495907675268833">‏داده‌های انتخاب‌‌شده از Chrome و دستگاه‌های همگام‌سازی‌شده حذف شدند. ممکن است اشکال دیگری از سابقه مرورتان در حساب Google شما وجود داشته باشد، مانند جستجو‌ها و فعالیت دیگر سرویس‌های Google در history.google.com.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8606668294522778825">‏ممکن است Google Chrome برای بهبود تجربه مرور شما از سرویس‌های وب استفاده کند. می‌توانید به صورت اختیاری این سرویس‌ها را غیرفعال کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
-<translation id="96145293669295453">‏نکته Chrome. برای دیدن گزینه‌های بیشتر برگه، دکمه «نمایش برگه‌ها» را در نوارابزار (در پایین یا بالای صفحه است) فشار دهید و نگه دارید.</translation>
 </translationbundle>

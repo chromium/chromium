@@ -41,4 +41,4 @@ function listRemovableDevicesCallback(deviceList) {
   });
 }
 
-chrome.test.runTests([testDeviceList])
+chrome.test.runTests([testDeviceList]);

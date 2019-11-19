@@ -61,6 +61,24 @@
 </style>
 <script>
 
+function getComputedStyleAsFloat(style, value) {
+  return parseFloat(style.getPropertyValue(value).slice(0, -2));
+}
+
+function elementIntersects(element, topPos, bottomPos, leftPos, rightPos) {
+  const rect = element.getBoundingClientRect();
+  const style = window.getComputedStyle(element);
+
+  // Only consider the size of |element|, so remove the padding from |rect|.
+  // The padding is used for positioning.
+  rect.top += getComputedStyleAsFloat(style, 'padding-top');
+  rect.bottom -= getComputedStyleAsFloat(style, 'padding-bottom');
+  rect.left += getComputedStyleAsFloat(style, 'padding-left');
+  rect.right -= getComputedStyleAsFloat(style, 'padding-right');
+  return leftPos < rect.right && rightPos > rect.left && topPos < rect.bottom &&
+         bottomPos > rect.top;
+}
+
 function setupHeaderFooterTemplate(options) {
   const body = document.querySelector('body');
   const header = document.querySelector('#header');
@@ -70,6 +88,11 @@ function setupHeaderFooterTemplate(options) {
   body.style.height = `${options.height}px`;
   header.style.height = `${options.topMargin}px`;
   footer.style.height = `${options.bottomMargin}px`;
+
+  const topMargin = options.topMargin;
+  const bottomMargin = options.height - options.bottomMargin;
+  const leftMargin = options.leftMargin;
+  const rightMargin = options.width - options.rightMargin;
 
   header.innerHTML = options['headerTemplate'] || `
     <div class='date text left'></div>
@@ -86,6 +109,11 @@ function setupHeaderFooterTemplate(options) {
       element.textContent = options[cssClass];
       if (options.isRtl)
         element.dir = 'rtl';
+
+      if (elementIntersects(element, topMargin, bottomMargin, leftMargin,
+                            rightMargin)) {
+        element.style.visibility = 'hidden';
+      }
     }
   }
 }

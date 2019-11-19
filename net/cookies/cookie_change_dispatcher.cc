@@ -34,6 +34,15 @@ const char* CookieChangeCauseToString(CookieChangeCause cause) {
   return cause_string;
 }
 
+CookieChangeInfo::CookieChangeInfo() = default;
+
+CookieChangeInfo::CookieChangeInfo(const CanonicalCookie& cookie,
+                                   CookieAccessSemantics access_semantics,
+                                   CookieChangeCause cause)
+    : cookie(cookie), access_semantics(access_semantics), cause(cause) {}
+
+CookieChangeInfo::~CookieChangeInfo() = default;
+
 bool CookieChangeCauseIsDeletion(CookieChangeCause cause) {
   return cause != CookieChangeCause::INSERTED;
 }

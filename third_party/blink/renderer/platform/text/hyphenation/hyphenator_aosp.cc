@@ -16,7 +16,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include <vector>
 #include <memory>
 #include <algorithm>
 #include <unicode/uchar.h>
@@ -25,8 +24,6 @@
 #include <fcntl.h>
 
 #include "third_party/blink/renderer/platform/text/hyphenation/hyphenator_aosp.h"
-
-using std::vector;
 
 namespace android {
 
@@ -112,7 +109,7 @@ Hyphenator* Hyphenator::loadBinary(const uint8_t* patternData) {
   return result;
 }
 
-void Hyphenator::hyphenate(vector<uint8_t>* result,
+void Hyphenator::hyphenate(Vector<uint8_t>* result,
                            const uint16_t* word,
                            size_t len) {
   result->clear();

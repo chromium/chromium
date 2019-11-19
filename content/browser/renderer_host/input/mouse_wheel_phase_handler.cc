@@ -32,11 +32,19 @@ void MouseWheelPhaseHandler::AddPhaseIfNeededAndScheduleEndEvent(
 
   if (has_phase) {
     if (mouse_wheel_event.phase == blink::WebMouseWheelEvent::kPhaseEnded) {
-      // Don't send the wheel end event immediately, start a timer instead to
-      // see whether momentum phase of the scrolling starts or not.
-      ScheduleMouseWheelEndDispatching(
-          should_route_event,
-          kMaximumTimeBetweenPhaseEndedAndMomentumPhaseBegan);
+      // If the momentum_phase is anything other than blocked, don't send the
+      // wheel end event immediately, start a timer instead to see whether
+      // momentum phase of the scrolling starts or not. If momentum_phase is
+      // blocked, that means that momentum scrolling events are not coming
+      // next (i.e. preparing for a pinch, maybe), so end immediately.
+      if (mouse_wheel_event.momentum_phase ==
+          blink::WebMouseWheelEvent::kPhaseBlocked) {
+        SendSyntheticWheelEventWithPhaseEnded(should_route_event);
+      } else {
+        ScheduleMouseWheelEndDispatching(
+            should_route_event,
+            max_time_between_phase_ended_and_momentum_phase_began());
+      }
     } else if (mouse_wheel_event.phase ==
                blink::WebMouseWheelEvent::kPhaseBegan) {
       // A new scrolling sequence has started, send the pending wheel end

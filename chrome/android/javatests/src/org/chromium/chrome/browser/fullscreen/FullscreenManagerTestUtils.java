@@ -8,17 +8,19 @@ import android.os.SystemClock;
 
 import org.junit.Assert;
 
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager.FullscreenListener;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.RenderCoordinates;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 
@@ -35,7 +37,7 @@ public class FullscreenManagerTestUtils {
      * @param testRule The test rule for the currently running test.
      * @param show Whether the browser controls should be shown.
      */
-    public static void scrollBrowserControls(ChromeTabbedActivityTestRule testRule, boolean show) {
+    public static void scrollBrowserControls(ChromeActivityTestRule testRule, boolean show) {
         ChromeFullscreenManager fullscreenManager = testRule.getActivity().getFullscreenManager();
         int browserControlsHeight = fullscreenManager.getTopControlsHeight();
 
@@ -67,7 +69,7 @@ public class FullscreenManagerTestUtils {
      * @param position The desired top controls offset.
      */
     public static void waitForBrowserControlsPosition(
-            ChromeTabbedActivityTestRule testRule, int position) {
+            ChromeActivityTestRule testRule, int position) {
         final ChromeFullscreenManager fullscreenManager =
                 testRule.getActivity().getFullscreenManager();
         CriteriaHelper.pollUiThread(Criteria.equals(position, new Callable<Integer>() {
@@ -104,7 +106,7 @@ public class FullscreenManagerTestUtils {
      * @param tab The current activity tab.
      */
     public static void waitForBrowserControlsToBeMoveable(
-            ChromeTabbedActivityTestRule testRule, final Tab tab) throws InterruptedException {
+            ChromeActivityTestRule testRule, final Tab tab) {
         waitForBrowserControlsPosition(testRule, 0);
 
         final CallbackHelper contentMovedCallback = new CallbackHelper();
@@ -225,27 +227,16 @@ public class FullscreenManagerTestUtils {
      * Disable any browser visibility overrides for testing.
      */
     public static void disableBrowserOverrides() {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                BrowserStateBrowserControlsVisibilityDelegate.disableForTesting();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> BrowserStateBrowserControlsVisibilityDelegate.disableForTesting());
     }
 
-    public static void fling(ChromeTabbedActivityTestRule testRule, final int vx, final int vy) {
-        try {
-            ThreadUtils.runOnUiThread(new Callable<Boolean>() {
-                @Override
-                public Boolean call() {
+    public static void fling(ChromeActivityTestRule testRule, final int vx, final int vy) {
+        PostTask.runOrPostTask(
+                UiThreadTaskTraits.DEFAULT, () -> {
                     testRule.getWebContents().getEventForwarder().startFling(
                             SystemClock.uptimeMillis(), vx, vy, /*synthetic_scroll*/ false,
                             /*prevent_boosting*/ false);
-                    return true;
-                }
-            });
-        } catch (Throwable e) {
-            Assert.fail("Failed to fling");
-        }
+                });
     }
 }

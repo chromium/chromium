@@ -12,12 +12,12 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/mirroring/service/fake_network_service.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "media/cast/test/utility/net_utility.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_endpoint.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,9 +31,9 @@ class UdpSocketClientTest : public ::testing::Test {
  public:
   UdpSocketClientTest() {
     network_context_ = std::make_unique<MockNetworkContext>(
-        mojo::MakeRequest(&network_context_ptr_));
+        network_context_remote_.BindNewPipeAndPassReceiver());
     udp_transport_client_ = std::make_unique<UdpSocketClient>(
-        media::cast::test::GetFreeLocalPort(), network_context_ptr_.get(),
+        media::cast::test::GetFreeLocalPort(), network_context_remote_.get(),
         base::OnceClosure());
   }
 
@@ -47,8 +47,8 @@ class UdpSocketClientTest : public ::testing::Test {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
-  network::mojom::NetworkContextPtr network_context_ptr_;
+  base::test::TaskEnvironment task_environment_;
+  mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
   std::unique_ptr<MockNetworkContext> network_context_;
   std::unique_ptr<UdpSocketClient> udp_transport_client_;
   std::unique_ptr<Packet> received_packet_;
@@ -70,7 +70,7 @@ TEST_F(UdpSocketClientTest, SendAndReceive) {
         &UdpSocketClientTest::OnReceivedPacket, base::Unretained(this)));
     run_loop.Run();
   }
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   MockUdpSocket* socket = network_context_->udp_socket();
 
@@ -117,7 +117,7 @@ TEST_F(UdpSocketClientTest, SendBeforeConnected) {
     EXPECT_CALL(resume_send_cb, Run()).Times(0);
     EXPECT_FALSE(udp_transport_client_->SendPacket(
         new base::RefCountedData<Packet>(packet), resume_send_cb.Get()));
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
   {
     // Expect the UDPSocket to be created when calling StartReceiving().

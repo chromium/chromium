@@ -24,15 +24,16 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/services/printing/public/mojom/constants.mojom.h"
+#include "chrome/browser/printing/printing_service.h"
 #include "chrome/services/printing/public/mojom/pdf_to_emf_converter.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
-#include "content/public/common/service_manager_connection.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "printing/emf_win.h"
 #include "printing/pdf_render_settings.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 using content::BrowserThread;
 
@@ -43,8 +44,8 @@ namespace {
 class PdfToEmfConverterClientImpl : public mojom::PdfToEmfConverterClient {
  public:
   explicit PdfToEmfConverterClientImpl(
-      mojom::PdfToEmfConverterClientRequest request)
-      : binding_(this, std::move(request)) {}
+      mojo::PendingReceiver<mojom::PdfToEmfConverterClient> receiver)
+      : receiver_(this, std::move(receiver)) {}
 
  private:
   // mojom::PdfToEmfConverterClient implementation.
@@ -86,7 +87,7 @@ class PdfToEmfConverterClientImpl : public mojom::PdfToEmfConverterClient {
     std::move(callback).Run();
   }
 
-  mojo::Binding<mojom::PdfToEmfConverterClient> binding_;
+  mojo::Receiver<mojom::PdfToEmfConverterClient> receiver_;
 };
 
 // Emf subclass that knows how to play back PostScript data embedded as EMF
@@ -115,7 +116,7 @@ class PostScriptMetaFile : public Emf {
 //   2. Utility converts the page, and sends back the data in a memory region.
 class PdfConverterImpl : public PdfConverter {
  public:
-  PdfConverterImpl(const scoped_refptr<base::RefCountedMemory>& data,
+  PdfConverterImpl(scoped_refptr<base::RefCountedMemory> data,
                    const PdfRenderSettings& conversion_settings,
                    StartCallback start_callback);
   ~PdfConverterImpl() override;
@@ -146,7 +147,7 @@ class PdfConverterImpl : public PdfConverter {
 
     int page_number() const { return page_number_; }
 
-    const PdfConverter::GetPageCallback& callback() const { return callback_; }
+    PdfConverter::GetPageCallback callback() const { return callback_; }
 
    private:
     int page_number_;
@@ -156,17 +157,18 @@ class PdfConverterImpl : public PdfConverter {
     DISALLOW_COPY_AND_ASSIGN(GetPageCallbackData);
   };
 
-  void Initialize(const scoped_refptr<base::RefCountedMemory>& data);
+  void Initialize(scoped_refptr<base::RefCountedMemory> data);
 
   void GetPage(int page_number,
-               const PdfConverter::GetPageCallback& get_page_callback) override;
+               PdfConverter::GetPageCallback get_page_callback) override;
 
   void Stop();
 
   std::unique_ptr<MetafilePlayer> GetMetaFileFromMapping(
       base::ReadOnlySharedMemoryMapping mapping);
 
-  void OnPageCount(mojom::PdfToEmfConverterPtr converter, uint32_t page_count);
+  void OnPageCount(mojo::PendingRemote<mojom::PdfToEmfConverter> converter,
+                   uint32_t page_count);
   void OnPageDone(base::ReadOnlySharedMemoryRegion emf_region,
                   float scale_factor);
 
@@ -193,11 +195,11 @@ class PdfConverterImpl : public PdfConverter {
   std::unique_ptr<PdfToEmfConverterClientImpl>
       pdf_to_emf_converter_client_impl_;
 
-  mojom::PdfToEmfConverterPtr pdf_to_emf_converter_;
+  mojo::Remote<mojom::PdfToEmfConverter> pdf_to_emf_converter_;
 
-  mojom::PdfToEmfConverterFactoryPtr pdf_to_emf_converter_factory_;
+  mojo::Remote<mojom::PdfToEmfConverterFactory> pdf_to_emf_converter_factory_;
 
-  base::WeakPtrFactory<PdfConverterImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<PdfConverterImpl> weak_ptr_factory_{this};
 
   static bool simulate_failure_initializing_conversion_;
 
@@ -239,13 +241,10 @@ bool PostScriptMetaFile::SafePlayback(HDC hdc) const {
   return true;
 }
 
-PdfConverterImpl::PdfConverterImpl(
-    const scoped_refptr<base::RefCountedMemory>& data,
-    const PdfRenderSettings& settings,
-    StartCallback start_callback)
-    : settings_(settings),
-      start_callback_(std::move(start_callback)),
-      weak_ptr_factory_(this) {
+PdfConverterImpl::PdfConverterImpl(scoped_refptr<base::RefCountedMemory> data,
+                                   const PdfRenderSettings& settings,
+                                   StartCallback start_callback)
+    : settings_(settings), start_callback_(std::move(start_callback)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(start_callback_);
 
@@ -258,8 +257,7 @@ PdfConverterImpl::~PdfConverterImpl() {
   RecordConversionMetrics();
 }
 
-void PdfConverterImpl::Initialize(
-    const scoped_refptr<base::RefCountedMemory>& data) {
+void PdfConverterImpl::Initialize(scoped_refptr<base::RefCountedMemory> data) {
   if (simulate_failure_initializing_conversion_) {
     OnFailed(std::string("Failed to create PDF data mapping."));
     return;
@@ -274,32 +272,32 @@ void PdfConverterImpl::Initialize(
 
   memcpy(memory.mapping.memory(), data->front(), data->size());
 
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(printing::mojom::kChromePrintingServiceName,
-                      &pdf_to_emf_converter_factory_);
-  pdf_to_emf_converter_factory_.set_connection_error_handler(base::BindOnce(
+  GetPrintingService()->BindPdfToEmfConverterFactory(
+      pdf_to_emf_converter_factory_.BindNewPipeAndPassReceiver());
+  pdf_to_emf_converter_factory_.set_disconnect_handler(base::BindOnce(
       &PdfConverterImpl::OnFailed, weak_ptr_factory_.GetWeakPtr(),
       std::string("Connection to PdfToEmfConverterFactory error.")));
 
-  mojom::PdfToEmfConverterClientPtr pdf_to_emf_converter_client_ptr;
+  mojo::PendingRemote<mojom::PdfToEmfConverterClient>
+      pdf_to_emf_converter_client_remote;
   pdf_to_emf_converter_client_impl_ =
       std::make_unique<PdfToEmfConverterClientImpl>(
-          mojo::MakeRequest(&pdf_to_emf_converter_client_ptr));
+          pdf_to_emf_converter_client_remote.InitWithNewPipeAndPassReceiver());
 
   pdf_to_emf_converter_factory_->CreateConverter(
       std::move(memory.region), settings_,
-      std::move(pdf_to_emf_converter_client_ptr),
+      std::move(pdf_to_emf_converter_client_remote),
       base::BindOnce(&PdfConverterImpl::OnPageCount,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PdfConverterImpl::OnPageCount(mojom::PdfToEmfConverterPtr converter,
-                                   uint32_t page_count) {
+void PdfConverterImpl::OnPageCount(
+    mojo::PendingRemote<mojom::PdfToEmfConverter> converter,
+    uint32_t page_count) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!pdf_to_emf_converter_.is_bound());
-  pdf_to_emf_converter_ = std::move(converter);
-  pdf_to_emf_converter_.set_connection_error_handler(base::BindOnce(
+  pdf_to_emf_converter_.Bind(std::move(converter));
+  pdf_to_emf_converter_.set_disconnect_handler(base::BindOnce(
       &PdfConverterImpl::OnFailed, weak_ptr_factory_.GetWeakPtr(),
       std::string("Connection to PdfToEmfConverter error.")));
   std::move(start_callback_).Run(page_count);
@@ -308,7 +306,7 @@ void PdfConverterImpl::OnPageCount(mojom::PdfToEmfConverterPtr converter,
 
 void PdfConverterImpl::GetPage(
     int page_number,
-    const PdfConverter::GetPageCallback& get_page_callback) {
+    PdfConverter::GetPageCallback get_page_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(pdf_to_emf_converter_.is_bound());
 
@@ -422,7 +420,7 @@ PdfConverter::~PdfConverter() = default;
 
 // static
 std::unique_ptr<PdfConverter> PdfConverter::StartPdfConverter(
-    const scoped_refptr<base::RefCountedMemory>& data,
+    scoped_refptr<base::RefCountedMemory> data,
     const PdfRenderSettings& conversion_settings,
     StartCallback start_callback) {
   return std::make_unique<PdfConverterImpl>(data, conversion_settings,

@@ -153,7 +153,7 @@ class FakePeripheral : public device::BluetoothDevice {
 
   // Mutable because IsGattServicesDiscoveryComplete needs to post a task but
   // is const.
-  mutable base::WeakPtrFactory<FakePeripheral> weak_ptr_factory_;
+  mutable base::WeakPtrFactory<FakePeripheral> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakePeripheral);
 };

@@ -41,16 +41,9 @@ Response DOMHandler::SetFileInputFiles(
   if (!allow_file_access_)
     return Response::Error("Not allowed");
   if (host_) {
-    for (size_t i = 0; i < files->length(); i++) {
-#if defined(OS_WIN)
+    for (const std::string& file : *files) {
       ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(
-          host_->GetProcess()->GetID(),
-          base::FilePath(base::UTF8ToUTF16(files->get(i))));
-#else
-      ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(
-          host_->GetProcess()->GetID(),
-          base::FilePath(files->get(i)));
-#endif  // OS_WIN
+          host_->GetProcess()->GetID(), base::FilePath::FromUTF8Unsafe(file));
     }
   }
   return Response::FallThrough();

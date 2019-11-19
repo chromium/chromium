@@ -28,13 +28,13 @@
 namespace blink {
 
 SpeechSynthesisVoice* SpeechSynthesisVoice::Create(
-    scoped_refptr<PlatformSpeechSynthesisVoice> voice) {
+    mojom::blink::SpeechSynthesisVoicePtr voice) {
   return MakeGarbageCollected<SpeechSynthesisVoice>(std::move(voice));
 }
 
 SpeechSynthesisVoice::SpeechSynthesisVoice(
-    scoped_refptr<PlatformSpeechSynthesisVoice> voice)
-    : platform_voice_(std::move(voice)) {}
+    mojom::blink::SpeechSynthesisVoicePtr mojom_voice)
+    : mojom_voice_(std::move(mojom_voice)) {}
 
 SpeechSynthesisVoice::~SpeechSynthesisVoice() = default;
 

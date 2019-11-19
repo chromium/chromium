@@ -27,7 +27,7 @@ namespace {
 
 bool CsrssDisconnectSupported() {
   // This functionality has not been verified on versions before Win10.
-  if (base::win::GetVersion() < base::win::VERSION_WIN10)
+  if (base::win::GetVersion() < base::win::Version::WIN10)
     return false;
 
   // Does not work on 32-bit on x64 (ie Wow64).

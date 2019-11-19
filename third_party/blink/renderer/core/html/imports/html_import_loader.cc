@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/core/html/imports/html_import_loader.h"
 
-#include <memory>
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
@@ -39,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/imports/html_import_child.h"
 #include "third_party/blink/renderer/core/html/imports/html_imports_controller.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_response_headers.h"
 
 namespace blink {
@@ -46,7 +46,8 @@ namespace blink {
 HTMLImportLoader::HTMLImportLoader(HTMLImportsController* controller)
     : controller_(controller),
       state_(kStateLoading),
-      microtask_queue_(V0CustomElementSyncMicrotaskQueue::Create()) {}
+      microtask_queue_(
+          MakeGarbageCollected<V0CustomElementSyncMicrotaskQueue>()) {}
 
 HTMLImportLoader::~HTMLImportLoader() = default;
 
@@ -73,7 +74,7 @@ void HTMLImportLoader::ResponseReceived(Resource* resource,
   SetState(StartWritingAndParsing(response));
 }
 
-void HTMLImportLoader::DataReceived(Resource*,
+void HTMLImportLoader::DataReceived(Resource* resource,
                                     const char* data,
                                     size_t length) {
   document_->Parser()->AppendBytes(data, length);
@@ -95,7 +96,7 @@ HTMLImportLoader::State HTMLImportLoader::StartWritingAndParsing(
     const ResourceResponse& response) {
   DCHECK(controller_);
   DCHECK(!imports_.IsEmpty());
-  document_ = HTMLDocument::Create(
+  document_ = MakeGarbageCollected<HTMLDocument>(
       DocumentInit::CreateWithImportsController(controller_)
           .WithURL(response.CurrentRequestUrl()));
   document_->OpenForNavigation(kAllowAsynchronousParsing, response.MimeType(),
@@ -150,7 +151,7 @@ void HTMLImportLoader::NotifyParserStopped() {
   parser->RemoveClient(this);
 }
 
-void HTMLImportLoader::DidRemoveAllPendingStylesheet() {
+void HTMLImportLoader::DidRemoveAllPendingStylesheets() {
   if (state_ == kStateParsed)
     SetState(FinishLoading());
 }

@@ -43,6 +43,9 @@ class SuggestedArticlesObserver
   void OnFullRefreshRequired() override;
   void ContentSuggestionsServiceShutdown() override;
 
+  // Starts prefetching current suggestions if available.
+  void ConsumeSuggestions();
+
   // Returns a pointer to the list of testing articles. If there is no such
   // list, allocates one before returning the list.  The observer owns the list.
   std::vector<ntp_snippets::ContentSuggestion>* GetTestingArticles();

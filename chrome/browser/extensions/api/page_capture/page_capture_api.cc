@@ -23,11 +23,10 @@
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/notification_types.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/mhtml_generation_params.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/public_session_permission_helper.h"
@@ -53,6 +52,7 @@ const char kPageCaptureNotAllowed[] =
 const char kUserDenied[] = "User denied request.";
 #endif
 constexpr base::TaskTraits kCreateTemporaryFileTaskTraits = {
+    base::ThreadPool(),
     // Requires IO.
     base::MayBlock(),
 
@@ -75,7 +75,7 @@ PageCaptureSaveAsMHTMLFunction::PageCaptureSaveAsMHTMLFunction() {
 
 PageCaptureSaveAsMHTMLFunction::~PageCaptureSaveAsMHTMLFunction() {
   if (mhtml_file_.get()) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&ClearFileReferenceOnIOThread, std::move(mhtml_file_)));
   }
@@ -119,7 +119,7 @@ bool PageCaptureSaveAsMHTMLFunction::RunAsync() {
   if (!CanCaptureCurrentPage()) {
     return false;
   }
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, kCreateTemporaryFileTaskTraits,
       base::BindOnce(&PageCaptureSaveAsMHTMLFunction::CreateTemporaryFile,
                      this));
@@ -180,7 +180,7 @@ bool PageCaptureSaveAsMHTMLFunction::OnMessageReceived(
 void PageCaptureSaveAsMHTMLFunction::ResolvePermissionRequest(
     const PermissionIDSet& allowed_permissions) {
   if (allowed_permissions.ContainsID(APIPermission::kPageCapture)) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, kCreateTemporaryFileTaskTraits,
         base::BindOnce(&PageCaptureSaveAsMHTMLFunction::CreateTemporaryFile,
                        this));
@@ -192,7 +192,7 @@ void PageCaptureSaveAsMHTMLFunction::ResolvePermissionRequest(
 
 void PageCaptureSaveAsMHTMLFunction::CreateTemporaryFile() {
   bool success = base::CreateTemporaryFile(&mhtml_path_);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&PageCaptureSaveAsMHTMLFunction::TemporaryFileCreatedOnIO,
                      this, success));
@@ -205,8 +205,8 @@ void PageCaptureSaveAsMHTMLFunction::TemporaryFileCreatedOnIO(bool success) {
     // once it is no longer used.
     mhtml_file_ = ShareableFileReference::GetOrCreate(
         mhtml_path_, ShareableFileReference::DELETE_ON_FINAL_RELEASE,
-        base::CreateSequencedTaskRunnerWithTraits(
-            {// Requires IO.
+        base::CreateSequencedTaskRunner(
+            {base::ThreadPool(),  // Requires IO.
              base::MayBlock(),
 
              // TaskPriority: Inherit.
@@ -218,7 +218,7 @@ void PageCaptureSaveAsMHTMLFunction::TemporaryFileCreatedOnIO(bool success) {
              base::TaskShutdownBehavior::BLOCK_SHUTDOWN})
             .get());
   }
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&PageCaptureSaveAsMHTMLFunction::TemporaryFileCreatedOnUI,
                      this, success));
@@ -278,9 +278,8 @@ void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int64_t file_size) {
     return;
   }
 
-  int child_id = render_frame_host()->GetProcess()->GetID();
-  ChildProcessSecurityPolicy::GetInstance()->GrantReadFile(
-      child_id, mhtml_path_);
+  ChildProcessSecurityPolicy::GetInstance()->GrantReadFile(source_process_id(),
+                                                           mhtml_path_);
 
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
   dict->SetString("mhtmlFilePath", mhtml_path_.value());

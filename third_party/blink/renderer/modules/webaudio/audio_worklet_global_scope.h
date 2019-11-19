@@ -5,14 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_GLOBAL_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_GLOBAL_SCOPE_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param_descriptor.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -24,6 +22,7 @@ class CrossThreadAudioWorkletProcessorInfo;
 class ExceptionState;
 class MessagePortChannel;
 class SerializedScriptValue;
+class V8BlinkAudioWorkletProcessorConstructor;
 struct GlobalScopeCreationParams;
 
 
@@ -54,10 +53,6 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static AudioWorkletGlobalScope* Create(
-      std::unique_ptr<GlobalScopeCreationParams>,
-      WorkerThread*);
-
   AudioWorkletGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                           WorkerThread*);
   ~AudioWorkletGlobalScope() override;
@@ -66,9 +61,10 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   void Dispose() final;
   bool IsClosing() const final { return is_closing_; }
 
-  void registerProcessor(const String& name,
-                         const ScriptValue& class_definition,
-                         ExceptionState&);
+  void registerProcessor(
+      const String& name,
+      V8BlinkAudioWorkletProcessorConstructor* processor_ctor,
+      ExceptionState&);
 
   // Creates an instance of AudioWorkletProcessor from a registered name.
   // This is invoked by AudioWorkletMessagingProxy upon the construction of
@@ -104,7 +100,7 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   void SetSampleRate(float sample_rate);
 
   // IDL
-  unsigned long long currentFrame() const { return current_frame_; }
+  uint64_t currentFrame() const { return current_frame_; }
   double currentTime() const;
   float sampleRate() const { return sample_rate_; }
 
@@ -113,11 +109,9 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
  private:
   bool is_closing_ = false;
 
-  typedef HeapHashMap<String,
-                      TraceWrapperMember<AudioWorkletProcessorDefinition>>
+  typedef HeapHashMap<String, Member<AudioWorkletProcessorDefinition>>
       ProcessorDefinitionMap;
-  typedef HeapVector<TraceWrapperMember<AudioWorkletProcessor>>
-      ProcessorInstances;
+  typedef HeapVector<Member<AudioWorkletProcessor>> ProcessorInstances;
 
   ProcessorDefinitionMap processor_definition_map_;
   ProcessorInstances processor_instances_;

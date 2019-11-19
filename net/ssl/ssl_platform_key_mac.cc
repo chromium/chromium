@@ -12,7 +12,10 @@
 #include <Security/cssm.h>
 
 #include <memory>
+#include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/mac/availability.h"
@@ -23,6 +26,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_policy.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "crypto/mac_security_services_lock.h"
 #include "crypto/openssl_util.h"
@@ -48,21 +52,6 @@ namespace net {
 
 namespace {
 
-// TODO(davidben): Remove this when we switch to building to the 10.13
-// SDK. https://crbug.com/780980
-#if !defined(MAC_OS_X_VERSION_10_13) || \
-    MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_13
-API_AVAILABLE(macosx(10.13))
-const SecKeyAlgorithm kSecKeyAlgorithmRSASignatureDigestPSSSHA256 =
-    CFSTR("algid:sign:RSA:digest-PSS:SHA256:SHA256:32");
-API_AVAILABLE(macosx(10.13))
-const SecKeyAlgorithm kSecKeyAlgorithmRSASignatureDigestPSSSHA384 =
-    CFSTR("algid:sign:RSA:digest-PSS:SHA384:SHA384:48");
-API_AVAILABLE(macosx(10.13))
-const SecKeyAlgorithm kSecKeyAlgorithmRSASignatureDigestPSSSHA512 =
-    CFSTR("algid:sign:RSA:digest-PSS:SHA512:SHA512:64");
-#endif
-
 class ScopedCSSM_CC_HANDLE {
  public:
   ScopedCSSM_CC_HANDLE() : handle_(0) {}
@@ -86,12 +75,10 @@ class ScopedCSSM_CC_HANDLE {
 
 class SSLPlatformKeyCSSM : public ThreadedSSLPrivateKey::Delegate {
  public:
-  SSLPlatformKeyCSSM(int type,
-                     size_t max_length,
+  SSLPlatformKeyCSSM(bssl::UniquePtr<EVP_PKEY> pubkey,
                      SecKeyRef key,
                      const CSSM_KEY* cssm_key)
-      : type_(type),
-        max_length_(max_length),
+      : pubkey_(std::move(pubkey)),
         key_(key, base::scoped_policy::RETAIN),
         cssm_key_(cssm_key) {}
 
@@ -104,8 +91,8 @@ class SSLPlatformKeyCSSM : public ThreadedSSLPrivateKey::Delegate {
   }
 
   std::vector<uint16_t> GetAlgorithmPreferences() override {
-    return SSLPrivateKey::DefaultAlgorithmPreferences(type_,
-                                                      false /* no PSS */);
+    return SSLPrivateKey::DefaultAlgorithmPreferences(
+        EVP_PKEY_id(pubkey_.get()), true /* include PSS */);
   }
 
   Error Sign(uint16_t algorithm,
@@ -148,17 +135,38 @@ class SSLPlatformKeyCSSM : public ThreadedSSLPrivateKey::Delegate {
     hash_data.Length = digest_len;
     hash_data.Data = digest;
 
+    base::Optional<std::vector<uint8_t>> pss_storage;
     bssl::UniquePtr<uint8_t> free_digest_info;
     if (cssm_key_->KeyHeader.AlgorithmId == CSSM_ALGID_RSA) {
-      // CSSM expects the caller to prepend the DigestInfo.
-      int hash_nid = EVP_MD_type(md);
-      int is_alloced;
-      if (!RSA_add_pkcs1_prefix(&hash_data.Data, &hash_data.Length, &is_alloced,
-                                hash_nid, hash_data.Data, hash_data.Length)) {
-        return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
+      if (SSL_is_signature_algorithm_rsa_pss(algorithm)) {
+        pss_storage = AddPSSPadding(pubkey_.get(), md,
+                                    base::make_span(digest, digest_len));
+        if (!pss_storage) {
+          return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
+        }
+        hash_data.Length = pss_storage->size();
+        hash_data.Data = pss_storage->data();
+
+        CSSM_CONTEXT_ATTRIBUTE padding_attr;
+        padding_attr.AttributeType = CSSM_ATTRIBUTE_PADDING;
+        padding_attr.AttributeLength = sizeof(uint32_t);
+        padding_attr.Attribute.Uint32 = CSSM_PADDING_NONE;
+        if (CSSM_UpdateContextAttributes(cssm_signature.get(), 1,
+                                         &padding_attr) != CSSM_OK) {
+          return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
+        }
+      } else {
+        // CSSM expects the caller to prepend the DigestInfo.
+        int hash_nid = EVP_MD_type(md);
+        int is_alloced;
+        if (!RSA_add_pkcs1_prefix(&hash_data.Data, &hash_data.Length,
+                                  &is_alloced, hash_nid, hash_data.Data,
+                                  hash_data.Length)) {
+          return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
+        }
+        if (is_alloced)
+          free_digest_info.reset(hash_data.Data);
       }
-      if (is_alloced)
-        free_digest_info.reset(hash_data.Data);
 
       // Set RSA blinding.
       CSSM_CONTEXT_ATTRIBUTE blinding_attr;
@@ -171,7 +179,7 @@ class SSLPlatformKeyCSSM : public ThreadedSSLPrivateKey::Delegate {
       }
     }
 
-    signature->resize(max_length_);
+    signature->resize(EVP_PKEY_size(pubkey_.get()));
     CSSM_DATA signature_data;
     signature_data.Length = signature->size();
     signature_data.Data = signature->data();
@@ -185,8 +193,7 @@ class SSLPlatformKeyCSSM : public ThreadedSSLPrivateKey::Delegate {
   }
 
  private:
-  int type_;
-  size_t max_length_;
+  bssl::UniquePtr<EVP_PKEY> pubkey_;
   base::ScopedCFTypeRef<SecKeyRef> key_;
   const CSSM_KEY* cssm_key_;
 
@@ -217,6 +224,8 @@ SecKeyAlgorithm GetSecKeyAlgorithm(uint16_t algorithm) {
       return kSecKeyAlgorithmECDSASignatureDigestX962SHA1;
   }
 
+  // RSA-PSS is only available in macOS 10.13 and up. In earlier versions, we
+  // use a fallback path (see GetSecKeyAlgorithmWithFallback).
   if (__builtin_available(macOS 10.13, *)) {
     switch (algorithm) {
       case SSL_SIGN_RSA_PSS_SHA512:
@@ -234,15 +243,13 @@ SecKeyAlgorithm GetSecKeyAlgorithm(uint16_t algorithm) {
 class API_AVAILABLE(macosx(10.12)) SSLPlatformKeySecKey
     : public ThreadedSSLPrivateKey::Delegate {
  public:
-  SSLPlatformKeySecKey(int type, size_t max_length, SecKeyRef key)
-      : key_(key, base::scoped_policy::RETAIN) {
+  SSLPlatformKeySecKey(bssl::UniquePtr<EVP_PKEY> pubkey, SecKeyRef key)
+      : pubkey_(std::move(pubkey)), key_(key, base::scoped_policy::RETAIN) {
     // Determine the algorithms supported by the key.
     for (uint16_t algorithm : SSLPrivateKey::DefaultAlgorithmPreferences(
-             type, true /* include PSS */)) {
-      SecKeyAlgorithm sec_algorithm = GetSecKeyAlgorithm(algorithm);
-      if (sec_algorithm &&
-          SecKeyIsAlgorithmSupported(key_.get(), kSecKeyOperationTypeSign,
-                                     sec_algorithm)) {
+             EVP_PKEY_id(pubkey_.get()), true /* include PSS */)) {
+      bool unused;
+      if (GetSecKeyAlgorithmWithFallback(algorithm, &unused)) {
         preferences_.push_back(algorithm);
       }
     }
@@ -263,23 +270,39 @@ class API_AVAILABLE(macosx(10.12)) SSLPlatformKeySecKey
   Error Sign(uint16_t algorithm,
              base::span<const uint8_t> input,
              std::vector<uint8_t>* signature) override {
-    SecKeyAlgorithm sec_algorithm = GetSecKeyAlgorithm(algorithm);
+    bool pss_fallback = false;
+    SecKeyAlgorithm sec_algorithm =
+        GetSecKeyAlgorithmWithFallback(algorithm, &pss_fallback);
     if (!sec_algorithm) {
       NOTREACHED();
       return ERR_FAILED;
     }
 
     const EVP_MD* md = SSL_get_signature_algorithm_digest(algorithm);
-    uint8_t digest[EVP_MAX_MD_SIZE];
+    uint8_t digest_buf[EVP_MAX_MD_SIZE];
     unsigned digest_len;
-    if (!md || !EVP_Digest(input.data(), input.size(), digest, &digest_len, md,
-                           nullptr)) {
+    if (!md || !EVP_Digest(input.data(), input.size(), digest_buf, &digest_len,
+                           md, nullptr)) {
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
     }
+    base::span<const uint8_t> digest = base::make_span(digest_buf, digest_len);
 
-    base::ScopedCFTypeRef<CFDataRef> digest_ref(CFDataCreateWithBytesNoCopy(
-        kCFAllocatorDefault, digest, base::checked_cast<CFIndex>(digest_len),
-        kCFAllocatorNull));
+    base::Optional<std::vector<uint8_t>> pss_storage;
+    if (pss_fallback) {
+      // Implement RSA-PSS by adding the padding manually and then using
+      // kSecKeyAlgorithmRSASignatureRaw.
+      DCHECK(SSL_is_signature_algorithm_rsa_pss(algorithm));
+      DCHECK_EQ(sec_algorithm, kSecKeyAlgorithmRSASignatureRaw);
+      pss_storage = AddPSSPadding(pubkey_.get(), md, digest);
+      if (!pss_storage) {
+        return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
+      }
+      digest = *pss_storage;
+    }
+
+    base::ScopedCFTypeRef<CFDataRef> digest_ref(
+        CFDataCreate(kCFAllocatorDefault, digest.data(),
+                     base::checked_cast<CFIndex>(digest.size())));
 
     base::ScopedCFTypeRef<CFErrorRef> error;
     base::ScopedCFTypeRef<CFDataRef> signature_ref(SecKeyCreateSignature(
@@ -296,7 +319,31 @@ class API_AVAILABLE(macosx(10.12)) SSLPlatformKeySecKey
   }
 
  private:
+  // Returns the algorithm to use with |algorithm| and this key, or nullptr if
+  // not supported. If the resulting algorithm should be manually padded for
+  // RSA-PSS, |*out_pss_fallback| is set to true.
+  SecKeyAlgorithm GetSecKeyAlgorithmWithFallback(uint16_t algorithm,
+                                                 bool* out_pss_fallback) {
+    SecKeyAlgorithm sec_algorithm = GetSecKeyAlgorithm(algorithm);
+    if (sec_algorithm &&
+        SecKeyIsAlgorithmSupported(key_.get(), kSecKeyOperationTypeSign,
+                                   sec_algorithm)) {
+      *out_pss_fallback = false;
+      return sec_algorithm;
+    }
+
+    if (SSL_is_signature_algorithm_rsa_pss(algorithm) &&
+        SecKeyIsAlgorithmSupported(key_.get(), kSecKeyOperationTypeSign,
+                                   kSecKeyAlgorithmRSASignatureRaw)) {
+      *out_pss_fallback = true;
+      return kSecKeyAlgorithmRSASignatureRaw;
+    }
+
+    return nullptr;
+  }
+
   std::vector<uint16_t> preferences_;
+  bssl::UniquePtr<EVP_PKEY> pubkey_;
   base::ScopedCFTypeRef<SecKeyRef> key_;
 
   DISALLOW_COPY_AND_ASSIGN(SSLPlatformKeySecKey);
@@ -305,15 +352,13 @@ class API_AVAILABLE(macosx(10.12)) SSLPlatformKeySecKey
 scoped_refptr<SSLPrivateKey> CreateSSLPrivateKeyForSecKey(
     const X509Certificate* certificate,
     SecKeyRef private_key) {
-  int key_type;
-  size_t max_length;
-  if (!GetClientCertInfo(certificate, &key_type, &max_length))
+  bssl::UniquePtr<EVP_PKEY> pubkey = GetClientCertPublicKey(certificate);
+  if (!pubkey)
     return nullptr;
 
   if (__builtin_available(macOS 10.12, *)) {
     return base::MakeRefCounted<ThreadedSSLPrivateKey>(
-        std::make_unique<SSLPlatformKeySecKey>(key_type, max_length,
-                                               private_key),
+        std::make_unique<SSLPlatformKeySecKey>(std::move(pubkey), private_key),
         GetSSLPlatformKeyTaskRunner());
   }
 
@@ -325,7 +370,7 @@ scoped_refptr<SSLPrivateKey> CreateSSLPrivateKeyForSecKey(
   }
 
   return base::MakeRefCounted<ThreadedSSLPrivateKey>(
-      std::make_unique<SSLPlatformKeyCSSM>(key_type, max_length, private_key,
+      std::make_unique<SSLPlatformKeyCSSM>(std::move(pubkey), private_key,
                                            cssm_key),
       GetSSLPlatformKeyTaskRunner());
 }

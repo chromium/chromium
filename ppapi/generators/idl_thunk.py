@@ -5,6 +5,8 @@
 
 """ Generator for C++ style thunks """
 
+from __future__ import print_function
+
 import glob
 import os
 import re
@@ -423,7 +425,7 @@ class TGen(GeneratorByFile):
     my_min, my_max = filenode.GetMinMax(releases)
     if my_min > releases[-1] or my_max < releases[0]:
       if os.path.isfile(savename):
-        print "Removing stale %s for this range." % filenode.GetName()
+        print("Removing stale %s for this range." % filenode.GetName())
         os.remove(os.path.realpath(savename))
       return False
     do_generate = filenode.GetProperty('generate_thunk')
@@ -493,7 +495,7 @@ class TGen(GeneratorByFile):
     for node in filenode.GetListOf('Interface'):
       # Skip if this node is not in this release
       if not node.InReleases(releases):
-        print "Skipping %s" % node
+        print("Skipping %s" % node)
         continue
 
       # Generate Member functions
@@ -572,10 +574,10 @@ def Main(args):
   filenames = glob.glob(idldir)
   ast = ParseFiles(filenames)
   if tgen.GenerateRange(ast, ['M13', 'M14', 'M15'], {}):
-    print "Golden file for M13-M15 failed."
+    print("Golden file for M13-M15 failed.")
     failed = 1
   else:
-    print "Golden file for M13-M15 passed."
+    print("Golden file for M13-M15 passed.")
 
   return failed
 

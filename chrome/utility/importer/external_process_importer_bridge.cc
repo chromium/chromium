@@ -4,6 +4,9 @@
 
 #include "chrome/utility/importer/external_process_importer_bridge.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
@@ -15,8 +18,6 @@
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_data_types.h"
 #include "components/autofill/core/common/password_form.h"
-
-using chrome::mojom::ProfileImportObserver;
 
 namespace {
 
@@ -32,14 +33,14 @@ const int kNumAutofillFormDataToSend = 100;
 
 ExternalProcessImporterBridge::ExternalProcessImporterBridge(
     const base::flat_map<uint32_t, std::string>& localized_strings,
-    scoped_refptr<chrome::mojom::ThreadSafeProfileImportObserverPtr> observer)
+    mojo::SharedRemote<chrome::mojom::ProfileImportObserver> observer)
     : localized_strings_(std::move(localized_strings)),
       observer_(std::move(observer)) {}
 
 void ExternalProcessImporterBridge::AddBookmarks(
     const std::vector<ImportedBookmarkEntry>& bookmarks,
     const base::string16& first_folder_name) {
-  (*observer_)->OnBookmarksImportStart(first_folder_name, bookmarks.size());
+  observer_->OnBookmarksImportStart(first_folder_name, bookmarks.size());
 
   // |bookmarks_left| is required for the checks below as Windows has a
   // Debug bounds-check which prevents pushing an iterator beyond its end()
@@ -50,7 +51,7 @@ void ExternalProcessImporterBridge::AddBookmarks(
     auto end_group = it + std::min(bookmarks_left, kNumBookmarksToSend);
     bookmark_group.assign(it, end_group);
 
-    (*observer_)->OnBookmarksImportGroup(bookmark_group);
+    observer_->OnBookmarksImportGroup(bookmark_group);
     bookmarks_left -= end_group - it;
     it = end_group;
   }
@@ -58,12 +59,12 @@ void ExternalProcessImporterBridge::AddBookmarks(
 }
 
 void ExternalProcessImporterBridge::AddHomePage(const GURL& home_page) {
-  (*observer_)->OnHomePageImportReady(home_page);
+  observer_->OnHomePageImportReady(home_page);
 }
 
 void ExternalProcessImporterBridge::SetFavicons(
     const favicon_base::FaviconUsageDataList& favicons) {
-  (*observer_)->OnFaviconsImportStart(favicons.size());
+  observer_->OnFaviconsImportStart(favicons.size());
 
   // |favicons_left| is required for the checks below as Windows has a
   // Debug bounds-check which prevents pushing an iterator beyond its end()
@@ -74,7 +75,7 @@ void ExternalProcessImporterBridge::SetFavicons(
     auto end_group = it + std::min(favicons_left, kNumFaviconsToSend);
     favicons_group.assign(it, end_group);
 
-    (*observer_)->OnFaviconsImportGroup(favicons_group);
+    observer_->OnFaviconsImportGroup(favicons_group);
     favicons_left -= end_group - it;
     it = end_group;
   }
@@ -84,7 +85,7 @@ void ExternalProcessImporterBridge::SetFavicons(
 void ExternalProcessImporterBridge::SetHistoryItems(
     const std::vector<ImporterURLRow>& rows,
     importer::VisitSource visit_source) {
-  (*observer_)->OnHistoryImportStart(rows.size());
+  observer_->OnHistoryImportStart(rows.size());
 
   // |rows_left| is required for the checks below as Windows has a
   // Debug bounds-check which prevents pushing an iterator beyond its end()
@@ -95,7 +96,7 @@ void ExternalProcessImporterBridge::SetHistoryItems(
     auto end_group = it + std::min(rows_left, kNumHistoryRowsToSend);
     row_group.assign(it, end_group);
 
-    (*observer_)->OnHistoryImportGroup(row_group, visit_source);
+    observer_->OnHistoryImportGroup(row_group, visit_source);
     rows_left -= end_group - it;
     it = end_group;
   }
@@ -105,22 +106,22 @@ void ExternalProcessImporterBridge::SetHistoryItems(
 void ExternalProcessImporterBridge::SetKeywords(
     const std::vector<importer::SearchEngineInfo>& search_engines,
     bool unique_on_host_and_path) {
-  (*observer_)->OnKeywordsImportReady(search_engines, unique_on_host_and_path);
+  observer_->OnKeywordsImportReady(search_engines, unique_on_host_and_path);
 }
 
 void ExternalProcessImporterBridge::SetFirefoxSearchEnginesXMLData(
     const std::vector<std::string>& search_engine_data) {
-  (*observer_)->OnFirefoxSearchEngineDataReceived(search_engine_data);
+  observer_->OnFirefoxSearchEngineDataReceived(search_engine_data);
 }
 
 void ExternalProcessImporterBridge::SetPasswordForm(
     const autofill::PasswordForm& form) {
-  (*observer_)->OnPasswordFormImportReady(form);
+  observer_->OnPasswordFormImportReady(form);
 }
 
 void ExternalProcessImporterBridge::SetAutofillFormData(
     const std::vector<ImporterAutofillFormDataEntry>& entries) {
-  (*observer_)->OnAutofillFormDataImportStart(entries.size());
+  observer_->OnAutofillFormDataImportStart(entries.size());
 
   // |autofill_form_data_entries_left| is required for the checks below as
   // Windows has a Debug bounds-check which prevents pushing an iterator beyond
@@ -133,7 +134,7 @@ void ExternalProcessImporterBridge::SetAutofillFormData(
                                    kNumAutofillFormDataToSend);
     autofill_form_data_entry_group.assign(it, end_group);
 
-    (*observer_)->OnAutofillFormDataImportGroup(autofill_form_data_entry_group);
+    observer_->OnAutofillFormDataImportGroup(autofill_form_data_entry_group);
     autofill_form_data_entries_left -= end_group - it;
     it = end_group;
   }
@@ -141,20 +142,20 @@ void ExternalProcessImporterBridge::SetAutofillFormData(
 }
 
 void ExternalProcessImporterBridge::NotifyStarted() {
-  (*observer_)->OnImportStart();
+  observer_->OnImportStart();
 }
 
 void ExternalProcessImporterBridge::NotifyItemStarted(
     importer::ImportItem item) {
-  (*observer_)->OnImportItemStart(item);
+  observer_->OnImportItemStart(item);
 }
 
 void ExternalProcessImporterBridge::NotifyItemEnded(importer::ImportItem item) {
-  (*observer_)->OnImportItemFinished(item);
+  observer_->OnImportItemFinished(item);
 }
 
 void ExternalProcessImporterBridge::NotifyEnded() {
-  (*observer_)->OnImportFinished(true, std::string());
+  observer_->OnImportFinished(true, std::string());
 }
 
 base::string16 ExternalProcessImporterBridge::GetLocalizedString(

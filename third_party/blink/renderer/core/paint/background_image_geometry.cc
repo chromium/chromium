@@ -62,10 +62,10 @@ bool FixedBackgroundPaintsInLocalCoordinates(
   return !mapping->BackgroundPaintsOntoScrollingContentsLayer();
 }
 
-IntPoint AccumulatedScrollOffsetForFixedBackground(
+LayoutPoint AccumulatedScrollOffsetForFixedBackground(
     const LayoutBoxModelObject& object,
     const LayoutBoxModelObject* container) {
-  IntPoint result;
+  LayoutPoint result;
   if (&object == container)
     return result;
 
@@ -316,7 +316,7 @@ LayoutPoint BackgroundImageGeometry::GetOffsetForCell(
            LayoutSize(border_spacing.Width(), LayoutUnit());
   }
 
-  LayoutRect sections_rect(LayoutPoint(), cell.Table()->Size());
+  PhysicalRect sections_rect(PhysicalOffset(), cell.Table()->Size());
   cell.Table()->SubtractCaptionRect(sections_rect);
   LayoutUnit height_of_captions =
       cell.Table()->Size().Height() - sections_rect.Height();
@@ -355,7 +355,7 @@ LayoutSize BackgroundImageGeometry::GetBackgroundObjectDimensions(
   }
 
   DCHECK(positioning_box.IsLayoutTableCol());
-  LayoutRect sections_rect(LayoutPoint(), cell.Table()->Size());
+  PhysicalRect sections_rect(PhysicalOffset(), cell.Table()->Size());
   cell.Table()->SubtractCaptionRect(sections_rect);
   LayoutUnit column_height = sections_rect.Height() -
                              cell.Table()->BorderBefore() -
@@ -373,22 +373,20 @@ LayoutSize BackgroundImageGeometry::GetBackgroundObjectDimensions(
   return LayoutSize(width, column_height);
 }
 
-namespace {
-
-bool ShouldUseFixedAttachment(const FillLayer& fill_layer) {
-  if (RuntimeEnabledFeatures::FastMobileScrollingEnabled()) {
-    // As a side effect of an optimization to blit on scroll, we do not honor
-    // the CSS property "background-attachment: fixed" because it may result in
-    // rendering artifacts. Note, these artifacts only appear if we are blitting
-    // on scroll of a page that has fixed background images.
-    return false;
-  }
-  return fill_layer.Attachment() == EFillAttachment::kFixed;
+bool BackgroundImageGeometry::ShouldUseFixedAttachment(
+    const FillLayer& fill_layer) {
+  // Solid color background should use default attachment.
+  return fill_layer.GetImage() &&
+         fill_layer.Attachment() == EFillAttachment::kFixed;
 }
+
+namespace {
 
 LayoutRect FixedAttachmentPositioningArea(const LayoutBoxModelObject& obj,
                                           const LayoutBoxModelObject* container,
                                           const GlobalPaintFlags flags) {
+  // TODO(crbug.com/966142): We should consider ancestor with transform as the
+  // fixed background container, instead of always the viewport.
   LocalFrameView* frame_view = obj.View()->GetFrameView();
   if (!frame_view)
     return LayoutRect();
@@ -408,17 +406,22 @@ LayoutRect FixedAttachmentPositioningArea(const LayoutBoxModelObject& obj,
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
       DCHECK_EQ(obj.GetBackgroundPaintLocation(),
                 kBackgroundPaintInScrollingContents);
-      rect.SetLocation(IntPoint(ToLayoutView(obj).ScrolledContentOffset()));
+      rect.SetLocation(LayoutPoint(ToLayoutView(obj).ScrolledContentOffset()));
     } else if (auto* mapping = obj.Layer()->GetCompositedLayerMapping()) {
-      if (mapping->BackgroundPaintsOntoScrollingContentsLayer())
-        rect.SetLocation(IntPoint(ToLayoutView(obj).ScrolledContentOffset()));
+      if (mapping->BackgroundPaintsOntoScrollingContentsLayer()) {
+        rect.SetLocation(
+            LayoutPoint(ToLayoutView(obj).ScrolledContentOffset()));
+      }
     }
   }
 
   rect.MoveBy(AccumulatedScrollOffsetForFixedBackground(obj, container));
 
-  if (container)
-    rect.MoveBy(LayoutPoint(-container->LocalToAbsolute(FloatPoint())));
+  if (container) {
+    rect.MoveBy(
+        -container->LocalToAbsolutePoint(PhysicalOffset(), kIgnoreTransforms)
+             .ToLayoutPoint());
+  }
 
   // By now we have converted the viewport rect to the border box space of
   // |container|, however |container| does not necessarily create a paint
@@ -431,7 +434,7 @@ LayoutRect FixedAttachmentPositioningArea(const LayoutBoxModelObject& obj,
   if (container) {
     DCHECK_GE(container->GetDocument().Lifecycle().GetState(),
               DocumentLifecycle::kPrePaintClean);
-    rect.MoveBy(container->FirstFragment().PaintOffset());
+    rect.MoveBy(container->FirstFragment().PaintOffset().ToLayoutPoint());
   }
 
   return rect;
@@ -494,8 +497,8 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
     case EFillBox::kContent:
       // If the PaddingOutsets are zero then this is equivalent to
       // kPadding and we should apply the snapping logic.
-      if (!positioning_box_.PaddingOutsets().IsZero()) {
-        unsnapped_dest_adjust = positioning_box_.PaddingOutsets();
+      unsnapped_dest_adjust = positioning_box_.PaddingOutsets();
+      if (!unsnapped_dest_adjust.IsZero()) {
         unsnapped_dest_adjust += positioning_box_.BorderBoxOutsets();
 
         // We're not trying to match a border position, so don't snap.
@@ -593,8 +596,8 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
     case EFillBox::kContent:
       // If the PaddingOutsets are zero then this is equivalent to
       // kPadding and we should apply the snapping logic.
-      if (!positioning_box_.PaddingOutsets().IsZero()) {
-        unsnapped_box_outset = positioning_box_.PaddingOutsets();
+      unsnapped_box_outset = positioning_box_.PaddingOutsets();
+      if (!unsnapped_box_outset.IsZero()) {
         unsnapped_box_outset += positioning_box_.BorderBoxOutsets();
 
         // We're not trying to match a border position, so don't snap.
@@ -695,11 +698,11 @@ void BackgroundImageGeometry::ComputePositioningArea(
     // outsets also include the snapping behavior.
     LayoutRectOutsets unsnapped_dest_adjust;
     LayoutRectOutsets snapped_dest_adjust;
-    LayoutRectOutsets unsnapped_box_outset;
-    LayoutRectOutsets snapped_box_outset;
     ComputeDestRectAdjustments(fill_layer, unsnapped_positioning_area,
                                disallow_border_derived_adjustment,
                                unsnapped_dest_adjust, snapped_dest_adjust);
+    LayoutRectOutsets unsnapped_box_outset;
+    LayoutRectOutsets snapped_box_outset;
     ComputePositioningAreaAdjustments(fill_layer, unsnapped_positioning_area,
                                       disallow_border_derived_adjustment,
                                       unsnapped_box_outset, snapped_box_outset);
@@ -872,7 +875,8 @@ void BackgroundImageGeometry::Calculate(const LayoutBoxModelObject* container,
                                         PaintPhase paint_phase,
                                         GlobalPaintFlags flags,
                                         const FillLayer& fill_layer,
-                                        const LayoutRect& paint_rect) {
+                                        const PhysicalRect& paint_rect_arg) {
+  LayoutRect paint_rect = paint_rect_arg.ToLayoutRect();
   // Unsnapped positioning area is used to derive quantities
   // that reference source image maps and define non-integer values, such
   // as phase and position.

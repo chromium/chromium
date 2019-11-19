@@ -50,9 +50,10 @@ bool AndroidImageReader::LoadFunctions() {
   // devices, this is unlikely to happen in the foreseeable future, so we use
   // dynamic loading.
 
-  // Functions are not present for android version older than OREO
+  // Functions are not present for android version older than OREO.
+  // Currently we want to enable AImageReader only for android P+ devices.
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_OREO) {
+      base::android::SDK_VERSION_P) {
     return false;
   }
 
@@ -67,12 +68,14 @@ bool AndroidImageReader::LoadFunctions() {
   LOAD_FUNCTION(libmediandk, AImage_getHardwareBuffer);
   LOAD_FUNCTION(libmediandk, AImage_getWidth);
   LOAD_FUNCTION(libmediandk, AImage_getHeight);
+  LOAD_FUNCTION(libmediandk, AImage_getCropRect);
   LOAD_FUNCTION(libmediandk, AImageReader_newWithUsage);
   LOAD_FUNCTION(libmediandk, AImageReader_setImageListener);
   LOAD_FUNCTION(libmediandk, AImageReader_delete);
   LOAD_FUNCTION(libmediandk, AImageReader_getFormat);
   LOAD_FUNCTION(libmediandk, AImageReader_getWindow);
   LOAD_FUNCTION(libmediandk, AImageReader_acquireLatestImageAsync);
+  LOAD_FUNCTION(libmediandk, AImageReader_acquireNextImageAsync);
 
   void* libandroid = dlopen("libandroid.so", RTLD_NOW);
   if (libandroid == nullptr) {
@@ -107,6 +110,11 @@ media_status_t AndroidImageReader::AImage_getWidth(const AImage* image,
 media_status_t AndroidImageReader::AImage_getHeight(const AImage* image,
                                                     int32_t* height) {
   return AImage_getHeight_(image, height);
+}
+
+media_status_t AndroidImageReader::AImage_getCropRect(const AImage* image,
+                                                      AImageCropRect* rect) {
+  return AImage_getCropRect_(image, rect);
 }
 
 media_status_t AndroidImageReader::AImageReader_newWithUsage(
@@ -147,6 +155,13 @@ media_status_t AndroidImageReader::AImageReader_acquireLatestImageAsync(
     AImage** image,
     int* acquireFenceFd) {
   return AImageReader_acquireLatestImageAsync_(reader, image, acquireFenceFd);
+}
+
+media_status_t AndroidImageReader::AImageReader_acquireNextImageAsync(
+    AImageReader* reader,
+    AImage** image,
+    int* acquireFenceFd) {
+  return AImageReader_acquireNextImageAsync_(reader, image, acquireFenceFd);
 }
 
 jobject AndroidImageReader::ANativeWindow_toSurface(JNIEnv* env,

@@ -6,11 +6,11 @@
 <translation id="145360476452865422">অ্যানিমেশান নীতি:</translation>
 <translation id="1555130319947370107">নীল</translation>
 <translation id="1588438908519853928">সাধারণ</translation>
-<translation id="1591070050619849194">সমস্ত ছবি অ্যানিমেশান অক্ষম করুন৷</translation>
+<translation id="1591070050619849194">সমস্ত ইমেজ অ্যানিমেশন বন্ধ করুন৷</translation>
 <translation id="1703735871906654364">ক্যারেট ব্রাউজিং</translation>
 <translation id="1791496371305830581">সমস্ত অ্যানিমেশানকৃত চিত্রগুলিকে মঞ্জুরি দিন৷</translation>
 <translation id="1996252509865389616">সক্ষম করবেন?</translation>
-<translation id="2079545284768500474">পূর্বাবস্থায় ফিরুন</translation>
+<translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="2179565792157161713">নতুন ট্যাবে দীর্ঘ বিবরণ খুলুন</translation>
 <translation id="2223143012868735942">রঙ উপলব্ধি উন্নত করতে একটি পছন্দসই রঙ ফিল্টার ওয়েব পেজে প্রয়োগ করা হয়েছে৷</translation>
 <translation id="2394933097471027016">এখনই এটি ব্যবহার করে দেখুন - ক্যারেট ব্রাউজিং সর্বদা এই পৃষ্ঠায় সক্ষম করা থাকে!</translation>
@@ -23,14 +23,15 @@
 <translation id="3410969471888629217">সাইট কাস্টমাইজেশনগুলি মুছুন</translation>
 <translation id="3435896845095436175">সক্ষম করুন</translation>
 <translation id="3622586652998721735">ডিফল্ট স্কীম হিসাবে সেট করুন</translation>
-<translation id="3812541808639806898">বৈকল্পিক পাঠ্য প্রদর্শক ছবি</translation>
+<translation id="3812541808639806898">বৈকল্পিক পাঠ্য প্রদর্শক ইমেজ</translation>
 <translation id="381767806621926835">কোনো "longdesc" বা "aria-describedat" অ্যাট্রিবিউটগুলির সাথে যেকোনো কিছুর উপর ডান-ক্লিক করুন৷</translation>
 <translation id="4023902424053835668">তীর চিহ্নগুলি ব্যবহার করে ওয়েব পৃষ্ঠাগুলির পাঠ্য ব্রাউজ করুন৷</translation>
 <translation id="4388820049312272371">একটি দ্রুত ফ্ল্যাশের সাথে কার্সারের লোকেশন হাইলাইট করুন৷</translation>
-<translation id="4394049700291259645">অক্ষম</translation>
+<translation id="4394049700291259645">বন্ধ</translation>
 <translation id="4769065380738716500">চিত্রগুলিকে তাদের বিকল্প পাঠ্যের দ্বারা প্রতিস্থাপিত করা হয়েছে৷</translation>
 <translation id="4896660567607030658">কোনো প্রতিক্রিয়া নেই, শুধুমাত্র কার্সার প্রদর্শন করুন৷</translation>
 <translation id="4937901943818762779">অ্যানিমেশানকৃত চিত্রগুলিকে অনুমতি দিন, কিন্তু শুধুমাত্র একবার৷</translation>
+<translation id="4949131196216960195">ক্যারেট ব্রাউজিং চালু করতে &lt;span class='key'&gt;সার্চ করুন&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (উজ্জ্বলতা বাড়ানোর কী অথবা F7) বোতামে প্রেস করুন। বন্ধ করতে হলে আবার এই বোতামে প্রেস করুন।</translation>
 <translation id="4954450790315188152">যখন ক্যারেট ব্রাউজিং সক্ষম করা থাকবে:</translation>
 <translation id="5041932793799765940">রঙের সমন্বয়</translation>
 <translation id="5094574508723441140">বর্ধিত কনট্রাস্ট</translation>
@@ -39,7 +40,7 @@
 <translation id="5331422999063554397">ইনভার্টেড রঙ</translation>
 <translation id="5555153510860501336">উচ্চ কনট্রাস্ট অক্ষম রয়েছে</translation>
 <translation id="5558600050691192317">কীবোর্ড কমান্ডগুলি</translation>
-<translation id="5594989420907487559">শুধুমাত্র একবার অ্যানিমেশান চালান বা সম্পূর্ণভাবে অ্যানিমেশান অক্ষম করুন৷</translation>
+<translation id="5594989420907487559">শুধুমাত্র একবার অ্যানিমেশন চালান বা সম্পূর্ণভাবে অ্যানিমেশন বন্ধ করুন৷</translation>
 <translation id="5631241868147802353">ডিফল্ট রঙের স্কীম:</translation>
 <translation id="5650358096585648000">চাক্ষুষ প্রতিক্রিয়া</translation>
 <translation id="5710185147685935461">ওয়েব পৃষ্ঠাগুলিকে আরও সহজে পাঠযোগ্য করতে পরিবর্তন করে বা রঙের স্কীম পাল্টায়৷</translation>
@@ -50,7 +51,7 @@
 <translation id="6170146920149900756">রঙ বৃদ্ধিকারী</translation>
 <translation id="633394792577263429">শব্দগুলির দ্বারা সরাতে &lt;span class='key'&gt;নিয়ন্ত্রণ&lt;/span&gt; টিপে ধরে রাখুন৷</translation>
 <translation id="6550675742724504774">বিকল্পসমূহ</translation>
-<translation id="6838518108677880446">সেট আপ:</translation>
+<translation id="6838518108677880446">সেট-আপ:</translation>
 <translation id="690628312087070417">যখন ক্যারেট একটি বড় দূরত্বে সরে যায়:</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="7379645913608427028">ডিগ্রী</translation>
@@ -60,10 +61,9 @@
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="786423340267544509">aria-describedat বা longdesc অ্যাট্রিবিউটগুলির সাথে উপাদানগুলিতে সীমানা যোগ করুন৷</translation>
 <translation id="7942349550061667556">লাল</translation>
-<translation id="8254860724243898966">ক্যারেট ব্রাউজিং চালু করতে &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (উজ্জ্বলতা বাড়ানোর কী, বা F7) টিপুন৷ এটিকে বন্ধ করতে এটি আবার টিপুন৷</translation>
 <translation id="8260673944985561857">ক্যারেট ব্রাউজিং বিকল্পগুলি</translation>
 <translation id="8321034316479930120">অ্যানিমেশান নীতি</translation>
 <translation id="8480209185614411573">উচ্চ কনট্রাস্ট</translation>
 <translation id="8609925175482059018">ক্যারেট ব্রাউজিং চালু করতে &lt;span class='key'&gt;F7&lt;/span&gt; টিপুন৷ এটিকে বন্ধ করতে এটি আবার টিপুন৷</translation>
-<translation id="894241283505723656">বিষয়বস্তুর মেনুর মধ্যে দীর্ঘ বিবরণ</translation>
+<translation id="894241283505723656">সংশ্লিষ্ট মেনুর মধ্যে দীর্ঘ বিবরণ</translation>
 </translationbundle>

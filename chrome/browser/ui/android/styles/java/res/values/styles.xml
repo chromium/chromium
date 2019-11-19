@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- TODO(crbug.com/1017190): Remove the UnusedResources workaround. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
+    <!-- Basic theme for an overflow menu displayed in Chrome. -->
+    <style name="Base.OverflowMenuThemeOverlay" parent="Theme.AppCompat.DayNight">
+        <item name="android:popupBackground">@null</item>
+        <item name="android:listDivider">@null</item>
+        <item name="android:listPreferredItemHeightSmall">48dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.BlackTitle1</item>
+        <item name="colorControlHighlight">@color/control_highlight_color</item>
+    </style>
+    <style name="OverflowMenuThemeOverlay" parent="Base.OverflowMenuThemeOverlay" />
+
+</resources>

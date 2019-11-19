@@ -1,0 +1,32 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package chromeos.assistant;
+
+// Parameters about the GAIA user's context.
+// It only applies to the primary user under the multi-user scenario.
+message GaiaUserContextUi {
+  // Whether the query comes from a GAIA user.
+  optional bool is_gaia_user = 1;
+
+  // Whether Web & App Activity is enabled.
+  // This bit only makes sense for GAIA traffic.
+  optional bool waa_enabled = 2;
+
+  // Whether Web & App Activity is disabled by Dasher domain admin.
+  // This bit only makes sense for GAIA traffic.
+  optional bool waa_disabled_by_dasher_domain = 3;
+
+  // Whether Assistant is disabled by Dasher domain admin.
+  // This bit only makes sense for GAIA traffic.
+  optional bool assistant_disabled_by_dasher_domain = 4;
+
+  // Whether Device Apps is enabled to store user's apps which could help
+  // improve user experience across Google services.
+  optional bool device_apps_enabled = 6;
+}

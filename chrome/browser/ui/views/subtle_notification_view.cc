@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font_list.h"
@@ -75,7 +76,8 @@ SubtleNotificationView::InstructionView::InstructionView(
     const base::string16& text) {
   // The |between_child_spacing| is the horizontal margin of the key name.
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kHorizontal, gfx::Insets(), kKeyNameMarginHorizPx));
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      kKeyNameMarginHorizPx));
 
   SetText(text);
 }
@@ -124,7 +126,8 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
 
   views::View* key = new views::View;
   auto key_name_layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kHorizontal, gfx::Insets(0, kKeyNamePaddingPx), 0);
+      views::BoxLayout::Orientation::kHorizontal,
+      gfx::Insets(0, kKeyNamePaddingPx), 0);
   key_name_layout->set_minimum_cross_axis_size(
       label->GetPreferredSize().height() + kKeyNamePaddingPx * 2);
   key->SetLayoutManager(std::move(key_name_layout));
@@ -150,7 +153,7 @@ SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
   AddChildView(instruction_view_);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kHorizontal,
+      views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets(outer_padding_vert, outer_padding_horiz), kMiddlePaddingPx));
 }
 
@@ -174,7 +177,7 @@ views::Widget* SubtleNotificationView::CreatePopupWidget(
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = parent_view;
   params.accept_events = false;
-  popup->Init(params);
+  popup->Init(std::move(params));
   popup->SetContentsView(view);
   // We set layout manager to nullptr to prevent the widget from sizing its
   // contents to the same size as itself. This prevents the widget contents from

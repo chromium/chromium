@@ -45,10 +45,10 @@ class DisplayObserverImpl : public DisplayObserver {
   }
 
   void OnDisplayAdded(const Display& new_display) override {
-    AddChange("Added id=" + base::Int64ToString(new_display.id()));
+    AddChange("Added id=" + base::NumberToString(new_display.id()));
   }
   void OnDisplayRemoved(const Display& old_display) override {
-    AddChange("Removed id=" + base::Int64ToString(old_display.id()));
+    AddChange("Removed id=" + base::NumberToString(old_display.id()));
   }
   void OnDisplayMetricsChanged(const Display& display,
                                uint32_t changed_metrics) override {
@@ -61,7 +61,7 @@ class DisplayObserverImpl : public DisplayObserver {
     AddPartChange(changed_metrics, DISPLAY_METRIC_ROTATION, "rotation", &parts);
     AddPartChange(changed_metrics, DISPLAY_METRIC_PRIMARY, "primary", &parts);
 
-    AddChange("Changed id=" + base::Int64ToString(display.id()) + parts);
+    AddChange("Changed id=" + base::NumberToString(display.id()) + parts);
   }
 
   std::string changes_;

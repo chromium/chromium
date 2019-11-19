@@ -11,6 +11,8 @@ source_set("web_request") {
   sources = [
     "form_data_parser.cc",
     "form_data_parser.h",
+    "permission_helper.cc",
+    "permission_helper.h",
     "upload_data_presenter.cc",
     "upload_data_presenter.h",
     "web_request_api.cc",

@@ -16,7 +16,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/drive_backend/drive_backend_constants.h"
 #include "chrome/browser/sync_file_system/drive_backend/drive_backend_test_util.h"
@@ -625,7 +625,7 @@ class MetadataDatabaseTest : public testing::TestWithParam<bool> {
 
  private:
   base::ScopedTempDir database_dir_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::unique_ptr<leveldb::Env> in_memory_env_;
   std::unique_ptr<MetadataDatabase> metadata_database_;

@@ -86,7 +86,14 @@ void shm_pool_destroy(wl_client* client, wl_resource* resource) {
 }
 
 void shm_pool_resize(wl_client* client, wl_resource* resource, int32_t size) {
-  // Nothing to do here.
+  auto* shm = GetUserDataAs<SharedMemory>(resource);
+  if (size < 0 || static_cast<size_t>(size) < shm->GetSize()) {
+    wl_resource_post_error(resource, WL_SHM_ERROR_INVALID_FD,
+                           "Can't shrink a shm pool.");
+  }
+
+  if (!shm->Resize(size))
+    wl_resource_post_no_memory(resource);
 }
 
 const struct wl_shm_pool_interface shm_pool_implementation = {

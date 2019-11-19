@@ -3,4 +3,24 @@ include_rules = [
     "+third_party/blink/renderer/modules/encryptedmedia",
     "+third_party/blink/renderer/modules/mediacapturefromelement",
     "+third_party/blink/renderer/modules/mediastream",
+    "+third_party/blink/renderer/modules/modules_export.h",
+
+    "+cc/paint/paint_canvas.h",
+    "+cc/paint/skia_paint_canvas.h",
+    "+components/viz/common",
+    "+media/base",
+    "+media/capture",
+    "+skia/ext/platform_canvas.h",
+    "+third_party/libyuv",
+    "+ui/gfx/color_space.h",
 ]
+
+specific_include_rules = {
+    ".*_unittest.cc": [
+        "+base/run_loop.h",
+        "+cc/paint/paint_flags.h",
+    ],
+    "html_audio_element_capturer_source_unittest.cc" : [
+        "+media/audio/null_audio_sink.h",
+    ],
+}

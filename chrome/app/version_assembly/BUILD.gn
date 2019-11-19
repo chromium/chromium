@@ -10,6 +10,7 @@ version_assembly_output_file = "$target_gen_dir/version_assembly.manifest"
 
 # Generates a manifest file with the current build's version information.
 process_version("chrome_exe_version_manifest") {
+  process_only = true
   visibility = [ ":*" ]
   template_file = "chrome_exe_manifest.template"
   sources = [

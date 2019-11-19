@@ -351,8 +351,7 @@
     },
 
     onDebuggingLinkClicked_: function() {
-      chrome.send(
-          'login.WelcomeScreen.userActed', ['connect-debugging-features']);
+      this.fire('enable-debugging-clicked');
     },
 
     /*

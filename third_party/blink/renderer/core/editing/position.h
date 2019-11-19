@@ -216,7 +216,7 @@ class PositionTemplate {
       const Node& anchor_node);
 
   String ToAnchorTypeAndOffsetString() const;
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
   void ShowTreeForThis() const;
   void ShowTreeForThisInFlatTree() const;
 #endif
@@ -298,8 +298,8 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&, const PositionInFlatTree&);
 
 }  // namespace blink
 
-#ifndef NDEBUG
-// Outside the WebCore namespace for ease of invocation from gdb.
+#if DCHECK_IS_ON()
+// Outside the blink namespace for ease of invocation from gdb.
 void showTree(const blink::Position&);
 void showTree(const blink::Position*);
 #endif

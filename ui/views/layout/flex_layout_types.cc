@@ -6,21 +6,15 @@
 
 #include <algorithm>
 #include <tuple>
+#include <utility>
 
 #include "base/bind.h"
-#include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 
 namespace views {
 
 namespace {
-
-std::string OptionalToString(const base::Optional<int>& opt) {
-  if (!opt.has_value())
-    return "_";
-  return base::StringPrintf("%d", opt.value());
-}
 
 // Default Flex Rules ----------------------------------------------------------
 
@@ -69,6 +63,7 @@ int InterpolateSize(MinimumFlexSizeRule minimum_size_rule,
 
 gfx::Size GetPreferredSize(MinimumFlexSizeRule minimum_size_rule,
                            MaximumFlexSizeRule maximum_size_rule,
+                           bool adjust_height_for_width,
                            const views::View* view,
                            const views::SizeBounds& maximum_size) {
   gfx::Size min = view->GetMinimumSize();
@@ -85,18 +80,21 @@ gfx::Size GetPreferredSize(MinimumFlexSizeRule minimum_size_rule,
                             preferred.width(), *maximum_size.width());
   }
 
-  // Allow views that need to grow vertically when they're compressed
-  // horizontally to do so.
-  //
-  // If we just went with GetHeightForWidth() we would have situations where an
-  // empty text control wanted no (or very little) height which could cause a
-  // layout to shrink vertically; we will always try to allocate at least the
-  // view's reported preferred height.
-  //
-  // Note that this is an adjustment made for practical considerations, and may
-  // not be "correct" in some absolute sense. Let's revisit at some point.
-  const int preferred_height =
-      std::max(preferred.height(), view->GetHeightForWidth(width));
+  int preferred_height = preferred.height();
+  if (adjust_height_for_width && width < preferred.width()) {
+    // Allow views that need to grow vertically when they're compressed
+    // horizontally to do so.
+    //
+    // If we just went with GetHeightForWidth() we would have situations where
+    // an empty text control wanted no (or very little) height which could cause
+    // a layout to shrink vertically; we will always try to allocate at least
+    // the view's reported preferred height.
+    //
+    // Note that this is an adjustment made for practical considerations, and
+    // may not be "correct" in some absolute sense. Let's revisit at some point.
+    preferred_height =
+        std::max(preferred_height, view->GetHeightForWidth(width));
+  }
 
   if (!maximum_size.height()) {
     // Not having a maximum size is different from having a large available
@@ -112,93 +110,169 @@ gfx::Size GetPreferredSize(MinimumFlexSizeRule minimum_size_rule,
 
 FlexRule GetDefaultFlexRule(
     MinimumFlexSizeRule minimum_size_rule = MinimumFlexSizeRule::kPreferred,
-    MaximumFlexSizeRule maximum_size_rule = MaximumFlexSizeRule::kPreferred) {
+    MaximumFlexSizeRule maximum_size_rule = MaximumFlexSizeRule::kPreferred,
+    bool adjust_height_for_width = false) {
   return base::BindRepeating(&GetPreferredSize, minimum_size_rule,
-                             maximum_size_rule);
+                             maximum_size_rule, adjust_height_for_width);
 }
 
 }  // namespace
 
-// SizeBounds ------------------------------------------------------------------
-
-SizeBounds::SizeBounds() = default;
-
-SizeBounds::SizeBounds(const base::Optional<int>& width,
-                       const base::Optional<int>& height)
-    : width_(width), height_(height) {}
-
-SizeBounds::SizeBounds(const SizeBounds& other)
-    : width_(other.width()), height_(other.height()) {}
-
-SizeBounds::SizeBounds(const gfx::Size& other)
-    : width_(other.width()), height_(other.height()) {}
-
-void SizeBounds::Enlarge(int width, int height) {
-  if (width_)
-    width_ = std::max(0, *width_ + width);
-  if (height_)
-    height_ = std::max(0, *height_ + height);
-}
-
-bool SizeBounds::operator==(const SizeBounds& other) const {
-  return width_ == other.width_ && height_ == other.height_;
-}
-
-bool SizeBounds::operator!=(const SizeBounds& other) const {
-  return !(*this == other);
-}
-
-bool SizeBounds::operator<(const SizeBounds& other) const {
-  return std::tie(height_, width_) < std::tie(other.height_, other.width_);
-}
-
-std::string SizeBounds::ToString() const {
-  return base::StringPrintf("%s x %s", OptionalToString(width()).c_str(),
-                            OptionalToString(height()).c_str());
-}
-
 // FlexSpecification -----------------------------------------------------------
 
-FlexSpecification::FlexSpecification()
-    : rule_(GetDefaultFlexRule()), order_(1), weight_(0) {}
+FlexSpecification::FlexSpecification() : rule_(GetDefaultFlexRule()) {}
 
-FlexSpecification FlexSpecification::ForCustomRule(const FlexRule& rule) {
-  return FlexSpecification(rule, 1, 1);
+FlexSpecification FlexSpecification::ForCustomRule(FlexRule rule) {
+  return FlexSpecification(std::move(rule), 1, 1, LayoutAlignment::kStretch);
 }
 
 FlexSpecification FlexSpecification::ForSizeRule(
     MinimumFlexSizeRule minimum_size_rule,
-    MaximumFlexSizeRule maximum_size_rule) {
+    MaximumFlexSizeRule maximum_size_rule,
+    bool adjust_height_for_width) {
   return FlexSpecification(
-      GetDefaultFlexRule(minimum_size_rule, maximum_size_rule), 1, 1);
+      GetDefaultFlexRule(minimum_size_rule, maximum_size_rule,
+                         adjust_height_for_width),
+      1, 1, LayoutAlignment::kStretch);
 }
 
-FlexSpecification::FlexSpecification(const FlexRule& rule,
+FlexSpecification::FlexSpecification(FlexRule rule,
                                      int order,
-                                     int weight)
-    : rule_(rule), order_(order), weight_(weight) {}
+                                     int weight,
+                                     LayoutAlignment alignment)
+    : rule_(std::move(rule)),
+      order_(order),
+      weight_(weight),
+      alignment_(alignment) {}
 
-FlexSpecification::FlexSpecification(const FlexSpecification& other)
-    : rule_(other.rule_), order_(other.order_), weight_(other.weight_) {}
+FlexSpecification::FlexSpecification(const FlexSpecification& other) = default;
 
 FlexSpecification& FlexSpecification::operator=(
-    const FlexSpecification& other) {
-  rule_ = other.rule_;
-  order_ = other.order_;
-  weight_ = other.weight_;
-  return *this;
-}
+    const FlexSpecification& other) = default;
 
 FlexSpecification::~FlexSpecification() = default;
 
 FlexSpecification FlexSpecification::WithWeight(int weight) const {
   DCHECK_GE(weight, 0);
-  return FlexSpecification(rule_, order_, weight);
+  return FlexSpecification(rule_, order_, weight, alignment_);
 }
 
 FlexSpecification FlexSpecification::WithOrder(int order) const {
   DCHECK_GE(order, 1);
-  return FlexSpecification(rule_, order, weight_);
+  return FlexSpecification(rule_, order, weight_, alignment_);
+}
+
+FlexSpecification FlexSpecification::WithAlignment(
+    LayoutAlignment alignment) const {
+  return FlexSpecification(rule_, order_, weight_, alignment);
+}
+
+// Inset1D ---------------------------------------------------------------------
+
+void Inset1D::SetInsets(int leading, int trailing) {
+  leading_ = leading;
+  trailing_ = trailing;
+}
+
+void Inset1D::Expand(int leading, int trailing) {
+  leading_ += leading;
+  trailing_ += trailing;
+}
+
+bool Inset1D::operator==(const Inset1D& other) const {
+  return leading_ == other.leading_ && trailing_ == other.trailing_;
+}
+
+bool Inset1D::operator!=(const Inset1D& other) const {
+  return !(*this == other);
+}
+
+bool Inset1D::operator<(const Inset1D& other) const {
+  return std::tie(leading_, trailing_) <
+         std::tie(other.leading_, other.trailing_);
+}
+
+std::string Inset1D::ToString() const {
+  return base::StringPrintf("%d, %d", leading(), trailing());
+}
+
+// Span ------------------------------------------------------------------------
+
+void Span::SetSpan(int start, int length) {
+  start_ = start;
+  length_ = std::max(0, length);
+}
+
+void Span::Expand(int leading, int trailing) {
+  const int end = this->end();
+  set_start(start_ - leading);
+  set_end(end + trailing);
+}
+
+void Span::Inset(int leading, int trailing) {
+  Expand(-leading, -trailing);
+}
+
+void Span::Inset(const Inset1D& insets) {
+  Inset(insets.leading(), insets.trailing());
+}
+
+void Span::Center(const Span& container, const Inset1D& margins) {
+  int remaining = container.length() - length();
+
+  // Case 1: no room for any margins. Just center the span in the container,
+  // with equal overflow on each side.
+  if (remaining <= 0) {
+    set_start(container.start() + std::ceil(remaining * 0.5f));
+    return;
+  }
+
+  // Case 2: room for only part of the margins.
+  if (margins.size() > remaining) {
+    float scale = float{remaining} / float{margins.size()};
+    set_start(container.start() + std::roundf(scale * margins.leading()));
+    return;
+  }
+
+  // Case 3: room for both span and margins. Center the whole unit.
+  remaining -= margins.size();
+  set_start(container.start() + remaining / 2 + margins.leading());
+}
+
+void Span::Align(const Span& container,
+                 LayoutAlignment alignment,
+                 const Inset1D& margins) {
+  switch (alignment) {
+    case LayoutAlignment::kStart:
+      set_start(container.start() + margins.leading());
+      break;
+    case LayoutAlignment::kEnd:
+      set_start(container.end() - (margins.trailing() + length()));
+      break;
+    case LayoutAlignment::kCenter:
+      Center(container, margins);
+      break;
+    case LayoutAlignment::kStretch:
+      SetSpan(container.start() + margins.leading(),
+              std::max(0, container.length() - margins.size()));
+      break;
+  }
+}
+
+bool Span::operator==(const Span& other) const {
+  return start_ == other.start_ && length_ == other.length_;
+}
+
+bool Span::operator!=(const Span& other) const {
+  return !(*this == other);
+}
+
+bool Span::operator<(const Span& other) const {
+  return std::tie(start_, length_) < std::tie(other.start_, other.length_);
+}
+
+std::string Span::ToString() const {
+  return base::StringPrintf("%d [%d]", start(), length());
 }
 
 }  // namespace views

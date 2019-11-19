@@ -50,8 +50,7 @@ public class AwContentsClientGetDefaultVideoPosterTest {
             return getPoster();
         }
 
-        public void waitForGetDefaultVideoPosterCalled() throws InterruptedException,
-                TimeoutException {
+        public void waitForGetDefaultVideoPosterCalled() throws TimeoutException {
             mVideoPosterCallbackHelper.waitForCallback(0);
         }
 
@@ -85,7 +84,7 @@ public class AwContentsClientGetDefaultVideoPosterTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
-    public void testInterceptDefaultVidoePosterURL() throws Throwable {
+    public void testInterceptDefaultVidoePosterURL() {
         DefaultVideoPosterClient contentsClient = new DefaultVideoPosterClient(
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
         DefaultVideoPosterRequestHandler handler =

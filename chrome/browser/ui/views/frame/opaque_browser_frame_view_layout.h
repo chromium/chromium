@@ -13,7 +13,7 @@
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/window/frame_buttons.h"
 
-class HostedAppButtonContainer;
+class WebAppFrameToolbarView;
 class OpaqueBrowserFrameViewLayoutDelegate;
 
 namespace views {
@@ -52,8 +52,8 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
       const std::vector<views::FrameButton>& leading_buttons,
       const std::vector<views::FrameButton>& trailing_buttons);
 
-  gfx::Rect GetBoundsForTabStrip(const gfx::Size& tabstrip_preferred_size,
-                                 int total_width) const;
+  gfx::Rect GetBoundsForTabStripRegion(const gfx::Size& tabstrip_preferred_size,
+                                       int total_width) const;
 
   // Returns the bounds of the window required to display the content area at
   // the specified bounds.
@@ -219,7 +219,7 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   views::View* window_icon_;
   views::Label* window_title_;
 
-  HostedAppButtonContainer* hosted_app_button_container_ = nullptr;
+  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
 
   std::vector<views::FrameButton> leading_buttons_;
   std::vector<views::FrameButton> trailing_buttons_;

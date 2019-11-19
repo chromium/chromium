@@ -4,6 +4,9 @@
 
 #include "chrome/browser/offline_pages/background_loader_offliner.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -26,14 +29,17 @@
 #include "components/offline_pages/core/stub_offline_page_model.h"
 #include "components/prefs/pref_service.h"
 #include "components/previews/content/previews_user_data.h"
+#include "components/security_state/core/security_state.h"
 #include "content/public/browser/mhtml_extra_parts.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
+#include "net/test/cert_test_util.h"
+#include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -45,8 +51,11 @@ namespace offline_pages {
 
 namespace {
 
+using security_state::VisibleSecurityState;
+
 const int64_t kRequestId = 7;
 const GURL kHttpUrl("http://www.tunafish.com");
+const GURL kHttpsUrl("https://www.yellowtail.com");
 const GURL kFileUrl("file://salmon.png");
 const ClientId kClientId("async_loading", "88");
 const bool kUserRequested = true;
@@ -104,8 +113,8 @@ class MockOfflinePageModel : public StubOfflinePageModel {
                                   SavePageResult::ALREADY_EXISTS, 123456));
   }
 
-  void DeletePagesByOfflineId(const std::vector<int64_t>& offline_ids,
-                              DeletePageCallback callback) override {
+  void DeletePagesWithCriteria(const PageCriteria& criteria,
+                               DeletePageCallback callback) override {
     mock_deleting_ = true;
     std::move(callback).Run(DeletePageResult::SUCCESS);
   }
@@ -147,11 +156,22 @@ class TestBackgroundLoaderOffliner : public BackgroundLoaderOffliner {
 
   bool is_loading() { return loader_ && stub_->is_loading(); }
 
- protected:
-  void ResetLoader() override;
+  void set_custom_visible_security_state(
+      std::unique_ptr<VisibleSecurityState> visible_security_state) {
+    custom_visible_security_state_ = std::move(visible_security_state);
+  }
+  void set_page_type(content::PageType page_type) { page_type_ = page_type; }
 
  private:
+  // BackgroundLoaderOffliner overrides.
+  void ResetLoader() override;
+  std::unique_ptr<VisibleSecurityState> GetVisibleSecurityState(
+      content::WebContents* web_contents) override;
+  content::PageType GetPageType(content::WebContents* web_contents) override;
+
   background_loader::BackgroundLoaderContentsStub* stub_;
+  std::unique_ptr<VisibleSecurityState> custom_visible_security_state_;
+  content::PageType page_type_ = content::PageType::PAGE_TYPE_NORMAL;
 };
 
 TestBackgroundLoaderOffliner::TestBackgroundLoaderOffliner(
@@ -170,6 +190,19 @@ void TestBackgroundLoaderOffliner::ResetLoader() {
   stub_ = new background_loader::BackgroundLoaderContentsStub(browser_context_);
   loader_.reset(stub_);
   loader_->SetDelegate(this);
+}
+
+std::unique_ptr<VisibleSecurityState>
+TestBackgroundLoaderOffliner::GetVisibleSecurityState(
+    content::WebContents* web_contents) {
+  if (custom_visible_security_state_)
+    return std::move(custom_visible_security_state_);
+  return BackgroundLoaderOffliner::GetVisibleSecurityState(web_contents);
+}
+
+content::PageType TestBackgroundLoaderOffliner::GetPageType(
+    content::WebContents* web_contents) {
+  return page_type_;
 }
 
 class BackgroundLoaderOfflinerTest : public testing::Test {
@@ -223,6 +256,7 @@ class BackgroundLoaderOfflinerTest : public testing::Test {
     offliner_->SetBackgroundSnapshotControllerForTest(
         std::move(snapshot_controller));
     // Call complete loading.
+    offliner()->DocumentAvailableInMainFrame();
     offliner()->DocumentOnLoadCompletedInMainFrame();
     PumpLoop();
   }
@@ -231,13 +265,24 @@ class BackgroundLoaderOfflinerTest : public testing::Test {
     return offliner_->GetRequestStatsForTest();
   }
 
+  std::unique_ptr<VisibleSecurityState> BaseVisibleSecurityState() {
+    auto visible_security_state = std::make_unique<VisibleSecurityState>();
+    visible_security_state->connection_info_initialized = true;
+    visible_security_state->url = kHttpsUrl;
+    visible_security_state->certificate =
+        net::ImportCertFromFile(net::GetTestCertsDirectory(), "sha1_2016.pem");
+    visible_security_state->cert_status =
+        net::CERT_STATUS_SHA1_SIGNATURE_PRESENT;
+    return visible_security_state;
+  }
+
  private:
   void OnCompletion(const SavePageRequest& request,
                     Offliner::RequestStatus status);
   void OnProgress(const SavePageRequest& request, int64_t bytes);
   void OnCancel(const SavePageRequest& request);
   void OnCanDownload(bool allowed);
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvhte_;
   TestingProfile profile_;
   std::unique_ptr<OfflinerPolicy> policy_;
@@ -256,7 +301,7 @@ class BackgroundLoaderOfflinerTest : public testing::Test {
 };
 
 BackgroundLoaderOfflinerTest::BackgroundLoaderOfflinerTest()
-    : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP),
+    : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
       load_termination_listener_(nullptr),
       model_(nullptr),
       completion_callback_called_(false),
@@ -322,13 +367,6 @@ TEST_F(BackgroundLoaderOfflinerTest,
   profile()->GetPrefs()->SetBoolean(prefs::kBlockThirdPartyCookies, true);
   EXPECT_FALSE(offliner()->LoadAndSave(request, completion_callback(),
                                        progress_callback()));
-  histograms().ExpectBucketCount(
-      "OfflinePages.Background.CctApiDisableStatus",
-      static_cast<int>(OfflinePagesCctApiPrerenderAllowedStatus::
-                           THIRD_PARTY_COOKIES_DISABLED),
-      1);
-  histograms().ExpectBucketCount("OfflinePages.Background.CctApiDisableStatus",
-                                 0 /* PRERENDER_ALLOWED */, 0);
 }
 
 TEST_F(BackgroundLoaderOfflinerTest,
@@ -343,16 +381,6 @@ TEST_F(BackgroundLoaderOfflinerTest,
       chrome_browser_net::NETWORK_PREDICTION_NEVER);
   EXPECT_FALSE(offliner()->LoadAndSave(request, completion_callback(),
                                        progress_callback()));
-  histograms().ExpectBucketCount(
-      "OfflinePages.Background.CctApiDisableStatus",
-      static_cast<int>(OfflinePagesCctApiPrerenderAllowedStatus::
-                           NETWORK_PREDICTION_DISABLED),
-      1);
-  histograms().ExpectBucketCount(
-      "OfflinePages.Background.CctApiDisableStatus",
-      static_cast<int>(
-          OfflinePagesCctApiPrerenderAllowedStatus::PRERENDER_ALLOWED),
-      0);
 }
 
 TEST_F(BackgroundLoaderOfflinerTest, LoadAndSaveStartsLoading) {
@@ -542,6 +570,13 @@ TEST_F(BackgroundLoaderOfflinerTest, ResetsWhenDownloadEncountered) {
   EXPECT_EQ(Offliner::RequestStatus::LOADING_FAILED_DOWNLOAD, request_status());
 }
 
+TEST_F(BackgroundLoaderOfflinerTest, CanDownloadReturnsIfNoPendingRequest) {
+  offliner()->CanDownload(can_download_callback());
+  PumpLoop();
+  EXPECT_TRUE(can_download_callback_called());
+  EXPECT_FALSE(can_download());
+}
+
 TEST_F(BackgroundLoaderOfflinerTest, FailsOnInvalidURL) {
   base::Time creation_time = base::Time::Now();
   SavePageRequest request(kRequestId, kFileUrl, kClientId, creation_time,
@@ -612,6 +647,147 @@ TEST_F(BackgroundLoaderOfflinerTest, FailsOnErrorPage) {
 
   EXPECT_TRUE(completion_callback_called());
   EXPECT_EQ(Offliner::RequestStatus::LOADING_FAILED_NET_ERROR,
+            request_status());
+}
+
+TEST_F(BackgroundLoaderOfflinerTest, FailsOnCertificateError) {
+  base::Time creation_time = base::Time::Now();
+  SavePageRequest request(kRequestId, kHttpUrl, kClientId, creation_time,
+                          kUserRequested);
+  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+
+  // Sets the certificate status as having been revoked.
+  std::unique_ptr<VisibleSecurityState> visible_security_state =
+      BaseVisibleSecurityState();
+  visible_security_state->cert_status |= net::CERT_STATUS_REVOKED;
+  offliner()->set_custom_visible_security_state(
+      std::move(visible_security_state));
+
+  // Called after calling LoadAndSave so we have web_contents to work with.
+  content::MockNavigationHandle handle(
+      kHttpUrl, offliner()->web_contents()->GetMainFrame());
+  handle.set_has_committed(true);
+  offliner()->DidFinishNavigation(&handle);
+
+  CompleteLoading();
+  PumpLoop();
+
+  EXPECT_FALSE(SaveInProgress());
+  EXPECT_TRUE(completion_callback_called());
+  EXPECT_EQ(Offliner::RequestStatus::LOADED_PAGE_HAS_CERTIFICATE_ERROR,
+            request_status());
+}
+
+TEST_F(BackgroundLoaderOfflinerTest, FailsOnRevocationCheckingFailure) {
+  base::Time creation_time = base::Time::Now();
+  SavePageRequest request(kRequestId, kHttpUrl, kClientId, creation_time,
+                          kUserRequested);
+  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+
+  // Sets a revocation checking failure certificate error that should not be
+  // allowed.
+  std::unique_ptr<VisibleSecurityState> visible_security_state =
+      BaseVisibleSecurityState();
+  visible_security_state->cert_status |=
+      net::CERT_STATUS_NO_REVOCATION_MECHANISM;
+  offliner()->set_custom_visible_security_state(
+      std::move(visible_security_state));
+
+  // Called after calling LoadAndSave so we have web_contents to work with.
+  content::MockNavigationHandle handle(
+      kHttpUrl, offliner()->web_contents()->GetMainFrame());
+  handle.set_has_committed(true);
+  offliner()->DidFinishNavigation(&handle);
+
+  CompleteLoading();
+  PumpLoop();
+
+  EXPECT_FALSE(SaveInProgress());
+  EXPECT_TRUE(completion_callback_called());
+  EXPECT_EQ(Offliner::RequestStatus::LOADED_PAGE_HAS_CERTIFICATE_ERROR,
+            request_status());
+}
+
+TEST_F(BackgroundLoaderOfflinerTest, SucceedsOnHttp) {
+  base::Time creation_time = base::Time::Now();
+  SavePageRequest request(kRequestId, kHttpUrl, kClientId, creation_time,
+                          kUserRequested);
+  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+
+  // Sets the URL to HTTP while still setting a major certificate error (should
+  // be ignored).
+  std::unique_ptr<VisibleSecurityState> visible_security_state =
+      BaseVisibleSecurityState();
+  visible_security_state->url = kHttpUrl;
+  visible_security_state->cert_status |= net::CERT_STATUS_REVOKED;
+  offliner()->set_custom_visible_security_state(
+      std::move(visible_security_state));
+
+  // Called after calling LoadAndSave so we have web_contents to work with.
+  content::MockNavigationHandle handle(
+      kHttpUrl, offliner()->web_contents()->GetMainFrame());
+  handle.set_has_committed(true);
+  offliner()->DidFinishNavigation(&handle);
+
+  CompleteLoading();
+  PumpLoop();
+
+  EXPECT_TRUE(SaveInProgress());
+  EXPECT_FALSE(completion_callback_called());
+}
+
+TEST_F(BackgroundLoaderOfflinerTest, FailsOnUnwantedContent) {
+  base::Time creation_time = base::Time::Now();
+  SavePageRequest request(kRequestId, kHttpUrl, kClientId, creation_time,
+                          kUserRequested);
+  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+
+  // Sets the page as containing SafeBrowsing unwanted content.
+  std::unique_ptr<VisibleSecurityState> visible_security_state =
+      BaseVisibleSecurityState();
+  visible_security_state->malicious_content_status = security_state::
+      MaliciousContentStatus::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING;
+  offliner()->set_custom_visible_security_state(
+      std::move(visible_security_state));
+  // Called after calling LoadAndSave so we have web_contents to work with.
+  content::MockNavigationHandle handle(
+      kHttpUrl, offliner()->web_contents()->GetMainFrame());
+  handle.set_has_committed(true);
+  offliner()->DidFinishNavigation(&handle);
+
+  CompleteLoading();
+  PumpLoop();
+
+  EXPECT_FALSE(SaveInProgress());
+  EXPECT_TRUE(completion_callback_called());
+  EXPECT_EQ(Offliner::RequestStatus::LOADED_PAGE_IS_BLOCKED, request_status());
+}
+
+TEST_F(BackgroundLoaderOfflinerTest, FailsOnInterstitialPage) {
+  base::Time creation_time = base::Time::Now();
+  SavePageRequest request(kRequestId, kHttpUrl, kClientId, creation_time,
+                          kUserRequested);
+  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+
+  // Sets the page as being an interstitial.
+  offliner()->set_page_type(content::PageType::PAGE_TYPE_INTERSTITIAL);
+  // Called after calling LoadAndSave so we have web_contents to work with.
+  content::MockNavigationHandle handle(
+      kHttpUrl, offliner()->web_contents()->GetMainFrame());
+  handle.set_has_committed(true);
+  offliner()->DidFinishNavigation(&handle);
+
+  CompleteLoading();
+  PumpLoop();
+
+  EXPECT_FALSE(SaveInProgress());
+  EXPECT_TRUE(completion_callback_called());
+  EXPECT_EQ(Offliner::RequestStatus::LOADED_PAGE_IS_CHROME_INTERNAL,
             request_status());
 }
 
@@ -697,7 +873,7 @@ TEST_F(BackgroundLoaderOfflinerTest, OffliningPreviewsStatusOnHistogram) {
   PreviewsUITabHelper::CreateForWebContents(offliner()->web_contents());
   PreviewsUITabHelper::FromWebContents(offliner()->web_contents())
       ->CreatePreviewsUserDataForNavigationHandle(&handle, 1u)
-      ->set_committed_previews_state(content::PreviewsTypes::CLIENT_LOFI_ON);
+      ->set_committed_previews_state(content::PreviewsTypes::NOSCRIPT_ON);
   scoped_refptr<net::HttpResponseHeaders> header(
       new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
   handle.set_response_headers(header.get());

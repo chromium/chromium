@@ -1,0 +1,37 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
+<link rel="import" href="../../settings_page/settings_animated_pages.html">
+<link rel="import" href="../../settings_page/settings_subpage.html">
+<link rel="import" href="../../controls/settings_toggle_button.html">
+<link rel="import" href="../../route.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="smb_shares_page.html">
+
+<dom-module id="os-settings-files-page">
+  <template>
+  <style include="settings-shared"></style>
+  <settings-animated-pages id="pages" section="files"
+      focus-config="[[focusConfig_]]">
+    <div route-path="default">
+      <settings-toggle-button
+          pref="{{prefs.gdata.disabled}}"
+          label="$i18n{disconnectGoogleDriveAccount}">
+      </settings-toggle-button>
+      <cr-link-row id="smbShares" class="hr" on-click="onTapSmbShares_"
+          label="$i18n{smbSharesTitle}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </div>
+    <template is="dom-if" route-path="/smbShares">
+      <settings-subpage
+          associated-control="[[$$('#smbShares')]]"
+          page-title="$i18n{smbSharesTitle}">
+        <settings-smb-shares-page prefs="[[prefs]]">
+        </settings-smb-shares-page>
+      </settings-subpage>
+    </template>
+  </settings-animated-pages>
+  </template>
+  <script src="os_files_page.js"></script>
+</dom-module>

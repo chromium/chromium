@@ -8,7 +8,7 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -17,7 +17,7 @@
 using base::TimeDelta;
 
 TEST(DelayedCallbackGroup, RunEmpty) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(
       TimeDelta::FromSeconds(1), base::SequencedTaskRunnerHandle::Get());
   callback_group->RunAll();
@@ -25,7 +25,7 @@ TEST(DelayedCallbackGroup, RunEmpty) {
 
 TEST(DelayedCallbackGroup, RunSimple) {
   const TimeDelta kTimeout = TimeDelta::FromMilliseconds(500);
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(
       TimeDelta::FromSeconds(1), base::SequencedTaskRunnerHandle::Get());
 
@@ -47,7 +47,7 @@ TEST(DelayedCallbackGroup, RunSimple) {
 
 TEST(DelayedCallbackGroup, TimeoutSimple) {
   const TimeDelta kTimeout = TimeDelta::FromMilliseconds(500);
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(
       TimeDelta::FromSeconds(1), base::SequencedTaskRunnerHandle::Get());
 
@@ -68,7 +68,7 @@ TEST(DelayedCallbackGroup, TimeoutSimple) {
 
 TEST(DelayedCallbackGroup, TimeoutAndRun) {
   const TimeDelta kTimeout = TimeDelta::FromMilliseconds(500);
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(
       TimeDelta::FromSeconds(1), base::SequencedTaskRunnerHandle::Get());
 
@@ -110,7 +110,7 @@ TEST(DelayedCallbackGroup, TimeoutAndRun) {
 
 TEST(DelayedCallbackGroup, DoubleExpiration) {
   const TimeDelta kTimeout = TimeDelta::FromMilliseconds(500);
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(
       TimeDelta::FromSeconds(1), base::SequencedTaskRunnerHandle::Get());
 

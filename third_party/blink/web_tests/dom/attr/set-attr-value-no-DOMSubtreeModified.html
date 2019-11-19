@@ -1,16 +1,13 @@
 <!DOCTYPE html>
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <div id="testDiv"></div>
 <script>
-    description("Tests that setting Attr.value does not fire a DOMSubtreeModified event.");
+    var test = async_test("Tests that setting Attr.value does not fire a DOMSubtreeModified event");
 
     var testDiv = document.getElementById("testDiv");
-    var wasDOMSubtreeModifiedFired = false;
-    testDiv.attributes[0].addEventListener("DOMSubtreeModified", function() {
-        wasDOMSubtreeModifiedFired = true;
-    }, false);
+    testDiv.attributes[0].addEventListener("DOMSubtreeModified", test.unreached_func("DOMSubtreeModified should not be fired"), false);
 
-    shouldBeFalse("wasDOMSubtreeModifiedFired");
     testDiv.attributes[0].value = "testDiv2";
-    shouldBeFalse("wasDOMSubtreeModifiedFired");
+    test.done();
 </script>

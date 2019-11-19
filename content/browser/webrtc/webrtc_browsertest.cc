@@ -10,7 +10,6 @@
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/network_service_util.h"
-#include "content/public/common/webrtc_ip_handling_policy.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -19,6 +18,7 @@
 #include "media/media_buildflags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 
 namespace content {
 
@@ -241,6 +241,15 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
                        GetSettingsReportsValuesForRemoteTracks) {
   MakeTypicalPeerConnectionCall(
       "testGetSettingsReportsValuesForRemoteTracks();");
+}
+
+// TODO(crbug.com/988432): This test is a temporary replacement for:
+// external/wpt/webrtc/RTCRtpReceiver-getSynchronizationSources.https.html
+IN_PROC_BROWSER_TEST_F(
+    MAYBE_WebRtcBrowserTest,
+    EstablishVideoOnlyCallAndVerifyGetSynchronizationSourcesWorks) {
+  MakeTypicalPeerConnectionCall(
+      "testEstablishVideoOnlyCallAndVerifyGetSynchronizationSourcesWorks();");
 }
 
 #if defined(OS_ANDROID) && BUILDFLAG(USE_PROPRIETARY_CODECS)

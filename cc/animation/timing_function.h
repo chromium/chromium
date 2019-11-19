@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "cc/animation/animation_export.h"
 #include "ui/gfx/geometry/cubic_bezier.h"
 
@@ -18,8 +17,13 @@ class CC_ANIMATION_EXPORT TimingFunction {
  public:
   virtual ~TimingFunction();
 
+  TimingFunction& operator=(const TimingFunction&) = delete;
+
   // Note that LINEAR is a nullptr TimingFunction (for now).
-  enum class Type { LINEAR, CUBIC_BEZIER, STEPS, FRAMES };
+  enum class Type { LINEAR, CUBIC_BEZIER, STEPS };
+
+  // Which limit to apply at a discontinuous boundary.
+  enum class LimitDirection { LEFT, RIGHT };
 
   virtual Type GetType() const = 0;
   virtual double GetValue(double t) const = 0;
@@ -28,8 +32,6 @@ class CC_ANIMATION_EXPORT TimingFunction {
 
  protected:
   TimingFunction();
-
-  DISALLOW_ASSIGN(TimingFunction);
 };
 
 class CC_ANIMATION_EXPORT CubicBezierTimingFunction : public TimingFunction {
@@ -43,6 +45,9 @@ class CC_ANIMATION_EXPORT CubicBezierTimingFunction : public TimingFunction {
                                                            double x2,
                                                            double y2);
   ~CubicBezierTimingFunction() override;
+
+  CubicBezierTimingFunction& operator=(const CubicBezierTimingFunction&) =
+      delete;
 
   // TimingFunction implementation.
   Type GetType() const override;
@@ -62,20 +67,31 @@ class CC_ANIMATION_EXPORT CubicBezierTimingFunction : public TimingFunction {
 
   gfx::CubicBezier bezier_;
   EaseType ease_type_;
-
-  DISALLOW_ASSIGN(CubicBezierTimingFunction);
 };
 
 class CC_ANIMATION_EXPORT StepsTimingFunction : public TimingFunction {
  public:
   // step-timing-function values
   // https://drafts.csswg.org/css-easing-1/#typedef-step-timing-function
-  enum class StepPosition { START, END };
+  enum class StepPosition {
+    START,      // Discontinuity at progress = 0.
+                // Alias for jump-start. Maintaining a separate enumerated value
+                // for serialization.
+    END,        // Discontinuity at progress = 1.
+                // Alias for jump-end. Maintaining a separate enumerated value
+                // for serialization.
+    JUMP_BOTH,  // Discontinuities at progress = 0 and 1.
+    JUMP_END,   // Discontinuity at progress = 1.
+    JUMP_NONE,  // Continuous at progress = 0 and 1.
+    JUMP_START  // Discontinuity at progress = 0.
+  };
 
   static std::unique_ptr<StepsTimingFunction> Create(
       int steps,
       StepPosition step_position);
   ~StepsTimingFunction() override;
+
+  StepsTimingFunction& operator=(const StepsTimingFunction&) = delete;
 
   // TimingFunction implementation.
   Type GetType() const override;
@@ -85,23 +101,29 @@ class CC_ANIMATION_EXPORT StepsTimingFunction : public TimingFunction {
 
   int steps() const { return steps_; }
   StepPosition step_position() const { return step_position_; }
-  double GetPreciseValue(double t) const;
+  double GetPreciseValue(double t, LimitDirection limit_direction) const;
 
  private:
   StepsTimingFunction(int steps, StepPosition step_position);
+
+  // The number of jumps is the number of discontinuities in the timing
+  // function. There is a subtle distinction between the number of steps and
+  // jumps. The number of steps is the number of intervals in the timing
+  // function. The number of jumps differs from the number of steps when either
+  // both or neither end point has a discontinuity.
+  // https://drafts.csswg.org/css-easing-1/#step-easing-functions
+  int NumberOfJumps() const;
 
   float GetStepsStartOffset() const;
 
   int steps_;
   StepPosition step_position_;
-
-  DISALLOW_ASSIGN(StepsTimingFunction);
 };
 
-class CC_ANIMATION_EXPORT FramesTimingFunction : public TimingFunction {
+class CC_ANIMATION_EXPORT LinearTimingFunction : public TimingFunction {
  public:
-  static std::unique_ptr<FramesTimingFunction> Create(int frames);
-  ~FramesTimingFunction() override;
+  static std::unique_ptr<LinearTimingFunction> Create();
+  ~LinearTimingFunction() override;
 
   // TimingFunction implementation.
   Type GetType() const override;
@@ -109,15 +131,8 @@ class CC_ANIMATION_EXPORT FramesTimingFunction : public TimingFunction {
   std::unique_ptr<TimingFunction> Clone() const override;
   double Velocity(double time) const override;
 
-  int frames() const { return frames_; }
-  double GetPreciseValue(double t) const;
-
  private:
-  explicit FramesTimingFunction(int frames);
-
-  int frames_;
-
-  DISALLOW_ASSIGN(FramesTimingFunction);
+  LinearTimingFunction();
 };
 
 }  // namespace cc

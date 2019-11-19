@@ -7,8 +7,9 @@
 
 #include "base/auto_reset.h"
 #include "base/macros.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/stack_util.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
@@ -41,7 +42,11 @@ class PLATFORM_EXPORT ScriptForbiddenScope final {
     return GetMutableCounter() > 0;
   }
 
-  // DO NOT USE THESE FUNCTIONS FROM OUTSIDE OF THIS CLASS.
+  static void ThrowScriptForbiddenException(v8::Isolate* isolate) {
+    V8ThrowException::ThrowError(isolate, "Script execution is forbidden.");
+  }
+
+ private:
   static void Enter() {
     if (LIKELY(!WTF::MayNotBeMainThread())) {
       ++g_main_thread_counter_;
@@ -58,9 +63,11 @@ class PLATFORM_EXPORT ScriptForbiddenScope final {
     }
   }
 
- private:
   static unsigned& GetMutableCounter();
   static unsigned g_main_thread_counter_;
+
+  // V8GCController is exceptionally allowed to call Enter/Exit.
+  friend class V8GCController;
 };
 
 }  // namespace blink

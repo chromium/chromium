@@ -24,10 +24,10 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_displacement_map.h"
 
-#include "SkDisplacementMapEffect.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/skia/include/effects/SkDisplacementMapEffect.h"
 
 namespace blink {
 
@@ -39,15 +39,6 @@ FEDisplacementMap::FEDisplacementMap(Filter* filter,
       x_channel_selector_(x_channel_selector),
       y_channel_selector_(y_channel_selector),
       scale_(scale) {}
-
-FEDisplacementMap* FEDisplacementMap::Create(
-    Filter* filter,
-    ChannelSelectorType x_channel_selector,
-    ChannelSelectorType y_channel_selector,
-    float scale) {
-  return MakeGarbageCollected<FEDisplacementMap>(filter, x_channel_selector,
-                                                 y_channel_selector, scale);
-}
 
 FloatRect FEDisplacementMap::MapEffect(const FloatRect& rect) const {
   FloatRect result = rect;

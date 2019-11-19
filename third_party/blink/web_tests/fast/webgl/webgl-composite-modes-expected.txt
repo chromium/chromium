@@ -1,3 +1,0 @@
-This test is only useful as a pixel test. You should see two rows with 4 canvases in each. The top row of canvases should have a black background, the bottom row should have a dark blue background. Each canvas should have a green triangle in it. If multisampling is supported, the odd columns should have smooth edges instead of jagged stair-stepping. Otherwise, all canvases within a row should be identical to each other.
-
-

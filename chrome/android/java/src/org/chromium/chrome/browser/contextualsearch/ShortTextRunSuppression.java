@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
+
 /**
  * Implements a policy that a Tap on a word that's part of a short text run should be suppressed.
  * Computes the ratio of the tapped word to the entire run of text in the element (which includes
@@ -28,7 +30,8 @@ class ShortTextRunSuppression extends ContextualSearchHeuristic {
      * @param elementRunLength The length of the text in the element tapped, in characters.
      */
     ShortTextRunSuppression(ContextualSearchContext contextualSearchContext, int elementRunLength) {
-        mIsSuppressionEnabled = ContextualSearchFieldTrial.isShortTextRunSuppressionEnabled();
+        mIsSuppressionEnabled = ContextualSearchFieldTrial.getSwitch(
+                ContextualSearchSwitch.IS_SHORT_TEXT_RUN_SUPPRESSION_ENABLED);
         mWordElementRatioDecile = wordElementRatio(contextualSearchContext, elementRunLength);
         mIsConditionSatisfied = mWordElementRatioDecile >= LARGE_WORD_ELEMENT_RATIO;
     }

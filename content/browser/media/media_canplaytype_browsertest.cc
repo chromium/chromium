@@ -15,7 +15,6 @@
 #include "content/shell/browser/shell.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
-#include "third_party/libaom/av1_buildflags.h"
 #include "ui/display/display_switches.h"
 
 #if defined(OS_ANDROID)
@@ -75,7 +74,7 @@ class MediaCanPlayTypeTest : public MediaBrowserTest {
   MediaCanPlayTypeTest() : url_("about:blank") {}
 
   void SetUpOnMainThread() override {
-    NavigateToURL(shell(), url_);
+    EXPECT_TRUE(NavigateToURL(shell(), url_));
   }
 
   std::string CanPlay(const std::string& type) {
@@ -1540,7 +1539,15 @@ IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_NewVp9Variants) {
   for (const auto& mime_type : kSupportedMimeTypes) {
 // Profile 2 and 3 support is currently disabled on ARM and MIPS.
 #if defined(ARCH_CPU_ARM_FAMILY) || defined(ARCH_CPU_MIPS_FAMILY)
+#if defined(OS_ANDROID)
+    const char* kVP9Profile2And3Probably =
+        base::android::BuildInfo::GetInstance()->sdk_int() >=
+                base::android::SDK_VERSION_P
+            ? kProbably
+            : kNot;
+#else
     const char* kVP9Profile2And3Probably = kNot;
+#endif
 #else
     const char* kVP9Profile2And3Probably = kProbably;
 #endif

@@ -34,11 +34,26 @@
 #include "third_party/blink/renderer/modules/webaudio/media_element_audio_source_options.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/locker.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
+
+class MediaElementAudioSourceHandlerLocker final {
+  STACK_ALLOCATED();
+
+ public:
+  MediaElementAudioSourceHandlerLocker(MediaElementAudioSourceHandler& lockable)
+      : lockable_(lockable) {
+    lockable_.lock();
+  }
+  ~MediaElementAudioSourceHandlerLocker() { lockable_.unlock(); }
+
+ private:
+  MediaElementAudioSourceHandler& lockable_;
+
+  DISALLOW_COPY_AND_ASSIGN(MediaElementAudioSourceHandlerLocker);
+};
 
 MediaElementAudioSourceHandler::MediaElementAudioSourceHandler(
     AudioNode& node,
@@ -100,7 +115,7 @@ void MediaElementAudioSourceHandler::SetFormat(uint32_t number_of_channels,
       DLOG(ERROR) << "setFormat(" << number_of_channels << ", "
                   << source_sample_rate << ") - unhandled format change";
       // Synchronize with process().
-      Locker<MediaElementAudioSourceHandler> locker(*this);
+      MediaElementAudioSourceHandlerLocker locker(*this);
       source_number_of_channels_ = 0;
       source_sample_rate_ = 0;
       is_origin_tainted_ = is_tainted;
@@ -110,7 +125,7 @@ void MediaElementAudioSourceHandler::SetFormat(uint32_t number_of_channels,
     // Synchronize with process() to protect |source_number_of_channels_|,
     // |source_sample_rate_|, |multi_channel_resampler_|. and
     // |is_origin_tainted_|.
-    Locker<MediaElementAudioSourceHandler> locker(*this);
+    MediaElementAudioSourceHandlerLocker locker(*this);
 
     is_origin_tainted_ = is_tainted;
     source_number_of_channels_ = number_of_channels;
@@ -142,11 +157,12 @@ bool MediaElementAudioSourceHandler::WouldTaintOrigin() {
 
 void MediaElementAudioSourceHandler::PrintCorsMessage(const String& message) {
   if (Context()->GetExecutionContext()) {
-    Context()->GetExecutionContext()->AddConsoleMessage(ConsoleMessage::Create(
-        kSecurityMessageSource, mojom::ConsoleMessageLevel::kInfo,
-        "MediaElementAudioSource outputs zeroes due to "
-        "CORS access restrictions for " +
-            message));
+    Context()->GetExecutionContext()->AddConsoleMessage(
+        ConsoleMessage::Create(mojom::ConsoleMessageSource::kSecurity,
+                               mojom::ConsoleMessageLevel::kInfo,
+                               "MediaElementAudioSource outputs zeroes due to "
+                               "CORS access restrictions for " +
+                                   message));
   }
 }
 
@@ -278,6 +294,14 @@ void MediaElementAudioSourceNode::lock() {
 
 void MediaElementAudioSourceNode::unlock() {
   GetMediaElementAudioSourceHandler().unlock();
+}
+
+void MediaElementAudioSourceNode::ReportDidCreate() {
+  GraphTracer().DidCreateAudioNode(this);
+}
+
+void MediaElementAudioSourceNode::ReportWillBeDestroyed() {
+  GraphTracer().WillDestroyAudioNode(this);
 }
 
 }  // namespace blink

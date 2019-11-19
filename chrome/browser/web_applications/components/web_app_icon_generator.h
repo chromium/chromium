@@ -7,11 +7,15 @@
 
 #include <map>
 #include <set>
+#include <string>
 #include <vector>
 
+#include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
+
+struct WebApplicationIconInfo;
 
 namespace web_app {
 
@@ -34,6 +38,9 @@ enum {
 
 }  // namespace icon_size
 
+// Returns icon sizes to be generated from downloaded icons.
+std::set<int> SizesToGenerate();
+
 struct BitmapAndSource {
   BitmapAndSource();
   BitmapAndSource(const GURL& source_url_p, const SkBitmap& bitmap_p);
@@ -53,7 +60,10 @@ std::map<int, BitmapAndSource> ConstrainBitmapsToSizes(
 
 // Generates a square container icon of |output_size| by drawing the given
 // |letter| into a rounded background of |color|.
-SkBitmap GenerateBitmap(int output_size, SkColor color, char letter);
+SkBitmap GenerateBitmap(int output_size, SkColor color, base::char16 letter);
+
+// Returns the letter that will be painted on the generated icon.
+base::char16 GenerateIconLetterFromUrl(const GURL& app_url);
 
 // Resize icons to the accepted sizes, and generate any that are missing.
 // Note that |app_url| is the launch URL for the app.
@@ -64,6 +74,12 @@ std::map<int, BitmapAndSource> ResizeIconsAndGenerateMissing(
     const std::set<int>& sizes_to_generate,
     const GURL& app_url,
     SkColor* generated_icon_color);
+
+// Generate icons for default sizes, using the first letter of the application
+// name and some background color. |app_name| is encoded as UTF8.
+std::vector<WebApplicationIconInfo> GenerateIcons(
+    const std::string& app_name,
+    SkColor background_icon_color);
 
 }  // namespace web_app
 

@@ -11,7 +11,7 @@
 #include "components/infobars/core/simple_alert_infobar_delegate.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/web_state/web_state_observer_bridge.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -119,8 +119,7 @@ PresentAddPassesDialogResult GetUmaResult(
       InfoBarManagerImpl::FromWebState(_webState),
       infobars::InfoBarDelegate::SHOW_PASSKIT_ERROR_INFOBAR_DELEGATE_IOS,
       /*vector_icon=*/nullptr,
-      l10n_util::GetStringUTF16(IDS_IOS_GENERIC_PASSKIT_ERROR),
-      /*auto_expire=*/true);
+      l10n_util::GetStringUTF16(IDS_IOS_GENERIC_PASSKIT_ERROR));
 
   // Infobar does not provide callback on dismissal.
   [self stop];

@@ -49,11 +49,6 @@ class MODULES_EXPORT DirectoryEntry final : public Entry {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DirectoryEntry* Create(DOMFileSystemBase* file_system,
-                                const String& full_path) {
-    return MakeGarbageCollected<DirectoryEntry>(file_system, full_path);
-  }
-
   DirectoryEntry(DOMFileSystemBase*, const String& full_path);
 
   bool isDirectory() const override { return true; }

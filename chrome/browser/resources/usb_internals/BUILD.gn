@@ -3,22 +3,58 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
 
 js_type_check("closure_compile") {
   deps = [
+    ":descriptor_panel",
+    ":devices_page",
     ":usb_internals",
   ]
 }
 
 js_library("usb_internals") {
-  sources = [
-    "usb_internals.js",
-  ]
-
   deps = [
+    ":devices_page",
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js:util",
     "//ui/webui/resources/js/cr/ui:tabs",
+    "//ui/webui/resources/js/cr/ui:tree",
+  ]
+}
+
+js_library("devices_page") {
+  deps = [
+    ":descriptor_panel",
+    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("descriptor_panel") {
+  deps = [
+    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+grit("resources") {
+  source = "resources.grd"
+
+  # The .grd contains references to generated files.
+  source_is_generated = true
+  outputs = [
+    "grit/usb_internals_resources.h",
+    "usb_internals_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+  depfile_dir = target_gen_dir
+  grit_flags = [
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+  ]
+  deps = [
+    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_js",
   ]
 }

@@ -24,7 +24,7 @@ BluetoothProfileManagerClient::Options::~Options() = default;
 // The BluetoothProfileManagerClient implementation used in production.
 class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
  public:
-  BluetoothProfileManagerClientImpl() : weak_ptr_factory_(this) {}
+  BluetoothProfileManagerClientImpl() {}
 
   ~BluetoothProfileManagerClientImpl() override = default;
 
@@ -220,7 +220,8 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
   // than we do.
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<BluetoothProfileManagerClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothProfileManagerClientImpl> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothProfileManagerClientImpl);
 };

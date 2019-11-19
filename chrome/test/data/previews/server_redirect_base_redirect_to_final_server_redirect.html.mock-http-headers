@@ -1,0 +1,3 @@
+HTTP/1.1 302 Found
+Location: client_redirect_base_to_server_redirect_with_defer_all_script.html
+

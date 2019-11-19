@@ -36,11 +36,11 @@ class TestWebUIDataSourceImpl : public TestWebUIDataSource {
 
   ~TestWebUIDataSourceImpl() override {}
 
-  const base::DictionaryValue* GetLocalizedStrings() const override {
+  const base::DictionaryValue* GetLocalizedStrings() override {
     return source_->GetLocalizedStrings();
   }
 
-  const ui::TemplateReplacements* GetReplacements() const override {
+  const ui::TemplateReplacements* GetReplacements() override {
     return source_->GetReplacements();
   }
 

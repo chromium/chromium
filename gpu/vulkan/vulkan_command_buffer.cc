@@ -11,18 +11,92 @@
 
 namespace gpu {
 
+namespace {
+
+VkPipelineStageFlags GetPipelineStageFlags(
+    const VulkanDeviceQueue* device_queue,
+    const VkImageLayout layout) {
+  switch (layout) {
+    case VK_IMAGE_LAYOUT_UNDEFINED:
+      return VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+    case VK_IMAGE_LAYOUT_GENERAL:
+      return VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+    case VK_IMAGE_LAYOUT_PREINITIALIZED:
+      return VK_PIPELINE_STAGE_HOST_BIT;
+    case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+      return VK_PIPELINE_STAGE_TRANSFER_BIT;
+    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+      return VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL: {
+      VkPipelineStageFlags flags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT |
+                                   VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
+      if (device_queue->enabled_device_features().tessellationShader) {
+        flags |= VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT |
+                 VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT;
+      }
+      if (device_queue->enabled_device_features().geometryShader) {
+        flags |= VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT;
+      }
+      return flags;
+    }
+    case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+      return VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+    default:
+      NOTREACHED() << "layout=" << layout;
+  }
+  return 0;
+}
+
+VkAccessFlags GetAccessMask(const VkImageLayout layout) {
+  switch (layout) {
+    case VK_IMAGE_LAYOUT_UNDEFINED:
+      return 0;
+    case VK_IMAGE_LAYOUT_GENERAL:
+      DLOG(WARNING) << "VK_IMAGE_LAYOUT_GENERAL is used.";
+      return VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
+             VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT |
+             VK_ACCESS_TRANSFER_WRITE_BIT | VK_ACCESS_TRANSFER_READ_BIT |
+             VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_HOST_WRITE_BIT |
+             VK_ACCESS_HOST_READ_BIT | VK_ACCESS_INPUT_ATTACHMENT_READ_BIT |
+             VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
+             VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT |
+             VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT;
+    case VK_IMAGE_LAYOUT_PREINITIALIZED:
+      return VK_ACCESS_HOST_WRITE_BIT;
+    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+      return VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
+             VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+      return VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
+    case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+      return VK_ACCESS_TRANSFER_READ_BIT;
+    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+      return VK_ACCESS_TRANSFER_WRITE_BIT;
+    case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+      return 0;
+    default:
+      NOTREACHED() << "layout=" << layout;
+  }
+  return 0;
+}
+
+}  // namespace
+
 VulkanCommandBuffer::VulkanCommandBuffer(VulkanDeviceQueue* device_queue,
                                          VulkanCommandPool* command_pool,
-                                         bool primary)
+                                         bool primary,
+                                         bool use_protected_memory)
     : primary_(primary),
+      use_protected_memory_(use_protected_memory),
       device_queue_(device_queue),
       command_pool_(command_pool) {
   command_pool_->IncrementCommandBufferCount();
 }
 
 VulkanCommandBuffer::~VulkanCommandBuffer() {
+  DCHECK(!submission_fence_.is_valid());
   DCHECK_EQ(static_cast<VkCommandBuffer>(VK_NULL_HANDLE), command_buffer_);
-  DCHECK_EQ(static_cast<VkFence>(VK_NULL_HANDLE), submission_fence_);
   DCHECK(!recording_);
   command_pool_->DecrementCommandBufferCount();
 }
@@ -31,28 +105,20 @@ bool VulkanCommandBuffer::Initialize() {
   VkResult result = VK_SUCCESS;
   VkDevice device = device_queue_->GetVulkanDevice();
 
-  VkCommandBufferAllocateInfo command_buffer_info = {};
-  command_buffer_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-  command_buffer_info.commandPool = command_pool_->handle();
-  command_buffer_info.level = primary_ ? VK_COMMAND_BUFFER_LEVEL_PRIMARY
-                                       : VK_COMMAND_BUFFER_LEVEL_SECONDARY;
-  command_buffer_info.commandBufferCount = 1;
+  VkCommandBufferAllocateInfo command_buffer_info = {
+      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+      .pNext = nullptr,
+      .commandPool = command_pool_->handle(),
+      .level = primary_ ? VK_COMMAND_BUFFER_LEVEL_PRIMARY
+                        : VK_COMMAND_BUFFER_LEVEL_SECONDARY,
+      .commandBufferCount = 1,
+  };
 
+  DCHECK_EQ(static_cast<VkCommandBuffer>(VK_NULL_HANDLE), command_buffer_);
   result =
       vkAllocateCommandBuffers(device, &command_buffer_info, &command_buffer_);
   if (VK_SUCCESS != result) {
     DLOG(ERROR) << "vkAllocateCommandBuffers() failed: " << result;
-    return false;
-  }
-
-  VkFenceCreateInfo fence_create_info = {};
-  fence_create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-  fence_create_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-  result =
-      vkCreateFence(device, &fence_create_info, nullptr, &submission_fence_);
-  if (VK_SUCCESS != result) {
-    DLOG(ERROR) << "vkCreateFence(submission) failed: " << result;
     return false;
   }
 
@@ -62,10 +128,9 @@ bool VulkanCommandBuffer::Initialize() {
 
 void VulkanCommandBuffer::Destroy() {
   VkDevice device = device_queue_->GetVulkanDevice();
-  if (VK_NULL_HANDLE != submission_fence_) {
-    DCHECK(SubmissionFinished());
-    vkDestroyFence(device, submission_fence_, nullptr);
-    submission_fence_ = VK_NULL_HANDLE;
+  if (submission_fence_.is_valid()) {
+    DCHECK(device_queue_->GetFenceHelper()->HasPassed(submission_fence_));
+    submission_fence_ = VulkanFenceHelper::FenceHandle();
   }
 
   if (VK_NULL_HANDLE != command_buffer_) {
@@ -78,31 +143,45 @@ bool VulkanCommandBuffer::Submit(uint32_t num_wait_semaphores,
                                  VkSemaphore* wait_semaphores,
                                  uint32_t num_signal_semaphores,
                                  VkSemaphore* signal_semaphores) {
-  VkPipelineStageFlags wait_dst_stage_mask = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-
   DCHECK(primary_);
+
+  std::vector<VkPipelineStageFlags> wait_dst_stage_mask(
+      num_wait_semaphores, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
+
+  VkProtectedSubmitInfo protected_submit_info = {};
+  protected_submit_info.sType = VK_STRUCTURE_TYPE_PROTECTED_SUBMIT_INFO;
+  protected_submit_info.pNext = nullptr;
+  protected_submit_info.protectedSubmit = VK_TRUE;
 
   VkSubmitInfo submit_info = {};
   submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-  submit_info.commandBufferCount = 1;
-  submit_info.pCommandBuffers = &command_buffer_;
+  submit_info.pNext = use_protected_memory_ ? &protected_submit_info : nullptr;
   submit_info.waitSemaphoreCount = num_wait_semaphores;
   submit_info.pWaitSemaphores = wait_semaphores;
-  submit_info.pWaitDstStageMask = &wait_dst_stage_mask;
+  submit_info.pWaitDstStageMask = wait_dst_stage_mask.data();
+  submit_info.commandBufferCount = 1;
+  submit_info.pCommandBuffers = &command_buffer_;
   submit_info.signalSemaphoreCount = num_signal_semaphores;
   submit_info.pSignalSemaphores = signal_semaphores;
 
   VkResult result = VK_SUCCESS;
 
-  result =
-      vkResetFences(device_queue_->GetVulkanDevice(), 1, &submission_fence_);
+  VkFence fence;
+  result = device_queue_->GetFenceHelper()->GetFence(&fence);
   if (VK_SUCCESS != result) {
-    DLOG(ERROR) << "vkResetFences() failed: " << result;
+    DLOG(ERROR) << "Failed to create fence: " << result;
     return false;
   }
 
-  result = vkQueueSubmit(device_queue_->GetVulkanQueue(), 1, &submit_info,
-                         submission_fence_);
+  result =
+      vkQueueSubmit(device_queue_->GetVulkanQueue(), 1, &submit_info, fence);
+
+  if (VK_SUCCESS != result) {
+    vkDestroyFence(device_queue_->GetVulkanDevice(), fence, nullptr);
+    submission_fence_ = VulkanFenceHelper::FenceHandle();
+  } else {
+    submission_fence_ = device_queue_->GetFenceHelper()->EnqueueFence(fence);
+  }
 
   PostExecution();
   if (VK_SUCCESS != result) {
@@ -127,13 +206,60 @@ void VulkanCommandBuffer::Clear() {
 }
 
 void VulkanCommandBuffer::Wait(uint64_t timeout) {
-  VkDevice device = device_queue_->GetVulkanDevice();
-  vkWaitForFences(device, 1, &submission_fence_, true, timeout);
+  if (!submission_fence_.is_valid())
+    return;
+
+  device_queue_->GetFenceHelper()->Wait(submission_fence_, timeout);
 }
 
 bool VulkanCommandBuffer::SubmissionFinished() {
-  VkDevice device = device_queue_->GetVulkanDevice();
-  return VK_SUCCESS == vkGetFenceStatus(device, submission_fence_);
+  if (!submission_fence_.is_valid())
+    return true;
+
+  return device_queue_->GetFenceHelper()->HasPassed(submission_fence_);
+}
+
+void VulkanCommandBuffer::TransitionImageLayout(VkImage image,
+                                                VkImageLayout old_layout,
+                                                VkImageLayout new_layout) {
+  VkImageMemoryBarrier barrier = {};
+  barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+  barrier.srcAccessMask = GetAccessMask(old_layout);
+  barrier.dstAccessMask = GetAccessMask(new_layout);
+  barrier.oldLayout = old_layout;
+  barrier.newLayout = new_layout;
+  barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+  barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+  barrier.image = image;
+  barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  barrier.subresourceRange.baseMipLevel = 0;
+  barrier.subresourceRange.levelCount = 1;
+  barrier.subresourceRange.baseArrayLayer = 0;
+  barrier.subresourceRange.layerCount = 1;
+  vkCmdPipelineBarrier(command_buffer_,
+                       GetPipelineStageFlags(device_queue_, old_layout),
+                       GetPipelineStageFlags(device_queue_, new_layout), 0, 0,
+                       nullptr, 0, nullptr, 1, &barrier);
+}
+
+void VulkanCommandBuffer::CopyBufferToImage(VkBuffer buffer,
+                                            VkImage image,
+                                            uint32_t buffer_width,
+                                            uint32_t buffer_height,
+                                            uint32_t width,
+                                            uint32_t height) {
+  VkBufferImageCopy region = {};
+  region.bufferOffset = 0;
+  region.bufferRowLength = buffer_width;
+  region.bufferImageHeight = buffer_height;
+  region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  region.imageSubresource.mipLevel = 0;
+  region.imageSubresource.baseArrayLayer = 0;
+  region.imageSubresource.layerCount = 1;
+  region.imageOffset = {0, 0, 0};
+  region.imageExtent = {width, height, 1};
+  vkCmdCopyBufferToImage(command_buffer_, buffer, image,
+                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 }
 
 void VulkanCommandBuffer::PostExecution() {
@@ -151,8 +277,7 @@ void VulkanCommandBuffer::ResetIfDirty() {
   if (record_type_ == RECORD_TYPE_DIRTY) {
     // Block if command buffer is still in use. This can be externally avoided
     // using the asynchronous SubmissionFinished() function.
-    VkDevice device = device_queue_->GetVulkanDevice();
-    vkWaitForFences(device, 1, &submission_fence_, true, UINT64_MAX);
+    Wait(UINT64_MAX);
     VkResult result = vkResetCommandBuffer(command_buffer_, 0);
     if (VK_SUCCESS != result) {
       DLOG(ERROR) << "vkResetCommandBuffer() failed: " << result;

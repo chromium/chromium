@@ -116,7 +116,7 @@ class BudgetDatabase {
 
   using CacheCallback = base::OnceCallback<void(bool success)>;
 
-  void OnDatabaseInit(bool success);
+  void OnDatabaseInit(leveldb_proto::Enums::InitStatus status);
 
   bool IsCached(const url::Origin& origin) const;
 
@@ -169,7 +169,7 @@ class BudgetDatabase {
   // The clock used to vend times.
   std::unique_ptr<base::Clock> clock_;
 
-  base::WeakPtrFactory<BudgetDatabase> weak_ptr_factory_;
+  base::WeakPtrFactory<BudgetDatabase> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BudgetDatabase);
 };

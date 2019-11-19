@@ -72,8 +72,17 @@ class GL_EXPORT GLStubApi: public GLStubApiBase {
   GLboolean glUnmapBufferFn(GLenum target) override;
 
  private:
+  // The only consumers of GLStubApi are GpuChannelTestCommon (gpu_unittests)
+  // and GPU fuzzers. We get a new GLStubApi for every case executed by
+  // fuzzers, so we don't have to worry about ID exhaustion.
+  void GenHelper(GLsizei count, GLuint* objects) {
+    for (GLsizei i = 0; i < count; ++i)
+      objects[i] = next_id_++;
+  }
+
   std::string version_;
   std::string extensions_;
+  GLuint next_id_ = 1;
 
   DISALLOW_COPY_AND_ASSIGN(GLStubApi);
 };

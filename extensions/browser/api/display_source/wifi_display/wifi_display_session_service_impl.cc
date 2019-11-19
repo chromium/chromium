@@ -8,7 +8,6 @@
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/display_source/display_source_connection_delegate_factory.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
 
 namespace {
 const char kErrorCannotHaveMultipleSessions[] =
@@ -33,25 +32,25 @@ WiFiDisplaySessionServiceImpl::~WiFiDisplaySessionServiceImpl() {
 }
 
 // static
-void WiFiDisplaySessionServiceImpl::BindToRequest(
+void WiFiDisplaySessionServiceImpl::BindToReceiver(
     content::BrowserContext* browser_context,
-    WiFiDisplaySessionServiceRequest request,
+    mojo::PendingReceiver<WiFiDisplaySessionService> receiver,
     content::RenderFrameHost* render_frame_host) {
   DisplaySourceConnectionDelegate* delegate =
       DisplaySourceConnectionDelegateFactory::GetForBrowserContext(
           browser_context);
   CHECK(delegate);
   auto* impl = new WiFiDisplaySessionServiceImpl(delegate);
-  impl->binding_ =
-      mojo::MakeStrongBinding(base::WrapUnique(impl), std::move(request));
+  impl->receiver_ =
+      mojo::MakeSelfOwnedReceiver(base::WrapUnique(impl), std::move(receiver));
 }
 
 void WiFiDisplaySessionServiceImpl::SetClient(
-    mojom::WiFiDisplaySessionServiceClientPtr client) {
+    mojo::PendingRemote<mojom::WiFiDisplaySessionServiceClient> client) {
   DCHECK(client);
   DCHECK(!client_);
-  client_ = std::move(client);
-  client_.set_connection_error_handler(
+  client_.Bind(std::move(client));
+  client_.set_disconnect_handler(
       base::Bind(&WiFiDisplaySessionServiceImpl::OnClientConnectionError,
                  weak_factory_.GetWeakPtr()));
 }
@@ -200,7 +199,7 @@ void WiFiDisplaySessionServiceImpl::OnDisconnectFailed(
 
 void WiFiDisplaySessionServiceImpl::OnClientConnectionError() {
   DLOG(ERROR) << "IPC connection error";
-  binding_->Close();
+  receiver_->reset();
 }
 
 }  // namespace extensions

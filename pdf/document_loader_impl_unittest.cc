@@ -207,7 +207,6 @@ class TestClient : public DocumentLoader::Client {
   void OnNewDataReceived() override {}
   void OnDocumentComplete() override {}
   void OnDocumentCanceled() override {}
-  void CancelBrowserDownload() override {}
 
   std::unique_ptr<URLLoaderWrapper> CreateFullPageLoader() {
     return std::unique_ptr<URLLoaderWrapper>(

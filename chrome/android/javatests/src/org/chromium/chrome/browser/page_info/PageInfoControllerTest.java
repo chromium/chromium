@@ -14,7 +14,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
@@ -23,6 +22,7 @@ import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
@@ -47,7 +47,7 @@ public class PageInfoControllerTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 
@@ -58,8 +58,8 @@ public class PageInfoControllerTest {
     @MediumTest
     @Feature({"PageInfoController"})
     @RetryOnFailure
-    public void testShow() throws InterruptedException {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+    public void testShow() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             PageInfoController.show(mActivityTestRule.getActivity(),
                     mActivityTestRule.getActivity().getActivityTab(), null,
                     PageInfoController.OpenedFromSource.MENU);
@@ -73,11 +73,11 @@ public class PageInfoControllerTest {
     @MediumTest
     @Feature({"PageInfoController"})
     @RetryOnFailure
-    public void testPageInfoUrl() throws InterruptedException {
+    public void testPageInfoUrl() {
         String testUrl = mTestServer.getURLWithHostName("xn--allestrungen-9ib.ch", "/");
         mActivityTestRule.loadUrlInTab(
                 testUrl, PageTransition.TYPED, mActivityTestRule.getActivity().getActivityTab());
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             PageInfoController pageInfo = new PageInfoController(mActivityTestRule.getActivity(),
                     mActivityTestRule.getActivity().getActivityTab(), ConnectionSecurityLevel.NONE,
                     null, null, PageInfoController.OfflinePageState.NOT_OFFLINE_PAGE,

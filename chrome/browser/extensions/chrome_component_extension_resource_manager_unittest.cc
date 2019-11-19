@@ -4,8 +4,11 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/grit/component_extension_resources.h"
+#include "chrome/grit/component_extension_resources_map.h"
 #include "extensions/browser/component_extension_resource_manager.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/constants.h"
@@ -65,12 +68,45 @@ TEST_F(ChromeComponentExtensionResourceManagerTest,
 
 #if defined(OS_CHROMEOS)
   // The resource is a component resource.
-  ComponentExtensionResourceInfo resource_info;
+  int resource_id = 0;
   ASSERT_TRUE(resource_manager->IsComponentExtensionResource(
-      extension->path(), resource.relative_path(), &resource_info));
-  ASSERT_EQ(IDR_FILE_MANAGER_ICON_16, resource_info.resource_id);
-  EXPECT_FALSE(resource_info.gzipped);
+      extension->path(), resource.relative_path(), &resource_id));
+  ASSERT_EQ(IDR_FILE_MANAGER_ICON_16, resource_id);
 #endif
+}
+
+TEST_F(ChromeComponentExtensionResourceManagerTest,
+       IsComponentExtensionResource_Generated) {
+  // Check that the file being used for testing is indeed a generated resource.
+  int generated_resource_id = IDR_PDF_SHARED_VARS_JS;
+  bool found_resource = false;
+  for (size_t i = 0; i < kComponentExtensionResourcesSize; ++i) {
+    if (kComponentExtensionResources[i].value == generated_resource_id) {
+      ASSERT_TRUE(base::StartsWith(kComponentExtensionResources[i].name,
+                                   "@out_folder@",
+                                   base::CompareCase::SENSITIVE));
+      found_resource = true;
+      break;
+    }
+  }
+  ASSERT_TRUE(found_resource);
+
+  const ComponentExtensionResourceManager* resource_manager =
+      ExtensionsBrowserClient::Get()->GetComponentExtensionResourceManager();
+  ASSERT_TRUE(resource_manager);
+
+  base::FilePath resources_dir;
+  base::PathService::Get(chrome::DIR_RESOURCES, &resources_dir);
+
+  base::FilePath extension_path = resources_dir.AppendASCII("pdf");
+  base::FilePath resource_path =
+      base::FilePath().AppendASCII("elements/shared-vars.js");
+
+  // Check that the resource is classified as a component resource.
+  int resource_id = 0;
+  ASSERT_TRUE(resource_manager->IsComponentExtensionResource(
+      extension_path, resource_path, &resource_id));
+  ASSERT_EQ(generated_resource_id, resource_id);
 }
 
 }  // namespace extensions

@@ -9,12 +9,11 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "ios/web/public/global_state/ios_global_state.h"
-#include "ios/web/public/global_state/ios_global_state_configuration.h"
-#include "ios/web/public/user_agent.h"
+#include "ios/web/common/user_agent.h"
+#include "ios/web/public/init/ios_global_state.h"
+#include "ios/web/public/init/ios_global_state_configuration.h"
 #include "net/proxy_resolution/proxy_config_service.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
-#include "url/url_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,11 +28,9 @@ void InitializeOnMainThread() {
   ios_global_state::CreateParams create_params;
   create_params.install_at_exit_manager = true;
   ios_global_state::Create(create_params);
-  ios_global_state::StartTaskScheduler(/*init_params=*/nullptr);
+  ios_global_state::StartThreadPool();
 
-  url::Initialize();
-
-  ios_global_state::BuildMessageLoop();
+  ios_global_state::BuildSingleThreadTaskExecutor();
   ios_global_state::CreateNetworkChangeNotifier();
 }
 

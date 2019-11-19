@@ -31,7 +31,8 @@
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -40,10 +41,6 @@ class StyleImage;
 
 class CSSImageSetValue : public CSSValueList {
  public:
-  static CSSImageSetValue* Create(CSSParserMode parser_mode) {
-    return MakeGarbageCollected<CSSImageSetValue>(parser_mode);
-  }
-
   explicit CSSImageSetValue(CSSParserMode);
   ~CSSImageSetValue();
 
@@ -87,7 +84,12 @@ class CSSImageSetValue : public CSSValueList {
   Vector<ImageWithScale> images_in_set_;
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSImageSetValue, IsImageSetValue());
+template <>
+struct DowncastTraits<CSSImageSetValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsImageSetValue();
+  }
+};
 
 }  // namespace blink
 

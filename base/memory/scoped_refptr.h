@@ -25,9 +25,16 @@ class RefCounted;
 template <class, typename>
 class RefCountedThreadSafe;
 class SequencedTaskRunner;
+class WrappedPromise;
 
 template <typename T>
 scoped_refptr<T> AdoptRef(T* t);
+
+namespace internal {
+
+class BasePromise;
+
+}  // namespace internal
 
 namespace subtle {
 
@@ -171,8 +178,16 @@ class scoped_refptr {
 
   constexpr scoped_refptr() = default;
 
-  // Constructs from raw pointer. constexpr if |p| is null.
-  constexpr scoped_refptr(T* p) : ptr_(p) {
+  // Allow implicit construction from nullptr.
+  constexpr scoped_refptr(std::nullptr_t) {}
+
+  // Constructs from a raw pointer. Note that this constructor allows implicit
+  // conversion from T* to scoped_refptr<T> which is strongly discouraged. If
+  // you are creating a new ref-counted object please use
+  // base::MakeRefCounted<T>() or base::WrapRefCounted<T>(). Otherwise you
+  // should move or copy construct from an existing scoped_refptr<T> to the
+  // ref-counted object.
+  scoped_refptr(T* p) : ptr_(p) {
     if (ptr_)
       AddRef(ptr_);
   }
@@ -259,6 +274,11 @@ class scoped_refptr {
   template <typename U>
   friend scoped_refptr<U> base::AdoptRef(U*);
   friend class ::base::SequencedTaskRunner;
+
+  // Friend access so these classes can use the constructor below as part of a
+  // binary size optimization.
+  friend class ::base::internal::BasePromise;
+  friend class ::base::WrappedPromise;
 
   // Returns the owned pointer (if any), releasing ownership to the caller. The
   // caller is responsible for managing the lifetime of the reference.

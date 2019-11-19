@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
@@ -25,6 +27,8 @@ namespace blink {
 
 class ExceptionState;
 class FetchRespondWithObserver;
+class PerformanceMark;
+class PerformanceMeasure;
 class Request;
 class Response;
 class ScriptState;
@@ -49,18 +53,14 @@ class MODULES_EXPORT FetchEvent final
   static FetchEvent* Create(ScriptState*,
                             const AtomicString& type,
                             const FetchEventInit*);
-  static FetchEvent* Create(ScriptState*,
-                            const AtomicString& type,
-                            const FetchEventInit*,
-                            FetchRespondWithObserver*,
-                            WaitUntilObserver*,
-                            bool navigation_preload_sent);
 
   FetchEvent(ScriptState*,
              const AtomicString& type,
              const FetchEventInit*,
              FetchRespondWithObserver*,
              WaitUntilObserver*,
+             mojo::PendingRemote<mojom::blink::WorkerTimingContainer>
+                 worker_timing_remote,
              bool navigation_preload_sent);
   ~FetchEvent() override;
 
@@ -71,6 +71,8 @@ class MODULES_EXPORT FetchEvent final
 
   void respondWith(ScriptState*, ScriptPromise, ExceptionState&);
   ScriptPromise preloadResponse(ScriptState*);
+  void addPerformanceEntry(PerformanceMark*);
+  void addPerformanceEntry(PerformanceMeasure*);
 
   void OnNavigationPreloadResponse(ScriptState*,
                                    std::unique_ptr<WebURLResponse>,
@@ -78,7 +80,7 @@ class MODULES_EXPORT FetchEvent final
   void OnNavigationPreloadError(ScriptState*,
                                 std::unique_ptr<WebServiceWorkerError>);
   void OnNavigationPreloadComplete(WorkerGlobalScope*,
-                                   TimeTicks completion_time,
+                                   base::TimeTicks completion_time,
                                    int64_t encoded_data_length,
                                    int64_t encoded_body_length,
                                    int64_t decoded_body_length);
@@ -92,10 +94,13 @@ class MODULES_EXPORT FetchEvent final
 
  private:
   Member<FetchRespondWithObserver> observer_;
-  TraceWrapperMember<Request> request_;
+  Member<Request> request_;
   Member<PreloadResponseProperty> preload_response_property_;
   std::unique_ptr<WebURLResponse> preload_response_;
   Member<DataPipeBytesConsumer::CompletionNotifier> body_completion_notifier_;
+  // This is currently always null while https://crbug.com/900700 is being
+  // implemented.
+  mojo::Remote<mojom::blink::WorkerTimingContainer> worker_timing_remote_;
   String client_id_;
   String resulting_client_id_;
   bool is_reload_;

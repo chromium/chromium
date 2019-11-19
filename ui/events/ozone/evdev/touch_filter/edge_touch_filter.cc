@@ -16,7 +16,6 @@
 
 namespace ui {
 
-
 namespace {
 
 // The maximum distance from the border to be considered for filtering
@@ -30,9 +29,9 @@ bool IsNearBorder(const gfx::Point& point, gfx::Size touchscreen_size) {
 
 }  // namespace
 
-EdgeTouchFilter::EdgeTouchFilter(gfx::Size& touchscreen_size)
-    : touchscreen_size_(touchscreen_size) {
-}
+EdgeTouchFilter::EdgeTouchFilter(const gfx::Size& touchscreen_size)
+    : touchscreen_size_(touchscreen_size) {}
+
 EdgeTouchFilter::~EdgeTouchFilter() {}
 
 void EdgeTouchFilter::Filter(

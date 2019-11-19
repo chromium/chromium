@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/location.h"
@@ -15,11 +16,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_checker.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/common/video_decode_accelerator.mojom.h"
-#include "components/arc/common/video_encode_accelerator.mojom.h"
-#include "components/arc/common/video_protected_buffer_allocator.mojom.h"
+#include "components/arc/mojom/video_decode_accelerator.mojom.h"
+#include "components/arc/mojom/video_encode_accelerator.mojom.h"
+#include "components/arc/mojom/video_protected_buffer_allocator.mojom.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_service_registry.h"
@@ -28,9 +29,6 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/service_manager/public/cpp/connector.h"
-#include "services/ws/public/mojom/arc_gpu.mojom.h"
-#include "services/ws/public/mojom/constants.mojom.h"
-#include "ui/base/ui_base_features.h"
 
 namespace arc {
 
@@ -57,13 +55,13 @@ class GpuArcVideoServiceHostFactory
 
 class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
  public:
-  VideoAcceleratorFactoryService() { DCHECK(!features::IsMultiProcessMash()); }
+  VideoAcceleratorFactoryService() = default;
 
   ~VideoAcceleratorFactoryService() override = default;
 
   void CreateDecodeAccelerator(
       mojom::VideoDecodeAcceleratorRequest request) override {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(
             &content::BindInterfaceInGpuProcess<mojom::VideoDecodeAccelerator>,
@@ -72,7 +70,7 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
 
   void CreateEncodeAccelerator(
       mojom::VideoEncodeAcceleratorRequest request) override {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(
             &content::BindInterfaceInGpuProcess<mojom::VideoEncodeAccelerator>,
@@ -81,64 +79,15 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
 
   void CreateProtectedBufferAllocator(
       mojom::VideoProtectedBufferAllocatorRequest request) override {
-    base::PostTaskWithTraits(
-        FROM_HERE, {content::BrowserThread::IO},
-        base::BindOnce(&content::BindInterfaceInGpuProcess<
-                           mojom::VideoProtectedBufferAllocator>,
-                       std::move(request)));
+    base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                   base::BindOnce(&content::BindInterfaceInGpuProcess<
+                                      mojom::VideoProtectedBufferAllocator>,
+                                  std::move(request)));
   }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(VideoAcceleratorFactoryService);
 };
-
-class VideoAcceleratorFactoryServiceViz
-    : public mojom::VideoAcceleratorFactory {
- public:
-  VideoAcceleratorFactoryServiceViz() {
-    DCHECK(features::IsMultiProcessMash());
-    DETACH_FROM_THREAD(thread_checker_);
-    auto* connector =
-        content::ServiceManagerConnection::GetForProcess()->GetConnector();
-    connector->BindInterface(ws::mojom::kServiceName, &arc_gpu_);
-  }
-
-  ~VideoAcceleratorFactoryServiceViz() override {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  }
-
-  void CreateDecodeAccelerator(
-      mojom::VideoDecodeAcceleratorRequest request) override {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    arc_gpu_->CreateVideoDecodeAccelerator(std::move(request));
-  }
-
-  void CreateEncodeAccelerator(
-      mojom::VideoEncodeAcceleratorRequest request) override {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    arc_gpu_->CreateVideoEncodeAccelerator(std::move(request));
-  }
-
-  void CreateProtectedBufferAllocator(
-      mojom::VideoProtectedBufferAllocatorRequest request) override {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    arc_gpu_->CreateVideoProtectedBufferAllocator(std::move(request));
-  }
-
- private:
-  THREAD_CHECKER(thread_checker_);
-
-  ws::mojom::ArcGpuPtr arc_gpu_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoAcceleratorFactoryServiceViz);
-};
-
-std::unique_ptr<mojom::VideoAcceleratorFactory>
-CreateVideoAcceleratorFactory() {
-  if (features::IsMultiProcessMash())
-    return std::make_unique<VideoAcceleratorFactoryServiceViz>();
-  return std::make_unique<VideoAcceleratorFactoryService>();
-}
 
 }  // namespace
 
@@ -151,7 +100,8 @@ GpuArcVideoServiceHost* GpuArcVideoServiceHost::GetForBrowserContext(
 GpuArcVideoServiceHost::GpuArcVideoServiceHost(content::BrowserContext* context,
                                                ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service),
-      video_accelerator_factory_(CreateVideoAcceleratorFactory()) {
+      video_accelerator_factory_(
+          std::make_unique<VideoAcceleratorFactoryService>()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   arc_bridge_service_->video()->SetHost(this);
 }

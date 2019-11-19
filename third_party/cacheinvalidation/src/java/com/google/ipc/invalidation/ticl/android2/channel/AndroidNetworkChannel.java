@@ -48,15 +48,15 @@ public class AndroidNetworkChannel implements TestableNetworkChannel {
     Intent intent = ProtocolIntents.newOutboundMessageIntent(outgoingMessage);
 
     // Select the sender service to use for upstream message.
-    if (AndroidChannelPreferences.getGcmChannelType(context) == GcmChannelType.GCM_UPSTREAM){
-      String upstreamServiceClass = new AndroidTiclManifest(context).getGcmUpstreamServiceClass();
-      if (upstreamServiceClass == null || upstreamServiceClass.isEmpty()) {
-        logger.warning("GcmUpstreamSenderService class not found.");
-        return;
-      }
-      intent.setClassName(context, upstreamServiceClass);
+    if (AndroidChannelPreferences.getGcmChannelType() == GcmChannelType.GCM_UPSTREAM) {
+        String upstreamServiceClass = new AndroidTiclManifest(context).getGcmUpstreamServiceClass();
+        if (upstreamServiceClass == null || upstreamServiceClass.isEmpty()) {
+            logger.warning("GcmUpstreamSenderService class not found.");
+            return;
+        }
+        intent.setClassName(context, upstreamServiceClass);
     } else {
-      intent.setClassName(context, AndroidMessageSenderService.class.getName());
+        intent.setClassName(context, AndroidMessageSenderService.class.getName());
     }
     try {
       context.startService(intent);

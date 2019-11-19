@@ -51,6 +51,7 @@ class AccessibilityEventRecorderAuraLinux : public AccessibilityEventRecorder {
  private:
   bool ShouldUseATSPI();
 
+  std::string AtkObjectToString(AtkObject* obj, bool include_name);
   void AddATKEventListener(const char* event_name);
   void AddATKEventListeners();
   void RemoveATKEventListeners();
@@ -62,7 +63,6 @@ class AccessibilityEventRecorderAuraLinux : public AccessibilityEventRecorder {
   AtspiEventListener* atspi_event_listener_ = nullptr;
   base::ProcessId pid_;
   base::StringPiece application_name_match_pattern_;
-  std::vector<unsigned int> atk_listener_ids_;
   static AccessibilityEventRecorderAuraLinux* instance_;
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorderAuraLinux);
@@ -71,6 +71,12 @@ class AccessibilityEventRecorderAuraLinux : public AccessibilityEventRecorder {
 // static
 AccessibilityEventRecorderAuraLinux*
     AccessibilityEventRecorderAuraLinux::instance_ = nullptr;
+
+// static
+std::vector<unsigned int>& GetATKListenerIds() {
+  static base::NoDestructor<std::vector<unsigned int>> atk_listener_ids;
+  return *atk_listener_ids;
+}
 
 // static
 gboolean AccessibilityEventRecorderAuraLinux::OnATKEventReceived(
@@ -97,12 +103,12 @@ std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
       manager, pid, application_name_match_pattern);
 }
 
-std::vector<AccessibilityEventRecorder::EventRecorderFactory>
+std::vector<AccessibilityEventRecorder::TestPass>
 AccessibilityEventRecorder::GetTestPasses() {
   // Both the Blink pass and native pass use the same recorder
   return {
-      &AccessibilityEventRecorder::Create,
-      &AccessibilityEventRecorder::Create,
+      {"blink", &AccessibilityEventRecorder::Create},
+      {"linux", &AccessibilityEventRecorder::Create},
   };
 }
 
@@ -141,10 +147,13 @@ void AccessibilityEventRecorderAuraLinux::AddATKEventListener(
   if (!id)
     LOG(FATAL) << "atk_add_global_event_listener failed for " << event_name;
 
-  atk_listener_ids_.push_back(id);
+  std::vector<unsigned int>& atk_listener_ids = GetATKListenerIds();
+  atk_listener_ids.push_back(id);
 }
 
 void AccessibilityEventRecorderAuraLinux::AddATKEventListeners() {
+  if (GetATKListenerIds().size() >= 1)
+    return;
   GObject* gobject = G_OBJECT(g_object_new(G_TYPE_OBJECT, nullptr, nullptr));
   g_object_unref(atk_no_op_object_new(gobject));
   g_object_unref(gobject);
@@ -152,14 +161,20 @@ void AccessibilityEventRecorderAuraLinux::AddATKEventListeners() {
   AddATKEventListener("ATK:AtkObject:state-change");
   AddATKEventListener("ATK:AtkObject:focus-event");
   AddATKEventListener("ATK:AtkObject:property-change");
+  AddATKEventListener("ATK:AtkObject:children-changed");
+  AddATKEventListener("ATK:AtkText:text-insert");
+  AddATKEventListener("ATK:AtkText:text-remove");
+  AddATKEventListener("ATK:AtkText:text-selection-changed");
+  AddATKEventListener("ATK:AtkText:text-caret-moved");
   AddATKEventListener("ATK:AtkSelection:selection-changed");
 }
 
 void AccessibilityEventRecorderAuraLinux::RemoveATKEventListeners() {
-  for (const auto& id : atk_listener_ids_)
+  std::vector<unsigned int>& atk_listener_ids = GetATKListenerIds();
+  for (const auto& id : atk_listener_ids)
     atk_remove_global_event_listener(id);
 
-  atk_listener_ids_.clear();
+  atk_listener_ids.clear();
 }
 
 // Pruning states which are not supported on older bots makes it possible to
@@ -180,6 +195,20 @@ bool AccessibilityEventRecorderAuraLinux::IncludeState(
   }
 }
 
+std::string AccessibilityEventRecorderAuraLinux::AtkObjectToString(
+    AtkObject* obj,
+    bool include_name) {
+  std::string role = AtkRoleToString(atk_object_get_role(obj));
+  base::ReplaceChars(role, " ", "_", &role);
+  std::string str =
+      base::StringPrintf("role=ROLE_%s", base::ToUpperASCII(role).c_str());
+  // Getting the name breaks firing of name-change events. Allow disabling of
+  // logging the name in those situations.
+  if (include_name)
+    str += base::StringPrintf(" name='%s'", atk_object_get_name(obj));
+  return str;
+}
+
 void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
     const char* event,
     unsigned int n_params,
@@ -190,31 +219,68 @@ void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
     return;
   }
 
+  bool log_name = true;
+  std::string event_name(event);
   std::string log;
-  if (std::string(event).find("property-change") != std::string::npos) {
+  if (event_name.find("property-change") != std::string::npos) {
     DCHECK_GE(n_params, 2u);
     AtkPropertyValues* property_values =
         static_cast<AtkPropertyValues*>(g_value_get_pointer(&params[1]));
 
-    if (g_strcmp0(property_values->property_name, "accessible-value"))
+    if (g_strcmp0(property_values->property_name, "accessible-value") == 0) {
+      log += "VALUE-CHANGED:";
+      log +=
+          base::NumberToString(g_value_get_double(&property_values->new_value));
+    } else if (g_strcmp0(property_values->property_name, "accessible-name") ==
+               0) {
+      const char* new_name = g_value_get_string(&property_values->new_value);
+      log += "NAME-CHANGED:";
+      log += (new_name) ? new_name : "(null)";
+    } else if (g_strcmp0(property_values->property_name,
+                         "accessible-description") == 0) {
+      const char* new_description =
+          g_value_get_string(&property_values->new_value);
+      log += "DESCRIPTION-CHANGED:";
+      log += (new_description) ? new_description : "(null)";
+    } else {
       return;
+    }
+  } else if (event_name.find("children-changed") != std::string::npos) {
+    log_name = false;
+    log += base::ToUpperASCII(event);
+    // Despite this actually being a signed integer, it's defined as a uint.
+    int index = static_cast<int>(g_value_get_uint(&params[1]));
+    log += base::StringPrintf(" index:%d", index);
+    AtkObject* child = static_cast<AtkObject*>(g_value_get_pointer(&params[2]));
 
-    log += "VALUE-CHANGED:";
-    log +=
-        base::NumberToString(g_value_get_double(&property_values->new_value));
+    // Removed children may become stale references by this point.
+    if (event_name.find("::remove") != std::string::npos)
+      log += " CHILD:(REMOVED)";
+    else if (child)
+      log += " CHILD:(" + AtkObjectToString(child, log_name) + ")";
+    else
+      log += " CHILD:(NULL)";
   } else {
     log += base::ToUpperASCII(event);
-    if (std::string(event).find("state-change") != std::string::npos) {
-      log += ":" + base::ToUpperASCII(g_value_get_string(&params[1]));
-      log += base::StringPrintf(":%s", g_strdup_value_contents(&params[2]));
+    if (event_name.find("state-change") != std::string::npos) {
+      std::string state_type = g_value_get_string(&params[1]);
+      log += ":" + base::ToUpperASCII(state_type);
+
+      gchar* parameter = g_strdup_value_contents(&params[2]);
+      log += base::StringPrintf(":%s", parameter);
+      g_free(parameter);
+
+    } else if (event_name.find("text-insert") != std::string::npos ||
+               event_name.find("text-remove") != std::string::npos) {
+      DCHECK_GE(n_params, 4u);
+      log += base::StringPrintf(
+          " (start=%i length=%i '%s')", g_value_get_int(&params[1]),
+          g_value_get_int(&params[2]), g_value_get_string(&params[3]));
     }
   }
 
   AtkObject* obj = ATK_OBJECT(g_value_get_object(&params[0]));
-  std::string role = atk_role_get_name(atk_object_get_role(obj));
-  base::ReplaceChars(role, " ", "_", &role);
-  log += base::StringPrintf(" role=ROLE_%s", base::ToUpperASCII(role).c_str());
-  log += base::StringPrintf(" name='%s'", atk_object_get_name(obj));
+  log += " " + AtkObjectToString(obj, log_name);
 
   std::string states = "";
   AtkStateSet* state_set = atk_object_ref_state_set(obj);
@@ -228,6 +294,7 @@ void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
   states = base::CollapseWhitespaceASCII(states, false);
   base::ReplaceChars(states, " ", ",", &states);
   log += base::StringPrintf(" %s", states.c_str());
+  g_object_unref(state_set);
 
   OnEvent(log);
 }

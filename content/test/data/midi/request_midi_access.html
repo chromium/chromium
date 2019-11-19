@@ -1,0 +1,14 @@
+<html>
+<script>
+// A smoke test to call requestMIDIAccess From ContentBrowserTest.
+// We cannot check result since it relies on the availability of system level
+// MIDI on the test runner.
+var error_message = "";
+navigator.requestMIDIAccess().then(
+  _ => { document.title = "pass" },
+  e => {
+    error_message = e.message;
+    document.title = "fail";
+  });
+</script>
+</html>

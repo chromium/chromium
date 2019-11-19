@@ -7,3 +7,4 @@ per-file session_restore_android*=yfriedman@chromium.org
 per-file session_restore_android*=felipeg@chromium.org
 
 per-file session_restore*chromeos*=xiyuan@chromium.org
+# COMPONENT: UI>Browser>Sessions

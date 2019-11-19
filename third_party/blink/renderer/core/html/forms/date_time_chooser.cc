@@ -30,7 +30,13 @@
 
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser.h"
 
+#include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom-blink.h"
+
 namespace blink {
+
+DateTimeChooserParameters::DateTimeChooserParameters() = default;
+
+DateTimeChooserParameters::~DateTimeChooserParameters() = default;
 
 DateTimeChooser::~DateTimeChooser() = default;
 

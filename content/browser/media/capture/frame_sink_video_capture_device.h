@@ -22,7 +22,9 @@
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
 
@@ -78,7 +80,8 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
       base::ReadOnlySharedMemoryRegion data,
       media::mojom::VideoFrameInfoPtr info,
       const gfx::Rect& content_rect,
-      viz::mojom::FrameSinkVideoConsumerFrameCallbacksPtr callbacks) final;
+      mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
+          callbacks) final;
   void OnStopped() final;
 
   // These are called to notify when the capture target has changed or was
@@ -99,12 +102,12 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   // implementation calls CreateCapturerViaGlobalManager(), but subclasses
   // and/or tests may provide alternatives.
   virtual void CreateCapturer(
-      viz::mojom::FrameSinkVideoCapturerRequest request);
+      mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver);
 
   // Establishes connection to FrameSinkVideoCapturer using the global
   // viz::HostFrameSinkManager.
   static void CreateCapturerViaGlobalManager(
-      viz::mojom::FrameSinkVideoCapturerRequest request);
+      mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver);
 
  private:
   using BufferId = decltype(media::VideoCaptureDevice::Client::Buffer::id);
@@ -145,12 +148,12 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
 
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> capturer_;
 
-  // A vector that holds the "callbacks" mojo InterfacePtr for each frame while
-  // the frame is being processed by VideoFrameReceiver. The index corresponding
-  // to a particular frame is used as the BufferId passed to VideoFrameReceiver.
+  // A vector that holds the "callbacks" mojo::Remote for each frame while the
+  // frame is being processed by VideoFrameReceiver. The index corresponding to
+  // a particular frame is used as the BufferId passed to VideoFrameReceiver.
   // Therefore, non-null pointers in this vector must never move to a different
   // position.
-  std::vector<viz::mojom::FrameSinkVideoConsumerFrameCallbacksPtr>
+  std::vector<mojo::Remote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>>
       frame_callbacks_;
 
   // Set when OnFatalError() is called. This prevents any future
@@ -165,10 +168,10 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
       cursor_controller_;
 
   // Prevent display sleeping while content capture is in progress.
-  device::mojom::WakeLockPtr wake_lock_;
+  mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
   // Creates WeakPtrs for use on the device thread.
-  base::WeakPtrFactory<FrameSinkVideoCaptureDevice> weak_factory_;
+  base::WeakPtrFactory<FrameSinkVideoCaptureDevice> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FrameSinkVideoCaptureDevice);
 };

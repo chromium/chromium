@@ -2,16 +2,17 @@
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Utilities for Cronet performance tests."""
 
-import android_rndis_forwarder
 import logging
 import os
 import posixpath
 import subprocess
 import tempfile
 from time import sleep
+
+from cronet.tools import android_rndis_forwarder
+
 
 REPOSITORY_ROOT = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..'))
@@ -28,6 +29,9 @@ APP_APK = os.path.join(BUILD_DIR, 'apks', 'CronetPerfTest.apk')
 APP_PACKAGE = 'org.chromium.net'
 APP_ACTIVITY = '.CronetPerfTestActivity'
 APP_ACTION = 'android.intent.action.MAIN'
+HTTP_PORT = None  # Value will be overridden by DEFAULT_BENCHMARK_CONFIG.
+# TODO(pauljensen): Consider whether we can avoid loading this
+# DEFAULT_BENCHMARK_CONFIG dict into globals.
 DEFAULT_BENCHMARK_CONFIG = {
   # Control various metric recording for further investigation.
   'CAPTURE_NETLOG': False,

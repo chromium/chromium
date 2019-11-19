@@ -18,9 +18,10 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/guest_view/browser/guest_view_manager.h"
-#include "components/signin/core/browser/identity_utils.h"
-#include "components/signin/core/browser/signin_pref_names.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 bool CanOfferSignin(Profile* profile,
@@ -46,9 +47,8 @@ bool CanOfferSignin(Profile* profile,
       return false;
 
     // Make sure this username is not prohibited by policy.
-    if (!identity::LegacyIsUsernameAllowedByPatternFromPrefs(
-            g_browser_process->local_state(), email,
-            prefs::kGoogleServicesUsernamePattern)) {
+    if (!signin::IsUsernameAllowedByPatternFromPrefs(
+            g_browser_process->local_state(), email)) {
       if (error_message) {
         error_message->assign(
             l10n_util::GetStringUTF8(IDS_SYNC_LOGIN_NAME_PROHIBITED));
@@ -59,7 +59,7 @@ bool CanOfferSignin(Profile* profile,
     if (can_offer == CAN_OFFER_SIGNIN_FOR_SECONDARY_ACCOUNT)
       return true;
 
-    // If the signin manager already has an authenticated name, then this is a
+    // If the identity manager already has a primary account, then this is a
     // re-auth scenario.  Make sure the email just signed in corresponds to
     // the one sign in manager expects.
     std::string current_email = identity_manager->GetPrimaryAccountInfo().email;
@@ -85,6 +85,9 @@ bool CanOfferSignin(Profile* profile,
                 .GetAllProfilesAttributes();
 
         for (const ProfileAttributesEntry* entry : entries) {
+          if (!entry->IsAuthenticated())
+            continue;
+
           // For backward compatibility, need to check also the username of the
           // profile, since the GAIA ID may not have been set yet in the
           // ProfileAttributesStorage.  It will be set once the profile
@@ -126,5 +129,5 @@ bool IsCrossAccountError(Profile* profile,
   InvestigatedScenario scenario =
       SigninInvestigator(email, gaia_id, &provider).Investigate();
 
-  return scenario == InvestigatedScenario::DIFFERENT_ACCOUNT;
+  return scenario == InvestigatedScenario::kDifferentAccount;
 }

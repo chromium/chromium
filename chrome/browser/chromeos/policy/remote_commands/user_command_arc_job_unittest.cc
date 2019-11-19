@@ -14,13 +14,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_service_manager.h"
-#include "components/arc/connection_holder.h"
+#include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/connection_holder.h"
 #include "components/arc/test/fake_policy_instance.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -42,7 +42,7 @@ std::unique_ptr<policy::RemoteCommandJob> CreateArcJob(
   // Create the job and validate.
   auto job = std::make_unique<policy::UserCommandArcJob>(profile);
 
-  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto));
+  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto, nullptr));
   EXPECT_EQ(kUniqueID, job->unique_id());
   EXPECT_EQ(policy::RemoteCommandJob::NOT_STARTED, job->status());
 
@@ -54,7 +54,7 @@ class UserCommandArcJobTest : public testing::Test {
   UserCommandArcJobTest();
   ~UserCommandArcJobTest() override;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   // ArcServiceManager needs to be created before ArcPolicyBridge (since the
   // Bridge depends on the Manager), and it needs to be destroyed after Profile
@@ -99,7 +99,8 @@ TEST_F(UserCommandArcJobTest, TestPayloadReceiving) {
         run_loop->Quit();
       },
       &run_loop, job.get(), policy_instance_.get(), kPayload));
-  EXPECT_TRUE(job->Run(base::TimeTicks::Now(), check_result_callback));
+  EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
+                       check_result_callback));
   run_loop.Run();
 }
 

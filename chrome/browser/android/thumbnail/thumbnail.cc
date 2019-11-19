@@ -50,9 +50,7 @@ Thumbnail::Thumbnail(TabId tab_id,
       ui_resource_id_(0),
       retrieved_(false),
       ui_resource_provider_(ui_resource_provider),
-      thumbnail_delegate_(thumbnail_delegate),
-      weak_factory_(this) {
-}
+      thumbnail_delegate_(thumbnail_delegate) {}
 
 Thumbnail::~Thumbnail() {
   ClearUIResourceId();

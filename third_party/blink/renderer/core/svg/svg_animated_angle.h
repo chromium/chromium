@@ -44,10 +44,6 @@ class SVGAnimatedAngle final : public ScriptWrappable,
   USING_GARBAGE_COLLECTED_MIXIN(SVGAnimatedAngle);
 
  public:
-  static SVGAnimatedAngle* Create(SVGElement* context_element) {
-    return MakeGarbageCollected<SVGAnimatedAngle>(context_element);
-  }
-
   explicit SVGAnimatedAngle(SVGElement* context_element);
   ~SVGAnimatedAngle() override;
 

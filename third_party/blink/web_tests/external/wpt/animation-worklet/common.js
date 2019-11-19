@@ -3,7 +3,9 @@
 function registerPassthroughAnimator() {
   return runInAnimationWorklet(`
     registerAnimator('passthrough', class {
-      animate(currentTime, effect) { effect.localTime = currentTime; }
+      animate(currentTime, effect) {
+        effect.localTime = currentTime;
+      }
     });
   `);
 }
@@ -16,24 +18,18 @@ function registerConstantLocalTimeAnimator(localTime) {
   `);
 }
 
-// TODO(majidvp): This is used to sidestep a bug where we currently animate
-// with currentTime=NaN when scroll timeline is not active. Remove once we fix
-// http://crbug.com/937456
-function registerPassthroughExceptNaNAnimator() {
-  return runInAnimationWorklet(`
-    registerAnimator('passthrough_except_nan', class {
-      animate(currentTime, effect) {
-        if (Number.isNaN(currentTime)) return;
-        effect.localTime = currentTime;
-      }
-    });
-  `);
-}
-
 function runInAnimationWorklet(code) {
   return CSS.animationWorklet.addModule(
     URL.createObjectURL(new Blob([code], {type: 'text/javascript'}))
   );
+}
+
+function approxEquals(actual, expected){
+  // precision in ms
+  const epsilon = 0.005;
+  const lowerBound = (expected - epsilon) < actual;
+  const upperBound = (expected + epsilon) > actual;
+  return lowerBound && upperBound;
 }
 
 function waitForAsyncAnimationFrames(count) {

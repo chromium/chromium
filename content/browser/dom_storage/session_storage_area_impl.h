@@ -13,8 +13,10 @@
 #include "content/browser/dom_storage/session_storage_metadata.h"
 #include "content/browser/dom_storage/storage_area_impl.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "url/origin.h"
 
 namespace content {
@@ -59,9 +61,10 @@ class CONTENT_EXPORT SessionStorageAreaImpl : public blink::mojom::StorageArea {
   std::unique_ptr<SessionStorageAreaImpl> Clone(
       SessionStorageMetadata::NamespaceEntry namespace_entry);
 
-  void Bind(blink::mojom::StorageAreaAssociatedRequest request);
+  void Bind(
+      mojo::PendingAssociatedReceiver<blink::mojom::StorageArea> receiver);
 
-  bool IsBound() const { return binding_.is_bound(); }
+  bool IsBound() const { return receiver_.is_bound(); }
 
   SessionStorageDataMap* data_map() { return shared_data_map_.get(); }
 
@@ -70,7 +73,8 @@ class CONTENT_EXPORT SessionStorageAreaImpl : public blink::mojom::StorageArea {
 
   // blink::mojom::StorageArea:
   void AddObserver(
-      blink::mojom::StorageAreaObserverAssociatedPtrInfo observer) override;
+      mojo::PendingAssociatedRemote<blink::mojom::StorageAreaObserver> observer)
+      override;
   void Put(const std::vector<uint8_t>& key,
            const std::vector<uint8_t>& value,
            const base::Optional<std::vector<uint8_t>>& client_old_value,
@@ -83,8 +87,8 @@ class CONTENT_EXPORT SessionStorageAreaImpl : public blink::mojom::StorageArea {
   void DeleteAll(const std::string& source,
                  DeleteAllCallback callback) override;
   void Get(const std::vector<uint8_t>& key, GetCallback callback) override;
-  void GetAll(blink::mojom::StorageAreaGetAllCallbackAssociatedPtrInfo
-                  complete_callback,
+  void GetAll(mojo::PendingAssociatedRemote<
+                  blink::mojom::StorageAreaGetAllCallback> complete_callback,
               GetAllCallback callback) override;
 
  private:
@@ -100,8 +104,8 @@ class CONTENT_EXPORT SessionStorageAreaImpl : public blink::mojom::StorageArea {
   scoped_refptr<SessionStorageDataMap> shared_data_map_;
   RegisterNewAreaMap register_new_map_callback_;
 
-  mojo::AssociatedInterfacePtrSet<blink::mojom::StorageAreaObserver> observers_;
-  mojo::AssociatedBinding<blink::mojom::StorageArea> binding_;
+  mojo::AssociatedRemoteSet<blink::mojom::StorageAreaObserver> observers_;
+  mojo::AssociatedReceiver<blink::mojom::StorageArea> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SessionStorageAreaImpl);
 };

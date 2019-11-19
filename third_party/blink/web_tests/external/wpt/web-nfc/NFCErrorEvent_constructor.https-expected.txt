@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL NFCErrorEvent constructor without init dict NFCErrorEvent is not defined
-Harness: the test ran to completion.
-

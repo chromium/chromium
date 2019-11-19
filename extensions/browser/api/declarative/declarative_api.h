@@ -29,7 +29,7 @@ struct Params;
 }  // namespace events
 }  // namespace api
 
-class RulesFunction : public UIThreadExtensionFunction {
+class RulesFunction : public ExtensionFunction {
  public:
   RulesFunction();
 

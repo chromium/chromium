@@ -1,22 +1,22 @@
+include_rules = [
+  "+chrome/services/app_service/public",
+]
+
 specific_include_rules = {
   # https://crbug.com/826386
   "app_window_launcher_controller\.cc": [
     "+ash/shell.h",
   ],
-  # https://crbug.com/887156
-  "arc_app_window_launcher_controller\.cc": [
-    "+ash/shell.h",
-  ],
-  # https://crbug.com/875111
   "chrome_launcher_controller_unittest\.cc": [
-    "+ash/multi_user/multi_user_window_manager.h",
+    # https://crbug.com/875111
+    "+ash/multi_user/multi_user_window_manager_impl.h",
   ],
-  # https://crbug.com/887156
-  "crostini_app_window_shelf_controller\.cc": [
-    "+ash/shell.h",
+  "browser_shortcut_launcher_item_controller\.cc": [
+    "+ash/wm/desks/desks_util.h",
   ],
-  # https://crbug.com/887156
-  "internal_app_window_shelf_controller\.cc": [
-    "+ash/shell.h",
+  "chrome_launcher_controller_browsertest.cc": [
+    "+ash/wm/desks/desk.h",
+    "+ash/wm/desks/desks_controller.h",
+    "+ash/wm/desks/desks_test_util.h",
   ],
 }

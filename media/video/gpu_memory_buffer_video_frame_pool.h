@@ -42,8 +42,7 @@ class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
 
   // Callback used by MaybeCreateHardwareFrame to deliver a new VideoFrame
   // after it has been copied to GpuMemoryBuffers.
-  using FrameReadyCB =
-      base::OnceCallback<void(const scoped_refptr<VideoFrame>&)>;
+  using FrameReadyCB = base::OnceCallback<void(scoped_refptr<VideoFrame>)>;
 
   // Calls |cb| on |media_worker_pool| with a new VideoFrame containing only
   // mailboxes to native resources. |cb| will be destroyed on
@@ -52,9 +51,8 @@ class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
   // |video_frame|.
   // If it's not possible to create a new hardware VideoFrame, |video_frame|
   // itself will passed to |cb|.
-  virtual void MaybeCreateHardwareFrame(
-      const scoped_refptr<VideoFrame>& video_frame,
-      FrameReadyCB frame_ready_cb);
+  virtual void MaybeCreateHardwareFrame(scoped_refptr<VideoFrame> video_frame,
+                                        FrameReadyCB frame_ready_cb);
 
   // Aborts any pending copies. Previously provided |frame_ready_cb| callbacks
   // may still be called if the copy has already started.

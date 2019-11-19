@@ -4,6 +4,7 @@
 
 // https://html.spec.whatwg.org/C/custom-elements.html#customelementregistry
 
+[Exposed=Window]
 interface CustomElementRegistry {
     [CallWith=ScriptState, CEReactions, CustomElementCallbacks, RaisesException, MeasureAs=CustomElementRegistryDefine] void define(DOMString name, CustomElementConstructor constructor, optional ElementDefinitionOptions options);
     any get(DOMString name);
@@ -17,6 +18,6 @@ callback CustomElementConstructor = any ();
 callback CustomElementAdoptedCallback = void (Document oldOwner, Document newOwner);
 callback CustomElementAttributeChangedCallback = void (DOMString localName, DOMString? oldValue, DOMString? newValue, USVString? attrNamespace);
 callback CustomElementFormAssociatedCallback = void (HTMLFormElement? form);
-callback CustomElementDisabledStateChangedCallback = void (boolean disabled);
-enum RestoreValueMode { "restore", "autocomplete" };
-callback CustomElementRestoreValueCallback = void (FormDataEntryValue value, RestoreValueMode mode);
+callback CustomElementFormDisabledCallback = void (boolean disabled);
+enum FormStateRestoreMode { "restore", "autocomplete" };
+callback CustomElementFormStateRestoreCallback = void (ControlValue value, FormStateRestoreMode mode);

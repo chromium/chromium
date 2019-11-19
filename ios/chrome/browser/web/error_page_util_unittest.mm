@@ -55,6 +55,9 @@ TEST_F(ErrorPageUtilTest, NonPostNonOtrError) {
                                 /*is_post=*/false,
                                 /*is_off_the_record=*/false);
 
+  // Make sure gzipped HTML is successfully decompressed.
+  EXPECT_TRUE([html containsString:@"<head>"]);
+
   EXPECT_TRUE([html containsString:ErrorAsString(ERR_CONNECTION_TIMED_OUT)]);
   EXPECT_TRUE([html containsString:kTestUrl]);
   EXPECT_TRUE([html containsString:GetNSString(IDS_ERRORPAGES_BUTTON_RELOAD)]);
@@ -68,6 +71,9 @@ TEST_F(ErrorPageUtilTest, PostNonOtrError) {
                                 CreateTestError(NSURLErrorTimedOut),
                                 /*is_post=*/true,
                                 /*is_off_the_record=*/false);
+
+  // Make sure gzipped HTML is successfully decompressed.
+  EXPECT_TRUE([html containsString:@"<head>"]);
 
   EXPECT_TRUE([html containsString:ErrorAsString(ERR_CONNECTION_TIMED_OUT)]);
   EXPECT_TRUE([html containsString:kTestUrl]);
@@ -83,6 +89,9 @@ TEST_F(ErrorPageUtilTest, NonPostOtrError) {
                                 /*is_post=*/false,
                                 /*is_off_the_record=*/true);
 
+  // Make sure gzipped HTML is successfully decompressed.
+  EXPECT_TRUE([html containsString:@"<head>"]);
+
   EXPECT_TRUE([html containsString:ErrorAsString(ERR_CONNECTION_TIMED_OUT)]);
   EXPECT_TRUE([html containsString:kTestUrl]);
   EXPECT_TRUE([html containsString:GetNSString(IDS_ERRORPAGES_BUTTON_RELOAD)]);
@@ -96,6 +105,9 @@ TEST_F(ErrorPageUtilTest, PostOtrError) {
                                 CreateTestError(NSURLErrorTimedOut),
                                 /*is_post=*/true,
                                 /*is_off_the_record=*/true);
+
+  // Make sure gzipped HTML is successfully decompressed.
+  EXPECT_TRUE([html containsString:@"<head>"]);
 
   EXPECT_TRUE([html containsString:ErrorAsString(ERR_CONNECTION_TIMED_OUT)]);
   EXPECT_TRUE([html containsString:kTestUrl]);
@@ -112,6 +124,9 @@ TEST_F(ErrorPageUtilTest, NoUrlSpec) {
   NSString* html = GetErrorPage(GURL::EmptyGURL(), error,
                                 /*is_post=*/false,
                                 /*is_off_the_record=*/false);
+
+  // Make sure gzipped HTML is successfully decompressed.
+  EXPECT_TRUE([html containsString:@"<head>"]);
 
   EXPECT_TRUE([html containsString:ErrorAsString(ERR_CONNECTION_TIMED_OUT)]);
   EXPECT_TRUE([html containsString:GetNSString(IDS_ERRORPAGES_BUTTON_RELOAD)]);

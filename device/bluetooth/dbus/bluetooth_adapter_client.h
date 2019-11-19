@@ -221,6 +221,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterClient : public BluezDBusClient {
                                    const base::Closure& callback,
                                    ErrorCallback error_callback) = 0;
 
+  virtual void SetLongTermKeys(
+      const dbus::ObjectPath& object_path,
+      const std::vector<std::vector<uint8_t>>& long_term_keys,
+      ErrorCallback error_callback) = 0;
+
   // Creates the instance.
   static BluetoothAdapterClient* Create();
 

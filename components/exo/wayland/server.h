@@ -19,7 +19,12 @@ class Display;
 
 namespace wayland {
 
+class SerialTracker;
+struct WaylandDataDeviceManager;
 class WaylandDisplayOutput;
+struct WaylandSeat;
+struct WaylandTextInputManager;
+struct WaylandXdgShell;
 
 // This class is a thin wrapper around a Wayland display server. All Wayland
 // requests are dispatched into the given Exosphere display.
@@ -55,7 +60,15 @@ class Server : public display::DisplayObserver {
  private:
   Display* const display_;
   std::unique_ptr<wl_display, WlDisplayDeleter> wl_display_;
+  std::unique_ptr<SerialTracker> serial_tracker_;
   base::flat_map<int64_t, std::unique_ptr<WaylandDisplayOutput>> outputs_;
+  std::unique_ptr<WaylandDataDeviceManager> data_device_manager_data_;
+  std::unique_ptr<WaylandSeat> seat_data_;
+
+#if defined(OS_CHROMEOS)
+  std::unique_ptr<WaylandTextInputManager> zwp_text_manager_data_;
+  std::unique_ptr<WaylandXdgShell> xdg_shell_data_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(Server);
 };

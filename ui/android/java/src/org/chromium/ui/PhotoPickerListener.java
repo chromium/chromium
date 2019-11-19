@@ -4,7 +4,9 @@
 
 package org.chromium.ui;
 
-import android.support.annotation.IntDef;
+import android.net.Uri;
+
+import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -38,5 +40,5 @@ public interface PhotoPickerListener {
      *
      * @param photos The photos that were selected.
      */
-    void onPhotoPickerUserAction(@PhotoPickerAction int action, String[] photos);
+    void onPhotoPickerUserAction(@PhotoPickerAction int action, Uri[] photos);
 }

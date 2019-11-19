@@ -16,8 +16,7 @@ const char kEnableBenchmarking[] = "enable-benchmarking";
 
 // Fakes the channel of the browser for purposes of Variations filtering. This
 // is to be used for testing only. Possible values are "stable", "beta", "dev"
-// and "canary". Note that this only applies if the browser's reported channel
-// is UNKNOWN.
+// and "canary". This works for official builds as well.
 const char kFakeVariationsChannel[] = "fake-variations-channel";
 
 // This option can be used to force parameters of field trials when testing

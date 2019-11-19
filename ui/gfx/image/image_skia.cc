@@ -339,22 +339,22 @@ ImageSkia ImageSkia::CreateFrom1xBitmap(const SkBitmap& bitmap) {
   return ImageSkia(ImageSkiaRep(bitmap, 0.0f));
 }
 
-std::unique_ptr<ImageSkia> ImageSkia::DeepCopy() const {
-  ImageSkia* copy = new ImageSkia;
+ImageSkia ImageSkia::DeepCopy() const {
+  ImageSkia copy;
   if (isNull())
-    return base::WrapUnique(copy);
+    return copy;
 
   CHECK(CanRead());
 
   std::vector<gfx::ImageSkiaRep>& reps = storage_->image_reps();
   for (auto iter = reps.begin(); iter != reps.end(); ++iter) {
-    copy->AddRepresentation(*iter);
+    copy.AddRepresentation(*iter);
   }
   // The copy has its own storage. Detach the copy from the current
   // sequence so that other sequences can use this.
-  if (!copy->isNull())
-    copy->storage_->DetachFromSequence();
-  return base::WrapUnique(copy);
+  if (!copy.isNull())
+    copy.storage_->DetachFromSequence();
+  return copy;
 }
 
 bool ImageSkia::BackedBySameObjectAs(const gfx::ImageSkia& other) const {
@@ -497,7 +497,7 @@ void ImageSkia::RemoveUnsupportedRepresentationsForScale(float scale) {
 
 void ImageSkia::Init(const ImageSkiaRep& image_rep) {
   if (image_rep.GetBitmap().drawsNothing()) {
-    storage_ = NULL;
+    storage_.reset();
     return;
   }
   storage_ = new internal::ImageSkiaStorage(

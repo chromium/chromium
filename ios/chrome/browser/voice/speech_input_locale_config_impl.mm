@@ -85,7 +85,7 @@ SpeechInputLocaleConfigImpl::GetTextToSpeechLanguages() const {
 bool SpeechInputLocaleConfigImpl::IsTextToSpeechEnabledForCode(
     const std::string& locale_code) const {
   std::string language = GetLanguageComponentForLocaleCode(locale_code);
-  return base::ContainsValue(text_to_speech_languages_, language);
+  return base::Contains(text_to_speech_languages_, language);
 }
 
 SpeechInputLocale SpeechInputLocaleConfigImpl::GetMatchingLocale(

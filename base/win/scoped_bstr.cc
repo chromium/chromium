@@ -16,8 +16,8 @@ namespace win {
 
 namespace {
 
-BSTR AllocBstrOrDie(StringPiece16 non_bstr) {
-  BSTR result = ::SysAllocStringLen(as_wcstr(non_bstr),
+BSTR AllocBstrOrDie(WStringPiece non_bstr) {
+  BSTR result = ::SysAllocStringLen(non_bstr.data(),
                                     checked_cast<UINT>(non_bstr.length()));
   if (!result) {
     base::TerminateBecauseOutOfMemory((non_bstr.length() + 1) *
@@ -35,7 +35,7 @@ BSTR AllocBstrBytesOrDie(size_t bytes) {
 
 }  // namespace
 
-ScopedBstr::ScopedBstr(StringPiece16 non_bstr)
+ScopedBstr::ScopedBstr(WStringPiece non_bstr)
     : bstr_(AllocBstrOrDie(non_bstr)) {}
 
 ScopedBstr::~ScopedBstr() {
@@ -68,7 +68,7 @@ BSTR* ScopedBstr::Receive() {
   return &bstr_;
 }
 
-BSTR ScopedBstr::Allocate(StringPiece16 str) {
+BSTR ScopedBstr::Allocate(WStringPiece str) {
   Reset(AllocBstrOrDie(str));
   return bstr_;
 }

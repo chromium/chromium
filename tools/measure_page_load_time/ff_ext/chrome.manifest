@@ -1,2 +1,0 @@
-content	measurepageloadtimeextension	content/
-overlay	chrome://browser/content/browser.xul	chrome://measurepageloadtimeextension/content/firefoxOverlay.xul

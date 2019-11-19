@@ -1,0 +1,21 @@
+rootWebArea
+++genericContainer
+++++canvas
+++++++staticText name='Static fallback'
+++++canvas
+++++++staticText name='<newline>    '
+++++++paragraph name='Aria hidden paragraph in fallback content'
+++++++++staticText name='Line breaking content in a fallback'
+++++++staticText name='<newline>    '
+++++++paragraph name='Visibility hidden paragraph in fallback content'
+++++++++staticText name='This is another paragraph in fallback'
+++++++staticText name='<newline>    '
+++++++heading invisible name='Aria hidden paragraph in fallback content' hierarchicalLevel=1
+++++++++staticText invisible name='Aria hidden paragraph in fallback content'
+++++++staticText name='<newline>    '
+++++++heading invisible hierarchicalLevel=1
+++++++++staticText name='Display none text in fallback content '
+++++++staticText name='<newline>    '
+++++++heading invisible hierarchicalLevel=2
+++++++++staticText name='Visibility hidden paragraph in fallback content'
+++++++staticText name='<newline>  '

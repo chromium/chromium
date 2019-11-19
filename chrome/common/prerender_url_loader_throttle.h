@@ -13,13 +13,13 @@
 #include "chrome/common/prerender.mojom.h"
 #include "chrome/common/prerender_types.h"
 #include "content/public/common/resource_type.h"
-#include "content/public/common/url_loader_throttle.h"
 #include "net/base/request_priority.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace prerender {
 
 class PrerenderURLLoaderThrottle
-    : public content::URLLoaderThrottle,
+    : public blink::URLLoaderThrottle,
       public base::SupportsWeakPtr<PrerenderURLLoaderThrottle> {
  public:
   // If the throttle needs to cancel the prerender, it will run
@@ -42,17 +42,17 @@ class PrerenderURLLoaderThrottle
   }
 
  private:
-  // content::URLLoaderThrottle implementation.
+  // blink::URLLoaderThrottle implementation.
   void DetachFromCurrentSequence() override;
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
   void WillRedirectRequest(net::RedirectInfo* redirect_info,
-                           const network::ResourceResponseHead& response_head,
+                           const network::mojom::URLResponseHead& response_head,
                            bool* defer,
                            std::vector<std::string>* to_be_removed_headers,
                            net::HttpRequestHeaders* modified_headers) override;
   void WillProcessResponse(const GURL& response_url,
-                           network::ResourceResponseHead* response_head,
+                           network::mojom::URLResponseHead* response_head,
                            bool* defer) override;
 
   void OnTimedOut();

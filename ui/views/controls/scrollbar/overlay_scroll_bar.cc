@@ -13,6 +13,7 @@
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/layout/fill_layout.h"
 
 namespace views {
 namespace {
@@ -36,7 +37,7 @@ OverlayScrollBar::Thumb::Thumb(OverlayScrollBar* scroll_bar)
   // that might reference it yet.
 }
 
-OverlayScrollBar::Thumb::~Thumb() {}
+OverlayScrollBar::Thumb::~Thumb() = default;
 
 void OverlayScrollBar::Thumb::Init() {
   EnableCanvasFlippingForRTLUI(true);
@@ -124,46 +125,26 @@ void OverlayScrollBar::Thumb::OnStateChanged() {
   }
 }
 
-OverlayScrollBar::OverlayScrollBar(bool horizontal)
-    : BaseScrollBar(horizontal) {
-  auto* thumb = new Thumb(this);
-  SetThumb(thumb);
-  thumb->Init();
+OverlayScrollBar::OverlayScrollBar(bool horizontal) : ScrollBar(horizontal) {
   set_notify_enter_exit_on_child(true);
   SetPaintToLayer();
   layer()->SetMasksToBounds(true);
   layer()->SetFillsBoundsOpaquely(false);
+
+  // Allow the thumb to take up the whole size of the scrollbar.  Layout need
+  // only set the thumb cross-axis coordinate; ScrollBar::Update() will set the
+  // thumb size/offset.
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  auto* thumb = new Thumb(this);
+  SetThumb(thumb);
+  thumb->Init();
 }
 
-OverlayScrollBar::~OverlayScrollBar() {}
+OverlayScrollBar::~OverlayScrollBar() = default;
 
-gfx::Rect OverlayScrollBar::GetTrackBounds() const {
-  gfx::Rect local = GetLocalBounds();
-  // The track has to be wide enough for the thumb.
-  local.Inset(gfx::Insets(IsHorizontal() ? -kThumbHoverOffset : 0,
-                          IsHorizontal() ? 0 : -kThumbHoverOffset, 0, 0));
-  return local;
-}
-
-int OverlayScrollBar::GetThickness() const {
-  return kThumbThickness;
-}
-
-bool OverlayScrollBar::OverlapsContent() const {
-  return true;
-}
-
-void OverlayScrollBar::Layout() {
-  gfx::Rect thumb_bounds = GetTrackBounds();
-  BaseScrollBarThumb* thumb = GetThumb();
-  if (IsHorizontal()) {
-    thumb_bounds.set_x(thumb->x());
-    thumb_bounds.set_width(thumb->width());
-  } else {
-    thumb_bounds.set_y(thumb->y());
-    thumb_bounds.set_height(thumb->height());
-  }
-  thumb->SetBoundsRect(thumb_bounds);
+gfx::Insets OverlayScrollBar::GetInsets() const {
+  return IsHorizontal() ? gfx::Insets(-kThumbHoverOffset, 0, 0, 0)
+                        : gfx::Insets(0, -kThumbHoverOffset, 0, 0);
 }
 
 void OverlayScrollBar::OnMouseEntered(const ui::MouseEvent& event) {
@@ -172,6 +153,18 @@ void OverlayScrollBar::OnMouseEntered(const ui::MouseEvent& event) {
 
 void OverlayScrollBar::OnMouseExited(const ui::MouseEvent& event) {
   StartHideCountdown();
+}
+
+bool OverlayScrollBar::OverlapsContent() const {
+  return true;
+}
+
+gfx::Rect OverlayScrollBar::GetTrackBounds() const {
+  return GetContentsBounds();
+}
+
+int OverlayScrollBar::GetThickness() const {
+  return kThumbThickness;
 }
 
 void OverlayScrollBar::Show() {
@@ -190,7 +183,11 @@ void OverlayScrollBar::StartHideCountdown() {
     return;
   hide_timer_.Start(
       FROM_HERE, ui::kOverlayScrollbarFadeDelay,
-      base::Bind(&OverlayScrollBar::Hide, base::Unretained(this)));
+      base::BindOnce(&OverlayScrollBar::Hide, base::Unretained(this)));
 }
+
+BEGIN_METADATA(OverlayScrollBar)
+METADATA_PARENT_CLASS(ScrollBar)
+END_METADATA()
 
 }  // namespace views

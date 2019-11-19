@@ -9,12 +9,6 @@
 namespace blink {
 namespace test {
 
-// static
-MediaStubLocalFrameClient* MediaStubLocalFrameClient::Create(
-    std::unique_ptr<WebMediaPlayer> player) {
-  return MakeGarbageCollected<MediaStubLocalFrameClient>(std::move(player));
-}
-
 MediaStubLocalFrameClient::MediaStubLocalFrameClient(
     std::unique_ptr<WebMediaPlayer> player)
     : player_(std::move(player)) {}
@@ -22,8 +16,7 @@ MediaStubLocalFrameClient::MediaStubLocalFrameClient(
 std::unique_ptr<WebMediaPlayer> MediaStubLocalFrameClient::CreateWebMediaPlayer(
     HTMLMediaElement&,
     const WebMediaPlayerSource&,
-    WebMediaPlayerClient*,
-    WebLayerTreeView*) {
+    WebMediaPlayerClient*) {
   DCHECK(player_) << " Empty injected player - already used?";
   return std::move(player_);
 }

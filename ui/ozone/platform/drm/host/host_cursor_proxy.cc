@@ -4,18 +4,19 @@
 
 #include "ui/ozone/platform/drm/host/host_cursor_proxy.h"
 
+#include <utility>
+
 #include "services/service_manager/public/cpp/connector.h"
-#include "services/ws/public/mojom/constants.mojom.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 
 namespace ui {
 
 // We assume that this is invoked only on the Mus/UI thread.
 HostCursorProxy::HostCursorProxy(
-    ui::ozone::mojom::DeviceCursorPtr main_cursor_ptr,
-    ui::ozone::mojom::DeviceCursorPtr evdev_cursor_ptr)
-    : main_cursor_ptr_(std::move(main_cursor_ptr)),
-      evdev_cursor_ptr_(std::move(evdev_cursor_ptr)),
+    mojo::PendingAssociatedRemote<ui::ozone::mojom::DeviceCursor> main_cursor,
+    mojo::PendingAssociatedRemote<ui::ozone::mojom::DeviceCursor> evdev_cursor)
+    : main_cursor_(std::move(main_cursor)),
+      evdev_cursor_(std::move(evdev_cursor)),
       ui_thread_ref_(base::PlatformThread::CurrentRef()) {}
 
 HostCursorProxy::~HostCursorProxy() {}
@@ -26,9 +27,9 @@ void HostCursorProxy::CursorSet(gfx::AcceleratedWidget widget,
                                 int frame_delay_ms) {
   InitializeOnEvdevIfNecessary();
   if (ui_thread_ref_ == base::PlatformThread::CurrentRef()) {
-    main_cursor_ptr_->SetCursor(widget, bitmaps, location, frame_delay_ms);
+    main_cursor_->SetCursor(widget, bitmaps, location, frame_delay_ms);
   } else {
-    evdev_cursor_ptr_->SetCursor(widget, bitmaps, location, frame_delay_ms);
+    evdev_cursor_->SetCursor(widget, bitmaps, location, frame_delay_ms);
   }
 }
 
@@ -36,9 +37,9 @@ void HostCursorProxy::Move(gfx::AcceleratedWidget widget,
                            const gfx::Point& location) {
   InitializeOnEvdevIfNecessary();
   if (ui_thread_ref_ == base::PlatformThread::CurrentRef()) {
-    main_cursor_ptr_->MoveCursor(widget, location);
+    main_cursor_->MoveCursor(widget, location);
   } else {
-    evdev_cursor_ptr_->MoveCursor(widget, location);
+    evdev_cursor_->MoveCursor(widget, location);
   }
 }
 
@@ -55,7 +56,7 @@ void HostCursorProxy::InitializeOnEvdevIfNecessary() {
   if (ui_thread_ref_ != base::PlatformThread::CurrentRef()) {
     // Rebind the mojo pipe on the current thread. We expect this to be the
     // thread running EVDEV.
-    evdev_cursor_ptr_.Bind(evdev_cursor_ptr_.PassInterface());
+    evdev_cursor_.Bind(evdev_cursor_.Unbind());
   }
 }
 

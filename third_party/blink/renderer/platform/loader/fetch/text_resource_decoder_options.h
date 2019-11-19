@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
 namespace blink {
@@ -38,7 +38,11 @@ class PLATFORM_EXPORT TextResourceDecoderOptions final {
 
   // Corresponds to utf-8 decode in Encoding spec:
   // https://encoding.spec.whatwg.org/#utf-8-decode.
-  static TextResourceDecoderOptions CreateAlwaysUseUTF8ForText();
+  static TextResourceDecoderOptions CreateUTF8Decode();
+
+  // Corresponds to utf-8 decode without BOM in Encoding spec:
+  // https://encoding.spec.whatwg.org/#utf-8-decode-without-bom.
+  static TextResourceDecoderOptions CreateUTF8DecodeWithoutBOM();
 
   static TextResourceDecoderOptions CreateWithAutoDetection(
       ContentType,
@@ -79,6 +83,7 @@ class PLATFORM_EXPORT TextResourceDecoderOptions final {
   }
   ContentType GetContentType() const { return content_type_; }
   const WTF::TextEncoding& DefaultEncoding() const { return default_encoding_; }
+  bool GetNoBOMDecoding() const { return no_bom_decoding_; }
   bool GetUseLenientXMLDecoding() const { return use_lenient_xml_decoding_; }
 
   const char* HintEncoding() const { return hint_encoding_; }
@@ -95,6 +100,7 @@ class PLATFORM_EXPORT TextResourceDecoderOptions final {
   EncodingDetectionOption encoding_detection_option_;
   ContentType content_type_;
   WTF::TextEncoding default_encoding_;
+  bool no_bom_decoding_;
   bool use_lenient_xml_decoding_;  // Don't stop on XML decoding errors.
 
   // Hints for DetectTextEncoding().

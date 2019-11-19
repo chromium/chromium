@@ -1,0 +1,53 @@
+<!--
+  Test whether or not an iframe can load file subresources when:
+   - The main frame can load files.
+   - The iframe is sandboxed.
+   - The navigation is to about:srcdoc.
+
+  See https://crbug.com/977186
+-->
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<iframe sandbox="allow-scripts" name="theiframe" srcdoc="
+  <script src='./resources/script.js'
+          onload='parent.postMessage(&quot;loaded&quot;,&quot;*&quot;)'
+          onerror='parent.postMessage(&quot;error&quot;,&quot;*&quot;)'
+  ></script>
+"></iframe>
+
+<a target="theiframe" href="../resources/back.html"></a>
+
+<script>
+  let button = document.querySelector("a");
+  let iframe = document.querySelector("iframe");
+
+  let message = function() {
+    return new Promise(resolve =>
+      window.addEventListener('message', event => resolve(event.data))
+    );
+  };
+
+  async_test(async function(t) {
+    // 1. Initial navigation to about:srcdoc.
+    assert_equals("error", await message());
+
+    // 2. Repeating the same navigation, by modifying the srcdoc attribute.
+    iframe.srcdoc = iframe.srcdoc;
+    assert_equals("error", await message());
+
+    // 3. History navigation to about:srcdoc.
+    //
+    //    button.click() navigates to back.html which will execute
+    //    history.back() and navigate back to the about:srcdoc page.
+    button.click();
+    assert_equals("error", await message());
+
+    // 4. Same as (2). This used to be useful, because (3) had side effects on
+    //    (4).
+    iframe.srcdoc = iframe.srcdoc;
+    assert_equals("error", await message());
+
+    t.done();
+  });
+</script>

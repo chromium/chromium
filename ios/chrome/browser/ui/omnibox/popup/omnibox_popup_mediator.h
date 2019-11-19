@@ -8,12 +8,14 @@
 #import <UIKit/UIKit.h>
 #include "components/omnibox/browser/autocomplete_result.h"
 
-#import "ios/chrome/browser/ui/omnibox/autocomplete_result_consumer.h"
-#import "ios/chrome/browser/ui/omnibox/image_retriever.h"
+#import "ios/chrome/browser/ui/omnibox/popup/autocomplete_result_consumer.h"
+#import "ios/chrome/browser/ui/omnibox/popup/favicon_retriever.h"
+#import "ios/chrome/browser/ui/omnibox/popup/image_retriever.h"
 #include "ui/base/window_open_disposition.h"
 
 @protocol BrowserCommands;
 @class OmniboxPopupPresenter;
+class FaviconLoader;
 class WebStateList;
 
 namespace image_fetcher {
@@ -32,14 +34,11 @@ class OmniboxPopupMediatorDelegate {
   virtual void OnMatchHighlighted(size_t row) = 0;
 };
 
-@interface OmniboxPopupMediator
-    : NSObject<AutocompleteResultConsumerDelegate, ImageRetriever>
+@interface OmniboxPopupMediator : NSObject <AutocompleteResultConsumerDelegate,
+                                            ImageRetriever,
+                                            FaviconRetriever>
 
-// Designated initializer. Takes ownership of |imageFetcher|.
-- (instancetype)initWithFetcher:
-                    (std::unique_ptr<image_fetcher::IOSImageDataFetcherWrapper>)
-                        imageFetcher
-                       delegate:(OmniboxPopupMediatorDelegate*)delegate;
+@property(nonatomic, readonly, assign) FaviconLoader* faviconLoader;
 
 // Whether the mediator has results to show.
 @property(nonatomic, assign) BOOL hasResults;
@@ -49,6 +48,10 @@ class OmniboxPopupMediatorDelegate {
 
 // Sets the text alignment of the popup content.
 - (void)setTextAlignment:(NSTextAlignment)alignment;
+
+// Sets the semantic content attribute of the popup content.
+- (void)setSemanticContentAttribute:
+    (UISemanticContentAttribute)semanticContentAttribute;
 
 // Updates the popup with the |results|.
 - (void)updateWithResults:(const AutocompleteResult&)results;
@@ -63,7 +66,25 @@ class OmniboxPopupMediatorDelegate {
 @property(nonatomic, strong) OmniboxPopupPresenter* presenter;
 // The web state list this mediator is handling.
 @property(nonatomic, assign) WebStateList* webStateList;
+// Whether the default search engine is Google impacts which icon is used in
+// some cases
+@property(nonatomic, assign) BOOL defaultSearchEngineIsGoogle;
 
+// Designated initializer. Takes ownership of |imageFetcher|.
+- (instancetype)initWithFetcher:
+                    (std::unique_ptr<image_fetcher::IOSImageDataFetcherWrapper>)
+                        imageFetcher
+                  faviconLoader:(FaviconLoader*)faviconLoader
+                       delegate:(OmniboxPopupMediatorDelegate*)delegate;
+
+- (void)updateMatches:(const AutocompleteResult&)result
+        withAnimation:(BOOL)animated;
+
+// Sets the text alignment of the popup content.
+- (void)setTextAlignment:(NSTextAlignment)alignment;
+
+// Updates the popup with the |results|.
+- (void)updateWithResults:(const AutocompleteResult&)results;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_POPUP_MEDIATOR_H_

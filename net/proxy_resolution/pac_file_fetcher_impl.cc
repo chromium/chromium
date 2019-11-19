@@ -105,13 +105,7 @@ void ConvertResponseToUTF16(const std::string& charset,
 
 std::unique_ptr<PacFileFetcherImpl> PacFileFetcherImpl::Create(
     URLRequestContext* url_request_context) {
-  return base::WrapUnique(new PacFileFetcherImpl(url_request_context, false));
-}
-
-std::unique_ptr<PacFileFetcherImpl>
-PacFileFetcherImpl::CreateWithFileUrlSupport(
-    URLRequestContext* url_request_context) {
-  return base::WrapUnique(new PacFileFetcherImpl(url_request_context, true));
+  return base::WrapUnique(new PacFileFetcherImpl(url_request_context));
 }
 
 PacFileFetcherImpl::~PacFileFetcherImpl() {
@@ -179,7 +173,6 @@ int PacFileFetcherImpl::Fetch(
   // requests, PAC requests are aren't blocked on them.
   cur_request_ = url_request_context_->CreateRequest(url, MAXIMUM_PRIORITY,
                                                      this, traffic_annotation);
-  cur_request_->set_is_pac_request(true);
 
   // Make sure that the PAC script is downloaded using a direct connection,
   // to avoid circular dependencies (fetching is a part of proxy resolution).
@@ -256,7 +249,7 @@ void PacFileFetcherImpl::OnReceivedRedirect(URLRequest* request,
 }
 
 void PacFileFetcherImpl::OnAuthRequired(URLRequest* request,
-                                        AuthChallengeInfo* auth_info) {
+                                        const AuthChallengeInfo& auth_info) {
   DCHECK_EQ(request, cur_request_.get());
   // TODO(eroman): http://crbug.com/77366
   LOG(WARNING) << "Auth required to fetch PAC script, aborting.";
@@ -265,17 +258,13 @@ void PacFileFetcherImpl::OnAuthRequired(URLRequest* request,
 }
 
 void PacFileFetcherImpl::OnSSLCertificateError(URLRequest* request,
+                                               int net_error,
                                                const SSLInfo& ssl_info,
                                                bool fatal) {
   DCHECK_EQ(request, cur_request_.get());
-  // Revocation check failures are not fatal.
-  if (IsCertStatusMinorError(ssl_info.cert_status)) {
-    request->ContinueDespiteLastError();
-    return;
-  }
   LOG(WARNING) << "SSL certificate error when fetching PAC script, aborting.";
   // Certificate errors are in same space as net errors.
-  result_code_ = MapCertStatusToNetError(ssl_info.cert_status);
+  result_code_ = net_error;
   request->Cancel();
 }
 
@@ -295,7 +284,7 @@ void PacFileFetcherImpl::OnResponseStarted(URLRequest* request, int net_error) {
     if (request->GetResponseCode() != 200) {
       VLOG(1) << "Fetched PAC script had (bad) status line: "
               << request->response_headers()->GetStatusLine();
-      result_code_ = ERR_PAC_STATUS_NOT_OK;
+      result_code_ = ERR_HTTP_RESPONSE_CODE_FAILURE;
       request->Cancel();
       return;
     }
@@ -324,18 +313,15 @@ void PacFileFetcherImpl::OnReadCompleted(URLRequest* request, int num_bytes) {
   }
 }
 
-PacFileFetcherImpl::PacFileFetcherImpl(URLRequestContext* url_request_context,
-                                       bool allow_file_url)
+PacFileFetcherImpl::PacFileFetcherImpl(URLRequestContext* url_request_context)
     : url_request_context_(url_request_context),
       buf_(base::MakeRefCounted<IOBuffer>(kBufSize)),
       next_id_(0),
       cur_request_id_(0),
       result_code_(OK),
-      result_text_(NULL),
+      result_text_(nullptr),
       max_response_bytes_(kDefaultMaxResponseBytes),
-      max_duration_(kDefaultMaxDuration),
-      allow_file_url_(allow_file_url),
-      weak_factory_(this) {
+      max_duration_(kDefaultMaxDuration) {
   DCHECK(url_request_context);
 }
 
@@ -343,12 +329,6 @@ bool PacFileFetcherImpl::IsUrlSchemeAllowed(const GURL& url) const {
   // Always allow http://, https://, data:, and ftp://.
   if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIs("ftp") || url.SchemeIs("data"))
     return true;
-
-  // Only permit file:// if |allow_file_url_| was set. file:// should not be
-  // allowed for URLs that were auto-detected, or as the result of a server-side
-  // redirect.
-  if (url.SchemeIsFile())
-    return allow_file_url_;
 
   // Disallow any other URL scheme.
   return false;
@@ -425,7 +405,7 @@ void PacFileFetcherImpl::ResetCurRequestState() {
   cur_request_id_ = 0;
   callback_.Reset();
   result_code_ = OK;
-  result_text_ = NULL;
+  result_text_ = nullptr;
   fetch_start_time_ = base::TimeTicks();
   fetch_time_to_first_byte_ = base::TimeTicks();
 }

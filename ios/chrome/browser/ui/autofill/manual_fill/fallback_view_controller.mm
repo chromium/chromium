@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -36,6 +37,12 @@ constexpr CGFloat PopoverLoadingHeight = 185.5;
 // If the loading indicator was shown, it will be on screen for at least this
 // amount of seconds.
 constexpr CGFloat kMinimumLoadingTime = 0.5;
+
+// Height of the section header.
+constexpr CGFloat kSectionHeaderHeight = 6;
+
+// Height of the section footer.
+constexpr CGFloat kSectionFooterHeight = 8;
 
 }  // namespace
 
@@ -77,19 +84,19 @@ constexpr CGFloat kMinimumLoadingTime = 0.5;
 - (void)viewDidLoad {
   // Super's |viewDidLoad| uses |styler.tableViewBackgroundColor| so it needs to
   // be set before.
-  self.styler.tableViewBackgroundColor = [UIColor whiteColor];
+  self.styler.tableViewBackgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   [super viewDidLoad];
 
   self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-  self.tableView.sectionHeaderHeight = 0;
-  self.tableView.sectionFooterHeight = 20.0;
+  self.tableView.sectionHeaderHeight = kSectionHeaderHeight;
+  self.tableView.sectionFooterHeight = kSectionFooterHeight;
   self.tableView.estimatedRowHeight = 1;
   self.tableView.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
   self.tableView.allowsSelection = NO;
   self.definesPresentationContext = YES;
   if (!self.tableViewModel) {
-    if (IsIPadIdiom()) {
+    if (self.popoverPresentationController) {
       self.preferredContentSize = CGSizeMake(
           PopoverPreferredWidth, AlignValueToPixel(PopoverLoadingHeight));
     }
@@ -138,6 +145,15 @@ constexpr CGFloat kMinimumLoadingTime = 0.5;
   }
   self.queuedActionItems = actions;
   [self presentQueuedActionItems];
+}
+
+#pragma mark - Getters
+
+- (BOOL)contentInsetsAlwaysEqualToSafeArea {
+  if (@available(iOS 13, *)) {
+    return NO;
+  }
+  return _contentInsetsAlwaysEqualToSafeArea;
 }
 
 #pragma mark - Private
@@ -233,7 +249,7 @@ constexpr CGFloat kMinimumLoadingTime = 0.5;
     }
   }
   [self.tableView reloadData];
-  if (IsIPadIdiom()) {
+  if (self.popoverPresentationController) {
     // Update the preffered content size on iPad so the popover shows the right
     // size.
     [self.tableView layoutIfNeeded];

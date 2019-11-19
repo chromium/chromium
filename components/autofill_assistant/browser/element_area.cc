@@ -12,69 +12,97 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
-#include "components/autofill_assistant/browser/web_controller.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
 
-namespace {
-// Waiting period between two checks.
-static constexpr base::TimeDelta kCheckDelay =
-    base::TimeDelta::FromMilliseconds(100);
-}  // namespace
-
 ElementArea::ElementArea(ScriptExecutorDelegate* delegate)
-    : delegate_(delegate), scheduled_update_(false), weak_ptr_factory_(this) {
+    : delegate_(delegate) {
   DCHECK(delegate_);
 }
 
 ElementArea::~ElementArea() = default;
 
 void ElementArea::Clear() {
-  rectangles_.clear();
-  ReportUpdate();
+  SetFromProto(ElementAreaProto());
 }
 
 void ElementArea::SetFromProto(const ElementAreaProto& proto) {
   rectangles_.clear();
-  for (const auto& rectangle_proto : proto.rectangles()) {
-    rectangles_.emplace_back();
-    Rectangle& rectangle = rectangles_.back();
-    rectangle.full_width = rectangle_proto.full_width();
-    DVLOG(3) << "Touchable Rectangle"
-             << (rectangle.full_width ? " (full_width)" : "") << ":";
-    for (const auto& element_proto : rectangle_proto.elements()) {
-      rectangle.positions.emplace_back();
-      ElementPosition& position = rectangle.positions.back();
-      position.selector = Selector(element_proto);
-      DVLOG(3) << "  " << position.selector;
-    }
-  }
-  ReportUpdate();
+  AddRectangles(proto.touchable(), /* restricted= */ false);
+  AddRectangles(proto.restricted(), /* restricted= */ true);
 
-  if (rectangles_.empty())
+  if (rectangles_.empty()) {
+    timer_.Stop();
+    ReportUpdate();
     return;
+  }
 
-  if (!scheduled_update_) {
-    // Check once and schedule regular updates.
-    scheduled_update_ = true;
-    KeepUpdatingElementPositions();
-  } else {
-    // If regular updates are already scheduled, just force a check of position
-    // right away and keep running the scheduled updates.
-    UpdatePositions();
+  Update();
+  if (!timer_.IsRunning()) {
+    timer_.Start(
+        FROM_HERE, delegate_->GetSettings().element_position_update_interval,
+        base::BindRepeating(
+            &ElementArea::Update,
+            // This ElementArea instance owns |update_element_positions_|
+            base::Unretained(this)));
   }
 }
 
-void ElementArea::UpdatePositions() {
+void ElementArea::AddRectangles(
+    const ::google::protobuf::RepeatedPtrField<ElementAreaProto::Rectangle>&
+        rectangles_proto,
+    bool restricted) {
+  for (const auto& rectangle_proto : rectangles_proto) {
+    rectangles_.emplace_back();
+    Rectangle& rectangle = rectangles_.back();
+    rectangle.full_width = rectangle_proto.full_width();
+    rectangle.restricted = restricted;
+    DVLOG(3) << "Rectangle (full_width="
+             << (rectangle.full_width ? "true" : "false")
+             << ", restricted=" << (restricted ? "true" : "false") << "):";
+    for (const auto& element_proto : rectangle_proto.elements()) {
+      rectangle.positions.emplace_back();
+      ElementPosition& position = rectangle.positions.back();
+      position.selector = Selector(element_proto).MustBeVisible();
+      DVLOG(3) << "  " << position.selector;
+    }
+  }
+}
+
+void ElementArea::Update() {
   if (rectangles_.empty())
     return;
 
+  // If anything is still pending, skip the update.
+  if (visual_viewport_pending_update_)
+    return;
+
+  for (auto& rectangle : rectangles_) {
+    if (rectangle.IsPending())
+      return;
+  }
+
+  // Mark everything as pending at the same time, to avoid reporting partial
+  // results.
+  visual_viewport_pending_update_ = true;
   for (auto& rectangle : rectangles_) {
     for (auto& position : rectangle.positions) {
       // To avoid reporting partial rectangles, all element positions become
       // pending at the same time.
       position.pending_update = true;
     }
+  }
+
+  // Viewport and element positions are always queried, and so reported, at the
+  // same time. This allows supporting both elements whose position is relative
+  // (and move with a scroll) as elements whose position is absolute (and don't
+  // move with a scroll.) Being able to tell the difference would be more
+  // effective and allow refreshing element positions less aggressively.
+  delegate_->GetWebController()->GetVisualViewport(base::BindOnce(
+      &ElementArea::OnGetVisualViewport, weak_ptr_factory_.GetWeakPtr()));
+
+  for (auto& rectangle : rectangles_) {
     for (auto& position : rectangle.positions) {
       delegate_->GetWebController()->GetElementPosition(
           position.selector,
@@ -84,22 +112,20 @@ void ElementArea::UpdatePositions() {
   }
 }
 
-bool ElementArea::IsEmpty() const {
-  for (const auto& rectangle : rectangles_) {
-    for (const auto& position : rectangle.positions) {
-      if (!position.rect.empty()) {
-        return false;
-      }
+void ElementArea::GetTouchableRectangles(std::vector<RectF>* area) {
+  for (auto& rectangle : rectangles_) {
+    if (!rectangle.restricted) {
+      area->emplace_back();
+      rectangle.FillRect(&area->back(), visual_viewport_);
     }
   }
-  return true;
 }
 
-void ElementArea::GetArea(std::vector<RectF>* area) {
+void ElementArea::GetRestrictedRectangles(std::vector<RectF>* area) {
   for (auto& rectangle : rectangles_) {
-    RectF rect;
-    if (rectangle.FillRect(&rect)) {
-      area->emplace_back(rect);
+    if (rectangle.restricted) {
+      area->emplace_back();
+      rectangle.FillRect(&area->back(), visual_viewport_);
     }
   }
 }
@@ -121,11 +147,13 @@ bool ElementArea::Rectangle::IsPending() const {
   return false;
 }
 
-bool ElementArea::Rectangle::FillRect(RectF* rect) const {
+void ElementArea::Rectangle::FillRect(RectF* rect,
+                                      const RectF& visual_viewport) const {
   bool has_first_rect = false;
   for (const auto& position : positions) {
-    if (position.rect.empty())
+    if (position.rect.empty()) {
       continue;
+    }
 
     if (!has_first_rect) {
       *rect = position.rect;
@@ -137,28 +165,11 @@ bool ElementArea::Rectangle::FillRect(RectF* rect) const {
     rect->left = std::min(rect->left, position.rect.left);
     rect->right = std::max(rect->right, position.rect.right);
   }
-  if (!has_first_rect)
-    return false;
-
-  if (full_width) {
-    rect->left = 0.0;
-    rect->right = 1.0;
+  if (has_first_rect && full_width) {
+    rect->left = visual_viewport.left;
+    rect->right = visual_viewport.right;
   }
-  return true;
-}
-
-void ElementArea::KeepUpdatingElementPositions() {
-  if (rectangles_.empty()) {
-    scheduled_update_ = false;
-    return;
-  }
-
-  UpdatePositions();
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&ElementArea::KeepUpdatingElementPositions,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kCheckDelay);
+  return;
 }
 
 void ElementArea::OnGetElementPosition(const Selector& selector,
@@ -175,6 +186,7 @@ void ElementArea::OnGetElementPosition(const Selector& selector,
       }
     }
   }
+
   if (updated) {
     ReportUpdate();
   }
@@ -182,9 +194,34 @@ void ElementArea::OnGetElementPosition(const Selector& selector,
   // rectangles_. This is fine.
 }
 
+void ElementArea::OnGetVisualViewport(bool success, const RectF& rect) {
+  if (!visual_viewport_pending_update_)
+    return;
+
+  visual_viewport_pending_update_ = false;
+  if (!success)
+    return;
+
+  visual_viewport_ = rect;
+  ReportUpdate();
+}
+
 void ElementArea::ReportUpdate() {
   if (!on_update_)
     return;
+
+  if (rectangles_.empty()) {
+    // Reporting of visual viewport is best effort when reporting empty
+    // rectangles. It might also be empty.
+    on_update_.Run(visual_viewport_, {}, {});
+    return;
+  }
+
+  // If there are rectangles, delay reporting until both the visual viewport
+  // size and the rectangles are available.
+  if (visual_viewport_pending_update_) {
+    return;
+  }
 
   for (const auto& rectangle : rectangles_) {
     if (rectangle.IsPending()) {
@@ -193,9 +230,12 @@ void ElementArea::ReportUpdate() {
     }
   }
 
-  std::vector<RectF> area;
-  GetArea(&area);
-  on_update_.Run(area);
+  std::vector<RectF> touchable_area;
+  std::vector<RectF> restricted_area;
+  GetTouchableRectangles(&touchable_area);
+  GetRestrictedRectangles(&restricted_area);
+
+  on_update_.Run(visual_viewport_, touchable_area, restricted_area);
 }
 
 }  // namespace autofill_assistant

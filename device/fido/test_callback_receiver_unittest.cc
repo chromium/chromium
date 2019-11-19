@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,7 +42,7 @@ class MoveResets {
 }  // namespace
 
 TEST(TestCallbackReceiver, BasicClosure) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   TestCallbackReceiver<> closure_receiver;
 
   auto closure = closure_receiver.callback();
@@ -60,7 +60,7 @@ TEST(TestCallbackReceiver, BasicClosure) {
 }
 
 TEST(TestCallbackReceiver, BasicCopyableArgument) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   TestCallbackReceiver<int> callback_receiver;
 
   auto callback = callback_receiver.callback();
@@ -78,7 +78,7 @@ TEST(TestCallbackReceiver, BasicCopyableArgument) {
 }
 
 TEST(TestCallbackReceiver, MoveOnlyArgumentIsMoved) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   TestCallbackReceiver<std::unique_ptr<int>> callback_receiver;
 
   auto callback = callback_receiver.callback();
@@ -92,7 +92,7 @@ TEST(TestCallbackReceiver, MoveOnlyArgumentIsMoved) {
 }
 
 TEST(TestCallbackReceiver, ReferenceArgumentIsCopied) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   TestCallbackReceiver<MoveResets&> callback_receiver;
 
   MoveResets passed_in_value = true;
@@ -119,7 +119,7 @@ TEST(TestCallbackReceiver, ReferenceArgumentIsCopied) {
 TEST(TestCallbackReceiver, StatusAndValue) {
   enum class TestStatus { NOT_OK, OK };
 
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   StatusAndValueCallbackReceiver<TestStatus, std::unique_ptr<int>>
       callback_receiver;
 
@@ -135,7 +135,7 @@ TEST(TestCallbackReceiver, StatusAndValue) {
 }
 
 TEST(TestCallbackReceiver, WaitForCallback) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   TestCallbackReceiver<> closure_receiver;
   auto closure = closure_receiver.callback();
 
@@ -152,7 +152,7 @@ TEST(TestCallbackReceiver, WaitForCallback) {
 }
 
 TEST(TestCallbackReceiver, WaitForCallbackAfterCallback) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   TestCallbackReceiver<> closure_receiver;
 
   auto closure = closure_receiver.callback();

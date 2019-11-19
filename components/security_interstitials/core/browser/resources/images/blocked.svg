@@ -1,11 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="20px" height="16px" viewBox="0 0 20 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-    <g transform="translate(-2.000000, -4.000000)">
-      <g>
-          <polygon points="0 0 24 0 24 24 0 24"></polygon>
-          <path d="M20,4 C21,4 22,5 22,6 L22,18 C22,19 21,20 20,20 L4,20 C2.9,20 2,19.1 2,18 L2,6 C2,5 3,4 4,4 L20,4 Z M14.3923033,15.4598278 L15.4949742,14.3581062 L13.1207639,11.9859397 L15.5,9.60774749 L14.3973291,8.50602582 L12.0170879,10.8842181 L9.63182079,8.5 L8.52914991,9.60172166 L10.9154222,11.9859397 L8.5,14.3982783 L9.60267088,15.5 L12.0170879,13.0866571 L14.3923033,15.4598278 Z" fill-opacity="0.2" fill="#000000"></path>
-      </g>
-    </g>
-  </g>
-</svg>
+<svg width="20" height="16" viewBox="0 0 20 16" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><path d="M-2-4h24v24H-2z"/><path d="M18 0c1 0 2 1 2 2v12c0 1-1 2-2 2H2c-1.1 0-2-.9-2-2V2c0-1 1-2 2-2h16zm-5.608 11.46l1.103-1.102-2.374-2.372L13.5 5.608l-1.103-1.102-2.38 2.378L7.632 4.5 6.529 5.602l2.386 2.384L6.5 10.398 7.603 11.5l2.414-2.413 2.375 2.373z" fill-opacity=".2" fill="#000"/></g></svg>

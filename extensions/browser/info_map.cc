@@ -12,7 +12,6 @@
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
-#include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/gurl.h"
 
@@ -46,7 +45,7 @@ InfoMap::ExtraData::ExtraData()
 
 InfoMap::ExtraData::~ExtraData() {}
 
-InfoMap::InfoMap() : ruleset_manager_(this) {}
+InfoMap::InfoMap() {}
 
 const ExtensionSet& InfoMap::extensions() const {
   CheckOnValidThread();
@@ -138,80 +137,11 @@ void InfoMap::UnregisterAllExtensionsInProcess(int process_id) {
   process_map_.RemoveAllFromProcess(process_id);
 }
 
-// This function is security sensitive. Bugs could cause problems that break
-// restrictions on local file access or NaCl's validation caching. If you modify
-// this function, please get a security review from a NaCl person.
-bool InfoMap::MapUrlToLocalFilePath(const GURL& file_url,
-                                    bool use_blocking_api,
-                                    base::FilePath* file_path) {
-  // Check that the URL is recognized by the extension system.
-  const Extension* extension = extensions_.GetExtensionOrAppByURL(file_url);
-  if (!extension)
-    return false;
-
-  // This is a short-cut which avoids calling a blocking file operation
-  // (GetFilePath()), so that this can be called on the IO thread. It only
-  // handles a subset of the urls.
-  if (!use_blocking_api) {
-    if (file_url.SchemeIs(extensions::kExtensionScheme)) {
-      std::string path = file_url.path();
-      base::TrimString(path, "/", &path);  // Remove first slash
-      *file_path = extension->path().AppendASCII(path);
-      return true;
-    }
-    return false;
-  }
-
-  std::string path = file_url.path();
-  ExtensionResource resource;
-
-  if (SharedModuleInfo::IsImportedPath(path)) {
-    // Check if this is a valid path that is imported for this extension.
-    std::string new_extension_id;
-    std::string new_relative_path;
-    SharedModuleInfo::ParseImportedPath(
-        path, &new_extension_id, &new_relative_path);
-    const Extension* new_extension = extensions_.GetByID(new_extension_id);
-    if (!new_extension)
-      return false;
-
-    if (!SharedModuleInfo::ImportsExtensionById(extension, new_extension_id))
-      return false;
-
-    resource = new_extension->GetResource(new_relative_path);
-  } else {
-    // Check that the URL references a resource in the extension.
-    resource = extension->GetResource(path);
-  }
-
-  if (resource.empty())
-    return false;
-
-  // GetFilePath is a blocking function call.
-  const base::FilePath resource_file_path = resource.GetFilePath();
-  if (resource_file_path.empty())
-    return false;
-
-  *file_path = resource_file_path;
-  return true;
-}
-
 QuotaService* InfoMap::GetQuotaService() {
   CheckOnValidThread();
   if (!quota_service_)
     quota_service_.reset(new QuotaService());
   return quota_service_.get();
-}
-
-declarative_net_request::RulesetManager* InfoMap::GetRulesetManager() {
-  CheckOnValidThread();
-  return &ruleset_manager_;
-}
-
-const declarative_net_request::RulesetManager* InfoMap::GetRulesetManager()
-    const {
-  CheckOnValidThread();
-  return &ruleset_manager_;
 }
 
 void InfoMap::SetNotificationsDisabled(
@@ -238,11 +168,6 @@ void InfoMap::SetIsLockScreenContext(bool is_lock_screen_context) {
   process_map_.set_is_lock_screen_context(is_lock_screen_context);
 }
 
-InfoMap::~InfoMap() {
-  if (quota_service_) {
-    BrowserThread::DeleteSoon(
-        BrowserThread::IO, FROM_HERE, quota_service_.release());
-  }
-}
+InfoMap::~InfoMap() = default;
 
 }  // namespace extensions

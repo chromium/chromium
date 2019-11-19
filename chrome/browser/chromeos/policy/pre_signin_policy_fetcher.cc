@@ -20,7 +20,7 @@
 #include "chromeos/cryptohome/cryptohome_util.h"
 #include "chromeos/cryptohome/homedir_methods.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "chromeos/dbus/cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -37,7 +37,7 @@ const int kPolicyFetchTimeoutSecs = 10;
 
 // Traits for the tasks posted in pre-signin policy fetch. As this blocks
 // signin, the tasks have user-visible priority.
-constexpr base::TaskTraits kTaskTraits = {base::MayBlock(),
+constexpr base::TaskTraits kTaskTraits = {base::ThreadPool(), base::MayBlock(),
                                           base::TaskPriority::USER_VISIBLE};
 }  // namespace
 
@@ -54,8 +54,7 @@ PreSigninPolicyFetcher::PreSigninPolicyFetcher(
       is_active_directory_managed_(is_active_directory_managed),
       account_id_(account_id),
       auth_key_(auth_key),
-      task_runner_(base::CreateSequencedTaskRunnerWithTraits(kTaskTraits)),
-      weak_ptr_factory_(this) {
+      task_runner_(base::CreateSequencedTaskRunner(kTaskTraits)) {
   DCHECK(account_id_.GetAccountType() != AccountType::ACTIVE_DIRECTORY ||
          is_active_directory_managed_);
 }
@@ -73,7 +72,7 @@ void PreSigninPolicyFetcher::FetchPolicy(PolicyFetchResultCallback callback) {
   key->set_secret(auth_key_.secret);
   cryptohome::MountRequest mount;
   mount.set_hidden_mount(true);
-  chromeos::DBusThreadManager::Get()->GetCryptohomeClient()->MountEx(
+  chromeos::CryptohomeClient::Get()->MountEx(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_), auth,
       mount,
       base::Bind(&PreSigninPolicyFetcher::OnMountTemporaryUserHome,
@@ -130,16 +129,18 @@ void PreSigninPolicyFetcher::OnCachedPolicyRetrieved(
 void PreSigninPolicyFetcher::OnPolicyKeyLoaded(
     RetrievePolicyResponseType retrieve_policy_response,
     const std::string& policy_blob) {
-  cryptohome_client_->Unmount(base::BindOnce(
-      &PreSigninPolicyFetcher::OnUnmountTemporaryUserHome,
-      weak_ptr_factory_.GetWeakPtr(), retrieve_policy_response, policy_blob));
+  cryptohome_client_->UnmountEx(
+      cryptohome::UnmountRequest(),
+      base::BindOnce(&PreSigninPolicyFetcher::OnUnmountTemporaryUserHome,
+                     weak_ptr_factory_.GetWeakPtr(), retrieve_policy_response,
+                     policy_blob));
 }
 
 void PreSigninPolicyFetcher::OnUnmountTemporaryUserHome(
     RetrievePolicyResponseType retrieve_policy_response,
     const std::string& policy_blob,
-    base::Optional<bool> unmount_success) {
-  if (!unmount_success.has_value() || !unmount_success.value()) {
+    base::Optional<cryptohome::BaseReply> reply) {
+  if (BaseReplyToMountError(reply) != cryptohome::MOUNT_ERROR_NONE) {
     // The temporary userhome mount could not be unmounted. Log an error and
     // continue, and hope that the unmount will be successful on the next mount
     // (temporary user homes are automatically unmounted by cryptohomed on every

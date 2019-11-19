@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <string>
 
 #include "base/logging.h"
@@ -13,11 +14,13 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 
@@ -25,7 +28,7 @@ namespace {
 
 // In DP, the amount to round the corners of the progress bar (both bg and
 // fg, aka slice).
-const int kCornerRadius = 3;
+constexpr int kCornerRadius = 3;
 
 // Adds a rectangle to the path. The corners will be rounded if there is room.
 void AddPossiblyRoundRectToPath(const gfx::Rect& rectangle,
@@ -41,17 +44,13 @@ void AddPossiblyRoundRectToPath(const gfx::Rect& rectangle,
 
 }  // namespace
 
-// static
-const char ProgressBar::kViewClassName[] = "ProgressBar";
-
 ProgressBar::ProgressBar(int preferred_height, bool allow_round_corner)
     : preferred_height_(preferred_height),
       allow_round_corner_(allow_round_corner) {
   EnableCanvasFlippingForRTLUI(true);
 }
 
-ProgressBar::~ProgressBar() {
-}
+ProgressBar::~ProgressBar() = default;
 
 void ProgressBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kProgressIndicator;
@@ -63,10 +62,6 @@ gfx::Size ProgressBar::CalculatePreferredSize() const {
   gfx::Insets insets = GetInsets();
   pref_size.Enlarge(insets.width(), insets.height());
   return pref_size;
-}
-
-const char* ProgressBar::GetClassName() const {
-  return kViewClassName;
 }
 
 void ProgressBar::OnPaint(gfx::Canvas* canvas) {
@@ -103,6 +98,10 @@ void ProgressBar::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawPath(slice_path, slice_flags);
 }
 
+double ProgressBar::GetValue() const {
+  return current_value_;
+}
+
 void ProgressBar::SetValue(double value) {
   double adjusted_value = (value < 0.0 || value > 1.0) ? -1.0 : value;
 
@@ -111,12 +110,12 @@ void ProgressBar::SetValue(double value) {
 
   current_value_ = adjusted_value;
   if (IsIndeterminate()) {
-    indeterminate_bar_animation_.reset(new gfx::LinearAnimation(this));
+    indeterminate_bar_animation_ = std::make_unique<gfx::LinearAnimation>(this);
     indeterminate_bar_animation_->SetDuration(base::TimeDelta::FromSeconds(2));
     indeterminate_bar_animation_->Start();
   } else {
     indeterminate_bar_animation_.reset();
-    SchedulePaint();
+    OnPropertyChanged(&current_value_, kPropertyEffectsPaint);
   }
 }
 
@@ -128,9 +127,25 @@ SkColor ProgressBar::GetForegroundColor() const {
       ui::NativeTheme::kColorId_ProminentButtonColor);
 }
 
+void ProgressBar::SetForegroundColor(SkColor color) {
+  if (foreground_color_ == color)
+    return;
+
+  foreground_color_ = color;
+  OnPropertyChanged(&foreground_color_, kPropertyEffectsPaint);
+}
+
 SkColor ProgressBar::GetBackgroundColor() const {
   return background_color_.value_or(
       color_utils::BlendTowardMaxContrast(GetForegroundColor(), 0xCC));
+}
+
+void ProgressBar::SetBackgroundColor(SkColor color) {
+  if (background_color_ == color)
+    return;
+
+  background_color_ = color;
+  OnPropertyChanged(&background_color_, kPropertyEffectsPaint);
 }
 
 void ProgressBar::AnimationProgressed(const gfx::Animation* animation) {
@@ -211,5 +226,11 @@ void ProgressBar::OnPaintIndeterminate(gfx::Canvas* canvas) {
   slice_flags.setColor(GetForegroundColor());
   canvas->DrawPath(slice_path, slice_flags);
 }
+
+BEGIN_METADATA(ProgressBar)
+METADATA_PARENT_CLASS(View)
+ADD_PROPERTY_METADATA(ProgressBar, SkColor, ForegroundColor)
+ADD_PROPERTY_METADATA(ProgressBar, SkColor, BackgroundColor)
+END_METADATA()
 
 }  // namespace views

@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef UI_VIEWS_CONTROLS_NATIVE_NATIVE_VIEW_HOST_TEST_BASE_H_
+#define UI_VIEWS_CONTROLS_NATIVE_NATIVE_VIEW_HOST_TEST_BASE_H_
+
 #include <memory>
 
 #include "base/macros.h"
@@ -57,10 +60,12 @@ class NativeViewHostTestBase : public ViewsTestBase {
 
   std::unique_ptr<Widget> toplevel_;
   std::unique_ptr<NativeViewHost> host_;
-  int host_destroyed_count_;
+  int host_destroyed_count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(NativeViewHostTestBase);
 };
 
 }  // namespace test
 }  // namespace views
+
+#endif  // UI_VIEWS_CONTROLS_NATIVE_NATIVE_VIEW_HOST_TEST_BASE_H_

@@ -5,6 +5,8 @@
 	<meta name="viewport" content="width=480"/>
 
 	<script>
+      if (window.internals)
+          internals.runtimeFlags.accelerated2dCanvasEnabled = true;
 
 	    function init() {
 	        var ctx = document.getElementById("world").getContext("2d");
@@ -13,8 +15,7 @@
 	        
             if (window.testRunner) {
                 testRunner.dumpAsTextWithPixelResults();
-                var console = document.getElementById("layeroutput");
-                console.innerHTML = internals.layerTreeAsText(document);
+                testRunner.setCustomTextOutput(internals.layerTreeAsText(document));
             }
 	    }
 	</script>
@@ -27,15 +28,9 @@
             background-color: green;
             position: absolute;
         }
-        #layeroutput
-        {
-            position: absolute;
-            top: -100%;
-        }
 	</style>
 </head>
 <body onLoad="init()">
-    <pre id="layeroutput"></pre>
 	<div id="output"></div>
 	<canvas id="world" width="100" height="50"></canvas>
 </body>

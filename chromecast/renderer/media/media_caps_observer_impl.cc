@@ -12,10 +12,10 @@ namespace chromecast {
 namespace media {
 
 MediaCapsObserverImpl::MediaCapsObserverImpl(
-    mojom::MediaCapsObserverPtr* proxy,
+    mojo::PendingRemote<mojom::MediaCapsObserver>* proxy,
     SupportedCodecProfileLevelsMemo* supported_profiles)
     : supported_profiles_(supported_profiles),
-      binding_(this, mojo::MakeRequest(proxy)) {}
+      receiver_(this, proxy->InitWithNewPipeAndPassReceiver()) {}
 
 MediaCapsObserverImpl::~MediaCapsObserverImpl() = default;
 

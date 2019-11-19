@@ -1,0 +1,2 @@
+Window right edge exceeds screen right edge? (stable should be false): false
+Window bottom edge exceeds screen bottom edge? (stable should be false): false

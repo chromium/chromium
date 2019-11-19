@@ -73,7 +73,7 @@
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/snackbar_button"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/snackbar_min_height"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:paddingEnd="24dp"
             android:paddingStart="24dp"

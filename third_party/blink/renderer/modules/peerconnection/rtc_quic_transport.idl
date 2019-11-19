@@ -18,16 +18,22 @@ enum RTCQuicTransportState {
    RaisesException=Constructor,
    Exposed=Window,
    Measure,
-   OriginTrialEnabled=RTCQuicTransport,
+   RuntimeEnabled=RTCQuicTransport,
    SecureContext
 ] interface RTCQuicTransport : EventTarget {
     [Measure] readonly attribute RTCIceTransport transport;
     [Measure] readonly attribute RTCQuicTransportState state;
+    [Measure] readonly attribute unsigned short? maxDatagramLength;
     [Measure] ArrayBuffer getKey();
     [Measure, RaisesException] void connect();
     [Measure, RaisesException] void listen(BufferSource remote_key);
     [Measure] void stop();
     [Measure, RaisesException] RTCQuicStream createStream();
+    [CallWith=ScriptState, Measure, RaisesException]
+    Promise<void> readyToSendDatagram();
+    [Measure, RaisesException] void sendDatagram(BufferSource data);
+    [CallWith=ScriptState, Measure, RaisesException]
+    Promise<sequence<ArrayBuffer>> receiveDatagrams();
     [CallWith=ScriptState, Measure, RaisesException]
     Promise<RTCQuicTransportStats> getStats();
     attribute EventHandler onstatechange;

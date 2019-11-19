@@ -18,26 +18,23 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "chrome/browser/metrics/incognito_observer.h"
 #include "chrome/browser/metrics/metrics_memory_details.h"
 #include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/ukm/observers/history_delete_observer.h"
-#include "components/ukm/observers/sync_disable_observer.h"
+#include "components/ukm/observers/ukm_consent_state_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
+class BrowserActivityWatcher;
 class PluginMetricsProvider;
 class Profile;
 class PrefRegistrySimple;
-
-#if defined(OS_ANDROID)
-class TabModelListObserver;
-#endif  // defined(OS_ANDROID)
-
 
 namespace metrics {
 class MetricsService;
@@ -49,7 +46,7 @@ class MetricsStateManager;
 class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
                                    public content::NotificationObserver,
                                    public ukm::HistoryDeleteObserver,
-                                   public ukm::SyncDisableObserver {
+                                   public ukm::UkmConsentStateObserver {
  public:
   ~ChromeMetricsServiceClient() override;
 
@@ -84,8 +81,8 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   bool IsReportingPolicyManaged() override;
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
   bool IsUMACellularUploadLogicEnabled() override;
-  bool SyncStateAllowsUkm() override;
-  bool SyncStateAllowsExtensionUkm() override;
+  bool IsUkmAllowedForAllProfiles() override;
+  bool IsUkmAllowedWithExtensionsForAllProfiles() override;
   bool AreNotificationListenersEnabledOnAllProfiles() override;
   std::string GetAppPackageName() override;
   std::string GetUploadSigningKey() override;
@@ -95,8 +92,8 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // ukm::HistoryDeleteObserver:
   void OnHistoryDeleted() override;
 
-  // ukm::SyncDisableObserver:
-  void OnSyncPrefsChanged(bool must_purge) override;
+  // ukm::UkmConsentStateObserver:
+  void OnUkmAllowedStateChanged(bool must_purge) override;
 
   // Determine what to do with a file based on filename. Visible for testing.
   using IsProcessRunningFunction = bool (*)(base::ProcessId);
@@ -176,29 +173,25 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 
   content::NotificationRegistrar registrar_;
 
-#if defined(OS_ANDROID)
   // Listener for changes in incognito activity.
-  // Desktop platform use BrowserList, and can listen for
-  // chrome::NOTIFICATION_BROWSER_OPENED instead.
-  std::unique_ptr<TabModelListObserver> incognito_observer_;
-#endif  // defined(OS_ANDROID)
+  std::unique_ptr<IncognitoObserver> incognito_observer_;
 
   // Whether we registered all notification listeners successfully.
-  bool notification_listeners_active_;
+  bool notification_listeners_active_ = false;
 
   // Saved callback received from CollectFinalMetricsForLog().
   base::Closure collect_final_metrics_done_callback_;
 
   // Indicates that collect final metrics step is running.
-  bool waiting_for_collect_final_metrics_step_;
+  bool waiting_for_collect_final_metrics_step_ = false;
 
   // Number of async histogram fetch requests in progress.
-  int num_async_histogram_fetches_in_progress_;
+  int num_async_histogram_fetches_in_progress_ = 0;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // The PluginMetricsProvider instance that was registered with
   // MetricsService. Has the same lifetime as |metrics_service_|.
-  PluginMetricsProvider* plugin_metrics_provider_;
+  PluginMetricsProvider* plugin_metrics_provider_ = nullptr;
 #endif
 
   // Callback to determine whether or not a cellular network is currently being
@@ -210,7 +203,11 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   std::unique_ptr<base::CallbackList<void(OmniboxLog*)>::Subscription>
       omnibox_url_opened_subscription_;
 
-  base::WeakPtrFactory<ChromeMetricsServiceClient> weak_ptr_factory_;
+#if !defined(OS_ANDROID)
+  std::unique_ptr<BrowserActivityWatcher> browser_activity_watcher_;
+#endif
+
+  base::WeakPtrFactory<ChromeMetricsServiceClient> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeMetricsServiceClient);
 };

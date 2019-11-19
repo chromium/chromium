@@ -50,12 +50,11 @@ namespace {
 class RequestPrintPreviewObserver : public WebContentsObserver {
  public:
   explicit RequestPrintPreviewObserver(WebContents* dialog)
-      : WebContentsObserver(dialog) {
-  }
-  ~RequestPrintPreviewObserver() override {}
+      : WebContentsObserver(dialog) {}
+  ~RequestPrintPreviewObserver() override = default;
 
-  void set_quit_closure(const base::Closure& quit_closure) {
-    quit_closure_ = quit_closure;
+  void set_quit_closure(base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
   }
 
  private:
@@ -72,10 +71,11 @@ class RequestPrintPreviewObserver : public WebContentsObserver {
 
   void OnRequestPrintPreview(
       const PrintHostMsg_RequestPrintPreview_Params& /* params */) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, quit_closure_);
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(quit_closure_));
   }
 
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(RequestPrintPreviewObserver);
 };
@@ -83,9 +83,8 @@ class RequestPrintPreviewObserver : public WebContentsObserver {
 class PrintPreviewDialogClonedObserver : public WebContentsObserver {
  public:
   explicit PrintPreviewDialogClonedObserver(WebContents* dialog)
-      : WebContentsObserver(dialog) {
-  }
-  ~PrintPreviewDialogClonedObserver() override {}
+      : WebContentsObserver(dialog) {}
+  ~PrintPreviewDialogClonedObserver() override = default;
 
   RequestPrintPreviewObserver* request_preview_dialog_observer() {
     return request_preview_dialog_observer_.get();
@@ -107,10 +106,8 @@ class PrintPreviewDialogClonedObserver : public WebContentsObserver {
 class PrintPreviewDialogDestroyedObserver : public WebContentsObserver {
  public:
   explicit PrintPreviewDialogDestroyedObserver(WebContents* dialog)
-      : WebContentsObserver(dialog),
-        dialog_destroyed_(false) {
-  }
-  ~PrintPreviewDialogDestroyedObserver() override {}
+      : WebContentsObserver(dialog) {}
+  ~PrintPreviewDialogDestroyedObserver() override = default;
 
   bool dialog_destroyed() const { return dialog_destroyed_; }
 
@@ -118,15 +115,15 @@ class PrintPreviewDialogDestroyedObserver : public WebContentsObserver {
   // content::WebContentsObserver implementation.
   void WebContentsDestroyed() override { dialog_destroyed_ = true; }
 
-  bool dialog_destroyed_;
+  bool dialog_destroyed_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(PrintPreviewDialogDestroyedObserver);
 };
 
 void PluginsLoadedCallback(
-    const base::Closure& quit_closure,
+    base::OnceClosure quit_closure,
     const std::vector<content::WebPluginInfo>& /* info */) {
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 bool GetPdfPluginInfo(content::WebPluginInfo* info) {
@@ -149,16 +146,16 @@ void CheckPdfPluginForRenderFrame(content::RenderFrameHost* frame) {
 
   ChromePluginServiceFilter* filter = ChromePluginServiceFilter::GetInstance();
   EXPECT_TRUE(filter->IsPluginAvailable(
-      frame->GetProcess()->GetID(), frame->GetRoutingID(), nullptr,
-      GURL(kDummyPrintUrl), url::Origin(), &pdf_plugin_info));
+      frame->GetProcess()->GetID(), frame->GetRoutingID(), GURL(kDummyPrintUrl),
+      url::Origin(), &pdf_plugin_info));
 }
 
 }  // namespace
 
 class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
  public:
-  PrintPreviewDialogControllerBrowserTest() : initiator_(nullptr) {}
-  ~PrintPreviewDialogControllerBrowserTest() override {}
+  PrintPreviewDialogControllerBrowserTest() = default;
+  ~PrintPreviewDialogControllerBrowserTest() override = default;
 
   WebContents* initiator() {
     return initiator_;
@@ -177,9 +174,9 @@ class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
     return dialog_controller->GetPrintPreviewForContents(initiator_);
   }
 
-  void SetAlwaysOpenPdfExternallyForTests(bool always_open_pdf_externally) {
+  void SetAlwaysOpenPdfExternallyForTests() {
     PluginPrefs::GetForProfile(browser()->profile())
-        ->SetAlwaysOpenPdfExternallyForTests(always_open_pdf_externally);
+        ->SetAlwaysOpenPdfExternallyForTests(true);
   }
 
  private:
@@ -219,15 +216,21 @@ class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<PrintPreviewDialogClonedObserver> cloned_tab_observer_;
-  WebContents* initiator_;
+  WebContents* initiator_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PrintPreviewDialogControllerBrowserTest);
 };
 
+// Flaky on Linux: crbug.com/1021545
+#if defined(OS_LINUX)
+#define MAYBE_NavigateFromInitiatorTab DISABLED_NavigateFromInitiatorTab
+#else
+#define MAYBE_NavigateFromInitiatorTab NavigateFromInitiatorTab
+#endif
 // Test to verify that when a initiator navigates, we can create a new preview
 // dialog for the new tab contents.
 IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
-                       NavigateFromInitiatorTab) {
+                       MAYBE_NavigateFromInitiatorTab) {
   // Print for the first time.
   PrintPreview();
 
@@ -254,10 +257,16 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   EXPECT_TRUE(new_preview_dialog);
 }
 
+// Flaky on Linux: crbug.com/1021545
+#if defined(OS_LINUX)
+#define MAYBE_ReloadInitiatorTab DISABLED_ReloadInitiatorTab
+#else
+#define MAYBE_ReloadInitiatorTab ReloadInitiatorTab
+#endif
 // Test to verify that after reloading the initiator, it creates a new print
 // preview dialog.
 IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
-                       ReloadInitiatorTab) {
+                       MAYBE_ReloadInitiatorTab) {
   // Print for the first time.
   PrintPreview();
 
@@ -288,15 +297,21 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   EXPECT_TRUE(new_preview_dialog);
 }
 
+// Flaky on Linux: crbug.com/1021545
+#if defined(OS_LINUX)
+#define MAYBE_PdfPluginDisabled DISABLED_PdfPluginDisabled
+#else
+#define MAYBE_PdfPluginDisabled PdfPluginDisabled
+#endif
 // Test to verify that after print preview works even when the PDF plugin is
 // disabled for webpages.
 IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
-                       PdfPluginDisabled) {
+                       MAYBE_PdfPluginDisabled) {
   // Make sure plugins are loaded.
   {
     base::RunLoop run_loop;
     content::PluginService::GetInstance()->GetPlugins(
-        base::Bind(&PluginsLoadedCallback, run_loop.QuitClosure()));
+        base::BindOnce(&PluginsLoadedCallback, run_loop.QuitClosure()));
     run_loop.Run();
   }
   // Get the PDF plugin info.
@@ -304,15 +319,14 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   ASSERT_TRUE(GetPdfPluginInfo(&pdf_plugin_info));
 
   // Disable the PDF plugin.
-  SetAlwaysOpenPdfExternallyForTests(true);
+  SetAlwaysOpenPdfExternallyForTests();
 
   // Make sure it is actually disabled for webpages.
   ChromePluginServiceFilter* filter = ChromePluginServiceFilter::GetInstance();
   content::WebPluginInfo dummy_pdf_plugin_info = pdf_plugin_info;
   EXPECT_FALSE(filter->IsPluginAvailable(
       initiator()->GetMainFrame()->GetProcess()->GetID(),
-      initiator()->GetMainFrame()->GetRoutingID(),
-      browser()->profile()->GetResourceContext(), GURL(),
+      initiator()->GetMainFrame()->GetRoutingID(), GURL(),
       url::Origin::Create(GURL("http://google.com")), &dummy_pdf_plugin_info));
 
   PrintPreview();
@@ -354,8 +368,16 @@ const std::vector<task_manager::WebContentsTag*>& GetTrackedTags() {
   return task_manager::WebContentsTagsManager::GetInstance()->tracked_tags();
 }
 
+}  // namespace
+
+// Flaky on Linux: crbug.com/1021545
+#if defined(OS_LINUX)
+#define MAYBE_TaskManagementTest DISABLED_TaskManagementTest
+#else
+#define MAYBE_TaskManagementTest TaskManagementTest
+#endif
 IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
-                       TaskManagementTest) {
+                       MAYBE_TaskManagementTest) {
   // This test starts with two tabs open.
   EXPECT_EQ(2U, GetTrackedTags().size());
 
@@ -396,13 +418,17 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
                                base::CompareCase::INSENSITIVE_ASCII));
 }
 
+// Flaky on Linux: crbug.com/1021545
+#if defined(OS_LINUX)
+#define MAYBE_PrintPreviewPdfAccessibility DISABLED_PrintPreviewPdfAccessibility
+#else
+#define MAYBE_PrintPreviewPdfAccessibility PrintPreviewPdfAccessibility
+#endif
 IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
-                       PrintPreviewPdfAccessibility) {
+                       MAYBE_PrintPreviewPdfAccessibility) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,HelloWorld"));
   PrintPreview();
   WebContents* preview_dialog = GetPrintPreviewDialog();
   WaitForAccessibilityTreeToContainNodeWithName(preview_dialog, "HelloWorld");
 }
-
-}  // namespace

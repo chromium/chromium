@@ -11,4 +11,4 @@ sources = [
 ]
 
 type_mappings =
-    [ "mojo_base.mojom.ProcessId=base::ProcessId[copyable_pass_by_value]" ]
+    [ "mojo_base.mojom.ProcessId=::base::ProcessId[copyable_pass_by_value]" ]

@@ -13,7 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "components/image_fetcher/core/image_decoder.h"
@@ -111,7 +111,7 @@ class FeedImageManagerTest : public testing::Test {
     ASSERT_TRUE(image_database_->IsInitialized());
   }
 
-  void RunUntilIdle() { scoped_task_environment_.RunUntilIdle(); }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   FeedImageDatabase* image_database() { return image_database_; }
 
@@ -144,7 +144,7 @@ class FeedImageManagerTest : public testing::Test {
   FeedImageDatabase* image_database_;
   base::ScopedTempDir database_dir_;
   FakeImageDecoder* fake_image_decoder_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   HistogramTester histogram_;
 
   DISALLOW_COPY_AND_ASSIGN(FeedImageManagerTest);

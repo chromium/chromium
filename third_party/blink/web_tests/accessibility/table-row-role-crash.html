@@ -1,0 +1,79 @@
+<style></style>
+<script>
+
+function jsfuzzer() {
+    var variableElement = document.getElementById("variableElement"); //HTMLUnknownElement
+    var templateElement = document.getElementById("templateElement"); //HTMLTemplateElement
+    var htmlFormElement = document.getElementById("htmlFormElement"); //HTMLFormElement
+    var createdVarElement = document.createElement("var"); //HTMLUnknownElement
+    document.all[7].appendChild(htmlBaseTag);
+    var createdTBodyElement = document.createElement("tbody");
+    createdTBodyElement.insertRow();
+    document.all[20].appendChild(createdTBodyElement);
+    document.all[13].appendChild(htmlLiElement);
+
+    // For some reason past here, not appending via modulo fails to induce a crash?
+    document.all[52 % document.all.length].appendChild(createdVarElement);
+    document.adoptNode(htmlDescriptionTag);
+    htmlFormElement.reset();
+    document.all[90 % document.all.length].appendChild(variableElement);
+    document.all[85 % document.all.length].appendChild(templateElement);
+    htmlFormElement.reset();
+}
+
+function eventhandler2() {
+    var htmlLiElement = document.getElementById("htmlLiElement"); //HTMLLIElement
+    var htmlContentTag = document.getElementById("htmlContentTag"); //HTMLContentElement
+    var htmlAreaTag = document.getElementById("htmlAreaTag"); //HTMLAreaElement
+    var htmlUnknownElement = document.getElementById("htmlUnknownElement"); //HTMLUnknownElement
+    var htmlParagraphElement = document.createElement("p"); //HTMLParagraphElement
+    var var00016 = window.getSelection();
+    var00016.selectAllChildren(templateElement);
+    document.all[51 % document.all.length].appendChild(htmlParagraphElement);
+    var var00036 = document.createElement("a");;
+    var var00039 = htmlLiElement.outerHTML;
+
+    var caretRange = document.caretRangeFromPoint();
+    caretRange.insertNode(templateElement);
+    var var00192 = var00016.extentNode;
+    var00016.selectAllChildren(var00192);
+    var00016.deleteFromDocument();
+    htmlLiElement.innerHTML = var00039;
+    document.all[82 % document.all.length].appendChild(htmlContentTag);
+    document.all[99 % document.all.length].appendChild(htmlUnknownElement);
+    document.all[36 % document.all.length].appendChild(var00036);
+    document.all[50 % document.all.length].appendChild(htmlAreaTag);
+}
+</script>
+<body onload=jsfuzzer()>
+  <hr>
+  <ul>
+    <li>
+      <dl>
+        <dd id="htmlDescriptionTag"><dt declare="declare"</dt>
+        <li id="htmlLiElement"></li>
+  </ul>
+  <var id="variableElement">
+    <image><ol></ol>
+  </var>
+  <template id="templateElement">
+  </template>
+  <input>
+  <content id="htmlContentTag"></content>
+  <map>
+    <area id="htmlAreaTag" role="group" </area>
+    <area id="htmlvar00017"</area>
+    <form id="htmlFormElement" onreset="eventhandler2()">
+      <fieldset>
+        <textarea></textarea>
+        <label></label>
+        <h4></h4>
+        <link></p>
+        <base id="htmlBaseTag">
+        <div></div>
+        <noscript></noscript>
+        <basefont id="htmlUnknownElement"></basefont>
+      </fieldset>
+    </form>
+  </map>
+</body>

@@ -5,21 +5,33 @@
       <emit emit_type='prepend'></emit>
     </output>
     <output filename="grit/mojo_bindings_resources_map.h"
-        type="gzipped_resource_map_header" />
+        type="resource_map_header" />
     <output filename="grit/mojo_bindings_resources_map.cc"
-        type="gzipped_resource_map_source" />
+        type="resource_map_source" />
     <output filename="mojo_bindings_resources.pak" type="data_package" />
   </outputs>
   <translations />
   <release seq="1">
     <includes>
-      <include name="IDR_MOJO_MOJO_BINDINGS_JS"
-          file="${root_gen_dir}/mojo/public/js/mojo_bindings.js"
-          use_base_dir="false"
+      <!-- All resources included on Android should use the lite bindings. -->
+      <if expr="not is_android">
+        <include name="IDR_MOJO_MOJO_BINDINGS_JS"
+            file="${root_gen_dir}/mojo/public/js/mojo_bindings.js"
+            use_base_dir="false"
+            type="BINDATA"
+            compress="gzip" />
+      </if>
+      <include name="IDR_MOJO_MOJO_BINDINGS_LITE_HTML"
+          file="mojo_bindings_lite.html"
           type="BINDATA"
           compress="gzip" />
       <include name="IDR_MOJO_MOJO_BINDINGS_LITE_JS"
           file="${root_gen_dir}/mojo/public/js/mojo_bindings_lite.js"
+          use_base_dir="false"
+          type="BINDATA"
+          compress="gzip" />
+      <include name="IDR_MOJO_BIG_BUFFER_MOJOM_HTML"
+          file="${root_gen_dir}/mojo/public/mojom/base/big_buffer.mojom.html"
           use_base_dir="false"
           type="BINDATA"
           compress="gzip" />
@@ -28,8 +40,18 @@
           use_base_dir="false"
           type="BINDATA"
           compress="gzip" />
+      <include name="IDR_MOJO_FILE_MOJOM_HTML"
+          file="${root_gen_dir}/mojo/public/mojom/base/file.mojom.html"
+          use_base_dir="false"
+          type="BINDATA"
+          compress="gzip" />
       <include name="IDR_MOJO_FILE_MOJOM_LITE_JS"
           file="${root_gen_dir}/mojo/public/mojom/base/file.mojom-lite.js"
+          use_base_dir="false"
+          type="BINDATA"
+          compress="gzip" />
+      <include name="IDR_MOJO_STRING16_MOJOM_HTML"
+          file="${root_gen_dir}/mojo/public/mojom/base/string16.mojom.html"
           use_base_dir="false"
           type="BINDATA"
           compress="gzip" />
@@ -39,6 +61,11 @@
           type="BINDATA"
           compress="gzip" />
       <if expr="is_win or is_macosx or is_linux">
+        <include name="IDR_MOJO_TIME_MOJOM_HTML"
+            file="${root_gen_dir}/mojo/public/mojom/base/time.mojom.html"
+            use_base_dir="false"
+            type="BINDATA"
+            compress="gzip" />
         <include name="IDR_MOJO_TIME_MOJOM_LITE_JS"
             file="${root_gen_dir}/mojo/public/mojom/base/time.mojom-lite.js"
             use_base_dir="false"

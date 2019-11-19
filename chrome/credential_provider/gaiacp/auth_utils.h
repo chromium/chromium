@@ -5,9 +5,18 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_AUTH_UTILS_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_AUTH_UTILS_H_
 
+#include "base/strings/string16.h"
+
 #include "chrome/credential_provider/gaiacp/stdafx.h"
 
 namespace credential_provider {
+
+// Gets the auth package id for NEGOSSP_NAME_A.
+HRESULT GetAuthenticationPackageId(ULONG* id);
+
+HRESULT DetermineUserSidFromAuthenticationBuffer(
+    const CREDENTIAL_PROVIDER_CREDENTIAL_SERIALIZATION* cpcs,
+    base::string16* sid);
 
 HRESULT BuildCredPackAuthenticationBuffer(
     BSTR domain,

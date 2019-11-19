@@ -27,7 +27,7 @@ struct UIOverrides : public Extension::ManifestData {
 
   static bool RemovesBookmarkButton(const Extension* extension);
   static bool RemovesBookmarkShortcut(const Extension* extension);
-  static bool RemovesBookmarkOpenPagesShortcut(const Extension* extension);
+  static bool RemovesBookmarkAllTabsShortcut(const Extension* extension);
 
   std::unique_ptr<api::manifest_types::ChromeUIOverrides::Bookmarks_ui>
       bookmarks_ui;

@@ -7,11 +7,12 @@
 <meta name="flags" content="ahem">
 <link rel="match" href="reference/pre-wrap-001-ref.html">
 <meta name="assert" content="The word is not broken if there are previous breaking opportunities, honoring the white-space: pre-wrap value.">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <style>
 div {
-   position: relative;
    font-size: 20px;
    font-family: Ahem;
+   line-height: 1em;
 }
 .red {
   position: absolute;
@@ -24,7 +25,6 @@ div {
 }
 .test {
   color: green;
-  line-height: 1em;
   width: 2ch;
 
   white-space: pre-wrap;

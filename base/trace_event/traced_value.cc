@@ -341,7 +341,7 @@ class PickleWriter final : public TracedValue::Writer {
             stack.push_back(cur_dict);
             cur_dict = cur_dict->SetKey(ReadKeyName(it), std::move(new_dict));
           } else {
-            cur_list->GetList().push_back(std::move(new_dict));
+            cur_list->Append(std::move(new_dict));
             // |new_dict| is invalidated at this point, so |cur_dict| needs to
             // be reset.
             cur_dict = &cur_list->GetList().back();
@@ -369,7 +369,7 @@ class PickleWriter final : public TracedValue::Writer {
             cur_list = cur_dict->SetKey(ReadKeyName(it), std::move(new_list));
             cur_dict = nullptr;
           } else {
-            cur_list->GetList().push_back(std::move(new_list));
+            cur_list->Append(std::move(new_list));
             stack.push_back(cur_list);
             // |cur_list| is invalidated at this point by the Append, so it
             // needs to be reset.
@@ -380,44 +380,40 @@ class PickleWriter final : public TracedValue::Writer {
         case kTypeBool: {
           bool value;
           CHECK(it.ReadBool(&value));
-          base::Value new_bool(value);
           if (cur_dict) {
-            cur_dict->SetKey(ReadKeyName(it), std::move(new_bool));
+            cur_dict->SetBoolKey(ReadKeyName(it), value);
           } else {
-            cur_list->GetList().push_back(std::move(new_bool));
+            cur_list->Append(value);
           }
         } break;
 
         case kTypeInt: {
           int value;
           CHECK(it.ReadInt(&value));
-          base::Value new_int(value);
           if (cur_dict) {
-            cur_dict->SetKey(ReadKeyName(it), std::move(new_int));
+            cur_dict->SetIntKey(ReadKeyName(it), value);
           } else {
-            cur_list->GetList().push_back(std::move(new_int));
+            cur_list->Append(value);
           }
         } break;
 
         case kTypeDouble: {
           double value;
           CHECK(it.ReadDouble(&value));
-          base::Value new_double(value);
           if (cur_dict) {
-            cur_dict->SetKey(ReadKeyName(it), std::move(new_double));
+            cur_dict->SetDoubleKey(ReadKeyName(it), value);
           } else {
-            cur_list->GetList().push_back(std::move(new_double));
+            cur_list->Append(value);
           }
         } break;
 
         case kTypeString: {
           std::string value;
           CHECK(it.ReadString(&value));
-          base::Value new_str(std::move(value));
           if (cur_dict) {
-            cur_dict->SetKey(ReadKeyName(it), std::move(new_str));
+            cur_dict->SetStringKey(ReadKeyName(it), std::move(value));
           } else {
-            cur_list->GetList().push_back(std::move(new_str));
+            cur_list->Append(std::move(value));
           }
         } break;
 

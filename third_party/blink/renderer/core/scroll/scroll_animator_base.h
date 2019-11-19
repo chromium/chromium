@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_compositor_coordinator.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -66,7 +67,9 @@ class CORE_EXPORT ScrollAnimatorBase
   // no unusedDelta and didScroll=true, i.e. fully consuming the scroll request.
   // This makes animations latch to a single scroller. Note, the semantics are
   // currently somewhat different on Mac - see ScrollAnimatorMac.mm.
-  virtual ScrollResult UserScroll(ScrollGranularity, const ScrollOffset& delta);
+  virtual ScrollResult UserScroll(ScrollGranularity,
+                                  const ScrollOffset& delta,
+                                  ScrollableArea::ScrollCallback on_finish);
 
   virtual void ScrollToOffsetWithoutAnimation(const ScrollOffset&);
 

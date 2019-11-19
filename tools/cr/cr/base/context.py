@@ -8,6 +8,8 @@ Contains all the support code to enable the shared context used by the cr tool.
 This includes the configuration variables and command line handling.
 """
 
+from __future__ import print_function
+
 import argparse
 import os
 import cr
@@ -42,9 +44,9 @@ class _DumpVisitor(cr.visitor.ExportVisitor):
   def _DumpNow(self):
     if self.to_dump:
       if self.with_source:
-        print 'From', self.Where()
+        print('From', self.Where())
       for key in sorted(self.to_dump.keys()):
-        print '  ', key, '=', self.to_dump[key]
+        print('  ', key, '=', self.to_dump[key])
       self.to_dump = {}
 
 

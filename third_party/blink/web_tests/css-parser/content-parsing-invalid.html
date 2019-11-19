@@ -16,16 +16,41 @@
 #target2::after {
   content: url("a") none;
 }
-</style>
+#target3::before {
+  content: "string" / "alt1" "alt2";
+}
+#target3::after {
+  content: "string" / "alt1" "alt2";
+}
+#target4::before {
+  content: "string" / ;
+}
+#target4::after {
+  content: "string" / ;
+}
+#target5::before {
+  content: / "alt";
+}
+#target5::after {
+  content: / "alt";
+}
 
+</style>
 <div id="target1"></div>
 <div id="target2"></div>
-
+<div id="target3"></div>
+<div id="target4"></div>
+<div id="target5"></div>
 <script>
 test(function(){
   assert_equals(document.styleSheets[0].cssRules[0].style.content, '');
   assert_equals(document.styleSheets[0].cssRules[1].style.content, '');
   assert_equals(document.styleSheets[0].cssRules[2].style.content, '');
   assert_equals(document.styleSheets[0].cssRules[3].style.content, '');
+  assert_equals(document.styleSheets[0].cssRules[4].style.content, '');
+  assert_equals(document.styleSheets[0].cssRules[5].style.content, '');
+  assert_equals(document.styleSheets[0].cssRules[6].style.content, '');
+  assert_equals(document.styleSheets[0].cssRules[7].style.content, '');
+  assert_equals(document.styleSheets[0].cssRules[8].style.content, '');
 }, "Test to ensure that invalid values of content on pseudo elements are dropped by the parser");
 </script>

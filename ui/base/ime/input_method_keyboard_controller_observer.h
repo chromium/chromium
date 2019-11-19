@@ -5,7 +5,7 @@
 #ifndef UI_BASE_IME_INPUT_METHOD_KEYBOARD_CONTROLLER_OBSERVER_H_
 #define UI_BASE_IME_INPUT_METHOD_KEYBOARD_CONTROLLER_OBSERVER_H_
 
-#include "ui/base/ime/ui_base_ime_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 class Rect;
@@ -15,7 +15,7 @@ namespace ui {
 
 // This observer class provides a method to observe on screen
 // keyboard changes.
-class UI_BASE_IME_EXPORT InputMethodKeyboardControllerObserver {
+class COMPONENT_EXPORT(UI_BASE_IME) InputMethodKeyboardControllerObserver {
  public:
   // The |keyboard_rect| parameter contains the bounds of the keyboard in dips.
   virtual void OnKeyboardVisible(const gfx::Rect& keyboard_rect) = 0;

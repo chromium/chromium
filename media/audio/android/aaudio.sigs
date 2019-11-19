@@ -1,0 +1,29 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+//------------------------------------------------
+// Functions from AAudio used in media code.
+//------------------------------------------------
+
+const char * AAudio_convertResultToText(aaudio_result_t returnCode);
+aaudio_result_t AAudio_createStreamBuilder(AAudioStreamBuilder** builder);
+void AAudioStreamBuilder_setDeviceId(AAudioStreamBuilder* builder, int32_t deviceId);
+void AAudioStreamBuilder_setSampleRate(AAudioStreamBuilder* builder, int32_t sampleRate);
+void AAudioStreamBuilder_setChannelCount(AAudioStreamBuilder* builder, int32_t channelCount);
+void AAudioStreamBuilder_setSamplesPerFrame(AAudioStreamBuilder* builder, int32_t samplesPerFrame);
+void AAudioStreamBuilder_setFormat(AAudioStreamBuilder* builder, aaudio_format_t format);
+void AAudioStreamBuilder_setDirection(AAudioStreamBuilder* builder, aaudio_direction_t direction);
+void AAudioStreamBuilder_setBufferCapacityInFrames(AAudioStreamBuilder* builder, int32_t numFrames);
+void AAudioStreamBuilder_setPerformanceMode(AAudioStreamBuilder* builder, aaudio_performance_mode_t mode);
+void AAudioStreamBuilder_setFramesPerDataCallback(AAudioStreamBuilder* builder, int32_t numFrames);
+void AAudioStreamBuilder_setUsage(AAudioStreamBuilder* builder, aaudio_usage_t usage);
+void AAudioStreamBuilder_setDataCallback(AAudioStreamBuilder* builder, AAudioStream_dataCallback callback, void *userData);
+void AAudioStreamBuilder_setErrorCallback(AAudioStreamBuilder* builder, AAudioStream_errorCallback callback, void *userData);
+aaudio_result_t AAudioStreamBuilder_openStream(AAudioStreamBuilder* builder, AAudioStream** stream);
+aaudio_result_t AAudioStreamBuilder_delete(AAudioStreamBuilder* builder);
+aaudio_result_t AAudioStream_close(AAudioStream* stream);
+aaudio_result_t AAudioStream_requestStart(AAudioStream* stream);
+aaudio_result_t AAudioStream_requestStop(AAudioStream* stream);
+aaudio_result_t AAudioStream_getTimestamp(AAudioStream* stream, clockid_t clockid, int64_t *framePosition, int64_t *timeNanoseconds);
+int64_t AAudioStream_getFramesWritten(AAudioStream* stream);

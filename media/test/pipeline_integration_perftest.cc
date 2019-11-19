@@ -5,7 +5,7 @@
 #include "media/base/test_data_util.h"
 #include "media/media_buildflags.h"
 #include "media/test/pipeline_integration_test_base.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 
 namespace media {
 
@@ -13,7 +13,7 @@ static const int kBenchmarkIterationsAudio = 200;
 static const int kBenchmarkIterationsVideo = 20;
 
 static void RunPlaybackBenchmark(const std::string& filename,
-                                 const std::string& name,
+                                 const std::string& metric_suffix,
                                  int iterations,
                                  bool audio_only) {
   double time_seconds = 0.0;
@@ -38,8 +38,9 @@ static void RunPlaybackBenchmark(const std::string& filename,
     }
   }
 
-  perf_test::PrintResult(name, "", filename, iterations / time_seconds,
-                         "runs/s", true);
+  perf_test::PerfResultReporter reporter("clockless_video_playback", filename);
+  reporter.RegisterImportantMetric(metric_suffix, "runs/s");
+  reporter.AddResult(metric_suffix, iterations / time_seconds);
 }
 
 static void RunVideoPlaybackBenchmark(const std::string& filename,
@@ -74,16 +75,22 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(kAudioTestFiles));
 
 TEST(PipelineIntegrationPerfTest, VP8PlaybackBenchmark) {
-  RunVideoPlaybackBenchmark("bear_silent.webm", "clockless_video_playback_vp8");
+  RunVideoPlaybackBenchmark("bear_silent.webm", "_vp8");
 }
 
 TEST(PipelineIntegrationPerfTest, VP9PlaybackBenchmark) {
-  RunVideoPlaybackBenchmark("bear-vp9.webm", "clockless_video_playback_vp9");
+  RunVideoPlaybackBenchmark("bear-vp9.webm", "_vp9");
 }
+
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+TEST(PipelineIntegrationPerfTest, AV1PlaybackBenchmark) {
+  RunVideoPlaybackBenchmark("bear-av1-640x480.webm", "_av1");
+}
+#endif
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 TEST(PipelineIntegrationPerfTest, MP4PlaybackBenchmark) {
-  RunVideoPlaybackBenchmark("bear_silent.mp4", "clockless_video_playback_mp4");
+  RunVideoPlaybackBenchmark("bear_silent.mp4", "_mp4");
 }
 #endif
 

@@ -4,55 +4,38 @@
 
 /** @fileoverview Runs the Sign-in web UI tests. */
 
-/** @const {string} Path to source root. */
-const ROOT_PATH = '../../../../../';
-
 // Polymer BrowserTest fixture.
-GEN_INCLUDE(
-    [ROOT_PATH + 'chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "base/command_line.h"');
-GEN('#include "chrome/test/data/webui/signin_browsertest.h"');
+GEN('#include "build/branding_buildflags.h"');
+GEN('#include "services/network/public/cpp/features.h"');
 
 /**
  * Test fixture for
- * chrome/browser/resources/signin/dice_sync_confirmation/sync_confirmation.html.
+ * chrome/browser/resources/signin/sync_confirmation/sync_confirmation.html.
  * This has to be declared as a variable for TEST_F to find it correctly.
  */
+// eslint-disable-next-line no-var
 var SigninSyncConfirmationTest = class extends PolymerTest {
   /** @override */
-  get typedefCppFixture() {
-    return 'SigninBrowserTest';
-  }
-
-  /** @override */
-  testGenPreamble() {
-    GEN('  EnableUnity();');
-  }
-
-  /** @override */
   get browsePreload() {
-    return 'chrome://sync-confirmation/sync_confirmation_app.html';
+    return 'chrome://sync-confirmation/test_loader.html?module=signin/sync_confirmation_test.js';
   }
 
   /** @override */
   get extraLibraries() {
-    return PolymerTest.getLibraries(ROOT_PATH).concat([
-      ROOT_PATH + 'chrome/test/data/webui/test_browser_proxy.js',
-      ROOT_PATH + 'chrome/browser/resources/signin/dice_sync_confirmation/' +
-          'sync_confirmation_browser_proxy.js',
-      'test_sync_confirmation_browser_proxy.js',
-      'sync_confirmation_test.js',
-    ]);
+    return [
+      '//third_party/mocha/mocha.js',
+      '//chrome/test/data/webui/mocha_adapter.js',
+    ];
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['network::features::kOutOfBlinkCors']};
   }
 };
 
-// TODO(https://crbug.com/862573): Re-enable when no longer failing when
-// is_chrome_branded is true.
-GEN('#if defined(GOOGLE_CHROME_BUILD)');
-GEN('#define MAYBE_DialogWithDice DISABLED_DialogWithDice');
-GEN('#else');
-GEN('#define MAYBE_DialogWithDice');
-GEN('#endif');
-TEST_F('SigninSyncConfirmationTest', 'MAYBE_DialogWithDice', function() {
+TEST_F('SigninSyncConfirmationTest', 'Dialog', function() {
   mocha.run();
 });

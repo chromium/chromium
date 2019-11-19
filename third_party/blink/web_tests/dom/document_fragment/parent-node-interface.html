@@ -1,51 +1,50 @@
 <!DOCTYPE html>
+<title>This tests that DocumentFragment implements the ParentNode interface</title>
 <body>
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-
-description('This tests that DocumentFragment implements the ParentNode interface.');
-
 var documentFragment = new DocumentFragment();
 
-shouldBe('documentFragment.children.length', '0');
-shouldBe('documentFragment.childElementCount', '0');
-shouldBeNull('documentFragment.firstElementChild');
-shouldBeNull('documentFragment.lastElementChild');
+assert_equals(documentFragment.children.length, 0);
+assert_equals(documentFragment.childElementCount, 0);
+assert_equals(documentFragment.firstElementChild, null);
+assert_equals(documentFragment.lastElementChild, null);
 
 documentFragment.appendChild(new Text('a'));
-shouldBe('documentFragment.children.length', '0');
-shouldBe('documentFragment.childElementCount', '0');
-shouldBeNull('documentFragment.firstElementChild');
-shouldBeNull('documentFragment.lastElementChild');
+assert_equals(documentFragment.children.length, 0);
+assert_equals(documentFragment.childElementCount, 0);
+assert_equals(documentFragment.firstElementChild, null);
+assert_equals(documentFragment.lastElementChild, null);
 
 var b = documentFragment.appendChild(document.createElement('b'));
-shouldBe('documentFragment.children.length', '1');
-shouldBe('documentFragment.childElementCount', '1');
-shouldBe('documentFragment.children[0]', 'b');
-shouldBe('documentFragment.firstElementChild', 'b');
-shouldBe('documentFragment.lastElementChild', 'b');
+assert_equals(documentFragment.children.length, 1);
+assert_equals(documentFragment.childElementCount, 1);
+assert_equals(documentFragment.children[0], b);
+assert_equals(documentFragment.firstElementChild, b);
+assert_equals(documentFragment.lastElementChild, b);
 
 documentFragment.appendChild(new Text('c'));
-shouldBe('documentFragment.children.length', '1');
-shouldBe('documentFragment.childElementCount', '1');
-shouldBe('documentFragment.children[0]', 'b');
-shouldBe('documentFragment.firstElementChild', 'b');
-shouldBe('documentFragment.lastElementChild', 'b');
+assert_equals(documentFragment.children.length, 1);
+assert_equals(documentFragment.childElementCount, 1);
+assert_equals(documentFragment.children[0], b);
+assert_equals(documentFragment.firstElementChild, b);
+assert_equals(documentFragment.lastElementChild, b);
 
-var d = documentFragment.appendChild(document.createElement('d'));
-shouldBe('documentFragment.children.length', '2');
-shouldBe('documentFragment.childElementCount', '2');
-shouldBe('documentFragment.children[0]', 'b');
-shouldBe('documentFragment.children[1]', 'd');
-shouldBe('documentFragment.firstElementChild', 'b');
-shouldBe('documentFragment.lastElementChild', 'd');
+var d = documentFragment.appendChild(document.createElement(d));
+assert_equals(documentFragment.children.length, 2);
+assert_equals(documentFragment.childElementCount, 2);
+assert_equals(documentFragment.children[0], b);
+assert_equals(documentFragment.children[1], d);
+assert_equals(documentFragment.firstElementChild, b);
+assert_equals(documentFragment.lastElementChild, d);
 
 documentFragment.appendChild(new Text('e'));
-shouldBe('documentFragment.children.length', '2');
-shouldBe('documentFragment.childElementCount', '2');
-shouldBe('documentFragment.children[0]', 'b');
-shouldBe('documentFragment.children[1]', 'd');
-shouldBe('documentFragment.firstElementChild', 'b');
-shouldBe('documentFragment.lastElementChild', 'd');
-
+assert_equals(documentFragment.children.length, 2);
+assert_equals(documentFragment.childElementCount, 2);
+assert_equals(documentFragment.children[0], b);
+assert_equals(documentFragment.children[1], d);
+assert_equals(documentFragment.firstElementChild, b);
+assert_equals(documentFragment.lastElementChild, d);
+done();
 </script>

@@ -12,22 +12,6 @@ class FlashEmbedRewrite {
   // Entry point that will then call a private website-specific method.
   static GURL RewriteFlashEmbedURL(const GURL&);
 
-  // Used for UMA. Values should not be reorderer or reused.
-  // SUCCESS refers to an embed properly rewritten. SUCCESS_PARAMS_REWRITE
-  // refers to an embed rewritten with the params fixed. SUCCESS_ENABLEJSAPI
-  // refers to a rewritten embed even though the JS API was enabled (Chrome
-  // Android only). FAILURE_ENABLEJSAPI indicates the embed was not rewritten
-  // because the JS API was enabled.
-  enum class YouTubeRewriteStatus {
-    kSuccess = 0,
-    kSuccessParamsRewrite = 1,
-    kSuccessEnableJSAPI = 2,
-    kFailureEnableJSAPI = 3,
-    kLast = kFailureEnableJSAPI,
-  };
-
-  static const char kFlashYouTubeRewriteUMA[];
-
  private:
   // YouTube specific method.
   static GURL RewriteYouTubeFlashEmbedURL(const GURL&);

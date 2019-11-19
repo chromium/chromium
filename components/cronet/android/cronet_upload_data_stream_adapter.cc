@@ -14,9 +14,9 @@
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h"
 #include "components/cronet/android/cronet_url_request_adapter.h"
 #include "components/cronet/android/io_buffer_with_byte_buffer.h"
-#include "jni/CronetUploadDataStream_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -98,8 +98,7 @@ void CronetUploadDataStreamAdapter::OnRewindSucceeded(
                                 upload_data_stream_));
 }
 
-void CronetUploadDataStreamAdapter::Destroy(JNIEnv* env,
-                                            const JavaParamRef<jobject>& jobj) {
+void CronetUploadDataStreamAdapter::Destroy(JNIEnv* env) {
   delete this;
 }
 

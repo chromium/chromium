@@ -7,11 +7,17 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/strings/string_piece.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 
 class GURL;
 
 namespace net {
+
+class HttpResponseHeaders;
 
 // See RFC 2397 for a complete description of the 'data' URL scheme.
 //
@@ -30,6 +36,11 @@ namespace net {
 class NET_EXPORT DataURL {
  public:
   // This method can be used to parse a 'data' URL into its component pieces.
+  //
+  // |mime_type| and |charset| must be non-null and point to empty strings.
+  //
+  // If |data| is null, then the <data> section will not be parsed or validated.
+  // If non-null, it must point to an empty string.
   //
   // The resulting mime_type is normalized to lowercase.  The data is the
   // decoded data (e.g.., if the data URL specifies base64 encoding, then the
@@ -50,16 +61,25 @@ class NET_EXPORT DataURL {
   // false.
   //
   // If there's any other grammar violation in the URL, then this method will
-  // return false. Output variables may be changed and contain invalid data. On
-  // success, true is returned.
-  //
-  // OPTIONAL: If |data| is NULL, then the <data> section will not be parsed
-  //           or validated.
-  //
+  // return false, and all passed in pointers will be unmodified. On success,
+  // true is returned.
   static bool Parse(const GURL& url,
                     std::string* mime_type,
                     std::string* charset,
-                    std::string* data);
+                    std::string* data) WARN_UNUSED_RESULT;
+
+  // Similar to parse, except that it also generates a bogus set of response
+  // headers, with Content-Type populated, and takes a method. Only the "HEAD"
+  // method modifies the response, resulting in a 0-length body. All arguments
+  // except must be non-null. All std::string pointers must point to empty
+  // strings, and |*headers| must be nullptr. Returns net::OK on success.
+  static Error BuildResponse(const GURL& url,
+                             base::StringPiece method,
+                             std::string* mime_type,
+                             std::string* charset,
+                             std::string* data,
+                             scoped_refptr<HttpResponseHeaders>* headers)
+      WARN_UNUSED_RESULT;
 };
 
 }  // namespace net

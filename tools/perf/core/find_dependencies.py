@@ -2,20 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import fnmatch
 import imp
 import logging
-import optparse
 import os
 import sys
 import zipfile
 
-from telemetry import benchmark
 from telemetry.internal.util import command_line
 from telemetry.internal.util import path
 from telemetry.internal.util import path_set
-
-from py_utils import discover
 
 try:
   from modulegraph import modulegraph  # pylint: disable=import-error
@@ -93,35 +91,6 @@ def FindPythonDependencies(module_path):
     sys.path = sys_path
 
 
-def FindPageSetDependencies(base_dir):
-  logging.info('Finding page sets in %s', base_dir)
-
-  # Add base_dir to path so our imports relative to base_dir will work.
-  sys.path.append(base_dir)
-  tests = discover.DiscoverClasses(base_dir, base_dir, benchmark.Benchmark,
-                                   index_by_class_name=True)
-
-  for test_class in tests.itervalues():
-    test_obj = test_class()
-
-    # Ensure the test's default options are set if needed.
-    parser = optparse.OptionParser()
-    test_obj.AddCommandLineArgs(parser, None)
-    options = optparse.Values()
-    for k, v in parser.get_default_values().__dict__.iteritems():
-      options.ensure_value(k, v)
-
-    # Page set paths are relative to their runner script, not relative to us.
-    path.GetBaseDir = lambda: base_dir
-    # TODO: Loading the page set will automatically download its Cloud Storage
-    # deps. This is really expensive, and we don't want to do this by default.
-    story_set = test_obj.CreateStorySet(options)
-
-    # Add all of its serving_dirs as dependencies.
-    for serving_dir in story_set.serving_dirs:
-      yield serving_dir
-
-
 def FindExcludedFiles(files, options):
   # Define some filters for files.
   def IsHidden(path_string):
@@ -170,7 +139,7 @@ def FindDependencies(target_paths, options):
   # have Telemetry.
   dependencies |= FindPythonDependencies(os.path.realpath(
       os.path.join(path_util.GetTelemetryDir(),
-                   'telemetry', 'benchmark_runner.py')))
+                   'telemetry', 'command_line', 'parser.py')))
   dependencies |= FindPythonDependencies(os.path.realpath(
       os.path.join(path_util.GetTelemetryDir(),
                    'telemetry', 'testing', 'run_tests.py')))
@@ -182,8 +151,6 @@ def FindDependencies(target_paths, options):
     dependencies.add(base_dir)
     dependencies |= FindBootstrapDependencies(base_dir)
     dependencies |= FindPythonDependencies(target_path)
-    if options.include_page_set_data:
-      dependencies |= FindPageSetDependencies(base_dir)
 
   # Remove excluded files.
   dependencies -= FindExcludedFiles(set(dependencies), options)
@@ -231,10 +198,6 @@ class FindDependenciesCommand(command_line.OptparseCommand):
         help='Increase verbosity level (repeat as needed).')
 
     parser.add_option(
-        '-p', '--include-page-set-data', action='store_true', default=False,
-        help='Scan tests for page set data and include them.')
-
-    parser.add_option(
         '-e', '--exclude', action='append', default=[],
         help='Exclude paths matching EXCLUDE. Can be used multiple times.')
 
@@ -256,7 +219,7 @@ class FindDependenciesCommand(command_line.OptparseCommand):
     dependencies = FindDependencies(target_paths, args)
     if args.zip:
       ZipDependencies(target_paths, dependencies, args)
-      print 'Zip archive written to %s.' % args.zip
+      print('Zip archive written to %s.' % args.zip)
     else:
-      print '\n'.join(sorted(dependencies))
+      print('\n'.join(sorted(dependencies)))
     return 0

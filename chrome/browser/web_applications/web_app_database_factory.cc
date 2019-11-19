@@ -4,7 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 
-#include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "components/sync/model_impl/model_type_store_service_impl.h"
 
 namespace web_app {

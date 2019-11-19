@@ -13,8 +13,10 @@
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "media/audio/audio_output_delegate.h"
-#include "media/mojo/interfaces/audio_logging.mojom.h"
-#include "media/mojo/interfaces/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_logging.mojom.h"
+#include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class MediaObserver;
@@ -37,13 +39,14 @@ class CONTENT_EXPORT AudioOutputDelegateImpl
   static std::unique_ptr<AudioOutputDelegate> Create(
       EventHandler* handler,
       media::AudioManager* audio_manager,
-      media::mojom::AudioLogPtr audio_log,
+      mojo::PendingRemote<media::mojom::AudioLog> audio_log,
       MediaObserver* media_observer,
       int stream_id,
       int render_frame_id,
       int render_process_id,
       const media::AudioParameters& params,
-      media::mojom::AudioOutputStreamObserverPtr observer,
+      mojo::PendingRemote<media::mojom::AudioOutputStreamObserver>
+          pending_observer,
       const std::string& output_device_id);
 
   AudioOutputDelegateImpl(
@@ -51,13 +54,14 @@ class CONTENT_EXPORT AudioOutputDelegateImpl
       std::unique_ptr<base::CancelableSyncSocket> foreign_socket,
       EventHandler* handler,
       media::AudioManager* audio_manager,
-      media::mojom::AudioLogPtr audio_log,
+      mojo::PendingRemote<media::mojom::AudioLog> audio_log,
       MediaObserver* media_observer,
       int stream_id,
       int render_frame_id,
       int render_process_id,
       const media::AudioParameters& params,
-      media::mojom::AudioOutputStreamObserverPtr observer,
+      mojo::PendingRemote<media::mojom::AudioOutputStreamObserver>
+          pending_observer,
       const std::string& output_device_id);
 
   ~AudioOutputDelegateImpl() override;
@@ -66,6 +70,7 @@ class CONTENT_EXPORT AudioOutputDelegateImpl
   int GetStreamId() override;
   void OnPlayStream() override;
   void OnPauseStream() override;
+  void OnFlushStream() override;
   void OnSetVolume(double volume) override;
 
  private:
@@ -81,7 +86,7 @@ class CONTENT_EXPORT AudioOutputDelegateImpl
 
   // This is the event handler which |this| send notifications to.
   EventHandler* subscriber_;
-  const media::mojom::AudioLogPtr audio_log_;
+  const mojo::Remote<media::mojom::AudioLog> audio_log_;
   // |controller_event_handler_| proxies events from controller to |this|.
   // |controller_event_handler_|, and |reader_| will outlive |this|, see the
   // destructor for details.
@@ -99,9 +104,9 @@ class CONTENT_EXPORT AudioOutputDelegateImpl
   base::RepeatingTimer poll_timer_;
   bool is_audible_ = false;
   // |observer_| is notified about changes in the audible state of the stream.
-  media::mojom::AudioOutputStreamObserverPtr observer_;
+  mojo::Remote<media::mojom::AudioOutputStreamObserver> observer_;
 
-  base::WeakPtrFactory<AudioOutputDelegateImpl> weak_factory_;
+  base::WeakPtrFactory<AudioOutputDelegateImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AudioOutputDelegateImpl);
 };

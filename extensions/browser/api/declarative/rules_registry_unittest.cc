@@ -9,7 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/declarative/test_rules_registry.h"
 #include "extensions/browser/api_test_utils.h"
@@ -28,7 +28,7 @@ namespace extensions {
 using api_test_utils::ParseDictionary;
 
 TEST(RulesRegistryTest, FillOptionalIdentifiers) {
-  content::TestBrowserThreadBundle test_browser_thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
 
   std::string error;
   scoped_refptr<RulesRegistry> registry =
@@ -145,12 +145,12 @@ TEST(RulesRegistryTest, FillOptionalIdentifiers) {
             registry->GetNumberOfUsedRuleIdentifiersForTesting());
 
   // Make sure that deletion traits of registry are executed.
-  registry = NULL;
+  registry.reset();
   base::RunLoop().RunUntilIdle();
 }
 
 TEST(RulesRegistryTest, FillOptionalPriority) {
-  content::TestBrowserThreadBundle test_browser_thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
 
   std::string error;
   scoped_refptr<RulesRegistry> registry =
@@ -182,13 +182,13 @@ TEST(RulesRegistryTest, FillOptionalPriority) {
             std::max(*get_rules[0]->priority, *get_rules[1]->priority));
 
   // Make sure that deletion traits of registry are executed.
-  registry = NULL;
+  registry.reset();
   base::RunLoop().RunUntilIdle();
 }
 
 // Test verifies 2 rules defined in the manifest appear in the registry.
 TEST(RulesRegistryTest, TwoRulesInManifest) {
-  content::TestBrowserThreadBundle test_browser_thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
 
   // Create extension
   std::unique_ptr<base::DictionaryValue> manifest = ParseDictionary(
@@ -270,7 +270,7 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
 // Tests verifies that rules defined in the manifest cannot be deleted but
 // programmatically added rules still can be deleted.
 TEST(RulesRegistryTest, DeleteRuleInManifest) {
-  content::TestBrowserThreadBundle test_browser_thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
 
   // Create extension
   std::unique_ptr<base::DictionaryValue> manifest = ParseDictionary(

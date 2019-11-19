@@ -51,6 +51,14 @@ class MediaStreamAudioDestinationHandler final
 
   bool RequiresTailProcessing() const final { return false; }
 
+  // This node has no outputs, so we need methods that are different from the
+  // ones provided by AudioBasicInspectorHnadler, which assume an output.
+  void PullInputs(uint32_t frames_to_process) override;
+  void CheckNumberOfChannelsForInput(AudioNodeInput*) override;
+
+  // AudioNode
+  void UpdatePullStatusIfNeeded() override;
+
  private:
   MediaStreamAudioDestinationHandler(AudioNode&, uint32_t number_of_channels);
   // As an audio source, we will never propagate silence.
@@ -88,6 +96,10 @@ class MediaStreamAudioDestinationNode final : public AudioBasicInspectorNode {
   MediaStreamSource* source() const { return source_; }
 
   void Trace(Visitor*) final;
+
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
 
  private:
   const Member<MediaStreamSource> source_;

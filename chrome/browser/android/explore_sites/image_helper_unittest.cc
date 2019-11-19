@@ -10,17 +10,19 @@
 #include "base/bind.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "services/data_decoder/public/cpp/test_data_decoder_service.h"
-#include "services/data_decoder/public/mojom/constants.mojom.h"
-#include "services/service_manager/public/cpp/test/test_connector_factory.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "ui/gfx/color_palette.h"
 
 namespace explore_sites {
+
+SkColor getBackgroundColor() {
+  return SK_ColorTRANSPARENT;
+}
 
 const std::vector<unsigned char> kWebpBytes{
     0x52, 0x49, 0x46, 0x46, 0x40, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50,
@@ -47,11 +49,8 @@ const int kUpperBoundCorner = 26;
 
 class ExploreSitesImageHelperTest : public testing::Test {
  public:
-  ExploreSitesImageHelperTest()
-      : data_decoder_(connector_factory_.RegisterInstance(
-            data_decoder::mojom::kServiceName)) {}
-
-  ~ExploreSitesImageHelperTest() override {}
+  ExploreSitesImageHelperTest() = default;
+  ~ExploreSitesImageHelperTest() override = default;
 
   EncodedImageList GetEncodedImageList(int num_icons);
   BitmapCallback StoreBitmap() {
@@ -65,14 +64,9 @@ class ExploreSitesImageHelperTest : public testing::Test {
   std::vector<std::unique_ptr<SkBitmap>> last_bitmap_list;
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
-  std::unique_ptr<service_manager::Connector> GetConnector() {
-    return connector_factory_.CreateConnector();
-  }
-
-  service_manager::TestConnectorFactory connector_factory_;
-  data_decoder::DataDecoderService data_decoder_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -90,10 +84,9 @@ EncodedImageList ExploreSitesImageHelperTest::GetEncodedImageList(
 TEST_F(ExploreSitesImageHelperTest, TestImageHelper_SiteIcon) {
   ImageHelper image_helper;
 
-  image_helper.ComposeSiteImage(StoreBitmap(), GetEncodedImageList(1),
-                                GetConnector());
+  image_helper.ComposeSiteImage(StoreBitmap(), GetEncodedImageList(1));
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   ASSERT_NE(nullptr, last_bitmap_list[0]);
   EXPECT_FALSE(last_bitmap_list[0]->isNull());
@@ -105,16 +98,14 @@ TEST_F(ExploreSitesImageHelperTest, TestImageHelper_SiteIcon) {
 // Test that two sequential calls to get site icons works.
 TEST_F(ExploreSitesImageHelperTest, TestImageHelper_SiteIcon_MultipleCalls) {
   ImageHelper image_helper;
-  image_helper.ComposeSiteImage(StoreBitmap(), GetEncodedImageList(1),
-                                GetConnector());
-  scoped_task_environment_.RunUntilIdle();
+  image_helper.ComposeSiteImage(StoreBitmap(), GetEncodedImageList(1));
+  task_environment_.RunUntilIdle();
 
   ASSERT_NE(nullptr, last_bitmap_list[0]);
   EXPECT_FALSE(last_bitmap_list[0]->isNull());
 
-  image_helper.ComposeSiteImage(StoreBitmap(), GetEncodedImageList(1),
-                                GetConnector());
-  scoped_task_environment_.RunUntilIdle();
+  image_helper.ComposeSiteImage(StoreBitmap(), GetEncodedImageList(1));
+  task_environment_.RunUntilIdle();
 
   ASSERT_NE(nullptr, last_bitmap_list[1]);
   EXPECT_FALSE(last_bitmap_list[1]->isNull());
@@ -123,11 +114,9 @@ TEST_F(ExploreSitesImageHelperTest, TestImageHelper_SiteIcon_MultipleCalls) {
 // Test that two concurrent calls to get site icons works.
 TEST_F(ExploreSitesImageHelperTest, TestImageHelper_SiteIcon_ConcurrentCalls) {
   ImageHelper image_helper;
-  image_helper.ComposeSiteImage(StoreBitmap(), GetEncodedImageList(1),
-                                GetConnector());
-  image_helper.ComposeSiteImage(StoreBitmap(), GetEncodedImageList(1),
-                                GetConnector());
-  scoped_task_environment_.RunUntilIdle();
+  image_helper.ComposeSiteImage(StoreBitmap(), GetEncodedImageList(1));
+  image_helper.ComposeSiteImage(StoreBitmap(), GetEncodedImageList(1));
+  task_environment_.RunUntilIdle();
 
   ASSERT_NE(nullptr, last_bitmap_list[0]);
   EXPECT_FALSE(last_bitmap_list[0]->isNull());
@@ -139,8 +128,8 @@ TEST_F(ExploreSitesImageHelperTest, TestImageHelper_SiteIcon_ConcurrentCalls) {
 TEST_F(ExploreSitesImageHelperTest, TestImageHelper_CategoryImage_One) {
   ImageHelper image_helper;
   image_helper.ComposeCategoryImage(StoreBitmap(), kIconSize,
-                                    GetEncodedImageList(1), GetConnector());
-  scoped_task_environment_.RunUntilIdle();
+                                    GetEncodedImageList(1));
+  task_environment_.RunUntilIdle();
 
   ASSERT_NE(nullptr, last_bitmap_list[0]);
   EXPECT_FALSE(last_bitmap_list[0]->isNull());
@@ -148,15 +137,15 @@ TEST_F(ExploreSitesImageHelperTest, TestImageHelper_CategoryImage_One) {
   EXPECT_EQ(last_bitmap_list[0]->height(), kIconSize);
 
   // One square in the center. If inside the bounds, the color should be 0.
-  // If outside of the bounds the color should be kGoogleGrey100.
+  // If outside of the bounds the color should be transparent.
   for (int i = 0; i < last_bitmap_list[0]->width(); i++) {
     for (int j = 0; j < last_bitmap_list[0]->height(); j++) {
       if (j > kLowerBoundCenter && j < kUpperBoundCenter &&
           i > kLowerBoundCenter &&
           i < kUpperBoundCenter) {  // centered square is color 0
         EXPECT_EQ(last_bitmap_list[0]->getColor(j, i), (unsigned)0);
-      } else {  // rest of bitmap is grey
-        EXPECT_EQ(last_bitmap_list[0]->getColor(j, i), gfx::kGoogleGrey100);
+      } else {  // rest of bitmap is transparent
+        EXPECT_EQ(last_bitmap_list[0]->getColor(j, i), getBackgroundColor());
       }
     }
   }
@@ -166,8 +155,8 @@ TEST_F(ExploreSitesImageHelperTest, TestImageHelper_CategoryImage_One) {
 TEST_F(ExploreSitesImageHelperTest, TestImageHelper_CategoryImage_Two) {
   ImageHelper image_helper;
   image_helper.ComposeCategoryImage(StoreBitmap(), kIconSize,
-                                    GetEncodedImageList(2), GetConnector());
-  scoped_task_environment_.RunUntilIdle();
+                                    GetEncodedImageList(2));
+  task_environment_.RunUntilIdle();
 
   ASSERT_NE(nullptr, last_bitmap_list[0]);
   EXPECT_FALSE(last_bitmap_list[0]->isNull());
@@ -175,14 +164,14 @@ TEST_F(ExploreSitesImageHelperTest, TestImageHelper_CategoryImage_Two) {
   EXPECT_EQ(last_bitmap_list[0]->height(), kIconSize);
 
   // Two squares, side by side. If inside the bounds, the color should be 0.
-  // If outside of the bounds the color should be kGoogleGrey100.
+  // If outside of the bounds the color should be transparent.
   for (int i = 0; i < last_bitmap_list[0]->width(); i++) {
     for (int j = 0; j < last_bitmap_list[0]->height(); j++) {
       if ((j < kLowerBoundCorner || j > kUpperBoundCorner) &&
           i > kLowerBoundCenter && i < kUpperBoundCenter) {
         EXPECT_EQ(last_bitmap_list[0]->getColor(j, i), (unsigned)0);
-      } else {  // rest of bitmap is grey
-        EXPECT_EQ(last_bitmap_list[0]->getColor(j, i), gfx::kGoogleGrey100);
+      } else {  // rest of bitmap is transparent
+        EXPECT_EQ(last_bitmap_list[0]->getColor(j, i), getBackgroundColor());
       }
     }
   }
@@ -192,8 +181,8 @@ TEST_F(ExploreSitesImageHelperTest, TestImageHelper_CategoryImage_Two) {
 TEST_F(ExploreSitesImageHelperTest, TestImageHelper_CategoryImage_Three) {
   ImageHelper image_helper;
   image_helper.ComposeCategoryImage(StoreBitmap(), kIconSize,
-                                    GetEncodedImageList(3), GetConnector());
-  scoped_task_environment_.RunUntilIdle();
+                                    GetEncodedImageList(3));
+  task_environment_.RunUntilIdle();
 
   ASSERT_NE(nullptr, last_bitmap_list[0]);
   EXPECT_FALSE(last_bitmap_list[0]->isNull());
@@ -202,7 +191,7 @@ TEST_F(ExploreSitesImageHelperTest, TestImageHelper_CategoryImage_Three) {
 
   // Three squares, two on top and one on bottom. If inside the bounds, the
   // color should be 0. If outside of the bounds the color should be
-  // kGoogleGrey100.
+  // transparent.
   for (int i = 0; i < last_bitmap_list[0]->width(); i++) {
     for (int j = 0; j < last_bitmap_list[0]->height(); j++) {
       if ((i < kLowerBoundCorner && j < kLowerBoundCorner) ||  // top left
@@ -210,8 +199,8 @@ TEST_F(ExploreSitesImageHelperTest, TestImageHelper_CategoryImage_Three) {
           (i > kUpperBoundCorner && j > kLowerBoundCenter &&
            j < kUpperBoundCenter)) {  // bottom
         EXPECT_EQ(last_bitmap_list[0]->getColor(j, i), (unsigned)0);
-      } else {  // rest of bitmap is grey
-        EXPECT_EQ(last_bitmap_list[0]->getColor(j, i), gfx::kGoogleGrey100);
+      } else {  // rest of bitmap is transparent
+        EXPECT_EQ(last_bitmap_list[0]->getColor(j, i), getBackgroundColor());
       }
     }
   }
@@ -221,8 +210,8 @@ TEST_F(ExploreSitesImageHelperTest, TestImageHelper_CategoryImage_Three) {
 TEST_F(ExploreSitesImageHelperTest, TestImageHelper_CategoryImage_Four) {
   ImageHelper image_helper;
   image_helper.ComposeCategoryImage(StoreBitmap(), kIconSize,
-                                    GetEncodedImageList(4), GetConnector());
-  scoped_task_environment_.RunUntilIdle();
+                                    GetEncodedImageList(4));
+  task_environment_.RunUntilIdle();
 
   ASSERT_NE(nullptr, last_bitmap_list[0]);
   EXPECT_FALSE(last_bitmap_list[0]->isNull());
@@ -230,7 +219,7 @@ TEST_F(ExploreSitesImageHelperTest, TestImageHelper_CategoryImage_Four) {
   EXPECT_EQ(last_bitmap_list[0]->height(), kIconSize);
 
   // Four squares in each corner. If inside the bounds, the color should be 0.
-  // If outside of the bounds the color should be kGoogleGrey100.
+  // If outside of the bounds the color should be transparent.
   for (int i = 0; i < last_bitmap_list[0]->width(); i++) {
     for (int j = 0; j < last_bitmap_list[0]->height(); j++) {
       if ((i < kLowerBoundCorner && j < kLowerBoundCorner) ||  // top left
@@ -238,8 +227,8 @@ TEST_F(ExploreSitesImageHelperTest, TestImageHelper_CategoryImage_Four) {
           (i > kUpperBoundCorner && j < kLowerBoundCorner) ||  // bottom left
           (i > kUpperBoundCorner && j > kUpperBoundCorner)) {  // bottom right
         EXPECT_EQ(last_bitmap_list[0]->getColor(j, i), (unsigned)0);
-      } else {  // rest of bitmap is grey
-        EXPECT_EQ(last_bitmap_list[0]->getColor(j, i), gfx::kGoogleGrey100);
+      } else {  // rest of bitmap is transparent
+        EXPECT_EQ(last_bitmap_list[0]->getColor(j, i), getBackgroundColor());
       }
     }
   }
@@ -261,9 +250,9 @@ TEST_F(ExploreSitesImageHelperTest, TestImageHelper_CategoryImage_InvalidWebP) {
       image_list.push_back(std::make_unique<EncodedImageBytes>(kWebpBytes));
     }
     image_helper.ComposeCategoryImage(StoreBitmap(), kIconSize,
-                                      std::move(image_list), GetConnector());
+                                      std::move(image_list));
 
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     if (i == 0) {
       ASSERT_EQ(nullptr, last_bitmap_list[i]);
@@ -279,9 +268,8 @@ TEST_F(ExploreSitesImageHelperTest, TestImageHelper_ImageDecodedUMA) {
   ImageHelper image_helper;
 
   // Record one success UMA from CompseSiteImage.
-  image_helper.ComposeSiteImage(StoreBitmap(), GetEncodedImageList(1),
-                                GetConnector());
-  scoped_task_environment_.RunUntilIdle();
+  image_helper.ComposeSiteImage(StoreBitmap(), GetEncodedImageList(1));
+  task_environment_.RunUntilIdle();
 
   histograms().ExpectTotalCount("ExploreSites.ImageDecoded", 1);
   histograms().ExpectBucketCount("ExploreSites.ImageDecoded", true, 1);
@@ -289,17 +277,16 @@ TEST_F(ExploreSitesImageHelperTest, TestImageHelper_ImageDecodedUMA) {
   // Record one failure UMA from ComposeSiteImage.
   EncodedImageList image_list;
   image_list.push_back(std::make_unique<EncodedImageBytes>(kInvalidWebpBytes));
-  image_helper.ComposeSiteImage(StoreBitmap(), std::move(image_list),
-                                GetConnector());
-  scoped_task_environment_.RunUntilIdle();
+  image_helper.ComposeSiteImage(StoreBitmap(), std::move(image_list));
+  task_environment_.RunUntilIdle();
 
   histograms().ExpectTotalCount("ExploreSites.ImageDecoded", 2);
   histograms().ExpectBucketCount("ExploreSites.ImageDecoded", false, 1);
 
   // Record 2 samples from ComposeCategoryImage.
   image_helper.ComposeCategoryImage(StoreBitmap(), kIconSize,
-                                    GetEncodedImageList(2), GetConnector());
-  scoped_task_environment_.RunUntilIdle();
+                                    GetEncodedImageList(2));
+  task_environment_.RunUntilIdle();
 
   histograms().ExpectTotalCount("ExploreSites.ImageDecoded", 4);
   histograms().ExpectBucketCount("ExploreSites.ImageDecoded", true, 3);

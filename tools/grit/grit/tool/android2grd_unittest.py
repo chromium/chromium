@@ -5,6 +5,8 @@
 
 '''Unit tests for grit.tool.android2grd'''
 
+from __future__ import print_function
+
 import os
 import sys
 if __name__ == '__main__':
@@ -13,7 +15,6 @@ if __name__ == '__main__':
 import unittest
 import xml.dom.minidom
 
-from grit import grd_reader
 from grit import util
 from grit.node import empty
 from grit.node import message
@@ -106,7 +107,7 @@ class Android2GrdUnittest(unittest.TestCase):
     self.assertEqual(len(messages), 5)
 
     # Check that a message node is constructed correctly.
-    msg = filter(lambda x: x.GetTextualIds()[0] == "IDS_PLACEHOLDERS", messages)
+    msg = [x for x in messages if x.GetTextualIds()[0] == 'IDS_PLACEHOLDERS']
     self.assertTrue(msg)
     msg = msg[0]
 
@@ -116,7 +117,7 @@ class Android2GrdUnittest(unittest.TestCase):
   def testTranslatableAttribute(self):
     grd = self.__ParseAndroidXml([])
     messages = grd.GetChildrenOfType(message.MessageNode)
-    msgs = filter(lambda x: x.GetTextualIds()[0] == "IDS_CONSTANT", messages)
+    msgs = [x for x in messages if x.GetTextualIds()[0] == 'IDS_CONSTANT']
     self.assertTrue(msgs)
     self.assertFalse(msgs[0].IsTranslateable())
 
@@ -124,12 +125,12 @@ class Android2GrdUnittest(unittest.TestCase):
     grd = self.__ParseAndroidXml(['--languages', 'en-US,en-GB,ru,id'])
 
     files = grd.GetChildrenOfType(node_io.FileNode)
-    us_file = filter(lambda x: x.attrs['lang'] == 'en-US', files)
+    us_file = [x for x in files if x.attrs['lang'] == 'en-US']
     self.assertTrue(us_file)
     self.assertEqual(us_file[0].GetInputPath(),
                      'chrome_android_strings_en-US.xtb')
 
-    id_file = filter(lambda x: x.attrs['lang'] == 'id', files)
+    id_file = [x for x in files if x.attrs['lang'] == 'id']
     self.assertTrue(id_file)
     self.assertEqual(id_file[0].GetInputPath(),
                      'chrome_android_strings_id.xtb')
@@ -144,9 +145,9 @@ class Android2GrdUnittest(unittest.TestCase):
     outputs = grd.GetChildrenOfType(node_io.OutputNode)
     self.assertEqual(len(outputs), 7)
 
-    header_outputs = filter(lambda x: x.GetType() == 'rc_header', outputs)
-    rc_outputs = filter(lambda x: x.GetType() == 'rc_all', outputs)
-    xml_outputs = filter(lambda x: x.GetType() == 'android', outputs)
+    header_outputs = [x for x in outputs if x.GetType() == 'rc_header']
+    rc_outputs = [x for x in outputs if x.GetType() == 'rc_all']
+    xml_outputs = [x for x in outputs if x.GetType() == 'android']
 
     self.assertEqual(len(header_outputs), 1)
     self.assertEqual(len(rc_outputs), 3)
@@ -157,8 +158,8 @@ class Android2GrdUnittest(unittest.TestCase):
     self.assertEqual(util.normpath(header_outputs[0].GetFilename()),
                      util.normpath('header/dir/chrome_android_strings.h'))
 
-    id_rc = filter(lambda x: x.GetLanguage() == 'id', rc_outputs)
-    id_xml = filter(lambda x: x.GetLanguage() == 'id', xml_outputs)
+    id_rc = [x for x in rc_outputs if x.GetLanguage() == 'id']
+    id_xml = [x for x in xml_outputs if x.GetLanguage() == 'id']
     self.assertTrue(id_rc)
     self.assertTrue(id_xml)
     self.assertEqual(util.normpath(id_rc[0].GetFilename()),
@@ -166,8 +167,8 @@ class Android2GrdUnittest(unittest.TestCase):
     self.assertEqual(util.normpath(id_xml[0].GetFilename()),
                      util.normpath('xml/dir/values-in/strings.xml'))
 
-    us_rc = filter(lambda x: x.GetLanguage() == 'en-US', rc_outputs)
-    us_xml = filter(lambda x: x.GetLanguage() == 'en-US', xml_outputs)
+    us_rc = [x for x in rc_outputs if x.GetLanguage() == 'en-US']
+    us_xml = [x for x in xml_outputs if x.GetLanguage() == 'en-US']
     self.assertTrue(us_rc)
     self.assertTrue(us_xml)
     self.assertEqual(util.normpath(us_rc[0].GetFilename()),

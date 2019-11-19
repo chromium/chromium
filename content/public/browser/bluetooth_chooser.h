@@ -47,7 +47,7 @@ class CONTENT_EXPORT BluetoothChooser {
   // After the EventHandler is called with Event::CANCELLED, Event::SELECTED,
   // Event::DENIED_PERMISSION or Event::SHOW_*, it won't be called again, and
   // users must not call any more BluetoothChooser methods.
-  typedef base::Callback<void(Event, const std::string& opt_device_id)>
+  typedef base::RepeatingCallback<void(Event, const std::string& opt_device_id)>
       EventHandler;
 
   BluetoothChooser() {}

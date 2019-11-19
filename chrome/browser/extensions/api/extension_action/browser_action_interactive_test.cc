@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/extension_action.h"
 #include "chrome/browser/extensions/extension_action_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -22,16 +21,19 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/zoom/test/zoom_test_utils.h"
+#include "components/zoom/zoom_controller.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/buildflags.h"
 
 #if defined(OS_WIN)
@@ -337,9 +339,10 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
     return;
 
   OpenPopupViaAPI(false);
-  ExtensionService* service = extensions::ExtensionSystem::Get(
-      browser()->profile())->extension_service();
-  ASSERT_FALSE(service->GetExtensionById(last_loaded_extension_id(), false)
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
+  ASSERT_FALSE(registry
+                   ->GetExtensionById(last_loaded_extension_id(),
+                                      ExtensionRegistry::ENABLED)
                    ->permissions_data()
                    ->HasAPIPermissionForTab(
                        SessionTabHelper::IdForTab(
@@ -417,6 +420,77 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   // the popup to go away. This should not crash.
   UninstallExtension(extension->id());
   EXPECT_FALSE(browser_action_test_util->HasPopup());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
+  if (!ShouldRunPopupTest())
+    return;
+
+  ASSERT_TRUE(
+      LoadExtension(test_data_dir_.AppendASCII("browser_action/open_popup")));
+  const Extension* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(extension) << message_;
+
+  // Navigate to one of the extension's pages in a tab.
+  ui_test_utils::NavigateToURL(browser(),
+                               extension->GetResourceURL("popup.html"));
+  content::WebContents* tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Zoom the extension page in the tab.
+  zoom::ZoomController* zoom_controller =
+      zoom::ZoomController::FromWebContents(tab_contents);
+  double tab_old_zoom_level = zoom_controller->GetZoomLevel();
+  double tab_new_zoom_level = tab_old_zoom_level + 1.0;
+  zoom::ZoomController::ZoomChangedEventData zoom_change_data(
+      tab_contents, tab_old_zoom_level, tab_new_zoom_level,
+      zoom::ZoomController::ZOOM_MODE_DEFAULT, true);
+  zoom::ZoomChangedWatcher zoom_change_watcher(tab_contents, zoom_change_data);
+  zoom_controller->SetZoomLevel(tab_new_zoom_level);
+  zoom_change_watcher.Wait();
+
+  // Open the extension's popup.
+  content::WindowedNotificationObserver popup_observer(
+      NOTIFICATION_EXTENSION_HOST_CREATED,
+      content::NotificationService::AllSources());
+  OpenPopupViaToolbar();
+  popup_observer.Wait();
+  ExtensionHost* extension_host =
+      content::Details<ExtensionHost>(popup_observer.details()).ptr();
+  content::WebContents* popup_contents = extension_host->host_contents();
+
+  // The popup should not use the per-origin zoom level that was set by zooming
+  // the tab.
+  const double default_zoom_level =
+      content::HostZoomMap::GetForWebContents(popup_contents)
+          ->GetDefaultZoomLevel();
+  double popup_zoom_level = content::HostZoomMap::GetZoomLevel(popup_contents);
+  EXPECT_TRUE(blink::PageZoomValuesEqual(popup_zoom_level, default_zoom_level))
+      << popup_zoom_level << " vs " << default_zoom_level;
+
+  // Preventing the use of the per-origin zoom level in the popup should not
+  // affect the zoom of the tab.
+  EXPECT_TRUE(blink::PageZoomValuesEqual(zoom_controller->GetZoomLevel(),
+                                         tab_new_zoom_level))
+      << zoom_controller->GetZoomLevel() << " vs " << tab_new_zoom_level;
+
+  // Subsequent zooming in the tab should also be done independently of the
+  // popup.
+  tab_old_zoom_level = zoom_controller->GetZoomLevel();
+  tab_new_zoom_level = tab_old_zoom_level + 1.0;
+  zoom::ZoomController::ZoomChangedEventData zoom_change_data2(
+      tab_contents, tab_old_zoom_level, tab_new_zoom_level,
+      zoom::ZoomController::ZOOM_MODE_DEFAULT, true);
+  zoom::ZoomChangedWatcher zoom_change_watcher2(tab_contents,
+                                                zoom_change_data2);
+  zoom_controller->SetZoomLevel(tab_new_zoom_level);
+  zoom_change_watcher2.Wait();
+
+  popup_zoom_level = content::HostZoomMap::GetZoomLevel(popup_contents);
+  EXPECT_TRUE(blink::PageZoomValuesEqual(popup_zoom_level, default_zoom_level))
+      << popup_zoom_level << " vs " << default_zoom_level;
+
+  ClosePopup();
 }
 
 class BrowserActionInteractiveViewsTest : public BrowserActionInteractiveTest {

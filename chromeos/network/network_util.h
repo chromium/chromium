@@ -132,7 +132,7 @@ std::unique_ptr<base::ListValue> TranslateNetworkListToONC(
     int limit);
 
 // Returns the Shill type corresponding to ONC |type| or an empty string if
-// there is no match. Only valid for ethernet, wifi, wimax, cellular, and vpn.
+// there is no match. Only valid for ethernet, wifi, cellular, and vpn.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 std::string TranslateONCTypeToShill(const std::string& type);
 

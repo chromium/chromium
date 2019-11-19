@@ -1,0 +1,2402 @@
+[
+{"category": "Mn",
+ "names": [],
+ "key": "0363",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter a",
+   "alternative": "",
+   "short": "combining a"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "0364",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter e",
+   "alternative": "",
+   "short": "combining e"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "0365",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter i",
+   "alternative": "",
+   "short": "combining i"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "0366",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter o",
+   "alternative": "",
+   "short": "combining o"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "0367",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter u",
+   "alternative": "",
+   "short": "combining u"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "0368",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter c",
+   "alternative": "",
+   "short": "combining c"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "0369",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter d",
+   "alternative": "",
+   "short": "combining d"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "036A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter h",
+   "alternative": "",
+   "short": "combining h"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "036B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter m",
+   "alternative": "",
+   "short": "combining m"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "036C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter r",
+   "alternative": "",
+   "short": "combining r"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "036D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter t",
+   "alternative": "",
+   "short": "combining t"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "036E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter v",
+   "alternative": "",
+   "short": "combining v"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "036F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter x",
+   "alternative": "",
+   "short": "combining x"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "1D62",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter i",
+   "alternative": "",
+   "short": "subscript i"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "1D63",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter r",
+   "alternative": "",
+   "short": "subscript r"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "1D64",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter u",
+   "alternative": "",
+   "short": "subscript u"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "1D65",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter v",
+   "alternative": "",
+   "short": "subscript v"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DCA",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter r below",
+   "alternative": "",
+   "short": "combining r below"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DD3",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter flattened open a above",
+   "alternative": "",
+   "short": "combining flattened open a above"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DD4",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter ae",
+   "alternative": "",
+   "short": "combining ae"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DD5",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter ao",
+   "alternative": "",
+   "short": "combining ao"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DD6",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter av",
+   "alternative": "",
+   "short": "combining av"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DD7",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter c cedilla",
+   "alternative": "",
+   "short": "combining c cedilla"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DD8",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter insular d",
+   "alternative": "",
+   "short": "combining insular d"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DD9",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter eth",
+   "alternative": "",
+   "short": "combining eth"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DDA",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter g",
+   "alternative": "",
+   "short": "combining g"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DDB",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin letter small capital g",
+   "alternative": "",
+   "short": "combining small cap g"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DDC",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter k",
+   "alternative": "",
+   "short": "combining k"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DDD",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter l",
+   "alternative": "",
+   "short": "combining l"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DDE",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin letter small capital l",
+   "alternative": "",
+   "short": "combining small cap l"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DDF",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin letter small capital m",
+   "alternative": "",
+   "short": "combining small cap m"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DE0",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter n",
+   "alternative": "",
+   "short": "combining n"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DE1",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin letter small capital n",
+   "alternative": "",
+   "short": "combining small cap n"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DE2",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin letter small capital r",
+   "alternative": "",
+   "short": "combining small cap r"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DE3",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter r rotunda",
+   "alternative": "",
+   "short": "combining r rotunda"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DE4",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter s",
+   "alternative": "",
+   "short": "combining s"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DE5",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter long s",
+   "alternative": "",
+   "short": "combining long s"
+  }}},
+{"category": "Mn",
+ "names": [],
+ "key": "1DE6",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "combining latin small letter z",
+   "alternative": "",
+   "short": "combining z"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "2071",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "superscript latin small letter i",
+   "alternative": "",
+   "short": "superscript i"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "207F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "superscript latin small letter n",
+   "alternative": "",
+   "short": "superscript n"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "2090",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter a",
+   "alternative": "",
+   "short": "subscript a"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "2091",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter e",
+   "alternative": "",
+   "short": "subscript e"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "2092",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter o",
+   "alternative": "",
+   "short": "subscript o"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "2093",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter x",
+   "alternative": "",
+   "short": "subscript x"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "2094",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter schwa",
+   "alternative": "",
+   "short": "subscript schwa"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "2095",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter h",
+   "alternative": "",
+   "short": "subscript h"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "2096",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter k",
+   "alternative": "",
+   "short": "subscript k"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "2097",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter l",
+   "alternative": "",
+   "short": "subscript l"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "2098",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter m",
+   "alternative": "",
+   "short": "subscript m"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "2099",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter n",
+   "alternative": "",
+   "short": "subscript n"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "209A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter p",
+   "alternative": "",
+   "short": "subscript p"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "209B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter s",
+   "alternative": "",
+   "short": "subscript s"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "209C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter t",
+   "alternative": "",
+   "short": "subscript t"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "249C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter a",
+   "alternative": "",
+   "short": "parenthesized a"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "249D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter b",
+   "alternative": "",
+   "short": "parenthesized b"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "249E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter c",
+   "alternative": "",
+   "short": "parenthesized c"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "249F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter d",
+   "alternative": "",
+   "short": "parenthesized d"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24A0",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter e",
+   "alternative": "",
+   "short": "parenthesized e"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24A1",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter f",
+   "alternative": "",
+   "short": "parenthesized f"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24A2",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter g",
+   "alternative": "",
+   "short": "parenthesized g"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24A3",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter h",
+   "alternative": "",
+   "short": "parenthesized h"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24A4",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter i",
+   "alternative": "",
+   "short": "parenthesized i"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24A5",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter j",
+   "alternative": "",
+   "short": "parenthesized j"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24A6",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter k",
+   "alternative": "",
+   "short": "parenthesized k"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24A7",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter l",
+   "alternative": "",
+   "short": "parenthesized l"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24A8",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter m",
+   "alternative": "",
+   "short": "parenthesized m"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24A9",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter n",
+   "alternative": "",
+   "short": "parenthesized n"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24AA",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter o",
+   "alternative": "",
+   "short": "parenthesized o"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24AB",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter p",
+   "alternative": "",
+   "short": "parenthesized p"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24AC",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter q",
+   "alternative": "",
+   "short": "parenthesized q"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24AD",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter r",
+   "alternative": "",
+   "short": "parenthesized r"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24AE",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter s",
+   "alternative": "",
+   "short": "parenthesized s"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24AF",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter t",
+   "alternative": "",
+   "short": "parenthesized t"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24B0",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter u",
+   "alternative": "",
+   "short": "parenthesized u"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24B1",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter v",
+   "alternative": "",
+   "short": "parenthesized v"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24B2",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter w",
+   "alternative": "",
+   "short": "parenthesized w"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24B3",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter x",
+   "alternative": "",
+   "short": "parenthesized x"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24B4",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter y",
+   "alternative": "",
+   "short": "parenthesized y"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24B5",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin small letter z",
+   "alternative": "",
+   "short": "parenthesized z"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24B6",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter a",
+   "alternative": "",
+   "short": "circled cap a"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24B7",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter b",
+   "alternative": "",
+   "short": "circled cap b"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24B8",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter c",
+   "alternative": "",
+   "short": "circled cap c"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24B9",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter d",
+   "alternative": "",
+   "short": "circled cap d"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24BA",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter e",
+   "alternative": "",
+   "short": "circled cap e"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24BB",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter f",
+   "alternative": "",
+   "short": "circled cap f"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24BC",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter g",
+   "alternative": "",
+   "short": "circled cap g"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24BD",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter h",
+   "alternative": "",
+   "short": "circled cap h"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24BE",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter i",
+   "alternative": "",
+   "short": "circled cap i"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24BF",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter j",
+   "alternative": "",
+   "short": "circled cap j"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24C0",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter k",
+   "alternative": "",
+   "short": "circled cap k"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24C1",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter l",
+   "alternative": "",
+   "short": "circled cap l"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24C2",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter m",
+   "alternative": "",
+   "short": "circled cap m"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24C3",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter n",
+   "alternative": "",
+   "short": "circled cap n"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24C4",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter o",
+   "alternative": "",
+   "short": "circled cap o"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24C5",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter p",
+   "alternative": "",
+   "short": "circled cap p"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24C6",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter q",
+   "alternative": "",
+   "short": "circled cap q"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24C7",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter r",
+   "alternative": "",
+   "short": "circled cap r"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24C8",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter s",
+   "alternative": "",
+   "short": "circled cap s"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24C9",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter t",
+   "alternative": "",
+   "short": "circled cap t"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24CA",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter u",
+   "alternative": "",
+   "short": "circled cap u"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24CB",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter v",
+   "alternative": "",
+   "short": "circled cap v"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24CC",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter w",
+   "alternative": "",
+   "short": "circled cap w"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24CD",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter x",
+   "alternative": "",
+   "short": "circled cap x"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24CE",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter y",
+   "alternative": "",
+   "short": "circled cap y"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24CF",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin capital letter z",
+   "alternative": "",
+   "short": "circled cap z"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24D0",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter a",
+   "alternative": "",
+   "short": "circled a"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24D1",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter b",
+   "alternative": "",
+   "short": "circled b"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24D2",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter c",
+   "alternative": "",
+   "short": "circled c"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24D3",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter d",
+   "alternative": "",
+   "short": "circled d"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24D4",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter e",
+   "alternative": "",
+   "short": "circled e"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24D5",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter f",
+   "alternative": "",
+   "short": "circled f"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24D6",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter g",
+   "alternative": "",
+   "short": "circled g"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24D7",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter h",
+   "alternative": "",
+   "short": "circled h"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24D8",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter i",
+   "alternative": "",
+   "short": "circled i"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24D9",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter j",
+   "alternative": "",
+   "short": "circled j"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24DA",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter k",
+   "alternative": "",
+   "short": "circled k"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24DB",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter l",
+   "alternative": "",
+   "short": "circled l"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24DC",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter m",
+   "alternative": "",
+   "short": "circled m"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24DD",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter n",
+   "alternative": "",
+   "short": "circled n"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24DE",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter o",
+   "alternative": "",
+   "short": "circled o"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24DF",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter p",
+   "alternative": "",
+   "short": "circled p"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24E0",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter q",
+   "alternative": "",
+   "short": "circled q"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24E1",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter r",
+   "alternative": "",
+   "short": "circled r"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24E2",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter s",
+   "alternative": "",
+   "short": "circled s"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24E3",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter t",
+   "alternative": "",
+   "short": "circled t"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24E4",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter u",
+   "alternative": "",
+   "short": "circled u"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24E5",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter v",
+   "alternative": "",
+   "short": "circled v"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24E6",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter w",
+   "alternative": "",
+   "short": "circled w"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24E7",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter x",
+   "alternative": "",
+   "short": "circled x"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24E8",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter y",
+   "alternative": "",
+   "short": "circled y"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "24E9",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled latin small letter z",
+   "alternative": "",
+   "short": "circled z"
+  }}},
+{"category": "Lm",
+ "names": [],
+ "key": "2C7C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin subscript small letter j",
+   "alternative": "",
+   "short": "subscript j"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F110",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter a",
+   "alternative": "",
+   "short": "parenthesized cap a"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F111",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter b",
+   "alternative": "",
+   "short": "parenthesized cap b"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F112",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter c",
+   "alternative": "",
+   "short": "parenthesized cap c"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F113",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter d",
+   "alternative": "",
+   "short": "parenthesized cap d"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F114",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter e",
+   "alternative": "",
+   "short": "parenthesized cap e"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F115",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter f",
+   "alternative": "",
+   "short": "parenthesized cap f"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F116",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter g",
+   "alternative": "",
+   "short": "parenthesized cap g"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F117",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter h",
+   "alternative": "",
+   "short": "parenthesized cap h"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F118",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter i",
+   "alternative": "",
+   "short": "parenthesized cap i"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F119",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter j",
+   "alternative": "",
+   "short": "parenthesized cap j"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F11A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter k",
+   "alternative": "",
+   "short": "parenthesized cap k"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F11B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter l",
+   "alternative": "",
+   "short": "parenthesized cap l"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F11C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter m",
+   "alternative": "",
+   "short": "parenthesized cap m"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F11D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter n",
+   "alternative": "",
+   "short": "parenthesized cap n"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F11E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter o",
+   "alternative": "",
+   "short": "parenthesized cap o"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F11F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter p",
+   "alternative": "",
+   "short": "parenthesized cap p"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F120",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter q",
+   "alternative": "",
+   "short": "parenthesized cap q"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F121",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter r",
+   "alternative": "",
+   "short": "parenthesized cap r"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F122",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter s",
+   "alternative": "",
+   "short": "parenthesized cap s"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F123",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter t",
+   "alternative": "",
+   "short": "parenthesized cap t"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F124",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter u",
+   "alternative": "",
+   "short": "parenthesized cap u"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F125",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter v",
+   "alternative": "",
+   "short": "parenthesized cap v"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F126",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter w",
+   "alternative": "",
+   "short": "parenthesized cap w"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F127",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter x",
+   "alternative": "",
+   "short": "parenthesized cap x"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F128",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter y",
+   "alternative": "",
+   "short": "parenthesized cap y"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F129",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "parenthesized latin capital letter z",
+   "alternative": "",
+   "short": "parenthesized cap z"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F12A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "tortoise shell bracketed latin capital letter s",
+   "alternative": "",
+   "short": "tortoise shell bracketed cap s"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F12B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled italic latin capital letter c",
+   "alternative": "",
+   "short": "circled italic cap c"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F12C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "circled italic latin capital letter r",
+   "alternative": "",
+   "short": "circled italic cap r"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F130",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter a",
+   "alternative": "",
+   "short": "squared cap a"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F131",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter b",
+   "alternative": "",
+   "short": "squared cap b"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F132",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter c",
+   "alternative": "",
+   "short": "squared cap c"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F133",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter d",
+   "alternative": "",
+   "short": "squared cap d"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F134",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter e",
+   "alternative": "",
+   "short": "squared cap e"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F135",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter f",
+   "alternative": "",
+   "short": "squared cap f"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F136",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter g",
+   "alternative": "",
+   "short": "squared cap g"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F137",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter h",
+   "alternative": "",
+   "short": "squared cap h"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F138",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter i",
+   "alternative": "",
+   "short": "squared cap i"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F139",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter j",
+   "alternative": "",
+   "short": "squared cap j"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F13A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter k",
+   "alternative": "",
+   "short": "squared cap k"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F13B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter l",
+   "alternative": "",
+   "short": "squared cap l"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F13C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter m",
+   "alternative": "",
+   "short": "squared cap m"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F13D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter n",
+   "alternative": "",
+   "short": "squared cap n"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F13E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter o",
+   "alternative": "",
+   "short": "squared cap o"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F13F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter p",
+   "alternative": "",
+   "short": "squared cap p"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F140",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter q",
+   "alternative": "",
+   "short": "squared cap q"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F141",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter r",
+   "alternative": "",
+   "short": "squared cap r"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F142",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter s",
+   "alternative": "",
+   "short": "squared cap s"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F143",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter t",
+   "alternative": "",
+   "short": "squared cap t"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F144",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter u",
+   "alternative": "",
+   "short": "squared cap u"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F145",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter v",
+   "alternative": "",
+   "short": "squared cap v"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F146",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter w",
+   "alternative": "",
+   "short": "squared cap w"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F147",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter x",
+   "alternative": "",
+   "short": "squared cap x"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F148",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter y",
+   "alternative": "",
+   "short": "squared cap y"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F149",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "squared latin capital letter z",
+   "alternative": "",
+   "short": "squared cap z"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F150",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter a",
+   "alternative": "",
+   "short": "negative circled cap a"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F151",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter b",
+   "alternative": "",
+   "short": "negative circled cap b"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F152",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter c",
+   "alternative": "",
+   "short": "negative circled cap c"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F153",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter d",
+   "alternative": "",
+   "short": "negative circled cap d"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F154",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter e",
+   "alternative": "",
+   "short": "negative circled cap e"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F155",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter f",
+   "alternative": "",
+   "short": "negative circled cap f"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F156",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter g",
+   "alternative": "",
+   "short": "negative circled cap g"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F157",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter h",
+   "alternative": "",
+   "short": "negative circled cap h"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F158",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter i",
+   "alternative": "",
+   "short": "negative circled cap i"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F159",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter j",
+   "alternative": "",
+   "short": "negative circled cap j"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F15A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter k",
+   "alternative": "",
+   "short": "negative circled cap k"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F15B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter l",
+   "alternative": "",
+   "short": "negative circled cap l"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F15C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter m",
+   "alternative": "",
+   "short": "negative circled cap m"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F15D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter n",
+   "alternative": "",
+   "short": "negative circled cap n"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F15E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter o",
+   "alternative": "",
+   "short": "negative circled cap o"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F15F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter p",
+   "alternative": "",
+   "short": "negative circled cap p"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F160",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter q",
+   "alternative": "",
+   "short": "negative circled cap q"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F161",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter r",
+   "alternative": "",
+   "short": "negative circled cap r"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F162",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter s",
+   "alternative": "",
+   "short": "negative circled cap s"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F163",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter t",
+   "alternative": "",
+   "short": "negative circled cap t"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F164",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter u",
+   "alternative": "",
+   "short": "negative circled cap u"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F165",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter v",
+   "alternative": "",
+   "short": "negative circled cap v"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F166",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter w",
+   "alternative": "",
+   "short": "negative circled cap w"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F167",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter x",
+   "alternative": "",
+   "short": "negative circled cap x"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F168",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter y",
+   "alternative": "",
+   "short": "negative circled cap y"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F169",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative circled latin capital letter z",
+   "alternative": "",
+   "short": "negative circled cap z"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F170",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter a",
+   "alternative": "",
+   "short": "negative squared cap a"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F171",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter b",
+   "alternative": "",
+   "short": "negative squared cap b"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F172",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter c",
+   "alternative": "",
+   "short": "negative squared cap c"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F173",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter d",
+   "alternative": "",
+   "short": "negative squared cap d"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F174",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter e",
+   "alternative": "",
+   "short": "negative squared cap e"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F175",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter f",
+   "alternative": "",
+   "short": "negative squared cap f"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F176",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter g",
+   "alternative": "",
+   "short": "negative squared cap g"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F177",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter h",
+   "alternative": "",
+   "short": "negative squared cap h"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F178",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter i",
+   "alternative": "",
+   "short": "negative squared cap i"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F179",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter j",
+   "alternative": "",
+   "short": "negative squared cap j"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F17A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter k",
+   "alternative": "",
+   "short": "negative squared cap k"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F17B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter l",
+   "alternative": "",
+   "short": "negative squared cap l"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F17C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter m",
+   "alternative": "",
+   "short": "negative squared cap m"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F17D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter n",
+   "alternative": "",
+   "short": "negative squared cap n"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F17E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter o",
+   "alternative": "",
+   "short": "negative squared cap o"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F17F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter p",
+   "alternative": "",
+   "short": "negative squared cap p"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F180",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter q",
+   "alternative": "",
+   "short": "negative squared cap q"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F181",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter r",
+   "alternative": "",
+   "short": "negative squared cap r"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F182",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter s",
+   "alternative": "",
+   "short": "negative squared cap s"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F183",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter t",
+   "alternative": "",
+   "short": "negative squared cap t"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F184",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter u",
+   "alternative": "",
+   "short": "negative squared cap u"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F185",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter v",
+   "alternative": "",
+   "short": "negative squared cap v"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F186",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter w",
+   "alternative": "",
+   "short": "negative squared cap w"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F187",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter x",
+   "alternative": "",
+   "short": "negative squared cap x"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F188",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter y",
+   "alternative": "",
+   "short": "negative squared cap y"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F189",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "negative squared latin capital letter z",
+   "alternative": "",
+   "short": "negative squared cap z"
+  }}},
+{"category": "So",
+ "names": [],
+ "key": "1F18A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "crossed negative squared latin capital letter p",
+   "alternative": "",
+   "short": "crossed negative squared cap p"
+  }}}
+]

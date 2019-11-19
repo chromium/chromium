@@ -94,6 +94,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthFailure {
         return "Cryptohome missing from disk.";
       case AUTH_DISABLED:
         return "Auth disabled for user.";
+      case TPM_ERROR:
+        return "Critical TPM error encountered.";
       default:
         NOTREACHED();
         return std::string();

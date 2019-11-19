@@ -4,11 +4,11 @@
 
 module content.mojom;
 
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
-import "ui/base/mojo/window_open_disposition.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/base/mojom/window_open_disposition.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/url.mojom";
 
 // Parameters used to configure the behavior of |NavigableContents.Navigate|.
@@ -36,15 +36,7 @@ interface NavigableContents {
   // maintained by the Content Service. Responds with a |embed_token| which can
   // be given to Mus in order to authorize embedding of that visual
   // representation within the client application's own window tree.
-  //
-  // |use_window_service| is true when the client calling this method wants to
-  // use Window Service for embedding. This is the case when the client and the
-  // Content Service are using different window trees.
-  //
-  // TODO(https://crbug.com/874143): Remove the |use_window_service| flag once
-  // we have more widely available UI Service support.
-  CreateView(bool use_window_service)
-      => (mojo_base.mojom.UnguessableToken embed_token);
+  CreateView() => (mojo_base.mojom.UnguessableToken embed_token);
 
   // Attempts to transfer global input focus to the navigated contents if they
   // have an active visual representation.
@@ -87,7 +79,15 @@ interface NavigableContentsClient {
                         ui.mojom.WindowOpenDisposition disposition,
                         bool from_user_gesture);
 
+  // Notifies the client whether the web contents can navigate back in its
+  // history stack.
+  UpdateCanGoBack(bool can_go_back);
+
   // Informs the client of the ID of the content area's accessibility tree
   // whenever it changes.
   UpdateContentAXTree(ax.mojom.AXTreeID id);
+
+  // Informs the client that the focused DOM node has changed.
+  FocusedNodeChanged(bool is_editable_node,
+                     gfx.mojom.Rect node_bounds_in_screen);
 };

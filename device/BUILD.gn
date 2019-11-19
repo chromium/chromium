@@ -38,8 +38,8 @@ test("device_unittests") {
     "bluetooth/bluetooth_remote_gatt_service_unittest.cc",
     "bluetooth/bluetooth_service_record_win_unittest.cc",
     "bluetooth/bluetooth_task_manager_win_unittest.cc",
-    "bluetooth/bluetooth_uuid_unittest.cc",
     "bluetooth/device_unittest.cc",
+    "bluetooth/public/cpp/bluetooth_uuid_unittest.cc",
     "bluetooth/string_util_icu_unittest.cc",
     "bluetooth/test/bluetooth_gatt_server_test.cc",
     "bluetooth/test/bluetooth_gatt_server_test.h",
@@ -71,6 +71,7 @@ test("device_unittests") {
     "bluetooth/test/test_pairing_delegate.h",
     "bluetooth/uribeacon/uri_encoder_unittest.cc",
     "fido/attestation_statement_formats_unittest.cc",
+    "fido/bio/enrollment_handler_unittest.cc",
     "fido/ble/fido_ble_connection_unittest.cc",
     "fido/ble/fido_ble_device_unittest.cc",
     "fido/ble/fido_ble_frames_unittest.cc",
@@ -80,6 +81,7 @@ test("device_unittests") {
     "fido/cable/fido_cable_device_unittest.cc",
     "fido/cable/fido_cable_discovery_unittest.cc",
     "fido/cable/fido_cable_handshake_handler_unittest.cc",
+    "fido/credential_management_handler_unittest.cc",
     "fido/ctap_request_unittest.cc",
     "fido/ctap_response_unittest.cc",
     "fido/fake_fido_discovery_unittest.cc",
@@ -102,11 +104,14 @@ test("device_unittests") {
     "fido/u2f_sign_operation_unittest.cc",
     "fido/win/type_conversions_unittest.cc",
     "gamepad/abstract_haptic_gamepad_unittest.cc",
+    "gamepad/dualshock4_controller_unittest.cc",
+    "gamepad/gamepad_blocklist_unittest.cc",
     "gamepad/gamepad_id_list_unittest.cc",
     "gamepad/gamepad_provider_unittest.cc",
     "gamepad/gamepad_service_unittest.cc",
-    "gamepad/hid_haptic_gamepad_base_unittest.cc",
+    "gamepad/hid_haptic_gamepad_unittest.cc",
     "gamepad/public/cpp/gamepad_mojom_traits_unittest.cc",
+    "gamepad/xbox_hid_controller_unittest.cc",
     "test/run_all_unittests.cc",
   ]
 
@@ -118,10 +123,13 @@ test("device_unittests") {
   }
 
   deps = [
+    "//base",
     "//base/test:test_support",
     "//base/third_party/dynamic_annotations:dynamic_annotations",
     "//components/apdu",
     "//components/cbor",
+    "//components/device_event_log",
+    "//device/base",
     "//device/base/synchronization",
     "//device/bluetooth",
     "//device/bluetooth:deprecated_experimental_mojo",
@@ -141,8 +149,13 @@ test("device_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:blink_headers",
-    "//tools/usb_gadget",
+    "//ui/base",
     "//url",
+  ]
+
+  data_deps = [
+    "bluetooth/strings:bluetooth_test_strings",
+    "//ui/resources:ui_test_pak_data",
   ]
 
   # U2F:
@@ -167,48 +180,16 @@ test("device_unittests") {
     deps += [ "//device/udev_linux" ]
   }
 
-  # USB does not compile on iOS.
-  if (!is_ios) {
-    sources += [
-      "test/test_device_client.cc",
-      "test/test_device_client.h",
-      "usb/mojo/device_impl_unittest.cc",
-      "usb/mojo/device_manager_impl_unittest.cc",
-      "usb/public/cpp/usb_utils_unittest.cc",
-      "usb/usb_descriptors_unittest.cc",
-      "usb/usb_device_handle_unittest.cc",
-      "usb/usb_service_unittest.cc",
-      "usb/webusb_descriptors_unittest.cc",
-    ]
-    deps += [
-      ":usb_test_gadget",
-      "//device/base",
-      "//device/base:mocks",
-      "//device/usb",
-      "//device/usb:test_support",
-      "//device/usb/mojo",
-      "//device/usb/public/cpp",
-      "//device/usb/public/mojom",
-      "//net:test_support",
-    ]
-
-    if (!is_android) {
-      sources += [ "usb/usb_ids_unittest.cc" ]
-    }
-  }
-
-  # UsbContext is a libusb-specific object.
-  if (is_mac || is_win) {
-    sources += [ "usb/usb_context_unittest.cc" ]
-    deps += [ "//third_party/libusb" ]
-  }
-
   if (is_android) {
     deps += [
       ":bluetooth_test_java",
       ":bluetooth_test_jni_headers",
-      "//device/usb:java",
     ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "bluetooth/chromeos/bluetooth_utils_unittest.cc" ]
+    deps += [ "//chromeos/constants" ]
   }
 
   if ((is_chromeos || is_linux) && use_dbus) {
@@ -228,6 +209,10 @@ test("device_unittests") {
     ]
 
     deps += [ "//dbus" ]
+
+    if (is_chromeos) {
+      deps += [ "//services/data_decoder/public/mojom" ]
+    }
   }
 
   if (is_linux) {
@@ -344,7 +329,6 @@ test("device_unittests") {
       "vr/util/fps_meter_unittest.cc",
       "vr/util/sliding_average_unittest.cc",
       "vr/vr_device_base_unittest.cc",
-      "vr/vr_display_impl_unittest.cc",
     ]
 
     if (is_android) {
@@ -362,21 +346,18 @@ test("device_unittests") {
       "//ui/display:test_support",
     ]
   }
-}
 
-source_set("usb_test_gadget") {
-  testonly = true
+  # Some gamepad tests require the HID service. Only build these tests on
+  # platforms where the HID service is enabled.
+  if (!is_android && !is_fuchsia) {
+    sources += [ "gamepad/nintendo_data_fetcher_unittest.cc" ]
 
-  sources = [
-    "test/usb_test_gadget.h",
-    "test/usb_test_gadget_impl.cc",
-  ]
-
-  deps = [
-    "//device/base",
-    "//device/usb",
-    "//net:test_support",
-  ]
+    deps += [
+      "//services/device:test_support",
+      "//services/device/hid",
+      "//services/device/hid:mocks",
+    ]
+  }
 }
 
 if (is_android) {
@@ -385,8 +366,8 @@ if (is_android) {
   ]
 
   generate_jni("bluetooth_test_jni_headers") {
+    testonly = true
     sources = bluetooth_java_sources_needing_jni
-    jni_package = "bluetooth"
   }
 
   android_library("bluetooth_test_java") {
@@ -396,8 +377,8 @@ if (is_android) {
       "//base:base_java",
       "//components/location/android:location_java",
       "//device/bluetooth:java",
-      "//third_party/android_deps:android_support_annotations_java",
-      "//third_party/android_tools:android_test_mock_java",
+      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/android_sdk:android_test_mock_java",
     ]
 
     srcjar_deps = [ ":bluetooth_test_javagen" ]
@@ -414,7 +395,7 @@ if (is_android) {
       "//base:base_junit_test_support",
       "//device/gamepad:java",
       "//mojo/public/java:bindings_java",
-      "//third_party/android_deps:android_support_annotations_java",
+      "//third_party/android_deps:androidx_annotation_annotation_java",
     ]
     srcjar_deps = [ "//device/gamepad:java_enums_srcjar" ]
   }

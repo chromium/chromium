@@ -6,6 +6,22 @@ import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
 import("//testing/test.gni")
 
+declare_args() {
+  if (is_cast_desktop_build) {
+    # Desktop builds should set cast_static_media_lib_target explicitly if
+    # desired.
+    cast_static_media_lib_target = ""
+  } else if (is_cast_audio_only) {
+    cast_static_media_lib_target =
+        "//chromecast/media/cma/backend/alsa:libcast_media_1.0_audio"
+  } else if (enable_video_with_mixed_audio) {
+    cast_static_media_lib_target =
+        "//chromecast/media/cma/backend/video:libcast_media_1.0_avsync"
+  } else {
+    cast_static_media_lib_target = ""
+  }
+}
+
 group("media") {
   public_deps = [
     "//chromecast/media/audio",
@@ -20,23 +36,29 @@ group("media") {
 # Handles the various differences between (ATV, Things, desktop, device builds).
 group("libcast_media") {
   if (is_android) {
-    if (is_cast_using_cma_backend) {
-      deps = [
-        "//chromecast/media/cma/backend/android:cast_media_android",
-      ]
-    } else {
-      deps = [
-        "//chromecast/media/cma/backend:cast_media_android_dummy",
-      ]
-    }
+    deps = [
+      "//chromecast/media/cma/backend/android:cast_media_android",
+    ]
   } else if (is_fuchsia) {
     deps = [
       "//chromecast/media/cma/backend/fuchsia:media_backend",
+    ]
+  } else if (cast_static_media_lib_target != "") {
+    deps = [
+      "$cast_static_media_lib_target",
+    ]
+  } else if (is_cast_desktop_build) {
+    deps = [
+      "//chromecast/media/cma/backend/desktop",
     ]
   } else {
     deps = [
       "//chromecast/media/cma/backend:libcast_media_1.0",
     ]
+  }
+
+  if (cast_volume_control_in_avsettings) {
+    deps += [ "//chromecast/media/avsettings:libcast_avsettings_1.0" ]
   }
 }
 
@@ -65,7 +87,10 @@ test("cast_media_unittests") {
     "//chromecast/base",
     "//chromecast/base/metrics:test_support",
     "//chromecast/common/mojom",
+    "//chromecast/media/audio/capture_service:unittests",
+    "//chromecast/media/base:monotonic_clock",
     "//chromecast/media/cma:test_support",
+    "//chromecast/media/cma:unittests",
     "//chromecast/public",
     "//content/test:test_support",
     "//media:test_support",
@@ -76,14 +101,11 @@ test("cast_media_unittests") {
     "//testing/gtest",
   ]
 
-  if (is_cast_using_cma_backend) {
-    deps += [ "//chromecast/media/cma:unittests" ]
-    if (is_android) {
-      deps += [
-        "//chromecast/media/cma/backend/android:audio_track_java",
-        "//media/base/android:media_java",
-      ]
-      shard_timeout = 300
-    }
+  if (is_android) {
+    deps += [
+      "//chromecast/media/cma/backend/android:audio_track_java",
+      "//media/base/android:media_java",
+    ]
+    shard_timeout = 300
   }
 }

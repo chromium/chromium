@@ -1,0 +1,19 @@
+include_rules = [
+    # Don't depend on platform/.
+    "-third_party/blink/renderer/platform",
+
+    # Module.
+    "+third_party/blink/renderer/platform/cookie",
+
+    # Dependencies.
+    "+third_party/blink/renderer/platform/platform_export.h",
+    "+third_party/blink/renderer/platform/weborigin",
+    "+third_party/blink/renderer/platform/wtf",
+]
+
+specific_include_rules = {
+    "canonical_cookie.cc": [
+        "+net/cookies/canonical_cookie.h",
+        "+net/cookies/cookie_constants.h",
+    ],
+}

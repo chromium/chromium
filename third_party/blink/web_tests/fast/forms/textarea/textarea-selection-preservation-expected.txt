@@ -27,15 +27,6 @@ PASS ta.selectionEnd is 4
 - reset form
 PASS ta.selectionStart is 7
 PASS ta.selectionEnd is 7
-- set new defaultValue
-PASS ta.selectionStart is 9
-PASS ta.selectionEnd is 9
-- set same defaultValue
-PASS ta.selectionStart is 9
-PASS ta.selectionEnd is 9
-- append a text node
-PASS ta.selectionStart is 12
-PASS ta.selectionEnd is 12
 - append a empty text node
 PASS ta.selectionStart is 2
 PASS ta.selectionEnd is 3

@@ -1,0 +1,86 @@
+[
+    {
+        "duration": "74.0",
+        "name": "v8.browsing_desktop/browse:media:flickr_infinite_scroll"
+    },
+    {
+        "duration": "44.0",
+        "name": "v8.browsing_desktop/browse:media:googleplaystore:2018"
+    },
+    {
+        "duration": "0.0",
+        "name": "v8.browsing_desktop/browse:media:imgur"
+    },
+    {
+        "duration": "99.0",
+        "name": "v8.browsing_desktop/browse:media:pinterest:2018"
+    },
+    {
+        "duration": "80.0",
+        "name": "v8.browsing_desktop/browse:media:tumblr:2018"
+    },
+    {
+        "duration": "72.0",
+        "name": "v8.browsing_desktop/browse:media:youtube:2018"
+    },
+    {
+        "duration": "66.0",
+        "name": "v8.browsing_desktop/browse:media:youtubetv:2019"
+    },
+    {
+        "duration": "73.0",
+        "name": "v8.browsing_desktop/browse:news:cnn:2018"
+    },
+    {
+        "duration": "58.0",
+        "name": "v8.browsing_desktop/browse:news:flipboard:2018"
+    },
+    {
+        "duration": "100.0",
+        "name": "v8.browsing_desktop/browse:news:nytimes:2018"
+    },
+    {
+        "duration": "66.0",
+        "name": "v8.browsing_desktop/browse:news:reddit:2018"
+    },
+    {
+        "duration": "55.0",
+        "name": "v8.browsing_desktop/browse:search:google"
+    },
+    {
+        "duration": "50.0",
+        "name": "v8.browsing_desktop/browse:search:google:2018"
+    },
+    {
+        "duration": "34.0",
+        "name": "v8.browsing_desktop/browse:search:google_india:2018"
+    },
+    {
+        "duration": "92.0",
+        "name": "v8.browsing_desktop/browse:social:facebook_infinite_scroll:2018"
+    },
+    {
+        "duration": "50.0",
+        "name": "v8.browsing_desktop/browse:social:twitter:2018"
+    },
+    {
+        "duration": "66.0",
+        "name": "v8.browsing_desktop/browse:tech:discourse_infinite_scroll:2018"
+    },
+    {
+        "duration": "17.0",
+        "name": "v8.browsing_desktop/browse:tools:earth"
+    },
+    {
+        "duration": "8.0",
+        "name": "v8.browsing_desktop/browse:tools:maps"
+    },
+    {
+        "duration": "8.0",
+        "name": "v8.browsing_desktop/browse:tools:maps:2019"
+    },
+    {
+        "duration": "65.0",
+        "name": "v8.browsing_desktop/browse:tools:sheets:2019"
+    }
+]

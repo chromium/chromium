@@ -1,0 +1,15 @@
+The extension.crx package must be signed by WebStore, in order for
+the extension to have the expected ID which is whitelisted in Chrome:
+"oclffehlkdgibkainkilopaalpdobkan".
+
+This extension is used in the API tests for the following APIs:
+-chrome.loginScreenUi
+-chrome.storage
+-chrome.login
+
+The code for the tests can be found under the
+chrome/browser/chromeos/extensions/login_screen_apis/ directory.
+
+In case a new version of the test extension has to be published on WebStore,
+please reach out to the OWNERS, chromeos-enterprise-extensions@ or
+managed-devices@ mailing list.

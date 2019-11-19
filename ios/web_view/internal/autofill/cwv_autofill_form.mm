@@ -38,4 +38,29 @@
   return self;
 }
 
+#pragma mark - NSObject
+
+- (NSString*)debugDescription {
+  NSString* description = [super debugDescription];
+  NSMutableArray<NSString*>* descriptionStrings =
+      [NSMutableArray arrayWithObject:description];
+  if (_name) {
+    [descriptionStrings addObject:_name];
+  }
+  if (_type == CWVAutofillFormTypeUnknown) {
+    [descriptionStrings addObject:@"Unknown"];
+  } else {
+    if (_type & CWVAutofillFormTypeAddresses) {
+      [descriptionStrings addObject:@"Addresses"];
+    }
+    if (_type & CWVAutofillFormTypeCreditCards) {
+      [descriptionStrings addObject:@"Credit cards"];
+    }
+    if (_type & CWVAutofillFormTypePasswords) {
+      [descriptionStrings addObject:@"Passwords"];
+    }
+  }
+  return [descriptionStrings componentsJoinedByString:@", "];
+}
+
 @end

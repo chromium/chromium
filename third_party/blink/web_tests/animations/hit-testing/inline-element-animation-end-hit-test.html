@@ -16,26 +16,19 @@ body { margin: 0 }
 }
 
 </style>
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <div class="margin">
   <span class="grow">
     <div id="box"></div>
   </span>
 </div>
-<p id="description"></p>
-<div id="console"></div>
 <script>
-
-jsTestIsAsync = true;
-
-description("Tests that when a LayoutObject loses its PaintLayer " +
-    "due to completion of an animation of an inline statically positioned " +
-    "element, we correctly update the locations of descendent layers.");
+var test = async_test("Tests that when a LayoutObject loses its PaintLayer due to completion of an animation of an inline statically positioned element, we correctly update the locations of descendent layers");
 
 var box = document.querySelector("#box");
-box.parentNode.addEventListener("animationend", function() {
-  shouldBeTrue("document.elementFromPoint(150, 150) === box");
-  finishJSTest();
-});
+box.parentNode.addEventListener("animationend", test.step_func_done(() => {
+  assert_equals(document.elementFromPoint(150, 150), box);
+}));
 
 </script>

@@ -28,6 +28,13 @@ SkImageInfo RecordPaintCanvas::imageInfo() const {
   return GetCanvas()->imageInfo();
 }
 
+void* RecordPaintCanvas::accessTopLayerPixels(SkImageInfo* info,
+                                              size_t* rowBytes,
+                                              SkIPoint* origin) {
+  // Modifications to the underlying pixels cannot be saved.
+  return nullptr;
+}
+
 void RecordPaintCanvas::flush() {
   // This is a noop when recording.
 }
@@ -246,6 +253,7 @@ void RecordPaintCanvas::drawImage(const PaintImage& image,
                                   SkScalar left,
                                   SkScalar top,
                                   const PaintFlags* flags) {
+  DCHECK(!image.IsPaintWorklet());
   list_->push<DrawImageOp>(image, left, top, flags);
 }
 
@@ -273,9 +281,9 @@ void RecordPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,
 void RecordPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,
                                      SkScalar x,
                                      SkScalar y,
-                                     const PaintFlags& flags,
-                                     const NodeHolder& holder) {
-  list_->push<DrawTextBlobOp>(std::move(blob), x, y, flags, holder);
+                                     NodeId node_id,
+                                     const PaintFlags& flags) {
+  list_->push<DrawTextBlobOp>(std::move(blob), x, y, node_id, flags);
 }
 
 void RecordPaintCanvas::drawPicture(sk_sp<const PaintRecord> record) {
@@ -286,11 +294,6 @@ void RecordPaintCanvas::drawPicture(sk_sp<const PaintRecord> record) {
 bool RecordPaintCanvas::isClipEmpty() const {
   DCHECK(InitializedWithRecordingBounds());
   return GetCanvas()->isClipEmpty();
-}
-
-bool RecordPaintCanvas::isClipRect() const {
-  DCHECK(InitializedWithRecordingBounds());
-  return GetCanvas()->isClipRect();
 }
 
 const SkMatrix& RecordPaintCanvas::getTotalMatrix() const {

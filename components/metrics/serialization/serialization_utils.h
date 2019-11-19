@@ -19,7 +19,7 @@ namespace SerializationUtils {
 
 // Deserializes a sample passed as a string and return a sample.
 // The return value will either be a scoped_ptr to a Metric sample (if the
-// deserialization was successful) or a NULL scoped_ptr.
+// deserialization was successful) or a nullptr scoped_ptr.
 std::unique_ptr<MetricSample> ParseSample(const std::string& sample);
 
 // Reads all samples from a file and truncate the file when done.

@@ -4,19 +4,16 @@
 
 // https://webbluetoothcg.github.io/web-bluetooth/#bluetoothdevice
 
-// Implement BluetoothDevice interface: http://crbug.com/421668
-
 [
+    Exposed=Window,
     RuntimeEnabled=WebBluetooth,
     SecureContext
-] interface BluetoothDevice : EventTarget
-// Implement ServiceEventHandlers interface: http://crbug.com/421670
-// : ServiceEventHandlers
-{
-// Implement BluetoothDevice interface: http://crbug.com/421668
+] interface BluetoothDevice : EventTarget {
     readonly    attribute DOMString id;
     readonly    attribute DOMString?                 name;
     readonly    attribute BluetoothRemoteGATTServer  gatt;
 
     attribute EventHandler ongattserverdisconnected;
 };
+
+// TODO: Include ServiceEventHandlers mixin (https://crbug.com/421670)

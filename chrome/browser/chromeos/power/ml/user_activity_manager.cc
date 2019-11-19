@@ -11,7 +11,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/chromeos/power/ml/real_boot_clock.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/resource_coordinator/tab_metrics_logger.h"
@@ -89,40 +88,34 @@ void LogMetricsToUMA(const UserActivityEvent& event) {
 }  // namespace
 
 struct UserActivityManager::PreviousIdleEventData {
-  // Gap between two ScreenDimImminent signals.
-  base::TimeDelta dim_imminent_signal_interval;
-  // Features recorded for the ScreenDimImminent signal at the beginning of
-  // |dim_imminent_signal_interval|.
+  // Gap between two smart dim decision requests.
+  base::TimeDelta smart_dim_request_interval;
+  // Features recorded for the smart dim decision request at the beginning of
+  // |smart_dim_request_interval|.
   UserActivityEvent::Features features;
-  // Model prediction recorded for the ScreenDimImminent signal at the beginning
-  // of |dim_imminent_signal_interval|.
+  // Model prediction recorded for the smart dim decision request signal at the
+  // beginning of |smart_dim_request_interval|.
   UserActivityEvent::ModelPrediction model_prediction;
 };
 
 UserActivityManager::UserActivityManager(
     UserActivityUkmLogger* ukm_logger,
-    IdleEventNotifier* idle_event_notifier,
     ui::UserActivityDetector* detector,
     chromeos::PowerManagerClient* power_manager_client,
     session_manager::SessionManager* session_manager,
-    viz::mojom::VideoDetectorObserverRequest request,
+    mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
     const chromeos::ChromeUserManager* user_manager,
     SmartDimModel* smart_dim_model)
-    : boot_clock_(std::make_unique<RealBootClock>()),
-      ukm_logger_(ukm_logger),
+    : ukm_logger_(ukm_logger),
       smart_dim_model_(smart_dim_model),
-      idle_event_observer_(this),
       user_activity_observer_(this),
       power_manager_client_observer_(this),
       session_manager_observer_(this),
       session_manager_(session_manager),
-      binding_(this, std::move(request)),
+      receiver_(this, std::move(receiver)),
       user_manager_(user_manager),
-      power_manager_client_(power_manager_client),
-      weak_ptr_factory_(this) {
+      power_manager_client_(power_manager_client) {
   DCHECK(ukm_logger_);
-  DCHECK(idle_event_notifier);
-  idle_event_observer_.Add(idle_event_notifier);
 
   DCHECK(detector);
   user_activity_observer_.Add(detector);
@@ -237,16 +230,17 @@ void UserActivityManager::OnVideoActivityStarted() {
                 UserActivityEvent::Event::VIDEO_ACTIVITY);
 }
 
-void UserActivityManager::OnIdleEventObserved(
-    const IdleEventNotifier::ActivityData& activity_data) {
+void UserActivityManager::UpdateAndGetSmartDimDecision(
+    const IdleEventNotifier::ActivityData& activity_data,
+    base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::TimeDelta now = boot_clock_->GetTimeSinceBoot();
+  const base::TimeDelta now = boot_clock_.GetTimeSinceBoot();
   if (waiting_for_final_action_) {
     if (waiting_for_model_decision_) {
       CancelDimDecisionRequest();
     } else {
-      // ScreenDimImminent is received again after an earlier ScreenDimImminent
-      // event without any user action/suspend in between.
+      // Smart dim request comes again after an earlier request event without
+      // any user action/suspend in between.
       PopulatePreviousEventData(now);
     }
   }
@@ -273,13 +267,15 @@ void UserActivityManager::OnIdleEventObserved(
     waiting_for_model_decision_ = true;
     time_dim_decision_requested_ = base::TimeTicks::Now();
     smart_dim_model_->RequestDimDecision(
-        features_, base::Bind(&UserActivityManager::ApplyDimDecision,
-                              weak_ptr_factory_.GetWeakPtr()));
+        features_,
+        base::BindOnce(&UserActivityManager::HandleSmartDimDecision,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
   waiting_for_final_action_ = true;
 }
 
-void UserActivityManager::ApplyDimDecision(
+void UserActivityManager::HandleSmartDimDecision(
+    base::OnceCallback<void(bool)> callback,
     UserActivityEvent::ModelPrediction prediction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   waiting_for_model_decision_ = false;
@@ -291,7 +287,6 @@ void UserActivityManager::ApplyDimDecision(
   // previously deferred.
   if (prediction.response() == UserActivityEvent::ModelPrediction::NO_DIM &&
       !dim_deferred_) {
-    power_manager_client_->DeferScreenDim();
     dim_deferred_ = true;
     prediction.set_model_applied(true);
   } else {
@@ -301,8 +296,8 @@ void UserActivityManager::ApplyDimDecision(
                                      UserActivityEvent::ModelPrediction::DIM &&
                                  !dim_deferred_);
   }
-
   model_prediction_ = prediction;
+  std::move(callback).Run(dim_deferred_);
 }
 
 void UserActivityManager::OnSessionStateChanged() {
@@ -508,7 +503,7 @@ void UserActivityManager::MaybeLogEvent(
   event->set_reason(reason);
   if (idle_event_start_since_boot_) {
     event->set_log_duration_sec(
-        (boot_clock_->GetTimeSinceBoot() - idle_event_start_since_boot_.value())
+        (boot_clock_.GetTimeSinceBoot() - idle_event_start_since_boot_.value())
             .InSeconds());
   }
   event->set_screen_dim_occurred(screen_dim_occurred_);
@@ -530,7 +525,7 @@ void UserActivityManager::MaybeLogEvent(
     if (previous_event->has_log_duration_sec()) {
       previous_event->set_log_duration_sec(
           previous_event->log_duration_sec() +
-          previous_idle_event_data_->dim_imminent_signal_interval.InSeconds());
+          previous_idle_event_data_->smart_dim_request_interval.InSeconds());
     }
 
     *previous_activity_event.mutable_features() =
@@ -552,12 +547,6 @@ void UserActivityManager::MaybeLogEvent(
     previous_positive_actions_count_++;
   }
   ResetAfterLogging();
-}
-
-void UserActivityManager::SetTaskRunnerForTesting(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    std::unique_ptr<BootClock> test_boot_clock) {
-  boot_clock_ = std::move(test_boot_clock);
 }
 
 void UserActivityManager::PopulatePreviousEventData(
@@ -591,7 +580,7 @@ void UserActivityManager::PopulatePreviousEventData(
   LogPowerMLPreviousEventLoggingResult(result);
 
   previous_idle_event_data_ = std::make_unique<PreviousIdleEventData>();
-  previous_idle_event_data_->dim_imminent_signal_interval =
+  previous_idle_event_data_->smart_dim_request_interval =
       now - idle_event_start_since_boot_.value();
 
   previous_idle_event_data_->features = features_;

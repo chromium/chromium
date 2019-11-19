@@ -45,12 +45,9 @@ class TestMessageCenterObserver : public message_center::MessageCenterObserver {
 
 class NotificationsTest : public InProcessBrowserTest {
  public:
-  NotificationsTest() {}
+  NotificationsTest();
 
  protected:
-  // InProcessBrowserTest overrides.
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override;
-
   int GetNotificationCount();
   int GetNotificationPopupCount();
 
@@ -86,15 +83,19 @@ class NotificationsTest : public InProcessBrowserTest {
   GURL GetTestPageURL() const;
   content::WebContents* GetActiveWebContents(Browser* browser);
 
- protected:
-  void EnablePermissionsEmbargo(
-      base::test::ScopedFeatureList* scoped_feature_list);
-
  private:
   std::string RequestAndRespondToPermission(
       Browser* browser,
       PermissionRequestManager::AutoResponseType bubble_response);
 
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class NotificationsTestWithPermissionsEmbargo : public NotificationsTest {
+ public:
+  NotificationsTestWithPermissionsEmbargo();
+
+ private:
   base::test::ScopedFeatureList feature_list_;
 };
 

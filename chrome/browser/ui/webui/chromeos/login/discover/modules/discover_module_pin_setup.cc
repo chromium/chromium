@@ -43,16 +43,14 @@ class DiscoverModulePinSetupHandler : public DiscoverHandler {
 
   base::WeakPtr<DiscoverModulePinSetup> module_;
 
-  base::WeakPtrFactory<DiscoverModulePinSetupHandler> weak_factory_;
+  base::WeakPtrFactory<DiscoverModulePinSetupHandler> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(DiscoverModulePinSetupHandler);
 };
 
 DiscoverModulePinSetupHandler::DiscoverModulePinSetupHandler(
     base::WeakPtr<DiscoverModulePinSetup> module,
     JSCallsContainer* js_calls_container)
-    : DiscoverHandler(DiscoverModulePinSetup::kModuleName, js_calls_container),
-      module_(module),
-      weak_factory_(this) {}
+    : DiscoverHandler(js_calls_container), module_(module) {}
 
 void DiscoverModulePinSetupHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {

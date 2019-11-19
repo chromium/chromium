@@ -18,6 +18,14 @@ class AURA_EXPORT DragDropClientObserver {
   // Called when dragging ended.
   virtual void OnDragEnded() = 0;
 
+#if defined(OS_CHROMEOS)
+  // Called when the set of currently selected drag operation changes during the
+  // drag. |action| is a bitmask of the actions selected by the client. This is
+  // to provide feedback during the operation, it does not take precedence over
+  // the operation returned from StartDragAndDrop.
+  virtual void OnDragActionsChanged(int actions) {}
+#endif
+
  protected:
   virtual ~DragDropClientObserver() = default;
 };

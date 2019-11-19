@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "ash/shell.h"
-#include "ash/ws/window_service_owner.h"
-#include "services/ws/window_service.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -35,14 +33,6 @@ void ShellState::SetRootWindowForNewWindows(aura::Window* root) {
 void ShellState::NotifyAllClients() {
   const int64_t display_id = GetDisplayIdForNewWindows();
   display::Screen::GetScreen()->SetDisplayForNewWindows(display_id);
-
-  // WindowService broadcasts the display id over mojo to all remote apps.
-  // TODO(jamescook): Move this into Shell when ShellState is removed.
-  WindowServiceOwner* ws_owner = Shell::Get()->window_service_owner();
-  // |ws_owner| is null during shutdown and tests. |window_service()| is null
-  // during early startup.
-  if (ws_owner && ws_owner->window_service())
-    ws_owner->window_service()->SetDisplayForNewWindows(display_id);
 }
 
 int64_t ShellState::GetDisplayIdForNewWindows() const {

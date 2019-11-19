@@ -22,6 +22,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace prerender {
 
@@ -127,8 +128,9 @@ void PrerenderDispatcher::PrerenderStop(int prerender_id) {
 }
 
 void PrerenderDispatcher::OnPrerenderDispatcherRequest(
-    chrome::mojom::PrerenderDispatcherAssociatedRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+    mojo::PendingAssociatedReceiver<chrome::mojom::PrerenderDispatcher>
+        receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void PrerenderDispatcher::RegisterMojoInterfaces(
@@ -164,7 +166,8 @@ void PrerenderDispatcher::Add(const WebPrerender& prerender) {
           GURL(prerender.Url()),
           content::Referrer(blink::WebStringToGURL(prerender.GetReferrer()),
                             prerender.GetReferrerPolicy())),
-      extra_data.size(), extra_data.render_view_route_id()));
+      prerender.SecurityOrigin(), extra_data.size(),
+      extra_data.render_view_route_id()));
 }
 
 void PrerenderDispatcher::Cancel(const WebPrerender& prerender) {

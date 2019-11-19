@@ -11,6 +11,7 @@ namespace policy {
 extern const char kDeviceStateManagementDomain[];
 extern const char kDeviceStateMode[];
 extern const char kDeviceStateDisabledMessage[];
+extern const char kDeviceStatePackagedLicense[];
 
 // String constants used to persist the restorative action in the
 // kDeviceStateMode dictionary entry.

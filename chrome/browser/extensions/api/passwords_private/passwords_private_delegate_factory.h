@@ -32,7 +32,7 @@ class PasswordsPrivateDelegateFactory
   PasswordsPrivateDelegateFactory();
   ~PasswordsPrivateDelegateFactory() override;
 
-  // BrowserContextKeyedBaseFactory implementation.
+  // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;

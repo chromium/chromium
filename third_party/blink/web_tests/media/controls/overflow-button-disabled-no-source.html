@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<title>Test that the overflow menu is shown but disabled with no source.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video controls width=400 controlsList=nodownload disablePictureInPicture></video>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+
+  // Make sure the button is visible and disabled.
+  assert_true(overflowButton(video).disabled);
+  assert_equals(overflowButton(video).style.display, '');
+
+  // Set the source and start playing.
+  video.src = '../content/60_sec_video.webm';
+  video.play().then(t.step_func_done(() => {
+    // Make sure the button has been hidden and is no longer disabled.
+    assert_false(overflowButton(video).disabled);
+    assert_equals(overflowButton(video).style.display, 'none');
+  }), t.unreached_func());
+});
+</script>
+</html>

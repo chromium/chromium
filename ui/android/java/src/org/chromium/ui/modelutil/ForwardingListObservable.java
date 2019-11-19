@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.ui.modelutil;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Helper class for implementing a {@link ListObserver} that just forwards to its own observers.
@@ -27,5 +27,10 @@ public class ForwardingListObservable<P>
     public void onItemRangeChanged(
             ListObservable<P> source, int index, int count, @Nullable P payload) {
         notifyItemRangeChanged(index, count, payload);
+    }
+
+    @Override
+    public void onItemMoved(ListObservable source, int fromIndex, int toIndex) {
+        notifyItemMoved(fromIndex, toIndex);
     }
 }

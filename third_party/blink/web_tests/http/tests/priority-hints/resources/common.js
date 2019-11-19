@@ -14,10 +14,18 @@ const kLow = 1,
 const kPriorityHints = 2738;
 
 function assert_priority_onload(url, expected_priority, test) {
-  return test.step_func(e => {
-    assert_equals(expected_priority, getPriority(url, document));
-    test.done();
-  });
+  // Set up priority promise synchronously.
+  const priority_promise = getPriority(url);
+
+  // The below function will run after the resource has been fetched. It will
+  // assert that the priority promise we set-up earlier resolved to the correct
+  // value.
+  return () => {
+    priority_promise.then(test.step_func((priority) => {
+      assert_equals(priority, expected_priority);
+      test.done();
+    }));
+  }
 }
 
 function getPriority(url) {

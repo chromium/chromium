@@ -126,7 +126,7 @@ class AffiliationFetchThrottler
   bool is_fetch_scheduled_;
   std::unique_ptr<net::BackoffEntry> exponential_backoff_;
 
-  base::WeakPtrFactory<AffiliationFetchThrottler> weak_ptr_factory_;
+  base::WeakPtrFactory<AffiliationFetchThrottler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AffiliationFetchThrottler);
 };

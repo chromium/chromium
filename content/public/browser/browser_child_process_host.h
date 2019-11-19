@@ -5,6 +5,9 @@
 #ifndef CONTENT_PUBLIC_BROWSER_BROWSER_CHILD_PROCESS_HOST_H_
 #define CONTENT_PUBLIC_BROWSER_BROWSER_CHILD_PROCESS_HOST_H_
 
+#include <memory>
+
+#include "base/callback.h"
 #include "base/environment.h"
 #include "base/memory/shared_memory.h"
 #include "base/process/kill.h"
@@ -13,8 +16,10 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_termination_info.h"
+#include "content/public/common/child_process_host.h"
 #include "content/public/common/process_type.h"
 #include "ipc/ipc_sender.h"
+#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 
 #if defined(OS_MACOSX)
@@ -29,7 +34,6 @@ class PersistentMemoryAllocator;
 namespace content {
 
 class BrowserChildProcessHostDelegate;
-class ChildProcessHost;
 class SandboxedProcessLauncherDelegate;
 struct ChildProcessData;
 
@@ -40,17 +44,10 @@ class CONTENT_EXPORT BrowserChildProcessHost : public IPC::Sender {
   // Used to create a child process host. The delegate must outlive this object.
   // |process_type| needs to be either an enum value from ProcessType or an
   // embedder-defined value.
-  static BrowserChildProcessHost* Create(
-      content::ProcessType process_type,
-      BrowserChildProcessHostDelegate* delegate);
-
-  // Used to create a child process host, connecting the process to the
-  // Service Manager as a new service instance identified by |service_name| and
-  // (optional) |instance_id|.
-  static BrowserChildProcessHost* Create(
+  static std::unique_ptr<BrowserChildProcessHost> Create(
       content::ProcessType process_type,
       BrowserChildProcessHostDelegate* delegate,
-      const std::string& service_name);
+      ChildProcessHost::IpcMode ipc_mode);
 
   // Returns the child process host with unique id |child_process_id|, or
   // nullptr if it doesn't exist. |child_process_id| is NOT the process ID, but
@@ -65,10 +62,10 @@ class CONTENT_EXPORT BrowserChildProcessHost : public IPC::Sender {
       std::unique_ptr<base::CommandLine> cmd_line,
       bool terminate_on_shutdown) = 0;
 
-  virtual const ChildProcessData& GetData() const = 0;
+  virtual const ChildProcessData& GetData() = 0;
 
   // Returns the ChildProcessHost object used by this object.
-  virtual ChildProcessHost* GetHost() const = 0;
+  virtual ChildProcessHost* GetHost() = 0;
 
   // Returns the termination info of a child.
   // |known_dead| indicates that the child is already dead. On Linux, this
@@ -103,6 +100,16 @@ class CONTENT_EXPORT BrowserChildProcessHost : public IPC::Sender {
   // Returns a PortProvider used to get the task port for child processes.
   static base::PortProvider* GetPortProvider();
 #endif
+
+  // Allows tests to override host interface binding behavior. Any interface
+  // binding request which would normally pass through
+  // BrowserChildProcessHostImpl::BindHostReceiver() will pass through
+  // |callback| first if non-null. |callback| is only called from the IO thread.
+  using BindHostReceiverInterceptor =
+      base::RepeatingCallback<void(BrowserChildProcessHost* process_host,
+                                   mojo::GenericPendingReceiver* receiver)>;
+  static void InterceptBindHostReceiverForTesting(
+      BindHostReceiverInterceptor callback);
 };
 
 }  // namespace content

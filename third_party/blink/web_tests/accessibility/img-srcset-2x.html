@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<script>
+    testRunner.setBackingScaleFactor(2, () => {});
+</script>
+
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<img id="img1" src="resources/cake.png">
+<img id="img2" width=16 height=16 srcset="resources/red.png 1x, resources/green.png 2x">
+
+<script>
+function filename(url) {
+    return url.substring(url.lastIndexOf('/') + 1);
+}
+
+test(function(t) {
+    var axImg1 = accessibilityController.accessibleElementById("img1");
+    assert_equals(filename(axImg1.url), 'cake.png');
+    var axImg2 = accessibilityController.accessibleElementById("img2");
+    assert_equals(filename(axImg2.url), 'green.png');
+}, "Test that img.url retrieves the loaded image when the img uses srcset");
+</script>

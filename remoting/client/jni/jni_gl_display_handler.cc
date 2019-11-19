@@ -11,7 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "jni/GlDisplay_jni.h"
+#include "remoting/android/jni_headers/GlDisplay_jni.h"
 #include "remoting/client/chromoting_client_runtime.h"
 #include "remoting/client/cursor_shape_stub_proxy.h"
 #include "remoting/client/display/gl_canvas.h"
@@ -74,13 +74,13 @@ class JniGlDisplayHandler::Core : public protocol::CursorShapeStub,
 
   // Used on display thread.
   base::WeakPtr<Core> weak_ptr_;
-  base::WeakPtrFactory<Core> weak_factory_;
+  base::WeakPtrFactory<Core> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 JniGlDisplayHandler::Core::Core(base::WeakPtr<JniGlDisplayHandler> shell)
-    : shell_(shell), weak_factory_(this) {
+    : shell_(shell) {
   runtime_ = ChromotingClientRuntime::GetInstance();
   DCHECK(!runtime_->display_task_runner()->BelongsToCurrentThread());
 
@@ -217,8 +217,7 @@ void JniGlDisplayHandler::Core::Initialize() {
 JniGlDisplayHandler::JniGlDisplayHandler(
     const base::android::JavaRef<jobject>& java_client)
     : runtime_(ChromotingClientRuntime::GetInstance()),
-      ui_task_poster_(runtime_->display_task_runner()),
-      weak_factory_(this) {
+      ui_task_poster_(runtime_->display_task_runner()) {
   core_.reset(new Core(weak_factory_.GetWeakPtr()));
   JNIEnv* env = base::android::AttachCurrentThread();
   java_display_.Reset(Java_GlDisplay_createJavaDisplayObject(

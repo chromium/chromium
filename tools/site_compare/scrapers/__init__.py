@@ -5,6 +5,8 @@
 
 """Selects the appropriate scraper for a given browser and version."""
 
+from __future__ import print_function
+
 import types
 
 # TODO(jhaas): unify all optional scraper parameters into kwargs
@@ -30,4 +32,4 @@ def GetScraper(browser):
 
 # if invoked rather than imported, do some tests
 if __name__ == "__main__":
-  print GetScraper("IE")
+  print(GetScraper("IE"))

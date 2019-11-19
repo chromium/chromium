@@ -22,7 +22,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/escape.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/cpp/resource_response.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 
@@ -56,7 +56,7 @@ const char kMessage[] = "message";
 
 static GoogleServiceAuthError CreateAuthError(
     int net_error,
-    const network::ResourceResponseHead* head,
+    const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
   if (net_error == net::ERR_ABORTED) {
     return GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED);
@@ -128,8 +128,7 @@ OAuth2MintTokenFlow::Parameters::~Parameters() {}
 
 OAuth2MintTokenFlow::OAuth2MintTokenFlow(Delegate* delegate,
                                          const Parameters& parameters)
-    : delegate_(delegate), parameters_(parameters), weak_factory_(this) {
-}
+    : delegate_(delegate), parameters_(parameters) {}
 
 OAuth2MintTokenFlow::~OAuth2MintTokenFlow() { }
 
@@ -187,14 +186,14 @@ std::string OAuth2MintTokenFlow::CreateApiCallBody() {
 }
 
 void OAuth2MintTokenFlow::ProcessApiCallSuccess(
-    const network::ResourceResponseHead* head,
+    const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
   std::string response_body;
   if (body)
     response_body = std::move(*body);
   std::unique_ptr<base::Value> value =
       base::JSONReader::ReadDeprecated(response_body);
-  base::DictionaryValue* dict = NULL;
+  base::DictionaryValue* dict = nullptr;
   if (!value.get() || !value->GetAsDictionary(&dict)) {
     ReportFailure(GoogleServiceAuthError::FromUnexpectedServiceResponse(
         "Not able to parse a JSON object from a service response."));
@@ -231,7 +230,7 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
 
 void OAuth2MintTokenFlow::ProcessApiCallFailure(
     int net_error,
-    const network::ResourceResponseHead* head,
+    const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
   ReportFailure(CreateAuthError(net_error, head, std::move(body)));
 }
@@ -255,17 +254,17 @@ bool OAuth2MintTokenFlow::ParseIssueAdviceResponse(
   CHECK(dict);
   CHECK(issue_advice);
 
-  const base::DictionaryValue* consent_dict = NULL;
+  const base::DictionaryValue* consent_dict = nullptr;
   if (!dict->GetDictionary(kConsentKey, &consent_dict))
     return false;
 
-  const base::ListValue* scopes_list = NULL;
+  const base::ListValue* scopes_list = nullptr;
   if (!consent_dict->GetList(kScopesKey, &scopes_list))
     return false;
 
   bool success = true;
   for (size_t index = 0; index < scopes_list->GetSize(); ++index) {
-    const base::DictionaryValue* scopes_entry = NULL;
+    const base::DictionaryValue* scopes_entry = nullptr;
     IssueAdviceInfoEntry entry;
     base::string16 detail;
     if (!scopes_list->GetDictionary(index, &scopes_entry) ||

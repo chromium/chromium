@@ -29,16 +29,16 @@ class SessionChangeObserver::WtsRegistrationNotificationManager {
 
   WtsRegistrationNotificationManager() {
     DCHECK(!singleton_hwnd_observer_);
-    singleton_hwnd_observer_.reset(new gfx::SingletonHwndObserver(
+    singleton_hwnd_observer_ = std::make_unique<gfx::SingletonHwndObserver>(
         base::BindRepeating(&WtsRegistrationNotificationManager::OnWndProc,
-                            base::Unretained(this))));
+                            base::Unretained(this)));
 
     base::OnceClosure wts_register = base::BindOnce(
         base::IgnoreResult(&WTSRegisterSessionNotification),
         gfx::SingletonHwnd::GetInstance()->hwnd(), NOTIFY_FOR_THIS_SESSION);
 
-    base::CreateCOMSTATaskRunnerWithTraits({})->PostTask(
-        FROM_HERE, std::move(wts_register));
+    base::CreateCOMSTATaskRunner({base::ThreadPool()})
+        ->PostTask(FROM_HERE, std::move(wts_register));
   }
 
   ~WtsRegistrationNotificationManager() { RemoveSingletonHwndObserver(); }

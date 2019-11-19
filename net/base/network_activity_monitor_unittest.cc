@@ -41,7 +41,7 @@ class NetworkActivityMontiorTest : public testing::Test {
 
 TEST_F(NetworkActivityMontiorTest, GetInstance) {
   NetworkActivityMonitor* monitor = NetworkActivityMonitor::GetInstance();
-  EXPECT_TRUE(monitor != NULL);
+  EXPECT_TRUE(monitor != nullptr);
   EXPECT_TRUE(monitor == NetworkActivityMonitor::GetInstance());
 }
 

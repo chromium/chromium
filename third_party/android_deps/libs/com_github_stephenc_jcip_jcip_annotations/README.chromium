@@ -1,0 +1,13 @@
+Name: JCIP Annotations under Apache License
+Short Name: jcip-annotations
+URL: http://stephenc.github.com/jcip-annotations
+Version: 1.0-1
+License: Apache License, Version 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+A clean room implementation of the JCIP Annotations based entirely on the specification provided by the javadocs.
+
+Local Modifications:
+No modifications.

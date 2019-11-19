@@ -9,7 +9,7 @@
 
 namespace autofill {
 namespace {
-base::Clock* g_autofill_clock = nullptr;
+const base::Clock* g_autofill_clock = nullptr;
 }  // namespace
 
 // static
@@ -25,7 +25,7 @@ void AutofillClock::SetClock() {
 }
 
 // static
-void AutofillClock::SetTestClock(base::Clock* clock) {
+void AutofillClock::SetTestClock(const base::Clock* clock) {
   DCHECK(clock);
   g_autofill_clock = clock;
 }

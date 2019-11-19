@@ -10,7 +10,7 @@ FAIL .grid 4 assert_equals:
   <div data-expected-width="50" data-offset-x="0" class="firstRowFourthColumn alignSelfBaseline"><img src="../../fast/replaced/resources/1x1-blue.png" style="width: 50px; vertical-align: middle"></div>
   <div data-expected-width="100" data-offset-x="0" class="firstRowFifthColumn" style="width: 100px;"></div>
 </div>
-offsetLeft expected 18 but got 17
+offsetLeft expected 18 but got 16
 PASS .grid 5
 Harness: the test ran to completion.
 

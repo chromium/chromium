@@ -7,22 +7,16 @@ import("//mojo/public/tools/bindings/mojom.gni")
 component("common") {
   output_name = "storage_common"
   sources = [
-    "blob_storage/blob_handle.cc",
-    "blob_storage/blob_handle.h",
-    "blob_storage/blob_storage_constants.cc",
-    "blob_storage/blob_storage_constants.h",
     "database/database_connections.cc",
     "database/database_connections.h",
     "database/database_identifier.cc",
     "database/database_identifier.h",
-    "fileapi/file_system_info.cc",
-    "fileapi/file_system_info.h",
-    "fileapi/file_system_mount_option.h",
-    "fileapi/file_system_type_converters.h",
-    "fileapi/file_system_types.h",
-    "fileapi/file_system_util.cc",
-    "fileapi/file_system_util.h",
-    "quota/quota_limit_type.h",
+    "file_system/file_system_info.cc",
+    "file_system/file_system_info.h",
+    "file_system/file_system_mount_option.h",
+    "file_system/file_system_types.h",
+    "file_system/file_system_util.cc",
+    "file_system/file_system_util.h",
     "storage_histograms.cc",
     "storage_histograms.h",
   ]
@@ -36,7 +30,7 @@ component("common") {
   defines = [ "IS_STORAGE_COMMON_IMPL" ]
 
   public_deps = [
-    "//components/services/filesystem/public/interfaces",
+    "//components/services/filesystem/public/mojom",
     "//services/network/public/mojom",
     "//third_party/blink/public:blink_headers",
   ]
@@ -55,7 +49,7 @@ source_set("unittests") {
   sources = [
     "database/database_connections_unittest.cc",
     "database/database_identifier_unittest.cc",
-    "fileapi/file_system_util_unittest.cc",
+    "file_system/file_system_util_unittest.cc",
     "run_all_unittests.cc",
   ]
 

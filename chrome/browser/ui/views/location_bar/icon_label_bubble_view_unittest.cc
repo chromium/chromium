@@ -60,14 +60,13 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
   }
 
   int width() const { return bounds().width(); }
-  bool IsLabelVisible() const { return label()->visible(); }
+  bool IsLabelVisible() const { return label()->GetVisible(); }
   void SetLabelVisible(bool visible) { label()->SetVisible(visible); }
   const gfx::Rect& GetLabelBounds() const { return label()->bounds(); }
 
   State state() const {
-    const double kOpenFraction =
-        static_cast<double>(kOpenTimeMS) / kAnimationDurationMS;
-    double state = value_ / (double)kNumberOfSteps;
+    const double kOpenFraction = double{kOpenTimeMS} / kAnimationDurationMS;
+    double state = double{value_} / kNumberOfSteps;
     if (state < kOpenFraction)
       return GROWING;
     if (state > (1.0 - kOpenFraction))
@@ -95,17 +94,17 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
              2 * GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING)));
   }
 
-  double WidthMultiplier() const override {
+  int GetWidthBetween(int min, int max) const override {
     const double kOpenFraction =
         static_cast<double>(kOpenTimeMS) / kAnimationDurationMS;
-    double fraction = value_ / (double)kNumberOfSteps;
+    double fraction = static_cast<double>(value_) / kNumberOfSteps;
     switch (state()) {
       case GROWING:
-        return fraction / kOpenFraction;
+        return min + (max - min) * (fraction / kOpenFraction);
       case STEADY:
-        return 1.0;
+        return max;
       case SHRINKING:
-        return (1.0 - fraction) / kOpenFraction;
+        return min + (max - min) * ((1.0 - fraction) / kOpenFraction);
     }
     NOTREACHED();
     return 1.0;
@@ -152,8 +151,8 @@ class IconLabelBubbleViewTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  void VerifyWithAnimationStep(int step) {
-    Reset();
+  void VerifyWithAnimationStep(int step, bool icon_visible) {
+    Reset(icon_visible);
     for (int value = 0; value < kNumberOfSteps; value += step) {
       SetValue(value);
       VerifyAnimationStep();
@@ -180,19 +179,21 @@ class IconLabelBubbleViewTest : public ChromeViewsTestBase {
     views::Widget::InitParams params =
         CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 200, 200);
-    widget_->Init(params);
+    widget_->Init(std::move(params));
   }
 
-  void Reset() {
+  void Reset(bool icon_visible) {
     view_->SetLabelVisible(true);
     SetValue(0);
     steady_reached_ = false;
     shrinking_reached_ = false;
     minimum_size_reached_ = false;
-    previous_width_ = 0;
     initial_image_x_ = GetImageBounds().x();
     EXPECT_EQ(GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left(),
               initial_image_x_);
+
+    previous_width_ = icon_visible ? initial_image_x_ : 0;
+    view_->set_grow_animation_starting_width_for_testing(previous_width_);
   }
 
   void VerifyAnimationStep() {
@@ -280,10 +281,21 @@ class IconLabelBubbleViewTest : public ChromeViewsTestBase {
 // size.
 // Various step sizes during animation simulate different possible timing.
 TEST_F(IconLabelBubbleViewTest, AnimateLayout) {
-  VerifyWithAnimationStep(1);
-  VerifyWithAnimationStep(5);
-  VerifyWithAnimationStep(10);
-  VerifyWithAnimationStep(25);
+  VerifyWithAnimationStep(1, false);
+  VerifyWithAnimationStep(5, false);
+  VerifyWithAnimationStep(10, false);
+  VerifyWithAnimationStep(25, false);
+}
+
+// Like AnimateLayout, tests layout rules while simulating animation, except
+// with the icon initially visible.
+// The animation is first growing the bubble from the image size, then keeping
+// its size constant and finally shrinking it down to the initial size.
+TEST_F(IconLabelBubbleViewTest, AnimateLayoutWithVisibleIcon) {
+  VerifyWithAnimationStep(1, true);
+  VerifyWithAnimationStep(5, true);
+  VerifyWithAnimationStep(10, true);
+  VerifyWithAnimationStep(25, true);
 }
 
 // Verify that clicking the view a second time hides its bubble.
@@ -414,7 +426,7 @@ TEST_F(IconLabelBubbleViewCrashTest,
       CreateParams(views::Widget::InitParams::TYPE_WINDOW);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   views::Widget widget;
-  widget.Init(params);
+  widget.Init(std::move(params));
   IconLabelBubbleView* icon_label_bubble_view =
       new TestIconLabelBubbleView(font_list);
   icon_label_bubble_view->SetLabel(base::ASCIIToUTF16("x"));

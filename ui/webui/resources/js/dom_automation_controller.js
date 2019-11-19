@@ -10,8 +10,8 @@
 /** @constructor */
 function DomAutomationController() {}
 
-/** @param {string} json */
-DomAutomationController.prototype.send = function(json) {};
+/** @param {*} jsonObj */
+DomAutomationController.prototype.send = function(jsonObj) {};
 
 /** @type {DomAutomationController} */
 window.domAutomationController;

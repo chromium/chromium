@@ -14,7 +14,9 @@
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/speech/speech_recognizer.mojom.h"
 
 namespace network {
@@ -34,9 +36,10 @@ class CONTENT_EXPORT SpeechRecognitionDispatcherHost
  public:
   SpeechRecognitionDispatcherHost(int render_process_id, int render_frame_id);
   ~SpeechRecognitionDispatcherHost() override;
-  static void Create(int render_process_id,
-                     int render_frame_id,
-                     blink::mojom::SpeechRecognizerRequest request);
+  static void Create(
+      int render_process_id,
+      int render_frame_id,
+      mojo::PendingReceiver<blink::mojom::SpeechRecognizer> receiver);
   base::WeakPtr<SpeechRecognitionDispatcherHost> AsWeakPtr();
 
   // blink::mojom::SpeechRecognizer implementation
@@ -65,7 +68,7 @@ class CONTENT_EXPORT SpeechRecognitionDispatcherHost
   // Used for posting asynchronous tasks (on the IO thread) without worrying
   // about this class being destroyed in the meanwhile (due to browser shutdown)
   // since tasks pending on a destroyed WeakPtr are automatically discarded.
-  base::WeakPtrFactory<SpeechRecognitionDispatcherHost> weak_factory_;
+  base::WeakPtrFactory<SpeechRecognitionDispatcherHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SpeechRecognitionDispatcherHost);
 };
@@ -73,13 +76,14 @@ class CONTENT_EXPORT SpeechRecognitionDispatcherHost
 // SpeechRecognitionSession implements the
 // blink::mojom::SpeechRecognitionSession interface for a particular session. It
 // also acts as a proxy for events sent from SpeechRecognitionManager, and
-// forwards the events to the renderer using a SpeechRecognitionSessionClientPtr
-// (that is passed from the render process).
+// forwards the events to the renderer using a
+// mojo::Remote<SpeechRecognitionSessionClient> (that is passed from the render
+// process).
 class SpeechRecognitionSession : public blink::mojom::SpeechRecognitionSession,
                                  public SpeechRecognitionEventListener {
  public:
   explicit SpeechRecognitionSession(
-      blink::mojom::SpeechRecognitionSessionClientPtrInfo client_ptr_info);
+      mojo::PendingRemote<blink::mojom::SpeechRecognitionSessionClient> client);
   ~SpeechRecognitionSession() override;
   base::WeakPtr<SpeechRecognitionSession> AsWeakPtr();
 
@@ -112,10 +116,10 @@ class SpeechRecognitionSession : public blink::mojom::SpeechRecognitionSession,
   void ConnectionErrorHandler();
 
   int session_id_;
-  blink::mojom::SpeechRecognitionSessionClientPtr client_;
+  mojo::Remote<blink::mojom::SpeechRecognitionSessionClient> client_;
   bool stopped_;
 
-  base::WeakPtrFactory<SpeechRecognitionSession> weak_factory_;
+  base::WeakPtrFactory<SpeechRecognitionSession> weak_factory_{this};
 };
 
 }  // namespace content

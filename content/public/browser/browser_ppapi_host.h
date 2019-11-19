@@ -50,10 +50,10 @@ class CONTENT_EXPORT BrowserPpapiHost {
   virtual ppapi::host::PpapiHost* GetPpapiHost() = 0;
 
   // Returns a reference to the plugin process.
-  virtual const base::Process& GetPluginProcess() const = 0;
+  virtual const base::Process& GetPluginProcess() = 0;
 
   // Returns true if the given PP_Instance is valid.
-  virtual bool IsValidInstance(PP_Instance instance) const = 0;
+  virtual bool IsValidInstance(PP_Instance instance) = 0;
 
   // Retrieves the process/frame Ids associated with the RenderFrame containing
   // the given instance and returns true on success. If the instance is
@@ -66,7 +66,7 @@ class CONTENT_EXPORT BrowserPpapiHost {
   // IDs to a RenderFrame/ProcessHost on the UI thread.
   virtual bool GetRenderFrameIDsForInstance(PP_Instance instance,
                                             int* render_process_id,
-                                            int* render_frame_id) const = 0;
+                                            int* render_frame_id) = 0;
 
   // Returns the name of the plugin.
   virtual const std::string& GetPluginName() = 0;

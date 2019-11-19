@@ -16,8 +16,8 @@ layer at (0,0) size 800x600
         LayoutText {#text} at (0,0) size 22x19
           text run at (0,0) width 22: "abc"
         LayoutBR {BR} at (22,15) size 0x0
-        LayoutMenuList {SELECT} at (0,20) size 233x20 [bgcolor=#FFFFFF] [border: (1px solid #A9A9A9)]
-          LayoutBlockFlow (anonymous) at (1,1) size 231x18
+        LayoutMenuList {SELECT} at (0,20) size 235x20 [bgcolor=#FFFFFF] [border: (1px solid #A9A9A9)]
+          LayoutBlockFlow (anonymous) at (1,1) size 233x18
             LayoutText (anonymous) at (4,1) size 211x16
               text run at (4,1) width 211: "this select box shouldn't be selected"
         LayoutText {#text} at (0,0) size 0x0

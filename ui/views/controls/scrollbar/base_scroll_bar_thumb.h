@@ -17,7 +17,7 @@ class Canvas;
 
 namespace views {
 
-class BaseScrollBar;
+class ScrollBar;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -29,7 +29,9 @@ class BaseScrollBar;
 ///////////////////////////////////////////////////////////////////////////////
 class VIEWS_EXPORT BaseScrollBarThumb : public View {
  public:
-  explicit BaseScrollBarThumb(BaseScrollBar* scroll_bar);
+  METADATA_HEADER(BaseScrollBarThumb);
+
+  explicit BaseScrollBarThumb(ScrollBar* scroll_bar);
   ~BaseScrollBarThumb() override;
 
   // Sets the length (width or height) of the thumb to the specified value.
@@ -64,11 +66,11 @@ class VIEWS_EXPORT BaseScrollBarThumb : public View {
 
   bool IsHorizontal() const;
 
-  BaseScrollBar* scroll_bar() { return scroll_bar_; }
+  ScrollBar* scroll_bar() { return scroll_bar_; }
 
  private:
-  // The BaseScrollBar that owns us.
-  BaseScrollBar* scroll_bar_;
+  // The ScrollBar that owns us.
+  ScrollBar* scroll_bar_;
 
   int drag_start_position_;
 

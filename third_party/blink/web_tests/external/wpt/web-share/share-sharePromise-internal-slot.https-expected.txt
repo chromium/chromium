@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Only allow one share call at a time, which is controlled by the [[sharePromise]] internal slot. assert_throws: function "function() { throw e }" threw object "AbortError: Internal error: could not connect to Web Share interface." that is not a DOMException InvalidStateError: property "code" is equal to 20, expected 11
+Harness: the test ran to completion.
+

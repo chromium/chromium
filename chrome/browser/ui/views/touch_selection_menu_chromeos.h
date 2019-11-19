@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "components/arc/common/intent_helper.mojom.h"
+#include "components/arc/mojom/intent_helper.mojom.h"
 #include "ui/views/touchui/touch_selection_menu_views.h"
 
 namespace views {

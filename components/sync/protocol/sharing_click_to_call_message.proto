@@ -1,0 +1,16 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chrome_browser_sharing;
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+// Message to pass phone number in click to call feature.
+message ClickToCallMessage {
+  // required
+  string phone_number = 1;
+}

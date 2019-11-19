@@ -1,0 +1,14 @@
+{
+  "name": "Example bisect job",
+  "bug_id": "1022349",
+  "target": "performance_webview_test_suite",
+  "configuration": "android-go_webview-perf",
+  "comparison_mode": "performance",
+  "benchmark": "system_health.memory_mobile",
+  "story": "browse:media:facebook_photos",
+  "chart": "memory:webview:all_processes:reported_by_os:system_memory:private_dirty_size",
+  "statistic": "avg",
+  "repository": "chromium",
+  "start_git_hash": "9bb441de89f7d031992ec67585ac0732ef622222",
+  "end_git_hash": "f402331ff436d3ac12cacbd1c959641eb3524923"
+}

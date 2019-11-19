@@ -6,6 +6,7 @@
     </title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
+    <script src="../resources/audio-param.js"></script>
     <script src="../resources/audit-util.js"></script>
     <script src="../resources/audit.js"></script>
   </head>
@@ -354,6 +355,149 @@
             .then(task.done.bind(task));
       });
 
+      audit.define('cancel future setTarget', (task, should) => {
+        const context =
+            new OfflineAudioContext(1, renderDuration * sampleRate, sampleRate);
+        const src = new ConstantSourceNode(context);
+        src.connect(context.destination);
+
+        src.offset.setValueAtTime(0.5, 0);
+        src.offset.setTargetAtTime(0, 0.75 * renderDuration, 0.1);
+        // Now cancel the effect of the setTarget.
+        src.offset.cancelAndHoldAtTime(0.5 * renderDuration);
+
+        src.start();
+        context.startRendering()
+            .then(buffer => {
+              let actual = buffer.getChannelData(0);
+              // Because the setTarget was cancelled, the output should be a
+              // constant.
+              should(actual, 'After cancelling future setTarget event, output')
+                  .beConstantValueOf(0.5);
+            })
+            .then(task.done.bind(task));
+      });
+
+      audit.define('cancel setTarget now', (task, should) => {
+        const context =
+            new OfflineAudioContext(1, renderDuration * sampleRate, sampleRate);
+        const src = new ConstantSourceNode(context);
+        src.connect(context.destination);
+
+        src.offset.setValueAtTime(0.5, 0);
+        src.offset.setTargetAtTime(0, 0.5 * renderDuration, 0.1);
+        // Now cancel the effect of the setTarget.
+        src.offset.cancelAndHoldAtTime(0.5 * renderDuration);
+
+        src.start();
+        context.startRendering()
+            .then(buffer => {
+              let actual = buffer.getChannelData(0);
+              // Because the setTarget was cancelled, the output should be a
+              // constant.
+              should(
+                  actual,
+                  'After cancelling setTarget event starting now, output')
+                  .beConstantValueOf(0.5);
+            })
+            .then(task.done.bind(task));
+      });
+
+      audit.define('cancel future setValueCurve', (task, should) => {
+        const context =
+            new OfflineAudioContext(1, renderDuration * sampleRate, sampleRate);
+        const src = new ConstantSourceNode(context);
+        src.connect(context.destination);
+
+        src.offset.setValueAtTime(0.5, 0);
+        src.offset.setValueCurveAtTime([-1, 1], 0.75 * renderDuration, 0.1);
+        // Now cancel the effect of the setTarget.
+        src.offset.cancelAndHoldAtTime(0.5 * renderDuration);
+
+        src.start();
+        context.startRendering()
+            .then(buffer => {
+              let actual = buffer.getChannelData(0);
+              // Because the setTarget was cancelled, the output should be a
+              // constant.
+              should(
+                  actual, 'After cancelling future setValueCurve event, output')
+                  .beConstantValueOf(0.5);
+            })
+            .then(task.done.bind(task));
+      });
+
+      audit.define('cancel setValueCurve now', (task, should) => {
+        const context =
+            new OfflineAudioContext(1, renderDuration * sampleRate, sampleRate);
+        const src = new ConstantSourceNode(context);
+        src.connect(context.destination);
+
+        src.offset.setValueAtTime(0.5, 0);
+        src.offset.setValueCurveAtTime([-1, 1], 0.5 * renderDuration, 0.1);
+        // Now cancel the effect of the setTarget.
+        src.offset.cancelAndHoldAtTime(0.5 * renderDuration);
+
+        src.start();
+        context.startRendering()
+            .then(buffer => {
+              let actual = buffer.getChannelData(0);
+              // Because the setTarget was cancelled, the output should be a
+              // constant.
+              should(
+                  actual,
+                  'After cancelling current setValueCurve event starting now, output')
+                  .beConstantValueOf(0.5);
+            })
+            .then(task.done.bind(task));
+      });
+
+      audit.define(
+        {
+          label: 'linear, cancel, linear, cancel, linear',
+          description: 'Schedules 3 linear ramps, cancelling 2 of them, '
+            + 'so that we end up with 2 cancel events next to each other'
+        },
+        (task, should) => {
+          cancelTest2(
+            should,
+            linearRampTest('1st linearRamp'),
+            {valueThreshold: 0, curveThreshold: 0},
+            (g, cancelTime, expectedConstant, cancelTime2) => {
+              // Ramp from first cancel time to the end will be cancelled at
+              // second cancel time.
+              const v1 = expectedConstant;
+              const t1 = cancelTime;
+              const v2 = 2;
+              const t2 = renderDuration;
+              g[0].gain.linearRampToValueAtTime(v2, t2);
+              g[2].gain.setValueAtTime(v1, t1);
+              g[2].gain.linearRampToValueAtTime(v2, t2);
+
+              const expectedConstant2 =
+                audioParamLinearRamp(cancelTime2, v1, t1, v2, t2);
+
+              return {
+                constantEndTime: cancelTime,
+                message: `2nd linearRamp(${v2}, ${t2})`,
+                expectedConstant2
+              };
+            },
+            (g, cancelTime2, expectedConstant2) => {
+              // Ramp from second cancel time to the end.
+              const v3 = 0;
+              const t3 = renderDuration;
+              g[0].gain.linearRampToValueAtTime(v3, t3);
+              g[3].gain.setValueAtTime(expectedConstant2, cancelTime2);
+              g[3].gain.linearRampToValueAtTime(v3, t3);
+              return {
+                constantEndTime2: cancelTime2,
+                message2: `3rd linearRamp(${v3}, ${t3})`,
+              };
+            })
+            .then(() => task.done());
+        });
+
       audit.run();
 
       // Common function for doing a linearRamp test.  This just does a linear
@@ -387,7 +531,7 @@
       // Run the cancellation test. A set of automations is created and
       // canceled.
       //
-      // |testFunction| is a function that generates the automation to be
+      // |testerFunction| is a function that generates the automation to be
       // tested.  It is given an array of 3 gain nodes, the value and time of an
       // initial linear ramp, and the time where the cancellation should occur.
       // The function must do the automations for the first two gain nodes.  It
@@ -538,6 +682,140 @@
                     c2.slice(constantEndFrame),
                     {absoluteThreshold: postResult.errorThreshold || 0});
           }
+        });
+      }
+
+      // Similar to cancelTest, but does 2 cancels.
+      function cancelTest2(
+          should, testerFunction, thresholdOptions,
+          postCancelTest, postCancelTest2) {
+        // Channel 0: Actual output that includes the cancellation of events.
+        // Channel 1: Expected data up to the first cancellation.
+        // Channel 2: Expected data from 1st cancellation to 2nd cancellation.
+        // Channel 3: Expected data from 2nd cancellation to the end.
+        const context =
+          new OfflineAudioContext(4, renderDuration * sampleRate, sampleRate);
+
+        const src = context.createConstantSource();
+
+        // g0: Actual gain which will have cancelAndHoldAtTime called on it
+        // twice.
+        // g1: Expected gain from start to the 1st cancel.
+        // g2: Expected gain from 1st cancel to the 2nd cancel.
+        // g3: Expected gain from the 2nd cancel to the end.
+        const g0 = context.createGain();
+        const g1 = context.createGain();
+        const g2 = context.createGain();
+        const g3 = context.createGain();
+        const v0 = 1;
+        const t0 = 0.01;
+
+        const cancelTime1 = renderDuration * 0.5;
+        const cancelTime2 = renderDuration * 0.75;
+
+        // Run testerFunction to generate the 1st ramp.
+        const {
+          expectedConstant, autoMessage, summaryMessage} =
+            testerFunction([g0, g1, g2], v0, t0, cancelTime1);
+
+        // 1st cancel, cancelling the 1st ramp.
+        g0.gain.cancelAndHoldAtTime(cancelTime1);
+
+        // Run postCancelTest to generate the 2nd ramp.
+        const {
+          constantEndTime, message, errorThreshold = 0, expectedConstant2} =
+            postCancelTest(
+              [g0, g1, g2], cancelTime1, expectedConstant, cancelTime2);
+
+        // 2nd cancel, cancelling the 2nd ramp.
+        g0.gain.cancelAndHoldAtTime(cancelTime2);
+
+        // Run postCancelTest2 to generate the 3rd ramp.
+        const {constantEndTime2, message2} =
+          postCancelTest2([g0, g1, g2, g3], cancelTime2, expectedConstant2);
+
+        // Connect everything together
+        src.connect(g0);
+        src.connect(g1);
+        src.connect(g2);
+        src.connect(g3);
+        const merger = context.createChannelMerger(4);
+        g0.connect(merger, 0, 0);
+        g1.connect(merger, 0, 1);
+        g2.connect(merger, 0, 2);
+        g3.connect(merger, 0, 3);
+        merger.connect(context.destination);
+
+        // Go!
+        src.start();
+
+        return context.startRendering().then(function (buffer) {
+          const actual = buffer.getChannelData(0);
+          const expected1 = buffer.getChannelData(1);
+          const expected2 = buffer.getChannelData(2);
+          const expected3 = buffer.getChannelData(3);
+
+          const cancelFrame1 = Math.ceil(cancelTime1 * sampleRate);
+          const cancelFrame2 = Math.ceil(cancelTime2 * sampleRate);
+
+          const constantEndFrame1 = Math.ceil(constantEndTime * sampleRate);
+          const constantEndFrame2 = Math.ceil(constantEndTime2 * sampleRate);
+
+          const actualTail1 = actual.slice(cancelFrame1, constantEndFrame1);
+          const actualTail2 = actual.slice(cancelFrame2, constantEndFrame2);
+
+          const actualConstant1 = actual[cancelFrame1];
+          const actualConstant2 = actual[cancelFrame2];
+
+          // Verify first section curve
+          should(
+            actual.slice(0, cancelFrame1),
+            autoMessage + ' up to time ' + cancelTime1)
+            .beCloseToArray(
+              expected1.slice(0, cancelFrame1),
+              {absoluteThreshold: thresholdOptions.curveThreshold});
+
+          // Verify that a value was held after 1st cancel
+          should(
+            actualTail1,
+            'Cancelling ' + autoMessage + ' at time ' + cancelTime1)
+            .beConstantValueOf(actualConstant1);
+
+          // Verify that held value after 1st cancel was correct
+          should(
+            actualConstant1,
+            'Expected value for cancelling ' + autoMessage + ' at time ' +
+            cancelTime1)
+            .beCloseTo(
+              expectedConstant,
+              {threshold: thresholdOptions.valueThreshold});
+
+          // Verify middle section curve
+          should(actual.slice(constantEndFrame1, cancelFrame2), message)
+            .beCloseToArray(
+              expected2.slice(constantEndFrame1, cancelFrame2),
+              {absoluteThreshold: errorThreshold});
+
+          // Verify that a value was held after 2nd cancel
+          should(
+            actualTail2,
+            'Cancelling ' + message + ' at time ' + cancelTime2)
+            .beConstantValueOf(actualConstant2);
+
+          // Verify that held value after 2nd cancel was correct
+          should(
+            actualConstant2,
+            'Expected value for cancelling ' + message + ' at time ' +
+            cancelTime2)
+            .beCloseTo(
+              expectedConstant2,
+              {threshold: thresholdOptions.valueThreshold});
+
+          // Verify end section curve
+          should(actual.slice(constantEndFrame2), message2)
+            .beCloseToArray(
+              expected3.slice(constantEndFrame2),
+              {absoluteThreshold: errorThreshold || 0});
         });
       }
     </script>

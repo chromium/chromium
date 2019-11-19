@@ -5,12 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_TEXT_CHECK_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_TEXT_CHECK_CLIENT_H_
 
+#include <memory>
+
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/public/web/web_text_checking_completion.h"
 
 namespace blink {
-
-class WebTextCheckingCompletion;
 
 class WebTextCheckClient {
  public:
@@ -32,7 +33,7 @@ class WebTextCheckClient {
   // returned by passed completion object.
   virtual void RequestCheckingOfText(
       const WebString& text_to_check,
-      WebTextCheckingCompletion* completion_callback) {}
+      std::unique_ptr<WebTextCheckingCompletion> completion_callback) {}
 
  protected:
   virtual ~WebTextCheckClient() = default;

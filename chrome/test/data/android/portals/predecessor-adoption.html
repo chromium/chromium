@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Test Portal Adoption</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+      portal {
+        border: solid;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test Portal Adoption</h1>
+    <script>
+      var portal = document.createElement('portal');
+      var portalLoaded = new Promise((resolve) => {
+        portal.onload = resolve;
+      });
+      portal.src = 'predecessor-adoption-embed.html';
+      document.body.appendChild(portal);
+
+      async function activatePortal() {
+        await portalLoaded;
+        await portal.activate();
+        window.portalHost.addEventListener('message', (e) => {
+          if (e.data == 'ping')
+            e.source.postMessage('ping reply', '*');
+        });
+        document.body.removeChild(portal);
+        portal = null;
+      }
+
+      window.addEventListener('portalactivate', (e) => {
+        portal = e.adoptPredecessor();
+        document.body.appendChild(portal);
+      });
+
+      function removePortal() {
+        document.body.removeChild(portal);
+        portal = null;
+      }
+    </script>
+  </body>
+</html>

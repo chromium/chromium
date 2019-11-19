@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='../../resources/gesture-util.js'></script>
+<style type="text/css">
+    #outer {
+      background: #fff;
+      position: absolute
+    }
+
+    #inner {
+      max-height: 300px;
+      max-width: 116px;
+      overflow-y: auto;
+      will-change: transform;
+    }
+
+    /* Custom scrollbar so they're updated on the main thread only */
+    ::-webkit-scrollbar {
+      height: 16px;
+      width: 16px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: grey;
+    }
+
+    /* An interesting background so we can tell we're scrolling */
+    #spacer {
+      height: 3000px;
+      width: 100px;
+      background-color: #FFF;
+      background-size: 50px 50px;
+      background-position: 0 0, 25px 25px;
+      background-image: linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black),
+                        linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black);
+
+    }
+</style>
+<div id="outer">
+   <div id="inner">
+      <div id="spacer"></div>
+   </div>
+  <p>
+    Scroll the above box with wheel or touch. If the scrollbar moves with the
+    scroll the test passes.
+  </p>
+</div>
+ <script>
+    addEventListener('load', async () => {
+      let scroller = document.getElementById('inner');
+
+      // Add style that will cause the PaintLayer and associated compositing
+      // layers to get deleted.
+      scroller.style.overflowY = 'visible';
+      scroller.style.willChange = 'auto';
+
+      // Force a style and layout recalc.
+      scroller.offsetHeight;
+
+      // Remove the style so that a new PaintLayer and compositing layers are
+      // re-added.
+      scroller.style.willChange = '';
+      scroller.style.overflowY = '';
+
+      await waitForCompositorCommit();
+
+      promise_test(async () => {
+        const delta = 1000;
+        const location = { x: 50, y: 50 };
+        await smoothScroll(delta,
+                           location.x,
+                           location.y,
+                           GestureSourceType.TOUCH_INPUT,
+                           'down',
+                           SPEED_INSTANT);
+
+        // Will throw exception if window.scrollY not greater than 0.
+        assert_greater_than(scroller.scrollTop, 0,
+                            "Scroller should be scrolled.");
+      }, 'Tests that composited scrolling works after de-and-re-compositing scroller.');
+
+
+    });
+ </script>

@@ -17,10 +17,6 @@ class HTMLImportLoader;
 class V0CustomElementMicrotaskRunQueue
     : public GarbageCollected<V0CustomElementMicrotaskRunQueue> {
  public:
-  static V0CustomElementMicrotaskRunQueue* Create() {
-    return MakeGarbageCollected<V0CustomElementMicrotaskRunQueue>();
-  }
-
   V0CustomElementMicrotaskRunQueue();
 
   void Enqueue(HTMLImportLoader* parent_loader,

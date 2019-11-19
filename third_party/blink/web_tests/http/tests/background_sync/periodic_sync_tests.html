@@ -1,0 +1,48 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Background Sync API: Verifies that Periodic Background Sync works
+  correctly.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../serviceworker/resources/test-helpers.js"></script>
+<script src="/serviceworker/resources/shared-utils.js"></script>
+<script src="../resources/permissions-helper.js"></script>
+<script src="./resources/utils.js"></script>
+
+<script>
+  periodicSyncTest(async (test, periodicSync) => {
+    await periodicSync.register('test');
+  }, 'register succeeds when no options are provided');
+
+  periodicSyncTest(async (test, periodicSync) => {
+    await periodicSync.register('test', {});
+  }, 'register succeeds when no minInterval is provided');
+
+  periodicSyncTest(async (test, periodicSync) => {
+    await promise_rejects(
+        test, new TypeError(),
+        periodicSync.register('test', { minInterval: -1000 }),
+        'register should have thrown an error');
+  }, 'register fails when invalid minInterval is provided');
+
+  periodicSyncTest(async (test, periodicSync) => {
+    await periodicSync.register('test');
+    const tags = await periodicSync.getTags();
+    assert_equals(tags.length, 1);
+    assert_equals(tags[0], 'test');
+  }, 'getTags works as expected');
+
+  periodicSyncTest(async (test, periodicSync) => {
+    await periodicSync.unregister('non-existent');
+  }, 'unregister succeeds when a non-existent tag is provided');
+
+  periodicSyncTest(async (test, periodicSync) => {
+    await periodicSync.register('test');
+    let tags = await periodicSync.getTags();
+    assert_equals(tags.length, 1);
+
+    await periodicSync.unregister('test');
+    tags = await periodicSync.getTags();
+    assert_equals(tags.length, 0);
+  }, 'unregister removes the specified registration');
+</script>

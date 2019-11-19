@@ -86,7 +86,16 @@ enum class UserInteractionType {
   // User started an app from Smart Text Selection context menu.
   APP_STARTED_FROM_SMART_TEXT_SELECTION_CONTEXT_MENU = 17,
 
-  kMaxValue = APP_STARTED_FROM_SMART_TEXT_SELECTION_CONTEXT_MENU,
+  // User started an app from the Kiosk Next Home app.
+  APP_STARTED_FROM_KIOSK_NEXT_HOME = 18,
+
+  // User interacted with an app using a gamepad.
+  GAMEPAD_INTERACTION = 19,
+
+  // User started an app from entering URL in the Omnibox in the browser.
+  APP_STARTED_FROM_OMNIBOX = 20,
+
+  kMaxValue = APP_STARTED_FROM_OMNIBOX,
 };
 
 }  // namespace arc

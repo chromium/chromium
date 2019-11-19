@@ -4,7 +4,7 @@
 
 #include "services/video_capture/public/cpp/receiver_media_to_mojo_adapter.h"
 
-#include "media/capture/video/shared_memory_handle_provider.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/video_capture/public/mojom/scoped_access_permission.mojom.h"
 
@@ -14,11 +14,12 @@ class ScopedAccessPermissionMojoToMediaAdapter
     : public media::VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
  public:
   ScopedAccessPermissionMojoToMediaAdapter(
-      video_capture::mojom::ScopedAccessPermissionPtr access_permission)
+      mojo::PendingRemote<video_capture::mojom::ScopedAccessPermission>
+          access_permission)
       : access_permission_(std::move(access_permission)) {}
 
  private:
-  video_capture::mojom::ScopedAccessPermissionPtr access_permission_;
+  mojo::Remote<video_capture::mojom::ScopedAccessPermission> access_permission_;
 };
 
 }  // anonymous namespace
@@ -40,7 +41,7 @@ void ReceiverMediaToMojoAdapter::OnNewBuffer(
 void ReceiverMediaToMojoAdapter::OnFrameReadyInBuffer(
     int32_t buffer_id,
     int32_t frame_feedback_id,
-    mojom::ScopedAccessPermissionPtr access_permission,
+    mojo::PendingRemote<mojom::ScopedAccessPermission> access_permission,
     media::mojom::VideoFrameInfoPtr frame_info) {
   receiver_->OnFrameReadyInBuffer(
       buffer_id, frame_feedback_id,

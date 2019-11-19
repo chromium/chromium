@@ -1,0 +1,57 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 4
+
+module arc.mojom;
+
+import "components/arc/mojom/print_common.mojom";
+
+// Represents the Chrome side of a print session. Used by ARC to send
+// print-related messages to Chrome and interact with the ARC Custom Tab used
+// for printing.
+// Closing the interface will close the ARC Custom Tab.
+// Next method ID: 0
+interface PrintSessionHost {
+};
+
+// Represents the ARC side of a print session. Used by Chrome to send
+// print-related messages to ARC and request rendered print documents.
+// Next method ID: 2
+interface PrintSessionInstance {
+  // Called when Chrome print preview is closed.
+  [MinVersion=2] OnPrintPreviewClosed@0();
+
+  // Creates a |preview_document| for print preview using the provided
+  // |request|.
+  // The returned |preview_document| will be null if errors occurred while
+  // rendering it.
+  [MinVersion=3] CreatePreviewDocument@1(PrintDocumentRequest request)
+      => (handle? preview_document, int64 data_size);
+};
+
+// Used by ARC to create a new print session. A print session is used to print a
+// document from ARC using Chrome print preview.
+// Next method ID: 1
+interface PrintSpoolerHost {
+  // Opens the file owned by |scoped_handle| in Chrome print preview in an ARC
+  // Custom Tab.
+  // The |task_id| and |surface_id| specify the Android task and the surface on
+  // which the ARC Custom Tab should be shown.
+  // The |top_margin| is the height of the space at the top of the window.
+  // The returned |host| will be null if errors occur while saving the print
+  // document or locating the Android surface.
+  [MinVersion=1] StartPrintInCustomTab@0(handle scoped_handle,
+                                         int32 task_id,
+                                         int32 surface_id,
+                                         int32 top_margin,
+                                         PrintSessionInstance instance)
+      => (PrintSessionHost? host);
+};
+
+// Next method ID: 1
+interface PrintSpoolerInstance {
+  // Establishes full-duplex communication with the host.
+  [MinVersion=0] Init@0(PrintSpoolerHost host_ptr) => ();
+};

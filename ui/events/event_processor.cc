@@ -9,7 +9,7 @@
 
 namespace ui {
 
-EventProcessor::EventProcessor() : weak_ptr_factory_(this) {}
+EventProcessor::EventProcessor() {}
 
 EventProcessor::~EventProcessor() {}
 
@@ -29,29 +29,21 @@ EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
 
   EventDispatchDetails details;
   OnEventProcessingStarted(event_to_dispatch);
-  // GetInitialEventTarget() may handle the event.
-  EventTarget* initial_target = event_to_dispatch->handled()
-                                    ? nullptr
-                                    : GetInitialEventTarget(event_to_dispatch);
   if (!event_to_dispatch->handled()) {
-    EventTarget* target = initial_target;
-    EventTargeter* targeter = nullptr;
-
-    if (!target) {
-      EventTarget* root = GetRootForEvent(event_to_dispatch);
-      DCHECK(root);
-      targeter = root->GetEventTargeter();
-      if (targeter) {
+    EventTarget* target = nullptr;
+    EventTarget* root = GetRootForEvent(event_to_dispatch);
+    DCHECK(root);
+    EventTargeter* targeter = root->GetEventTargeter();
+    if (targeter) {
+      target = targeter->FindTargetForEvent(root, event_to_dispatch);
+    } else {
+      targeter = GetDefaultEventTargeter();
+      if (event_to_dispatch->target())
+        target = root;
+      else
         target = targeter->FindTargetForEvent(root, event_to_dispatch);
-      } else {
-        targeter = GetDefaultEventTargeter();
-        if (event_to_dispatch->target())
-          target = root;
-        else
-          target = targeter->FindTargetForEvent(root, event_to_dispatch);
-      }
-      DCHECK(targeter);
     }
+    DCHECK(targeter);
 
     while (target) {
       details = DispatchEvent(target, event_to_dispatch);
@@ -71,10 +63,8 @@ EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
         return details;
       }
 
-      if (details.target_destroyed || event->handled() ||
-          target == initial_target) {
+      if (details.target_destroyed || event->handled() || !target)
         break;
-      }
 
       DCHECK(targeter);
       target = targeter->FindNextBestTarget(target, event_to_dispatch);

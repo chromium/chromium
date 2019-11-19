@@ -12,9 +12,10 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "extensions/common/mojo/wifi_display_session_service.mojom.h"
+#include "extensions/common/mojom/wifi_display_session_service.mojom.h"
 #include "extensions/renderer/api/display_source/wifi_display/wifi_display_media_packetizer.h"
 #include "extensions/renderer/api/display_source/wifi_display/wifi_display_video_encoder.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/platform/web_media_stream_track.h"
 #include "third_party/wds/src/libwds/public/media_manager.h"
 
@@ -34,7 +35,7 @@ class WiFiDisplayMediaManager : public wds::SourceMediaManager {
   WiFiDisplayMediaManager(
       const blink::WebMediaStreamTrack& video_track,
       const blink::WebMediaStreamTrack& audio_track,
-      const std::string& sink_ip_address,
+      const net::IPAddress& sink_ip_address,
       service_manager::InterfaceProvider* interface_provider,
       const ErrorCallback& error_callback);
 
@@ -69,9 +70,10 @@ class WiFiDisplayMediaManager : public wds::SourceMediaManager {
   void OnMediaPipelineInitialized(bool success);
   void RegisterMediaService(
       const scoped_refptr<base::SingleThreadTaskRunner>& main_runner,
-      mojom::WiFiDisplayMediaServiceRequest service,
+      mojo::PendingReceiver<mojom::WiFiDisplayMediaService> service,
       const base::Closure& on_completed);
-  void ConnectToRemoteService(mojom::WiFiDisplayMediaServiceRequest request);
+  void ConnectToRemoteService(
+      mojo::PendingReceiver<mojom::WiFiDisplayMediaService> receiver);
   blink::WebMediaStreamTrack video_track_;
   blink::WebMediaStreamTrack audio_track_;
 
@@ -79,7 +81,7 @@ class WiFiDisplayMediaManager : public wds::SourceMediaManager {
   std::unique_ptr<WiFiDisplayVideoSink> video_sink_;
 
   service_manager::InterfaceProvider* interface_provider_;
-  std::string sink_ip_address_;
+  net::IPAddress sink_ip_address_;
   std::pair<int, int> sink_rtp_ports_;
   wds::H264VideoFormat optimal_video_format_;
   wds::AudioCodec optimal_audio_codec_;

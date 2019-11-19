@@ -145,6 +145,8 @@ class UrlPatternIndexMatcher {
   // nullptr, then all requests return no match.
   explicit UrlPatternIndexMatcher(const flat::UrlPatternIndex* flat_index);
   ~UrlPatternIndexMatcher();
+  UrlPatternIndexMatcher(UrlPatternIndexMatcher&&);
+  UrlPatternIndexMatcher& operator=(UrlPatternIndexMatcher&&);
 
   // If the index contains one or more UrlRules that match the request, returns
   // one of them, depending on the |strategy|. Otherwise, returns nullptr.

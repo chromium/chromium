@@ -35,9 +35,9 @@
 namespace blink {
 
 // A helper method for coverting a MemoryCache::TypeStatistic to a
-// WebCache::ResourceTypeStat.
+// WebCacheResourceTypeStat.
 static void ToResourceTypeStat(const MemoryCache::TypeStatistic& from,
-                               WebCache::ResourceTypeStat& to) {
+                               WebCacheResourceTypeStat& to) {
   to.count = from.count;
   to.size = from.size;
   to.decoded_size = from.decoded_size;
@@ -67,7 +67,7 @@ void WebCache::GetUsageStats(UsageStats* result) {
   }
 }
 
-void WebCache::GetResourceTypeStats(ResourceTypeStats* result) {
+void WebCache::GetResourceTypeStats(WebCacheResourceTypeStats* result) {
   MemoryCache* cache = GetMemoryCache();
   if (cache) {
     MemoryCache::Statistics stats = cache->GetStatistics();
@@ -78,7 +78,7 @@ void WebCache::GetResourceTypeStats(ResourceTypeStats* result) {
     ToResourceTypeStat(stats.fonts, result->fonts);
     ToResourceTypeStat(stats.other, result->other);
   } else {
-    memset(result, 0, sizeof(WebCache::ResourceTypeStats));
+    memset(result, 0, sizeof(WebCacheResourceTypeStats));
   }
 }
 

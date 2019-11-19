@@ -43,6 +43,13 @@ chrome.usersPrivate.LoginStatusDict;
 chrome.usersPrivate.getWhitelistedUsers = function(callback) {};
 
 /**
+ * Checks to see if the user is already present as a whitelisted user.
+ * @param {string} email
+ * @param {function(boolean):void} callback
+ */
+chrome.usersPrivate.isWhitelistedUser = function(email, callback) {};
+
+/**
  * Adds a new user with the given email to the whitelist. The callback is called
  * with true if the user was added succesfully, or with false if not (e.g.
  * because the user was already present, or the current user isn't the owner).

@@ -7,12 +7,13 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_profile.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
+#include "components/payments/core/autofill_card_validation.h"
 #include "components/payments/core/payment_request_data_util.h"
 #include "components/payments/core/strings_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -133,11 +134,11 @@ bool IsValidCreditCardNumber(const base::string16& card_number,
   if (!self.creditCard)
     return l10n_util::GetNSString(IDS_PAYMENTS_ADD_CARD_LABEL);
 
-  const autofill::CreditCardCompletionStatus status =
-      autofill::GetCompletionStatusForCard(
+  const payments::CreditCardCompletionStatus status =
+      payments::GetCompletionStatusForCard(
           *self.creditCard, self.paymentRequest->GetApplicationLocale(),
           self.paymentRequest->billing_profiles());
-  return base::SysUTF16ToNSString(autofill::GetEditDialogTitleForCard(status));
+  return base::SysUTF16ToNSString(payments::GetEditDialogTitleForCard(status));
 }
 
 - (CollectionViewItem*)headerItem {

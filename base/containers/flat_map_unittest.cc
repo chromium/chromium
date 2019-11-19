@@ -41,11 +41,6 @@ TEST(FlatMap, RangeConstructor) {
   flat_map<int, int> first(std::begin(input_vals), std::end(input_vals));
   EXPECT_THAT(first, ElementsAre(std::make_pair(1, 1), std::make_pair(2, 1),
                                  std::make_pair(3, 1)));
-
-  flat_map<int, int> last(std::begin(input_vals), std::end(input_vals),
-                          KEEP_LAST_OF_DUPES);
-  EXPECT_THAT(last, ElementsAre(std::make_pair(1, 3), std::make_pair(2, 3),
-                                std::make_pair(3, 3)));
 }
 
 TEST(FlatMap, MoveConstructor) {
@@ -68,36 +63,18 @@ TEST(FlatMap, MoveConstructor) {
 TEST(FlatMap, VectorConstructor) {
   using IntPair = std::pair<int, int>;
   using IntMap = flat_map<int, int>;
-  {
-    std::vector<IntPair> vect{{1, 1}, {1, 2}, {2, 1}};
-    IntMap map(std::move(vect));
-    EXPECT_THAT(map, ElementsAre(IntPair(1, 1), IntPair(2, 1)));
-  }
-  {
-    std::vector<IntPair> vect{{1, 1}, {1, 2}, {2, 1}};
-    IntMap map(std::move(vect), KEEP_LAST_OF_DUPES);
-    EXPECT_THAT(map, ElementsAre(IntPair(1, 2), IntPair(2, 1)));
-  }
+  std::vector<IntPair> vect{{1, 1}, {1, 2}, {2, 1}};
+  IntMap map(std::move(vect));
+  EXPECT_THAT(map, ElementsAre(IntPair(1, 1), IntPair(2, 1)));
 }
 
 TEST(FlatMap, InitializerListConstructor) {
-  {
-    flat_map<int, int> cont(
-        {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}, {1, 2}, {10, 10}, {8, 8}});
-    EXPECT_THAT(cont, ElementsAre(std::make_pair(1, 1), std::make_pair(2, 2),
-                                  std::make_pair(3, 3), std::make_pair(4, 4),
-                                  std::make_pair(5, 5), std::make_pair(8, 8),
-                                  std::make_pair(10, 10)));
-  }
-  {
-    flat_map<int, int> cont(
-        {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}, {1, 2}, {10, 10}, {8, 8}},
-        KEEP_LAST_OF_DUPES);
-    EXPECT_THAT(cont, ElementsAre(std::make_pair(1, 2), std::make_pair(2, 2),
-                                  std::make_pair(3, 3), std::make_pair(4, 4),
-                                  std::make_pair(5, 5), std::make_pair(8, 8),
-                                  std::make_pair(10, 10)));
-  }
+  flat_map<int, int> cont(
+      {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}, {1, 2}, {10, 10}, {8, 8}});
+  EXPECT_THAT(cont, ElementsAre(std::make_pair(1, 1), std::make_pair(2, 2),
+                                std::make_pair(3, 3), std::make_pair(4, 4),
+                                std::make_pair(5, 5), std::make_pair(8, 8),
+                                std::make_pair(10, 10)));
 }
 
 TEST(FlatMap, InitializerListAssignment) {

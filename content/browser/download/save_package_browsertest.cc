@@ -38,15 +38,13 @@ class TestShellDownloadManagerDelegate : public ShellDownloadManagerDelegate {
 
   void GetSaveDir(BrowserContext* context,
                   base::FilePath* website_save_dir,
-                  base::FilePath* download_save_dir,
-                  bool* skip_dir_check) override {
+                  base::FilePath* download_save_dir) override {
     *website_save_dir = download_dir_;
     *download_save_dir = download_dir_;
-    *skip_dir_check = false;
   }
 
   bool ShouldCompleteDownload(download::DownloadItem* download,
-                              const base::Closure& closure) override {
+                              base::OnceClosure closure) override {
     return true;
   }
 
@@ -95,7 +93,7 @@ class SavePackageBrowserTest : public ContentBrowserTest {
                                        bool remove_download) {
     ASSERT_TRUE(embedded_test_server()->Start());
     GURL url = embedded_test_server()->GetURL("/page_with_iframe.html");
-    NavigateToURL(shell(), url);
+    EXPECT_TRUE(NavigateToURL(shell(), url));
     auto* download_manager =
         static_cast<DownloadManagerImpl*>(BrowserContext::GetDownloadManager(
             shell()->web_contents()->GetBrowserContext()));
@@ -142,7 +140,7 @@ class SavePackageBrowserTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, ImplicitCancel) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(kTestFile);
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   base::FilePath full_file_name, dir;
   GetDestinationPaths("a", &full_file_name, &dir);
   scoped_refptr<SavePackage> save_package(new SavePackage(
@@ -155,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, ImplicitCancel) {
 IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, ExplicitCancel) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(kTestFile);
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   base::FilePath full_file_name, dir;
   GetDestinationPaths("a", &full_file_name, &dir);
   scoped_refptr<SavePackage> save_package(new SavePackage(

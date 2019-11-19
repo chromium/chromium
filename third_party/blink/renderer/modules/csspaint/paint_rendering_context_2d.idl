@@ -80,4 +80,4 @@
     sequence<unrestricted double> getLineDash();
     attribute unrestricted double lineDashOffset;
 };
-PaintRenderingContext2D implements CanvasPath;
+PaintRenderingContext2D includes CanvasPath;

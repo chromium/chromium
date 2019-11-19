@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -33,10 +33,39 @@ public interface PaymentApp {
     }
 
     /**
+     * The interface for listener to payment method change events. Note: What the spec calls
+     * "payment methods" in the context of a "change event", this code calls "instruments".
+     */
+    public interface PaymentMethodChangeCallback {
+        /**
+         * Called to notify merchant of payment method change. The payment app should block user
+         * interaction until updateWith() or noUpdatedPaymentDetails().
+         * https://w3c.github.io/payment-request/#paymentmethodchangeevent-interface
+         *
+         * @param methodName         Method name. For example, "https://google.com/pay". Should not
+         *                           be null or empty.
+         * @param stringifiedDetails JSON-serialized object. For example, {"type": "debit"}. Should
+         *                           not be null.
+         * @return Whether the payment state was valid.
+         */
+        boolean changePaymentMethodFromInvokedApp(String methodName, String stringifiedDetails);
+    }
+
+    /**
+     * Sets the listener to payment method change events. Should be called before a payment method
+     * has been selected, e.g., before getInstruments(), which constructs the payment methods.
+     *
+     * @param methodChangeCallback The object that will receive notifications of payment method
+     *                             changes.
+     */
+    default void setPaymentMethodChangeCallback(PaymentMethodChangeCallback methodChangeCallback) {}
+
+    /**
      * Provides a list of all payment instruments in this app. For example, this can be all credit
      * cards for the current profile. Can return null or empty list, e.g., if user has no locally
      * stored credit cards.
      *
+     * @param id               The unique identifier of the PaymentRequest.
      * @param methodDataMap    The map from methods to method specific data. The data contains such
      *                         information as whether the app should be invoked in test or
      *                         production mode, merchant identifier, or a public key.
@@ -48,7 +77,7 @@ public interface PaymentApp {
      * @param modifiers        The relevant payment details modifiers.
      * @param callback         The object that will receive the list of instruments.
      */
-    void getInstruments(Map<String, PaymentMethodData> methodDataMap, String origin,
+    void getInstruments(String id, Map<String, PaymentMethodData> methodDataMap, String origin,
             String iframeOrigin, @Nullable byte[][] certificateChain,
             Map<String, PaymentDetailsModifier> modifiers, InstrumentsCallback callback);
 

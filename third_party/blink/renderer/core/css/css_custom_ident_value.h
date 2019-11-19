@@ -7,22 +7,13 @@
 
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
 class CORE_EXPORT CSSCustomIdentValue : public CSSValue {
  public:
-  static CSSCustomIdentValue* Create(const AtomicString& str) {
-    return MakeGarbageCollected<CSSCustomIdentValue>(str);
-  }
-
-  // TODO(sashab, timloh): Remove this and lazily parse the CSSPropertyID in
-  // isKnownPropertyID().
-  static CSSCustomIdentValue* Create(CSSPropertyID id) {
-    return MakeGarbageCollected<CSSCustomIdentValue>(id);
-  }
-
   explicit CSSCustomIdentValue(const AtomicString&);
   explicit CSSCustomIdentValue(CSSPropertyID);
 
@@ -30,7 +21,9 @@ class CORE_EXPORT CSSCustomIdentValue : public CSSValue {
     DCHECK(!IsKnownPropertyID());
     return string_;
   }
-  bool IsKnownPropertyID() const { return property_id_ != CSSPropertyInvalid; }
+  bool IsKnownPropertyID() const {
+    return property_id_ != CSSPropertyID::kInvalid;
+  }
   CSSPropertyID ValueAsPropertyID() const {
     DCHECK(IsKnownPropertyID());
     return property_id_;
@@ -50,7 +43,12 @@ class CORE_EXPORT CSSCustomIdentValue : public CSSValue {
   CSSPropertyID property_id_;
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSCustomIdentValue, IsCustomIdentValue());
+template <>
+struct DowncastTraits<CSSCustomIdentValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsCustomIdentValue();
+  }
+};
 
 }  // namespace blink
 

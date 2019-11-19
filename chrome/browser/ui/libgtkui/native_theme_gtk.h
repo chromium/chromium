@@ -26,44 +26,53 @@ class NativeThemeGtk : public ui::NativeThemeBase {
   static NativeThemeGtk* instance();
 
   // Overridden from ui::NativeThemeBase:
-  SkColor GetSystemColor(ColorId color_id) const override;
+  SkColor GetSystemColor(
+      ColorId color_id,
+      ColorScheme color_scheme = ColorScheme::kDefault) const override;
   void PaintArrowButton(cc::PaintCanvas* canvas,
                         const gfx::Rect& rect,
                         Part direction,
-                        State state) const override;
+                        State state,
+                        ColorScheme color_scheme,
+                        const ScrollbarArrowExtraParams& arrow) const override;
   void PaintScrollbarTrack(cc::PaintCanvas* canvas,
                            Part part,
                            State state,
                            const ScrollbarTrackExtraParams& extra_params,
-                           const gfx::Rect& rect) const override;
-  void PaintScrollbarThumb(
-      cc::PaintCanvas* canvas,
-      Part part,
-      State state,
-      const gfx::Rect& rect,
-      NativeTheme::ScrollbarOverlayColorTheme theme) const override;
+                           const gfx::Rect& rect,
+                           ColorScheme color_scheme) const override;
+  void PaintScrollbarThumb(cc::PaintCanvas* canvas,
+                           Part part,
+                           State state,
+                           const gfx::Rect& rect,
+                           NativeTheme::ScrollbarOverlayColorTheme theme,
+                           ColorScheme color_scheme) const override;
   void PaintScrollbarCorner(cc::PaintCanvas* canvas,
                             State state,
-                            const gfx::Rect& rect) const override;
+                            const gfx::Rect& rect,
+                            ColorScheme color_scheme) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
       const gfx::Size& size,
-      const MenuBackgroundExtraParams& menu_background) const override;
-  void PaintMenuSeparator(
-      cc::PaintCanvas* canvas,
-      State state,
-      const gfx::Rect& rect,
-      const MenuSeparatorExtraParams& menu_separator) const override;
-  void PaintMenuItemBackground(
-      cc::PaintCanvas* canvas,
-      State state,
-      const gfx::Rect& rect,
-      const MenuItemExtraParams& menu_item) const override;
-  void PaintFrameTopArea(
-      cc::PaintCanvas* canvas,
-      State state,
-      const gfx::Rect& rect,
-      const FrameTopAreaExtraParams& frame_top_area) const override;
+      const MenuBackgroundExtraParams& menu_background,
+      ColorScheme color_scheme) const override;
+  void PaintMenuSeparator(cc::PaintCanvas* canvas,
+                          State state,
+                          const gfx::Rect& rect,
+                          const MenuSeparatorExtraParams& menu_separator,
+                          ColorScheme color_scheme) const override;
+  void PaintMenuItemBackground(cc::PaintCanvas* canvas,
+                               State state,
+                               const gfx::Rect& rect,
+                               const MenuItemExtraParams& menu_item,
+                               ColorScheme color_scheme) const override;
+  void PaintFrameTopArea(cc::PaintCanvas* canvas,
+                         State state,
+                         const gfx::Rect& rect,
+                         const FrameTopAreaExtraParams& frame_top_area,
+                         ColorScheme color_scheme) const override;
+
+  void OnThemeChanged(GtkSettings* settings, GtkParamSpec* param);
 
  private:
   friend class base::NoDestructor<NativeThemeGtk>;
@@ -72,12 +81,6 @@ class NativeThemeGtk : public ui::NativeThemeBase {
   ~NativeThemeGtk() override;
 
   void SetThemeCssOverride(ScopedCssProvider provider);
-
-  CHROMEG_CALLBACK_1(NativeThemeGtk,
-                     void,
-                     OnThemeChanged,
-                     GtkSettings*,
-                     GtkParamSpec*);
 
   mutable base::Optional<SkColor> color_cache_[kColorId_NumColors];
 

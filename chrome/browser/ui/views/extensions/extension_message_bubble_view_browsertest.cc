@@ -9,11 +9,11 @@
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/window/dialog_client_view.h"
 
 namespace {
 
@@ -35,7 +35,7 @@ void CheckBubbleAgainstReferenceBounds(views::BubbleDialogDelegateView* bubble,
   EXPECT_FALSE(reference_bounds.x() > bubble_bounds.right());
 
   // And, of course, the bubble should be visible...
-  EXPECT_TRUE(bubble->visible());
+  EXPECT_TRUE(bubble->GetVisible());
   // ... as should its Widget.
   EXPECT_TRUE(bubble->GetWidget()->IsVisible());
 }
@@ -130,13 +130,13 @@ void ExtensionMessageBubbleViewBrowserTest::ClickLearnMoreButton(
 void ExtensionMessageBubbleViewBrowserTest::ClickActionButton(
     Browser* browser) {
   ToolbarActionsBarBubbleViews* bubble = GetViewsBubbleForBrowser(browser);
-  bubble->GetDialogClientView()->AcceptWindow();
+  bubble->AcceptDialog();
 }
 
 void ExtensionMessageBubbleViewBrowserTest::ClickDismissButton(
     Browser* browser) {
   ToolbarActionsBarBubbleViews* bubble = GetViewsBubbleForBrowser(browser);
-  bubble->GetDialogClientView()->CancelWindow();
+  bubble->CancelDialog();
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionMessageBubbleViewBrowserTest,

@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FILE_UPLOAD_CONTROL_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FILE_UPLOAD_CONTROL_PAINTER_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-struct PaintInfo;
-class LayoutPoint;
 class LayoutFileUploadControl;
+struct PaintInfo;
+struct PhysicalOffset;
 
 class FileUploadControlPainter {
   STACK_ALLOCATED();
@@ -21,7 +21,7 @@ class FileUploadControlPainter {
       const LayoutFileUploadControl& layout_file_upload_control)
       : layout_file_upload_control_(layout_file_upload_control) {}
 
-  void PaintObject(const PaintInfo&, const LayoutPoint& paint_offset);
+  void PaintObject(const PaintInfo&, const PhysicalOffset& paint_offset);
 
  private:
   const LayoutFileUploadControl& layout_file_upload_control_;

@@ -75,6 +75,16 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     UPDATE          = READ_META | WRITE,  // READ_WRITE & ~READ_DATA
   };
 
+  // This enum backs a histogram. Please keep enums.xml up to date with any
+  // changes, and new entries should be appended at the end. Never re-arrange /
+  // re-use values.
+  enum class NetworkIsolationKeyPresent {
+    kNotPresentCacheableRequest = 0,
+    kNotPresentNonCacheableRequest = 1,
+    kPresent = 2,
+    kMaxValue = kPresent,
+  };
+
   Transaction(RequestPriority priority,
               HttpCache* cache);
   ~Transaction() override;
@@ -85,25 +95,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   std::string& method() { return method_; }
 
   const std::string& key() const { return cache_key_; }
-
-  // Writes |buf_len| bytes of meta-data from the provided buffer |buf|. to the
-  // HTTP cache entry that backs this transaction (if any).
-  // Returns the number of bytes actually written, or a net error code. If the
-  // operation cannot complete immediately, returns ERR_IO_PENDING, grabs a
-  // reference to the buffer (until completion), and notifies the caller using
-  // the provided |callback| when the operation finishes.
-  //
-  // The first time this method is called for a given transaction, previous
-  // meta-data will be overwritten with the provided data, and subsequent
-  // invocations will keep appending to the cached entry.
-  //
-  // In order to guarantee that the metadata is set to the correct entry, the
-  // response (or response info) must be evaluated by the caller, for instance
-  // to make sure that the response_time is as expected, before calling this
-  // method.
-  int WriteMetadata(IOBuffer* buf,
-                    int buf_len,
-                    CompletionOnceCallback callback);
 
   HttpCache::ActiveEntry* entry() { return entry_; }
 
@@ -150,7 +141,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
            int buf_len,
            CompletionOnceCallback callback) override;
   void StopCaching() override;
-  bool GetFullRequestHeaders(HttpRequestHeaders* headers) const override;
   int64_t GetTotalReceivedBytes() const override;
   int64_t GetTotalSentBytes() const override;
   void DoneReading() override;
@@ -229,7 +219,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     int64_t total_sent_bytes = 0;
     ConnectionAttempts old_connection_attempts;
     IPEndPoint old_remote_endpoint;
-    HttpRequestHeaders full_request_headers;
 
     DISALLOW_COPY_AND_ASSIGN(NetworkTransactionInfo);
   };
@@ -242,8 +231,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     STATE_GET_BACKEND,
     STATE_GET_BACKEND_COMPLETE,
     STATE_INIT_ENTRY,
-    STATE_OPEN_ENTRY,
-    STATE_OPEN_ENTRY_COMPLETE,
+    STATE_OPEN_OR_CREATE_ENTRY,
+    STATE_OPEN_OR_CREATE_ENTRY_COMPLETE,
     STATE_DOOM_ENTRY,
     STATE_DOOM_ENTRY_COMPLETE,
     STATE_CREATE_ENTRY,
@@ -253,8 +242,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     STATE_DONE_HEADERS_ADD_TO_ENTRY_COMPLETE,
     STATE_CACHE_READ_RESPONSE,
     STATE_CACHE_READ_RESPONSE_COMPLETE,
-    STATE_TOGGLE_UNUSED_SINCE_PREFETCH,
-    STATE_TOGGLE_UNUSED_SINCE_PREFETCH_COMPLETE,
+    STATE_WRITE_UPDATED_PREFETCH_RESPONSE,
+    STATE_WRITE_UPDATED_PREFETCH_RESPONSE_COMPLETE,
     STATE_CACHE_DISPATCH_VALIDATION,
     STATE_CACHE_QUERY_DATA,
     STATE_CACHE_QUERY_DATA_COMPLETE,
@@ -278,8 +267,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     STATE_TRUNCATE_CACHED_METADATA,
     STATE_TRUNCATE_CACHED_METADATA_COMPLETE,
     STATE_PARTIAL_HEADERS_RECEIVED,
-    STATE_CACHE_READ_METADATA,
-    STATE_CACHE_READ_METADATA_COMPLETE,
     STATE_HEADERS_PHASE_CANNOT_PROCEED,
     STATE_FINISH_HEADERS,
     STATE_FINISH_HEADERS_COMPLETE,
@@ -324,8 +311,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   int DoGetBackend();
   int DoGetBackendComplete(int result);
   int DoInitEntry();
-  int DoOpenEntry();
-  int DoOpenEntryComplete(int result);
+  int DoOpenOrCreateEntry();
+  int DoOpenOrCreateEntryComplete(int result);
   int DoDoomEntry();
   int DoDoomEntryComplete(int result);
   int DoCreateEntry();
@@ -335,8 +322,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   int DoDoneHeadersAddToEntryComplete(int result);
   int DoCacheReadResponse();
   int DoCacheReadResponseComplete(int result);
-  int DoCacheToggleUnusedSincePrefetch();
-  int DoCacheToggleUnusedSincePrefetchComplete(int result);
+  int DoCacheWriteUpdatedPrefetchResponse(int result);
+  int DoCacheWriteUpdatedPrefetchResponseComplete(int result);
   int DoCacheDispatchValidation();
   int DoCacheQueryData();
   int DoCacheQueryDataComplete(int result);
@@ -360,8 +347,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   int DoTruncateCachedMetadata();
   int DoTruncateCachedMetadataComplete(int result);
   int DoPartialHeadersReceived();
-  int DoCacheReadMetadata();
-  int DoCacheReadMetadataComplete(int result);
   int DoHeadersPhaseCannotProceed(int result);
   int DoFinishHeaders(int result);
   int DoFinishHeadersComplete(int result);
@@ -432,6 +417,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   bool IsResponseConditionalizable(std::string* etag_value,
                                    std::string* last_modified_value) const;
 
+  // Returns true if |method_| indicates that we should only try to open an
+  // entry and not attempt to create.
+  bool ShouldOpenOnlyMethods() const;
+
   // Returns true if the resource info MemoryEntryDataHints bit flags in
   // |in_memory_info| and the current request & load flags suggest that
   // the cache entry in question is not actually usable for HTTP
@@ -463,9 +452,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
                    int data_len,
                    CompletionOnceCallback callback);
 
-  // Called to write response_ to the cache entry. |truncated| indicates if the
+  // Called to write a response to the cache entry. |truncated| indicates if the
   // entry should be marked as incomplete.
-  int WriteResponseInfoToEntry(bool truncated);
+  int WriteResponseInfoToEntry(const HttpResponseInfo& response,
+                               bool truncated);
 
   // Helper function, should be called with result of WriteResponseInfoToEntry
   // (or the result of the callback, when WriteResponseInfoToEntry returns
@@ -573,6 +563,9 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Saves network transaction info using |transaction|.
   void SaveNetworkTransactionInfo(const HttpTransaction& transaction);
 
+  // Disables caching for media content when running on battery.
+  bool ShouldDisableMediaCaching(const HttpResponseHeaders* headers) const;
+
   State next_state_;
 
   // Initial request with which Start() was invoked.
@@ -595,6 +588,16 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   CompletionOnceCallback callback_;  // Consumer's callback.
   HttpResponseInfo response_;
   HttpResponseInfo auth_response_;
+
+  // This is only populated when we want to modify a prefetch request in some
+  // way for future transactions, while leaving it untouched for the current
+  // one. DoCacheReadResponseComplete() sets this to a copy of |response_|,
+  // and modifies the members for future transactions. Then,
+  // WriteResponseInfoToEntry() writes |updated_prefetch_response_| to the cache
+  // entry if it is populated, or |response_| otherwise. Finally,
+  // WriteResponseInfoToEntry() resets this to base::nullopt.
+  std::unique_ptr<HttpResponseInfo> updated_prefetch_response_;
+
   const HttpResponseInfo* new_response_;
   std::string cache_key_;
   Mode mode_;
@@ -617,6 +620,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
                                              // lock.
   bool fail_conditionalization_for_test_;  // Fail ConditionalizeRequest.
   scoped_refptr<IOBuffer> read_buf_;
+
+  // Length of the buffer passed in Read().
+  int read_buf_len_;
+
   int io_buf_len_;
   int read_offset_;
   int effective_load_flags_;
@@ -639,8 +646,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   base::TimeTicks send_request_since_;
   base::TimeTicks read_headers_since_;
   base::Time open_entry_last_used_;
-  base::TimeDelta stale_entry_freshness_;
-  base::TimeDelta stale_entry_age_;
   bool cant_conditionalize_zero_freshness_from_memhint_;
   bool recorded_histograms_;
   ParallelWritingPattern parallel_writing_pattern_;
@@ -671,7 +676,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // True if the Transaction is currently processing the DoLoop.
   bool in_do_loop_;
 
-  base::WeakPtrFactory<Transaction> weak_factory_;
+  base::WeakPtrFactory<Transaction> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Transaction);
 };

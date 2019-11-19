@@ -8,6 +8,7 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
@@ -15,13 +16,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/google/core/common/google_util.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/signin_header_helper.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test_utils.h"
@@ -124,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
 
   // Require account consistency.
   SupervisedUserSettingsService* supervised_user_settings_service =
-      SupervisedUserSettingsServiceFactory::GetForProfile(profile);
+      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
   supervised_user_settings_service->SetLocalSetting(
       supervised_users::kAccountConsistencyMirrorRequired,
       std::make_unique<base::Value>(true));
@@ -139,40 +140,19 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
   ASSERT_EQ(3, signin::PROFILE_MODE_INCOGNITO_DISABLED |
                    signin::PROFILE_MODE_ADD_ACCOUNT_DISABLED);
   TestMirrorRequestForProfile(test_server_.get(), profile,
-                              "mode=3,enable_account_consistency=true");
+                              "mode=3,enable_account_consistency=true,"
+                              "consistency_enabled_by_default=false");
 }
 
-class ChromeOsMirrorAccountConsistencyTestWithAccountManagerEnabled
-    : public ChromeOsMirrorAccountConsistencyTest {
- public:
-  ChromeOsMirrorAccountConsistencyTestWithAccountManagerEnabled() = default;
-  ~ChromeOsMirrorAccountConsistencyTestWithAccountManagerEnabled() override =
-      default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::switches::kAccountManager);
-    ChromeOsMirrorAccountConsistencyTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      ChromeOsMirrorAccountConsistencyTestWithAccountManagerEnabled);
-};
-
-IN_PROC_BROWSER_TEST_F(
-    ChromeOsMirrorAccountConsistencyTestWithAccountManagerEnabled,
-    PRE_TestMirrorRequestChromeOsNotChildAccount) {
+IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
+                       PRE_TestMirrorRequestChromeOsNotChildAccount) {
   RegisterUser(account_id_);
   chromeos::StartupUtils::MarkOobeCompleted();
 }
 
-// Mirror is not enabled for non-child accounts.
-IN_PROC_BROWSER_TEST_F(
-    ChromeOsMirrorAccountConsistencyTestWithAccountManagerEnabled,
-    TestMirrorRequestChromeOsNotChildAccount) {
+// Mirror is enabled for non-child accounts.
+IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
+                       TestMirrorRequestChromeOsNotChildAccount) {
   // Not a child user.
   LoginUser(account_id_);
 
@@ -185,5 +165,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile));
   TestMirrorRequestForProfile(test_server_.get(), profile,
-                              "mode=0,enable_account_consistency=true");
+                              "mode=0,enable_account_consistency=true,"
+                              "consistency_enabled_by_default=false");
 }

@@ -90,6 +90,7 @@ ARRAY_BUFFER_AND_VIEW_TYPES = TYPED_ARRAY_TYPES.union(frozenset([
 # disable the hack.
 _CALLBACK_CONSTRUCTORS = frozenset((
     'AnimatorConstructor',
+    'BlinkAudioWorkletProcessorConstructor',
     'CustomElementConstructor',
     'NoArgumentConstructor',
 ))
@@ -208,7 +209,7 @@ def cpp_type(idl_type, extended_attributes=None, raw_type=False, used_as_rvalue_
     else:
         native_array_element_type = idl_type.native_array_element_type
     if native_array_element_type:
-        vector_type = cpp_ptr_type('Vector', 'HeapVector', native_array_element_type.is_gc_type)
+        vector_type = cpp_ptr_type('Vector', 'HeapVector', native_array_element_type.is_traceable)
         vector_template_type = cpp_template_type(vector_type, native_array_element_type.cpp_type_args(used_in_cpp_sequence=True))
         if used_as_rvalue_type:
             return 'const %s&' % vector_template_type
@@ -216,7 +217,7 @@ def cpp_type(idl_type, extended_attributes=None, raw_type=False, used_as_rvalue_
 
     # Record types.
     if idl_type.is_record_type:
-        vector_type = cpp_ptr_type('Vector', 'HeapVector', idl_type.value_type.is_gc_type)
+        vector_type = cpp_ptr_type('Vector', 'HeapVector', idl_type.value_type.is_traceable)
         value_type = idl_type.value_type.cpp_type_args(used_in_cpp_sequence=True)
         vector_template_type = cpp_template_type(vector_type,
                                                  'std::pair<String, %s>' % value_type)
@@ -276,7 +277,7 @@ def cpp_type(idl_type, extended_attributes=None, raw_type=False, used_as_rvalue_
             return v8_type_name
         if not used_in_cpp_sequence:
             return v8_type_name + '*'
-        return cpp_template_type('TraceWrapperMember', v8_type_name)
+        return cpp_template_type('Member', v8_type_name)
 
     if base_idl_type == 'void':
         return base_idl_type
@@ -381,7 +382,7 @@ IdlTypeBase.is_gc_type = property(is_gc_type)
 
 
 def is_traceable(idl_type):
-    return idl_type.is_garbage_collected or idl_type.is_callback_function
+    return idl_type.is_garbage_collected or idl_type.is_callback_function or idl_type.cpp_type in ('ScriptValue', 'ScriptPromise')
 
 IdlTypeBase.is_traceable = property(is_traceable)
 IdlUnionType.is_traceable = property(lambda self: True)
@@ -513,8 +514,7 @@ def impl_includes_for_type(idl_type, interfaces_info):
         includes_for_type.add('platform/wtf/text/wtf_string.h')
     if idl_type.is_callback_function:
         component = IdlType.callback_functions[base_idl_type]['component_dir']
-        return set(['bindings/%s/v8/%s' % (component, binding_header_filename(base_idl_type)),
-                    'platform/bindings/trace_wrapper_member.h'])
+        return set(['bindings/%s/v8/%s' % (component, binding_header_filename(base_idl_type))])
     if base_idl_type in interfaces_info:
         interface_info = interfaces_info[base_idl_type]
         includes_for_type.add(interface_info['include_path'])
@@ -570,7 +570,7 @@ V8_VALUE_TO_CPP_VALUE = {
     # Interface types
     'FlexibleArrayBufferView': 'ToFlexibleArrayBufferView({isolate}, {v8_value}, {variable_name}, allocateFlexibleArrayBufferViewStorage({v8_value}))',
     'Promise': 'ScriptPromise::Cast(ScriptState::Current({isolate}), {v8_value})',
-    'ScriptValue': 'ScriptValue(ScriptState::Current({isolate}), {v8_value})',
+    'ScriptValue': 'ScriptValue({isolate}, {v8_value})',
     'Window': 'ToDOMWindow({isolate}, {v8_value})',
     'XPathNSResolver': 'ToXPathNSResolver(ScriptState::Current({isolate}), {v8_value})',
 }
@@ -1051,10 +1051,12 @@ def literal_cpp_value(idl_type, idl_literal):
     """Converts an expression that is a valid C++ literal for this type."""
     # FIXME: add validation that idl_type and idl_literal are compatible
     if idl_type.base_type in ('any', 'object') and idl_literal.is_null:
-        return 'ScriptValue()'
+        return 'ScriptValue::CreateNull(script_state->GetIsolate())'
     literal_value = str(idl_literal)
     if idl_type.base_type in ('octet', 'unsigned short', 'unsigned long'):
         return literal_value + 'u'
+    if idl_type.is_dictionary and literal_value == '{}':
+        return 'MakeGarbageCollected<{}>()'.format(idl_type.base_type)
     return literal_value
 
 
@@ -1069,6 +1071,8 @@ def union_literal_cpp_value(idl_type, idl_literal):
         member_type = idl_type.boolean_member_type
     elif idl_literal.idl_type == 'sequence':
         member_type = idl_type.sequence_member_type
+    elif idl_literal.idl_type == 'dictionary':
+        member_type = idl_type.dictionary_member_type
     else:
         raise ValueError('Unsupported literal type: ' + idl_literal.idl_type)
 
@@ -1091,6 +1095,8 @@ IdlArrayOrSequenceType.literal_cpp_value = array_or_sequence_literal_cpp_value
 _IDL_TYPE_TO_NATIVE_VALUE_TRAITS_TAG_MAP = {
     'DOMString': 'IDLString',
     'USVString': 'IDLUSVString',
+    'DOMStringOrNull': 'IDLStringOrNull',
+    'USVStringOrNull': 'IDLUSVStringOrNull',
     'any': 'ScriptValue',
     'boolean': 'IDLBoolean',
     'long': 'IDLLong',
@@ -1102,6 +1108,8 @@ _IDL_TYPE_TO_NATIVE_VALUE_TRAITS_TAG_MAP = {
 
 def idl_type_to_native_value_traits_tag(idl_type):
     idl_type_str = str(idl_type)
+    if idl_type.is_nullable:
+        idl_type_str += "OrNull"
     if idl_type_str in _IDL_TYPE_TO_NATIVE_VALUE_TRAITS_TAG_MAP:
         return _IDL_TYPE_TO_NATIVE_VALUE_TRAITS_TAG_MAP[idl_type_str]
     else:

@@ -1,10 +1,10 @@
-<script src="../../../js-test.js"></script>
+<script src="../../../resources/js-test.js"></script>
 <body>
 If this doesn't crash, it passed.
 <iframe id=iframe src=resources/empty-custom-body.html></iframe>
 </body>
 <script>
-jsTestIsAsync = true;
+window.jsTestIsAsync = true;
 
 if (window.testRunner)
   testRunner.dumpAsText();

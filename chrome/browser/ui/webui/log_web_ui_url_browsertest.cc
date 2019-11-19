@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"

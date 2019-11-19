@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
-#include "cc/test/layer_test_common.h"
+#include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/draw_quad.h"
@@ -26,12 +26,13 @@ TEST(TextureLayerImplTest, VisibleOpaqueRegion) {
   const gfx::Rect layer_rect(layer_bounds);
   const Region layer_region(layer_rect);
 
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
 
-  TextureLayerImpl* layer = impl.AddChildToRoot<TextureLayerImpl>();
+  TextureLayerImpl* layer = impl.AddLayer<TextureLayerImpl>();
   layer->SetBounds(layer_bounds);
   layer->draw_properties().visible_layer_rect = layer_rect;
   layer->SetBlendBackgroundColor(true);
+  CopyProperties(impl.root_layer(), layer);
 
   // Verify initial conditions.
   EXPECT_FALSE(layer->contents_opaque());
@@ -51,20 +52,21 @@ TEST(TextureLayerImplTest, Occlusion) {
   gfx::Size layer_size(1000, 1000);
   gfx::Size viewport_size(1000, 1000);
 
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
 
   auto resource = viz::TransferableResource::MakeGL(
       gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D,
       gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
-                     gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456));
+                     gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456),
+      layer_size, false /* is_overlay_candidate */);
 
-  TextureLayerImpl* texture_layer_impl =
-      impl.AddChildToRoot<TextureLayerImpl>();
+  TextureLayerImpl* texture_layer_impl = impl.AddLayer<TextureLayerImpl>();
   texture_layer_impl->SetBounds(layer_size);
   texture_layer_impl->SetDrawsContent(true);
   texture_layer_impl->SetTransferableResource(
       resource,
       viz::SingleReleaseCallback::Create(base::BindOnce(&IgnoreCallback)));
+  CopyProperties(impl.root_layer(), texture_layer_impl);
 
   impl.CalcDrawProps(viewport_size);
 
@@ -73,8 +75,7 @@ TEST(TextureLayerImplTest, Occlusion) {
     gfx::Rect occluded;
     impl.AppendQuadsWithOcclusion(texture_layer_impl, occluded);
 
-    LayerTestCommon::VerifyQuadsExactlyCoverRect(impl.quad_list(),
-                                                 gfx::Rect(layer_size));
+    VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect(layer_size));
     EXPECT_EQ(1u, impl.quad_list().size());
   }
 
@@ -83,7 +84,7 @@ TEST(TextureLayerImplTest, Occlusion) {
     gfx::Rect occluded(texture_layer_impl->visible_layer_rect());
     impl.AppendQuadsWithOcclusion(texture_layer_impl, occluded);
 
-    LayerTestCommon::VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect());
+    VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect());
     EXPECT_EQ(impl.quad_list().size(), 0u);
   }
 
@@ -93,51 +94,12 @@ TEST(TextureLayerImplTest, Occlusion) {
     impl.AppendQuadsWithOcclusion(texture_layer_impl, occluded);
 
     size_t partially_occluded_count = 0;
-    LayerTestCommon::VerifyQuadsAreOccluded(
-        impl.quad_list(), occluded, &partially_occluded_count);
+    VerifyQuadsAreOccluded(impl.quad_list(), occluded,
+                           &partially_occluded_count);
     // The layer outputs one quad, which is partially occluded.
     EXPECT_EQ(1u, impl.quad_list().size());
     EXPECT_EQ(1u, partially_occluded_count);
   }
-}
-
-TEST(TextureLayerImplTest, ResourceNotFreedOnGpuRasterToggle) {
-  bool released = false;
-  LayerTestCommon::LayerImplTest impl(
-      FakeLayerTreeFrameSink::Create3dForGpuRasterization());
-  impl.host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
-
-  gfx::Size layer_size(1000, 1000);
-  gfx::Size viewport_size(1000, 1000);
-
-  viz::TransferableResource resource;
-  resource.is_software = false;
-  resource.mailbox_holder.mailbox = gpu::Mailbox::Generate();
-  resource.mailbox_holder.sync_token =
-      gpu::SyncToken(gpu::CommandBufferNamespace::GPU_IO,
-                     gpu::CommandBufferId::FromUnsafeValue(0x234), 0x456);
-  resource.mailbox_holder.texture_target = GL_TEXTURE_2D;
-
-  TextureLayerImpl* texture_layer_impl =
-      impl.AddChildToRoot<TextureLayerImpl>();
-  texture_layer_impl->SetBounds(layer_size);
-  texture_layer_impl->SetDrawsContent(true);
-  texture_layer_impl->SetTransferableResource(
-      resource, viz::SingleReleaseCallback::Create(base::BindOnce(
-                    [](bool* released, const gpu::SyncToken& sync_token,
-                       bool lost) { *released = true; },
-                    base::Unretained(&released))));
-
-  impl.CalcDrawProps(viewport_size);
-
-  // Gpu rasterization is disabled by default.
-  EXPECT_FALSE(impl.host_impl()->use_gpu_rasterization());
-  EXPECT_FALSE(released);
-  // Toggling the gpu rasterization clears all tilings on both trees.
-  impl.host_impl()->SetHasGpuRasterizationTrigger(true);
-  impl.host_impl()->CommitComplete();
-  EXPECT_TRUE(impl.host_impl()->use_gpu_rasterization());
-  EXPECT_FALSE(released);
 }
 
 }  // namespace

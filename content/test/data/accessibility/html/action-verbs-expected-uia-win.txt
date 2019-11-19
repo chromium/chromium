@@ -1,0 +1,28 @@
+document Name='Action verbs'
+++group
+++++description Name='Generic div'
+++heading Name='Heading'
+++button Name='Button'
+++link Name='Link'
+++textbox
+++searchbox
+++textbox
+++textbox
+++checkbox Toggle.ToggleState='Off'
+++checkbox Toggle.ToggleState='On'
+++radio SelectionItem.IsSelected=false
+++switch Name='ARIA Switch' Toggle.ToggleState='Off'
+++group
+++++button Name='Summary' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++++description Name='Summary'
+++combobox ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='Pop-up button'
+++++list Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++listitem Name='Pop-up button' SelectionItem.IsSelected=true
+++group
+++++description Name='Div with click handler'
+++group
+++++group
+++menu Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++menuitem Name='Menu item 1'
+++++menuitemcheckbox Name='Menu item 2' Toggle.ToggleState='On'
+++++menuitemradio Name='Menu item 3' SelectionItem.IsSelected=false

@@ -6,7 +6,7 @@
 
 #include "base/command_line.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/frame_host/navigation_handle_impl.h"
+#include "content/browser/frame_host/navigation_request.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_switches.h"
@@ -47,11 +47,10 @@ WebUINavigationThrottle::CreateThrottleForNavigation(
   if (navigation_handle->IsInMainFrame())
     return nullptr;
 
-  RenderFrameHostImpl* parent =
-      static_cast<NavigationHandleImpl*>(navigation_handle)
-          ->frame_tree_node()
-          ->parent()
-          ->current_frame_host();
+  RenderFrameHostImpl* parent = NavigationRequest::From(navigation_handle)
+                                    ->frame_tree_node()
+                                    ->parent()
+                                    ->current_frame_host();
 
   // Throttle if the renderer process has WebUI bindings, or if the parent frame
   // is on a WebUI page.

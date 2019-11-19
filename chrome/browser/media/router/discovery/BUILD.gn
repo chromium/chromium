@@ -1,7 +1,8 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-#
+
+assert(!is_android)
 
 static_library("discovery") {
   inputs = [
@@ -46,6 +47,16 @@ static_library("discovery") {
     "dial/safe_dial_app_info_parser.h",
     "dial/safe_dial_device_description_parser.cc",
     "dial/safe_dial_device_description_parser.h",
+    "discovery_network_info.cc",
+    "discovery_network_info.h",
+    "discovery_network_list.h",
+    "discovery_network_list_wifi.h",
+    "discovery_network_monitor.cc",
+    "discovery_network_monitor.h",
+    "discovery_network_monitor_metric_observer.cc",
+    "discovery_network_monitor_metric_observer.h",
+    "discovery_network_monitor_metrics.cc",
+    "discovery_network_monitor_metrics.h",
     "mdns/cast_media_sink_service.cc",
     "mdns/cast_media_sink_service.h",
     "mdns/cast_media_sink_service_impl.cc",
@@ -62,28 +73,21 @@ static_library("discovery") {
     "media_sink_discovery_metrics.h",
   ]
 
-  if (!is_android) {
-    sources += [
-      "discovery_network_info.cc",
-      "discovery_network_info.h",
-      "discovery_network_list.h",
-      "discovery_network_list_wifi.h",
-      "discovery_network_list_wifi_linux.cc",
-      "discovery_network_list_wifi_mac.mm",
-      "discovery_network_list_win.cc",
-      "discovery_network_monitor.cc",
-      "discovery_network_monitor.h",
-      "discovery_network_monitor_metric_observer.cc",
-      "discovery_network_monitor_metric_observer.h",
-      "discovery_network_monitor_metrics.cc",
-      "discovery_network_monitor_metrics.h",
-    ]
-    if (is_posix) {
-      sources += [ "discovery_network_list_posix.cc" ]
-    }
+  if (is_linux) {
+    sources += [ "discovery_network_list_wifi_linux.cc" ]
+  }
+
+  if (is_posix) {
+    sources += [ "discovery_network_list_posix.cc" ]
   }
 
   if (is_mac) {
+    sources += [ "discovery_network_list_wifi_mac.mm" ]
     libs = [ "CoreWLAN.framework" ]
+  }
+
+  if (is_win) {
+    sources += [ "discovery_network_list_win.cc" ]
+    libs = [ "iphlpapi.lib" ]
   }
 }

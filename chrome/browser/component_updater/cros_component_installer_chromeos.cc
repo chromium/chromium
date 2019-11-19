@@ -21,6 +21,7 @@
 #include "chromeos/dbus/image_loader_client.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/crx_file/id_util.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
 
@@ -35,11 +36,11 @@ constexpr char kComponentsRootPath[] = "cros-components";
 const ComponentConfig kConfigs[] = {
     {"epson-inkjet-printer-escpr", "3.0",
      "1913a5e0a6cad30b6f03e176177e0d7ed62c5d6700a9c66da556d7c3f5d6a47e"},
-    {"cros-termina", "740.1",
+    {"cros-termina", "800.1",
      "e9d960f84f628e1f42d05de4046bb5b3154b6f1f65c08412c6af57a29aecaffb"},
-    {"rtanalytics-light", "9.0",
+    {"rtanalytics-light", "15.0",
      "69f09d33c439c2ab55bbbe24b47ab55cb3f6c0bd1f1ef46eefea3216ec925038"},
-    {"rtanalytics-full", "9.0",
+    {"rtanalytics-full", "15.0",
      "c93c3e1013c52100a20038b405ac854d69fa889f6dc4fa6f188267051e05e444"},
     {"star-cups-driver", "1.1",
      "6d24de30f671da5aee6d463d9e446cafe9ddac672800a9defe86877dcde6c466"},
@@ -61,22 +62,19 @@ const ComponentConfig* FindConfig(const std::string& name) {
 // TODO(xiaochu): add metrics for component usage (https://crbug.com/793052).
 void LogCustomUninstall(base::Optional<bool> result) {}
 
+void FinishCustomUninstallOnUIThread(const std::string& name) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  chromeos::DBusThreadManager::Get()->GetImageLoaderClient()->UnmountComponent(
+      name, base::BindOnce(&LogCustomUninstall));
+}
+
 std::string GenerateId(const std::string& sha2hashstr) {
   // kIdSize is the count of a pair of hex in the sha2hash array.
   // In string representation of sha2hash, size is doubled since each hex is
   // represented by a single char.
   return crx_file::id_util::GenerateIdFromHex(
       sha2hashstr.substr(0, crx_file::id_util::kIdSize * 2));
-}
-
-void CleanUpOldInstalls(const std::string& name) {
-  // Clean up components installed at old path.
-  base::FilePath path;
-  if (!base::PathService::Get(DIR_COMPONENT_USER, &path))
-    return;
-  path = path.Append(name);
-  if (base::PathExists(path))
-    base::DeleteFile(path, true);
 }
 
 // Returns all installed components.
@@ -133,9 +131,6 @@ update_client::CrxInstaller::Result
 CrOSComponentInstallerPolicy::OnCustomInstall(
     const base::DictionaryValue& manifest,
     const base::FilePath& install_dir) {
-  // TODO(xiaochu): remove after M66 ships to stable. https://crbug.com/792203
-  CleanUpOldInstalls(name_);
-
   cros_component_installer_->EmitInstalledSignal(GetName());
 
   return update_client::CrxInstaller::Result(update_client::InstallError::NONE);
@@ -144,8 +139,8 @@ CrOSComponentInstallerPolicy::OnCustomInstall(
 void CrOSComponentInstallerPolicy::OnCustomUninstall() {
   cros_component_installer_->UnregisterCompatiblePath(name_);
 
-  chromeos::DBusThreadManager::Get()->GetImageLoaderClient()->UnmountComponent(
-      name_, base::BindOnce(&LogCustomUninstall));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(&FinishCustomUninstallOnUIThread, name_));
 }
 
 void CrOSComponentInstallerPolicy::ComponentReady(
@@ -247,8 +242,9 @@ bool CrOSComponentInstaller::Unload(const std::string& name) {
 }
 
 void CrOSComponentInstaller::RegisterInstalled() {
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(GetInstalled),
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+      base::BindOnce(GetInstalled),
       base::BindOnce(&CrOSComponentInstaller::RegisterN,
                      base::Unretained(this)));
 }

@@ -1,0 +1,95 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /MediaBox [0 0 200 200]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Contents 5 0 R
+>>
+endobj
+4 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Courier
+>>
+endobj
+5 0 obj <<
+  /Length 572
+>>
+stream
+% Using Courier because the width of each string is predictable (at 10pt, the
+% width of each glyph is 6pt).
+BT
+/F1 10 Tf
+10 180 Td
+(This is some text) Tj
+/F1 5 Tf
+102 4 Td
+(abc) Tj
+9 -4 Td
+/F1 10 Tf
+( with a) Tj
+-111 -10 Td
+(simulated superscript.) Tj
+ET
+BT
+/F1 10 Tf
+10 150 Td
+(This is some text) Tj
+/F1 5 Tf
+102 -1 Td
+(abc) Tj
+9 1 Td
+/F1 10 Tf
+( with a) Tj
+-111 -10 Td
+(simulated subscript.) Tj
+ET
+BT
+/F1 10 Tf
+10 120 Td
+(This is some text) Tj
+/F1 5 Tf
+102 -1 Td
+(abc) Tj
+0 5 Td
+(def) Tj
+9 -4 Td
+/F1 10 Tf
+( with both) Tj
+-111 -10 Td
+(superscript and subscript.) Tj
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000068 00000 n 
+0000000157 00000 n 
+0000000283 00000 n 
+0000000357 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 6
+>>
+startxref
+981
+%%EOF

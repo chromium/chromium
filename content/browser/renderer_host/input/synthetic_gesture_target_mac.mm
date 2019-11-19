@@ -4,10 +4,9 @@
 
 #include "content/browser/renderer_host/input/synthetic_gesture_target_mac.h"
 
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
-#import "content/browser/renderer_host/render_widget_host_view_cocoa.h"
+#import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
 // Unlike some event APIs, Apple does not provide a way to programmatically
@@ -88,42 +87,42 @@ void SyntheticGestureTargetMac::DispatchWebGestureEventToPlatform(
     const ui::LatencyInfo& latency_info) {
   // Create an autorelease pool so that we clean up any synthetic events we
   // generate.
-  base::mac::ScopedNSAutoreleasePool pool;
+  @autoreleasepool {
+    NSPoint content_local = NSMakePoint(
+        web_gesture.PositionInWidget().x,
+        [cocoa_view_ frame].size.height - web_gesture.PositionInWidget().y);
+    NSPoint location_in_window = [cocoa_view_ convertPoint:content_local
+                                                    toView:nil];
 
-  NSPoint content_local = NSMakePoint(
-      web_gesture.PositionInWidget().x,
-      [cocoa_view_ frame].size.height - web_gesture.PositionInWidget().y);
-  NSPoint location_in_window =
-      [cocoa_view_ convertPoint:content_local toView:nil];
-
-  switch (web_gesture.GetType()) {
-    case WebInputEvent::kGesturePinchBegin: {
-      id cocoa_event =
-          [SyntheticPinchEvent eventWithMagnification:0.0f
-                                     locationInWindow:location_in_window
-                                                phase:NSEventPhaseBegan];
-      [cocoa_view_ handleBeginGestureWithEvent:cocoa_event
-                       isSyntheticallyInjected:YES];
-      return;
+    switch (web_gesture.GetType()) {
+      case WebInputEvent::kGesturePinchBegin: {
+        id cocoa_event =
+            [SyntheticPinchEvent eventWithMagnification:0.0f
+                                       locationInWindow:location_in_window
+                                                  phase:NSEventPhaseBegan];
+        [cocoa_view_ handleBeginGestureWithEvent:cocoa_event
+                         isSyntheticallyInjected:YES];
+        return;
+      }
+      case WebInputEvent::kGesturePinchEnd: {
+        id cocoa_event =
+            [SyntheticPinchEvent eventWithMagnification:0.0f
+                                       locationInWindow:location_in_window
+                                                  phase:NSEventPhaseEnded];
+        [cocoa_view_ handleEndGestureWithEvent:cocoa_event];
+        return;
+      }
+      case WebInputEvent::kGesturePinchUpdate: {
+        id cocoa_event = [SyntheticPinchEvent
+            eventWithMagnification:web_gesture.data.pinch_update.scale - 1.0f
+                  locationInWindow:location_in_window
+                             phase:NSEventPhaseChanged];
+        [cocoa_view_ magnifyWithEvent:cocoa_event];
+        return;
+      }
+      default:
+        NOTREACHED();
     }
-    case WebInputEvent::kGesturePinchEnd: {
-      id cocoa_event =
-          [SyntheticPinchEvent eventWithMagnification:0.0f
-                                     locationInWindow:location_in_window
-                                                phase:NSEventPhaseEnded];
-      [cocoa_view_ handleEndGestureWithEvent:cocoa_event];
-      return;
-    }
-    case WebInputEvent::kGesturePinchUpdate: {
-      id cocoa_event = [SyntheticPinchEvent
-          eventWithMagnification:web_gesture.data.pinch_update.scale - 1.0f
-                locationInWindow:location_in_window
-                           phase:NSEventPhaseChanged];
-      [cocoa_view_ magnifyWithEvent:cocoa_event];
-      return;
-    }
-    default:
-      NOTREACHED();
   }
 }
 

@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Informácie o prehliadači Chromium</translation>
 <translation id="1289966288285062467">Upozornenie o ochrane súkromia v prehliadači Chromium</translation>
 <translation id="1472013873724362412">Váš účet nefunguje v prehliadači Chromium. Kontaktujte správcu domény alebo sa prihláste pomocou bežného účtu Google.</translation>
+<translation id="1507010443238049608">Pomoc so zlepšovaním funkcií a výkonu prehliadača Chromium</translation>
 <translation id="1617663976202781617">Údaje zo synchronizácie prehliadača Chromium</translation>
 <translation id="1736662517232558588">Vymazanie údajov prehliadača Chromium</translation>
 <translation id="1838412507805038478">Prehliadač Chromium overil, že certifikát tohto webu bol vydaný vydavateľom <ph name="ISSUER" />.</translation>
@@ -14,24 +15,16 @@
 <translation id="2168108852149185974">Niektoré doplnky spôsobujú zlyhanie prehliadača Chromium. Odinštalujte ich.</translation>
 <translation id="2178608107313874732">Chromium momentálne nemôže použiť váš fotoaparát</translation>
 <translation id="2195025571279539885">Chcete, aby prehliadač Chromium nabudúce ponúkol možnosť prekladu stránok v jazyku <ph name="LANGUAGE_NAME" />?</translation>
-<translation id="2517624234762908348">Synchronizovať údaje prehliadača Chromium</translation>
-<translation id="2647554856022461007">Chromium vám môže uľahčiť prehliadanie pomocou webových služieb. Vybrané webové služby môžete podľa potreby vypnúť. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="2590893390871230428">Synchronizácia údajov prehliadača Chromium</translation>
 <translation id="2730884209570016437">Chromium nemôže použiť váš fotoaparát, pretože ho práve používa iná aplikácia</translation>
 <translation id="2915596697727466327">Chromium používa overenie Face ID na zaistenie oprávneného prístupu k heslám.</translation>
 <translation id="3256316712990552818">Skopírovaná do prehliadača Chromium</translation>
-<translation id="3413120535237193088">Ak chcete mať záložky na všetkých zariadeniach, prihláste sa do prehliadača Chromium.</translation>
-<translation id="3473048256428424907">Zapnite čítačku kódov QR Chromium</translation>
-<translation id="3605252743693911722">Prihláste sa do prehliadača Chromium a získajte svoje záložky, heslá a ďalšie nastavenia na všetkých zariadeniach.</translation>
 <translation id="3805899903892079518">Chromium nemá prístup k vašim fotkám ani videám. Prístup povoľte v časti Nastavenia systému iOS &gt; Súkromie &gt; Fotky.</translation>
-<translation id="4024541897090868497">Ak chcete mať karty na všetkých zariadeniach, prihláste sa do prehliadača Chromium.</translation>
-<translation id="4157467675761413638">Tip pre Chromium: ďalšie možnosti kariet získate pridržaním tlačidla Zobraziť karty na paneli s nástrojmi, ktorý sa nachádza v dolnej alebo hornej časti obrazovky.</translation>
-<translation id="4241912885070669028">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />. Touto akciou odstránite údaje prehliadača Chromium z príslušného zariadenia, avšak zostanú naďalej vo vašom účte Google.</translation>
-<translation id="4272892696084633551">Pomôžte vylepšiť funkcie a výkon prehliadača Chromium</translation>
 <translation id="4555020257205549924">Po zapnutí tejto funkcie bude prehliadač Chromium ponúkať preloženie stránok napísaných v inom jazyku pomocou Prekladača Google. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="4681781466797808448">Zapnutie skenera prehliadača Chromium</translation>
 <translation id="4787850887676698916">Tu sa zobrazia karty, ktoré ste otvorili v prehliadači Chromium na iných zariadeniach.</translation>
-<translation id="495292094137889840">Začnite používať čítačku kódov QR Chromium</translation>
 <translation id="4999538639245140991">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje prehliadača Chromium budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>
-<translation id="5231355151045086930">Odhlásenie sa z prehliadača Chromium</translation>
+<translation id="5573014823074921752">Tip pre Chromium: ďalšie možnosti karty získate pridržaním tlačidla „Zobraziť karty“ na paneli s nástrojmi, ktorý sa nachádza v dolnej alebo hornej časti obrazovky.</translation>
 <translation id="5862307444128926510">Vitajte v prehliadači Chromium</translation>
 <translation id="5945387852661427312">Prihlasujete sa pomocou účtu spravovaného doménou <ph name="DOMAIN" /> a jej správcovi tým dávate kontrolu nad vašimi údajmi prehliadača Chromium. Vaše údaje budú natrvalo prepojené s týmto účtom. Odhlásením z prehliadača Chromium odstránite údaje z príslušného zariadenia, avšak naďalej zostanú uložené vo vašom účte Google.</translation>
 <translation id="6068866989048414399">Zmluvné podmienky prehliadača Chromium</translation>
@@ -48,11 +41,13 @@
 <translation id="7674213385180944843">Otvorte Nastavenia &gt; Súkromie &gt; Fotoaparát &gt; Chromium a zapnite fotoaparát.</translation>
 <translation id="7746854981345936341">Tip pre Chromium: niektoré tlačidlá sa teraz nachádzajú v dolnej časti obrazovky, napríklad Dopredu, Späť a Hľadať.</translation>
 <translation id="786327964234957808">Účet na synchronizáciu <ph name="USER_EMAIL1" /> prepínate na <ph name="USER_EMAIL2" />. Vaše existujúce údaje prehliadača Chromium spravuje doména <ph name="DOMAIN" />. Touto akciou odstránite údaje z vášho zariadenia, avšak zostanú naďalej v účte <ph name="USER_EMAIL1" />.</translation>
+<translation id="7890287942691234100">Začnite používať skener prehliadača Chromium</translation>
 <translation id="8073677936375100957">Chcete vymazať údaje prehliadača Chromium z tohto zariadenia?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Presuňte Chromium do doku<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Získajte lepšie prostredie Google v prehliadači Chromium na základe svojej polohy.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autori Chromium. Všetky práva vyhradené.</translation>
 <translation id="8809780021347235332">Ak chcete ukladať fotky, klepnite na Nastavenia a povoľte prehliadaču Chromium používať fotky</translation>
 <translation id="9022552996538154597">Prihlásiť sa do prehliadača Chromium</translation>
+<translation id="9217078088703304241"><ph name="BEGIN_LINK" />Aktualizované zmluvné podmienky prehliadača Chromium<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Autori prehliadača Chromium</translation>
 </translationbundle>

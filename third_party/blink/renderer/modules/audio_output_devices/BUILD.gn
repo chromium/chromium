@@ -8,7 +8,5 @@ blink_modules_sources("audio_output_devices") {
   sources = [
     "html_media_element_audio_output_device.cc",
     "html_media_element_audio_output_device.h",
-    "set_sink_id_callbacks.cc",
-    "set_sink_id_callbacks.h",
   ]
 }

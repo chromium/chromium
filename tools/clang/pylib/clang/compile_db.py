@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import json
 import os
 import re
@@ -32,9 +34,9 @@ def _ProcessCommand(command):
     command = ' '.join(
         [match_dict['clang'], '--driver-mode=cl', match_dict['args']])
   elif _debugging:
-    print 'Compile command didn\'t match expected regex!'
-    print 'Command:', command
-    print 'Regex:', _CMD_LINE_RE.pattern
+    print('Compile command didn\'t match expected regex!')
+    print('Command:', command)
+    print('Regex:', _CMD_LINE_RE.pattern)
 
   return command
 
@@ -56,7 +58,7 @@ def _ProcessEntry(entry):
           entry['command'][match.end(1):]])
   except IOError:
     if _debugging:
-      print 'Couldn\'t read response file for %s' % entry['file']
+      print('Couldn\'t read response file for %s' % entry['file'])
 
   return entry
 
@@ -77,7 +79,7 @@ def ProcessCompileDatabaseIfNeeded(compile_db):
     return compile_db
 
   if _debugging:
-    print 'Read in %d entries from the compile db' % len(compile_db)
+    print('Read in %d entries from the compile db' % len(compile_db))
   compile_db = [_ProcessEntry(e) for e in compile_db]
   original_length = len(compile_db)
 
@@ -86,7 +88,7 @@ def ProcessCompileDatabaseIfNeeded(compile_db):
   compile_db = [e for e in compile_db if '_nacl.cc.pdb' not in e['command']
       and '_nacl_win64.cc.pdb' not in e['command']]
   if _debugging:
-    print 'Filtered out %d entries...' % (original_length - len(compile_db))
+    print('Filtered out %d entries...' % (original_length - len(compile_db)))
 
   # TODO(dcheng): Also filter out multiple commands for the same file. Not sure
   # how that happens, but apparently it's an issue on Windows.

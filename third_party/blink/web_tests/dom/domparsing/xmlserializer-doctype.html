@@ -1,33 +1,19 @@
 <html>
 <head>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
     <script>
-        function debug(str) {
-            li = document.createElement('li');
-            li.appendChild(document.createTextNode(str));
-            document.getElementById('console').appendChild(li);
-        }
-
-        function runTests() {
-            if (window.testRunner) {
-                testRunner.dumpAsText();
-            }
-
+        test(() => {
             var docType = window.document.implementation.createDocumentType("aDocTypeName", "aPublicID", "aSystemID");
             var doc = window.document.implementation.createDocument("", "", docType);
 
             var serializer = new XMLSerializer();
 
             var result = serializer.serializeToString(docType);
-            if (result == '<!DOCTYPE aDocTypeName PUBLIC "aPublicID" "aSystemID">')
-                debug('PASS: the DocumentType node has been successfully serialize to "' + result + '".');
-            else
-                debug('FAIL: the DocumentType node has not been successfully serialized.');
-        }
+            assert_equals(result, '<!DOCTYPE aDocTypeName PUBLIC "aPublicID" "aSystemID">', 'The DocumentType node should serialize to "' + result + '"');
+        }, "This tests XMLSerializer.serializeToString() on a DocumentType node that has a document associated with it");
     </script>
 </head>
-<body onload="runTests()">
-This tests XMLSerializer.serializeToString() on a DocumentType node that has a document associated with it.
-<ul id="console">
-</ul>
+<body>
 </body>
 </html>

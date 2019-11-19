@@ -6,9 +6,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "chrome/android/features/media_router/jni_headers/ChromeMediaRouter_jni.h"
 #include "chrome/browser/media/android/remote/flinging_controller_bridge.h"
 #include "chrome/browser/media/android/router/media_router_android.h"
-#include "jni/ChromeMediaRouter_jni.h"
 #include "media/base/media_controller.h"
 
 using base::android::ConvertUTF8ToJavaString;

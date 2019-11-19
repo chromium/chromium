@@ -5,51 +5,20 @@
 #ifndef COMPONENTS_SYNC_MODEL_CONFLICT_RESOLUTION_H_
 #define COMPONENTS_SYNC_MODEL_CONFLICT_RESOLUTION_H_
 
-#include <memory>
-
-#include "components/sync/model/entity_data.h"
-
 namespace syncer {
 
-// A simple class to represent the resolution of a data conflict. We either:
+// An enum to represent the resolution of a data conflict. We either:
 // 1) Use the local client data and update the server.
 // 2) Use the remote server data and update the client.
-// 3) Use newly created data and update both.
-class ConflictResolution {
- public:
-  // This enum is used in histograms.xml and entries shouldn't be renumbered or
-  // removed. New entries must be added at the end, before TYPE_SIZE.
-  enum Type {
-    CHANGES_MATCH,  // Exists for logging purposes.
-    USE_LOCAL,
-    USE_REMOTE,
-    USE_NEW,
-    IGNORE_LOCAL_ENCRYPTION,   // Exists for logging purposes.
-    IGNORE_REMOTE_ENCRYPTION,  // Exists for logging purposes.
-    TYPE_SIZE,
-  };
-
-  // Convenience functions for brevity.
-  static ConflictResolution UseLocal();
-  static ConflictResolution UseRemote();
-  static ConflictResolution UseNew(std::unique_ptr<EntityData> data);
-
-  // Move constructor since we can't copy a unique_ptr.
-  ConflictResolution(ConflictResolution&& other);
-  ~ConflictResolution();
-
-  Type type() const { return type_; }
-
-  // Get the data for USE_NEW, or nullptr. Can only be called once.
-  std::unique_ptr<EntityData> ExtractData();
-
- private:
-  ConflictResolution(Type type, std::unique_ptr<EntityData> data);
-
-  const Type type_;
-  std::unique_ptr<EntityData> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConflictResolution);
+// We use this enum for UMA and values shouldn't change.
+enum class ConflictResolution {
+  kChangesMatch,  // Exists for logging purposes.
+  kUseLocal,
+  kUseRemote,
+  kUseNewDEPRECATED,  // Deprecated because it's not used in production code.
+  kIgnoreLocalEncryption,   // Exists for logging purposes.
+  kIgnoreRemoteEncryption,  // Exists for logging purposes.
+  kTypeSize,
 };
 
 }  // namespace syncer

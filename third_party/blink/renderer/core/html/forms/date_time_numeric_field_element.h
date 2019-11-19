@@ -29,7 +29,7 @@
 #include "base/macros.h"
 #include "third_party/blink/public/platform/web_focus_type.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_field_element.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -65,6 +65,7 @@ class DateTimeNumericFieldElement : public DateTimeFieldElement {
  protected:
   DateTimeNumericFieldElement(Document&,
                               FieldOwner&,
+                              DateTimeField,
                               const Range&,
                               const Range& hard_limits,
                               const String& placeholder,

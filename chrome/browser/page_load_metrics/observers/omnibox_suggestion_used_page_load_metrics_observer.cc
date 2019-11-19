@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "chrome/browser/page_load_metrics/page_load_metrics_util.h"
+#include "components/page_load_metrics/browser/page_load_metrics_util.h"
 
 namespace {
 
@@ -46,8 +46,7 @@ OmniboxSuggestionUsedMetricsObserver::~OmniboxSuggestionUsedMetricsObserver() {}
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 OmniboxSuggestionUsedMetricsObserver::OnHidden(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
   return STOP_OBSERVING;
 }
 
@@ -62,11 +61,10 @@ OmniboxSuggestionUsedMetricsObserver::OnCommit(
 }
 
 void OmniboxSuggestionUsedMetricsObserver::OnFirstContentfulPaintInPage(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
   base::TimeDelta fcp = timing.paint_timing->first_contentful_paint.value();
 
-  if (info.started_in_foreground) {
+  if (GetDelegate().StartedInForeground()) {
     if (ui::PageTransitionCoreTypeIs(transition_type_,
                                      ui::PAGE_TRANSITION_GENERATED)) {
       PAGE_LOAD_HISTOGRAM(kSearchFirstContentfulPaint, fcp);
@@ -79,30 +77,30 @@ void OmniboxSuggestionUsedMetricsObserver::OnFirstContentfulPaintInPage(
   // Since a page is not supposed to paint in the background,
   // when this function gets called, first_foreground_time should be set.
   // We add this check just to be safe.
-  if (is_prerender_ && info.first_foreground_time) {
+  if (is_prerender_ && GetDelegate().GetFirstForegroundTime()) {
     base::TimeDelta perceived_fcp =
-        std::max(base::TimeDelta(), fcp - info.first_foreground_time.value());
+        std::max(base::TimeDelta(),
+                 fcp - GetDelegate().GetFirstForegroundTime().value());
     if (ui::PageTransitionCoreTypeIs(transition_type_,
                                      ui::PAGE_TRANSITION_GENERATED)) {
       PAGE_LOAD_HISTOGRAM(kPrerenderSearchFirstContentfulPaint, perceived_fcp);
       PAGE_LOAD_HISTOGRAM(kPrerenderSearchNavigationToFirstForeground,
-                          info.first_foreground_time.value());
+                          GetDelegate().GetFirstForegroundTime().value());
     } else if (ui::PageTransitionCoreTypeIs(transition_type_,
                                             ui::PAGE_TRANSITION_TYPED)) {
       PAGE_LOAD_HISTOGRAM(kPrerenderURLFirstContentfulPaint, perceived_fcp);
       PAGE_LOAD_HISTOGRAM(kPrerenderURLNavigationToFirstForeground,
-                          info.first_foreground_time.value());
+                          GetDelegate().GetFirstForegroundTime().value());
     }
   }
 }
 
 void OmniboxSuggestionUsedMetricsObserver::
     OnFirstMeaningfulPaintInMainFrameDocument(
-        const page_load_metrics::mojom::PageLoadTiming& timing,
-        const page_load_metrics::PageLoadExtraInfo& info) {
+        const page_load_metrics::mojom::PageLoadTiming& timing) {
   base::TimeDelta fmp = timing.paint_timing->first_meaningful_paint.value();
 
-  if (info.started_in_foreground) {
+  if (GetDelegate().StartedInForeground()) {
     if (ui::PageTransitionCoreTypeIs(transition_type_,
                                      ui::PAGE_TRANSITION_GENERATED)) {
       PAGE_LOAD_HISTOGRAM(kSearchFirstMeaningfulPaint, fmp);
@@ -110,9 +108,10 @@ void OmniboxSuggestionUsedMetricsObserver::
                                             ui::PAGE_TRANSITION_TYPED)) {
       PAGE_LOAD_HISTOGRAM(kURLFirstMeaningfulPaint, fmp);
     }
-  } else if (is_prerender_ && info.first_foreground_time) {
+  } else if (is_prerender_ && GetDelegate().GetFirstForegroundTime()) {
     base::TimeDelta perceived_fmp =
-        std::max(base::TimeDelta(), fmp - info.first_foreground_time.value());
+        std::max(base::TimeDelta(),
+                 fmp - GetDelegate().GetFirstForegroundTime().value());
     if (ui::PageTransitionCoreTypeIs(transition_type_,
                                      ui::PAGE_TRANSITION_GENERATED)) {
       PAGE_LOAD_HISTOGRAM(kPrerenderSearchFirstMeaningfulPaint, perceived_fmp);

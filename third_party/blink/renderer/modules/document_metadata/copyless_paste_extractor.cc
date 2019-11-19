@@ -8,13 +8,13 @@
 #include <memory>
 #include <utility>
 
-#include "third_party/blink/public/platform/modules/document_metadata/copyless_paste.mojom-blink.h"
+#include "third_party/blink/public/mojom/document_metadata/copyless_paste.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -53,7 +53,7 @@ constexpr wtf_size_t kMaxRepeatedSize = 100;
 
 constexpr char kJSONLDKeyType[] = "@type";
 constexpr char kJSONLDKeyGraph[] = "@graph";
-bool isWhitelistedType(AtomicString type) {
+bool IsSupportedType(AtomicString type) {
   DEFINE_STATIC_LOCAL(HashSet<AtomicString>, elements,
                       ({// Common types that include addresses.
                         "AutoDealer", "Hotel", "LocalBusiness", "Organization",
@@ -64,9 +64,9 @@ bool isWhitelistedType(AtomicString type) {
   return type && elements.Contains(type);
 }
 
-void extractEntity(const JSONObject&, Entity&, int recursionLevel);
+void ExtractEntity(const JSONObject&, Entity&, int recursionLevel);
 
-bool parseRepeatedValue(const JSONArray& arr,
+bool ParseRepeatedValue(const JSONArray& arr,
                         Values& values,
                         int recursionLevel) {
   if (arr.size() < 1) {
@@ -136,7 +136,7 @@ bool parseRepeatedValue(const JSONArray& arr,
       } break;
       case JSONValue::ValueType::kTypeObject:
         values.get_entity_values().push_back(Entity::New());
-        extractEntity(*(JSONObject::Cast(innerVal)),
+        ExtractEntity(*(JSONObject::Cast(innerVal)),
                       *(values.get_entity_values().at(j)), recursionLevel + 1);
         break;
       default:
@@ -146,7 +146,7 @@ bool parseRepeatedValue(const JSONArray& arr,
   return true;
 }
 
-void extractEntity(const JSONObject& val, Entity& entity, int recursionLevel) {
+void ExtractEntity(const JSONObject& val, Entity& entity, int recursionLevel) {
   if (recursionLevel >= kMaxDepth) {
     return;
   }
@@ -200,12 +200,12 @@ void extractEntity(const JSONObject& val, Entity& entity, int recursionLevel) {
         property->values->set_entity_values(Vector<EntityPtr>());
         property->values->get_entity_values().push_back(Entity::New());
 
-        extractEntity(*(val.GetJSONObject(entry.first)),
+        ExtractEntity(*(val.GetJSONObject(entry.first)),
                       *(property->values->get_entity_values().at(0)),
                       recursionLevel + 1);
       } break;
       case JSONValue::ValueType::kTypeArray:
-        addProperty = parseRepeatedValue(*(val.GetArray(entry.first)),
+        addProperty = ParseRepeatedValue(*(val.GetArray(entry.first)),
                                          *(property->values), recursionLevel);
         break;
       default:
@@ -216,47 +216,48 @@ void extractEntity(const JSONObject& val, Entity& entity, int recursionLevel) {
   }
 }
 
-void extractTopLevelEntity(const JSONObject& val, Vector<EntityPtr>& entities) {
+void ExtractTopLevelEntity(const JSONObject& val, Vector<EntityPtr>& entities) {
   // Now we have a JSONObject which corresponds to a single (possibly nested)
   // entity.
   EntityPtr entity = Entity::New();
   String type;
   val.GetString(kJSONLDKeyType, &type);
-  if (!isWhitelistedType(AtomicString(type))) {
+  if (!IsSupportedType(AtomicString(type))) {
     return;
   }
-  extractEntity(val, *entity, 0);
+  ExtractEntity(val, *entity, 0);
   entities.push_back(std::move(entity));
 }
 
-void extractEntitiesFromArray(const JSONArray& arr,
+void ExtractEntitiesFromArray(const JSONArray& arr,
                               Vector<EntityPtr>& entities) {
   for (wtf_size_t i = 0; i < arr.size(); ++i) {
     const JSONValue* val = arr.at(i);
     if (val->GetType() == JSONValue::ValueType::kTypeObject) {
-      extractTopLevelEntity(*(JSONObject::Cast(val)), entities);
+      ExtractTopLevelEntity(*(JSONObject::Cast(val)), entities);
     }
   }
 }
 
-void extractEntityFromTopLevelObject(const JSONObject& val,
+void ExtractEntityFromTopLevelObject(const JSONObject& val,
                                      Vector<EntityPtr>& entities) {
   const JSONArray* graph = val.GetArray(kJSONLDKeyGraph);
   if (graph) {
-    extractEntitiesFromArray(*graph, entities);
+    ExtractEntitiesFromArray(*graph, entities);
   }
-  extractTopLevelEntity(val, entities);
+  ExtractTopLevelEntity(val, entities);
 }
 
 // ExtractionStatus is used in UMA, hence is append-only.
 // kCount must be the last entry.
 enum ExtractionStatus { kOK, kEmpty, kParseFailure, kWrongType, kCount };
 
-ExtractionStatus extractMetadata(const Element& root,
+ExtractionStatus ExtractMetadata(const Element& root,
                                  Vector<EntityPtr>& entities) {
   for (Element& element : ElementTraversal::DescendantsOf(root)) {
     if (element.HasTagName(html_names::kScriptTag) &&
-        element.getAttribute(html_names::kTypeAttr) == "application/ld+json") {
+        element.FastGetAttribute(html_names::kTypeAttr) ==
+            "application/ld+json") {
       std::unique_ptr<JSONValue> json = ParseJSON(element.textContent());
       if (!json) {
         LOG(ERROR) << "Failed to parse json.";
@@ -264,10 +265,10 @@ ExtractionStatus extractMetadata(const Element& root,
       }
       switch (json->GetType()) {
         case JSONValue::ValueType::kTypeArray:
-          extractEntitiesFromArray(*(JSONArray::Cast(json.get())), entities);
+          ExtractEntitiesFromArray(*(JSONArray::Cast(json.get())), entities);
           break;
         case JSONValue::ValueType::kTypeObject:
-          extractEntityFromTopLevelObject(*(JSONObject::Cast(json.get())),
+          ExtractEntityFromTopLevelObject(*(JSONObject::Cast(json.get())),
                                           entities);
           break;
         default:
@@ -283,8 +284,8 @@ ExtractionStatus extractMetadata(const Element& root,
 
 }  // namespace
 
-WebPagePtr CopylessPasteExtractor::extract(const Document& document) {
-  TRACE_EVENT0("blink", "CopylessPasteExtractor::extract");
+WebPagePtr CopylessPasteExtractor::Extract(const Document& document) {
+  TRACE_EVENT0("blink", "CopylessPasteExtractor::Extract");
 
   if (!document.GetFrame() || !document.GetFrame()->IsMainFrame())
     return nullptr;
@@ -296,9 +297,9 @@ WebPagePtr CopylessPasteExtractor::extract(const Document& document) {
   WebPagePtr page = WebPage::New();
 
   // Traverse the DOM tree and extract the metadata.
-  TimeTicks start_time = CurrentTimeTicks();
-  ExtractionStatus status = extractMetadata(*html, page->entities);
-  TimeDelta elapsed_time = CurrentTimeTicks() - start_time;
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  ExtractionStatus status = ExtractMetadata(*html, page->entities);
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
 
   DEFINE_STATIC_LOCAL(EnumerationHistogram, status_histogram,
                       ("CopylessPaste.ExtractionStatus", kCount));
@@ -306,14 +307,14 @@ WebPagePtr CopylessPasteExtractor::extract(const Document& document) {
 
   if (status != kOK) {
     DEFINE_STATIC_LOCAL(
-        CustomCountHistogram, extractionHistogram,
+        CustomCountHistogram, extraction_histogram,
         ("CopylessPaste.ExtractionFailedUs", 1, 1000 * 1000, 50));
-    extractionHistogram.CountMicroseconds(elapsed_time);
+    extraction_histogram.CountMicroseconds(elapsed_time);
     return nullptr;
   }
-  DEFINE_STATIC_LOCAL(CustomCountHistogram, extractionHistogram,
+  DEFINE_STATIC_LOCAL(CustomCountHistogram, extraction_histogram,
                       ("CopylessPaste.ExtractionUs", 1, 1000 * 1000, 50));
-  extractionHistogram.CountMicroseconds(elapsed_time);
+  extraction_histogram.CountMicroseconds(elapsed_time);
 
   page->url = document.Url();
   page->title = document.title();

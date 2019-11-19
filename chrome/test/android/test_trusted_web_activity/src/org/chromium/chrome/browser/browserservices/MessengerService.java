@@ -12,7 +12,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 /**
  * The TrustedWebActivityClientTest tests need to test behaviour called on

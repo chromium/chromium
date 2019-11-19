@@ -41,6 +41,8 @@ jumbo_component("geometry") {
     "rect_conversions.h",
     "rect_f.cc",
     "rect_f.h",
+    "rounded_corners_f.cc",
+    "rounded_corners_f.h",
     "safe_integer_conversions.h",
     "scroll_offset.cc",
     "scroll_offset.h",
@@ -66,7 +68,7 @@ jumbo_component("geometry") {
     "//base",
   ]
 
-  if (is_android && !is_debug) {
+  if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }

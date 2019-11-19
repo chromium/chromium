@@ -11,11 +11,11 @@ async_test(t => {
   const video = document.querySelector('video');
   const testCases = [
     { width: 500, expect: expectSmall },
-    { width: 1441, expect: expectMedium },
-    { width: 800, expect: expectMedium },
-    { width: 2000, expect: expectMedium },
+    { width: 1441, expect: expectLarge },
+    { width: 800, expect: expectSmall },
+    { width: 2000, expect: expectLarge },
     { width: 0, expect: expectSmall },
-    { width: 741, expect: expectMedium },
+    { width: 741, expect: expectSmall },
     { width: 308, expect: expectSmall },
     { width: 150, expect: expectSmall },
   ];
@@ -40,11 +40,11 @@ async_test(t => {
 
   function expectSmall() {
     checkControlsHasClass(video, 'sizing-small');
-    checkControlsDoesNotHaveClass(video, 'sizing-medium');
+    checkControlsDoesNotHaveClass(video, 'sizing-large');
   }
 
-  function expectMedium() {
-    checkControlsHasClass(video, 'sizing-medium');
+  function expectLarge() {
+    checkControlsHasClass(video, 'sizing-large');
     checkControlsDoesNotHaveClass(video, 'sizing-small');
   }
 

@@ -2,7 +2,6 @@
 <script src="../resources/gc.js"></script>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <!--
 
@@ -20,13 +19,13 @@ if (window.internals)
 <div role="region" id="atomic" aria-atomic="true"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var node = document.getElementById("atomic");
     var axNode = accessibilityController.accessibleElementById("atomic");
     assert_equals(axNode.isAtomic, true);
     assert_equals(node.accessibleNode.atomic, null);
     node.accessibleNode.atomic = false;
-    assert_equals(axNode.isAtomic, false);
+    assert_equals(axNode.isAtomic, true);
     node.accessibleNode.atomic = null;
     assert_equals(axNode.isAtomic, true);
     assert_equals(node.accessibleNode.atomic, null);
@@ -36,55 +35,55 @@ test_after_layout_and_paint(function(t) {
 <div role="region" id="atomic2"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var node = document.getElementById("atomic2");
     var axNode = accessibilityController.accessibleElementById("atomic2");
     assert_equals(axNode.isAtomic, false);
     node.accessibleNode.atomic = true;
-    assert_equals(axNode.isAtomic, true);
+    assert_equals(axNode.isAtomic, false);
 }, "AccessibleNode.atomic");
 </script>
 
 <div role="status" id="busy"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var node = document.getElementById("busy");
     var axNode = accessibilityController.accessibleElementById("busy");
     assert_equals(axNode.isBusy, false);
     node.accessibleNode.busy = true;
-    assert_equals(axNode.isBusy, true);
+    assert_equals(axNode.isBusy, false);
 }, "AccessibleNode.busy");
 </script>
 
 <div role="checkbox" id="disabled"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var node = document.getElementById("disabled");
     var axNode = accessibilityController.accessibleElementById("disabled");
     assert_equals(axNode.restriction, "none");
     node.accessibleNode.disabled = true;
-    assert_equals(axNode.restriction, "disabled");
+    assert_equals(axNode.restriction, "none");
 }, "AccessibleNode.disabled");
 </script>
 
 <div role="button" id="expanded"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var node = document.getElementById("expanded");
     var axNode = accessibilityController.accessibleElementById("expanded");
     assert_equals(axNode.isExpanded, false);
     node.accessibleNode.expanded = true;
-    assert_equals(axNode.isExpanded, true);
+    assert_equals(axNode.isExpanded, false);
 }, "AccessibleNode.expanded");
 </script>
 
 <div role="region" id="will-be-hidden"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var node = document.getElementById("will-be-hidden");
     var axNode = accessibilityController.accessibleElementById("will-be-hidden");
     assert_true(axNode != null);
@@ -92,78 +91,78 @@ test_after_layout_and_paint(function(t) {
     node.id = "hidden";
 
     axNode = accessibilityController.accessibleElementById("hidden");
-    assert_true(axNode == null);
+    assert_true(axNode != null);
 }, "AccessibleNode.hidden");
 </script>
 
 <div role="dialog" id="modal"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var node = document.getElementById("modal");
     var axNode = accessibilityController.accessibleElementById("modal");
     assert_equals(axNode.isModal, false);
     node.accessibleNode.modal = true;
-    assert_equals(axNode.isModal, true);
+    assert_equals(axNode.isModal, false);
 }, "AccessibleNode.modal");
 </script>
 
 <div role="textbox" id="multiline"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var node = document.getElementById("multiline");
     var axNode = accessibilityController.accessibleElementById("multiline");
     assert_equals(axNode.isMultiLine, false);
     node.accessibleNode.multiline = true;
-    assert_equals(axNode.isMultiLine, true);
+    assert_equals(axNode.isMultiLine, false);
 }, "AccessibleNode.multiline");
 </script>
 
 <div role="listbox" id="multiselectable"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var node = document.getElementById("multiselectable");
     var axNode = accessibilityController.accessibleElementById("multiselectable");
     assert_equals(axNode.isMultiSelectable, false);
     node.accessibleNode.multiselectable = true;
-    assert_equals(axNode.isMultiSelectable, true);
+    assert_equals(axNode.isMultiSelectable, false);
 }, "AccessibleNode.multiselectable");
 </script>
 
 <div role="textbox" id="readOnly" tabindex="0"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var node = document.getElementById("readOnly");
     var axNode = accessibilityController.accessibleElementById("readOnly");
     assert_equals(axNode.isAttributeSettable("AXValue"), true);
     node.accessibleNode.readOnly = true;
-    assert_equals(axNode.isAttributeSettable("AXValue"), false);
+    assert_equals(axNode.isAttributeSettable("AXValue"), true);
 }, "AccessibleNode.readOnly");
 </script>
 
 <div role="textbox" id="required"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var node = document.getElementById("required");
     var axNode = accessibilityController.accessibleElementById("required");
     assert_equals(axNode.isRequired, false);
     node.accessibleNode.required = true;
-    assert_equals(axNode.isRequired, true);
+    assert_equals(axNode.isRequired, false);
 }, "AccessibleNode.required");
 </script>
 
 <div role="option" id="selected" tabindex="-1"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var node = document.getElementById("selected");
     var axNode = accessibilityController.accessibleElementById("selected");
     assert_equals(axNode.isSelected, false);
     node.accessibleNode.selected = true;
-    assert_equals(axNode.isSelected, true);
+    assert_equals(axNode.isSelected, false);
 }, "AccessibleNode.selected");
 </script>

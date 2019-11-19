@@ -3,10 +3,10 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/password_manager/core/browser/webdata",
   "+components/payments/content",
-  "+components/search_engines/keyword_table.h",
-  "+components/search_engines/keyword_web_data_service.h",
-  "+components/signin/core/browser/webdata",
+  "+components/search_engines",
+  "+components/signin/public/webdata",
   "+components/sync",
   "+components/webdata/common",
   "+sql",
+  "+testing/gtest",
 ]

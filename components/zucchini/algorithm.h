@@ -53,6 +53,20 @@ constexpr T AlignCeil(T x, T m) {
   return T((x + m - 1) / m) * m;
 }
 
+// Specialized alignment helpers that returns the increment to |pos| to get the
+// next n-aligned value, where n is in {2, 4}. This is useful for aligning
+// iterators relative to a base iterator using:
+//   it += IncrementForAlignCeil2(it - base);
+template <class T>
+inline int IncrementForAlignCeil2(T pos) {
+  return static_cast<int>(pos & 1);  // Optimized from (-pos) & 1.
+}
+
+template <class T>
+inline int IncrementForAlignCeil4(T pos) {
+  return static_cast<int>((-pos) & 3);
+}
+
 // Sorts values in |container| and removes duplicates.
 template <class T>
 void SortAndUniquify(std::vector<T>* container) {

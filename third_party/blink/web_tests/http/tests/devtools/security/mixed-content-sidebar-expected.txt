@@ -1,0 +1,124 @@
+Tests that the sidebar uses the correct styling for mixed content subresources.
+
+Origin sidebar:
+<DIV >
+    <#document-fragment >
+        <STYLE >
+        </STYLE>
+        <STYLE >
+        </STYLE>
+        <STYLE >
+        </STYLE>
+        <STYLE >
+        </STYLE>
+        <DIV class=tree-outline-disclosure >
+            <OL class=tree-outline role=tree tabindex=-1 >
+                <LI role=treeitem class=security-main-view-sidebar-tree-item selected force-white-icons tabindex=0 >
+                    <DIV class=selection fill >
+                    </DIV>
+                    <SPAN class=tree-element-title >
+                    </SPAN>
+                    <DIV class=icon lock-icon lock-icon-neutral >
+                    </DIV>
+                    <SPAN class=title >
+Overview
+                    </SPAN>
+                </LI>
+                <OL class=children role=group >
+                </OL>
+                <LI role=treeitem class=parent always-parent expanded security-sidebar-origins aria-expanded=true >
+                    <DIV class=selection fill >
+                    </DIV>
+                    <SPAN class=tree-element-title >
+Main origin
+                    </SPAN>
+                </LI>
+                <OL class=children expanded role=group >
+                    <LI role=treeitem class=security-main-view-reload-message >
+                        <DIV class=selection fill >
+                        </DIV>
+                        <SPAN class=tree-element-title >
+Reload to view details
+                        </SPAN>
+                    </LI>
+                    <OL class=children role=group >
+                    </OL>
+                </OL>
+                <LI role=treeitem class=parent always-parent expanded security-sidebar-origins aria-expanded=true >
+                    <DIV class=selection fill >
+                    </DIV>
+                    <SPAN class=tree-element-title >
+Non-secure origins
+                    </SPAN>
+                </LI>
+                <OL class=children expanded role=group >
+                    <LI role=treeitem class=security-sidebar-tree-item >
+                        <DIV class=selection fill >
+                        </DIV>
+                        <SPAN class=tree-element-title >
+                        </SPAN>
+                        <DIV class=icon security-property security-property-insecure >
+                        </DIV>
+                        <SPAN >
+                            <SPAN class=url-scheme-insecure >
+http
+                            </SPAN>
+                            <SPAN class=url-scheme-separator >
+://
+                            </SPAN>
+                            <SPAN >
+foo.test
+                            </SPAN>
+                        </SPAN>
+                    </LI>
+                    <OL class=children role=group >
+                    </OL>
+                    <LI role=treeitem class=security-sidebar-tree-item >
+                        <DIV class=selection fill >
+                        </DIV>
+                        <SPAN class=tree-element-title >
+                        </SPAN>
+                        <DIV class=icon security-property security-property-insecure >
+                        </DIV>
+                        <SPAN >
+                            <SPAN class=url-scheme-insecure >
+http
+                            </SPAN>
+                            <SPAN class=url-scheme-separator >
+://
+                            </SPAN>
+                            <SPAN >
+bar.test
+                            </SPAN>
+                        </SPAN>
+                    </LI>
+                    <OL class=children role=group >
+                    </OL>
+                </OL>
+                <LI role=treeitem class=parent always-parent expanded security-sidebar-origins hidden aria-expanded=true >
+                    <DIV class=selection fill >
+                    </DIV>
+                    <SPAN class=tree-element-title >
+Secure origins
+                    </SPAN>
+                </LI>
+                <OL class=children expanded hidden role=group >
+                </OL>
+                <LI role=treeitem class=parent always-parent expanded security-sidebar-origins hidden aria-expanded=true >
+                    <DIV class=selection fill >
+                    </DIV>
+                    <SPAN class=tree-element-title >
+Unknown / canceled
+                    </SPAN>
+                </LI>
+                <OL class=children expanded hidden role=group >
+                </OL>
+            </OL>
+        </DIV>
+        <STYLE >
+        </STYLE>
+        <STYLE >
+        </STYLE>
+    </#document-fragment>
+</DIV>
+

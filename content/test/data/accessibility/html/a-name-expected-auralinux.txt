@@ -1,5 +1,5 @@
 [document web]
 ++[link] name='named anchor'
-++++[text] name='named anchor'
+++++[static] name='named anchor'
 ++[link] name='both a named anchor and a link'
-++++[text] name='both a named anchor and a link'
+++++[static] name='both a named anchor and a link'

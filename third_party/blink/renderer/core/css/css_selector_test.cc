@@ -9,10 +9,8 @@
 
 namespace blink {
 
-using namespace css_test_helpers;
-
 TEST(CSSSelector, Representations) {
-  TestStyleSheet sheet;
+  css_test_helpers::TestStyleSheet sheet;
 
   const char* css_rules =
       "summary::-webkit-details-marker { }"

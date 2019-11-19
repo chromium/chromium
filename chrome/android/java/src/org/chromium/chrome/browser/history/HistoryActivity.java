@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.history;
 
 import android.os.Bundle;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.util.IntentUtils;

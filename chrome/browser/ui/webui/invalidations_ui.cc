@@ -23,7 +23,6 @@ content::WebUIDataSource* CreateInvalidationsHTMLSource() {
       "script-src chrome://resources 'self' 'unsafe-eval';");
   source->AddResourcePath("about_invalidations.js", IDR_ABOUT_INVALIDATIONS_JS);
   source->SetDefaultResource(IDR_ABOUT_INVALIDATIONS_HTML);
-  source->UseGzip();
   return source;
 }
 

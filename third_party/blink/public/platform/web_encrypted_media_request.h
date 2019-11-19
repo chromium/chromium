@@ -6,13 +6,15 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_ENCRYPTED_MEDIA_REQUEST_H_
 
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/platform/web_content_decryption_module_access.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
+
+#include <memory>
 
 namespace blink {
 
 class EncryptedMediaRequest;
-class WebContentDecryptionModuleAccess;
 struct WebMediaKeySystemConfiguration;
 class WebSecurityOrigin;
 template <typename T>
@@ -31,7 +33,7 @@ class WebEncryptedMediaRequest {
   BLINK_PLATFORM_EXPORT WebSecurityOrigin GetSecurityOrigin() const;
 
   BLINK_PLATFORM_EXPORT void RequestSucceeded(
-      WebContentDecryptionModuleAccess*);
+      std::unique_ptr<WebContentDecryptionModuleAccess>);
   BLINK_PLATFORM_EXPORT void RequestNotSupported(
       const WebString& error_message);
 

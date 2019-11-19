@@ -1,0 +1,4 @@
+file://content/browser/web_package/OWNERS
+
+# TEAM: loading-dev@chromium.org
+# COMPONENT: Blink>Loader>WebPackaging

@@ -12,20 +12,20 @@ partial interface ServiceWorkerRegistration {
 interface PushManager {
   [SameObject] static readonly attribute FrozenArray<DOMString> supportedContentEncodings;
 
-  Promise<PushSubscription> subscribe(optional PushSubscriptionOptionsInit options);
+  Promise<PushSubscription> subscribe(optional PushSubscriptionOptionsInit options = {});
   Promise<PushSubscription?> getSubscription();
-  Promise<PushPermissionState> permissionState(optional PushSubscriptionOptionsInit options);
-};
-
-dictionary PushSubscriptionOptionsInit {
-  boolean userVisibleOnly = false;
-  (BufferSource or DOMString)? applicationServerKey = null;
+  Promise<PushPermissionState> permissionState(optional PushSubscriptionOptionsInit options = {});
 };
 
 [Exposed=(Window,Worker), SecureContext]
 interface PushSubscriptionOptions {
   readonly attribute boolean userVisibleOnly;
   [SameObject] readonly attribute ArrayBuffer? applicationServerKey;
+};
+
+dictionary PushSubscriptionOptionsInit {
+  boolean userVisibleOnly = false;
+  (BufferSource or DOMString)? applicationServerKey = null;
 };
 
 [Exposed=(Window,Worker), SecureContext]
@@ -64,26 +64,28 @@ partial interface ServiceWorkerGlobalScope {
   attribute EventHandler onpushsubscriptionchange;
 };
 
+[Exposed=ServiceWorker, SecureContext]
+interface PushEvent : ExtendableEvent {
+  constructor(DOMString type, optional PushEventInit eventInitDict = {});
+  readonly attribute PushMessageData? data;
+};
+
 typedef (BufferSource or USVString) PushMessageDataInit;
 
 dictionary PushEventInit : ExtendableEventInit {
   PushMessageDataInit data;
 };
 
-[Constructor(DOMString type, optional PushEventInit eventInitDict), Exposed=ServiceWorker, SecureContext]
-interface PushEvent : ExtendableEvent {
-  readonly attribute PushMessageData? data;
-};
-
-dictionary PushSubscriptionChangeInit : ExtendableEventInit {
-  PushSubscription newSubscription = null;
-  PushSubscription oldSubscription = null;
-};
-
-[Constructor(DOMString type, optional PushSubscriptionChangeInit eventInitDict), Exposed=ServiceWorker, SecureContext]
+[Exposed=ServiceWorker, SecureContext]
 interface PushSubscriptionChangeEvent : ExtendableEvent {
+  constructor(DOMString type, optional PushSubscriptionChangeEventInit eventInitDict = {});
   readonly attribute PushSubscription? newSubscription;
   readonly attribute PushSubscription? oldSubscription;
+};
+
+dictionary PushSubscriptionChangeEventInit : ExtendableEventInit {
+  PushSubscription newSubscription = null;
+  PushSubscription oldSubscription = null;
 };
 
 enum PushPermissionState {

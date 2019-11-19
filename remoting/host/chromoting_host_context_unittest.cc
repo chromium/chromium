@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/message_loop/message_loop.h"
-#include "base/run_loop.h"
-#include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/chromoting_host_context.h"
+
+#include "base/run_loop.h"
+#include "base/test/task_environment.h"
+#include "remoting/base/auto_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -13,12 +14,13 @@ namespace remoting {
 // A simple test that starts and stop the context. This tests the context
 // operates properly and all threads and message loops are valid.
 TEST(ChromotingHostContextTest, StartAndStop) {
-  base::MessageLoopForUI message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   base::RunLoop run_loop;
 
   std::unique_ptr<ChromotingHostContext> context =
       ChromotingHostContext::Create(new AutoThreadTaskRunner(
-          message_loop.task_runner(), run_loop.QuitClosure()));
+          task_environment.GetMainThreadTaskRunner(), run_loop.QuitClosure()));
 
   EXPECT_TRUE(context);
   if (!context)

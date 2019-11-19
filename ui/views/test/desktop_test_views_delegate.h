@@ -28,4 +28,4 @@ class DesktopTestViewsDelegate : public TestViewsDelegate {
 
 }  // namespace views
 
-#endif
+#endif  // UI_VIEWS_TEST_DESKTOP_TEST_VIEWS_DELEGATE_H_

@@ -11,7 +11,7 @@
 
 namespace ash {
 
-LivenessServiceProvider::LivenessServiceProvider() : weak_ptr_factory_(this) {}
+LivenessServiceProvider::LivenessServiceProvider() {}
 
 LivenessServiceProvider::~LivenessServiceProvider() = default;
 

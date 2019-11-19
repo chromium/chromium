@@ -5,6 +5,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/api/page_capture/page_capture_api.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
@@ -65,7 +66,25 @@ class PageCaptureSaveAsMHTMLDelegate
   base::FilePath temp_file_;
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionPageCaptureApiTest, SaveAsMHTML) {
+// TODO(crbug.com/961017): Fix memory leaks in tests and re-enable on LSAN.
+#ifdef LEAK_SANITIZER
+#define MAYBE_SaveAsMHTMLWithActiveTabWithFileAccess \
+  DISABLED_SaveAsMHTMLWithActiveTabWithFileAccess
+#else
+#define MAYBE_SaveAsMHTMLWithActiveTabWithFileAccess \
+  SaveAsMHTMLWithActiveTabWithFileAccess
+#endif
+
+// TODO(crbug.com/961017): Fix memory leaks in tests and re-enable on LSAN.
+// Also flaky-failing on slow (debug) bots: https://crbug.com/1017305
+#if defined(LEAK_SANITIZER) || !defined(NDEBUG) || \
+    defined(ADDRESS_SANITIZER) || defined(OS_WIN)
+#define MAYBE_SaveAsMHTML DISABLED_SaveAsMHTML
+#else
+#define MAYBE_SaveAsMHTML SaveAsMHTML
+#endif
+
+IN_PROC_BROWSER_TEST_F(ExtensionPageCaptureApiTest, MAYBE_SaveAsMHTML) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunExtensionTestWithFlagsAndArg(
@@ -83,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPageCaptureApiTest, SaveAsMHTML) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionPageCaptureApiTest,
-                       SaveAsMHTMLWithActiveTabWithFileAccess) {
+                       MAYBE_SaveAsMHTMLWithActiveTabWithFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunExtensionTest("page_capture")) << message_;

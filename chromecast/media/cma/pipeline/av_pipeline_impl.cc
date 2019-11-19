@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
@@ -159,7 +158,7 @@ void AvPipelineImpl::OnFlushDone() {
   }
   DCHECK_EQ(state_, kFlushing);
   set_state(kFlushed);
-  base::ResetAndReturn(&flush_cb_).Run();
+  std::move(flush_cb_).Run();
 }
 
 void AvPipelineImpl::SetCdm(CastCdmContext* cast_cdm_context) {
@@ -343,7 +342,7 @@ void AvPipelineImpl::OnDecoderError() {
     client_.playback_error_cb.Run(::media::PIPELINE_ERROR_COULD_NOT_RENDER);
 
   if (!flush_cb_.is_null())
-    base::ResetAndReturn(&flush_cb_).Run();
+    std::move(flush_cb_).Run();
 }
 
 void AvPipelineImpl::OnKeyStatusChanged(const std::string& key_id,

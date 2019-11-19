@@ -11,8 +11,8 @@ cr.define('chrome.sync.about_tab', function() {
       this.removeAttribute('highlighted');
     }
 
-    var oldStr = oldVal.toString();
-    var newStr = newVal.toString();
+    const oldStr = oldVal.toString();
+    const newStr = newVal.toString();
     if (oldStr != '' && oldStr != newStr) {
       // Note the addListener function does not end up creating duplicate
       // listeners.  There can be only one listener per event at a time.
@@ -24,7 +24,7 @@ cr.define('chrome.sync.about_tab', function() {
 
   function refreshAboutInfo(aboutInfo) {
     chrome.sync.aboutInfo = aboutInfo;
-    var aboutInfoDiv = $('about-info');
+    const aboutInfoDiv = $('about-info');
     jstProcess(new JsEvalContext(aboutInfo), aboutInfoDiv);
   }
 
@@ -33,13 +33,13 @@ cr.define('chrome.sync.about_tab', function() {
   }
 
   function onAboutInfoCountersUpdated(e) {
-    var details = e.details;
+    const details = e.details;
 
-    var modelType = details.modelType;
-    var counters = details.counters;
+    const modelType = details.modelType;
+    const counters = details.counters;
 
-    var type_status_array = chrome.sync.aboutInfo.type_status;
-    type_status_array.forEach(function(row) {
+    const typeStatusArray = chrome.sync.aboutInfo.type_status;
+    typeStatusArray.forEach(function(row) {
       if (row.name == modelType) {
         // There are three types of counters, only "status" counters have these
         // fields. Keep the old values if updated fields are not present.
@@ -52,8 +52,7 @@ cr.define('chrome.sync.about_tab', function() {
       }
     });
     jstProcess(
-        new JsEvalContext({ type_status: type_status_array }),
-        $('typeInfo'));
+        new JsEvalContext({type_status: typeStatusArray}), $('typeInfo'));
   }
 
   /**
@@ -74,17 +73,17 @@ cr.define('chrome.sync.about_tab', function() {
   }
 
   /** Container for accumulated sync protocol events. */
-  var protocolEvents = [];
+  const protocolEvents = [];
 
   /** We may receive re-delivered events.  Keep a record of ones we've seen. */
-  var knownEventTimestamps = {};
+  const knownEventTimestamps = {};
 
   /**
    * Callback for incoming protocol events.
    * @param {Event} e The protocol event.
    */
   function onReceivedProtocolEvent(e) {
-    var details = e.details;
+    const details = e.details;
 
     // Return early if we've seen this event before.  Assumes that timestamps
     // are sufficiently high resolution to uniquely identify an event.
@@ -95,24 +94,25 @@ cr.define('chrome.sync.about_tab', function() {
     knownEventTimestamps[details.time] = true;
     protocolEvents.push(details);
 
-    var trafficContainer = $('traffic-event-container');
+    const trafficContainer = $('traffic-event-container');
 
     // Scroll to the bottom if we were already at the bottom.  Otherwise, leave
     // the scrollbar alone.
-    var shouldScrollDown = isScrolledToBottom(trafficContainer);
+    const shouldScrollDown = isScrolledToBottom(trafficContainer);
 
-    var context = new JsEvalContext({ events: protocolEvents });
+    const context = new JsEvalContext({events: protocolEvents});
     jstProcess(context, trafficContainer);
 
-    if (shouldScrollDown)
+    if (shouldScrollDown) {
       scrollToBottom(trafficContainer);
+    }
   }
 
   /**
    * Initializes state and callbacks for the protocol event log UI.
    */
   function initProtocolEventLog() {
-    var includeSpecificsCheckbox = $('capture-specifics');
+    const includeSpecificsCheckbox = $('capture-specifics');
     includeSpecificsCheckbox.addEventListener('change', function(event) {
       chrome.sync.setIncludeSpecifics(includeSpecificsCheckbox.checked);
     });
@@ -123,7 +123,7 @@ cr.define('chrome.sync.about_tab', function() {
     // Make the prototype jscontent element disappear.
     jstProcess({}, $('traffic-event-container'));
 
-    var triggerRefreshButton = $('trigger-refresh');
+    const triggerRefreshButton = $('trigger-refresh');
     triggerRefreshButton.addEventListener('click', function(event) {
       chrome.sync.triggerRefresh();
     });
@@ -135,15 +135,15 @@ cr.define('chrome.sync.about_tab', function() {
   function initStatusDumpButton() {
     $('status-data').hidden = true;
 
-    var dumpStatusButton = $('dump-status');
+    const dumpStatusButton = $('dump-status');
     dumpStatusButton.addEventListener('click', function(event) {
-      var aboutInfo = chrome.sync.aboutInfo;
+      const aboutInfo = chrome.sync.aboutInfo;
       if (!$('include-ids').checked) {
         aboutInfo.details = chrome.sync.aboutInfo.details.filter(function(el) {
           return !el.is_sensitive;
         });
       }
-      var data = '';
+      let data = '';
       data += new Date().toString() + '\n';
       data += '======\n';
       data += 'Status\n';
@@ -154,7 +154,7 @@ cr.define('chrome.sync.about_tab', function() {
       $('status-data').hidden = false;
     });
 
-    var importStatusButton = $('import-status');
+    const importStatusButton = $('import-status');
     importStatusButton.addEventListener('click', function(event) {
       $('status-data').hidden = false;
       if ($('status-text').value.length == 0) {
@@ -164,8 +164,8 @@ cr.define('chrome.sync.about_tab', function() {
       }
 
       // First remove any characters before the '{'.
-      var data = $('status-text').value;
-      var firstBrace = data.indexOf('{');
+      let data = $('status-text').value;
+      const firstBrace = data.indexOf('{');
       if (firstBrace < 0) {
         $('status-text').value = 'Invalid sync status dump.';
         return;
@@ -181,7 +181,7 @@ cr.define('chrome.sync.about_tab', function() {
           'onCountersUpdated',
           onAboutInfoCountersUpdated);
 
-      var aboutInfo = JSON.parse(data);
+      const aboutInfo = JSON.parse(data);
       refreshAboutInfo(aboutInfo);
     });
   }
@@ -195,12 +195,12 @@ cr.define('chrome.sync.about_tab', function() {
       // We ignore proto clicks to keep it copyable.
       return;
     }
-    var traffic_event_div = e.target;
+    let trafficEventDiv = e.target;
     // Click might be on div's child.
-    if (traffic_event_div.nodeName != "DIV") {
-      traffic_event_div = traffic_event_div.parentNode;
+    if (trafficEventDiv.nodeName != 'DIV') {
+      trafficEventDiv = trafficEventDiv.parentNode;
     }
-    traffic_event_div.classList.toggle('traffic-event-entry-expanded');
+    trafficEventDiv.classList.toggle('traffic-event-entry-expanded');
   }
 
   /**

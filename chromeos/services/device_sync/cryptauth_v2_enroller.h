@@ -50,7 +50,8 @@ class CryptAuthEnrollmentResult;
 // 2b) EnrollKeysResponse: We simply view this response as an indication that
 //     the EnrollKeysRequest was successful.
 //
-// An instance of this class can only call Enroll() once.
+// A CryptAuthV2Enroller object is designed to be used for only one Enroll()
+// call. For a new Enrollment attempt, a new object should be created.
 class CryptAuthV2Enroller {
  public:
   virtual ~CryptAuthV2Enroller();

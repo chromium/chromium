@@ -207,8 +207,7 @@ Polymer({
     this.actionMenuModel_ = event.model.item;
     /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu'))
         .showAt(
-            /** @type {!Element} */ (
-                Polymer.dom(/** @type {!Event} */ (event)).localTarget));
+            /** @type {!Element} */ (/** @type {!Event} */ (event).target));
   },
 
   // <if expr="chromeos">

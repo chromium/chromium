@@ -45,7 +45,7 @@ class FakeBrightnessMonitor : public BrightnessMonitor {
 
   base::ObserverList<BrightnessMonitor::Observer> observers_;
 
-  base::WeakPtrFactory<FakeBrightnessMonitor> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeBrightnessMonitor> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeBrightnessMonitor);
 };

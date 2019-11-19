@@ -1,3 +1,5 @@
+'use strict';
+
 // The mouse bot will always be precise. Humans can click anywhere in the boxes.
 const epsilon = (window.eventSender) ? 0 : 50;
 

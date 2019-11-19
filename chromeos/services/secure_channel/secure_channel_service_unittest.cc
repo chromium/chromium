@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
@@ -28,14 +28,13 @@
 #include "chromeos/services/secure_channel/fake_timer_factory.h"
 #include "chromeos/services/secure_channel/pending_connection_manager_impl.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
-#include "chromeos/services/secure_channel/public/mojom/constants.mojom.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/services/secure_channel/secure_channel_initializer.h"
-#include "chromeos/services/secure_channel/secure_channel_service.h"
 #include "chromeos/services/secure_channel/timer_factory_impl.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
-#include "services/service_manager/public/cpp/test/test_connector_factory.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -276,7 +275,8 @@ class FakeClientConnectionParametersFactory
   // ClientConnectionParametersImpl::Factory:
   std::unique_ptr<ClientConnectionParameters> BuildInstance(
       const std::string& feature,
-      mojom::ConnectionDelegatePtr connection_delegate_ptr) override {
+      mojo::PendingRemote<mojom::ConnectionDelegate> connection_delegate_remote)
+      override {
     auto instance = std::make_unique<FakeClientConnectionParameters>(
         feature, base::BindOnce(
                      &FakeClientConnectionParametersFactory::OnInstanceDeleted,
@@ -379,12 +379,9 @@ class SecureChannelServiceTest : public testing::Test {
     ClientConnectionParametersImpl::Factory::SetFactoryForTesting(
         fake_client_connection_parameters_factory_.get());
 
-    service_ = std::make_unique<SecureChannelService>(
-        connector_factory_.RegisterInstance(mojom::kServiceName));
-
-    connector_factory_.GetDefaultConnector()->BindInterface(
-        mojom::kServiceName, &secure_channel_ptr_);
-    secure_channel_ptr_.FlushForTesting();
+    service_ = SecureChannelInitializer::Factory::Get()->BuildInstance();
+    service_->BindReceiver(secure_channel_remote_.BindNewPipeAndPassReceiver());
+    secure_channel_remote_.FlushForTesting();
   }
 
   void TearDown() override {
@@ -808,16 +805,16 @@ class SecureChannelServiceTest : public testing::Test {
     FakeConnectionDelegate fake_connection_delegate;
 
     if (is_listener) {
-      secure_channel_ptr_->ListenForConnectionFromDevice(
+      secure_channel_remote_->ListenForConnectionFromDevice(
           device_to_connect, local_device, feature, connection_priority,
-          fake_connection_delegate.GenerateInterfacePtr());
+          fake_connection_delegate.GenerateRemote());
     } else {
-      secure_channel_ptr_->InitiateConnectionToDevice(
+      secure_channel_remote_->InitiateConnectionToDevice(
           device_to_connect, local_device, feature, connection_priority,
-          fake_connection_delegate.GenerateInterfacePtr());
+          fake_connection_delegate.GenerateRemote());
     }
 
-    secure_channel_ptr_.FlushForTesting();
+    secure_channel_remote_.FlushForTesting();
   }
 
   FakeActiveConnectionManager* fake_active_connection_manager() {
@@ -832,7 +829,7 @@ class SecureChannelServiceTest : public testing::Test {
     return test_remote_device_cache_factory_->instance();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   const multidevice::RemoteDeviceList test_devices_;
 
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
@@ -865,13 +862,12 @@ class SecureChannelServiceTest : public testing::Test {
 
   size_t num_queued_requests_before_initialization_ = 0u;
 
-  service_manager::TestConnectorFactory connector_factory_;
-  std::unique_ptr<SecureChannelService> service_;
+  std::unique_ptr<SecureChannelBase> service_;
 
   bool is_adapter_powered_;
   bool is_adapter_present_;
 
-  mojom::SecureChannelPtr secure_channel_ptr_;
+  mojo::Remote<mojom::SecureChannel> secure_channel_remote_;
 
   DISALLOW_COPY_AND_ASSIGN(SecureChannelServiceTest);
 };

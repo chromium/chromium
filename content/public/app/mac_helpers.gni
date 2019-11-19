@@ -1,0 +1,57 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This list defines variants of the helper app bundles that macOS //content
+# embedders need to produce. The different variants are code signed with
+# different entitlements, which afford different capabilities depending on the
+# requirements of the process.
+#
+# This list should be kept in sync with the enum options defined in
+# //content/public/common/child_process_host.h.
+#
+# Each element of the list list is a tuple representing a helper variant. The
+# elements of the tuple are:
+#   target name - A short name to be used when defining the target for that
+#                 helper variant.
+#   bundle ID suffix - A string fragment to append to the CFBundleIdentifier of
+#                      the helper.
+#   app name suffix - A string fragment to append to the outer bundle name as
+#                     well as the inner executable. This should be reflected in
+#                     the target's output_name.
+content_mac_helpers = [
+  # The basic helper with no special entitlements.
+  [
+    "default",
+    "",
+    "",
+  ],
+
+  # A helper with the capability to JIT (execute writable memory), needed by V8,
+  # and used to run renderer processes.
+  [
+    "renderer",
+    ".renderer",
+    " (Renderer)",
+  ],
+
+  # A helper with the capability to execute writable memory, needed by
+  # Swiftshader, and used to run renderer processes.
+  #
+  # Note: be careful if adding a suffix to this name - doing so may
+  # break automatic graphics switching. crbug.com/985486
+  [
+    "gpu",
+    "",
+    " (GPU)",
+  ],
+
+  # A helper that does not perform library validation, allowing code not signed
+  # by either Apple or the signing identity to be loaded, and that can execute
+  # unsigned memory. This is used by binary plugins like Flash.
+  [
+    "plugin",
+    ".plugin",
+    " (Plugin)",
+  ],
+]

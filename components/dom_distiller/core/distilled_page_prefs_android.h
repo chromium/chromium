@@ -59,9 +59,7 @@ class DistilledPagePrefsObserverAndroid : public DistilledPagePrefs::Observer {
   void OnChangeTheme(DistilledPagePrefs::Theme new_theme) override;
   void OnChangeFontScaling(float scaling) override;
 
-  virtual void DestroyObserverAndroid(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  virtual void DestroyObserverAndroid(JNIEnv* env);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

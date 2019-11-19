@@ -22,23 +22,15 @@ class Value;
 
 namespace data_reduction_proxy {
 
-// Stores the properties of a single network. Created on the UI thread, but
-// lives on the IO thread. Guaranteed to be destroyed on IO thread if the IO
-// thread is still available at the time of destruction. If the IO thread is
-// unavailable, then the destruction will happen on the UI thread.
+// Stores the properties of a single network. Lives on the IO thread.
 class NetworkPropertiesManager {
  public:
-  NetworkPropertiesManager(
-      base::Clock* clock,
-      PrefService* pref_service,
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+  NetworkPropertiesManager(base::Clock* clock, PrefService* pref_service);
 
   virtual ~NetworkPropertiesManager();
 
   // Called when the user clears the browsing history.
   void DeleteHistory();
-
-  void ShutdownOnUIThread();
 
   void OnChangeInNetworkID(const std::string& network_id);
 
@@ -100,13 +92,12 @@ class NetworkPropertiesManager {
   typedef std::map<std::string, NetworkProperties> NetworkPropertiesContainer;
 
   // PrefManager writes or updates the network properties prefs. Created on
-  // UI thread, and should be used on the UI thread. May be destroyed on UI
-  // or IO thread.
+  // UI thread, and should be used on the UI thread.
   class PrefManager;
 
   // Called when there is a change in the network property of the current
   // network.
-  void OnChangeInNetworkPropertyOnIOThread();
+  void OnChangeInNetworkProperty();
 
   static NetworkPropertiesContainer ConvertDictionaryValueToParsedPrefs(
       const base::Value* value);
@@ -114,10 +105,7 @@ class NetworkPropertiesManager {
   // Clock used for querying current time. Guaranteed to be non-null.
   base::Clock* clock_;
 
-  // Task runner on which prefs should be accessed.
-  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-
-  // Network properties of different networks. Should be accessed on the IO
+  // Network properties of different networks. Should be accessed on the UI
   // thread.
   NetworkPropertiesContainer network_properties_container_;
 

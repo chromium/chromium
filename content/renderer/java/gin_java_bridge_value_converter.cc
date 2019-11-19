@@ -44,8 +44,7 @@ std::unique_ptr<base::Value> GinJavaBridgeValueConverter::FromV8Value(
 bool GinJavaBridgeValueConverter::FromV8Object(
     v8::Local<v8::Object> value,
     std::unique_ptr<base::Value>* out,
-    v8::Isolate* isolate,
-    const FromV8ValueCallback& callback) {
+    v8::Isolate* isolate) {
   GinJavaBridgeObject* unwrapped;
   if (!gin::ConvertFromV8(isolate, value, &unwrapped)) {
     return false;

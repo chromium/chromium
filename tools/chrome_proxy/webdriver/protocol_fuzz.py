@@ -81,6 +81,8 @@
 #     Creates a random boolean, either 'true' or 'false'
 #     Example: "I am awesome: {{RAND_BOOL}}" yields "I am awesome: true"
 
+from __future__ import print_function
+
 import BaseHTTPServer
 import base64
 import itertools
@@ -351,8 +353,8 @@ class ProtocolFuzzer(IntegrationTest):
           body = t.ExecuteJavascriptStatement('document.body.innerHTML')
           self.assertEqual(body, STATIC_RESPONSE_BODY)
         except Exception as e:
-          print 'Response headers: ' + headers
-          print 'URL: ' + url
+          print('Response headers: ' + headers)
+          print('URL: ' + url)
           raise e
 
 if __name__ == '__main__':

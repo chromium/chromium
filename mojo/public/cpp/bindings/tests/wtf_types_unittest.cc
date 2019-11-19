@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/lib/fixed_buffer.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/lib/wtf_serialization.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/variant_test_util.h"
 #include "mojo/public/interfaces/bindings/tests/test_wtf_types.mojom-blink.h"
 #include "mojo/public/interfaces/bindings/tests/test_wtf_types.mojom.h"
@@ -27,8 +28,8 @@ const char kUTF8HelloWorld[] = "hell\xC3\xB3 w\xC3\xB3rld";
 
 class TestWTFImpl : public TestWTF {
  public:
-  explicit TestWTFImpl(TestWTFRequest request)
-      : binding_(this, std::move(request)) {}
+  explicit TestWTFImpl(PendingReceiver<TestWTF> receiver)
+      : receiver_(this, std::move(receiver)) {}
 
   // mojo::test::TestWTF implementation:
   void EchoString(const base::Optional<std::string>& str,
@@ -50,7 +51,7 @@ class TestWTFImpl : public TestWTF {
   }
 
  private:
-  Binding<TestWTF> binding_;
+  Receiver<TestWTF> receiver_;
 };
 
 class WTFTypesTest : public testing::Test {
@@ -58,7 +59,7 @@ class WTFTypesTest : public testing::Test {
   WTFTypesTest() {}
 
  private:
-  base::MessageLoop loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 WTF::Vector<WTF::String> ConstructStringArray() {
@@ -83,25 +84,25 @@ WTF::HashMap<WTF::String, WTF::String> ConstructStringMap() {
 }
 
 void ExpectString(const WTF::String& expected_string,
-                  const base::Closure& closure,
+                  base::OnceClosure closure,
                   const WTF::String& string) {
   EXPECT_EQ(expected_string, string);
-  closure.Run();
+  std::move(closure).Run();
 }
 
 void ExpectStringArray(base::Optional<WTF::Vector<WTF::String>>* expected_arr,
-                       const base::Closure& closure,
+                       base::OnceClosure closure,
                        const base::Optional<WTF::Vector<WTF::String>>& arr) {
   EXPECT_EQ(*expected_arr, arr);
-  closure.Run();
+  std::move(closure).Run();
 }
 
 void ExpectStringMap(
     base::Optional<WTF::HashMap<WTF::String, WTF::String>>* expected_map,
-    const base::Closure& closure,
+    base::OnceClosure closure,
     const base::Optional<WTF::HashMap<WTF::String, WTF::String>>& map) {
   EXPECT_EQ(*expected_map, map);
-  closure.Run();
+  std::move(closure).Run();
 }
 
 }  // namespace
@@ -191,8 +192,9 @@ TEST_F(WTFTypesTest, Serialization_PublicAPI) {
 }
 
 TEST_F(WTFTypesTest, SendString) {
-  blink::TestWTFPtr ptr;
-  TestWTFImpl impl(ConvertInterfaceRequest<TestWTF>(MakeRequest(&ptr)));
+  Remote<blink::TestWTF> remote;
+  TestWTFImpl impl(
+      ConvertPendingReceiver<TestWTF>(remote.BindNewPipeAndPassReceiver()));
 
   WTF::Vector<WTF::String> strs = ConstructStringArray();
 
@@ -203,15 +205,16 @@ TEST_F(WTFTypesTest, SendString) {
     //   - deserialized as base::Optional<std::string>;
     //   - serialized;
     //   - deserialized as WTF::String.
-    ptr->EchoString(strs[i],
-                    base::Bind(&ExpectString, strs[i], loop.QuitClosure()));
+    remote->EchoString(
+        strs[i], base::BindOnce(&ExpectString, strs[i], loop.QuitClosure()));
     loop.Run();
   }
 }
 
 TEST_F(WTFTypesTest, SendStringArray) {
-  blink::TestWTFPtr ptr;
-  TestWTFImpl impl(ConvertInterfaceRequest<TestWTF>(MakeRequest(&ptr)));
+  Remote<blink::TestWTF> remote;
+  TestWTFImpl impl(
+      ConvertPendingReceiver<TestWTF>(remote.BindNewPipeAndPassReceiver()));
 
   base::Optional<WTF::Vector<WTF::String>> arrs[3];
   // arrs[0] is empty.
@@ -228,16 +231,17 @@ TEST_F(WTFTypesTest, SendStringArray) {
     //     base::Optional<std::vector<base::Optional<std::string>>>;
     //   - serialized;
     //   - deserialized as base::Optional<WTF::Vector<WTF::String>>.
-    ptr->EchoStringArray(
-        arrs[i], base::Bind(&ExpectStringArray, base::Unretained(&arrs[i]),
-                            loop.QuitClosure()));
+    remote->EchoStringArray(
+        arrs[i], base::BindOnce(&ExpectStringArray, base::Unretained(&arrs[i]),
+                                loop.QuitClosure()));
     loop.Run();
   }
 }
 
 TEST_F(WTFTypesTest, SendStringMap) {
-  blink::TestWTFPtr ptr;
-  TestWTFImpl impl(ConvertInterfaceRequest<TestWTF>(MakeRequest(&ptr)));
+  Remote<blink::TestWTF> remote;
+  TestWTFImpl impl(
+      ConvertPendingReceiver<TestWTF>(remote.BindNewPipeAndPassReceiver()));
 
   base::Optional<WTF::HashMap<WTF::String, WTF::String>> maps[3];
   // maps[0] is empty.
@@ -255,9 +259,9 @@ TEST_F(WTFTypesTest, SendStringMap) {
     //   - serialized;
     //   - deserialized as base::Optional<WTF::HashMap<WTF::String,
     //     WTF::String>>.
-    ptr->EchoStringMap(maps[i],
-                       base::Bind(&ExpectStringMap, base::Unretained(&maps[i]),
-                                  loop.QuitClosure()));
+    remote->EchoStringMap(
+        maps[i], base::BindOnce(&ExpectStringMap, base::Unretained(&maps[i]),
+                                loop.QuitClosure()));
     loop.Run();
   }
 }

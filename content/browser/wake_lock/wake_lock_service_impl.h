@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WAKE_LOCK_WAKE_LOCK_SERVICE_IMPL_H_
 
 #include "content/public/browser/frame_service_base.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom.h"
 
 namespace content {
@@ -13,16 +14,18 @@ namespace content {
 class WakeLockServiceImpl final
     : public FrameServiceBase<blink::mojom::WakeLockService> {
  public:
-  static void Create(RenderFrameHost*, blink::mojom::WakeLockServiceRequest);
+  static void Create(RenderFrameHost*,
+                     mojo::PendingReceiver<blink::mojom::WakeLockService>);
 
   // WakeLockService implementation.
   void GetWakeLock(device::mojom::WakeLockType,
                    device::mojom::WakeLockReason,
                    const std::string&,
-                   device::mojom::WakeLockRequest) final;
+                   mojo::PendingReceiver<device::mojom::WakeLock>) final;
 
  private:
-  WakeLockServiceImpl(RenderFrameHost*, blink::mojom::WakeLockServiceRequest);
+  WakeLockServiceImpl(RenderFrameHost*,
+                      mojo::PendingReceiver<blink::mojom::WakeLockService>);
 
   DISALLOW_COPY_AND_ASSIGN(WakeLockServiceImpl);
 };

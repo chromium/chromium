@@ -26,17 +26,24 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
                                                 public ComboboxListener,
                                                 public TextfieldController {
  public:
+  // Grouping of multiple textfields that provide insets.
+  struct InsetTextfields {
+    Textfield* left = nullptr;
+    Textfield* top = nullptr;
+    Textfield* right = nullptr;
+    Textfield* bottom = nullptr;
+  };
+
   // This view is created and added to the left-side view in the FullPanel each
   // time the "Add" button is pressed. It also will display Textfield controls
   // when the mouse is pressed over the view. These Textfields allow the user to
   // interactively set each margin and the "flex" for the given view.
   class ChildPanel : public View, public TextfieldController {
    public:
-    ChildPanel(LayoutExampleBase* example, const gfx::Size& preferred_size);
+    explicit ChildPanel(LayoutExampleBase* example);
     ~ChildPanel() override;
 
     // View
-    gfx::Size CalculatePreferredSize() const override;
     bool OnMousePressed(const ui::MouseEvent& event) override;
     void Layout() override;
 
@@ -55,7 +62,7 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
     LayoutExampleBase* example_;
     bool selected_ = false;
     Textfield* flex_;
-    Textfield* margin_[4];
+    InsetTextfields margin_;
     gfx::Size preferred_size_;
 
     DISALLOW_COPY_AND_ASSIGN(ChildPanel);
@@ -67,11 +74,8 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
   // Force the box_layout_panel_ to layout and repaint.
   void RefreshLayoutPanel(bool update_layout);
 
-  static gfx::Size TextfieldsToSize(
-      Textfield* textfields[2],
-      const gfx::Size& default_size = gfx::Size());
   static gfx::Insets TextfieldsToInsets(
-      Textfield* textfields[4],
+      const InsetTextfields& textfields,
       const gfx::Insets& default_insets = gfx::Insets());
 
  protected:
@@ -104,6 +108,14 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
                                Textfield* textfields[4],
                                int* vertical_pos);
 
+  // Creates a set of labeled Textfields with |label_text|, and four text fields
+  // arranged at compass points representing a set of insets. |vertical_pos| is
+  // updated to the bottom of the last Textfield + kSpacing, and |textfields| is
+  // populated with the fields that are created.
+  void CreateMarginsTextFields(const base::string16& label_text,
+                               InsetTextfields* textfields,
+                               int* vertical_pos);
+
   // Creates a Checkbox with label |label_text|. Adjust |vertical_pos| to
   // |vertical_pos| + checkbox->height() + kSpacing.
   Checkbox* CreateCheckbox(const base::string16& label_text, int* vertical_pos);
@@ -118,6 +130,8 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
   // controls are created correctly.
   void CreateExampleView(View* container) final;
 
+  gfx::Size GetNewChildPanelPreferredSize();
+
   // Called by CreateExampleView() to create any additional controls required by
   // the specific layout. |vertical_start_pos| tells the control where to start
   // placing new controls (i.e. the bottom of the existing common controls).
@@ -131,12 +145,11 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
   virtual void UpdateLayoutManager() = 0;
 
  private:
-  View* full_panel_ = nullptr;
   View* layout_panel_ = nullptr;
   View* control_panel_ = nullptr;
   LabelButton* add_button_ = nullptr;
-  Textfield* child_panel_size_[2] = {nullptr, nullptr};
-  int panel_count_ = 0;
+  Textfield* preferred_width_view_ = nullptr;
+  Textfield* preferred_height_view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(LayoutExampleBase);
 };

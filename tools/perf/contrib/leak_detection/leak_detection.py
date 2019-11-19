@@ -28,6 +28,7 @@ class _LeakDetectionBase(perf_benchmark.PerfBenchmark):
     # TODO(crbug.com/936805): Note this is a hack. Perf benchmarks should not
     # override the CustomizeOptions method.
     options.browser_options.AppendExtraBrowserArgs('--js-flags=--expose-gc')
+    options.browser_options.AppendExtraBrowserArgs('--disable-perfetto')
 
   def CustomizeBrowserOptions(self, _):
     # TODO(crbug.com/936805): Note this is a hack. Perf benchmarks should not

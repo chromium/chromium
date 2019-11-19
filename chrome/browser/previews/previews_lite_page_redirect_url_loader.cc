@@ -10,8 +10,12 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/previews/previews_lite_page_navigation_throttle.h"
+#include "chrome/browser/previews/previews_lite_page_redirect_url_loader_interceptor.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_request_options.h"
+#include "components/previews/core/previews_experiments.h"
 #include "components/previews/core/previews_lite_page_redirect.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/common/previews_state.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -26,15 +30,99 @@ constexpr size_t kRedirectDefaultAllocationSize = 512 * 1024;
 }  // namespace
 
 PreviewsLitePageRedirectURLLoader::PreviewsLitePageRedirectURLLoader(
+    content::BrowserContext* browser_context,
     const network::ResourceRequest& tentative_resource_request,
     HandleRequest callback)
     : modified_resource_request_(tentative_resource_request),
       callback_(std::move(callback)),
       binding_(this),
-      weak_ptr_factory_(this) {}
+      origin_probe_finished_successfully_(false),
+      litepage_request_finished_successfully_(false) {
+  pref_service_ = browser_context
+                      ? Profile::FromBrowserContext(browser_context)->GetPrefs()
+                      : nullptr;
+}
 
 PreviewsLitePageRedirectURLLoader::~PreviewsLitePageRedirectURLLoader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void PreviewsLitePageRedirectURLLoader::OnOriginProbeComplete(bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // It is safe to delete the prober during this callback, so do so because it
+  // is an expensive object to keep around.
+  origin_connectivity_prober_.reset();
+
+  if (success) {
+    origin_probe_finished_successfully_ = true;
+    MaybeCallOnLitePageSuccess();
+    return;
+  }
+  OnLitePageFallback();
+}
+
+void PreviewsLitePageRedirectURLLoader::StartOriginProbe(
+    const GURL& original_url,
+    const scoped_refptr<network::SharedURLLoaderFactory>&
+        network_loader_factory) {
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("previews_litepage_origin_prober", R"(
+        semantics {
+          sender: "Previews Litepage Origin Prober"
+          description:
+            "Sends a HEAD request to the origin that the user is navigating to "
+            "in order to establish network connectivity before attempting a "
+            "preview of that site."
+          trigger:
+            "Requested on preview-eligible navigations when Lite mode and "
+            "Previews are enabled and the network is slow."
+          data: "None."
+          destination: WEBSITE
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can control Lite mode on Android via the settings menu. "
+            "Lite mode is not available on iOS, and on desktop only for "
+            "developer testing."
+          policy_exception_justification: "Not implemented."
+        })");
+
+  // This probe is a single chance with a short timeout because it blocks the
+  // navigation.
+  AvailabilityProber::TimeoutPolicy timeout_policy;
+  timeout_policy.base_timeout =
+      previews::params::LitePageRedirectPreviewOriginProbeTimeout();
+
+  AvailabilityProber::RetryPolicy retry_policy;
+  retry_policy.max_retries = 0;
+
+  origin_connectivity_prober_ = std::make_unique<AvailabilityProber>(
+      this, network_loader_factory, pref_service_,
+      AvailabilityProber::ClientName::kLitepagesOriginCheck,
+      original_url.GetOrigin(), AvailabilityProber::HttpMethod::kHead,
+      net::HttpRequestHeaders(), retry_policy, timeout_policy,
+      traffic_annotation, 10 /* max_cache_entries */,
+      base::TimeDelta::FromHours(24) /* revalidate_cache_after */);
+  origin_connectivity_prober_->SetOnCompleteCallback(base::BindRepeating(
+      &PreviewsLitePageRedirectURLLoader::OnOriginProbeComplete,
+      weak_ptr_factory_.GetWeakPtr()));
+  origin_connectivity_prober_->SendNowIfInactive(
+      false /* send_only_in_foreground */);
+}
+
+bool PreviewsLitePageRedirectURLLoader::ShouldSendNextProbe() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return true;
+}
+
+bool PreviewsLitePageRedirectURLLoader::IsResponseSuccess(
+    net::Error net_error,
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Any HTTP response is fine, so long as we got it.
+  return net_error == net::OK && head && head->headers;
 }
 
 void PreviewsLitePageRedirectURLLoader::StartRedirectToPreview(
@@ -43,17 +131,41 @@ void PreviewsLitePageRedirectURLLoader::StartRedirectToPreview(
         network_loader_factory,
     int frame_tree_node_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(data_reduction_proxy::DataReductionProxyRequestOptions::
+             GetSessionKeyFromRequestHeaders(chrome_proxy_headers)
+                 .has_value());
 
-  GURL lite_page_url = PreviewsLitePageNavigationThrottle::GetPreviewsURLForURL(
-      modified_resource_request_.url);
+  std::string original_url_str;
+  GURL original_url;
+  GURL lite_page_url;
+
+  if (previews::ExtractOriginalURLFromLitePageRedirectURL(
+          modified_resource_request_.url, &original_url_str)) {
+    // We are navigating directly to a lite pages URL. This can happen for
+    // forward/back navigations.
+    original_url = GURL(original_url_str);
+    lite_page_url = modified_resource_request_.url;
+  } else {
+    // We are navigating to an origin URL, which needs to be redirected to a
+    // lite pages URL.
+    original_url = modified_resource_request_.url;
+    lite_page_url = GetLitePageRedirectURLForURL(original_url);
+  }
 
   CreateRedirectInformation(lite_page_url);
 
   modified_resource_request_.headers.MergeFrom(chrome_proxy_headers);
 
-  serving_url_loader_ = std::make_unique<PreviewsLitePageServingURLLoader>(
-      base::BindOnce(&PreviewsLitePageRedirectURLLoader::OnResultDetermined,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (previews::params::LitePageRedirectShouldProbeOrigin()) {
+    StartOriginProbe(original_url, network_loader_factory);
+  } else {
+    origin_probe_finished_successfully_ = true;
+  }
+
+  serving_url_loader_ =
+      std::make_unique<PreviewsLitePageRedirectServingURLLoader>(
+          base::BindOnce(&PreviewsLitePageRedirectURLLoader::OnResultDetermined,
+                         weak_ptr_factory_.GetWeakPtr()));
   // |serving_url_loader_| can be null after this call.
   serving_url_loader_->StartNetworkRequest(
       modified_resource_request_, network_loader_factory, frame_tree_node_id);
@@ -61,6 +173,7 @@ void PreviewsLitePageRedirectURLLoader::StartRedirectToPreview(
 
 void PreviewsLitePageRedirectURLLoader::StartRedirectToOriginalURL(
     const GURL& original_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CreateRedirectInformation(original_url);
 
   std::move(callback_).Run(
@@ -71,13 +184,14 @@ void PreviewsLitePageRedirectURLLoader::StartRedirectToOriginalURL(
 
 void PreviewsLitePageRedirectURLLoader::CreateRedirectInformation(
     const GURL& redirect_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool insecure_scheme_was_upgraded = false;
   bool copy_fragment = true;
 
   redirect_info_ = net::RedirectInfo::ComputeRedirectInfo(
       modified_resource_request_.method, modified_resource_request_.url,
+      modified_resource_request_.request_initiator,
       modified_resource_request_.site_for_cookies,
-      modified_resource_request_.top_frame_origin,
       net::URLRequest::UPDATE_FIRST_PARTY_URL_ON_REDIRECT,
       modified_resource_request_.referrer_policy,
       modified_resource_request_.referrer.spec(), net::HTTP_TEMPORARY_REDIRECT,
@@ -95,8 +209,6 @@ void PreviewsLitePageRedirectURLLoader::CreateRedirectInformation(
   modified_resource_request_.method = redirect_info_.new_method;
   modified_resource_request_.site_for_cookies =
       redirect_info_.new_site_for_cookies;
-  modified_resource_request_.top_frame_origin =
-      redirect_info_.new_top_frame_origin;
   modified_resource_request_.referrer = GURL(redirect_info_.new_referrer);
   modified_resource_request_.referrer_policy =
       redirect_info_.new_referrer_policy;
@@ -106,11 +218,14 @@ void PreviewsLitePageRedirectURLLoader::OnResultDetermined(
     ServingLoaderResult result,
     base::Optional<net::RedirectInfo> redirect_info,
     scoped_refptr<network::ResourceResponse> response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!redirect_info || result == ServingLoaderResult::kRedirect);
   DCHECK(!response || result == ServingLoaderResult::kRedirect);
+
   switch (result) {
     case ServingLoaderResult::kSuccess:
-      OnLitePageSuccess();
+      litepage_request_finished_successfully_ = true;
+      MaybeCallOnLitePageSuccess();
       return;
     case ServingLoaderResult::kFallback:
       OnLitePageFallback();
@@ -122,7 +237,24 @@ void PreviewsLitePageRedirectURLLoader::OnResultDetermined(
   NOTREACHED();
 }
 
+void PreviewsLitePageRedirectURLLoader::MaybeCallOnLitePageSuccess() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!callback_)
+    return;
+
+  if (!origin_probe_finished_successfully_ ||
+      !litepage_request_finished_successfully_) {
+    return;
+  }
+
+  OnLitePageSuccess();
+}
+
 void PreviewsLitePageRedirectURLLoader::OnLitePageSuccess() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(origin_probe_finished_successfully_);
+  DCHECK(litepage_request_finished_successfully_);
+
   std::move(callback_).Run(
       std::move(serving_url_loader_),
       base::BindOnce(&PreviewsLitePageRedirectURLLoader::
@@ -133,6 +265,7 @@ void PreviewsLitePageRedirectURLLoader::OnLitePageSuccess() {
 void PreviewsLitePageRedirectURLLoader::OnLitePageRedirect(
     const net::RedirectInfo& redirect_info,
     const network::ResourceResponseHead& response_head) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   redirect_info_ = redirect_info;
 
   response_head_ = response_head;
@@ -145,13 +278,15 @@ void PreviewsLitePageRedirectURLLoader::OnLitePageRedirect(
 
 void PreviewsLitePageRedirectURLLoader::OnLitePageFallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::move(callback_).Run(nullptr, {});
+  if (callback_)
+    std::move(callback_).Run(nullptr, {});
 }
 
 void PreviewsLitePageRedirectURLLoader::StartHandlingRedirectToModifiedRequest(
     const network::ResourceRequest& resource_request,
-    network::mojom::URLLoaderRequest request,
-    network::mojom::URLLoaderClientPtr client) {
+    mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   response_head_.request_start = base::TimeTicks::Now();
   response_head_.response_start = response_head_.request_start;
 
@@ -161,27 +296,25 @@ void PreviewsLitePageRedirectURLLoader::StartHandlingRedirectToModifiedRequest(
       net::HTTP_TEMPORARY_REDIRECT,
       modified_resource_request_.url.spec().c_str());
 
-  scoped_refptr<net::HttpResponseHeaders> fake_headers_for_redirect =
-      new net::HttpResponseHeaders(net::HttpUtil::AssembleRawHeaders(
-          header_string.c_str(), header_string.length()));
-
-  response_head_.headers = fake_headers_for_redirect;
+  response_head_.headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(header_string));
   response_head_.encoded_data_length = 0;
 
-  StartHandlingRedirect(resource_request, std::move(request),
+  StartHandlingRedirect(resource_request, std::move(receiver),
                         std::move(client));
 }
 
 void PreviewsLitePageRedirectURLLoader::StartHandlingRedirect(
     const network::ResourceRequest& /* resource_request */,
-    network::mojom::URLLoaderRequest request,
-    network::mojom::URLLoaderClientPtr client) {
+    mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!binding_.is_bound());
-  binding_.Bind(std::move(request));
+  binding_.Bind(std::move(receiver));
   binding_.set_connection_error_handler(
       base::BindOnce(&PreviewsLitePageRedirectURLLoader::OnConnectionClosed,
                      weak_ptr_factory_.GetWeakPtr()));
-  client_ = std::move(client);
+  client_.Bind(std::move(client));
 
   mojo::DataPipe pipe(kRedirectDefaultAllocationSize);
   if (!pipe.consumer_handle.is_valid()) {
@@ -198,12 +331,6 @@ void PreviewsLitePageRedirectURLLoader::FollowRedirect(
     const base::Optional<GURL>& new_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Content should not hang onto old URLLoaders for redirects.
-  NOTREACHED();
-}
-
-void PreviewsLitePageRedirectURLLoader::ProceedWithResponse() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This class never provides a response past the headers.
   NOTREACHED();
 }
 

@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS Calling send() when data channel is in connecting state should throw InvalidStateError
+PASS Data channel should be able to send simple string and receive as string
+PASS Data channel should be able to send unicode string and receive as unicode string
+PASS Data channel should ignore binaryType and always receive string message as string
+PASS Data channel should be able to send Uint8Array message and receive as ArrayBuffer
+PASS Data channel should be able to send ArrayBuffer message and receive as ArrayBuffer
+FAIL Data channel should be able to send Blob message and receive as ArrayBuffer promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
+FAIL Data channel should be able to send ArrayBuffer message and receive as Blob promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to set the 'binaryType' property on 'RTCDataChannel': Blob support not implemented yet"
+FAIL Data channel binaryType should receive message as Blob by default assert_equals: Expect initial binaryType value to be blob expected "blob" but got "arraybuffer"
+FAIL Sending multiple messages with different types should succeed and be received assert_unreached: Unexpected promise rejection: NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet Reached unreachable code
+FAIL Calling send() up to max size should succeed, above max size should fail promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'maxMessageSize' of null"
+Harness: the test ran to completion.
+

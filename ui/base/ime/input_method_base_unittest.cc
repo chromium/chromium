@@ -8,9 +8,9 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/input_method_observer.h"
@@ -110,20 +110,9 @@ class ClientChangeVerifier {
 };
 
 class InputMethodBaseTest : public testing::Test {
- protected:
-  InputMethodBaseTest() {
-  }
-  ~InputMethodBaseTest() override {}
-
-  void SetUp() override {
-    message_loop_ = std::make_unique<base::MessageLoopForUI>();
-  }
-
-  void TearDown() override { message_loop_.reset(); }
-
  private:
-  std::unique_ptr<base::MessageLoop> message_loop_;
-  DISALLOW_COPY_AND_ASSIGN(InputMethodBaseTest);
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
 };
 
 class MockInputMethodBase : public InputMethodBase {

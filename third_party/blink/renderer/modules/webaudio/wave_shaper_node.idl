@@ -31,6 +31,7 @@ enum OverSampleType {
 };
 
 [
+    Exposed=Window,
     Constructor(BaseAudioContext context, optional WaveShaperOptions options),
     RaisesException=Constructor,
     Measure

@@ -9,7 +9,7 @@
 #include "base/strings/string_piece.h"
 #include "base/win/async_operation.h"
 #include "base/win/winrt_storage_util.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/bluetooth_test_win.h"
 #include "device/bluetooth/test/fake_gatt_read_result_winrt.h"
 #include "device/bluetooth/test/fake_gatt_write_result_winrt.h"

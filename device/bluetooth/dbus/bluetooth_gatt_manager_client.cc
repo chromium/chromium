@@ -22,8 +22,7 @@ const char BluetoothGattManagerClient::kNoResponseError[] =
 // The BluetoothGattManagerClient implementation used in production.
 class BluetoothGattManagerClientImpl : public BluetoothGattManagerClient {
  public:
-  BluetoothGattManagerClientImpl()
-      : object_manager_(nullptr), weak_ptr_factory_(this) {}
+  BluetoothGattManagerClientImpl() : object_manager_(nullptr) {}
 
   ~BluetoothGattManagerClientImpl() override = default;
 
@@ -125,7 +124,7 @@ class BluetoothGattManagerClientImpl : public BluetoothGattManagerClient {
   // than we do.
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<BluetoothGattManagerClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothGattManagerClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothGattManagerClientImpl);
 };

@@ -1,8 +1,0 @@
-CONSOLE WARNING: line 429: The `devicemotion` event is deprecated on insecure origins and will be removed. See https://www.chromestatus.com/feature/5688035094036480 for more details.
-CONSOLE WARNING: line 429: The `deviceorientation` event is deprecated on insecure origins and will be removed. See https://www.chromestatus.com/feature/5468407470227456 for more details.
-This is a testharness.js-based test.
-PASS Event handlers as well as interfaces are exposed on `window`.
-PASS DeviceMotionEvent fires.
-PASS DeviceOrientationEvent fires.
-Harness: the test ran to completion.
-

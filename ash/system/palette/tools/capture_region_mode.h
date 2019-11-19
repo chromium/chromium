@@ -30,7 +30,7 @@ class ASH_EXPORT CaptureRegionMode : public CommonPaletteTool {
 
   void OnScreenshotDone();
 
-  base::WeakPtrFactory<CaptureRegionMode> weak_factory_;
+  base::WeakPtrFactory<CaptureRegionMode> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CaptureRegionMode);
 };

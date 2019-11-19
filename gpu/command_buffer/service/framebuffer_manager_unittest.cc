@@ -154,7 +154,8 @@ class FramebufferInfoTestBase : public GpuServiceTest {
     TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(gl_.get(),
         extensions, "", gl_version, context_type_);
     feature_info_->InitializeForTesting(context_type_);
-    decoder_.reset(new MockGLES2Decoder(&command_buffer_service_, &outputter_));
+    decoder_.reset(
+        new MockGLES2Decoder(&client_, &command_buffer_service_, &outputter_));
     manager_.CreateFramebuffer(kClient1Id, kService1Id);
     error_state_.reset(new ::testing::StrictMock<gles2::MockErrorState>());
     framebuffer_ = manager_.GetFramebuffer(kClient1Id);
@@ -171,6 +172,7 @@ class FramebufferInfoTestBase : public GpuServiceTest {
   std::unique_ptr<RenderbufferManager> renderbuffer_manager_;
   std::unique_ptr<MockErrorState> error_state_;
   FakeCommandBufferServiceBase command_buffer_service_;
+  FakeDecoderClient client_;
   TraceOutputter outputter_;
   std::unique_ptr<MockGLES2Decoder> decoder_;
 };
@@ -1248,25 +1250,15 @@ TEST_F(FramebufferInfoTest, DrawBufferMasks) {
   // Test ValidateAndAdjustDrawBuffers().
 
   // gl_FragColor situation.
-  EXPECT_CALL(*gl_, DrawBuffersARB(kMaxDrawBuffers, _))
-      .Times(1)
-      .RetiresOnSaturation();
-  EXPECT_TRUE(framebuffer_->ValidateAndAdjustDrawBuffers(0x3u, 0x3u));
+  EXPECT_CALL(*gl_, DrawBuffersARB(kMaxDrawBuffers, _)).Times(0);
+  EXPECT_FALSE(framebuffer_->ValidateAndAdjustDrawBuffers(0x3u, 0x3u));
   // gl_FragData situation.
   EXPECT_CALL(*gl_, DrawBuffersARB(kMaxDrawBuffers, _))
       .Times(0);
   EXPECT_FALSE(
       framebuffer_->ValidateAndAdjustDrawBuffers(0xFFFFFFFFu, 0xFFFFFFFFu));
   // User defined output variables, fully match.
-  EXPECT_CALL(*gl_, DrawBuffersARB(kMaxDrawBuffers, _))
-      .Times(1)
-      .RetiresOnSaturation();
-  EXPECT_TRUE(
-      framebuffer_->ValidateAndAdjustDrawBuffers(0x31Bu, 0x33Fu));
-  // Call it a second time - this test is critical, making sure we don't
-  // call DrawBuffers() every draw call if program doesn't change.
-  EXPECT_CALL(*gl_, DrawBuffersARB(kMaxDrawBuffers, _))
-      .Times(0);
+  EXPECT_CALL(*gl_, DrawBuffersARB(kMaxDrawBuffers, _)).Times(0);
   EXPECT_TRUE(
       framebuffer_->ValidateAndAdjustDrawBuffers(0x31Bu, 0x33Fu));
   // User defined output variables, fully on, one type mismatch.
@@ -1275,23 +1267,12 @@ TEST_F(FramebufferInfoTest, DrawBufferMasks) {
   EXPECT_FALSE(
       framebuffer_->ValidateAndAdjustDrawBuffers(0x32Bu, 0x33Fu));
   // Empty output.
-  EXPECT_CALL(*gl_, DrawBuffersARB(kMaxDrawBuffers, _))
-      .Times(1)
-      .RetiresOnSaturation();
-  EXPECT_TRUE(
-      framebuffer_->ValidateAndAdjustDrawBuffers(0u, 0u));
+  EXPECT_CALL(*gl_, DrawBuffersARB(kMaxDrawBuffers, _)).Times(0);
+  EXPECT_FALSE(framebuffer_->ValidateAndAdjustDrawBuffers(0u, 0u));
   // User defined output variables, some active buffers have no corresponding
   // output variables, but if they do, types match.
-  EXPECT_CALL(*gl_, DrawBuffersARB(kMaxDrawBuffers, _))
-      .Times(1)
-      .RetiresOnSaturation();
-  EXPECT_TRUE(
-      framebuffer_->ValidateAndAdjustDrawBuffers(0x310u, 0x330u));
-  // Call it a second time - making sure DrawBuffers isn't triggered.
-  EXPECT_CALL(*gl_, DrawBuffersARB(kMaxDrawBuffers, _))
-      .Times(0);
-  EXPECT_TRUE(
-      framebuffer_->ValidateAndAdjustDrawBuffers(0x310u, 0x330u));
+  EXPECT_CALL(*gl_, DrawBuffersARB(kMaxDrawBuffers, _)).Times(0);
+  EXPECT_FALSE(framebuffer_->ValidateAndAdjustDrawBuffers(0x310u, 0x330u));
 }
 
 class FramebufferInfoFloatTest : public FramebufferInfoTestBase {
@@ -1415,6 +1396,96 @@ TEST_F(FramebufferInfoTest, UnbindTexture) {
   // Check they were detached
   EXPECT_TRUE(framebuffer_->GetAttachment(GL_COLOR_ATTACHMENT0) == nullptr);
   EXPECT_TRUE(framebuffer_->GetAttachment(GL_DEPTH_ATTACHMENT) == nullptr);
+}
+
+TEST_F(FramebufferInfoTest, LastColorAttachmentIdTest) {
+  const GLuint kTextureClient1Id = 33;
+  const GLuint kTextureService1Id = 333;
+  const GLuint kTextureClient2Id = 34;
+  const GLuint kTextureService2Id = 334;
+  const GLuint kTextureClient3Id = 35;
+  const GLuint kTextureService3Id = 335;
+  const GLuint kRenderbufferClientId = 36;
+  const GLuint kRenderbufferServiceId = 336;
+  const GLuint kTextureLayerClientId = 37;
+  const GLuint kTextureLayerServiceId = 337;
+
+  const GLenum kTarget1 = GL_TEXTURE_2D;
+  const GLint kLevel1 = 0;
+  const GLint kSamples1 = 0;
+
+  const GLenum kTargetTextureLayer = GL_TEXTURE_2D_ARRAY;
+  const GLint kBorder = 0;
+  const GLenum kType = GL_UNSIGNED_BYTE;
+  const GLsizei kWidth = 16;
+  const GLsizei kHeight = 32;
+  const GLint kDepth = 2;
+  const GLint kLevel = 0;
+  const GLenum kFormat = GL_RGBA;
+  const GLsizei kLayer = 0;
+
+  texture_manager_->CreateTexture(kTextureClient1Id, kTextureService1Id);
+  scoped_refptr<TextureRef> texture1(
+      texture_manager_->GetTexture(kTextureClient1Id));
+  ASSERT_TRUE(texture1.get() != nullptr);
+  texture_manager_->CreateTexture(kTextureClient2Id, kTextureService2Id);
+  scoped_refptr<TextureRef> texture2(
+      texture_manager_->GetTexture(kTextureClient2Id));
+  ASSERT_TRUE(texture2.get() != nullptr);
+  texture_manager_->CreateTexture(kTextureClient3Id, kTextureService3Id);
+  scoped_refptr<TextureRef> texture3(
+      texture_manager_->GetTexture(kTextureClient3Id));
+  ASSERT_TRUE(texture3.get() != nullptr);
+
+  renderbuffer_manager_->CreateRenderbuffer(kRenderbufferClientId,
+                                            kRenderbufferServiceId);
+  Renderbuffer* renderbuffer =
+      renderbuffer_manager_->GetRenderbuffer(kRenderbufferClientId);
+  ASSERT_TRUE(renderbuffer != nullptr);
+
+  texture_manager_->CreateTexture(kTextureLayerClientId,
+                                  kTextureLayerServiceId);
+  scoped_refptr<TextureRef> textureLayer(
+      texture_manager_->GetTexture(kTextureLayerClientId));
+  ASSERT_TRUE(textureLayer.get());
+
+  texture_manager_->SetTarget(textureLayer.get(), kTargetTextureLayer);
+  texture_manager_->SetLevelInfo(textureLayer.get(), kTargetTextureLayer,
+                                 kLevel, kFormat, kWidth, kHeight, kDepth,
+                                 kBorder, kFormat, kType, gfx::Rect());
+
+  EXPECT_EQ(framebuffer_->last_color_attachment_id(), -1);
+  framebuffer_->AttachTexture(GL_COLOR_ATTACHMENT0, texture1.get(), kTarget1,
+                              kLevel1, kSamples1);
+  EXPECT_EQ(framebuffer_->last_color_attachment_id(), 0);
+  framebuffer_->AttachTexture(GL_COLOR_ATTACHMENT2, texture3.get(), kTarget1,
+                              kLevel1, kSamples1);
+  EXPECT_EQ(framebuffer_->last_color_attachment_id(), 2);
+  framebuffer_->AttachTexture(GL_COLOR_ATTACHMENT1, texture2.get(), kTarget1,
+                              kLevel1, kSamples1);
+  EXPECT_EQ(framebuffer_->last_color_attachment_id(), 2);
+  framebuffer_->AttachRenderbuffer(GL_DEPTH_ATTACHMENT, renderbuffer);
+  EXPECT_EQ(framebuffer_->last_color_attachment_id(), 2);
+  framebuffer_->AttachRenderbuffer(GL_COLOR_ATTACHMENT3, renderbuffer);
+  EXPECT_EQ(framebuffer_->last_color_attachment_id(), 3);
+  framebuffer_->AttachTexture(GL_COLOR_ATTACHMENT4, texture1.get(), kTarget1,
+                              kLevel1, kSamples1);
+  EXPECT_EQ(framebuffer_->last_color_attachment_id(), 4);
+  EXPECT_TRUE(framebuffer_->GetAttachment(GL_COLOR_ATTACHMENT0) != nullptr);
+  framebuffer_->AttachTextureLayer(GL_COLOR_ATTACHMENT5, textureLayer.get(),
+                                   kTargetTextureLayer, kLevel, kLayer);
+  EXPECT_EQ(framebuffer_->last_color_attachment_id(), 5);
+
+  framebuffer_->UnbindTexture(kTargetTextureLayer, textureLayer.get());
+  EXPECT_EQ(framebuffer_->last_color_attachment_id(), 4);
+  framebuffer_->UnbindTexture(kTarget1, texture2.get());
+  EXPECT_EQ(framebuffer_->last_color_attachment_id(), 4);
+  framebuffer_->UnbindTexture(kTarget1, texture1.get());
+  EXPECT_EQ(framebuffer_->last_color_attachment_id(), 3);
+  framebuffer_->UnbindRenderbuffer(GL_COLOR_ATTACHMENT3, renderbuffer);
+  EXPECT_EQ(framebuffer_->last_color_attachment_id(), 2);
+  framebuffer_->UnbindTexture(kTarget1, texture3.get());
+  EXPECT_EQ(framebuffer_->last_color_attachment_id(), -1);
 }
 
 TEST_F(FramebufferInfoTest, IsCompleteMarkAsComplete) {

@@ -7,10 +7,12 @@
 
 #include <memory>
 
-#include "chromeos/printing/printer_configuration.h"
+#include "base/strings/string_piece.h"
 #include "components/sync/protocol/printer_specifics.pb.h"
 
 namespace chromeos {
+
+class Printer;
 
 // Convert |printer| into its local representation.  Enforces that only one
 // field in PpdReference is filled in.  In order of preference, we populate
@@ -29,6 +31,11 @@ std::unique_ptr<sync_pb::PrinterSpecifics> PrinterToSpecifics(
 // SpecificsToPrinter.
 void MergePrinterToSpecifics(const Printer& printer,
                              sync_pb::PrinterSpecifics* specifics);
+
+// Combines |make| and |model| with a space to generate a make and model string.
+// If |model| already represents the make and model, the string is just |model|.
+// This is to prevent strings of the form '<make> <make> <model>'.
+std::string MakeAndModel(base::StringPiece make, base::StringPiece model);
 
 }  // namespace chromeos
 

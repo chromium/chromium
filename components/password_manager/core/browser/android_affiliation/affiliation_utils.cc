@@ -11,7 +11,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/url_formatter/elide_url.h"
-#include "components/variations/variations_associated_data.h"
 #include "net/base/escape.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon_stdstring.h"
@@ -94,11 +93,7 @@ bool CanonicalizeHashComponent(const base::StringPiece& input_hash,
   // safe" base64 alphabet; plus the padding ('=').
   const char kBase64NonAlphanumericChars[] = "-_=";
 
-  // We need net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS to
-  // unescape the padding ('=').
-  std::string base64_encoded_hash = net::UnescapeURLComponent(
-      input_hash.as_string(),
-      net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+  std::string base64_encoded_hash = net::UnescapeBinaryURLComponent(input_hash);
 
   if (!base64_encoded_hash.empty() &&
       CanonicalizeBase64Padding(&base64_encoded_hash) &&
@@ -121,8 +116,8 @@ bool CanonicalizePackageNameComponent(
   // Characters other than alphanumeric that are permitted in the package names.
   const char kPackageNameNonAlphanumericChars[] = "._";
 
-  std::string package_name = net::UnescapeURLComponent(
-      input_package_name.as_string(), net::UnescapeRule::NORMAL);
+  std::string package_name =
+      net::UnescapeBinaryURLComponent(input_package_name);
 
   // TODO(engedy): We might want to use a regex to check this more throughly.
   if (!package_name.empty() &&

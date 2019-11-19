@@ -9,12 +9,10 @@
 #include "third_party/blink/renderer/platform/geometry/double_size.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_point.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
-
-class LayoutPoint;
 
 class PLATFORM_EXPORT DoublePoint {
   DISALLOW_NEW();
@@ -24,15 +22,16 @@ class PLATFORM_EXPORT DoublePoint {
   constexpr DoublePoint(double x, double y) : x_(x), y_(y) {}
   constexpr DoublePoint(const IntPoint& p) : x_(p.X()), y_(p.Y()) {}
   constexpr DoublePoint(const FloatPoint& p) : x_(p.X()), y_(p.Y()) {}
-  explicit DoublePoint(const LayoutPoint&);
+  // We also have conversion operator to DoublePoint defined in LayoutPoint.
 
-  constexpr explicit DoublePoint(const IntSize& size)
-      : x_(size.Width()), y_(size.Height()) {}
-
-  explicit DoublePoint(const FloatSize&);
-
+  constexpr explicit DoublePoint(const IntSize& s)
+      : x_(s.Width()), y_(s.Height()) {}
+  constexpr explicit DoublePoint(const FloatSize& s)
+      : x_(s.Width()), y_(s.Height()) {}
   constexpr explicit DoublePoint(const DoubleSize& size)
       : x_(size.Width()), y_(size.Height()) {}
+
+  explicit operator FloatPoint() const;
 
   static constexpr DoublePoint Zero() { return DoublePoint(); }
 
@@ -120,10 +119,6 @@ inline IntPoint CeiledIntPoint(const DoublePoint& p) {
 
 inline IntPoint FlooredIntPoint(const DoublePoint& p) {
   return IntPoint(clampTo<int>(floor(p.X())), clampTo<int>(floor(p.Y())));
-}
-
-constexpr FloatPoint ToFloatPoint(const DoublePoint& a) {
-  return FloatPoint(a.X(), a.Y());
 }
 
 constexpr DoubleSize ToDoubleSize(const DoublePoint& a) {

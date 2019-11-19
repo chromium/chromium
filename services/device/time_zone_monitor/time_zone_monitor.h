@@ -6,12 +6,17 @@
 #define SERVICES_DEVICE_TIME_ZONE_MONITOR_TIME_ZONE_MONITOR_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/threading/thread_checker.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/public/mojom/time_zone_monitor.mojom.h"
+#include "third_party/icu/source/common/unicode/uversion.h"
 
 template <class T>
 class scoped_refptr;
@@ -19,6 +24,10 @@ class scoped_refptr;
 namespace base {
 class SequencedTaskRunner;
 }
+
+U_NAMESPACE_BEGIN
+class TimeZone;
+U_NAMESPACE_END
 
 namespace device {
 
@@ -35,7 +44,7 @@ namespace device {
 //  - Mac uses a sandbox hole defined in content/renderer/renderer.sb.
 //  - Linux-based platforms use ProxyLocaltimeCallToBrowser in
 //    content/zygote/zygote_main_linux.cc and HandleLocaltime in
-//    content/browser/renderer_host/sandbox_ipc_linux.cc to override
+//    content/browser/sandbox_ipc_linux.cc to override
 //    localtime in renderer processes with custom code that calls
 //    localtime in the browser process via Chrome IPC.
 
@@ -49,22 +58,33 @@ class TimeZoneMonitor : public device::mojom::TimeZoneMonitor {
 
   ~TimeZoneMonitor() override;
 
-  void Bind(device::mojom::TimeZoneMonitorRequest request);
+  void Bind(mojo::PendingReceiver<device::mojom::TimeZoneMonitor> receiver);
 
  protected:
   TimeZoneMonitor();
 
-  // Notify all callbacks that the system time zone may have changed.
-  void NotifyClients();
+  // Notifies clients that the system time zone may have changed and is now
+  // zone_id_str.
+  void NotifyClients(base::StringPiece zone_id_str);
+
+  // Sets ICU's default TimeZone for the process and calls NotifyClients().
+  void UpdateIcuAndNotifyClients(std::unique_ptr<icu::TimeZone> new_zone);
+
+  // Detects the host time zone using the logic in ICU.
+  static std::unique_ptr<icu::TimeZone> DetectHostTimeZoneFromIcu();
+
+  // Converts |zone|'s ID string to UTF-8 and returns it.
+  static std::string GetTimeZoneId(const icu::TimeZone& zone);
 
  private:
   base::ThreadChecker thread_checker_;
 
   // device::mojom::device::mojom::TimeZoneMonitor:
-  void AddClient(device::mojom::TimeZoneMonitorClientPtr client) override;
+  void AddClient(mojo::PendingRemote<device::mojom::TimeZoneMonitorClient>
+                     client) override;
 
-  mojo::BindingSet<device::mojom::TimeZoneMonitor> bindings_;
-  mojo::InterfacePtrSet<device::mojom::TimeZoneMonitorClient> clients_;
+  mojo::ReceiverSet<device::mojom::TimeZoneMonitor> receivers_;
+  mojo::RemoteSet<device::mojom::TimeZoneMonitorClient> clients_;
   DISALLOW_COPY_AND_ASSIGN(TimeZoneMonitor);
 };
 

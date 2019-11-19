@@ -12,18 +12,18 @@
 
 namespace autofill_assistant {
 
-StopAction::StopAction(const ActionProto& proto) : Action(proto) {
+StopAction::StopAction(ActionDelegate* delegate, const ActionProto& proto)
+    : Action(delegate, proto) {
   DCHECK(proto_.has_stop());
 }
 
 StopAction::~StopAction() {}
 
-void StopAction::InternalProcessAction(ActionDelegate* delegate,
-                                       ProcessActionCallback callback) {
+void StopAction::InternalProcessAction(ProcessActionCallback callback) {
   if (proto_.stop().close_cct()) {
-    delegate->Close();
+    delegate_->Close();
   } else {
-    delegate->Shutdown();
+    delegate_->Shutdown();
   }
   UpdateProcessedAction(ACTION_APPLIED);
   std::move(callback).Run(std::move(processed_action_proto_));

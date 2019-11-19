@@ -18,8 +18,7 @@ SigninStatusMetricsProvider::SigninStatusMetricsProvider(
     bool is_test)
     : delegate_(std::move(delegate)),
       scoped_observer_(this),
-      is_test_(is_test),
-      weak_ptr_factory_(this) {
+      is_test_(is_test) {
   DCHECK(delegate_ || is_test_);
   if (is_test_)
     return;
@@ -53,7 +52,7 @@ SigninStatusMetricsProvider::CreateInstance(
 }
 
 void SigninStatusMetricsProvider::OnIdentityManagerCreated(
-    identity::IdentityManager* identity_manager) {
+    signin::IdentityManager* identity_manager) {
   // Whenever a new profile is created, a new IdentityManager will be created
   // for it. This ensures that all sign-in or sign-out actions of all opened
   // profiles are being monitored.
@@ -69,7 +68,7 @@ void SigninStatusMetricsProvider::OnIdentityManagerCreated(
 }
 
 void SigninStatusMetricsProvider::OnIdentityManagerShutdown(
-    identity::IdentityManager* identity_manager) {
+    signin::IdentityManager* identity_manager) {
   if (scoped_observer_.IsObserving(identity_manager))
     scoped_observer_.Remove(identity_manager);
 }
@@ -102,7 +101,7 @@ void SigninStatusMetricsProvider::Initialize() {
   delegate_->Initialize();
 
   // Start observing all already-created IdentityManagers.
-  for (identity::IdentityManager* manager :
+  for (signin::IdentityManager* manager :
        delegate_->GetIdentityManagersForAllAccounts()) {
     DCHECK(!scoped_observer_.IsObserving(manager));
     scoped_observer_.Add(manager);

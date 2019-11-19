@@ -38,7 +38,7 @@ class CONTENT_EXPORT ResourceConverter {
   // If NeedsFlush() is true then Flush() must be called before any vars created
   // by the ResourceConverter are valid. It handles creating any resource hosts
   // that need to be created. |callback| will always be called asynchronously.
-  virtual void Flush(const base::Callback<void(bool)>& callback) = 0;
+  virtual void Flush(base::OnceCallback<void(bool)> callback) = 0;
 
   // Attempts to convert a V8 object to a PP_Var with type PP_VARTYPE_RESOURCE.
   // On success, writes the resulting var to |result|, sets |was_resource| to
@@ -65,7 +65,7 @@ class ResourceConverterImpl : public ResourceConverter {
   // ResourceConverter overrides.
   void Reset() override;
   bool NeedsFlush() override;
-  void Flush(const base::Callback<void(bool)>& callback) override;
+  void Flush(base::OnceCallback<void(bool)> callback) override;
   bool FromV8Value(v8::Local<v8::Object> val,
                    v8::Local<v8::Context> context,
                    PP_Var* result,

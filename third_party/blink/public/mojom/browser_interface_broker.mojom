@@ -1,0 +1,15 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/generic_pending_receiver.mojom";
+
+// An interface through which the renderer may request
+// interfaces from the browser.
+interface BrowserInterfaceBroker {
+    // Asks the browser to bind |receiver| to its remote implementation
+    // in the browser process.
+    GetInterface(mojo_base.mojom.GenericPendingReceiver receiver);
+};

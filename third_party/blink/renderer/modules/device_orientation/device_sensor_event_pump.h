@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_SENSOR_EVENT_PUMP_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_SENSOR_EVENT_PUMP_H_
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/sensor_provider.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -19,7 +21,7 @@ class MODULES_EXPORT DeviceSensorEventPump : public GarbageCollectedMixin {
   // Default rate for firing events.
   static constexpr int kDefaultPumpFrequencyHz = 60;
   static constexpr int kDefaultPumpDelayMicroseconds =
-      WTF::Time::kMicrosecondsPerSecond / kDefaultPumpFrequencyHz;
+      base::Time::kMicrosecondsPerSecond / kDefaultPumpFrequencyHz;
 
   // The pump is a tri-state automaton with allowed transitions as follows:
   // STOPPED -> PENDING_START
@@ -34,7 +36,8 @@ class MODULES_EXPORT DeviceSensorEventPump : public GarbageCollectedMixin {
   void HandleSensorProviderError();
 
   void SetSensorProviderForTesting(
-      device::mojom::blink::SensorProviderPtr sensor_provider);
+      mojo::PendingRemote<device::mojom::blink::SensorProvider>
+          sensor_provider);
   PumpState GetPumpStateForTesting();
 
  protected:
@@ -60,7 +63,7 @@ class MODULES_EXPORT DeviceSensorEventPump : public GarbageCollectedMixin {
 
   virtual void DidStartIfPossible();
 
-  device::mojom::blink::SensorProviderPtr sensor_provider_;
+  mojo::Remote<device::mojom::blink::SensorProvider> sensor_provider_;
 
  private:
   virtual bool SensorsReadyOrErrored() const = 0;

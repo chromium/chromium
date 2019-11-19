@@ -11,17 +11,18 @@ import android.widget.ListView;
 
 import org.junit.Assert;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinatorTestUtils;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion.MatchClassification;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class OmniboxTestUtils {
             List<MatchClassification> classifications = new ArrayList<>();
             classifications.add(new MatchClassification(0, MatchClassificationStyle.NONE));
             mSuggestions.add(new OmniboxSuggestion(type, false, 0, 0, text, classifications, null,
-                    classifications, null, "", url, false, false));
+                    classifications, null, "", url, null, null, false, false));
             return this;
         }
 
@@ -143,8 +144,8 @@ public class OmniboxTestUtils {
         }
 
         @Override
-        public void start(Profile profile, String url, final String text, int cursorPosition,
-                boolean preventInlineAutocomplete, boolean focusedFromFakebox) {
+        public void start(Profile profile, String url, int pageClassification, final String text,
+                int cursorPosition, boolean preventInlineAutocomplete) {
             mStartAutocompleteCalled = true;
             mSuggestionsDispatcher = new Runnable() {
                 @Override
@@ -165,8 +166,8 @@ public class OmniboxTestUtils {
         }
 
         @Override
-        public void startZeroSuggest(Profile profile, String omniboxText, String url, String title,
-                boolean focusedFromFakebox) {
+        public void startZeroSuggest(Profile profile, String omniboxText, String url,
+                int pageClassification, String title) {
             mZeroSuggestCalledCount++;
         }
 
@@ -182,11 +183,6 @@ public class OmniboxTestUtils {
         public void stop(boolean clear) {
             if (mSuggestionsDispatcher != null) mView.removeCallbacks(mSuggestionsDispatcher);
             mSuggestionsDispatcher = null;
-        }
-
-        @Override
-        protected long nativeInit(Profile profile) {
-            return 1;
         }
 
         @Override
@@ -208,20 +204,15 @@ public class OmniboxTestUtils {
         }
 
         @Override
-        public void start(Profile profile, String url, String text, int cursorPosition,
-                boolean preventInlineAutocomplete, boolean focusedFromFakebox) {}
+        public void start(Profile profile, String url, int pageClassification, String text,
+                int cursorPosition, boolean preventInlineAutocomplete) {}
 
         @Override
-        public void startZeroSuggest(Profile profile, String omniboxText, String url, String title,
-                boolean focusedFromFakebox) {}
+        public void startZeroSuggest(Profile profile, String omniboxText, String url,
+                int pageClassification, String title) {}
 
         @Override
         public void stop(boolean clear) {}
-
-        @Override
-        protected long nativeInit(Profile profile) {
-            return 1;
-        }
 
         @Override
         public void setProfile(Profile profile) {}
@@ -231,10 +222,8 @@ public class OmniboxTestUtils {
      * Checks and verifies that the URL bar can request and release focus X times without issue.
      * @param urlBar The view to focus.
      * @param times The number of times focus should be requested and released.
-     * @throws InterruptedException
      */
-    public static void checkUrlBarRefocus(UrlBar urlBar, int times)
-            throws InterruptedException {
+    public static void checkUrlBarRefocus(UrlBar urlBar, int times) {
         for (int i = 0; i < times; i++) {
             toggleUrlBarFocus(urlBar, true);
             waitForFocusAndKeyboardActive(urlBar, true);
@@ -249,18 +238,18 @@ public class OmniboxTestUtils {
      * @return Whether the UrlBar has focus.
      */
     public static boolean doesUrlBarHaveFocus(final UrlBar urlBar) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
             @Override
-            public Boolean call() throws Exception {
+            public Boolean call() {
                 return urlBar.hasFocus();
             }
         });
     }
 
     private static boolean isKeyboardActiveForView(final View view) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
             @Override
-            public Boolean call() throws Exception {
+            public Boolean call() {
                 InputMethodManager imm =
                         (InputMethodManager) view.getContext().getSystemService(
                                 Context.INPUT_METHOD_SERVICE);
@@ -287,12 +276,7 @@ public class OmniboxTestUtils {
 
             TouchCommon.singleClickView(urlBar);
         } else {
-            ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-                @Override
-                public void run() {
-                    urlBar.clearFocus();
-                }
-            });
+            TestThreadUtils.runOnUiThreadBlocking(() -> { urlBar.clearFocus(); });
         }
     }
 
@@ -337,8 +321,8 @@ public class OmniboxTestUtils {
         CriteriaHelper.pollUiThread(new Criteria() {
             @Override
             public boolean isSatisfied() {
-                ListView suggestionsList =
-                        locationBar.getAutocompleteCoordinator().getSuggestionList();
+                ListView suggestionsList = AutocompleteCoordinatorTestUtils.getSuggestionList(
+                        locationBar.getAutocompleteCoordinator());
                 if (suggestionsList == null) {
                     updateFailureReason("suggestionList is null");
                     return false;
@@ -366,8 +350,8 @@ public class OmniboxTestUtils {
         CriteriaHelper.pollUiThread(new Criteria() {
             @Override
             public boolean isSatisfied() {
-                ListView suggestionsList =
-                        locationBar.getAutocompleteCoordinator().getSuggestionList();
+                ListView suggestionsList = AutocompleteCoordinatorTestUtils.getSuggestionList(
+                        locationBar.getAutocompleteCoordinator());
                 return suggestionsList != null
                         && suggestionsList.isShown()
                         && suggestionsList.getCount() == expectedCount;

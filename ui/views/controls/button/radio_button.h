@@ -16,14 +16,12 @@ namespace views {
 // platform specific objects to replicate the native platforms looks and feel.
 class VIEWS_EXPORT RadioButton : public Checkbox {
  public:
-  // The button's class name.
-  static const char kViewClassName[];
+  METADATA_HEADER(RadioButton);
 
   RadioButton(const base::string16& label, int group_id);
   ~RadioButton() override;
 
   // Overridden from View:
-  const char* GetClassName() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   View* GetSelectedViewForGroup(int group) override;
   bool IsGroupFocusTraversable() const override;

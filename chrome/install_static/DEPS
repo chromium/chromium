@@ -5,12 +5,12 @@ include_rules = [
   "-chrome",
   # For the app icon resource identifiers.
   "+chrome/app/chrome_dll_resource.h",
+  # All registry access should go through nt_registry.
+  "+chrome/chrome_elf/nt_registry/nt_registry.h",
   # For the app icon resource indices.
   "+chrome/common/chrome_icon_resources_win.h",
   # Anything from this dir.
   "+chrome/install_static",
-  # All registry access should go through nt_registry.
-  "+chrome_elf/nt_registry/nt_registry.h",
   # For BUILDFLAG(ENABLE_NACL)
   "+components/nacl/common/buildflags.h",
   # For the version_info::Channel enum.

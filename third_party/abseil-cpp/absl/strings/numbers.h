@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,13 +47,13 @@ namespace absl {
 // integer type. If any errors are encountered, this function returns `false`,
 // leaving `out` in an unspecified state.
 template <typename int_type>
-ABSL_MUST_USE_RESULT bool SimpleAtoi(absl::string_view s, int_type* out);
+ABSL_MUST_USE_RESULT bool SimpleAtoi(absl::string_view str, int_type* out);
 
 // SimpleAtof()
 //
 // Converts the given string (optionally followed or preceded by ASCII
 // whitespace) into a float, which may be rounded on overflow or underflow.
-// See http://en.cppreference.com/w/c/string/byte/strtof for details about the
+// See https://en.cppreference.com/w/c/string/byte/strtof for details about the
 // allowed formats for `str`. If any errors are encountered, this function
 // returns `false`, leaving `out` in an unspecified state.
 ABSL_MUST_USE_RESULT bool SimpleAtof(absl::string_view str, float* out);
@@ -62,7 +62,7 @@ ABSL_MUST_USE_RESULT bool SimpleAtof(absl::string_view str, float* out);
 //
 // Converts the given string (optionally followed or preceded by ASCII
 // whitespace) into a double, which may be rounded on overflow or underflow.
-// See http://en.cppreference.com/w/c/string/byte/strtof for details about the
+// See https://en.cppreference.com/w/c/string/byte/strtof for details about the
 // allowed formats for `str`. If any errors are encountered, this function
 // returns `false`, leaving `out` in an unspecified state.
 ABSL_MUST_USE_RESULT bool SimpleAtod(absl::string_view str, double* out);
@@ -180,8 +180,8 @@ ABSL_MUST_USE_RESULT bool safe_strtoi_base(absl::string_view s, int_type* out,
 // preceded by ASCII whitespace, with a value in the range of the corresponding
 // integer type.
 template <typename int_type>
-ABSL_MUST_USE_RESULT bool SimpleAtoi(absl::string_view s, int_type* out) {
-  return numbers_internal::safe_strtoi_base(s, out, 10);
+ABSL_MUST_USE_RESULT bool SimpleAtoi(absl::string_view str, int_type* out) {
+  return numbers_internal::safe_strtoi_base(str, out, 10);
 }
 
 }  // namespace absl

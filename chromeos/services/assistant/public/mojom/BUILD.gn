@@ -8,15 +8,38 @@ mojom("mojom") {
   sources = [
     "assistant.mojom",
     "assistant_audio_decoder.mojom",
-    "constants.mojom",
     "settings.mojom",
   ]
 
   public_deps = [
+    ":notification",
+    "//ash/public/mojom",
+    "//chromeos/services/network_config/public/mojom",
     "//mojo/public/mojom/base",
+    "//services/audio/public/mojom",
+    "//services/device/public/mojom",
     "//services/identity/public/mojom",
+    "//services/media_session/public/mojom",
+    "//services/preferences/public/mojom",
     "//ui/accessibility/mojom",
-    "//ui/gfx/geometry/mojo",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  # Ash mojom disables variants, so its dependents must do the same.
+  disable_variants = true
+}
+
+# This dependency is separated to avoid circular dependencies between the above
+# target and Ash's public mojoms, which also depend on the definition of
+# AssistantNotification.
+mojom("notification") {
+  sources = [
+    "assistant_notification.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
 }

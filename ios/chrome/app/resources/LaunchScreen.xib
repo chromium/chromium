@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14865.1" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14819.2"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -15,11 +15,11 @@
                 <viewControllerLayoutGuide type="bottom" id="TrJ-rv-PCn"/>
             </layoutGuides>
             <view key="view" contentMode="scaleToFill" id="tRS-Cx-RH3">
-                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchscreen_app_logo" translatesAutoresizingMaskIntoConstraints="NO" id="K7H-Iv-QNk">
-                        <rect key="frame" x="204" y="204" width="192" height="192"/>
+                        <rect key="frame" x="128" y="369" width="158" height="158"/>
                         <constraints>
                             <constraint firstAttribute="width" relation="lessThanOrEqual" constant="192" id="Ybu-iB-Ad4"/>
                             <constraint firstAttribute="height" relation="lessThanOrEqual" constant="192" id="gGV-z8-zNx"/>
@@ -27,14 +27,14 @@
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchscreen_brand_name" translatesAutoresizingMaskIntoConstraints="NO" id="bAU-qs-X5w">
-                        <rect key="frame" x="247" y="545" width="107" height="35"/>
+                        <rect key="frame" x="153.5" y="807" width="107" height="35"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="107" id="0Mf-i7-mvo"/>
                             <constraint firstAttribute="height" constant="35" id="7Gs-G7-OR2"/>
                         </constraints>
                     </imageView>
                 </subviews>
-                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                <color key="backgroundColor" name="background_color"/>
                 <constraints>
                     <constraint firstItem="K7H-Iv-QNk" firstAttribute="width" secondItem="tRS-Cx-RH3" secondAttribute="width" multiplier="0.381966" id="3hJ-Yo-1Tg"/>
                     <constraint firstItem="K7H-Iv-QNk" firstAttribute="height" secondItem="tRS-Cx-RH3" secondAttribute="height" multiplier="0.381966" id="962-tL-cOd"/>
@@ -68,5 +68,8 @@
     <resources>
         <image name="launchscreen_app_logo" width="192" height="192"/>
         <image name="launchscreen_brand_name" width="107" height="35"/>
+        <namedColor name="background_color">
+            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
     </resources>
 </document>

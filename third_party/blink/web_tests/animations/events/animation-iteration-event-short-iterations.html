@@ -1,61 +1,42 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>Tests that iteration events are fired when the duration is very short.</title>
-  <style>
-    #box {
-      position: relative;
-      left: 100px;
-      top: 10px;
-      height: 100px;
-      width: 100px;
-      animation-duration: 0.001s;
-      animation-name: anim;
-      background-color: #999;
-      animation-iteration-count: 10;
-    }
-    @keyframes anim {
-        from { left: 200px; }
-        to   { left: 300px; }
-    }
-  </style>
-  <script>
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-        testRunner.waitUntilDone();
-    }
+<title>Tests that iteration events are fired when the duration is very short.</title>
+<style>
+  #box {
+    position: relative;
+    left: 100px;
+    top: 10px;
+    height: 100px;
+    width: 100px;
+    animation-duration: 0.001s;
+    animation-name: anim;
+    background-color: #999;
+    animation-iteration-count: 10;
+  }
+  @keyframes anim {
+      from { left: 200px; }
+      to   { left: 300px; }
+  }
+</style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+var count = 0;
+async_test(t => {
+  window.addEventListener("load", t.step_func(() => {
+    document.addEventListener('animationIteration', t.step_func(() => {
+      ++count;
+    }));
 
-    function fail() {
-      document.getElementById('result').innerHTML = 'FAIL: Got ' + count + ' animationCount events';
-    }  
+    document.addEventListener('animationend', t.step_func_done(() => {
+      // We collapse all iteration events that occur within a single
+      // frame into a single event. See http://crbug.com/275263.
+      assert_less_than(count, 10, 'Got a reasonable number of animationCount events');
+    }));
 
-    var count = 0;
-    onload = function()
-    {
-        document.addEventListener('animationIteration', function() {
-          ++count;
-        }, false);
-
-        document.addEventListener('animationend', function() {
-            // We collapse all iteration events that occur within a single
-            // frame into a single event. See http://crbug.com/275263.
-            if (count < 10)
-                document.getElementById('result').innerHTML = 'PASS: Got a reasonable number of animationCount events';
-            else
-                fail();
-            if (window.testRunner)
-                testRunner.notifyDone();
-        }, false);
-
-        // Animation begins once we append the DOM node to the document.
-        var boxNode = document.createElement('div');
-        boxNode.id = 'box';
-        document.body.appendChild(boxNode);
-    }
-  </script>
-</head>
-<body>
-Tests that iteration events are fired when the duration is very short.
-<pre id="result">FAIL: No animationend event received</pre>
-</body>
-</html>
+    // Animation begins once we append the DOM node to the document.
+    var boxNode = document.createElement('div');
+    boxNode.id = 'box';
+    document.body.appendChild(boxNode);
+  }));
+}, "Tests that iteration events are fired when the duration is very short");
+</script>

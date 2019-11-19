@@ -107,9 +107,8 @@ GuestViewBase* AppViewGuest::Create(WebContents* owner_web_contents) {
 
 AppViewGuest::AppViewGuest(WebContents* owner_web_contents)
     : GuestView<AppViewGuest>(owner_web_contents),
-      app_view_guest_delegate_(ExtensionsAPIClient::Get()
-                                   ->CreateAppViewGuestDelegate()),
-      weak_ptr_factory_(this) {
+      app_view_guest_delegate_(
+          ExtensionsAPIClient::Get()->CreateAppViewGuestDelegate()) {
   if (app_view_guest_delegate_)
     app_delegate_.reset(app_view_guest_delegate_->CreateAppDelegate());
 }
@@ -147,7 +146,7 @@ void AppViewGuest::RequestMediaAccessPermission(
 bool AppViewGuest::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
-    blink::MediaStreamType type) {
+    blink::mojom::MediaStreamType type) {
   if (!app_delegate_) {
     return WebContentsDelegate::CheckMediaAccessPermission(
         render_frame_host, security_origin, type);

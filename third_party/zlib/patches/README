@@ -4,6 +4,7 @@
    build.
  - 0001-simd.patch: integrate Intel SIMD optimizations from
    https://github.com/jtkukunas/zlib/
+ - 0002-uninitializedcheck.patch: prevent uninitialized use of state->check
 
 == Procedure to create a patch file ==
 

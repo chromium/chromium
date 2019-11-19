@@ -7,29 +7,22 @@
 
 #include <memory>
 #include "base/memory/weak_ptr.h"
-#include "third_party/blink/public/platform/web_canvas_capture_handler.h"
-#include "third_party/blink/renderer/core/html/canvas/canvas_draw_listener.h"
+#include "third_party/blink/renderer/modules/mediacapturefromelement/auto_canvas_draw_listener.h"
+#include "third_party/blink/renderer/modules/mediacapturefromelement/canvas_capture_handler.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
 
-class OnRequestCanvasDrawListener final
-    : public GarbageCollectedFinalized<OnRequestCanvasDrawListener>,
-      public CanvasDrawListener {
-  USING_GARBAGE_COLLECTED_MIXIN(OnRequestCanvasDrawListener);
-
+class OnRequestCanvasDrawListener : public AutoCanvasDrawListener {
  public:
-  OnRequestCanvasDrawListener(std::unique_ptr<WebCanvasCaptureHandler>);
+  explicit OnRequestCanvasDrawListener(std::unique_ptr<CanvasCaptureHandler>);
   ~OnRequestCanvasDrawListener() override;
 
-  static OnRequestCanvasDrawListener* Create(
-      std::unique_ptr<WebCanvasCaptureHandler>);
-  void SendNewFrame(
-      sk_sp<SkImage>,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>) override;
+  void SendNewFrame(sk_sp<SkImage>,
+                    base::WeakPtr<WebGraphicsContext3DProviderWrapper>) final;
 
-  void Trace(blink::Visitor* visitor) override {}
+  void Trace(blink::Visitor*) override;
 };
 
 }  // namespace blink

@@ -23,7 +23,7 @@ void AcceleratorManager::Register(
 
   for (const ui::Accelerator& accelerator : accelerators) {
     AcceleratorTargetList& targets = accelerators_[accelerator].second;
-    DCHECK(!base::ContainsValue(targets, target))
+    DCHECK(!base::Contains(targets, target))
         << "Registering the same target multiple times";
 
     // All priority accelerators go to the front of the line.
@@ -61,7 +61,7 @@ void AcceleratorManager::UnregisterAll(AcceleratorTarget* target) {
   for (auto map_iter = accelerators_.begin();
        map_iter != accelerators_.end();) {
     AcceleratorTargetList* targets = &map_iter->second.second;
-    if (!base::ContainsValue(*targets, target)) {
+    if (!base::Contains(*targets, target)) {
       ++map_iter;
     } else {
       auto tmp_iter = map_iter;

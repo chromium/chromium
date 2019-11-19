@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.text.TextUtils;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.Locale;
 

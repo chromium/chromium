@@ -8,17 +8,21 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/login/login_handler.h"
-#include "components/password_manager/core/browser/login_model.h"
+#include "components/password_manager/core/browser/http_auth_observer.h"
 #include "ui/views/view.h"
 
 namespace views {
 class Textfield;
 }
 
+namespace password_manager {
+class HttpAuthManager;
+}
+
 // This class is responsible for displaying the contents of a login window
 // for HTTP/FTP authentication.
 class LoginView : public views::View,
-                  public password_manager::LoginModelObserver {
+                  public password_manager::HttpAuthObserver {
  public:
   // |login_model_data->model| is observed for the entire lifetime of the
   // LoginView. Therefore |login_model_data->model| should not be destroyed
@@ -32,9 +36,9 @@ class LoginView : public views::View,
   const base::string16& GetUsername() const;
   const base::string16& GetPassword() const;
 
-  // password_manager::LoginModelObserver:
-  void OnAutofillDataAvailableInternal(const base::string16& username,
-                                       const base::string16& password) override;
+  // password_manager::HttpAuthObserver:
+  void OnAutofillDataAvailable(const base::string16& username,
+                               const base::string16& password) override;
   void OnLoginModelDestroying() override;
 
   // Used by LoginHandlerViews to set the initial focus.
@@ -50,7 +54,7 @@ class LoginView : public views::View,
 
   // If not null, points to a model we need to notify of our own destruction
   // so it doesn't try and access this when its too late.
-  password_manager::LoginModel* login_model_;
+  password_manager::HttpAuthManager* http_auth_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(LoginView);
 };

@@ -10,8 +10,8 @@ WrapperSharedURLLoaderFactoryInfo::WrapperSharedURLLoaderFactoryInfo() =
     default;
 
 WrapperSharedURLLoaderFactoryInfo::WrapperSharedURLLoaderFactoryInfo(
-    network::mojom::URLLoaderFactoryPtrInfo factory_ptr_info)
-    : factory_ptr_info_(std::move(factory_ptr_info)) {}
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote)
+    : factory_remote_(std::move(factory_remote)) {}
 
 WrapperSharedURLLoaderFactoryInfo::~WrapperSharedURLLoaderFactoryInfo() =
     default;
@@ -19,7 +19,7 @@ WrapperSharedURLLoaderFactoryInfo::~WrapperSharedURLLoaderFactoryInfo() =
 scoped_refptr<network::SharedURLLoaderFactory>
 WrapperSharedURLLoaderFactoryInfo::CreateFactory() {
   return base::MakeRefCounted<WrapperSharedURLLoaderFactory>(
-      std::move(factory_ptr_info_));
+      std::move(factory_remote_));
 }
 
 }  // namespace network

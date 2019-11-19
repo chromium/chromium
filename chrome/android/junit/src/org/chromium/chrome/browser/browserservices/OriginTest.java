@@ -51,7 +51,7 @@ public class OriginTest {
     }
 
     private static void check(String url, String scheme, String host, int port) {
-        Origin origin = new Origin(url);
+        Origin origin = Origin.create(url);
         Assert.assertEquals(scheme, origin.uri().getScheme());
         Assert.assertEquals(host, origin.uri().getHost());
         Assert.assertEquals(port, origin.uri().getPort());
@@ -63,27 +63,27 @@ public class OriginTest {
     @Test
     @SmallTest
     public void testConstruction() {
-        Origin origin = new Origin("http://www.example.com/path/to/page.html");
+        Origin origin = Origin.create("http://www.example.com/path/to/page.html");
         Assert.assertEquals("http://www.example.com", origin.toString());
     }
 
     @Test
     @SmallTest
     public void testEquality() {
-        Origin origin1 = new Origin("http://www.example.com/page1.html");
-        Origin origin2 = new Origin("http://www.example.com/page2.html");
+        Origin origin1 = Origin.create("http://www.example.com/page1.html");
+        Origin origin2 = Origin.create("http://www.example.com/page2.html");
         Assert.assertEquals(origin1, origin2);
         Assert.assertEquals(origin1.hashCode(), origin2.hashCode());
 
         // Note http*s*.
-        Origin origin3 = new Origin("https://www.example.com/page3.html");
+        Origin origin3 = Origin.create("https://www.example.com/page3.html");
         Assert.assertNotEquals(origin1, origin3);
     }
 
     @Test
     @SmallTest
     public void testToUri() {
-        Origin origin = new Origin(Uri.parse("http://www.example.com/page.html"));
+        Origin origin = Origin.create(Uri.parse("http://www.example.com/page.html"));
         Uri uri = Uri.parse("http://www.example.com");
         Assert.assertEquals(uri, origin.uri());
     }
@@ -91,15 +91,15 @@ public class OriginTest {
     @Test
     @SmallTest
     public void testToString() {
-        Origin origin = new Origin("http://www.example.com/page.html");
+        Origin origin = Origin.create("http://www.example.com/page.html");
         Assert.assertEquals("http://www.example.com", origin.toString());
     }
 
     @Test
     @SmallTest
     public void testValidity() {
-        Assert.assertTrue(new Origin("http://www.example.com").isValid());
-        Assert.assertFalse(new Origin("null").isValid());
-        Assert.assertFalse(new Origin("www.example.com").isValid());
+        Assert.assertNotNull(Origin.create("http://www.example.com"));
+        Assert.assertNull(Origin.create("null"));
+        Assert.assertNull(Origin.create("www.example.com"));
     }
 }

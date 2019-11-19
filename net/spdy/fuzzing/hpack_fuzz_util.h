@@ -14,7 +14,6 @@
 #include "net/third_party/quiche/src/spdy/core/hpack/hpack_decoder_adapter.h"
 #include "net/third_party/quiche/src/spdy/core/hpack/hpack_encoder.h"
 #include "net/third_party/quiche/src/spdy/platform/api/spdy_export.h"
-#include "net/third_party/quiche/src/spdy/platform/api/spdy_string.h"
 #include "net/third_party/quiche/src/spdy/platform/api/spdy_string_piece.h"
 
 namespace spdy {
@@ -26,8 +25,8 @@ class HpackFuzzUtil {
   struct GeneratorContext {
     GeneratorContext();
     ~GeneratorContext();
-    std::vector<SpdyString> names;
-    std::vector<SpdyString> values;
+    std::vector<std::string> names;
+    std::vector<std::string> values;
   };
 
   // Initializes a GeneratorContext with a random seed and name/value fixtures.
@@ -40,7 +39,7 @@ class HpackFuzzUtil {
   // upper-bounded by |sanity_bound|.
   static size_t SampleExponential(size_t mean, size_t sanity_bound);
 
-  // Holds an input SpdyString, and manages an offset into that SpdyString.
+  // Holds an input string, and manages an offset into that string.
   struct Input {
     Input();  // Initializes |offset| to zero.
     ~Input();
@@ -48,7 +47,7 @@ class HpackFuzzUtil {
     size_t remaining() { return input.size() - offset; }
     const char* ptr() { return input.data() + offset; }
 
-    SpdyString input;
+    std::string input;
     size_t offset;
   };
 
@@ -58,7 +57,7 @@ class HpackFuzzUtil {
 
   // Returns the serialized header block length prefix for a block of
   // |block_size| bytes.
-  static SpdyString HeaderBlockPrefix(size_t block_size);
+  static std::string HeaderBlockPrefix(size_t block_size);
 
   // A FuzzerContext holds fuzzer input, as well as each of the decoder and
   // encoder stages which fuzzed header blocks are processed through.

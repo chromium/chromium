@@ -1,0 +1,380 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 12
+
+// This file defines the mojo interface between the ARC networking stack and
+// Chrome OS. There are three different groups of interactions:
+//  - WiFi RPCs for scanning and manipulating saved network configurations,
+//  - Layer 3 RPCs for configuring and registering IP networks inside ARC,
+//  - VPN RPCs for integrating Always-on-VPNs and ARC as a VPN provider.
+
+module arc.mojom;
+
+// Indicates if a request send by ARC to the host has successfully completed.
+[Extensible]
+enum NetworkResult {
+  SUCCESS = 0,
+  FAILURE = 1,
+};
+
+// Additional argument to GetNetworks to specify the type of networks the
+// host is interested to learn about.
+[Extensible]
+enum GetNetworksRequestType {
+  // All configured WiFi networks saved on the host.
+  CONFIGURED_ONLY = 0,
+  // All WiFi networks currently visible by scanning.
+  VISIBLE_ONLY = 1,
+  // All networks with an active layer 3 connection for all physical types.
+  [MinVersion=10] ACTIVE_ONLY = 2,
+};
+
+// Represents the possible connection states of a network service.
+// It is effectively a subset of the shill::ConnectState enum defined in
+// platform2/shill/service.h. Before adding a new state to shill::ConnectState
+// there must be a valid value in this enum to map it to, or a new value must
+// first be defined in ConnectionStateType and correctly handled by ARC.
+// The mapping from shill::ConnectState must then be updated inside shill in
+// Service::GetStateString (platform2/shill/service.cc) as well as in
+// TranslateConnectionState inside components/arc/net/arc_net_host_impl.cc.
+[Extensible]
+enum ConnectionStateType {
+  // An active network that is connected at the physical layer and for which IP
+  // provisioning has succeeded for IPv4, or IPv6, or both.
+  // This corresponds to shill::ConnectState.kStateConnected.
+  CONNECTED = 0,
+
+  // The network is still connecting and not ready for IP traffic, but already
+  // considered active. This corresponds to kStateAssociating and
+  // kStateConfiguring in shill::ConnectState.
+  CONNECTING = 1,
+
+  // The network is disconnected. This corresponds to kStateUnknown, kStateIdle,
+  // and kStateFailure in shill::ConnectState.
+  NOT_CONNECTED = 2,
+
+  // The network is active and ready for IP traffic, but a captive portal is
+  // known to prevent access to the Internet. This corresponds to
+  // shill::ConnectState.kStatePortal
+  PORTAL = 3,
+
+  // The network is active and ready for IP traffic, and there is no known
+  // captive portal blocking the traffic to the Internet. This corresponds to
+  // shill::ConnectState.kStateOnline
+  ONLINE = 4,
+};
+
+// Additional WiFi network information provided by scan results.
+struct VisibleNetworkDetails {
+  int32 frequency;
+  int32 signal_strength;
+  string bssid;
+};
+
+// Additional configuration information needed for creating and saving
+// WiFi network configuration on the host.
+struct ConfiguredNetworkDetails {
+  string? passphrase;
+  bool autoconnect;
+};
+
+union NetworkDetails {
+  VisibleNetworkDetails visible;
+  ConfiguredNetworkDetails configured;
+};
+
+// The two possible Internet Procol families.
+[Extensible]
+enum IPAddressType {
+  IPV4,
+  IPV6,
+};
+
+// Layer 3 and proxy configuration information for an IP network.
+struct IPConfiguration {
+
+  // Literal representation of the IP address of the ARC gateway.
+  string gateway;
+
+  // Literal representation of the IP address of ARC for that network.
+  string ip_address;
+
+  // List of literal IP addresses of name servers to use on that network.
+  array<string> name_servers;
+
+  // Length of the routing prefix.
+  int32 routing_prefix;
+
+  // IP family for that configuration
+  IPAddressType type;
+
+  // URL of the HTTP proxy to use for that network.
+  string web_proxy_auto_discovery_url;
+};
+
+// The subset of wireless security protocols that Android defines in
+// android.net.wifi.WifiConfiguration and that can be supported by the
+// host.
+[Extensible]
+enum SecurityType {
+  NONE,
+  WEP_PSK,
+  WEP_8021X,
+  WPA_PSK,
+  WPA_EAP,
+};
+
+// Tethering state of a |NetworkConfiguration| as a client.
+[Extensible]
+enum TetheringClientState {
+  // Tethering state is detected and confirmed.
+  CONFIRMED,
+
+  // Tethering state is not detected.
+  NOT_DETECTED,
+
+  // Tethering data is suspected and can be |CONFIRMED| in the future.
+  SUSPECTED,
+};
+
+// Describes properties of a WiFi networks used to create Android's
+// android.net.wifi.Wificonfiguration objects and android.net.wifi.WifiInfo
+// objects.
+struct WiFi {
+  // The network BSSID in the format of an Ethernet MAC address.
+  string bssid;
+
+  // The frequency of this network, in MHz.
+  int32 frequency;
+
+  // The network SSID encoded as an hexadecimal string.
+  string hex_ssid;
+
+  // True if the network does not broadcast its ssid.
+  bool hidden_ssid;
+
+  // The type of wireless security protocol used by this network.
+  SecurityType security;
+
+  // The current RSSI of this network. Updates for this value are not sent to
+  // ARC for connected WiFi networks and should be considered precise only for
+  // scanning results.
+  int32 signal_strength;
+};
+
+// The physical network types exposed to ARC by the host,
+// corresponding to a subset of shill technology types defined
+// in platform2/system_api/dbus/shill/dbus-constants.h.
+// The missing shill technology types are:
+//  - WiMAX: obsolete WiFi standard, deprecated in Chrome OS in Q2 2019.
+//  - Bluetooth: ARC does not support host IP networks over Bluetooth.
+//  - PPPoE: ARC does not support host Point to Point networks.
+// Next Enum ID: 5
+// ID 4 was previously assigned to WiMAX.
+[Extensible]
+enum NetworkType {
+  CELLULAR = 0,
+  ETHERNET = 1,
+  VPN = 2,
+  WIFI = 3,
+};
+
+// Used by ARC to request a network configuration to be created on the host.
+struct NetworkConfiguration {
+  // The connection state of the network service.
+  ConnectionStateType connection_state;
+
+  // A string token that uniquely identifies this network service.
+  string guid;
+
+  // IP configuration for the network service inside ARC.
+  array<IPConfiguration>? ip_configs;
+
+  // MAC address of the network interface inside the ARC.
+  string? mac_address;
+
+  // The type of the underlying physical network.
+  NetworkType type;
+
+  // Additional WiFi properties for WiFi network services.
+  WiFi? wifi;
+
+  // Indicates if the physical network is known to have upstream Internet
+  // access through tethering on a metered network.
+  [MinVersion=8] TetheringClientState tethering_client_state;
+
+  // The network interface associated with this network service.
+  [MinVersion=10] string? network_interface;
+
+  // True if this network is the host default network.
+  [MinVersion=11] bool is_default_network;
+};
+
+// Describes a Wifi network configuration that ARC has requested the host to
+// create.
+struct WifiConfiguration {
+  // These correspond to ONC properties returned by
+  // chrome.networkingPrivate.getNetworks() and createNetwork().
+  // See components/onc/docs/onc_spec.html
+
+  // SSID encoded as a series of hex bytes, e.g. "61626364"
+  // This allows for handling SSIDs which are not valid UTF-8 strings.
+  [MinVersion=2] string? hexssid@6;
+
+  [MinVersion=1] string? guid@5;
+  string security@4;
+
+  // Fields specific to either visible or configured networks.
+  [MinVersion=2] NetworkDetails? details@7;
+
+  // Deprecated.  These will be removed when both sides support NetworkDetails.
+  int32 frequency@1;
+  int32 signal_strength@2;
+  string bssid@3;
+
+  // Deprecated. |hexssid| will be used, going forward.
+  string ssid@0;
+};
+
+// Response object sent back to ARC when it queries existing networks on
+// Chrome OS side. The kind of networks returned by Chrome OS is specified
+// with the GetNetworksRequestType enum.
+struct GetNetworksResponseType {
+  NetworkResult status;
+  array<NetworkConfiguration> networks;
+};
+
+struct AndroidVpnConfiguration {
+  // The canonical name of the VPN app (e.g. "com.android.myvpn").
+  string app_name@0;
+
+  // The human-readable name of the VPN app (e.g. "OpenVPN").
+  string app_label@1;
+
+  // The name of the VPN session, as set by the app using setSession().
+  // The app does not need to call setSession() so this may be empty.
+  string session_name@2;
+
+  // True if Chrome browser traffic should be sent through the VPN.
+  bool tunnel_chrome_traffic@3;
+
+  // The next hop for IPv4 traffic originating on the host.  Currently this
+  // will be set to arc0's IP address.
+  string ipv4_gateway@4;
+
+  // A list of IPv4 and IPv6 ranges to route through the VPN.  e.g.
+  // ["0.0.0.0/0"] or ["192.168.1.0/24", "10.1.0.0/16"].
+  array<string> split_include@5;
+
+  // A list of IPv4 and IPv6 ranges to exclude from the VPN.  If specified,
+  // all traffic that does not fall into these ranges will use the VPN.
+  array<string> split_exclude@6;
+
+  // A list of DNS servers.
+  array<string> nameservers@7;
+
+  // A list of search domains for DNS resolution.
+  array<string> domains@8;
+};
+
+// Next Method ID: 14
+// ID 3 is missing as it belonged to a deprecated method.
+interface NetHost {
+  // Sends a request to get enabled / disabled status of WiFi.
+  GetWifiEnabledState@1() => (bool is_enabled);
+
+  // Sends a request to start scan of WiFi APs.
+  [MinVersion=1] StartScan@2();
+
+  // Sends a request to enable or disable WiFi. The |result| is true when the
+  // the state has been successfully set or WiFi is already in the desired
+  // state. It is false if WiFi manipulation is prohibited due to a policy or
+  // its current state.
+  [MinVersion=3] SetWifiEnabledState@4(bool is_enabled) => (bool result);
+
+  // Creates a new network and returns the GUID.  If an error occurs,
+  // |guid| will be an empty string.
+  [MinVersion=4] CreateNetwork@5(WifiConfiguration cfg) => (string guid);
+
+  // Deletes an existing network.
+  [MinVersion=4] ForgetNetwork@6(string guid) => (NetworkResult status);
+
+  // Initiates a network connection.  If called when connected to a different
+  // network, it will drop the current connection first.
+  [MinVersion=4] StartConnect@7(string guid) => (NetworkResult status);
+
+  // Disconnects from network |guid|.
+  [MinVersion=4] StartDisconnect@8(string guid) => (NetworkResult status);
+
+  // Retrieve details (IP, SSID, etc.) about the current network connection.
+  [MinVersion=5] GetDefaultNetwork@9() => (
+      NetworkConfiguration? logical_default,
+      NetworkConfiguration? physical_default);
+
+  // Sends a request to get the subset of network services existing on Chrome OS
+  // that match the kind specified with GetNetworksRequestType. This call
+  // supports three usages:
+  //  - Querying the list of saved WiFi network configurations for implementing
+  //    WifiManager public APIs for accessing saved WiFi profiles.
+  //  - Querying visible WiFi networks for implementing Android WifiManager
+  //    public scanning APIs.
+  //  - Querying the list of all networks with an active layer 3 connection,
+  //    which is used for the initial registration of IP networks to Android
+  //    connectivity stack. This includes all physical types of networks.
+  [MinVersion=6] GetNetworks@10(GetNetworksRequestType type) =>
+      (GetNetworksResponseType response);
+
+  // Inform Chrome OS that a VPN has connected.
+  [MinVersion=7] AndroidVpnConnected@11(AndroidVpnConfiguration cfg);
+
+  // Inform Chrome OS that a VPN is disconnected, reconnecting, or reconnected.
+  [MinVersion=7] AndroidVpnStateChanged@12(ConnectionStateType state);
+
+  // Tells Chrome OS that network traffic should go through a certain VPN
+  // connection. |vpnPackage| is the package name of the Android VPN app. If
+  // |lockdown| is true and the VPN connection is down, traffic is blackholed to
+  // prevent circumventing the VPN connection. This applies to Chrome traffic
+  // (users 'chronos' and 'debugd'), not other system traffic like the
+  // update engine.
+  // TODO(b/111201944): Add Chrome UI to enable the user to escape the lockdown,
+  // unless the lockdown is dictated via policy.
+  // Call with empty string as |vpnPackage| to lift the restriction.
+  [MinVersion=9] SetAlwaysOnVpn@13(string vpnPackage, bool lockdown);
+};
+
+// Next Method ID: 8
+interface NetInstance {
+  // DEPRECATED: Please use Init@6 instead.
+  InitDeprecated@0(NetHost host_ptr);
+
+  // Establishes full-duplex communication with the host.
+  [MinVersion=8] Init@6(NetHost host_ptr) => ();
+
+  // Notifies the instance of a WiFI AP scan being completed.
+  [MinVersion=1] ScanCompleted@1();
+
+  // Notifies the instance of a change in the host default network service.
+  [MinVersion=2] DefaultNetworkChanged@2(
+      NetworkConfiguration? logical_default,
+      NetworkConfiguration? physical_default);
+
+  // Notifies the instance of a change in the state of WiFi on the host.
+  [MinVersion=3] WifiEnabledStateChanged@3(bool is_enabled);
+
+  // Ask Android to disconnect the VPN, per user request.
+  [MinVersion=7] DisconnectAndroidVpn@4();
+
+  // Ask Android to pop up a VPN configuration dialog, per user request.
+  [MinVersion=7] ConfigureAndroidVpn@5();
+
+  // Notifies the instance of a change in one active network service.
+  // Updates are only sent for active networks with an active layer 3
+  // connection or networks in the process of connecting, corresponding to
+  // CONNECTING, CONNECTED, PORTAL, and ONLINE ConnectionStateType values.
+  // TODO(b/77293260): Notifications should only be sent for updates to
+  // properties and data visible in NetworkConfiguration, and not for all shill
+  // property updates.
+  [MinVersion=10] ActiveNetworksChanged@7(array<NetworkConfiguration> network);
+};

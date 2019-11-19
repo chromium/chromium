@@ -66,6 +66,17 @@ jumbo_static_library("browser") {
     deps += [ "//media" ]
   }
 
+  if (!is_ios) {
+    sources += [
+      "cookie_settings_policy_handler.cc",
+      "cookie_settings_policy_handler.h",
+    ]
+    deps += [
+      "//components/policy:generated",
+      "//components/policy/core/browser",
+    ]
+  }
+
   configs += [
     "//build/config/compiler:no_size_t_to_int_warning",
     "//build/config/compiler:wexit_time_destructors",
@@ -99,8 +110,19 @@ jumbo_source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//extensions/buildflags",
+    "//net",
+    "//ppapi/buildflags:buildflags",
     "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]
+
+  if (!is_ios) {
+    sources += [ "cookie_settings_policy_handler_unittest.cc" ]
+
+    deps += [
+      "//components/policy:generated",
+      "//components/policy/core/browser:test_support",
+    ]
+  }
 }

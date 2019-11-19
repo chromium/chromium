@@ -6,14 +6,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_COMPOSITOR_THREAD_SCHEDULER_H_
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "components/scheduling_metrics/task_duration_metric_reporter.h"
-#include "third_party/blink/public/platform/web_thread_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_type.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_metrics_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_impl.h"
+
+namespace base {
+class TaskObserver;
+}
 
 namespace blink {
 namespace scheduler {
@@ -23,17 +26,17 @@ class PLATFORM_EXPORT CompositorThreadScheduler
       public SingleThreadIdleTaskRunner::Delegate {
  public:
   explicit CompositorThreadScheduler(
-      std::unique_ptr<base::sequence_manager::SequenceManager>
-          sequence_manager);
+      base::sequence_manager::SequenceManager* sequence_manager);
 
   ~CompositorThreadScheduler() override;
 
   // NonMainThreadSchedulerImpl:
   scoped_refptr<NonMainThreadTaskQueue> DefaultTaskQueue() override;
-  void OnTaskCompleted(NonMainThreadTaskQueue* worker_task_queue,
-                       const base::sequence_manager::Task& task,
-                       const base::sequence_manager::TaskQueue::TaskTiming&
-                           task_timing) override;
+  void OnTaskCompleted(
+      NonMainThreadTaskQueue* worker_task_queue,
+      const base::sequence_manager::Task& task,
+      base::sequence_manager::TaskQueue::TaskTiming* task_timing,
+      base::sequence_manager::LazyNow* lazy_now) override;
 
   // WebThreadScheduler:
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;
@@ -42,10 +45,10 @@ class PLATFORM_EXPORT CompositorThreadScheduler
   scoped_refptr<base::SingleThreadTaskRunner> InputTaskRunner() override;
   bool ShouldYieldForHighPriorityWork() override;
   bool CanExceedIdleDeadlineIfRequired() const override;
-  void AddTaskObserver(base::MessageLoop::TaskObserver* task_observer) override;
-  void RemoveTaskObserver(
-      base::MessageLoop::TaskObserver* task_observer) override;
-  void AddRAILModeObserver(WebRAILModeObserver*) override {}
+  void AddTaskObserver(base::TaskObserver* task_observer) override;
+  void RemoveTaskObserver(base::TaskObserver* task_observer) override;
+  void AddRAILModeObserver(RAILModeObserver*) override {}
+  void RemoveRAILModeObserver(RAILModeObserver const*) override {}
   void Shutdown() override;
 
   // ThreadSchedulerImpl:

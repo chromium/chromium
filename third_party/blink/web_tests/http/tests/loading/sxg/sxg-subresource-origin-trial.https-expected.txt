@@ -1,0 +1,16 @@
+main frame - DidStartNavigation
+main frame - ReadyToCommitNavigation
+main frame - didCommitLoadForFrame
+main frame - didReceiveTitle: Signed Exchange subresource Origin Trial
+main frame - didFinishDocumentLoadForFrame
+main frame - didHandleOnloadEventsForFrame
+main frame - didFinishLoadForFrame
+main frame - BeginNavigation request to 'https://127.0.0.1:8443/loading/sxg/resources/sxg-subresource-origin-trial-page.php', http method GET
+main frame - DidStartNavigation
+main frame - ReadyToCommitNavigation
+main frame - didCommitLoadForFrame
+main frame - didReceiveTitle: Signed Exchange subresource Origin Trial inner page
+main frame - didFinishDocumentLoadForFrame
+main frame - didHandleOnloadEventsForFrame
+main frame - didFinishLoadForFrame
+Hello from sxg

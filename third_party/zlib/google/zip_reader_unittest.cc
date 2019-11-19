@@ -15,14 +15,14 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/hash/md5.h"
 #include "base/logging.h"
-#include "base/md5.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -214,7 +214,7 @@ class ZipReaderTest : public PlatformTest {
 
   base::ScopedTempDir temp_dir_;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(ZipReaderTest, Open_ValidZipFile) {
@@ -428,12 +428,10 @@ TEST_F(ZipReaderTest, ExtractToFileAsync_RegularFile) {
   ASSERT_TRUE(LocateAndOpenEntry(&reader, target_path));
   reader.ExtractCurrentEntryToFilePathAsync(
       target_file,
-      base::Bind(&MockUnzipListener::OnUnzipSuccess,
-                 listener.AsWeakPtr()),
-      base::Bind(&MockUnzipListener::OnUnzipFailure,
-                 listener.AsWeakPtr()),
-      base::Bind(&MockUnzipListener::OnUnzipProgress,
-                 listener.AsWeakPtr()));
+      base::BindOnce(&MockUnzipListener::OnUnzipSuccess, listener.AsWeakPtr()),
+      base::BindOnce(&MockUnzipListener::OnUnzipFailure, listener.AsWeakPtr()),
+      base::BindRepeating(&MockUnzipListener::OnUnzipProgress,
+                          listener.AsWeakPtr()));
 
   EXPECT_EQ(0, listener.success_calls());
   EXPECT_EQ(0, listener.failure_calls());
@@ -468,12 +466,10 @@ TEST_F(ZipReaderTest, ExtractToFileAsync_Directory) {
   ASSERT_TRUE(LocateAndOpenEntry(&reader, target_path));
   reader.ExtractCurrentEntryToFilePathAsync(
       target_file,
-      base::Bind(&MockUnzipListener::OnUnzipSuccess,
-                 listener.AsWeakPtr()),
-      base::Bind(&MockUnzipListener::OnUnzipFailure,
-                 listener.AsWeakPtr()),
-      base::Bind(&MockUnzipListener::OnUnzipProgress,
-                 listener.AsWeakPtr()));
+      base::BindOnce(&MockUnzipListener::OnUnzipSuccess, listener.AsWeakPtr()),
+      base::BindOnce(&MockUnzipListener::OnUnzipFailure, listener.AsWeakPtr()),
+      base::BindRepeating(&MockUnzipListener::OnUnzipProgress,
+                          listener.AsWeakPtr()));
 
   EXPECT_EQ(0, listener.success_calls());
   EXPECT_EQ(0, listener.failure_calls());

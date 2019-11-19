@@ -131,6 +131,15 @@ typedef NS_ENUM(NSInteger, ChromeTableViewControllerStyle) {
               targetContentOffset:(inout CGPoint*)targetContentOffset
     NS_REQUIRES_SUPER;
 
+#pragma mark - UITableViewDelegate
+
+// Prevents non-editable (i.e. returns NO in |tableView:canEditRowAtIndexPath:|)
+// items from being selected in editing mode, otherwise they will not have radio
+// buttons ahead but still be selectable, which may cause a crash when trying to
+// delete items based on |self.tableView.indexPathsForSelectedRows|.
+- (NSIndexPath*)tableView:(UITableView*)tableView
+    willSelectRowAtIndexPath:(NSIndexPath*)indexPath NS_REQUIRES_SUPER;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_CHROME_TABLE_VIEW_CONTROLLER_H_

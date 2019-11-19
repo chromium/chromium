@@ -18,6 +18,8 @@ Examples:
   %prog HEAD
 """
 
+from __future__ import print_function
+
 import subprocess
 import sys
 
@@ -32,7 +34,7 @@ def GitShell(args, ignore_return=False):
                          stderr=subprocess.STDOUT)
   (out, err) = job.communicate()
   if job.returncode != 0 and not ignore_return:
-    print out
+    print(out)
     raise Exception("Error %d running command %s" % (
         job.returncode, args))
   return out.split('\n')
@@ -51,7 +53,7 @@ def PrintGitDiff(extra_args):
     if (line.startswith('diff ') or
         line.startswith('index ') or
         line.startswith('--- ')):
-      print line
+      print(line)
       continue
 
     # Get the filename from the +++ line:
@@ -60,7 +62,7 @@ def PrintGitDiff(extra_args):
       # Filename might be /dev/null or a/file or b/file.
       # Skip the first two characters unless it starts with /.
       current_file = line[4:] if line[4] == '/' else line[6:]
-      print line
+      print(line)
       continue
 
     # Update line number from the @@ lines:
@@ -69,9 +71,9 @@ def PrintGitDiff(extra_args):
     if line.startswith('@@ '):
       _, old_nr, new_nr, _ = line.split(' ', 3)
       line_num = int(new_nr.split(',')[0])
-      print line
+      print(line)
       continue
-    print current_file + ':' + repr(line_num) + ':' + line
+    print(current_file + ':' + repr(line_num) + ':' + line)
 
     # Increment line number for lines that start with ' ' or '+':
     #  @@ -41,4 +41,4 @@ def MyFunc():

@@ -35,6 +35,8 @@ class TestFrameNavigationObserver : public WebContentsObserver {
   // associated FrameTreeNode has committed.
   void WaitForCommit();
 
+  bool last_navigation_succeeded() const { return last_navigation_succeeded_; }
+
  private:
   // WebContentsObserver
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
@@ -53,6 +55,9 @@ class TestFrameNavigationObserver : public WebContentsObserver {
   // If true, this object is waiting for commit only, not for the full load
   // of the document.
   bool wait_for_commit_;
+
+  // True if the last navigation succeeded.
+  bool last_navigation_succeeded_;
 
   // Saved parameters from NavigationHandle.
   base::Optional<ui::PageTransition> transition_type_;

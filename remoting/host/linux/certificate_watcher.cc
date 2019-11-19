@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/files/file_util.h"
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -174,8 +174,7 @@ CertificateWatcher::CertificateWatcher(
     : restart_action_(restart_action),
       caller_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       io_task_runner_(io_task_runner),
-      delay_(base::TimeDelta::FromSeconds(kReadDelayInSeconds)),
-      weak_factory_(this) {
+      delay_(base::TimeDelta::FromSeconds(kReadDelayInSeconds)) {
   if (!base::PathService::Get(base::DIR_HOME, &cert_watch_path_)) {
     LOG(FATAL) << "Failed to get path of the home directory.";
   }

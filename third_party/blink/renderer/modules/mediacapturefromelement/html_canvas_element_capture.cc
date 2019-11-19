@@ -6,10 +6,12 @@
 
 #include <memory>
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_canvas_capture_handler.h"
 #include "third_party/blink/public/platform/web_media_stream.h"
 #include "third_party/blink/public/platform/web_media_stream_track.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/modules/mediacapturefromelement/canvas_capture_handler.h"
 #include "third_party/blink/renderer/modules/mediacapturefromelement/canvas_capture_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 
@@ -53,15 +55,18 @@ MediaStream* HTMLCanvasElementCapture::captureStream(
     return nullptr;
   }
 
+  LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
   WebMediaStreamTrack track;
   const WebSize size(element.width(), element.height());
-  std::unique_ptr<WebCanvasCaptureHandler> handler;
+  std::unique_ptr<CanvasCaptureHandler> handler;
   if (given_frame_rate) {
-    handler = Platform::Current()->CreateCanvasCaptureHandler(size, frame_rate,
-                                                              &track);
+    handler = CanvasCaptureHandler::CreateCanvasCaptureHandler(
+        frame, size, frame_rate, Platform::Current()->GetIOTaskRunner(),
+        &track);
   } else {
-    handler = Platform::Current()->CreateCanvasCaptureHandler(
-        size, kDefaultFrameRate, &track);
+    handler = CanvasCaptureHandler::CreateCanvasCaptureHandler(
+        frame, size, kDefaultFrameRate, Platform::Current()->GetIOTaskRunner(),
+        &track);
   }
 
   if (!handler) {
@@ -75,10 +80,10 @@ MediaStream* HTMLCanvasElementCapture::captureStream(
   DCHECK(context);
   CanvasCaptureMediaStreamTrack* canvas_track;
   if (given_frame_rate) {
-    canvas_track = CanvasCaptureMediaStreamTrack::Create(
+    canvas_track = MakeGarbageCollected<CanvasCaptureMediaStreamTrack>(
         track, &element, context, std::move(handler), frame_rate);
   } else {
-    canvas_track = CanvasCaptureMediaStreamTrack::Create(
+    canvas_track = MakeGarbageCollected<CanvasCaptureMediaStreamTrack>(
         track, &element, context, std::move(handler));
   }
   // We want to capture a frame in the beginning.

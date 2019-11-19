@@ -57,9 +57,12 @@ static_library("field_trial_config") {
     "//components/variations",
     "//components/variations/proto:proto",
     "//net",
+    "//ui/base",
   ]
 
-  public_deps = [ "//third_party/protobuf:protobuf_lite" ]
+  public_deps = [
+    "//third_party/protobuf:protobuf_lite",
+  ]
 }
 
 source_set("unit_tests") {
@@ -73,5 +76,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/variations",
     "//testing/gtest",
+    "//ui/base",
   ]
 }

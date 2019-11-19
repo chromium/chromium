@@ -150,16 +150,16 @@ std::unique_ptr<AudioRendererMixerManager> AudioRendererMixerManager::Create() {
 scoped_refptr<media::AudioRendererMixerInput>
 AudioRendererMixerManager::CreateInput(
     int source_render_frame_id,
-    int session_id,
+    const base::UnguessableToken& session_id,
     const std::string& device_id,
     media::AudioLatency::LatencyType latency) {
   // AudioRendererMixerManager lives on the renderer thread and is destroyed on
   // renderer thread destruction, so it's safe to pass its pointer to a mixer
   // input.
   //
-  // TODO(olka, grunell): |session_id| is always zero, delete since
+  // TODO(olka, grunell): |session_id| is always empty, delete since
   // NewAudioRenderingMixingStrategy didn't ship, https://crbug.com/870836.
-  DCHECK_EQ(session_id, 0);
+  DCHECK(session_id.is_empty());
   return base::MakeRefCounted<media::AudioRendererMixerInput>(
       this, source_render_frame_id, device_id, latency);
 }
@@ -239,8 +239,9 @@ void AudioRendererMixerManager::ReturnMixer(media::AudioRendererMixer* mixer) {
 scoped_refptr<media::AudioRendererSink> AudioRendererMixerManager::GetSink(
     int source_render_frame_id,
     const std::string& device_id) {
-  return create_sink_cb_.Run(source_render_frame_id,
-                             media::AudioSinkParameters(0, device_id));
+  return create_sink_cb_.Run(
+      source_render_frame_id,
+      media::AudioSinkParameters(base::UnguessableToken(), device_id));
 }
 
 AudioRendererMixerManager::MixerKey::MixerKey(

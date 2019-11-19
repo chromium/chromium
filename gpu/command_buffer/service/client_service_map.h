@@ -76,7 +76,7 @@ class ClientServiceMap {
       return true;
     }
     if (client_id == 0) {
-      *service_id = 0;
+      *service_id = ServiceType{};
       return true;
     }
     return false;

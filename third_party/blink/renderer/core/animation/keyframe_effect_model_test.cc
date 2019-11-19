@@ -31,20 +31,25 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/animation/animatable/animatable_double.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helper.h"
+#include "third_party/blink/renderer/core/animation/css/compositor_keyframe_color.h"
+#include "third_party/blink/renderer/core/animation/css/compositor_keyframe_double.h"
+#include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value_factory.h"
 #include "third_party/blink/renderer/core/animation/css_default_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
-#include "third_party/blink/renderer/core/css/property_descriptor.h"
-#include "third_party/blink/renderer/core/css/property_registration.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
 
@@ -52,7 +57,9 @@ class AnimationKeyframeEffectModel : public PageTestBase {
  protected:
   void SetUp() override {
     PageTestBase::SetUp(IntSize());
+    GetDocument().UpdateStyleAndLayoutTree();
     element = GetDocument().CreateElementForBinding("foo");
+    GetDocument().body()->appendChild(element);
   }
 
   void ExpectLengthValue(double expected_value,
@@ -64,12 +71,16 @@ class AnimationKeyframeEffectModel : public PageTestBase {
     const TypedInterpolationValue* typed_value =
         ToInvalidatableInterpolation(interpolation_value)
             ->GetCachedValueForTesting();
-    // Length values are stored as a list of values; here we assume pixels.
-    EXPECT_TRUE(typed_value->GetInterpolableValue().IsList());
-    const InterpolableList* list =
-        ToInterpolableList(&typed_value->GetInterpolableValue());
-    EXPECT_FLOAT_EQ(expected_value,
-                    ToInterpolableNumber(list->Get(0))->Value());
+    // Length values are stored as an |InterpolableLength|; here we assume
+    // pixels.
+    EXPECT_TRUE(typed_value->GetInterpolableValue().IsLength());
+    const InterpolableLength& length =
+        To<InterpolableLength>(typed_value->GetInterpolableValue());
+    // Lengths are computed in logical units, which are quantized to 64ths of
+    // a pixel.
+    EXPECT_NEAR(expected_value,
+                length.CreateCSSValue(kValueRangeAll)->GetDoubleValue(),
+                /*abs_error=*/0.02);
   }
 
   void ExpectNonInterpolableValue(const String& expected_value,
@@ -99,11 +110,11 @@ StringKeyframeVector KeyframesAtZeroAndOne(CSSPropertyID property,
                                            const String& zero_value,
                                            const String& one_value) {
   StringKeyframeVector keyframes(2);
-  keyframes[0] = StringKeyframe::Create();
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
   keyframes[0]->SetOffset(0.0);
   keyframes[0]->SetCSSPropertyValue(
       property, zero_value, SecureContextMode::kInsecureContext, nullptr);
-  keyframes[1] = StringKeyframe::Create();
+  keyframes[1] = MakeGarbageCollected<StringKeyframe>();
   keyframes[1]->SetOffset(1.0);
   keyframes[1]->SetCSSPropertyValue(
       property, one_value, SecureContextMode::kInsecureContext, nullptr);
@@ -112,21 +123,46 @@ StringKeyframeVector KeyframesAtZeroAndOne(CSSPropertyID property,
 
 StringKeyframeVector KeyframesAtZeroAndOne(
     AtomicString property_name,
-    const PropertyRegistry* property_registry,
     const String& zero_value,
     const String& one_value) {
   StringKeyframeVector keyframes(2);
-  keyframes[0] = StringKeyframe::Create();
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
   keyframes[0]->SetOffset(0.0);
   keyframes[0]->SetCSSPropertyValue(
-      property_name, property_registry, zero_value,
-      SecureContextMode::kInsecureContext, nullptr);
-  keyframes[1] = StringKeyframe::Create();
+      property_name, zero_value, SecureContextMode::kInsecureContext, nullptr);
+  keyframes[1] = MakeGarbageCollected<StringKeyframe>();
   keyframes[1]->SetOffset(1.0);
-  keyframes[1]->SetCSSPropertyValue(property_name, property_registry, one_value,
-                                    SecureContextMode::kInsecureContext,
-                                    nullptr);
+  keyframes[1]->SetCSSPropertyValue(
+      property_name, one_value, SecureContextMode::kInsecureContext, nullptr);
   return keyframes;
+}
+
+const PropertySpecificKeyframeVector& ConstructEffectAndGetKeyframes(
+    const AtomicString& property_name,
+    const AtomicString& type,
+    Document* document,
+    Element* element,
+    const String& zero_value,
+    const String& one_value,
+    ExceptionState& exception_state) {
+  css_test_helpers::RegisterProperty(*document, property_name, type, zero_value,
+                                     false);
+
+  StringKeyframeVector keyframes =
+      KeyframesAtZeroAndOne(property_name, zero_value, one_value);
+
+  element->style()->setProperty(document, property_name, zero_value,
+                                g_empty_string, exception_state);
+
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+
+  auto style = document->EnsureStyleResolver().StyleForElement(element);
+
+  // Snapshot should update first time after construction
+  EXPECT_TRUE(effect->SnapshotAllCompositorKeyframesIfNecessary(
+      *element, *style, nullptr));
+
+  return *effect->GetPropertySpecificKeyframes(PropertyHandle(property_name));
 }
 
 void ExpectProperty(CSSPropertyID property,
@@ -152,23 +188,21 @@ Interpolation* FindValue(HeapVector<Member<Interpolation>>& values,
 
 TEST_F(AnimationKeyframeEffectModel, BasicOperation) {
   StringKeyframeVector keyframes =
-      KeyframesAtZeroAndOne(CSSPropertyFontFamily, "serif", "cursive");
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+      KeyframesAtZeroAndOne(CSSPropertyID::kFontFamily, "serif", "cursive");
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.6, kDuration, values);
   ASSERT_EQ(1UL, values.size());
-  ExpectProperty(CSSPropertyFontFamily, values.at(0));
+  ExpectProperty(CSSPropertyID::kFontFamily, values.at(0));
   ExpectNonInterpolableValue("cursive", values.at(0));
 }
 
 TEST_F(AnimationKeyframeEffectModel, CompositeReplaceNonInterpolable) {
   StringKeyframeVector keyframes =
-      KeyframesAtZeroAndOne(CSSPropertyFontFamily, "serif", "cursive");
+      KeyframesAtZeroAndOne(CSSPropertyID::kFontFamily, "serif", "cursive");
   keyframes[0]->SetComposite(EffectModel::kCompositeReplace);
   keyframes[1]->SetComposite(EffectModel::kCompositeReplace);
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.6, kDuration, values);
   ExpectNonInterpolableValue("cursive", values.at(0));
@@ -176,11 +210,10 @@ TEST_F(AnimationKeyframeEffectModel, CompositeReplaceNonInterpolable) {
 
 TEST_F(AnimationKeyframeEffectModel, CompositeReplace) {
   StringKeyframeVector keyframes =
-      KeyframesAtZeroAndOne(CSSPropertyLeft, "3px", "5px");
+      KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "3px", "5px");
   keyframes[0]->SetComposite(EffectModel::kCompositeReplace);
   keyframes[1]->SetComposite(EffectModel::kCompositeReplace);
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.6, kDuration, values);
   ExpectLengthValue(3.0 * 0.4 + 5.0 * 0.6, values.at(0));
@@ -189,11 +222,10 @@ TEST_F(AnimationKeyframeEffectModel, CompositeReplace) {
 // FIXME: Re-enable this test once compositing of CompositeAdd is supported.
 TEST_F(AnimationKeyframeEffectModel, DISABLED_CompositeAdd) {
   StringKeyframeVector keyframes =
-      KeyframesAtZeroAndOne(CSSPropertyLeft, "3px", "5px");
+      KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "3px", "5px");
   keyframes[0]->SetComposite(EffectModel::kCompositeAdd);
   keyframes[1]->SetComposite(EffectModel::kCompositeAdd);
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.6, kDuration, values);
   ExpectLengthValue((7.0 + 3.0) * 0.4 + (7.0 + 5.0) * 0.6, values.at(0));
@@ -201,42 +233,41 @@ TEST_F(AnimationKeyframeEffectModel, DISABLED_CompositeAdd) {
 
 TEST_F(AnimationKeyframeEffectModel, CompositeEaseIn) {
   StringKeyframeVector keyframes =
-      KeyframesAtZeroAndOne(CSSPropertyLeft, "3px", "5px");
+      KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "3px", "5px");
   keyframes[0]->SetComposite(EffectModel::kCompositeReplace);
   keyframes[0]->SetEasing(CubicBezierTimingFunction::Preset(
       CubicBezierTimingFunction::EaseType::EASE_IN));
   keyframes[1]->SetComposite(EffectModel::kCompositeReplace);
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
+  // CubicBezier(0.42, 0, 1, 1)(0.6) = 0.4291197695757142.
   effect->Sample(0, 0.6, kDuration, values);
-  ExpectLengthValue(3.8579516, values.at(0));
+  ExpectLengthValue(3.85824, values.at(0));
   effect->Sample(0, 0.6, kDuration * 100, values);
-  ExpectLengthValue(3.8582394, values.at(0));
+  ExpectLengthValue(3.85824, values.at(0));
 }
 
 TEST_F(AnimationKeyframeEffectModel, CompositeCubicBezier) {
   StringKeyframeVector keyframes =
-      KeyframesAtZeroAndOne(CSSPropertyLeft, "3px", "5px");
+      KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "3px", "5px");
   keyframes[0]->SetComposite(EffectModel::kCompositeReplace);
   keyframes[0]->SetEasing(CubicBezierTimingFunction::Create(0.42, 0, 0.58, 1));
   keyframes[1]->SetComposite(EffectModel::kCompositeReplace);
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  // CubicBezier(0.42, 0, 0.58, 1)(0.6) = 0.6681161300485039.
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.6, kDuration, values);
-  ExpectLengthValue(4.3363357, values.at(0));
+  ExpectLengthValue(4.336232, values.at(0));
   effect->Sample(0, 0.6, kDuration * 1000, values);
-  ExpectLengthValue(4.3362322, values.at(0));
+  ExpectLengthValue(4.336232, values.at(0));
 }
 
 TEST_F(AnimationKeyframeEffectModel, ExtrapolateReplaceNonInterpolable) {
   StringKeyframeVector keyframes =
-      KeyframesAtZeroAndOne(CSSPropertyFontFamily, "serif", "cursive");
+      KeyframesAtZeroAndOne(CSSPropertyID::kFontFamily, "serif", "cursive");
   keyframes[0]->SetComposite(EffectModel::kCompositeReplace);
   keyframes[1]->SetComposite(EffectModel::kCompositeReplace);
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 1.6, kDuration, values);
   ExpectNonInterpolableValue("cursive", values.at(0));
@@ -244,9 +275,8 @@ TEST_F(AnimationKeyframeEffectModel, ExtrapolateReplaceNonInterpolable) {
 
 TEST_F(AnimationKeyframeEffectModel, ExtrapolateReplace) {
   StringKeyframeVector keyframes =
-      KeyframesAtZeroAndOne(CSSPropertyLeft, "3px", "5px");
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+      KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "3px", "5px");
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   keyframes[0]->SetComposite(EffectModel::kCompositeReplace);
   keyframes[1]->SetComposite(EffectModel::kCompositeReplace);
   HeapVector<Member<Interpolation>> values;
@@ -257,19 +287,18 @@ TEST_F(AnimationKeyframeEffectModel, ExtrapolateReplace) {
 // FIXME: Re-enable this test once compositing of CompositeAdd is supported.
 TEST_F(AnimationKeyframeEffectModel, DISABLED_ExtrapolateAdd) {
   StringKeyframeVector keyframes =
-      KeyframesAtZeroAndOne(CSSPropertyLeft, "3px", "5px");
+      KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "3px", "5px");
   keyframes[0]->SetComposite(EffectModel::kCompositeAdd);
   keyframes[1]->SetComposite(EffectModel::kCompositeAdd);
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 1.6, kDuration, values);
   ExpectLengthValue((7.0 + 3.0) * -0.6 + (7.0 + 5.0) * 1.6, values.at(0));
 }
 
 TEST_F(AnimationKeyframeEffectModel, ZeroKeyframes) {
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(StringKeyframeVector());
+  auto* effect =
+      MakeGarbageCollected<StringKeyframeEffectModel>(StringKeyframeVector());
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.5, kDuration, values);
   EXPECT_TRUE(values.IsEmpty());
@@ -278,14 +307,13 @@ TEST_F(AnimationKeyframeEffectModel, ZeroKeyframes) {
 // FIXME: Re-enable this test once compositing of CompositeAdd is supported.
 TEST_F(AnimationKeyframeEffectModel, DISABLED_SingleKeyframeAtOffsetZero) {
   StringKeyframeVector keyframes(1);
-  keyframes[0] = StringKeyframe::Create();
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
   keyframes[0]->SetOffset(0.0);
-  keyframes[0]->SetCSSPropertyValue(CSSPropertyFontFamily, "serif",
+  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "serif",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
 
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.6, kDuration, values);
   ExpectNonInterpolableValue("serif", values.at(0));
@@ -294,13 +322,13 @@ TEST_F(AnimationKeyframeEffectModel, DISABLED_SingleKeyframeAtOffsetZero) {
 // FIXME: Re-enable this test once compositing of CompositeAdd is supported.
 TEST_F(AnimationKeyframeEffectModel, DISABLED_SingleKeyframeAtOffsetOne) {
   StringKeyframeVector keyframes(1);
-  keyframes[0] = StringKeyframe::Create();
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
   keyframes[0]->SetOffset(1.0);
-  keyframes[0]->SetCSSPropertyValue(
-      CSSPropertyLeft, "5px", SecureContextMode::kInsecureContext, nullptr);
+  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kLeft, "5px",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
 
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.6, kDuration, values);
   ExpectLengthValue(7.0 * 0.4 + 5.0 * 0.6, values.at(0));
@@ -308,24 +336,23 @@ TEST_F(AnimationKeyframeEffectModel, DISABLED_SingleKeyframeAtOffsetOne) {
 
 TEST_F(AnimationKeyframeEffectModel, MoreThanTwoKeyframes) {
   StringKeyframeVector keyframes(3);
-  keyframes[0] = StringKeyframe::Create();
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
   keyframes[0]->SetOffset(0.0);
-  keyframes[0]->SetCSSPropertyValue(CSSPropertyFontFamily, "serif",
+  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "serif",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[1] = StringKeyframe::Create();
+  keyframes[1] = MakeGarbageCollected<StringKeyframe>();
   keyframes[1]->SetOffset(0.5);
-  keyframes[1]->SetCSSPropertyValue(CSSPropertyFontFamily, "sans-serif",
+  keyframes[1]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "sans-serif",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[2] = StringKeyframe::Create();
+  keyframes[2] = MakeGarbageCollected<StringKeyframe>();
   keyframes[2]->SetOffset(1.0);
-  keyframes[2]->SetCSSPropertyValue(CSSPropertyFontFamily, "cursive",
+  keyframes[2]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "cursive",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
 
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.3, kDuration, values);
   ExpectNonInterpolableValue("sans-serif", values.at(0));
@@ -335,22 +362,21 @@ TEST_F(AnimationKeyframeEffectModel, MoreThanTwoKeyframes) {
 
 TEST_F(AnimationKeyframeEffectModel, EndKeyframeOffsetsUnspecified) {
   StringKeyframeVector keyframes(3);
-  keyframes[0] = StringKeyframe::Create();
-  keyframes[0]->SetCSSPropertyValue(CSSPropertyFontFamily, "serif",
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "serif",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[1] = StringKeyframe::Create();
+  keyframes[1] = MakeGarbageCollected<StringKeyframe>();
   keyframes[1]->SetOffset(0.5);
-  keyframes[1]->SetCSSPropertyValue(CSSPropertyFontFamily, "cursive",
+  keyframes[1]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "cursive",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[2] = StringKeyframe::Create();
-  keyframes[2]->SetCSSPropertyValue(CSSPropertyFontFamily, "serif",
+  keyframes[2] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[2]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "serif",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
 
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.1, kDuration, values);
   ExpectNonInterpolableValue("serif", values.at(0));
@@ -362,24 +388,23 @@ TEST_F(AnimationKeyframeEffectModel, EndKeyframeOffsetsUnspecified) {
 
 TEST_F(AnimationKeyframeEffectModel, SampleOnKeyframe) {
   StringKeyframeVector keyframes(3);
-  keyframes[0] = StringKeyframe::Create();
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
   keyframes[0]->SetOffset(0.0);
-  keyframes[0]->SetCSSPropertyValue(CSSPropertyFontFamily, "serif",
+  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "serif",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[1] = StringKeyframe::Create();
+  keyframes[1] = MakeGarbageCollected<StringKeyframe>();
   keyframes[1]->SetOffset(0.5);
-  keyframes[1]->SetCSSPropertyValue(CSSPropertyFontFamily, "cursive",
+  keyframes[1]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "cursive",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[2] = StringKeyframe::Create();
+  keyframes[2] = MakeGarbageCollected<StringKeyframe>();
   keyframes[2]->SetOffset(1.0);
-  keyframes[2]->SetCSSPropertyValue(CSSPropertyFontFamily, "serif",
+  keyframes[2]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "serif",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
 
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.0, kDuration, values);
   ExpectNonInterpolableValue("serif", values.at(0));
@@ -391,54 +416,53 @@ TEST_F(AnimationKeyframeEffectModel, SampleOnKeyframe) {
 
 TEST_F(AnimationKeyframeEffectModel, MultipleKeyframesWithSameOffset) {
   StringKeyframeVector keyframes(9);
-  keyframes[0] = StringKeyframe::Create();
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
   keyframes[0]->SetOffset(0.0);
-  keyframes[0]->SetCSSPropertyValue(CSSPropertyFontFamily, "serif",
+  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "serif",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[1] = StringKeyframe::Create();
+  keyframes[1] = MakeGarbageCollected<StringKeyframe>();
   keyframes[1]->SetOffset(0.1);
-  keyframes[1]->SetCSSPropertyValue(CSSPropertyFontFamily, "sans-serif",
+  keyframes[1]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "sans-serif",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[2] = StringKeyframe::Create();
+  keyframes[2] = MakeGarbageCollected<StringKeyframe>();
   keyframes[2]->SetOffset(0.1);
-  keyframes[2]->SetCSSPropertyValue(CSSPropertyFontFamily, "monospace",
+  keyframes[2]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "monospace",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[3] = StringKeyframe::Create();
+  keyframes[3] = MakeGarbageCollected<StringKeyframe>();
   keyframes[3]->SetOffset(0.5);
-  keyframes[3]->SetCSSPropertyValue(CSSPropertyFontFamily, "cursive",
+  keyframes[3]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "cursive",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[4] = StringKeyframe::Create();
+  keyframes[4] = MakeGarbageCollected<StringKeyframe>();
   keyframes[4]->SetOffset(0.5);
-  keyframes[4]->SetCSSPropertyValue(CSSPropertyFontFamily, "fantasy",
+  keyframes[4]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "fantasy",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[5] = StringKeyframe::Create();
+  keyframes[5] = MakeGarbageCollected<StringKeyframe>();
   keyframes[5]->SetOffset(0.5);
-  keyframes[5]->SetCSSPropertyValue(CSSPropertyFontFamily, "system-ui",
+  keyframes[5]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "system-ui",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[6] = StringKeyframe::Create();
+  keyframes[6] = MakeGarbageCollected<StringKeyframe>();
   keyframes[6]->SetOffset(0.9);
-  keyframes[6]->SetCSSPropertyValue(CSSPropertyFontFamily, "serif",
+  keyframes[6]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "serif",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[7] = StringKeyframe::Create();
+  keyframes[7] = MakeGarbageCollected<StringKeyframe>();
   keyframes[7]->SetOffset(0.9);
-  keyframes[7]->SetCSSPropertyValue(CSSPropertyFontFamily, "sans-serif",
+  keyframes[7]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "sans-serif",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[8] = StringKeyframe::Create();
+  keyframes[8] = MakeGarbageCollected<StringKeyframe>();
   keyframes[8]->SetOffset(1.0);
-  keyframes[8]->SetCSSPropertyValue(CSSPropertyFontFamily, "monospace",
+  keyframes[8]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "monospace",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
 
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.0, kDuration, values);
   ExpectNonInterpolableValue("serif", values.at(0));
@@ -459,18 +483,19 @@ TEST_F(AnimationKeyframeEffectModel, MultipleKeyframesWithSameOffset) {
 // FIXME: Re-enable this test once compositing of CompositeAdd is supported.
 TEST_F(AnimationKeyframeEffectModel, DISABLED_PerKeyframeComposite) {
   StringKeyframeVector keyframes(2);
-  keyframes[0] = StringKeyframe::Create();
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
   keyframes[0]->SetOffset(0.0);
-  keyframes[0]->SetCSSPropertyValue(
-      CSSPropertyLeft, "3px", SecureContextMode::kInsecureContext, nullptr);
-  keyframes[1] = StringKeyframe::Create();
+  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kLeft, "3px",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
+  keyframes[1] = MakeGarbageCollected<StringKeyframe>();
   keyframes[1]->SetOffset(1.0);
-  keyframes[1]->SetCSSPropertyValue(
-      CSSPropertyLeft, "5px", SecureContextMode::kInsecureContext, nullptr);
+  keyframes[1]->SetCSSPropertyValue(CSSPropertyID::kLeft, "5px",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
   keyframes[1]->SetComposite(EffectModel::kCompositeAdd);
 
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.6, kDuration, values);
   ExpectLengthValue(3.0 * 0.4 + (7.0 + 5.0) * 0.6, values.at(0));
@@ -478,32 +503,31 @@ TEST_F(AnimationKeyframeEffectModel, DISABLED_PerKeyframeComposite) {
 
 TEST_F(AnimationKeyframeEffectModel, MultipleProperties) {
   StringKeyframeVector keyframes(2);
-  keyframes[0] = StringKeyframe::Create();
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
   keyframes[0]->SetOffset(0.0);
-  keyframes[0]->SetCSSPropertyValue(CSSPropertyFontFamily, "serif",
+  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "serif",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[0]->SetCSSPropertyValue(CSSPropertyFontStyle, "normal",
+  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kFontStyle, "normal",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[1] = StringKeyframe::Create();
+  keyframes[1] = MakeGarbageCollected<StringKeyframe>();
   keyframes[1]->SetOffset(1.0);
-  keyframes[1]->SetCSSPropertyValue(CSSPropertyFontFamily, "cursive",
+  keyframes[1]->SetCSSPropertyValue(CSSPropertyID::kFontFamily, "cursive",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
-  keyframes[1]->SetCSSPropertyValue(CSSPropertyFontStyle, "oblique",
+  keyframes[1]->SetCSSPropertyValue(CSSPropertyID::kFontStyle, "oblique",
                                     SecureContextMode::kInsecureContext,
                                     nullptr);
 
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.6, kDuration, values);
   EXPECT_EQ(2UL, values.size());
-  Interpolation* left_value = FindValue(values, CSSPropertyFontFamily);
+  Interpolation* left_value = FindValue(values, CSSPropertyID::kFontFamily);
   ASSERT_TRUE(left_value);
   ExpectNonInterpolableValue("cursive", left_value);
-  Interpolation* right_value = FindValue(values, CSSPropertyFontStyle);
+  Interpolation* right_value = FindValue(values, CSSPropertyID::kFontStyle);
   ASSERT_TRUE(right_value);
   ExpectNonInterpolableValue("oblique", right_value);
 }
@@ -511,11 +535,10 @@ TEST_F(AnimationKeyframeEffectModel, MultipleProperties) {
 // FIXME: Re-enable this test once compositing of CompositeAdd is supported.
 TEST_F(AnimationKeyframeEffectModel, DISABLED_RecompositeCompositableValue) {
   StringKeyframeVector keyframes =
-      KeyframesAtZeroAndOne(CSSPropertyLeft, "3px", "5px");
+      KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "3px", "5px");
   keyframes[0]->SetComposite(EffectModel::kCompositeAdd);
   keyframes[1]->SetComposite(EffectModel::kCompositeAdd);
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.6, kDuration, values);
   ExpectLengthValue((7.0 + 3.0) * 0.4 + (7.0 + 5.0) * 0.6, values.at(0));
@@ -524,9 +547,8 @@ TEST_F(AnimationKeyframeEffectModel, DISABLED_RecompositeCompositableValue) {
 
 TEST_F(AnimationKeyframeEffectModel, MultipleIterations) {
   StringKeyframeVector keyframes =
-      KeyframesAtZeroAndOne(CSSPropertyLeft, "1px", "3px");
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+      KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "1px", "3px");
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.5, kDuration, values);
   ExpectLengthValue(2.0, values.at(0));
@@ -539,22 +561,24 @@ TEST_F(AnimationKeyframeEffectModel, MultipleIterations) {
 // FIXME: Re-enable this test once compositing of CompositeAdd is supported.
 TEST_F(AnimationKeyframeEffectModel, DISABLED_DependsOnUnderlyingValue) {
   StringKeyframeVector keyframes(3);
-  keyframes[0] = StringKeyframe::Create();
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
   keyframes[0]->SetOffset(0.0);
-  keyframes[0]->SetCSSPropertyValue(
-      CSSPropertyLeft, "1px", SecureContextMode::kInsecureContext, nullptr);
+  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kLeft, "1px",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
   keyframes[0]->SetComposite(EffectModel::kCompositeAdd);
-  keyframes[1] = StringKeyframe::Create();
+  keyframes[1] = MakeGarbageCollected<StringKeyframe>();
   keyframes[1]->SetOffset(0.5);
-  keyframes[1]->SetCSSPropertyValue(
-      CSSPropertyLeft, "1px", SecureContextMode::kInsecureContext, nullptr);
-  keyframes[2] = StringKeyframe::Create();
+  keyframes[1]->SetCSSPropertyValue(CSSPropertyID::kLeft, "1px",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
+  keyframes[2] = MakeGarbageCollected<StringKeyframe>();
   keyframes[2]->SetOffset(1.0);
-  keyframes[2]->SetCSSPropertyValue(
-      CSSPropertyLeft, "1px", SecureContextMode::kInsecureContext, nullptr);
+  keyframes[2]->SetCSSPropertyValue(CSSPropertyID::kLeft, "1px",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
 
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0, kDuration, values);
   EXPECT_TRUE(values.at(0));
@@ -578,15 +602,15 @@ TEST_F(AnimationKeyframeEffectModel, DISABLED_DependsOnUnderlyingValue) {
 
 TEST_F(AnimationKeyframeEffectModel, AddSyntheticKeyframes) {
   StringKeyframeVector keyframes(1);
-  keyframes[0] = StringKeyframe::Create();
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
   keyframes[0]->SetOffset(0.5);
-  keyframes[0]->SetCSSPropertyValue(
-      CSSPropertyLeft, "4px", SecureContextMode::kInsecureContext, nullptr);
+  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kLeft, "4px",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
 
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   const StringPropertySpecificKeyframeVector& property_specific_keyframes =
-      effect->GetPropertySpecificKeyframes(
+      *effect->GetPropertySpecificKeyframes(
           PropertyHandle(GetCSSPropertyLeft()));
   EXPECT_EQ(3U, property_specific_keyframes.size());
   EXPECT_DOUBLE_EQ(0.0, property_specific_keyframes[0]->Offset());
@@ -596,8 +620,7 @@ TEST_F(AnimationKeyframeEffectModel, AddSyntheticKeyframes) {
 
 TEST_F(AnimationKeyframeEffectModel, ToKeyframeEffectModel) {
   StringKeyframeVector keyframes(0);
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
 
   EffectModel* base_effect = effect;
   EXPECT_TRUE(ToStringKeyframeEffectModel(base_effect));
@@ -605,19 +628,17 @@ TEST_F(AnimationKeyframeEffectModel, ToKeyframeEffectModel) {
 
 TEST_F(AnimationKeyframeEffectModel, CompositorSnapshotUpdateBasic) {
   StringKeyframeVector keyframes =
-      KeyframesAtZeroAndOne(CSSPropertyOpacity, "0", "1");
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
+      KeyframesAtZeroAndOne(CSSPropertyID::kOpacity, "0", "1");
+  auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
 
   auto style = GetDocument().EnsureStyleResolver().StyleForElement(element);
 
-  const AnimatableValue* value;
+  const CompositorKeyframeValue* value;
 
-  // Animatable value should be empty before snapshot
-  value = effect
-              ->GetPropertySpecificKeyframes(
-                  PropertyHandle(GetCSSPropertyOpacity()))[0]
-              ->GetAnimatableValue();
+  // Compositor keyframe value should be empty before snapshot
+  const auto& empty_keyframes = *effect->GetPropertySpecificKeyframes(
+      PropertyHandle(GetCSSPropertyOpacity()));
+  value = empty_keyframes[0]->GetCompositorKeyframeValue();
   EXPECT_FALSE(value);
 
   // Snapshot should update first time after construction
@@ -631,11 +652,10 @@ TEST_F(AnimationKeyframeEffectModel, CompositorSnapshotUpdateBasic) {
   EXPECT_TRUE(effect->SnapshotAllCompositorKeyframesIfNecessary(
       *element, *style, nullptr));
 
-  // Animatable value should be available after snapshot
-  value = effect
-              ->GetPropertySpecificKeyframes(
-                  PropertyHandle(GetCSSPropertyOpacity()))[0]
-              ->GetAnimatableValue();
+  // Compositor keyframe value should be available after snapshot
+  const auto& available_keyframes = *effect->GetPropertySpecificKeyframes(
+      PropertyHandle(GetCSSPropertyOpacity()));
+  value = available_keyframes[0]->GetCompositorKeyframeValue();
   EXPECT_TRUE(value);
   EXPECT_TRUE(value->IsDouble());
 }
@@ -643,34 +663,32 @@ TEST_F(AnimationKeyframeEffectModel, CompositorSnapshotUpdateBasic) {
 TEST_F(AnimationKeyframeEffectModel,
        CompositorSnapshotUpdateAfterKeyframeChange) {
   StringKeyframeVector opacity_keyframes =
-      KeyframesAtZeroAndOne(CSSPropertyOpacity, "0", "1");
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(opacity_keyframes);
+      KeyframesAtZeroAndOne(CSSPropertyID::kOpacity, "0", "1");
+  auto* effect =
+      MakeGarbageCollected<StringKeyframeEffectModel>(opacity_keyframes);
 
   auto style = GetDocument().EnsureStyleResolver().StyleForElement(element);
 
   EXPECT_TRUE(effect->SnapshotAllCompositorKeyframesIfNecessary(
       *element, *style, nullptr));
 
-  const AnimatableValue* value;
-  value = effect
-              ->GetPropertySpecificKeyframes(
-                  PropertyHandle(GetCSSPropertyOpacity()))[0]
-              ->GetAnimatableValue();
+  const CompositorKeyframeValue* value;
+  const auto& keyframes = *effect->GetPropertySpecificKeyframes(
+      PropertyHandle(GetCSSPropertyOpacity()));
+  value = keyframes[0]->GetCompositorKeyframeValue();
   EXPECT_TRUE(value);
   EXPECT_TRUE(value->IsDouble());
 
   StringKeyframeVector filter_keyframes =
-      KeyframesAtZeroAndOne(CSSPropertyFilter, "blur(1px)", "blur(10px)");
+      KeyframesAtZeroAndOne(CSSPropertyID::kFilter, "blur(1px)", "blur(10px)");
   effect->SetFrames(filter_keyframes);
 
   // Snapshot should update after changing keyframes
   EXPECT_TRUE(effect->SnapshotAllCompositorKeyframesIfNecessary(
       *element, *style, nullptr));
-  value = effect
-              ->GetPropertySpecificKeyframes(
-                  PropertyHandle(GetCSSPropertyFilter()))[0]
-              ->GetAnimatableValue();
+  const auto& updated_keyframes = *effect->GetPropertySpecificKeyframes(
+      PropertyHandle(GetCSSPropertyFilter()));
+  value = updated_keyframes[0]->GetCompositorKeyframeValue();
   EXPECT_TRUE(value);
   EXPECT_TRUE(value->IsFilterOperations());
 }
@@ -678,40 +696,95 @@ TEST_F(AnimationKeyframeEffectModel,
 TEST_F(AnimationKeyframeEffectModel, CompositorSnapshotUpdateCustomProperty) {
   ScopedOffMainThreadCSSPaintForTest off_main_thread_css_paint(true);
   DummyExceptionStateForTesting exception_state;
-  PropertyDescriptor* property_descriptor = PropertyDescriptor::Create();
-  property_descriptor->setName("--foo");
-  property_descriptor->setSyntax("<number>");
-  property_descriptor->setInitialValue("0");
-  property_descriptor->setInherits(false);
-  PropertyRegistration::registerProperty(&GetDocument(), property_descriptor,
-                                         exception_state);
-  EXPECT_FALSE(exception_state.HadException());
 
-  StringKeyframeVector keyframes = KeyframesAtZeroAndOne(
-      AtomicString("--foo"), GetDocument().GetPropertyRegistry(), "0", "100");
+  // Compositor keyframe value available after snapshot
+  const CompositorKeyframeValue* value =
+      ConstructEffectAndGetKeyframes("--foo", "<number>", &GetDocument(),
+                                     element, "0", "100", exception_state)[1]
+          ->GetCompositorKeyframeValue();
+  ASSERT_FALSE(exception_state.HadException());
 
-  element->style()->setProperty(&GetDocument(), "--foo", "0", g_empty_string,
-                                exception_state);
-  EXPECT_FALSE(exception_state.HadException());
-
-  StringKeyframeEffectModel* effect =
-      StringKeyframeEffectModel::Create(keyframes);
-
-  auto style = GetDocument().EnsureStyleResolver().StyleForElement(element);
-
-  const AnimatableValue* value;
-
-  // Snapshot should update first time after construction
-  EXPECT_TRUE(effect->SnapshotAllCompositorKeyframesIfNecessary(
-      *element, *style, nullptr));
-
-  // Animatable value should be available after snapshot
-  value = effect
-              ->GetPropertySpecificKeyframes(
-                  PropertyHandle(AtomicString("--foo")))[0]
-              ->GetAnimatableValue();
+  // Test value holds the correct number type
   EXPECT_TRUE(value);
   EXPECT_TRUE(value->IsDouble());
+  EXPECT_EQ(ToCompositorKeyframeDouble(value)->ToDouble(), 100);
+}
+
+TEST_F(AnimationKeyframeEffectModel, CompositorUpdateColorProperty) {
+  ScopedOffMainThreadCSSPaintForTest off_main_thread_css_paint(true);
+  DummyExceptionStateForTesting exception_state;
+
+  element->style()->setProperty(&GetDocument(), "color", "rgb(0, 255, 0)",
+                                g_empty_string, exception_state);
+
+  // Compositor keyframe value available after snapshot
+  const CompositorKeyframeValue* value_rgb =
+      ConstructEffectAndGetKeyframes("--rgb", "<color>", &GetDocument(),
+                                     element, "rgb(0, 0, 0)", "rgb(0, 255, 0)",
+                                     exception_state)[1]
+          ->GetCompositorKeyframeValue();
+  const CompositorKeyframeValue* value_hsl =
+      ConstructEffectAndGetKeyframes("--hsl", "<color>", &GetDocument(),
+                                     element, "hsl(0, 0%, 0%)",
+                                     "hsl(120, 100%, 50%)", exception_state)[1]
+          ->GetCompositorKeyframeValue();
+  const CompositorKeyframeValue* value_name =
+      ConstructEffectAndGetKeyframes("--named", "<color>", &GetDocument(),
+                                     element, "black", "lime",
+                                     exception_state)[1]
+          ->GetCompositorKeyframeValue();
+  const CompositorKeyframeValue* value_hex =
+      ConstructEffectAndGetKeyframes("--hex", "<color>", &GetDocument(),
+                                     element, "#000000", "#00FF00",
+                                     exception_state)[1]
+          ->GetCompositorKeyframeValue();
+  const CompositorKeyframeValue* value_curr =
+      ConstructEffectAndGetKeyframes("--curr", "<color>", &GetDocument(),
+                                     element, "#000000", "currentcolor",
+                                     exception_state)[1]
+          ->GetCompositorKeyframeValue();
+  const PropertySpecificKeyframeVector& values_mixed =
+      ConstructEffectAndGetKeyframes("--mixed", "<color>", &GetDocument(),
+                                     element, "#000000", "lime",
+                                     exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  // Test rgb color input
+  EXPECT_TRUE(value_rgb);
+  EXPECT_TRUE(value_rgb->IsColor());
+  EXPECT_EQ(ToCompositorKeyframeColor(value_rgb)->ToColor(), SK_ColorGREEN);
+
+  // Test hsl color input
+  EXPECT_TRUE(value_hsl);
+  EXPECT_TRUE(value_hsl->IsColor());
+  EXPECT_EQ(ToCompositorKeyframeColor(value_hsl)->ToColor(), SK_ColorGREEN);
+
+  // Test named color input
+  EXPECT_TRUE(value_name);
+  EXPECT_TRUE(value_name->IsColor());
+  EXPECT_EQ(ToCompositorKeyframeColor(value_name)->ToColor(), SK_ColorGREEN);
+
+  // Test hex color input
+  EXPECT_TRUE(value_hex);
+  EXPECT_TRUE(value_hex->IsColor());
+  EXPECT_EQ(ToCompositorKeyframeColor(value_hex)->ToColor(), SK_ColorGREEN);
+
+  // currentcolor is a CSSIdentifierValue not a color
+  EXPECT_FALSE(value_curr);
+
+  // Ensure both frames are consistent when values are mixed
+  const CompositorKeyframeValue* value_mixed0 =
+      values_mixed[0]->GetCompositorKeyframeValue();
+  const CompositorKeyframeValue* value_mixed1 =
+      values_mixed[1]->GetCompositorKeyframeValue();
+
+  EXPECT_TRUE(value_mixed0);
+  EXPECT_TRUE(value_mixed0->IsColor());
+  EXPECT_EQ(ToCompositorKeyframeColor(value_mixed0)->ToColor(), SK_ColorBLACK);
+
+  EXPECT_TRUE(value_mixed1);
+  EXPECT_TRUE(value_mixed1->IsColor());
+  EXPECT_EQ(ToCompositorKeyframeColor(value_mixed1)->ToColor(), SK_ColorGREEN);
 }
 
 }  // namespace blink
@@ -727,12 +800,12 @@ class KeyframeEffectModelTest : public testing::Test {
 
 TEST_F(KeyframeEffectModelTest, EvenlyDistributed1) {
   KeyframeVector keyframes(5);
-  keyframes[0] = StringKeyframe::Create();
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
   keyframes[0]->SetOffset(0.125);
-  keyframes[1] = StringKeyframe::Create();
-  keyframes[2] = StringKeyframe::Create();
-  keyframes[3] = StringKeyframe::Create();
-  keyframes[4] = StringKeyframe::Create();
+  keyframes[1] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[2] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[3] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[4] = MakeGarbageCollected<StringKeyframe>();
   keyframes[4]->SetOffset(0.625);
 
   const Vector<double> result = GetComputedOffsets(keyframes);
@@ -746,13 +819,13 @@ TEST_F(KeyframeEffectModelTest, EvenlyDistributed1) {
 
 TEST_F(KeyframeEffectModelTest, EvenlyDistributed2) {
   KeyframeVector keyframes(6);
-  keyframes[0] = StringKeyframe::Create();
-  keyframes[1] = StringKeyframe::Create();
-  keyframes[2] = StringKeyframe::Create();
-  keyframes[3] = StringKeyframe::Create();
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[1] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[2] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[3] = MakeGarbageCollected<StringKeyframe>();
   keyframes[3]->SetOffset(0.75);
-  keyframes[4] = StringKeyframe::Create();
-  keyframes[5] = StringKeyframe::Create();
+  keyframes[4] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[5] = MakeGarbageCollected<StringKeyframe>();
 
   const Vector<double> result = GetComputedOffsets(keyframes);
   EXPECT_EQ(6U, result.size());
@@ -766,21 +839,21 @@ TEST_F(KeyframeEffectModelTest, EvenlyDistributed2) {
 
 TEST_F(KeyframeEffectModelTest, EvenlyDistributed3) {
   KeyframeVector keyframes(12);
-  keyframes[0] = StringKeyframe::Create();
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
   keyframes[0]->SetOffset(0);
-  keyframes[1] = StringKeyframe::Create();
-  keyframes[2] = StringKeyframe::Create();
-  keyframes[3] = StringKeyframe::Create();
-  keyframes[4] = StringKeyframe::Create();
+  keyframes[1] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[2] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[3] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[4] = MakeGarbageCollected<StringKeyframe>();
   keyframes[4]->SetOffset(0.5);
-  keyframes[5] = StringKeyframe::Create();
-  keyframes[6] = StringKeyframe::Create();
-  keyframes[7] = StringKeyframe::Create();
+  keyframes[5] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[6] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[7] = MakeGarbageCollected<StringKeyframe>();
   keyframes[7]->SetOffset(0.8);
-  keyframes[8] = StringKeyframe::Create();
-  keyframes[9] = StringKeyframe::Create();
-  keyframes[10] = StringKeyframe::Create();
-  keyframes[11] = StringKeyframe::Create();
+  keyframes[8] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[9] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[10] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[11] = MakeGarbageCollected<StringKeyframe>();
 
   const Vector<double> result = GetComputedOffsets(keyframes);
   EXPECT_EQ(12U, result.size());

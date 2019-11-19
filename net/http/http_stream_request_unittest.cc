@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "net/http/http_stream_factory.h"
 #include "net/http/http_stream_factory_job.h"
 #include "net/http/http_stream_factory_job_controller.h"
@@ -22,7 +22,7 @@ namespace net {
 
 // Make sure that Request passes on its priority updates to its jobs.
 TEST(HttpStreamRequestTest, SetPriority) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
 
   SequencedSocketData data;
   data.set_connect_data(MockConnect(ASYNC, OK));
@@ -57,7 +57,7 @@ TEST(HttpStreamRequestTest, SetPriority) {
   request->SetPriority(MEDIUM);
   EXPECT_EQ(MEDIUM, job_controller_raw_ptr->main_job()->priority());
 
-  EXPECT_CALL(request_delegate, OnStreamFailed(_, _, _)).Times(1);
+  EXPECT_CALL(request_delegate, OnStreamFailed(_, _, _, _)).Times(1);
   job_controller_raw_ptr->OnStreamFailed(job_factory.main_job(), ERR_FAILED,
                                          SSLConfig());
 

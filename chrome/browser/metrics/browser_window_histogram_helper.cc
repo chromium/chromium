@@ -5,7 +5,6 @@
 #include "chrome/browser/metrics/browser_window_histogram_helper.h"
 
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
-#include "ui/compositor/compositor.h"
 
 BrowserWindowHistogramHelper::~BrowserWindowHistogramHelper() {}
 
@@ -24,8 +23,7 @@ BrowserWindowHistogramHelper::MaybeRecordValueAndCreateInstanceOnBrowserPaint(
 }
 
 BrowserWindowHistogramHelper::BrowserWindowHistogramHelper(
-    ui::Compositor* compositor)
-    : scoped_observer_(this) {
+    ui::Compositor* compositor) {
   startup_metric_utils::RecordBrowserWindowFirstPaint(base::TimeTicks::Now());
 
 #if defined(OS_MACOSX)

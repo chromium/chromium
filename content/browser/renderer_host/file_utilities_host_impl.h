@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_FILE_UTILITIES_HOST_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_FILE_UTILITIES_HOST_IMPL_H_
 
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/file/file_utilities.mojom.h"
 
 namespace content {
@@ -14,8 +15,9 @@ class FileUtilitiesHostImpl : public blink::mojom::FileUtilitiesHost {
   explicit FileUtilitiesHostImpl(int process_id);
   ~FileUtilitiesHostImpl() override;
 
-  static void Create(int process_id,
-                     blink::mojom::FileUtilitiesHostRequest request);
+  static void Create(
+      int process_id,
+      mojo::PendingReceiver<blink::mojom::FileUtilitiesHost> receiver);
 
  private:
   // blink::mojom::FileUtilitiesHost implementation.

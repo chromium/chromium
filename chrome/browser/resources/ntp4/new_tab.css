@@ -95,10 +95,9 @@ html[dir='rtl'] #attribution {
 }
 
 #footer {
-  background-image: linear-gradient(
-      rgba(242, 242, 242, 0.9), rgba(222, 222, 222, 0.9));
+  background-color: white;
   bottom: 0;
-  color: #7F7F7F;
+  color: #666;
   font-size: 0.9em;
   font-weight: bold;
   overflow: hidden;
@@ -178,33 +177,6 @@ html[dir='rtl'] #login-container {
 
 html[dir='rtl'] .login-status-icon {
   background-position-x: left;
-}
-
-#login-status-bubble-contents {
-  font-size: 1.1em;
-}
-
-#login-status-message-container {
-  margin-bottom: 13px;
-}
-
-#login-status-learn-more {
-  display: inline-block;
-}
-
-.login-status-row {
-  -webkit-box-align: center;
-  -webkit-box-orient: horizontal;
-  -webkit-box-pack: end;
-  display: -webkit-box;
-}
-
-#login-status-advanced-container {
-  -webkit-box-flex: 1;
-}
-
-#login-status-dismiss {
-  min-width: 6em;
 }
 
 /* Trash. *********************************************************************/
@@ -300,7 +272,7 @@ html[dir='rtl'] #footer.showing-trash-mode #trash.drag-target .lid {
 
 #chrome-web-store-link {
   -webkit-order: 3;
-  color: inherit;
+  color: rgb(26, 115, 232);
   cursor: pointer;
   display: inline-block;
   margin: 0;
@@ -316,10 +288,6 @@ html[dir='rtl'] #footer.showing-trash-mode #trash.drag-target .lid {
   line-height: 49px;
   padding-inline-end: 36px;
   padding-inline-start: 15px;
-}
-
-#chrome-web-store-link:hover {
-  color: #666;
 }
 
 html[dir='rtl'] #chrome-web-store-title {

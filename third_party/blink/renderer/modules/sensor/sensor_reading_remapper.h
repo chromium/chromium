@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_SENSOR_READING_REMAPPER_H_
 
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
-#include "services/device/public/mojom/sensor.mojom-blink.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "services/device/public/mojom/sensor.mojom-blink-forward.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 

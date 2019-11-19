@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+</style>
+
+<div id="first" tabindex="0">First</div>
+<input id="second" type="text">Second</input>
+<div id="third" tabindex="0">Third</div>
+
+<script>
+  // This checks that removing an editable element that is interested and
+  // focused resets spat nav and allows further navigation.
+  let first = document.getElementById("first");
+  let second = document.getElementById("second");
+  let third = document.getElementById("third");
+
+  test(() => {
+    // Move interest to 'second' and focus it.
+    snav.triggerMove('Down');
+    snav.triggerMove('Down');
+    eventSender.keyDown('Enter');
+
+    assert_equals(window.internals.interestedElement,
+                  second,
+                  "Input box starts off with interest.");
+    assert_equals(document.activeElement,
+                  second,
+                  "Enter key moves focus into 'second'");
+
+    second.remove();
+
+    snav.triggerMove('Down');
+
+    assert_equals(window.internals.interestedElement,
+                  first,
+                  "'first' box should be interested.");
+
+    snav.triggerMove('Down');
+
+    assert_equals(window.internals.interestedElement,
+                  third,
+                  "'third' box should be interested.");
+
+  }, "Spat-Nav resets gracefully after focused editable is removed from DOM.");
+</script>

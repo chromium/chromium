@@ -2,118 +2,24 @@
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
   <head>
     <meta charset="utf-8">
-    <link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
-    <link rel="import" href="chrome://resources/html/polymer.html">
-    <link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-    <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-    <link rel="import" href="signin_shared_css.html">
-    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
-    <link rel="stylesheet" href="sync_confirmation.css"></link>
-    <custom-style>
-      <style is="custom-style" include="signin-dialog-shared paper-button-style">
-<if expr="is_macosx or is_linux">
-        #undoButton {
-          margin-inline-end: 8px;
-          margin-inline-start: 0;
+    <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+    <script type="module" src="sync_confirmation_app.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        width: 512px;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: var(--md-background-color);
         }
-</if>
-      </style>
-    </custom-style>
+      }
+    </style>
   </head>
   <body>
-    <!--
-      Use the 'consent-description' attribute to annotate all the UI elements
-      that are part of the text the user reads before consenting to the Sync
-      data collection . Similarly, use 'consent-confirmation' on UI elements on
-      which user clicks to indicate consent.
-    -->
-    <div class="container">
-      <div class="top-title-bar" consent-description>
-        $i18n{syncConfirmationTitle}
-      </div>
-      <div class="details" id="syncConfirmationDetails">
-        <div id="picture-container">
-          <div id="illustration">
-            <div id="icons">
-              <div id="icon-bookmarks" class="fade-top-left"></div>
-              <div id="icon-extensions" class="fade-top-left"></div>
-              <div id="icon-passwords" class="fade-bottom-left"></div>
-              <div id="icon-history" class="fade-top-right"></div>
-              <div id="icon-tabs" class="fade-middle-right"></div>
-              <div id="icon-themes" class="fade-bottom-right"></div>
-              <div id="icon-circle-open" class="fade-middle-left"></div>
-              <div id="icon-circle-1" class="icon-circle fade-middle-left"></div>
-              <div id="icon-circle-2" class="icon-circle fade-top-right"></div>
-              <div id="icon-circle-3" class="icon-circle fade-middle-right"></div>
-              <div id="icon-circle-4" class="icon-circle fade-top-right"></div>
-            </div>
-            <div class="picture">
-              <img id="profile-picture">
-              <div id="checkmark-circle">
-                <svg id="checkmark-check" width="13" height="10" viewBox="0 0 13 10">
-                  <path id="checkmark-path" d="M1 5l3.5 3.5L12 1" stroke="#FFF"
-                        stroke-width="2" stroke-dasharray="16"
-                        stroke-dashoffset="16" fill="none"></path>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="message-container">
-          <!--
-            "Chrome sync" is the Google Cloud Based services used for sync. Thus
-            this section uses the Chrome logo even for Chromium builds.
-          -->
-          <div id="chrome-logo" class="logo"></div>
-          <div>
-            <div class="title" consent-description>
-              $i18n{syncConfirmationChromeSyncTitle}
-            </div>
-            <div class="body text" consent-description>
-              $i18n{syncConfirmationChromeSyncBody}
-            </div>
-          </div>
-        </div>
-        <div class="message-container">
-          <!--
-            This section uses the Google logo even for Chromium builds as the
-            user can personalize their Google services from this screen.
-          -->
-          <div id="googleg-logo" class="logo"></div>
-          <div>
-            <div class="title" consent-description>
-              $i18n{syncConfirmationPersonalizeServicesTitle}
-            </div>
-            <div class="body text" consent-description>
-              $i18n{syncConfirmationPersonalizeServicesBody}
-            </div>
-          </div>
-        </div>
-        <div class="message-container">
-          <div class="body" consent-description consent-confirmation>
-            $i18nRaw{syncConfirmationSyncSettingsLinkBody}
-          </div>
-        </div>
-      </div>
-      <div class="details" id="syncDisabledDetails">
-        <div class="body text" consent-description>
-          $i18n{syncDisabledConfirmationDetails}
-        </div>
-      </div>
-      <div class="action-container">
-        <paper-button class="action-button" id="confirmButton"
-            consent-confirmation>
-          $i18n{syncConfirmationConfirmLabel}
-        </paper-button>
-        <paper-button id="undoButton">
-          $i18n{syncConfirmationUndoLabel}
-        </paper-button>
-      </div>
-    </div>
+    <sync-confirmation-app></sync-confirmation-app>
   </body>
-  <script src="chrome://resources/js/cr.js"></script>
-  <script src="chrome://resources/js/load_time_data.js"></script>
-  <script src="chrome://resources/js/util.js"></script>
-  <script src="sync_confirmation.js"></script>
-  <script src="chrome://sync-confirmation/strings.js"></script>
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <script type="module" src="sync_confirmation.js"></script>
 </html>

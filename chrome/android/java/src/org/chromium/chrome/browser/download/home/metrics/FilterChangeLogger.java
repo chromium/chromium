@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.download.home.metrics;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.download.DownloadFilter;
 import org.chromium.chrome.browser.download.home.filter.FilterCoordinator;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
-import org.chromium.chrome.browser.download.ui.DownloadFilter;
 
 /**
  * Helper class to log filter changes as the occur.

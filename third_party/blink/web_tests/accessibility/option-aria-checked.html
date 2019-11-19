@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <select>
 <option id="element1" role="menuitemcheckbox">1</option>
@@ -19,32 +18,32 @@
       return accessibilityController.accessibleElementById(id);
   }
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("element1");
     assert_equals(ax.checked, "false");
   }, "<option> of role menuitemcheckbox is not checked by default");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("element2");
     assert_equals(ax.checked, "true");
   }, "<option> of role menuitemcheckbox can be checked with aria-checked");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("element3");
     assert_equals(ax.checked, "false");
   }, "<option> of role menuitemradio is not checked by default");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("element4");
     assert_equals(ax.checked, "true");
   }, "<option> of role menuitemradio can be checked with aria-checked");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("element5");
     assert_equals(ax.checked, "true");
   }, "<option> of no role is checked with aria-checked set");
 
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
     var ax = axElementById("element6");
     assert_equals(ax.checked, "");
   }, "Element of button role does not expose checked even with aria-checked set");

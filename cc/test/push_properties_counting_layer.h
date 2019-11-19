@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "cc/layers/layer.h"
 
@@ -19,6 +18,10 @@ class LayerTreeImpl;
 class PushPropertiesCountingLayer : public Layer {
  public:
   static scoped_refptr<PushPropertiesCountingLayer> Create();
+
+  PushPropertiesCountingLayer(const PushPropertiesCountingLayer&) = delete;
+  PushPropertiesCountingLayer& operator=(const PushPropertiesCountingLayer&) =
+      delete;
 
   // Layer implementation.
   void PushPropertiesTo(LayerImpl* layer) override;
@@ -37,8 +40,6 @@ class PushPropertiesCountingLayer : public Layer {
   void AddPushPropertiesCount();
 
   size_t push_properties_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PushPropertiesCountingLayer);
 };
 
 }  // namespace cc

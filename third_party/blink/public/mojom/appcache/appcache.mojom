@@ -4,12 +4,11 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/appcache/appcache_info.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "url/mojom/url.mojom";
-import "services/network/public/mojom/url_loader_factory.mojom";
-
-const int64 kAppCacheNoHostId = 0;
 
 enum AppCacheEventID {
   APPCACHE_CHECKING_EVENT = 0,
@@ -33,9 +32,15 @@ enum AppCacheErrorReason {
   APPCACHE_UNKNOWN_ERROR,
 };
 
+// Per-resource information displayed in DevTools.
 struct AppCacheResourceInfo {
   url.mojom.Url url;
-  int64 size;
+  // Disk space consumed by this resource.
+  int64 response_size;
+  // Padding added when the Quota API counts this resource.
+  //
+  // Non-zero only for opaque responses.
+  int64 padding_size;
   bool is_master;
   bool is_manifest;
   bool is_intercept;
@@ -59,11 +64,9 @@ interface AppCacheBackend {
   // Informs the browser of a new appcache host.
   //
   // Unregistering the host is accomplished by closing the AppCacheHost pipe.
-  //
-  // TODO(mek): Move this method to DocumentInterfaceBroker to stop passing
-  // frame ID over mojo.
-  RegisterHost(AppCacheHost& host_request, AppCacheFrontend frontend,
-               int32 host_id, int32 render_frame_id);
+  RegisterHost(pending_receiver<AppCacheHost> host_receiver,
+               pending_remote<AppCacheFrontend> frontend,
+               mojo_base.mojom.UnguessableToken host_id);
 };
 
 interface AppCacheHost {
@@ -75,12 +78,11 @@ interface AppCacheHost {
   // Called prior to the main resource load. When the system contains multiple
   // candidates for a main resource load, the appcache preferred by the host
   // that created this host is used to break ties.
-  SetSpawningHostId(int32 spawning_host_id);
+  SetSpawningHostId(mojo_base.mojom.UnguessableToken spawning_host_id);
 
   // Initiates the cache selection algorithm for the given host.
   // This is sent prior to any subresource loads. An AppCacheMsg_CacheSelected
   // message will be sent in response.
-  // 'host_id' indentifies a specific document or worker
   // 'document_url' the url of the main resource
   // 'appcache_document_was_loaded_from' the id of the appcache the main
   //     resource was loaded from or kAppCacheNoCacheId
@@ -90,7 +92,7 @@ interface AppCacheHost {
               url.mojom.Url opt_manifest_url);
 
   // Initiates worker specific cache selection algorithm for the given host.
-  SelectCacheForSharedWorker(int64 appcache_id);
+  SelectCacheForWorker(int64 appcache_id);
 
   // Informs the browser of a 'foreign' entry in an appcache.
   MarkAsForeignEntry(url.mojom.Url document_url,
@@ -136,6 +138,6 @@ interface AppCacheFrontend {
 
   // In the network service world this message sets the URLLoaderFactory to be
   // used for subresources.
-  SetSubresourceFactory(network.mojom.URLLoaderFactory url_loader_factory);
+  SetSubresourceFactory(
+      pending_remote<network.mojom.URLLoaderFactory> url_loader_factory);
 };
-

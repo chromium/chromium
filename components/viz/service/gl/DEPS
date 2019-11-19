@@ -2,7 +2,9 @@
 
 include_rules = [
   "+components/arc/video_accelerator",
+  "+components/chromeos_camera",
   "+components/crash/core/common/crash_key.h",
+  "+components/viz/service/service_jni_headers",
   "+gpu/command_buffer",
   "+gpu/config",
   "+gpu/ipc",
@@ -10,16 +12,10 @@ include_rules = [
   "+gpu/ipc/service",
   "+gpu/vulkan",
   "+ipc",
-  "+jni",
   "+media/gpu",
   "+media/mojo",
   "+mojo/public/cpp",
-  "+services/viz/privileged/interfaces",
+  "+skia/buildflags.h",
+  "+services/viz/privileged/mojom",
   "+ui/gl",
 ]
-
-specific_include_rules = {
-  "gpu_service_impl_unittest\.cc": [
-    "+services/ws/public/mojom",
-  ]
-}

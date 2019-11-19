@@ -11,10 +11,10 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "storage/browser/fileapi/external_mount_points.h"
-#include "storage/browser/fileapi/file_observers.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_observers.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/common/file_system/file_system_util.h"
 
 using storage::ExternalMountPoints;
 using storage::FileSystemContext;

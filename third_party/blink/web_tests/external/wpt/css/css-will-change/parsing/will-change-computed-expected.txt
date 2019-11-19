@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS Property will-change value 'auto' computes to 'auto'
+PASS Property will-change value 'scroll-position' computes to 'scroll-position'
+PASS Property will-change value 'contents' computes to 'contents'
+PASS Property will-change value 'transform' computes to 'transform'
+PASS Property will-change value 'background-color' computes to 'background-color'
+FAIL Property will-change value 'scroll-position, contents' computes to 'scroll-position, contents' assert_equals: expected "scroll-position, contents" but got "contents, scroll-position"
+PASS Property will-change value 'scroll-position, transform' computes to 'scroll-position, transform'
+PASS Property will-change value 'contents, transform' computes to 'contents, transform'
+PASS Property will-change value 'transform, background-color' computes to 'transform, background-color'
+Harness: the test ran to completion.
+

@@ -14,7 +14,6 @@ static_library("network_time") {
     "//base",
     "//base:i18n",
     "//components/client_update_protocol",
-    "//components/data_use_measurement/core",
     "//components/prefs",
     "//components/variations",
     "//net",

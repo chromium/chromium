@@ -9,9 +9,33 @@
 #include <string>
 
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
+#define ASSERT_ORIGIN_TRIAL(feature) \
+  static_assert(std::is_same<decltype(::blink::RuntimeEnabledFeatures::     \
+                                          feature##EnabledByRuntimeFlag()), \
+                             bool>(),                                       \
+                #feature " must be part of an origin trial");
 
 namespace blink {
+
+enum class OriginTrialFeature : int32_t {
+  // For testing
+  kNonExisting = 0,
+
+  {% for feature in features %}
+  {% if feature.origin_trial_feature_name %}
+  k{{feature.name}},
+  {% endif %}
+  {% endfor %}
+};
+
+// A pure virtual interface for checking the availability of origin trial
+// features in a context.
+class PLATFORM_EXPORT FeatureContext {
+ public:
+  virtual bool FeatureEnabled(OriginTrialFeature) const = 0;
+};
 
 // A class that stores static enablers for all experimental features.
 
@@ -37,12 +61,13 @@ class PLATFORM_EXPORT RuntimeEnabledFeatures {
   static void SetFeatureEnabledFromString(const std::string& name, bool enabled);
 
   {% for feature in features %}
-  {% if not feature.origin_trial_feature_name %}
+  {% if not feature.in_origin_trial %}
   {% if feature.custom %}
   static bool {{feature.name}}Enabled();
   {% else %}
   static void Set{{feature.name}}Enabled(bool enabled) { {{feature.data_member_name}} = enabled; }
   static bool {{feature.name}}Enabled() { return {{feature.enabled_condition}}; }
+  static bool {{feature.name}}Enabled(const FeatureContext*) { return {{feature.enabled_condition}}; }
   {% endif %}
 
   {% endif %}
@@ -51,23 +76,22 @@ class PLATFORM_EXPORT RuntimeEnabledFeatures {
   // Origin-trial-enabled features:
   //
   // These features are currently part of an origin trial (see
-  // https://www.chromium.org/blink/origin-trials). These methods can be used
-  // to test whether the feature is unconditionally enabled (for example, by
-  // starting the browser with the appropriate command-line flag). However,
-  // that is almost always the incorrect check. Most renderer code should
-  // be calling origin_trials::<feature>Enabled() instead, to test if the
+  // https://www.chromium.org/blink/origin-trials). <feature>EnabledByRuntimeFlag()
+  // can be used to test whether the feature is unconditionally enabled
+  // (for example, by starting the browser with the appropriate command-line flag).
+  // However, that is almost always the incorrect check. Most renderer code should
+  // be calling <feature>Enabled(const FeatureContext*) instead, to test if the
   // feature is enabled in a given context.
 
-  {% for feature in features %}
-  {% if feature.origin_trial_feature_name %}
+  {% for feature in origin_trial_controlled_features %}
   {% if feature.custom %}
   static bool {{feature.name}}EnabledByRuntimeFlag();
   {% else %}
   static void Set{{feature.name}}Enabled(bool enabled) { {{feature.data_member_name}} = enabled; }
   static bool {{feature.name}}EnabledByRuntimeFlag() { return {{feature.enabled_condition}}; }
   {% endif %}
+  static bool {{feature.name}}Enabled(const FeatureContext*);
 
-  {% endif %}
   {% endfor %}
 
  private:

@@ -125,7 +125,7 @@ class LocalToRemoteSyncer : public SyncTask {
 
   std::unique_ptr<FolderCreator> folder_creator_;
 
-  base::WeakPtrFactory<LocalToRemoteSyncer> weak_ptr_factory_;
+  base::WeakPtrFactory<LocalToRemoteSyncer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LocalToRemoteSyncer);
 };

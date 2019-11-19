@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Legacy Browser Support Internals</title>
+
+  <script src="chrome://resources/js/promise_resolver.js"></script>
+  <script src="chrome://resources/js/cr.js"></script>
+  <script src="chrome://resources/js/util.js"></script>
+
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+
+  <style>
+    table {
+      border-collapse: collapse;
+      font-family: monospace;
+    }
+
+    pre,
+    table {
+      font-size: 1.25em;
+    }
+
+    th {
+      background: black;
+      color: white;
+    }
+
+    th,
+    td {
+      border: 1px solid black;
+      padding: 6px 10px;
+      text-align: center;
+    }
+
+    .url {
+      text-align: start;
+    }
+
+    #url-checker-input {
+      width: 400px;
+    }
+
+    #xml-not-fetched-yet,
+    #xml-last-fetch {
+        display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Legacy Browser Support Internals</h1>
+
+  <!-- TODO(crbug/959379): Hide all this and show a message if
+                           BrowserSwitcherEnabled is false. -->
+
+  <h2>URL Checker</h2>
+
+  <p>
+    Enter a complete URL (with the http:// part) to see what LBS would do
+    with it.
+  </p>
+
+  <p>
+    <input type="text" id="url-checker-input"
+        placeholder="http://example.com/">
+  </p>
+
+  <pre id=output></pre>
+
+  <h2>Sitelist</h2>
+  <table id="sitelist"></table>
+
+  <h2>Greylist</h2>
+  <table id="greylist"></table>
+
+  <h2>XML sitelists</h2>
+
+  <table id="xml-sitelists"></table>
+
+  <div id="xml-description-wrapper">
+    <p id="xml-not-fetched-yet">
+      XML sitelists have not been fetched yet.
+    </p>
+
+    <p id="xml-last-fetch">
+      XML sitelists were last downloaded at
+      <span id="last-fetch-placeholder"></span>.
+    </p>
+
+    <p id="xml-next-fetch">
+      Next download is at
+      <span id="next-fetch-placeholder"></span>.
+    </p>
+
+    <p>
+      <button id="refresh-xml-button">Download now</button>
+    </p>
+  </div>
+
+  <template id="header-row-template">
+    <tr>
+      <th>Rule</th>
+      <th>Source</th>
+      <th>Type</th>
+      <th>Inverted?</th>
+    </tr>
+  </template>
+
+  <template id="rule-row-template">
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </template>
+
+  <template id="xml-header-row-template">
+    <tr>
+      <th>Source policy</th>
+      <th>URL</th>
+    </tr>
+  </template>
+
+  <template id="xml-row-template">
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+  </template>
+
+  <script src="/internals/browser_switch_internals.js"></script>
+</body>
+</html>

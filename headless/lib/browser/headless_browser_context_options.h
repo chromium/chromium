@@ -48,12 +48,6 @@ class HeadlessBrowserContextOptions {
   // See HeadlessBrowser::Options::font_render_hinting.
   gfx::FontRenderParams::Hinting font_render_hinting() const;
 
-  // Custom network protocol handlers. These can be used to override URL
-  // fetching for different network schemes.
-  const ProtocolHandlerMap& protocol_handlers() const;
-  // Since ProtocolHandlerMap is move-only, this method takes ownership of them.
-  ProtocolHandlerMap TakeProtocolHandlers();
-
   // Callback that is invoked to override WebPreferences for RenderViews
   // created within this HeadlessBrowserContext.
   base::RepeatingCallback<void(WebPreferences*)>
@@ -77,8 +71,6 @@ class HeadlessBrowserContextOptions {
   base::Optional<bool> block_new_web_contents_;
   base::Optional<base::RepeatingCallback<void(WebPreferences*)>>
       override_web_preferences_callback_;
-
-  ProtocolHandlerMap protocol_handlers_;
 
   base::Optional<gfx::FontRenderParams::Hinting> font_render_hinting_;
 

@@ -1,0 +1,249 @@
+This is a testharness.js-based test.
+Found 245 tests; 241 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS <input type="hidden"> - letter-spacing
+PASS <input type="hidden"> - word-spacing
+PASS <input type="hidden"> - line-height
+PASS <input type="hidden"> - text-transform
+PASS <input type="hidden"> - text-indent
+PASS <input type="hidden"> - text-shadow
+PASS <input type="hidden"> - text-align
+PASS <input type="text"> - letter-spacing
+PASS <input type="text"> - word-spacing
+PASS <input type="text"> - line-height
+PASS <input type="text"> - text-transform
+PASS <input type="text"> - text-indent
+PASS <input type="text"> - text-shadow
+PASS <input type="text"> - text-align
+PASS <input type="search"> - letter-spacing
+PASS <input type="search"> - word-spacing
+PASS <input type="search"> - line-height
+PASS <input type="search"> - text-transform
+PASS <input type="search"> - text-indent
+PASS <input type="search"> - text-shadow
+PASS <input type="search"> - text-align
+PASS <input type="tel"> - letter-spacing
+PASS <input type="tel"> - word-spacing
+PASS <input type="tel"> - line-height
+PASS <input type="tel"> - text-transform
+PASS <input type="tel"> - text-indent
+PASS <input type="tel"> - text-shadow
+PASS <input type="tel"> - text-align
+PASS <input type="url"> - letter-spacing
+PASS <input type="url"> - word-spacing
+PASS <input type="url"> - line-height
+PASS <input type="url"> - text-transform
+PASS <input type="url"> - text-indent
+PASS <input type="url"> - text-shadow
+PASS <input type="url"> - text-align
+PASS <input type="email"> - letter-spacing
+PASS <input type="email"> - word-spacing
+PASS <input type="email"> - line-height
+PASS <input type="email"> - text-transform
+PASS <input type="email"> - text-indent
+PASS <input type="email"> - text-shadow
+PASS <input type="email"> - text-align
+PASS <input type="password"> - letter-spacing
+PASS <input type="password"> - word-spacing
+PASS <input type="password"> - line-height
+PASS <input type="password"> - text-transform
+PASS <input type="password"> - text-indent
+PASS <input type="password"> - text-shadow
+PASS <input type="password"> - text-align
+PASS <input type="date"> - letter-spacing
+PASS <input type="date"> - word-spacing
+PASS <input type="date"> - line-height
+PASS <input type="date"> - text-transform
+PASS <input type="date"> - text-indent
+PASS <input type="date"> - text-shadow
+PASS <input type="date"> - text-align
+PASS <input type="month"> - letter-spacing
+PASS <input type="month"> - word-spacing
+PASS <input type="month"> - line-height
+PASS <input type="month"> - text-transform
+PASS <input type="month"> - text-indent
+PASS <input type="month"> - text-shadow
+PASS <input type="month"> - text-align
+PASS <input type="week"> - letter-spacing
+PASS <input type="week"> - word-spacing
+PASS <input type="week"> - line-height
+PASS <input type="week"> - text-transform
+PASS <input type="week"> - text-indent
+PASS <input type="week"> - text-shadow
+PASS <input type="week"> - text-align
+PASS <input type="time"> - letter-spacing
+PASS <input type="time"> - word-spacing
+PASS <input type="time"> - line-height
+PASS <input type="time"> - text-transform
+PASS <input type="time"> - text-indent
+PASS <input type="time"> - text-shadow
+PASS <input type="time"> - text-align
+PASS <input type="datetime-local"> - letter-spacing
+PASS <input type="datetime-local"> - word-spacing
+PASS <input type="datetime-local"> - line-height
+PASS <input type="datetime-local"> - text-transform
+PASS <input type="datetime-local"> - text-indent
+PASS <input type="datetime-local"> - text-shadow
+PASS <input type="datetime-local"> - text-align
+PASS <input type="number"> - letter-spacing
+PASS <input type="number"> - word-spacing
+PASS <input type="number"> - line-height
+PASS <input type="number"> - text-transform
+PASS <input type="number"> - text-indent
+PASS <input type="number"> - text-shadow
+PASS <input type="number"> - text-align
+PASS <input type="range"> - letter-spacing
+PASS <input type="range"> - word-spacing
+PASS <input type="range"> - line-height
+PASS <input type="range"> - text-transform
+PASS <input type="range"> - text-indent
+PASS <input type="range"> - text-shadow
+PASS <input type="range"> - text-align
+PASS <input type="color"> - letter-spacing
+PASS <input type="color"> - word-spacing
+PASS <input type="color"> - line-height
+PASS <input type="color"> - text-transform
+PASS <input type="color"> - text-indent
+PASS <input type="color"> - text-shadow
+PASS <input type="color"> - text-align
+PASS <input type="checkbox"> - letter-spacing
+PASS <input type="checkbox"> - word-spacing
+PASS <input type="checkbox"> - line-height
+PASS <input type="checkbox"> - text-transform
+PASS <input type="checkbox"> - text-indent
+PASS <input type="checkbox"> - text-shadow
+PASS <input type="checkbox"> - text-align
+PASS <input type="radio"> - letter-spacing
+PASS <input type="radio"> - word-spacing
+PASS <input type="radio"> - line-height
+PASS <input type="radio"> - text-transform
+PASS <input type="radio"> - text-indent
+PASS <input type="radio"> - text-shadow
+PASS <input type="radio"> - text-align
+PASS <input type="file"> - letter-spacing
+PASS <input type="file"> - word-spacing
+PASS <input type="file"> - line-height
+PASS <input type="file"> - text-transform
+PASS <input type="file"> - text-indent
+PASS <input type="file"> - text-shadow
+PASS <input type="file"> - text-align
+PASS <input type="submit"> - letter-spacing
+PASS <input type="submit"> - word-spacing
+PASS <input type="submit"> - line-height
+PASS <input type="submit"> - text-transform
+PASS <input type="submit"> - text-indent
+PASS <input type="submit"> - text-shadow
+PASS <input type="submit"> - text-align
+PASS <input type="image"> - letter-spacing
+PASS <input type="image"> - word-spacing
+PASS <input type="image"> - line-height
+PASS <input type="image"> - text-transform
+PASS <input type="image"> - text-indent
+PASS <input type="image"> - text-shadow
+PASS <input type="image"> - text-align
+PASS <input type="reset"> - letter-spacing
+PASS <input type="reset"> - word-spacing
+PASS <input type="reset"> - line-height
+PASS <input type="reset"> - text-transform
+PASS <input type="reset"> - text-indent
+PASS <input type="reset"> - text-shadow
+PASS <input type="reset"> - text-align
+PASS <input type="button"> - letter-spacing
+PASS <input type="button"> - word-spacing
+PASS <input type="button"> - line-height
+PASS <input type="button"> - text-transform
+PASS <input type="button"> - text-indent
+PASS <input type="button"> - text-shadow
+PASS <input type="button"> - text-align
+PASS <select><optgroup><option> - letter-spacing
+PASS <select><optgroup><option> - word-spacing
+PASS <select><optgroup><option> - line-height
+PASS <select><optgroup><option> - text-transform
+PASS <select><optgroup><option> - text-indent
+PASS <select><optgroup><option> - text-shadow
+PASS <select><optgroup><option> - text-align
+PASS <optgroup><option> (in select) - letter-spacing
+PASS <optgroup><option> (in select) - word-spacing
+PASS <optgroup><option> (in select) - line-height
+PASS <optgroup><option> (in select) - text-transform
+PASS <optgroup><option> (in select) - text-indent
+PASS <optgroup><option> (in select) - text-shadow
+PASS <optgroup><option> (in select) - text-align
+PASS <option> (in select > optgroup) - letter-spacing
+PASS <option> (in select > optgroup) - word-spacing
+PASS <option> (in select > optgroup) - line-height
+PASS <option> (in select > optgroup) - text-transform
+PASS <option> (in select > optgroup) - text-indent
+PASS <option> (in select > optgroup) - text-shadow
+PASS <option> (in select > optgroup) - text-align
+PASS <select multiple=""> - letter-spacing
+PASS <select multiple=""> - word-spacing
+PASS <select multiple=""> - line-height
+PASS <select multiple=""> - text-transform
+PASS <select multiple=""> - text-indent
+PASS <select multiple=""> - text-shadow
+PASS <select multiple=""> - text-align
+PASS <optgroup> - letter-spacing
+PASS <optgroup> - word-spacing
+PASS <optgroup> - line-height
+PASS <optgroup> - text-transform
+PASS <optgroup> - text-indent
+PASS <optgroup> - text-shadow
+PASS <optgroup> - text-align
+PASS <option> - letter-spacing
+PASS <option> - word-spacing
+PASS <option> - line-height
+PASS <option> - text-transform
+PASS <option> - text-indent
+PASS <option> - text-shadow
+PASS <option> - text-align
+PASS <button> - letter-spacing
+PASS <button> - word-spacing
+PASS <button> - line-height
+PASS <button> - text-transform
+PASS <button> - text-indent
+PASS <button> - text-shadow
+PASS <button> - text-align
+PASS <textarea> - letter-spacing
+PASS <textarea> - word-spacing
+PASS <textarea> - line-height
+PASS <textarea> - text-transform
+PASS <textarea> - text-indent
+PASS <textarea> - text-shadow
+PASS <textarea> - text-align
+PASS <table><tbody><tr><td> - letter-spacing
+PASS <table><tbody><tr><td> - word-spacing
+PASS <table><tbody><tr><td> - line-height
+PASS <table><tbody><tr><td> - text-transform
+FAIL <table><tbody><tr><td> - text-indent assert_equals: expected "0px" but got "5px"
+PASS <table><tbody><tr><td> - text-shadow
+PASS <table><tbody><tr><td> - text-align
+PASS <tbody><tr><td> (in table) - letter-spacing
+PASS <tbody><tr><td> (in table) - word-spacing
+PASS <tbody><tr><td> (in table) - line-height
+PASS <tbody><tr><td> (in table) - text-transform
+FAIL <tbody><tr><td> (in table) - text-indent assert_equals: expected "0px" but got "5px"
+PASS <tbody><tr><td> (in table) - text-shadow
+PASS <tbody><tr><td> (in table) - text-align
+PASS <tr><td> (in table > tbody) - letter-spacing
+PASS <tr><td> (in table > tbody) - word-spacing
+PASS <tr><td> (in table > tbody) - line-height
+PASS <tr><td> (in table > tbody) - text-transform
+FAIL <tr><td> (in table > tbody) - text-indent assert_equals: expected "0px" but got "5px"
+PASS <tr><td> (in table > tbody) - text-shadow
+PASS <tr><td> (in table > tbody) - text-align
+PASS <td> (in table > tbody > tr) - letter-spacing
+PASS <td> (in table > tbody > tr) - word-spacing
+PASS <td> (in table > tbody > tr) - line-height
+PASS <td> (in table > tbody > tr) - text-transform
+FAIL <td> (in table > tbody > tr) - text-indent assert_equals: expected "0px" but got "5px"
+PASS <td> (in table > tbody > tr) - text-shadow
+PASS <td> (in table > tbody > tr) - text-align
+PASS <marquee> - letter-spacing
+PASS <marquee> - word-spacing
+PASS <marquee> - line-height
+PASS <marquee> - text-transform
+PASS <marquee> - text-indent
+PASS <marquee> - text-shadow
+PASS <marquee> - text-align
+Harness: the test ran to completion.
+

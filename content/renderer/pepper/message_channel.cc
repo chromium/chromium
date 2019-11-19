@@ -183,9 +183,7 @@ MessageChannel::MessageChannel(PepperPluginInstanceImpl* instance)
       plugin_message_queue_state_(WAITING_TO_START),
       var_converter_(instance->pp_instance(),
                      V8VarConverter::kDisallowObjectVars),
-      template_cache_(instance->GetIsolate()),
-      weak_ptr_factory_(this) {
-}
+      template_cache_(instance->GetIsolate()) {}
 
 gin::ObjectTemplateBuilder MessageChannel::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
@@ -385,11 +383,9 @@ void MessageChannel::EnqueuePluginMessage(v8::Local<v8::Value> v8_value) {
   // support for Messaging.)
   // TODO(raymes): Possibly change this to use TryCatch to do the conversion and
   // throw an exception if necessary.
-  V8VarConverter::VarResult conversion_result =
-      var_converter_.FromV8Value(
-          v8_value,
-          v8::Isolate::GetCurrent()->GetCurrentContext(),
-          base::Bind(&MessageChannel::FromV8ValueComplete,
+  V8VarConverter::VarResult conversion_result = var_converter_.FromV8Value(
+      v8_value, v8::Isolate::GetCurrent()->GetCurrentContext(),
+      base::BindOnce(&MessageChannel::FromV8ValueComplete,
                      weak_ptr_factory_.GetWeakPtr(),
                      &plugin_message_queue_.back()));
   if (conversion_result.completed_synchronously) {
@@ -459,21 +455,20 @@ void MessageChannel::DrainJSMessageQueueSoon() {
 }
 
 void MessageChannel::UnregisterSyncMessageStatusObserver() {
-  if (!unregister_observer_callback_.is_null()) {
-    unregister_observer_callback_.Run();
-    unregister_observer_callback_.Reset();
-  }
+  if (unregister_observer_callback_)
+    std::move(unregister_observer_callback_).Run();
 }
 
 v8::Local<v8::FunctionTemplate> MessageChannel::GetFunctionTemplate(
     v8::Isolate* isolate,
     const std::string& name,
-    void (MessageChannel::*memberFuncPtr)(gin::Arguments* args)) {
+    void (MessageChannel::*member_func_ptr)(gin::Arguments* args)) {
   v8::Local<v8::FunctionTemplate> function_template = template_cache_.Get(name);
   if (!function_template.IsEmpty())
     return function_template;
   function_template = gin::CreateFunctionTemplate(
-      isolate, base::Bind(memberFuncPtr, weak_ptr_factory_.GetWeakPtr()));
+      isolate,
+      base::BindRepeating(member_func_ptr, weak_ptr_factory_.GetWeakPtr()));
   template_cache_.Set(name, function_template);
   return function_template;
 }

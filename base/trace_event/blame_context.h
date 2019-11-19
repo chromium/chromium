@@ -127,7 +127,7 @@ class BASE_EXPORT BlameContext
   const unsigned char* category_group_enabled_;
 
   ThreadChecker thread_checker_;
-  WeakPtrFactory<BlameContext> weak_factory_;
+  WeakPtrFactory<BlameContext> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BlameContext);
 };

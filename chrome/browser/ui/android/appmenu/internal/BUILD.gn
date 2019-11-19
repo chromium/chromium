@@ -1,0 +1,91 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  java_files = [
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenu.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuAdapter.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuButtonHelperImpl.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuCoordinatorFactory.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuCoordinatorImpl.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuDragHelper.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuHandlerImpl.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemIcon.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/ui/android/appmenu:java",
+    "//chrome/browser/ui/android/appmenu:java_resources",
+    "//chrome/browser/ui/android/widget:java",
+    "//chrome/lib/lifecycle/public/android:java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+  ]
+}
+
+android_resources("java_resources") {
+  custom_package = "org.chromium.chrome.browser.ui.appmenu.internal"
+  resource_dirs = [ "java/res" ]
+
+  # Include resource dependencies needed by :java so that resources may
+  # all be accessed through the same custom_package.
+  deps = [
+    "//chrome/browser/ui/android/appmenu:java_resources",
+    "//chrome/browser/ui/android/widget:ui_widget_java_resources",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+
+  java_files = [
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuAdapterTest.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuAdapterRenderTest.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuTest.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/TestAppMenuDelegate.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/TestAppMenuPropertiesDelegate.java",
+  ]
+  deps = [
+    ":java",
+    ":test_java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/browser/ui/android/appmenu:java",
+    "//chrome/browser/ui/android/appmenu:test_support_java",
+    "//chrome/browser/ui/android/widget:test_support_java",
+    "//chrome/lib/lifecycle/public/android:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_support_test_runner:rules_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
+android_resources("test_java_resources") {
+  testonly = true
+
+  custom_package = "org.chromium.chrome.browser.ui.appmenu.test"
+  resource_dirs = [ "test/java/res" ]
+  deps = [
+    ":java_resources",
+  ]
+}
+
+junit_binary("junit") {
+  testonly = true
+
+  java_files = [ "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuPopupPositionTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_junit_test_support",
+  ]
+}

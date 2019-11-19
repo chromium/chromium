@@ -33,10 +33,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/array_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/mediastream/media_track_constraints.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -324,8 +325,6 @@ static void ParseOldStyleNames(
           ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kGoogHighpassFilter)) {
       result.goog_highpass_filter.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kGoogTypingNoiseDetection)) {
-      result.goog_typing_noise_detection.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kGoogAudioMirroring)) {
       result.goog_audio_mirroring.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kDAEchoCancellation)) {
@@ -414,11 +413,13 @@ static void ParseOldStyleNames(
                constraint.name_.Equals(kGoogBeamforming) ||
                constraint.name_.Equals(kGoogArrayGeometry) ||
                constraint.name_.Equals(kPowerLineFrequency) ||
-               constraint.name_.Equals(kMediaStreamAudioHotword)) {
+               constraint.name_.Equals(kMediaStreamAudioHotword) ||
+               constraint.name_.Equals(kGoogTypingNoiseDetection)) {
       // TODO(crbug.com/856176): Remove the kGoogBeamforming and
       // kGoogArrayGeometry special cases.
       context->AddConsoleMessage(ConsoleMessage::Create(
-          kDeprecationMessageSource, mojom::ConsoleMessageLevel::kWarning,
+          mojom::ConsoleMessageSource::kDeprecation,
+          mojom::ConsoleMessageLevel::kWarning,
           "Obsolete constraint named " + String(constraint.name_) +
               " is ignored. Please stop using it."));
     } else if (constraint.name_.Equals(kVideoKind)) {
@@ -441,10 +442,11 @@ static void ParseOldStyleNames(
       if (report_unknown_names) {
         // TODO(hta): UMA stats for unknown constraints passed.
         // https://crbug.com/576613
-        context->AddConsoleMessage(ConsoleMessage::Create(
-            kDeprecationMessageSource, mojom::ConsoleMessageLevel::kWarning,
-            "Unknown constraint named " + String(constraint.name_) +
-                " rejected"));
+        context->AddConsoleMessage(
+            ConsoleMessage::Create(mojom::ConsoleMessageSource::kDeprecation,
+                                   mojom::ConsoleMessageLevel::kWarning,
+                                   "Unknown constraint named " +
+                                       String(constraint.name_) + " rejected"));
         // TODO(crbug.com/856176): Don't throw an error.
         error_state.ThrowConstraintError("Unknown name of constraint detected",
                                          constraint.name_);
@@ -647,10 +649,6 @@ void CopyConstraintSet(const MediaTrackConstraintSet* constraints_in,
     CopyStringConstraint(constraints_in->resizeMode(), naked_treatment,
                          constraint_buffer.resize_mode);
   }
-  if (constraints_in->hasVolume()) {
-    CopyDoubleConstraint(constraints_in->volume(), naked_treatment,
-                         constraint_buffer.volume);
-  }
   if (constraints_in->hasSampleRate()) {
     CopyLongConstraint(constraints_in->sampleRate(), naked_treatment,
                        constraint_buffer.sample_rate);
@@ -662,11 +660,6 @@ void CopyConstraintSet(const MediaTrackConstraintSet* constraints_in,
   if (constraints_in->hasEchoCancellation()) {
     CopyBooleanConstraint(constraints_in->echoCancellation(), naked_treatment,
                           constraint_buffer.echo_cancellation);
-  }
-  if (constraints_in->hasEchoCancellationType()) {
-    CopyStringConstraint(constraints_in->echoCancellationType(),
-                         naked_treatment,
-                         constraint_buffer.echo_cancellation_type);
   }
   if (constraints_in->hasAutoGainControl()) {
     CopyBooleanConstraint(constraints_in->autoGainControl(), naked_treatment,
@@ -695,22 +688,6 @@ void CopyConstraintSet(const MediaTrackConstraintSet* constraints_in,
   if (constraints_in->hasVideoKind()) {
     CopyStringConstraint(constraints_in->videoKind(), naked_treatment,
                          constraint_buffer.video_kind);
-  }
-  if (constraints_in->hasDepthNear()) {
-    CopyDoubleConstraint(constraints_in->depthNear(), naked_treatment,
-                         constraint_buffer.depth_near);
-  }
-  if (constraints_in->hasDepthFar()) {
-    CopyDoubleConstraint(constraints_in->depthFar(), naked_treatment,
-                         constraint_buffer.depth_far);
-  }
-  if (constraints_in->hasFocalLengthX()) {
-    CopyDoubleConstraint(constraints_in->focalLengthX(), naked_treatment,
-                         constraint_buffer.focal_length_x);
-  }
-  if (constraints_in->hasFocalLengthY()) {
-    CopyDoubleConstraint(constraints_in->focalLengthY(), naked_treatment,
-                         constraint_buffer.focal_length_y);
   }
 }
 
@@ -923,8 +900,6 @@ void ConvertConstraintSet(const WebMediaTrackConstraintSet& input,
     output->setFacingMode(ConvertString(input.facing_mode, naked_treatment));
   if (!input.resize_mode.IsEmpty())
     output->setResizeMode(ConvertString(input.resize_mode, naked_treatment));
-  if (!input.volume.IsEmpty())
-    output->setVolume(ConvertDouble(input.volume, naked_treatment));
   if (!input.sample_rate.IsEmpty())
     output->setSampleRate(ConvertLong(input.sample_rate, naked_treatment));
   if (!input.sample_size.IsEmpty())

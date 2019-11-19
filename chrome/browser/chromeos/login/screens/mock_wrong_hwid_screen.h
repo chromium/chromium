@@ -6,17 +6,15 @@
 #define CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_MOCK_WRONG_HWID_SCREEN_H_
 
 #include "chrome/browser/chromeos/login/screens/wrong_hwid_screen.h"
-#include "chrome/browser/chromeos/login/screens/wrong_hwid_screen_view.h"
+#include "chrome/browser/ui/webui/chromeos/login/wrong_hwid_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {
 
-class BaseScreenDelegate;
-
 class MockWrongHWIDScreen : public WrongHWIDScreen {
  public:
-  MockWrongHWIDScreen(BaseScreenDelegate* base_screen_delegate,
-                      WrongHWIDScreenView* view);
+  MockWrongHWIDScreen(WrongHWIDScreenView* view,
+                      const base::RepeatingClosure& exit_callback);
   ~MockWrongHWIDScreen() override;
 
   MOCK_METHOD0(Show, void());
@@ -28,14 +26,14 @@ class MockWrongHWIDScreenView : public WrongHWIDScreenView {
   MockWrongHWIDScreenView();
   ~MockWrongHWIDScreenView() override;
 
-  void SetDelegate(Delegate* delegate) override;
+  void SetDelegate(WrongHWIDScreen* delegate) override;
 
   MOCK_METHOD0(Show, void());
   MOCK_METHOD0(Hide, void());
-  MOCK_METHOD1(MockSetDelegate, void(Delegate*));
+  MOCK_METHOD1(MockSetDelegate, void(WrongHWIDScreen*));
 
  private:
-  Delegate* delegate_ = nullptr;
+  WrongHWIDScreen* delegate_ = nullptr;
 };
 
 }  // namespace chromeos

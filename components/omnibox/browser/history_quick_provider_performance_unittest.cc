@@ -12,7 +12,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_service.h"
@@ -21,7 +21,7 @@
 #include "components/omnibox/browser/history_test_util.h"
 #include "components/omnibox/browser/in_memory_url_index_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 
 namespace history {
 
@@ -99,7 +99,7 @@ class HQPPerfTestOnePopularURL : public testing::Test {
  private:
   base::TimeDelta RunTest(const base::string16& text);
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
 
   scoped_refptr<HistoryQuickProvider> provider_;
@@ -118,7 +118,7 @@ void HQPPerfTestOnePopularURL::SetUp() {
 void HQPPerfTestOnePopularURL::TearDown() {
   provider_ = nullptr;
   client_.reset();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 void HQPPerfTestOnePopularURL::PrepareData() {
@@ -150,16 +150,21 @@ void HQPPerfTestOnePopularURL::PrepareData() {
 }
 
 void HQPPerfTestOnePopularURL::PrintMeasurements(
-    const std::string& trace_name,
+    const std::string& story_name,
     const std::vector<base::TimeDelta>& measurements) {
   auto* test_info = ::testing::UnitTest::GetInstance()->current_test_info();
 
   std::string durations;
   for (const auto& measurement : measurements)
     durations += std::to_string(measurement.InMillisecondsRoundedUp()) + ',';
+  // Strip off trailing comma.
+  durations.pop_back();
 
-  perf_test::PrintResultList(test_info->test_case_name(), test_info->name(),
-                             trace_name, durations, "ms", true);
+  auto metric_prefix = std::string(test_info->test_case_name()) + "_" +
+                       std::string(test_info->name());
+  perf_test::PerfResultReporter reporter(metric_prefix, story_name);
+  reporter.RegisterImportantMetric(".duration", "ms");
+  reporter.AddResultList(".duration", durations);
 }
 
 base::TimeDelta HQPPerfTestOnePopularURL::RunTest(const base::string16& text) {

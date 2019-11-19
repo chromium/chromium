@@ -6,9 +6,11 @@
 
 #include <stddef.h>
 
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/profile_metrics/counts.h"
 #include "ios/chrome/browser/browser_state/browser_state_info_cache.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#include "ios/web/public/browser_state.h"
 
 bool CountBrowserStateInformation(ios::ChromeBrowserStateManager* manager,
                                   profile_metrics::Counts* counts) {
@@ -34,4 +36,11 @@ void LogNumberOfBrowserStates(ios::ChromeBrowserStateManager* manager) {
   profile_metrics::Counts counts;
   CountBrowserStateInformation(manager, &counts);
   profile_metrics::LogProfileMetricsCounts(counts);
+}
+
+profile_metrics::BrowserProfileType GetBrowserStateType(
+    web::BrowserState* browser_state) {
+  return browser_state->IsOffTheRecord()
+             ? profile_metrics::BrowserProfileType::kIncognito
+             : profile_metrics::BrowserProfileType::kRegular;
 }

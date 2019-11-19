@@ -27,6 +27,7 @@ class ConnectivityChecker;
 
 namespace metrics {
 class CastMetricsServiceClient;
+class CastBrowserMetrics;
 }  // namespace metrics
 
 namespace shell {
@@ -59,6 +60,7 @@ class CastBrowserProcess {
   void SetAccessibilityManager(
       std::unique_ptr<AccessibilityManager> accessibility_manager);
   void ClearAccessibilityManager();
+  void AccessibilityStateChanged(bool enabled);
 #endif  // BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 
   void SetCastScreen(std::unique_ptr<CastScreen> cast_screen);
@@ -95,8 +97,8 @@ class CastBrowserProcess {
 #endif  //  BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 
 #endif  // defined(USE_AURA)
-  metrics::CastMetricsServiceClient* metrics_service_client() const {
-    return metrics_service_client_.get();
+  metrics::CastBrowserMetrics* cast_browser_metrics() const {
+    return cast_browser_metrics_.get();
   }
   PrefService* pref_service() const { return pref_service_.get(); }
   ConnectivityChecker* connectivity_checker() const {
@@ -124,7 +126,7 @@ class CastBrowserProcess {
   std::unique_ptr<PrefService> pref_service_;
   scoped_refptr<ConnectivityChecker> connectivity_checker_;
   std::unique_ptr<CastBrowserContext> browser_context_;
-  std::unique_ptr<metrics::CastMetricsServiceClient> metrics_service_client_;
+  std::unique_ptr<metrics::CastBrowserMetrics> cast_browser_metrics_;
   std::unique_ptr<RemoteDebuggingServer> remote_debugging_server_;
 
   CastWebViewFactory* web_view_factory_ = nullptr;

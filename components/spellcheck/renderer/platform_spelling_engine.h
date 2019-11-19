@@ -8,6 +8,7 @@
 #include "base/compiler_specific.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/renderer/spelling_engine.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class PlatformSpellingEngine : public SpellingEngine {
  public:
@@ -29,8 +30,7 @@ class PlatformSpellingEngine : public SpellingEngine {
   // Not owned. |embedder_provider_| outlives PlatformSpellingEngine.
   service_manager::LocalInterfaceProvider* embedder_provider_;
 
-  spellcheck::mojom::SpellCheckHostPtr spell_check_host_;
+  mojo::Remote<spellcheck::mojom::SpellCheckHost> spell_check_host_;
 };
 
 #endif  // COMPONENTS_SPELLCHECK_RENDERER_PLATFORM_SPELLING_ENGINE_H_
-

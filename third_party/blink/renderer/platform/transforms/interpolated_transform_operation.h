@@ -60,6 +60,12 @@ class PLATFORM_EXPORT InterpolatedTransformOperation final
   void Apply(TransformationMatrix&,
              const FloatSize& border_box_size) const override;
 
+  scoped_refptr<TransformOperation> Accumulate(
+      const TransformOperation&) override {
+    NOTREACHED();
+    return this;
+  }
+
   scoped_refptr<TransformOperation> Blend(
       const TransformOperation* from,
       double progress,
@@ -67,6 +73,10 @@ class PLATFORM_EXPORT InterpolatedTransformOperation final
   scoped_refptr<TransformOperation> Zoom(double factor) final {
     return Create(from_.Zoom(factor), to_.Zoom(factor), starting_index_,
                   progress_);
+  }
+
+  bool PreservesAxisAlignment() const final {
+    return from_.PreservesAxisAlignment() && to_.PreservesAxisAlignment();
   }
 
   bool DependsOnBoxSize() const override {

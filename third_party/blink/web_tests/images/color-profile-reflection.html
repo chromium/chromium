@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html>
-<script src="../resources/run-after-layout-and-paint.js"></script>
-
 <style>
   .reflection {
     -webkit-box-reflect: below 5px linear-gradient(transparent, white);
@@ -12,22 +10,4 @@
 
 <!-- The blue sector of the image should be at 12 o'clock and reflected below. -->
 <div></div>
-
-<script>
-window.onload = function() {
-  if (window.testRunner) {
-    testRunner.dumpAsTextWithPixelResults();
-    testRunner.waitUntilDone();
-  }
-
-  document.querySelector('div').classList.add('reflection');
-
-  if (window.testRunner)
-    runAfterLayoutAndPaint(done);
-};
-
-function done() {
-  testRunner.notifyDone();
-}
-</script>
 </html>

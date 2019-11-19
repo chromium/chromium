@@ -81,8 +81,9 @@ BrowsingDataFilterBuilder::Create(Mode mode) {
 }
 
 // static
-base::Callback<bool(const GURL&)> BrowsingDataFilterBuilder::BuildNoopFilter() {
-  return base::Bind([](const GURL&) { return true; });
+base::RepeatingCallback<bool(const GURL&)>
+BrowsingDataFilterBuilder::BuildNoopFilter() {
+  return base::BindRepeating([](const GURL&) { return true; });
 }
 
 BrowsingDataFilterBuilderImpl::BrowsingDataFilterBuilderImpl(Mode mode)
@@ -117,17 +118,17 @@ void BrowsingDataFilterBuilderImpl::AddRegisterableDomain(
   domains_.insert(domain);
 }
 
-bool BrowsingDataFilterBuilderImpl::IsEmptyBlacklist() const {
+bool BrowsingDataFilterBuilderImpl::IsEmptyBlacklist() {
   return mode_ == Mode::BLACKLIST && origins_.empty() && domains_.empty();
 }
 
 base::RepeatingCallback<bool(const GURL&)>
-BrowsingDataFilterBuilderImpl::BuildGeneralFilter() const {
+BrowsingDataFilterBuilderImpl::BuildGeneralFilter() {
   return base::BindRepeating(&MatchesURL, origins_, domains_, mode_);
 }
 
 network::mojom::ClearDataFilterPtr
-BrowsingDataFilterBuilderImpl::BuildNetworkServiceFilter() const {
+BrowsingDataFilterBuilderImpl::BuildNetworkServiceFilter() {
   if (IsEmptyBlacklist())
     return nullptr;
   network::mojom::ClearDataFilterPtr filter =
@@ -143,7 +144,7 @@ BrowsingDataFilterBuilderImpl::BuildNetworkServiceFilter() const {
 }
 
 network::mojom::CookieDeletionFilterPtr
-BrowsingDataFilterBuilderImpl::BuildCookieDeletionFilter() const {
+BrowsingDataFilterBuilderImpl::BuildCookieDeletionFilter() {
   DCHECK(origins_.empty())
       << "Origin-based deletion is not suitable for cookies. Please use "
          "different scoping, such as RegistrableDomainFilterBuilder.";
@@ -163,7 +164,7 @@ BrowsingDataFilterBuilderImpl::BuildCookieDeletionFilter() const {
 }
 
 base::RepeatingCallback<bool(const std::string& site)>
-BrowsingDataFilterBuilderImpl::BuildPluginFilter() const {
+BrowsingDataFilterBuilderImpl::BuildPluginFilter() {
   DCHECK(origins_.empty()) <<
       "Origin-based deletion is not suitable for plugins. Please use "
       "different scoping, such as RegistrableDomainFilterBuilder.";
@@ -171,13 +172,12 @@ BrowsingDataFilterBuilderImpl::BuildPluginFilter() const {
                              domains_, mode_);
 }
 
-BrowsingDataFilterBuilderImpl::Mode
-BrowsingDataFilterBuilderImpl::GetMode() const {
+BrowsingDataFilterBuilderImpl::Mode BrowsingDataFilterBuilderImpl::GetMode() {
   return mode_;
 }
 
 std::unique_ptr<BrowsingDataFilterBuilder>
-BrowsingDataFilterBuilderImpl::Copy() const {
+BrowsingDataFilterBuilderImpl::Copy() {
   std::unique_ptr<BrowsingDataFilterBuilderImpl> copy =
       std::make_unique<BrowsingDataFilterBuilderImpl>(mode_);
   copy->origins_ = origins_;
@@ -186,7 +186,7 @@ BrowsingDataFilterBuilderImpl::Copy() const {
 }
 
 bool BrowsingDataFilterBuilderImpl::operator==(
-    const BrowsingDataFilterBuilder& other) const {
+    const BrowsingDataFilterBuilder& other) {
   // This is the only implementation of BrowsingDataFilterBuilder, so we can
   // downcast |other|.
   const BrowsingDataFilterBuilderImpl* other_impl =

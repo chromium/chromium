@@ -35,7 +35,7 @@ unchanged:
 +  error::Code code;
 +};
 +
- class LIBPROTOBUF_EXPORT Status {
+ class PROTOBUF_EXPORT Status {
   public:
    // Creates a "successful" status.
 @@ -73,13 +77,14 @@

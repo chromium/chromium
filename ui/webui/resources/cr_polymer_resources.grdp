@@ -3,8 +3,8 @@
      Polymer or are Polymer related. -->
 <grit-part>
   <!-- HTML resources -->
-  <structure name="IDR_WEBUI_HTML_ACTION_LINK_CSS"
-             file="html/action_link_css.html" type="chrome_html"
+  <structure name="IDR_WEBUI_HTML_CR_UI_FOCUS_ROW_BEHAVIOR"
+             file="html/cr/ui/focus_row_behavior.html" type="chrome_html"
              compress="gzip" />
   <structure name="IDR_WEBUI_HTML_CR_UI_FOCUS_WITHOUT_INK"
              file="html/cr/ui/focus_without_ink.html" type="chrome_html"
@@ -18,9 +18,6 @@
   <structure name="IDR_WEBUI_HTML_LIST_PROPERTY_UPDATE_BEHAVIOR"
              file="html/list_property_update_behavior.html" type="chrome_html"
              compress="gzip" />
-  <structure name="IDR_WEBUI_HTML_MD_SELECT_CSS_HTML"
-             file="html/md_select_css.html" type="chrome_html"
-             compress="gzip" flattenhtml="true" />
   <structure name="IDR_WEBUI_HTML_POLYMER"
              file="html/polymer.html" type="chrome_html" compress="gzip" />
   <structure name="IDR_WEBUI_HTML_WEBUI_LISTENER_BEHAVIOR"
@@ -37,6 +34,9 @@
   <!-- JS resources -->
   <structure name="IDR_WEBUI_JS_I18N_BEHAVIOR"
              file="js/i18n_behavior.js" type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_WEBUI_JS_CR_UI_FOCUS_ROW_BEHAVIOR"
+             file="js/cr/ui/focus_row_behavior.js" type="chrome_html"
              compress="gzip" />
   <structure name="IDR_WEBUI_JS_CR_UI_FOCUS_WITHOUT_INK"
              file="js/cr/ui/focus_without_ink.js" type="chrome_html"

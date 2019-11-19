@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+
 /**
  * @fileoverview A debouncer which fires the given callback after a delay. The
  * delay can be refreshed by calling restartTimeout. Resetting the timeout with
  * no delay moves the callback to the end of the task queue.
  */
 
-cr.define('bookmarks', function() {
-  class Debouncer {
+  export class Debouncer {
     /** @param {!function()} callback */
     constructor(callback) {
       /** @private {!function()} */
@@ -81,7 +83,3 @@ cr.define('bookmarks', function() {
     }
   }
 
-  return {
-    Debouncer: Debouncer,
-  };
-});

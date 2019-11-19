@@ -34,4 +34,10 @@ public interface TaskExecutor {
      * @return The TaskRunner for the specified TaskTraits.
      */
     public SingleThreadTaskRunner createSingleThreadTaskRunner(TaskTraits traits);
+
+    /**
+     * @return true iff the executor for these traits is backed by a SingleThreadTaskRunner
+     * associated with the current thread.
+     */
+    public boolean canRunTaskImmediately(TaskTraits traits);
 }

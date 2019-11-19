@@ -20,7 +20,8 @@ TEST_F(BrowserAboutRewriterTest, NtpTest) {
   EXPECT_FALSE(WillHandleWebBrowserAboutURL(&url, nil));
 }
 
-// Test that about|chrome://about is rewritten to chrome-urls.
+// Test that about|chrome://about is rewritten to chrome-urls and about:blank
+// is not.
 TEST_F(BrowserAboutRewriterTest, AboutTest) {
   GURL url = GURL("about:about");
   EXPECT_FALSE(WillHandleWebBrowserAboutURL(&url, /*browser_state=*/nullptr));
@@ -29,6 +30,10 @@ TEST_F(BrowserAboutRewriterTest, AboutTest) {
   url = GURL("chrome://about/");
   EXPECT_FALSE(WillHandleWebBrowserAboutURL(&url, /*browser_state=*/nullptr));
   EXPECT_EQ(url, GURL("chrome://chrome-urls/"));
+
+  url = GURL("about:blank?for=");
+  EXPECT_FALSE(WillHandleWebBrowserAboutURL(&url, /*browser_state=*/nullptr));
+  EXPECT_EQ(url, GURL("about:blank?for="));
 }
 
 // Test that about|chrome://sync is rewritten to sync-internals.

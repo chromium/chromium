@@ -4,43 +4,11 @@
 #include "datasets/google_message2/benchmark_message2.pb.h"
 #include "datasets/google_message3/benchmark_message3.pb.h"
 #include "datasets/google_message4/benchmark_message4.pb.h"
-
-#include "google/protobuf/message.h"
-#include "google/protobuf/descriptor.h"
+#include "data_proto2_to_proto3_util.h"
 
 #include <fstream>
 
-using google::protobuf::FieldDescriptor;
-using google::protobuf::Message;
-using google::protobuf::Reflection;
-
-
-class DataGroupStripper {
- public:
-  static void StripMessage(Message *message) {
-    std::vector<const FieldDescriptor*> set_fields;
-    const Reflection* reflection = message->GetReflection();
-    reflection->ListFields(*message, &set_fields);
-
-    for (size_t i = 0; i < set_fields.size(); i++) {
-      const FieldDescriptor* field = set_fields[i];
-      if (field->type() == FieldDescriptor::TYPE_GROUP) {
-        reflection->ClearField(message, field);
-      }
-      if (field->type() == FieldDescriptor::TYPE_MESSAGE) {
-        if (field->is_repeated()) {
-          for (int j = 0; j < reflection->FieldSize(*message, field); j++) {
-            StripMessage(reflection->MutableRepeatedMessage(message, field, j));
-          }
-        } else {
-          StripMessage(reflection->MutableMessage(message, field));
-        }
-      }
-    }
-
-    reflection->MutableUnknownFields(message)->Clear();
-  }
-};
+using google::protobuf::util::GogoDataStripper;
 
 std::string ReadFile(const std::string& name) {
   std::ifstream file(name.c_str());
@@ -91,7 +59,8 @@ int main(int argc, char *argv[]) {
 
     for (int i = 0; i < dataset.payload_size(); i++) {
       message->ParseFromString(dataset.payload(i));
-      DataGroupStripper::StripMessage(message);
+      GogoDataStripper stripper;
+      stripper.StripMessage(message);
       dataset.set_payload(i, message->SerializeAsString());
     }
 

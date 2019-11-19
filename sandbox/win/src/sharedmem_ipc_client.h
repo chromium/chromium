@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "sandbox/win/src/crosscall_params.h"
+#include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/sandbox.h"
 
 // IPC transport implementation that uses shared memory.
@@ -84,7 +85,7 @@ struct ChannelControl {
   // the client waits on the pong event for the IPC answer back
   HANDLE pong_event;
   // the IPC unique identifier
-  uint32_t ipc_tag;
+  IpcTag ipc_tag;
 };
 
 struct IPCControl {

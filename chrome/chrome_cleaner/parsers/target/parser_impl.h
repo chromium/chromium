@@ -5,14 +5,15 @@
 #ifndef CHROME_CHROME_CLEANER_PARSERS_TARGET_PARSER_IMPL_H_
 #define CHROME_CHROME_CLEANER_PARSERS_TARGET_PARSER_IMPL_H_
 
-#include "chrome/chrome_cleaner/interfaces/parser_interface.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "chrome/chrome_cleaner/mojom/parser_interface.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chrome_cleaner {
 
 class ParserImpl : public mojom::Parser {
  public:
-  explicit ParserImpl(mojom::ParserRequest request,
+  explicit ParserImpl(mojo::PendingReceiver<mojom::Parser> receiver,
                       base::OnceClosure connection_error_handler);
   ~ParserImpl() override;
 
@@ -25,7 +26,7 @@ class ParserImpl : public mojom::Parser {
                      ParserImpl::ParseShortcutCallback callback) override;
 
  private:
-  mojo::Binding<mojom::Parser> binding_;
+  mojo::Receiver<mojom::Parser> receiver_;
 };
 
 }  // namespace chrome_cleaner

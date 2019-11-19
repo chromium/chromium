@@ -35,13 +35,13 @@ void NetTestSuite::Shutdown() {
 }
 
 void NetTestSuite::InitializeTestThread() {
-  network_change_notifier_.reset(net::NetworkChangeNotifier::CreateMock());
+  network_change_notifier_ = net::NetworkChangeNotifier::CreateMockIfNeeded();
 
   InitializeTestThreadNoNetworkChangeNotifier();
 }
 
 void NetTestSuite::InitializeTestThreadNoNetworkChangeNotifier() {
-  host_resolver_proc_ = new net::RuleBasedHostResolverProc(NULL);
+  host_resolver_proc_ = new net::RuleBasedHostResolverProc(nullptr);
   scoped_host_resolver_proc_.Init(host_resolver_proc_.get());
   // In case any attempts are made to resolve host names, force them all to
   // be mapped to localhost.  This prevents DNS queries from being sent in

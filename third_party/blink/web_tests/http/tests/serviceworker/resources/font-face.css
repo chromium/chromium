@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'Ahem';
+  /* Use the CORS approved resource so the cross-origin test doesn't fail with
+   * network error. The request is still expected to be logged as initiated by a
+   * no-cors stylesheet.
+   */
+  src: url(/css/resources/cors-ahem.php);
+}
+
+body {
+  font-family: 'Ahem';
+}

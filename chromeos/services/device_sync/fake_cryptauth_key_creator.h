@@ -11,6 +11,7 @@
 #include "chromeos/services/device_sync/cryptauth_key.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/services/device_sync/cryptauth_key_creator.h"
+#include "chromeos/services/device_sync/cryptauth_key_creator_impl.h"
 
 namespace chromeos {
 
@@ -44,6 +45,22 @@ class FakeCryptAuthKeyCreator : public CryptAuthKeyCreator {
   CreateKeysCallback create_keys_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthKeyCreator);
+};
+
+class FakeCryptAuthKeyCreatorFactory : public CryptAuthKeyCreatorImpl::Factory {
+ public:
+  FakeCryptAuthKeyCreatorFactory();
+  ~FakeCryptAuthKeyCreatorFactory() override;
+
+  FakeCryptAuthKeyCreator* instance() { return instance_; }
+
+ private:
+  // CryptAuthKeyCreatorImpl::Factory:
+  std::unique_ptr<CryptAuthKeyCreator> BuildInstance() override;
+
+  FakeCryptAuthKeyCreator* instance_ = nullptr;
+
+  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthKeyCreatorFactory);
 };
 
 }  // namespace device_sync

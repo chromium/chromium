@@ -56,6 +56,11 @@ class PLATFORM_EXPORT ShapingLineBreaker final {
     // Indicates the resulting break offset.
     unsigned break_offset;
 
+    // True if there were no break opportunities that can fit. When this is
+    // false, the result width should be smaller than or equal to the available
+    // space.
+    bool is_overflow;
+
     // True if the break is hyphenated, either by automatic hyphenation or
     // soft-hyphen characters.
     // The hyphen glyph is not included in the |ShapeResult|, and that appending

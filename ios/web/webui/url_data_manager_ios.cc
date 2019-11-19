@@ -17,9 +17,9 @@
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
 #include "ios/web/public/browser_state.h"
-#include "ios/web/public/url_data_source_ios.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
+#include "ios/web/public/webui/url_data_source_ios.h"
 #include "ios/web/webui/url_data_manager_ios_backend.h"
 #include "ios/web/webui/url_data_source_ios_impl.h"
 #include "ios/web/webui/web_ui_ios_data_source_impl.h"
@@ -67,7 +67,7 @@ URLDataManagerIOS::~URLDataManagerIOS() {
 
 void URLDataManagerIOS::AddDataSource(URLDataSourceIOSImpl* source) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {web::WebThread::IO},
       base::BindOnce(&AddDataSourceOnIOThread, base::Unretained(browser_state_),
                      base::WrapRefCounted(source)));
@@ -109,9 +109,8 @@ void URLDataManagerIOS::DeleteDataSource(
   }
   if (schedule_delete) {
     // Schedule a task to delete the DataSource back on the UI thread.
-    base::PostTaskWithTraits(
-        FROM_HERE, {web::WebThread::UI},
-        base::BindOnce(&URLDataManagerIOS::DeleteDataSources));
+    base::PostTask(FROM_HERE, {web::WebThread::UI},
+                   base::BindOnce(&URLDataManagerIOS::DeleteDataSources));
   }
 }
 
@@ -135,7 +134,7 @@ bool URLDataManagerIOS::IsScheduledForDeletion(
   base::AutoLock lock(GetDeleteLock());
   if (!data_sources_)
     return false;
-  return base::ContainsValue(*data_sources_, data_source);
+  return base::Contains(*data_sources_, data_source);
 }
 
 }  // namespace web

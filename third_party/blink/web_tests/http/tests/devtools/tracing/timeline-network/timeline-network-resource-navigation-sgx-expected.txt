@@ -1,0 +1,11 @@
+Tests presence and order of tracing events for a browser navigation.
+
+Page reloaded.
+Recording stopped
+Number of events in request: 5
+ResourceWillSendRequest from thread CrBrowserMain
+ResourceSendRequest from thread CrRendererMain
+ResourceReceiveResponse from thread CrRendererMain
+ResourceReceivedData from thread CrRendererMain
+ResourceFinish from thread CrRendererMain
+

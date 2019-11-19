@@ -21,6 +21,7 @@
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
@@ -42,13 +43,13 @@ std::string GetDefaultMediaDeviceIDOnUIThread(
   if (!delegate)
     return std::string();
 
-  blink::MediaStreamType media_stream_type;
+  blink::mojom::MediaStreamType media_stream_type;
   switch (device_type) {
     case blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT:
-      media_stream_type = blink::MEDIA_DEVICE_AUDIO_CAPTURE;
+      media_stream_type = blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE;
       break;
     case blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT:
-      media_stream_type = blink::MEDIA_DEVICE_VIDEO_CAPTURE;
+      media_stream_type = blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE;
       break;
     default:
       return std::string();
@@ -120,7 +121,7 @@ void GetDefaultMediaDeviceID(
     }
   }
 
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE, {BrowserThread::UI},
       base::Bind(&GetDefaultMediaDeviceIDOnUIThread, device_type,
                  render_process_id, render_frame_id),
@@ -130,22 +131,49 @@ void GetDefaultMediaDeviceID(
 MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
                                                      int render_frame_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderFrameHost* frame_host =
-      RenderFrameHost::FromID(render_process_id, render_frame_id);
+  RenderFrameHostImpl* frame_host =
+      RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
   RenderProcessHost* process_host =
       RenderProcessHost::FromID(render_process_id);
-  WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
-      WebContents::FromRenderFrameHost(frame_host));
 
-  std::string device_id_salt =
-      process_host ? process_host->GetBrowserContext()->GetMediaDeviceIDSalt()
-                   : std::string();
-  std::string group_id_salt =
-      device_id_salt + (web_contents
-                            ? web_contents->GetMediaDeviceGroupIDSaltBase()
-                            : std::string());
-  url::Origin origin =
-      frame_host ? frame_host->GetLastCommittedOrigin() : url::Origin();
+  url::Origin origin;
+  GURL url;
+  GURL site_for_cookies;
+  url::Origin top_level_origin;
+  std::string frame_salt;
+
+  if (frame_host) {
+    origin = frame_host->GetLastCommittedOrigin();
+    url = frame_host->GetLastCommittedURL();
+    site_for_cookies = frame_host->ComputeSiteForCookies();
+    top_level_origin = frame_host->frame_tree_node()
+                           ->frame_tree()
+                           ->GetMainFrame()
+                           ->GetLastCommittedOrigin();
+    frame_salt = frame_host->GetMediaDeviceIDSaltBase();
+  }
+
+  bool are_persistent_ids_allowed = false;
+  std::string device_id_salt;
+  std::string group_id_salt;
+  if (process_host) {
+    are_persistent_ids_allowed =
+        GetContentClient()->browser()->ArePersistentMediaDeviceIDsAllowed(
+            process_host->GetBrowserContext(), url, site_for_cookies,
+            top_level_origin);
+    device_id_salt = process_host->GetBrowserContext()->GetMediaDeviceIDSalt();
+    group_id_salt = device_id_salt;
+  }
+
+  // If persistent IDs are not allowed, append |frame_salt| to make it
+  // specific to the current document.
+  if (!are_persistent_ids_allowed)
+    device_id_salt += frame_salt;
+
+  // |group_id_salt| must be unique per document, but it must also change if
+  // cookies are cleared. Also, it must be different from |device_id_salt|,
+  // thus appending a constant.
+  group_id_salt += frame_salt + "groupid";
 
   return {std::move(device_id_salt), std::move(group_id_salt),
           std::move(origin)};

@@ -4,8 +4,9 @@
      found in the LICENSE file. -->
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-       xmlns:tools="http://schemas.android.com/tools"
-       tools:showIn="@layout/personalized_signin_promo_view_settings">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:showIn="@layout/personalized_signin_promo_view_settings">
 
     <ImageView
         android:id="@+id/signin_promo_image"
@@ -15,7 +16,7 @@
         tools:ignore="ContentDescription"
         android:scaleType="fitCenter"/>
 
-    <ImageButton
+    <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/signin_promo_close_button"
         android:layout_width="24dp"
         android:layout_height="24dp"
@@ -24,5 +25,6 @@
         android:contentDescription="@string/close"
         android:scaleType="fitCenter"
         android:src="@drawable/btn_close"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        app:tint="@color/default_icon_color" />
 </merge>

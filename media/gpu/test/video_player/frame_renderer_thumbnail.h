@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
@@ -40,22 +41,18 @@ class FrameRendererThumbnail : public FrameRenderer {
 
   // Create an instance of the thumbnail frame renderer.
   static std::unique_ptr<FrameRendererThumbnail> Create(
-      const std::vector<std::string> thumbnail_checksums);
-
-  // Create an instance of the thumbnail frame renderer. The |video_file_path|
-  // should point to a file containing all golden thumbnail hashes for the video
-  // being rendered.
-  static std::unique_ptr<FrameRendererThumbnail> Create(
-      const base::FilePath& video_file_path);
+      const std::vector<std::string> thumbnail_checksums,
+      const base::FilePath& output_folder);
 
   // FrameRenderer implementation
-  // Acquire the active GL context. This will claim |gl_context_lock_|.
-  void AcquireGLContext() override;
-  // Release the active GL context. This will release |gl_context_lock_|.
-  void ReleaseGLContext() override;
-  // Get the active GL context. This requires holding |gl_context_lock_|.
+  // Acquire the GL context on the |renderer_task_runner_|. This needs to be
+  // called before executing any GL-related functions. The context will remain
+  // current on the |renderer_task_runner_| until the renderer is destroyed.
+  bool AcquireGLContext() override;
+  // Get the active GL context on the |renderer_task_runner_|.
   gl::GLContext* GetGLContext() override;
   void RenderFrame(scoped_refptr<VideoFrame> video_frame) override;
+  void WaitUntilRenderingDone() override;
   scoped_refptr<VideoFrame> CreateVideoFrame(VideoPixelFormat pixel_format,
                                              const gfx::Size& texture_size,
                                              uint32_t texture_target,
@@ -63,57 +60,58 @@ class FrameRendererThumbnail : public FrameRenderer {
 
   // Validate the thumbnail image by comparing it against known golden values.
   bool ValidateThumbnail();
-  // Save the thumbnail image to disk.
-  void SaveThumbnail();
 
  private:
   explicit FrameRendererThumbnail(
-      const std::vector<std::string>& thumbnail_checksums);
+      const std::vector<std::string>& thumbnail_checksums,
+      const base::FilePath& output_folder);
 
   // Initialize the frame renderer, performs all rendering-related setup.
   void Initialize();
+  // Perform cleanup on the |renderer_task_runner_|, releases the GL context.
+  void DestroyTask(base::WaitableEvent* done);
 
-  // Initialize the thumbnail image the frame thumbnails will be rendered to.
-  void InitializeThumbnailImage() EXCLUSIVE_LOCKS_REQUIRED(renderer_lock_);
-  // Destroy the thumbnail image.
-  void DestroyThumbnailImage() EXCLUSIVE_LOCKS_REQUIRED(renderer_lock_);
-  // Render the texture with specified |texture_id| to the thumbnail image.
-  void RenderThumbnail(uint32_t texture_target, uint32_t texture_id)
-      EXCLUSIVE_LOCKS_REQUIRED(renderer_lock_);
-  // Convert the thumbnail image to RGBA.
-  const std::vector<uint8_t> ConvertThumbnailToRGBA()
-      EXCLUSIVE_LOCKS_REQUIRED(renderer_lock_);
+  // Initialize the thumbnail image the frame thumbnails will be rendered to on
+  // the |renderer_task_runner_|.
+  void InitializeThumbnailImageTask();
+  // Destroy the thumbnail image on the |renderer_task_runner_|.
+  void DestroyThumbnailImageTask();
+  // Render the texture with specified |texture_id| to the thumbnail image on
+  // the |renderer_task_runner_|.
+  void RenderThumbnailTask(uint32_t texture_target, uint32_t texture_id);
+  // Convert the thumbnail image to RGBA on the |renderer_task_runner_|.
+  const std::vector<uint8_t> ConvertThumbnailToRGBATask();
+  // Validate the thumbnail image on the |renderer_task_runner_|. The validated
+  // thumbnail will be saved to disk on failure.
+  void ValidateThumbnailTask(bool* success, base::WaitableEvent* done);
+  // Save the thumbnail image to disk on the |renderer_task_runner_|.
+  void SaveThumbnailTask();
 
-  // Destroy the texture associated with the specified |mailbox|.
-  void DeleteTexture(const gpu::Mailbox& mailbox, const gpu::SyncToken&);
+  // Destroy the texture associated with the |mailbox| on the
+  // |renderer_task_runner_|.
+  void DeleteTextureTask(const gpu::Mailbox& mailbox, const gpu::SyncToken&);
 
   // The number of frames rendered so far.
-  size_t frame_count_ GUARDED_BY(renderer_lock_);
+  size_t frame_count_ = 0u;
 
   // The list of thumbnail checksums for all platforms.
   const std::vector<std::string> thumbnail_checksums_;
   // Map between mailboxes and texture id's.
-  std::map<gpu::Mailbox, uint32_t> mailbox_texture_map_
-      GUARDED_BY(renderer_lock_);
+  std::map<gpu::Mailbox, uint32_t> mailbox_texture_map_;
 
   // Id of the frame buffer used to render the thumbnails image.
-  GLuint thumbnails_fbo_id_ GUARDED_BY(renderer_lock_);
+  GLuint thumbnails_fbo_id_ = 0u;
   // Size of the frame buffer used to render the thumbnails image.
-  gfx::Size thumbnails_fbo_size_ GUARDED_BY(renderer_lock_);
+  gfx::Size thumbnails_fbo_size_;
   // Texture id of the thumbnails image.
-  GLuint thumbnails_texture_id_ GUARDED_BY(renderer_lock_);
+  GLuint thumbnails_texture_id_ = 0u;
   // Size of the individual thumbnails rendered to the thumbnails image.
-  gfx::Size thumbnail_size_ GUARDED_BY(renderer_lock_);
+  gfx::Size thumbnail_size_;
   // Vertex buffer used to render thumbnails to the thumbnails image.
-  GLuint vertex_buffer_ GUARDED_BY(renderer_lock_);
+  GLuint vertex_buffer_ = 0u;
   // Shader program used to render thumbnails to the thumbnails image.
-  GLuint program_ GUARDED_BY(renderer_lock_);
+  GLuint program_ = 0u;
 
-  // Lock protecting variables accessed on both renderer and client thread.
-  mutable base::Lock renderer_lock_;
-
-  // Lock protecting access to the gl context.
-  mutable base::Lock gl_context_lock_;
   // GL context used for rendering.
   scoped_refptr<gl::GLContext> gl_context_;
   // GL surface used for rendering.
@@ -121,6 +119,12 @@ class FrameRendererThumbnail : public FrameRenderer {
 
   // Whether GL was initialized, as it should only happen once.
   static bool gl_initialized_;
+
+  // Output folder the thumbnails image will be written to by SaveThumbnail().
+  const base::FilePath output_folder_;
+
+  // Renderer thread task runner.
+  scoped_refptr<base::SequencedTaskRunner> renderer_task_runner_;
 
   SEQUENCE_CHECKER(client_sequence_checker_);
   SEQUENCE_CHECKER(renderer_sequence_checker_);

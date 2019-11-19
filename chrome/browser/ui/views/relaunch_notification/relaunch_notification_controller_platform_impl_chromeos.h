@@ -9,7 +9,6 @@
 
 #include "base/time/time.h"
 
-class RelaunchRecommendedTimer;
 class RelaunchRequiredTimer;
 
 class RelaunchNotificationControllerPlatformImpl {
@@ -19,7 +18,7 @@ class RelaunchNotificationControllerPlatformImpl {
   ~RelaunchNotificationControllerPlatformImpl();
 
   // Shows the relaunch recommended notification if it is not already open.
-  void NotifyRelaunchRecommended(base::Time detection_time);
+  void NotifyRelaunchRecommended(base::Time detection_time, bool past_deadline);
 
   // Shows the relaunch required notification if it is not already open.
   void NotifyRelaunchRequired(base::Time deadline);
@@ -37,19 +36,21 @@ class RelaunchNotificationControllerPlatformImpl {
  private:
   // Callback triggered whenever the recommended notification's title has to
   // refresh.
-  void RefreshRelaunchRecommendedTitle();
+  void RefreshRelaunchRecommendedTitle(bool past_deadline);
+
+  // Ensure show recording only once.
+  void RecordRecommendedShowResult();
 
   // Callback triggered whenever the required notification's title has to
   // refresh.
   void RefreshRelaunchRequiredTitle();
 
-  // Timer that takes care of the string refresh in the relaunch recommended
-  // notification title.
-  std::unique_ptr<RelaunchRecommendedTimer> relaunch_recommended_timer_;
-
   // Timer that takes care of the string refresh in the relaunch required
   // notification title.
   std::unique_ptr<RelaunchRequiredTimer> relaunch_required_timer_;
+
+  // Indicate that show of the Recommended notification was already recorded.
+  bool recorded_shown_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(RelaunchNotificationControllerPlatformImpl);
 };

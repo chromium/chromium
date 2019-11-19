@@ -4,7 +4,6 @@
 
 import("//build/config/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
-import("//services/service_manager/public/cpp/service_executable.gni")
 import("//testing/test.gni")
 
 source_set("lib") {
@@ -17,11 +16,10 @@ source_set("lib") {
 
   deps = [
     "//base",
-    "//components/services/font/public/interfaces",
+    "//components/services/font/public/mojom",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//ppapi/buildflags:buildflags",
-    "//services/service_manager/public/cpp",
     "//third_party/fontconfig",
     "//ui/gfx",
   ]
@@ -32,10 +30,6 @@ source_set("lib") {
 
   if (is_linux && enable_plugins) {
     deps += [ ":ppapi_fontconfig_matching" ]
-  }
-
-  if (is_linux) {
-    deps += [ "//base/test:fontconfig_util_linux" ]
   }
 }
 
@@ -54,37 +48,21 @@ if (is_linux && enable_plugins) {
   }
 }
 
-service_executable("font_service") {
-  sources = [
-    "main.cc",
-  ]
-
-  deps = [
-    ":lib",
-    "//base",
-    "//mojo/public/c/system",
-    "//services/service_manager/public/cpp",
-    "//services/service_manager/public/mojom",
-  ]
-}
-
 test("font_service_unittests") {
   sources = [
     "font_loader_unittest.cc",
   ]
 
   deps = [
+    ":lib",
     "//base",
     "//base/test:test_support",
     "//components/services/font/public/cpp",
-    "//components/services/font/public/cpp:manifest",
-    "//components/services/font/public/interfaces",
+    "//components/services/font/public/mojom",
     "//mojo/core/test:run_all_unittests",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//ppapi/buildflags:buildflags",
-    "//services/service_manager/public/cpp",
-    "//services/service_manager/public/cpp/test:test_support",
     "//skia",
     "//testing/gtest",
   ]
@@ -95,8 +73,4 @@ test("font_service_unittests") {
       "//third_party:freetype_harfbuzz",
     ]
   }
-
-  data_deps = [
-    ":font_service",
-  ]
 }

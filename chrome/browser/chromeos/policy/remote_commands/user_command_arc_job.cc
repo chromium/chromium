@@ -12,12 +12,20 @@
 #include "base/single_thread_task_runner.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/common/policy.mojom.h"
+#include "components/arc/mojom/policy.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace policy {
+
+namespace {
+
+constexpr base::TimeDelta kDefaultCommandTimeout =
+    base::TimeDelta::FromMinutes(2);
+
+}  // namespace
 
 UserCommandArcJob::UserCommandArcJob(Profile* profile) : profile_(profile) {}
 
@@ -25,6 +33,10 @@ UserCommandArcJob::~UserCommandArcJob() = default;
 
 enterprise_management::RemoteCommand_Type UserCommandArcJob::GetType() const {
   return enterprise_management::RemoteCommand_Type_USER_ARC_COMMAND;
+}
+
+base::TimeDelta UserCommandArcJob::GetCommandTimeout() const {
+  return kDefaultCommandTimeout;
 }
 
 bool UserCommandArcJob::ParseCommandPayload(

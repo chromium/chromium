@@ -9,11 +9,12 @@
 #include "base/process/launch.h"
 #include "base/run_loop.h"
 #include "base/test/launcher/unit_test_launcher.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/exo/wayland/clients/test/wayland_client_test.h"
+#include "components/viz/test/test_gpu_service_holder.h"
 #include "mojo/core/embedder/embedder.h"
 
 namespace exo {
@@ -55,9 +56,8 @@ class ExoClientPerfTestSuite : public ash::AshTestSuite {
     if (run_with_external_wayland_server_) {
       base::TestSuite::Initialize();
 
-      scoped_task_environment_ =
-          std::make_unique<base::test::ScopedTaskEnvironment>(
-              base::test::ScopedTaskEnvironment::MainThreadType::UI);
+      task_environment_ = std::make_unique<base::test::TaskEnvironment>(
+          base::test::TaskEnvironment::MainThreadType::UI);
     } else {
       // We only need initialized ash related stuff for running wayland server
       // within the test.
@@ -65,9 +65,8 @@ class ExoClientPerfTestSuite : public ash::AshTestSuite {
 
       // Initialize task envrionment here instead of Test::SetUp(), because all
       // tests and their SetUp() will be running in client thread.
-      scoped_task_environment_ =
-          std::make_unique<base::test::ScopedTaskEnvironment>(
-              base::test::ScopedTaskEnvironment::MainThreadType::UI);
+      task_environment_ = std::make_unique<base::test::TaskEnvironment>(
+          base::test::TaskEnvironment::MainThreadType::UI);
 
       // Set the UI thread task runner to WaylandClientTest, so all tests can
       // post tasks to UI thread.
@@ -78,11 +77,11 @@ class ExoClientPerfTestSuite : public ash::AshTestSuite {
 
   void Shutdown() override {
     if (run_with_external_wayland_server_) {
-      scoped_task_environment_ = nullptr;
+      task_environment_ = nullptr;
       base::TestSuite::Shutdown();
     } else {
       WaylandClientTest::SetUIThreadTaskRunner(nullptr);
-      scoped_task_environment_ = nullptr;
+      task_environment_ = nullptr;
       ash::AshTestSuite::Shutdown();
     }
   }
@@ -96,7 +95,7 @@ class ExoClientPerfTestSuite : public ash::AshTestSuite {
   // Do not run the wayland server within the test.
   const bool run_with_external_wayland_server_ = false;
 
-  std::unique_ptr<base::test::ScopedTaskEnvironment> scoped_task_environment_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 
   // Result of RUN_ALL_TESTS().
   int result_ = 1;
@@ -109,6 +108,12 @@ class ExoClientPerfTestSuite : public ash::AshTestSuite {
 
 int main(int argc, char** argv) {
   mojo::core::Init();
+
+  // The TaskEnvironment and UI thread don't get reset between tests so don't
+  // reset the GPU thread either. Destroying the GPU service is problematic
+  // because tasks on the UI thread can live on past the end of the test and
+  // keep references to GPU thread objects.
+  viz::TestGpuServiceHolder::DoNotResetOnTestExit();
 
   exo::ExoClientPerfTestSuite test_suite(argc, argv);
 

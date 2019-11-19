@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -18,32 +17,6 @@
 #include "chrome/installer/util/installation_state.h"
 
 namespace installer {
-
-namespace {
-
-enum SetupSingletonAcquisitionResult {
-  // The setup singleton was acquired successfully.
-  SETUP_SINGLETON_ACQUISITION_SUCCESS = 0,
-  // Acquisition of the exit event mutex timed out.
-  SETUP_SINGLETON_ACQUISITION_EXIT_EVENT_MUTEX_TIMEOUT = 1,
-  // Acquisition of the setup mutex timed out.
-  SETUP_SINGLETON_ACQUISITION_SETUP_MUTEX_TIMEOUT = 2,
-  // Creation of the setup mutex failed.
-  SETUP_SINGLETON_ACQUISITION_SETUP_MUTEX_CREATION_FAILED = 3,
-  // Creation of the exit event failed.
-  SETUP_SINGLETON_ACQUISITION_EXIT_EVENT_CREATION_FAILED = 4,
-  // Creation of the exit event mutex failed.
-  SETUP_SINGLETON_ACQUISITION_EXIT_EVENT_MUTEX_CREATION_FAILED = 5,
-  SETUP_SINGLETON_ACQUISITION_RESULT_COUNT,
-};
-
-void RecordSetupSingletonAcquisitionResultHistogram(
-    SetupSingletonAcquisitionResult result) {
-  UMA_HISTOGRAM_ENUMERATION("Setup.Install.SingletonAcquisitionResult", result,
-                            SETUP_SINGLETON_ACQUISITION_RESULT_COUNT);
-}
-
-}  // namespace
 
 std::unique_ptr<SetupSingleton> SetupSingleton::Acquire(
     const base::CommandLine& command_line,
@@ -61,8 +34,7 @@ std::unique_ptr<SetupSingleton> SetupSingleton::Acquire(
       nullptr, FALSE,
       (L"Global\\ChromeSetupMutex_" + sync_primitive_name_suffix).c_str()));
   if (!setup_mutex.IsValid()) {
-    RecordSetupSingletonAcquisitionResultHistogram(
-        SETUP_SINGLETON_ACQUISITION_SETUP_MUTEX_CREATION_FAILED);
+    // UMA data indicates that this happens 0.03 % of the time.
     return nullptr;
   }
 
@@ -70,8 +42,7 @@ std::unique_ptr<SetupSingleton> SetupSingleton::Acquire(
       nullptr, TRUE, FALSE,
       (L"Global\\ChromeSetupExitEvent_" + sync_primitive_name_suffix).c_str()));
   if (!exit_event.IsValid()) {
-    RecordSetupSingletonAcquisitionResultHistogram(
-        SETUP_SINGLETON_ACQUISITION_EXIT_EVENT_CREATION_FAILED);
+    // UMA data indicates that this happens < 0.01 % of the time.
     return nullptr;
   }
 
@@ -87,15 +58,13 @@ std::unique_ptr<SetupSingleton> SetupSingleton::Acquire(
         (L"Global\\ChromeSetupExitEventMutex_" + sync_primitive_name_suffix)
             .c_str()));
     if (!exit_event_mutex.IsValid()) {
-      RecordSetupSingletonAcquisitionResultHistogram(
-          SETUP_SINGLETON_ACQUISITION_EXIT_EVENT_MUTEX_CREATION_FAILED);
+      // UMA data indicates that this happens < 0.01 % of the time.
       return nullptr;
     }
 
     ScopedHoldMutex scoped_hold_exit_event_mutex;
     if (!scoped_hold_exit_event_mutex.Acquire(exit_event_mutex.Get())) {
-      RecordSetupSingletonAcquisitionResultHistogram(
-          SETUP_SINGLETON_ACQUISITION_EXIT_EVENT_MUTEX_TIMEOUT);
+      // UMA data indicates that this happens < 0.01 % of the time.
       return nullptr;
     }
 
@@ -107,8 +76,7 @@ std::unique_ptr<SetupSingleton> SetupSingleton::Acquire(
     // Acquire |setup_mutex_|.
     if (!setup_singleton->scoped_hold_setup_mutex_.Acquire(
             setup_singleton->setup_mutex_.Get())) {
-      RecordSetupSingletonAcquisitionResultHistogram(
-          SETUP_SINGLETON_ACQUISITION_SETUP_MUTEX_TIMEOUT);
+      // UMA data indicates that this happens 0.84 % of the time.
       return nullptr;
     }
     setup_singleton->exit_event_.Reset();
@@ -119,8 +87,7 @@ std::unique_ptr<SetupSingleton> SetupSingleton::Acquire(
   installer_state->Initialize(command_line, master_preferences,
                               *original_state);
 
-  RecordSetupSingletonAcquisitionResultHistogram(
-      SETUP_SINGLETON_ACQUISITION_SUCCESS);
+  // UMA data indicates that this method succeeds > 99% of the time.
   return setup_singleton;
 }
 

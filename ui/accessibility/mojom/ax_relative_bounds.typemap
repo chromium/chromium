@@ -12,8 +12,8 @@ sources = [
 ]
 public_deps = [
   "//ui/gfx",
-  "//ui/gfx/geometry/mojo",
-  "//ui/gfx/geometry/mojo:struct_traits",
-  "//ui/gfx/mojo",
+  "//ui/gfx/geometry/mojom",
+  "//ui/gfx/geometry/mojom:mojom_traits",
+  "//ui/gfx/mojom",
 ]
-type_mappings = [ "ax.mojom.AXRelativeBounds=ui::AXRelativeBounds" ]
+type_mappings = [ "ax.mojom.AXRelativeBounds=::ui::AXRelativeBounds" ]

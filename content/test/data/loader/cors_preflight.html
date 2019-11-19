@@ -1,0 +1,12 @@
+<html>
+<head>
+<script>
+const cors_url = location.protocol + "//" + location.hostname + ":" +
+    location.search.split(';')[1];
+const cache_mode = location.search.split(';')[2];
+fetch(cors_url, {cache: cache_mode, headers: [["foo", "bar"]]}).then(() => {
+  document.title = "DONE";
+});
+</script>
+</head>
+</html>

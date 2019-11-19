@@ -36,9 +36,11 @@ Polymer({
 
   behaviors: [
     I18nBehavior,
+    WebUIListenerBehavior,
     ListPropertyUpdateBehavior,
     Polymer.IronA11yKeysBehavior,
     settings.GlobalScrollTargetBehavior,
+    PrefsBehavior,
   ],
 
   properties: {
@@ -94,6 +96,18 @@ Polymer({
     },
 
     /** @private */
+    hidePasswordsLink_: {
+      type: Boolean,
+      computed: 'computeHidePasswordsLink_(syncPrefs_, syncStatus_)',
+    },
+
+    /** @private */
+    passwordsLeakDetectionEnabled_: {
+      type: Boolean,
+      value: loadTimeData.getBoolean('passwordsLeakDetectionEnabled'),
+    },
+
+    /** @private */
     showExportPasswords_: {
       type: Boolean,
       computed: 'hasPasswords_(savedPasswords.splices)',
@@ -111,6 +125,23 @@ Polymer({
     /** @private */
     showPasswordEditDialog_: Boolean,
 
+    // <if expr="not chromeos">
+    /** @private {Array<!settings.StoredAccount>} */
+    storedAccounts_: Object,
+    // </if>
+
+    /** @private {settings.SyncPrefs} */
+    syncPrefs_: Object,
+
+    /** @private {settings.SyncStatus} */
+    syncStatus_: Object,
+
+    /** @private */
+    userSignedIn_: {
+      type: Boolean,
+      computed: 'computeUserSignedIn_(syncStatus_, storedAccounts_)',
+    },
+
     /** Filter on the saved passwords and exceptions. */
     filter: {
       type: String,
@@ -122,11 +153,28 @@ Polymer({
 
     /** @private */
     listBlurred_: Boolean,
+
+    // <if expr="chromeos">
+    /**
+     * Auth token for retrieving passwords if required by OS.
+     * @private
+     */
+    authToken_: {
+      type: String,
+      value: '',
+      observer: 'onAuthTokenChanged_',
+    },
+
+    /** @private */
+    showPasswordPromptDialog_: Boolean,
+
+    /** @private {settings.BlockingRequestManager} */
+    tokenRequestManager_: Object
+    // </if>
   },
 
   listeners: {
     'password-menu-tap': 'onPasswordMenuTap_',
-    'export-passwords': 'onExportPasswords_',
   },
 
   keyBindings: {
@@ -139,11 +187,14 @@ Polymer({
   },
 
   /**
-   * The element to return focus to, when the currently active dialog is
-   * closed.
-   * @private {?HTMLElement}
+   * A stack of the elements that triggered dialog to open and should therefore
+   * receive focus when that dialog is closed. The bottom of the stack is the
+   * element that triggered the earliest open dialog and top of the stack is the
+   * element that triggered the most recent (i.e. active) dialog. If no dialog
+   * is open, the stack is empty.
+   * @private {!Array<Element>}
    */
-  activeDialogAnchor_: null,
+  activeDialogAnchorStack_: [],
 
   /**
    * @type {PasswordManagerProxy}
@@ -184,6 +235,19 @@ Polymer({
     // Set the manager. These can be overridden by tests.
     this.passwordManager_ = PasswordManagerImpl.getInstance();
 
+    // <if expr="chromeos">
+    // If the user's account supports the password check, an auth token will be
+    // required in order for them to view or export passwords. Otherwise there
+    // is no additional security so |tokenRequestManager_| will immediately
+    // resolve requests.
+    if (loadTimeData.getBoolean('userCannotManuallyEnterPassword')) {
+      this.tokenRequestManager_ = new settings.BlockingRequestManager();
+    } else {
+      this.tokenRequestManager_ = new settings.BlockingRequestManager(
+          this.openPasswordPromptDialog_.bind(this));
+    }
+    // </if>
+
     // Request initial data.
     this.passwordManager_.getSavedPasswordList(setSavedPasswordsListener);
     this.passwordManager_.getExceptionList(setPasswordExceptionsListener);
@@ -195,6 +259,23 @@ Polymer({
         setPasswordExceptionsListener);
 
     this.notifySplices('savedPasswords', []);
+
+    const syncBrowserProxy = settings.SyncBrowserProxyImpl.getInstance();
+
+    const syncStatusChanged = syncStatus => this.syncStatus_ = syncStatus;
+    syncBrowserProxy.getSyncStatus().then(syncStatusChanged);
+    this.addWebUIListener('sync-status-changed', syncStatusChanged);
+
+    // <if expr="not chromeos">
+    const storedAccountsChanged = storedAccounts => this.storedAccounts_ =
+        storedAccounts;
+    syncBrowserProxy.getStoredAccounts().then(storedAccountsChanged);
+    this.addWebUIListener('stored-accounts-updated', storedAccountsChanged);
+    // </if>
+
+    const syncPrefsChanged = syncPrefs => this.syncPrefs_ = syncPrefs;
+    syncBrowserProxy.sendSyncPrefsChanged();
+    this.addWebUIListener('sync-prefs-changed', syncPrefsChanged);
 
     Polymer.RenderStatus.afterNextRender(this, function() {
       Polymer.IronA11yAnnouncer.requestAvailability();
@@ -213,11 +294,43 @@ Polymer({
          * @type {function(!Array<PasswordManagerProxy.ExceptionEntry>):void}
          */
         (this.setPasswordExceptionsListener_));
-
-    if (this.$.undoToast.open) {
-      this.$.undoToast.hide();
+    if (cr.toastManager.getInstance().isToastOpen) {
+      cr.toastManager.getInstance().hide();
     }
   },
+
+  // <if expr="chromeos">
+  /**
+   * When |authToken_| changes to a new non-empty value, it means that the
+   * password-prompt-dialog succeeded in creating a fresh token in the
+   * quickUnlockPrivate API. Because new tokens can only ever be created
+   * immediately following a GAIA password check, the passwordsPrivate API can
+   * now safely grant requests for secure data (i.e. saved passwords) for a
+   * limited time. This observer resolves the request, triggering a callback
+   * that requires a fresh auth token to succeed and that was provided to the
+   * BlockingRequestManager by another DOM element seeking secure data.
+   *
+   * @param {string} newToken The newly created auth token. Note that its
+   *     precise value is not relevant here, only the facts that it changed and
+   *     that it is non-empty (i.e. not expired).
+   * @private
+   */
+  onAuthTokenChanged_: function(newToken) {
+    if (newToken) {
+      this.tokenRequestManager_.resolve();
+    }
+  },
+
+  onPasswordPromptClosed_: function() {
+    this.showPasswordPromptDialog_ = false;
+    cr.ui.focusWithoutInk(assert(this.activeDialogAnchorStack_.pop()));
+  },
+
+  openPasswordPromptDialog_: function() {
+    this.activeDialogAnchorStack_.push(getDeepActiveElement());
+    this.showPasswordPromptDialog_ = true;
+  },
+  // </if>
 
   /**
    * Shows the edit password dialog.
@@ -233,12 +346,39 @@ Polymer({
   /** @private */
   onPasswordEditDialogClosed_: function() {
     this.showPasswordEditDialog_ = false;
-    cr.ui.focusWithoutInk(assert(this.activeDialogAnchor_));
-    this.activeDialogAnchor_ = null;
+    cr.ui.focusWithoutInk(assert(this.activeDialogAnchorStack_.pop()));
 
     // Trigger a re-evaluation of the activePassword as the visibility state of
     // the password might have changed.
     this.activePassword.notifyPath('item.password');
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeHidePasswordsLink_: function() {
+    return !!this.syncStatus_ && !!this.syncStatus_.signedIn &&
+        !!this.syncPrefs_ && !!this.syncPrefs_.encryptAllData;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeUserSignedIn_: function() {
+    return (!!this.syncStatus_ && !!this.syncStatus_.signedIn) ?
+        !this.syncStatus_.hasError :
+        (!!this.storedAccounts_ && this.storedAccounts_.length > 0);
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  getCheckedLeakDetection_: function() {
+    return this.userSignedIn_ &&
+        !!this.getPref('profile.password_manager_leak_detection').value;
   },
 
   /**
@@ -254,6 +394,20 @@ Polymer({
     return this.savedPasswords.filter(
         p => [p.entry.urls.shown, p.entry.username].some(
             term => term.toLowerCase().includes(filter.toLowerCase())));
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getPasswordsLeakDetectionSubLabel_: function() {
+    if (this.userSignedIn_) {
+      return '';
+    }
+    if (this.getPref('profile.password_manager_leak_detection').value) {
+      return this.i18n('passwordsLeakDetectionSignedOutEnabledDescription');
+    }
+    return '';
   },
 
   /**
@@ -273,8 +427,9 @@ Polymer({
   onMenuRemovePasswordTap_: function() {
     this.passwordManager_.removeSavedPassword(
         this.activePassword.item.entry.id);
-    this.fire('iron-announce', {text: this.$.undoLabel.textContent});
-    this.$.undoToast.show();
+    cr.toastManager.getInstance().show(
+        this.i18n('passwordDeleted'),
+        /* showUndo */ true);
     /** @type {CrActionMenuElement} */ (this.$.menu).close();
   },
 
@@ -287,7 +442,7 @@ Polymer({
     const activeElement = getDeepActiveElement();
     if (!activeElement || !isEditable(activeElement)) {
       this.passwordManager_.undoRemoveSavedPasswordOrException();
-      this.$.undoToast.hide();
+      cr.toastManager.getInstance().hide();
       // Preventing the default is necessary to not conflict with a possible
       // search action.
       event.preventDefault();
@@ -296,7 +451,7 @@ Polymer({
 
   onUndoButtonTap_: function() {
     this.passwordManager_.undoRemoveSavedPasswordOrException();
-    this.$.undoToast.hide();
+    cr.toastManager.getInstance().hide();
   },
   /**
    * Fires an event that should delete the password exception.
@@ -319,7 +474,7 @@ Polymer({
     this.activePassword =
         /** @type {!PasswordListItemElement} */ (event.detail.listItem);
     menu.showAt(target);
-    this.activeDialogAnchor_ = target;
+    this.activeDialogAnchorStack_.push(target);
   },
 
   /**
@@ -332,7 +487,7 @@ Polymer({
         /** @type {!HTMLElement} */ (this.$$('#exportImportMenuButton'));
 
     menu.showAt(target);
-    this.activeDialogAnchor_ = target;
+    this.activeDialogAnchorStack_.push(target);
   },
 
   /**
@@ -356,8 +511,7 @@ Polymer({
   /** @private */
   onPasswordsExportDialogClosed_: function() {
     this.showPasswordsExportDialog_ = false;
-    cr.ui.focusWithoutInk(assert(this.activeDialogAnchor_));
-    this.activeDialogAnchor_ = null;
+    cr.ui.focusWithoutInk(assert(this.activeDialogAnchorStack_.pop()));
   },
 
   /**
@@ -393,6 +547,6 @@ Polymer({
   showImportOrExportPasswords_: function(
       showExportPasswords, showImportPasswords) {
     return showExportPasswords || showImportPasswords;
-  }
+  },
 });
 })();

@@ -11,7 +11,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import android.app.Notification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -41,6 +43,8 @@ import org.chromium.content_public.browser.WebContents;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CastWebContentsServiceTest {
+    private static final String WEBCONTENTS_TITLE = "CastWebContentsServiceTest_title";
+
     private @Mock WebContents mWebContents;
     private @Mock MediaSessionImpl mMediaSessionImpl;
     private String mInstanceId;
@@ -73,6 +77,7 @@ public class CastWebContentsServiceTest {
     @Before
     public void setUp() {
         mWebContents = mock(WebContents.class);
+        when(mWebContents.getTitle()).thenReturn(WEBCONTENTS_TITLE);
         mMediaSessionImpl = mock(MediaSessionImpl.class);
         mInstanceId = "1";
         mIntent = CastWebContentsIntentUtils.requestStartCastService(
@@ -93,6 +98,32 @@ public class CastWebContentsServiceTest {
         assertNotNull(mShadowService.getLastForegroundNotification());
         assertFalse(mShadowService.isForegroundStopped());
         assertFalse(mShadowService.getNotificationShouldRemoved());
+    }
+
+    @Test
+    public void testForegroundNotificationHasUniqueChannelId() {
+        mServiceLifecycle.bind();
+        Notification notification = mShadowService.getLastForegroundNotification();
+        String notificationChannelId = notification.getChannelId();
+        assertNotNull(notificationChannelId);
+        assertEquals("org.chromium.chromecast.shell.CastWebContentsService.channel",
+                notificationChannelId);
+    }
+
+    @Test
+    public void testForegroundNotificationHasCorrectSmallIcon() {
+        mServiceLifecycle.bind();
+        Notification notification = mShadowService.getLastForegroundNotification();
+        assertNotNull(notification.getSmallIcon());
+        assertEquals(R.drawable.ic_settings_cast, notification.getSmallIcon().getResId());
+    }
+
+    @Test
+    public void testNotificationTitleMatchesWebContentsTitle() {
+        mServiceLifecycle.bind();
+        Notification notification = mShadowService.getLastForegroundNotification();
+        assertEquals(notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString(),
+                WEBCONTENTS_TITLE);
     }
 
     @Test

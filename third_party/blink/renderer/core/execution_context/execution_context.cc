@@ -27,35 +27,46 @@
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 
+#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/csp/execution_context_csp_delegate.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/fetch_client_settings_object_impl.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
 
-ExecutionContext::ExecutionContext(v8::Isolate* isolate)
+ExecutionContext::ExecutionContext(v8::Isolate* isolate,
+                                   Agent* agent,
+                                   OriginTrialContext* origin_trial_context)
     : isolate_(isolate),
       circular_sequential_id_(0),
       in_dispatch_error_event_(false),
+      lifecycle_state_(mojom::FrameLifecycleState::kRunning),
       is_context_destroyed_(false),
       csp_delegate_(MakeGarbageCollected<ExecutionContextCSPDelegate>(*this)),
+      agent_(agent),
+      origin_trial_context_(origin_trial_context),
       window_interaction_tokens_(0),
-      referrer_policy_(network::mojom::ReferrerPolicy::kDefault),
-      invalidator_(std::make_unique<InterfaceInvalidator>()) {}
+      referrer_policy_(network::mojom::ReferrerPolicy::kDefault) {
+  if (origin_trial_context_)
+    origin_trial_context_->BindExecutionContext(this);
+}
 
 ExecutionContext::~ExecutionContext() = default;
 
@@ -94,8 +105,15 @@ void ExecutionContext::SetLifecycleState(mojom::FrameLifecycleState state) {
 
 void ExecutionContext::NotifyContextDestroyed() {
   is_context_destroyed_ = true;
-  invalidator_.reset();
   ContextLifecycleNotifier::NotifyContextDestroyed();
+}
+
+void ExecutionContext::AddConsoleMessageImpl(mojom::ConsoleMessageSource source,
+                                             mojom::ConsoleMessageLevel level,
+                                             const String& message,
+                                             bool discard_duplicates) {
+  AddConsoleMessage(ConsoleMessage::Create(source, level, message),
+                    discard_duplicates);
 }
 
 void ExecutionContext::DispatchErrorEvent(
@@ -136,6 +154,10 @@ bool ExecutionContext::DispatchErrorEventInternal(
   return error_event->defaultPrevented();
 }
 
+bool ExecutionContext::IsContextPaused() const {
+  return lifecycle_state_ != mojom::FrameLifecycleState::kRunning;
+}
+
 int ExecutionContext::CircularSequentialID() {
   ++circular_sequential_id_;
   if (circular_sequential_id_ > ((1U << 31) - 1U))
@@ -146,7 +168,7 @@ int ExecutionContext::CircularSequentialID() {
 
 PublicURLManager& ExecutionContext::GetPublicURLManager() {
   if (!public_url_manager_)
-    public_url_manager_ = PublicURLManager::Create(this);
+    public_url_manager_ = MakeGarbageCollected<PublicURLManager>(this);
   return *public_url_manager_;
 }
 
@@ -171,6 +193,10 @@ SecurityOrigin* ExecutionContext::GetMutableSecurityOrigin() {
 
 ContentSecurityPolicy* ExecutionContext::GetContentSecurityPolicy() {
   return GetSecurityContext().GetContentSecurityPolicy();
+}
+
+const base::UnguessableToken& ExecutionContext::GetAgentClusterID() const {
+  return agent_->cluster_id();
 }
 
 void ExecutionContext::AllowWindowInteraction() {
@@ -211,7 +237,8 @@ void ExecutionContext::ParseAndSetReferrerPolicy(const String& policies,
                                   : kDoNotSupportReferrerPolicyLegacyKeywords,
           &referrer_policy)) {
     AddConsoleMessage(ConsoleMessage::Create(
-        kRenderingMessageSource, mojom::ConsoleMessageLevel::kError,
+        mojom::ConsoleMessageSource::kRendering,
+        mojom::ConsoleMessageLevel::kError,
         "Failed to set referrer policy: The value '" + policies +
             "' is not one of " +
             (support_legacy_keywords
@@ -247,8 +274,10 @@ void ExecutionContext::Trace(blink::Visitor* visitor) {
   visitor->Trace(public_url_manager_);
   visitor->Trace(pending_exceptions_);
   visitor->Trace(csp_delegate_);
+  visitor->Trace(agent_);
+  visitor->Trace(origin_trial_context_);
   ContextLifecycleNotifier::Trace(visitor);
-  ConsoleLoggerImplBase::Trace(visitor);
+  ConsoleLogger::Trace(visitor);
   Supplementable<ExecutionContext>::Trace(visitor);
 }
 
@@ -260,6 +289,41 @@ bool ExecutionContext::IsSameAgentCluster(
   if (this_id.is_empty() || other_id.is_empty())
     return false;
   return this_id == other_id;
+}
+
+v8::MicrotaskQueue* ExecutionContext::GetMicrotaskQueue() const {
+  // TODO(keishi): Convert to DCHECK once we assign agents everywhere.
+  if (!agent_)
+    return nullptr;
+  DCHECK(agent_->event_loop());
+  return agent_->event_loop()->microtask_queue();
+}
+
+bool ExecutionContext::FeatureEnabled(OriginTrialFeature feature) const {
+  return origin_trial_context_ &&
+         origin_trial_context_->IsFeatureEnabled(feature);
+}
+
+void ExecutionContext::CountFeaturePolicyUsage(mojom::WebFeature feature) {
+  UseCounter::Count(*this, feature);
+}
+
+bool ExecutionContext::FeaturePolicyFeatureObserved(
+    mojom::FeaturePolicyFeature feature) {
+  size_t feature_index = static_cast<size_t>(feature);
+  if (parsed_feature_policies_.size() == 0) {
+    parsed_feature_policies_.resize(
+        static_cast<size_t>(mojom::FeaturePolicyFeature::kMaxValue) + 1);
+  } else if (parsed_feature_policies_[feature_index]) {
+    return true;
+  }
+  parsed_feature_policies_[feature_index] = true;
+  return false;
+}
+
+bool ExecutionContext::RequireTrustedTypes() const {
+  return GetSecurityContext().TrustedTypesRequiredByPolicy() &&
+         RuntimeEnabledFeatures::TrustedDOMTypesEnabled(this);
 }
 
 }  // namespace blink

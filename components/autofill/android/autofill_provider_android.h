@@ -49,7 +49,7 @@ class AutofillProviderAndroid : public AutofillProvider {
   void OnFormSubmitted(AutofillHandlerProxy* handler,
                        const FormData& form,
                        bool known_success,
-                       SubmissionSource source) override;
+                       mojom::SubmissionSource source) override;
   void OnFocusNoLongerOnForm(AutofillHandlerProxy* handler) override;
   void OnFocusOnFormField(AutofillHandlerProxy* handler,
                           const FormData& form,
@@ -68,7 +68,7 @@ class AutofillProviderAndroid : public AutofillProvider {
   void OnAutofillAvailable(JNIEnv* env, jobject jcaller, jobject form_data);
 
  private:
-  void FireSuccessfulSubmission(SubmissionSource source);
+  void FireSuccessfulSubmission(mojom::SubmissionSource source);
   void OnFocusChanged(bool focus_on_form,
                       size_t index,
                       const gfx::RectF& bounding_box);
@@ -100,7 +100,7 @@ class AutofillProviderAndroid : public AutofillProvider {
   content::WebContents* web_contents_;
   bool check_submission_;
   // Valid only if check_submission_ is true.
-  SubmissionSource pending_submission_source_;
+  mojom::SubmissionSource pending_submission_source_;
 
   base::WeakPtr<AutofillHandlerProxy> handler_for_testing_;
 

@@ -67,12 +67,14 @@ class ContentSettingImageView : public IconLabelBubbleView,
 
   void disable_animation() { can_animate_ = false; }
 
+  bool ShowBubbleImpl();
+
   // IconLabelBubbleView:
   const char* GetClassName() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
-  void OnNativeThemeChanged(const ui::NativeTheme* native_theme) override;
+  void OnThemeChanged() override;
   SkColor GetTextColor() const override;
   bool ShouldShowSeparator() const override;
   bool ShowBubble(const ui::Event& event) override;

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/public/platform/web_memory_pressure_listener.h"
 
-#include "third_party/blink/renderer/platform/memory_pressure_listener.h"
+#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 
 namespace blink {
 

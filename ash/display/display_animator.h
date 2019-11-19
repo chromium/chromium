@@ -54,7 +54,7 @@ class ASH_EXPORT DisplayAnimator
 
   std::map<aura::Window*, std::unique_ptr<ui::Layer>> hiding_layers_;
   std::unique_ptr<base::OneShotTimer> timer_;
-  base::WeakPtrFactory<DisplayAnimator> weak_ptr_factory_;
+  base::WeakPtrFactory<DisplayAnimator> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DisplayAnimator);
 };

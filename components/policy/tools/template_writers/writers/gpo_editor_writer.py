@@ -23,12 +23,20 @@ class GpoEditorWriter(template_writer.TemplateWriter):
     # Include deprecated policies in the 'DeprecatedPolicies' group, even if
     # they aren't supported anymore.
     #
-    # TODO(crbug.com/463990): Eventually exclude some policies, e.g. if they were
-    # deprecated a long time ago.
+    # TODO(crbug.com/463990): Eventually exclude some policies, e.g. if they
+    # were deprecated a long time ago.
     if policy.get('deprecated', False):
       return True
 
     return super(GpoEditorWriter, self).IsVersionSupported(policy, supported_on)
+
+  def IsPolicyOnWin7Only(self, policy):
+    ''' Returns true if the policy is supported on win7 only.'''
+    for suppported_on in policy.get('supported_on', []):
+      if 'win7' in suppported_on.get('platforms', []):
+        return True
+    return False
+
 
   def _FindDeprecatedPolicies(self, policy_list):
     deprecated_policies = []

@@ -24,6 +24,8 @@ namespace explore_sites {
 // specific.
 class GetImagesTask : public Task {
  public:
+  enum class DataType { kCategory, kSite, kSummary };
+
   GetImagesTask(ExploreSitesStore* store,
                 int category_id,
                 int max_images,
@@ -31,6 +33,11 @@ class GetImagesTask : public Task {
 
   GetImagesTask(ExploreSitesStore* store,
                 int site_id,
+                EncodedImageListCallback callback);
+
+  GetImagesTask(ExploreSitesStore* store,
+                DataType data_type,
+                int max_images,
                 EncodedImageListCallback callback);
 
   ~GetImagesTask() override;
@@ -43,14 +50,13 @@ class GetImagesTask : public Task {
 
   ExploreSitesStore* store_;  // outlives this class.
 
-  enum class DataType { kCategory, kSite };
   DataType data_type_;
   int id_;
   int max_results_;
 
   EncodedImageListCallback callback_;
 
-  base::WeakPtrFactory<GetImagesTask> weak_ptr_factory_;
+  base::WeakPtrFactory<GetImagesTask> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GetImagesTask);
 };

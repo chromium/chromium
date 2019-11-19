@@ -16,10 +16,6 @@
 #include "net/http/http_byte_range.h"
 #include "storage/browser/blob/blob_reader.h"
 
-namespace net {
-class IOBufferWithSize;
-}
-
 namespace network {
 class NetToMojoPendingBuffer;
 }
@@ -55,9 +51,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MojoBlobReader {
                                              uint64_t content_size) = 0;
 
     // Called if DidCalculateSize returned |REQUEST_SIDE_DATA|, with the side
-    // data associated with the blob being read. If the blob doesn't have side
-    // data this method is called with null.
-    virtual void DidReadSideData(net::IOBufferWithSize* data) {}
+    // data associated with the blob being read, if any.
+    virtual void DidReadSideData(base::Optional<mojo_base::BigBuffer> data) {}
 
     // Called whenever some amount of data is read from the blob and about to be
     // written to the data pipe.
@@ -133,7 +128,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MojoBlobReader {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<MojoBlobReader> weak_factory_;
+  base::WeakPtrFactory<MojoBlobReader> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MojoBlobReader);
 };

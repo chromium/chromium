@@ -16,6 +16,14 @@ Polymer({
       type: String,
       notify: true,
     },
+
+    /**
+     * The number of cookies used by the given website.
+     */
+    websiteCookieUsage: {
+      type: String,
+      notify: true,
+    },
   },
 
   /** @override */
@@ -76,7 +84,7 @@ cr.define('settings.WebsiteUsagePrivateApi', function() {
    * @param {string} usage The string showing how much data the given host
    *     is using.
    */
-  const returnUsageTotal = function(host, usage) {
+  const returnUsageTotal = function(host, usage, cookies) {
     const instance =
         settings.WebsiteUsagePrivateApi.websiteUsagePolymerInstance;
     if (instance == null) {
@@ -85,6 +93,7 @@ cr.define('settings.WebsiteUsagePrivateApi', function() {
 
     if (hostName == host) {
       instance.websiteDataUsage = usage;
+      instance.websiteCookieUsage = cookies;
     }
   };
 

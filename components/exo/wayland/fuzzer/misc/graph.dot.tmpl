@@ -1,0 +1,41 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+digraph g {
+pack=false;
+start="random";
+overlap=false;
+splines=true;
+graph [rankdir = "LR"];
+
+"_unknown_" [label="?" shape=diamond]
+{% for interface in interfaces %}
+  "{{interface.name}}" [shape=box]
+  {% for request in interface.requests %}
+    "{{interface.name}}_{{request.name}}" [label="{{request.name}}", shape=ellipse]
+  {% endfor %}
+  {% for event in interface.events %}
+    "{{interface.name}}_{{event.name}}" [label="{{event.name}}", shape=hexagon]
+  {% endfor %}
+{% endfor %}
+
+{% for interface in interfaces %}
+  "{{interface.name}}" [shape=box]
+  {% for message in interface.requests + interface.events %}
+    "{{interface.name}}" -> "{{interface.name}}_{{message.name}}" [style=bold]
+    {% for arg in message.args %}
+      {% if arg.type == "object" %}
+        "{{arg.interface | default("_unknown_", true)}}" -> "{{interface.name}}_{{message.name}}" [
+          style=dotted
+        ]
+      {% elif arg.type == "new_id" %}
+        "{{interface.name}}_{{message.name}}" -> "{{arg.interface | default("_unknown_", true)}}" [
+          style=bold
+        ]
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+{% endfor %}
+
+}

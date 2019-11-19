@@ -6,7 +6,7 @@
      found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.widget.accessibility.AccessibilityTabModelListItem
+<org.chromium.chrome.browser.accessibility_tab_switcher.AccessibilityTabModelListItem
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/list_item_frame"
@@ -24,8 +24,7 @@
             style="@style/ListItemEndIconSmall"
             android:paddingStart="23dp"
             android:paddingEnd="13dp"
-            android:src="@drawable/btn_delete_24dp"
-            app:tint="@color/standard_mode_tint" />
+            android:src="@drawable/btn_delete_24dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -48,4 +47,4 @@
             style="@style/TextButton" />
     </LinearLayout>
 
-</org.chromium.chrome.browser.widget.accessibility.AccessibilityTabModelListItem>
+</org.chromium.chrome.browser.accessibility_tab_switcher.AccessibilityTabModelListItem>

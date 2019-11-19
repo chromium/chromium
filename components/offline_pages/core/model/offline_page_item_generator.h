@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/offline_pages/core/client_namespace_constants.h"
+#include "components/offline_pages/core/offline_page_archive_publisher.h"
 #include "components/offline_pages/core/offline_page_item.h"
 
 class GURL;
@@ -38,6 +39,7 @@ class OfflinePageItemGenerator {
   void SetDigest(const std::string& digest);
   void SetFileMissingTime(base::Time file_missing_time);
   void SetUseOfflineIdAsSystemDownloadId(bool enable);
+  void SetSystemDownloadId(int64_t system_download_id);
 
  private:
   std::string namespace_ = kDefaultNamespace;
@@ -52,6 +54,7 @@ class OfflinePageItemGenerator {
   base::FilePath archive_dir_;
   std::string digest_;
   base::Time file_missing_time_;
+  int64_t system_download_id_ = kArchiveNotPublished;
 
   bool use_offline_id_as_system_download_id_ = false;
 };

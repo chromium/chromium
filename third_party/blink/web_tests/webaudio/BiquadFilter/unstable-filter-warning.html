@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+  <head>
+    <title>
+      Console Warning for Unstable BiquadFilterNode
+    </title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <script src="../resources/audit.js"></script>
+  </head>
+
+  <body>
+    <script>
+      let audit = Audit.createTaskRunner({requireResultFile: true});
+
+      // Fairly arbitrary sample rate.  If you change it, be sure to verify that
+      // the filter does produce non-finite values before 1 sec is up.
+      let sampleRate = 48000;
+
+      audit.define(
+          {label: 'test', description: 'Console warning for unstable filter'},
+          (task, should) => {
+            // The length depends on how fast the filter blows up.  This seems
+            // to work.
+            let context = new OfflineAudioContext(
+                {length: sampleRate, sampleRate: sampleRate});
+
+            // Test consists of an oscillator feeding a biquad filter whose
+            // detune parameter is modulated by another oscillator.
+            let src =
+                new OscillatorNode(context, {type: 'sine', frequency: 80});
+            let detuneMod =
+                new OscillatorNode(context, {type: 'sine', frequency: 1000});
+            let modGain = new GainNode(context, {gain: 3000});
+            let filter = new BiquadFilterNode(context, {frequency: 200});
+            // Make sure filter detune automation is a-rate!
+            filter.detune.automationRate = 'a-rate';
+
+            detuneMod.connect(modGain).connect(filter.detune);
+            src.connect(filter).connect(context.destination);
+
+            src.start();
+            detuneMod.start();
+
+            context.startRendering()
+                .then(buffer => {
+                  let output = buffer.getChannelData(0);
+
+                  // This test really requires an a-rate BiquadFilter. Print a
+                  // simple message so we know.
+                  should(
+                      filter.detune.automationRate,
+                      'BiquadFilterNode.detune.automationRate')
+                      .beEqualTo('a-rate');
+
+                  // The output should have at least one non-finite value.
+                  // (Don't care where or how many.)
+                  let nonFiniteFound = false;
+                  for (let k = 0; k < output.length; ++k) {
+                    if (!isFinite(output[k])) {
+                      nonFiniteFound = true;
+                      break;
+                    }
+                  }
+
+                  should(nonFiniteFound, 'At least one non-Finite output value')
+                      .beTrue();
+                })
+                .then(() => task.done());
+          });
+
+      audit.run();
+    </script>
+  </body>
+</html>

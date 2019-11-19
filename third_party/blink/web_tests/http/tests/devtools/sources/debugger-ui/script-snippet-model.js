@@ -23,6 +23,11 @@
         TestRunner.addResult('UISourceCodeRemoved: ' + uiSourceCode.displayName());
       }
 
+      async function printUiSourceCode(uiSourceCode) {
+        const { content } = await uiSourceCode.requestContent();
+        TestRunner.addResult(content);
+      }
+
       workspace.addEventListener(
           Workspace.Workspace.Events.UISourceCodeAdded, uiSourceCodeAdded);
       workspace.addEventListener(
@@ -30,11 +35,11 @@
 
       const uiSourceCode1 = await Snippets.project.createFile('', null, '');
       TestRunner.addResult('Snippet content:');
-      TestRunner.addResult(await uiSourceCode1.requestContent());
+      await printUiSourceCode(uiSourceCode1);
       TestRunner.addResult('Snippet1 created.');
       const uiSourceCode2 = await Snippets.project.createFile('', null, '');
       TestRunner.addResult('Snippet content:');
-      TestRunner.addResult(await uiSourceCode2.requestContent());
+      await printUiSourceCode(uiSourceCode2);
       TestRunner.addResult('Snippet2 created.');
 
       await rename(uiSourceCode1, 'foo');
@@ -45,9 +50,9 @@
       await rename(uiSourceCode2, 'foo');
 
       TestRunner.addResult('Content of first snippet:');
-      TestRunner.addResult(await uiSourceCode1.requestContent());
+      await printUiSourceCode(uiSourceCode1);
       TestRunner.addResult('Content of second snippet:');
-      TestRunner.addResult(await uiSourceCode2.requestContent());
+      await printUiSourceCode(uiSourceCode2);
 
       TestRunner.addResult('Delete snippets..');
       await uiSourceCode1.project().deleteFile(uiSourceCode1);
@@ -59,7 +64,7 @@
       TestRunner.addResult('Add third..');
       const uiSourceCode3 = await Snippets.project.createFile('', null, '');
       TestRunner.addResult('Content of third snippet:');
-      TestRunner.addResult(await uiSourceCode3.requestContent());
+      await printUiSourceCode(uiSourceCode3);
       TestRunner.addResult(
           'Number of uiSourceCodes in workspace: ' +
           workspace.uiSourceCodes().filter(uiSourceCode => uiSourceCode.url().startsWith('snippet://')).length);

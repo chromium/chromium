@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "net/third_party/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quic/core/quic_packets.h"
 
 // N.B. This file and the .cc are separate from util.h/.cc so that they can be
 // independently updated by folks working on QUIC when new errors are added.

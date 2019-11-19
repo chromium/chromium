@@ -59,9 +59,9 @@ JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeShouldBindCaller(
 
 JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeFoo(
     JNIEnv* env,
-    jobject jcaller,
-    jobject caller,
-    jlong nativeNativeObject) {
+    jclass jcaller,
+    jlong nativeNativeObject,
+    jobject caller) {
   NativeObject* native = reinterpret_cast<NativeObject*>(nativeNativeObject);
   CHECK_NATIVE_PTR(env, jcaller, native, "Foo");
   return native->Foo(env, base::android::JavaParamRef<jobject>(env, caller));
@@ -69,9 +69,9 @@ JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeFoo(
 
 JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeFoo(
     JNIEnv* env,
-    jobject jcaller,
-    jobject caller,
+    jclass jcaller,
     jlong nativeNativeObject,
+    jobject caller,
     jint a) {
   NativeObject* native = reinterpret_cast<NativeObject*>(nativeNativeObject);
   CHECK_NATIVE_PTR(env, jcaller, native, "Foo");
@@ -85,6 +85,15 @@ JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeCallNativeMethod(
   Ptr* native = reinterpret_cast<Ptr*>(nativePtr);
   CHECK_NATIVE_PTR(env, jcaller, native, "CallNativeMethod");
   return native->CallNativeMethod(env, base::android::JavaParamRef<jobject>(env, jcaller));
+}
+
+JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeCallWithQualifiedObject(
+    JNIEnv* env,
+    jobject jcaller,
+    jlong nativePtr) {
+  Foo::Bar* native = reinterpret_cast<Foo::Bar*>(nativePtr);
+  CHECK_NATIVE_PTR(env, jcaller, native, "CallWithQualifiedObject");
+  return native->CallWithQualifiedObject(env, base::android::JavaParamRef<jobject>(env, jcaller));
 }
 
 

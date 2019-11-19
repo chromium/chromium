@@ -50,8 +50,7 @@ HostScannerImpl::HostScannerImpl(
       device_id_tether_network_guid_map_(device_id_tether_network_guid_map),
       host_scan_cache_(host_scan_cache),
       connection_preserver_(connection_preserver),
-      clock_(clock),
-      weak_ptr_factory_(this) {
+      clock_(clock) {
   session_manager_->AddObserver(this);
 }
 

@@ -1,0 +1,851 @@
+diff --git b/third_party/unrar/src/archive.cpp a/third_party/unrar/src/archive.cpp
+index 9e3aa8d3870d..af16f1983293 100644
+--- b/third_party/unrar/src/archive.cpp
++++ a/third_party/unrar/src/archive.cpp
+@@ -336,3 +338,12 @@ int64 Archive::Tell()
+ }
+ #endif
+ 
++#if defined(CHROMIUM_UNRAR)
++void Archive::SetTempFileHandle(FileHandle hF) {
++  hTempFile = hF;
++}
++
++FileHandle Archive::GetTempFileHandle() {
++  return hTempFile;
++}
++#endif
+diff --git b/third_party/unrar/src/archive.hpp a/third_party/unrar/src/archive.hpp
+index a9fa06c29e63..9c1456830413 100644
+--- b/third_party/unrar/src/archive.hpp
++++ a/third_party/unrar/src/archive.hpp
+@@ -60,6 +60,13 @@ class Archive:public File
+     QuickOpen QOpen;
+     bool ProhibitQOpen;
+ #endif
++
++#if defined(CHROMIUM_UNRAR)
++    // A handle for a temporary file that should be used when extracting the
++    // archive. This is used to extract the contents while in a sandbox.
++    FileHandle hTempFile;
++#endif
++
+   public:
+     Archive(RAROptions *InitCmd=NULL);
+     ~Archive();
+@@ -101,6 +108,10 @@ class Archive:public File
+     void QOpenUnload() {QOpen.Unload();}
+     void SetProhibitQOpen(bool Mode) {ProhibitQOpen=Mode;}
+ #endif
++#if defined(CHROMIUM_UNRAR)
++    void SetTempFileHandle(FileHandle hF);
++    FileHandle GetTempFileHandle();
++#endif
+ 
+     BaseBlock ShortBlock;
+     MarkHeader MarkHead;
+diff --git b/third_party/unrar/src/arcread.cpp a/third_party/unrar/src/arcread.cpp
+index e64519a7e0df..83cac34699b7 100644
+--- b/third_party/unrar/src/arcread.cpp
++++ a/third_party/unrar/src/arcread.cpp
+@@ -141,7 +144,8 @@ size_t Archive::ReadHeader15()
+ 
+   if (Decrypt)
+   {
+-#ifdef RAR_NOCRYPT // For rarext.dll and unrar_nocrypt.dll.
++#if defined(RAR_NOCRYPT) || \
++    defined(CHROMIUM_UNRAR)  // For rarext.dll and unrar_nocrypt.dll.
+     return 0;
+ #else
+     RequestArcPassword();
+@@ -554,7 +559,7 @@ size_t Archive::ReadHeader50()
+ 
+   if (Decrypt)
+   {
+-#if defined(RAR_NOCRYPT)
++#if defined(RAR_NOCRYPT) || defined(CHROMIUM_UNRAR)
+     return 0;
+ #else
+ 
+diff --git b/third_party/unrar/src/crc.cpp a/third_party/unrar/src/crc.cpp
+index 1097f4cd00d1..8488e102c28e 100644
+--- b/third_party/unrar/src/crc.cpp
++++ a/third_party/unrar/src/crc.cpp
+@@ -15,6 +15,7 @@
+ #include "rar.hpp"
+ 
+ static uint crc_tables[8][256]; // Tables for Slicing-by-8.
++static bool is_initialized = false;
+ 
+ 
+ // Build the classic CRC32 lookup table.
+@@ -49,10 +50,13 @@ static void InitTables()
+ }
+ 
+ 
+-struct CallInitCRC {CallInitCRC() {InitTables();}} static CallInit32;
+-
+ uint CRC32(uint StartCRC,const void *Addr,size_t Size)
+ {
++  if (!is_initialized) {
++    is_initialized = true;
++    InitTables();
++  }
++
+   byte *Data=(byte *)Addr;
+ 
+   // Align Data to 8 for better performance.
+diff --git b/third_party/unrar/src/errhnd.cpp a/third_party/unrar/src/errhnd.cpp
+index ef1c372ae491..55f098961657 100644
+--- b/third_party/unrar/src/errhnd.cpp
++++ a/third_party/unrar/src/errhnd.cpp
+@@ -1,10 +1,12 @@
+-#include "rar.hpp"
++// NOTE(vakh): The process.h file needs to be included first because "rar.hpp"
++// defines certain macros that cause symbol redefinition errors
++#if defined(UNRAR_NO_EXCEPTIONS)
++#include "base/logging.h"
++#include "base/process/process.h"
++#endif  // defined(UNRAR_NO_EXCEPTIONS)
+ 
+-ErrorHandler::ErrorHandler()
+-{
+-  Clean();
+-}
++#include "rar.hpp"
+ 
+ 
+ void ErrorHandler::Clean()
+ {
+@@ -322,7 +325,11 @@ void ErrorHandler::Throw(RAR_EXIT Code)
+     mprintf(L"\n%s\n",St(MProgAborted));
+ #endif
+   SetErrorCode(Code);
++#if defined(UNRAR_NO_EXCEPTIONS)
++  CHECK(false) << "Failed with RAR_EXIT code: " << Code;
++#else
+   throw Code;
++#endif  // defined(UNRAR_NO_EXCEPTIONS)
+ }
+ 
+ 
+diff --git b/third_party/unrar/src/errhnd.hpp a/third_party/unrar/src/errhnd.hpp
+index 53c713291831..b3f728e48122 100644
+--- b/third_party/unrar/src/errhnd.hpp
++++ a/third_party/unrar/src/errhnd.hpp
+@@ -23,13 +23,12 @@ enum RAR_EXIT // RAR exit code.
+ class ErrorHandler
+ {
+   private:
+-    RAR_EXIT ExitCode;
+-    uint ErrCount;
+-    bool EnableBreak;
+-    bool Silent;
+-    bool DisableShutdown; // Shutdown is not suitable after last error.
++    RAR_EXIT ExitCode = RARX_SUCCESS;
++    uint ErrCount = 0;
++    bool EnableBreak = true;
++    bool Silent = false;
++    bool DisableShutdown = false; // Shutdown is not suitable after last error.
+   public:
+-    ErrorHandler();
+     void Clean();
+     void MemoryError();
+     void OpenError(const wchar *FileName);
+@@ -66,9 +65,9 @@ class ErrorHandler
+     void SetDisableShutdown() {DisableShutdown=true;}
+     bool IsShutdownEnabled() {return !DisableShutdown;}
+ 
+-    bool UserBreak; // Ctrl+Break is pressed.
+-    bool MainExit; // main() is completed.
++    bool UserBreak = false; // Ctrl+Break is pressed.
++    bool MainExit = false; // main() is completed.
+ };
+ 
+ 
+ #endif
+diff --git b/third_party/unrar/src/extract.cpp a/third_party/unrar/src/extract.cpp
+index ee9480d245bc..9374ff616d75 100644
+--- b/third_party/unrar/src/extract.cpp
++++ a/third_party/unrar/src/extract.cpp
+@@ -261,20 +267,22 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+     if (HeaderType==HEAD_SERVICE && PrevProcessed)
+       SetExtraInfo(Cmd,Arc,DestFileName);
+     if (HeaderType==HEAD_ENDARC)
+       if (Arc.EndArcHead.NextVolume)
+       {
+-#ifndef NOVOLUME
++#ifdef NOVOLUME
++        return false;
++#else
+         if (!MergeArchive(Arc,&DataIO,false,Command))
+         {
+           ErrHandler.SetErrorCode(RARX_WARNING);
+           return false;
+         }
+-#endif
+         Arc.Seek(Arc.CurBlockPos,SEEK_SET);
+         return true;
++#endif
+       }
+       else
+         return false;
+     Arc.SeekToNext();
+     return true;
+   }
+@@ -512,6 +522,11 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+ #endif
+ 
+     File CurFile;
++#if defined(CHROMIUM_UNRAR)
++    // Since extraction is done in a sandbox, this must extract to the temp file
++    // handle instead of the default.
++    CurFile.SetFileHandle(Arc.GetTempFileHandle());
++#endif
+ 
+     bool LinkEntry=Arc.FileHead.RedirType!=FSREDIR_NONE;
+     if (LinkEntry && Arc.FileHead.RedirType!=FSREDIR_FILECOPY)
+diff --git b/third_party/unrar/src/extract.hpp a/third_party/unrar/src/extract.hpp
+index 4cae23ee4faf..d74f17939c93 100644
+--- b/third_party/unrar/src/extract.hpp
++++ a/third_party/unrar/src/extract.hpp
+@@ -59,6 +59,10 @@ class CmdExtract
+     void ExtractArchiveInit(Archive &Arc);
+     bool ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat);
+     static void UnstoreFile(ComprDataIO &DataIO,int64 DestUnpSize);
++
++#if defined(CHROMIUM_UNRAR)
++    int64 GetCurrentFileSize() { return DataIO.CurUnpWrite; }
++#endif
+ };
+ 
+ #endif
+diff --git b/third_party/unrar/src/file.cpp a/third_party/unrar/src/file.cpp
+index 52c86c0621af..7dc5b724ca73 100644
+--- b/third_party/unrar/src/file.cpp
++++ a/third_party/unrar/src/file.cpp
+@@ -51,6 +53,11 @@ bool File::Open(const wchar *Name,uint Mode)
+   bool UpdateMode=(Mode & FMF_UPDATE)!=0;
+   bool WriteMode=(Mode & FMF_WRITE)!=0;
+ #ifdef _WIN_ALL
++#if defined(CHROMIUM_UNRAR)
++  // Do not open a file handle since the sandbox doesn't allow it. Use the
++  // handle provided by the caller.
++  hNewFile = hOpenFile;
++#else
+   uint Access=WriteMode ? GENERIC_WRITE:GENERIC_READ;
+   if (UpdateMode)
+     Access|=GENERIC_WRITE;
+@@ -89,6 +96,14 @@ bool File::Open(const wchar *Name,uint Mode)
+   if (hNewFile==FILE_BAD_HANDLE && LastError==ERROR_FILE_NOT_FOUND)
+     ErrorType=FILE_NOTFOUND;
+ 
++#endif  // defined(CHROMIUM_UNRAR)
++
++#else
++
++#if defined(CHROMIUM_UNRAR)
++  // Do not open a file handle since the sandbox doesn't allow it. Use the
++  // handle provided by the caller.
++  int handle = hOpenFile;
+ #else
+   int flags=UpdateMode ? O_RDWR:(WriteMode ? O_WRONLY:O_RDONLY);
+ #ifdef O_BINARY
+@@ -99,8 +114,9 @@ bool File::Open(const wchar *Name,uint Mode)
+ #endif
+   char NameA[NM];
+   WideToChar(Name,NameA,ASIZE(NameA));
+-
+   int handle=open(NameA,flags);
++#endif  // defined(CHROMIUM_UNRAR)
++
+ #ifdef LOCK_EX
+ 
+ #ifdef _OSF_SOURCE
+@@ -159,6 +175,11 @@ bool File::WOpen(const wchar *Name)
+ 
+ bool File::Create(const wchar *Name,uint Mode)
+ {
++#if defined(CHROMIUM_UNRAR)
++  // Since the Chromium sandbox does not allow the creation of files, use the
++  // provided file.
++  hFile = hOpenFile;
++#else
+   // OpenIndiana based NAS and CIFS shares fail to set the file time if file
+   // was created in read+write mode and some data was written and not flushed
+   // before SetFileTime call. So we should use the write only mode if we plan
+@@ -196,6 +217,7 @@ bool File::Create(const wchar *Name,uint Mode)
+   hFile=fopen(NameA,WriteMode ? WRITEBINARY:CREATEBINARY);
+ #endif
+ #endif
++#endif  // defined(CHROMIUM_UNRAR)
+   NewFile=true;
+   HandleType=FILE_HANDLENORMAL;
+   SkipClose=false;
+@@ -230,6 +252,8 @@ bool File::Close()
+   {
+     if (!SkipClose)
+     {
++#if !defined(CHROMIUM_UNRAR)
++// unrar should not close the file handle since it wasn't opened by unrar.
+ #ifdef _WIN_ALL
+       // We use the standard system handle for stdout in Windows
+       // and it must not  be closed here.
+@@ -242,6 +266,7 @@ bool File::Close()
+       Success=fclose(hFile)!=EOF;
+ #endif
+ #endif
++#endif  // defined(CHROMIUM_UNRAR)
+     }
+     hFile=FILE_BAD_HANDLE;
+   }
+@@ -729,3 +760,9 @@ int64 File::Copy(File &Dest,int64 Length)
+   return CopySize;
+ }
+ #endif
++
++#if defined(CHROMIUM_UNRAR)
++void File::SetFileHandle(FileHandle hF) {
++  hOpenFile = hF;
++}
++#endif  // defined(CHROMIUM_UNRAR)
+diff --git b/third_party/unrar/src/file.hpp a/third_party/unrar/src/file.hpp
+index 9d2e4226a7b4..9cc7807b0fde 100644
+--- b/third_party/unrar/src/file.hpp
++++ a/third_party/unrar/src/file.hpp
+@@ -70,6 +70,10 @@ class File
+     wchar FileName[NM];
+ 
+     FILE_ERRORTYPE ErrorType;
++
++#if defined(CHROMIUM_UNRAR)
++    FileHandle hOpenFile;
++#endif  // defined(CHROMIUM_UNRAR)
+   public:
+     File();
+     virtual ~File();
+@@ -116,6 +120,14 @@ class File
+ #ifdef _WIN_ALL
+     void RemoveSequentialFlag() {NoSequentialRead=true;}
+ #endif
++
++#if defined(CHROMIUM_UNRAR)
++    // Since unrar runs in a sandbox, it doesn't have the permission to open
++    // files on the filesystem. Instead, the caller opens the file and passes
++    // the file handle to unrar. This handle is then used to read the file.
++    void SetFileHandle(FileHandle file);
++#endif  // defined(CHROMIUM_UNRAR)
++
+ #ifdef _UNIX
+     int GetFD()
+     {
+diff --git b/third_party/unrar/src/isnt.cpp a/third_party/unrar/src/isnt.cpp
+index 6fadec049fe4..d30adf550925 100644
+--- b/third_party/unrar/src/isnt.cpp
++++ a/third_party/unrar/src/isnt.cpp
+@@ -1,24 +1,18 @@
+ #include "rar.hpp"
+ 
+ #ifdef _WIN_ALL
++#include "versionhelpers.h"
++
+ DWORD WinNT()
+ {
+-  static int dwPlatformId=-1;
+-  static DWORD dwMajorVersion,dwMinorVersion;
+-  if (dwPlatformId==-1)
+-  {
+-    OSVERSIONINFO WinVer;
+-    WinVer.dwOSVersionInfoSize=sizeof(WinVer);
+-    GetVersionEx(&WinVer);
+-    dwPlatformId=WinVer.dwPlatformId;
+-    dwMajorVersion=WinVer.dwMajorVersion;
+-    dwMinorVersion=WinVer.dwMinorVersion;
+-  }
+-  DWORD Result=0;
+-  if (dwPlatformId==VER_PLATFORM_WIN32_NT)
+-    Result=dwMajorVersion*0x100+dwMinorVersion;
+-
+-
+-  return Result;
++  if (!IsWindowsXPOrGreater())
++    return WNT_NONE;
++  if (!IsWindowsVistaOrGreater())
++    return WNT_WXP;
++  if (!IsWindows7OrGreater()) return WNT_VISTA;
++  if (!IsWindows8OrGreater()) return WNT_W7;
++  if (!IsWindows8Point1OrGreater()) return WNT_W8;
++  if (!IsWindows10OrGreater()) return WNT_W81;
++  return WNT_W10;
+ }
+ #endif
+diff --git b/third_party/unrar/src/isnt.hpp a/third_party/unrar/src/isnt.hpp
+index 85790da46290..a02174447e29 100644
+--- b/third_party/unrar/src/isnt.hpp
++++ a/third_party/unrar/src/isnt.hpp
+@@ -1,6 +1,8 @@
+ #ifndef _RAR_ISNT_
+ #define _RAR_ISNT_
+ 
++#include "windows.h"
++
+ enum WINNT_VERSION {
+   WNT_NONE=0,WNT_NT351=0x0333,WNT_NT4=0x0400,WNT_W2000=0x0500,
+   WNT_WXP=0x0501,WNT_W2003=0x0502,WNT_VISTA=0x0600,WNT_W7=0x0601,
+@@ -9,5 +11,4 @@ enum WINNT_VERSION {
+ 
+ DWORD WinNT();
+ 
+-
+ #endif
+diff --git b/third_party/unrar/src/model.cpp a/third_party/unrar/src/model.cpp
+index 09f9650b1c72..de700a9245ee 100644
+--- b/third_party/unrar/src/model.cpp
++++ a/third_party/unrar/src/model.cpp
+@@ -45,13 +45,27 @@ void ModelPPM::RestartModelRare()
+   InitRL=-(MaxOrder < 12 ? MaxOrder:12)-1;
+   MinContext = MaxContext = (RARPPM_CONTEXT*) SubAlloc.AllocContext();
+   if (MinContext == NULL)
++  {
++#if defined(UNRAR_NO_EXCEPTIONS)
++    base::TerminateBecauseOutOfMemory(0);
++#else
+     throw std::bad_alloc();
++#endif  // defined(UNRAR_NO_EXCEPTIONS)
++  }
++
+   MinContext->Suffix=NULL;
+   OrderFall=MaxOrder;
+   MinContext->U.SummFreq=(MinContext->NumStats=256)+1;
+   FoundState=MinContext->U.Stats=(RARPPM_STATE*)SubAlloc.AllocUnits(256/2);
+   if (FoundState == NULL)
++  {
++#if defined(UNRAR_NO_EXCEPTIONS)
++    base::TerminateBecauseOutOfMemory(0);
++#else
+     throw std::bad_alloc();
++#endif  // defined(UNRAR_NO_EXCEPTIONS)
++  }
++
+   for (RunLength=InitRL, PrevSuccess=i=0;i < 256;i++) 
+   {
+     MinContext->U.Stats[i].Symbol=i;      
+diff --git b/third_party/unrar/src/os.hpp a/third_party/unrar/src/os.hpp
+index d4a7426d9ec4..bc1112633f7d 100644
+--- b/third_party/unrar/src/os.hpp
++++ a/third_party/unrar/src/os.hpp
+@@ -32,22 +32,26 @@
+ #define STRICT 1
+ #endif
+ 
++#if !defined(CHROMIUM_UNRAR)
+ // 'ifndef' check here is needed for unrar.dll header to avoid macro
+ // re-definition warnings in third party projects.
+ #ifndef UNICODE
+ #define UNICODE
+ #endif
+ 
+ #undef WINVER
+ #undef _WIN32_WINNT
+ #define WINVER 0x0501
+ #define _WIN32_WINNT 0x0501
++#endif  // CHROMIUM_UNRAR
+ 
+-#if !defined(ZIPSFX)
++#if !defined(ZIPSFX) && !defined(CHROMIUM_UNRAR)
+ #define RAR_SMP
+ #endif
+ 
++#if !defined(CHROMIUM_UNRAR)
+ #define WIN32_LEAN_AND_MEAN
++#endif  // CHROMIUM_UNRAR
+ 
+ #include <windows.h>
+ #include <prsht.h>
+@@ -74,8 +78,11 @@
+   #include <direct.h>
+   #include <intrin.h>
+ 
++#if !defined(CHROMIUM_UNRAR)
+   #define USE_SSE
+   #define SSE_ALIGNMENT 16
++#endif  // CHROMIUM_UNRAR
++
+ #else
+   #include <dirent.h>
+ #endif // _MSC_VER
+diff --git b/third_party/unrar/src/threadmisc.cpp a/third_party/unrar/src/threadmisc.cpp
+index fd408f0518ae..3136031b48ab 100644
+--- b/third_party/unrar/src/threadmisc.cpp
++++ a/third_party/unrar/src/threadmisc.cpp
+@@ -45,17 +45,22 @@ static inline void CriticalSectionEnd(CRITSECT_HANDLE *CritSection)
+ }
+ 
+ 
+-static struct GlobalPoolCreateSync
++struct GlobalPoolCreateSync
+ {
+   CRITSECT_HANDLE CritSection;
+   GlobalPoolCreateSync()  { CriticalSectionCreate(&CritSection); }
+   ~GlobalPoolCreateSync() { CriticalSectionDelete(&CritSection); }
+-} PoolCreateSync;
++};
++
++static GlobalPoolCreateSync& GetPoolCreateSync() {
++  static GlobalPoolCreateSync PoolCreateSync;
++  return PoolCreateSync;
++}
+ 
+ 
+ ThreadPool* CreateThreadPool()
+ {
+-  CriticalSectionStart(&PoolCreateSync.CritSection); 
++  CriticalSectionStart(&(GetPoolCreateSync().CritSection));
+ 
+   if (GlobalPoolUseCount++ == 0)
+     GlobalPool=new ThreadPool(MaxPoolThreads);
+@@ -68,11 +73,11 @@ ThreadPool* CreateThreadPool()
+   if (GlobalPoolUseCount > 1)
+   {
+     ThreadPool *Pool = new ThreadPool(MaxPoolThreads);
+-    CriticalSectionEnd(&PoolCreateSync.CritSection); 
++    CriticalSectionEnd(&(GetPoolCreateSync().CritSection));
+     return Pool;
+   }
+ 
+-  CriticalSectionEnd(&PoolCreateSync.CritSection); 
++  CriticalSectionEnd(&(GetPoolCreateSync().CritSection));
+   return GlobalPool;
+ }
+ 
+@@ -81,7 +86,7 @@ void DestroyThreadPool(ThreadPool *Pool)
+ {
+   if (Pool!=NULL)
+   {
+-    CriticalSectionStart(&PoolCreateSync.CritSection); 
++    CriticalSectionStart(&(GetPoolCreateSync().CritSection));
+ 
+     if (Pool==GlobalPool && GlobalPoolUseCount > 0 && --GlobalPoolUseCount == 0)
+       delete GlobalPool;
+@@ -91,7 +96,7 @@ void DestroyThreadPool(ThreadPool *Pool)
+     if (Pool!=GlobalPool)
+       delete Pool;
+ 
+-    CriticalSectionEnd(&PoolCreateSync.CritSection); 
++    CriticalSectionEnd(&(GetPoolCreateSync().CritSection));
+   }
+ }
+ 
+diff --git b/third_party/unrar/src/unicode.cpp a/third_party/unrar/src/unicode.cpp
+index ffba8c11fa4b..e84d9c1de02e 100644
+--- b/third_party/unrar/src/unicode.cpp
++++ a/third_party/unrar/src/unicode.cpp
+@@ -1,7 +1,7 @@
+ #include "rar.hpp"
+ #define MBFUNCTIONS
+ 
+-#if defined(_UNIX) && defined(MBFUNCTIONS)
++#if !defined(_WIN_ALL) && !defined(_APPLE) && defined(_UNIX) && defined(MBFUNCTIONS)
+ 
+ static bool WideToCharMap(const wchar *Src,char *Dest,size_t DestSize,bool &Success);
+ static void CharToWideMap(const char *Src,wchar *Dest,size_t DestSize,bool &Success);
+@@ -30,7 +30,7 @@ bool WideToChar(const wchar *Src,char *Dest,size_t DestSize)
+ #elif defined(_APPLE)
+   WideToUtf(Src,Dest,DestSize);
+ 
+-#elif defined(MBFUNCTIONS)
++#elif defined(_UNIX) && defined(MBFUNCTIONS)
+   if (!WideToCharMap(Src,Dest,DestSize,RetCode))
+   {
+     mbstate_t ps; // Use thread safe external state based functions.
+@@ -95,7 +95,7 @@ bool CharToWide(const char *Src,wchar *Dest,size_t DestSize)
+ #elif defined(_APPLE)
+   UtfToWide(Src,Dest,DestSize);
+ 
+-#elif defined(MBFUNCTIONS)
++#elif defined(_UNIX) && defined(MBFUNCTIONS)
+   mbstate_t ps;
+   memset (&ps, 0, sizeof(ps));
+   const char *SrcParam=Src; // mbsrtowcs can change the pointer.
+@@ -128,8 +128,8 @@ bool CharToWide(const char *Src,wchar *Dest,size_t DestSize)
+ }
+ 
+ 
+-#if defined(_UNIX) && defined(MBFUNCTIONS)
+-// Convert and restore mapped inconvertible Unicode characters. 
++#if !defined(_WIN_ALL) && !defined(_APPLE) && defined(_UNIX) && defined(MBFUNCTIONS)
++// Convert and restore mapped inconvertible Unicode characters.
+ // We use it for extended ASCII names in Unix.
+ bool WideToCharMap(const wchar *Src,char *Dest,size_t DestSize,bool &Success)
+ {
+@@ -142,7 +142,7 @@ bool WideToCharMap(const wchar *Src,char *Dest,size_t DestSize,bool &Success)
+   // can produce uninitilized output while reporting success on garbage input.
+   // So we clean the destination to calm analyzers.
+   memset(Dest,0,DestSize);
+-  
++
+   Success=true;
+   uint SrcPos=0,DestPos=0;
+   while (Src[SrcPos]!=0 && DestPos<DestSize-MB_CUR_MAX)
+@@ -177,8 +177,8 @@ bool WideToCharMap(const wchar *Src,char *Dest,size_t DestSize,bool &Success)
+ #endif
+ 
+ 
+-#if defined(_UNIX) && defined(MBFUNCTIONS)
++#if !defined(_WIN_ALL) && !defined(_APPLE) && defined(_UNIX) && defined(MBFUNCTIONS)
+ // Convert and map inconvertible Unicode characters.
+ // We use it for extended ASCII names in Unix.
+ void CharToWideMap(const char *Src,wchar *Dest,size_t DestSize,bool &Success)
+ {
+diff --git b/third_party/unrar/src/unpack.cpp a/third_party/unrar/src/unpack.cpp
+index d297211dcdb8..dee442e2d19f 100644
+--- b/third_party/unrar/src/unpack.cpp
++++ a/third_party/unrar/src/unpack.cpp
+@@ -1,3 +1,9 @@
++// NOTE(vakh): The process.h file needs to be included first because "rar.hpp"
++// defines certain macros that cause symbol redefinition errors
++#if defined(UNRAR_NO_EXCEPTIONS)
++#include "base/process/memory.h"
++#endif  // defined(UNRAR_NO_EXCEPTIONS)
++
+ #include "rar.hpp"
+ 
+ #include "coder.cpp"
+@@ -91,16 +97,27 @@ void Unpack::Init(size_t WinSize,bool Solid)
+ 
+   // We do not handle growth for existing fragmented window.
+   if (Grow && Fragmented)
++  {
++#if defined(UNRAR_NO_EXCEPTIONS)
++    base::TerminateBecauseOutOfMemory(0);
++#else
+     throw std::bad_alloc();
++#endif  // defined(UNRAR_NO_EXCEPTIONS)
++  }
+ 
+   byte *NewWindow=Fragmented ? NULL : (byte *)malloc(WinSize);
+ 
+   if (NewWindow==NULL)
++  {
+     if (Grow || WinSize<0x1000000)
+     {
+       // We do not support growth for new fragmented window.
+       // Also exclude RAR4 and small dictionaries.
++#if defined(UNRAR_NO_EXCEPTIONS)
++      base::TerminateBecauseOutOfMemory(WinSize);
++#else
+       throw std::bad_alloc();
++#endif  // defined(UNRAR_NO_EXCEPTIONS)
+     }
+     else
+     {
+@@ -112,6 +129,7 @@ void Unpack::Init(size_t WinSize,bool Solid)
+       FragWindow.Init(WinSize);
+       Fragmented=true;
+     }
++  }
+ 
+   if (!Fragmented)
+   {
+diff --git b/third_party/unrar/src/unpack50frag.cpp a/third_party/unrar/src/unpack50frag.cpp
+index d55b3564c7d9..e45cb51a389c 100644
+--- b/third_party/unrar/src/unpack50frag.cpp
++++ a/third_party/unrar/src/unpack50frag.cpp
+@@ -48,9 +48,15 @@ void FragmentedWindow::Init(size_t WinSize)
+         break;
+       Size-=Size/32;
+     }
+-    if (NewMem==NULL)
++    if (NewMem == NULL)
++    {
++#if defined(UNRAR_NO_EXCEPTIONS)
++      base::TerminateBecauseOutOfMemory(Size);
++#else
+       throw std::bad_alloc();
+-
++#endif  // defined(UNRAR_NO_EXCEPTIONS)
++    }
++
+     // Clean the window to generate the same output when unpacking corrupt
+     // RAR files, which may access to unused areas of sliding dictionary.
+     memset(NewMem,0,Size);
+@@ -60,8 +66,14 @@ void FragmentedWindow::Init(size_t WinSize)
+     MemSize[BlockNum]=TotalSize;
+     BlockNum++;
+   }
+-  if (TotalSize<WinSize) // Not found enough free blocks.
++  if (TotalSize < WinSize)  // Not found enough free blocks.
++  {
++#if defined(UNRAR_NO_EXCEPTIONS)
++    base::TerminateBecauseOutOfMemory(WinSize);
++#else
+     throw std::bad_alloc();
++#endif  // defined(UNRAR_NO_EXCEPTIONS)
++  }
+ }
+ 
+ 
+diff --git b/third_party/unrar/src/unrar_wrapper.cc a/third_party/unrar/src/unrar_wrapper.cc
+new file mode 100644
+index 000000000000..63b31f008861
+--- /dev/null
++++ a/third_party/unrar/src/unrar_wrapper.cc
+@@ -0,0 +1,80 @@
++// Copyright 2019 The Chromium Authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "third_party/unrar/src/unrar_wrapper.h"
++
++#include <memory>
++
++#include "base/files/file_path.h"
++#include "base/metrics/histogram_macros.h"
++#include "build/build_config.h"
++#include "third_party/unrar/src/rar.hpp"
++
++namespace third_party_unrar {
++
++RarReader::RarReader() {}
++
++RarReader::~RarReader() {}
++
++bool RarReader::Open(base::File rar_file, base::File temp_file) {
++  rar_file_ = std::move(rar_file);
++  temp_file_ = std::move(temp_file);
++
++  archive_ = std::make_unique<Archive>();
++  archive_->SetFileHandle(rar_file_.GetPlatformFile());
++  archive_->SetTempFileHandle(temp_file_.GetPlatformFile());
++
++  bool open_success = archive_->Open(L"dummy.rar");
++  UMA_HISTOGRAM_BOOLEAN("SBClientDownload.RarOpenSuccess", open_success);
++  if (!open_success)
++    return false;
++
++  bool is_valid_archive = archive_->IsArchive(/*EnableBroken=*/true);
++  UMA_HISTOGRAM_BOOLEAN("SBClientDownload.RarValidArchive", is_valid_archive);
++  if (!is_valid_archive)
++    return false;
++
++  UMA_HISTOGRAM_BOOLEAN("SBClientDownload.RarHeadersEncrypted",
++                        archive_->Encrypted);
++
++  command_ = std::make_unique<CommandData>();
++  command_->ParseArg(const_cast<wchar_t*>(L"-p"));
++  command_->ParseArg(const_cast<wchar_t*>(L"x"));
++  command_->ParseDone();
++
++  extractor_ = std::make_unique<CmdExtract>(command_.get());
++  extractor_->ExtractArchiveInit(*archive_);
++
++  return true;
++}
++
++bool RarReader::ExtractNextEntry() {
++  bool success = true, repeat = true;
++  while (success || repeat) {
++    temp_file_.Seek(base::File::Whence::FROM_BEGIN, 0);
++    temp_file_.SetLength(0);
++    size_t header_size = archive_->ReadHeader();
++    repeat = false;
++    success = extractor_->ExtractCurrentFile(
++        *archive_, header_size, repeat);  // |repeat| is passed by reference
++
++    if (archive_->GetHeaderType() == HEAD_FILE) {
++#if defined(OS_WIN)
++      current_entry_.file_path = base::FilePath(archive_->FileHead.FileName);
++#else
++      std::wstring wide_filename(archive_->FileHead.FileName);
++      std::string filename(wide_filename.begin(), wide_filename.end());
++      current_entry_.file_path = base::FilePath(filename);
++#endif
++      current_entry_.is_directory = archive_->FileHead.Dir;
++      current_entry_.is_encrypted = archive_->FileHead.Encrypted;
++      current_entry_.file_size = extractor_->GetCurrentFileSize();
++      return true;
++    }
++  }
++
++  return false;
++}
++
++}  // namespace third_party_unrar
+diff --git b/third_party/unrar/src/unrar_wrapper.h a/third_party/unrar/src/unrar_wrapper.h
+new file mode 100644
+index 000000000000..1626af000903
+--- /dev/null
++++ a/third_party/unrar/src/unrar_wrapper.h
+@@ -0,0 +1,72 @@
++// Copyright 2018 The Chromium Authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef THIRD_PARTY_UNRAR_SRC_UNRAR_WRAPPER_H_
++#define THIRD_PARTY_UNRAR_SRC_UNRAR_WRAPPER_H_
++
++#include "base/files/file.h"
++#include "base/files/file_path.h"
++#include "base/files/platform_file.h"
++#include "base/memory/scoped_refptr.h"
++
++// Forward declare the unrar symbols needed for extraction, so users of
++// RarReader don't need all the symbols from unrar.
++class Archive;
++class CmdExtract;
++class CommandData;
++
++namespace third_party_unrar {
++
++// This class is used for extracting RAR files, one entry at a time.
++class RarReader {
++ public:
++  struct EntryInfo {
++    // The relative path of this entry, within the archive.
++    base::FilePath file_path;
++
++    // Whether the entry is a directory or a file.
++    bool is_directory;
++
++    // Whether the entry has encrypted contents.
++    bool is_encrypted;
++
++    // The actual size of the entry.
++    size_t file_size;
++  };
++
++  RarReader();
++  ~RarReader();
++
++  // Opens the RAR archive in |rar_file|, and uses |temp_file| for extracting
++  // each entry.
++  bool Open(base::File rar_file, base::File temp_file);
++
++  // Extracts the next entry in the RAR archive. Returns true on success and
++  // updates the information in |current_entry()|.
++  bool ExtractNextEntry();
++
++  // Returns the EntryInfo for the most recently extracted entry in the RAR
++  // archive.
++  const EntryInfo& current_entry() { return current_entry_; }
++
++ private:
++  // The temporary file used for extracting each entry. This allows RAR
++  // extraction to safely occur within a sandbox.
++  base::File temp_file_;
++
++  // The RAR archive being extracted.
++  base::File rar_file_;
++
++  // Information for the current entry in the RAR archive.
++  EntryInfo current_entry_;
++
++  // Unrar data structures needed for extraction.
++  std::unique_ptr<Archive> archive_;
++  std::unique_ptr<CmdExtract> extractor_;
++  std::unique_ptr<CommandData> command_;
++};
++
++}  // namespace third_party_unrar
++
++#endif  // THIRD_PARTY_UNRAR_SRC_UNRAR_WRAPPER_H_

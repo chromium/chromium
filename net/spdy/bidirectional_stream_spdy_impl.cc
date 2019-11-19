@@ -45,8 +45,7 @@ BidirectionalStreamSpdyImpl::BidirectionalStreamSpdyImpl(
       closed_stream_status_(ERR_FAILED),
       closed_stream_received_bytes_(0),
       closed_stream_sent_bytes_(0),
-      closed_has_load_timing_info_(false),
-      weak_factory_(this) {}
+      closed_has_load_timing_info_(false) {}
 
 BidirectionalStreamSpdyImpl::~BidirectionalStreamSpdyImpl() {
   // Sends a RST to the remote if the stream is destroyed before it completes.
@@ -78,9 +77,10 @@ void BidirectionalStreamSpdyImpl::Start(
 
   int rv = stream_request_.StartRequest(
       SPDY_BIDIRECTIONAL_STREAM, spdy_session_, request_info_->url,
-      request_info_->priority, request_info_->socket_tag, net_log,
-      base::Bind(&BidirectionalStreamSpdyImpl::OnStreamInitialized,
-                 weak_factory_.GetWeakPtr()),
+      false /* no early data */, request_info_->priority,
+      request_info_->socket_tag, net_log,
+      base::BindOnce(&BidirectionalStreamSpdyImpl::OnStreamInitialized,
+                     weak_factory_.GetWeakPtr()),
       traffic_annotation);
   if (rv != ERR_IO_PENDING)
     OnStreamInitialized(rv);
@@ -354,8 +354,8 @@ void BidirectionalStreamSpdyImpl::ScheduleBufferedRead() {
 
   more_read_data_pending_ = false;
   timer_->Start(FROM_HERE, base::TimeDelta::FromMilliseconds(kBufferTimeMs),
-                base::Bind(&BidirectionalStreamSpdyImpl::DoBufferedRead,
-                           weak_factory_.GetWeakPtr()));
+                base::BindOnce(&BidirectionalStreamSpdyImpl::DoBufferedRead,
+                               weak_factory_.GetWeakPtr()));
 }
 
 void BidirectionalStreamSpdyImpl::DoBufferedRead() {

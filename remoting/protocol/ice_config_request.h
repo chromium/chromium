@@ -17,12 +17,13 @@ class IceConfigRequest {
  public:
   // Callback to receive results of the request. |ice_config| is null if the
   // request has failed.
-  typedef base::Callback<void(const IceConfig& ice_config)> OnIceConfigCallback;
+  typedef base::OnceCallback<void(const IceConfig& ice_config)>
+      OnIceConfigCallback;
 
   virtual ~IceConfigRequest() {}
 
   // Sends the request and calls the |callback| with the results.
-  virtual void Send(const OnIceConfigCallback& callback) = 0;
+  virtual void Send(OnIceConfigCallback callback) = 0;
 };
 
 }  // namespace protocol

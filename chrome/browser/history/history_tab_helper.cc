@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/frame_navigate_params.h"
+#include "third_party/blink/public/mojom/referrer.mojom.h"
 #include "ui/base/page_transition_types.h"
 
 #if defined(OS_ANDROID)
@@ -142,10 +143,9 @@ void HistoryTabHelper::DidFinishNavigation(
   // the WebContents' URL getter does.
   NavigationEntry* last_committed =
       web_contents()->GetController().GetLastCommittedEntry();
-  const history::HistoryAddPageArgs& add_page_args =
-      CreateHistoryAddPageArgs(
-          web_contents()->GetURL(), last_committed->GetTimestamp(),
-          last_committed->GetUniqueID(), navigation_handle);
+  const history::HistoryAddPageArgs& add_page_args = CreateHistoryAddPageArgs(
+      web_contents()->GetLastCommittedURL(), last_committed->GetTimestamp(),
+      last_committed->GetUniqueID(), navigation_handle);
 
   prerender::PrerenderManager* prerender_manager =
       prerender::PrerenderManagerFactory::GetForBrowserContext(
@@ -232,8 +232,8 @@ void HistoryTabHelper::WebContentsDestroyed() {
     NavigationEntry* entry = tab->GetController().GetLastCommittedEntry();
     history::ContextID context_id = history::ContextIDForWebContents(tab);
     if (entry) {
-      hs->UpdateWithPageEndTime(context_id, entry->GetUniqueID(), tab->GetURL(),
-                                base::Time::Now());
+      hs->UpdateWithPageEndTime(context_id, entry->GetUniqueID(),
+                                tab->GetLastCommittedURL(), base::Time::Now());
     }
     hs->ClearCachedDataForContextID(context_id);
   }

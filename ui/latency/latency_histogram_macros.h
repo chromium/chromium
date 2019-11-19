@@ -31,7 +31,7 @@
       name, std::max(static_cast<int64_t>(0), (end - start).InMicroseconds()), \
       1, 1000000, 100);
 
-// Event latency that is mostly under 1 second. We should only use 100 buckets
+// Event latency that is mostly under 100ms. We should only use 100 buckets
 // when needed. This drops reports on clients with low-resolution clocks.
 #define UMA_HISTOGRAM_INPUT_LATENCY_CUSTOM_MICROSECONDS(name, start, end) \
   CONFIRM_EVENT_TIMES_EXIST(start, end)                                   \
@@ -39,6 +39,16 @@
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(                                \
       name, frame_difference, base::TimeDelta::FromMicroseconds(1),       \
       base::TimeDelta::FromMilliseconds(100), 100);
+
+// Event latency that is mostly under 1 second. We should only use 100 buckets
+// when needed. This drops reports on clients with low-resolution clocks.
+#define UMA_HISTOGRAM_INPUT_LATENCY_CUSTOM_1_SECOND_MAX_MICROSECONDS( \
+    name, start, end)                                                 \
+  CONFIRM_EVENT_TIMES_EXIST(start, end)                               \
+  base::TimeDelta frame_difference = end - start;                     \
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(                            \
+      name, frame_difference, base::TimeDelta::FromMicroseconds(1),   \
+      base::TimeDelta::FromMilliseconds(1000), 100);
 
 #define UMA_HISTOGRAM_INPUT_LATENCY_MILLISECONDS(name, start, end)             \
   CONFIRM_EVENT_TIMES_EXIST(start, end)                                        \

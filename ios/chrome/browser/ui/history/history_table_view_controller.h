@@ -13,22 +13,24 @@ namespace ios {
 class ChromeBrowserState;
 }
 
+enum class UrlLoadStrategy;
+
 @class ContextMenuCoordinator;
 @protocol TableViewFaviconDataSource;
 @protocol HistoryLocalCommands;
 @protocol HistoryPresentationDelegate;
-@protocol UrlLoader;
 
 // ChromeTableViewController for displaying history items.
 @interface HistoryTableViewController
-    : ChromeTableViewController<HistoryConsumer>
+    : ChromeTableViewController <HistoryConsumer,
+                                 UIAdaptivePresentationControllerDelegate>
 // The ViewController's BrowserState.
 @property(nonatomic, assign) ios::ChromeBrowserState* browserState;
 // Abstraction to communicate with HistoryService and WebHistoryService.
 // Not owned by HistoryTableViewController.
 @property(nonatomic, assign) history::BrowsingHistoryService* historyService;
-// The UrlLoader used by this ViewController.
-@property(nonatomic, weak) id<UrlLoader> loader;
+// Opaque instructions on how to open urls.
+@property(nonatomic) UrlLoadStrategy loadStrategy;
 // Delegate for this HistoryTableView.
 @property(nonatomic, weak) id<HistoryLocalCommands> localDispatcher;
 // Delegate used to make the Tab UI visible.

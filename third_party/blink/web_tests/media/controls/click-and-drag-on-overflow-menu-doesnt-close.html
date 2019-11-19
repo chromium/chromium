@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<title>Test that when a user clicks and drags on the overflow it does not disappear.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video controls width=500 preload=none src="https://need_a_url_here_to.show/download/button.mp4"></video>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+  const menu = overflowMenu(video);
+  const overflowBtn = overflowButton(video);
+  const downloadBtn = downloadsOverflowItem(video);
+  const captionsBtn = captionsOverflowItem(video);
+
+  // Add text tracks so that the captions option appears.
+  [ '../track/captions-webvtt/captions-fast.vtt',
+    '../track/captions-webvtt/captions-rtl.vtt' ].forEach(source => {
+    const track = document.createElement('track');
+    track.src = source;
+    track.kind = 'captions';
+    video.appendChild(track);
+  });
+
+  enableTestMode(video);
+
+  window.addEventListener('load', t.step_func(() => {
+    // Open the overflow menu and click and drag on it.
+    singleTapOnControl(overflowBtn, t.step_func(clickAndDrag));
+  }), { once: true });
+
+  // Neither the downloads button nor the captions button should receive a click during the click and drag.
+  downloadBtn.addEventListener('click', t.unreached_func('Downloads received a click'));
+  captionsBtn.addEventListener('click', t.unreached_func('Captions received a click'));
+
+  function clickAndDrag() {
+    assert_true(isControlVisible(menu), 'Overflow menu should be visible before we start click-and-drag');
+    assert_true(isControlVisible(downloadBtn), 'Download button should be visible');
+    assert_true(isControlVisible(captionsBtn), 'Captions button should be visible');
+
+    const downloadPosition = elementCoordinates(downloadBtn);
+    const captionsPosition = elementCoordinates(captionsBtn);
+
+    // Click down on downloads but drag and release over captions.
+    chrome.gpuBenchmarking.pointerActionSequence([{
+      source: 'mouse',
+      actions: [
+        { name: 'pointerDown', x: downloadPosition[0], y: downloadPosition[1] },
+        { name: 'pointerMove', x: captionsPosition[0], y: captionsPosition[1] },
+        { name: 'pointerUp', x: captionsPosition[0], y: captionsPosition[1] },
+      ]
+    }], t.step_func_done(() => {
+      assert_true(isControlVisible(menu), 'Overflow menu should still be visible after click-and-drag');
+    }));
+  }
+});
+</script>
+</html>

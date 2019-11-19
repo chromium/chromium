@@ -64,8 +64,7 @@ void RemoveStatusChangedHandler(IBluetoothLEAdvertisementPublisher* publisher,
 
 }  // namespace
 
-BluetoothAdvertisementWinrt::BluetoothAdvertisementWinrt()
-    : weak_ptr_factory_(this) {}
+BluetoothAdvertisementWinrt::BluetoothAdvertisementWinrt() {}
 
 bool BluetoothAdvertisementWinrt::Initialize(
     std::unique_ptr<BluetoothAdvertisement::Data> advertisement_data) {

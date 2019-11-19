@@ -53,12 +53,9 @@ class MultipleTapDetector : public ui::EventRewriter {
   bool enabled() const { return enabled_; }
 
   // Overridden from ui::EventRewriter
-  ui::EventRewriteStatus RewriteEvent(
+  ui::EventDispatchDetails RewriteEvent(
       const ui::Event& event,
-      std::unique_ptr<ui::Event>* rewritten_event) override;
-  ui::EventRewriteStatus NextDispatchEvent(
-      const ui::Event& last_event,
-      std::unique_ptr<ui::Event>* new_event) override;
+      const Continuation continuation) override;
 
  private:
   friend class MultipleTapDetectorTest;
@@ -84,7 +81,14 @@ class MultipleTapDetector : public ui::EventRewriter {
   int tap_count_;
   gfx::Point last_tap_location_;
   base::OneShotTimer triple_tap_timer_;
-  std::deque<ui::TouchEvent> stashed_events_;
+  class Stash {
+   public:
+    Stash(const ui::TouchEvent& e, const Continuation c);
+    ~Stash();
+    const ui::TouchEvent event;
+    const Continuation continuation;
+  };
+  std::deque<Stash> stashed_events_;
 
   DISALLOW_COPY_AND_ASSIGN(MultipleTapDetector);
 };

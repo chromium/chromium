@@ -69,10 +69,10 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
       extensions::Extension::Create(path, extensions::Manifest::INTERNAL,
                                     *manifest.get(),
                                     extensions::Extension::NO_FLAGS, &errors);
-  EXPECT_TRUE(extension.get() != NULL) << errors;
+  EXPECT_TRUE(extension.get() != nullptr) << errors;
   EXPECT_TRUE(crx_file::id_util::IdIsValid(extension->id()));
   if (!extension.get() || !crx_file::id_util::IdIsValid(extension->id()))
-    return NULL;
+    return nullptr;
 
   extension_prefs->OnExtensionInstalled(
       extension.get(),

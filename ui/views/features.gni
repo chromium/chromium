@@ -2,10 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromecast_build.gni")
 import("//build/config/ui.gni")
+
+# Enable desktop-oriented features implemented by DesktopNativeWidgetAura.
+enable_desktop_aura = use_aura && !is_chromeos && !is_chromecast
 
 declare_args() {
   # Whether we should draw the minimize, maximize/restore, and close
   # buttons using the system theme.  Only used on Linux.
-  enable_native_window_nav_buttons = use_aura && !use_ozone && is_desktop_linux
+  enable_native_window_nav_buttons = enable_desktop_aura && is_linux
 }

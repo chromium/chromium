@@ -32,10 +32,9 @@ std::string GetCrtcAction(const DisplaySnapshot& output,
                             mode ? mode->ToString().c_str() : "NULL");
 }
 
-std::string GetSetHDCPStateAction(const DisplaySnapshot& output,
-                                  HDCPState state) {
-  return base::StringPrintf("set_hdcp(id=%" PRId64 ",state=%d)",
-                            output.display_id(), state);
+std::string GetSetHDCPStateAction(int64_t display_id, HDCPState state) {
+  return base::StringPrintf("set_hdcp(id=%" PRId64 ",state=%d)", display_id,
+                            state);
 }
 
 std::string SetColorMatrixAction(int64_t display_id,

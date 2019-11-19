@@ -29,15 +29,16 @@ class PrintQueriesQueue : public base::RefCountedThreadSafe<PrintQueriesQueue> {
   // Queues a semi-initialized worker thread. Can be called from any thread.
   // Current use case is queuing from the I/O thread.
   // TODO(maruel):  Have them vanish after a timeout (~5 minutes?)
-  void QueuePrinterQuery(PrinterQuery* query);
+  void QueuePrinterQuery(std::unique_ptr<PrinterQuery> query);
 
   // Pops a queued PrinterQuery object that was previously queued or creates
   // a new one. Can be called from any thread.
-  scoped_refptr<PrinterQuery> PopPrinterQuery(int document_cookie);
+  std::unique_ptr<PrinterQuery> PopPrinterQuery(int document_cookie);
 
   // Creates new query. Virtual so that tests can override it.
-  virtual scoped_refptr<PrinterQuery> CreatePrinterQuery(int render_process_id,
-                                                         int render_frame_id);
+  virtual std::unique_ptr<PrinterQuery> CreatePrinterQuery(
+      int render_process_id,
+      int render_frame_id);
 
   void Shutdown();
 
@@ -47,7 +48,7 @@ class PrintQueriesQueue : public base::RefCountedThreadSafe<PrintQueriesQueue> {
 
  private:
   friend class base::RefCountedThreadSafe<PrintQueriesQueue>;
-  using PrinterQueries = std::vector<scoped_refptr<PrinterQuery>>;
+  using PrinterQueries = std::vector<std::unique_ptr<PrinterQuery>>;
 
   // Used to serialize access to |queued_queries_|.
   base::Lock lock_;

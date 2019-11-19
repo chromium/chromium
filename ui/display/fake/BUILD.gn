@@ -1,0 +1,32 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/jumbo.gni")
+import("//build/config/ui.gni")
+
+# This target contains dummy or fake classes that can be used as
+# placeholders when lacking something better, or for testing.
+jumbo_component("fake") {
+  sources = [
+    "fake_display_delegate.cc",
+    "fake_display_delegate.h",
+    "fake_display_export.h",
+    "fake_display_snapshot.cc",
+    "fake_display_snapshot.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  defines = [ "FAKE_DISPLAY_IMPLEMENTATION" ]
+
+  deps = [
+    "//base",
+    "//skia",
+    "//third_party/re2",
+    "//ui/display",
+    "//ui/display/types",
+    "//ui/display/util",
+    "//ui/gfx/geometry",
+  ]
+}

@@ -16,13 +16,13 @@ import static org.chromium.net.CronetTestRule.assertContains;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 import android.system.Os;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Test NetworkChangeNotifier.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class NetworkChangeNotifierTest {
     @Rule
     public final CronetTestRule mTestRule = new CronetTestRule();

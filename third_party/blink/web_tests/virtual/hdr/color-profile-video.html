@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../media/media-file.js"></script>
+<style>
+  video {
+    outline: 15px solid blue;
+    border: 15px solid green;
+    background: orange;
+    padding: 15px;
+    margin: 20px;
+    width: 300px;
+  }
+</style>
+</head>
+
+<body>
+  <!-- This test passes if:
+    1) the final colored blocks in the series of colored blocks in the
+       video content box area are respectively: cyan, blue, green
+    2) the video seek point is near 00:000:00.00 -->
+  <video preload="auto"/>
+</body>
+
+<script>
+if (window.testRunner)
+  testRunner.waitUntilDone();
+
+window.onload = function() {
+  if (window.testRunner) {
+    document.querySelector('video').oncanplaythrough = function() {
+      setTimeout(function() { testRunner.notifyDone() }, 0);
+    };
+  }
+
+  setSrcByTagName('video', '../../media/content/test.ogv');
+};
+</script>
+</html>

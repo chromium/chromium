@@ -6,5 +6,8 @@ include_rules = [
   "+chromeos/dbus",
   "+components/prefs",
   "+media",
+  "+mojo/public/cpp/bindings",
   "+testing",
+  "+services/media_session/public",
+  "+services/service_manager/public",
 ]

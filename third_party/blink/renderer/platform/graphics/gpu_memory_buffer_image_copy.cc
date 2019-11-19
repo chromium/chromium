@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/gpu_memory_buffer_image_copy.h"
+#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
@@ -77,7 +78,17 @@ gfx::GpuMemoryBuffer* GpuMemoryBufferImageCopy::CopyImage(Image* image) {
   // Not strictly necessary since we are on the same context, but keeping
   // for cleanliness and in case we ever move off the same context.
   gl_->WaitSyncTokenCHROMIUM(sync_token.GetData());
-  GLuint source_texture_id = gl_->CreateAndConsumeTextureCHROMIUM(mailbox.name);
+
+  GLuint source_texture_id;
+  if (mailbox.IsSharedImage()) {
+    source_texture_id =
+        gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
+    gl_->BeginSharedImageAccessDirectCHROMIUM(
+        source_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  } else {
+    source_texture_id = gl_->CreateAndConsumeTextureCHROMIUM(mailbox.name);
+  }
+
   gl_->BindTexture(GL_TEXTURE_2D, 0);
 
   gl_->CopySubTextureCHROMIUM(source_texture_id, 0, GL_TEXTURE_2D,
@@ -86,6 +97,8 @@ gfx::GpuMemoryBuffer* GpuMemoryBufferImageCopy::CopyImage(Image* image) {
 
   // Cleanup the read framebuffer, associated image and texture.
   gl_->BindTexture(GL_TEXTURE_2D, 0);
+  if (mailbox.IsSharedImage())
+    gl_->EndSharedImageAccessDirectCHROMIUM(source_texture_id);
   gl_->DeleteTextures(1, &source_texture_id);
 
   // Cleanup the draw framebuffer, associated image and texture.

@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_H_
 
+#include "third_party/blink/public/platform/web_color_scheme.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
@@ -36,7 +37,7 @@
 
 namespace blink {
 
-class CullRect;
+class Element;
 class GraphicsContext;
 class IntRect;
 class ChromeClient;
@@ -45,17 +46,9 @@ class ScrollbarTheme;
 class WebGestureEvent;
 class WebMouseEvent;
 
-class CORE_EXPORT Scrollbar : public GarbageCollectedFinalized<Scrollbar>,
+class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
                               public DisplayItemClient {
  public:
-  static Scrollbar* Create(ScrollableArea* scrollable_area,
-                           ScrollbarOrientation orientation,
-                           ScrollbarControlSize size,
-                           ChromeClient* chrome_client) {
-    return MakeGarbageCollected<Scrollbar>(scrollable_area, orientation, size,
-                                           chrome_client);
-  }
-
   // Theme object ownership remains with the caller and it must outlive the
   // scrollbar.
   static Scrollbar* CreateForTesting(ScrollableArea* scrollable_area,
@@ -63,12 +56,13 @@ class CORE_EXPORT Scrollbar : public GarbageCollectedFinalized<Scrollbar>,
                                      ScrollbarControlSize size,
                                      ScrollbarTheme* theme) {
     return MakeGarbageCollected<Scrollbar>(scrollable_area, orientation, size,
-                                           nullptr, theme);
+                                           nullptr, nullptr, theme);
   }
 
   Scrollbar(ScrollableArea*,
             ScrollbarOrientation,
             ScrollbarControlSize,
+            Element* style_source,
             ChromeClient* = nullptr,
             ScrollbarTheme* = nullptr);
   ~Scrollbar() override;
@@ -84,7 +78,8 @@ class CORE_EXPORT Scrollbar : public GarbageCollectedFinalized<Scrollbar>,
   const IntRect& FrameRect() const { return frame_rect_; }
 
   ScrollbarOverlayColorTheme GetScrollbarOverlayColorTheme() const;
-  void GetTickmarks(Vector<IntRect>&) const;
+  bool HasTickmarks() const;
+  Vector<IntRect> GetTickmarks() const;
   bool IsScrollableAreaActive() const;
 
   IntPoint ConvertFromRootFrame(const IntPoint&) const;
@@ -124,13 +119,14 @@ class CORE_EXPORT Scrollbar : public GarbageCollectedFinalized<Scrollbar>,
   int PressedPos() const { return pressed_pos_; }
 
   virtual void SetHoveredPart(ScrollbarPart);
-  virtual void SetPressedPart(ScrollbarPart);
+  virtual void SetPressedPart(ScrollbarPart, WebInputEvent::Type);
 
   void SetProportion(int visible_size, int total_size);
   void SetPressedPos(int p) { pressed_pos_ = p; }
 
-  void Paint(GraphicsContext&, const CullRect&) const;
+  void Paint(GraphicsContext&) const;
 
+  virtual bool IsSolidColor() const;
   virtual bool IsOverlayScrollbar() const;
   bool ShouldParticipateInHitTesting();
 
@@ -166,8 +162,9 @@ class CORE_EXPORT Scrollbar : public GarbageCollectedFinalized<Scrollbar>,
     elastic_overscroll_ = elastic_overscroll;
   }
 
-  // Use setNeedsPaintInvalidation to cause the scrollbar (or parts thereof)
-  // to repaint.
+  // Use SetNeedsPaintInvalidation to cause the scrollbar (or parts thereof)
+  // to repaint. Here "track" includes track, buttons and tickmarks, i.e. all
+  // things except the thumb.
   bool TrackNeedsRepaint() const { return track_needs_repaint_; }
   void ClearTrackNeedsRepaint() { track_needs_repaint_ = false; }
   bool ThumbNeedsRepaint() const { return thumb_needs_repaint_; }
@@ -178,9 +175,9 @@ class CORE_EXPORT Scrollbar : public GarbageCollectedFinalized<Scrollbar>,
     return orientation_ == kHorizontalScrollbar ? "HorizontalScrollbar"
                                                 : "VerticalScrollbar";
   }
-  LayoutRect VisualRect() const final { return visual_rect_; }
+  IntRect VisualRect() const final { return visual_rect_; }
 
-  virtual void SetVisualRect(const LayoutRect& r) { visual_rect_ = r; }
+  virtual void SetVisualRect(const IntRect& r) { visual_rect_ = r; }
 
   // Marks the scrollbar as needing to be redrawn.
   //
@@ -197,17 +194,29 @@ class CORE_EXPORT Scrollbar : public GarbageCollectedFinalized<Scrollbar>,
 
   CompositorElementId GetElementId();
 
-  // Promptly unregister from the theme manager + run finalizers of derived
-  // Scrollbars.
-  EAGERLY_FINALIZE();
-  DEFINE_INLINE_EAGER_FINALIZATION_OPERATOR_NEW()
+  float EffectiveZoom() const;
+  bool ContainerIsRightToLeft() const;
+
+  // The Element that supplies our style information. If the scrollbar is
+  // for a document, this is either the <body> or <html> element. Otherwise, it
+  // is the element that owns our PaintLayerScrollableArea.
+  Element* StyleSource() const { return style_source_.Get(); }
+
+  WebColorScheme UsedColorScheme() const;
+
   virtual void Trace(blink::Visitor*);
 
  protected:
   void AutoscrollTimerFired(TimerBase*);
-  void StartTimerIfNeeded(TimeDelta delay);
+  void StartTimerIfNeeded(base::TimeDelta delay);
   void StopTimerIfNeeded();
-  void AutoscrollPressedPart(TimeDelta delay);
+  void AutoscrollPressedPart(base::TimeDelta delay);
+  bool HandleTapGesture();
+  void InjectScrollGestureForPressedPart(WebInputEvent::Type gesture_type);
+  void InjectGestureScrollUpdateForThumbMove(float single_axis_target_offset);
+  void InjectScrollGesture(WebInputEvent::Type type,
+                           ScrollOffset delta,
+                           ScrollGranularity granularity);
   ScrollDirectionPhysical PressedPartScrollDirectionPhysical();
   ScrollGranularity PressedPartScrollGranularity();
 
@@ -239,12 +248,15 @@ class CORE_EXPORT Scrollbar : public GarbageCollectedFinalized<Scrollbar>,
   float ScrollableAreaCurrentPos() const;
   float ScrollableAreaTargetPos() const;
   bool ThumbWillBeUnderMouse() const;
+  bool DeltaWillScroll(ScrollOffset delta) const;
 
   int theme_scrollbar_thickness_;
   bool track_needs_repaint_;
   bool thumb_needs_repaint_;
-  LayoutRect visual_rect_;
+  bool injected_gesture_scroll_begin_;
+  IntRect visual_rect_;
   IntRect frame_rect_;
+  Member<Element> style_source_;
 };
 
 }  // namespace blink

@@ -1,0 +1,29 @@
+<!--
+@UIA-WIN-ALLOW:Label*
+@BLINK-ALLOW:label*
+@WIN-ALLOW:label*
+-->
+<!DOCTYPE html>
+<html>
+<style>
+  .hide {
+    visibility: hidden;
+  }
+  .visible {
+    visibility: visible;
+  }
+</style>
+<body>
+  <div>
+    <span class="hide" aria-label="span-A1">
+      <span aria-label="span-A2" id="a2"></span>
+      <span class="visible" aria-label="span-A3" aria-labelledby="a4">
+        <span class="hide" aria-label="span-A4" id="a4"></span>
+      </span>
+    </span>
+
+    <span aria-label="span-B" aria-labelledby="a2"></span>
+    <span aria-label="span-C"></span>
+  </div>
+</body>
+</html>

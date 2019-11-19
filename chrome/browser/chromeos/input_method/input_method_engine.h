@@ -11,15 +11,15 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "base/time/time.h"
+
 #include "chrome/browser/ui/input_method/input_method_engine_base.h"
+#include "ui/base/ime/candidate_window.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/base/ime/ime_engine_handler_interface.h"
 #include "url/gurl.h"
 
 namespace ui {
-class CandidateWindow;
 struct CompositionText;
 class KeyEvent;
 
@@ -30,7 +30,7 @@ struct InputMethodMenuItem;
 
 namespace input_method {
 class InputMethodEngineBase;
-}
+}  // namespace input_method
 
 namespace chromeos {
 
@@ -133,6 +133,13 @@ class InputMethodEngine : public ::input_method::InputMethodEngineBase {
   void UpdateComposition(const ui::CompositionText& composition_text,
                          uint32_t cursor_pos,
                          bool is_visible) override;
+  bool SetCompositionRange(
+      uint32_t before,
+      uint32_t after,
+      const std::vector<ui::ImeTextSpan>& text_spans) override;
+
+  bool SetSelectionRange(uint32_t start, uint32_t end) override;
+
   void CommitTextToInputContext(int context_id,
                                 const std::string& text) override;
   bool SendKeyEvent(ui::KeyEvent* event, const std::string& code) override;
@@ -146,13 +153,13 @@ class InputMethodEngine : public ::input_method::InputMethodEngineBase {
       ui::ime::InputMethodMenuItem* property);
 
   // The current candidate window.
-  std::unique_ptr<ui::CandidateWindow> candidate_window_;
+  ui::CandidateWindow candidate_window_;
 
   // The current candidate window property.
   CandidateWindowProperty candidate_window_property_;
 
   // Indicates whether the candidate window is visible.
-  bool window_visible_;
+  bool window_visible_ = false;
 
   // Mapping of candidate index to candidate id.
   std::vector<int> candidate_ids_;
@@ -161,10 +168,12 @@ class InputMethodEngine : public ::input_method::InputMethodEngineBase {
   std::map<int, int> candidate_indexes_;
 
   // Whether the screen is in mirroring mode.
-  bool is_mirroring_;
+  bool is_mirroring_ = false;
 
   // Whether the desktop is being casted.
-  bool is_casting_;
+  bool is_casting_ = false;
+
+  DISALLOW_COPY_AND_ASSIGN(InputMethodEngine);
 };
 
 }  // namespace chromeos

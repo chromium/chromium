@@ -1,0 +1,40 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/list_property_update_behavior.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
+<link rel="import" href="cups_printer_types.html">
+<link rel="import" href="cups_printers_browser_proxy.html">
+<link rel="import" href="cups_printers_entry_list_behavior.html">
+<link rel="import" href="cups_printers_entry.html">
+<link rel="import" href="cups_printers_entry_manager.html">
+<link rel="import" href="../settings_shared_css.html">
+
+<dom-module id="settings-cups-nearby-printers">
+  <template>
+    <style include="cups-printer-shared">
+      :host {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #no-search-results {
+        margin-top: 20px;
+      }
+    </style>
+
+    <iron-list class="list-frame vertical-list flex-auto" id="printerEntryList"
+        items="[[filteredPrinters_]]">
+      <template>
+        <settings-cups-printers-entry printer-entry="[[item]]">
+        </settings-cups-printers-entry>
+      </template>
+    </iron-list>
+    <div id="no-search-results"
+        hidden="[[!showNoSearchResultsMessage_(searchTerm,
+            filteredPrinters_.*)]]">
+      $i18n{noSearchResults}
+    </div>
+  </template>
+  <script src="cups_nearby_printers.js"></script>
+</dom-module>

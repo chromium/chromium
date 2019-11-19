@@ -4,7 +4,10 @@
         <script>
             function log(frame, success, isWidth, size) {
                 if (window.testRunner) {
-                    document.getElementById("results").contentDocument.getElementById("console").appendChild(document.createTextNode((success ? "PASS: " : "FAIL: ") + frame.name + " resized correctly\n"));
+                    document.getElementById("results").contentWindow.postMessage({
+                        type: "log",
+                        message: (success ? "PASS: " : "FAIL: ") + frame.name + " resized correctly"
+                    }, "*");
                 } else {
                     frame.document.close();
                     if (success)
@@ -30,7 +33,10 @@
                     testRunner.dumpAsText();
                     testRunner.dumpChildFrames();
 
-                    document.getElementById("results").contentDocument.getElementById("description").innerText = "\nThis tests that frames with frameborder=0 can be resized. See WebKit Bug 23750. On success, two 'PASS' messages will be shown below.";
+                    document.getElementById("results").contentWindow.postMessage({
+                        type: "description",
+                        message: "\nThis tests that frames with frameborder=0 can be resized. See WebKit Bug 23750. On success, two 'PASS' messages will be shown below."
+                    }, "*");
 
                     // Move the One/* vertical resizer ten pixels west.
                     eventSender.mouseMoveTo(90, 400);
@@ -62,7 +68,7 @@
             <frame frameborder=0 name="One" style="border-right: 2px solid green;"></frame>
             <frameset rows="70,*" onmousemove="checkProgress()" onmouseup="checkProgress()" onmousedown="checkProgress()">
                 <frame frameborder=0 name="Two" style="border-bottom: 2px solid green;"></frame>
-                <frame id="results" frameborder=0 name="Three" src="data:text/html,<body bgcolor='gray'> <p id='description'>To resize frames drag the top or left of this frame </p><pre id='console'></pre></body>"></frame>
+                <frame id="results" frameborder=0 name="Three" src="data:text/html,<body bgcolor='gray'> <p id='description'>To resize frames drag the top or left of this frame </p><pre id='console'</pre><script>window.onmessage = e => { if (e.data.type === 'description') { document.getElementById('description').innerText = e.data.message; } else { document.getElementById('console').appendChild(document.createTextNode(e.data.message + '\n')); } }</script></body>"></frame>
             </frameset>
         </frameset>
 </html>

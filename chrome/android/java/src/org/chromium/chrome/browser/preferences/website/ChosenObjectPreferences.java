@@ -4,23 +4,28 @@
 
 package org.chromium.chrome.browser.preferences.website;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceScreen;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceScreen;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ListView;
 
 import org.chromium.base.annotations.RemovableInRelease;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
-import org.chromium.chrome.browser.preferences.PreferenceUtils;
+import org.chromium.chrome.browser.preferences.ChromeImageViewPreference;
+import org.chromium.chrome.browser.preferences.ManagedPreferenceDelegate;
+import org.chromium.chrome.browser.preferences.ManagedPreferencesUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.ArrayList;
@@ -31,14 +36,11 @@ import java.util.Locale;
  * Shows a particular chosen object (e.g. a USB device) and the list of sites that have been
  * granted access to it by the user.
  */
-public class ChosenObjectPreferences
-        extends PreferenceFragment implements Preference.OnPreferenceClickListener {
+public class ChosenObjectPreferences extends PreferenceFragmentCompat {
     public static final String EXTRA_OBJECT_INFOS = "org.chromium.chrome.preferences.object_infos";
     public static final String EXTRA_SITES = "org.chromium.chrome.preferences.site_set";
     public static final String EXTRA_CATEGORY =
             "org.chromium.chrome.preferences.content_settings_type";
-
-    public static final String PREF_OBJECT_NAME = "object_name";
 
     // The site settings category we are showing.
     private SiteSettingsCategory mCategory;
@@ -52,12 +54,16 @@ public class ChosenObjectPreferences
     private String mSearch = "";
 
     @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        // Set empty preferences screen.
+        PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getStyledContext());
+        setPreferenceScreen(screen);
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public void onActivityCreated(Bundle savedInstanceState) {
-        PreferenceUtils.addPreferencesFromResource(this, R.xml.chosen_object_preferences);
-        ListView listView = (ListView) getView().findViewById(android.R.id.list);
-        listView.setDivider(null);
-
+        setDivider(null);
         int contentSettingsType = getArguments().getInt(EXTRA_CATEGORY);
         mCategory = SiteSettingsCategory.createFromContentSettingsType(contentSettingsType);
         mObjectInfos =
@@ -124,9 +130,8 @@ public class ChosenObjectPreferences
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            HelpAndFeedback.getInstance(getActivity())
-                    .show(getActivity(), getString(R.string.help_context_settings),
-                            Profile.getLastUsedProfile(), null);
+            HelpAndFeedback.getInstance().show(getActivity(),
+                    getString(R.string.help_context_settings), Profile.getLastUsedProfile(), null);
             return true;
         }
         return false;
@@ -143,15 +148,28 @@ public class ChosenObjectPreferences
         }
     }
 
-    @Override
-    public boolean onPreferenceClick(Preference preference) {
-        if (PREF_OBJECT_NAME.equals(preference.getKey())) {
-            for (int i = 0; i < mObjectInfos.size(); ++i) mObjectInfos.get(i).revoke();
-            getActivity().finish();
-            return true;
+    /**
+     * Iterates through |mObjectInfos| to revoke the object permissions. If the list of objects
+     * contains one that is managed, a toast will display to explain that the managed objects cannot
+     * be reset, otherwise all of the objects are reset so the activity is finished.
+     */
+    public void revokeObjectPermissions() {
+        boolean hasManagedObject = false;
+        for (ChosenObjectInfo info : mObjectInfos) {
+            if (info.isManaged()) {
+                hasManagedObject = true;
+            } else {
+                info.revoke();
+            }
         }
 
-        return false;
+        // Managed objects cannot be revoked, so finish the activity only if the list did not
+        // contain managed objects.
+        if (hasManagedObject) {
+            ManagedPreferencesUtils.showManagedSettingsCannotBeResetToast(getActivity());
+        } else {
+            getActivity().finish();
+        }
     }
 
     private class ResultsPopulator implements WebsitePermissionsFetcher.WebsitePermissionsCallback {
@@ -204,26 +222,94 @@ public class ChosenObjectPreferences
         fetcher.fetchPreferencesForCategory(mCategory, new ResultsPopulator());
     }
 
-    private void resetList() {
-        getPreferenceScreen().removeAll();
-        PreferenceUtils.addPreferencesFromResource(this, R.xml.chosen_object_preferences);
-
+    /**
+     * Configures two Preferences that make up the header portion of this fragment. The first
+     * Preference displays the chosen object name and provides a button to reset all of the site
+     * permissions for the object. The second Preference is a horizontal divider line.
+     */
+    private void createHeader() {
         PreferenceScreen preferenceScreen = getPreferenceScreen();
-        Preference header = preferenceScreen.findPreference(PREF_OBJECT_NAME);
-        // All the ChosenObjectInfo instances represent the same object so we may arbitrarily
-        // use the name of the first one.
-        header.setTitle(mObjectInfos.get(0).getName());
-        header.setOnPreferenceClickListener(this);
+        ChromeImageViewPreference header = new ChromeImageViewPreference(getStyledContext());
+        String titleText = mObjectInfos.get(0).getName();
+        String dialogMsg =
+                String.format(getView().getContext().getString(
+                                      R.string.chosen_object_website_reset_confirmation_for),
+                        titleText);
 
-        for (int i = 0; i < mSites.size(); ++i) {
+        header.setTitle(titleText);
+        header.setImageView(R.drawable.ic_delete_white_24dp,
+                R.string.website_settings_revoke_all_permissions_for_device, (View view) -> {
+                    new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+                            .setTitle(R.string.reset)
+                            .setMessage(dialogMsg)
+                            .setPositiveButton(R.string.reset,
+                                    (DialogInterface dialog, int which) -> {
+                                        revokeObjectPermissions();
+                                        getInfo();
+                                    })
+                            .setNegativeButton(R.string.cancel, null)
+                            .show();
+                });
+        preferenceScreen.addPreference(header);
+
+        // TODO(chouinard): Handle this header and divider in a cleaner way. May need to migrate
+        // WebsitePreference to extend ChromeBasePreference to more easily set dividers
+        // programmatically.
+        Preference divider = new Preference(getStyledContext());
+        divider.setLayoutResource(R.layout.divider_preference);
+        preferenceScreen.addPreference(divider);
+    }
+
+    /**
+     * Refreshes the preference list by recreating the heading and the sites allowed to access the
+     * chosen object preference for this fragment.
+     */
+    private void resetList() {
+        PreferenceScreen preferenceScreen = getPreferenceScreen();
+        preferenceScreen.removeAll();
+        createHeader();
+
+        // Each item |i| in |mSites| and |mObjectInfos| correspond to each other.
+        // See SingleCategoryPreferences.addChosenObjects().
+        for (int i = 0; i < mSites.size() && i < mObjectInfos.size(); ++i) {
             Website site = mSites.get(i);
-            Preference preference = new WebsitePreference(getActivity(), site, mCategory);
+            ChosenObjectInfo info = mObjectInfos.get(i);
+            WebsitePreference preference =
+                    new WebsitePreference(getStyledContext(), site, mCategory);
+
             preference.getExtras().putSerializable(SingleWebsitePreferences.EXTRA_SITE, site);
             preference.setFragment(SingleWebsitePreferences.class.getCanonicalName());
+            preference.setImageView(R.drawable.ic_delete_white_24dp,
+                    R.string.website_settings_revoke_device_permission, (View view) -> {
+                        info.revoke();
+                        getInfo();
+                    });
+
+            preference.setManagedPreferenceDelegate(new ManagedPreferenceDelegate() {
+                @Override
+                public boolean isPreferenceControlledByPolicy(Preference preference) {
+                    return info.isManaged();
+                }
+
+                @Override
+                public boolean isPreferenceControlledByCustodian(Preference preference) {
+                    return false;
+                }
+
+                @Override
+                public boolean isPreferenceClickDisabledByPolicy(Preference preference) {
+                    return false;
+                }
+            });
+
             preferenceScreen.addPreference(preference);
         }
 
         // Force this list to be reloaded if the activity is resumed.
         mSites = null;
+    }
+
+    private Context getStyledContext() {
+        return getPreferenceManager().getContext();
     }
 }

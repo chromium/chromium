@@ -18,10 +18,10 @@
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/images/branded_image_provider.h"
 #import "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
-#import "ios/web/public/navigation_manager.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_client.h"
-#import "ios/web/public/web_state/web_state.h"
-#import "ios/web/public/web_state/web_state_observer_bridge.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,6 +37,9 @@
 
 // The icon for the search button.
 @property(nonatomic, strong) UIImage* searchIcon;
+
+// Whether the associated toolbar is in dark mode.
+@property(nonatomic, assign) BOOL toolbarDarkMode;
 
 @end
 
@@ -185,7 +188,7 @@
   _incognito = incognito;
   if (self.searchIcon) {
     // If the searchEngine was already initialized, ask for the new image.
-    [self searchEngineChanged];
+    [self updateSearchIcon];
   }
 }
 
@@ -302,6 +305,26 @@
   [self.consumer setShareMenuEnabled:shareMenuEnabled];
 }
 
+// Updates the search icon in the toolbar. This depends on both the current
+// search engine as well as the dark mode status of the associated toolbar.
+- (void)updateSearchIcon {
+  SearchEngineIcon searchEngineIcon = SEARCH_ENGINE_ICON_OTHER;
+  if (self.templateURLService &&
+      self.templateURLService->GetDefaultSearchProvider() &&
+      self.templateURLService->GetDefaultSearchProvider()->GetEngineType(
+          self.templateURLService->search_terms_data()) ==
+          SEARCH_ENGINE_GOOGLE) {
+    searchEngineIcon = SEARCH_ENGINE_ICON_GOOGLE_SEARCH;
+  }
+  BOOL useDarkIcon = self.incognito || self.toolbarDarkMode;
+  UIImage* searchIcon =
+      ios::GetChromeBrowserProvider()
+          ->GetBrandedImageProvider()
+          ->GetToolbarSearchIcon(searchEngineIcon, useDarkIcon);
+  DCHECK(searchIcon);
+  [self.consumer setSearchIcon:searchIcon];
+}
+
 #pragma mark - BookmarkModelBridgeObserver
 
 // If an added or removed bookmark is the same as the current url, update the
@@ -338,20 +361,16 @@
 #pragma mark - SearchEngineObserving
 
 - (void)searchEngineChanged {
-  SearchEngineIcon searchEngineIcon = SEARCH_ENGINE_ICON_OTHER;
-  if (self.templateURLService &&
-      self.templateURLService->GetDefaultSearchProvider() &&
-      self.templateURLService->GetDefaultSearchProvider()->GetEngineType(
-          self.templateURLService->search_terms_data()) ==
-          SEARCH_ENGINE_GOOGLE) {
-    searchEngineIcon = SEARCH_ENGINE_ICON_GOOGLE_SEARCH;
-  }
-  UIImage* searchIcon =
-      ios::GetChromeBrowserProvider()
-          ->GetBrandedImageProvider()
-          ->GetToolbarSearchIcon(searchEngineIcon, self.incognito);
-  DCHECK(searchIcon);
-  [self.consumer setSearchIcon:searchIcon];
+  [self updateSearchIcon];
+}
+
+#pragma mark - AdaptiveToolbarViewControllerDelegate
+
+- (void)userInterfaceStyleChangedForViewController:
+    (AdaptiveToolbarViewController*)viewController {
+  self.toolbarDarkMode = viewController.traitCollection.userInterfaceStyle ==
+                         UIUserInterfaceStyleDark;
+  [self updateSearchIcon];
 }
 
 @end

@@ -1,0 +1,38 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutSVGViewportContainer svg id='inner1'",
+          "rect": [0, 0, 200, 200],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "InlineTextBox 'PASS '",
+          "rect": [0, 100, 200, 100],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'PASS '",
+          "rect": [0, 100, 200, 100],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'PASS'",
+          "rect": [0, 100, 200, 100],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'PASS'",
+          "rect": [0, 100, 200, 100],
+          "reason": "disappeared"
+        }
+      ]
+    }
+  ]
+}
+

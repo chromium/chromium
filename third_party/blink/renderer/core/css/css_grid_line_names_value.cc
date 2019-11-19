@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+namespace cssvalue {
 
 String CSSGridLineNamesValue::CustomCSSText() const {
   return "[" + CSSValueList::CustomCSSText() + "]";
@@ -41,4 +42,5 @@ String CSSGridLineNamesValue::CustomCSSText() const {
 CSSGridLineNamesValue::CSSGridLineNamesValue()
     : CSSValueList(kGridLineNamesClass, kSpaceSeparator) {}
 
+}  // namespace cssvalue
 }  // namespace blink

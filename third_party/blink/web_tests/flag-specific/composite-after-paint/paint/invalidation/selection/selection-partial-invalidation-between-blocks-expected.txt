@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalTextFragment 'Second cell'",
+          "rect": [11, 35, 74, 20],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'First cell'",
+          "rect": [11, 11, 58, 20],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

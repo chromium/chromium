@@ -10,7 +10,7 @@ Running: editProperty
 element.style { ()
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
     color: blue;
     : ;
 
@@ -31,7 +31,7 @@ Running: undoStyles
 element.style { ()
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
     color: blue;
 
 [expanded] 
@@ -49,7 +49,7 @@ Running: onUndoedProperty
 element.style { ()
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 
 [expanded] 
 div { (user agent stylesheet)

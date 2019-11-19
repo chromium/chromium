@@ -8,7 +8,7 @@
       url(images/2x/triangle_red.png) 2x);
 }
 
-.ssl-opt-in .checkbox {
+.ssl-opt-in .checkbox::after {
   border-color: #696969;
 }
 

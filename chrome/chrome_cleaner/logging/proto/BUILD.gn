@@ -4,14 +4,15 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
 proto_library("shared_data_proto") {
   sources = [
     "shared_data.proto",
   ]
 
-  deps = [
-    ":removal_status_proto",
-  ]
+  link_deps = [ ":removal_status_proto" ]
 }
 
 proto_library("chrome_cleaner_report_proto") {
@@ -19,19 +20,12 @@ proto_library("chrome_cleaner_report_proto") {
     "chrome_cleaner_report.proto",
   ]
 
-  deps = [
-    ":shared_data_proto",
-    "//third_party/protobuf:py_proto",
-  ]
+  link_deps = [ ":shared_data_proto" ]
 }
 
 proto_library("removal_status_proto") {
   sources = [
     "removal_status.proto",
-  ]
-
-  deps = [
-    "//third_party/protobuf:py_proto",
   ]
 }
 
@@ -40,10 +34,7 @@ proto_library("reporter_logs_proto") {
     "reporter_logs.proto",
   ]
 
-  deps = [
-    ":shared_data_proto",
-    "//third_party/protobuf:py_proto",
-  ]
+  link_deps = [ ":shared_data_proto" ]
 }
 
 proto_library("interface_logger_proto") {
@@ -52,10 +43,12 @@ proto_library("interface_logger_proto") {
   ]
 }
 
-# A target that depends on all the protos imported directly from Python scripts.
+# A target that depends on all the protos and protobuf libs imported directly
+# from Python scripts.
 group("ensure_py_protos") {
   deps = [
     ":chrome_cleaner_report_proto",
     ":reporter_logs_proto",
+    "//third_party/protobuf:py_proto",
   ]
 }

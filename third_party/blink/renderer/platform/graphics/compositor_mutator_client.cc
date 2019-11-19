@@ -7,6 +7,7 @@
 #include <memory>
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher_impl.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -28,8 +29,9 @@ bool CompositorMutatorClient::Mutate(
     MutateQueuingStrategy queueing_strategy,
     DoneCallback on_done) {
   TRACE_EVENT0("cc", "CompositorMutatorClient::Mutate");
-  return mutator_->MutateAsynchronously(std::move(input_state),
-                                        queueing_strategy, std::move(on_done));
+  return mutator_->MutateAsynchronously(
+      std::move(input_state), queueing_strategy,
+      CrossThreadBindOnce(std::move(on_done)));
 }
 
 void CompositorMutatorClient::SetMutationUpdate(

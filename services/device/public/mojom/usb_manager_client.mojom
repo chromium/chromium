@@ -1,0 +1,15 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module device.mojom;
+
+import "services/device/public/mojom/usb_device.mojom";
+
+interface UsbDeviceManagerClient {
+  // Called when a device is connected to the host.
+  OnDeviceAdded(UsbDeviceInfo device_info);
+
+  // Called when a device is disconnected from the host.
+  OnDeviceRemoved(UsbDeviceInfo device_info);
+};

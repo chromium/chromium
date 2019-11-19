@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/base64.h"
@@ -31,7 +32,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/browser/trace_uploader.h"
 #include "content/public/browser/tracing_controller.h"
 #include "content/public/browser/tracing_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -96,10 +96,9 @@ void OnTraceBufferStatusResult(const WebUIDataSource::GotDataCallback& callback,
 
 void TracingCallbackWrapperBase64(
     const WebUIDataSource::GotDataCallback& callback,
-    std::unique_ptr<const base::DictionaryValue> metadata,
-    base::RefCountedString* data) {
+    std::unique_ptr<std::string> data) {
   base::RefCountedString* data_base64 = new base::RefCountedString();
-  base::Base64Encode(data->data(), &data_base64->data());
+  base::Base64Encode(*data, &data_base64->data());
   callback.Run(data_base64);
 }
 
@@ -139,16 +138,17 @@ bool OnBeginJSONRequest(const std::string& path,
   return false;
 }
 
-bool OnTracingRequest(const std::string& path,
+bool OnShouldHandleRequest(const std::string& path) {
+  return base::StartsWith(path, "json/", base::CompareCase::SENSITIVE);
+}
+
+void OnTracingRequest(const std::string& path,
                       const WebUIDataSource::GotDataCallback& callback) {
-  if (base::StartsWith(path, "json/", base::CompareCase::SENSITIVE)) {
-    if (!OnBeginJSONRequest(path, callback)) {
-      std::string error("##ERROR##");
-      callback.Run(base::RefCountedString::TakeString(&error));
-    }
-    return true;
+  DCHECK(OnShouldHandleRequest(path));
+  if (!OnBeginJSONRequest(path, callback)) {
+    std::string error("##ERROR##");
+    callback.Run(base::RefCountedString::TakeString(&error));
   }
-  return false;
 }
 
 }  // namespace
@@ -162,95 +162,21 @@ bool OnTracingRequest(const std::string& path,
 
 TracingUI::TracingUI(WebUI* web_ui)
     : WebUIController(web_ui),
-      delegate_(GetContentClient()->browser()->GetTracingDelegate()),
-      weak_factory_(this) {
-  web_ui->RegisterMessageCallback(
-      "doUpload",
-      base::BindRepeating(&TracingUI::DoUpload, base::Unretained(this)));
-  web_ui->RegisterMessageCallback(
-      "doUploadBase64", base::BindRepeating(&TracingUI::DoUploadBase64Encoded,
-                                            base::Unretained(this)));
-
+      delegate_(GetContentClient()->browser()->GetTracingDelegate()) {
   // Set up the chrome://tracing/ source.
   BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
 
   WebUIDataSource* source = WebUIDataSource::Create(kChromeUITracingHost);
-  source->UseGzip(base::BindRepeating([](const std::string& path) {
-    return path != "json/begin_recording" && path != "json/categories" &&
-           path != "json/end_recording_compressed" &&
-           path != "json/get_buffer_percent_full" &&
-           path != "json/get_buffer_status";
-  }));
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
   source->SetDefaultResource(IDR_TRACING_HTML);
   source->AddResourcePath("tracing.js", IDR_TRACING_JS);
-  source->SetRequestFilter(base::Bind(OnTracingRequest));
+  source->SetRequestFilter(base::BindRepeating(OnShouldHandleRequest),
+                           base::BindRepeating(OnTracingRequest));
   WebUIDataSource::Add(browser_context, source);
-  TracingControllerImpl::GetInstance()->RegisterTracingUI(this);
 }
 
-TracingUI::~TracingUI() {
-  TracingControllerImpl::GetInstance()->UnregisterTracingUI(this);
-}
-
-void TracingUI::DoUploadBase64Encoded(const base::ListValue* args) {
-  std::string file_contents_base64;
-  if (!args || args->empty() || !args->GetString(0, &file_contents_base64)) {
-    web_ui()->CallJavascriptFunctionUnsafe("onUploadError",
-                                           base::Value("Missing data"));
-    return;
-  }
-
-  std::string file_contents;
-  base::Base64Decode(file_contents_base64, &file_contents);
-
-  // doUploadBase64 is used to upload binary data which is assumed to already
-  // be compressed.
-  DoUploadInternal(file_contents, TraceUploader::UNCOMPRESSED_UPLOAD);
-}
-
-void TracingUI::DoUpload(const base::ListValue* args) {
-  std::string file_contents;
-  if (!args || args->empty() || !args->GetString(0, &file_contents)) {
-    web_ui()->CallJavascriptFunctionUnsafe("onUploadError",
-                                           base::Value("Missing data"));
-    return;
-  }
-
-  DoUploadInternal(file_contents, TraceUploader::COMPRESSED_UPLOAD);
-}
-
-void TracingUI::DoUploadInternal(const std::string& file_contents,
-                                 TraceUploader::UploadMode upload_mode) {
-  if (!delegate_) {
-    web_ui()->CallJavascriptFunctionUnsafe("onUploadError",
-                                           base::Value("Not implemented"));
-    return;
-  }
-
-  if (trace_uploader_) {
-    web_ui()->CallJavascriptFunctionUnsafe("onUploadError",
-                                           base::Value("Upload in progress"));
-    return;
-  }
-
-  TraceUploader::UploadProgressCallback progress_callback =
-      base::Bind(&TracingUI::OnTraceUploadProgress,
-      weak_factory_.GetWeakPtr());
-  TraceUploader::UploadDoneCallback done_callback = base::BindOnce(
-      &TracingUI::OnTraceUploadComplete, weak_factory_.GetWeakPtr());
-
-  trace_uploader_ = delegate_->GetTraceUploader(
-      BrowserContext::GetDefaultStoragePartition(
-          web_ui()->GetWebContents()->GetBrowserContext())
-          ->GetURLLoaderFactoryForBrowserProcess());
-  DCHECK(trace_uploader_);
-  trace_uploader_->DoUpload(file_contents, upload_mode, nullptr,
-                            std::move(progress_callback),
-                            std::move(done_callback));
-  // TODO(mmandlis): Add support for stopping the upload in progress.
-}
+TracingUI::~TracingUI() = default;
 
 // static
 bool TracingUI::GetTracingOptions(
@@ -305,27 +231,6 @@ bool TracingUI::GetTracingOptions(
     return false;
   }
   return true;
-}
-
-void TracingUI::OnTraceUploadProgress(int64_t current, int64_t total) {
-  DCHECK(current <= total);
-  int percent = (current / total) * 100;
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "onUploadProgress", base::Value(percent),
-      base::Value(base::StringPrintf("%" PRId64, current)),
-      base::Value(base::StringPrintf("%" PRId64, total)));
-}
-
-void TracingUI::OnTraceUploadComplete(bool success,
-                                      const std::string& feedback) {
-  if (success) {
-    web_ui()->CallJavascriptFunctionUnsafe("onUploadComplete",
-                                           base::Value(feedback));
-  } else {
-    web_ui()->CallJavascriptFunctionUnsafe("onUploadError",
-                                           base::Value(feedback));
-  }
-  trace_uploader_.reset();
 }
 
 }  // namespace content

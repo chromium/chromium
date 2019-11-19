@@ -8,9 +8,6 @@ if (window.testRunner) {
     testRunner.waitUntilDone();
 }
 
-if (window.internals)
-    internals.runtimeFlags.setFramebustingNeedsSameOriginOrUserGesture = true;
-
 window.addEventListener("message", e => {
   if (e.data == "PASS")
     testRunner.notifyDone();

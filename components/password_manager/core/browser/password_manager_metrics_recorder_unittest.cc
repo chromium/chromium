@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/metrics/metrics_hashes.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -34,7 +34,7 @@ PasswordManagerMetricsRecorder CreateMetricsRecorder() {
 }  // namespace
 
 TEST(PasswordManagerMetricsRecorder, UserModifiedPasswordField) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   {
     PasswordManagerMetricsRecorder recorder(CreateMetricsRecorder());
@@ -52,7 +52,7 @@ TEST(PasswordManagerMetricsRecorder, UserModifiedPasswordField) {
 }
 
 TEST(PasswordManagerMetricsRecorder, UserModifiedPasswordFieldMultipleTimes) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   {
     PasswordManagerMetricsRecorder recorder(CreateMetricsRecorder());
@@ -71,7 +71,7 @@ TEST(PasswordManagerMetricsRecorder, UserModifiedPasswordFieldMultipleTimes) {
 }
 
 TEST(PasswordManagerMetricsRecorder, UserModifiedPasswordFieldNotCalled) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   { PasswordManagerMetricsRecorder recorder(CreateMetricsRecorder()); }
   const auto& entries =

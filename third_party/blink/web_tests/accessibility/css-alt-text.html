@@ -1,0 +1,259 @@
+<!DOCTYPE HTML>
+<script src="../resources/gc.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="controlparent">
+  <span id="controlchild">Some Text</span>
+</div>
+
+<style>
+#controlparent::before {
+  content:  "item1" "item2" url(bullet.png);
+}
+</style>
+
+<script>
+
+test(function(t) {
+  var parentAXNode = accessibilityController.accessibleElementById("controlparent");
+  var contentTextNode = parentAXNode.childAtIndex(0);
+  var imageNode = parentAXNode.childAtIndex(1);
+  var spanAXNode = accessibilityController.accessibleElementById("controlchild");
+
+  assert_equals(contentTextNode.name, "item1item2");
+  assert_equals(imageNode.name, "");
+  assert_equals(parentAXNode.childAtIndex(2), spanAXNode);
+}, "When no alternative text is supplied text content should have a (concatenated) accessible name, images should have no name.");
+
+</script>
+<div id="parent">
+  <span id="child">Some Text</span>
+</div>
+
+<style>
+#parent::before {
+  content:  "\25BA" / "code";
+}
+</style>
+
+<script>
+
+test(function(t) {
+  var parentAXNode = accessibilityController.accessibleElementById("parent");
+  var textNode = parentAXNode.childAtIndex(0);
+  assert_equals(textNode.name, "code");
+  assert_equals(textNode.role, "AXRole: AXStaticText");
+  var spanAXNode = accessibilityController.accessibleElementById("child");
+  assert_equals(parentAXNode.childAtIndex(1), spanAXNode);
+}, "A pseudo element with text content and alt text should have the accessible name overridden.");
+
+</script>
+
+<div id="parentempty">
+  <span id="childempty">Some Text</span>
+</div>
+
+<style>
+#parentempty::before {
+  content:  "\25BA" / "";
+}
+</style>
+
+<script>
+test(function(t) {
+  var parentAXNode = accessibilityController.accessibleElementById("parentempty");
+  var childAXNode = parentAXNode.childAtIndex(0);
+  var spanAXNode = accessibilityController.accessibleElementById("childempty");
+
+  // As the alt string was blank, there should be no accessible node for the pseudo element.
+  // Therefore, the first child should just be the inner span node.
+  assert_equals(parentAXNode.childrenCount, 1);
+  assert_equals(childAXNode, spanAXNode);
+}, "A pseudo element with text content and an explicitly empty alternative string should not be included in the accessibility tree.");
+
+</script>
+
+<div id="imgparent"class="title">
+  <span id="imgchild">Some Text</span>
+</div>
+
+<style>
+#imgparent::before {
+  content: url(bullet.png) / "star";
+}
+</style>
+
+<script>
+
+test(function(t) {
+  var parentAXNode = accessibilityController.accessibleElementById("imgparent");
+  var imageNode = parentAXNode.childAtIndex(0);
+  assert_equals(imageNode.name, "star");
+  assert_equals(imageNode.role, "AXRole: AXImage");
+  var spanAXNode = accessibilityController.accessibleElementById("imgchild");
+  assert_equals(parentAXNode.childAtIndex(1), spanAXNode);
+}, "Pseudo element with image content and alt text should have the accessible name overridden.");
+
+</script>
+
+<div id="imgparentempty"class="title">
+  <span id="imgchildempty">Some Text</span>
+</div>
+
+<style>
+#imgparentempty::before {
+  content: url(bullet.png) / "";
+}
+</style>
+
+<script>
+
+test(function(t) {
+  var parentAXNode = accessibilityController.accessibleElementById("imgparentempty");
+  var childAXNode = parentAXNode.childAtIndex(0);
+  var spanAXNode = accessibilityController.accessibleElementById("imgchildempty");
+
+  // For images content on a pseudo element, if the alternative string was provided and
+  // explicitly empty, this behaves the same as a DOM image node with an empty/missing
+  // alt attribute.
+
+  assert_equals(parentAXNode.childrenCount, 2);
+  assert_equals(childAXNode.role, "AXRole: AXImage");
+  assert_equals(childAXNode.name, "");
+  assert_equals(parentAXNode.childAtIndex(1), spanAXNode);
+}, "A pseudo element with image content and an explicitly empty alt string should still appear in the accessibility tree with a role of AXImage, but no accessible name.");
+
+</script>
+
+<div id="divlistparent" class="title">
+  <span id="divlistchild">Some Text</span>
+</div>
+
+<style>
+#divlistparent::before {
+  content: "item1" "item2" url(bullet.png) / "a list of items";
+}
+</style>
+
+<script>
+test(function(t) {
+  var parentAXNode = accessibilityController.accessibleElementById("divlistparent");
+  var textContentListNode = parentAXNode.childAtIndex(0);
+  assert_equals(textContentListNode.name, "a list of items");
+  assert_equals(textContentListNode.role, "AXRole: AXStaticText");
+  var parentAXNode = accessibilityController.accessibleElementById("divlistparent");
+  var spanAXNode = accessibilityController.accessibleElementById("divlistchild");
+  assert_equals(parentAXNode.childAtIndex(1), spanAXNode);
+}, "A pseudo element with mixed content list, with first item being text and with alt text should have the accessible name overriden and a role of AXStaticText.");
+
+</script>
+
+<div id="emptylistparent" class="title">
+  <span id="emptylistchild">Some Text</span>
+</div>
+
+<style>
+#emptylistparent::before {
+  content: url(bullet.png) "item1" "item2" url(bullet.png) / "";
+}
+</style>
+
+<script>
+test(function(t) {
+  var parentAXNode = accessibilityController.accessibleElementById("emptylistparent");
+  var contentListNode = parentAXNode.childAtIndex(0);
+  assert_equals(contentListNode.name, "");
+  assert_equals(contentListNode.role, "AXRole: AXImage");
+  var spanAXNode = accessibilityController.accessibleElementById("emptylistchild");
+  assert_equals(parentAXNode.childAtIndex(1), spanAXNode);
+  assert_equals(parentAXNode.role, "AXRole: AXGenericContainer");
+}, "A pseudo element with mixed content list, with first item being image and with empty alt text should have a role of AXImage and empty name.");
+
+</script>
+
+
+<div id="firstletterparent">
+  <p id="firstletterchild">Some Text</p>
+</div>
+
+<style>
+#firstletterchild::first-letter {
+  color: red;
+  content: "Foo" / "Bar";
+}
+</style>
+
+<script>
+test(function(t) {
+  var parentAXNode = accessibilityController.accessibleElementById("firstletterparent");
+  var firstAXNode = parentAXNode.childAtIndex(0);
+  assert_equals(firstAXNode.role, "AXRole: AXParagraph");
+  var paragraphNode = accessibilityController.accessibleElementById("firstletterchild");
+  assert_equals(firstAXNode, paragraphNode);
+}, "Pseudo elements that don't support the content property should not impact the accessibility tree if the property and alt text is supplied.");
+
+</script>
+
+<div id="divcontent">Div text content</div>
+<style>
+#divcontent {
+  content: url(bullet.png) / "alt";
+}
+</style>
+
+<script>
+
+test(function(t) {
+  var domAXNode = accessibilityController.accessibleElementById("divcontent");
+  assert_equals(domAXNode.role, "AXRole: AXImage");
+  assert_equals(domAXNode.name, "alt");
+},"Non pseudo elements which support the content property should have the alt text applied to the image that replaces their content.");
+
+</script>
+
+<!--- The following test cases are merely here to test that the addition of alt text support has not altered the default behaviour if the content property is incorrectly supplied -->
+
+<div id="divdoubleimage">DOM Text</div>
+
+<style>
+#divdoubleimage {
+  content: url(bullet.png) url(bullet.png) / "alt";
+}
+</style>
+
+<script>
+
+test(function(t) {
+  var domAXNode = accessibilityController.accessibleElementById("divdoubleimage");
+  assert_equals(domAXNode.role, "AXRole: AXGenericContainer");
+  assert_equals(domAXNode.childrenCount, 1);
+
+  var childAXNode = domAXNode.childAtIndex(0);
+  assert_equals(childAXNode.role, "AXRole: AXStaticText");
+  assert_equals(childAXNode.name, "DOM Text");
+},"A DOM Node with more than one image and alternative text should not impact the accessibility tree.");
+
+</script>
+
+<div id="divtextcontent">DOM Text</div>
+
+<style>
+#divtextcontent {
+  content: "text content replacement" / "alt";
+}
+</style>
+
+<script>
+
+test(function(t) {
+  var domAXNode = accessibilityController.accessibleElementById("divtextcontent");
+  assert_equals(domAXNode.role, "AXRole: AXGenericContainer");
+  assert_equals(domAXNode.childrenCount, 1);
+
+  var childAXNode = domAXNode.childAtIndex(0);
+  assert_equals(childAXNode.role, "AXRole: AXStaticText");
+  assert_equals(childAXNode.name, "DOM Text");
+},"A DOM Node with text replacement content and alt text should not impact the accessibility tree.");
+
+</script>

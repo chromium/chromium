@@ -56,11 +56,11 @@ class SimpleInterceptablePrefFilter : public InterceptablePrefFilter {
  private:
   // InterceptablePrefFilter implementation.
   void FinalizeFilterOnLoad(
-      const PostFilterOnLoadCallback& post_filter_on_load_callback,
+      PostFilterOnLoadCallback post_filter_on_load_callback,
       std::unique_ptr<base::DictionaryValue> pref_store_contents,
       bool prefs_altered) override {
-    post_filter_on_load_callback.Run(std::move(pref_store_contents),
-                                     prefs_altered);
+    std::move(post_filter_on_load_callback)
+        .Run(std::move(pref_store_contents), prefs_altered);
   }
 };
 
@@ -228,14 +228,14 @@ class TrackedPreferencesMigrationTest : public testing::Test {
     switch (store_id) {
       case MOCK_UNPROTECTED_PREF_STORE:
         mock_unprotected_pref_filter_.FilterOnLoad(
-            base::Bind(&TrackedPreferencesMigrationTest::GetPrefsBack,
-                       base::Unretained(this), MOCK_UNPROTECTED_PREF_STORE),
+            base::BindOnce(&TrackedPreferencesMigrationTest::GetPrefsBack,
+                           base::Unretained(this), MOCK_UNPROTECTED_PREF_STORE),
             std::move(unprotected_prefs_));
         break;
       case MOCK_PROTECTED_PREF_STORE:
         mock_protected_pref_filter_.FilterOnLoad(
-            base::Bind(&TrackedPreferencesMigrationTest::GetPrefsBack,
-                       base::Unretained(this), MOCK_PROTECTED_PREF_STORE),
+            base::BindOnce(&TrackedPreferencesMigrationTest::GetPrefsBack,
+                           base::Unretained(this), MOCK_PROTECTED_PREF_STORE),
             std::move(protected_prefs_));
         break;
     }
@@ -272,13 +272,11 @@ class TrackedPreferencesMigrationTest : public testing::Test {
     switch (store_id) {
       case MOCK_UNPROTECTED_PREF_STORE:
         EXPECT_FALSE(unprotected_store_successful_write_callback_.is_null());
-        unprotected_store_successful_write_callback_.Run();
-        unprotected_store_successful_write_callback_.Reset();
+        std::move(unprotected_store_successful_write_callback_).Run();
         break;
       case MOCK_PROTECTED_PREF_STORE:
         EXPECT_FALSE(protected_store_successful_write_callback_.is_null());
-        protected_store_successful_write_callback_.Run();
-        protected_store_successful_write_callback_.Reset();
+        std::move(protected_store_successful_write_callback_).Run();
         break;
     }
   }
@@ -286,15 +284,17 @@ class TrackedPreferencesMigrationTest : public testing::Test {
  private:
   void RegisterSuccessfulWriteClosure(
       MockPrefStoreID store_id,
-      const base::Closure& successful_write_closure) {
+      base::OnceClosure successful_write_closure) {
     switch (store_id) {
       case MOCK_UNPROTECTED_PREF_STORE:
         EXPECT_TRUE(unprotected_store_successful_write_callback_.is_null());
-        unprotected_store_successful_write_callback_ = successful_write_closure;
+        unprotected_store_successful_write_callback_ =
+            std::move(successful_write_closure);
         break;
       case MOCK_PROTECTED_PREF_STORE:
         EXPECT_TRUE(protected_store_successful_write_callback_.is_null());
-        protected_store_successful_write_callback_ = successful_write_closure;
+        protected_store_successful_write_callback_ =
+            std::move(successful_write_closure);
         break;
     }
   }
@@ -362,8 +362,8 @@ class TrackedPreferencesMigrationTest : public testing::Test {
   SimpleInterceptablePrefFilter mock_unprotected_pref_filter_;
   SimpleInterceptablePrefFilter mock_protected_pref_filter_;
 
-  base::Closure unprotected_store_successful_write_callback_;
-  base::Closure protected_store_successful_write_callback_;
+  base::OnceClosure unprotected_store_successful_write_callback_;
+  base::OnceClosure protected_store_successful_write_callback_;
 
   bool migration_modified_unprotected_store_;
   bool migration_modified_protected_store_;

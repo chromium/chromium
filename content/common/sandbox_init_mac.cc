@@ -15,7 +15,7 @@
 #include "gpu/config/gpu_switches.h"
 #include "gpu/config/gpu_switching.h"
 #include "gpu/config/gpu_util.h"
-#include "media/gpu/vt_video_decode_accelerator_mac.h"
+#include "media/gpu/mac/vt_video_decode_accelerator_mac.h"
 #include "sandbox/mac/seatbelt.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #include "services/service_manager/sandbox/mac/sandbox_mac.h"
@@ -34,7 +34,7 @@ base::OnceClosure MaybeWrapWithGPUSandboxHook(
   if (sandbox_type != service_manager::SANDBOX_TYPE_GPU)
     return original;
 
-  return base::Bind(
+  return base::BindOnce(
       [](base::OnceClosure arg) {
         // We need to gather GPUInfo and compute GpuFeatureInfo here, so we can
         // decide if initializing core profile or compatibility profile GL,
@@ -72,7 +72,7 @@ base::OnceClosure MaybeWrapWithGPUSandboxHook(
         if (!arg.is_null())
           std::move(arg).Run();
       },
-      base::Passed(std::move(original)));
+      std::move(original));
 }
 
 // Fill in |sandbox_type| based on the command line.  Returns false if the

@@ -6,10 +6,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
-#include "base/metrics/field_trial.h"
-#include "base/metrics/field_trial_param_associator.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,8 +24,7 @@
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/feature_engagement/test/test_tracker.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/variations/variations_params_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,8 +32,6 @@ namespace feature_engagement {
 
 namespace {
 
-constexpr char kIncognitoWindowTrialName[] = "IncognitoWindowTrial";
-constexpr char kGroupName[] = "Enabled";
 constexpr char kTestProfileName[] = "test-profile";
 
 class FakeIncognitoWindowTracker : public IncognitoWindowTracker {
@@ -92,7 +85,7 @@ class IncognitoWindowTrackerEventTest : public testing::Test {
   std::unique_ptr<FakeIncognitoWindowTracker> incognito_window_tracker_;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(IncognitoWindowTrackerEventTest);
 };
@@ -120,27 +113,8 @@ namespace {
 
 class IncognitoWindowTrackerTest : public testing::Test {
  public:
-  IncognitoWindowTrackerTest() = default;
-  ~IncognitoWindowTrackerTest() override = default;
-
-  void SetUp() override {
-    // Set up the kIncognitoWindowTrialName field trial.
-    base::FieldTrial* incognito_window_trial =
-        base::FieldTrialList::CreateFieldTrial(kIncognitoWindowTrialName,
-                                               kGroupName);
-    trials_[kIPHIncognitoWindowFeature.name] = incognito_window_trial;
-
-    std::unique_ptr<base::FeatureList> feature_list =
-        std::make_unique<base::FeatureList>();
-    feature_list->RegisterFieldTrialOverride(
-        kIPHIncognitoWindowFeature.name,
-        base::FeatureList::OVERRIDE_ENABLE_FEATURE, incognito_window_trial);
-
-    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-    ASSERT_EQ(incognito_window_trial,
-              base::FeatureList::GetFieldTrial(kIPHIncognitoWindowFeature));
-
-    std::map<std::string, std::string> incognito_window_params;
+  IncognitoWindowTrackerTest() {
+    base::FieldTrialParams incognito_window_params;
     incognito_window_params["event_incognito_window_opened"] =
         "name:incognito_window_opened;comparator:==0;window:3650;storage:3650";
     incognito_window_params["event_incognito_window_session_time_met"] =
@@ -155,8 +129,13 @@ class IncognitoWindowTrackerTest : public testing::Test {
     incognito_window_params["x_date_released_in_seconds"] =
         base::NumberToString(static_cast<int64_t>(
             first_run::GetFirstRunSentinelCreationTime().ToDoubleT()));
-    SetFeatureParams(kIPHIncognitoWindowFeature, incognito_window_params);
 
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kIPHIncognitoWindowFeature, incognito_window_params);
+  }
+  ~IncognitoWindowTrackerTest() override = default;
+
+  void SetUp() override {
     // Start the DesktopSessionDurationTracker to track active session time.
     metrics::DesktopSessionDurationTracker::Initialize();
 
@@ -181,33 +160,16 @@ class IncognitoWindowTrackerTest : public testing::Test {
     // Need to invoke the reset method as TearDown is on the UI thread.
     testing_profile_manager_.reset();
     metrics::DesktopSessionDurationTracker::CleanupForTesting();
-
-    // This is required to ensure each test can define its own params.
-    base::FieldTrialParamAssociator::GetInstance()->ClearAllParamsForTesting();
-  }
-
-  void SetFeatureParams(const base::Feature& feature,
-                        std::map<std::string, std::string> params) {
-    ASSERT_TRUE(
-        base::FieldTrialParamAssociator::GetInstance()
-            ->AssociateFieldTrialParams(trials_[feature.name]->trial_name(),
-                                        kGroupName, params));
-
-    std::map<std::string, std::string> actualParams;
-    EXPECT_TRUE(base::GetFieldTrialParamsByFeature(feature, &actualParams));
-    EXPECT_EQ(params, actualParams);
   }
 
  protected:
   std::unique_ptr<FakeIncognitoWindowTracker> incognito_window_tracker_;
   std::unique_ptr<Tracker> feature_engagement_tracker_;
-  variations::testing::VariationParamsManager params_manager_;
 
  private:
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  content::TestBrowserThreadBundle thread_bundle_;
-  std::map<std::string, base::FieldTrial*> trials_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(IncognitoWindowTrackerTest);
 };

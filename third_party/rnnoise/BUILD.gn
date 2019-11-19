@@ -6,15 +6,7 @@ import("//testing/test.gni")
 
 group("rnnoise") {
   deps = [
-    ":kiss_fft",
     ":rnn_vad",
-  ]
-}
-
-source_set("kiss_fft") {
-  sources = [
-    "src/kiss_fft.cc",
-    "src/kiss_fft.h",
   ]
 }
 
@@ -23,16 +15,5 @@ source_set("rnn_vad") {
     "src/rnn_activations.h",
     "src/rnn_vad_weights.cc",
     "src/rnn_vad_weights.h",
-  ]
-}
-
-test("kiss_fft_unittest") {
-  sources = [
-    "src/kiss_fft_unittest.cc",
-  ]
-  deps = [
-    ":kiss_fft",
-    "//testing/gtest",
-    "//testing/gtest:gtest_main",
   ]
 }

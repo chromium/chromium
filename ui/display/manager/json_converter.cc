@@ -170,7 +170,7 @@ bool DisplayLayoutToJson(const DisplayLayout& layout, base::Value* value) {
     return false;
 
   dict_value->SetBoolean(kDefaultUnifiedKey, layout.default_unified);
-  dict_value->SetString(kPrimaryIdKey, base::Int64ToString(layout.primary_id));
+  dict_value->SetString(kPrimaryIdKey, base::NumberToString(layout.primary_id));
 
   std::unique_ptr<base::ListValue> placement_list(new base::ListValue);
   for (const auto& placement : layout.placement_list) {
@@ -180,10 +180,10 @@ bool DisplayLayoutToJson(const DisplayLayout& layout, base::Value* value) {
         kPositionKey, DisplayPlacement::PositionToString(placement.position));
     placement_value->SetInteger(kOffsetKey, placement.offset);
     placement_value->SetString(kDisplayPlacementDisplayIdKey,
-                               base::Int64ToString(placement.display_id));
+                               base::NumberToString(placement.display_id));
     placement_value->SetString(
         kDisplayPlacementParentDisplayIdKey,
-        base::Int64ToString(placement.parent_display_id));
+        base::NumberToString(placement.parent_display_id));
     placement_list->Append(std::move(placement_value));
   }
   dict_value->Set(kDisplayPlacementKey, std::move(placement_list));

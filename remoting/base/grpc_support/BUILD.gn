@@ -1,0 +1,55 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/grpc/grpc_library.gni")
+
+static_library("grpc_support") {
+  sources = [
+    "grpc_async_executor.cc",
+    "grpc_async_executor.h",
+    "grpc_async_request.cc",
+    "grpc_async_request.h",
+    "grpc_async_server_streaming_request.cc",
+    "grpc_async_server_streaming_request.h",
+    "grpc_async_unary_request.h",
+    "grpc_authenticated_executor.cc",
+    "grpc_authenticated_executor.h",
+    "grpc_channel.cc",
+    "grpc_channel.h",
+    "grpc_executor.h",
+    "grpc_util.cc",
+    "grpc_util.h",
+    "scoped_grpc_server_stream.cc",
+    "scoped_grpc_server_stream.h",
+    "using_grpc_channel_shared_ptr.inc",
+  ]
+
+  deps = [
+    "//base",
+    "//third_party/google_trust_services",
+    "//third_party/grpc:grpcpp",
+  ]
+}
+
+cc_grpc_library("unit_tests_grpc_library") {
+  sources = [
+    "grpc_support_test_services.proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "grpc_async_executor_unittest.cc",
+    "grpc_authenticated_executor_unittest.cc",
+  ]
+  deps = [
+    ":grpc_support",
+    ":unit_tests_grpc_library",
+    "//remoting/base/grpc_test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

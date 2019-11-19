@@ -89,7 +89,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionURLRewriteBrowserTest, NewTabPageURL) {
   // Check that the actual and virtual URL corresponds to the new tab URL.
   EXPECT_EQ(local_ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
             GetNavigationEntry()->GetVirtualURL());
-  EXPECT_TRUE(search::IsNTPURL(GetNavigationEntry()->GetURL(), profile()));
+  EXPECT_TRUE(
+      search::IsNTPOrRelatedURL(GetNavigationEntry()->GetURL(), profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionURLRewriteBrowserTest, NewTabPageURLOverride) {

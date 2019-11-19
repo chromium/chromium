@@ -7,9 +7,6 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/paint/nine_piece_image_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/layout_point.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/box_reflection.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -55,8 +52,8 @@ BoxReflection BoxReflectionForPaintLayer(const PaintLayer& layer,
   if (!mask_nine_piece.HasImage())
     return BoxReflection(direction, offset, nullptr, FloatRect());
 
-  LayoutRect mask_rect(LayoutPoint(), frame_layout_rect.Size());
-  LayoutRect mask_bounding_rect(mask_rect);
+  PhysicalRect mask_rect(PhysicalOffset(), frame_layout_rect.Size());
+  PhysicalRect mask_bounding_rect(mask_rect);
   mask_bounding_rect.Expand(style.ImageOutsets(mask_nine_piece));
 
   PaintRecordBuilder builder;

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <bitset>
 #include <memory>
 #include "base/single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,9 +23,9 @@
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -33,13 +34,13 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
   DedicatedWorkerThreadForTest(ExecutionContext* parent_execution_context,
                                DedicatedWorkerObjectProxy& worker_object_proxy)
       : DedicatedWorkerThread(parent_execution_context, worker_object_proxy) {
-    worker_backing_thread_ = WorkerBackingThread::Create(
-        ThreadCreationParams(WebThreadType::kTestThread));
+    worker_backing_thread_ = std::make_unique<WorkerBackingThread>(
+        ThreadCreationParams(ThreadType::kTestThread));
   }
 
   WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(
       std::unique_ptr<GlobalScopeCreationParams> creation_params) override {
-    auto* global_scope = MakeGarbageCollected<DedicatedWorkerGlobalScope>(
+    auto* global_scope = DedicatedWorkerGlobalScope::Create(
         std::move(creation_params), this, time_origin_);
     // Initializing a global scope with a dummy creation params may emit warning
     // messages (e.g., invalid CSP directives). Clear them here for tests that
@@ -52,9 +53,8 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
   void CountFeature(WebFeature feature) {
     EXPECT_TRUE(IsCurrentThread());
     GlobalScope()->CountFeature(feature);
-    PostCrossThreadTask(
-        *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalTest),
-        FROM_HERE, CrossThreadBind(&test::ExitRunLoop));
+    PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
+                        CrossThreadBindOnce(&test::ExitRunLoop));
   }
 
   // Emulates deprecated API use on DedicatedWorkerGlobalScope.
@@ -67,9 +67,8 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
     String console_message = GetConsoleMessageStorage()->at(0)->Message();
     EXPECT_TRUE(console_message.Contains("deprecated"));
 
-    PostCrossThreadTask(
-        *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalTest),
-        FROM_HERE, CrossThreadBind(&test::ExitRunLoop));
+    PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
+                        CrossThreadBindOnce(&test::ExitRunLoop));
   }
 
   void TestTaskRunner() {
@@ -77,9 +76,8 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
         GlobalScope()->GetTaskRunner(TaskType::kInternalTest);
     EXPECT_TRUE(task_runner->RunsTasksInCurrentSequence());
-    PostCrossThreadTask(
-        *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalTest),
-        FROM_HERE, CrossThreadBind(&test::ExitRunLoop));
+    PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
+                        CrossThreadBindOnce(&test::ExitRunLoop));
   }
 };
 
@@ -90,25 +88,25 @@ class DedicatedWorkerObjectProxyForTest final
       DedicatedWorkerMessagingProxy* messaging_proxy,
       ParentExecutionContextTaskRunners* parent_execution_context_task_runners)
       : DedicatedWorkerObjectProxy(messaging_proxy,
-                                   parent_execution_context_task_runners),
-        reported_features_(static_cast<int>(WebFeature::kNumberOfFeatures)) {}
+                                   parent_execution_context_task_runners) {}
 
   void CountFeature(WebFeature feature) override {
     // Any feature should be reported only one time.
-    EXPECT_FALSE(reported_features_.QuickGet(static_cast<int>(feature)));
-    reported_features_.QuickSet(static_cast<int>(feature));
+    EXPECT_FALSE(reported_features_[static_cast<size_t>(feature)]);
+    reported_features_.set(static_cast<size_t>(feature));
     DedicatedWorkerObjectProxy::CountFeature(feature);
   }
 
   void CountDeprecation(WebFeature feature) override {
     // Any feature should be reported only one time.
-    EXPECT_FALSE(reported_features_.QuickGet(static_cast<int>(feature)));
-    reported_features_.QuickSet(static_cast<int>(feature));
+    EXPECT_FALSE(reported_features_[static_cast<size_t>(feature)]);
+    reported_features_.set(static_cast<size_t>(feature));
     DedicatedWorkerObjectProxy::CountDeprecation(feature);
   }
 
  private:
-  BitVector reported_features_;
+  std::bitset<static_cast<size_t>(WebFeature::kNumberOfFeatures)>
+      reported_features_;
 };
 
 class DedicatedWorkerMessagingProxyForTest
@@ -139,7 +137,8 @@ class DedicatedWorkerMessagingProxyForTest
             network::mojom::ReferrerPolicy::kDefault, security_origin_.get(),
             false /* starter_secure_context */,
             CalculateHttpsState(security_origin_.get()),
-            nullptr /* worker_clients */, mojom::IPAddressSpace::kLocal,
+            nullptr /* worker_clients */, nullptr /* content_settings_client */,
+            network::mojom::IPAddressSpace::kLocal,
             nullptr /* origin_trial_tokens */, base::UnguessableToken::Create(),
             std::move(worker_settings), kV8CacheOptionsDefault,
             nullptr /* worklet_module_responses_map */),
@@ -222,20 +221,20 @@ TEST_F(DedicatedWorkerTest, UseCounter) {
 
   // API use on the DedicatedWorkerGlobalScope should be recorded in UseCounter
   // on the Document.
-  EXPECT_FALSE(UseCounter::IsCounted(GetDocument(), kFeature1));
+  EXPECT_FALSE(GetDocument().IsUseCounted(kFeature1));
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-      CrossThreadBind(&DedicatedWorkerThreadForTest::CountFeature,
-                      CrossThreadUnretained(GetWorkerThread()), kFeature1));
+      CrossThreadBindOnce(&DedicatedWorkerThreadForTest::CountFeature,
+                          CrossThreadUnretained(GetWorkerThread()), kFeature1));
   test::EnterRunLoop();
-  EXPECT_TRUE(UseCounter::IsCounted(GetDocument(), kFeature1));
+  EXPECT_TRUE(GetDocument().IsUseCounted(kFeature1));
 
   // API use should be reported to the Document only one time. See comments in
   // DedicatedWorkerObjectProxyForTest::CountFeature.
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-      CrossThreadBind(&DedicatedWorkerThreadForTest::CountFeature,
-                      CrossThreadUnretained(GetWorkerThread()), kFeature1));
+      CrossThreadBindOnce(&DedicatedWorkerThreadForTest::CountFeature,
+                          CrossThreadUnretained(GetWorkerThread()), kFeature1));
   test::EnterRunLoop();
 
   // This feature is randomly selected from Deprecation::deprecationMessage().
@@ -243,20 +242,20 @@ TEST_F(DedicatedWorkerTest, UseCounter) {
 
   // Deprecated API use on the DedicatedWorkerGlobalScope should be recorded in
   // UseCounter on the Document.
-  EXPECT_FALSE(UseCounter::IsCounted(GetDocument(), kFeature2));
+  EXPECT_FALSE(GetDocument().IsUseCounted(kFeature2));
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-      CrossThreadBind(&DedicatedWorkerThreadForTest::CountDeprecation,
-                      CrossThreadUnretained(GetWorkerThread()), kFeature2));
+      CrossThreadBindOnce(&DedicatedWorkerThreadForTest::CountDeprecation,
+                          CrossThreadUnretained(GetWorkerThread()), kFeature2));
   test::EnterRunLoop();
-  EXPECT_TRUE(UseCounter::IsCounted(GetDocument(), kFeature2));
+  EXPECT_TRUE(GetDocument().IsUseCounted(kFeature2));
 
   // API use should be reported to the Document only one time. See comments in
   // DedicatedWorkerObjectProxyForTest::CountDeprecation.
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-      CrossThreadBind(&DedicatedWorkerThreadForTest::CountDeprecation,
-                      CrossThreadUnretained(GetWorkerThread()), kFeature2));
+      CrossThreadBindOnce(&DedicatedWorkerThreadForTest::CountDeprecation,
+                          CrossThreadUnretained(GetWorkerThread()), kFeature2));
   test::EnterRunLoop();
 }
 
@@ -266,8 +265,8 @@ TEST_F(DedicatedWorkerTest, TaskRunner) {
 
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-      CrossThreadBind(&DedicatedWorkerThreadForTest::TestTaskRunner,
-                      CrossThreadUnretained(GetWorkerThread())));
+      CrossThreadBindOnce(&DedicatedWorkerThreadForTest::TestTaskRunner,
+                          CrossThreadUnretained(GetWorkerThread())));
   test::EnterRunLoop();
 }
 

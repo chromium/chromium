@@ -36,6 +36,12 @@ RASTER_EXPORT void DumpGrMemoryStatistics(
     base::trace_event::ProcessMemoryDump* pmd,
     base::Optional<uint64_t> tracing_guid);
 
+// Dumps a single"skia/grpu_resources/context_0x{&context}" entry with total
+// cache usage. Designed for background dumps.
+RASTER_EXPORT void DumpBackgroundGrMemoryStatistics(
+    const GrContext* context,
+    base::trace_event::ProcessMemoryDump* pmd);
+
 }  // namespace raster
 }  // namespace gpu
 

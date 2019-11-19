@@ -9,19 +9,16 @@
 
 namespace media {
 
-// Default timecode scale if the TimecodeScale element is
-// not specified in the INFO element.
+// Default timecode scale, in nanoseconds, if the TimecodeScale element is not
+// specified in the INFO element.
 static const int kWebMDefaultTimecodeScale = 1000000;
 
-WebMInfoParser::WebMInfoParser()
-    : timecode_scale_(-1),
-      duration_(-1) {
-}
+WebMInfoParser::WebMInfoParser() : timecode_scale_ns_(-1), duration_(-1) {}
 
 WebMInfoParser::~WebMInfoParser() = default;
 
 int WebMInfoParser::Parse(const uint8_t* buf, int size) {
-  timecode_scale_ = -1;
+  timecode_scale_ns_ = -1;
   duration_ = -1;
 
   WebMListParser parser(kWebMIdInfo, this);
@@ -37,10 +34,10 @@ int WebMInfoParser::Parse(const uint8_t* buf, int size) {
 WebMParserClient* WebMInfoParser::OnListStart(int id) { return this; }
 
 bool WebMInfoParser::OnListEnd(int id) {
-  if (id == kWebMIdInfo && timecode_scale_ == -1) {
+  if (id == kWebMIdInfo && timecode_scale_ns_ == -1) {
     // Set timecode scale to default value if it isn't present in
     // the Info element.
-    timecode_scale_ = kWebMDefaultTimecodeScale;
+    timecode_scale_ns_ = kWebMDefaultTimecodeScale;
   }
   return true;
 }
@@ -54,12 +51,12 @@ bool WebMInfoParser::OnUInt(int id, int64_t val) {
     return false;
   }
 
-  if (timecode_scale_ != -1) {
+  if (timecode_scale_ns_ != -1) {
     DVLOG(1) << "Multiple values for id " << std::hex << id << " specified";
     return false;
   }
 
-  timecode_scale_ = val;
+  timecode_scale_ns_ = val;
   return true;
 }
 

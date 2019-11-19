@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS e.style['will-change'] = "auto transform" should not set the property value
+PASS e.style['will-change'] = "auto, transform" should not set the property value
+PASS e.style['will-change'] = "contents auto" should not set the property value
+PASS e.style['will-change'] = "contents, auto" should not set the property value
+PASS e.style['will-change'] = "transform, initial" should not set the property value
+PASS e.style['will-change'] = "transform, inherit" should not set the property value
+FAIL e.style['will-change'] = "transform, unset" should not set the property value assert_equals: expected "" but got "transform"
+PASS e.style['will-change'] = "transform, default" should not set the property value
+PASS e.style['will-change'] = "will-change" should not set the property value
+PASS e.style['will-change'] = "none" should not set the property value
+PASS e.style['will-change'] = "all" should not set the property value
+Harness: the test ran to completion.
+

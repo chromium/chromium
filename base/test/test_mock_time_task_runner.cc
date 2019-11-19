@@ -440,7 +440,8 @@ bool TestMockTimeTaskRunner::DequeueNextTask(const TimeTicks& reference,
   return false;
 }
 
-void TestMockTimeTaskRunner::Run(bool application_tasks_allowed) {
+void TestMockTimeTaskRunner::Run(bool application_tasks_allowed,
+                                 TimeDelta timeout) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // Since TestMockTimeTaskRunner doesn't process system messages: there's no
@@ -451,7 +452,9 @@ void TestMockTimeTaskRunner::Run(bool application_tasks_allowed) {
       << "This is a nested RunLoop instance and needs to be of "
          "Type::kNestableTasksAllowed.";
 
-  while (!quit_run_loop_) {
+  // This computation relies on saturated arithmetic.
+  TimeTicks run_until = now_ticks_ + timeout;
+  while (!quit_run_loop_ && now_ticks_ < run_until) {
     RunUntilIdle();
     if (quit_run_loop_ || ShouldQuitWhenIdle())
       break;
@@ -469,7 +472,8 @@ void TestMockTimeTaskRunner::Run(bool application_tasks_allowed) {
           tasks_lock_cv_.Wait();
         continue;
       }
-      auto_fast_forward_by = tasks_.top().GetTimeToRun() - now_ticks_;
+      auto_fast_forward_by =
+          std::min(run_until, tasks_.top().GetTimeToRun()) - now_ticks_;
     }
     FastForwardBy(auto_fast_forward_by);
   }

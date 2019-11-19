@@ -6,7 +6,7 @@
 
 #include <EGL/egl.h>
 #include <dlfcn.h>
-
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"

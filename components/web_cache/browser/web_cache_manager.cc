@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/system/sys_info.h"
@@ -19,10 +18,6 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
-#include "content/public/browser/render_process_host.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 
 using base::Time;
 using base::TimeDelta;
@@ -57,18 +52,12 @@ int GetDefaultCacheSize() {
 
 // static
 WebCacheManager* WebCacheManager::GetInstance() {
-  return base::Singleton<WebCacheManager>::get();
+  static base::NoDestructor<WebCacheManager> s_instance;
+  return s_instance.get();
 }
 
 WebCacheManager::WebCacheManager()
-    : global_size_limit_(GetDefaultGlobalSizeLimit()),
-      weak_factory_(this) {
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
-                 content::NotificationService::AllBrowserContextsAndSources());
+    : global_size_limit_(GetDefaultGlobalSizeLimit()) {
 }
 
 WebCacheManager::~WebCacheManager() {
@@ -86,8 +75,8 @@ void WebCacheManager::Add(int renderer_id) {
   content::RenderProcessHost* host =
       content::RenderProcessHost::FromID(renderer_id);
   if (host) {
-    mojom::WebCachePtr service;
-    BindInterface(host, &service);
+    mojo::Remote<mojom::WebCache> service;
+    host->BindReceiver(service.BindNewPipeAndPassReceiver());
     web_cache_services_[renderer_id] = std::move(service);
   }
 
@@ -165,27 +154,22 @@ void WebCacheManager::ClearCacheOnNavigation() {
   ClearRendererCache(inactive_renderers_, ON_NAVIGATION);
 }
 
-void WebCacheManager::Observe(int type,
-                              const content::NotificationSource& source,
-                              const content::NotificationDetails& details) {
-  switch (type) {
-    case content::NOTIFICATION_RENDERER_PROCESS_CREATED: {
-      content::RenderProcessHost* process =
-          content::Source<content::RenderProcessHost>(source).ptr();
-      Add(process->GetID());
-      break;
-    }
-    case content::NOTIFICATION_RENDERER_PROCESS_CLOSED:
-    case content::NOTIFICATION_RENDERER_PROCESS_TERMINATED: {
-      content::RenderProcessHost* process =
-          content::Source<content::RenderProcessHost>(source).ptr();
-      Remove(process->GetID());
-      break;
-    }
-    default:
-      NOTREACHED();
-      break;
-  }
+void WebCacheManager::OnRenderProcessHostCreated(
+    content::RenderProcessHost* process_host) {
+  Add(process_host->GetID());
+  rph_observers_.Add(process_host);
+}
+
+void WebCacheManager::RenderProcessExited(
+    content::RenderProcessHost* process_host,
+    const content::ChildProcessTerminationInfo& info) {
+  RenderProcessHostDestroyed(process_host);
+}
+
+void WebCacheManager::RenderProcessHostDestroyed(
+    content::RenderProcessHost* process_host) {
+  rph_observers_.Remove(process_host);
+  Remove(process_host->GetID());
 }
 
 // static
@@ -307,12 +291,13 @@ void WebCacheManager::EnactStrategy(const AllocationStrategy& strategy) {
       // This is the capacity this renderer has been allocated.
       uint64_t capacity = allocation->second;
 
-      // Find the WebCachePtr by renderer process id.
+      // Find the mojo::Remote<WebCache> by renderer process id.
       auto it = web_cache_services_.find(allocation->first);
-      DCHECK(it != web_cache_services_.end());
-      const mojom::WebCachePtr& service = it->second;
-      DCHECK(service);
-      service->SetCacheCapacity(capacity);
+      if (it != web_cache_services_.end()) {
+        const mojo::Remote<mojom::WebCache>& service = it->second;
+        DCHECK(service);
+        service->SetCacheCapacity(capacity);
+      }
     }
     ++allocation;
   }
@@ -332,12 +317,13 @@ void WebCacheManager::ClearRendererCache(
     content::RenderProcessHost* host =
         content::RenderProcessHost::FromID(*iter);
     if (host) {
-      // Find the WebCachePtr by renderer process id.
+      // Find the mojo::Remote<WebCache> by renderer process id.
       auto it = web_cache_services_.find(*iter);
-      DCHECK(it != web_cache_services_.end());
-      const mojom::WebCachePtr& service = it->second;
-      DCHECK(service);
-      service->ClearCache(occasion == ON_NAVIGATION);
+      if (it != web_cache_services_.end()) {
+        const mojo::Remote<mojom::WebCache>& service = it->second;
+        DCHECK(service);
+        service->ClearCache(occasion == ON_NAVIGATION);
+      }
     }
   }
 }

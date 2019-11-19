@@ -34,7 +34,7 @@ class VIEWS_EXPORT DesktopDragDropClientWin
   ~DesktopDragDropClientWin() override;
 
   // Overridden from aura::client::DragDropClient:
-  int StartDragAndDrop(const ui::OSExchangeData& data,
+  int StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
                        aura::Window* root_window,
                        aura::Window* source_window,
                        const gfx::Point& screen_location,
@@ -56,7 +56,7 @@ class VIEWS_EXPORT DesktopDragDropClientWin
 
   scoped_refptr<DesktopDropTargetWin> drop_target_;
 
-  base::WeakPtrFactory<DesktopDragDropClientWin> weak_factory_;
+  base::WeakPtrFactory<DesktopDragDropClientWin> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DesktopDragDropClientWin);
 };

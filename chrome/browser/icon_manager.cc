@@ -17,15 +17,15 @@ namespace {
 void RunCallbackIfNotCanceled(
     const base::CancelableTaskTracker::IsCanceledCallback& is_canceled,
     IconManager::IconRequestCallback callback,
-    gfx::Image* image) {
+    gfx::Image image) {
   if (is_canceled.Run())
     return;
-  std::move(callback).Run(image);
+  std::move(callback).Run(std::move(image));
 }
 
 }  // namespace
 
-IconManager::IconManager() : weak_factory_(this) {}
+IconManager::IconManager() {}
 
 IconManager::~IconManager() {
 }
@@ -41,7 +41,7 @@ gfx::Image* IconManager::LookupIconFromFilepath(const base::FilePath& file_path,
   if (icon_it == icon_cache_.end())
     return nullptr;
 
-  return icon_it->second.get();
+  return &icon_it->second;
 }
 
 base::CancelableTaskTracker::TaskId IconManager::LoadIcon(
@@ -67,19 +67,17 @@ base::CancelableTaskTracker::TaskId IconManager::LoadIcon(
 void IconManager::OnIconLoaded(IconRequestCallback callback,
                                base::FilePath file_path,
                                IconLoader::IconSize size,
-                               std::unique_ptr<gfx::Image> result,
+                               gfx::Image result,
                                const IconLoader::IconGroup& group) {
   // Cache the bitmap. Watch out: |result| may be null, which indicates a
   // failure. We assume that if we have an entry in |icon_cache_| it must not be
   // null.
   CacheKey key(group, size);
-  if (result) {
-    std::move(callback).Run(result.get());
+  std::move(callback).Run(result);
+  if (!result.IsEmpty())
     icon_cache_[key] = std::move(result);
-  } else {
-    std::move(callback).Run(nullptr);
+  else
     icon_cache_.erase(key);
-  }
 
   group_cache_[file_path] = group;
 }

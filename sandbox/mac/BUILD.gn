@@ -67,9 +67,8 @@ component("system_services") {
 
 test("sandbox_mac_unittests") {
   sources = [
-    "mojom/struct_traits_unittest.cc",
+    "mojom/mojom_traits_unittest.cc",
     "sandbox_mac_compiler_unittest.mm",
-    "sandbox_mac_compiler_v2_unittest.mm",
     "sandbox_mac_seatbelt_exec_unittest.cc",
     "seatbelt_extension_unittest.cc",
   ]

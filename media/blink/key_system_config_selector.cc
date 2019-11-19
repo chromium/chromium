@@ -18,11 +18,11 @@
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/media_permission.h"
 #include "media/base/mime_util.h"
-#include "media/blink/webmediaplayer_util.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/public/web/modules/media/webmediaplayer_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -306,8 +306,7 @@ KeySystemConfigSelector::KeySystemConfigSelector(
     MediaPermission* media_permission)
     : key_systems_(key_systems),
       media_permission_(media_permission),
-      is_supported_media_type_cb_(base::BindRepeating(&IsSupportedMediaType)),
-      weak_factory_(this) {
+      is_supported_media_type_cb_(base::BindRepeating(&IsSupportedMediaType)) {
   DCHECK(key_systems_);
   DCHECK(media_permission_);
 }
@@ -379,11 +378,11 @@ EmeConfigRule KeySystemConfigSelector::GetEncryptionSchemeConfigRule(
     // compatibility and simplicity, we treat kNotSpecified the same as kCenc.
     case EmeEncryptionScheme::kNotSpecified:
     case EmeEncryptionScheme::kCenc:
-      return key_systems_->GetEncryptionSchemeConfigRule(key_system,
-                                                         EncryptionMode::kCenc);
+      return key_systems_->GetEncryptionSchemeConfigRule(
+          key_system, EncryptionScheme::kCenc);
     case EmeEncryptionScheme::kCbcs:
-      return key_systems_->GetEncryptionSchemeConfigRule(key_system,
-                                                         EncryptionMode::kCbcs);
+      return key_systems_->GetEncryptionSchemeConfigRule(
+          key_system, EncryptionScheme::kCbcs);
   }
 
   NOTREACHED();
@@ -519,20 +518,18 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   //    run the following steps:
   if (!candidate.init_data_types.empty()) {
     // 3.1. Let supported types be an empty sequence of DOMStrings.
-    std::vector<blink::WebEncryptedMediaInitDataType> supported_types;
+    std::vector<EmeInitDataType> supported_types;
 
     // 3.2. For each value in candidate configuration's initDataTypes member:
     for (size_t i = 0; i < candidate.init_data_types.size(); i++) {
       // 3.2.1. Let initDataType be the value.
-      blink::WebEncryptedMediaInitDataType init_data_type =
-          candidate.init_data_types[i];
+      EmeInitDataType init_data_type = candidate.init_data_types[i];
 
       // 3.2.2. If the implementation supports generating requests based on
       //        initDataType, add initDataType to supported types. String
       //        comparison is case-sensitive. The empty string is never
       //        supported.
-      if (key_systems_->IsSupportedInitDataType(
-              key_system, ConvertToEmeInitDataType(init_data_type))) {
+      if (key_systems_->IsSupportedInitDataType(key_system, init_data_type)) {
         supported_types.push_back(init_data_type);
       }
     }

@@ -81,14 +81,14 @@ WiFiDisplayVideoEncoder::CreateElementaryStreamInfo() const {
 }
 
 void WiFiDisplayVideoEncoder::InsertRawVideoFrame(
-    const scoped_refptr<media::VideoFrame>& video_frame,
+    scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks reference_time) {
   DCHECK(client_thread_checker_.CalledOnValidThread());
   DCHECK(!encoded_callback_.is_null());
   media_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&WiFiDisplayVideoEncoder::InsertFrameOnMediaThread, this,
-                     video_frame, reference_time, send_idr_));
+                     std::move(video_frame), reference_time, send_idr_));
   send_idr_ = false;
 }
 

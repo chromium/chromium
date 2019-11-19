@@ -83,7 +83,7 @@ class ElfImageReader {
     NoteReader(const ElfImageReader* elf_reader_,
                const ProcessMemoryRange* range,
                const ProgramHeaderTable* phdr_table,
-               ssize_t max_note_size,
+               size_t max_note_size,
                const std::string& name_filter = std::string(),
                NoteType type_filter = 0,
                bool use_filter = false);
@@ -105,7 +105,7 @@ class ElfImageReader {
     const ProgramHeaderTable* phdr_table_;  // weak
     std::unique_ptr<ProcessMemoryRange> segment_range_;
     size_t phdr_index_;
-    ssize_t max_note_size_;
+    size_t max_note_size_;
     std::string name_filter_;
     NoteType type_filter_;
     bool use_filter_;
@@ -211,10 +211,9 @@ class ElfImageReader {
   //!
   //! \param[in] max_note_size The maximum note size to read. Notes whose
   //!     combined name, descriptor, and padding size are greater than
-  //!     \a max_note_size will be silently skipped. A \a max_note_size of -1
-  //!     indicates infinite maximum note size.
+  //!     \a max_note_size will be silently skipped.
   //! \return A NoteReader object capable of reading notes in this image.
-  std::unique_ptr<NoteReader> Notes(ssize_t max_note_size);
+  std::unique_ptr<NoteReader> Notes(size_t max_note_size);
 
   //! \brief Return a NoteReader for this image, which scans all PT_NOTE
   //!     segments in the image, filtering by name and type.
@@ -226,12 +225,11 @@ class ElfImageReader {
   //! \param[in] type The note type to match.
   //! \param[in] max_note_size The maximum note size to read. Notes whose
   //!     combined name, descriptor, and padding size are greater than
-  //!     \a max_note_size will be silently skipped. A \a max_note_size of -1
-  //!     indicates infinite maximum note size.
+  //!     \a max_note_size will be silently skipped.
   //! \return A NoteReader object capable of reading notes in this image.
   std::unique_ptr<NoteReader> NotesWithNameAndType(const std::string& name,
                                                    NoteReader::NoteType type,
-                                                   ssize_t max_note_size);
+                                                   size_t max_note_size);
 
   //! \brief Return a ProcessMemoryRange restricted to the range of this image.
   //!

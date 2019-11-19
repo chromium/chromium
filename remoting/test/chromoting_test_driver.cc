@@ -7,9 +7,10 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "base/test/test_switches.h"
@@ -151,7 +152,7 @@ void PrintJsonFileInfo() {
 int main(int argc, char* argv[]) {
   base::TestSuite test_suite(argc, argv);
   base::FeatureList::InitializeInstance(std::string(), std::string());
-  base::MessageLoopForIO message_loop;
+  base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
 
   if (!base::CommandLine::InitializedForCurrentProcess()) {
     if (!base::CommandLine::Init(argc, argv)) {
@@ -191,7 +192,8 @@ int main(int argc, char* argv[]) {
 #endif
   }
 
-  base::TaskScheduler::CreateAndStartWithDefaultParams("ChromotingTestDriver");
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
+      "ChromotingTestDriver");
 
   mojo::core::Init();
 

@@ -71,7 +71,7 @@ class VrGLThread : public base::android::JavaHandlerThread,
   void SendRequestPresentReply(device::mojom::XRSessionPtr) override;
   void DialogSurfaceCreated(jobject surface,
                             gl::SurfaceTexture* texture) override;
-  void UpdateGamepadData(device::GvrGamepadData) override;
+  void UpdateGamepadData(GvrGamepadData) override;
   void ToggleCardboardGamepad(bool enabled) override;
 
   // BrowserRendererBrowserInterface implementation (BrowserRenderer calling to

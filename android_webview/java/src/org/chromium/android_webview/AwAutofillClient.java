@@ -7,13 +7,14 @@ package org.chromium.android_webview;
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillPopup;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.ui.DropdownItem;
-import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Java counterpart to the AwAutofillClient. This class is owned by AwContents and has
@@ -44,19 +45,21 @@ public class AwAutofillClient {
             AutofillSuggestion[] suggestions) {
 
         if (mAutofillPopup == null) {
-            if (WindowAndroid.activityFromContext(mContext) == null) {
-                nativeDismissed(mNativeAwAutofillClient);
+            if (ContextUtils.activityFromContext(mContext) == null) {
+                AwAutofillClientJni.get().dismissed(mNativeAwAutofillClient, AwAutofillClient.this);
                 return;
             }
             try {
                 mAutofillPopup = new AutofillPopup(mContext, anchorView, new AutofillDelegate() {
                     @Override
                     public void dismissed() {
-                        nativeDismissed(mNativeAwAutofillClient);
+                        AwAutofillClientJni.get().dismissed(
+                                mNativeAwAutofillClient, AwAutofillClient.this);
                     }
                     @Override
                     public void suggestionSelected(int listIndex) {
-                        nativeSuggestionSelected(mNativeAwAutofillClient, listIndex);
+                        AwAutofillClientJni.get().suggestionSelected(
+                                mNativeAwAutofillClient, AwAutofillClient.this, listIndex);
                     }
                     @Override
                     public void deleteSuggestion(int listIndex) {}
@@ -67,7 +70,7 @@ public class AwAutofillClient {
             } catch (RuntimeException e) {
                 // Deliberately swallowing exception because bad fraemwork implementation can
                 // throw exceptions in ListPopupWindow constructor.
-                nativeDismissed(mNativeAwAutofillClient);
+                AwAutofillClientJni.get().dismissed(mNativeAwAutofillClient, AwAutofillClient.this);
                 return;
             }
         }
@@ -101,7 +104,9 @@ public class AwAutofillClient {
                 false /* isMultilineLabel */, false /* isBoldLabel */);
     }
 
-    private native void nativeDismissed(long nativeAwAutofillClient);
-    private native void nativeSuggestionSelected(long nativeAwAutofillClient,
-            int position);
+    @NativeMethods
+    interface Natives {
+        void dismissed(long nativeAwAutofillClient, AwAutofillClient caller);
+        void suggestionSelected(long nativeAwAutofillClient, AwAutofillClient caller, int position);
+    }
 }

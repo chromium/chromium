@@ -18,25 +18,21 @@ class MojoProxyResolverV8TracingBindingsTest : public testing::Test {
  public:
   MojoProxyResolverV8TracingBindingsTest() = default;
 
-  void SetUp() override {
-    bindings_.reset(new MojoProxyResolverV8TracingBindings<
-                    MojoProxyResolverV8TracingBindingsTest>(this));
-  }
-
   void Alert(const std::string& message) { alerts_.push_back(message); }
 
   void OnError(int32_t line_number, const std::string& message) {
     errors_.push_back(std::make_pair(line_number, message));
   }
 
-  void ResolveDns(const std::string& hostname,
-                  net::ProxyResolveDnsOperation operation,
-                  mojom::HostResolverRequestClientPtr client) {}
+  void ResolveDns(
+      const std::string& hostname,
+      net::ProxyResolveDnsOperation operation,
+      const net::NetworkIsolationKey& network_isolation_key,
+      mojo::PendingRemote<mojom::HostResolverRequestClient> client) {}
 
  protected:
-  std::unique_ptr<MojoProxyResolverV8TracingBindings<
-      MojoProxyResolverV8TracingBindingsTest>>
-      bindings_;
+  MojoProxyResolverV8TracingBindings<MojoProxyResolverV8TracingBindingsTest>
+      bindings_{this};
 
   std::vector<std::string> alerts_;
   std::vector<std::pair<int, std::string>> errors_;
@@ -46,11 +42,11 @@ class MojoProxyResolverV8TracingBindingsTest : public testing::Test {
 };
 
 TEST_F(MojoProxyResolverV8TracingBindingsTest, Basic) {
-  bindings_->Alert(base::ASCIIToUTF16("alert"));
-  bindings_->OnError(-1, base::ASCIIToUTF16("error"));
+  bindings_.Alert(base::ASCIIToUTF16("alert"));
+  bindings_.OnError(-1, base::ASCIIToUTF16("error"));
 
-  EXPECT_TRUE(bindings_->GetHostResolver());
-  EXPECT_FALSE(bindings_->GetNetLogWithSource().net_log());
+  EXPECT_TRUE(bindings_.GetHostResolver());
+  EXPECT_FALSE(bindings_.GetNetLogWithSource().net_log());
 
   ASSERT_EQ(1u, alerts_.size());
   EXPECT_EQ("alert", alerts_[0]);

@@ -44,7 +44,7 @@ class CONTENT_EXPORT PepperNetworkMonitorHost
 
   network::NetworkConnectionTracker* network_connection_tracker_;
 
-  base::WeakPtrFactory<PepperNetworkMonitorHost> weak_factory_;
+  base::WeakPtrFactory<PepperNetworkMonitorHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperNetworkMonitorHost);
 };

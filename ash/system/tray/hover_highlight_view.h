@@ -9,6 +9,7 @@
 
 #include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/tray_popup_item_style.h"
+#include "base/bind.h"
 #include "base/macros.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/text_constants.h"
@@ -48,18 +49,6 @@ class HoverHighlightView : public ActionableView {
   // detailed views.
   void AddIconAndLabel(const gfx::ImageSkia& image, const base::string16& text);
 
-  // Convenience function for populating the view with an icon, a main label,
-  // and a sub label. This also sets the accessible name based on the main
-  // label. Used for scrollable rows in detailed views.
-  void AddIconAndLabels(const gfx::ImageSkia& image,
-                        const base::string16& text,
-                        const base::string16& sub_text);
-
-  // A convenience function for populating the view with an icon and a label for
-  // a system menu default view row.
-  void AddIconAndLabelForDefaultView(const gfx::ImageSkia& image,
-                                     const base::string16& text);
-
   // Populates the view with a text label, inset on the left by the horizontal
   // space that would normally be occupied by an icon.
   void AddLabelRow(const base::string16& text);
@@ -86,7 +75,7 @@ class HoverHighlightView : public ActionableView {
 
   // Changes the view's current accessibility state. This will fire an
   // accessibility event if needed.
-  void SetAccessiblityState(AccessibilityState accessibility_state);
+  void SetAccessibilityState(AccessibilityState accessibility_state);
 
   // Removes current children of the view so that it can be re-populated.
   void Reset();
@@ -104,6 +93,7 @@ class HoverHighlightView : public ActionableView {
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  const char* GetClassName() const override;
 
   TriView* tri_view() { return tri_view_; }
 
@@ -114,22 +104,15 @@ class HoverHighlightView : public ActionableView {
                          const base::string16& text,
                          TrayPopupItemStyle::FontStyle font_style);
 
-  // Adds the image, main label and sub label to the row with the main label
-  // being styled using |font_style| and the sub label being styled using
-  // FontStyle::CAPTION and ColorStyle::INACTIVE.
-  void DoAddIconAndLabels(const gfx::ImageSkia& image,
-                          const base::string16& text,
-                          TrayPopupItemStyle::FontStyle font_style,
-                          const base::string16& sub_text);
-
   // ActionableView:
   bool PerformAction(const ui::Event& event) override;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
-  void OnEnabledChanged() override;
   void OnFocus() override;
+
+  void OnEnabledChanged();
 
   // Determines whether the view is populated or not. If it is, Reset() should
   // be called before re-populating the view.
@@ -144,6 +127,10 @@ class HoverHighlightView : public ActionableView {
   bool expandable_ = false;
   const bool use_unified_theme_;
   AccessibilityState accessibility_state_ = AccessibilityState::DEFAULT;
+  views::PropertyChangedSubscription enabled_changed_subscription_ =
+      AddEnabledChangedCallback(
+          base::BindRepeating(&HoverHighlightView::OnEnabledChanged,
+                              base::Unretained(this)));
 
   DISALLOW_COPY_AND_ASSIGN(HoverHighlightView);
 };

@@ -61,12 +61,4 @@ WebPluginDocument::operator PluginDocument*() const {
   return static_cast<PluginDocument*>(private_.Get());
 }
 
-void WebPluginDocument::SetShowBeforeUnloadDialog(bool show_dialog) {
-  if (!IsPluginDocument())
-    return;
-
-  PluginDocument* doc = Unwrap<PluginDocument>();
-  doc->SetShowBeforeUnloadDialog(show_dialog);
-}
-
 }  // namespace blink

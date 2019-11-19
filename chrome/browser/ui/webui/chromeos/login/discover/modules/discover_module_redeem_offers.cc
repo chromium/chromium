@@ -31,8 +31,7 @@ class DiscoverModuleRedeemOffersHandler : public DiscoverHandler {
 
 DiscoverModuleRedeemOffersHandler::DiscoverModuleRedeemOffersHandler(
     JSCallsContainer* js_calls_container)
-    : DiscoverHandler(DiscoverModuleRedeemOffers::kModuleName,
-                      js_calls_container) {}
+    : DiscoverHandler(js_calls_container) {}
 
 void DiscoverModuleRedeemOffersHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {

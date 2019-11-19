@@ -24,6 +24,7 @@
 // <include src="task_queue.js">
 // <include src="media_import_handler.js">
 // <include src="media_scanner.js">
+// <include src="mount_metrics.js">
 // <include src="progress_center.js">
 // <include src="test_util.js">
 // <include src="background.js">

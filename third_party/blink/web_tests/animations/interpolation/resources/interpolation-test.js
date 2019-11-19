@@ -42,12 +42,15 @@
  *        This works in the same way as assertInterpolation with expectations auto
  *        generated according to each interpolation method's handling of values
  *        that don't interpolate.
- *  - assertComposition({property, underlying, [addFrom], [addTo], [replaceFrom], [replaceTo]}, [{at: fraction, is: value}])
+ *  - assertComposition(
+ *          { property, underlying, [accumulateFrom], [accumulateTo],
+ *            [addFrom], [addTo], [replaceFrom], [replaceTo] },
+ *          [{at: fraction, is: value}])
  *        Similar to assertInterpolation() instead using only the Web Animations API
- *        to animate composite specified keyframes (add or replace) on top of
- *        an underlying value.
- *        Exactly one of (addFrom, replaceFrom) must be specified.
- *        Exactly one of (addTo, replaceTo) must be specified.
+ *        to animate composite specified keyframes (accumulate, add or replace) on
+ *        top of an underlying value.
+ *        Exactly one of (accumulateFrom, addFrom, replaceFrom) must be specified.
+ *        Exactly one of (accumulateTo, addTo, replaceTo) must be specified.
  *  - afterTest(callback)
  *        Calls callback after all the tests have executed.
  *
@@ -158,6 +161,8 @@
         }
         if (property === 'offset')
           property = 'cssOffset';
+        else if (property === 'float')
+          property = 'cssFloat';
       }
       var keyframes = [];
       if (!isNeutralKeyframe(from)) {
@@ -370,16 +375,19 @@ assertInterpolation({
     var options = compositionTest.options;
     var property = options.property;
     var underlying = options.underlying;
-    var from = options.addFrom || options.replaceFrom;
-    var to = options.addTo || options.replaceTo;
-    var fromComposite = 'addFrom' in options ? 'add' : 'replace';
-    var toComposite = 'addTo' in options ? 'add' : 'replace';
-    if ('addFrom' in options === 'replaceFrom' in options
-      || 'addTo' in options === 'replaceTo' in options) {
+    var from = options.accumulateFrom || options.addFrom || options.replaceFrom;
+    var to = options.accumulateTo || options.addTo || options.replaceTo;
+    var fromComposite = 'accumulateFrom' in options ? 'accumulate' : 'addFrom' in options ? 'add' : 'replace';
+    var toComposite = 'accumulateTo' in options ? 'accumulate' : 'addTo' in options ? 'add' : 'replace';
+    const invalidFrom = 'addFrom' in options === 'replaceFrom' in options
+        && 'addFrom' in options === 'accumulateFrom' in options;
+    const invalidTo = 'addTo' in options === 'replaceTo' in options
+        && 'addTo' in options === 'accumulateTo' in options;
+    if (invalidFrom || invalidTo) {
       test(function() {
-        assert_true('addFrom' in options !== 'replaceFrom' in options, 'addFrom xor replaceFrom must be specified');
-        assert_true('addTo' in options !== 'replaceTo' in options, 'addTo xor replaceTo must be specified');
-      }, `Composition tests must use addFrom xor replaceFrom, and addTo xor replaceTo`);
+        assert_false(invalidFrom, 'Exactly one of accumulateFrom, addFrom, or replaceFrom must be specified');
+        assert_false(invalidTo, 'Exactly one of accumulateTo, addTo, or replaceTo must be specified');
+      }, `Composition tests must have valid setup`);
     }
     validateTestInputs(property, from, to, underlying);
 

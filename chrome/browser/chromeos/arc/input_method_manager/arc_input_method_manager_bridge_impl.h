@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/chromeos/arc/input_method_manager/arc_input_method_manager_bridge.h"
-#include "components/arc/connection_observer.h"
+#include "components/arc/session/connection_observer.h"
 
 namespace arc {
 

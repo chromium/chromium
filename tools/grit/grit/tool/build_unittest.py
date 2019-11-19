@@ -6,10 +6,11 @@
 '''Unit tests for the 'grit build' tool.
 '''
 
+from __future__ import print_function
+
 import codecs
 import os
 import sys
-import tempfile
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 

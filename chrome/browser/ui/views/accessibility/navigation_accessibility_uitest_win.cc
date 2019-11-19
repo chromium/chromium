@@ -111,7 +111,7 @@ void WinAccessibilityEventMonitor::WaitForNextEvent(
   if (event_queue_.empty()) {
     loop_runner_ = new content::MessageLoopRunner();
     loop_runner_->Run();
-    loop_runner_ = NULL;
+    loop_runner_.reset();
   }
   EventInfo event_info = event_queue_.front();
   event_queue_.pop_front();

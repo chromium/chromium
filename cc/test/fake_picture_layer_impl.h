@@ -19,73 +19,20 @@ class FakePictureLayerImpl : public PictureLayerImpl {
  public:
   using TileRequirementCheck = bool (PictureLayerTiling::*)(const Tile*) const;
 
-  static std::unique_ptr<FakePictureLayerImpl> Create(LayerTreeImpl* tree_impl,
-                                                      int id) {
-    Layer::LayerMaskType mask_type = Layer::LayerMaskType::NOT_MASK;
-    return base::WrapUnique(new FakePictureLayerImpl(tree_impl, id, mask_type));
-  }
-
-  static std::unique_ptr<FakePictureLayerImpl> CreateMask(
-      LayerTreeImpl* tree_impl,
-      int id) {
-    Layer::LayerMaskType mask_type = Layer::LayerMaskType::MULTI_TEXTURE_MASK;
-    return base::WrapUnique(new FakePictureLayerImpl(tree_impl, id, mask_type));
-  }
-
-  static std::unique_ptr<FakePictureLayerImpl> CreateSingleTextureMask(
-      LayerTreeImpl* tree_impl,
-      int id) {
-    Layer::LayerMaskType mask_type = Layer::LayerMaskType::SINGLE_TEXTURE_MASK;
-    return base::WrapUnique(new FakePictureLayerImpl(tree_impl, id, mask_type));
-  }
-
-  // Create layer from a raster source that covers the entire layer.
-  static std::unique_ptr<FakePictureLayerImpl> CreateWithRasterSource(
+  // If raster_source is provided, it will cover the entire layer.
+  static std::unique_ptr<FakePictureLayerImpl> Create(
       LayerTreeImpl* tree_impl,
       int id,
-      scoped_refptr<RasterSource> raster_source) {
-    Layer::LayerMaskType mask_type = Layer::LayerMaskType::NOT_MASK;
+      scoped_refptr<RasterSource> raster_source = nullptr) {
     return base::WrapUnique(
-        new FakePictureLayerImpl(tree_impl, id, raster_source, mask_type));
-  }
-
-  // Create layer from a raster source that only covers part of the layer.
-  static std::unique_ptr<FakePictureLayerImpl> CreateWithPartialRasterSource(
-      LayerTreeImpl* tree_impl,
-      int id,
-      scoped_refptr<RasterSource> raster_source,
-      const gfx::Size& layer_bounds) {
-    Layer::LayerMaskType mask_type = Layer::LayerMaskType::NOT_MASK;
-    return base::WrapUnique(new FakePictureLayerImpl(
-        tree_impl, id, raster_source, mask_type, layer_bounds));
-  }
-
-  // Create layer from a raster source that covers the entire layer and is a
-  // mask.
-  static std::unique_ptr<FakePictureLayerImpl> CreateMaskWithRasterSource(
-      LayerTreeImpl* tree_impl,
-      int id,
-      scoped_refptr<RasterSource> raster_source) {
-    Layer::LayerMaskType mask_type = Layer::LayerMaskType::MULTI_TEXTURE_MASK;
-    return base::WrapUnique(
-        new FakePictureLayerImpl(tree_impl, id, raster_source, mask_type));
-  }
-
-  static std::unique_ptr<FakePictureLayerImpl>
-  CreateSingleTextureMaskWithRasterSource(
-      LayerTreeImpl* tree_impl,
-      int id,
-      scoped_refptr<RasterSource> raster_source) {
-    Layer::LayerMaskType mask_type = Layer::LayerMaskType::SINGLE_TEXTURE_MASK;
-    return base::WrapUnique(
-        new FakePictureLayerImpl(tree_impl, id, raster_source, mask_type));
+        new FakePictureLayerImpl(tree_impl, id, raster_source));
   }
 
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void PushPropertiesTo(LayerImpl* layer_impl) override;
   void AppendQuads(viz::RenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
-  gfx::Size CalculateTileSize(const gfx::Size& content_bounds) const override;
+  gfx::Size CalculateTileSize(const gfx::Size& content_bounds) override;
 
   void DidBecomeActive() override;
   size_t did_become_active_call_count() {
@@ -104,14 +51,14 @@ class FakePictureLayerImpl : public PictureLayerImpl {
   size_t CountTilesRequiredForDraw() const;
 
   using PictureLayerImpl::AddTiling;
-  using PictureLayerImpl::CleanUpTilingsOnActiveLayer;
   using PictureLayerImpl::CanHaveTilings;
+  using PictureLayerImpl::CleanUpTilingsOnActiveLayer;
   using PictureLayerImpl::MinimumContentsScale;
   using PictureLayerImpl::SanityCheckTilingState;
   using PictureLayerImpl::UpdateRasterSource;
 
-  using PictureLayerImpl::UpdateIdealScales;
   using PictureLayerImpl::MaximumTilingContentsScale;
+  using PictureLayerImpl::UpdateIdealScales;
 
   void AddTilingUntilNextDraw(float scale) {
     last_append_quads_tilings_.push_back(
@@ -130,8 +77,8 @@ class FakePictureLayerImpl : public PictureLayerImpl {
 
   PictureLayerTilingSet* tilings() { return tilings_.get(); }
   RasterSource* raster_source() { return raster_source_.get(); }
-  void SetRasterSourceOnPending(scoped_refptr<RasterSource> raster_source,
-                                const Region& invalidation);
+  void SetRasterSource(scoped_refptr<RasterSource> raster_source,
+                       const Region& invalidation);
   size_t append_quads_count() { return append_quads_count_; }
 
   const Region& invalidation() const { return invalidation_; }
@@ -172,16 +119,7 @@ class FakePictureLayerImpl : public PictureLayerImpl {
  protected:
   FakePictureLayerImpl(LayerTreeImpl* tree_impl,
                        int id,
-                       scoped_refptr<RasterSource> raster_source,
-                       Layer::LayerMaskType mask_type);
-  FakePictureLayerImpl(LayerTreeImpl* tree_impl,
-                       int id,
-                       scoped_refptr<RasterSource> raster_source,
-                       Layer::LayerMaskType mask_type,
-                       const gfx::Size& layer_bounds);
-  FakePictureLayerImpl(LayerTreeImpl* tree_impl,
-                       int id,
-                       Layer::LayerMaskType mask_type);
+                       scoped_refptr<RasterSource> raster_source = nullptr);
 
  private:
   gfx::Size fixed_tile_size_;

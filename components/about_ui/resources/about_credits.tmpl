@@ -3,20 +3,55 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width">
+<meta name="color-scheme" content="light dark">
 <title>Credits</title>
 <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 <style>
+html {
+  --google-blue-50: rgb(232, 240, 254);
+  --google-blue-300: rgb(138, 180, 248);
+  --google-blue-600: rgb(26, 115, 232);
+  --google-blue-900: rgb(23, 78, 166);
+  --google-grey-200: rgb(232, 234, 237);
+  --google-grey-800: rgb(60, 64, 67);
+  --google-grey-900: rgb(32, 33, 36);
+
+  --interactive-color: var(--google-blue-600);
+  --primary-color: var(--google-grey-900);
+
+  --product-background: var(--google-blue-50);
+  --product-text-color: var(--google-blue-900);
+
+  background: white;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --interactive-color: var(--google-blue-300);
+    --primary-color: var(--google-grey-200);
+
+    --product-background: var(--google-grey-800);
+    --product-text-color: var(--google-grey-200);
+
+    background: var(--google-grey-900);
+  }
+}
+
 body {
-  background-color: white;
+  color: var(--primary-color);
   font-size: 84%;
   max-width: 1020px;
+}
+a {
+  color: var(--interactive-color);
 }
 .page-title {
   font-size: 164%;
   font-weight: bold;
 }
 .product {
-  background-color: #c3d9ff;
+  background-color: var(--product-background);
+  color: var(--product-text-color);
   border-radius: 5px;
   margin-top: 16px;
   overflow: auto;
@@ -29,7 +64,7 @@ body {
   margin: 3px;
 }
 .product .homepage {
-  color: blue;
+  color: var(--interactive-color);
   float: right;
   margin: 3px;
   text-align: right;
@@ -38,14 +73,13 @@ body {
   content: " - ";
 }
 .product .show {
-  color: blue;
+  color: var(--interactive-color);
   float: right;
   margin: 3px;
   text-align: right;
   text-decoration: underline;
 }
 .licence {
-  background-color: #e8eef7;
   border-radius: 3px;
   clear: both;
   display: none;

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+</style>
+
+<div id="first" tabindex="0">First</div>
+<div id="second" tabindex="0">Second</div>
+<div id="third" tabindex="0">Third</div>
+
+<script>
+  var resultMap = [
+    ["Down", "first"],
+    ["Down", "second"],
+    ["Down", "third"],
+  ];
+
+  // This test checks that the "focusless spatial navigation" when in a11y does
+  // dispatch key events to elements (since they will have focus).
+  let no_keyboard_events_test =
+      async_test("Focusless SpatNav A11y Does Dispatch KeyboardEvents");
+
+  var count = 0;
+  for (let id of ['first', 'second']) {
+    let e = document.getElementById(id);
+    e.addEventListener('keydown', e => { count++; });
+  }
+  document.getElementById('third').addEventListener(
+      'keydown',
+       no_keyboard_events_test.unreached_func(
+           'Should not have sent a keyboard event to the third div'));
+
+  let postAssertsFunc = no_keyboard_events_test.step_func_done(() => {
+    // We should send a keyboard event each time focus leaves a div. Should
+    // happen twice.
+    assert_equals(count, 2);
+  });
+
+  snav.assertFocusMoves(resultMap,
+                        true /* enableSpatnav */,
+                        postAssertsFunc,
+                        true /* focuslessSpatNav */ );
+</script>

@@ -36,17 +36,11 @@
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "url/origin.h"
 
 namespace blink {
 
 class Prerender;
-
-// WebPrerenderRelType is a bitfield since multiple rel attributes can be set on
-// the same prerender.
-enum WebPrerenderRelType {
-  kPrerenderRelTypePrerender = 0x1,
-  kPrerenderRelTypeNext = 0x2,
-};
 
 class WebPrerender {
  public:
@@ -75,6 +69,7 @@ class WebPrerender {
 
   BLINK_PLATFORM_EXPORT WebURL Url() const;
   BLINK_PLATFORM_EXPORT WebString GetReferrer() const;
+  BLINK_PLATFORM_EXPORT url::Origin SecurityOrigin() const;
   BLINK_PLATFORM_EXPORT unsigned RelTypes() const;
   BLINK_PLATFORM_EXPORT network::mojom::ReferrerPolicy GetReferrerPolicy()
       const;

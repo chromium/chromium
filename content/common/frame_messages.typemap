@@ -5,4 +5,4 @@
 mojom = "//content/common/frame_messages.mojom"
 public_headers = [ "//content/common/frame_messages_forward.h" ]
 traits_headers = [ "//content/common/frame_messages.h" ]
-type_mappings = [ "content.mojom.DidCommitProvisionalLoadParams=std::unique_ptr<::FrameHostMsg_DidCommitProvisionalLoad_Params>[move_only,nullable_is_same_type]" ]
+type_mappings = [ "content.mojom.DidCommitProvisionalLoadParams=::std::unique_ptr<::FrameHostMsg_DidCommitProvisionalLoad_Params>[move_only,nullable_is_same_type]" ]

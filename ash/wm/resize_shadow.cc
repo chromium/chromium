@@ -8,6 +8,7 @@
 
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
@@ -33,8 +34,7 @@ static constexpr int kCornerRadiusOfWindow = 2;
 class ResizeShadowImageSource : public gfx::CanvasImageSource {
  public:
   ResizeShadowImageSource()
-      : gfx::CanvasImageSource(gfx::Size(kImageSide, kImageSide),
-                               false /* is opaque */) {}
+      : gfx::CanvasImageSource(gfx::Size(kImageSide, kImageSide)) {}
 
   ~ResizeShadowImageSource() override = default;
 
@@ -57,9 +57,6 @@ class ResizeShadowImageSource : public gfx::CanvasImageSource {
   DISALLOW_COPY_AND_ASSIGN(ResizeShadowImageSource);
 };
 
-base::LazyInstance<std::unique_ptr<gfx::ImageSkia>>::Leaky g_shadow_image =
-    LAZY_INSTANCE_INITIALIZER;
-
 }  // namespace
 
 namespace ash {
@@ -76,13 +73,14 @@ ResizeShadow::ResizeShadow(aura::Window* window)
   layer_->SetOpacity(0.f);
   layer_->SetVisible(false);
 
-  if (!g_shadow_image.Get()) {
+  static base::NoDestructor<gfx::ImageSkia> shadow_image;
+
+  if (shadow_image->isNull()) {
     auto* source = new ResizeShadowImageSource();
-    g_shadow_image.Get() = std::make_unique<gfx::ImageSkia>(
-        base::WrapUnique(source), source->size());
+    *shadow_image = gfx::ImageSkia(base::WrapUnique(source), source->size());
   }
-  layer_->UpdateNinePatchLayerImage(*g_shadow_image.Get());
-  gfx::Rect aperture(g_shadow_image.Get()->size());
+  layer_->UpdateNinePatchLayerImage(*shadow_image);
+  gfx::Rect aperture(shadow_image->size());
   constexpr gfx::Insets kApertureInsets(kVisualThickness +
                                         kCornerRadiusOfWindow);
   aperture.Inset(kApertureInsets);

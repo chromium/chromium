@@ -7,6 +7,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/config/win/console_app.gni")
 import("//build/config/win/manifest.gni")
+import("//gpu/vulkan/features.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")
@@ -18,6 +19,7 @@ if (is_android) {
 } else if (is_mac) {
   import("//build/config/mac/rules.gni")
   import("//build/mac/tweak_info_plist.gni")
+  import("//content/public/app/mac_helpers.gni")
   import("//third_party/icu/config.gni")
   import("//ui/gl/features.gni")
   import("//v8/gni/v8.gni")
@@ -43,6 +45,30 @@ source_set("android_shell_descriptors") {
   ]
   public_deps = [
     "//content/public/common:content_descriptors",
+  ]
+}
+
+source_set("web_test_messages") {
+  testonly = true
+  sources = [
+    # Note that if this target becomes jumbofied, it should use
+    # jumbo_excluded_sources to exclude the messages.cc files.
+    # IPC uses multiple inclusions in different macro contexts to
+    # generate the code. This is not compatible with jumbo
+    # compilations since all other files need the "clean" version of
+    # the message headers.
+    "common/web_test/blink_test_messages.cc",
+    "common/web_test/blink_test_messages.h",
+    "common/web_test/web_test_messages.cc",
+    "common/web_test/web_test_messages.h",
+  ]
+
+  deps = [
+    "//content/public/common",
+    "//ipc",
+    "//net",
+    "//skia",
+    "//url/ipc:url_ipc",
   ]
 }
 
@@ -92,8 +118,6 @@ jumbo_static_library("content_shell_lib") {
     "browser/shell_application_mac.mm",
     "browser/shell_browser_context.cc",
     "browser/shell_browser_context.h",
-    "browser/shell_browser_main.cc",
-    "browser/shell_browser_main.h",
     "browser/shell_browser_main_parts.cc",
     "browser/shell_browser_main_parts.h",
     "browser/shell_browser_main_parts_mac.mm",
@@ -112,14 +136,7 @@ jumbo_static_library("content_shell_lib") {
     "browser/shell_javascript_dialog_manager.cc",
     "browser/shell_javascript_dialog_manager.h",
     "browser/shell_javascript_dialog_win.cc",
-    "browser/shell_login_dialog.cc",
-    "browser/shell_login_dialog.h",
-    "browser/shell_login_dialog_mac.mm",
     "browser/shell_mac.mm",
-    "browser/shell_net_log.cc",
-    "browser/shell_net_log.h",
-    "browser/shell_network_delegate.cc",
-    "browser/shell_network_delegate.h",
     "browser/shell_permission_manager.cc",
     "browser/shell_permission_manager.h",
     "browser/shell_platform_data_aura.cc",
@@ -130,8 +147,6 @@ jumbo_static_library("content_shell_lib") {
     "browser/shell_quota_permission_context.h",
     "browser/shell_speech_recognition_manager_delegate.cc",
     "browser/shell_speech_recognition_manager_delegate.h",
-    "browser/shell_url_request_context_getter.cc",
-    "browser/shell_url_request_context_getter.h",
     "browser/shell_web_contents_view_delegate.h",
     "browser/shell_web_contents_view_delegate_android.cc",
     "browser/shell_web_contents_view_delegate_creator.h",
@@ -142,8 +157,14 @@ jumbo_static_library("content_shell_lib") {
     "browser/web_test/devtools_protocol_test_bindings.h",
     "browser/web_test/fake_bluetooth_chooser.cc",
     "browser/web_test/fake_bluetooth_chooser.h",
+    "browser/web_test/fake_bluetooth_chooser_factory.cc",
+    "browser/web_test/fake_bluetooth_chooser_factory.h",
+    "browser/web_test/fake_bluetooth_scanning_prompt.cc",
+    "browser/web_test/fake_bluetooth_scanning_prompt.h",
     "browser/web_test/leak_detector.cc",
     "browser/web_test/leak_detector.h",
+    "browser/web_test/mock_client_hints_controller_delegate.cc",
+    "browser/web_test/mock_client_hints_controller_delegate.h",
     "browser/web_test/mojo_web_test_helper.cc",
     "browser/web_test/mojo_web_test_helper.h",
     "browser/web_test/secondary_test_window_observer.cc",
@@ -166,6 +187,8 @@ jumbo_static_library("content_shell_lib") {
     "browser/web_test/web_test_browser_main_parts.h",
     "browser/web_test/web_test_content_browser_client.cc",
     "browser/web_test/web_test_content_browser_client.h",
+    "browser/web_test/web_test_content_index_provider.cc",
+    "browser/web_test/web_test_content_index_provider.h",
     "browser/web_test/web_test_devtools_bindings.cc",
     "browser/web_test/web_test_devtools_bindings.h",
     "browser/web_test/web_test_download_manager_delegate.cc",
@@ -180,22 +203,20 @@ jumbo_static_library("content_shell_lib") {
     "browser/web_test/web_test_permission_manager.h",
     "browser/web_test/web_test_push_messaging_service.cc",
     "browser/web_test/web_test_push_messaging_service.h",
-    "browser/web_test/web_test_url_request_context_getter.cc",
-    "browser/web_test/web_test_url_request_context_getter.h",
+    "browser/web_test/web_test_tts_controller_delegate.cc",
+    "browser/web_test/web_test_tts_controller_delegate.h",
+    "browser/web_test/web_test_tts_platform.cc",
+    "browser/web_test/web_test_tts_platform.h",
     "common/power_monitor_test_impl.cc",
     "common/power_monitor_test_impl.h",
     "common/shell_content_client.cc",
     "common/shell_content_client.h",
-    "common/shell_messages.cc",
-    "common/shell_messages.h",
     "common/shell_origin_trial_policy.cc",
     "common/shell_origin_trial_policy.h",
     "common/shell_switches.cc",
     "common/shell_switches.h",
     "common/web_test/web_test_content_client.cc",
     "common/web_test/web_test_content_client.h",
-    "common/web_test/web_test_messages.cc",
-    "common/web_test/web_test_messages.h",
     "gpu/shell_content_gpu_client.cc",
     "gpu/shell_content_gpu_client.h",
     "renderer/shell_content_renderer_client.cc",
@@ -222,15 +243,6 @@ jumbo_static_library("content_shell_lib") {
     "utility/shell_content_utility_client.h",
   ]
 
-  jumbo_excluded_sources = [
-    # IPC uses multiple inclusions in different macro contexts to
-    # generate the code. This is not compatible with jumbo
-    # compilations since all other files need the "clean" version of
-    # the message headers.
-    "common/web_test/web_test_messages.cc",
-    "common/shell_messages.cc",
-  ]
-
   configs += [
     ":content_shell_lib_warnings",
     "//build/config:precompiled_headers",
@@ -250,6 +262,9 @@ jumbo_static_library("content_shell_lib") {
     # #include'ed by renderer/web_test/blink_test_runner.h
     ":mojo_bindings",
 
+    # The generated mojom JS bindings are used by web tests.
+    ":mojo_bindings_js",
+
     # This exposes all public content APIs.
     "//content/public/app:both",
     "//content/public/browser",
@@ -258,11 +273,12 @@ jumbo_static_library("content_shell_lib") {
     "//content/public/gpu",
     "//content/public/renderer",
     "//content/public/utility",
-    "//ipc",
     "//services/network:network_service",
   ]
   deps = [
+    ":client_hints_util",
     ":resources",
+    ":web_test_messages",
     ":web_test_switches",
     ":web_test_utils",
     "//base",
@@ -284,7 +300,6 @@ jumbo_static_library("content_shell_lib") {
     "//components/web_cache/renderer",
     "//content:resources",
     "//content/app/resources",
-    "//content/app/strings",
     "//content/gpu",
     "//content/public/common",
     "//content/public/common:service_names",
@@ -307,13 +322,12 @@ jumbo_static_library("content_shell_lib") {
     "//net:test_support",
     "//ppapi/buildflags",
     "//sandbox",
-    "//services/device/public/cpp/test:test_support",
+    "//services/device/public/cpp:test_support",
     "//services/device/public/mojom",
     "//services/network/public/cpp",
     "//services/service_manager/embedder:embedder_result_codes",
     "//services/service_manager/public/cpp",
     "//services/test/echo:lib",
-    "//services/test/echo/public/cpp:manifest",
     "//services/test/echo/public/mojom",
     "//skia",
     "//skia:test_fonts",
@@ -325,10 +339,11 @@ jumbo_static_library("content_shell_lib") {
     "//third_party/blink/public:image_resources",
     "//third_party/blink/public:resources",
     "//third_party/blink/public:test_support",
+    "//third_party/blink/public/strings",
     "//third_party/icu",
     "//ui/base",
     "//ui/base/clipboard",
-    "//ui/base/ime",
+    "//ui/base/ime/init",
     "//ui/display",
     "//ui/events:events_base",
     "//ui/gfx",
@@ -363,9 +378,15 @@ jumbo_static_library("content_shell_lib") {
       "//ppapi/shared_impl",
     ]
   }
+  if (enable_vulkan) {
+    deps += [
+      "//gpu/vulkan:test_support",
+      "//gpu/vulkan/init",
+    ]
+  }
   if (mojo_media_host == "browser") {
     deps += [
-      "//media/mojo/interfaces:constants",
+      "//media/mojo/mojom:constants",
       "//media/mojo/services",
     ]
   }
@@ -391,20 +412,18 @@ jumbo_static_library("content_shell_lib") {
   }
 
   if (is_android) {
-    sources += [
-      "browser/web_test/scoped_android_configuration.cc",
-      "browser/web_test/scoped_android_configuration.h",
-    ]
     deps += [
       "//base/test:test_support",
       "//components/embedder_support/android:view",
       "//content/shell/android:content_shell_jni_headers",
+      "//content/test:android_test_message_pump_support",
       "//mojo/public/java/system:test_support",
       "//ui/android",
     ]
   }
 
-  if (toolkit_views) {
+  # TODO(spang): Investigate using shell_views with is_chromecast=true.
+  if (toolkit_views && !is_chromecast) {
     deps += [ "//ui/views" ]
   }
 
@@ -417,7 +436,7 @@ jumbo_static_library("content_shell_lib") {
       "//ui/wm",
     ]
 
-    if (toolkit_views) {
+    if (toolkit_views && !is_chromecast) {
       sources += [
         "browser/shell_views.cc",
         "browser/shell_web_contents_view_delegate_views.cc",
@@ -444,9 +463,6 @@ jumbo_static_library("content_shell_lib") {
   if (is_chromeos) {
     deps += [
       "//chromeos/dbus",
-      "//services/ws/test_ws:lib",
-      "//services/ws/test_ws:manifest",
-      "//services/ws/test_ws:mojom",
       "//ui/wm:test_support",
     ]
   }
@@ -465,6 +481,24 @@ jumbo_static_library("content_shell_lib") {
       "browser/shell_plugin_service_filter.h",
     ]
   }
+
+  if (enable_cast_renderer) {
+    deps += [ "//media/mojo/mojom:constants" ]
+  }
+}
+
+static_library("client_hints_util") {
+  testonly = true
+
+  sources = [
+    "utility/mock_client_hints_utils.cc",
+    "utility/mock_client_hints_utils.h",
+  ]
+
+  deps = [
+    "//content/public/common",
+    "//third_party/blink/public:blink",
+  ]
 }
 
 grit("content_shell_resources_grit") {
@@ -507,14 +541,15 @@ repack("pak") {
 
   sources = [
     "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
-    "$root_gen_dir/content/app/strings/content_strings_en-US.pak",
     "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
+    "$root_gen_dir/content/browser/webrtc/resources/webrtc_internals_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/content/shell/shell_resources.pak",
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
+    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
     "$root_gen_dir/ui/resources/webui_resources.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
@@ -525,17 +560,18 @@ repack("pak") {
     ":resources",
     "//content:resources",
     "//content/app/resources",
-    "//content/app/strings",
     "//content/browser/tracing:resources",
+    "//content/browser/webrtc/resources",
     "//mojo/public/js:resources",
     "//net:net_resources",
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
+    "//third_party/blink/public/strings",
     "//ui/resources",
     "//ui/strings",
   ]
 
-  if (toolkit_views) {
+  if (toolkit_views && !is_chromecast) {
     deps += [ "//ui/views/resources" ]
     sources +=
         [ "$root_gen_dir/ui/views/resources/views_resources_100_percent.pak" ]
@@ -647,32 +683,10 @@ if (is_android) {
 }
 
 if (is_mac) {
-  bundle_data("content_shell_framework_helpers") {
-    testonly = true
-    sources = [
-      "$root_out_dir/chrome_crashpad_handler",
-    ]
-    outputs = [
-      "{{bundle_contents_dir}}/Helpers/{{source_file_part}}",
-    ]
-    public_deps = [
-      "//components/crash/content/app:chrome_crashpad_handler",
-    ]
-  }
-
-  mac_xib_bundle_data("content_shell_framework_xibs") {
-    sources = [
-      "app/English.lproj/HttpAuth.xib",
-      "app/English.lproj/MainMenu.xib",
-    ]
-    output_path = "{{bundle_resources_dir}}/English.lproj"
-  }
-
   bundle_data("content_shell_framework_resources") {
     testonly = true
     sources = [
       "$root_out_dir/content_shell.pak",
-      "resources/missingImage.png",
     ]
 
     public_deps = [
@@ -687,7 +701,6 @@ if (is_mac) {
     }
 
     if (v8_use_external_startup_data) {
-      sources += [ "$root_out_dir/natives_blob.bin" ]
       public_deps += [ "//v8" ]
       if (use_v8_context_snapshot) {
         sources += [ "$root_out_dir/v8_context_snapshot.bin" ]
@@ -723,6 +736,25 @@ if (is_mac) {
   content_shell_framework_name = "$content_shell_product_name Framework"
   content_shell_helper_name = "$content_shell_product_name Helper"
 
+  bundle_data("content_shell_framework_helpers") {
+    testonly = true
+    sources = [
+      "$root_out_dir/chrome_crashpad_handler",
+    ]
+    outputs = [
+      "{{bundle_contents_dir}}/Helpers/{{source_file_part}}",
+    ]
+    public_deps = [
+      "//components/crash/content/app:chrome_crashpad_handler",
+    ]
+    foreach(helper_params, content_mac_helpers) {
+      sources += [
+        "$root_out_dir/${content_shell_helper_name}${helper_params[2]}.app",
+      ]
+      public_deps += [ ":content_shell_helper_app_${helper_params[0]}" ]
+    }
+  }
+
   tweak_info_plist("content_shell_framework_plist") {
     testonly = true
     info_plist = "app/framework-Info.plist"
@@ -746,6 +778,7 @@ if (is_mac) {
 
     framework_contents = [
       "Helpers",
+      "Libraries",
       "Resources",
     ]
 
@@ -761,7 +794,6 @@ if (is_mac) {
       ":content_shell_angle_library",
       ":content_shell_framework_helpers",
       ":content_shell_framework_resources",
-      ":content_shell_framework_xibs",
       ":content_shell_swiftshader_library",
       "//third_party/icu:icudata",
     ]
@@ -804,40 +836,61 @@ if (is_mac) {
     ]
   }
 
-  mac_app_bundle("content_shell_helper_app") {
-    testonly = true
-    output_name = content_shell_helper_name
-    sources = [
-      "app/shell_main_mac.cc",
-    ]
-    defines = [
-      "HELPER_EXECUTABLE",
-      "SHELL_PRODUCT_NAME=\"$content_shell_product_name\"",
-    ]
-    deps = [
-      "//sandbox/mac:seatbelt",
-    ]
-    ldflags = [
-      # The helper is in Content Shell.app/Contents/Frameworks/Content Shell Helper.app/Contents/MacOS/
-      # so set rpath up to the base.
-      "-rpath",
-      "@executable_path/../../../../../..",
-    ]
-    info_plist_target = ":content_shell_helper_plist"
+  template("content_shell_helper_app") {
+    mac_app_bundle(target_name) {
+      assert(defined(invoker.helper_name_suffix))
+      assert(defined(invoker.helper_bundle_id_suffix))
+
+      testonly = true
+
+      output_name = content_shell_helper_name + invoker.helper_name_suffix
+
+      sources = [
+        "app/shell_main_mac.cc",
+      ]
+      defines = [
+        "HELPER_EXECUTABLE",
+        "SHELL_PRODUCT_NAME=\"$content_shell_product_name\"",
+      ]
+      extra_substitutions = [
+        "CONTENT_SHELL_HELPER_SUFFIX=${invoker.helper_name_suffix}",
+        "CONTENT_SHELL_HELPER_BUNDLE_ID_SUFFIX=${invoker.helper_bundle_id_suffix}",
+      ]
+      deps = [
+        "//sandbox/mac:seatbelt",
+      ]
+      ldflags = [
+        # The helper is in Content Shell.app/Contents/Frameworks/
+        #     Content Shell Framework.framework/Versions/C/Helpers/
+        #     Content Shell Helper.app/Contents/MacOS/
+        # so set rpath up to the base.
+        "-rpath",
+        "@executable_path/../../../../../../../../../..",
+      ]
+      info_plist_target = ":content_shell_helper_plist"
+    }
+  }
+
+  foreach(helper_params, content_mac_helpers) {
+    _helper_target = helper_params[0]
+    _helper_bundle_id = helper_params[1]
+    _helper_suffix = helper_params[2]
+    content_shell_helper_app("content_shell_helper_app_${_helper_target}") {
+      helper_name_suffix = _helper_suffix
+      helper_bundle_id_suffix = _helper_bundle_id
+    }
   }
 
   bundle_data("content_shell_framework_bundle_data") {
     testonly = true
     sources = [
       "$root_out_dir/$content_shell_framework_name.framework",
-      "$root_out_dir/$content_shell_helper_name.app",
     ]
     outputs = [
       "{{bundle_contents_dir}}/Frameworks/{{source_file_part}}",
     ]
     public_deps = [
       ":content_shell_framework",
-      ":content_shell_helper_app",
     ]
   }
 
@@ -852,7 +905,7 @@ if (is_mac) {
   }
 
   if (use_egl) {
-    # Add the ANGLE .dylibs in the MODULE_DIR of Chromium.app
+    # Add the ANGLE .dylibs in the Libraries directory of the Framework.
     bundle_data("content_shell_angle_binaries") {
       sources = [
         "$root_out_dir/egl_intermediates/libEGL.dylib",
@@ -866,7 +919,7 @@ if (is_mac) {
       ]
     }
 
-    # Add the SwiftShader .dylibs in the MODULE_DIR of Chromium.app
+    # Add the SwiftShader .dylibs in the Libraries directory of the Framework.
     bundle_data("content_shell_swiftshader_binaries") {
       sources = [
         "$root_out_dir/egl_intermediates/libswiftshader_libEGL.dylib",
@@ -907,9 +960,10 @@ mojom("mojo_bindings") {
   ]
   public_deps = [
     "//mojo/public/mojom/base",
-    "//skia/public/interfaces",
-    "//ui/gfx/geometry/mojo",
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
   ]
 }
 
@@ -925,6 +979,15 @@ group("content_shell_crash_test") {
     "//testing/scripts/content_shell_crash_test.py",
     "//testing/xvfb.py",
   ]
+  if (is_mac && !use_system_xcode) {
+    data += [
+      # Scripts call otool, which is a symlink to llvm-otool, so we need both.
+      # llvm-otool shells out to llvm-objdump, so that's needed as well.
+      mac_bin_path + "llvm-objdump",
+      mac_bin_path + "llvm-otool",
+      mac_bin_path + "otool",
+    ]
+  }
   if (is_posix) {
     data += [
       "//components/crash/content/tools/generate_breakpad_symbols.py",
@@ -934,18 +997,18 @@ group("content_shell_crash_test") {
   if (is_win) {
     data_deps += [ "//build/win:copy_cdb_to_output" ]
   }
-  if (is_posix && !is_android) {
+  if (is_posix) {
     data_deps += [
-      "//third_party/breakpad:dump_syms($host_toolchain)",
-      "//third_party/breakpad:minidump_stackwalk($host_toolchain)",
+      "//third_party/breakpad:dump_syms",
+      "//third_party/breakpad:minidump_stackwalk",
     ]
   }
   if (is_android) {
     data_deps += [
-      "//third_party/breakpad:dump_syms",
+      "//build/android:devil_chromium_py",
+      "//build/android:test_runner_py",
       "//third_party/breakpad:microdump_stackwalk",
       "//third_party/breakpad:minidump_dump",
-      "//third_party/breakpad:minidump_stackwalk",
       "//third_party/breakpad:symupload",
       "//tools/android/forwarder2",
     ]

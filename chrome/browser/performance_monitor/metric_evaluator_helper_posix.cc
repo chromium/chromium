@@ -21,4 +21,10 @@ base::Optional<float> MetricEvaluatorsHelperPosix::GetDiskIdleTimePercent() {
   return base::nullopt;
 }
 
+base::Optional<int>
+MetricEvaluatorsHelperPosix::GetChromeTotalResidentSetEstimateMb() {
+  NOTREACHED();
+  return base::nullopt;
+}
+
 }  // namespace performance_monitor

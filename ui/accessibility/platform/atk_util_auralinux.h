@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_ACCESSIBILITY_AX_UTIL_AURALINUX_H_
-#define UI_ACCESSIBILITY_AX_UTIL_AURALINUX_H_
+#ifndef UI_ACCESSIBILITY_PLATFORM_ATK_UTIL_AURALINUX_H_
+#define UI_ACCESSIBILITY_PLATFORM_ATK_UTIL_AURALINUX_H_
 
 #include <atk/atk.h>
 
@@ -48,16 +48,11 @@ class AX_EXPORT AtkUtilAuraLinux {
 
   static DiscardAtkKeyEvent HandleAtkKeyEvent(AtkKeyEventStruct* key_event);
 
-#if defined(USE_X11)
-  static DiscardAtkKeyEvent HandleKeyEvent(XEvent* xevent);
-#endif
-
  private:
   friend struct base::DefaultSingletonTraits<AtkUtilAuraLinux>;
 
   bool ShouldEnableAccessibility();
 
-  bool PlatformShouldEnableAccessibility();
   void PlatformInitializeAsync();
 
   DISALLOW_COPY_AND_ASSIGN(AtkUtilAuraLinux);
@@ -65,4 +60,4 @@ class AX_EXPORT AtkUtilAuraLinux {
 
 }  // namespace ui
 
-#endif  // UI_ACCESSIBILITY_AX_UTIL_AURALINUX_H_
+#endif  // UI_ACCESSIBILITY_PLATFORM_ATK_UTIL_AURALINUX_H_

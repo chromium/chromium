@@ -12,9 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_export.h"
-#include "content/common/service_worker/service_worker_types.h"
-#include "mojo/public/cpp/bindings/associated_binding_set.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "url/origin.h"
 
@@ -27,13 +28,14 @@ namespace service_worker_object_host_unittest {
 class ServiceWorkerObjectHostTest;
 }  // namespace service_worker_object_host_unittest
 
-// Roughly corresponds to one WebServiceWorker object in the renderer process.
+// Roughly corresponds to one blink::ServiceWorker object in the renderer
+// process.
 //
-// The WebServiceWorker object in the renderer process maintains a reference to
-// |this| by owning an associated interface pointer to
+// The blink::ServiceWorker object in the renderer process maintains a
+// reference to |this| by owning a Mojo remote to
 // blink::mojom::ServiceWorkerObjectHost. When all Mojo connections bound with
-// |bindings_| are disconnected, |this| will be deleted. See also comments on
-// |bindings_|.
+// |receivers_| are disconnected, |this| will be deleted. See also comments on
+// |receivers_|.
 //
 // Has references to the corresponding ServiceWorkerVersion in order to ensure
 // that the version is alive while this handle is around.
@@ -71,11 +73,11 @@ class CONTENT_EXPORT ServiceWorkerObjectHost
   // Mojo.
   blink::mojom::ServiceWorkerObjectInfoPtr CreateIncompleteObjectInfo();
 
-  // Starts to use the |remote_object_ptr_info| as a valid Mojo pipe endpoint,
-  // and triggers statechanged event if |sent_state| is old and needs to be
-  // updated.
+  // Starts to use the |pending_object| as a valid remote, and triggers
+  // statechanged event if |sent_state| is old and needs to be updated.
   void AddRemoteObjectPtrAndUpdateState(
-      blink::mojom::ServiceWorkerObjectAssociatedPtrInfo remote_object_ptr_info,
+      mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerObject>
+          pending_object,
       blink::mojom::ServiceWorkerState sent_state);
 
   ServiceWorkerVersion* version() { return version_.get(); }
@@ -109,18 +111,17 @@ class CONTENT_EXPORT ServiceWorkerObjectHost
   // object.
   const url::Origin provider_origin_;
   scoped_refptr<ServiceWorkerVersion> version_;
-  // Typically both |bindings_| and |remote_objects_| contain only one Mojo
-  // connection, corresponding to the content::WebServiceWorkerImpl in the
-  // renderer which corresponds to the ServiceWorker JavaScript object. However,
-  // multiple Mojo connections may exist while propagating multiple service
-  // worker object infos to the renderer process, but only the first one that
-  // arrived there will be used to create the new content::WebServiceWorkerImpl
-  // instance and be bound to it.
-  mojo::AssociatedBindingSet<blink::mojom::ServiceWorkerObjectHost> bindings_;
-  mojo::AssociatedInterfacePtrSet<blink::mojom::ServiceWorkerObject>
-      remote_objects_;
+  // Typically both |receivers_| and |remote_objects_| contain only one Mojo
+  // connection, corresponding to the blink::ServiceWorker in the renderer which
+  // corresponds to the ServiceWorker JavaScript object. However, multiple Mojo
+  // connections may exist while propagating multiple service worker object
+  // infos to the renderer process, but only the first one that arrived there
+  // will be used to create the new blink::ServiceWorker instance and be bound
+  // to it.
+  mojo::AssociatedReceiverSet<blink::mojom::ServiceWorkerObjectHost> receivers_;
+  mojo::AssociatedRemoteSet<blink::mojom::ServiceWorkerObject> remote_objects_;
 
-  base::WeakPtrFactory<ServiceWorkerObjectHost> weak_ptr_factory_;
+  base::WeakPtrFactory<ServiceWorkerObjectHost> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerObjectHost);
 };

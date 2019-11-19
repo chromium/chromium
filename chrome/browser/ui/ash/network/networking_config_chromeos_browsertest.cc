@@ -3,18 +3,13 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/ash_view_ids.h"
-#include "ash/public/interfaces/constants.mojom.h"
-#include "ash/public/interfaces/system_tray_test_api.test-mojom-test-utils.h"
-#include "ash/public/interfaces/system_tray_test_api.test-mojom.h"
-#include "base/macros.h"
+#include "ash/public/cpp/system_tray_test_api.h"
+#include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "content/public/common/service_manager_connection.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
-#include "services/service_manager/public/cpp/connector.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -29,23 +24,17 @@ IN_PROC_BROWSER_TEST_F(NetworkingConfigChromeosTest, SystemTrayItem) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("networking_config")));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
-  // Connect to ash.
-  ash::mojom::SystemTrayTestApiPtr tray_test_api;
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(ash::mojom::kServiceName, &tray_test_api);
-
   // Show the network detail view.
-  ash::mojom::SystemTrayTestApiAsyncWaiter wait_for(tray_test_api.get());
-  wait_for.ShowDetailedView(ash::mojom::TrayItem::kNetwork);
+  auto tray_test_api = ash::SystemTrayTestApi::Create();
+  tray_test_api->ShowNetworkDetailedView();
+  base::RunLoop().RunUntilIdle();
 
-  // Expect that the extension-controlled VPN item appears.
+  // Expect that the extension-controlled item appears.
   base::string16 expected_tooltip = base::UTF8ToUTF16(
       "The extension \"NetworkingConfig test extension\" can help connect to "
       "this network.");
-  base::string16 tooltip;
-  wait_for.GetBubbleViewTooltip(ash::VIEW_ID_EXTENSION_CONTROLLED_WIFI,
-                                &tooltip);
+  base::string16 tooltip = tray_test_api->GetBubbleViewTooltip(
+      ash::VIEW_ID_EXTENSION_CONTROLLED_WIFI);
   EXPECT_EQ(expected_tooltip, tooltip);
 }
 

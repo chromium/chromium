@@ -5,9 +5,8 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
 
 #include "base/metrics/user_metrics.h"
-#include "components/autofill/core/common/autofill_features.h"
-#import "ios/chrome/browser/ui/autofill/manual_fill/uicolor_manualfill.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -31,11 +30,30 @@ NSString* const AccessoryCreditCardAccessibilityIdentifier =
 
 namespace {
 
-// The inset on the left before the icons start.
-constexpr CGFloat ManualFillIconsLeftInset = 10;
+// The leading inset for the icons.
+constexpr CGFloat ManualFillIconsLeadingInset = 10;
 
-// The inset on the right after the icons end.
-constexpr CGFloat ManualFillIconsRightInset = 24;
+// The trailing inset for the icons.
+constexpr CGFloat ManualFillIconsTrailingInset = 24;
+
+// The iPad override for the trailing inset.
+constexpr CGFloat ManualFillIconsIPadTrailingInset = 20;
+
+// Default spacing for the icons.
+constexpr CGFloat ManualFillIconsSpacing = 10;
+
+// iPad override for the icons' spacing.
+constexpr CGFloat ManualFillIconsIPadSpacing = 15;
+
+// Color to use for the buttons while enabled.
+UIColor* IconActiveTintColor() {
+  return [UIColor colorNamed:kToolbarButtonColor];
+}
+
+// Color to use for the buttons while highlighted.
+UIColor* IconHighlightTintColor() {
+  return [UIColor colorNamed:kBlueColor];
+}
 
 }  // namespace
 
@@ -78,13 +96,11 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 - (void)resetAnimated:(BOOL)animated {
   [UIView animateWithDuration:animated ? MFAnimationDuration : 0
                    animations:^{
-                     [self resetTintColors];
-                     // Workaround the |hidden| property in stacked views.
-                     if (!self.keyboardButton.hidden) {
-                       self.keyboardButton.hidden = YES;
-                       self.keyboardButton.alpha = 0.0;
-                     }
+                     [self resetIcons];
                    }];
+  if (!self.keyboardButton.hidden) {
+    [self setKeyboardButtonHidden:YES animated:animated];
+  }
 }
 
 #pragma mark - Setters
@@ -124,7 +140,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
   UIImage* image = [UIImage imageNamed:imageName];
   [button setImage:image forState:UIControlStateNormal];
-  button.tintColor = [self activeTintColor];
+  button.tintColor = IconActiveTintColor();
   button.translatesAutoresizingMaskIntoConstraints = NO;
   [button addTarget:self
                 action:selector
@@ -166,7 +182,6 @@ static NSTimeInterval MFAnimationDuration = 0.2;
   self.passwordButton.contentEdgeInsets = UIEdgeInsetsMake(0, 2, 0, 2);
   [icons addObject:self.passwordButton];
 
-  if (autofill::features::IsAutofillManualFallbackEnabled()) {
     self.cardsButton =
         [self manualFillButtonWithAction:@selector(cardButtonPressed:)
                               ImageNamed:@"ic_credit_card"
@@ -188,13 +203,16 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 
     self.accountButton.hidden = self.isAddressButtonHidden;
     [icons addObject:self.accountButton];
-  }
+
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:icons];
-  stackView.spacing = 10;
+  stackView.spacing =
+      IsIPadIdiom() ? ManualFillIconsIPadSpacing : ManualFillIconsSpacing;
   stackView.axis = UILayoutConstraintAxisHorizontal;
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:stackView];
 
+  CGFloat trailingInset = IsIPadIdiom() ? ManualFillIconsIPadTrailingInset
+                                        : ManualFillIconsTrailingInset;
   id<LayoutGuideProvider> safeAreaLayoutGuide = self.view.safeAreaLayoutGuide;
   [NSLayoutConstraint activateConstraints:@[
     // Vertical constraints.
@@ -204,27 +222,26 @@ static NSTimeInterval MFAnimationDuration = 0.2;
     // Horizontal constraints.
     [stackView.leadingAnchor
         constraintEqualToAnchor:safeAreaLayoutGuide.leadingAnchor
-                       constant:ManualFillIconsLeftInset],
+                       constant:ManualFillIconsLeadingInset],
     [safeAreaLayoutGuide.trailingAnchor
         constraintEqualToAnchor:stackView.trailingAnchor
-                       constant:ManualFillIconsRightInset],
+                       constant:trailingInset],
   ]];
 }
 
-// Resets the colors of all the icons to the active color.
-- (void)resetTintColors {
-  UIColor* activeTintColor = [self activeTintColor];
-  [self.accountButton setTintColor:activeTintColor];
-  [self.passwordButton setTintColor:activeTintColor];
-  [self.cardsButton setTintColor:activeTintColor];
+// Resets the icon's color and userInteractionEnabled.
+- (void)resetIcons {
+  self.accountButton.userInteractionEnabled = YES;
+  self.cardsButton.userInteractionEnabled = YES;
+  self.passwordButton.userInteractionEnabled = YES;
+
+  [self.accountButton setTintColor:IconActiveTintColor()];
+  [self.passwordButton setTintColor:IconActiveTintColor()];
+  [self.cardsButton setTintColor:IconActiveTintColor()];
 }
 
-- (UIColor*)activeTintColor {
-  return [UIColor.blackColor colorWithAlphaComponent:0.5];
-}
-
-- (void)animateKeyboardButtonHidden:(BOOL)hidden {
-  [UIView animateWithDuration:MFAnimationDuration
+- (void)setKeyboardButtonHidden:(BOOL)hidden animated:(BOOL)animated {
+  [UIView animateWithDuration:animated ? MFAnimationDuration : 0
                    animations:^{
                      // Workaround setting more than once the |hidden| property
                      // in stacked views.
@@ -242,31 +259,34 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 
 - (void)keyboardButtonPressed {
   base::RecordAction(base::UserMetricsAction("ManualFallback_Close"));
-  [self animateKeyboardButtonHidden:YES];
-  [self resetTintColors];
+  [self resetAnimated:YES];
   [self.delegate keyboardButtonPressed];
 }
 
 - (void)passwordButtonPressed:(UIButton*)sender {
   base::RecordAction(base::UserMetricsAction("ManualFallback_OpenPassword"));
-  [self animateKeyboardButtonHidden:NO];
-  [self resetTintColors];
-  [self.passwordButton setTintColor:UIColor.cr_manualFillTintColor];
+  [self setKeyboardButtonHidden:NO animated:YES];
+  [self resetIcons];
+  self.passwordButton.userInteractionEnabled = NO;
+  self.passwordButton.tintColor = IconHighlightTintColor();
   [self.delegate passwordButtonPressed:sender];
 }
 
 - (void)cardButtonPressed:(UIButton*)sender {
   base::RecordAction(base::UserMetricsAction("ManualFallback_OpenCreditCard"));
-  [self animateKeyboardButtonHidden:NO];
-  [self resetTintColors];
-  [self.cardsButton setTintColor:UIColor.cr_manualFillTintColor];
+  [self setKeyboardButtonHidden:NO animated:YES];
+  [self resetIcons];
+  self.cardsButton.userInteractionEnabled = NO;
+  self.cardsButton.tintColor = IconHighlightTintColor();
   [self.delegate cardButtonPressed:sender];
 }
 
 - (void)accountButtonPressed:(UIButton*)sender {
-  [self animateKeyboardButtonHidden:NO];
-  [self resetTintColors];
-  [self.accountButton setTintColor:UIColor.cr_manualFillTintColor];
+  base::RecordAction(base::UserMetricsAction("ManualFallback_OpenProfile"));
+  [self setKeyboardButtonHidden:NO animated:YES];
+  [self resetIcons];
+  self.accountButton.userInteractionEnabled = NO;
+  self.accountButton.tintColor = IconHighlightTintColor();
   [self.delegate accountButtonPressed:sender];
 }
 

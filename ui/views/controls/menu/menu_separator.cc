@@ -88,4 +88,8 @@ gfx::Size MenuSeparator::CalculatePreferredSize() const {
                    height);
 }
 
+BEGIN_METADATA(MenuSeparator)
+METADATA_PARENT_CLASS(View)
+END_METADATA()
+
 }  // namespace views

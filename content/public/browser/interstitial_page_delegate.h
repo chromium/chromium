@@ -53,7 +53,7 @@ class CONTENT_EXPORT InterstitialPageDelegate {
   }
 
   // Return the interstitial type for testing.
-  virtual TypeID GetTypeForTesting() const;
+  virtual TypeID GetTypeForTesting();
 };
 
 }  // namespace content

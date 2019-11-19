@@ -36,15 +36,15 @@ class PaintControllerPaintTestBase : public RenderingTest {
   }
 
   void SetUp() override {
-    RenderingTest::SetUp();
     EnableCompositing();
+    RenderingTest::SetUp();
   }
 
   bool PaintWithoutCommit(
       const base::Optional<IntRect>& interest_rect = base::nullopt) {
     GetDocument().View()->Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      if (GetLayoutView().Layer()->NeedsRepaint()) {
+      if (GetLayoutView().Layer()->SelfOrDescendantNeedsRepaint()) {
         GraphicsContext graphics_context(RootPaintController());
         GetDocument().View()->Paint(
             graphics_context, kGlobalPaintNormalPhase,

@@ -16,6 +16,14 @@ LayerOwner::LayerOwner(std::unique_ptr<Layer> layer) {
 
 LayerOwner::~LayerOwner() = default;
 
+void LayerOwner::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void LayerOwner::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void LayerOwner::SetLayer(std::unique_ptr<Layer> layer) {
   DCHECK(!OwnsLayer());
   layer_owner_ = std::move(layer);
@@ -27,6 +35,16 @@ std::unique_ptr<Layer> LayerOwner::AcquireLayer() {
   if (layer_owner_)
     layer_owner_->owner_ = NULL;
   return std::move(layer_owner_);
+}
+
+std::unique_ptr<Layer> LayerOwner::ReleaseLayer() {
+  layer_ = nullptr;
+  return AcquireLayer();
+}
+
+void LayerOwner::Reset(std::unique_ptr<Layer> layer) {
+  ReleaseLayer();
+  SetLayer(std::move(layer));
 }
 
 std::unique_ptr<Layer> LayerOwner::RecreateLayer() {
@@ -62,6 +80,9 @@ std::unique_ptr<Layer> LayerOwner::RecreateLayer() {
   // Install the delegate last so that the delegate isn't notified as we copy
   // state to the new layer.
   layer_->set_delegate(old_delegate);
+
+  for (auto& observer : observers_)
+    observer.OnLayerRecreated(old_layer.get());
 
   return old_layer;
 }

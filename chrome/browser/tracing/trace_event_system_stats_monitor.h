@@ -44,7 +44,7 @@ class TraceEventSystemStatsMonitor
   // Indicates if profiling has started.
   bool is_profiling_ = false;
 
-  base::WeakPtrFactory<TraceEventSystemStatsMonitor> weak_factory_;
+  base::WeakPtrFactory<TraceEventSystemStatsMonitor> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TraceEventSystemStatsMonitor);
 };

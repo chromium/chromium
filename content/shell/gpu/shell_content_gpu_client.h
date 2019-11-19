@@ -19,7 +19,8 @@ class ShellContentGpuClient : public ContentGpuClient {
   ~ShellContentGpuClient() override;
 
   // ContentGpuClient:
-  void InitializeRegistry(service_manager::BinderRegistry* registry) override;
+  void ExposeInterfacesToBrowser(const gpu::GpuPreferences& gpu_preferences,
+                                 mojo::BinderMap* binders) override;
 
   DISALLOW_COPY_AND_ASSIGN(ShellContentGpuClient);
 };

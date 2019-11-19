@@ -31,10 +31,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/task_traits.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/reporter_runner_win.h"
@@ -80,7 +82,7 @@ const base::FilePath::CharType kSwReporterExeName[] =
 
 // SwReporter is normally only registered in official builds.  However, to
 // enable testing in chromium build bots, test code can set this to true.
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 bool is_sw_reporter_enabled = true;
 #else
 bool is_sw_reporter_enabled = false;
@@ -96,14 +98,14 @@ void SRTHasCompleted(SRTCompleted value) {
 }
 
 void ReportUploadsWithUma(const base::string16& upload_results) {
-  base::WStringTokenizer tokenizer(upload_results, L";");
+  base::String16Tokenizer tokenizer(upload_results, STRING16_LITERAL(";"));
   int failure_count = 0;
   int success_count = 0;
   int longest_failure_run = 0;
   int current_failure_run = 0;
   bool last_result = false;
   while (tokenizer.GetNext()) {
-    if (tokenizer.token_piece() == L"0") {
+    if (tokenizer.token_piece() == STRING16_LITERAL("0")) {
       ++failure_count;
       ++current_failure_run;
       last_result = false;
@@ -414,10 +416,9 @@ void RegisterSwReporterComponent(ComponentUpdateService* cus) {
   // Once the component is ready and browser startup is complete, run
   // |safe_browsing::OnSwReporterReady|.
   auto lambda = [](safe_browsing::SwReporterInvocationSequence&& invocations) {
-    content::BrowserThread::PostAfterStartupTask(
+    base::PostTask(
         FROM_HERE,
-        base::CreateSingleThreadTaskRunnerWithTraits(
-            {content::BrowserThread::UI}),
+        {content::BrowserThread::UI, base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
             &safe_browsing::ChromeCleanerController::OnSwReporterReady,
             base::Unretained(

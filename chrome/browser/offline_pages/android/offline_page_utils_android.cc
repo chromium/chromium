@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/offline_pages/android/downloads/offline_page_download_bridge.h"
 #include "chrome/browser/offline_pages/android/downloads/offline_page_infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -28,9 +29,9 @@ bool OfflinePageUtils::GetTabId(content::WebContents* web_contents,
 // static
 bool OfflinePageUtils::CurrentlyShownInCustomTab(
     content::WebContents* web_contents) {
-  TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents);
-  DCHECK(tab_android);
-  return tab_android && tab_android->IsCurrentlyACustomTab();
+  auto* delegate = static_cast<::android::TabWebContentsDelegateAndroid*>(
+      web_contents->GetDelegate());
+  return delegate && delegate->IsCustomTab();
 }
 
 // static

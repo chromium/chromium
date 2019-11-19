@@ -16,7 +16,7 @@
 #include "media/filters/ffmpeg_demuxer.h"
 #include "media/filters/ffmpeg_glue.h"
 
-#if BUILDFLAG(ENABLE_HEVC_DEMUXING)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #include "media/filters/ffmpeg_h265_to_annex_b_bitstream_converter.h"
 #endif
 
@@ -29,7 +29,7 @@
 namespace media {
 
 VideoFrameExtractor::VideoFrameExtractor(DataSource* data_source)
-    : data_source_(data_source), video_stream_index_(-1), weak_factory_(this) {}
+    : data_source_(data_source), video_stream_index_(-1) {}
 
 VideoFrameExtractor::~VideoFrameExtractor() = default;
 
@@ -98,7 +98,7 @@ void VideoFrameExtractor::ConvertPacket(AVPacket* packet) {
       bitstream_converter_.reset(
           new FFmpegH264ToAnnexBBitstreamConverter(video_stream_->codecpar));
       break;
-#if BUILDFLAG(ENABLE_HEVC_DEMUXING)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     case AV_CODEC_ID_HEVC:
       bitstream_converter_.reset(
           new FFmpegH265ToAnnexBBitstreamConverter(video_stream_->codecpar));

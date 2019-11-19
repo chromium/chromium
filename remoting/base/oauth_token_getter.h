@@ -34,6 +34,10 @@ class OAuthTokenGetter {
                                        const std::string& refresh_token)>
       CredentialsUpdatedCallback;
 
+  // Called if the current refresh token is exchanged for one with new scopes.
+  typedef base::RepeatingCallback<void(const std::string& refresh_token)>
+      RefreshTokenUpdatedCallback;
+
   // This structure contains information required to perform authorization
   // with the authorization server.
   struct OAuthAuthorizationCredentials {

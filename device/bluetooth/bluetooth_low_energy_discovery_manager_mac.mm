@@ -104,7 +104,6 @@ BluetoothLowEnergyDiscoveryManagerMac::Create(Observer* observer) {
 BluetoothLowEnergyDiscoveryManagerMac::BluetoothLowEnergyDiscoveryManagerMac(
     Observer* observer)
     : observer_(observer) {
-  DCHECK(BluetoothAdapterMac::IsLowEnergyAvailable());
   discovering_ = false;
 }
 

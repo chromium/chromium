@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEB_TEST_SUPPORT_H_
 
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -42,8 +42,6 @@ class WebTestSupport {
  public:
   PLATFORM_EXPORT static bool IsRunningWebTest();
   PLATFORM_EXPORT static void SetIsRunningWebTest(bool);
-  PLATFORM_EXPORT static bool IsMockThemeEnabledForTest();
-  PLATFORM_EXPORT static void SetMockThemeEnabledForTest(bool);
   PLATFORM_EXPORT static bool IsFontAntialiasingEnabledForTest();
   PLATFORM_EXPORT static void SetFontAntialiasingEnabledForTest(bool);
   PLATFORM_EXPORT static bool IsTextSubpixelPositioningAllowedForTest();

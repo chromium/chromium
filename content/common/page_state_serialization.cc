@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <utility>
 
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
@@ -14,6 +15,7 @@
 #include "build/build_config.h"
 #include "content/common/page_state.mojom.h"
 #include "content/common/unique_name_helper.h"
+#include "content/public/common/referrer.h"
 #include "ipc/ipc_message_utils.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
@@ -21,7 +23,7 @@
 #include "third_party/blink/public/platform/web_history_scroll_restoration_type.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/geometry/mojo/geometry_struct_traits.h"
+#include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace content {
@@ -205,6 +207,7 @@ struct SerializeObject {
 // 25: Limit the length of unique names: https://crbug.com/626202
 // 26: Switch to mojo-based serialization.
 // 27: Add serialized scroll anchor to FrameState.
+// 28: Add initiator origin to FrameState.
 // NOTE: If the version is -1, then the pickle contains only a URL string.
 // See ReadPageState.
 //
@@ -212,7 +215,7 @@ const int kMinVersion = 11;
 // NOTE: When changing the version, please add a backwards compatibility test.
 // See PageStateSerializationTest.DumpExpectedPageStateForBackwardsCompat for
 // instructions on how to generate the new test case.
-const int kCurrentVersion = 27;
+const int kCurrentVersion = 28;
 
 // A bunch of convenience functions to write to/read from SerializeObjects.  The
 // de-serializers assume the input data will be in the correct format and fall
@@ -464,7 +467,7 @@ void ReadResourceRequestBody(
         std::string blob_uuid = ReadStdString(obj);
         AppendBlobToRequestBody(request_body, blob_uuid);
       } else {
-        ReadGURL(obj); // Skip the obsolete blob url value.
+        ReadGURL(obj);  // Skip the obsolete blob url value.
       }
     }
   }
@@ -544,14 +547,13 @@ void ReadFrameState(
   state->item_sequence_number = ReadInteger64(obj);
   state->document_sequence_number = ReadInteger64(obj);
   if (obj->version >= 21 && obj->version < 23)
-    ReadInteger64(obj); // Skip obsolete frame sequence number.
+    ReadInteger64(obj);  // Skip obsolete frame sequence number.
 
   if (obj->version >= 17 && obj->version < 19)
-    ReadInteger64(obj); // Skip obsolete target frame id number.
+    ReadInteger64(obj);  // Skip obsolete target frame id number.
 
   if (obj->version >= 18) {
-    state->referrer_policy =
-        static_cast<network::mojom::ReferrerPolicy>(ReadInteger(obj));
+    state->referrer_policy = Referrer::ConvertToPolicy(ReadInteger(obj));
   }
 
   if (obj->version >= 20 && state->did_save_scroll_or_scale_state) {
@@ -773,6 +775,8 @@ void WriteFrameState(const ExplodedFrameState& state,
                      history::mojom::FrameState* frame) {
   frame->url_string = state.url_string;
   frame->referrer = state.referrer;
+  if (state.initiator_origin.has_value())
+    frame->initiator_origin = state.initiator_origin.value().Serialize();
   frame->target = state.target;
   frame->state_object = state.state_object;
 
@@ -823,6 +827,11 @@ void ReadFrameState(history::mojom::FrameState* frame,
                     ExplodedFrameState* state) {
   state->url_string = frame->url_string;
   state->referrer = frame->referrer;
+  if (frame->initiator_origin.has_value()) {
+    state->initiator_origin =
+        url::Origin::Create(GURL(frame->initiator_origin.value()));
+  }
+
   state->target = frame->target;
   state->state_object = frame->state_object;
 
@@ -1023,6 +1032,7 @@ void EncodePageState(const ExplodedPageState& exploded, std::string* encoded) {
   obj.version = kCurrentVersion;
   WriteMojoPageState(exploded, &obj);
   *encoded = obj.GetAsString();
+  DCHECK(!encoded->empty());
 }
 
 void LegacyEncodePageStateForTesting(const ExplodedPageState& exploded,

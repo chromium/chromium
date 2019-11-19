@@ -6,6 +6,8 @@
 
 """A script to parse and dump localized strings in resource.arsc files."""
 
+from __future__ import print_function
+
 import argparse
 import collections
 import contextlib
@@ -207,13 +209,13 @@ class ResourceStringValues(object):
       else:
         # Sanity check: the resource name should be the same for all chunks.
         # Resource ID is redefined with a different name!!
-        print 'WARNING: Resource key ignored (%s, should be %s)' % (
-            res_name, self.res_name)
+        print('WARNING: Resource key ignored (%s, should be %s)' %
+              (res_name, self.res_name))
 
     if self.res_values.setdefault(res_config, res_value) is not res_value:
-      print 'WARNING: Duplicate value definition for [config %s]: %s ' \
+      print('WARNING: Duplicate value definition for [config %s]: %s ' \
             '(already has %s)' % (
-                res_config, res_value, self.res_values[res_config])
+                res_config, res_value, self.res_values[res_config]))
 
   def ToStringList(self, res_id):
     """Convert entry to string list for human-friendly output."""

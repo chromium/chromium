@@ -7,6 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/post_task.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
@@ -20,17 +23,19 @@ ResolveHostClientImpl::ResolveHostClientImpl(
     const GURL& url,
     ResolveHostCallback callback,
     network::mojom::NetworkContext* network_context)
-    : binding_(this), callback_(std::move(callback)) {
-  network::mojom::ResolveHostClientPtr resolve_host_client_ptr;
-  binding_.Bind(mojo::MakeRequest(&resolve_host_client_ptr));
+    : callback_(std::move(callback)) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   network::mojom::ResolveHostParametersPtr parameters =
       network::mojom::ResolveHostParameters::New();
   parameters->initial_priority = net::RequestPriority::IDLE;
   parameters->is_speculative = true;
-  network_context->ResolveHost(net::HostPortPair::FromURL(url),
-                               std::move(parameters),
-                               std::move(resolve_host_client_ptr));
-  binding_.set_connection_error_handler(base::BindOnce(
+  network_context->ResolveHost(
+      net::HostPortPair::FromURL(url), std::move(parameters),
+      receiver_.BindNewPipeAndPassRemote(base::CreateSingleThreadTaskRunner(
+          {content::BrowserThread::UI,
+           content::BrowserTaskType::kPreconnect})));
+  receiver_.set_disconnect_handler(base::BindOnce(
       &ResolveHostClientImpl::OnConnectionError, base::Unretained(this)));
 }
 

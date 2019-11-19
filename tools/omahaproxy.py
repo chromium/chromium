@@ -9,6 +9,8 @@ Scrapes Chrome channel information and prints out the requested nugget of
 information.
 """
 
+from __future__ import print_function
+
 import json
 import optparse
 import os
@@ -23,7 +25,7 @@ def main():
   try:
     data = json.load(urllib.urlopen(URL))
   except Exception as e:
-    print 'Error: could not load %s\n\n%s' % (URL, str(e))
+    print('Error: could not load %s\n\n%s' % (URL, str(e)))
     return 1
 
   # Iterate to find out valid values for OS, channel, and field options.
@@ -79,11 +81,11 @@ def main():
       if opts.field not in version:
         continue
 
-      print version[opts.field]
+      print(version[opts.field])
       return 0
 
-  print 'Error: unable to find %s for Chrome %s %s.' % (
-      opts.field, opts.os, opts.channel)
+  print('Error: unable to find %s for Chrome %s %s.' % (opts.field, opts.os,
+                                                        opts.channel))
   return 1
 
 if __name__ == '__main__':

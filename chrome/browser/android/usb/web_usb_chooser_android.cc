@@ -7,12 +7,12 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "chrome/browser/ui/android/usb_chooser_dialog_android.h"
+#include "chrome/browser/ui/android/device_dialog/usb_chooser_dialog_android.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
 
 WebUsbChooserAndroid::WebUsbChooserAndroid(
     content::RenderFrameHost* render_frame_host)
-    : WebUsbChooser(render_frame_host), weak_factory_(this) {}
+    : WebUsbChooser(render_frame_host) {}
 
 WebUsbChooserAndroid::~WebUsbChooserAndroid() {}
 

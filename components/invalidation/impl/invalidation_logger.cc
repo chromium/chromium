@@ -54,7 +54,7 @@ void InvalidationLogger::EmitState() {
 }
 
 void InvalidationLogger::OnUpdateTopics(
-    std::map<std::string, syncer::TopicSet> updated_topics) {
+    std::map<std::string, syncer::Topics> updated_topics) {
   for (const auto& updated_topic : updated_topics) {
     latest_ids_[updated_topic.first] =
         syncer::ConvertTopicsToIds(updated_topic.second);

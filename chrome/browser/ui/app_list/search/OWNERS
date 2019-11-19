@@ -1,0 +1,9 @@
+# Mainly for ML search-ranking purposes, see app_list/OWNERS for other reviews.
+per-file search_controller*=jiameng@chromium.org
+per-file mixer*=jiameng@chromium.org
+per-file zero_state_file_provider*=jiameng@chromium.org
+per-file zero_state_file_result*=jiameng@chromium.org
+per-file drive_quick_access_provider*=jiameng@chromium.org
+per-file drive_quick_access_result*=jiameng@chromium.org
+
+# COMPONENT: UI>Shell>Launcher

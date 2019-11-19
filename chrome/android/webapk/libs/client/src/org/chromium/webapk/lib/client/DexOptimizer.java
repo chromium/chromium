@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
  * Note: This class is copied (mostly) verbatim from DexOptUtils in GMSCore.
  */
 public class DexOptimizer {
-    private static final String TAG = "cr_DexOptimzer";
+    private static final String TAG = "DexOptimzer";
 
     private static final String DEX_SUFFIX = ".dex";
     private static final String ODEX_SUFFIX = ".odex";

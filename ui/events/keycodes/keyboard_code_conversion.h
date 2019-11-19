@@ -107,6 +107,10 @@ EVENTS_BASE_EXPORT KeyboardCode DomCodeToUsLayoutKeyboardCode(DomCode dom_code);
 EVENTS_BASE_EXPORT KeyboardCode
 DomCodeToUsLayoutNonLocatedKeyboardCode(DomCode dom_code);
 
+// Returns the ui::EventFlags value associated with a modifier key,
+// or 0 (EF_NONE) if the key is not a modifier.
+EVENTS_BASE_EXPORT int ModifierDomKeyToEventFlag(DomKey key);
+
 }  // namespace ui
 
 #endif  // UI_EVENTS_KEYCODES_KEYBOARD_CODE_CONVERSION_H_

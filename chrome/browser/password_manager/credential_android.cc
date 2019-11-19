@@ -6,8 +6,8 @@
 
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/android/chrome_jni_headers/Credential_jni.h"
 #include "chrome/grit/generated_resources.h"
-#include "jni/Credential_jni.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 

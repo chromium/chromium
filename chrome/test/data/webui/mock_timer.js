@@ -2,81 +2,78 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Overrides timeout and interval callbacks to mock timing behavior.
- * @constructor
- */
-function MockTimer() {
-  /**
-   * Default versions of the timing functions.
-   * @type {Object<string, !Function>}
-   * @private
-   */
-  this.originals_ = [];
+/** Overrides timeout and interval callbacks to mock timing behavior. */
+/* #export */ class MockTimer {
+  constructor() {
+    /**
+     * Default versions of the timing functions.
+     * @type {Object<string, !Function>}
+     * @private
+     */
+    this.originals_ = [];
 
-  /**
-   * Key to assign on the next creation of a scheduled timer. Each call to
-   * setTimeout or setInterval returns a unique key that can be used for
-   * clearing the timer.
-   * @type {number}
-   * @private
-   */
-  this.nextTimerKey_ = 1;
+    /**
+     * Key to assign on the next creation of a scheduled timer. Each call to
+     * setTimeout or setInterval returns a unique key that can be used for
+     * clearing the timer.
+     * @type {number}
+     * @private
+     */
+    this.nextTimerKey_ = 1;
 
-  /**
-   * Details for active timers.
-   * @type {Array<{callback: Function,
-   *                delay: number,
-   *                key: number,
-   *                repeats: boolean}>}
-   * @private
-   */
-  this.timers_ = [];
+    /**
+     * Details for active timers.
+     * @type {Array<{callback: Function,
+     *                delay: number,
+     *                key: number,
+     *                repeats: boolean}>}
+     * @private
+     */
+    this.timers_ = [];
 
-  /**
-   * List of scheduled tasks.
-   * @type {Array<{when: number, key: number}>}
-   * @private
-   */
-  this.schedule_ = [];
+    /**
+     * List of scheduled tasks.
+     * @type {Array<{when: number, key: number}>}
+     * @private
+     */
+    this.schedule_ = [];
 
-  /**
-   * Virtual elapsed time in milliseconds.
-   * @type {number}
-   * @private
-   */
-  this.now_ = 0;
+    /**
+     * Virtual elapsed time in milliseconds.
+     * @type {number}
+     * @private
+     */
+    this.now_ = 0;
 
-  /**
-   * Used to control when scheduled callbacks fire.  Calling the 'tick' method
-   * inflates this parameter and triggers callbacks.
-   * @type {number}
-   * @private
-   */
-  this.until_ = 0;
-}
+    /**
+     * Used to control when scheduled callbacks fire.  Calling the 'tick' method
+     * inflates this parameter and triggers callbacks.
+     * @type {number}
+     * @private
+     */
+    this.until_ = 0;
+  }
 
-MockTimer.prototype = {
   /**
    * Replaces built-in functions for scheduled callbacks.
    */
-  install: function() {
+  install() {
     this.replace_('setTimeout', this.setTimeout_.bind(this));
     this.replace_('clearTimeout', this.clearTimeout_.bind(this));
     this.replace_('setInterval', this.setInterval_.bind(this));
     this.replace_('clearInterval', this.clearInterval_.bind(this));
-  },
+  }
 
   /**
    * Restores default behavior for scheduling callbacks.
    */
-  uninstall: function() {
+  uninstall() {
     if (this.originals_) {
       for (var key in this.originals_) {
         window[key] = this.originals_[key];
       }
     }
-  },
+  }
 
   /**
    * Overrides a global function.
@@ -84,10 +81,10 @@ MockTimer.prototype = {
    * @param {!Function} replacementFunction The function override.
    * @private
    */
-  replace_: function(functionName, replacementFunction) {
+  replace_(functionName, replacementFunction) {
     this.originals_[functionName] = window[functionName];
     window[functionName] = replacementFunction;
-  },
+  }
 
   /**
    * Creates a virtual timer.
@@ -97,14 +94,14 @@ MockTimer.prototype = {
    * @return {number} Idetifier for the timer.
    * @private
    */
-  createTimer_: function(callback, delayInMs, repeats) {
+  createTimer_(callback, delayInMs, repeats) {
     var key = this.nextTimerKey_++;
     var task =
         {callback: callback, delay: delayInMs, key: key, repeats: repeats};
     this.timers_[key] = task;
     this.scheduleTask_(task);
     return key;
-  },
+  }
 
   /**
    * Schedules a callback for execution after a virtual time delay. The tasks
@@ -116,7 +113,7 @@ MockTimer.prototype = {
    *          repeats: boolean}} details The timer details.
    * @private
    */
-  scheduleTask_: function(details) {
+  scheduleTask_(details) {
     var key = details.key;
     var when = this.now_ + details.delay;
     var index = this.schedule_.length;
@@ -124,7 +121,7 @@ MockTimer.prototype = {
       index--;
     }
     this.schedule_.splice(index, 0, {when: when, key: key});
-  },
+  }
 
   /**
    * Override of window.setInterval.
@@ -132,9 +129,9 @@ MockTimer.prototype = {
    * @param {number} intervalInMs The repeat interval.
    * @private
    */
-  setInterval_: function(callback, intervalInMs) {
+  setInterval_(callback, intervalInMs) {
     return this.createTimer_(callback, intervalInMs, true);
-  },
+  }
 
   /**
    * Override of window.clearInterval.
@@ -142,9 +139,9 @@ MockTimer.prototype = {
    *     setInterval.
    * @private
    */
-  clearInterval_: function(key) {
+  clearInterval_(key) {
     this.timers_[key] = undefined;
-  },
+  }
 
   /**
    * Override of window.setTimeout.
@@ -152,9 +149,9 @@ MockTimer.prototype = {
    * @param {number} delayInMs The scheduled delay.
    * @private
    */
-  setTimeout_: function(callback, delayInMs) {
+  setTimeout_(callback, delayInMs) {
     return this.createTimer_(callback, delayInMs, false);
-  },
+  }
 
   /**
    * Override of window.clearTimeout.
@@ -162,26 +159,26 @@ MockTimer.prototype = {
    *     from setTimeout.
    * @private
    */
-  clearTimeout_: function(key) {
+  clearTimeout_(key) {
     this.timers_[key] = undefined;
-  },
+  }
 
   /**
    * Simulates passage of time, triggering any scheduled callbacks whose timer
    * has elapsed.
    * @param {number} elapsedMs The simulated elapsed time in milliseconds.
    */
-  tick: function(elapsedMs) {
+  tick(elapsedMs) {
     this.until_ += elapsedMs;
     this.fireElapsedCallbacks_();
-  },
+  }
 
   /**
    * Triggers any callbacks that should have fired based in the simulated
    * timing.
    * @private
    */
-  fireElapsedCallbacks_: function() {
+  fireElapsedCallbacks_() {
     while (this.schedule_.length > 0) {
       var when = this.schedule_[this.schedule_.length - 1].when;
       if (when > this.until_) {
@@ -203,6 +200,5 @@ MockTimer.prototype = {
       }
     }
     this.now_ = this.until_;
-  },
-
-};
+  }
+}

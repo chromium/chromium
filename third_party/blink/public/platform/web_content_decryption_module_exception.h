@@ -13,10 +13,6 @@ enum WebContentDecryptionModuleException {
   kWebContentDecryptionModuleExceptionNotSupportedError,
   kWebContentDecryptionModuleExceptionInvalidStateError,
   kWebContentDecryptionModuleExceptionQuotaExceededError,
-  // TODO(jrummell): UnknownError is not part of the spec, but CDMs can
-  // generate other error codes (in addition to the 4 listed above). Remove
-  // UnknownError when the CDMs no longer use other error codes.
-  kWebContentDecryptionModuleExceptionUnknownError
 };
 
 }  // namespace blink

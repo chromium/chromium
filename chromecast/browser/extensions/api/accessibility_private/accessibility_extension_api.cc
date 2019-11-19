@@ -37,38 +37,43 @@ AccessibilityPrivateSetNativeAccessibilityEnabledFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
-AccessibilityPrivateSetFocusRingFunction::Run() {
+AccessibilityPrivateSetFocusRingsFunction::Run() {
+  std::unique_ptr<accessibility_private::SetFocusRings::Params> params(
+      accessibility_private::SetFocusRings::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
   auto* accessibility_manager =
       chromecast::shell::CastBrowserProcess::GetInstance()
           ->accessibility_manager();
 
-  std::unique_ptr<accessibility_private::SetFocusRing::Params> params(
-      accessibility_private::SetFocusRing::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
+  for (const accessibility_private::FocusRingInfo& focus_ring_info :
+       params->focus_rings) {
+    std::vector<gfx::Rect> rects;
+    for (const accessibility_private::ScreenRect& rect :
+         focus_ring_info.rects) {
+      rects.push_back(gfx::Rect(rect.left, rect.top, rect.width, rect.height));
+    }
 
-  std::vector<gfx::Rect> rects;
-  for (const accessibility_private::ScreenRect& rect : params->rects) {
-    rects.push_back(gfx::Rect(rect.left, rect.top, rect.width, rect.height));
-  }
+    if (focus_ring_info.color.length() > 0) {
+      SkColor color;
+      if (!extensions::image_util::ParseHexColorString(focus_ring_info.color,
+                                                       &color))
+        return RespondNow(Error("Could not parse hex color"));
+      accessibility_manager->SetFocusRingColor(color);
+    } else {
+      accessibility_manager->ResetFocusRingColor();
+    }
 
-  if (params->color) {
-    SkColor color;
-    if (!extensions::image_util::ParseHexColorString(*(params->color), &color))
-      return RespondNow(Error("Could not parse hex color"));
-    accessibility_manager->SetFocusRingColor(color);
-  } else {
-    accessibility_manager->ResetFocusRingColor();
-  }
+    // Move the visible focus ring to cover all of these rects.
+    accessibility_manager->SetFocusRing(
+        rects, chromecast::FocusRingBehavior::PERSIST_FOCUS_RING);
 
-  // Move the visible focus ring to cover all of these rects.
-  accessibility_manager->SetFocusRing(
-      rects, chromecast::FocusRingBehavior::PERSIST_FOCUS_RING);
-
-  // Also update the touch exploration controller so that synthesized
-  // touch events are anchored within the focused object.
-  if (!rects.empty()) {
-    accessibility_manager->SetTouchAccessibilityAnchorPoint(
-        rects[0].CenterPoint());
+    // Also update the touch exploration controller so that synthesized
+    // touch events are anchored within the focused object.
+    if (!rects.empty()) {
+      accessibility_manager->SetTouchAccessibilityAnchorPoint(
+          rects[0].CenterPoint());
+    }
   }
 
   return RespondNow(NoArguments());
@@ -108,12 +113,6 @@ AccessibilityPrivateSetKeyboardListenerFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateDarkenScreenFunction::Run() {
   LOG(ERROR) << "AccessibilityPrivateDarkenScreenFunction";
-  return RespondNow(Error(kErrorNotSupported));
-}
-
-ExtensionFunction::ResponseAction
-AccessibilityPrivateSetSwitchAccessKeysFunction::Run() {
-  LOG(ERROR) << "AccessibilityPrivateSetSwitchAccessKeysFunction";
   return RespondNow(Error(kErrorNotSupported));
 }
 

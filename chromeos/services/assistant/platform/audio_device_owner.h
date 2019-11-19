@@ -15,8 +15,9 @@
 #include "media/base/audio_block_fifo.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/audio/public/cpp/output_device.h"
-#include "services/service_manager/public/cpp/connector.h"
+#include "services/audio/public/mojom/stream_factory.mojom.h"
 
 namespace chromeos {
 namespace assistant {
@@ -30,9 +31,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioDeviceOwner
       const std::string& device_id);
   ~AudioDeviceOwner() override;
 
-  void StartOnMainThread(assistant_client::AudioOutput::Delegate* delegate,
-                         service_manager::Connector* connector,
-                         const assistant_client::OutputStreamFormat& format);
+  void StartOnMainThread(
+      assistant_client::AudioOutput::Delegate* delegate,
+      mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
+      const assistant_client::OutputStreamFormat& format);
 
   void StopOnBackgroundThread();
 
@@ -48,7 +50,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioDeviceOwner
 
  private:
   void StartDeviceOnBackgroundThread(
-      std::unique_ptr<service_manager::Connector> connector);
+      mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory);
 
   // Requests assistant to fill buffer with more data.
   void ScheduleFillLocked(const base::TimeTicks& time);

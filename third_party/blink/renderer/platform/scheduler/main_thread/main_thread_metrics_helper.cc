@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "services/resource_coordinator/public/cpp/resource_coordinator_features.h"
 #include "third_party/blink/public/platform/scheduler/web_renderer_process_type.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
@@ -29,8 +28,19 @@ namespace scheduler {
 #define DURATION_PER_TASK_TYPE_METRIC_NAME \
   "RendererScheduler.TaskDurationPerTaskType2"
 #define COUNT_PER_FRAME_METRIC_NAME "RendererScheduler.TaskCountPerFrameType"
+#define COUNT_PER_FRAME_METRIC_NAME_WITH_SAFEPOINT \
+  "RendererScheduler.TaskCountPerFrameType.HasSafePoint"
 #define DURATION_PER_TASK_USE_CASE_NAME \
   "RendererScheduler.TaskDurationPerUseCase2"
+#define QUEUEING_TIME_PER_QUEUE_TYPE_METRIC_NAME \
+  "RendererScheduler.QueueingDurationPerQueueType"
+
+// Same as UMA_HISTOGRAM_TIMES but for a broader view of this metric we end
+// at 1 minute instead of 10 seconds.
+#define QUEUEING_TIME_HISTOGRAM(name, sample)                               \
+  UMA_HISTOGRAM_CUSTOM_TIMES(QUEUEING_TIME_PER_QUEUE_TYPE_METRIC_NAME name, \
+                             sample, base::TimeDelta::FromMilliseconds(1),  \
+                             base::TimeDelta::FromMinutes(1), 50)
 
 enum class MainThreadTaskLoadState { kLow, kHigh, kUnknown };
 
@@ -40,6 +50,9 @@ constexpr base::TimeDelta kThreadLoadTrackerReportingInterval =
     base::TimeDelta::FromSeconds(1);
 constexpr base::TimeDelta kLongIdlePeriodDiscardingThreshold =
     base::TimeDelta::FromMinutes(3);
+
+// Main thread load percentage that is considered low.
+constexpr int kMainThreadTaskLoadLowPercentage = 25;
 
 }  // namespace
 
@@ -85,11 +98,9 @@ MainThreadMetricsHelper::MainThreadMetricsHelper(
     bool has_cpu_timing_for_each_task,
     base::TimeTicks now,
     bool renderer_backgrounded)
-    : MetricsHelper(WebThreadType::kMainThread, has_cpu_timing_for_each_task),
+    : MetricsHelper(ThreadType::kMainThread, has_cpu_timing_for_each_task),
       main_thread_scheduler_(main_thread_scheduler),
       renderer_shutting_down_(false),
-      is_page_almost_idle_signal_enabled_(
-          ::resource_coordinator::IsPageAlmostIdleSignalEnabled()),
       main_thread_load_tracker_(
           now,
           base::BindRepeating(
@@ -128,7 +139,9 @@ MainThreadMetricsHelper::MainThreadMetricsHelper(
       total_task_time_reporter_(
           "Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread.Positive",
           "Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread.Negative"),
-      main_thread_task_load_state_(MainThreadTaskLoadState::kUnknown) {
+      main_thread_task_load_state_(MainThreadTaskLoadState::kUnknown),
+      current_task_slice_start_time_(now),
+      safepoints_in_current_toplevel_task_count_(0) {
   main_thread_load_tracker_.Resume(now);
   if (renderer_backgrounded) {
     background_main_thread_load_tracker_.Resume(now);
@@ -192,6 +205,37 @@ base::TimeDelta DurationOfIntervalOverlap(base::TimeTicks start1,
 }
 
 }  // namespace
+
+void MainThreadMetricsHelper::OnSafepointEntered(base::TimeTicks now) {
+  current_task_slice_start_time_ = now;
+}
+
+void MainThreadMetricsHelper::OnSafepointExited(base::TimeTicks now) {
+  safepoints_in_current_toplevel_task_count_++;
+  RecordTaskSliceMetrics(now);
+}
+
+void MainThreadMetricsHelper::RecordTaskSliceMetrics(base::TimeTicks now) {
+  UMA_HISTOGRAM_TIMES("RendererScheduler.TasksWithSafepoints.TaskSliceTime",
+                      now - current_task_slice_start_time_);
+}
+
+void MainThreadMetricsHelper::RecordMetricsForTasksWithSafepoints(
+    const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
+  if (safepoints_in_current_toplevel_task_count_ == 0)
+    return;
+
+  RecordTaskSliceMetrics(task_timing.end_time());
+
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "RendererScheduler.TasksWithSafepoints.TaskTime",
+      task_timing.wall_duration(), base::TimeDelta::FromMicroseconds(1),
+      base::TimeDelta::FromSeconds(1), 50);
+  UMA_HISTOGRAM_COUNTS_100(
+      "RendererScheduler.TasksWithSafepoints.SafepointCount",
+      safepoints_in_current_toplevel_task_count_);
+  safepoints_in_current_toplevel_task_count_ = 0;
+}
 
 void MainThreadMetricsHelper::RecordTaskMetrics(
     MainThreadTaskQueue* queue,
@@ -398,6 +442,31 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
                      task_timing.end_time())));
 
     foreground_per_task_type_duration_reporter_.RecordTask(task_type, duration);
+
+    if (!task.queue_time.is_null()) {
+      switch (queue_type) {
+        case MainThreadTaskQueue::QueueType::kCompositor: {
+          QUEUEING_TIME_HISTOGRAM(".Compositor",
+                                  task_timing.start_time() - task.queue_time);
+          break;
+        }
+        case MainThreadTaskQueue::QueueType::kInput: {
+          QUEUEING_TIME_HISTOGRAM(".Input",
+                                  task_timing.start_time() - task.queue_time);
+          break;
+        }
+        case MainThreadTaskQueue::QueueType::kFrameLoading:
+        case MainThreadTaskQueue::QueueType::kFrameLoadingControl: {
+          QUEUEING_TIME_HISTOGRAM(".Loading",
+                                  task_timing.start_time() - task.queue_time);
+          break;
+        }
+        default: {
+          QUEUEING_TIME_HISTOGRAM(".Other",
+                                  task_timing.start_time() - task.queue_time);
+        }
+      }
+    }
   }
 
   if (main_thread_scheduler_->main_thread_only().renderer_hidden) {
@@ -438,6 +507,41 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
   if (duration >= base::TimeDelta::FromSeconds(1)) {
     UMA_HISTOGRAM_ENUMERATION(COUNT_PER_FRAME_METRIC_NAME ".LongerThan1s",
                               frame_status, FrameStatus::kCount);
+  }
+
+  if (safepoints_in_current_toplevel_task_count_ > 0) {
+    UMA_HISTOGRAM_ENUMERATION(COUNT_PER_FRAME_METRIC_NAME_WITH_SAFEPOINT,
+                              frame_status, FrameStatus::kCount);
+    if (duration >= base::TimeDelta::FromMilliseconds(16)) {
+      UMA_HISTOGRAM_ENUMERATION(COUNT_PER_FRAME_METRIC_NAME_WITH_SAFEPOINT
+                                ".LongerThan16ms",
+                                frame_status, FrameStatus::kCount);
+    }
+
+    if (duration >= base::TimeDelta::FromMilliseconds(50)) {
+      UMA_HISTOGRAM_ENUMERATION(COUNT_PER_FRAME_METRIC_NAME_WITH_SAFEPOINT
+                                ".LongerThan50ms",
+                                frame_status, FrameStatus::kCount);
+    }
+
+    if (duration >= base::TimeDelta::FromMilliseconds(100)) {
+      UMA_HISTOGRAM_ENUMERATION(COUNT_PER_FRAME_METRIC_NAME_WITH_SAFEPOINT
+                                ".LongerThan100ms",
+                                frame_status, FrameStatus::kCount);
+    }
+
+    if (duration >= base::TimeDelta::FromMilliseconds(150)) {
+      UMA_HISTOGRAM_ENUMERATION(COUNT_PER_FRAME_METRIC_NAME_WITH_SAFEPOINT
+                                ".LongerThan150ms",
+                                frame_status, FrameStatus::kCount);
+    }
+
+    if (duration >= base::TimeDelta::FromSeconds(1)) {
+      UMA_HISTOGRAM_ENUMERATION(COUNT_PER_FRAME_METRIC_NAME_WITH_SAFEPOINT
+                                ".LongerThan1s",
+                                frame_status, FrameStatus::kCount);
+    }
+    RecordMetricsForTasksWithSafepoints(task_timing);
   }
 
   UseCase use_case =
@@ -563,9 +667,6 @@ void MainThreadMetricsHelper::RecordBackgroundMainThreadTaskLoad(
 
 void MainThreadMetricsHelper::ReportLowThreadLoadForPageAlmostIdleSignal(
     int load_percentage) {
-  if (!is_page_almost_idle_signal_enabled_)
-    return;
-
   // Avoid sending IPCs when the renderer is shutting down as this wreaks havoc
   // in test harnesses. These messages aren't needed in production code either
   // as the endpoint receiving them dies shortly after and does nothing with
@@ -573,18 +674,18 @@ void MainThreadMetricsHelper::ReportLowThreadLoadForPageAlmostIdleSignal(
   if (renderer_shutting_down_)
     return;
 
-  static const int main_thread_task_load_low_threshold =
-      ::resource_coordinator::GetMainThreadTaskLoadLowThreshold();
-
-  // Avoid sending duplicate IPCs when the state doesn't change.
-  if (load_percentage <= main_thread_task_load_low_threshold &&
-      main_thread_task_load_state_ != MainThreadTaskLoadState::kLow) {
-    RendererResourceCoordinator::Get().SetMainThreadTaskLoadIsLow(true);
-    main_thread_task_load_state_ = MainThreadTaskLoadState::kLow;
-  } else if (load_percentage > main_thread_task_load_low_threshold &&
-             main_thread_task_load_state_ != MainThreadTaskLoadState::kHigh) {
-    RendererResourceCoordinator::Get().SetMainThreadTaskLoadIsLow(false);
-    main_thread_task_load_state_ = MainThreadTaskLoadState::kHigh;
+  if (auto* renderer_resource_coordinator =
+          RendererResourceCoordinator::Get()) {
+    // Avoid sending duplicate IPCs when the state doesn't change.
+    if (load_percentage <= kMainThreadTaskLoadLowPercentage &&
+        main_thread_task_load_state_ != MainThreadTaskLoadState::kLow) {
+      renderer_resource_coordinator->SetMainThreadTaskLoadIsLow(true);
+      main_thread_task_load_state_ = MainThreadTaskLoadState::kLow;
+    } else if (load_percentage > kMainThreadTaskLoadLowPercentage &&
+               main_thread_task_load_state_ != MainThreadTaskLoadState::kHigh) {
+      renderer_resource_coordinator->SetMainThreadTaskLoadIsLow(false);
+      main_thread_task_load_state_ = MainThreadTaskLoadState::kHigh;
+    }
   }
 }
 

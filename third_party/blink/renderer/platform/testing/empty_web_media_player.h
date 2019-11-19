@@ -28,6 +28,7 @@ class EmptyWebMediaPlayer : public WebMediaPlayer {
   void Seek(double seconds) override {}
   void SetRate(double) override {}
   void SetVolume(double) override {}
+  void SetLatencyHint(double) override {}
   void OnRequestPictureInPicture() override {}
   SurfaceLayerMode GetVideoSurfaceLayerMode() const override {
     return SurfaceLayerMode::kNever;
@@ -35,7 +36,7 @@ class EmptyWebMediaPlayer : public WebMediaPlayer {
   WebTimeRanges Buffered() const override;
   WebTimeRanges Seekable() const override;
   void SetSinkId(const WebString& sink_id,
-                 std::unique_ptr<WebSetSinkIdCallbacks>) override {}
+                 WebSetSinkIdCompleteCallback) override {}
   bool HasVideo() const override { return false; }
   bool HasAudio() const override { return false; }
   WebSize NaturalSize() const override;
@@ -61,6 +62,8 @@ class EmptyWebMediaPlayer : public WebMediaPlayer {
              cc::PaintFlags&,
              int already_uploaded_id,
              VideoFrameUploadMetadata*) override {}
+  bool HasAvailableVideoFrame() const override { return false; }
+  base::WeakPtr<WebMediaPlayer> AsWeakPtr() override { return nullptr; }
 };
 
 }  // namespace blink

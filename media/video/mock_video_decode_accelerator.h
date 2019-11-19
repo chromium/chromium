@@ -27,7 +27,7 @@ class MockVideoDecodeAccelerator : public VideoDecodeAccelerator {
   ~MockVideoDecodeAccelerator() override;
 
   MOCK_METHOD2(Initialize, bool(const Config& config, Client* client));
-  MOCK_METHOD1(Decode, void(const BitstreamBuffer& bitstream_buffer));
+  MOCK_METHOD1(Decode, void(BitstreamBuffer bitstream_buffer));
   MOCK_METHOD2(Decode,
                void(scoped_refptr<DecoderBuffer> buffer, int32_t bitstream_id));
   MOCK_METHOD1(AssignPictureBuffers,

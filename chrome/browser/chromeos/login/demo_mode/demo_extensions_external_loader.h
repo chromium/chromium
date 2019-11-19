@@ -74,7 +74,7 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
   // The list of app ids that should be cached by |external_cache_|.
   std::vector<std::string> app_ids_;
 
-  base::WeakPtrFactory<DemoExtensionsExternalLoader> weak_ptr_factory_;
+  base::WeakPtrFactory<DemoExtensionsExternalLoader> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DemoExtensionsExternalLoader);
 };

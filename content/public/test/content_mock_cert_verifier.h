@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 
@@ -59,7 +60,7 @@ class ContentMockCertVerifier {
     void EnsureNetworkServiceTestInitialized();
 
     net::MockCertVerifier* verifier_;
-    network::mojom::NetworkServiceTestPtr network_service_test_;
+    mojo::Remote<network::mojom::NetworkServiceTest> network_service_test_;
 
     DISALLOW_COPY_AND_ASSIGN(CertVerifier);
   };

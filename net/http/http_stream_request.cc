@@ -11,6 +11,7 @@
 #include "base/stl_util.h"
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/log/net_log_event_type.h"
+#include "net/spdy/bidirectional_stream_spdy_impl.h"
 #include "net/spdy/spdy_http_stream.h"
 #include "net/spdy/spdy_session.h"
 
@@ -50,24 +51,6 @@ void HttpStreamRequest::Complete(bool was_alpn_negotiated,
   was_alpn_negotiated_ = was_alpn_negotiated;
   negotiated_protocol_ = negotiated_protocol;
   using_spdy_ = using_spdy;
-}
-
-void HttpStreamRequest::OnStreamReadyOnPooledConnection(
-    const SSLConfig& used_ssl_config,
-    const ProxyInfo& used_proxy_info,
-    std::unique_ptr<HttpStream> stream) {
-  DCHECK(completed_);
-  helper_->OnStreamReadyOnPooledConnection(used_ssl_config, used_proxy_info,
-                                           std::move(stream));
-}
-
-void HttpStreamRequest::OnBidirectionalStreamImplReadyOnPooledConnection(
-    const SSLConfig& used_ssl_config,
-    const ProxyInfo& used_proxy_info,
-    std::unique_ptr<BidirectionalStreamImpl> stream) {
-  DCHECK(completed_);
-  helper_->OnBidirectionalStreamImplReadyOnPooledConnection(
-      used_ssl_config, used_proxy_info, std::move(stream));
 }
 
 int HttpStreamRequest::RestartTunnelWithProxyAuth() {

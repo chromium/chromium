@@ -14,6 +14,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/radio_button.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/view.h"
 
@@ -28,8 +29,19 @@ class ScrollViewExample::ScrollableView : public View {
  public:
   ScrollableView() {
     SetColor(SK_ColorRED, SK_ColorCYAN);
-    AddChildView(new LabelButton(NULL, ASCIIToUTF16("Button")));
-    AddChildView(new RadioButton(ASCIIToUTF16("Radio Button"), 0));
+
+    auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
+
+    const auto add_child = [this](std::unique_ptr<View> view) {
+      auto* container = AddChildView(std::make_unique<View>());
+      container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+      container->AddChildView(std::move(view));
+    };
+    add_child(std::make_unique<LabelButton>(nullptr, ASCIIToUTF16("Button")));
+    add_child(std::make_unique<RadioButton>(ASCIIToUTF16("Radio Button"), 0));
+    layout_manager->SetDefaultFlex(1);
   }
 
   void SetColor(SkColor from, SkColor to) {
@@ -37,29 +49,12 @@ class ScrollViewExample::ScrollableView : public View {
     to_color_ = to;
   }
 
-  void PlaceChildY(int index, int y) {
-    View* view = child_at(index);
-    gfx::Size size = view->GetPreferredSize();
-    view->SetBounds(0, y, size.width(), size.height());
-  }
-
-  // View
-  void Layout() override {
-    PlaceChildY(0, 0);
-    PlaceChildY(1, height() / 2);
-    SizeToPreferredSize();
-  }
-
   void OnPaintBackground(gfx::Canvas* canvas) override {
     cc::PaintFlags flags;
-    flags.setShader(
-        gfx::CreateGradientShader(0, height(), from_color_, to_color_));
+    flags.setShader(gfx::CreateGradientShader(
+        gfx::Point(), gfx::Point(0, height()), from_color_, to_color_));
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawRect(GetLocalBounds(), flags);
-  }
-
-  gfx::Size CalculatePreferredSize() const override {
-    return gfx::Size(width(), height());
   }
 
  private:
@@ -72,43 +67,41 @@ class ScrollViewExample::ScrollableView : public View {
 ScrollViewExample::ScrollViewExample() : ExampleBase("Scroll View") {
 }
 
-ScrollViewExample::~ScrollViewExample() {
-}
+ScrollViewExample::~ScrollViewExample() = default;
 
 void ScrollViewExample::CreateExampleView(View* container) {
-  wide_ = new LabelButton(this, ASCIIToUTF16("Wide"));
-  tall_ = new LabelButton(this, ASCIIToUTF16("Tall"));
-  big_square_ = new LabelButton(this, ASCIIToUTF16("Big Square"));
-  small_square_ = new LabelButton(this, ASCIIToUTF16("Small Square"));
-  scroll_to_ = new LabelButton(this, ASCIIToUTF16("Scroll to"));
-  scrollable_ = new ScrollableView();
-  scroll_view_ = new ScrollView();
-  scroll_view_->SetContents(scrollable_);
+  auto scroll_view = std::make_unique<ScrollView>();
+  scrollable_ = scroll_view->SetContents(std::make_unique<ScrollableView>());
   scrollable_->SetBounds(0, 0, 1000, 100);
   scrollable_->SetColor(SK_ColorYELLOW, SK_ColorCYAN);
 
-  GridLayout* layout = container->SetLayoutManager(
-      std::make_unique<views::GridLayout>(container));
+  GridLayout* layout =
+      container->SetLayoutManager(std::make_unique<views::GridLayout>());
 
   // Add scroll view.
   ColumnSet* column_set = layout->AddColumnSet(0);
   column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1,
                         GridLayout::USE_PREF, 0, 0);
   layout->StartRow(1, 0);
-  layout->AddView(scroll_view_);
+  scroll_view_ = layout->AddView(std::move(scroll_view));
 
   // Add control buttons.
   column_set = layout->AddColumnSet(1);
-  for (int i = 0; i < 5; i++) {
+  for (size_t i = 0; i < 5; i++) {
     column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1,
                           GridLayout::USE_PREF, 0, 0);
   }
   layout->StartRow(0, 1);
-  layout->AddView(wide_);
-  layout->AddView(tall_);
-  layout->AddView(big_square_);
-  layout->AddView(small_square_);
-  layout->AddView(scroll_to_);
+  wide_ = layout->AddView(
+      std::make_unique<LabelButton>(this, ASCIIToUTF16("Wide")));
+  tall_ = layout->AddView(
+      std::make_unique<LabelButton>(this, ASCIIToUTF16("Tall")));
+  big_square_ = layout->AddView(
+      std::make_unique<LabelButton>(this, ASCIIToUTF16("Big Square")));
+  small_square_ = layout->AddView(
+      std::make_unique<LabelButton>(this, ASCIIToUTF16("Small Square")));
+  scroll_to_ = layout->AddView(
+      std::make_unique<LabelButton>(this, ASCIIToUTF16("Scroll to")));
 }
 
 void ScrollViewExample::ButtonPressed(Button* sender, const ui::Event& event) {
@@ -128,7 +121,7 @@ void ScrollViewExample::ButtonPressed(Button* sender, const ui::Event& event) {
     scroll_view_->contents()->ScrollRectToVisible(
         gfx::Rect(20, 500, 1000, 500));
   }
-  scroll_view_->Layout();
+  scroll_view_->InvalidateLayout();
 }
 
 }  // namespace examples

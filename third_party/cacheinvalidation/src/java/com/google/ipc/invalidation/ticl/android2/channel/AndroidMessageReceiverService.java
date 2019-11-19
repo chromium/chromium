@@ -85,7 +85,7 @@ public class AndroidMessageReceiverService extends MultiplexingGcmListener.Abstr
     // Store the echo token.
     String echoToken = intent.getStringExtra(C2dmConstants.ECHO_PARAM);
     if (echoToken != null) {
-      AndroidChannelPreferences.setEchoToken(this, echoToken);
+        AndroidChannelPreferences.setEchoToken(echoToken);
     }
   }
 

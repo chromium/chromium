@@ -16,6 +16,7 @@ struct PasswordForm;
 
 namespace password_manager {
 
+struct FieldInfo;
 struct InteractionsStats;
 
 // Reads from the PasswordStore are done asynchronously on a separate
@@ -32,9 +33,13 @@ class PasswordStoreConsumer {
   virtual void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<autofill::PasswordForm>> results) = 0;
 
-  // Called when the GetLogins() request is finished, with the associated site
-  // statistics.
+  // Called when the GetSiteStats() request is finished, with the associated
+  // site statistics.
   virtual void OnGetSiteStatistics(std::vector<InteractionsStats> stats);
+
+  // Called when the GetAllFieldInfo() request is finished, with the associated
+  // field info.
+  virtual void OnGetAllFieldInfo(std::vector<FieldInfo> field_info);
 
   // The base::CancelableTaskTracker can be used for cancelling the
   // tasks associated with the consumer.
@@ -53,7 +58,7 @@ class PasswordStoreConsumer {
 
  private:
   base::CancelableTaskTracker cancelable_task_tracker_;
-  base::WeakPtrFactory<PasswordStoreConsumer> weak_ptr_factory_;
+  base::WeakPtrFactory<PasswordStoreConsumer> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

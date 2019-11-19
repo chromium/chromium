@@ -14,6 +14,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaCodec.CryptoInfo;
 import android.os.Build;
+import android.security.NetworkSecurityPolicy;
+import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
@@ -21,14 +23,14 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import org.chromium.base.annotations.DoNotInline;
+import org.chromium.base.annotations.VerifiesOnN;
 
 /**
  * Utility class to use new APIs that were added in N (API level 24). These need to exist in a
  * separate class so that Android framework can successfully verify classes without
  * encountering the new APIs.
  */
-@DoNotInline
+@VerifiesOnN
 @TargetApi(Build.VERSION_CODES.N)
 public final class ApiHelperForN {
     private ApiHelperForN() {}
@@ -72,5 +74,15 @@ public final class ApiHelperForN {
     public static void setVrModeEnabled(Activity activity, boolean enabled,
             ComponentName requestedComponent) throws PackageManager.NameNotFoundException {
         activity.setVrModeEnabled(enabled, requestedComponent);
+    }
+
+    /** See {@link NetworkSecurityPolicy#isCleartextTrafficPermitted(String)}. */
+    public static boolean isCleartextTrafficPermitted(String host) {
+        return NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted(host);
+    }
+
+    /** See {@link View#onResolvePointerIcon(MotionEvent, int)}. */
+    public static PointerIcon onResolvePointerIcon(View view, MotionEvent event, int pointerIndex) {
+        return view.onResolvePointerIcon(event, pointerIndex);
     }
 }

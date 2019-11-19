@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/strings/string16.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/vr/gl_browser_interface.h"
 #include "chrome/browser/android/vr/vr_controller.h"
 #include "chrome/browser/vr/input_event.h"
@@ -16,7 +18,43 @@
 
 namespace {
 constexpr gfx::Vector3dF kForwardVector = {0.0f, 0.0f, -1.0f};
+
+device::Gamepad CreateGamepad(const vr::GvrGamepadData& data) {
+  device::Gamepad gamepad;
+
+  // Unless the controller state is updated on a different thread,
+  // data.connected should always be true when this function is called by
+  // GvrInputDelegate::GetInputSourceState.
+  gamepad.connected = data.connected;
+
+  gamepad.timestamp = data.timestamp;
+
+  gamepad.hand = data.right_handed ? device::GamepadHand::kRight
+                                   : device::GamepadHand::kLeft;
+
+  bool pressed = data.controller_button_pressed;
+  bool touched = data.is_touching;
+  double value = pressed ? 1.0 : 0.0;
+  gamepad.buttons[gamepad.buttons_length++] =
+      device::GamepadButton(pressed, touched, value);
+
+  if (touched) {
+    // data.touch_pos values reported by the GVR Android SDK are clamped to
+    // [0.0, 1.0], with (0, 0) corresponding to the top-left of the touchpad.
+    // Normalize the values to use X axis range -1 (left) to 1 (right) and Y
+    // axis range -1 (top) to 1 (bottom).
+    gamepad.axes[0] = (data.touch_pos.x() * 2.0) - 1.0;
+    gamepad.axes[1] = (data.touch_pos.y() * 2.0) - 1.0;
+  } else {
+    gamepad.axes[0] = 0.0;
+    gamepad.axes[1] = 0.0;
+  }
+
+  gamepad.axes_length = 2;
+
+  return gamepad;
 }
+}  // namespace
 
 namespace vr {
 
@@ -43,7 +81,7 @@ void GvrInputDelegate::UpdateController(const gfx::Transform& head_pose,
                                         bool is_webxr_frame) {
   controller_->UpdateState(head_pose);
 
-  device::GvrGamepadData controller_data = controller_->GetGamepadData();
+  GvrGamepadData controller_data = controller_->GetGamepadData();
   if (!is_webxr_frame)
     controller_data.connected = false;
   browser_->UpdateGamepadData(controller_data);
@@ -120,7 +158,7 @@ device::mojom::XRInputSourceStatePtr GvrInputDelegate::GetInputSourceState() {
       device::mojom::XRTargetRayMode::POINTING;
 
   // Controller uses an arm model.
-  state->description->emulated_position = true;
+  state->emulated_position = true;
 
   if (controller_->IsConnected()) {
     // Set the primary button state.
@@ -141,12 +179,17 @@ device::mojom::XRInputSourceStatePtr GvrInputDelegate::GetInputSourceState() {
     // Get the grip transform
     gfx::Transform grip;
     controller_->GetTransform(&grip);
-    state->grip = grip;
+    state->mojo_from_input = grip;
 
     // Set the pointer offset from the grip transform.
     gfx::Transform pointer;
     controller_->GetRelativePointerTransform(&pointer);
-    state->description->pointer_offset = pointer;
+    state->description->input_from_pointer = pointer;
+
+    state->description->profiles.push_back("google-daydream");
+
+    // This Gamepad data is used to expose touchpad position to WebXR.
+    state->gamepad = CreateGamepad(controller_->GetGamepadData());
   }
 
   return state;

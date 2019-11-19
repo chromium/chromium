@@ -106,18 +106,13 @@ class Executive(object):
     def cpu_count(self):
         return multiprocessing.cpu_count()
 
-    def kill_process(self, pid):
+    def kill_process(self, pid, kill_tree=True):
         """Attempts to kill the given pid.
+
+        if kill_tree is True, the whole process group will be killed.
 
         Will fail silently if pid does not exist or insufficient permissions.
         """
-        # This method behaves differently on Windows and Linux. On Windows, it
-        # kills the process as well as all of its subprocesses (because of the
-        # '/t' flag). Some call sites depend on this behaviour (e.g. to kill all
-        # worker processes of wptserve on Windows).
-        # TODO(robertma): Replicate the behaviour on POSIX by calling setsid()
-        # in Popen's preexec_fn hook, and perhaps rename the method to
-        # kill_process_tree.
         if sys.platform == 'win32':
             # Workaround for race condition that occurs when the browser is
             # killed as it's launching a process. This sometimes leaves a child
@@ -138,7 +133,10 @@ class Executive(object):
             return
 
         try:
-            os.kill(pid, signal.SIGKILL)
+            if kill_tree:
+                os.killpg(os.getpgid(pid), signal.SIGKILL)
+            else:
+                os.kill(pid, signal.SIGKILL)
             os.waitpid(pid, os.WNOHANG)
         except OSError as error:
             if error.errno == errno.ESRCH:
@@ -311,13 +309,17 @@ class Executive(object):
                     error_handler=None,
                     return_exit_code=False,
                     return_stderr=True,
-                    decode_output=True, debug_logging=True):
+                    ignore_stderr=False,
+                    decode_output=True,
+                    debug_logging=True):
         """Popen wrapper for convenience and to work around python bugs."""
         assert isinstance(args, list) or isinstance(args, tuple)
         start_time = time.time()
 
+        assert not (return_stderr and ignore_stderr)
         stdin, string_to_communicate = self._compute_stdin(input)
-        stderr = self.STDOUT if return_stderr else None
+        stderr = self.STDOUT if return_stderr else (
+            self.DEVNULL if ignore_stderr else None)
 
         process = self.popen(args,
                              stdin=stdin,
@@ -399,6 +401,11 @@ class Executive(object):
     def popen(self, args, **kwargs):
         assert not kwargs.get('shell')
         string_args = self._stringify_args(args)
+
+        # os.setpgid is required, otherwise, kill_process function will kill
+        # the parent processes unexpectedly.
+        if sys.platform != 'win32':
+            kwargs['preexec_fn'] = lambda: os.setpgid(0, 0)
         return subprocess.Popen(string_args, **kwargs)
 
     def call(self, args, **kwargs):

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
@@ -23,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_field_trial_list_resetter.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/processed_study.h"
 #include "components/variations/study_filtering.h"
@@ -127,14 +129,14 @@ class VariationsSeedProcessorTest : public ::testing::Test {
 
   bool CreateTrialFromStudy(const Study& study) {
     return CreateTrialFromStudyWithFeatureListAndEntropyOverride(
-        study, nullptr, &feature_list_);
+        study, nullptr, base::FeatureList::GetInstance());
   }
 
   bool CreateTrialFromStudyWithEntropyOverride(
       const Study& study,
       const base::FieldTrial::EntropyProvider* override_entropy_provider) {
     return CreateTrialFromStudyWithFeatureListAndEntropyOverride(
-        study, override_entropy_provider, &feature_list_);
+        study, override_entropy_provider, base::FeatureList::GetInstance());
   }
 
   bool CreateTrialFromStudyWithFeatureList(const Study& study,
@@ -159,7 +161,6 @@ class VariationsSeedProcessorTest : public ::testing::Test {
   }
 
  protected:
-  base::FeatureList feature_list_;
   TestOverrideStringCallback override_callback_;
 
  private:
@@ -168,8 +169,6 @@ class VariationsSeedProcessorTest : public ::testing::Test {
 
 TEST_F(VariationsSeedProcessorTest, AllowForceGroupAndVariationId) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
-
-  base::FieldTrialList field_trial_list(nullptr);
 
   Study study = CreateStudyWithFlagGroups(100, 0, 0);
   study.mutable_experiment(1)->set_google_web_experiment_id(kExperimentId);
@@ -187,8 +186,6 @@ TEST_F(VariationsSeedProcessorTest, AllowForceGroupAndVariationId) {
 TEST_F(VariationsSeedProcessorTest, ForceGroupWithFlag1) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
 
-  base::FieldTrialList field_trial_list(nullptr);
-
   Study study = CreateStudyWithFlagGroups(100, 0, 0);
   EXPECT_TRUE(CreateTrialFromStudy(study));
   EXPECT_EQ(kFlagGroup1Name,
@@ -198,8 +195,6 @@ TEST_F(VariationsSeedProcessorTest, ForceGroupWithFlag1) {
 // Test that the group for kForcingFlag2 is forced.
 TEST_F(VariationsSeedProcessorTest, ForceGroupWithFlag2) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag2);
-
-  base::FieldTrialList field_trial_list(nullptr);
 
   Study study = CreateStudyWithFlagGroups(100, 0, 0);
   EXPECT_TRUE(CreateTrialFromStudy(study));
@@ -212,8 +207,6 @@ TEST_F(VariationsSeedProcessorTest, ForceGroup_ChooseFirstGroupWithFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag2);
 
-  base::FieldTrialList field_trial_list(nullptr);
-
   Study study = CreateStudyWithFlagGroups(100, 0, 0);
   EXPECT_TRUE(CreateTrialFromStudy(study));
   EXPECT_EQ(kFlagGroup1Name,
@@ -221,8 +214,6 @@ TEST_F(VariationsSeedProcessorTest, ForceGroup_ChooseFirstGroupWithFlag) {
 }
 
 TEST_F(VariationsSeedProcessorTest, ForceGroup_DontChooseGroupWithFlag) {
-  base::FieldTrialList field_trial_list(nullptr);
-
   // The two flag groups are given high probability, which would normally make
   // them very likely to be chosen. They won't be chosen since flag groups are
   // never chosen when their flag isn't present.
@@ -233,8 +224,6 @@ TEST_F(VariationsSeedProcessorTest, ForceGroup_DontChooseGroupWithFlag) {
 }
 
 TEST_F(VariationsSeedProcessorTest, CreateTrialForRegisteredGroup) {
-  base::FieldTrialList field_trial_list(nullptr);
-
   base::FieldTrialList::CreateFieldTrial(kFlagStudyName, kOtherGroupName);
 
   // Create an arbitrary study that does not have group named |kOtherGroupName|.
@@ -266,7 +255,7 @@ TEST_F(VariationsSeedProcessorTest,
   const base::Time year_ago =
       base::Time::Now() - base::TimeDelta::FromDays(365);
 
-  ClientFilterableState client_state;
+  ClientFilterableState client_state({});
   client_state.locale = "en-CA";
   client_state.reference_date = base::Time::Now();
   client_state.version = base::Version("20.0.0.0");
@@ -277,8 +266,10 @@ TEST_F(VariationsSeedProcessorTest,
   // Check that adding [expired, non-expired] activates the non-expired one.
   ASSERT_EQ(std::string(), base::FieldTrialList::FindFullName(kTrialName));
   {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.Init();
+
     base::FeatureList feature_list;
-    base::FieldTrialList field_trial_list(nullptr);
     study1->set_expiry_date(TimeToProtoTime(year_ago));
     seed_processor.CreateTrialsFromSeed(seed, client_state,
                                         override_callback_.callback(), nullptr,
@@ -289,8 +280,10 @@ TEST_F(VariationsSeedProcessorTest,
   // Check that adding [non-expired, expired] activates the non-expired one.
   ASSERT_EQ(std::string(), base::FieldTrialList::FindFullName(kTrialName));
   {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.Init();
+
     base::FeatureList feature_list;
-    base::FieldTrialList field_trial_list(nullptr);
     study1->clear_expiry_date();
     study2->set_expiry_date(TimeToProtoTime(year_ago));
     seed_processor.CreateTrialsFromSeed(seed, client_state,
@@ -301,8 +294,6 @@ TEST_F(VariationsSeedProcessorTest,
 }
 
 TEST_F(VariationsSeedProcessorTest, OverrideUIStrings) {
-  base::FieldTrialList field_trial_list(nullptr);
-
   Study study;
   study.set_name("Study1");
   study.set_default_experiment_name("B");
@@ -346,7 +337,6 @@ TEST_F(VariationsSeedProcessorTest, OverrideUIStringsWithForcingFlag) {
   override->set_value("test");
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
-  base::FieldTrialList field_trial_list(nullptr);
   EXPECT_TRUE(CreateTrialFromStudy(study));
   EXPECT_EQ(kFlagGroup1Name, base::FieldTrialList::FindFullName(study.name()));
 
@@ -487,8 +477,6 @@ TEST_F(VariationsSeedProcessorTest, ProcessedStudyAllAssignmentsToOneGroup) {
 }
 
 TEST_F(VariationsSeedProcessorTest, VariationParams) {
-  base::FieldTrialList field_trial_list(nullptr);
-
   Study study;
   study.set_name("Study1");
   study.set_default_experiment_name("B");
@@ -518,15 +506,12 @@ TEST_F(VariationsSeedProcessorTest, VariationParamsWithForcingFlag) {
   param->set_value("y");
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
-  base::FieldTrialList field_trial_list(nullptr);
   EXPECT_TRUE(CreateTrialFromStudy(study));
   EXPECT_EQ(kFlagGroup1Name, base::FieldTrialList::FindFullName(study.name()));
   EXPECT_EQ("y", GetVariationParamValue(study.name(), "x"));
 }
 
 TEST_F(VariationsSeedProcessorTest, StartsActive) {
-  base::FieldTrialList field_trial_list(nullptr);
-
   VariationsSeed seed;
   Study* study1 = seed.add_study();
   study1->set_name("A");
@@ -548,7 +533,7 @@ TEST_F(VariationsSeedProcessorTest, StartsActive) {
   AddExperiment("Default", 0, study3);
   study3->set_activation_type(Study_ActivationType_ACTIVATE_ON_QUERY);
 
-  ClientFilterableState client_state;
+  ClientFilterableState client_state({});
   client_state.locale = "en-CA";
   client_state.reference_date = base::Time::Now();
   client_state.version = base::Version("20.0.0.0");
@@ -559,7 +544,7 @@ TEST_F(VariationsSeedProcessorTest, StartsActive) {
   VariationsSeedProcessor seed_processor;
   seed_processor.CreateTrialsFromSeed(seed, client_state,
                                       override_callback_.callback(), nullptr,
-                                      &feature_list_);
+                                      base::FeatureList::GetInstance());
 
   // Non-specified and ACTIVATE_ON_QUERY should not start active, but
   // ACTIVATE_ON_STARTUP should.
@@ -580,8 +565,6 @@ TEST_F(VariationsSeedProcessorTest, StartsActive) {
 TEST_F(VariationsSeedProcessorTest, StartsActiveWithFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
 
-  base::FieldTrialList field_trial_list(nullptr);
-
   Study study = CreateStudyWithFlagGroups(100, 0, 0);
   study.set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
 
@@ -600,7 +583,6 @@ TEST_F(VariationsSeedProcessorTest, ForcingFlagAlreadyForced) {
   param->set_value("y");
   study.mutable_experiment(0)->set_google_web_experiment_id(kExperimentId);
 
-  base::FieldTrialList field_trial_list(nullptr);
   base::FieldTrialList::CreateFieldTrial(kFlagStudyName, kNonFlagGroupName);
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
@@ -644,7 +626,10 @@ TEST_F(VariationsSeedProcessorTest, FeatureEnabledOrDisableByTrial) {
     const auto& test_case = test_cases[i];
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "]", i));
 
-    base::FieldTrialList field_trial_list(nullptr);
+    // Needed for base::FeatureList::GetInstance() when creating field trials.
+    base::test::ScopedFeatureList base_scoped_feature_list;
+    base_scoped_feature_list.Init();
+
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
 
     Study study;
@@ -767,7 +752,10 @@ TEST_F(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
         test_case.enable_features_command_line,
         test_case.disable_features_command_line, static_cast<int>(group)));
 
-    base::FieldTrialList field_trial_list(nullptr);
+    // Needed for base::FeatureList::GetInstance() when creating field trials.
+    base::test::ScopedFeatureList base_scoped_feature_list;
+    base_scoped_feature_list.Init();
+
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
         test_case.enable_features_command_line,
@@ -837,7 +825,10 @@ TEST_F(VariationsSeedProcessorTest, FeaturesInExpiredStudies) {
     SCOPED_TRACE(
         base::StringPrintf("Test[%" PRIuS "]: %s", i, test_case.feature.name));
 
-    base::FieldTrialList field_trial_list(nullptr);
+    // Needed for base::FeatureList::GetInstance() when creating field trials.
+    base::test::ScopedFeatureList base_scoped_feature_list;
+    base_scoped_feature_list.Init();
+
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(std::string(), std::string());
 
@@ -870,8 +861,6 @@ TEST_F(VariationsSeedProcessorTest, FeaturesInExpiredStudies) {
 }
 
 TEST_F(VariationsSeedProcessorTest, NoDefaultExperiment) {
-  base::FieldTrialList field_trial_list(nullptr);
-
   Study study;
   study.set_name("Study1");
 
@@ -890,14 +879,13 @@ TEST_F(VariationsSeedProcessorTest, ExistingFieldTrial_ExpiredByConfig) {
   static struct base::Feature kFeature {
     "FeatureName", base::FEATURE_ENABLED_BY_DEFAULT
   };
-  base::FieldTrialList field_trial_list(nullptr);
 
   // In this case, an existing forced trial exists with a different default
   // group than the study config, which is expired. This tests that we don't
   // crash in such a case.
   auto* trial = base::FieldTrialList::FactoryGetFieldTrial(
-      "Study1", 100, "ExistingDefault", base::FieldTrialList::kNoExpirationYear,
-      1, 1, base::FieldTrial::SESSION_RANDOMIZED, nullptr);
+      "Study1", 100, "ExistingDefault", base::FieldTrial::SESSION_RANDOMIZED,
+      nullptr);
   trial->AppendGroup("A", 100);
   trial->SetForced();
 
@@ -922,7 +910,6 @@ TEST_F(VariationsSeedProcessorTest, ExpiredStudy_NoDefaultGroup) {
   static struct base::Feature kFeature {
     "FeatureName", base::FEATURE_ENABLED_BY_DEFAULT
   };
-  base::FieldTrialList field_trial_list(nullptr);
 
   // Although it's not expected for the server to provide a study with an expiry
   // date set, but not default experiment, this tests that we don't crash if
@@ -964,6 +951,7 @@ TEST_F(VariationsSeedProcessorTest, LowEntropyStudyTest) {
 
   // An entorpy value of 0.1 will cause the AA group to be chosen, since AA is
   // the only non-default group, and has a probability percent above 0.1.
+  base::test::ScopedFieldTrialListResetter resetter;
   base::FieldTrialList field_trial_list(
       std::make_unique<base::MockEntropyProvider>(0.1));
 

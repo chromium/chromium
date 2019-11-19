@@ -12,9 +12,9 @@
 #include "base/logging.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/view_messages.h"
+#include "content/public/android/content_jni_headers/ContentViewStaticsImpl_jni.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
-#include "jni/ContentViewStaticsImpl_jni.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF16ToJavaString;

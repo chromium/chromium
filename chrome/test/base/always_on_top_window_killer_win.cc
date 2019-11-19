@@ -8,14 +8,12 @@
 
 #include <ios>
 #include <string>
-#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/process/process.h"
 #include "base/stl_util.h"
-#include "chrome/test/base/process_inspector_win.h"
+#include "chrome/test/base/process_lineage_win.h"
 #include "chrome/test/base/save_desktop_snapshot_win.h"
 #include "ui/display/win/screen_win.h"
 
@@ -40,10 +38,6 @@ constexpr char kWindowFoundPostTest[] =
     "out. This may have been caused by this test or a previous test and may "
     "cause flakes;";
 
-// A command line switch to specify the output directory into which snapshots
-// are to be saved in case an always-on-top window is found.
-constexpr char kSnapshotOutputDir[] = "snapshot-output-dir";
-
 // A window enumerator that searches for always-on-top windows. A snapshot of
 // the screen is saved if any unexpected on-top windows are found.
 class WindowEnumerator {
@@ -56,12 +50,6 @@ class WindowEnumerator {
   void Run();
 
  private:
-  // Properies of a running process.
-  struct ProcessProperties {
-    DWORD process_id;
-    base::string16 command_line;
-  };
-
   // An EnumWindowsProc invoked by EnumWindows once for each window.
   static BOOL CALLBACK OnWindowProc(HWND hwnd, LPARAM l_param);
 
@@ -77,15 +65,6 @@ class WindowEnumerator {
   // Returns true if |class_name| is the name of a window owned by the Windows
   // shell.
   static bool IsShellWindowClass(const base::string16& class_name);
-
-  // Returns the lineage of |process_id|; specifically, the pid and command line
-  // of |process_id| and each of its ancestors that are still running. Due to
-  // aggressive pid reuse on Windows, it's possible that the returned collection
-  // may contain misleading information. Since the goal of this method is to get
-  // useful data in the aggregate, some misleading info here and there is
-  // tolerable. If it proves to be intolerable, additional checks can be added
-  // to be sure that each ancestor is older that its child.
-  static std::vector<ProcessProperties> GetProcessLineage(DWORD process_id);
 
   // Main processing function run for each window.
   BOOL OnWindow(HWND hwnd);
@@ -161,34 +140,6 @@ bool WindowEnumerator::IsShellWindowClass(const base::string16& class_name) {
          class_name == L"Shell_SecondaryTrayWnd";
 }
 
-// static
-std::vector<WindowEnumerator::ProcessProperties>
-WindowEnumerator::GetProcessLineage(DWORD process_id) {
-  std::vector<ProcessProperties> properties;
-
-  while (true) {
-    base::Process process = base::Process::OpenWithAccess(
-        process_id, PROCESS_QUERY_INFORMATION | SYNCHRONIZE | PROCESS_VM_READ);
-    if (!process.IsValid())
-      break;
-
-    auto inspector = ProcessInspector::Create(process);
-    if (!inspector)
-      break;
-
-    // If PID reuse proves to be a problem, this would be a good point to add
-    // extra checks that |process| is older than the previously inspected
-    // process.
-
-    properties.push_back({process_id, inspector->command_line()});
-    DWORD parent_pid = inspector->GetParentPid();
-    if (process_id == parent_pid)
-      break;
-    process_id = parent_pid;
-  }
-  return properties;
-}
-
 BOOL WindowEnumerator::OnWindow(HWND hwnd) {
   const BOOL kContinueIterating = TRUE;
 
@@ -231,19 +182,9 @@ BOOL WindowEnumerator::OnWindow(HWND hwnd) {
 
     DWORD process_id = 0;
     GetWindowThreadProcessId(hwnd, &process_id);
-    std::vector<ProcessProperties> process_properties =
-        GetProcessLineage(process_id);
-    if (!process_properties.empty()) {
-      sstream << " owning process lineage: ";
-      base::string16 sep;
-      for (const auto& prop : process_properties) {
-        sstream << sep << L"(process_id: " << prop.process_id
-                << L", command_line: \"" << prop.command_line << "\")";
-        if (sep.empty())
-          sep = L", ";
-      }
-      sstream << ";";
-    }
+    ProcessLineage lineage = ProcessLineage::Create(process_id);
+    if (!lineage.IsEmpty())
+      sstream << " owning process lineage: " << lineage.ToString() << ";";
 
     if (!snapshot_file.empty()) {
       sstream << " screen snapshot saved to file: \"" << snapshot_file.value()

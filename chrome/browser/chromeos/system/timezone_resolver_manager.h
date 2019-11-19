@@ -101,7 +101,7 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate {
   // Becomes true after UpdateTimezoneResolver() has been called at least once.
   bool initialized_ = false;
 
-  base::WeakPtrFactory<TimeZoneResolverManager> weak_factory_;
+  base::WeakPtrFactory<TimeZoneResolverManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TimeZoneResolverManager);
 };

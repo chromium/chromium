@@ -2,20 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ToolbarManager} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/toolbar_manager.js';
+
+import {MockWindow} from './test_util.js';
+
 // A cut-down version of MockInteractions.move, which is not exposed
 // publicly.
 function getMouseMoveEvents(fromX, fromY, toX, toY, steps) {
-  var dx = Math.round((toX - fromX) / steps);
-  var dy = Math.round((toY - fromY) / steps);
-  var events = [];
+  const dx = Math.round((toX - fromX) / steps);
+  const dy = Math.round((toY - fromY) / steps);
+  const events = [];
 
   // Deliberate <= to ensure that an event is run for toX, toY
-  for (var i = 0; i <= steps; i++) {
-    var e = new MouseEvent('mousemove', {
+  for (let i = 0; i <= steps; i++) {
+    const e = new MouseEvent('mousemove', {
       clientX: fromX,
       clientY: fromY,
       movementX: dx,
-      movementY: dy
+      movementY: dy,
     });
     events.push(e);
     fromX += dx;
@@ -25,7 +29,7 @@ function getMouseMoveEvents(fromX, fromY, toX, toY, steps) {
 }
 
 function makeTapEvent(x, y) {
-  var e = new MouseEvent('mousemove', {
+  const e = new MouseEvent('mousemove', {
     clientX: x,
     clientY: y,
     movementX: 0,
@@ -44,22 +48,22 @@ function mockGetCurrentTimestamp() {
   return 1449000000000 + this.callCount * 50;
 }
 
-var tests = [
+const tests = [
   /**
    * Test that ToolbarManager.forceHideTopToolbar hides (or shows) the top
    * toolbar correctly for different mouse movements.
    */
   function testToolbarManagerForceHideTopToolbar() {
-    var mockWindow = new MockWindow(1920, 1080);
+    const mockWindow = new MockWindow(1920, 1080);
 
-    var toolbar = document.createElement('viewer-pdf-toolbar');
+    const toolbar = document.createElement('viewer-pdf-toolbar');
     document.body.appendChild(toolbar);
-    var zoomToolbar = document.createElement('viewer-zoom-toolbar');
+    const zoomToolbar = document.createElement('viewer-zoom-toolbar');
     document.body.appendChild(zoomToolbar);
-    var toolbarManager = new ToolbarManager(mockWindow, toolbar, zoomToolbar);
+    const toolbarManager = new ToolbarManager(mockWindow, toolbar, zoomToolbar);
     toolbarManager.getCurrentTimestamp_ = mockGetCurrentTimestamp;
 
-    var mouseMove = function(fromX, fromY, toX, toY, steps) {
+    const mouseMove = function(fromX, fromY, toX, toY, steps) {
       getMouseMoveEvents(fromX, fromY, toX, toY, steps).forEach(function(e) {
         toolbarManager.handleMouseMove(e);
       });
@@ -99,14 +103,15 @@ var tests = [
    * Test that changes to window height bubble down to dropdowns correctly.
    */
   function testToolbarManagerResizeDropdown() {
-    var mockWindow = new MockWindow(1920, 1080);
-    var mockZoomToolbar = {
-      clientHeight: 400
+    const mockWindow = new MockWindow(1920, 1080);
+    const mockZoomToolbar = {
+      clientHeight: 400,
+      isPrintPreview: false,
     };
-    var toolbar = document.getElementById('toolbar');
-    var bookmarksDropdown = toolbar.$.bookmarks;
+    const toolbar = document.getElementById('toolbar');
+    const bookmarksDropdown = toolbar.$.bookmarks;
 
-    var toolbarManager =
+    const toolbarManager =
         new ToolbarManager(mockWindow, toolbar, mockZoomToolbar);
 
     chrome.test.assertEq(680, bookmarksDropdown.lowerBound);
@@ -121,16 +126,16 @@ var tests = [
    * Test that the toolbar will not be hidden when navigating with the tab key.
    */
   function testToolbarKeyboardNavigation() {
-    var mockWindow = new MockWindow(1920, 1080);
-    var toolbar =
-        Polymer.Base.create('viewer-pdf-toolbar', {loadProgress: 100});
+    const mockWindow = new MockWindow(1920, 1080);
+    const toolbar = document.createElement('viewer-pdf-toolbar');
+    toolbar.loadProgress = 100;
     document.body.appendChild(toolbar);
-    var zoomToolbar = document.createElement('viewer-zoom-toolbar');
+    const zoomToolbar = document.createElement('viewer-zoom-toolbar');
     document.body.appendChild(zoomToolbar);
-    var toolbarManager = new ToolbarManager(mockWindow, toolbar, zoomToolbar);
+    const toolbarManager = new ToolbarManager(mockWindow, toolbar, zoomToolbar);
     toolbarManager.getCurrentTimestamp_ = mockGetCurrentTimestamp;
 
-    var mouseMove = function(fromX, fromY, toX, toY, steps) {
+    const mouseMove = function(fromX, fromY, toX, toY, steps) {
       getMouseMoveEvents(fromX, fromY, toX, toY, steps).forEach(function(e) {
         toolbarManager.handleMouseMove(e);
       });
@@ -159,42 +164,97 @@ var tests = [
   },
 
   /**
+   * Tests that the zoom toolbar becomes visible when it is focused, and is made
+   * invisible by calling resetKeyboardNavigationAndHideToolbars().
+   * Simulates focusing and then un-focusing the zoom toolbar buttons from Print
+   * Preview.
+   */
+  function testToolbarManagerResetKeyboardNavigation() {
+    const mockWindow = new MockWindow(1920, 1080);
+
+    const zoomToolbar = document.createElement('viewer-zoom-toolbar');
+    zoomToolbar.isPrintPreview = true;
+    document.body.appendChild(zoomToolbar);
+    const toolbarManager = new ToolbarManager(mockWindow, null, zoomToolbar);
+    toolbarManager.getCurrentTimestamp_ = mockGetCurrentTimestamp;
+
+    // Move the mouse and wait for a timeout to ensure toolbar is invisible.
+    getMouseMoveEvents(200, 200, 800, 800, 5).forEach(function(e) {
+      toolbarManager.handleMouseMove(e);
+    });
+    mockWindow.runTimeout();
+    chrome.test.assertFalse(zoomToolbar.isVisible());
+
+    // Simulate focusing the fit to page button using the tab key.
+    zoomToolbar.$$('#fit-button')
+        .dispatchEvent(
+            new CustomEvent('focus', {bubbles: true, composed: true}));
+    chrome.test.assertTrue(zoomToolbar.isVisible());
+
+    // Call resetKeyboardNavigationAndHideToolbars(). This happens when focus
+    // leaves the PDF viewer in Print Preview, and returns to the main Print
+    // Preview sidebar UI.
+    toolbarManager.resetKeyboardNavigationAndHideToolbars();
+
+    chrome.test.assertTrue(zoomToolbar.isVisible());
+
+    // Simulate re-focusing the zoom toolbar with the tab key. See
+    // https://crbug.com/982694.
+    zoomToolbar.$$('#fit-button')
+        .dispatchEvent(
+            new CustomEvent('keyup', {bubbles: true, composed: true}));
+    mockWindow.runTimeout();
+    chrome.test.assertTrue(zoomToolbar.isVisible());
+
+    // Simulate focus leaving the PDF viewer again, but this time don't
+    // refocus the button afterward.
+    toolbarManager.resetKeyboardNavigationAndHideToolbars();
+    chrome.test.assertTrue(zoomToolbar.isVisible());
+    mockWindow.runTimeout();
+
+    // Toolbar should be hidden.
+    chrome.test.assertFalse(zoomToolbar.isVisible());
+
+    chrome.test.succeed();
+  },
+
+  /*
    * Test that the toolbars can be shown or hidden by tapping with a touch
    * device.
    */
   function testToolbarTouchInteraction() {
-    var mockWindow = new MockWindow(1920, 1080);
-    var toolbar =
-        Polymer.Base.create('viewer-pdf-toolbar', {loadProgress: 100});
+    const mockWindow = new MockWindow(1920, 1080);
+    const toolbar = document.createElement('viewer-pdf-toolbar');
+    toolbar.loadProgress = 100;
     document.body.appendChild(toolbar);
-    var zoomToolbar = document.createElement('viewer-zoom-toolbar');
+    const zoomToolbar = document.createElement('viewer-zoom-toolbar');
     document.body.appendChild(zoomToolbar);
-    var toolbarManager = new ToolbarManager(mockWindow, toolbar, zoomToolbar);
+    const toolbarManager = new ToolbarManager(mockWindow, toolbar, zoomToolbar);
 
     toolbarManager.hideToolbarsIfAllowed();
     chrome.test.assertFalse(toolbar.opened);
 
     // Tap anywhere on the screen -> Toolbars open.
     toolbarManager.handleMouseMove(makeTapEvent(500, 500));
-    chrome.test.assertTrue(toolbar.opened, "toolbars open after tap");
+    chrome.test.assertTrue(toolbar.opened, 'toolbars open after tap');
 
     // Tap again -> Toolbars close.
     toolbarManager.handleMouseMove(makeTapEvent(500, 500));
-    chrome.test.assertFalse(toolbar.opened, "toolbars close after tap");
+    chrome.test.assertFalse(toolbar.opened, 'toolbars close after tap');
 
     // Open toolbars, wait 2 seconds -> Toolbars close.
     toolbarManager.handleMouseMove(makeTapEvent(500, 500));
     mockWindow.runTimeout();
-    chrome.test.assertFalse(toolbar.opened, "toolbars close after wait");
+    chrome.test.assertFalse(toolbar.opened, 'toolbars close after wait');
 
     // Open toolbars, tap near toolbars -> Toolbar doesn't close.
     toolbarManager.handleMouseMove(makeTapEvent(500, 500));
     toolbarManager.handleMouseMove(makeTapEvent(100, 75));
-    chrome.test.assertTrue(toolbar.opened,
-                           "toolbars stay open after tap near toolbars");
+    chrome.test.assertTrue(
+        toolbar.opened, 'toolbars stay open after tap near toolbars');
     mockWindow.runTimeout();
-    chrome.test.assertTrue(toolbar.opened,
-                           "tap near toolbars prevents auto close");
+    chrome.test.assertTrue(
+        toolbar.opened, 'tap near toolbars prevents auto close');
 
     chrome.test.succeed();
   }

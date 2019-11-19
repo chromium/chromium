@@ -41,10 +41,9 @@
                 'mediaStreamDestination.numberOfInputs')
                 .beEqualTo(1);
 
-            // We should have no outputs, but since we're implemented using
-            // AudioBasicInspectorNode, we have one.
+            // We should have no outputs
             should(mediaStreamDestination.numberOfOutputs, 'Number of outputs')
-                .beEqualTo(1);
+                .beEqualTo(0);
 
             // FIXME: add a test where we create a PeerConnection and call
             // addStream(mediaStreamDestination.stream).

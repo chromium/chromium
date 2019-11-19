@@ -128,15 +128,15 @@ void MediaFragmentURIParser::ParseFragments() {
     //     UTF-8. If either name or value are not valid UTF-8 strings, then
     //     remove the name-value pair from the list.
     bool valid_utf8 = true;
-    CString utf8_name;
+    std::string utf8_name;
     if (!name.IsEmpty()) {
       utf8_name = name.Utf8(kStrictUTF8Conversion);
-      valid_utf8 = !utf8_name.IsNull();
+      valid_utf8 = !utf8_name.empty();
     }
-    CString utf8_value;
+    std::string utf8_value;
     if (valid_utf8 && !value.IsEmpty()) {
       utf8_value = value.Utf8(kStrictUTF8Conversion);
-      valid_utf8 = !utf8_value.IsNull();
+      valid_utf8 = !utf8_value.empty();
     }
 
     if (valid_utf8)

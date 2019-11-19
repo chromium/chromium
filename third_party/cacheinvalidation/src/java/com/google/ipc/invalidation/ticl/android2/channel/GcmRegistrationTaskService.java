@@ -83,11 +83,11 @@ public class GcmRegistrationTaskService extends GcmTaskService {
 
   /** Stores the registration token and the current application version in Shared Preferences. */
   private void storeToken(String token) {
-    AndroidChannelPreferences.setRegistrationToken(this, token);
-    AndroidChannelPreferences.setAppVersion(
-        this, CommonUtils.getPackageVersion(this, getPackageName()));
-    // Send the updated token to the server.
-    updateServer();
+      AndroidChannelPreferences.setRegistrationToken(token);
+      AndroidChannelPreferences.setAppVersion(
+              CommonUtils.getPackageVersion(this, getPackageName()));
+      // Send the updated token to the server.
+      updateServer();
   }
 
   /** Sends a message to the server to update the GCM registration token. */
@@ -100,15 +100,15 @@ public class GcmRegistrationTaskService extends GcmTaskService {
     sendBuffered.putExtra(AndroidChannelConstants.MESSAGE_SENDER_SVC_GCM_REGID_CHANGE, ignoredData);
 
     // Select the sender service to use for upstream message.
-    if (AndroidChannelPreferences.getGcmChannelType(this) == GcmChannelType.GCM_UPSTREAM) {
-      String upstreamServiceClass = new AndroidTiclManifest(this).getGcmUpstreamServiceClass();
-      if (upstreamServiceClass == null) {
-        logger.warning("GcmUpstreamSenderService class not found.");
-        return;
-      }
-      sendBuffered.setClassName(this, upstreamServiceClass);
+    if (AndroidChannelPreferences.getGcmChannelType() == GcmChannelType.GCM_UPSTREAM) {
+        String upstreamServiceClass = new AndroidTiclManifest(this).getGcmUpstreamServiceClass();
+        if (upstreamServiceClass == null) {
+            logger.warning("GcmUpstreamSenderService class not found.");
+            return;
+        }
+        sendBuffered.setClassName(this, upstreamServiceClass);
     } else {
-      sendBuffered.setClass(this, AndroidMessageSenderService.class);
+        sendBuffered.setClass(this, AndroidMessageSenderService.class);
     }
     try {
       startService(sendBuffered);

@@ -6,6 +6,8 @@
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_FLAT_RULESET_INDEXER_H_
 
 #include <stddef.h>
+#include <memory>
+#include <set>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -43,15 +45,22 @@ class FlatRulesetIndexer {
  private:
   using UrlPatternIndexBuilder = url_pattern_index::UrlPatternIndexBuilder;
 
-  UrlPatternIndexBuilder* GetBuilder(
-      api::declarative_net_request::RuleActionType type);
+  flat::ActionType GetActionType(const IndexedRule& indexed_rule) const;
+  uint8_t GetRemoveHeadersMask(const IndexedRule& indexed_rule) const;
+  std::vector<UrlPatternIndexBuilder*> GetBuilders(
+      const IndexedRule& indexed_rule);
+  std::vector<UrlPatternIndexBuilder*> GetRemoveHeaderBuilders(
+      const std::set<api::declarative_net_request::RemoveHeaderType>& types);
 
   flatbuffers::FlatBufferBuilder builder_;
 
-  UrlPatternIndexBuilder blocking_index_builder_;
-  UrlPatternIndexBuilder allowing_index_builder_;
-  UrlPatternIndexBuilder redirect_index_builder_;
+  // This will consist of |flat::ActionIndex_count| builders. We use unique_ptr
+  // since UrlPatternIndexBuilder is a non-copyable and non-movable type.
+  const std::vector<std::unique_ptr<UrlPatternIndexBuilder>> index_builders_;
+
   std::vector<flatbuffers::Offset<flat::UrlRuleMetadata>> metadata_;
+
+  std::vector<flatbuffers::Offset<flat::RegexRule>> regex_rules_;
 
   size_t indexed_rules_count_ = 0;  // Number of rules indexed till now.
   bool finished_ = false;           // Whether Finish() has been called.

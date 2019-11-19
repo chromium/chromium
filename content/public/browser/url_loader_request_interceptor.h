@@ -8,6 +8,8 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
 namespace network {
@@ -16,22 +18,23 @@ struct ResourceRequest;
 
 namespace content {
 
-class ResourceContext;
+class BrowserContext;
 
 // URLLoaderRequestInterceptor is given a chance to create a URLLoader and
 // intercept a navigation request before the request is handed off to the
 // default URLLoader, e.g. the one from the network service.
 // URLLoaderRequestInterceptor is a per-request object and kept around during
 // the lifetime of a navigation request (including multiple redirect legs).
+// All methods are called on the UI thread.
 class URLLoaderRequestInterceptor {
  public:
   URLLoaderRequestInterceptor() = default;
   virtual ~URLLoaderRequestInterceptor() = default;
 
-  using RequestHandler =
-      base::OnceCallback<void(const network::ResourceRequest& resource_request,
-                              network::mojom::URLLoaderRequest,
-                              network::mojom::URLLoaderClientPtr)>;
+  using RequestHandler = base::OnceCallback<void(
+      const network::ResourceRequest& resource_request,
+      mojo::PendingReceiver<network::mojom::URLLoader>,
+      mojo::PendingRemote<network::mojom::URLLoaderClient>)>;
   using LoaderCallback = base::OnceCallback<void(RequestHandler)>;
 
   // Asks this handler to handle this resource load request.
@@ -45,7 +48,7 @@ class URLLoaderRequestInterceptor {
   // NavigationLoaderInterceptor::MaybeCreateLoader.
   virtual void MaybeCreateLoader(
       const network::ResourceRequest& tentative_resource_request,
-      ResourceContext* resource_context,
+      BrowserContext* browser_context,
       LoaderCallback callback) = 0;
 };
 

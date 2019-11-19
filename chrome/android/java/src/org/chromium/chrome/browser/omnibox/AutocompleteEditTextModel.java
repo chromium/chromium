@@ -20,7 +20,7 @@ import org.chromium.base.Log;
  * An autocomplete model that appends autocomplete text at the end of query/URL text and selects it.
  */
 public class AutocompleteEditTextModel implements AutocompleteEditTextModelBase {
-    private static final String TAG = "cr_AutocompleteModel";
+    private static final String TAG = "AutocompleteModel";
 
     private static final boolean DEBUG = false;
 

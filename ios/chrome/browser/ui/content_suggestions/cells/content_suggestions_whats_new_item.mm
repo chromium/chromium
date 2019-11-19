@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
@@ -22,9 +23,6 @@ const CGFloat kLabelIconMargin = 8;
 const CGFloat kLabelFontSize = 14;
 const CGFloat kIconSize = 24;
 const CGFloat kIconTopMargin = 10;
-
-const int kTextColorRGB = 0x333333;
-const int kLinkColorRGB = 0x5595FE;
 
 }  // namespace
 
@@ -159,7 +157,7 @@ const int kLinkColorRGB = 0x5595FE;
 + (void)configureLabel:(UILabel*)promoLabel withText:(NSString*)text {
   promoLabel.font =
       [[MDCTypography fontLoader] regularFontOfSize:kLabelFontSize];
-  promoLabel.textColor = UIColorFromRGB(kTextColorRGB, 1.0);
+  promoLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   promoLabel.numberOfLines = 0;
 
   NSRange linkRange;
@@ -171,7 +169,7 @@ const int kLinkColorRGB = 0x5595FE;
       [[NSMutableAttributedString alloc] initWithString:strippedText];
 
   // Sets the styling to mimic a link.
-  UIColor* linkColor = UIColorFromRGB(kLinkColorRGB, 1.0);
+  UIColor* linkColor = [UIColor colorNamed:kBlueColor];
   [attributedText addAttribute:NSForegroundColorAttributeName
                          value:linkColor
                          range:linkRange];

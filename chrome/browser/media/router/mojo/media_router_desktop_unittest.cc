@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/media/router/mojo/media_router_desktop.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -9,8 +11,7 @@
 #include <string>
 #include <utility>
 
-#include "chrome/browser/media/router/mojo/media_router_desktop.h"
-
+#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -20,7 +21,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/test/media_router_mojo_test.h"
 #include "chrome/browser/media/router/test/test_helper.h"
-#include "chrome/common/media_router/media_source_helper.h"
+#include "chrome/common/media_router/media_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -66,11 +67,17 @@ class MediaRouterDesktopTestBase : public MediaRouterMojoTest {
   std::unique_ptr<MediaRouterMojoImpl> CreateMediaRouter() override {
     std::unique_ptr<MockCastMediaSinkService> cast_media_sink_service;
     if (enable_cast_discovery) {
-      feature_list_.InitWithFeatures({kEnableCastDiscovery}, {});
+      // We disable the DIAL MRP because initializing the DIAL MRP requires
+      // initialization of objects it depends on, which is outside the scope of
+      // this unit test. DIAL MRP initialization is covered by Media Router
+      // browser tests.
+      feature_list_.InitWithFeatures({kEnableCastDiscovery},
+                                     {kDialMediaRouteProvider});
       cast_media_sink_service = std::make_unique<MockCastMediaSinkService>();
       cast_media_sink_service_ = cast_media_sink_service.get();
     } else {
-      feature_list_.InitWithFeatures({}, {kEnableCastDiscovery});
+      feature_list_.InitWithFeatures(
+          {}, {kEnableCastDiscovery, kDialMediaRouteProvider});
     }
 
     media_sink_service_ = std::unique_ptr<DualMediaSinkService>(
@@ -134,7 +141,7 @@ TEST_F(MediaRouterDesktopTestCastDiscoveryDisabled,
 
 TEST_F(MediaRouterDesktopTest, OnUserGesture) {
   EXPECT_CALL(mock_extension_provider_,
-              UpdateMediaSinks(MediaSourceForDesktop().id()));
+              UpdateMediaSinks(MediaSource::ForDesktop().id()));
   router()->OnUserGesture();
   base::RunLoop().RunUntilIdle();
 }
@@ -208,13 +215,13 @@ TEST_F(MediaRouterDesktopTest, ExtensionMrpRecoversFromConnectionError) {
   // |extension_mrp_proxy|.
   for (int i = 0; i < MediaRouterDesktop::kMaxMediaRouteProviderErrorCount;
        i++) {
-    extension_mrp_proxy->binding_.Unbind();
+    ignore_result(extension_mrp_proxy->receiver_.Unbind());
     base::RunLoop().RunUntilIdle();
-    EXPECT_TRUE(extension_mrp_proxy->binding_.is_bound());
+    EXPECT_TRUE(extension_mrp_proxy->receiver_.is_bound());
   }
-  extension_mrp_proxy->binding_.Unbind();
+  ignore_result(extension_mrp_proxy->receiver_.Unbind());
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(extension_mrp_proxy->binding_.is_bound());
+  EXPECT_FALSE(extension_mrp_proxy->receiver_.is_bound());
 }
 
 }  // namespace media_router

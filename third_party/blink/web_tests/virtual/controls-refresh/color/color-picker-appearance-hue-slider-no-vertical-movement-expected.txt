@@ -1,0 +1,6 @@
+Popup opened.
+ArrowUp did not move hue slider selection ring.
+ctrlKey+ArrowUp did not move hue slider selection ring.
+ArrowDown did not move hue slider selection ring.
+ctrlKey+ArrowDown did not move hue slider selection ring.
+TEST COMPLETE

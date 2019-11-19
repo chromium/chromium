@@ -25,7 +25,8 @@
 
 // https://svgwg.org/svg2-draft/struct.html#InterfaceSVGSymbolElement
 
+[Exposed=Window]
 interface SVGSymbolElement : SVGElement {
 };
 
-SVGSymbolElement implements SVGFitToViewBox;
+SVGSymbolElement includes SVGFitToViewBox;

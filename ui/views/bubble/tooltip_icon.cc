@@ -6,6 +6,7 @@
 
 #include "base/timer/timer.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -19,17 +20,12 @@ TooltipIcon::TooltipIcon(const base::string16& tooltip, int tooltip_icon_size)
       tooltip_icon_size_(tooltip_icon_size),
       mouse_inside_(false),
       bubble_(nullptr),
-      preferred_width_(0),
-      observer_(this) {
+      preferred_width_(0) {
   SetDrawAsHovered(false);
 }
 
 TooltipIcon::~TooltipIcon() {
   HideBubble();
-}
-
-const char* TooltipIcon::GetClassName() const {
-  return "TooltipIcon";
 }
 
 void TooltipIcon::OnMouseEntered(const ui::MouseEvent& event) {
@@ -112,5 +108,9 @@ void TooltipIcon::OnWidgetDestroyed(Widget* widget) {
   mouse_watcher_.reset();
   bubble_ = nullptr;
 }
+
+BEGIN_METADATA(TooltipIcon)
+METADATA_PARENT_CLASS(ImageView)
+END_METADATA()
 
 }  // namespace views

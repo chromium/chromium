@@ -22,13 +22,6 @@ SessionID BrowserSyncedTabDelegate::GetSessionId() const {
   return SessionTabHelper::FromWebContents(web_contents())->session_id();
 }
 
-SessionID BrowserSyncedTabDelegate::GetSourceTabID() const {
-  const sync_sessions::SyncSessionsRouterTabHelper* helper =
-      sync_sessions::SyncSessionsRouterTabHelper::FromWebContents(
-          web_contents());
-  return helper->source_tab_id();
-}
-
 bool BrowserSyncedTabDelegate::IsPlaceholderTab() const {
   return false;
 }

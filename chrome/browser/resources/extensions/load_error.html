@@ -1,0 +1,42 @@
+<style include="cr-shared-style">
+  .description-row {
+    display: flex;
+  }
+
+  .row-label {
+    display: block;
+    width: 104px;  /* Magic number from the specs. */
+  }
+
+  paper-spinner-lite {
+    margin-inline-end: 8px;
+  }
+</style>
+<cr-dialog id="dialog" close-text="$i18n{close}">
+  <div slot="title">$i18n{loadErrorHeading}</div>
+  <div slot="body">
+    <div id="info">
+      <div id="file" class="description-row">
+        <span class="row-label">$i18n{loadErrorFileLabel}</span>
+        <span class="row-value">[[loadError.path]]</span>
+      </div>
+      <div id="error" class="description-row">
+        <span class="row-label">$i18n{loadErrorErrorLabel}</span>
+        <span class="row-value">[[loadError.error]]</span>
+      </div>
+    </div>
+    <extensions-code-section id="code"
+        could-not-display-code="$i18n{loadErrorCouldNotLoadManifest}">
+    </extensions-code-section>
+  </div>
+  <div slot="button-container">
+    <paper-spinner-lite active="[[retrying_]]"></paper-spinner-lite>
+    <cr-button class="cancel-button" on-click="close">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" disabled="[[retrying_]]"
+        on-click="onRetryTap_">
+      $i18n{loadErrorRetry}
+    </cr-button>
+  </div>
+</cr-dialog>

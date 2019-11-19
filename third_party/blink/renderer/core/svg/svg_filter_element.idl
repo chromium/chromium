@@ -35,5 +35,5 @@ interface SVGFilterElement : SVGElement {
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedLength      height;
 };
 
-SVGFilterElement implements SVGURIReference;
-// SVGFilterElement implements SVGUnitTypes;
+SVGFilterElement includes SVGURIReference;
+// SVGFilterElement includes SVGUnitTypes;

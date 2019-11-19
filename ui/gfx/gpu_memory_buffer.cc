@@ -21,6 +21,25 @@ GpuMemoryBufferHandle& GpuMemoryBufferHandle::operator=(
 
 GpuMemoryBufferHandle::~GpuMemoryBufferHandle() = default;
 
+GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
+  GpuMemoryBufferHandle handle;
+  handle.type = type;
+  handle.id = id;
+  handle.region = region.Duplicate();
+  handle.offset = offset;
+  handle.stride = stride;
+#if defined(OS_LINUX) || defined(OS_FUCHSIA)
+  handle.native_pixmap_handle = CloneHandleForIPC(native_pixmap_handle);
+#elif defined(OS_MACOSX) && !defined(OS_IOS)
+  NOTIMPLEMENTED();
+#elif defined(OS_WIN)
+  NOTIMPLEMENTED();
+#elif defined(OS_ANDROID)
+  NOTIMPLEMENTED();
+#endif
+  return handle;
+}
+
 void GpuMemoryBuffer::SetColorSpace(const gfx::ColorSpace& color_space) {}
 
 }  // namespace gfx

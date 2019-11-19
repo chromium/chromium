@@ -18,5 +18,5 @@ callback LockGrantedCallback = any (Lock? lock);
         LockOptions options,
         LockGrantedCallback callback);
 
-    [CallWith=ScriptState, RaisesException, Measure] Promise<LockState> query();
+    [CallWith=ScriptState, RaisesException, Measure] Promise<LockManagerSnapshot> query();
 };

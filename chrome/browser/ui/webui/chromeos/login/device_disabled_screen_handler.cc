@@ -5,22 +5,18 @@
 #include "chrome/browser/ui/webui/chromeos/login/device_disabled_screen_handler.h"
 
 #include "chrome/browser/chromeos/login/oobe_screen.h"
+#include "chrome/browser/chromeos/login/screens/device_disabled_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace {
-
-const char kJsScreenPath[] = "login.DeviceDisabledScreen";
-
-}  // namespace
-
 namespace chromeos {
+
+constexpr StaticOobeScreenId DeviceDisabledScreenView::kScreenId;
 
 DeviceDisabledScreenHandler::DeviceDisabledScreenHandler(
     JSCallsContainer* js_calls_container)
     : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_call_js_prefix(kJsScreenPath);
 }
 
 DeviceDisabledScreenHandler::~DeviceDisabledScreenHandler() {
@@ -46,7 +42,7 @@ void DeviceDisabledScreenHandler::Hide() {
   show_on_init_ = false;
 }
 
-void DeviceDisabledScreenHandler::SetDelegate(Delegate* delegate) {
+void DeviceDisabledScreenHandler::SetDelegate(DeviceDisabledScreen* delegate) {
   delegate_ = delegate;
   if (page_is_ready())
     Initialize();

@@ -1,0 +1,64 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO(csharrison): Move subresource_filter_browsertests here.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  generate_jni("jni_headers") {
+    sources = [
+      "../../android/javatests/src/org/chromium/chrome/browser/subresource_filter/TestRulesetPublisher.java",
+    ]
+  }
+
+  android_library("subresource_filter_java_test_support") {
+    testonly = true
+    java_files = [ "../../android/javatests/src/org/chromium/chrome/browser/subresource_filter/TestRulesetPublisher.java" ]
+    deps = [
+      "//base:base_java",
+    ]
+  }
+
+  android_library("subresource_filter_javatests") {
+    testonly = true
+    java_files = [ "../../android/javatests/src/org/chromium/chrome/browser/subresource_filter/SubresourceFilterTest.java" ]
+    deps = [
+      ":subresource_filter_java_test_support",
+      "//base:base_java_test_support",
+      "//chrome/android:chrome_java",
+      "//chrome/android:chrome_test_java",
+      "//chrome/test/android:chrome_java_test_support",
+      "//components/safe_browsing/android:safe_browsing_java",
+      "//content/public/test/android:content_java_test_support",
+      "//net/android:net_java_test_support",
+      "//third_party/android_support_test_runner:rules_java",
+      "//third_party/android_support_test_runner:runner_java",
+      "//third_party/junit",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_ruleset_publisher.cc",
+    "test_ruleset_publisher.h",
+  ]
+  deps = [
+    "//chrome/browser",
+    "//components/subresource_filter/content/browser:browser",
+    "//components/subresource_filter/core/browser:browser",
+    "//components/subresource_filter/core/common:test_support",
+    "//net",
+    "//services/network/public/mojom",
+    "//testing/gtest:gtest",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+
+  if (is_android) {
+    sources += [ "android_test_ruleset_publisher.cc" ]
+    deps += [ ":jni_headers" ]
+  }
+}

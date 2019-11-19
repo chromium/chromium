@@ -8,7 +8,6 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrContext.h"
-#include "third_party/skia/include/gpu/GrContextOptions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"

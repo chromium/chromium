@@ -5,7 +5,7 @@
 #include "components/navigation_interception/navigation_params_android.h"
 
 #include "base/android/jni_string.h"
-#include "jni/NavigationParams_jni.h"
+#include "components/navigation_interception/jni_headers/NavigationParams_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;

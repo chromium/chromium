@@ -102,6 +102,7 @@ class BASE_EXPORT MachPortRendezvousServer {
 
  private:
   friend class MachPortRendezvousServerTest;
+  friend struct MachPortRendezvousFuzzer;
 
   struct ClientData {
     ClientData(ScopedDispatchObject<dispatch_source_t> exit_watcher,
@@ -161,7 +162,9 @@ class BASE_EXPORT MachPortRendezvousClient {
  public:
   // Connects to the MachPortRendezvousServer and requests any registered Mach
   // ports. This only performs the rendezvous once. Subsequent calls to this
-  // method return the same instance.
+  // method return the same instance. If the rendezvous fails, which can happen
+  // if the server is not available, this returns null. Acquiring zero ports
+  // from the exchange is not considered a failure.
   static MachPortRendezvousClient* GetInstance();
 
   // Returns the Mach send right that was registered with |key|. If no such
@@ -201,13 +204,8 @@ class BASE_EXPORT MachPortRendezvousClient {
   // MachRendezvousPort with MACH_PORT_NULL is returned.
   MachRendezvousPort PortForKey(MachPortsForRendezvous::key_type key);
 
-  bool did_acquire_ports() { return did_acquire_ports_; }
-
   // Lock for the below data members.
   Lock lock_;
-  // Flag for if the client has attempted to acquire ports. If the client
-  // experienced an error in doing so, this will still be true.
-  bool did_acquire_ports_ = false;
   // The collection of ports that was acquired.
   MachPortsForRendezvous ports_;
 

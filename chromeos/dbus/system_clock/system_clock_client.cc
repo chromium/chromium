@@ -51,8 +51,7 @@ class SystemClockClientImpl : public SystemClockClient {
   explicit SystemClockClientImpl(dbus::Bus* bus)
       : can_set_time_(false),
         can_set_time_initialized_(false),
-        system_clock_proxy_(nullptr),
-        weak_ptr_factory_(this) {
+        system_clock_proxy_(nullptr) {
     CHECK(bus);
     InitDBus(bus);
   }
@@ -186,29 +185,36 @@ class SystemClockClientImpl : public SystemClockClient {
   dbus::ObjectProxy* system_clock_proxy_;
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::WeakPtrFactory<SystemClockClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<SystemClockClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SystemClockClientImpl);
 };
 
-SystemClockClient::SystemClockClient() = default;
+SystemClockClient::SystemClockClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
 
-SystemClockClient::~SystemClockClient() = default;
+SystemClockClient::~SystemClockClient() {
+  CHECK_EQ(this, g_instance);
+  g_instance = nullptr;
+}
 
 // static
 void SystemClockClient::Initialize(dbus::Bus* bus) {
-  CHECK(!g_instance);
-  if (bus)
-    g_instance = new SystemClockClientImpl(bus);
-  else
-    g_instance = new FakeSystemClockClient();
+  CHECK(bus);
+  new SystemClockClientImpl(bus);
+}
+
+// static
+void SystemClockClient::InitializeFake() {
+  new FakeSystemClockClient();
 }
 
 // static
 void SystemClockClient::Shutdown() {
   CHECK(g_instance);
   delete g_instance;
-  g_instance = nullptr;
 }
 
 // static

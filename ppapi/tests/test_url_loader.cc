@@ -692,30 +692,23 @@ std::string TestURLLoader::TestTrustedHttpRequests() {
     ASSERT_EQ(PP_OK, OpenTrusted("GET", "Accept-Charset:\n"));
     ASSERT_EQ(PP_OK, OpenTrusted("GET", "Accept-Encoding:\n"));
     ASSERT_EQ(PP_OK, OpenTrusted("GET", "Connection:\n"));
-    ASSERT_EQ(PP_OK, OpenTrusted("GET", "Content-Length:\n"));
     ASSERT_EQ(PP_OK, OpenTrusted("GET", "Cookie:\n"));
-    ASSERT_EQ(PP_OK, OpenTrusted("GET", "Cookie2:\n"));
-    ASSERT_EQ(PP_OK, OpenTrusted("GET", "Content-Transfer-Encoding:\n"));
     ASSERT_EQ(PP_OK, OpenTrusted("GET", "Date:\n"));
+    ASSERT_EQ(PP_OK, OpenTrusted("GET", "DNT:\n"));
     ASSERT_EQ(PP_OK, OpenTrusted("GET", "Expect:\n"));
-    ASSERT_EQ(PP_OK, OpenTrusted("GET", "Host:\n"));
-    ASSERT_EQ(PP_OK, OpenTrusted("GET", "Keep-Alive:\n"));
+
+    // Host header is still forbidden because it can conflict with specific URL.
+
     ASSERT_EQ(PP_OK, OpenTrusted("GET", "Referer:\n"));
-    ASSERT_EQ(PP_OK, OpenTrusted("GET", "TE:\n"));
-    ASSERT_EQ(PP_OK, OpenTrusted("GET", "Trailer:\n"));
-    ASSERT_EQ(PP_OK, OpenTrusted("GET", "Transfer-Encoding:\n"));
-    ASSERT_EQ(PP_OK, OpenTrusted("GET", "Upgrade:\n"));
     ASSERT_EQ(PP_OK, OpenTrusted("GET", "User-Agent:\n"));
     ASSERT_EQ(PP_OK, OpenTrusted("GET", "Via:\n"));
-    ASSERT_EQ(PP_OK,
-              OpenTrusted("GET",
-                  "Proxy-Authorization: Basic dXNlcjpwYXNzd29yZA==:\n"));
     ASSERT_EQ(PP_OK, OpenTrusted("GET", "Sec-foo:\n"));
   }
   // Trusted requests with custom referrer should succeed.
   {
     pp::URLRequestInfo request(instance_);
-    request.SetCustomReferrerURL("http://www.google.com/");
+    request.SetCustomReferrerURL("http://www.referer.com/");
+    request.SetHeaders("Referer: http://www.referer.com/");
 
     int32_t rv = OpenTrusted(request, NULL);
     if (rv != PP_OK)

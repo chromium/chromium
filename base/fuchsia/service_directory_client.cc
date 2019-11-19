@@ -4,36 +4,17 @@
 
 #include "base/fuchsia/service_directory_client.h"
 
-#include <lib/fdio/util.h>
+#include <lib/fdio/directory.h>
 #include <utility>
 
+#include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 
 namespace base {
 namespace fuchsia {
-
-namespace {
-
-// static
-fidl::InterfaceHandle<::fuchsia::io::Directory> ConnectToServiceRoot() {
-  fidl::InterfaceHandle<::fuchsia::io::Directory> directory;
-  zx_status_t result = fdio_service_connect(
-      "/svc/.", directory.NewRequest().TakeChannel().release());
-  ZX_CHECK(result == ZX_OK, result) << "Failed to open /svc";
-  return directory;
-}
-
-// Singleton container for the process-global ServiceDirectoryClient instance.
-std::unique_ptr<ServiceDirectoryClient>* ProcessServiceDirectoryClient() {
-  static base::NoDestructor<std::unique_ptr<ServiceDirectoryClient>>
-      service_directory_client_ptr(
-          std::make_unique<ServiceDirectoryClient>(ConnectToServiceRoot()));
-  return service_directory_client_ptr.get();
-}
-
-}  // namespace
 
 ServiceDirectoryClient::ServiceDirectoryClient(
     fidl::InterfaceHandle<::fuchsia::io::Directory> directory)
@@ -45,7 +26,7 @@ ServiceDirectoryClient::~ServiceDirectoryClient() = default;
 
 // static
 const ServiceDirectoryClient* ServiceDirectoryClient::ForCurrentProcess() {
-  return ProcessServiceDirectoryClient()->get();
+  return ServiceDirectoryClient::ProcessInstance()->get();
 }
 
 zx_status_t ServiceDirectoryClient::ConnectToServiceUnsafe(
@@ -56,19 +37,25 @@ zx_status_t ServiceDirectoryClient::ConnectToServiceUnsafe(
                                  request.release());
 }
 
-ScopedServiceDirectoryClientForCurrentProcessForTest::
-    ScopedServiceDirectoryClientForCurrentProcessForTest(
-        fidl::InterfaceHandle<::fuchsia::io::Directory> directory)
-    : old_client_(std::move(*ProcessServiceDirectoryClient())) {
-  *ProcessServiceDirectoryClient() =
-      std::make_unique<ServiceDirectoryClient>(std::move(directory));
-  client_ = ProcessServiceDirectoryClient()->get();
+ServiceDirectoryClient::ServiceDirectoryClient() {}
+
+// static
+std::unique_ptr<ServiceDirectoryClient>
+ServiceDirectoryClient::CreateForProcess() {
+  fidl::InterfaceHandle<::fuchsia::io::Directory> directory =
+      OpenDirectory(base::FilePath(kServiceDirectoryPath));
+  if (directory)
+    return std::make_unique<ServiceDirectoryClient>(std::move(directory));
+  LOG(WARNING) << "/svc is not available.";
+  return base::WrapUnique(new ServiceDirectoryClient);
 }
 
-ScopedServiceDirectoryClientForCurrentProcessForTest::
-    ~ScopedServiceDirectoryClientForCurrentProcessForTest() {
-  DCHECK_EQ(ProcessServiceDirectoryClient()->get(), client_);
-  *ProcessServiceDirectoryClient() = std::move(old_client_);
+// static
+std::unique_ptr<ServiceDirectoryClient>*
+ServiceDirectoryClient::ProcessInstance() {
+  static base::NoDestructor<std::unique_ptr<ServiceDirectoryClient>>
+      service_directory_client_ptr(CreateForProcess());
+  return service_directory_client_ptr.get();
 }
 
 }  // namespace fuchsia

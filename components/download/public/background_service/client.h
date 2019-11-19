@@ -30,19 +30,6 @@ using GetUploadDataCallback =
 // when the DownloadService is created (see the factory).
 class Client {
  public:
-  // Used by OnDownloadStarted to determine whether or not the DownloadService
-  // should continue downloading the file or abort the attempt.
-  enum class ShouldDownload {
-    // Continue to download the file.
-    CONTINUE,
-
-    // Abort the download.
-    ABORT,
-
-    // The count of entries for the enum.
-    COUNT,
-  };
-
   // Used by OnDownloadFailed to determine the reason of the abort.
   enum class FailureReason {
     // Used when the download has been aborted after reaching a threshold where
@@ -88,13 +75,12 @@ class Client {
   // Called when the DownloadService fails to initialize and should not be used.
   virtual void OnServiceUnavailable() = 0;
 
-  // Return whether or not the download should be aborted (potentially in
-  // response to |headers|).  The download will be downloading at the time this
-  // call is made.
-  virtual ShouldDownload OnDownloadStarted(
+  // Will be called when a download has been started and the headers have been
+  // retrieved. The download will be downloading at the time this call is made.
+  virtual void OnDownloadStarted(
       const std::string& guid,
       const std::vector<GURL>& url_chain,
-      const scoped_refptr<const net::HttpResponseHeaders>& headers) = 0;
+      const scoped_refptr<const net::HttpResponseHeaders>& headers);
 
   // Will be called when there is an update to the current progress state of the
   // underlying download.  Note that |bytes_downloaded| may go backwards if the
@@ -104,7 +90,7 @@ class Client {
   // driver.
   virtual void OnDownloadUpdated(const std::string& guid,
                                  uint64_t bytes_uploaded,
-                                 uint64_t bytes_downloaded) = 0;
+                                 uint64_t bytes_downloaded);
 
   // Called when a download failed.  Check FailureReason for a list of possible
   // reasons why this failure occurred.  Note that this will also be called for
@@ -112,7 +98,7 @@ class Client {
   // and response headers filled in if available.
   virtual void OnDownloadFailed(const std::string& guid,
                                 const download::CompletionInfo& info,
-                                FailureReason reason) = 0;
+                                FailureReason reason);
 
   // Called when a download has been successfully completed.
   // The file and the database record will be automatically removed if it is not

@@ -76,7 +76,7 @@ function run(testFunction, logger) {
  * Checks for existence of Bob Pay twice, with the same payment method specific
  * parameters.
  */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   first = null;
   second = null;
 
@@ -94,7 +94,7 @@ function buy() {  // eslint-disable-line no-unused-vars
 /**
  * Checks for existence of Bob Pay and AlicePay.
  */
-function otherBuy() {  // eslint-disable-line no-unused-vars
+function otherBuy() { // eslint-disable-line no-unused-vars
   first = null;
   second = null;
 
@@ -112,7 +112,7 @@ function otherBuy() {  // eslint-disable-line no-unused-vars
 /**
  * Checks for existence of an enrolled instrument for BobPay and AlicePay.
  */
-function hasEnrolledInstrument() {  // eslint-disable-line no-unused-vars
+function hasEnrolledInstrument() { // eslint-disable-line no-unused-vars
   first = null;
   second = null;
 

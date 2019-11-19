@@ -7,49 +7,51 @@
  * file system.
  * @interface
  */
-function EntryLocation() {}
+class EntryLocation {
+  constructor() {
+    /**
+     * Volume information.
+     * @type {VolumeInfo}
+     */
+    this.volumeInfo;
 
-/**
- * Volume information.
- * @type {!VolumeInfo}
- */
-EntryLocation.prototype.volumeInfo;
+    /**
+     * Root type.
+     * @type {VolumeManagerCommon.RootType}
+     */
+    this.rootType;
 
-/**
- * Root type.
- * @type {VolumeManagerCommon.RootType}
- */
-EntryLocation.prototype.rootType;
+    /**
+     * Whether the entry is root entry or not.
+     * @type {boolean}
+     */
+    this.isRootEntry;
 
-/**
- * Whether the entry is root entry or not.
- * @type {boolean}
- */
-EntryLocation.prototype.isRootEntry;
+    /**
+     * Whether the location obtained from the fake entry corresponds to special
+     * searches.
+     * @type {boolean}
+     */
+    this.isSpecialSearchRoot;
 
-/**
- * Whether the location obtained from the fake entry corresponds to special
- * searches.
- * @type {boolean}
- */
-EntryLocation.prototype.isSpecialSearchRoot;
+    /**
+     * Whether the location is under Google Drive or a special search root which
+     * represents a special search from Google Drive.
+     * @type {boolean}
+     */
+    this.isDriveBased;
 
-/**
- * Whether the location is under Google Drive or a special search root which
- * represents a special search from Google Drive.
- * @type {boolean}
- */
-EntryLocation.prototype.isDriveBased;
+    /**
+     * Whether the entry is read only or not.
+     * @type {boolean}
+     */
+    this.isReadOnly;
 
-/**
- * Whether the entry is read only or not.
- * @type {boolean}
- */
-EntryLocation.prototype.isReadOnly;
-
-/**
- * Whether the entry should be displayed with a fixed name instead of individual
- * entry's name. (e.g. "Downloads" is a fixed name)
- * @type {boolean}
- */
-EntryLocation.prototype.hasFixedLabel;
+    /**
+     * Whether the entry should be displayed with a fixed name instead of
+     * individual entry's name. (e.g. "Downloads" is a fixed name)
+     * @type {boolean}
+     */
+    this.hasFixedLabel;
+  }
+}

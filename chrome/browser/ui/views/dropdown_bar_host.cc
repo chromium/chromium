@@ -23,7 +23,8 @@ bool DropdownBarHost::disable_animations_during_testing_ = false;
 // DropdownBarHost, public:
 
 DropdownBarHost::DropdownBarHost(BrowserView* browser_view)
-    : browser_view_(browser_view),
+    : AnimationDelegateViews(browser_view),
+      browser_view_(browser_view),
       view_(nullptr),
       delegate_(nullptr),
       focus_manager_(nullptr),
@@ -48,14 +49,14 @@ void DropdownBarHost::Init(views::View* host_view,
   clip_view->AddChildView(view_);
 
   // Initialize the host.
-  host_.reset(new ThemeCopyingWidget(browser_view_->GetWidget()));
+  host_ = std::make_unique<ThemeCopyingWidget>(browser_view_->GetWidget());
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_CONTROL);
   params.delegate = this;
   params.name = "DropdownBarHost";
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = browser_view_->GetWidget()->GetNativeView();
   params.opacity = views::Widget::InitParams::TRANSLUCENT_WINDOW;
-  host_->Init(params);
+  host_->Init(std::move(params));
   host_->SetContentsView(clip_view.release());
 
   SetHostViewNative(host_view);
@@ -71,9 +72,9 @@ void DropdownBarHost::Init(views::View* host_view,
     NOTREACHED();
   }
 
-  animation_.reset(new gfx::SlideAnimation(this));
+  animation_ = std::make_unique<gfx::SlideAnimation>(this);
   if (!gfx::Animation::ShouldRenderRichAnimation())
-    animation_->SetSlideDuration(0);
+    animation_->SetSlideDuration(base::TimeDelta());
 
   // Update the widget and |view_| bounds to the hidden state.
   AnimationProgressed(animation_.get());
@@ -87,7 +88,8 @@ DropdownBarHost::~DropdownBarHost() {
 void DropdownBarHost::Show(bool animate) {
   // Stores the currently focused view, and tracks focus changes so that we can
   // restore focus when the dropdown widget is closed.
-  focus_tracker_.reset(new views::ExternalFocusTracker(view_, focus_manager_));
+  focus_tracker_ =
+      std::make_unique<views::ExternalFocusTracker>(view_, focus_manager_);
 
   SetDialogPosition(GetDialogPosition(gfx::Rect()));
 
@@ -192,7 +194,7 @@ void DropdownBarHost::OnDidChangeFocus(views::View* focused_before,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// DropdownBarHost, gfx::AnimationDelegate implementation:
+// DropdownBarHost, views::AnimationDelegateViews implementation:
 
 void DropdownBarHost::AnimationProgressed(const gfx::Animation* animation) {
   // First, we calculate how many pixels to slide the widget.

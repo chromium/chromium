@@ -73,9 +73,6 @@ void BlacklistData::AddEntry(const std::string& host_name,
       EvictOldestHost();
   }
 
-  // Only allowed types should be recorded.
-  DCHECK(allowed_types_.find(type) != allowed_types_.end());
-
   if (type_policy_) {
     auto item = black_list_item_type_map_.find(type);
     if (item == black_list_item_type_map_.end()) {

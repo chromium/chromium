@@ -55,10 +55,10 @@ extern const char kSortingCodeField[];
 extern const char kCountryField[];
 
 // AddressUiComponent::HINT_SHORT.
-extern const char kShortField[];
+extern const bool kShortField;
 
 // AddressUiComponent::HINT_LONG.
-extern const char kLongField[];
+extern const bool kLongField;
 
 // Converts a field type in string format as returned by
 // autofill::GetAddressComponents into the appropriate autofill::ServerFieldType
@@ -74,11 +74,6 @@ void GetAddressComponents(const std::string& country_code,
                           const std::string& ui_language_code,
                           base::ListValue* address_components,
                           std::string* components_language_code);
-
-// Sets data related to the country combobox.
-void SetCountryData(const PersonalDataManager& manager,
-                    base::DictionaryValue* localized_strings,
-                    const std::string& ui_language_code);
 
 }  // namespace autofill
 

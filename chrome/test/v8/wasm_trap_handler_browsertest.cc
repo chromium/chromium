@@ -120,16 +120,18 @@ IN_PROC_BROWSER_TEST_F(WasmTrapHandlerBrowserTest, OutOfBounds) {
 IN_PROC_BROWSER_TEST_F(WasmTrapHandlerBrowserTest,
                        TrapHandlerCorrectlyConfigured) {
   const bool is_trap_handler_enabled = IsTrapHandlerEnabled();
-// In msan builds, v8 is configured to generate arm code and run it in the
-// simulator. This results in an incorrect value here, because Chrome thinks
-// the trap handlers hould be supported but it is not.
-#if defined(MEMORY_SANITIZER)
-  ignore_result(kIsTrapHandlerSupported);
-  ASSERT_FALSE(is_trap_handler_enabled);
-#else
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    defined(THREAD_SANITIZER) || defined(LEAK_SANITIZER) ||    \
+    defined(UNDEFINED_SANITIZER)
+  // Sanitizers may prevent signal handler installation and thereby trap handler
+  // setup. As there is no easy way to test if signal handler installation is
+  // possible, we disable this test for sanitizers.
+  ignore_result(is_trap_handler_enabled);
+  return;
+#endif
+
   ASSERT_EQ(is_trap_handler_enabled,
             kIsTrapHandlerSupported && base::FeatureList::IsEnabled(
                                            features::kWebAssemblyTrapHandler));
-#endif
 }
 }  // namespace

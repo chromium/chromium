@@ -151,12 +151,11 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
   };
 
   // Renders a scaled/transformed copy of a source texture according to the
-  // |request| parameters and other source characteristics. The result texture
-  // is populated and its GL reference placed in |things|. For RGBA_BITMAP
-  // requests, the image content will be rendered in top-down row order and
-  // maybe red-blue swapped, to support efficient readback later on. For
-  // RGBA_TEXTURE requests, the image content is always rendered Y-flipped
-  // (bottom-up row order).
+  // |request| parameters and other source characteristics. |result_texture|
+  // must be allocated/sized by the caller. For RGBA_BITMAP requests, the image
+  // content will be rendered in top-down row order and maybe red-blue swapped,
+  // to support efficient readback later on. For RGBA_TEXTURE requests, the
+  // image content is always rendered Y-flipped (bottom-up row order).
   void RenderResultTexture(const CopyOutputRequest& request,
                            bool flipped_source,
                            const gfx::ColorSpace& source_color_space,
@@ -164,6 +163,7 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
                            const gfx::Size& source_texture_size,
                            const gfx::Rect& sampling_rect,
                            const gfx::Rect& result_rect,
+                           GLuint result_texture,
                            ReusableThings* things);
 
   // Similar to RenderResultTexture(), except also transform the image into I420
@@ -210,13 +210,17 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
                                     const gfx::Rect& result_rect,
                                     const gfx::ColorSpace& color_space);
 
-  // Completes a copy request by packaging-up and sending the given
-  // |result_texture| in a mailbox. This method takes ownership of
-  // |result_texture|.
-  void SendTextureResult(std::unique_ptr<CopyOutputRequest> request,
-                         GLuint result_texture,
-                         const gfx::Rect& result_rect,
-                         const gfx::ColorSpace& color_space);
+  // Renders a scaled/transformed copy of a source texture similarly to
+  // RenderResultTexture, but packages up the result in a mailbox and sends it
+  // as the result to the CopyOutputRequest.
+  void RenderAndSendTextureResult(std::unique_ptr<CopyOutputRequest> request,
+                                  bool flipped_source,
+                                  const gfx::ColorSpace& color_space,
+                                  GLuint source_texture,
+                                  const gfx::Size& source_texture_size,
+                                  const gfx::Rect& sampling_rect,
+                                  const gfx::Rect& result_rect,
+                                  ReusableThings* things);
 
   // Like StartReadbackFromTexture(), except that this processes the three Y/U/V
   // result textures in |things| by using three framebuffers and three

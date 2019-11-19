@@ -43,7 +43,13 @@ chrome.test.getConfig(function(config) {
       chrome.tabs.create({ url: test_url });
     },
     function testDocumentStartRunsInSameWorldAsDocumentEndOfJavaScriptUrl() {
-      chrome.test.listenOnce(onRequest, checkFirstMessageEquals('parent'));
+      onRequest.addListener(function listener(request) {
+        onRequest.removeListener(listener);
+        // The empty document was replaced with the result of the evaluated
+        // JavaScript code.
+        checkFirstMessageEquals('jsresult/something')(request);
+        chrome.test.succeed();
+      });
       chrome.test.log('Creating tab...');
       var test_url =
           ('http://localhost:PORT/extensions/' +

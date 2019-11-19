@@ -19,8 +19,9 @@
 #include "ui/display/screen.h"
 
 #if defined(OS_CHROMEOS)
+#include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_client.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "components/account_id/account_id.h"
 #endif
 
@@ -28,15 +29,17 @@ using content::WebContents;
 
 namespace {
 
-
 // Type used to indicate to match anything.
-const int kMatchAny                     = 0;
+const uint32_t kMatchAny = 0;
 
 // See BrowserMatches for details.
-const int kMatchOriginalProfile         = 1 << 0;
-const int kMatchCanSupportWindowFeature = 1 << 1;
-const int kMatchTabbed                  = 1 << 2;
-const int kMatchDisplayId               = 1 << 3;
+const uint32_t kMatchOriginalProfile = 1 << 0;
+const uint32_t kMatchCanSupportWindowFeature = 1 << 1;
+const uint32_t kMatchNormal = 1 << 2;
+const uint32_t kMatchDisplayId = 1 << 3;
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
+const uint32_t kMatchCurrentWorkspace = 1 << 4;
+#endif
 
 // Returns true if the specified |browser| matches the specified arguments.
 // |match_types| is a bitmask dictating what parameters to match:
@@ -45,7 +48,7 @@ const int kMatchDisplayId               = 1 << 3;
 //   incognito windows.
 // . If it contains kMatchCanSupportWindowFeature
 //   |CanSupportWindowFeature(window_feature)| must return true.
-// . If it contains kMatchTabbed, the browser must be a tabbed browser.
+// . If it contains kMatchNormal, the browser must be a normal tabbed browser.
 bool BrowserMatches(Browser* browser,
                     Profile* profile,
                     Browser::WindowFeature window_feature,
@@ -58,13 +61,14 @@ bool BrowserMatches(Browser* browser,
 
 #if defined(OS_CHROMEOS)
   // Get the profile on which the window is currently shown.
-  // MultiUserWindowManagerClient might be NULL under test scenario.
-  MultiUserWindowManagerClient* const client =
-      MultiUserWindowManagerClient::GetInstance();
+  // MultiUserWindowManagerHelper might be NULL under test scenario.
+  ash::MultiUserWindowManager* const multi_user_window_manager =
+      MultiUserWindowManagerHelper::GetWindowManager();
   Profile* shown_profile = nullptr;
-  if (client) {
+  if (multi_user_window_manager) {
     const AccountId& shown_account_id =
-        client->GetUserPresentingWindow(browser->window()->GetNativeWindow());
+        multi_user_window_manager->GetUserPresentingWindow(
+            browser->window()->GetNativeWindow());
     shown_profile =
         shown_account_id.is_valid()
             ? multi_user_util::GetProfileFromAccountId(shown_account_id)
@@ -91,8 +95,16 @@ bool BrowserMatches(Browser* browser,
 #endif
   }
 
-  if ((match_types & kMatchTabbed) && !browser->is_type_tabbed())
+  if ((match_types & kMatchNormal) && !browser->is_type_normal())
     return false;
+
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
+  // Note that |browser->window()| might be nullptr in tests.
+  if ((match_types & kMatchCurrentWorkspace) &&
+      (!browser->window() || !browser->window()->IsOnCurrentWorkspace())) {
+    return false;
+  }
+#endif  // OS_WIN
 
   if (match_types & kMatchDisplayId) {
     return display::Screen::GetScreen()
@@ -124,17 +136,22 @@ Browser* FindBrowserWithTabbedOrAnyType(
     Profile* profile,
     bool match_tabbed,
     bool match_original_profiles,
+    bool match_current_workspace,
     int64_t display_id = display::kInvalidDisplayId) {
   BrowserList* browser_list_impl = BrowserList::GetInstance();
   if (!browser_list_impl)
     return NULL;
   uint32_t match_types = kMatchAny;
   if (match_tabbed)
-    match_types |= kMatchTabbed;
+    match_types |= kMatchNormal;
   if (match_original_profiles)
     match_types |= kMatchOriginalProfile;
   if (display_id != display::kInvalidDisplayId)
     match_types |= kMatchDisplayId;
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
+  if (match_current_workspace)
+    match_types |= kMatchCurrentWorkspace;
+#endif
   Browser* browser =
       FindBrowserMatching(browser_list_impl->begin_last_active(),
                           browser_list_impl->end_last_active(), profile,
@@ -170,18 +187,18 @@ Browser* FindTabbedBrowser(Profile* profile,
                            bool match_original_profiles,
                            int64_t display_id) {
   return FindBrowserWithTabbedOrAnyType(profile, true, match_original_profiles,
+                                        /*match_current_workspace=*/true,
                                         display_id);
 }
 
-Browser* FindAnyBrowser(Profile* profile,
-                        bool match_original_profiles) {
-  return FindBrowserWithTabbedOrAnyType(profile,
-                                        false,
-                                        match_original_profiles);
+Browser* FindAnyBrowser(Profile* profile, bool match_original_profiles) {
+  return FindBrowserWithTabbedOrAnyType(profile, false, match_original_profiles,
+                                        /*match_current_workspace=*/false);
 }
 
 Browser* FindBrowserWithProfile(Profile* profile) {
-  return FindBrowserWithTabbedOrAnyType(profile, false, false);
+  return FindBrowserWithTabbedOrAnyType(profile, false, false,
+                                        /*match_current_workspace=*/false);
 }
 
 Browser* FindBrowserWithID(SessionID desired_id) {
@@ -239,7 +256,7 @@ size_t GetBrowserCount(Profile* profile) {
 }
 
 size_t GetTabbedBrowserCount(Profile* profile) {
-  return GetBrowserCountImpl(profile, kMatchTabbed);
+  return GetBrowserCountImpl(profile, kMatchNormal);
 }
 
 }  // namespace chrome

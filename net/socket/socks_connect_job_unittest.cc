@@ -7,13 +7,14 @@
 #include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/log/net_log.h"
 #include "net/socket/client_socket_factory.h"
@@ -24,7 +25,7 @@
 #include "net/socket/socks_connect_job.h"
 #include "net/socket/transport_connect_job.h"
 #include "net/test/gtest_util.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,8 +38,7 @@ const int kProxyPort = 4321;
 
 constexpr base::TimeDelta kTinyTime = base::TimeDelta::FromMicroseconds(1);
 
-class SOCKSConnectJobTest : public testing::Test,
-                            public WithScopedTaskEnvironment {
+class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
  public:
   enum class SOCKSVersion {
     V4,
@@ -46,45 +46,44 @@ class SOCKSConnectJobTest : public testing::Test,
   };
 
   SOCKSConnectJobTest()
-      : WithScopedTaskEnvironment(
-            base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME,
-            base::test::ScopedTaskEnvironment::NowSource::
-                MAIN_THREAD_MOCK_TIME) {
-    // Set an initial delay to ensure that the first call to TimeTicks::Now()
-    // before incrementing the counter does not return a null value.
-    FastForwardBy(base::TimeDelta::FromSeconds(1));
-  }
+      : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        common_connect_job_params_(
+            &client_socket_factory_,
+            &host_resolver_,
+            nullptr /* http_auth_cache */,
+            nullptr /* http_auth_handler_factory */,
+            nullptr /* spdy_session_pool */,
+            nullptr /* quic_supported_versions */,
+            nullptr /* quic_stream_factory */,
+            nullptr /* proxy_delegate */,
+            nullptr /* http_user_agent_settings */,
+            nullptr /* ssl_client_context */,
+            nullptr /* socket_performance_watcher_factory */,
+            nullptr /* network_quality_estimator */,
+            &net_log_,
+            nullptr /* websocket_endpoint_lock_manager */) {}
 
   ~SOCKSConnectJobTest() override {}
 
   static scoped_refptr<SOCKSSocketParams> CreateSOCKSParams(
-      SOCKSVersion socks_version) {
+      SOCKSVersion socks_version,
+      bool disable_secure_dns = false) {
     return base::MakeRefCounted<SOCKSSocketParams>(
         base::MakeRefCounted<TransportSocketParams>(
-            HostPortPair(kProxyHostName, kProxyPort), true /* respect_limits */,
-            OnHostResolutionCallback()),
+            HostPortPair(kProxyHostName, kProxyPort), NetworkIsolationKey(),
+            disable_secure_dns, OnHostResolutionCallback()),
         socks_version == SOCKSVersion::V5,
         socks_version == SOCKSVersion::V4
             ? HostPortPair(kSOCKS4TestHost, kSOCKS4TestPort)
             : HostPortPair(kSOCKS5TestHost, kSOCKS5TestPort),
-        TRAFFIC_ANNOTATION_FOR_TESTS);
-  }
-
-  CommonConnectJobParams CreateCommonParams() {
-    // Group name doesn't matter.
-    return CommonConnectJobParams(
-        "group_name", SocketTag(), &client_socket_factory_, &host_resolver_,
-        nullptr /* proxy_delegate */, SSLClientSocketContext(),
-        SSLClientSocketContext(),
-        nullptr /* socket_performance_watcher_factory */,
-        nullptr /* network_quality_estimator */, &net_log_,
-        nullptr /* websocket_endpoint_lock_manager */);
+        NetworkIsolationKey(), TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
  protected:
   NetLog net_log_;
   MockHostResolver host_resolver_;
   MockTaggingClientSocketFactory client_socket_factory_;
+  const CommonConnectJobParams common_connect_job_params_;
 };
 
 TEST_F(SOCKSConnectJobTest, HostResolutionFailure) {
@@ -93,7 +92,8 @@ TEST_F(SOCKSConnectJobTest, HostResolutionFailure) {
   for (bool failure_synchronous : {false, true}) {
     host_resolver_.set_synchronous_mode(failure_synchronous);
     TestConnectJobDelegate test_delegate;
-    SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, CreateCommonParams(),
+    SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, SocketTag(),
+                                      &common_connect_job_params_,
                                       CreateSOCKSParams(SOCKSVersion::V5),
                                       &test_delegate, nullptr /* net_log */);
     test_delegate.StartJobExpectingResult(
@@ -121,7 +121,8 @@ TEST_F(SOCKSConnectJobTest, HandshakeError) {
       client_socket_factory_.AddSocketDataProvider(&sequenced_socket_data);
 
       TestConnectJobDelegate test_delegate;
-      SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, CreateCommonParams(),
+      SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, SocketTag(),
+                                        &common_connect_job_params_,
                                         CreateSOCKSParams(SOCKSVersion::V5),
                                         &test_delegate, nullptr /* net_log */);
       test_delegate.StartJobExpectingResult(
@@ -154,7 +155,8 @@ TEST_F(SOCKSConnectJobTest, SOCKS4) {
       client_socket_factory_.AddSocketDataProvider(&sequenced_socket_data);
 
       TestConnectJobDelegate test_delegate;
-      SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, CreateCommonParams(),
+      SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, SocketTag(),
+                                        &common_connect_job_params_,
                                         CreateSOCKSParams(SOCKSVersion::V4),
                                         &test_delegate, nullptr /* net_log */);
       test_delegate.StartJobExpectingResult(
@@ -190,7 +192,8 @@ TEST_F(SOCKSConnectJobTest, SOCKS5) {
       client_socket_factory_.AddSocketDataProvider(&sequenced_socket_data);
 
       TestConnectJobDelegate test_delegate;
-      SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, CreateCommonParams(),
+      SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, SocketTag(),
+                                        &common_connect_job_params_,
                                         CreateSOCKSParams(SOCKSVersion::V5),
                                         &test_delegate, nullptr /* net_log */);
       test_delegate.StartJobExpectingResult(
@@ -217,7 +220,8 @@ TEST_F(SOCKSConnectJobTest, HasEstablishedConnection) {
   client_socket_factory_.AddSocketDataProvider(&sequenced_socket_data);
 
   TestConnectJobDelegate test_delegate;
-  SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, CreateCommonParams(),
+  SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, SocketTag(),
+                                    &common_connect_job_params_,
                                     CreateSOCKSParams(SOCKSVersion::V4),
                                     &test_delegate, nullptr /* net_log */);
   socks_connect_job.Connect();
@@ -247,7 +251,8 @@ TEST_F(SOCKSConnectJobTest, TimeoutDuringDnsResolution) {
   host_resolver_.set_ondemand_mode(true);
 
   TestConnectJobDelegate test_delegate;
-  SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, CreateCommonParams(),
+  SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, SocketTag(),
+                                    &common_connect_job_params_,
                                     CreateSOCKSParams(SOCKSVersion::V5),
                                     &test_delegate, nullptr /* net_log */);
   socks_connect_job.Connect();
@@ -268,11 +273,6 @@ TEST_F(SOCKSConnectJobTest, TimeoutDuringDnsResolution) {
 
 // Check that SOCKSConnectJob's timeout is respected for the handshake phase.
 TEST_F(SOCKSConnectJobTest, TimeoutDuringHandshake) {
-  // This test assumes TransportConnectJobs have a shorter timeout than
-  // SOCKSConnectJobs.
-  ASSERT_LT(TransportConnectJob::ConnectionTimeout(),
-            SOCKSConnectJob::ConnectionTimeout());
-
   host_resolver_.set_ondemand_mode(true);
 
   MockWrite writes[] = {
@@ -284,7 +284,8 @@ TEST_F(SOCKSConnectJobTest, TimeoutDuringHandshake) {
   client_socket_factory_.AddSocketDataProvider(&sequenced_socket_data);
 
   TestConnectJobDelegate test_delegate;
-  SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, CreateCommonParams(),
+  SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, SocketTag(),
+                                    &common_connect_job_params_,
                                     CreateSOCKSParams(SOCKSVersion::V5),
                                     &test_delegate, nullptr /* net_log */);
   socks_connect_job.Connect();
@@ -296,20 +297,17 @@ TEST_F(SOCKSConnectJobTest, TimeoutDuringHandshake) {
   EXPECT_TRUE(host_resolver_.has_pending_requests());
 
   // DNS resolution completes, and the socket connects.  The request should not
-  // time out, even after the TransportConnectJob's timeout passes.
+  // time out, even after the TransportConnectJob's timeout passes. The
+  // SOCKSConnectJob's handshake timer should also be started.
   host_resolver_.ResolveAllPending();
 
-  // The timer is now restarted with a value of
-  // SOCKSConnectJob::ConnectionTimeout() -
-  // TransportConnectJob::ConnectionTimeout(). Waiting until almost that much
-  // time has passed should cause no observable change in the SOCKSConnectJob's
-  // status.
-  FastForwardBy(SOCKSConnectJob::ConnectionTimeout() -
-                TransportConnectJob::ConnectionTimeout() - kTinyTime);
+  // Waiting until just before the SOCKS handshake times out. There should cause
+  // no observable change in the SOCKSConnectJob's status.
+  FastForwardBy(SOCKSConnectJob::HandshakeTimeoutForTesting() - kTinyTime);
   EXPECT_FALSE(test_delegate.has_result());
 
-  // Wait for exactly the SOCKSConnectJob's timeout has fully elapsed. The Job
-  // should time out.
+  // Wait for exactly the SOCKSConnectJob's handshake timeout has fully elapsed.
+  // The Job should time out.
   FastForwardBy(kTinyTime);
   EXPECT_FALSE(host_resolver_.has_pending_requests());
   EXPECT_TRUE(test_delegate.has_result());
@@ -329,9 +327,9 @@ TEST_F(SOCKSConnectJobTest, Priority) {
         continue;
       TestConnectJobDelegate test_delegate;
       SOCKSConnectJob socks_connect_job(
-          static_cast<RequestPriority>(initial_priority), CreateCommonParams(),
-          CreateSOCKSParams(SOCKSVersion::V4), &test_delegate,
-          nullptr /* net_log */);
+          static_cast<RequestPriority>(initial_priority), SocketTag(),
+          &common_connect_job_params_, CreateSOCKSParams(SOCKSVersion::V4),
+          &test_delegate, nullptr /* net_log */);
       ASSERT_THAT(socks_connect_job.Connect(), test::IsError(ERR_IO_PENDING));
       ASSERT_TRUE(host_resolver_.has_pending_requests());
       int request_id = host_resolver_.num_resolve();
@@ -346,6 +344,23 @@ TEST_F(SOCKSConnectJobTest, Priority) {
       socks_connect_job.ChangePriority(
           static_cast<RequestPriority>(initial_priority));
       EXPECT_EQ(initial_priority, host_resolver_.request_priority(request_id));
+    }
+  }
+}
+
+TEST_F(SOCKSConnectJobTest, DisableSecureDns) {
+  for (bool disable_secure_dns : {false, true}) {
+    TestConnectJobDelegate test_delegate;
+    SOCKSConnectJob socks_connect_job(
+        DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+        CreateSOCKSParams(SOCKSVersion::V4, disable_secure_dns), &test_delegate,
+        nullptr /* net_log */);
+    ASSERT_THAT(socks_connect_job.Connect(), test::IsError(ERR_IO_PENDING));
+    EXPECT_EQ(disable_secure_dns,
+              host_resolver_.last_secure_dns_mode_override().has_value());
+    if (disable_secure_dns) {
+      EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF,
+                host_resolver_.last_secure_dns_mode_override().value());
     }
   }
 }
@@ -374,7 +389,8 @@ TEST_F(SOCKSConnectJobTest, ConnectTiming) {
   client_socket_factory_.AddSocketDataProvider(&sequenced_socket_data);
 
   TestConnectJobDelegate test_delegate;
-  SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, CreateCommonParams(),
+  SOCKSConnectJob socks_connect_job(DEFAULT_PRIORITY, SocketTag(),
+                                    &common_connect_job_params_,
                                     CreateSOCKSParams(SOCKSVersion::V5),
                                     &test_delegate, nullptr /* net_log */);
   base::TimeTicks start = base::TimeTicks::Now();
@@ -413,7 +429,8 @@ TEST_F(SOCKSConnectJobTest, CancelDuringDnsResolution) {
 
   TestConnectJobDelegate test_delegate;
   std::unique_ptr<SOCKSConnectJob> socks_connect_job =
-      std::make_unique<SOCKSConnectJob>(DEFAULT_PRIORITY, CreateCommonParams(),
+      std::make_unique<SOCKSConnectJob>(DEFAULT_PRIORITY, SocketTag(),
+                                        &common_connect_job_params_,
                                         CreateSOCKSParams(SOCKSVersion::V5),
                                         &test_delegate, nullptr /* net_log */);
   socks_connect_job->Connect();
@@ -436,7 +453,8 @@ TEST_F(SOCKSConnectJobTest, CancelDuringConnect) {
 
   TestConnectJobDelegate test_delegate;
   std::unique_ptr<SOCKSConnectJob> socks_connect_job =
-      std::make_unique<SOCKSConnectJob>(DEFAULT_PRIORITY, CreateCommonParams(),
+      std::make_unique<SOCKSConnectJob>(DEFAULT_PRIORITY, SocketTag(),
+                                        &common_connect_job_params_,
                                         CreateSOCKSParams(SOCKSVersion::V5),
                                         &test_delegate, nullptr /* net_log */);
   socks_connect_job->Connect();
@@ -464,7 +482,8 @@ TEST_F(SOCKSConnectJobTest, CancelDuringHandshake) {
 
   TestConnectJobDelegate test_delegate;
   std::unique_ptr<SOCKSConnectJob> socks_connect_job =
-      std::make_unique<SOCKSConnectJob>(DEFAULT_PRIORITY, CreateCommonParams(),
+      std::make_unique<SOCKSConnectJob>(DEFAULT_PRIORITY, SocketTag(),
+                                        &common_connect_job_params_,
                                         CreateSOCKSParams(SOCKSVersion::V5),
                                         &test_delegate, nullptr /* net_log */);
   socks_connect_job->Connect();

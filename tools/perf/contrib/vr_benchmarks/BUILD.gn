@@ -3,15 +3,15 @@
 # found in the LICENSE file.
 
 import("//chrome/browser/vr/features.gni")
-
-assert(is_android)
+import("//device/vr/buildflags/buildflags.gni")
 
 group("vr_perf_tests") {
   testonly = true
   data = [
     "./data/",
+    "./desktop_runtimes/",
     "./__init__.py",
-    "./shared_android_vr_page_state.py",
+    "./shared_vr_page_state.py",
     "./vr_benchmarks.py",
     "./vr_browsing_mode_pages.py",
     "./vr_sample_page.py",
@@ -19,26 +19,45 @@ group("vr_perf_tests") {
     "./webvr_sample_pages.py",
     "./webvr_wpr_pages.py",
     "./webxr_sample_pages.py",
-    "//chrome/android/shared_preference_files/test/",
-    "//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk",
-    "//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk",
+
+    # For the ACL setup code.
+    "//chrome/browser/vr/test/run_xr_browser_tests.py",
     "//chrome/test/data/xr/webvr_info/samples/",
-    "//third_party/webxr_test_pages/webxr-samples",
+    "//third_party/webxr_test_pages/webxr-samples/",
   ]
   data_deps = [
-    "//chrome/android:vr_nfc_simulator_apk",
     "//testing:run_perf_test",
   ]
 
-  # We'll only ever use the assets if it's a Chrome-branded build. We don't have
-  # a way of checking whether the files are actually present to copy, but the
-  # script will deal with that.
-  if (use_vr_assets_component) {
-    data_deps += [ ":generate_vr_assets_profile" ]
-  }
   deps = [
     "//tools/perf:perf",
   ]
+
+  if (is_android) {
+    data += [
+      "//chrome/android/shared_preference_files/test/",
+      "//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk",
+      "//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk",
+    ]
+
+    data_deps += [
+      "//chrome/android:chrome_modern_public_bundle",
+      "//chrome/android:vr_nfc_simulator_apk",
+    ]
+
+    # We'll only ever use the assets if it's a Chrome-branded build. We don't have
+    # a way of checking whether the files are actually present to copy, but the
+    # script will deal with that.
+    if (use_vr_assets_component) {
+      data_deps += [ ":generate_vr_assets_profile" ]
+    }
+  }
+
+  if (is_win) {
+    if (enable_openvr) {
+      deps += [ "//device/vr:openvr_mock" ]
+    }
+  }
 }
 
 # Copies files to the gen/ directory and creates a manifest so that the VR
@@ -53,7 +72,7 @@ action("generate_vr_assets_profile") {
     "//chrome/browser/resources/vr/assets/vr_assets_component_files.json",
   ]
   outputs = [
-    "$target_gen_dir/vr_assets_profile/",
+    "$target_gen_dir/vr_assets_profile",
   ]
   args = [
     "--output",

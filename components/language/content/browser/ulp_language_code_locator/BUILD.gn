@@ -8,9 +8,9 @@ import("//testing/test.gni")
 action("ulp_serialized_to_static_c") {
   script = "ulp_serialized_to_static_c.py"
   inputs = [
-    "geolanguage-data_rank0.txt",
-    "geolanguage-data_rank1.txt",
-    "geolanguage-data_rank2.txt",
+    "geolanguage-data_rank0.bin",
+    "geolanguage-data_rank1.bin",
+    "geolanguage-data_rank2.bin",
   ]
   sources = [
     "ulp_language_code_locator_helper.h.tmpl",
@@ -60,6 +60,7 @@ source_set("ulp_language_code_locator") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "s2langquadtree_datatest.cc",
     "s2langquadtree_unittest.cc",
     "ulp_language_code_locator_unittest.cc",
   ]
@@ -69,23 +70,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/prefs:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/s2cellid",
-  ]
-}
-
-test("data_tests") {
-  sources = [
-    "//components/test/run_all_unittests.cc",
-    "s2langquadtree_datatest.cc",
-  ]
-  deps = [
-    ":s2langquadtree",
-    ":ulp_language_code_locator",
-    "//base",
-    "//base/test:test_support",
-    "//components/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/s2cellid",

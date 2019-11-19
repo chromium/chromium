@@ -12,14 +12,29 @@
 
 namespace manual_fill {
 
-extern NSString* const PasswordSearchBarAccessibilityIdentifier;
-extern NSString* const PasswordTableViewAccessibilityIdentifier;
+extern NSString* const kPasswordDoneButtonAccessibilityIdentifier;
+extern NSString* const kPasswordSearchBarAccessibilityIdentifier;
+extern NSString* const kPasswordTableViewAccessibilityIdentifier;
 
 }  // namespace manual_fill
+
+@class PasswordViewController;
+
+// Delegate of the PasswordViewController.
+@protocol PasswordViewControllerDelegate <NSObject>
+
+// User Tapped "Done" button.
+- (void)passwordViewControllerDidTapDoneButton:
+    (PasswordViewController*)passwordViewController;
+
+@end
 
 // This class presents a list of usernames and passwords in a table view.
 @interface PasswordViewController
     : FallbackViewController<ManualFillPasswordConsumer>
+
+// Delegate for the view controller.
+@property(nonatomic, weak) id<PasswordViewControllerDelegate> delegate;
 
 - (instancetype)initWithSearchController:(UISearchController*)searchController
     NS_DESIGNATED_INITIALIZER;

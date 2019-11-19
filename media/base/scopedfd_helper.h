@@ -16,8 +16,8 @@ namespace media {
 // this and BUILD.gn as our needs evolve.
 #if defined(OS_LINUX)
 
-// Return a new vector containing duplicates of |fds|, or an empty vector in
-// case of error.
+// Return a new vector containing duplicates of |fds|, or PCHECKs in case of an
+// error.
 MEDIA_EXPORT std::vector<base::ScopedFD> DuplicateFDs(
     const std::vector<base::ScopedFD>& fds);
 

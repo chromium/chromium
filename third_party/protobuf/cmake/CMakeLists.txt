@@ -30,6 +30,7 @@ endif()
 
 # Options
 option(protobuf_BUILD_TESTS "Build tests" ON)
+option(protobuf_BUILD_CONFORMANCE "Build conformance tests" OFF)
 option(protobuf_BUILD_EXAMPLES "Build examples" OFF)
 option(protobuf_BUILD_PROTOC_BINARIES "Build libprotoc and protoc compiler" ON)
 if (BUILD_SHARED_LIBS)
@@ -67,23 +68,28 @@ string(REGEX REPLACE        "${protobuf_AC_INIT_REGEX}" "\\2"
 string(REGEX REPLACE        "${protobuf_AC_INIT_REGEX}" "\\3"
     protobuf_CONTACT        "${protobuf_AC_INIT_LINE}")
 # Parse version tweaks
-set(protobuf_VERSION_REGEX "^([0-9]+)\\.([0-9]+)\\.([0-9]+)-?(.*)$")
+set(protobuf_VERSION_REGEX "^([0-9]+)\\.([0-9]+)\\.([0-9]+)([-]rc[-]|\\.)?([0-9]*)$")
 string(REGEX REPLACE     "${protobuf_VERSION_REGEX}" "\\1"
   protobuf_VERSION_MAJOR "${protobuf_VERSION_STRING}")
 string(REGEX REPLACE     "${protobuf_VERSION_REGEX}" "\\2"
   protobuf_VERSION_MINOR "${protobuf_VERSION_STRING}")
 string(REGEX REPLACE     "${protobuf_VERSION_REGEX}" "\\3"
   protobuf_VERSION_PATCH "${protobuf_VERSION_STRING}")
-string(REGEX REPLACE     "${protobuf_VERSION_REGEX}" "\\4"
+string(REGEX REPLACE     "${protobuf_VERSION_REGEX}" "\\5"
   protobuf_VERSION_PRERELEASE "${protobuf_VERSION_STRING}")
+
+message(STATUS "${protobuf_VERSION_PRERELEASE}")
 
 # Package version
 set(protobuf_VERSION
   "${protobuf_VERSION_MAJOR}.${protobuf_VERSION_MINOR}.${protobuf_VERSION_PATCH}")
 
 if(protobuf_VERSION_PRERELEASE)
-  set(protobuf_VERSION "${protobuf_VERSION}-${protobuf_VERSION_PRERELEASE}")
+  set(protobuf_VERSION "${protobuf_VERSION}.${protobuf_VERSION_PRERELEASE}")
+else()
+  set(protobuf_VERSION "${protobuf_VERSION}.0")
 endif()
+message(STATUS "${protobuf_VERSION}")
 
 if(protobuf_VERBOSE)
   message(STATUS "Configuration script parsing status [")
@@ -217,6 +223,10 @@ endif (protobuf_BUILD_PROTOC_BINARIES)
 if (protobuf_BUILD_TESTS)
   include(tests.cmake)
 endif (protobuf_BUILD_TESTS)
+
+if (protobuf_BUILD_CONFORMANCE)
+  include(conformance.cmake)
+endif (protobuf_BUILD_CONFORMANCE)
 
 include(install.cmake)
 

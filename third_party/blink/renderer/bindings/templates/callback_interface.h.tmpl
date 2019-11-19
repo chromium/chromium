@@ -77,39 +77,6 @@ class {{exported}}{{v8_class}} final : public CallbackInterfaceBase {
 {% endif %}
 };
 
-template <>
-class V8PersistentCallbackInterface<{{v8_class}}> final : public V8PersistentCallbackInterfaceBase {
-  using V8CallbackInterface = {{v8_class}};
-
- public:
-  explicit V8PersistentCallbackInterface(V8CallbackInterface* callback_interface)
-      : V8PersistentCallbackInterfaceBase(callback_interface) {}
-  ~V8PersistentCallbackInterface() override = default;
-
-{% for method in methods %}
-  {{exported}}v8::Maybe<{{method.cpp_type}}> {{method.name}}({{method.argument_declarations | join(', ')}}) WARN_UNUSED_RESULT;
-{% endfor %}
-{% if methods|length == 1 and methods[0].idl_type == 'void' %}
-  {{exported}}void InvokeAndReportException({{methods[0].argument_declarations | join(', ')}});
-{% endif %}
-
- private:
-  V8CallbackInterface* Proxy() {
-    return As<V8CallbackInterface>();
-  }
-
-  template <typename V8CallbackInterface>
-  friend V8PersistentCallbackInterface<V8CallbackInterface>*
-  ToV8PersistentCallbackInterface(V8CallbackInterface*);
-};
-
-// {{v8_class}} is designed to be used with wrapper-tracing.
-// As blink::Persistent does not perform wrapper-tracing, use of
-// |WrapPersistent| for callback interfaces is likely (if not always) misuse.
-// Thus, this code prohibits such a use case. The call sites should explicitly
-// use WrapPersistent(V8PersistentCallbackInterface<T>*).
-Persistent<{{v8_class}}> WrapPersistent({{v8_class}}*) = delete;
-
 }  // namespace blink
 
 #endif  // {{header_guard}}

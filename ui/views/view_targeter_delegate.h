@@ -23,8 +23,8 @@ class View;
 // themselves.
 class VIEWS_EXPORT ViewTargeterDelegate {
  public:
-  ViewTargeterDelegate() {}
-  virtual ~ViewTargeterDelegate() {}
+  ViewTargeterDelegate() = default;
+  virtual ~ViewTargeterDelegate() = default;
 
   // Returns true if |target| should be considered as a candidate target for
   // an event having |rect| as its location, where |rect| is in the local

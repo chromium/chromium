@@ -1,0 +1,56 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: nested commit</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="pass-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="resources/utils.js"></script>
+
+<style>
+#outer {
+  width: 100px;
+  height: 100px;
+}
+#inner {
+  width: 50px;
+  height: 50px;
+  background: lightgreen;
+}
+div > div > div {
+  width: 10px;
+  height: 10px;
+  background: red;
+}
+</style>
+
+<div id="log"></div>
+<div id="outer" class="container">
+  <div id="inner" class="container"></div>
+</div>
+
+<script>
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  takeScreenshot();
+}
+
+async function runTest() {
+  const outer = document.getElementById("outer");
+  const inner = document.getElementById("inner");
+
+  await Promise.all([
+    setInvisible(outer),
+    setInvisible(inner)]);
+  // Dirty the inner layout
+  inner.appendChild(document.createElement("div"));
+  setVisible(inner).then(
+    () => { finishTest("PASS"); },
+    (e) => { finishTest("FAIL " + e.message); });
+}
+
+window.onload = runTest;
+</script>
+</html>

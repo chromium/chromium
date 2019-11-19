@@ -3,49 +3,6 @@
 <script src=../../resources/testharnessreport.js></script>
 <script>
 
-// This test verifies that DetectedFace can be created
-test(function() {
-  var detectedFace = new DetectedFace();
-  assert_true(detectedFace instanceof DetectedFace);
-}, 'DetectedFace instance can be created.');
-
-// This test verifies that FaceDetector can be created
-test(function() {
-  var faceDetector = new FaceDetector();
-  assert_true(faceDetector instanceof FaceDetector);
-}, 'FaceDetector instance can be created with no argument.');
-
-// This test verifies that FaceDetector can be created with |maxDetectedFaces|
-// argument
-test(function() {
-  var faceDetector = new FaceDetector({maxDetectedFaces: 5});
-  assert_true(faceDetector instanceof FaceDetector);
-}, 'FaceDetector instance can be created with maxDetectedFaces.');
-
-// This test verifies that FaceDetector can be created with |fastMode| argument
-test(function() {
-  var faceDetector = new FaceDetector({fastMode: true});
-  assert_true(faceDetector instanceof FaceDetector);
-}, 'FaceDetector instance can be created with fastMode.');
-
-// This test verifies that DetectedBarcode can be created
-test(function() {
-  var detectedBarcode = new DetectedBarcode();
-  assert_true(detectedBarcode instanceof DetectedBarcode);
-}, 'DetectedBarcode instance can be created.');
-
-// This test verifies that BarcodeDetector can be created
-test(function() {
-  var barcodeDetector = new BarcodeDetector();
-  assert_true(barcodeDetector instanceof BarcodeDetector);
-}, 'BarcodeDetector instance can be created.');
-
-// This test verifies that DetectedText can be created
-test(function() {
-  var detectedText = new DetectedText();
-  assert_true(detectedText instanceof DetectedText);
-}, 'DetectedText instance can be created.');
-
 // This test verifies that TextDetector can be created
 test(function() {
   var textDetector = new TextDetector();

@@ -15,8 +15,7 @@ namespace net {
 SerialWorker::SerialWorker()
     : base::RefCountedDeleteOnSequence<SerialWorker>(
           base::SequencedTaskRunnerHandle::Get()),
-      state_(IDLE),
-      weak_factory_(this) {}
+      state_(IDLE) {}
 
 SerialWorker::~SerialWorker() = default;
 
@@ -25,15 +24,15 @@ void SerialWorker::WorkNow() {
   switch (state_) {
     case IDLE:
       // We are posting weak pointer to OnWorkJobFinished to avoid leak when
-      // PostTaskWithTraitsAndReply fails to post task back to the original
+      // PostTaskAndReply fails to post task back to the original
       // task runner. In this case the callback is not destroyed, and the
       // weak reference allows SerialWorker instance to be deleted.
-      base::PostTaskWithTraitsAndReply(
-          FROM_HERE,
-          {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-          base::BindOnce(&SerialWorker::DoWork, this),
-          base::BindOnce(&SerialWorker::OnWorkJobFinished,
-                         weak_factory_.GetWeakPtr()));
+      base::PostTaskAndReply(FROM_HERE,
+                             {base::ThreadPool(), base::MayBlock(),
+                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+                             base::BindOnce(&SerialWorker::DoWork, this),
+                             base::BindOnce(&SerialWorker::OnWorkJobFinished,
+                                            weak_factory_.GetWeakPtr()));
       state_ = WORKING;
       return;
     case WORKING:

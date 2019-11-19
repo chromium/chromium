@@ -1,0 +1,205 @@
+{
+  "families": [
+    {
+      "family": "Arimo",
+      "aliases": [
+        "sans",
+        "sans serif",
+        "sans-serif",
+        "Arial",
+        "Helvetica"
+      ],
+      "fallback": true,
+      "fallback_group": "sans-serif",
+      "fonts": [
+        {
+          "asset": "Arimo-Regular.ttf"
+        },
+        {
+          "asset": "Arimo-Bold.ttf",
+          "weight": 700
+        },
+        {
+          "asset": "Arimo-Italic.ttf",
+          "slant": "italic"
+        },
+        {
+          "asset": "Arimo-BoldItalic.ttf",
+          "weight": 700,
+          "slant": "italic"
+        }
+      ]
+    },
+    {
+      "family": "Tinos",
+      "aliases": [
+        "serif",
+        "Times",
+        "Times New Roman",
+        "Monaco",
+        "SubpixelPositioning"
+      ],
+      "fallback": true,
+      "fallback_group": "serif",
+      "fonts": [
+        {
+          "asset": "Tinos-Regular.ttf"
+        },
+        {
+          "asset": "Tinos-Bold.ttf",
+          "weight": 700
+        },
+        {
+          "asset": "Tinos-Italic.ttf",
+          "slant": "italic"
+        },
+        {
+          "asset": "Tinos-BoldItalic.ttf",
+          "weight": 700,
+          "slant": "italic"
+        }
+      ]
+    },
+    {
+      "family": "Cousine",
+      "aliases": [
+        "mono",
+        "monospace",
+        "Courier",
+        "Courier New"
+      ],
+      "fallback": true,
+      "fallback_group": "monospace",
+      "fonts": [
+        {
+          "asset": "Cousine-Regular.ttf"
+        },
+        {
+          "asset": "Cousine-Bold.ttf",
+          "weight": 700
+        },
+        {
+          "asset": "Cousine-Italic.ttf",
+          "slant": "italic"
+        },
+        {
+          "asset": "Cousine-BoldItalic.ttf",
+          "weight": 700,
+          "slant": "italic"
+        }
+      ]
+    },
+    {
+      "family": "Gelasio",
+      "aliases": [
+        "Georgia"
+      ],
+      "fallback": false,
+      "fonts": [
+        {
+          "asset": "Gelasio-Regular.ttf"
+        },
+        {
+          "asset": "Gelasio-Bold.ttf",
+          "weight": 700
+        },
+        {
+          "asset": "Gelasio-Italic.ttf",
+          "slant": "italic"
+        },
+        {
+          "asset": "Gelasio-BoldItalic.ttf",
+          "weight": 700,
+          "slant": "italic"
+        }
+      ]
+    },
+    {
+      "family": "Ahem",
+      "aliases": [
+        "SubpixelPositioningAhem"
+      ],
+      "fallback": false,
+      "fallback_group": "sans-serif",
+      "fonts": [
+        {
+          "asset": "Ahem.ttf"
+        }
+      ]
+    },
+    {
+      "family": "DejaVu Sans",
+      "fallback": true,
+      "fonts": [
+        {
+          "asset": "DejaVuSans.ttf"
+        }
+      ]
+    },
+    {
+      "family": "Garuda",
+      "fallback": true,
+      "fonts": [
+        {
+          "asset": "Garuda.ttf"
+        }
+      ]
+    },
+    {
+      "family": "Lohit Devanagari",
+      "fallback": true,
+      "fonts": [
+        {
+          "asset": "Lohit-Devanagari.ttf"
+        }
+      ]
+    },
+    {
+      "family": "Lohit Gurmukhi",
+      "fallback": true,
+      "fonts": [
+        {
+          "asset": "Lohit-Gurmukhi.ttf"
+        }
+      ]
+    },
+    {
+      "family": "Lohit Tamil",
+      "fallback": true,
+      "fonts": [
+        {
+          "asset": "Lohit-Tamil.ttf"
+        }
+      ]
+    },
+    {
+      "family": "Mukti",
+      "fallback": true,
+      "fonts": [
+        {
+          "asset": "MuktiNarrow.ttf"
+        }
+      ]
+    },
+    {
+      "family": "Noto Sans Khmer",
+      "fallback": true,
+      "fonts": [
+        {
+          "asset": "NotoSansKhmer-Regular.ttf",
+          "language": "km"
+        }
+      ]
+    },
+    {
+      "family": "Noto Sans CJK JP",
+      "fallback": true,
+      "fonts": [
+        {
+          "asset": "NotoSansCJKjp-Regular.otf",
+          "language": "ja"
+        }
+      ]
+    }
+  ]
+}

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "content/common/content_export.h"
 
 namespace base {
@@ -28,10 +28,13 @@ struct StorageUsageInfo;
 
 // Represents the per-BrowserContext IndexedDB data.
 // Call these methods only via the exposed TaskRunner.
-class IndexedDBContext : public base::RefCountedThreadSafe<IndexedDBContext> {
+// Refcounted because this class is used throughout the codebase on different
+// threads.
+class IndexedDBContext
+    : public base::RefCountedDeleteOnSequence<IndexedDBContext> {
  public:
   // Only call the below methods by posting to this TaskRunner.
-  virtual base::SequencedTaskRunner* TaskRunner() const = 0;
+  virtual base::SequencedTaskRunner* TaskRunner() = 0;
 
   // Methods used in response to QuotaManager requests.
   virtual std::vector<StorageUsageInfo> GetAllOriginsInfo() = 0;
@@ -45,14 +48,22 @@ class IndexedDBContext : public base::RefCountedThreadSafe<IndexedDBContext> {
                               IndexedDBContext* dest_context) = 0;
 
   // Get the file name of the local storage file for the given origin.
-  virtual base::FilePath GetFilePathForTesting(
-      const url::Origin& origin) const = 0;
+  virtual base::FilePath GetFilePathForTesting(const url::Origin& origin) = 0;
 
   // Forget the origins/sizes read from disk.
   virtual void ResetCachesForTesting() = 0;
 
+  // Disables the exit-time deletion of session-only data.
+  virtual void SetForceKeepSessionState() = 0;
+
  protected:
-  friend class base::RefCountedThreadSafe<IndexedDBContext>;
+  friend class base::RefCountedDeleteOnSequence<IndexedDBContext>;
+  friend class base::DeleteHelper<IndexedDBContext>;
+
+  IndexedDBContext(scoped_refptr<base::SequencedTaskRunner> owning_task_runner)
+      : base::RefCountedDeleteOnSequence<IndexedDBContext>(
+            std::move(owning_task_runner)) {}
+
   virtual ~IndexedDBContext() {}
 };
 

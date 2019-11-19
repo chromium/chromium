@@ -12,10 +12,6 @@
 struct BlinkGCPluginOptions {
   bool dump_graph = false;
 
-  // If |true|, emit warning for class types which derive from from
-  // GarbageCollectedFinalized<> when just GarbageCollected<> will do.
-  bool warn_unneeded_finalizer = false;
-
   // Member<T> fields are only permitted in managed classes,
   // something CheckFieldsVisitor verifies, issuing errors if
   // found in unmanaged classes. WeakMember<T> should be treated

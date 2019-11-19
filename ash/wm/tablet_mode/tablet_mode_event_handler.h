@@ -13,7 +13,6 @@ class TouchEvent;
 }
 
 namespace ash {
-namespace wm {
 
 // TabletModeEventHandler handles toggling fullscreen when appropriate.
 // TabletModeEventHandler installs event handlers in an environment specific
@@ -33,7 +32,6 @@ class TabletModeEventHandler : public ui::EventHandler {
   DISALLOW_COPY_AND_ASSIGN(TabletModeEventHandler);
 };
 
-}  // namespace wm
 }  // namespace ash
 
 #endif  // ASH_WM_TABLET_MODE_TABLET_MODE_EVENT_HANDLER_H_

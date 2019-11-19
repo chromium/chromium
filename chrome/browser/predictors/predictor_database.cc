@@ -103,6 +103,7 @@ void PredictorDatabaseInternal::Initialize() {
   }
 
   bool success = db_->Open(db_path_);
+  db_->Preload();
 
   if (!success)
     return;

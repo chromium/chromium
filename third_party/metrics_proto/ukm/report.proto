@@ -12,9 +12,10 @@ import "ukm/aggregate.proto";
 import "ukm/entry.proto";
 import "ukm/source.proto";
 import "system_profile.proto";
+import "user_demographics.proto";
 
 // This is the message type sent from Chrome to the UKM collector.
-// Next tag: 11
+// Next tag: 12
 message Report {
   // A unique identifier for a Chrome install. This ID should be used only
   // in UKM reports, and not linked to any other data sources.
@@ -45,6 +46,11 @@ message Report {
   // Information about the user's browser and system configuration.
   optional metrics.SystemProfileProto system_profile = 2;
 
+  // The user's demographic information that consists of their noised birth year
+  // and gender. This data is made available to Chrome via syncable priority
+  // pref, so is only available if the user is signed-in and syncing.
+  optional metrics.UserDemographicsProto user_demographics = 11;
+
   // A list of the top-level navigations that data was collected for.
   repeated Source sources = 3;
 
@@ -62,8 +68,17 @@ message Report {
     optional int32 unmatched_sources = 3;
     // Number of sources deferred from a previous interval.
     optional int32 carryover_sources = 4;
-    // Number of sources deferred to the next interval due to lack of events.
+    // Number of sources deferred to the next interval. Sources corresponding to
+    // opened tabs that could emit more events in the future are kept in memory
+    // and deferred to the next interval for inclusion in next reports, up to a
+    // max limit on number of sources.
     optional int32 deferred_sources = 5;
+    // Number of sources deferred to the next interval due to lack of events.
+    optional int32 entryless_sources = 6;
+    // Time elapsed in seconds from the moment the newest truncated source was
+    // created to the moment it was discarded from memory, if pruning happened
+    // due to number of sources exceeding the max threshold.
+    optional int32 pruned_sources_age_seconds = 7;
   }
   optional SourceCounts source_counts = 10;
 

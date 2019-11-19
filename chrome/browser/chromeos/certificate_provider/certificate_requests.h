@@ -27,10 +27,9 @@ class CertificateRequests {
   // request and be returned by RemoveRequest(). |timeout_callback| will be
   // called with the request id if this request times out before
   // SetCertificates() was called for all extensions in |extension_ids|.
-  int AddRequest(
-      const std::vector<std::string>& extension_ids,
-      const base::Callback<void(net::ClientCertIdentityList)>& callback,
-      const base::Callback<void(int)>& timeout_callback);
+  int AddRequest(const std::vector<std::string>& extension_ids,
+                 base::OnceCallback<void(net::ClientCertIdentityList)> callback,
+                 base::OnceCallback<void(int)> timeout_callback);
 
   // Returns whether this reply was expected, i.e. the request with |request_id|
   // was waiting for a reply from this extension. If it was expected, the
@@ -47,7 +46,7 @@ class CertificateRequests {
   bool RemoveRequest(
       int request_id,
       std::map<std::string, CertificateInfoList>* certificates,
-      base::Callback<void(net::ClientCertIdentityList)>* callback);
+      base::OnceCallback<void(net::ClientCertIdentityList)>* callback);
 
   // Removes this extension from all pending requests and returns the ids of
   // all completed requests.

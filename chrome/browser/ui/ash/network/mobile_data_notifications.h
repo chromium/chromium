@@ -48,7 +48,7 @@ class MobileDataNotifications
                      const std::string& error_name) override;
 
   // UserSessionStateObserver:
-  void ActiveUserChanged(const user_manager::User* active_user) override;
+  void ActiveUserChanged(user_manager::User* active_user) override;
 
   // SessionManagerObserver:
   void OnSessionStateChanged() override;
@@ -76,7 +76,7 @@ class MobileDataNotifications
 
   base::OneShotTimer one_shot_notification_check_delay_;
 
-  base::WeakPtrFactory<MobileDataNotifications> weak_factory_;
+  base::WeakPtrFactory<MobileDataNotifications> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MobileDataNotifications);
 };

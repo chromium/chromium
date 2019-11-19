@@ -59,6 +59,8 @@ testcase.tabindexFocus = async () => {
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'drive-welcome-link'));
   chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'welcome-dismiss'));
+  chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'file-list'));
 };
 
@@ -162,6 +164,8 @@ testcase.tabindexFocusDirectorySelected = async () => {
       await remoteCall.checkNextTabFocus(appId, 'directory-tree'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'drive-welcome-link'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'welcome-dismiss'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'file-list'));
 };

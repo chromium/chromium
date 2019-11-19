@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "device/base/features.h"
@@ -18,6 +18,9 @@
 #include "device/vr/orientation/orientation_device_provider.h"
 #include "device/vr/test/fake_orientation_provider.h"
 #include "device/vr/test/fake_sensor_provider.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer_reader.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
@@ -38,13 +41,13 @@ class VROrientationDeviceProviderTest : public testing::Test {
     fake_sensor_provider_ = std::make_unique<FakeSensorProvider>();
 
     fake_sensor_ = std::make_unique<FakeOrientationSensor>(
-        mojo::MakeRequest(&sensor_ptr_));
+        sensor_.InitWithNewPipeAndPassReceiver());
     shared_buffer_handle_ = mojo::SharedBufferHandle::Create(
         sizeof(SensorReadingSharedBuffer) *
         (static_cast<uint64_t>(mojom::SensorType::kMaxValue) + 1));
 
-    service_manager::mojom::ConnectorRequest request;
-    connector_ = service_manager::Connector::Create(&request);
+    mojo::PendingReceiver<service_manager::mojom::Connector> receiver;
+    connector_ = service_manager::Connector::Create(&receiver);
     connector_->OverrideBinderForTesting(
         service_manager::ServiceFilter::ByName(mojom::kServiceName),
         mojom::SensorProvider::Name_,
@@ -53,28 +56,28 @@ class VROrientationDeviceProviderTest : public testing::Test {
 
     provider_ = std::make_unique<VROrientationDeviceProvider>(connector_.get());
 
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   void TearDown() override {}
 
   void InitializeDevice(mojom::SensorInitParamsPtr params) {
     // Be sure GetSensor goes through so the callback is set.
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     fake_sensor_provider_->CallCallback(std::move(params));
 
     // Allow the callback call to go through.
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   mojom::SensorInitParamsPtr FakeInitParams() {
     auto init_params = mojom::SensorInitParams::New();
-    init_params->sensor = std::move(sensor_ptr_);
+    init_params->sensor = std::move(sensor_);
     init_params->default_configuration = PlatformSensorConfiguration(
         SensorTraits<kOrientationSensorType>::kDefaultFrequency);
 
-    init_params->client_request = mojo::MakeRequest(&sensor_client_ptr_);
+    init_params->client_receiver = sensor_client_.BindNewPipeAndPassReceiver();
 
     init_params->memory = shared_buffer_handle_->Clone(
         mojo::SharedBufferHandle::AccessMode::READ_ONLY);
@@ -87,11 +90,11 @@ class VROrientationDeviceProviderTest : public testing::Test {
 
   base::RepeatingCallback<void(device::mojom::XRDeviceId,
                                mojom::VRDisplayInfoPtr,
-                               mojom::XRRuntimePtr device)>
+                               mojo::PendingRemote<mojom::XRRuntime> device)>
   DeviceAndIdCallbackFailIfCalled() {
-    return base::BindRepeating([](device::mojom::XRDeviceId id,
-                                  mojom::VRDisplayInfoPtr,
-                                  mojom::XRRuntimePtr device) { FAIL(); });
+    return base::BindRepeating(
+        [](device::mojom::XRDeviceId id, mojom::VRDisplayInfoPtr,
+           mojo::PendingRemote<mojom::XRRuntime> device) { FAIL(); });
   }
 
   base::RepeatingCallback<void(device::mojom::XRDeviceId)>
@@ -101,11 +104,12 @@ class VROrientationDeviceProviderTest : public testing::Test {
 
   base::RepeatingCallback<void(device::mojom::XRDeviceId,
                                mojom::VRDisplayInfoPtr,
-                               mojom::XRRuntimePtr device)>
+                               mojo::PendingRemote<mojom::XRRuntime> device)>
   DeviceAndIdCallbackMustBeCalled(base::RunLoop* loop) {
     return base::BindRepeating(
         [](base::OnceClosure quit_closure, device::mojom::XRDeviceId id,
-           mojom::VRDisplayInfoPtr info, mojom::XRRuntimePtr device) {
+           mojom::VRDisplayInfoPtr info,
+           mojo::PendingRemote<mojom::XRRuntime> device) {
           ASSERT_TRUE(device);
           ASSERT_TRUE(info);
           std::move(quit_closure).Run();
@@ -133,18 +137,18 @@ class VROrientationDeviceProviderTest : public testing::Test {
   }
 
   // Needed for MakeRequest to work.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<VROrientationDeviceProvider> provider_;
 
   std::unique_ptr<FakeSensorProvider> fake_sensor_provider_;
-  mojom::SensorProviderPtr sensor_provider_ptr_;
+  mojo::Remote<mojom::SensorProvider> sensor_provider_;
 
   // Fake Sensor Init params objects
   std::unique_ptr<FakeOrientationSensor> fake_sensor_;
-  mojom::SensorPtrInfo sensor_ptr_;
+  mojo::PendingRemote<mojom::Sensor> sensor_;
   mojo::ScopedSharedBufferHandle shared_buffer_handle_;
-  mojom::SensorClientPtr sensor_client_ptr_;
+  mojo::Remote<mojom::SensorClient> sensor_client_;
 
   std::unique_ptr<service_manager::Connector> connector_;
 

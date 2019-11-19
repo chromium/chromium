@@ -1,6 +1,0 @@
-# These tests should fail when the MediaCastOverlayButton is disabled.
-# See https://crbug.com/728660.
-
-Bug(none) media/controls/controls-overlay-cast-button.html [ Failure ]
-Bug(none) media/controls/video-overlay-cast-covering.html [ Failure ]
-Bug(none) media/controls/video-overlay-cast-light-rendering.html [ Failure ]

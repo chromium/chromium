@@ -8,13 +8,14 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/hash/md5.h"
 #include "base/location.h"
-#include "base/md5.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind_test_util.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/common/cloud_print/cloud_print_constants.h"
 #include "chrome/service/cloud_print/cloud_print_service_helpers.h"
@@ -410,10 +411,9 @@ class MockPrintSystem : public PrintSystem {
   MOCK_METHOD1(EnumeratePrinters, PrintSystem::PrintSystemResult(
       printing::PrinterList* printer_list));
 
-  MOCK_METHOD2(
-      GetPrinterCapsAndDefaults,
-      void(const std::string& printer_name,
-           const PrintSystem::PrinterCapsAndDefaultsCallback& callback));
+  MOCK_METHOD2(GetPrinterCapsAndDefaults,
+               void(const std::string& printer_name,
+                    PrintSystem::PrinterCapsAndDefaultsCallback callback));
 
   MOCK_METHOD1(IsValidPrinter, bool(const std::string& printer_name));
 
@@ -456,7 +456,7 @@ class PrinterJobHandlerTest : public ::testing::Test {
   bool GetPrinterInfo(printing::PrinterBasicInfo* info);
   void SendCapsAndDefaults(
       const std::string& printer_name,
-      const PrintSystem::PrinterCapsAndDefaultsCallback& callback);
+      PrintSystem::PrinterCapsAndDefaultsCallback callback);
   void AddMimeHeader(const GURL& url, net::FakeURLFetcher* fetcher);
   void AddTicketMimeHeader(const GURL& url, net::FakeURLFetcher* fetcher);
   bool PostSpoolSuccess();
@@ -464,8 +464,9 @@ class PrinterJobHandlerTest : public ::testing::Test {
   void BeginTest(int timeout_seconds);
   void MakeJobFetchReturnNoJobs();
 
-  base::MessageLoopForIO loop_;
-  std::unique_ptr<base::RunLoop> active_run_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
+  base::OnceClosure active_run_loop_quit_closure_;
   TestURLFetcherCallback url_callback_;
   MockPrinterJobHandlerDelegate jobhandler_delegate_;
   CloudPrintTokenStore token_store_;
@@ -522,9 +523,9 @@ void PrinterJobHandlerTest::MakeJobFetchReturnNoJobs() {
 }
 
 PrinterJobHandlerTest::PrinterJobHandlerTest()
-    : factory_(NULL, base::Bind(&TestURLFetcherCallback::CreateURLFetcher,
-                                base::Unretained(&url_callback_))) {
-}
+    : factory_(nullptr,
+               base::BindRepeating(&TestURLFetcherCallback::CreateURLFetcher,
+                                   base::Unretained(&url_callback_))) {}
 
 bool PrinterJobHandlerTest::PostSpoolSuccess() {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -533,9 +534,10 @@ bool PrinterJobHandlerTest::PostSpoolSuccess() {
 
   // Everything that would be posted on the printer thread queue
   // has been posted, we can tell the main message loop to quit when idle
-  // and not worry about it idling while the print thread does work
+  // and not worry about it idling while the print thread does work.
+  DCHECK(!active_run_loop_quit_closure_.is_null());
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, active_run_loop_->QuitWhenIdleClosure());
+      FROM_HERE, std::move(active_run_loop_quit_closure_));
   return true;
 }
 
@@ -603,19 +605,23 @@ void PrinterJobHandlerTest::BeginTest(int timeout_seconds) {
 
   job_handler_->Initialize();
 
-  active_run_loop_ = std::make_unique<base::RunLoop>();
+  base::RunLoop run_loop;
+  active_run_loop_quit_closure_ = run_loop.QuitWhenIdleClosure();
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, active_run_loop_->QuitWhenIdleClosure(),
-      base::TimeDelta::FromSeconds(timeout_seconds));
+  base::RunLoop::ScopedRunTimeoutForTest run_timeout(
+      base::TimeDelta::FromSeconds(timeout_seconds),
+      base::BindLambdaForTesting([&]() {
+        ADD_FAILURE();
+        run_loop.QuitWhenIdle();
+      }));
 
-  active_run_loop_->Run();
+  run_loop.Run();
 }
 
 void PrinterJobHandlerTest::SendCapsAndDefaults(
     const std::string& printer_name,
-    const PrintSystem::PrinterCapsAndDefaultsCallback& callback) {
-  callback.Run(true, printer_name, caps_and_defaults_);
+    PrintSystem::PrinterCapsAndDefaultsCallback callback) {
+  std::move(callback).Run(true, printer_name, caps_and_defaults_);
 }
 
 bool PrinterJobHandlerTest::GetPrinterInfo(printing::PrinterBasicInfo* info) {
@@ -760,7 +766,7 @@ TEST_F(PrinterJobHandlerTest, DISABLED_ManyFailureTest) {
                            net::HTTP_INTERNAL_SERVER_ERROR,
                            net::URLRequestStatus::FAILED);
 
-  loop_.task_runner()->PostDelayedTask(
+  task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&net::FakeURLFetcherFactory::SetFakeResponse,
                      base::Unretained(&factory_), TicketURI(1),

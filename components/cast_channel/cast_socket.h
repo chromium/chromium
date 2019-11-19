@@ -22,7 +22,8 @@
 #include "components/cast_channel/cast_channel_enum.h"
 #include "components/cast_channel/cast_socket.h"
 #include "components/cast_channel/cast_transport.h"
-#include "net/base/completion_callback.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/log/net_log_source.h"
@@ -92,7 +93,7 @@ class CastSocket {
   // be in READY_STATE_CLOSED.
   //
   // It is fine to delete this object in |callback|.
-  virtual void Close(const net::CompletionCallback& callback) = 0;
+  virtual void Close(net::CompletionOnceCallback callback) = 0;
 
   // The IP endpoint for the destination of the channel.
   virtual const net::IPEndPoint& ip_endpoint() const = 0;
@@ -196,7 +197,7 @@ class CastSocketImpl : public CastSocket {
   // CastSocket interface.
   void Connect(OnOpenCallback callback) override;
   CastTransport* transport() const override;
-  void Close(const net::CompletionCallback& callback) override;
+  void Close(net::CompletionOnceCallback callback) override;
   const net::IPEndPoint& ip_endpoint() const override;
   int id() const override;
   void set_id(int channel_id) override;
@@ -347,11 +348,11 @@ class CastSocketImpl : public CastSocket {
 
   NetworkContextGetter network_context_getter_;
 
-  // Owned ptr to the underlying TCP socket.
-  network::mojom::TCPConnectedSocketPtr tcp_socket_;
+  // Owned remote to the underlying TCP socket.
+  mojo::Remote<network::mojom::TCPConnectedSocket> tcp_socket_;
 
-  // Owned ptr to the underlying SSL socket.
-  network::mojom::TLSClientSocketPtr socket_;
+  // Owned remote to the underlying SSL socket.
+  mojo::Remote<network::mojom::TLSClientSocket> socket_;
 
   // Helper class to write to the SSL socket.
   std::unique_ptr<MojoDataPump> mojo_data_pump_;
@@ -418,7 +419,7 @@ class CastSocketImpl : public CastSocket {
   // List of socket observers.
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::WeakPtrFactory<CastSocketImpl> weak_factory_;
+  base::WeakPtrFactory<CastSocketImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CastSocketImpl);
 };

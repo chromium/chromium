@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Chromium cannot upgrade to ATK 2.12 API as it still needs to run
-// valid builds for Ubuntu Trusty.
-#define ATK_DISABLE_DEPRECATION_WARNINGS
-
 #include <atk/atk.h>
 
 #include <string>

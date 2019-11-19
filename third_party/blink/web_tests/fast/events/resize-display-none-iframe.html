@@ -11,12 +11,13 @@ var innerWindow = ifr.contentWindow;
 var width = 0;
 var height = 0;
 
-innerWindow.onresize = () => {
-  width = innerWindow.innerWidth;
-  height = innerWindow.innerHeight;
-};
-
 onload = () => {
+  // Add event listener after the srcdoc has been loaded, but before it is displayed.
+  innerWindow.onresize = () => {
+    width = innerWindow.innerWidth;
+    height = innerWindow.innerHeight;
+  };
+
   raf2(() => {
     assert_true(innerWindow.innerWidth == 0);
     assert_true(innerWindow.innerHeight == 0);

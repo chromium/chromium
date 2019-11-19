@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_PAGE_PASSWORDS_ANALYSER_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_PAGE_PASSWORDS_ANALYSER_H_
 
+#include <set>
+
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -40,7 +42,9 @@ class PagePasswordsAnalyser {
   // By default, the analyser will log to the DevTools console.
   void AnalyseDocumentDOM(blink::WebLocalFrame* frame);
 
-  std::set<blink::WebNode> skip_nodes_;
+  // A set of renderer_ids which have already been analyzed.
+  std::set<uint32_t> skip_control_element_renderer_ids_;
+  std::set<uint32_t> skip_form_element_renderer_ids_;
   // This is true when new DOM content is available since the last time
   // the page was analysed, meaning the page needs to be reanalysed.
   bool page_dirty_;
@@ -48,5 +52,4 @@ class PagePasswordsAnalyser {
 
 }  // namespace autofill
 
-#endif
-   // COMPONENTS_AUTOFILL_CONTENT_RENDERER_PAGE_PASSWORDS_ANALYSER_H_
+#endif  // COMPONENTS_AUTOFILL_CONTENT_RENDERER_PAGE_PASSWORDS_ANALYSER_H_

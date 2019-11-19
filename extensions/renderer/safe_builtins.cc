@@ -12,8 +12,6 @@
 
 namespace extensions {
 
-using namespace v8_helpers;
-
 namespace {
 
 const char kClassName[] = "extensions::SafeBuiltins";
@@ -132,7 +130,7 @@ const char kScript[] =
 
 v8::Local<v8::Private> MakeKey(const char* name, v8::Isolate* isolate) {
   return v8::Private::ForApi(
-      isolate, ToV8StringUnsafe(
+      isolate, v8_helpers::ToV8StringUnsafe(
                    isolate, base::StringPrintf("%s::%s", kClassName, name)));
 }
 
@@ -162,9 +160,9 @@ class ExtensionImpl : public v8::Extension {
   v8::Local<v8::FunctionTemplate> GetNativeFunctionTemplate(
       v8::Isolate* isolate,
       v8::Local<v8::String> name) override {
-    if (name->StringEquals(ToV8StringUnsafe(isolate, "Apply")))
+    if (name->StringEquals(v8_helpers::ToV8StringUnsafe(isolate, "Apply")))
       return v8::FunctionTemplate::New(isolate, Apply);
-    if (name->StringEquals(ToV8StringUnsafe(isolate, "Save")))
+    if (name->StringEquals(v8_helpers::ToV8StringUnsafe(isolate, "Save")))
       return v8::FunctionTemplate::New(isolate, Save);
     NOTREACHED() << *v8::String::Utf8Value(isolate, name);
     return v8::Local<v8::FunctionTemplate>();
@@ -186,7 +184,7 @@ class ExtensionImpl : public v8::Extension {
                  .As<v8::Object>();
     } else {
       info.GetIsolate()->ThrowException(
-          v8::Exception::TypeError(ToV8StringUnsafe(
+          v8::Exception::TypeError(v8_helpers::ToV8StringUnsafe(
               info.GetIsolate(),
               "The first argument is the receiver and must be an object")));
       return;
@@ -200,9 +198,10 @@ class ExtensionImpl : public v8::Extension {
     std::unique_ptr<v8::Local<v8::Value>[]> argv(
         new v8::Local<v8::Value>[argc]);
     for (int i = 0; i < argc; ++i) {
-      CHECK(IsTrue(args->Has(context, i + first_arg_index)));
+      CHECK(v8_helpers::IsTrue(args->Has(context, i + first_arg_index)));
       // Getting a property value could throw an exception.
-      if (!GetProperty(context, args, i + first_arg_index, &argv[i]))
+      if (!v8_helpers::GetProperty(context, args, i + first_arg_index,
+                                   &argv[i]))
         return;
     }
 

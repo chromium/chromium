@@ -83,26 +83,6 @@ size_t RefCountedString::size() const {
   return data_.size();
 }
 
-RefCountedSharedMemory::RefCountedSharedMemory(
-    std::unique_ptr<SharedMemory> shm,
-    size_t size)
-    : shm_(std::move(shm)), size_(size) {
-  DCHECK(shm_);
-  DCHECK(shm_->memory());
-  DCHECK_GT(size_, 0U);
-  DCHECK_LE(size_, shm_->mapped_size());
-}
-
-RefCountedSharedMemory::~RefCountedSharedMemory() = default;
-
-const unsigned char* RefCountedSharedMemory::front() const {
-  return static_cast<const unsigned char*>(shm_->memory());
-}
-
-size_t RefCountedSharedMemory::size() const {
-  return size_;
-}
-
 RefCountedSharedMemoryMapping::RefCountedSharedMemoryMapping(
     ReadOnlySharedMemoryMapping mapping)
     : mapping_(std::move(mapping)), size_(mapping_.size()) {

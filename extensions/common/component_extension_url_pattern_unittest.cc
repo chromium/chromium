@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -25,7 +26,7 @@ TEST(ComponentExtensionUrlPattern, AllUrls) {
                       .Build();
   std::string error;
   EXPECT_FALSE(all_urls->permissions_data()->CanAccessPage(
-      GURL("chrome://settings"), kTabId, &error))
+      content::GetWebUIURL("settings"), kTabId, &error))
       << error;
   // Non-chrome scheme should be fine.
   EXPECT_TRUE(all_urls->permissions_data()->CanAccessPage(
@@ -43,7 +44,7 @@ TEST(ComponentExtensionUrlPattern, ChromeVoxExtension) {
                       .Build();
   std::string error;
   EXPECT_TRUE(all_urls->permissions_data()->CanAccessPage(
-      GURL("chrome://settings"), kTabId, &error))
+      content::GetWebUIURL("settings"), kTabId, &error))
       << error;
 }
 
@@ -51,12 +52,12 @@ TEST(ComponentExtensionUrlPattern, ExplicitChromeUrl) {
   // Explicitly specifying a pattern that allows access to the chrome
   // scheme is OK.
   auto chrome_urls = ExtensionBuilder("chrome urls")
-                         .AddPermission("chrome://*/*")
+                         .AddPermission(content::GetWebUIURLString("*/*"))
                          .SetLocation(Manifest::COMPONENT)
                          .Build();
   std::string error;
   EXPECT_TRUE(chrome_urls->permissions_data()->CanAccessPage(
-      GURL("chrome://settings"), kTabId, &error))
+      content::GetWebUIURL("settings"), kTabId, &error))
       << error;
 }
 

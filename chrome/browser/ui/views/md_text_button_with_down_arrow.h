@@ -23,7 +23,7 @@ class MdTextButtonWithDownArrow : public MdTextButton {
 
  protected:
   // views::MdTextButton:
-  void OnNativeThemeChanged(const ui::NativeTheme* theme) override;
+  void OnThemeChanged() override;
 
  private:
   void SetDropArrowImage();

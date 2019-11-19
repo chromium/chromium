@@ -10,10 +10,8 @@
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/keyframed_animation_curve.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_curve.h"
-#include "third_party/blink/renderer/platform/animation/compositor_filter_animation_curve.h"
+#include "third_party/blink/renderer/platform/animation/compositor_color_animation_curve.h"
 #include "third_party/blink/renderer/platform/animation/compositor_float_animation_curve.h"
-#include "third_party/blink/renderer/platform/animation/compositor_scroll_offset_animation_curve.h"
-#include "third_party/blink/renderer/platform/animation/compositor_transform_animation_curve.h"
 
 using cc::KeyframeModel;
 using cc::AnimationIdProvider;
@@ -27,15 +25,16 @@ CompositorKeyframeModel::CompositorKeyframeModel(
     const CompositorAnimationCurve& curve,
     compositor_target_property::Type target_property,
     int keyframe_model_id,
-    int group_id) {
+    int group_id,
+    const AtomicString& custom_property_name) {
   if (!keyframe_model_id)
     keyframe_model_id = AnimationIdProvider::NextKeyframeModelId();
   if (!group_id)
     group_id = AnimationIdProvider::NextGroupId();
 
-  keyframe_model_ =
-      KeyframeModel::Create(curve.CloneToAnimationCurve(), keyframe_model_id,
-                            group_id, target_property);
+  keyframe_model_ = KeyframeModel::Create(
+      curve.CloneToAnimationCurve(), keyframe_model_id, group_id,
+      target_property, custom_property_name.Utf8().data());
 }
 
 CompositorKeyframeModel::~CompositorKeyframeModel() = default;
@@ -81,6 +80,10 @@ double CompositorKeyframeModel::StartTime() const {
 void CompositorKeyframeModel::SetStartTime(double monotonic_time) {
   keyframe_model_->set_start_time(base::TimeTicks::FromInternalValue(
       monotonic_time * base::Time::kMicrosecondsPerSecond));
+}
+
+void CompositorKeyframeModel::SetStartTime(base::TimeTicks monotonic_time) {
+  keyframe_model_->set_start_time(monotonic_time);
 }
 
 double CompositorKeyframeModel::TimeOffset() const {
@@ -132,6 +135,17 @@ CompositorKeyframeModel::FloatCurveForTesting() const {
   auto keyframed_curve = base::WrapUnique(
       static_cast<cc::KeyframedFloatAnimationCurve*>(curve->Clone().release()));
   return CompositorFloatAnimationCurve::CreateForTesting(
+      std::move(keyframed_curve));
+}
+
+std::unique_ptr<CompositorColorAnimationCurve>
+CompositorKeyframeModel::ColorCurveForTesting() const {
+  const cc::AnimationCurve* curve = keyframe_model_->curve();
+  DCHECK_EQ(cc::AnimationCurve::COLOR, curve->Type());
+
+  auto keyframed_curve = base::WrapUnique(
+      static_cast<cc::KeyframedColorAnimationCurve*>(curve->Clone().release()));
+  return CompositorColorAnimationCurve::CreateForTesting(
       std::move(keyframed_curve));
 }
 

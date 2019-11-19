@@ -15,6 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 class GURL;
 
@@ -35,7 +36,6 @@ struct RedirectInfo;
 
 namespace network {
 struct ResourceRequest;
-struct ResourceResponseHead;
 namespace mojom {
 class URLLoaderFactory;
 }
@@ -55,6 +55,9 @@ class SimpleURLLoaderStreamConsumer;
 // that was passed it.
 //
 // Each SimpleURLLoader can only be used for a single request.
+//
+// By default SimpleURLLoader will not return the response body for non-2xx
+// HTTP codes. See SetAllowHttpErrorResults() for details.
 //
 // TODO(mmenke): Support the following:
 // * Maybe some sort of retry backoff or delay?  ServiceURLLoaderContext enables
@@ -112,14 +115,14 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // removed for requests when a redirect to a non-Google URL occurs.
   using OnRedirectCallback =
       base::RepeatingCallback<void(const net::RedirectInfo& redirect_info,
-                                   const ResourceResponseHead& response_head,
+                                   const mojom::URLResponseHead& response_head,
                                    std::vector<std::string>* removed_headers)>;
 
   // Callback used when a response is received. It is safe to delete the
   // SimpleURLLoader during the callback.
   using OnResponseStartedCallback =
       base::OnceCallback<void(const GURL& final_url,
-                              const ResourceResponseHead& response_head)>;
+                              const mojom::URLResponseHead& response_head)>;
 
   // Callback used when an upload progress is reported. It is safe to
   // delete the SimpleURLLoader during the callback.
@@ -260,16 +263,16 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // before the request is started.
   //
   // When false, if a non-2xx result is received (Other than a redirect), the
-  // request will fail with net::FAILED without waiting to read the response
-  // body, though headers will be accessible through response_info().
+  // request will fail with net::ERR_HTTP_RESPONSE_CODE_FAILURE without waiting
+  // to read the response body, though headers will be accessible through
+  // response_info().
   //
   // When true, non-2xx responses are treated no differently than other
   // responses, so their response body is returned just as with any other
-  // response code, and when they complete, net_error() will return net::OK, if
+  // response code, and when they complete, NetError() will return net::OK, if
   // no other problem occurs.
   //
   // Defaults to false.
-  // TODO(mmenke): Consider adding a new error code for this.
   virtual void SetAllowHttpErrorResults(bool allow_http_error_results) = 0;
 
   // Attaches the specified string as the upload body. Depending on the length
@@ -319,6 +322,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // was added to the ResourceRequest passed to Create() by the consumer.
   virtual void SetRetryOptions(int max_retries, int retry_mode) = 0;
 
+  // Sets options for URLLoaderFactory::CreateLoaderAndStart. See
+  // //network/public/mojom/url_loader_factory.mojom. This should be
+  // called before the request is started.
+  virtual void SetURLLoaderFactoryOptions(uint32_t options) = 0;
+
   // The amount of time to wait before giving up on a given network request and
   // considering it an error. If not set, then the request is allowed to take
   // as much time as it wants.
@@ -328,10 +336,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // only be called once the loader has informed the caller of completion.
   virtual int NetError() const = 0;
 
-  // The ResourceResponseHead for the request. Will be nullptr if ResponseInfo
+  // The URLResponseHead for the request. Will be nullptr if ResponseInfo
   // was never received. May only be called once the loader has informed the
   // caller of completion.
-  virtual const ResourceResponseHead* ResponseInfo() const = 0;
+  virtual const mojom::URLResponseHead* ResponseInfo() const = 0;
 
   // Returns the URL that this loader is processing. May only be called once the
   // loader has informed the caller of completion.

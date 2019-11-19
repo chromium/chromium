@@ -49,6 +49,12 @@ class PLATFORM_EXPORT IdentityTransformOperation final
 
   void Apply(TransformationMatrix&, const FloatSize&) const override {}
 
+  scoped_refptr<TransformOperation> Accumulate(
+      const TransformOperation& other) override {
+    NOTREACHED();
+    return this;
+  }
+
   scoped_refptr<TransformOperation> Blend(
       const TransformOperation*,
       double progress,
@@ -57,6 +63,8 @@ class PLATFORM_EXPORT IdentityTransformOperation final
   }
 
   scoped_refptr<TransformOperation> Zoom(double factor) final { return this; }
+
+  bool PreservesAxisAlignment() const final { return true; }
 
   IdentityTransformOperation() = default;
 };

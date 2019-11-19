@@ -71,6 +71,9 @@ const char* kFinalStatusNames[] = {
     "NoStatePrefetch Finished",
     "Low-End Device",
     "BrowserSwitcher Switch",
+    "GWS Holdback",
+    "Unknown",
+    "Navigation Predictor Holdback",
     "Max",
 };
 static_assert(base::size(kFinalStatusNames) == FINAL_STATUS_MAX + 1,

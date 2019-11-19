@@ -53,7 +53,7 @@ class KioskAppIconLoader {
 
   gfx::ImageSkia icon_;
 
-  base::WeakPtrFactory<KioskAppIconLoader> weak_factory_;
+  base::WeakPtrFactory<KioskAppIconLoader> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(KioskAppIconLoader);
 };

@@ -12,7 +12,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -54,7 +54,7 @@ class MockObserver : public DialService::Observer {
 class DialServiceTest : public testing::Test {
  public:
   DialServiceTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP),
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         mock_ip_(net::IPAddress::IPv4AllZeros()),
         dial_service_(&test_net_log_) {
     dial_service_.AddObserver(&mock_observer_);
@@ -62,7 +62,7 @@ class DialServiceTest : public testing::Test {
   }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   net::TestNetLog test_net_log_;
   net::IPAddress mock_ip_;
   DialServiceImpl dial_service_;

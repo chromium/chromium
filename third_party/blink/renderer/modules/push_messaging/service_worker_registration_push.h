@@ -16,7 +16,7 @@ class PushManager;
 class ServiceWorkerRegistration;
 
 class ServiceWorkerRegistrationPush final
-    : public GarbageCollectedFinalized<ServiceWorkerRegistrationPush>,
+    : public GarbageCollected<ServiceWorkerRegistrationPush>,
       public Supplement<ServiceWorkerRegistration> {
   USING_GARBAGE_COLLECTED_MIXIN(ServiceWorkerRegistrationPush);
 

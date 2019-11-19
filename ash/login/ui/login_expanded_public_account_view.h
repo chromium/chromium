@@ -10,9 +10,9 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_menu_view.h"
 #include "ash/login/ui/non_accessible_view.h"
-#include "ash/public/interfaces/login_user_info.mojom.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/view.h"
 
@@ -22,6 +22,7 @@ class ArrowButtonView;
 class LoginUserView;
 class RightPaneView;
 class PublicAccountWarningDialog;
+struct LoginUserInfo;
 
 // Implements an expanded view for the public account user to select language
 // and keyboard options.
@@ -45,6 +46,8 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
     LoginMenuView::Item selected_language_item();
     LoginMenuView::Item selected_keyboard_item();
     views::ImageView* monitoring_warning_icon();
+    views::Label* monitoring_warning_label();
+    void ResetUserForTest();
 
    private:
     LoginExpandedPublicAccountView* const view_;
@@ -56,8 +59,8 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
   ~LoginExpandedPublicAccountView() override;
 
   void ProcessPressedEvent(const ui::LocatedEvent* event);
-  void UpdateForUser(const mojom::LoginUserInfoPtr& user);
-  const mojom::LoginUserInfoPtr& current_user() const;
+  void UpdateForUser(const LoginUserInfo& user);
+  const LoginUserInfo& current_user() const;
   void Hide();
   void ShowWarningDialog();
   void OnWarningDialogClosed();

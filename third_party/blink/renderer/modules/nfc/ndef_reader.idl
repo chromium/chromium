@@ -1,0 +1,19 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// http://w3c.github.io/web-nfc/#dom-ndefreader
+
+[
+    RuntimeEnabled=WebNFC,
+    ActiveScriptWrappable,
+    SecureContext,
+    Constructor(),
+    ConstructorCallWith=ExecutionContext,
+    Exposed=Window
+] interface NDEFReader : EventTarget {
+    attribute EventHandler onreading;
+    attribute EventHandler onerror;
+
+    void scan(optional NDEFScanOptions options);
+};

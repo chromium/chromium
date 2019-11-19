@@ -1,5 +1,0 @@
-Blocked access to external URL http://example.com/worker.js
-Test worker fetch of blocked url. Should print a "PASS" statement.
-
-PASS
-

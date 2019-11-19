@@ -9,42 +9,74 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/files/file_util.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/path_service.h"
+#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
 #include "fuchsia/runners/cast/cast_runner.h"
 #include "fuchsia/runners/common/web_component.h"
 
 namespace {
+
 constexpr int kBindingsFailureExitCode = 129;
+constexpr int kRewriteRulesProviderDisconnectExitCode = 130;
+
 }  // namespace
 
-CastComponent::CastComponent(
-    CastRunner* runner,
-    std::unique_ptr<base::fuchsia::StartupContext> context,
-    fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-        controller_request)
-    : WebComponent(runner, std::move(context), std::move(controller_request)),
-      queryable_data_(frame(),
-                      startup_context()
-                          ->incoming_services()
-                          ->ConnectToService<chromium::cast::QueryableData>()),
-      navigation_observer_binding_(this) {
-  base::AutoReset<bool> constructor_active_reset(&constructor_active_, true);
+CastComponent::CastComponentParams::CastComponentParams() = default;
+CastComponent::CastComponentParams::CastComponentParams(CastComponentParams&&) =
+    default;
+CastComponent::CastComponentParams::~CastComponentParams() = default;
 
-  cast_channel_ = std::make_unique<CastChannelBindings>(
-      frame(), &connector_,
-      startup_context()
-          ->incoming_services()
-          ->ConnectToService<chromium::cast::CastChannel>(),
+CastComponent::CastComponent(CastRunner* runner,
+                             CastComponent::CastComponentParams params)
+    : WebComponent(runner,
+                   std::move(params.startup_context),
+                   std::move(params.controller_request)),
+      agent_manager_(std::move(params.agent_manager)),
+      application_config_(std::move(params.app_config)),
+      rewrite_rules_provider_(std::move(params.rewrite_rules_provider)),
+      initial_rewrite_rules_(std::move(params.rewrite_rules.value())),
+      api_bindings_client_(std::move(params.api_bindings_client)),
+      navigation_listener_binding_(this) {
+  base::AutoReset<bool> constructor_active_reset(&constructor_active_, true);
+}
+
+CastComponent::~CastComponent() = default;
+
+void CastComponent::StartComponent() {
+  if (application_config_.has_enable_remote_debugging() &&
+      application_config_.enable_remote_debugging()) {
+    WebComponent::EnableRemoteDebugging();
+  }
+
+  WebComponent::StartComponent();
+
+  connector_ = std::make_unique<NamedMessagePortConnector>(frame());
+
+  rewrite_rules_provider_.set_error_handler([this](zx_status_t status) {
+    ZX_LOG_IF(ERROR, status != ZX_OK, status)
+        << "UrlRequestRewriteRulesProvider disconnected.";
+    DestroyComponent(kRewriteRulesProviderDisconnectExitCode,
+                     fuchsia::sys::TerminationReason::INTERNAL_ERROR);
+  });
+  OnRewriteRulesReceived(std::move(initial_rewrite_rules_));
+
+  frame()->SetEnableInput(false);
+  frame()->SetNavigationEventListener(
+      navigation_listener_binding_.NewBinding());
+  api_bindings_client_->AttachToFrame(
+      frame(), connector_.get(),
       base::BindOnce(&CastComponent::DestroyComponent, base::Unretained(this),
                      kBindingsFailureExitCode,
                      fuchsia::sys::TerminationReason::INTERNAL_ERROR));
 
-  frame()->SetNavigationEventObserver(
-      navigation_observer_binding_.NewBinding());
+  application_controller_ = std::make_unique<ApplicationControllerImpl>(
+      frame(), agent_manager_->ConnectToAgentService<
+                   chromium::cast::ApplicationControllerReceiver>(
+                   CastRunner::kAgentComponentUrl));
 }
-
-CastComponent::~CastComponent() = default;
 
 void CastComponent::DestroyComponent(int termination_exit_code,
                                      fuchsia::sys::TerminationReason reason) {
@@ -53,10 +85,18 @@ void CastComponent::DestroyComponent(int termination_exit_code,
   WebComponent::DestroyComponent(termination_exit_code, reason);
 }
 
+void CastComponent::OnRewriteRulesReceived(
+    std::vector<fuchsia::web::UrlRequestRewriteRule> rewrite_rules) {
+  frame()->SetUrlRequestRewriteRules(std::move(rewrite_rules), [this]() {
+    rewrite_rules_provider_->GetUrlRequestRewriteRules(
+        fit::bind_member(this, &CastComponent::OnRewriteRulesReceived));
+  });
+}
+
 void CastComponent::OnNavigationStateChanged(
-    chromium::web::NavigationEvent change,
+    fuchsia::web::NavigationState change,
     OnNavigationStateChangedCallback callback) {
-  if (change.url)
-    connector_.NotifyPageLoad(frame());
+  if (change.has_is_main_document_loaded() && change.is_main_document_loaded())
+    connector_->OnPageLoad();
   callback();
 }

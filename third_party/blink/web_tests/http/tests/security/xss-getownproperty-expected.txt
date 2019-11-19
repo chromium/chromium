@@ -1,3 +1,0 @@
-CONSOLE MESSAGE: line 20: PASS: Access check triggered
-CONSOLE MESSAGE: line 27: PASS: Access check triggered
-Test should log two "PASS" messages to the console.

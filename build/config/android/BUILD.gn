@@ -73,19 +73,13 @@ config("compiler") {
   } else {
     assert(false, "Architecture not supported")
   }
-  cflags += [
-    "--target=$abi_target",
-    "-isystem" +
-        rebase_path("$android_ndk_root/sysroot/usr/include/$abi_target",
-                    root_build_dir),
-    "-D__ANDROID_API__=$compile_api_level",
-  ]
-  ldflags += [ "--target=$abi_target" ]
+  cflags += [ "--target=$abi_target$compile_api_level" ]
+  ldflags += [ "--target=$abi_target$compile_api_level" ]
 
   # TODO(crbug.com/771171): Remove this define once code that uses it has been
   # updated to no longer need it. This is leftover from older Android NDK
   # versions.
-  if (compile_api_level < 20) {
+  if (compile_api_level < 21) {
     cflags += [ "-DHAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC=1" ]
   }
 
@@ -99,37 +93,23 @@ config("compiler") {
 # that is Android-only. Please see that target for advice on what should go in
 # :runtime_library vs. :compiler.
 config("runtime_library") {
-  # NOTE: The libc++ header include paths below are specified in cflags_cc
-  # rather than include_dirs because they need to come after include_dirs.
-  # Think of them like system headers, but don't use '-isystem' because the
-  # arm-linux-androideabi-4.4.3 toolchain (circa Gingerbread) will exhibit
-  # strange errors. The include ordering here is important; change with
-  # caution.
-  cflags_cc = [ "-isystem" +
-                rebase_path("$android_ndk_root/sources/android/support/include",
-                            root_build_dir) ]
-
-  defines = [
-    "__GNU_SOURCE=1",  # Necessary for clone().
-    "CHROMIUM_CXX_TWEAK_INLINES",  # Saves binary size.
-  ]
-  ldflags = [ "-nostdlib" ]
-  lib_dirs = [ android_libcpp_lib_dir ]
+  # Let the linker find libgcc.a.
+  ldflags = [ "-B" + rebase_path(android_toolchain_root, root_build_dir) ]
 
   libs = []
-  libs += [ "android_support" ]
+
+  # On 64-bit platforms, the only symbols provided by libandroid_support.a are
+  # strto{d,f,l,ul}_l. These symbols are not used by our libc++, and newer NDKs
+  # don't provide a libandroid_support.a on 64-bit platforms, so we only depend
+  # on this library on 32-bit platforms.
+  if (current_cpu == "arm" || current_cpu == "x86") {
+    libs += [ "android_support" ]
+  }
 
   # arm builds of libc++ starting in NDK r12 depend on unwind.
   if (current_cpu == "arm") {
     libs += [ "unwind" ]
   }
-
-  # Manually link the libgcc.a that the cross compiler uses. This is
-  # absolute because the linker will look inside the sysroot if it's not.
-  libs += [
-    rebase_path(android_libgcc_file),
-    "c",
-  ]
 
   if (current_cpu == "arm" && arm_version == 6) {
     libs += [ "atomic" ]
@@ -168,7 +148,7 @@ config("default_orderfile_instrumentation") {
     cflags = [ "-finstrument-function-entry-bare" ]
     if (use_thin_lto) {
       # TODO(pcc): This should not be necessary. Remove once
-      # https://reviews.llvm.org/D50017 lands and gets rolled in.
+      # https://reviews.llvm.org/D50016 lands and gets rolled in.
       ldflags = [ "-Wl,-u,__cyg_profile_func_enter_bare" ]
     }
   }

@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/web_applications/components/web_app_provider_base_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -21,7 +21,7 @@ class WebAppProvider;
 
 // Singleton that owns all WebAppProviderFactories and associates them with
 // Profile.
-class WebAppProviderFactory : public BrowserContextKeyedServiceFactory {
+class WebAppProviderFactory : public WebAppProviderBaseFactory {
  public:
   static WebAppProvider* GetForProfile(Profile* profile);
 

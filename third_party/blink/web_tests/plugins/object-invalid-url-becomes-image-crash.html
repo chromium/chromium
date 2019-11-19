@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<div id="container"></div>
+<script>
+  var object = document.createElement("object");
+  container.appendChild(object);
+  object.data = "x";
+  object.type = "image/webp";
+  object.align = "Right";
+
+  test(()=> { }, "No crash or DCHECK failure");
+</script>

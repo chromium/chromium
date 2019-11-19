@@ -11,14 +11,21 @@ namespace autofill {
 class PersonalDataManager;
 }  // namespace autofill;
 
+namespace password_manager {
+class PasswordStore;
+}  // password_manager
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface CWVAutofillDataManager ()
 
 // |personalDataManager| The underlying personal data manager being wrapped.
+// |passwordStore| The underlying password store being wrapped.
 // It should outlive this instance.
 - (instancetype)initWithPersonalDataManager:
-    (autofill::PersonalDataManager*)personalDataManager
+                    (autofill::PersonalDataManager*)personalDataManager
+                              passwordStore:(password_manager::PasswordStore*)
+                                                passwordStore
     NS_DESIGNATED_INITIALIZER;
 
 @end

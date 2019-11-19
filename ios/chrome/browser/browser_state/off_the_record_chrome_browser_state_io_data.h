@@ -24,7 +24,7 @@ namespace net {
 class CookieStore;
 class HttpNetworkSession;
 class HttpTransactionFactory;
-class URLRequestContext;
+class URLRequestJobFactoryImpl;
 }  // namespace net
 
 // OffTheRecordChromeBrowserState owns a
@@ -94,10 +94,6 @@ class OffTheRecordChromeBrowserStateIOData : public ChromeBrowserStateIOData {
       std::unique_ptr<IOSChromeNetworkDelegate> chrome_network_delegate,
       ProfileParams* profile_params,
       ProtocolHandlerMap* protocol_handlers) const override;
-  AppRequestContext* InitializeAppRequestContext(
-      net::URLRequestContext* main_context) const override;
-  AppRequestContext* AcquireIsolatedAppRequestContext(
-      net::URLRequestContext* main_context) const override;
 
   mutable std::unique_ptr<IOSChromeNetworkDelegate> network_delegate_;
 
@@ -106,7 +102,7 @@ class OffTheRecordChromeBrowserStateIOData : public ChromeBrowserStateIOData {
 
   mutable std::unique_ptr<net::CookieStore> main_cookie_store_;
 
-  mutable std::unique_ptr<net::URLRequestJobFactory> main_job_factory_;
+  mutable std::unique_ptr<net::URLRequestJobFactoryImpl> main_job_factory_;
 
   // Server bound certificates and cookies are persisted to the disk on iOS.
   base::FilePath cookie_path_;

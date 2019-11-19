@@ -117,7 +117,7 @@ Each network traffic annotation should specify the following items:
      the source code has hardcoded that the request goes to Google (e.g. for
      ZeroSuggest), use  `GOOGLE_OWNED_SERVICE`. If the request can go to other
      domains and is perceived as a part of a website rather than a native
-     browser feature, use `WEBSITE`. Use `LOCAL` if the reques is processed
+     browser feature, use `WEBSITE`. Use `LOCAL` if the request is processed
      locally and doesn't go to network, otherwise use `OTHER`. If `OTHER` is
      used, please add plain text description in `destination_other`
      field.
@@ -302,9 +302,9 @@ clients, and one can run it manually.
 ### Waterfall tests
 Two commit queue trybots test traffic annotations on changed files using the
 scripts in `tools/traffic_annotation/scripts`. To run these tests faster and to
-avoid spamming the commit queue if an unforeseen error has happed in downstream
-scripts or tools, they are run in error resilient mode, only on changed files,
-and using heuristics to decide which files to process.
+avoid spamming the commit queue if an unforeseen error has happened in
+downstream scripts or tools, they are run in error resilient mode, only on
+changed files, and using heuristics to decide which files to process.
 An FYI bot runs more detailed tests on the whole repository and with different
 switches, to make sure that the heuristics that trybot tests use and the limited
 scope of tests have not neglected any issues.

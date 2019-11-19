@@ -1,0 +1,21 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/test.gni")
+
+mojom("mojom") {
+  sources = [
+    "discardable_shared_memory_manager.mojom",
+  ]
+
+  import_dirs = [
+    get_path_info("../../../..", "abspath"),
+    "//mojo/services",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+  ]
+}

@@ -1,6 +1,7 @@
 CONSOLE ERROR: line 4: Error: <animate> attribute values: Invalid value, ";;".
 CONSOLE ERROR: line 5: Error: <animate> attribute values: Invalid value, "300;255;180;30;;".
 CONSOLE ERROR: line 7: Error: <animate> attribute values: Invalid value, "50%;;;;10%".
+CONSOLE ERROR: line 8: Error: <animate> attribute values: Invalid value, "50%;  ;10%".
 Tests parsing of values attribute.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

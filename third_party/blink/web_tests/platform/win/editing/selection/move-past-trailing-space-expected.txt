@@ -17,7 +17,7 @@ layer at (0,0) size 800x600
   LayoutBlockFlow {HTML} at (0,0) size 800x600
     LayoutBlockFlow {BODY} at (8,8) size 784x584
       LayoutBlockFlow {DIV} at (0,0) size 228x84 [border: (2px solid #FF0000)]
-        LayoutInline {SPAN} at (0,0) size 108x55
+        LayoutInline {SPAN} at (106,14) size 108x55
           LayoutText {#text} at (106,14) size 108x55
             text run at (106,14) width 46 RTL: " \x{5D0}\x{5D7}\x{5E8}\x{5D9}"
             text run at (152,14) width 62: "before"

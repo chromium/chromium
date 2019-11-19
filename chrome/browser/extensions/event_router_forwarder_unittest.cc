@@ -18,8 +18,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -58,13 +58,16 @@ class MockEventRouterForwarder : public EventRouterForwarder {
   ~MockEventRouterForwarder() override {}
 };
 
-static void BroadcastEventToRenderers(EventRouterForwarder* event_router,
-                                      events::HistogramValue histogram_value,
-                                      const std::string& event_name,
-                                      const GURL& url) {
+static void BroadcastEventToRenderers(
+    EventRouterForwarder* event_router,
+    events::HistogramValue histogram_value,
+    const std::string& event_name,
+    const GURL& url,
+    bool dispatch_to_off_the_record_profiles) {
   std::unique_ptr<base::ListValue> args(new base::ListValue());
   event_router->BroadcastEventToRenderers(histogram_value, event_name,
-                                          std::move(args), url);
+                                          std::move(args), url,
+                                          dispatch_to_off_the_record_profiles);
 }
 
 static void DispatchEventToRenderers(EventRouterForwarder* event_router,
@@ -72,11 +75,12 @@ static void DispatchEventToRenderers(EventRouterForwarder* event_router,
                                      const std::string& event_name,
                                      void* profile,
                                      bool use_profile_to_restrict_events,
-                                     const GURL& url) {
+                                     const GURL& url,
+                                     bool dispatch_to_off_the_record_profiles) {
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  event_router->DispatchEventToRenderers(histogram_value, event_name,
-                                         std::move(args), profile,
-                                         use_profile_to_restrict_events, url);
+  event_router->DispatchEventToRenderers(
+      histogram_value, event_name, std::move(args), profile,
+      use_profile_to_restrict_events, url, dispatch_to_off_the_record_profiles);
 }
 
 }  // namespace
@@ -84,15 +88,18 @@ static void DispatchEventToRenderers(EventRouterForwarder* event_router,
 class EventRouterForwarderTest : public testing::Test {
  protected:
   EventRouterForwarderTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::REAL_IO_THREAD),
-        profile_manager_(
-            TestingBrowserProcess::GetGlobal()) {
+      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {
 #if defined(OS_MACOSX)
     base::PowerMonitorDeviceSource::AllocateSystemIOPorts();
 #endif
     std::unique_ptr<base::PowerMonitorSource> power_monitor_source(
         new base::PowerMonitorDeviceSource());
-    dummy.reset(new base::PowerMonitor(std::move(power_monitor_source)));
+    base::PowerMonitor::Initialize(std::move(power_monitor_source));
+  }
+
+  ~EventRouterForwarderTest() override {
+    base::PowerMonitor::ShutdownForTesting();
   }
 
   void SetUp() override {
@@ -103,9 +110,8 @@ class EventRouterForwarderTest : public testing::Test {
     profile2_ = profile_manager_.CreateTestingProfile("two");
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  std::unique_ptr<base::PowerMonitor> dummy;
   // Profiles are weak pointers, owned by ProfileManager in |browser_process_|.
   TestingProfile* profile1_;
   TestingProfile* profile2_;
@@ -120,7 +126,7 @@ TEST_F(EventRouterForwarderTest, BroadcastRendererUI) {
   EXPECT_CALL(*event_router, CallEventRouter(profile2_, "", kHistogramValue,
                                              kEventName, profile2_, url));
   BroadcastEventToRenderers(event_router.get(), kHistogramValue, kEventName,
-                            url);
+                            url, false);
 }
 
 TEST_F(EventRouterForwarderTest, BroadcastRendererUIIncognito) {
@@ -136,7 +142,25 @@ TEST_F(EventRouterForwarderTest, BroadcastRendererUIIncognito) {
   EXPECT_CALL(*event_router, CallEventRouter(profile2_, "", kHistogramValue,
                                              kEventName, profile2_, url));
   BroadcastEventToRenderers(event_router.get(), kHistogramValue, kEventName,
-                            url);
+                            url, false);
+}
+
+TEST_F(EventRouterForwarderTest,
+       BroadcastRendererUIIncognitoWithDispatchToOffTheRecordProfiles) {
+  scoped_refptr<MockEventRouterForwarder> event_router(
+      new MockEventRouterForwarder);
+  using ::testing::_;
+  GURL url;
+  Profile* incognito1 = profile1_->GetOffTheRecordProfile();
+  Profile* incognito2 = profile2_->GetOffTheRecordProfile();
+  EXPECT_CALL(*event_router, CallEventRouter(profile1_, "", kHistogramValue,
+                                             kEventName, profile1_, url));
+  EXPECT_CALL(*event_router, CallEventRouter(incognito1, _, _, _, _, _));
+  EXPECT_CALL(*event_router, CallEventRouter(profile2_, "", kHistogramValue,
+                                             kEventName, profile2_, url));
+  EXPECT_CALL(*event_router, CallEventRouter(incognito2, _, _, _, _, _));
+  BroadcastEventToRenderers(event_router.get(), kHistogramValue, kEventName,
+                            url, true);
 }
 
 // This is the canonical test for passing control flow from the IO thread
@@ -150,14 +174,14 @@ TEST_F(EventRouterForwarderTest, BroadcastRendererIO) {
                                              kEventName, profile1_, url));
   EXPECT_CALL(*event_router, CallEventRouter(profile2_, "", kHistogramValue,
                                              kEventName, profile2_, url));
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
-                           base::BindOnce(&BroadcastEventToRenderers,
-                                          base::Unretained(event_router.get()),
-                                          kHistogramValue, kEventName, url));
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(&BroadcastEventToRenderers,
+                                base::Unretained(event_router.get()),
+                                kHistogramValue, kEventName, url, false));
 
   // Wait for IO thread's message loop to be processed
   scoped_refptr<base::ThreadTestHelper> helper(new base::ThreadTestHelper(
-      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}).get()));
+      base::CreateSingleThreadTaskRunner({BrowserThread::IO}).get()));
   ASSERT_TRUE(helper->Run());
 
   base::RunLoop().RunUntilIdle();
@@ -173,7 +197,7 @@ TEST_F(EventRouterForwarderTest, UnicastRendererUIRestricted) {
   EXPECT_CALL(*event_router, CallEventRouter(profile2_, _, _, _, _, _))
       .Times(0);
   DispatchEventToRenderers(event_router.get(), kHistogramValue, kEventName,
-                           profile1_, true, url);
+                           profile1_, true, url, false);
 }
 
 TEST_F(EventRouterForwarderTest, UnicastRendererUIRestrictedIncognito1) {
@@ -189,7 +213,27 @@ TEST_F(EventRouterForwarderTest, UnicastRendererUIRestrictedIncognito1) {
   EXPECT_CALL(*event_router, CallEventRouter(profile2_, _, _, _, _, _))
       .Times(0);
   DispatchEventToRenderers(event_router.get(), kHistogramValue, kEventName,
-                           profile1_, true, url);
+                           profile1_, true, url, false);
+}
+
+TEST_F(
+    EventRouterForwarderTest,
+    UnicastRendererUIRestrictedIncognito1WithDispatchToOffTheRecordProfiles) {
+  scoped_refptr<MockEventRouterForwarder> event_router(
+      new MockEventRouterForwarder);
+  Profile* incognito1 = profile1_->GetOffTheRecordProfile();
+  Profile* incognito2 = profile2_->GetOffTheRecordProfile();
+  using ::testing::_;
+  GURL url;
+  EXPECT_CALL(*event_router, CallEventRouter(profile1_, "", kHistogramValue,
+                                             kEventName, profile1_, url));
+  EXPECT_CALL(*event_router, CallEventRouter(incognito1, _, _, _, _, _));
+  EXPECT_CALL(*event_router, CallEventRouter(profile2_, _, _, _, _, _))
+      .Times(0);
+  EXPECT_CALL(*event_router, CallEventRouter(incognito2, _, _, _, _, _))
+      .Times(0);
+  DispatchEventToRenderers(event_router.get(), kHistogramValue, kEventName,
+                           profile1_, true, url, true);
 }
 
 TEST_F(EventRouterForwarderTest, UnicastRendererUIRestrictedIncognito2) {
@@ -205,7 +249,7 @@ TEST_F(EventRouterForwarderTest, UnicastRendererUIRestrictedIncognito2) {
   EXPECT_CALL(*event_router, CallEventRouter(profile2_, _, _, _, _, _))
       .Times(0);
   DispatchEventToRenderers(event_router.get(), kHistogramValue, kEventName,
-                           incognito, true, url);
+                           incognito, true, url, false);
 }
 
 TEST_F(EventRouterForwarderTest, UnicastRendererUIUnrestricted) {
@@ -218,7 +262,7 @@ TEST_F(EventRouterForwarderTest, UnicastRendererUIUnrestricted) {
   EXPECT_CALL(*event_router, CallEventRouter(profile2_, _, _, _, _, _))
       .Times(0);
   DispatchEventToRenderers(event_router.get(), kHistogramValue, kEventName,
-                           profile1_, false, url);
+                           profile1_, false, url, false);
 }
 
 TEST_F(EventRouterForwarderTest, UnicastRendererUIUnrestrictedIncognito) {
@@ -234,7 +278,7 @@ TEST_F(EventRouterForwarderTest, UnicastRendererUIUnrestrictedIncognito) {
   EXPECT_CALL(*event_router, CallEventRouter(profile2_, _, _, _, _, _))
       .Times(0);
   DispatchEventToRenderers(event_router.get(), kHistogramValue, kEventName,
-                           profile1_, false, url);
+                           profile1_, false, url, false);
 }
 
 }  // namespace extensions

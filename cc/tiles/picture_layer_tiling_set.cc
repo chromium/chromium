@@ -242,7 +242,7 @@ void PictureLayerTilingSet::CleanUpTilings(
       continue;
 
     // Don't remove tilings that are required.
-    if (base::ContainsValue(needed_tilings, tiling.get())) {
+    if (base::Contains(needed_tilings, tiling.get())) {
       continue;
     }
 

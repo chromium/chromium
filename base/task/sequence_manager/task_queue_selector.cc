@@ -20,10 +20,17 @@ namespace internal {
 constexpr const int64_t TaskQueueSelector::per_priority_starvation_tolerance_[];
 
 TaskQueueSelector::TaskQueueSelector(
-    scoped_refptr<AssociatedThreadId> associated_thread)
+    scoped_refptr<AssociatedThreadId> associated_thread,
+    const SequenceManager::Settings& settings)
     : associated_thread_(std::move(associated_thread)),
-      delayed_work_queue_sets_("delayed", this),
-      immediate_work_queue_sets_("immediate", this) {}
+#if DCHECK_IS_ON()
+      random_task_selection_(settings.random_task_selection_seed != 0),
+#endif
+      anti_starvation_logic_for_priorities_disabled_(
+          settings.anti_starvation_logic_for_priorities_disabled),
+      delayed_work_queue_sets_("delayed", this, settings),
+      immediate_work_queue_sets_("immediate", this, settings) {
+}
 
 TaskQueueSelector::~TaskQueueSelector() = default;
 
@@ -123,6 +130,8 @@ int64_t TaskQueueSelector::GetSortKeyForPriority(
       return std::numeric_limits<int64_t>::max();
 
     default:
+      if (anti_starvation_logic_for_priorities_disabled_)
+        return per_priority_starvation_tolerance_[priority];
       return selection_count_ + per_priority_starvation_tolerance_[priority];
   }
 }
@@ -150,54 +159,13 @@ void TaskQueueSelector::WorkQueueSetBecameNonEmpty(size_t set_index) {
   }
 }
 
-WorkQueue* TaskQueueSelector::ChooseOldestImmediateTaskWithPriority(
-    TaskQueue::QueuePriority priority) const {
-  return immediate_work_queue_sets_.GetOldestQueueInSet(priority);
-}
-
-WorkQueue* TaskQueueSelector::ChooseOldestDelayedTaskWithPriority(
-    TaskQueue::QueuePriority priority) const {
-  return delayed_work_queue_sets_.GetOldestQueueInSet(priority);
-}
-
-WorkQueue* TaskQueueSelector::ChooseOldestImmediateOrDelayedTaskWithPriority(
-    TaskQueue::QueuePriority priority,
-    bool* out_chose_delayed_over_immediate) const {
-  DCHECK_EQ(*out_chose_delayed_over_immediate, false);
-  EnqueueOrder immediate_enqueue_order;
-  WorkQueue* immediate_queue =
-      immediate_work_queue_sets_.GetOldestQueueAndEnqueueOrderInSet(
-          priority, &immediate_enqueue_order);
-  if (immediate_queue) {
-    EnqueueOrder delayed_enqueue_order;
-    WorkQueue* delayed_queue =
-        delayed_work_queue_sets_.GetOldestQueueAndEnqueueOrderInSet(
-            priority, &delayed_enqueue_order);
-    if (!delayed_queue)
-      return immediate_queue;
-
-    if (immediate_enqueue_order < delayed_enqueue_order) {
-      return immediate_queue;
-    } else {
-      *out_chose_delayed_over_immediate = true;
-      return delayed_queue;
-    }
-  }
-  return delayed_work_queue_sets_.GetOldestQueueInSet(priority);
-}
-
-WorkQueue* TaskQueueSelector::ChooseOldestWithPriority(
-    TaskQueue::QueuePriority priority,
-    bool* out_chose_delayed_over_immediate) const {
-  // Select an immediate work queue if we are starving immediate tasks.
-  if (immediate_starvation_count_ >= kMaxDelayedStarvationTasks) {
-    WorkQueue* queue = ChooseOldestImmediateTaskWithPriority(priority);
-    if (queue)
-      return queue;
-    return ChooseOldestDelayedTaskWithPriority(priority);
-  }
-  return ChooseOldestImmediateOrDelayedTaskWithPriority(
-      priority, out_chose_delayed_over_immediate);
+void TaskQueueSelector::CollectSkippedOverLowerPriorityTasks(
+    const internal::WorkQueue* selected_work_queue,
+    std::vector<const Task*>* result) const {
+  delayed_work_queue_sets_.CollectSkippedOverLowerPriorityTasks(
+      selected_work_queue, result);
+  immediate_work_queue_sets_.CollectSkippedOverLowerPriorityTasks(
+      selected_work_queue, result);
 }
 
 #if DCHECK_IS_ON() || !defined(NDEBUG)
@@ -226,7 +194,7 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService() {
   // the highest priority for which we have work, unless we are starving a lower
   // priority.
   TaskQueue::QueuePriority priority = active_priorities_.min_id();
-  bool chose_delayed_over_immediate = false;
+  bool chose_delayed_over_immediate;
 
   // Control tasks are allowed to indefinitely stave out other work and any
   // control tasks we run should not be counted for task starvation purposes.
@@ -234,7 +202,13 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService() {
     selection_count_++;
 
   WorkQueue* queue =
-      ChooseOldestWithPriority(priority, &chose_delayed_over_immediate);
+#if DCHECK_IS_ON()
+      random_task_selection_ ? ChooseWithPriority<SetOperationRandom>(
+                                   priority, &chose_delayed_over_immediate)
+                             :
+#endif
+                             ChooseWithPriority<SetOperationOldest>(
+                                 priority, &chose_delayed_over_immediate);
 
   // If we still have any tasks remaining for |set_index| then adjust it's
   // sort key.
@@ -258,9 +232,12 @@ void TaskQueueSelector::SetTaskQueueSelectorObserver(Observer* observer) {
   task_queue_selector_observer_ = observer;
 }
 
-bool TaskQueueSelector::AllEnabledWorkQueuesAreEmpty() const {
+Optional<TaskQueue::QueuePriority>
+TaskQueueSelector::GetHighestPendingPriority() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  return active_priorities_.empty();
+  if (active_priorities_.empty())
+    return nullopt;
+  return active_priorities_.min_id();
 }
 
 void TaskQueueSelector::SetImmediateStarvationCountForTest(

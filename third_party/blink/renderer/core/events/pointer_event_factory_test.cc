@@ -82,6 +82,15 @@ class PointerEventFactoryTest : public testing::Test {
     const char* expected_pointer_type =
         PointerTypeNameForWebPointPointerType(pointer_type);
     EXPECT_EQ(expected_pointer_type, pointer_event->pointerType());
+
+    EXPECT_EQ(!!(modifiers & WebInputEvent::kControlKey),
+              pointer_event->ctrlKey());
+    EXPECT_EQ(!!(modifiers & WebInputEvent::kShiftKey),
+              pointer_event->shiftKey());
+    EXPECT_EQ(!!(modifiers & WebInputEvent::kAltKey), pointer_event->altKey());
+    EXPECT_EQ(!!(modifiers & WebInputEvent::kMetaKey),
+              pointer_event->metaKey());
+
     if (type == WebInputEvent::kPointerMove) {
       EXPECT_EQ(coalesced_event_count,
                 pointer_event->getCoalescedEvents().size());
@@ -114,12 +123,13 @@ class PointerEventFactoryTest : public testing::Test {
             pointer_event->pointerId(),
             WebPointerProperties(1, WebPointerProperties::PointerType::kUnknown,
                                  WebPointerProperties::Button::kNoButton,
-                                 WebFloatPoint(50, 50), WebFloatPoint(20, 20))),
+                                 WebFloatPoint(50, 50), WebFloatPoint(20, 20)),
+            type),
         FloatPoint(100, 100));
     return pointer_event;
   }
   void CreateAndCheckPointerTransitionEvent(PointerEvent*, const AtomicString&);
-  void CheckNonHoveringPointers(const std::set<int>& expected);
+  void CheckNonHoveringPointers(const HashSet<int>& expected);
 
   PointerEventFactory pointer_event_factory_;
   int expected_mouse_id_;
@@ -160,10 +170,15 @@ void PointerEventFactoryTest::CreateAndCheckPointerTransitionEvent(
   EXPECT_EQ(clone_pointer_event->pointerId(), pointer_event->pointerId());
   EXPECT_EQ(clone_pointer_event->isPrimary(), pointer_event->isPrimary());
   EXPECT_EQ(clone_pointer_event->type(), type);
+
+  EXPECT_EQ(clone_pointer_event->ctrlKey(), pointer_event->ctrlKey());
+  EXPECT_EQ(clone_pointer_event->shiftKey(), pointer_event->shiftKey());
+  EXPECT_EQ(clone_pointer_event->altKey(), pointer_event->altKey());
+  EXPECT_EQ(clone_pointer_event->metaKey(), pointer_event->metaKey());
 }
 
 void PointerEventFactoryTest::CheckNonHoveringPointers(
-    const std::set<int>& expected_pointers) {
+    const HashSet<int>& expected_pointers) {
   Vector<int> pointers =
       pointer_event_factory_.GetPointerIdsOfNonHoveringPointers();
   EXPECT_EQ(pointers.size(), expected_pointers.size());
@@ -575,7 +590,8 @@ TEST_F(PointerEventFactoryTest, LastPointerPosition) {
           expected_mouse_id_,
           WebPointerProperties(1, WebPointerProperties::PointerType::kUnknown,
                                WebPointerProperties::Button::kNoButton,
-                               WebFloatPoint(50, 50), WebFloatPoint(20, 20))),
+                               WebFloatPoint(50, 50), WebFloatPoint(20, 20)),
+          WebInputEvent::kPointerMove),
       FloatPoint(20, 20));
 }
 
@@ -649,6 +665,29 @@ TEST_F(PointerEventFactoryTest, PenEraserButton) {
       true /* isprimary */, true /* hovering */, WebInputEvent::kNoModifiers,
       WebInputEvent::kPointerUp, WebPointerProperties::Button::kLeft);
   EXPECT_EQ(event_type_names::kPointerup, last_pointerup_event->type());
+}
+
+TEST_F(PointerEventFactoryTest, MousePointerKeyStates) {
+  WebInputEvent::Modifiers modifiers = static_cast<WebInputEvent::Modifiers>(
+      WebInputEvent::kControlKey | WebInputEvent::kMetaKey);
+
+  PointerEvent* pointer_event1 = CreateAndCheckWebPointerEvent(
+      WebPointerProperties::PointerType::kMouse, 0, expected_mouse_id_,
+      true /* isprimary */, true /* hovering */, modifiers,
+      WebInputEvent::kPointerMove);
+
+  CreateAndCheckPointerTransitionEvent(pointer_event1,
+                                       event_type_names::kPointerout);
+
+  modifiers = static_cast<WebInputEvent::Modifiers>(WebInputEvent::kAltKey |
+                                                    WebInputEvent::kShiftKey);
+  PointerEvent* pointer_event2 = CreateAndCheckWebPointerEvent(
+      WebPointerProperties::PointerType::kMouse, 0, expected_mouse_id_,
+      true /* isprimary */, true /* hovering */, modifiers,
+      WebInputEvent::kPointerMove);
+
+  CreateAndCheckPointerTransitionEvent(pointer_event2,
+                                       event_type_names::kPointerover);
 }
 
 }  // namespace blink

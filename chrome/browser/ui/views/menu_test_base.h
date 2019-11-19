@@ -11,11 +11,11 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/views/controls/button/menu_button_listener.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
 namespace views {
-class MenuButton;
+class Button;
 class MenuItemView;
 class MenuRunner;
 }
@@ -35,7 +35,7 @@ class MenuRunner;
 // MenuItemView prevents repeated activation of a menu by clicks too
 // close in time.
 class MenuTestBase : public ViewEventTestBase,
-                     public views::MenuButtonListener,
+                     public views::ButtonListener,
                      public views::MenuDelegate {
  public:
   MenuTestBase();
@@ -75,10 +75,8 @@ class MenuTestBase : public ViewEventTestBase,
   void DoTestOnMessageLoop() override;
   gfx::Size GetPreferredSizeForContents() const override;
 
-  // views::MenuButtonListener implementation
-  void OnMenuButtonClicked(views::MenuButton* source,
-                           const gfx::Point& point,
-                           const ui::Event* event) override;
+  // views::ButtonListener implementation
+  void ButtonPressed(views::Button* source, const ui::Event& event) override;
 
   // views::MenuDelegate implementation
   void ExecuteCommand(int id) override;

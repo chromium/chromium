@@ -7,8 +7,6 @@
 # Naming and folder structure below are following the recommendation for Chrome
 # components. Component-updated CDMs must follow the same recommendation.
 
-# Note: This file must be in sync with cdm_paths.cc
-
 # OS name for components is close to "target_os" but has some differences.
 # Explicitly define what we use to avoid confusion.
 if (is_chromeos) {
@@ -29,18 +27,24 @@ if (current_cpu == "x86" || current_cpu == "x64" || current_cpu == "arm") {
   component_arch = "unsupported_arch"
 }
 
-# Only enable platform specific path for Win and Mac, where CDMs are Chrome
-# components.
-# TODO(xhwang): Improve how we enable platform specific path. See
-# http://crbug.com/468584
-if ((is_win || is_mac) && (current_cpu == "x86" || current_cpu == "x64")) {
-  _platform_specific_path =
+# Enable platform specific paths. This is required when the CDMs are Chrome
+# components, but is optional for other platforms.
+# Note: |cdm_platform_specific_path| is exported as a BUILDFLAG to
+# cdm_paths.cc.
+if ((is_win || is_mac || is_desktop_linux) &&
+    (current_cpu == "x86" || current_cpu == "x64")) {
+  cdm_platform_specific_path =
       "_platform_specific/$component_os" + "_" + "$component_arch"
 
   # Path of Clear Key and Widevine CDMs relative to the output dir.
-  clearkey_cdm_path = "ClearKeyCdm/$_platform_specific_path"
-  widevine_cdm_path = "WidevineCdm/$_platform_specific_path"
+  clearkey_cdm_path = "ClearKeyCdm/$cdm_platform_specific_path"
+  widevine_cdm_path = "WidevineCdm/$cdm_platform_specific_path"
+} else if (is_fuchsia) {
+  cdm_platform_specific_path = ""
+  clearkey_cdm_path = "lib"
+  widevine_cdm_path = "lib"
 } else {
+  cdm_platform_specific_path = ""
   clearkey_cdm_path = "."
   widevine_cdm_path = "."
 }

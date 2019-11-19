@@ -41,9 +41,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // VideoEncodeAccelerator implementation.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
   bool Initialize(const Config& config, Client* client) override;
-  void Encode(const scoped_refptr<VideoFrame>& frame,
-              bool force_keyframe) override;
-  void UseOutputBitstreamBuffer(const BitstreamBuffer& buffer) override;
+  void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
+  void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(uint32_t bitrate,
                                        uint32_t framerate) override;
   void Destroy() override;
@@ -152,7 +151,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
   base::WeakPtrFactory<MediaFoundationVideoEncodeAccelerator>
-      encoder_task_weak_factory_;
+      encoder_task_weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaFoundationVideoEncodeAccelerator);
 };

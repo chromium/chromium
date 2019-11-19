@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #import "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
 #include "chrome/browser/ui/find_bar/find_tab_helper.h"
+#include "chrome/browser/ui/find_bar/find_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 #import "ui/base/cocoa/find_pasteboard.h"
@@ -70,7 +71,7 @@ class FindBarPlatformHelperMac : public FindBarPlatformHelper {
           continue;
         FindTabHelper* find_tab_helper =
             FindTabHelper::FromWebContents(web_contents);
-        find_tab_helper->StopFinding(FindBarController::kClearSelectionOnPage);
+        find_tab_helper->StopFinding(FindOnPageSelectionAction::kClear);
       }
     }
 

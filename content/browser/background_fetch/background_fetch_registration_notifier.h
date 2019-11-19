@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
 namespace content {
@@ -29,12 +30,15 @@ class CONTENT_EXPORT BackgroundFetchRegistrationNotifier {
   // identified by the |unique_id| progress.
   void AddObserver(
       const std::string& unique_id,
-      blink::mojom::BackgroundFetchRegistrationObserverPtr observer);
+      mojo::PendingRemote<blink::mojom::BackgroundFetchRegistrationObserver>
+          observer);
 
-  // Notifies any registered observers for the |registration| of the progress.
-  // This will cause JavaScript events to fire.
-  // Completed fetches must also call Notify with the final state.
-  void Notify(const blink::mojom::BackgroundFetchRegistration& registration);
+  // Notifies any registered observers for the |registration_data| of the
+  // progress. This will cause JavaScript events to fire. Completed fetches must
+  // also call Notify with the final state.
+  void Notify(
+      const std::string& unique_id,
+      const blink::mojom::BackgroundFetchRegistrationData& registration_data);
 
   // Notifies any registered observers for the registration identified by
   // |unique_id| that the records for the fetch are no longer available.
@@ -66,7 +70,7 @@ class CONTENT_EXPORT BackgroundFetchRegistrationNotifier {
 
   // Storage of observers keyed by the |unique_id| of a registration.
   std::multimap<std::string,
-                blink::mojom::BackgroundFetchRegistrationObserverPtr>
+                mojo::Remote<blink::mojom::BackgroundFetchRegistrationObserver>>
       observers_;
 
   // URLs the observers care about, indexed by the unique_id of the observer.
@@ -77,7 +81,7 @@ class CONTENT_EXPORT BackgroundFetchRegistrationNotifier {
   // This is used for UMA recording.
   std::map<std::string, std::pair<int, int>> num_requests_and_updates_;
 
-  base::WeakPtrFactory<BackgroundFetchRegistrationNotifier> weak_factory_;
+  base::WeakPtrFactory<BackgroundFetchRegistrationNotifier> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundFetchRegistrationNotifier);
 };

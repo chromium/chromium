@@ -39,7 +39,7 @@ cca.toast.speak = function(message) {
 cca.toast.update_ = function(message, spoken) {
   // TTS speaks changes of on-screen aria-live elements. Force content changes
   // and clear content once inactive to avoid stale content being read out.
-  var element = document.querySelector('#toast');
+  var element = /** @type {!HTMLElement} */ (document.querySelector('#toast'));
   cca.util.animateCancel(element); // Cancel the active toast if any.
   element.textContent = ''; // Force to reiterate repeated messages.
   element.textContent = chrome.i18n.getMessage(message) || message;

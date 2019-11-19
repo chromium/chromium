@@ -21,7 +21,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/synchronization/cancellation_flag.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
@@ -32,10 +32,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/app_mode/kiosk_oem_manifest_parser.h"
 #include "chromeos/constants/chromeos_constants.h"
 #include "chromeos/constants/chromeos_paths.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/system/kiosk_oem_manifest_parser.h"
 #include "chromeos/system/name_value_pairs_parser.h"
 
 namespace chromeos {
@@ -187,6 +187,8 @@ const char kCustomizationIdKey[] = "customization_id";
 const char kDevSwitchBootKey[] = "devsw_boot";
 const char kDevSwitchBootValueDev[] = "1";
 const char kDevSwitchBootValueVerified[] = "0";
+const char kDockMacAddressKey[] = "dock_mac";
+const char kEthernetMacAddressKey[] = "ethernet_mac0";
 const char kFirmwareWriteProtectBootKey[] = "wpsw_boot";
 const char kFirmwareWriteProtectBootValueOn[] = "1";
 const char kFirmwareWriteProtectBootValueOff[] = "0";
@@ -198,6 +200,7 @@ const char kHardwareClassKey[] = "hardware_class";
 const char kIsVmKey[] = "is_vm";
 const char kIsVmValueFalse[] = "0";
 const char kIsVmValueTrue[] = "1";
+const char kManufactureDateKey[] = "mfg_date";
 const char kOffersCouponCodeKey[] = "ubind_attribute";
 const char kOffersGroupCodeKey[] = "gbind_attribute";
 const char kRlzBrandCodeKey[] = "rlz_brand_code";
@@ -275,7 +278,7 @@ class StatisticsProviderImpl : public StatisticsProvider {
   bool load_statistics_started_;
   NameValuePairsParser::NameValueMap machine_info_;
   MachineFlags machine_flags_;
-  base::CancellationFlag cancellation_flag_;
+  base::AtomicFlag cancellation_flag_;
   bool oem_manifest_loaded_;
   std::string region_;
   std::unique_ptr<base::Value> regional_data_;
@@ -483,9 +486,9 @@ void StatisticsProviderImpl::StartLoadingMachineStatistics(
 
   // TaskPriority::USER_BLOCKING because this is on the critical path of
   // rendering the NTP on startup. https://crbug.com/831835
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&StatisticsProviderImpl::LoadMachineStatistics,
                      base::Unretained(this), load_oem_manifest));

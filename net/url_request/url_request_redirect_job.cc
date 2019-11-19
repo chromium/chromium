@@ -16,12 +16,15 @@
 #include "base/values.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_log_util.h"
+#include "net/http/http_raw_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request_job.h"
 
 namespace net {
 
@@ -33,8 +36,7 @@ URLRequestRedirectJob::URLRequestRedirectJob(URLRequest* request,
     : URLRequestJob(request, network_delegate),
       redirect_destination_(redirect_destination),
       response_code_(response_code),
-      redirect_reason_(redirect_reason),
-      weak_factory_(this) {
+      redirect_reason_(redirect_reason) {
   DCHECK(!redirect_reason_.empty());
 }
 
@@ -62,9 +64,8 @@ void URLRequestRedirectJob::GetLoadTimingInfo(
 }
 
 void URLRequestRedirectJob::Start() {
-  request()->net_log().AddEvent(
-      NetLogEventType::URL_REQUEST_REDIRECT_JOB,
-      NetLog::StringCallback("reason", &redirect_reason_));
+  request()->net_log().AddEventWithStringParams(
+      NetLogEventType::URL_REQUEST_REDIRECT_JOB, "reason", redirect_reason_);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&URLRequestRedirectJob::StartAsync,
                                 weak_factory_.GetWeakPtr()));
@@ -111,21 +112,39 @@ void URLRequestRedirectJob::StartAsync() {
         http_origin.c_str());
   }
 
-  fake_headers_ = new HttpResponseHeaders(
-      HttpUtil::AssembleRawHeaders(header_string.c_str(),
-                                   header_string.length()));
-  DCHECK(fake_headers_->IsRedirect(NULL));
+  fake_headers_ = base::MakeRefCounted<HttpResponseHeaders>(
+      HttpUtil::AssembleRawHeaders(header_string));
+  DCHECK(fake_headers_->IsRedirect(nullptr));
 
-  request()->net_log().AddEvent(
+  NetLogResponseHeaders(
+      request()->net_log(),
       NetLogEventType::URL_REQUEST_FAKE_RESPONSE_HEADERS_CREATED,
-      base::Bind(&HttpResponseHeaders::NetLogCallback,
-                 base::Unretained(fake_headers_.get())));
+      fake_headers_.get());
+
+  // Send request headers along if there's a callback
+  if (request_headers_callback_) {
+    HttpRawRequestHeaders raw_request_headers;
+    for (const auto& header : request_headers.GetHeaderVector()) {
+      raw_request_headers.Add(header.key, header.value);
+    }
+
+    // Just to make extra sure everyone knows this is an internal header
+    raw_request_headers.set_request_line(
+        base::StringPrintf("%s %s HTTP/1.1\r\n", request_->method().c_str(),
+                           request_->url().PathForRequest().c_str()));
+    request_headers_callback_.Run(std::move(raw_request_headers));
+  }
 
   // TODO(mmenke):  Consider calling the NetworkDelegate with the headers here.
   // There's some weirdness about how to handle the case in which the delegate
   // tries to modify the redirect location, in terms of how IsSafeRedirect
   // should behave, and whether the fragment should be copied.
   URLRequestJob::NotifyHeadersComplete();
+}
+
+void URLRequestRedirectJob::SetRequestHeadersCallback(
+    RequestHeadersCallback callback) {
+  request_headers_callback_ = std::move(callback);
 }
 
 }  // namespace net

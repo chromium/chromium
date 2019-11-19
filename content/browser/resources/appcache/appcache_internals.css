@@ -68,9 +68,17 @@
 
 .appcache-info-template-file-url {
   width: 200px;
-  height:25px;
+  height: 25px;
 }
 
 .appcache-info-template-file-url {
   color: rgb(60, 102, 221);
+}
+
+.appcache-details {
+  text-align: start;
+}
+
+.appcache-details td {
+  width: 80px;
 }

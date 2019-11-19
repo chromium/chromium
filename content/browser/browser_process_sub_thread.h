@@ -53,10 +53,6 @@ class CONTENT_EXPORT BrowserProcessSubThread : public base::Thread {
   // starting this BrowserProcessSubThread.
   void AllowBlockingForTesting();
 
-  // Creates and starts the IO thread. It should not be promoted to
-  // BrowserThread::IO until BrowserMainLoop::CreateThreads().
-  static std::unique_ptr<BrowserProcessSubThread> CreateIOThread();
-
  protected:
   void Init() override;
   void Run(base::RunLoop* run_loop) override;

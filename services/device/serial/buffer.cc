@@ -15,18 +15,19 @@ ReadOnlyBuffer::~ReadOnlyBuffer() = default;
 
 WritableBuffer::~WritableBuffer() = default;
 
-SendBuffer::SendBuffer(const std::vector<uint8_t>& data,
+SendBuffer::SendBuffer(const uint8_t* buffer,
+                       uint32_t size,
                        SendCompleteCallback callback)
-    : data_(data), callback_(std::move(callback)) {}
+    : data_(buffer), size_(size), callback_(std::move(callback)) {}
 
 SendBuffer::~SendBuffer() = default;
 
 const uint8_t* SendBuffer::GetData() {
-  return data_.data();
+  return data_;
 }
 
 uint32_t SendBuffer::GetSize() {
-  return base::checked_cast<uint32_t>(data_.size());
+  return size_;
 }
 
 void SendBuffer::Done(uint32_t bytes_read) {

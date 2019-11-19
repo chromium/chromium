@@ -1,6 +1,5 @@
 include_rules = [
   "+base",
-  "+components/data_use_measurement/core",
   "+components/safe_browsing/common/safe_browsing_prefs.h",
   "+components/safe_browsing/features.h",
   "+components/safe_browsing/proto/webui.pb.h",

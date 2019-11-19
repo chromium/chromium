@@ -14,7 +14,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequenced_task_runner.h"
@@ -150,7 +150,7 @@ class NotificationPlatformBridgeWinImpl
     // Delete any remaining temp files in the image folder from the previous
     // sessions.
     DCHECK(notification_task_runner_);
-    content::BrowserThread::PostAfterStartupTask(
+    content::BrowserThread::PostBestEffortTask(
         FROM_HERE, notification_task_runner_,
         image_retainer_->GetCleanupTask());
   }
@@ -520,7 +520,7 @@ class NotificationPlatformBridgeWinImpl
         notifications;
     for (uint32_t index = 0; index < size; ++index) {
       mswr::ComPtr<winui::Notifications::IToastNotification> tn;
-      hr = list->GetAt(0U, &tn);
+      hr = list->GetAt(index, &tn);
       if (FAILED(hr)) {
         status = GetDisplayedStatus::SUCCESS_WITH_GET_AT_FAILURE;
         DLOG(ERROR) << "Failed to get notification " << index << " of " << size
@@ -568,7 +568,7 @@ class NotificationPlatformBridgeWinImpl
       displayed_notifications.insert(launch_id.notification_id());
     }
 
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(std::move(callback), std::move(displayed_notifications),
                        /*supports_synchronization=*/true));
@@ -612,9 +612,8 @@ class NotificationPlatformBridgeWinImpl
 
     LogSetReadyCallbackStatus(static_cast<SetReadyCallbackStatus>(status));
 
-    bool success =
-        base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                                 base::BindOnce(std::move(callback), enabled));
+    bool success = base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                                  base::BindOnce(std::move(callback), enabled));
     DCHECK(success);
   }
 
@@ -629,7 +628,7 @@ class NotificationPlatformBridgeWinImpl
       return;
     }
 
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&ForwardNotificationOperationOnUiThread, operation,
                        launch_id.notification_type(), launch_id.origin_url(),
@@ -777,8 +776,8 @@ winui::Notifications::IToastNotifier*
     NotificationPlatformBridgeWinImpl::notifier_for_testing_ = nullptr;
 
 NotificationPlatformBridgeWin::NotificationPlatformBridgeWin() {
-  notification_task_runner_ = base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+  notification_task_runner_ = base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   impl_ = base::MakeRefCounted<NotificationPlatformBridgeWinImpl>(
       notification_task_runner_);
@@ -851,20 +850,19 @@ bool NotificationPlatformBridgeWin::HandleActivation(
     return false;
   }
 
-  if (launch_id.is_for_dismiss_button()) {
-    LogActivationStatus(ActivationStatus::SUCCESS);
-    return true;  // We're done! The toast has already dismissed.
-  }
-
   base::Optional<base::string16> reply;
   base::string16 inline_reply =
       command_line.GetSwitchValueNative(switches::kNotificationInlineReply);
   if (!inline_reply.empty())
     reply = inline_reply;
 
-  NotificationCommon::Operation operation =
-      launch_id.is_for_context_menu() ? NotificationCommon::OPERATION_SETTINGS
-                                      : NotificationCommon::OPERATION_CLICK;
+  NotificationCommon::Operation operation;
+  if (launch_id.is_for_dismiss_button())
+    operation = NotificationCommon::OPERATION_CLOSE;
+  else if (launch_id.is_for_context_menu())
+    operation = NotificationCommon::OPERATION_SETTINGS;
+  else
+    operation = NotificationCommon::OPERATION_CLICK;
 
   base::Optional<int> action_index;
   if (launch_id.button_index() != -1)
@@ -882,11 +880,11 @@ bool NotificationPlatformBridgeWin::HandleActivation(
 // static
 bool NotificationPlatformBridgeWin::NativeNotificationEnabled() {
   // There was a Microsoft bug in Windows 10 prior to build 17134 (i.e.,
-  // VERSION_WIN10_RS4), causing endless loops in displaying notifications. It
-  // significantly amplified the memory and CPU usage. Therefore, we enable
-  // Windows 10 native notification only for build 17134 and later. See
-  // crbug.com/882622 and crbug.com/878823 for more details.
-  return base::win::GetVersion() >= base::win::VERSION_WIN10_RS4 &&
+  // Version::WIN10_RS4), causing endless loops in displaying
+  // notifications. It significantly amplified the memory and CPU usage.
+  // Therefore, we enable Windows 10 native notification only for build 17134
+  // and later. See crbug.com/882622 and crbug.com/878823 for more details.
+  return base::win::GetVersion() >= base::win::Version::WIN10_RS4 &&
          base::FeatureList::IsEnabled(features::kNativeNotifications);
 }
 

@@ -26,7 +26,7 @@ mojom("mojo_interfaces") {
   public_deps = [
     ":mojo_types",
     "//mojo/public/mojom/base",
-    "//ui/gfx/geometry/mojo",
+    "//ui/gfx/geometry/mojom",
   ]
 }
 
@@ -37,7 +37,7 @@ mojom("mojo_types") {
 
   public_deps = [
     "//mojo/public/mojom/base",
-    "//ui/gfx/geometry/mojo",
+    "//ui/gfx/geometry/mojom",
   ]
 }
 
@@ -55,7 +55,7 @@ mojom("mojo_test_types") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "content_capture_struct_traits_unittest.cc",
+    "content_capture_mojom_traits_unittest.cc",
   ]
 
   public_deps = [

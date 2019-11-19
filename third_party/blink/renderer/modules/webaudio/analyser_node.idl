@@ -25,6 +25,7 @@
 
 // See https://webaudio.github.io/web-audio-api/#analysernode
 [
+    Exposed=Window,
     Constructor(BaseAudioContext context, optional AnalyserOptions options),
     RaisesException=Constructor,
     Measure

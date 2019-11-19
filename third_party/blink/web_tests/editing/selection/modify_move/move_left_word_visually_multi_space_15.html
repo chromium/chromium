@@ -1,0 +1,164 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="rtl">|    abc    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc |   אבצ    def    </div>',
+  '15-0 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl"> |   abc    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc |   אבצ    def    </div>',
+  '15-1 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">  |  abc    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc |   אבצ    def    </div>',
+  '15-2 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">   | abc    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc |   אבצ    def    </div>',
+  '15-3 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    |abc    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc |   אבצ    def    </div>',
+  '15-4 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    a|bc    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc |   אבצ    def    </div>',
+  '15-5 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    ab|c    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc |   אבצ    def    </div>',
+  '15-6 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc|    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    \u05D0\u05D1\u05E6 |   def    </div>',
+  '15-7 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc |   אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ |   def    </div>',
+  '15-8 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc  |  אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ |   def    </div>',
+  '15-9 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc   | אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ |   def    </div>',
+  '15-10 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    |אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ |   def    </div>',
+  '15-11 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    א|בצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ |   def    </div>',
+  '15-12 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    אב|צ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ |   def    </div>',
+  '15-13 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    אבצ|    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    \u05D0\u05D1\u05E6    def|    </div>',
+  '15-14 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    אבצ |   def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ    def|    </div>',
+  '15-15 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    אבצ  |  def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ    def|    </div>',
+  '15-16 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    אבצ   | def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ    def|    </div>',
+  '15-17 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    אבצ    |def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ    def|    </div>',
+  '15-18 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    אבצ    d|ef    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ    def|    </div>',
+  '15-19 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    אבצ    de|f    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ    def|    </div>',
+  '15-20 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    אבצ    def|    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ    def|    </div>',
+  '15-21 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    אבצ    def |   </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ    def|    </div>',
+  '15-22 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    אבצ    def  |  </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ    def|    </div>',
+  '15-23 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    אבצ    def   | </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ    def|    </div>',
+  '15-24 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">    abc    אבצ    def    |</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">    abc    אבצ    def|    </div>',
+  '15-25 left word');
+</script>

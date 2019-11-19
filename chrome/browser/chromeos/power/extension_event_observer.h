@@ -16,13 +16,13 @@
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observer.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/power_manager_client.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_source.h"
+#include "base/unguessable_token.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "extensions/browser/extension_host_observer.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 
 class Profile;
@@ -38,7 +38,7 @@ namespace chromeos {
 // that arrive from Google's GCM servers and network requests initiated by
 // extensions while processing the push messages.  This class is owned by
 // WakeOnWifiManager.
-class ExtensionEventObserver : public content::NotificationObserver,
+class ExtensionEventObserver : public ProfileManagerObserver,
                                public extensions::ProcessManagerObserver,
                                public extensions::ExtensionHostObserver,
                                public PowerManagerClient::Observer {
@@ -74,15 +74,14 @@ class ExtensionEventObserver : public content::NotificationObserver,
   // ExtensionEventObserver should or should not delay the system suspend.
   void SetShouldDelaySuspend(bool should_delay);
 
-  // content::NotificationObserver override.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
 
-  // extensions::ProcessManagerObserver overrides.
+  // extensions::ProcessManagerObserver:
   void OnBackgroundHostCreated(extensions::ExtensionHost* host) override;
+  void OnProcessManagerShutdown(extensions::ProcessManager* manager) override;
 
-  // extensions::ExtensionHostObserver overrides.
+  // extensions::ExtensionHostObserver:
   void OnExtensionHostDestroyed(const extensions::ExtensionHost* host) override;
   void OnBackgroundEventDispatched(const extensions::ExtensionHost* host,
                                    const std::string& event_name,
@@ -94,17 +93,13 @@ class ExtensionEventObserver : public content::NotificationObserver,
   void OnNetworkRequestDone(const extensions::ExtensionHost* host,
                             uint64_t request_id) override;
 
-  // PowerManagerClient::Observer overrides.
+  // PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
   void DarkSuspendImminent() override;
   void SuspendDone(const base::TimeDelta& duration) override;
 
  private:
   friend class TestApi;
-
-  // Called when a new profile is created or destroyed.
-  void OnProfileAdded(Profile* profile);
-  void OnProfileDestroyed(Profile* profile);
 
   // Called when the system is about to perform a regular suspend or a dark
   // suspend.
@@ -119,17 +114,19 @@ class ExtensionEventObserver : public content::NotificationObserver,
                      std::unique_ptr<KeepaliveSources>>
       keepalive_sources_;
 
-  std::set<Profile*> active_profiles_;
+  ScopedObserver<extensions::ProcessManager, extensions::ProcessManagerObserver>
+      process_manager_observers_{this};
 
-  bool should_delay_suspend_;
-  bool suspend_is_pending_;
-  int suspend_keepalive_count_;
-  base::Closure power_manager_callback_;
+  bool should_delay_suspend_ = true;
+  int suspend_keepalive_count_ = 0;
+
+  // |this| blocks Power Manager suspend with this token. When the token is
+  // empty, |this| isn't blocking suspend.
+  base::UnguessableToken block_suspend_token_;
+
   base::CancelableClosure suspend_readiness_callback_;
 
-  content::NotificationRegistrar registrar_;
-
-  base::WeakPtrFactory<ExtensionEventObserver> weak_factory_;
+  base::WeakPtrFactory<ExtensionEventObserver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionEventObserver);
 };

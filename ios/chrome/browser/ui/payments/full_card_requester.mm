@@ -12,6 +12,17 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+autofill::CardUnmaskPromptView* CreateCardUnmaskPromptViewBridge(
+    autofill::CardUnmaskPromptControllerImpl* controller,
+    UIViewController* base_view_controller) {
+  return new autofill::CardUnmaskPromptViewBridge(controller,
+                                                  base_view_controller);
+}
+
+}
+
 FullCardRequester::FullCardRequester(UIViewController* base_view_controller,
                                      ios::ChromeBrowserState* browser_state)
     : base_view_controller_(base_view_controller),
@@ -34,9 +45,11 @@ void FullCardRequester::ShowUnmaskPrompt(
     const autofill::CreditCard& card,
     autofill::AutofillClient::UnmaskCardReason reason,
     base::WeakPtr<autofill::CardUnmaskDelegate> delegate) {
-  unmask_controller_.ShowPrompt(new autofill::CardUnmaskPromptViewBridge(
-                                    &unmask_controller_, base_view_controller_),
-                                card, reason, delegate);
+  unmask_controller_.ShowPrompt(
+      base::Bind(&CreateCardUnmaskPromptViewBridge,
+                 base::Unretained(&unmask_controller_),
+                 base::Unretained(base_view_controller_)),
+      card, reason, delegate);
 }
 
 void FullCardRequester::OnUnmaskVerificationResult(

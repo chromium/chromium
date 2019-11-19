@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <script>
+      let channel = new MessageChannel();
+      myObject.postMessage("Hello", [channel.port1]);
+
+      channel.port2.onmessage = function(e) {
+        document.title = e.data;
+      }
+    </script>
+  </head>
+  <body>
+    <div>post message with ports</div>
+  </body>
+</html>

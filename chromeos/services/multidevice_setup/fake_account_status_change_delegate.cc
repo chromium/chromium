@@ -12,11 +12,11 @@ FakeAccountStatusChangeDelegate::FakeAccountStatusChangeDelegate() = default;
 
 FakeAccountStatusChangeDelegate::~FakeAccountStatusChangeDelegate() = default;
 
-mojom::AccountStatusChangeDelegatePtr
-FakeAccountStatusChangeDelegate::GenerateInterfacePtr() {
-  mojom::AccountStatusChangeDelegatePtr interface_ptr;
-  bindings_.AddBinding(this, mojo::MakeRequest(&interface_ptr));
-  return interface_ptr;
+mojo::PendingRemote<mojom::AccountStatusChangeDelegate>
+FakeAccountStatusChangeDelegate::GenerateRemote() {
+  mojo::PendingRemote<mojom::AccountStatusChangeDelegate> remote;
+  receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+  return remote;
 }
 
 void FakeAccountStatusChangeDelegate::OnPotentialHostExistsForNewUser() {

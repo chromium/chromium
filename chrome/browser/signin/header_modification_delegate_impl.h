@@ -6,12 +6,10 @@
 #define CHROME_BROWSER_SIGNIN_HEADER_MODIFICATION_DELEGATE_IMPL_H_
 
 #include "chrome/browser/signin/header_modification_delegate.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "content/public/browser/browser_thread.h"
 
-class ProfileIOData;
-
-namespace content {
-class ResourceContext;
-}
+class Profile;
 
 namespace signin {
 
@@ -20,8 +18,7 @@ namespace signin {
 // interface.
 class HeaderModificationDelegateImpl : public HeaderModificationDelegate {
  public:
-  explicit HeaderModificationDelegateImpl(
-      content::ResourceContext* resource_context);
+  explicit HeaderModificationDelegateImpl(Profile* profile);
   ~HeaderModificationDelegateImpl() override;
 
   // HeaderModificationDelegate
@@ -33,7 +30,8 @@ class HeaderModificationDelegateImpl : public HeaderModificationDelegate {
                        const GURL& redirect_url) override;
 
  private:
-  ProfileIOData* const io_data_;
+  Profile* profile_;
+  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 
   DISALLOW_COPY_AND_ASSIGN(HeaderModificationDelegateImpl);
 };

@@ -3,14 +3,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
+import argparse
 import sys
 import xml.sax
 
 
 class PathsExtractor(xml.sax.ContentHandler):
 
-  def __init__(self):
+  def __init__(self, polymer_version):
     self.paths = []
+    self.polymer_version = polymer_version
 
   def startElement(self, name, attrs):
     if name != 'structure':
@@ -18,17 +22,23 @@ class PathsExtractor(xml.sax.ContentHandler):
     path = attrs['file']
     if path.startswith('../../../third_party/web-animations-js'):
       return
-    prefix_1_0 = '../../../third_party/polymer/v1_0/components-chromium/'
-    if path.startswith(prefix_1_0):
-      self.paths.append(path[len(prefix_1_0):])
+    prefix = ('../../../third_party/polymer/v%s_0/components-chromium/' %
+        self.polymer_version)
+    if path.startswith(prefix):
+      self.paths.append(path[len(prefix):])
     else:
       raise Exception("Unexpected path %s." % path)
 
 def main(argv):
-  xml_handler = PathsExtractor()
-  xml.sax.parse(argv[1], xml_handler)
-  print '\n'.join(sorted(xml_handler.paths))
+  parser = argparse.ArgumentParser()
+  parser.add_argument('input')
+  parser.add_argument('--polymer_version', required=True)
+  args = parser.parse_args(argv)
+
+  xml_handler = PathsExtractor(args.polymer_version)
+  xml.sax.parse(args.input, xml_handler)
+  print('\n'.join(sorted(xml_handler.paths)))
 
 
 if __name__ == '__main__':
-  sys.exit(main(sys.argv))
+  sys.exit(main(sys.argv[1:]))

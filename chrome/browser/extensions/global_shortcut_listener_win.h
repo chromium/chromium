@@ -46,6 +46,9 @@ class GlobalShortcutListenerWin : public GlobalShortcutListener,
   // Whether this object is listening for global shortcuts.
   bool is_listening_;
 
+  // The number of media keys currently registered.
+  int registered_media_keys_ = 0;
+
   // A map of registered accelerators and their registration ids. The value is
   // null for media keys if kHardwareMediaKeyHandling is true.
   using HotKeyMap = std::map<ui::Accelerator,

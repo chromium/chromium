@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL The temporally first autofocus in the document wins, even if an element is inserted later that is previous in the document tree Uncaught Error: assert_equals: expected Element node <input autofocus=""></input> but got Element node <input autofocus=""></input>
-Harness: the test ran to completion.
-

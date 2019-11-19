@@ -20,9 +20,7 @@ MockFileStream::MockFileStream(
     : FileStream(task_runner),
       forced_error_(OK),
       async_error_(false),
-      throttled_(false),
-      weak_factory_(this) {
-}
+      throttled_(false) {}
 
 MockFileStream::MockFileStream(
     base::File file,
@@ -30,8 +28,7 @@ MockFileStream::MockFileStream(
     : FileStream(std::move(file), task_runner),
       forced_error_(OK),
       async_error_(false),
-      throttled_(false),
-      weak_factory_(this) {}
+      throttled_(false) {}
 
 MockFileStream::~MockFileStream() = default;
 

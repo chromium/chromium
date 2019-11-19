@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_SYNC_DRIVER_SYNC_TYPE_PREFERENCE_PROVIDER_H_
 #define COMPONENTS_SYNC_DRIVER_SYNC_TYPE_PREFERENCE_PROVIDER_H_
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/user_selectable_type.h"
 
 namespace syncer {
 
 class SyncTypePreferenceProvider {
  public:
-  virtual ModelTypeSet GetForcedDataTypes() const = 0;
+  virtual UserSelectableTypeSet GetForcedTypes() const = 0;
+  virtual bool IsEncryptEverythingAllowed() const = 0;
 
  protected:
   virtual ~SyncTypePreferenceProvider() {}

@@ -37,6 +37,10 @@ const PrefControlBehavior = {
         }
         error += ' in ' + this.domHost.tagName;
         console.error(error);
+      } else if (
+          this.pref.enforcement ==
+          chrome.settingsPrivate.Enforcement.PARENT_SUPERVISED) {
+        console.error('PARENT_SUPERVISED is not enforced by pref controls');
       }
     });
   },

@@ -52,7 +52,7 @@ class PairingHostAuthenticator : public PairingAuthenticatorBase {
   bool protocol_error_ = false;
   bool waiting_for_paired_secret_ = false;
 
-  base::WeakPtrFactory<PairingHostAuthenticator> weak_factory_;
+  base::WeakPtrFactory<PairingHostAuthenticator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PairingHostAuthenticator);
 };

@@ -14,7 +14,7 @@ namespace offline_pages {
 // |OfflineClock()| to its original state upon destruction.
 class TestScopedOfflineClockOverride {
  public:
-  explicit TestScopedOfflineClockOverride(base::Clock* clock);
+  explicit TestScopedOfflineClockOverride(const base::Clock* clock);
   ~TestScopedOfflineClockOverride();
 
  private:

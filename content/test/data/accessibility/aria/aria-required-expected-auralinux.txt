@@ -1,0 +1,4 @@
+[document web]
+++[panel] required xml-roles:radiogroup
+++++[radio button] checkable:true xml-roles:radio
+++++[radio button] checkable:true xml-roles:radio

@@ -22,7 +22,7 @@ namespace {
 // when it reaches an invalid item (including the wildcard character). |parsed|
 // is the resulting integer vector. Function returns true if all numbers were
 // parsed successfully, false otherwise.
-bool ParseVersionNumbers(const std::string& version_str,
+bool ParseVersionNumbers(StringPiece version_str,
                          std::vector<uint32_t>* parsed) {
   std::vector<StringPiece> numbers =
       SplitStringPiece(version_str, ".", KEEP_WHITESPACE, SPLIT_WANT_ALL);
@@ -38,7 +38,7 @@ bool ParseVersionNumbers(const std::string& version_str,
       return false;
 
     // This throws out leading zeros for the first item only.
-    if (it == numbers.begin() && UintToString(num) != *it)
+    if (it == numbers.begin() && NumberToString(num) != *it)
       return false;
 
     // StringToUint returns unsigned int but Version fields are uint32_t.
@@ -83,7 +83,7 @@ Version::Version(const Version& other) = default;
 
 Version::~Version() = default;
 
-Version::Version(const std::string& version_str) {
+Version::Version(StringPiece version_str) {
   std::vector<uint32_t> parsed;
   if (!ParseVersionNumbers(version_str, &parsed))
     return;
@@ -99,16 +99,16 @@ bool Version::IsValid() const {
 }
 
 // static
-bool Version::IsValidWildcardString(const std::string& wildcard_string) {
-  std::string version_string = wildcard_string;
+bool Version::IsValidWildcardString(StringPiece wildcard_string) {
+  StringPiece version_string = wildcard_string;
   if (EndsWith(version_string, ".*", CompareCase::SENSITIVE))
-    version_string.resize(version_string.size() - 2);
+    version_string = version_string.substr(0, version_string.size() - 2);
 
   Version version(version_string);
   return version.IsValid();
 }
 
-int Version::CompareToWildcardString(const std::string& wildcard_string) const {
+int Version::CompareToWildcardString(StringPiece wildcard_string) const {
   DCHECK(IsValid());
   DCHECK(Version::IsValidWildcardString(wildcard_string));
 
@@ -151,15 +151,15 @@ int Version::CompareTo(const Version& other) const {
   return CompareVersionComponents(components_, other.components_);
 }
 
-const std::string Version::GetString() const {
+std::string Version::GetString() const {
   DCHECK(IsValid());
   std::string version_str;
   size_t count = components_.size();
   for (size_t i = 0; i < count - 1; ++i) {
-    version_str.append(UintToString(components_[i]));
+    version_str.append(NumberToString(components_[i]));
     version_str.append(".");
   }
-  version_str.append(UintToString(components_[count - 1]));
+  version_str.append(NumberToString(components_[count - 1]));
   return version_str;
 }
 

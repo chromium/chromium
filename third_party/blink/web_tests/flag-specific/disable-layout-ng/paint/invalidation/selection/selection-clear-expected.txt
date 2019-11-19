@@ -1,0 +1,33 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV id='firstLine'",
+          "rect": [8, 8, 100, 200],
+          "reason": "full"
+        },
+        {
+          "object": "InlineTextBox 'FAIL: Test did'",
+          "rect": [8, 48, 97, 119],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'not run'",
+          "rect": [8, 48, 97, 119],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox '\u00A0'",
+          "rect": [8, 48, 8, 19],
+          "reason": "appeared"
+        }
+      ]
+    }
+  ]
+}
+

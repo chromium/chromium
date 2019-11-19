@@ -5,6 +5,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 
 #include <stddef.h>
+#include <memory>
 
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -131,12 +132,8 @@ class BlendingImageSource : public BinaryImageSource {
 
 class SuperimposedImageSource : public gfx::CanvasImageSource {
  public:
-  SuperimposedImageSource(const ImageSkia& first,
-                          const ImageSkia& second)
-      : gfx::CanvasImageSource(first.size(), false /* is opaque */),
-        first_(first),
-        second_(second) {
-  }
+  SuperimposedImageSource(const ImageSkia& first, const ImageSkia& second)
+      : gfx::CanvasImageSource(first.size()), first_(first), second_(second) {}
 
   ~SuperimposedImageSource() override {}
 
@@ -399,7 +396,7 @@ class HorizontalShadowSource : public CanvasImageSource {
  public:
   HorizontalShadowSource(const std::vector<ShadowValue>& shadows,
                          bool fades_down)
-      : CanvasImageSource(Size(1, GetHeightForShadows(shadows)), false),
+      : CanvasImageSource(Size(1, GetHeightForShadows(shadows))),
         shadows_(shadows),
         fades_down_(fades_down) {}
   ~HorizontalShadowSource() override {}
@@ -457,9 +454,7 @@ class RotatedSource : public ImageSkiaSource {
 class IconWithBadgeSource : public gfx::CanvasImageSource {
  public:
   IconWithBadgeSource(const ImageSkia& icon, const ImageSkia& badge)
-      : gfx::CanvasImageSource(icon.size(), false /* is opaque */),
-        icon_(icon),
-        badge_(badge) {}
+      : gfx::CanvasImageSource(icon.size()), icon_(icon), badge_(badge) {}
 
   ~IconWithBadgeSource() override {}
 
@@ -475,6 +470,30 @@ class IconWithBadgeSource : public gfx::CanvasImageSource {
   const ImageSkia badge_;
 
   DISALLOW_COPY_AND_ASSIGN(IconWithBadgeSource);
+};
+
+// ImageSkiaSource which uses SkBitmapOperations::CreateColorMask
+// to generate image reps for the target image.
+class ColorMaskSource : public gfx::ImageSkiaSource {
+ public:
+  ColorMaskSource(const ImageSkia& image, SkColor color)
+      : image_(image), color_(color) {}
+
+  ~ColorMaskSource() override {}
+
+  // gfx::ImageSkiaSource overrides:
+  ImageSkiaRep GetImageForScale(float scale) override {
+    ImageSkiaRep image_rep = image_.GetRepresentation(scale);
+    return ImageSkiaRep(
+        SkBitmapOperations::CreateColorMask(image_rep.GetBitmap(), color_),
+        image_rep.scale());
+  }
+
+ private:
+  const ImageSkia image_;
+  const SkColor color_;
+
+  DISALLOW_COPY_AND_ASSIGN(ColorMaskSource);
 };
 
 }  // namespace
@@ -559,9 +578,10 @@ ImageSkia ImageSkiaOperations::ExtractSubset(const ImageSkia& image,
                                              const Rect& subset_bounds) {
   gfx::Rect clipped_bounds =
       gfx::IntersectRects(subset_bounds, gfx::Rect(image.size()));
-  if (image.isNull() || clipped_bounds.IsEmpty()) {
+  if (image.isNull() || clipped_bounds.IsEmpty())
     return ImageSkia();
-  }
+  if (clipped_bounds == gfx::Rect(image.size()))
+    return image;
 
   return ImageSkia(
       std::make_unique<ExtractSubsetImageSource>(image, clipped_bounds),
@@ -575,6 +595,8 @@ ImageSkia ImageSkiaOperations::CreateResizedImage(
     const Size& target_dip_size) {
   if (source.isNull())
     return ImageSkia();
+  if (source.size() == target_dip_size)
+    return source;
 
   return ImageSkia(
       std::make_unique<ResizeSource>(source, method, target_dip_size),
@@ -630,4 +652,13 @@ ImageSkia ImageSkiaOperations::CreateIconWithBadge(const ImageSkia& icon,
                    icon.size());
 }
 
+// static
+ImageSkia ImageSkiaOperations::CreateColorMask(const ImageSkia& image,
+                                               SkColor color) {
+  if (image.isNull())
+    return ImageSkia();
+
+  return ImageSkia(std::make_unique<ColorMaskSource>(image, color),
+                   image.size());
+}
 }  // namespace gfx

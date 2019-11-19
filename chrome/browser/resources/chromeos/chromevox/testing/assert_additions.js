@@ -105,9 +105,10 @@ function assertArraysEquals(arrayA, arrayB) {
 
 /**
  * Asserts and fails immediately once called.
+ * @param {string=} opt_msg
  */
-function assertNotReached() {
-  assertFalse(true);
+function assertNotReached(opt_msg) {
+  assertFalse(true, opt_msg);
 }
 
 /**

@@ -74,7 +74,7 @@ TEST_F(BackgroundFetchPermissionContextTest, TestOutcomeAllowWithFrame) {
 // CONTENT_SETTING_ALLOW.
 TEST_F(BackgroundFetchPermissionContextTest, TestOutcomeAllowWithoutFrame) {
   GURL url("https://example.com");
-  SetContentSetting(url, CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS,
+  SetContentSetting(url, ContentSettingsType::AUTOMATIC_DOWNLOADS,
                     CONTENT_SETTING_ALLOW);
 
   BackgroundFetchPermissionContext permission_context(profile());
@@ -88,7 +88,7 @@ TEST_F(BackgroundFetchPermissionContextTest, TestOutcomeAllowWithoutFrame) {
 // CONTENT_SETTING_BLOCK.
 TEST_F(BackgroundFetchPermissionContextTest, TestOutcomeDenyWithoutFrame) {
   GURL url("https://example.com");
-  SetContentSetting(url, CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS,
+  SetContentSetting(url, ContentSettingsType::AUTOMATIC_DOWNLOADS,
                     CONTENT_SETTING_BLOCK);
 
   BackgroundFetchPermissionContext permission_context(profile());
@@ -104,7 +104,7 @@ TEST_F(BackgroundFetchPermissionContextTest, TestOutcomePromptWithoutFrame) {
   ASSERT_TRUE(host_content_settings_map);
 
   GURL url("https://example.com");
-  SetContentSetting(url, CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS,
+  SetContentSetting(url, ContentSettingsType::AUTOMATIC_DOWNLOADS,
                     CONTENT_SETTING_ASK);
 
   BackgroundFetchPermissionContext permission_context(profile());

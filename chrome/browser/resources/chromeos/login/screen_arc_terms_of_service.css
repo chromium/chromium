@@ -2,13 +2,6 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#arc-tos {
-  /* To prevent appearing visual gap at the bottom for the some languages. */
-  height: 640px;
-  min-height: unset;
-  padding: unset;
-}
-
 #arc-tos .popup-overlay {
   background: rgba(0, 0, 0, .5);
 }
@@ -33,7 +26,7 @@
   border: 1px solid #d9d9d9;
   display: block;
   height: 300px;
-  width: 622px;
+  width: 100%;
 }
 
 #arc-tos-overlay-webview-container.overlay-loading > webview,
@@ -82,7 +75,7 @@ html[dir='rtl'] .arc-tos-overlay-close-top {
 }
 
 .arc-overlay-url .oobe-popup {
-  width: 640px;
+  max-width: 640px;
 }
 
 .arc-overlay-text #arc-tos-overlay-webview-container,

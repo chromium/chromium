@@ -11,7 +11,8 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/content/public/cpp/navigable_contents_observer.h"
 #include "services/content/public/mojom/navigable_contents.mojom.h"
 #include "services/content/public/mojom/navigable_contents_factory.mojom.h"
@@ -69,13 +70,6 @@ class COMPONENT_EXPORT(CONTENT_SERVICE_CPP) NavigableContents
   // being done via Tab-key cycling or a similar mechanism.
   void FocusThroughTabTraversal(bool reverse);
 
-  // Force NavigableContents to use Window Service for embedding. Note this must
-  // be called before its view is created.
-  void ForceUseWindowService();
-
-  // Whether to use Window Service for embedding.
-  bool ShouldUseWindowService() const;
-
  private:
   // mojom::NavigableContentsClient:
   void ClearViewFocus() override;
@@ -89,19 +83,20 @@ class COMPONENT_EXPORT(CONTENT_SERVICE_CPP) NavigableContents
   void DidSuppressNavigation(const GURL& url,
                              WindowOpenDisposition disposition,
                              bool from_user_gesture) override;
+  void UpdateCanGoBack(bool can_go_back) override;
   void UpdateContentAXTree(const ui::AXTreeID& id) override;
+  void FocusedNodeChanged(bool is_editable_node,
+                          const gfx::Rect& node_bounds_in_screen) override;
 
   void OnEmbedTokenReceived(const base::UnguessableToken& token);
 
-  mojom::NavigableContentsPtr contents_;
-  mojo::Binding<mojom::NavigableContentsClient> client_binding_;
+  mojo::Remote<mojom::NavigableContents> contents_;
+  mojo::Receiver<mojom::NavigableContentsClient> client_receiver_;
   std::unique_ptr<NavigableContentsView> view_;
 
   base::ReentrantObserverList<NavigableContentsObserver> observers_;
 
   ui::AXTreeID content_ax_tree_id_;
-
-  bool force_use_window_service_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(NavigableContents);
 };

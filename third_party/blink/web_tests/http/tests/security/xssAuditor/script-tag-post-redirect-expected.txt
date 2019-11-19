@@ -1,9 +1,0 @@
-CONSOLE ERROR: line 4: Uncaught ReferenceError: hunter is not defined
-Test for use of original post body in redirect. If the auditor fires, we've got a false positive from that.
-
- 
-
---------
-Frame: 'tg'
---------
-This is a page with a static script matching a post variable

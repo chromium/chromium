@@ -10,7 +10,7 @@
 
 namespace extensions {
 
-class IdentityRemoveCachedAuthTokenFunction : public UIThreadExtensionFunction {
+class IdentityRemoveCachedAuthTokenFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("identity.removeCachedAuthToken",
                              EXPERIMENTAL_IDENTITY_REMOVECACHEDAUTHTOKEN)

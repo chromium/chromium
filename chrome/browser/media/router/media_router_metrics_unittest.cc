@@ -279,4 +279,10 @@ TEST(MediaRouterMetricsTest, RecordSearchSinkOutcome) {
       MediaRouterMetrics::kHistogramRecordSearchSinkOutcome);
 }
 
+TEST(MediaRouterMetricsTest, RecordIconStateAtDialogOpen) {
+  TestRecordBooleanMetric(
+      base::BindRepeating(&MediaRouterMetrics::RecordIconStateAtDialogOpen),
+      MediaRouterMetrics::kHistogramUiDialogIconStateAtOpen);
+}
+
 }  // namespace media_router

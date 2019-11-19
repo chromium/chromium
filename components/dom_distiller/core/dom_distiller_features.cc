@@ -11,9 +11,19 @@
 
 namespace dom_distiller {
 
-bool IsEnableDomDistillerSet() {
+const base::Feature kReaderMode{"ReaderMode",
+                                base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsDomDistillerEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableDomDistiller);
+             switches::kEnableDomDistiller) ||
+         base::FeatureList::IsEnabled(kReaderMode);
+}
+
+bool ShouldStartDistillabilityService() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kEnableDistillabilityService) ||
+         base::FeatureList::IsEnabled(kReaderMode);
 }
 
 }  // namespace dom_distiller

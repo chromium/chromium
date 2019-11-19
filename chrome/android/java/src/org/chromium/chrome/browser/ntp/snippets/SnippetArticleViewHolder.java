@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.ntp.snippets;
 
-import android.support.annotation.LayoutRes;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.VisibleForTesting;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.metrics.ImpressionTracker;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
@@ -23,8 +22,8 @@ import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsOfflineModelObserver;
 import org.chromium.chrome.browser.suggestions.SuggestionsRecyclerView;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
-import org.chromium.chrome.browser.widget.displaystyle.DisplayStyleObserverAdapter;
-import org.chromium.chrome.browser.widget.displaystyle.UiConfig;
+import org.chromium.chrome.browser.ui.widget.displaystyle.DisplayStyleObserverAdapter;
+import org.chromium.chrome.browser.ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
 /**
@@ -81,11 +80,7 @@ public class SnippetArticleViewHolder extends CardViewHolder {
 
     @Override
     public void onCardTapped() {
-        if (mArticle.isContextual()) {
-            RecordUserAction.record("ContextualSuggestions.SuggestionClicked");
-        } else {
-            SuggestionsMetrics.recordCardTapped();
-        }
+        SuggestionsMetrics.recordCardTapped();
         int windowDisposition = WindowOpenDisposition.CURRENT_TAB;
         mUiDelegate.getEventReporter().onSuggestionOpened(
                 mArticle, windowDisposition, mUiDelegate.getSuggestionsRanker());
@@ -102,6 +97,11 @@ public class SnippetArticleViewHolder extends CardViewHolder {
     @Override
     public String getUrl() {
         return mArticle.mUrl;
+    }
+
+    @Override
+    public String getContextMenuTitle() {
+        return mArticle.mTitle;
     }
 
     @Override
@@ -156,7 +156,7 @@ public class SnippetArticleViewHolder extends CardViewHolder {
     }
 
     protected SuggestionsBinder createBinder(SuggestionsUiDelegate uiDelegate) {
-        return new SuggestionsBinder(itemView, uiDelegate, false);
+        return new SuggestionsBinder(itemView, uiDelegate);
     }
 
     /**
@@ -195,7 +195,7 @@ public class SnippetArticleViewHolder extends CardViewHolder {
 
     /** Updates the visibility of the card's offline badge by checking the bound article's info. */
     private void refreshOfflineBadgeVisibility() {
-        boolean visible = mArticle.getOfflinePageOfflineId() != null || mArticle.isAssetDownload();
+        boolean visible = mArticle.getOfflinePageOfflineId() != null;
         mSuggestionsBinder.updateOfflineBadgeVisibility(visible);
     }
 

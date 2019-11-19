@@ -5,13 +5,8 @@ document resource from CSS.enable:
 <html>
 <head>
 <title>webpage for repeat-fetch-service-worker.js</title>
-<script>
-function installSW() {
-  navigator.serviceWorker.register('repeat-fetch-service-worker.js');
-}
-</script>
 </head>
-<body onload="installSW()"><p>injected by service worker</p></body>
+<body><p>injected by service worker</p></body>
 </html>
 
 

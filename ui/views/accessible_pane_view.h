@@ -25,6 +25,8 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
                                         public FocusChangeListener,
                                         public FocusTraversable {
  public:
+  METADATA_HEADER(AccessiblePaneView);
+
   AccessiblePaneView();
   ~AccessiblePaneView() override;
 
@@ -33,7 +35,9 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
   // If |initial_focus| is not NULL, that control will get
   // the initial focus, if it's enabled and focusable. Returns true if
   // the pane was able to receive focus.
-  virtual bool SetPaneFocus(View* initial_focus);
+  bool SetPaneFocus(View* initial_focus);
+
+  bool pane_has_focus() const { return pane_has_focus_; }
 
   // Set focus to the pane with complete keyboard access, with the
   // focus initially set to the default child. Focus will be restored
@@ -71,15 +75,15 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
 
   // Returns the parent of |v|. Subclasses can override this if
   // they need custom focus search behavior.
-  virtual View* GetParentForFocusSearch(View* v);
+  View* GetParentForFocusSearch(View* v);
 
   // Returns true if |v| is contained within the hierarchy rooted at |root|
   // for the purpose of focus searching. Subclasses can override this if
   // they need custom focus search behavior.
-  virtual bool ContainsForFocusSearch(View* root, const View* v);
+  bool ContainsForFocusSearch(View* root, const View* v);
 
   // Remove pane focus.
-  virtual void RemovePaneFocus();
+  void RemovePaneFocus();
 
   View* GetFirstFocusableChild();
   View* GetLastFocusableChild();
@@ -94,15 +98,15 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
   }
 
  private:
-  bool pane_has_focus_;
+  bool pane_has_focus_ = false;
 
   // If true, the panel should be de-activated upon escape when no active view
   // is known where to return to.
-  bool allow_deactivate_on_esc_;
+  bool allow_deactivate_on_esc_ = false;
 
   // Save the focus manager rather than calling GetFocusManager(),
   // so that we can remove focus listeners in the destructor.
-  FocusManager* focus_manager_;
+  FocusManager* focus_manager_ = nullptr;
 
   // Our custom focus search implementation that traps focus in this
   // pane and traverses all views that are focusable for accessibility,
@@ -110,18 +114,18 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
   std::unique_ptr<FocusSearch> focus_search_;
 
   // Registered accelerators
-  ui::Accelerator home_key_;
-  ui::Accelerator end_key_;
-  ui::Accelerator escape_key_;
-  ui::Accelerator left_key_;
-  ui::Accelerator right_key_;
+  ui::Accelerator home_key_{ui::VKEY_HOME, ui::EF_NONE};
+  ui::Accelerator end_key_{ui::VKEY_END, ui::EF_NONE};
+  ui::Accelerator escape_key_{ui::VKEY_ESCAPE, ui::EF_NONE};
+  ui::Accelerator left_key_{ui::VKEY_LEFT, ui::EF_NONE};
+  ui::Accelerator right_key_{ui::VKEY_RIGHT, ui::EF_NONE};
 
   // Holds the last focused view that's not within this pane.
   std::unique_ptr<ViewTracker> last_focused_view_tracker_;
 
   friend class AccessiblePaneViewFocusSearch;
 
-  base::WeakPtrFactory<AccessiblePaneView> method_factory_;
+  base::WeakPtrFactory<AccessiblePaneView> method_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AccessiblePaneView);
 };

@@ -26,15 +26,34 @@ document.write('<link id="incognitothemecss" rel="stylesheet" ' +
     <a class="learn-more-button"
         href="$i18n{learnMoreLink}">$i18n{learnMore}</a>
   </p>
-  <div>
-    <div class="bulletpoints">$i18nRaw{incognitoTabFeatures}</div>
+  <div id="bulletpoints-wrapper">
+    <div class="bulletpoints first">$i18nRaw{incognitoTabFeatures}</div>
     <div class="bulletpoints">$i18nRaw{incognitoTabWarning}</div>
-    <div class="clearer"></div>
+  </div>
+  <div id="cookie-controls" $i18n{hideCookieControls}>
+    <div id="cookie-controls-description">
+      <em>$i18n{cookieControlsTitle}</em>
+      $i18n{cookieControlsDescription}
+    </div>
+    <div id="cookie-controls-tooltip-icon-wrapper" $i18n{hideTooltipIcon}>
+      <a href="chrome://settings/content/cookies">
+        <cr-tooltip-icon icon-aria-label="$i18n{cookieControlsTitle}"
+                         icon-class="cr20:domain"
+                         tooltip-text="$i18n{cookieControlsTooltipText}">
+        </cr-tooltip-icon>
+      </a>
+    </div>
+    <cr-toggle id="cookie-controls-toggle"
+               aria-label="$i18n{cookieControlsTitle}"
+               $i18n{cookieControlsToggleChecked} dark></cr-toggle>
   </div>
   <a class="learn-more-button" href="$i18n{learnMoreLink}">$i18n{learnMore}</a>
 </div>
 <script src="chrome://resources/js/cr.js"></script>
 <script src="chrome://resources/js/util.js"></script>
 <script src="incognito_tab.js"></script>
+<!-- Lazy-load cr_elements to avoid performance penalty introduced by loading Polymer -->
+<script type="module" src="chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js" async></script>
+<script type="module" src="chrome://resources/cr_elements/policy/cr_tooltip_icon.m.js" async></script>
 </body>
 </html>

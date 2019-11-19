@@ -19,6 +19,7 @@ cast_source_set("app") {
     "//chromecast/base",
     "//chromecast/browser",
     "//chromecast/common",
+    "//chromecast/gpu",
     "//chromecast/renderer",
     "//chromecast/utility",
     "//components/crash/core/common:crash_key",
@@ -61,7 +62,7 @@ cast_source_set("cast_crash_client") {
 
   if (is_android) {
     deps += [
-      "//chromecast/base:cast_sys_info",
+      "//chromecast/base:android_create_sys_info",
       "//chromecast/base:cast_version",
       "//chromecast/browser:jni_headers",
     ]

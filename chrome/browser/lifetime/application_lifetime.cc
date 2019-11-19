@@ -26,7 +26,6 @@
 #include "chrome/browser/metrics/thread_watcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
@@ -52,7 +51,7 @@
 #include "chrome/browser/chromeos/boot_times_recorder.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/power_policy_controller.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #endif
 
@@ -199,7 +198,6 @@ void CloseAllBrowsers() {
 void AttemptUserExit() {
 #if defined(OS_CHROMEOS)
   VLOG(1) << "AttemptUserExit";
-  browser_shutdown::StartShutdownTracing();
   chromeos::BootTimesRecorder::Get()->AddLogoutTimeMarker("LogoutStarted",
                                                           false);
 
@@ -262,8 +260,8 @@ void AttemptRestart() {
   // Make sure we don't send stop request to the session manager.
   g_send_stop_request_to_session_manager = false;
   // Run exit process in clean stack.
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                           base::BindOnce(&ExitIgnoreUnloadHandlers));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(&ExitIgnoreUnloadHandlers));
 #else
   // Set the flag to restore state after the restart.
   pref_service->SetBoolean(prefs::kRestartLastSessionOnShutdown, true);

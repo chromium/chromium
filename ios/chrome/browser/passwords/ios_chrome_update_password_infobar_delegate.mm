@@ -14,11 +14,10 @@
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/infobars/infobar.h"
 #import "ios/chrome/browser/passwords/update_password_infobar_controller.h"
-#import "ios/chrome/browser/ui/infobars/coordinators/infobar_password_coordinator.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,20 +40,12 @@ void IOSChromeUpdatePasswordInfoBarDelegate::Create(
       is_sync_user, std::move(form_manager)));
   delegate->set_dispatcher(dispatcher);
 
-  if (IsInfobarUIRebootEnabled()) {
-    InfobarPasswordCoordinator* coordinator =
-        [[InfobarPasswordCoordinator alloc]
-            initWithInfoBarDelegate:delegate.get()];
-    infobar_manager->AddInfoBar(
-        std::make_unique<InfoBarIOS>(coordinator, std::move(delegate)));
-  } else {
-    UpdatePasswordInfoBarController* controller =
-        [[UpdatePasswordInfoBarController alloc]
-            initWithBaseViewController:baseViewController
-                       infoBarDelegate:delegate.get()];
-    infobar_manager->AddInfoBar(
-        std::make_unique<InfoBarIOS>(controller, std::move(delegate)));
-  }
+  UpdatePasswordInfoBarController* controller =
+      [[UpdatePasswordInfoBarController alloc]
+          initWithBaseViewController:baseViewController
+                     infoBarDelegate:delegate.get()];
+  infobar_manager->AddInfoBar(
+      std::make_unique<InfoBarIOS>(controller, std::move(delegate)));
 }
 
 IOSChromeUpdatePasswordInfoBarDelegate::
@@ -70,23 +61,22 @@ IOSChromeUpdatePasswordInfoBarDelegate::IOSChromeUpdatePasswordInfoBarDelegate(
     std::unique_ptr<PasswordFormManagerForUI> form_manager)
     : IOSChromePasswordManagerInfoBarDelegate(is_sync_user,
                                               std::move(form_manager)) {
-  selected_account_ = form_to_save()->GetPreferredMatch()->username_value;
+  selected_account_ = form_to_save()->GetPendingCredentials().username_value;
   form_to_save()->GetMetricsRecorder()->RecordPasswordBubbleShown(
       form_to_save()->GetCredentialSource(),
+      password_manager::metrics_util::AUTOMATIC_WITH_PASSWORD_PENDING_UPDATE);
+  password_manager::metrics_util::LogUIDisplayDisposition(
       password_manager::metrics_util::AUTOMATIC_WITH_PASSWORD_PENDING_UPDATE);
 }
 
 bool IOSChromeUpdatePasswordInfoBarDelegate::ShowMultipleAccounts() const {
-  // If a password is overriden, we know that the preferred match account is
-  // correct, so should not provide the option to choose a different account.
-  return form_to_save()->GetBestMatches().size() > 1 &&
-         !form_to_save()->IsPasswordOverridden();
+  return form_to_save()->GetBestMatches().size() > 1;
 }
 
 NSArray* IOSChromeUpdatePasswordInfoBarDelegate::GetAccounts() const {
   NSMutableArray* usernames = [NSMutableArray array];
-  for (const auto& match : form_to_save()->GetBestMatches()) {
-    [usernames addObject:base::SysUTF16ToNSString(match.first)];
+  for (const auto* match : form_to_save()->GetBestMatches()) {
+    [usernames addObject:base::SysUTF16ToNSString(match->username_value)];
   }
   return usernames;
 }
@@ -117,18 +107,19 @@ base::string16 IOSChromeUpdatePasswordInfoBarDelegate::GetButtonLabel(
 
 bool IOSChromeUpdatePasswordInfoBarDelegate::Accept() {
   DCHECK(form_to_save());
-  if (ShowMultipleAccounts()) {
-    form_to_save()->Update(
-        *form_to_save()->GetBestMatches().at(selected_account_));
-  } else {
-    form_to_save()->Update(form_to_save()->GetPendingCredentials());
-  }
+  UpdatePasswordFormUsernameAndPassword(
+      selected_account_, form_to_save()->GetPendingCredentials().password_value,
+      form_to_save());
+  form_to_save()->Save();
   set_infobar_response(password_manager::metrics_util::CLICKED_SAVE);
   return true;
 }
 
-bool IOSChromeUpdatePasswordInfoBarDelegate::Cancel() {
+void IOSChromeUpdatePasswordInfoBarDelegate::InfoBarDismissed() {
   DCHECK(form_to_save());
   set_infobar_response(password_manager::metrics_util::CLICKED_CANCEL);
-  return true;
+}
+
+base::string16 IOSChromeUpdatePasswordInfoBarDelegate::GetLinkText() const {
+  return ShowMultipleAccounts() ? selected_account_ : base::string16();
 }

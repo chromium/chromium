@@ -46,15 +46,6 @@ bool VerifyValidQuotaConfig(const char* key) {
 
 const int kCommitIntervalMs = 30000;
 
-void LogDaysSinceLastAccess(base::Time this_time,
-                            const QuotaDatabase::OriginInfoTableEntry& entry) {
-  base::TimeDelta time_since = this_time - std::max(entry.last_access_time,
-                                                    entry.last_modified_time);
-  if (time_since.InDays() < 1)
-    return;
-  UMA_HISTOGRAM_COUNTS_1000("Quota.DaysSinceLastAccess", time_since.InDays());
-}
-
 }  // anonymous namespace
 
 // static
@@ -204,7 +195,6 @@ bool QuotaDatabase::SetOriginLastAccessTime(const url::Origin& origin,
 
   OriginInfoTableEntry entry;
   if (GetOriginInfo(origin, type, &entry)) {
-    LogDaysSinceLastAccess(last_access_time, entry);
     ++entry.used_count;
     const char* kSql =
         "UPDATE OriginInfoTable"
@@ -243,7 +233,6 @@ bool QuotaDatabase::SetOriginLastModifiedTime(const url::Origin& origin,
 
   OriginInfoTableEntry entry;
   if (GetOriginInfo(origin, type, &entry)) {
-    LogDaysSinceLastAccess(last_modified_time, entry);
     const char* kSql =
         "UPDATE OriginInfoTable"
         " SET last_modified_time = ?"
@@ -464,7 +453,7 @@ bool QuotaDatabase::GetLRUOrigin(StorageType type,
   while (statement.Step()) {
     url::Origin read_origin =
         url::Origin::Create(GURL(statement.ColumnString(0)));
-    if (base::ContainsKey(exceptions, read_origin))
+    if (base::Contains(exceptions, read_origin))
       continue;
 
     if (special_storage_policy &&

@@ -1,8 +1,6 @@
 #ifndef _RAR_HEADERS_
 #define _RAR_HEADERS_
 
-namespace third_party_unrar {
-
 #define  SIZEOF_MARKHEAD3        7 // Size of RAR 4.x archive mark header.
 #define  SIZEOF_MAINHEAD14       7 // Size of RAR 1.4 main archive header.
 #define  SIZEOF_MAINHEAD3       13 // Size of RAR 4.x main archive header.
@@ -352,6 +350,5 @@ struct StreamHeader:SubBlockHeader
   char StreamName[260];
 };
 
-}  // namespace third_party_unrar
 
 #endif

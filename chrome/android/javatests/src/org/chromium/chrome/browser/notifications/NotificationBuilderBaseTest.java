@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import android.app.Notification;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.MediumTest;
+import android.support.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,8 +20,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.notifications.channels.ChannelDefinitions;
+import org.chromium.chrome.browser.ui.widget.RoundedIconGenerator;
 import org.chromium.chrome.browser.util.UrlUtilities;
-import org.chromium.chrome.browser.widget.RoundedIconGenerator;
 import org.chromium.content_public.browser.test.NativeLibraryTestRule;
 
 /**
@@ -37,7 +37,7 @@ public class NotificationBuilderBaseTest {
     public NativeLibraryTestRule mActivityTestRule = new NativeLibraryTestRule();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // Not initializing the browser process is safe because GetDomainAndRegistry() is
         // stand-alone.
         mActivityTestRule.loadNativeLibraryNoBrowserProcess();
@@ -52,7 +52,7 @@ public class NotificationBuilderBaseTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Notifications"})
-    public void testEnsureNormalizedIconBehavior() throws Exception {
+    public void testEnsureNormalizedIconBehavior() {
         // Get the dimensions of the notification icon that will be presented to the user.
         Context appContext = InstrumentationRegistry.getInstrumentation()
                                      .getTargetContext()
@@ -68,7 +68,7 @@ public class NotificationBuilderBaseTest {
 
         NotificationBuilderBase notificationBuilder = new NotificationBuilderBase(resources) {
             @Override
-            public Notification build() {
+            public ChromeNotification build(NotificationMetadata metadata) {
                 return null;
             }
         };
@@ -92,5 +92,34 @@ public class NotificationBuilderBaseTest {
         Bitmap fromSmallIcon = notificationBuilder.ensureNormalizedIcon(smallIcon, origin);
         Assert.assertNotNull(fromSmallIcon);
         Assert.assertEquals(smallIcon, fromSmallIcon);
+    }
+
+    /**
+     * Tests that hiding the large icon will result in getNormalizedLargeIcon() returning null.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Notifications"})
+    public void testHiddenIconReturnsNull() {
+        NotificationBuilderBase notificationBuilder =
+                new NotificationBuilderBase(InstrumentationRegistry.getInstrumentation()
+                                                    .getTargetContext()
+                                                    .getApplicationContext()
+                                                    .getResources()) {
+                    @Override
+                    public ChromeNotification build(NotificationMetadata metadata) {
+                        return null;
+                    }
+                };
+
+        notificationBuilder.setChannelId(ChannelDefinitions.ChannelId.BROWSER);
+        notificationBuilder.setOrigin("https://example.com");
+
+        Bitmap normalizedIcon = notificationBuilder.getNormalizedLargeIcon();
+        Assert.assertNotNull(normalizedIcon);
+
+        notificationBuilder.setHideLargeIcon(true);
+        Bitmap nullIcon = notificationBuilder.getNormalizedLargeIcon();
+        Assert.assertNull(nullIcon);
     }
 }

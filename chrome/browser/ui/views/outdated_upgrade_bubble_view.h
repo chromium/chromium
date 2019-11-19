@@ -28,8 +28,6 @@ class OutdatedUpgradeBubbleView : public views::BubbleDialogDelegateView {
   bool ShouldShowCloseButton() const override;
   bool Accept() override;
   bool Close() override;
-  int GetDialogButtons() const override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   void Init() override;
 
  private:
@@ -43,7 +41,7 @@ class OutdatedUpgradeBubbleView : public views::BubbleDialogDelegateView {
   bool uma_recorded_ = false;
 
   // Identifies if auto-update is enabled or not.
-  bool auto_update_enabled_;
+  const bool auto_update_enabled_;
 
   // The PageNavigator to use for opening the Download Chrome URL.
   content::PageNavigator* navigator_;

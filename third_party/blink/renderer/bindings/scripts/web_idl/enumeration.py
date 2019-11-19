@@ -1,29 +1,61 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from .extended_attribute import ExtendedAttributeList
-from .utilities import assert_no_extra_args
+from .code_generator_info import CodeGeneratorInfo
+from .composition_parts import WithCodeGeneratorInfo
+from .composition_parts import WithComponent
+from .composition_parts import WithDebugInfo
+from .composition_parts import WithExtendedAttributes
+from .ir_map import IRMap
+from .make_copy import make_copy
+from .user_defined_type import UserDefinedType
 
 
-# https://heycam.github.io/webidl/#idl-enums
-class Enumeration(object):
+class Enumeration(UserDefinedType, WithExtendedAttributes,
+                  WithCodeGeneratorInfo, WithComponent, WithDebugInfo):
+    """https://heycam.github.io/webidl/#idl-enums"""
 
-    def __init__(self, **kwargs):
-        self._identifier = kwargs.pop('identifier')
-        self._values = kwargs.pop('values', [])
-        # Extended attributes on enumerations are not allowed in spec, but Blink uses them.
-        self._extended_attribute_list = kwargs.pop('extended_attribute_list', ExtendedAttributeList())
-        assert_no_extra_args(kwargs)
+    class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
+             WithComponent, WithDebugInfo):
+        def __init__(self,
+                     identifier,
+                     values,
+                     extended_attributes=None,
+                     code_generator_info=None,
+                     component=None,
+                     debug_info=None):
+            assert isinstance(values, (list, tuple))
+            assert all(isinstance(value, str) for value in values)
 
-    @property
-    def identifier(self):
-        return self._identifier
+            IRMap.IR.__init__(
+                self, identifier=identifier, kind=IRMap.IR.Kind.ENUMERATION)
+            WithExtendedAttributes.__init__(self, extended_attributes)
+            WithCodeGeneratorInfo.__init__(self, code_generator_info)
+            WithComponent.__init__(self, component)
+            WithDebugInfo.__init__(self, debug_info)
+
+            self.values = list(values)
+
+    def __init__(self, ir):
+        assert isinstance(ir, Enumeration.IR)
+
+        ir = make_copy(ir)
+        UserDefinedType.__init__(self, ir.identifier)
+        WithExtendedAttributes.__init__(self, ir.extended_attributes)
+        WithCodeGeneratorInfo.__init__(
+            self, CodeGeneratorInfo(ir.code_generator_info))
+        WithComponent.__init__(self, components=ir.components)
+        WithDebugInfo.__init__(self, ir.debug_info)
+
+        self._values = tuple(ir.values)
 
     @property
     def values(self):
+        """Returns the list of enum values."""
         return self._values
 
+    # UserDefinedType overrides
     @property
-    def extended_attribute_list(self):
-        return self._extended_attribute_list
+    def is_enumeration(self):
+        return True

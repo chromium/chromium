@@ -39,9 +39,6 @@ window.jsTestIsAsync = true;
 if (window.testRunner)
     testRunner.dumpAsText();
 
-if (window.internals)
-    internals.settings.setMockScrollbarsEnabled(true);
-
 onload = function() {
     // Verify the document root element is the last element returned for empty queries.
     shouldBe('document.elementsFromPoint(300, 300)[0]', 'document.body.parentElement');

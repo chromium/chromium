@@ -20,8 +20,8 @@
 #include "net/ftp/ftp_directory_listing_parser.h"
 #include "net/net_buildflags.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "url/gurl.h"
 
 namespace blink {

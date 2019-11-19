@@ -10,6 +10,8 @@ source_set("snackbar") {
   ]
   deps = [
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/util",
     "//ios/third_party/material_components_ios",
   ]
   libs = [ "UIKit.framework" ]

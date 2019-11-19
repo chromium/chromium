@@ -13,15 +13,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.File;
@@ -36,7 +36,7 @@ import java.io.File;
  *
  * Because each media parser call may perform multiple process and thread hops, it can be slow.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 public class DownloadMediaParserTest {
     private static final long MAX_MEDIA_PARSER_POLL_TIME_MS = 10000;
     private static final long MEDIA_PARSER_POLL_INTERVAL_MS = 1000;
@@ -53,7 +53,7 @@ public class DownloadMediaParserTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mTestRule.loadNativeLibraryAndInitBrowserProcess();
     }
 
@@ -64,7 +64,7 @@ public class DownloadMediaParserTest {
         MediaParserResult result = new MediaParserResult();
 
         // The native DownloadMediaParser needs to be created on UI thread.
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             DownloadMediaParserBridge parser = new DownloadMediaParserBridge(
                     mimeType, filePath, (DownloadMediaData mediaData) -> {
                         result.mediaData = mediaData;
@@ -89,7 +89,7 @@ public class DownloadMediaParserTest {
      * Verify that the metadata from audio file can be retrieved correctly.
      * @throws InterruptedException
      */
-    public void testParseAudioMetatadata() throws InterruptedException {
+    public void testParseAudioMetatadata() {
         String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/sfx.mp3";
         MediaParserResult result = parseMediaFile(filePath, "audio/mp3");
         Assert.assertTrue("Failed to parse audio metadata.", result.mediaData != null);
@@ -104,7 +104,7 @@ public class DownloadMediaParserTest {
      * Verify metadata and thumbnail can be retrieved correctly from h264 video file.
      * @throws InterruptedException
      */
-    public void testParseVideoH264() throws InterruptedException {
+    public void testParseVideoH264() {
         String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/bear.mp4";
         MediaParserResult result = parseMediaFile(filePath, "video/mp4");
         Assert.assertTrue("Failed to parse video file.", result.mediaData != null);
@@ -121,7 +121,7 @@ public class DownloadMediaParserTest {
      * Verify metadata and thumbnail can be retrieved correctly from vp8 video file.
      * @throws InterruptedException
      */
-    public void testParseVideoThumbnailVp8() throws InterruptedException {
+    public void testParseVideoThumbnailVp8() {
         String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/bear-vp8-webvtt.webm";
         MediaParserResult result = parseMediaFile(filePath, "video/webm");
         Assert.assertTrue("Failed to parse video file.", result.mediaData != null);
@@ -139,7 +139,7 @@ public class DownloadMediaParserTest {
      * plane.
      * @throws InterruptedException
      */
-    public void testParseVideoThumbnailVp8WithAlphaPlane() throws InterruptedException {
+    public void testParseVideoThumbnailVp8WithAlphaPlane() {
         String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/bear-vp8a.webm";
         MediaParserResult result = parseMediaFile(filePath, "video/webm");
         Assert.assertTrue("Failed to parse video file.", result.mediaData != null);

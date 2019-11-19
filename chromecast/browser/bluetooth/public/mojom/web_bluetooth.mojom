@@ -10,7 +10,8 @@ module chromecast.mojom;
 // devices.
 interface BluetoothDeviceAccessProvider {
   // Request that the host begin granting |client| access to approved devices.
-  RequestDeviceAccess(BluetoothDeviceAccessProviderClient client);
+  RequestDeviceAccess(
+      pending_remote<BluetoothDeviceAccessProviderClient> client);
 };
 
 // The client for BluetoothDeviceAccessProvider, provided by the Activity,

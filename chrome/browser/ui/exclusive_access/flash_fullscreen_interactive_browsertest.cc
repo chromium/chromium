@@ -6,7 +6,6 @@
 #include "base/bind_helpers.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/ppapi/ppapi_test.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -72,7 +72,8 @@ class FlashFullscreenInteractiveBrowserTest : public OutOfProcessPPAPITest {
   // screen captured.  During tab capture, Flash fullscreen remains embedded
   // within the tab content area of a non-fullscreened browser window.
   void StartFakingTabCapture() {
-    GetActiveWebContents()->IncrementCapturerCount(gfx::Size(360, 240));
+    GetActiveWebContents()->IncrementCapturerCount(gfx::Size(360, 240),
+                                                   /* stay_hidden */ false);
   }
 
   bool LaunchFlashFullscreen() {
@@ -300,14 +301,8 @@ IN_PROC_BROWSER_TEST_F(FlashFullscreenInteractiveBrowserTest,
   EXPECT_TRUE(ObserveTabIsInFullscreen(false));
 }
 
-// Flaky on Linux, see https://crbug.com/648406.
-#if defined(OS_LINUX)
-#define MAYBE_FullscreenFromSubframe DISABLED_FullscreenFromSubframe
-#else
-#define MAYBE_FullscreenFromSubframe FullscreenFromSubframe
-#endif
 IN_PROC_BROWSER_TEST_F(FlashFullscreenInteractiveBrowserTest,
-                       MAYBE_FullscreenFromSubframe) {
+                       FullscreenFromSubframe) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   StartFakingTabCapture();
   ASSERT_TRUE(LaunchFlashFullscreenInSubframe());
@@ -424,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(FlashFullscreenInteractiveBrowserTest,
       fullscreen_view->GetRenderWidgetHost();
   content::RenderProcessHost* process = fullscreen_widget->GetProcess();
   content::PwnMessageHelper::LockMouse(
-      process, fullscreen_widget->GetRoutingID(), true, true);
+      process, fullscreen_widget->GetRoutingID(), true, true, false);
 
   // Make sure that the fullscreen widget got the mouse lock.
   EXPECT_TRUE(fullscreen_view->IsMouseLocked());

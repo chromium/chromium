@@ -13,6 +13,9 @@ KeywordSearchTermVisit::~KeywordSearchTermVisit() {}
 
 KeywordSearchTermRow::KeywordSearchTermRow() : keyword_id(0), url_id(0) {}
 
+KeywordSearchTermRow::KeywordSearchTermRow(const KeywordSearchTermRow& other) =
+    default;
+
 KeywordSearchTermRow::~KeywordSearchTermRow() {}
 
 }  // namespace history

@@ -6,8 +6,7 @@
 
 namespace gin {
 
-Runner::Runner() : weak_factory_(this) {
-}
+Runner::Runner() {}
 
 Runner::~Runner() = default;
 

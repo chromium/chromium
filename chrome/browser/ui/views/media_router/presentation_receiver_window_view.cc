@@ -43,13 +43,11 @@
 
 #if defined(OS_CHROMEOS)
 #include "ash/public/cpp/window_properties.h"
-#include "ash/public/interfaces/window_state_type.mojom.h"
 #include "base/callback.h"
 #include "base/scoped_observer.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/native_widget_types.h"
 #endif
 
@@ -64,8 +62,6 @@ class FullscreenWindowObserver : public aura::WindowObserver {
   FullscreenWindowObserver(aura::Window* observed_window,
                            base::RepeatingClosure on_fullscreen_change)
       : on_fullscreen_change_(on_fullscreen_change) {
-    if (features::IsUsingWindowService())
-      observed_window = observed_window->GetRootWindow();
     observed_window_.Add(observed_window);
   }
 
@@ -167,10 +163,10 @@ void PresentationReceiverWindowView::Init() {
   location_bar_view_ =
       new LocationBarView(nullptr, profile, &command_updater_, this, true);
 
-  auto box_owner =
-      std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical);
+  auto box_owner = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical);
   box_owner->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_STRETCH);
+      views::BoxLayout::CrossAxisAlignment::kStretch);
   auto* box = SetLayoutManager(std::move(box_owner));
   AddChildView(location_bar_view_);
   box->SetFlexForView(location_bar_view_, 0);

@@ -12,14 +12,14 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
-#include "components/viz/service/display_embedder/compositor_overlay_candidate_validator.h"
+#include "components/viz/service/display/overlay_candidate_validator.h"
 #include "content/browser/compositor/reflector_impl.h"
 #include "content/browser/compositor/reflector_texture.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "services/ws/public/cpp/gpu/context_provider_command_buffer.h"
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
 
@@ -31,14 +31,8 @@ static viz::ResourceFormat kFboTextureFormat = viz::RGBA_8888;
 
 OffscreenBrowserCompositorOutputSurface::
     OffscreenBrowserCompositorOutputSurface(
-        scoped_refptr<ws::ContextProviderCommandBuffer> context,
-        const UpdateVSyncParametersCallback& update_vsync_parameters_callback,
-        std::unique_ptr<viz::CompositorOverlayCandidateValidator>
-            overlay_candidate_validator)
-    : BrowserCompositorOutputSurface(std::move(context),
-                                     update_vsync_parameters_callback,
-                                     std::move(overlay_candidate_validator)),
-      weak_ptr_factory_(this) {
+        scoped_refptr<viz::ContextProviderCommandBuffer> context)
+    : BrowserCompositorOutputSurface(std::move(context)) {
   capabilities_.uses_default_gl_framebuffer = false;
 }
 
@@ -191,7 +185,9 @@ void OffscreenBrowserCompositorOutputSurface::OnReflectorChanged() {
 void OffscreenBrowserCompositorOutputSurface::OnSwapBuffersComplete(
     const std::vector<ui::LatencyInfo>& latency_info) {
   latency_tracker_.OnGpuSwapBuffersCompleted(latency_info);
-  client_->DidReceiveSwapBuffersAck();
+  // Swap timings are not available since for offscreen there is no Swap, just
+  // a SignalSyncToken.
+  client_->DidReceiveSwapBuffersAck(gfx::SwapTimings());
   client_->DidReceivePresentationFeedback(gfx::PresentationFeedback());
 }
 

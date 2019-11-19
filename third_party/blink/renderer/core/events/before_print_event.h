@@ -12,10 +12,6 @@ namespace blink {
 
 class BeforePrintEvent final : public Event {
  public:
-  static BeforePrintEvent* Create() {
-    return MakeGarbageCollected<BeforePrintEvent>();
-  }
-
   BeforePrintEvent()
       : Event(event_type_names::kBeforeprint, Bubbles::kNo, Cancelable::kNo) {}
   ~BeforePrintEvent() override = default;

@@ -10,11 +10,16 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
+#include "chrome/browser/android/webapps/add_to_homescreen_installer.h"
 #include "chrome/browser/banners/app_banner_manager.h"
+#include "chrome/browser/installable/installable_ambient_badge_infobar_delegate.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
+
+struct AddToHomescreenParams;
 
 namespace banners {
 
@@ -41,6 +46,7 @@ class AppBannerUiDelegateAndroid;
 // together.
 class AppBannerManagerAndroid
     : public AppBannerManager,
+      public InstallableAmbientBadgeInfoBarDelegate::Client,
       public content::WebContentsUserData<AppBannerManagerAndroid> {
  public:
   explicit AppBannerManagerAndroid(content::WebContents* web_contents);
@@ -51,26 +57,9 @@ class AppBannerManagerAndroid
   // Returns a reference to the Java-side AppBannerManager owned by this object.
   const base::android::ScopedJavaLocalRef<jobject> GetJavaBannerManager() const;
 
-  // Returns a reference to the Java-side AddToHomescreenDialog owned by
-  // |ui_delegate_|, or null if it does not exist.
-  base::android::ScopedJavaLocalRef<jobject> GetAddToHomescreenDialogForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj);
-
   // Returns true if the banner pipeline is currently running.
   bool IsRunningForTesting(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& jobj);
-
-  // Informs the InstallableManager for the WebContents we are attached to that
-  // the add to homescreen menu item has been tapped.
-  void RecordMenuItemAddToHomescreen(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj);
-
-  // Informs the InstallableManager for the WebContents we are attached to that
-  // the menu has been opened.
-  void RecordMenuOpen(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& jobj);
 
   // Called when the Java-side has retrieved information for the app.
   // Returns |false| if an icon fetch couldn't be kicked off.
@@ -83,10 +72,9 @@ class AppBannerManagerAndroid
       const base::android::JavaParamRef<jstring>& jicon_url);
 
   // AppBannerManager overrides.
-  void RequestAppBanner(const GURL& validated_url, bool is_debug_mode) override;
-  void SendBannerDismissed() override;
+  void RequestAppBanner(const GURL& validated_url) override;
 
-  // InstallableAmbientBadgeInfoBarAndroid::Client overrides.
+  // InstallableAmbientBadgeInfoBarDelegate::Client overrides.
   void AddToHomescreenFromBadge() override;
   void BadgeDismissed() override;
 
@@ -94,17 +82,20 @@ class AppBannerManagerAndroid
   // AppBannerManager overrides.
   std::string GetAppIdentifier() override;
   std::string GetBannerType() override;
-  bool CheckIfInstalled() override;
-  bool IsWebAppConsideredInstalled(content::WebContents* web_contents,
-                                   const GURL& validated_url,
-                                   const GURL& start_url,
-                                   const GURL& manifest_url) override;
-  InstallableParams ParamsToPerformInstallableCheck() override;
-  void PerformInstallableCheck() override;
-  void OnDidPerformInstallableCheck(const InstallableData& result) override;
-  void OnAppIconFetched(const SkBitmap& bitmap) override;
+  bool IsWebAppConsideredInstalled() override;
+  void PerformInstallableChecks() override;
+  InstallableParams ParamsToPerformInstallableWebAppCheck() override;
+  void PerformInstallableWebAppCheck() override;
+  void OnDidPerformInstallableWebAppCheck(
+      const InstallableData& result) override;
   void ResetCurrentPageData() override;
   void ShowBannerUi(WebappInstallSource install_source) override;
+  void MaybeShowAmbientBadge() override;
+  base::WeakPtr<AppBannerManager> GetWeakPtr() override;
+  void InvalidateWeakPtrs() override;
+  bool IsSupportedAppPlatform(const base::string16& platform) const override;
+  bool IsRelatedAppInstalled(
+      const blink::Manifest::RelatedApplication& related_app) const override;
 
  private:
   friend class content::WebContentsUserData<AppBannerManagerAndroid>;
@@ -116,25 +107,33 @@ class AppBannerManagerAndroid
   std::string ExtractQueryValueForName(const GURL& url,
                                        const std::string& name);
 
+  bool ShouldPerformInstallableNativeAppCheck();
+  void PerformInstallableNativeAppCheck();
+
   // Returns NO_ERROR_DETECTED if |platform|, |url|, and |id| are consistent and
   // can be used to query the Play Store for a native app. Otherwise returns the
   // error which prevents querying from taking place. The query may not
   // necessarily succeed (e.g. |id| doesn't map to anything), but if this method
   // returns NO_ERROR_DETECTED, only a native app banner may be shown, and the
   // web app banner flow will not be run.
-  InstallableStatusCode QueryNativeApp(const std::string& platform,
+  InstallableStatusCode QueryNativeApp(const base::string16& platform,
                                        const GURL& url,
                                        const std::string& id);
+
+  // Called when the download of a native app's icon is complete, as native
+  // banners use an icon provided from the Play Store rather than the web
+  // manifest.
+  void OnNativeAppIconFetched(const SkBitmap& bitmap);
 
   // Returns the appropriate app name based on whether we have a native/web app.
   base::string16 GetAppName() const override;
 
-  // Shows the ambient badge if the current page advertises a native app or is
-  // a PWA.
-  void MaybeShowAmbientBadge();
-
   // Hides the ambient badge if it is showing.
   void HideAmbientBadge();
+
+  // Called for recording metrics.
+  void RecordEventForAppBanner(AddToHomescreenInstaller::Event event,
+                               const AddToHomescreenParams& a2hs_params);
 
   std::unique_ptr<AppBannerUiDelegateAndroid> ui_delegate_;
 
@@ -156,8 +155,7 @@ class AppBannerManagerAndroid
   // Title to display in the banner for native app.
   base::string16 native_app_title_;
 
-  // Whether WebAPKs can be installed.
-  bool can_install_webapk_;
+  base::WeakPtrFactory<AppBannerManagerAndroid> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

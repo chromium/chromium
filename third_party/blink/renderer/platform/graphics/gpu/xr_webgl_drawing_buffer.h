@@ -43,9 +43,6 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
 
   void Resize(const IntSize&);
 
-  void OverwriteColorBufferFromMailboxTexture(const gpu::MailboxHolder&,
-                                              const IntSize& size);
-
   scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage(
       std::unique_ptr<viz::SingleReleaseCallback>* out_release_callback);
 
@@ -79,7 +76,10 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
 
  private:
   struct PLATFORM_EXPORT ColorBuffer : public RefCounted<ColorBuffer> {
-    ColorBuffer(XRWebGLDrawingBuffer*, const IntSize&, GLuint texture_id);
+    ColorBuffer(XRWebGLDrawingBuffer*,
+                const IntSize&,
+                const gpu::Mailbox& mailbox,
+                GLuint texture_id);
     ~ColorBuffer();
 
     // The owning XRWebGLDrawingBuffer. Note that DrawingBuffer is explicitly
@@ -87,10 +87,13 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
     // of its ColorBuffers.
     scoped_refptr<XRWebGLDrawingBuffer> drawing_buffer;
     const IntSize size;
+
+    // The id of the texture that imports the shared image into the
+    // DrawingBuffer's context.
     const GLuint texture_id = 0;
 
-    // The mailbox used to send this buffer to the compositor.
-    gpu::Mailbox mailbox;
+    // The mailbox pointing to the shared image backing this color buffer.
+    const gpu::Mailbox mailbox;
 
     // The sync token for when this buffer was sent to the compositor.
     gpu::SyncToken produce_sync_token;
@@ -136,8 +139,8 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
   const GLuint framebuffer_ = 0;
   GLuint resolved_framebuffer_ = 0;
   GLuint multisample_renderbuffer_ = 0;
-  scoped_refptr<ColorBuffer> back_color_buffer_ = 0;
-  scoped_refptr<ColorBuffer> front_color_buffer_ = 0;
+  scoped_refptr<ColorBuffer> back_color_buffer_;
+  scoped_refptr<ColorBuffer> front_color_buffer_;
   GLuint depth_stencil_buffer_ = 0;
   IntSize size_;
 
@@ -164,12 +167,10 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
     kNone,
     kMSAAImplicitResolve,
     kMSAAExplicitResolve,
-    kScreenSpaceAntialiasing,
   };
 
   AntialiasingMode anti_aliasing_mode_ = kNone;
 
-  bool storage_texture_supported_ = false;
   int max_texture_size_ = 0;
   int sample_count_ = 0;
 

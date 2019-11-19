@@ -62,8 +62,12 @@ using ScopedRefCountedIOSurfaceMachPort =
 using ScopedInUseIOSurface =
     base::ScopedTypeRef<IOSurfaceRef, internal::ScopedInUseIOSurfaceTraits>;
 
-// Set color space for given IOSurface. Color space must have an associated ICC
-// color profile otherwise this function does nothing.
+// Return true if there exists a value for IOSurfaceColorSpace or
+// IOSurfaceICCProfile that will make CoreAnimation render using |color_space|.
+GFX_EXPORT bool IOSurfaceCanSetColorSpace(const gfx::ColorSpace& color_space);
+
+// Set color space for given IOSurface. IOSurfaceCanSetColorSpace must return
+// true for |color_space| otherwise this does nothing.
 GFX_EXPORT void IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
                                        const gfx::ColorSpace& color_space);
 

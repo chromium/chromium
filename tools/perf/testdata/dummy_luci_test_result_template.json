@@ -1,0 +1,17 @@
+{
+  "testResult": {
+    "testPath" : "DummySuite.DummyCase",
+    "status": "PASS",
+    "expected": true,
+    "outputArtifacts":{
+      "trace/1.json": {
+        "contentType":"application/json",
+        "filePath":"FULL_TRACE_FILE_PATH"
+      }
+    },
+    "tags":[
+      {"key":"tbmv2","value":"renderingMetric"},
+      {"key":"tbmv2","value":"umaMetric"}
+    ]
+  }
+}

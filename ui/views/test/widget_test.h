@@ -6,7 +6,9 @@
 #define UI_VIEWS_TEST_WIDGET_TEST_H_
 
 #include <memory>
+#include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -44,7 +46,14 @@ class WidgetTest : public ViewsTestBase {
 
   using WidgetAutoclosePtr = std::unique_ptr<Widget, WidgetCloser>;
 
-  WidgetTest();
+  // Constructs an AshTestBase with |traits| being forwarded to its
+  // TaskEnvironment. |ViewsTestBase::SubclassManagesTaskEnvironment()|
+  // can also be passed as a sole trait to indicate that this WidgetTest's
+  // subclass will manage the task environment.
+  template <typename... TaskEnvironmentTraits>
+  NOINLINE explicit WidgetTest(TaskEnvironmentTraits&&... traits)
+      : ViewsTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {}
+
   ~WidgetTest() override;
 
   // Create Widgets with |native_widget| in InitParams set to an instance of
@@ -103,6 +112,12 @@ class WidgetTest : public ViewsTestBase {
   // Returns the set of all Widgets that currently have a NativeWindow.
   static Widget::Widgets GetAllWidgets();
 
+  // Waits for system app activation events, if any, to have happened. This is
+  // necessary on macOS 10.15+, where the system will attempt to find and
+  // activate a window owned by the app shortly after app startup, if there is
+  // one. See https://crbug.com/998868 for details.
+  static void WaitForSystemAppActivation();
+
  private:
   DISALLOW_COPY_AND_ASSIGN(WidgetTest);
 };
@@ -125,7 +140,7 @@ class DesktopWidgetTest : public WidgetTest {
 class TestDesktopWidgetDelegate : public WidgetDelegate {
  public:
   TestDesktopWidgetDelegate();
-  TestDesktopWidgetDelegate(Widget* widget);
+  explicit TestDesktopWidgetDelegate(Widget* widget);
   ~TestDesktopWidgetDelegate() override;
 
   // Initialize the Widget, adding some meaningful default InitParams.

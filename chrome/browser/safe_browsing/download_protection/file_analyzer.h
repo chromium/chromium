@@ -46,11 +46,11 @@ class FileAnalyzer {
 
     // For archive files, whether the archive contains an executable. Has
     // unspecified contents for non-archive files.
-    bool archived_executable;
+    bool archived_executable = false;
 
     // For archive files, whether the archive contains an archive. Has
     // unspecified contents for non-archive files.
-    bool archived_archive;
+    bool archived_archive = false;
 
     // For archive files, the features extracted from each contained
     // archive/binary.
@@ -74,10 +74,10 @@ class FileAnalyzer {
 #endif
 
     // For archive files, the number of contained files.
-    int file_count;
+    int file_count = 0;
 
     // For archive files, the number of contained directories.
-    int directory_count;
+    int directory_count = 0;
   };
 
   explicit FileAnalyzer(
@@ -121,7 +121,7 @@ class FileAnalyzer {
   base::TimeTicks dmg_analysis_start_time_;
 #endif
 
-  base::WeakPtrFactory<FileAnalyzer> weakptr_factory_;
+  base::WeakPtrFactory<FileAnalyzer> weakptr_factory_{this};
 };
 
 }  // namespace safe_browsing

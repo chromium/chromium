@@ -6,7 +6,6 @@ package org.chromium.device.nfc;
 
 import org.chromium.device.mojom.NdefMessage;
 import org.chromium.device.mojom.NdefRecord;
-import org.chromium.device.mojom.NdefRecordType;
 
 /**
  * Utility class that provides validation of NdefMessage.
@@ -35,7 +34,17 @@ public final class NdefMessageValidator {
      */
     private static boolean isValid(NdefRecord record) {
         if (record == null) return false;
-        if (record.recordType == NdefRecordType.EMPTY) return true;
-        return record.data != null && record.mediaType != null && !record.mediaType.isEmpty();
+        if (record.recordType.equals(NdefMessageUtils.RECORD_TYPE_EMPTY)) return true;
+        if (record.data == null) return false;
+        if (record.recordType.equals(NdefMessageUtils.RECORD_TYPE_MIME)) {
+            // 'mime' type records must have mediaType.
+            if (record.mediaType == null || record.mediaType.isEmpty()) {
+                return false;
+            }
+        } else if (record.mediaType != null) {
+            // Other types must not have mediaType.
+            return false;
+        }
+        return true;
     }
 }

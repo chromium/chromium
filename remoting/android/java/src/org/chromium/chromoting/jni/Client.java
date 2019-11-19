@@ -6,6 +6,7 @@ package org.chromium.chromoting.jni;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chromoting.CapabilityManager;
 import org.chromium.chromoting.InputStub;
 import org.chromium.chromoting.Preconditions;
@@ -36,14 +37,14 @@ public class Client implements InputStub {
         }
 
         sClient = this;
-        mNativeJniClient = nativeInit();
+        mNativeJniClient = ClientJni.get().init(Client.this);
     }
 
     // Suppress FindBugs warning, since |sClient| is only used on the UI thread.
     public void destroy() {
         if (sClient != null) {
             disconnectFromHost();
-            nativeDestroy(mNativeJniClient);
+            ClientJni.get().destroy(mNativeJniClient, Client.this);
             sClient = null;
         }
     }
@@ -85,15 +86,15 @@ public class Client implements InputStub {
     }
 
     /** Attempts to form a connection to the user-selected host. */
-    public void connectToHost(String username, String authToken, String hostJid,
+    public void connectToHost(String username, String authToken, String hostJid, String hostFtlId,
             String hostId, String hostPubkey, SessionAuthenticator authenticator, String flags,
             String hostVersion, String hostOs, String hostOsVersion, ConnectionListener listener) {
         disconnectFromHost();
 
         mConnectionListener = listener;
         mAuthenticator = authenticator;
-        nativeConnect(mNativeJniClient, username, authToken, hostJid,
-                hostId, hostPubkey, mAuthenticator.getPairingId(hostId),
+        ClientJni.get().connect(mNativeJniClient, Client.this, username, authToken, hostJid,
+                hostFtlId, hostId, hostPubkey, mAuthenticator.getPairingId(hostId),
                 mAuthenticator.getPairingSecret(hostId), mCapabilityManager.getLocalCapabilities(),
                 flags, hostVersion, hostOs, hostOsVersion);
         mConnected = true;
@@ -117,7 +118,7 @@ public class Client implements InputStub {
             return;
         }
 
-        nativeDisconnect(mNativeJniClient);
+        ClientJni.get().disconnect(mNativeJniClient, Client.this);
         mConnectionListener = null;
         mConnected = false;
         mCapabilityManager.onHostDisconnect();
@@ -157,7 +158,8 @@ public class Client implements InputStub {
     public void handleAuthenticationResponse(
             String pin, boolean createPair, String deviceName) {
         assert mConnected;
-        nativeAuthenticationResponse(mNativeJniClient, pin, createPair, deviceName);
+        ClientJni.get().authenticationResponse(
+                mNativeJniClient, Client.this, pin, createPair, deviceName);
     }
 
     /**
@@ -177,7 +179,8 @@ public class Client implements InputStub {
             return;
         }
 
-        nativeSendMouseEvent(mNativeJniClient, x, y, whichButton, buttonDown);
+        ClientJni.get().sendMouseEvent(
+                mNativeJniClient, Client.this, x, y, whichButton, buttonDown);
     }
 
     /** Injects a mouse-wheel event with delta values. */
@@ -187,7 +190,7 @@ public class Client implements InputStub {
             return;
         }
 
-        nativeSendMouseWheelEvent(mNativeJniClient, deltaX, deltaY);
+        ClientJni.get().sendMouseWheelEvent(mNativeJniClient, Client.this, deltaX, deltaY);
     }
 
     /**
@@ -200,7 +203,8 @@ public class Client implements InputStub {
             return false;
         }
 
-        return nativeSendKeyEvent(mNativeJniClient, scanCode, keyCode, keyDown);
+        return ClientJni.get().sendKeyEvent(
+                mNativeJniClient, Client.this, scanCode, keyCode, keyDown);
     }
 
     /** Sends TextEvent to the host. */
@@ -210,7 +214,7 @@ public class Client implements InputStub {
             return;
         }
 
-        nativeSendTextEvent(mNativeJniClient, text);
+        ClientJni.get().sendTextEvent(mNativeJniClient, Client.this, text);
     }
 
     /** Sends an array of TouchEvents to the host. */
@@ -220,7 +224,7 @@ public class Client implements InputStub {
             return;
         }
 
-        nativeSendTouchEvent(mNativeJniClient, eventType, data);
+        ClientJni.get().sendTouchEvent(mNativeJniClient, Client.this, eventType, data);
     }
 
     /**
@@ -231,7 +235,7 @@ public class Client implements InputStub {
             return;
         }
 
-        nativeEnableVideoChannel(mNativeJniClient, enable);
+        ClientJni.get().enableVideoChannel(mNativeJniClient, Client.this, enable);
     }
 
     //
@@ -255,7 +259,8 @@ public class Client implements InputStub {
             return;
         }
 
-        nativeOnThirdPartyTokenFetched(mNativeJniClient, token, sharedSecret);
+        ClientJni.get().onThirdPartyTokenFetched(
+                mNativeJniClient, Client.this, token, sharedSecret);
     }
 
     //
@@ -288,7 +293,7 @@ public class Client implements InputStub {
             return;
         }
 
-        nativeSendExtensionMessage(mNativeJniClient, type, data);
+        ClientJni.get().sendExtensionMessage(mNativeJniClient, Client.this, type, data);
     }
 
     /**
@@ -304,55 +309,57 @@ public class Client implements InputStub {
             return;
         }
 
-        nativeSendClientResolution(mNativeJniClient, dipsWidth, dipsHeight, density);
+        ClientJni.get().sendClientResolution(
+                mNativeJniClient, Client.this, dipsWidth, dipsHeight, density);
     }
 
-    private native long nativeInit();
+    @NativeMethods
+    interface Natives {
+        long init(Client caller);
+        void destroy(long nativeJniClient, Client caller);
+        /** Performs the native portion of the connection. */
+        void connect(long nativeJniClient, Client caller, String username, String authToken,
+                String hostJid, String hostFtlId, String hostId, String hostPubkey, String pairId,
+                String pairSecret, String capabilities, String flags, String hostVersion,
+                String hostOs, String hostOsVersion);
 
-    private native void nativeDestroy(long nativeJniClient);
+        /** Native implementation of Client.handleAuthenticationResponse(). */
+        void authenticationResponse(long nativeJniClient, Client caller, String pin,
+                boolean createPair, String deviceName);
 
-    /** Performs the native portion of the connection. */
-    private native void nativeConnect(long nativeJniClient,
-            String username, String authToken, String hostJid, String hostId, String hostPubkey,
-            String pairId, String pairSecret, String capabilities, String flags,
-            String hostVersion, String hostOs, String hostOsVersion);
+        /** Performs the native portion of the cleanup. */
+        void disconnect(long nativeJniClient, Client caller);
 
-    /** Native implementation of Client.handleAuthenticationResponse(). */
-    private native void nativeAuthenticationResponse(
-            long nativeJniClient, String pin, boolean createPair, String deviceName);
+        /** Passes authentication data to the native handling code. */
+        void onThirdPartyTokenFetched(
+                long nativeJniClient, Client caller, String token, String sharedSecret);
 
-    /** Performs the native portion of the cleanup. */
-    private native void nativeDisconnect(long nativeJniClient);
+        /** Passes mouse information to the native handling code. */
+        void sendMouseEvent(long nativeJniClient, Client caller, int x, int y, int whichButton,
+                boolean buttonDown);
 
-    /** Passes authentication data to the native handling code. */
-    private native void nativeOnThirdPartyTokenFetched(
-            long nativeJniClient, String token, String sharedSecret);
+        /** Passes mouse-wheel information to the native handling code. */
+        void sendMouseWheelEvent(long nativeJniClient, Client caller, int deltaX, int deltaY);
 
-    /** Passes mouse information to the native handling code. */
-    private native void nativeSendMouseEvent(
-            long nativeJniClient, int x, int y, int whichButton, boolean buttonDown);
+        /** Passes key press information to the native handling code. */
+        boolean sendKeyEvent(
+                long nativeJniClient, Client caller, int scanCode, int keyCode, boolean keyDown);
 
-    /** Passes mouse-wheel information to the native handling code. */
-    private native void nativeSendMouseWheelEvent(long nativeJniClient, int deltaX, int deltaY);
+        /** Passes text event information to the native handling code. */
+        void sendTextEvent(long nativeJniClient, Client caller, String text);
 
-    /** Passes key press information to the native handling code. */
-    private native boolean nativeSendKeyEvent(
-            long nativeJniClient, int scanCode, int keyCode, boolean keyDown);
+        /** Passes touch event information to the native handling code. */
+        void sendTouchEvent(
+                long nativeJniClient, Client caller, int eventType, TouchEventData[] data);
 
-    /** Passes text event information to the native handling code. */
-    private native void nativeSendTextEvent(long nativeJniClient, String text);
+        /** Native implementation of Client.enableVideoChannel() */
+        void enableVideoChannel(long nativeJniClient, Client caller, boolean enable);
 
-    /** Passes touch event information to the native handling code. */
-    private native void nativeSendTouchEvent(
-            long nativeJniClient, int eventType, TouchEventData[] data);
+        /** Passes extension message to the native code. */
+        void sendExtensionMessage(long nativeJniClient, Client caller, String type, String data);
 
-    /** Native implementation of Client.enableVideoChannel() */
-    private native void nativeEnableVideoChannel(long nativeJniClient, boolean enable);
-
-    /** Passes extension message to the native code. */
-    private native void nativeSendExtensionMessage(long nativeJniClient, String type, String data);
-
-    /** Sends client resolution to the host. */
-    private native void nativeSendClientResolution(
-            long nativeJniClient, int dipsWidth, int dipsHeight, float scale);
+        /** Sends client resolution to the host. */
+        void sendClientResolution(
+                long nativeJniClient, Client caller, int dipsWidth, int dipsHeight, float scale);
+    }
 }

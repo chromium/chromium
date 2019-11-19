@@ -7,4 +7,4 @@ A virtual test suite (origin-trials-runtimeflags-disabled) covers
 this. Depending on the test, it may be necessary to add specific
 results in the directory:
 
-LayoutTests/virtual/origin-trials-runtimeflags-disabled/http/tests/origin_trials/webexposed/
+web_tests/virtual/origin-trials-runtimeflags-disabled/http/tests/origin_trials/webexposed/

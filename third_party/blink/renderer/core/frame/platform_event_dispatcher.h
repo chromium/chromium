@@ -14,7 +14,23 @@ class LocalFrame;
 
 class CORE_EXPORT PlatformEventDispatcher : public GarbageCollectedMixin {
  public:
-  void AddController(PlatformEventController*);
+  // Adds a controller to be notified when a change event occurs and starts
+  // listening for change events. |frame| is the frame that will be passed to
+  // the dispatcher's StartListening method. The caller must provide a valid,
+  // non-nullptr frame.
+  //
+  // Note that the frame associated with the controller's document may be
+  // nullptr if the document was shut down, which can occur when a frame
+  // navigates from an initial empty document to another same-origin document.
+  // If the controller was initialized with the initial empty document, it may
+  // need to provide a valid frame from another source, for instance the
+  // DOMWindow.
+  // TODO(crbug.com/850619): fix all the callsites, currently not all of them
+  // (and unittests) are guaranteed to pass a non-nullptr frame.
+  void AddController(PlatformEventController*, LocalFrame* frame);
+
+  // Removes a controller from |controllers_| and stops listening if there are
+  // no more registered controllers.
   void RemoveController(PlatformEventController*);
 
   void Trace(blink::Visitor*) override;

@@ -55,8 +55,7 @@ class CronetUploadDataStreamAdapter : public CronetUploadDataStream::Delegate {
 
   // Destroys |this|. Can be called from any thread, but needs to be protected
   // by the adapter lock.
-  void Destroy(JNIEnv* env,
-               const base::android::JavaParamRef<jobject>& jobject);
+  void Destroy(JNIEnv* env);
 
  private:
   // Initialized on construction, effectively constant.

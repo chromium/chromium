@@ -12,17 +12,22 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "content/common/content_export.h"
+#include "content/public/common/previews_state.h"
 #include "content/public/common/resource_type.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/blink/public/common/loader/loading_behavior_flag.h"
+#include "third_party/blink/public/mojom/use_counter/css_property_id.mojom.h"
 #include "third_party/blink/public/mojom/web_client_hints/web_client_hints_types.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
-#include "third_party/blink/public/platform/web_loading_behavior_flag.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/base/page_transition_types.h"
 #include "v8/include/v8.h"
 
@@ -30,15 +35,13 @@ class GURL;
 
 namespace blink {
 class WebDocumentLoader;
+class WebElement;
 class WebFormElement;
-class WebNode;
 class WebString;
-struct WebURLError;
 class WebWorkerFetchContext;
 }
 
 namespace network {
-struct ResourceResponseHead;
 struct URLLoaderCompletionStatus;
 }  // namespace network
 
@@ -68,14 +71,12 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void WasHidden() {}
   virtual void WasShown() {}
 
-  // Called when associated widget is about to close.
-  virtual void WidgetWillClose() {}
-
   // Navigation callbacks.
   //
   // Each navigation starts with a DidStartNavigation call. Then it may be
   // followed by a ReadyToCommitNavigation (if the navigation has succeeded),
   // and should always end with a DidFinishNavigation.
+  // TODO(dgozman): ReadyToCommitNavigation will be removed soon.
   //
   // Unfortunately, this is currently a mess. For example, some started
   // navigations which did not commit won't receive any further notifications.
@@ -94,30 +95,29 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
       const GURL& url,
       base::Optional<blink::WebNavigationType> navigation_type) {}
 
-  // Called when a navigation is about to be committed and |document_loader|
+  // Called when a navigation has just committed and |document_loader|
   // will start loading a new document in the RenderFrame.
+  // TODO(dgozman): the name does not match functionality anymore, we should
+  // merge this with DidCommitProvisionalLoad, which will become
+  // DidFinishNavigation.
   virtual void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) {}
 
   // These match the Blink API notifications
   virtual void DidCreateNewDocument() {}
   virtual void DidCreateDocumentElement() {}
-  // Called when a provisional load is about to commit in a frame. This is
-  // dispatched just before the Javascript unload event.
-  virtual void WillCommitProvisionalLoad() {}
   // TODO(dgozman): replace next two methods with DidFinishNavigation.
   virtual void DidCommitProvisionalLoad(bool is_same_document_navigation,
                                         ui::PageTransition transition) {}
-  virtual void DidFailProvisionalLoad(const blink::WebURLError& error) {}
+  virtual void DidFailProvisionalLoad() {}
   virtual void DidFinishLoad() {}
   virtual void DidFinishDocumentLoad() {}
   virtual void DidHandleOnloadEvents() {}
   virtual void DidCreateScriptContext(v8::Local<v8::Context> context,
-                                      int world_id) {}
+                                      int32_t world_id) {}
   virtual void WillReleaseScriptContext(v8::Local<v8::Context> context,
-                                        int world_id) {}
+                                        int32_t world_id) {}
   virtual void DidClearWindowObject() {}
-  virtual void DidChangeManifest() {}
   virtual void DidChangeScrollOffset() {}
   virtual void WillSendSubmitEvent(const blink::WebFormElement& form) {}
   virtual void WillSubmitForm(const blink::WebFormElement& form) {}
@@ -158,33 +158,55 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
 
   // Notification when the renderer uses a particular code path during a page
   // load. This is used for metrics collection.
-  virtual void DidObserveLoadingBehavior(
-      blink::WebLoadingBehaviorFlag behavior) {}
+  virtual void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) {}
 
   // Notification when the renderer observes a new use counter usage during a
   // page load. This is used for UseCounter metrics.
   virtual void DidObserveNewFeatureUsage(blink::mojom::WebFeature feature) {}
-  virtual void DidObserveNewCssPropertyUsage(int css_property,
-                                             bool is_animated) {}
+  virtual void DidObserveNewCssPropertyUsage(
+      blink::mojom::CSSSampleId css_property,
+      bool is_animated) {}
 
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
-  // This is called once for each janking animation frame, with the jank
-  // fraction for that frame.  The cumulative jank score can be inferred by
-  // summing the jank fractions.
-  virtual void DidObserveLayoutJank(double jank_fraction) {}
+  // This is called once for each animation frame containing any layout shift,
+  // and receives the layout shift (LS) score for that frame.  The cumulative
+  // layout shift (CLS) score can be inferred by summing the LS scores.
+  // |after_input_or_scroll| indicates whether the given |score| was observed
+  // after an input or scroll occurred in the associated document.
+  virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {
+  }
+
+  // Reports lazy loaded behavior when the frame or image is fully deferred or
+  // if the frame or image is loaded after being deferred by lazy load.
+  // Called every time the behavior occurs. This does not apply to image
+  // requests for placeholder images.
+  virtual void DidObserveLazyLoadBehavior(
+      blink::WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) {}
 
   // Notification when the renderer a response started, completed or canceled.
   // Complete or Cancel is guaranteed to be called for a response that started.
   // |request_id| uniquely identifies the request within this render frame.
+  // |previews_state| is the PreviewsState if the request is a sub-resource. For
+  // Document resources, |previews_state| should be reported as PREVIEWS_OFF.
   virtual void DidStartResponse(
-      const GURL& response_url,
+      const url::Origin& origin_of_final_response_url,
       int request_id,
-      const network::ResourceResponseHead& response_head,
-      content::ResourceType resource_type) {}
+      const network::mojom::URLResponseHead& response_head,
+      content::ResourceType resource_type,
+      PreviewsState previews_state) {}
   virtual void DidCompleteResponse(
       int request_id,
       const network::URLLoaderCompletionStatus& status) {}
   virtual void DidCancelResponse(int request_id) {}
+
+  // Reports that a resource was loaded from the blink memory cache.
+  // |request_id| uniquely identifies this resource within this render frame.
+  // |from_archive| indicates if the resource originated from a MHTML archive.
+  virtual void DidLoadResourceFromMemoryCache(const GURL& response_url,
+                                              int request_id,
+                                              int64_t encoded_body_length,
+                                              const std::string& mime_type,
+                                              bool from_archive) {}
 
   // Notification when the renderer observes data used during the page load.
   // This is used for page load metrics. |received_data_length| is the received
@@ -193,11 +215,11 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void DidReceiveTransferSizeUpdate(int resource_id,
                                             int received_data_length) {}
 
-  // Called when the focused node has changed to |node|.
-  virtual void FocusedNodeChanged(const blink::WebNode& node) {}
+  // Called when the focused element has changed to |element|.
+  virtual void FocusedElementChanged(const blink::WebElement& element) {}
 
   // Called when accessibility is enabled or disabled.
-  virtual void AccessibilityModeChanged() {}
+  virtual void AccessibilityModeChanged(const ui::AXMode& mode) {}
 
   // Called when script in the page calls window.print().
   virtual void ScriptedPrint(bool user_initiated) {}

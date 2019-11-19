@@ -4,7 +4,7 @@
 
 package org.chromium.components.signin;
 
-import android.support.annotation.MainThread;
+import androidx.annotation.MainThread;
 
 /**
  * Observer that receives account change notifications. Use {@link AccountManagerFacade#addObserver}

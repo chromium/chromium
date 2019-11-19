@@ -122,13 +122,6 @@ bool ShellExtensionsClient::IsScriptableURL(const GURL& url,
   return true;
 }
 
-bool ShellExtensionsClient::ShouldSuppressFatalErrors() const {
-  return true;
-}
-
-void ShellExtensionsClient::RecordDidSuppressFatalError() {
-}
-
 const GURL& ShellExtensionsClient::GetWebstoreBaseURL() const {
   return webstore_base_url_;
 }

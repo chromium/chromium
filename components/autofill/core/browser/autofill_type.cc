@@ -56,6 +56,10 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_STREET_ADDRESS:
     case ADDRESS_HOME_SORTING_CODE:
     case ADDRESS_HOME_DEPENDENT_LOCALITY:
+    case ADDRESS_HOME_STREET:
+    case ADDRESS_HOME_HOUSE_NUMBER:
+    case ADDRESS_HOME_FLOOR:
+    case ADDRESS_HOME_OTHER_SUBUNIT:
       return ADDRESS_HOME;
 
     case ADDRESS_BILLING_LINE1:
@@ -94,6 +98,9 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case PROBABLY_NEW_PASSWORD:
     case NOT_NEW_PASSWORD:
     case CONFIRMATION_PASSWORD:
+    case NOT_PASSWORD:
+    case SINGLE_USERNAME:
+    case NOT_USERNAME:
       return PASSWORD_FIELD;
 
     case NO_SERVER_DATA:
@@ -107,6 +114,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case MERCHANT_PROMO_CODE:
+    case UPI_VPA:
       return NO_GROUP;
 
     case MAX_VALID_FIELD_TYPE:
@@ -122,9 +130,9 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
 
     case UNKNOWN_TYPE:
       return NO_GROUP;
-    default:
-      return NO_GROUP;
   }
+  NOTREACHED();
+  return NO_GROUP;
 }
 
 FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
@@ -192,9 +200,9 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
     case HTML_TYPE_UNSPECIFIED:
     case HTML_TYPE_UNRECOGNIZED:
       return NO_GROUP;
-    default:
-      return NO_GROUP;
   }
+  NOTREACHED();
+  return NO_GROUP;
 }
 
 AutofillType::AutofillType(ServerFieldType field_type)
@@ -419,13 +427,12 @@ ServerFieldType AutofillType::GetStorableType() const {
     case HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR:
       return CREDIT_CARD_EXP_4_DIGIT_YEAR;
 
+    case HTML_TYPE_UPI_VPA:
+      return UPI_VPA;
+
     // These types aren't stored; they're transient.
     case HTML_TYPE_TRANSACTION_AMOUNT:
     case HTML_TYPE_TRANSACTION_CURRENCY:
-      return UNKNOWN_TYPE;
-
-    // TODO(crbug/702223): Add autofill support for UPI-VPA.
-    case HTML_TYPE_UPI_VPA:
       return UNKNOWN_TYPE;
 
     case HTML_TYPE_UNRECOGNIZED:
@@ -434,78 +441,6 @@ ServerFieldType AutofillType::GetStorableType() const {
 
   NOTREACHED();
   return UNKNOWN_TYPE;
-}
-
-// static
-ServerFieldType AutofillType::GetEquivalentBillingFieldType(
-    ServerFieldType field_type) {
-  switch (field_type) {
-    case ADDRESS_HOME_LINE1:
-      return ADDRESS_BILLING_LINE1;
-
-    case ADDRESS_HOME_LINE2:
-      return ADDRESS_BILLING_LINE2;
-
-    case ADDRESS_HOME_APT_NUM:
-      return ADDRESS_BILLING_APT_NUM;
-
-    case ADDRESS_HOME_CITY:
-      return ADDRESS_BILLING_CITY;
-
-    case ADDRESS_HOME_STATE:
-      return ADDRESS_BILLING_STATE;
-
-    case ADDRESS_HOME_ZIP:
-      return ADDRESS_BILLING_ZIP;
-
-    case ADDRESS_HOME_COUNTRY:
-      return ADDRESS_BILLING_COUNTRY;
-
-    case ADDRESS_HOME_STREET_ADDRESS:
-      return ADDRESS_BILLING_STREET_ADDRESS;
-
-    case ADDRESS_HOME_SORTING_CODE:
-      return ADDRESS_BILLING_SORTING_CODE;
-
-    case ADDRESS_HOME_DEPENDENT_LOCALITY:
-      return ADDRESS_BILLING_DEPENDENT_LOCALITY;
-
-    case PHONE_HOME_WHOLE_NUMBER:
-      return PHONE_BILLING_WHOLE_NUMBER;
-
-    case PHONE_HOME_NUMBER:
-      return PHONE_BILLING_NUMBER;
-
-    case PHONE_HOME_CITY_CODE:
-      return PHONE_BILLING_CITY_CODE;
-
-    case PHONE_HOME_COUNTRY_CODE:
-      return PHONE_BILLING_COUNTRY_CODE;
-
-    case PHONE_HOME_CITY_AND_NUMBER:
-      return PHONE_BILLING_CITY_AND_NUMBER;
-
-    case NAME_FIRST:
-      return NAME_BILLING_FIRST;
-
-    case NAME_MIDDLE:
-      return NAME_BILLING_MIDDLE;
-
-    case NAME_LAST:
-      return NAME_BILLING_LAST;
-
-    case NAME_MIDDLE_INITIAL:
-      return NAME_BILLING_MIDDLE_INITIAL;
-
-    case NAME_FULL:
-      return NAME_BILLING_FULL;
-
-    case NAME_SUFFIX:
-      return NAME_BILLING_SUFFIX;
-
-    default:
-      return field_type;
-  }
 }
 
 std::string AutofillType::ToString() const {
@@ -777,10 +712,24 @@ std::string AutofillType::ServerFieldTypeToString(ServerFieldType type) {
       return "SEARCH_TERM";
     case PRICE:
       return "PRICE";
-
+    case NOT_PASSWORD:
+      return "NOT_PASSWORD";
+    case SINGLE_USERNAME:
+      return "SINGLE_USERNAME";
+    case NOT_USERNAME:
+      return "NOT_USERNAME";
+    case UPI_VPA:
+      return "UPI_VPA";
+    case ADDRESS_HOME_STREET:
+      return "ADDRESS_HOME_STREET";
+    case ADDRESS_HOME_HOUSE_NUMBER:
+      return "ADDRESS_HOME_HOUSE_NUMBER";
+    case ADDRESS_HOME_FLOOR:
+      return "ADDRESS_HOME_FLOOR";
+    case ADDRESS_HOME_OTHER_SUBUNIT:
+      return "ADDRESS_HOME_OTHER_SUBUNIT";
     case AMBIGUOUS_TYPE:
       return "AMBIGUOUS_TYPE";
-
     case MAX_VALID_FIELD_TYPE:
       return std::string();
   }

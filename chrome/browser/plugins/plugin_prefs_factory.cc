@@ -5,6 +5,7 @@
 #include "chrome/browser/plugins/plugin_prefs_factory.h"
 
 #include "base/path_service.h"
+#include "base/time/time.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -61,8 +62,11 @@ void PluginPrefsFactory::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kPluginsDisabledPlugins);
   registry->RegisterListPref(prefs::kPluginsDisabledPluginsExceptions);
   registry->RegisterListPref(prefs::kPluginsEnabledPlugins);
-  registry->RegisterBooleanPref(prefs::kPluginsAlwaysOpenPdfExternally, false, 
-                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kPluginsAlwaysOpenPdfExternally, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterTimePref(prefs::kPluginsDeprecationInfobarLastShown,
+                             base::Time());
 }
 
 content::BrowserContext* PluginPrefsFactory::GetBrowserContextToUse(

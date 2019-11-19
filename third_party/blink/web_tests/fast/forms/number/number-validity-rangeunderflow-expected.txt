@@ -16,6 +16,7 @@ PASS The value "99" undeflows the minimum value "100".
 PASS The value "-101" undeflows the minimum value "-100".
 PASS The value "99" undeflows the minimum value "1E+2".
 PASS The value "101" undeflows the minimum value "200".
+PASS The value "-.8" undeflows the minimum value "1".
 PASS The value "99" doesn't underflow the minimum value "1E+2" when disabled.
 PASS successfullyParsed is true
 

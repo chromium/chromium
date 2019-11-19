@@ -37,6 +37,10 @@ class DevToolsClient {
       const std::string& method,
       const base::DictionaryValue& params) = 0;
 
+  virtual Status SendCommandFromWebSocket(const std::string& method,
+                                          const base::DictionaryValue& params,
+                                          const int client_command_id) = 0;
+
   virtual Status SendCommandWithTimeout(
       const std::string& method,
       const base::DictionaryValue& params,

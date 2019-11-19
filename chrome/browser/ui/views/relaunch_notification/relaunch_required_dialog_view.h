@@ -13,7 +13,6 @@
 
 class Browser;
 namespace views {
-class Label;
 class Widget;
 }  // namespace views
 
@@ -41,15 +40,11 @@ class RelaunchRequiredDialogView : views::DialogDelegateView {
   // views::DialogDelegateView:
   bool Cancel() override;
   bool Accept() override;
-  int GetDefaultDialogButton() const override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   ui::ModalType GetModalType() const override;
   base::string16 GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
   gfx::ImageSkia GetWindowIcon() override;
   bool ShouldShowWindowIcon() const override;
-  int GetHeightForWidth(int width) const override;
-  void Layout() override;
 
  protected:
   // views::DialogDelegateView:
@@ -66,9 +61,6 @@ class RelaunchRequiredDialogView : views::DialogDelegateView {
 
   // A callback to run if the user accepts the prompt to relaunch the browser.
   base::RepeatingClosure on_accept_;
-
-  // The label containing the body text of the dialog.
-  views::Label* body_label_;
 
   // Timer that schedules title refreshes.
   RelaunchRequiredTimer relaunch_required_timer_;

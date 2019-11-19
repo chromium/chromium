@@ -23,7 +23,6 @@ source_set("client") {
     "//chromeos/services/secure_channel/public/cpp/shared",
     "//chromeos/services/secure_channel/public/mojom",
     "//mojo/public/cpp/bindings",
-    "//services/service_manager/public/cpp",
   ]
 }
 
@@ -31,7 +30,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    ":shared",
     "fake_client_channel.cc",
     "fake_client_channel.h",
     "fake_client_channel_observer.cc",
@@ -69,7 +67,6 @@ source_set("unit_tests") {
     "//chromeos/services/secure_channel:test_support",
     "//chromeos/services/secure_channel/public/cpp/shared",
     "//chromeos/services/secure_channel/public/mojom",
-    "//services/service_manager/public/cpp/test:test_support",
     "//testing/gtest",
   ]
 }

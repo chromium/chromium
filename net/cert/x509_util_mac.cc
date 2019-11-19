@@ -121,42 +121,6 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
   return result;
 }
 
-bool IsSelfSigned(SecCertificateRef cert_handle) {
-  CSSMCachedCertificate cached_cert;
-  OSStatus status = cached_cert.Init(cert_handle);
-  if (status != noErr)
-    return false;
-
-  CSSMFieldValue subject;
-  status = cached_cert.GetField(&CSSMOID_X509V1SubjectNameStd, &subject);
-  if (status != CSSM_OK || !subject.field())
-    return false;
-
-  CSSMFieldValue issuer;
-  status = cached_cert.GetField(&CSSMOID_X509V1IssuerNameStd, &issuer);
-  if (status != CSSM_OK || !issuer.field())
-    return false;
-
-  if (subject.field()->Length != issuer.field()->Length ||
-      memcmp(subject.field()->Data, issuer.field()->Data,
-             issuer.field()->Length) != 0) {
-    return false;
-  }
-
-  CSSM_CL_HANDLE cl_handle = CSSM_INVALID_HANDLE;
-  status = SecCertificateGetCLHandle(cert_handle, &cl_handle);
-  if (status)
-    return false;
-  CSSM_DATA cert_data;
-  status = SecCertificateGetData(cert_handle, &cert_data);
-  if (status)
-    return false;
-
-  if (CSSM_CL_CertVerify(cl_handle, 0, &cert_data, &cert_data, NULL, 0))
-    return false;
-  return true;
-}
-
 SHA256HashValue CalculateFingerprint256(SecCertificateRef cert) {
   SHA256HashValue sha256;
   memset(sha256.data, 0, sizeof(sha256.data));

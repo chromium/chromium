@@ -35,7 +35,7 @@ namespace win {
 // One-time Initialization for ScopedHString:
 //
 //   bool success = ScopedHString::ResolveCoreWinRTStringDelayload();
-//   if (!success) {
+//   if (success) {
 //     // ScopeHString can be used.
 //   } else {
 //     // Handle error.
@@ -63,7 +63,12 @@ class BASE_EXPORT ScopedHString
   // Loads all required HSTRING functions, available from Win8 and onwards.
   static bool ResolveCoreWinRTStringDelayload();
 
+  // Returns a view into the memory buffer managed by the instance. The returned
+  // StringPiece is only valid during the lifetime of this ScopedHString
+  // instance.
   WStringPiece Get() const;
+
+  // Returns a copy of the instance as a UTF-8 string.
   std::string GetAsUTF8() const;
 };
 

@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/invitation.h"
 
 namespace drivefs {
@@ -24,7 +24,7 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsBootstrapListener {
   virtual ~DriveFsBootstrapListener();
 
   const base::UnguessableToken& pending_token() const { return pending_token_; }
-  virtual mojom::DriveFsBootstrapPtr bootstrap();
+  virtual mojo::PendingRemote<mojom::DriveFsBootstrap> bootstrap();
   bool is_connected() const { return connected_; }
 
  protected:
@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsBootstrapListener {
   void AcceptMojoConnection(base::ScopedFD handle);
 
   mojo::OutgoingInvitation invitation_;
-  mojom::DriveFsBootstrapPtr bootstrap_;
+  mojo::PendingRemote<mojom::DriveFsBootstrap> bootstrap_;
 
   // The token passed to DriveFS as part of 'source path' used to match it to
   // this instance.

@@ -27,16 +27,17 @@ class ANIMATION_EXPORT ThrobAnimation : public SlideAnimation {
   void StartThrobbing(int cycles_til_stop);
 
   // Sets the duration of the slide animation when throbbing.
-  void SetThrobDuration(int duration) { throb_duration_ = duration; }
+  void SetThrobDuration(base::TimeDelta duration) {
+    throb_duration_ = duration;
+  }
 
   // Overridden to reset to the slide duration.
-  void Reset() override;
-  void Reset(double value) override;
+  void Reset(double value = 0) override;
   void Show() override;
   void Hide() override;
 
   // Overridden to maintain the slide duration.
-  void SetSlideDuration(int duration) override;
+  void SetSlideDuration(base::TimeDelta duration) override;
 
   // The number of cycles remaining until the animation stops.
   void set_cycles_remaining(int value) { cycles_remaining_ = value; }
@@ -47,20 +48,20 @@ class ANIMATION_EXPORT ThrobAnimation : public SlideAnimation {
   void Step(base::TimeTicks time_now) override;
 
  private:
-  // Resets state such that we behave like SlideAnimation.
-  void ResetForSlide();
+  // Stops throbbing; as a result this will behave like a SlideAnimation.
+  void StopThrobbing();
 
   // Duration of the slide animation.
-  int slide_duration_;
+  base::TimeDelta slide_duration_ = GetSlideDuration();
 
   // Duration of the slide animation when throbbing.
-  int throb_duration_;
+  base::TimeDelta throb_duration_ = base::TimeDelta::FromMilliseconds(400);
 
   // If throbbing, this is the number of cycles left.
-  int cycles_remaining_;
+  int cycles_remaining_ = 0;
 
   // Are we throbbing?
-  bool throbbing_;
+  bool throbbing_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ThrobAnimation);
 };

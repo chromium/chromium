@@ -46,12 +46,15 @@ class PaymentRequestPaymentItemsDisplayViewControllerTest
  protected:
   // CollectionViewControllerTest:
   void SetUp() override {
-    DoSetUp();
     CollectionViewControllerTest::SetUp();
+    DoSetUp();
   }
 
   // CollectionViewControllerTest:
-  void TearDown() override { DoTearDown(); }
+  void TearDown() override {
+    DoTearDown();
+    CollectionViewControllerTest::TearDown();
+  }
 
   CollectionViewController* InstantiateController() override {
     mediator_ = [[TestPaymentItemsDisplayMediator alloc] init];

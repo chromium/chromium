@@ -3,56 +3,56 @@
 // found in the LICENSE file.
 
 /**
- * @constructor
- * @extends {HTMLElement}
  * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#the-menuitem-element
  */
-function HTMLMenuItemElement() {}
+class HTMLMenuItemElement extends HTMLElement {
+  constructor() {
+    /**
+     * @type {string}
+     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-type
+     */
+    this.type;
 
-/**
- * @type {string}
- * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-type
- */
-HTMLMenuItemElement.prototype.type;
+    /**
+     * @type {string}
+     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-label
+     */
+    this.label;
 
-/**
- * @type {string}
- * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-label
- */
-HTMLMenuItemElement.prototype.label;
+    /**
+     * @type {string}
+     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-icon
+     */
+    this.icon;
 
-/**
- * @type {string}
- * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-icon
- */
-HTMLMenuItemElement.prototype.icon;
+    /**
+     * @type {boolean}
+     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-disabled
+     */
+    this.disabled;
 
-/**
- * @type {boolean}
- * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-disabled
- */
-HTMLMenuItemElement.prototype.disabled;
+    /**
+     * @type {boolean}
+     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-checked
+     */
+    this.checked;
 
-/**
- * @type {boolean}
- * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-checked
- */
-HTMLMenuItemElement.prototype.checked;
+    /**
+     * @type {string}
+     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-radiogroup
+     */
+    this.radiogroup;
 
-/**
- * @type {string}
- * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-radiogroup
- */
-HTMLMenuItemElement.prototype.radiogroup;
+    /**
+     * @type {boolean}
+     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-default
+     */
+    this.default;
 
-/**
- * @type {boolean}
- * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-default
- */
-HTMLMenuItemElement.prototype.default;
-
-/**
- * @type {HTMLElement|undefined}
- * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-command
- */
-HTMLMenuItemElement.prototype.command;
+    /**
+     * @type {HTMLElement|undefined}
+     * @see http://www.w3.org/html/wg/drafts/html/master/interactive-elements.html#dom-menuitem-command
+     */
+    this.command;
+  }
+}

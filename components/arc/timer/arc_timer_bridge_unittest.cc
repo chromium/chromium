@@ -15,18 +15,18 @@
 #include "base/posix/unix_domain_socket.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/power_manager_client.h"
-#include "components/arc/arc_bridge_service.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/arc/arc_service_manager.h"
-#include "components/arc/common/timer.mojom.h"
-#include "components/arc/connection_holder.h"
+#include "components/arc/mojom/timer.mojom.h"
+#include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/connection_holder.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_timer_instance.h"
 #include "components/arc/test/test_browser_context.h"
 #include "components/arc/timer/arc_timer_bridge.h"
-#include "components/arc/timer/arc_timer_struct_traits.h"
+#include "components/arc/timer/arc_timer_mojom_traits.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,8 +89,8 @@ class ArcTimerStore {
 class ArcTimerTest : public testing::Test {
  public:
   ArcTimerTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP) {
-    chromeos::PowerManagerClient::Initialize();
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {
+    chromeos::PowerManagerClient::InitializeFake();
     timer_bridge_ = ArcTimerBridge::GetForBrowserContextForTesting(&context_);
     // This results in ArcTimerBridge::OnInstanceReady being called.
     ArcServiceManager::Get()->arc_bridge_service()->timer()->SetInstance(
@@ -125,7 +125,7 @@ class ArcTimerTest : public testing::Test {
   bool StoreReadFds(const std::vector<clockid_t> clocks,
                     std::vector<base::ScopedFD> read_fds);
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
   TestBrowserContext context_;
   FakeTimerInstance timer_instance_;

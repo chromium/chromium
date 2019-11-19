@@ -21,7 +21,7 @@ class GLImageSharedMemoryTestDelegate : public GLImageTestDelegateBase {
  public:
   scoped_refptr<GLImage> CreateSolidColorImage(const gfx::Size& size,
                                                const uint8_t color[4]) const {
-    DCHECK_EQ(NumberOfPlanesForBufferFormat(format), 1u);
+    DCHECK_EQ(NumberOfPlanesForLinearBufferFormat(format), 1u);
     base::UnsafeSharedMemoryRegion shared_memory_region =
         base::UnsafeSharedMemoryRegion::Create(
             gfx::BufferSizeForBufferFormat(size, format));

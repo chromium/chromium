@@ -104,14 +104,14 @@ bool FilterOperations::HasFilterThatMovesPixels() const {
 void FilterOperations::AddClient(SVGResourceClient& client) const {
   for (FilterOperation* operation : operations_) {
     if (operation->GetType() == FilterOperation::REFERENCE)
-      ToReferenceFilterOperation(*operation).AddClient(client);
+      To<ReferenceFilterOperation>(*operation).AddClient(client);
   }
 }
 
 void FilterOperations::RemoveClient(SVGResourceClient& client) const {
   for (FilterOperation* operation : operations_) {
     if (operation->GetType() == FilterOperation::REFERENCE)
-      ToReferenceFilterOperation(*operation).RemoveClient(client);
+      To<ReferenceFilterOperation>(*operation).RemoveClient(client);
   }
 }
 

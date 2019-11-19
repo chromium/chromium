@@ -145,9 +145,9 @@ struct EnumSizeTraits<
 #define INTERNAL_HISTOGRAM_EXACT_LINEAR_WITH_FLAG(name, sample, boundary,  \
                                                   flag)                    \
   do {                                                                     \
-    static_assert(!std::is_enum<decltype(sample)>::value,                  \
+    static_assert(!std::is_enum<std::decay_t<decltype(sample)>>::value,    \
                   "|sample| should not be an enum type!");                 \
-    static_assert(!std::is_enum<decltype(boundary)>::value,                \
+    static_assert(!std::is_enum<std::decay_t<decltype(boundary)>>::value,  \
                   "|boundary| should not be an enum type!");               \
     STATIC_HISTOGRAM_POINTER_BLOCK(                                        \
         name, Add(sample),                                                 \
@@ -161,9 +161,9 @@ struct EnumSizeTraits<
 #define INTERNAL_HISTOGRAM_SCALED_EXACT_LINEAR_WITH_FLAG(                      \
     name, sample, count, boundary, scale, flag)                                \
   do {                                                                         \
-    static_assert(!std::is_enum<decltype(sample)>::value,                      \
+    static_assert(!std::is_enum<std::decay_t<decltype(sample)>>::value,        \
                   "|sample| should not be an enum type!");                     \
-    static_assert(!std::is_enum<decltype(boundary)>::value,                    \
+    static_assert(!std::is_enum<std::decay_t<decltype(boundary)>>::value,      \
                   "|boundary| should not be an enum type!");                   \
     class ScaledLinearHistogramInstance : public base::ScaledLinearHistogram { \
      public:                                                                   \
@@ -186,7 +186,8 @@ struct EnumSizeTraits<
 #define INTERNAL_UMA_HISTOGRAM_ENUMERATION_DEDUCE_BOUNDARY(name, sample,       \
                                                            flags)              \
   INTERNAL_HISTOGRAM_ENUMERATION_WITH_FLAG(                                    \
-      name, sample, base::internal::EnumSizeTraits<decltype(sample)>::Count(), \
+      name, sample,                                                            \
+      base::internal::EnumSizeTraits<std::decay_t<decltype(sample)>>::Count(), \
       flags)
 
 // Note: The value in |sample| must be strictly less than |enum_size|.
@@ -231,8 +232,8 @@ struct EnumSizeTraits<
     using decayed_sample = std::decay<decltype(sample)>::type;               \
     static_assert(std::is_enum<decayed_sample>::value,                       \
                   "Unexpected: |sample| is not at enum.");                   \
-    constexpr auto boundary =                                                \
-        base::internal::EnumSizeTraits<decltype(sample)>::Count();           \
+    constexpr auto boundary = base::internal::EnumSizeTraits<                \
+        std::decay_t<decltype(sample)>>::Count();                            \
     static_assert(                                                           \
         static_cast<uintmax_t>(boundary) <                                   \
             static_cast<uintmax_t>(                                          \

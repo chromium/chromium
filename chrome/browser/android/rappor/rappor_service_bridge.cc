@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/RapporServiceBridge_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "components/rappor/public/rappor_utils.h"
 #include "components/rappor/rappor_service_impl.h"
-#include "jni/RapporServiceBridge_jni.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;

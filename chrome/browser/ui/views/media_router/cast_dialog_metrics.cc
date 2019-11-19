@@ -4,10 +4,18 @@
 
 #include "chrome/browser/ui/views/media_router/cast_dialog_metrics.h"
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+
 namespace media_router {
 
-CastDialogMetrics::CastDialogMetrics(const base::Time& initialization_time)
-    : initialization_time_(initialization_time) {}
+CastDialogMetrics::CastDialogMetrics(const base::Time& initialization_time,
+                                     Profile* profile)
+    : initialization_time_(initialization_time) {
+  MediaRouterMetrics::RecordIconStateAtDialogOpen(
+      profile->GetPrefs()->GetBoolean(prefs::kShowCastIconInToolbar));
+}
 
 CastDialogMetrics::~CastDialogMetrics() = default;
 

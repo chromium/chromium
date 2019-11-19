@@ -114,9 +114,9 @@ void VerifyPixelSizesAreSameAsDIPSize(const PaintInfos& info_list) {
 
 class PaintInfoTest : public ::testing::Test {
  public:
-  PaintInfoTest() {}
+  PaintInfoTest() = default;
 
-  ~PaintInfoTest() override {}
+  ~PaintInfoTest() override = default;
 
   //  ___________
   // |     1     |
@@ -192,10 +192,9 @@ class PaintInfoTest : public ::testing::Test {
       ui::PaintContext context(nullptr, dsf, invalidation_rects[i],
                                pixel_canvas_enabled);
       info_list = GetPaintInfoSetup(context);
-      for (size_t j = 0; j < repaint_indices[i].size(); j++) {
-        EXPECT_TRUE(
-            info_list[repaint_indices[i][j]]->context().IsRectInvalid(gfx::Rect(
-                info_list[repaint_indices[i][j]]->paint_recording_size())));
+      for (int repaint_index : repaint_indices[i]) {
+        EXPECT_TRUE(info_list[repaint_index]->context().IsRectInvalid(
+            gfx::Rect(info_list[repaint_index]->paint_recording_size())));
       }
       info_list.clear();
     }

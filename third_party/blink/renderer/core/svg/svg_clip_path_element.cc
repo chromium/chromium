@@ -22,16 +22,17 @@
 #include "third_party/blink/renderer/core/svg/svg_clip_path_element.h"
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
-inline SVGClipPathElement::SVGClipPathElement(Document& document)
+SVGClipPathElement::SVGClipPathElement(Document& document)
     : SVGGraphicsElement(svg_names::kClipPathTag, document),
-      clip_path_units_(
-          SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>::Create(
-              this,
-              svg_names::kClipPathUnitsAttr,
-              SVGUnitTypes::kSvgUnitTypeUserspaceonuse)) {
+      clip_path_units_(MakeGarbageCollected<
+                       SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>>(
+          this,
+          svg_names::kClipPathUnitsAttr,
+          SVGUnitTypes::kSvgUnitTypeUserspaceonuse)) {
   AddToPropertyMap(clip_path_units_);
 }
 
@@ -40,14 +41,12 @@ void SVGClipPathElement::Trace(blink::Visitor* visitor) {
   SVGGraphicsElement::Trace(visitor);
 }
 
-DEFINE_NODE_FACTORY(SVGClipPathElement)
-
 void SVGClipPathElement::SvgAttributeChanged(const QualifiedName& attr_name) {
   if (attr_name == svg_names::kClipPathUnitsAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
 
     LayoutSVGResourceContainer* layout_object =
-        ToLayoutSVGResourceContainer(this->GetLayoutObject());
+        ToLayoutSVGResourceContainer(GetLayoutObject());
     if (layout_object)
       layout_object->InvalidateCacheAndMarkForLayout();
     return;
@@ -68,7 +67,8 @@ void SVGClipPathElement::ChildrenChanged(const ChildrenChange& change) {
   }
 }
 
-LayoutObject* SVGClipPathElement::CreateLayoutObject(const ComputedStyle&) {
+LayoutObject* SVGClipPathElement::CreateLayoutObject(const ComputedStyle&,
+                                                     LegacyLayout) {
   return new LayoutSVGResourceClipper(this);
 }
 

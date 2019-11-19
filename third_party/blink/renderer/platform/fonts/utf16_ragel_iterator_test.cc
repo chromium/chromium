@@ -29,9 +29,9 @@ TEST(UTF16RagelIteratorTest, CharacterClasses) {
       0x0030,
       0x231A,
       0x00A9};
-  icu_63::UnicodeString class_examples_unicode_string =
-      icu_63::UnicodeString::fromUTF32(class_examples_codepoints,
-                                       base::size(class_examples_codepoints));
+  icu::UnicodeString class_examples_unicode_string =
+      icu::UnicodeString::fromUTF32(class_examples_codepoints,
+                                    base::size(class_examples_codepoints));
   char categories[] = {UTF16RagelIterator::COMBINING_ENCLOSING_KEYCAP,
                        UTF16RagelIterator::COMBINING_ENCLOSING_CIRCLE_BACKSLASH,
                        UTF16RagelIterator::ZWJ,
@@ -72,9 +72,9 @@ TEST(UTF16RagelIteratorTest, ArithmeticOperators) {
       kVariationSelector15Character, kVariationSelector16Character,
       kVariationSelector16Character, kVariationSelector16Character,
   };
-  icu_63::UnicodeString class_examples_unicode_string =
-      icu_63::UnicodeString::fromUTF32(class_examples_codepoints,
-                                       base::size(class_examples_codepoints));
+  icu::UnicodeString class_examples_unicode_string =
+      icu::UnicodeString::fromUTF32(class_examples_codepoints,
+                                    base::size(class_examples_codepoints));
 
   UTF16RagelIterator ragel_iterator(
       reinterpret_cast<const UChar*>(class_examples_unicode_string.getBuffer()),
@@ -114,7 +114,7 @@ TEST(UTF16RagelIteratorTest, CursorPositioning) {
   UChar32 flags_codepoints[] = {0x1F99E, 0x1F99E, 0x1F99E,
                                 kLeftSpeechBubbleCharacter};
 
-  icu_63::UnicodeString flags_unicode_string = icu_63::UnicodeString::fromUTF32(
+  icu::UnicodeString flags_unicode_string = icu::UnicodeString::fromUTF32(
       flags_codepoints, base::size(flags_codepoints));
   UTF16RagelIterator ragel_iterator(
       reinterpret_cast<const UChar*>(flags_unicode_string.getBuffer()),

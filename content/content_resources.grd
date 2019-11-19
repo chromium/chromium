@@ -5,6 +5,10 @@
     <output filename="grit/content_resources.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
+    <output filename="grit/content_resources_map.h"
+        type="resource_map_header" />
+    <output filename="grit/content_resources_map.cc"
+        type="resource_map_source" />
     <output filename="content_resources.pak" type="data_package" />
   </outputs>
   <translations />
@@ -26,9 +30,12 @@
       <include name="IDR_INDEXED_DB_INTERNALS_CSS" file="browser/resources/indexed_db/indexeddb_internals.css" flattenhtml="true" compress="gzip" type="BINDATA" />
       <include name="IDR_MEDIA_INTERNALS_HTML" file="browser/resources/media/media_internals.html" flattenhtml="true" allowexternalscript="true" compress="gzip" type="BINDATA" />
       <include name="IDR_MEDIA_INTERNALS_JS" file="browser/resources/media/media_internals.js" flattenhtml="true" compress="gzip" type="BINDATA" />
-      <include name="IDR_NETWORK_ERROR_LISTING_HTML" file="browser/resources/net/network_errors_listing.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_NETWORK_ERROR_LISTING_JS" file="browser/resources/net/network_errors_listing.js" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_NETWORK_ERROR_LISTING_CSS" file="browser/resources/net/network_errors_listing.css" flattenhtml="true" type="BINDATA" />
+      <include name="IDR_MEDIA_INTERNALS_JS_DISABLED" file="browser/resources/media/media_internals_disabled.js" flattenhtml="true" compress="gzip" type="BINDATA" />
+      <include name="IDR_NETWORK_ERROR_LISTING_HTML" file="browser/resources/net/network_errors_listing.html" flattenhtml="true" allowexternalscript="true" compress="gzip" type="BINDATA" />
+      <include name="IDR_NETWORK_ERROR_LISTING_JS" file="browser/resources/net/network_errors_listing.js" flattenhtml="true" type="BINDATA" compress="gzip" />
+      <include name="IDR_NETWORK_ERROR_LISTING_CSS" file="browser/resources/net/network_errors_listing.css" flattenhtml="true" type="BINDATA" compress="gzip" />
+      <include name="IDR_ORIGIN_MOJO_HTML" file="${root_gen_dir}/url/mojom/origin.mojom.html" use_base_dir="false" type="BINDATA" compress="gzip" />
+      <include name="IDR_ORIGIN_MOJO_JS" file="${root_gen_dir}/url/mojom/origin.mojom-lite.js" use_base_dir="false" type="BINDATA" compress="gzip" />
       <include name="IDR_PROCESS_INTERNALS_HTML" file="browser/resources/process/process_internals.html" flattenhtml="true" allowexternalscript="true" compress="gzip" type="BINDATA" />
       <include name="IDR_PROCESS_INTERNALS_MOJO_JS" file="${root_gen_dir}/content/browser/process_internals/process_internals.mojom-lite.js" use_base_dir="false" type="BINDATA" compress="gzip" />
       <include name="IDR_PROCESS_INTERNALS_CSS" file="browser/resources/process/process_internals.css" flattenhtml="true" compress="gzip" type="BINDATA" />
@@ -36,9 +43,12 @@
       <include name="IDR_SERVICE_WORKER_INTERNALS_HTML" file="browser/resources/service_worker/serviceworker_internals.html" flattenhtml="true" allowexternalscript="true" compress="gzip" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_INTERNALS_JS" file="browser/resources/service_worker/serviceworker_internals.js" flattenhtml="true" compress="gzip" type="BINDATA" />
       <include name="IDR_SERVICE_WORKER_INTERNALS_CSS" file="browser/resources/service_worker/serviceworker_internals.css" flattenhtml="true" compress="gzip" type="BINDATA" />
+      <include name="IDR_UNGUESSABLE_TOKEN_MOJO_HTML" file="${root_gen_dir}/mojo/public/mojom/base/unguessable_token.mojom.html" use_base_dir="false" type="BINDATA" compress="gzip" />
+      <include name="IDR_UNGUESSABLE_TOKEN_MOJO_JS" file="${root_gen_dir}/mojo/public/mojom/base/unguessable_token.mojom-lite.js" use_base_dir="false" type="BINDATA" compress="gzip" />
+      <include name="IDR_URL_MOJO_HTML" file="${root_gen_dir}/url/mojom/url.mojom.html" use_base_dir="false" type="BINDATA" compress="gzip" />
       <include name="IDR_URL_MOJO_JS" file="${root_gen_dir}/url/mojom/url.mojom-lite.js" use_base_dir="false" type="BINDATA" compress="gzip" />
-      <include name="IDR_WEBRTC_INTERNALS_HTML" file="browser/resources/media/webrtc_internals.html" flattenhtml="true" allowexternalscript="true" compress="gzip" type="BINDATA" />
-      <include name="IDR_WEBRTC_INTERNALS_JS" file="browser/resources/media/webrtc_internals.js" flattenhtml="true" compress="gzip" type="BINDATA" />
+      <include name="IDR_VULKAN_INFO_MOJO_JS" file="${root_gen_dir}/gpu/ipc/common/vulkan_info.mojom-lite.js" use_base_dir="false" type="BINDATA" compress="gzip" />
+      <include name="IDR_VULKAN_TYPES_MOJO_JS" file="${root_gen_dir}/gpu/ipc/common/vulkan_types.mojom-lite.js" use_base_dir="false" type="BINDATA" compress="gzip" />
     </includes>
   </release>
 </grit>

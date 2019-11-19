@@ -1,0 +1,38 @@
+# Copyright (c) 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# WPT codebase for running webplatform tests
+group("wpt_tests_isolate") {
+  testonly = true
+  data = [
+    "//testing/scripts/common.py",
+    "//testing/scripts/run_wpt_tests.py",
+    "//testing/xvfb.py",
+
+    # Include blinkpy tools for setting up expectations.
+    "//third_party/blink/tools/build_wpt_metadata.py",
+    "//third_party/blink/tools/update_wpt_output.py",
+    "//third_party/blink/tools/blinkpy/",
+
+    # The web_tests/external directory contains all WPT components including
+    # the test runner codebase, manifest file, and the tests themselves.
+    "//third_party/blink/web_tests/external/",
+
+    # Include a single file from wpt_internal only to initialize that directory.
+    # We don't need to run these tests but still need to create a MANIFEST here.
+    # See crbug.com/1018829 for more details.
+    "//third_party/blink/web_tests/wpt_internal/README",
+
+    # Include the various Test Expectations files.
+    "//third_party/blink/web_tests/ASANExpectations",
+    "//third_party/blink/web_tests/LeakExpectations",
+    "//third_party/blink/web_tests/MSANExpectations",
+    "//third_party/blink/web_tests/NeverFixTests",
+    "//third_party/blink/web_tests/SlowTests",
+    "//third_party/blink/web_tests/StaleTestExpectations",
+    "//third_party/blink/web_tests/TestExpectations",
+    "//third_party/blink/web_tests/VirtualTestSuites",
+    "//third_party/blink/web_tests/WPTOverrideExpectations",
+  ]
+}

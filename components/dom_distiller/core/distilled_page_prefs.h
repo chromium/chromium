@@ -21,17 +21,31 @@ namespace dom_distiller {
 class DistilledPagePrefs {
  public:
   // Possible font families for distilled page.
+  // These must be kept in sync with the resource strings in
+  // chrome/android/java/res/values/arrays.xml
+  // Values should start from 0 and can't have gaps.
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.dom_distiller.core
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: FontFamily
+  // GENERATED_JAVA_PREFIX_TO_STRIP: FONT_FAMILY_
   enum FontFamily {
-#define DEFINE_FONT_FAMILY(name, value) name = value,
-#include "components/dom_distiller/core/font_family_list.h"
-#undef DEFINE_FONT_FAMILY
+    FONT_FAMILY_SANS_SERIF = 0,
+    FONT_FAMILY_SERIF = 1,
+    FONT_FAMILY_MONOSPACE = 2,
+    FONT_FAMILY_NUM_ENTRIES = 3
   };
 
   // Possible themes for distilled page.
+  // Values should start from 0 and can't have gaps.
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.dom_distiller.core
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: Theme
+  // GENERATED_JAVA_PREFIX_TO_STRIP: THEME_
   enum Theme {
-#define DEFINE_THEME(name, value) name = value,
-#include "components/dom_distiller/core/theme_list.h"
-#undef DEFINE_THEME
+    THEME_LIGHT = 0,
+    THEME_DARK = 1,
+    THEME_SEPIA = 2,
+    THEME_NUM_ENTRIES = 3
   };
 
   class Observer {
@@ -72,11 +86,10 @@ class DistilledPagePrefs {
   // Notifies all Observers of new font scaling.
   void NotifyOnChangeFontScaling(float scaling);
 
-
   PrefService* pref_service_;
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::WeakPtrFactory<DistilledPagePrefs> weak_ptr_factory_;
+  base::WeakPtrFactory<DistilledPagePrefs> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DistilledPagePrefs);
 };

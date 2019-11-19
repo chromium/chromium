@@ -41,7 +41,7 @@
         android:id="@+id/menu_item_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/translate_overflow_menu_divider_color"
+        android:background="@color/divider_bg_color"
         android:visibility="gone" />
 
 </LinearLayout>

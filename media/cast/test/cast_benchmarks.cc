@@ -299,10 +299,9 @@ class RunOneBenchmark {
     task_runner_->Sleep(duration);
   }
 
-  void BasicPlayerGotVideoFrame(
-      const scoped_refptr<media::VideoFrame>& video_frame,
-      const base::TimeTicks& render_time,
-      bool continuous) {
+  void BasicPlayerGotVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
+                                base::TimeTicks render_time,
+                                bool continuous) {
     video_ticks_.push_back(
         std::make_pair(testing_clock_receiver_.NowTicks(), render_time));
     cast_receiver_->RequestDecodedVideoFrame(base::Bind(
@@ -310,7 +309,7 @@ class RunOneBenchmark {
   }
 
   void BasicPlayerGotAudioFrame(std::unique_ptr<AudioBus> audio_bus,
-                                const base::TimeTicks& playout_time,
+                                base::TimeTicks playout_time,
                                 bool is_continuous) {
     audio_ticks_.push_back(
         std::make_pair(testing_clock_receiver_.NowTicks(), playout_time));

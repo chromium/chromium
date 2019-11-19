@@ -36,8 +36,6 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HTMLOptGroupElement* Create(Document&);
-
   explicit HTMLOptGroupElement(Document&);
 
   bool IsDisabledFormControl() const override;

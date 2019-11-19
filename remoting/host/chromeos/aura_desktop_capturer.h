@@ -48,7 +48,7 @@ class AuraDesktopCapturer : public webrtc::DesktopCapturer {
   // The root window of the Aura Shell.
   aura::Window* desktop_window_;
 
-  base::WeakPtrFactory<AuraDesktopCapturer> weak_factory_;
+  base::WeakPtrFactory<AuraDesktopCapturer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AuraDesktopCapturer);
 };

@@ -331,10 +331,15 @@ typedef NSString* VNBarcodeSymbology NS_STRING_ENUM;
 
 // VNBarcodeObservation forward declarations.
 @interface VNRectangleObservation : VNDetectedObjectObservation
+@property(readonly, nonatomic, assign) CGPoint topLeft;
+@property(readonly, nonatomic, assign) CGPoint topRight;
+@property(readonly, nonatomic, assign) CGPoint bottomLeft;
+@property(readonly, nonatomic, assign) CGPoint bottomRight;
 @end
 
 @interface VNBarcodeObservation : VNRectangleObservation
 @property(readonly, nonatomic, copy) NSString* payloadStringValue;
+@property(readonly, nonatomic, copy) VNBarcodeSymbology symbology;
 @end
 
 #endif  // MAC_OS_X_VERSION_10_13
@@ -358,7 +363,24 @@ typedef NSString* NSAppearanceName;
 
 BASE_EXPORT extern NSAppearanceName const NSAppearanceNameDarkAqua;
 
-#endif
+#endif  // MAC_OS_X_VERSION_10_14
+
+#if !defined(MAC_OS_X_VERSION_10_15) || \
+    MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_15
+
+@interface NSScreen (ForwardDeclare)
+@property(readonly)
+    CGFloat maximumPotentialExtendedDynamicRangeColorComponentValue;
+@end
+
+@interface SFUniversalLink : NSObject
+- (instancetype)initWithWebpageURL:(NSURL*)url;
+@property(readonly) NSURL* webpageURL;
+@property(readonly) NSURL* applicationURL;
+@property(getter=isEnabled) BOOL enabled;
+@end
+
+#endif  // MAC_OS_X_VERSION_10_15
 
 // ----------------------------------------------------------------------------
 // The symbol for kCWSSIDDidChangeNotification is available in the
@@ -372,6 +394,8 @@ BASE_EXPORT extern "C" NSString* const kCWSSIDDidChangeNotification;
 // this preprocessor block can be removed.
 #if !defined(MAC_OS_X_VERSION_10_13)
 typedef NSString* NSTextCheckingOptionKey;
+typedef NSString* NSAccessibilityRole;
+typedef NSString* NSAccessibilitySubrole;
 #endif
 
 #endif  // BASE_MAC_SDK_FORWARD_DECLARATIONS_H_

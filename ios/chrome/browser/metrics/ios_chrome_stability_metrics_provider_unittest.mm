@@ -9,6 +9,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
+#include "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -32,6 +33,9 @@ class IOSChromeStabilityMetricsProviderTest : public PlatformTest {
 
 TEST_F(IOSChromeStabilityMetricsProviderTest,
        DidStartLoadingEventShouldIncrementPageLoadCount) {
+  if (base::FeatureList::IsEnabled(
+          web::features::kLogLoadStartedInDidStartNavigation))
+    return;
   IOSChromeStabilityMetricsProvider provider(&prefs_);
 
   // A load should not increment metrics if recording is disabled.
@@ -59,6 +63,48 @@ TEST_F(IOSChromeStabilityMetricsProviderTest,
   EXPECT_EQ(1, system_profile.stability().page_load_count());
   histogram_tester_.ExpectTotalCount(
       IOSChromeStabilityMetricsProvider::kPageLoadCountLoadingStartedMetric, 1);
+}
+
+TEST_F(IOSChromeStabilityMetricsProviderTest,
+       DidStartNavigationEventShouldIncrementPageLoadCount) {
+  if (!base::FeatureList::IsEnabled(
+          web::features::kLogLoadStartedInDidStartNavigation))
+    return;
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL("https://www.site.com"));
+  context.SetIsSameDocument(false);
+  IOSChromeStabilityMetricsProvider provider(&prefs_);
+
+  // A navigation should not increment metrics if recording is disabled.
+  provider.WebStateDidStartNavigation(kNullWebState, &context);
+
+  metrics::SystemProfileProto system_profile;
+
+  // Call ProvideStabilityMetrics to check that it will force pending tasks to
+  // be executed immediately.
+  provider.ProvideStabilityMetrics(&system_profile);
+
+  EXPECT_EQ(0, system_profile.stability().page_load_count());
+  EXPECT_TRUE(histogram_tester_
+                  .GetTotalCountsForPrefix(
+                      IOSChromeStabilityMetricsProvider::kPageLoadCountMetric)
+                  .empty());
+
+  // A navigation should increment metrics if recording is enabled.
+  provider.OnRecordingEnabled();
+  provider.WebStateDidStartNavigation(kNullWebState, &context);
+
+  system_profile.Clear();
+  provider.ProvideStabilityMetrics(&system_profile);
+
+  EXPECT_EQ(1, system_profile.stability().page_load_count());
+  histogram_tester_.ExpectUniqueSample(
+      IOSChromeStabilityMetricsProvider::kPageLoadCountMetric,
+      static_cast<base::HistogramBase::Sample>(
+          IOSChromeStabilityMetricsProvider::PageLoadCountNavigationType::
+              PAGE_LOAD_NAVIGATION),
+      1);
 }
 
 TEST_F(IOSChromeStabilityMetricsProviderTest,
@@ -141,9 +187,11 @@ TEST_F(IOSChromeStabilityMetricsProviderTest, WebNavigationShouldLogPageLoad) {
 
   metrics::SystemProfileProto system_profile;
   provider.ProvideStabilityMetrics(&system_profile);
-  // TODO(crbug.com/786547): change to 1 once page load count cuts over to be
-  // based on DidStartNavigation.
-  EXPECT_EQ(0, system_profile.stability().page_load_count());
+  int page_load_count = base::FeatureList::IsEnabled(
+                            web::features::kLogLoadStartedInDidStartNavigation)
+                            ? 1
+                            : 0;
+  EXPECT_EQ(page_load_count, system_profile.stability().page_load_count());
 }
 
 TEST_F(IOSChromeStabilityMetricsProviderTest,

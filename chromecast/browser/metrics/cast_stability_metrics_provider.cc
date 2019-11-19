@@ -10,8 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromecast/base/pref_names.h"
-#include "chromecast/browser/cast_browser_process.h"
-#include "chromecast/browser/metrics/cast_metrics_service_client.h"
+#include "chromecast/metrics/cast_metrics_service_client.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -37,13 +36,6 @@ enum RendererType {
   RENDERER_TYPE_COUNT
 };
 
-void IncrementPrefValue(const char* path) {
-  PrefService* pref = shell::CastBrowserProcess::GetInstance()->pref_service();
-  DCHECK(pref);
-  int value = pref->GetInteger(path);
-  pref->SetInteger(path, value + 1);
-}
-
 // Converts an exit code into something that can be inserted into our
 // histograms (which expect non-negative numbers less than MAX_INT).
 int MapCrashExitCodeForHistogram(int exit_code) {
@@ -61,8 +53,10 @@ void CastStabilityMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 CastStabilityMetricsProvider::CastStabilityMetricsProvider(
-    ::metrics::MetricsService* metrics_service)
-    : metrics_service_(metrics_service) {
+    ::metrics::MetricsService* metrics_service,
+    PrefService* pref_service)
+    : metrics_service_(metrics_service), pref_service_(pref_service) {
+  DCHECK(pref_service_);
   BrowserChildProcessObserver::Add(this);
 }
 
@@ -85,32 +79,32 @@ void CastStabilityMetricsProvider::OnRecordingDisabled() {
 
 void CastStabilityMetricsProvider::ProvideStabilityMetrics(
     ::metrics::SystemProfileProto* system_profile_proto) {
-  PrefService* pref = shell::CastBrowserProcess::GetInstance()->pref_service();
   ::metrics::SystemProfileProto_Stability* stability_proto =
       system_profile_proto->mutable_stability();
 
-  int count = pref->GetInteger(prefs::kStabilityChildProcessCrashCount);
+  int count =
+      pref_service_->GetInteger(prefs::kStabilityChildProcessCrashCount);
   if (count) {
     stability_proto->set_child_process_crash_count(count);
-    pref->SetInteger(prefs::kStabilityChildProcessCrashCount, 0);
+    pref_service_->SetInteger(prefs::kStabilityChildProcessCrashCount, 0);
   }
 
-  count = pref->GetInteger(prefs::kStabilityRendererCrashCount);
+  count = pref_service_->GetInteger(prefs::kStabilityRendererCrashCount);
   if (count) {
     stability_proto->set_renderer_crash_count(count);
-    pref->SetInteger(prefs::kStabilityRendererCrashCount, 0);
+    pref_service_->SetInteger(prefs::kStabilityRendererCrashCount, 0);
   }
 
-  count = pref->GetInteger(prefs::kStabilityRendererFailedLaunchCount);
+  count = pref_service_->GetInteger(prefs::kStabilityRendererFailedLaunchCount);
   if (count) {
     stability_proto->set_renderer_failed_launch_count(count);
-    pref->SetInteger(prefs::kStabilityRendererFailedLaunchCount, 0);
+    pref_service_->SetInteger(prefs::kStabilityRendererFailedLaunchCount, 0);
   }
 
-  count = pref->GetInteger(prefs::kStabilityRendererHangCount);
+  count = pref_service_->GetInteger(prefs::kStabilityRendererHangCount);
   if (count) {
     stability_proto->set_renderer_hang_count(count);
-    pref->SetInteger(prefs::kStabilityRendererHangCount, 0);
+    pref_service_->SetInteger(prefs::kStabilityRendererHangCount, 0);
   }
 }
 
@@ -186,6 +180,11 @@ void CastStabilityMetricsProvider::LogRendererCrash(
 
 void CastStabilityMetricsProvider::LogRendererHang() {
   IncrementPrefValue(prefs::kStabilityRendererHangCount);
+}
+
+void CastStabilityMetricsProvider::IncrementPrefValue(const char* path) {
+  int value = pref_service_->GetInteger(path);
+  pref_service_->SetInteger(path, value + 1);
 }
 
 }  // namespace metrics

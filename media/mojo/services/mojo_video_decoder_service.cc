@@ -89,8 +89,7 @@ MojoVideoDecoderService::MojoVideoDecoderService(
     MojoMediaClient* mojo_media_client,
     MojoCdmServiceContext* mojo_cdm_service_context)
     : mojo_media_client_(mojo_media_client),
-      mojo_cdm_service_context_(mojo_cdm_service_context),
-      weak_factory_(this) {
+      mojo_cdm_service_context_(mojo_cdm_service_context) {
   DVLOG(1) << __func__;
   DCHECK(mojo_media_client_);
   DCHECK(mojo_cdm_service_context_);
@@ -119,11 +118,13 @@ void MojoVideoDecoderService::GetSupportedConfigs(
 }
 
 void MojoVideoDecoderService::Construct(
-    mojom::VideoDecoderClientAssociatedPtrInfo client,
-    mojom::MediaLogAssociatedPtrInfo media_log,
-    mojom::VideoFrameHandleReleaserRequest video_frame_handle_releaser,
+    mojo::PendingAssociatedRemote<mojom::VideoDecoderClient> client,
+    mojo::PendingAssociatedRemote<mojom::MediaLog> media_log,
+    mojo::PendingReceiver<mojom::VideoFrameHandleReleaser>
+        video_frame_handle_releaser_receiver,
     mojo::ScopedDataPipeConsumerHandle decoder_buffer_pipe,
     mojom::CommandBufferIdPtr command_buffer_id,
+    VideoDecoderImplementation implementation,
     const gfx::ColorSpace& target_color_space) {
   DVLOG(1) << __func__;
   TRACE_EVENT0("media", "MojoVideoDecoderService::Construct");
@@ -141,15 +142,16 @@ void MojoVideoDecoderService::Construct(
   media_log_ =
       std::make_unique<MojoMediaLog>(std::move(media_log), task_runner);
 
-  video_frame_handle_releaser_ =
-      mojo::MakeStrongBinding(std::make_unique<VideoFrameHandleReleaserImpl>(),
-                              std::move(video_frame_handle_releaser));
+  video_frame_handle_releaser_ = mojo::MakeSelfOwnedReceiver(
+      std::make_unique<VideoFrameHandleReleaserImpl>(),
+      std::move(video_frame_handle_releaser_receiver));
 
   mojo_decoder_buffer_reader_.reset(
       new MojoDecoderBufferReader(std::move(decoder_buffer_pipe)));
 
   decoder_ = mojo_media_client_->CreateVideoDecoder(
       task_runner, media_log_.get(), std::move(command_buffer_id),
+      implementation,
       base::BindRepeating(
           &MojoVideoDecoderService::OnDecoderRequestedOverlayInfo, weak_this_),
       target_color_space);
@@ -174,18 +176,23 @@ void MojoVideoDecoderService::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  // Get CdmContext from cdm_id if the stream is encrypted.
+  // Get CdmContext from |cdm_id|, which could be null.
   CdmContext* cdm_context = nullptr;
   if (cdm_id != CdmContext::kInvalidCdmId) {
-    cdm_context_ref_ = mojo_cdm_service_context_->GetCdmContextRef(cdm_id);
-    if (!cdm_context_ref_) {
-      DVLOG(1) << "CdmContextRef not found for CDM id: " << cdm_id;
-      OnDecoderInitialized(false);
-      return;
+    auto cdm_context_ref = mojo_cdm_service_context_->GetCdmContextRef(cdm_id);
+    if (cdm_context_ref) {
+      // |cdm_context_ref_| must be kept as long as |cdm_context| is used by the
+      // |decoder_|.
+      cdm_context_ref_ = std::move(cdm_context_ref);
+      cdm_context = cdm_context_ref_->GetCdmContext();
+      DCHECK(cdm_context);
     }
+  }
 
-    cdm_context = cdm_context_ref_->GetCdmContext();
-    DCHECK(cdm_context);
+  if (config.is_encrypted() && !cdm_context) {
+    DVLOG(1) << "CdmContext for " << cdm_id << " not found for encrypted video";
+    OnDecoderInitialized(false);
+    return;
   }
 
   using Self = MojoVideoDecoderService;
@@ -311,9 +318,8 @@ void MojoVideoDecoderService::OnDecoderReset() {
   std::move(reset_cb_).Run();
 }
 
-void MojoVideoDecoderService::OnDecoderOutput(
-    const scoped_refptr<VideoFrame>& frame) {
-  DVLOG(3) << __func__;
+void MojoVideoDecoderService::OnDecoderOutput(scoped_refptr<VideoFrame> frame) {
+  DVLOG(3) << __func__ << " pts=" << frame->timestamp().InMilliseconds();
   DCHECK(client_);
   DCHECK(decoder_);
   TRACE_EVENT1("media", "MojoVideoDecoderService::OnDecoderOutput",
@@ -334,7 +340,8 @@ void MojoVideoDecoderService::OnDecoderOutput(
     release_token = releaser->RegisterVideoFrame(frame);
   }
 
-  client_->OnVideoFrameDecoded(frame, decoder_->CanReadWithoutStalling(),
+  client_->OnVideoFrameDecoded(std::move(frame),
+                               decoder_->CanReadWithoutStalling(),
                                std::move(release_token));
 }
 

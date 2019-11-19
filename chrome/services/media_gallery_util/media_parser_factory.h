@@ -10,12 +10,13 @@
 #include <memory>
 
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
-#include "services/service_manager/public/cpp/service_context_ref.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 class MediaParserFactory : public chrome::mojom::MediaParserFactory {
  public:
   explicit MediaParserFactory(
-      std::unique_ptr<service_manager::ServiceContextRef> service_ref);
+      mojo::PendingReceiver<chrome::mojom::MediaParserFactory> receiver);
   ~MediaParserFactory() override;
 
  private:
@@ -24,7 +25,7 @@ class MediaParserFactory : public chrome::mojom::MediaParserFactory {
                          int64_t ffmpeg_cpu_flags,
                          CreateMediaParserCallback callback) override;
 
-  const std::unique_ptr<service_manager::ServiceContextRef> service_ref_;
+  mojo::Receiver<chrome::mojom::MediaParserFactory> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaParserFactory);
 };

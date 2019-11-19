@@ -17,17 +17,19 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace device {
 
@@ -252,7 +254,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // of, by decoding the bluetooth class information for Classic devices or
   // by decoding the device's appearance for LE devices. For example,
   // Microsoft Universal Foldable Keyboard only advertises the appearance.
-  BluetoothDeviceType GetDeviceType() const;
+  virtual BluetoothDeviceType GetDeviceType() const;
 
   // Indicates whether the device is known to support pairing based on its
   // device class and address.
@@ -536,7 +538,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // Returns the |address| in the canonical format: XX:XX:XX:XX:XX:XX, where
   // each 'X' is a hex digit.  If the input |address| is invalid, returns an
   // empty string.
-  static std::string CanonicalizeAddress(const std::string& address);
+  static std::string CanonicalizeAddress(base::StringPiece address);
+
+  // Parses a Bluetooth address to an output buffer. The output buffer must be
+  // exactly 6 bytes in size. The address can be formatted in one of three ways:
+  //
+  //   1A:2B:3C:4D:5E:6F
+  //   1A-2B-3C-4D-5E-6F
+  //   1A2B3C4D5E6F
+  static bool ParseAddress(base::StringPiece input, base::span<uint8_t> output);
 
   // Update the last time this device was seen.
   void UpdateTimestamp();
@@ -579,6 +589,23 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // Aborts all the previous prepare writes in a reliable write session.
   virtual void AbortWrite(const base::Closure& callback,
                           const AbortWriteErrorCallback& error_callback) = 0;
+
+  // Set the remaining battery of the device to show in the UI. This value must
+  // be between 0 and 100, inclusive.
+  // TODO(https://crbug.com/973237): Battery percentage is populated by
+  // ash::GattBatteryPoller and used only by Chrome OS. In the future, when
+  // there is a unified Mojo service, this logic will be moved to
+  // BluetoothDeviceInfo.
+  void SetBatteryPercentage(base::Optional<uint8_t> battery_percentage);
+
+  // Returns the remaining battery for the device.
+  // TODO(https://crbug.com/973237): Battery percentage is populated by
+  // ash::GattBatteryPoller and used only by Chrome OS. In the future, when
+  // there is a unified Mojo service, this logic will be moved to
+  // BluetoothDeviceInfo.
+  const base::Optional<uint8_t>& battery_percentage() const {
+    return battery_percentage_;
+  }
 #endif
 
  protected:
@@ -713,6 +740,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // Returns a localized string containing the device's bluetooth address and
   // a device type for display when |name_| is empty.
   base::string16 GetAddressWithLocalizedDeviceTypeName() const;
+
+#if defined(OS_CHROMEOS)
+  // Remaining battery level of the device.
+  // TODO(https://crbug.com/973237): This field is different from others because
+  // it is not filled by the platform. In the future, when there is a unified
+  // Mojo service, this field will be moved to BluetoothDeviceInfo.
+  base::Optional<uint8_t> battery_percentage_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothDevice);
 };

@@ -12,8 +12,6 @@ CHROME_ARGS = [
     '--disable-background-networking',
     '--disable-default-apps',
     '--no-proxy-server',
-    # TODO(droger): Remove once crbug.com/354743 is fixed.
-    '--safebrowsing-disable-auto-update',
 
     # Disables actions that chrome performs only on first run or each launches,
     # which can interfere with page load performance, or even block its

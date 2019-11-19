@@ -64,15 +64,15 @@ platform.
 
 | SensorType                        | Android                   | Linux                                 | macOS                                 | Windows                                   |
 | --------------------------------- | ------------------------- | ------------------------------------- | ------------------------------------- | ----------------------------------------- |
-| AMBIENT_LIGHT                     | TYPE_LIGHT                | in_illuminance                        | AppleLMUController                    | SENSOR_TYPE_AMBIENT_LIGHT                 |
+| AMBIENT_LIGHT                     | TYPE_LIGHT                | in_illuminance                        | AppleLMUController                    | Yes                                       |
 | PROXIMITY                         |                           |                                       |                                       |                                           |
-| ACCELEROMETER                     | TYPE_ACCELEROMETER        | in_accel                              | SMCMotionSensor                       | SENSOR_TYPE_ACCELEROMETER_3D              |
-| LINEAR_ACCELEROMETER              | TYPE_LINEAR_ACCELEROMETER | ACCELEROMETER (*)                     |                                       | ACCELEROMETER (*)                         |
-| GYROSCOPE                         | TYPE_GYROSCOPE            | in_anglvel                            |                                       | SENSOR_TYPE_GYROMETER_3D                  |
-| MAGNETOMETER                      | TYPE_MAGNETIC_FIELD       | in_magn                               |                                       | SENSOR_TYPE_COMPASS_3D                    |
+| ACCELEROMETER                     | TYPE_ACCELEROMETER        | in_accel                              | SMCMotionSensor                       | Yes                                       |
+| LINEAR_ACCELEROMETER              | See below                 | ACCELEROMETER (*)                     |                                       | ACCELEROMETER (*)                         |
+| GYROSCOPE                         | TYPE_GYROSCOPE            | in_anglvel                            |                                       | Yes                                       |
+| MAGNETOMETER                      | TYPE_MAGNETIC_FIELD       | in_magn                               |                                       | Yes                                       |
 | PRESSURE                          |                           |                                       |                                       |                                           |
-| ABSOLUTE_ORIENTATION_EULER_ANGLES | See below                 | ACCELEROMETER and MAGNETOMETER (*)    |                                       | SENSOR_TYPE_INCLINOMETER_3D               |
-| ABSOLUTE_ORIENTATION_QUATERNION   | See below                 | ABSOLUTE_ORIENTATION_EULER_ANGLES (*) |                                       | SENSOR_TYPE_AGGREGATED_DEVICE_ORIENTATION |
+| ABSOLUTE_ORIENTATION_EULER_ANGLES | See below                 | ACCELEROMETER and MAGNETOMETER (*)    |                                       | Yes                                       |
+| ABSOLUTE_ORIENTATION_QUATERNION   | See below                 | ABSOLUTE_ORIENTATION_EULER_ANGLES (*) |                                       | Yes                                       |
 | RELATIVE_ORIENTATION_EULER_ANGLES | See below                 | ACCELEROMETER and GYROSCOPE (*)       | ACCELEROMETER (*)                     |                                           |
 |                                   |                           | or ACCELEROMETER (*)                  |                                       |                                           |
 | RELATIVE_ORIENTATION_QUATERNION   | TYPE_GAME_ROTATION_VECTOR | RELATIVE_ORIENTATION_EULER_ANGLES (*) | RELATIVE_ORIENTATION_EULER_ANGLES (*) |                                           |
@@ -86,6 +86,10 @@ Sensors are implemented by passing through values provided by the
 class. The TYPE_* values in the below descriptions correspond to the integer
 constants from the android.hardware.Sensor used to provide data for a
 SensorType.
+
+For LINEAR_ACCELEROMETER, the following sensor fallback is used:
+1. Use TYPE_LINEAR_ACCELERATION directly
+2. ACCELEROMETER, with a low-pass filter to isolate the effect of gravity
 
 For ABSOLUTE_ORIENTATION_EULER_ANGLES, the following sensor fallback is used:
 1. ABSOLUTE_ORIENTATION_QUATERNION (if it uses TYPE_ROTATION_VECTOR
@@ -128,13 +132,7 @@ value that can be read from the RELATIVE_ORIENTATION_EULER_ANGLES.
 
 ### Windows
 
-Sensors are implemented by passing through values provided by the
-[Sensor API](https://msdn.microsoft.com/en-us/library/windows/desktop/dd318953(v=vs.85).aspx).
-The values in the "Windows" column of the table above correspond to the names of
-the sensor type GUIDs used to provide data for a SensorType. The
-LINEAR_ACCELEROMETER sensor type is provided by implementing a low-pass-filter
-over the values returned by the ACCELEROMETER in order to remove the
-contribution of the gravitational force.
+Please refer to this [document](windows/README.md).
 
 ## Testing
 
@@ -145,7 +143,6 @@ The sensors unit tests file for Android is
 `android/junit/src/org/chromium/device/sensors/PlatformSensorAndProviderTest.java`.
 
 Sensors browser tests are located in `content/test/data/generic_sensor`.
-
 
 ## Design Documents
 

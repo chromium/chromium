@@ -101,8 +101,8 @@ void ForwardersManager::WaitForEventsOnInternalThread() {
     return;
 
   base::ScopedClosureRunner wait_for_events_soon(
-      base::Bind(&ForwardersManager::WaitForEventsOnInternalThreadSoon,
-                 base::Unretained(this)));
+      base::BindOnce(&ForwardersManager::WaitForEventsOnInternalThreadSoon,
+                     base::Unretained(this)));
 
   if (FD_ISSET(wakeup_notifier_.receiver_fd(), &read_fds)) {
     // Note that the events on FDs other than the wakeup notifier one, if any,

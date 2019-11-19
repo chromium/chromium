@@ -27,6 +27,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_CACHE_H_
 
+#include "base/containers/span.h"
+#include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
@@ -50,8 +52,6 @@ class ShapeCache {
   class SmallStringKey {
     DISALLOW_NEW();
 
-    void HashString();
-
    public:
     static unsigned Capacity() { return kCapacity; }
 
@@ -63,26 +63,26 @@ class ShapeCache {
         : length_(kDeletedValueLength),
           direction_(static_cast<unsigned>(TextDirection::kLtr)) {}
 
-    SmallStringKey(const LChar* characters,
-                   uint16_t length,
-                   TextDirection direction)
-        : length_(length), direction_(static_cast<unsigned>(direction)) {
-      DCHECK(length <= kCapacity);
+    SmallStringKey(base::span<const LChar> characters, TextDirection direction)
+        : length_(static_cast<uint16_t>(characters.size())),
+          direction_(static_cast<unsigned>(direction)) {
+      DCHECK(characters.size() <= kCapacity);
       // Up-convert from LChar to UChar.
-      for (uint16_t i = 0; i < length; ++i) {
+      for (uint16_t i = 0; i < characters.size(); ++i) {
         characters_[i] = characters[i];
       }
 
-      HashString();
+      hash_ = static_cast<unsigned>(base::FastHash(
+          base::as_bytes(base::make_span(characters_, length_))));
     }
 
-    SmallStringKey(const UChar* characters,
-                   uint16_t length,
-                   TextDirection direction)
-        : length_(length), direction_(static_cast<unsigned>(direction)) {
-      DCHECK(length <= kCapacity);
-      memcpy(characters_, characters, length * sizeof(UChar));
-      HashString();
+    SmallStringKey(base::span<const UChar> characters, TextDirection direction)
+        : length_(static_cast<uint16_t>(characters.size())),
+          direction_(static_cast<unsigned>(direction)) {
+      DCHECK(characters.size() <= kCapacity);
+      memcpy(characters_, characters.data(), characters.size_bytes());
+      hash_ = static_cast<unsigned>(base::FastHash(
+          base::as_bytes(base::make_span(characters_, length_))));
     }
 
     const UChar* Characters() const { return characters_; }
@@ -109,7 +109,7 @@ class ShapeCache {
   };
 
  public:
-  ShapeCache() : weak_factory_(this) {
+  ShapeCache() {
     // TODO(cavalcantii): Investigate tradeoffs of reserving space
     // in short_string_map.
   }
@@ -152,10 +152,9 @@ class ShapeCache {
 
  private:
   ShapeCacheEntry* AddSlowCase(const TextRun& run, ShapeCacheEntry entry) {
-    unsigned length = run.length();
     bool is_new_entry;
     ShapeCacheEntry* value;
-    if (length == 1) {
+    if (run.length() == 1) {
       uint32_t key = run[0];
       // All current codepoints in UTF-32 are bewteen 0x0 and 0x10FFFF,
       // as such use bit 31 (zero-based) to indicate direction.
@@ -167,11 +166,9 @@ class ShapeCache {
     } else {
       SmallStringKey small_string_key;
       if (run.Is8Bit()) {
-        small_string_key =
-            SmallStringKey(run.Characters8(), length, run.Direction());
+        small_string_key = SmallStringKey(run.Span8(), run.Direction());
       } else {
-        small_string_key =
-            SmallStringKey(run.Characters16(), length, run.Direction());
+        small_string_key = SmallStringKey(run.Span16(), run.Direction());
       }
 
       SmallStringMap::AddResult add_result =
@@ -236,7 +233,7 @@ class ShapeCache {
   SingleCharMap single_char_map_;
   SmallStringMap short_string_map_;
   unsigned version_ = 0;
-  base::WeakPtrFactory<ShapeCache> weak_factory_;
+  base::WeakPtrFactory<ShapeCache> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ShapeCache);
 };

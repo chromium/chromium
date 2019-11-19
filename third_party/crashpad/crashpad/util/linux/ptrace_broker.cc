@@ -24,6 +24,7 @@
 
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "util/misc/memory_sanitizer.h"
 
 namespace crashpad {
 
@@ -139,9 +140,10 @@ int PtraceBroker::RunImpl() {
           attach_on_stack = true;
         }
 
-        Bool status = kBoolFalse;
+        ExceptionHandlerProtocol::Bool status =
+            ExceptionHandlerProtocol::kBoolFalse;
         if (attach->ResetAttach(request.tid)) {
-          status = kBoolTrue;
+          status = ExceptionHandlerProtocol::kBoolTrue;
           if (!attach_on_stack) {
             ++attach_count_;
           }
@@ -151,21 +153,23 @@ int PtraceBroker::RunImpl() {
           return errno;
         }
 
-        if (status == kBoolFalse) {
-          Errno error = errno;
+        if (status == ExceptionHandlerProtocol::kBoolFalse) {
+          ExceptionHandlerProtocol::Errno error = errno;
           if (!WriteFile(sock_, &error, sizeof(error))) {
             return errno;
           }
         }
 
-        if (attach_on_stack && status == kBoolTrue) {
+        if (attach_on_stack && status == ExceptionHandlerProtocol::kBoolTrue) {
           return RunImpl();
         }
         continue;
       }
 
       case Request::kTypeIs64Bit: {
-        Bool is_64_bit = ptracer_.Is64Bit() ? kBoolTrue : kBoolFalse;
+        ExceptionHandlerProtocol::Bool is_64_bit =
+            ptracer_.Is64Bit() ? ExceptionHandlerProtocol::kBoolTrue
+                               : ExceptionHandlerProtocol::kBoolFalse;
         if (!WriteFile(sock_, &is_64_bit, sizeof(is_64_bit))) {
           return errno;
         }
@@ -175,15 +179,15 @@ int PtraceBroker::RunImpl() {
       case Request::kTypeGetThreadInfo: {
         GetThreadInfoResponse response;
         response.success = ptracer_.GetThreadInfo(request.tid, &response.info)
-                               ? kBoolTrue
-                               : kBoolFalse;
+                               ? ExceptionHandlerProtocol::kBoolTrue
+                               : ExceptionHandlerProtocol::kBoolFalse;
 
         if (!WriteFile(sock_, &response, sizeof(response))) {
           return errno;
         }
 
-        if (response.success == kBoolFalse) {
-          Errno error = errno;
+        if (response.success == ExceptionHandlerProtocol::kBoolFalse) {
+          ExceptionHandlerProtocol::Errno error = errno;
           if (!WriteFile(sock_, &error, sizeof(error))) {
             return errno;
           }
@@ -249,7 +253,7 @@ int PtraceBroker::RunImpl() {
   }
 }
 
-int PtraceBroker::SendError(Errno err) {
+int PtraceBroker::SendError(ExceptionHandlerProtocol::Errno err) {
   return WriteFile(sock_, &err, sizeof(err)) ? 0 : errno;
 }
 
@@ -352,6 +356,10 @@ int PtraceBroker::SendMemory(pid_t pid, VMAddress address, VMSize size) {
   return 0;
 }
 
+#if defined(MEMORY_SANITIZER)
+// MSan doesn't intercept syscall() and doesn't see that buffer is initialized.
+__attribute__((no_sanitize("memory")))
+#endif  // defined(MEMORY_SANITIZER)
 int PtraceBroker::SendDirectory(FileHandle handle) {
   char buffer[4096];
   int rv;

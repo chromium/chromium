@@ -1,1 +1,4 @@
-typemaps = [ "//services/viz/privileged/cpp/context_lost_reason.typemap" ]
+typemaps = [
+  "//services/viz/privileged/cpp/context_lost_reason.typemap",
+  "//services/viz/privileged/cpp/overlay_strategy.typemap",
+]

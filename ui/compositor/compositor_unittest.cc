@@ -7,7 +7,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -19,9 +19,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/test/context_factories_for_test.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/compositor/test/in_process_context_factory.h"
+#include "ui/compositor/test/test_context_factories.h"
 
 using testing::Mock;
 using testing::_;
@@ -35,21 +35,19 @@ class CompositorTest : public testing::Test {
   ~CompositorTest() override {}
 
   void SetUp() override {
-    ui::ContextFactory* context_factory = nullptr;
-    ui::ContextFactoryPrivate* context_factory_private = nullptr;
-    ui::InitializeContextFactoryForTests(false, &context_factory,
-                                         &context_factory_private);
+    context_factories_ = std::make_unique<TestContextFactories>(false);
 
-    compositor_.reset(new ui::Compositor(
-        context_factory_private->AllocateFrameSinkId(), context_factory,
-        context_factory_private, CreateTaskRunner(),
-        false /* enable_pixel_canvas */));
+    compositor_ = std::make_unique<Compositor>(
+        context_factories_->GetContextFactoryPrivate()->AllocateFrameSinkId(),
+        context_factories_->GetContextFactory(),
+        context_factories_->GetContextFactoryPrivate(), CreateTaskRunner(),
+        false /* enable_pixel_canvas */);
     compositor_->SetAcceleratedWidget(gfx::kNullAcceleratedWidget);
   }
 
   void TearDown() override {
     compositor_.reset();
-    ui::TerminateContextFactoryForTests();
+    context_factories_.reset();
   }
 
   void DestroyCompositor() { compositor_.reset(); }
@@ -57,10 +55,11 @@ class CompositorTest : public testing::Test {
  protected:
   virtual scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner() = 0;
 
-  ui::Compositor* compositor() { return compositor_.get(); }
+  Compositor* compositor() { return compositor_.get(); }
 
  private:
-  std::unique_ptr<ui::Compositor> compositor_;
+  std::unique_ptr<TestContextFactories> context_factories_;
+  std::unique_ptr<Compositor> compositor_;
 
   DISALLOW_COPY_AND_ASSIGN(CompositorTest);
 };
@@ -83,8 +82,7 @@ class CompositorTestWithMockedTime : public CompositorTest {
 class CompositorTestWithMessageLoop : public CompositorTest {
  public:
   CompositorTestWithMessageLoop()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
   ~CompositorTestWithMessageLoop() override = default;
 
  protected:
@@ -96,13 +94,13 @@ class CompositorTestWithMessageLoop : public CompositorTest {
   base::SequencedTaskRunner* task_runner() { return task_runner_.get(); }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 }  // namespace
 
-TEST_F(CompositorTestWithMessageLoop, OutputColorMatrix) {
+TEST_F(CompositorTestWithMessageLoop, ShouldUpdateDisplayProperties) {
   auto root_layer = std::make_unique<Layer>(ui::LAYER_SOLID_COLOR);
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
@@ -112,12 +110,20 @@ TEST_F(CompositorTestWithMessageLoop, OutputColorMatrix) {
                                 allocator.GetCurrentLocalSurfaceIdAllocation());
   DCHECK(compositor()->IsVisible());
 
-  // Set a non-identity color matrix on the compistor display, and expect it to
-  // be set on the context factory.
+  // Set a non-identity color matrix, color space, sdr white level, vsync
+  // timebase and vsync interval, and expect it to be set on the context
+  // factory.
   SkMatrix44 color_matrix(SkMatrix44::kIdentity_Constructor);
   color_matrix.set(1, 1, 0.7f);
   color_matrix.set(2, 2, 0.4f);
+  gfx::ColorSpace color_space(gfx::ColorSpace::CreateDisplayP3D65());
+  float sdr_white_level(1.0f);
+  base::TimeTicks vsync_timebase(base::TimeTicks::Now());
+  base::TimeDelta vsync_interval(base::TimeDelta::FromMilliseconds(250));
   compositor()->SetDisplayColorMatrix(color_matrix);
+  compositor()->SetDisplayColorSpace(color_space, sdr_white_level);
+  compositor()->SetDisplayVSyncParameters(vsync_timebase, vsync_interval);
+
   InProcessContextFactory* context_factory_private =
       static_cast<InProcessContextFactory*>(
           compositor()->context_factory_private());
@@ -125,11 +131,20 @@ TEST_F(CompositorTestWithMessageLoop, OutputColorMatrix) {
   DrawWaiterForTest::WaitForCompositingEnded(compositor());
   EXPECT_EQ(color_matrix,
             context_factory_private->GetOutputColorMatrix(compositor()));
+  EXPECT_EQ(color_space,
+            context_factory_private->GetDisplayColorSpace(compositor()));
+  EXPECT_EQ(sdr_white_level,
+            context_factory_private->GetSDRWhiteLevel(compositor()));
+  EXPECT_EQ(vsync_timebase,
+            context_factory_private->GetDisplayVSyncTimeBase(compositor()));
+  EXPECT_EQ(vsync_interval,
+            context_factory_private->GetDisplayVSyncTimeInterval(compositor()));
 
   // Simulate a lost context by releasing the output surface and setting it on
-  // the compositor again. Expect that the same color matrix will be set again
-  // on the context factory.
-  context_factory_private->ResetOutputColorMatrixToIdentity(compositor());
+  // the compositor again. Expect that the same color matrix, color space, sdr
+  // white level, vsync timebase and vsync interval will be set again on the
+  // context factory.
+  context_factory_private->ResetDisplayOutputParameters(compositor());
   compositor()->SetVisible(false);
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
             compositor()->ReleaseAcceleratedWidget());
@@ -139,6 +154,14 @@ TEST_F(CompositorTestWithMessageLoop, OutputColorMatrix) {
   DrawWaiterForTest::WaitForCompositingEnded(compositor());
   EXPECT_EQ(color_matrix,
             context_factory_private->GetOutputColorMatrix(compositor()));
+  EXPECT_EQ(color_space,
+            context_factory_private->GetDisplayColorSpace(compositor()));
+  EXPECT_EQ(sdr_white_level,
+            context_factory_private->GetSDRWhiteLevel(compositor()));
+  EXPECT_EQ(vsync_timebase,
+            context_factory_private->GetDisplayVSyncTimeBase(compositor()));
+  EXPECT_EQ(vsync_interval,
+            context_factory_private->GetDisplayVSyncTimeInterval(compositor()));
   compositor()->SetRootLayer(nullptr);
 }
 

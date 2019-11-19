@@ -31,14 +31,14 @@ TEST(RecordParsedTest, ParseSingleRecord) {
 
   parser.SkipQuestion();
   record = RecordParsed::CreateFrom(&parser, base::Time());
-  EXPECT_TRUE(record != NULL);
+  EXPECT_TRUE(record != nullptr);
 
   ASSERT_EQ("codereview.chromium.org", record->name());
   ASSERT_EQ(dns_protocol::kTypeCNAME, record->type());
   ASSERT_EQ(dns_protocol::kClassIN, record->klass());
 
   rdata = record->rdata<CnameRecordRdata>();
-  ASSERT_TRUE(rdata != NULL);
+  ASSERT_TRUE(rdata != nullptr);
   ASSERT_EQ(kT1CanonName, rdata->cname());
 
   ASSERT_FALSE(record->rdata<SrvRecordRdata>());

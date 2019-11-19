@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("../../tools/js_modulizer.gni")
 
 js_type_check("closure_compile") {
   deps = [
@@ -20,4 +22,56 @@ js_library("cr_radio_button_behavior") {
   deps = [
     "//third_party/polymer/v1_0/components-chromium/paper-behaviors:paper-ripple-behavior-extracted",
   ]
+}
+
+# Targets for auto-generating and typechecking Polymer 3 JS modules
+
+js_modulizer("modulize") {
+  input_files = [ "cr_radio_button_behavior.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/paper-behaviors:paper-ripple-behavior",
+  ]
+  namespace_rewrites = [ "Polymer.PaperRippleBehavior|PaperRippleBehavior" ]
+}
+
+polymer_modulizer("cr_radio_button") {
+  js_file = "cr_radio_button.js"
+  html_file = "cr_radio_button.html"
+  html_type = "dom-module"
+  auto_imports = [ "ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_behavior.html|CrRadioButtonBehavior" ]
+}
+
+polymer_modulizer("cr_radio_button_style_css") {
+  js_file = "cr_radio_button_style_css.m.js"
+  html_file = "cr_radio_button_style_css.html"
+  html_type = "style-module"
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":cr_radio_button.m",
+    ":cr_radio_button_behavior.m",
+  ]
+}
+
+js_library("cr_radio_button.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button.m.js",
+  ]
+  deps = [
+    ":cr_radio_button_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":cr_radio_button_module" ]
+}
+
+js_library("cr_radio_button_behavior.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_behavior.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/paper-behaviors:paper-ripple-behavior",
+  ]
+  extra_deps = [ ":modulize" ]
 }

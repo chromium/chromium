@@ -29,7 +29,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "crypto/rsa_private_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -108,7 +108,7 @@ class SessionManagerOperationTest : public testing::Test {
   }
 
  protected:
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   policy::DevicePolicyBuilder policy_;
   ObservableFakeSessionManagerClient session_manager_client_;
@@ -136,7 +136,7 @@ TEST_F(SessionManagerOperationTest, LoadNoPolicyNoKey) {
   EXPECT_CALL(*this,
               OnOperationCompleted(
                   &op, DeviceSettingsService::STORE_KEY_UNAVAILABLE));
-  op.Start(&session_manager_client_, owner_key_util_, NULL);
+  op.Start(&session_manager_client_, owner_key_util_, nullptr);
   content::RunAllTasksUntilIdle();
   Mock::VerifyAndClearExpectations(this);
 
@@ -157,7 +157,7 @@ TEST_F(SessionManagerOperationTest, LoadOwnerKey) {
   EXPECT_CALL(*this,
               OnOperationCompleted(
                   &op, DeviceSettingsService::STORE_NO_POLICY));
-  op.Start(&session_manager_client_, owner_key_util_, NULL);
+  op.Start(&session_manager_client_, owner_key_util_, nullptr);
   content::RunAllTasksUntilIdle();
   Mock::VerifyAndClearExpectations(this);
 
@@ -175,7 +175,7 @@ TEST_F(SessionManagerOperationTest, LoadPolicy) {
 
   EXPECT_CALL(*this,
               OnOperationCompleted(&op, DeviceSettingsService::STORE_SUCCESS));
-  op.Start(&session_manager_client_, owner_key_util_, NULL);
+  op.Start(&session_manager_client_, owner_key_util_, nullptr);
   content::RunAllTasksUntilIdle();
   Mock::VerifyAndClearExpectations(this);
 
@@ -199,7 +199,7 @@ TEST_F(SessionManagerOperationTest, LoadImmediately) {
   EXPECT_CALL(*this,
               OnOperationCompleted(
                   &op, DeviceSettingsService::STORE_SUCCESS));
-  op.Start(&session_manager_client_, owner_key_util_, NULL);
+  op.Start(&session_manager_client_, owner_key_util_, nullptr);
   content::RunAllTasksUntilIdle();
   Mock::VerifyAndClearExpectations(this);
 
@@ -253,7 +253,7 @@ TEST_F(SessionManagerOperationTest, RestartLoad) {
       this, &policy_, &session_manager_client_, owner_key_util_, &op));
 
   EXPECT_CALL(*this, OnOperationCompleted(&op, _)).Times(0);
-  op.Start(&session_manager_client_, owner_key_util_, NULL);
+  op.Start(&session_manager_client_, owner_key_util_, nullptr);
   content::RunAllTasksUntilIdle();
   Mock::VerifyAndClearExpectations(this);
 
@@ -279,7 +279,7 @@ TEST_F(SessionManagerOperationTest, StoreSettings) {
   EXPECT_CALL(*this,
               OnOperationCompleted(
                   &op, DeviceSettingsService::STORE_SUCCESS));
-  op.Start(&session_manager_client_, owner_key_util_, NULL);
+  op.Start(&session_manager_client_, owner_key_util_, nullptr);
   content::RunAllTasksUntilIdle();
   Mock::VerifyAndClearExpectations(this);
 

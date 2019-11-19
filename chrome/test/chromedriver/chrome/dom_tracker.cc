@@ -62,8 +62,8 @@ Status DomTracker::OnEvent(DevToolsClient* client,
     }
   } else if (method == "DOM.documentUpdated") {
     node_to_frame_map_.clear();
-    base::DictionaryValue params;
-    client->SendCommand("DOM.getDocument", params);
+    // Calling DOM.getDocument is necessary to receive future DOM update events.
+    client->SendCommandAndIgnoreResponse("DOM.getDocument", {});
   }
   return Status(kOk);
 }

@@ -5,16 +5,18 @@ package org.chromium.ui.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IdRes;
-import android.support.annotation.Px;
-import android.support.annotation.StyleRes;
+import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
+import androidx.annotation.Px;
+import androidx.annotation.StyleRes;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.ui.R;
@@ -68,6 +70,8 @@ public class ChipView extends LinearLayout {
                 R.styleable.ChipView_primaryTextAppearance, R.style.TextAppearance_ChipText);
         mSecondaryTextAppearanceId = a.getResourceId(
                 R.styleable.ChipView_secondaryTextAppearance, R.style.TextAppearance_ChipText);
+        int verticalInset = a.getDimensionPixelSize(R.styleable.ChipView_verticalInset,
+                getResources().getDimensionPixelSize(R.dimen.chip_bg_vertical_inset));
         a.recycle();
 
         mIcon = new ChromeImageView(getContext());
@@ -84,7 +88,7 @@ public class ChipView extends LinearLayout {
 
         // Reset icon and background:
         mRippleBackgroundHelper = new RippleBackgroundHelper(this, chipColorId, rippleColorId,
-                cornerRadius, R.color.chip_stroke_color, R.dimen.chip_border_width);
+                cornerRadius, R.color.chip_stroke_color, R.dimen.chip_border_width, verticalInset);
         setIcon(INVALID_ICON_ID, false);
     }
 
@@ -97,6 +101,18 @@ public class ChipView extends LinearLayout {
     }
 
     /**
+     * Unlike setSelected, setEnabled doesn't properly propagate the new state to its subcomponents.
+     * Enforce this so ColorStateLists used for the text appearance apply as intended.
+     * @param enabled The new enabled state for the chip view and the TextViews owned by it.
+     */
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        getPrimaryTextView().setEnabled(enabled);
+        if (mSecondaryText != null) mSecondaryText.setEnabled(enabled);
+    }
+
+    /**
      * Sets the icon at the start of the chip view.
      * @param icon The resource id pointing to the icon.
      */
@@ -105,11 +121,20 @@ public class ChipView extends LinearLayout {
             mIcon.setVisibility(ViewGroup.GONE);
             return;
         }
+
         mIcon.setVisibility(ViewGroup.VISIBLE);
         mIcon.setImageResource(icon);
-        if (mPrimaryText.getTextColors() != null && tintWithTextColor) {
-            ApiCompatibilityUtils.setImageTintList(mIcon, mPrimaryText.getTextColors());
-        }
+        setTint(tintWithTextColor);
+    }
+
+    /**
+     * Sets the icon at the start of the chip view.
+     * @param drawable Drawable to display.
+     */
+    public void setIcon(Drawable drawable, boolean tintWithTextColor) {
+        mIcon.setVisibility(ViewGroup.VISIBLE);
+        mIcon.setImageDrawable(drawable);
+        setTint(tintWithTextColor);
     }
 
     /**
@@ -130,8 +155,25 @@ public class ChipView extends LinearLayout {
             mSecondaryText =
                     new TextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
             ApiCompatibilityUtils.setTextAppearance(mSecondaryText, mSecondaryTextAppearanceId);
+            // Ensure that basic state changes are aligned with the ChipView. They update
+            // automatically once the view is part of the hierarchy.
+            mSecondaryText.setSelected(isSelected());
+            mSecondaryText.setEnabled(isEnabled());
             addView(mSecondaryText);
         }
         return mSecondaryText;
+    }
+
+    /**
+     * Sets the correct tinting on the Chip's image view.
+     * @param tintWithTextColor If true then the image view will be tinted with the primary text
+     *      color. If not, the tint will be cleared.
+     */
+    private void setTint(boolean tintWithTextColor) {
+        if (mPrimaryText.getTextColors() != null && tintWithTextColor) {
+            ApiCompatibilityUtils.setImageTintList(mIcon, mPrimaryText.getTextColors());
+        } else {
+            ApiCompatibilityUtils.setImageTintList(mIcon, null);
+        }
     }
 }

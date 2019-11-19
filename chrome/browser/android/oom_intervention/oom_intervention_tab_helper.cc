@@ -4,6 +4,9 @@
 
 #include "chrome/browser/android/oom_intervention/oom_intervention_tab_helper.h"
 
+#include <string>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_config.h"
@@ -14,6 +17,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
 
 namespace {
@@ -68,9 +72,7 @@ OomInterventionTabHelper::OomInterventionTabHelper(
     : content::WebContentsObserver(web_contents),
       decider_(OomInterventionDecider::GetForBrowserContext(
           web_contents->GetBrowserContext())),
-      binding_(this),
-      scoped_observer_(this),
-      weak_ptr_factory_(this) {
+      scoped_observer_(this) {
   scoped_observer_.Add(crash_reporter::CrashMetricsReporter::GetInstance());
 }
 
@@ -285,7 +287,7 @@ void OomInterventionTabHelper::StartMonitoringIfNeeded() {
 
   auto* config = OomInterventionConfig::GetInstance();
   if (config->should_detect_in_renderer()) {
-    if (binding_.is_bound())
+    if (receiver_.is_bound())
       return;
     StartDetectionInRenderer();
   } else if (config->is_swap_monitor_enabled()) {
@@ -325,16 +327,13 @@ void OomInterventionTabHelper::StartDetectionInRenderer() {
   DCHECK(main_frame);
   content::RenderProcessHost* render_process_host = main_frame->GetProcess();
   DCHECK(render_process_host);
-  content::BindInterface(render_process_host,
-                         mojo::MakeRequest(&intervention_));
-  DCHECK(!binding_.is_bound());
-  blink::mojom::OomInterventionHostPtr host;
-  binding_.Bind(mojo::MakeRequest(&host));
+  render_process_host->BindReceiver(intervention_.BindNewPipeAndPassReceiver());
+  DCHECK(!receiver_.is_bound());
   blink::mojom::DetectionArgsPtr detection_args =
       config->GetRendererOomDetectionArgs();
-  intervention_->StartDetection(std::move(host), std::move(detection_args),
-                                renderer_pause_enabled, navigate_ads_enabled,
-                                purge_v8_memory_enabled);
+  intervention_->StartDetection(
+      receiver_.BindNewPipeAndPassRemote(), std::move(detection_args),
+      renderer_pause_enabled, navigate_ads_enabled, purge_v8_memory_enabled);
 }
 
 void OomInterventionTabHelper::OnNearOomDetected() {
@@ -367,8 +366,7 @@ void OomInterventionTabHelper::ResetInterventionState() {
 
 void OomInterventionTabHelper::ResetInterfaces() {
   intervention_.reset();
-  if (binding_.is_bound())
-    binding_.Close();
+  receiver_.reset();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OomInterventionTabHelper)

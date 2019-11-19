@@ -1,0 +1,87 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.cellular_setup.mojom;
+
+import "url/mojom/url.mojom";
+
+// The CellularSetup interface provides an API for clients to set up a cellular
+// connection on this device. Specifically, the StartActivation() function
+// provides an interface for activating a cold SIM (i.e., one which is not fully
+// set up with a mobile carrier). Clients of the CellularSetup interface are
+// expected to render carrier-provided UIs which allow users to sign into a
+// carrier portal and pay for mobile service.
+
+// Status of the carrier portal; in this context, the portal refers to a website
+// rendered by a carrier which allows the user to activate a cellular
+// connection.
+enum CarrierPortalStatus {
+  kPortalFailedToLoad,
+  kPortalLoadedWithoutPaidUser,
+  kPortalLoadedButErrorOccurredDuringPayment,
+  kPortalLoadedAndUserCompletedPayment,
+};
+
+// Potential results for an activation attempt.
+enum ActivationResult {
+  // Activation was initiated successfully by the attempt. Note that the device
+  // may not be fully activated by the time this result occurs since the process
+  // completes in the background.
+  kSuccessfullyStartedActivation,
+
+  // Activation was unnecessary because the SIM is already activated.
+  kAlreadyActivated,
+
+  // Activation failed (e.g., due to a failure within Shill).
+  kFailedToActivate,
+};
+
+// Metadata corresponding to a cellular activation request which allows the
+// carrier to associate the current device with an account with the carrier.
+struct CellularMetadata {
+  // URL to which users should be directed in order to complete the
+  // carrier-based payment flow.
+  url.mojom.Url payment_url;
+
+  // Data to be passed to the payment portal to verify the SIM.
+  string payment_post_data;
+
+  // Human-readable name of the carrier associated with the SIM card.
+  string carrier;
+
+  // The Mobile Equipment Identifier, a unique identifier for mobile devices.
+  string meid;
+
+  // The International Mobile Equipment Identity, another unique identifier.
+  string imei;
+
+  // The Mobile Directory Number, the carrier-provided number used to reach a
+  // mobile device.
+  string mdn;
+};
+
+// Interface for handling changes to the carrier payment portal; used by the UI
+// to notify CellularSetup of updates to the portal.
+interface CarrierPortalHandler {
+  OnCarrierPortalStatusChange(CarrierPortalStatus status);
+};
+
+// Delegate which is notified when activation starts and finishes. Used by the
+// service to notify the UI of the state of the activation flow.
+interface ActivationDelegate {
+  // Called when the flow has started; only called when the device is eligible
+  // for activation (i.e., has a valid, unactivated SIM).
+  OnActivationStarted(CellularMetadata metadata);
+
+  // Called when the flow has finished, regardless of success or failure.
+  OnActivationFinished(ActivationResult result);
+};
+
+// Interface used to set up a cellular connection.
+interface CellularSetup {
+  // Entrypoint to the activation flow. If |delegate| becomes disconnected
+  // during the activation process, activation is cancelled.
+  StartActivation(pending_remote<ActivationDelegate> delegate)
+      => (pending_remote<CarrierPortalHandler> observer);
+};

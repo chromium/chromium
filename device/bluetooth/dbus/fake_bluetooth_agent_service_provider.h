@@ -33,24 +33,22 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAgentServiceProvider
   // method on the object passed on construction.
   virtual void Release();
   virtual void RequestPinCode(const dbus::ObjectPath& device_path,
-                              const Delegate::PinCodeCallback& callback);
+                              Delegate::PinCodeCallback callback);
   virtual void DisplayPinCode(const dbus::ObjectPath& device_path,
                               const std::string& pincode);
   virtual void RequestPasskey(const dbus::ObjectPath& device_path,
-                              const Delegate::PasskeyCallback& callback);
+                              Delegate::PasskeyCallback callback);
   virtual void DisplayPasskey(const dbus::ObjectPath& device_path,
                               uint32_t passkey,
                               int16_t entered);
-  virtual void RequestConfirmation(
-      const dbus::ObjectPath& device_path,
-      uint32_t passkey,
-      const Delegate::ConfirmationCallback& callback);
-  virtual void RequestAuthorization(
-      const dbus::ObjectPath& device_path,
-      const Delegate::ConfirmationCallback& callback);
+  virtual void RequestConfirmation(const dbus::ObjectPath& device_path,
+                                   uint32_t passkey,
+                                   Delegate::ConfirmationCallback callback);
+  virtual void RequestAuthorization(const dbus::ObjectPath& device_path,
+                                    Delegate::ConfirmationCallback callback);
   virtual void AuthorizeService(const dbus::ObjectPath& device_path,
                                 const std::string& uuid,
-                                const Delegate::ConfirmationCallback& callback);
+                                Delegate::ConfirmationCallback callback);
   virtual void Cancel();
 
  private:

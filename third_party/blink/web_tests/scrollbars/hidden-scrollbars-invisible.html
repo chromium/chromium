@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <script>
-if (window.internals) {
-  internals.runtimeFlags.overlayScrollbarsEnabled = true;
-  internals.settings.setMockScrollbarsEnabled(true);
-}
+if (window.internals)
+  internals.useMockOverlayScrollbars();
 </script>
 <div id="div" style="overflow: scroll; width: 200px; height: 200px;">
   <div style="background-color: green; height: 3000px; width: 100px"></div>
@@ -15,8 +13,6 @@ if (window.internals) {
 <script>
   window.onload = function() {
     if (window.internals) {
-      internals.runtimeFlags.overlayScrollbarsEnabled = true;
-
       var div = document.querySelector('#div');
       var iframe = document.querySelector('#iframe');
       internals.setScrollbarVisibilityInScrollableArea(div, true);

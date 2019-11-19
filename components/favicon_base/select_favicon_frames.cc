@@ -123,7 +123,7 @@ void GetCandidateIndicesWithBestScores(
     return;
   }
 
-  if (base::ContainsValue(desired_sizes, 0)) {
+  if (base::Contains(desired_sizes, 0)) {
     // Just return the biggest image available.
     SelectionResult result;
     result.index = BiggestCandidate(candidate_sizes);

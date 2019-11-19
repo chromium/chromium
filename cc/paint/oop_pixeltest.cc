@@ -18,8 +18,8 @@
 #include "cc/raster/playback_image_provider.h"
 #include "cc/raster/raster_source.h"
 #include "cc/test/pixel_test_utils.h"
-#include "cc/test/test_in_process_context_provider.h"
 #include "cc/tiles/gpu_image_decode_cache.h"
+#include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_implementation.h"
@@ -78,10 +78,20 @@ class OopPixelTest : public testing::Test,
   void SetUp() override {
     InitializeOOPContext();
     gles2_context_provider_ =
-        base::MakeRefCounted<TestInProcessContextProvider>(
+        base::MakeRefCounted<viz::TestInProcessContextProvider>(
             /*enable_oop_rasterization=*/false, /*support_locking=*/true);
     gpu::ContextResult result = gles2_context_provider_->BindToCurrentThread();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
+    const int gles2_max_texture_size =
+        gles2_context_provider_->ContextCapabilities().max_texture_size;
+    gpu_image_cache_.reset(new GpuImageDecodeCache(
+        gles2_context_provider_.get(), false, kRGBA_8888_SkColorType,
+        kWorkingSetSize, gles2_max_texture_size,
+        PaintImage::kDefaultGeneratorClientId));
+
+    const int raster_max_texture_size =
+        raster_context_provider_->ContextCapabilities().max_texture_size;
+    ASSERT_EQ(raster_max_texture_size, gles2_max_texture_size);
   }
 
   // gpu::raster::GrShaderCache::Client implementation.
@@ -93,29 +103,17 @@ class OopPixelTest : public testing::Test,
       oop_image_cache_.reset();
 
     raster_context_provider_ =
-        base::MakeRefCounted<TestInProcessContextProvider>(
+        base::MakeRefCounted<viz::TestInProcessContextProvider>(
             /*enable_oop_rasterization=*/true, /*support_locking=*/true,
             &gr_shader_cache_, &activity_flags_);
     gpu::ContextResult result = raster_context_provider_->BindToCurrentThread();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
-  }
-
-  void CreateGpuImageCache(const gfx::ColorSpace& color_space) {
-    const int gles2_max_texture_size =
-        raster_context_provider_->ContextCapabilities().max_texture_size;
-    gpu_image_cache_.reset(new GpuImageDecodeCache(
-        gles2_context_provider_.get(), false, kRGBA_8888_SkColorType,
-        kWorkingSetSize, gles2_max_texture_size,
-        PaintImage::kDefaultGeneratorClientId, color_space.ToSkColorSpace()));
-  }
-
-  void CreateOopImageCache(const gfx::ColorSpace& color_space) {
     const int raster_max_texture_size =
         raster_context_provider_->ContextCapabilities().max_texture_size;
     oop_image_cache_.reset(new GpuImageDecodeCache(
         raster_context_provider_.get(), true, kRGBA_8888_SkColorType,
         kWorkingSetSize, raster_max_texture_size,
-        PaintImage::kDefaultGeneratorClientId, color_space.ToSkColorSpace()));
+        PaintImage::kDefaultGeneratorClientId));
   }
 
   class RasterOptions {
@@ -154,13 +152,12 @@ class OopPixelTest : public testing::Test,
 
   SkBitmap Raster(scoped_refptr<DisplayItemList> display_item_list,
                   const RasterOptions& options) {
-    CreateOopImageCache(options.color_space);
-
     GURL url("https://example.com/foo");
-    TestInProcessContextProvider::ScopedRasterContextLock lock(
+    viz::TestInProcessContextProvider::ScopedRasterContextLock lock(
         raster_context_provider_.get(), url.possibly_invalid_spec().c_str());
 
     PlaybackImageProvider image_provider(oop_image_cache_.get(),
+                                         options.color_space,
                                          PlaybackImageProvider::Settings());
 
     gpu::gles2::GLES2Interface* gl = gles2_context_provider_->ContextGL();
@@ -179,12 +176,10 @@ class OopPixelTest : public testing::Test,
     raster_implementation->WaitSyncTokenCHROMIUM(
         sii->GenUnverifiedSyncToken().GetConstData());
 
-    RasterColorSpace color_space(options.color_space, ++color_space_id_);
-
     if (options.preclear) {
       raster_implementation->BeginRasterCHROMIUM(
           options.preclear_color, options.msaa_sample_count,
-          options.use_lcd_text, color_space, mailbox.name);
+          options.use_lcd_text, options.color_space, mailbox.name);
       raster_implementation->EndRasterCHROMIUM();
     }
 
@@ -192,16 +187,19 @@ class OopPixelTest : public testing::Test,
 
     raster_implementation->BeginRasterCHROMIUM(
         options.background_color, options.msaa_sample_count,
-        options.use_lcd_text, color_space, mailbox.name);
+        options.use_lcd_text, options.color_space, mailbox.name);
+    size_t max_op_size_limit =
+        gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
     raster_implementation->RasterCHROMIUM(
         display_item_list.get(), &image_provider, options.content_size,
         options.full_raster_rect, options.playback_rect, options.post_translate,
-        options.post_scale, options.requires_clear);
+        options.post_scale, options.requires_clear, &max_op_size_limit);
     for (const auto& list : options.additional_lists) {
       raster_implementation->RasterCHROMIUM(
           list.get(), &image_provider, options.content_size,
           options.full_raster_rect, options.playback_rect,
-          options.post_translate, options.post_scale, options.requires_clear);
+          options.post_translate, options.post_scale, options.requires_clear,
+          &max_op_size_limit);
     }
     raster_implementation->EndRasterCHROMIUM();
     raster_implementation->OrderingBarrierCHROMIUM();
@@ -260,9 +258,7 @@ class OopPixelTest : public testing::Test,
   SkBitmap RasterExpectedBitmap(
       scoped_refptr<DisplayItemList> display_item_list,
       const RasterOptions& options) {
-    CreateGpuImageCache(options.color_space);
-
-    TestInProcessContextProvider::ScopedRasterContextLock lock(
+    viz::TestInProcessContextProvider::ScopedRasterContextLock lock(
         gles2_context_provider_.get());
     gles2_context_provider_->GrContext()->resetContext();
 
@@ -283,6 +279,7 @@ class OopPixelTest : public testing::Test,
       options.shader_with_animated_images->set_has_animated_images(true);
 
     PlaybackImageProvider image_provider(gpu_image_cache_.get(),
+                                         options.color_space,
                                          PlaybackImageProvider::Settings());
 
     auto raster_source = recording.CreateRasterSource();
@@ -297,7 +294,8 @@ class OopPixelTest : public testing::Test,
           SkSurfaceProps(flags, SkSurfaceProps::kLegacyFontHost_InitType);
     }
     SkImageInfo image_info = SkImageInfo::MakeN32Premul(
-        options.resource_size.width(), options.resource_size.height());
+        options.resource_size.width(), options.resource_size.height(),
+        options.color_space.ToSkColorSpace());
     auto surface = SkSurface::MakeRenderTarget(
         gles2_context_provider_->GrContext(), SkBudgeted::kYes, image_info);
     SkCanvas* canvas = surface->getCanvas();
@@ -309,10 +307,9 @@ class OopPixelTest : public testing::Test,
     gfx::AxisTransform2d raster_transform(options.post_scale,
                                           options.post_translate);
     raster_source->PlaybackToCanvas(
-        canvas, options.color_space, options.content_size,
-        options.full_raster_rect, options.playback_rect, raster_transform,
-        settings);
-    surface->prepareForExternalIO();
+        canvas, options.content_size, options.full_raster_rect,
+        options.playback_rect, raster_transform, settings);
+    surface->flush();
     EXPECT_EQ(gles2_context_provider_->ContextGL()->GetError(),
               static_cast<unsigned>(GL_NO_ERROR));
 
@@ -347,8 +344,8 @@ class OopPixelTest : public testing::Test,
 
  protected:
   enum { kWorkingSetSize = 64 * 1024 * 1024 };
-  scoped_refptr<TestInProcessContextProvider> raster_context_provider_;
-  scoped_refptr<TestInProcessContextProvider> gles2_context_provider_;
+  scoped_refptr<viz::TestInProcessContextProvider> raster_context_provider_;
+  scoped_refptr<viz::TestInProcessContextProvider> gles2_context_provider_;
   std::unique_ptr<GpuImageDecodeCache> gpu_image_cache_;
   std::unique_ptr<GpuImageDecodeCache> oop_image_cache_;
   gl::DisableNullDrawGLBindings enable_pixel_output_;
@@ -563,9 +560,8 @@ TEST_P(OopImagePixelTest, DrawImageShaderScaled) {
   auto builder = PaintImageBuilder::WithDefault().set_image(image, 0).set_id(
       PaintImage::GetNextId());
   auto paint_image = builder.TakePaintImage();
-  auto paint_image_shader =
-      PaintShader::MakeImage(paint_image, SkShader::kRepeat_TileMode,
-                             SkShader::kRepeat_TileMode, nullptr);
+  auto paint_image_shader = PaintShader::MakeImage(
+      paint_image, SkTileMode::kRepeat, SkTileMode::kRepeat, nullptr);
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
@@ -609,8 +605,8 @@ TEST_P(OopImagePixelTest, DrawRecordShaderWithImageScaled) {
   flags.setFilterQuality(FilterQuality());
   paint_record->push<DrawImageOp>(paint_image, 0.f, 0.f, &flags);
   auto paint_record_shader = PaintShader::MakePaintRecord(
-      paint_record, gfx::RectToSkRect(rect), SkShader::kRepeat_TileMode,
-      SkShader::kRepeat_TileMode, nullptr);
+      paint_record, gfx::RectToSkRect(rect), SkTileMode::kRepeat,
+      SkTileMode::kRepeat, nullptr);
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
@@ -653,9 +649,8 @@ TEST_F(OopImagePixelTest, DrawRecordShaderTranslatedTileRect) {
 
   SkRect tile_rect = SkRect::MakeXYWH(x_offset, y_offset, 2, 3);
   sk_sp<PaintShader> paint_record_shader = PaintShader::MakePaintRecord(
-      shader_buffer, tile_rect, SkShader::kRepeat_TileMode,
-      SkShader::kRepeat_TileMode, nullptr,
-      PaintShader::ScalingBehavior::kRasterAtScale);
+      shader_buffer, tile_rect, SkTileMode::kRepeat, SkTileMode::kRepeat,
+      nullptr, PaintShader::ScalingBehavior::kRasterAtScale);
 
   gfx::Size output_size(10, 10);
 
@@ -1466,8 +1461,8 @@ class OopRecordShaderPixelTest : public OopPixelTest,
     paint_record->push<DrawTextBlobOp>(
         BuildTextBlob(SkTypeface::MakeDefault(), UseLcdText()), 0u, 0u, flags);
     auto paint_record_shader = PaintShader::MakePaintRecord(
-        paint_record, SkRect::MakeWH(25, 25), SkShader::kRepeat_TileMode,
-        SkShader::kRepeat_TileMode, nullptr);
+        paint_record, SkRect::MakeWH(25, 25), SkTileMode::kRepeat,
+        SkTileMode::kRepeat, nullptr);
 
     auto display_item_list = base::MakeRefCounted<DisplayItemList>();
     display_item_list->StartPaint();
@@ -1655,6 +1650,40 @@ class OopPathPixelTest : public OopPixelTest,
 
 TEST_P(OopPathPixelTest, Basic) {
   RunTest();
+}
+
+TEST_F(OopPixelTest, RecordShaderExceedsMaxTextureSize) {
+  const int max_texture_size =
+      raster_context_provider_->ContextCapabilities().max_texture_size;
+  const SkRect rect = SkRect::MakeWH(max_texture_size + 10, 10);
+
+  auto shader_record = sk_make_sp<PaintRecord>();
+  shader_record->push<DrawColorOp>(SK_ColorWHITE, SkBlendMode::kSrc);
+  PaintFlags flags;
+  flags.setStyle(PaintFlags::kFill_Style);
+  flags.setColor(SK_ColorGREEN);
+  shader_record->push<DrawRectOp>(rect, flags);
+  auto shader = PaintShader::MakePaintRecord(
+      shader_record, rect, SkTileMode::kRepeat, SkTileMode::kRepeat, nullptr);
+
+  RasterOptions options;
+  options.resource_size = gfx::Size(100, 100);
+  options.content_size = gfx::Size(rect.width(), rect.height());
+  options.full_raster_rect = gfx::Rect(options.content_size);
+  options.playback_rect = options.full_raster_rect;
+  options.color_space = gfx::ColorSpace::CreateSRGB();
+
+  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+  display_item_list->StartPaint();
+  display_item_list->push<DrawColorOp>(SK_ColorWHITE, SkBlendMode::kSrc);
+  flags.setShader(shader);
+  display_item_list->push<DrawRectOp>(rect, flags);
+  display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
+  display_item_list->Finalize();
+
+  auto expected = RasterExpectedBitmap(display_item_list, options);
+  auto actual = Raster(display_item_list, options);
+  ExpectEquals(actual, expected);
 }
 
 INSTANTIATE_TEST_SUITE_P(P, OopImagePixelTest, ::testing::Bool());

@@ -99,7 +99,7 @@ class FeedJournalBridge {
 
   FeedJournalDatabase* feed_journal_database_;
 
-  base::WeakPtrFactory<FeedJournalBridge> weak_ptr_factory_;
+  base::WeakPtrFactory<FeedJournalBridge> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FeedJournalBridge);
 };

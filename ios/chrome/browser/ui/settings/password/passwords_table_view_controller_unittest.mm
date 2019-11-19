@@ -21,8 +21,10 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #include "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -41,11 +43,6 @@ using password_manager::MockPasswordStore;
 @end
 
 namespace {
-
-typedef struct {
-  bool export_enabled;
-  int section_offset;
-} ExportPasswordsFeatureStatus;
 
 class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
  protected:
@@ -81,7 +78,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
         static_cast<PasswordsTableViewController*>(controller());
     std::vector<std::unique_ptr<autofill::PasswordForm>> passwords;
     passwords.push_back(std::move(form));
-    [passwords_controller onGetPasswordStoreResults:passwords];
+    [passwords_controller onGetPasswordStoreResults:std::move(passwords)];
   }
 
   // Creates and adds a saved password form.
@@ -96,7 +93,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     form->submit_element = base::ASCIIToUTF16("signIn");
     form->signon_realm = "http://www.example.com/";
     form->preferred = false;
-    form->scheme = autofill::PasswordForm::SCHEME_HTML;
+    form->scheme = autofill::PasswordForm::Scheme::kHtml;
     form->blacklisted_by_user = false;
     AddPasswordForm(std::move(form));
   }
@@ -113,7 +110,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     form->submit_element = base::ASCIIToUTF16("signIn");
     form->signon_realm = "http://www.example2.com/";
     form->preferred = false;
-    form->scheme = autofill::PasswordForm::SCHEME_HTML;
+    form->scheme = autofill::PasswordForm::Scheme::kHtml;
     form->blacklisted_by_user = false;
     AddPasswordForm(std::move(form));
   }
@@ -131,7 +128,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     form->submit_element = base::ASCIIToUTF16("signIn");
     form->signon_realm = "http://www.secret.com/";
     form->preferred = false;
-    form->scheme = autofill::PasswordForm::SCHEME_HTML;
+    form->scheme = autofill::PasswordForm::Scheme::kHtml;
     form->blacklisted_by_user = true;
     AddPasswordForm(std::move(form));
   }
@@ -149,7 +146,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     form->submit_element = base::ASCIIToUTF16("signIn");
     form->signon_realm = "http://www.secret2.com/";
     form->preferred = false;
-    form->scheme = autofill::PasswordForm::SCHEME_HTML;
+    form->scheme = autofill::PasswordForm::Scheme::kHtml;
     form->blacklisted_by_user = true;
     AddPasswordForm(std::move(form));
   }
@@ -165,7 +162,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
         base::test::ios::kWaitForUIElementTimeout, condition);
   }
 
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
 };
 
@@ -308,8 +305,7 @@ TEST_F(PasswordsTableViewControllerTest,
   TableViewDetailTextItem* exportButton = GetTableViewItem(1, 0);
   CheckTextCellTextWithId(IDS_IOS_EXPORT_PASSWORDS, 1, 0);
 
-  EXPECT_NSEQ(UIColorFromRGB(kTableViewTextLabelColorLightGrey),
-              exportButton.textColor);
+  EXPECT_NSEQ(UIColor.cr_labelColor, exportButton.textColor);
   EXPECT_TRUE(exportButton.accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
 
@@ -317,8 +313,7 @@ TEST_F(PasswordsTableViewControllerTest,
   AddBlacklistedForm1();
   // The export button should still be disabled as exporting blacklisted forms
   // is not currently supported.
-  EXPECT_NSEQ(UIColorFromRGB(kTableViewTextLabelColorLightGrey),
-              exportButton.textColor);
+  EXPECT_NSEQ(UIColor.cr_labelColor, exportButton.textColor);
   EXPECT_TRUE(exportButton.accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
 }
@@ -334,8 +329,7 @@ TEST_F(PasswordsTableViewControllerTest,
 
   CheckTextCellTextWithId(IDS_IOS_EXPORT_PASSWORDS, 2, 0);
 
-  EXPECT_NSEQ(UIColorFromRGB(kTableViewTextLabelColorBlue),
-              exportButton.textColor);
+  EXPECT_NSEQ([UIColor colorNamed:kBlueColor], exportButton.textColor);
   EXPECT_FALSE(exportButton.accessibilityTraits &
                UIAccessibilityTraitNotEnabled);
 }
@@ -352,8 +346,7 @@ TEST_F(PasswordsTableViewControllerTest, TestExportButtonDisabledEditMode) {
 
   [passwords_controller setEditing:YES animated:NO];
 
-  EXPECT_NSEQ(UIColorFromRGB(kTableViewTextLabelColorLightGrey),
-              exportButton.textColor);
+  EXPECT_NSEQ(UIColor.cr_labelColor, exportButton.textColor);
   EXPECT_TRUE(exportButton.accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
 }
@@ -373,8 +366,7 @@ TEST_F(PasswordsTableViewControllerTest,
   [passwords_controller setEditing:YES animated:NO];
   [passwords_controller setEditing:NO animated:NO];
 
-  EXPECT_NSEQ(UIColorFromRGB(kTableViewTextLabelColorBlue),
-              exportButton.textColor);
+  EXPECT_NSEQ([UIColor colorNamed:kBlueColor], exportButton.textColor);
   EXPECT_FALSE(exportButton.accessibilityTraits &
                UIAccessibilityTraitNotEnabled);
 }
@@ -391,7 +383,7 @@ TEST_F(PasswordsTableViewControllerTest, PropagateDeletionToStore) {
   form.password_value = base::ASCIIToUTF16("test");
   form.submit_element = base::ASCIIToUTF16("signIn");
   form.signon_realm = "http://www.example.com/";
-  form.scheme = autofill::PasswordForm::SCHEME_HTML;
+  form.scheme = autofill::PasswordForm::Scheme::kHtml;
   form.blacklisted_by_user = false;
 
   AddPasswordForm(std::make_unique<autofill::PasswordForm>(form));

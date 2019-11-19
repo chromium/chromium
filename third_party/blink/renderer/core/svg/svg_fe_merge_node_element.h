@@ -31,8 +31,6 @@ class SVGFEMergeNodeElement final : public SVGElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(SVGFEMergeNodeElement);
-
   explicit SVGFEMergeNodeElement(Document&);
 
   SVGAnimatedString* in1() { return in1_.Get(); }

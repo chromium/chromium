@@ -5,7 +5,7 @@
 #include "chrome/browser/media/router/providers/dial/dial_activity_manager.h"
 
 #include "base/bind.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/media/router/providers/dial/dial_internal_message_util.h"
 #include "chrome/browser/media/router/test/test_helper.h"
 #include "net/http/http_status_code.h"
@@ -66,14 +66,15 @@ class DialActivityManagerTest : public testing::Test {
     LaunchApp(activity.route.media_route_id(), base::nullopt);
     LaunchApp(activity.route.media_route_id(), "bar");
 
-    network::ResourceResponseHead response_head;
+    auto response_head = network::mojom::URLResponseHead::New();
     if (app_instance_url) {
-      response_head.headers =
+      response_head->headers =
           base::MakeRefCounted<net::HttpResponseHeaders>("");
-      response_head.headers->AddHeader("LOCATION: " + app_instance_url->spec());
+      response_head->headers->AddHeader("LOCATION: " +
+                                        app_instance_url->spec());
     }
     loader_factory_.AddResponse(activity.launch_info.app_launch_url,
-                                response_head, "",
+                                std::move(response_head), "",
                                 network::URLLoaderCompletionStatus());
     EXPECT_CALL(*this, OnAppLaunchResult(true));
     base::RunLoop().RunUntilIdle();
@@ -109,7 +110,7 @@ class DialActivityManagerTest : public testing::Test {
                     RouteRequestResult::ResultCode));
 
  protected:
-  base::test::ScopedTaskEnvironment environment_;
+  base::test::TaskEnvironment environment_;
   std::string presentation_id_ = "presentationId";
   MediaSinkInternal sink_ = CreateDialSink(1);
   MediaSource::Id source_id_ =
@@ -165,9 +166,9 @@ TEST_F(DialActivityManagerTest, LaunchAppFails) {
                               "foo");
   LaunchApp(activity->route.media_route_id(), base::nullopt);
 
-  network::ResourceResponseHead response_head;
   loader_factory_.AddResponse(
-      activity->launch_info.app_launch_url, response_head, "",
+      activity->launch_info.app_launch_url,
+      network::mojom::URLResponseHead::New(), "",
       network::URLLoaderCompletionStatus(net::HTTP_SERVICE_UNAVAILABLE));
   EXPECT_CALL(*this, OnAppLaunchResult(false));
   base::RunLoop().RunUntilIdle();
@@ -187,16 +188,19 @@ TEST_F(DialActivityManagerTest, StopApp) {
       GURL(sink_.dial_data().app_url.spec() + "/YouTube/app_instance");
   TestLaunchApp(*activity, base::nullopt, app_instance_url);
 
+  auto can_stop = manager_.CanStopApp(activity->route.media_route_id());
+  EXPECT_EQ(can_stop.second, RouteRequestResult::OK);
   manager_.SetExpectedRequest(app_instance_url, "DELETE", base::nullopt);
   StopApp(activity->route.media_route_id());
+  testing::Mock::VerifyAndClearExpectations(this);
 
-  // Pending stop request.
-  EXPECT_CALL(*this, OnStopAppResult(_, Not(RouteRequestResult::OK)));
-  EXPECT_CALL(manager_, OnFetcherCreated()).Times(0);
-  StopApp(activity->route.media_route_id());
+  // // The result should not be OK because there is a pending request.
+  can_stop = manager_.CanStopApp(activity->route.media_route_id());
+  EXPECT_NE(can_stop.second, RouteRequestResult::OK);
 
-  loader_factory_.AddResponse(app_instance_url, network::ResourceResponseHead(),
-                              "", network::URLLoaderCompletionStatus());
+  loader_factory_.AddResponse(app_instance_url,
+                              network::mojom::URLResponseHead::New(), "",
+                              network::URLLoaderCompletionStatus());
   EXPECT_CALL(*this, OnStopAppResult(testing::Eq(base::nullopt),
                                      RouteRequestResult::OK));
   base::RunLoop().RunUntilIdle();
@@ -217,8 +221,9 @@ TEST_F(DialActivityManagerTest, StopAppUseFallbackURL) {
   manager_.SetExpectedRequest(app_instance_url, "DELETE", base::nullopt);
   StopApp(activity->route.media_route_id());
 
-  loader_factory_.AddResponse(app_instance_url, network::ResourceResponseHead(),
-                              "", network::URLLoaderCompletionStatus());
+  loader_factory_.AddResponse(app_instance_url,
+                              network::mojom::URLResponseHead::New(), "",
+                              network::URLLoaderCompletionStatus());
   EXPECT_CALL(*this, OnStopAppResult(testing::Eq(base::nullopt),
                                      RouteRequestResult::OK));
   base::RunLoop().RunUntilIdle();
@@ -240,7 +245,7 @@ TEST_F(DialActivityManagerTest, StopAppFails) {
   StopApp(activity->route.media_route_id());
 
   loader_factory_.AddResponse(
-      app_instance_url, network::ResourceResponseHead(), "",
+      app_instance_url, network::mojom::URLResponseHead::New(), "",
       network::URLLoaderCompletionStatus(net::HTTP_SERVICE_UNAVAILABLE));
   EXPECT_CALL(*this, OnStopAppResult(_, Not(RouteRequestResult::OK)));
   base::RunLoop().RunUntilIdle();

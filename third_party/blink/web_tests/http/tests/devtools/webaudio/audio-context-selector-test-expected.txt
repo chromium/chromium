@@ -1,0 +1,81 @@
+Tests the AudioContextSelector.
+
+Running: testStartsEmpty
+
+Number of contexts (items): 0
+Title: Audio context: (no recordings)}
+Selected Context: null
+
+
+Running: testSelectsCreatedContext
+
+Number of contexts (items): 1
+Title: Audio context: realtime (dc39fd)}
+Selected Context: {
+   "contextId": "924c4ee4-4cae-4e62-b4c6-71603edc39fd",
+   "contextType": "realtime"
+}
+
+
+Running: testResetClearsList
+
+Number of contexts (items): 0
+Title: Audio context: (no recordings)}
+Selected Context: {
+   "contextId": "924c4ee4-4cae-4e62-b4c6-71603edc39fd",
+   "contextType": "realtime"
+}
+
+
+Running: testReSelectsCreatedContextAfterChange
+
+Number of contexts (items): 1
+Title: Audio context: realtime (dc39fd)}
+Selected Context: {
+   "contextId": "924c4ee4-4cae-4e62-b4c6-71603edc39fd",
+   "contextType": "realtime"
+}
+
+
+Running: testFirstCreatedContextStaysSelected
+
+Number of contexts (items): 2
+Title: Audio context: realtime (dc39fd)}
+Selected Context: {
+   "contextId": "924c4ee4-4cae-4e62-b4c6-71603edc39fd",
+   "contextType": "realtime"
+}
+
+
+Running: testChangingContextDoesNotChangeSelection
+
+Number of contexts (items): 2
+Title: Audio context: realtime (dc39fd)}
+Selected Context: {
+   "contextId": "924c4ee4-4cae-4e62-b4c6-71603edc39fd",
+   "contextType": "realtime"
+}
+
+
+Running: testSelectedContextBecomesSelected
+
+Number of contexts (items): 2
+Title: Audio context: realtime (695c9e)}
+Selected Context: {
+   "contextId": "78a3e94e-4968-4bf6-8905-325109695c9e",
+   "contextType": "realtime"
+}
+
+
+Running: testOnListItemReplacedCalled
+_onListItemReplaced called with contexts (items) count: 1
+_onListItemReplaced called with contexts (items) count: 1
+
+Number of contexts (items): 1
+Title: Audio context: realtime (dc39fd)}
+Selected Context: {
+   "contextId": "924c4ee4-4cae-4e62-b4c6-71603edc39fd",
+   "contextType": "realtime"
+}
+
+

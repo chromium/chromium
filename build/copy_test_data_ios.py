@@ -5,6 +5,8 @@
 
 """Copies test data files or directories into a given output directory."""
 
+from __future__ import print_function
+
 import optparse
 import os
 import shutil
@@ -94,11 +96,11 @@ def DoMain(argv):
 def main(argv):
   try:
     result = DoMain(argv[1:])
-  except WrongNumberOfArgumentsException, e:
-    print >>sys.stderr, e
+  except WrongNumberOfArgumentsException as e:
+    print(e, file=sys.stderr)
     return 1
   if result:
-    print result
+    print(result)
   return 0
 
 if __name__ == '__main__':

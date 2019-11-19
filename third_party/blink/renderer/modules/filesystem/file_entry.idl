@@ -30,10 +30,14 @@
 
 // https://www.w3.org/TR/2012/WD-file-system-api-20120417/#idl-def-FileEntry
 [
-    NoInterfaceObject
+  NoInterfaceObject
 ] interface FileEntry : Entry {
-    // TODO(crbug.com/841185): |errorCallback| is not nullable in the spec.
-    void createWriter(FileWriterCallback successCallback, optional ErrorCallback? errorCallback);
-    // TODO(crbug.com/841185): |errorCallback| is not nullable in the spec.
-    void file(FileCallback successCallback, optional ErrorCallback? errorCallback);
+  // TODO(crbug.com/841185): |errorCallback| is not nullable in the spec.
+  void createWriter(FileWriterCallback successCallback,
+                    optional ErrorCallback? errorCallback);
+
+  // TODO(crbug.com/841185): |errorCallback| is not nullable in the spec.
+  [MeasureAs=DeprecatedFileSystemRead]
+  void file(FileCallback successCallback,
+            optional ErrorCallback? errorCallback);
 };

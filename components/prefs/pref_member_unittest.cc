@@ -8,10 +8,10 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/scoped_task_environment.h"
-#include "base/threading/thread.h"
+#include "base/task/post_task.h"
+#include "base/test/task_environment.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,13 +35,13 @@ void RegisterTestPrefs(PrefRegistrySimple* registry) {
 class GetPrefValueHelper
     : public base::RefCountedThreadSafe<GetPrefValueHelper> {
  public:
-  GetPrefValueHelper() : value_(false), pref_thread_("pref thread") {
-    pref_thread_.Start();
-  }
+  GetPrefValueHelper()
+      : value_(false),
+        task_runner_(base::CreateSequencedTaskRunner({base::ThreadPool()})) {}
 
   void Init(const std::string& pref_name, PrefService* prefs) {
     pref_.Init(pref_name, prefs);
-    pref_.MoveToThread(pref_thread_.task_runner());
+    pref_.MoveToSequence(task_runner_);
   }
 
   void Destroy() {
@@ -51,16 +51,10 @@ class GetPrefValueHelper
   void FetchValue() {
     base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                               base::WaitableEvent::InitialState::NOT_SIGNALED);
-    ASSERT_TRUE(pref_thread_.task_runner()->PostTask(
+    ASSERT_TRUE(task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&GetPrefValueHelper::GetPrefValue, this, &event)));
     event.Wait();
-  }
-
-  // The thread must be stopped on the main thread. GetPrefValueHelper being
-  // ref-counted, the destructor can be called from any thread.
-  void StopThread() {
-    pref_thread_.Stop();
   }
 
   bool value() { return value_; }
@@ -77,7 +71,8 @@ class GetPrefValueHelper
   BooleanPrefMember pref_;
   bool value_;
 
-  base::Thread pref_thread_;  // The thread |pref_| runs on.
+  // The sequence |pref_| runs on.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 class PrefMemberTestClass {
@@ -85,8 +80,8 @@ class PrefMemberTestClass {
   explicit PrefMemberTestClass(PrefService* prefs)
       : observe_cnt_(0), prefs_(prefs) {
     str_.Init(kStringPref, prefs,
-              base::Bind(&PrefMemberTestClass::OnPreferenceChanged,
-                         base::Unretained(this)));
+              base::BindRepeating(&PrefMemberTestClass::OnPreferenceChanged,
+                                  base::Unretained(this)));
   }
 
   void OnPreferenceChanged(const std::string& pref_name) {
@@ -105,7 +100,7 @@ class PrefMemberTestClass {
 }  // anonymous namespace
 
 class PrefMemberTest : public testing::Test {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(PrefMemberTest, BasicGetAndSet) {
@@ -306,7 +301,7 @@ TEST_F(PrefMemberTest, NoInit) {
   IntegerPrefMember pref;
 }
 
-TEST_F(PrefMemberTest, MoveToThread) {
+TEST_F(PrefMemberTest, MoveToSequence) {
   TestingPrefServiceSimple prefs;
   scoped_refptr<GetPrefValueHelper> helper(new GetPrefValueHelper());
   RegisterTestPrefs(prefs.registry());
@@ -324,6 +319,4 @@ TEST_F(PrefMemberTest, MoveToThread) {
 
   helper->FetchValue();
   EXPECT_TRUE(helper->value());
-
-  helper->StopThread();
 }

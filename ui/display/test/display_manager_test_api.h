@@ -39,8 +39,8 @@ class DISPLAY_EXPORT DisplayManagerTestApi {
 
   // Update the display configuration as given in |display_specs|. The format of
   // |display_spec| is a list of comma separated spec for each displays. Please
-  // refer to the comment in |ash::DisplayInfo::CreateFromSpec| for the format
-  // of the display spec.
+  // refer to the comment in |display::ManagedDisplayInfo::CreateFromSpec| for
+  // the format of the display spec.
   void UpdateDisplay(const std::string& display_specs);
 
   // Set the 1st display as an internal display and returns the display Id for

@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/policy_low_level.h"
@@ -41,7 +40,7 @@ class FileSystemPolicy {
   // 'file' : The target file or directory.
   static bool CreateFileAction(EvalResult eval_result,
                                const ClientInfo& client_info,
-                               const base::string16& file,
+                               const std::wstring& file,
                                uint32_t attributes,
                                uint32_t desired_access,
                                uint32_t file_attributes,
@@ -59,7 +58,7 @@ class FileSystemPolicy {
   // 'file' : The target file or directory.
   static bool OpenFileAction(EvalResult eval_result,
                              const ClientInfo& client_info,
-                             const base::string16& file,
+                             const std::wstring& file,
                              uint32_t attributes,
                              uint32_t desired_access,
                              uint32_t share_access,
@@ -72,7 +71,7 @@ class FileSystemPolicy {
   // API that is compatible with the IPC-received parameters.
   static bool QueryAttributesFileAction(EvalResult eval_result,
                                         const ClientInfo& client_info,
-                                        const base::string16& file,
+                                        const std::wstring& file,
                                         uint32_t attributes,
                                         FILE_BASIC_INFORMATION* file_info,
                                         NTSTATUS* nt_status);
@@ -82,7 +81,7 @@ class FileSystemPolicy {
   static bool QueryFullAttributesFileAction(
       EvalResult eval_result,
       const ClientInfo& client_info,
-      const base::string16& file,
+      const std::wstring& file,
       uint32_t attributes,
       FILE_NETWORK_OPEN_INFORMATION* file_info,
       NTSTATUS* nt_status);
@@ -101,12 +100,12 @@ class FileSystemPolicy {
 
 // Expands the path and check if it's a reparse point. Returns false if the path
 // cannot be trusted.
-bool PreProcessName(base::string16* path);
+bool PreProcessName(std::wstring* path);
 
 // Corrects global paths to have a correctly escaped NT prefix at the
 // beginning. If the name has no NT prefix (either normal or escaped)
 // add the escaped form to the string
-base::string16 FixNTPrefixForMatch(const base::string16& name);
+std::wstring FixNTPrefixForMatch(const std::wstring& name);
 
 }  // namespace sandbox
 

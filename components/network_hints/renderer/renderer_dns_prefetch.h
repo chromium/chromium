@@ -26,8 +26,10 @@
 #include <map>
 #include <string>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "components/network_hints/renderer/dns_prefetch_queue.h"
 
 namespace network_hints {
@@ -36,7 +38,16 @@ namespace network_hints {
 // DNS prefetch requests to the net stack.
 class RendererDnsPrefetch {
  public:
-  RendererDnsPrefetch();
+  typedef base::RepeatingCallback<void(const std::vector<std::string>&)>
+      BatchHandler;
+
+  // The specified |batch_handler| will be notified periodically and
+  // asynchronously on the same sequence when there are hostnames that should
+  // be resolved. Individual |Resolve| calls are batched up to help minimize
+  // IPC to the process where DNS requests are made. The |batch_handler| is
+  // expected to outlive instances of this class. It is safe to delete
+  // instances of this class when |batch_handler| is called.
+  explicit RendererDnsPrefetch(BatchHandler batch_handler);
   ~RendererDnsPrefetch();
 
   // Push a name into the queue to be resolved.
@@ -67,21 +78,26 @@ class RendererDnsPrefetch {
   // at least the specified number of names, or the buffer is empty.
   void ExtractBufferedNames(size_t size_goal = 0);
 
-  // DnsPrefetchNames does not check the buffer, and just sends names
-  // that are already collected in the domain_map_ for DNS lookup.
-  // If max_count is zero, then all available names are sent; and
-  // if positive, then at most max_count names will be sent.
-  void DnsPrefetchNames(size_t max_count = 0);
+  // GetNamesToPrefetch does not check the buffer, and just takes names that
+  // are already collected in the domain_map_ for DNS lookup.  If max_count is
+  // zero, then all available names are appended to |names|; and if positive,
+  // then at most max_count names will be appended.
+  void GetNamesToPrefetch(size_t max_count, std::vector<std::string>* names);
 
   // Reset() restores initial state provided after construction.
   // This discards ALL queue entries, and map entries.
   void Reset();
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // This callback is run periodically to send a set of recommended hostnames
+  // to resolve.
+  BatchHandler batch_handler_;
+
   // We use c_string_queue_ to hold lists of names supplied typically) by the
   // renderer.  It queues the names, at minimal cost to the renderer's thread,
   // and allows this class to process them when time permits (in a later task).
   DnsQueue c_string_queue_;
-
 
   // domain_map_ contains (for each domain) one of the next two constants,
   // depending on whether we have asked the browser process to do the actual
@@ -101,7 +117,7 @@ class RendererDnsPrefetch {
   int buffer_full_discard_count_;
   int numeric_ip_discard_count_;
 
-  base::WeakPtrFactory<RendererDnsPrefetch> weak_factory_;
+  base::WeakPtrFactory<RendererDnsPrefetch> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RendererDnsPrefetch);
 };  // class RendererDnsPrefetch

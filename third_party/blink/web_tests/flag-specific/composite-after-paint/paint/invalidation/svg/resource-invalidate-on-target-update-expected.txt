@@ -1,0 +1,48 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutSVGRect rect id='rect3'",
+          "rect": [0, 240, 230, 120],
+          "reason": "full"
+        },
+        {
+          "object": "LayoutSVGRect rect id='rect2'",
+          "rect": [10, 130, 200, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRect rect id='rect1'",
+          "rect": [10, 10, 200, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRect rect id='rect1'",
+          "rect": [10, 10, 200, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRect rect id='rect2'",
+          "rect": [10, 130, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRect rect id='rect1'",
+          "rect": [10, 10, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRect rect id='rect1'",
+          "rect": [10, 10, 100, 100],
+          "reason": "paint property change"
+        }
+      ]
+    }
+  ]
+}
+

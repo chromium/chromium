@@ -73,7 +73,7 @@ class URLRequestMockDataJob : public URLRequestJob {
   std::string data_;
   size_t data_offset_;
   bool request_client_certificate_;
-  base::WeakPtrFactory<URLRequestMockDataJob> weak_factory_;
+  base::WeakPtrFactory<URLRequestMockDataJob> weak_factory_{this};
 };
 
 }  // namespace net

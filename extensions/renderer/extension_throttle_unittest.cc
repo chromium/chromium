@@ -11,9 +11,8 @@
 #include "extensions/renderer/extension_throttle_entry.h"
 #include "extensions/renderer/extension_throttle_manager.h"
 #include "extensions/renderer/extension_throttle_test_support.h"
-#include "net/base/load_flags.h"
 #include "net/url_request/redirect_info.h"
-#include "services/network/public/cpp/resource_response.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::TimeDelta;
@@ -59,10 +58,6 @@ class MockExtensionThrottleEntry : public ExtensionThrottleEntry {
   }
 
   BackoffEntry* GetBackoffEntry() override { return &backoff_entry_; }
-
-  static bool ExplicitUserRequest(int load_flags) {
-    return ExtensionThrottleEntry::ExplicitUserRequest(load_flags);
-  }
 
   void ResetToBlank(const TimeTicks& time_now) {
     fake_clock_.set_now(time_now);
@@ -176,25 +171,16 @@ void ExtensionThrottleEntryTest::SetUp() {
 TEST_F(ExtensionThrottleEntryTest, CanThrottleRequest) {
   entry_->set_exponential_backoff_release_time(entry_->ImplGetTimeNow() +
                                                TimeDelta::FromMilliseconds(1));
-
-  EXPECT_TRUE(entry_->ShouldRejectRequest(net::LOAD_NORMAL));
+  EXPECT_TRUE(entry_->ShouldRejectRequest());
 }
 
-TEST_F(ExtensionThrottleEntryTest, InterfaceDuringExponentialBackoff) {
-  entry_->set_exponential_backoff_release_time(entry_->ImplGetTimeNow() +
-                                               TimeDelta::FromMilliseconds(1));
-  EXPECT_TRUE(entry_->ShouldRejectRequest(net::LOAD_NORMAL));
-
-  // Also end-to-end test the load flags exceptions.
-  EXPECT_FALSE(entry_->ShouldRejectRequest(net::LOAD_MAYBE_USER_GESTURE));
-}
-
-TEST_F(ExtensionThrottleEntryTest, InterfaceNotDuringExponentialBackoff) {
+TEST_F(ExtensionThrottleEntryTest,
+       CanThrottleRequestNotDuringExponentialBackoff) {
   entry_->set_exponential_backoff_release_time(entry_->ImplGetTimeNow());
-  EXPECT_FALSE(entry_->ShouldRejectRequest(net::LOAD_NORMAL));
+  EXPECT_FALSE(entry_->ShouldRejectRequest());
   entry_->set_exponential_backoff_release_time(entry_->ImplGetTimeNow() -
                                                TimeDelta::FromMilliseconds(1));
-  EXPECT_FALSE(entry_->ShouldRejectRequest(net::LOAD_NORMAL));
+  EXPECT_FALSE(entry_->ShouldRejectRequest());
 }
 
 TEST_F(ExtensionThrottleEntryTest, InterfaceUpdateFailure) {
@@ -296,14 +282,6 @@ TEST_F(ExtensionThrottleEntryTest, SlidingWindow) {
   EXPECT_EQ(time_4, entry_->sliding_window_release_time());
 }
 
-TEST_F(ExtensionThrottleEntryTest, ExplicitUserRequest) {
-  ASSERT_FALSE(MockExtensionThrottleEntry::ExplicitUserRequest(0));
-  ASSERT_TRUE(MockExtensionThrottleEntry::ExplicitUserRequest(
-      net::LOAD_MAYBE_USER_GESTURE));
-  ASSERT_FALSE(MockExtensionThrottleEntry::ExplicitUserRequest(
-      ~net::LOAD_MAYBE_USER_GESTURE));
-}
-
 TEST(ExtensionThrottleManagerTest, IsUrlStandardised) {
   MockExtensionThrottleManager manager;
   GurlAndString test_values[] = {
@@ -366,11 +344,11 @@ TEST(ExtensionThrottleManagerTest, LocalHostOptedOut) {
   // A localhost entry should always be opted out.
   ExtensionThrottleEntry* localhost_entry =
       manager.RegisterRequestUrl(GURL("http://localhost/hello"));
-  EXPECT_FALSE(localhost_entry->ShouldRejectRequest(net::LOAD_NORMAL));
+  EXPECT_FALSE(localhost_entry->ShouldRejectRequest());
   for (int i = 0; i < 10; ++i) {
     localhost_entry->UpdateWithResponse(503);
   }
-  EXPECT_FALSE(localhost_entry->ShouldRejectRequest(net::LOAD_NORMAL));
+  EXPECT_FALSE(localhost_entry->ShouldRejectRequest());
 
   // We're not mocking out GetTimeNow() in this scenario
   // so add a 100 ms buffer to avoid flakiness (that should always
@@ -388,7 +366,7 @@ TEST(ExtensionThrottleManagerTest, ClearOnNetworkChange) {
     for (int j = 0; j < 10; ++j) {
       entry_before->UpdateWithResponse(503);
     }
-    EXPECT_TRUE(entry_before->ShouldRejectRequest(net::LOAD_NORMAL));
+    EXPECT_TRUE(entry_before->ShouldRejectRequest());
 
     switch (i) {
       case 0:
@@ -403,24 +381,23 @@ TEST(ExtensionThrottleManagerTest, ClearOnNetworkChange) {
 
     ExtensionThrottleEntry* entry_after =
         manager.RegisterRequestUrl(GURL("http://www.example.com/"));
-    EXPECT_FALSE(entry_after->ShouldRejectRequest(net::LOAD_NORMAL));
+    EXPECT_FALSE(entry_after->ShouldRejectRequest());
   }
 }
 
 TEST(ExtensionThrottleManagerTest, UseAfterNetworkChange) {
   MockExtensionThrottleManager manager;
   const GURL test_url("http://www.example.com/");
-  EXPECT_FALSE(manager.ShouldRejectRequest(test_url, net::LOAD_NORMAL));
+  EXPECT_FALSE(manager.ShouldRejectRequest(test_url));
   manager.SetOnline(/*is_online=*/false);
   manager.SetOnline(/*is_online=*/true);
   net::RedirectInfo redirect_info;
   redirect_info.new_url = GURL("http://www.newsite.com");
-  EXPECT_FALSE(
-      manager.ShouldRejectRedirect(test_url, net::LOAD_NORMAL, redirect_info));
+  EXPECT_FALSE(manager.ShouldRejectRedirect(test_url, redirect_info));
   manager.SetOnline(/*is_online=*/false);
   manager.SetOnline(/*is_online=*/true);
-  network::ResourceResponseHead response_head;
-  manager.WillProcessResponse(redirect_info.new_url, response_head);
+  auto response_head = network::mojom::URLResponseHead::New();
+  manager.WillProcessResponse(redirect_info.new_url, *response_head);
 }
 
 }  // namespace extensions

@@ -9,6 +9,8 @@
 
 #import "cwv_preferences.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface CWVPreferences (Autofill)
 
 // Whether or not profile autofill is turned on. Defaults to |YES|.
@@ -33,5 +35,7 @@
     BOOL passwordAutofillEnabled;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_PREFERENCES_AUTOFILL_H_

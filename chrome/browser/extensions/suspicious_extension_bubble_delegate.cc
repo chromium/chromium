@@ -154,15 +154,13 @@ bool SuspiciousExtensionBubbleDelegate::ShouldLimitToEnabledExtensions() const {
 
 void SuspiciousExtensionBubbleDelegate::LogExtensionCount(
     size_t count) {
-  UMA_HISTOGRAM_COUNTS_100(
-      "ExtensionBubble.ExtensionWipeoutCount", count);
+  UMA_HISTOGRAM_COUNTS_100("ExtensionBubble.ExtensionWipeoutCount", count);
 }
 
 void SuspiciousExtensionBubbleDelegate::LogAction(
     ExtensionMessageBubbleController::BubbleAction action) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "ExtensionBubble.WipeoutUserSelection",
-      action, ExtensionMessageBubbleController::ACTION_BOUNDARY);
+  // There are no significant actions for this bubble (the user just has to
+  // acknowledge it).
 }
 
 bool SuspiciousExtensionBubbleDelegate::SupportsPolicyIndicator() {

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 
 #include <algorithm>
 
@@ -21,18 +20,17 @@ namespace {
 }  // namespace
 
 TEST(CTKnownLogsTest, GoogleIDsAreSorted) {
-  ASSERT_TRUE(std::is_sorted(std::begin(kGoogleLogIDs), std::end(kGoogleLogIDs),
-                             [](const char* a, const char* b) {
-                               return memcmp(a, b, crypto::kSHA256Length) < 0;
-                             }));
+  std::vector<std::string> google_log_ids = GetLogsOperatedByGoogle();
+  ASSERT_TRUE(
+      std::is_sorted(std::begin(google_log_ids), std::end(google_log_ids)));
 }
 
 TEST(CTKnownLogsTest, DisallowedLogsAreSortedByLogID) {
+  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs =
+      GetDisqualifiedLogs();
   ASSERT_TRUE(std::is_sorted(
-      std::begin(kDisqualifiedCTLogList), std::end(kDisqualifiedCTLogList),
-      [](const DisqualifiedCTLogInfo& a, const DisqualifiedCTLogInfo& b) {
-        return memcmp(a.log_id, b.log_id, crypto::kSHA256Length) < 0;
-      }));
+      std::begin(disqualified_logs), std::end(disqualified_logs),
+      [](const auto& a, const auto& b) { return a.first < b.first; }));
 }
 
 }  // namespace certificate_transparency

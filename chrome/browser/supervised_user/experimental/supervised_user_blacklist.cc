@@ -55,7 +55,7 @@ bool SupervisedUserBlacklist::Hash::operator<(const Hash& rhs) const {
   return memcmp(data, rhs.data, base::kSHA1Length) < 0;
 }
 
-SupervisedUserBlacklist::SupervisedUserBlacklist() : weak_ptr_factory_(this) {}
+SupervisedUserBlacklist::SupervisedUserBlacklist() {}
 
 SupervisedUserBlacklist::~SupervisedUserBlacklist() {}
 
@@ -70,9 +70,9 @@ size_t SupervisedUserBlacklist::GetEntryCount() const {
 
 void SupervisedUserBlacklist::ReadFromFile(const base::FilePath& path,
                                            const base::Closure& done_callback) {
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ReadFromBinaryFileOnFileThread, path),
       base::BindOnce(&SupervisedUserBlacklist::OnReadFromFileCompleted,

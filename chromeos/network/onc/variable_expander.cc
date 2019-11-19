@@ -145,6 +145,12 @@ bool VariableExpander::ExpandValue(base::Value* value) const {
       // Nothing to do here.
       break;
     }
+
+    // TODO(crbug.com/859477): Remove after root cause is found.
+    case base::Value::Type::DEAD: {
+      CHECK(false);
+      break;
+    }
   }
   return no_error;
 }

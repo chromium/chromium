@@ -1,0 +1,22 @@
+Tests fetch cached response entries from the protocol.
+Expecting skipCount and pageSize to slice the results
+Cached requests (-/1): 
+   http://127.0.0.1:8000/inspector-protocol/cachestorage/resources/service-worker.html
+
+Cached requests (1/1): 
+   http://127.0.0.1:8000/inspector-protocol/cachestorage/resources/service-worker.js
+
+Cached requests (-/2): 
+   http://127.0.0.1:8000/inspector-protocol/cachestorage/resources/service-worker.html
+   http://127.0.0.1:8000/inspector-protocol/cachestorage/resources/service-worker.js
+
+Expecting skipCount to default to 0
+Cached requests (-/1): 
+   http://127.0.0.1:8000/inspector-protocol/cachestorage/resources/service-worker.html
+
+Expecting pageSize to default to all
+Cached requests (-/-): 
+   http://127.0.0.1:8000/inspector-protocol/cachestorage/resources/service-worker.html
+   http://127.0.0.1:8000/inspector-protocol/cachestorage/resources/service-worker.js
+
+

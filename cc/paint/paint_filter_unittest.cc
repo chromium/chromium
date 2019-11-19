@@ -114,9 +114,8 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
           0.3f, nullptr, &crop_rect);
     case PaintFilter::Type::kPaintFlags: {
       PaintFlags flags;
-      flags.setShader(PaintShader::MakeImage(image, SkShader::kClamp_TileMode,
-                                             SkShader::kClamp_TileMode,
-                                             nullptr));
+      flags.setShader(PaintShader::MakeImage(image, SkTileMode::kClamp,
+                                             SkTileMode::kClamp, nullptr));
       return sk_make_sp<PaintFlagsPaintFilter>(flags, &crop_rect);
     }
     case PaintFilter::Type::kMatrix:

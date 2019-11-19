@@ -1,0 +1,24 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/
+
+[
+    Exposed(Window WebGPU, Worker WebGPU)
+] interface GPURenderPassEncoder {
+    void setViewport(float x, float y,
+                     float width, float height,
+                     float minDepth, float maxDepth);
+
+    void setScissorRect(unsigned long x, unsigned long y,
+                        unsigned long width, unsigned long height);
+
+    [RaisesException] void setBlendColor(GPUColor color);
+    void setStencilReference(unsigned long reference);
+
+    void executeBundles(sequence<GPURenderBundle> bundles);
+    void endPass();
+};
+GPURenderPassEncoder includes GPUProgrammablePassEncoder;
+GPURenderPassEncoder includes GPURenderEncoderBase;

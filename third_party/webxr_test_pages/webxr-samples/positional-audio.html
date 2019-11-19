@@ -36,6 +36,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <!--The polyfill is not needed for browser that have native API support,
         but is linked by these samples for wider compatibility.-->
     <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='js/xrray-polyfill.js' type='module'></script>
     <script src='js/webxr-polyfill.js'></script>
 
     <script src="https://cdn.jsdelivr.net/npm/resonance-audio/build/resonance-audio.min.js"></script>
@@ -50,7 +51,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           This sample demonstrates playing audio that sounds as if it originates
           at a specific point in the space. Audio will begin playing when you
           enter XR.
-          <a class="back" href="./">Back</a>
+          <a class="back" href="./index.html">Back</a>
         </p>
       </details>
     </header>
@@ -69,7 +70,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         var polyfill = new WebXRPolyfill();
       }
 
-      // Temporary
+      // If requested, don't display the frame rate info.
       let hideStats = QueryArgs.getBool('hideStats', false);
 
       const DEFAULT_HEIGHT = 1.5;
@@ -158,7 +159,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       function createBufferSource(source, buffer, analyser) {
         // Create a buffer source. This will need to be recreated every time
-        // we wish to start the audio, see 
+        // we wish to start the audio, see
         // https://developer.mozilla.org/en-US/docs/Web/API/AudioBufferSourceNode
         let bufferSource = audioContext.createBufferSource();
         bufferSource.loop = true;
@@ -264,15 +265,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       function initXR() {
         xrButton = new XRDeviceButton({
           onRequestSession: onRequestSession,
-          onEndSession: onEndSession
+          onEndSession: onEndSession,
+          supportedSessionTypes: ['immersive-vr']
         });
         document.querySelector('header').appendChild(xrButton.domElement);
 
         if (navigator.xr) {
-          navigator.xr.supportsSessionMode('immersive-vr').then(() => {
-            xrButton.enabled = true;
-          });
-
           // Load multiple audio sources.
           Promise.all([
             createAudioSource({
@@ -299,6 +297,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
               if (audioContext.state == 'running') {
                 pauseAudio();
               } else {
+                if ("userActivation" in navigator) {
+                  console.debug(navigator.userActivation);
+                }
                 playAudio();
               }
             });
@@ -306,7 +307,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             scene.addNode(playButton);
           });
 
-          navigator.xr.requestSession().then(onSessionStarted);
+          requestInlineSession()
+          .then((session) => {
+            gl.canvas.addEventListener('touchend', () => {
+              session.end().then(() => {
+                requestInlineSession({ optionalFeatures: ['local-floor'] });
+              })
+            }, { once: true });
+          });
         } else {
           initFallback();
         }
@@ -314,7 +322,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       function initFallback() {
         initGL();
-        document.body.appendChild(gl.canvas);
         let fallbackHelper = new FallbackHelper(scene, gl);
         fallbackHelper.emulateStage = true;
       }
@@ -326,6 +333,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         gl = createWebGLContext({
           xrCompatible: true
         });
+        document.body.appendChild(gl.canvas);
+
+        function onResize () {
+          gl.canvas.width = (gl.canvas.offsetWidth * window.devicePixelRatio);
+          gl.canvas.height = (gl.canvas.offsetHeight * window.devicePixelRatio);
+        }
+        window.addEventListener('resize', onResize);
+        onResize();
 
         renderer = new Renderer(gl);
         scene.setRenderer(renderer);
@@ -333,10 +348,20 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       }
 
       function onRequestSession() {
-        navigator.xr.requestSession({ mode: 'immersive-vr' }).then((session) => {
+        navigator.xr.requestSession('immersive-vr', {requiredFeatures: ['local-floor']})
+        .then((session) => {
+          session.mode = 'immersive-vr';
           xrButton.setSession(session);
           onSessionStarted(session);
         });
+      }
+
+      function requestInlineSession(options) {
+        return navigator.xr.requestSession('inline', options)
+          .then((session) => {
+            session.mode = 'inline';
+            return onSessionStarted(session);
+          });
       }
 
       function onSessionStarted(session) {
@@ -353,15 +378,26 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         initGL();
 
-        let outputCanvas = document.createElement('canvas');
-        document.body.appendChild(outputCanvas);
-
         session.updateRenderState({
-            baseLayer: new XRWebGLLayer(session, gl),
-            outputContext: outputCanvas.getContext('xrpresent')
+            baseLayer: new XRWebGLLayer(session, gl)
         });
 
-        session.requestReferenceSpace({ type: 'stationary', subtype: 'floor-level' }).then((refSpace) => {
+        session.requestReferenceSpace('local-floor').then((refSpace) => {
+          return refSpace;
+        }, (e) => {
+          if (!session.mode.startsWith('immersive')) {
+            // If we're in inline mode, our underlying platform may not support
+            // the local-floor reference space, but a viewer space is guaranteed.
+            return session.requestReferenceSpace('viewer').then((viewerRefSpace) => {
+              // Adjust the viewer space for an estimated user height. Otherwise,
+              // the poses queried with this space will originate from the floor.
+              let xform = new XRRigidTransform({x: 0, y: -1.5, z: 0});
+              return viewerRefSpace.getOffsetReferenceSpace(xform);
+            });
+          } else {
+            throw e;
+          }
+        }).then((refSpace) => {
           if (session.mode.startsWith('immersive')) {
             xrImmersiveRefSpace = refSpace;
           } else {
@@ -370,6 +406,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
           session.requestAnimationFrame(onXRFrame);
         });
+
+        return session;
       }
 
       function onEndSession(session) {
@@ -383,31 +421,22 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           // Stop the audio playback when we exit XR.
           pauseAudio();
         }
-
-        if (event.session.renderState.outputContext) {
-          document.body.removeChild(event.session.renderState.outputContext.canvas);
-        }
       }
 
-      let draggingSource = null;
-      let draggingInput = null;
-      let draggingTransform = mat4.create();
-
       function hitTest(inputSource, frame, refSpace) {
-        let inputPose = frame.getInputPose(inputSource, refSpace);
-        if (!inputPose) {
-          return;
-        }
-
-        if (inputPose.targetRay) {
-          let hitResult = scene.hitTest(inputPose.targetRay)
+        let pose = frame.getPose(inputSource.targetRaySpace, refSpace);
+        if (pose) {
+          let targetRay = new XRRay(pose.transform);
+          let hitResult = scene.hitTest(targetRay)
           if (hitResult) {
             for (let source of audioSources) {
-              if (hitResult.node ==  source.node) {
-                draggingSource = source;
-                draggingInput = inputSource;
-                mat4.invert(draggingTransform, inputPose.targetRay.matrix);
-                mat4.multiply(draggingTransform, draggingTransform, source.node.matrix);
+              if (hitResult.node === source.node) {
+                // Associate the input source with the audio source object until
+                // onSelectEnd event is raised with the same input source.
+                source.draggingInput = inputSource;
+                source.draggingTransform = mat4.create();
+                mat4.invert(source.draggingTransform, targetRay.matrix);
+                mat4.multiply(source.draggingTransform, source.draggingTransform, source.node.matrix);
                 return true;
               }
             }
@@ -424,9 +453,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         hitTest(ev.inputSource, ev.frame, refSpace);
       }
 
+      // Remove any references to the input source from the audio sources so
+      // that the objects are not dragged any further after the user releases
+      // the trigger.
       function onSelectEnd(ev) {
-        draggingSource =  null;
-        draggingInput = null;
+        for (let source of audioSources) {
+          if (source.draggingInput === ev.inputSource) {
+            source.draggingInput = undefined;
+            source.draggingTransform = undefined;
+          }
+        }
       }
 
       let tmpMatrix = mat4.create();
@@ -443,13 +479,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         scene.updateInputSources(frame, refSpace);
 
-        if (draggingSource) {
-          let draggingPose = frame.getInputPose(draggingInput, refSpace);
-          if (draggingPose) {
-            let pos = draggingSource.position;
-            mat4.multiply(tmpMatrix, draggingPose.targetRay.matrix, draggingTransform);
-            vec3.transformMat4(pos, [0, 0, 0], tmpMatrix);
-            draggingSource.source.setPosition(pos[0], pos[1], pos[2]);
+        // Update the position of all currently selected audio sources. It's
+        // possible to select multiple audio sources and drag them at the same
+        // time (one per controller that has the trigger held down).
+        for (let draggingSource of audioSources) {
+          if (draggingSource.draggingInput) {
+            let draggingPose = frame.getPose(draggingSource.draggingInput.targetRaySpace, refSpace);
+            if (draggingPose) {
+              let position = draggingSource.position;
+              mat4.multiply(tmpMatrix, draggingPose.transform.matrix, draggingSource.draggingTransform);
+              vec3.transformMat4(position, [0, 0, 0], tmpMatrix);
+              draggingSource.source.setPosition(position[0], position[1], position[2]);
+            }
           }
         }
 

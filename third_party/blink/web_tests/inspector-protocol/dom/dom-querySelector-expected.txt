@@ -1,0 +1,91 @@
+Tests DOM.querySelector and DOM.querySelectorAll
+querySelector: by node name
+
+Running test: getFirstDivInBody
+{
+    attributes : [
+    ]
+    backendNodeId : <number>
+    childNodeCount : 6
+    localName : body
+    nodeId : <number>
+    nodeName : BODY
+    nodeType : 1
+    nodeValue : 
+    parentId : <number>
+}
+{
+    nodeId : <number>
+}
+{
+    attributes : [
+        [0] : class
+        [1] : testClass
+        [2] : id
+        [3] : firstDiv
+    ]
+    backendNodeId : <number>
+    childNodeCount : 0
+    localName : div
+    nodeId : <number>
+    nodeName : DIV
+    nodeType : 1
+    nodeValue : 
+    parentId : <number>
+}
+
+Running test: queryForSecondDivInBodyById
+{
+    attributes : [
+    ]
+    backendNodeId : <number>
+    childNodeCount : 6
+    localName : body
+    nodeId : <number>
+    nodeName : BODY
+    nodeType : 1
+    nodeValue : 
+    parentId : <number>
+}
+{
+    nodeId : <number>
+}
+[
+    [0] : class
+    [1] : testClass
+    [2] : id
+    [3] : secondDiv
+]
+
+Running test: queryForAllDivsWithGivenClassName
+{
+    attributes : [
+    ]
+    backendNodeId : <number>
+    childNodeCount : 6
+    localName : body
+    nodeId : <number>
+    nodeName : BODY
+    nodeType : 1
+    nodeValue : 
+    parentId : <number>
+}
+5
+
+Running test: expectProperSetChildNodeEventsForDeepNodeQuery
+{
+    attributes : [
+    ]
+    backendNodeId : <number>
+    childNodeCount : 6
+    localName : body
+    nodeId : <number>
+    nodeName : BODY
+    nodeType : 1
+    nodeValue : 
+    parentId : <number>
+}
+{
+    nodeId : <number>
+}
+

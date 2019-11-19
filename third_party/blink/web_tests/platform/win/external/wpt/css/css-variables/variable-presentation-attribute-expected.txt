@@ -1,0 +1,52 @@
+This is a testharness.js-based test.
+PASS Testing 'stroke-width' on '#box1'.
+PASS Testing 'stroke-width' on '#box2'.
+PASS Testing 'stroke-width' on '#box3'.
+PASS Testing 'clip' on '#test4'.
+PASS Testing 'alignment-baseline'.
+FAIL Testing 'baseline-shift'. assert_equals: Default value. expected "baseline" but got "0px"
+PASS Testing 'clip-rule'.
+PASS Testing 'color'.
+FAIL Testing 'color-interpolation-filters'. assert_equals: Default value. expected "" but got "linearrgb"
+PASS Testing 'cursor'.
+PASS Testing 'direction'.
+PASS Testing 'display'.
+PASS Testing 'dominant-baseline'.
+FAIL Testing 'fill'. assert_equals: Default value. expected "black" but got "rgb(0, 0, 0)"
+PASS Testing 'fill-opacity'.
+PASS Testing 'fill-rule'.
+PASS Testing 'filter'.
+FAIL Testing 'flood-color'. assert_equals: Default value. expected "" but got "rgb(0, 0, 0)"
+PASS Testing 'flood-opacity'.
+FAIL Testing 'font-family'. assert_equals: Default value. expected "Times New Roman" but got "\"times new roman\""
+PASS Testing 'font-size'.
+PASS Testing 'font-size-adjust'.
+FAIL Testing 'font-stretch'. assert_equals: Default value. expected "normal" but got "100%"
+PASS Testing 'font-style'.
+PASS Testing 'font-weight'.
+FAIL Testing 'glyph-orientation-horizontal'. assert_equals: Default value. expected "0deg" but got ""
+FAIL Testing 'glyph-orientation-vertical'. assert_equals: Default value. expected "auto" but got ""
+FAIL Testing 'kerning'. assert_equals: Default value. expected "auto" but got ""
+PASS Testing 'letter-spacing'.
+FAIL Testing 'lighting-color'. assert_equals: Default value. expected "" but got "rgb(255, 255, 255)"
+PASS Testing 'opacity'.
+PASS Testing 'overflow'.
+FAIL Testing 'pointer-events'. assert_equals: Default value. expected "visiblePainted" but got "auto"
+FAIL Testing 'stop-color'. assert_equals: Default value. expected "" but got "rgb(0, 0, 0)"
+PASS Testing 'stop-opacity'.
+FAIL Testing 'stroke'. assert_equals: Default value. expected "" but got "none"
+PASS Testing 'stroke-dasharray'.
+PASS Testing 'stroke-dashoffset'.
+PASS Testing 'stroke-linecap'.
+PASS Testing 'stroke-linejoin'.
+PASS Testing 'stroke-miterlimit'.
+PASS Testing 'stroke-opacity'.
+PASS Testing 'stroke-width'.
+PASS Testing 'text-anchor'.
+PASS Testing 'text-decoration-line'.
+PASS Testing 'text-decoration-style'.
+PASS Testing 'visibility'.
+PASS Testing 'word-spacing'.
+FAIL Testing 'writing-mode'. assert_equals: Default value. expected "lr-tb" but got "horizontal-tb"
+Harness: the test ran to completion.
+

@@ -38,9 +38,14 @@ source_set("audio") {
 
 source_set("test_support") {
   testonly = true
+
   sources = [
     "fake_async_audio_data_supplier.cc",
     "fake_async_audio_data_supplier.h",
+  ]
+
+  deps = [
+    "//base",
   ]
 }
 

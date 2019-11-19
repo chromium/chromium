@@ -12,6 +12,7 @@
 
 #include "base/macros.h"
 #include "cc/layers/layer.h"
+#include "cc/layers/ui_resource_layer.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 #include "chrome/browser/android/compositor/scene_layer/scene_layer.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -107,6 +108,11 @@ class TabListSceneLayer : public SceneLayer {
                    jfloat side_border_scale,
                    jboolean inset_border);
 
+  void PutBackgroundLayer(JNIEnv* env,
+                          const base::android::JavaParamRef<jobject>& jobj,
+                          jint resource_id,
+                          jfloat alpha);
+
   void OnDetach() override;
   bool ShouldShowBackground() override;
   SkColor GetBackgroundColor() override;
@@ -118,6 +124,8 @@ class TabListSceneLayer : public SceneLayer {
   typedef std::map<int, scoped_refptr<TabLayer>> TabMap;
   TabMap tab_map_;
   std::set<int> visible_tabs_this_frame_;
+
+  scoped_refptr<cc::UIResourceLayer> background_layer_;
 
   bool content_obscures_self_;
   ui::ResourceManager* resource_manager_;

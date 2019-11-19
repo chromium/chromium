@@ -13,7 +13,7 @@
 
 namespace blink {
 
-class CSSSyntaxDescriptor;
+class CSSSyntaxDefinition;
 class PropertyRegistry;
 
 class CORE_EXPORT CSSInterpolationTypesMap : public InterpolationTypesMap {
@@ -26,7 +26,7 @@ class CORE_EXPORT CSSInterpolationTypesMap : public InterpolationTypesMap {
 
   static InterpolationTypes CreateInterpolationTypesForCSSSyntax(
       const AtomicString& property_name,
-      const CSSSyntaxDescriptor&,
+      const CSSSyntaxDefinition&,
       const PropertyRegistration&);
 
  private:

@@ -6,7 +6,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
-#import "ios/web/public/web_state/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -75,7 +74,7 @@ initWithBaseViewController:(UIViewController*)viewController
     _addressMediator =
         [[ManualFillAddressMediator alloc] initWithProfiles:profiles];
     _addressMediator.navigationDelegate = self;
-    _addressMediator.contentDelegate = self.manualFillInjectionHandler;
+    _addressMediator.contentInjector = self.injectionHandler;
     _addressMediator.consumer = _addressViewController;
   }
   return self;
@@ -99,6 +98,10 @@ initWithBaseViewController:(UIViewController*)viewController
   __weak id<AddressCoordinatorDelegate> delegate = self.delegate;
   [self dismissIfNecessaryThenDoCompletion:^{
     [delegate openAddressSettings];
+    if (IsIPadIdiom()) {
+      // Settings close the popover but don't send a message to reopen it.
+      [delegate fallbackCoordinatorDidDismissPopover:self];
+    }
   }];
 }
 

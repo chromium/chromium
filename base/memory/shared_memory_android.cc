@@ -29,9 +29,7 @@ bool SharedMemory::Create(const SharedMemoryCreateOptions& options) {
     return false;
 
   // "name" is just a label in ashmem. It is visible in /proc/pid/maps.
-  int fd = ashmem_create_region(
-      options.name_deprecated ? options.name_deprecated->c_str() : "",
-      rounded_size);
+  int fd = ashmem_create_region("", rounded_size);
   shm_ = SharedMemoryHandle::ImportHandle(fd, options.size);
   if (!shm_.IsValid()) {
     DLOG(ERROR) << "Shared memory creation failed";
@@ -48,18 +46,6 @@ bool SharedMemory::Create(const SharedMemoryCreateOptions& options) {
   requested_size_ = options.size;
 
   return true;
-}
-
-bool SharedMemory::Delete(const std::string& name) {
-  // Like on Windows, this is intentionally returning true as ashmem will
-  // automatically releases the resource when all FDs on it are closed.
-  return true;
-}
-
-bool SharedMemory::Open(const std::string& name, bool read_only) {
-  // ashmem doesn't support name mapping
-  NOTIMPLEMENTED();
-  return false;
 }
 
 void SharedMemory::Close() {

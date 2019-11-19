@@ -34,9 +34,9 @@ REPOSITORY_ROOT = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..', '..'))
 
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'build', 'android'))
-import lighttpd_server
-sys.path.append(os.path.join(REPOSITORY_ROOT, 'components', 'cronet', 'tools'))
-import perf_test_utils
+import lighttpd_server  # pylint: disable=wrong-import-position
+sys.path.append(os.path.join(REPOSITORY_ROOT, 'components'))
+from cronet.tools import perf_test_utils  # pylint: disable=wrong-import-position
 
 def main():
   device = perf_test_utils.NativeDevice()
@@ -44,7 +44,8 @@ def main():
   http_server_doc_root = perf_test_utils.GenerateHttpTestResources()
   config_file = tempfile.NamedTemporaryFile()
   http_server = lighttpd_server.LighttpdServer(http_server_doc_root,
-      port=perf_test_utils.HTTP_PORT, base_config_path=config_file.name)
+      port=perf_test_utils.HTTP_PORT,
+      base_config_path=config_file.name)
   perf_test_utils.GenerateLighttpdConfig(config_file, http_server_doc_root,
                                          http_server)
   assert http_server.StartupHttpServer()
@@ -68,4 +69,3 @@ def main():
 
 if __name__ == '__main__':
   main()
-

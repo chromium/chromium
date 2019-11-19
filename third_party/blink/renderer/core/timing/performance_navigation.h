@@ -49,10 +49,6 @@ class CORE_EXPORT PerformanceNavigation final : public ScriptWrappable,
   USING_GARBAGE_COLLECTED_MIXIN(PerformanceNavigation);
 
  public:
-  static PerformanceNavigation* Create(LocalFrame* frame) {
-    return MakeGarbageCollected<PerformanceNavigation>(frame);
-  }
-
   explicit PerformanceNavigation(LocalFrame*);
 
   enum PerformanceNavigationType {

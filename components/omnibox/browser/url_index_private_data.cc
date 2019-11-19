@@ -291,7 +291,7 @@ bool URLIndexPrivateData::UpdateURL(
         row_to_update.set_title(row.title());
         RowWordStarts word_starts;
         AddRowWordsToIndex(row_to_update, &word_starts);
-        word_starts_map_[row_id] = word_starts;
+        word_starts_map_[row_id] = std::move(word_starts);
       }
       row_was_updated = true;
     }
@@ -654,8 +654,7 @@ HistoryIDSet URLIndexPrivateData::HistoryIDsForTerm(
                     word_history_id_set.end());
     }
   }
-  HistoryIDSet history_id_set(buffer.begin(), buffer.end(),
-                              base::KEEP_FIRST_OF_DUPES);
+  HistoryIDSet history_id_set(buffer.begin(), buffer.end());
 
   // Record a new cache entry for this word if the term is longer than
   // a single character.
@@ -802,12 +801,13 @@ bool URLIndexPrivateData::IndexRow(
   new_row.set_typed_count(row.typed_count());
   new_row.set_last_visit(row.last_visit());
   new_row.set_title(row.title());
-  history_info_map_[history_id].url_row = new_row;
 
   // Index the words contained in the URL and title of the row.
   RowWordStarts word_starts;
   AddRowWordsToIndex(new_row, &word_starts);
-  word_starts_map_[history_id] = word_starts;
+  word_starts_map_[history_id] = std::move(word_starts);
+
+  history_info_map_[history_id].url_row = std::move(new_row);
 
   // Update the recent visits information or schedule the update
   // as appropriate.
@@ -1145,8 +1145,7 @@ bool URLIndexPrivateData::RestoreCharWordMap(
       return false;
     base::char16 uni_char = static_cast<base::char16>(entry.char_16());
     const RepeatedField<int32_t>& word_ids = entry.word_id();
-    char_word_map_[uni_char] =
-        WordIDSet(word_ids.begin(), word_ids.end(), base::KEEP_FIRST_OF_DUPES);
+    char_word_map_[uni_char] = WordIDSet(word_ids.begin(), word_ids.end());
   }
   return true;
 }
@@ -1167,8 +1166,8 @@ bool URLIndexPrivateData::RestoreWordIDHistoryMap(
       return false;
     WordID word_id = entry.word_id();
     const RepeatedField<int64_t>& history_ids = entry.history_id();
-    word_id_history_map_[word_id] = HistoryIDSet(
-        history_ids.begin(), history_ids.end(), base::KEEP_FIRST_OF_DUPES);
+    word_id_history_map_[word_id] =
+        HistoryIDSet(history_ids.begin(), history_ids.end());
     for (HistoryID history_id : history_ids)
       history_id_word_map_[history_id].insert(word_id);
   }

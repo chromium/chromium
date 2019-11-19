@@ -18,7 +18,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/device/usb/usb_device_manager_helper.h"
-#include "device/usb/public/mojom/device.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/mojom/usb_device.mojom.h"
 
 namespace base {
 class RefCountedBytes;
@@ -80,7 +81,7 @@ class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
 
   AndroidUsbDevice(crypto::RSAPrivateKey* rsa_key,
                    const AndroidDeviceInfo& android_device_info,
-                   device::mojom::UsbDevicePtr device_ptr);
+                   mojo::Remote<device::mojom::UsbDevice> device);
 
   void InitOnCallerThread();
 
@@ -133,7 +134,7 @@ class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
   std::unique_ptr<crypto::RSAPrivateKey> rsa_key_;
 
   // Device info
-  device::mojom::UsbDevicePtr device_ptr_;
+  mojo::Remote<device::mojom::UsbDevice> device_;
   AndroidDeviceInfo android_device_info_;
 
   bool is_connected_;
@@ -152,7 +153,7 @@ class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
   using PendingMessages = std::vector<std::unique_ptr<AdbMessage>>;
   PendingMessages pending_messages_;
 
-  base::WeakPtrFactory<AndroidUsbDevice> weak_factory_;
+  base::WeakPtrFactory<AndroidUsbDevice> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AndroidUsbDevice);
 };

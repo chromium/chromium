@@ -16,8 +16,7 @@ import android.util.Log;
 
 import org.chromium.webapk.lib.common.WebApkMetaDataKeys;
 
-import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /** Selects host browser to launch, showing a dialog to select browser if necessary. */
 public class LaunchHostBrowserSelector {
@@ -77,9 +76,9 @@ public class LaunchHostBrowserSelector {
             return;
         }
 
-        Set<ResolveInfo> infos =
+        Map<String, ResolveInfo> infos =
                 WebApkUtils.getInstalledBrowserResolveInfos(mContext.getPackageManager());
-        if (hasBrowserSupportingWebApks(infos)) {
+        if (!infos.isEmpty()) {
             showChooseHostBrowserDialog(infos, selectCallback);
         } else {
             showInstallHostBrowserDialog(metadata, selectCallback);
@@ -96,19 +95,9 @@ public class LaunchHostBrowserSelector {
         }
     }
 
-    /** Returns whether there is any installed browser supporting WebAPKs. */
-    private static boolean hasBrowserSupportingWebApks(Set<ResolveInfo> resolveInfos) {
-        List<String> browsersSupportingWebApk = HostBrowserUtils.getBrowsersSupportingWebApk();
-        for (ResolveInfo info : resolveInfos) {
-            if (browsersSupportingWebApk.contains(info.activityInfo.packageName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /** Shows a dialog to choose the host browser. */
-    private void showChooseHostBrowserDialog(Set<ResolveInfo> infos, Callback selectCallback) {
+    private void showChooseHostBrowserDialog(
+            Map<String, ResolveInfo> infos, Callback selectCallback) {
         ChooseHostBrowserDialog.DialogListener listener =
                 new ChooseHostBrowserDialog.DialogListener() {
                     @Override

@@ -7,9 +7,9 @@
 namespace content {
 
 FakeRendererCompositorFrameSink::FakeRendererCompositorFrameSink(
-    viz::mojom::CompositorFrameSinkPtr sink,
-    viz::mojom::CompositorFrameSinkClientRequest request)
-    : binding_(this, std::move(request)), sink_(std::move(sink)) {}
+    mojo::PendingRemote<viz::mojom::CompositorFrameSink> sink,
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient> receiver)
+    : receiver_(this, std::move(receiver)), sink_(std::move(sink)) {}
 
 FakeRendererCompositorFrameSink::~FakeRendererCompositorFrameSink() = default;
 
@@ -30,7 +30,7 @@ void FakeRendererCompositorFrameSink::Reset() {
 }
 
 void FakeRendererCompositorFrameSink::Flush() {
-  binding_.FlushForTesting();
+  receiver_.FlushForTesting();
 }
 
 }  // namespace content

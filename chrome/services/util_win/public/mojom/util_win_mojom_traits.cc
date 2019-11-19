@@ -131,7 +131,7 @@ const base::string16& StructTraits<
 const base::string16& StructTraits<
     chrome::mojom::InspectionResultDataView,
     ModuleInspectionResult>::version(const ModuleInspectionResult& input) {
-  return input.basename;
+  return input.version;
 }
 // static
 chrome::mojom::CertificateType
@@ -197,7 +197,7 @@ bool StructTraits<chrome::mojom::AntiVirusProductDataView,
     output->set_product_name(std::move(product_name));
 
   std::string product_version;
-  if (!input.ReadProductName(&product_version))
+  if (!input.ReadProductVersion(&product_version))
     return false;
   if (!product_version.empty())
     output->set_product_version(std::move(product_version));

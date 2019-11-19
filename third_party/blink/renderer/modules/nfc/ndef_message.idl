@@ -4,7 +4,14 @@
 
 // https://w3c.github.io/web-nfc/#dom-ndefmessage
 
-dictionary NDEFMessage {
-    sequence<NDEFRecord> records;
-    USVString url;
+[
+    RuntimeEnabled=WebNFC,
+    SecureContext,
+    Constructor(NDEFMessageInit messageInit),
+    ConstructorCallWith=ExecutionContext,
+    RaisesException=Constructor,
+    Exposed=Window
+] interface NDEFMessage {
+    readonly attribute USVString url;
+    readonly attribute FrozenArray<NDEFRecord> records;
 };

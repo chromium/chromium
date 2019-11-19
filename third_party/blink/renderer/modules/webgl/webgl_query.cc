@@ -33,9 +33,7 @@ WebGLQuery::WebGLQuery(WebGL2RenderingContextBase* ctx)
   SetObject(query);
 }
 
-WebGLQuery::~WebGLQuery() {
-  RunDestructor();
-}
+WebGLQuery::~WebGLQuery() = default;
 
 void WebGLQuery::SetTarget(GLenum target) {
   DCHECK(Object());

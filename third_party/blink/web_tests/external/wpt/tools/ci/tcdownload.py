@@ -10,6 +10,10 @@ import github
 logging.basicConfig()
 logger = logging.getLogger("tc-download")
 
+# The root URL of the Taskcluster deployment from which to download wpt reports
+# (after https://bugzilla.mozilla.org/show_bug.cgi?id=1574668 lands, this will
+# be https://community-tc.services.mozilla.com)
+TASKCLUSTER_ROOT_URL = 'https://taskcluster.net'
 
 def get_parser():
     parser = argparse.ArgumentParser()
@@ -19,7 +23,7 @@ def get_parser():
                         help="Log type to fetch")
     parser.add_argument("--repo-name", action="store", default="web-platform-tests/wpt",
                         help="GitHub repo name in the format owner/repo. "
-                        "This must be the repo from which the TaskCluster run was scheduled "
+                        "This must be the repo from which the Taskcluster run was scheduled "
                         "(for PRs this is the repo into which the PR would merge)")
     parser.add_argument("--token-file", action="store",
                         help="File containing GitHub token")
@@ -70,12 +74,17 @@ def run(*args, **kwargs):
         taskgroups.add(taskgroup_id)
 
     if not taskgroups:
-        logger.error("No complete TaskCluster runs found for ref %s" % kwargs["ref"])
-        return
+        logger.error("No complete Taskcluster runs found for ref %s" % kwargs["ref"])
+        return 1
 
     for taskgroup in taskgroups:
-        taskgroup_url = "https://queue.taskcluster.net/v1/task-group/%s/list"
-        artifacts_list_url = "https://queue.taskcluster.net/v1/task/%s/artifacts"
+        if TASKCLUSTER_ROOT_URL == 'https://taskcluster.net':
+            # NOTE: this condition can be removed after November 9, 2019
+            taskgroup_url = "https://queue.taskcluster.net/v1/task-group/%s/list"
+            artifacts_list_url = "https://queue.taskcluster.net/v1/task/%s/artifacts"
+        else:
+            taskgroup_url = TASKCLUSTER_ROOT_URL + "/api/queue/v1/task-group/%s/list"
+            artifacts_list_url = TASKCLUSTER_ROOT_URL + "/api/queue/v1/task/%s/artifacts"
         tasks = get_json(taskgroup_url % taskgroup, "tasks")
         for task in tasks:
             task_id = task["status"]["taskId"]

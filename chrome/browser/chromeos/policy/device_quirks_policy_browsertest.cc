@@ -24,11 +24,6 @@ class DeviceQuirksPolicyTest : public policy::DevicePolicyCrosBrowserTest {
  public:
   DeviceQuirksPolicyTest() {}
 
-  void SetUpInProcessBrowserTestFixture() override {
-    InstallOwnerKey();
-    DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
-  }
-
   void SetUpOnMainThread() override {
     // NOTE: QuirksManager::Initialize() isn't necessary here, since it'll be
     // called in ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun().

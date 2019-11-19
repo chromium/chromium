@@ -1,8 +1,17 @@
 This is a testharness.js-based test.
-FAIL Verify worker script from uncontrolled document is intercepted by Service Worker promise_test: Unhandled rejection with value: undefined
-FAIL Verify worker script intercepted by same-origin response succeeds promise_test: Unhandled rejection with value: undefined
-PASS Verify worker script intercepted by cors response fails
-PASS Verify worker script intercepted by no-cors cross-origin response fails
-PASS Verify worker loads from controlled document are intercepted by Service Worker
+FAIL Verify a dedicated worker script request issued from a uncontrolled document is intercepted by worker's own service worker. promise_test: Unhandled rejection with value: undefined
+PASS Verify a shared worker script request issued from a uncontrolled document is intercepted by worker's own service worker.
+FAIL Verify a same-origin worker script served by a service worker succeeds in starting a dedicated worker. promise_test: Unhandled rejection with value: undefined
+PASS Verify a same-origin worker script served by a service worker succeeds in starting a shared worker.
+PASS Verify a cors worker script served by a service worker fails dedicated worker start.
+PASS Verify a cors worker script served by a service worker fails shared worker start.
+PASS Verify a no-cors cross-origin worker script served by a service worker fails dedicated worker start.
+PASS Verify a no-cors cross-origin worker script served by a service worker fails shared worker start.
+PASS Register a service worker for worker subresource interception tests.
+FAIL Requests on a dedicated worker controlled by a service worker. assert_equals: expected "This load was successfully intercepted." but got "{\"error\": {\"message\": \"\", \"code\": 404}}"
+PASS Requests on a shared worker controlled by a service worker.
+FAIL Requests on a dedicated worker nested in a dedicated worker and controlled by a service worker assert_equals: expected "This load was successfully intercepted." but got "{\"error\": {\"message\": \"\", \"code\": 404}}"
+FAIL Requests on a dedicated worker nested in a shared worker and controlled by a service worker assert_equals: expected "This load was successfully intercepted." but got "Unexpected error! Worker is not defined"
+PASS Unregister a service worker for subresource interception tests.
 Harness: the test ran to completion.
 

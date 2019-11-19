@@ -8,11 +8,10 @@
 #include "base/bind_helpers.h"
 #include "base/lazy_instance.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/service_manager_connection.h"
+#include "content/public/browser/system_connector.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/power.h"
 #include "extensions/common/extension.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "services/device/public/mojom/constants.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -155,18 +154,15 @@ device::mojom::WakeLock* PowerAPI::GetWakeLock() {
   if (wake_lock_)
     return wake_lock_.get();
 
-  device::mojom::WakeLockRequest request = mojo::MakeRequest(&wake_lock_);
-
-  DCHECK(content::ServiceManagerConnection::GetForProcess());
-  auto* connector =
-      content::ServiceManagerConnection::GetForProcess()->GetConnector();
-  device::mojom::WakeLockProviderPtr wake_lock_provider;
-  connector->BindInterface(device::mojom::kServiceName,
-                           mojo::MakeRequest(&wake_lock_provider));
+  auto* connector = content::GetSystemConnector();
+  DCHECK(connector);
+  mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider;
+  connector->Connect(device::mojom::kServiceName,
+                     wake_lock_provider.BindNewPipeAndPassReceiver());
   wake_lock_provider->GetWakeLockWithoutContext(
       LevelToWakeLockType(current_level_),
       device::mojom::WakeLockReason::kOther, kWakeLockDescription,
-      std::move(request));
+      wake_lock_.BindNewPipeAndPassReceiver());
   return wake_lock_.get();
 }
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_UI_CONTROLLER_H_
 #define CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_UI_CONTROLLER_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 
@@ -13,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
+#include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/common/buildflags.h"
 #include "components/password_manager/core/browser/password_store.h"
@@ -36,15 +36,18 @@ class PasswordFormManagerForUI;
 class AccountChooserPrompt;
 struct AccountInfo;
 class AutoSigninFirstRunPrompt;
+class CredentialLeakPrompt;
 class ManagePasswordsIconView;
-class PasswordDialogController;
-class PasswordDialogControllerImpl;
+class CredentialLeakDialogController;
+class CredentialManagerDialogController;
+class PasswordBaseDialogController;
 
 // Per-tab class to control the Omnibox password icon and bubble.
 class ManagePasswordsUIController
     : public content::WebContentsObserver,
       public content::WebContentsUserData<ManagePasswordsUIController>,
       public password_manager::PasswordStore::Observer,
+      public PasswordsLeakDialogDelegate,
       public PasswordsModelDelegate,
       public PasswordsClientUIDelegate {
  public:
@@ -80,11 +83,12 @@ class ManagePasswordsUIController
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager)
       override;
   void OnPasswordAutofilled(
-      const std::map<base::string16, const autofill::PasswordForm*>&
-          password_form_map,
+      const std::vector<const autofill::PasswordForm*>& password_forms,
       const GURL& origin,
       const std::vector<const autofill::PasswordForm*>* federated_matches)
       override;
+  void OnCredentialLeak(password_manager::CredentialLeakType leak_dialog_type,
+                        const GURL& origin) override;
 
   // PasswordStore::Observer:
   void OnLoginsChanged(
@@ -96,7 +100,7 @@ class ManagePasswordsUIController
 
   // True iff the bubble is to be opened automatically.
   bool IsAutomaticallyOpeningBubble() const {
-    return bubble_status_ == SHOULD_POP_UP;
+    return bubble_status_ == BubbleStatus::SHOULD_POP_UP;
   }
 
   base::WeakPtr<PasswordsModelDelegate> GetModelDelegateProxy();
@@ -147,10 +151,8 @@ class ManagePasswordsUIController
   explicit ManagePasswordsUIController(
       content::WebContents* web_contents);
 
-  // The pieces of saving and blacklisting passwords that interact with
-  // FormManager, split off into internal functions for testing/mocking.
-  virtual void SavePasswordInternal();
-  virtual void NeverSavePasswordInternal();
+  // Hides the bubble if opened. Mocked in the tests.
+  virtual void HidePasswordBubble();
 
   // Called when a PasswordForm is autofilled, when a new PasswordForm is
   // submitted, or when a navigation occurs to update the visibility of the
@@ -159,11 +161,15 @@ class ManagePasswordsUIController
 
   // Called to create the account chooser dialog. Mocked in tests.
   virtual AccountChooserPrompt* CreateAccountChooser(
-      PasswordDialogController* controller);
+      CredentialManagerDialogController* controller);
 
   // Called to create the account chooser dialog. Mocked in tests.
   virtual AutoSigninFirstRunPrompt* CreateAutoSigninPrompt(
-      PasswordDialogController* controller);
+      CredentialManagerDialogController* controller);
+
+  // Called to create the credentials leaked dialog.
+  virtual CredentialLeakPrompt* CreateCredentialLeakPrompt(
+      CredentialLeakDialogController* controller);
 
   // Check if |web_contents()| is attached to some Browser. Mocked in tests.
   virtual bool HasBrowserWindow() const;
@@ -171,13 +177,11 @@ class ManagePasswordsUIController
   // True if the bubble is to be opened automatically or after re-auth.
   bool ShouldBubblePopUp() const {
     return IsAutomaticallyOpeningBubble() ||
-           bubble_status_ == SHOULD_POP_UP_AFTER_REAUTH;
+           bubble_status_ == BubbleStatus::SHOULD_POP_UP_AFTER_REAUTH;
   }
 
   // Returns whether the bubble is currently open.
-  bool IsShowingBubbleForTest() const {
-    return bubble_status_ != BubbleStatus::NOT_SHOWN;
-  }
+  bool IsShowingBubbleForTest() const { return IsShowingBubble(); }
 
   // content::WebContentsObserver:
   void DidFinishNavigation(
@@ -187,7 +191,11 @@ class ManagePasswordsUIController
  private:
   friend class content::WebContentsUserData<ManagePasswordsUIController>;
 
-  enum BubbleStatus {
+  // PasswordsLeakDialogDelegate:
+  void NavigateToPasswordCheckup() override;
+  void OnLeakDialogHidden() override;
+
+  enum class BubbleStatus {
     NOT_SHOWN,
     // The bubble is to be popped up in the next call to
     // UpdateBubbleAndIconVisibility().
@@ -198,6 +206,11 @@ class ManagePasswordsUIController
     // Same as SHOWN but the icon is to be updated when the bubble is closed.
     SHOWN_PENDING_ICON_UPDATE,
   };
+
+  bool IsShowingBubble() const {
+    return bubble_status_ == BubbleStatus::SHOWN ||
+           bubble_status_ == BubbleStatus::SHOWN_PENDING_ICON_UPDATE;
+  }
 
   // Returns the timeout for the manual save fallback.
   static base::TimeDelta GetTimeoutForSaveFallback();
@@ -234,9 +247,9 @@ class ManagePasswordsUIController
   ManagePasswordsState passwords_data_;
 
   // The controller for the blocking dialogs.
-  std::unique_ptr<PasswordDialogControllerImpl> dialog_controller_;
+  std::unique_ptr<PasswordBaseDialogController> dialog_controller_;
 
-  BubbleStatus bubble_status_;
+  BubbleStatus bubble_status_ = BubbleStatus::NOT_SHOWN;
 
   // The timer that controls whether the fallback for saving should be
   // available. Should be reset once the fallback is not needed (an automatic
@@ -256,7 +269,7 @@ class ManagePasswordsUIController
   // time the internal state of ManagePasswordsUIController has nothing to do
   // with the old bubble.
   // Invalidating all the weak pointers will detach the current bubble.
-  base::WeakPtrFactory<ManagePasswordsUIController> weak_ptr_factory_;
+  base::WeakPtrFactory<ManagePasswordsUIController> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

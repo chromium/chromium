@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_not_equals: overflow-block should be equivalent to not (overflow-block: none) got disallowed value false
-Found 762 tests; 566 PASS, 196 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 772 tests; 576 PASS, 196 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS subtest_1
 FAIL subtest_2 assert_true: expected true got false
 PASS subtest_3
@@ -599,8 +599,6 @@ PASS subtest_595
 PASS subtest_596
 PASS subtest_597
 PASS subtest_598
-PASS monochrome_and_color
-PASS find_depth
 PASS subtest_599
 PASS subtest_600
 PASS subtest_601
@@ -611,6 +609,8 @@ PASS subtest_605
 PASS subtest_606
 PASS subtest_607
 PASS subtest_608
+PASS monochrome_and_color
+PASS find_depth
 PASS subtest_609
 PASS subtest_610
 PASS subtest_611
@@ -684,7 +684,6 @@ PASS subtest_678
 PASS subtest_679
 PASS subtest_680
 PASS subtest_681
-PASS find_resolution
 PASS subtest_682
 PASS subtest_683
 PASS subtest_684
@@ -695,6 +694,7 @@ PASS subtest_688
 PASS subtest_689
 PASS subtest_690
 PASS subtest_691
+PASS find_resolution
 PASS subtest_692
 PASS subtest_693
 PASS subtest_694
@@ -757,11 +757,21 @@ PASS subtest_750
 PASS subtest_751
 PASS subtest_752
 PASS subtest_753
-FAIL subtest_754 assert_true: expected true got false
-FAIL subtest_755 assert_true: expected true got false
-FAIL subtest_756 assert_true: expected true got false
-FAIL subtest_757 assert_true: expected true got false
-FAIL subtest_758 assert_true: expected true got false
+PASS subtest_754
+PASS subtest_755
+PASS subtest_756
+PASS subtest_757
+PASS subtest_758
 PASS subtest_759
+PASS subtest_760
+PASS subtest_761
+PASS subtest_762
+PASS subtest_763
+FAIL subtest_764 assert_true: expected true got false
+FAIL subtest_765 assert_true: expected true got false
+FAIL subtest_766 assert_true: expected true got false
+FAIL subtest_767 assert_true: expected true got false
+FAIL subtest_768 assert_true: expected true got false
+PASS subtest_769
 Harness: the test ran to completion.
 

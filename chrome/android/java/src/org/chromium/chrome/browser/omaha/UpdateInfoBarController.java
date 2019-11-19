@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
 import org.chromium.chrome.browser.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateInteractionSource;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateStatus;
 import org.chromium.chrome.browser.tab.Tab;
@@ -60,18 +61,19 @@ public class UpdateInfoBarController implements Destroyable {
     }
 
     private void restartChrome() {
-        UpdateStatusProvider.getInstance().finishInlineUpdate();
+        UpdateStatusProvider.getInstance().finishInlineUpdate(UpdateInteractionSource.FROM_INFOBAR);
     }
 
     private void retryUpdate() {
         if (mActivity == null) return;
-        UpdateStatusProvider.getInstance().startInlineUpdate(mActivity);
+        UpdateStatusProvider.getInstance().retryInlineUpdate(
+                UpdateInteractionSource.FROM_INFOBAR, mActivity);
     }
 
     private void showRestartInfobar() {
         if (mActivity == null) return;
 
-        Tab tab = mActivity.getActivityTabProvider().getActivityTab();
+        Tab tab = mActivity.getActivityTabProvider().get();
         if (tab == null) return;
 
         SimpleConfirmInfoBarBuilder.create(tab,
@@ -101,7 +103,7 @@ public class UpdateInfoBarController implements Destroyable {
     private void showFailedInfobar() {
         if (mActivity == null) return;
 
-        Tab tab = mActivity.getActivityTabProvider().getActivityTab();
+        Tab tab = mActivity.getActivityTabProvider().get();
         if (tab == null) return;
 
         SimpleConfirmInfoBarBuilder.create(tab,

@@ -39,8 +39,7 @@ void WebSocketPerProcessThrottler::PendingConnection::OnCompleteHandshake() {
   throttler_ = nullptr;
 }
 
-WebSocketPerProcessThrottler::WebSocketPerProcessThrottler()
-    : weak_factory_(this) {}
+WebSocketPerProcessThrottler::WebSocketPerProcessThrottler() {}
 WebSocketPerProcessThrottler::~WebSocketPerProcessThrottler() {}
 
 base::TimeDelta WebSocketPerProcessThrottler::CalculateDelay() const {

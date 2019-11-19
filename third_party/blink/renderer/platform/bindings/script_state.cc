@@ -6,22 +6,17 @@
 
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
-#include "third_party/blink/renderer/platform/instance_counters.h"
+#include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 
 namespace blink {
-
-ScriptState* ScriptState::Create(v8::Local<v8::Context> context,
-                                 scoped_refptr<DOMWrapperWorld> world) {
-  return MakeGarbageCollected<ScriptState>(context, std::move(world));
-}
 
 ScriptState::ScriptState(v8::Local<v8::Context> context,
                          scoped_refptr<DOMWrapperWorld> world)
     : isolate_(context->GetIsolate()),
       context_(isolate_, context),
       world_(std::move(world)),
-      per_context_data_(V8PerContextData::Create(context)),
-      reference_from_v8_context_(this) {
+      per_context_data_(std::make_unique<V8PerContextData>(context)),
+      reference_from_v8_context_(PERSISTENT_FROM_HERE, this) {
   DCHECK(world_);
   context_.SetWeak(this, &OnV8ContextCollectedCallback);
   context->SetAlignedPointerInEmbedderData(kV8ContextPerContextDataIndex, this);

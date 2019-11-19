@@ -62,6 +62,15 @@ PlayerUtils.registerEMEEventListeners = function(player) {
         }
         player.onMessage(message);
       });
+      mediaKeySession.addEventListener('keystatuseschange', function(e) {
+        const result = [];
+        for (let item of mediaKeySession.keyStatuses) {
+          result.push(`{kid:${
+              Utils.base64urlEncode(
+                  Utils.convertToUint8Array(item[0]))},status:${item[1]}}`);
+        }
+        Utils.timeLog('KeyStatusesChange: ' + result.join(','));
+      });
     }
 
     // Calls getStatusForPolicy() and returns a resolved promise if the result

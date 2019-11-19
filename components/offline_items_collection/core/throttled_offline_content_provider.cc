@@ -28,8 +28,7 @@ ThrottledOfflineContentProvider::ThrottledOfflineContentProvider(
     : delay_between_updates_(delay_between_updates),
       last_update_time_(base::TimeTicks::Now()),
       update_queued_(false),
-      wrapped_provider_(provider),
-      weak_ptr_factory_(this) {
+      wrapped_provider_(provider) {
   DCHECK(wrapped_provider_);
   wrapped_provider_->AddObserver(this);
 }
@@ -97,14 +96,21 @@ void ThrottledOfflineContentProvider::OnGetItemByIdDone(
 
 void ThrottledOfflineContentProvider::GetVisualsForItem(
     const ContentId& id,
+    GetVisualsOptions options,
     VisualsCallback callback) {
-  wrapped_provider_->GetVisualsForItem(id, std::move(callback));
+  wrapped_provider_->GetVisualsForItem(id, options, std::move(callback));
 }
 
 void ThrottledOfflineContentProvider::GetShareInfoForItem(
     const ContentId& id,
     ShareCallback callback) {
   wrapped_provider_->GetShareInfoForItem(id, std::move(callback));
+}
+
+void ThrottledOfflineContentProvider::RenameItem(const ContentId& id,
+                                                 const std::string& name,
+                                                 RenameCallback callback) {
+  wrapped_provider_->RenameItem(id, name, std::move(callback));
 }
 
 void ThrottledOfflineContentProvider::AddObserver(
@@ -130,8 +136,14 @@ void ThrottledOfflineContentProvider::OnItemRemoved(const ContentId& id) {
     observer.OnItemRemoved(id);
 }
 
-void ThrottledOfflineContentProvider::OnItemUpdated(const OfflineItem& item) {
-  updates_[item.id] = item;
+void ThrottledOfflineContentProvider::OnItemUpdated(
+    const OfflineItem& item,
+    const base::Optional<UpdateDelta>& update_delta) {
+  base::Optional<UpdateDelta> merged = update_delta;
+  if (updates_.find(item.id) != updates_.end()) {
+    merged = UpdateDelta::MergeUpdates(updates_[item.id].second, update_delta);
+  }
+  updates_[item.id] = std::make_pair(item, merged);
 
   // If we already queued an update, we're throttling, just wait until the
   // update passes through.
@@ -159,7 +171,7 @@ void ThrottledOfflineContentProvider::UpdateItemIfPresent(
     const OfflineItem& item) {
   auto it = updates_.find(item.id);
   if (it != updates_.end())
-    it->second = item;
+    it->second.first = item;
 }
 
 void ThrottledOfflineContentProvider::FlushUpdates() {
@@ -168,8 +180,10 @@ void ThrottledOfflineContentProvider::FlushUpdates() {
 
   OfflineItemMap updates = std::move(updates_);
   for (auto item_pair : updates) {
+    auto& item = item_pair.second.first;
+    auto& update = item_pair.second.second;
     for (auto& observer : observers_)
-      observer.OnItemUpdated(item_pair.second);
+      observer.OnItemUpdated(item, update);
   }
 }
 

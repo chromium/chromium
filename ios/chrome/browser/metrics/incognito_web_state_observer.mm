@@ -16,8 +16,7 @@
 #error "This file requires ARC support."
 #endif
 
-IncognitoWebStateObserver::IncognitoWebStateObserver()
-    : scoped_observer_(this) {
+IncognitoWebStateObserver::IncognitoWebStateObserver() {
   TabModelList::AddObserver(this);
 
   // Observe all existing off-the-record TabModels' WebStateLists.

@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "components/feed/core/user_classifier.h"
 
-class PrefRegistrySimple;
 class PrefService;
 
 namespace base {
@@ -32,9 +31,6 @@ class RefreshThrottler {
   RefreshThrottler(UserClassifier::UserClass user_class,
                    PrefService* pref_service,
                    base::Clock* clock);
-
-  // Registers profile prefs, called from browser_prefs.cc.
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Returns whether quota is available for another request, persists the usage
   // of said quota, and reports this information to UMA.

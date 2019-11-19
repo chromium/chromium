@@ -63,6 +63,15 @@ enum HDCPState {
   HDCP_STATE_LAST = HDCP_STATE_ENABLED
 };
 
+// The orientation of the panel in respect to the natural device orientation.
+enum PanelOrientation {
+  kNormal = 0,
+  kBottomUp = 1,
+  kLeftUp = 2,
+  kRightUp = 3,
+  kLast = kRightUp
+};
+
 }  // namespace display
 
 #endif  // UI_DISPLAY_TYPES_DISPLAY_CONSTANTS_H_

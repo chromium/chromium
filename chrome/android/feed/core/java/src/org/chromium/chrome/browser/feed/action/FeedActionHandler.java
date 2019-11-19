@@ -4,19 +4,19 @@
 
 package org.chromium.chrome.browser.feed.action;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
-import com.google.android.libraries.feed.api.knowncontent.ContentMetadata;
-import com.google.android.libraries.feed.host.action.ActionApi;
+import com.google.android.libraries.feed.api.client.knowncontent.ContentMetadata;
+import com.google.android.libraries.feed.api.host.action.ActionApi;
 
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.feed.FeedLoggingBridge;
 import org.chromium.chrome.browser.feed.FeedOfflineIndicator;
+import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.suggestions.NavigationRecorder;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
-import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -29,14 +29,14 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
  * Handles the actions user can trigger on the feed.
  */
 public class FeedActionHandler implements ActionApi {
-    private final SuggestionsNavigationDelegate mDelegate;
+    private final NativePageNavigationDelegate mDelegate;
     private final Runnable mSuggestionConsumedObserver;
     private final FeedOfflineIndicator mOfflineIndicator;
     private final OfflinePageBridge mOfflinePageBridge;
     private final FeedLoggingBridge mLoggingBridge;
 
     /**
-     * @param delegate The {@link SuggestionsNavigationDelegate} that this handler calls when
+     * @param delegate The {@link NativePageNavigationDelegate} that this handler calls when
      * handling some of the actions.
      * @param suggestionConsumedObserver An observer that is interested in any time a suggestion is
      * consumed by the user.
@@ -44,7 +44,7 @@ public class FeedActionHandler implements ActionApi {
      * @param offlinePageBridge Capable of updating {@link LoadUrlParams} to include offline ids.
      * @param loggingBridge Reports pages visiting time.
      */
-    public FeedActionHandler(@NonNull SuggestionsNavigationDelegate delegate,
+    public FeedActionHandler(@NonNull NativePageNavigationDelegate delegate,
             @NonNull Runnable suggestionConsumedObserver,
             @NonNull FeedOfflineIndicator offlineIndicator,
             @NonNull OfflinePageBridge offlinePageBridge,

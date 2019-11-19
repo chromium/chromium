@@ -124,15 +124,15 @@ std::string DecryptSampleAES(const std::string& key,
 // We only support AES-CBC at this time.
 // For the purpose of these tests, the key id is also used as the actual key.
 std::string DecryptBuffer(const StreamParserBuffer& buffer,
-                          const EncryptionScheme& scheme) {
-  EXPECT_TRUE(scheme.is_encrypted());
-  EXPECT_TRUE(scheme.mode() == EncryptionScheme::CIPHER_MODE_AES_CBC);
+                          EncryptionScheme scheme) {
+  EXPECT_EQ(scheme, EncryptionScheme::kCbcs);
 
   // Audio streams use whole block full sample encryption (so pattern = {0,0}),
   // so only the video stream uses pattern decryption. |has_pattern| is only
   // used by DecryptSampleAES(), which assumes a {1,9} pattern if
   // |has_pattern| = true.
-  bool has_pattern = scheme.pattern() == EncryptionPattern(1, 9);
+  bool has_pattern =
+      buffer.decrypt_config()->encryption_pattern() == EncryptionPattern(1, 9);
 
   std::string key;
   EXPECT_TRUE(
@@ -472,7 +472,7 @@ TEST_F(Mp2tStreamParserTest, HLSSampleAES) {
   parser_->Flush();
   EncryptionScheme video_encryption_scheme =
       current_video_config_.encryption_scheme();
-  EXPECT_TRUE(video_encryption_scheme.is_encrypted());
+  EXPECT_NE(video_encryption_scheme, EncryptionScheme::kUnencrypted);
   for (const auto& buffer : video_buffer_capture_) {
     std::string decrypted_video_buffer =
         DecryptBuffer(*buffer.get(), video_encryption_scheme);
@@ -480,7 +480,7 @@ TEST_F(Mp2tStreamParserTest, HLSSampleAES) {
   }
   EncryptionScheme audio_encryption_scheme =
       current_audio_config_.encryption_scheme();
-  EXPECT_TRUE(audio_encryption_scheme.is_encrypted());
+  EXPECT_NE(audio_encryption_scheme, EncryptionScheme::kUnencrypted);
   for (const auto& buffer : audio_buffer_capture_) {
     std::string decrypted_audio_buffer =
         DecryptBuffer(*buffer.get(), audio_encryption_scheme);
@@ -495,7 +495,7 @@ TEST_F(Mp2tStreamParserTest, HLSSampleAES) {
   ParseMpeg2TsFile("bear-1280x720-hls.ts", 2048);
   parser_->Flush();
   video_encryption_scheme = current_video_config_.encryption_scheme();
-  EXPECT_FALSE(video_encryption_scheme.is_encrypted());
+  EXPECT_EQ(video_encryption_scheme, EncryptionScheme::kUnencrypted);
   // Skip the last buffer, which may be truncated.
   for (size_t i = 0; i + 1 < video_buffer_capture_.size(); i++) {
     const auto& buffer = video_buffer_capture_[i];
@@ -504,7 +504,7 @@ TEST_F(Mp2tStreamParserTest, HLSSampleAES) {
     EXPECT_EQ(decrypted_video_buffers[i], unencrypted_video_buffer);
   }
   audio_encryption_scheme = current_audio_config_.encryption_scheme();
-  EXPECT_FALSE(audio_encryption_scheme.is_encrypted());
+  EXPECT_EQ(audio_encryption_scheme, EncryptionScheme::kUnencrypted);
   for (size_t i = 0; i + 1 < audio_buffer_capture_.size(); i++) {
     const auto& buffer = audio_buffer_capture_[i];
     std::string unencrypted_audio_buffer(
@@ -519,10 +519,10 @@ TEST_F(Mp2tStreamParserTest, PrepareForHLSSampleAES) {
   parser_->Flush();
   EncryptionScheme video_encryption_scheme =
       current_video_config_.encryption_scheme();
-  EXPECT_TRUE(video_encryption_scheme.is_encrypted());
+  EXPECT_NE(video_encryption_scheme, EncryptionScheme::kUnencrypted);
   EncryptionScheme audio_encryption_scheme =
       current_audio_config_.encryption_scheme();
-  EXPECT_TRUE(audio_encryption_scheme.is_encrypted());
+  EXPECT_NE(audio_encryption_scheme, EncryptionScheme::kUnencrypted);
 }
 
 #endif

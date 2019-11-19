@@ -13,6 +13,7 @@
 #include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/udp_socket.h"
@@ -65,9 +66,9 @@ class MockDisplaySourceConnectionDelegate
 
   void StopWatchingAvailableSinks() override;
 
-  std::string GetLocalAddress() const override;
+  net::IPAddress GetLocalAddress() const override;
 
-  std::string GetSinkAddress() const override;
+  net::IPAddress GetSinkAddress() const override;
 
   void SendMessage(const std::string& message) override;
 
@@ -336,9 +337,9 @@ void MockDisplaySourceConnectionDelegate::Connect(
 
   // Bind sink to udp socket at this stage
   // And store udp port to udp_port_ string in order to be used
-  // In a message exchange. Then make a base::PostTaskWithTraits
+  // In a message exchange. Then make a base::PostTask
   // on UI thread and call OnSinkConnected() to proceed with the test
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&MockDisplaySourceConnectionDelegate::BindToUdpSocket,
                      base::Unretained(this)));
@@ -366,12 +367,12 @@ MockDisplaySourceConnectionDelegate::GetConnectedSink() const {
 
 void MockDisplaySourceConnectionDelegate::StopWatchingAvailableSinks() {}
 
-std::string MockDisplaySourceConnectionDelegate::GetLocalAddress() const {
-  return "127.0.0.1";
+net::IPAddress MockDisplaySourceConnectionDelegate::GetLocalAddress() const {
+  return net::IPAddress::IPv4Localhost();
 }
 
-std::string MockDisplaySourceConnectionDelegate::GetSinkAddress() const {
-  return "127.0.0.1";
+net::IPAddress MockDisplaySourceConnectionDelegate::GetSinkAddress() const {
+  return net::IPAddress::IPv4Localhost();
 }
 
 void MockDisplaySourceConnectionDelegate::SendMessage(
@@ -431,8 +432,8 @@ EnqueueSinkMessage(std::string message) {
     AdaptMessagePattern(found_clientport_key, kClientPortKey, kUdpPortLength,
                         udp_port_, message);
 
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(message_received_cb_, message));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(message_received_cb_, message));
 }
 
 void MockDisplaySourceConnectionDelegate::
@@ -487,7 +488,7 @@ void MockDisplaySourceConnectionDelegate::BindToUdpSocket() {
       udp_port_ = std::to_string(port);
       // When we got an udp socket established and udp port is known
       // Change sink's status to connected and proceed with the test.
-      base::PostTaskWithTraits(
+      base::PostTask(
           FROM_HERE, {BrowserThread::UI},
           base::BindOnce(&MockDisplaySourceConnectionDelegate::OnSinkConnected,
                          base::Unretained(this)));
@@ -518,13 +519,13 @@ void MockDisplaySourceConnectionDelegate::OnMediaPacketReceived(
     int net_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(recvfrom_buffer_.get());
-  recvfrom_buffer_ = NULL;
+  recvfrom_buffer_.reset();
 
   if (net_result > 0) {
     // We received at least one media packet.
     // Test is completed.
     socket_->Close();
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&MockDisplaySourceConnectionDelegate::Disconnect,
                        base::Unretained(this), StringCallback()));

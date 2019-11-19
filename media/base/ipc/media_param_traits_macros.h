@@ -32,7 +32,7 @@
 #include "media/base/subsample_entry.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
-#include "media/base/video_rotation.h"
+#include "media/base/video_transformation.h"
 #include "media/base/video_types.h"
 #include "media/base/waiting.h"
 #include "media/base/watch_time_keys.h"
@@ -40,6 +40,7 @@
 // move CdmProxy related code into #if BUILDFLAG(ENABLE_LIBRARY_CDMS).
 #include "media/cdm/cdm_proxy.h"
 #include "media/media_buildflags.h"
+#include "media/video/supported_video_decoder_config.h"
 #include "ui/gfx/ipc/color/gfx_param_traits_macros.h"
 
 #if defined(OS_ANDROID)
@@ -58,6 +59,10 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::AudioParameters::Format,
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::BufferingState,
                           media::BufferingState::BUFFERING_STATE_MAX)
+
+IPC_ENUM_TRAITS_MAX_VALUE(
+    media::BufferingStateChangeReason,
+    media::BufferingStateChangeReason::BUFFERING_STATE_CHANGE_REASON_MAX)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::CdmMessageType,
                           media::CdmMessageType::MESSAGE_TYPE_MAX)
@@ -99,11 +104,8 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::DemuxerStream::Type,
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::EmeInitDataType, media::EmeInitDataType::MAX)
 
-IPC_ENUM_TRAITS_MAX_VALUE(media::EncryptionMode,
-                          media::EncryptionMode::kMaxValue)
-
-IPC_ENUM_TRAITS_MAX_VALUE(media::EncryptionScheme::CipherMode,
-                          media::EncryptionScheme::CipherMode::CIPHER_MODE_MAX)
+IPC_ENUM_TRAITS_MAX_VALUE(media::EncryptionScheme,
+                          media::EncryptionScheme::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::HdcpVersion,
                           media::HdcpVersion::kHdcpVersionMax)
@@ -132,6 +134,9 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::WatchTimeKey,
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(media::VideoCodecProfile,
                               media::VIDEO_CODEC_PROFILE_MIN,
                               media::VIDEO_CODEC_PROFILE_MAX)
+
+IPC_ENUM_TRAITS_MAX_VALUE(media::VideoDecoderImplementation,
+                          media::VideoDecoderImplementation::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::VideoPixelFormat, media::PIXEL_FORMAT_MAX)
 

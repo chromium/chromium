@@ -31,7 +31,7 @@ using content::BrowserThread;
 using device::BluetoothAdapter;
 using device::BluetoothDevice;
 
-namespace bluetooth = extensions::api::bluetooth;
+namespace bluetooth_api = extensions::api::bluetooth;
 namespace GetDevice = extensions::api::bluetooth::GetDevice;
 namespace GetDevices = extensions::api::bluetooth::GetDevices;
 
@@ -72,11 +72,14 @@ BluetoothAPI::BluetoothAPI(content::BrowserContext* context)
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BLUETOOTH_LOG(EVENT) << "BluetoothAPI: " << browser_context_;
   EventRouter* event_router = EventRouter::Get(browser_context_);
+  event_router->RegisterObserver(
+      this, bluetooth_api::OnAdapterStateChanged::kEventName);
   event_router->RegisterObserver(this,
-                                 bluetooth::OnAdapterStateChanged::kEventName);
-  event_router->RegisterObserver(this, bluetooth::OnDeviceAdded::kEventName);
-  event_router->RegisterObserver(this, bluetooth::OnDeviceChanged::kEventName);
-  event_router->RegisterObserver(this, bluetooth::OnDeviceRemoved::kEventName);
+                                 bluetooth_api::OnDeviceAdded::kEventName);
+  event_router->RegisterObserver(this,
+                                 bluetooth_api::OnDeviceChanged::kEventName);
+  event_router->RegisterObserver(this,
+                                 bluetooth_api::OnDeviceRemoved::kEventName);
 }
 
 BluetoothAPI::~BluetoothAPI() {
@@ -116,9 +119,9 @@ BluetoothGetAdapterStateFunction::~BluetoothGetAdapterStateFunction() = default;
 
 void BluetoothGetAdapterStateFunction::DoWork(
     scoped_refptr<BluetoothAdapter> adapter) {
-  bluetooth::AdapterState state;
+  bluetooth_api::AdapterState state;
   PopulateAdapterState(*adapter, &state);
-  Respond(ArgumentList(bluetooth::GetAdapterState::Results::Create(state)));
+  Respond(ArgumentList(bluetooth_api::GetAdapterState::Results::Create(state)));
 }
 
 BluetoothGetDevicesFunction::BluetoothGetDevicesFunction() = default;
@@ -139,7 +142,8 @@ void BluetoothGetDevicesFunction::DoWork(
   BluetoothAdapter::DeviceList devices;
 #if defined(OS_CHROMEOS)
   // Default filter values.
-  bluetooth::FilterType filter_type = bluetooth::FilterType::FILTER_TYPE_ALL;
+  bluetooth_api::FilterType filter_type =
+      bluetooth_api::FilterType::FILTER_TYPE_ALL;
   int limit = 0; /*no limit*/
   if (params_->filter) {
     filter_type = params_->filter->filter_type;
@@ -159,8 +163,8 @@ void BluetoothGetDevicesFunction::DoWork(
     const BluetoothDevice* device = *iter;
     DCHECK(device);
 
-    bluetooth::Device extension_device;
-    bluetooth::BluetoothDeviceToApiDevice(*device, &extension_device);
+    bluetooth_api::Device extension_device;
+    bluetooth_api::BluetoothDeviceToApiDevice(*device, &extension_device);
 
     device_list->Append(extension_device.ToValue());
   }
@@ -183,8 +187,8 @@ void BluetoothGetDeviceFunction::DoWork(
 
   BluetoothDevice* device = adapter->GetDevice(params_->device_address);
   if (device) {
-    bluetooth::Device extension_device;
-    bluetooth::BluetoothDeviceToApiDevice(*device, &extension_device);
+    bluetooth_api::Device extension_device;
+    bluetooth_api::BluetoothDeviceToApiDevice(*device, &extension_device);
     Respond(OneArgument(extension_device.ToValue()));
   } else {
     Respond(Error(kInvalidDevice));

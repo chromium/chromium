@@ -12,7 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_thread.h"
 
 const char* kFirstUserActionNewTaskHistogramName[] = {
     "FirstUserAction.BackgroundTimeNewTaskHandset",

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_JS_SUGGESTION_MANAGER_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_JS_SUGGESTION_MANAGER_H_
 
-#import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
+#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 
 namespace web {
 class WebFramesManager;

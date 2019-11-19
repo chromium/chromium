@@ -14,7 +14,12 @@ interface ContextualSearchSelectionHandler {
     /**
      * Handle a scroll event on the base page.
      */
-    public void handleScroll();
+    public void handleScrollStart();
+
+    /**
+     * Handle a scroll-ending event on the base page.
+     */
+    public void handleScrollEnd();
 
     /**
      * Handle the selection being cleared on the base page.
@@ -77,4 +82,9 @@ interface ContextualSearchSelectionHandler {
      * features to.
      */
     public void logNonHeuristicFeatures(ContextualSearchInteractionRecorder interactionRecorder);
+
+    /**
+     * Handles a long-press gesture that may make a server Resolve request to determine the search.
+     */
+    void handleValidResolvingLongpress();
 }

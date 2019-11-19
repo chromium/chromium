@@ -13,6 +13,7 @@
 namespace blink {
 
 class FrameOrImportedDocument;
+class PrefetchedSignedExchangeManager;
 
 class LoaderFactoryForFrame final : public ResourceFetcher::LoaderFactory {
  public:
@@ -29,6 +30,8 @@ class LoaderFactoryForFrame final : public ResourceFetcher::LoaderFactory {
 
  private:
   const Member<const FrameOrImportedDocument> frame_or_imported_document_;
+  const Member<PrefetchedSignedExchangeManager>
+      prefetched_signed_exchange_manager_;
 };
 
 }  // namespace blink

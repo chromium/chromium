@@ -42,7 +42,7 @@ class TestOptionsProvider : public ImageProvider,
 
   SkStrikeServer* strike_server() { return &strike_server_; }
   SkStrikeClient* strike_client() { return &strike_client_; }
-  SkColorSpace* color_space() { return color_space_.get(); }
+  sk_sp<SkColorSpace> color_space() { return color_space_; }
   bool can_use_lcd_text() const { return can_use_lcd_text_; }
   bool context_supports_distance_field_text() const {
     return context_supports_distance_field_text_;

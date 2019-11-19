@@ -4,7 +4,9 @@
 
 #include "chrome/browser/offline_pages/background_loader_offliner.h"
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
@@ -19,24 +21,29 @@
 #include "chrome/browser/offline_pages/offliner_user_data.h"
 #include "chrome/browser/previews/previews_ui_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
 #include "components/offline_pages/content/renovations/render_frame_script_injector.h"
 #include "components/offline_pages/core/background/offliner_policy.h"
 #include "components/offline_pages/core/background/save_page_request.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
+#include "components/offline_pages/core/offline_page_client_policy.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/renovations/page_renovation_loader.h"
 #include "components/offline_pages/core/renovations/page_renovator.h"
 #include "components/previews/content/previews_user_data.h"
+#include "components/security_state/core/security_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/mhtml_extra_parts.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/previews_state.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
 
 namespace offline_pages {
@@ -77,17 +84,6 @@ void RecordOffliningPreviewsUMA(const ClientId& client_id,
       is_previews_enabled);
 }
 
-void RecordResourceCompletionUMA(bool image_complete,
-                                 bool css_complete,
-                                 bool xhr_complete) {
-  base::UmaHistogramBoolean("OfflinePages.Background.ResourceCompletion.Image",
-                            image_complete);
-  base::UmaHistogramBoolean("OfflinePages.Background.ResourceCompletion.Css",
-                            css_complete);
-  base::UmaHistogramBoolean("OfflinePages.Background.ResourceCompletion.Xhr",
-                            xhr_complete);
-}
-
 void HandleLoadTerminationCancel(
     Offliner::CompletionCallback completion_callback,
     const SavePageRequest& canceled_request) {
@@ -110,8 +106,7 @@ BackgroundLoaderOffliner::BackgroundLoaderOffliner(
       page_load_state_(SUCCESS),
       network_bytes_(0LL),
       is_low_bar_met_(false),
-      did_snapshot_on_last_retry_(false),
-      weak_ptr_factory_(this) {
+      did_snapshot_on_last_retry_(false) {
   DCHECK(offline_page_model_);
   DCHECK(browser_context_);
   // When the offliner is created for test harness runs, the
@@ -152,47 +147,13 @@ bool BackgroundLoaderOffliner::LoadAndSave(
     return false;
   }
 
-  ClientPolicyController* policy_controller =
-      offline_page_model_->GetPolicyController();
-  if (policy_controller->IsDisabledWhenPrefetchDisabled(
-          request.client_id().name_space) &&
+  if (GetPolicy(request.client_id().name_space)
+          .requires_specific_user_settings &&
       (AreThirdPartyCookiesBlocked(browser_context_) ||
        IsNetworkPredictionDisabled(browser_context_))) {
     DVLOG(1) << "WARNING: Unable to load when 3rd party cookies blocked or "
              << "prediction disabled";
-    // Record user metrics for third party cookies being disabled or network
-    // prediction being disabled.
-    if (AreThirdPartyCookiesBlocked(browser_context_)) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "OfflinePages.Background.CctApiDisableStatus",
-          static_cast<int>(OfflinePagesCctApiPrerenderAllowedStatus::
-                               THIRD_PARTY_COOKIES_DISABLED),
-          static_cast<int>(OfflinePagesCctApiPrerenderAllowedStatus::
-                               NETWORK_PREDICTION_DISABLED) +
-              1);
-    }
-    if (IsNetworkPredictionDisabled(browser_context_)) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "OfflinePages.Background.CctApiDisableStatus",
-          static_cast<int>(OfflinePagesCctApiPrerenderAllowedStatus::
-                               NETWORK_PREDICTION_DISABLED),
-          static_cast<int>(OfflinePagesCctApiPrerenderAllowedStatus::
-                               NETWORK_PREDICTION_DISABLED) +
-              1);
-    }
-
     return false;
-  }
-
-  // Record UMA that the load was allowed to proceed.
-  if (request.client_id().name_space == kCCTNamespace) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "OfflinePages.Background.CctApiDisableStatus",
-        static_cast<int>(
-            OfflinePagesCctApiPrerenderAllowedStatus::PRERENDER_ALLOWED),
-        static_cast<int>(OfflinePagesCctApiPrerenderAllowedStatus::
-                             NETWORK_PREDICTION_DISABLED) +
-            1);
   }
 
   if (!OfflinePageModel::CanSaveURL(request.url())) {
@@ -228,7 +189,8 @@ bool BackgroundLoaderOffliner::LoadAndSave(
   loader_.get()->LoadPage(request.url());
 
   snapshot_controller_ = std::make_unique<BackgroundSnapshotController>(
-      base::ThreadTaskRunnerHandle::Get(), this, (bool)page_renovator_);
+      base::ThreadTaskRunnerHandle::Get(), this,
+      static_cast<bool>(page_renovator_));
 
   return true;
 }
@@ -284,9 +246,10 @@ bool BackgroundLoaderOffliner::HandleTimeout(int64_t request_id) {
 }
 
 void BackgroundLoaderOffliner::CanDownload(
-    const base::Callback<void(bool)>& callback) {
+    base::OnceCallback<void(bool)> callback) {
   if (!pending_request_.get()) {
-    callback.Run(false);  // Shouldn't happen though...
+    std::move(callback).Run(false);  // Shouldn't happen though...
+    return;
   }
 
   bool should_allow_downloads = false;
@@ -296,13 +259,13 @@ void BackgroundLoaderOffliner::CanDownload(
   // If we want to proceed with the file download, fail with
   // DOWNLOAD_THROTTLED. If we don't want to proceed with the file download,
   // fail with LOADING_FAILED_DOWNLOAD.
-  if (offline_page_model_->GetPolicyController()->ShouldAllowDownloads(
-          pending_request_.get()->client_id().name_space)) {
+  if (GetPolicy(pending_request_.get()->client_id().name_space)
+          .allows_conversion_to_background_file_download) {
     should_allow_downloads = true;
     final_status = Offliner::RequestStatus::DOWNLOAD_THROTTLED;
   }
 
-  callback.Run(should_allow_downloads);
+  std::move(callback).Run(should_allow_downloads);
   SavePageRequest request(*pending_request_.get());
   std::move(completion_callback_).Run(request, final_status);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -395,7 +358,7 @@ void BackgroundLoaderOffliner::DidFinishNavigation(
     previews::PreviewsUserData* previews_user_data =
         previews_tab_helper->GetPreviewsUserData(navigation_handle);
     if (previews_user_data)
-      previews_state = previews_user_data->committed_previews_state();
+      previews_state = previews_user_data->CommittedPreviewsState();
   }
 
   RecordOffliningPreviewsUMA(pending_request_->client_id(), previews_state);
@@ -430,6 +393,8 @@ void BackgroundLoaderOffliner::StartSnapshot() {
     DVLOG(1) << "Pending request was cleared during delay.";
     return;
   }
+  DCHECK(is_low_bar_met_)
+      << "Minimum quality must have been reached before saving a snapshot";
 
   // Add this signal to signal_data_.
   AddLoadingSignal("Snapshotting");
@@ -459,18 +424,23 @@ void BackgroundLoaderOffliner::StartSnapshot() {
     return;
   }
 
-  save_state_ = SAVING;
   content::WebContents* web_contents(
       content::WebContentsObserver::web_contents());
+
+  Offliner::RequestStatus loaded_page_error =
+      CanSavePageInBackground(web_contents);
+  if (loaded_page_error != Offliner::RequestStatus::UNKNOWN) {
+    std::move(completion_callback_).Run(request, loaded_page_error);
+    ResetState();
+    return;
+  }
+
+  save_state_ = SAVING;
 
   // Capture loading signals to UMA.
   RequestStats& image_stats = stats_[ResourceDataType::IMAGE];
   RequestStats& css_stats = stats_[ResourceDataType::TEXT_CSS];
   RequestStats& xhr_stats = stats_[ResourceDataType::XHR];
-  bool image_complete = (image_stats.requested == image_stats.completed);
-  bool css_complete = (css_stats.requested == css_stats.completed);
-  bool xhr_complete = (xhr_stats.requested == xhr_stats.completed);
-  RecordResourceCompletionUMA(image_complete, css_complete, xhr_complete);
 
   // Add loading signal into the MHTML that will be generated if the command
   // line flag is set for it.
@@ -544,10 +514,10 @@ void BackgroundLoaderOffliner::OnPageSaved(SavePageResult save_result,
 
   if (save_state_ == DELETE_AFTER_SAVE) {
     // Delete the saved page off disk and from the OPM.
-    std::vector<int64_t> offline_ids;
-    offline_ids.push_back(offline_id);
-    offline_page_model_->DeletePagesByOfflineId(
-        offline_ids,
+    PageCriteria criteria;
+    criteria.offline_ids = std::vector<int64_t>{offline_id};
+    offline_page_model_->DeletePagesWithCriteria(
+        criteria,
         base::Bind(&BackgroundLoaderOffliner::DeleteOfflinePageCallback,
                    weak_ptr_factory_.GetWeakPtr(), request));
     save_state_ = NONE;
@@ -625,6 +595,48 @@ void BackgroundLoaderOffliner::AddLoadingSignal(const char* signal_name) {
 
 void BackgroundLoaderOffliner::RenovationsCompleted() {
   snapshot_controller_->RenovationsCompleted();
+}
+
+Offliner::RequestStatus BackgroundLoaderOffliner::CanSavePageInBackground(
+    content::WebContents* web_contents) {
+  DCHECK(is_low_bar_met_)
+      << "Minimum quality must have been reached before checking loaded page";
+  std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
+      GetVisibleSecurityState(web_contents);
+  // Checks for HTTPS certificate errors (HTTP connections are not affected).
+  if (security_state::HasMajorCertificateError(*visible_security_state))
+    return Offliner::RequestStatus::LOADED_PAGE_HAS_CERTIFICATE_ERROR;
+
+  // Checks if the page is blocked by SafeBrowsing.
+  if (visible_security_state->malicious_content_status !=
+      security_state::MaliciousContentStatus::MALICIOUS_CONTENT_STATUS_NONE) {
+    return Offliner::RequestStatus::LOADED_PAGE_IS_BLOCKED;
+  }
+
+  // Don't save Chrome error or interstitial pages.
+  if (GetPageType(web_contents) != content::PageType::PAGE_TYPE_NORMAL)
+    return Offliner::RequestStatus::LOADED_PAGE_IS_CHROME_INTERNAL;
+
+  return Offliner::RequestStatus::UNKNOWN;
+}
+
+std::unique_ptr<security_state::VisibleSecurityState>
+BackgroundLoaderOffliner::GetVisibleSecurityState(
+    content::WebContents* web_contents) {
+  // Note: this tab helper needs to be created here as in the background it is
+  // not created by default.
+  SecurityStateTabHelper::CreateForWebContents(web_contents);
+  SecurityStateTabHelper* helper =
+      SecurityStateTabHelper::FromWebContents(web_contents);
+  DCHECK(helper);
+  return helper->GetVisibleSecurityState();
+}
+
+content::PageType BackgroundLoaderOffliner::GetPageType(
+    content::WebContents* web_contents) {
+  DCHECK(web_contents->GetController().GetVisibleEntry())
+      << "An entry must have committed at this WebContents";
+  return web_contents->GetController().GetVisibleEntry()->GetPageType();
 }
 
 }  // namespace offline_pages

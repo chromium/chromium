@@ -1,0 +1,8 @@
+{
+  "name": "Tests that context menus work properly in incognito split mode",
+  "version": "0.1",
+  "manifest_version": 2,
+  "permissions": ["contextMenus"],
+  "incognito": "split",
+  "background": { "service_worker": "test.js" }
+}

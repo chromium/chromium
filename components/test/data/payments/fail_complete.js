@@ -9,7 +9,7 @@
 /**
  * Launches the PaymentRequest UI and always fails to complete the transaction.
  */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   try {
     new PaymentRequest(
         [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}],

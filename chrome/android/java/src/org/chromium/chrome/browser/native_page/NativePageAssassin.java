@@ -84,12 +84,6 @@ public class NativePageAssassin {
     }
 
     private void freeze(Tab tab) {
-        if (tab == null) return;
-        NativePage pageToFreeze = tab.getNativePage();
-        if (pageToFreeze == null || pageToFreeze instanceof FrozenNativePage
-                || pageToFreeze.getView().getParent() != null) {
-            return;
-        }
-        tab.freezeNativePage();
+        if (tab != null) tab.freezeNativePage();
     }
 }

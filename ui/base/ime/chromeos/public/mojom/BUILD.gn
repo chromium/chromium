@@ -1,0 +1,16 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos)
+
+mojom_component("mojom") {
+  sources = [
+    "ime_keyset.mojom",
+  ]
+
+  macro_prefix = "UI_BASE_IME_MOJOM"
+  output_prefix = "ui_base_ime_mojom"
+}

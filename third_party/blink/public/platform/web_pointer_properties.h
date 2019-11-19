@@ -5,15 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_POINTER_PROPERTIES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_POINTER_PROPERTIES_H_
 
+#include "third_party/blink/public/platform/pointer_id.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_float_point.h"
 
-#include <cstdint>
 #include <limits>
 
 namespace blink {
-
-using PointerId = int32_t;
 
 // This class encapsulates the properties that are common between mouse and
 // pointer events and touch points as we transition towards the unified pointer
@@ -71,6 +69,7 @@ class WebPointerProperties {
         pointer_type(pointer_type_param),
         movement_x(movement_x),
         movement_y(movement_y),
+        is_raw_movement_event(false),
         position_in_widget_(position_in_widget),
         position_in_screen_(position_in_screen) {}
 
@@ -126,6 +125,10 @@ class WebPointerProperties {
 
   int movement_x;
   int movement_y;
+
+  // True if this event has raw movement value from OS.
+  // TODO(crbug.com/982379): Figure out how to avoid using this boolean.
+  bool is_raw_movement_event;
 
  protected:
   // Widget coordinate, which is relative to the bound of current RenderWidget

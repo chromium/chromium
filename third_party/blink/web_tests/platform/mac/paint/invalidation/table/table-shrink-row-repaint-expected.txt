@@ -1,238 +1,233 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [785, 848],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "LayoutTableCell TD id='resizeMe'",
+          "object": "LayoutNGTableCell TD id='resizeMe'",
           "rect": [8, 110, 769, 210],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 780, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 740, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 720, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 680, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 660, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 620, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 600, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 560, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 540, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 500, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 480, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 440, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 420, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 380, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 360, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 320, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 300, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 240, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 180, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 120, 769, 60],
           "reason": "geometry"
         },
         {
-          "object": "LayoutTableCell TD",
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD",
           "rect": [8, 800, 769, 48],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '10'",
+          "object": "NGPhysicalTextFragment '10'",
           "rect": [13, 821, 16, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '13'",
+          "object": "NGPhysicalTextFragment '13'",
           "rect": [13, 801, 16, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '12'",
+          "object": "NGPhysicalTextFragment '12'",
           "rect": [13, 741, 16, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '11'",
+          "object": "NGPhysicalTextFragment '11'",
           "rect": [13, 681, 16, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '10'",
+          "object": "NGPhysicalTextFragment '10'",
           "rect": [13, 621, 16, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '9'",
+          "object": "NGPhysicalTextFragment '9'",
           "rect": [13, 761, 8, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '8'",
+          "object": "NGPhysicalTextFragment '8'",
           "rect": [13, 701, 8, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '7'",
+          "object": "NGPhysicalTextFragment '7'",
           "rect": [13, 641, 8, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '6'",
+          "object": "NGPhysicalTextFragment '6'",
           "rect": [13, 581, 8, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '9'",
+          "object": "NGPhysicalTextFragment '9'",
           "rect": [13, 561, 8, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '5'",
+          "object": "NGPhysicalTextFragment '5'",
           "rect": [13, 521, 8, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '8'",
+          "object": "NGPhysicalTextFragment '8'",
           "rect": [13, 501, 8, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '4'",
+          "object": "NGPhysicalTextFragment '4'",
           "rect": [13, 461, 8, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '7'",
+          "object": "NGPhysicalTextFragment '7'",
           "rect": [13, 441, 8, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '3'",
+          "object": "NGPhysicalTextFragment '3'",
           "rect": [13, 401, 8, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '6'",
+          "object": "NGPhysicalTextFragment '6'",
           "rect": [13, 381, 8, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '2'",
+          "object": "NGPhysicalTextFragment '2'",
           "rect": [13, 341, 8, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '5'",
+          "object": "NGPhysicalTextFragment '5'",
           "rect": [13, 321, 8, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '4'",
+          "object": "NGPhysicalTextFragment '4'",
           "rect": [13, 261, 8, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '3'",
+          "object": "NGPhysicalTextFragment '3'",
           "rect": [13, 201, 8, 18],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox '2'",
+          "object": "NGPhysicalTextFragment '2'",
           "rect": [13, 141, 8, 18],
           "reason": "geometry"
         }
       ]
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ]
 }

@@ -6,9 +6,12 @@
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_API_CALL_FLOW_H_
 
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "chromeos/services/device_sync/network_request_error.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "services/network/public/cpp/resource_response.h"
@@ -19,7 +22,12 @@ namespace device_sync {
 
 // Google API call flow implementation underlying all CryptAuth API calls.
 // CryptAuth is a Google service that manages authorization and cryptographic
-// credentials for users' devices (eg. public keys).
+// credentials for users' devices (eg. public keys). We assume the following:
+//   * A POST request's body is the serialized request proto,
+//   * A GET request encodes the request proto as query parameters and has no
+//     body,
+//   * The response body is the serialized response proto.
+
 class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
  public:
   typedef base::Callback<void(const std::string& serialized_response)>
@@ -29,19 +37,36 @@ class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
   CryptAuthApiCallFlow();
   ~CryptAuthApiCallFlow() override;
 
-  // Starts the API call.
-  //   request_url: The URL endpoint of the API request.
-  //   context: The URL context used to make the request.
-  //   access_token: The access token for whom to make the to make the request.
-  //   serialized_request: A serialized proto containing the request data.
-  //   result_callback: Called when the flow completes successfully with a
-  //       serialized response proto.
-  //   error_callback: Called when the flow completes with an error.
-  virtual void Start(
+  // Starts the API POST request call.
+  //   |request_url|: The URL endpoint of the API request.
+  //   |serialized_request|: A serialized proto containing the request data.
+  //   |access_token|: The access token for whom to make the request.
+  //   |result_callback|: Called when the flow completes successfully
+  //                      with a serialized response proto.
+  //   |error_callback|: Called when the flow completes with an error.
+  virtual void StartPostRequest(
       const GURL& request_url,
+      const std::string& serialized_request,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& access_token,
-      const std::string& serialized_request,
+      const ResultCallback& result_callback,
+      const ErrorCallback& error_callback);
+
+  // Starts the API GET request call.
+  //   |request_url|: The URL endpoint of the API request.
+  //   |request_as_query_parameters|: The request proto represented as key-value
+  //                                  pairs to be sent as query parameters.
+  //                                  Note: A key can have multiple values.
+  //   |access_token|: The access token for whom to make the request.
+  //   |result_callback|: Called when the flow completes successfully
+  //                      with a serialized response proto.
+  //   |error_callback|: Called when the flow completes with an error.
+  virtual void StartGetRequest(
+      const GURL& request_url,
+      const std::vector<std::pair<std::string, std::string>>&
+          request_as_query_parameters,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const std::string& access_token,
       const ResultCallback& result_callback,
       const ErrorCallback& error_callback);
 
@@ -63,10 +88,10 @@ class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
   std::string CreateApiCallBody() override;
   std::string CreateApiCallBodyContentType() override;
   std::string GetRequestTypeForBody(const std::string& body) override;
-  void ProcessApiCallSuccess(const network::ResourceResponseHead* head,
+  void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
                              std::unique_ptr<std::string> body) override;
   void ProcessApiCallFailure(int net_error,
-                             const network::ResourceResponseHead* head,
+                             const network::mojom::URLResponseHead* head,
                              std::unique_ptr<std::string> body) override;
   net::PartialNetworkTrafficAnnotationTag GetNetworkTrafficAnnotationTag()
       override;
@@ -75,8 +100,15 @@ class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
   // The URL of the CryptAuth endpoint serving the request.
   GURL request_url_;
 
-  // Serialized request message proto that will be sent in the API request.
-  std::string serialized_request_;
+  // Serialized request message proto that will be sent in the API POST request.
+  // Null if request type is not POST.
+  base::Optional<std::string> serialized_request_;
+
+  // The request message proto represented as key-value pairs that will be sent
+  // as query parameters in the API GET request. Note: A key can have multiple
+  // values. Null if request type is not GET.
+  base::Optional<std::vector<std::pair<std::string, std::string>>>
+      request_as_query_parameters_;
 
   // Callback invoked with the serialized response message proto when the flow
   // completes successfully.

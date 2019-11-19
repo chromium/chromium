@@ -8,31 +8,21 @@
 #include <stdint.h>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/macros.h"
-#include "components/services/font/public/interfaces/font_service.mojom.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
-#include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_binding.h"
-#include "skia/ext/skia_utils_base.h"
+#include "components/services/font/public/mojom/font_service.mojom.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace font_service {
 
-class FontServiceApp : public service_manager::Service,
-                       public mojom::FontService {
+class FontServiceApp : public mojom::FontService {
  public:
-  explicit FontServiceApp(service_manager::mojom::ServiceRequest request);
+  FontServiceApp();
   ~FontServiceApp() override;
 
-  void CreateSelf(mojom::FontServiceRequest request);
+  void BindReceiver(mojo::PendingReceiver<mojom::FontService> receiver);
 
  private:
-  // service_manager::Service:
-  void OnStart() override;
-  void OnBindInterface(const service_manager::BindSourceInfo& source_info,
-                       const std::string& interface_name,
-                       mojo::ScopedMessagePipeHandle interface_pipe) override;
-
   // FontService:
   void MatchFamilyName(const std::string& family_name,
                        mojom::TypefaceStylePtr requested_style,
@@ -58,15 +48,13 @@ class FontServiceApp : public service_manager::Service,
                              uint32_t charset,
                              uint32_t fallbackFamilyType,
                              MatchFontWithFallbackCallback callback) override;
-  int FindOrAddPath(const SkString& path);
+  size_t FindOrAddPath(const base::FilePath& path);
 
-  service_manager::ServiceBinding service_binding_;
-  service_manager::BinderRegistry registry_;
-  mojo::BindingSet<mojom::FontService> bindings_;
+  mojo::ReceiverSet<mojom::FontService> receivers_;
 
   // We don't want to leak paths to our callers; we thus enumerate the paths of
   // fonts.
-  std::vector<SkString> paths_;
+  std::vector<base::FilePath> paths_;
 
   DISALLOW_COPY_AND_ASSIGN(FontServiceApp);
 };

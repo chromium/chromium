@@ -89,7 +89,7 @@ def generate_sharding_map(
       candidate_story, candidate_story_duration = story_timing_list[-1]
       new_diff = abs(total_time_scheduled + candidate_story_duration -
                      expected_total_time)
-      if new_diff < last_diff or i == final_shard_index:
+      if new_diff <= last_diff or i == final_shard_index:
         story_timing_list.pop()
         total_time_scheduled += candidate_story_duration
         time_per_shard += candidate_story_duration
@@ -145,6 +145,10 @@ def _add_benchmarks_to_shard(sharding_map, shard_index, stories_in_shard,
       benchmarks_in_shard[b]['begin'] = first_story
     if last_story != len(all_stories[b]):
       benchmarks_in_shard[b]['end'] = last_story
+    # TODO(crbug.com/965158): Currently we unconditionally run the full story
+    # set. Instead we should allow choosing certain benchmarks to run
+    # the abridged story set instead.
+    benchmarks_in_shard[b]['abridged'] = False
   sharding_map[str(shard_index)] = {'benchmarks': benchmarks_in_shard}
 
 

@@ -10,7 +10,7 @@
 #include <string>
 
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/public/interfaces/window_state_type.mojom.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
@@ -26,13 +26,12 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/widget/widget_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace ash {
-namespace wm {
 class WindowState;
-}
-}
+}  // namespace ash
 
 namespace base {
 namespace trace_event {
@@ -51,6 +50,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
                          public aura::WindowObserver,
                          public aura::client::CaptureClientObserver,
                          public views::WidgetDelegate,
+                         public views::WidgetObserver,
                          public views::View,
                          public wm::ActivationChangeObserver {
  public:
@@ -67,6 +67,13 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // The receiver can chose to not close the window on this signal.
   void set_close_callback(const base::RepeatingClosure& close_callback) {
     close_callback_ = close_callback;
+  }
+
+  // Set the callback to run when the user has requested to close the surface.
+  // This runs before the normal |close_callback_| and should not be used to
+  // actually close the surface.
+  void set_pre_close_callback(const base::RepeatingClosure& close_callback) {
+    pre_close_callback_ = close_callback;
   }
 
   // Set the callback to run when the surface is destroyed.
@@ -95,10 +102,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   // Set the child ax tree ID for the surface.
   void SetChildAxTreeId(ui::AXTreeID child_ax_tree_id);
-
-  // Signal a request to close the window. It is up to the implementation to
-  // actually decide to do so though.
-  void Close();
 
   // Set geometry for surface. The geometry represents the "visible bounds"
   // for the surface from the user's perspective.
@@ -166,6 +169,9 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool WidgetHasHitTestMask() const override;
   void GetWidgetHitTestMask(SkPath* mask) const override;
 
+  // Overridden from views::WidgetObserver:
+  void OnWidgetClosing(views::Widget* widget) override;
+
   // Overridden from views::View:
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
@@ -223,9 +229,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // In the local coordinate system of the window.
   virtual gfx::Rect GetShadowBounds() const;
 
-  // Set the parent window of this surface.
-  void SetParentWindow(aura::Window* parent);
-
   // Start the event capture on this surface.
   void StartCapture();
 
@@ -233,6 +236,11 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   // Install custom window targeter. Used to restore window targeter.
   void InstallCustomWindowTargeter();
+
+  // Creates a NonClientFrameView for shell surface.
+  views::NonClientFrameView* CreateNonClientFrameViewInternal(
+      views::Widget* widget,
+      bool client_controlled);
 
   views::Widget* widget_ = nullptr;
   aura::Window* parent_ = nullptr;
@@ -248,17 +256,17 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   base::Optional<gfx::Rect> shadow_bounds_;
   bool shadow_bounds_changed_ = false;
   base::string16 title_;
-  // TODO(oshima): Remove this once the transition to new drag/resize
-  // complete. https://crbug.com/801666.
-  bool client_controlled_move_resize_ = true;
   SurfaceFrameType frame_type_ = SurfaceFrameType::NONE;
   bool is_popup_ = false;
   bool has_grab_ = false;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ShellSurfaceTest,
+                           HostWindowBoundsUpdatedAfterCommitWidget);
+
   // Called on widget creation to initialize its window state.
   // TODO(reveman): Remove virtual functions below to avoid FBC problem.
-  virtual void InitializeWindowState(ash::wm::WindowState* window_state) = 0;
+  virtual void InitializeWindowState(ash::WindowState* window_state) = 0;
 
   // Returns the scale of the surface tree relative to the shell surface.
   virtual float GetScale() const;
@@ -283,6 +291,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   base::Optional<std::string> application_id_;
   base::Optional<std::string> startup_id_;
   base::RepeatingClosure close_callback_;
+  base::RepeatingClosure pre_close_callback_;
   base::OnceClosure surface_destroyed_callback_;
   bool system_modal_ = false;
   bool non_system_modal_window_was_active_ = false;

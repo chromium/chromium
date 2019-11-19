@@ -11,11 +11,16 @@
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
 
 namespace {
-bool g_is_input_source_dvorak_qwerty = false;
+bool g_is_input_source_command_qwerty = false;
 }  // namespace
 
-void SetIsInputSourceDvorakQwertyForTesting(bool is_dvorak_qwerty) {
-  g_is_input_source_dvorak_qwerty = is_dvorak_qwerty;
+void SetIsInputSourceCommandQwertyForTesting(bool is_command_qwerty) {
+  g_is_input_source_command_qwerty = is_command_qwerty;
+}
+
+bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
+  return [layout_id isEqualToString:@"com.apple.keylayout.DVORAK-QWERTYCMD"] ||
+         [layout_id isEqualToString:@"com.apple.keylayout.Dhivehi-QWERTY"];
 }
 
 @interface KeyboardInputSourceListener : NSObject
@@ -43,10 +48,9 @@ void SetIsInputSourceDvorakQwertyForTesting(bool is_dvorak_qwerty) {
 - (void)updateInputSource {
   base::ScopedCFTypeRef<TISInputSourceRef> inputSource(
       TISCopyCurrentKeyboardInputSource());
-  NSString* inputSourceID = (NSString*)TISGetInputSourceProperty(
+  NSString* layoutId = (NSString*)TISGetInputSourceProperty(
       inputSource.get(), kTISPropertyInputSourceID);
-  g_is_input_source_dvorak_qwerty =
-      [inputSourceID isEqualToString:@"com.apple.keylayout.DVORAK-QWERTYCMD"];
+  g_is_input_source_command_qwerty = IsKeyboardLayoutCommandQwerty(layoutId);
 }
 
 - (void)inputSourceDidChange:(NSNotification*)notification {
@@ -132,11 +136,11 @@ void SetIsInputSourceDvorakQwertyForTesting(bool is_dvorak_qwerty) {
       [[KeyboardInputSourceListener alloc] init];
 
   // We typically want to compare [NSMenuItem keyEquivalent] against [NSEvent
-  // charactersIgnoringModifiers]. There is a special keyboard layout "Dvorak -
-  // QWERTY" which uses QWERTY-style shortcuts when the Command key is held
-  // down. In this case, we want to use the keycode of the event rather than
-  // looking at the characters.
-  if (g_is_input_source_dvorak_qwerty) {
+  // charactersIgnoringModifiers]. There are special command-qwerty layouts
+  // (such as DVORAK-QWERTY) which use QWERTY-style shortcuts when the Command
+  // key is held down. In this case, we want to use the keycode of the event
+  // rather than looking at the characters.
+  if (g_is_input_source_command_qwerty) {
     ui::KeyboardCode windows_keycode =
         ui::KeyboardCodeFromKeyCode(event.keyCode);
     unichar shifted_character, character;

@@ -5,11 +5,12 @@
 #ifndef CHROMEOS_SERVICES_ASSISTANT_PLATFORM_VOLUME_CONTROL_IMPL_H_
 #define CHROMEOS_SERVICES_ASSISTANT_PLATFORM_VOLUME_CONTROL_IMPL_H_
 
-#include "ash/public/interfaces/assistant_volume_control.mojom.h"
+#include "ash/public/mojom/assistant_volume_control.mojom.h"
 #include "base/macros.h"
+#include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
 #include "libassistant/shared/public/platform_audio_output.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/service_manager/public/cpp/connector.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 namespace assistant {
@@ -19,7 +20,7 @@ class AssistantMediaSession;
 class VolumeControlImpl : public assistant_client::VolumeControl,
                           public ash::mojom::VolumeObserver {
  public:
-  VolumeControlImpl(service_manager::Connector* connector,
+  VolumeControlImpl(mojom::Client* client,
                     AssistantMediaSession* media_session);
   ~VolumeControlImpl() override;
 
@@ -44,8 +45,8 @@ class VolumeControlImpl : public assistant_client::VolumeControl,
   void SetSystemMutedOnMainThread(bool muted);
 
   AssistantMediaSession* media_session_;
-  ash::mojom::AssistantVolumeControlPtr volume_control_ptr_;
-  mojo::Binding<ash::mojom::VolumeObserver> binding_;
+  mojo::Remote<ash::mojom::AssistantVolumeControl> volume_control_;
+  mojo::Receiver<ash::mojom::VolumeObserver> receiver_{this};
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   int volume_ = 100;

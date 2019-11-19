@@ -7,9 +7,9 @@
 #include <memory>
 #include <vector>
 
-#include "chromeos/dbus/fake_power_manager_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/display/manager/fake_display_snapshot.h"
+#include "ui/display/fake/fake_display_snapshot.h"
 
 namespace ash {
 
@@ -46,7 +46,7 @@ class ProjectingObserverTest : public testing::Test {
   ProjectingObserverTest() = default;
 
   void SetUp() override {
-    chromeos::PowerManagerClient::Initialize();
+    chromeos::PowerManagerClient::InitializeFake();
     observer_ = std::make_unique<ProjectingObserver>(nullptr);
   }
 

@@ -53,7 +53,7 @@ class MockAsyncMethodCaller : public AsyncMethodCaller {
                     const Identification& user_id,
                     const std::string& key_name,
                     const Callback& callback));
-  MOCK_METHOD8(TpmAttestationSignEnterpriseChallenge,
+  MOCK_METHOD9(TpmAttestationSignEnterpriseChallenge,
                void(chromeos::attestation::AttestationKeyType key_type,
                     const Identification& user_id,
                     const std::string& key_name,
@@ -61,6 +61,7 @@ class MockAsyncMethodCaller : public AsyncMethodCaller {
                     const std::string& device_id,
                     chromeos::attestation::AttestationChallengeOptions options,
                     const std::string& challenge,
+                    const std::string& key_name_for_spkac,
                     const DataCallback& callback));
   MOCK_METHOD5(TpmAttestationSignSimpleChallenge,
                void(chromeos::attestation::AttestationKeyType key_type,

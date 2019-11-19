@@ -6,20 +6,22 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.signin.ProfileDataCache;
-import org.chromium.chrome.browser.signin.SigninAccessPoint;
 import org.chromium.chrome.browser.signin.SigninManager;
 import org.chromium.chrome.browser.signin.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.SigninPromoController;
@@ -28,6 +30,7 @@ import org.chromium.chrome.browser.signin.SyncPromoView;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ChromeSigninController;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.AndroidSyncSettings;
 import org.chromium.components.sync.AndroidSyncSettings.AndroidSyncSettingsObserver;
 
@@ -93,7 +96,7 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
             mSigninPromoController = null;
         }
 
-        mSignInManager = SigninManager.get();
+        mSignInManager = IdentityServicesProvider.getSigninManager();
         mSignInManager.addSignInStateObserver(this);
 
         mPromoState = calculatePromoState();
@@ -134,6 +137,7 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
      * @return Personalized signin promo header {@link ViewHolder} instance that can be used with
      *         {@link RecyclerView}.
      */
+    // TODO(crbug.com/160194): Clean up after bookmark reordering launches.
     ViewHolder createPersonalizedSigninPromoHolder(ViewGroup parent) {
         View view = LayoutInflater.from(mContext).inflate(
                 R.layout.personalized_signin_promo_view_bookmarks, parent, false);
@@ -146,6 +150,7 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
      * @return Sync promo header {@link ViewHolder} instance that can be used with
      *         {@link RecyclerView}.
      */
+    // TODO(crbug.com/160194): Clean up after bookmark reordering launches.
     ViewHolder createSyncPromoHolder(ViewGroup parent) {
         SyncPromoView view = SyncPromoView.create(parent, SigninAccessPoint.BOOKMARK_MANAGER);
 
@@ -259,7 +264,13 @@ class BookmarkPromoHeader implements AndroidSyncSettingsObserver, SignInStateObs
      * @param promoState The promo state to which the header will be set to.
      */
     @VisibleForTesting
-    public static void forcePromoStateForTests(@PromoState int promoState) {
+    static void forcePromoStateForTests(@Nullable @PromoState Integer promoState) {
         sPromoStateForTests = promoState;
+    }
+
+    @VisibleForTesting
+    static void setPrefPersonalizedSigninPromoDeclinedForTests(boolean isDeclined) {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                PREF_PERSONALIZED_SIGNIN_PROMO_DECLINED, isDeclined);
     }
 }

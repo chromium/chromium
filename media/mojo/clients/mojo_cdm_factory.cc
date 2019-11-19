@@ -13,7 +13,7 @@
 #include "media/cdm/aes_decryptor.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/clients/mojo_cdm.h"
-#include "media/mojo/interfaces/interface_factory.mojom.h"
+#include "media/mojo/mojom/interface_factory.mojom.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 #include "url/origin.h"
 
@@ -58,13 +58,14 @@ void MojoCdmFactory::Create(
     return;
   }
 
-  mojom::ContentDecryptionModulePtr cdm_ptr;
-  interface_factory_->CreateCdm(key_system, mojo::MakeRequest(&cdm_ptr));
+  mojo::PendingRemote<mojom::ContentDecryptionModule> cdm_pending_remote;
+  interface_factory_->CreateCdm(
+      key_system, cdm_pending_remote.InitWithNewPipeAndPassReceiver());
 
-  MojoCdm::Create(key_system, security_origin, cdm_config, std::move(cdm_ptr),
-                  interface_factory_, session_message_cb, session_closed_cb,
-                  session_keys_change_cb, session_expiration_update_cb,
-                  cdm_created_cb);
+  MojoCdm::Create(key_system, security_origin, cdm_config,
+                  std::move(cdm_pending_remote), interface_factory_,
+                  session_message_cb, session_closed_cb, session_keys_change_cb,
+                  session_expiration_update_cb, cdm_created_cb);
 }
 
 }  // namespace media

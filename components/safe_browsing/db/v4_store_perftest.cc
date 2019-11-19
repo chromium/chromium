@@ -17,9 +17,22 @@
 #include "components/safe_browsing/db/v4_test_util.h"
 #include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 
 namespace safe_browsing {
+
+namespace {
+
+constexpr char kMetricPrefixV4Store[] = "V4Store.";
+constexpr char kMetricGetMatchingHashPrefixMs[] = "get_matching_hash_prefix";
+
+perf_test::PerfResultReporter SetUpV4StoreReporter(const std::string& story) {
+  perf_test::PerfResultReporter reporter(kMetricPrefixV4Store, story);
+  reporter.RegisterImportantMetric(kMetricGetMatchingHashPrefixMs, "ms");
+  return reporter;
+}
+
+}  // namespace
 
 class V4StorePerftest : public testing::Test {};
 
@@ -53,6 +66,7 @@ TEST_F(V4StorePerftest, StressTest) {
   store->SetPrefixes(std::move(prefixes), kMinHashPrefixLength);
 
   size_t matches = 0;
+  auto reporter = SetUpV4StoreReporter("stress_test");
   base::ElapsedTimer timer;
   for (size_t i = 0; i < kNumPrefixes; i++) {
     size_t index = i * kMaxHashPrefixLength;
@@ -60,8 +74,8 @@ TEST_F(V4StorePerftest, StressTest) {
         full_hashes_piece.substr(index, kMaxHashPrefixLength);
     matches += !store->GetMatchingHashPrefix(full_hash).empty();
   }
-  perf_test::PrintResult("GetMatchingHashPrefix", "", "",
-                         timer.Elapsed().InMillisecondsF(), "ms", true);
+  reporter.AddResult(kMetricGetMatchingHashPrefixMs,
+                     timer.Elapsed().InMillisecondsF());
 
   EXPECT_EQ(kNumPrefixes, matches);
 }

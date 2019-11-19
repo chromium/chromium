@@ -37,8 +37,7 @@
 
   readonly attribute Clients clients;
   readonly attribute ServiceWorkerRegistration registration;
-
-  [CallWith=ScriptState, RaisesException] Promise<Response> fetch(RequestInfo input, optional RequestInit init);
+  readonly attribute ServiceWorker serviceWorker;
 
   [CallWith=ScriptState] Promise<void> skipWaiting();
 

@@ -4,13 +4,17 @@
 
 #import "ios/chrome/browser/ui/dialogs/dialog_presenter.h"
 
+#include "base/observer_list.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/test_navigation_manager.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
-#include "ios/web/public/web_state/web_state_observer.h"
+#include "ios/web/public/web_state_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -21,35 +25,11 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// TestWebState subclass that supports the WebStateDestroyed() callback for a
-// single observer.
-class DialogPresenterTestWebState : public web::TestWebState {
- public:
-  DialogPresenterTestWebState() : web::TestWebState(), observer_(nullptr) {}
-  ~DialogPresenterTestWebState() override {
-    if (observer_)
-      observer_->WebStateDestroyed(this);
-  }
-
- protected:
-  // WebState overrides.
-  void AddObserver(web::WebStateObserver* observer) override {
-    // Currently, only one observer is supported.
-    ASSERT_EQ(observer_, nullptr);
-    observer_ = observer;
-  }
-
- private:
-  web::WebStateObserver* observer_;
-};
-}  // namespace
-
 @interface TestDialogPresenterDelegate : NSObject<DialogPresenterDelegate> {
   std::vector<web::WebState*> _presentedWebStates;
 }
 // The web states for the dialogs that have been presented.
-@property(nonatomic, readonly) std::vector<web::WebState*> presentedWebStates;
+@property(nonatomic, readonly) std::vector<web::WebState*>& presentedWebStates;
 // Whether the dialog should be allowed to present a dialog.
 @property(nonatomic, assign) BOOL shouldAllowDialogPresentation;
 @end
@@ -63,7 +43,7 @@ class DialogPresenterTestWebState : public web::TestWebState {
   return self;
 }
 
-- (std::vector<web::WebState*>)presentedWebStates {
+- (std::vector<web::WebState*>&)presentedWebStates {
   return _presentedWebStates;
 }
 
@@ -104,7 +84,7 @@ class DialogPresenterTest : public PlatformTest {
 // Tests that a dialog was successfully shown and that the delegate was notified
 // with the correct context.
 TEST_F(DialogPresenterTest, SimpleTest) {
-  DialogPresenterTestWebState webState;
+  web::TestWebState webState;
   [presenter() runJavaScriptAlertPanelWithMessage:@""
                                        requestURL:GURL()
                                          webState:&webState
@@ -116,7 +96,7 @@ TEST_F(DialogPresenterTest, SimpleTest) {
 // Test that javascript dialogs are presented with a different title when they
 // are presented from a URL with a different origin to the webstate origin.
 TEST_F(DialogPresenterTest, IFrameTest) {
-  DialogPresenterTestWebState web_state;
+  web::TestWebState web_state;
   GURL foo_url = GURL("http://foo.com");
   GURL bar_url = GURL("http://bar.com");
 
@@ -153,7 +133,7 @@ TEST_F(DialogPresenterTest, IFrameTest) {
 // Tests that JavaScript dialogs have correct title when they are presented from
 // about:blank page.
 TEST_F(DialogPresenterTest, AboutBlankTest) {
-  DialogPresenterTestWebState web_state;
+  web::TestWebState web_state;
   web_state.SetCurrentURL(GURL(url::kAboutBlankURL));
   [presenter() runJavaScriptAlertPanelWithMessage:@""
                                        requestURL:GURL(url::kAboutBlankURL)
@@ -170,7 +150,7 @@ TEST_F(DialogPresenterTest, AboutBlankTest) {
 // Tests that multiple JavaScript dialogs are queued
 TEST_F(DialogPresenterTest, QueueTest) {
   // Tests that the dialog for |webState1| has been shown.
-  DialogPresenterTestWebState webState1;
+  web::TestWebState webState1;
   [presenter() runJavaScriptAlertPanelWithMessage:@""
                                        requestURL:GURL()
                                          webState:&webState1
@@ -179,7 +159,7 @@ TEST_F(DialogPresenterTest, QueueTest) {
   EXPECT_EQ(&webState1, delegate().presentedWebStates.front());
   // Attempt to present another dialog for |webState2|, and verify that only
   // |webState2| has been shown.
-  DialogPresenterTestWebState webState2;
+  web::TestWebState webState2;
   [presenter() runJavaScriptAlertPanelWithMessage:@""
                                        requestURL:GURL()
                                          webState:&webState2
@@ -200,12 +180,12 @@ TEST_F(DialogPresenterTest, QueueTest) {
 // handler.
 TEST_F(DialogPresenterTest, CancelTest) {
   // Show a dialog for |webState1| and enqueue a dialog for |webState2|.
-  DialogPresenterTestWebState webState1;
+  web::TestWebState webState1;
   [presenter() runJavaScriptAlertPanelWithMessage:@""
                                        requestURL:GURL()
                                          webState:&webState1
                                 completionHandler:nil];
-  DialogPresenterTestWebState webState2;
+  web::TestWebState webState2;
   __block BOOL completion_called = NO;
   [presenter() runJavaScriptAlertPanelWithMessage:@""
                                        requestURL:GURL()
@@ -225,7 +205,7 @@ TEST_F(DialogPresenterTest, CancelTest) {
 // notified.
 TEST_F(DialogPresenterTest, DelegatePresenting) {
   // Tests that the dialog is not shown if the delegate is presenting.
-  DialogPresenterTestWebState webState1;
+  web::TestWebState webState1;
   delegate().shouldAllowDialogPresentation = NO;
   [presenter() runJavaScriptAlertPanelWithMessage:@""
                                        requestURL:GURL()
@@ -250,7 +230,7 @@ TEST_F(DialogPresenterTest, DelegatePresenting) {
 TEST_F(DialogPresenterTest, CancelAllTest) {
   // Show a dialog for |context1| and enqueue a dialog for |context2| and
   // |context3|.
-  DialogPresenterTestWebState webState1;
+  web::TestWebState webState1;
   __block BOOL completion1_called = NO;
   [presenter() runJavaScriptAlertPanelWithMessage:@"1"
                                        requestURL:GURL()
@@ -258,7 +238,7 @@ TEST_F(DialogPresenterTest, CancelAllTest) {
                                 completionHandler:^{
                                   completion1_called = YES;
                                 }];
-  DialogPresenterTestWebState webState2;
+  web::TestWebState webState2;
   __block BOOL completion2_called = NO;
   [presenter() runJavaScriptAlertPanelWithMessage:@"2"
                                        requestURL:GURL()
@@ -266,7 +246,7 @@ TEST_F(DialogPresenterTest, CancelAllTest) {
                                 completionHandler:^{
                                   completion2_called = YES;
                                 }];
-  DialogPresenterTestWebState webState3;
+  web::TestWebState webState3;
   __block BOOL completion3_called = NO;
   [presenter() runJavaScriptAlertPanelWithMessage:@"3"
                                        requestURL:GURL()
@@ -281,4 +261,107 @@ TEST_F(DialogPresenterTest, CancelAllTest) {
   EXPECT_TRUE(completion1_called);
   EXPECT_TRUE(completion2_called);
   EXPECT_TRUE(completion3_called);
+}
+
+// Tests that dialogs are appropriately cancelled for
+// WebStateObserver::DidStartNavigation().
+TEST_F(DialogPresenterTest, CancelForNavigationStarted) {
+  // Set up a WebState complete with NavigationManager with last commited item.
+  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
+  item->SetURL(GURL("https://chromium.org"));
+  std::unique_ptr<web::TestNavigationManager> nav_manager =
+      std::make_unique<web::TestNavigationManager>();
+  nav_manager->SetLastCommittedItem(item.get());
+  std::unique_ptr<web::TestWebState> web_state =
+      std::make_unique<web::TestWebState>();
+  web_state->SetNavigationManager(std::move(nav_manager));
+  // Verify cancellation for DidStartNavigation().
+  __block BOOL dialog_cancelled = NO;
+  [presenter() runJavaScriptTextInputPanelWithPrompt:@""
+                                         defaultText:@""
+                                          requestURL:item->GetURL()
+                                            webState:web_state.get()
+                                   completionHandler:^(NSString* input) {
+                                     dialog_cancelled = !input;
+                                   }];
+  web::FakeNavigationContext context;
+  web_state->OnNavigationStarted(&context);
+  EXPECT_TRUE(dialog_cancelled);
+}
+
+// Tests that dialogs are appropriately cancelled for
+// WebStateObserver::DidFinishNavigation().
+TEST_F(DialogPresenterTest, CancelForNavigationFinished) {
+  // Set up a WebState complete with NavigationManager with last commited item.
+  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
+  item->SetURL(GURL("https://chromium.org"));
+  std::unique_ptr<web::TestNavigationManager> nav_manager =
+      std::make_unique<web::TestNavigationManager>();
+  nav_manager->SetLastCommittedItem(item.get());
+  std::unique_ptr<web::TestWebState> web_state =
+      std::make_unique<web::TestWebState>();
+  web_state->SetNavigationManager(std::move(nav_manager));
+  // Verify cancellation for DidFinishNavigation().
+  __block BOOL dialog_cancelled = NO;
+  [presenter() runJavaScriptTextInputPanelWithPrompt:@""
+                                         defaultText:@""
+                                          requestURL:item->GetURL()
+                                            webState:web_state.get()
+                                   completionHandler:^(NSString* input) {
+                                     dialog_cancelled = !input;
+                                   }];
+  web::FakeNavigationContext context;
+  context.SetHasCommitted(true);
+  web_state->OnNavigationFinished(&context);
+  EXPECT_TRUE(dialog_cancelled);
+}
+
+// Tests that dialogs are appropriately cancelled for
+// WebStateObserver::RenderProcessGone().
+TEST_F(DialogPresenterTest, CancelForRenderProcessGone) {
+  // Set up a WebState complete with NavigationManager with last commited item.
+  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
+  item->SetURL(GURL("https://chromium.org"));
+  std::unique_ptr<web::TestNavigationManager> nav_manager =
+      std::make_unique<web::TestNavigationManager>();
+  nav_manager->SetLastCommittedItem(item.get());
+  std::unique_ptr<web::TestWebState> web_state =
+      std::make_unique<web::TestWebState>();
+  web_state->SetNavigationManager(std::move(nav_manager));
+  // Verify cancellation for RenderProcessGone().
+  __block BOOL dialog_cancelled = NO;
+  [presenter() runJavaScriptTextInputPanelWithPrompt:@""
+                                         defaultText:@""
+                                          requestURL:item->GetURL()
+                                            webState:web_state.get()
+                                   completionHandler:^(NSString* input) {
+                                     dialog_cancelled = !input;
+                                   }];
+  web_state->OnRenderProcessGone();
+  EXPECT_TRUE(dialog_cancelled);
+}
+
+// Tests that dialogs are appropriately cancelled for
+// WebStateObserver::WebStateDestroyed().
+TEST_F(DialogPresenterTest, CancelForWebStateDestroyed) {
+  // Set up a WebState complete with NavigationManager with last commited item.
+  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
+  item->SetURL(GURL("https://chromium.org"));
+  std::unique_ptr<web::TestNavigationManager> nav_manager =
+      std::make_unique<web::TestNavigationManager>();
+  nav_manager->SetLastCommittedItem(item.get());
+  std::unique_ptr<web::TestWebState> web_state =
+      std::make_unique<web::TestWebState>();
+  web_state->SetNavigationManager(std::move(nav_manager));
+  // Verify cancellation for WebStateDestroyed().
+  __block BOOL dialog_cancelled = NO;
+  [presenter() runJavaScriptTextInputPanelWithPrompt:@""
+                                         defaultText:@""
+                                          requestURL:item->GetURL()
+                                            webState:web_state.get()
+                                   completionHandler:^(NSString* input) {
+                                     dialog_cancelled = !input;
+                                   }];
+  web_state = nullptr;
+  EXPECT_TRUE(dialog_cancelled);
 }

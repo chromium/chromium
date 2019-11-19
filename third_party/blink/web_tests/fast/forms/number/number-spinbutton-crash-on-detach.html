@@ -15,9 +15,7 @@ if (window.testRunner) {
     testRunner.waitUntilDone();
 }
 window.onload = function() {
-    var iframe = document.querySelector('iframe');
-    iframe.src = '';
-    iframe.srcdoc = '<script>gc(); alert("alert"); parent.finish();</' + 'script>';
+    document.querySelector('iframe').srcdoc = '<script>gc(); alert("alert"); parent.finish();</' + 'script>';
 };
 
 function finish() {

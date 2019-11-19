@@ -37,6 +37,8 @@ void FakeConnectionToHost::Connect(
   SetState(CONNECTING, protocol::OK);
 }
 
+void FakeConnectionToHost::Disconnect(protocol::ErrorCode error) {}
+
 void FakeConnectionToHost::SignalStateChange(protocol::Session::State state,
                                              protocol::ErrorCode error) {
   DCHECK(event_callback_);

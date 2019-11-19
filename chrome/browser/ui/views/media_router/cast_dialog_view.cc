@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_metrics.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
@@ -49,6 +50,16 @@ namespace {
 // This value is negative so that it doesn't overlap with a sink index.
 constexpr int kAlternativeSourceButtonId = -1;
 
+std::unique_ptr<views::Button> CreateSourcesButton(
+    views::ButtonListener* listener) {
+  auto sources_button = std::make_unique<views::MdTextButtonWithDownArrow>(
+      listener,
+      l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_ALTERNATIVE_SOURCES_BUTTON));
+  sources_button->SetID(kAlternativeSourceButtonId);
+  sources_button->SetEnabled(false);
+  return sources_button;
+}
+
 }  // namespace
 
 // static
@@ -59,16 +70,28 @@ void CastDialogView::ShowDialogWithToolbarAction(
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   DCHECK(browser_view->toolbar()->browser_actions());
   views::View* action_view = browser_view->toolbar()->cast_button();
-  ShowDialog(action_view, views::BubbleBorder::TOP_RIGHT, controller, browser,
+  ShowDialog(action_view, views::BubbleBorder::TOP_RIGHT, controller,
+             browser->profile(), start_time);
+}
+
+// static
+void CastDialogView::ShowDialogCenteredForBrowserWindow(
+    CastDialogController* controller,
+    Browser* browser,
+    const base::Time& start_time) {
+  ShowDialog(BrowserView::GetBrowserViewForBrowser(browser)->top_container(),
+             views::BubbleBorder::TOP_CENTER, controller, browser->profile(),
              start_time);
 }
 
 // static
-void CastDialogView::ShowDialogTopCentered(CastDialogController* controller,
-                                           Browser* browser,
-                                           const base::Time& start_time) {
-  ShowDialog(BrowserView::GetBrowserViewForBrowser(browser)->top_container(),
-             views::BubbleBorder::TOP_CENTER, controller, browser, start_time);
+void CastDialogView::ShowDialogCentered(const gfx::Rect& bounds,
+                                        CastDialogController* controller,
+                                        Profile* profile,
+                                        const base::Time& start_time) {
+  ShowDialog(/* anchor_view */ nullptr, views::BubbleBorder::TOP_CENTER,
+             controller, profile, start_time);
+  instance_->SetAnchorRect(bounds);
 }
 
 // static
@@ -106,9 +129,8 @@ base::string16 CastDialogView::GetWindowTitle() const {
     case SourceType::kTab:
       return dialog_title_;
     case SourceType::kDesktop:
-      // |dialog_title_| may contain the presentation URL origin which is not
-      // relevant for the desktop source, so we use the default title string.
-      return l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_CAST_DIALOG_TITLE);
+      return l10n_util::GetStringUTF16(
+          IDS_MEDIA_ROUTER_DESKTOP_MIRROR_CAST_MODE);
     case SourceType::kLocalFile:
       return l10n_util::GetStringFUTF16(IDS_MEDIA_ROUTER_CAST_LOCAL_MEDIA_TITLE,
                                         local_file_name_.value());
@@ -116,19 +138,6 @@ base::string16 CastDialogView::GetWindowTitle() const {
       NOTREACHED();
       return base::string16();
   }
-}
-
-int CastDialogView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_NONE;
-}
-
-views::View* CastDialogView::CreateExtraView() {
-  sources_button_ = new views::MdTextButtonWithDownArrow(
-      this,
-      l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_ALTERNATIVE_SOURCES_BUTTON));
-  sources_button_->set_id(kAlternativeSourceButtonId);
-  sources_button_->SetEnabled(false);
-  return sources_button_;
 }
 
 bool CastDialogView::Close() {
@@ -176,10 +185,9 @@ void CastDialogView::ButtonPressed(views::Button* sender,
     // SinkPressed() invokes a refresh of the sink list, which deletes the
     // sink button. So we must call this after the button is done handling the
     // press event.
-    base::PostTaskWithTraits(
-        FROM_HERE, {content::BrowserThread::UI},
-        base::BindOnce(&CastDialogView::SinkPressed, weak_factory_.GetWeakPtr(),
-                       sender->tag()));
+    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                   base::BindOnce(&CastDialogView::SinkPressed,
+                                  weak_factory_.GetWeakPtr(), sender->tag()));
   }
 }
 
@@ -234,12 +242,12 @@ void CastDialogView::KeepShownForTesting() {
 void CastDialogView::ShowDialog(views::View* anchor_view,
                                 views::BubbleBorder::Arrow anchor_position,
                                 CastDialogController* controller,
-                                Browser* browser,
+                                Profile* profile,
                                 const base::Time& start_time) {
   DCHECK(!instance_);
   DCHECK(!start_time.is_null());
   instance_ = new CastDialogView(anchor_view, anchor_position, controller,
-                                 browser, start_time);
+                                 profile, start_time);
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(instance_);
   widget->Show();
@@ -248,14 +256,15 @@ void CastDialogView::ShowDialog(views::View* anchor_view,
 CastDialogView::CastDialogView(views::View* anchor_view,
                                views::BubbleBorder::Arrow anchor_position,
                                CastDialogController* controller,
-                               Browser* browser,
+                               Profile* profile,
                                const base::Time& start_time)
     : BubbleDialogDelegateView(anchor_view, anchor_position),
       selected_source_(SourceType::kTab),
       controller_(controller),
-      browser_(browser),
-      metrics_(start_time),
-      weak_factory_(this) {
+      profile_(profile),
+      metrics_(start_time, profile) {
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_NONE);
+  sources_button_ = DialogDelegate::SetExtraView(CreateSourcesButton(this));
   ShowNoSinksView();
 }
 
@@ -295,7 +304,7 @@ void CastDialogView::ShowNoSinksView() {
     scroll_view_ = nullptr;
     sink_buttons_.clear();
   }
-  no_sinks_view_ = new CastDialogNoSinksView(browser_);
+  no_sinks_view_ = new CastDialogNoSinksView(profile_);
   AddChildView(no_sinks_view_);
 }
 
@@ -337,9 +346,9 @@ void CastDialogView::RestoreSinkListState() {
 
 void CastDialogView::PopulateScrollView(const std::vector<UIMediaSink>& sinks) {
   sink_buttons_.clear();
-  views::View* sink_list_view = new views::View();
-  sink_list_view->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical));
+  auto sink_list_view = std::make_unique<views::View>();
+  sink_list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
   for (size_t i = 0; i < sinks.size(); i++) {
     const UIMediaSink& sink = sinks.at(i);
     CastDialogSinkButton* sink_button =
@@ -347,7 +356,7 @@ void CastDialogView::PopulateScrollView(const std::vector<UIMediaSink>& sinks) {
     sink_buttons_.push_back(sink_button);
     sink_list_view->AddChildView(sink_button);
   }
-  scroll_view_->SetContents(sink_list_view);
+  scroll_view_->SetContents(std::move(sink_list_view));
 
   MaybeSizeToContents();
   Layout();
@@ -368,9 +377,9 @@ void CastDialogView::ShowSourcesMenu() {
   sources_menu_runner_ = std::make_unique<views::MenuRunner>(
       sources_menu_model_.get(), views::MenuRunner::COMBOBOX);
   const gfx::Rect& screen_bounds = sources_button_->GetBoundsInScreen();
-  sources_menu_runner_->RunMenuAt(sources_button_->GetWidget(), nullptr,
-                                  screen_bounds, views::MENU_ANCHOR_TOPLEFT,
-                                  ui::MENU_SOURCE_MOUSE);
+  sources_menu_runner_->RunMenuAt(
+      sources_button_->GetWidget(), nullptr, screen_bounds,
+      views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE);
 }
 
 void CastDialogView::SelectSource(SourceType source) {
@@ -393,6 +402,9 @@ void CastDialogView::SinkPressed(size_t index) {
   } else if (sink.issue) {
     controller_->ClearIssue(sink.issue->id());
   } else {
+    // |sink| may get invalidated during CastDialogController::StartCasting()
+    // due to a model update, so we must use a copy of its |id| field.
+    const std::string sink_id = sink.id;
     base::Optional<MediaCastMode> cast_mode = GetCastModeToUse(sink);
     if (cast_mode) {
       // Starting local file casting may open a new tab synchronously on the UI
@@ -400,7 +412,7 @@ void CastDialogView::SinkPressed(size_t index) {
       // closing and getting destroyed.
       if (cast_mode.value() == LOCAL_FILE)
         set_close_on_deactivate(false);
-      controller_->StartCasting(sink.id, cast_mode.value());
+      controller_->StartCasting(sink_id, cast_mode.value());
       // Re-enable close on deactivate so the user can click elsewhere to close
       // the dialog.
       if (cast_mode.value() == LOCAL_FILE)
@@ -422,17 +434,17 @@ base::Optional<MediaCastMode> CastDialogView::GetCastModeToUse(
   // supported and selected.
   switch (selected_source_) {
     case SourceType::kTab:
-      if (base::ContainsKey(sink.cast_modes, PRESENTATION))
+      if (base::Contains(sink.cast_modes, PRESENTATION))
         return base::make_optional<MediaCastMode>(PRESENTATION);
-      if (base::ContainsKey(sink.cast_modes, TAB_MIRROR))
+      if (base::Contains(sink.cast_modes, TAB_MIRROR))
         return base::make_optional<MediaCastMode>(TAB_MIRROR);
       break;
     case SourceType::kDesktop:
-      if (base::ContainsKey(sink.cast_modes, DESKTOP_MIRROR))
+      if (base::Contains(sink.cast_modes, DESKTOP_MIRROR))
         return base::make_optional<MediaCastMode>(DESKTOP_MIRROR);
       break;
     case SourceType::kLocalFile:
-      if (base::ContainsKey(sink.cast_modes, LOCAL_FILE))
+      if (base::Contains(sink.cast_modes, LOCAL_FILE))
         return base::make_optional<MediaCastMode>(LOCAL_FILE);
       break;
   }
@@ -453,11 +465,10 @@ void CastDialogView::DisableUnsupportedSinks() {
 void CastDialogView::RecordSinkCountWithDelay() {
   // Record the number of sinks after three seconds. This is consistent with the
   // WebUI dialog.
-  base::PostDelayedTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(&CastDialogView::RecordSinkCount,
-                     weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(3));
+  base::PostDelayedTask(FROM_HERE, {content::BrowserThread::UI},
+                        base::BindOnce(&CastDialogView::RecordSinkCount,
+                                       weak_factory_.GetWeakPtr()),
+                        base::TimeDelta::FromSeconds(3));
 }
 
 void CastDialogView::RecordSinkCount() {

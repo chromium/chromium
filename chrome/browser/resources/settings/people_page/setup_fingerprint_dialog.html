@@ -1,11 +1,13 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/chromeos/fingerprint/cr_fingerprint_progress_arc.html">
+<link rel="import" href="chrome://resources/cr_elements/chromeos/cr_lottie/cr_lottie.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
 <link rel="import" href="../icons.html">
@@ -15,19 +17,31 @@
 <dom-module id="settings-setup-fingerprint-dialog">
   <template>
     <style include="settings-shared">
-      #dialog {
-        --cr-dialog-native: {
-          min-width: 500px;
-          width: 500px;
-        };
+      #dialog::part(dialog) {
+        min-width: 500px;
+        width: 500px;
+      }
+
+      .fingerprint-scanner-laptop-bottom-right {
+        background:
+            url(chrome://theme/IDR_LOGIN_FINGERPRINT_SCANNER_LAPTOP_BOTTOM_RIGHT_ANIMATION);
+      }
+
+      .fingerprint-scanner-laptop-top-right {
+        background:
+            url(chrome://theme/IDR_LOGIN_FINGERPRINT_SCANNER_LAPTOP_TOP_RIGHT_ANIMATION);
       }
 
       #scannerLocation {
-        background: url(chrome://theme/IDR_LOGIN_FINGERPRINT_SCANNER_ANIMATION);
         background-position: center;
         background-repeat: no-repeat;
         background-size: 298px 205px;
         height: 240px;
+      }
+
+      #scannerLocationLottie {
+        height: 220px;
+        padding: 10px 0;
       }
 
       #messageDiv {
@@ -54,24 +68,35 @@
             aria-live="polite">
           <span>[[getInstructionMessage_(step_, problemMessage_)]]</span>
         </div>
-        <div id="scannerLocation" hidden="[[!showScannerLocation_(step_)]]"
-            aria-label="$i18n{configureFingerprintScannerStepAriaLabel}"
-            aria-live="polite" >
-        </div>
+        <template is="dom-if" if="[[shouldUseLottieAnimation_]]">
+          <div id="scannerLocationLottie"
+            hidden="[[!showScannerLocation_(step_)]]" aria-live="polite"
+            aria-label="$i18n{configureFingerprintScannerStepAriaLabel}">
+            <cr-lottie animation-url="finger_print.json" autoplay>
+            </cr-lottie>
+          </div>
+        </template>
+        <template is="dom-if" if="[[!shouldUseLottieAnimation_]]">
+          <div id="scannerLocation" hidden="[[!showScannerLocation_(step_)]]"
+             class$="[[fingerprintScannerAnimationClass_]]"
+             aria-label="$i18n{configureFingerprintScannerStepAriaLabel}"
+             aria-live="polite" >
+          </div>
+        </template>
         <cr-fingerprint-progress-arc id="arc" circle-radius="100"
             hidden="[[!showArc_(step_)]]">
         </cr-fingerprint-progress-arc>
       </div>
       <div slot="button-container">
-        <paper-button id="addAnotherButton" on-click="onAddAnotherFingerprint_"
+        <cr-button id="addAnotherButton" on-click="onAddAnotherFingerprint_"
             hidden$="[[hideAddAnother_(step_, allowAddAnotherFinger)]]">
           $i18n{configureFingerprintAddAnotherButton}
-        </paper-button>
+        </cr-button>
 
-        <paper-button id="closeButton"
+        <cr-button id="closeButton"
             class$="[[getCloseButtonClass_(step_)]]" on-click="onClose_">
           [[getCloseButtonText_(step_)]]
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
   </template>

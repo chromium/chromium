@@ -5,6 +5,8 @@
 """WSGI application to manage a USB gadget.
 """
 
+from __future__ import print_function
+
 import datetime
 import hashlib
 import re
@@ -83,7 +85,7 @@ class UpdateHandler(web.RequestHandler):
     if claimed_by is not None:
       args.extend(['--start-claimed', claimed_by])
 
-    print 'Reloading with version {}...'.format(md5sum)
+    print('Reloading with version {}...'.format(md5sum))
 
     global http_server
     if chip.IsConfigured():

@@ -11,10 +11,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "cc/layers/texture_layer.h"
-#include "third_party/blink/public/common/screen_orientation/web_screen_orientation_type.h"
-
-class GURL;
 
 namespace blink {
 struct Manifest;
@@ -44,22 +40,21 @@ class StoragePartition;
 // Turn the browser process into web test mode.
 void EnableBrowserWebTestMode();
 
+// Replaces the SharedWorkerService implementation with a test-specific one that
+// tracks running shared workers.
+void InjectTestSharedWorkerService(StoragePartition* storage_partition);
+
 // Terminates all workers and notifies when complete. This is used for
 // testing when it is important to make sure that all shared worker activity
-// has stopped.
-void TerminateAllSharedWorkersForTesting(StoragePartition* storage_partition,
-                                         base::OnceClosure callback);
+// has stopped. Can only be used if InjectTestSharedWorkerService() was called.
+void TerminateAllSharedWorkers(StoragePartition* storage_partition,
+                               base::OnceClosure callback);
 
 ///////////////////////////////////////////////////////////////////////////////
 // The following methods are meant to be used from a renderer.
 
 // Turn a renderer into web test mode.
 void EnableRendererWebTestMode();
-
-// "Casts" |render_view| to |WebViewTestProxy|.  Caller has to ensure that
-// prior to construction of |render_view|, EnableWebTestProxyCreation was
-// called.
-test_runner::WebViewTestProxy* GetWebViewTestProxy(RenderView* render_view);
 
 // Gets WebWidgetTestProxy associated with |frame| (either the view's widget
 // or the local root's frame widget).  Caller has to ensure that prior to
@@ -72,7 +67,7 @@ test_runner::WebWidgetTestProxy* GetWebWidgetTestProxy(
 // between WebFrames and RenderFrames.
 void EnableWebTestProxyCreation();
 
-typedef base::OnceCallback<void(const GURL&, const blink::Manifest&)>
+typedef base::OnceCallback<void(const blink::WebURL&, const blink::Manifest&)>
     FetchManifestCallback;
 void FetchManifest(blink::WebView* view, FetchManifestCallback callback);
 
@@ -90,9 +85,6 @@ void ForceResizeRenderView(RenderView* render_view,
 
 // Set the device scale factor and force the compositor to resize.
 void SetDeviceScaleFactor(RenderView* render_view, float factor);
-
-// Get the window to viewport scale.
-float GetWindowToViewportScale(RenderView* render_view);
 
 // Converts |event| from screen coordinates to coordinates used by the widget
 // associated with the |web_widget_test_proxy|.  Returns nullptr if no

@@ -14,14 +14,14 @@ namespace password_manager {
 
 ContentCredentialManager::ContentCredentialManager(
     PasswordManagerClient* client)
-    : impl_(client), binding_(this) {}
+    : impl_(client) {}
 
 ContentCredentialManager::~ContentCredentialManager() {}
 
 void ContentCredentialManager::BindRequest(
-    blink::mojom::CredentialManagerRequest request) {
-  DCHECK(!binding_.is_bound());
-  binding_.Bind(std::move(request));
+    mojo::PendingReceiver<blink::mojom::CredentialManager> receiver) {
+  DCHECK(!receiver_.is_bound());
+  receiver_.Bind(std::move(receiver));
 
   // The browser side will close the message pipe on DidFinishNavigation before
   // the renderer side would be destroyed, and the renderer never explicitly
@@ -29,16 +29,16 @@ void ContentCredentialManager::BindRequest(
   // case the renderer will try to reconnect when the next call to the API is
   // made. Make sure this implementation will no longer be bound to a broken
   // pipe once that happens, so the DCHECK above will succeed.
-  binding_.set_connection_error_handler(base::BindOnce(
+  receiver_.set_disconnect_handler(base::BindOnce(
       &ContentCredentialManager::DisconnectBinding, base::Unretained(this)));
 }
 
 bool ContentCredentialManager::HasBinding() const {
-  return binding_.is_bound();
+  return receiver_.is_bound();
 }
 
 void ContentCredentialManager::DisconnectBinding() {
-  binding_.Close();
+  receiver_.reset();
 }
 
 void ContentCredentialManager::Store(const CredentialInfo& credential,

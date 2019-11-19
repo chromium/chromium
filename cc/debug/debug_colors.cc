@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/logging.h"
-#include "base/macros.h"
 
 #include "cc/debug/debug_colors.h"
 
@@ -195,6 +194,25 @@ SkColor DebugColors::PaintRectFillColor(int step) {
   return FadedGreen(60, step);
 }
 
+static SkColor FadedBlue(int initial_value, int step) {
+  DCHECK_GE(step, 0);
+  DCHECK_LE(step, DebugColors::kFadeSteps);
+  int value = step * initial_value / DebugColors::kFadeSteps;
+  return SkColorSetARGB(value, 0, 0, 255);
+}
+/// Layout Shift rects in blue.
+SkColor DebugColors::LayoutShiftRectBorderColor() {
+  return SkColorSetARGB(0, 0, 0, 255);
+}
+int DebugColors::LayoutShiftRectBorderWidth() {
+  // We don't want any border showing for the layout shift debug rects so we set
+  // the border width to be equal to 0.
+  return 0;
+}
+SkColor DebugColors::LayoutShiftRectFillColor(int step) {
+  return FadedBlue(60, step);
+}
+
 // Property-changed rects in blue.
 SkColor DebugColors::PropertyChangedRectBorderColor() {
   return SkColorSetARGB(255, 0, 0, 255);
@@ -256,6 +274,17 @@ SkColor DebugColors::NonFastScrollableRectBorderColor() {
 int DebugColors::NonFastScrollableRectBorderWidth() { return 2; }
 SkColor DebugColors::NonFastScrollableRectFillColor() {
   return SkColorSetARGB(30, 238, 163, 59);
+}
+
+// Main-thread scrolling reason rects in yellow-orange.
+SkColor DebugColors::MainThreadScrollingReasonRectBorderColor() {
+  return SkColorSetARGB(255, 200, 100, 0);
+}
+int DebugColors::MainThreadScrollingReasonRectBorderWidth() {
+  return 2;
+}
+SkColor DebugColors::MainThreadScrollingReasonRectFillColor() {
+  return SkColorSetARGB(30, 200, 100, 0);
 }
 
 // Animation bounds are lime-green.

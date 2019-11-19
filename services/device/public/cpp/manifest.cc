@@ -5,8 +5,6 @@
 #include "services/device/public/cpp/manifest.h"
 
 #include "base/no_destructor.h"
-#include "device/usb/public/mojom/device_manager.mojom.h"
-#include "device/usb/public/mojom/device_manager_test.mojom.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "services/device/public/mojom/bluetooth_system.mojom.h"
 #include "services/device/public/mojom/constants.mojom.h"
@@ -23,6 +21,8 @@
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "services/device/public/mojom/time_zone_monitor.mojom.h"
+#include "services/device/public/mojom/usb_manager.mojom.h"
+#include "services/device/public/mojom/usb_manager_test.mojom.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/service_manager/public/cpp/manifest_builder.h"

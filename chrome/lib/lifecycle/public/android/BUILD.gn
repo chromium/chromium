@@ -1,0 +1,24 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  deps = [
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+  ]
+  java_files = [
+    "java/src/org/chromium/chrome/browser/lifecycle/ActivityLifecycleDispatcher.java",
+    "java/src/org/chromium/chrome/browser/lifecycle/ActivityResultWithNativeObserver.java",
+    "java/src/org/chromium/chrome/browser/lifecycle/ConfigurationChangedObserver.java",
+    "java/src/org/chromium/chrome/browser/lifecycle/Destroyable.java",
+    "java/src/org/chromium/chrome/browser/lifecycle/InflationObserver.java",
+    "java/src/org/chromium/chrome/browser/lifecycle/LifecycleObserver.java",
+    "java/src/org/chromium/chrome/browser/lifecycle/NativeInitObserver.java",
+    "java/src/org/chromium/chrome/browser/lifecycle/PauseResumeWithNativeObserver.java",
+    "java/src/org/chromium/chrome/browser/lifecycle/SaveInstanceStateObserver.java",
+    "java/src/org/chromium/chrome/browser/lifecycle/StartStopWithNativeObserver.java",
+    "java/src/org/chromium/chrome/browser/lifecycle/WindowFocusChangedObserver.java",
+  ]
+}

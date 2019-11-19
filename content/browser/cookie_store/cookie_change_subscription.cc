@@ -158,7 +158,8 @@ void CookieChangeSubscription::Serialize(
 }
 
 bool CookieChangeSubscription::ShouldObserveChangeTo(
-    const net::CanonicalCookie& cookie) const {
+    const net::CanonicalCookie& cookie,
+    net::CookieAccessSemantics access_semantics) const {
   switch (match_type_) {
     case ::network::mojom::CookieMatchType::EQUALS:
       if (cookie.Name() != name_)
@@ -174,8 +175,8 @@ bool CookieChangeSubscription::ShouldObserveChangeTo(
   net_options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::SAME_SITE_STRICT);
 
-  return cookie.IncludeForRequestURL(url_, net_options) ==
-         net::CanonicalCookie::CookieInclusionStatus::INCLUDE;
+  return cookie.IncludeForRequestURL(url_, net_options, access_semantics)
+      .IsInclude();
 }
 
 }  // namespace content

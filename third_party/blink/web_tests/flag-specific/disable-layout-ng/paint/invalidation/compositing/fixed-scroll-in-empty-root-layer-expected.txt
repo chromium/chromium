@@ -1,0 +1,66 @@
+{
+  "layers": [
+    {
+      "name": "LayoutBlockFlow HTML",
+      "bounds": [785, 2016],
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "backgroundColor": "#FF0000",
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow HTML (foreground) Layer",
+      "bounds": [785, 2016],
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -200, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 250, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 50, 0, 1]
+      ]
+    }
+  ]
+}
+

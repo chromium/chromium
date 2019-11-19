@@ -43,13 +43,15 @@ class FullscreenMediator : public FullscreenModelObserver {
   // Sets the WebState which view is to be resized.
   void SetWebState(web::WebState* webState);
 
+  // Sets whether the browser view is currently handling a trait collection
+  // update.  UI changes received through the broadcaster must be handled
+  // differently when received for trait collection updates as opposed to normal
+  // rendering and scrolling events.
+  void SetIsBrowserTraitCollectionUpdating(bool updating);
+
   // Enters or exits fullscreen, animating the changes.
   void EnterFullscreen();
   void ExitFullscreen();
-
-  // Activate or deactivate the offset compensation for the frame changes.
-  void StopFrameChangeCompensation();
-  void StartFrameChangeCompensation();
 
   // Instructs the mediator to stop observing its model.
   void Disconnect();
@@ -78,13 +80,17 @@ class FullscreenMediator : public FullscreenModelObserver {
   FullscreenModel* model_ = nullptr;
   // The active animator.
   __strong FullscreenAnimator* animator_ = nil;
-  // The FullscreenControllerObservers that need to get notified of model
-  // changes.
-  base::ObserverList<FullscreenControllerObserver>::Unchecked observers_;
-
   // Fullscreen resizer, used to resize the WebView based on the fullscreen
   // progress.
   FullscreenWebViewResizer* resizer_ = nil;
+  // Whether the browser's trait collection is being updated.
+  bool updating_browser_trait_collection_ = false;
+  // Whether the content view was scrolled to the top when the browser trait
+  // collection began updating.
+  bool scrolled_to_top_during_trait_collection_updates_ = false;
+  // The FullscreenControllerObservers that need to get notified of model
+  // changes.
+  base::ObserverList<FullscreenControllerObserver>::Unchecked observers_;
 
   DISALLOW_COPY_AND_ASSIGN(FullscreenMediator);
 };

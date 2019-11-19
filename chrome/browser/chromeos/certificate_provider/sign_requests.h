@@ -7,9 +7,15 @@
 
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/ref_counted.h"
+#include "base/optional.h"
+#include "components/account_id/account_id.h"
+#include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
 
 namespace chromeos {
@@ -17,19 +23,30 @@ namespace certificate_provider {
 
 class SignRequests {
  public:
+  using ExtensionNameRequestIdPair = std::pair<std::string, int>;
+
   SignRequests();
   ~SignRequests();
 
   // Returns the id of the new request. The returned request id is specific to
   // the given extension.
-  int AddRequest(const std::string& extension_id,
-                 net::SSLPrivateKey::SignCallback callback);
+  int AddRequest(
+      const std::string& extension_id,
+      const scoped_refptr<net::X509Certificate>& certificate,
+      const base::Optional<AccountId>& authenticating_user_account_id,
+      net::SSLPrivateKey::SignCallback callback);
+
+  // Returns the list of requests that correspond to the authentication of the
+  // given user.
+  std::vector<ExtensionNameRequestIdPair> FindRequestsForAuthenticatingUser(
+      const AccountId& authenticating_user_account_id) const;
 
   // Returns false if no request with the given id for |extension_id|
-  // could be found. Otherwise removes the request and sets |callback| to the
-  // callback that was provided with AddRequest().
+  // could be found. Otherwise removes the request and sets |certificate| and
+  // |callback| to the values that were provided with AddRequest().
   bool RemoveRequest(const std::string& extension_id,
                      int request_id,
+                     scoped_refptr<net::X509Certificate>* certificate,
                      net::SSLPrivateKey::SignCallback* callback);
 
   // Remove all pending requests for this extension and return their
@@ -38,15 +55,30 @@ class SignRequests {
       const std::string& extension_id);
 
  private:
+  struct Request {
+    Request(const scoped_refptr<net::X509Certificate>& certificate,
+            const base::Optional<AccountId>& authenticating_user_account_id,
+            net::SSLPrivateKey::SignCallback callback);
+    Request(Request&& other);
+    ~Request();
+    Request& operator=(Request&&);
+
+    scoped_refptr<net::X509Certificate> certificate;
+    base::Optional<AccountId> authenticating_user_account_id;
+    net::SSLPrivateKey::SignCallback callback;
+
+   private:
+    DISALLOW_COPY_AND_ASSIGN(Request);
+  };
+
   // Holds state of all sign requests to a single extension.
   struct RequestsState {
     RequestsState();
     RequestsState(RequestsState&& other);
     ~RequestsState();
 
-    // Maps from request id to the SignCallback that must be called with the
-    // signature or error.
-    std::map<int, net::SSLPrivateKey::SignCallback> pending_requests;
+    // Maps from request id to the request state.
+    std::map<int, Request> pending_requests;
 
     // The request id that will be used for the next sign request to this
     // extension.

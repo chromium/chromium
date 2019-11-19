@@ -30,14 +30,15 @@
 #include "third_party/blink/public/platform/web_focus_type.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_field_element.h"
 #include "third_party/blink/renderer/core/html/forms/step_range.h"
-#include "third_party/blink/renderer/platform/date_components.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/text/date_components.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class DateTimeFieldsState;
 class Locale;
 class StepRange;
+enum class DateTimeField;
 
 // DateTimeEditElement class contains numberic field and symbolc field for
 // representing date and time, such as
@@ -82,8 +83,6 @@ class DateTimeEditElement final : public HTMLDivElement,
         : locale(locale), step_range(step_range) {}
   };
 
-  static DateTimeEditElement* Create(Document&, EditControlOwner&);
-
   DateTimeEditElement(Document&, EditControlOwner&);
   ~DateTimeEditElement() override;
   void Trace(Visitor*) override;
@@ -107,10 +106,13 @@ class DateTimeEditElement final : public HTMLDivElement,
   void SetValueAsDate(const LayoutParameters&, const DateComponents&);
   void SetValueAsDateTimeFieldsState(const DateTimeFieldsState&);
   void SetOnlyYearMonthDay(const DateComponents&);
+  void SetOnlyTime(const DateComponents&);
   void StepDown();
   void StepUp();
   String Value() const;
   DateTimeFieldsState ValueAsDateTimeFieldsState() const;
+  bool HasField(DateTimeField) const;
+  bool IsFirstFieldAMPM() const;
 
  private:
   static const wtf_size_t kInvalidFieldIndex = UINT_MAX;
@@ -162,6 +164,13 @@ DEFINE_TYPE_CASTS(DateTimeEditElement,
                   element,
                   element->IsDateTimeEditElement(),
                   element.IsDateTimeEditElement());
+
+template <>
+struct DowncastTraits<DateTimeEditElement> {
+  static bool AllowFrom(const Element& element) {
+    return element.IsDateTimeEditElement();
+  }
+};
 
 }  // namespace blink
 

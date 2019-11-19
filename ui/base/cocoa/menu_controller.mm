@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/cancelable_callback.h"
 #include "base/logging.h"
+#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -43,6 +44,42 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 }
 
 }  // namespace
+
+// This class stores a base::WeakPtr<ui::MenuModel> as an Objective-C object,
+// which allows it to be stored in the representedObject field of an NSMenuItem.
+@interface WeakPtrToMenuModelAsNSObject : NSObject
++ (instancetype)weakPtrForModel:(ui::MenuModel*)model;
++ (ui::MenuModel*)getFrom:(id)instance;
+- (instancetype)initWithModel:(ui::MenuModel*)model;
+- (ui::MenuModel*)menuModel;
+@end
+
+@implementation WeakPtrToMenuModelAsNSObject {
+  base::WeakPtr<ui::MenuModel> model_;
+}
+
++ (instancetype)weakPtrForModel:(ui::MenuModel*)model {
+  return
+      [[[WeakPtrToMenuModelAsNSObject alloc] initWithModel:model] autorelease];
+}
+
++ (ui::MenuModel*)getFrom:(id)instance {
+  return [base::mac::ObjCCastStrict<WeakPtrToMenuModelAsNSObject>(instance)
+      menuModel];
+}
+
+- (instancetype)initWithModel:(ui::MenuModel*)model {
+  if ((self = [super init])) {
+    model_ = model->AsWeakPtr();
+  }
+  return self;
+}
+
+- (ui::MenuModel*)menuModel {
+  return model_.get();
+}
+
+@end
 
 // Internal methods.
 @interface MenuControllerCocoa ()
@@ -83,7 +120,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 @end
 
 @implementation MenuControllerCocoa {
-  ui::MenuModel* model_;  // Weak.
+  base::WeakPtr<ui::MenuModel> model_;
   base::scoped_nsobject<NSMenu> menu_;
   BOOL useWithPopUpButtonCell_;  // If YES, 0th item is blank
   BOOL isMenuOpen_;
@@ -91,9 +128,16 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   std::unique_ptr<base::CancelableClosure> postedItemSelectedTask_;
 }
 
-@synthesize model = model_;
 @synthesize useWithPopUpButtonCell = useWithPopUpButtonCell_;
 @synthesize postItemSelectedAsTask = postItemSelectedAsTask_;
+
+- (ui::MenuModel*)model {
+  return model_.get();
+}
+
+- (void)setModel:(ui::MenuModel*)model {
+  model_ = model->AsWeakPtr();
+}
 
 - (instancetype)init {
   self = [super init];
@@ -103,7 +147,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 - (instancetype)initWithModel:(ui::MenuModel*)model
        useWithPopUpButtonCell:(BOOL)useWithCell {
   if ((self = [super init])) {
-    model_ = model;
+    model_ = model->AsWeakPtr();
     useWithPopUpButtonCell_ = useWithCell;
     [self menu];
   }
@@ -117,14 +161,15 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   // while its context menu is still open.
   [self cancel];
 
-  model_ = NULL;
+  model_ = nullptr;
   [super dealloc];
 }
 
 - (void)cancel {
   if (isMenuOpen_) {
     [menu_ cancelTracking];
-    model_->MenuWillClose();
+    if (model_)
+      model_->MenuWillClose();
     isMenuOpen_ = NO;
   }
 }
@@ -175,6 +220,13 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
     [item setTarget:nil];
     [item setAction:nil];
     [item setSubmenu:submenu];
+    // [item setSubmenu] updates target and action which means clicking on a
+    // submenu entry will not call [self validateUserInterfaceItem].
+    DCHECK_EQ([item action], @selector(submenuAction:));
+    DCHECK_EQ([item target], submenu);
+    // Set the enabled state here as submenu entries do not call into
+    // validateUserInterfaceItem. See crbug.com/981294 and crbug.com/991472.
+    [item setEnabled:model->IsEnabledAt(index)];
   } else {
     // The MenuModel works on indexes so we can't just set the command id as the
     // tag like we do in other menus. Also set the represented object to be
@@ -183,8 +235,8 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
     // in validation of the menu items.
     [item setTag:index];
     [item setTarget:self];
-    NSValue* modelObject = [NSValue valueWithPointer:model];
-    [item setRepresentedObject:modelObject];  // Retains |modelObject|.
+    [item setRepresentedObject:[WeakPtrToMenuModelAsNSObject
+                                   weakPtrForModel:model]];
     // On the Mac, context menus never have accelerators. Menus constructed
     // for context use have useWithPopUpButtonCell_ set to NO.
     if (useWithPopUpButtonCell_) {
@@ -209,8 +261,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 
   NSInteger modelIndex = [item tag];
   ui::MenuModel* model =
-      static_cast<ui::MenuModel*>(
-          [[(id)item representedObject] pointerValue]);
+      [WeakPtrToMenuModelAsNSObject getFrom:[(id)item representedObject]];
   DCHECK(model);
   if (model) {
     BOOL checked = model->IsItemCheckedAt(modelIndex);
@@ -296,8 +347,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 
   NSInteger modelIndex = [sender tag];
   ui::MenuModel* model =
-      static_cast<ui::MenuModel*>(
-          [[sender representedObject] pointerValue]);
+      [WeakPtrToMenuModelAsNSObject getFrom:[sender representedObject]];
   DCHECK(model);
   if (model)
     model->ActivatedAt(modelIndex, uiEventFlags);
@@ -306,7 +356,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 
 - (NSMenu*)menu {
   if (!menu_ && model_) {
-    menu_.reset([[self menuFromModel:model_] retain]);
+    menu_.reset([[self menuFromModel:model_.get()] retain]);
     [menu_ setDelegate:self];
     // If this is to be used with a NSPopUpButtonCell, add an item at the 0th
     // position that's empty. Doing it after the menu has been constructed won't
@@ -327,13 +377,15 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 
 - (void)menuWillOpen:(NSMenu*)menu {
   isMenuOpen_ = YES;
-  model_->MenuWillShow();  // Note: |model_| may trigger -[self dealloc].
+  if (model_)
+    model_->MenuWillShow();  // Note: |model_| may trigger -[self dealloc].
 }
 
 - (void)menuDidClose:(NSMenu*)menu {
   if (isMenuOpen_) {
     isMenuOpen_ = NO;
-    model_->MenuWillClose();  // Note: |model_| may trigger -[self dealloc].
+    if (model_)
+      model_->MenuWillClose();  // Note: |model_| may trigger -[self dealloc].
   }
 }
 

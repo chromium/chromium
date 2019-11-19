@@ -18,8 +18,7 @@ namespace deprecated {
 // Similar to VideoFrame::ReleaseMailboxCB for now.
 using ReleaseMailboxCB = base::OnceCallback<void(const gpu::SyncToken&)>;
 using OutputWithReleaseMailboxCB =
-    base::RepeatingCallback<void(ReleaseMailboxCB,
-                                 const scoped_refptr<VideoFrame>&)>;
+    base::RepeatingCallback<void(ReleaseMailboxCB, scoped_refptr<VideoFrame>)>;
 }  // namespace deprecated
 
 }  // namespace media

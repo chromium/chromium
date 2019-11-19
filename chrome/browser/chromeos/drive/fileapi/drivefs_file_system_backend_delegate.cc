@@ -6,9 +6,9 @@
 
 #include "chrome/browser/chromeos/drive/fileapi/drivefs_async_file_util.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/fileapi/async_file_util.h"
-#include "storage/browser/fileapi/file_stream_reader.h"
-#include "storage/browser/fileapi/file_stream_writer.h"
+#include "storage/browser/file_system/async_file_util.h"
+#include "storage/browser/file_system/file_stream_reader.h"
+#include "storage/browser/file_system/file_stream_writer.h"
 
 namespace drive {
 

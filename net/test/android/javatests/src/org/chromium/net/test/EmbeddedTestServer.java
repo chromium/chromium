@@ -39,7 +39,7 @@ import javax.annotation.concurrent.GuardedBy;
  * Note that this runs net::test_server::EmbeddedTestServer in a service in a separate APK.
  */
 public class EmbeddedTestServer {
-    private static final String TAG = "cr_TestServer";
+    private static final String TAG = "TestServer";
 
     private static final String EMBEDDED_TEST_SERVER_SERVICE =
             "org.chromium.net.test.EMBEDDED_TEST_SERVER_SERVICE";
@@ -140,8 +140,7 @@ public class EmbeddedTestServer {
      *          the service at server destruction time.
      *  @param httpsSetting Whether the server should use HTTPS.
      */
-    public void initializeNative(Context context, ServerHTTPSSetting httpsSetting)
-            throws InterruptedException {
+    public void initializeNative(Context context, ServerHTTPSSetting httpsSetting) {
         mContext = context;
 
         Intent intent = new Intent(EMBEDDED_TEST_SERVER_SERVICE);
@@ -153,7 +152,11 @@ public class EmbeddedTestServer {
         synchronized (mImplMonitor) {
             Log.i(TAG, "Waiting for EmbeddedTestServer service connection.");
             while (mImpl == null) {
-                mImplMonitor.wait(SERVICE_CONNECTION_WAIT_INTERVAL_MS);
+                try {
+                    mImplMonitor.wait(SERVICE_CONNECTION_WAIT_INTERVAL_MS);
+                } catch (InterruptedException e) {
+                    // Ignore the InterruptedException. Rely on the outer while loop to re-run.
+                }
                 Log.i(TAG, "Still waiting for EmbeddedTestServer service connection.");
             }
             Log.i(TAG, "EmbeddedTestServer service connected.");
@@ -322,8 +325,7 @@ public class EmbeddedTestServer {
      *  @param context The context in which the server will run.
      *  @return The created server.
      */
-    public static EmbeddedTestServer createAndStartServer(Context context)
-            throws InterruptedException {
+    public static EmbeddedTestServer createAndStartServer(Context context) {
         return createAndStartServerWithPort(context, 0);
     }
 
@@ -336,8 +338,7 @@ public class EmbeddedTestServer {
      *  @param port The port to use for the server, 0 to auto-select an unused port.
      *  @return The created server.
      */
-    public static EmbeddedTestServer createAndStartServerWithPort(Context context, int port)
-            throws InterruptedException {
+    public static EmbeddedTestServer createAndStartServerWithPort(Context context, int port) {
         Assert.assertNotEquals("EmbeddedTestServer should not be created on UiThread, "
                 + "the instantiation will hang forever waiting for tasks to post to UI thread",
                 Looper.getMainLooper(), Looper.myLooper());
@@ -355,7 +356,7 @@ public class EmbeddedTestServer {
      *  @return The created server.
      */
     public static EmbeddedTestServer createAndStartHTTPSServer(
-            Context context, @ServerCertificate int serverCertificate) throws InterruptedException {
+            Context context, @ServerCertificate int serverCertificate) {
         return createAndStartHTTPSServerWithPort(context, serverCertificate, 0 /* port */);
     }
 
@@ -369,8 +370,8 @@ public class EmbeddedTestServer {
      *  @param port The port to use for the server, 0 to auto-select an unused port.
      *  @return The created server.
      */
-    public static EmbeddedTestServer createAndStartHTTPSServerWithPort(Context context,
-            @ServerCertificate int serverCertificate, int port) throws InterruptedException {
+    public static EmbeddedTestServer createAndStartHTTPSServerWithPort(
+            Context context, @ServerCertificate int serverCertificate, int port) {
         Assert.assertNotEquals("EmbeddedTestServer should not be created on UiThread, "
                         + "the instantiation will hang forever waiting for tasks"
                         + " to post to UI thread",
@@ -390,7 +391,7 @@ public class EmbeddedTestServer {
      *  @return The created server.
      */
     public static <T extends EmbeddedTestServer> T initializeAndStartServer(
-            T server, Context context, int port) throws InterruptedException {
+            T server, Context context, int port) {
         server.initializeNative(context, ServerHTTPSSetting.USE_HTTP);
         server.addDefaultHandlers("");
         if (!server.start(port)) {
@@ -412,8 +413,7 @@ public class EmbeddedTestServer {
      *  @return The created server.
      */
     public static <T extends EmbeddedTestServer> T initializeAndStartHTTPSServer(
-            T server, Context context, @ServerCertificate int serverCertificate, int port)
-            throws InterruptedException {
+            T server, Context context, @ServerCertificate int serverCertificate, int port) {
         server.initializeNative(context, ServerHTTPSSetting.USE_HTTPS);
         server.addDefaultHandlers("");
         server.setSSLConfig(serverCertificate);

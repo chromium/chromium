@@ -8,27 +8,23 @@
 #include <vector>
 
 #include "base/big_endian.h"
-#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "content/browser/web_package/signed_exchange_certificate_chain.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_envelope.h"
 #include "content/browser/web_package/signed_exchange_signature_header_field.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/public/browser/content_browser_client.h"
-#include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
-#include "services/network/public/cpp/network_switches.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
@@ -60,7 +56,7 @@ constexpr base::TimeDelta kFourWeeks = base::TimeDelta::FromDays(4 * 7);
 base::Optional<crypto::SignatureVerifier::SignatureAlgorithm>
 GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
                       SignedExchangeDevToolsProxy* devtools_proxy) {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"), "VerifySignature");
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"), "GetSignatureAlgorithm");
   base::StringPiece spki;
   if (!net::asn1::ExtractSPKIFromDERCert(
           net::x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()),
@@ -106,6 +102,7 @@ bool VerifySignature(base::span<const uint8_t> sig,
                      scoped_refptr<net::X509Certificate> cert,
                      crypto::SignatureVerifier::SignatureAlgorithm algorithm,
                      SignedExchangeDevToolsProxy* devtools_proxy) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"), "VerifySignature");
   crypto::SignatureVerifier verifier;
   if (!net::x509_util::SignatureVerifierInitWithCertificate(
           &verifier, algorithm, sig, cert->cert_buffer())) {
@@ -244,28 +241,18 @@ SignedExchangeSignatureVerifier::Result VerifyTimestamps(
   return SignedExchangeSignatureVerifier::Result::kSuccess;
 }
 
-// Returns true if SPKI hash of |certificate| is included in the
-// --ignore-certificate-errors-spki-list command line flag, and
-// ContentBrowserClient::CanIgnoreCertificateErrorIfNeeded() returns true.
-bool ShouldIgnoreTimestampError(
-    scoped_refptr<net::X509Certificate> certificate) {
-  static base::NoDestructor<
-      SignedExchangeSignatureVerifier::IgnoreErrorsSPKIList>
-      instance(*base::CommandLine::ForCurrentProcess());
-  return instance->ShouldIgnoreError(certificate);
-}
-
 }  // namespace
 
 SignedExchangeSignatureVerifier::Result SignedExchangeSignatureVerifier::Verify(
     SignedExchangeVersion version,
     const SignedExchangeEnvelope& envelope,
-    scoped_refptr<net::X509Certificate> certificate,
+    const SignedExchangeCertificateChain* cert_chain,
     const base::Time& verification_time,
     SignedExchangeDevToolsProxy* devtools_proxy) {
   SCOPED_UMA_HISTOGRAM_TIMER("SignedExchange.Time.SignatureVerify");
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeSignatureVerifier::Verify");
+  scoped_refptr<net::X509Certificate> certificate = cert_chain->cert();
   DCHECK(certificate);
   const auto validity_period_result = VerifyValidityPeriod(envelope);
   if (validity_period_result != Result::kSuccess) {
@@ -280,7 +267,7 @@ SignedExchangeSignatureVerifier::Result SignedExchangeSignatureVerifier::Verify(
   }
   const auto timestamp_result = VerifyTimestamps(envelope, verification_time);
   if (timestamp_result != Result::kSuccess &&
-      !ShouldIgnoreTimestampError(certificate)) {
+      !cert_chain->ShouldIgnoreErrors()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy,
         base::StringPrintf(
@@ -319,45 +306,6 @@ SignedExchangeSignatureVerifier::Result SignedExchangeSignatureVerifier::Verify(
     return Result::kErrSignatureVerificationFailed;
   }
   return Result::kSuccess;
-}
-
-SignedExchangeSignatureVerifier::IgnoreErrorsSPKIList::IgnoreErrorsSPKIList(
-    const std::string& spki_list) {
-  Parse(spki_list);
-}
-
-SignedExchangeSignatureVerifier::IgnoreErrorsSPKIList::IgnoreErrorsSPKIList(
-    const base::CommandLine& command_line) {
-  if (!GetContentClient()->browser()->CanIgnoreCertificateErrorIfNeeded())
-    return;
-  Parse(command_line.GetSwitchValueASCII(
-      network::switches::kIgnoreCertificateErrorsSPKIList));
-}
-
-void SignedExchangeSignatureVerifier::IgnoreErrorsSPKIList::Parse(
-    const std::string& spki_list) {
-  hash_set_ =
-      network::IgnoreErrorsCertVerifier::MakeWhitelist(base::SplitString(
-          spki_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
-}
-
-SignedExchangeSignatureVerifier::IgnoreErrorsSPKIList::~IgnoreErrorsSPKIList() =
-    default;
-
-bool SignedExchangeSignatureVerifier::IgnoreErrorsSPKIList::ShouldIgnoreError(
-    scoped_refptr<net::X509Certificate> certificate) {
-  if (hash_set_.empty())
-    return false;
-
-  base::StringPiece spki;
-  if (!net::asn1::ExtractSPKIFromDERCert(
-          net::x509_util::CryptoBufferAsStringPiece(certificate->cert_buffer()),
-          &spki)) {
-    return false;
-  }
-  net::SHA256HashValue hash;
-  crypto::SHA256HashString(spki, &hash, sizeof(net::SHA256HashValue));
-  return hash_set_.find(hash) != hash_set_.end();
 }
 
 }  // namespace content

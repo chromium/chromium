@@ -7,13 +7,14 @@ package org.chromium.chrome.browser.ntp.snippets;
 import android.content.Context;
 import android.net.ConnectivityManager;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.ChromeBackgroundService;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;

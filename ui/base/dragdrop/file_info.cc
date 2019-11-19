@@ -6,13 +6,13 @@
 
 namespace ui {
 
-FileInfo::FileInfo() {}
+FileInfo::FileInfo() = default;
 
 FileInfo::FileInfo(const base::FilePath& path,
                    const base::FilePath& display_name)
     : path(path), display_name(display_name) {}
 
-FileInfo::~FileInfo() {}
+FileInfo::~FileInfo() = default;
 
 bool FileInfo::operator==(const FileInfo& other) const {
   return path == other.path && display_name == other.display_name;

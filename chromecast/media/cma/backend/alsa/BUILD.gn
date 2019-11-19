@@ -10,12 +10,13 @@ import("//testing/test.gni")
 # Alsa must be used for these targets to build.
 assert(use_alsa)
 
-cast_shared_library("libcast_media_1.0_audio") {
+cast_source_set("libcast_media_1.0_audio") {
   sources = [
     "cast_media_shlib.cc",
   ]
 
   deps = [
+    ":volume_control",
     "//base",
     "//chromecast/base",
     "//chromecast/media/cma/backend:audio_codec_support",
@@ -28,12 +29,39 @@ cast_shared_library("libcast_media_1.0_audio") {
   ]
 }
 
-cast_source_set("cma_backend_support") {
+cast_source_set("alsa_wrapper") {
+  sources = [
+    "alsa_wrapper.cc",
+    "alsa_wrapper.h",
+  ]
+
+  libs = [ "asound" ]
+
+  deps = [
+    "//base",
+    "//chromecast/media/cma/backend:audio_buildflags",
+    "//media",
+  ]
+}
+
+cast_source_set("volume_control") {
   sources = [
     "alsa_volume_control.cc",
     "alsa_volume_control.h",
-    "alsa_wrapper.cc",
-    "alsa_wrapper.h",
+  ]
+
+  libs = [ "asound" ]
+
+  deps = [
+    "//base",
+    "//chromecast/base:chromecast_switches",
+    "//chromecast/media/cma/backend:public",
+    "//media",
+  ]
+}
+
+cast_source_set("mixer_output") {
+  sources = [
     "mixer_output_stream_alsa.cc",
     "mixer_output_stream_alsa.h",
   ]
@@ -41,13 +69,9 @@ cast_source_set("cma_backend_support") {
   libs = [ "asound" ]
 
   deps = [
+    ":alsa_wrapper",
     "//base",
-    "//chromecast/base",
-    "//chromecast/media/base",
-    "//chromecast/media/cma/backend:audio_buildflags",
-    "//chromecast/media/cma/backend:public",
-    "//chromecast/media/cma/base",
-    "//chromecast/media/cma/decoder",
+    "//chromecast/base:chromecast_switches",
     "//chromecast/public/media",
     "//media",
   ]

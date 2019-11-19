@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -52,10 +52,9 @@ class ExternalPolicyDataFetcherTest : public testing::Test {
                      std::unique_ptr<std::string> data);
   int GetAndResetCallbackCount();
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::TestSimpleTaskRunner> owner_task_runner_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  std::unique_ptr<ExternalPolicyDataFetcherBackend> fetcher_backend_;
   std::unique_ptr<ExternalPolicyDataFetcher> fetcher_;
 
   std::map<int, ExternalPolicyDataFetcher::Job*> jobs_;  // Not owned.
@@ -79,10 +78,9 @@ void ExternalPolicyDataFetcherTest::SetUp() {
   auto url_loader_factory =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
-  fetcher_backend_ = std::make_unique<ExternalPolicyDataFetcherBackend>(
-      std::move(url_loader_factory));
   owner_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
-  fetcher_ = fetcher_backend_->CreateFrontend(owner_task_runner_);
+  fetcher_ = std::make_unique<ExternalPolicyDataFetcher>(
+      std::move(url_loader_factory), owner_task_runner_);
 }
 
 void ExternalPolicyDataFetcherTest::StartJob(int index) {
@@ -173,7 +171,7 @@ TEST_F(ExternalPolicyDataFetcherTest, ConnectionInterrupted) {
 
   // Make the fetch fail due to an interrupted connection.
   test_url_loader_factory_.AddResponse(
-      GURL(kExternalPolicyDataURLs[0]), network::ResourceResponseHead(),
+      GURL(kExternalPolicyDataURLs[0]), network::mojom::URLResponseHead::New(),
       std::string(),
       network::URLLoaderCompletionStatus(net::ERR_CONNECTION_RESET));
 
@@ -198,7 +196,7 @@ TEST_F(ExternalPolicyDataFetcherTest, NetworkError) {
 
   // Make the fetch fail due to a network error.
   test_url_loader_factory_.AddResponse(
-      GURL(kExternalPolicyDataURLs[0]), network::ResourceResponseHead(),
+      GURL(kExternalPolicyDataURLs[0]), network::mojom::URLResponseHead::New(),
       std::string(),
       network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED));
 
@@ -313,7 +311,7 @@ TEST_F(ExternalPolicyDataFetcherTest, SuccessfulCanceled) {
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 
   // Cancel the fetch job before the successful fetch result has arrived from
-  // the backend.
+  // the job.
   CancelJob(0);
 
   // Verify that the callback is not invoked.

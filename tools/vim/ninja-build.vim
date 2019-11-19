@@ -58,7 +58,7 @@ def compute_ninja_command_for_current_buffer():
   file_to_build = path_to_current_buffer()
   file_to_build = os.path.relpath(file_to_build, build_dir)
 
-  build_cmd = ' '.join(['ninja', '-C', build_dir, file_to_build + '^'])
+  build_cmd = ' '.join(['autoninja', '-C', build_dir, file_to_build + '^'])
   if sys.platform == 'win32':
     # Escape \ for Vim, and ^ for both Vim and shell.
     build_cmd = build_cmd.replace('\\', '\\\\').replace('^', '^^^^')
@@ -66,7 +66,7 @@ def compute_ninja_command_for_current_buffer():
 
 
 def compute_ninja_command_for_targets(targets=''):
-  build_cmd = ' '.join(['ninja', '-C', path_to_build_dir(),
+  build_cmd = ' '.join(['autoninja', '-C', path_to_build_dir(),
                         targets])
   vim.command('return "%s"' % build_cmd)
 endpython

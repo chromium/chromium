@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "services/device/geolocation/wifi_data_provider_chromeos.h"
+
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill_manager_client.h"
+#include "base/test/task_environment.h"
+#include "chromeos/dbus/shill/shill_clients.h"
+#include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/network/geolocation_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -19,23 +20,22 @@ namespace device {
 class GeolocationChromeOsWifiDataProviderTest : public testing::Test {
  protected:
   GeolocationChromeOsWifiDataProviderTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
 
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
+    chromeos::shill_clients::InitializeFakes();
     chromeos::NetworkHandler::Initialize();
-    manager_client_ =
-        chromeos::DBusThreadManager::Get()->GetShillManagerClient();
+    manager_client_ = chromeos::ShillManagerClient::Get();
     manager_test_ = manager_client_->GetTestInterface();
     provider_ = new WifiDataProviderChromeOs();
     base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
-    provider_ = NULL;
+    provider_.reset();
     chromeos::NetworkHandler::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
+    chromeos::shill_clients::Shutdown();
   }
 
   bool GetAccessPointData() { return provider_->GetAccessPointData(&ap_data_); }
@@ -60,7 +60,7 @@ class GeolocationChromeOsWifiDataProviderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<WifiDataProviderChromeOs> provider_;
   chromeos::ShillManagerClient* manager_client_;
   chromeos::ShillManagerClient::TestInterface* manager_test_;

@@ -11,7 +11,7 @@
         android:fillColor="@color/black_alpha_20"
         android:pathData="M12,14m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"/>
     <path
-        android:fillColor="@android:color/white"
+        android:fillColor="@color/default_icon_color_inverse"
         android:pathData="M4 6H20v12H4z" />
     <path
         android:fillColor="@color/default_icon_color_blue"

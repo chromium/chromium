@@ -15,15 +15,19 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/usb/usb_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace chrome {
 
-TabAlertState GetTabAlertStateForContents(content::WebContents* contents) {
+std::vector<TabAlertState> GetTabAlertStatesForContents(
+    content::WebContents* contents) {
+  std::vector<TabAlertState> states;
   if (!contents)
-    return TabAlertState::NONE;
+    return states;
 
   scoped_refptr<MediaStreamCaptureIndicator> indicator =
       MediaCaptureDevicesDispatcher::GetInstance()->
@@ -34,28 +38,32 @@ TabAlertState GetTabAlertStateForContents(content::WebContents* contents) {
     // TODO(crbug.com/861961): To show the icon of the highest-priority alert
     // with tooltip that notes all the states in play.
     if (indicator->IsCapturingDesktop(contents))
-      return TabAlertState::DESKTOP_CAPTURING;
+      states.push_back(TabAlertState::DESKTOP_CAPTURING);
     if (indicator->IsBeingMirrored(contents))
-      return TabAlertState::TAB_CAPTURING;
+      states.push_back(TabAlertState::TAB_CAPTURING);
     if (indicator->IsCapturingUserMedia(contents))
-      return TabAlertState::MEDIA_RECORDING;
+      states.push_back(TabAlertState::MEDIA_RECORDING);
   }
 
   if (contents->IsConnectedToBluetoothDevice())
-    return TabAlertState::BLUETOOTH_CONNECTED;
+    states.push_back(TabAlertState::BLUETOOTH_CONNECTED);
 
   UsbTabHelper* usb_tab_helper = UsbTabHelper::FromWebContents(contents);
   if (usb_tab_helper && usb_tab_helper->IsDeviceConnected())
-    return TabAlertState::USB_CONNECTED;
+    states.push_back(TabAlertState::USB_CONNECTED);
+
+  if (contents->IsConnectedToSerialPort())
+    states.push_back(TabAlertState::SERIAL_CONNECTED);
 
   // Check if VR content is being presented in a headset.
   // NOTE: This icon must take priority over the audio alert ones
-  // because most VR content has audio and its usage is implied by the VR icon.
+  // because most VR content has audio and its usage is implied by the VR
+  // icon.
   if (vr::VrTabHelper::IsContentDisplayedInHeadset(contents))
-    return TabAlertState::VR_PRESENTING_IN_HEADSET;
+    states.push_back(TabAlertState::VR_PRESENTING_IN_HEADSET);
 
   if (contents->HasPictureInPictureVideo())
-    return TabAlertState::PIP_PLAYING;
+    states.push_back(TabAlertState::PIP_PLAYING);
 
   // Only tabs have a RecentlyAudibleHelper, but this function is abused for
   // some non-tab WebContents. In that case fall back to using the realtime
@@ -66,52 +74,53 @@ TabAlertState GetTabAlertStateForContents(content::WebContents* contents) {
     audible = audible_helper->WasRecentlyAudible();
   if (audible) {
     if (contents->IsAudioMuted())
-      return TabAlertState::AUDIO_MUTING;
-    return TabAlertState::AUDIO_PLAYING;
+      states.push_back(TabAlertState::AUDIO_MUTING);
+    states.push_back(TabAlertState::AUDIO_PLAYING);
   }
 
-  return TabAlertState::NONE;
+  return states;
 }
 
-bool CanToggleAudioMute(content::WebContents* contents) {
-  switch (chrome::GetTabAlertStateForContents(contents)) {
-    case TabAlertState::NONE:
+base::string16 GetTabAlertStateText(const TabAlertState alert_state) {
+  switch (alert_state) {
     case TabAlertState::AUDIO_PLAYING:
+      return l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_PLAYING);
     case TabAlertState::AUDIO_MUTING:
-    case TabAlertState::PIP_PLAYING:
-    case TabAlertState::VR_PRESENTING_IN_HEADSET:
-      return true;
+      return l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_MUTING);
     case TabAlertState::MEDIA_RECORDING:
+      return l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_MEDIA_RECORDING);
     case TabAlertState::TAB_CAPTURING:
+      return l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_TAB_CAPTURING);
     case TabAlertState::BLUETOOTH_CONNECTED:
+      return l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_BLUETOOTH_CONNECTED);
     case TabAlertState::USB_CONNECTED:
+      return l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_USB_CONNECTED);
+    case TabAlertState::SERIAL_CONNECTED:
+      return l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_SERIAL_CONNECTED);
+    case TabAlertState::PIP_PLAYING:
+      return l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ALERT_STATE_PIP_PLAYING);
     case TabAlertState::DESKTOP_CAPTURING:
-      // The new Audio Service implements muting separately from the tab audio
-      // capture infrastructure; so the mute state can be toggled independently
-      // at all times.
-      //
-      // TODO(crbug.com/672469): Remove this method once the Audio Service is
-      // launched.
-      return base::FeatureList::IsEnabled(features::kAudioServiceAudioStreams);
+      return l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_DESKTOP_CAPTURING);
+    case TabAlertState::VR_PRESENTING_IN_HEADSET:
+      return l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING);
   }
   NOTREACHED();
-  return false;
+  return base::string16();
 }
 
 TabMutedReason GetTabAudioMutedReason(content::WebContents* contents) {
   LastMuteMetadata::CreateForWebContents(contents);  // Ensures metadata exists.
   LastMuteMetadata* const metadata =
       LastMuteMetadata::FromWebContents(contents);
-  if (GetTabAlertStateForContents(contents) == TabAlertState::TAB_CAPTURING &&
-      !base::FeatureList::IsEnabled(features::kAudioServiceAudioStreams)) {
-    // The legacy tab audio capture implementation in libcontent forces muting
-    // off because it requires using the same infrastructure.
-    //
-    // TODO(crbug.com/672469): Remove this once the Audio Service is launched.
-    // See comments in CanToggleAudioMute().
-    metadata->reason = TabMutedReason::MEDIA_CAPTURE;
-    metadata->extension_id.clear();
-  }
   return metadata->reason;
 }
 
@@ -121,9 +130,6 @@ bool SetTabAudioMuted(content::WebContents* contents,
                       const std::string& extension_id) {
   DCHECK(contents);
   DCHECK(TabMutedReason::NONE != reason);
-
-  if (!chrome::CanToggleAudioMute(contents))
-    return false;
 
   contents->SetAudioMuted(mute);
 
@@ -138,15 +144,6 @@ bool SetTabAudioMuted(content::WebContents* contents,
     metadata->extension_id.clear();
   }
 
-  return true;
-}
-
-bool AreAllTabsMuted(const TabStripModel& tab_strip,
-                     const std::vector<int>& indices) {
-  for (auto i = indices.begin(); i != indices.end(); ++i) {
-    if (!tab_strip.GetWebContentsAt(*i)->IsAudioMuted())
-      return false;
-  }
   return true;
 }
 
@@ -171,7 +168,7 @@ bool IsSiteMuted(const TabStripModel& tab_strip, const int index) {
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   HostContentSettingsMap* settings =
       HostContentSettingsMapFactory::GetForProfile(profile);
-  return settings->GetContentSetting(url, url, CONTENT_SETTINGS_TYPE_SOUND,
+  return settings->GetContentSetting(url, url, ContentSettingsType::SOUND,
                                      std::string()) == CONTENT_SETTING_BLOCK;
 }
 

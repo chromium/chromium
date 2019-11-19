@@ -3,7 +3,6 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../assert_selection.js"></script>
 <script>
-const usesBidiAffinity = window.internals && internals.runtimeFlags.bidiCaretAffinityEnabled;
 
 selection_test(
   '<div contenteditable dir="ltr">|abc<span>\u05D0\u05D1\u05D2def</span></div>',
@@ -26,31 +25,25 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc|<span>\u05D0\u05D1\u05D2def</span></div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr">abc<span>\u05d0\u05d1\u05d2d|ef</span></div>'
-      : '<div contenteditable dir="ltr">abc<span>\u05D0\u05D1|\u05D2def</span></div>',
+  '<div contenteditable dir="ltr">abc<span>\u05D0|\u05D1\u05D2def</span></div>',
   '33-3 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr">abc<span>|\u05D0\u05D1\u05D2def</span></div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr">abc<span>\u05d0\u05d1\u05d2d|ef</span></div>'
-      : '<div contenteditable dir="ltr">abc<span>\u05D0\u05D1|\u05D2def</span></div>',
+  '<div contenteditable dir="ltr">abc<span>\u05D0|\u05D1\u05D2def</span></div>',
   '33-4 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr">abc<span>\u05D0|\u05D1\u05D2def</span></div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr">abc|<span>\u05d0\u05d1\u05d2def</span></div>'
-      : '<div contenteditable dir="ltr">abc<span>\u05D0\u05D1\u05D2|def</span></div>',
+  '<div contenteditable dir="ltr">abc<span>\u05D0\u05D1|\u05D2def</span></div>',
   '33-5 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr">abc<span>\u05D0\u05D1|\u05D2def</span></div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr">abc<span>\u05D0|\u05D1\u05D2def</span></div>',
+  '<div contenteditable dir="ltr">abc<span>\u05D0\u05D1\u05D2|def</span></div>',
   '33-6 ltr right character');
 
 selection_test(

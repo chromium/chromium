@@ -1,16 +1,17 @@
 rootWebArea name='Table example - th rowheader'
-++table
-++++row
-++++++rowHeader name='Firstname'
-++++++++staticText name='Firstname'
-++++++++++inlineTextBox name='Firstname'
-++++++cell name='Jill'
-++++++++staticText name='Jill'
-++++++++++inlineTextBox name='Jill'
-++++row
-++++++rowHeader name='Lastname'
-++++++++staticText name='Lastname'
-++++++++++inlineTextBox name='Lastname'
-++++++cell name='Smith'
-++++++++staticText name='Smith'
-++++++++++inlineTextBox name='Smith'
+++genericContainer ignored
+++++table
+++++++row
+++++++++rowHeader name='Firstname'
+++++++++++staticText name='Firstname'
+++++++++++++inlineTextBox name='Firstname'
+++++++++cell name='Jill'
+++++++++++staticText name='Jill'
+++++++++++++inlineTextBox name='Jill'
+++++++row
+++++++++rowHeader name='Lastname'
+++++++++++staticText name='Lastname'
+++++++++++++inlineTextBox name='Lastname'
+++++++++cell name='Smith'
+++++++++++staticText name='Smith'
+++++++++++++inlineTextBox name='Smith'

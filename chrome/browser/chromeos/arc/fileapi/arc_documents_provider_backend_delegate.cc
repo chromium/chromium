@@ -8,9 +8,10 @@
 
 #include "base/logging.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_file_stream_reader.h"
+#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_file_stream_writer.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/fileapi/file_stream_reader.h"
-#include "storage/browser/fileapi/file_stream_writer.h"
+#include "storage/browser/file_system/file_stream_reader.h"
+#include "storage/browser/file_system/file_stream_writer.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -48,8 +49,8 @@ ArcDocumentsProviderBackendDelegate::CreateFileStreamWriter(
     int64_t offset,
     storage::FileSystemContext* context) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  NOTREACHED();  // Read-only file system.
-  return nullptr;
+
+  return std::make_unique<ArcDocumentsProviderFileStreamWriter>(url, offset);
 }
 
 storage::WatcherManager* ArcDocumentsProviderBackendDelegate::GetWatcherManager(

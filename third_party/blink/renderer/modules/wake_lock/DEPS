@@ -3,5 +3,10 @@ include_rules = [
   "+services/device/public/mojom",
   "+services/device/public/interfaces/constants.mojom-blink.h",
   "+services/device/public/mojom/wake_lock.mojom-blink.h",
-  "+third_party/blink/renderer/modules/event_target_modules.h",
 ]
+
+specific_include_rules = {
+  "wake_lock_test_utils\.cc|.+_test\.cc": [
+    "+base/run_loop.h",
+  ],
+}

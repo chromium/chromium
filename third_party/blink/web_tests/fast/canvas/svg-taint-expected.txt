@@ -1,6 +1,0 @@
-Let's check that rendering an SVG pattern to a canvas taints it!
-See https://bugs.webkit.org/show_bug.cgi?id=36838
-
-Starting...
-Exception: SecurityError
- 

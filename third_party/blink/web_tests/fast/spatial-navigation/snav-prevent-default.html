@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+
+<div>
+  <button id="a">A</button>
+</div>
+<div>
+  <button id="b">B</button>
+</div>
+<div>
+  <button id="c">C</button>
+</div>
+<div tabindex=-1>
+  <button id="d">D</button>
+</div>
+<div tabindex=-1>
+  <button id="e">E</button>
+</div>
+<div tabindex=-1>
+  <button id="f">F</button>
+</div>
+<div>
+  <button id="g">G</button>
+</div>
+<script>
+  const buttons = document.getElementsByTagName("button");
+  const parentContainers = document.getElementsByTagName("div");
+  const preventDefault = (e) => e.preventDefault();
+
+  // Add event handler.
+  buttons[0].addEventListener('keydown', preventDefault);
+  buttons[1].addEventListener('keydown', preventDefault, { capture: true });
+  buttons[2].addEventListener('keydown', preventDefault, { passive: true });
+  parentContainers[3].addEventListener('keydown', preventDefault);
+  parentContainers[4].addEventListener('keydown', preventDefault, { capture: true });
+  parentContainers[5].addEventListener('keydown', preventDefault, { passive: true });
+  buttons[6].addEventListener('keydown', (e) => { });
+
+  // SpatNav Test
+  snav.assertSnavEnabledAndTestable();
+
+  test(() => {
+    // Move focus to A button.
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+      buttons[0], "A button should start off interested.");
+
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+      buttons[0], "The focus should remain on the A button.");
+
+    // Move focus to B button.
+    buttons[1].focus();
+    assert_equals(window.internals.interestedElement,
+      buttons[1], "A button should start off interested.");
+
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+      buttons[1], "The focus should remain on the B button.");
+
+    // Move focus to C button.
+    buttons[2].focus();
+    assert_equals(window.internals.interestedElement,
+      buttons[2], "C button should start off interested.");
+
+    // Move focus to D button.
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+      buttons[3], "The focus should move to the D button.");
+
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+      buttons[3], "The focus should remain on the D button.");
+
+    // Move focus to E button.
+    buttons[4].focus();
+    assert_equals(window.internals.interestedElement,
+      buttons[4], "E button should start off interested.");
+
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+      buttons[4], "The focus should remain on the E button.");
+
+    // Move focus to F button.
+    buttons[5].focus();
+    assert_equals(window.internals.interestedElement,
+      buttons[5], "E button should start off interested.");
+
+    // Move focus to G button.
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+      buttons[6], "The focus should move to the G button.");
+
+    // Move focus to F button again.
+    snav.triggerMove('Up');
+    assert_equals(window.internals.interestedElement,
+      buttons[5], "The focus should move to the F button.");
+
+  }, "Event.preventDefault() prevent the spatial-navigation operation.");
+</script>

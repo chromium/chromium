@@ -73,7 +73,7 @@ class ReloadCacheControlBrowserTest : public ContentBrowserTest {
     // a registered HandleFileRequest for "content/test/data".
     // Because the handler is registered as the first handler, MonitorHandler
     // is needed to capture all requests.
-    embedded_test_server()->RegisterRequestMonitor(base::Bind(
+    embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
         &ReloadCacheControlBrowserTest::MonitorRequestHandler,
         base::Unretained(this)));
 

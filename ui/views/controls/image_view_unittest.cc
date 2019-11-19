@@ -38,7 +38,7 @@ namespace views {
 class ImageViewTest : public ViewsTestBase,
                       public ::testing::WithParamInterface<Axis> {
  public:
-  ImageViewTest() {}
+  ImageViewTest() = default;
 
   // ViewsTestBase:
   void SetUp() override {
@@ -48,12 +48,12 @@ class ImageViewTest : public ViewsTestBase,
         CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(200, 200);
     params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    widget_.Init(params);
+    widget_.Init(std::move(params));
     View* container = new View();
     // Make sure children can take up exactly as much space as they require.
-    BoxLayout::Orientation orientation = GetParam() == Axis::kHorizontal
-                                             ? BoxLayout::kHorizontal
-                                             : BoxLayout::kVertical;
+    BoxLayout::Orientation orientation =
+        GetParam() == Axis::kHorizontal ? BoxLayout::Orientation::kHorizontal
+                                        : BoxLayout::Orientation::kVertical;
     container->SetLayoutManager(std::make_unique<BoxLayout>(orientation));
     widget_.SetContentsView(container);
 
@@ -88,7 +88,7 @@ class ImageViewTest : public ViewsTestBase,
 // Test the image origin of the internal ImageSkia is correct when it is
 // center-aligned (both horizontally and vertically).
 TEST_P(ImageViewTest, CenterAlignment) {
-  image_view()->SetHorizontalAlignment(ImageView::CENTER);
+  image_view()->SetHorizontalAlignment(ImageView::Alignment::kCenter);
 
   constexpr int kImageSkiaSize = 4;
   SkBitmap bitmap;
@@ -128,7 +128,7 @@ TEST_P(ImageViewTest, CenterAlignment) {
 
 TEST_P(ImageViewTest, ImageOriginForCustomViewBounds) {
   gfx::Rect image_view_bounds(10, 10, 80, 80);
-  image_view()->SetHorizontalAlignment(ImageView::CENTER);
+  image_view()->SetHorizontalAlignment(ImageView::Alignment::kCenter);
   image_view()->SetBoundsRect(image_view_bounds);
 
   SkBitmap bitmap;

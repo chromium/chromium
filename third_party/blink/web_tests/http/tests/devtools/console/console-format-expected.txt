@@ -465,12 +465,12 @@ console-format.js:22 [svg#svg-node]
 globals[25]
     <svg id="svg-node"></svg>
 console-format.js:21 {enumerableProp: 4, __underscoreEnumerableProp__: 5, __underscoreNonEnumerableProp: 2, abc: 3, getFoo: ƒ, …}
+    bar: (...)
     enumerableProp: 4
     __underscoreEnumerableProp__: 5
-    abc: 3
-    bar: (...)
-    getFoo: ƒ ()
     __underscoreNonEnumerableProp: 2
+    abc: 3
+    getFoo: ƒ ()
     get bar: ƒ ()
     set bar: ƒ (x)
     __proto__: Object
@@ -480,12 +480,12 @@ console-format.js:22 [{…}]
     __proto__: Array(0)
 globals[26]
 {enumerableProp: 4, __underscoreEnumerableProp__: 5, __underscoreNonEnumerableProp: 2, abc: 3, getFoo: ƒ, …}
+    bar: (...)
     enumerableProp: 4
     __underscoreEnumerableProp__: 5
-    abc: 3
-    bar: (...)
-    getFoo: ƒ ()
     __underscoreNonEnumerableProp: 2
+    abc: 3
+    getFoo: ƒ ()
     get bar: ƒ ()
     set bar: ƒ (x)
     __proto__: Object
@@ -514,16 +514,16 @@ globals[29]
 ƒ Object() { [native code] }
 console-format.js:21 {constructor: ƒ, __defineGetter__: ƒ, __defineSetter__: ƒ, hasOwnProperty: ƒ, __lookupGetter__: ƒ, …}
     constructor: ƒ Object()
-    hasOwnProperty: ƒ hasOwnProperty()
-    isPrototypeOf: ƒ isPrototypeOf()
-    propertyIsEnumerable: ƒ propertyIsEnumerable()
-    toLocaleString: ƒ toLocaleString()
-    toString: ƒ toString()
-    valueOf: ƒ valueOf()
     __defineGetter__: ƒ __defineGetter__()
     __defineSetter__: ƒ __defineSetter__()
+    hasOwnProperty: ƒ hasOwnProperty()
     __lookupGetter__: ƒ __lookupGetter__()
     __lookupSetter__: ƒ __lookupSetter__()
+    isPrototypeOf: ƒ isPrototypeOf()
+    propertyIsEnumerable: ƒ propertyIsEnumerable()
+    toString: ƒ toString()
+    valueOf: ƒ valueOf()
+    toLocaleString: ƒ toLocaleString()
     get __proto__: ƒ __proto__()
     set __proto__: ƒ __proto__()
 console-format.js:22 [{…}]
@@ -533,16 +533,16 @@ console-format.js:22 [{…}]
 globals[30]
 {constructor: ƒ, __defineGetter__: ƒ, __defineSetter__: ƒ, hasOwnProperty: ƒ, __lookupGetter__: ƒ, …}
     constructor: ƒ Object()
-    hasOwnProperty: ƒ hasOwnProperty()
-    isPrototypeOf: ƒ isPrototypeOf()
-    propertyIsEnumerable: ƒ propertyIsEnumerable()
-    toLocaleString: ƒ toLocaleString()
-    toString: ƒ toString()
-    valueOf: ƒ valueOf()
     __defineGetter__: ƒ __defineGetter__()
     __defineSetter__: ƒ __defineSetter__()
+    hasOwnProperty: ƒ hasOwnProperty()
     __lookupGetter__: ƒ __lookupGetter__()
     __lookupSetter__: ƒ __lookupSetter__()
+    isPrototypeOf: ƒ isPrototypeOf()
+    propertyIsEnumerable: ƒ propertyIsEnumerable()
+    toString: ƒ toString()
+    valueOf: ƒ valueOf()
+    toLocaleString: ƒ toLocaleString()
     get __proto__: ƒ __proto__()
     set __proto__: ƒ __proto__()
 console-format.js:21 ƒ ( /**/ foo/**/, /*/**/bar,
@@ -585,13 +585,13 @@ String {"abc"}
     __proto__: String
     [[PrimitiveValue]]: "abc"
 console-format.js:21 Uint16Array(3) [1, 2, 3]
-    0: 1
-    1: 2
-    2: 3
     buffer: (...)
     byteLength: (...)
     byteOffset: (...)
     length: (...)
+    0: 1
+    1: 2
+    2: 3
     Symbol(Symbol.toStringTag): (...)
     __proto__: TypedArray
 console-format.js:22 [Uint16Array(3)]
@@ -600,13 +600,13 @@ console-format.js:22 [Uint16Array(3)]
     __proto__: Array(0)
 globals[34]
 Uint16Array(3) [1, 2, 3]
-    0: 1
-    1: 2
-    2: 3
     buffer: (...)
     byteLength: (...)
     byteOffset: (...)
     length: (...)
+    0: 1
+    1: 2
+    2: 3
     Symbol(Symbol.toStringTag): (...)
     __proto__: TypedArray
 console-format.js:21 #text
@@ -624,11 +624,11 @@ console-format.js:22 [DOMException: Failed to execute 'removeChild' on 'Node': T
 globals[36]
 DOMException: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
 console-format.js:21 Uint8Array [3]
-    0: 3
     buffer: (...)
     byteLength: (...)
     byteOffset: (...)
     length: (...)
+    0: 3
     Symbol(Symbol.toStringTag): (...)
     __proto__: TypedArray
 console-format.js:22 [Uint8Array(1)]
@@ -637,11 +637,11 @@ console-format.js:22 [Uint8Array(1)]
     __proto__: Array(0)
 globals[37]
 Uint8Array [3]
-    0: 3
     buffer: (...)
     byteLength: (...)
     byteOffset: (...)
     length: (...)
+    0: 3
     Symbol(Symbol.toStringTag): (...)
     __proto__: TypedArray
 console-format.js:21 Uint8Array(400) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …]
@@ -734,10 +734,10 @@ Number {42, 1: "foo", a: "bar"}
     [[PrimitiveValue]]: 42
 console-format.js:21 String {"abc", 3: "foo", 01: "foo", a: "bar"}
     0: "a"
-    01: "foo"
     1: "b"
     2: "c"
     3: "foo"
+    01: "foo"
     a: "bar"
     length: 3
     __proto__: String
@@ -749,10 +749,10 @@ console-format.js:22 [String]
 globals[44]
 String {"abc", 3: "foo", 01: "foo", a: "bar"}
     0: "a"
-    01: "foo"
     1: "b"
     2: "c"
     3: "foo"
+    01: "foo"
     a: "bar"
     length: 3
     __proto__: String

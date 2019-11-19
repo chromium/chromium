@@ -68,7 +68,7 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(
 
   const DecryptConfig* decrypt_config = input.decrypt_config();
   DCHECK(decrypt_config) << "No need to call Decrypt() on unencrypted buffer.";
-  DCHECK_EQ(EncryptionMode::kCenc, decrypt_config->encryption_mode());
+  DCHECK_EQ(EncryptionScheme::kCenc, decrypt_config->encryption_scheme());
 
   const std::string& iv = decrypt_config->iv();
   DCHECK_EQ(iv.size(), static_cast<size_t>(DecryptConfig::kDecryptionKeySize));

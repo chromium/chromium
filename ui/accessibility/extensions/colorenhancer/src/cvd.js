@@ -14,7 +14,7 @@
   var curSimulate = false;
   var curEnable = false;
   var curFilter = 0;
-  var cssTemplate = `
+  var cssContent = `
 html[cvd="0"] {
   -webkit-filter: url('#cvd_extension_0');
 }
@@ -345,7 +345,7 @@ html[cvd="1"] {
       style = document.createElement('style');
       style.id = STYLE_ID;
       style.setAttribute('type', 'text/css');
-      style.innerHTML = cssTemplate.replace(/#/g, baseUrl + '#');
+      style.innerHTML = cssContent;
       document.head.appendChild(style);
     }
 

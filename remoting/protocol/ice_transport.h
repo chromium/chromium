@@ -106,7 +106,7 @@ class IceTransport : public Transport,
   std::unique_ptr<IceTransportInfo> pending_transport_info_message_;
   base::OneShotTimer transport_info_timer_;
 
-  base::WeakPtrFactory<IceTransport> weak_factory_;
+  base::WeakPtrFactory<IceTransport> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IceTransport);
 };

@@ -1,7 +1,7 @@
 <!-- This test uses a particular image size to avoid hitting flakiness in mesa texture sampling.  See http://crbug.com/621892 for more details. -->
 <style>
 img {
-    transform:translateZ(0);
+    will-change: transform;
 }
 div {
     width: 160px;

@@ -18,19 +18,20 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
 class ActiveStyleSheetsTest : public PageTestBase {
  protected:
   static CSSStyleSheet* CreateSheet(const String& css_text = String()) {
-    StyleSheetContents* contents =
-        StyleSheetContents::Create(CSSParserContext::Create(
+    auto* contents = MakeGarbageCollected<StyleSheetContents>(
+        MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext));
     contents->ParseString(css_text);
     contents->EnsureRuleSet(MediaQueryEvaluator(),
                             kRuleHasDocumentSecurityOrigin);
-    return CSSStyleSheet::Create(contents);
+    return MakeGarbageCollected<CSSStyleSheet>(contents);
   }
 };
 
@@ -430,7 +431,8 @@ TEST_F(ApplyRulesetsTest, AddUniversalRuleToDocument) {
   GetStyleEngine().ApplyRuleSetChanges(GetDocument(), ActiveStyleSheetVector(),
                                        new_style_sheets);
 
-  EXPECT_EQ(kSubtreeStyleChange, GetDocument().GetStyleChangeType());
+  EXPECT_EQ(kSubtreeStyleChange,
+            GetDocument().documentElement()->GetStyleChangeType());
 }
 
 TEST_F(ApplyRulesetsTest, AddUniversalRuleToShadowTree) {
@@ -468,7 +470,8 @@ TEST_F(ApplyRulesetsTest, AddFontFaceRuleToDocument) {
   GetStyleEngine().ApplyRuleSetChanges(GetDocument(), ActiveStyleSheetVector(),
                                        new_style_sheets);
 
-  EXPECT_EQ(kSubtreeStyleChange, GetDocument().GetStyleChangeType());
+  EXPECT_EQ(kSubtreeStyleChange,
+            GetDocument().documentElement()->GetStyleChangeType());
 }
 
 TEST_F(ApplyRulesetsTest, AddFontFaceRuleToShadowTree) {

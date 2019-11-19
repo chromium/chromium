@@ -13,5 +13,5 @@ interface ServiceWorkerStreamCallback {
 
 struct ServiceWorkerStreamHandle {
   handle<data_pipe_consumer> stream;
-  ServiceWorkerStreamCallback& callback_request;
+  pending_receiver<ServiceWorkerStreamCallback> callback_receiver;
 };

@@ -11,7 +11,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_chromium_packet_reader.h"
 #include "net/quic/quic_chromium_packet_writer.h"
-#include "net/third_party/quic/core/quic_time.h"
+#include "net/third_party/quiche/src/quic/core/quic_time.h"
 
 namespace net {
 
@@ -80,11 +80,12 @@ class NET_EXPORT_PRIVATE QuicConnectivityProbingManager
   void CancelProbing(NetworkChangeNotifier::NetworkHandle network,
                      const quic::QuicSocketAddress& peer_address);
 
-  // Called when a connectivity probing packet has been received from
-  // |peer_address| on a socket with |self_address|.
-  void OnConnectivityProbingReceived(
-      const quic::QuicSocketAddress& self_address,
-      const quic::QuicSocketAddress& peer_address);
+  // Called when a new packet has been received from |peer_address| on a socket
+  // with |self_address|. |is_connectivity_probe| is true if the received
+  // packet is a connectivity probe.
+  void OnPacketReceived(const quic::QuicSocketAddress& self_address,
+                        const quic::QuicSocketAddress& peer_address,
+                        bool is_connectivity_probe);
 
   // Returns true if the manager is currently probing |peer_address| on
   // |network|.
@@ -128,7 +129,7 @@ class NET_EXPORT_PRIVATE QuicConnectivityProbingManager
 
   base::SequencedTaskRunner* task_runner_;
 
-  base::WeakPtrFactory<QuicConnectivityProbingManager> weak_factory_;
+  base::WeakPtrFactory<QuicConnectivityProbingManager> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(QuicConnectivityProbingManager);
 };
 

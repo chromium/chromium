@@ -10,6 +10,9 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -49,26 +52,26 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
   ~URLLoaderFactory() override;
 
   // mojom::URLLoaderFactory implementation.
-  void CreateLoaderAndStart(mojom::URLLoaderRequest request,
+  void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> receiver,
                             int32_t routing_id,
                             int32_t request_id,
                             uint32_t options,
                             const ResourceRequest& url_request,
-                            mojom::URLLoaderClientPtr client,
+                            mojo::PendingRemote<mojom::URLLoaderClient> client,
                             const net::MutableNetworkTrafficAnnotationTag&
                                 traffic_annotation) override;
-  void Clone(mojom::URLLoaderFactoryRequest request) override;
+  void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
 
-  static constexpr int kMaxKeepaliveConnections = 256;
-  static constexpr int kMaxKeepaliveConnectionsPerProcess = 20;
-  static constexpr int kMaxKeepaliveConnectionsPerProcessForFetchAPI = 10;
+  static constexpr int kMaxKeepaliveConnections = 2048;
+  static constexpr int kMaxKeepaliveConnectionsPerProcess = 256;
+  static constexpr int kMaxTotalKeepaliveRequestSize = 512 * 1024;
 
  private:
   // The NetworkContext that indirectly owns |this|.
   NetworkContext* const context_;
   mojom::URLLoaderFactoryParamsPtr params_;
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
-  mojom::TrustedURLLoaderHeaderClientPtr header_client_;
+  mojo::Remote<mojom::TrustedURLLoaderHeaderClient> header_client_;
 
   // |cors_url_loader_factory_| owns this.
   cors::CorsURLLoaderFactory* cors_url_loader_factory_;

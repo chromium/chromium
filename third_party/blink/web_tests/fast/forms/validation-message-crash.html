@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<iframe id="iframe"></iframe>
+<script>
+var t = async_test();
+var repeat = 3;
+function test() {
+  if (repeat -- > 0)
+    iframe.src = 'resources/validation-message-crash-iframe.html';
+  else 
+    t.done();
+}
+t.step(() => {
+  iframe.onload = test;
+  test();
+});
+</script>

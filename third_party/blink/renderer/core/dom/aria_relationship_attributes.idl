@@ -1,0 +1,21 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// ARIA reflection of relationship properties.
+// https://w3c.github.io/aria/#idl-interface
+[
+    RuntimeEnabled=AOMAriaRelationshipProperties
+] interface mixin AriaRelationshipAttributes {
+    [CEReactions, Reflect=aria_activedescendant] attribute Element? ariaActiveDescendantElement;
+    [CEReactions, Reflect=aria_controls] attribute FrozenArray<Element>? ariaControlsElements;
+    [CEReactions, Reflect=aria_describedby] attribute FrozenArray<Element>? ariaDescribedByElements;
+    [CEReactions, Reflect=aria_details] attribute Element? ariaDetailsElement;
+    [CEReactions, Reflect=aria_errormessage] attribute Element? ariaErrorMessageElement;
+    [CEReactions, Reflect=aria_flowto] attribute FrozenArray<Element>? ariaFlowToElements;
+    [CEReactions, Reflect=aria_labelledby] attribute FrozenArray<Element>? ariaLabelledByElements;
+    [CEReactions, Reflect=aria_owns] attribute FrozenArray<Element>? ariaOwnsElements;
+};
+
+Element includes AriaRelationshipAttributes;
+ElementInternals includes AriaRelationshipAttributes;

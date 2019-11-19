@@ -5,6 +5,8 @@
 #include "ui/ozone/platform/drm/gpu/gbm_overlay_surface.h"
 
 #include <unistd.h>
+#include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
@@ -16,7 +18,7 @@
 namespace ui {
 
 GbmOverlaySurface::GbmOverlaySurface(std::unique_ptr<DrmWindowProxy> window)
-    : window_(std::move(window)), weak_ptr_factory_(this) {}
+    : window_(std::move(window)) {}
 
 GbmOverlaySurface::~GbmOverlaySurface() {}
 

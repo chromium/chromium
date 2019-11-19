@@ -15,7 +15,6 @@ namespace blink {
 class WebLocalFrameClient;
 class WebRTCPeerConnectionHandler;
 class WebRTCPeerConnectionHandlerClient;
-class WebThemeEngine;
 class WebURL;
 class WebView;
 }
@@ -46,7 +45,6 @@ class TEST_RUNNER_EXPORT WebTestInterfaces {
                                bool protocol_mode);
 
   WebTestRunner* TestRunner();
-  blink::WebThemeEngine* ThemeEngine();
 
   std::unique_ptr<blink::WebRTCPeerConnectionHandler>
   CreateWebRTCPeerConnectionHandler(

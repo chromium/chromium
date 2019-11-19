@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "gpu/config/gpu_extra_info.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -55,6 +56,7 @@ class GPU_IPC_SERVICE_EXPORT GpuInit {
 
   const GPUInfo& gpu_info() const { return gpu_info_; }
   const GpuFeatureInfo& gpu_feature_info() const { return gpu_feature_info_; }
+  const GpuExtraInfo& gpu_extra_info() const { return gpu_extra_info_; }
   const base::Optional<GPUInfo>& gpu_info_for_hardware_gpu() const {
     return gpu_info_for_hardware_gpu_;
   }
@@ -77,6 +79,8 @@ class GPU_IPC_SERVICE_EXPORT GpuInit {
 #endif
 
  private:
+  void InitializeVulkan();
+
   GpuSandboxHelper* sandbox_helper_ = nullptr;
   std::unique_ptr<GpuWatchdogThread> watchdog_thread_;
   GPUInfo gpu_info_;
@@ -89,6 +93,8 @@ class GPU_IPC_SERVICE_EXPORT GpuInit {
   // switching to SwiftShader.
   base::Optional<GPUInfo> gpu_info_for_hardware_gpu_;
   base::Optional<GpuFeatureInfo> gpu_feature_info_for_hardware_gpu_;
+
+  GpuExtraInfo gpu_extra_info_;
 
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<VulkanImplementation> vulkan_implementation_;

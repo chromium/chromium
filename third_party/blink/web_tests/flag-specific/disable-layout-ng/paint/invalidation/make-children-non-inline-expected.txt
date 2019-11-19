@@ -1,0 +1,108 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox 'about all the stuff'",
+          "rect": [8, 264, 110, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'about all the stuff'",
+          "rect": [8, 164, 110, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'write a book'",
+          "rect": [8, 144, 79, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'write a book'",
+          "rect": [8, 144, 79, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'more words.'",
+          "rect": [8, 104, 79, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'more words.'",
+          "rect": [8, 104, 79, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'that comes'",
+          "rect": [8, 284, 67, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'that comes'",
+          "rect": [8, 184, 67, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'the break.'",
+          "rect": [8, 324, 62, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'the break.'",
+          "rect": [8, 224, 62, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'I could'",
+          "rect": [8, 124, 44, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'I could'",
+          "rect": [8, 124, 44, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'words,'",
+          "rect": [8, 84, 43, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'words,'",
+          "rect": [8, 84, 43, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'Word,'",
+          "rect": [8, 64, 39, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'Word,'",
+          "rect": [8, 64, 39, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'after'",
+          "rect": [8, 304, 29, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'after'",
+          "rect": [8, 204, 29, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "LayoutBlockFlow DIV id='target'",
+          "rect": [8, 164, 10, 100],
+          "reason": "appeared"
+        }
+      ]
+    }
+  ]
+}
+

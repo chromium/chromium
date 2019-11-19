@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon_client.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace system_logs {
@@ -39,7 +39,7 @@ std::string GetLogName(SupportedSource source_type) {
 
 SingleDebugDaemonLogSource::SingleDebugDaemonLogSource(
     SupportedSource source_type)
-    : SystemLogsSource(GetLogName(source_type)), weak_ptr_factory_(this) {}
+    : SystemLogsSource(GetLogName(source_type)) {}
 
 SingleDebugDaemonLogSource::~SingleDebugDaemonLogSource() {}
 

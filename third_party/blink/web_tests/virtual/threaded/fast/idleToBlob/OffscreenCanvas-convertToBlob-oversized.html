@@ -1,17 +1,7 @@
 <!DOCTYPE html>
 <script src="../../../../resources/testharness.js"></script>
 <script src="../../../../resources/testharnessreport.js"></script>
-<script id="myWorker" type="text/worker">
-self.onmessage = function(e) {
-};
-</script>
 <script>
-
-function makeWorker(script)
-{
-  var blob = new Blob([script]);
-  return new Worker(URL.createObjectURL(blob));
-}
 
 async_test(function(t) {
   var png_max_dimension = 65535;
@@ -47,7 +37,5 @@ async_test(function(t) {
     assert_false("convertToBlob failed, but shouldn't be.");
   }));
 }, "Verify that convertToBlob does not crash with oversized source encoded to Webp");
-
-
 </script>
 

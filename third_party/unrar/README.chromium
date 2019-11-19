@@ -1,8 +1,8 @@
 Name: UnRAR source for decompressing .RAR and other files.
 Short Name: unrar
 URL: https://github.com/aawc/unrar.git
-Revision: 0ff832d31470471803b175cfff4e40c1b08ee779
-Version: 5.6.1.4
+Revision: 5bf3568f8865dc4d335def904f80c875dc45c4d1
+Version: 5.7.3
 License: Non-standard
 License File: src/license.txt
 Security Critical: yes
@@ -21,7 +21,6 @@ a sandbox, but may not apply more broadly.
 Notable changes from upstream:
 - Use CHROMIUM_UNRAR macro to guard Chromium-specific changes.
 - Rewrite WinNT() in isnt.cpp to use the new Windows APIs.
-- Explicit use of parentheses to fix linter errors (001_linter.patch)
 - Replace exceptions with terminating the current process. Guarded with the
   macro UNRAR_NO_EXCEPTIONS.
 - Pass a file handle to the rar file, instead of trying to open the rar file
@@ -30,6 +29,7 @@ Notable changes from upstream:
 - Remove some static initializers.
 - Pass a file handle to a temporary file with write permission, so the archive
   can be extracted inside the sandbox for analysis.
-- Put all symbols into a namespace third_party_unrar to avoid polluting global
-  namespace (add_namespaces.patch)
-- Remove unnecessary semicolons from header files (semicolons.patch)
+- Fix a bug with NOVOLUME implementation (https://crbug.com/949787). This
+  should be temporary, until the fix can be pulled from upstream.
+
+All these changes are included in one patch file (chromium_changes.patch)

@@ -46,8 +46,7 @@ class MarkupAccumulator {
   STACK_ALLOCATED();
 
  public:
-  MarkupAccumulator(AbsoluteURLs,
-                    SerializationType = SerializationType::kAsOwnerDocument);
+  MarkupAccumulator(AbsoluteURLs, SerializationType);
   virtual ~MarkupAccumulator();
 
   template <typename Strategy>
@@ -62,7 +61,7 @@ class MarkupAccumulator {
   StringBuilder markup_;
 
  private:
-  bool SerializeAsHTMLDocument(const Node&) const;
+  bool SerializeAsHTML() const;
   String ToString() { return markup_.ToString(); }
 
   void AppendString(const String&);

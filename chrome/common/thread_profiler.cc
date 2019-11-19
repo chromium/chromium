@@ -9,19 +9,21 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/lazy_instance.h"
 #include "base/message_loop/work_id_provider.h"
+#include "base/no_destructor.h"
+#include "base/profiler/sample_metadata.h"
+#include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/rand_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "chrome/common/stack_sampling_configuration.h"
 #include "components/metrics/call_stack_profile_builder.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/service_names.mojom.h"
 #include "services/service_manager/embedder/switches.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 using CallStackProfileBuilder = metrics::CallStackProfileBuilder;
 using CallStackProfileParams = metrics::CallStackProfileParams;
@@ -29,20 +31,13 @@ using StackSamplingProfiler = base::StackSamplingProfiler;
 
 namespace {
 
-// The profiler object is stored in a SequenceLocalStorageSlot on child threads
-// to give it the same lifetime as the threads.
-base::LazyInstance<
-    base::SequenceLocalStorageSlot<std::unique_ptr<ThreadProfiler>>>::Leaky
-    g_child_thread_profiler_sequence_local_storage = LAZY_INSTANCE_INITIALIZER;
+// Pointer to the main thread instance, if any. Stored as a global because it's
+// created very early in chrome/app - and is thus otherwise inaccessible from
+// chrome_dll, by the time we need to register the main thread task runner.
+ThreadProfiler* g_main_thread_instance = nullptr;
 
 // Run continuous profiling 2% of the time.
 constexpr const double kFractionOfExecutionTimeToSample = 0.02;
-
-constexpr struct StackSamplingProfiler::SamplingParams kSamplingParams = {
-    /* initial_delay= */ base::TimeDelta::FromMilliseconds(0),
-    /* samples_per_profile= */ 300,
-    /* sampling_interval= */ base::TimeDelta::FromMilliseconds(100),
-    /* keep_consistent_sampling_interval= */ true};
 
 CallStackProfileParams::Process GetProcess() {
   const base::CommandLine* command_line =
@@ -136,36 +131,58 @@ class ThreadProfiler::WorkIdRecorder : public metrics::WorkIdRecorder {
   base::WorkIdProvider* const work_id_provider_;
 };
 
-ThreadProfiler::~ThreadProfiler() = default;
+ThreadProfiler::~ThreadProfiler() {
+  if (g_main_thread_instance == this)
+    g_main_thread_instance = nullptr;
+}
 
 // static
 std::unique_ptr<ThreadProfiler> ThreadProfiler::CreateAndStartOnMainThread() {
-  return std::unique_ptr<ThreadProfiler>(
+  // If running in single process mode, there may be multiple "main thread"
+  // profilers created. In this case, we assume the first created one is the
+  // browser one.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  bool is_single_process = command_line->HasSwitch(switches::kSingleProcess) ||
+                           command_line->HasSwitch(switches::kInProcessGPU);
+  DCHECK(!g_main_thread_instance || is_single_process);
+  auto instance = std::unique_ptr<ThreadProfiler>(
       new ThreadProfiler(CallStackProfileParams::MAIN_THREAD));
+  if (!g_main_thread_instance)
+    g_main_thread_instance = instance.get();
+  return instance;
 }
 
+// static
 void ThreadProfiler::SetMainThreadTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  DCHECK(g_main_thread_instance);
+  g_main_thread_instance->SetMainThreadTaskRunnerImpl(task_runner);
+}
+
+void ThreadProfiler::SetAuxUnwinderFactory(
+    const base::RepeatingCallback<std::unique_ptr<base::Unwinder>()>& factory) {
   if (!StackSamplingConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
     return;
 
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // This should only be called if the task runner wasn't provided in the
-  // constructor.
-  DCHECK(!owning_thread_task_runner_);
-  owning_thread_task_runner_ = task_runner;
-  ScheduleNextPeriodicCollection();
+  aux_unwinder_factory_ = factory;
+  startup_profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());
+  if (periodic_profiler_)
+    periodic_profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());
 }
 
 // static
 void ThreadProfiler::StartOnChildThread(CallStackProfileParams::Thread thread) {
+  // The profiler object is stored in a SequenceLocalStorageSlot on child
+  // threads to give it the same lifetime as the threads.
+  static base::NoDestructor<
+      base::SequenceLocalStorageSlot<std::unique_ptr<ThreadProfiler>>>
+      child_thread_profiler_sequence_local_storage;
+
   if (!StackSamplingConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
     return;
 
-  auto profiler = std::unique_ptr<ThreadProfiler>(
+  child_thread_profiler_sequence_local_storage->emplace(
       new ThreadProfiler(thread, base::ThreadTaskRunnerHandle::Get()));
-  g_child_thread_profiler_sequence_local_storage.Get().Set(std::move(profiler));
 }
 
 // static
@@ -176,18 +193,14 @@ void ThreadProfiler::SetBrowserProcessReceiverCallback(
 }
 
 // static
-void ThreadProfiler::SetServiceManagerConnectorForChildProcess(
-    service_manager::Connector* connector) {
+void ThreadProfiler::SetCollectorForChildProcess(
+    mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector) {
   if (!StackSamplingConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
     return;
 
   DCHECK_NE(CallStackProfileParams::BROWSER_PROCESS, GetProcess());
-
-  metrics::mojom::CallStackProfileCollectorPtr browser_interface;
-  connector->BindInterface(content::mojom::kBrowserServiceName,
-                           &browser_interface);
   CallStackProfileBuilder::SetParentProfileCollectorForChildProcess(
-      std::move(browser_interface));
+      std::move(collector));
 }
 
 // ThreadProfiler implementation synopsis:
@@ -214,13 +227,14 @@ ThreadProfiler::ThreadProfiler(
     : thread_(thread),
       owning_thread_task_runner_(owning_thread_task_runner),
       work_id_recorder_(std::make_unique<WorkIdRecorder>(
-          base::WorkIdProvider::GetForCurrentThread())),
-      weak_factory_(this) {
+          base::WorkIdProvider::GetForCurrentThread())) {
   if (!StackSamplingConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
     return;
 
+  const base::StackSamplingProfiler::SamplingParams sampling_params =
+      StackSamplingConfiguration::Get()->GetSamplingParams();
   startup_profiler_ = std::make_unique<StackSamplingProfiler>(
-      base::PlatformThread::CurrentId(), kSamplingParams,
+      base::GetSamplingProfilerCurrentThreadToken(), sampling_params,
       std::make_unique<CallStackProfileBuilder>(
           CallStackProfileParams(GetProcess(), thread,
                                  CallStackProfileParams::PROCESS_STARTUP),
@@ -234,10 +248,10 @@ ThreadProfiler::ThreadProfiler(
   // profiling.
   base::TimeTicks startup_profiling_completion_time =
       base::TimeTicks::Now() +
-      kSamplingParams.samples_per_profile * kSamplingParams.sampling_interval;
+      sampling_params.samples_per_profile * sampling_params.sampling_interval;
 
   periodic_sampling_scheduler_ = std::make_unique<PeriodicSamplingScheduler>(
-      kSamplingParams.samples_per_profile * kSamplingParams.sampling_interval,
+      sampling_params.samples_per_profile * sampling_params.sampling_interval,
       kFractionOfExecutionTimeToSample, startup_profiling_completion_time);
 
   if (owning_thread_task_runner_)
@@ -253,6 +267,20 @@ void ThreadProfiler::OnPeriodicCollectionCompleted(
                                 thread_profiler));
 }
 
+void ThreadProfiler::SetMainThreadTaskRunnerImpl(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  if (!StackSamplingConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
+    return;
+
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // This should only be called if the task runner wasn't provided in the
+  // constructor.
+  DCHECK(!owning_thread_task_runner_);
+  owning_thread_task_runner_ = task_runner;
+  ScheduleNextPeriodicCollection();
+}
+
 void ThreadProfiler::ScheduleNextPeriodicCollection() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   owning_thread_task_runner_->PostDelayedTask(
@@ -266,14 +294,17 @@ void ThreadProfiler::StartPeriodicSamplingCollection() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // NB: Destroys the previous profiler as side effect.
   periodic_profiler_ = std::make_unique<StackSamplingProfiler>(
-      base::PlatformThread::CurrentId(), kSamplingParams,
+      base::GetSamplingProfilerCurrentThreadToken(),
+      StackSamplingConfiguration::Get()->GetSamplingParams(),
       std::make_unique<CallStackProfileBuilder>(
           CallStackProfileParams(GetProcess(), thread_,
                                  CallStackProfileParams::PERIODIC_COLLECTION),
-          work_id_recorder_.get(), nullptr,
+          work_id_recorder_.get(),
           base::BindOnce(&ThreadProfiler::OnPeriodicCollectionCompleted,
                          owning_thread_task_runner_,
                          weak_factory_.GetWeakPtr())));
+  if (aux_unwinder_factory_)
+    periodic_profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());
 
   periodic_profiler_->Start();
 }

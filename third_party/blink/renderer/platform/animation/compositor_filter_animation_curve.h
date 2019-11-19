@@ -28,9 +28,7 @@ namespace blink {
 class PLATFORM_EXPORT CompositorFilterAnimationCurve
     : public CompositorAnimationCurve {
  public:
-  static std::unique_ptr<CompositorFilterAnimationCurve> Create() {
-    return base::WrapUnique(new CompositorFilterAnimationCurve());
-  }
+  CompositorFilterAnimationCurve();
   ~CompositorFilterAnimationCurve() override;
 
   void AddKeyframe(const CompositorFilterKeyframe&);
@@ -41,8 +39,6 @@ class PLATFORM_EXPORT CompositorFilterAnimationCurve
   std::unique_ptr<cc::AnimationCurve> CloneToAnimationCurve() const override;
 
  private:
-  CompositorFilterAnimationCurve();
-
   std::unique_ptr<cc::KeyframedFilterAnimationCurve> curve_;
 
   DISALLOW_COPY_AND_ASSIGN(CompositorFilterAnimationCurve);

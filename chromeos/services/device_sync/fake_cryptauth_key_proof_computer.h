@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/optional.h"
+#include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/services/device_sync/cryptauth_key_proof_computer.h"
 
 namespace chromeos {
@@ -22,10 +24,12 @@ class FakeCryptAuthKeyProofComputer : public CryptAuthKeyProofComputer {
   ~FakeCryptAuthKeyProofComputer() override;
 
   // CryptAuthKeyProofComputer:
-  // Returns "fake_key_proof_<key handle>_<payload>_<salt>".
-  base::Optional<std::string> ComputeKeyProof(const CryptAuthKey& key,
-                                              const std::string& payload,
-                                              const std::string& salt) override;
+  // Returns "fake_key_proof_|payload|>_<|salt|_|info (if not null)|".
+  base::Optional<std::string> ComputeKeyProof(
+      const CryptAuthKey& key,
+      const std::string& payload,
+      const std::string& salt,
+      const base::Optional<std::string>& info) override;
 
   void set_should_return_null(bool should_return_null) {
     should_return_null_ = should_return_null;

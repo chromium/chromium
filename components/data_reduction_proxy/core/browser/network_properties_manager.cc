@@ -51,7 +51,7 @@ base::Optional<NetworkProperties> GetParsedNetworkProperty(
 class NetworkPropertiesManager::PrefManager {
  public:
   PrefManager(base::Clock* clock, PrefService* pref_service)
-      : clock_(clock), pref_service_(pref_service), ui_weak_ptr_factory_(this) {
+      : clock_(clock), pref_service_(pref_service) {
     DCHECK(clock_);
     DictionaryPrefUpdate update(pref_service_, prefs::kNetworkProperties);
     base::DictionaryValue* properties_dict = update.Get();
@@ -61,19 +61,8 @@ class NetworkPropertiesManager::PrefManager {
 
   ~PrefManager() {}
 
-  base::WeakPtr<PrefManager> GetWeakPtr() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return ui_weak_ptr_factory_.GetWeakPtr();
-  }
-
-  void ShutdownOnUIThread() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    ui_weak_ptr_factory_.InvalidateWeakPtrs();
-  }
-
-  void OnChangeInNetworkPropertyOnUIThread(
-      const std::string& network_id,
-      const NetworkProperties& network_properties) {
+  void OnChangeInNetworkProperty(const std::string& network_id,
+                                 const NetworkProperties& network_properties) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     std::string serialized_network_properties;
@@ -174,26 +163,17 @@ class NetworkPropertiesManager::PrefManager {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Used to get |weak_ptr_| to self on the UI thread.
-  base::WeakPtrFactory<PrefManager> ui_weak_ptr_factory_;
-
   DISALLOW_COPY_AND_ASSIGN(PrefManager);
 };
 
-NetworkPropertiesManager::NetworkPropertiesManager(
-    base::Clock* clock,
-    PrefService* pref_service,
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+NetworkPropertiesManager::NetworkPropertiesManager(base::Clock* clock,
+                                                   PrefService* pref_service)
     : clock_(clock),
-      ui_task_runner_(ui_task_runner),
       network_properties_container_(ConvertDictionaryValueToParsedPrefs(
           pref_service->GetDictionary(prefs::kNetworkProperties))) {
-  DCHECK(ui_task_runner_);
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(clock_);
 
-  pref_manager_.reset(new PrefManager(clock_, pref_service));
-  pref_manager_weak_ptr_ = pref_manager_->GetWeakPtr();
+  pref_manager_ = std::make_unique<PrefManager>(clock_, pref_service);
 
   ResetWarmupURLFetchMetrics();
 
@@ -201,24 +181,11 @@ NetworkPropertiesManager::NetworkPropertiesManager(
 }
 
 NetworkPropertiesManager::~NetworkPropertiesManager() {
-  if (ui_task_runner_->RunsTasksInCurrentSequence() && pref_manager_) {
-    pref_manager_->ShutdownOnUIThread();
-  }
 }
 
 void NetworkPropertiesManager::DeleteHistory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  ui_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&NetworkPropertiesManager::PrefManager::DeleteHistory,
-                     pref_manager_weak_ptr_));
-}
-
-void NetworkPropertiesManager::ShutdownOnUIThread() {
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  pref_manager_->ShutdownOnUIThread();
-  pref_manager_.reset();
+  pref_manager_->DeleteHistory();
 }
 
 void NetworkPropertiesManager::OnChangeInNetworkID(
@@ -237,9 +204,6 @@ void NetworkPropertiesManager::OnChangeInNetworkID(
   if (it != network_properties_container_.end()) {
     network_properties_ = it->second;
     cached_entry_found = true;
-    if (params::ShouldDiscardCanaryCheckResult())
-      network_properties_.set_secure_proxy_disallowed_by_carrier(false);
-
   } else {
     // Reset to default state.
     network_properties_.Clear();
@@ -262,7 +226,7 @@ void NetworkPropertiesManager::ResetWarmupURLFetchMetrics() {
   warmup_url_fetch_attempt_counts_insecure_non_core_ = 0;
 }
 
-void NetworkPropertiesManager::OnChangeInNetworkPropertyOnIOThread() {
+void NetworkPropertiesManager::OnChangeInNetworkProperty() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   network_properties_.set_last_modified(clock_->Now().ToJavaTime());
@@ -271,11 +235,7 @@ void NetworkPropertiesManager::OnChangeInNetworkPropertyOnIOThread() {
   network_properties_container_.emplace(
       std::make_pair(network_id_, network_properties_));
 
-  ui_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&NetworkPropertiesManager::PrefManager::
-                         OnChangeInNetworkPropertyOnUIThread,
-                     pref_manager_weak_ptr_, network_id_, network_properties_));
+  pref_manager_->OnChangeInNetworkProperty(network_id_, network_properties_);
 }
 
 // static
@@ -289,9 +249,6 @@ NetworkPropertiesManager::ConvertDictionaryValueToParsedPrefs(
         GetParsedNetworkProperty(it.second);
     if (!network_properties)
       continue;
-    if (params::ShouldDiscardCanaryCheckResult())
-      network_properties->set_secure_proxy_disallowed_by_carrier(false);
-
     read_prefs.emplace(std::make_pair(it.first, network_properties.value()));
   }
 
@@ -300,6 +257,7 @@ NetworkPropertiesManager::ConvertDictionaryValueToParsedPrefs(
 
 bool NetworkPropertiesManager::IsSecureProxyAllowed(bool is_core_proxy) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(is_core_proxy);
   return !network_properties_.secure_proxy_disallowed_by_carrier() &&
          !network_properties_.has_captive_portal() &&
          !HasWarmupURLProbeFailed(true, is_core_proxy);
@@ -308,6 +266,7 @@ bool NetworkPropertiesManager::IsSecureProxyAllowed(bool is_core_proxy) const {
 bool NetworkPropertiesManager::IsInsecureProxyAllowed(
     bool is_core_proxy) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(is_core_proxy);
   return !HasWarmupURLProbeFailed(false, is_core_proxy);
 }
 
@@ -321,7 +280,7 @@ void NetworkPropertiesManager::SetIsSecureProxyDisallowedByCarrier(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   network_properties_.set_secure_proxy_disallowed_by_carrier(
       disallowed_by_carrier);
-  OnChangeInNetworkPropertyOnIOThread();
+  OnChangeInNetworkProperty();
 }
 
 bool NetworkPropertiesManager::IsCaptivePortal() const {
@@ -332,12 +291,13 @@ bool NetworkPropertiesManager::IsCaptivePortal() const {
 void NetworkPropertiesManager::SetIsCaptivePortal(bool is_captive_portal) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   network_properties_.set_has_captive_portal(is_captive_portal);
-  OnChangeInNetworkPropertyOnIOThread();
+  OnChangeInNetworkProperty();
 }
 
 bool NetworkPropertiesManager::HasWarmupURLProbeFailed(
     bool secure_proxy,
     bool is_core_proxy) const {
+  DCHECK(is_core_proxy);
   if (secure_proxy && is_core_proxy) {
     return network_properties_.secure_proxy_flags()
         .disallowed_due_to_warmup_probe_failure();
@@ -362,6 +322,7 @@ void NetworkPropertiesManager::SetHasWarmupURLProbeFailed(
     bool secure_proxy,
     bool is_core_proxy,
     bool warmup_url_probe_failed) {
+  DCHECK(is_core_proxy);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (secure_proxy && is_core_proxy) {
@@ -404,7 +365,7 @@ void NetworkPropertiesManager::SetHasWarmupURLProbeFailed(
     network_properties_.mutable_insecure_non_core_proxy_flags()
         ->set_disallowed_due_to_warmup_probe_failure(warmup_url_probe_failed);
   }
-  OnChangeInNetworkPropertyOnIOThread();
+  OnChangeInNetworkProperty();
 }
 
 bool NetworkPropertiesManager::ShouldFetchWarmupProbeURL(

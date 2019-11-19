@@ -16,8 +16,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "media/mojo/services/mojo_media_drm_storage.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -26,7 +25,6 @@ namespace cdm {
 
 namespace {
 
-const char kMediaDrmStorage[] = "media.media_drm_storage";
 const char kTestOrigin[] = "https://www.testorigin.com:80";
 const char kTestOrigin2[] = "https://www.testorigin2.com:80";
 
@@ -94,16 +92,17 @@ class MediaDrmStorageImplTest : public content::RenderViewHostTestHarness {
       MediaDrmStorageImpl::GetOriginIdCB get_origin_id_cb,
       MediaDrmStorageImpl::AllowEmptyOriginIdCB allow_empty_cb =
           base::BindRepeating(&AllowEmptyOriginId)) {
-    media::mojom::MediaDrmStoragePtr media_drm_storage_ptr;
-    auto request = mojo::MakeRequest(&media_drm_storage_ptr);
+    mojo::PendingRemote<media::mojom::MediaDrmStorage>
+        pending_media_drm_storage;
+    auto receiver = pending_media_drm_storage.InitWithNewPipeAndPassReceiver();
 
     auto media_drm_storage = std::make_unique<media::MojoMediaDrmStorage>(
-        std::move(media_drm_storage_ptr));
+        std::move(pending_media_drm_storage));
 
     // The created object will be destroyed on connection error.
     new MediaDrmStorageImpl(rfh, pref_service_.get(),
                             std::move(get_origin_id_cb),
-                            std::move(allow_empty_cb), std::move(request));
+                            std::move(allow_empty_cb), std::move(receiver));
 
     return std::move(media_drm_storage);
   }
@@ -124,7 +123,7 @@ class MediaDrmStorageImplTest : public content::RenderViewHostTestHarness {
 
     // Verify the origin dictionary is created.
     const base::DictionaryValue* storage_dict =
-        pref_service_->GetDictionary(kMediaDrmStorage);
+        pref_service_->GetDictionary(prefs::kMediaDrmStorage);
     EXPECT_TRUE(storage_dict->FindKey(kTestOrigin));
 
     DCHECK(*origin_id);
@@ -292,7 +291,7 @@ TEST_F(MediaDrmStorageImplTest, OnProvisioned) {
 
   // Verify the origin dictionary is created.
   const base::DictionaryValue* storage_dict =
-      pref_service_->GetDictionary(kMediaDrmStorage);
+      pref_service_->GetDictionary(prefs::kMediaDrmStorage);
   EXPECT_TRUE(storage_dict->FindKey(kTestOrigin));
 }
 

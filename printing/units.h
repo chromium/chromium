@@ -47,7 +47,8 @@ const float kA3HeightInch = 16.54f;
 PRINTING_EXPORT int ConvertUnit(double value, int old_unit, int new_unit);
 
 // Converts from one unit system to another using doubles.
-PRINTING_EXPORT double ConvertUnitDouble(double value, double old_unit,
+PRINTING_EXPORT double ConvertUnitDouble(double value,
+                                         double old_unit,
                                          double new_unit);
 
 // Converts from 1 pixel to 1 point using integers.

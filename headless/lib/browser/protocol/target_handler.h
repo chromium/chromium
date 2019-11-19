@@ -24,6 +24,8 @@ class TargetHandler : public DomainHandler, public Target::Backend {
                         Maybe<int> height,
                         Maybe<std::string> context_id,
                         Maybe<bool> enable_begin_frame_control,
+                        Maybe<bool> new_window,
+                        Maybe<bool> background,
                         std::string* out_target_id) override;
   Response CloseTarget(const std::string& target_id,
                        bool* out_success) override;

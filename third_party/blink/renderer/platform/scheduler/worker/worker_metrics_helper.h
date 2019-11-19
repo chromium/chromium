@@ -16,7 +16,7 @@ namespace scheduler {
 
 class PLATFORM_EXPORT WorkerMetricsHelper : public MetricsHelper {
  public:
-  explicit WorkerMetricsHelper(WebThreadType thread_type,
+  explicit WorkerMetricsHelper(ThreadType thread_type,
                                bool has_cpu_timing_for_each_task);
   ~WorkerMetricsHelper();
 

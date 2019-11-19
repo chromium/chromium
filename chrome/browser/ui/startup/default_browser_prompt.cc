@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
@@ -30,6 +31,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 
@@ -41,27 +44,40 @@ void ResetCheckDefaultBrowserPref(const base::FilePath& profile_path) {
 }
 
 void ShowPrompt() {
-  Browser* browser = chrome::FindLastActive();
-  if (!browser)
-    return;  // Reached during ui tests.
+  // Show the default browser request prompt in the most recently active,
+  // visible, tabbed browser. Do not show the prompt if no such browser exists.
+  BrowserList* browser_list = BrowserList::GetInstance();
+  for (auto browser_iterator = browser_list->begin_last_active();
+       browser_iterator != browser_list->end_last_active();
+       ++browser_iterator) {
+    Browser* browser = *browser_iterator;
 
-  // In ChromeBot tests, there might be a race. This line appears to get
-  // called during shutdown and |tab| can be NULL.
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents)
-    return;
+    // |browser| may be null in UI tests. Also, don't show the prompt in an app
+    // window, which is not meant to be treated as a Chrome window.
+    if (!browser || browser->deprecated_is_app())
+      continue;
 
-  // Never show the default browser prompt over the first run promos.
-  // TODO(pmonette): The whole logic that determines when to show the default
-  // browser prompt is due for a refactor. ShouldShowDefaultBrowserPrompt()
-  // should be aware of the first run promos and return false instead of
-  // counting on the early return here. See bug crbug.com/693292.
-  if (first_run::IsOnWelcomePage(web_contents))
-    return;
+    // In ChromeBot tests, there might be a race. This line appears to get
+    // called during shutdown and the active web contents can be nullptr.
+    content::WebContents* web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+    if (!web_contents ||
+        web_contents->GetVisibility() != content::Visibility::VISIBLE) {
+      continue;
+    }
 
-  chrome::DefaultBrowserInfoBarDelegate::Create(
-      InfoBarService::FromWebContents(web_contents), browser->profile());
+    // Never show the default browser prompt over the first run promos.
+    // TODO(pmonette): The whole logic that determines when to show the default
+    // browser prompt is due for a refactor. ShouldShowDefaultBrowserPrompt()
+    // should be aware of the first run promos and return false instead of
+    // counting on the early return here. See bug crbug.com/693292.
+    if (first_run::IsOnWelcomePage(web_contents))
+      continue;
+
+    chrome::DefaultBrowserInfoBarDelegate::Create(
+        InfoBarService::FromWebContents(web_contents), browser->profile());
+    break;
+  }
 }
 
 // Returns true if the default browser prompt should be shown if Chrome is not
@@ -156,9 +172,3 @@ void DefaultBrowserPromptDeclined(Profile* profile) {
 void ResetDefaultBrowserPrompt(Profile* profile) {
   profile->GetPrefs()->ClearPref(prefs::kDefaultBrowserLastDeclined);
 }
-
-#if !defined(OS_WIN)
-bool ShowFirstRunDefaultBrowserPrompt(Profile* profile) {
-  return false;
-}
-#endif

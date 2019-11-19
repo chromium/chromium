@@ -8,10 +8,10 @@ import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.text.TextUtils;
 
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.components.signin.ChromeSigninController;
 
@@ -109,10 +109,9 @@ public class GSAState {
     public boolean isGsaAvailable() {
         if (mGsaAvailable != null) return mGsaAvailable;
         mGsaAvailable = false;
-        PackageManager pm = mContext.getPackageManager();
         Intent searchIntent = new Intent(SEARCH_INTENT_ACTION);
         searchIntent.setPackage(GSAState.SEARCH_INTENT_PACKAGE);
-        List<ResolveInfo> resolveInfo = pm.queryIntentActivities(searchIntent, 0);
+        List<ResolveInfo> resolveInfo = PackageManagerUtils.queryIntentActivities(searchIntent, 0);
         if (resolveInfo.size() == 0) {
             mGsaAvailable = false;
         } else if (!isPackageAboveVersion(SEARCH_INTENT_PACKAGE, GSA_VERSION_FOR_DOCUMENT)

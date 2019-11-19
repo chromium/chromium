@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/traversal_range.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -63,7 +63,12 @@ class HasTagName {
 // a ContainerNode) for which HasTagName(html_names::kTitleTag) returned true,
 // so it would return the first child of |someNode| which is a <title> element.
 // If the caller needs to traverse a Node this way, it's necessary to first
-// check Node::IsContainerNode() and then use ToContainerNode().
+// check Node::IsContainerNode() and then use To<ContainerNode>(). Another way
+// to achieve same behaviour is to use DynamicTo<ContainerNode>() which
+// checks Node::IsContainerNode() and then returns container
+// node. If the conditional check fails then it returns nullptr.
+// DynamicTo<ContainerNode>() wraps IsContainerNode() so there is no need of
+// an explicit conditional check.
 //
 // When looking for a specific element type, it is more efficient to do this:
 //   Traversal<HTMLTitleElement>::firstChild(someNode);
@@ -262,7 +267,7 @@ inline Element* Traversal<Element>::NextTemplate(NodeType& current) {
   Node* node = NodeTraversal::Next(current);
   while (node && !node->IsElementNode())
     node = NodeTraversal::NextSkippingChildren(*node);
-  return ToElement(node);
+  return To<Element>(node);
 }
 
 template <>
@@ -272,7 +277,7 @@ inline Element* Traversal<Element>::NextTemplate(NodeType& current,
   Node* node = NodeTraversal::Next(current, stay_within);
   while (node && !node->IsElementNode())
     node = NodeTraversal::NextSkippingChildren(*node, stay_within);
-  return ToElement(node);
+  return To<Element>(node);
 }
 
 // Generic versions.

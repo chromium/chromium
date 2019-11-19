@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+
 /**
  * Handles toolbar triggered actions on the specific tab.
  */
@@ -17,10 +19,12 @@ public interface ToolbarTabController {
     void stopOrReloadCurrentTab();
 
     /**
-     * Navigates the current Tab back.
-     * @return Whether or not the current Tab did go back.
+     * Handles a back press action in tab page.
+     * @return A {@link ChromeTabbedActivity.BackPressedResult} indicating the result of this back
+     *         press. If returning null, the back press event is not consumed here.
      */
-    boolean back();
+    @ChromeTabbedActivity.BackPressedResult
+    Integer back();
 
     /**
      * Navigates the current Tab forward.

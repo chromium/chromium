@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 
@@ -73,8 +73,9 @@ bool File::Read(void* buffer, size_t buffer_len, size_t offset,
     return false;
   }
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskPriority::USER_BLOCKING, base::MayBlock()},
       base::BindOnce(&File::DoRead, base::Unretained(this), buffer, buffer_len,
                      offset),
       base::BindOnce(&File::OnOperationComplete, this, callback));
@@ -101,8 +102,9 @@ bool File::Write(const void* buffer, size_t buffer_len, size_t offset,
   // finish before it reads from the network again.
   // TODO(fdoray): Consider removing this from the critical path of network
   // requests and changing the priority to BACKGROUND.
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskPriority::USER_BLOCKING, base::MayBlock()},
       base::BindOnce(&File::DoWrite, base::Unretained(this), buffer, buffer_len,
                      offset),
       base::BindOnce(&File::OnOperationComplete, this, callback));
@@ -136,7 +138,7 @@ void File::WaitForPendingIO(int* num_pending_io) {
   // We are running unit tests so we should wait for all callbacks.
 
   // This waits for callbacks running on worker threads.
-  base::TaskScheduler::GetInstance()->FlushForTesting();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
   // This waits for the "Reply" tasks running on the current MessageLoop.
   base::RunLoop().RunUntilIdle();
 }

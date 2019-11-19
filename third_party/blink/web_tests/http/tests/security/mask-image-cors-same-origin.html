@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<style>
+#target {
+  width: 200px;
+  height: 200px;
+  background-color: green;
+  /* Access is OK because the URL and this document have the same origin. */
+  -webkit-mask-image: url("/resources/square100.png");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+</style>
+<div id="target"></div>

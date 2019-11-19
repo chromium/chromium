@@ -1,0 +1,24 @@
+supported_platforms: [ANDROID, CHROME_OS]
+
+# Create a simple lock override.
+cases {
+  input {
+    overrides {
+      action: LOCK
+      # Thursday, Feb 21st 2019 at 14:50pm
+      created_at_millis: 1550760600000
+    }
+  }
+  current_state {
+    # Thursday, Feb 21st 2019 at 15:00pm
+    time_millis: 1550761200000
+    timezone: "GMT"
+  }
+  output {
+    is_locked: true
+    active_policy: OVERRIDE
+    # Friday, Feb 22nd 2019 at 6:00am
+    next_unlocking_time_millis: 1550815200000
+    next_active_policy: NO_ACTIVE_POLICY
+  }
+}

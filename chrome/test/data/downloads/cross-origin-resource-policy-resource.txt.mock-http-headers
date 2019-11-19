@@ -1,0 +1,3 @@
+HTTP/1.0 200 OK
+Content-Type: text/plain
+Cross-Origin-Resource-Policy: same-origin

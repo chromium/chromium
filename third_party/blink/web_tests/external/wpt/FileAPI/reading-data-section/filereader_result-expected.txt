@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS readAsText
+PASS readAsDataURL
+PASS readAsArrayBuffer
+PASS readAsBinaryString
+FAIL result is null during "loadstart" event for readAsText assert_equals: result is null after first read call expected (object) null but got (string) ""
+FAIL result is null during "loadstart" event for readAsDataURL assert_equals: result is null after first read call expected (object) null but got (string) ""
+FAIL result is null during "loadstart" event for readAsArrayBuffer assert_equals: result is null during event expected null but got object "[object ArrayBuffer]"
+FAIL result is null during "loadstart" event for readAsBinaryString assert_equals: result is null after first read call expected (object) null but got (string) ""
+FAIL result is null during "progress" event for readAsText assert_equals: result is null after first read call expected (object) null but got (string) ""
+FAIL result is null during "progress" event for readAsDataURL assert_equals: result is null after first read call expected (object) null but got (string) ""
+FAIL result is null during "progress" event for readAsArrayBuffer assert_equals: result is null during event expected null but got object "[object ArrayBuffer]"
+FAIL result is null during "progress" event for readAsBinaryString assert_equals: result is null after first read call expected (object) null but got (string) ""
+Harness: the test ran to completion.
+

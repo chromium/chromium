@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="72px" height="72px" viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 57.1 (83088) - https://sketch.com -->
+    <title>btn_stop_timer_1x</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="44 29.6114286 42.3885714 28 36 34.3885714 29.6114286 28 28 29.6114286 34.3885714 36 28 42.3885714 29.6114286 44 36 37.6114286 42.3885714 44 44 42.3885714 37.6114286 36"></polygon>
+    </defs>
+    <g id="btn_stop_timer_1x" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Oval-3" fill="#BDC1C6" opacity="0.9" cx="36" cy="36" r="30"></circle>
+        <mask id="mask-2" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+        <use id="ic_close_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+    </g>
+</svg>

@@ -10,7 +10,6 @@ jumbo_component("surface") {
     "surface_export.h",
     "transport_dib.cc",
     "transport_dib.h",
-    "transport_dib_win.cc",
   ]
 
   configs += [ "//third_party/khronos:khronos_headers" ]
@@ -25,8 +24,4 @@ jumbo_component("surface") {
     "//ui/gfx/geometry",
     "//ui/gl",
   ]
-
-  if (is_posix) {
-    sources += [ "transport_dib_posix.cc" ]
-  }
 }

@@ -5,6 +5,8 @@
 '''Tool to create a new, empty .grd file with all the basic sections.
 '''
 
+from __future__ import print_function
+
 import getopt
 import sys
 
@@ -74,9 +76,10 @@ where in the file.'''
   def Run(self, opts, args):
     args = self.ParseOptions(args)
     if len(args) != 1:
-      print 'This tool requires exactly one argument, the name of the output file.'
+      print('This tool requires exactly one argument, the name of the output '
+            'file.')
       return 2
     filename = args[0]
     with util.WrapOutputStream(open(filename, 'w'), 'utf-8') as out:
       out.write(_FILE_CONTENTS)
-    print "Wrote file %s" % filename
+    print("Wrote file %s" % filename)

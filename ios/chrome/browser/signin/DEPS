@@ -1,7 +1,0 @@
-specific_include_rules = {
-  # The dependence on the Identity Service implementation should be used *only*
-  # for Identity Service creation.
-  "identity_service_creator.cc": [
-    "+services/identity/identity_service.h",
-  ],
-}

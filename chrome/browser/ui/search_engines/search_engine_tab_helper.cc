@@ -25,6 +25,8 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/resource_type.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/referrer.mojom.h"
 
 using content::NavigationController;
 using content::NavigationEntry;
@@ -136,16 +138,17 @@ void SearchEngineTabHelper::PageHasOpenSearchDescriptionDocument(
     return;
 
   auto* frame = web_contents()->GetMainFrame();
-  network::mojom::URLLoaderFactoryPtr url_loader_factory;
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
   frame->CreateNetworkServiceDefaultFactory(
-      mojo::MakeRequest(&url_loader_factory));
+      url_loader_factory.BindNewPipeAndPassReceiver());
 
   // Download the OpenSearch description document. If this is successful, a
   // new keyword will be created when done.
   TemplateURLFetcherFactory::GetForProfile(profile)->ScheduleDownload(
       keyword, osdd_url, entry->GetFavicon().url,
-      url::Origin::Create(web_contents()->GetURL()), url_loader_factory.get(),
-      frame->GetRoutingID(), content::RESOURCE_TYPE_SUB_RESOURCE);
+      frame->GetLastCommittedOrigin(), url_loader_factory.get(),
+      frame->GetRoutingID(),
+      static_cast<int>(content::ResourceType::kSubResource));
 }
 
 void SearchEngineTabHelper::OnFaviconUpdated(

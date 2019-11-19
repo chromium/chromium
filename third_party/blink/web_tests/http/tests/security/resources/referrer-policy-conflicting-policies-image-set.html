@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script>
+function done()
+{
+    if (window.testRunner)
+        testRunner.notifyDone();
+}
+</script>
+<style>
+div {
+    content: -webkit-image-set(url("http://127.0.0.1:8080/security/resources/green-if-no-referrer.php") 1x);
+}
+</style>
+<meta name="referrer" content="origin">
+<body onload="done();">
+<p>
+Checks that a CSS image that was created from an image-set before a referrer
+policy was set is loaded with the correct referrer, in this case, without a
+referrer.
+</p>
+<p>
+The test passes, if a green rectangle is displayed below.
+</p>
+<div></div>
+</body>

@@ -6,8 +6,8 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_profile.h"
-#include "components/autofill/core/browser/country_names.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/geo/country_names.h"
 #include "ios/chrome/browser/application_context.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"

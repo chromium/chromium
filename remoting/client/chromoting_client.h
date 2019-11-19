@@ -72,6 +72,9 @@ class ChromotingClient : public SignalStrategy::Listener,
              const std::string& host_jid,
              const std::string& capabilities);
 
+  // Closes the client and notifies the host of the closure.
+  void Close();
+
   protocol::ConnectionToHost::State connection_state() const {
     return connection_->state();
   }

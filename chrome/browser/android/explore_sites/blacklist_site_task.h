@@ -37,7 +37,7 @@ class BlacklistSiteTask : public Task {
   bool result_ = false;
   BooleanCallback callback_;
 
-  base::WeakPtrFactory<BlacklistSiteTask> weak_ptr_factory_;
+  base::WeakPtrFactory<BlacklistSiteTask> weak_ptr_factory_{this};
 };
 
 }  // namespace explore_sites

@@ -39,18 +39,25 @@ inline int vsnprintfT(wchar_t* buffer,
                       va_list argptr) {
   return base::vswprintf(buffer, buf_size, format, argptr);
 }
+inline int vsnprintfT(char16_t* buffer,
+                      size_t buf_size,
+                      const char16_t* format,
+                      va_list argptr) {
+  return base::vswprintf(reinterpret_cast<wchar_t*>(buffer), buf_size,
+                         reinterpret_cast<const wchar_t*>(format), argptr);
+}
 #endif
 
 // Templatized backend for StringPrintF/StringAppendF. This does not finalize
 // the va_list, the caller is expected to do that.
-template <class StringType>
-static void StringAppendVT(StringType* dst,
-                           const typename StringType::value_type* format,
+template <class CharT>
+static void StringAppendVT(std::basic_string<CharT>* dst,
+                           const CharT* format,
                            va_list ap) {
   // First try with a small fixed size buffer.
   // This buffer size should be kept in sync with StringUtilTest.GrowBoundary
   // and StringUtilTest.StringPrintfBounds.
-  typename StringType::value_type stack_buf[1024];
+  CharT stack_buf[1024];
 
   va_list ap_copy;
   va_copy(ap_copy, ap);
@@ -93,7 +100,7 @@ static void StringAppendVT(StringType* dst,
       return;
     }
 
-    std::vector<typename StringType::value_type> mem_buf(mem_length);
+    std::vector<CharT> mem_buf(mem_length);
 
     // NOTE: You can only use a va_list once.  Since we're in a while loop, we
     // need to make a new copy each time so we don't use up the original.
@@ -129,6 +136,15 @@ std::wstring StringPrintf(const wchar_t* format, ...) {
   va_end(ap);
   return result;
 }
+
+std::u16string StringPrintf(const char16_t* format, ...) {
+  va_list ap;
+  va_start(ap, format);
+  std::u16string result;
+  StringAppendV(&result, format, ap);
+  va_end(ap);
+  return result;
+}
 #endif
 
 std::string StringPrintV(const char* format, va_list ap) {
@@ -156,6 +172,17 @@ const std::wstring& SStringPrintf(std::wstring* dst,
   va_end(ap);
   return *dst;
 }
+
+const std::u16string& SStringPrintf(std::u16string* dst,
+                                    const char16_t* format,
+                                    ...) {
+  va_list ap;
+  va_start(ap, format);
+  dst->clear();
+  StringAppendV(dst, format, ap);
+  va_end(ap);
+  return *dst;
+}
 #endif
 
 void StringAppendF(std::string* dst, const char* format, ...) {
@@ -172,6 +199,13 @@ void StringAppendF(std::wstring* dst, const wchar_t* format, ...) {
   StringAppendV(dst, format, ap);
   va_end(ap);
 }
+
+void StringAppendF(std::u16string* dst, const char16_t* format, ...) {
+  va_list ap;
+  va_start(ap, format);
+  StringAppendV(dst, format, ap);
+  va_end(ap);
+}
 #endif
 
 void StringAppendV(std::string* dst, const char* format, va_list ap) {
@@ -180,6 +214,10 @@ void StringAppendV(std::string* dst, const char* format, va_list ap) {
 
 #if defined(OS_WIN)
 void StringAppendV(std::wstring* dst, const wchar_t* format, va_list ap) {
+  StringAppendVT(dst, format, ap);
+}
+
+void StringAppendV(std::u16string* dst, const char16_t* format, va_list ap) {
   StringAppendVT(dst, format, ap);
 }
 #endif

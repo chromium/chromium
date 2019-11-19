@@ -12,37 +12,38 @@ if (enable_vr) {
   component("vr") {
     output_name = "device_vr"
 
-    sources = [
-      "vr_export.h",
-    ]
     defines = [ "DEVICE_VR_IMPLEMENTATION" ]
-    deps = [
-      "//device/vr/buildflags",
-      "//device/vr/public/mojom",
-    ]
-    sources += [
+    sources = [
       "orientation/orientation_device.cc",
       "orientation/orientation_device.h",
       "orientation/orientation_device_provider.cc",
       "orientation/orientation_device_provider.h",
+      "orientation/orientation_session.cc",
+      "orientation/orientation_session.h",
       "util/fps_meter.cc",
       "util/fps_meter.h",
+      "util/gamepad_builder.cc",
+      "util/gamepad_builder.h",
       "util/sample_queue.cc",
       "util/sample_queue.h",
       "util/sliding_average.cc",
       "util/sliding_average.h",
+      "util/transform_utils.cc",
+      "util/transform_utils.h",
+      "util/xr_standard_gamepad_builder.cc",
+      "util/xr_standard_gamepad_builder.h",
       "vr_device.h",
       "vr_device_base.cc",
       "vr_device_base.h",
       "vr_device_provider.h",
-      "vr_display_impl.cc",
-      "vr_display_impl.h",
+      "vr_export.h",
     ]
-
-    deps += [
+    deps = [
       "//base",
       "//components/ukm:ukm",
       "//device/base",
+      "//device/vr/buildflags",
+      "//device/vr/public/mojom",
       "//gpu/ipc/common:interfaces",
       "//mojo/public/cpp/bindings",
       "//services/device/public/cpp/generic_sensor",
@@ -50,14 +51,11 @@ if (enable_vr) {
       "//services/service_manager/public/cpp",
       "//ui/display",
       "//ui/gfx",
-      "//ui/gfx/mojo:mojo",
+      "//ui/gfx/mojom",
     ]
 
     if (enable_gvr_services) {
       sources += [
-        "android/gvr/cardboard_gamepad_data_fetcher.cc",
-        "android/gvr/cardboard_gamepad_data_fetcher.h",
-        "android/gvr/cardboard_gamepad_data_provider.h",
         "android/gvr/gvr_delegate.cc",
         "android/gvr/gvr_delegate.h",
         "android/gvr/gvr_delegate_provider.h",
@@ -67,11 +65,8 @@ if (enable_vr) {
         "android/gvr/gvr_device.h",
         "android/gvr/gvr_device_provider.cc",
         "android/gvr/gvr_device_provider.h",
-        "android/gvr/gvr_gamepad_data_fetcher.cc",
-        "android/gvr/gvr_gamepad_data_fetcher.h",
-        "android/gvr/gvr_gamepad_data_provider.h",
-        "android/gvr/vr_module_delegate.cc",
-        "android/gvr/vr_module_delegate.h",
+        "android/gvr/gvr_utils.cc",
+        "android/gvr/gvr_utils.h",
       ]
 
       if (enable_arcore) {
@@ -83,8 +78,6 @@ if (enable_vr) {
 
       deps += [
         ":jni_headers",
-        "//device/gamepad",
-        "//device/gamepad/public/cpp:shared_with_blink",
         "//third_party/blink/public:blink_headers",
         "//third_party/gvr-android-sdk:gvr_shim",
       ]
@@ -93,18 +86,12 @@ if (enable_vr) {
     }
 
     if (enable_openvr) {
-      deps += [
-        "//device/gamepad",
-        "//device/gamepad/public/cpp:shared_with_blink",
-        "//third_party/openvr:openvr",
-      ]
+      deps += [ "//third_party/openvr:openvr" ]
       sources += [
         "openvr/openvr_api_wrapper.cc",
         "openvr/openvr_api_wrapper.h",
         "openvr/openvr_device.cc",
         "openvr/openvr_device.h",
-        "openvr/openvr_device_provider.cc",
-        "openvr/openvr_device_provider.h",
         "openvr/openvr_gamepad_helper.cc",
         "openvr/openvr_gamepad_helper.h",
         "openvr/openvr_render_loop.cc",
@@ -115,59 +102,133 @@ if (enable_vr) {
       ]
     }
 
-    if (enable_openvr || enable_oculus_vr || enable_windows_mr) {
+    if (enable_openvr || enable_oculus_vr || enable_windows_mr ||
+        enable_openxr) {
       sources += [
         "windows/compositor_base.cc",
         "windows/compositor_base.h",
       ]
     }
 
-    if (is_win && (enable_openvr || enable_oculus_vr || enable_windows_mr)) {
+    if (is_win && (enable_openvr || enable_oculus_vr || enable_windows_mr ||
+                   enable_openxr)) {
       libs = [
         "d3d11.lib",
         "DXGI.lib",
       ]
 
       sources += [
-        "isolated_gamepad_data_fetcher.cc",
-        "isolated_gamepad_data_fetcher.h",
         "windows/d3d11_texture_helper.cc",
         "windows/d3d11_texture_helper.h",
         "windows/flip_pixel_shader.h",
         "windows/geometry_shader.h",
         "windows/vertex_shader.h",
       ]
+
+      deps += [ ":directx_helpers" ]
     }
 
     if (is_win && enable_windows_mr) {
       sources += [
         "windows_mixed_reality/mixed_reality_device.cc",
         "windows_mixed_reality/mixed_reality_device.h",
+        "windows_mixed_reality/mixed_reality_input_helper.cc",
+        "windows_mixed_reality/mixed_reality_input_helper.h",
         "windows_mixed_reality/mixed_reality_renderloop.cc",
         "windows_mixed_reality/mixed_reality_renderloop.h",
         "windows_mixed_reality/mixed_reality_statics.cc",
         "windows_mixed_reality/mixed_reality_statics.h",
+        "windows_mixed_reality/wrappers/wmr_holographic_frame.cc",
+        "windows_mixed_reality/wrappers/wmr_holographic_frame.h",
+        "windows_mixed_reality/wrappers/wmr_holographic_space.cc",
+        "windows_mixed_reality/wrappers/wmr_holographic_space.h",
+        "windows_mixed_reality/wrappers/wmr_input_location.cc",
+        "windows_mixed_reality/wrappers/wmr_input_location.h",
+        "windows_mixed_reality/wrappers/wmr_input_manager.cc",
+        "windows_mixed_reality/wrappers/wmr_input_manager.h",
+        "windows_mixed_reality/wrappers/wmr_input_source.cc",
+        "windows_mixed_reality/wrappers/wmr_input_source.h",
+        "windows_mixed_reality/wrappers/wmr_input_source_state.cc",
+        "windows_mixed_reality/wrappers/wmr_input_source_state.h",
+        "windows_mixed_reality/wrappers/wmr_logging.cc",
+        "windows_mixed_reality/wrappers/wmr_logging.h",
+        "windows_mixed_reality/wrappers/wmr_origins.cc",
+        "windows_mixed_reality/wrappers/wmr_origins.h",
+        "windows_mixed_reality/wrappers/wmr_pointer_pose.cc",
+        "windows_mixed_reality/wrappers/wmr_pointer_pose.h",
+        "windows_mixed_reality/wrappers/wmr_pointer_source_pose.cc",
+        "windows_mixed_reality/wrappers/wmr_pointer_source_pose.h",
+        "windows_mixed_reality/wrappers/wmr_rendering.cc",
+        "windows_mixed_reality/wrappers/wmr_rendering.h",
+        "windows_mixed_reality/wrappers/wmr_timestamp.cc",
+        "windows_mixed_reality/wrappers/wmr_timestamp.h",
+        "windows_mixed_reality/wrappers/wmr_wrapper_factories.cc",
+        "windows_mixed_reality/wrappers/wmr_wrapper_factories.h",
+      ]
+
+      # Sources only meant to be actually used in tests, but need to be always
+      # included.
+      sources += [
+        "test/locked_vr_test_hook.cc",
+        "test/locked_vr_test_hook.h",
+        "windows_mixed_reality/wrappers/test/mock_wmr_holographic_frame.cc",
+        "windows_mixed_reality/wrappers/test/mock_wmr_holographic_frame.h",
+        "windows_mixed_reality/wrappers/test/mock_wmr_holographic_space.cc",
+        "windows_mixed_reality/wrappers/test/mock_wmr_holographic_space.h",
+        "windows_mixed_reality/wrappers/test/mock_wmr_input_location.cc",
+        "windows_mixed_reality/wrappers/test/mock_wmr_input_location.h",
+        "windows_mixed_reality/wrappers/test/mock_wmr_input_manager.cc",
+        "windows_mixed_reality/wrappers/test/mock_wmr_input_manager.h",
+        "windows_mixed_reality/wrappers/test/mock_wmr_input_source.cc",
+        "windows_mixed_reality/wrappers/test/mock_wmr_input_source.h",
+        "windows_mixed_reality/wrappers/test/mock_wmr_input_source_state.cc",
+        "windows_mixed_reality/wrappers/test/mock_wmr_input_source_state.h",
+        "windows_mixed_reality/wrappers/test/mock_wmr_origins.cc",
+        "windows_mixed_reality/wrappers/test/mock_wmr_origins.h",
+        "windows_mixed_reality/wrappers/test/mock_wmr_pointer_pose.cc",
+        "windows_mixed_reality/wrappers/test/mock_wmr_pointer_pose.h",
+        "windows_mixed_reality/wrappers/test/mock_wmr_pointer_source_pose.cc",
+        "windows_mixed_reality/wrappers/test/mock_wmr_pointer_source_pose.h",
+        "windows_mixed_reality/wrappers/test/mock_wmr_rendering.cc",
+        "windows_mixed_reality/wrappers/test/mock_wmr_rendering.h",
+        "windows_mixed_reality/wrappers/test/mock_wmr_timestamp.cc",
+        "windows_mixed_reality/wrappers/test/mock_wmr_timestamp.h",
       ]
     }
 
     if (enable_oculus_vr) {
-      deps += [
-        "//device/gamepad",
-        "//device/gamepad/public/cpp:shared_with_blink",
-        "//third_party/libovr",
-      ]
+      deps += [ "//third_party/libovr" ]
 
       sources += [
         "oculus/oculus_device.cc",
         "oculus/oculus_device.h",
-        "oculus/oculus_device_provider.cc",
-        "oculus/oculus_device_provider.h",
         "oculus/oculus_gamepad_helper.cc",
         "oculus/oculus_gamepad_helper.h",
         "oculus/oculus_render_loop.cc",
         "oculus/oculus_render_loop.h",
         "oculus/oculus_type_converters.cc",
         "oculus/oculus_type_converters.h",
+      ]
+    }
+
+    if (enable_openxr) {
+      deps += [ "//third_party/openxr" ]
+
+      sources += [
+        "openxr/openxr_api_wrapper.cc",
+        "openxr/openxr_api_wrapper.h",
+        "openxr/openxr_controller.cc",
+        "openxr/openxr_controller.h",
+        "openxr/openxr_device.cc",
+        "openxr/openxr_device.h",
+        "openxr/openxr_input_helper.cc",
+        "openxr/openxr_input_helper.h",
+        "openxr/openxr_render_loop.cc",
+        "openxr/openxr_render_loop.h",
+        "openxr/openxr_statics.cc",
+        "openxr/openxr_statics.h",
+        "openxr/openxr_util.cc",
+        "openxr/openxr_util.h",
       ]
     }
   }
@@ -186,8 +247,6 @@ if (enable_vr) {
       "test/fake_vr_device.h",
       "test/fake_vr_device_provider.cc",
       "test/fake_vr_device_provider.h",
-      "test/fake_vr_display_impl_client.cc",
-      "test/fake_vr_display_impl_client.h",
       "test/fake_vr_service_client.cc",
       "test/fake_vr_service_client.h",
       "vr_export.h",
@@ -202,6 +261,24 @@ if (enable_vr) {
       "//testing/gmock",
     ]
   }
+
+  if (is_win) {
+    static_library("directx_helpers") {
+      sources = [
+        "windows/d3d11_device_helpers.cc",
+        "windows/d3d11_device_helpers.h",
+      ]
+
+      libs = [
+        "d3d11.lib",
+        "DXGI.lib",
+      ]
+
+      deps = [
+        "//base",
+      ]
+    }
+  }
 } else {
   source_set("vr") {
     # We need to include an empty .cc file so that mac and windows don't fall over when trying to
@@ -214,6 +291,7 @@ if (enable_vr) {
 
 if (enable_openvr) {
   shared_library("openvr_mock") {
+    testonly = true
     output_name = "mock_vr_clients/bin/vrclient"
     if (target_cpu == "x64" && is_win) {
       output_name = "mock_vr_clients/bin/vrclient_x64"
@@ -232,9 +310,61 @@ if (enable_openvr) {
     ]
 
     deps = [
+      ":directx_helpers",
       "//base",
       "//device/vr/public/mojom:test_mojom",
       "//third_party/openvr:openvr_headers",
+    ]
+  }
+}
+
+if (enable_openxr) {
+  # The OpenXR Loader by default looks for the path to the OpenXR Runtime from a
+  # registry key, which typically points to the OpenXR runtime installed on the
+  # system. In test, we want to use the mock OpenXR runtime that is created
+  # below in :openxr_mock. If the XR_RUNTIME_JSON environment variable is set,
+  # the OpenXR loader instead looks for the path to the OpenXR runtime in the
+  # json file instead of the registry key. This json file copied to the output
+  # folder points to our mock OpenXR runtime.
+  copy("json_mock") {
+    sources = [
+      "openxr/test/openxr.json",
+    ]
+    outputs = [
+      "$root_out_dir/mock_vr_clients/bin/openxr/openxr.json",
+    ]
+  }
+
+  shared_library("openxr_mock") {
+    testonly = true
+    output_name = "mock_vr_clients/bin/openxr/openxrruntime"
+
+    include_dirs = [ "//third_party/openxr/src/include" ]
+
+    sources = [
+      "openxr/openxr_util.cc",
+      "openxr/openxr_util.h",
+      "openxr/test/fake_openxr_impl_api.cc",
+      "openxr/test/openxr.def",
+      "openxr/test/openxr_negotiate.h",
+      "openxr/test/openxr_test_helper.cc",
+      "openxr/test/openxr_test_helper.h",
+      "test/test_hook.h",
+    ]
+
+    libs = [
+      "d3d11.lib",
+      "DXGI.lib",
+    ]
+
+    deps = [
+      "//base",
+      "//device/vr/public/mojom:test_mojom",
+      "//third_party/openxr:openxr_headers",
+    ]
+
+    data_deps = [
+      "//device/vr:json_mock",
     ]
   }
 }
@@ -245,15 +375,16 @@ if (enable_gvr_services) {
 
   generate_jni("jni_headers") {
     sources = java_sources_needing_jni
-    jni_package = "device"
   }
 
   android_library("java") {
     java_files = java_sources_needing_jni
     deps = [
       "//base:base_java",
+      "//base:jni_java",
+      "//third_party/gvr-android-sdk:gvr_common_java",
       "//ui/android:ui_java",
     ]
-    classpath_deps = [ "//third_party/gvr-android-sdk:gvr_common_java" ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }

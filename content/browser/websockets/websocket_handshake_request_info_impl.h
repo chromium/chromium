@@ -22,8 +22,8 @@ class WebSocketHandshakeRequestInfoImpl final
                                                 int render_frame_id,
                                                 net::URLRequest* request);
 
-  int GetChildId() const override;
-  int GetRenderFrameId() const override;
+  int GetChildId() override;
+  int GetRenderFrameId() override;
 
  private:
   WebSocketHandshakeRequestInfoImpl(int child_id, int render_frame_id);

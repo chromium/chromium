@@ -22,6 +22,7 @@ assertAttributeInterpolation({
   {at: 0, is: '1 4'},
   {at: 1, is: '2 2'},
 ]);
+
 assertAttributeInterpolation({
   property: 'order',
   from: '2',
@@ -34,6 +35,7 @@ assertAttributeInterpolation({
   {at: 1, is: '2 2'},
   {at: 1.4, is: '2 2'}
 ]);
+
 assertAttributeInterpolation({
   property: 'order',
   from: '2',
@@ -41,6 +43,15 @@ assertAttributeInterpolation({
 }, [
   {at: 0, is: '2 2'},
   {at: 1, is: '4 1'},
+]);
+
+//Regression test for crbug.com/994800
+assertAttributeInterpolation({
+  property: 'order',
+  from: '1',
+  to: '3'
+}, [
+  {at: 3.40282e+038, is: '2147483647 , 2147483647'},
 ]);
 </script>
 </body>

@@ -23,10 +23,14 @@ function callback1() {
 function callback2() {
     o2.src = 'resources/freed-frame-helper.html';
 }
+var iterations = 0;
 function called_from_helper() {
-    o1.appendChild(o2);
+  if (++iterations > 20) {
     if (window.testRunner) {
-        testRunner.notifyDone();
+      testRunner.notifyDone();
     }
+    return;
+  }
+  o1.appendChild(o2);
 }
 </script>

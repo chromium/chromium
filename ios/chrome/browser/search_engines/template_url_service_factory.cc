@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
@@ -15,11 +14,10 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/google/google_url_tracker_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/search_engines/template_url_service_client_impl.h"
 #include "ios/chrome/browser/search_engines/ui_thread_search_terms_data.h"
-#include "ios/chrome/browser/web_data_service_factory.h"
+#include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #include "rlz/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_RLZ)
@@ -45,13 +43,12 @@ std::unique_ptr<KeyedService> BuildTemplateURLService(
       ios::ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<TemplateURLService>(
       browser_state->GetPrefs(),
-      base::WrapUnique(new ios::UIThreadSearchTermsData(browser_state)),
+      std::make_unique<ios::UIThreadSearchTermsData>(),
       ios::WebDataServiceFactory::GetKeywordWebDataForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS),
-      base::WrapUnique(new ios::TemplateURLServiceClientImpl(
+      std::make_unique<ios::TemplateURLServiceClientImpl>(
           ios::HistoryServiceFactory::GetForBrowserState(
-              browser_state, ServiceAccessType::EXPLICIT_ACCESS))),
-      ios::GoogleURLTrackerFactory::GetForBrowserState(browser_state),
+              browser_state, ServiceAccessType::EXPLICIT_ACCESS)),
       GetApplicationContext()->GetRapporServiceImpl(),
       GetDefaultSearchProviderChangedCallback());
 }
@@ -81,7 +78,6 @@ TemplateURLServiceFactory::TemplateURLServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "TemplateURLService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ios::GoogleURLTrackerFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::WebDataServiceFactory::GetInstance());
 }

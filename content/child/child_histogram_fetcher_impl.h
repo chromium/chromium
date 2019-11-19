@@ -13,6 +13,7 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "content/common/histogram_fetcher.mojom.h"
 #include "ipc/message_filter.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace base {
 class HistogramDeltaSerialization;
@@ -26,11 +27,13 @@ class ChildHistogramFetcherFactoryImpl
   ChildHistogramFetcherFactoryImpl();
   ~ChildHistogramFetcherFactoryImpl() override;
 
-  static void Create(content::mojom::ChildHistogramFetcherFactoryRequest);
+  static void Create(
+      mojo::PendingReceiver<content::mojom::ChildHistogramFetcherFactory>);
 
  private:
-  void CreateFetcher(base::WritableSharedMemoryRegion,
-                     content::mojom::ChildHistogramFetcherRequest) override;
+  void CreateFetcher(
+      base::WritableSharedMemoryRegion,
+      mojo::PendingReceiver<content::mojom::ChildHistogramFetcher>) override;
 };
 
 class ChildHistogramFetcherImpl : public content::mojom::ChildHistogramFetcher {

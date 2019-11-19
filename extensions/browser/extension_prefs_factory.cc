@@ -49,7 +49,7 @@ ExtensionPrefsFactory::~ExtensionPrefsFactory() {
 KeyedService* ExtensionPrefsFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   ExtensionsBrowserClient* client = ExtensionsBrowserClient::Get();
-  std::vector<ExtensionPrefsObserver*> prefs_observers;
+  std::vector<EarlyExtensionPrefsObserver*> prefs_observers;
   client->GetEarlyExtensionPrefsObservers(context, &prefs_observers);
   return ExtensionPrefs::Create(
       context, client->GetPrefServiceForContext(context),

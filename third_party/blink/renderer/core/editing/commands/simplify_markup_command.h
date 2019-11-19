@@ -32,13 +32,6 @@ namespace blink {
 
 class SimplifyMarkupCommand final : public CompositeEditCommand {
  public:
-  static SimplifyMarkupCommand* Create(Document& document,
-                                       Node* first_node,
-                                       Node* node_after_last) {
-    return MakeGarbageCollected<SimplifyMarkupCommand>(document, first_node,
-                                                       node_after_last);
-  }
-
   SimplifyMarkupCommand(Document&, Node* first_node, Node* node_after_last);
 
   void Trace(Visitor*) override;

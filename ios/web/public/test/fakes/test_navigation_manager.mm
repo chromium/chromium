@@ -13,6 +13,7 @@ namespace web {
 TestNavigationManager::TestNavigationManager()
     : items_index_(-1),
       pending_item_(nullptr),
+      pending_item_index_(-1),
       last_committed_item_(nullptr),
       visible_item_(nullptr),
       browser_state_(nullptr),
@@ -104,8 +105,11 @@ int TestNavigationManager::GetLastCommittedItemIndex() const {
 }
 
 int TestNavigationManager::GetPendingItemIndex() const {
-  NOTREACHED();
-  return 0;
+  return pending_item_index_;
+}
+
+void TestNavigationManager::SetPendingItemIndex(int index) {
+  pending_item_index_ = index;
 }
 
 bool TestNavigationManager::RemoveItemAtIndex(int index) {

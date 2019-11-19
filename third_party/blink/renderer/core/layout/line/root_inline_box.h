@@ -139,8 +139,8 @@ class RootInlineBox : public InlineFlowBox {
              LayoutUnit line_top,
              LayoutUnit line_bottom) const override;
   bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation& location_in_container,
-                   const LayoutPoint& accumulated_offset,
+                   const HitTestLocation&,
+                   const PhysicalOffset& accumulated_offset,
                    LayoutUnit line_top,
                    LayoutUnit line_bottom) override;
 
@@ -150,8 +150,8 @@ class RootInlineBox : public InlineFlowBox {
 
   LineLayoutBlockFlow Block() const;
 
-  InlineBox* ClosestLeafChildForPoint(const LayoutPoint&,
-                                      bool only_editable_leaves) const;
+  const LayoutObject* ClosestLeafChildForPoint(const LayoutPoint&,
+                                               bool only_editable_leaves) const;
   InlineBox* ClosestLeafChildForLogicalLeftPosition(
       LayoutUnit,
       bool only_editable_leaves = false) const;

@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_SENSOR_ENTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_SENSOR_ENTRY_H_
 
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/device/public/mojom/sensor.mojom-blink.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/mojom/sensor.mojom-blink-forward.h"
 #include "services/device/public/mojom/sensor_provider.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -19,7 +20,7 @@ namespace blink {
 
 class DeviceSensorEventPump;
 
-class DeviceSensorEntry : public GarbageCollectedFinalized<DeviceSensorEntry>,
+class DeviceSensorEntry : public GarbageCollected<DeviceSensorEntry>,
                           public device::mojom::blink::SensorClient {
   USING_PRE_FINALIZER(DeviceSensorEntry, Dispose);
 
@@ -74,13 +75,11 @@ class DeviceSensorEntry : public GarbageCollectedFinalized<DeviceSensorEntry>,
 
   State state_ = State::NOT_INITIALIZED;
 
-  device::mojom::blink::SensorPtr sensor_;
-  mojo::Binding<device::mojom::blink::SensorClient> client_binding_{this};
+  mojo::Remote<device::mojom::blink::Sensor> sensor_remote_;
+  mojo::Receiver<device::mojom::blink::SensorClient> client_receiver_{this};
 
   device::mojom::blink::SensorType type_;
 
-  mojo::ScopedSharedBufferHandle shared_buffer_handle_;
-  mojo::ScopedSharedBufferMapping shared_buffer_;
   std::unique_ptr<device::SensorReadingSharedBufferReader>
       shared_buffer_reader_;
 };

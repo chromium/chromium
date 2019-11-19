@@ -17,10 +17,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
-import org.chromium.chrome.browser.tabmodel.document.DocumentTabModelSelector;
 import org.chromium.chrome.test.util.ApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.tabmodel.document.MockStorageDelegate;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 
@@ -30,19 +28,14 @@ import java.util.concurrent.TimeoutException;
 public class MultiActivityTestRule implements TestRule {
     private static final String TAG = "MultiActivityTest";
 
-    MockStorageDelegate mStorageDelegate;
     Context mContext;
-
-    public MockStorageDelegate getStorageDelegate() {
-        return mStorageDelegate;
-    }
 
     public Context getContext() {
         return mContext;
     }
 
     public void waitForFullLoad(final ChromeActivity activity, final String expectedTitle)
-            throws InterruptedException, TimeoutException {
+            throws TimeoutException {
         waitForTabCreation(activity);
 
         ApplicationTestUtils.assertWaitForPageScaleFactorMatch(activity, 0.5f);
@@ -59,8 +52,7 @@ public class MultiActivityTestRule implements TestRule {
         });
     }
 
-    private void waitForTabCreation(ChromeActivity activity)
-            throws InterruptedException, TimeoutException {
+    private void waitForTabCreation(ChromeActivity activity) throws TimeoutException {
         final CallbackHelper newTabCreatorHelper = new CallbackHelper();
         activity.getTabModelSelector().addObserver(new EmptyTabModelSelectorObserver() {
             @Override
@@ -71,19 +63,13 @@ public class MultiActivityTestRule implements TestRule {
         newTabCreatorHelper.waitForCallback(0);
     }
 
-    private void ruleSetUp() throws Exception {
+    private void ruleSetUp() {
         RecordHistogram.setDisabledForTests(true);
         mContext = InstrumentationRegistry.getTargetContext();
-        ApplicationTestUtils.setUp(mContext, true);
-
-        // Make the DocumentTabModelSelector use a mocked out directory so that test runs don't
-        // interfere with each other.
-        mStorageDelegate = new MockStorageDelegate(mContext.getCacheDir());
-        DocumentTabModelSelector.setStorageDelegateForTests(mStorageDelegate);
+        ApplicationTestUtils.setUp(mContext);
     }
 
-    private void ruleTearDown() throws Exception {
-        mStorageDelegate.ensureDirectoryDestroyed();
+    private void ruleTearDown() {
         ApplicationTestUtils.tearDown(mContext);
         RecordHistogram.setDisabledForTests(false);
     }

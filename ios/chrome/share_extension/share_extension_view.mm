@@ -5,6 +5,7 @@
 #import "ios/chrome/share_extension/share_extension_view.h"
 
 #include "base/logging.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/share_extension/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -18,7 +19,6 @@ const CGFloat kCornerRadius = 6;
 const CGFloat kDividerHeight = 0.5;
 const CGFloat kShareExtensionPadding = 16;
 const CGFloat kButtonHeight = 44;
-const CGFloat kLowAlpha = 0.3;
 
 // Size of the icon if present.
 const CGFloat kScreenshotSize = 80;
@@ -40,22 +40,16 @@ const CGFloat kButtonFontSize = 17;
   [super setHighlighted:highlighted];
 
   if (highlighted)
-    self.backgroundColor = [UIColor colorWithWhite:217.0f / 255.0f alpha:1];
+    self.backgroundColor = [UIColor colorNamed:kTableViewRowHighlightColor];
   else
-    self.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = UIColor.clearColor;
 }
 
 @end
 
 #pragma mark - Share Extension View
 
-@interface ShareExtensionView () {
-  __weak id<ShareExtensionViewActionTarget> _target;
-
-  // Track if a button has been pressed. All button pressing will have no effect
-  // if |_dismissed| is YES.
-  BOOL _dismissed;
-}
+@interface ShareExtensionView ()
 
 // Keep strong references of the views that need to be updated.
 @property(nonatomic, strong) UILabel* titleLabel;
@@ -65,45 +59,15 @@ const CGFloat kButtonFontSize = 17;
 @property(nonatomic, strong) UIImageView* screenshotView;
 @property(nonatomic, strong) UIView* itemView;
 
-// View creation helpers.
-// Returns a view containing the shared items (title, URL, screenshot). This
-// method will set the ivars.
-- (UIView*)sharedItemView;
+@property(nonatomic, weak) id<ShareExtensionViewActionTarget> target;
 
-// Returns a button containing the with title |title| and action |selector| on
-// |_target|.
-- (UIButton*)buttonWithTitle:(NSString*)title selector:(SEL)selector;
-
-// Returns a view containing a divider with vibrancy effect.
-- (UIView*)dividerViewWithVibrancy:(UIVisualEffect*)vibrancyEffect;
-
-// Returns a navigationBar.
-- (UINavigationBar*)navigationBar;
-
-// Called when "Read Later" button has been pressed.
-- (void)addToReadingListPressed:(UIButton*)sender;
-
-// Called when "Add to bookmarks" button has been pressed.
-- (void)addToBookmarksPressed:(UIButton*)sender;
-
-// Called when "Cancel" button has been pressed.
-- (void)cancelPressed:(UIButton*)sender;
-
-// Animates the button |sender| by replaceing its string to "Added", then call
-// completion.
-- (void)animateButtonPressed:(UIButton*)sender
-              withCompletion:(void (^)(void))completion;
+// Track if a button has been pressed. All button pressing will have no effect
+// if |dismissed| is YES.
+@property(nonatomic, assign) BOOL dismissed;
 
 @end
 
 @implementation ShareExtensionView
-
-@synthesize titleLabel = _titleLabel;
-@synthesize URLLabel = _URLLabel;
-@synthesize titleURLContainer = _titleURLContainer;
-@synthesize readingListButton = _readingListButton;
-@synthesize screenshotView = _screenshotView;
-@synthesize itemView = _itemView;
 
 #pragma mark - Lifecycle
 
@@ -113,24 +77,11 @@ const CGFloat kButtonFontSize = 17;
   if (self) {
     DCHECK(target);
     _target = target;
-    _dismissed = NO;
 
     [self.layer setCornerRadius:kCornerRadius];
     [self setClipsToBounds:YES];
-    UIBlurEffect* blurEffect =
-        [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
-    UIVibrancyEffect* vibrancyEffect =
-        [UIVibrancyEffect effectForBlurEffect:blurEffect];
 
-    self.backgroundColor = [UIColor colorWithWhite:242.0f / 255.0f alpha:1];
-
-    // Add the blur effect to the whole widget.
-    UIVisualEffectView* blurringView =
-        [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-    [self addSubview:blurringView];
-    ui_util::ConstrainAllSidesOfViewToView(self, blurringView);
-    [[blurringView layer] setCornerRadius:kCornerRadius];
-    [blurringView setClipsToBounds:YES];
+    self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
     NSString* addToReadingListTitle = NSLocalizedString(
         @"IDS_IOS_ADD_READING_LIST_SHARE_EXTENSION",
@@ -146,38 +97,46 @@ const CGFloat kButtonFontSize = 17;
         [self buttonWithTitle:addToBookmarksTitle
                      selector:@selector(addToBookmarksPressed:)];
 
+    NSString* openInChromeTitle = NSLocalizedString(
+        @"IDS_IOS_OPEN_IN_CHROME_SHARE_EXTENSION",
+        @"The Open in Chrome button text in share extension.");
+    UIButton* openButton =
+        [self buttonWithTitle:openInChromeTitle
+                     selector:@selector(openInChromePressed:)];
+
     UIStackView* contentStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-      [self navigationBar], [self dividerViewWithVibrancy:vibrancyEffect],
-      [self sharedItemView], [self dividerViewWithVibrancy:vibrancyEffect],
-      self.readingListButton, [self dividerViewWithVibrancy:vibrancyEffect],
-      bookmarksButton
+      [self navigationBar], [self dividerView], [self sharedItemView],
+      [self dividerView], self.readingListButton, [self dividerView],
+      bookmarksButton, [self dividerView], openButton
     ]];
     [contentStack setAxis:UILayoutConstraintAxisVertical];
-    [[blurringView contentView] addSubview:contentStack];
+    [self addSubview:contentStack];
 
-    [blurringView setTranslatesAutoresizingMaskIntoConstraints:NO];
     [contentStack setTranslatesAutoresizingMaskIntoConstraints:NO];
 
-    ui_util::ConstrainAllSidesOfViewToView([blurringView contentView],
-                                           contentStack);
+    ui_util::ConstrainAllSidesOfViewToView(self, contentStack);
   }
   return self;
 }
 
 #pragma mark Init helpers
 
+// Returns a view containing the shared items (title, URL, screenshot). This
+// method will set the ivars.
 - (UIView*)sharedItemView {
   // Title label. Text will be filled by |setTitle:| when available.
   _titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-  [_titleLabel setFont:[UIFont boldSystemFontOfSize:16]];
-  [_titleLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+  _titleLabel.font = [UIFont boldSystemFontOfSize:16];
+  _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
   // URL label. Text will be filled by |setURL:| when available.
   _URLLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-  [_URLLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-  [_URLLabel setNumberOfLines:3];
-  [_URLLabel setLineBreakMode:NSLineBreakByWordWrapping];
-  [_URLLabel setFont:[UIFont systemFontOfSize:12]];
+  _URLLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  _URLLabel.numberOfLines = 3;
+  _URLLabel.lineBreakMode = NSLineBreakByWordWrapping;
+  _URLLabel.font = [UIFont systemFontOfSize:12];
+  _URLLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
   // Screenshot view. Image will be filled by |setScreenshot:| when available.
   _screenshotView = [[UIImageView alloc] initWithFrame:CGRectZero];
@@ -261,29 +220,23 @@ const CGFloat kButtonFontSize = 17;
   return _itemView;
 }
 
-- (UIView*)dividerViewWithVibrancy:(UIVisualEffect*)vibrancyEffect {
-  UIVisualEffectView* dividerVibrancy =
-      [[UIVisualEffectView alloc] initWithEffect:vibrancyEffect];
+// Returns a view containing a divider.
+- (UIView*)dividerView {
   UIView* divider = [[UIView alloc] initWithFrame:CGRectZero];
-  [divider setBackgroundColor:[UIColor colorWithWhite:0 alpha:kLowAlpha]];
-  [[dividerVibrancy contentView] addSubview:divider];
-  [dividerVibrancy setTranslatesAutoresizingMaskIntoConstraints:NO];
   [divider setTranslatesAutoresizingMaskIntoConstraints:NO];
-  ui_util::ConstrainAllSidesOfViewToView([dividerVibrancy contentView],
-                                         divider);
+  divider.backgroundColor = [UIColor colorNamed:kSeparatorColor];
   CGFloat slidingConstant = ui_util::AlignValueToPixel(kDividerHeight);
-  [[dividerVibrancy heightAnchor] constraintEqualToConstant:slidingConstant]
-      .active = YES;
-  return dividerVibrancy;
+  [divider.heightAnchor constraintEqualToConstant:slidingConstant].active = YES;
+  return divider;
 }
 
+// Returns a button containing title |title| and action |selector| on
+// |self.target|.
 - (UIButton*)buttonWithTitle:(NSString*)title selector:(SEL)selector {
-  UIButton* systemButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  UIColor* systemColor = [systemButton titleColorForState:UIControlStateNormal];
-
   UIButton* button = [[ShareExtensionButton alloc] initWithFrame:CGRectZero];
   [button setTitle:title forState:UIControlStateNormal];
-  [button setTitleColor:systemColor forState:UIControlStateNormal];
+  [button setTitleColor:[UIColor colorNamed:kBlueColor]
+               forState:UIControlStateNormal];
   [[button titleLabel] setFont:[UIFont systemFontOfSize:kButtonFontSize]];
   [button setTranslatesAutoresizingMaskIntoConstraints:NO];
   [button addTarget:self
@@ -293,6 +246,7 @@ const CGFloat kButtonFontSize = 17;
   return button;
 }
 
+// Returns a navigationBar.
 - (UINavigationBar*)navigationBar {
   // Create the navigation bar.
   UINavigationBar* navigationBar =
@@ -308,14 +262,14 @@ const CGFloat kButtonFontSize = 17;
   [navigationBar setShadowImage:emptyImage];
   [navigationBar setTranslucent:YES];
   [navigationBar setTranslatesAutoresizingMaskIntoConstraints:NO];
+  navigationBar.titleTextAttributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextPrimaryColor]
+  };
 
-  UIButton* systemButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  UIColor* systemColor = [systemButton titleColorForState:UIControlStateNormal];
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
                            action:@selector(cancelPressed:)];
-  [cancelButton setTintColor:systemColor];
 
   NSString* appName =
       [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
@@ -327,28 +281,41 @@ const CGFloat kButtonFontSize = 17;
   return navigationBar;
 }
 
+// Called when "Read Later" button has been pressed.
 - (void)addToReadingListPressed:(UIButton*)sender {
-  if (_dismissed) {
+  if (self.dismissed) {
     return;
   }
-  _dismissed = YES;
-  [self animateButtonPressed:sender
-              withCompletion:^{
-                [_target shareExtensionViewDidSelectAddToReadingList:sender];
-              }];
+  self.dismissed = YES;
+  [self
+      animateButtonPressed:sender
+            withCompletion:^{
+              [self.target shareExtensionViewDidSelectAddToReadingList:sender];
+            }];
 }
 
+// Called when "Add to bookmarks" button has been pressed.
 - (void)addToBookmarksPressed:(UIButton*)sender {
-  if (_dismissed) {
+  if (self.dismissed) {
     return;
   }
-  _dismissed = YES;
+  self.dismissed = YES;
   [self animateButtonPressed:sender
               withCompletion:^{
-                [_target shareExtensionViewDidSelectAddToBookmarks:sender];
+                [self.target shareExtensionViewDidSelectAddToBookmarks:sender];
               }];
 }
 
+- (void)openInChromePressed:(UIButton*)sender {
+  if (self.dismissed) {
+    return;
+  }
+  self.dismissed = YES;
+  [self.target shareExtensionViewDidSelectOpenInChrome:sender];
+}
+
+// Animates the button |sender| by replacing its string to "Added", then call
+// completion.
 - (void)animateButtonPressed:(UIButton*)sender
               withCompletion:(void (^)(void))completion {
   NSString* addedString =
@@ -408,12 +375,13 @@ const CGFloat kButtonFontSize = 17;
   step1HideText();
 }
 
+// Called when "Cancel" button has been pressed.
 - (void)cancelPressed:(UIButton*)sender {
-  if (_dismissed) {
+  if (self.dismissed) {
     return;
   }
-  _dismissed = YES;
-  [_target shareExtensionViewDidSelectCancel:sender];
+  self.dismissed = YES;
+  [self.target shareExtensionViewDidSelectCancel:sender];
 }
 
 #pragma mark - Content getters and setters.

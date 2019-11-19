@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -32,12 +33,12 @@ namespace base {
 class MessagePumpLibeventTest : public testing::Test {
  protected:
   MessagePumpLibeventTest()
-      : ui_loop_(new MessageLoop(MessageLoop::TYPE_UI)),
+      : ui_loop_(new MessageLoop(MessagePumpType::UI)),
         io_thread_("MessagePumpLibeventTestIOThread") {}
   ~MessagePumpLibeventTest() override = default;
 
   void SetUp() override {
-    Thread::Options options(MessageLoop::TYPE_IO, 0);
+    Thread::Options options(MessagePumpType::IO, 0);
     ASSERT_TRUE(io_thread_.StartWithOptions(options));
     int ret = pipe(pipefds_);
     ASSERT_EQ(0, ret);
@@ -155,8 +156,8 @@ TEST_F(MessagePumpLibeventTest, StopWatcher) {
   OnLibeventNotification(pump.get(), &watcher);
 }
 
-void QuitMessageLoopAndStart(const Closure& quit_closure) {
-  quit_closure.Run();
+void QuitMessageLoopAndStart(OnceClosure quit_closure) {
+  std::move(quit_closure).Run();
 
   RunLoop runloop(RunLoop::Type::kNestableTasksAllowed);
   ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, runloop.QuitClosure());
@@ -196,18 +197,19 @@ void FatalClosure() {
 class QuitWatcher : public BaseWatcher {
  public:
   QuitWatcher(MessagePumpLibevent::FdWatchController* controller,
-              base::Closure quit_closure)
+              base::OnceClosure quit_closure)
       : BaseWatcher(controller), quit_closure_(std::move(quit_closure)) {}
 
   void OnFileCanReadWithoutBlocking(int /* fd */) override {
     // Post a fatal closure to the MessageLoop before we quit it.
     ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, BindOnce(&FatalClosure));
 
-    quit_closure_.Run();
+    if (quit_closure_)
+      std::move(quit_closure_).Run();
   }
 
  private:
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
 };
 
 void WriteFDWrapper(const int fd,

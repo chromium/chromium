@@ -1,0 +1,156 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 4
+
+// This file defines the mojo interface between Android and Chromium for video
+// decoding. Any Mojo callee that returns a value does so by callback.
+// However, the caller may receive it by out-param (for sync calls) or
+// via callback (for async calls).
+// However, we only use callbacks to Reset, Flush and Initialize
+// in the present design and don't use for other functions.
+// This is mainly because other VDAClient functions and VDA functions are not
+// correlated.
+// Please don't use this design as a good reference, it is strongly recommended
+// in mojom that all the function results are reported by passed callbacks.
+
+module arc.mojom;
+
+import "components/arc/mojom/gfx.mojom";
+import "components/arc/mojom/video_common.mojom";
+
+// Information of the bitstream buffer.
+struct BitstreamBuffer {
+  int32 bitstream_id;
+  // This handle is passed and used in Decode().
+  // The handle fd is ashmem.
+  handle handle_fd;
+  uint32 offset;
+  uint32 bytes_used;
+};
+
+struct Picture {
+  int32 picture_buffer_id;
+  int32 bitstream_id;
+  // the crop rectangle with the picture buffer to be displayed.
+  Rect crop_rect;
+};
+
+// Format specification of the picture buffer request.
+struct PictureBufferFormat {
+  // minimal number of buffers required to process the video.
+  uint32 min_num_buffers;
+  Size coded_size;
+};
+
+struct VideoDecodeAcceleratorConfig {
+  VideoCodecProfile profile;
+  bool secure_mode;
+};
+
+// The interface to access the hardware video decoding accelerator. To use
+// the decoder, the client first calls Initialize() and must wait for a
+// callback with the result. Once done, the client can feed the decoder with
+// input bit streams via Decode(). The decoder will call
+// VideoDecodeClient::NotifyEndOfBitstreamBuffer() to notify the client that
+// it has finished consuming the contents of the buffer.
+//
+// The decoder will also call VideoDecodeClient::ProvidePictureBuffers to
+// ask for output buffers for decoding. The client must provide at least
+// PictureBufferFormat::min_num_buffers of output buffers and tell the decoder
+// the number by AssignPictureBuffers(). Those output buffers are imported
+// one by one by ImportBufferForPicture(). Afterwards, the video decoder will
+// writes the decoded output into those output buffers and notify the client
+// via PictureReady() to indicate when a buffer is ready to be used. After
+// client finish using the decoded buffer, it can return the buffer back to the
+// decoder by ReusePictureBuffer(), allowing the buffer to be reused for
+// decoding future frames.
+//
+// For secure playback, the client only holds the dummy buffers for both output
+// and input. The protected buffers will be allocated in server side
+// and never shared to the client. For input buffers, the client must call
+// AllocateProtectedBuffer() for each handle before passing it to Decode().
+// The protected buffers will be allocated at the server side for storing
+// decrypted input bit streams. For output buffers, the server will allocated
+// the protected output buffers when ImportBufferForPicture() is called;
+// this will tell the server to import and use the protected buffer instead of
+// the dummy buffer.
+//
+// Deprecated method IDs: 3, 7, 8
+// Next method ID: 10
+interface VideoDecodeAccelerator {
+  [Extensible]
+  enum Result {
+    SUCCESS = 0,
+    ILLEGAL_STATE = 1,
+    INVALID_ARGUMENT = 2,
+    UNREADABLE_INPUT = 3,
+    PLATFORM_FAILURE = 4,
+    INSUFFICIENT_RESOURCES = 5,
+    CANCELLED = 6,
+  };
+
+  // Initializes video decoder accelerator with specific video codec profile.
+  // The caller needs to wait for the initialization result (returned by
+  // callback) before calling any other methods.
+  Initialize@0(VideoDecodeAcceleratorConfig config,
+               VideoDecodeClient client) => (Result result);
+
+  // Decodes the content in the shared memory of the bitstream buffer. The
+  // callee needs to map the the shared memory to read the content and is
+  // responsible to release the shared memory by closing the file descriptor.
+  Decode@1(BitstreamBuffer bitstream_buffer);
+
+  // Sets the number of output picture buffers.
+  // This releases any buffers in use/imported previously.
+  AssignPictureBuffers@2(uint32 count);
+
+  // Imports a buffer to be used by the accelerator with specified
+  // |picture_buffer_id|.
+  // Releases any previously imported buffer under given |picture_buffer_id|.
+  // This should be preceded by a call to AssignPictureBuffers().
+  // Calls VDA::ImportBufferForPicture() with |format| and a
+  // gfx::GpuMemoryBufferHandle created from |handle_fd| and |planes|.
+  [MinVersion=2]
+  ImportBufferForPicture@9(int32 picture_buffer_id, HalPixelFormat format,
+                           handle handle_fd, array<VideoFramePlane> planes);
+
+  // Returns picture buffer with specified |picture_buffer_id| to be reused by
+  // the accelerator.
+  ReusePictureBuffer@4(int32 picture_buffer_id);
+
+  // Resets the accelerator, without decoding any pending buffers.
+  // When it is done, the callback will be invoked.
+  Reset@5() => (Result result);
+
+  // Flushes the accelerator. After all the output buffers pending decode have
+  // been returned to client, the callback will be invoked.
+  // Flush() can be cancelled by a succeeding Reset(). In that case, the
+  // callback is called with Result::CANCELLED.
+  Flush@6() => (Result result);
+};
+
+// Deprecated method IDs: 0, 4
+// Next method ID: 6
+interface VideoDecodeClient {
+
+  // Called to notify the client that |picture| is ready to be displayed.
+  // The calls to PictureReady() are in display order and Picture should
+  // be displayed in that order.
+  PictureReady@1(Picture picture);
+
+  // Called to notify that decoder has decoded the end of the BitstreamBuffer
+  // with specified |bitstream_id|.
+  NotifyEndOfBitstreamBuffer@2(int32 bitstream_id);
+
+  // Called when an asynchronous error happens, for example, illegal state,
+  // error while decoding the stream, or a platform/system error.
+  // The errors in Initialize(), Reset() and Flush(), will not be reported here,
+  // but will be returned in its callback function.
+  NotifyError@3(VideoDecodeAccelerator.Result error);
+
+  // Callback to tell client how many and what size of buffers to provide.
+  [MinVersion=3]
+  ProvidePictureBuffers@5(PictureBufferFormat format, Rect visible_rect);
+};

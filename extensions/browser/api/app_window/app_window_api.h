@@ -16,7 +16,7 @@ struct CreateWindowOptions;
 }
 }
 
-class AppWindowCreateFunction : public UIThreadExtensionFunction {
+class AppWindowCreateFunction : public ExtensionFunction {
  public:
   AppWindowCreateFunction();
   DECLARE_EXTENSION_FUNCTION("app.window.create", APP_WINDOW_CREATE)
@@ -26,8 +26,8 @@ class AppWindowCreateFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnAppWindowReadyToCommitFirstNavigationOrClosed(ResponseValue result_arg,
-                                                       bool ready_to_commit);
+  void OnAppWindowFinishedFirstNavigationOrClosed(ResponseValue result_arg,
+                                                  bool did_finish);
 
   bool GetBoundsSpec(
       const extensions::api::app_window::CreateWindowOptions& options,

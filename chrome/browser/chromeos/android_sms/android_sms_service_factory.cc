@@ -11,8 +11,8 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -102,6 +102,7 @@ bool AndroidSmsServiceFactory::ServiceIsNULLWhileTesting() const {
 void AndroidSmsServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   PairingLostNotifier::RegisterProfilePrefs(registry);
+  AndroidSmsAppManagerImpl::RegisterProfilePrefs(registry);
 }
 
 }  // namespace android_sms

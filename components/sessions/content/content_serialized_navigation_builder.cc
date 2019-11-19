@@ -4,10 +4,13 @@
 
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 
+#include <string>
+
 #include "base/logging.h"
 #include "components/sessions/content/content_record_password_state.h"
 #include "components/sessions/content/content_serialized_navigation_driver.h"
 #include "components/sessions/content/extended_info_handler.h"
+#include "components/sessions/content/navigation_task_id.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/favicon_status.h"
@@ -64,6 +67,10 @@ ContentSerializedNavigationBuilder::FromNavigationEntry(
   navigation.replaced_entry_data_ =
       ConvertReplacedEntryData(entry->GetReplacedEntryData());
   navigation.password_state_ = GetPasswordStateFromNavigation(entry);
+  navigation.task_id_ = NavigationTaskId::Get(entry)->id();
+  navigation.parent_task_id_ = NavigationTaskId::Get(entry)->parent_id();
+  navigation.root_task_id_ = NavigationTaskId::Get(entry)->root_id();
+  navigation.children_task_ids_ = NavigationTaskId::Get(entry)->children_ids();
 
   for (const auto& handler_entry :
        ContentSerializedNavigationDriver::GetInstance()
@@ -83,14 +90,18 @@ std::unique_ptr<content::NavigationEntry>
 ContentSerializedNavigationBuilder::ToNavigationEntry(
     const SerializedNavigationEntry* navigation,
     content::BrowserContext* browser_context) {
-  network::mojom::ReferrerPolicy policy =
-      static_cast<network::mojom::ReferrerPolicy>(navigation->referrer_policy_);
+  // The initial values of the NavigationEntry are only temporary - they
+  // will get cloberred by one of the SetPageState calls below.
+  //
+  // This means that things like |navigation->referrer_url| are ignored
+  // in favor of using the data stored in |navigation->encoded_page_state|.
+  GURL temporary_url;
+  content::Referrer temporary_referrer;
+  base::Optional<url::Origin> temporary_initiator_origin;
+
   std::unique_ptr<content::NavigationEntry> entry(
       content::NavigationController::CreateNavigationEntry(
-          navigation->virtual_url_,
-          content::Referrer::SanitizeForRequest(
-              navigation->virtual_url_,
-              content::Referrer(navigation->referrer_url_, policy)),
+          temporary_url, temporary_referrer, temporary_initiator_origin,
           // Use a transition type of reload so that we don't incorrectly
           // increase the typed count.
           ui::PAGE_TRANSITION_RELOAD, false,
@@ -98,9 +109,46 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
           std::string(), browser_context,
           nullptr /* blob_url_loader_factory */));
 
+  // In some cases the |encoded_page_state| might be empty - we
+  // need to gracefully handle such data when it is deserialized.
+  //
+  // One case is tests for "foreign" session restore entries, such as
+  // SessionRestoreTest.RestoreForeignTab.  We hypothesise that old session
+  // restore entries might also contain an empty |encoded_page_state|.
+  if (navigation->encoded_page_state_.empty()) {
+    // Ensure that the deserialized/restored content::NavigationEntry (and
+    // the content::FrameNavigationEntry underneath) has a valid PageState.
+    entry->SetPageState(
+        content::PageState::CreateFromURL(navigation->virtual_url_));
+
+    // The |navigation|-based referrer set below might be inconsistent with the
+    // referrer embedded inside the PageState set above.  Nevertheless, to
+    // minimize changes to behavior of old session restore entries, we restore
+    // the deserialized referrer here.
+    //
+    // TODO(lukasza): Consider including the |deserialized_referrer| in the
+    // PageState set above + drop the SetReferrer call below.  This will
+    // slightly change the legacy behavior, but will make PageState and
+    // Referrer consistent.
+    content::Referrer referrer(
+        navigation->referrer_url(),
+        content::Referrer::ConvertToPolicy(navigation->referrer_policy()));
+    entry->SetReferrer(referrer);
+  } else {
+    // Note that PageState covers some of the values inside |navigation| (e.g.
+    // URL, Referrer).  Calling SetPageState will clobber these values in
+    // content::NavigationEntry (and FrameNavigationEntry(s) below).
+    entry->SetPageState(content::PageState::CreateFromEncodedData(
+        navigation->encoded_page_state_));
+
+    // |navigation|-level referrer information is redundant wrt PageState, but
+    // they should be consistent / in-sync.
+    DCHECK_EQ(navigation->referrer_url(), entry->GetReferrer().url);
+    DCHECK_EQ(navigation->referrer_policy(),
+              static_cast<int>(entry->GetReferrer().policy));
+  }
+
   entry->SetTitle(navigation->title_);
-  entry->SetPageState(content::PageState::CreateFromEncodedData(
-      navigation->encoded_page_state_));
   entry->SetHasPostData(navigation->has_post_data_);
   entry->SetPostID(navigation->post_id_);
   entry->SetOriginalRequestURL(navigation->original_request_url_);
@@ -108,6 +156,12 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
   entry->SetTimestamp(navigation->timestamp_);
   entry->SetHttpStatusCode(navigation->http_status_code_);
   entry->SetRedirectChain(navigation->redirect_chain_);
+  entry->SetVirtualURL(navigation->virtual_url_);
+  sessions::NavigationTaskId* navigation_task_id =
+      sessions::NavigationTaskId::Get(entry.get());
+  navigation_task_id->set_id(navigation->task_id());
+  navigation_task_id->set_parent_id(navigation->parent_task_id());
+  navigation_task_id->set_root_id(navigation->root_task_id());
 
   const ContentSerializedNavigationDriver::ExtendedInfoHandlerMap&
       extended_info_handlers = ContentSerializedNavigationDriver::GetInstance()

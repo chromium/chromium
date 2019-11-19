@@ -134,7 +134,8 @@ interface ConnectionDelegate {
   // |channel| to be notified when it has been invalidated due to a dropped
   // connection. Note that clients are expected to hold the reference to
   // |channel| until they are done using the connection.
-  OnConnection(Channel channel, MessageReceiver& message_receiver);
+  OnConnection(pending_remote<Channel> channel,
+               pending_receiver<MessageReceiver> message_receiver_receiver);
 };
 
 // Brokers connections between the current Chromebook and remote devices,
@@ -173,7 +174,7 @@ interface SecureChannel {
       chromeos.multidevice.mojom.RemoteDevice local_device,
       string feature,
       ConnectionPriority connection_priority,
-      ConnectionDelegate delegate);
+      pending_remote<ConnectionDelegate> delegate);
 
   // Initiates a connection to |device|, which is presumed to be listening
   // for incoming connections. This function attempts to create a connection
@@ -187,5 +188,5 @@ interface SecureChannel {
       chromeos.multidevice.mojom.RemoteDevice local_device,
       string feature,
       ConnectionPriority connection_priority,
-      ConnectionDelegate delegate);
+      pending_remote<ConnectionDelegate> delegate);
 };

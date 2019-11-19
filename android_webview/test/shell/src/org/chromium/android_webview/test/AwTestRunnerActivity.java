@@ -13,7 +13,6 @@ import android.widget.LinearLayout;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.shell.AwShellResourceProvider;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 
 /**
@@ -30,7 +29,6 @@ public class AwTestRunnerActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         AwShellResourceProvider.registerResources(this);
-        ContextUtils.initApplicationContext(getApplicationContext());
         try (StrictModeContext ctx = StrictModeContext.allowDiskReads()) {
             AwBrowserProcess.loadLibrary(null);
         }

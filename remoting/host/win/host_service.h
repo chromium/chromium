@@ -122,7 +122,7 @@ class HostService : public WtsTerminalMonitor {
   base::WeakPtr<HostService> weak_ptr_;
 
   // Used to post session change notifications and control events.
-  base::WeakPtrFactory<HostService> weak_factory_;
+  base::WeakPtrFactory<HostService> weak_factory_{this};
 
   // Singleton.
   friend struct base::DefaultSingletonTraits<HostService>;

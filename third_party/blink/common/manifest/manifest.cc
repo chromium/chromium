@@ -30,7 +30,7 @@ Manifest::RelatedApplication::RelatedApplication() = default;
 Manifest::RelatedApplication::~RelatedApplication() = default;
 
 Manifest::Manifest()
-    : display(blink::kWebDisplayModeUndefined),
+    : display(blink::mojom::DisplayMode::kUndefined),
       orientation(blink::kWebScreenOrientationLockDefault),
       prefer_related_applications(false) {}
 
@@ -40,12 +40,12 @@ Manifest::~Manifest() = default;
 
 bool Manifest::IsEmpty() const {
   return name.is_null() && short_name.is_null() && start_url.is_empty() &&
-         display == blink::kWebDisplayModeUndefined &&
+         display == blink::mojom::DisplayMode::kUndefined &&
          orientation == blink::kWebScreenOrientationLockDefault &&
          icons.empty() && !share_target.has_value() &&
          related_applications.empty() && !prefer_related_applications &&
-         !theme_color && !background_color && splash_screen_url.is_empty() &&
-         gcm_sender_id.is_null() && scope.is_empty();
+         !theme_color && !background_color && gcm_sender_id.is_null() &&
+         scope.is_empty();
 }
 
 }  // namespace blink

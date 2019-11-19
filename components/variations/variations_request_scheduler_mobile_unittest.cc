@@ -5,7 +5,7 @@
 #include "components/variations/variations_request_scheduler_mobile.h"
 
 #include "base/bind.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/pref_names.h"
@@ -49,7 +49,7 @@ TEST(VariationsRequestSchedulerMobileTest, StartRun) {
 }
 
 TEST(VariationsRequestSchedulerMobileTest, OnAppEnterForegroundNoRun) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
 
   TestingPrefServiceSimple prefs;
 
@@ -76,7 +76,7 @@ TEST(VariationsRequestSchedulerMobileTest, OnAppEnterForegroundNoRun) {
 }
 
 TEST(VariationsRequestSchedulerMobileTest, OnAppEnterForegroundRun) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
 
   TestingPrefServiceSimple prefs;
 
@@ -102,7 +102,7 @@ TEST(VariationsRequestSchedulerMobileTest, OnAppEnterForegroundRun) {
 }
 
 TEST(VariationsRequestSchedulerMobileTest, OnAppEnterForegroundOnStartup) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
 
   TestingPrefServiceSimple prefs;
 

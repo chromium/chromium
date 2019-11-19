@@ -6,44 +6,18 @@ package org.chromium.chrome.browser.compositor.layouts.phone.stack;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.IntDef;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.animation.FloatProperty;
-import org.chromium.chrome.browser.compositor.layouts.ChromeAnimation;
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * StackTab is used to keep track of a thumbnail's bitmap and position and to
  * draw itself onto the GL canvas at the desired Y Offset.
  * @VisibleForTesting
  */
-public class StackTab implements ChromeAnimation.Animatable {
-    /**
-     * Properties that can be animated by using a
-     * {@link org.chromium.chrome.browser.compositor.layouts.ChromeAnimation.Animatable}.
-     */
-    @IntDef({Property.SCALE, Property.SCROLL_OFFSET, Property.ALPHA, Property.X_IN_STACK_INFLUENCE,
-            Property.X_IN_STACK_OFFSET, Property.X_OUT_OF_STACK, Property.Y_IN_STACK_INFLUENCE,
-            Property.Y_IN_STACK_OFFSET, Property.Y_OUT_OF_STACK, Property.DISCARD_AMOUNT})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Property {
-        int SCALE = 0;
-        int SCROLL_OFFSET = 1;
-        int ALPHA = 2;
-        int X_IN_STACK_INFLUENCE = 3;
-        int X_IN_STACK_OFFSET = 4;
-        int X_OUT_OF_STACK = 5;
-        int Y_IN_STACK_INFLUENCE = 6;
-        int Y_IN_STACK_OFFSET = 7;
-        int Y_OUT_OF_STACK = 8;
-        int DISCARD_AMOUNT = 9;
-    }
-
+public class StackTab {
     // Cached values from values/dimens.xml
     public static float sStackedTabVisibleSize; // stacked_tab_visible_size
     public static float sStackBufferWidth; // stack_buffer_width
@@ -90,6 +64,31 @@ public class StackTab implements ChromeAnimation.Animatable {
 
     private LayoutTab mLayoutTab;
 
+    public static final FloatProperty<StackTab> DISCARD_AMOUNT =
+            new FloatProperty<StackTab>("DISCARD_AMOUNT") {
+                @Override
+                public void setValue(StackTab layoutTab, float v) {
+                    layoutTab.setDiscardAmount(v);
+                }
+
+                @Override
+                public Float get(StackTab layoutTab) {
+                    return layoutTab.getDiscardAmount();
+                }
+            };
+
+    public static final FloatProperty<StackTab> SCALE = new FloatProperty<StackTab>("SCALE") {
+        @Override
+        public void setValue(StackTab layoutTab, float v) {
+            layoutTab.setScale(v);
+        }
+
+        @Override
+        public Float get(StackTab layoutTab) {
+            return layoutTab.getScale();
+        }
+    };
+
     public static final FloatProperty<StackTab> SCROLL_OFFSET =
             new FloatProperty<StackTab>("SCROLL_OFFSET") {
                 @Override
@@ -100,6 +99,58 @@ public class StackTab implements ChromeAnimation.Animatable {
                 @Override
                 public Float get(StackTab layoutTab) {
                     return layoutTab.getScrollOffset();
+                }
+            };
+
+    public static final FloatProperty<StackTab> X_IN_STACK_INFLUENCE =
+            new FloatProperty<StackTab>("X_IN_STACK_INFLUENCE") {
+                @Override
+                public void setValue(StackTab layoutTab, float v) {
+                    layoutTab.setXInStackInfluence(v);
+                }
+
+                @Override
+                public Float get(StackTab layoutTab) {
+                    return layoutTab.getXInStackInfluence();
+                }
+            };
+
+    public static final FloatProperty<StackTab> X_IN_STACK_OFFSET =
+            new FloatProperty<StackTab>("X_IN_STACK_OFFSET") {
+                @Override
+                public void setValue(StackTab layoutTab, float v) {
+                    layoutTab.setXInStackOffset(v);
+                }
+
+                @Override
+                public Float get(StackTab layoutTab) {
+                    return layoutTab.getXInStackOffset();
+                }
+            };
+
+    public static final FloatProperty<StackTab> Y_IN_STACK_INFLUENCE =
+            new FloatProperty<StackTab>("Y_IN_STACK_INFLUENCE") {
+                @Override
+                public void setValue(StackTab layoutTab, float v) {
+                    layoutTab.setYInStackInfluence(v);
+                }
+
+                @Override
+                public Float get(StackTab layoutTab) {
+                    return layoutTab.getYInStackInfluence();
+                }
+            };
+
+    public static final FloatProperty<StackTab> Y_IN_STACK_OFFSET =
+            new FloatProperty<StackTab>("Y_IN_STACK_OFFSET") {
+                @Override
+                public void setValue(StackTab layoutTab, float v) {
+                    layoutTab.setYInStackOffset(v);
+                }
+
+                @Override
+                public Float get(StackTab layoutTab) {
+                    return layoutTab.getYInStackOffset();
                 }
             };
 
@@ -457,50 +508,4 @@ public class StackTab implements ChromeAnimation.Animatable {
     public int getOrderSortingValue() {
         return mOrderSortingValue;
     }
-
-    /**
-     * Callback for
-     * {@link org.chromium.chrome.browser.compositor.layouts.ChromeAnimation.Animatable}
-     *
-     * @param prop The property to set
-     * @param val The value to set it to
-     */
-    @Override
-    public void setProperty(@Property int prop, float val) {
-        switch (prop) {
-            case Property.SCALE:
-                setScale(val);
-                break;
-            case Property.SCROLL_OFFSET:
-                setScrollOffset(val);
-                break;
-            case Property.ALPHA:
-                setAlpha(val);
-                break;
-            case Property.X_IN_STACK_INFLUENCE:
-                setXInStackInfluence(val);
-                break;
-            case Property.X_IN_STACK_OFFSET:
-                setXInStackOffset(val);
-                break;
-            case Property.X_OUT_OF_STACK:
-                setXOutOfStack(val);
-                break;
-            case Property.Y_IN_STACK_INFLUENCE:
-                setYInStackInfluence(val);
-                break;
-            case Property.Y_IN_STACK_OFFSET:
-                setYInStackOffset(val);
-                break;
-            case Property.Y_OUT_OF_STACK:
-                setYOutOfStack(val);
-                break;
-            case Property.DISCARD_AMOUNT:
-                setDiscardAmount(val);
-                break;
-        }
-    }
-
-    @Override
-    public void onPropertyAnimationFinished(@Property int prop) {}
 }

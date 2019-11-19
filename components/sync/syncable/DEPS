@@ -2,6 +2,7 @@ include_rules = [
   "+components/sync/base",
   "+components/sync/engine",
   "+components/sync/model",
+  "+components/sync/nigori",
   "+components/sync/protocol",
   "+components/sync/test",
   "+net/base/escape.h",

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 693 tests; 640 PASS, 53 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 686 tests; 653 PASS, 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS align-content (type: discrete) has testInterpolation function
 PASS align-content uses discrete animation when animating between "flex-start" and "flex-end" with linear easing
@@ -38,8 +38,8 @@ PASS background-clip uses discrete animation when animating between "padding-box
 PASS background-clip uses discrete animation when animating between "padding-box" and "content-box" with keyframe easing
 PASS background-image (type: discrete) has testInterpolation function
 FAIL background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.499)"
-FAIL background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.427878)"
-FAIL background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.427878)"
+FAIL background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.428259)"
+FAIL background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.428259)"
 PASS background-origin (type: discrete) has testInterpolation function
 PASS background-origin uses discrete animation when animating between "padding-box" and "content-box" with linear easing
 PASS background-origin uses discrete animation when animating between "padding-box" and "content-box" with effect easing
@@ -66,26 +66,14 @@ PASS border-collapse (type: discrete) has testInterpolation function
 PASS border-collapse uses discrete animation when animating between "collapse" and "separate" with linear easing
 PASS border-collapse uses discrete animation when animating between "collapse" and "separate" with effect easing
 PASS border-collapse uses discrete animation when animating between "collapse" and "separate" with keyframe easing
-PASS border-image-outset (type: discrete) has testInterpolation function
-FAIL border-image-outset uses discrete animation when animating between "1 2 3 4" and "5 6 7 8" with linear easing assert_equals: The value should be 1 2 3 4 at 499ms expected "1 2 3 4" but got "2.996 3.996 4.996 5.996"
-FAIL border-image-outset uses discrete animation when animating between "1 2 3 4" and "5 6 7 8" with effect easing assert_equals: The value should be 1 2 3 4 at 940ms expected "1 2 3 4" but got "2.71151 3.71151 4.71151 5.71151"
-FAIL border-image-outset uses discrete animation when animating between "1 2 3 4" and "5 6 7 8" with keyframe easing assert_equals: The value should be 1 2 3 4 at 940ms expected "1 2 3 4" but got "2.71151 3.71151 4.71151 5.71151"
 PASS border-image-repeat (type: discrete) has testInterpolation function
 PASS border-image-repeat uses discrete animation when animating between "stretch repeat" and "round space" with linear easing
 PASS border-image-repeat uses discrete animation when animating between "stretch repeat" and "round space" with effect easing
 PASS border-image-repeat uses discrete animation when animating between "stretch repeat" and "round space" with keyframe easing
-PASS border-image-slice (type: discrete) has testInterpolation function
-FAIL border-image-slice uses discrete animation when animating between "1 2 3 4" and "5 6 7 8" with linear easing assert_equals: The value should be 1 2 3 4 at 499ms expected "1 2 3 4" but got "2.996 3.996 4.996 5.996"
-FAIL border-image-slice uses discrete animation when animating between "1 2 3 4" and "5 6 7 8" with effect easing assert_equals: The value should be 1 2 3 4 at 940ms expected "1 2 3 4" but got "2.71151 3.71151 4.71151 5.71151"
-FAIL border-image-slice uses discrete animation when animating between "1 2 3 4" and "5 6 7 8" with keyframe easing assert_equals: The value should be 1 2 3 4 at 940ms expected "1 2 3 4" but got "2.71151 3.71151 4.71151 5.71151"
 PASS border-image-source (type: discrete) has testInterpolation function
 FAIL border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.499)"
-FAIL border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.427878)"
-FAIL border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.427878)"
-PASS border-image-width (type: discrete) has testInterpolation function
-FAIL border-image-width uses discrete animation when animating between "1 2 3 4" and "5 6 7 8" with linear easing assert_equals: The value should be 1 2 3 4 at 499ms expected "1 2 3 4" but got "2.996 3.996 4.996 5.996"
-FAIL border-image-width uses discrete animation when animating between "1 2 3 4" and "5 6 7 8" with effect easing assert_equals: The value should be 1 2 3 4 at 940ms expected "1 2 3 4" but got "2.71151 3.71151 4.71151 5.71151"
-FAIL border-image-width uses discrete animation when animating between "1 2 3 4" and "5 6 7 8" with keyframe easing assert_equals: The value should be 1 2 3 4 at 940ms expected "1 2 3 4" but got "2.71151 3.71151 4.71151 5.71151"
+FAIL border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.428259)"
+FAIL border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.428259)"
 PASS border-left-color (type: color) has testInterpolation function
 PASS border-left-color supports animating as color of rgb()
 PASS border-left-color supports animating as color of #RGB
@@ -224,10 +212,6 @@ PASS column-width (type: discrete) has testInterpolation function
 PASS column-width uses discrete animation when animating between "auto" and "1px" with linear easing
 PASS column-width uses discrete animation when animating between "auto" and "1px" with effect easing
 PASS column-width uses discrete animation when animating between "auto" and "1px" with keyframe easing
-PASS content (type: discrete) has testInterpolation function
-PASS content uses discrete animation when animating between ""a"" and ""b"" with linear easing
-PASS content uses discrete animation when animating between ""a"" and ""b"" with effect easing
-PASS content uses discrete animation when animating between ""a"" and ""b"" with keyframe easing
 PASS counter-increment (type: discrete) has testInterpolation function
 PASS counter-increment uses discrete animation when animating between "ident-1 1" and "ident-2 2" with linear easing
 PASS counter-increment uses discrete animation when animating between "ident-1 1" and "ident-2 2" with effect easing
@@ -263,7 +247,7 @@ PASS filter: percentage or numeric-specifiable functions (number value)
 PASS filter: percentage or numeric-specifiable functions (percentage value)
 PASS filter: interpolate different length of filter-function-list with function which lacuna value is 1
 PASS filter: interpolate different length of filter-function-list with function which lacuna value is 0
-FAIL filter: interpolate different length of filter-function-list with drop-shadow function assert_equals: The value should be blur(5px) drop-shadow(rgba(85, 0, 170, 0.6) 5px 5px 5px at 500ms expected "blur(5px) drop-shadow(rgba(85, 0, 170, 0.6) 5px 5px 5px" but got "blur(5px) drop-shadow(rgba(0, 0, 255, 0.4) 5px 5px 5px)"
+PASS filter: interpolate different length of filter-function-list with drop-shadow function
 PASS filter: interpolate from none
 PASS filter: url function (interpoalte as discrete)
 PASS flex-basis (type: lengthPercentageOrCalc) has testInterpolation function
@@ -417,8 +401,8 @@ PASS lighting-color supports animating as color of rgba()
 PASS lighting-color supports animating as color of hsla()
 PASS list-style-image (type: discrete) has testInterpolation function
 FAIL list-style-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.499)"
-FAIL list-style-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.427878)"
-FAIL list-style-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.427878)"
+FAIL list-style-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.428259)"
+FAIL list-style-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.428259)"
 PASS list-style-position (type: discrete) has testInterpolation function
 PASS list-style-position uses discrete animation when animating between "inside" and "outside" with linear easing
 PASS list-style-position uses discrete animation when animating between "inside" and "outside" with effect easing
@@ -455,6 +439,15 @@ PASS object-fit (type: discrete) has testInterpolation function
 PASS object-fit uses discrete animation when animating between "fill" and "contain" with linear easing
 PASS object-fit uses discrete animation when animating between "fill" and "contain" with effect easing
 PASS object-fit uses discrete animation when animating between "fill" and "contain" with keyframe easing
+PASS offset-distance (type: lengthPercentageOrCalc) has testInterpolation function
+PASS offset-distance supports animating as a length
+PASS offset-distance supports animating as a length of rem
+PASS offset-distance supports animating as a percentage
+PASS offset-distance supports animating as combination units "px" and "%"
+PASS offset-distance supports animating as combination units "%" and "em"
+PASS offset-distance supports animating as combination units "em" and "rem"
+PASS offset-distance supports animating as combination units "px" and "calc"
+PASS offset-distance supports animating as a calc
 PASS order (type: integer) has testInterpolation function
 PASS order supports animating as an integer
 PASS outline-color (type: color) has testInterpolation function
@@ -548,13 +541,13 @@ PASS stop-opacity (type: opacity) has testInterpolation function
 PASS stop-opacity supports animating as a [0, 1] number
 PASS stroke-dasharray (type: dasharray) has testInterpolation function
 PASS stroke-dasharray supports animating as a percentage
-FAIL stroke-dasharray supports animating as a positive number assert_equals: The value should be 1.3 at 500ms expected "1.3" but got "1.3px"
-FAIL stroke-dasharray supports animating as a dasharray (mismatched length) assert_equals: The value should be 6, 12, 8, 12, 10, 6, 10, 16, 4, 8, 14, 10 at 500ms expected "6, 12, 8, 12, 10, 6, 10, 16, 4, 8, 14, 10" but got "6px, 12px, 8px, 12px, 10px, 6px, 10px, 16px, 4px, 8px, 14px, 10px"
-FAIL stroke-dasharray supports animating as a dasharray (mixed number and percentage) assert_equals: The value should be 4, 40%, 4, 6 at 500ms expected "4, 40%, 4, 6" but got "4px, 40%, 4px, 6px"
+PASS stroke-dasharray supports animating as a positive number
+PASS stroke-dasharray supports animating as a dasharray (mismatched length)
+PASS stroke-dasharray supports animating as a dasharray (mixed lengths and percentages)
 PASS stroke-dasharray (type: discrete) has testInterpolation function
-FAIL stroke-dasharray uses discrete animation when animating between "none" and "10, 20" with linear easing assert_equals: The value should be 10, 20 at 500ms expected "10, 20" but got "10px, 20px"
-FAIL stroke-dasharray uses discrete animation when animating between "none" and "10, 20" with effect easing assert_equals: The value should be 10, 20 at 960ms expected "10, 20" but got "10px, 20px"
-FAIL stroke-dasharray uses discrete animation when animating between "none" and "10, 20" with keyframe easing assert_equals: The value should be 10, 20 at 960ms expected "10, 20" but got "10px, 20px"
+PASS stroke-dasharray uses discrete animation when animating between "none" and "10px, 20px" with linear easing
+PASS stroke-dasharray uses discrete animation when animating between "none" and "10px, 20px" with effect easing
+PASS stroke-dasharray uses discrete animation when animating between "none" and "10px, 20px" with keyframe easing
 PASS stroke-linecap (type: discrete) has testInterpolation function
 PASS stroke-linecap uses discrete animation when animating between "round" and "square" with linear easing
 PASS stroke-linecap uses discrete animation when animating between "round" and "square" with effect easing
@@ -655,17 +648,17 @@ PASS transform-style uses discrete animation when animating between "flat" and "
 PASS transform-style uses discrete animation when animating between "flat" and "preserve-3d" with keyframe easing
 PASS rotate (type: rotateList) has testInterpolation function
 PASS rotate without rotation axes
-FAIL rotate with rotation axes assert_equals: The value should be y 45deg at 500ms expected "y 45deg" but got "0 1 0 45deg"
-FAIL rotate with rotation axes and range over 360 degrees assert_equals: The value should be y 180deg at 250ms expected "y 180deg" but got "0 1 0 180deg"
+PASS rotate with rotation axes
+PASS rotate with rotation axes and range over 360 degrees
 FAIL rotate with different rotation axes assert_approx_equals: expected 0 0.707107 0.707107 45deg but got 0 1 1 45deg: The value should be 0 0.707107 0.707107 45deg at 500ms but got 0 1 1 45deg expected 0.707107 +/- 0.0001 but got 1
 PASS translate (type: translateList) has testInterpolation function
 PASS translate with two unspecified values
 PASS translate with one unspecified value
 PASS translate with all three values specified
-FAIL translate with combination of percentages and lengths assert_equals: The value should be calc(0% + 200px) calc(25% - 50.5px) 200px at 500ms expected "calc(0% + 200px) calc(25% - 50.5px) 200px" but got "200px calc(25% + -50.5px) 200px"
+FAIL translate with combination of percentages and lengths assert_equals: The value should be calc(0% + 200px) calc(25% - 50.5px) 200px at 500ms expected "calc(0% + 200px) calc(25% - 50.5px) 200px" but got "200px calc(25% - 50.5px) 200px"
 PASS scale (type: scaleList) has testInterpolation function
-FAIL scale with two unspecified values assert_equals: The value should be 4 at 500ms expected "4" but got "4 1"
-FAIL scale with one unspecified value assert_equals: The value should be 4 at 500ms expected "4" but got "4 4"
+PASS scale with two unspecified values
+PASS scale with one unspecified value
 PASS scale
 PASS vector-effect (type: discrete) has testInterpolation function
 PASS vector-effect uses discrete animation when animating between "none" and "non-scaling-stroke" with linear easing

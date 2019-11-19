@@ -23,7 +23,7 @@ namespace test {
 // signature `void(CallbackArgs...)` can be invoked on.
 //
 // Example usage:
-//   base::test::ScopedTaskEnvironment task_environment;
+//   base::test::TaskEnvironment task_environment;
 //   TestCallbackReceiver<int> callback_receiver;
 //
 //   // Manufacture the base::OnceCallback whose invovcation will be received

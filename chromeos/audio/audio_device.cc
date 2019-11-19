@@ -18,11 +18,6 @@ namespace {
 // Get the priority for a particular device type. The priority returned
 // will be between 0 to 3, the higher number meaning a higher priority.
 uint8_t GetDevicePriority(AudioDeviceType type, bool is_input) {
-  // Lower the priority of bluetooth mic to prevent unexpected bad eperience
-  // to user because of bluetooth audio profile switching. Make priority to
-  // zero so this mic will never be automatically chosen.
-  if (type == AUDIO_TYPE_BLUETOOTH && is_input)
-    return 0;
   switch (type) {
     case AUDIO_TYPE_HEADPHONE:
     case AUDIO_TYPE_LINEOUT:
@@ -36,6 +31,10 @@ uint8_t GetDevicePriority(AudioDeviceType type, bool is_input) {
     case AUDIO_TYPE_INTERNAL_MIC:
     case AUDIO_TYPE_FRONT_MIC:
       return 1;
+    // Lower the priority of bluetooth mic to prevent unexpected bad eperience
+    // to user because of bluetooth audio profile switching. Make priority to
+    // zero so this mic will never be automatically chosen.
+    case AUDIO_TYPE_BLUETOOTH_NB_MIC:
     // Rear mic should have priority lower than front mic to prevent poor
     // quality input caused by accidental selecting to rear side mic.
     case AUDIO_TYPE_REAR_MIC:
@@ -62,6 +61,8 @@ std::string AudioDevice::GetTypeString(AudioDeviceType type) {
       return "USB";
     case AUDIO_TYPE_BLUETOOTH:
       return "BLUETOOTH";
+    case AUDIO_TYPE_BLUETOOTH_NB_MIC:
+      return "BLUETOOTH_NB_MIC";
     case AUDIO_TYPE_HDMI:
       return "HDMI";
     case AUDIO_TYPE_INTERNAL_SPEAKER:
@@ -101,6 +102,8 @@ AudioDeviceType AudioDevice::GetAudioType(
     return AUDIO_TYPE_REAR_MIC;
   else if (node_type.find("KEYBOARD_MIC") != std::string::npos)
     return AUDIO_TYPE_KEYBOARD_MIC;
+  else if (node_type.find("BLUETOOTH_NB_MIC") != std::string::npos)
+    return AUDIO_TYPE_BLUETOOTH_NB_MIC;
   else if (node_type.find("MIC") != std::string::npos)
     return AUDIO_TYPE_MIC;
   else if (node_type.find("USB") != std::string::npos)
@@ -190,10 +193,20 @@ bool AudioDevice::IsExternalDevice() const {
     return false;
 
   if (is_input) {
-    return (type != AUDIO_TYPE_INTERNAL_MIC && type != AUDIO_TYPE_FRONT_MIC &&
-            type != AUDIO_TYPE_REAR_MIC);
+    return !IsInternalMic();
   } else {
     return (type != AUDIO_TYPE_INTERNAL_SPEAKER);
+  }
+}
+
+bool AudioDevice::IsInternalMic() const {
+  switch (type) {
+    case AUDIO_TYPE_INTERNAL_MIC:
+    case AUDIO_TYPE_FRONT_MIC:
+    case AUDIO_TYPE_REAR_MIC:
+      return true;
+    default:
+      return false;
   }
 }
 

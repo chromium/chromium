@@ -56,7 +56,7 @@ BASE_EXPORT void RecordAction(const UserMetricsAction& action);
 BASE_EXPORT void RecordComputedAction(const std::string& action);
 
 // Called with the action string.
-typedef Callback<void(const std::string&)> ActionCallback;
+using ActionCallback = RepeatingCallback<void(const std::string&)>;
 
 // Add/remove action callbacks (see above).
 // These functions must be called after the task runner has been set with

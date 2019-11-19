@@ -5,6 +5,8 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_SAFE_BROWSING_AW_URL_CHECKER_DELEGATE_IMPL_H_
 #define ANDROID_WEBVIEW_BROWSER_SAFE_BROWSING_AW_URL_CHECKER_DELEGATE_IMPL_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/browser/url_checker_delegate.h"

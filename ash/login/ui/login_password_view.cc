@@ -10,6 +10,7 @@
 #include "ash/login/ui/login_button.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/public/cpp/login_constants.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -17,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -124,31 +126,31 @@ struct IconBundle {
   const int num_frames = 0;
 };
 
-// Construct an IconBundle instance for a given mojom::EasyUnlockIconId value.
-IconBundle GetEasyUnlockResources(mojom::EasyUnlockIconId id) {
+// Construct an IconBundle instance for a given EasyUnlockIconId value.
+IconBundle GetEasyUnlockResources(EasyUnlockIconId id) {
   switch (id) {
-    case mojom::EasyUnlockIconId::NONE:
+    case EasyUnlockIconId::NONE:
       break;
-    case mojom::EasyUnlockIconId::HARDLOCKED:
+    case EasyUnlockIconId::HARDLOCKED:
       return IconBundle(IDR_EASY_UNLOCK_HARDLOCKED,
                         IDR_EASY_UNLOCK_HARDLOCKED_HOVER,
                         IDR_EASY_UNLOCK_HARDLOCKED_PRESSED);
-    case mojom::EasyUnlockIconId::LOCKED:
+    case EasyUnlockIconId::LOCKED:
       return IconBundle(IDR_EASY_UNLOCK_LOCKED, IDR_EASY_UNLOCK_LOCKED_HOVER,
                         IDR_EASY_UNLOCK_LOCKED_PRESSED);
-    case mojom::EasyUnlockIconId::LOCKED_TO_BE_ACTIVATED:
+    case EasyUnlockIconId::LOCKED_TO_BE_ACTIVATED:
       return IconBundle(IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED,
                         IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_HOVER,
                         IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_PRESSED);
-    case mojom::EasyUnlockIconId::LOCKED_WITH_PROXIMITY_HINT:
+    case EasyUnlockIconId::LOCKED_WITH_PROXIMITY_HINT:
       return IconBundle(IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT,
                         IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_HOVER,
                         IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_PRESSED);
-    case mojom::EasyUnlockIconId::UNLOCKED:
+    case EasyUnlockIconId::UNLOCKED:
       return IconBundle(IDR_EASY_UNLOCK_UNLOCKED,
                         IDR_EASY_UNLOCK_UNLOCKED_HOVER,
                         IDR_EASY_UNLOCK_UNLOCKED_PRESSED);
-    case mojom::EasyUnlockIconId::SPINNER:
+    case EasyUnlockIconId::SPINNER:
       return IconBundle(IDR_EASY_UNLOCK_SPINNER,
                         base::TimeDelta::FromSeconds(2), 45 /*num_frames*/);
   }
@@ -186,7 +188,7 @@ class LoginPasswordView::EasyUnlockIcon : public views::Button,
                    base::Unretained(this)));
   }
 
-  void SetEasyUnlockIcon(mojom::EasyUnlockIconId icon_id,
+  void SetEasyUnlockIcon(EasyUnlockIconId icon_id,
                          const base::string16& accessibility_label) {
     bool changed_states = icon_id != icon_id_;
     icon_id_ = icon_id;
@@ -245,7 +247,7 @@ class LoginPasswordView::EasyUnlockIcon : public views::Button,
     if (!GetWidget() || !GetWidget()->GetRootView())
       return;
 
-    if (icon_id_ == mojom::EasyUnlockIconId::NONE)
+    if (icon_id_ == EasyUnlockIconId::NONE)
       return;
 
     IconBundle resources = GetEasyUnlockResources(icon_id_);
@@ -281,7 +283,7 @@ class LoginPasswordView::EasyUnlockIcon : public views::Button,
   }
 
   // Icon we are currently displaying.
-  mojom::EasyUnlockIconId icon_id_ = mojom::EasyUnlockIconId::NONE;
+  EasyUnlockIconId icon_id_ = EasyUnlockIconId::NONE;
 
   // View which renders the icon.
   AnimatedRoundedImageView* icon_;
@@ -331,19 +333,19 @@ void LoginPasswordView::TestApi::set_immediately_hover_easy_unlock_icon() {
 LoginPasswordView::LoginPasswordView() {
   Shell::Get()->ime_controller()->AddObserver(this);
 
-  auto* root_layout = SetLayoutManager(
-      std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical));
+  auto* root_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
   root_layout->set_main_axis_alignment(
-      views::BoxLayout::MAIN_AXIS_ALIGNMENT_CENTER);
+      views::BoxLayout::MainAxisAlignment::kCenter);
 
   password_row_ = new NonAccessibleView();
 
   auto layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kHorizontal,
+      views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets(kMarginAboveBelowPasswordIconsDp, 0));
-  layout->set_main_axis_alignment(views::BoxLayout::MAIN_AXIS_ALIGNMENT_CENTER);
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_CENTER);
+      views::BoxLayout::CrossAxisAlignment::kCenter);
   auto* layout_ptr = password_row_->SetLayoutManager(std::move(layout));
   AddChildView(password_row_);
 
@@ -404,8 +406,8 @@ LoginPasswordView::LoginPasswordView() {
           kLockScreenArrowIcon, kSubmitButtonSizeDp,
           SkColorSetA(login_constants::kButtonEnabledColor,
                       login_constants::kButtonDisabledAlpha)));
-  submit_button_->SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_ASH_LOGIN_POD_SUBMIT_BUTTON_ACCESSIBLE_NAME));
+  submit_button_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   password_row_->AddChildView(submit_button_);
 
   // Separator on bottom.
@@ -445,22 +447,20 @@ void LoginPasswordView::SetEnabledOnEmptyPassword(bool enabled) {
 }
 
 void LoginPasswordView::SetEasyUnlockIcon(
-    mojom::EasyUnlockIconId id,
+    EasyUnlockIconId id,
     const base::string16& accessibility_label) {
   // Update icon.
   easy_unlock_icon_->SetEasyUnlockIcon(id, accessibility_label);
 
   // Update icon visiblity.
-  bool has_icon = id != mojom::EasyUnlockIconId::NONE;
+  bool has_icon = id != EasyUnlockIconId::NONE;
   easy_unlock_icon_->SetVisible(has_icon);
   easy_unlock_right_margin_->SetVisible(has_icon);
   password_row_->Layout();
 }
 
-void LoginPasswordView::UpdateForUser(const mojom::LoginUserInfoPtr& user) {
-  textfield_->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_ASH_LOGIN_POD_PASSWORD_FIELD_ACCESSIBLE_NAME,
-      base::UTF8ToUTF16(user->basic_user_info->display_email)));
+void LoginPasswordView::SetAccessibleName(const base::string16& name) {
+  textfield_->SetAccessibleName(name);
 }
 
 void LoginPasswordView::SetFocusEnabledForChildViews(bool enable) {
@@ -472,7 +472,7 @@ void LoginPasswordView::Clear() {
   textfield_->SetText(base::string16());
   // |ContentsChanged| won't be called by |Textfield| if the text is changed
   // by |Textfield::SetText()|.
-  ContentsChanged(textfield_, textfield_->text());
+  ContentsChanged(textfield_, textfield_->GetText());
 }
 
 void LoginPasswordView::InsertNumber(int value) {
@@ -493,7 +493,7 @@ void LoginPasswordView::Backspace() {
 
 void LoginPasswordView::SetPlaceholderText(
     const base::string16& placeholder_text) {
-  textfield_->set_placeholder_text(placeholder_text);
+  textfield_->SetPlaceholderText(placeholder_text);
   SchedulePaint();
 }
 
@@ -519,7 +519,7 @@ void LoginPasswordView::RequestFocus() {
 
 bool LoginPasswordView::OnKeyPressed(const ui::KeyEvent& event) {
   if (event.key_code() == ui::KeyboardCode::VKEY_RETURN &&
-      submit_button_->enabled()) {
+      submit_button_->GetEnabled()) {
     SubmitPassword();
     return true;
   }
@@ -544,7 +544,7 @@ void LoginPasswordView::ContentsChanged(views::Textfield* sender,
 bool LoginPasswordView::HandleKeyEvent(views::Textfield* sender,
                                        const ui::KeyEvent& key_event) {
   // Treat the password field as normal if it has text
-  if (!textfield_->text().empty())
+  if (!textfield_->GetText().empty())
     return false;
 
   if (key_event.type() != ui::ET_KEY_PRESSED)
@@ -568,8 +568,9 @@ bool LoginPasswordView::HandleKeyEvent(views::Textfield* sender,
 }
 
 void LoginPasswordView::UpdateUiState() {
-  bool is_enabled = !textfield_->read_only() &&
-                    (enabled_on_empty_password_ || !textfield_->text().empty());
+  bool is_enabled =
+      !textfield_->GetReadOnly() &&
+      (enabled_on_empty_password_ || !textfield_->GetText().empty());
   submit_button_->SetEnabled(is_enabled);
   SkColor color = is_enabled
                       ? login_constants::kButtonEnabledColor
@@ -586,10 +587,10 @@ void LoginPasswordView::OnCapsLockChanged(bool enabled) {
 }
 
 void LoginPasswordView::SubmitPassword() {
-  DCHECK(submit_button_->enabled());
-  if (textfield_->read_only())
+  DCHECK(submit_button_->GetEnabled());
+  if (textfield_->GetReadOnly())
     return;
-  on_submit_.Run(textfield_->text());
+  on_submit_.Run(textfield_->GetText());
 }
 
 }  // namespace ash

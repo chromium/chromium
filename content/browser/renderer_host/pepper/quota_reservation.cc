@@ -11,10 +11,10 @@
 #include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/fileapi/file_system_operation_runner.h"
-#include "storage/browser/fileapi/quota/open_file_handle.h"
-#include "storage/browser/fileapi/quota/quota_reservation.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/quota/open_file_handle.h"
+#include "storage/browser/file_system/quota/quota_reservation.h"
+#include "storage/common/file_system/file_system_util.h"
 
 namespace content {
 
@@ -121,7 +121,7 @@ void QuotaReservation::GotReservedQuota(const ReserveQuotaCallback& callback,
     file_sizes[it->first] = it->second->GetMaxWrittenOffset();
 
   if (file_system_context_.get()) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(callback, quota_reservation_->remaining_quota(),
                        file_sizes));

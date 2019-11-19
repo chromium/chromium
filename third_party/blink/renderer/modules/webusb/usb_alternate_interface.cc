@@ -47,8 +47,14 @@ USBAlternateInterface::Info() const {
 
 HeapVector<Member<USBEndpoint>> USBAlternateInterface::endpoints() const {
   HeapVector<Member<USBEndpoint>> endpoints;
-  for (wtf_size_t i = 0; i < Info().endpoints.size(); ++i)
-    endpoints.push_back(USBEndpoint::Create(this, i));
+  for (wtf_size_t i = 0; i < Info().endpoints.size(); ++i) {
+    // Filter out control endpoints because there is no coresponding enum value
+    // defined in WebUSB.
+    if (Info().endpoints[i]->type !=
+        device::mojom::blink::UsbTransferType::CONTROL) {
+      endpoints.push_back(USBEndpoint::Create(this, i));
+    }
+  }
   return endpoints;
 }
 

@@ -4,9 +4,10 @@
 
 /**
  * Mock class for Background.
- * @constructor
  */
-function MockBackground() {
-  this.fileOperationManager = new MockFileOperationManager();
-  this.progressCenter = new MockProgressCenter();
+class MockBackground {
+  constructor() {
+    this.fileOperationManager = new MockFileOperationManager();
+    this.progressCenter = new MockProgressCenter();
+  }
 }

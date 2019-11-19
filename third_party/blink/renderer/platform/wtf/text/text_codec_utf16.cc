@@ -27,7 +27,6 @@
 
 #include <memory>
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -150,9 +149,9 @@ String TextCodecUTF16::Decode(const char* bytes,
   return String::Adopt(buffer);
 }
 
-CString TextCodecUTF16::Encode(const UChar* characters,
-                               wtf_size_t length,
-                               UnencodableHandling) {
+std::string TextCodecUTF16::Encode(const UChar* characters,
+                                   wtf_size_t length,
+                                   UnencodableHandling) {
   // We need to be sure we can double the length without overflowing.
   // Since the passed-in length is the length of an actual existing
   // character buffer, each character is two bytes, and we know
@@ -161,47 +160,42 @@ CString TextCodecUTF16::Encode(const UChar* characters,
   // and there's no need for a runtime check.
   DCHECK_LE(length, std::numeric_limits<wtf_size_t>::max() / 2);
 
-  char* bytes;
-  CString result = CString::CreateUninitialized(length * 2, bytes);
+  std::string result(length * 2, '\0');
 
-  // FIXME: CString is not a reasonable data structure for encoded UTF-16, which
-  // will have null characters inside it. Perhaps the result of encode should
-  // not be a CString.
   if (little_endian_) {
     for (wtf_size_t i = 0; i < length; ++i) {
       UChar c = characters[i];
-      bytes[i * 2] = static_cast<char>(c);
-      bytes[i * 2 + 1] = c >> 8;
+      result[i * 2] = static_cast<char>(c);
+      result[i * 2 + 1] = c >> 8;
     }
   } else {
     for (wtf_size_t i = 0; i < length; ++i) {
       UChar c = characters[i];
-      bytes[i * 2] = c >> 8;
-      bytes[i * 2 + 1] = static_cast<char>(c);
+      result[i * 2] = c >> 8;
+      result[i * 2 + 1] = static_cast<char>(c);
     }
   }
 
   return result;
 }
 
-CString TextCodecUTF16::Encode(const LChar* characters,
-                               wtf_size_t length,
-                               UnencodableHandling) {
+std::string TextCodecUTF16::Encode(const LChar* characters,
+                                   wtf_size_t length,
+                                   UnencodableHandling) {
   // In the LChar case, we do actually need to perform this check in release. :)
   CHECK_LE(length, std::numeric_limits<wtf_size_t>::max() / 2);
 
-  char* bytes;
-  CString result = CString::CreateUninitialized(length * 2, bytes);
+  std::string result(length * 2, '\0');
 
   if (little_endian_) {
     for (wtf_size_t i = 0; i < length; ++i) {
-      bytes[i * 2] = characters[i];
-      bytes[i * 2 + 1] = 0;
+      result[i * 2] = characters[i];
+      result[i * 2 + 1] = 0;
     }
   } else {
     for (wtf_size_t i = 0; i < length; ++i) {
-      bytes[i * 2] = 0;
-      bytes[i * 2 + 1] = characters[i];
+      result[i * 2] = 0;
+      result[i * 2 + 1] = characters[i];
     }
   }
 

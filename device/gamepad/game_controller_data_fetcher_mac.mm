@@ -6,8 +6,9 @@
 
 #include <string.h>
 
+#include "base/mac/mac_util.h"
 #include "base/strings/string16.h"
-#include "base/strings/string_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
 
@@ -19,12 +20,44 @@ namespace {
 
 const int kGCControllerPlayerIndexCount = 4;
 
-void CopyNSStringAsUTF16LittleEndian(NSString* src,
-                                     UChar* dest,
-                                     size_t dest_len) {
-  NSData* as16 = [src dataUsingEncoding:NSUTF16LittleEndianStringEncoding];
-  memset(dest, 0, dest_len);
-  [as16 getBytes:dest length:dest_len - sizeof(UChar)];
+// Returns true if |controller| should be enumerated by this data fetcher.
+bool IsSupported(GCController* controller) {
+  // We only support the extendedGamepad profile, the basic gamepad profile
+  // appears to only be for iOS devices.
+  if (![controller extendedGamepad])
+    return false;
+
+  // In OS X 10.15, Game Controller API added support for Xbox Wireless
+  // Controller and Dualshock 4. A productCategory property was added to
+  // GCController to allow applications to detect these new categories of
+  // devices.
+  //
+  // In Chrome for Mac, Xbox Wireless Controller and Dualshock 4 are
+  // enumerated by XboxDataFetcher and GamepadPlatformDataFetcherMac,
+  // respectively. If GameControllerDataFetcherMac also enumerates these
+  // devices, it will add duplicate gamepads to the gamepad list.
+  //
+  // On macOS 10.15 or later, use the productCategory property to distinguish
+  // Xbox One and Dualshock 4 and block them from being enumerated by this
+  // data fetcher. On 10.14 or earlier, compare the |vendor_name| against
+  // known values for these devices. Once Chrome no longer supports 10.14, the
+  // |vendor_name| path may be removed.
+  if (base::mac::IsAtLeastOS10_15()) {
+    NSString* product_category =
+        [controller performSelector:@selector(productCategory)];
+    if ([product_category isEqualToString:@"Xbox One"])
+      return false;
+    if ([product_category isEqualToString:@"DualShock 4"])
+      return false;
+  } else {
+    NSString* vendor_name = [controller vendorName];
+    if ([vendor_name isEqualToString:@"Xbox Wireless Controller"])
+      return false;
+    if ([vendor_name isEqualToString:@"Wireless Controller"])
+      return false;
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -45,9 +78,7 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
   bool player_indices[Gamepads::kItemsLengthCap];
   std::fill(player_indices, player_indices + Gamepads::kItemsLengthCap, false);
   for (GCController* controller in controllers) {
-    // We only support the extendedGamepad profile, the basic gamepad profile
-    // appears to only be for iOS devices.
-    if (![controller extendedGamepad])
+    if (!IsSupported(controller))
       continue;
 
     int player_index = [controller playerIndex];
@@ -63,9 +94,7 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
   // In the second pass, assign indices to newly connected gamepads and fetch
   // the gamepad state.
   for (GCController* controller in controllers) {
-    auto extended_gamepad = [controller extendedGamepad];
-
-    if (!extended_gamepad)
+    if (!IsSupported(controller))
       continue;
 
     int player_index = [controller playerIndex];
@@ -90,11 +119,9 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
       NSString* ident =
           [NSString stringWithFormat:@"%@ (STANDARD GAMEPAD)",
                                      vendorName ? vendorName : @"Unknown"];
-      CopyNSStringAsUTF16LittleEndian(ident, pad.id, sizeof(pad.id));
 
-      CopyNSStringAsUTF16LittleEndian(@"standard", pad.mapping,
-                                      sizeof(pad.mapping));
-
+      pad.mapping = GamepadMapping::kStandard;
+      pad.SetID(base::SysNSStringToUTF16(ident));
       pad.axes_length = AXIS_INDEX_COUNT;
       pad.buttons_length = BUTTON_INDEX_COUNT - 1;
       pad.connected = true;
@@ -114,6 +141,7 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
 
     pad.timestamp = CurrentTimeInMicroseconds();
 
+    auto extended_gamepad = [controller extendedGamepad];
     pad.axes[AXIS_INDEX_LEFT_STICK_X] =
         [[[extended_gamepad leftThumbstick] xAxis] value];
     pad.axes[AXIS_INDEX_LEFT_STICK_Y] =

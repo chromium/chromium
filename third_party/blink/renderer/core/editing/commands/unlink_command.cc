@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/editing/commands/unlink_command.h"
 
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -40,7 +41,8 @@ void UnlinkCommand::DoApply(EditingState* editing_state) {
   if (!EndingSelection().IsRange())
     return;
 
-  RemoveStyledElement(HTMLAnchorElement::Create(GetDocument()), editing_state);
+  RemoveStyledElement(MakeGarbageCollected<HTMLAnchorElement>(GetDocument()),
+                      editing_state);
 }
 
 }  // namespace blink

@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.dependency_injection;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class is for overriding factories of Modules in tests.
+ * This class is for overriding factories of Modules in tests. See also ModuleOverridesRule.
  *
  * The chosen approach for substituting dagger bindings in integrational tests is to override
  * Modules, without touching Components. Substituting the entire structure of Components in each
@@ -32,7 +32,7 @@ public class ModuleFactoryOverrides {
     private static Map<Class<?>, Object> sOverrides;
 
     /** Override the Module factory of specified type. */
-    public static <T> void setOverride(Class<T> factoryClass, T override) {
+    static void setOverride(Class<?> factoryClass, Object override) {
         if (sOverrides == null) {
             sOverrides = new HashMap<>();
         }
@@ -40,7 +40,7 @@ public class ModuleFactoryOverrides {
     }
 
     /** Clear all overrides */
-    public static void clearOverrides() {
+    static void clearOverrides() {
         sOverrides = null;
     }
 

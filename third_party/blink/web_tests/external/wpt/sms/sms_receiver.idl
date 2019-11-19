@@ -1,0 +1,24 @@
+[SecureContext]
+interface mixin NavigatorSMS {
+  readonly attribute SMSReceiver sms;
+};
+
+Navigator includes NavigatorSMS;
+
+[
+  SecureContext,
+  Exposed=(Window,DedicatedWorker)]
+interface SMS {
+  readonly attribute DOMString content;
+};
+
+dictionary SMSReceiverOptions {
+  // TODO(b/976401): Implement abort controller.
+};
+
+[
+  SecureContext,
+  Exposed=Window
+] interface SMSReceiver {
+  Promise<SMS> receive(optional SMSReceiverOptions options);
+};

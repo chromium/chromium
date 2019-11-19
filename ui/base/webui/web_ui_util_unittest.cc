@@ -152,3 +152,16 @@ TEST(WebUIUtilTest, ParsePathAndImageSpec) {
   EXPECT_EQ(1.5f, factor);
   EXPECT_EQ(1, index);
 }
+
+TEST(WebUIUtilTest, GetPngDataUrl_Basic) {
+  // The input doesn't have to be a valid image.
+  std::vector<unsigned char> in = {1, 2, 3, 4};
+  std::string out = webui::GetPngDataUrl(in.data(), in.size());
+  EXPECT_EQ("data:image/png;base64,AQIDBA==", out);
+}
+
+TEST(WebUIUtilTest, GetPngDataUrl_EmptyInput) {
+  std::vector<unsigned char> in;
+  webui::GetPngDataUrl(in.data(), in.size());
+  // No crash.
+}

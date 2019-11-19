@@ -56,12 +56,13 @@ const CpuUarchTableEntry kCpuUarchTable[] = {
     {"06_5C", "Goldmont"},
     {"06_5E", "Skylake"},
     {"06_5F", "Goldmont"},    // Denverton
+    {"06_7A", "GoldmontPlus"},
     {"06_8E", "Kabylake"},
     {"06_9E", "Kabylake"},
     {"0F_03", "Prescott"},
     {"0F_04", "Prescott"},
     {"0F_06", "Presler"},
-    {"0F_70", "Excavator"},   // AMD Stoney Ridge
+    {"15_70", "Excavator"},   // AMD Stoney Ridge
 };
 
 const CpuUarchTableEntry* kCpuUarchTableEnd =
@@ -90,7 +91,8 @@ std::string GetCpuUarch(const CPUIdentity& cpuid) {
   auto* bound = std::lower_bound(internal::kCpuUarchTable,
                                  internal::kCpuUarchTableEnd, search_elem,
                                  internal::CpuUarchTableCmp);
-  if (bound->family_model != family_model)
+  if (bound == internal::kCpuUarchTableEnd ||
+      bound->family_model != family_model)
     return std::string();  // Unknown uarch
   return bound->uarch;
 }

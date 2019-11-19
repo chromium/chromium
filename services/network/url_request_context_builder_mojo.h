@@ -10,11 +10,14 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "build/build_config.h"
-#include "net/proxy_resolution/dhcp_pac_file_fetcher_factory.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/url_request_context_owner.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
+
+#if defined(OS_CHROMEOS)
+#include "services/network/public/mojom/dhcp_wpad_url_client.mojom.h"
+#endif  // defined(OS_CHROMEOS)
 
 namespace net {
 class HostResolver;
@@ -25,7 +28,6 @@ class URLRequestContext;
 }  // namespace net
 
 namespace network {
-
 // Specialization of URLRequestContextBuilder that can create a
 // ProxyResolutionService that uses a Mojo ProxyResolver. The consumer is
 // responsible for providing the proxy_resolver::mojom::ProxyResolverFactory.
@@ -37,16 +39,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
   URLRequestContextBuilderMojo();
   ~URLRequestContextBuilderMojo() override;
 
-  // Overrides default DhcpPacFileFetcherFactory. Ignored if no
-  // proxy_resolver::mojom::ProxyResolverFactory is provided.
-  void SetDhcpFetcherFactory(
-      std::unique_ptr<net::DhcpPacFileFetcherFactory> dhcp_fetcher_factory);
-
   // Sets Mojo factory used to create ProxyResolvers. If not set, falls back to
   // URLRequestContext's default behavior.
   void SetMojoProxyResolverFactory(
       proxy_resolver::mojom::ProxyResolverFactoryPtr
           mojo_proxy_resolver_factory);
+
+#if defined(OS_CHROMEOS)
+  void SetDhcpWpadUrlClient(
+      network::mojom::DhcpWpadUrlClientPtr dhcp_wpad_url_client);
+#endif  // defined(OS_CHROMEOS)
 
  private:
   std::unique_ptr<net::ProxyResolutionService> CreateProxyResolutionService(
@@ -56,10 +58,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextBuilderMojo
       net::NetworkDelegate* network_delegate,
       net::NetLog* net_log) override;
 
-  std::unique_ptr<net::DhcpPacFileFetcherFactory> dhcp_fetcher_factory_;
+  std::unique_ptr<net::DhcpPacFileFetcher> CreateDhcpPacFileFetcher(
+      net::URLRequestContext* context);
+
+#if defined(OS_CHROMEOS)
+  // If set, handles calls to get the PAC script URL from the browser process.
+  // Only used if |mojo_proxy_resolver_factory_| is set.
+  network::mojom::DhcpWpadUrlClientPtr dhcp_wpad_url_client_;
+#endif  // defined(OS_CHROMEOS)
 
   proxy_resolver::mojom::ProxyResolverFactoryPtr mojo_proxy_resolver_factory_;
-
   DISALLOW_COPY_AND_ASSIGN(URLRequestContextBuilderMojo);
 };
 

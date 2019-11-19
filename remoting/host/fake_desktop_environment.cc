@@ -15,7 +15,7 @@
 
 namespace remoting {
 
-FakeInputInjector::FakeInputInjector() : weak_factory_(this) {}
+FakeInputInjector::FakeInputInjector() {}
 FakeInputInjector::~FakeInputInjector() = default;
 
 void FakeInputInjector::Start(
@@ -57,9 +57,7 @@ void FakeScreenControls::SetScreenResolution(
 FakeDesktopEnvironment::FakeDesktopEnvironment(
     scoped_refptr<base::SingleThreadTaskRunner> capture_thread,
     const DesktopEnvironmentOptions& options)
-    : capture_thread_(std::move(capture_thread)),
-      options_(options),
-      weak_factory_(this) {}
+    : capture_thread_(std::move(capture_thread)), options_(options) {}
 
 FakeDesktopEnvironment::~FakeDesktopEnvironment() = default;
 

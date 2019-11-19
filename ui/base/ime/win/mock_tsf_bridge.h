@@ -12,6 +12,7 @@
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/ime/win/tsf_bridge.h"
+#include "ui/base/ime/win/tsf_text_store.h"
 
 namespace ui {
 
@@ -31,6 +32,8 @@ class MockTSFBridge : public TSFBridge {
   void RemoveInputMethodDelegate() override;
   Microsoft::WRL::ComPtr<ITfThreadMgr> GetThreadManager() override;
   TextInputClient* GetFocusedTextInputClient() const override;
+  bool IsInputLanguageCJK() override;
+  void SetInputPanelPolicy(bool input_panel_policy_manual) override;
 
   // Resets MockTSFBridge state including function call counter.
   void Reset();
@@ -80,6 +83,10 @@ class MockTSFBridge : public TSFBridge {
     return latest_text_input_type_;
   }
 
+  void SetTSFTextStoreForTesting(TSFTextStore* tsf_text_store) {
+    tsf_text_store_ = tsf_text_store;
+  }
+
  private:
   unsigned enable_ime_call_count_ = 0;
   unsigned disable_ime_call_count_ = 0;
@@ -94,6 +101,7 @@ class MockTSFBridge : public TSFBridge {
   HWND focused_window_ = nullptr;
   TextInputType latest_text_input_type_ = TEXT_INPUT_TYPE_NONE;
   Microsoft::WRL::ComPtr<ITfThreadMgr> thread_manager_;
+  TSFTextStore* tsf_text_store_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MockTSFBridge);
 };

@@ -7,9 +7,9 @@
 #include <string>
 
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/time/time.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -49,7 +49,7 @@ constexpr int kNotificationCheckDelayInSeconds = 2;
 ////////////////////////////////////////////////////////////////////////////////
 // MobileDataNotifications
 
-MobileDataNotifications::MobileDataNotifications() : weak_factory_(this) {
+MobileDataNotifications::MobileDataNotifications() {
   NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
   NetworkHandler::Get()->network_connection_handler()->AddObserver(this);
   UserManager::Get()->AddSessionStateObserver(this);
@@ -88,7 +88,7 @@ void MobileDataNotifications::ConnectFailed(const std::string& service_path,
 }
 
 void MobileDataNotifications::ActiveUserChanged(
-    const user_manager::User* active_user) {
+    user_manager::User* active_user) {
   ShowOptionalMobileDataNotification();
 }
 
@@ -144,7 +144,7 @@ void MobileDataNotifications::ShowOptionalMobileDataNotificationImpl(
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&MobileDataNotificationClicked,
                                   first_active_network->guid())),
-          ash::kNotificationMobileDataIcon,
+          kNotificationMobileDataIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
 
   SystemNotificationHelper::GetInstance()->Display(*notification);

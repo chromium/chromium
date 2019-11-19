@@ -16,6 +16,7 @@ import java.util.Map;
 public abstract class UrlResponseInfo {
     /**
      * Unmodifiable container of response headers or trailers.
+     * {@hide}.
      */
     public abstract static class HeaderBlock {
         /**

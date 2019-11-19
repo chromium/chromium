@@ -8,6 +8,9 @@
 #include "base/strings/stringprintf.h"
 #include "net/http/http_auth_challenge_tokenizer.h"
 #include "net/http/http_auth_scheme.h"
+#include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
+#include "net/log/net_log_with_source.h"
 
 namespace net {
 
@@ -19,7 +22,7 @@ bool ShouldRedactChallenge(HttpAuthChallengeTokenizer* challenge) {
   if (challenge->challenge_text().find(',') != std::string::npos)
     return false;
 
-  std::string scheme = base::ToLowerASCII(challenge->scheme());
+  std::string scheme = challenge->auth_scheme();
   // Invalid input.
   if (scheme.empty())
     return false;
@@ -41,7 +44,7 @@ std::string ElideHeaderValueForNetLog(NetLogCaptureMode capture_mode,
   std::string::const_iterator redact_end = value.begin();
 
   if (redact_begin == redact_end &&
-      !capture_mode.include_cookies_and_credentials()) {
+      !NetLogCaptureIncludesSensitive(capture_mode)) {
     if (base::EqualsCaseInsensitiveASCII(header, "set-cookie") ||
         base::EqualsCaseInsensitiveASCII(header, "set-cookie2") ||
         base::EqualsCaseInsensitiveASCII(header, "cookie") ||
@@ -68,6 +71,23 @@ std::string ElideHeaderValueForNetLog(NetLogCaptureMode capture_mode,
       base::StringPrintf("[%ld bytes were stripped]",
                          static_cast<long>(redact_end - redact_begin)) +
       std::string(redact_end, value.end());
+}
+
+NET_EXPORT void NetLogResponseHeaders(const NetLogWithSource& net_log,
+                                      NetLogEventType type,
+                                      const HttpResponseHeaders* headers) {
+  net_log.AddEvent(type, [&](NetLogCaptureMode capture_mode) {
+    return headers->NetLogParams(capture_mode);
+  });
+}
+
+void NetLogRequestHeaders(const NetLogWithSource& net_log,
+                          NetLogEventType type,
+                          const std::string& request_line,
+                          const HttpRequestHeaders* headers) {
+  net_log.AddEvent(type, [&](NetLogCaptureMode capture_mode) {
+    return headers->NetLogParams(request_line, capture_mode);
+  });
 }
 
 }  // namespace net

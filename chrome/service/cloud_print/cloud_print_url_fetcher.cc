@@ -15,7 +15,6 @@
 #include "chrome/service/cloud_print/cloud_print_token_store.h"
 #include "chrome/service/net/service_url_request_context_getter.h"
 #include "chrome/service/service_process.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/url_fetcher.h"
@@ -278,16 +277,13 @@ void CloudPrintURLFetcher::StartRequestHelper(
           })");
   request_ =
       net::URLFetcher::Create(0, url, request_type, this, traffic_annotation);
-  data_use_measurement::DataUseUserData::AttachToFetcher(
-      request_.get(), data_use_measurement::DataUseUserData::CLOUD_PRINT);
   request_->SetRequestContext(GetRequestContextGetter());
   // Since we implement our own retry logic, disable the retry in URLFetcher.
   request_->SetAutomaticallyRetryOn5xx(false);
   request_->SetMaxRetriesOn5xx(max_retries);
   delegate_ = delegate;
   SetupRequestHeaders();
-  request_->SetLoadFlags(net::LOAD_DO_NOT_SEND_COOKIES |
-                         net::LOAD_DO_NOT_SAVE_COOKIES);
+  request_->SetAllowCredentials(false);
   if (request_type == net::URLFetcher::POST) {
     request_->SetUploadData(post_data_mime_type, post_data);
     ReportUploadSize(type_, post_data.size());

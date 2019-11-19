@@ -1,0 +1,145 @@
+oncalls: {
+  name: "Chromium"
+  url: "https://build.chromium.org/p/chromium/sheriff.json"
+}
+oncalls: {
+  name: "Android"
+  url: "https://build.chromium.org/p/chromium/sheriff_android.json"
+}
+oncalls: {
+  name: "iOS"
+  url: "https://build.chromium.org/p/chromium/sheriff_ios.json"
+}
+oncalls: {
+  name: "CrOS MTV"
+  url: "https://build.chromium.org/p/chromium/sheriff_cros_mtv.json"
+}
+oncalls: {
+  name: "CrOS non-MTV"
+  url: "https://build.chromium.org/p/chromium/sheriff_cros_nonmtv.json"
+}
+oncalls: {
+  name: "ChromeOS Gardener"
+  url: "https://build.chromium.org/p/chromium/sheriff_cr_cros_gardeners.json"
+}
+oncalls: {
+  name: "GPU"
+  url: "https://build.chromium.org/p/chromium/sheriff_gpu.json"
+}
+oncalls: {
+  name: "Angle"
+  url: "https://build.chromium.org/p/chromium/sheriff_angle.json"
+}
+oncalls: {
+  name: "Perf"
+  url: "https://build.chromium.org/p/chromium/sheriff_perf.json"
+}
+oncalls: {
+  name: "Perfbot"
+  url: "https://build.chromium.org/p/chromium/sheriff_perfbot.json"
+}
+oncalls: {
+  name: "V8"
+  url: "https://build.chromium.org/p/chromium/sheriff_v8.json"
+}
+oncalls: {
+  name: "Trooper"
+  url: "https://build.chromium.org/p/chromium/trooper.json"
+}
+
+links: {
+  name: "Builds"
+  links: {
+    text: "continuous"
+    url: "https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html"
+    alt: "Continuous browser snapshots"
+  }
+  links: {
+    text: "symbols"
+    url: "https://www.chromium.org/developers/how-tos/debugging-on-windows"
+    alt: "Windows Symbols"
+  }
+  links: {
+    text: "status"
+    url: "https://chromium-status.appspot.com/"
+    alt: "Current tree status"
+  }
+}
+
+links: {
+  name: "Dashboards"
+  links: {
+    text: "perf"
+    url: "https://chromeperf.appspot.com/"
+    alt: "Chrome perf dashboard"
+  }
+  links {
+    text: "flake-portal"
+    url: "https://analysis.chromium.org/p/chromium/flake-portal"
+    alt: "New flake portal"
+  }
+  links {
+    text: "legacy-flakiness"
+    url: "https://test-results.appspot.com/dashboards/flakiness_dashboard.html"
+    alt: "Legacy flakiness dashboard"
+  }
+}
+
+links: {
+  name: "Chromium"
+  links: {
+    text: "source"
+    url: "https://chromium.googlesource.com/chromium/src"
+    alt: "Chromium source code repository"
+  }
+  links: {
+    text: "reviews"
+    url: "https://chromium-review.googlesource.com"
+    alt: "Chromium code review tool"
+  }
+  links: {
+    text: "bugs"
+    url: "https://crbug.com"
+    alt: "Chromium bug tracker"
+  }
+  links: {
+    text: "dev"
+    url: "https://dev.chromium.org/Home"
+    alt: "Chromium developer home page"
+  }
+  links: {
+    text: "support"
+    url: "https://support.google.com/chrome/#topic=7438008"
+    alt: "Google Chrome help center"
+  }
+}
+
+links: {
+  name: "Consoles"
+  links: {
+    text: "swarm"
+    url: "/p/chromium/g/chromium.swarm"
+    alt: "Chromium Swarm console"
+  }
+  links: {
+    text: "prod"
+    url: "https://luci-milo.appspot.com/p/chromium/g/main/console"
+    alt: "Main luci-milo console"
+  }
+}
+
+links: {
+  name: "Navigate"
+  links: {
+    text: "about"
+    url: "http://dev.chromium.org/developers/testing/chromium-build-infrastructure/tour-of-the-chromium-buildbot"
+    alt: "Tour of the console"
+  }
+  links: {
+    text: "customize"
+    url: "https://chromium.googlesource.com/chromium/src/+/master/infra/config/luci-milo-dev.cfg"
+      alt: "Customize this console"
+  }
+}
+
+tree_status_host: "chromium-status.appspot.com"

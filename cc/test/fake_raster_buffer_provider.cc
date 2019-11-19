@@ -38,10 +38,6 @@ viz::ResourceFormat FakeRasterBufferProviderImpl::GetResourceFormat() const {
   return viz::ResourceFormat::RGBA_8888;
 }
 
-bool FakeRasterBufferProviderImpl::IsResourceSwizzleRequired() const {
-  return false;
-}
-
 bool FakeRasterBufferProviderImpl::IsResourcePremultiplied() const {
   return true;
 }

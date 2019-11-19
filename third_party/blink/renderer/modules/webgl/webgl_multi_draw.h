@@ -45,6 +45,37 @@ class WebGLMultiDraw final : public WebGLExtension,
                           MakeSpan(offsetsList), offsetsOffset, drawcount);
   }
 
+  void multiDrawArraysInstancedWEBGL(
+      GLenum mode,
+      Int32ArrayOrLongSequence firstsList,
+      GLuint firstsOffset,
+      Int32ArrayOrLongSequence countsList,
+      GLuint countsOffset,
+      Int32ArrayOrLongSequence instanceCountsList,
+      GLuint instanceCountsOffset,
+      GLsizei drawcount) {
+    multiDrawArraysInstancedImpl(mode, MakeSpan(firstsList), firstsOffset,
+                                 MakeSpan(countsList), countsOffset,
+                                 MakeSpan(instanceCountsList),
+                                 instanceCountsOffset, drawcount);
+  }
+
+  void multiDrawElementsInstancedWEBGL(
+      GLenum mode,
+      Int32ArrayOrLongSequence countsList,
+      GLuint countsOffset,
+      GLenum type,
+      Int32ArrayOrLongSequence offsetsList,
+      GLuint offsetsOffset,
+      Int32ArrayOrLongSequence instanceCountsList,
+      GLuint instanceCountsOffset,
+      GLsizei drawcount) {
+    multiDrawElementsInstancedImpl(mode, MakeSpan(countsList), countsOffset,
+                                   type, MakeSpan(offsetsList), offsetsOffset,
+                                   MakeSpan(instanceCountsList),
+                                   instanceCountsOffset, drawcount);
+  }
+
  private:
   void multiDrawArraysImpl(GLenum mode,
                            const base::span<const int32_t>& firsts,
@@ -60,6 +91,27 @@ class WebGLMultiDraw final : public WebGLExtension,
                              const base::span<const int32_t>& offsets,
                              GLuint offsetsOffset,
                              GLsizei drawcount);
+
+  void multiDrawArraysInstancedImpl(
+      GLenum mode,
+      const base::span<const int32_t>& firsts,
+      GLuint firstsOffset,
+      const base::span<const int32_t>& counts,
+      GLuint countsOffset,
+      const base::span<const int32_t>& instanceCounts,
+      GLuint instanceCountsOffset,
+      GLsizei drawcount);
+
+  void multiDrawElementsInstancedImpl(
+      GLenum mode,
+      const base::span<const int32_t>& counts,
+      GLuint countsOffset,
+      GLenum type,
+      const base::span<const int32_t>& offsets,
+      GLuint offsetsOffset,
+      const base::span<const int32_t>& instanceCounts,
+      GLuint instanceCountsOffset,
+      GLsizei drawcount);
 };
 
 }  // namespace blink

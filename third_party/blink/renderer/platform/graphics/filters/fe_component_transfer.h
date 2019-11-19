@@ -60,13 +60,6 @@ struct ComponentTransferFunction {
 
 class PLATFORM_EXPORT FEComponentTransfer final : public FilterEffect {
  public:
-  static FEComponentTransfer* Create(
-      Filter*,
-      const ComponentTransferFunction& red_func,
-      const ComponentTransferFunction& green_func,
-      const ComponentTransferFunction& blue_func,
-      const ComponentTransferFunction& alpha_func);
-
   FEComponentTransfer(Filter*,
                       const ComponentTransferFunction& red_func,
                       const ComponentTransferFunction& green_func,

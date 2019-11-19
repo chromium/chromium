@@ -15,6 +15,7 @@
 namespace ios {
 class ChromeBrowserState;
 }
+class WebStateList;
 
 @protocol RecentTabsConsumer;
 
@@ -34,6 +35,9 @@ class ChromeBrowserState;
 
 // The coordinator's BrowserState.
 @property(nonatomic, assign) ios::ChromeBrowserState* browserState;
+
+// The WebStateList that this mediator listens for.
+@property(nonatomic, assign) WebStateList* webStateList;
 
 // Starts observing the he user's signed-in and chrome-sync states.
 - (void)initObservers;

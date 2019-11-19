@@ -7,7 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/u2f/u2f_controller.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/web_state.h"
 #include "net/base/url_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

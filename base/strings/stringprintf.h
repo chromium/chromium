@@ -19,7 +19,13 @@ namespace base {
 BASE_EXPORT std::string StringPrintf(const char* format, ...)
     PRINTF_FORMAT(1, 2) WARN_UNUSED_RESULT;
 #if defined(OS_WIN)
+// Note: Unfortunately compile time checking of the format string for UTF-16
+// strings is not supported by any compiler, thus these functions should be used
+// carefully and sparingly. Also applies to SStringPrintf and StringAppendV
+// below.
 BASE_EXPORT std::wstring StringPrintf(const wchar_t* format, ...)
+    WPRINTF_FORMAT(1, 2) WARN_UNUSED_RESULT;
+BASE_EXPORT std::u16string StringPrintf(const char16_t* format, ...)
     WPRINTF_FORMAT(1, 2) WARN_UNUSED_RESULT;
 #endif
 
@@ -35,6 +41,9 @@ BASE_EXPORT const std::string& SStringPrintf(std::string* dst,
 BASE_EXPORT const std::wstring& SStringPrintf(std::wstring* dst,
                                               const wchar_t* format,
                                               ...) WPRINTF_FORMAT(2, 3);
+BASE_EXPORT const std::u16string& SStringPrintf(std::u16string* dst,
+                                                const char16_t* format,
+                                                ...) WPRINTF_FORMAT(2, 3);
 #endif
 
 // Append result to a supplied string.
@@ -42,6 +51,8 @@ BASE_EXPORT void StringAppendF(std::string* dst, const char* format, ...)
     PRINTF_FORMAT(2, 3);
 #if defined(OS_WIN)
 BASE_EXPORT void StringAppendF(std::wstring* dst, const wchar_t* format, ...)
+    WPRINTF_FORMAT(2, 3);
+BASE_EXPORT void StringAppendF(std::u16string* dst, const char16_t* format, ...)
     WPRINTF_FORMAT(2, 3);
 #endif
 
@@ -52,6 +63,9 @@ BASE_EXPORT void StringAppendV(std::string* dst, const char* format, va_list ap)
 #if defined(OS_WIN)
 BASE_EXPORT void StringAppendV(std::wstring* dst,
                                const wchar_t* format,
+                               va_list ap) WPRINTF_FORMAT(2, 0);
+BASE_EXPORT void StringAppendV(std::u16string* dst,
+                               const char16_t* format,
                                va_list ap) WPRINTF_FORMAT(2, 0);
 #endif
 

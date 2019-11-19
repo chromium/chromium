@@ -23,22 +23,22 @@ PrintQueriesQueue::~PrintQueriesQueue() {
   queued_queries_.clear();
 }
 
-void PrintQueriesQueue::QueuePrinterQuery(PrinterQuery* query) {
+void PrintQueriesQueue::QueuePrinterQuery(std::unique_ptr<PrinterQuery> query) {
   base::AutoLock lock(lock_);
   DCHECK(query);
-  queued_queries_.push_back(base::WrapRefCounted(query));
   DCHECK(query->is_valid());
+  queued_queries_.push_back(std::move(query));
 }
 
-scoped_refptr<PrinterQuery> PrintQueriesQueue::PopPrinterQuery(
+std::unique_ptr<PrinterQuery> PrintQueriesQueue::PopPrinterQuery(
     int document_cookie) {
   base::AutoLock lock(lock_);
   for (auto it = queued_queries_.begin(); it != queued_queries_.end(); ++it) {
-    scoped_refptr<PrinterQuery>& query = *it;
-    if (query->cookie() != document_cookie || query->is_callback_pending())
+    std::unique_ptr<PrinterQuery>& query = *it;
+    if (query->cookie() != document_cookie)
       continue;
 
-    scoped_refptr<PrinterQuery> current_query = query;
+    std::unique_ptr<PrinterQuery> current_query = std::move(query);
     queued_queries_.erase(it);
     DCHECK(current_query->is_valid());
     return current_query;
@@ -46,10 +46,10 @@ scoped_refptr<PrinterQuery> PrintQueriesQueue::PopPrinterQuery(
   return nullptr;
 }
 
-scoped_refptr<PrinterQuery> PrintQueriesQueue::CreatePrinterQuery(
+std::unique_ptr<PrinterQuery> PrintQueriesQueue::CreatePrinterQuery(
     int render_process_id,
     int render_frame_id) {
-  return base::MakeRefCounted<PrinterQuery>(render_process_id, render_frame_id);
+  return std::make_unique<PrinterQuery>(render_process_id, render_frame_id);
 }
 
 void PrintQueriesQueue::Shutdown() {
@@ -62,8 +62,8 @@ void PrintQueriesQueue::Shutdown() {
   // corresponding PrintJob, so any pending preview requests are not covered
   // by PrintJobManager::StopJobs and should be stopped explicitly.
   for (auto& query : queries_to_stop) {
-    query->PostTask(FROM_HERE,
-                    base::BindOnce(&PrinterQuery::StopWorker, query));
+    query->PostTask(
+        FROM_HERE, base::BindOnce(&PrinterQuery::StopWorker, std::move(query)));
   }
 }
 

@@ -9,7 +9,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/system/system_monitor.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/mojom/device_notifications.mojom.h"
 #include "services/audio/traced_service_ref.h"
 
@@ -27,10 +29,12 @@ class DeviceNotifier final : public base::SystemMonitor::DevicesChangedObserver,
   DeviceNotifier();
   ~DeviceNotifier() final;
 
-  void Bind(mojom::DeviceNotifierRequest request, TracedServiceRef context_ref);
+  void Bind(mojo::PendingReceiver<mojom::DeviceNotifier> receiver,
+            TracedServiceRef context_ref);
 
   // mojom::DeviceNotifier implementation.
-  void RegisterListener(mojom::DeviceListenerPtr listener) final;
+  void RegisterListener(
+      mojo::PendingRemote<mojom::DeviceListener> listener) final;
 
   // base::SystemMonitor::DevicesChangedObserver implementation;
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) final;
@@ -40,10 +44,10 @@ class DeviceNotifier final : public base::SystemMonitor::DevicesChangedObserver,
   void RemoveListener(int listener_id);
 
   int next_listener_id_ = 0;
-  base::flat_map<int, mojom::DeviceListenerPtr> listeners_;
-  mojo::BindingSet<mojom::DeviceNotifier, TracedServiceRef> bindings_;
+  base::flat_map<int, mojo::Remote<mojom::DeviceListener>> listeners_;
+  mojo::ReceiverSet<mojom::DeviceNotifier, TracedServiceRef> receivers_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::WeakPtrFactory<DeviceNotifier> weak_factory_;
+  base::WeakPtrFactory<DeviceNotifier> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceNotifier);
 };

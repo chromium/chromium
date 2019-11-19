@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/services/secure_channel/ble_listener_failure_type.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
@@ -97,7 +97,7 @@ class SecureChannelBleListenerOperationTest : public testing::Test {
     failure_type_from_callback_ = failure_type;
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<FakeBleConnectionManager> fake_ble_connection_manager_;
   DeviceIdPair device_id_pair_;

@@ -6,6 +6,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
+#include "chrome/android/chrome_jni_headers/LocaleTemplateUrlLoader_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/search_engines/prepopulated_engines.h"
@@ -13,7 +14,6 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/util.h"
-#include "jni/LocaleTemplateUrlLoader_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
@@ -38,14 +38,11 @@ LocaleTemplateUrlLoader::LocaleTemplateUrlLoader(const std::string& locale,
                                                  TemplateURLService* service)
     : locale_(locale), template_url_service_(service) {}
 
-void LocaleTemplateUrlLoader::Destroy(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj) {
+void LocaleTemplateUrlLoader::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jboolean LocaleTemplateUrlLoader::LoadTemplateUrls(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+jboolean LocaleTemplateUrlLoader::LoadTemplateUrls(JNIEnv* env) {
   DCHECK(locale_.length() == 2);
 
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_list =
@@ -95,9 +92,7 @@ jboolean LocaleTemplateUrlLoader::LoadTemplateUrls(
   return true;
 }
 
-void LocaleTemplateUrlLoader::RemoveTemplateUrls(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void LocaleTemplateUrlLoader::RemoveTemplateUrls(JNIEnv* env) {
   while (!prepopulate_ids_.empty()) {
     TemplateURL* turl = FindURLByPrepopulateID(
         template_url_service_->GetTemplateURLs(), prepopulate_ids_.back());
@@ -108,9 +103,7 @@ void LocaleTemplateUrlLoader::RemoveTemplateUrls(
   }
 }
 
-void LocaleTemplateUrlLoader::OverrideDefaultSearchProvider(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void LocaleTemplateUrlLoader::OverrideDefaultSearchProvider(JNIEnv* env) {
   // If the user has changed their default search provider, no-op.
   const TemplateURL* current_dsp =
       template_url_service_->GetDefaultSearchProvider();
@@ -127,9 +120,7 @@ void LocaleTemplateUrlLoader::OverrideDefaultSearchProvider(
   }
 }
 
-void LocaleTemplateUrlLoader::SetGoogleAsDefaultSearch(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void LocaleTemplateUrlLoader::SetGoogleAsDefaultSearch(JNIEnv* env) {
   // If the user has changed their default search provider, no-op.
   const TemplateURL* current_dsp =
       template_url_service_->GetDefaultSearchProvider();

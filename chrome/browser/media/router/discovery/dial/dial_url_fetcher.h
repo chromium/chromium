@@ -12,6 +12,8 @@
 #include "base/callback.h"
 #include "base/optional.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -20,7 +22,6 @@ struct RedirectInfo;
 
 namespace network {
 class SimpleURLLoader;
-struct ResourceResponseHead;
 }  // namespace network
 
 namespace media_router {
@@ -56,7 +57,7 @@ class DialURLFetcher {
   // owned by underlying |loader_| object and is reset per HTTP request. Returns
   // nullptr if this function is called before |loader_| has informed the caller
   // of completion.
-  const network::ResourceResponseHead* GetResponseHead() const;
+  const network::mojom::URLResponseHead* GetResponseHead() const;
 
  private:
   friend class TestDialURLFetcher;
@@ -80,7 +81,7 @@ class DialURLFetcher {
 
   // Invokes the error callback due to redirect, and aborts the request.
   void ReportRedirectError(const net::RedirectInfo& redirect_info,
-                           const network::ResourceResponseHead& response_head,
+                           const network::mojom::URLResponseHead& response_head,
                            std::vector<std::string>* to_be_removed_headers);
 
   // Runs |error_cb_| with |message| and clears it.

@@ -83,7 +83,7 @@ class SpeechWebContentsObserver : public content::WebContentsObserver {
 IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, BasicTearDown) {
   ASSERT_TRUE(embedded_test_server()->Start());
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   ASSERT_TRUE(https_server.Start());
 
   GURL http_url =

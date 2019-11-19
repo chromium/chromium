@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_QUOTA_STORAGE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_QUOTA_STORAGE_MANAGER_H_
 
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/quota/quota_dispatcher_host.mojom-blink.h"
-#include "third_party/blink/public/platform/modules/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
@@ -27,17 +28,17 @@ class StorageManager final : public ScriptWrappable {
   ScriptPromise estimate(ScriptState*);
 
  private:
-  mojom::blink::PermissionService& GetPermissionService(ExecutionContext*);
+  mojom::blink::PermissionService* GetPermissionService(ExecutionContext*);
   void PermissionServiceConnectionError();
   void PermissionRequestComplete(ScriptPromiseResolver*,
                                  mojom::blink::PermissionStatus);
 
   // Binds the interface (if not already bound) with the given interface
   // provider, and returns it,
-  mojom::blink::QuotaDispatcherHost& GetQuotaHost(ExecutionContext*);
+  mojom::blink::QuotaDispatcherHost* GetQuotaHost(ExecutionContext*);
 
-  mojom::blink::PermissionServicePtr permission_service_;
-  mojom::blink::QuotaDispatcherHostPtr quota_host_;
+  mojo::Remote<mojom::blink::PermissionService> permission_service_;
+  mojo::Remote<mojom::blink::QuotaDispatcherHost> quota_host_;
 };
 
 }  // namespace blink

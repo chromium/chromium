@@ -4,6 +4,9 @@
 
 package org.chromium.content.browser.remoteobjects;
 
+import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.Matchers.not;
+
 import android.support.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -145,5 +148,16 @@ public final class RemoteObjectHostImplTest {
         Assert.assertSame(o, mRegistry.getObjectById(id));
         host.releaseObject(id);
         Assert.assertNull(mRegistry.getObjectById(id));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-JavaBridge"})
+    public void testClose() {
+        RemoteObjectHostImpl host = new RemoteObjectHostImpl(
+                TestJavascriptInterface.class, /* auditor */ null, mRegistry);
+        Assert.assertThat(mRegistry, isIn(mRetainingSet));
+        host.close();
+        Assert.assertThat(mRegistry, not(isIn(mRetainingSet)));
     }
 }

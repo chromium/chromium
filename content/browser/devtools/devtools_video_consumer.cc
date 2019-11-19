@@ -59,7 +59,7 @@ SkBitmap DevToolsVideoConsumer::GetSkBitmapFromFrame(
   skbitmap.allocN32Pixels(frame->visible_rect().width(),
                           frame->visible_rect().height());
   cc::SkiaPaintCanvas canvas(skbitmap);
-  renderer.Copy(frame, &canvas, media::Context3D(), nullptr);
+  renderer.Copy(frame, &canvas, nullptr);
   return skbitmap;
 }
 
@@ -135,7 +135,8 @@ void DevToolsVideoConsumer::OnFrameCaptured(
     base::ReadOnlySharedMemoryRegion data,
     ::media::mojom::VideoFrameInfoPtr info,
     const gfx::Rect& content_rect,
-    viz::mojom::FrameSinkVideoConsumerFrameCallbacksPtr callbacks) {
+    mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
+        callbacks) {
   if (!data.IsValid())
     return;
 
@@ -169,7 +170,8 @@ void DevToolsVideoConsumer::OnFrameCaptured(
   }
   frame->AddDestructionObserver(base::BindOnce(
       [](base::ReadOnlySharedMemoryMapping mapping,
-         viz::mojom::FrameSinkVideoConsumerFrameCallbacksPtr callbacks) {},
+         mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
+             callbacks) {},
       std::move(mapping), std::move(callbacks)));
   frame->metadata()->MergeInternalValuesFrom(info->metadata);
   if (info->color_space.has_value())

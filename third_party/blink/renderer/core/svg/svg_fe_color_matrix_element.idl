@@ -40,4 +40,4 @@
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumberList values;
 };
 
-SVGFEColorMatrixElement implements SVGFilterPrimitiveStandardAttributes;
+SVGFEColorMatrixElement includes SVGFilterPrimitiveStandardAttributes;

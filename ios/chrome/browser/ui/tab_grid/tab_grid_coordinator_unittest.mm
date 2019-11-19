@@ -7,7 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/ui/main/tab_switcher.h"
+#import "ios/chrome/browser/ui/tab_grid/tab_switcher.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #include "testing/gtest_mac.h"
 #include "third_party/ocmock/OCMock/OCMock.h"

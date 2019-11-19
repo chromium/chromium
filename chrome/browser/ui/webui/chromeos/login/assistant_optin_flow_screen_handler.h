@@ -8,23 +8,47 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/interfaces/assistant_setup.mojom.h"
+#include "ash/public/cpp/assistant/assistant_setup.h"
+#include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/arc/voice_interaction/voice_interaction_controller_client.h"
-#include "chrome/browser/chromeos/login/screens/assistant_optin_flow_screen_view.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chromeos/services/assistant/public/mojom/settings.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
+
+class AssistantOptInFlowScreen;
+
+// Interface for dependency injection between AssistantOptInFlowScreen
+// and its WebUI representation.
+class AssistantOptInFlowScreenView {
+ public:
+  constexpr static StaticOobeScreenId kScreenId{"assistant-optin-flow"};
+
+  virtual ~AssistantOptInFlowScreenView() = default;
+
+  virtual void Bind(AssistantOptInFlowScreen* screen) = 0;
+  virtual void Unbind() = 0;
+  virtual void Show() = 0;
+  virtual void Hide() = 0;
+
+ protected:
+  AssistantOptInFlowScreenView() = default;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(AssistantOptInFlowScreenView);
+};
 
 // TODO(updowndota): Refactor to reuse AssistantOptInHandler methods.
 class AssistantOptInFlowScreenHandler
     : public BaseScreenHandler,
       public AssistantOptInFlowScreenView,
-      public arc::VoiceInteractionControllerClient::Observer,
+      public ash::AssistantStateObserver,
       assistant::mojom::SpeakerIdEnrollmentClient {
  public:
+  using TView = AssistantOptInFlowScreenView;
+
   explicit AssistantOptInFlowScreenHandler(
       JSCallsContainer* js_calls_container);
   ~AssistantOptInFlowScreenHandler() override;
@@ -40,6 +64,7 @@ class AssistantOptInFlowScreenHandler
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void RegisterMessages() override;
+  void GetAdditionalParameters(base::DictionaryValue* dict) override;
 
   // AssistantOptInFlowScreenView:
   void Bind(AssistantOptInFlowScreen* screen) override;
@@ -63,18 +88,24 @@ class AssistantOptInFlowScreenHandler
   void OnActivityControlOptInResult(bool opted_in);
   void OnEmailOptInResult(bool opted_in);
 
+  // Called when the UI dialog is closed.
+  void OnDialogClosed();
+
  private:
   // BaseScreenHandler:
   void Initialize() override;
 
-  // arc::VoiceInteractionControllerClient::Observer overrides
-  void OnStateChanged(ash::mojom::VoiceInteractionState state) override;
+  // ash::AssistantStateObserver:
+  void OnAssistantStatusChanged(ash::mojom::AssistantState state) override;
 
   // Connect to assistant settings manager.
   void BindAssistantSettingsManager();
 
   // Send GetSettings request for the opt-in UI.
   void SendGetSettingsRequest();
+
+  // Stops the current speaker ID enrollment flow.
+  void StopSpeakerIdEnrollment();
 
   // Send message and consent data to the page.
   void ReloadContent(const base::Value& dict);
@@ -95,7 +126,6 @@ class AssistantOptInFlowScreenHandler
   void HandleVoiceMatchScreenShown();
   void HandleGetMoreScreenShown();
   void HandleLoadingTimeout();
-  void HandleHotwordResult(bool enable_hotword);
   void HandleFlowFinished();
   void HandleFlowInitialized(const int flow_type);
 
@@ -118,10 +148,11 @@ class AssistantOptInFlowScreenHandler
   // Whether email optin is needed for user.
   bool email_optin_needed_ = false;
 
-  // Whether user chose to enable hotword.
-  bool enable_hotword_ = true;
+  // Whether the use has completed voice match enrollment.
+  bool voice_match_enrollment_done_ = false;
 
-  bool is_retrain_flow_ = false;
+  // Assistant optin flow type.
+  ash::FlowType flow_type_ = ash::FlowType::kConsentFlow;
 
   // Time that get settings request is sent.
   base::TimeTicks send_request_time_;
@@ -132,10 +163,10 @@ class AssistantOptInFlowScreenHandler
   // Whether the screen has been initialized.
   bool initialized_ = false;
 
-  mojo::Binding<assistant::mojom::SpeakerIdEnrollmentClient> client_binding_;
-  assistant::mojom::SpeakerIdEnrollmentClientPtr client_ptr_;
-  assistant::mojom::AssistantSettingsManagerPtr settings_manager_;
-  base::WeakPtrFactory<AssistantOptInFlowScreenHandler> weak_factory_;
+  mojo::Receiver<assistant::mojom::SpeakerIdEnrollmentClient> client_receiver_{
+      this};
+  mojo::Remote<assistant::mojom::AssistantSettingsManager> settings_manager_;
+  base::WeakPtrFactory<AssistantOptInFlowScreenHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AssistantOptInFlowScreenHandler);
 };

@@ -6,9 +6,12 @@ package org.chromium.chrome.browser.contacts_picker;
 
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.task.AsyncTask;
 
 /**
@@ -61,12 +64,19 @@ public class ContactViewHolder
             return;
         }
 
-        Bitmap icon = mCategoryView.getIconCache().getBitmap(mContact.getId());
-        if (icon == null) {
-            mWorkerTask = new FetchIconWorkerTask(mContact.getId(), mContentResolver, this);
-            mWorkerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        Drawable drawable = contact.getSelfIcon();
+        if (drawable != null) {
+            assert drawable instanceof BitmapDrawable;
+            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+            mItemView.initialize(contact, bitmap);
+        } else {
+            Bitmap icon = mCategoryView.getIconCache().getBitmap(mContact.getId());
+            if (icon == null) {
+                mWorkerTask = new FetchIconWorkerTask(mContact.getId(), mContentResolver, this);
+                mWorkerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+            mItemView.initialize(contact, icon);
         }
-        mItemView.initialize(contact, icon);
     }
 
     /**
@@ -81,14 +91,13 @@ public class ContactViewHolder
 
     @Override
     public void iconRetrieved(Bitmap icon, String contactId) {
-        if (icon == null) return;
-        if (!contactId.equals(mContact.getId())) return;
-
         if (mCategoryView.getIconCache().getBitmap(contactId) == null) {
             mCategoryView.getIconCache().putBitmap(contactId, icon);
         }
 
-        mItemView.setIconBitmap(icon);
+        if (icon != null && contactId.equals(mContact.getId())) {
+            mItemView.setIconBitmap(icon);
+        }
     }
 
     /** Sets the icon to use when testing. */

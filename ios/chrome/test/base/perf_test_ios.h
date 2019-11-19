@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 
 typedef base::TimeDelta (^TimedActionBlock)(int index);
 
@@ -70,7 +70,7 @@ class PerfTest : public BlockCleanupTest {
   // Sets number of times to repeat a test when ran with RepeatTimedRuns.
   int repeatCount_;
   // The threads used for testing.
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   // The WebClient for testing purposes.
   web::ScopedTestingWebClient web_client_;
 };

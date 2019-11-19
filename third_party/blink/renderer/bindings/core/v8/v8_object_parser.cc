@@ -11,102 +11,6 @@
 
 namespace blink {
 
-bool V8ObjectParser::ParsePrototype(v8::Local<v8::Context> context,
-                                    v8::Local<v8::Function> constructor,
-                                    v8::Local<v8::Object>* prototype,
-                                    ExceptionState* exception_state) {
-  v8::Isolate* isolate = context->GetIsolate();
-  v8::TryCatch block(isolate);
-
-  v8::Local<v8::Value> prototype_value;
-  if (!constructor->Get(context, V8AtomicString(isolate, "prototype"))
-           .ToLocal(&prototype_value)) {
-    exception_state->RethrowV8Exception(block.Exception());
-    return false;
-  }
-
-  if (prototype_value->IsNullOrUndefined()) {
-    exception_state->ThrowTypeError(
-        "The 'prototype' object on the class does not exist.");
-    return false;
-  }
-
-  if (!prototype_value->IsObject()) {
-    exception_state->ThrowTypeError(
-        "The 'prototype' property on the class is not an object.");
-    return false;
-  }
-
-  *prototype = v8::Local<v8::Object>::Cast(prototype_value);
-  return true;
-}
-
-bool V8ObjectParser::ParseFunction(v8::Local<v8::Context> context,
-                                   v8::Local<v8::Object> prototype,
-                                   const AtomicString function_name,
-                                   v8::Local<v8::Function>* function,
-                                   ExceptionState* exception_state) {
-  v8::Isolate* isolate = context->GetIsolate();
-  v8::TryCatch block(isolate);
-
-  v8::Local<v8::Value> function_value;
-  if (!prototype->Get(context, V8AtomicString(isolate, function_name))
-           .ToLocal(&function_value)) {
-    exception_state->RethrowV8Exception(block.Exception());
-    return false;
-  }
-
-  if (function_value->IsNullOrUndefined()) {
-    exception_state->ThrowTypeError(
-        "The '" + function_name +
-        "' property on the prototype does not exist.");
-    return false;
-  }
-
-  if (!function_value->IsFunction()) {
-    exception_state->ThrowTypeError(
-        "The '" + function_name +
-        "' property on the prototype is not a function.");
-    return false;
-  }
-
-  *function = v8::Local<v8::Function>::Cast(function_value);
-  return true;
-}
-
-bool V8ObjectParser::ParseGeneratorFunction(v8::Local<v8::Context> context,
-                                            v8::Local<v8::Object> prototype,
-                                            const AtomicString function_name,
-                                            v8::Local<v8::Function>* function,
-                                            ExceptionState* exception_state) {
-  v8::Isolate* isolate = context->GetIsolate();
-  v8::TryCatch block(isolate);
-
-  v8::Local<v8::Value> function_value;
-  if (!prototype->Get(context, V8AtomicString(isolate, function_name))
-           .ToLocal(&function_value)) {
-    exception_state->RethrowV8Exception(block.Exception());
-    return false;
-  }
-
-  if (function_value->IsNullOrUndefined()) {
-    exception_state->ThrowTypeError(
-        "The '" + function_name +
-        "' property on the prototype does not exist.");
-    return false;
-  }
-
-  if (!function_value->IsGeneratorFunction()) {
-    exception_state->ThrowTypeError(
-        "The '" + function_name +
-        "' property on the prototype is not a generator function.");
-    return false;
-  }
-
-  *function = v8::Local<v8::Function>::Cast(function_value);
-  return true;
-}
-
 bool V8ObjectParser::ParseCSSPropertyList(
     v8::Local<v8::Context> context,
     v8::Local<v8::Object> constructor,
@@ -134,9 +38,9 @@ bool V8ObjectParser::ParseCSSPropertyList(
 
     for (const auto& property : properties) {
       CSSPropertyID property_id = cssPropertyID(property);
-      if (property_id == CSSPropertyVariable) {
+      if (property_id == CSSPropertyID::kVariable) {
         custom_properties->push_back(std::move(property));
-      } else if (property_id != CSSPropertyInvalid) {
+      } else if (property_id != CSSPropertyID::kInvalid) {
         native_properties->push_back(std::move(property_id));
       }
     }

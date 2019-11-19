@@ -5,24 +5,30 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_NAVIGATOR_PARAMS_H_
 #define CHROME_BROWSER_UI_BROWSER_NAVIGATOR_PARAMS_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/referrer.h"
-#include "content/public/common/was_activated_option.h"
+#include "content/public/common/was_activated_option.mojom.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
+
+#if !defined(OS_ANDROID)
+#include "chrome/browser/ui/tabs/tab_group_id.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif
 
 class Browser;
 class Profile;
@@ -31,7 +37,7 @@ namespace content {
 class RenderFrameHost;
 class WebContents;
 struct OpenURLParams;
-}
+}  // namespace content
 
 // Parameters that tell Navigate() what to do.
 //
@@ -94,9 +100,6 @@ struct NavigateParams {
   // Any redirect URLs that occurred for this navigation before |url|.
   // Usually empty.
   std::vector<GURL> redirect_chain;
-
-  // Indicates whether this navigation will be sent using POST.
-  bool uses_post = false;
 
   // The post data when the navigation uses POST.
   scoped_refptr<network::ResourceRequestBody> post_data;
@@ -171,11 +174,6 @@ struct NavigateParams {
   // accordance with |add_types|. The default allows the TabHandler to decide.
   int tabstrip_index = -1;
 
-  // A bitmask of values defined in TabStripModel::AddTabTypes. Helps
-  // determine where to insert a new tab and whether or not it should be
-  // selected, among other properties.
-  int tabstrip_add_types = TabStripModel::ADD_ACTIVE;
-
   // If non-empty, the new tab is an app tab.
   std::string extension_app_id;
 
@@ -227,6 +225,14 @@ struct NavigateParams {
   //       window can assume responsibility for the Browser's lifetime (Browser
   //       objects are deleted when the user closes a visible browser window).
   Browser* browser = nullptr;
+
+  // The group the caller would like the tab to be added to.
+  base::Optional<TabGroupId> group;
+
+  // A bitmask of values defined in TabStripModel::AddTabTypes. Helps
+  // determine where to insert a new tab and whether or not it should be
+  // selected, among other properties.
+  int tabstrip_add_types = TabStripModel::ADD_ACTIVE;
 #endif
 
   // The profile that is initiating the navigation. If there is a non-NULL
@@ -268,8 +274,8 @@ struct NavigateParams {
   // outside of the page and pass it to the page as if it happened on a prior
   // page. For example, if the assistant opens a page we should treat the
   // user's interaction with the assistant as a previous user activation.
-  content::WasActivatedOption was_activated =
-      content::WasActivatedOption::kUnknown;
+  content::mojom::WasActivatedOption was_activated =
+      content::mojom::WasActivatedOption::kUnknown;
 
   // If this navigation was initiated from a link that specified the
   // hrefTranslate attribute, this contains the attribute's value (a BCP47

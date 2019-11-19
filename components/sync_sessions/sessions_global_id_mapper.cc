@@ -114,7 +114,7 @@ void SessionsGlobalIdMapper::CleanupNavigationTracking() {
     // orphaned from |global_to_unique_|.
     base::EraseIf(unique_to_current_global_,
                   [this](const std::pair<int, int64_t> kv) {
-                    return !base::ContainsKey(global_to_unique_, kv.second);
+                    return !base::Contains(global_to_unique_, kv.second);
                   });
   }
 }

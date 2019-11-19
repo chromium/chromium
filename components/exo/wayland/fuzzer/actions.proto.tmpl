@@ -1,0 +1,59 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+package exo.wayland_fuzzer.actions;
+
+enum small_value {
+  ZERO = 0;
+  ONE = 1;
+  TWO = 2;
+  THREE = 3;
+}
+
+// Enumerates all the expected globals which the fuzzer might target. It is
+// reasonable for the fuzzer to target the "unspecified" global, in which case
+// we will attempt to bind an index that does not exist.
+enum global {
+  GLOBAL_UNSPECIFIED = 0;
+  {% for interface in interfaces if interface.is_global %}
+    {{interface.name}} = {{interface.idx + 1}};
+  {% endfor %}
+}
+
+message action {
+  oneof act {
+    {% for interface in interfaces %}
+      {% for request in interface.requests %}
+        {{interface.name}}_{{request.name}} act_{{interface.name}}_{{request.name}} = {{request.idx + 1}};
+      {% endfor %}
+    {% endfor %}
+  }
+}
+
+message actions {
+  repeated action acts = 1;
+}
+
+{% for interface in interfaces %}
+  {% for request in interface.requests %}
+    {% if request.name != "bind" or interface.name != "wl_registry" %}
+      message {{interface.name}}_{{request.name}} {
+        small_value receiver = 1;
+        {% for arg in request.args if arg.proto_type %}
+          {{arg.proto_type}} {{arg.name}} = {{loop.index + 1}};
+        {% endfor %}
+      }
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+
+// Bind is a special case where we want the fuzzer to grab global interfaces we
+// know about (so we use an enum) but the other fields are free game.
+message wl_registry_bind {
+  small_value receiver = 1;
+
+  global global = 2;
+}

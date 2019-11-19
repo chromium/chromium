@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_PARSING_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_PARSING_UTILS_H_
 
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser_helpers.h"
@@ -40,6 +41,7 @@ using IsPositionKeyword = bool (*)(CSSValueID);
 
 constexpr size_t kMaxNumAnimationLonghands = 8;
 
+bool IsBaselineKeyword(CSSValueID id);
 bool IsSelfPositionKeyword(CSSValueID);
 bool IsSelfPositionOrLeftOrRightKeyword(CSSValueID);
 bool IsContentPositionKeyword(CSSValueID);
@@ -141,7 +143,7 @@ CSSValue* ConsumeCounter(CSSParserTokenRange&, const CSSParserContext&, int);
 
 CSSValue* ConsumeFontSize(
     CSSParserTokenRange&,
-    CSSParserMode,
+    const CSSParserContext&,
     css_property_parser_helpers::UnitlessQuirk =
         css_property_parser_helpers::UnitlessQuirk::kForbid);
 
@@ -205,6 +207,7 @@ CSSValue* ConsumeWidthOrHeight(
 CSSValue* ConsumeMarginOrOffset(CSSParserTokenRange&,
                                 CSSParserMode,
                                 css_property_parser_helpers::UnitlessQuirk);
+CSSValue* ConsumeScrollPadding(CSSParserTokenRange&);
 CSSValue* ConsumeOffsetPath(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumePathOrNone(CSSParserTokenRange&);
 CSSValue* ConsumeOffsetRotate(CSSParserTokenRange&, const CSSParserContext&);
@@ -248,19 +251,21 @@ CSSValue* ConsumePositionLonghand(CSSParserTokenRange& range,
     int percent;
     if (id == start)
       percent = 0;
-    else if (id == CSSValueCenter)
+    else if (id == CSSValueID::kCenter)
       percent = 50;
     else if (id == end)
       percent = 100;
     else
       return nullptr;
     range.ConsumeIncludingWhitespace();
-    return CSSPrimitiveValue::Create(percent,
-                                     CSSPrimitiveValue::UnitType::kPercentage);
+    return CSSNumericLiteralValue::Create(
+        percent, CSSPrimitiveValue::UnitType::kPercentage);
   }
   return css_property_parser_helpers::ConsumeLengthOrPercent(
       range, css_parser_mode, kValueRangeAll);
 }
+
+CSSValue* ConsumeIntrinsicLength(CSSParserTokenRange&, const CSSParserContext&);
 
 }  // namespace css_parsing_utils
 }  // namespace blink

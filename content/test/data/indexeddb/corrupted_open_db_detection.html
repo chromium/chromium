@@ -30,6 +30,7 @@ var transaction;
 var request;
 var db;
 var objectStore;
+var transactionErrorsExpected = true;
 
 function upgradeCallback() {
   db = event.target.result;
@@ -81,9 +82,10 @@ function requestError(event) {
 }
 
 function databaseClosed(event) {
-  shouldBe("numTransactionErrors", "1");
-  shouldBe("numTransactionAborts", "1");
-
+  if (transactionErrorsExpected) {
+    shouldBe("numTransactionErrors", "1");
+    shouldBe("numTransactionAborts", "1");
+  }
   done("Closed as expected");
 }
 
@@ -135,7 +137,8 @@ var tests = {
 
       done("Closed as expected");
     };
-    testXhr("/corrupt/test/fail?class=LevelDBTransaction&method=Commit", function() {
+    testXhr("/corrupt/test/fail?class=LevelDBTransaction&method=Commit",
+            function() {
       request = objectStore.put("Any Value", 'key-0');
       request.onerror = requestError;
     });
@@ -148,7 +151,8 @@ var tests = {
       request.onsuccess = function (event){
         var cursor = request.result;
         if (cursor) {
-          // Get an object. Probably shouldn't get this far, but won't call this an error.
+          // Get an object. Probably shouldn't get this far, but won't call this
+          // an error.
           cursor.continue();
         } else {
           // Got the last object. We shouldn't get this far.
@@ -158,10 +162,11 @@ var tests = {
     });
   },
   failGetBlobJournal: function() {
-    // Get() #1 is the put (GetNewVersionNumber)
-    // Get() #2 is the blob key generator (GetBlobKeyGeneratorCurrentNumber)
-    // Get() #3 is the journal (GetPrimaryBlobJournal)
-    testXhr("/corrupt/test/fail?class=LevelDBTransaction&method=Get&instNum=3", function() {
+    // Get() #1 is the blob key generator (GetBlobKeyGeneratorCurrentNumber)
+    // Get() #2 is the journal (GetPrimaryBlobJournal)
+    testXhr(
+        "/corrupt/test/fail?class=LevelDBDirectTransaction&method=Get&instNum=2",
+        function() {
       tests.testCommon('readwrite');
       request = objectStore.put({blob: new Blob(['abc'])}, 'key-0');
       request.onerror = requestError;
@@ -174,11 +179,14 @@ var tests = {
     });
   },
   clearObjectStore: function() {
+    // Since the error will occur during 'cleanup' of the leveldb scope, there
+    // might not be any transactions that explicitly fail. Instead, the database
+    // will just close.
     testXhr("/corrupt/test/corruptdb?storeName", function() {
+      transactionErrorsExpected = false;
       tests.testCommon('readwrite');
       request = objectStore.clear();
       request.onerror = requestError;
-      request.onsuccess = unexpectedSuccessCallback
     });
   }
 };

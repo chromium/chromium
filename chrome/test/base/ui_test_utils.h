@@ -12,7 +12,12 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/scoped_observer.h"
 #include "base/strings/string16.h"
+#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "components/history/core/browser/history_service.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_observer.h"
@@ -26,7 +31,6 @@
 #include "url/gurl.h"
 
 class Browser;
-class LocationBar;
 class Profile;
 
 namespace app_modal {
@@ -165,6 +169,11 @@ bool GetRelativeBuildDirectory(base::FilePath* build_dir);
 // Blocks until an application modal dialog is shown and returns it.
 app_modal::JavaScriptAppModalDialog* WaitForAppModalDialog();
 
+#if defined(TOOLKIT_VIEWS)
+// Blocks until the given view attains the given visibility state.
+void WaitForViewVisibility(Browser* browser, ViewID vid, bool visible);
+#endif
+
 // Performs a find in the page of the specified tab. Returns the number of
 // matches found.  |ordinal| is an optional parameter which is set to the index
 // of the current match. |selection_rect| is an optional parameter which is set
@@ -179,12 +188,23 @@ int FindInPage(content::WebContents* tab,
 // Blocks until the |history_service|'s history finishes loading.
 void WaitForHistoryToLoad(history::HistoryService* history_service);
 
+// Blocks until a Browser is added to the BrowserList.
+Browser* WaitForBrowserToOpen();
+
+// Blocks until a Browser is removed from the BrowserList. If |browser| is null,
+// the removal of any browser will suffice; otherwise the removed browser must
+// match |browser|.
+void WaitForBrowserToClose(Browser* browser = nullptr);
+
 // Download the given file and waits for the download to complete.
 void DownloadURL(Browser* browser, const GURL& download_url);
 
+// Waits until the autocomplete controller reaches its done state.
+void WaitForAutocompleteDone(Browser* browser);
+
 // Send the given text to the omnibox and wait until it's updated.
 void SendToOmniboxAndSubmit(
-    LocationBar* location_bar,
+    Browser* browser,
     const std::string& input,
     base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
@@ -197,30 +217,6 @@ void GetCookies(const GURL& url,
                 content::WebContents* contents,
                 int* value_size,
                 std::string* value);
-
-// A WindowedNotificationObserver hard-wired to observe
-// chrome::NOTIFICATION_TAB_ADDED.
-class WindowedTabAddedNotificationObserver
-    : public content::WindowedNotificationObserver {
- public:
-  // Register to listen for notifications of NOTIFICATION_TAB_ADDED from either
-  // a specific source, or from all sources if |source| is
-  // NotificationService::AllSources().
-  explicit WindowedTabAddedNotificationObserver(
-      const content::NotificationSource& source);
-
-  // Returns the added tab, or NULL if no notification was observed yet.
-  content::WebContents* GetTab() { return added_tab_; }
-
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
- private:
-  content::WebContents* added_tab_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowedTabAddedNotificationObserver);
-};
 
 // Similar to WindowedNotificationObserver but also provides a way of retrieving
 // the details associated with the notification.
@@ -281,22 +277,52 @@ class UrlLoadObserver : public content::WindowedNotificationObserver {
   DISALLOW_COPY_AND_ASSIGN(UrlLoadObserver);
 };
 
-// Convenience class for waiting for a new browser to be created.
-// Like WindowedNotificationObserver, this class provides a safe, non-racey
-// way to wait for a new browser to be created.
-class BrowserAddedObserver {
+// A helper that will wait until a tab is added to a specific Browser.
+class TabAddedWaiter : public TabStripModelObserver {
  public:
-  BrowserAddedObserver();
-  ~BrowserAddedObserver();
+  explicit TabAddedWaiter(Browser* browser);
+  ~TabAddedWaiter() override = default;
 
-  // Wait for a new browser to be created, and return a pointer to it.
-  Browser* WaitForSingleNewBrowser();
+  void Wait();
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
  private:
-  content::WindowedNotificationObserver notification_observer_;
-  std::set<Browser*> original_browsers_;
+  base::RunLoop run_loop_;
 
-  DISALLOW_COPY_AND_ASSIGN(BrowserAddedObserver);
+  DISALLOW_COPY_AND_ASSIGN(TabAddedWaiter);
+};
+
+// Similar to TabAddedWaiter, but will observe tabs added to all Browser
+// objects, and can return the last tab that was added.
+class AllBrowserTabAddedWaiter : public TabStripModelObserver,
+                                 public BrowserListObserver {
+ public:
+  AllBrowserTabAddedWaiter();
+  ~AllBrowserTabAddedWaiter() override;
+
+  content::WebContents* Wait();
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override;
+
+ private:
+  base::RunLoop run_loop_;
+
+  // The last tab that was added.
+  content::WebContents* web_contents_ = nullptr;
+
+  DISALLOW_COPY_AND_ASSIGN(AllBrowserTabAddedWaiter);
 };
 
 // Enumerates all history contents on the backend thread. Returns them in
@@ -309,13 +335,7 @@ class HistoryEnumerator {
   std::vector<GURL>& urls() { return urls_; }
 
  private:
-  void HistoryQueryComplete(
-      const base::Closure& quit_task,
-      history::QueryResults* results);
-
   std::vector<GURL> urls_;
-
-  base::CancelableTaskTracker tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(HistoryEnumerator);
 };

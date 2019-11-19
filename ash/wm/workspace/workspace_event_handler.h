@@ -20,11 +20,9 @@ class MouseEvent;
 }
 
 namespace ash {
-class WorkspaceEventHandlerTestHelper;
 
-namespace wm {
 class WindowState;
-}
+class WorkspaceEventHandlerTestHelper;
 
 // Handles events on workspace windows, such as double-click on the resize edge
 // to maximize in one dimension.
@@ -44,7 +42,7 @@ class ASH_EXPORT WorkspaceEventHandler : public ui::EventHandler {
   // bottom vertical resize edge, and if so toggles the vertical height of the
   // window between its restored state and the full available height of the
   // workspace.
-  void HandleVerticalResizeDoubleClick(wm::WindowState* window_state,
+  void HandleVerticalResizeDoubleClick(WindowState* window_state,
                                        ui::MouseEvent* event);
 
   aura::Window* workspace_window_;

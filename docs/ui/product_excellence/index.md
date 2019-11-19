@@ -1,7 +1,14 @@
+# Stint 4: Views Cleanup Continued
+Schedule: May 12-31, 2019  
+Participants: kylixrd, pkasting, robliao, 2 external contributors  
+[Summary](https://groups.google.com/a/google.com/d/topic/chrome-desktop-ui/vOccMw26R5o/discussion)  
+Relevant links:
+* [Bug query](https://bugs.chromium.org/p/chromium/issues/list?q=hotlist%3DViewsCleanup)
+
 # Stint 3: Views Cleanup
 Schedule: Mar. 11-29, 2019  
-Participants: TBD  
-Summary and stories: TBD  
+Participants: kylixrd, pkasting, robliao, sky, weili, 4 external contributors  
+[Summary](https://groups.google.com/a/google.com/d/topic/chrome-desktop-ui/VaIS9NmyQOw/discussion)  
 Relevant links:
 * [Bug query](https://bugs.chromium.org/p/chromium/issues/list?q=hotlist%3DViewsCleanup)
 

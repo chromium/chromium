@@ -61,18 +61,25 @@ std::string GetUniqueId(const void* module_addr) {
   return std::string();
 }
 
+// Returns the size of the _TEXT segment of the module loaded at |module_addr|.
+size_t GetModuleTextSize(const void* module_addr) {
+  const mach_header_64* mach_header =
+      reinterpret_cast<const mach_header_64*>(module_addr);
+  DCHECK_EQ(MH_MAGIC_64, mach_header->magic);
+  unsigned long module_size;
+  getsegmentdata(mach_header, SEG_TEXT, &module_size);
+  return module_size;
+}
+
 }  // namespace
 
 class MacModule : public ModuleCache::Module {
  public:
-  MacModule(uintptr_t base_address,
-            const std::string& id,
-            const FilePath& debug_basename,
-            size_t size)
-      : base_address_(base_address),
-        id_(id),
-        debug_basename_(debug_basename),
-        size_(size) {}
+  MacModule(const Dl_info& dl_info)
+      : base_address_(reinterpret_cast<uintptr_t>(dl_info.dli_fbase)),
+        id_(GetUniqueId(dl_info.dli_fbase)),
+        debug_basename_(FilePath(dl_info.dli_fname).BaseName()),
+        size_(GetModuleTextSize(dl_info.dli_fbase)) {}
 
   MacModule(const MacModule&) = delete;
   MacModule& operator=(const MacModule&) = delete;
@@ -82,6 +89,7 @@ class MacModule : public ModuleCache::Module {
   std::string GetId() const override { return id_; }
   FilePath GetDebugBasename() const override { return debug_basename_; }
   size_t GetSize() const override { return size_; }
+  bool IsNative() const override { return true; }
 
  private:
   uintptr_t base_address_;
@@ -93,22 +101,10 @@ class MacModule : public ModuleCache::Module {
 // static
 std::unique_ptr<ModuleCache::Module> ModuleCache::CreateModuleForAddress(
     uintptr_t address) {
-  Dl_info inf;
-  if (!dladdr(reinterpret_cast<const void*>(address), &inf))
+  Dl_info info;
+  if (!dladdr(reinterpret_cast<const void*>(address), &info))
     return nullptr;
-  auto base_module_address = reinterpret_cast<uintptr_t>(inf.dli_fbase);
-  return std::make_unique<MacModule>(
-      base_module_address, GetUniqueId(inf.dli_fbase),
-      FilePath(inf.dli_fname).BaseName(), GetModuleTextSize(inf.dli_fbase));
-}
-
-size_t ModuleCache::GetModuleTextSize(const void* module_addr) {
-  const mach_header_64* mach_header =
-      reinterpret_cast<const mach_header_64*>(module_addr);
-  DCHECK_EQ(MH_MAGIC_64, mach_header->magic);
-  unsigned long module_size;
-  getsegmentdata(mach_header, SEG_TEXT, &module_size);
-  return module_size;
+  return std::make_unique<MacModule>(info);
 }
 
 }  // namespace base

@@ -8,8 +8,15 @@
 #include <cmath>
 
 #include "base/logging.h"
+#include "base/numerics/ranges.h"
 
 namespace gfx {
+
+namespace {
+
+const int kMaxNewtonIterations = 4;
+
+}  // namespace
 
 static const double kBezierEpsilon = 1e-7;
 
@@ -17,6 +24,7 @@ CubicBezier::CubicBezier(double p1x, double p1y, double p2x, double p2y) {
   InitCoefficients(p1x, p1y, p2x, p2y);
   InitGradients(p1x, p1y, p2x, p2y);
   InitRange(p1y, p2y);
+  InitSpline();
 }
 
 CubicBezier::CubicBezier(const CubicBezier& other) = default;
@@ -34,6 +42,13 @@ void CubicBezier::InitCoefficients(double p1x,
   cy_ = 3.0 * p1y;
   by_ = 3.0 * (p2y - p1y) - cy_;
   ay_ = 1.0 - cy_ - by_;
+
+#ifndef NDEBUG
+  // Bezier curves with x-coordinates outside the range [0,1] for internal
+  // control points may have multiple values for t for a given value of x.
+  // In this case, calls to SolveCurveX may produce ambiguous results.
+  monotonically_increasing_ = p1x >= 0 && p1x <= 1 && p2x >= 0 && p2x <= 1;
+#endif
 }
 
 void CubicBezier::InitGradients(double p1x,
@@ -43,14 +58,18 @@ void CubicBezier::InitGradients(double p1x,
   // End-point gradients are used to calculate timing function results
   // outside the range [0, 1].
   //
-  // There are three possibilities for the gradient at each end:
+  // There are four possibilities for the gradient at each end:
   // (1) the closest control point is not horizontally coincident with regard to
   //     (0, 0) or (1, 1). In this case the line between the end point and
   //     the control point is tangent to the bezier at the end point.
   // (2) the closest control point is coincident with the end point. In
   //     this case the line between the end point and the far control
   //     point is tangent to the bezier at the end point.
-  // (3) the closest control point is horizontally coincident with the end
+  // (3) both internal control points are coincident with an endpoint. There
+  //     are two special case that fall into this category:
+  //     CubicBezier(0, 0, 0, 0) and CubicBezier(1, 1, 1, 1). Both are
+  //     equivalent to linear.
+  // (4) the closest control point is horizontally coincident with the end
   //     point, but vertically distinct. In this case the gradient at the
   //     end point is Infinite. However, this causes issues when
   //     interpolating. As a result, we break down to a simple case of
@@ -60,13 +79,17 @@ void CubicBezier::InitGradients(double p1x,
     start_gradient_ = p1y / p1x;
   else if (!p1y && p2x > 0)
     start_gradient_ = p2y / p2x;
+  else if (!p1y && !p2y)
+    start_gradient_ = 1;
   else
     start_gradient_ = 0;
 
   if (p2x < 1)
     end_gradient_ = (p2y - 1) / (p2x - 1);
-  else if (p2x == 1 && p1x < 1)
+  else if (p2y == 1 && p1x < 1)
     end_gradient_ = (p1y - 1) / (p1x - 1);
+  else if (p2y == 1 && p1y == 1)
+    end_gradient_ = 1;
   else
     end_gradient_ = 0;
 }
@@ -128,8 +151,15 @@ void CubicBezier::InitRange(double p1y, double p2y) {
   if (0 < t2 && t2 < 1)
     sol2 = SampleCurveY(t2);
 
-  range_min_ = std::min(std::min(range_min_, sol1), sol2);
-  range_max_ = std::max(std::max(range_max_, sol1), sol2);
+  range_min_ = std::min({range_min_, sol1, sol2});
+  range_max_ = std::max({range_max_, sol1, sol2});
+}
+
+void CubicBezier::InitSpline() {
+  double delta_t = 1.0 / (CUBIC_BEZIER_SPLINE_SAMPLES - 1);
+  for (int i = 0; i < CUBIC_BEZIER_SPLINE_SAMPLES; i++) {
+    spline_samples_[i] = SampleCurveX(i * delta_t);
+  }
 }
 
 double CubicBezier::GetDefaultEpsilon() {
@@ -142,27 +172,43 @@ double CubicBezier::SolveCurveX(double x, double epsilon) const {
 
   double t0;
   double t1;
-  double t2;
+  double t2 = x;
   double x2;
   double d2;
   int i;
 
-  // First try a few iterations of Newton's method -- normally very fast.
-  for (t2 = x, i = 0; i < 8; i++) {
+#ifndef NDEBUG
+  DCHECK(monotonically_increasing_);
+#endif
+
+  // Linear interpolation of spline curve for initial guess.
+  double delta_t = 1.0 / (CUBIC_BEZIER_SPLINE_SAMPLES - 1);
+  for (i = 1; i < CUBIC_BEZIER_SPLINE_SAMPLES; i++) {
+    if (x <= spline_samples_[i]) {
+      t1 = delta_t * i;
+      t0 = t1 - delta_t;
+      t2 = t0 + (t1 - t0) * (x - spline_samples_[i - 1]) /
+                    (spline_samples_[i] - spline_samples_[i - 1]);
+      break;
+    }
+  }
+
+  // Perform a few iterations of Newton's method -- normally very fast.
+  // See https://en.wikipedia.org/wiki/Newton%27s_method.
+  double newton_epsilon = std::min(kBezierEpsilon, epsilon);
+  for (i = 0; i < kMaxNewtonIterations; i++) {
     x2 = SampleCurveX(t2) - x;
-    if (fabs(x2) < epsilon)
+    if (fabs(x2) < newton_epsilon)
       return t2;
     d2 = SampleCurveDerivativeX(t2);
-    if (fabs(d2) < 1e-6)
+    if (fabs(d2) < kBezierEpsilon)
       break;
     t2 = t2 - x2 / d2;
   }
+  if (fabs(x2) < epsilon)
+    return t2;
 
   // Fall back to the bisection method for reliability.
-  t0 = 0.0;
-  t1 = 1.0;
-  t2 = x;
-
   while (t0 < t1) {
     x2 = SampleCurveX(t2);
     if (fabs(x2 - x) < epsilon)
@@ -171,7 +217,7 @@ double CubicBezier::SolveCurveX(double x, double epsilon) const {
       t0 = t2;
     else
       t1 = t2;
-    t2 = (t1 - t0) * .5 + t0;
+    t2 = (t1 + t0) * .5;
   }
 
   // Failure.
@@ -183,7 +229,7 @@ double CubicBezier::Solve(double x) const {
 }
 
 double CubicBezier::SlopeWithEpsilon(double x, double epsilon) const {
-  x = std::min(std::max(x, 0.0), 1.0);
+  x = base::ClampToRange(x, 0.0, 1.0);
   double t = SolveCurveX(x, epsilon);
   double dx = SampleCurveDerivativeX(t);
   double dy = SampleCurveDerivativeY(t);

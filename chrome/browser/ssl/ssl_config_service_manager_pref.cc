@@ -10,11 +10,12 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -23,7 +24,8 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/cert/cert_verifier.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_config_service.h"
@@ -150,7 +152,7 @@ class SSLConfigServiceManagerPref : public SSLConfigServiceManager {
   // The local_state prefs.
   BooleanPrefMember rev_checking_enabled_;
   BooleanPrefMember rev_checking_required_local_anchors_;
-  BooleanPrefMember symantec_legacy_infrastructure_enabled_;
+  BooleanPrefMember tls13_hardening_for_local_anchors_enabled_;
   StringPrefMember ssl_version_min_;
   StringPrefMember ssl_version_max_;
   StringListPrefMember h2_client_cert_coalescing_host_patterns_;
@@ -158,7 +160,7 @@ class SSLConfigServiceManagerPref : public SSLConfigServiceManager {
   // The cached list of disabled SSL cipher suites.
   std::vector<uint16_t> disabled_cipher_suites_;
 
-  mojo::InterfacePtrSet<network::mojom::SSLConfigClient> ssl_config_client_set_;
+  mojo::RemoteSet<network::mojom::SSLConfigClient> ssl_config_client_set_;
 
   DISALLOW_COPY_AND_ASSIGN(SSLConfigServiceManagerPref);
 };
@@ -166,6 +168,11 @@ class SSLConfigServiceManagerPref : public SSLConfigServiceManager {
 SSLConfigServiceManagerPref::SSLConfigServiceManagerPref(
     PrefService* local_state) {
   DCHECK(local_state);
+
+  local_state->SetDefaultPrefValue(
+      prefs::kTLS13HardeningForLocalAnchorsEnabled,
+      base::Value(base::FeatureList::IsEnabled(
+          features::kTLS13HardeningForLocalAnchors)));
 
   PrefChangeRegistrar::NamedChangeCallback local_state_callback =
       base::BindRepeating(&SSLConfigServiceManagerPref::OnPreferenceChanged,
@@ -176,8 +183,8 @@ SSLConfigServiceManagerPref::SSLConfigServiceManagerPref(
   rev_checking_required_local_anchors_.Init(
       prefs::kCertRevocationCheckingRequiredLocalAnchors, local_state,
       local_state_callback);
-  symantec_legacy_infrastructure_enabled_.Init(
-      prefs::kCertEnableSymantecLegacyInfrastructure, local_state,
+  tls13_hardening_for_local_anchors_enabled_.Init(
+      prefs::kTLS13HardeningForLocalAnchorsEnabled, local_state,
       local_state_callback);
   ssl_version_min_.Init(prefs::kSSLVersionMin, local_state,
                         local_state_callback);
@@ -196,16 +203,16 @@ SSLConfigServiceManagerPref::SSLConfigServiceManagerPref(
 
 // static
 void SSLConfigServiceManagerPref::RegisterPrefs(PrefRegistrySimple* registry) {
-  net::SSLConfig default_config;
   net::CertVerifier::Config default_verifier_config;
   registry->RegisterBooleanPref(prefs::kCertRevocationCheckingEnabled,
                                 default_verifier_config.enable_rev_checking);
   registry->RegisterBooleanPref(
       prefs::kCertRevocationCheckingRequiredLocalAnchors,
       default_verifier_config.require_rev_checking_local_anchors);
+  net::SSLContextConfig default_context_config;
   registry->RegisterBooleanPref(
-      prefs::kCertEnableSymantecLegacyInfrastructure,
-      default_verifier_config.disable_symantec_enforcement);
+      prefs::kTLS13HardeningForLocalAnchorsEnabled,
+      default_context_config.tls13_hardening_for_local_anchors_enabled);
   registry->RegisterStringPref(prefs::kSSLVersionMin, std::string());
   registry->RegisterStringPref(prefs::kSSLVersionMax, std::string());
   registry->RegisterListPref(prefs::kCipherSuiteBlacklist);
@@ -215,10 +222,10 @@ void SSLConfigServiceManagerPref::RegisterPrefs(PrefRegistrySimple* registry) {
 void SSLConfigServiceManagerPref::AddToNetworkContextParams(
     network::mojom::NetworkContextParams* network_context_params) {
   network_context_params->initial_ssl_config = GetSSLConfigFromPrefs();
-  network::mojom::SSLConfigClientPtr ssl_config_client;
-  network_context_params->ssl_config_client_request =
-      mojo::MakeRequest(&ssl_config_client);
-  ssl_config_client_set_.AddPtr(std::move(ssl_config_client));
+  mojo::Remote<network::mojom::SSLConfigClient> ssl_config_client;
+  network_context_params->ssl_config_client_receiver =
+      ssl_config_client.BindNewPipeAndPassReceiver();
+  ssl_config_client_set_.Add(std::move(ssl_config_client));
 }
 
 void SSLConfigServiceManagerPref::FlushForTesting() {
@@ -235,12 +242,11 @@ void SSLConfigServiceManagerPref::OnPreferenceChanged(
   network::mojom::SSLConfigPtr new_config = GetSSLConfigFromPrefs();
   network::mojom::SSLConfig* raw_config = new_config.get();
 
-  ssl_config_client_set_.ForAllPtrs(
-      [raw_config](network::mojom::SSLConfigClient* client) {
-        // Mojo calls consume all InterfacePtrs passed to them, so have to
-        // clone the config for each call.
-        client->OnSSLConfigUpdated(raw_config->Clone());
-      });
+  for (const auto& client : ssl_config_client_set_) {
+    // Mojo calls consume all InterfacePtrs passed to them, so have to
+    // clone the config for each call.
+    client->OnSSLConfigUpdated(raw_config->Clone());
+  }
 }
 
 network::mojom::SSLConfigPtr
@@ -255,8 +261,8 @@ SSLConfigServiceManagerPref::GetSSLConfigFromPrefs() const {
     config->rev_checking_enabled = false;
   config->rev_checking_required_local_anchors =
       rev_checking_required_local_anchors_.GetValue();
-  config->symantec_enforcement_disabled =
-      symantec_legacy_infrastructure_enabled_.GetValue();
+  config->tls13_hardening_for_local_anchors_enabled =
+      tls13_hardening_for_local_anchors_enabled_.GetValue();
   std::string version_min_str = ssl_version_min_.GetValue();
   std::string version_max_str = ssl_version_max_.GetValue();
 

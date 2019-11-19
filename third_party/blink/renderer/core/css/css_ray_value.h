@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_RAY_VALUE_H_
 
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -16,10 +17,6 @@ namespace cssvalue {
 
 class CSSRayValue : public CSSValue {
  public:
-  static CSSRayValue* Create(const CSSPrimitiveValue& angle,
-                             const CSSIdentifierValue& size,
-                             const CSSIdentifierValue* contain);
-
   CSSRayValue(const CSSPrimitiveValue& angle,
               const CSSIdentifierValue& size,
               const CSSIdentifierValue* contain);
@@ -40,9 +37,13 @@ class CSSRayValue : public CSSValue {
   Member<const CSSIdentifierValue> contain_;
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSRayValue, IsRayValue());
-
 }  // namespace cssvalue
+
+template <>
+struct DowncastTraits<cssvalue::CSSRayValue> {
+  static bool AllowFrom(const CSSValue& value) { return value.IsRayValue(); }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_RAY_VALUE_H_

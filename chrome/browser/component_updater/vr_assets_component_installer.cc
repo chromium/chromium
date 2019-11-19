@@ -27,7 +27,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
-#include "jni/VrAssetsComponentInstaller_jni.h"
+#include "chrome/android/chrome_jni_headers/VrAssetsComponentInstaller_jni.h"
 #endif  // defined(OS_ANDROID)
 
 using component_updater::ComponentUpdateService;

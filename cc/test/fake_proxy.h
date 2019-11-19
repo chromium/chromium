@@ -20,7 +20,6 @@ class FakeProxy : public Proxy {
   void SetLayerTreeHost(LayerTreeHost* host);
 
   bool IsStarted() const override;
-  bool CommitToActiveTree() const override;
   void SetLayerTreeFrameSink(
       LayerTreeFrameSink* layer_tree_frame_sink) override {}
   void ReleaseLayerTreeFrameSink() override {}
@@ -31,10 +30,9 @@ class FakeProxy : public Proxy {
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override {}
   void SetNextCommitWaitsForActivation() override {}
   bool RequestedAnimatePending() override;
-  void NotifyInputThrottledUntilCommit() override {}
   void SetDeferMainFrameUpdate(bool defer_main_frame_update) override {}
   void StartDeferringCommits(base::TimeDelta timeout) override {}
-  void StopDeferringCommits() override {}
+  void StopDeferringCommits(PaintHoldingCommitTrigger) override {}
   bool CommitRequested() const override;
   void Start() override {}
   void Stop() override {}
@@ -47,11 +45,10 @@ class FakeProxy : public Proxy {
                                   BrowserControlsState current,
                                   bool animate) override {}
   void RequestBeginMainFrameNotExpected(bool new_state) override {}
-  void SetURLForUkm(const GURL& url) override {}
+  void SetSourceURL(ukm::SourceId source_id, const GURL& url) override {}
   void ClearHistory() override {}
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override {}
-  uint32_t GenerateChildSurfaceSequenceNumberSync() override;
 
  private:
   LayerTreeHost* layer_tree_host_;

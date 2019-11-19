@@ -1,7 +1,7 @@
 images
 node_modules
 package-lock.json
-tests.hash
+tests.result.txt
 tests.log
-a.out.*
+piex.out.js
 *.bc

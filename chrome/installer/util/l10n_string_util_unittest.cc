@@ -5,6 +5,7 @@
 #include "chrome/installer/util/l10n_string_util.h"
 
 #include "base/macros.h"
+#include "build/branding_buildflags.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/installer_util_strings.h"
@@ -36,7 +37,7 @@ TEST(GetLocalizedStringTest, DistinctStrings) {
   }
 }
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Test that the mode-specific string mappings are correct for Google Chrome
 // builds.
 TEST(GetBaseMessageIdForMode, GoogleStringIds) {
@@ -83,6 +84,6 @@ TEST(GetBaseMessageIdForMode, GoogleStringIds) {
       EXPECT_EQ(mode_strings[i], GetBaseMessageIdForMode(input_ids[i]));
   }
 }
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace installer

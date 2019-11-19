@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/callback_internal.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/test_timeouts.h"
@@ -85,80 +84,62 @@ TEST_F(CallbackTest, IsNull) {
 }
 
 TEST_F(CallbackTest, Equals) {
-  EXPECT_TRUE(callback_a_.Equals(callback_a_));
-  EXPECT_FALSE(callback_a_.Equals(callback_b_));
-  EXPECT_FALSE(callback_b_.Equals(callback_a_));
+  EXPECT_EQ(callback_a_, callback_a_);
+  EXPECT_NE(callback_a_, callback_b_);
+  EXPECT_NE(callback_b_, callback_a_);
 
   // We should compare based on instance, not type.
   RepeatingCallback<void()> callback_c(new FakeBindState());
   RepeatingCallback<void()> callback_a2 = callback_a_;
-  EXPECT_TRUE(callback_a_.Equals(callback_a2));
-  EXPECT_FALSE(callback_a_.Equals(callback_c));
+  EXPECT_EQ(callback_a_, callback_a2);
+  EXPECT_NE(callback_a_, callback_c);
 
   // Empty, however, is always equal to empty.
   RepeatingCallback<void()> empty2;
-  EXPECT_TRUE(null_callback_.Equals(empty2));
+  EXPECT_EQ(null_callback_, empty2);
 }
 
 TEST_F(CallbackTest, Reset) {
   // Resetting should bring us back to empty.
   ASSERT_FALSE(callback_a_.is_null());
-  ASSERT_FALSE(callback_a_.Equals(null_callback_));
+  EXPECT_NE(callback_a_, null_callback_);
 
   callback_a_.Reset();
 
   EXPECT_TRUE(callback_a_.is_null());
-  EXPECT_TRUE(callback_a_.Equals(null_callback_));
+  EXPECT_EQ(callback_a_, null_callback_);
 }
 
 TEST_F(CallbackTest, Move) {
   // Moving should reset the callback.
   ASSERT_FALSE(callback_a_.is_null());
-  ASSERT_FALSE(callback_a_.Equals(null_callback_));
+  EXPECT_NE(callback_a_, null_callback_);
 
   auto tmp = std::move(callback_a_);
 
   EXPECT_TRUE(callback_a_.is_null());
-  EXPECT_TRUE(callback_a_.Equals(null_callback_));
-}
-
-struct TestForReentrancy {
-  TestForReentrancy()
-      : cb_already_run(false),
-        cb(BindRepeating(&TestForReentrancy::AssertCBIsNull,
-                         Unretained(this))) {}
-  void AssertCBIsNull() {
-    ASSERT_TRUE(cb.is_null());
-    cb_already_run = true;
-  }
-  bool cb_already_run;
-  RepeatingClosure cb;
-};
-
-TEST_F(CallbackTest, ResetAndReturn) {
-  TestForReentrancy tfr;
-  ASSERT_FALSE(tfr.cb.is_null());
-  ASSERT_FALSE(tfr.cb_already_run);
-  ResetAndReturn(&tfr.cb).Run();
-  ASSERT_TRUE(tfr.cb.is_null());
-  ASSERT_TRUE(tfr.cb_already_run);
+  EXPECT_EQ(callback_a_, null_callback_);
 }
 
 TEST_F(CallbackTest, NullAfterMoveRun) {
-  RepeatingClosure cb = BindRepeating([] {});
+  RepeatingCallback<void(void*)> cb = BindRepeating([](void* param) {
+    EXPECT_TRUE(static_cast<RepeatingCallback<void(void*)>*>(param)->is_null());
+  });
   ASSERT_TRUE(cb);
-  std::move(cb).Run();
-  ASSERT_FALSE(cb);
+  std::move(cb).Run(&cb);
+  EXPECT_FALSE(cb);
 
   const RepeatingClosure cb2 = BindRepeating([] {});
   ASSERT_TRUE(cb2);
   std::move(cb2).Run();
-  ASSERT_TRUE(cb2);
+  EXPECT_TRUE(cb2);
 
-  OnceClosure cb3 = BindOnce([] {});
+  OnceCallback<void(void*)> cb3 = BindOnce([](void* param) {
+    EXPECT_TRUE(static_cast<OnceCallback<void(void*)>*>(param)->is_null());
+  });
   ASSERT_TRUE(cb3);
-  std::move(cb3).Run();
-  ASSERT_FALSE(cb3);
+  std::move(cb3).Run(&cb3);
+  EXPECT_FALSE(cb3);
 }
 
 TEST_F(CallbackTest, MaybeValidReturnsTrue) {
@@ -184,11 +165,15 @@ TEST_F(CallbackTest, MaybeValidInvalidateWeakPtrsOnSameSequence) {
   RepeatingCallback<void()> cb =
       BindRepeating(&ClassWithAMethod::TheMethod, ptr);
   EXPECT_TRUE(cb.MaybeValid());
+  EXPECT_FALSE(cb.IsCancelled());
 
   factory.InvalidateWeakPtrs();
-  // MaybeValid() should be false because InvalidateWeakPtrs() was called on
-  // the same thread.
+  // MaybeValid() should be false and IsCancelled() should become true because
+  // InvalidateWeakPtrs() was called on the same thread.
   EXPECT_FALSE(cb.MaybeValid());
+  EXPECT_TRUE(cb.IsCancelled());
+  // is_null() is not affected by the invalidated WeakPtr.
+  EXPECT_FALSE(cb.is_null());
 }
 
 TEST_F(CallbackTest, MaybeValidInvalidateWeakPtrsOnOtherSequence) {

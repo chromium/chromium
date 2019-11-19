@@ -7,7 +7,8 @@
 namespace media {
 
 AudioSourceParameters::AudioSourceParameters() = default;
-AudioSourceParameters::AudioSourceParameters(int session_id)
+AudioSourceParameters::AudioSourceParameters(
+    const base::UnguessableToken& session_id)
     : session_id(session_id) {}
 AudioSourceParameters::AudioSourceParameters(
     const AudioSourceParameters& params) = default;

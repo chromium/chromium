@@ -4,13 +4,13 @@
 
 module prefs.mojom;
 
+import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom";
 
 const string kServiceName = "preferences";
-const string kLocalStateServiceName = "local_state";
 
 // The know pref store types.
 //
@@ -45,7 +45,7 @@ interface PrefStoreObserver {
 // store and a handle to receive notifications on.
 struct PrefStoreConnection {
   // Handle to receive updates on.
-  PrefStoreObserver& observer;
+  pending_receiver<PrefStoreObserver> observer;
 
   // Initial values of the PrefStore. These will not be communicated through
   // OnPrefChanged.
@@ -72,7 +72,7 @@ struct PersistentPrefStoreConnection {
   };
 
   PrefStoreConnection? pref_store_connection;
-  PersistentPrefStore? pref_store;
+  pending_remote<PersistentPrefStore>? pref_store;
   ReadError read_error;
   bool read_only;
 };
@@ -93,7 +93,14 @@ interface PrefStoreConnector {
   //
   // Calls to |Connect| before |Init| are allowed and will cause the calls to
   // queue and connect once |Init| has been called.
-  Connect(PrefRegistry pref_registry) =>
+  //
+  // If |client_token| is provided, it uniquely identifies the connection,
+  // fixing it to a specific set of observed prefs. Normally the client's
+  // Service Manager Identity is used for this purposes, and this is a temporary
+  // measure to support pulling disjoint clients off of Service Manager APIs.
+  // Once all clients are migrated to using this token argument, the structure
+  // of Prefs Service interfaces can be changed to eliminate the Token value.
+  Connect(PrefRegistry pref_registry, mojo_base.mojom.Token? client_token) =>
       (PersistentPrefStoreConnection connection,
        IncognitoPersistentPrefStoreConnection? underlay,
        array<PrefRegistration> remote_defaults,
@@ -185,7 +192,7 @@ struct TrackedPersistentPrefStoreConfiguration {
   string registry_seed;
   mojo_base.mojom.String16 registry_path;
   TrackedPreferenceValidationDelegate? validation_delegate;
-  ResetOnLoadObserver? reset_on_load_observer;
+  pending_remote<ResetOnLoadObserver>? reset_on_load_observer;
 };
 
 struct TrackedPreferenceMetadata {

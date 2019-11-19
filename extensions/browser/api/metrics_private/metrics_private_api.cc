@@ -10,7 +10,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"

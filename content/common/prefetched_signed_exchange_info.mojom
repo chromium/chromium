@@ -1,0 +1,25 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+import "services/network/public/mojom/url_loader_factory.mojom";
+import "services/network/public/mojom/url_loader.mojom";
+import "services/network/public/mojom/url_response_head.mojom";
+import "url/mojom/url.mojom";
+
+[Native]
+struct SHA256HashValue;
+
+// Used for SignedExchangeSubresourcePrefetch.
+// This struct keeps the information about a prefetched signed exchange. It is
+// used in CommitNavigationParams to be passed from the browser process to the
+// renderer process in CommitNavigation IPC.
+struct PrefetchedSignedExchangeInfo {
+  url.mojom.Url outer_url;
+  SHA256HashValue header_integrity;
+  url.mojom.Url inner_url;
+  network.mojom.URLResponseHead inner_response;
+  pending_remote<network.mojom.URLLoaderFactory> loader_factory_handle;
+};

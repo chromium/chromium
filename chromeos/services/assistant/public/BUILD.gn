@@ -13,6 +13,7 @@ component("feature_flags") {
   ]
 
   deps = [
+    "//ash/public/cpp",
     "//base",
   ]
 }

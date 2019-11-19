@@ -65,8 +65,6 @@ namespace fileManagerPrivateInternal {
     static void pinDriveFile(DOMString url,
                              boolean pin,
                              SimpleCallback callback);
-    static void ensureFileDownloaded(DOMString url,
-                             SimpleCallback callback);
     static void executeTask(DOMString taskId,
                             DOMString[] urls,
                             ExecuteTaskCallback callback);
@@ -77,16 +75,6 @@ namespace fileManagerPrivateInternal {
     static void getFileTasks(DOMString[] urls,
                              GetFileTasksCallback callback);
     static void getDownloadUrl(DOMString url, GetUrlCallback callback);
-    static void requestDriveShare(DOMString url,
-                                fileManagerPrivate.DriveShareType shareType,
-                                SimpleCallback callback);
-    static void setEntryTag(DOMString url,
-                            fileManagerPrivate.EntryTagVisibility visibility,
-                            DOMString key,
-                            DOMString value,
-                            SimpleCallback callback);
-    static void cancelFileTransfers(DOMString[] urls,
-                                    optional SimpleCallback callback);
     static void startCopy(DOMString url,
                           DOMString parentUrl,
                           DOMString newName,
@@ -103,15 +91,19 @@ namespace fileManagerPrivateInternal {
                                  GetDirectorySizeCallback callback);
     static void getRecentFiles(fileManagerPrivate.SourceRestriction restriction,
                                GetRecentFilesCallback callback);
-    static void sharePathsWithCrostini(DOMString[] urls, boolean persist,
-                                      SimpleCallback callback);
-    static void unsharePathWithCrostini(DOMString url, SimpleCallback callback);
+    static void sharePathsWithCrostini(DOMString vmName, DOMString[] urls,
+                                       boolean persist,
+                                       SimpleCallback callback);
+    static void unsharePathWithCrostini(DOMString vmName, DOMString url,
+                                        SimpleCallback callback);
     static void getCrostiniSharedPaths(boolean observeFirstForSession,
-        GetCrostiniSharedPathsCallback callback);
+                                       DOMString vmName,
+                                       GetCrostiniSharedPathsCallback callback);
     static void getLinuxPackageInfo(DOMString url,
                                     GetLinuxPackageInfoCallback callback);
     static void installLinuxPackage(DOMString url,
                                     InstallLinuxPackageCallback callback);
+    static void importCrostiniImage(DOMString url);
     static void getThumbnail(DOMString url,
                              boolean cropToSquare,
                              GetThumbnailCallback callback);

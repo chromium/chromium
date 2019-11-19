@@ -9,6 +9,5 @@ proto_library("data_reduction_proxy_proto") {
     "client_config.proto",
     "data_store.proto",
     "network_properties.proto",
-    "pageload_metrics.proto",
   ]
 }

@@ -2,120 +2,129 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('system_dialog_browsertest', function() {
-  /** @enum {string} */
-  const TestNames = {
-    LinkTriggersLocalPrint: 'link triggers local print',
-    InvalidSettingsDisableLink: 'invalid settings disable link',
-  };
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, NativeLayer, PluginProxy, whenReady} from 'chrome://print/print_preview.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {isWindows} from 'chrome://resources/js/cr.m.js';
+import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
+import {PDFPluginStub} from 'chrome://test/print_preview/plugin_stub.js';
+import {getCddTemplate, getDefaultInitialSettings, selectOption} from 'chrome://test/print_preview/print_preview_test_utils.js';
+import {eventToPromise, waitBeforeNextRender} from 'chrome://test/test_util.m.js';
 
-  const suiteName = 'SystemDialogBrowserTest';
-  suite(suiteName, function() {
-    /** @type {?PrintPreviewAppElement} */
-    let page = null;
+window.system_dialog_browsertest = {};
+system_dialog_browsertest.suiteName = 'SystemDialogBrowserTest';
+/** @enum {string} */
+system_dialog_browsertest.TestNames = {
+  LinkTriggersLocalPrint: 'link triggers local print',
+  InvalidSettingsDisableLink: 'invalid settings disable link',
+};
 
-    /** @type {?print_preview.NativeLayer} */
-    let nativeLayer = null;
+suite(system_dialog_browsertest.suiteName, function() {
+  /** @type {?PrintPreviewSidebarElement} */
+  let sidebar = null;
 
-    /** @type {?PrintPreviewLinkContainerElement} */
-    let linkContainer = null;
+  /** @type {?NativeLayer} */
+  let nativeLayer = null;
 
-    /** @type {?HTMLElement} */
-    let link = null;
+  /** @type {?PrintPreviewLinkContainerElement} */
+  let linkContainer = null;
 
-    /** @type {string} */
-    let printTicketKey = '';
+  /** @type {?HTMLElement} */
+  let link = null;
 
-    /** @override */
-    setup(function() {
-      nativeLayer = new print_preview.NativeLayerStub();
-      print_preview.NativeLayer.setInstance(nativeLayer);
-      PolymerTest.clearBody();
+  /** @type {string} */
+  let printTicketKey = '';
 
-      const initialSettings =
-          print_preview_test_utils.getDefaultInitialSettings();
-      nativeLayer.setInitialSettings(initialSettings);
-      nativeLayer.setLocalDestinationCapabilities(
-          print_preview_test_utils.getCddTemplate(initialSettings.printerName));
-      const pluginProxy = new print_preview.PDFPluginStub();
-      print_preview_new.PluginProxy.setInstance(pluginProxy);
+  /** @override */
+  setup(function() {
+    nativeLayer = new NativeLayerStub();
+    NativeLayer.setInstance(nativeLayer);
+    PolymerTest.clearBody();
 
-      page = document.createElement('print-preview-app');
-      document.body.appendChild(page);
-      const previewArea = page.$.previewArea;
-      pluginProxy.setLoadCallback(previewArea.onPluginLoad_.bind(previewArea));
-      linkContainer = page.$$('print-preview-link-container');
-      return Promise
-          .all([
-            nativeLayer.whenCalled('getInitialSettings'),
-            nativeLayer.whenCalled('getPrinterCapabilities'),
-          ])
-          .then(function() {
-            return nativeLayer.whenCalled('getPreview');
-          })
-          .then(function() {
-            assertEquals('FooDevice', page.destination_.id);
-            link = cr.isWindows ? linkContainer.$.systemDialogLink :
-                                  linkContainer.$.openPdfInPreviewLink;
-            printTicketKey =
-                cr.isWindows ? 'showSystemDialog' : 'OpenPDFInPreview';
-          });
-    });
+    const initialSettings = getDefaultInitialSettings();
+    nativeLayer.setInitialSettings(initialSettings);
+    nativeLayer.setLocalDestinationCapabilities(
+        getCddTemplate(initialSettings.printerName));
+    const pluginProxy = new PDFPluginStub();
+    PluginProxy.setInstance(pluginProxy);
 
-    test(assert(TestNames.LinkTriggersLocalPrint), function() {
-      assertFalse(linkContainer.disabled);
-      assertFalse(link.hidden);
-      link.click();
-      // Should result in a print call and dialog should close.
-      return nativeLayer.whenCalled('print').then(function(printTicket) {
-        expectTrue(JSON.parse(printTicket)[printTicketKey]);
-        return nativeLayer.whenCalled('dialogClose');
-      });
-    });
-
-    test(assert(TestNames.InvalidSettingsDisableLink), function() {
-      assertFalse(linkContainer.disabled);
-      assertFalse(link.hidden);
-
-      const moreSettingsElement = page.$$('print-preview-more-settings');
-      moreSettingsElement.$.label.click();
-      const scalingSettings = page.$$('print-preview-scaling-settings');
-      assertFalse(scalingSettings.hidden);
-      nativeLayer.resetResolver('getPreview');
-
-      // Set scaling settings to custom.
-      scalingSettings.$$('.md-select').value =
-          scalingSettings.ScalingValue.CUSTOM;
-      scalingSettings.$$('.md-select').dispatchEvent(new CustomEvent('change'));
-
-      // Set an invalid input.
-      const scalingSettingsInput =
-          scalingSettings.$$('print-preview-number-settings-section')
-              .$.userValue.inputElement;
-      scalingSettingsInput.value = '0';
-      scalingSettingsInput.dispatchEvent(
-          new CustomEvent('input', {composed: true, bubbles: true}));
-
-      // No new preview
-      nativeLayer.whenCalled('getPreview').then(function() {
-        assertTrue(false);
-      });
-
-      return test_util.eventToPromise('input-change', scalingSettings)
-          .then(() => {
-            // Expect disabled print button
-            const header = page.$$('print-preview-header');
-            const printButton = header.$$('.action-button');
-            assertTrue(printButton.disabled);
-            assertTrue(linkContainer.disabled);
-            assertFalse(link.hidden);
-            assertTrue(link.querySelector('button').disabled);
-          });
-    });
+    const page = document.createElement('print-preview-app');
+    document.body.appendChild(page);
+    const previewArea = page.$.previewArea;
+    sidebar = page.$$('print-preview-sidebar');
+    return Promise
+        .all([
+          waitBeforeNextRender(page),
+          whenReady(),
+          nativeLayer.whenCalled('getInitialSettings'),
+          nativeLayer.whenCalled('getPrinterCapabilities'),
+        ])
+        .then(function() {
+          linkContainer = sidebar.$$('print-preview-link-container');
+          return nativeLayer.whenCalled('getPreview');
+        })
+        .then(function() {
+          assertEquals('FooDevice', page.destination_.id);
+          link = isWindows ? linkContainer.$.systemDialogLink :
+                             linkContainer.$.openPdfInPreviewLink;
+          printTicketKey = isWindows ? 'showSystemDialog' : 'OpenPDFInPreview';
+        });
   });
 
-  return {
-    suiteName: suiteName,
-    TestNames: TestNames,
-  };
+  test(
+      assert(system_dialog_browsertest.TestNames.LinkTriggersLocalPrint),
+      function() {
+        assertFalse(linkContainer.disabled);
+        assertFalse(link.hidden);
+        link.click();
+        // Should result in a print call and dialog should close.
+        return nativeLayer.whenCalled('print').then(function(printTicket) {
+          expectTrue(JSON.parse(printTicket)[printTicketKey]);
+          return nativeLayer.whenCalled('dialogClose');
+        });
+      });
+
+  test(
+      assert(system_dialog_browsertest.TestNames.InvalidSettingsDisableLink),
+      function() {
+        assertFalse(linkContainer.disabled);
+        assertFalse(link.hidden);
+
+        const moreSettingsElement = sidebar.$$('print-preview-more-settings');
+        moreSettingsElement.$.label.click();
+        const scalingSettings = sidebar.$$('print-preview-scaling-settings');
+        assertFalse(scalingSettings.hidden);
+        nativeLayer.resetResolver('getPreview');
+        let previewCalls = 0;
+
+        // Set scaling settings to custom.
+        return selectOption(
+                   scalingSettings,
+                   scalingSettings.ScalingValue.CUSTOM.toString())
+            .then(() => {
+              previewCalls = nativeLayer.getCallCount('getPreview');
+
+              // Set an invalid input.
+              const scalingSettingsInput =
+                  scalingSettings.$$('print-preview-number-settings-section')
+                      .$.userValue.inputElement;
+              scalingSettingsInput.value = '0';
+              scalingSettingsInput.dispatchEvent(
+                  new CustomEvent('input', {composed: true, bubbles: true}));
+
+              return eventToPromise('input-change', scalingSettings);
+            })
+            .then(() => {
+              // Expect disabled print button
+              const parentElement = sidebar.$$('print-preview-button-strip');
+              const printButton = parentElement.$$('.action-button');
+              assertTrue(printButton.disabled);
+              assertTrue(linkContainer.disabled);
+              assertFalse(link.hidden);
+              assertTrue(link.querySelector('cr-icon-button').disabled);
+
+              // No new preview
+              assertEquals(
+                  previewCalls, nativeLayer.getCallCount('getPreview'));
+            });
+      });
 });

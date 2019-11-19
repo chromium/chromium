@@ -1,0 +1,51 @@
+<style include="print-preview-shared cr-hidden-style md-select">
+  :host {
+    --duplex-icon-side-padding: 8px;
+    --duplex-icon-size: 16px;
+  }
+
+  .md-select {
+    background-position: var(--duplex-icon-side-padding) center,
+        calc(100% - var(--md-select-side-padding)) center;
+    background-size: var(--duplex-icon-size), var(--md-arrow-width);
+    padding-inline-start: 32px;
+  }
+
+  :host-context([dir=rtl]) .md-select {
+    background-position-x: calc(100% - var(--duplex-icon-side-padding)),
+        var(--md-select-side-padding);
+  }
+</style>
+<print-preview-settings-section hidden$="[[!settings.duplex.available]]">
+  <div slot="title">
+    <label id="label">$i18n{optionTwoSided}</label>
+  </div>
+  <div slot="controls" class="checkbox">
+    <cr-checkbox id="duplex" aria-labelledby="label"
+        disabled$="[[getDisabled_(settings.duplex.setByPolicy, disabled)]]"
+        on-change="onCheckboxChange_">
+      $i18n{printOnBothSidesLabel}
+    </cr-checkbox>
+  </div>
+</print-preview-settings-section>
+<iron-collapse opened="[[getOpenCollapse_(
+    settings.duplex.*, settings.duplexShortEdge.available)]]">
+  <print-preview-settings-section>
+    <div slot="title"></div>
+    <div slot="controls">
+      <select class="md-select" aria-labelledby="duplex"
+          style="background-image: [[getBackgroundImages_(
+            settings.duplexShortEdge.value, dark)]];"
+          disabled$="[[getDisabled_(
+            settings.duplexShortEdge.setByPolicy, disabled)]]"
+          value="{{selectedValue::change}}">
+        <option value="[[duplexValueEnum_.LONG_EDGE]]">
+          $i18n{optionLongEdge}
+        </option>
+        <option value="[[duplexValueEnum_.SHORT_EDGE]]">
+          $i18n{optionShortEdge}
+        </option>
+      </select>
+    </div>
+  </print-preview-settings-section>
+</iron-collapse>

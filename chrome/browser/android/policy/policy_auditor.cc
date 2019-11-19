@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/android/chrome_jni_headers/PolicyAuditor_jni.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/PolicyAuditor_jni.h"
 #include "net/cert/cert_status_flags.h"
 
 using base::android::JavaParamRef;

@@ -14,7 +14,7 @@
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_platform.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_speech_synthesis_constants.h"
+#include "third_party/blink/public/mojom/speech/speech_synthesis.mojom.h"
 
 class TtsControllerTest : public testing::Test {};
 
@@ -27,8 +27,7 @@ class MockTtsControllerDelegate : public TtsControllerDelegateImpl {
   PrefService* pref_service_ = nullptr;
 
  private:
-  const PrefService* GetPrefService(
-      const content::TtsUtterance* utterance) override {
+  const PrefService* GetPrefService(content::TtsUtterance* utterance) override {
     return pref_service_;
   }
 };
@@ -229,23 +228,23 @@ TEST_F(TtsControllerTest, TestTtsControllerUtteranceDefaults) {
   std::unique_ptr<MockTtsControllerDelegate> tts_controller_delegate =
       std::make_unique<MockTtsControllerDelegate>();
 
-  double rate = blink::kWebSpeechSynthesisDoublePrefNotSet;
-  double pitch = blink::kWebSpeechSynthesisDoublePrefNotSet;
-  double volume = blink::kWebSpeechSynthesisDoublePrefNotSet;
+  double rate = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
+  double pitch = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
+  double volume = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
 
   std::unique_ptr<content::TtsUtterance> utterance1 =
-      base::WrapUnique(content::TtsUtterance::Create(nullptr));
+      content::TtsUtterance::Create(nullptr);
   tts_controller_delegate->UpdateUtteranceDefaultsFromPrefs(
       utterance1.get(), &rate, &pitch, &volume);
   // Updated to global defaults.
-  EXPECT_EQ(blink::kWebSpeechSynthesisDefaultTextToSpeechRate, rate);
-  EXPECT_EQ(blink::kWebSpeechSynthesisDefaultTextToSpeechPitch, pitch);
-  EXPECT_EQ(blink::kWebSpeechSynthesisDefaultTextToSpeechVolume, volume);
+  EXPECT_EQ(blink::mojom::kSpeechSynthesisDefaultRate, rate);
+  EXPECT_EQ(blink::mojom::kSpeechSynthesisDefaultPitch, pitch);
+  EXPECT_EQ(blink::mojom::kSpeechSynthesisDefaultVolume, volume);
 
   // Now we will set prefs and expect those to be used as defaults.
-  rate = blink::kWebSpeechSynthesisDoublePrefNotSet;
-  pitch = blink::kWebSpeechSynthesisDoublePrefNotSet;
-  volume = blink::kWebSpeechSynthesisDoublePrefNotSet;
+  rate = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
+  pitch = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
+  volume = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
   TestingPrefServiceSimple pref_service_;
   pref_service_.registry()->RegisterDoublePref(prefs::kTextToSpeechRate, 1.5);
   pref_service_.registry()->RegisterDoublePref(prefs::kTextToSpeechPitch, 2.0);
@@ -253,7 +252,7 @@ TEST_F(TtsControllerTest, TestTtsControllerUtteranceDefaults) {
   tts_controller_delegate->pref_service_ = &pref_service_;
 
   std::unique_ptr<content::TtsUtterance> utterance2 =
-      base::WrapUnique(content::TtsUtterance::Create(nullptr));
+      content::TtsUtterance::Create(nullptr);
   tts_controller_delegate->UpdateUtteranceDefaultsFromPrefs(
       utterance2.get(), &rate, &pitch, &volume);
   // Updated to pref values.
@@ -267,7 +266,7 @@ TEST_F(TtsControllerTest, TestTtsControllerUtteranceDefaults) {
   volume = 1.3f;
 
   std::unique_ptr<content::TtsUtterance> utterance3 =
-      base::WrapUnique(content::TtsUtterance::Create(nullptr));
+      content::TtsUtterance::Create(nullptr);
   tts_controller_delegate->UpdateUtteranceDefaultsFromPrefs(
       utterance3.get(), &rate, &pitch, &volume);
   // Updated to pref values.

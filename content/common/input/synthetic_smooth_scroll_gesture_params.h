@@ -9,6 +9,7 @@
 
 #include "content/common/content_export.h"
 #include "content/common/input/synthetic_gesture_params.h"
+#include "ui/events/types/scroll_types.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -30,8 +31,7 @@ struct CONTENT_EXPORT SyntheticSmoothScrollGestureParams
   float speed_in_pixels_s;
   float fling_velocity_x;
   float fling_velocity_y;
-  bool precise_scrolling_deltas;
-  bool scroll_by_page;
+  ui::input_types::ScrollGranularity granularity;
 
   static const SyntheticSmoothScrollGestureParams* Cast(
       const SyntheticGestureParams* gesture_params);

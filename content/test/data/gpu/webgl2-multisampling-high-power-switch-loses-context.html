@@ -1,0 +1,62 @@
+<html>
+<head>
+<script type="text/javascript">
+let canvas;
+let gl;
+let msrb;
+let contextLost = false;
+
+function send(str) {
+  if (window.domAutomationController) {
+    window.domAutomationController.send(str);
+  } else {
+    console.log(str);
+  }
+}
+
+function animate() {
+  if (!contextLost) {
+    gl.clearColor(0, 1, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  }
+  requestAnimationFrame(animate);
+}
+
+function onLoad() {
+  canvas = document.getElementById("canvas1");
+  canvas.addEventListener('webglcontextlost', function(e) {
+    console.log('Context lost');
+    e.preventDefault();
+    contextLost = true;
+  }, false);
+  canvas.addEventListener('webglcontextrestored', function(e) {
+    contextLost = false;
+    send("SUCCESS");
+  }, false);
+  gl = canvas.getContext('webgl2', {powerPreference: "low-power"});
+  msrb = gl.createRenderbuffer();
+  gl.bindRenderbuffer(gl.RENDERBUFFER, msrb);
+  gl.renderbufferStorageMultisample(gl.RENDERBUFFER, 2, gl.RGBA8, 16, 16);
+  gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+  let err = gl.getError();
+  if (err != 0) {
+    console.log("Error " + err + " allocating multisampled renderbuffer");
+    send("FAILED");
+    return;
+  }
+  // Must draw to the WebGL canvas in order for the GPU switch to be detected.
+  requestAnimationFrame(animate);
+  send("LOADED");
+}
+
+function runTest() {
+  let c2 = document.getElementById("canvas2");
+  let gl = c2.getContext('webgl2', {powerPreference: "high-performance"});
+}
+</script>
+</head>
+<body onload="onLoad()">
+<canvas id="canvas1" width="16px" height="16px"></canvas>
+<canvas id="canvas2" width="16px" height="16px"></canvas>
+</body>
+</html>

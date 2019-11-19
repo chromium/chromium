@@ -44,11 +44,7 @@ class SVGLengthList final
  public:
   typedef SVGLengthListTearOff TearOffType;
 
-  static SVGLengthList* Create(SVGLengthMode mode = SVGLengthMode::kOther) {
-    return MakeGarbageCollected<SVGLengthList>(mode);
-  }
-
-  explicit SVGLengthList(SVGLengthMode);
+  explicit SVGLengthList(SVGLengthMode = SVGLengthMode::kOther);
   ~SVGLengthList() override;
 
   SVGParsingError SetValueAsString(const String&);
@@ -60,7 +56,7 @@ class SVGLengthList final
   SVGLengthMode UnitMode() const { return mode_; }
 
   void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(SVGAnimationElement*,
+  void CalculateAnimatedValue(const SVGAnimateElement&,
                               float percentage,
                               unsigned repeat_count,
                               SVGPropertyBase* from_value,

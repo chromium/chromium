@@ -8,7 +8,7 @@
 
 namespace audio {
 
-LogAdapter::LogAdapter(media::mojom::AudioLogPtr audio_log)
+LogAdapter::LogAdapter(mojo::PendingRemote<media::mojom::AudioLog> audio_log)
     : audio_log_(std::move(audio_log)) {}
 
 LogAdapter::~LogAdapter() = default;

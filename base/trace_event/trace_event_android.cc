@@ -84,7 +84,7 @@ void EndChromeTracing(TraceLog* trace_log,
                       WaitableEvent* complete_event) {
   trace_log->SetDisabled();
   // Delete the buffered trace events as they have been sent to atrace.
-  trace_log->Flush(Bind(&NoOpOutputCallback, complete_event));
+  trace_log->Flush(BindRepeating(&NoOpOutputCallback, complete_event));
 }
 
 }  // namespace

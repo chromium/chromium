@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
@@ -48,11 +47,11 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 
 namespace blink {
-
-using namespace html_names;
 
 class MediaDocumentParser : public RawDataDocumentParser {
  public:
@@ -69,38 +68,43 @@ class MediaDocumentParser : public RawDataDocumentParser {
 };
 
 void MediaDocumentParser::CreateDocumentStructure() {
+  // TODO(dgozman): DocumentLoader might call Finish on a stopped parser.
+  // See also comments for DocumentParser::{Detach,StopParsing}.
+  if (IsStopped())
+    return;
   if (did_build_document_structure_)
     return;
   did_build_document_structure_ = true;
 
   DCHECK(GetDocument());
-  HTMLHtmlElement* root_element = HTMLHtmlElement::Create(*GetDocument());
+  auto* root_element = MakeGarbageCollected<HTMLHtmlElement>(*GetDocument());
   GetDocument()->AppendChild(root_element);
   root_element->InsertedByParser();
 
   if (IsDetached())
     return;  // runScriptsAtDocumentElementAvailable can detach the frame.
 
-  HTMLHeadElement* head = HTMLHeadElement::Create(*GetDocument());
-  HTMLMetaElement* meta = HTMLMetaElement::Create(*GetDocument());
-  meta->setAttribute(kNameAttr, "viewport");
-  meta->setAttribute(kContentAttr, "width=device-width");
+  auto* head = MakeGarbageCollected<HTMLHeadElement>(*GetDocument());
+  auto* meta = MakeGarbageCollected<HTMLMetaElement>(*GetDocument());
+  meta->setAttribute(html_names::kNameAttr, "viewport");
+  meta->setAttribute(html_names::kContentAttr, "width=device-width");
   head->AppendChild(meta);
 
-  HTMLVideoElement* media = HTMLVideoElement::Create(*GetDocument());
-  media->setAttribute(kControlsAttr, "");
-  media->setAttribute(kAutoplayAttr, "");
-  media->setAttribute(kNameAttr, "media");
+  auto* media = MakeGarbageCollected<HTMLVideoElement>(*GetDocument());
+  media->setAttribute(html_names::kControlsAttr, "");
+  media->setAttribute(html_names::kAutoplayAttr, "");
+  media->setAttribute(html_names::kNameAttr, "media");
 
-  HTMLSourceElement* source = HTMLSourceElement::Create(*GetDocument());
-  source->SetSrc(GetDocument()->Url());
+  auto* source = MakeGarbageCollected<HTMLSourceElement>(*GetDocument());
+  source->setAttribute(html_names::kSrcAttr,
+                       AtomicString(GetDocument()->Url()));
 
   if (DocumentLoader* loader = GetDocument()->Loader())
     source->setType(loader->MimeType());
 
   media->AppendChild(source);
 
-  HTMLBodyElement* body = HTMLBodyElement::Create(*GetDocument());
+  auto* body = MakeGarbageCollected<HTMLBodyElement>(*GetDocument());
 
   GetDocument()->WillInsertBody();
 
@@ -122,7 +126,7 @@ MediaDocument::MediaDocument(const DocumentInit& initializer)
   LockCompatibilityMode();
 
   // Set the autoplay policy to kNoUserGestureRequired.
-  if (GetSettings()) {
+  if (GetSettings() && IsInMainFrame()) {
     GetSettings()->SetAutoplayPolicy(
         AutoplayPolicy::Type::kNoUserGestureRequired);
   }

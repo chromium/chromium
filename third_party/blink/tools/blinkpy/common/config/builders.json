@@ -1,59 +1,78 @@
 {
-    "Chromium Mac10.13": {
-        "port_name": "mac-mac10.13",
-        "specifiers": ["Mac10.13", "Release"]
-    },
-    "Fuchsia": {
+    "Fuchsia x64": {
+        "master": "chromium.linux",
         "port_name": "fuchsia",
         "specifiers": ["Fuchsia", "Release"]
     },
     "Linux Tests": {
+        "master": "chromium.linux",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"]
     },
     "Linux Tests (dbg)(1)": {
+        "master": "chromium.linux",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Debug"]
     },
     "Mac10.10 Tests": {
+        "master": "chromium.mac",
         "port_name": "mac-mac10.10",
         "specifiers": ["Mac10.10", "Release"]
     },
     "Mac10.11 Tests": {
+        "master": "chromium.mac",
         "port_name": "mac-mac10.11",
         "specifiers": ["Mac10.11", "Release"]
     },
-    "Mac10.13 Tests": {
+    "Mac10.12 Tests": {
+        "master": "chromium.mac",
         "port_name": "mac-mac10.12",
         "specifiers": ["Mac10.12", "Release"]
     },
-    "Mac10.13 Tests (dbg)": {
-        "port_name": "mac-mac10.11",
-        "specifiers": ["Mac10.13", "Debug"]
+    "Mac10.13 Tests": {
+        "master": "chromium.mac",
+        "port_name": "mac-mac10.13",
+        "specifiers": ["Mac10.13", "Release"]
     },
     "WebKit Mac10.13 (retina)": {
+        "master": "chromium.mac",
         "port_name": "mac-retina",
         "specifiers": ["Retina", "Release"]
     },
-    "WebKit Android (Nexus4)": {
-        "port_name": "android-kitkat",
-        "specifiers": ["KitKat", "Release"]
+    "Mac10.13 Tests (dbg)": {
+        "master": "chromium.mac",
+        "port_name": "mac-mac10.13",
+        "specifiers": ["Mac10.13", "Debug"]
     },
-    "WebKit Win10": {
-        "port_name": "win-win10",
-        "specifiers": ["Win10", "Release"]
-    },
-    "Win7 Tests": {
+    "Win7 Tests (1)": {
+        "master": "chromium.win",
         "port_name": "win-win7",
         "specifiers": ["Win7", "Release"]
     },
+    "Win10 Tests x64": {
+        "master": "chromium.win",
+        "port_name": "win-win10",
+        "specifiers": ["Win10", "Release"]
+    },
     "Win7 Tests (dbg)(1)": {
+        "master": "chromium.win",
         "port_name": "win-win7",
         "specifiers": ["Win7", "Debug"]
+    },
+    "Win10 Tests x64 (dbg)": {
+        "master": "chromium.win",
+        "port_name": "win-win10",
+        "specifiers": ["Win10", "Debug"]
+    },
+    "fuchsia_x64": {
+        "port_name": "fuchsia",
+        "specifiers": ["Fuchsia", "Release"],
+        "is_try_builder": true
     },
     "linux-blink-rel": {
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
+        "has_webdriver_tests": true,
         "is_try_builder": true
     },
     "mac10.10-blink-rel": {
@@ -89,12 +108,6 @@
     "win10-blink-rel": {
         "port_name": "win-win10",
         "specifiers": ["Win10", "Release"],
-        "is_try_builder": true
-    },
-    "android_blink_rel": {
-        "bucket": "luci.chromium.try",
-        "port_name": "android-kitkat",
-        "specifiers": ["KitKat", "Release"],
         "is_try_builder": true
     }
 }

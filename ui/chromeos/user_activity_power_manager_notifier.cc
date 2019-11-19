@@ -4,12 +4,10 @@
 
 #include "ui/chromeos/user_activity_power_manager_notifier.h"
 
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/power_manager_client.h"
 #include "services/device/public/mojom/constants.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "ui/base/user_activity/user_activity_detector.h"
-#include "ui/events/devices/input_device_manager.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -48,23 +46,25 @@ power_manager::UserActivityType GetUserActivityTypeForEvent(
 UserActivityPowerManagerNotifier::UserActivityPowerManagerNotifier(
     UserActivityDetector* detector,
     service_manager::Connector* connector)
-    : detector_(detector), fingerprint_observer_binding_(this) {
+    : detector_(detector) {
   detector_->AddObserver(this);
-  ui::InputDeviceManager::GetInstance()->AddObserver(this);
+  ui::DeviceDataManager::GetInstance()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
 
   // Connector can be null in tests.
   if (connector) {
     // Treat fingerprint attempts as user activies to turn on the screen.
     // I.e., when user tried to use fingerprint to unlock.
-    connector->BindInterface(device::mojom::kServiceName, &fingerprint_ptr_);
-    device::mojom::FingerprintObserverPtr observer;
-    fingerprint_observer_binding_.Bind(mojo::MakeRequest(&observer));
-    fingerprint_ptr_->AddFingerprintObserver(std::move(observer));
+    connector->Connect(device::mojom::kServiceName,
+                       fingerprint_.BindNewPipeAndPassReceiver());
+    fingerprint_->AddFingerprintObserver(
+        fingerprint_observer_receiver_.BindNewPipeAndPassRemote());
   }
 }
 
 UserActivityPowerManagerNotifier::~UserActivityPowerManagerNotifier() {
-  ui::InputDeviceManager::GetInstance()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+  ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
   detector_->RemoveObserver(this);
 }
 
@@ -100,11 +100,26 @@ void UserActivityPowerManagerNotifier::MaybeNotifyUserActivity(
   base::TimeTicks now = base::TimeTicks::Now();
   // InSeconds() truncates rather than rounding, so it's fine for this
   // comparison.
-  if (last_notify_time_.is_null() ||
+  // powerd depends on this D-Bus call to track input events. When the
+  // system is about to suspend or in dark resume, report user activity
+  // immediately so that powerd can transition to full resume and turn the
+  // display on as soon as possible. OnUserActivity calls are rate-limited by
+  // the sender, so it's safe to always notify while we're suspending.
+  if (suspending_ || last_notify_time_.is_null() ||
       (now - last_notify_time_).InSeconds() >= kNotifyIntervalSec) {
     chromeos::PowerManagerClient::Get()->NotifyUserActivity(user_activity_type);
     last_notify_time_ = now;
   }
+}
+
+void UserActivityPowerManagerNotifier::SuspendImminent(
+    power_manager::SuspendImminent::Reason reason) {
+  suspending_ = true;
+}
+
+void UserActivityPowerManagerNotifier::SuspendDone(
+    const base::TimeDelta& sleep_duration) {
+  suspending_ = false;
 }
 
 }  // namespace ui

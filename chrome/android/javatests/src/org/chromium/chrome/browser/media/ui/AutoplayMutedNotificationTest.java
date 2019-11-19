@@ -72,7 +72,7 @@ public class AutoplayMutedNotificationTest {
             return mAudioFocusState;
         }
 
-        public void requestAudioFocus(int focusType) throws Exception {
+        public void requestAudioFocus(int focusType) {
             int result = getAudioManager().requestAudioFocus(
                     this, AudioManager.STREAM_MUSIC, focusType);
             if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
@@ -86,14 +86,14 @@ public class AutoplayMutedNotificationTest {
     private MockAudioFocusChangeListener mAudioFocusChangeListener;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         mAudioFocusChangeListener = new MockAudioFocusChangeListener();
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PATH));
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 

@@ -1,0 +1,36 @@
+# https://crbug.com/925652 - There are no |services_|.
+-HidServiceTest.GetDevices
+
+# https://crbug.com/925652 - |num_sockets| expectations mismatch.
+-NetworkContextTest.PreconnectFour
+-NetworkContextTest.PreconnectTwo
+
+# https://crbug.com/925652 - Fails FillOSMemoryDump().
+-OSMetricsTest.GivesNonZeroResults
+
+# https://crbug.com/925653 - IsTracingEnabled() expectations not met.
+-TracingConsumerTest.NotifiesOnTracingEnabledWaitsFor*
+
+# https://crbug.com/925653 - Flaky OOM and virtual method crashes.
+-TracingConsumerTest.FlushProducers
+-TracingConsumerTest.LargeDataSize
+-TracingConsumerTest.PrivacyFilterConfig
+-TracingConsumerTest.PrivacyFilterConfigInJson
+-TracingConsumerTest.TestConsumerPriority
+
+# https://crbug.com/925653 - Second socket receives too many packets.
+-UDPSocketTest.JoinMulticastGroup
+
+# https://crbug.com/925653 - Unexpected address-in-use.
+-TCPBoundSocketTest.ListenError
+
+# https://crbug.com/976319 - Flakily times-out due to virtualization overhead.
+-SimpleURLLoaderTest.OnUploadProgressCallback/*
+
+# https://crbug.com/986544 - Flakes with mismatched state expectations.
+-URLLoaderTest.ResourceSchedulerIntegration
+
+# https://crbug.com/989223 - connect()ed UDP socket's getsockname() is wrong.
+-UDPSocketTest.TestReceiveMoreWithBufferSize
+-UDPSocketTest.TestReadSend
+-NetworkContextTest.CreateUDPSocket

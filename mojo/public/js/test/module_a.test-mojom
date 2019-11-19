@@ -1,0 +1,35 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module module_a;
+
+struct TestStructA1 {
+  string q;
+  string r;
+  string s;
+};
+
+struct TestStructA2 {
+  enum NestedEnum {
+    A,
+    B,
+  };
+
+  TestStructA1 ax;
+  TestStructA1 ay;
+  NestedEnum enumField;
+};
+
+enum ModuleEnum {
+  THIRD,
+};
+
+interface ParentInterface {
+  enum NestedEnum {
+    FIRST,
+    SECOND,
+  };
+
+  SomeMethod(NestedEnum value);
+};

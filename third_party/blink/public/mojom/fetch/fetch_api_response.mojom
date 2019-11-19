@@ -6,14 +6,13 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
+import "services/network/public/mojom/content_security_policy.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom";
 import "url/mojom/url.mojom";
 
 // Describes a Response in terms of the concept from the Fetch spec.
 // https://fetch.spec.whatwg.org/#response-class
-// It is currently used by Cache Storage and Service Worker, and the plan is to
-// use it also in Background Fetch to replace content::ServiceWorkerResponse.
 // Note: Be sure to update CacheStorageCache::EstimatedResponseSizeWithoutBlob()
 // when adding or removing members.
 struct FetchAPIResponse {
@@ -34,7 +33,7 @@ struct FetchAPIResponse {
   // Corresponds to response types from the Fetch spec:
   // https://fetch.spec.whatwg.org/#concept-response-type
   network.mojom.FetchResponseType response_type =
-    network.mojom.FetchResponseType.kOpaque;
+    network.mojom.FetchResponseType.kDefault;
 
   // The source of this response, e.g. network, CacheStorage.
   network.mojom.FetchResponseSource response_source =
@@ -61,6 +60,16 @@ struct FetchAPIResponse {
   // set of headers that should be exposed.
   array<string> cors_exposed_header_names;
 
-  // Side data is used to pass the metadata of the response (eg. V8 code cache).
+  // Used to pass code cache for responses produced by cache_storage.  The code
+  // cache will be stored in the side data stream of the blob.
   SerializedBlob? side_data_blob;
+
+  // Used to pass code cache for a response that is being newly stored in
+  // cache_storage.  This blob is created from a memory buffer in the renderer
+  // and the code cache is contained in the primary data stream of the blob.
+  SerializedBlob? side_data_blob_for_cache_put;
+
+  // In case this response had a Content-Security-Policy header, this is the
+  // parsed CSP.
+  network.mojom.ContentSecurityPolicy? content_security_policy;
 };

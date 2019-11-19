@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <cstddef>
 #include <string>
 #include <utility>
 
@@ -45,14 +46,18 @@ class InterfacePtr {
 
   // Constructs an unbound InterfacePtr.
   InterfacePtr() {}
-  InterfacePtr(decltype(nullptr)) {}
+  InterfacePtr(std::nullptr_t) {}
 
   // Takes over the binding of another InterfacePtr.
   InterfacePtr(InterfacePtr&& other) noexcept {
     internal_state_.Swap(&other.internal_state_);
   }
 
-  explicit InterfacePtr(PtrInfoType&& info) noexcept { Bind(std::move(info)); }
+  explicit InterfacePtr(
+      PtrInfoType&& info,
+      scoped_refptr<base::SequencedTaskRunner> runner = nullptr) noexcept {
+    Bind(std::move(info), std::move(runner));
+  }
 
   // Takes over the binding of another InterfacePtr, and closes any message pipe
   // already bound to this pointer.
@@ -64,7 +69,7 @@ class InterfacePtr {
 
   // Assigning nullptr to this class causes it to close the currently bound
   // message pipe (if any) and returns the pointer to the unbound state.
-  InterfacePtr& operator=(decltype(nullptr)) {
+  InterfacePtr& operator=(std::nullptr_t) {
     reset();
     return *this;
   }
@@ -86,7 +91,7 @@ class InterfacePtr {
             scoped_refptr<base::SequencedTaskRunner> runner = nullptr) {
     reset();
     if (info.is_valid())
-      internal_state_.Bind(std::move(info), std::move(runner));
+      internal_state_.Bind(info.internal_state(), std::move(runner));
   }
 
   // Returns whether or not this InterfacePtr is bound to a message pipe.
@@ -106,8 +111,8 @@ class InterfacePtr {
   // Queries the max version that the remote side supports. On completion, the
   // result will be returned as the input of |callback|. The version number of
   // this interface pointer will also be updated.
-  void QueryVersion(const base::Callback<void(uint32_t)>& callback) {
-    internal_state_.QueryVersion(callback);
+  void QueryVersion(base::OnceCallback<void(uint32_t)> callback) {
+    internal_state_.QueryVersion(std::move(callback));
   }
 
   // If the remote side doesn't support the specified version, it will close its

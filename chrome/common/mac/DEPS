@@ -1,4 +1,0 @@
-include_rules = [
-  "+third_party/google_toolbox_for_mac/src",
-  "+third_party/mach_override",
-]

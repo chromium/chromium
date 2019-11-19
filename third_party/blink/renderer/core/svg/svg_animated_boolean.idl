@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/types.html#InterfaceSVGAnimatedBoolean
 
+[Exposed=Window]
 interface SVGAnimatedBoolean {
     [RaisesException=Setter] attribute boolean baseVal;
     readonly attribute boolean animVal;

@@ -23,7 +23,7 @@
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -80,7 +80,7 @@ class PrivacyTableViewControllerTest : public ChromeTableViewControllerTest {
         initWithBrowserState:chrome_browser_state_.get()];
   }
 
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   NSString* initialValueForSpdyProxyEnabled_;
@@ -90,11 +90,10 @@ class PrivacyTableViewControllerTest : public ChromeTableViewControllerTest {
 // and sections.
 TEST_F(PrivacyTableViewControllerTest, TestModel) {
   CheckController();
-  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_EQ(2, NumberOfSections());
 
   // Sections[0].
-  EXPECT_EQ(1, NumberOfItemsInSection(0));
-  CheckSectionHeaderWithId(IDS_IOS_OPTIONS_CONTINUITY_LABEL, 0);
+  EXPECT_EQ(2, NumberOfItemsInSection(0));
   NSString* handoffSubtitle = chrome_browser_state_->GetPrefs()->GetBoolean(
                                   prefs::kIosHandoffToOtherDevices)
                                   ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
@@ -102,26 +101,14 @@ TEST_F(PrivacyTableViewControllerTest, TestModel) {
   CheckTextCellTextAndDetailText(
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_HANDOFF_TO_OTHER_DEVICES),
       handoffSubtitle, 0, 0);
+  CheckSwitchCellStateAndText(
+      NO, l10n_util::GetNSString(IDS_SETTINGS_CAN_MAKE_PAYMENT_TOGGLE_LABEL), 0,
+      1);
 
   // Sections[1].
-  EXPECT_EQ(2, NumberOfItemsInSection(1));
-  CheckSectionHeaderWithId(IDS_IOS_OPTIONS_WEB_SERVICES_LABEL, 1);
-  CheckSwitchCellStateAndTextWithId(YES, IDS_IOS_OPTIONS_SEARCH_URL_SUGGESTIONS,
-                                    1, 0);
-  CheckDetailItemTextWithIds(IDS_IOS_OPTIONS_SEND_USAGE_DATA,
-                             IDS_IOS_OPTIONS_DATA_USAGE_NEVER, 1, 1);
-  CheckSectionFooterWithId(IDS_IOS_OPTIONS_PRIVACY_FOOTER, 1);
-
-  // Sections[2].
-  EXPECT_EQ(1, NumberOfItemsInSection(2));
-  CheckSwitchCellStateAndText(
-      NO, l10n_util::GetNSString(IDS_SETTINGS_CAN_MAKE_PAYMENT_TOGGLE_LABEL), 2,
-      0);
-
-  // Sections[3].
-  EXPECT_EQ(1, NumberOfItemsInSection(3));
+  EXPECT_EQ(1, NumberOfItemsInSection(1));
   CheckTextCellText(l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE),
-                    3, 0);
+                    1, 0);
 }
 
 }  // namespace

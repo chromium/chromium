@@ -8,13 +8,19 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "extensions/browser/install/crx_install_error.h"
+#include "extensions/common/constants.h"
 
 class Profile;
 
 namespace extensions {
 
 class CrxInstaller;
+class Extension;
 
 // Class used to actually install the Bookmark App in the system.
 // TODO(loyso): Erase this subclass once crbug.com/877898 fixed.
@@ -27,15 +33,22 @@ class BookmarkAppInstallFinalizer : public web_app::InstallFinalizer {
 
   // InstallFinalizer:
   void FinalizeInstall(const WebApplicationInfo& web_app_info,
+                       const FinalizeOptions& options,
                        InstallFinalizedCallback callback) override;
-  bool CanCreateOsShortcuts() const override;
-  void CreateOsShortcuts(const web_app::AppId& app_id,
-                         CreateOsShortcutsCallback callback) override;
-  bool CanPinAppToShelf() const override;
-  void PinAppToShelf(const web_app::AppId& app_id) override;
-  bool CanReparentTab(bool shortcut_created) const override;
-  void ReparentTab(const web_app::AppId& app_id,
-                   content::WebContents* web_contents) override;
+  void FinalizeFallbackInstallAfterSync(
+      const web_app::AppId& app_id,
+      InstallFinalizedCallback callback) override;
+  void FinalizeUninstallAfterSync(const web_app::AppId& app_id,
+                                  UninstallWebAppCallback callback) override;
+  void FinalizeUpdate(const WebApplicationInfo& web_app_info,
+                      InstallFinalizedCallback callback) override;
+  void UninstallExternalWebApp(
+      const GURL& app_url,
+      web_app::ExternalInstallSource external_install_source,
+      UninstallWebAppCallback callback) override;
+  bool CanUserUninstallFromSync(const web_app::AppId& app_id) const override;
+  void UninstallWebAppFromSyncByUser(const web_app::AppId& app_id,
+                                     UninstallWebAppCallback) override;
   bool CanRevealAppShim() const override;
   void RevealAppShim(const web_app::AppId& app_id) override;
 
@@ -45,8 +58,30 @@ class BookmarkAppInstallFinalizer : public web_app::InstallFinalizer {
       CrxInstallerFactory crx_installer_factory);
 
  private:
+  // May return nullptr if app_id is not found or extension is disabled.
+  const Extension* GetEnabledExtension(const web_app::AppId& app_id) const;
+
+  void UninstallExtension(const web_app::AppId& app_id,
+                          UninstallWebAppCallback);
+
+  void OnExtensionInstalled(const GURL& app_url,
+                            LaunchType launch_type,
+                            bool is_locally_installed,
+                            InstallFinalizedCallback callback,
+                            scoped_refptr<CrxInstaller> crx_installer,
+                            const base::Optional<CrxInstallError>& error);
+
+  void OnExtensionUpdated(const web_app::AppId& expected_app_id,
+                          InstallFinalizedCallback callback,
+                          scoped_refptr<CrxInstaller> crx_installer,
+                          const base::Optional<CrxInstallError>& error);
+
   CrxInstallerFactory crx_installer_factory_;
+  web_app::ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
+
   Profile* profile_;
+
+  base::WeakPtrFactory<BookmarkAppInstallFinalizer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkAppInstallFinalizer);
 };

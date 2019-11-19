@@ -19,6 +19,24 @@ PrinterBasicInfo::PrinterBasicInfo(const PrinterBasicInfo& other) = default;
 
 PrinterBasicInfo::~PrinterBasicInfo() = default;
 
+#if defined(OS_CHROMEOS)
+
+AdvancedCapabilityValue::AdvancedCapabilityValue() = default;
+
+AdvancedCapabilityValue::AdvancedCapabilityValue(
+    const AdvancedCapabilityValue& other) = default;
+
+AdvancedCapabilityValue::~AdvancedCapabilityValue() = default;
+
+AdvancedCapability::AdvancedCapability() = default;
+
+AdvancedCapability::AdvancedCapability(const AdvancedCapability& other) =
+    default;
+
+AdvancedCapability::~AdvancedCapability() = default;
+
+#endif  // defined(OS_CHROMEOS)
+
 PrinterSemanticCapsAndDefaults::PrinterSemanticCapsAndDefaults() = default;
 
 PrinterSemanticCapsAndDefaults::PrinterSemanticCapsAndDefaults(

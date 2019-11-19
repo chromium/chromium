@@ -1,0 +1,45 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 8
+
+module arc.mojom;
+
+import "components/arc/mojom/video_decode_accelerator.mojom";
+import "components/arc/mojom/video_encode_accelerator.mojom";
+import "components/arc/mojom/video_protected_buffer_allocator.mojom";
+
+// Deprecated method IDs: 0
+// Next method ID: 2
+interface VideoHost {
+  // Requests an IPC channel from Chrome's browser process to bootstrap a new
+  // mojo child process and a token which can be used to create a message pipe
+  // connected to a new VideoAcceleratorFactory.
+  [MinVersion=4]
+  OnBootstrapVideoAcceleratorFactory@1() => (handle channel_handle,
+                                             string token);
+};
+
+// Next method ID: 2
+interface VideoInstance {
+  // DEPRECATED: Please use Init@1 instead.
+  InitDeprecated@0(VideoHost host_ptr);
+
+  // Establishes full-duplex communication with the host.
+  [MinVersion=5] Init@1(VideoHost host_ptr) => ();
+};
+
+// Deprecated method IDs: 0
+// Next method ID: 4
+interface VideoAcceleratorFactory {
+  [MinVersion=1]
+  CreateEncodeAccelerator@1(VideoEncodeAccelerator& video_encoder);
+
+  [MinVersion=6]
+  CreateDecodeAccelerator@2(VideoDecodeAccelerator& video_decoder);
+
+  [Minversion=7]
+  CreateProtectedBufferAllocator@3(
+      VideoProtectedBufferAllocator& video_protected_buffer_allocator);
+};

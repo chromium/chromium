@@ -24,7 +24,7 @@ namespace extensions {
 
 // Implements the inputMethodPrivate.getInputMethodConfig  method.
 class InputMethodPrivateGetInputMethodConfigFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   InputMethodPrivateGetInputMethodConfigFunction() {}
 
@@ -41,7 +41,7 @@ class InputMethodPrivateGetInputMethodConfigFunction
 
 // Implements the inputMethodPrivate.getCurrentInputMethod method.
 class InputMethodPrivateGetCurrentInputMethodFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   InputMethodPrivateGetCurrentInputMethodFunction() {}
 
@@ -58,7 +58,7 @@ class InputMethodPrivateGetCurrentInputMethodFunction
 
 // Implements the inputMethodPrivate.setCurrentInputMethod method.
 class InputMethodPrivateSetCurrentInputMethodFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   InputMethodPrivateSetCurrentInputMethodFunction() {}
 
@@ -74,8 +74,7 @@ class InputMethodPrivateSetCurrentInputMethodFunction
 };
 
 // Implements the inputMethodPrivate.getInputMethods method.
-class InputMethodPrivateGetInputMethodsFunction
-    : public UIThreadExtensionFunction {
+class InputMethodPrivateGetInputMethodsFunction : public ExtensionFunction {
  public:
   InputMethodPrivateGetInputMethodsFunction() {}
 
@@ -92,7 +91,7 @@ class InputMethodPrivateGetInputMethodsFunction
 
 // Implements the inputMethodPrivate.fetchAllDictionaryWords method.
 class InputMethodPrivateFetchAllDictionaryWordsFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   InputMethodPrivateFetchAllDictionaryWordsFunction() {}
 
@@ -108,8 +107,7 @@ class InputMethodPrivateFetchAllDictionaryWordsFunction
 };
 
 // Implements the inputMethodPrivate.addWordToDictionary method.
-class InputMethodPrivateAddWordToDictionaryFunction
-    : public UIThreadExtensionFunction {
+class InputMethodPrivateAddWordToDictionaryFunction : public ExtensionFunction {
  public:
   InputMethodPrivateAddWordToDictionaryFunction() {}
 
@@ -126,7 +124,7 @@ class InputMethodPrivateAddWordToDictionaryFunction
 
 // Implements the inputMethodPrivate.getEncryptSyncEnabled method.
 class InputMethodPrivateGetEncryptSyncEnabledFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   InputMethodPrivateGetEncryptSyncEnabledFunction() {}
 
@@ -142,8 +140,7 @@ class InputMethodPrivateGetEncryptSyncEnabledFunction
 };
 
 // Implements the inputMethodPrivate.setXkbLayout method.
-class InputMethodPrivateSetXkbLayoutFunction
-    : public UIThreadExtensionFunction {
+class InputMethodPrivateSetXkbLayoutFunction : public ExtensionFunction {
  public:
   InputMethodPrivateSetXkbLayoutFunction() {}
 
@@ -159,8 +156,7 @@ class InputMethodPrivateSetXkbLayoutFunction
 };
 
 // Implements the inputMethodPrivate.showInputView method.
-class InputMethodPrivateShowInputViewFunction
-    : public UIThreadExtensionFunction {
+class InputMethodPrivateShowInputViewFunction : public ExtensionFunction {
  public:
   InputMethodPrivateShowInputViewFunction() {}
 
@@ -176,8 +172,7 @@ class InputMethodPrivateShowInputViewFunction
 };
 
 // Implements the inputMethodPrivate.openOptionsPage method.
-class InputMethodPrivateOpenOptionsPageFunction
-    : public UIThreadExtensionFunction {
+class InputMethodPrivateOpenOptionsPageFunction : public ExtensionFunction {
  public:
   InputMethodPrivateOpenOptionsPageFunction() {}
 
@@ -192,8 +187,7 @@ class InputMethodPrivateOpenOptionsPageFunction
   DISALLOW_COPY_AND_ASSIGN(InputMethodPrivateOpenOptionsPageFunction);
 };
 
-class InputMethodPrivateGetSurroundingTextFunction
-    : public UIThreadExtensionFunction {
+class InputMethodPrivateGetSurroundingTextFunction : public ExtensionFunction {
  public:
   InputMethodPrivateGetSurroundingTextFunction() {}
 
@@ -208,7 +202,7 @@ class InputMethodPrivateGetSurroundingTextFunction
   DISALLOW_COPY_AND_ASSIGN(InputMethodPrivateGetSurroundingTextFunction);
 };
 
-class InputMethodPrivateGetSettingFunction : public UIThreadExtensionFunction {
+class InputMethodPrivateGetSettingFunction : public ExtensionFunction {
  public:
   InputMethodPrivateGetSettingFunction() = default;
 
@@ -224,7 +218,7 @@ class InputMethodPrivateGetSettingFunction : public UIThreadExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(InputMethodPrivateGetSettingFunction);
 };
 
-class InputMethodPrivateSetSettingFunction : public UIThreadExtensionFunction {
+class InputMethodPrivateSetSettingFunction : public ExtensionFunction {
  public:
   InputMethodPrivateSetSettingFunction() = default;
 
@@ -238,6 +232,36 @@ class InputMethodPrivateSetSettingFunction : public UIThreadExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.setSetting",
                              INPUTMETHODPRIVATE_SETSETTING)
   DISALLOW_COPY_AND_ASSIGN(InputMethodPrivateSetSettingFunction);
+};
+
+class InputMethodPrivateSetCompositionRangeFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.setCompositionRange",
+                             INPUTMETHODPRIVATE_SETCOMPOSITIONRANGE)
+
+ protected:
+  ~InputMethodPrivateSetCompositionRangeFunction() override {}
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+class InputMethodPrivateSetSelectionRangeFunction : public ExtensionFunction {
+ public:
+  InputMethodPrivateSetSelectionRangeFunction(
+      const InputMethodPrivateSetSelectionRangeFunction&) = delete;
+  InputMethodPrivateSetSelectionRangeFunction& operator=(
+      const InputMethodPrivateSetSelectionRangeFunction&) = delete;
+  InputMethodPrivateSetSelectionRangeFunction() = default;
+
+ protected:
+  ~InputMethodPrivateSetSelectionRangeFunction() override = default;
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.setSelectionRange",
+                             INPUTMETHODPRIVATE_SETSELECTIONRANGE)
 };
 
 class InputMethodAPI : public BrowserContextKeyedAPI,

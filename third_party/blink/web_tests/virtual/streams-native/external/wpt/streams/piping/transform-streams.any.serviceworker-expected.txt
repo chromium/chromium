@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Piping through an identity transform stream should close the destination when the source closes Failed to execute 'pipeThrough' on 'ReadableStream': pipeThrough disabled because StreamsNative feature is enabled
-Harness: the test ran to completion.
-

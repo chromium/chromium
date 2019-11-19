@@ -48,15 +48,23 @@ cca.views.camera.timertick.start = function() {
         tickTimeout = null;
       }
       cca.util.animateCancel(tickMsg);
-      reject();
+      reject(new Error('cancel'));
     };
 
-    var tickCounter = cca.state.get('_10sec') ? 10 : 3;
+    let tickCounter = cca.state.get('_10sec') ? 10 : 3;
+    const sounds = {
+      1: '#sound-tick-final',
+      2: '#sound-tick-inc',
+      3: '#sound-tick-inc',
+      [tickCounter]: '#sound-tick-start',
+    };
     var onTimerTick = () => {
       if (tickCounter == 0) {
         resolve();
       } else {
-        cca.sound.play('#sound-tick');
+        if (sounds[tickCounter] !== undefined) {
+          cca.sound.play(sounds[tickCounter]);
+        }
         tickMsg.textContent = tickCounter + '';
         cca.util.animateOnce(tickMsg);
         tickTimeout = setTimeout(onTimerTick, 1000);

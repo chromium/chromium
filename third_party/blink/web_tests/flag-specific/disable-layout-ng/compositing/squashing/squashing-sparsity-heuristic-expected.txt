@@ -1,0 +1,57 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='composited'",
+      "bounds": [400, 400],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 1
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='A' class='overlap1')",
+      "position": [80, 80],
+      "bounds": [10, 10],
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='B' class='overlap2'",
+      "bounds": [10, 10],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FF00",
+      "transform": 2
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='C' class='overlap3')",
+      "position": [0, 80],
+      "bounds": [25, 10],
+      "transform": 2
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [220, 220, 0, 1]
+      ]
+    }
+  ]
+}
+

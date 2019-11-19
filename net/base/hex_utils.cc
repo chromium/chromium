@@ -5,21 +5,10 @@
 #include "net/base/hex_utils.h"
 
 #include <algorithm>
-#include <cstdint>
-#include <vector>
 
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 
 namespace net {
-
-std::string HexDecode(base::StringPiece input) {
-  std::vector<uint8_t> output;
-  std::string result;
-  if (base::HexStringToBytes(input, &output))
-    result.assign(reinterpret_cast<const char*>(&output[0]), output.size());
-  return result;
-}
 
 std::string HexDump(base::StringPiece input) {
   const int kBytesPerLine = 16;  // Maximum bytes dumped per line.

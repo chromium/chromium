@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Property grid-auto-flow value 'row' computes to 'row'
+PASS Property grid-auto-flow value 'column' computes to 'column'
+FAIL Property grid-auto-flow value 'row dense' computes to 'dense' assert_equals: expected "dense" but got "row dense"
+PASS Property grid-auto-flow value 'column dense' computes to 'column dense'
+FAIL Property grid-auto-flow value 'dense row' computes to 'dense' assert_equals: expected "dense" but got "row dense"
+PASS Property grid-auto-flow value 'dense column' computes to 'column dense'
+FAIL Property grid-auto-flow value 'dense' computes to 'dense' assert_equals: expected "dense" but got "row dense"
+Harness: the test ran to completion.
+

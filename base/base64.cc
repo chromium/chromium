@@ -10,15 +10,20 @@
 
 namespace base {
 
+std::string Base64Encode(span<const uint8_t> input) {
+  std::string output;
+  output.resize(modp_b64_encode_len(input.size()));  // makes room for null byte
+
+  // modp_b64_encode_len() returns at least 1, so output[0] is safe to use.
+  const size_t output_size = modp_b64_encode(
+      &(output[0]), reinterpret_cast<const char*>(input.data()), input.size());
+
+  output.resize(output_size);
+  return output;
+}
+
 void Base64Encode(const StringPiece& input, std::string* output) {
-  std::string temp;
-  temp.resize(modp_b64_encode_len(input.size()));  // makes room for null byte
-
-  // modp_b64_encode_len() returns at least 1, so temp[0] is safe to use.
-  size_t output_size = modp_b64_encode(&(temp[0]), input.data(), input.size());
-
-  temp.resize(output_size);  // strips off null byte
-  output->swap(temp);
+  *output = Base64Encode(base::as_bytes(base::make_span(input)));
 }
 
 bool Base64Decode(const StringPiece& input, std::string* output) {

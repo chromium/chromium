@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "components/infobars/core/infobar.h"
 #include "components/language/core/browser/language_model_manager.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/page_translated_details.h"
 #include "components/translate/core/browser/translate_accept_languages.h"
@@ -18,10 +19,8 @@
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "ios/web/public/browser_state.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/web_state.h"
 #include "ios/web_view/internal/language/web_view_language_model_manager_factory.h"
-#import "ios/web_view/internal/language/web_view_url_language_histogram_factory.h"
-#include "ios/web_view/internal/pref_names.h"
 #import "ios/web_view/internal/translate/cwv_translation_controller_internal.h"
 #include "ios/web_view/internal/translate/web_view_translate_accept_languages_factory.h"
 #include "ios/web_view/internal/translate/web_view_translate_ranker_factory.h"
@@ -46,11 +45,6 @@ WebViewTranslateClient::WebViewTranslateClient(web::WebState* web_state)
                         web_state->GetNavigationManager(),
                         translate_manager_.get()) {
   web_state->AddObserver(this);
-  language::IOSLanguageDetectionTabHelper::CreateForWebState(
-      web_state, translate_driver_.CreateLanguageDetectionCallback(),
-      ios_web_view::WebViewUrlLanguageHistogramFactory::GetForBrowserState(
-          ios_web_view::WebViewBrowserState::FromBrowserState(
-              web_state->GetBrowserState())));
 }
 
 WebViewTranslateClient::~WebViewTranslateClient() = default;
@@ -102,7 +96,7 @@ PrefService* WebViewTranslateClient::GetPrefs() {
 std::unique_ptr<translate::TranslatePrefs>
 WebViewTranslateClient::GetTranslatePrefs() {
   return std::make_unique<translate::TranslatePrefs>(
-      GetPrefs(), prefs::kAcceptLanguages, nullptr);
+      GetPrefs(), language::prefs::kAcceptLanguages, nullptr);
 }
 
 translate::TranslateAcceptLanguages*
@@ -117,16 +111,6 @@ WebViewTranslateClient::GetTranslateAcceptLanguages() {
 int WebViewTranslateClient::GetInfobarIconID() const {
   NOTREACHED();
   return 0;
-}
-
-void WebViewTranslateClient::RecordLanguageDetectionEvent(
-    const translate::LanguageDetectionDetails& details) const {
-  // TODO(crbug.com/722679): Implementing gaia-keyed logging.
-}
-
-void WebViewTranslateClient::RecordTranslateEvent(
-    const metrics::TranslateEventProto&) {
-  // TODO(crbug.com/728491): Implementing gaia-keyed logging.
 }
 
 bool WebViewTranslateClient::IsTranslatableURL(const GURL& url) {

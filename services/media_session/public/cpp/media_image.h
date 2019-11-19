@@ -25,7 +25,7 @@ namespace media_session {
 
 // Structure representing an MediaImage as per the MediaSession API, see:
 // https://wicg.github.io/mediasession/#dictdef-mediaimage
-struct COMPONENT_EXPORT(MEDIA_SESSION_CPP) MediaImage {
+struct COMPONENT_EXPORT(MEDIA_SESSION_BASE_CPP) MediaImage {
   MediaImage();
   MediaImage(const MediaImage& other);
   ~MediaImage();

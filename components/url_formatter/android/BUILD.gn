@@ -7,7 +7,9 @@ import("//build/config/android/rules.gni")
 android_library("url_formatter_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   java_files =
       [ "java/src/org/chromium/components/url_formatter/UrlFormatter.java" ]
@@ -17,6 +19,4 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/url_formatter/UrlFormatter.java",
   ]
-
-  jni_package = "url_formatter"
 }

@@ -39,7 +39,7 @@ class TestExtensionDir {
   base::FilePath Pack();
 
   // Returns the path to the unpacked directory.
-  base::FilePath UnpackedPath();
+  base::FilePath UnpackedPath() const;
 
  private:
   // Stores files that make up the extension.

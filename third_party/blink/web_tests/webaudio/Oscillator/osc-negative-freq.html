@@ -27,7 +27,7 @@
         runTest(should, {
           message: 'Sum of positive and negative frequency sine oscillators',
           type: 'sine',
-          threshold: 3.5763e-7
+          threshold: 4.1724e-7
         }).then(() => task.done());
       });
 
@@ -145,7 +145,7 @@
               should(
                   actual,
                   'Sum of positive and negative frequency custom oscillators')
-                  .beCloseToArray(expected, {absoluteThreshold: 3.5763e-7});
+                  .beCloseToArray(expected, {absoluteThreshold: 4.1724e-7});
             })
             .then(() => task.done());
       });

@@ -23,8 +23,9 @@ class EventTarget;
 
 namespace test {
 
-typedef base::Callback<void(EventType, const gfx::Vector2dF&)>
-        ScrollStepCallback;
+// See EventGenerator::GestureScrollSequenceWithCallback for details.
+using ScrollStepCallback =
+    base::RepeatingCallback<void(EventType, const gfx::Vector2dF&)>;
 
 class TestTickClock;
 class EventGenerator;
@@ -176,6 +177,9 @@ class EventGenerator {
 
   // Generates events to click (press, release) left button.
   void ClickLeftButton();
+
+  // Generates events to click (press, release) right button.
+  void ClickRightButton();
 
   // Generates a double click event using the left button.
   void DoubleClickLeftButton();

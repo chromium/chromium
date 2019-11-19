@@ -4,7 +4,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/pref_registry",
   "+components/prefs",
+  "+components/signin/public",
   "+components/sync",
   "+components/sync_preferences",
-  "+services/identity/public/cpp",
 ]

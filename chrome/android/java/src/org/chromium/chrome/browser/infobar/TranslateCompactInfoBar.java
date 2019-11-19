@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.infobar.translate.TranslateMenu;
@@ -170,7 +171,7 @@ public class TranslateCompactInfoBar extends InfoBar
     TranslateCompactInfoBar(int initialStep, String sourceLanguageCode, String targetLanguageCode,
             boolean alwaysTranslate, boolean triggeredFromMenu, String[] languages,
             String[] languageCodes, int[] hashCodes, int tabTextColor) {
-        super(R.drawable.infobar_translate_compact, null, null);
+        super(R.drawable.infobar_translate_compact, 0, null, null);
 
         mInitialStep = initialStep;
         mDefaultTextColor = tabTextColor;
@@ -204,7 +205,7 @@ public class TranslateCompactInfoBar extends InfoBar
         if (mDefaultTextColor > 0) {
             mTabLayout.setTabTextColors(
                     ContextCompat.getColor(getContext(), R.color.default_text_color),
-                    ContextCompat.getColor(getContext(), R.color.infobar_accent_blue));
+                    ContextCompat.getColor(getContext(), R.color.tab_layout_selected_tab_color));
         }
         mTabLayout.addTabs(mOptions.sourceLanguageName(), mOptions.targetLanguageName());
 
@@ -260,7 +261,8 @@ public class TranslateCompactInfoBar extends InfoBar
     }
 
     private void initMenuHelper(int menuType) {
-        boolean isIncognito = nativeIsIncognito(mNativeTranslateInfoBarPtr);
+        boolean isIncognito = TranslateCompactInfoBarJni.get().isIncognito(
+                mNativeTranslateInfoBarPtr, TranslateCompactInfoBar.this);
         switch (menuType) {
             case TranslateMenu.MENU_OVERFLOW:
                 if (mOverflowMenuHelper == null) {
@@ -327,13 +329,16 @@ public class TranslateCompactInfoBar extends InfoBar
     }
 
     private void closeInfobar(boolean explicitly) {
+        if (isDismissed()) return;
+
         if (!mUserInteracted) {
             recordInfobarAction(INFOBAR_DECLINE);
         }
 
         // Check if we should trigger the auto "never translate" if infobar is closed explicitly.
         if (explicitly && mNativeTranslateInfoBarPtr != 0
-                && nativeShouldAutoNeverTranslate(mNativeTranslateInfoBarPtr, mMenuExpanded)) {
+                && TranslateCompactInfoBarJni.get().shouldAutoNeverTranslate(
+                        mNativeTranslateInfoBarPtr, TranslateCompactInfoBar.this, mMenuExpanded)) {
             createAndShowSnackbar(getContext().getString(R.string.translate_snackbar_language_never,
                                           mOptions.sourceLanguageName()),
                     Snackbar.UMA_TRANSLATE_NEVER, ACTION_AUTO_NEVER_LANGUAGE);
@@ -432,8 +437,8 @@ public class TranslateCompactInfoBar extends InfoBar
             recordInfobarAction(INFOBAR_MORE_LANGUAGES_TRANSLATE);
             recordInfobarLanguageData(
                     INFOBAR_HISTOGRAM_MORE_LANGUAGES_LANGUAGE, mOptions.targetLanguageCode());
-            nativeApplyStringTranslateOption(
-                    mNativeTranslateInfoBarPtr, TranslateOption.TARGET_CODE, code);
+            TranslateCompactInfoBarJni.get().applyStringTranslateOption(mNativeTranslateInfoBarPtr,
+                    TranslateCompactInfoBar.this, TranslateOption.TARGET_CODE, code);
             // Adjust UI.
             mTabLayout.replaceTabTitle(TARGET_TAB_INDEX, mOptions.getRepresentationFromCode(code));
             startTranslating(mTabLayout.getSelectedTabPosition());
@@ -452,8 +457,8 @@ public class TranslateCompactInfoBar extends InfoBar
         if (mNativeTranslateInfoBarPtr != 0 && mOptions.setSourceLanguage(code)) {
             recordInfobarLanguageData(
                     INFOBAR_HISTOGRAM_PAGE_NOT_IN_LANGUAGE, mOptions.sourceLanguageCode());
-            nativeApplyStringTranslateOption(
-                    mNativeTranslateInfoBarPtr, TranslateOption.SOURCE_CODE, code);
+            TranslateCompactInfoBarJni.get().applyStringTranslateOption(mNativeTranslateInfoBarPtr,
+                    TranslateCompactInfoBar.this, TranslateOption.SOURCE_CODE, code);
             // Adjust UI.
             mTabLayout.replaceTabTitle(SOURCE_TAB_INDEX, mOptions.getRepresentationFromCode(code));
             startTranslating(mTabLayout.getSelectedTabPosition());
@@ -578,14 +583,16 @@ public class TranslateCompactInfoBar extends InfoBar
             case ACTION_AUTO_NEVER_LANGUAGE:
                 mUserInteracted = true;
                 // After applying this option, the infobar will dismiss.
-                nativeApplyBoolTranslateOption(
-                        mNativeTranslateInfoBarPtr, TranslateOption.NEVER_TRANSLATE, true);
+                TranslateCompactInfoBarJni.get().applyBoolTranslateOption(
+                        mNativeTranslateInfoBarPtr, TranslateCompactInfoBar.this,
+                        TranslateOption.NEVER_TRANSLATE, true);
                 return;
             case ACTION_OVERFLOW_NEVER_SITE:
                 mUserInteracted = true;
                 // After applying this option, the infobar will dismiss.
-                nativeApplyBoolTranslateOption(
-                        mNativeTranslateInfoBarPtr, TranslateOption.NEVER_TRANSLATE_SITE, true);
+                TranslateCompactInfoBarJni.get().applyBoolTranslateOption(
+                        mNativeTranslateInfoBarPtr, TranslateCompactInfoBar.this,
+                        TranslateOption.NEVER_TRANSLATE_SITE, true);
                 return;
             default:
                 assert false : "Unsupported Menu Item Id, in handle post snackbar";
@@ -595,7 +602,8 @@ public class TranslateCompactInfoBar extends InfoBar
     private void toggleAlwaysTranslate() {
         mOptions.toggleAlwaysTranslateLanguageState(
                 !mOptions.getTranslateState(TranslateOptions.Type.ALWAYS_LANGUAGE));
-        nativeApplyBoolTranslateOption(mNativeTranslateInfoBarPtr, TranslateOption.ALWAYS_TRANSLATE,
+        TranslateCompactInfoBarJni.get().applyBoolTranslateOption(mNativeTranslateInfoBarPtr,
+                TranslateCompactInfoBar.this, TranslateOption.ALWAYS_TRANSLATE,
                 mOptions.getTranslateState(TranslateOptions.Type.ALWAYS_LANGUAGE));
     }
 
@@ -621,11 +629,14 @@ public class TranslateCompactInfoBar extends InfoBar
         return mParent != null ? mParent.getWidth() : 0;
     }
 
-    private native void nativeApplyStringTranslateOption(
-            long nativeTranslateCompactInfoBar, int option, String value);
-    private native void nativeApplyBoolTranslateOption(
-            long nativeTranslateCompactInfoBar, int option, boolean value);
-    private native boolean nativeShouldAutoNeverTranslate(
-            long nativeTranslateCompactInfoBar, boolean menuExpanded);
-    private native boolean nativeIsIncognito(long nativeTranslateCompactInfoBar);
+    @NativeMethods
+    interface Natives {
+        void applyStringTranslateOption(long nativeTranslateCompactInfoBar,
+                TranslateCompactInfoBar caller, int option, String value);
+        void applyBoolTranslateOption(long nativeTranslateCompactInfoBar,
+                TranslateCompactInfoBar caller, int option, boolean value);
+        boolean shouldAutoNeverTranslate(long nativeTranslateCompactInfoBar,
+                TranslateCompactInfoBar caller, boolean menuExpanded);
+        boolean isIncognito(long nativeTranslateCompactInfoBar, TranslateCompactInfoBar caller);
+    }
 }

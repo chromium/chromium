@@ -8,10 +8,12 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.UserData;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content.browser.PopupController;
 import org.chromium.content.browser.PopupController.HideablePopup;
 import org.chromium.content.browser.WindowEventObserver;
@@ -98,7 +100,8 @@ public class SelectPopup implements HideablePopup, ViewAndroidDelegate.Container
 
     @Override
     public void hide() {
-        // Cancels the selection by calling nativeSelectMenuItems() with null indices.
+        // Cancels the selection by calling SelectPopupJni.get().selectMenuItems() with null
+        // indices.
         if (mPopupView != null) mPopupView.hide(true);
     }
 
@@ -150,8 +153,8 @@ public class SelectPopup implements HideablePopup, ViewAndroidDelegate.Container
         WebContentsAccessibilityImpl wcax =
                 WebContentsAccessibilityImpl.fromWebContents(mWebContents);
         if (DeviceFormFactor.isTablet() && !multiple && !wcax.isTouchExplorationEnabled()) {
-            mPopupView = new SelectPopupDropdown(
-                    this, context, anchorView, popupItems, selectedIndices, rightAligned);
+            mPopupView = new SelectPopupDropdown(this, context, anchorView, popupItems,
+                    selectedIndices, rightAligned, mWebContents);
         } else {
             mPopupView =
                     new SelectPopupDialog(this, context, popupItems, multiple, selectedIndices);
@@ -190,12 +193,16 @@ public class SelectPopup implements HideablePopup, ViewAndroidDelegate.Container
      */
     public void selectMenuItems(int[] indices) {
         if (mNativeSelectPopup != 0) {
-            nativeSelectMenuItems(mNativeSelectPopup, mNativeSelectPopupSourceFrame, indices);
+            SelectPopupJni.get().selectMenuItems(
+                    mNativeSelectPopup, SelectPopup.this, mNativeSelectPopupSourceFrame, indices);
         }
         mNativeSelectPopupSourceFrame = 0;
         mPopupView = null;
     }
 
-    private native void nativeSelectMenuItems(
-            long nativeSelectPopup, long nativeSelectPopupSourceFrame, int[] indices);
+    @NativeMethods
+    interface Natives {
+        void selectMenuItems(long nativeSelectPopup, SelectPopup caller,
+                long nativeSelectPopupSourceFrame, int[] indices);
+    }
 }

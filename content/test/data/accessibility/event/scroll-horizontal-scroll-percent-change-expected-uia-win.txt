@@ -1,0 +1,2 @@
+ScrollHorizontalScrollPercent changed on role=document
+ScrollHorizontalScrollPercent changed on role=group

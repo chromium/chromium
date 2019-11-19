@@ -4,14 +4,22 @@
 
 module network.mojom;
 
+import "url/mojom/origin.mojom";
+
+// An enum to represent a mode if origin matching functions uses port.
+enum CorsPortMatchMode {
+  kAllowAnyPort,
+  kAllowOnlySpecifiedPort,
+};
+
 // An enum to represent a mode if matching functions can accept a partial match
-// for sub-domains, or for registerable domains.
-enum CorsOriginAccessMatchMode {
+// for sub-domains, or for registrable domains.
+enum CorsDomainMatchMode {
   // 'www.example.com' matches an OriginAccessEntry for 'example.com'
   kAllowSubdomains,
 
   // 'www.example.com' matches an OriginAccessEntry for 'not-www.example.com'
-  kAllowRegisterableDomains,
+  kAllowRegistrableDomains,
 
   // 'www.example.com' does not match an OriginAccessEntry for 'example.com'
   kDisallowSubdomains,
@@ -35,8 +43,14 @@ struct CorsOriginPattern {
   // The domain part of the destination URL.
   string domain;
 
+  // The port part of the destination URL.
+  uint16 port;
+
   // Specifies a mode for domain match.
-  CorsOriginAccessMatchMode mode;
+  CorsDomainMatchMode domain_match_mode;
+
+  // Specifies a mode for port match.
+  CorsPortMatchMode port_match_mode;
 
   // Order of preference in which the pattern is applied.  Higher priority
   // patterns take precedence over lower ones.  In the case were both a
@@ -48,7 +62,7 @@ struct CorsOriginPattern {
 // Parameters for representing pairs of source origin and allow/block-lists
 // for CORS.
 struct CorsOriginAccessPatterns {
-  string source_origin;
+  url.mojom.Origin source_origin;
 
   array<CorsOriginPattern> allow_patterns;
   array<CorsOriginPattern> block_patterns;

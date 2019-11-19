@@ -23,13 +23,13 @@
 <div id='container'>
   <div id='child' class='hideMe'></div>
 </div>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.waitUntilDone();
-    testRunner.dumpAsText();
-}
+var test = async_test("Test if display none cancels nested animations");
+
 var firstCall = true;
-child.addEventListener('animationstart', function(e) {
+child.addEventListener('animationstart', test.step_func((e) => {
     if (firstCall) {
         container.classList.add('hideMe');
         container.offsetTop;
@@ -37,11 +37,8 @@ child.addEventListener('animationstart', function(e) {
         firstCall = false;
         return;
     }
-    document.documentElement.textContent = 'PASS';
-    if (window.testRunner) {
-        testRunner.notifyDone();
-    }
-});
+    test.done();
+}));
 child.classList.remove('hideMe');
 </script>
 

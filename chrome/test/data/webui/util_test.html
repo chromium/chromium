@@ -24,6 +24,7 @@ function testQuoteString() {
 }
 
 function testClickHandler() {
+  listenForPrivilegedLinkClicks();
   var clickArgs = null;
   var oldSend = chrome.send;
   chrome.send = function(message, args) {

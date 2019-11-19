@@ -7,18 +7,18 @@
 #include <windows.h>
 #include <wtsapi32.h>
 
+#include "base/bind.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/win/windows_version.h"
+#include "ui/base/win/session_change_observer.h"
 
 namespace ui {
 
 namespace {
 
-// Checks if the current session is locked. Note: This API is only available
-// starting Windows 7 and up. For Windows 7 level1->SessionFlags has inverted
-// logic: https://msdn.microsoft.com/en-us/library/windows/desktop/ee621019.
+// Checks if the current session is locked.
 bool IsSessionLocked() {
-  DCHECK_GT(base::win::GetVersion(), base::win::VERSION_WIN7);
   bool is_locked = false;
   LPWSTR buffer = nullptr;
   DWORD buffer_length = 0;
@@ -26,40 +26,52 @@ bool IsSessionLocked() {
                                    WTSSessionInfoEx, &buffer, &buffer_length) &&
       buffer_length >= sizeof(WTSINFOEXW)) {
     auto* info = reinterpret_cast<WTSINFOEXW*>(buffer);
-    is_locked =
-        info->Data.WTSInfoExLevel1.SessionFlags == WTS_SESSIONSTATE_LOCK;
+    auto session_flags = info->Data.WTSInfoExLevel1.SessionFlags;
+    // For Windows 7 SessionFlags has inverted logic:
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ee621019.
+    if (base::win::GetVersion() == base::win::Version::WIN7)
+      is_locked = session_flags == WTS_SESSIONSTATE_UNLOCK;
+    else
+      is_locked = session_flags == WTS_SESSIONSTATE_LOCK;
   }
   if (buffer)
     ::WTSFreeMemory(buffer);
   return is_locked;
 }
 
-// Checks if the current desktop is called "default" to see if we are on the
-// lock screen or on the desktop. This returns true on Windows 10 if we are on
-// the lock screen before the password prompt. Use IsSessionLocked for
-// Windows 10 and above.
-bool IsDesktopNameDefault() {
-  DCHECK_LE(base::win::GetVersion(), base::win::VERSION_WIN7);
-  bool is_locked = true;
-  HDESK input_desk = ::OpenInputDesktop(0, 0, GENERIC_READ);
-  if (input_desk) {
-    wchar_t name[256] = {0};
-    DWORD needed = 0;
-    if (::GetUserObjectInformation(
-            input_desk, UOI_NAME, name, sizeof(name), &needed)) {
-      is_locked = lstrcmpi(name, L"default") != 0;
-    }
-    ::CloseDesktop(input_desk);
+// Observes the screen lock state of Windows and caches the current state. This
+// is necessary as IsSessionLocked uses WTSQuerySessionInformation internally,
+// which is an expensive syscall and causes a performance regression as we query
+// the current state quite often. http://crbug.com/940607.
+class SessionLockedObserver {
+ public:
+  SessionLockedObserver()
+      : session_change_observer_(
+            base::BindRepeating(&SessionLockedObserver::OnSessionChange,
+                                base::Unretained(this))),
+        screen_locked_(IsSessionLocked()) {}
+
+  bool IsLocked() const { return screen_locked_; }
+
+ private:
+  void OnSessionChange(WPARAM status_code) {
+    if (status_code == WTS_SESSION_LOCK)
+      screen_locked_ = true;
+    else if (status_code == WTS_SESSION_UNLOCK)
+      screen_locked_ = false;
   }
-  return is_locked;
-}
+
+  SessionChangeObserver session_change_observer_;
+  bool screen_locked_;
+
+  DISALLOW_COPY_AND_ASSIGN(SessionLockedObserver);
+};
 
 }  // namespace
 
 bool IsWorkstationLocked() {
-  return base::win::GetVersion() <= base::win::VERSION_WIN7
-             ? IsDesktopNameDefault()
-             : IsSessionLocked();
+  static const base::NoDestructor<SessionLockedObserver> observer;
+  return observer->IsLocked();
 }
 
 }  // namespace ui

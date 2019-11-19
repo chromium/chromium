@@ -1,0 +1,26 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-Chrome-OS builds cannot depend on //chromeos")
+
+component("upstart") {
+  defines = [ "IS_UPSTART_CLIENT_IMPL" ]
+
+  deps = [
+    "//base",
+    "//chromeos/dbus:common",
+    "//chromeos/dbus/auth_policy",
+    "//chromeos/dbus/auth_policy:authpolicy_proto",
+    "//chromeos/dbus/kerberos",
+    "//chromeos/dbus/media_analytics",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_upstart_client.cc",
+    "fake_upstart_client.h",
+    "upstart_client.cc",
+    "upstart_client.h",
+  ]
+}

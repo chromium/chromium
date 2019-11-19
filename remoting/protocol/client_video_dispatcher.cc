@@ -34,8 +34,7 @@ ClientVideoDispatcher::ClientVideoDispatcher(VideoStub* video_stub,
                                              ClientStub* client_stub)
     : ChannelDispatcherBase(kVideoChannelName),
       video_stub_(video_stub),
-      client_stub_(client_stub),
-      weak_factory_(this) {}
+      client_stub_(client_stub) {}
 
 ClientVideoDispatcher::~ClientVideoDispatcher() = default;
 

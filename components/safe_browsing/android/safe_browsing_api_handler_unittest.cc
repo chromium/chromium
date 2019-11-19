@@ -179,23 +179,16 @@ TEST_F(SafeBrowsingApiHandlerUtilTest, SubresourceFilterSubTypes) {
   } test_cases[] = {
       {"warn",
        "enforce",
-       {{{Type::ABUSIVE, Level::WARN}, {Type::BETTER_ADS, Level::ENFORCE}},
-        base::KEEP_FIRST_OF_DUPES}},
-      {nullptr,
-       "warn",
-       {{{Type::BETTER_ADS, Level::WARN}}, base::KEEP_FIRST_OF_DUPES}},
+       {{Type::ABUSIVE, Level::WARN}, {Type::BETTER_ADS, Level::ENFORCE}}},
+      {nullptr, "warn", {{Type::BETTER_ADS, Level::WARN}}},
       {"asdf",
        "",
-       {{{Type::ABUSIVE, Level::ENFORCE}, {Type::BETTER_ADS, Level::ENFORCE}},
-        base::KEEP_FIRST_OF_DUPES}},
-      {"warn",
-       nullptr,
-       {{{Type::ABUSIVE, Level::WARN}}, base::KEEP_FIRST_OF_DUPES}},
+       {{Type::ABUSIVE, Level::ENFORCE}, {Type::BETTER_ADS, Level::ENFORCE}}},
+      {"warn", nullptr, {{Type::ABUSIVE, Level::WARN}}},
       {nullptr, nullptr, {}},
       {"",
        "",
-       {{{Type::ABUSIVE, Level::ENFORCE}, {Type::BETTER_ADS, Level::ENFORCE}},
-        base::KEEP_FIRST_OF_DUPES}},
+       {{Type::ABUSIVE, Level::ENFORCE}, {Type::BETTER_ADS, Level::ENFORCE}}},
   };
 
   for (const auto& test_case : test_cases) {

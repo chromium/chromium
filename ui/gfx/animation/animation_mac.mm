@@ -7,7 +7,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/mac/mac_util.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_loop_current.h"
 
 // Only available since 10.12.
 @interface NSWorkspace (AvailableSinceSierra)
@@ -15,6 +15,11 @@
 @end
 
 namespace gfx {
+
+// static
+bool Animation::ShouldRenderRichAnimationImpl() {
+  return !PrefersReducedMotion();
+}
 
 // static
 bool Animation::ScrollAnimationsEnabledBySystem() {

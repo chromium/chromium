@@ -1,0 +1,7 @@
+AXWebArea AXRoleDescription='HTML content'
+++AXGroup AXSubrole=AXCodeStyleGroup AXRoleDescription='code'
+++++AXStaticText AXRoleDescription='text' AXValue='role'
+++AXStaticText AXRoleDescription='text' AXValue='element (no name)'
+++AXStaticText AXRoleDescription='text' AXValue=' '
+++AXGroup AXSubrole=AXCodeStyleGroup AXRoleDescription='group' AXDescription='include me'
+++++AXStaticText AXRoleDescription='text' AXValue='element (with name)'

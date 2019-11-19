@@ -1,0 +1,22 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  deps = [
+    "//base",
+    "//ios/web/public:web_state_observer",
+  ]
+
+  sources = [
+    "context_menu_params.h",
+    "crw_web_view_proxy.h",
+    "crw_web_view_scroll_view_proxy.h",
+    "java_script_dialog_callback.h",
+    "java_script_dialog_presenter.h",
+    "java_script_dialog_type.h",
+    "page_display_state.h",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

@@ -93,8 +93,8 @@ if (!is_android) {
     }
     if (is_chromeos) {
       deps += [
-        "//chromeos",
         "//chromeos/dbus",
+        "//chromeos/system",
       ]
     }
 
@@ -130,7 +130,7 @@ if (!is_android) {
       "//testing/gtest",
     ]
     if (is_chromeos) {
-      deps += [ "//chromeos" ]
+      deps += [ "//chromeos/system" ]
     }
   }
 
@@ -164,8 +164,8 @@ if (!is_android) {
     ]
     if (is_chromeos) {
       deps += [
-        "//chromeos:test_support",
         "//chromeos/dbus:test_support",
+        "//chromeos/system",
       ]
     }
   }

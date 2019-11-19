@@ -79,7 +79,7 @@ class DMTokenStorage {
   std::string dm_token_;
   StoreCallback store_callback_;
   std::vector<RetrieveCallback> retrieve_callbacks_;
-  base::WeakPtrFactory<DMTokenStorage> weak_ptr_factory_;
+  base::WeakPtrFactory<DMTokenStorage> weak_ptr_factory_{this};
 };
 
 }  // namespace policy

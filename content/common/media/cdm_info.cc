@@ -12,7 +12,7 @@ CdmCapability::CdmCapability() = default;
 
 CdmCapability::CdmCapability(
     std::vector<media::VideoCodec> video_codecs,
-    base::flat_set<media::EncryptionMode> encryption_schemes,
+    base::flat_set<media::EncryptionScheme> encryption_schemes,
     base::flat_set<media::CdmSessionType> session_types,
     base::flat_set<media::CdmProxy::Protocol> cdm_proxy_protocols)
     : video_codecs(std::move(video_codecs)),

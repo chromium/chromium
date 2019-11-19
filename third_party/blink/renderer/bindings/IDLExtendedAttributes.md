@@ -47,7 +47,7 @@ Lastly, please do not confuse "_extended_ attributes", which go inside `[...]` a
 
 ### Constants
 
-Only the following (Blink-only) extended attributes apply to constants: `[DeprecateAs]`, `[MeasureAs]`, `[OriginTrialEnabled]`, `[Reflect]`, and `[RuntimeEnabled]`, and the interface extended attribute `[DoNotCheckConstants]` affects constants.
+Only the following (Blink-only) extended attributes apply to constants: `[DeprecateAs]`, `[MeasureAs]`, `[Reflect]`, and `[RuntimeEnabled]`, and the interface extended attribute `[DoNotCheckConstants]` affects constants.
 
 ### Overloaded methods
 
@@ -100,9 +100,9 @@ The following extended attributes are used on special operations, as on methods 
 
 Extended attributes on partial interface members work as normal. However, only the following 4 extended attributes can be used on the partial interface itself; otherwise extended attributes should appear on the main interface definition:
 
-`[Conditional]`, `[ImplementedAs]`, `[OriginTrialEnabled]` and `[RuntimeEnabled]`
+`[Conditional]`, `[ImplementedAs]` and `[RuntimeEnabled]`
 
-3 of these are used to allow the entire partial interface to be selectively enabled or disabled: `[Conditional]`, `[OriginTrialEnabled]` and `[RuntimeEnabled]`, and function as if the extended attribute were applied to each _member_ (methods, attributes, and constants). Style-wise, if the entire partial interface should be enabled or disabled, these extended attributes should be used on the partial interface, not on each individual member; this clarifies intent and simplifies editing. However:
+2 of these are used to allow the entire partial interface to be selectively enabled or disabled: `[Conditional]` and `[RuntimeEnabled]`, and function as if the extended attribute were applied to each _member_ (methods, attributes, and constants). Style-wise, if the entire partial interface should be enabled or disabled, these extended attributes should be used on the partial interface, not on each individual member; this clarifies intent and simplifies editing. However:
 
 * If some members should not be disabled, this cannot be used on the partial interface; this is often the case for constants.
 * If different members should be controlled by different flags, this must be specified individually.
@@ -112,19 +112,15 @@ The remaining extended attribute, `[ImplementedAs]`, is mandatory. A partial
 interface must have `[ImplementedAs]` extended attribute to specify a static-only C++ class.
 This is stored internally via `[PartialInterfaceImplementedAs]` (see below).
 
-### implements
+### interface mixins
 
-Extended attributes on members of an implemented interface work as normal. However, only the following 5 extended attributes can be used on the implemented interface itself; otherwise extended attributes should appear on the main (implementing) interface definition:
+Extended attributes on members of an interface mixin work as normal. However, only the following 4 extended attributes can be used on the interface mixin itself; otherwise extended attributes should appear on the main (including) interface definition:
 
-* `[LegacyTreatAsPartialInterface]` is part of an ongoing change, as implemented interfaces used to be treated internally as partial interfaces.
+* `[LegacyTreatAsPartialInterface]` is part of an ongoing change, as interface mixins used to be treated internally as partial interfaces.
 
-* `[ImplementedAs]` is only necessary for these legacy files: otherwise the class (C++) implementing (IDL) implemented interfaces does not need to be specified, as this is handled in Blink C++.
-
-* `[OriginTrialEnabled]` behaves as for partial interfaces.
+* `[ImplementedAs]` is only necessary for these legacy files: otherwise the class (C++) implementing (IDL) interface mixins does not need to be specified, as this is handled in Blink C++.
 
 * `[RuntimeEnabled]` behaves as for partial interfaces.
-
-* `[NoInterfaceObject]` is _always_ specified on implemented interfaces.
 
 ### Inheritance
 
@@ -970,7 +966,7 @@ Summary: Measures usage of a specific feature via UseCounter.
 
 In order to measure usage of specific features, Chrome submits anonymous statistics through the Histogram recording system for users who opt-in to sharing usage statistics. This extended attribute hooks up a specific feature to this measurement system.
 
-Usage: `[Measure]` can be specified on interfaces, methods, attributes, and constants. When specified on an interface usage of the constructor will be measured. The generated feature name must be added to [UseCounter::Feature](https://code.google.com/p/chromium/codesearch#chromium/src/third_party/blink/renderer/core/frame/use_counter.h&q=%22enum%20Feature%22&sq=package:chromium&type=cs&l=61) (in [core/frame/use_counter.h](https://code.google.com/p/chromium/codesearch#chromium/src/third_party/blink/renderer/core/frame/use_counter.h)).
+Usage: `[Measure]` can be specified on interfaces, methods, attributes, and constants. When specified on an interface usage of the constructor will be measured. The generated feature name must be added to [UseCounter::Feature](https://code.google.com/p/chromium/codesearch#chromium/src/third_party/blink/renderer/platform/instrumentation/use_counter.h&q=%22enum%20Feature%22&sq=package:chromium&type=cs&l=61) (in [platform/instrumentation/use_counter.h](https://code.google.com/p/chromium/codesearch#chromium/src/third_party/blink/renderer/platform/instrumentation/use_counter.h)).
 
 ```webidl
 [Measure] attribute Node interestingAttribute;
@@ -983,7 +979,7 @@ Usage: `[Measure]` can be specified on interfaces, methods, attributes, and cons
 Summary: Like `[Measure]`, but the feature name is provided as the extended attribute value.
 This is similar to the standard `[DeprecateAs]` extended attribute, but does not display a deprecation warning.
 
-Usage: `[MeasureAs]` can be specified on interfaces, methods, attributes, and constants. The value must match one of the enumeration values in [UseCounter::Feature](https://code.google.com/p/chromium/codesearch#chromium/src/third_party/blink/renderer/core/frame/use_counter.h&q=%22enum%20Feature%22&sq=package:chromium&type=cs&l=61) (in [core/frame/use_counter.h](https://code.google.com/p/chromium/codesearch#chromium/src/third_party/blink/renderer/core/frame/use_counter.h)).
+Usage: `[MeasureAs]` can be specified on interfaces, methods, attributes, and constants. The value must match one of the enumeration values in [UseCounter::Feature](https://code.google.com/p/chromium/codesearch#chromium/src/third_party/blink/renderer/platform/instrumentation/use_counter.h&q=%22enum%20Feature%22&sq=package:chromium&type=cs&l=61) (in [platform/instrumentation/use_counter.h](https://code.google.com/p/chromium/codesearch#chromium/src/third_party/blink/renderer/platform/instrumentation/use_counter.h)).
 
 ```webidl
 [MeasureAs=AttributeWeAreInterestedIn] attribute Node interestingAttribute;
@@ -1003,24 +999,6 @@ Usage: `[NotEnumerable]` can be specified on methods and attributes
 ```
 
 `[NotEnumerable]` indicates that the method or attribute is not enumerable.
-
-### [OriginTrialEnabled] _(i, m, a, c)_
-
-Summary: Like `[RuntimeEnabled]`, it controls at runtime whether bindings are exposed, but uses a different mechanism for enabling experimental features.
-
-Usage: `[OriginTrialEnabled=FeatureName]`. FeatureName must be included in [runtime\_enabled\_features.json5](https://code.google.com/p/chromium/codesearch#chromium/src/third_party/blink/renderer/platform/runtime_enabled_features.json5), and is the same value that would be used with `[RuntimeEnabled]`.
-
-```webidl
-[
-    OriginTrialEnabled=MediaSession
-] interface MediaSession { ... };
-```
-
-When there is an active origin trial for the current execution context, the feature is enabled at runtime, and the binding would be exposed to the web. `[OriginTrialEnabled]` also includes a check for the associated runtime flag, so features can be enabled in that fashion, even without an origin trial.
-
-`[OriginTrialEnabled]` has similar semantics to `[RuntimeEnabled]`, and is intended as a drop-in replacement. For example, `[OriginTrialEnabled]` _cannot_ be applied to arguments, see `[RuntimeEnabled]` for reasoning. The key implementation difference is that `[OriginTrialEnabled]` wraps the generated code with `if (origin_trials::FeatureNameEnabled(...)) { ...code... }`.
-
-For more information, see [RuntimeEnabledFeatures](https://code.google.com/p/chromium/codesearch#chromium/src/third_party/blink/renderer/platform/runtime_enabled_features.json5) and [OriginTrialContext](https://code.google.com/p/chromium/codesearch#chromium/src/third_party/blink/renderer/core/origin_trials/origin_trial_context.h).
 
 ### [RaisesException] _(i, m, a)_
 
@@ -1135,6 +1113,9 @@ The `[ReflectEmpty]` extended attribute specifies the value that an IDL getter f
 
 `[ReflectEmpty]` should be used if the specification for the content attribute has an empty attribute value mapped to some attribute state. For HTML, this applies to [enumerated attributes](http://www.whatwg.org/specs/web-apps/current-work/#enumerated-attribute) only.
 
+Non-empty string value specified by `[ReflectEmpty]` must be added to
+`core/html/keywords.json5`.
+
 ### [ReflectInvalid] _(a)_
 
 Specification: [Limited value attributes](http://www.whatwg.org/specs/web-apps/current-work/#limited-to-only-known-values) - _defined in spec prose, not as an IDL extended attribute._
@@ -1153,6 +1134,9 @@ The `[ReflectInvalid]` extended attribute specifies the value that an IDL getter
 
 `[ReflectInvalid]` should be used if the specification for the content attribute has an _invalid value state_ defined. For HTML, this applies to [enumerated attributes](http://www.whatwg.org/specs/web-apps/current-work/#enumerated-attribute) only.
 
+Non-empty string value specified by `[ReflectInvalid]` must be added to
+`core/html/keywords.json5`.
+
 ### [ReflectMissing] _(a)_
 
 Specification: [Limited value attributes](http://www.whatwg.org/specs/web-apps/current-work/#limited-to-only-known-values) - _defined in spec prose, not as an IDL extended attribute._
@@ -1170,6 +1154,9 @@ interface HTMLMyElement {
 The `[ReflectMissing]` extended attribute specifies the value that an IDL getter for the `direction` attribute should return when the content attribute is missing (e.g., return `"auto"` when accessing the `preload` IDL attribute on `<my-element>`.) Its (string) literal value must be one of the possible values that the `[ReflectOnly]` extended attribute lists.
 
 `[ReflectMissing]` should be used if the specification for the content attribute has a _missing value state_ defined. For HTML, this applies to [enumerated attributes](http://www.whatwg.org/specs/web-apps/current-work/#enumerated-attribute) only.
+
+Non-empty string value specified by `[ReflectMissing]` must be added to
+`core/html/keywords.json5`.
 
 ### [ReflectOnly] _(a)_
 
@@ -1191,6 +1178,9 @@ The ReflectOnly attribute limits the range of values that the attribute getter c
 If there is no match, the empty string will be returned. As required by the specification, no such checking is performed when the reflected IDL attribute is set.
 
 `[ReflectOnly]` should be used if the specification for a reflected IDL attribute says it is _"limited to only known values"_.
+
+Non-empty string values specified by `[ReflectOnly]` must be added to
+`core/html/keywords.json5`.
 
 ### [RuntimeEnabled] _(i, m, a, c)_
 
@@ -1493,7 +1483,7 @@ These extended attributes are _temporary_ and are only in use while some change 
 
 ### [LegacyTreatAsPartialInterface] _(i)_
 
-Summary: `[LegacyTreatAsPartialInterface]` on an interface that is the target of an `implements` statement means that the interface is treated as a partial interface, meaning members are accessed via static member functions in a separate class, rather than as instance methods on the instance object `*impl` or class methods on the C++ class implementing the (main) interface. This is legacy from original implementation of `implements`, and is being removed ([Bug 360435](https://crbug.com/360435), nbarth@).
+Summary: `[LegacyTreatAsPartialInterface]` on an interface mixin means that the mixin is treated as a partial interface, meaning members are accessed via static member functions in a separate class, rather than as instance methods on the instance object `*impl` or class methods on the C++ class implementing the (main) interface. This is legacy from original implementation of mixins, and is being removed ([Bug 360435](https://crbug.com/360435), nbarth@).
 
 
 ### [CachedAccessor] _(a)_
@@ -1634,7 +1624,6 @@ Added to members of a partial interface definition (and implemented interfaces w
 ***
 
 * `[ImmutablePrototype]`
-* `[LegacyInterfaceTypeChecking]`
 * `[LogAllWorlds]`
 * `[PerWorldBindings]` :: interacts with `[LogActivity]`
 

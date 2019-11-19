@@ -8,7 +8,6 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_loader.h"
-#include "ui/base/cursor/cursor_type.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/wm/public/activation_client.h"
@@ -128,7 +127,7 @@ class MouseCursorOverlayController::Observer : public ui::EventHandler,
 };
 
 MouseCursorOverlayController::MouseCursorOverlayController()
-    : mouse_move_behavior_atomic_(kNotMoving), weak_factory_(this) {
+    : mouse_move_behavior_atomic_(kNotMoving) {
   // MouseCursorOverlayController can be constructed on any thread, but
   // thereafter must be used according to class-level comments.
   DETACH_FROM_SEQUENCE(ui_sequence_checker_);
@@ -156,8 +155,11 @@ gfx::NativeCursor MouseCursorOverlayController::GetCurrentCursorOrDefault()
 
   if (auto* window = Observer::GetTargetWindow(observer_)) {
     if (auto* host = window->GetHost()) {
-      const gfx::NativeCursor cursor = host->last_cursor();
+      gfx::NativeCursor cursor = host->last_cursor();
       if (cursor != ui::CursorType::kNull) {
+        if (cursor.device_scale_factor() < 1.0f) {
+          cursor.set_device_scale_factor(1.0f);
+        }
         return cursor;
       }
     }
@@ -208,8 +210,8 @@ void MouseCursorOverlayController::DisconnectFromToolkitForTesting() {
 
   observer_->StopTracking();
 
-  // The default cursor is ui::CursorType::kNone. Make it kPointer so the tests
-  // have a non-empty cursor bitmap to work with.
+  // The default cursor is ui::CursorType::kNone. Make it kPointer
+  // so the tests have a non-empty cursor bitmap to work with.
   auto* const window = Observer::GetTargetWindow(observer_);
   CHECK(window);
   auto* const host = window->GetHost();

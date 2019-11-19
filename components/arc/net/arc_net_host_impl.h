@@ -18,8 +18,8 @@
 #include "base/values.h"
 #include "chromeos/network/network_connection_observer.h"
 #include "chromeos/network/network_state_handler_observer.h"
-#include "components/arc/common/net.mojom.h"
-#include "components/arc/connection_observer.h"
+#include "components/arc/mojom/net.mojom.h"
+#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -91,6 +91,8 @@ class ArcNetHostImpl : public KeyedService,
   void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
   void NetworkConnectionStateChanged(
       const chromeos::NetworkState* network) override;
+  void ActiveNetworksChanged(
+      const std::vector<const chromeos::NetworkState*>& networks) override;
   void NetworkListChanged() override;
   void DeviceListChanged() override;
   void GetDefaultNetwork(GetDefaultNetworkCallback callback) override;
@@ -157,13 +159,12 @@ class ArcNetHostImpl : public KeyedService,
 
   std::string cached_service_path_;
   std::string cached_guid_;
-
   std::string arc_vpn_service_path_;
   // Owned by the user profile whose context was used to initialize |this|.
   PrefService* pref_service_ = nullptr;
 
   THREAD_CHECKER(thread_checker_);
-  base::WeakPtrFactory<ArcNetHostImpl> weak_factory_;
+  base::WeakPtrFactory<ArcNetHostImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcNetHostImpl);
 };

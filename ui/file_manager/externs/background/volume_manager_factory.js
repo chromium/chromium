@@ -5,10 +5,9 @@
 var volumeManagerFactory = {};
 
 /**
- * @param {function(VolumeManager)=} opt_callback
- * @return {Promise}
+ * @return {!Promise<!VolumeManager>}
  */
-volumeManagerFactory.getInstance = function(opt_callback) {};
+volumeManagerFactory.getInstance = function() {};
 
 /**
  * @return {VolumeManager}

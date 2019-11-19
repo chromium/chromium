@@ -4,21 +4,21 @@
 
 # A tool that removes all non-interface-specific parts from a .jar file.
 
-if (current_toolchain == host_toolchain) {
+if (is_linux) {
   executable("ijar") {
     sources = [
       "classfile.cc",
       "common.h",
       "ijar.cc",
       "mapped_file.h",
+      "mapped_file_unix.cc",
+      "platform_utils.cc",
+      "platform_utils.h",
       "zip.cc",
       "zip.h",
+      "zlib_client.cc",
+      "zlib_client.h",
     ]
-    if (is_win) {
-      sources += [ "mapped_file_windows.cc" ]
-    } else {
-      sources += [ "mapped_file_unix.cc" ]
-    }
 
     deps = [
       "//third_party/zlib",

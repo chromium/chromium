@@ -99,7 +99,7 @@ class CC_EXPORT EffectTreeLayerListIterator {
   // When in state LAYER, this is the layer that's currently being visited.
   // Otherwise, this is the layer that will be visited the next time we're in
   // state LAYER.
-  LayerImplList::reverse_iterator layer_list_iterator_;
+  LayerTreeImpl::const_reverse_iterator layer_list_iterator_;
 
   // When in state LAYER, this is the render target effect tree index for the
   // currently visited layer. Otherwise, this is the the effect tree index of

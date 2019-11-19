@@ -39,7 +39,7 @@
 
 // Reset content insets back to zero and sets the delegate to nil. Used to stop
 // hearing for the pull gesture to reset and unlock the trailing view.
-- (void)resetContentInsetAndDelegate;
+- (void)resetContentInsetAndDelegateAnimated:(BOOL)animated;
 
 // Animates the content insets so the trailing view is showed as the first
 // thing.

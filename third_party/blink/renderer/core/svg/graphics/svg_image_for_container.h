@@ -88,6 +88,13 @@ class SVGImageForContainer final : public Image {
 
   PaintImage PaintImageForCurrentFrame() override;
 
+  DarkModeClassification CheckTypeSpecificConditionsForDarkMode(
+      const FloatRect& dest_rect,
+      DarkModeImageClassifier* classifier) override {
+    return image_->CheckTypeSpecificConditionsForDarkMode(dest_rect,
+                                                          classifier);
+  }
+
  protected:
   void DrawPattern(GraphicsContext&,
                    const FloatRect&,

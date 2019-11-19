@@ -15,12 +15,13 @@ namespace content {
 // For use by unit tests.
 class MockAppCacheService : public AppCacheServiceImpl {
  public:
-  MockAppCacheService()
-    : AppCacheServiceImpl(NULL),
-      mock_delete_appcaches_for_origin_result_(net::OK),
-      delete_called_count_(0) {
-    storage_.reset(new MockAppCacheStorage(this));
+  explicit MockAppCacheService(base::WeakPtr<StoragePartitionImpl> partition)
+      : AppCacheServiceImpl(nullptr, std::move(partition)),
+        mock_delete_appcaches_for_origin_result_(net::OK),
+        delete_called_count_(0) {
+    storage_ = std::make_unique<MockAppCacheStorage>(this);
   }
+  MockAppCacheService() : MockAppCacheService(nullptr) {}
 
   // Just returns a canned completion code without actually
   // removing groups and caches in our mock storage instance.

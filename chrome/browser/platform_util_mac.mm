@@ -58,8 +58,8 @@ namespace internal {
 void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
   switch (type) {
     case OPEN_FILE:
-      base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                               base::BindOnce(&OpenFileOnMainThread, path));
+      base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                     base::BindOnce(&OpenFileOnMainThread, path));
       return;
     case OPEN_FOLDER:
       NSString* path_string = base::SysUTF8ToNSString(path.value());

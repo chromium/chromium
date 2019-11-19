@@ -12,10 +12,6 @@
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/core/test/test_support_impl.h"
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-#include "mojo/core/embedder/default_mach_broker.h"
-#endif
-
 int main(int argc, char** argv) {
   base::PerfTestSuite test(argc, argv);
 
@@ -25,10 +21,6 @@ int main(int argc, char** argv) {
       test_io_thread.task_runner(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
   mojo::test::TestSupport::Init(new mojo::core::test::TestSupportImpl());
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-  mojo::core::SetMachPortProvider(
-      mojo::core::DefaultMachBroker::Get()->port_provider());
-#endif
 
   return test.Run();
 }

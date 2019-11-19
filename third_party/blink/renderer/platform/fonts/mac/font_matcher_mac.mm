@@ -32,11 +32,12 @@
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
 #import <math.h>
+#include "base/mac/foundation_util.h"
+#include "base/mac/scoped_cftyperef.h"
+#include "base/mac/scoped_nsobject.h"
 #include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
-#include "third_party/blink/renderer/platform/mac/version_util_mac.h"
 #import "third_party/blink/renderer/platform/wtf/hash_set.h"
-#import "third_party/blink/renderer/platform/wtf/retain_ptr.h"
 #import "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 @interface NSFont (YosemiteAdditions)
@@ -130,38 +131,36 @@ static BOOL BetterChoice(NSFontTraitMask desired_traits,
 NSFont* MatchUniqueFont(const AtomicString& unique_font_name, float size) {
   // Testing with a large list of fonts available on Mac OS shows that matching
   // for kCTFontNameAttribute matches postscript name as well as full font name.
-  WTF::RetainPtr<CFMutableDictionaryRef> attributes(
-      CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL));
-  WTF::RetainPtr<NSString> desired_name(unique_font_name);
-  CFDictionarySetValue(attributes.Get(), kCTFontNameAttribute,
-                       desired_name.Get());
-  WTF::RetainPtr<CFNumberRef> font_size =
-      CFNumberCreate(kCFAllocatorDefault, kCFNumberFloat32Type, &size);
-  CFDictionarySetValue(attributes.Get(), kCTFontSizeAttribute, font_size.Get());
-  WTF::RetainPtr<CTFontDescriptorRef> descriptor(
-      CTFontDescriptorCreateWithAttributes(attributes.Get()));
-  WTF::RetainPtr<CTFontRef> matched_font(
-      CTFontCreateWithFontDescriptor(descriptor.Get(), 0, nullptr));
+  NSString* desired_name = unique_font_name;
+  NSDictionary* attributes = @{
+    (NSString*)kCTFontNameAttribute : desired_name,
+    (NSString*)kCTFontSizeAttribute : @(size)
+  };
+  base::ScopedCFTypeRef<CTFontDescriptorRef> descriptor(
+      CTFontDescriptorCreateWithAttributes(base::mac::NSToCFCast(attributes)));
+
+  base::ScopedCFTypeRef<CTFontRef> matched_font(
+      CTFontCreateWithFontDescriptor(descriptor, 0, nullptr));
+
   // CoreText will usually give us *something* but not always an exactly
   // matched font.
-  DCHECK(matched_font.Get());
-  WTF::RetainPtr<CFStringRef> matched_font_ps_name(
-      CTFontCopyName(matched_font.Get(), kCTFontPostScriptNameKey));
-  WTF::RetainPtr<CFStringRef> matched_font_full_font_name(
-      CTFontCopyName(matched_font.Get(), kCTFontFullNameKey));
+  DCHECK(matched_font);
+  base::ScopedCFTypeRef<CFStringRef> matched_font_ps_name(
+      CTFontCopyName(matched_font, kCTFontPostScriptNameKey));
+  base::ScopedCFTypeRef<CFStringRef> matched_font_full_font_name(
+      CTFontCopyName(matched_font, kCTFontFullNameKey));
   // If the found font does not match in postscript name or full font name, it's
   // not the exact match that is required, so return nullptr.
-  if ((kCFCompareEqualTo !=
-       CFStringCompare(matched_font_ps_name.Get(),
-                       (__bridge CFStringRef)desired_name.Get(),
-                       kCFCompareCaseInsensitive)) &&
-      (kCFCompareEqualTo !=
-       CFStringCompare(matched_font_full_font_name.Get(),
-                       (__bridge CFStringRef)desired_name.Get(),
-                       kCFCompareCaseInsensitive))) {
+  if (kCFCompareEqualTo != CFStringCompare(matched_font_ps_name,
+                                           base::mac::NSToCFCast(desired_name),
+                                           kCFCompareCaseInsensitive) &&
+      kCFCompareEqualTo != CFStringCompare(matched_font_full_font_name,
+                                           base::mac::NSToCFCast(desired_name),
+                                           kCFCompareCaseInsensitive)) {
     return nullptr;
   }
-  return (__bridge NSFont*)matched_font.LeakRef();
+
+  return [base::mac::CFToNSCast(matched_font.release()) autorelease];
 }
 
 // Family name is somewhat of a misnomer here.  We first attempt to find an
@@ -195,16 +194,19 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
   NSString* desired_family = desired_family_string;
   NSFontManager* font_manager = [NSFontManager sharedFontManager];
 
-  // Do a simple case insensitive search for a matching font family.
-  // NSFontManager requires exact name matches.
-  // This addresses the problem of matching arial to Arial, etc., but perhaps
-  // not all the issues.
-  NSEnumerator* e = [[font_manager availableFontFamilies] objectEnumerator];
-  NSString* available_family;
-  while ((available_family = [e nextObject])) {
-    if ([desired_family caseInsensitiveCompare:available_family] ==
-        NSOrderedSame)
-      break;
+  // From Mac OS 10.15 [NSFontManager availableFonts] does not list certain
+  // fonts that availableMembersOfFontFamily actually shows results for, for
+  // example "Hiragino Kaku Gothic ProN" is not listed, only Hiragino Sans is
+  // listed. We previously enumerated availableFontFamilies and looked for a
+  // case-insensitive string match here, but instead, we can rely on
+  // availableMembersOfFontFamily here to do a case-insensitive comparison, then
+  // set available_family to desired_family if the result was not empty.
+  // See https://crbug.com/1000542
+  NSString* available_family = nil;
+  NSArray* fonts_in_family =
+      [font_manager availableMembersOfFontFamily:desired_family];
+  if (fonts_in_family && [fonts_in_family count]) {
+    available_family = desired_family;
   }
 
   int app_kit_font_weight = ToAppKitFontWeight(desired_weight);

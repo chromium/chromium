@@ -24,8 +24,8 @@
 namespace test_runner {
 
 void WebViewTestProxy::Initialize(WebTestInterfaces* interfaces,
-                                  WebTestDelegate* delegate) {
-  delegate_ = delegate;
+                                  std::unique_ptr<WebTestDelegate> delegate) {
+  delegate_ = std::move(delegate);
   test_interfaces_ = interfaces->GetTestInterfaces();
   test_interfaces()->WindowOpened(this);
 }
@@ -36,26 +36,25 @@ blink::WebView* WebViewTestProxy::CreateView(
     const blink::WebWindowFeatures& features,
     const blink::WebString& frame_name,
     blink::WebNavigationPolicy policy,
-    bool suppress_opener,
     blink::WebSandboxFlags sandbox_flags,
     const blink::FeaturePolicy::FeatureState& opener_feature_state,
     const blink::SessionStorageNamespaceId& session_storage_namespace_id) {
-  if (GetTestRunner()->shouldDumpNavigationPolicy()) {
+  if (GetTestRunner()->ShouldDumpNavigationPolicy()) {
     delegate()->PrintMessage("Default policy for createView for '" +
                              URLDescription(request.Url()) + "' is '" +
                              WebNavigationPolicyToString(policy) + "'\n");
   }
 
-  if (!GetTestRunner()->canOpenWindows())
+  if (!GetTestRunner()->CanOpenWindows())
     return nullptr;
 
-  if (GetTestRunner()->shouldDumpCreateView()) {
+  if (GetTestRunner()->ShouldDumpCreateView()) {
     delegate()->PrintMessage(std::string("createView(") +
                              URLDescription(request.Url()) + ")\n");
   }
-  return RenderViewImpl::CreateView(
-      creator, request, features, frame_name, policy, suppress_opener,
-      sandbox_flags, opener_feature_state, session_storage_namespace_id);
+  return RenderViewImpl::CreateView(creator, request, features, frame_name,
+                                    policy, sandbox_flags, opener_feature_state,
+                                    session_storage_namespace_id);
 }
 
 void WebViewTestProxy::PrintPage(blink::WebLocalFrame* frame) {
@@ -76,22 +75,12 @@ void WebViewTestProxy::DidFocus(blink::WebLocalFrame* calling_frame) {
   RenderViewImpl::DidFocus(calling_frame);
 }
 
-blink::WebScreenInfo WebViewTestProxy::GetScreenInfo() {
-  blink::WebScreenInfo info = RenderViewImpl::GetScreenInfo();
-
-  MockScreenOrientationClient* mock_client =
-      GetTestRunner()->getMockScreenOrientationClient();
-
-  if (!mock_client->IsDisabled()) {
-    // Override screen orientation information with mock data.
-    info.orientation_type = mock_client->CurrentOrientationType();
-    info.orientation_angle = mock_client->CurrentOrientationAngle();
-  }
-
-  return info;
-}
-
 void WebViewTestProxy::Reset() {
+  // TODO(https://crbug.com/961499): There is a race condition where Reset()
+  // can be called after GetWidget() has been nulled, but before this is
+  // destructed.
+  if (!GetWidget())
+    return;
   accessibility_controller_.Reset();
   // text_input_controller_ doesn't have any state to reset.
   view_test_runner_.Reset();
@@ -112,10 +101,10 @@ void WebViewTestProxy::BindTo(blink::WebLocalFrame* frame) {
 
 WebViewTestProxy::~WebViewTestProxy() {
   test_interfaces_->WindowClosed(this);
-  if (test_interfaces_->GetDelegate() == delegate_)
+  if (test_interfaces_->GetDelegate() == delegate_.get()) {
     test_interfaces_->SetDelegate(nullptr);
-  // TODO(https://crbug.com/545684): This delegate seems unnecessarily leaked.
-  // Make |delegate_| a std::unique_ptr<>?
+    test_interfaces_->SetMainView(nullptr);
+  }
 }
 
 TestRunner* WebViewTestProxy::GetTestRunner() {

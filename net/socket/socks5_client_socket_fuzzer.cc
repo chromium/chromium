@@ -5,10 +5,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include <memory>
 
 #include "base/logging.h"
-#include "base/test/fuzzed_data_provider.h"
+
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -26,7 +28,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Use a test NetLog, to exercise logging code.
   net::TestNetLog test_net_log;
 
-  base::FuzzedDataProvider data_provider(data, size);
+  FuzzedDataProvider data_provider(data, size);
 
   net::TestCompletionCallback callback;
   std::unique_ptr<net::FuzzedSocket> fuzzed_socket(

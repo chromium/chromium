@@ -18,6 +18,7 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
+#include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/sequence_local_sync_event_watcher.h"
 #include "mojo/public/cpp/bindings/sync_handle_watcher.h"
@@ -30,6 +31,9 @@ class Lock;
 }
 
 namespace mojo {
+namespace internal {
+class MessageQuotaChecker;
+}
 
 // The Connector class is responsible for performing read/write operations on a
 // MessagePipe. It writes messages it receives through the MessageReceiver
@@ -154,6 +158,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
     return message_pipe_.is_valid();
   }
 
+  // Adds this object to a ConnectionGroup identified by |ref|. All receiving
+  // pipe endpoints decoded from inbound messages on this MultiplexRouter will
+  // be added to the same group.
+  void SetConnectionGroup(ConnectionGroup::Ref ref);
+
   // Waits for the next message on the pipe, blocking until one arrives,
   // |deadline| elapses, or an error happens. Returns |true| if a message has
   // been delivered, |false| otherwise.
@@ -190,6 +199,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // |tag| must be a const string literal.
   void SetWatcherHeapProfilerTag(const char* tag);
 
+  // Sets the quota checker.
+  void SetMessageQuotaChecker(
+      scoped_refptr<internal::MessageQuotaChecker> checker);
+
   // Allows testing environments to override the default serialization behavior
   // of newly constructed Connector instances. Must be called before any
   // Connector instances are constructed.
@@ -219,6 +232,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // accepted by the receiver, and |false| otherwise (e.g. if it failed
   // validation).
   bool DispatchMessage(Message message);
+
+  // Posts a task to dispatch the next message in |dispatch_queue_|. These two
+  // functions keep |num_pending_dispatch_tasks_| up to date, so as to allow
+  // bounding the number of posted tasks when the Connector is e.g. paused and
+  // resumed repeatedly.
+  void PostDispatchNextMessageInQueue();
+  void CallDispatchNextMessageInQueue();
 
   // Used to schedule dispatch of a single message from the front of
   // |dispatch_queue_|. Returns |true| if the dispatch succeeded and |false|
@@ -301,6 +321,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  // The quota checker associate with this connector, if any.
+  scoped_refptr<internal::MessageQuotaChecker> quota_checker_;
+
   base::Lock connected_lock_;
   bool connected_ = true;
 
@@ -316,16 +339,22 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // nested dispatch operations.
   bool is_dispatching_ = false;
 
+  // The number of outstanding tasks for CallDispatchNextMessageInQueue.
+  size_t num_pending_dispatch_tasks_ = 0;
+
 #if defined(ENABLE_IPC_FUZZER)
   std::unique_ptr<MessageReceiver> message_dumper_;
 #endif
+
+  // A reference to the ConnectionGroup to which this Connector belongs, if any.
+  ConnectionGroup::Ref connection_group_;
 
   // Create a single weak ptr and use it everywhere, to avoid the malloc/free
   // cost of creating a new weak ptr whenever it is needed.
   // NOTE: This weak pointer is invalidated when the message pipe is closed or
   // transferred (i.e., when |connected_| is set to false).
   base::WeakPtr<Connector> weak_self_;
-  base::WeakPtrFactory<Connector> weak_factory_;
+  base::WeakPtrFactory<Connector> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Connector);
 };

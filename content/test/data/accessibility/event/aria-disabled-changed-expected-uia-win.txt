@@ -1,0 +1,16 @@
+AriaProperties changed on role=checkbox, name=checkbox1
+AriaProperties changed on role=checkbox, name=checkbox2
+AriaProperties changed on role=group, name=fieldset0
+AriaProperties changed on role=group, name=fieldset1
+AriaProperties changed on role=radio, name=radio0
+AriaProperties changed on role=radio, name=radio1
+IsEnabled changed on role=checkbox, name=checkbox1
+IsEnabled changed on role=checkbox, name=checkbox2
+IsEnabled changed on role=group, name=fieldset0
+IsEnabled changed on role=group, name=fieldset1
+IsEnabled changed on role=radio, name=radio0
+IsEnabled changed on role=radio, name=radio1
+ValueIsReadOnly changed on role=checkbox, name=checkbox1
+ValueIsReadOnly changed on role=checkbox, name=checkbox2
+ValueIsReadOnly changed on role=radio, name=radio0
+ValueIsReadOnly changed on role=radio, name=radio1

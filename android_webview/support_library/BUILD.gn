@@ -8,13 +8,16 @@ import("//build/config/android/rules.gni")
 android_library("support_lib_glue_java") {
   java_files = [
     "java/src/org/chromium/support_lib_glue/IsomorphicAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibJsReplyProxyAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibProxyControllerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibReflectionUtil.java",
     "java/src/org/chromium/support_lib_glue/SupportLibServiceWorkerClientAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibServiceWorkerControllerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibServiceWorkerSettingsAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibTracingControllerAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibWebMessageAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebMessageCallbackAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibWebMessageListenerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebMessagePortAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebResourceRequest.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebSettingsAdapter.java",
@@ -26,7 +29,6 @@ android_library("support_lib_glue_java") {
   ]
 
   deps = [
-    "//android_webview:android_webview_commandline_java",
     "//android_webview:android_webview_java",
     "//android_webview/glue:glue",
     "//android_webview/support_library/boundary_interfaces:boundary_interface_java",

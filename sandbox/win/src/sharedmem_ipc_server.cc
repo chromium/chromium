@@ -153,17 +153,15 @@ bool SharedMemIPCServer::InvokeCallback(const ServerControl* service_context,
   if (!params.get())
     return false;
 
-  uint32_t tag = params->GetTag();
+  IpcTag tag = params->GetTag();
   static_assert(0 == INVALID_TYPE, "incorrect type enum");
-  IPCParams ipc_params = {0};
-  ipc_params.ipc_tag = tag;
+  IPCParams ipc_params = {tag};
 
   void* args[kMaxIpcParams];
   if (!GetArgs(params.get(), &ipc_params, args))
     return false;
 
-  IPCInfo ipc_info = {0};
-  ipc_info.ipc_tag = tag;
+  IPCInfo ipc_info = {tag};
   ipc_info.client_info = &service_context->target_info;
   Dispatcher* dispatcher = service_context->dispatcher;
   DCHECK(dispatcher);

@@ -6,7 +6,7 @@ source_set("tests") {
   testonly = true
 
   sources = [
-    "struct_traits_unittest.cc",
+    "mojom_traits_unittest.cc",
   ]
 
   deps = [
@@ -14,9 +14,9 @@ source_set("tests") {
     "//components/viz/common:common",
     "//components/viz/test:test_support",
     "//mojo/public/cpp/test_support:test_utils",
-    "//services/viz/public/interfaces",
+    "//services/viz/public/mojom",
     "//testing/gtest",
     "//ui/gfx:test_support",
-    "//ui/gfx/geometry/mojo:struct_traits",
+    "//ui/gfx/geometry/mojom:mojom_traits",
   ]
 }

@@ -12,11 +12,33 @@ RendererFactorySelector::RendererFactorySelector() = default;
 
 RendererFactorySelector::~RendererFactorySelector() = default;
 
+void RendererFactorySelector::AddBaseFactory(
+    FactoryType type,
+    std::unique_ptr<RendererFactory> factory) {
+  DCHECK(!base_factory_type_) << "At most one base factory!";
+
+  AddFactory(type, std::move(factory));
+  SetBaseFactoryType(type);
+}
+
+void RendererFactorySelector::AddConditionalFactory(
+    FactoryType type,
+    std::unique_ptr<RendererFactory> factory,
+    ConditionalFactoryCB callback) {
+  DCHECK(factory);
+  DCHECK(callback);
+  DCHECK(!conditional_factory_types_.count(type))
+      << "At most one conditional factory for a given type!";
+
+  conditional_factory_types_.emplace(type, callback);
+  AddFactory(type, std::move(factory));
+}
+
 void RendererFactorySelector::AddFactory(
     FactoryType type,
     std::unique_ptr<RendererFactory> factory) {
+  DCHECK(factory);
   DCHECK(!factories_[type]);
-
   factories_[type] = std::move(factory);
 }
 
@@ -25,44 +47,38 @@ void RendererFactorySelector::SetBaseFactoryType(FactoryType type) {
   base_factory_type_ = type;
 }
 
+RendererFactorySelector::FactoryType
+RendererFactorySelector::GetCurrentFactoryType() {
+  for (const auto& entry : conditional_factory_types_) {
+    if (entry.second.Run())
+      return entry.first;
+  }
+
+  return base_factory_type_.value();
+}
+
 RendererFactory* RendererFactorySelector::GetCurrentFactory() {
-  DCHECK(base_factory_type_);
-  FactoryType next_factory_type = base_factory_type_.value();
+  FactoryType current_factory_type = GetCurrentFactoryType();
 
-  if (use_media_player_)
-    next_factory_type = FactoryType::MEDIA_PLAYER;
-
-  if (query_is_remoting_active_cb_ && query_is_remoting_active_cb_.Run())
-    next_factory_type = FactoryType::COURIER;
-
-  if (query_is_flinging_active_cb_ && query_is_flinging_active_cb_.Run())
-    next_factory_type = FactoryType::FLINGING;
-
-  DVLOG(1) << __func__ << " Selecting factory type: " << next_factory_type;
-
-  RendererFactory* current_factory = factories_[next_factory_type].get();
-
+  DVLOG(1) << __func__ << " Selecting factory type: " << current_factory_type;
+  auto* current_factory = factories_[current_factory_type].get();
   DCHECK(current_factory);
 
   return current_factory;
 }
 
 #if defined(OS_ANDROID)
-void RendererFactorySelector::SetUseMediaPlayer(bool use_media_player) {
-  use_media_player_ = use_media_player;
+void RendererFactorySelector::StartRequestRemotePlayStateCB(
+    RequestRemotePlayStateChangeCB callback_request) {
+  DCHECK(!remote_play_state_change_cb_request_);
+  remote_play_state_change_cb_request_ = std::move(callback_request);
+}
+
+void RendererFactorySelector::SetRemotePlayStateChangeCB(
+    RemotePlayStateChangeCB callback) {
+  DCHECK(remote_play_state_change_cb_request_);
+  std::move(remote_play_state_change_cb_request_).Run(std::move(callback));
 }
 #endif
-
-void RendererFactorySelector::SetQueryIsRemotingActiveCB(
-    QueryIsRemotingActiveCB query_is_remoting_active_cb) {
-  DCHECK(!query_is_remoting_active_cb_);
-  query_is_remoting_active_cb_ = query_is_remoting_active_cb;
-}
-
-void RendererFactorySelector::SetQueryIsFlingingActiveCB(
-    QueryIsFlingingActiveCB query_is_flinging_active_cb) {
-  DCHECK(!query_is_flinging_active_cb_);
-  query_is_flinging_active_cb_ = query_is_flinging_active_cb;
-}
 
 }  // namespace media

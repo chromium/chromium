@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 21: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/resources/anchor-url-dom-write-location-click.php?%3Ca%20id=%22anchorLink%22%20href=%22javascript:alert(String.fromCharCode(0x58,0x53,0x53))%22%3EClick%3C/a%3E' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-

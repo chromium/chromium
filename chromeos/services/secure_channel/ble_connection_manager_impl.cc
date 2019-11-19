@@ -22,7 +22,7 @@
 #include "chromeos/services/secure_channel/latency_metrics_logger.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/services/secure_channel/secure_channel_disconnector_impl.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace chromeos {
 
@@ -345,7 +345,8 @@ void BleConnectionManagerImpl::OnReceivedAdvertisement(
   std::unique_ptr<Connection> connection =
       weave::BluetoothLowEnergyWeaveClientConnection::Factory::NewInstance(
           remote_device, bluetooth_adapter_,
-          device::BluetoothUUID(kGattServerUuid), bluetooth_device,
+          device::BluetoothUUID(kGattServerUuid),
+          bluetooth_device->GetAddress(),
           true /* should_set_low_connection_latency */);
 
   SetAuthenticatingChannel(
@@ -381,8 +382,8 @@ void BleConnectionManagerImpl::OnSecureChannelStatusChanged(
 
 bool BleConnectionManagerImpl::DoesAuthenticatingChannelExist(
     const std::string& remote_device_id) {
-  return base::ContainsKey(remote_device_id_to_secure_channel_map_,
-                           remote_device_id);
+  return base::Contains(remote_device_id_to_secure_channel_map_,
+                        remote_device_id);
 }
 
 void BleConnectionManagerImpl::SetAuthenticatingChannel(
@@ -623,7 +624,7 @@ void BleConnectionManagerImpl::StartConnectionAttemptTimerMetricsIfNecessary(
     ConnectionRole connection_role) {
   // If an entry already exists, there is nothing to do. This is expected if
   // more than one client is attempting a connection to the same device.
-  if (base::ContainsKey(remote_device_id_to_timestamps_map_, remote_device_id))
+  if (base::Contains(remote_device_id_to_timestamps_map_, remote_device_id))
     return;
 
   remote_device_id_to_timestamps_map_[remote_device_id] =

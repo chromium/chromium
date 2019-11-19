@@ -13,6 +13,7 @@
 #include "content/public/renderer/render_view.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/guest_view/extensions_guest_view_messages.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_document.h"
@@ -28,7 +29,12 @@ MimeHandlerViewContainer::MimeHandlerViewContainer(
     const GURL& original_url)
     : GuestViewContainer(render_frame),
       MimeHandlerViewContainerBase(render_frame, info, mime_type, original_url),
-      guest_proxy_routing_id_(-1) {
+      guest_proxy_routing_id_(-1),
+      is_resource_accessible_to_embedder_(
+          GetSourceFrame()->GetSecurityOrigin().CanAccess(
+              blink::WebSecurityOrigin::Create(original_url))) {
+  RecordInteraction(
+      MimeHandlerViewUMATypes::Type::kDidCreateMimeHandlerViewContainerBase);
   is_embedded_ = !render_frame->GetWebFrame()->GetDocument().IsPluginDocument();
 }
 
@@ -88,7 +94,7 @@ void MimeHandlerViewContainer::DidResizeElement(const gfx::Size& new_size) {
 
 v8::Local<v8::Object> MimeHandlerViewContainer::V8ScriptableObject(
     v8::Isolate* isolate) {
-  return GetScriptableObject(isolate);
+  return GetScriptableObjectInternal(isolate);
 }
 
 void MimeHandlerViewContainer::OnCreateMimeHandlerViewGuestACK(
@@ -120,14 +126,6 @@ void MimeHandlerViewContainer::CreateMimeHandlerViewGuestIfNecessary() {
   MimeHandlerViewContainerBase::CreateMimeHandlerViewGuestIfNecessary();
 }
 
-blink::WebRemoteFrame* MimeHandlerViewContainer::GetGuestProxyFrame() const {
-  content::RenderView* guest_proxy_render_view =
-      content::RenderView::FromRoutingID(guest_proxy_routing_id_);
-  if (!guest_proxy_render_view)
-    return nullptr;
-  return guest_proxy_render_view->GetWebView()->MainFrame()->ToWebRemoteFrame();
-}
-
 int32_t MimeHandlerViewContainer::GetInstanceId() const {
   return element_instance_id();
 }
@@ -136,16 +134,24 @@ gfx::Size MimeHandlerViewContainer::GetElementSize() const {
   return *element_size_;
 }
 
-void MimeHandlerViewContainer::SetShowBeforeUnloadDialog(
-    bool show_dialog,
-    SetShowBeforeUnloadDialogCallback callback) {
-  DCHECK(!is_embedded_);
-  render_frame()
-      ->GetWebFrame()
-      ->GetDocument()
-      .To<blink::WebPluginDocument>()
-      .SetShowBeforeUnloadDialog(show_dialog);
-  std::move(callback).Run();
+blink::WebLocalFrame* MimeHandlerViewContainer::GetSourceFrame() {
+  return render_frame()->GetWebFrame();
+}
+
+blink::WebFrame* MimeHandlerViewContainer::GetTargetFrame() {
+  content::RenderView* guest_proxy_render_view =
+      content::RenderView::FromRoutingID(guest_proxy_routing_id_);
+  if (!guest_proxy_render_view)
+    return nullptr;
+  return guest_proxy_render_view->GetWebView()->MainFrame()->ToWebRemoteFrame();
+}
+
+bool MimeHandlerViewContainer::IsEmbedded() const {
+  return is_embedded_;
+}
+
+bool MimeHandlerViewContainer::IsResourceAccessibleBySource() const {
+  return is_resource_accessible_to_embedder_;
 }
 
 }  // namespace extensions

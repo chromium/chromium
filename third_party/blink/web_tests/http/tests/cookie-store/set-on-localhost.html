@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- NOTE: On http://localhost, the Cookie Store API is intended to behave the
+same way as document.cookie. -->
+<title>Cookie Store API: Set a cookie on http://localhost</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+promise_test(async t => {
+  await cookieStore.delete('cookie-name');
+
+  await cookieStore.set('cookie-name', 'cookie-value');
+  t.add_cleanup(async () => { await cookieStore.delete('cookie-name'); });
+  const cookie = await cookieStore.get('cookie-name');
+  assert_equals(cookie.value, 'cookie-value');
+  assert_equals(cookie.secure, false);
+}, 'cookieStore.set(name, value) sets an insecure cookie');
+
+promise_test(async t => {
+  await cookieStore.delete('cookie-name');
+
+  await cookieStore.set({ name: 'cookie-name', value: 'cookie-value' });
+  t.add_cleanup(async () => { await cookieStore.delete('cookie-name'); });
+  const cookie = await cookieStore.get('cookie-name');
+  assert_equals(cookie.value, 'cookie-value');
+  assert_equals(cookie.secure, false);
+}, 'cookieStore.set(options) with no "secure" option sets an insecure cookie');
+
+promise_test(async t => {
+  await cookieStore.delete('cookie-name');
+
+  await cookieStore.set({
+    name: 'cookie-name', value: 'cookie-value', secure: false
+  });
+  t.add_cleanup(async () => { await cookieStore.delete('cookie-name'); });
+  const cookie = await cookieStore.get('cookie-name');
+  assert_equals(cookie.value, 'cookie-value');
+  assert_equals(cookie.secure, false);
+}, 'cookieStore.set(options) with "secure: false" sets an insecure cookie');
+
+promise_test(async t => {
+  await promise_rejects(t, new TypeError(),
+      cookieStore.set({
+        name: 'cookie-name', value: 'cookie-value', secure: true
+      }));
+}, 'cookieStore.set(options) with "secure: true" throws an exception');
+
+promise_test(async t => {
+  await cookieStore.delete('cookie-name');
+
+  await cookieStore.set('cookie-name', 'cookie-value', { secure: false });
+  t.add_cleanup(async () => { await cookieStore.delete('cookie-name'); });
+  const cookie = await cookieStore.get('cookie-name');
+  assert_equals(cookie.value, 'cookie-value');
+  assert_equals(cookie.secure, false);
+}, `cookieStore.set(name, value, options) with "secure: false" sets an insecure
+    cookie`);
+
+promise_test(async t => {
+  await cookieStore.delete('cookie-name');
+
+  await promise_rejects(t, new TypeError(),
+      cookieStore.set('cookie-name', 'cookie-value', { secure: true }));
+}, `cookieStore.set(name, value, options) with "secure: true" throws an
+    exception`);
+
+</script>

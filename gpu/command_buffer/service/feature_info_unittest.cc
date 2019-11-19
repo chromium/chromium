@@ -277,11 +277,11 @@ TEST_P(FeatureInfoTest, InitializeNoExtensions) {
   // Check a couple of random extensions that should not be there.
   EXPECT_FALSE(gfx::HasExtension(info_->extensions(), "GL_OES_texture_npot"));
   EXPECT_FALSE(gfx::HasExtension(info_->extensions(),
-                                 "GL_EXT_texture_compression_dxt1"));
+                                 "GL_ANGLE_texture_compression_dxt1"));
   EXPECT_FALSE(gfx::HasExtension(info_->extensions(),
-                                 "GL_CHROMIUM_texture_compression_dxt3"));
+                                 "GL_ANGLE_texture_compression_dxt3"));
   EXPECT_FALSE(gfx::HasExtension(info_->extensions(),
-                                 "GL_CHROMIUM_texture_compression_dxt5"));
+                                 "GL_ANGLE_texture_compression_dxt5"));
   EXPECT_FALSE(
       gfx::HasExtension(info_->extensions(), "GL_ANGLE_texture_usage"));
   EXPECT_FALSE(
@@ -408,9 +408,9 @@ TEST_P(FeatureInfoTest, InitializeNPOTExtensionGL) {
 }
 
 TEST_P(FeatureInfoTest, InitializeDXTExtensionGLES2) {
-  SetupInitExpectations("GL_EXT_texture_compression_dxt1");
+  SetupInitExpectations("GL_ANGLE_texture_compression_dxt1");
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
-                                "GL_EXT_texture_compression_dxt1"));
+                                "GL_ANGLE_texture_compression_dxt1"));
   EXPECT_TRUE(info_->validators()->compressed_texture_format.IsValid(
       GL_COMPRESSED_RGB_S3TC_DXT1_EXT));
   EXPECT_TRUE(info_->validators()->compressed_texture_format.IsValid(
@@ -424,11 +424,11 @@ TEST_P(FeatureInfoTest, InitializeDXTExtensionGLES2) {
 TEST_P(FeatureInfoTest, InitializeDXTExtensionGL) {
   SetupInitExpectations("GL_EXT_texture_compression_s3tc");
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
-                                "GL_EXT_texture_compression_dxt1"));
+                                "GL_ANGLE_texture_compression_dxt1"));
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
-                                "GL_CHROMIUM_texture_compression_dxt3"));
+                                "GL_ANGLE_texture_compression_dxt3"));
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
-                                "GL_CHROMIUM_texture_compression_dxt5"));
+                                "GL_ANGLE_texture_compression_dxt5"));
   EXPECT_TRUE(info_->validators()->compressed_texture_format.IsValid(
       GL_COMPRESSED_RGB_S3TC_DXT1_EXT));
   EXPECT_TRUE(info_->validators()->compressed_texture_format.IsValid(
@@ -468,11 +468,11 @@ TEST_P(FeatureInfoTest, InitializeEXT_texture_compression_s3tc_srgbGL) {
       GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT));
 }
 
-TEST_P(FeatureInfoTest, InitializeCHROMIUM_compressed_texture_etc) {
+TEST_P(FeatureInfoTest, InitializeANGLE_compressed_texture_etc) {
   SetupInitExpectationsWithGLVersion("", "",
                                      "OpenGL ES 3.0");
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
-                                "GL_CHROMIUM_compressed_texture_etc"));
+                                "GL_ANGLE_compressed_texture_etc"));
   EXPECT_TRUE(info_->validators()->compressed_texture_format.IsValid(
       GL_COMPRESSED_R11_EAC));
   EXPECT_TRUE(info_->validators()->compressed_texture_format.IsValid(
@@ -1440,23 +1440,6 @@ TEST_P(FeatureInfoTest, InitializeOES_element_index_uint) {
   EXPECT_TRUE(info_->validators()->index_type.IsValid(GL_UNSIGNED_INT));
 }
 
-TEST_P(FeatureInfoTest, InitializeVAOsWithClientSideArrays) {
-  gpu::GpuDriverBugWorkarounds workarounds;
-  workarounds.use_client_side_arrays_for_stream_buffers = true;
-  SetupInitExpectationsWithWorkarounds("GL_OES_vertex_array_object",
-                                       workarounds);
-  if (GetContextType() == CONTEXT_TYPE_OPENGLES2) {
-    EXPECT_TRUE(info_->workarounds().use_client_side_arrays_for_stream_buffers);
-    EXPECT_FALSE(info_->feature_flags().native_vertex_array_object);
-  } else {  // CONTEXT_TYPE_OPENGLES3
-    // We only turn on use_client_side_arrays_for_stream_buffers on ES2
-    // contexts. See https://crbug.com/826509.
-    EXPECT_FALSE(
-        info_->workarounds().use_client_side_arrays_for_stream_buffers);
-    EXPECT_TRUE(info_->feature_flags().native_vertex_array_object);
-  }
-}
-
 TEST_P(FeatureInfoTest, InitializeEXT_blend_minmax) {
   SetupInitExpectations("GL_EXT_blend_minmax");
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(), "GL_EXT_blend_minmax"));
@@ -1730,11 +1713,6 @@ TEST_P(FeatureInfoTest, InitializeEXT_texture_norm16) {
   EXPECT_TRUE(info_->validators()->texture_internal_format.IsValid(GL_RED_EXT));
   EXPECT_TRUE(
       info_->validators()->texture_internal_format_storage.IsValid(GL_R16_EXT));
-}
-
-TEST_P(FeatureInfoTest, InitializeCHROMIUM_ycbcr_422_imageTrue) {
-  SetupInitExpectations("GL_APPLE_ycbcr_422");
-  EXPECT_TRUE(info_->feature_flags().chromium_image_ycbcr_422);
 }
 
 TEST_P(FeatureInfoTest, InitializeCHROMIUM_unpremultiply_and_dither_copy) {

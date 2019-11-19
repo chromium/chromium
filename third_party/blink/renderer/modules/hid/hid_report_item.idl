@@ -1,0 +1,104 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// An element of a HID report that describes one or more fields contained within
+// the report.
+// https://wicg.github.io/webhid/index.html#report-descriptor
+
+// The HID specification allows a device to specify units in one of four
+// standard unit systems. A device may also specify it is not using units, or is
+// using a vendor-defined unit system. Each unit system corresponds to a set of
+// units for length, mass, time, temperature, current, and luminous intensity.
+// See the units table in section 6.2.2.7 of the Device Class Definition for
+// HID, v1.11.
+// https://www.usb.org/document-library/device-class-definition-hid-111
+enum HIDUnitSystem {
+    // No unit system in use.
+    "none",
+    // Centimeter, gram, seconds, kelvin, ampere, candela.
+    "si-linear",
+    // Radians, gram, seconds, kelvin, ampere, candela.
+    "si-rotation",
+    // Inch, slug, seconds, Fahrenheit, ampere, candela.
+    "english-linear",
+    // Degrees, slug, seconds, Fahrenheit, ampere, candela.
+    "english-rotation",
+    "vendor-defined",
+    "reserved",
+};
+
+[
+    Exposed(Window WebHID),
+    SecureContext
+] interface HIDReportItem {
+    // True if the item represents an absolute measurement (e.g. joystick tilt)
+    // or false if it represents a relative measurement (e.g. mouse movement).
+    readonly attribute boolean isAbsolute;
+
+    // True if the item is an Array or false if it is a Variable. Array items
+    // are typically used when a device needs to represent a large number of
+    // button-type inputs, but only a few inputs need to be active at once.
+    // Variable items require space in the report for each input, but can report
+    // all inputs simultaneously.
+    readonly attribute boolean isArray;
+
+    // True if the usages for this item are defined by |usageMinimum| and
+    // |usageMaximum| or false if the usages are defined by |usages|.
+    readonly attribute boolean isRange;
+
+    // True if the item uses an out-of-bounds value when there is no input.
+    readonly attribute boolean hasNull;
+
+    // An ordered list of 32-bit usage values associated with this item. Unused
+    // if |isRange| is true. If |reportCount| is two or more, usages are
+    // assigned from the list until the list is exhausted.
+    readonly attribute FrozenArray<unsigned long> usages;
+
+    // The minimum and maximum usage values associated with this item. Unused if
+    // |isRange| is false. If |reportCount| is two or more, usages are assigned
+    // starting from |usageMinimum| and increment by one.
+    readonly attribute unsigned long usageMinimum;
+    readonly attribute unsigned long usageMaximum;
+
+    // The size of a single field described by this item, in bits.
+    readonly attribute unsigned short reportSize;
+
+    // The number of similar fields described by this item. The total size of
+    // the item described by this report is |reportSize| * |reportCount| bits.
+    readonly attribute unsigned short reportCount;
+
+    // The base 10 exponent of the units for this report item. For instance, for
+    // kilograms |unitExponent| would be 3 and for micrograms it would be -6.
+    readonly attribute byte unitExponent;
+
+    // The unit system determines which units are used for length, mass, time,
+    // temperature, current, and luminous intensity. May be "none" if the values
+    // for this report item are unitless.
+    readonly attribute HIDUnitSystem unitSystem;
+
+    // The following members determine the exponents for each factor of the
+    // unit definition. For instance, for acceleration all factors would have
+    // an exponent of 0 except |unitFactorLengthExponent| which would be 1 and
+    // |unitFactorTimeExponent| which would be -2.
+    readonly attribute byte unitFactorLengthExponent;
+    readonly attribute byte unitFactorMassExponent;
+    readonly attribute byte unitFactorTimeExponent;
+    readonly attribute byte unitFactorTemperatureExponent;
+    readonly attribute byte unitFactorCurrentExponent;
+    readonly attribute byte unitFactorLuminousIntensityExponent;
+
+    // The minimum and maximum values that may be represented by this input. A
+    // device with |hasNull| may report a value outside this range to indicate
+    // no input.
+    readonly attribute long logicalMinimum;
+    readonly attribute long logicalMaximum;
+
+    // The minimum and maximum values, scaled to the units described by |unit|
+    // and |unitExponent|.
+    readonly attribute long physicalMinimum;
+    readonly attribute long physicalMaximum;
+
+    // The strings associated with this item.
+    readonly attribute FrozenArray<DOMString> strings;
+};

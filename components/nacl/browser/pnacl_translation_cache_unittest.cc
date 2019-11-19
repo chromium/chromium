@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "components/nacl/common/pnacl_types.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +26,7 @@ const int kTestDiskCacheSize = 16 * 1024 * 1024;
 class PnaclTranslationCacheTest : public testing::Test {
  protected:
   PnaclTranslationCacheTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP) {}
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
   ~PnaclTranslationCacheTest() override {}
   void SetUp() override { cache_.reset(new PnaclTranslationCache()); }
   void TearDown() override {
@@ -44,7 +44,7 @@ class PnaclTranslationCacheTest : public testing::Test {
   std::string GetNexe(const std::string& key);
 
   std::unique_ptr<PnaclTranslationCache> cache_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
 };
 

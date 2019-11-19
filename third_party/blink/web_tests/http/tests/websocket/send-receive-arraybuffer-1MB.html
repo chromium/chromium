@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+function randomValuesArrayBuffer(length)
+{
+  const array = new Uint8Array(length);
+  // crypto.getRandomValues has a quota. See
+  // https://www.w3.org/TR/WebCryptoAPI/#Crypto-method-getRandomValues.
+  const cryptoQuota = 65535;
+  let index = 0;
+  const buffer = array.buffer;
+  while(index < buffer.byteLength) {
+    const bufferView = array.subarray(index, index + cryptoQuota);
+    window.crypto.getRandomValues(bufferView);
+    index += cryptoQuota;
+  }
+  return buffer;
+}
+
+function runTest(buffer, description) {
+  async_test((test) => {
+    const ws = new WebSocket("ws://127.0.0.1:8880/echo");
+    ws.binaryType = "arraybuffer";
+    let messageSHA256 = undefined;
+    let bufferSHA256 = window.crypto.subtle.digest("SHA-256", buffer);
+    ws.onopen = test.step_func(() => {
+      ws.send(buffer);
+    });
+    ws.onmessage = test.step_func((event) => {
+      if (event.data === "Goodbye")
+        return;
+      assert_equals(messageSHA256, undefined);
+      messageSHA256 = window.crypto.subtle.digest("SHA-256", event.data);
+      // Sending "Goodbye" lets the server close the connection.
+      ws.send("Goodbye");
+    });
+    ws.onclose = test.step_func((e) => {
+      assert_true(e.wasClean);
+      // Checking bytes in JS is slow with MSAN, so we compare the arrays on
+      // SHA dijest array.
+      Promise.all([messageSHA256, bufferSHA256]).then(
+        test.step_func_done(([messageDigest, bufferDigest]) => {
+          assert_array_equals(new Uint8Array(messageDigest),
+          new Uint8Array(bufferDigest), "Array dijest should be same.");
+        }),
+        test.unreached_func("digest should work")
+      );
+    });
+  }, description);
+}
+
+runTest(new ArrayBuffer(0), "empty array buffer");
+runTest(new TextEncoder().encode('Hello, world!'), "text array buffer");
+runTest(randomValuesArrayBuffer(256), "random 256 values");
+runTest(randomValuesArrayBuffer(2560), "random 2560 values");
+runTest(randomValuesArrayBuffer(25600), "random 25600 values");
+runTest(randomValuesArrayBuffer(256000), "random 256000 values");
+runTest(randomValuesArrayBuffer(1000000), "random 1000000 values");
+</script>
+</body>
+</html>

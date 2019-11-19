@@ -32,9 +32,9 @@ TEST_F(IncognitoModePrefsTest, IntToAvailability) {
   EXPECT_EQ(IncognitoModePrefs::FORCED, incognito);
 
   EXPECT_FALSE(IncognitoModePrefs::IntToAvailability(10, &incognito));
-  EXPECT_EQ(IncognitoModePrefs::ENABLED, incognito);
+  EXPECT_EQ(IncognitoModePrefs::kDefaultAvailability, incognito);
   EXPECT_FALSE(IncognitoModePrefs::IntToAvailability(-1, &incognito));
-  EXPECT_EQ(IncognitoModePrefs::ENABLED, incognito);
+  EXPECT_EQ(IncognitoModePrefs::kDefaultAvailability, incognito);
 }
 
 TEST_F(IncognitoModePrefsTest, GetAvailability) {

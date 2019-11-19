@@ -20,7 +20,7 @@ void DrawSelectionRect(const SkBitmap& bitmap, const blink::WebRect& wr) {
   flags.setAntiAlias(true);
   flags.setStrokeWidth(1.0f);
   SkIRect rect;  // Bounding rect
-  rect.set(wr.x, wr.y, wr.x + wr.width, wr.y + wr.height);
+  rect.setXYWH(wr.x, wr.y, wr.width, wr.height);
   canvas.drawIRect(rect, flags);
 }
 

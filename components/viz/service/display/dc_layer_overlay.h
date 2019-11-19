@@ -5,18 +5,22 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_DC_LAYER_OVERLAY_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DC_LAYER_OVERLAY_H_
 
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "components/viz/common/quads/render_pass.h"
+#include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/viz_service_export.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkMatrix44.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gl/dc_renderer_layer_params.h"
+#include "ui/gfx/video_types.h"
 
 namespace viz {
 class DisplayResourceProvider;
-class OutputSurface;
+class RendererSettings;
 
 // Holds all information necessary to construct a DCLayer from a DrawQuad.
 class VIZ_SERVICE_EXPORT DCLayerOverlay {
@@ -32,13 +36,18 @@ class VIZ_SERVICE_EXPORT DCLayerOverlay {
   // hardware protected video and soon for Finch experiment on software
   // protected video.
   bool RequiresOverlay() const {
-    return (protected_video_type == ui::ProtectedVideoType::kHardwareProtected);
+    return (protected_video_type ==
+            gfx::ProtectedVideoType::kHardwareProtected);
   }
 
-  // Resource ids for video Y and UV planes.  Can be the same resource.
-  // See DirectCompositionSurfaceWin for details.
-  ResourceId y_resource_id = 0;
-  ResourceId uv_resource_id = 0;
+  // Resource ids for video Y and UV planes, a single NV12 image, or a swap
+  // chain image. See DirectCompositionSurfaceWin for details.
+  enum : size_t { kNumResources = 2 };
+  ResourceId resources[kNumResources] = {kInvalidResourceId};
+
+  // Mailboxes corresponding to |resources|. This is populated in SkiaRenderer
+  // for accessing the textures on the GPU thread.
+  gpu::Mailbox mailbox[kNumResources];
 
   // Stacking order relative to backbuffer which has z-order 0.
   int z_order = 1;
@@ -62,14 +71,18 @@ class VIZ_SERVICE_EXPORT DCLayerOverlay {
   // normally BT.709.
   gfx::ColorSpace color_space;
 
-  ui::ProtectedVideoType protected_video_type = ui::ProtectedVideoType::kClear;
+  gfx::ProtectedVideoType protected_video_type =
+      gfx::ProtectedVideoType::kClear;
 };
 
 typedef std::vector<DCLayerOverlay> DCLayerOverlayList;
 
-class DCLayerOverlayProcessor {
+class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor {
  public:
-  explicit DCLayerOverlayProcessor(OutputSurface* surface);
+  DCLayerOverlayProcessor(const OutputSurface::Capabilities& capabilities,
+                          const RendererSettings& settings);
+  // For testing.
+  DCLayerOverlayProcessor();
   ~DCLayerOverlayProcessor();
 
   void Process(DisplayResourceProvider* resource_provider,
@@ -78,7 +91,6 @@ class DCLayerOverlayProcessor {
                gfx::Rect* damage_rect,
                DCLayerOverlayList* dc_layer_overlays);
   void ClearOverlayState();
-  void SetHasHwOverlaySupport() { has_hw_overlay_support_ = true; }
   // This is the damage contribution due to previous frame's overlays which can
   // be empty.
   gfx::Rect previous_frame_overlay_damage_contribution() {
@@ -90,45 +102,62 @@ class DCLayerOverlayProcessor {
   QuadList::Iterator ProcessRenderPassDrawQuad(RenderPass* render_pass,
                                                gfx::Rect* damage_rect,
                                                QuadList::Iterator it);
-
   void ProcessRenderPass(DisplayResourceProvider* resource_provider,
                          const gfx::RectF& display_rect,
                          RenderPass* render_pass,
                          bool is_root,
                          gfx::Rect* damage_rect,
                          DCLayerOverlayList* dc_layer_overlays);
-  void ProcessForOverlay(const gfx::RectF& display_rect,
-                         QuadList* quad_list,
-                         const gfx::Rect& quad_rectangle,
-                         QuadList::Iterator* it,
-                         gfx::Rect* damage_rect);
+  // Returns an iterator to the element after |it|.
+  QuadList::Iterator ProcessForOverlay(const gfx::RectF& display_rect,
+                                       RenderPass* render_pass,
+                                       const gfx::Rect& quad_rectangle,
+                                       const QuadList::Iterator& it,
+                                       gfx::Rect* damage_rect);
   void ProcessForUnderlay(const gfx::RectF& display_rect,
                           RenderPass* render_pass,
                           const gfx::Rect& quad_rectangle,
-                          const gfx::RectF& occlusion_bounding_box,
                           const QuadList::Iterator& it,
                           bool is_root,
-                          bool has_occluding_surface_damage,
                           gfx::Rect* damage_rect,
                           gfx::Rect* this_frame_underlay_rect,
-                          gfx::Rect* this_frame_underlay_occlusion,
                           DCLayerOverlay* dc_layer);
 
+  void InsertDebugBorderDrawQuads(const gfx::RectF& display_rect,
+                                  const gfx::Rect& overlay_rect,
+                                  RenderPass* root_render_pass,
+                                  gfx::Rect* damage_rect);
+
+  const bool has_hw_overlay_support_;
+  const bool show_debug_borders_;
+
   gfx::Rect previous_frame_underlay_rect_;
-  gfx::Rect previous_frame_underlay_occlusion_;
   gfx::RectF previous_display_rect_;
   // previous and current overlay_rect_union_ include both overlay and underlay
   gfx::Rect previous_frame_overlay_rect_union_;
   gfx::Rect current_frame_overlay_rect_union_;
   int previous_frame_processed_overlay_count_ = 0;
   int current_frame_processed_overlay_count_ = 0;
-  bool has_hw_overlay_support_ = true;
 
-  // Store information about clipped punch-through rects in target space for
-  // non-root render passes. These rects are used to clear the corresponding
-  // areas in parent render passes.
-  base::flat_map<RenderPassId, std::vector<gfx::Rect>>
-      pass_punch_through_rects_;
+  struct RenderPassData {
+    RenderPassData();
+    RenderPassData(const RenderPassData& other);
+    ~RenderPassData();
+
+    // Store information about clipped punch-through rects in target space for
+    // non-root render passes. These rects are used to clear the corresponding
+    // areas in parent render passes.
+    std::vector<gfx::Rect> punch_through_rects;
+
+    // Output rects of child render passes that have backdrop filters in target
+    // space. These rects are used to determine if the overlay rect could be
+    // read by backdrop filters.
+    std::vector<gfx::Rect> backdrop_filter_rects;
+
+    // Whether this render pass has backdrop filters.
+    bool has_backdrop_filters = false;
+  };
+  base::flat_map<RenderPassId, RenderPassData> render_pass_data_;
 
   DISALLOW_COPY_AND_ASSIGN(DCLayerOverlayProcessor);
 };

@@ -51,7 +51,7 @@ class ONCCertificateImporterImplTest : public testing::Test {
 
   void TearDown() override {
     thread_task_runner_handle_.reset();
-    task_runner_ = NULL;
+    task_runner_.reset();
   }
 
  protected:

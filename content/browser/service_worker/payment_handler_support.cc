@@ -50,16 +50,16 @@ class ShowPaymentHandlerWindowReplier {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (response_callback_) {
       DCHECK(fallback_);
-      base::PostTaskWithTraits(
-          FROM_HERE, {BrowserThread::IO},
+      base::PostTask(
+          FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
           base::BindOnce(std::move(fallback_), std::move(response_callback_)));
     }
   }
 
   void Run(bool success, int render_process_id, int render_frame_id) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
+    RunOrPostTaskOnThread(
+        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
         base::BindOnce(std::move(callback_), std::move(response_callback_),
                        success, render_process_id, render_frame_id));
   }
@@ -98,10 +98,10 @@ void PaymentHandlerSupport::ShowPaymentHandlerWindow(
     OpenWindowFallback fallback,
     blink::mojom::ServiceWorkerHost::OpenPaymentHandlerWindowCallback
         response_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(context);
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
+  RunOrPostTaskOnThread(
+      FROM_HERE, BrowserThread::UI,
       base::BindOnce(&ShowPaymentHandlerWindowOnUI,
                      base::WrapRefCounted(context->wrapper()), url,
                      std::move(callback), std::move(fallback),

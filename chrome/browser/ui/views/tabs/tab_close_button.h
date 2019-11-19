@@ -35,23 +35,20 @@ class TabCloseButton : public views::ImageButton,
   // colors to use. It must also be called when the background color of the tab
   // changes (this class does not track tab activation state), and when the
   // theme changes.
-  void SetIconColors(SkColor icon_color,
-                     SkColor hovered_icon_color,
-                     SkColor pressed_icon_color,
-                     SkColor hovered_color,
-                     SkColor pressed_color);
+  void SetIconColors(SkColor foreground_color, SkColor background_color);
 
-  // views::View:
+  // views::ImageButton:
+  const char* GetClassName() const override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
-  void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
+  void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  const char* GetClassName() const override;
-  void Layout() override;
-  gfx::Size CalculatePreferredSize() const override;
+  std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
 
  protected:
+  // views::ImageButton:
+  gfx::Size CalculatePreferredSize() const override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
  private:
@@ -59,16 +56,9 @@ class TabCloseButton : public views::ImageButton,
   views::View* TargetForRect(views::View* root, const gfx::Rect& rect) override;
   bool GetHitTestMask(SkPath* mask) const override;
 
-  // Draw the highlight circle.
-  void DrawHighlight(gfx::Canvas* canvas, ButtonState state);
-
-  // Draw the close "X" glyph.
-  void DrawCloseGlyph(gfx::Canvas* canvas, ButtonState state);
-
   MouseEventCallback mouse_event_callback_;
 
-  SkColor icon_colors_[views::Button::STATE_PRESSED + 1];
-  SkColor highlight_colors_[views::Button::STATE_PRESSED + 1];
+  SkColor icon_color_ = gfx::kPlaceholderColor;
 
   DISALLOW_COPY_AND_ASSIGN(TabCloseButton);
 };

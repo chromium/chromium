@@ -12,7 +12,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 
-class Profile;
+class TestingProfile;
 
 namespace user_manager {
 class ScopedUserManager;
@@ -26,7 +26,8 @@ class CrostiniTestHelper {
  public:
   // For convenience, instantiating this allows Crostini, and enables it
   // unless enable_crostini is false. The destructor resets these.
-  explicit CrostiniTestHelper(Profile*, bool enable_crostini = true);
+  explicit CrostiniTestHelper(TestingProfile* profile,
+                              bool enable_crostini = true);
   ~CrostiniTestHelper();
 
   // Creates the apps named "dummy1" and "dummy2" in the default container.
@@ -43,9 +44,15 @@ class CrostiniTestHelper {
       vm_tools::apps::App& app,
       const std::map<std::string, std::set<std::string>>& keywords);
 
+  // When the App Service is enabled, the timing of when Profile-related and
+  // Profile-creation-triggered initialization occurs means that the App
+  // Service has to be re-initialized with Crostini's testing fakes. This
+  // method does that re-initialization.
+  void ReInitializeAppServiceIntegration();
+
   // Set/unset the the CrostiniEnabled pref
-  static void EnableCrostini(Profile* profile);
-  static void DisableCrostini(Profile* profile);
+  static void EnableCrostini(TestingProfile* profile);
+  static void DisableCrostini(TestingProfile* profile);
 
   // Returns the app id that the registry would use for the given desktop file.
   static std::string GenerateAppId(
@@ -68,7 +75,8 @@ class CrostiniTestHelper {
  private:
   void UpdateRegistry();
 
-  Profile* profile_;
+  TestingProfile* profile_;
+  bool initialized_dbus_;
   vm_tools::apps::ApplicationList current_apps_;
 
   // This are used to allow Crostini.

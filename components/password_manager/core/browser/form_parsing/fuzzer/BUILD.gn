@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyrightn Gerrit 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,6 +15,7 @@ static_library("fuzzer_support") {
 
   deps = [
     "//base",
+    "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/password_manager/core/browser/form_parsing",
     "//url",
@@ -85,41 +86,6 @@ fuzzer_test("password_manager_form_parser_fuzzer") {
 fuzzer_test("password_manager_form_parser_proto_fuzzer") {
   sources = [
     "form_parser_proto_fuzzer.cc",
-  ]
-
-  deps = [
-    ":form_data_essentials_proto",
-    ":fuzzer_support",
-    ":fuzzer_support_proto",
-    "//base",
-    "//base:i18n",
-    "//components/autofill/core/common",
-    "//components/password_manager/core/browser/form_parsing",
-    "//third_party/libprotobuf-mutator",
-  ]
-
-  dict = "form_parser_fuzzer.dict"
-}
-
-fuzzer_test("password_manager_form_parser_generic_fuzzer") {
-  sources = [
-    "form_parser_generic_fuzzer.cc",
-  ]
-
-  deps = [
-    ":fuzzer_support",
-    "//base",
-    "//base:i18n",
-    "//components/autofill/core/common",
-    "//components/password_manager/core/browser/form_parsing",
-  ]
-
-  dict = "form_parser_fuzzer.dict"
-}
-
-fuzzer_test("password_manager_form_parser_proto_generic_fuzzer") {
-  sources = [
-    "form_parser_proto_generic_fuzzer.cc",
   ]
 
   deps = [

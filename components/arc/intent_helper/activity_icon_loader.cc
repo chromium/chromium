@@ -13,9 +13,9 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/post_task.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
@@ -165,7 +165,7 @@ bool ActivityIconLoader::ActivityName::operator<(
 }
 
 ActivityIconLoader::ActivityIconLoader()
-    : scale_factor_(GetSupportedScaleFactor()), weak_ptr_factory_(this) {}
+    : scale_factor_(GetSupportedScaleFactor()) {}
 
 ActivityIconLoader::~ActivityIconLoader() = default;
 

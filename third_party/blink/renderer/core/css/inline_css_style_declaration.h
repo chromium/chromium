@@ -46,7 +46,6 @@ class InlineCSSStyleDeclaration final
   Element* ParentElement() const override { return parent_element_; }
 
   void DidMutate(MutationType) override;
-  PropertyRegistry* GetPropertyRegistry() const final;
 
   Member<Element> parent_element_;
 };

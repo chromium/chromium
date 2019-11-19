@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -20,10 +20,22 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   STACK_ALLOCATED();
 
  public:
-  explicit ShapeResultSpacing(const TextContainerType&);
+  explicit ShapeResultSpacing(const TextContainerType& text)
+      : text_(text),
+        letter_spacing_(0),
+        word_spacing_(0),
+        expansion_(0),
+        expansion_per_opportunity_(0),
+        expansion_opportunity_count_(0),
+        text_justify_(TextJustify::kAuto),
+        has_spacing_(false),
+        normalize_space_(false),
+        allow_tabs_(false),
+        is_after_expansion_(false) {}
 
   const TextContainerType& Text() const { return text_; }
-  float LetterSpacing() const { return letter_spacing_; }
+  float LetterSpacing() const { return has_spacing_ ? letter_spacing_ : .0f; }
+  float WordSpacing() const { return has_spacing_ ? word_spacing_ : .0f; }
   bool HasSpacing() const { return has_spacing_; }
   bool HasExpansion() const { return expansion_opportunity_count_; }
 

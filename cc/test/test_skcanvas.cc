@@ -29,7 +29,9 @@ void SaveCountingCanvas::onDrawPaint(const SkPaint& paint) {
   paint_ = paint;
 }
 
-MockCanvas::MockCanvas() : SkNoDrawCanvas(100, 100) {}
+MockCanvas::MockCanvas() : SkNoDrawCanvas(100, 100) {
+  context_ = GrContext::MakeMock(nullptr);
+}
 
 MockCanvas::~MockCanvas() = default;
 

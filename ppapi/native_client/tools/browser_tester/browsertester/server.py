@@ -59,17 +59,17 @@ class RequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     return path
 
   def guess_type(self, path):
-      # We store the extension -> MIME type mapping in the server instead of the
-      # request handler so we that can add additional mapping entries via the
-      # command line.
-      base, ext = posixpath.splitext(path)
-      if ext in self.server.extensions_mapping:
-          return self.server.extensions_mapping[ext]
-      ext = ext.lower()
-      if ext in self.server.extensions_mapping:
-          return self.server.extensions_mapping[ext]
-      else:
-          return self.server.extensions_mapping['']
+    # We store the extension -> MIME type mapping in the server instead of the
+    # request handler so we that can add additional mapping entries via the
+    # command line.
+    _, ext = posixpath.splitext(path)
+    if ext in self.server.extensions_mapping:
+      return self.server.extensions_mapping[ext]
+    ext = ext.lower()
+    if ext in self.server.extensions_mapping:
+      return self.server.extensions_mapping[ext]
+    else:
+      return self.server.extensions_mapping['']
 
   def SendRPCResponse(self, response):
     self.send_response(200)
@@ -84,14 +84,14 @@ class RequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
   def HandleRPC(self, name, query):
     kargs = {}
-    for k, v in query.iteritems():
+    for k, v in query.items():
       assert len(v) == 1, k
       kargs[k] = v[0]
 
     l = self.server.listener
     try:
       response = getattr(l, name)(**kargs)
-    except Exception, e:
+    except Exception as e:
       self.SendRPCResponse('%r' % (e,))
       raise
     else:
@@ -139,7 +139,7 @@ class RequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
       try:
         data = self.rfile.read(int(self.headers.getheader('content-length')))
         outfile.write(data)
-      except IOError, e:
+      except IOError as e:
         outfile.close()
         try:
           os.remove(output_path)

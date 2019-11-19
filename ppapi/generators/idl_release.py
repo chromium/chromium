@@ -10,6 +10,8 @@ This file defines the behavior of the AST namespace which allows for resolving
 a symbol as one or more AST nodes given a Release or range of Releases.
 """
 
+from __future__ import print_function
+
 import sys
 
 from idl_log import ErrOut, InfoOut, WarnOut
@@ -272,7 +274,7 @@ def TestReleaseNode():
   assert Foo23.InRange('M14', 'M15A')
   assert Foo23.InRange('M15B', 'M17')
   assert not Foo23.InRange('M16', 'M17')
-  print "TestReleaseNode - Passed"
+  print("TestReleaseNode - Passed")
 
 
 def TestReleaseListWarning():
@@ -287,7 +289,7 @@ def TestReleaseListWarning():
   assert releases.AddNode(Foo23)
   assert releases.AddNode(Foo45)
   assert warning
-  print "TestReleaseListWarning - Passed"
+  print("TestReleaseListWarning - Passed")
 
 
 def TestReleaseListError():
@@ -303,7 +305,7 @@ def TestReleaseListError():
   assert releases.AddNode(Foo23)
   assert not releases.AddNode(Foo1X)
   assert error
-  print "TestReleaseListError - Passed"
+  print("TestReleaseListError - Passed")
 
 
 def TestReleaseListOK():
@@ -335,11 +337,11 @@ def TestReleaseListOK():
   assert releases.FindRange(None, None) == [FooXX, Foo1X, Foo23, Foo45]
 
   # Verify we can find the correct versions
-  print "TestReleaseListOK - Passed"
+  print("TestReleaseListOK - Passed")
 
 
 def TestReleaseMap():
-  print "TestReleaseMap- Passed"
+  print("TestReleaseMap- Passed")
 
 
 def Main(args):
@@ -347,7 +349,7 @@ def Main(args):
   TestReleaseListWarning()
   TestReleaseListError()
   TestReleaseListOK()
-  print "Passed"
+  print("Passed")
   return 0
 
 

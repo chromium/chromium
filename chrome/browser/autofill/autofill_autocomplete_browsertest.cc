@@ -6,7 +6,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,9 +18,9 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/suggestion.h"
 #include "components/autofill/core/browser/test_autofill_async_observer.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -50,7 +49,7 @@ const char kSimpleFormFileName[] = "autocomplete_simple_form.html";
 class MockSuggestionsHandler
     : public AutocompleteHistoryManager::SuggestionsHandler {
  public:
-  MockSuggestionsHandler() : weak_ptr_factory_(this) {}
+  MockSuggestionsHandler() {}
 
   void OnSuggestionsReturned(
       int query_id,
@@ -69,10 +68,10 @@ class MockSuggestionsHandler
 
  private:
   std::vector<Suggestion> last_suggestions_;
-  base::WeakPtrFactory<MockSuggestionsHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<MockSuggestionsHandler> weak_ptr_factory_{this};
 };
 
-class BaseAutofillAutocompleteTest : public InProcessBrowserTest {
+class AutofillAutocompleteTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     active_browser_ = browser();
@@ -187,8 +186,6 @@ class BaseAutofillAutocompleteTest : public InProcessBrowserTest {
 
   PrefService* pref_service() { return active_browser_->profile()->GetPrefs(); }
 
-  base::test::ScopedFeatureList scoped_features_;
-
  private:
   void GetAutocompleteSuggestions(const std::string& input_name,
                                   const std::string& prefix,
@@ -219,19 +216,8 @@ class BaseAutofillAutocompleteTest : public InProcessBrowserTest {
   Browser* active_browser_;
 };
 
-class AutofillAutocompleteTest : public BaseAutofillAutocompleteTest,
-                                 public testing::WithParamInterface<bool> {
- protected:
-  // InProcessBrowserTest overrides:
-  void SetUp() override {
-    scoped_features_.InitWithFeatureState(
-        features::kAutocompleteRetentionPolicyEnabled, GetParam());
-    InProcessBrowserTest::SetUp();
-  }
-};
-
 // Tests that a user can save a simple Autocomplete value.
-IN_PROC_BROWSER_TEST_P(AutofillAutocompleteTest, SubmitSimpleValue_Saves) {
+IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest, SubmitSimpleValue_Saves) {
   std::string prefix = "Some";
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
@@ -240,7 +226,7 @@ IN_PROC_BROWSER_TEST_P(AutofillAutocompleteTest, SubmitSimpleValue_Saves) {
 }
 
 // Tests that we don't save new autocomplete entries when in Incognito.
-IN_PROC_BROWSER_TEST_P(AutofillAutocompleteTest,
+IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
                        SubmitSimpleValue_OTR_DoesNotSave) {
   set_active_browser(CreateIncognitoBrowser());
 
@@ -253,7 +239,7 @@ IN_PROC_BROWSER_TEST_P(AutofillAutocompleteTest,
 
 // Tests that we don't save new autocomplete entries when Autocomplete was
 // disabled by the user.
-IN_PROC_BROWSER_TEST_P(AutofillAutocompleteTest,
+IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
                        SubmitSimpleValue_Disabled_DoesNotSave) {
   pref_service()->SetBoolean(prefs::kAutofillProfileEnabled, false);
   std::string prefix = "Some";
@@ -265,38 +251,19 @@ IN_PROC_BROWSER_TEST_P(AutofillAutocompleteTest,
 
 // Tests that initialization of the AutocompleteHistoryManager sets the
 // retention policy last version ran preference when the flag is enabled.
-IN_PROC_BROWSER_TEST_P(AutofillAutocompleteTest,
+IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
                        RetentionPolicy_Init_SavesVersionPref) {
   // Navigate to a file and wait, this will make sure we instantiate
   // AutocompleteHistoryManager.
   NavigateToFile(kSimpleFormFileName);
 
-  bool retention_policy_enabled = GetParam();
-
   int saved_version = pref_service()->GetInteger(
       prefs::kAutocompleteLastVersionRetentionPolicy);
-
-  if (retention_policy_enabled) {
-    EXPECT_EQ(CHROME_VERSION_MAJOR, saved_version);
-  } else {
-    EXPECT_NE(CHROME_VERSION_MAJOR, saved_version);
-  }
+  EXPECT_EQ(CHROME_VERSION_MAJOR, saved_version);
 }
 
-// TODO(crbug.com/920214): Convert these tests as part of the flag cleanup.
-class AutofillAutocompleteRetentionEnabledTest
-    : public BaseAutofillAutocompleteTest {
- protected:
-  // AutofillAutocompleteTest overrides:
-  void SetUp() override {
-    scoped_features_.InitAndEnableFeature(
-        features::kAutocompleteRetentionPolicyEnabled);
-    InProcessBrowserTest::SetUp();
-  }
-};
-
 // Tests that the retention policy cleanup removes an expired entry.
-IN_PROC_BROWSER_TEST_F(AutofillAutocompleteRetentionEnabledTest,
+IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
                        RetentionPolicy_RemovesExpiredEntry) {
   // Go back in time, far enough so that we'll expire the entry.
   TestAutofillClock test_clock;
@@ -330,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteRetentionEnabledTest,
 
 // Tests that the retention policy cleanup does not remove a valid entry (e.g.
 // 20 days old).
-IN_PROC_BROWSER_TEST_F(AutofillAutocompleteRetentionEnabledTest,
+IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
                        RetentionPolicy_DoesNot_RemoveValidEntry) {
   // Go back in time, but not far enough so that we'd expire the entry.
   TestAutofillClock test_clock;
@@ -362,57 +329,5 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteRetentionEnabledTest,
   // Verify that the entry is still there.
   ValidateSingleValue(prefix, test_value);
 }
-
-// TODO(crbug.com/920214): Remove these tests as part of the flag cleanup.
-class AutofillAutocompleteRetentionDisabledTest
-    : public BaseAutofillAutocompleteTest {
- protected:
-  // AutofillAutocompleteTest overrides:
-  void SetUp() override {
-    scoped_features_.InitAndDisableFeature(
-        features::kAutocompleteRetentionPolicyEnabled);
-    InProcessBrowserTest::SetUp();
-  }
-};
-
-// Tests that we don't cleanup expired entries when the Autocomplete Retention
-// Policy feature flag is disabled.
-IN_PROC_BROWSER_TEST_F(AutofillAutocompleteRetentionDisabledTest,
-                       RetentionPolicy_DoesNot_RemoveExpiredEntry) {
-  // Go back in time, far enough so that we would expire the entry when the flag
-  // is on.
-  TestAutofillClock test_clock;
-  base::TimeDelta days_delta =
-      base::TimeDelta::FromDays(2 * kAutocompleteRetentionPolicyPeriodInDays);
-  test_clock.SetNow(AutofillClock::Now() - days_delta);
-
-  // Add an entry.
-  std::string prefix = "Some";
-  std::string test_value = "SomeName!";
-  NavigateToFile(kSimpleFormFileName);
-  FillInputAndSubmit(test_value, /*should_skip_save=*/false);
-  ValidateSingleValue(prefix, test_value);
-
-  // Come back to current time, modify the saved major version and setup our
-  // observer.
-  test_clock.Advance(days_delta);
-  pref_service()->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
-                             CHROME_VERSION_MAJOR - 1);
-
-  // Fake-trigger the retention policy cleanup (since the flag is off it won't),
-  // and then queue up a wait DB task before we validate the values. Worst case
-  // of order of DB tasks should then be:
-  // 1. Cleanup,
-  // 2. Wait DB Task,
-  // 3. Get Values DB task (for validation logic).
-  ReinitializeAutocompleteHistoryManager();
-
-  WaitForDBTasks();
-
-  // Verify that the entry is still there.
-  ValidateSingleValue(prefix, test_value);
-}
-
-INSTANTIATE_TEST_SUITE_P(, AutofillAutocompleteTest, testing::Bool());
 
 }  // namespace autofill

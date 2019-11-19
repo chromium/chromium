@@ -168,8 +168,8 @@ ImageLoaderClient::ImageLoaderClient() = default;
 ImageLoaderClient::~ImageLoaderClient() = default;
 
 // static
-ImageLoaderClient* ImageLoaderClient::Create() {
-  return new ImageLoaderClientImpl();
+std::unique_ptr<ImageLoaderClient> ImageLoaderClient::Create() {
+  return std::make_unique<ImageLoaderClientImpl>();
 }
 
 }  // namespace chromeos

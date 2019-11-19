@@ -5,8 +5,11 @@
 #ifndef CONTENT_SHELL_BROWSER_WEB_TEST_MOJO_WEB_TEST_HELPER_H_
 #define CONTENT_SHELL_BROWSER_WEB_TEST_MOJO_WEB_TEST_HELPER_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "content/test/data/mojo_web_test_helper_test.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
@@ -15,7 +18,7 @@ class MojoWebTestHelper : public mojom::MojoWebTestHelper {
   MojoWebTestHelper();
   ~MojoWebTestHelper() override;
 
-  static void Create(mojom::MojoWebTestHelperRequest request);
+  static void Create(mojo::PendingReceiver<mojom::MojoWebTestHelper> receiver);
 
   // mojom::MojoWebTestHelper:
   void Reverse(const std::string& message, ReverseCallback callback) override;

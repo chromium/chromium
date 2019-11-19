@@ -76,6 +76,7 @@ GURL AlternateNavInfoBarDelegate::GetLinkURL() const {
 
 bool AlternateNavInfoBarDelegate::LinkClicked(
     WindowOpenDisposition disposition) {
+  DCHECK(match_);
   history::HistoryService* const history_service =
       HistoryServiceFactory::GetForProfile(profile_,
                                            ServiceAccessType::IMPLICIT_ACCESS);

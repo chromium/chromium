@@ -4,6 +4,7 @@
 
 #include "chrome/browser/offline_pages/prefetch/offline_prefetch_download_client.h"
 
+#include <limits>
 #include <map>
 #include <set>
 #include <utility>
@@ -21,8 +22,8 @@
 namespace offline_pages {
 
 OfflinePrefetchDownloadClient::OfflinePrefetchDownloadClient(
-    content::BrowserContext* context)
-    : context_(context) {}
+    SimpleFactoryKey* simple_factory_key)
+    : simple_factory_key_(simple_factory_key) {}
 
 OfflinePrefetchDownloadClient::~OfflinePrefetchDownloadClient() = default;
 
@@ -60,19 +61,6 @@ void OfflinePrefetchDownloadClient::OnServiceUnavailable() {
   if (downloader)
     downloader->OnDownloadServiceUnavailable();
 }
-
-download::Client::ShouldDownload
-OfflinePrefetchDownloadClient::OnDownloadStarted(
-    const std::string& guid,
-    const std::vector<GURL>& url_chain,
-    const scoped_refptr<const net::HttpResponseHeaders>& headers) {
-  return download::Client::ShouldDownload::CONTINUE;
-}
-
-void OfflinePrefetchDownloadClient::OnDownloadUpdated(
-    const std::string& guid,
-    uint64_t bytes_uploaded,
-    uint64_t bytes_downloaded) {}
 
 void OfflinePrefetchDownloadClient::OnDownloadFailed(
     const std::string& guid,
@@ -114,7 +102,7 @@ void OfflinePrefetchDownloadClient::GetUploadData(
 PrefetchDownloader* OfflinePrefetchDownloadClient::GetPrefetchDownloader()
     const {
   PrefetchService* prefetch_service =
-      PrefetchServiceFactory::GetForBrowserContext(context_);
+      PrefetchServiceFactory::GetForKey(simple_factory_key_);
   if (!prefetch_service)
     return nullptr;
   return prefetch_service->GetPrefetchDownloader();

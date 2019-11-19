@@ -10,9 +10,10 @@
 
 #include "base/logging.h"
 #include "base/stl_util.h"
-#include "components/sync/base/cryptographer.h"
+#include "components/sync/nigori/cryptographer.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/wifi_configuration_specifics.pb.h"
 
 namespace syncer {
 
@@ -25,7 +26,7 @@ bool EndsWithSpace(const std::string& string) {
 
 std::unique_ptr<sync_pb::PasswordSpecificsData> DecryptPasswordSpecifics(
     const sync_pb::EntitySpecifics& specifics,
-    Cryptographer* crypto) {
+    const Cryptographer* crypto) {
   if (!specifics.has_password())
     return nullptr;
   const sync_pb::PasswordSpecifics& password_specifics = specifics.password();
@@ -34,6 +35,26 @@ std::unique_ptr<sync_pb::PasswordSpecificsData> DecryptPasswordSpecifics(
   const sync_pb::EncryptedData& encrypted = password_specifics.encrypted();
   std::unique_ptr<sync_pb::PasswordSpecificsData> data =
       std::make_unique<sync_pb::PasswordSpecificsData>();
+  if (!crypto->CanDecrypt(encrypted))
+    return nullptr;
+  if (!crypto->Decrypt(encrypted, data.get()))
+    return nullptr;
+  return data;
+}
+
+std::unique_ptr<sync_pb::WifiConfigurationSpecificsData>
+DecryptWifiConfigurationSpecifics(const sync_pb::EntitySpecifics& specifics,
+                                  const Cryptographer* crypto) {
+  if (!specifics.has_wifi_configuration())
+    return nullptr;
+  const sync_pb::WifiConfigurationSpecifics& wifi_configuration_specifics =
+      specifics.wifi_configuration();
+  if (!wifi_configuration_specifics.has_encrypted())
+    return nullptr;
+  const sync_pb::EncryptedData& encrypted =
+      wifi_configuration_specifics.encrypted();
+  std::unique_ptr<sync_pb::WifiConfigurationSpecificsData> data =
+      std::make_unique<sync_pb::WifiConfigurationSpecificsData>();
   if (!crypto->CanDecrypt(encrypted))
     return nullptr;
   if (!crypto->Decrypt(encrypted, data.get()))

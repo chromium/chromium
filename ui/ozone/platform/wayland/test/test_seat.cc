@@ -4,8 +4,8 @@
 
 #include "ui/ozone/platform/wayland/test/test_seat.h"
 
+#include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
-#include "ui/ozone/platform/wayland/test/test_pointer.h"
 #include "ui/ozone/platform/wayland/test/test_touch.h"
 
 namespace wl {
@@ -15,11 +15,11 @@ namespace {
 constexpr uint32_t kSeatVersion = 4;
 
 void GetPointer(wl_client* client, wl_resource* resource, uint32_t id) {
-  wl_resource* pointer_resource = CreateResourceWithImpl<TestPointer>(
+  wl_resource* pointer_resource = CreateResourceWithImpl<MockPointer>(
       client, &wl_pointer_interface, wl_resource_get_version(resource),
-      &kTestPointerImpl, id);
+      &kMockPointerImpl, id);
   GetUserDataAs<TestSeat>(resource)->set_pointer(
-      GetUserDataAs<TestPointer>(pointer_resource));
+      GetUserDataAs<MockPointer>(pointer_resource));
 }
 
 void GetKeyboard(wl_client* client, wl_resource* resource, uint32_t id) {

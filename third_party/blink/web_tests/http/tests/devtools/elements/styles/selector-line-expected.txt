@@ -8,7 +8,7 @@ element.style { ()
     color: green;
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 /-- overloaded --/     color: green;
 
 [expanded] 

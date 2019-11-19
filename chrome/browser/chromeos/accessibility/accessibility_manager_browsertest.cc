@@ -5,11 +5,13 @@
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 
 #include "ash/public/cpp/ash_pref_names.h"
+#include "ash/public/cpp/test/accessibility_controller_test_api.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
+#include "chrome/browser/chromeos/login/test/guest_session_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/preferences.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -17,17 +19,18 @@
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/supervised_user/logged_in_user_mixin.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
-#include "chrome/browser/ui/ash/ksv/keyboard_shortcut_viewer_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_names.h"
+#include "content/public/browser/browser_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/chromeos/component_extension_ime_manager.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
@@ -53,10 +56,6 @@ constexpr char kTestUserName[] = "owner@gmail.com";
 constexpr char kTestUserGaiaId[] = "9876543210";
 
 constexpr int kTestAutoclickDelayMs = 2000;
-
-// Test user name for supervised user. The domain part must be matched with
-// user_manager::kSupervisedUserDomain.
-constexpr char kTestSupervisedUserName[] = "test@locally-managed.localhost";
 
 class MockAccessibilityObserver {
  public:
@@ -239,7 +238,7 @@ bool IsBrailleImeCurrent() {
 }  // namespace
 
 // For user session accessibility manager tests.
-class AccessibilityManagerTest : public InProcessBrowserTest {
+class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
  protected:
   AccessibilityManagerTest()
       : disable_animations_(
@@ -248,6 +247,7 @@ class AccessibilityManagerTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     default_autoclick_delay_ = GetAutoclickDelay();
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
 
   int default_autoclick_delay() const { return default_autoclick_delay_; }
@@ -517,35 +517,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, AccessibilityMenuVisibility) {
   EXPECT_FALSE(ShouldShowAccessibilityMenu());
 }
 
-// Tests text caret highlighting for remote mojo applications (e.g. shortcut
-// viewer). This test integration of AccessibilityManager with the IME driver.
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, CaretHighlightInRemoteApp) {
-  AccessibilityManager::Get()->SetCaretHighlightEnabled(true);
-
-  // App launch is asynchronous so we will wait for a non-empty caret bounds
-  // update.
-  auto wait_for_bounds = [](base::RunLoop* run_loop, const gfx::Rect& bounds) {
-    // Under mash the first bounds update we see might be from the ash process
-    // clearing its caret highlight. Wait for the app's highlight to show up.
-    if (!bounds.IsEmpty())
-      run_loop->Quit();
-  };
-  base::RunLoop run_loop;
-  AccessibilityManager::Get()->SetCaretBoundsObserverForTest(
-      base::BindRepeating(wait_for_bounds, &run_loop));
-
-  // Focus will move to the search field and show a text caret highlight.
-  keyboard_shortcut_viewer_util::ToggleKeyboardShortcutViewer();
-
-  // Wait for the app to launch, the IME session to start and the caret bounds
-  // to be set.
-  run_loop.Run();
-
-  // Browser tests spin the message loop during shutdown which can lead to
-  // additional bounds updates.
-  AccessibilityManager::Get()->SetCaretBoundsObserverForTest(base::DoNothing());
-}
-
 // For signin screen to user session accessibility manager tests.
 class AccessibilityManagerLoginTest : public OobeBaseTest {
  protected:
@@ -555,14 +526,16 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
   ~AccessibilityManagerLoginTest() override = default;
 
   void SetUpOnMainThread() override {
-    OobeBaseTest::SetUpOnMainThread();
+    // BrailleController has to be set before SetUpOnMainThread call as
+    // observers subscribe to the controller during SetUpOnMainThread.
     AccessibilityManager::SetBrailleControllerForTest(&braille_controller_);
     default_autoclick_delay_ = GetAutoclickDelay();
+    OobeBaseTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
-    AccessibilityManager::SetBrailleControllerForTest(nullptr);
     OobeBaseTest::TearDownOnMainThread();
+    AccessibilityManager::SetBrailleControllerForTest(nullptr);
   }
 
   void CreateSession(const AccountId& account_id) {
@@ -576,14 +549,16 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
         user_manager::UserManager::Get()
             ->FindUser(account_id)
             ->username_hash());
-    session_manager::SessionManager::Get()->SessionStarted();
+
+    auto* session_manager = session_manager::SessionManager::Get();
+    session_manager->NotifyUserProfileLoaded(account_id);
+    session_manager->SessionStarted();
   }
 
   void SetBrailleDisplayAvailability(bool available) {
     braille_controller_.SetAvailable(available);
     braille_controller_.GetObserver()->OnBrailleDisplayStateChanged(
         *braille_controller_.GetDisplayState());
-    AccessibilityManager::Get()->FlushForTesting();
   }
 
   int default_autoclick_delay_ = 0;
@@ -667,34 +642,48 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, MAYBE_Login) {
   EXPECT_TRUE(IsMonoAudioEnabled());
 }
 
-class AccessibilityManagerUserTypeTest : public AccessibilityManagerTest,
-                                         public WithParamInterface<AccountId> {
+// Tests that ash and browser process has the same states after sign-in.
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, AshState) {
+  WaitForSigninScreen();
+  CreateSession(test_account_id_);
+  StartUserSession(test_account_id_);
+
+  auto ash_a11y_controller_test_api =
+      ash::AccessibilityControllerTestApi::Create();
+
+  // Ash and browser has the same state.
+  EXPECT_FALSE(IsLargeCursorEnabled());
+  EXPECT_FALSE(ash_a11y_controller_test_api->IsLargeCursorEnabled());
+
+  // Changes from the browser side is reflected in both browser and ash.
+  SetLargeCursorEnabled(true);
+  EXPECT_TRUE(IsLargeCursorEnabled());
+  EXPECT_TRUE(ash_a11y_controller_test_api->IsLargeCursorEnabled());
+
+  // Changes from ash is also reflect in both browser and ash.
+  ash_a11y_controller_test_api->SetLargeCursorEnabled(false);
+  EXPECT_FALSE(IsLargeCursorEnabled());
+  EXPECT_FALSE(ash_a11y_controller_test_api->IsLargeCursorEnabled());
+}
+
+class AccessibilityManagerUserTypeTest
+    : public AccessibilityManagerTest,
+      public WithParamInterface<user_manager::UserType> {
  protected:
-  AccessibilityManagerUserTypeTest() = default;
-  virtual ~AccessibilityManagerUserTypeTest() = default;
+  AccessibilityManagerUserTypeTest() {
+    if (GetParam() == user_manager::USER_TYPE_GUEST) {
+      guest_session_ = std::make_unique<GuestSessionMixin>(&mixin_host_);
+    } else if (GetParam() == user_manager::USER_TYPE_CHILD) {
+      logged_in_user_mixin_ = std::make_unique<LoggedInUserMixin>(
+          &mixin_host_, LoggedInUserMixin::LogInType::kChild,
+          embedded_test_server());
+    }
+  }
+  ~AccessibilityManagerUserTypeTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (GetParam() == user_manager::GuestAccountId()) {
-      command_line->AppendSwitch(chromeos::switches::kGuestSession);
-      command_line->AppendSwitch(::switches::kIncognito);
-      command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile,
-                                      "hash");
-      command_line->AppendSwitchASCII(
-          chromeos::switches::kLoginUser,
-          user_manager::GuestAccountId().GetUserEmail());
-    } else if (GetParam() ==
-               AccountId::FromUserEmail(kTestSupervisedUserName)) {
-      command_line->AppendSwitchASCII(::switches::kSupervisedUserId,
-                                      supervised_users::kChildAccountSUID);
-#if defined(OS_CHROMEOS)
-      command_line->AppendSwitchASCII(
-          chromeos::switches::kLoginUser,
-          "supervised_user@locally-managed.localhost");
-      command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile,
-                                      "hash");
-#endif
-    }
     AccessibilityManager::SetBrailleControllerForTest(&braille_controller_);
+    AccessibilityManagerTest::SetUpCommandLine(command_line);
   }
 
   void TearDownOnMainThread() override {
@@ -706,8 +695,11 @@ class AccessibilityManagerUserTypeTest : public AccessibilityManagerTest,
     braille_controller_.SetAvailable(available);
     braille_controller_.GetObserver()->OnBrailleDisplayStateChanged(
         *braille_controller_.GetDisplayState());
-    AccessibilityManager::Get()->FlushForTesting();
   }
+
+  std::unique_ptr<GuestSessionMixin> guest_session_;
+
+  std::unique_ptr<LoggedInUserMixin> logged_in_user_mixin_;
 
   MockBrailleController braille_controller_;
 
@@ -715,16 +707,16 @@ class AccessibilityManagerUserTypeTest : public AccessibilityManagerTest,
   DISALLOW_COPY_AND_ASSIGN(AccessibilityManagerUserTypeTest);
 };
 
-// TODO(yoshiki): Enable a test for retail mode (i.e. RetailAccountId).
-INSTANTIATE_TEST_SUITE_P(
-    UserTypeInstantiation,
-    AccessibilityManagerUserTypeTest,
-    ::testing::Values(AccountId::FromUserEmailGaiaId(kTestUserName,
-                                                     kTestUserGaiaId),
-                      user_manager::GuestAccountId(),
-                      AccountId::FromUserEmail(kTestSupervisedUserName)));
+INSTANTIATE_TEST_SUITE_P(UserTypeInstantiation,
+                         AccessibilityManagerUserTypeTest,
+                         ::testing::Values(user_manager::USER_TYPE_REGULAR,
+                                           user_manager::USER_TYPE_GUEST,
+                                           user_manager::USER_TYPE_CHILD));
 
 IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
+  if (GetParam() == user_manager::USER_TYPE_CHILD)
+    logged_in_user_mixin_->LogInUser();
+
   // This object watches for IME preference changes and reflects those in
   // the IME framework state.
   chromeos::Preferences prefs;
@@ -749,11 +741,11 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
   // enabled.
   KeyEvent event;
   event.command = extensions::api::braille_display_private::KEY_COMMAND_DOTS;
-  event.braille_dots.reset(new int(0));
+  event.braille_dots = std::make_unique<int>(0);
   braille_controller_.GetObserver()->OnBrailleKeyEvent(event);
   EXPECT_TRUE(IsBrailleImeCurrent());
 
-  // Unplug the display.  Spolken feedback remains on, but the Braille IME
+  // Unplug the display.  Spoken feedback remains on, but the Braille IME
   // should get deactivated.
   SetBrailleDisplayAvailability(false);
   EXPECT_TRUE(IsSpokenFeedbackEnabled());

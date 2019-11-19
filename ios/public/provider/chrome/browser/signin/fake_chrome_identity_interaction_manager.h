@@ -7,6 +7,9 @@
 
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_interaction_manager.h"
 
+// Accessibility identifier for FakeChromeIdentityInteractionManager view.
+extern NSString* kFakeAddAccountViewIdentifier;
+
 // A fake ChromeIdentityInteractionManager to use in integration tests.
 @interface FakeChromeIdentityInteractionManager
     : ChromeIdentityInteractionManager

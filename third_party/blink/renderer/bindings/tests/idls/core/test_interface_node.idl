@@ -41,4 +41,7 @@ interface TestInterfaceNode : Node {
     TestInterfaceEmpty testInterfaceEmptyMethod();
     [PerWorldBindings] TestInterfaceEmpty perWorldBindingsTestInterfaceEmptyMethod();
     [PerWorldBindings] TestInterfaceEmpty perWorldBindingsTestInterfaceEmptyMethodOptionalBooleanArg(optional boolean optionalBooleanArgument);
+
+    TestInterfaceEmpty testInterfaceEmptyMethodOverloadWithVariadicArgs(boolean booleanArg, Node nodeArg, DOMString... domStringVariadicArgs);
+    TestInterfaceEmpty testInterfaceEmptyMethodOverloadWithVariadicArgs(boolean booleanArg, DOMString... domStringVariadicArgs);
 };

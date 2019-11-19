@@ -32,10 +32,16 @@
       shiftPress('Tab');
       dumpFocus();
 
+      press('ArrowUp');
+      dumpFocus();
+
       shiftPress('Tab');
       dumpFocus();
 
       press('Tab');
+      dumpFocus();
+
+      press('ArrowUp');
       dumpFocus();
 
       press('Tab');
@@ -52,6 +58,9 @@
       shiftPress('Tab');
       dumpFocus();
 
+      press('ArrowUp');
+      dumpFocus();
+
       scrollViewportToTop();
       dumpFocus();
 
@@ -61,11 +70,17 @@
       press('Tab');
       dumpFocus();
 
+      press('ArrowUp');
+      dumpFocus();
+
       TestRunner.addResult(`\nSetting focus in prompt:`);
       prompt.focus();
       dumpFocus();
 
       shiftPress('Tab');
+      dumpFocus();
+
+      press('ArrowUp');
       dumpFocus();
 
       scrollViewportToTop();
@@ -87,7 +102,13 @@
       press('ArrowDown');
       dumpFocus();
 
+      press('ArrowDown');
+      dumpFocus();
+
       press('End');
+      dumpFocus();
+
+      press('ArrowUp');
       dumpFocus();
 
       press('ArrowUp');

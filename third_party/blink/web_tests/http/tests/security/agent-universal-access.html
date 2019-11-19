@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Agent Universal Access Test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+
+// Load an iframe after the universal access setting (normally set by
+// Android webview) has been set. The agents on the two iframes will
+// be different but access should still be allowed.
+async_test(t => {
+  internals.settings.setUniversalAccessFromFileURLs(true);
+
+  // create same origin iframe
+  let iframe = document.createElement('iframe');
+  iframe.addEventListener(
+    'load',
+    t.step_func(evt => {
+      iframe.contentDocument.body.style.backgroundColor = 'blue';
+      t.done();
+    }));
+
+  document.body.appendChild(iframe);
+  iframe.src =
+    'http://127.0.0.1:8000/security/resources/blank.html';
+
+  t.add_cleanup(() => {
+    document.body.removeChild(iframe);
+    internals.settings.setUniversalAccessFromFileURLs(false);
+  });
+}, 'Same-origin documents must share the same agent.');
+
+</script>
+</body>
+</html>

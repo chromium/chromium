@@ -1,0 +1,7 @@
+include_rules = [
+  "+content/public/common",
+  "+content/public/browser",
+  "+content/public/test",
+  "+mojo/public",
+  "+services/metrics/public/cpp",
+]

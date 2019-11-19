@@ -26,13 +26,12 @@ PepperTrueTypeFontHost::PepperTrueTypeFontHost(
     PP_Resource resource,
     const SerializedTrueTypeFontDesc& desc)
     : ResourceHost(host->GetPpapiHost(), instance, resource),
-      initialize_completed_(false),
-      weak_factory_(this) {
+      initialize_completed_(false) {
   font_ = PepperTrueTypeFont::Create();
-  // Initialize the font on a TaskScheduler thread. This must complete before
+  // Initialize the font on a ThreadPool thread. This must complete before
   // using |font_|.
-  task_runner_ = base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  task_runner_ = base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   SerializedTrueTypeFontDesc* actual_desc =
       new SerializedTrueTypeFontDesc(desc);
   base::PostTaskAndReplyWithResult(

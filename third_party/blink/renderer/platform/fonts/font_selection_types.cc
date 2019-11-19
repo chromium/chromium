@@ -25,7 +25,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 
-#include "third_party/blink/renderer/platform/wtf/string_hasher.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 namespace {
 
@@ -79,8 +79,8 @@ String FontSelectionValue::ToString() const {
 
 String FontSelectionRequest::ToString() const {
   return String::Format(
-      "weight=%s, width=%s, slope=%s", weight.ToString().Ascii().data(),
-      width.ToString().Ascii().data(), slope.ToString().Ascii().data());
+      "weight=%s, width=%s, slope=%s", weight.ToString().Ascii().c_str(),
+      width.ToString().Ascii().data(), slope.ToString().Ascii().c_str());
 }
 
 }  // namespace blink

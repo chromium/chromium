@@ -55,7 +55,7 @@ void ChildFrameDisconnector::DisconnectCollectedFrameOwners() {
     HTMLFrameOwnerElement* owner = frame_owners_[i].Get();
     // Don't need to traverse up the tree for the first owner since no
     // script could have moved it.
-    if (!i || Root().IsShadowIncludingInclusiveAncestorOf(owner))
+    if (!i || Root().IsShadowIncludingInclusiveAncestorOf(*owner))
       owner->DisconnectContentFrame();
   }
 }
@@ -63,13 +63,12 @@ void ChildFrameDisconnector::DisconnectCollectedFrameOwners() {
 #if DCHECK_IS_ON()
 static unsigned CheckConnectedSubframeCountIsConsistent(Node& node) {
   unsigned count = 0;
-
-  if (node.IsElementNode()) {
+  if (auto* element = DynamicTo<Element>(node)) {
     auto* frame_owner_element = DynamicTo<HTMLFrameOwnerElement>(node);
     if (frame_owner_element && frame_owner_element->ContentFrame())
       count++;
 
-    if (ShadowRoot* root = ToElement(node).GetShadowRoot())
+    if (ShadowRoot* root = element->GetShadowRoot())
       count += CheckConnectedSubframeCountIsConsistent(*root);
   }
 

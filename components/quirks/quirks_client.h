@@ -78,7 +78,7 @@ class QuirksClient {
   net::BackoffEntry backoff_entry_;
 
   // Factory for callbacks.
-  base::WeakPtrFactory<QuirksClient> weak_ptr_factory_;
+  base::WeakPtrFactory<QuirksClient> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(QuirksClient);
 };

@@ -13,10 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 
-// TODO(gab): Removing this include causes IWYU failures in other headers,
-// remove it in a follow- up CL.
-#include "base/threading/thread_checker.h"
-
 namespace base {
 
 // This is a helper for classes that want to allow users to stash random data by
@@ -24,6 +20,8 @@ namespace base {
 class BASE_EXPORT SupportsUserData {
  public:
   SupportsUserData();
+  SupportsUserData(SupportsUserData&&);
+  SupportsUserData& operator=(SupportsUserData&&);
 
   // Derive from this class and add your own data members to associate extra
   // information with this object. Alternatively, add this as a public base
@@ -31,16 +29,23 @@ class BASE_EXPORT SupportsUserData {
   class BASE_EXPORT Data {
    public:
     virtual ~Data() = default;
+
+    // Returns a copy of |this|; null if copy is not supported.
+    virtual std::unique_ptr<Data> Clone();
   };
 
   // The user data allows the clients to associate data with this object.
-  // Multiple user data values can be stored under different keys.
-  // This object will TAKE OWNERSHIP of the given data pointer, and will
-  // delete the object if it is changed or the object is destroyed.
   // |key| must not be null--that value is too vulnerable for collision.
+  // NOTE: SetUserData() with an empty unique_ptr behaves the same as
+  // RemoveUserData().
   Data* GetUserData(const void* key) const;
   void SetUserData(const void* key, std::unique_ptr<Data> data);
   void RemoveUserData(const void* key);
+
+  // Adds all data from |other|, that is clonable, to |this|. That is, this
+  // iterates over the data in |other|, and any data that returns non-null from
+  // Clone() is added to |this|.
+  void CloneDataFrom(const SupportsUserData& other);
 
   // SupportsUserData is not thread-safe, and on debug build will assert it is
   // only used on one execution sequence. Calling this method allows the caller
@@ -50,6 +55,10 @@ class BASE_EXPORT SupportsUserData {
 
  protected:
   virtual ~SupportsUserData();
+
+  // Clear all user data from this object. This can be used if the subclass
+  // needs to provide reset functionality.
+  void ClearAllUserData();
 
  private:
   using DataMap = std::map<const void*, std::unique_ptr<Data>>;
@@ -65,19 +74,21 @@ class BASE_EXPORT SupportsUserData {
 // Adapter class that releases a refcounted object when the
 // SupportsUserData::Data object is deleted.
 template <typename T>
-class UserDataAdapter : public base::SupportsUserData::Data {
+class UserDataAdapter : public SupportsUserData::Data {
  public:
   static T* Get(const SupportsUserData* supports_user_data, const void* key) {
     UserDataAdapter* data =
       static_cast<UserDataAdapter*>(supports_user_data->GetUserData(key));
-    return data ? static_cast<T*>(data->object_.get()) : NULL;
+    return data ? static_cast<T*>(data->object_.get()) : nullptr;
   }
 
-  UserDataAdapter(T* object) : object_(object) {}
+  explicit UserDataAdapter(T* object) : object_(object) {}
+  ~UserDataAdapter() override = default;
+
   T* release() { return object_.release(); }
 
  private:
-  scoped_refptr<T> object_;
+  scoped_refptr<T> const object_;
 
   DISALLOW_COPY_AND_ASSIGN(UserDataAdapter);
 };

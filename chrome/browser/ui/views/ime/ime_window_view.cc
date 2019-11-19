@@ -38,13 +38,13 @@ ImeWindowView::ImeWindowView(ImeWindow* ime_window,
   params.delegate = this;
   params.wants_mouse_events_when_inactive = true;
   params.remove_standard_frame = false;
-  params.keep_on_top = true;
+  params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
   params.visible_on_all_workspaces = false;
   params.bounds = bounds;
   window_->set_focus_on_creation(false);
-  window_->set_frame_type(views::Widget::FRAME_TYPE_FORCE_CUSTOM);
-  window_->Init(params);
+  window_->set_frame_type(views::Widget::FrameType::kForceCustom);
+  window_->Init(std::move(params));
   window_->UpdateWindowTitle();
   window_->UpdateWindowIcon();
 
@@ -170,10 +170,6 @@ bool ImeWindowView::CanMinimize() const {
 
 base::string16 ImeWindowView::GetWindowTitle() const {
   return base::UTF8ToUTF16(ime_window_->title());
-}
-
-gfx::ImageSkia ImeWindowView::GetWindowAppIcon() {
-  return GetWindowIcon();
 }
 
 gfx::ImageSkia ImeWindowView::GetWindowIcon() {

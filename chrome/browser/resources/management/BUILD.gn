@@ -3,8 +3,10 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
 
 js_type_check("closure_compile") {
+  is_polymer3 = true
   deps = [
     ":management_browser_proxy",
     ":management_ui",
@@ -13,15 +15,34 @@ js_type_check("closure_compile") {
 
 js_library("management_ui") {
   deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
 }
 
 js_library("management_browser_proxy") {
   deps = [
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+polymer_modulizer("management_ui") {
+  js_file = "management_ui.js"
+  html_file = "management_ui.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("icons") {
+  js_file = "icons.js"
+  html_file = "icons.html"
+  html_type = "v3-ready"
+}
+
+group("polymer3_elements") {
+  deps = [
+    ":icons_module",
+    ":management_ui_module",
   ]
 }

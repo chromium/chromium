@@ -13,6 +13,7 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.chromium.base.task.TaskTraits;
 import org.chromium.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.identity_service.IIdentityService;
 
@@ -21,9 +22,12 @@ import org.chromium.webapk.lib.common.identity_service.IIdentityService;
  * "WebAPK Identity service".
  */
 public class WebApkIdentityServiceClient {
-    /** Used to notify the consumer after checking whether the caller browser backs the WebAPK. */
+    /**
+     * Used to notify the consumer after checking whether the caller browser backs the WebAPK.
+     *  |browserPackageName| is the package name of the browser which backs the WebAPK.
+     */
     public interface CheckBrowserBacksWebApkCallback {
-        void onChecked(boolean doesBrowserBackWebApk);
+        void onChecked(boolean doesBrowserBackWebApk, String browserPackageName);
     }
 
     /**
@@ -40,24 +44,24 @@ public class WebApkIdentityServiceClient {
      */
     public static final int SHELL_APK_VERSION_SUPPORTING_SWITCH_RUNTIME_HOST = 6;
 
-    private static final String ACTION_WEBAPK_IDENTITY_SERVICE = "org.webapk.IDENTITY_SERVICE_API";
-    private static final String TAG = "cr_WebApkIdentityService";
+    public static final String ACTION_WEBAPK_IDENTITY_SERVICE = "org.webapk.IDENTITY_SERVICE_API";
+    private static final String TAG = "WebApkIdentityService";
 
     private static WebApkIdentityServiceClient sInstance;
 
     /** Manages connections between the browser application and WebAPK Identity services. */
     private WebApkServiceConnectionManager mConnectionManager;
 
-    public static WebApkIdentityServiceClient getInstance() {
+    public static WebApkIdentityServiceClient getInstance(TaskTraits uiThreadTaskTraits) {
         if (sInstance == null) {
-            sInstance = new WebApkIdentityServiceClient();
+            sInstance = new WebApkIdentityServiceClient(uiThreadTaskTraits);
         }
         return sInstance;
     }
 
-    private WebApkIdentityServiceClient() {
+    private WebApkIdentityServiceClient(TaskTraits uiThreadTaskTraits) {
         mConnectionManager = new WebApkServiceConnectionManager(
-                null /* category */, ACTION_WEBAPK_IDENTITY_SERVICE);
+                uiThreadTaskTraits, null /* category */, ACTION_WEBAPK_IDENTITY_SERVICE);
     }
 
     /**
@@ -105,7 +109,8 @@ public class WebApkIdentityServiceClient {
      */
     private static void onGotWebApkRuntimeHost(String browserPackageName,
             String webApkBackingBrowserPackageName, CheckBrowserBacksWebApkCallback callback) {
-        callback.onChecked(TextUtils.equals(webApkBackingBrowserPackageName, browserPackageName));
+        callback.onChecked(TextUtils.equals(webApkBackingBrowserPackageName, browserPackageName),
+                webApkBackingBrowserPackageName);
     }
 
     /**

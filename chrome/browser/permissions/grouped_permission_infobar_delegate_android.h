@@ -13,11 +13,12 @@
 
 class InfoBarService;
 class PermissionPromptAndroid;
+class Profile;
 
-// An InfoBar that displays a group of permission requests, each of which can be
-// allowed or blocked independently.
-// TODO(timloh): This is incorrectly named as we've removed grouped permissions,
-// rename it to PermissionInfoBarDelegate once crbug.com/606138 is done.
+// An InfoBar that displays a permission request.
+//
+// TODO(crbug.com/986737): This class is only used for displaying notification
+// permission requests and has nothing to do with grouped permissions anymore.
 class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Public so we can have std::unique_ptr<GroupedPermissionInfoBarDelegate>.
@@ -31,6 +32,15 @@ class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   ContentSettingsType GetContentSettingType(size_t position) const;
 
+  // Returns the string to show in the infobar in its compact state.
+  base::string16 GetCompactMessageText() const;
+
+  // Returns the title of the link to show in the infobar in its compact state.
+  base::string16 GetCompactLinkText() const;
+
+  // Returns the secondary string to show in the infobar in the expanded state.
+  base::string16 GetDescriptionText() const;
+
   // InfoBarDelegate:
   int GetIconId() const override;
 
@@ -39,10 +49,15 @@ class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool Accept() override;
   bool Cancel() override;
   void InfoBarDismissed() override;
+  bool LinkClicked(WindowOpenDisposition disposition) override;
+
+  // Returns true if we should show the permission request as a mini-infobar.
+  static bool ShouldShowMiniInfobar(Profile* profile, ContentSettingsType type);
 
  private:
   GroupedPermissionInfoBarDelegate(
-      const base::WeakPtr<PermissionPromptAndroid>& permission_prompt);
+      const base::WeakPtr<PermissionPromptAndroid>& permission_prompt,
+      InfoBarService* infobar_service);
 
   // ConfirmInfoBarDelegate:
   InfoBarIdentifier GetIdentifier() const override;
@@ -53,6 +68,8 @@ class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;
 
   base::WeakPtr<PermissionPromptAndroid> permission_prompt_;
+  InfoBarService* infobar_service_;
+  bool details_expanded_;
 
   DISALLOW_COPY_AND_ASSIGN(GroupedPermissionInfoBarDelegate);
 };

@@ -20,7 +20,7 @@
 
 namespace {
 
-IMP g_original_populatemenu_implementation = nullptr;
+base::mac::ScopedObjCClassSwizzler* g_populatemenu_swizzler = nullptr;
 
 // |g_filtered_entries_array| is only set during testing (see
 // +[ChromeSwizzleServicesMenuUpdater storeFilteredEntriesForTestingInArray:]).
@@ -71,13 +71,26 @@ NSMenuItem* GetMenuItemByID(ui::MenuModel* model,
 - (void)populateMenu:(NSMenu*)menu
     withServiceEntries:(NSArray*)entries
             forDisplay:(BOOL)display {
-  // Create a new service entry array that does not include the redundant
-  // Services vended by Safari.
   NSMutableArray* remainingEntries = [NSMutableArray array];
   [g_filtered_entries_array removeAllObjects];
 
+  // Remove some services.
+  //   - Remove the ones from Safari, as they are redundant to the ones provided
+  //     by Chromium, and confusing to the user due to them switching apps
+  //     upon their selection.
+  //   - Remove the "Open URL" one provided by SystemUIServer, as it is
+  //     redundant to the one provided by Chromium and has other serious issues.
+  //     (https://crbug.com/960209)
+
   for (_NSServiceEntry* nextEntry in entries) {
-    if (![[nextEntry bundleIdentifier] isEqualToString:@"com.apple.Safari"]) {
+    NSString* bundleIdentifier = [nextEntry bundleIdentifier];
+    NSString* message = [nextEntry valueForKey:@"message"];
+    bool shouldRemove =
+        ([bundleIdentifier isEqualToString:@"com.apple.Safari"]) ||
+        ([bundleIdentifier isEqualToString:@"com.apple.systemuiserver"] &&
+         [message isEqualToString:@"openURL"]);
+
+    if (!shouldRemove) {
       [remainingEntries addObject:nextEntry];
     } else {
       [g_filtered_entries_array addObject:nextEntry];
@@ -85,8 +98,8 @@ NSMenuItem* GetMenuItemByID(ui::MenuModel* model,
   }
 
   // Pass the filtered array along to the _NSServicesMenuUpdater.
-  g_original_populatemenu_implementation(self, _cmd, menu, remainingEntries,
-                                         display);
+  g_populatemenu_swizzler->InvokeOriginal<void, NSMenu*, NSArray*, BOOL>(
+      self, _cmd, menu, remainingEntries, display);
 }
 
 + (void)storeFilteredEntriesForTestingInArray:(NSMutableArray*)array {
@@ -132,8 +145,7 @@ NSMenuItem* GetMenuItemByID(ui::MenuModel* model,
     Class swizzleClass = [ChromeSwizzleServicesMenuUpdater class];
     static base::NoDestructor<base::mac::ScopedObjCClassSwizzler>
         servicesMenuFilter(targetClass, swizzleClass, targetSelector);
-    g_original_populatemenu_implementation =
-        servicesMenuFilter->GetOriginalImplementation();
+    g_populatemenu_swizzler = servicesMenuFilter.get();
   });
 }
 

@@ -24,7 +24,7 @@ quad_list: [
       width: 620
       height: 400
     }
-    quad: {
+    solid_color_quad: {
       color: 0xffffffff
       force_anti_aliasing_off: false
     }
@@ -73,8 +73,22 @@ quad_list: [
       width: 620
       height: 400
     }
-    quad: {
-      color: 0xff000000
+    tile_quad: {
+      needs_blending: true
+      texture_color: 0xff000000
+      texture_size: {
+        width: 620
+        height: 400
+      }
+      tex_coord_rect: {
+        x: 0
+        y: 0
+        width: 620
+        height: 400
+      }
+      swizzle_contents: true
+      is_premultiplied: true
+      nearest_neighbor: true
       force_anti_aliasing_off: true
     }
     sqs: {

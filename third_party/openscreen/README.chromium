@@ -1,0 +1,25 @@
+Name: Open Screen Protocol Library
+Short Name: openscreen
+URL: https://chromium.googlesource.com/openscreen
+Version: 0
+Revision: 9499a256bc609e9efdf15a268fd047127870af41
+License: BSD
+License File: src/LICENSE
+Security Critical: yes
+License Android Compatible: yes
+
+Description:
+This implements the Open Screen Protocol.  Open Screen Protocol is an open
+source implementation of a network protocol necessary to implement, among other
+things, the Presentation API.  For the working draft spec, see
+https://github.com/webscreens/openscreenprotocol/.
+
+Update with:
+git log --date=short --no-merges --format='%ad %ae %s' -- third_party/openscreen
+
+2019-10-21 mfoltz@chromium.org Update README.chromium
+2019-10-21 mfoltz@chromium.org Adds a README.md
+2019-09-30 efoo@chromium.org Add # COMPONENT: Internals>Cast>Providers as per suggested by mfoltz@
+2019-09-26 efoo@chromium.org Add Component: Blink>PresentationAPI
+
+

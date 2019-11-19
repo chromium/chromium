@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script>
+// This browser pixel test checks if the 2D canvas is properly displayed
+// when the color space is set to srgb.
+// We use float16 pixelFormat for increased precision with the wide
+// color gamut
+
+var g_swapsBeforeAck = 15;
+
+function main()
+{
+  draw();
+  waitForFinish();
+}
+
+function draw()
+{
+  var ctx = document.getElementById("c").getContext("2d",
+    {colorSpace:"srgb", pixelFormat: "float16"});
+  ctx.fillStyle = 'red';
+  ctx.fillRect(20,20,50,50);
+  ctx.fillStyle = 'green';
+  ctx.fillRect(70,20,50,50);
+  ctx.fillStyle = 'blue';
+  ctx.fillRect(20,70,50,50);
+  ctx.fillStyle = 'black';
+  ctx.fillRect(70,70,50,50);
+}
+
+function waitForFinish()
+{
+  if (g_swapsBeforeAck == 0) {
+    domAutomationController.send("SUCCESS");
+  } else {
+    g_swapsBeforeAck--;
+    document.getElementById('container').style.zIndex = g_swapsBeforeAck + 1;
+    window.requestAnimationFrame(waitForFinish);
+  }
+}
+</script>
+</head>
+<body onload="main()">
+<div id="container" style="position:absolute; top:0px; left:0px">
+<canvas id="c" width="140" height="140"></canvas>
+</div>
+</body>
+</html>

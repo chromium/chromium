@@ -23,7 +23,7 @@ ChromeOSLoginMediaAccessHandler::~ChromeOSLoginMediaAccessHandler() {}
 
 bool ChromeOSLoginMediaAccessHandler::SupportsStreamType(
     content::WebContents* web_contents,
-    const blink::MediaStreamType type,
+    const blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   if (!web_contents)
     return false;
@@ -34,9 +34,9 @@ bool ChromeOSLoginMediaAccessHandler::SupportsStreamType(
 bool ChromeOSLoginMediaAccessHandler::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
-    blink::MediaStreamType type,
+    blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
-  if (type != blink::MEDIA_DEVICE_VIDEO_CAPTURE)
+  if (type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE)
     return false;
 
   // When creating new user (including supervised user), we must be able to use
@@ -82,12 +82,13 @@ void ChromeOSLoginMediaAccessHandler::HandleRequest(
     const extensions::Extension* extension) {
   bool audio_allowed = false;
   bool video_allowed =
-      request.video_type == blink::MEDIA_DEVICE_VIDEO_CAPTURE &&
+      request.video_type ==
+          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE &&
       CheckMediaAccessPermission(
           content::RenderFrameHost::FromID(request.render_process_id,
                                            request.render_frame_id),
-          request.security_origin, blink::MEDIA_DEVICE_VIDEO_CAPTURE,
-          extension);
+          request.security_origin,
+          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, extension);
 
   CheckDevicesAndRunCallback(web_contents, request, std::move(callback),
                              audio_allowed, video_allowed);

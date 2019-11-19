@@ -6,6 +6,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/ios/asset_catalog.gni")
 import("//build/config/ios/rules.gni")
 import("//build/config/locales.gni")
+import("//ios/build/chrome_build.gni")
 import("//ios/chrome/app/resources/ios_chrome_repack.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
@@ -60,6 +61,7 @@ repack("repack_unscaled_resources") {
   visibility = [ ":packed_resources" ]
   sources = [
     "$root_gen_dir/components/components_resources.pak",
+    "$root_gen_dir/components/sync_driver_resources.pak",
     "$root_gen_dir/ios/chrome/ios_resources.pak",
     "$root_gen_dir/ios/web/ios_web_resources.pak",
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
@@ -69,6 +71,7 @@ repack("repack_unscaled_resources") {
   deps = [
     ":ios_resources",
     "//components/resources",
+    "//components/sync/driver:resources",
     "//ios/web:resources",
     "//mojo/public/js:resources",
     "//net:net_resources",
@@ -98,7 +101,6 @@ appiconset("chromium_icons") {
 imageset("launchscreen_app_logo") {
   sources = [
     "launchscreen_app_logo.imageset/Contents.json",
-    "launchscreen_app_logo.imageset/launchscreen_app_logo.png",
     "launchscreen_app_logo.imageset/launchscreen_app_logo@2x.png",
     "launchscreen_app_logo.imageset/launchscreen_app_logo@3x.png",
   ]
@@ -107,9 +109,10 @@ imageset("launchscreen_app_logo") {
 imageset("launchscreen_brand_name") {
   sources = [
     "launchscreen_brand_name.imageset/Contents.json",
-    "launchscreen_brand_name.imageset/launchscreen_brand_name.png",
-    "launchscreen_brand_name.imageset/launchscreen_brand_name@2x.png",
-    "launchscreen_brand_name.imageset/launchscreen_brand_name@3x.png",
+    "launchscreen_brand_name.imageset/launchscreen_brand_name_dark@2x.png",
+    "launchscreen_brand_name.imageset/launchscreen_brand_name_dark@3x.png",
+    "launchscreen_brand_name.imageset/launchscreen_brand_name_light@2x.png",
+    "launchscreen_brand_name.imageset/launchscreen_brand_name_light@3x.png",
   ]
 }
 
@@ -117,7 +120,16 @@ group("launchscreen_assets") {
   public_deps = [
     ":launchscreen_app_logo",
     ":launchscreen_brand_name",
+    "//ios/chrome/common/colors/resources:background_color",
   ]
+}
+
+if (ios_enable_multi_window) {
+  # Multi window requires both additional plist entries (handled in ../BUILD.gn) and
+  # an additional storyboard file.
+  bundle_data_ib_file("base_scene_storyboard") {
+    source = "BaseScene.storyboard"
+  }
 }
 
 bundle_data_ib_file("launchscreen_xib") {
@@ -141,19 +153,19 @@ generate_localizable_strings("system_strings") {
   ]
 }
 
-imageset("quick_action_new_incognito_tab") {
+imageset("quick_action_incognito_search") {
   sources = [
-    "quick_action_new_incognito_tab.imageset/Contents.json",
-    "quick_action_new_incognito_tab.imageset/quick_action_new_incognito_tab@2x.png",
-    "quick_action_new_incognito_tab.imageset/quick_action_new_incognito_tab@3x.png",
+    "quick_action_incognito_search.imageset/Contents.json",
+    "quick_action_incognito_search.imageset/quick_action_incognito_search@2x.png",
+    "quick_action_incognito_search.imageset/quick_action_incognito_search@3x.png",
   ]
 }
 
-imageset("quick_action_new_tab") {
+imageset("quick_action_new_search") {
   sources = [
-    "quick_action_new_tab.imageset/Contents.json",
-    "quick_action_new_tab.imageset/quick_action_new_tab@2x.png",
-    "quick_action_new_tab.imageset/quick_action_new_tab@3x.png",
+    "quick_action_new_search.imageset/Contents.json",
+    "quick_action_new_search.imageset/quick_action_new_search@2x.png",
+    "quick_action_new_search.imageset/quick_action_new_search@3x.png",
   ]
 }
 
@@ -175,8 +187,8 @@ imageset("quick_action_voice_search") {
 
 group("quick_action_icons") {
   public_deps = [
-    ":quick_action_new_incognito_tab",
-    ":quick_action_new_tab",
+    ":quick_action_incognito_search",
+    ":quick_action_new_search",
     ":quick_action_qr_scanner",
     ":quick_action_voice_search",
   ]

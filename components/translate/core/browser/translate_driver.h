@@ -6,6 +6,7 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_DRIVER_H_
 
 #include <string>
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
 
@@ -46,6 +47,9 @@ class TranslateDriver {
 
   // Returns the visible URL, or an empty GURL if there is no visible URL.
   virtual const GURL& GetVisibleURL() = 0;
+
+  // Returns the Ukm SourceId for the associated WebContents.
+  virtual ukm::SourceId GetUkmSourceId() = 0;
 
   // Returns whether the driver has access to the current page.
   virtual bool HasCurrentPage() = 0;

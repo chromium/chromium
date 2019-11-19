@@ -41,6 +41,7 @@ async function showGridView(rootPath, expectedSet) {
         caller, 'Failed to compare the grid lables, expected: %j, actual %j.',
         expectedLabels, actualLabels);
   });
+  return appId;
 }
 
 /**
@@ -55,4 +56,49 @@ testcase.showGridViewDownloads = () => {
  */
 testcase.showGridViewDrive = () => {
   return showGridView(RootPath.DRIVE, BASIC_DRIVE_ENTRY_SET);
+};
+
+/**
+ * Tests to view-button switches to thumbnail (grid) view and clicking again
+ * switches back to detail (file list) view.
+ */
+testcase.showGridViewButtonSwitches = async () => {
+  const appId = await showGridView(RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET);
+
+  // Check that a11y message for switching to grid view.
+  let a11yMessages =
+      await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
+  chrome.test.assertEq(1, a11yMessages.length, 'Missing a11y message');
+  chrome.test.assertEq(
+      'File list has changed to thumbnail view.', a11yMessages[0]);
+
+  // Click view-button again to switch to detail view.
+  await remoteCall.waitAndClickElement(appId, '#view-button');
+
+  // Wait for detail-view to be visible and grid to be hidden.
+  await remoteCall.waitForElement(appId, '#detail-table:not([hidden])');
+  await remoteCall.waitForElement(appId, 'grid[hidden]');
+
+  // Check that a11y message for switching to list view.
+  a11yMessages =
+      await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
+  chrome.test.assertEq(2, a11yMessages.length, 'Missing a11y message');
+  chrome.test.assertEq('File list has changed to list view.', a11yMessages[1]);
+};
+
+/**
+ * Tests that selecting/de-selecting files with keyboard produces a11y
+ * messages.
+ */
+testcase.showGridViewKeyboardSelectionA11y = async () => {
+  const isGridView = true;
+  return testcase.fileListKeyboardSelectionA11y(isGridView);
+};
+
+/**
+ * Tests that selecting/de-selecting files with mouse produces a11y messages.
+ */
+testcase.showGridViewMouseSelectionA11y = async () => {
+  const isGridView = true;
+  return testcase.fileListMouseSelectionA11y(isGridView);
 };

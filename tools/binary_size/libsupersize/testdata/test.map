@@ -71,7 +71,7 @@ Memory map
 .plt            0x0028c864     0x1094
  ** PLT         0x0028c864     0x1094
 
-.text           0x0028d900  0x223cd28
+.text           0x0028d900  0x2250ba8
  .text.startup._GLOBAL__sub_I_page_allocator.cc
                 0x0028d900       0x10 obj/base/base/page_allocator.o
  .text.startup._GLOBAL__sub_I_bbr_sender.cc

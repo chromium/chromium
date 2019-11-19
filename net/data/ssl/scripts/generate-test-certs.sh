@@ -12,11 +12,15 @@ rm -rf out
 mkdir out
 mkdir out/int
 
-/bin/sh -c "echo 01 > out/2048-sha256-root-serial"
+openssl rand -hex -out out/2048-sha256-root-serial 16
 touch out/2048-sha256-root-index.txt
 
-# Generate the key
-openssl genrsa -out out/2048-sha256-root.key 2048
+# Generate the key or copy over the existing one if present.
+if [ -f ../certificates/root_ca_cert.pem ]; then
+  openssl rsa -in ../certificates/root_ca_cert.pem -out out/2048-sha256-root.key
+else
+  openssl genrsa -out out/2048-sha256-root.key 2048
+fi
 
 # Generate the root certificate
 CA_NAME="req_ca_dn" \
@@ -36,13 +40,21 @@ CA_NAME="req_ca_dn" \
     -text > out/2048-sha256-root.pem
 
 # Generate the test intermediate
-/bin/sh -c "echo 01 > out/int/2048-sha256-int-serial"
+openssl rand -hex -out out/int/2048-sha256-int-serial 16
 touch out/int/2048-sha256-int-index.txt
+
+# Copy over an existing key if present.
+if [ -f ../certificates/intermediate_ca_cert.pem ]; then
+  openssl rsa -in ../certificates/intermediate_ca_cert.pem \
+    -out out/int/2048-sha256-int.key
+else
+  openssl genrsa -out out/int/2048-sha256-int.key 2048
+fi
 
 CA_NAME="req_intermediate_dn" \
   openssl req \
     -new \
-    -keyout out/int/2048-sha256-int.key \
+    -key out/int/2048-sha256-int.key \
     -out out/int/2048-sha256-int.req \
     -config ca.cnf
 
@@ -542,6 +554,14 @@ python crlsetutil.py -o ../certificates/crlset_by_leaf_spki.raw \
   "BlockedBySPKI": ["../certificates/ok_cert.pem"]
 }
 CRLBYLEAFSPKI
+
+## Block a root cert directly by SPKI
+python crlsetutil.py -o ../certificates/crlset_by_root_spki.raw \
+<<CRLBYROOTSPKI
+{
+  "BlockedBySPKI": ["../certificates/root_ca_cert.pem"]
+}
+CRLBYROOTSPKI
 
 ## Block a leaf cert by issuer-hash-and-serial (ok_cert.pem == serial 3, by
 ## virtue of the serial file and ordering above.

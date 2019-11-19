@@ -72,7 +72,7 @@ class WebDataServiceFactory : public BrowserContextKeyedServiceFactory {
   WebDataServiceFactory();
   ~WebDataServiceFactory() override;
 
-  // |BrowserContextKeyedBaseFactory| methods:
+  // |BrowserContextKeyedServiceFactory| methods:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(

@@ -4,33 +4,41 @@
 
 #include "chromecast/browser/ui/aura/accessibility/ax_tree_source_aura.h"
 
+#include "chromecast/browser/accessibility/accessibility_manager.h"
+#include "chromecast/browser/cast_browser_process.h"
+#include "chromecast/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"
+#include "ui/aura/client/focus_client.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 
 AXTreeSourceAura::AXTreeSourceAura(views::AXAuraObjWrapper* root,
-                                   const ui::AXTreeID& tree_id)
-    : AXTreeSourceViews(root, tree_id) {}
+                                   const ui::AXTreeID& tree_id,
+                                   views::AXAuraObjCache* cache)
+    : AXTreeSourceViews(root, tree_id, cache) {}
 
 AXTreeSourceAura::~AXTreeSourceAura() = default;
 
 bool AXTreeSourceAura::GetTreeData(ui::AXTreeData* tree_data) const {
   AXTreeSourceViews::GetTreeData(tree_data);
 
-  // TODO(b/111911092): AXTreeData::focus_id represents the node within the
-  // tree with 'keyboard focus'.  We have no keyboard focus on chromecast so
-  // this is being left as -1. This prevents getFocus calls from the chromevox
-  // background page from finding any window in focus and interferes with
-  // gesture event processing.  Since we only ever have one top level window
-  // and one ax tree, temporarily returning 1 here to indicate the root node
-  // is always the focused window. A better solution would be to fix the focus
-  // issues on chromecast which relies on a) the root window to be focused via
-  // Focus() and 2) a native widget being registered with the root window so
-  // the above GetFocus call will work.  When this code is re-unified with
-  // chrome, this will need to be a special case for chromecast unless the
-  // better solution described above is implemented.
-  tree_data->focus_id = 1;
+  aura::Window* root_window =
+      chromecast::shell::CastBrowserProcess::GetInstance()
+          ->accessibility_manager()
+          ->window_tree_host()
+          ->window();
+  if (root_window) {
+    aura::client::FocusClient* focus_client =
+        aura::client::GetFocusClient(root_window);
+    if (focus_client) {
+      aura::Window* window = focus_client->GetFocusedWindow();
+      tree_data->focus_id =
+          AutomationManagerAura::GetInstance()->GetIDFromWindow(window);
+    }
+  }
   return true;
 }
 

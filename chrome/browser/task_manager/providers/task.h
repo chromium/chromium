@@ -15,7 +15,7 @@
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/sessions/core/session_id.h"
-#include "third_party/blink/public/platform/web_cache.h"
+#include "third_party/blink/public/common/web_cache/web_cache_resource_type_stats.h"
 #include "ui/gfx/image/image_skia.h"
 
 class Profile;
@@ -37,12 +37,13 @@ class Task {
     UNKNOWN = 0,
 
     /* Singleton processes first that don't belong to a particular tab. */
-    BROWSER,  /* The main browser process. */
-    GPU,      /* A graphics process. */
-    ARC,      /* An ARC process. */
-    CROSTINI, /* A Crostini VM process. */
-    ZYGOTE,   /* A Linux zygote process. */
-    UTILITY,  /* A browser utility process. */
+    BROWSER,   /* The main browser process. */
+    GPU,       /* A graphics process. */
+    ARC,       /* An ARC process. */
+    CROSTINI,  /* A Crostini VM process. */
+    PLUGIN_VM, /* A Plugin VM process. */
+    ZYGOTE,    /* A Linux zygote process. */
+    UTILITY,   /* A browser utility process. */
 
     /* Per-Tab processes next. */
     RENDERER,  /* A normal WebContents renderer process. */
@@ -54,6 +55,7 @@ class Task {
     WORKER,         /* A web worker process. */
     NACL,           /* A NativeClient loader or broker process. */
     SANDBOX_HELPER, /* A sandbox helper process. */
+    SERVICE_WORKER, /* A service worker running on the renderer process. */
   };
 
   // Create a task with the given |title| and the given favicon |icon|. This
@@ -149,7 +151,7 @@ class Task {
   // Checking if the task reports Webkit resource cache statistics and getting
   // them if it does.
   virtual bool ReportsWebCacheStats() const;
-  virtual blink::WebCache::ResourceTypeStats GetWebCacheStats() const;
+  virtual blink::WebCacheResourceTypeStats GetWebCacheStats() const;
 
   // Returns the keep-alive counter if the Task is an event page, -1 otherwise.
   virtual int GetKeepaliveCount() const;

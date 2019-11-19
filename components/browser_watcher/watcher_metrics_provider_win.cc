@@ -17,6 +17,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/process/process.h"
@@ -160,15 +161,15 @@ enum CollectionInitializationStatus {
 };
 
 void LogCollectionInitStatus(CollectionInitializationStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("ActivityTracker.Collect.InitStatus", status,
-                            INIT_STATUS_MAX);
+  base::UmaHistogramEnumeration("ActivityTracker.Collect.InitStatus", status,
+                                INIT_STATUS_MAX);
 }
 
 // Returns a task runner appropriate for running background tasks that perform
 // file I/O.
 scoped_refptr<base::TaskRunner> CreateBackgroundTaskRunner() {
-  return base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+  return base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
@@ -188,8 +189,7 @@ WatcherMetricsProviderWin::WatcherMetricsProviderWin(
       user_data_dir_(user_data_dir),
       crash_dir_(crash_dir),
       exe_details_cb_(exe_details_cb),
-      task_runner_(CreateBackgroundTaskRunner()),
-      weak_ptr_factory_(this) {}
+      task_runner_(CreateBackgroundTaskRunner()) {}
 
 WatcherMetricsProviderWin::~WatcherMetricsProviderWin() {
 }
@@ -260,8 +260,8 @@ void WatcherMetricsProviderWin::CollectPostmortemReportsImpl() {
 
   std::vector<base::FilePath> stability_files = GetStabilityFiles(
       stability_dir, GetStabilityFilePattern(), excluded_stability_files);
-  UMA_HISTOGRAM_COUNTS_100("ActivityTracker.Collect.StabilityFileCount",
-                           stability_files.size());
+  base::UmaHistogramCounts100("ActivityTracker.Collect.StabilityFileCount",
+                              stability_files.size());
 
   // If postmortem collection is disabled, delete the files.
   const bool should_collect = base::GetFieldTrialParamByFeatureAsBool(

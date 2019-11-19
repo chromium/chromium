@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/grit/extensions_renderer_resources.h"
 #include "extensions/renderer/module_system_test.h"
-#include "gin/dictionary.h"
 
 namespace extensions {
 namespace {
@@ -26,16 +23,6 @@ class UtilsUnittest : public ModuleSystemTest {
                                  "exports.$set('DCHECK', function() {});\n"
                                  "exports.$set('WARNING', function() {});");
     env()->OverrideNativeHandler("v8_context", "");
-
-    // Native bindings set up the chrome.runtime accessor, so we don't need to
-    // stub it out.
-    if (base::FeatureList::IsEnabled(extensions_features::kNativeCrxBindings))
-      return;
-
-    gin::Dictionary chrome(env()->isolate(), env()->CreateGlobal("chrome"));
-    gin::Dictionary chrome_runtime(
-        gin::Dictionary::CreateEmpty(env()->isolate()));
-    chrome.Set("runtime", chrome_runtime);
   }
 
   void RunTest(const std::string& test_name) { RunTestImpl(test_name, false); }

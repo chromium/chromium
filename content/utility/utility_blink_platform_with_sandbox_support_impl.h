@@ -20,19 +20,13 @@ namespace blink {
 class WebSandboxSupport;
 }
 
-namespace service_manager {
-class Connector;
-}
-
 namespace content {
 
 // This class extends from UtilityBlinkPlatformImpl with added blink web
 // sandbox support.
 class UtilityBlinkPlatformWithSandboxSupportImpl : public blink::Platform {
  public:
-  UtilityBlinkPlatformWithSandboxSupportImpl() = delete;
-  explicit UtilityBlinkPlatformWithSandboxSupportImpl(
-      service_manager::Connector*);
+  UtilityBlinkPlatformWithSandboxSupportImpl();
   ~UtilityBlinkPlatformWithSandboxSupportImpl() override;
 
   // BlinkPlatformImpl

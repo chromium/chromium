@@ -23,8 +23,6 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 
-using namespace testing;
-
 namespace {
 
 class MockCanvas : public SkCanvas {
@@ -113,7 +111,7 @@ class MockCanvas : public SkCanvas {
 // Simple Painter that will be used to test BorderPainter.
 class MockPainter : public views::Painter {
  public:
-  MockPainter() {}
+  MockPainter() = default;
 
   // Gets the canvas given to the last call to Paint().
   gfx::Canvas* given_canvas() const { return given_canvas_; }
@@ -155,12 +153,12 @@ class BorderTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
 
-    view_.reset(new views::View());
+    view_ = std::make_unique<views::View>();
     view_->SetSize(gfx::Size(100, 50));
-    recorder_.reset(new cc::PaintRecorder());
-    canvas_.reset(new gfx::Canvas(
+    recorder_ = std::make_unique<cc::PaintRecorder>();
+    canvas_ = std::make_unique<gfx::Canvas>(
         recorder_->beginRecording(SkRect::MakeWH(kCanvasWidth, kCanvasHeight)),
-        1.0f));
+        1.0f);
   }
 
   void TearDown() override {
@@ -210,7 +208,9 @@ TEST_F(BorderTest, SolidBorder) {
 }
 
 TEST_F(BorderTest, RoundedRectBorder) {
-  std::unique_ptr<Border> border(CreateRoundedRectBorder(3, 4, SK_ColorBLUE));
+  std::unique_ptr<Border> border(CreateRoundedRectBorder(
+      3, LayoutProvider::Get()->GetCornerRadiusMetric(EMPHASIS_LOW),
+      SK_ColorBLUE));
   EXPECT_EQ(gfx::Size(6, 6), border->GetMinimumSize());
   EXPECT_EQ(gfx::Insets(3, 3, 3, 3), border->GetInsets());
   border->Paint(*view_, canvas_.get());

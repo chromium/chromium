@@ -28,6 +28,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -38,12 +39,6 @@ namespace cssvalue {
 
 class CSSReflectValue : public CSSValue {
  public:
-  static CSSReflectValue* Create(CSSIdentifierValue* direction,
-                                 CSSPrimitiveValue* offset,
-                                 CSSValue* mask) {
-    return MakeGarbageCollected<CSSReflectValue>(direction, offset, mask);
-  }
-
   CSSReflectValue(CSSIdentifierValue* direction,
                   CSSPrimitiveValue* offset,
                   CSSValue* mask)
@@ -68,9 +63,15 @@ class CSSReflectValue : public CSSValue {
   Member<CSSValue> mask_;
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSReflectValue, IsReflectValue());
-
 }  // namespace cssvalue
+
+template <>
+struct DowncastTraits<cssvalue::CSSReflectValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsReflectValue();
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_REFLECT_VALUE_H_

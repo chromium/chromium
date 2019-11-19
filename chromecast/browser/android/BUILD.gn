@@ -13,6 +13,7 @@ cast_shell_android_manifest =
 
 manifest_variables = [
   "cast_build_enable_background_activities=$enable_background_activities",
+  "is_android_things=$is_android_things",
   "is_android_things_non_public=$is_android_things_non_public",
 ]
 
@@ -54,11 +55,24 @@ java_cpp_template("cast_shell_build_config_gen") {
 android_resources("cast_shell_android_resources") {
   android_manifest = cast_shell_android_manifest
   android_manifest_dep = ":cast_shell_manifest"
-  resource_dirs = [ "//chromecast/browser/android/apk/res" ]
+  resource_dirs = [
+    "//chromecast/browser/android/apk/res",
+    "//chromecast/browser/android/apk/res-values",
+  ]
+}
+
+android_resources("cast_shell_android_stub_resources") {
+  android_manifest = cast_shell_android_manifest
+  android_manifest_dep = ":cast_shell_manifest"
+  resource_dirs = [ "//chromecast/browser/android/apk/res-values" ]
 }
 
 android_library("cast_audio_manager_java") {
   java_src_dir = "//chromecast/browser/android/apk/src"
+
+  alternative_android_sdk_dep =
+      "//third_party/android_sdk:public_framework_system_java"
+
   java_files = [
     "$java_src_dir/org/chromium/chromecast/shell/CastAudioManager.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastAudioFocusRequest.java",
@@ -93,8 +107,13 @@ android_library("reactive_android_java") {
   deps = [
     "//base:base_java",
     "//chromecast/base:base_java",
-    "//third_party/android_deps:android_support_core_utils_java",
+    "//third_party/android_deps:androidx_localbroadcastmanager_localbroadcastmanager_java",
+    "//third_party/android_deps:com_android_support_support_core_utils_java",
   ]
+}
+
+generate_product_config_srcjar("chromecast_product_config") {
+  java_package = "org.chromium.chromecast.shell"
 }
 
 android_library("cast_shell_java") {
@@ -125,12 +144,16 @@ android_library("cast_shell_java") {
   ]
 
   android_manifest_for_lint = cast_shell_android_manifest
+  min_sdk_version = 21
 
   srcjar_deps = [
     ":cast_shell_build_config_gen",
+    ":chromecast_product_config",
     ":logs_provider_aidl",
     "//chromecast/browser:java_enums",
   ]
+
+  jar_excluded_patterns = [ "*/ProductConfig.class" ]
 
   deps = [
     ":cast_audio_manager_java",
@@ -139,7 +162,9 @@ android_library("cast_shell_java") {
     ":cast_shell_manifest",
     ":reactive_android_java",
     "//base:base_java",
+    "//base:jni_java",
     "//chromecast/base:base_java",
+    "//chromecast/media/cma/backend/android:audio_track_java",
     "//components/crash/android:java",
     "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:view_java",
@@ -147,15 +172,14 @@ android_library("cast_shell_java") {
     "//content/public/android:content_java",
     "//media/base/android:media_java",
     "//net/android:net_java",
+    "//third_party/android_deps:androidx_localbroadcastmanager_localbroadcastmanager_java",
+    "//third_party/android_deps:com_android_support_support_compat_java",
 
     # TODO(slan): We may need to pass this in as a parameter.
-    "//third_party/android_deps:android_support_core_utils_java",
+    "//third_party/android_deps:com_android_support_support_core_utils_java",
     "//ui/android:ui_java",
   ]
-
-  if (is_cast_using_cma_backend) {
-    deps += [ "//chromecast/media/cma/backend/android:audio_track_java" ]
-  }
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   if (is_android_things_non_public) {
     deps += [ ":cast_shell_android_things_sys_info_java" ]
@@ -181,7 +205,6 @@ if (is_android_things_non_public && !build_for_android_things_n) {
     deps = [
       "//chromecast/internal/android/prebuilt/things:support_lib_java",
     ]
-    jni_package = "chromecast"
   }
 }
 
@@ -210,7 +233,7 @@ junit_binary("cast_shell_junit_tests") {
     "//base:base_junit_test_support",
     "//chromecast/base:cast_base_test_utils_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:android_support_core_utils_java",
+    "//third_party/android_deps:com_android_support_support_core_utils_java",
     "//third_party/hamcrest:hamcrest_java",
   ]
 }

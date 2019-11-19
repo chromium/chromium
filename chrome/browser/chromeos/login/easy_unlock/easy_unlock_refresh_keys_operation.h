@@ -46,7 +46,7 @@ class EasyUnlockRefreshKeysOperation {
   std::unique_ptr<EasyUnlockCreateKeysOperation> create_keys_operation_;
   std::unique_ptr<EasyUnlockRemoveKeysOperation> remove_keys_operation_;
 
-  base::WeakPtrFactory<EasyUnlockRefreshKeysOperation> weak_ptr_factory_;
+  base::WeakPtrFactory<EasyUnlockRefreshKeysOperation> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockRefreshKeysOperation);
 };

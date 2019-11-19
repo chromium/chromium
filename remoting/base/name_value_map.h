@@ -20,13 +20,19 @@ struct NameMapElement {
 };
 
 template <typename T, size_t N>
-const char* ValueToName(const NameMapElement<T> (&map)[N], T value) {
+const char* ValueToNameUnchecked(const NameMapElement<T> (&map)[N], T value) {
   for (size_t i = 0; i < N; ++i) {
     if (map[i].value == value)
       return map[i].name;
   }
-  NOTREACHED();
   return nullptr;
+}
+
+template <typename T, size_t N>
+const char* ValueToName(const NameMapElement<T> (&map)[N], T value) {
+  const char* result = ValueToNameUnchecked(map, value);
+  DCHECK_NE(nullptr, result);
+  return result;
 }
 
 template <typename T, size_t N>

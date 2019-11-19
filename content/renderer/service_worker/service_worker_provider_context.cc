@@ -8,26 +8,20 @@
 #include <utility>
 #include <vector>
 
-#include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequenced_task_runner_helpers.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "content/child/child_thread_impl.h"
-#include "content/child/thread_safe_sender.h"
 #include "content/public/common/service_names.mojom.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "content/renderer/service_worker/service_worker_subresource_loader.h"
+#include "content/renderer/service_worker/web_service_worker_provider_impl.h"
 #include "content/renderer/worker/worker_thread_registry.h"
-#include "mojo/public/cpp/bindings/strong_associated_binding.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/blink/public/common/service_worker/service_worker_utils.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
@@ -36,208 +30,196 @@ namespace content {
 namespace {
 
 void CreateSubresourceLoaderFactoryForProviderContext(
-    blink::mojom::ServiceWorkerContainerHostPtrInfo container_host_info,
-    blink::mojom::ControllerServiceWorkerPtrInfo controller_ptr_info,
+    mojo::PendingRemote<blink::mojom::ServiceWorkerContainerHost>
+        remote_container_host,
+    mojo::PendingRemote<blink::mojom::ControllerServiceWorker>
+        remote_controller,
     const std::string& client_id,
     std::unique_ptr<network::SharedURLLoaderFactoryInfo> fallback_factory_info,
-    blink::mojom::ControllerServiceWorkerConnectorRequest connector_request,
-    network::mojom::URLLoaderFactoryRequest request,
+    mojo::PendingReceiver<blink::mojom::ControllerServiceWorkerConnector>
+        connector_receiver,
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  blink::mojom::ControllerServiceWorkerPtr controller_ptr;
-  controller_ptr.Bind(std::move(controller_ptr_info));
   auto connector = base::MakeRefCounted<ControllerServiceWorkerConnector>(
-      std::move(container_host_info), std::move(controller_ptr), client_id);
-  connector->AddBinding(std::move(connector_request));
+      std::move(remote_container_host), std::move(remote_controller),
+      client_id);
+  connector->AddBinding(std::move(connector_receiver));
   ServiceWorkerSubresourceLoaderFactory::Create(
       std::move(connector),
       network::SharedURLLoaderFactory::Create(std::move(fallback_factory_info)),
-      std::move(request), std::move(task_runner));
+      std::move(receiver), std::move(task_runner));
 }
 
 }  // namespace
 
-// static
-int ServiceWorkerProviderContext::GetNextId() {
-  static base::AtomicSequenceNumber sequence;
-  return sequence.GetNext();  // We start at zero.
-}
-
 // For service worker clients.
 ServiceWorkerProviderContext::ServiceWorkerProviderContext(
-    int provider_id,
     blink::mojom::ServiceWorkerProviderType provider_type,
-    blink::mojom::ServiceWorkerContainerAssociatedRequest request,
-    blink::mojom::ServiceWorkerContainerHostAssociatedPtrInfo host_ptr_info,
+    mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainer>
+        receiver,
+    mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainerHost>
+        host_remote,
     blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
     scoped_refptr<network::SharedURLLoaderFactory> fallback_loader_factory)
     : provider_type_(provider_type),
-      provider_id_(provider_id),
       main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      binding_(this, std::move(request)),
-      weak_factory_(this) {
-  container_host_.Bind(std::move(host_ptr_info));
-  state_for_client_ = std::make_unique<ServiceWorkerProviderStateForClient>(
-      std::move(fallback_loader_factory));
+      receiver_(this, std::move(receiver)),
+      fallback_loader_factory_(std::move(fallback_loader_factory)) {
+  if (host_remote.is_valid())
+    container_host_.Bind(std::move(host_remote));
 
   // Set up the URL loader factory for sending subresource requests to
   // the controller.
   if (controller_info) {
     SetController(std::move(controller_info),
-                  std::vector<blink::mojom::WebFeature>(),
                   false /* should_notify_controllerchange */);
   }
 }
 
-ServiceWorkerProviderContext::~ServiceWorkerProviderContext() = default;
+ServiceWorkerProviderContext::~ServiceWorkerProviderContext() {
+  if (weak_wrapped_subresource_loader_factory_)
+    weak_wrapped_subresource_loader_factory_->Detach();
+}
 
 blink::mojom::ServiceWorkerObjectInfoPtr
 ServiceWorkerProviderContext::TakeController() {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(state_for_client_);
-  return std::move(state_for_client_->controller);
+  return std::move(controller_);
 }
 
 int64_t ServiceWorkerProviderContext::GetControllerVersionId() const {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(state_for_client_);
-  return state_for_client_->controller_version_id;
+  return controller_version_id_;
 }
 
 blink::mojom::ControllerServiceWorkerMode
-ServiceWorkerProviderContext::IsControlledByServiceWorker() const {
+ServiceWorkerProviderContext::GetControllerServiceWorkerMode() const {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(state_for_client_);
-  return state_for_client_->controller_mode;
+  return controller_mode_;
 }
 
 network::mojom::URLLoaderFactory*
-ServiceWorkerProviderContext::GetSubresourceLoaderFactory() {
-  if (!blink::ServiceWorkerUtils::IsServicificationEnabled())
-    return nullptr;
-
-  DCHECK(state_for_client_);
-  auto* state = state_for_client_.get();
-  if (!state->controller_endpoint && !state->controller_connector) {
+ServiceWorkerProviderContext::GetSubresourceLoaderFactoryInternal() {
+  if (!remote_controller_ && !controller_connector_) {
     // No controller is attached.
     return nullptr;
   }
 
-  if (state->controller_mode !=
+  if (controller_mode_ !=
       blink::mojom::ControllerServiceWorkerMode::kControlled) {
     // The controller does not exist or has no fetch event handler.
     return nullptr;
   }
 
-  if (!state->subresource_loader_factory) {
-    DCHECK(!state->controller_connector);
-    DCHECK(state->controller_endpoint);
+  if (!subresource_loader_factory_) {
+    DCHECK(!controller_connector_);
+    DCHECK(remote_controller_);
 
-    blink::mojom::ServiceWorkerContainerHostPtrInfo host_ptr_info =
-        CloneContainerHostPtrInfo();
-    if (!host_ptr_info)
+    mojo::PendingRemote<blink::mojom::ServiceWorkerContainerHost>
+        remote_container_host = CloneRemoteContainerHost();
+    if (!remote_container_host)
       return nullptr;
 
     // Create a SubresourceLoaderFactory on a background thread to avoid
     // extra contention on the main thread.
-    auto task_runner = base::CreateSequencedTaskRunnerWithTraits(
-        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    auto task_runner = base::CreateSequencedTaskRunner(
+        {base::ThreadPool(), base::MayBlock(),
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
     task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(&CreateSubresourceLoaderFactoryForProviderContext,
-                       std::move(host_ptr_info),
-                       std::move(state->controller_endpoint), state->client_id,
-                       state->fallback_loader_factory->Clone(),
-                       mojo::MakeRequest(&state->controller_connector),
-                       mojo::MakeRequest(&state->subresource_loader_factory),
+                       std::move(remote_container_host),
+                       std::move(remote_controller_), client_id_,
+                       fallback_loader_factory_->Clone(),
+                       controller_connector_.BindNewPipeAndPassReceiver(),
+                       subresource_loader_factory_.BindNewPipeAndPassReceiver(),
                        task_runner));
+
+    DCHECK(!weak_wrapped_subresource_loader_factory_);
+    weak_wrapped_subresource_loader_factory_ =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            subresource_loader_factory_.get());
   }
-  return state->subresource_loader_factory.get();
+  return subresource_loader_factory_.get();
+}
+
+scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
+ServiceWorkerProviderContext::GetSubresourceLoaderFactory() {
+  // If we can't get our internal factory it means the state is not currently
+  // good to process new requests regardless of the presence of an existing
+  // weak_wrapped_subresource_loader_factory.
+  if (!GetSubresourceLoaderFactoryInternal()) {
+    return nullptr;
+  }
+
+  return weak_wrapped_subresource_loader_factory_;
 }
 
 blink::mojom::ServiceWorkerContainerHost*
 ServiceWorkerProviderContext::container_host() const {
   DCHECK_EQ(blink::mojom::ServiceWorkerProviderType::kForWindow,
             provider_type_);
-  return container_host_.get();
+  return container_host_ ? container_host_.get() : nullptr;
 }
 
 const std::set<blink::mojom::WebFeature>&
 ServiceWorkerProviderContext::used_features() const {
-  DCHECK(state_for_client_);
-  return state_for_client_->used_features;
+  return used_features_;
 }
 
 const std::string& ServiceWorkerProviderContext::client_id() const {
-  DCHECK(state_for_client_);
-  return state_for_client_->client_id;
+  return client_id_;
 }
 
 const base::UnguessableToken&
 ServiceWorkerProviderContext::fetch_request_window_id() const {
-  DCHECK(state_for_client_);
-  return state_for_client_->fetch_request_window_id;
+  return fetch_request_window_id_;
 }
 
 void ServiceWorkerProviderContext::SetWebServiceWorkerProvider(
     base::WeakPtr<WebServiceWorkerProviderImpl> provider) {
-  DCHECK(state_for_client_);
-  state_for_client_->web_service_worker_provider = provider;
+  web_service_worker_provider_ = std::move(provider);
 }
 
 void ServiceWorkerProviderContext::RegisterWorkerClient(
-    blink::mojom::ServiceWorkerWorkerClientPtr client) {
+    mojo::PendingRemote<blink::mojom::ServiceWorkerWorkerClient>
+        pending_client) {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(state_for_client_);
-  client.set_connection_error_handler(base::BindOnce(
+  mojo::Remote<blink::mojom::ServiceWorkerWorkerClient> client(
+      std::move(pending_client));
+  client.set_disconnect_handler(base::BindOnce(
       &ServiceWorkerProviderContext::UnregisterWorkerFetchContext,
       base::Unretained(this), client.get()));
-  state_for_client_->worker_clients.push_back(std::move(client));
+  worker_clients_.push_back(std::move(client));
 }
 
 void ServiceWorkerProviderContext::CloneWorkerClientRegistry(
-    blink::mojom::ServiceWorkerWorkerClientRegistryRequest request) {
+    mojo::PendingReceiver<blink::mojom::ServiceWorkerWorkerClientRegistry>
+        receiver) {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(state_for_client_);
-  state_for_client_->worker_client_registry_bindings.AddBinding(
-      this, std::move(request));
+  worker_client_registry_receivers_.Add(this, std::move(receiver));
 }
 
-blink::mojom::ServiceWorkerContainerHostPtrInfo
-ServiceWorkerProviderContext::CloneContainerHostPtrInfo() {
-  DCHECK(blink::ServiceWorkerUtils::IsServicificationEnabled());
+mojo::PendingRemote<blink::mojom::ServiceWorkerContainerHost>
+ServiceWorkerProviderContext::CloneRemoteContainerHost() {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(state_for_client_);
   if (!container_host_)
-    return nullptr;
-  blink::mojom::ServiceWorkerContainerHostPtrInfo container_host_ptr_info;
+    return mojo::NullRemote();
+  mojo::PendingRemote<blink::mojom::ServiceWorkerContainerHost>
+      remote_container_host;
   container_host_->CloneContainerHost(
-      mojo::MakeRequest(&container_host_ptr_info));
-  return container_host_ptr_info;
+      remote_container_host.InitWithNewPipeAndPassReceiver());
+  return remote_container_host;
 }
 
 void ServiceWorkerProviderContext::OnNetworkProviderDestroyed() {
   container_host_.reset();
 }
 
-void ServiceWorkerProviderContext::PingContainerHost(
-    base::OnceClosure callback) {
-  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  if (!container_host_)
-    return;
-  container_host_->Ping(std::move(callback));
-}
-
 void ServiceWorkerProviderContext::DispatchNetworkQuiet() {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  ServiceWorkerProviderStateForClient* state = state_for_client_.get();
-  DCHECK(state);
 
-  // In non-S13nSW, this hint isn't needed because the browser process
-  // sees all requests and schedules update at a convenient time.
-  if (!blink::ServiceWorkerUtils::IsServicificationEnabled())
-    return;
-
-  if (state->controller_mode ==
+  if (controller_mode_ ==
       blink::mojom::ControllerServiceWorkerMode::kNoController) {
     return;
   }
@@ -273,67 +255,62 @@ void ServiceWorkerProviderContext::NotifyExecutionReady() {
 void ServiceWorkerProviderContext::UnregisterWorkerFetchContext(
     blink::mojom::ServiceWorkerWorkerClient* client) {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(state_for_client_);
   base::EraseIf(
-      state_for_client_->worker_clients,
-      [client](const blink::mojom::ServiceWorkerWorkerClientPtr& client_ptr) {
-        return client_ptr.get() == client;
-      });
+      worker_clients_,
+      [client](const mojo::Remote<blink::mojom::ServiceWorkerWorkerClient>&
+                   remote_client) { return remote_client.get() == client; });
 }
 
 void ServiceWorkerProviderContext::SetController(
     blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
-    const std::vector<blink::mojom::WebFeature>& used_features,
     bool should_notify_controllerchange) {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  ServiceWorkerProviderStateForClient* state = state_for_client_.get();
-  DCHECK(state);
 
-  state->controller = std::move(controller_info->object_info);
-  state->controller_version_id =
-      state->controller ? state->controller->version_id
-                        : blink::mojom::kInvalidServiceWorkerVersionId;
+  controller_ = std::move(controller_info->object_info);
+  controller_version_id_ = controller_
+                               ? controller_->version_id
+                               : blink::mojom::kInvalidServiceWorkerVersionId;
   // The client id should never change once set.
-  DCHECK(state->client_id.empty() ||
-         state->client_id == controller_info->client_id);
-  state->client_id = controller_info->client_id;
+  DCHECK(client_id_.empty() || client_id_ == controller_info->client_id);
+  client_id_ = controller_info->client_id;
 
-  if (controller_info->fetch_request_window_id)
-    state->fetch_request_window_id = *controller_info->fetch_request_window_id;
+  if (controller_info->fetch_request_window_id) {
+    DCHECK(controller_);
+    fetch_request_window_id_ = *controller_info->fetch_request_window_id;
+  } else {
+    fetch_request_window_id_ = base::UnguessableToken();
+  }
 
   DCHECK((controller_info->mode ==
               blink::mojom::ControllerServiceWorkerMode::kNoController &&
-          !state->controller) ||
+          !controller_) ||
          (controller_info->mode !=
               blink::mojom::ControllerServiceWorkerMode::kNoController &&
-          state->controller));
-  state->controller_mode = controller_info->mode;
-  state->controller_endpoint = std::move(controller_info->endpoint);
+          controller_));
+  controller_mode_ = controller_info->mode;
+  remote_controller_ = std::move(controller_info->remote_controller);
 
   // Propagate the controller to workers related to this provider.
-  if (state->controller) {
+  if (controller_) {
     DCHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
-              state->controller->version_id);
-    for (const auto& worker : state->worker_clients) {
+              controller_->version_id);
+    for (const auto& worker : worker_clients_) {
       // This is a Mojo interface call to the (dedicated or shared) worker
       // thread.
-      worker->OnControllerChanged(state->controller_mode);
+      worker->OnControllerChanged(controller_mode_);
     }
   }
-  for (blink::mojom::WebFeature feature : used_features)
-    state->used_features.insert(feature);
+  for (blink::mojom::WebFeature feature : controller_info->used_features)
+    used_features_.insert(feature);
 
-  // S13nServiceWorker:
   // Reset connector state for subresource loader factory if necessary.
   if (CanCreateSubresourceLoaderFactory()) {
-    DCHECK(blink::ServiceWorkerUtils::IsServicificationEnabled());
-
     // There could be four patterns:
     //  (A) Had a controller, and got a new controller.
     //  (B) Had a controller, and lost the controller.
     //  (C) Didn't have a controller, and got a new controller.
     //  (D) Didn't have a controller, and lost the controller (nothing to do).
-    if (state->controller_connector) {
+    if (controller_connector_) {
       // Used to have a controller at least once and have created a
       // subresource loader factory before (if no subresource factory was
       // created before, then the right controller, if any, will be used when
@@ -345,9 +322,7 @@ void ServiceWorkerProviderContext::SetController(
       // the existing controller or may use the new controller settings
       // depending on when the request is actually passed to the factory (this
       // part is inherently racy).
-      state->controller_connector->UpdateController(
-          blink::mojom::ControllerServiceWorkerPtr(
-              std::move(state->controller_endpoint)));
+      controller_connector_->UpdateController(std::move(remote_controller_));
     }
   }
 
@@ -355,10 +330,9 @@ void ServiceWorkerProviderContext::SetController(
   // has not yet been created (as WebServiceWorkerProviderImpl is created for a
   // ServiceWorkerContainer). In that case, once it's created it will still get
   // the controller from |this| via WebServiceWorkerProviderImpl::SetClient().
-  if (state->web_service_worker_provider) {
-    state->web_service_worker_provider->SetController(
-        std::move(state->controller), state->used_features,
-        should_notify_controllerchange);
+  if (web_service_worker_provider_) {
+    web_service_worker_provider_->SetController(
+        std::move(controller_), used_features_, should_notify_controllerchange);
   }
 }
 
@@ -367,35 +341,28 @@ void ServiceWorkerProviderContext::PostMessageToClient(
     blink::TransferableMessage message) {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
 
-  ServiceWorkerProviderStateForClient* state = state_for_client_.get();
-  DCHECK(state);
-  if (state->web_service_worker_provider) {
-    state->web_service_worker_provider->PostMessageToClient(std::move(source),
-                                                            std::move(message));
+  if (web_service_worker_provider_) {
+    web_service_worker_provider_->PostMessageToClient(std::move(source),
+                                                      std::move(message));
   }
 }
 
 void ServiceWorkerProviderContext::CountFeature(
     blink::mojom::WebFeature feature) {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(state_for_client_);
-  ServiceWorkerProviderStateForClient* state = state_for_client_.get();
 
   // ServiceWorkerProviderContext keeps track of features in order to propagate
   // it to WebServiceWorkerProviderClient, which actually records the
   // UseCounter.
-  state->used_features.insert(feature);
-  if (state->web_service_worker_provider) {
-    state->web_service_worker_provider->CountFeature(feature);
+  used_features_.insert(feature);
+  if (web_service_worker_provider_) {
+    web_service_worker_provider_->CountFeature(feature);
   }
 }
 
 bool ServiceWorkerProviderContext::CanCreateSubresourceLoaderFactory() const {
-  // Expected that it is called only for clients.
-  DCHECK(state_for_client_);
-  // |state_for_client_->fallback_loader_factory| could be null in unit tests.
-  return (blink::ServiceWorkerUtils::IsServicificationEnabled() &&
-          state_for_client_->fallback_loader_factory);
+  // |fallback_loader_factory| could be null in unit tests.
+  return fallback_loader_factory_ != nullptr;
 }
 
 void ServiceWorkerProviderContext::DestructOnMainThread() const {

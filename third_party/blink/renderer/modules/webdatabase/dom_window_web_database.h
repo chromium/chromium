@@ -45,13 +45,13 @@ class DOMWindowWebDatabase {
                                 const String& name,
                                 const String& version,
                                 const String& display_name,
-                                unsigned estimated_size,
+                                uint32_t estimated_size,
                                 ExceptionState&);
   static Database* openDatabase(LocalDOMWindow&,
                                 const String& name,
                                 const String& version,
                                 const String& display_name,
-                                unsigned estimated_size,
+                                uint32_t estimated_size,
                                 V8DatabaseCallback* creation_callback,
                                 ExceptionState&);
 };

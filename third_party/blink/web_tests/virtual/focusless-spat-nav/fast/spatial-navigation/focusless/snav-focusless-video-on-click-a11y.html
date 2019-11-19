@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<video id="first" controls></video>
+
+<script>
+  if (accessibilityController) {
+    accessibilityController.reset();
+  }
+
+  async_test((t) => {
+    let first = document.getElementById("first");
+
+    mockSnavService.callback = notCalled;
+
+    async function runTest() {
+      await snav.rAF();
+
+      snav.triggerMove('Down');
+      await snavCallback();
+      assert_equals(window.internals.interestedElement,
+                    first,
+                    "'first' should be interested.");
+      assert_not_equals(document.activeElement,
+                        first,
+                        "'first' should not yet be focused.");
+      assert_false(mockSnavService.canExitFocus,
+                  "We haven't yet focused, so we should not be able to exit.");
+      assert_true(mockSnavService.canSelectElement,
+                  "Should be able to select element.");
+      assert_false(mockSnavService.hasDefaultVideoControls,
+                   "Nothing is focused, no default controls");
+
+      eventSender.keyDown('Enter');
+      await snavCallback();
+      assert_true(mockSnavService.canExitFocus,
+                  "Should be able to exit focus.");
+      assert_true(mockSnavService.canSelectElement,
+                  "Should be able to select element.");
+      assert_true(mockSnavService.hasDefaultVideoControls,
+                  "Nothing first uses default controls");
+      assert_equals(window.internals.interestedElement,
+                    first,
+                    "'first' should be interested.");
+      assert_equals(document.activeElement,
+                    first,
+                    "'first' should be focused.");
+      t.done();
+    };
+
+    t.step_timeout(() => {
+      runTest();
+    }, 0);
+
+    function notCalled() {
+      t.step_timeout(() => {
+        assert_false(true, "Should not be called");
+      }, 0);
+    };
+
+  }, 'Spat Nav state updates correctly when clicking on video elements.');
+</script>

@@ -35,11 +35,14 @@ class TestToolbarActionViewController : public ToolbarActionViewController {
   bool ExecuteAction(bool by_user) override;
   void UpdateState() override;
   bool DisabledClickOpensMenu() const override;
+  PageInteractionStatus GetPageInteractionStatus(
+      content::WebContents* web_contents) const override;
 
   // Instruct the controller to fake showing a popup.
   void ShowPopup(bool by_user);
 
   // Configure the test controller. These also call UpdateDelegate().
+  void SetActionName(const base::string16& name);
   void SetAccessibleName(const base::string16& name);
   void SetTooltip(const base::string16& tooltip);
   void SetEnabled(bool is_enabled);
@@ -57,6 +60,9 @@ class TestToolbarActionViewController : public ToolbarActionViewController {
 
   // The delegate of the controller, if one exists.
   ToolbarActionViewDelegate* delegate_ = nullptr;
+
+  // Action name for the controller.
+  base::string16 action_name_;
 
   // The optional accessible name and tooltip; by default these are empty.
   base::string16 accessible_name_;

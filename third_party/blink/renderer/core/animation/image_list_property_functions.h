@@ -24,10 +24,10 @@ class ImageListPropertyFunctions {
                            StyleImageList* result) {
     const FillLayer* fill_layer = nullptr;
     switch (property.PropertyID()) {
-      case CSSPropertyBackgroundImage:
+      case CSSPropertyID::kBackgroundImage:
         fill_layer = &style.BackgroundLayers();
         break;
-      case CSSPropertyWebkitMaskImage:
+      case CSSPropertyID::kWebkitMaskImage:
         fill_layer = &style.MaskLayers();
         break;
       default:
@@ -47,10 +47,10 @@ class ImageListPropertyFunctions {
                            const StyleImageList* image_list) {
     FillLayer* fill_layer = nullptr;
     switch (property.PropertyID()) {
-      case CSSPropertyBackgroundImage:
+      case CSSPropertyID::kBackgroundImage:
         fill_layer = &style.AccessBackgroundLayers();
         break;
-      case CSSPropertyWebkitMaskImage:
+      case CSSPropertyID::kWebkitMaskImage:
         fill_layer = &style.AccessMaskLayers();
         break;
       default:

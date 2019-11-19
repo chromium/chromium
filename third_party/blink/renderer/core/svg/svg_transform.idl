@@ -22,6 +22,7 @@
 // https://svgwg.org/svg2-draft/coords.html#InterfaceSVGTransform
 
 [
+    Exposed=Window,
     ImplementedAs=SVGTransformTearOff
 ] interface SVGTransform {
     // Transform Types

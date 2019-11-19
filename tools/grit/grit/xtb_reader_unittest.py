@@ -5,14 +5,16 @@
 
 '''Unit tests for grit.xtb_reader'''
 
+from __future__ import print_function
 
 import os
 import sys
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-import StringIO
 import unittest
+
+from six import StringIO
 
 from grit import util
 from grit import xtb_reader
@@ -21,7 +23,7 @@ from grit.node import empty
 
 class XtbReaderUnittest(unittest.TestCase):
   def testParsing(self):
-    xtb_file = StringIO.StringIO('''<?xml version="1.0" encoding="UTF-8"?>
+    xtb_file = StringIO('''<?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE translationbundle>
       <translationbundle lang="fr">
         <translation id="5282608565720904145">Bingo.</translation>
@@ -57,7 +59,7 @@ and another after a blank line.</translation>
     clique_hello_user = msgs.children[1].GetCliques()[0]
     msg_hello_user = clique_hello_user.GetMessage()
 
-    xtb_file = StringIO.StringIO('''<?xml version="1.0" encoding="UTF-8"?>
+    xtb_file = StringIO('''<?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE translationbundle>
       <translationbundle lang="is">
         <translation id="%s">Meirihattar!</translation>
@@ -80,7 +82,7 @@ and another after a blank line.</translation>
     clique = msgs.children[0].GetCliques()[0]
     msg = clique.GetMessage()
 
-    xtb_file = StringIO.StringIO('''<?xml version="1.0" encoding="UTF-8"?>
+    xtb_file = StringIO('''<?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE translationbundle>
       <translationbundle lang="is">
         <if expr="is_linux">

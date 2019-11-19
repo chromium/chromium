@@ -41,14 +41,14 @@ class StorageSchemaManifestHandlerTest : public testing::Test {
         Extension::Create(temp_dir_.GetPath(), Manifest::UNPACKED, manifest_,
                           Extension::NO_FLAGS, "", &error);
     if (!extension.get())
-      return NULL;
+      return nullptr;
     base::FilePath schema_path = temp_dir_.GetPath().AppendASCII("schema.json");
     if (schema.empty()) {
       base::DeleteFile(schema_path, false);
     } else {
       if (base::WriteFile(schema_path, schema.data(), schema.size()) !=
           static_cast<int>(schema.size())) {
-        return NULL;
+        return nullptr;
       }
     }
     return extension;

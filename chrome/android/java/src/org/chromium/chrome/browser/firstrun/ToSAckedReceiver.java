@@ -12,9 +12,10 @@ import android.os.Build;
 import android.os.Bundle;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.HashSet;
 import java.util.List;
@@ -57,12 +58,8 @@ public class ToSAckedReceiver extends BroadcastReceiver {
                 ContextUtils.getAppSharedPreferences().getStringSet(
                         TOS_ACKED_ACCOUNTS, null);
         if (toSAckedAccounts == null || toSAckedAccounts.isEmpty()) return false;
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                ProcessInitializationHandler.getInstance().initializePreNative();
-            }
-        });
+        PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT,
+                () -> { ProcessInitializationHandler.getInstance().initializePreNative(); });
         AccountManagerFacade accountHelper = AccountManagerFacade.get();
         List<String> accountNames = accountHelper.tryGetGoogleAccountNames();
         if (accountNames.isEmpty()) return false;

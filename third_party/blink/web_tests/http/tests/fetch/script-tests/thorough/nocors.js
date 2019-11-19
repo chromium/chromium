@@ -31,7 +31,7 @@ var TEST_TARGETS = [
   onlyOnServiceWorkerProxiedTest(
     [OTHER_BASE_URL + 'method=GET&headers=CUSTOM',
      [fetchResolved, noContentLength, noServerHeader, noBody, typeOpaque],
-     [methodIsGET, noCustomHeader, authCheck2]]),
+     [methodIsGET, noCustomHeader, onlyForCrossSiteCookieTest(authCheck2)]]),
   onlyOnServiceWorkerProxiedTest(
     [OTHER_BASE_URL + 'method=POST&headers=CUSTOM',
      [fetchResolved, noContentLength, noServerHeader, noBody, typeOpaque],
@@ -63,7 +63,8 @@ var TEST_TARGETS = [
 
   [OTHER_BASE_URL + 'mode=no-cors&method=GET&headers=CUSTOM',
    [fetchResolved, noContentLength, noServerHeader, noBody, typeOpaque],
-   onlyOnServiceWorkerProxiedTest([methodIsGET, noCustomHeader, authCheck2])],
+   onlyOnServiceWorkerProxiedTest([methodIsGET, noCustomHeader,
+                                   onlyForCrossSiteCookieTest(authCheck2)])],
   [OTHER_BASE_URL + 'mode=no-cors&method=POST&headers=CUSTOM',
    [fetchResolved, noContentLength, noServerHeader, noBody, typeOpaque],
    onlyOnServiceWorkerProxiedTest([methodIsPOST, noCustomHeader])],

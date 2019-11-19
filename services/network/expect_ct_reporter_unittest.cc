@@ -13,7 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "net/cert/ct_serialization.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
@@ -51,6 +51,7 @@ class TestCertificateReportSender : public net::ReportSender {
             const base::Callback<void()>& success_callback,
             const base::Callback<void(const GURL&, int, int)>& error_callback)
       override {
+    sent_report_count_++;
     latest_report_uri_ = report_uri;
     serialized_report.CopyToString(&latest_serialized_report_);
     content_type.CopyToString(&latest_content_type_);
@@ -59,6 +60,8 @@ class TestCertificateReportSender : public net::ReportSender {
       report_callback_.Run();
     }
   }
+
+  int sent_report_count() const { return sent_report_count_; }
 
   const GURL& latest_report_uri() const { return latest_report_uri_; }
 
@@ -85,6 +88,7 @@ class TestCertificateReportSender : public net::ReportSender {
   }
 
  private:
+  int sent_report_count_ = 0;
   GURL latest_report_uri_;
   std::string latest_content_type_;
   std::string latest_serialized_report_;
@@ -287,8 +291,7 @@ class TestExpectCTNetworkDelegate : public net::NetworkDelegateImpl {
 class ExpectCTReporterWaitTest : public ::testing::Test {
  public:
   ExpectCTReporterWaitTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void SetUp() override {
     // Initializes URLRequestContext after the thread is set up.
@@ -322,60 +325,66 @@ class ExpectCTReporterWaitTest : public ::testing::Test {
  private:
   TestExpectCTNetworkDelegate network_delegate_;
   std::unique_ptr<net::TestURLRequestContext> context_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(ExpectCTReporterWaitTest);
 };
+
+std::unique_ptr<net::test_server::HttpResponse> ReplyToPostWith200(
+    const net::test_server::HttpRequest& request) {
+  if (request.method != net::test_server::METHOD_POST)
+    return nullptr;
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_OK);
+  return http_response;
+}
+
+std::unique_ptr<net::test_server::HttpResponse> HandleReportPreflight(
+    const std::map<std::string, std::string>& cors_headers,
+    base::RepeatingClosure callback,
+    const net::test_server::HttpRequest& request) {
+  if (request.method != net::test_server::METHOD_OPTIONS)
+    return nullptr;
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_OK);
+  for (const auto& cors_header : cors_headers) {
+    http_response->AddCustomHeader(cors_header.first, cors_header.second);
+  }
+
+  if (!callback.is_null()) {
+    callback.Run();
+  }
+
+  return http_response;
+}
+
+std::unique_ptr<net::test_server::HttpResponse> HandleReportPreflightForPath(
+    const std::string& path,
+    const std::map<std::string, std::string>& cors_headers,
+    base::RepeatingClosure callback,
+    const net::test_server::HttpRequest& request) {
+  if (request.relative_url != path)
+    return nullptr;
+  return HandleReportPreflight(cors_headers, callback, request);
+}
 
 // A test fixture that responds properly to CORS preflights so that reports can
 // be successfully sent to test_server().
 class ExpectCTReporterTest : public ::testing::Test {
  public:
+  const std::map<std::string, std::string> kGoodCorsHeaders{
+      {"Access-Control-Allow-Origin", "*"},
+      {"Access-Control-Allow-Methods", "GET,POST"},
+      {"Access-Control-Allow-Headers", "content-type,another-header"}};
+
   ExpectCTReporterTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
   ~ExpectCTReporterTest() override {}
 
-  void SetUp() override {
-    report_server_.RegisterRequestHandler(base::Bind(
-        &ExpectCTReporterTest::HandleReportPreflight, base::Unretained(this)));
-    ASSERT_TRUE(report_server_.Start());
-  }
-
-  std::unique_ptr<net::test_server::HttpResponse> HandleReportPreflight(
-      const net::test_server::HttpRequest& request) {
-    handled_preflight_ = true;
-    std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-        new net::test_server::BasicHttpResponse());
-    http_response->set_code(net::HTTP_OK);
-    for (const auto& cors_header : cors_headers_) {
-      http_response->AddCustomHeader(cors_header.first, cors_header.second);
-    }
-
-    // If WaitForReportPreflight() has been called, signal that a preflight has
-    // been handled. Do this after copying |cors_headers_| to the response,
-    // because tests can mutate |cors_headers_| immediately after
-    // |preflight_run_loop_| quits.
-    if (preflight_run_loop_) {
-      preflight_run_loop_->Quit();
-    }
-
-    return http_response;
-  }
-
-  // Can only be called once per test to wait for a single preflight.
-  void WaitForReportPreflight() {
-    DCHECK(!preflight_run_loop_)
-        << "WaitForReportPreflight should only be called once per test";
-    if (handled_preflight_) {
-      return;
-    }
-    preflight_run_loop_ = std::make_unique<base::RunLoop>();
-    preflight_run_loop_->Run();
-  }
-
  protected:
-  const net::EmbeddedTestServer& test_server() { return report_server_; }
+  net::EmbeddedTestServer& test_server() { return report_server_; }
 
   // Tests that reports are not sent when the CORS preflight request returns the
   // header field |preflight_header_name| with value given by
@@ -389,50 +398,61 @@ class ExpectCTReporterTest : public ::testing::Test {
       const std::string& preflight_header_name,
       const std::string& preflight_header_bad_value,
       const std::string& preflight_header_good_value) {
-    cors_headers_[preflight_header_name] = preflight_header_bad_value;
-    const GURL fail_report_uri = test_server().GetURL("/report1");
+    const std::string fail_path = "/report1";
+    const std::string successful_path = "/report2";
+
+    std::map<std::string, std::string> bad_cors_headers = kGoodCorsHeaders;
+    bad_cors_headers[preflight_header_name] = preflight_header_bad_value;
+    std::map<std::string, std::string> good_cors_headers = kGoodCorsHeaders;
+    good_cors_headers[preflight_header_name] = preflight_header_good_value;
+
+    base::RunLoop bad_cors_run_loop;
+    report_server_.RegisterRequestHandler(
+        base::Bind(&HandleReportPreflightForPath, fail_path, bad_cors_headers,
+                   bad_cors_run_loop.QuitClosure()));
+    report_server_.RegisterRequestHandler(
+        base::Bind(&HandleReportPreflightForPath, successful_path,
+                   good_cors_headers, base::RepeatingClosure()));
+    ASSERT_TRUE(report_server_.Start());
+
+    const GURL fail_report_uri = test_server().GetURL(fail_path);
+    const GURL successful_report_uri = test_server().GetURL(successful_path);
+
     reporter->OnExpectCTFailed(
         host_port, fail_report_uri, base::Time(), ssl_info.cert.get(),
         ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps);
-    WaitForReportPreflight();
+    bad_cors_run_loop.Run();
+    // The CORS preflight response may not even have been received yet, so
+    // these expectations are mostly aspirational.
     EXPECT_TRUE(sender->latest_report_uri().is_empty());
     EXPECT_TRUE(sender->latest_serialized_report().empty());
 
-    // Set the proper header value and send a dummy report. The test will fail
+    // Send a report to the url with good CORS headers. The test will fail
     // if the previous OnExpectCTFailed() call unexpectedly resulted in a
     // report, as WaitForReport() would see the previous report to /report1
-    // instead of the expected report to /report2.
-    const GURL successful_report_uri = test_server().GetURL("/report2");
-    cors_headers_[preflight_header_name] = preflight_header_good_value;
+    // instead of the expected report to /report2, or sent_report_count() will
+    // be 2.
     reporter->OnExpectCTFailed(
         host_port, successful_report_uri, base::Time(), ssl_info.cert.get(),
         ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps);
     sender->WaitForReport(successful_report_uri);
     EXPECT_EQ(successful_report_uri, sender->latest_report_uri());
-  }
-
-  void SetCorsHeaderWithWhitespace() {
-    cors_headers_["Access-Control-Allow-Methods"] = "GET, POST";
+    EXPECT_EQ(1, sender->sent_report_count());
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   net::EmbeddedTestServer report_server_;
-  // Set to true when HandleReportPreflight() has been called. Used by
-  // WaitForReportPreflight() to determine when to just return immediately
-  // because a preflight has already been handled.
-  bool handled_preflight_ = false;
-  std::unique_ptr<base::RunLoop> preflight_run_loop_;
-  std::map<std::string, std::string> cors_headers_{
-      {"Access-Control-Allow-Origin", "*"},
-      {"Access-Control-Allow-Methods", "GET,POST"},
-      {"Access-Control-Allow-Headers", "content-type,another-header"}};
 };
 
 }  // namespace
 
 // Test that no report is sent when the feature is not enabled.
 TEST_F(ExpectCTReporterTest, FeatureDisabled) {
+  test_server().RegisterRequestHandler(base::Bind(
+      &HandleReportPreflight, kGoodCorsHeaders, base::RepeatingClosure()));
+  ASSERT_TRUE(test_server().Start());
+
   base::HistogramTester histograms;
   histograms.ExpectTotalCount(kSendHistogramName, 0);
 
@@ -478,6 +498,7 @@ TEST_F(ExpectCTReporterTest, FeatureDisabled) {
         ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps);
     sender->WaitForReport(report_uri);
     EXPECT_EQ(report_uri, sender->latest_report_uri());
+    EXPECT_EQ(1, sender->sent_report_count());
   }
 }
 
@@ -624,7 +645,13 @@ TEST_F(ExpectCTReporterTest, SendReport) {
   ASSERT_TRUE(
       base::Time::FromUTCExploded({2017, 1, 0, 1, 0, 0, 0, 0}, &expiration));
 
-  const GURL report_uri = test_server().GetURL("/report");
+  const std::string report_path = "/report";
+  base::RunLoop cors_run_loop;
+  test_server().RegisterRequestHandler(base::Bind(&HandleReportPreflightForPath,
+                                                  report_path, kGoodCorsHeaders,
+                                                  cors_run_loop.QuitClosure()));
+  ASSERT_TRUE(test_server().Start());
+  const GURL report_uri = test_server().GetURL(report_path);
 
   // Check that the report is sent and contains the correct information.
   reporter.OnExpectCTFailed(net::HostPortPair::FromURL(report_uri), report_uri,
@@ -633,7 +660,7 @@ TEST_F(ExpectCTReporterTest, SendReport) {
                             ssl_info.signed_certificate_timestamps);
 
   // A CORS preflight request should be sent before the actual report.
-  WaitForReportPreflight();
+  cors_run_loop.Run();
   sender->WaitForReport(report_uri);
 
   EXPECT_EQ(report_uri, sender->latest_report_uri());
@@ -651,6 +678,13 @@ TEST_F(ExpectCTReporterTest, SendReport) {
 
 // Test that the success callback is called when a report is successfully sent.
 TEST_F(ExpectCTReporterTest, SendReportSuccessCallback) {
+  test_server().RegisterRequestHandler(base::Bind(
+      &HandleReportPreflight, kGoodCorsHeaders, base::RepeatingClosure()));
+  // This test actually sends the report to the testserver, so register a
+  // handler that will return OK.
+  test_server().RegisterRequestHandler(base::Bind(&ReplyToPostWith200));
+  ASSERT_TRUE(test_server().Start());
+
   base::RunLoop run_loop;
 
   net::TestURLRequestContext context;
@@ -692,7 +726,14 @@ TEST_F(ExpectCTReporterTest, SendReportSuccessCallback) {
 
 // Test that report preflight responses can contain whitespace.
 TEST_F(ExpectCTReporterTest, PreflightContainsWhitespace) {
-  SetCorsHeaderWithWhitespace();
+  const std::string report_path = "/report";
+  std::map<std::string, std::string> cors_headers = kGoodCorsHeaders;
+  cors_headers["Access-Control-Allow-Methods"] = "GET, POST";
+  base::RunLoop cors_run_loop;
+  test_server().RegisterRequestHandler(base::Bind(&HandleReportPreflightForPath,
+                                                  report_path, cors_headers,
+                                                  cors_run_loop.QuitClosure()));
+  ASSERT_TRUE(test_server().Start());
 
   TestCertificateReportSender* sender = new TestCertificateReportSender();
   net::TestURLRequestContext context;
@@ -707,14 +748,14 @@ TEST_F(ExpectCTReporterTest, PreflightContainsWhitespace) {
   ssl_info.unverified_cert = net::ImportCertFromFile(
       net::GetTestCertsDirectory(), "localhost_cert.pem");
 
-  const GURL report_uri = test_server().GetURL("/report");
+  const GURL report_uri = test_server().GetURL(report_path);
   reporter.OnExpectCTFailed(net::HostPortPair::FromURL(report_uri), report_uri,
                             base::Time::Now(), ssl_info.cert.get(),
                             ssl_info.unverified_cert.get(),
                             ssl_info.signed_certificate_timestamps);
 
   // A CORS preflight request should be sent before the actual report.
-  WaitForReportPreflight();
+  cors_run_loop.Run();
   sender->WaitForReport(report_uri);
 
   EXPECT_EQ(report_uri, sender->latest_report_uri());

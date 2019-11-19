@@ -4,9 +4,13 @@
 
 #include "ui/ozone/platform/drm/gpu/crtc_controller.h"
 
+#include <memory>
+
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/presentation_feedback.h"
+#include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_dumb_buffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
@@ -20,7 +24,9 @@ CrtcController::CrtcController(const scoped_refptr<DrmDevice>& drm,
                                uint32_t connector)
     : drm_(drm),
       crtc_(crtc),
-      connector_(connector) {}
+      connector_(connector),
+      internal_diplay_only_modifiers_(
+          {I915_FORMAT_MOD_Y_TILED_CCS, I915_FORMAT_MOD_Yf_TILED_CCS}) {}
 
 CrtcController::~CrtcController() {
   if (!is_disabled_) {
@@ -94,7 +100,21 @@ bool CrtcController::AssignOverlayPlanes(HardwareDisplayPlaneList* plane_list,
 }
 
 std::vector<uint64_t> CrtcController::GetFormatModifiers(uint32_t format) {
-  return drm_->plane_manager()->GetFormatModifiers(crtc_, format);
+  std::vector<uint64_t> modifiers =
+      drm_->plane_manager()->GetFormatModifiers(crtc_, format);
+
+  display::DisplayConnectionType display_type =
+      ui::GetDisplayType(drm_->GetConnector(connector_).get());
+  // If this is an external display, remove the modifiers applicable to internal
+  // displays only.
+  if (display_type != display::DISPLAY_CONNECTION_TYPE_INTERNAL) {
+    for (auto modifier : internal_diplay_only_modifiers_) {
+      modifiers.erase(std::remove(modifiers.begin(), modifiers.end(), modifier),
+                      modifiers.end());
+    }
+  }
+
+  return modifiers;
 }
 
 void CrtcController::SetCursor(uint32_t handle, const gfx::Size& size) {

@@ -13,7 +13,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
-#include "media/audio/sounds/sounds_manager.h"
+#include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/input_method_util.h"
@@ -59,9 +59,7 @@ ui::IMEInputContextHandlerInterface* GetInputContext() {
 }  // namespace
 
 DictationChromeos::DictationChromeos(Profile* profile)
-    : composition_(std::make_unique<ui::CompositionText>()),
-      profile_(profile),
-      weak_ptr_factory_(this) {
+    : composition_(std::make_unique<ui::CompositionText>()), profile_(profile) {
   if (GetInputContext() && GetInputContext()->GetInputMethod())
     GetInputContext()->GetInputMethod()->AddObserver(this);
 }
@@ -109,7 +107,7 @@ void DictationChromeos::OnSpeechSoundLevelChanged(int16_t level) {}
 void DictationChromeos::OnSpeechRecognitionStateChanged(
     SpeechRecognizerStatus new_state) {
   if (new_state == SPEECH_RECOGNIZER_RECOGNIZING)
-    media::SoundsManager::Get()->Play(chromeos::SOUND_DICTATION_START);
+    audio::SoundsManager::Get()->Play(chromeos::SOUND_DICTATION_START);
   else if (new_state == SPEECH_RECOGNIZER_READY)
     // This state is only reached when nothing has been said for a fixed time.
     // In this case, the expected behavior is for dictation to terminate.
@@ -136,7 +134,7 @@ void DictationChromeos::DictationOff() {
     return;
 
   if (!composition_->text.empty()) {
-    media::SoundsManager::Get()->Play(chromeos::SOUND_DICTATION_END);
+    audio::SoundsManager::Get()->Play(chromeos::SOUND_DICTATION_END);
 
     ui::IMEInputContextHandlerInterface* input_context = GetInputContext();
     if (input_context)
@@ -144,7 +142,7 @@ void DictationChromeos::DictationOff() {
 
     composition_->text = base::string16();
   } else {
-    media::SoundsManager::Get()->Play(chromeos::SOUND_DICTATION_CANCEL);
+    audio::SoundsManager::Get()->Play(chromeos::SOUND_DICTATION_CANCEL);
   }
 
   chromeos::AccessibilityStatusEventDetails details(

@@ -15,14 +15,15 @@
  */
 package com.google.ipc.invalidation.ticl.android2.channel;
 
-import com.google.ipc.invalidation.external.client.SystemResources.Logger;
-import com.google.ipc.invalidation.external.client.android.service.AndroidLogger;
-import com.google.ipc.invalidation.ticl.android2.channel.AndroidChannelConstants.C2dmConstants;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 
+import com.google.ipc.invalidation.external.client.SystemResources.Logger;
+import com.google.ipc.invalidation.external.client.android.service.AndroidLogger;
+import com.google.ipc.invalidation.ticl.android2.channel.AndroidChannelConstants.C2dmConstants;
+
+import org.chromium.base.ContextUtils;
 
 /** Accessor class for shared preference entries used by the channel. */
 public class AndroidChannelPreferences {
@@ -76,134 +77,133 @@ public class AndroidChannelPreferences {
   private static final Logger logger = AndroidLogger.forTag("ChannelPrefs");
 
   /** Sets the token echoed on subsequent HTTP requests. */
-  static void setEchoToken(Context context, String token) {
-    SharedPreferences.Editor editor = getPreferences(context).edit();
+  static void setEchoToken(String token) {
+      SharedPreferences.Editor editor = getPreferences().edit();
 
-    // This might fail, but at worst it just means we lose an echo token; the channel
-    // needs to be able to handle that anyway since it can never assume an echo token
-    // makes it to the client (since the channel can drop messages).
-    editor.putString(C2dmConstants.ECHO_PARAM, token);
-    if (!editor.commit()) {
-      logger.warning("Failed writing shared preferences for: setEchoToken");
-    }
+      // This might fail, but at worst it just means we lose an echo token; the channel
+      // needs to be able to handle that anyway since it can never assume an echo token
+      // makes it to the client (since the channel can drop messages).
+      editor.putString(C2dmConstants.ECHO_PARAM, token);
+      if (!editor.commit()) {
+          logger.warning("Failed writing shared preferences for: setEchoToken");
+      }
   }
 
   /** Returns the echo token that should be included on HTTP requests. */
-  
-  public static String getEchoToken(Context context) {
-    return getPreferences(context).getString(C2dmConstants.ECHO_PARAM, null);
+
+  public static String getEchoToken() {
+      return getPreferences().getString(C2dmConstants.ECHO_PARAM, null);
   }
 
   /** Buffers the last message sent by the Ticl. Overwrites any previously buffered message. */
-  static void bufferMessage(Context context, byte[] message) {
-    SharedPreferences.Editor editor = getPreferences(context).edit();
-    String encodedMessage =
-        Base64.encodeToString(message, Base64.URL_SAFE | Base64.NO_WRAP  | Base64.NO_PADDING);
-    editor.putString(BUFFERED_MSG_PREF, encodedMessage);
+  static void bufferMessage(byte[] message) {
+      SharedPreferences.Editor editor = getPreferences().edit();
+      String encodedMessage =
+              Base64.encodeToString(message, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+      editor.putString(BUFFERED_MSG_PREF, encodedMessage);
 
-    // This might fail, but at worst we'll just drop a message, which the Ticl must be prepared to
-    // handle.
-    if (!editor.commit()) {
-      logger.warning("Failed writing shared preferences for: bufferMessage");
-    }
+      // This might fail, but at worst we'll just drop a message, which the Ticl must be prepared to
+      // handle.
+      if (!editor.commit()) {
+          logger.warning("Failed writing shared preferences for: bufferMessage");
+      }
   }
 
   /**
    * Removes and returns the buffered Ticl message, if any. If no message was buffered, returns
    * {@code null}.
    */
-  static byte[] takeBufferedMessage(Context context) {
-    SharedPreferences preferences = getPreferences(context);
-    String message = preferences.getString(BUFFERED_MSG_PREF, null);
-    if (message == null) {
-      // No message was buffered.
-      return null;
-    }
-    // There is a message to return. Remove the stored value from the preferences.
-    SharedPreferences.Editor editor = preferences.edit();
-    editor.remove(BUFFERED_MSG_PREF);
+  static byte[] takeBufferedMessage() {
+      SharedPreferences preferences = getPreferences();
+      String message = preferences.getString(BUFFERED_MSG_PREF, null);
+      if (message == null) {
+          // No message was buffered.
+          return null;
+      }
+      // There is a message to return. Remove the stored value from the preferences.
+      SharedPreferences.Editor editor = preferences.edit();
+      editor.remove(BUFFERED_MSG_PREF);
 
-    // If this fails, we might send the same message twice, which is fine.
-    if (!editor.commit()) {
-      logger.warning("Failed writing shared preferences for: takeBufferedMessage");
-    }
+      // If this fails, we might send the same message twice, which is fine.
+      if (!editor.commit()) {
+          logger.warning("Failed writing shared preferences for: takeBufferedMessage");
+      }
 
-    // Return the decoded message.
-    return Base64.decode(message, Base64.URL_SAFE);
+      // Return the decoded message.
+      return Base64.decode(message, Base64.URL_SAFE);
   }
 
   /**
    * Sets the registration token returned from GCM for the sender id stored against
    * {@code GCM_SENDER_ID}.
    */
-  static void setRegistrationToken(Context context, String token) {
-    if (token == null) {
-      return;
-    }
-    SharedPreferences.Editor editor = getPreferences(context).edit();
-    editor.putString(GCM_REGISTRATION_TOKEN_PREF, token);
-    if (!editor.commit()) {
-      logger.warning("Failed writing shared preferences for: setRegistrationToken");
-    }
+  static void setRegistrationToken(String token) {
+      if (token == null) {
+          return;
+      }
+      SharedPreferences.Editor editor = getPreferences().edit();
+      editor.putString(GCM_REGISTRATION_TOKEN_PREF, token);
+      if (!editor.commit()) {
+          logger.warning("Failed writing shared preferences for: setRegistrationToken");
+      }
   }
 
   /**
    * Returns the registration token stored or an empty string if no token is found.
    */
-  static String getRegistrationToken(Context context) {
-    return getPreferences(context).getString(GCM_REGISTRATION_TOKEN_PREF, "");
+  static String getRegistrationToken() {
+      return getPreferences().getString(GCM_REGISTRATION_TOKEN_PREF, "");
   }
 
   /**
    * Sets the GCM channel configuration used.
-   *
-   * @param context, the application context.
    * @param type, the channel configuration type specified in {@code GcmChannelType}.
    */
-  public static void setGcmChannelType(Context context, int type) {
-    if (getGcmChannelType(context) == type) {
-      return;
-    }
-    SharedPreferences.Editor editor = getPreferences(context).edit();
-    editor.putInt(GCM_CHANNEL_TYPE_PREF, type);
-    if (!editor.commit()) {
-      logger.warning("Failed writing shared preferences for: setGcmChannelType");
-    }
+  public static void setGcmChannelType(int type) {
+      if (getGcmChannelType() == type) {
+          return;
+      }
+      SharedPreferences.Editor editor = getPreferences().edit();
+      editor.putInt(GCM_CHANNEL_TYPE_PREF, type);
+      if (!editor.commit()) {
+          logger.warning("Failed writing shared preferences for: setGcmChannelType");
+      }
   }
 
   /**
    * Returns the GCM channel configuration used.
    */
-  static int getGcmChannelType(Context context) {
-    return getPreferences(context).getInt(GCM_CHANNEL_TYPE_PREF, -1);
+  static int getGcmChannelType() {
+      return getPreferences().getInt(GCM_CHANNEL_TYPE_PREF, -1);
   }
 
   /**
    * Stores the client app version for the registration token stored against {@code GCM_APP_VERSION}
    */
-  static void setAppVersion(Context context, int version) {
-    SharedPreferences.Editor editor = getPreferences(context).edit();
+  static void setAppVersion(int version) {
+      SharedPreferences.Editor editor = getPreferences().edit();
 
-    editor.putInt(GCM_APP_VERSION_PREF, version);
-    if (!editor.commit()) {
-      logger.warning("Failed writing shared preferences for: setAppVersion");
-    }
+      editor.putInt(GCM_APP_VERSION_PREF, version);
+      if (!editor.commit()) {
+          logger.warning("Failed writing shared preferences for: setAppVersion");
+      }
   }
 
   /**
    * Returns the client app version or -1 if no version is found.
    */
-  static int getAppVersion(Context context) {
-    return getPreferences(context).getInt(GCM_APP_VERSION_PREF, -1);
+  static int getAppVersion() {
+      return getPreferences().getInt(GCM_APP_VERSION_PREF, -1);
   }
 
   /** Returns whether a message has been buffered, for tests. */
-  public static boolean hasBufferedMessageForTest(Context context) {
-    return getPreferences(context).contains(BUFFERED_MSG_PREF);
+  public static boolean hasBufferedMessageForTest() {
+      return getPreferences().contains(BUFFERED_MSG_PREF);
   }
 
   /** Returns a new {@link SharedPreferences} instance to access the channel preferences. */
-  private static SharedPreferences getPreferences(Context context) {
-    return context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+  private static SharedPreferences getPreferences() {
+      return ContextUtils.getApplicationContext().getSharedPreferences(
+              PREFERENCES_NAME, Context.MODE_PRIVATE);
   }
 }

@@ -1,0 +1,146 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/compiled_action.gni")
+
+if (!is_ios && !is_android) {
+  executable("make_top_domain_skeletons") {
+    sources = [
+      "make_top_domain_skeletons.cc",
+    ]
+
+    deps = [
+      "//base",
+      "//base:i18n",
+      "//third_party/icu",
+    ]
+  }
+}
+
+executable("top_domain_generator") {
+  sources = [
+    "top_domain_generator.cc",
+    "top_domain_state_generator.cc",
+    "top_domain_state_generator.h",
+    "trie_entry.cc",
+    "trie_entry.h",
+  ]
+  deps = [
+    "//base",
+    "//net/tools/huffman_trie:huffman_trie_generator_sources",
+  ]
+  if (is_ios) {
+    libs = [ "UIKit.framework" ]
+  }
+}
+
+compiled_action("generate_top_domains_trie") {
+  tool = ":top_domain_generator"
+
+  # Inputs in order expected by the command line of the tool.
+  inputs = [
+    "//components/url_formatter/spoof_checks/top_domains/domains.skeletons",
+    "//components/url_formatter/spoof_checks/top_domains/top_domains_trie.template",
+  ]
+  outputs = [
+    "$target_gen_dir/domains-trie-inc.cc",
+  ]
+  args =
+      rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
+}
+
+# TODO(crbug/915921): Combine this and the previous one into a
+# compiled_action_foreach target.
+compiled_action("generate_top_domains_test_trie") {
+  tool = ":top_domain_generator"
+
+  # Inputs in order expected by the command line of the tool.
+  inputs = [
+    "//components/url_formatter/spoof_checks/top_domains/test_domains.skeletons",
+    "//components/url_formatter/spoof_checks/top_domains/top_domains_trie.template",
+  ]
+  outputs = [
+    "$target_gen_dir/test_domains-trie-inc.cc",
+  ]
+
+  # Passing --for_testing flag marks only the first site with is_top_500.
+  args = rebase_path(inputs, root_build_dir) +
+         rebase_path(outputs, root_build_dir) + [ "--for_testing" ]
+}
+
+executable("make_top_domain_list_variables") {
+  sources = [
+    "make_top_domain_list_variables.cc",
+  ]
+  deps = [
+    ":common",
+    "//base",
+    "//base:i18n",
+    "//third_party/icu",
+  ]
+  if (is_ios) {
+    libs = [ "UIKit.framework" ]
+  }
+}
+
+source_set("common") {
+  sources = [
+    "top_domain_util.cc",
+    "top_domain_util.h",
+  ]
+
+  deps = [
+    "//net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "top_domain_util_unittest.cc",
+  ]
+  deps = [
+    ":common",
+    "//testing/gtest",
+  ]
+}
+
+# TODO(crbug/915921): Combine this and the previous one into a
+# compiled_action_foreach target.
+compiled_action("generate_top_domain_list_variables_file") {
+  tool = ":make_top_domain_list_variables"
+
+  # Inputs in order expected by the command line of the tool.
+  inputs = [
+    "//components/url_formatter/spoof_checks/top_domains/domains.list",
+  ]
+  outputs = [
+    "$target_gen_dir/top500-domains-inc.cc",
+  ]
+  args =
+      rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
+}
+
+# top500_domains and top500_domains_header are intentionally separated to remove
+# serialized build dependency from some targets to
+# generate_top_domain_list_variables action target.
+source_set("top500_domains") {
+  # This empty public is intentional to remove unnecessary build dependency.
+  public = []
+
+  sources = [
+    "$target_gen_dir/top500-domains-inc.cc",
+  ]
+
+  deps = [
+    ":generate_top_domain_list_variables_file",
+    ":top500_domains_header",
+  ]
+}
+
+source_set("top500_domains_header") {
+  sources = [
+    "top500_domains.h",
+  ]
+}

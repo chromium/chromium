@@ -21,6 +21,7 @@ var Manager = (function() {
     var copyAllPlayerButton = $('copy-all-player-button');
     var copyAllAudioButton = $('copy-all-audio-button');
     var hidePlayersButton = $('hide-players-button');
+    var devtoolsNoticeWindow = $('devtools-notice-window');
 
     // In tests we may not have these buttons.
     if (copyAllPlayerButton) {
@@ -38,6 +39,9 @@ var Manager = (function() {
     }
     if (hidePlayersButton) {
       hidePlayersButton.onclick = this.hidePlayers_.bind(this);
+    }
+    if (devtoolsNoticeWindow) {
+      devtoolsNoticeWindow.onclick = this.hideNoticeWindow_;
     }
   }
 
@@ -123,6 +127,10 @@ var Manager = (function() {
       util.object.forEach(this.players_, function(playerInfo, id) {
         this.removePlayer(id);
       }, this);
+    },
+
+    hideNoticeWindow_: function() {
+      this.style.display = 'none';
     },
 
     updatePlayerInfoNoRecord: function(id, timestamp, key, value) {

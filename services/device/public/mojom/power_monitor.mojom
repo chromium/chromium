@@ -6,7 +6,7 @@ module device.mojom;
 
 interface PowerMonitor {
   // Add a client that will be notified on PowerStateChange, Suspend and Resume.
-  AddClient(PowerMonitorClient client);
+  AddClient(pending_remote<PowerMonitorClient> client);
 };
 
 interface PowerMonitorClient {

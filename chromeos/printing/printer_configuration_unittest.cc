@@ -84,42 +84,4 @@ TEST(PrinterConfigurationTest, ParseUriSubdomainQueueAndPort) {
   EXPECT_EQ(result->path(), "/ipp/print");
 }
 
-TEST(PrinterConfigurationTest, RequiresIpResolution) {
-  chromeos::Printer printer;
-  printer.set_effective_uri("");
-  printer.set_id("zeroconf-testid");
-  printer.set_uri("ipp://test.local:631/ipp/print");
-  EXPECT_TRUE(printer.RequiresIpResolution());
-}
-
-// In this case we expect RequiresIpResolution() to return false since
-// |effective_uri_| has already been computed.
-TEST(PrinterConfigurationTest, RequiresIpResolutionNonEmptyEffectiveUri) {
-  chromeos::Printer printer;
-  printer.set_effective_uri("test.local:631");
-  printer.set_id("zeroconf-testid");
-  printer.set_uri("ipp://test.local:631/ipp/print");
-  EXPECT_FALSE(printer.RequiresIpResolution());
-}
-
-// In this case we expect RequiresIpResolution() to return false since |id_|
-// does not have the "zeroconf-" prefix.
-TEST(PrinterConfigurationTest, RequiresIpResolutionNotZeroconf) {
-  chromeos::Printer printer;
-  printer.set_effective_uri("");
-  printer.set_id("testid");
-  printer.set_uri("ipp://test.local:631/ipp/print");
-  EXPECT_FALSE(printer.RequiresIpResolution());
-}
-
-// In this case we expect RequiresIpResolution() to return false since the
-// hostname in |uri_| does not end with ".local".
-TEST(PrinterConfigurationTest, RequiresIpResolutionNoLocal) {
-  chromeos::Printer printer;
-  printer.set_effective_uri("");
-  printer.set_id("zeroconf-testid");
-  printer.set_uri("ipp://localhost:631/ipp/print");
-  EXPECT_FALSE(printer.RequiresIpResolution());
-}
-
 }  // namespace

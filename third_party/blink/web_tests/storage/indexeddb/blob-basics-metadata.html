@@ -4,6 +4,9 @@
 <input type="file" id="fileInput" multiple></input>
 <script>
 
+ // This test cannot be a WPT because it uses the Blink specific APIs to
+ // automate file drag/drop.
+
 description("Confirm basic Blob/File/FileList functionality.");
 
 fileInput = document.getElementById("fileInput");

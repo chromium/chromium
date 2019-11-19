@@ -1,4 +1,6 @@
 include_rules = [
   "+content/public/browser",
-  "+components/search_engines",
+  "+components/google/core/common",
+  "+components/ukm",
+  "+services/metrics/public/cpp",
 ]

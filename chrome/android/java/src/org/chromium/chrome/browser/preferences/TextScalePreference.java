@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.preferences;
 
 import android.content.Context;
+import android.support.v7.preference.PreferenceViewHolder;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.View;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.accessibility.FontSizePrefs.FontSizePrefsObse
  */
 public class TextScalePreference extends SeekBarPreference {
     private TextView mPreview;
-    private View mView;
     private final FontSizePrefs mFontSizePrefs;
 
     private final FontSizePrefsObserver mFontSizePrefsObserver = new FontSizePrefsObserver() {
@@ -39,23 +38,17 @@ public class TextScalePreference extends SeekBarPreference {
     public TextScalePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mFontSizePrefs = FontSizePrefs.getInstance(getContext());
+        mFontSizePrefs = FontSizePrefs.getInstance();
 
         setLayoutResource(R.layout.custom_preference);
         setWidgetLayoutResource(R.layout.preference_text_scale);
     }
 
     @Override
-    protected View onCreateView(android.view.ViewGroup parent) {
-        if (mView == null) mView = super.onCreateView(parent);
-        return mView;
-    }
-
-    @Override
-    protected void onBindView(View view) {
-        super.onBindView(view);
+    public void onBindViewHolder(PreferenceViewHolder holder) {
+        super.onBindViewHolder(holder);
         if (mPreview == null) {
-            mPreview = (TextView) view.findViewById(R.id.preview);
+            mPreview = (TextView) holder.findViewById(R.id.preview);
             updatePreview();
         }
     }

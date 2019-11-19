@@ -53,10 +53,12 @@ class WebContentsState {
   // Synthesizes a stub, single-navigation state for a tab that will be loaded
   // lazily.
   static base::android::ScopedJavaLocalRef<jobject>
-      CreateSingleNavigationStateAsByteBuffer(JNIEnv* env, jstring url,
-                                              jstring referrer_url,
-                                              jint referrer_policy,
-                                              jboolean is_off_the_record);
+  CreateSingleNavigationStateAsByteBuffer(JNIEnv* env,
+                                          jstring url,
+                                          jstring referrer_url,
+                                          jint referrer_policy,
+                                          jstring initiator_origin,
+                                          jboolean is_off_the_record);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_TAB_STATE_H_

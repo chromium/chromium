@@ -13,7 +13,7 @@
 #include "chrome/browser/component_updater/pepper_flash_component_installer.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pepper_flash.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "ppapi/shared_impl/test_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -61,7 +61,7 @@ const base::FilePath::CharType kDataPath[] =
 
 // TODO(viettrungluu): Separate out into two separate tests; use a test fixture.
 TEST(ComponentInstallerTest, PepperFlashCheck) {
-  content::TestBrowserThreadBundle test_browser_thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
 
   ppapi::PpapiGlobals::PerThreadForTest per_thread_for_test;
   ppapi::TestGlobals test_globals(per_thread_for_test);

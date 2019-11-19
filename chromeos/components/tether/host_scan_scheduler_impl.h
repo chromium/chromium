@@ -86,7 +86,7 @@ class HostScanSchedulerImpl : public HostScanScheduler,
   base::Time last_scan_end_timestamp_;
   bool is_screen_locked_;
 
-  base::WeakPtrFactory<HostScanSchedulerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<HostScanSchedulerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HostScanSchedulerImpl);
 };

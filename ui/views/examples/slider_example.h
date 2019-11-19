@@ -30,8 +30,8 @@ class VIEWS_EXAMPLES_EXPORT SliderExample : public ExampleBase,
                           float old_value,
                           SliderChangeReason reason) override;
 
-  Slider* slider_;
-  Label* label_;
+  Slider* slider_ = nullptr;
+  Label* label_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SliderExample);
 };

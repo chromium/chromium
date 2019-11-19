@@ -64,7 +64,8 @@ const SkColor kHintSublabelTextColor = SkColorSetARGB(255, 161, 161, 161);
 const SkColor kInnerCircleColor = SK_ColorWHITE;
 const SkColor kOuterCircleColor = SkColorSetA(kInnerCircleColor, 255 * 0.2);
 
-constexpr int kCircleAnimationDurationMs = 900;
+constexpr auto kCircleAnimationDuration =
+    base::TimeDelta::FromMilliseconds(900);
 
 constexpr int kHintRectBorderRadius = 4;
 
@@ -87,7 +88,7 @@ views::Widget::InitParams GetWidgetParams(aura::Window* root_window) {
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.name = kWidgetName;
-  params.keep_on_top = true;
+  params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.accept_events = true;
   params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
@@ -124,18 +125,19 @@ void AnimateLayerToPosition(views::View* view,
 // min and max radius. The animation takes |animation_duration| milliseconds
 // to complete. The center of these circles are at the center of the view
 // element.
-class CircularThrobberView : public views::View, public gfx::AnimationDelegate {
+class CircularThrobberView : public views::View,
+                             public views::AnimationDelegateViews {
  public:
   CircularThrobberView(int width,
                        const SkColor& inner_circle_color,
                        const SkColor& outer_circle_color,
-                       int animation_duration);
+                       base::TimeDelta animation_duration);
   ~CircularThrobberView() override;
 
-  // views::View overrides:
+  // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
-  // gfx::AnimationDelegate overrides:
+  // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
 
  private:
@@ -165,8 +167,9 @@ class CircularThrobberView : public views::View, public gfx::AnimationDelegate {
 CircularThrobberView::CircularThrobberView(int width,
                                            const SkColor& inner_circle_color,
                                            const SkColor& outer_circle_color,
-                                           int animation_duration)
-    : inner_radius_(width / 4),
+                                           base::TimeDelta animation_duration)
+    : views::AnimationDelegateViews(this),
+      inner_radius_(width / 4),
       outer_radius_(inner_radius_),
       smallest_radius_animated_circle_(width * kThrobberCircleRadiusFactor),
       largest_radius_animated_circle_(width / 2),
@@ -210,10 +213,10 @@ class TouchTargetThrobberView : public CircularThrobberView {
                           const SkColor& inner_circle_color,
                           const SkColor& outer_circle_color,
                           const SkColor& hand_icon_color,
-                          int animation_duration);
+                          base::TimeDelta animation_duration);
   ~TouchTargetThrobberView() override;
 
-  // views::View overrides:
+  // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:
@@ -231,7 +234,7 @@ TouchTargetThrobberView::TouchTargetThrobberView(
     const SkColor& inner_circle_color,
     const SkColor& outer_circle_color,
     const SkColor& hand_icon_color,
-    int animation_duration)
+    base::TimeDelta animation_duration)
     : CircularThrobberView(bounds.width(),
                            inner_circle_color,
                            outer_circle_color,
@@ -271,7 +274,7 @@ class HintBox : public views::View {
   HintBox(const gfx::Rect& bounds, int border_radius);
   ~HintBox() override;
 
-  // views::View overrides:
+  // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
   void SetLabel(const base::string16& text, const SkColor& color);
@@ -325,8 +328,7 @@ HintBox::HintBox(const gfx::Rect& bounds, int border_radius)
             bounds.width() + 2 * base_border_ + arrow_width_,
             bounds.height() + 2 * base_border_);
 
-  rounded_rect_bounds_ = GetLocalBounds();
-  rounded_rect_bounds_.Inset(GetInsets());
+  rounded_rect_bounds_ = GetContentsBounds();
 
   flags_.setColor(SK_ColorWHITE);
   flags_.setStyle(cc::PaintFlags::kFill_Style);
@@ -350,8 +352,7 @@ HintBox::~HintBox() = default;
 
 void HintBox::UpdateWidth(int updated_width) {
   SetSize(gfx::Size(updated_width + 2 * base_border_ + arrow_width_, height()));
-  rounded_rect_bounds_ = GetLocalBounds();
-  rounded_rect_bounds_.Inset(GetInsets());
+  rounded_rect_bounds_ = GetContentsBounds();
 }
 
 void HintBox::SetLabel(const base::string16& text, const SkColor& color) {
@@ -411,7 +412,7 @@ class CompletionMessageView : public views::View {
   CompletionMessageView(const gfx::Rect& bounds, const base::string16& message);
   ~CompletionMessageView() override;
 
-  // views::View overrides:
+  // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:
@@ -462,7 +463,8 @@ void CompletionMessageView::OnPaint(gfx::Canvas* canvas) {
 
 TouchCalibratorView::TouchCalibratorView(const display::Display& target_display,
                                          bool is_primary_view)
-    : display_(target_display),
+    : views::AnimationDelegateViews(this),
+      display_(target_display),
       is_primary_view_(is_primary_view),
       exit_label_(nullptr),
       tap_label_(nullptr),
@@ -526,7 +528,7 @@ void TouchCalibratorView::InitViewContents() {
 
   throbber_circle_ =
       new CircularThrobberView(kThrobberCircleViewWidth, kInnerCircleColor,
-                               kOuterCircleColor, kCircleAnimationDurationMs);
+                               kOuterCircleColor, kCircleAnimationDuration);
   throbber_circle_->SetPosition(
       gfx::Point(kThrobberCircleViewHorizontalOffset, 0));
 
@@ -588,7 +590,7 @@ void TouchCalibratorView::InitViewContents() {
                 hint_box->height() * kTouchTargetVerticalOffsetFactor,
                 kTouchTargetWidth, kTouchTargetHeight),
       kTouchTargetInnerCircleColor, kTouchTargetOuterCircleColor,
-      kHandIconColor, kCircleAnimationDurationMs);
+      kHandIconColor, kCircleAnimationDuration);
   target_view->SetVisible(true);
 
   hint_box_view_->AddChildView(target_view);

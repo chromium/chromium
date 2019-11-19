@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace payments {
@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest, CompleteFail) {
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::ERROR_MESSAGE_SHOWN});
   ClickOnDialogViewAndWait(DialogViewID::CVC_PROMPT_CONFIRM_BUTTON);
-  EXPECT_FALSE(dialog_view()->throbber_overlay_for_testing()->visible());
+  EXPECT_FALSE(dialog_view()->throbber_overlay_for_testing()->GetVisible());
 
   // The user can only close the dialog at this point.
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);

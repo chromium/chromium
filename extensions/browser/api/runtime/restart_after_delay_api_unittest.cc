@@ -166,7 +166,7 @@ class RestartAfterDelayApiTest : public ApiUnitTest {
   }
 
  private:
-  std::string RunFunctionGetError(UIThreadExtensionFunction* function,
+  std::string RunFunctionGetError(ExtensionFunction* function,
                                   const Extension* extension,
                                   const std::string& args) {
     scoped_refptr<ExtensionFunction> function_owner(function);

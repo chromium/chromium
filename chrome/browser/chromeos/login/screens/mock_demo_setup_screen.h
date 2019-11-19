@@ -7,19 +7,21 @@
 
 #include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/chromeos/login/screens/demo_setup_screen.h"
-#include "chrome/browser/chromeos/login/screens/demo_setup_screen_view.h"
+#include "chrome/browser/ui/webui/chromeos/login/demo_setup_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {
 
 class MockDemoSetupScreen : public DemoSetupScreen {
  public:
-  MockDemoSetupScreen(BaseScreenDelegate* base_screen_delegate,
-                      DemoSetupScreenView* view);
+  MockDemoSetupScreen(DemoSetupScreenView* view,
+                      const ScreenExitCallback& exit_callback);
   ~MockDemoSetupScreen() override;
 
   MOCK_METHOD0(Show, void());
   MOCK_METHOD0(Hide, void());
+
+  void ExitScreen(Result result);
 };
 
 class MockDemoSetupScreenView : public DemoSetupScreenView {

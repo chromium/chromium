@@ -139,7 +139,8 @@ class LockScreenValueStoreMigratorImpl : public LockScreenValueStoreMigrator {
   // Maps extension ids to the extension's migration status.
   std::unordered_map<ExtensionId, MigrationData> migration_items_;
 
-  base::WeakPtrFactory<LockScreenValueStoreMigratorImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<LockScreenValueStoreMigratorImpl> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(LockScreenValueStoreMigratorImpl);
 };

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ui/views/paint_info.h"
+#include "base/feature_list.h"
+#include "ui/views/views_features.h"
 
 namespace views {
 namespace {
@@ -68,15 +70,23 @@ PaintInfo PaintInfo::CreateChildPaintInfo(const PaintInfo& parent_paint_info,
                                           const gfx::Rect& bounds,
                                           const gfx::Size& parent_size,
                                           ScaleType scale_type,
-                                          bool is_layer) {
-  return PaintInfo(parent_paint_info, bounds, parent_size, scale_type,
-                   is_layer);
+                                          bool is_layer,
+                                          bool needs_paint) {
+  return PaintInfo(parent_paint_info, bounds, parent_size, scale_type, is_layer,
+                   needs_paint);
 }
 
-PaintInfo::~PaintInfo() {}
+PaintInfo::~PaintInfo() = default;
 
 bool PaintInfo::IsPixelCanvas() const {
   return context().is_pixel_canvas();
+}
+
+bool PaintInfo::ShouldPaint() const {
+  if (base::FeatureList::IsEnabled(features::kEnableViewPaintOptimization))
+    return needs_paint_;
+
+  return context().IsRectInvalid(gfx::Rect(paint_recording_size()));
 }
 
 PaintInfo::PaintInfo(const PaintInfo& other)
@@ -85,7 +95,8 @@ PaintInfo::PaintInfo(const PaintInfo& other)
       paint_recording_bounds_(other.paint_recording_bounds_),
       offset_from_parent_(other.offset_from_parent_),
       context_(other.context(), gfx::Vector2d()),
-      root_context_(nullptr) {}
+      root_context_(nullptr),
+      needs_paint_(false) {}
 
 // The root layer should use the ScaleToEnclosingRect, the same logic that
 // cc(chrome compositor) is using.
@@ -104,7 +115,8 @@ PaintInfo::PaintInfo(const PaintInfo& parent_paint_info,
                      const gfx::Rect& bounds,
                      const gfx::Size& parent_size,
                      ScaleType scale_type,
-                     bool is_layer)
+                     bool is_layer,
+                     bool needs_paint)
     : paint_recording_scale_x_(1.f),
       paint_recording_scale_y_(1.f),
       paint_recording_bounds_(
@@ -116,7 +128,8 @@ PaintInfo::PaintInfo(const PaintInfo& parent_paint_info,
           paint_recording_bounds_.OffsetFromOrigin() -
           parent_paint_info.paint_recording_bounds_.OffsetFromOrigin()),
       context_(parent_paint_info.context(), offset_from_parent_),
-      root_context_(nullptr) {
+      root_context_(nullptr),
+      needs_paint_(needs_paint) {
   if (IsPixelCanvas()) {
     if (scale_type == ScaleType::kUniformScaling) {
       paint_recording_scale_x_ = paint_recording_scale_y_ =

@@ -49,7 +49,7 @@ class TextfieldTestApi {
   gfx::Rect GetCursorViewRect() { return textfield_->cursor_view_.bounds(); }
   void SetCursorViewRect(gfx::Rect bounds);
 
-  bool IsCursorVisible() const { return textfield_->cursor_view_.visible(); }
+  bool IsCursorVisible() const { return textfield_->cursor_view_.GetVisible(); }
 
   bool IsTextDirectionCheckedInContextMenu(
       base::i18n::TextDirection direction) const;

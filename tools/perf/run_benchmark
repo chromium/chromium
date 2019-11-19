@@ -5,21 +5,12 @@
 
 import sys
 
-from core import path_util
-sys.path.insert(1, path_util.GetTelemetryDir())
-
-from telemetry import benchmark_runner
-
 from chrome_telemetry_build import chromium_config
+from core import benchmark_runner
 
 
 def main():
-  config = chromium_config.ChromiumConfig(
-      benchmark_dirs=[path_util.GetPerfBenchmarksDir(),
-                      path_util.GetPerfContribDir()],
-      top_level_dir=path_util.GetPerfDir(),
-      expectations_files=[path_util.GetExpectationsPath()])
-  return benchmark_runner.main(config)
+  return benchmark_runner.main(chromium_config.GetDefaultChromiumConfig())
 
 
 if __name__ == '__main__':

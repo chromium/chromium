@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright (c) 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,9 @@ const GpuControlList::Conditions kExceptionsForEntry5[1] = {
         nullptr,                                          // machine model info
         0,                                                // gpu_series size
         nullptr,                                          // gpu_series
-        nullptr,                                          // more conditions
+        {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
+         nullptr, nullptr},                   // intel_gpu_generation
+        &kMoreForEntry5_572251052Exception0,  // more data
     },
 };
 

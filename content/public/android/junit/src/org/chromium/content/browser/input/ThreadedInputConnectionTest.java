@@ -59,7 +59,7 @@ public class ThreadedInputConnectionTest {
     boolean mRunningOnUiThread;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         mImeAdapter = Mockito.mock(ImeAdapterImpl.class);
@@ -234,7 +234,7 @@ public class ThreadedInputConnectionTest {
 
     @Test
     @Feature("TextInput")
-    public void testUpdateSelectionBehaviorWhenUpdatesRequested() throws InterruptedException {
+    public void testUpdateSelectionBehaviorWhenUpdatesRequested() {
         // Arrange.
         final ExtractedTextRequest request = new ExtractedTextRequest();
 
@@ -267,7 +267,7 @@ public class ThreadedInputConnectionTest {
 
     @Test
     @Feature("TextInput")
-    public void testUpdateSelectionBehaviorWhenUpdatesNotRequested() throws InterruptedException {
+    public void testUpdateSelectionBehaviorWhenUpdatesNotRequested() {
         // Arrange.
         final ExtractedTextRequest request = new ExtractedTextRequest();
 
@@ -316,7 +316,7 @@ public class ThreadedInputConnectionTest {
 
     @Test
     @Feature("TextInput")
-    public void testExtractedTextNotSentAfterInputConnectionReset() throws InterruptedException {
+    public void testExtractedTextNotSentAfterInputConnectionReset() {
         // Arrange.
         final ExtractedTextRequest request = new ExtractedTextRequest();
 

@@ -38,7 +38,7 @@ class DownloadCompletedTask : public Task {
   PrefetchStore* prefetch_store_;            // Outlives this class.
   PrefetchDownloadResult download_result_;
 
-  base::WeakPtrFactory<DownloadCompletedTask> weak_ptr_factory_;
+  base::WeakPtrFactory<DownloadCompletedTask> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DownloadCompletedTask);
 };

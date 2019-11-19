@@ -1,12 +1,10 @@
 #include "rar.hpp"
 
-namespace third_party_unrar {
-
 static int SleepTime=0;
 
 void InitSystemOptions(int SleepTime)
 {
-  ::third_party_unrar::SleepTime=SleepTime;
+  ::SleepTime=SleepTime;
 }
 
 
@@ -125,6 +123,28 @@ void Shutdown(POWER_MODE Mode)
   if (Mode==POWERMODE_RESTART)
     ExitWindowsEx(EWX_REBOOT|EWX_FORCE,SHTDN_REASON_FLAG_PLANNED);
 }
+
+
+bool ShutdownCheckAnother(bool Open)
+{
+  const wchar *EventName=L"rar -ioff";
+  static HANDLE hEvent=NULL;
+  bool Result=false; // Return false if no other RAR -ioff are running.
+  if (Open) // Create or open the event.
+    hEvent=CreateEvent(NULL,FALSE,FALSE,EventName);
+  else
+  {
+    if (hEvent!=NULL)
+      CloseHandle(hEvent); // Close our event.
+    // Check if other copies still own the event. While race conditions
+    // are possible, they are improbable and their harm is minimal.
+    hEvent=CreateEvent(NULL,FALSE,FALSE,EventName);
+    Result=GetLastError()==ERROR_ALREADY_EXISTS;
+    if (hEvent!=NULL)
+      CloseHandle(hEvent);
+  }
+  return Result;
+}
 #endif
 
 
@@ -182,5 +202,3 @@ SSE_VERSION GetSSEVersion()
   return SSE_NONE;
 }
 #endif
-
-}  // namespace third_party_unrar

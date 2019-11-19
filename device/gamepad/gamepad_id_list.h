@@ -36,6 +36,7 @@ enum class GamepadId : uint32_t {
   kDragonRiseProduct0006 = 0x00790006,
   kDragonRiseProduct0011 = 0x00790011,
   kGoogleProduct2c40 = 0x18d12c40,
+  kGoogleProduct9400 = 0x18d19400,
   kGreenAsiaProduct0003 = 0x0e8f0003,
   kLakeviewResearchProduct0005 = 0x09250005,
   kLakeviewResearchProduct8866 = 0x09258866,
@@ -58,7 +59,12 @@ enum class GamepadId : uint32_t {
   kMicrosoftProduct02ea = 0x045e02ea,
   kMicrosoftProduct02fd = 0x045e02fd,
   kMicrosoftProduct0719 = 0x045e0719,
+  kMicrosoftProduct0b0a = 0x045e0b0a,
+  kMicrosoftProduct0b0c = 0x045e0b0c,
+  kNintendoProduct2006 = 0x057e2006,
+  kNintendoProduct2007 = 0x057e2007,
   kNintendoProduct2009 = 0x057e2009,
+  kNintendoProduct200e = 0x057e200e,
   kNvidiaProduct7210 = 0x09557210,
   kNvidiaProduct7214 = 0x09557214,
   kPadixProduct2060 = 0x05832060,
@@ -81,6 +87,7 @@ enum class GamepadId : uint32_t {
   kVendor2378Product1008 = 0x23781008,
   kVendor2378Product100a = 0x2378100a,
   kVendor2836Product0001 = 0x28360001,
+  kVendor2e95Product7725 = 0x2e957725,
 };
 
 class DEVICE_GAMEPAD_EXPORT GamepadIdList {

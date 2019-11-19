@@ -70,65 +70,36 @@ RemoteDeviceImpl::~RemoteDeviceImpl() = default;
 
 void RemoteDeviceImpl::Connect(StatusCallback cb) {
   MAKE_SURE_IO_THREAD(Connect, BindToCurrentSequence(std::move(cb)));
-  if (!ConnectSync()) {
-    // Error logged.
-    EXEC_CB_AND_RET(cb, false);
-  }
-
-  connect_cb_ = std::move(cb);
-}
-
-bool RemoteDeviceImpl::ConnectSync() {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
   LOG(INFO) << "Connect(" << util::AddrLastByteString(addr_) << ")";
 
   if (!gatt_client_manager_) {
     LOG(ERROR) << __func__ << " failed: Destroyed";
-    return false;
+    EXEC_CB_AND_RET(cb, false);
   }
+
   if (connect_pending_) {
     LOG(ERROR) << __func__ << " failed: Connection pending";
-    return false;
+    EXEC_CB_AND_RET(cb, false);
   }
 
   gatt_client_manager_->NotifyConnect(addr_);
-
   connect_pending_ = true;
-  gatt_client_manager_->EnqueueConnectRequest(addr_);
-
-  return true;
+  connect_cb_ = std::move(cb);
+  gatt_client_manager_->EnqueueConnectRequest(addr_, true);
 }
 
 void RemoteDeviceImpl::Disconnect(StatusCallback cb) {
   MAKE_SURE_IO_THREAD(Disconnect, BindToCurrentSequence(std::move(cb)));
-  if (!DisconnectSync()) {
-    // Error logged.
+  LOG(INFO) << "Disconnect(" << util::AddrLastByteString(addr_) << ")";
+
+  if (!gatt_client_manager_) {
+    LOG(ERROR) << __func__ << " failed: Destroyed";
     EXEC_CB_AND_RET(cb, false);
   }
 
-  disconnect_cb_ = std::move(cb);
-}
-
-bool RemoteDeviceImpl::DisconnectSync() {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-  LOG(INFO) << "Disconnect(" << util::AddrLastByteString(addr_) << ")";
-  if (!gatt_client_manager_) {
-    LOG(ERROR) << __func__ << " failed: Destroyed";
-    return false;
-  }
-
-  if (!connected_) {
-    LOG(ERROR) << "Not connected";
-    return false;
-  }
-
-  if (!gatt_client_manager_->gatt_client()->Disconnect(addr_)) {
-    LOG(ERROR) << __func__ << " failed";
-    return false;
-  }
   disconnect_pending_ = true;
-
-  return true;
+  disconnect_cb_ = std::move(cb);
+  gatt_client_manager_->EnqueueConnectRequest(addr_, false);
 }
 
 void RemoteDeviceImpl::CreateBond(StatusCallback cb) {
@@ -244,7 +215,7 @@ void RemoteDeviceImpl::ConnectionParameterUpdate(int min_interval,
 }
 
 bool RemoteDeviceImpl::IsConnected() {
-  return connected_;
+  return connected_ && !disconnect_pending_;
 }
 
 bool RemoteDeviceImpl::IsBonded() {
@@ -569,7 +540,10 @@ void RemoteDeviceImpl::EnqueueOperation(const std::string& name,
 
 void RemoteDeviceImpl::NotifyQueueOperationComplete() {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  DCHECK(!command_queue_.empty());
+  if (command_queue_.empty()) {
+    LOG(ERROR) << "Command queue is empty, device might be disconnected";
+    return;
+  }
   command_queue_.pop_front();
   command_timeout_timer_.Stop();
 
@@ -581,7 +555,10 @@ void RemoteDeviceImpl::NotifyQueueOperationComplete() {
 
 void RemoteDeviceImpl::RunNextOperation() {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  DCHECK(!command_queue_.empty());
+  if (command_queue_.empty()) {
+    LOG(ERROR) << "Command queue is empty, device might be disconnected";
+    return;
+  }
   auto& front = command_queue_.front();
   command_timeout_timer_.Start(
       FROM_HERE, kCommandTimeout,

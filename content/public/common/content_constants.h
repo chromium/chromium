@@ -62,6 +62,12 @@ CONTENT_EXPORT extern const int kHistogramSynchronizerReservedSequenceNumber;
 // How long to keep a detachable resource load alive before aborting it.
 CONTENT_EXPORT extern const int kDefaultDetachableCancelDelayMs;
 
+// Defines a HTTP header name that is set internally, and some code places
+// in content need to know the name to manage the header stored in
+// network::ResourceRequest::cors_exempt_headers.
+CONTENT_EXPORT extern const char kCorsExemptPurposeHeaderName[];
+CONTENT_EXPORT extern const char kCorsExemptRequestedWithHeaderName[];
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_COMMON_CONTENT_CONSTANTS_H_

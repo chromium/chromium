@@ -1,0 +1,11 @@
+executable("get_accessible_interfaces") {
+  sources = [
+    "get_accessible_interfaces.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/app:chrome_service_manifests",
+    "//content/public/app:service_manifests",
+  ]
+}

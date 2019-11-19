@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "chrome/browser/sync/glue/extensions_activity_monitor.h"
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/sync/model/model_type_store_service.h"
@@ -45,11 +45,13 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   favicon::FaviconService* GetFaviconService() override;
   history::HistoryService* GetHistoryService() override;
+  send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
+      override;
   sync_sessions::SessionSyncService* GetSessionSyncService() override;
   base::Closure GetPasswordStateChangedCallback() override;
   syncer::DataTypeController::TypeVector CreateDataTypeControllers(
       syncer::SyncService* sync_service) override;
-  autofill::PersonalDataManager* GetPersonalDataManager() override;
+  syncer::TrustedVaultClient* GetTrustedVaultClient() override;
   invalidation::InvalidationService* GetInvalidationService() override;
   BookmarkUndoService* GetBookmarkUndoService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
@@ -60,6 +62,7 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   scoped_refptr<syncer::ModelSafeWorker> CreateModelWorkerForGroup(
       syncer::ModelSafeGroup group) override;
   syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
+  syncer::SyncTypePreferenceProvider* GetPreferenceProvider() override;
 
  private:
   Profile* const profile_;
@@ -70,14 +73,17 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   std::unique_ptr<browser_sync::ProfileSyncComponentsFactoryImpl>
       component_factory_;
 
+  std::unique_ptr<syncer::TrustedVaultClient> trusted_vault_client_;
+
   // Members that must be fetched on the UI thread but accessed on their
   // respective backend threads.
   scoped_refptr<autofill::AutofillWebDataService> profile_web_data_service_;
   scoped_refptr<autofill::AutofillWebDataService> account_web_data_service_;
-  scoped_refptr<password_manager::PasswordStore> password_store_;
+  scoped_refptr<password_manager::PasswordStore> profile_password_store_;
+  scoped_refptr<password_manager::PasswordStore> account_password_store_;
 
   // The task runner for the |web_data_service_|, if any.
-  scoped_refptr<base::SingleThreadTaskRunner> web_data_service_thread_;
+  scoped_refptr<base::SequencedTaskRunner> web_data_service_thread_;
 
   // Generates and monitors the ExtensionsActivity object used by sync.
   ExtensionsActivityMonitor extensions_activity_monitor_;

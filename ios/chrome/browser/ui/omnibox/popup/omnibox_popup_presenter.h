@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class OmniboxPopupPresenter;
+
 @protocol OmniboxPopupPresenterDelegate
 
 // View to which the popup view should be added as subview.
@@ -30,12 +31,12 @@
 // delegate.
 @interface OmniboxPopupPresenter : NSObject
 
-// Updates appearance depending on the content size of the presented view
-// controller by changing the visible height of the popup. When the popup was
-// not previously shown, it will appear with "expansion" animation.
-- (void)updateHeightAndAnimateAppearanceIfNecessary;
-// Call this to hide the popup with animation.
-- (void)animateCollapse;
+// Whether the popup is open
+@property(nonatomic, assign, getter=isOpen) BOOL open;
+
+// Uses the popup's intrinsic content size to add or remove the popup view
+// if necessary.
+- (void)updatePopup;
 
 - (instancetype)initWithPopupPresenterDelegate:
                     (id<OmniboxPopupPresenterDelegate>)presenterDelegate

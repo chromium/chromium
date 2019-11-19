@@ -1,11 +1,11 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="certificate_manager_types.html">
 <link rel="import" href="certificate_shared_css.html">
 <link rel="import" href="certificates_browser_proxy.html">
@@ -35,19 +35,18 @@
       <div class="name">[[model.name]]</div>
       <cr-policy-indicator indicator-type="[[getPolicyIndicatorType_(model)]]">
       </cr-policy-indicator>
-      <paper-icon-button-light class="icon-more-vert">
-        <button id="dots" title="[[i18n('moreActions')]]" on-tap="onDotsTap_">
-        </button>
-      </paper-icon-button-light>
+      <cr-icon-button class="icon-more-vert" id="dots"
+          title="[[i18n('moreActions')]]" on-click="onDotsTap_">
+      </cr-icon-button>
       <cr-lazy-render id="menu">
         <template>
-          <cr-action-menu>
+          <cr-action-menu role-description="[[i18n('menu')]]">
             <button class="dropdown-item" id="view"
                 on-tap="onViewTap_">
               [[i18n('certificateManagerView')]]
             </button>
             <button class="dropdown-item" id="edit"
-                hidden$="[[!canEdit_(certificateType, model)]]"
+                hidden$="[[!canEdit_(model)]]"
                 on-tap="onEditTap_">
               [[i18n('edit')]]
             </button>

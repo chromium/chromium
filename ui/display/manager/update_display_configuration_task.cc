@@ -20,16 +20,15 @@ UpdateDisplayConfigurationTask::UpdateDisplayConfigurationTask(
     chromeos::DisplayPowerState new_power_state,
     int power_flags,
     bool force_configure,
-    const ResponseCallback& callback)
+    ResponseCallback callback)
     : delegate_(delegate),
       layout_manager_(layout_manager),
       new_display_state_(new_display_state),
       new_power_state_(new_power_state),
       power_flags_(power_flags),
       force_configure_(force_configure),
-      callback_(callback),
-      requesting_displays_(false),
-      weak_ptr_factory_(this) {
+      callback_(std::move(callback)),
+      requesting_displays_(false) {
   delegate_->AddObserver(this);
 }
 
@@ -40,8 +39,8 @@ UpdateDisplayConfigurationTask::~UpdateDisplayConfigurationTask() {
 void UpdateDisplayConfigurationTask::Run() {
   requesting_displays_ = true;
   delegate_->GetDisplays(
-      base::Bind(&UpdateDisplayConfigurationTask::OnDisplaysUpdated,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&UpdateDisplayConfigurationTask::OnDisplaysUpdated,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void UpdateDisplayConfigurationTask::OnConfigurationChanged() {}
@@ -58,16 +57,7 @@ void UpdateDisplayConfigurationTask::OnDisplaySnapshotsInvalidated() {
 
 void UpdateDisplayConfigurationTask::OnDisplaysUpdated(
     const std::vector<DisplaySnapshot*>& displays) {
-  cached_displays_.clear();
-  cached_unassociated_displays_.clear();
-
-  for (auto* const display : displays) {
-    if (display->has_associated_crtc())
-      cached_displays_.push_back(display);
-    else
-      cached_unassociated_displays_.push_back(display);
-  }
-
+  cached_displays_ = displays;
   requesting_displays_ = false;
 
   // If the user hasn't requested a display state, update it using the requested
@@ -82,8 +72,8 @@ void UpdateDisplayConfigurationTask::OnDisplaysUpdated(
           << " force_configure=" << force_configure_
           << " display_count=" << cached_displays_.size();
   if (ShouldConfigure()) {
-    EnterState(base::Bind(&UpdateDisplayConfigurationTask::OnStateEntered,
-                          weak_ptr_factory_.GetWeakPtr()));
+    EnterState(base::BindOnce(&UpdateDisplayConfigurationTask::OnStateEntered,
+                              weak_ptr_factory_.GetWeakPtr()));
   } else {
     // If we don't have to configure then we're sticking with the old
     // configuration. Update it such that it reflects in the reported value.
@@ -93,21 +83,21 @@ void UpdateDisplayConfigurationTask::OnDisplaysUpdated(
 }
 
 void UpdateDisplayConfigurationTask::EnterState(
-    const ConfigureDisplaysTask::ResponseCallback& callback) {
+    ConfigureDisplaysTask::ResponseCallback callback) {
   VLOG(2) << "EnterState";
   std::vector<DisplayConfigureRequest> requests;
   if (!layout_manager_->GetDisplayLayout(cached_displays_, new_display_state_,
                                          new_power_state_, &requests)) {
-    callback.Run(ConfigureDisplaysTask::ERROR);
+    std::move(callback).Run(ConfigureDisplaysTask::ERROR);
     return;
   }
   if (!requests.empty()) {
     configure_task_.reset(
-        new ConfigureDisplaysTask(delegate_, requests, callback));
+        new ConfigureDisplaysTask(delegate_, requests, std::move(callback)));
     configure_task_->Run();
   } else {
     VLOG(2) << "No displays";
-    callback.Run(ConfigureDisplaysTask::SUCCESS);
+    std::move(callback).Run(ConfigureDisplaysTask::SUCCESS);
   }
 }
 
@@ -126,7 +116,7 @@ void UpdateDisplayConfigurationTask::OnStateEntered(
           layout_manager_->GetPowerState() != new_power_state_ ||
           force_configure_) {
         new_display_state_ = MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED;
-        EnterState(base::Bind(
+        EnterState(base::BindOnce(
             &UpdateDisplayConfigurationTask::OnEnableSoftwareMirroring,
             weak_ptr_factory_.GetWeakPtr()));
         return;
@@ -155,8 +145,9 @@ void UpdateDisplayConfigurationTask::OnEnableSoftwareMirroring(
 }
 
 void UpdateDisplayConfigurationTask::FinishConfiguration(bool success) {
-  callback_.Run(success, cached_displays_, cached_unassociated_displays_,
-                new_display_state_, new_power_state_);
+  std::move(callback_).Run(success, cached_displays_,
+                           cached_unassociated_displays_, new_display_state_,
+                           new_power_state_);
 }
 
 bool UpdateDisplayConfigurationTask::ShouldForceDpms() const {

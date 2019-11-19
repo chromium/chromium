@@ -32,7 +32,7 @@ class EphemeralProvider : public UserModifiableProvider {
                          const ContentSettingsPattern& secondary_pattern,
                          ContentSettingsType content_type,
                          const ResourceIdentifier& resource_identifier,
-                         base::Value* value) override;
+                         std::unique_ptr<base::Value>&& value) override;
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
   void ShutdownOnUIThread() override;
   base::Time GetWebsiteSettingLastModified(

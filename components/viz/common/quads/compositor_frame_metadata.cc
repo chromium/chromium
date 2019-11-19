@@ -11,7 +11,7 @@ CompositorFrameMetadata::CompositorFrameMetadata() = default;
 CompositorFrameMetadata::CompositorFrameMetadata(
     CompositorFrameMetadata&& other) = default;
 
-CompositorFrameMetadata::~CompositorFrameMetadata() {}
+CompositorFrameMetadata::~CompositorFrameMetadata() = default;
 
 CompositorFrameMetadata& CompositorFrameMetadata::operator=(
     CompositorFrameMetadata&& other) = default;

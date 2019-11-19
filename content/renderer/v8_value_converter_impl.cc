@@ -23,19 +23,15 @@ namespace content {
 
 // Default implementation of V8ValueConverter::Strategy
 
-bool V8ValueConverter::Strategy::FromV8Object(
-    v8::Local<v8::Object> value,
-    std::unique_ptr<base::Value>* out,
-    v8::Isolate* isolate,
-    const FromV8ValueCallback& callback) {
+bool V8ValueConverter::Strategy::FromV8Object(v8::Local<v8::Object> value,
+                                              std::unique_ptr<base::Value>* out,
+                                              v8::Isolate* isolate) {
   return false;
 }
 
-bool V8ValueConverter::Strategy::FromV8Array(
-    v8::Local<v8::Array> value,
-    std::unique_ptr<base::Value>* out,
-    v8::Isolate* isolate,
-    const FromV8ValueCallback& callback) {
+bool V8ValueConverter::Strategy::FromV8Array(v8::Local<v8::Array> value,
+                                             std::unique_ptr<base::Value>* out,
+                                             v8::Isolate* isolate) {
   return false;
 }
 
@@ -454,14 +450,8 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Array(
     scope.reset(new v8::Context::Scope(val->CreationContext()));
 
   if (strategy_) {
-    // These base::Unretained's are safe, because Strategy::FromV8Value should
-    // be synchronous, so this object can't be out of scope.
-    V8ValueConverter::Strategy::FromV8ValueCallback callback =
-        base::Bind(&V8ValueConverterImpl::FromV8ValueImpl,
-                   base::Unretained(this),
-                   base::Unretained(state));
     std::unique_ptr<base::Value> out;
-    if (strategy_->FromV8Array(val, &out, isolate, std::move(callback)))
+    if (strategy_->FromV8Array(val, &out, isolate))
       return out;
   }
 
@@ -537,14 +527,8 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
     scope.reset(new v8::Context::Scope(val->CreationContext()));
 
   if (strategy_) {
-    // These base::Unretained's are safe, because Strategy::FromV8Value should
-    // be synchronous, so this object can't be out of scope.
-    V8ValueConverter::Strategy::FromV8ValueCallback callback =
-        base::Bind(&V8ValueConverterImpl::FromV8ValueImpl,
-                   base::Unretained(this),
-                   base::Unretained(state));
     std::unique_ptr<base::Value> out;
-    if (strategy_->FromV8Object(val, &out, isolate, std::move(callback)))
+    if (strategy_->FromV8Object(val, &out, isolate))
       return out;
   }
 

@@ -25,7 +25,7 @@ ApiResourceManager<HidConnectionResource>::GetFactoryInstance() {
 
 HidConnectionResource::HidConnectionResource(
     const std::string& owner_extension_id,
-    device::mojom::HidConnectionPtr connection)
+    mojo::PendingRemote<device::mojom::HidConnection> connection)
     : ApiResource(owner_extension_id), connection_(std::move(connection)) {}
 
 HidConnectionResource::~HidConnectionResource() {

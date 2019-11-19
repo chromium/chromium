@@ -62,6 +62,7 @@ class CC_PAINT_EXPORT FilterOperations {
   gfx::Rect MapRectReverse(const gfx::Rect& rect, const SkMatrix& matrix) const;
 
   bool HasFilterThatMovesPixels() const;
+  float MaximumPixelMovement() const;
   bool HasFilterThatAffectsOpacity() const;
   bool HasReferenceFilter() const;
 

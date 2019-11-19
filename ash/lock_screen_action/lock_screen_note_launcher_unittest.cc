@@ -27,7 +27,7 @@ using LockScreenNoteLauncherTest = AshTestBase;
 TEST_F(LockScreenNoteLauncherTest, LaunchSuccess) {
   TrayAction* tray_action = Shell::Get()->tray_action();
   TestTrayActionClient action_client;
-  tray_action->SetClient(action_client.CreateInterfacePtrAndBind(),
+  tray_action->SetClient(action_client.CreateRemoteAndBind(),
                          mojom::TrayActionState::kAvailable);
 
   EXPECT_TRUE(LockScreenNoteLauncher::CanAttemptLaunch());
@@ -58,7 +58,7 @@ TEST_F(LockScreenNoteLauncherTest, LaunchSuccess) {
 TEST_F(LockScreenNoteLauncherTest, LaunchFailure) {
   TrayAction* tray_action = Shell::Get()->tray_action();
   TestTrayActionClient action_client;
-  tray_action->SetClient(action_client.CreateInterfacePtrAndBind(),
+  tray_action->SetClient(action_client.CreateRemoteAndBind(),
                          mojom::TrayActionState::kAvailable);
 
   EXPECT_TRUE(LockScreenNoteLauncher::CanAttemptLaunch());
@@ -89,7 +89,7 @@ TEST_F(LockScreenNoteLauncherTest, LaunchFailure) {
 TEST_F(LockScreenNoteLauncherTest, LaunchNotRequestedInUnavailableStates) {
   TrayAction* tray_action = Shell::Get()->tray_action();
   TestTrayActionClient action_client;
-  tray_action->SetClient(action_client.CreateInterfacePtrAndBind(),
+  tray_action->SetClient(action_client.CreateRemoteAndBind(),
                          mojom::TrayActionState::kLaunching);
 
   EXPECT_FALSE(LockScreenNoteLauncher::CanAttemptLaunch());

@@ -42,6 +42,9 @@ class BubbleManager {
     virtual void OnBubbleClosed(BubbleReference bubble,
                                 BubbleCloseReason reason) = 0;
 
+    // Called when a bubble is shown.
+    virtual void OnBubbleShown(BubbleReference bubble) = 0;
+
    private:
     DISALLOW_COPY_AND_ASSIGN(BubbleManagerObserver);
   };

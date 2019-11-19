@@ -1,0 +1,53 @@
+Only in /tmp/private-join-and-compute.original: BUILD
+Only in third_party/private-join-and-compute: BUILD.gn
+Only in third_party/private-join-and-compute: chromium_patch.h
+Only in /tmp/private-join-and-compute.original: client.cc
+Only in /tmp/private-join-and-compute.original: client_impl.cc
+Only in /tmp/private-join-and-compute.original: client_impl.h
+Files /tmp/private-join-and-compute.original/crypto/big_num.cc and third_party/private-join-and-compute/crypto/big_num.cc differ
+Files /tmp/private-join-and-compute.original/crypto/big_num.h and third_party/private-join-and-compute/crypto/big_num.h differ
+Only in /tmp/private-join-and-compute.original/crypto: BUILD
+Files /tmp/private-join-and-compute.original/crypto/context.cc and third_party/private-join-and-compute/crypto/context.cc differ
+Files /tmp/private-join-and-compute.original/crypto/context.h and third_party/private-join-and-compute/crypto/context.h differ
+Files /tmp/private-join-and-compute.original/crypto/ec_commutative_cipher.cc and third_party/private-join-and-compute/crypto/ec_commutative_cipher.cc differ
+Files /tmp/private-join-and-compute.original/crypto/ec_commutative_cipher.h and third_party/private-join-and-compute/crypto/ec_commutative_cipher.h differ
+Files /tmp/private-join-and-compute.original/crypto/ec_group.cc and third_party/private-join-and-compute/crypto/ec_group.cc differ
+Files /tmp/private-join-and-compute.original/crypto/ec_point.cc and third_party/private-join-and-compute/crypto/ec_point.cc differ
+Only in /tmp/private-join-and-compute.original/crypto: elgamal.cc
+Only in /tmp/private-join-and-compute.original/crypto: elgamal.h
+Only in /tmp/private-join-and-compute.original/crypto: fixed_base_exp.cc
+Only in /tmp/private-join-and-compute.original/crypto: fixed_base_exp.h
+Only in /tmp/private-join-and-compute.original/crypto: mont_mul.cc
+Only in /tmp/private-join-and-compute.original/crypto: mont_mul.h
+Only in /tmp/private-join-and-compute.original/crypto: openssl_init.cc
+Only in /tmp/private-join-and-compute.original/crypto: openssl_init.h
+Only in /tmp/private-join-and-compute.original/crypto: paillier.cc
+Only in /tmp/private-join-and-compute.original/crypto: paillier.h
+Only in /tmp/private-join-and-compute.original/crypto: two_modulus_crt.cc
+Only in /tmp/private-join-and-compute.original/crypto: two_modulus_crt.h
+Only in /tmp/private-join-and-compute.original: data_util.cc
+Only in /tmp/private-join-and-compute.original: data_util.h
+Only in third_party/private-join-and-compute: DEPS
+Only in /tmp/private-join-and-compute.original: generate_dummy_data.cc
+Only in /tmp/private-join-and-compute.original: .git
+Only in /tmp/private-join-and-compute.original: glog_files
+Only in /tmp/private-join-and-compute.original: match.proto
+Only in /tmp/private-join-and-compute.original: message_sink.h
+Only in third_party/private-join-and-compute: OWNERS
+Only in /tmp/private-join-and-compute.original: private_intersection_sum.proto
+Only in /tmp/private-join-and-compute.original: private_join_and_compute.proto
+Only in /tmp/private-join-and-compute.original: private_join_and_compute_rpc_impl.cc
+Only in /tmp/private-join-and-compute.original: private_join_and_compute_rpc_impl.h
+Only in /tmp/private-join-and-compute.original: protocol_client.h
+Only in /tmp/private-join-and-compute.original: protocol_server.h
+Only in third_party/private-join-and-compute: README.chromium
+Only in /tmp/private-join-and-compute.original: server.cc
+Only in /tmp/private-join-and-compute.original: server_impl.cc
+Only in /tmp/private-join-and-compute.original: server_impl.h
+Only in /tmp/private-join-and-compute.original/util: BUILD
+Files /tmp/private-join-and-compute.original/util/status.cc and third_party/private-join-and-compute/util/status.cc differ
+Files /tmp/private-join-and-compute.original/util/status.h and third_party/private-join-and-compute/util/status.h differ
+Files /tmp/private-join-and-compute.original/util/status_macros.h and third_party/private-join-and-compute/util/status_macros.h differ
+Files /tmp/private-join-and-compute.original/util/statusor.cc and third_party/private-join-and-compute/util/statusor.cc differ
+Files /tmp/private-join-and-compute.original/util/statusor.h and third_party/private-join-and-compute/util/statusor.h differ
+Only in /tmp/private-join-and-compute.original: WORKSPACE

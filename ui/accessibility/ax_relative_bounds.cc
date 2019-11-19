@@ -8,7 +8,7 @@
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/gfx/transform.h"
 
-using base::IntToString;
+using base::NumberToString;
 
 namespace ui {
 
@@ -23,14 +23,14 @@ AXRelativeBounds::AXRelativeBounds(const AXRelativeBounds& other) {
   offset_container_id = other.offset_container_id;
   bounds = other.bounds;
   if (other.transform)
-    transform.reset(new gfx::Transform(*other.transform));
+    transform = std::make_unique<gfx::Transform>(*other.transform);
 }
 
 AXRelativeBounds& AXRelativeBounds::operator=(AXRelativeBounds other) {
   offset_container_id = other.offset_container_id;
   bounds = other.bounds;
   if (other.transform)
-    transform.reset(new gfx::Transform(*other.transform));
+    transform = std::make_unique<gfx::Transform>(*other.transform);
   else
     transform.reset(nullptr);
   return *this;
@@ -56,12 +56,13 @@ std::string AXRelativeBounds::ToString() const {
   std::string result;
 
   if (offset_container_id != -1)
-    result += "offset_container_id=" + IntToString(offset_container_id) + " ";
+    result +=
+        "offset_container_id=" + NumberToString(offset_container_id) + " ";
 
-  result += "(" + IntToString(bounds.x()) + ", " +
-      IntToString(bounds.y()) + ")-(" +
-      IntToString(bounds.width()) + ", " +
-      IntToString(bounds.height()) + ")";
+  result += "(" + NumberToString(bounds.x()) + ", " +
+            NumberToString(bounds.y()) + ")-(" +
+            NumberToString(bounds.width()) + ", " +
+            NumberToString(bounds.height()) + ")";
 
   if (transform && !transform->IsIdentity())
     result += " transform=" + transform->ToString();

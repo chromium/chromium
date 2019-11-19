@@ -14,7 +14,6 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
 import org.chromium.base.ActivityState;
@@ -22,11 +21,14 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager;
+import org.chromium.chrome.browser.gesturenav.HistoryNavigationLayout;
 import org.chromium.chrome.browser.native_page.NativePage;
+import org.chromium.chrome.browser.native_page.NativePageHost;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.chrome.browser.util.ViewUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * The native recent tabs page. Lists recently closed tabs, open windows and tabs from the user's
@@ -43,10 +45,11 @@ public class RecentTabsPage
     private final ChromeFullscreenManager mFullscreenManager;
     private final ExpandableListView mListView;
     private final String mTitle;
-    private final ViewGroup mView;
+    private final HistoryNavigationLayout mView;
 
     private RecentTabsManager mRecentTabsManager;
     private RecentTabsRowAdapter mAdapter;
+    private NativePageHost mPageHost;
 
     private boolean mSnapshotContentChanged;
     private int mSnapshotListPosition;
@@ -76,16 +79,19 @@ public class RecentTabsPage
      *
      * @param activity The activity this view belongs to.
      * @param recentTabsManager The RecentTabsManager which provides the model data.
+     * @param pageHost The NativePageHost used to provide a history navigation delegate object.
      */
-    public RecentTabsPage(ChromeActivity activity, RecentTabsManager recentTabsManager) {
+    public RecentTabsPage(
+            ChromeActivity activity, RecentTabsManager recentTabsManager, NativePageHost pageHost) {
         mActivity = activity;
         mRecentTabsManager = recentTabsManager;
+        mPageHost = pageHost;
         Resources resources = activity.getResources();
 
         mTitle = resources.getString(R.string.recent_tabs);
         mRecentTabsManager.setUpdatedCallback(this);
         LayoutInflater inflater = LayoutInflater.from(activity);
-        mView = (ViewGroup) inflater.inflate(R.layout.recent_tabs_page, null);
+        mView = (HistoryNavigationLayout) inflater.inflate(R.layout.recent_tabs_page, null);
         mListView = (ExpandableListView) mView.findViewById(R.id.odp_listview);
         mAdapter = new RecentTabsRowAdapter(activity, recentTabsManager);
         mListView.setAdapter(mAdapter);
@@ -99,10 +105,15 @@ public class RecentTabsPage
         ApplicationStatus.registerStateListenerForActivity(this, activity);
         // {@link #mInForeground} will be updated once the view is attached to the window.
 
-        mFullscreenManager = activity.getFullscreenManager();
-        mFullscreenManager.addListener(this);
-        onBottomControlsHeightChanged(mFullscreenManager.getBottomControlsHeight());
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+            mFullscreenManager = activity.getFullscreenManager();
+            mFullscreenManager.addListener(this);
+            onBottomControlsHeightChanged(mFullscreenManager.getBottomControlsHeight());
+        } else {
+            mFullscreenManager = null;
+        }
 
+        mView.setNavigationDelegate(mPageHost.createHistoryNavigationDelegate());
         onUpdated();
     }
 
@@ -165,13 +176,14 @@ public class RecentTabsPage
         assert !mIsAttachedToWindow : "Destroy called before removed from window";
         mRecentTabsManager.destroy();
         mRecentTabsManager = null;
+        mPageHost = null;
         mAdapter.notifyDataSetInvalidated();
         mAdapter = null;
         mListView.setAdapter((RecentTabsRowAdapter) null);
 
         mView.removeOnAttachStateChangeListener(this);
         ApplicationStatus.unregisterActivityStateListener(this);
-        mFullscreenManager.removeListener(this);
+        if (mFullscreenManager != null) mFullscreenManager.removeListener(this);
     }
 
     @Override

@@ -6,10 +6,10 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "net/base/io_buffer.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -45,9 +45,17 @@ void SetValue(T* address, T value) {
   *address = value;
 }
 
+// Must run on IO thread task runner.
+base::WeakPtr<storage::BlobStorageContext> BlobStorageContextGetter(
+    storage::BlobStorageContext* blob_context) {
+  DCHECK(blob_context);
+  return blob_context->AsWeakPtr();
+}
+
 class MockDelegate : public InMemoryDownload::Delegate {
  public:
-  MockDelegate() = default;
+  MockDelegate(BlobContextGetter blob_context_getter)
+      : blob_context_getter_(blob_context_getter) {}
 
   void WaitForCompletion() {
     DCHECK(!run_loop_.running());
@@ -62,19 +70,17 @@ class MockDelegate : public InMemoryDownload::Delegate {
       run_loop_.Quit();
   }
   MOCK_METHOD1(OnUploadProgress, void(InMemoryDownload*));
+  void RetrieveBlobContextGetter(
+      base::OnceCallback<void(BlobContextGetter)> callback) override {
+    std::move(callback).Run(blob_context_getter_);
+  }
 
  private:
   base::RunLoop run_loop_;
+  BlobContextGetter blob_context_getter_;
 
   DISALLOW_COPY_AND_ASSIGN(MockDelegate);
 };
-
-// Must run on IO thread task runner.
-base::WeakPtr<storage::BlobStorageContext> BlobStorageContextGetter(
-    storage::BlobStorageContext* blob_context) {
-  DCHECK(blob_context);
-  return blob_context->AsWeakPtr();
-}
 
 class InMemoryDownloadTest : public testing::Test {
  public:
@@ -83,7 +89,7 @@ class InMemoryDownloadTest : public testing::Test {
 
   void SetUp() override {
     io_thread_.reset(new base::Thread("Network and Blob IO thread"));
-    base::Thread::Options options(base::MessageLoop::TYPE_IO, 0);
+    base::Thread::Options options(base::MessagePumpType::IO, 0);
     io_thread_->StartWithOptions(options);
 
     base::RunLoop loop;
@@ -94,6 +100,11 @@ class InMemoryDownloadTest : public testing::Test {
           loop.Quit();
         }));
     loop.Run();
+
+    auto blob_storage_context_getter = base::BindRepeating(
+        &BlobStorageContextGetter, blob_storage_context_.get());
+    mock_delegate_ =
+        std::make_unique<NiceMock<MockDelegate>>(blob_storage_context_getter);
   }
 
   void TearDown() override {
@@ -108,13 +119,11 @@ class InMemoryDownloadTest : public testing::Test {
     download_ = std::make_unique<InMemoryDownloadImpl>(
         base::GenerateGUID(), request_params, /* request_body= */ nullptr,
         TRAFFIC_ANNOTATION_FOR_TESTS, delegate(), &url_loader_factory_,
-        base::BindRepeating(&BlobStorageContextGetter,
-                            blob_storage_context_.get()),
         io_thread_->task_runner());
   }
 
   InMemoryDownload* download() { return download_.get(); }
-  MockDelegate* delegate() { return &mock_delegate_; }
+  MockDelegate* delegate() { return mock_delegate_.get(); }
   network::TestURLLoaderFactory* url_loader_factory() {
     return &url_loader_factory_;
   }
@@ -163,10 +172,10 @@ class InMemoryDownloadTest : public testing::Test {
   std::unique_ptr<base::Thread> io_thread_;
 
   // Created before other objects to provide test environment.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<InMemoryDownloadImpl> download_;
-  NiceMock<MockDelegate> mock_delegate_;
+  std::unique_ptr<NiceMock<MockDelegate>> mock_delegate_;
 
   // Used by SimpleURLLoader network backend.
   network::TestURLLoaderFactory url_loader_factory_;
@@ -201,27 +210,28 @@ TEST_F(InMemoryDownloadTest, RedirectResponseHeaders) {
   // Add a redirect.
   net::RedirectInfo redirect_info;
   redirect_info.new_url = GURL("https://example.com/redirect12345");
-  network::TestURLLoaderFactory::Redirects redirects = {
-      {redirect_info, network::ResourceResponseHead()}};
+  network::TestURLLoaderFactory::Redirects redirects;
+  redirects.push_back({redirect_info, network::mojom::URLResponseHead::New()});
 
   // Add some random header.
-  network::ResourceResponseHead response_head;
-  response_head.headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
-  response_head.headers->AddHeader("X-Random-Test-Header: 123");
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  response_head->headers->AddHeader("X-Random-Test-Header: 123");
 
   // The size must match for download as stream from SimpleUrlLoader.
   network::URLLoaderCompletionStatus status;
   status.decoded_body_length = base::size(kTestDownloadData) - 1;
 
-  url_loader_factory()->AddResponse(request_params.url, response_head,
-                                    kTestDownloadData, status, redirects);
+  url_loader_factory()->AddResponse(request_params.url, response_head.Clone(),
+                                    kTestDownloadData, status,
+                                    std::move(redirects));
 
   std::vector<GURL> expected_url_chain = {request_params.url,
                                           redirect_info.new_url};
 
   EXPECT_CALL(*delegate(),
               OnDownloadStarted(InMemoryDownloadMatcher(
-                  response_head.headers->raw_headers(), expected_url_chain)));
+                  response_head->headers->raw_headers(), expected_url_chain)));
 
   download()->Start();
   delegate()->WaitForCompletion();
@@ -231,7 +241,7 @@ TEST_F(InMemoryDownloadTest, RedirectResponseHeaders) {
   // the original URL and redirect URL, and should not contain the final URL.
   EXPECT_EQ(download()->url_chain(), expected_url_chain);
   EXPECT_EQ(download()->response_headers()->raw_headers(),
-            response_head.headers->raw_headers());
+            response_head->headers->raw_headers());
 
   // Verfiy the data persisted to disk after redirect chain.
   auto blob = download()->ResultAsBlob();

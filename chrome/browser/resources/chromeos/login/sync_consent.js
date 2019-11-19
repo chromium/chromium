@@ -65,11 +65,11 @@ Polymer({
    * Reacts to changes in loadTimeData.
    */
   updateLocalizedContent: function() {
-    let useMakeBetterScreen = loadTimeData.getBoolean('syncConsentMakeBetter');
-    if (useMakeBetterScreen) {
-      if (this.$.syncConsentMakeChromeSyncOptionsDialog.hidden)
-        this.showScreen_('syncConsentNewDialog');
+    if (loadTimeData.getBoolean('splitSettingsSync')) {
+      // SplitSettingsSync version.
+      this.showScreen_('osSyncConsentDialog');
     } else {
+      // Regular version.
       this.showScreen_('syncConsentOverviewDialog');
     }
     this.i18nUpdateLocale();
@@ -89,6 +89,20 @@ Polymer({
         this.getConsentDescription_(), this.getConsentConfirmation_(e.path)
       ]);
     }
+  },
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onOsSyncAcceptAndContinue_: function(event) {
+    assert(loadTimeData.getBoolean('splitSettingsSync'));
+    assert(event.path);
+    let enableOsSync = !!this.$.enableOsSyncToggle.checked;
+    chrome.send('login.SyncConsentScreen.osSyncAcceptAndContinue', [
+      this.getConsentDescription_(), this.getConsentConfirmation_(event.path),
+      enableOsSync
+    ]);
   },
 
   /**
@@ -129,45 +143,5 @@ Polymer({
             .map(element => element.innerHTML.trim());
     assert(consentDescription);
     return consentDescription;
-  },
-
-  /******************************************************
-   * Get Google smarts in Chrome dialog.
-   ******************************************************/
-
-  /**
-   * @private
-   */
-  onMoreOptionsButton_: function() {
-    this.showScreen_('syncConsentMakeChromeSyncOptionsDialog');
-  },
-
-  /**
-   * @private
-   */
-  onConfirm_: function() {
-    chrome.send(
-        'login.SyncConsentScreen.userActed',
-        ['continue-with-sync-and-personalization']);
-  },
-
-  /******************************************************
-   * Get Google smarts ... options dialog
-   ******************************************************/
-
-  /** @private */
-  onOptionsAcceptAndContinue_: function() {
-    const selected = this.$.optionsGroup.selected;
-    if (selected == 'justSync') {
-      chrome.send(
-          'login.SyncConsentScreen.userActed', ['continue-with-sync-only']);
-    } else if (selected == 'syncAndPersonalization') {
-      chrome.send(
-          'login.SyncConsentScreen.userActed',
-          ['continue-with-sync-and-personalization']);
-    } else {
-      // 'Continue and review' is default option.
-      chrome.send('login.SyncConsentScreen.userActed', ['continue-and-review']);
-    }
   },
 });

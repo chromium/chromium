@@ -14,8 +14,12 @@ class OverviewSession;
 // Used to observe overview mode changes in ash.
 class ASH_EXPORT OverviewObserver : public base::CheckedObserver {
  public:
-  // Called when the overview mode is about to be started (before the windows
-  // get re-arranged).
+  // Called when the overview mode is about to start. At this point, asking
+  // the overview controller whether it's in overview mode will return |false|.
+  virtual void OnOverviewModeWillStart() {}
+
+  // Called when the overview mode has just started (before the windows get
+  // re-arranged).
   virtual void OnOverviewModeStarting() {}
 
   // Called after the animations that happen when overview mode is started are

@@ -9,8 +9,9 @@
 
 #include <vector>
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/restricted_token_utils.h"
 #include "sandbox/win/src/security_level.h"
@@ -113,10 +114,10 @@ class RestrictedToken {
   // the error.
   //
   // Sample usage:
-  //    std::vector<base::string16> privilege_exceptions;
+  //    std::vector<std::wstring> privilege_exceptions;
   //    privilege_exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
   //    restricted_token.DeleteAllPrivileges(&privilege_exceptions);
-  DWORD DeleteAllPrivileges(const std::vector<base::string16>* exceptions);
+  DWORD DeleteAllPrivileges(const std::vector<std::wstring>* exceptions);
 
   // Adds a privilege to the list of privileges to remove in the restricted
   // token.

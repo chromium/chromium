@@ -15,7 +15,6 @@
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "mojo/public/cpp/bindings/struct_traits.h"  // nogncheck
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -34,10 +33,6 @@ struct VectorIcon;
 
 namespace message_center {
 
-namespace mojom {
-class NotificationDataView;
-}
-
 // Represents an individual item in NOTIFICATION_TYPE_MULTIPLE notifications.
 struct MESSAGE_CENTER_PUBLIC_EXPORT NotificationItem {
   base::string16 title;
@@ -45,9 +40,10 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT NotificationItem {
 };
 
 enum class SettingsButtonHandler {
-  NONE = 0,     // No button. This is the default.
-  INLINE = 1,   // Button shown, settings inline.
-  DELEGATE = 2  // Button shown, notification's delegate handles action.
+  NONE = 0,      // No button. This is the default. Does not affect native
+                 // settings button (like on Android).
+  INLINE = 1,    // Button shown, settings inline.
+  DELEGATE = 2,  // Button shown, notification's delegate handles action.
 };
 
 enum class SystemNotificationWarningLevel { NORMAL, WARNING, CRITICAL_WARNING };
@@ -187,9 +183,6 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
 
 class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
  public:
-  // Default constructor needed for generated mojom files.
-  Notification();
-
   // Creates a new notification.
   //
   // |type|: Type of the notification that dictates the layout.
@@ -223,6 +216,11 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // identical for both the Notification instances. The |id| of the notification
   // will be replaced by the given value.
   Notification(const std::string& id, const Notification& other);
+
+  // Creates a copy of the |other| notification. The delegate will be replaced
+  // by |delegate|.
+  Notification(scoped_refptr<NotificationDelegate> delegate,
+               const Notification& other);
 
   // Creates a copy of the |other| notification. The delegate, if any, will be
   // identical for both the Notification instances.
@@ -405,6 +403,10 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
            SettingsButtonHandler::NONE;
   }
 
+  void set_settings_button_handler(SettingsButtonHandler handler) {
+    optional_fields_.settings_button_handler = handler;
+  }
+
   bool should_show_snooze_button() const {
     return optional_fields_.should_show_snooze_button;
   }
@@ -454,8 +456,6 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   base::string16 display_source_;
 
  private:
-  friend struct mojo::StructTraits<mojom::NotificationDataView, Notification>;
-
   // The origin URL of the script which requested the notification.
   // Can be empty if requested through a chrome app or extension or if
   // it's a system notification.
@@ -476,17 +476,6 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // used to register the factory in MessageViewFactory.
   std::string custom_view_type_;
 };
-
-// Registering a vector icon allows it to later be looked up by name. This is
-// useful for vector icons sent over mojo: assuming the receiver has a known set
-// of icons it expects to see, this allows for icon lookup without
-// serialization/deserialization.
-MESSAGE_CENTER_PUBLIC_EXPORT
-void RegisterVectorIcons(
-    const std::vector<const gfx::VectorIcon*>& vector_icon);
-
-MESSAGE_CENTER_PUBLIC_EXPORT
-const gfx::VectorIcon* GetRegisteredVectorIcon(const std::string& id);
 
 }  // namespace message_center
 

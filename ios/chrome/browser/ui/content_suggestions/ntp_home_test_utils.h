@@ -5,11 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_NTP_HOME_TEST_UTILS_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_NTP_HOME_TEST_UTILS_H_
 
-#import <EarlGrey/EarlGrey.h>
 #import <UIKit/UIKit.h>
 
 #include "components/ntp_snippets/callbacks.h"
 #include "url/gurl.h"
+
+@protocol GREYMatcher;
 
 namespace ntp_home {
 // Returns the view corresponding to the ContentSuggestionsViewController.
@@ -19,16 +20,6 @@ UICollectionView* CollectionView();
 // Returns the view corresponding to the fake omnibox. Returns nil if it is not
 // in the view hierarchy.
 UIView* FakeOmnibox();
-
-// Returns a matcher, which is true if the view has its width equals to |width|.
-id<GREYMatcher> OmniboxWidth(CGFloat width);
-
-// Returns a matcher, which is true if the view has its width equals to |width|
-// plus or minus |margin|.
-id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin);
-
-// Returns a vector of 10 suggestions.
-std::vector<ntp_snippets::ContentSuggestion> Suggestions();
 }  // namespace ntp_home
 
 namespace ntp_snippets {

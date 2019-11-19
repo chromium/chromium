@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Failed to execute 'pipeTo' on 'ReadableStream': pipeTo disabled because StreamsNative feature is enabled
-FAIL Piping from a non-empty ReadableStream into a WritableStream that does not desire chunks assert_throws: pipeTo must reject with the same error function "function() { throw e }" threw object "TypeError: Failed to execute 'pipeTo' on 'ReadableStream': pipeTo disabled because StreamsNative feature is enabled" ("TypeError") expected object "error1: error1!" ("error1")
-FAIL Piping from a non-empty ReadableStream into a WritableStream that does not desire chunks, but then does promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'pipeTo' on 'ReadableStream': pipeTo disabled because StreamsNative feature is enabled"
-FAIL Piping from an empty ReadableStream into a WritableStream that does not desire chunks, but then the readable stream becomes non-empty and the writable stream starts desiring chunks promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'pipeTo' on 'ReadableStream': pipeTo disabled because StreamsNative feature is enabled"
-FAIL Piping from a ReadableStream to a WritableStream that desires more chunks before finishing with previous ones assert_equals: chunks should continue to be enqueued until the HWM is reached expected 1 but got 3
-FAIL Piping to a WritableStream that does not consume the writes fast enough exerts backpressure on the ReadableStream promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'pipeTo' on 'ReadableStream': pipeTo disabled because StreamsNative feature is enabled"
-Harness: the test ran to completion.
-

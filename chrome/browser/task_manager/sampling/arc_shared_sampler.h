@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_TASK_MANAGER_SAMPLING_ARC_SHARED_SAMPLER_H_
 
 #include <stdint.h>
+
 #include <map>
 
 #include "base/callback.h"
@@ -13,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/process/process_handle.h"
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
+#include "components/arc/mojom/process.mojom.h"
 
 namespace task_manager {
 
@@ -45,7 +46,7 @@ class ArcSharedSampler {
   // Called when ArcProcessService returns memory dump.
   void OnReceiveMemoryDump(
       int dump_type,
-      std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump);
+      std::vector<arc::mojom::ArcMemoryDumpPtr> process_dumps);
 
   // Holds callbacks registered by TaskGroup objects.
   CallbacksMap callbacks_;
@@ -59,7 +60,7 @@ class ArcSharedSampler {
   base::Time last_system_refresh = base::Time();
   base::Time last_app_refresh = base::Time();
 
-  base::WeakPtrFactory<ArcSharedSampler> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcSharedSampler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcSharedSampler);
 };

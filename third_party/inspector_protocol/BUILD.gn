@@ -2,109 +2,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# All build targets below are experimental and not used within the
-# Chromium / V8 / etc. trees yet thus far. Do not depend on anything.
+import("//build/config/jumbo.gni")
 
-import("//testing/test.gni")
-
-static_library("json_parser") {
+jumbo_component("crdtp") {
   sources = [
-    "encoding/json_parser.cc",
-    "encoding/json_parser.h",
-    "encoding/json_parser_handler.h",
-    "encoding/platform.h",
-    "encoding/span.h",
-    "encoding/status.h",
-    "encoding/str_util.cc",
-    "encoding/str_util.h",
+    "crdtp/cbor.h",
+    "crdtp/export.h",
+    "crdtp/glue.h",
+    "crdtp/status.h",
+    "crdtp/json.h",
+    "crdtp/json_platform.h",
+    "crdtp/parser_handler.h",
+    "crdtp/span.h",
+    "crdtp/status.h",
+    "crdtp/cbor.cc",
+    "crdtp/json.cc",
+    "crdtp/status.cc",
   ]
-}
 
-static_library("linux_dev_platform") {
-  sources = [
-    "encoding/linux_dev_platform.cc",
-    "encoding/linux_dev_platform.h",
-    "encoding/platform.h",
-  ]
-}
+  defines = [ "CRDTP_IMPLEMENTATION" ]
 
-test("json_parser_test") {
-  sources = [
-    "encoding/json_parser_test.cc",
-  ]
-  deps = [
-    ":json_parser",
-    ":linux_dev_platform",
-    "//base",
-    "//third_party/googletest:gmock",
-    "//third_party/googletest:gtest",
-    "//third_party/googletest:gtest_main",
-  ]
+  if (!is_debug) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
 }
-
-static_library("cbor") {
-  sources = [
-    "encoding/cbor.cc",
-    "encoding/cbor.h",
-    "encoding/json_parser_handler.h",
-    "encoding/span.h",
-    "encoding/status.h",
-  ]
-  deps = [
-    ":json_parser",
-  ]
-}
-
-test("cbor_test") {
-  sources = [
-    "encoding/cbor_test.cc",
-  ]
-  deps = [
-    ":cbor",
-    ":json_parser",
-    ":json_std_string_writer",
-    ":linux_dev_platform",
-    "//base",
-    "//third_party/googletest:gmock",
-    "//third_party/googletest:gtest",
-    "//third_party/googletest:gtest_main",
-  ]
-}
-
-test("span_test") {
-  sources = [
-    "encoding/span.h",
-    "encoding/span_test.cc",
-  ]
-  deps = [
-    "//base",
-    "//third_party/googletest:gmock",
-    "//third_party/googletest:gtest",
-    "//third_party/googletest:gtest_main",
-  ]
-}
-
-static_library("json_std_string_writer") {
-  sources = [
-    "encoding/json_parser_handler.h",
-    "encoding/json_std_string_writer.cc",
-    "encoding/json_std_string_writer.h",
-    "encoding/platform.h",
-    "encoding/span.h",
-    "encoding/status.h",
-  ]
-}
-
-test("json_std_string_writer_test") {
-  sources = [
-    "encoding/json_std_string_writer_test.cc",
-  ]
-  deps = [
-    ":json_std_string_writer",
-    ":linux_dev_platform",
-    "//base",
-    "//third_party/googletest:gmock",
-    "//third_party/googletest:gtest",
-    "//third_party/googletest:gtest_main",
-  ]
-}
+# encoding/encoding_test.cc:
+# There's no target for this file here, instead it is included
+# in //content/test:content_unittest
+# via //content/browser/devtools:inspector_protocol_encoding_test.

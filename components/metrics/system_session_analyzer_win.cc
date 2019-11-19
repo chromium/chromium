@@ -134,7 +134,7 @@ bool SystemSessionAnalyzer::FetchEvents(size_t requested_events,
 
   // Retrieve events: 2 events per session, plus the current session's start.
   DWORD desired_event_cnt = requested_events;
-  std::vector<EVT_HANDLE> events_raw(desired_event_cnt, NULL);
+  std::vector<EVT_HANDLE> events_raw(desired_event_cnt, nullptr);
   DWORD event_cnt = 0U;
   BOOL success = ::EvtNext(query_handle_.get(), desired_event_cnt,
                            events_raw.data(), kTimeoutMs, 0, &event_cnt);

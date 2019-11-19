@@ -24,27 +24,6 @@ import org.chromium.chrome.test.util.browser.suggestions.ContentSuggestionsTestU
 @Config(manifest = Config.NONE)
 public class SuggestionsCategoryInfoTest {
     @Test
-    public void testDownloadContextMenu() {
-        SuggestionsCategoryInfo categoryInfo =
-                new CategoryInfoBuilder(KnownCategories.DOWNLOADS).build();
-        assertThat(categoryInfo.isContextMenuItemSupported(
-                           ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_WINDOW),
-                is(true));
-        assertThat(categoryInfo.isContextMenuItemSupported(
-                           ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB),
-                is(true));
-        assertThat(categoryInfo.isContextMenuItemSupported(
-                           ContextMenuManager.ContextMenuItemId.OPEN_IN_INCOGNITO_TAB),
-                is(false));
-        assertThat(categoryInfo.isContextMenuItemSupported(
-                           ContextMenuManager.ContextMenuItemId.SAVE_FOR_OFFLINE),
-                is(false));
-        assertThat(categoryInfo.isContextMenuItemSupported(
-                           ContextMenuManager.ContextMenuItemId.REMOVE),
-                nullValue());
-    }
-
-    @Test
     public void testArticleContextMenu() {
         SuggestionsCategoryInfo categoryInfo =
                 new CategoryInfoBuilder(KnownCategories.ARTICLES).build();

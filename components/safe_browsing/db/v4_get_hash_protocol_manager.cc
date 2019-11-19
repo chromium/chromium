@@ -16,7 +16,6 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
@@ -267,7 +266,7 @@ void V4GetHashProtocolManager::ClearCache() {
 }
 
 void V4GetHashProtocolManager::GetFullHashes(
-    const FullHashToStoreAndHashPrefixesMap&
+    const FullHashToStoreAndHashPrefixesMap
         full_hash_to_store_and_hash_prefixes,
     const std::vector<std::string>& list_client_states,
     FullHashCallback callback) {
@@ -532,7 +531,7 @@ void V4GetHashProtocolManager::OnFullHashForApi(
   ThreatMetadata md;
   for (const FullHashInfo& full_hash_info : full_hash_infos) {
     DCHECK_EQ(GetChromeUrlApiId(), full_hash_info.list_id);
-    DCHECK(base::ContainsValue(full_hashes, full_hash_info.full_hash));
+    DCHECK(base::Contains(full_hashes, full_hash_info.full_hash));
     md.api_permissions.insert(full_hash_info.metadata.api_permissions.begin(),
                               full_hash_info.metadata.api_permissions.end());
   }
@@ -586,10 +585,9 @@ bool V4GetHashProtocolManager::ParseHashResponse(
 
     ListIdentifier list_id(match.platform_type(), match.threat_entry_type(),
                            match.threat_type());
-    if (!base::ContainsValue(platform_types_, list_id.platform_type()) ||
-        !base::ContainsValue(threat_entry_types_,
-                             list_id.threat_entry_type()) ||
-        !base::ContainsValue(threat_types_, list_id.threat_type())) {
+    if (!base::Contains(platform_types_, list_id.platform_type()) ||
+        !base::Contains(threat_entry_types_, list_id.threat_entry_type()) ||
+        !base::Contains(threat_types_, list_id.threat_type())) {
       // The server may send a ThreatMatch response for lists that we didn't ask
       // for so ignore those ThreatMatch responses.
       continue;

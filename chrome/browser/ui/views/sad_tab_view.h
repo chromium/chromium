@@ -39,7 +39,7 @@ class SadTabView : public SadTab,
                    public views::LinkListener,
                    public views::ButtonListener {
  public:
-  static const char kViewClassName[];
+  METADATA_HEADER(SadTabView);
 
   SadTabView(content::WebContents* web_contents, SadTabKind kind);
   ~SadTabView() override;
@@ -48,8 +48,7 @@ class SadTabView : public SadTab,
   void ReinstallInWebView() override;
 
   // Overridden from views::View:
-  void Layout() override;
-  const char* GetClassName() const override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // Overridden from views::LinkListener:
   void LinkClicked(views::Link* source, int event_flags) override;

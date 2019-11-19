@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -162,7 +162,7 @@ chrome::MessageBoxResult SimpleMessageBoxViews::Show(
   // attach to, move the dialog's widget on top so other windows do not obscure
   // it.
   if (!parent)
-    widget->SetAlwaysOnTop(true);
+    widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
 #endif
 
   widget->Show();
@@ -175,13 +175,6 @@ int SimpleMessageBoxViews::GetDialogButtons() const {
     return ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL;
 
   return ui::DIALOG_BUTTON_OK;
-}
-
-base::string16 SimpleMessageBoxViews::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  if (button == ui::DIALOG_BUTTON_CANCEL)
-    return no_text_;
-  return yes_text_;
 }
 
 bool SimpleMessageBoxViews::Close() {
@@ -250,22 +243,27 @@ SimpleMessageBoxViews::SimpleMessageBoxViews(
     bool can_close)
     : window_title_(title),
       type_(type),
-      yes_text_(yes_text),
-      no_text_(no_text),
       result_(chrome::MESSAGE_BOX_RESULT_NO),
       message_box_view_(new views::MessageBoxView(
           views::MessageBoxView::InitParams(message))),
       is_system_modal_(is_system_modal),
       can_close_(can_close) {
-  if (yes_text_.empty()) {
-    yes_text_ =
+  base::string16 ok_text = yes_text;
+  if (ok_text.empty()) {
+    ok_text =
         type_ == chrome::MESSAGE_BOX_TYPE_QUESTION
             ? l10n_util::GetStringUTF16(IDS_CONFIRM_MESSAGEBOX_YES_BUTTON_LABEL)
             : l10n_util::GetStringUTF16(IDS_OK);
   }
+  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_OK, ok_text);
 
-  if (no_text_.empty() && type_ == chrome::MESSAGE_BOX_TYPE_QUESTION)
-    no_text_ = l10n_util::GetStringUTF16(IDS_CANCEL);
+  // Only MESSAGE_BOX_TYPE_QUESTION has a Cancel button.
+  if (type_ == chrome::MESSAGE_BOX_TYPE_QUESTION) {
+    base::string16 cancel_text = no_text;
+    if (cancel_text.empty())
+      cancel_text = l10n_util::GetStringUTF16(IDS_CANCEL);
+    DialogDelegate::set_button_label(ui::DIALOG_BUTTON_CANCEL, cancel_text);
+  }
 
   if (!checkbox_text.empty())
     message_box_view_->SetCheckBoxLabel(checkbox_text);

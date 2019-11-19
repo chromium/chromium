@@ -11,293 +11,311 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_modifiers.h"
 
+using base::TimeDelta;
 using blink::WebGestureDevice;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
+using gfx::Vector2dF;
 
 namespace ui {
 namespace test {
 
+static constexpr TimeDelta kEventDelta = TimeDelta::FromMilliseconds(10);
+
+// Constants from fling_booster.cc
+static constexpr double kMinBoostScrollSpeed = 150.;
+static constexpr double kMinBoostFlingSpeed = 350.;
+static constexpr base::TimeDelta kFlingBoostTimeoutDelay =
+    base::TimeDelta::FromSecondsD(0.05);
+
 class FlingBoosterTest : public testing::Test {
  public:
-  FlingBoosterTest() : delta_time_(base::TimeDelta::FromMilliseconds(10)) {
-    gesture_scroll_event_.SetSourceDevice(blink::kWebGestureDeviceTouchscreen);
-  }
+  FlingBoosterTest() = default;
 
-  WebGestureEvent CreateFlingStart(base::TimeTicks timestamp,
-                                   WebGestureDevice source_device,
-                                   const gfx::Vector2dF& velocity,
-                                   int modifiers) {
+  WebGestureEvent CreateFlingStart(
+      const gfx::Vector2dF& velocity,
+      int modifiers = 0,
+      WebGestureDevice source_device = WebGestureDevice::kTouchscreen) {
     WebGestureEvent fling_start(WebInputEvent::kGestureFlingStart, modifiers,
-                                timestamp, source_device);
+                                event_time_, source_device);
     fling_start.data.fling_start.velocity_x = velocity.x();
     fling_start.data.fling_start.velocity_y = velocity.y();
     return fling_start;
   }
 
-  WebGestureEvent CreateFlingCancel(base::TimeTicks timestamp,
-                                    WebGestureDevice source_device) {
+  WebGestureEvent CreateFlingCancel(
+      WebGestureDevice source_device = WebGestureDevice::kTouchscreen) {
     WebGestureEvent fling_cancel(WebInputEvent::kGestureFlingCancel, 0,
-                                 timestamp, source_device);
+                                 event_time_, source_device);
     return fling_cancel;
   }
 
-  void StartFirstFling() {
-    event_time_ = base::TimeTicks() + delta_time_;
-    fling_booster_.reset(new FlingBooster(
-        gfx::Vector2dF(1000, 1000), blink::kWebGestureDeviceTouchscreen, 0));
-    fling_booster_->set_last_fling_animation_time(
-        EventTimeStampToSeconds(event_time_));
+  WebGestureEvent CreateScrollBegin(
+      gfx::Vector2dF delta,
+      WebGestureDevice source_device = WebGestureDevice::kTouchscreen) {
+    WebGestureEvent scroll_begin(WebInputEvent::kGestureScrollBegin, 0,
+                                 event_time_, source_device);
+    scroll_begin.data.scroll_begin.delta_x_hint = delta.x();
+    scroll_begin.data.scroll_begin.delta_y_hint = delta.y();
+    scroll_begin.data.scroll_begin.delta_hint_units =
+        ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
+    return scroll_begin;
   }
 
-  void CancelFling() {
-    WebGestureEvent fling_cancel_event =
-        CreateFlingCancel(event_time_, blink::kWebGestureDeviceTouchscreen);
-    bool cancel_current_fling;
-    EXPECT_TRUE(fling_booster_->FilterGestureEventForFlingBoosting(
-        fling_cancel_event, &cancel_current_fling));
-    EXPECT_FALSE(cancel_current_fling);
-    EXPECT_TRUE(fling_booster_->fling_cancellation_is_deferred());
+  WebGestureEvent CreateScrollUpdate(
+      gfx::Vector2dF delta,
+      WebGestureDevice source_device = WebGestureDevice::kTouchscreen) {
+    WebGestureEvent scroll_update(WebInputEvent::kGestureScrollUpdate, 0,
+                                  event_time_, source_device);
+    scroll_update.data.scroll_update.delta_x = delta.x();
+    scroll_update.data.scroll_update.delta_y = delta.y();
+    scroll_update.data.scroll_update.delta_units =
+        ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
+    return scroll_update;
+  }
+
+  WebGestureEvent CreateScrollEnd(
+      WebGestureDevice source_device = WebGestureDevice::kTouchscreen) {
+    return WebGestureEvent(WebInputEvent::kGestureScrollEnd, 0, event_time_,
+                           source_device);
+  }
+
+  Vector2dF DeltaFromVelocity(Vector2dF velocity, TimeDelta delta) {
+    float delta_seconds = static_cast<float>(delta.InSecondsF());
+    Vector2dF out = velocity;
+    out.Scale(1.f / delta_seconds);
+    return out;
+  }
+
+  Vector2dF SendFlingStart(WebGestureEvent event) {
+    DCHECK_EQ(WebInputEvent::kGestureFlingStart, event.GetType());
+
+    // The event will first be observed, then the FlingController will request
+    // a possibly boosted velocity.
+    fling_booster_.ObserveGestureEvent(event);
+    return fling_booster_.GetVelocityForFlingStart(event);
+  }
+
+  // Simulates the gesture scroll stream for a scroll that should create a
+  // boost.
+  void SimulateBoostingScroll() {
+    event_time_ += kEventDelta;
+    fling_booster_.ObserveGestureEvent(CreateFlingCancel());
+    fling_booster_.ObserveGestureEvent(CreateScrollEnd());
+    fling_booster_.ObserveGestureEvent(CreateScrollBegin(Vector2dF(0, 1)));
+
+    // GestureScrollUpdates in the same direction and at sufficient speed should
+    // be considered boosting. First GSU speed is ignored since we need 2 to
+    // determine velocity.
+    event_time_ += kEventDelta;
+    fling_booster_.ObserveGestureEvent(CreateScrollUpdate(Vector2dF(0, 1)));
+    event_time_ += kEventDelta;
+    fling_booster_.ObserveGestureEvent(CreateScrollUpdate(
+        DeltaFromVelocity(Vector2dF(0, kMinBoostScrollSpeed), kEventDelta)));
+  }
+
+  void ProgressFling(const Vector2dF& current_velocity,
+                     const Vector2dF& delta) {
+    fling_booster_.ObserveGestureEvent(CreateScrollUpdate(delta));
+    fling_booster_.ObserveProgressFling(current_velocity);
   }
 
  protected:
-  std::unique_ptr<FlingBooster> fling_booster_;
-  base::TimeDelta delta_time_;
-  base::TimeTicks event_time_;
-  WebGestureEvent gesture_scroll_event_;
+  base::TimeTicks event_time_ =
+      base::TimeTicks() + TimeDelta::FromSeconds(100000);
+  FlingBooster fling_booster_;
 };
 
-TEST_F(FlingBoosterTest, FlingBoost) {
-  StartFirstFling();
+TEST_F(FlingBoosterTest, FlingBoostBasic) {
+  Vector2dF fling_velocity;
 
-  // The fling cancellation should be deferred to allow fling boosting events to
-  // arrive.
-  CancelFling();
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 1000)));
+  EXPECT_EQ(Vector2dF(0, 1000), fling_velocity)
+      << "First fling shouldn't be boosted";
 
-  // The GestureScrollBegin should be swallowed by the fling when a fling
-  // cancellation is deferred.
-  gesture_scroll_event_.SetTimeStamp(event_time_);
-  gesture_scroll_event_.SetType(WebInputEvent::kGestureScrollBegin);
-  bool cancel_current_fling;
-  EXPECT_TRUE(fling_booster_->FilterGestureEventForFlingBoosting(
-      gesture_scroll_event_, &cancel_current_fling));
-  EXPECT_FALSE(cancel_current_fling);
+  SimulateBoostingScroll();
 
-  // Animate calls within the deferred cancellation window should continue.
-  event_time_ += delta_time_;
-  fling_booster_->set_last_fling_animation_time(
-      EventTimeStampToSeconds(event_time_));
-  EXPECT_FALSE(fling_booster_->MustCancelDeferredFling());
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 2000)));
+  EXPECT_EQ(Vector2dF(0, 3000), fling_velocity)
+      << "FlingStart with ongoing fling should be boosted";
+}
 
-  // GestureScrollUpdates in the same direction and at sufficient speed should
-  // be swallowed by the fling.
-  gesture_scroll_event_.SetTimeStamp(event_time_);
-  gesture_scroll_event_.SetType(WebInputEvent::kGestureScrollUpdate);
-  gesture_scroll_event_.data.scroll_update.delta_x = 100;
-  gesture_scroll_event_.data.scroll_update.delta_y = 100;
-  EXPECT_TRUE(fling_booster_->FilterGestureEventForFlingBoosting(
-      gesture_scroll_event_, &cancel_current_fling));
-  EXPECT_FALSE(cancel_current_fling);
+TEST_F(FlingBoosterTest, FlingBoostProgressedFling) {
+  Vector2dF fling_velocity;
 
-  // Animate calls within the deferred cancellation window should continue.
-  event_time_ += delta_time_;
-  fling_booster_->set_last_fling_animation_time(
-      EventTimeStampToSeconds(event_time_));
-  EXPECT_FALSE(fling_booster_->MustCancelDeferredFling());
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 1000)));
 
-  // GestureFlingStart in the same direction and at sufficient speed should
-  // boost the active fling.
-  WebGestureEvent fling_start_event =
-      CreateFlingStart(event_time_, blink::kWebGestureDeviceTouchscreen,
-                       gfx::Vector2dF(1000, 1000), 0);
-  EXPECT_TRUE(fling_booster_->FilterGestureEventForFlingBoosting(
-      fling_start_event, &cancel_current_fling));
-  EXPECT_FALSE(cancel_current_fling);
-  EXPECT_EQ(gfx::Vector2dF(2000, 2000),
-            fling_booster_->current_fling_velocity());
-  EXPECT_TRUE(fling_booster_->fling_boosted());
+  event_time_ += kEventDelta;
+  ProgressFling(Vector2dF(0, kMinBoostFlingSpeed), Vector2dF(0, 20));
 
-  // Animate calls within the deferred cancellation window should continue.
-  event_time_ += delta_time_;
-  fling_booster_->set_last_fling_animation_time(
-      EventTimeStampToSeconds(event_time_));
-  EXPECT_FALSE(fling_booster_->MustCancelDeferredFling());
+  SimulateBoostingScroll();
 
-  // GestureFlingCancel should terminate the fling if no boosting gestures are
-  // received within the timeout window.
-  CancelFling();
-  event_time_ += base::TimeDelta::FromMilliseconds(100);
-  fling_booster_->set_last_fling_animation_time(
-      EventTimeStampToSeconds(event_time_));
-  EXPECT_TRUE(fling_booster_->MustCancelDeferredFling());
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 1100)));
+
+  EXPECT_EQ(Vector2dF(0, 2100), fling_velocity) << "Fling should be boosted";
 }
 
 TEST_F(FlingBoosterTest, NoFlingBoostIfScrollDelayed) {
-  StartFirstFling();
+  Vector2dF fling_velocity;
 
-  // The fling cancellation should be deferred to allow fling boosting events to
-  // arrive.
-  CancelFling();
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 1000)));
+  SimulateBoostingScroll();
 
-  // The GestureScrollBegin should be swallowed by the fling when a fling
-  // cancellation is deferred.
-  gesture_scroll_event_.SetTimeStamp(event_time_);
-  gesture_scroll_event_.SetType(WebInputEvent::kGestureScrollBegin);
-  bool cancel_current_fling;
-  EXPECT_TRUE(fling_booster_->FilterGestureEventForFlingBoosting(
-      gesture_scroll_event_, &cancel_current_fling));
-  EXPECT_FALSE(cancel_current_fling);
+  // Delay longer than the timeout and ensure we don't boost.
+  event_time_ += kFlingBoostTimeoutDelay + TimeDelta::FromMilliseconds(1);
+  fling_booster_.ObserveGestureEvent(CreateScrollUpdate(Vector2dF(0, 10000)));
 
-  // If no GestureScrollUpdate or GestureFlingStart is received within the
-  // timeout window, the fling should be cancelled and scrolling should resume.
-  event_time_ += base::TimeDelta::FromMilliseconds(100);
-  fling_booster_->set_last_fling_animation_time(
-      EventTimeStampToSeconds(event_time_));
-  EXPECT_TRUE(fling_booster_->MustCancelDeferredFling());
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 2000)));
+  EXPECT_EQ(Vector2dF(0, 2000), fling_velocity)
+      << "ScrollUpdate delayed longer than boosting timeout; fling shouldn't "
+         "be boosted.";
 }
 
-TEST_F(FlingBoosterTest, NoFlingBoostIfNotAnimated) {
-  StartFirstFling();
+TEST_F(FlingBoosterTest, NoFlingBoostIfBoostTooSlow) {
+  Vector2dF fling_velocity;
 
-  // Animate fling once.
-  event_time_ += delta_time_;
-  fling_booster_->set_last_fling_animation_time(
-      EventTimeStampToSeconds(event_time_));
-  EXPECT_FALSE(fling_booster_->MustCancelDeferredFling());
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 1000)));
+  SimulateBoostingScroll();
 
-  // Cancel the fling after long delay of no animate. The fling cancellation
-  // should be deferred to allow fling boosting events to arrive.
-  event_time_ += base::TimeDelta::FromMilliseconds(100);
-  CancelFling();
+  auto new_velocity = Vector2dF(0, kMinBoostFlingSpeed - 1);
+  fling_velocity = SendFlingStart(CreateFlingStart(new_velocity));
+  EXPECT_EQ(new_velocity, fling_velocity)
+      << "Boosting FlingStart too slow; fling shouldn't be boosted.";
+}
 
-  // The GestureScrollBegin should be swallowed by the fling when a fling
-  // cancellation is deferred.
-  gesture_scroll_event_.SetTimeStamp(event_time_);
-  gesture_scroll_event_.SetType(WebInputEvent::kGestureScrollBegin);
-  bool cancel_current_fling;
-  EXPECT_TRUE(fling_booster_->FilterGestureEventForFlingBoosting(
-      gesture_scroll_event_, &cancel_current_fling));
-  EXPECT_FALSE(cancel_current_fling);
+TEST_F(FlingBoosterTest, NoFlingBoostIfPreviousStartVelocityTooSlow) {
+  Vector2dF fling_velocity;
 
-  // Should exit scroll boosting on GestureScrollUpdate due to long delay since
-  // last animate and cancel old fling. The scroll update event shouldn't get
-  // filtered.
-  gesture_scroll_event_.SetType(WebInputEvent::kGestureScrollUpdate);
-  gesture_scroll_event_.data.scroll_update.delta_y = 100;
-  EXPECT_FALSE(fling_booster_->FilterGestureEventForFlingBoosting(
-      gesture_scroll_event_, &cancel_current_fling));
-  EXPECT_TRUE(cancel_current_fling);
+  fling_velocity =
+      SendFlingStart(CreateFlingStart(Vector2dF(0, kMinBoostFlingSpeed - 1)));
+
+  SimulateBoostingScroll();
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 2000)));
+  EXPECT_EQ(Vector2dF(0, 2000), fling_velocity)
+      << "Previous fling too slow and shouldn't be boosted.";
+}
+
+TEST_F(FlingBoosterTest, NoFlingBoostIfCurrentVelocityTooSlow) {
+  Vector2dF fling_velocity;
+
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 1000)));
+
+  event_time_ += kEventDelta;
+  ProgressFling(Vector2dF(0, kMinBoostFlingSpeed - 1), Vector2dF(0, 20));
+
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 1100)));
+
+  EXPECT_EQ(Vector2dF(0, 1100), fling_velocity)
+      << "Existing fling too slow and shouldn't be boosted.";
 }
 
 TEST_F(FlingBoosterTest, NoFlingBoostIfFlingInDifferentDirection) {
-  StartFirstFling();
+  Vector2dF fling_velocity;
 
-  // The fling cancellation should be deferred to allow fling boosting events to
-  // arrive.
-  CancelFling();
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 1000)));
+  SimulateBoostingScroll();
 
-  // If the new fling is orthogonal to the existing fling, no boosting should
-  // take place, with the new fling replacing the old.
-  WebGestureEvent fling_start_event =
-      CreateFlingStart(event_time_, blink::kWebGestureDeviceTouchscreen,
-                       gfx::Vector2dF(-1000, -1000), 0);
-  bool cancel_current_fling;
-  EXPECT_TRUE(fling_booster_->FilterGestureEventForFlingBoosting(
-      fling_start_event, &cancel_current_fling));
-  EXPECT_FALSE(cancel_current_fling);
-  EXPECT_EQ(gfx::Vector2dF(-1000, -1000),
-            fling_booster_->current_fling_velocity());
-  EXPECT_FALSE(fling_booster_->fling_boosted());
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(1000, 0)));
+  EXPECT_EQ(Vector2dF(1000, 0), fling_velocity)
+      << "Fling isn't in same direction, shouldn't boost.";
 }
 
 TEST_F(FlingBoosterTest, NoFlingBoostIfScrollInDifferentDirection) {
-  StartFirstFling();
+  Vector2dF fling_velocity;
 
-  // The fling cancellation should be deferred to allow fling boosting events to
-  // arrive.
-  CancelFling();
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 1000)));
+  SimulateBoostingScroll();
 
-  // If the GestureScrollUpdate is in a different direction than the fling,
-  // the fling should be cancelled and the update event shouldn't get filtered.
-  gesture_scroll_event_.SetTimeStamp(event_time_);
-  gesture_scroll_event_.SetType(WebInputEvent::kGestureScrollUpdate);
-  gesture_scroll_event_.data.scroll_update.delta_x = -100;
-  bool cancel_current_fling;
-  EXPECT_FALSE(fling_booster_->FilterGestureEventForFlingBoosting(
-      gesture_scroll_event_, &cancel_current_fling));
-  EXPECT_TRUE(cancel_current_fling);
-}
+  // Start a new scroll in an orthogonal direction and fling in the direction
+  // of the original fling.
+  event_time_ += kEventDelta;
+  fling_booster_.ObserveGestureEvent(CreateScrollUpdate(Vector2dF(1000, 0)));
 
-TEST_F(FlingBoosterTest, NoFlingBoostIfFlingTooSlow) {
-  StartFirstFling();
-
-  // The fling cancellation should be deferred to allow fling boosting events to
-  // arrive.
-  CancelFling();
-
-  // If the new fling velocity is too small, no boosting should take place, with
-  // the new fling replacing the old.
-  WebGestureEvent fling_start_event =
-      CreateFlingStart(event_time_, blink::kWebGestureDeviceTouchscreen,
-                       gfx::Vector2dF(100, 100), 0);
-  bool cancel_current_fling;
-  EXPECT_TRUE(fling_booster_->FilterGestureEventForFlingBoosting(
-      fling_start_event, &cancel_current_fling));
-  EXPECT_FALSE(cancel_current_fling);
-  EXPECT_EQ(gfx::Vector2dF(100, 100), fling_booster_->current_fling_velocity());
-  EXPECT_FALSE(fling_booster_->fling_boosted());
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 2000)));
+  EXPECT_EQ(Vector2dF(0, 2000), fling_velocity)
+      << "Scrolling in an orthogonal direction should prevent boosting, even "
+         "if the fling is in the original direction.";
 }
 
 TEST_F(FlingBoosterTest, NoFlingBoostIfPreventBoostingFlagIsSet) {
-  StartFirstFling();
+  WebGestureEvent fling_start = CreateFlingStart(Vector2dF(0, 1000));
 
-  // The fling cancellation should not be deferred because of prevent boosting
-  // flag set.
-  WebGestureEvent fling_cancel_event =
-      CreateFlingCancel(event_time_, blink::kWebGestureDeviceTouchscreen);
-  fling_cancel_event.data.fling_cancel.prevent_boosting = true;
-  bool cancel_current_fling;
-  EXPECT_FALSE(fling_booster_->FilterGestureEventForFlingBoosting(
-      fling_cancel_event, &cancel_current_fling));
-  EXPECT_FALSE(cancel_current_fling);
-  EXPECT_FALSE(fling_booster_->fling_cancellation_is_deferred());
+  Vector2dF fling_velocity = SendFlingStart(fling_start);
+
+  // Start a new scroll.
+  event_time_ += kEventDelta;
+  WebGestureEvent cancel_event = CreateFlingCancel();
+  cancel_event.data.fling_cancel.prevent_boosting = true;
+  fling_booster_.ObserveGestureEvent(cancel_event);
+  fling_booster_.ObserveGestureEvent(CreateScrollBegin(Vector2dF(0, 1)));
+
+  // GestureScrollUpdates in the same direction and at sufficient speed should
+  // be considered boosting. However, since the prevent_boosting flag was set,
+  // we shouldn't boost.
+  event_time_ += kEventDelta;
+  fling_booster_.ObserveGestureEvent(CreateScrollUpdate(Vector2dF(0, 10000)));
+  event_time_ += kEventDelta;
+  fling_booster_.ObserveGestureEvent(CreateScrollUpdate(Vector2dF(0, 10000)));
+
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 2000)));
+  EXPECT_EQ(Vector2dF(0, 2000), fling_velocity)
+      << "prevent_boosting on FlingCancel should avoid boosting a subsequent "
+         "FlingStart";
 }
 
 TEST_F(FlingBoosterTest, NoFlingBoostIfDifferentFlingModifiers) {
-  StartFirstFling();
+  Vector2dF fling_velocity;
 
-  // The fling cancellation should be deferred to allow fling boosting events to
-  // arrive.
-  CancelFling();
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 1000)));
+  SimulateBoostingScroll();
 
-  // GestureFlingStart with different modifiers should replace the old fling.
-  WebGestureEvent fling_start_event =
-      CreateFlingStart(event_time_, blink::kWebGestureDeviceTouchscreen,
-                       gfx::Vector2dF(500, 500), MODIFIER_SHIFT);
-  bool cancel_current_fling;
-  EXPECT_TRUE(fling_booster_->FilterGestureEventForFlingBoosting(
-      fling_start_event, &cancel_current_fling));
-  EXPECT_FALSE(cancel_current_fling);
-  EXPECT_EQ(gfx::Vector2dF(500, 500), fling_booster_->current_fling_velocity());
-  EXPECT_FALSE(fling_booster_->fling_boosted());
+  fling_velocity =
+      SendFlingStart(CreateFlingStart(Vector2dF(0, 2000), MODIFIER_SHIFT));
+  EXPECT_EQ(Vector2dF(0, 2000), fling_velocity)
+      << "Changed modifier keys should prevent boost.";
 }
 
 TEST_F(FlingBoosterTest, NoFlingBoostIfDifferentFlingSourceDevices) {
-  StartFirstFling();
+  Vector2dF fling_velocity;
 
-  // The fling cancellation should be deferred to allow fling boosting events to
-  // arrive.
-  CancelFling();
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 1000)));
+  SimulateBoostingScroll();
 
-  // GestureFlingStart with different source device should not get filtered by
-  // fling_booster.
-  WebGestureEvent fling_start_event =
-      CreateFlingStart(event_time_, blink::kWebGestureDeviceTouchpad,
-                       gfx::Vector2dF(500, 500), 0);
-  bool cancel_current_fling;
-  EXPECT_FALSE(fling_booster_->FilterGestureEventForFlingBoosting(
-      fling_start_event, &cancel_current_fling));
-  EXPECT_TRUE(cancel_current_fling);
+  fling_velocity = SendFlingStart(
+      CreateFlingStart(Vector2dF(0, 1000), 0, WebGestureDevice::kTouchpad));
+  EXPECT_EQ(Vector2dF(0, 1000), fling_velocity)
+      << "Changed modifier keys should prevent boost.";
+}
+
+// Ensure a scroll starting after the boosting cutoff time doesn't extend the
+// timeout.
+TEST_F(FlingBoosterTest, NoFlingBoostIfScrollBeginPastCutoffTime) {
+  WebGestureEvent fling_start = CreateFlingStart(Vector2dF(0, 1000));
+  Vector2dF fling_velocity = SendFlingStart(fling_start);
+  ASSERT_EQ(Vector2dF(0, 1000), fling_velocity);
+
+  // Simulate a new fling boost delayed by more than the timeout.
+  {
+    event_time_ += kEventDelta;
+    fling_booster_.ObserveGestureEvent(CreateFlingCancel());
+    fling_booster_.ObserveGestureEvent(CreateScrollEnd());
+    event_time_ += kFlingBoostTimeoutDelay + TimeDelta::FromMilliseconds(1);
+    fling_booster_.ObserveGestureEvent(CreateScrollBegin(Vector2dF(0, 1)));
+
+    // GestureScrollUpdates in the same direction and at sufficient speed should
+    // be considered boosting. First GSU speed is ignored since we need 2 to
+    // determine velocity.
+    event_time_ += kEventDelta;
+    fling_booster_.ObserveGestureEvent(CreateScrollUpdate(Vector2dF(0, 1)));
+    event_time_ += kEventDelta;
+    fling_booster_.ObserveGestureEvent(CreateScrollUpdate(
+        DeltaFromVelocity(Vector2dF(0, kMinBoostScrollSpeed), kEventDelta)));
+  }
+
+  fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 2000)));
+  EXPECT_EQ(Vector2dF(0, 2000), fling_velocity)
+      << "Scroll must not be boosted since it occured after the boost timeout "
+         "delay.";
 }
 
 }  // namespace test

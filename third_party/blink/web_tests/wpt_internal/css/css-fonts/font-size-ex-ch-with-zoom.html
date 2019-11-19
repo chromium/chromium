@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:jochin@microsoft.com">
+<link rel="help" href="https://crbug.com/408777">
+<link rel="match" href="font-size-ex-ch-with-zoom-ref.html" />
+
+<title>Maintain correct font-size in ex and ch with zoom</title>
+
+<body style="margin: 0; padding: 0;">
+  <div style="font-size: 1ex">size should be 3ex</div>
+  <div style="font-size: 1ch">size should be 3ch</div>
+</body>
+
+<script>
+  if (window.eventSender) {
+    eventSender.setPageZoomFactor(3);
+  }
+</script>

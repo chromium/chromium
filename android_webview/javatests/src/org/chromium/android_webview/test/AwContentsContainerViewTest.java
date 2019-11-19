@@ -26,7 +26,7 @@ public class AwContentsContainerViewTest {
     private AwTestContainerView mContainerView;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContentsClient = new TestAwContentsClient();
         mContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
     }
@@ -34,7 +34,7 @@ public class AwContentsContainerViewTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testContainerViewClickable() throws Throwable {
+    public void testContainerViewClickable() {
         Assert.assertTrue(mContainerView.isClickable());
     }
 }

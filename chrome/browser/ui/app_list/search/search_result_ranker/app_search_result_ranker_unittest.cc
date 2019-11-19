@@ -8,7 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_predictor.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_predictor.pb.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_predictor_test_util.h"
@@ -39,16 +39,18 @@ class AppSearchResultRankerFlagTest : public testing::Test {
   }
 
   // Waits for all tasks in to finish.
-  void Wait() { scoped_task_environment_.RunUntilIdle(); }
+  void Wait() { task_environment_.RunUntilIdle(); }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::DEFAULT,
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
   base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AppSearchResultRankerFlagTest, TrainAndInfer) {
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      app_list_features::kEnableAppSearchResultRanker,
+      app_list_features::kEnableZeroStateAppsRanker,
       {{"app_search_result_ranker_predictor_name",
         FakeAppLaunchPredictor::kPredictorName}});
 
@@ -65,7 +67,7 @@ TEST_F(AppSearchResultRankerFlagTest, TrainAndInfer) {
 
 TEST_F(AppSearchResultRankerFlagTest, EphemeralUsersAreDisabled) {
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      app_list_features::kEnableAppSearchResultRanker,
+      app_list_features::kEnableZeroStateAppsRanker,
       {{"app_search_result_ranker_predictor_name",
         FakeAppLaunchPredictor::kPredictorName}});
 
@@ -80,7 +82,7 @@ TEST_F(AppSearchResultRankerFlagTest, EphemeralUsersAreDisabled) {
 
 TEST_F(AppSearchResultRankerFlagTest, ReturnEmptyIfDisabled) {
   scoped_feature_list_.InitWithFeatures(
-      {}, {app_list_features::kEnableAppSearchResultRanker});
+      {}, {app_list_features::kEnableZeroStateAppsRanker});
 
   AppSearchResultRanker ranker(temp_dir_.GetPath(), kNotAnEphemeralUser);
   Wait();
@@ -107,7 +109,7 @@ class AppSearchResultRankerSerializationTest
           ->mutable_rank_result())[kTarget2] = 2.0f;
 
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        app_list_features::kEnableAppSearchResultRanker,
+        app_list_features::kEnableZeroStateAppsRanker,
         {{"app_search_result_ranker_predictor_name",
           FakeAppLaunchPredictor::kPredictorName}});
   }

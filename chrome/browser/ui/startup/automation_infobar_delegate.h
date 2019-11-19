@@ -23,6 +23,7 @@ class AutomationInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
+  bool ShouldAnimate() const override;
   base::string16 GetMessageText() const override;
   int GetButtons() const override;
 

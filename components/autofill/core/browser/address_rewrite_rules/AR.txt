@@ -1,0 +1,42 @@
+\btierra\s+del\s+fuego\s+antartida\s+e\s+islas\s+del\s+atlantico\s+sur\b	tierra del fuego
+\bciudad\s+autonoma\s+de\s+buenos\s+aires\b	caba
+\bla\s+ciudad\s+de\s+buenos\s+aires\b	caba
+\bcapital\s+federal\b	caba
+\bdiecinueve\b	19
+\bdiecisiete\b	17
+\bargentina\b	ar
+\bboulevard\b	bv
+\bdieciocho\b	18
+\bdieciseis\b	16
+\bavenida\b	av
+\bcatorce\b	14
+\bprimera\b	1a
+\bsegunda\b	2a
+\bseptima\b	7a
+\btercera\b	3a
+\bcuarta\b	4a
+\bcuatro\b	4
+\boctava\b	8a
+\bpasaje\b	pje
+\bquince\b	15
+\bquinta\b	5a
+\bveinte\b	20
+\bcinco\b	5
+\bnueve\b	9
+\bsexta\b	6a
+\bsiete\b	7
+\btrece\b	13
+\bdiez\b	10
+\bdoce\b	12
+\bocho\b	8
+\bonce\b	11
+\bseis\b	6
+\btres\b	3
+\bdel\b	
+\bdos\b	2
+\blas\b	
+\blos\b	
+\buno\b	1
+\bde\b	
+\bel\b	
+\ble\b	

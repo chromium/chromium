@@ -8,7 +8,6 @@
 // automatically for use in initializing a ReadableStream.
 
 [
-    ActiveScriptWrappable,
     NoInterfaceObject
 ]
 interface UnderlyingSourceBase {
@@ -18,7 +17,4 @@ interface UnderlyingSourceBase {
 
     // This only exists to prevent Object.prototype.type being accessed.
     [CallWith=ScriptState] readonly attribute any type;
-
-    void notifyLockAcquired();
-    void notifyLockReleased();
 };

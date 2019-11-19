@@ -26,6 +26,7 @@ class DictionaryValue;
 
 namespace extensions {
 class Extension;
+class ScopedActiveInstall;
 class WebstoreDataFetcher;
 
 // A a purely abstract base for concrete classes implementing various types of

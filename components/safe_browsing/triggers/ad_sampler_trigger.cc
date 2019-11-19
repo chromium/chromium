@@ -17,6 +17,7 @@
 #include "components/safe_browsing/features.h"
 #include "components/safe_browsing/triggers/trigger_manager.h"
 #include "components/safe_browsing/triggers/trigger_throttler.h"
+#include "components/safe_browsing/triggers/trigger_util.h"
 #include "components/security_interstitials/content/unsafe_resource.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -39,13 +40,14 @@ const size_t kAdSamplerDefaultFrequency = 1000;
 // A frequency denominator with this value indicates sampling is disabled.
 const size_t kAdSamplerFrequencyDisabled = 0;
 
-// Number of milliseconds to wait after a page finished loading before starting
-// a report. Allows ads which load in the background to finish loading.
-const int64_t kAdSampleCollectionStartDelayMilliseconds = 1000;
-
 // Number of milliseconds to allow data collection to run before sending a
 // report (since this trigger runs in the background).
 const int64_t kAdSampleCollectionPeriodMilliseconds = 5000;
+
+// Range of number of milliseconds to wait after a page finished loading before
+// starting a report. Allows ads which load in the background to finish loading.
+const int64_t kMaxAdSampleCollectionStartDelayMilliseconds = 5000;
+const int64_t kMinAdSampleCollectionStartDelayMilliseconds = 500;
 
 // Metric for tracking what the Ad Sampler trigger does on each navigation.
 const char kAdSamplerTriggerActionMetricName[] =
@@ -67,34 +69,6 @@ size_t GetSamplerFrequencyDenominator() {
   return result;
 }
 
-bool DetectGoogleAd(content::RenderFrameHost* render_frame_host,
-                    const GURL& frame_url) {
-  // TODO(crbug.com/742397): This function is temporarily copied from
-  // c/b/page_load_metrics/observers/ads_page_load_metrics_observer.cc
-  // This code should be updated to use shared infrastructure when available.
-
-  // In case the navigation aborted, look up the RFH by the Frame Tree Node
-  // ID. It returns the committed frame host or the initial frame host for the
-  // frame if no committed host exists. Using a previous host is fine because
-  // once a frame has an ad we always consider it to have an ad.
-  // We use the unsafe method of FindFrameByFrameTreeNodeId because we're not
-  // concerned with which process the frame lives on (we only want to know if an
-  // ad could be present on the page right now).
-  if (render_frame_host) {
-    const std::string& frame_name = render_frame_host->GetFrameName();
-    if (base::StartsWith(frame_name, "google_ads_iframe",
-                         base::CompareCase::SENSITIVE) ||
-        base::StartsWith(frame_name, "google_ads_frame",
-                         base::CompareCase::SENSITIVE)) {
-      return true;
-    }
-  }
-
-  return frame_url.host_piece() == "tpc.googlesyndication.com" &&
-         base::StartsWith(frame_url.path_piece(), "/safeframe",
-                          base::CompareCase::SENSITIVE);
-}
-
 bool ShouldSampleAd(const size_t frequency_denominator) {
   return frequency_denominator != kAdSamplerFrequencyDisabled &&
          (base::RandUint64() % frequency_denominator) == 0;
@@ -110,15 +84,16 @@ AdSamplerTrigger::AdSamplerTrigger(
     history::HistoryService* history_service)
     : content::WebContentsObserver(web_contents),
       sampler_frequency_denominator_(GetSamplerFrequencyDenominator()),
-      start_report_delay_ms_(kAdSampleCollectionStartDelayMilliseconds),
+      start_report_delay_ms_(
+          base::RandInt(kMinAdSampleCollectionStartDelayMilliseconds,
+                        kMaxAdSampleCollectionStartDelayMilliseconds)),
       finish_report_delay_ms_(kAdSampleCollectionPeriodMilliseconds),
       trigger_manager_(trigger_manager),
       prefs_(prefs),
       url_loader_factory_(url_loader_factory),
       history_service_(history_service),
-      task_runner_(base::CreateSingleThreadTaskRunnerWithTraits(
-          {content::BrowserThread::UI})),
-      weak_ptr_factory_(this) {}
+      task_runner_(
+          base::CreateSingleThreadTaskRunner({content::BrowserThread::UI})) {}
 
 AdSamplerTrigger::~AdSamplerTrigger() {}
 

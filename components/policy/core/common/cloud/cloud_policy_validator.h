@@ -123,6 +123,8 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
     TIMESTAMP_NOT_VALIDATED,
   };
 
+  enum SignatureType { SHA1, SHA256 };
+
   struct POLICY_EXPORT ValidationResult {
     // Validation status.
     Status status = VALIDATION_OK;
@@ -156,7 +158,7 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
     return policy_data_;
   }
 
-  // ToDo
+  // Retrieve the policy value validation result.
   std::unique_ptr<ValidationResult> GetValidationResult() const;
 
   // Instruct the validator to check that the policy timestamp is present and is
@@ -172,9 +174,15 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   void ValidateUser(const AccountId& account_id);
 
   // Instruct the validator to check that the username in the policy blob
-  // matches |expected_user|. If |canonicalize| is set to true, both values are
-  // canonicalized before comparison.
-  void ValidateUsername(const std::string& expected_user, bool canonicalize);
+  // matches |expected_user|.
+  // This is used for DeviceLocalAccounts that doesn't have AccountId.
+  void ValidateUsername(const std::string& expected_user);
+
+  // Instruct the validator to check that the username in the policy blob
+  // matches the user credentials. It checks GAIA ID if policy blob has it,
+  // otherwise falls back to username check.
+  void ValidateUsernameAndGaiaId(const std::string& expected_user,
+                                 const std::string& gaia_id);
 
   // Instruct the validator to check that the policy blob is addressed to
   // |expected_domain|. This uses the domain part of the username field in the
@@ -250,6 +258,13 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   // Immediately performs validation on the current thread.
   void RunValidation();
 
+  // Verifies the SHA1/ or SHA256/RSA |signature| on |data| against |key|.
+  // |signature_type| specifies the type of signature (SHA1 or SHA256 ).
+  static bool VerifySignature(const std::string& data,
+                              const std::string& key,
+                              const std::string& signature,
+                              SignatureType signature_type);
+
  protected:
   // Internal flags indicating what to check.
   enum ValidationFlags {
@@ -265,6 +280,7 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
     VALIDATE_CACHED_KEY = 1 << 9,
     VALIDATE_DEVICE_ID = 1 << 10,
     VALIDATE_VALUES = 1 << 11,
+    VALIDATE_USERNAME = 1 << 12,
   };
 
   // Create a new validator that checks |policy_response|.
@@ -289,8 +305,6 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   int validation_flags_;
 
  private:
-  enum SignatureType { SHA1, SHA256 };
-
   // Performs validation, called on a background thread.
   static void PerformValidation(
       std::unique_ptr<CloudPolicyValidatorBase> self,
@@ -340,13 +354,6 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   virtual Status CheckPayload() = 0;
   virtual Status CheckValues() = 0;
 
-  // Verifies the SHA1/ or SHA256/RSA |signature| on |data| against |key|.
-  // |signature_type| specifies the type of signature (SHA1 or SHA256).
-  static bool VerifySignature(const std::string& data,
-                              const std::string& key,
-                              const std::string& signature,
-                              SignatureType signature_type);
-
   Status status_;
   std::unique_ptr<enterprise_management::PolicyFetchResponse> policy_;
   std::unique_ptr<enterprise_management::PolicyData> policy_data_;
@@ -355,7 +362,8 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   ValidateTimestampOption timestamp_option_;
   ValidateDMTokenOption dm_token_option_;
   ValidateDeviceIdOption device_id_option_;
-  AccountId account_id_;
+  std::string username_;
+  std::string gaia_id_;
   bool canonicalize_user_;
   std::string domain_;
   std::string dm_token_;

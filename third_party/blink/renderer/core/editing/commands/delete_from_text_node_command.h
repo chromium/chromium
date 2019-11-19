@@ -34,12 +34,6 @@ class Text;
 
 class DeleteFromTextNodeCommand final : public SimpleEditCommand {
  public:
-  static DeleteFromTextNodeCommand* Create(Text* node,
-                                           unsigned offset,
-                                           unsigned count) {
-    return MakeGarbageCollected<DeleteFromTextNodeCommand>(node, offset, count);
-  }
-
   DeleteFromTextNodeCommand(Text*, unsigned offset, unsigned count);
 
   void Trace(Visitor*) override;

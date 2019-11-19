@@ -10,5 +10,8 @@
     "src": "app.js",
     "use_cache": false,
     "scope": "/webpay"
+  },
+  "payment": {
+    "supported_delegations": ["shippingAddress", "payerName", "payerEmail", "payerPhone"]
   }
 }

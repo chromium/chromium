@@ -15,16 +15,19 @@ class CastDecryptConfigImpl : public CastDecryptConfig {
  public:
   CastDecryptConfigImpl(std::string key_id,
                         std::string iv,
+                        const EncryptionPattern& pattern,
                         std::vector<SubsampleEntry> subsamples);
   ~CastDecryptConfigImpl() override;
 
   const std::string& key_id() const override;
   const std::string& iv() const override;
+  const EncryptionPattern& pattern() const override;
   const std::vector<SubsampleEntry>& subsamples() const override;
 
  private:
   std::string key_id_;
   std::string iv_;
+  const EncryptionPattern pattern_;
   std::vector<SubsampleEntry> subsamples_;
 };
 

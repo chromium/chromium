@@ -1,0 +1,100 @@
+#!/usr/bin/env vpython
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import argparse
+import os
+import sys
+
+from core import path_util
+path_util.AddPyUtilsToPath()
+
+from core import cli_utils
+from core import external_modules
+from core.services import luci_auth
+from cli_tools.soundwave import commands
+from cli_tools.soundwave import studies
+
+
+DEFAULT_DATABASE_PATH = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), '_cached_data', 'soundwave', 'soundwave.db'))
+
+
+def main():
+  parser = argparse.ArgumentParser()
+  # Default args for all actions.
+  parser.add_argument(
+      '-s', '--sheriff', default='Chromium Perf Sheriff',
+      help='Only get data for this sheriff rotation, default: "%(default)s". '
+           'You can use the special value "all" to disable filtering by '
+           'sheriff rotation.')
+  parser.add_argument(
+      '-d', '--days', default=30, type=int,
+      help='Number of days to collect data for (default: %(default)s)')
+  parser.add_argument(
+      '--continue', action='store_true', dest='use_cache',
+      help='Skip refreshing some data for elements already in local db.')
+  parser.add_argument(
+      '--processes', type=int, default=40,
+      help='Number of concurrent processes to use for fetching data.')
+  parser.add_argument(
+      '--database-file', default=DEFAULT_DATABASE_PATH,
+      help='File path for database where to store data.')
+  parser.add_argument(
+      '-v', '--verbose', action='count', default=0,
+      help='Increase verbosity level')
+  subparsers = parser.add_subparsers(dest='action')
+  subparsers.required = True
+  # Subparser args for fetching alerts data.
+  subparser = subparsers.add_parser('alerts')
+  subparser.add_argument(
+      '-b', '--benchmark', required=True,
+      help='Fetch alerts for this benchmark.')
+  # Subparser args for fetching timeseries data.
+  subparser = subparsers.add_parser('timeseries')
+  group = subparser.add_mutually_exclusive_group(required=True)
+  group.add_argument(
+      '-b', '--benchmark', help='Fetch timeseries for this benchmark.')
+  group.add_argument(
+      '--study', choices=studies.NAMES,
+      help='Fetch timeseries needed for a specific study.')
+  group.add_argument(
+      '-i', '--input-file',
+      help='Fetch timeseries listed in this json file (see e.g.'
+           ' examples/soundwave directory).')
+  subparser.add_argument(
+      '-f', '--filters', action='append',
+      help='Only get data for timeseries whose path contains all the given '
+           'substrings.')
+  group = subparser.add_mutually_exclusive_group()
+  group.add_argument(
+      '--output-csv', metavar='PATH',
+      help='Export the timeseries data to a csv file, the PATH given may be '
+           'either a local or a cloud storage (i.e. gs://...) path.')
+  group.add_argument(
+      '--upload-csv', action='store_true',
+      help='Export the timeseries data to the default cloud storage path for '
+           'a given --study.')
+
+  args = parser.parse_args()
+
+  cli_utils.ConfigureLogging(args.verbose)
+  luci_auth.CheckLoggedIn()
+  if args.action == 'alerts':
+    commands.FetchAlertsData(args)
+  elif args.action == 'timeseries':
+    if args.study is not None:
+      args.study = studies.GetStudy(args.study)
+      if args.upload_csv:
+        args.output_csv = args.study.CLOUD_PATH
+    elif args.upload_csv:
+      return 'ERROR: --upload-csv also requires a --study to be specified'
+    commands.FetchTimeseriesData(args)
+  else:
+    raise NotImplementedError(args.action)
+
+
+if __name__ == '__main__':
+  external_modules.RequireModules()
+  sys.exit(main())

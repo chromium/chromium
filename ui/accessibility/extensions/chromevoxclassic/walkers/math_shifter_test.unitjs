@@ -1,0 +1,136 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Include test fixture.
+GEN_INCLUDE(['//ui/accessibility/extensions/chromevoxclassic/testing/chromevox_unittest_base.js']);
+
+/**
+ * Test fixture.
+ * @constructor
+ * @extends {ChromeVoxUnitTestBase}
+ */
+function CvoxMathShifterUnitTest() {}
+
+CvoxMathShifterUnitTest.prototype = {
+  __proto__: ChromeVoxUnitTestBase.prototype,
+
+  closureModuleDeps: [
+    'cvox.ChromeVoxTester',
+    'cvox.CursorSelection',
+    'cvox.DescriptionUtil',
+    'cvox.MathmlStoreRules'
+  ],
+
+  /** @override */
+  setUp: function() {
+    cvox.ChromeVoxTester.setUp(document);
+  },
+
+  /** @override */
+  tearDown: function() {
+    cvox.ChromeVoxTester.tearDown(document);
+  },
+
+  /**
+   * Simulates speaking the node (only text, no annotations!).
+   * @param {Node} node The node to be described.
+   * @return {!string} The resulting string.
+   */
+  getNodeDescription: function(node) {
+    if (node) {
+      var descs = cvox.DescriptionUtil.getMathDescription(node);
+      var descs_str = descs.map(function(desc) {return desc.text;});
+      return descs_str.filter(function(str) {return str;}).join(' ');
+    }
+    return '';
+  }
+};
+
+TEST_F('CvoxMathShifterUnitTest', 'MathmlMtext', function() {
+  this.loadHtml(
+      '<div><math xmlns="http://www.w3.org/1998/Math/MathML" id="m0">' +
+      '<mtext>Quod erat demonstrandum</mtext>' +
+      '</math></div>'
+      );
+  var node = $('m0');
+  assertEquals('Quod erat demonstrandum', this.getNodeDescription(node));
+});
+
+
+/** Test MathML individual.
+ * @export
+ */
+TEST_F('CvoxMathShifterUnitTest', 'MathmlMi', function() {
+  this.loadHtml(
+      '<div><math xmlns="http://www.w3.org/1998/Math/MathML" id="m1">' +
+      '<mi>x</mi>' +
+      '</math></div>');
+  var node = $('m1');
+  assertEquals('x', this.getNodeDescription(node));
+});
+
+
+/** Test MathML numeral.
+ * @export
+ */
+TEST_F('CvoxMathShifterUnitTest', 'MathmlMn', function() {
+  this.loadHtml(
+      '<div><math xmlns="http://www.w3.org/1998/Math/MathML" id="m2">' +
+      '<mn>123</mn>' +
+      '</math></div>');
+  var node = $('m2');
+  assertEquals('123', this.getNodeDescription(node));
+});
+
+
+/** Test MathML operator
+ * @export
+ */
+TEST_F('CvoxMathShifterUnitTest', 'MathmlMo', function() {
+  this.loadHtml(
+      '<div><math xmlns="http://www.w3.org/1998/Math/MathML" id="m3">' +
+      '<mo>+</mo>' +
+      '</math></div>');
+  var node = $('m3');
+  assertEquals('+', this.getNodeDescription(node));
+});
+
+
+/** Test MathML superscript.
+ * @export
+ */
+TEST_F('CvoxMathShifterUnitTest', 'MathmlMsup', function() {
+  this.loadHtml(
+      '<div><math xmlns="http://www.w3.org/1998/Math/MathML" id="m4">' +
+      '<msup><mi>x</mi><mn>4</mn></msup>' +
+      '</math></div>');
+  var node = $('m4');
+  assertEquals('x super 4', this.getNodeDescription(node));
+});
+
+
+/** Test MathML subscript.
+ * @export
+ */
+TEST_F('CvoxMathShifterUnitTest', 'MathmlMsub', function() {
+  this.loadHtml(
+      '<div><math xmlns="http://www.w3.org/1998/Math/MathML" id="m5">' +
+      '<msub><mi>x</mi><mn>3</mn></msub>' +
+      '</math></div>');
+  var node = $('m5');
+  assertEquals('x sub 3', this.getNodeDescription(node));
+});
+
+
+/** Test MathML subsupscript.
+ * @export
+ */
+TEST_F('CvoxMathShifterUnitTest', 'MathmlMsubsup', function() {
+  this.loadHtml(
+      '<div><math xmlns="http://www.w3.org/1998/Math/MathML" id="m6">' +
+      '<msubsup><mi>x</mi><mn>3</mn><mn>4</mn></msubsup>' +
+      '</math></div>');
+  var node = $('m6');
+  assertEquals('x sub 3 super 4', this.getNodeDescription(node));
+});

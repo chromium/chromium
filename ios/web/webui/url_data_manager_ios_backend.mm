@@ -20,14 +20,13 @@
 #include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "ios/web/public/browser_state.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
 #include "ios/web/webui/shared_resources_data_source_ios.h"
 #include "ios/web/webui/url_data_source_ios_impl.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
-#include "net/filter/gzip_source_stream.h"
 #include "net/filter/source_stream.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -60,7 +59,7 @@ bool CheckURLIsValid(const GURL& url) {
   std::vector<std::string> additional_schemes;
   DCHECK(GetWebClient()->IsAppSpecificURL(url) ||
          (GetWebClient()->GetAdditionalWebUISchemes(&additional_schemes),
-          base::ContainsValue(additional_schemes, url.scheme())));
+          base::Contains(additional_schemes, url.scheme())));
 
   if (!url.is_valid()) {
     NOTREACHED();
@@ -132,8 +131,6 @@ class URLRequestChromeJob : public net::URLRequestJob {
     deny_xframe_options_ = deny_xframe_options;
   }
 
-  void set_is_gzipped(bool is_gzipped) { is_gzipped_ = is_gzipped; }
-
   void set_source(scoped_refptr<URLDataSourceIOSImpl> source) {
     source_ = source;
   }
@@ -179,10 +176,6 @@ class URLRequestChromeJob : public net::URLRequestJob {
   // If true, sets  the "X-Frame-Options: DENY" header.
   bool deny_xframe_options_;
 
-  // True when gzip encoding should be used. NOTE: this requires the original
-  // resources in resources.pak use compress="gzip".
-  bool is_gzipped_;
-
   // The URLDataSourceIOSImpl that is servicing this request. This is a shared
   // pointer so that the request can continue to be served even if the source is
   // detached from the backend that initially owned it.
@@ -218,7 +211,6 @@ URLRequestChromeJob::URLRequestChromeJob(net::URLRequest* request,
       content_security_policy_object_source_("object-src 'none';"),
       content_security_policy_frame_source_("frame-src 'none';"),
       deny_xframe_options_(true),
-      is_gzipped_(false),
       send_content_type_header_(false),
       is_incognito_(is_incognito),
       browser_state_(browser_state),
@@ -285,9 +277,6 @@ void URLRequestChromeJob::GetResponseInfo(net::HttpResponseInfo* info) {
   if (deny_xframe_options_)
     info->headers->AddHeader(kChromeURLXFrameOptionsHeader);
 
-  if (is_gzipped_)
-    info->headers->AddHeader("Content-Encoding: gzip");
-
   if (!allow_caching_)
     info->headers->AddHeader("Cache-Control: no-cache");
 
@@ -301,11 +290,6 @@ void URLRequestChromeJob::GetResponseInfo(net::HttpResponseInfo* info) {
 std::unique_ptr<net::SourceStream> URLRequestChromeJob::SetUpSourceStream() {
   std::unique_ptr<net::SourceStream> source_stream =
       net::URLRequestJob::SetUpSourceStream();
-
-  if (is_gzipped_) {
-    source_stream = net::GzipSourceStream::Create(std::move(source_stream),
-                                                  net::SourceStream::TYPE_GZIP);
-  }
 
   // The URLRequestJob and the SourceStreams we are creating are owned by the
   // same parent URLRequest, thus it is safe to pass the replacements via a raw
@@ -343,7 +327,7 @@ void URLRequestChromeJob::DataAvailable(base::RefCountedMemory* bytes) {
     if (pending_buf_.get()) {
       CHECK(pending_buf_->data());
       int rv = CompleteRead(pending_buf_.get(), pending_buf_size_);
-      pending_buf_ = NULL;
+      pending_buf_.reset();
       ReadRawDataComplete(rv);
     }
   } else {
@@ -392,10 +376,9 @@ void GetMimeTypeOnUI(URLDataSourceIOSImpl* source,
                      const base::WeakPtr<URLRequestChromeJob>& job) {
   DCHECK_CURRENTLY_ON(WebThread::UI);
   std::string mime_type = source->source()->GetMimeType(path);
-  base::PostTaskWithTraits(
-      FROM_HERE, {WebThread::IO},
-      base::BindOnce(&URLRequestChromeJob::MimeTypeAvailable, job,
-                     base::RetainedRef(source), mime_type));
+  base::PostTask(FROM_HERE, {WebThread::IO},
+                 base::BindOnce(&URLRequestChromeJob::MimeTypeAvailable, job,
+                                base::RetainedRef(source), mime_type));
 }
 
 }  // namespace
@@ -503,7 +486,6 @@ bool URLDataManagerIOSBackend::StartRequest(const net::URLRequest* request,
       source->source()->GetContentSecurityPolicyObjectSrc());
   job->set_content_security_policy_frame_source("frame-src 'none';");
   job->set_deny_xframe_options(source->source()->ShouldDenyXFrameOptions());
-  job->set_is_gzipped(source->source()->IsGzipped(path));
   job->set_send_content_type_header(false);
 
   // Forward along the request to the data source.
@@ -512,7 +494,7 @@ bool URLDataManagerIOSBackend::StartRequest(const net::URLRequest* request,
   // message loop before request for data. And correspondingly their
   // replies are put on the IO thread in the same order.
   scoped_refptr<base::SingleThreadTaskRunner> target_runner =
-      base::CreateSingleThreadTaskRunnerWithTraits({web::WebThread::UI});
+      base::CreateSingleThreadTaskRunner({web::WebThread::UI});
   target_runner->PostTask(
       FROM_HERE, base::BindOnce(&GetMimeTypeOnUI, base::RetainedRef(source),
                                 path, job->weak_factory_.GetWeakPtr()));

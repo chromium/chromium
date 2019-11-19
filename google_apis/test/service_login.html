@@ -17,13 +17,6 @@ gaia.chromeOSLogin.attemptLogin = function(email, password, attemptToken) {
   window.parent.postMessage(msg, gaia.chromeOSLogin.parent_page_url_);
 };
 
-gaia.chromeOSLogin.clearOldAttempts = function() {
-  var msg = {
-    'method': 'clearOldAttempts'
-  };
-  window.parent.postMessage(msg, gaia.chromeOSLogin.parent_page_url_);
-};
-
 gaia.chromeOSLogin.onAttemptedLogin = function(emailFormElement,
                                                passwordFormElement,
                                                continueUrlElement) {
@@ -56,12 +49,9 @@ function onAuthError() {
   }
 }
 
-function onLoad() {
-  gaia.chromeOSLogin.clearOldAttempts();
-}
 </SCRIPT>
 </HEAD>
-<BODY onload='onLoad();'>
+<BODY>
   Local Auth Server:<BR>
   <FORM action='/ServiceLoginAuth' method=POST onsubmit='submitAndGo()'>
     <INPUT TYPE=text id="Email" name="Email">

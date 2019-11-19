@@ -64,9 +64,6 @@ void FileTypePolicies::RecordUpdateMetrics(UpdateResult result,
     base::UmaHistogramSparse(
         "SafeBrowsing.FileTypeUpdate." + src_name + "Version",
         config_->version_id());
-    base::UmaHistogramSparse(
-        "SafeBrowsing.FileTypeUpdate." + src_name + "TypeCount",
-        config_->file_types().size());
   }
 }
 

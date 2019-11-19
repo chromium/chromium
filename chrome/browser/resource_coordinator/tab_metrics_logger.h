@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_METRICS_LOGGER_H_
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "chrome/browser/resource_coordinator/tab_metrics_event.pb.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/page_transition_types.h"
@@ -22,6 +23,7 @@ class WebContents;
 
 namespace tab_ranker {
 struct TabFeatures;
+struct WindowFeatures;
 }  // namespace tab_ranker
 
 // Logs metrics for a tab and its WebContents when requested.
@@ -39,18 +41,8 @@ class TabMetricsLogger {
     int touch_event_count = 0;
     // Number of times this tab has been reactivated.
     int num_reactivations = 0;
-  };
-
-  // The state of a tab.
-  struct TabMetrics {
-    content::WebContents* web_contents = nullptr;
-
     // Source of the last committed navigation.
     ui::PageTransition page_transition = ui::PAGE_TRANSITION_FIRST;
-
-    // Per-page metrics of the state of the WebContents. Tracked since the
-    // tab's last top-level navigation.
-    PageMetrics page_metrics = {};
   };
 
   // A struct that contains metrics to be logged in ForegroundedOrClosed event.
@@ -58,8 +50,6 @@ class TabMetricsLogger {
     bool is_foregrounded = false;
     bool is_discarded = false;
     int64_t time_from_backgrounded = 0;
-    int mru_index = 0;
-    int total_tab_count = 0;
     int64_t label_id = 0;
   };
 
@@ -83,10 +73,6 @@ class TabMetricsLogger {
   void LogTabLifetime(ukm::SourceId ukm_source_id,
                       base::TimeDelta time_since_navigation);
 
-  // Returns the ContentType that matches |mime_type|.
-  static metrics::TabMetricsEvent::ContentType GetContentTypeFromMimeType(
-      const std::string& mime_type);
-
   // Returns the site engagement score for the WebContents, rounded down to 10s
   // to limit granularity. Returns -1 if site engagement service is disabled.
   static int GetSiteEngagementScore(content::WebContents* web_contents);
@@ -95,10 +81,13 @@ class TabMetricsLogger {
   // A common function for populating these features ensures that the same
   // values are used for logging training examples to UKM and for locally
   // scoring tabs.
-  static tab_ranker::TabFeatures GetTabFeatures(
-      const Browser* browser,
-      const TabMetrics& tab_metrics,
-      base::TimeDelta inactive_duration);
+  static base::Optional<tab_ranker::TabFeatures> GetTabFeatures(
+      const PageMetrics& page_metrics,
+      content::WebContents* web_contents);
+
+  // Returns a populated WindowFeatures for the browser.
+  static tab_ranker::WindowFeatures CreateWindowFeatures(
+      const Browser* browser);
 
   void set_query_id(int64_t query_id) { query_id_ = query_id; }
 

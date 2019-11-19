@@ -22,6 +22,7 @@ struct ConnectToHostInfo {
   std::string username;
   std::string auth_token;
   std::string host_jid;
+  std::string host_ftl_id;
   std::string host_id;
   std::string host_pubkey;
   std::string pairing_id;

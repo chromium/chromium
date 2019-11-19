@@ -36,7 +36,7 @@
             shouldBeEqualToString('testComputedStyle("object-position: top right;")', '100% 0%');
             shouldBeEqualToString('testComputedStyle("object-position: left 20px bottom 50%;")', '20px 50%');
             shouldBeEqualToString('testComputedStyle("object-position: right 50% bottom 25%;")', '50% 75%');
-            shouldBeEqualToString('testComputedStyle("object-position: bottom 20px right 12px;")', 'calc(100% + -12px) calc(100% + -20px)');
+            shouldBeEqualToString('testComputedStyle("object-position: bottom 20px right 12px;")', 'calc(100% - 12px) calc(100% - 20px)');
 
             shouldBeEqualToString('test("object-position: inherit;")', 'inherit');
             shouldBeEqualToString('test("object-position: initial;")', 'initial');

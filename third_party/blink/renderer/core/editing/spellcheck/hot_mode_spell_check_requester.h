@@ -15,6 +15,7 @@ class SpellCheckRequester;
 
 // This class is only supposed to be used by IdleSpellCheckController in hot
 // mode invocation. Not to be confused with SpellCheckRequester.
+// See design doc for details: https://goo.gl/zONC3v
 class HotModeSpellCheckRequester {
   STACK_ALLOCATED();
 

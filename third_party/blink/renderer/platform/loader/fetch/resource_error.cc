@@ -38,13 +38,9 @@ namespace blink {
 
 namespace {
 constexpr char kThrottledErrorDescription[] =
-    "Request throttled. Visit http://dev.chromium.org/throttling for more "
+    "Request throttled. Visit https://dev.chromium.org/throttling for more "
     "information.";
 }  // namespace
-
-int ResourceError::BlockedByXSSAuditorErrorCode() {
-  return net::ERR_BLOCKED_BY_XSS_AUDITOR;
-}
 
 ResourceError ResourceError::CancelledError(const KURL& url) {
   return ResourceError(net::ERR_ABORTED, url, base::nullopt);

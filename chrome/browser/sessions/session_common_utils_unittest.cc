@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/common/webui_url_constants.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/session_types.h"
@@ -26,8 +27,11 @@ void AppendNavigations(sessions::SessionTab* tab,
 class SessionCommonUtilTest : public ::testing::Test {};
 
 TEST_F(SessionCommonUtilTest, GetSelectedIndex) {
-  const GURL settings_page("chrome://settings");
-  const GURL sign_out_page("chrome://settings/signOut");
+  GURL::Replacements replace_sign_out_path;
+  replace_sign_out_path.SetPathStr(chrome::kSignOutSubPage);
+  const GURL settings_page(chrome::kChromeUISettingsURL);
+  const GURL sign_out_page(
+      settings_page.ReplaceComponents(replace_sign_out_path));
   sessions::SessionTab tab;
 
   std::unique_ptr<content::NavigationEntry> entry1(

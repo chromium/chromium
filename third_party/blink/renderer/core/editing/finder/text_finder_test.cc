@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_float_rect.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -496,7 +497,7 @@ TEST_F(TextFinderTest, FindTextJavaScriptUpdatesDOM) {
   EXPECT_TRUE(active_now);
 
   // Add new text to DOM and try FindNext.
-  Element* i_element = ToElement(GetDocument().body()->lastChild());
+  auto* i_element = To<Element>(GetDocument().body()->lastChild());
   ASSERT_TRUE(i_element);
   i_element->SetInnerHTMLFromString("ZZFindMe");
   GetDocument().UpdateStyleAndLayout();
@@ -550,7 +551,7 @@ TEST_F(TextFinderTest, FindTextJavaScriptUpdatesDOMAfterNoMatches) {
   EXPECT_FALSE(active_now);
 
   // Add new text to DOM and try FindNext.
-  Element* i_element = ToElement(GetDocument().body()->lastChild());
+  auto* i_element = To<Element>(GetDocument().body()->lastChild());
   ASSERT_TRUE(i_element);
   i_element->SetInnerHTMLFromString("ZZFindMe");
   GetDocument().UpdateStyleAndLayout();
@@ -579,41 +580,20 @@ TEST_F(TextFinderTest, FindTextJavaScriptUpdatesDOMAfterNoMatches) {
             match_rects[0]);
 }
 
-class TextFinderFakeTimerTest : public TextFinderTest {
- protected:
-  void SetUp() override {
-    time_elapsed_ = 0.0;
-    original_time_function_ = SetTimeFunctionsForTesting(ReturnMockTime);
-  }
-
-  void TearDown() override {
-    SetTimeFunctionsForTesting(original_time_function_);
-  }
-
- private:
-  static double ReturnMockTime() {
-    time_elapsed_ += 1.0;
-    return time_elapsed_;
-  }
-
-  TimeFunction original_time_function_;
-  static double time_elapsed_;
-};
-
-double TextFinderFakeTimerTest::time_elapsed_;
-
-TEST_F(TextFinderFakeTimerTest, ScopeWithTimeouts) {
+TEST_F(TextFinderTest, ScopeWithTimeouts) {
   // Make a long string.
-  String text(Vector<UChar>(100));
-  text.Fill('a');
   String search_pattern("abc");
+  StringBuilder text;
   // Make 4 substrings "abc" in text.
-  text.insert(search_pattern, 1);
-  text.insert(search_pattern, 10);
-  text.insert(search_pattern, 50);
-  text.insert(search_pattern, 90);
+  for (int i = 0; i < 100; ++i) {
+    if (i == 1 || i == 10 || i == 50 || i == 90) {
+      text.Append(search_pattern);
+    } else {
+      text.Append('a');
+    }
+  }
 
-  GetDocument().body()->SetInnerHTMLFromString(text);
+  GetDocument().body()->SetInnerHTMLFromString(text.ToString());
   GetDocument().UpdateStyleAndLayout();
 
   int identifier = 0;

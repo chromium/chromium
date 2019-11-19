@@ -30,14 +30,15 @@ class ThreadControllerForTest
     : public internal::ThreadControllerWithMessagePumpImpl {
  public:
   ThreadControllerForTest(std::unique_ptr<MessagePump> pump,
-                          const TickClock* clock)
-      : ThreadControllerWithMessagePumpImpl(std::move(pump), clock) {}
+                          SequenceManager::Settings& settings)
+      : ThreadControllerWithMessagePumpImpl(std::move(pump), settings) {}
 
   using ThreadControllerWithMessagePumpImpl::DoDelayedWork;
   using ThreadControllerWithMessagePumpImpl::DoIdleWork;
   using ThreadControllerWithMessagePumpImpl::DoWork;
   using ThreadControllerWithMessagePumpImpl::EnsureWorkScheduled;
   using ThreadControllerWithMessagePumpImpl::Quit;
+  using ThreadControllerWithMessagePumpImpl::Run;
 };
 
 class MockMessagePump : public MessagePump {
@@ -78,17 +79,17 @@ class FakeSequencedTaskSource : public internal::SequencedTaskSource {
   explicit FakeSequencedTaskSource(TickClock* clock) : clock_(clock) {}
   ~FakeSequencedTaskSource() override = default;
 
-  Optional<PendingTask> TakeTask() override {
+  Task* SelectNextTask() override {
     if (tasks_.empty())
-      return nullopt;
+      return nullptr;
     if (tasks_.front().delayed_run_time > clock_->NowTicks())
-      return nullopt;
-    PendingTask task = std::move(tasks_.front());
+      return nullptr;
+    running_stack_.push_back(std::move(tasks_.front()));
     tasks_.pop();
-    return task;
+    return &running_stack_.back();
   }
 
-  void DidRunTask() override {}
+  void DidRunTask() override { running_stack_.pop_back(); }
 
   TimeDelta DelayTillNextTask(LazyNow* lazy_now) const override {
     if (tasks_.empty())
@@ -100,10 +101,14 @@ class FakeSequencedTaskSource : public internal::SequencedTaskSource {
     return tasks_.front().delayed_run_time - lazy_now->Now();
   }
 
-  void AddTask(PendingTask task) {
-    DCHECK(tasks_.empty() || task.delayed_run_time.is_null() ||
-           tasks_.back().delayed_run_time < task.delayed_run_time);
-    tasks_.push(std::move(task));
+  void AddTask(Location posted_from,
+               OnceClosure task,
+               TimeTicks delayed_run_time) {
+    DCHECK(tasks_.empty() || delayed_run_time.is_null() ||
+           tasks_.back().delayed_run_time < delayed_run_time);
+    tasks_.push(
+        Task(internal::PostedTask(nullptr, std::move(task), posted_from),
+             delayed_run_time, EnqueueOrder::FromIntForTesting(13)));
   }
 
   bool HasPendingHighResolutionTasks() override { return false; }
@@ -112,7 +117,8 @@ class FakeSequencedTaskSource : public internal::SequencedTaskSource {
 
  private:
   TickClock* clock_;
-  std::queue<PendingTask> tasks_;
+  std::queue<Task> tasks_;
+  std::vector<Task> running_stack_;
 };
 
 TimeTicks Seconds(int seconds) {
@@ -129,8 +135,10 @@ class ThreadControllerWithMessagePumpTest : public testing::Test {
  public:
   ThreadControllerWithMessagePumpTest()
       : message_pump_(new testing::StrictMock<MockMessagePump>()),
+        settings_(
+            SequenceManager::Settings::Builder().SetTickClock(&clock_).Build()),
         thread_controller_(std::unique_ptr<MessagePump>(message_pump_),
-                           &clock_),
+                           settings_),
         task_source_(&clock_) {
     thread_controller_.SetWorkBatchSize(1);
     thread_controller_.SetSequencedTaskSource(&task_source_);
@@ -138,6 +146,7 @@ class ThreadControllerWithMessagePumpTest : public testing::Test {
 
  protected:
   MockMessagePump* message_pump_;
+  SequenceManager::Settings settings_;
   SimpleTestTickClock clock_;
   ThreadControllerForTest thread_controller_;
   FakeSequencedTaskSource task_source_;
@@ -147,11 +156,11 @@ TEST_F(ThreadControllerWithMessagePumpTest, ScheduleDelayedWork) {
   TimeTicks next_run_time;
 
   MockCallback<OnceClosure> task1;
-  task_source_.AddTask(PendingTask(FROM_HERE, task1.Get(), Seconds(10)));
+  task_source_.AddTask(FROM_HERE, task1.Get(), Seconds(10));
   MockCallback<OnceClosure> task2;
-  task_source_.AddTask(PendingTask(FROM_HERE, task2.Get(), TimeTicks()));
+  task_source_.AddTask(FROM_HERE, task2.Get(), TimeTicks());
   MockCallback<OnceClosure> task3;
-  task_source_.AddTask(PendingTask(FROM_HERE, task3.Get(), Seconds(20)));
+  task_source_.AddTask(FROM_HERE, task3.Get(), Seconds(20));
 
   // Call a no-op DoWork. Expect that it doesn't do any work.
   clock_.SetNowTicks(Seconds(5));
@@ -215,7 +224,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, SetNextDelayedDoWork_CapAtOneDay) {
 
 TEST_F(ThreadControllerWithMessagePumpTest, DelayedWork_CapAtOneDay) {
   MockCallback<OnceClosure> task1;
-  task_source_.AddTask(PendingTask(FROM_HERE, task1.Get(), Days(10)));
+  task_source_.AddTask(FROM_HERE, task1.Get(), Days(10));
 
   TimeTicks next_run_time;
   EXPECT_FALSE(thread_controller_.DoDelayedWork(&next_run_time));
@@ -224,7 +233,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, DelayedWork_CapAtOneDay) {
 
 TEST_F(ThreadControllerWithMessagePumpTest, DoWorkDoesntScheduleDelayedWork) {
   MockCallback<OnceClosure> task1;
-  task_source_.AddTask(PendingTask(FROM_HERE, task1.Get(), Seconds(10)));
+  task_source_.AddTask(FROM_HERE, task1.Get(), Seconds(10));
 
   EXPECT_CALL(*message_pump_, ScheduleDelayedWork(_)).Times(0);
   EXPECT_FALSE(thread_controller_.DoWork());
@@ -256,37 +265,34 @@ TEST_F(ThreadControllerWithMessagePumpTest, NestedExecution) {
         log.push_back("exiting nested runloop");
       }));
 
-  task_source_.AddTask(
-      PendingTask(FROM_HERE,
-                  base::BindOnce(
-                      [](std::vector<std::string>* log,
-                         ThreadControllerForTest* controller) {
-                        EXPECT_FALSE(controller->IsTaskExecutionAllowed());
-                        log->push_back("task1");
-                        RunLoop().Run();
-                      },
-                      &log, &thread_controller_),
-                  TimeTicks()));
-  task_source_.AddTask(
-      PendingTask(FROM_HERE,
-                  base::BindOnce(
-                      [](std::vector<std::string>* log,
-                         ThreadControllerForTest* controller) {
-                        EXPECT_FALSE(controller->IsTaskExecutionAllowed());
-                        log->push_back("task2");
-                      },
-                      &log, &thread_controller_),
-                  TimeTicks()));
-  task_source_.AddTask(
-      PendingTask(FROM_HERE,
-                  base::BindOnce(
-                      [](std::vector<std::string>* log,
-                         ThreadControllerForTest* controller) {
-                        EXPECT_FALSE(controller->IsTaskExecutionAllowed());
-                        log->push_back("task3");
-                      },
-                      &log, &thread_controller_),
-                  TimeTicks()));
+  task_source_.AddTask(FROM_HERE,
+                       base::BindOnce(
+                           [](std::vector<std::string>* log,
+                              ThreadControllerForTest* controller) {
+                             EXPECT_FALSE(controller->IsTaskExecutionAllowed());
+                             log->push_back("task1");
+                             RunLoop().Run();
+                           },
+                           &log, &thread_controller_),
+                       TimeTicks());
+  task_source_.AddTask(FROM_HERE,
+                       base::BindOnce(
+                           [](std::vector<std::string>* log,
+                              ThreadControllerForTest* controller) {
+                             EXPECT_FALSE(controller->IsTaskExecutionAllowed());
+                             log->push_back("task2");
+                           },
+                           &log, &thread_controller_),
+                       TimeTicks());
+  task_source_.AddTask(FROM_HERE,
+                       base::BindOnce(
+                           [](std::vector<std::string>* log,
+                              ThreadControllerForTest* controller) {
+                             EXPECT_FALSE(controller->IsTaskExecutionAllowed());
+                             log->push_back("task3");
+                           },
+                           &log, &thread_controller_),
+                       TimeTicks());
 
   EXPECT_TRUE(thread_controller_.IsTaskExecutionAllowed());
   RunLoop().Run();
@@ -326,36 +332,34 @@ TEST_F(ThreadControllerWithMessagePumpTest,
       }));
 
   task_source_.AddTask(
-      PendingTask(FROM_HERE,
-                  base::BindOnce(
-                      [](std::vector<std::string>* log,
-                         ThreadControllerForTest* controller) {
-                        EXPECT_FALSE(controller->IsTaskExecutionAllowed());
-                        log->push_back("task1");
-                        RunLoop(RunLoop::Type::kNestableTasksAllowed).Run();
-                      },
-                      &log, &thread_controller_),
-                  TimeTicks()));
-  task_source_.AddTask(
-      PendingTask(FROM_HERE,
-                  base::BindOnce(
-                      [](std::vector<std::string>* log,
-                         ThreadControllerForTest* controller) {
-                        EXPECT_FALSE(controller->IsTaskExecutionAllowed());
-                        log->push_back("task2");
-                      },
-                      &log, &thread_controller_),
-                  TimeTicks()));
-  task_source_.AddTask(
-      PendingTask(FROM_HERE,
-                  base::BindOnce(
-                      [](std::vector<std::string>* log,
-                         ThreadControllerForTest* controller) {
-                        EXPECT_FALSE(controller->IsTaskExecutionAllowed());
-                        log->push_back("task3");
-                      },
-                      &log, &thread_controller_),
-                  TimeTicks()));
+      FROM_HERE,
+      base::BindOnce(
+          [](std::vector<std::string>* log,
+             ThreadControllerForTest* controller) {
+            EXPECT_FALSE(controller->IsTaskExecutionAllowed());
+            log->push_back("task1");
+            RunLoop(RunLoop::Type::kNestableTasksAllowed).Run();
+          },
+          &log, &thread_controller_),
+      TimeTicks());
+  task_source_.AddTask(FROM_HERE,
+                       base::BindOnce(
+                           [](std::vector<std::string>* log,
+                              ThreadControllerForTest* controller) {
+                             EXPECT_FALSE(controller->IsTaskExecutionAllowed());
+                             log->push_back("task2");
+                           },
+                           &log, &thread_controller_),
+                       TimeTicks());
+  task_source_.AddTask(FROM_HERE,
+                       base::BindOnce(
+                           [](std::vector<std::string>* log,
+                              ThreadControllerForTest* controller) {
+                             EXPECT_FALSE(controller->IsTaskExecutionAllowed());
+                             log->push_back("task3");
+                           },
+                           &log, &thread_controller_),
+                       TimeTicks());
 
   EXPECT_TRUE(thread_controller_.IsTaskExecutionAllowed());
   RunLoop().Run();
@@ -377,12 +381,13 @@ TEST_F(ThreadControllerWithMessagePumpTest, ScheduleWorkFromDelayedTask) {
       }));
   EXPECT_CALL(*message_pump_, ScheduleWork());
 
-  task_source_.AddTask(PendingTask(FROM_HERE, base::BindLambdaForTesting([&]() {
-                                     // Triggers a ScheduleWork call.
-                                     task_source_.AddTask(PendingTask(
-                                         FROM_HERE, base::BindOnce([]() {})));
-                                   }),
-                                   TimeTicks()));
+  task_source_.AddTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                         // Triggers a ScheduleWork call.
+                         task_source_.AddTask(FROM_HERE,
+                                              base::BindOnce([]() {}),
+                                              base::TimeTicks());
+                       }),
+                       TimeTicks());
   RunLoop().Run();
 
   testing::Mock::VerifyAndClearExpectations(message_pump_);
@@ -402,7 +407,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, SetDefaultTaskRunner) {
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, EnsureWorkScheduled) {
-  task_source_.AddTask(PendingTask(FROM_HERE, DoNothing(), TimeTicks()));
+  task_source_.AddTask(FROM_HERE, DoNothing(), TimeTicks());
 
   // Ensure that the first ScheduleWork() call results in the pump being called.
   EXPECT_CALL(*message_pump_, ScheduleWork());
@@ -442,8 +447,8 @@ TEST_F(ThreadControllerWithMessagePumpTest, WorkBatching) {
       }));
 
   for (int i = 0; i < kBatchSize; i++) {
-    task_source_.AddTask(PendingTask(
-        FROM_HERE, BindLambdaForTesting([&] { task_count++; }), TimeTicks()));
+    task_source_.AddTask(FROM_HERE, BindLambdaForTesting([&] { task_count++; }),
+                         TimeTicks());
   }
 
   RunLoop run_loop;
@@ -479,11 +484,11 @@ TEST_F(ThreadControllerWithMessagePumpTest, QuitInterruptsBatch) {
 
   RunLoop run_loop;
   for (int i = 0; i < kBatchSize; i++) {
-    task_source_.AddTask(PendingTask(FROM_HERE, BindLambdaForTesting([&] {
-                                       if (!task_count++)
-                                         run_loop.Quit();
-                                     }),
-                                     TimeTicks()));
+    task_source_.AddTask(FROM_HERE, BindLambdaForTesting([&] {
+                           if (!task_count++)
+                             run_loop.Quit();
+                         }),
+                         TimeTicks());
   }
 
   run_loop.Run();
@@ -513,16 +518,16 @@ TEST_F(ThreadControllerWithMessagePumpTest, EarlyQuit) {
 
   RunLoop run_loop;
 
-  task_source_.AddTask(PendingTask(
+  task_source_.AddTask(
       FROM_HERE,
       base::BindOnce(
           [](std::vector<std::string>* log) { log->push_back("task1"); }, &log),
-      TimeTicks()));
-  task_source_.AddTask(PendingTask(
+      TimeTicks());
+  task_source_.AddTask(
       FROM_HERE,
       base::BindOnce(
           [](std::vector<std::string>* log) { log->push_back("task2"); }, &log),
-      TimeTicks()));
+      TimeTicks());
 
   run_loop.RunUntilIdle();
 
@@ -532,7 +537,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, EarlyQuit) {
 
 TEST_F(ThreadControllerWithMessagePumpTest, NativeNestedMessageLoop) {
   bool did_run = false;
-  task_source_.AddTask(PendingTask(
+  task_source_.AddTask(
       FROM_HERE, BindLambdaForTesting([&] {
         // Clear expectation set for the non-nested PostTask.
         testing::Mock::VerifyAndClearExpectations(message_pump_);
@@ -551,7 +556,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, NativeNestedMessageLoop) {
 
         // Simulate a native callback which posts a task, this
         // should now ask the pump to ScheduleWork();
-        task_source_.AddTask(PendingTask(FROM_HERE, DoNothing(), TimeTicks()));
+        task_source_.AddTask(FROM_HERE, DoNothing(), TimeTicks());
         EXPECT_CALL(*message_pump_, ScheduleWork());
         thread_controller_.ScheduleWork();
         testing::Mock::VerifyAndClearExpectations(message_pump_);
@@ -562,19 +567,51 @@ TEST_F(ThreadControllerWithMessagePumpTest, NativeNestedMessageLoop) {
         // we've left the native loop. This should not ScheduleWork
         // on the pump because the ThreadController will do that
         // after this task finishes.
-        task_source_.AddTask(PendingTask(FROM_HERE, DoNothing(), TimeTicks()));
+        task_source_.AddTask(FROM_HERE, DoNothing(), TimeTicks());
         EXPECT_CALL(*message_pump_, ScheduleWork()).Times(0);
         thread_controller_.ScheduleWork();
 
         did_run = true;
       }),
-      TimeTicks()));
+      TimeTicks());
 
   // Simulate a PostTask that enters a native nested message loop.
   EXPECT_CALL(*message_pump_, ScheduleWork());
   thread_controller_.ScheduleWork();
   EXPECT_TRUE(thread_controller_.DoWork());
   EXPECT_TRUE(did_run);
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest, RunWithTimeout) {
+  MockCallback<OnceClosure> task1;
+  task_source_.AddTask(FROM_HERE, task1.Get(), Seconds(5));
+  MockCallback<OnceClosure> task2;
+  task_source_.AddTask(FROM_HERE, task2.Get(), Seconds(10));
+  MockCallback<OnceClosure> task3;
+  task_source_.AddTask(FROM_HERE, task3.Get(), Seconds(20));
+
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce(Invoke([&](MessagePump::Delegate*) {
+        TimeTicks next_run_time;
+        clock_.SetNowTicks(Seconds(5));
+        EXPECT_CALL(task1, Run()).Times(1);
+        EXPECT_TRUE(thread_controller_.DoDelayedWork(&next_run_time));
+        EXPECT_EQ(next_run_time, Seconds(10));
+
+        clock_.SetNowTicks(Seconds(10));
+        EXPECT_CALL(task2, Run()).Times(1);
+        EXPECT_TRUE(thread_controller_.DoDelayedWork(&next_run_time));
+        EXPECT_EQ(next_run_time, Seconds(15));
+
+        clock_.SetNowTicks(Seconds(15));
+        EXPECT_CALL(task3, Run()).Times(0);
+        EXPECT_FALSE(thread_controller_.DoDelayedWork(&next_run_time));
+        EXPECT_EQ(next_run_time, TimeTicks());
+
+        EXPECT_CALL(*message_pump_, Quit());
+        EXPECT_FALSE(thread_controller_.DoIdleWork());
+      }));
+  thread_controller_.Run(true, TimeDelta::FromSeconds(15));
 }
 
 }  // namespace sequence_manager

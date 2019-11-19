@@ -208,7 +208,8 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
       std::unique_ptr<WebSocketHandshakeStreamBase> stream) override;
   void OnStreamFailed(int status,
                       const NetErrorDetails& net_error_details,
-                      const SSLConfig& used_ssl_config) override;
+                      const SSLConfig& used_ssl_config,
+                      const ProxyInfo& used_proxy_info) override;
   void OnCertificateError(int status,
                           const SSLConfig& used_ssl_config,
                           const SSLInfo& ssl_info) override;
@@ -218,11 +219,6 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
                         HttpAuthController* auth_controller) override;
   void OnNeedsClientAuth(const SSLConfig& used_ssl_config,
                          SSLCertRequestInfo* cert_info) override;
-  void OnHttpsProxyTunnelResponseRedirect(
-      const HttpResponseInfo& response_info,
-      const SSLConfig& used_ssl_config,
-      const ProxyInfo& used_proxy_info,
-      std::unique_ptr<HttpStream> stream) override;
   void OnQuicBroken() override;
 
   // Helper method to notify delegate if there is an error.
@@ -267,7 +263,7 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
   // are received. Other fields are populated at different stages of the request
   LoadTimingInfo load_timing_info_;
 
-  base::WeakPtrFactory<BidirectionalStream> weak_factory_;
+  base::WeakPtrFactory<BidirectionalStream> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BidirectionalStream);
 };

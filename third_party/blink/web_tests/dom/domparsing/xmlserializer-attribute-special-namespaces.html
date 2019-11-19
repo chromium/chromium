@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<script src="../../resources/js-test.js"></script>
+<title>Tests the serialization of special XML namespaces on attributes, as reported in http://crbug.com/395950, bug 395950</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-description('Tests the serialization of special XML namespaces on attributes, as reported in <a href="http://crbug.com/395950">bug 395950</a>.');
-
 var xmlDocument  = (new DOMParser()).parseFromString('<outer />', 'text/xml');
 
 var inner1 = xmlDocument.createElementNS(null, 'inner1');
@@ -16,18 +16,19 @@ inner2.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'xml:attr', 'value
 xmlDocument.firstChild.appendChild(inner2);
 
 // Check the DOM construction.
-shouldBeEqualToString('xmlDocument.querySelector("inner1").getAttributeNS("http://www.w3.org/XML/1998/namespace", "attr")', 'value');
-shouldBeEqualToString('xmlDocument.querySelector("inner2").getAttributeNS("http://www.w3.org/XML/1998/namespace", "attr")', 'value');
-shouldBeEqualToString('xmlDocument.querySelector("inner2").getAttribute("xml:attr")', 'value');
+assert_equals(xmlDocument.querySelector("inner1").getAttributeNS("http://www.w3.org/XML/1998/namespace", "attr"), 'value');
+assert_equals(xmlDocument.querySelector("inner2").getAttributeNS("http://www.w3.org/XML/1998/namespace", "attr"), 'value');
+assert_equals(xmlDocument.querySelector("inner2").getAttribute("xml:attr"), 'value');
 
 var xmlString = (new XMLSerializer()).serializeToString(xmlDocument);
 
 // Check the serialization result.
 var parsedDoc = (new DOMParser()).parseFromString(xmlString, 'text/xml');
-shouldBeEqualToString('parsedDoc.querySelector("inner1").getAttributeNS("http://www.w3.org/XML/1998/namespace", "attr")', 'value');
-shouldBeEqualToString('parsedDoc.querySelector("inner2").getAttributeNS("http://www.w3.org/XML/1998/namespace", "attr")', 'value');
-shouldBeEqualToString('parsedDoc.querySelector("inner2").getAttribute("xml:attr")', 'value');
+assert_equals(parsedDoc.querySelector("inner1").getAttributeNS("http://www.w3.org/XML/1998/namespace", "attr"), 'value');
+assert_equals(parsedDoc.querySelector("inner2").getAttributeNS("http://www.w3.org/XML/1998/namespace", "attr"), 'value');
+assert_equals(parsedDoc.querySelector("inner2").getAttribute("xml:attr"), 'value');
 
 // Check that the correct xmlns definitions were emitted.
-shouldBeEqualToNumber('xmlString.indexOf("xmlns:xml")', -1);
+assert_equals(xmlString.indexOf("xmlns:xml"), -1);
+done();
 </script>

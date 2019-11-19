@@ -8,8 +8,8 @@
  * test that uses this class may add expectations for speech
  * utterances, braille display content to be output, and earcons
  * played (by name).  The |install| method sets appropriate mock
- * classes as the |cvox.ChromeVox.tts|, |cvox.ChromeVox.braille| and
- * |cvox.ChromeVox.earcons| objects, respectively.  Output sent to
+ * classes as the |ChromeVox.tts|, |ChromeVox.braille| and
+ * |ChromeVox.earcons| objects, respectively.  Output sent to
  * those objects will then be collected in an internal queue.
  *
  * Expectations can be added using the |expectSpeech|,
@@ -96,7 +96,7 @@ var MockFeedback = function(opt_finishedCallback) {
    */
   this.logTimeoutId_ = 0;
   /**
-   * @type {cvox.NavBraille}
+   * @type {NavBraille}
    * @private
    */
   this.lastMatchedBraille_ = null;
@@ -105,7 +105,7 @@ var MockFeedback = function(opt_finishedCallback) {
 MockFeedback.prototype = {
 
   /**
-   * Install mock objects as |cvox.ChromeVox.tts| and |cvox.ChromeVox.braille|
+   * Install mock objects as |ChromeVox.tts| and |ChromeVox.braille|
    * to collect feedback.
    */
   install: function() {
@@ -113,30 +113,30 @@ MockFeedback.prototype = {
 
     var MockTts = function() {};
     MockTts.prototype = {
-      __proto__: cvox.TtsInterface.prototype,
+      __proto__: TtsInterface.prototype,
       speak: this.addUtterance_.bind(this)
     };
 
-    cvox.ChromeVox.tts = new MockTts();
+    ChromeVox.tts = new MockTts();
 
     var MockBraille = function() {};
     MockBraille.prototype = {
-      __proto__: cvox.BrailleInterface.prototype,
+      __proto__: BrailleInterface.prototype,
       write: this.addBraille_.bind(this)
     };
 
-    cvox.ChromeVox.braille = new MockBraille();
+    ChromeVox.braille = new MockBraille();
 
     var MockEarcons = function() {};
     MockEarcons.prototype = {
-      __proto__: cvox.AbstractEarcons.prototype,
+      __proto__: AbstractEarcons.prototype,
       playEarcon: this.addEarcon_.bind(this)
     };
 
-    // cvox.ChromeVox.earcons is a getter that switches between Classic and
+    // ChromeVox.earcons is a getter that switches between Classic and
     // Next; replace it with MockEarcons.
-    delete cvox.ChromeVox.earcons;
-    cvox.ChromeVox.earcons = new MockEarcons();
+    delete ChromeVox.earcons;
+    ChromeVox.earcons = new MockEarcons();
   },
 
   /**
@@ -165,7 +165,7 @@ MockFeedback.prototype = {
    * Adds an expectation for one spoken utterance that will be enqueued
    *     with a given queue mode.
    * @param {string|RegExp} text One utterance expectation.
-   * @param {cvox.QueueMode} queueMode The expected queue mode.
+   * @param {QueueMode} queueMode The expected queue mode.
    * @return {MockFeedback} |this| for chaining
    */
   expectSpeechWithQueueMode: function(text, queueMode) {
@@ -188,7 +188,7 @@ MockFeedback.prototype = {
    * @return {MockFeedback} |this| for chaining
    */
   expectQueuedSpeech: function(text) {
-    return this.expectSpeechWithQueueMode(text, cvox.QueueMode.QUEUE);
+    return this.expectSpeechWithQueueMode(text, QueueMode.QUEUE);
   },
 
   /**
@@ -197,7 +197,7 @@ MockFeedback.prototype = {
    * @return {MockFeedback} |this| for chaining
    */
   expectFlushingSpeech: function(text) {
-    return this.expectSpeechWithQueueMode(text, cvox.QueueMode.FLUSH);
+    return this.expectSpeechWithQueueMode(text, QueueMode.FLUSH);
   },
 
   /**
@@ -207,7 +207,7 @@ MockFeedback.prototype = {
    * @return {MockFeedback} |this| for chaining
    */
   expectCategoryFlushSpeech: function(text) {
-    return this.expectSpeechWithQueueMode(text, cvox.QueueMode.CATEGORY_FLUSH);
+    return this.expectSpeechWithQueueMode(text, QueueMode.CATEGORY_FLUSH);
   },
 
   /**
@@ -249,8 +249,9 @@ MockFeedback.prototype = {
     Array.prototype.forEach.call(arguments, function(text) {
       this.pendingActions_.push({
         perform: function() {
-          if (this.pendingUtterances_.length == 0)
+          if (this.pendingUtterances_.length == 0) {
             return false;
+          }
           if (MockFeedback.matchAndConsume_(
                   text, {}, this.pendingUtterances_)) {
             throw new Error('Got disallowed utterance "' + text + '".');
@@ -279,8 +280,9 @@ MockFeedback.prototype = {
       perform: function() {
         var match =
             MockFeedback.matchAndConsume_(text, props, this.pendingBraille_);
-        if (match)
+        if (match) {
           this.lastMatchedBraille_ = match;
+        }
         return !!match;
       }.bind(this),
       toString: function() {
@@ -364,7 +366,7 @@ MockFeedback.prototype = {
    * Returns the |NavBraille| that matched an expectation.  This is
    * intended to be used by a callback to invoke braille commands that
    * depend on display contents.
-   * @type {cvox.NavBraille}
+   * @type {NavBraille}
    */
   get lastMatchedBraille() {
     assertTrue(this.replaying_);
@@ -373,7 +375,7 @@ MockFeedback.prototype = {
 
   /**
    * @param {string} textString
-   * @param {cvox.QueueMode} queueMode
+   * @param {QueueMode} queueMode
    * @param {Object=} properties
    * @private
    */
@@ -410,8 +412,9 @@ MockFeedback.prototype = {
 
   /*** @private */
   process_: function() {
-    if (!this.replaying_ || this.inProcess_)
+    if (!this.replaying_ || this.inProcess_) {
       return;
+    }
     try {
       this.inProcess_ = true;
       while (this.pendingActions_.length > 0) {
@@ -446,22 +449,26 @@ MockFeedback.prototype = {
 
   /** @private */
   logPendingState_: function() {
-    if (this.pendingActions_.length > 0)
+    if (this.pendingActions_.length > 0) {
       console.log('Still waiting for ' + this.pendingActions_[0].toString());
+    }
     function logPending(desc, list) {
-      if (list.length > 0)
+      if (list.length > 0) {
         console.log(
             'Pending ' + desc + ':\n  ' +
             list.map(function(i) {
                   var ret = '\'' + i.text + '\'';
-                  if ('startIndex' in i)
+                  if ('startIndex' in i) {
                     ret += ' startIndex=' + i.startIndex;
-                  if ('endIndex' in i)
+                  }
+                  if ('endIndex' in i) {
                     ret += ' endIndex=' + i.endIndex;
+                  }
                   return ret;
                 })
                 .join('\n  ') +
             '\n  ');
+      }
     }
     logPending('speech utterances', this.pendingUtterances_);
     logPending('braille', this.pendingBraille_);
@@ -481,8 +488,9 @@ MockFeedback.prototype = {
 MockFeedback.matchAndConsume_ = function(text, props, pending) {
   for (var i = 0, candidate; candidate = pending[i]; ++i) {
     var candidateText = candidate.text;
-    if (typeof(candidateText) != 'string')
+    if (typeof (candidateText) != 'string') {
       candidateText = candidateText.toString();
+    }
 
     if (text === candidateText ||
         (text instanceof RegExp && text.test(candidateText)) ||
@@ -494,15 +502,17 @@ MockFeedback.matchAndConsume_ = function(text, props, pending) {
           break;
         }
       }
-      if (matched)
+      if (matched) {
         break;
+      }
     }
   }
   if (candidate) {
     var consumed = pending.splice(0, i + 1);
     consumed.forEach(function(item) {
-      if (item.callback)
+      if (item.callback) {
         item.callback();
+      }
     });
   }
   return candidate;

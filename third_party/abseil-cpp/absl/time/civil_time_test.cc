@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -616,6 +616,8 @@ TEST(CivilTime, Properties) {
   EXPECT_EQ(4, ss.hour());
   EXPECT_EQ(5, ss.minute());
   EXPECT_EQ(6, ss.second());
+  EXPECT_EQ(absl::Weekday::tuesday, absl::GetWeekday(ss));
+  EXPECT_EQ(34, absl::GetYearDay(ss));
 
   absl::CivilMinute mm(2015, 2, 3, 4, 5, 6);
   EXPECT_EQ(2015, mm.year());
@@ -624,6 +626,8 @@ TEST(CivilTime, Properties) {
   EXPECT_EQ(4, mm.hour());
   EXPECT_EQ(5, mm.minute());
   EXPECT_EQ(0, mm.second());
+  EXPECT_EQ(absl::Weekday::tuesday, absl::GetWeekday(mm));
+  EXPECT_EQ(34, absl::GetYearDay(mm));
 
   absl::CivilHour hh(2015, 2, 3, 4, 5, 6);
   EXPECT_EQ(2015, hh.year());
@@ -632,6 +636,8 @@ TEST(CivilTime, Properties) {
   EXPECT_EQ(4, hh.hour());
   EXPECT_EQ(0, hh.minute());
   EXPECT_EQ(0, hh.second());
+  EXPECT_EQ(absl::Weekday::tuesday, absl::GetWeekday(hh));
+  EXPECT_EQ(34, absl::GetYearDay(hh));
 
   absl::CivilDay d(2015, 2, 3, 4, 5, 6);
   EXPECT_EQ(2015, d.year());
@@ -640,6 +646,8 @@ TEST(CivilTime, Properties) {
   EXPECT_EQ(0, d.hour());
   EXPECT_EQ(0, d.minute());
   EXPECT_EQ(0, d.second());
+  EXPECT_EQ(absl::Weekday::tuesday, absl::GetWeekday(d));
+  EXPECT_EQ(34, absl::GetYearDay(d));
 
   absl::CivilMonth m(2015, 2, 3, 4, 5, 6);
   EXPECT_EQ(2015, m.year());
@@ -648,6 +656,8 @@ TEST(CivilTime, Properties) {
   EXPECT_EQ(0, m.hour());
   EXPECT_EQ(0, m.minute());
   EXPECT_EQ(0, m.second());
+  EXPECT_EQ(absl::Weekday::sunday, absl::GetWeekday(m));
+  EXPECT_EQ(32, absl::GetYearDay(m));
 
   absl::CivilYear y(2015, 2, 3, 4, 5, 6);
   EXPECT_EQ(2015, y.year());
@@ -656,6 +666,8 @@ TEST(CivilTime, Properties) {
   EXPECT_EQ(0, y.hour());
   EXPECT_EQ(0, y.minute());
   EXPECT_EQ(0, y.second());
+  EXPECT_EQ(absl::Weekday::thursday, absl::GetWeekday(y));
+  EXPECT_EQ(1, absl::GetYearDay(y));
 }
 
 TEST(CivilTime, Format) {
@@ -1028,7 +1040,7 @@ TEST(CivilTime, LeapYears) {
 TEST(CivilTime, FirstThursdayInMonth) {
   const absl::CivilDay nov1(2014, 11, 1);
   const absl::CivilDay thursday =
-      absl::PrevWeekday(nov1, absl::Weekday::thursday) + 7;
+      absl::NextWeekday(nov1 - 1, absl::Weekday::thursday);
   EXPECT_EQ("2014-11-06", absl::FormatCivilTime(thursday));
 
   // Bonus: Date of Thanksgiving in the United States

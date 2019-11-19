@@ -39,8 +39,6 @@ namespace blink {
 // so HTMLElement's layoutObjectIsNeeded doesn't need to know about it.
 class HTMLNoEmbedElement final : public HTMLElement {
  public:
-  DECLARE_NODE_FACTORY(HTMLNoEmbedElement);
-
   explicit HTMLNoEmbedElement(Document&);
 
  private:

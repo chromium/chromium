@@ -31,7 +31,7 @@ class WebUIResourceBrowserTest : public ContentBrowserTest {
       ASSERT_TRUE(PathExists(file));
     }
 
-    NavigateToURL(shell(), net::FilePathToFileURL(file));
+    EXPECT_TRUE(NavigateToURL(shell(), net::FilePathToFileURL(file)));
 
     content::WebContents* web_contents = shell()->web_contents();
     ASSERT_TRUE(web_contents);

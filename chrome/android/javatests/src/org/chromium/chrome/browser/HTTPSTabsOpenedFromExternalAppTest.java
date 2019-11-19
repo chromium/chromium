@@ -16,8 +16,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.network.mojom.ReferrerPolicy;
@@ -30,7 +30,8 @@ import org.chromium.network.mojom.ReferrerPolicy;
 
 public class HTTPSTabsOpenedFromExternalAppTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public ChromeActivityTestRule<? extends ChromeActivity> mActivityTestRule =
+            new ChromeActivityTestRule(ChromeTabbedActivity.class);
 
     private EmbeddedTestServer mTestServer;
 
@@ -42,13 +43,11 @@ public class HTTPSTabsOpenedFromExternalAppTest {
     /**
      * Tests that an http:// referrer is not stripped in case of https:// navigation with
      * default Policy.
-     * @throws InterruptedException
      */
     @Test
     @LargeTest
     @Feature({"Navigation"})
-    public void testReferrerPolicyHttpReferrerHttpsNavigationsPolicyDefault()
-            throws InterruptedException {
+    public void testReferrerPolicyHttpReferrerHttpsNavigationsPolicyDefault() {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getContext(), ServerCertificate.CERT_OK);
         try {

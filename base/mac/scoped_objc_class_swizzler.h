@@ -31,7 +31,17 @@ class BASE_EXPORT ScopedObjCClassSwizzler {
   // Return a callable function pointer for the replaced method. To call this
   // from the replacing function, the first two arguments should be |self| and
   // |_cmd|. These are followed by the (variadic) method arguments.
-  IMP GetOriginalImplementation();
+  IMP GetOriginalImplementation() const;
+
+  // Invoke the original function directly, optionally with some arguments.
+  // Prefer this to hanging onto pointers to the original implementation
+  // function or to casting the result of GetOriginalImplementation() yourself.
+  template <typename Ret, typename... Args>
+  Ret InvokeOriginal(id receiver, SEL selector, Args... args) const {
+    auto func = reinterpret_cast<Ret (*)(id, SEL, Args...)>(
+        GetOriginalImplementation());
+    return func(receiver, selector, args...);
+  }
 
  private:
   // Delegated constructor.

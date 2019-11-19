@@ -31,16 +31,11 @@ typedef MultiProcessTest StackTraceTest;
 typedef testing::Test StackTraceTest;
 #endif
 
-// Note: On Linux, this test currently only fully works on Debug builds.
-// See comments in the #ifdef soup if you intend to change this.
-#if defined(OS_WIN)
-// Always fails on Windows: crbug.com/32070
-#define MAYBE_OutputToStream DISABLED_OutputToStream
-#else
-#define MAYBE_OutputToStream OutputToStream
-#endif
 #if !defined(__UCLIBC__) && !defined(_AIX)
-TEST_F(StackTraceTest, MAYBE_OutputToStream) {
+// StackTrace::OutputToStream() is not implemented under uclibc, nor AIX.
+// See https://crbug.com/706728
+
+TEST_F(StackTraceTest, OutputToStream) {
   StackTrace trace;
 
   // Dump the trace into a string.
@@ -51,76 +46,61 @@ TEST_F(StackTraceTest, MAYBE_OutputToStream) {
   // ToString() should produce the same output.
   EXPECT_EQ(backtrace_message, trace.ToString());
 
-#if defined(OS_POSIX) && !defined(OS_MACOSX) && NDEBUG
-  // Stack traces require an extra data table that bloats our binaries,
-  // so they're turned off for release builds.  We stop the test here,
-  // at least letting us verify that the calls don't crash.
-  return;
-#endif  // defined(OS_POSIX) && !defined(OS_MACOSX) && NDEBUG
-
   size_t frames_found = 0;
-  trace.Addresses(&frames_found);
-  ASSERT_GE(frames_found, 5u) <<
-      "No stack frames found.  Skipping rest of test.";
+  const void* const* addresses = trace.Addresses(&frames_found);
+
+#if defined(OFFICIAL_BUILD) && defined(OS_POSIX) && !defined(OS_MACOSX)
+  // Stack traces require an extra data table that bloats our binaries,
+  // so they're turned off for official builds. Stop the test here, so
+  // it at least verifies that StackTrace calls don't crash.
+  return;
+#endif  // defined(OFFICIAL_BUILD) && defined(OS_POSIX) && !defined(OS_MACOSX)
+
+#if defined(OFFICIAL_BUILD) && defined(OS_FUCHSIA)
+  // TODO(https://crbug.com/1025329): StackTrace fails to capture any frames in
+  // Fuchsia Official builds.
+  return;
+#endif  // defined(OFFICIAL_BUILD) && defined(OS_FUCHSIA)
+
+  ASSERT_TRUE(addresses);
+  ASSERT_GT(frames_found, 5u) << "Too few frames found.";
+
+#if defined(OS_FUCHSIA) || defined(OS_ANDROID)
+  // Under Fuchsia and Android, StackTrace emits executable build-Ids and
+  // address offsets which are symbolized on the test host system, rather than
+  // being symbolized in-process.
+  return;
+#endif  // defined(OS_FUCHSIA) || defined(OS_ANDROID)
+
+#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
+  // Sanitizer configurations (ASan, TSan, MSan) emit unsymbolized stacks.
+  return;
+#endif  // defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) ||
+        // defined(MEMORY_SANITIZER)
 
   // Check if the output has symbol initialization warning.  If it does, fail.
   ASSERT_EQ(backtrace_message.find("Dumping unresolved backtrace"),
-            std::string::npos) <<
-      "Unable to resolve symbols.  Skipping rest of test.";
+            std::string::npos)
+      << "Unable to resolve symbols.";
 
-#if defined(OS_MACOSX)
-#if 0
-  // Disabled due to -fvisibility=hidden in build config.
-
-  // Symbol resolution via the backtrace_symbol function does not work well
-  // in OS X.
-  // See this thread:
-  //
-  //    http://lists.apple.com/archives/darwin-dev/2009/Mar/msg00111.html
-  //
-  // Just check instead that we find our way back to the "start" symbol
-  // which should be the first symbol in the trace.
-  //
-  // TODO(port): Find a more reliable way to resolve symbols.
-
-  // Expect to at least find main.
-  EXPECT_TRUE(backtrace_message.find("start") != std::string::npos)
-      << "Expected to find start in backtrace:\n"
-      << backtrace_message;
-
-#endif
-#elif defined(USE_SYMBOLIZE)
-  // This branch is for gcc-compiled code, but not Mac due to the
-  // above #if.
   // Expect a demangled symbol.
-  EXPECT_TRUE(backtrace_message.find("testing::Test::Run()") !=
-              std::string::npos)
+  // Note that Windows Release builds omit the function parameters from the
+  // demangled stack output, otherwise this could be "testing::Test::Run()".
+  EXPECT_TRUE(backtrace_message.find("testing::Test::Run") != std::string::npos)
       << "Expected a demangled symbol in backtrace:\n"
       << backtrace_message;
-
-#elif 0
-  // This is the fall-through case; it used to cover Windows.
-  // But it's disabled because of varying buildbot configs;
-  // some lack symbols.
 
   // Expect to at least find main.
   EXPECT_TRUE(backtrace_message.find("main") != std::string::npos)
       << "Expected to find main in backtrace:\n"
       << backtrace_message;
 
-#if defined(OS_WIN)
-// MSVC doesn't allow the use of C99's __func__ within C++, so we fake it with
-// MSVC's __FUNCTION__ macro.
-#define __func__ __FUNCTION__
-#endif
-
   // Expect to find this function as well.
   // Note: This will fail if not linked with -rdynamic (aka -export_dynamic)
   EXPECT_TRUE(backtrace_message.find(__func__) != std::string::npos)
       << "Expected to find " << __func__ << " in backtrace:\n"
       << backtrace_message;
-
-#endif  // define(OS_MACOSX)
 }
 
 #if !defined(OFFICIAL_BUILD) && !defined(NO_UNWIND_TABLES)
@@ -137,7 +117,7 @@ TEST_F(StackTraceTest, TruncatedTrace) {
   truncated.Addresses(&count);
   EXPECT_EQ(2u, count);
 }
-#endif  // !defined(OFFICIAL_BUILD)
+#endif  // !defined(OFFICIAL_BUILD) && !defined(NO_UNWIND_TABLES)
 
 // The test is used for manual testing, e.g., to see the raw output.
 TEST_F(StackTraceTest, DebugOutputToStream) {
@@ -185,7 +165,7 @@ TEST_F(StackTraceTest, DebugOutputToStreamWithNullPrefix) {
   trace.ToStringWithPrefix(nullptr);
 }
 
-#endif  // !defined(__UCLIBC__)
+#endif  // !defined(__UCLIBC__) && !defined(_AIX)
 
 #if defined(OS_POSIX) && !defined(OS_ANDROID)
 #if !defined(OS_IOS)

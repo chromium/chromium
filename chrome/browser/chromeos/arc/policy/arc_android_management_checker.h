@@ -12,13 +12,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/policy/android_management_client.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
 
 namespace arc {
 
-class ArcAndroidManagementChecker : public identity::IdentityManager::Observer {
+class ArcAndroidManagementChecker : public signin::IdentityManager::Observer {
  public:
   ArcAndroidManagementChecker(Profile* profile, bool retry_on_error);
   ~ArcAndroidManagementChecker() override;
@@ -42,14 +42,14 @@ class ArcAndroidManagementChecker : public identity::IdentityManager::Observer {
   // Ensures the refresh token is loaded in the |identity_manager|.
   void EnsureRefreshTokenLoaded();
 
-  // identity::IdentityManager::Observer:
+  // signin::IdentityManager::Observer:
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
   void OnRefreshTokensLoaded() override;
 
   // Unowned pointers.
   Profile* profile_;
-  identity::IdentityManager* const identity_manager_;
+  signin::IdentityManager* const identity_manager_;
 
   const std::string device_account_id_;
 
@@ -65,7 +65,7 @@ class ArcAndroidManagementChecker : public identity::IdentityManager::Observer {
   // The callback for the inflight operation.
   CheckCallback callback_;
 
-  base::WeakPtrFactory<ArcAndroidManagementChecker> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcAndroidManagementChecker> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcAndroidManagementChecker);
 };

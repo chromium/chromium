@@ -9,7 +9,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
-#include "chromeos/dbus/update_engine_client.h"
 
 namespace content {
 class BrowserContext;
@@ -26,14 +25,13 @@ class VersionUpdaterCros : public VersionUpdater,
                   bool is_powerwash_allowed) override;
   void GetChannel(bool get_current_channel,
                   const ChannelCallback& callback) override;
+  void GetEolInfo(EolInfoCallback callback) override;
   void SetUpdateOverCellularOneTimePermission(const StatusCallback& callback,
                                               const std::string& update_version,
                                               int64_t update_size) override;
 
   // Gets the last update status, without triggering a new check or download.
   void GetUpdateStatus(const StatusCallback& callback);
-
-  void GetEolStatus(EolStatusCallback callback) override;
 
  protected:
   friend class VersionUpdater;
@@ -44,8 +42,7 @@ class VersionUpdaterCros : public VersionUpdater,
 
  private:
   // UpdateEngineClient::Observer implementation.
-  void UpdateStatusChanged(
-      const chromeos::UpdateEngineClient::Status& status) override;
+  void UpdateStatusChanged(const update_engine::StatusResult& status) override;
 
   // Callback from UpdateEngineClient::RequestUpdateCheck().
   void OnUpdateCheck(chromeos::UpdateEngineClient::UpdateCheckResult result);
@@ -57,9 +54,9 @@ class VersionUpdaterCros : public VersionUpdater,
   void OnGetChannel(const ChannelCallback& cb,
                     const std::string& current_channel);
 
-  // Callback from UpdateEngineClient::GetEolStatus().
-  void OnGetEolStatus(EolStatusCallback cb,
-                      update_engine::EndOfLifeStatus status);
+  // Callback from UpdateEngineClient::GetEolInfo().
+  void OnGetEolInfo(EolInfoCallback cb,
+                    chromeos::UpdateEngineClient::EolInfo eol_info);
 
   // BrowserContext in which the class was instantiated.
   content::BrowserContext* context_;
@@ -68,12 +65,12 @@ class VersionUpdaterCros : public VersionUpdater,
   StatusCallback callback_;
 
   // Last state received via UpdateStatusChanged().
-  chromeos::UpdateEngineClient::UpdateStatusOperation last_operation_;
+  update_engine::Operation last_operation_;
 
   // True if an update check should be scheduled when the update engine is idle.
   bool check_for_update_when_idle_;
 
-  base::WeakPtrFactory<VersionUpdaterCros> weak_ptr_factory_;
+  base::WeakPtrFactory<VersionUpdaterCros> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VersionUpdaterCros);
 };

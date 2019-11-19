@@ -83,7 +83,7 @@ class RemoteObjectHostImpl implements RemoteObjectHost {
     @Override
     public void close() {
         RemoteObjectRegistry registry = mRegistry.get();
-        if (registry != null) {
+        if (registry == null) {
             return;
         }
         registry.close();

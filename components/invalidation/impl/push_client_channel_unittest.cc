@@ -67,12 +67,13 @@ TEST_F(PushClientChannelTest, Subscriptions) {
 // Call UpdateCredentials on the channel.  It should propagate it to
 // the push client.
 TEST_F(PushClientChannelTest, UpdateCredentials) {
-  const char kEmail[] = "foo@bar.com";
+  const CoreAccountId kAccountId("foo@bar.com");
   const char kToken[] = "token";
   EXPECT_TRUE(fake_push_client_->email().empty());
   EXPECT_TRUE(fake_push_client_->token().empty());
-  push_client_channel_.UpdateCredentials(kEmail, kToken);
-  EXPECT_EQ(kEmail, fake_push_client_->email());
+  // PushClient treats account IDs as emails. See https://crbug.com/1010544
+  push_client_channel_.UpdateCredentials(kAccountId, kToken);
+  EXPECT_EQ(kAccountId.id, fake_push_client_->email());
   EXPECT_EQ(kToken, fake_push_client_->token());
 }
 

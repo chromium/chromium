@@ -4,10 +4,13 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 
+#include <utility>
+
+#include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkRWBuffer.h"
@@ -19,7 +22,7 @@ namespace blink {
 // Interface for ImageDecoder to read a SharedBuffer.
 class SharedBufferSegmentReader final : public SegmentReader {
  public:
-  SharedBufferSegmentReader(scoped_refptr<SharedBuffer>);
+  explicit SharedBufferSegmentReader(scoped_refptr<SharedBuffer>);
   size_t size() const override;
   size_t GetSomeData(const char*& data, size_t position) const override;
   sk_sp<SkData> GetAsSkData() const override;
@@ -49,7 +52,15 @@ size_t SharedBufferSegmentReader::GetSomeData(const char*& data,
 }
 
 sk_sp<SkData> SharedBufferSegmentReader::GetAsSkData() const {
-  return shared_buffer_->GetAsSkData();
+  sk_sp<SkData> data = SkData::MakeUninitialized(shared_buffer_->size());
+  char* buffer = static_cast<char*>(data->writable_data());
+  size_t offset = 0;
+  for (const auto& span : *shared_buffer_) {
+    memcpy(buffer + offset, span.data(), span.size());
+    offset += span.size();
+  }
+
+  return data;
 }
 
 // DataSegmentReader -----------------------------------------------------------
@@ -57,7 +68,7 @@ sk_sp<SkData> SharedBufferSegmentReader::GetAsSkData() const {
 // Interface for ImageDecoder to read an SkData.
 class DataSegmentReader final : public SegmentReader {
  public:
-  DataSegmentReader(sk_sp<SkData>);
+  explicit DataSegmentReader(sk_sp<SkData>);
   size_t size() const override;
   size_t GetSomeData(const char*& data, size_t position) const override;
   sk_sp<SkData> GetAsSkData() const override;
@@ -92,7 +103,7 @@ sk_sp<SkData> DataSegmentReader::GetAsSkData() const {
 
 class ROBufferSegmentReader final : public SegmentReader {
  public:
-  ROBufferSegmentReader(sk_sp<SkROBuffer>);
+  explicit ROBufferSegmentReader(sk_sp<SkROBuffer>);
 
   size_t size() const override;
   size_t GetSomeData(const char*& data, size_t position) const override;
@@ -100,11 +111,10 @@ class ROBufferSegmentReader final : public SegmentReader {
 
  private:
   sk_sp<SkROBuffer> ro_buffer_;
-  // Protects access to mutable fields.
   mutable Mutex read_mutex_;
   // Position of the first char in the current block of iter_.
-  mutable size_t position_of_block_;
-  mutable SkROBuffer::Iter iter_;
+  mutable size_t position_of_block_ GUARDED_BY(read_mutex_);
+  mutable SkROBuffer::Iter iter_ GUARDED_BY(read_mutex_);
 
   DISALLOW_COPY_AND_ASSIGN(ROBufferSegmentReader);
 };

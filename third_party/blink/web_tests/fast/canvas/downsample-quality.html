@@ -4,10 +4,8 @@
 // This test should show two side-by-side thin circle outlines
 // with good visual quality, i.e. no aliasing from image downsampling.
 
-if (window.testRunner) {
-	testRunner.dumpAsTextWithPixelResults();
+if (window.testRunner)
 	testRunner.waitUntilDone();
-}
 
 var offscreenCanvas = document.createElement('canvas');
 offscreenCanvas.width = 500;

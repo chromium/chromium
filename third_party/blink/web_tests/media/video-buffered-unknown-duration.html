@@ -23,9 +23,13 @@ async_test(function(t) {
 
     video.onloadeddata = t.step_func(function() {
         video.onloadeddata = null;
-        assert_equals(video.buffered.length, 1);
-        assert_greater_than_equal(video.buffered.start(0), 0);
-        assert_not_equals(video.buffered.end(0), Infinity);
+
+        // We may not have video.buffered.length at this time, but if we do it
+        // should be between 0 and some value less than infinity.
+        if (video.buffered.length > 0) {
+            assert_greater_than_equal(video.buffered.start(0), 0);
+            assert_not_equals(video.buffered.end(0), Infinity);
+        }
         assert_equals(video.currentTime, 0);
         assert_equals(video.duration, Infinity);
         video.play();

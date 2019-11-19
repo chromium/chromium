@@ -32,7 +32,7 @@ interface TestStructPasser {
 };
 
 interface IndirectTestDriver {
-  GetPingReceiver(associated PingReceiver& request);
+  GetPingReceiver(pending_associated_receiver<PingReceiver> receiver);
 };
 
 interface Reflector {
@@ -43,12 +43,13 @@ interface Reflector {
 };
 
 interface AssociatedInterfaceVendor {
-  GetTestInterface(associated SimpleTestDriver& interface_reqest);
+  GetTestInterface(pending_associated_receiver<SimpleTestDriver> receiver);
 };
 
 interface InterfacePassingTestDriver {
   Init() => ();
-  GetPingReceiver(array<PingReceiver&> request) => ();
-  GetAssociatedPingReceiver(array<associated PingReceiver&> request) => ();
+  GetPingReceiver(array<pending_receiver<PingReceiver>> receiver) => ();
+  GetAssociatedPingReceiver(
+      array<pending_associated_receiver<PingReceiver>> receiver) => ();
   Quit();
 };

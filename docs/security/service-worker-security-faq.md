@@ -10,7 +10,7 @@ Chromium developers. (rsesek, estark, falken, slightlyoff, jakearchibald, evn,
 raymes, ainslie, mek, lgarron, elawrence, kinuko, palmer, your name here...)
 Last updated 12 May 2017. If you see an error or have an additional question,
 and have a Chromium account, go ahead and fix it. If you don't have a Chromium
-account, email palmer@chromium.org for a fix.
+account, email security-dev@chromium.org for a fix.
 
 ## Service Workers seem extremely risky! Why are they OK?
 
@@ -36,14 +36,16 @@ Explained](https://github.com/w3c/ServiceWorker/blob/master/explainer.md).
 
 Yes, SWs run in renderer processes. When Chrome starts a SW, it chooses a
 renderer process that is associated with the SW’s origin. If one does not exist,
-the browser creates a new one using a new SiteInstance for the origin.
+the browser creates a new one using a new
+[`SiteInstance`](https://cs.chromium.org/chromium/src/content/public/browser/site_instance.h)
+for the origin.
 
 ## What APIs can Service Workers access?
 
 The [HTML specification partially enumerates the API surface available to
 Workers](https://html.spec.whatwg.org/#apis-available-to-workers). See also
-`[Client](https://developer.mozilla.org/en-US/docs/Web/API/Client)`, and
-`[ServiceWorkerGlobalScope](https://w3c.github.io/ServiceWorker/#serviceworkerglobalscope-interface)`.
+[`Client`](https://developer.mozilla.org/en-US/docs/Web/API/Client), and
+[`ServiceWorkerGlobalScope`](https://w3c.github.io/ServiceWorker/#serviceworkerglobalscope-interface).
 (Note that SWs do not have access to synchronous APIs.)
 
 However, other web platform specifications can add new API surface. For example,
@@ -86,14 +88,12 @@ and one is about the running Service Worker thread.
 
 The installed registration lasts indefinitely, similar to origin-scoped storage
 like
-[IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API).
-Additionally, the browser performs an update check after any navigation using
-the Service Worker, invalidating the HTTP cache every 24 hours. (Additionally,
-[according to a recent spec
-change](https://w3c.github.io/ServiceWorker/#dfn-use-cache), browsers will
-revalidate the HTTP cache for SW scripts unless the site opts into using the
-cache. Chrome does not yet adhere to this new part of the spec, [but will
-soon](https://bugs.chromium.org/p/chromium/issues/detail?id=675540).)
+[IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API). The
+browser performs an update check after any navigation using the Service Worker,
+invalidating the HTTP cache every 24 hours. Additionally, [browsers will
+revalidate the HTTP cache for SW
+scripts](https://w3c.github.io/ServiceWorker/#dfn-use-cache) unless the site
+opts into using the cache.
 
 The browser also performs an update check whenever the SW starts and
 periodically while the worker is running, if it has not checked in the last 24

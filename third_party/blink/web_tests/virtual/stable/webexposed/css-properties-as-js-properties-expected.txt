@@ -15,6 +15,7 @@ animationIterationCount
 animationName
 animationPlayState
 animationTimingFunction
+backdropFilter
 backfaceVisibility
 background
 backgroundAttachment
@@ -141,6 +142,7 @@ fontDisplay
 fontFamily
 fontFeatureSettings
 fontKerning
+fontOpticalSizing
 fontSize
 fontStretch
 fontStyle
@@ -238,6 +240,8 @@ overflowWrap
 overflowX
 overflowY
 overscrollBehavior
+overscrollBehaviorBlock
+overscrollBehaviorInline
 overscrollBehaviorX
 overscrollBehaviorY
 padding

@@ -36,8 +36,7 @@ class StringTraceEndpoint
     *result_ += *chunk;
   }
 
-  void ReceiveTraceFinalContents(
-      std::unique_ptr<const base::DictionaryValue> metadata) override {
+  void ReceivedTraceFinalContents() override {
     if (!result_->empty())
       *result_ += "]";
     completion_callback_.Run();
@@ -71,8 +70,6 @@ class InProcessTraceController {
 
   bool EndTracing(std::string* json_trace_output) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    using namespace base::debug;
-
     if (!content::TracingController::GetInstance()->StopTracing(
             new StringTraceEndpoint(
                 json_trace_output,

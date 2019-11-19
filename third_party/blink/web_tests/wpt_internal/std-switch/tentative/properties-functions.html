@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script src="form-associated-basic.js"></script>
+<script type=module>
+import 'std:elements/switch';
+
+formAssociatedTests('std-switch', {
+    defaultOn: {type: 'boolean', domAttrName: 'defaulton'},
+    on: 'boolean'
+});
+</script>
+</body>

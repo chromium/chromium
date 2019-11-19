@@ -45,6 +45,9 @@ class PPP_Pdf_Proxy : public InterfaceProxy {
   void OnPluginMsgCanRedo(PP_Instance instance, PP_Bool* result);
   void OnPluginMsgUndo(PP_Instance instance);
   void OnPluginMsgRedo(PP_Instance instance);
+  void OnPluginMsgHandleAccessibilityAction(
+      PP_Instance instance,
+      const PP_PdfAccessibilityActionData& action_data);
   void OnPluginMsgReplaceSelection(PP_Instance instance,
                                    const std::string& text);
   void OnPluginMsgPrintBegin(PP_Instance instance,

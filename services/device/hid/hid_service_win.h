@@ -69,7 +69,7 @@ class HidServiceWin : public HidService, public DeviceMonitorWin::Observer {
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   ScopedObserver<DeviceMonitorWin, DeviceMonitorWin::Observer> device_observer_;
-  base::WeakPtrFactory<HidServiceWin> weak_factory_;
+  base::WeakPtrFactory<HidServiceWin> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HidServiceWin);
 };

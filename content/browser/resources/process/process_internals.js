@@ -7,9 +7,9 @@
 
 /**
  * Reference to the backend providing all the data.
- * @type {mojom.ProcessInternalsHandlerProxy}
+ * @type {mojom.ProcessInternalsHandlerRemote}
  */
-let uiHandler = null;
+let pageHandler = null;
 
 /**
  * @param {string} id Tab id.
@@ -36,7 +36,7 @@ function selectTab(id) {
 }
 
 function onHashChange() {
-  let hash = window.location.hash.slice(1).toLowerCase();
+  const hash = window.location.hash.slice(1).toLowerCase();
   if (!selectTab(hash)) {
     selectTab('general');
   }
@@ -48,9 +48,9 @@ function setupTabs() {
     const tabContent = tabContents[i];
     const tabName = tabContent.querySelector('.content-header').textContent;
 
-    let tabHeader = document.createElement('div');
+    const tabHeader = document.createElement('div');
     tabHeader.className = 'tab-header';
-    let button = document.createElement('button');
+    const button = document.createElement('button');
     button.textContent = tabName;
     tabHeader.appendChild(button);
     tabHeader.addEventListener('click', selectTab.bind(null, tabContent.id));
@@ -99,7 +99,7 @@ function frameToTreeItem(frame) {
     itemLabel += ` | url: ${frame.lastCommittedUrl.url}`;
   }
 
-  let item = new cr.ui.TreeItem(
+  const item = new cr.ui.TreeItem(
       {label: itemLabel, detail: {payload: {}, children: {}}});
   item.mayHaveChildren_ = true;
   item.expanded = true;
@@ -107,7 +107,7 @@ function frameToTreeItem(frame) {
 
   let frameCount = 1;
   for (const subframe of frame.subframes) {
-    let result = frameToTreeItem(subframe);
+    const result = frameToTreeItem(subframe);
     const subItem = result[0];
     const count = result[1];
 
@@ -130,13 +130,13 @@ function webContentsToTreeItem(webContents) {
     itemLabel += webContents.title + ', ';
   }
 
-  let item = new cr.ui.TreeItem(
+  const item = new cr.ui.TreeItem(
       {label: itemLabel, detail: {payload: {}, children: {}}});
   item.mayHaveChildren_ = true;
   item.expanded = true;
   item.icon = '';
 
-  let result = frameToTreeItem(webContents.rootFrame);
+  const result = frameToTreeItem(webContents.rootFrame);
   const rootItem = result[0];
   const count = result[1];
 
@@ -154,7 +154,7 @@ function webContentsToTreeItem(webContents) {
  *     input
  */
 function populateWebContentsTab(input) {
-  let tree = getTreeViewRoot();
+  const tree = getTreeViewRoot();
 
   // Clear the tree first before populating it with the new content.
   tree.innerText = '';
@@ -170,20 +170,75 @@ function populateWebContentsTab(input) {
  * current browser profile. The result is passed to populateWebContentsTab.
  */
 function loadWebContentsInfo() {
-  uiHandler.getAllWebContentsInfo().then(populateWebContentsTab);
+  pageHandler.getAllWebContentsInfo().then(populateWebContentsTab);
+}
+
+/**
+ * Function which retrieves the currently active isolated origins and inserts
+ * them into the page.  It organizes these origins into two lists: persisted
+ * isolated origins, which are triggered by password entry and apply only
+ * within the current profile, and global isolated origins, which apply to all
+ * profiles.
+ */
+function loadIsolatedOriginInfo() {
+  // Retrieve any persistent isolated origins for the current profile. Insert
+  // them into a list on the page if there is at least one such origin.
+  pageHandler.getUserTriggeredIsolatedOrigins().then((response) => {
+    const originCount = response.isolatedOrigins.length;
+    if (!originCount) {
+      return;
+    }
+
+    $('user-triggered-isolated-origins').textContent =
+        'The following origins are isolated because you previously typed a ' +
+        'password into these sites (' + originCount + ' total). ' +
+        'Clear cookies or history to wipe this list; this takes effect ' +
+        'after a restart.';
+
+    const list = document.createElement('ul');
+    for (const origin of response.isolatedOrigins) {
+      const item = document.createElement('li');
+      item.textContent = origin;
+      list.appendChild(item);
+    }
+
+    $('user-triggered-isolated-origins').appendChild(list);
+  });
+
+  // Retrieve global isolated origins and insert them into a separate list if
+  // there is at least one such origin.  Since these origins may come from
+  // multiple sources, include the source info for each origin in parens.
+  pageHandler.getGloballyIsolatedOrigins().then((response) => {
+    const originCount = response.isolatedOrigins.length;
+    if (!originCount) {
+      return;
+    }
+
+    $('global-isolated-origins').textContent =
+        'The following origins are isolated by default for all users (' +
+        originCount + ' total).  A description of how each origin was ' +
+        ' activated is provided in parentheses.';
+
+    const list = document.createElement('ul');
+    for (const originInfo of response.isolatedOrigins) {
+      const item = document.createElement('li');
+      item.textContent = `${originInfo.origin} (${originInfo.source})`;
+      list.appendChild(item);
+    }
+    $('global-isolated-origins').appendChild(list);
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
   // Setup Mojo interface to the backend.
-  uiHandler = mojom.ProcessInternalsHandler.getProxy();
+  pageHandler = mojom.ProcessInternalsHandler.getRemote(true);
 
   // Get the Site Isolation mode and populate it.
-  uiHandler.getIsolationMode().then((response) => {
+  pageHandler.getIsolationMode().then((response) => {
     $('isolation-mode').innerText = response.mode;
   });
-  uiHandler.getIsolatedOriginsSize().then((response) => {
-    $('isolated-origins').innerText = response.size;
-  });
+
+  loadIsolatedOriginInfo();
 
   // Setup the tabbed UI
   setupTabs();

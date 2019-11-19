@@ -12,8 +12,7 @@ namespace test {
 SliderTestApi::SliderTestApi(Slider* slider) : slider_(slider) {
 }
 
-SliderTestApi::~SliderTestApi() {
-}
+SliderTestApi::~SliderTestApi() = default;
 
 void SliderTestApi::SetListener(SliderListener* listener) {
   slider_->set_listener(listener);

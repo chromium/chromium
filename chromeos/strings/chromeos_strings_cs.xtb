@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="1482734542997480527">Toto zařízení je spravováno doménou <ph name="ENROLLMENT_DOMAIN" />, která také může sledovat vaši aktivitu.</translation>
 <translation id="1510238584712386396">Spouštěč</translation>
 <translation id="1734367976349034509">Toto zařízení je spravováno organizací</translation>
+<translation id="1930797645656624981">Služba metod zadávání systému Chrome OS</translation>
+<translation id="1979103255016296513">Uběhl termín pro změnu hesla</translation>
 <translation id="2049639323467105390">Zařízení je spravováno doménou <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">Na obrazovce nebylo nic nalezeno</translation>
 <translation id="2338501278241028356">Chcete-li objevit okolní zařízení, zapněte Bluetooth</translation>
 <translation id="2805756323405976993">Aplikace</translation>
 <translation id="2872961005593481000">Vypnout</translation>
-<translation id="3147142846278915599">Spouštěč (synchronizace aplikací...)</translation>
+<translation id="3008341117444806826">OBNOVIT</translation>
+<translation id="3838338534323494292">Nové heslo</translation>
+<translation id="4003259559679196451">Toto zařízení je spravováno doménou <ph name="ENROLLMENT_DOMAIN" />, která má přístup k veškeré uživatelské aktivitě, včetně navštívených webových stránek, hesel a e‑mailu.</translation>
+<translation id="4227825898293920515">Platnost hesla vyprší za <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Platnost lístku Kerberos brzy vyprší</translation>
+<translation id="445059817448385655">Staré heslo</translation>
+<translation id="467510802200863975">Hesla se neshodují</translation>
 <translation id="4731797938093519117">Rodičovský přístup</translation>
+<translation id="4890353053343094602">Ihned si zvolte nové</translation>
 <translation id="5212543919916444558">Na obrazovce nevidím nic, s čím vám můžu pomoct.
 Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
+<translation id="5317780077021120954">Uložit</translation>
+<translation id="5332948983412042822">Zvolte si nové</translation>
 <translation id="5457599981699367932">Použít jako host</translation>
 <translation id="54609108002486618">Spravovaný</translation>
 <translation id="5832805196449965646">Přidat uživatele</translation>
 <translation id="5895138241574237353">Restartovat</translation>
+<translation id="6058625436358447366">Chcete-li akci dokončit, zadejte své staré a nové heslo</translation>
+<translation id="6106186594183574873">Chcete-li akci dokončit, zadejte své staré heslo</translation>
+<translation id="6146993107019042706">Chcete-li akci dokončit, zadejte své nové heslo</translation>
 <translation id="7658239707568436148">Zrušit</translation>
+<translation id="7690294790491645610">Potvrďte nové heslo</translation>
+<translation id="808894953321890993">Změnit heslo</translation>
+<translation id="8747900814994928677">Potvrdit změnu</translation>
+<translation id="910415269708673980">Obnovte lístek pro <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Odemknout</translation>
 </translationbundle>

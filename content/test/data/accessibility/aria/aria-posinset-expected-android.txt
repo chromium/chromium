@@ -8,21 +8,21 @@ android.webkit.WebView focusable focused scrollable
 ++++android.view.View clickable collection_item focusable name='Item 1'
 ++++android.view.View clickable collection_item focusable name='Item 2' item_index=1 row_index=1
 ++android.view.View
-++++android.widget.RadioButton role_description='radio button' checkable clickable focusable
+++++android.widget.RadioButton role_description='radio button' checkable clickable focusable item_index=2 row_index=2
 ++++android.view.View name='1'
 ++++android.view.View name='<newline>'
-++++android.widget.RadioButton role_description='radio button' checkable clickable focusable
+++++android.widget.RadioButton role_description='radio button' checkable clickable focusable item_index=3 row_index=3
 ++++android.view.View name='2'
 ++android.widget.RadioButton role_description='radio button' checkable clickable focusable
 ++android.view.View name='Apple'
 ++android.view.View name='<newline>'
-++android.widget.RadioButton role_description='radio button' checkable clickable focusable
+++android.widget.RadioButton role_description='radio button' checkable clickable focusable item_index=1 row_index=1
 ++android.view.View name='Banana'
 ++android.view.View name='Cake'
 ++++android.view.View name='Cake'
 ++++android.widget.RadioButton role_description='radio button' checkable checked clickable focusable name='Chiffon cakes'
 ++++android.view.View name='<newline>'
-++++android.widget.RadioButton role_description='radio button' checkable clickable focusable name='Chocolate cakes'
+++++android.widget.RadioButton role_description='radio button' checkable clickable focusable name='Chocolate cakes' item_index=1 row_index=1
 ++android.view.View
 ++++android.view.View
 ++++++android.widget.Button role_description='button' clickable focusable name='changedFromRadio'

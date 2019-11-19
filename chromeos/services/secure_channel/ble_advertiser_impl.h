@@ -157,7 +157,7 @@ class BleAdvertiserImpl : public BleAdvertiser {
   base::flat_set<DeviceIdPair>
       requests_already_removed_due_to_failed_advertisement_;
 
-  base::WeakPtrFactory<BleAdvertiserImpl> weak_factory_;
+  base::WeakPtrFactory<BleAdvertiserImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BleAdvertiserImpl);
 };

@@ -43,7 +43,8 @@ class CONTENT_EXPORT WebRTCInternalsMessageHandler
   RenderFrameHost* GetWebRTCInternalsHost() const;
 
   // Javascript message handler.
-  void OnGetAllStats(const base::ListValue* list);
+  void OnGetStandardStats(const base::ListValue* list);
+  void OnGetLegacyStats(const base::ListValue* list);
   void OnSetAudioDebugRecordingsEnabled(bool enable,
                                         const base::ListValue* list);
   void OnSetEventLogRecordingsEnabled(bool enable, const base::ListValue* list);

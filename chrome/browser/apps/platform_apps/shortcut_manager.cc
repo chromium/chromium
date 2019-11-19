@@ -8,6 +8,7 @@
 #include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/one_shot_event.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -25,10 +26,13 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_set.h"
-#include "extensions/common/one_shot_event.h"
+
+#if defined(OS_MACOSX)
+#include "chrome/browser/apps/platform_apps/app_shim_registry_mac.h"
+#include "chrome/common/mac/app_mode_common.h"
+#endif
 
 using extensions::Extension;
 
@@ -38,7 +42,7 @@ namespace {
 // need to be recreated. This might happen when we change various aspects of app
 // shortcuts like command-line flags or associated icons, binaries, etc.
 #if defined(OS_MACOSX)
-const int kCurrentAppShortcutsVersion = 5;
+const int kCurrentAppShortcutsVersion = APP_SHIM_VERSION_NUMBER;
 #else
 const int kCurrentAppShortcutsVersion = 0;
 #endif
@@ -68,10 +72,7 @@ void AppShortcutManager::RegisterProfilePrefs(
 }
 
 AppShortcutManager::AppShortcutManager(Profile* profile)
-    : profile_(profile),
-      is_profile_attributes_storage_observer_(false),
-      extension_registry_observer_(this),
-      weak_ptr_factory_(this) {
+    : profile_(profile), is_profile_attributes_storage_observer_(false) {
   // Use of g_browser_process requires that we are either on the UI thread, or
   // there are no threads initialized (such as in unit tests).
   DCHECK(!content::BrowserThread::IsThreadInitialized(
@@ -84,8 +85,8 @@ AppShortcutManager::AppShortcutManager(Profile* profile)
   // UpdateShortcutsForAllAppsIfNeeded.
   extensions::ExtensionSystem::Get(profile)->ready().Post(
       FROM_HERE,
-      base::Bind(&AppShortcutManager::UpdateShortcutsForAllAppsIfNeeded,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&AppShortcutManager::UpdateShortcutsForAllAppsIfNeeded,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // profile_manager might be NULL in testing environments.
@@ -112,6 +113,11 @@ void AppShortcutManager::OnExtensionWillBeInstalled(
   if (!extension->is_app())
     return;
 
+#if defined(OS_MACOSX)
+  AppShimRegistry::Get()->OnAppInstalledForProfile(extension->id(),
+                                                   profile_->GetPath());
+#endif
+
   // If the app is being updated, update any existing shortcuts but do not
   // create new ones. If it is being installed, automatically create a
   // shortcut in the applications menu (e.g., Start Menu).
@@ -127,6 +133,15 @@ void AppShortcutManager::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UninstallReason reason) {
+#if defined(OS_MACOSX)
+  if (extension->is_app()) {
+    AppShimRegistry::Get()->OnAppUninstalledForProfile(extension->id(),
+                                                       profile_->GetPath());
+    // TODO(https://crbug.com/1001213): Plumb the return result through
+    // DeleteAllShortcuts, to appropriately delete multi-profile apps.
+  }
+#endif
+
   web_app::DeleteAllShortcuts(profile_, extension);
 }
 
@@ -135,6 +150,7 @@ void AppShortcutManager::OnProfileWillBeRemoved(
   if (profile_path != profile_->GetPath())
     return;
 
+  // TODO(https://crbug.com/1001213): Update AppShimRegistry here.
   web_app::internals::GetShortcutIOTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&web_app::internals::DeleteAllShortcutsForProfile,
@@ -164,7 +180,7 @@ void AppShortcutManager::UpdateShortcutsForAllAppsIfNeeded() {
   if (last_version >= kCurrentAppShortcutsVersion)
     return;
 
-  base::PostDelayedTaskWithTraits(
+  base::PostDelayedTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&AppShortcutManager::UpdateShortcutsForAllAppsNow,
                      weak_ptr_factory_.GetWeakPtr()),

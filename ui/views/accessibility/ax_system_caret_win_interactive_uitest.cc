@@ -6,7 +6,6 @@
 #include <oleacc.h>
 #include <wrl/client.h>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_variant.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,7 +29,9 @@ namespace {
 class AXSystemCaretWinTest : public test::DesktopWidgetTest {
  public:
   AXSystemCaretWinTest() : self_(CHILDID_SELF) {}
-  ~AXSystemCaretWinTest() override {}
+  AXSystemCaretWinTest(const AXSystemCaretWinTest&) = delete;
+  AXSystemCaretWinTest& operator=(const AXSystemCaretWinTest&) = delete;
+  ~AXSystemCaretWinTest() override = default;
 
   void SetUp() override {
     SetUpForInteractiveTests();
@@ -62,13 +63,15 @@ class AXSystemCaretWinTest : public test::DesktopWidgetTest {
   Widget* widget_;
   Textfield* textfield_;
   base::win::ScopedVariant self_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXSystemCaretWinTest);
 };
 
 class WinAccessibilityCaretEventMonitor {
  public:
   WinAccessibilityCaretEventMonitor(UINT event_min, UINT event_max);
+  WinAccessibilityCaretEventMonitor(const WinAccessibilityCaretEventMonitor&) =
+      delete;
+  WinAccessibilityCaretEventMonitor& operator=(
+      const WinAccessibilityCaretEventMonitor&) = delete;
   ~WinAccessibilityCaretEventMonitor();
 
   // Blocks until the next event is received. When it's received, it
@@ -105,13 +108,11 @@ class WinAccessibilityCaretEventMonitor {
   base::RunLoop loop_runner_;
   HWINEVENTHOOK win_event_hook_handle_;
   static WinAccessibilityCaretEventMonitor* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(WinAccessibilityCaretEventMonitor);
 };
 
 // static
 WinAccessibilityCaretEventMonitor*
-    WinAccessibilityCaretEventMonitor::instance_ = NULL;
+    WinAccessibilityCaretEventMonitor::instance_ = nullptr;
 
 WinAccessibilityCaretEventMonitor::WinAccessibilityCaretEventMonitor(
     UINT event_min,
@@ -120,7 +121,7 @@ WinAccessibilityCaretEventMonitor::WinAccessibilityCaretEventMonitor(
                     << " WinAccessibilityCaretEventMonitor at a time.";
   instance_ = this;
   win_event_hook_handle_ =
-      SetWinEventHook(event_min, event_max, NULL,
+      SetWinEventHook(event_min, event_max, nullptr,
                       &WinAccessibilityCaretEventMonitor::WinEventHookThunk,
                       GetCurrentProcessId(),
                       0,  // Hook all threads
@@ -129,7 +130,7 @@ WinAccessibilityCaretEventMonitor::WinAccessibilityCaretEventMonitor(
 
 WinAccessibilityCaretEventMonitor::~WinAccessibilityCaretEventMonitor() {
   UnhookWinEvent(win_event_hook_handle_);
-  instance_ = NULL;
+  instance_ = nullptr;
 }
 
 void WinAccessibilityCaretEventMonitor::WaitForNextEvent(DWORD* out_event,
@@ -145,9 +146,9 @@ void WinAccessibilityCaretEventMonitor::WaitForNextEvent(DWORD* out_event,
 
   Microsoft::WRL::ComPtr<IAccessible> acc_obj;
   base::win::ScopedVariant child_variant;
-  CHECK(S_OK == AccessibleObjectFromEvent(
-                    event_info.hwnd, event_info.obj_id, event_info.child_id,
-                    acc_obj.GetAddressOf(), child_variant.Receive()));
+  CHECK(S_OK == AccessibleObjectFromEvent(event_info.hwnd, event_info.obj_id,
+                                          event_info.child_id, &acc_obj,
+                                          child_variant.Receive()));
 
   base::win::ScopedVariant role_variant;
   if (S_OK == acc_obj->get_accRole(child_variant, role_variant.Receive()))
@@ -201,8 +202,7 @@ TEST_F(AXSystemCaretWinTest, DISABLED_TestOnCaretBoundsChangeInTextField) {
   ASSERT_NE(nullptr, native_window);
   HWND hwnd = native_window->GetHost()->GetAcceleratedWidget();
   EXPECT_HRESULT_SUCCEEDED(AccessibleObjectFromWindow(
-      hwnd, static_cast<DWORD>(OBJID_CARET), IID_IAccessible,
-      reinterpret_cast<void**>(caret_accessible.GetAddressOf())));
+      hwnd, static_cast<DWORD>(OBJID_CARET), IID_PPV_ARGS(&caret_accessible)));
 
   textfield_test_api.ExecuteTextEditCommand(
       ui::TextEditCommand::MOVE_TO_BEGINNING_OF_DOCUMENT);
@@ -231,8 +231,7 @@ TEST_F(AXSystemCaretWinTest, DISABLED_TestOnInputTypeChangeInTextField) {
   ASSERT_NE(nullptr, native_window);
   HWND hwnd = native_window->GetHost()->GetAcceleratedWidget();
   EXPECT_HRESULT_SUCCEEDED(AccessibleObjectFromWindow(
-      hwnd, static_cast<DWORD>(OBJID_CARET), IID_IAccessible,
-      reinterpret_cast<void**>(caret_accessible.GetAddressOf())));
+      hwnd, static_cast<DWORD>(OBJID_CARET), IID_PPV_ARGS(&caret_accessible)));
   LONG x, y, width, height;
   EXPECT_EQ(S_OK,
             caret_accessible->accLocation(&x, &y, &width, &height, self_));
@@ -245,8 +244,7 @@ TEST_F(AXSystemCaretWinTest, DISABLED_TestOnInputTypeChangeInTextField) {
   // Retrieving the caret again should also work.
   caret_accessible.Reset();
   EXPECT_HRESULT_SUCCEEDED(AccessibleObjectFromWindow(
-      hwnd, static_cast<DWORD>(OBJID_CARET), IID_IAccessible,
-      reinterpret_cast<void**>(caret_accessible.GetAddressOf())));
+      hwnd, static_cast<DWORD>(OBJID_CARET), IID_PPV_ARGS(&caret_accessible)));
   LONG x2, y2, width2, height2;
   EXPECT_EQ(S_OK,
             caret_accessible->accLocation(&x2, &y2, &width2, &height2, self_));
@@ -262,8 +260,7 @@ TEST_F(AXSystemCaretWinTest, DISABLED_TestMovingWindow) {
   ASSERT_NE(nullptr, native_window);
   HWND hwnd = native_window->GetHost()->GetAcceleratedWidget();
   EXPECT_HRESULT_SUCCEEDED(AccessibleObjectFromWindow(
-      hwnd, static_cast<DWORD>(OBJID_CARET), IID_IAccessible,
-      reinterpret_cast<void**>(caret_accessible.GetAddressOf())));
+      hwnd, static_cast<DWORD>(OBJID_CARET), IID_PPV_ARGS(&caret_accessible)));
   LONG x, y, width, height;
   EXPECT_EQ(S_OK,
             caret_accessible->accLocation(&x, &y, &width, &height, self_));
@@ -272,8 +269,7 @@ TEST_F(AXSystemCaretWinTest, DISABLED_TestMovingWindow) {
   LONG x2, y2, width2, height2;
   caret_accessible.Reset();
   EXPECT_HRESULT_SUCCEEDED(AccessibleObjectFromWindow(
-      hwnd, static_cast<DWORD>(OBJID_CARET), IID_IAccessible,
-      reinterpret_cast<void**>(caret_accessible.GetAddressOf())));
+      hwnd, static_cast<DWORD>(OBJID_CARET), IID_PPV_ARGS(&caret_accessible)));
   EXPECT_EQ(S_OK,
             caret_accessible->accLocation(&x2, &y2, &width2, &height2, self_));
   EXPECT_NE(x, x2);
@@ -290,8 +286,7 @@ TEST_F(AXSystemCaretWinTest, DISABLED_TestMovingWindow) {
   caret_accessible.Reset();
 
   EXPECT_HRESULT_SUCCEEDED(AccessibleObjectFromWindow(
-      hwnd, static_cast<DWORD>(OBJID_CARET), IID_IAccessible,
-      reinterpret_cast<void**>(caret_accessible.GetAddressOf())));
+      hwnd, static_cast<DWORD>(OBJID_CARET), IID_PPV_ARGS(&caret_accessible)));
   EXPECT_EQ(S_OK,
             caret_accessible->accLocation(&x3, &y3, &width3, &height3, self_));
   EXPECT_NE(x2, x3);
@@ -308,8 +303,7 @@ TEST_F(AXSystemCaretWinTest, DISABLED_TestCaretMSAAEvents) {
   ASSERT_NE(nullptr, native_window);
   HWND hwnd = native_window->GetHost()->GetAcceleratedWidget();
   EXPECT_HRESULT_SUCCEEDED(AccessibleObjectFromWindow(
-      hwnd, static_cast<DWORD>(OBJID_CARET), IID_IAccessible,
-      reinterpret_cast<void**>(caret_accessible.GetAddressOf())));
+      hwnd, static_cast<DWORD>(OBJID_CARET), IID_PPV_ARGS(&caret_accessible)));
 
   DWORD event;
   UINT role;

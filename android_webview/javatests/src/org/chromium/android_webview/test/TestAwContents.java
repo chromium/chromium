@@ -24,11 +24,6 @@ public class TestAwContents extends AwContents {
      */
     public interface RenderProcessGoneObserver {
         /**
-         * Invoked when AwContents knows about render process gone
-         */
-        void onRenderProcessGone();
-
-        /**
          * Invoked when AwContents notified AwContentsClient about render
          * process gone
          */
@@ -60,16 +55,8 @@ public class TestAwContents extends AwContents {
     }
 
     @Override
-    protected void onRenderProcessGone(int childProcessID) {
-        super.onRenderProcessGone(childProcessID);
-        for (RenderProcessGoneObserver observer : mRenderProcessGoneObservers) {
-            observer.onRenderProcessGone();
-        }
-    }
-
-    @Override
-    protected boolean onRenderProcessGoneDetail(int childProcessID, boolean crashed) {
-        boolean ret = super.onRenderProcessGoneDetail(childProcessID, crashed);
+    protected boolean onRenderProcessGone(int childProcessID, boolean crashed) {
+        boolean ret = super.onRenderProcessGone(childProcessID, crashed);
         for (RenderProcessGoneObserver observer : mRenderProcessGoneObservers) {
             observer.onRenderProcessGoneNotifiedToAwContentsClient();
         }

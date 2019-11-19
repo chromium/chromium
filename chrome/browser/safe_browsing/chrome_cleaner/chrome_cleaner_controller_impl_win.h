@@ -16,7 +16,12 @@
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_runner_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results_win.h"
+#include "chrome/browser/safe_browsing/chrome_cleaner/chrome_prompt_actions_win.h"
 #include "components/component_updater/component_updater_service.h"
+
+namespace extensions {
+class ExtensionRegistry;
+}
 
 namespace safe_browsing {
 
@@ -97,21 +102,20 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
 
   // Callback that checks if the weak pointer |controller| is still valid, and
   // if so will call OnPromptuser(). If |controller| is no longer valid, will
-  // immediately send a Mojo response denying the cleanup operation.
+  // immediately send an IPC response denying the cleanup operation.
   //
-  // The other Mojo callbacks below do not need corresponding "weak" callbacks,
+  // The other callbacks below do not need corresponding "weak" callbacks,
   // because for those cases nothing needs to be done if the weak pointer
   // referencing the controller instance is no longer valid (Chrome's Callback
   // objects become no-ops if the bound weak pointer is not valid).
   static void WeakOnPromptUser(
       const base::WeakPtr<ChromeCleanerControllerImpl>& controller,
       ChromeCleanerScannerResults&& reported_results,
-      chrome_cleaner::mojom::ChromePrompt::PromptUserCallback
-          prompt_user_callback);
+      ChromePromptActions::PromptUserReplyCallback reply_callback);
 
-  void OnPromptUser(ChromeCleanerScannerResults&& reported_results,
-                    chrome_cleaner::mojom::ChromePrompt::PromptUserCallback
-                        prompt_user_callback);
+  void OnPromptUser(
+      ChromeCleanerScannerResults&& reported_results,
+      ChromePromptActions::PromptUserReplyCallback reply_callback);
   void OnConnectionClosed();
   void OnCleanerProcessDone(ChromeCleanerRunner::ProcessStatus process_status);
   void InitiateReboot();
@@ -120,7 +124,8 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   // Pointer to either real_delegate_ or one set by tests.
   ChromeCleanerControllerDelegate* delegate_;
 
-  extensions::ExtensionService* extension_service_;
+  extensions::ExtensionService* extension_service_ = nullptr;
+  extensions::ExtensionRegistry* extension_registry_ = nullptr;
 
   State state_ = State::kIdle;
   // Whether Cleanup is powered by an external partner.
@@ -128,9 +133,9 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   IdleReason idle_reason_ = IdleReason::kInitial;
   std::unique_ptr<SwReporterInvocation> reporter_invocation_;
   ChromeCleanerScannerResults scanner_results_;
-  // The Mojo callback that should be called to send a response to the Chrome
-  // Cleaner process. This must be posted to run on the IO thread.
-  chrome_cleaner::mojom::ChromePrompt::PromptUserCallback prompt_user_callback_;
+  // Callback that should be called to send a response to the Chrome Cleaner
+  // process.
+  ChromePromptActions::PromptUserReplyCallback prompt_user_reply_callback_;
 
   // For metrics reporting.
   base::Time time_scanning_started_;
@@ -152,7 +157,7 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
 
   THREAD_CHECKER(thread_checker_);
 
-  base::WeakPtrFactory<ChromeCleanerControllerImpl> weak_factory_;
+  base::WeakPtrFactory<ChromeCleanerControllerImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeCleanerControllerImpl);
 };

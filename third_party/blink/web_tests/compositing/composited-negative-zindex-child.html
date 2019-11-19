@@ -26,7 +26,7 @@
       testRunner.dumpAsText();
 
     function doTest() {
-      document.getElementById('child').style.webkitTransform = 'translateZ(0)';
+      document.getElementById('child').style.willChange = 'transform';
     }
     window.addEventListener('load', doTest, false);
   </script>

@@ -9,6 +9,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/event_target.h"
+#include "ui/events/keycodes/dom/dom_key.h"
 
 namespace ui {
 
@@ -63,6 +64,8 @@ class KeyEventTestApi : public EventTestApi {
   void set_is_char(bool is_char) {
     key_event_->set_is_char(is_char);
   }
+
+  DomKey dom_key() const { return key_event_->key_; }
 
  private:
   KeyEventTestApi();

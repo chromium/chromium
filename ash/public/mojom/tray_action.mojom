@@ -1,0 +1,103 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom;
+
+// An action handler state.
+enum TrayActionState {
+  // The action cannot be handled - due to no client being set, the client not
+  // supporting the action, user session not being locked etc.
+  kNotAvailable,
+
+  // The client supports the action and is not currently handling the action.
+  kAvailable,
+
+  // The client received the request for the action and it is launching the
+  // flow to handle it.
+  kLaunching,
+
+  // The client is currently handling the action.
+  kActive,
+};
+
+// The user action that triggered a request for a new note.
+// Used in histograms - should be kept in sync with
+// NewLockScreenNoteRequestType histogram enum, and assigned values should
+// never be changed.
+enum LockScreenNoteOrigin {
+  // The note request originated from the new note button in the system
+  // tray - note that this UI element is deprecated.
+  kTrayAction = 0,
+
+  // The user tapped the note action button shown on the lock screen.
+  kLockScreenButtonTap = 1,
+
+  // The user swiped from the note action button shown on the lock screen.
+  kLockScreenButtonSwipe = 2,
+
+  // The user activated the lock screen button shown on the lock screen using
+  // the keyboard.
+  kLockScreenButtonKeyboard = 3,
+
+  // The user ejected the stylus tool from the device.
+  kStylusEject = 4,
+};
+
+// Reason for closing a lock screen note, and consequentially closing any
+// existing note handler app windows.
+// Used primarily for metrics reporting.
+// IMPORTANT: The values should be kept in sync with
+// LockScreenNoteTakingExitReason histogram enum, and assigned values should
+// never be changed.
+enum CloseLockScreenNoteReason {
+  // The user session was unlocked.
+  kSessionUnlock = 0,
+
+  // The user session was shut down (e.g. due to user sign-out).
+  kShutdown = 1,
+
+  // The user display was completely dimmed (e.g. due to user inactivity).
+  kScreenDimmed = 2,
+
+  // Device suspended.
+  kSuspend = 3,
+
+  // The app window associated with the note was closed by the app.
+  kAppWindowClosed = 4,
+
+  // The note taking app's support for the lock screen note taking was disabled
+  // (e.g. because of a policy update).
+  kAppLockScreenSupportDisabled = 5,
+
+  // The user pressed "Unlock" button on the lock screen UI.
+  kUnlockButtonPressed = 6,
+};
+
+// Used by a client (e.g. Chrome) to set up a handler for a tray action, and
+// notify ash on the action handler's state changes. A tray action is one of
+// predefined actions (currently only the "new note on lock screen" action is
+// supported) that appear as an ash status area button if the client declares
+// the action as available. Clicking the button invokes a client method that
+// requests the action associated with the button to be handled.
+interface TrayAction {
+  // Sets the client to be used to handle action requests.
+  // |lock_screen_note_state|: The current lock screen note action state
+  //     associated with the client.
+  SetClient(pending_remote<TrayActionClient> client,
+            TrayActionState lock_screen_note_state);
+
+  // Updates action state for the lock screen note action. If called with no
+  // client set, the state change will not take effect until a client is set.
+  // Null client is equivalent to kNotAvailable state.
+  UpdateLockScreenNoteState(TrayActionState state);
+};
+
+// Used by ash to request Chrome to handle an action.
+interface TrayActionClient {
+  // Requests a lock screen note action to be handled.
+  RequestNewLockScreenNote(LockScreenNoteOrigin origin);
+
+  // Closes lock screen note.
+  CloseLockScreenNote(CloseLockScreenNoteReason reason);
+};

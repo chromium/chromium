@@ -16,14 +16,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.SigninHelper;
-import org.chromium.chrome.browser.signin.SigninManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.signin.MockChangeEventChecker;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
@@ -32,6 +30,7 @@ import org.chromium.components.signin.AccountIdProvider;
 import org.chromium.components.sync.AndroidSyncSettings;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Test suite for Sync.
@@ -47,7 +46,7 @@ public class SyncTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testFlushDirectoryDoesntBreakSync() throws Throwable {
+    public void testFlushDirectoryDoesntBreakSync() {
         mSyncTestRule.setUpTestAccountAndSignIn();
         final Activity activity = mSyncTestRule.getActivity();
 
@@ -72,7 +71,7 @@ public class SyncTest {
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
 
         // Signing back in should re-enable sync.
-        mSyncTestRule.signIn(account);
+        mSyncTestRule.signinAndEnableSync(account);
         SyncTestUtil.waitForSyncActive();
     }
 
@@ -82,10 +81,10 @@ public class SyncTest {
     public void testStopAndClear() {
         mSyncTestRule.setUpTestAccountAndSignIn();
         CriteriaHelper.pollUiThread(
-                new Criteria("Timed out checking that isSignedInOnNative() == true") {
+                new Criteria("Timed out checking that hasPrimaryAccount() == true") {
                     @Override
                     public boolean isSatisfied() {
-                        return SigninManager.get().isSignedInOnNative();
+                        return IdentityServicesProvider.getIdentityManager().hasPrimaryAccount();
                     }
                 },
                 SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);
@@ -96,10 +95,10 @@ public class SyncTest {
         Assert.assertNull(SigninTestUtil.getCurrentAccount());
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
         CriteriaHelper.pollUiThread(
-                new Criteria("Timed out checking that isSignedInOnNative() == false") {
+                new Criteria("Timed out checking that hasPrimaryAccount() == false") {
                     @Override
                     public boolean isSatisfied() {
-                        return !SigninManager.get().isSignedInOnNative();
+                        return !IdentityServicesProvider.getIdentityManager().hasPrimaryAccount();
                     }
                 },
                 SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);
@@ -117,35 +116,32 @@ public class SyncTest {
         final Account oldAccount = mSyncTestRule.setUpTestAccountAndSignIn();
         final Account newAccount = SigninTestUtil.addTestAccount("test2@gmail.com");
 
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                // First, we force a call to updateAccountRenameData. In the real world,
-                // this should be called by one of our broadcast listener that listens to
-                // real account rename events instead of the mocks.
-                MockChangeEventChecker eventChecker = new MockChangeEventChecker();
-                eventChecker.insertRenameEvent(oldAccount.name, newAccount.name);
-                SigninHelper.updateAccountRenameData(eventChecker);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // First, we force a call to updateAccountRenameData. In the real world,
+            // this should be called by one of our broadcast listener that listens to
+            // real account rename events instead of the mocks.
+            MockChangeEventChecker eventChecker = new MockChangeEventChecker();
+            eventChecker.insertRenameEvent(oldAccount.name, newAccount.name);
+            SigninHelper.updateAccountRenameData(eventChecker);
 
-                // Tell the fake content resolver that a rename had happen and copy over the sync
-                // settings. This would normally be done by the
-                // SystemSyncTestRule.getSyncContentResolver().
-                mSyncTestRule.getSyncContentResolver().renameAccounts(
-                        oldAccount, newAccount, AndroidSyncSettings.get().getContractAuthority());
+            // Tell the fake content resolver that a rename had happen and copy over the sync
+            // settings. This would normally be done by the
+            // SystemSyncTestRule.getSyncContentResolver().
+            mSyncTestRule.getSyncContentResolver().renameAccounts(
+                    oldAccount, newAccount, AndroidSyncSettings.get().getContractAuthority());
 
-                // Inform the AccountTracker, these would normally be done by account validation
-                // or signin. We will only be calling the testing versions of it.
-                AccountIdProvider provider = AccountIdProvider.getInstance();
-                String[] accountNames = {oldAccount.name, newAccount.name};
-                String[] accountIds = {provider.getAccountId(accountNames[0]),
-                        provider.getAccountId(accountNames[1])};
-                IdentityServicesProvider.getAccountTrackerService().syncForceRefreshForTest(
-                        accountIds, accountNames);
+            // Inform the AccountTracker, these would normally be done by account validation
+            // or signin. We will only be calling the testing versions of it.
+            AccountIdProvider provider = AccountIdProvider.getInstance();
+            String[] accountNames = {oldAccount.name, newAccount.name};
+            String[] accountIds = {
+                    provider.getAccountId(accountNames[0]), provider.getAccountId(accountNames[1])};
+            IdentityServicesProvider.getAccountTrackerService().syncForceRefreshForTest(
+                    accountIds, accountNames);
 
-                // Starts the rename process. Normally, this is triggered by the broadcast
-                // listener as well.
-                SigninHelper.get().validateAccountSettings(true);
-            }
+            // Starts the rename process. Normally, this is triggered by the broadcast
+            // listener as well.
+            SigninHelper.get().validateAccountSettings(true);
         });
 
         CriteriaHelper.pollInstrumentationThread(new Criteria() {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "jni/ResourceFactory_jni.h"
 #include "ui/android/resources/nine_patch_resource.h"
+#include "ui/android/ui_android_jni_headers/ResourceFactory_jni.h"
 #include "ui/gfx/geometry/rect.h"
 
 using base::android::JavaParamRef;

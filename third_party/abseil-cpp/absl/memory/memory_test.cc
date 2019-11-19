@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -620,7 +620,7 @@ TEST(AllocatorTraits, FunctionsFull) {
 }
 
 TEST(AllocatorNoThrowTest, DefaultAllocator) {
-#if ABSL_ALLOCATOR_NOTHROW
+#if defined(ABSL_ALLOCATOR_NOTHROW) && ABSL_ALLOCATOR_NOTHROW
   EXPECT_TRUE(absl::default_allocator_is_nothrow::value);
 #else
   EXPECT_FALSE(absl::default_allocator_is_nothrow::value);
@@ -628,7 +628,7 @@ TEST(AllocatorNoThrowTest, DefaultAllocator) {
 }
 
 TEST(AllocatorNoThrowTest, StdAllocator) {
-#if ABSL_ALLOCATOR_NOTHROW
+#if defined(ABSL_ALLOCATOR_NOTHROW) && ABSL_ALLOCATOR_NOTHROW
   EXPECT_TRUE(absl::allocator_is_nothrow<std::allocator<int>>::value);
 #else
   EXPECT_FALSE(absl::allocator_is_nothrow<std::allocator<int>>::value);

@@ -17,7 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -115,7 +115,8 @@ TEST_F(SysInfoTest, MAYBE_AmountOfTotalDiskSpace) {
   EXPECT_GT(SysInfo::AmountOfTotalDiskSpace(tmp_path), 0) << tmp_path.value();
 }
 
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX)
+#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX) || \
+    defined(OS_FUCHSIA)
 TEST_F(SysInfoTest, OperatingSystemVersionNumbers) {
   int32_t os_major_version = -1;
   int32_t os_minor_version = -1;
@@ -160,7 +161,7 @@ TEST_F(SysInfoTest, HardwareModelNameFormatMacAndiOS) {
 #endif
 
 TEST_F(SysInfoTest, GetHardwareInfo) {
-  test::ScopedTaskEnvironment task_environment;
+  test::TaskEnvironment task_environment;
   base::Optional<SysInfo::HardwareInfo> hardware_info;
 
   auto callback = base::BindOnce(

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import argparse
+import codecs
 import datetime
 import fnmatch
 import glob
@@ -510,9 +511,11 @@ class GenerateEntitlementsAction(Action):
 
 
 def Main():
+  # Cache this codec so that plistlib can find it. See
+  # https://crbug.com/999461#c12 for more details.
+  codecs.lookup('utf-8')
+
   parser = argparse.ArgumentParser('codesign iOS bundles')
-  parser.add_argument('--developer_dir', required=False,
-                      help='Path to Xcode.')
   subparsers = parser.add_subparsers()
 
   actions = [
@@ -525,8 +528,6 @@ def Main():
     action.Register(subparsers)
 
   args = parser.parse_args()
-  if args.developer_dir:
-    os.environ['DEVELOPER_DIR'] = args.developer_dir
   args.func(args)
 
 

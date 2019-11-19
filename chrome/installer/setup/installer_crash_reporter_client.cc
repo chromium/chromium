@@ -10,6 +10,7 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
+#include "build/branding_buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/env_vars.h"
@@ -106,7 +107,7 @@ bool InstallerCrashReporterClient::IsRunningUnattended() {
 }
 
 bool InstallerCrashReporterClient::GetCollectStatsConsent() {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return GoogleUpdateSettings::GetCollectStatsConsent();
 #else
   return false;
@@ -130,7 +131,7 @@ bool InstallerCrashReporterClient::GetCollectStatsInSample() {
 
 bool InstallerCrashReporterClient::ReportingIsEnforcedByPolicy(bool* enabled) {
   // From the generated policy/policy/policy_constants.cc:
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   static const wchar_t kRegistryChromePolicyKey[] =
       L"SOFTWARE\\Policies\\Google\\Chrome";
 #else

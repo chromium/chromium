@@ -16,8 +16,10 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
 #include "mojo/public/cpp/bindings/lib/unserialized_message_context.h"
@@ -67,6 +69,14 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
           size_t payload_size,
           size_t payload_interface_id_count,
           std::vector<ScopedHandle>* handles);
+
+  // Constructs a new serialized Message object from a fully populated message
+  // payload (including a well-formed message header) and an optional set of
+  // handle attachments. This Message may not be extended with additional
+  // payload or handles once constructed, but its payload remains mutable as
+  // long as the Message is not moved and neither |Reset()| nor
+  // |TakeMojoMessage()| is called.
+  Message(base::span<const uint8_t> payload, base::span<ScopedHandle> handles);
 
   // Constructs a new serialized Message object from an existing
   // ScopedMessageHandle; e.g., one read from a message pipe.
@@ -178,6 +188,17 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
     return &associated_endpoint_handles_;
   }
 
+  // Sets the ConnectionGroup to which this Message's local receiver belongs, if
+  // any. This is called immediately after a Message is read from a message pipe
+  // but before it's deserialized. If non-null, |ref| must point to a Ref that
+  // outlives this Message object.
+  void set_receiver_connection_group(const ConnectionGroup::Ref* ref) {
+    receiver_connection_group_ = ref;
+  }
+  const ConnectionGroup::Ref* receiver_connection_group() const {
+    return receiver_connection_group_;
+  }
+
   // Takes ownership of any handles within |*context| and attaches them to this
   // Message.
   void AttachHandlesFromSerializationContext(
@@ -220,6 +241,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
         generic_context.release()->template SafeCast<MessageType>());
   }
 
+  const char* heap_profiler_tag() const { return heap_profiler_tag_; }
+  void set_heap_profiler_tag(const char* heap_profiler_tag) {
+    heap_profiler_tag_ = heap_profiler_tag;
+  }
+
 #if defined(ENABLE_IPC_FUZZER)
   const char* interface_name() const { return interface_name_; }
   void set_interface_name(const char* interface_name) {
@@ -257,12 +283,34 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   // Indicates whether this Message object is serialized.
   bool serialized_ = false;
 
+  const char* heap_profiler_tag_ = nullptr;
 #if defined(ENABLE_IPC_FUZZER)
   const char* interface_name_ = nullptr;
   const char* method_name_ = nullptr;
 #endif
 
+  // A reference to the ConnectionGroup to which the receiver of this Message
+  // belongs, if any. Only set if this Message was just read off of a message
+  // pipe and is about to be deserialized.
+  const ConnectionGroup::Ref* receiver_connection_group_ = nullptr;
+
   DISALLOW_COPY_AND_ASSIGN(Message);
+};
+
+class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageFilter {
+ public:
+  virtual ~MessageFilter() {}
+
+  // The filter may mutate the given message.  This method is called before
+  // the message is dispatched to the associated MessageReceiver. Returns true
+  // if the message was accepted and false otherwise, indicating that the
+  // message was invalid or malformed.
+  virtual bool WillDispatch(Message* message) WARN_UNUSED_RESULT = 0;
+
+  // The filter receives notification that the message was dispatched or
+  // rejected. Since the message filter is owned by the receiver it will not be
+  // invoked if the receiver is closed during a dispatch of a message.
+  virtual void DidDispatchOrReject(Message* message, bool accepted) = 0;
 };
 
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageReceiver {

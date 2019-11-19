@@ -43,10 +43,10 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen_options.h"
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
+#include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -88,7 +89,7 @@ void FullscreenElementChanged(Document& document,
     // fullscreen element. Hence, it must match :-webkit-full-screen-ancestor.
     if (new_request_type ==
         Fullscreen::RequestType::kPrefixedForCrossProcessDescendant) {
-      DCHECK(IsHTMLIFrameElement(new_element));
+      DCHECK(IsA<HTMLIFrameElement>(new_element));
       new_element->SetContainsFullScreenElement(true);
     }
     new_element->SetContainsFullScreenElementOnAncestorsCrossingFrameBoundaries(
@@ -225,7 +226,9 @@ bool AllowedToRequestFullscreen(Document& document) {
   // true:
 
   //  The algorithm is triggered by a user activation.
-  if (LocalFrame::HasTransientUserActivation(document.GetFrame()))
+  // We are doing experiment to see if there is any webpage breaking after we
+  // only allow one fullscreen when the user activation state is active.
+  if (LocalFrame::ConsumeTransientUserActivation(document.GetFrame()))
     return true;
 
   //  The algorithm is triggered by a user generated orientation change.
@@ -236,11 +239,25 @@ bool AllowedToRequestFullscreen(Document& document) {
     return true;
   }
 
+  if (document.IsImmersiveArOverlay()) {
+    // This is a workaround for lack of a user activation when an immersive-ar
+    // session is starting. If the app sets an element fullscreen in the "Enter
+    // AR" button click, that gets unfullscreened when the browser shows its AR
+    // session consent prompt. By the time the session starts, the 5-second
+    // timer for the initial user activation is likely to have expired. This
+    // also allows switching the active fullscreen element during the session.
+    // Note that exiting the immersive-ar session does FullyExitFullscreen to
+    // ensure a consistent post-session state.
+    DVLOG(1) << __func__ << ": allowing fullscreen immersive-ar DOM overlay";
+    return true;
+  }
+
   String message = ExceptionMessages::FailedToExecute(
       "requestFullscreen", "Element",
       "API can only be initiated by a user gesture.");
-  document.AddConsoleMessage(ConsoleMessage::Create(
-      kJSMessageSource, mojom::ConsoleMessageLevel::kWarning, message));
+  document.AddConsoleMessage(
+      ConsoleMessage::Create(mojom::ConsoleMessageSource::kJavaScript,
+                             mojom::ConsoleMessageLevel::kWarning, message));
 
   return false;
 }
@@ -283,7 +300,7 @@ bool RequestFullscreenConditionsMet(Element& pending, Document& document) {
     return false;
 
   // |pending| is not a dialog element.
-  if (IsHTMLDialogElement(pending))
+  if (IsA<HTMLDialogElement>(pending))
     return false;
 
   // The fullscreen element ready check for |pending| returns false.
@@ -578,7 +595,7 @@ ScriptPromise Fullscreen::RequestFullscreen(Element& pending,
   if (script_state) {
     // We should only be creating promises for unprefixed variants.
     DCHECK_EQ(Fullscreen::RequestType::kUnprefixed, request_type);
-    resolver = ScriptPromiseResolver::Create(script_state);
+    resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   }
 
   bool for_cross_process_descendant =
@@ -789,7 +806,7 @@ ScriptPromise Fullscreen::ExitFullscreen(Document& doc,
   }
 
   if (script_state)
-    resolver = ScriptPromiseResolver::Create(script_state);
+    resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   // 3. Let |resize| be false.
   bool resize = false;

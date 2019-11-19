@@ -10,17 +10,18 @@
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display_embedder/gl_output_surface.h"
 #include "components/viz/service/display_embedder/viz_process_context_provider.h"
-#include "ui/latency/latency_tracker.h"
+#include "components/viz/service/viz_service_export.h"
+#include "gpu/command_buffer/common/mailbox.h"
+#include "ui/gfx/color_space.h"
 
 namespace viz {
 
 // An OutputSurface implementation that draws and swaps to an offscreen GL
 // framebuffer.
-class GLOutputSurfaceOffscreen : public GLOutputSurface {
+class VIZ_SERVICE_EXPORT GLOutputSurfaceOffscreen : public GLOutputSurface {
  public:
-  GLOutputSurfaceOffscreen(
-      scoped_refptr<VizProcessContextProvider> context_provider,
-      SyntheticBeginFrameSource* synthetic_begin_frame_source);
+  explicit GLOutputSurfaceOffscreen(
+      scoped_refptr<VizProcessContextProvider> context_provider);
   ~GLOutputSurfaceOffscreen() override;
 
   // OutputSurface implementation.
@@ -37,10 +38,14 @@ class GLOutputSurfaceOffscreen : public GLOutputSurface {
  private:
   void OnSwapBuffersComplete(std::vector<ui::LatencyInfo> latency_info);
 
+  gpu::Mailbox mailbox_;
+
   uint32_t fbo_ = 0;
   uint32_t texture_id_ = 0;
   gfx::Size size_;
-  base::WeakPtrFactory<GLOutputSurfaceOffscreen> weak_ptr_factory_;
+  gfx::ColorSpace color_space_;
+
+  base::WeakPtrFactory<GLOutputSurfaceOffscreen> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GLOutputSurfaceOffscreen);
 };

@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -61,6 +62,7 @@ class ManagePasswordsTest : public InProcessBrowserTest {
  private:
   autofill::PasswordForm password_form_;
   autofill::PasswordForm federated_form_;
+  autofill::FormData observed_form_;
   base::HistogramTester histogram_tester_;
   password_manager::StubPasswordManagerClient client_;
   password_manager::StubPasswordManagerDriver driver_;

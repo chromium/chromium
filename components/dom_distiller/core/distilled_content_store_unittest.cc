@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,22 +18,19 @@ namespace dom_distiller {
 namespace {
 
 ArticleEntry CreateEntry(std::string entry_id,
-                         std::string page_url1,
-                         std::string page_url2,
-                         std::string page_url3) {
+                         GURL page_url1 = GURL(),
+                         GURL page_url2 = GURL(),
+                         GURL page_url3 = GURL()) {
   ArticleEntry entry;
-  entry.set_entry_id(entry_id);
-  if (!page_url1.empty()) {
-    ArticleEntryPage* page = entry.add_pages();
-    page->set_url(page_url1);
+  entry.entry_id = entry_id;
+  if (!page_url1.is_empty()) {
+    entry.pages.push_back(page_url1);
   }
-  if (!page_url2.empty()) {
-    ArticleEntryPage* page = entry.add_pages();
-    page->set_url(page_url2);
+  if (!page_url2.is_empty()) {
+    entry.pages.push_back(page_url2);
   }
-  if (!page_url3.empty()) {
-    ArticleEntryPage* page = entry.add_pages();
-    page->set_url(page_url3);
+  if (!page_url3.is_empty()) {
+    entry.pages.push_back(page_url3);
   }
   return entry;
 }
@@ -41,10 +38,10 @@ ArticleEntry CreateEntry(std::string entry_id,
 DistilledArticleProto CreateDistilledArticleForEntry(
     const ArticleEntry& entry) {
   DistilledArticleProto article;
-  for (int i = 0; i < entry.pages_size(); ++i) {
+  for (const GURL& url : entry.pages) {
     DistilledPageProto* page = article.add_pages();
-    page->set_url(entry.pages(i).url());
-    page->set_html("<div>" + entry.pages(i).url() + "</div>");
+    page->set_url(url.spec());
+    page->set_html("<div>" + url.spec() + "</div>");
   }
   return article;
 }
@@ -78,12 +75,13 @@ class InMemoryContentStoreTest : public testing::Test {
 
 // Tests whether saving and then loading a single article works as expected.
 TEST_F(InMemoryContentStoreTest, SaveAndLoadSingleArticle) {
-  base::test::ScopedTaskEnvironment task_environment;
-  const ArticleEntry entry = CreateEntry("test-id", "url1", "url2", "url3");
+  base::test::SingleThreadTaskEnvironment task_environment;
+  const ArticleEntry entry =
+      CreateEntry("test-id", GURL("https://url1"), GURL("https://url2"),
+                  GURL("https://url3"));
   const DistilledArticleProto stored_proto =
       CreateDistilledArticleForEntry(entry);
-  store_->SaveContent(entry,
-                      stored_proto,
+  store_->SaveContent(entry, stored_proto,
                       base::Bind(&InMemoryContentStoreTest::OnSaveCallback,
                                  base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
@@ -102,8 +100,10 @@ TEST_F(InMemoryContentStoreTest, SaveAndLoadSingleArticle) {
 // Tests that loading articles which have never been stored, yields a callback
 // where success is false.
 TEST_F(InMemoryContentStoreTest, LoadNonExistentArticle) {
-  base::test::ScopedTaskEnvironment task_environment;
-  const ArticleEntry entry = CreateEntry("bogus-id", "url1", "url2", "url3");
+  base::test::SingleThreadTaskEnvironment task_environment;
+  const ArticleEntry entry =
+      CreateEntry("bogus-id", GURL("https://url1"), GURL("https://url2"),
+                  GURL("https://url3"));
   store_->LoadContent(entry,
                       base::Bind(&InMemoryContentStoreTest::OnLoadCallback,
                                  base::Unretained(this)));
@@ -115,13 +115,14 @@ TEST_F(InMemoryContentStoreTest, LoadNonExistentArticle) {
 // of save and store does not matter when the total number of articles does not
 // exceed |kDefaultMaxNumCachedEntries|.
 TEST_F(InMemoryContentStoreTest, SaveAndLoadMultipleArticles) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   // Store first article.
-  const ArticleEntry first_entry = CreateEntry("first", "url1", "url2", "url3");
+  const ArticleEntry first_entry =
+      CreateEntry("first", GURL("https://url1"), GURL("https://url2"),
+                  GURL("https://url3"));
   const DistilledArticleProto first_stored_proto =
       CreateDistilledArticleForEntry(first_entry);
-  store_->SaveContent(first_entry,
-                      first_stored_proto,
+  store_->SaveContent(first_entry, first_stored_proto,
                       base::Bind(&InMemoryContentStoreTest::OnSaveCallback,
                                  base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
@@ -130,11 +131,11 @@ TEST_F(InMemoryContentStoreTest, SaveAndLoadMultipleArticles) {
 
   // Store second article.
   const ArticleEntry second_entry =
-      CreateEntry("second", "url4", "url5", "url6");
+      CreateEntry("second", GURL("https://url4"), GURL("https://url5"),
+                  GURL("https://url6"));
   const DistilledArticleProto second_stored_proto =
       CreateDistilledArticleForEntry(second_entry);
-  store_->SaveContent(second_entry,
-                      second_stored_proto,
+  store_->SaveContent(second_entry, second_stored_proto,
                       base::Bind(&InMemoryContentStoreTest::OnSaveCallback,
                                  base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
@@ -165,18 +166,19 @@ TEST_F(InMemoryContentStoreTest, SaveAndLoadMultipleArticles) {
 // Verifies that the content store does not store unlimited number of articles,
 // but expires the oldest ones when the limit for number of articles is reached.
 TEST_F(InMemoryContentStoreTest, SaveAndLoadMoreThanMaxArticles) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
 
   // Create a new store with only |kMaxNumArticles| articles as the limit.
   const int kMaxNumArticles = 3;
   store_.reset(new InMemoryContentStore(kMaxNumArticles));
 
   // Store first article.
-  const ArticleEntry first_entry = CreateEntry("first", "url1", "url2", "url3");
+  const ArticleEntry first_entry =
+      CreateEntry("first", GURL("https://url1"), GURL("https://url2"),
+                  GURL("https://url3"));
   const DistilledArticleProto first_stored_proto =
       CreateDistilledArticleForEntry(first_entry);
-  store_->SaveContent(first_entry,
-                      first_stored_proto,
+  store_->SaveContent(first_entry, first_stored_proto,
                       base::Bind(&InMemoryContentStoreTest::OnSaveCallback,
                                  base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
@@ -185,11 +187,11 @@ TEST_F(InMemoryContentStoreTest, SaveAndLoadMoreThanMaxArticles) {
 
   // Store second article.
   const ArticleEntry second_entry =
-      CreateEntry("second", "url4", "url5", "url6");
+      CreateEntry("second", GURL("https://url4"), GURL("https://url5"),
+                  GURL("https://url6"));
   const DistilledArticleProto second_stored_proto =
       CreateDistilledArticleForEntry(second_entry);
-  store_->SaveContent(second_entry,
-                      second_stored_proto,
+  store_->SaveContent(second_entry, second_stored_proto,
                       base::Bind(&InMemoryContentStoreTest::OnSaveCallback,
                                  base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
@@ -197,11 +199,12 @@ TEST_F(InMemoryContentStoreTest, SaveAndLoadMoreThanMaxArticles) {
   save_success_ = false;
 
   // Store third article.
-  const ArticleEntry third_entry = CreateEntry("third", "url7", "url8", "url9");
+  const ArticleEntry third_entry =
+      CreateEntry("third", GURL("https://url7"), GURL("https://url8"),
+                  GURL("https://url9"));
   const DistilledArticleProto third_stored_proto =
       CreateDistilledArticleForEntry(third_entry);
-  store_->SaveContent(third_entry,
-                      third_stored_proto,
+  store_->SaveContent(third_entry, third_stored_proto,
                       base::Bind(&InMemoryContentStoreTest::OnSaveCallback,
                                  base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
@@ -222,11 +225,11 @@ TEST_F(InMemoryContentStoreTest, SaveAndLoadMoreThanMaxArticles) {
 
   // Store fourth article.
   const ArticleEntry fourth_entry =
-      CreateEntry("fourth", "url10", "url11", "url12");
+      CreateEntry("fourth", GURL("https://url10"), GURL("https://url11"),
+                  GURL("https://url12"));
   const DistilledArticleProto fourth_stored_proto =
       CreateDistilledArticleForEntry(fourth_entry);
-  store_->SaveContent(fourth_entry,
-                      fourth_stored_proto,
+  store_->SaveContent(fourth_entry, fourth_stored_proto,
                       base::Bind(&InMemoryContentStoreTest::OnSaveCallback,
                                  base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
@@ -246,12 +249,13 @@ TEST_F(InMemoryContentStoreTest, SaveAndLoadMoreThanMaxArticles) {
 
 // Tests whether saving and then loading a single article works as expected.
 TEST_F(InMemoryContentStoreTest, LookupArticleByURL) {
-  base::test::ScopedTaskEnvironment task_environment;
-  const ArticleEntry entry = CreateEntry("test-id", "url1", "url2", "url3");
+  base::test::SingleThreadTaskEnvironment task_environment;
+  const ArticleEntry entry =
+      CreateEntry("test-id", GURL("https://url1"), GURL("https://url2"),
+                  GURL("https://url3"));
   const DistilledArticleProto stored_proto =
       CreateDistilledArticleForEntry(entry);
-  store_->SaveContent(entry,
-                      stored_proto,
+  store_->SaveContent(entry, stored_proto,
                       base::Bind(&InMemoryContentStoreTest::OnSaveCallback,
                                  base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
@@ -259,7 +263,8 @@ TEST_F(InMemoryContentStoreTest, LookupArticleByURL) {
   save_success_ = false;
 
   // Create an entry where the entry ID does not match, but the first URL does.
-  const ArticleEntry lookup_entry1 = CreateEntry("lookup-id", "url1", "", "");
+  const ArticleEntry lookup_entry1 =
+      CreateEntry("lookup-id", GURL("https://url1"));
   store_->LoadContent(lookup_entry1,
                       base::Bind(&InMemoryContentStoreTest::OnLoadCallback,
                                  base::Unretained(this)));
@@ -270,7 +275,7 @@ TEST_F(InMemoryContentStoreTest, LookupArticleByURL) {
 
   // Create an entry where the entry ID does not match, but the second URL does.
   const ArticleEntry lookup_entry2 =
-      CreateEntry("lookup-id", "bogus", "url2", "");
+      CreateEntry("lookup-id", GURL("bogus"), GURL("https://url2"));
   store_->LoadContent(lookup_entry2,
                       base::Bind(&InMemoryContentStoreTest::OnLoadCallback,
                                  base::Unretained(this)));
@@ -283,18 +288,19 @@ TEST_F(InMemoryContentStoreTest, LookupArticleByURL) {
 // Verifies that the content store does not store unlimited number of articles,
 // but expires the oldest ones when the limit for number of articles is reached.
 TEST_F(InMemoryContentStoreTest, LoadArticleByURLAfterExpungedFromCache) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
 
   // Create a new store with only |kMaxNumArticles| articles as the limit.
   const int kMaxNumArticles = 1;
   store_.reset(new InMemoryContentStore(kMaxNumArticles));
 
   // Store an article.
-  const ArticleEntry first_entry = CreateEntry("first", "url1", "url2", "url3");
+  const ArticleEntry first_entry =
+      CreateEntry("first", GURL("https://url1"), GURL("https://url2"),
+                  GURL("https://url3"));
   const DistilledArticleProto first_stored_proto =
       CreateDistilledArticleForEntry(first_entry);
-  store_->SaveContent(first_entry,
-                      first_stored_proto,
+  store_->SaveContent(first_entry, first_stored_proto,
                       base::Bind(&InMemoryContentStoreTest::OnSaveCallback,
                                  base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
@@ -304,7 +310,7 @@ TEST_F(InMemoryContentStoreTest, LoadArticleByURLAfterExpungedFromCache) {
   // Looking up the first entry by URL should succeed when it is still in the
   // cache.
   const ArticleEntry first_entry_lookup =
-      CreateEntry("lookup-id", "url1", "", "");
+      CreateEntry("lookup-id", GURL("https://url1"));
   store_->LoadContent(first_entry_lookup,
                       base::Bind(&InMemoryContentStoreTest::OnLoadCallback,
                                  base::Unretained(this)));
@@ -315,11 +321,11 @@ TEST_F(InMemoryContentStoreTest, LoadArticleByURLAfterExpungedFromCache) {
 
   // Store second article. This will remove the first article from the cache.
   const ArticleEntry second_entry =
-      CreateEntry("second", "url4", "url5", "url6");
+      CreateEntry("second", GURL("https://url4"), GURL("https://url5"),
+                  GURL("https://url6"));
   const DistilledArticleProto second_stored_proto =
       CreateDistilledArticleForEntry(second_entry);
-  store_->SaveContent(second_entry,
-                      second_stored_proto,
+  store_->SaveContent(second_entry, second_stored_proto,
                       base::Bind(&InMemoryContentStoreTest::OnSaveCallback,
                                  base::Unretained(this)));
   base::RunLoop().RunUntilIdle();

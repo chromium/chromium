@@ -12,13 +12,12 @@ namespace media {
 
 AudioDecoderConfig::AudioDecoderConfig() {}
 
-AudioDecoderConfig::AudioDecoderConfig(
-    AudioCodec codec,
-    SampleFormat sample_format,
-    ChannelLayout channel_layout,
-    int samples_per_second,
-    const std::vector<uint8_t>& extra_data,
-    const EncryptionScheme& encryption_scheme) {
+AudioDecoderConfig::AudioDecoderConfig(AudioCodec codec,
+                                       SampleFormat sample_format,
+                                       ChannelLayout channel_layout,
+                                       int samples_per_second,
+                                       const std::vector<uint8_t>& extra_data,
+                                       EncryptionScheme encryption_scheme) {
   Initialize(codec, sample_format, channel_layout, samples_per_second,
              extra_data, encryption_scheme, base::TimeDelta(), 0);
 }
@@ -31,7 +30,7 @@ void AudioDecoderConfig::Initialize(AudioCodec codec,
                                     ChannelLayout channel_layout,
                                     int samples_per_second,
                                     const std::vector<uint8_t>& extra_data,
-                                    const EncryptionScheme& encryption_scheme,
+                                    EncryptionScheme encryption_scheme,
                                     base::TimeDelta seek_preroll,
                                     int codec_delay) {
   codec_ = codec;
@@ -71,7 +70,7 @@ bool AudioDecoderConfig::Matches(const AudioDecoderConfig& config) const {
           (channel_layout() == config.channel_layout()) &&
           (samples_per_second() == config.samples_per_second()) &&
           (extra_data() == config.extra_data()) &&
-          (encryption_scheme().Matches(config.encryption_scheme())) &&
+          (encryption_scheme() == config.encryption_scheme()) &&
           (sample_format() == config.sample_format()) &&
           (seek_preroll() == config.seek_preroll()) &&
           (codec_delay() == config.codec_delay()) &&
@@ -83,9 +82,10 @@ std::string AudioDecoderConfig::AsHumanReadableString() const {
   std::ostringstream s;
   s << "codec: " << GetCodecName(codec())
     << ", bytes_per_channel: " << bytes_per_channel()
-    << ", channel_layout: " << channel_layout() << ", channels: " << channels()
+    << ", channel_layout: " << ChannelLayoutToString(channel_layout())
+    << ", channels: " << channels()
     << ", samples_per_second: " << samples_per_second()
-    << ", sample_format: " << sample_format()
+    << ", sample_format: " << SampleFormatToString(sample_format())
     << ", bytes_per_frame: " << bytes_per_frame()
     << ", seek_preroll: " << seek_preroll().InMicroseconds() << "us"
     << ", codec_delay: " << codec_delay()
@@ -109,16 +109,17 @@ void AudioDecoderConfig::SetChannelsForDiscrete(int channels) {
 
 void AudioDecoderConfig::SetIsEncrypted(bool is_encrypted) {
   if (!is_encrypted) {
-    DCHECK(encryption_scheme_.is_encrypted()) << "Config is already clear.";
-    encryption_scheme_ = Unencrypted();
+    DCHECK_NE(encryption_scheme_, EncryptionScheme::kUnencrypted)
+        << "Config is already clear.";
+    encryption_scheme_ = EncryptionScheme::kUnencrypted;
   } else {
-    DCHECK(!encryption_scheme_.is_encrypted())
+    DCHECK_EQ(encryption_scheme_, EncryptionScheme::kUnencrypted)
         << "Config is already encrypted.";
     // TODO(xhwang): This is only used to guide decoder selection, so set
     // a common encryption scheme that should be supported by all decrypting
     // decoders. We should be able to remove this when we support switching
     // decoders at run time. See http://crbug.com/695595
-    encryption_scheme_ = AesCtrEncryptionScheme();
+    encryption_scheme_ = EncryptionScheme::kCenc;
   }
 }
 

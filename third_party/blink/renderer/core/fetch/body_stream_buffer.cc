@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_tee.h"
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
-#include "third_party/blink/renderer/core/streams/readable_stream_default_controller_wrapper.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_default_controller_interface.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -27,7 +28,7 @@
 namespace blink {
 
 class BodyStreamBuffer::LoaderClient final
-    : public GarbageCollectedFinalized<LoaderClient>,
+    : public GarbageCollected<LoaderClient>,
       public ContextLifecycleObserver,
       public FetchDataLoader::Client {
   USING_GARBAGE_COLLECTED_MIXIN(LoaderClient);
@@ -106,9 +107,19 @@ BodyStreamBuffer::BodyStreamBuffer(ScriptState* script_state,
       consumer_(consumer),
       signal_(signal),
       made_from_readable_stream_(false) {
+  // This CHECK is temporary to track down the cause of
+  // https://crbug.com/1007162.
+  // TODO(ricea): Remove it once we know whether it crashes or not.
+  CHECK(consumer_);
+
   stream_ =
       ReadableStream::CreateWithCountQueueingStrategy(script_state_, this, 0);
   stream_broken_ = !stream_;
+
+  // This CHECK is temporary to track down the cause of
+  // https://crbug.com/1007162.
+  // TODO(ricea): Remove it once we know whether it crashes or not.
+  CHECK(consumer_);
 
   consumer_->SetClient(this);
   if (signal) {
@@ -294,9 +305,7 @@ void BodyStreamBuffer::OnStateChange() {
 }
 
 bool BodyStreamBuffer::HasPendingActivity() const {
-  if (loader_)
-    return true;
-  return UnderlyingSourceBase::HasPendingActivity();
+  return loader_;
 }
 
 void BodyStreamBuffer::ContextDestroyed(ExecutionContext* destroyed_context) {
@@ -393,7 +402,8 @@ void BodyStreamBuffer::Abort() {
     DCHECK(!consumer_);
     return;
   }
-  Controller()->GetError(DOMException::Create(DOMExceptionCode::kAbortError));
+  Controller()->Error(
+      MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
   CancelConsumer();
 }
 
@@ -408,7 +418,7 @@ void BodyStreamBuffer::Close() {
 void BodyStreamBuffer::GetError() {
   {
     ScriptState::Scope scope(script_state_);
-    Controller()->GetError(V8ThrowException::CreateTypeError(
+    Controller()->Error(V8ThrowException::CreateTypeError(
         script_state_->GetIsolate(), "network error"));
   }
   CancelConsumer();

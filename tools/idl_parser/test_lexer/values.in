@@ -56,3 +56,5 @@ identifier blah
 identifier include-hyphen
 identifier _leading_underscore
 identifier -leading_hyphen
+identifier Date
+identifier RegExp

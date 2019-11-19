@@ -41,10 +41,11 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface {
     std::string code;
     int key_code;  // only used by on-screen keyboards.
     std::string extension_id;
-    bool alt_key;
-    bool ctrl_key;
-    bool shift_key;
-    bool caps_lock;
+    bool alt_key = false;
+    bool altgr_key = false;
+    bool ctrl_key = false;
+    bool shift_key = false;
+    bool caps_lock = false;
   };
 
   enum SegmentStyle {
@@ -97,9 +98,6 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface {
     virtual void OnCompositionBoundsChanged(
         const std::vector<gfx::Rect>& bounds) = 0;
 
-    // Returns whether the observer is interested in key events.
-    virtual bool IsInterestedInKeyEvent() const = 0;
-
     // Called when a surrounding text is changed.
     virtual void OnSurroundingTextChanged(const std::string& engine_id,
                                           const std::string& text,
@@ -131,9 +129,10 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface {
 
   ~InputMethodEngineBase() override;
 
-  void Initialize(std::unique_ptr<InputMethodEngineBase::Observer> observer,
-                  const char* extension_id,
-                  Profile* profile);
+  virtual void Initialize(
+      std::unique_ptr<InputMethodEngineBase::Observer> observer,
+      const char* extension_id,
+      Profile* profile);
 
   // IMEEngineHandlerInterface overrides.
   void FocusIn(const ui::IMEEngineHandlerInterface::InputContext& input_context)
@@ -149,7 +148,6 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface {
                           uint32_t anchor_pos,
                           uint32_t offset_pos) override;
   void SetCompositionBounds(const std::vector<gfx::Rect>& bounds) override;
-  bool IsInterestedInKeyEvent() const override;
 
   // Returns the current active input_component id.
   const std::string& GetActiveComponentId() const;
@@ -160,6 +158,10 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface {
   // Commit the specified text to the specified context.  Fails if the context
   // is not focused.
   bool CommitText(int context_id, const char* text, std::string* error);
+
+  // Notifies InputContextHandler to commit any composition text.
+  // Set |reset_engine| to false if the event was from the extension.
+  void ConfirmCompositionText(bool reset_engine, bool keep_selection);
 
   // Deletes |number_of_chars| unicode characters as the basis of |offset| from
   // the surrounding text. The |offset| is relative position based on current
@@ -173,6 +175,10 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface {
                              size_t number_of_chars,
                              std::string* error);
 
+  // Commit the text currently being composed to the composition.
+  // Fails if the context is not focused.
+  bool FinishComposingText(int context_id, std::string* error);
+
   // Send the sequence of key events.
   bool SendKeyEvents(int context_id, const std::vector<KeyboardEvent>& events);
 
@@ -184,15 +190,29 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface {
                       int cursor,
                       const std::vector<SegmentInfo>& segments,
                       std::string* error);
+
+  // Set the current composition range.
+  bool SetCompositionRange(int context_id,
+                           int selection_before,
+                           int selection_after,
+                           const std::vector<SegmentInfo>& segments,
+                           std::string* error);
+
+  // Set the current selection range.
+  bool SetSelectionRange(int context_id,
+                         int start,
+                         int end,
+                         std::string* error);
+
   // Called when a key event is handled.
   void KeyEventHandled(const std::string& extension_id,
                        const std::string& request_id,
                        bool handled);
 
-  // Adds unprocessed key event to |request_map_|.
-  std::string AddRequest(
+  // Returns the request ID for this key event.
+  std::string AddPendingKeyEvent(
       const std::string& component_id,
-      ui::IMEEngineHandlerInterface::KeyEventDoneCallback key_data);
+      ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback);
 
   int GetContextIdForTesting() const { return context_id_; }
 
@@ -202,6 +222,20 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface {
   }
 
  protected:
+  struct PendingKeyEvent {
+    PendingKeyEvent(
+        const std::string& component_id,
+        ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback);
+    PendingKeyEvent(PendingKeyEvent&& other);
+    ~PendingKeyEvent();
+
+    std::string component_id;
+    ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback;
+
+   private:
+    DISALLOW_COPY_AND_ASSIGN(PendingKeyEvent);
+  };
+
   // Returns true if this IME is active, false if not.
   virtual bool IsActive() const = 0;
 
@@ -209,9 +243,21 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface {
   virtual void UpdateComposition(const ui::CompositionText& composition_text,
                                  uint32_t cursor_pos,
                                  bool is_visible) = 0;
+
+  // Notifies InputContextHandler to change the composition range.
+  virtual bool SetCompositionRange(
+      uint32_t before,
+      uint32_t after,
+      const std::vector<ui::ImeTextSpan>& text_spans) = 0;
+
+  // Notifies the InputContextHandler to change the selection range.
+  virtual bool SetSelectionRange(uint32_t start, uint32_t end) = 0;
+
   // Notifies InputContextHanlder to commit |text|.
   virtual void CommitTextToInputContext(int context_id,
                                         const std::string& text) = 0;
+  // Notifies InputContextHandler to delete surrounding text.
+  void DeleteSurroundingTextToInputContext(int offset, size_t number_of_chars);
   // Sends the key event to the window tree host.
   virtual bool SendKeyEvent(ui::KeyEvent* ui_event,
                             const std::string& code) = 0;
@@ -233,19 +279,10 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface {
   // The observer object recieving events for this IME.
   std::unique_ptr<InputMethodEngineBase::Observer> observer_;
 
-  // The current preedit text, and it's cursor position.
-  std::unique_ptr<ui::CompositionText> composition_text_;
-  int composition_cursor_;
-
   Profile* profile_;
 
-  using RequestMap =
-      std::map<std::string,
-               std::pair<std::string,
-                         ui::IMEEngineHandlerInterface::KeyEventDoneCallback>>;
-
-  unsigned int next_request_id_;
-  RequestMap request_map_;
+  unsigned int next_request_id_ = 1;
+  std::map<std::string, PendingKeyEvent> pending_key_events_;
 
   // The composition text to be set from calling input.ime.setComposition API.
   ui::CompositionText composition_;

@@ -6,12 +6,13 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
+#include "ash/public/cpp/wallpaper_controller_client.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
-#include "ash/wallpaper/wallpaper_controller.h"
+#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/display/display.h"
@@ -21,7 +22,6 @@ namespace ash {
 namespace {
 
 using CommandId = ShelfContextMenuModel::CommandId;
-using MenuItemList = std::vector<mojom::MenuItemPtr>;
 
 class ShelfContextMenuModelTest : public AshTestBase {
  public:
@@ -41,27 +41,18 @@ class ShelfContextMenuModelTest : public AshTestBase {
 };
 
 // A test wallpaper controller client class.
-class TestWallpaperControllerClient : public mojom::WallpaperControllerClient {
+class TestWallpaperControllerClient : public WallpaperControllerClient {
  public:
-  TestWallpaperControllerClient() : binding_(this) {}
-  ~TestWallpaperControllerClient() override = default;
+  TestWallpaperControllerClient() = default;
+  virtual ~TestWallpaperControllerClient() = default;
 
   size_t open_count() const { return open_count_; }
 
-  mojom::WallpaperControllerClientPtr CreateInterfacePtr() {
-    mojom::WallpaperControllerClientPtr ptr;
-    binding_.Bind(mojo::MakeRequest(&ptr));
-    return ptr;
-  }
-
-  // mojom::WallpaperControllerClient:
+  // WallpaperControllerClient:
   void OpenWallpaperPicker() override { open_count_++; }
-  void OnReadyToSetWallpaper() override {}
-  void OnFirstWallpaperAnimationFinished() override {}
 
  private:
   size_t open_count_ = 0;
-  mojo::Binding<mojom::WallpaperControllerClient> binding_;
 
   DISALLOW_COPY_AND_ASSIGN(TestWallpaperControllerClient);
 };
@@ -96,7 +87,7 @@ class TestShelfItemDelegate : public ShelfItemDelegate {
 
 // Tests the default items in a shelf context menu.
 TEST_F(ShelfContextMenuModelTest, Basic) {
-  ShelfContextMenuModel menu(MenuItemList(), nullptr, GetPrimaryDisplay().id());
+  ShelfContextMenuModel menu(nullptr, GetPrimaryDisplay().id());
 
   ASSERT_EQ(3, menu.GetItemCount());
   EXPECT_EQ(CommandId::MENU_AUTO_HIDE, menu.GetCommandIdAt(0));
@@ -123,13 +114,13 @@ TEST_F(ShelfContextMenuModelTest, Invocation) {
   Shelf* shelf = GetPrimaryShelf();
 
   // Check the shelf auto-hide behavior and menu interaction.
-  ShelfContextMenuModel menu1(MenuItemList(), nullptr, primary_id);
+  ShelfContextMenuModel menu1(nullptr, primary_id);
   EXPECT_EQ(SHELF_AUTO_HIDE_BEHAVIOR_NEVER, shelf->auto_hide_behavior());
   menu1.ActivatedAt(0);
   EXPECT_EQ(SHELF_AUTO_HIDE_BEHAVIOR_ALWAYS, shelf->auto_hide_behavior());
 
   // Recreate the menu, auto-hide should still be enabled.
-  ShelfContextMenuModel menu2(MenuItemList(), nullptr, primary_id);
+  ShelfContextMenuModel menu2(nullptr, primary_id);
   EXPECT_EQ(SHELF_AUTO_HIDE_BEHAVIOR_ALWAYS, shelf->auto_hide_behavior());
 
   // By default the shelf should be on bottom, shelf alignment options in order:
@@ -143,117 +134,46 @@ TEST_F(ShelfContextMenuModelTest, Invocation) {
   EXPECT_EQ(SHELF_ALIGNMENT_LEFT, shelf->alignment());
 
   // Recreate the menu, it should show left alignment checked.
-  ShelfContextMenuModel menu3(MenuItemList(), nullptr, primary_id);
+  ShelfContextMenuModel menu3(nullptr, primary_id);
   submenu = menu3.GetSubmenuModelAt(1);
   EXPECT_TRUE(submenu->IsItemCheckedAt(0));
 
   TestWallpaperControllerClient client;
-  Shell::Get()->wallpaper_controller()->SetClientForTesting(
-      client.CreateInterfacePtr());
+  Shell::Get()->wallpaper_controller()->SetClient(&client);
   EXPECT_EQ(0u, client.open_count());
 
   // Click the third option, wallpaper picker. It should open.
   menu3.ActivatedAt(2);
-  Shell::Get()->wallpaper_controller()->FlushForTesting();
   EXPECT_EQ(1u, client.open_count());
 }
 
-// Tests that a desktop context menu shows the default options.
-TEST_F(ShelfContextMenuModelTest, DesktopMenu) {
-  MenuItemList items;
-  // Pass a null delegate to indicate the menu is not for an application.
-  ShelfContextMenuModel menu(std::move(items), nullptr,
-                             GetPrimaryDisplay().id());
-
-  ASSERT_EQ(3, menu.GetItemCount());
-  EXPECT_EQ(CommandId::MENU_AUTO_HIDE, menu.GetCommandIdAt(0));
-  EXPECT_EQ(CommandId::MENU_ALIGNMENT_MENU, menu.GetCommandIdAt(1));
-  EXPECT_EQ(CommandId::MENU_CHANGE_WALLPAPER, menu.GetCommandIdAt(2));
-}
-
-// Tests the prepending of custom items in a shelf context menu.
+// Tests custom items in a shelf context menu for an application.
 TEST_F(ShelfContextMenuModelTest, CustomItems) {
-  // Make a list of custom items with a variety of values.
-  MenuItemList items;
-  mojom::MenuItemPtr item(mojom::MenuItem::New());
-  item->type = ui::MenuModel::TYPE_COMMAND;
-  item->command_id = 123;
-  item->label = base::ASCIIToUTF16("item");
-  item->enabled = true;
-  items.push_back(std::move(item));
-
-  mojom::MenuItemPtr check(mojom::MenuItem::New());
-  check->type = ui::MenuModel::TYPE_CHECK;
-  check->command_id = 999;
-  check->label = base::ASCIIToUTF16("check");
-  check->enabled = true;
-  check->checked = false;
-  items.push_back(std::move(check));
-
-  mojom::MenuItemPtr radio(mojom::MenuItem::New());
-  radio->type = ui::MenuModel::TYPE_RADIO;
-  radio->command_id = 1337;
-  radio->label = base::ASCIIToUTF16("radio");
-  radio->enabled = false;
-  radio->checked = true;
-  items.push_back(std::move(radio));
-
+  // Pass a valid delegate to indicate the menu is for an application.
   TestShelfItemDelegate delegate;
-  ShelfContextMenuModel menu(std::move(items), &delegate,
-                             GetPrimaryDisplay().id());
+  ShelfContextMenuModel menu(&delegate, GetPrimaryDisplay().id());
 
-  // Ensure the menu model's prepended contents match the items above. Because
-  // the delegate is not null, the menu is interpreted as an application menu.
-  // It will not have the desktop menu options which are autohide, shelf
-  // position, and wallpaper picker.
-  ASSERT_EQ(3, menu.GetItemCount());
+  // Because the delegate is valid, the context menu will not have the desktop
+  // menu options (autohide, shelf position, and wallpaper picker).
+  ASSERT_EQ(0, menu.GetItemCount());
 
+  // Add some custom items.
+  menu.AddItem(203, base::ASCIIToUTF16("item"));
+  menu.AddCheckItem(107, base::ASCIIToUTF16("check"));
+  menu.AddRadioItem(101, base::ASCIIToUTF16("radio"), 0);
+  ui::SimpleMenuModel submenu(nullptr);
+  menu.AddSubMenu(55, base::ASCIIToUTF16("submenu"), &submenu);
+
+  // Ensure the menu contents match the items above.
+  ASSERT_EQ(4, menu.GetItemCount());
   EXPECT_EQ(ui::MenuModel::TYPE_COMMAND, menu.GetTypeAt(0));
-  EXPECT_EQ(123, menu.GetCommandIdAt(0));
-  EXPECT_EQ(base::ASCIIToUTF16("item"), menu.GetLabelAt(0));
-  EXPECT_TRUE(menu.IsEnabledAt(0));
-
   EXPECT_EQ(ui::MenuModel::TYPE_CHECK, menu.GetTypeAt(1));
-  EXPECT_EQ(999, menu.GetCommandIdAt(1));
-  EXPECT_EQ(base::ASCIIToUTF16("check"), menu.GetLabelAt(1));
-  EXPECT_TRUE(menu.IsEnabledAt(1));
-  EXPECT_FALSE(menu.IsItemCheckedAt(1));
-
   EXPECT_EQ(ui::MenuModel::TYPE_RADIO, menu.GetTypeAt(2));
-  EXPECT_EQ(1337, menu.GetCommandIdAt(2));
-  EXPECT_EQ(base::ASCIIToUTF16("radio"), menu.GetLabelAt(2));
-  EXPECT_FALSE(menu.IsEnabledAt(2));
-  EXPECT_TRUE(menu.IsItemCheckedAt(2));
+  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU, menu.GetTypeAt(3));
 
   // Invoking a custom item should execute the command id on the delegate.
   menu.ActivatedAt(1);
-  EXPECT_EQ(999, delegate.last_executed_command());
-}
-
-// Tests the prepending of a custom submenu in a shelf context menu.
-TEST_F(ShelfContextMenuModelTest, CustomSubmenu) {
-  // Make a list of custom items that includes a submenu.
-  MenuItemList items;
-  mojom::MenuItemPtr submenu_item(mojom::MenuItem::New());
-  submenu_item->type = ui::MenuModel::TYPE_SUBMENU;
-  MenuItemList submenu_items;
-  submenu_items.push_back(mojom::MenuItem::New());
-  submenu_items.push_back(mojom::MenuItem::New());
-  submenu_item->submenu = std::move(submenu_items);
-  items.push_back(std::move(submenu_item));
-
-  // Ensure the menu model's prepended contents match the items above.
-  ShelfContextMenuModel menu(std::move(items), nullptr,
-                             GetPrimaryDisplay().id());
-  ASSERT_EQ(4, menu.GetItemCount());
-  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU, menu.GetTypeAt(0));
-  ui::MenuModel* submenu = menu.GetSubmenuModelAt(0);
-  EXPECT_EQ(2, submenu->GetItemCount());
-
-  // The default contents should appear at the bottom.
-  EXPECT_EQ(CommandId::MENU_AUTO_HIDE, menu.GetCommandIdAt(1));
-  EXPECT_EQ(CommandId::MENU_ALIGNMENT_MENU, menu.GetCommandIdAt(2));
-  EXPECT_EQ(CommandId::MENU_CHANGE_WALLPAPER, menu.GetCommandIdAt(3));
+  EXPECT_EQ(107, delegate.last_executed_command());
 }
 
 // Tests fullscreen's per-display removal of "Autohide shelf": crbug.com/496681
@@ -267,8 +187,8 @@ TEST_F(ShelfContextMenuModelTest, AutohideShelfOptionOnExternalDisplay) {
   widget->Show();
   widget->SetFullscreen(true);
 
-  ShelfContextMenuModel primary_menu(MenuItemList(), nullptr, primary_id);
-  ShelfContextMenuModel secondary_menu(MenuItemList(), nullptr, secondary_id);
+  ShelfContextMenuModel primary_menu(nullptr, primary_id);
+  ShelfContextMenuModel secondary_menu(nullptr, secondary_id);
   EXPECT_EQ(-1, primary_menu.GetIndexOfCommandId(CommandId::MENU_AUTO_HIDE));
   EXPECT_NE(-1, secondary_menu.GetIndexOfCommandId(CommandId::MENU_AUTO_HIDE));
 }
@@ -282,8 +202,8 @@ TEST_F(ShelfContextMenuModelTest, ExcludeClamshellOptionsOnTabletMode) {
 
   // In tablet mode, the wallpaper picker and auto-hide should be the only two
   // options because other options are disabled.
-  tablet_mode_controller->EnableTabletModeWindowManager(true);
-  ShelfContextMenuModel menu1(MenuItemList(), nullptr, primary_id);
+  tablet_mode_controller->SetEnabledForTest(true);
+  ShelfContextMenuModel menu1(nullptr, primary_id);
   EXPECT_EQ(2, menu1.GetItemCount());
   EXPECT_EQ(ShelfContextMenuModel::MENU_AUTO_HIDE, menu1.GetCommandIdAt(0));
   EXPECT_EQ(ShelfContextMenuModel::MENU_CHANGE_WALLPAPER,
@@ -291,8 +211,8 @@ TEST_F(ShelfContextMenuModelTest, ExcludeClamshellOptionsOnTabletMode) {
 
   // Test that a menu shown out of tablet mode includes all three options:
   // MENU_AUTO_HIDE, MENU_ALIGNMENT_MENU, and MENU_CHANGE_WALLPAPER.
-  tablet_mode_controller->EnableTabletModeWindowManager(false);
-  ShelfContextMenuModel menu2(MenuItemList(), nullptr, primary_id);
+  tablet_mode_controller->SetEnabledForTest(false);
+  ShelfContextMenuModel menu2(nullptr, primary_id);
   EXPECT_EQ(3, menu2.GetItemCount());
 
   // Test the auto hide option.
@@ -340,14 +260,14 @@ TEST_F(ShelfContextMenuModelTest, ShelfContextMenuOptions) {
   // a context menu option ensure that you have added the enum to
   // tools/metrics/enums.xml and that you haven't modified the order of the
   // existing enums.
-  ShelfContextMenuModel menu(MenuItemList(), nullptr, GetPrimaryDisplay().id());
+  ShelfContextMenuModel menu(nullptr, GetPrimaryDisplay().id());
   EXPECT_EQ(3, menu.GetItemCount());
 }
 
 TEST_F(ShelfContextMenuModelTest, NotificationContainerEnabled) {
   // Tests that NOTIFICATION_CONTAINER is enabled. This ensures that the
   // container is able to handle gesture events.
-  ShelfContextMenuModel menu(MenuItemList(), nullptr, GetPrimaryDisplay().id());
+  ShelfContextMenuModel menu(nullptr, GetPrimaryDisplay().id());
   menu.AddItem(NOTIFICATION_CONTAINER, base::string16());
 
   EXPECT_TRUE(menu.IsCommandIdEnabled(NOTIFICATION_CONTAINER));

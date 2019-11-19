@@ -583,18 +583,24 @@ addSuggestionsToModel:(NSArray<CSCollectionViewItem*>*)suggestions
 - (void)addFooterIfNeeded:(ContentSuggestionsSectionInformation*)sectionInfo {
   NSInteger sectionIdentifier = SectionIdentifierForInfo(sectionInfo);
 
+  NSString* footerTitle = sectionInfo.footerTitle;
+
   __weak ContentSuggestionsCollectionUpdater* weakSelf = self;
-  if (sectionInfo.footerTitle &&
-      ![self.collectionViewController.collectionViewModel
-          footerForSectionWithIdentifier:sectionIdentifier]) {
+  if (footerTitle && ![self.collectionViewController.collectionViewModel
+                         footerForSectionWithIdentifier:sectionIdentifier]) {
     ContentSuggestionsFooterItem* footer = [[ContentSuggestionsFooterItem alloc]
         initWithType:ItemTypeFooter
                title:sectionInfo.footerTitle
             callback:^(ContentSuggestionsFooterItem* item,
                        ContentSuggestionsFooterCell* cell) {
-              [weakSelf runAdditionalActionForSection:sectionInfo
-                                             withItem:item
-                                                 cell:cell];
+              __typeof(self) strongSelf = weakSelf;
+              ContentSuggestionsSectionInformation* strongSectionInfo =
+                  strongSelf
+                      .sectionInfoBySectionIdentifier[@(sectionIdentifier)];
+              DCHECK([footerTitle isEqual:strongSectionInfo.footerTitle]);
+              [strongSelf runAdditionalActionForSection:strongSectionInfo
+                                               withItem:item
+                                                   cell:cell];
             }];
 
     [self.collectionViewController.collectionViewModel

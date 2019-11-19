@@ -1,0 +1,35 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="../../route.html">
+<link rel="import" href="../../settings_page/settings_animated_pages.html">
+<link rel="import" href="../../settings_page/settings_subpage.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../../printing_page/cups_printers.html">
+
+<dom-module id="os-settings-printing-page">
+  <template>
+    <style include="settings-shared"></style>
+    <settings-animated-pages id="pages" section="printing"
+        focus-config="[[focusConfig_]]">
+      <div route-path="default">
+        <cr-link-row id="cupsPrinters" label="$i18n{cupsPrintersTitle}"
+            on-click="onTapCupsPrinters_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </div>
+      <template is="dom-if" route-path="/cupsPrinters">
+        <settings-subpage
+            associated-control="[[$$('#cupsPrinters')]]"
+            page-title="$i18n{cupsPrintersTitle}"
+            search-label="$i18n{searchLabel}"
+            search-term="{{searchTerm}}">
+          <settings-cups-printers search-term="{{searchTerm}}"
+              prefs="[[prefs]]">
+          </settings-cups-printers>
+        </settings-subpage>
+      </template>
+    </settings-animated-pages>
+  </template>
+  <script src="os_printing_page.js"></script>
+</dom-module>

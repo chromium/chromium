@@ -1,91 +1,32 @@
 rootWebArea
-++grid name='1: Individual rows get their own wrappers' tableRowCount=2 tableColumnCount=2
-++++genericContainer name='r1-wrap'
-++++++row name='r1-real' tableRowIndex=0 selected=false
-++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0 selected=false
-++++++++++staticText name='A1'
-++++++++++++inlineTextBox name='A1'
-++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0 selected=false
-++++++++++staticText name='A2'
-++++++++++++inlineTextBox name='A2'
-++++genericContainer name='r2-wrap'
-++++++genericContainer name='r2-vanilla'
-++++++++row name='r2-real' tableRowIndex=1 selected=false
-++++++++++cell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1 selected=false
-++++++++++++staticText name='B1'
-++++++++++++++inlineTextBox name='B1'
-++++++++++cell name='B2' tableCellColumnIndex=1 tableCellRowIndex=1 selected=false
-++++++++++++staticText name='B2'
-++++++++++++++inlineTextBox name='B2'
-++grid name='2: Single wrapper around all rows' tableRowCount=2 tableColumnCount=2
-++++genericContainer
-++++++row tableRowIndex=0 selected=false
-++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0 selected=false
-++++++++++staticText name='A1'
-++++++++++++inlineTextBox name='A1'
-++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0 selected=false
-++++++++++staticText name='A2'
-++++++++++++inlineTextBox name='A2'
-++++++row tableRowIndex=1 selected=false
-++++++++cell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1 selected=false
-++++++++++staticText name='B1'
-++++++++++++inlineTextBox name='B1'
-++++++++cell name='B2' tableCellColumnIndex=1 tableCellRowIndex=1 selected=false
-++++++++++staticText name='B2'
-++++++++++++inlineTextBox name='B2'
-++grid name='3: Individual cells get their own wrappers' tableRowCount=2 tableColumnCount=2
-++++row tableRowIndex=0 selected=false
+++genericContainer ignored
+++++grid name='1: Individual rows get their own wrappers' tableRowCount=2 tableColumnCount=2
+++++++genericContainer name='r1-wrap'
+++++++++row name='r1-real' tableRowIndex=0 selected=false
+++++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0 selected=false
+++++++++++++staticText name='A1'
+++++++++++++++inlineTextBox name='A1'
+++++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0 selected=false
+++++++++++++staticText name='A2'
+++++++++++++++inlineTextBox name='A2'
+++++++genericContainer name='r2-wrap'
+++++++++genericContainer name='r2-vanilla'
+++++++++++row name='r2-real' tableRowIndex=1 selected=false
+++++++++++++cell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1 selected=false
+++++++++++++++staticText name='B1'
+++++++++++++++++inlineTextBox name='B1'
+++++++++++++cell name='B2' tableCellColumnIndex=1 tableCellRowIndex=1 selected=false
+++++++++++++++staticText name='B2'
+++++++++++++++++inlineTextBox name='B2'
+++++grid name='2: Single wrapper around all rows' tableRowCount=2 tableColumnCount=2
 ++++++genericContainer
-++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0 selected=false
-++++++++++staticText name='A1'
-++++++++++++inlineTextBox name='A1'
-++++++genericContainer
-++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0 selected=false
-++++++++++staticText name='A2'
-++++++++++++inlineTextBox name='A2'
-++++row tableRowIndex=1 selected=false
-++++++genericContainer
-++++++++cell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1 selected=false
-++++++++++staticText name='B1'
-++++++++++++inlineTextBox name='B1'
-++++++genericContainer
-++++++++genericContainer
-++++++++++cell name='B2' tableCellColumnIndex=1 tableCellRowIndex=1 selected=false
-++++++++++++staticText name='B2'
-++++++++++++++inlineTextBox name='B2'
-++grid name='4: Single wrapper around all cells in a row' tableRowCount=2 tableColumnCount=2
-++++row tableRowIndex=0 selected=false
-++++++genericContainer
-++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0 selected=false
-++++++++++staticText name='A1'
-++++++++++++inlineTextBox name='A1'
-++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0 selected=false
-++++++++++staticText name='A2'
-++++++++++++inlineTextBox name='A2'
-++++row tableRowIndex=1 selected=false
-++++++genericContainer
-++++++++genericContainer
-++++++++++cell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1 selected=false
-++++++++++++staticText name='B1'
-++++++++++++++inlineTextBox name='B1'
-++++++++genericContainer
-++++++++++cell name='B2' tableCellColumnIndex=1 tableCellRowIndex=1 selected=false
-++++++++++++staticText name='B2'
-++++++++++++++inlineTextBox name='B2'
-++grid name='5: Wrapper insanity' tableRowCount=2 tableColumnCount=2
-++++genericContainer
-++++++genericContainer
-++++++++genericContainer
-++++++++++row tableRowIndex=0 selected=false
-++++++++++++genericContainer
-++++++++++++++genericContainer
-++++++++++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0 selected=false
-++++++++++++++++++staticText name='A1'
-++++++++++++++++++++inlineTextBox name='A1'
-++++++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0 selected=false
-++++++++++++++staticText name='A2'
-++++++++++++++++inlineTextBox name='A2'
-++++++genericContainer
+++++++++row tableRowIndex=0 selected=false
+++++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0 selected=false
+++++++++++++staticText name='A1'
+++++++++++++++inlineTextBox name='A1'
+++++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0 selected=false
+++++++++++++staticText name='A2'
+++++++++++++++inlineTextBox name='A2'
 ++++++++row tableRowIndex=1 selected=false
 ++++++++++cell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1 selected=false
 ++++++++++++staticText name='B1'
@@ -93,3 +34,63 @@ rootWebArea
 ++++++++++cell name='B2' tableCellColumnIndex=1 tableCellRowIndex=1 selected=false
 ++++++++++++staticText name='B2'
 ++++++++++++++inlineTextBox name='B2'
+++++grid name='3: Individual cells get their own wrappers' tableRowCount=2 tableColumnCount=2
+++++++row tableRowIndex=0 selected=false
+++++++++genericContainer
+++++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0 selected=false
+++++++++++++staticText name='A1'
+++++++++++++++inlineTextBox name='A1'
+++++++++genericContainer
+++++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0 selected=false
+++++++++++++staticText name='A2'
+++++++++++++++inlineTextBox name='A2'
+++++++row tableRowIndex=1 selected=false
+++++++++genericContainer
+++++++++++cell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1 selected=false
+++++++++++++staticText name='B1'
+++++++++++++++inlineTextBox name='B1'
+++++++++genericContainer
+++++++++++genericContainer
+++++++++++++cell name='B2' tableCellColumnIndex=1 tableCellRowIndex=1 selected=false
+++++++++++++++staticText name='B2'
+++++++++++++++++inlineTextBox name='B2'
+++++grid name='4: Single wrapper around all cells in a row' tableRowCount=2 tableColumnCount=2
+++++++row tableRowIndex=0 selected=false
+++++++++genericContainer
+++++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0 selected=false
+++++++++++++staticText name='A1'
+++++++++++++++inlineTextBox name='A1'
+++++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0 selected=false
+++++++++++++staticText name='A2'
+++++++++++++++inlineTextBox name='A2'
+++++++row tableRowIndex=1 selected=false
+++++++++genericContainer
+++++++++++genericContainer
+++++++++++++cell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1 selected=false
+++++++++++++++staticText name='B1'
+++++++++++++++++inlineTextBox name='B1'
+++++++++++genericContainer
+++++++++++++cell name='B2' tableCellColumnIndex=1 tableCellRowIndex=1 selected=false
+++++++++++++++staticText name='B2'
+++++++++++++++++inlineTextBox name='B2'
+++++grid name='5: Wrapper insanity' tableRowCount=2 tableColumnCount=2
+++++++genericContainer
+++++++++genericContainer
+++++++++++genericContainer
+++++++++++++row tableRowIndex=0 selected=false
+++++++++++++++genericContainer
+++++++++++++++++genericContainer
+++++++++++++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0 selected=false
+++++++++++++++++++++staticText name='A1'
+++++++++++++++++++++++inlineTextBox name='A1'
+++++++++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0 selected=false
+++++++++++++++++staticText name='A2'
+++++++++++++++++++inlineTextBox name='A2'
+++++++++genericContainer
+++++++++++row tableRowIndex=1 selected=false
+++++++++++++cell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1 selected=false
+++++++++++++++staticText name='B1'
+++++++++++++++++inlineTextBox name='B1'
+++++++++++++cell name='B2' tableCellColumnIndex=1 tableCellRowIndex=1 selected=false
+++++++++++++++staticText name='B2'
+++++++++++++++++inlineTextBox name='B2'

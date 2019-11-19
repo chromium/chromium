@@ -36,6 +36,7 @@
   "entries": [
     { "name": "hsts-preloaded.test", "policy": "test", "mode": "force-https" },
     { "name": "include-subdomains-hsts-preloaded.test", "policy": "test", "mode": "force-https", "include_subdomains": true },
+    { "name": "example", "policy": "test", "mode": "force-https", "include_subdomains": true },
 
     { "name": "no-rejected-pins-pkp.preloaded.test", "policy": "test", "pins": "withoutRejectedPins" },
     { "name": "with-report-uri-pkp.preloaded.test", "policy": "test", "pins": "withReportUri" },

@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL multiple return values from wasm to js promise_test: Unhandled rejection with value: object "CompileError: WebAssembly.instantiate(): return count of 2 exceeds internal limit of 1 @+15"
+FAIL multiple return values inside wasm promise_test: Unhandled rejection with value: object "CompileError: WebAssembly.instantiate(): return count of 2 exceeds internal limit of 1 @+15"
+FAIL multiple return values from js to wasm promise_test: Unhandled rejection with value: object "CompileError: WebAssembly.instantiate(): return count of 2 exceeds internal limit of 1 @+15"
+Harness: the test ran to completion.
+

@@ -17,6 +17,7 @@
 #include "chrome/common/safe_browsing/download_file_types.pb.h"
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
+#include "components/safe_browsing/buildflags.h"
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/download/download_commands.h"
@@ -298,6 +299,11 @@ class DownloadUIModel {
   // Executes the given download command on this download.
   virtual void ExecuteCommand(DownloadCommands* download_commands,
                               DownloadCommands::Command command);
+#endif
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  // Complete the Safe Browsing scan early.
+  virtual void CompleteSafeBrowsingScan();
 #endif
 
  protected:

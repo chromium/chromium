@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<title>Check request cookies for image resources with crossOrigin.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/get-host-info.js?pipe=sub"></script>
+<script>
+if (window.testRunner)
+  testRunner.setBlockThirdPartyCookies(false);
+
+
+function load_image(url, cross_origin) {
+  return new Promise(function(resolve, reject) {
+      var img = document.createElement('img');
+      document.body.appendChild(img);
+      img.onload = resolve;
+      img.onerror = reject;
+      if (cross_origin != '') {
+        img.crossOrigin = cross_origin;
+      }
+      img.src = url;
+    });
+}
+
+function assert_resolves(promise, description) {
+  return promise.catch(function(reason) {
+      throw description + ' - ' + reason;
+  });
+}
+
+promise_test(function(t) {
+    document.cookie = "TestCookie=same";
+    var host_info = get_host_info();
+    // HTTPS must be used because SameSite=None cookies must be Secure.
+    var RESOURCES_PATH = host_info['HTTPS_ORIGIN'] + '/security/resources/';
+    var REMOTE_RESOURCES_PATH = host_info['HTTPS_REMOTE_ORIGIN'] +
+                                '/security/resources/';
+
+    return fetch(new Request(REMOTE_RESOURCES_PATH + 'set-cookie.php?' +
+                             'name=TestCookie&value=cross&SameSiteNone',
+                             {mode: 'no-cors', credentials: 'include'}))
+      .then(function() {
+          return Promise.all([
+            assert_resolves(
+                load_image(
+                    RESOURCES_PATH + 'abe-cookie-check.php?Cookie=same', ''),
+                'Same-origin request for a resource whose CORS setting is ' +
+                'NoCORS must contain cookies.'),
+            assert_resolves(
+                load_image(
+                    RESOURCES_PATH + 'abe-cookie-check.php?Cookie=same',
+                    'anonymous'),
+                'Same-origin request for a resource whose CORS setting is ' +
+                'Anonymous must contain cookies.'),
+            assert_resolves(
+                load_image(
+                    RESOURCES_PATH + 'abe-cookie-check.php?Cookie=same',
+                    'use-credentials'),
+                'Same-origin request for a resource whose CORS setting is ' +
+                'UseCredentials must contain cookies.'),
+            assert_resolves(
+                load_image(
+                    REMOTE_RESOURCES_PATH + 'abe-cookie-check.php?Cookie=cross',
+                    ''),
+                'Cross-origin request for a resource whose CORS setting is ' +
+                'NoCORS must contain cookies.'),
+            assert_resolves(
+                load_image(
+                    REMOTE_RESOURCES_PATH + 'abe-allow-star.php?Cookie=NotSet',
+                    'anonymous'),
+                'Cross-origin request for a resource whose CORS setting is ' +
+                'Anonymous must not contain cookies.'),
+            assert_resolves(
+                load_image(
+                    REMOTE_RESOURCES_PATH + 'abe-allow-credentials.php?' +
+                    'Cookie=cross&Secure',
+                    'use-credentials'),
+                'Cross-origin request for a resource whose CORS setting is ' +
+                'UseCredentials must contain cookies.'),
+              ]);}
+        );
+  }, 'Check request cookies for image resources with crossOrigin.');
+</script>

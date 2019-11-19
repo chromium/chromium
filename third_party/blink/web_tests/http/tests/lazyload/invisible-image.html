@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="placeholder.js"></script>
+
+<body>
+  <div style="height:10000px;"></div>
+  <img id="visibility_hidden" style="visibility:hidden;" src='../loading/resources/base-image1.png'>
+  <img id="display_none" style="display:none;" src='../loading/resources/base-image2.png'>
+  <img id="attribute_hidden" hidden src='../loading/resources/base-image3.png'>
+  <img id="js_hidden" src='../loading/resources/dup-image1.png'>
+  <script>
+    document.getElementById("js_hidden").style = 'display:none;';
+  </script>
+</body>
+
+<script>
+  var visibility_hidden_element = document.getElementById("visibility_hidden");
+  var display_none_element = document.getElementById("display_none");
+  var attribute_hidden_element = document.getElementById("attribute_hidden");
+  var js_hidden_element = document.getElementById("js_hidden");
+  async_test(function(t) {
+    window.addEventListener("load", t.step_func_done());
+  }, "Test that document load event is fired");
+  async_test(function(t) {
+    let image_fully_loaded_promise = (element) => {
+      return new Promise(resolve => {
+        element.addEventListener("load",
+          t.step_func(() => {
+            assert_true(is_image_fully_loaded(element));
+            resolve();
+        }));
+      });
+    }
+    Promise.all([image_fully_loaded_promise(visibility_hidden_element),
+      image_fully_loaded_promise(display_none_element),
+      image_fully_loaded_promise(attribute_hidden_element),
+      image_fully_loaded_promise(js_hidden_element)]).then(() => {
+        t.done();
+    });
+  }, "Test that invisible images are loaded");
+</script>
+

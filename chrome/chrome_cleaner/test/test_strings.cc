@@ -12,12 +12,6 @@ const char kTestEventToSignal[] = "test-event-to-signal";
 const char kTestForceOverwriteZoneIdentifier[] =
     "test-force-overwrite-zone-identifier";
 
-// Test service properties
-const wchar_t kServiceName[] = L"CCT_TestService";
-const wchar_t kServiceDescription[] = L"Chrome Cleanup Tool (test)";
-const unsigned int kServiceQueryWaitTimeMs = 250;
-const int kServiceQueryRetry = 5;
-
 // Test file names.
 const wchar_t kValidUtf8Name[] = L"unicode_file_\u79c1.exe";
 const wchar_t kInvalidUtf8Name[] = L"unicode_file_\xd800.exe";

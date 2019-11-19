@@ -50,6 +50,7 @@
 #ifndef _MSC_VER
 #include <stdint.h>
 #endif
+#include <atomic>
 #include <string>
 #include <vector>
 

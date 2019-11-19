@@ -13,7 +13,6 @@ extern const base::FilePath::CharType kSafeBrowsingBaseFilename[];
 
 // Filename suffix for the cookie database.
 extern const base::FilePath::CharType kCookiesFile[];
-extern const base::FilePath::CharType kChannelIDFile[];
 
 // The URL for the Safe Browsing page.
 extern const char kSafeBrowsingUrl[];

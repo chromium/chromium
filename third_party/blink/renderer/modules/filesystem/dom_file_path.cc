@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/modules/filesystem/dom_file_path.h"
 
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 

@@ -28,6 +28,7 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/time/time.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/browser_process.h"
@@ -251,6 +252,11 @@ bool CheckBlankPasswordWithPrefs(const WCHAR* username,
   }
 
   if (need_recheck) {
+    // Mitigate the issues caused by loading DLLs on a background thread
+    // (http://crbug/973868).
+    base::ScopedThreadMayLoadLibraryOnBackgroundThread priority_boost(
+        FROM_HERE);
+
     HANDLE handle = INVALID_HANDLE_VALUE;
 
     // Attempt to login using blank password.
@@ -334,8 +340,9 @@ void GetOsPasswordStatus() {
   PasswordCheckPrefs* prefs_weak = prefs.get();
   OsPasswordStatus* status_weak = status.get();
   // This task calls ::LogonUser(), hence MayBlock().
-  base::PostTaskWithTraitsAndReply(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReply(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::Bind(&GetOsPasswordStatusInternal, prefs_weak, status_weak),
       base::Bind(&ReplyOsPasswordStatus, base::Passed(&prefs),
                  base::Passed(&status)));
@@ -526,9 +533,9 @@ bool AuthenticateUserNew(gfx::NativeWindow window,
 }  // namespace
 
 void DelayReportOsPassword() {
-  base::PostDelayedTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                                  base::BindOnce(&GetOsPasswordStatus),
-                                  base::TimeDelta::FromSeconds(40));
+  base::PostDelayedTask(FROM_HERE, {content::BrowserThread::UI},
+                        base::BindOnce(&GetOsPasswordStatus),
+                        base::TimeDelta::FromSeconds(40));
 }
 
 bool AuthenticateUser(gfx::NativeWindow window,

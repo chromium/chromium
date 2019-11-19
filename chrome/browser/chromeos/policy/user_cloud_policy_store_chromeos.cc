@@ -43,7 +43,8 @@ UserCloudPolicyStoreChromeOS::UserCloudPolicyStoreChromeOS(
     const base::FilePath& user_policy_key_dir,
     bool is_active_directory)
     : UserCloudPolicyStoreBase(background_task_runner,
-                               PolicyScope::POLICY_SCOPE_USER),
+                               PolicyScope::POLICY_SCOPE_USER,
+                               PolicySource::POLICY_SOURCE_CLOUD),
       session_manager_client_(session_manager_client),
       account_id_(account_id),
       is_active_directory_(is_active_directory),
@@ -51,8 +52,7 @@ UserCloudPolicyStoreChromeOS::UserCloudPolicyStoreChromeOS(
           cryptohome_client,
           background_task_runner,
           account_id,
-          user_policy_key_dir)),
-      weak_factory_(this) {}
+          user_policy_key_dir)) {}
 
 UserCloudPolicyStoreChromeOS::~UserCloudPolicyStoreChromeOS() {}
 

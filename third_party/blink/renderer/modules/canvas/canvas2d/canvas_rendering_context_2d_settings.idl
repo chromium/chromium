@@ -9,7 +9,6 @@ dictionary CanvasRenderingContext2DSettings {
     boolean alpha = true;
     [RuntimeEnabled=CanvasColorManagement] CanvasColorSpace colorSpace = "srgb";
     [RuntimeEnabled=CanvasColorManagement] CanvasPixelFormat pixelFormat = "uint8";
-    // TODO(crbug.com/788439): remove OriginTrialEnabled.
-    [OriginTrialEnabled=LowLatencyCanvas] boolean lowLatency = false;
+    [RuntimeEnabled=SurfaceEmbeddingFeatures] boolean desynchronized = false;
 };
 

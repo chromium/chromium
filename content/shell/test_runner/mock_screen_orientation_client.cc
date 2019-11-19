@@ -11,6 +11,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/renderer/render_frame.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -31,7 +32,7 @@ void MockScreenOrientationClient::ResetData() {
   device_orientation_ = blink::kWebScreenOrientationPortraitPrimary;
   current_orientation_ = blink::kWebScreenOrientationPortraitPrimary;
   is_disabled_ = false;
-  bindings_.CloseAllBindings();
+  receivers_.Clear();
 }
 
 void MockScreenOrientationClient::UpdateDeviceOrientation(
@@ -119,10 +120,11 @@ bool MockScreenOrientationClient::IsOrientationAllowedByCurrentLock(
   }
 }
 
-void MockScreenOrientationClient::AddBinding(
+void MockScreenOrientationClient::AddReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
-  bindings_.AddBinding(this, device::mojom::ScreenOrientationAssociatedRequest(
-                                 std::move(handle)));
+  receivers_.Add(
+      this, mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>(
+                std::move(handle)));
 }
 
 void MockScreenOrientationClient::OverrideAssociatedInterfaceProviderForFrame(
@@ -137,7 +139,7 @@ void MockScreenOrientationClient::OverrideAssociatedInterfaceProviderForFrame(
 
   provider->OverrideBinderForTesting(
       device::mojom::ScreenOrientation::Name_,
-      base::BindRepeating(&MockScreenOrientationClient::AddBinding,
+      base::BindRepeating(&MockScreenOrientationClient::AddReceiver,
                           base::Unretained(this)));
 }
 

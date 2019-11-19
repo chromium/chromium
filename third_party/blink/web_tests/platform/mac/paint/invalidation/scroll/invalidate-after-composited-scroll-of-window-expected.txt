@@ -1,34 +1,29 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [785, 4934],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "InlineTextBox 'Tests that invalidation of a div after scrolling invalidates just the div and no other area.'",
+          "object": "NGPhysicalTextFragment 'Tests that invalidation of a div after scrolling invalidates just the div and no other area.'",
           "rect": [8, 4908, 555, 18],
           "reason": "appeared"
         },
         {
-          "object": "LayoutBlockFlow DIV id='target'",
+          "object": "LayoutNGBlockFlow DIV id='target'",
           "rect": [8, 2408, 100, 100],
           "reason": "background"
         }
       ],
       "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -39,8 +34,7 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -2350, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }

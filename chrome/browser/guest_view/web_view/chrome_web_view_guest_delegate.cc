@@ -27,10 +27,7 @@ namespace extensions {
 
 ChromeWebViewGuestDelegate::ChromeWebViewGuestDelegate(
     WebViewGuest* web_view_guest)
-    : pending_context_menu_request_id_(0),
-      web_view_guest_(web_view_guest),
-      weak_ptr_factory_(this) {
-}
+    : pending_context_menu_request_id_(0), web_view_guest_(web_view_guest) {}
 
 ChromeWebViewGuestDelegate::~ChromeWebViewGuestDelegate() {
 }

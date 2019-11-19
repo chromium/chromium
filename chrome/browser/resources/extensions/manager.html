@@ -1,0 +1,109 @@
+<style include="cr-hidden-style">
+  :host {
+    color: var(--cr-primary-text-color);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    --cr-toolbar-field-width: 680px;
+  }
+
+  extensions-sidebar {
+    flex-basis: 256px;
+  }
+
+  #viewManager {
+    flex: 1;
+    position: relative;
+  }
+
+  extensions-item {
+    display: inline-block;
+  }
+</style>
+<extensions-drop-overlay drag-enabled="[[inDevMode]]">
+</extensions-drop-overlay>
+<extensions-toolbar in-dev-mode="[[inDevMode]]"
+    can-load-unpacked="[[canLoadUnpacked]]"
+    is-supervised="[[isSupervised_]]"
+    dev-mode-controlled-by-policy="[[devModeControlledByPolicy]]"
+    delegate="[[delegate]]" on-cr-toolbar-menu-tap="onMenuButtonTap_"
+    on-search-changed="onFilterChanged_"
+<if expr="chromeos">
+    on-kiosk-tap="onKioskTap_"
+    kiosk-enabled="[[kioskEnabled_]]"
+</if>
+    >
+</extensions-toolbar>
+<template is="dom-if" if="[[showDrawer_]]" restamp>
+  <cr-drawer id="drawer" heading="$i18n{toolbarTitle}"
+      align="$i18n{textdirection}" on-close="onDrawerClose_">
+    <div class="drawer-content">
+      <extensions-sidebar id="sidebar" is-supervised="[[isSupervised_]]"
+          on-close-drawer="onCloseDrawer_">
+      </extensions-sidebar>
+    </div>
+  </cr-drawer>
+</template>
+<cr-view-manager id="viewManager" role="main">
+  <extensions-item-list id="items-list" delegate="[[delegate]]"
+      in-dev-mode="[[inDevMode]]" filter="[[filter]]"
+      hidden$="[[!didInitPage_]]" slot="view" apps="[[apps_]]"
+      extensions="[[extensions_]]"
+      on-show-install-warnings="onShowInstallWarnings_">
+  </extensions-item-list>
+  <cr-lazy-render id="details-view">
+    <template>
+      <extensions-detail-view delegate="[[delegate]]" slot="view"
+          in-dev-mode="[[inDevMode]]"
+          from-activity-log="[[fromActivityLog_]]"
+          show-activity-log="[[showActivityLog]]"
+          incognito-available="[[incognitoAvailable_]]"
+          data="[[detailViewItem_]]">
+      </extensions-detail-view>
+    </template>
+  </cr-lazy-render>
+  <cr-lazy-render id="activity-log">
+    <template>
+      <extensions-activity-log delegate="[[delegate]]" slot="view"
+          extension-info="[[activityLogItem_]]">
+      </extensions-activity-log>
+    </template>
+  </cr-lazy-render>
+  <cr-lazy-render id="keyboard-shortcuts">
+    <template>
+      <extensions-keyboard-shortcuts delegate="[[delegate]]" slot="view"
+          items="[[extensions_]]">
+      </extensions-keyboard-shortcuts>
+    </template>
+  </cr-lazy-render>
+  <cr-lazy-render id="error-page">
+    <template>
+      <extensions-error-page data="[[errorPageItem_]]" slot="view"
+          delegate="[[delegate]]" in-dev-mode="[[inDevMode]]">
+      </extensions-error-page>
+    </template>
+  </cr-lazy-render>
+</cr-view-manager>
+<template is="dom-if" if="[[showOptionsDialog_]]" restamp>
+  <extensions-options-dialog id="options-dialog"
+      on-close="onOptionsDialogClose_">
+  </extensions-options-dialog>
+</template>
+<template is="dom-if" if="[[showLoadErrorDialog_]]" restamp>
+  <extensions-load-error id="load-error" delegate="[[delegate]]"
+      on-close="onLoadErrorDialogClose_">
+  </extensions-load-error>
+</template>
+<if expr="chromeos">
+<template is="dom-if" if="[[showKioskDialog_]]" restamp>
+  <extensions-kiosk-dialog id="kiosk-dialog" on-close="onKioskDialogClose_">
+  </extensions-kiosk-dialog>
+</template>
+</if>
+<template is="dom-if" if="[[showInstallWarningsDialog_]]" restamp>
+  <extensions-install-warnings-dialog
+      on-close="onInstallWarningsDialogClose_"
+      install-warnings="[[installWarnings_]]">
+  </extensions-install-warnings-dialog>
+</template>
+<cr-toast-manager></cr-toast-manager>

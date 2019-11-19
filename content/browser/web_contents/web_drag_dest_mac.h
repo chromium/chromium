@@ -20,13 +20,16 @@ class RenderViewHost;
 class RenderWidgetHostImpl;
 class WebContentsImpl;
 class WebDragDestDelegate;
-namespace mojom {
-class DraggingInfo;
-}  // namespace mojom
 }  // namespace content
 
 // A typedef for a RenderViewHost used for comparison purposes only.
 typedef content::RenderViewHost* RenderViewHostIdentifier;
+
+namespace remote_cocoa {
+namespace mojom {
+class DraggingInfo;
+}  // namespace mojom
+}  // namespace remote_cocoa
 
 namespace content {
 
@@ -98,10 +101,12 @@ CONTENT_EXPORT
 // Messages to send during the tracking of a drag, ususally upon receiving
 // calls from the view system. Communicates the drag messages to WebCore.
 - (void)setDropData:(const content::DropData&)dropData;
-- (NSDragOperation)draggingEntered:(const content::mojom::DraggingInfo*)info;
+- (NSDragOperation)draggingEntered:
+    (const remote_cocoa::mojom::DraggingInfo*)info;
 - (void)draggingExited;
-- (NSDragOperation)draggingUpdated:(const content::mojom::DraggingInfo*)info;
-- (BOOL)performDragOperation:(const content::mojom::DraggingInfo*)info;
+- (NSDragOperation)draggingUpdated:
+    (const remote_cocoa::mojom::DraggingInfo*)info;
+- (BOOL)performDragOperation:(const remote_cocoa::mojom::DraggingInfo*)info;
 
 // Helper to call WebWidgetHostInputEventRouter::GetRenderWidgetHostAtPoint().
 - (content::RenderWidgetHostImpl*)

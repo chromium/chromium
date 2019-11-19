@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_TTS_UTTERANCE_H_
 #define CONTENT_PUBLIC_BROWSER_TTS_UTTERANCE_H_
 
+#include <memory>
 #include <set>
 
 #include "content/common/content_export.h"
@@ -61,7 +62,7 @@ class CONTENT_EXPORT TtsUtterance {
   // Construct an utterance given a profile and a completion task to call
   // when the utterance is done speaking. Before speaking this utterance,
   // its other parameters like text, rate, pitch, etc. should all be set.
-  static TtsUtterance* Create(BrowserContext* browser_context);
+  static std::unique_ptr<TtsUtterance> Create(BrowserContext* browser_context);
   virtual ~TtsUtterance() = default;
 
   // Sends an event to the delegate. If the event type is TTS_EVENT_END
@@ -78,10 +79,10 @@ class CONTENT_EXPORT TtsUtterance {
 
   // Getters and setters for the text to speak and other speech options.
   virtual void SetText(const std::string& text) = 0;
-  virtual const std::string& GetText() const = 0;
+  virtual const std::string& GetText() = 0;
 
   virtual void SetOptions(const base::Value* options) = 0;
-  virtual const base::Value* GetOptions() const = 0;
+  virtual const base::Value* GetOptions() = 0;
 
   virtual void SetSrcId(int src_id) = 0;
   virtual int GetSrcId() = 0;
@@ -90,10 +91,10 @@ class CONTENT_EXPORT TtsUtterance {
   virtual const GURL& GetSrcUrl() = 0;
 
   virtual void SetVoiceName(const std::string& voice_name) = 0;
-  virtual const std::string& GetVoiceName() const = 0;
+  virtual const std::string& GetVoiceName() = 0;
 
   virtual void SetLang(const std::string& lang) = 0;
-  virtual const std::string& GetLang() const = 0;
+  virtual const std::string& GetLang() = 0;
 
   virtual void SetContinuousParameters(const double rate,
                                        const double pitch,
@@ -101,24 +102,24 @@ class CONTENT_EXPORT TtsUtterance {
   virtual const UtteranceContinuousParameters& GetContinuousParameters() = 0;
 
   virtual void SetCanEnqueue(bool can_enqueue) = 0;
-  virtual bool GetCanEnqueue() const = 0;
+  virtual bool GetCanEnqueue() = 0;
 
   virtual void SetRequiredEventTypes(const std::set<TtsEventType>& types) = 0;
-  virtual const std::set<TtsEventType>& GetRequiredEventTypes() const = 0;
+  virtual const std::set<TtsEventType>& GetRequiredEventTypes() = 0;
 
   virtual void SetDesiredEventTypes(const std::set<TtsEventType>& types) = 0;
-  virtual const std::set<TtsEventType>& GetDesiredEventTypes() const = 0;
+  virtual const std::set<TtsEventType>& GetDesiredEventTypes() = 0;
 
   virtual void SetEngineId(const std::string& engine_id) = 0;
-  virtual const std::string& GetEngineId() const = 0;
+  virtual const std::string& GetEngineId() = 0;
 
   virtual void SetEventDelegate(UtteranceEventDelegate* event_delegate) = 0;
-  virtual UtteranceEventDelegate* GetEventDelegate() const = 0;
+  virtual UtteranceEventDelegate* GetEventDelegate() = 0;
 
   // Getters and setters for internal state.
-  virtual BrowserContext* GetBrowserContext() const = 0;
-  virtual int GetId() const = 0;
-  virtual bool IsFinished() const = 0;
+  virtual BrowserContext* GetBrowserContext() = 0;
+  virtual int GetId() = 0;
+  virtual bool IsFinished() = 0;
 };
 
 }  // namespace content

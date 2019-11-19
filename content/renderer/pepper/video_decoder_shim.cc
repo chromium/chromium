@@ -35,7 +35,7 @@
 #include "media/video/picture.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ppapi/c/pp_errors.h"
-#include "services/ws/public/cpp/gpu/context_provider_command_buffer.h"
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 
 namespace content {
@@ -60,10 +60,10 @@ bool IsCodecSupported(media::VideoCodec codec) {
 // YUV->RGB converter class using a shader and FBO.
 class VideoDecoderShim::YUVConverter {
  public:
-  YUVConverter(scoped_refptr<ws::ContextProviderCommandBuffer>);
+  YUVConverter(scoped_refptr<viz::ContextProviderCommandBuffer>);
   ~YUVConverter();
   bool Initialize();
-  void Convert(const scoped_refptr<media::VideoFrame>& frame, GLuint tex_out);
+  void Convert(const media::VideoFrame* frame, GLuint tex_out);
 
  private:
   GLuint CreateShader();
@@ -71,7 +71,7 @@ class VideoDecoderShim::YUVConverter {
   GLuint CreateProgram(const char* name, GLuint vshader, GLuint fshader);
   GLuint CreateTexture();
 
-  scoped_refptr<ws::ContextProviderCommandBuffer> context_provider_;
+  scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
   gpu::gles2::GLES2Interface* gl_;
   GLuint frame_buffer_;
   GLuint vertex_buffer_;
@@ -101,7 +101,7 @@ class VideoDecoderShim::YUVConverter {
 };
 
 VideoDecoderShim::YUVConverter::YUVConverter(
-    scoped_refptr<ws::ContextProviderCommandBuffer> context_provider)
+    scoped_refptr<viz::ContextProviderCommandBuffer> context_provider)
     : context_provider_(std::move(context_provider)),
       gl_(context_provider_->ContextGL()),
       frame_buffer_(0),
@@ -353,9 +353,8 @@ bool VideoDecoderShim::YUVConverter::Initialize() {
   return (program_ != 0);
 }
 
-void VideoDecoderShim::YUVConverter::Convert(
-    const scoped_refptr<media::VideoFrame>& frame,
-    GLuint tex_out) {
+void VideoDecoderShim::YUVConverter::Convert(const media::VideoFrame* frame,
+                                             GLuint tex_out) {
   const float* yuv_matrix = nullptr;
   const float* yuv_adjust = nullptr;
 
@@ -406,6 +405,8 @@ void VideoDecoderShim::YUVConverter::Convert(
         case kRec601_SkYUVColorSpace:
           // Current default.
           break;
+        default:
+          NOTREACHED();
       }
     }
 
@@ -608,8 +609,7 @@ VideoDecoderShim::PendingDecode::~PendingDecode() {
 
 struct VideoDecoderShim::PendingFrame {
   explicit PendingFrame(uint32_t decode_id);
-  PendingFrame(uint32_t decode_id,
-               const scoped_refptr<media::VideoFrame>& frame);
+  PendingFrame(uint32_t decode_id, scoped_refptr<media::VideoFrame> frame);
   ~PendingFrame();
 
   const uint32_t decode_id;
@@ -626,9 +626,8 @@ VideoDecoderShim::PendingFrame::PendingFrame(uint32_t decode_id)
 
 VideoDecoderShim::PendingFrame::PendingFrame(
     uint32_t decode_id,
-    const scoped_refptr<media::VideoFrame>& frame)
-    : decode_id(decode_id), video_frame(frame) {
-}
+    scoped_refptr<media::VideoFrame> frame)
+    : decode_id(decode_id), video_frame(std::move(frame)) {}
 
 VideoDecoderShim::PendingFrame::~PendingFrame() {
 }
@@ -651,7 +650,7 @@ class VideoDecoderShim::DecoderImpl {
   void OnInitDone(bool success);
   void DoDecode();
   void OnDecodeComplete(media::DecodeStatus status);
-  void OnOutputComplete(const scoped_refptr<media::VideoFrame>& frame);
+  void OnOutputComplete(scoped_refptr<media::VideoFrame> frame);
   void OnResetComplete();
 
   // WeakPtr is bound to main_message_loop_. Use only in shim callbacks.
@@ -671,14 +670,12 @@ class VideoDecoderShim::DecoderImpl {
   // store id of the current buffer while Decode() call is pending.
   uint32_t decode_id_ = 0;
 
-  base::WeakPtrFactory<DecoderImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<DecoderImpl> weak_ptr_factory_{this};
 };
 
 VideoDecoderShim::DecoderImpl::DecoderImpl(
     const base::WeakPtr<VideoDecoderShim>& proxy)
-    : shim_(proxy),
-      main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      weak_ptr_factory_(this) {}
+    : shim_(proxy), main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
 VideoDecoderShim::DecoderImpl::~DecoderImpl() {
   DCHECK(pending_decodes_.empty());
@@ -707,10 +704,10 @@ void VideoDecoderShim::DecoderImpl::Initialize(
 
   decoder_->Initialize(
       config, true /* low_delay */, nullptr,
-      base::Bind(&VideoDecoderShim::DecoderImpl::OnInitDone,
-                 weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(&VideoDecoderShim::DecoderImpl::OnOutputComplete,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&VideoDecoderShim::DecoderImpl::OnInitDone,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&VideoDecoderShim::DecoderImpl::OnOutputComplete,
+                          weak_ptr_factory_.GetWeakPtr()),
       base::NullCallback());
 #else
   OnInitDone(false);
@@ -743,8 +740,9 @@ void VideoDecoderShim::DecoderImpl::Reset() {
     return;
   }
 
-  decoder_->Reset(base::Bind(&VideoDecoderShim::DecoderImpl::OnResetComplete,
-                             weak_ptr_factory_.GetWeakPtr()));
+  decoder_->Reset(
+      base::BindOnce(&VideoDecoderShim::DecoderImpl::OnResetComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void VideoDecoderShim::DecoderImpl::Stop() {
@@ -776,9 +774,10 @@ void VideoDecoderShim::DecoderImpl::DoDecode() {
   awaiting_decoder_ = true;
   const PendingDecode& decode = pending_decodes_.front();
   decode_id_ = decode.decode_id;
-  decoder_->Decode(decode.buffer,
-                   base::Bind(&VideoDecoderShim::DecoderImpl::OnDecodeComplete,
-                              weak_ptr_factory_.GetWeakPtr()));
+  decoder_->Decode(
+      decode.buffer,
+      base::BindOnce(&VideoDecoderShim::DecoderImpl::OnDecodeComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
   pending_decodes_.pop();
 }
 
@@ -806,14 +805,14 @@ void VideoDecoderShim::DecoderImpl::OnDecodeComplete(
 }
 
 void VideoDecoderShim::DecoderImpl::OnOutputComplete(
-    const scoped_refptr<media::VideoFrame>& frame) {
+    scoped_refptr<media::VideoFrame> frame) {
   // Software decoders are expected to generated frames only when a Decode()
   // call is pending.
   DCHECK(awaiting_decoder_);
 
   std::unique_ptr<PendingFrame> pending_frame;
   if (!frame->metadata()->IsTrue(media::VideoFrameMetadata::END_OF_STREAM))
-    pending_frame.reset(new PendingFrame(decode_id_, frame));
+    pending_frame.reset(new PendingFrame(decode_id_, std::move(frame)));
   else
     pending_frame.reset(new PendingFrame(decode_id_));
 
@@ -827,8 +826,8 @@ void VideoDecoderShim::DecoderImpl::OnResetComplete() {
       FROM_HERE, base::BindOnce(&VideoDecoderShim::OnResetComplete, shim_));
 }
 
-VideoDecoderShim::VideoDecoderShim(
-    PepperVideoDecoderHost* host, uint32_t texture_pool_size)
+VideoDecoderShim::VideoDecoderShim(PepperVideoDecoderHost* host,
+                                   uint32_t texture_pool_size)
     : state_(UNINITIALIZED),
       host_(host),
       media_task_runner_(
@@ -837,8 +836,7 @@ VideoDecoderShim::VideoDecoderShim(
           RenderThreadImpl::current()->SharedMainThreadContextProvider()),
       texture_pool_size_(texture_pool_size),
       num_pending_decodes_(0),
-      yuv_converter_(new YUVConverter(context_provider_)),
-      weak_ptr_factory_(this) {
+      yuv_converter_(new YUVConverter(context_provider_)) {
   DCHECK(host_);
   DCHECK(media_task_runner_.get());
   DCHECK(context_provider_.get());
@@ -891,12 +889,13 @@ bool VideoDecoderShim::Initialize(const Config& vda_config, Client* client) {
     return false;
 
   media::VideoDecoderConfig video_decoder_config(
-      codec, vda_config.profile, media::PIXEL_FORMAT_I420,
-      media::VideoColorSpace(), media::VIDEO_ROTATION_0,
+      codec, vda_config.profile,
+      media::VideoDecoderConfig::AlphaMode::kIsOpaque, media::VideoColorSpace(),
+      media::kNoTransformation,
       gfx::Size(32, 24),  // Small sizes that won't fail.
       gfx::Rect(32, 24), gfx::Size(32, 24),
       // TODO(bbudge): Verify extra data isn't needed.
-      media::EmptyExtraData(), media::Unencrypted());
+      media::EmptyExtraData(), media::EncryptionScheme::kUnencrypted);
 
   media_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoDecoderShim::DecoderImpl::Initialize,
@@ -910,7 +909,7 @@ bool VideoDecoderShim::Initialize(const Config& vda_config, Client* client) {
   return true;
 }
 
-void VideoDecoderShim::Decode(const media::BitstreamBuffer& bitstream_buffer) {
+void VideoDecoderShim::Decode(media::BitstreamBuffer bitstream_buffer) {
   DCHECK(RenderThreadImpl::current());
   DCHECK_EQ(state_, DECODING);
 
@@ -1054,7 +1053,7 @@ void VideoDecoderShim::SendPictures() {
 
     uint32_t local_texture_id = texture_id_map_[texture_id];
 
-    yuv_converter_->Convert(frame->video_frame, local_texture_id);
+    yuv_converter_->Convert(frame->video_frame.get(), local_texture_id);
 
     host_->PictureReady(media::Picture(texture_id, frame->decode_id,
                                        frame->video_frame->visible_rect(),

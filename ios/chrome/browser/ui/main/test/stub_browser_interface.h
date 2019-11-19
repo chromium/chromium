@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 
+class Browser;
 @class BrowserViewController;
 namespace ios {
 class ChromeBrowserState;
@@ -21,6 +22,7 @@ class ChromeBrowserState;
 @property(nonatomic, readwrite) UIViewController* viewController;
 @property(nonatomic, readwrite) BrowserViewController* bvc;
 @property(nonatomic, readwrite) TabModel* tabModel;
+@property(nonatomic, readwrite) Browser* browser;
 @property(nonatomic, readwrite) ios::ChromeBrowserState* browserState;
 @property(nonatomic, readwrite) BOOL incognito;
 @end

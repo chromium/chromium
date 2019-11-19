@@ -35,6 +35,9 @@ window.onload = function() {
         eventSender.mouseMoveTo(checkbox.offsetLeft + 2, checkbox.offsetTop + 2);
         eventSender.mouseDown();
         eventSender.mouseUp();
+        // Move mouse out of the element to avoid hover state which is not
+        // expected by the -expected.html.
+        eventSender.mouseMoveTo(checkbox.offsetLeft - 10, checkbox.offsetTop - 10);
         // Shift focus to other input element.
         eventSender.keyDown('\t');
         internals.setFocused(false);

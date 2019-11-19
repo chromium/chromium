@@ -8,4 +8,4 @@ traits_headers = [ "//url/mojom/origin_mojom_traits.h" ]
 deps = [
   "//url",
 ]
-type_mappings = [ "url.mojom.Origin=url::Origin" ]
+type_mappings = [ "url.mojom.Origin=::url::Origin" ]

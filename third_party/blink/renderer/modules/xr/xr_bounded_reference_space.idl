@@ -7,7 +7,7 @@
 [
     SecureContext,
     Exposed=Window,
-    OriginTrialEnabled=WebXR
+    RuntimeEnabled=WebXR
 ] interface XRBoundedReferenceSpace : XRReferenceSpace {
   readonly attribute FrozenArray<DOMPointReadOnly> boundsGeometry;
 };

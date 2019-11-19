@@ -25,8 +25,6 @@ class AccelerometerFileReader;
 // AccelerometerDelegate.
 class ASH_EXPORT AccelerometerReader {
  public:
-  // The time to wait between reading the accelerometer.
-  static const int kDelayBetweenReadsMs;
 
   // An interface to receive data from the AccelerometerReader.
   class Observer {
@@ -46,6 +44,10 @@ class ASH_EXPORT AccelerometerReader {
   // Add/Remove observers.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Accelerometer file reader starts/stops listening to tablet mode controller.
+  void StartListenToTabletModeController();
+  void StopListenToTabletModeController();
 
  protected:
   AccelerometerReader();

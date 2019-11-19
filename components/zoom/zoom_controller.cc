@@ -17,8 +17,8 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_type.h"
-#include "content/public/common/page_zoom.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 
 using content::BrowserThread;
 
@@ -46,8 +46,9 @@ ZoomController::ZoomController(content::WebContents* web_contents)
   host_zoom_map_ = content::HostZoomMap::GetForWebContents(web_contents);
   zoom_level_ = host_zoom_map_->GetDefaultZoomLevel();
 
-  zoom_subscription_ = host_zoom_map_->AddZoomLevelChangedCallback(
-      base::Bind(&ZoomController::OnZoomLevelChanged, base::Unretained(this)));
+  zoom_subscription_ =
+      host_zoom_map_->AddZoomLevelChangedCallback(base::BindRepeating(
+          &ZoomController::OnZoomLevelChanged, base::Unretained(this)));
 
   UpdateState(std::string());
 }
@@ -58,14 +59,14 @@ ZoomController::~ZoomController() {
 
 bool ZoomController::IsAtDefaultZoom() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return content::ZoomValuesEqual(GetZoomLevel(), GetDefaultZoomLevel());
+  return blink::PageZoomValuesEqual(GetZoomLevel(), GetDefaultZoomLevel());
 }
 
 ZoomController::RelativeZoom ZoomController::GetZoomRelativeToDefault() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   double current_level = GetZoomLevel();
   double default_level = GetDefaultZoomLevel();
-  if (content::ZoomValuesEqual(current_level, default_level))
+  if (blink::PageZoomValuesEqual(current_level, default_level))
     return ZOOM_AT_DEFAULT_ZOOM;
   if (current_level > default_level)
     return ZOOM_ABOVE_DEFAULT_ZOOM;
@@ -91,7 +92,7 @@ double ZoomController::GetZoomLevel() const {
 
 int ZoomController::GetZoomPercent() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  double zoom_factor = content::ZoomLevelToZoomFactor(GetZoomLevel());
+  double zoom_factor = blink::PageZoomLevelToZoomFactor(GetZoomLevel());
   // Round double for return.
   return static_cast<int>(zoom_factor * 100 + 0.5);
 }
@@ -122,7 +123,7 @@ bool ZoomController::SetZoomLevelByClient(
   // Do not actually rescale the page in manual mode.
   if (zoom_mode_ == ZOOM_MODE_MANUAL) {
     // If the zoom level hasn't changed, early out to avoid sending an event.
-    if (content::ZoomValuesEqual(zoom_level_, zoom_level))
+    if (blink::PageZoomValuesEqual(zoom_level_, zoom_level))
       return true;
 
     double old_zoom_level = zoom_level_;
@@ -335,8 +336,9 @@ void ZoomController::RenderFrameHostChanged(
     return;
 
   host_zoom_map_ = new_host_zoom_map;
-  zoom_subscription_ = host_zoom_map_->AddZoomLevelChangedCallback(
-      base::Bind(&ZoomController::OnZoomLevelChanged, base::Unretained(this)));
+  zoom_subscription_ =
+      host_zoom_map_->AddZoomLevelChangedCallback(base::BindRepeating(
+          &ZoomController::OnZoomLevelChanged, base::Unretained(this)));
 }
 
 void ZoomController::OnZoomLevelChanged(

@@ -24,7 +24,7 @@ struct FrameCounts {
 };
 
 static bool CPUSupportsAVX() {
-  static bool supports = ::base::CPU().has_avx();
+  static const bool supports = ::base::CPU().has_avx();
   return supports;
 }
 

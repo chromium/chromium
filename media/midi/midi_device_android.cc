@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/android/jni_string.h"
-#include "jni/MidiDeviceAndroid_jni.h"
+#include "media/midi/midi_jni_headers/MidiDeviceAndroid_jni.h"
 #include "media/midi/midi_output_port_android.h"
 
 using base::android::JavaRef;
@@ -32,21 +32,14 @@ MidiDeviceAndroid::MidiDeviceAndroid(JNIEnv* env,
     : raw_device_(raw_device) {
   ScopedJavaLocalRef<jobjectArray> raw_input_ports =
       Java_MidiDeviceAndroid_getInputPorts(env, raw_device);
-  jsize num_input_ports = env->GetArrayLength(raw_input_ports.obj());
-
-  for (jsize i = 0; i < num_input_ports; ++i) {
-    ScopedJavaLocalRef<jobject> j_port(
-        env, env->GetObjectArrayElement(raw_input_ports.obj(), i));
+  for (auto j_port : raw_input_ports.ReadElements<jobject>()) {
     input_ports_.push_back(
         std::make_unique<MidiInputPortAndroid>(env, j_port.obj(), delegate));
   }
 
   ScopedJavaLocalRef<jobjectArray> raw_output_ports =
       Java_MidiDeviceAndroid_getOutputPorts(env, raw_device);
-  jsize num_output_ports = env->GetArrayLength(raw_output_ports.obj());
-  for (jsize i = 0; i < num_output_ports; ++i) {
-    ScopedJavaLocalRef<jobject> j_port(
-        env, env->GetObjectArrayElement(raw_output_ports.obj(), i));
+  for (auto j_port : raw_output_ports.ReadElements<jobject>()) {
     output_ports_.push_back(
         std::make_unique<MidiOutputPortAndroid>(env, j_port.obj()));
   }

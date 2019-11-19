@@ -43,7 +43,7 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
   }
 
   bool SurfaceHasUnackedFrame(const SurfaceId& surface_id) const override {
-    return base::ContainsKey(undrawn_surfaces_, surface_id);
+    return base::Contains(undrawn_surfaces_, surface_id);
   }
 
   bool SurfaceDamaged(const SurfaceId& surface_id,
@@ -51,7 +51,7 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
     return false;
   }
 
-  void SurfaceDiscarded(const SurfaceId& surface_id) override {}
+  void SurfaceDestroyed(const SurfaceId& surface_id) override {}
 
   void DidFinishFrame(const BeginFrameAck& ack) override {
     last_begin_frame_ack_ = ack;
@@ -113,6 +113,10 @@ class TestDisplayScheduler : public DisplayScheduler {
   }
 
   bool has_pending_surfaces() { return has_pending_surfaces_; }
+
+  bool is_swap_throttled() const {
+    return pending_swaps_ >= max_pending_swaps_;
+  }
 
  protected:
   int scheduler_begin_frame_deadline_count_;
@@ -202,7 +206,7 @@ TEST_F(DisplaySchedulerTest, ResizeHasLateDeadlineUntilNewRootSurface) {
   EXPECT_GT(late_deadline, scheduler_.DesiredBeginFrameDeadlineTimeForTest());
   scheduler_.DisplayResized();
   EXPECT_EQ(late_deadline, scheduler_.DesiredBeginFrameDeadlineTimeForTest());
-  scheduler_.OnSurfaceDestroyed(root_surface_id1);
+  scheduler_.OnSurfaceMarkedForDestruction(root_surface_id1);
   scheduler_.SetNewRootSurface(root_surface_id2);
   EXPECT_GE(now_src().NowTicks(),
             scheduler_.DesiredBeginFrameDeadlineTimeForTest());
@@ -687,7 +691,8 @@ TEST_F(DisplaySchedulerTest, DidSwapBuffers) {
   AdvanceTimeAndBeginFrameForTest({sid2});
   base::TimeTicks expected_deadline =
       scheduler_.LastUsedBeginFrameArgs().deadline -
-      BeginFrameArgs::DefaultEstimatedParentDrawTime();
+      BeginFrameArgs::DefaultEstimatedDisplayDrawTime(
+          scheduler_.LastUsedBeginFrameArgs().interval);
   EXPECT_EQ(expected_deadline,
             scheduler_.DesiredBeginFrameDeadlineTimeForTest());
   // Still waiting for surface 2. Once it updates, deadline should trigger
@@ -788,6 +793,53 @@ TEST_F(DisplaySchedulerTest, SetNeedsOneBeginFrame) {
   // System should be idle again.
   AdvanceTimeAndBeginFrameForTest(std::vector<SurfaceId>());
   EXPECT_FALSE(scheduler_.inside_begin_frame_deadline_interval());
+}
+
+TEST_F(DisplaySchedulerTest, GpuBusyNotifications) {
+  SurfaceId root_surface_id(
+      kArbitraryFrameSinkId,
+      LocalSurfaceId(1, base::UnguessableToken::Create()));
+
+  scheduler_.SetVisible(true);
+  scheduler_.SetNewRootSurface(root_surface_id);
+
+  // Swap one frame, since max pending swaps is 1 it puts us in a swap throttled
+  // state.
+  AdvanceTimeAndBeginFrameForTest({root_surface_id});
+  EXPECT_EQ(scheduler_.current_frame_time(), last_begin_frame_args_.frame_time);
+  EXPECT_EQ(client().draw_and_swap_count(), 0);
+  SurfaceDamaged(root_surface_id);
+  scheduler_.BeginFrameDeadlineForTest();
+  EXPECT_EQ(client().draw_and_swap_count(), 1);
+  scheduler_.DidSwapBuffers();
+  EXPECT_TRUE(scheduler_.is_swap_throttled());
+
+  // The next vsync should not be blocked from the swap throttling.
+  EXPECT_FALSE(fake_begin_frame_source_.RequestCallbackOnGpuAvailable());
+
+  // Send the next vsync, after which vsyncs will be blocked on busy gpu.
+  EXPECT_TRUE(fake_begin_frame_source_.RequestCallbackOnGpuAvailable());
+
+  // Ack the pending swap buffers, we should no longer be marked gpu busy.
+  scheduler_.DidReceiveSwapBuffersAck();
+  EXPECT_FALSE(fake_begin_frame_source_.RequestCallbackOnGpuAvailable());
+}
+
+TEST_F(DisplaySchedulerTest, OnBeginFrameDeadlineNoClient) {
+  SurfaceId root_surface_id(
+      kArbitraryFrameSinkId,
+      LocalSurfaceId(1, base::UnguessableToken::Create()));
+
+  scheduler_.SetVisible(true);
+  scheduler_.SetNewRootSurface(root_surface_id);
+
+  AdvanceTimeAndBeginFrameForTest({root_surface_id});
+  SurfaceDamaged(root_surface_id);
+
+  // During teardown, we may get a BeginFrameDeadline while |client_| is null.
+  // This should not crash.
+  scheduler_.SetClient(nullptr);
+  scheduler_.BeginFrameDeadlineForTest();
 }
 
 }  // namespace

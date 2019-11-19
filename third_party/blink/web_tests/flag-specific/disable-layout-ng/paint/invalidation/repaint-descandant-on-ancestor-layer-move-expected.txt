@@ -1,0 +1,33 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (relative positioned) DIV",
+          "rect": [428, 38, 300, 20],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (relative positioned) DIV",
+          "rect": [28, 38, 300, 20],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'There should only be one copy of this text.'",
+          "rect": [428, 38, 270, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'There should only be one copy of this text.'",
+          "rect": [28, 38, 270, 19],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

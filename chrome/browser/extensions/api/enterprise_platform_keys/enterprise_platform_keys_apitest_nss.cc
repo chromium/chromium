@@ -11,23 +11,18 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_test_base.h"
+#include "chrome/browser/extensions/policy_test_utils.h"
 #include "chrome/browser/net/nss_context.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/policy/core/common/policy_map.h"
-#include "components/policy/policy_constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/test_extension_registry_observer.h"
 #include "net/cert/nss_cert_database.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -168,9 +163,7 @@ class EnterprisePlatformKeysTest
   }
 
   void SetUpOnMainThread() override {
-    embedded_test_server()->RegisterRequestHandler(
-        base::BindRepeating(&EnterprisePlatformKeysTest::InterceptMockHttp,
-                            base::Unretained(this)));
+    policy_test_utils::SetUpEmbeddedTestServer(embedded_test_server());
     PlatformKeysTestBase::SetUpOnMainThread();
   }
 
@@ -184,57 +177,7 @@ class EnterprisePlatformKeysTest
     done_callback.Run();
   }
 
-  void SetPolicy() {
-    // Extensions that are force-installed come from an update URL, which
-    // defaults to the webstore. Use a mock URL for this test with an update
-    // manifest that includes the crx file of the test extension.
-    GURL update_manifest_url(
-        embedded_test_server()->GetURL(kUpdateManifestPath));
-
-    std::unique_ptr<base::ListValue> forcelist(new base::ListValue);
-    forcelist->AppendString(base::StringPrintf(
-        "%s;%s", kTestExtensionID, update_manifest_url.spec().c_str()));
-
-    policy::PolicyMap policy;
-    policy.Set(policy::key::kExtensionInstallForcelist,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-               policy::POLICY_SOURCE_CLOUD, std::move(forcelist), nullptr);
-
-    // Set the policy and wait until the extension is installed.
-    TestExtensionRegistryObserver observer(ExtensionRegistry::Get(profile()));
-    mock_policy_provider()->UpdateChromePolicy(policy);
-    observer.WaitForExtensionWillBeInstalled();
-  }
-
  private:
-  // Replace "mock.http" with "127.0.0.1:<port>" on "update_manifest.xml" files.
-  // Host resolver doesn't work here because the test file doesn't know the
-  // correct port number.
-  std::unique_ptr<net::test_server::HttpResponse> InterceptMockHttp(
-      const net::test_server::HttpRequest& request) {
-    const std::string kFileNameToIntercept = "update_manifest.xml";
-    if (request.GetURL().ExtractFileName() != kFileNameToIntercept)
-      return nullptr;
-
-    base::FilePath test_data_dir;
-    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
-    // Remove the leading '/'.
-    std::string relative_manifest_path = request.GetURL().path().substr(1);
-    std::string manifest_response;
-    CHECK(base::ReadFileToString(test_data_dir.Append(relative_manifest_path),
-                                 &manifest_response));
-
-    base::ReplaceSubstringsAfterOffset(
-        &manifest_response, 0, "mock.http",
-        embedded_test_server()->host_port_pair().ToString());
-
-    std::unique_ptr<net::test_server::BasicHttpResponse> response(
-        new net::test_server::BasicHttpResponse());
-    response->set_content_type("text/xml");
-    response->set_content(manifest_response);
-    return response;
-  }
-
   void PrepareTestSystemSlotOnIO(
       crypto::ScopedTestSystemNSSKeySlot* system_slot) override {
     // Import a private key to the system slot.  The Javascript part of this
@@ -263,7 +206,9 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
                   loop.QuitClosure()));
    loop.Run();
   }
-  SetPolicy();
+  policy_test_utils::SetExtensionInstallForcelistPolicy(
+      kTestExtensionID, embedded_test_server()->GetURL(kUpdateManifestPath),
+      profile(), mock_policy_provider());
 
   // By default, the system token is disabled.
   std::string system_token_availability = "";

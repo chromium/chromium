@@ -52,7 +52,8 @@ class CONTENT_EXPORT AncestorThrottle : public NavigationThrottle {
 
   explicit AncestorThrottle(NavigationHandle* handle);
   NavigationThrottle::ThrottleCheckResult ProcessResponseImpl(
-      LoggingDisposition);
+      LoggingDisposition logging,
+      bool is_response_check);
   void ParseError(const std::string& value, HeaderDisposition disposition);
   void ConsoleError(HeaderDisposition disposition);
 

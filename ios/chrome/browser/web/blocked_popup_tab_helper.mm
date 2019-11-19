@@ -19,9 +19,10 @@
 #include "components/infobars/core/infobar.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "ios/chrome/browser/infobars/confirm_infobar_metrics_recorder.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/web/public/referrer.h"
+#include "ios/web/public/navigation/referrer.h"
 #include "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
@@ -65,6 +66,10 @@ class BlockPopupInfoBarDelegate : public ConfirmInfoBarDelegate {
   }
 
   bool Accept() override {
+    [ConfirmInfobarMetricsRecorder
+        recordConfirmInfobarEvent:MobileMessagesConfirmInfobarEvents::Accepted
+            forInfobarConfirmType:InfobarConfirmType::
+                                      kInfobarConfirmTypeBlockPopups];
     scoped_refptr<HostContentSettingsMap> host_content_map_settings(
         ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state_));
     for (auto& popup : popups_) {
@@ -74,10 +79,17 @@ class BlockPopupInfoBarDelegate : public ConfirmInfoBarDelegate {
       web_state_->OpenURL(params);
       host_content_map_settings->SetContentSettingCustomScope(
           ContentSettingsPattern::FromURL(popup.referrer.url),
-          ContentSettingsPattern::Wildcard(), CONTENT_SETTINGS_TYPE_POPUPS,
+          ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,
           std::string(), CONTENT_SETTING_ALLOW);
     }
     return true;
+  }
+
+  void InfoBarDismissed() override {
+    [ConfirmInfobarMetricsRecorder
+        recordConfirmInfobarEvent:MobileMessagesConfirmInfobarEvents::Dismissed
+            forInfobarConfirmType:InfobarConfirmType::
+                                      kInfobarConfirmTypeBlockPopups];
   }
 
   int GetButtons() const override { return BUTTON_OK; }
@@ -101,7 +113,7 @@ bool BlockedPopupTabHelper::ShouldBlockPopup(const GURL& source_url) {
   HostContentSettingsMap* settings_map =
       ios::HostContentSettingsMapFactory::GetForBrowserState(GetBrowserState());
   ContentSetting setting = settings_map->GetContentSetting(
-      source_url, source_url, CONTENT_SETTINGS_TYPE_POPUPS, std::string());
+      source_url, source_url, ContentSettingsType::POPUPS, std::string());
   return setting != CONTENT_SETTING_ALLOW;
 }
 
@@ -144,6 +156,10 @@ void BlockedPopupTabHelper::ShowInfoBar() {
   } else {
     infobar_ = infobar_manager->AddInfoBar(std::move(infobar));
   }
+  [ConfirmInfobarMetricsRecorder
+      recordConfirmInfobarEvent:MobileMessagesConfirmInfobarEvents::Presented
+          forInfobarConfirmType:InfobarConfirmType::
+                                    kInfobarConfirmTypeBlockPopups];
 }
 
 ios::ChromeBrowserState* BlockedPopupTabHelper::GetBrowserState() const {

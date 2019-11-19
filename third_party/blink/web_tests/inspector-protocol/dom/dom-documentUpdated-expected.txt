@@ -1,0 +1,14 @@
+Tests DOM.documentUpdated event
+{
+    method : DOM.documentUpdated
+    params : {
+    }
+    sessionId : <string>
+}
+{
+    method : DOM.documentUpdated
+    params : {
+    }
+    sessionId : <string>
+}
+

@@ -38,6 +38,17 @@ enum class CustomizedFeature {
   kMaxValue = CUSTOMIZED_FEATURE_SHORTCUT
 };
 
+// This enum must match the numbering for NTPCustomizedShortcutSettings in
+// enums.xml. Do not reorder or remove items, and update kMaxValue when new
+// items are added.
+enum class CustomizedShortcutSettings {
+  CUSTOMIZED_SHORTCUT_SETTINGS_MOST_VISITED = 0,
+  CUSTOMIZED_SHORTCUT_SETTINGS_CUSTOM_LINKS = 1,
+  CUSTOMIZED_SHORTCUT_SETTINGS_HIDDEN = 2,
+
+  kMaxValue = CUSTOMIZED_SHORTCUT_SETTINGS_HIDDEN
+};
+
 // This enum must match the numbering for NTPCustomizeAction in
 // enums.xml. Do not reorder or remove items, and update kMaxValue when new
 // items are added.
@@ -86,8 +97,10 @@ enum class CustomizeShortcutAction {
   CUSTOMIZE_SHORTCUT_ACTION_RESTORE_ALL = 4,
   CUSTOMIZE_SHORTCUT_ACTION_ADD = 5,
   CUSTOMIZE_SHORTCUT_ACTION_UPDATE = 6,
+  CUSTOMIZE_SHORTCUT_ACTION_TOGGLE_TYPE = 7,
+  CUSTOMIZE_SHORTCUT_ACTION_TOGGLE_VISIBILITY = 8,
 
-  kMaxValue = CUSTOMIZE_SHORTCUT_ACTION_UPDATE
+  kMaxValue = CUSTOMIZE_SHORTCUT_ACTION_TOGGLE_VISIBILITY
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_NTP_USER_DATA_TYPES_H_

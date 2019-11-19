@@ -26,6 +26,7 @@
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr.h"
 #include "mojo/public/cpp/bindings/associated_interface_request.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/bindings/thread_safe_interface_ptr.h"
 
@@ -109,6 +110,8 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
         const std::string& name,
         mojo::ScopedInterfaceEndpointHandle handle) = 0;
 
+    // Remove this after done with migrating all AsscoiatedInterfacePtr to
+    // AsscoiatedRemote.
     // Template helper to add an interface factory to this channel.
     template <typename Interface>
     using AssociatedInterfaceFactory =
@@ -121,22 +124,54 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
           base::Bind(&BindAssociatedInterfaceRequest<Interface>, factory));
     }
 
+    // Template helper to add an interface factory to this channel.
+    template <typename Interface>
+    using AssociatedReceiverFactory =
+        base::Callback<void(mojo::PendingAssociatedReceiver<Interface>)>;
+    template <typename Interface>
+    void AddAssociatedInterface(
+        const AssociatedReceiverFactory<Interface>& factory) {
+      AddGenericAssociatedInterface(
+          Interface::Name_,
+          base::Bind(&BindPendingAssociatedReceiver<Interface>, factory));
+    }
+
+    // Remove this after done with migrating all AsscoiatedInterfacePtr to
+    // AsscoiatedRemote.
     // Template helper to request a remote associated interface.
     template <typename Interface>
     void GetRemoteAssociatedInterface(
         mojo::AssociatedInterfacePtr<Interface>* proxy) {
       auto request = mojo::MakeRequest(proxy);
-      GetGenericRemoteAssociatedInterface(
-          Interface::Name_, request.PassHandle());
+      GetGenericRemoteAssociatedInterface(Interface::Name_,
+                                          request.PassHandle());
+    }
+
+    // Template helper to request a remote associated interface.
+    template <typename Interface>
+    void GetRemoteAssociatedInterface(
+        mojo::PendingAssociatedReceiver<Interface> receiver) {
+      GetGenericRemoteAssociatedInterface(Interface::Name_,
+                                          receiver.PassHandle());
     }
 
    private:
+    // Remove this after done with migrating all AsscoiatedInterfacePtr to
+    // AsscoiatedRemote.
     template <typename Interface>
     static void BindAssociatedInterfaceRequest(
         const AssociatedInterfaceFactory<Interface>& factory,
         mojo::ScopedInterfaceEndpointHandle handle) {
       factory.Run(
           mojo::AssociatedInterfaceRequest<Interface>(std::move(handle)));
+    }
+
+    template <typename Interface>
+    static void BindPendingAssociatedReceiver(
+        const AssociatedReceiverFactory<Interface>& factory,
+        mojo::ScopedInterfaceEndpointHandle handle) {
+      factory.Run(
+          mojo::PendingAssociatedReceiver<Interface>(std::move(handle)));
     }
   };
 

@@ -27,7 +27,7 @@ class TestWebContentsDelegate : public content::WebContentsDelegate {
 
   bool CheckMediaAccessPermission(RenderFrameHost* render_Frame_host,
                                   const GURL& security_origin,
-                                  blink::MediaStreamType type) override {
+                                  blink::mojom::MediaStreamType type) override {
     return true;
   }
 };
@@ -53,11 +53,11 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
   void RefreshPageAndSetHeaderPolicy(blink::mojom::FeaturePolicyFeature feature,
                                      bool enabled) {
     NavigateAndCommit(origin_.GetURL());
-    std::vector<url::Origin> whitelist;
+    std::vector<url::Origin> allowlist;
     if (enabled)
-      whitelist.push_back(origin_);
+      allowlist.push_back(origin_);
     RenderFrameHostTester::For(main_rfh())
-        ->SimulateFeaturePolicyHeader(feature, whitelist);
+        ->SimulateFeaturePolicyHeader(feature, allowlist);
   }
 
   bool CheckPermission(blink::MediaDeviceType device_type) {

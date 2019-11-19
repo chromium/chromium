@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -6,14 +6,17 @@
   <title>Omnibox Debug Page</title>
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <link rel="stylesheet" href="omnibox.css">
+  <script src="chrome://resources/js/promise_resolver.js"></script>
   <script src="chrome://resources/js/cr.js"></script>
-  <script src="chrome://resources/js/mojo_bindings_lite.js"></script>
+  <script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js"></script>
+  <script src="chrome://resources/js/load_time_data.js"></script>
   <script src="chrome://resources/js/util.js"></script>
   <script src="chrome/browser/ui/webui/omnibox/omnibox.mojom-lite.js"></script>
   <script src="omnibox_element.js"></script>
   <script src="omnibox_input.js"></script>
   <script src="omnibox_output.js"></script>
   <script src="omnibox.js"></script>
+  <script src="strings.js"></script>
 </head>
 
 <body>
@@ -29,74 +32,61 @@
           <span class="arrow-padding"></span>
           <span class="arrow-up">▲</span>
         </div>
-        <div class="row">
-          <label class="checkbox-container"
-                 title="When checked, interacting with the real omnibox of any browser window will update the debug page's output. Incognito window omnibox results will update only debug pages open in incognito windows. Likewise, normal window omnibox results will update only debug pages open in normal windows. When unfocusing the browser omnibox, the autocomplete controller sends a response with no combined results. This response is ignored in order to prevent the previous non-empty response from being hidden and because these results wouldn't normally be displayed by the browser window omnibox.">
+        <label class="row checkbox-container"
+               title="When checked, interacting with the real omnibox of any browser window will update the debug page's output. Incognito window omnibox results will update only debug pages open in incognito windows. Likewise, normal window omnibox results will update only debug pages open in normal windows. When unfocusing the browser omnibox, the autocomplete controller sends a response with no combined results. This response is ignored in order to prevent the previous non-empty response from being hidden and because these results wouldn't normally be displayed by the browser window omnibox.">
             <input id="connect-window-omnibox" type="checkbox" accesskey="w">
             <span>
               Connect <span class="accesskey">w</span>indow omnibox
             </span>
           </label>
-        </div>
         <div class="row response-selection-container">
           <span>Quer<span class="accesskey">y</span></span>
           <input id="response-selection" type="number" accesskey="y" value="0"
                  min="0" max="0">
           <span>of <span id="responses-count">0</span></span>
         </div>
-        <div id="history-warning" class="row" hidden>
-          <span class="warning-text"
-                title="The output you are currently viewing is historical and may not reflect the current inputs.">
+        <span id="history-warning" class="row warning-text"
+              title="The output you are currently viewing is historical and may not reflect the current inputs."
+              hidden>
             Viewing historical data
           </span>
-        </div>
       </div>
 
       <div class="top-column">
         <p class="row section-header">Input parameters</p>
-        <div class="row">
-          <label class="checkbox-container">
+        <label class="row checkbox-container">
             <input id="reset-autocomplete-controller" type="checkbox"
                    accesskey="r">
             <span>
               <span class="accesskey">R</span>eset autocomplete controller
             </span>
           </label>
-        </div>
-        <div class="row">
-          <label class="checkbox-container">
-            <input id="lock-cursor-position" type="checkbox" accesskey="c">
+        <label class="row checkbox-container">
+            <input id="lock-cursor-position" type="checkbox" accesskey="x">
             <span>
-              Lock <span class="accesskey">c</span>ursor
-              position to end of input
+              Lock cursor position to end of input
+              [<span class="accesskey">x</span>]
             </span>
           </label>
-        </div>
-        <div class="row">
-          <label class="checkbox-container">
+        <label class="row checkbox-container">
             <input id="zero-suggest" type="checkbox" accesskey="z">
             <span>
               <span class="accesskey">Z</span>ero suggest
             </span>
           </label>
-        </div>
-        <div class="row">
-          <label class="checkbox-container">
+        <label class="row checkbox-container">
             <input id="prevent-inline-autocomplete" type="checkbox"
                    accesskey="a">
             <span>
               Prevent inline <span class="accesskey">a</span>utocomplete
             </span>
           </label>
-        </div>
-        <div class="row">
-          <label class="checkbox-container">
+        <label class="row checkbox-container">
             <input id="prefer-keyword" type="checkbox" accesskey="k">
             <span>
               In <span class="accesskey">k</span>eyword mode
             </span>
           </label>
-        </div>
       </div>
 
       <div class="top-column">
@@ -111,51 +101,56 @@
           <option value="2">about:blank</option>
           <option value="3">user's home page</option>
           <option value="4" selected>arbitrary URL</option>
+          <option value="6">
+            search result page doing search term replacement
+          </option>
           <option value="9">
             search result page not doing search term replacement
           </option>
           <option value="7">new tab page omnibox</option>
           <option value="8">new tab page fakebox</option>
+          <option value="15">new tab page realbox</option>
           <option value="1">(OBSOLETE) new tab page</option>
-          <option value="6">
-            (OBSOLETE) search result page doing search term replacement
-          </option>
         </select>
       </div>
 
       <div class="top-column">
         <p class="row section-header">Display paramters</p>
-        <div class="row">
-          <label class="checkbox-container">
+        <label class="row checkbox-container">
             <input id="show-incomplete-results" type="checkbox" accesskey="i">
             <span>
               Show <span class="accesskey">i</span>ncomplete results
             </span>
           </label>
-        </div>
-        <div class="row">
-          <label class="checkbox-container">
+        <label class="row checkbox-container">
             <input id="show-details" type="checkbox" accesskey="t">
             <span>
               Show all de<span class="accesskey">t</span>ails
             </span>
           </label>
-        </div>
-        <div class="row">
-          <label class="checkbox-container">
+        <label class="row checkbox-container">
             <input id="show-all-providers" type="checkbox" accesskey="p">
             <span>
               Show results per <span class="accesskey">p</span>rovider
             </span>
           </label>
-        </div>
-        <div class="row">
-          <label class="checkbox-container">
-            <input id="elide-cells" type="checkbox" accesskey="s">
-            <span>
-              Elide Cell<span class="accesskey">s</span>
-            </span>
-          </label>
+        <div class="column-container">
+          <div class="column">
+            <label class="row checkbox-container">
+              <input id="elide-cells" type="checkbox" accesskey="s">
+              <span>
+                Elide cell<span class="accesskey">s</span>
+              </span>
+            </label>
+          </div>
+          <div class="column">
+            <label class="row checkbox-container">
+              <input id="thin-rows" type="checkbox" accesskey="h">
+              <span>
+                T<span class="accesskey">h</span>in rows
+              </span>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -166,33 +161,51 @@
                autocomplete="off"
                placeholder="Enter filter (e.g. 'google', 'is:star', 'not:del') [Alt+G]"
                title="Checks each cell individually; i.e. filter text should not span multiple columns. Supports fuzzyness; each character of filter text must be present in the cell, either adjacent to the previous matched character, or at the start of a new word. Words are defined as being delimited by either capital letters, groups of digits, or non alpha characters. E.g. 'abc' matches 'abc', 'a big cat', 'a-bigCat', 'a very big cat', and 'an amBer cat'; but does not match 'abigcat' or 'an amber cat'. 'green rainbow' is matched by 'gre rain', but not by 'gre bow'. One exception is the first character, which may be matched mid-word. E.g. 'een rain' can also match 'green rainbow'. Boolean properties can be searched for via the property name prefixed by 'is:' or 'not:'. Boolean property names are: 'Can Be Default', 'Starred', 'Has Tab Match', 'Del', 'Prev', and 'Done'.">
-        <div>
-          <span id="download-json" class="row button" accesskey="n"
-                title="Download responses in JSON format. This is not affected by the visibility of output and will include responses in their entirety as well as query and display inputs.">
-            <i class="icon copy-icon"></i>
-            <span>Dow<span class="accesskey">n</span>load as JSON</span>
-          </span>
+        <div class="column-container">
+          <div class="column">
+            <span id="export-clipboard" class="row button" accesskey="c"
+                  tabindex="0"
+                  title="Copy responses in JSON format. This is not affected by the visibility of output and will include responses in their entirety as well as query and display inputs.">
+              <i class="icon copy-icon"></i>
+              <span><span class="accesskey">C</span>opy</span>
+            </span>
+            <span id="export-file" class="row button" accesskey="n" tabindex="0"
+                  title="Download responses in JSON format. This is not affected by the visibility of output and will include responses in their entirety as well as query and display inputs.">
+              <i class="icon copy-icon"></i>
+              <span>Dow<span class="accesskey">n</span>load</span>
+            </span>
+          </div>
+          <div class="column">
+              <label id="import-clipboard"
+                     class="row icon-button button drag-container" accesskey="v"
+                     tabindex="0"
+                     title="Import JSON from clipboard. Accepts dragged text and files as well.">
+                  <i class="icon copy-icon"></i>
+                  <span>Paste [<span class="accesskey">v</span>]</span>
+              </label>
+              <label id="import-file"
+                     class="row icon-button button drag-container" accesskey="m"
+                     tabindex="0"
+                     title="Upload previously downloaded responses to load them. Accepts dragged text and files as well.">
+                  <input id="import-file-input" type="file" accept=".json">
+                  <i class="icon copy-icon"></i>
+                  <span>Upload [<span class="accesskey">m</span>]</span>
+              </label>
+              <label id="process-batch"
+                     class="row icon-button button drag-container" accesskey="b"
+                     tabindex="0"
+                     title="Upload a query batch specifier to download a batch export. Accepts dragged text and files as well.">
+                  <input id="process-batch-input" type="file" accept=".json">
+                  <i class="icon copy-icon"></i>
+                  <span>Process <span class="accesskey">b</span>atch</span>
+              </label>
+          </div>
         </div>
-        <div>
-          <label id="import-json" class="row icon-button button drag-container"
-                 accesskey="m" title="Import JSON">
-            <input id="import-json-input" type="file" accept=".json">
-            <i class="icon copy-icon"></i>
-            <span>I<span class="accesskey">m</span>port JSON</span>
-          </label>
-          <label id="import-clipboard"
-                 class="row icon-button button drag-container" accesskey="b"
-                 title="Import JSON from clipboard">
-            <i class="icon copy-icon"></i>
-            <span>Import clip<span class="accesskey">b</span>oard</span>
-          </label>
-        </div>
-        <div id="imported-warning" class="row" hidden>
-          <span class="warning-text"
-                title="The output you are currently viewing is imported and may not be the same as if you had entered these inputs now.">
+        <span id="imported-warning" class="row warning-text"
+              title="The output you are currently viewing is imported and may not be the same as if you had entered these inputs now."
+              hidden>
             Viewing imported data
           </span>
-        </div>
       </div>
     </div>
   </template>
@@ -255,10 +268,9 @@
     <span class="label">
       all providers done = <span id="done"></span>
     </span>
+    <span class="label">type = <span id="type"></span></span>
     <span class="label">host = <span id="host"></span></span>
-    <span class="label">
-      has isTypedHost = <span id="is-typed-host"></span>
-    </span>
+    <span class="label">is typed host = <span id="is-typed-host"></span></span>
   </template>
 
   <omnibox-input id="omnibox-input"></omnibox-input>

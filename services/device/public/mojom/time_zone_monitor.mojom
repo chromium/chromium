@@ -8,7 +8,7 @@ interface TimeZoneMonitor {
   // Add a client that will get notified on time zone changes. No throttling is
   // employed, as time zone changes are infrequent enough that there is no
   // realistic risk of flooding.
-  AddClient(TimeZoneMonitorClient client);
+  AddClient(pending_remote<TimeZoneMonitorClient> client);
 };
 
 interface TimeZoneMonitorClient {

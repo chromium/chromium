@@ -1,0 +1,29 @@
+<!--
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:ControllerFor*
+-->
+<!DOCTYPE html>
+<div id="radiogroup" role="radiogroup">
+  <div id="radio1" role="radio">radio1</div>
+  <div id="radio2" role="radio">radio2</div>
+  <div id="radio3" role="radio">radio3</div>
+</div>
+
+<input id="input1" type="text">
+<input id="input2" type="text">
+<button role="button" aria-controls="input1"></button>
+
+<script>
+  var go_passes = [
+    () => document.querySelector('div[role=radiogroup]').setAttribute(
+                                 'aria-controls', 'radio1 radio2 radio3'),
+    () => document.querySelector('button[role=button]').setAttribute(
+                                 'aria-controls', 'input2'),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>

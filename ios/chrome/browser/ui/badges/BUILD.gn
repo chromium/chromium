@@ -1,0 +1,108 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("public") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "badge_constants.h",
+    "badge_constants.mm",
+    "badge_item.h",
+    "badge_type.h",
+  ]
+}
+
+source_set("badges") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "badge_button.h",
+    "badge_button.mm",
+    "badge_button_factory.h",
+    "badge_button_factory.mm",
+    "badge_consumer.h",
+    "badge_delegate.h",
+    "badge_mediator.h",
+    "badge_mediator.mm",
+    "badge_static_item.h",
+    "badge_static_item.mm",
+    "badge_tappable_item.h",
+    "badge_tappable_item.mm",
+    "badge_view_controller.h",
+    "badge_view_controller.mm",
+  ]
+  deps = [
+    ":public",
+    "resources:incognito_badge",
+    "resources:incognito_small_badge",
+    "resources:wrench_badge",
+    "//base:base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/infobars:badge",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/fullscreen:ui",
+    "//ios/chrome/browser/ui/infobars:feature_flags",
+    "//ios/chrome/browser/ui/infobars/resources:infobar_settings_icon",
+    "//ios/chrome/browser/ui/list_model",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui_util",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+}
+
+source_set("badges_popup_menu") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "badge_popup_menu_coordinator.h",
+    "badge_popup_menu_coordinator.mm",
+    "badge_popup_menu_item.h",
+    "badge_popup_menu_item.mm",
+  ]
+  deps = [
+    ":badges",
+    ":public",
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/list_model",
+    "//ios/chrome/browser/ui/popup_menu/public:popup_menu_ui",
+    "//ios/chrome/browser/ui/popup_menu/public/cells",
+    "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui_util",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "badge_mediator_unittest.mm",
+  ]
+  deps = [
+    ":badges",
+    ":public",
+    "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:badge",
+    "//ios/chrome/browser/infobars:badge_public",
+    "//ios/chrome/browser/ui/infobars:test_support",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/web_state_list:test_support",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}

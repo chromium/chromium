@@ -46,11 +46,6 @@ void WidgetElement::OnWidgetDestroyed(views::Widget* widget) {
   widget_ = nullptr;
 }
 
-std::vector<std::pair<std::string, std::string>>
-WidgetElement::GetCustomProperties() const {
-  return {};
-}
-
 void WidgetElement::GetBounds(gfx::Rect* bounds) const {
   *bounds = widget_->GetRestoredBounds();
 }
@@ -72,14 +67,9 @@ void WidgetElement::SetVisible(bool visible) {
     widget_->Hide();
 }
 
-std::unique_ptr<protocol::Array<std::string>> WidgetElement::GetAttributes()
-    const {
-  auto attributes = protocol::Array<std::string>::create();
-  attributes->addItem("name");
-  attributes->addItem(widget_->GetName());
-  attributes->addItem("active");
-  attributes->addItem(widget_->IsActive() ? "true" : "false");
-  return attributes;
+std::vector<std::string> WidgetElement::GetAttributes() const {
+  return {"name", widget_->GetName(), "active",
+          widget_->IsActive() ? "true" : "false"};
 }
 
 std::pair<gfx::NativeWindow, gfx::Rect>
@@ -92,6 +82,10 @@ WidgetElement::GetNodeWindowAndScreenBounds() const {
 views::Widget* WidgetElement::From(const UIElement* element) {
   DCHECK_EQ(UIElementType::WIDGET, element->type());
   return static_cast<const WidgetElement*>(element)->widget_;
+}
+
+void WidgetElement::InitSources() {
+  AddSource("ui/views/widget/widget.h", 0);
 }
 
 template <>
@@ -109,4 +103,5 @@ int UIElement::FindUIElementIdForBackendElement<views::Widget>(
   }
   return 0;
 }
+
 }  // namespace ui_devtools

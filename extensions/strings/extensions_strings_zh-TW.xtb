@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">無法將圖片解碼：「<ph name="IMAGE_NAME" />」</translation>
 <translation id="2350172092385603347">已使用語言代碼，但是仍未在資訊清單中指定 default_locale。</translation>
 <translation id="2576842806987913196">已有一個 CRX 檔案使用這個名稱。</translation>
-<translation id="2753617847762399167">路徑無效 (絕對路徑或「..」相對路徑)：「<ph name="IMAGE_PATH" />」</translation>
 <translation id="2785530881066938471">無法載入內容指令碼的「<ph name="RELATIVE_PATH" />」檔案，因為該檔案未使用 UTF-8 編碼。</translation>
 <translation id="2903070246402204397">管理員已封鎖 <ph name="EXTENSION_NAME" /> (擴充功能 ID「<ph name="EXTENSION_ID" />」)。<ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">無法安裝套件：<ph name="ERROR_CODE" /></translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">系統不支援造型視窗。</translation>
 <translation id="5456409301717116725">這個擴充功能含有金鑰檔「<ph name="KEY_PATH" />」。你不妨重新考慮是否仍要進行。</translation>
 <translation id="5486326529110362464">私密金鑰必須存在輸入項目值。</translation>
-<translation id="5627523580512561598"><ph name="EXTENSION_NAME" /> 擴充功能</translation>
-<translation id="5960890139610307736">ExtensionView：<ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">這個裝置的管理員要求安裝「<ph name="EXTENSION_NAME" />」，因此無法解除安裝這個擴充功能。</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> 提供的不明產品 <ph name="PRODUCT_ID" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">供應商 <ph name="VENDOR_ID" /> 提供的 <ph name="PRODUCT_NAME" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">「<ph name="APP_NAME" />」要求存取你的一或多個裝置：</translation>
 <translation id="657064425229075395">無法載入背景指令碼「<ph name="BACKGROUND_SCRIPT" />」。</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> 的 <ph name="PRODUCT_NAME" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">無法建立解壓縮目錄：「<ph name="DIRECTORY_PATH" />」</translation>
 <translation id="677806580227005219">MIME 處理常式：<ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">這項擴充功能自動重新載入的頻率過高。</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> 提供的不明產品 <ph name="PRODUCT_ID" /></translation>

@@ -16,20 +16,25 @@ TEST(PaymentsServiceSandboxUrl, CheckSandboxUrls) {
       switches::kWalletServiceUseSandbox, "1");
 
   const char kExpectedSandboxURL[] =
-      "https://payments.sandbox.google.com/u/1#paymentMethods";
+      "https://pay.sandbox.google.com/payments/"
+      "home?utm_source=chrome&utm_medium=settings&utm_campaign=payment-methods#"
+      "paymentMethods";
 
-  EXPECT_EQ(kExpectedSandboxURL, GetManageInstrumentsUrl(1).spec());
-  EXPECT_EQ(kExpectedSandboxURL, GetManageAddressesUrl(1).spec());
+  EXPECT_EQ(kExpectedSandboxURL, GetManageInstrumentsUrl().spec());
+  EXPECT_EQ(kExpectedSandboxURL, GetManageAddressesUrl().spec());
 }
 
 TEST(PaymentsServiceSandboxUrl, CheckProdUrls) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kWalletServiceUseSandbox, "0");
 
-  const char kExpectedURL[] = "https://payments.google.com/u/1#paymentMethods";
+  const char kExpectedURL[] =
+      "https://pay.google.com/payments/"
+      "home?utm_source=chrome&utm_medium=settings&utm_campaign=payment-methods#"
+      "paymentMethods";
 
-  EXPECT_EQ(kExpectedURL, GetManageInstrumentsUrl(1).spec());
-  EXPECT_EQ(kExpectedURL, GetManageAddressesUrl(1).spec());
+  EXPECT_EQ(kExpectedURL, GetManageInstrumentsUrl().spec());
+  EXPECT_EQ(kExpectedURL, GetManageAddressesUrl().spec());
 }
 
 }  // namespace payments

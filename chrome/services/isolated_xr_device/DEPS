@@ -1,5 +1,4 @@
 include_rules = [
   "+device/vr",
   "+mojo/public",
-  "+services/service_manager/public"
 ]

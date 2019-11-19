@@ -16,7 +16,6 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/policy/profile_policy_connector_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/platform_keys_certificate_selector_chromeos.h"
@@ -33,7 +32,7 @@ namespace {
 class DefaultSelectDelegate
     : public chromeos::PlatformKeysService::SelectDelegate {
  public:
-  DefaultSelectDelegate() : weak_factory_(this) {}
+  DefaultSelectDelegate() {}
   ~DefaultSelectDelegate() override {}
 
   void Select(const std::string& extension_id,
@@ -64,7 +63,7 @@ class DefaultSelectDelegate
   }
 
  private:
-  base::WeakPtrFactory<DefaultSelectDelegate> weak_factory_;
+  base::WeakPtrFactory<DefaultSelectDelegate> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DefaultSelectDelegate);
 };
@@ -88,7 +87,6 @@ PlatformKeysServiceFactory::PlatformKeysServiceFactory()
           "PlatformKeysService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());
-  DependsOn(policy::ProfilePolicyConnectorFactory::GetInstance());
 }
 
 PlatformKeysServiceFactory::~PlatformKeysServiceFactory() {
@@ -105,7 +103,7 @@ KeyedService* PlatformKeysServiceFactory::BuildServiceInstanceFor(
       extensions::ExtensionSystem::Get(context)->state_store();
 
   policy::ProfilePolicyConnector* const policy_connector =
-      policy::ProfilePolicyConnectorFactory::GetForBrowserContext(context);
+      Profile::FromBrowserContext(context)->GetProfilePolicyConnector();
 
   Profile* const profile = Profile::FromBrowserContext(context);
 

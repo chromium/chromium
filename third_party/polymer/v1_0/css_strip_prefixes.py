@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import argparse
 import fnmatch
 import os
 import re
+import sys
 
 # List of CSS properties to be removed.
 CSS_PROPERTIES_TO_REMOVE = [
@@ -84,14 +86,19 @@ def ShouldRemoveLine(line):
   return any(pred(p) for p in CSS_PROPERTIES_TO_REMOVE)
 
 
-def main():
-  html_files = [os.path.join(dirpath, f)
-    for dirpath, dirnames, files in os.walk('components-chromium')
-    for f in fnmatch.filter(files, '*.html')]
+def main(argv):
+  parser = argparse.ArgumentParser('Strips CSS rules not needed by Chrome')
+  parser.add_argument(
+      '--file_extension', choices=['js', 'html'], required=True)
+  opts = parser.parse_args(sys.argv[1:])
 
-  for f in html_files:
+  files_to_process = [os.path.join(dirpath, f)
+    for dirpath, dirnames, files in os.walk('components-chromium')
+    for f in fnmatch.filter(files, '*.' + opts.file_extension)]
+
+  for f in files_to_process:
     ProcessFile(f)
 
 
 if __name__ == '__main__':
-  main()
+  main(sys.argv[1:])

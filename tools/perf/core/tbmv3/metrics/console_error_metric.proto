@@ -1,0 +1,19 @@
+// Copyright 2019 Google LLC.
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package perfetto.protos;
+
+import "protos/perfetto/metrics/metrics.proto";
+
+message ConsoleErrorMetric {
+  optional int64 all_errors = 1;
+  optional int64 js_errors = 2;
+  optional int64 network_errors = 3;
+}
+
+extend TraceMetrics {
+  optional ConsoleErrorMetric console_error_metric = 450;
+}

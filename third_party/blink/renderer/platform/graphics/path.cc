@@ -42,18 +42,14 @@ namespace blink {
 
 Path::Path() : path_() {}
 
-Path::Path(const Path& other) {
-  path_ = SkPath(other.path_);
-}
+Path::Path(const Path& other) : path_(other.path_) {}
 
-Path::Path(const SkPath& other) {
-  path_ = other;
-}
+Path::Path(const SkPath& other) : path_(other) {}
 
 Path::~Path() = default;
 
 Path& Path::operator=(const Path& other) {
-  path_ = SkPath(other.path_);
+  path_ = other.path_;
   return *this;
 }
 
@@ -364,8 +360,8 @@ void Path::AddEllipse(const FloatPoint& p,
   SkScalar radius_y_scalar = WebCoreFloatToSkScalar(radius_y);
 
   SkRect oval;
-  oval.set(cx - radius_x_scalar, cy - radius_y_scalar, cx + radius_x_scalar,
-           cy + radius_y_scalar);
+  oval.setLTRB(cx - radius_x_scalar, cy - radius_y_scalar, cx + radius_x_scalar,
+               cy + radius_y_scalar);
 
   float sweep = end_angle - start_angle;
   SkScalar start_degrees = WebCoreFloatToSkScalar(start_angle * 180 / kPiFloat);

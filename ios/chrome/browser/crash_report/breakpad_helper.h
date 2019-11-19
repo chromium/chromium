@@ -21,8 +21,12 @@ void SetEnabled(bool enabled);
 // Enable/Disable uploading crash reports.
 void SetUploadingEnabled(bool enabled);
 
-// Returns true if uploading crash reports is enabled.
-bool IsUploadingEnabled();
+// Sets the user preferences related to Breakpad and cache them to be used on
+// next startup to check if safe mode must be started.
+void SetUserEnabledUploading(bool enabled);
+
+// Returns true if uploading crash reports is enabled in the settings.
+bool UserEnabledUploading();
 
 // Cleans up all stored crash reports.
 void CleanupCrashReports();
@@ -62,6 +66,10 @@ void SetMemoryWarningCount(int count);
 // is 'true'), otherwise remove the key.
 void SetMemoryWarningInProgress(bool value);
 
+// Sets a key indicating that UI thread is frozen (if value is 'true'),
+// otherwise remove the key.
+void SetHangReport(bool value);
+
 // Sets a key indicating the current free memory amount in KB. 0 does not remove
 // the key as getting no memory is important information.
 void SetCurrentFreeMemoryInKB(int value);
@@ -89,6 +97,11 @@ void SetCurrentOrientation(int statusBarOrientation, int deviceOrientation);
 // values from 0 to 2).
 void SetCurrentHorizontalSizeClass(int horizontalSizeClass);
 
+// Sets a key in browser_state dictionary to store the device user interface
+// style. The values are from the UIKit UIUserInterfaceStyle enum (decimal
+// values from 0 to 2).
+void SetCurrentUserInterfaceStyle(int userInterfaceStyle);
+
 // Sets a key in browser_state dictionary to store the count of regular tabs.
 void SetRegularTabCount(int tabCount);
 
@@ -98,6 +111,18 @@ void SetIncognitoTabCount(int tabCount);
 // Sets a key indicating that destroying and rebuilding the incognito browser
 // state is in progress, otherwise remove the key.
 void SetDestroyingAndRebuildingIncognitoBrowserState(bool in_progress);
+
+// Sets a key to help debug a crash when animating from grid to visible tab.
+// |to_view_controller| is the view controller about to be presented. The
+// remaining parameters relate to the |to_view_controller|.
+void SetGridToVisibleTabAnimation(NSString* to_view_controller,
+                                  NSString* presenting_view_controller,
+                                  NSString* presented_view_controller,
+                                  NSString* parent_view_controller);
+
+// Removes the key to help debug a crash when animating from grid to visible
+// tab.
+void RemoveGridToVisibleTabAnimation();
 
 // Sets a key in browser to store the playback state of media player (audio or
 // video). This function records a new start. This function is called for each

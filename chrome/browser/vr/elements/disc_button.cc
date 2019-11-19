@@ -37,11 +37,11 @@ void DiscButton::NotifyClientSizeAnimated(const gfx::SizeF& size,
   Button::NotifyClientSizeAnimated(size, target_property_id, keyframe_model);
   if (target_property_id == BOUNDS) {
     background()->SetSize(size.width(), size.height());
-    background()->set_corner_radius(size.width() * 0.5f);  // Creates a circle.
+    background()->SetCornerRadius(size.width() * 0.5f);  // Creates a circle.
     foreground()->SetSize(size.width() * icon_scale_factor(),
                           size.height() * icon_scale_factor());
     hit_plane()->SetSize(size.width(), size.height());
-    hit_plane()->set_corner_radius(size.width() * 0.5f);  // Creates a circle.
+    hit_plane()->SetCornerRadius(size.width() * 0.5f);  // Creates a circle.
   }
 }
 

@@ -20,7 +20,6 @@ class ChromeProximityAuthClient : public proximity_auth::ProximityAuthClient {
   ~ChromeProximityAuthClient() override;
 
   // proximity_auth::ProximityAuthClient:
-  std::string GetAuthenticatedUsername() const override;
   void UpdateScreenlockState(proximity_auth::ScreenlockState state) override;
   void FinalizeUnlock(bool success) override;
   void FinalizeSignin(const std::string& secret) override;

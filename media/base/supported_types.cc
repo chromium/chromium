@@ -4,17 +4,29 @@
 
 #include "media/base/supported_types.h"
 
-#include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
+#include "build/build_config.h"
+#include "media/base/media.h"
 #include "media/base/media_client.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
-#include "third_party/libaom/av1_buildflags.h"
 #include "ui/display/display_switches.h"
 
 #if BUILDFLAG(ENABLE_LIBVPX)
+// TODO(dalecurtis): This technically should not be allowed in media/base. See
+// TODO below about moving outside of base.
 #include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_codec.h"
+#endif
+
+#if defined(OS_ANDROID)
+#include "base/android/build_info.h"
+
+// TODO(dalecurtis): This include is not allowed by media/base since
+// media/base/android is technically a different component. We should move
+// supported_types*.{cc,h} out of media/base to fix this.
+#include "media/base/android/media_codec_util.h"  // nogncheck
 #endif
 
 namespace media {
@@ -35,79 +47,79 @@ bool IsSupportedVideoType(const VideoType& type) {
   return IsDefaultSupportedVideoType(type);
 }
 
-bool IsColorSpaceSupported(const media::VideoColorSpace& color_space) {
+bool IsColorSpaceSupported(const VideoColorSpace& color_space) {
   switch (color_space.primaries) {
-    case media::VideoColorSpace::PrimaryID::EBU_3213_E:
-    case media::VideoColorSpace::PrimaryID::INVALID:
+    case VideoColorSpace::PrimaryID::EBU_3213_E:
+    case VideoColorSpace::PrimaryID::INVALID:
       return false;
 
     // Transfers supported before color management.
-    case media::VideoColorSpace::PrimaryID::BT709:
-    case media::VideoColorSpace::PrimaryID::UNSPECIFIED:
-    case media::VideoColorSpace::PrimaryID::BT470M:
-    case media::VideoColorSpace::PrimaryID::BT470BG:
-    case media::VideoColorSpace::PrimaryID::SMPTE170M:
+    case VideoColorSpace::PrimaryID::BT709:
+    case VideoColorSpace::PrimaryID::UNSPECIFIED:
+    case VideoColorSpace::PrimaryID::BT470M:
+    case VideoColorSpace::PrimaryID::BT470BG:
+    case VideoColorSpace::PrimaryID::SMPTE170M:
       break;
 
     // Supported with color management.
-    case media::VideoColorSpace::PrimaryID::SMPTE240M:
-    case media::VideoColorSpace::PrimaryID::FILM:
-    case media::VideoColorSpace::PrimaryID::BT2020:
-    case media::VideoColorSpace::PrimaryID::SMPTEST428_1:
-    case media::VideoColorSpace::PrimaryID::SMPTEST431_2:
-    case media::VideoColorSpace::PrimaryID::SMPTEST432_1:
+    case VideoColorSpace::PrimaryID::SMPTE240M:
+    case VideoColorSpace::PrimaryID::FILM:
+    case VideoColorSpace::PrimaryID::BT2020:
+    case VideoColorSpace::PrimaryID::SMPTEST428_1:
+    case VideoColorSpace::PrimaryID::SMPTEST431_2:
+    case VideoColorSpace::PrimaryID::SMPTEST432_1:
       break;
   }
 
   switch (color_space.transfer) {
     // Transfers supported before color management.
-    case media::VideoColorSpace::TransferID::UNSPECIFIED:
-    case media::VideoColorSpace::TransferID::GAMMA22:
-    case media::VideoColorSpace::TransferID::BT709:
-    case media::VideoColorSpace::TransferID::SMPTE170M:
-    case media::VideoColorSpace::TransferID::BT2020_10:
-    case media::VideoColorSpace::TransferID::BT2020_12:
-    case media::VideoColorSpace::TransferID::IEC61966_2_1:
+    case VideoColorSpace::TransferID::UNSPECIFIED:
+    case VideoColorSpace::TransferID::GAMMA22:
+    case VideoColorSpace::TransferID::BT709:
+    case VideoColorSpace::TransferID::SMPTE170M:
+    case VideoColorSpace::TransferID::BT2020_10:
+    case VideoColorSpace::TransferID::BT2020_12:
+    case VideoColorSpace::TransferID::IEC61966_2_1:
       break;
 
     // Supported with color management.
-    case media::VideoColorSpace::TransferID::GAMMA28:
-    case media::VideoColorSpace::TransferID::SMPTE240M:
-    case media::VideoColorSpace::TransferID::LINEAR:
-    case media::VideoColorSpace::TransferID::LOG:
-    case media::VideoColorSpace::TransferID::LOG_SQRT:
-    case media::VideoColorSpace::TransferID::BT1361_ECG:
-    case media::VideoColorSpace::TransferID::SMPTEST2084:
-    case media::VideoColorSpace::TransferID::IEC61966_2_4:
-    case media::VideoColorSpace::TransferID::SMPTEST428_1:
-    case media::VideoColorSpace::TransferID::ARIB_STD_B67:
+    case VideoColorSpace::TransferID::GAMMA28:
+    case VideoColorSpace::TransferID::SMPTE240M:
+    case VideoColorSpace::TransferID::LINEAR:
+    case VideoColorSpace::TransferID::LOG:
+    case VideoColorSpace::TransferID::LOG_SQRT:
+    case VideoColorSpace::TransferID::BT1361_ECG:
+    case VideoColorSpace::TransferID::SMPTEST2084:
+    case VideoColorSpace::TransferID::IEC61966_2_4:
+    case VideoColorSpace::TransferID::SMPTEST428_1:
+    case VideoColorSpace::TransferID::ARIB_STD_B67:
       break;
 
     // Never supported.
-    case media::VideoColorSpace::TransferID::INVALID:
+    case VideoColorSpace::TransferID::INVALID:
       return false;
   }
 
   switch (color_space.matrix) {
     // Supported before color management.
-    case media::VideoColorSpace::MatrixID::BT709:
-    case media::VideoColorSpace::MatrixID::UNSPECIFIED:
-    case media::VideoColorSpace::MatrixID::BT470BG:
-    case media::VideoColorSpace::MatrixID::SMPTE170M:
-    case media::VideoColorSpace::MatrixID::BT2020_NCL:
+    case VideoColorSpace::MatrixID::BT709:
+    case VideoColorSpace::MatrixID::UNSPECIFIED:
+    case VideoColorSpace::MatrixID::BT470BG:
+    case VideoColorSpace::MatrixID::SMPTE170M:
+    case VideoColorSpace::MatrixID::BT2020_NCL:
       break;
 
     // Supported with color management.
-    case media::VideoColorSpace::MatrixID::RGB:
-    case media::VideoColorSpace::MatrixID::FCC:
-    case media::VideoColorSpace::MatrixID::SMPTE240M:
-    case media::VideoColorSpace::MatrixID::YCOCG:
-    case media::VideoColorSpace::MatrixID::YDZDX:
-    case media::VideoColorSpace::MatrixID::BT2020_CL:
+    case VideoColorSpace::MatrixID::RGB:
+    case VideoColorSpace::MatrixID::FCC:
+    case VideoColorSpace::MatrixID::SMPTE240M:
+    case VideoColorSpace::MatrixID::YCOCG:
+    case VideoColorSpace::MatrixID::YDZDX:
+    case VideoColorSpace::MatrixID::BT2020_CL:
       break;
 
     // Never supported.
-    case media::VideoColorSpace::MatrixID::INVALID:
+    case VideoColorSpace::MatrixID::INVALID:
       return false;
   }
 
@@ -120,18 +132,25 @@ bool IsColorSpaceSupported(const media::VideoColorSpace& color_space) {
 bool IsVp9ProfileSupported(VideoCodecProfile profile) {
 #if BUILDFLAG(ENABLE_LIBVPX)
   // High bit depth capabilities may be toggled via LibVPX config flags.
-  static bool vpx_supports_high_bit_depth =
-      (vpx_codec_get_caps(vpx_codec_vp9_dx()) & VPX_CODEC_CAP_HIGHBITDEPTH) !=
-      0;
-
+  static const bool vpx_supports_hbd = (vpx_codec_get_caps(vpx_codec_vp9_dx()) &
+                                        VPX_CODEC_CAP_HIGHBITDEPTH) != 0;
   switch (profile) {
     // LibVPX always supports Profiles 0 and 1.
     case VP9PROFILE_PROFILE0:
     case VP9PROFILE_PROFILE1:
       return true;
+#if defined(OS_ANDROID)
+    case VP9PROFILE_PROFILE2:
+      return vpx_supports_hbd ||
+             MediaCodecUtil::IsVp9Profile2DecoderAvailable();
+    case VP9PROFILE_PROFILE3:
+      return vpx_supports_hbd ||
+             MediaCodecUtil::IsVp9Profile3DecoderAvailable();
+#else
     case VP9PROFILE_PROFILE2:
     case VP9PROFILE_PROFILE3:
-      return vpx_supports_high_bit_depth;
+      return vpx_supports_hbd;
+#endif
     default:
       NOTREACHED();
   }
@@ -141,26 +160,26 @@ bool IsVp9ProfileSupported(VideoCodecProfile profile) {
 
 bool IsAudioCodecProprietary(AudioCodec codec) {
   switch (codec) {
-    case media::kCodecAAC:
-    case media::kCodecAC3:
-    case media::kCodecEAC3:
-    case media::kCodecAMR_NB:
-    case media::kCodecAMR_WB:
-    case media::kCodecGSM_MS:
-    case media::kCodecALAC:
-    case media::kCodecMpegHAudio:
+    case kCodecAAC:
+    case kCodecAC3:
+    case kCodecEAC3:
+    case kCodecAMR_NB:
+    case kCodecAMR_WB:
+    case kCodecGSM_MS:
+    case kCodecALAC:
+    case kCodecMpegHAudio:
       return true;
 
-    case media::kCodecFLAC:
-    case media::kCodecMP3:
-    case media::kCodecOpus:
-    case media::kCodecVorbis:
-    case media::kCodecPCM:
-    case media::kCodecPCM_MULAW:
-    case media::kCodecPCM_S16BE:
-    case media::kCodecPCM_S24BE:
-    case media::kCodecPCM_ALAW:
-    case media::kUnknownAudioCodec:
+    case kCodecFLAC:
+    case kCodecMP3:
+    case kCodecOpus:
+    case kCodecVorbis:
+    case kCodecPCM:
+    case kCodecPCM_MULAW:
+    case kCodecPCM_S16BE:
+    case kCodecPCM_S24BE:
+    case kCodecPCM_ALAW:
+    case kUnknownAudioCodec:
       return false;
   }
 }
@@ -172,32 +191,32 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
 #endif
 
   switch (type.codec) {
-    case media::kCodecAAC:
-    case media::kCodecFLAC:
-    case media::kCodecMP3:
-    case media::kCodecOpus:
-    case media::kCodecPCM:
-    case media::kCodecPCM_MULAW:
-    case media::kCodecPCM_S16BE:
-    case media::kCodecPCM_S24BE:
-    case media::kCodecPCM_ALAW:
-    case media::kCodecVorbis:
+    case kCodecAAC:
+    case kCodecFLAC:
+    case kCodecMP3:
+    case kCodecOpus:
+    case kCodecPCM:
+    case kCodecPCM_MULAW:
+    case kCodecPCM_S16BE:
+    case kCodecPCM_S24BE:
+    case kCodecPCM_ALAW:
+    case kCodecVorbis:
       return true;
 
-    case media::kCodecAMR_NB:
-    case media::kCodecAMR_WB:
-    case media::kCodecGSM_MS:
+    case kCodecAMR_NB:
+    case kCodecAMR_WB:
+    case kCodecGSM_MS:
 #if defined(OS_CHROMEOS)
       return true;
 #else
       return false;
 #endif
 
-    case media::kCodecEAC3:
-    case media::kCodecALAC:
-    case media::kCodecAC3:
-    case media::kCodecMpegHAudio:
-    case media::kUnknownAudioCodec:
+    case kCodecEAC3:
+    case kCodecALAC:
+    case kCodecAC3:
+    case kCodecMpegHAudio:
+    case kUnknownAudioCodec:
       return false;
   }
 
@@ -232,30 +251,35 @@ bool IsDefaultSupportedVideoType(const VideoType& type) {
 #endif
 
   switch (type.codec) {
-    case media::kCodecAV1:
+    case kCodecAV1:
+      // If the AV1 decoder is enabled, or if we're on Q or later, yes.
 #if BUILDFLAG(ENABLE_AV1_DECODER)
       return IsColorSpaceSupported(type.color_space);
-#else
-      return false;
+#elif defined(OS_ANDROID)
+      if (base::android::BuildInfo::GetInstance()->is_at_least_q() &&
+          IsColorSpaceSupported(type.color_space)) {
+        return true;
+      }
 #endif
+      return false;
 
-    case media::kCodecVP9:
+    case kCodecVP9:
       // Color management required for HDR to not look terrible.
       return IsColorSpaceSupported(type.color_space) &&
              IsVp9ProfileSupported(type.profile);
-    case media::kCodecH264:
-    case media::kCodecVP8:
-    case media::kCodecTheora:
+    case kCodecH264:
+    case kCodecVP8:
+    case kCodecTheora:
       return true;
 
-    case media::kUnknownVideoCodec:
-    case media::kCodecVC1:
-    case media::kCodecMPEG2:
-    case media::kCodecHEVC:
-    case media::kCodecDolbyVision:
+    case kUnknownVideoCodec:
+    case kCodecVC1:
+    case kCodecMPEG2:
+    case kCodecHEVC:
+    case kCodecDolbyVision:
       return false;
 
-    case media::kCodecMPEG4:
+    case kCodecMPEG4:
 #if defined(OS_CHROMEOS)
       return true;
 #else

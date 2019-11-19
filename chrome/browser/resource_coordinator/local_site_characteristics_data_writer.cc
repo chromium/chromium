@@ -19,7 +19,7 @@ void LocalSiteCharacteristicsDataWriter::NotifySiteLoaded() {
   is_loaded_ = true;
   impl_->NotifySiteLoaded();
 
-  if (tab_visibility_ == TabVisibility::kBackground)
+  if (tab_visibility_ == performance_manager::TabVisibility::kBackground)
     impl_->NotifyLoadedSiteBackgrounded();
 }
 
@@ -33,7 +33,7 @@ void LocalSiteCharacteristicsDataWriter::NotifySiteUnloaded() {
 }
 
 void LocalSiteCharacteristicsDataWriter::NotifySiteVisibilityChanged(
-    TabVisibility visibility) {
+    performance_manager::TabVisibility visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ignore this if we receive the same event multiple times.
@@ -43,7 +43,7 @@ void LocalSiteCharacteristicsDataWriter::NotifySiteVisibilityChanged(
   tab_visibility_ = visibility;
 
   if (is_loaded_) {
-    if (visibility == TabVisibility::kBackground) {
+    if (visibility == performance_manager::TabVisibility::kBackground) {
       impl_->NotifyLoadedSiteBackgrounded();
     } else {
       impl_->NotifyLoadedSiteForegrounded();
@@ -53,19 +53,19 @@ void LocalSiteCharacteristicsDataWriter::NotifySiteVisibilityChanged(
 
 void LocalSiteCharacteristicsDataWriter::NotifyUpdatesFaviconInBackground() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(TabVisibility::kBackground, tab_visibility_);
+  DCHECK_EQ(performance_manager::TabVisibility::kBackground, tab_visibility_);
   impl_->NotifyUpdatesFaviconInBackground();
 }
 
 void LocalSiteCharacteristicsDataWriter::NotifyUpdatesTitleInBackground() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(TabVisibility::kBackground, tab_visibility_);
+  DCHECK_EQ(performance_manager::TabVisibility::kBackground, tab_visibility_);
   impl_->NotifyUpdatesTitleInBackground();
 }
 
 void LocalSiteCharacteristicsDataWriter::NotifyUsesAudioInBackground() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(TabVisibility::kBackground, tab_visibility_);
+  DCHECK_EQ(performance_manager::TabVisibility::kBackground, tab_visibility_);
   // TODO(sebmarchand): Do not advance the background audio observation time
   // when the WebContents has never played audio.
   impl_->NotifyUsesAudioInBackground();
@@ -73,7 +73,7 @@ void LocalSiteCharacteristicsDataWriter::NotifyUsesAudioInBackground() {
 
 void LocalSiteCharacteristicsDataWriter::NotifyUsesNotificationsInBackground() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(TabVisibility::kBackground, tab_visibility_);
+  DCHECK_EQ(performance_manager::TabVisibility::kBackground, tab_visibility_);
   impl_->NotifyUsesNotificationsInBackground();
 }
 
@@ -88,7 +88,7 @@ void LocalSiteCharacteristicsDataWriter::NotifyLoadTimePerformanceMeasurement(
 
 LocalSiteCharacteristicsDataWriter::LocalSiteCharacteristicsDataWriter(
     scoped_refptr<internal::LocalSiteCharacteristicsDataImpl> impl,
-    TabVisibility tab_visibility)
+    performance_manager::TabVisibility tab_visibility)
     : impl_(std::move(impl)),
       tab_visibility_(tab_visibility),
       is_loaded_(false) {

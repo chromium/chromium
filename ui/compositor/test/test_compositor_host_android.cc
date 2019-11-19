@@ -22,10 +22,10 @@ class TestCompositorHostAndroid : public TestCompositorHost {
       const gfx::Rect& bounds,
       ui::ContextFactory* context_factory,
       ui::ContextFactoryPrivate* context_factory_private) {
-    compositor_.reset(new ui::Compositor(
+    compositor_ = std::make_unique<ui::Compositor>(
         context_factory_private->AllocateFrameSinkId(), context_factory,
         context_factory_private, base::ThreadTaskRunnerHandle::Get(),
-        false /* enable_pixel_canvas */));
+        false /* enable_pixel_canvas */);
     // TODO(sievers): Support onscreen here.
     compositor_->SetAcceleratedWidget(gfx::kNullAcceleratedWidget);
     compositor_->SetScaleAndSize(1.0f,

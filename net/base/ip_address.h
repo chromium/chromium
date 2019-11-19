@@ -166,7 +166,8 @@ class NET_EXPORT IPAddress {
   // Returns true if |ip_address_| is 127.0.0.1/8 or ::1/128
   bool IsLoopback() const;
 
-  // Returns true if |ip_address_| is 169.254.0.0/16 or fe80::/10
+  // Returns true if |ip_address_| is 169.254.0.0/16 or fe80::/10, or
+  // ::ffff:169.254.0.0/112 (IPv4 mapped IPv6 link-local).
   bool IsLinkLocal() const;
 
   // The size in bytes of |ip_address_|.

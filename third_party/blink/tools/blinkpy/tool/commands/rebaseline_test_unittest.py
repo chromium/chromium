@@ -59,8 +59,8 @@ class TestRebaselineTest(BaseTestCase):
                                   'new win10 result')
         self.assertFalse(self.tool.filesystem.exists(self.tool.filesystem.join(
             port.web_tests_dir(), 'platform/test-win-win7/failures/expected/image-expected.txt')))
-        self.assertMultiLineEqual(
-            out, '{"remove-lines": [{"test": "failures/expected/image.html", "port_name": "test-win-win10"}]}\n')
+        # We should not change TestExpectations for unexpected failures.
+        self.assertMultiLineEqual(out, '')
 
     def test_baseline_directory(self):
         self.assertMultiLineEqual(

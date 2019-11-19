@@ -44,6 +44,11 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) ManifestBuilder {
     return *this;
   }
 
+  ManifestBuilder& WithDisplayName(int resource_id) {
+    manifest_.display_name = Manifest::DisplayName(resource_id);
+    return *this;
+  }
+
   ManifestBuilder& WithOptions(Manifest::Options options) {
     manifest_.options = std::move(options);
     return *this;
@@ -159,6 +164,11 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) ManifestOptionsBuilder {
       bool can_register_other_service_instances) {
     options_.can_register_other_service_instances =
         can_register_other_service_instances;
+    return *this;
+  }
+
+  ManifestOptionsBuilder& WithExecutionMode(Manifest::ExecutionMode mode) {
+    options_.execution_mode = mode;
     return *this;
   }
 

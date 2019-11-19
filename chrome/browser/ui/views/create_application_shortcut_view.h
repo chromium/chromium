@@ -41,7 +41,6 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView,
 
   // DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   ui::ModalType GetModalType() const override;
   base::string16 GetWindowTitle() const override;
@@ -52,8 +51,9 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView,
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
  private:
-  // Adds a new check-box as a child to the view.
-  views::Checkbox* AddCheckbox(const base::string16& text, bool checked);
+  // Creates a new check-box with the given text and checked state.
+  std::unique_ptr<views::Checkbox> AddCheckbox(const base::string16& text,
+                                               bool checked);
 
   // Called when the app's ShortcutInfo (with icon) is loaded.
   void OnAppInfoLoaded(std::unique_ptr<web_app::ShortcutInfo> shortcut_info);
@@ -64,14 +64,15 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView,
   base::Callback<void(bool)> close_callback_;
 
   // May be null if the platform doesn't support a particular location.
-  views::Checkbox* desktop_check_box_;
-  views::Checkbox* menu_check_box_;
-  views::Checkbox* quick_launch_check_box_;
+  views::Checkbox* desktop_check_box_ = nullptr;
+  views::Checkbox* menu_check_box_ = nullptr;
+  views::Checkbox* quick_launch_check_box_ = nullptr;
 
   // Target shortcut and file handler info.
   std::unique_ptr<web_app::ShortcutInfo> shortcut_info_;
 
-  base::WeakPtrFactory<CreateChromeApplicationShortcutView> weak_ptr_factory_;
+  base::WeakPtrFactory<CreateChromeApplicationShortcutView> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(CreateChromeApplicationShortcutView);
 };

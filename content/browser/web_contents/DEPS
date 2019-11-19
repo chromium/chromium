@@ -1,0 +1,6 @@
+specific_include_rules = {
+  ".*_mac.*": [
+    "+components/remote_cocoa",
+    "+content/app_shim_remote_cocoa",
+  ],
+}

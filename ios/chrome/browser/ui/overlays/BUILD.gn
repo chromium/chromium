@@ -1,0 +1,84 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("overlays") {
+  public = [
+    "overlay_container_coordinator.h",
+    "overlay_coordinator_factory.h",
+  ]
+  sources = [
+    "overlay_container_coordinator.mm",
+    "overlay_coordinator_factory+initialization.h",
+    "overlay_coordinator_factory.mm",
+    "overlay_presentation_context_impl.h",
+    "overlay_presentation_context_impl.mm",
+    "overlay_request_ui_state.h",
+    "overlay_request_ui_state.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  friend = [
+    ":unit_tests",
+    "//ios/chrome/browser/ui/overlays/web_content_area/java_script_dialogs/test",
+  ]
+
+  deps = [
+    ":container_ui",
+    ":coordinators",
+    "//base",
+    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/overlays/web_content_area",
+    "//ios/chrome/common/ui_util",
+  ]
+}
+
+source_set("container_ui") {
+  sources = [
+    "overlay_container_view_controller.h",
+    "overlay_container_view_controller.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+  ]
+}
+
+source_set("coordinators") {
+  sources = [
+    "overlay_request_coordinator.h",
+    "overlay_request_coordinator.mm",
+    "overlay_request_coordinator_delegate.h",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "overlay_request_ui_state_unittest.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":coordinators",
+    ":overlays",
+    "//base/test:test_support",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/ui/overlays/test",
+    "//testing/gtest",
+  ]
+}

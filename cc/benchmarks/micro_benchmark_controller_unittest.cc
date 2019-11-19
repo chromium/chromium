@@ -67,7 +67,7 @@ TEST_F(MicroBenchmarkControllerTest, ScheduleFail) {
 }
 
 TEST_F(MicroBenchmarkControllerTest, CommitScheduled) {
-  EXPECT_FALSE(layer_tree_host_->needs_commit());
+  layer_tree_host_->reset_needs_commit();
   int id = layer_tree_host_->ScheduleMicroBenchmark("unittest_only_benchmark",
                                                     nullptr, base::DoNothing());
   EXPECT_GT(id, 0);

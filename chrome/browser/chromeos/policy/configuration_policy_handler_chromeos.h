@@ -191,7 +191,11 @@ class ScreenBrightnessPercentPolicyHandler
 
 // Supported values for the |ArcBackupRestoreServiceEnabled| and
 // |ArcGoogleLocationServicesEnabled| policies.
-enum class ArcServicePolicyValue { kDisabled = 0, kUnderUserControl = 1 };
+enum class ArcServicePolicyValue {
+  kDisabled = 0,
+  kUnderUserControl = 1,
+  kEnabled = 2
+};
 
 // Instantiated once each for the |ArcBackupRestoreServiceEnabled| and
 // |ArcGoogleLocationServicesEnabled| policies to handle their special logic:
@@ -209,6 +213,21 @@ class ArcServicePolicyHandler : public IntRangePolicyHandlerBase {
   const std::string pref_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcServicePolicyHandler);
+};
+
+// Handles the |EcryptfsMigrationStrategy| policy, aliasing policy values that
+// are no longer supported to the "migrate" option.
+class EcryptfsMigrationStrategyPolicyHandler
+    : public IntRangePolicyHandlerBase {
+ public:
+  EcryptfsMigrationStrategyPolicyHandler();
+
+  // IntRangePolicyHandlerBase:
+  void ApplyPolicySettings(const PolicyMap& policies,
+                           PrefValueMap* prefs) override;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(EcryptfsMigrationStrategyPolicyHandler);
 };
 
 }  // namespace policy

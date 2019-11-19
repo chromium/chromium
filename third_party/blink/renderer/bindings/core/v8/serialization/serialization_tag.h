@@ -48,13 +48,18 @@ enum SerializationTag {
   kFileIndexTag = 'e',      // index:int32_t -> File (ref)
   kDOMFileSystemTag = 'd',  // type:int32_t, name:WebCoreString,
                             // uuid:WebCoreString -> FileSystem (ref)
+  kNativeFileSystemFileHandleTag = 'n',  // name:WebCoreString, index:uint32_t
+                                         // -> NativeFileSystemFileHandle (ref)
+  kNativeFileSystemDirectoryHandleTag =
+      'N',  // name:WebCoreString, index:uint32_t ->
+            // NativeFileSystemDirectoryHandle (ref)
   kFileListTag =
       'l',  // length:uint32_t, files:RawFile[length] -> FileList (ref)
   kFileListIndexTag =
       'L',  // length:uint32_t, files:int32_t[length] -> FileList (ref)
   kImageDataTag = '#',    // tags terminated by ImageSerializationTag::kEnd (see
                           // SerializedColorParams.h), width:uint32_t,
-                          // height:uint32_t, pixelDataLength:uint32_t,
+                          // height:uint32_t, pixelDataLength:uint64_t,
                           // data:byte[pixelDataLength]
                           // -> ImageData (ref)
   kImageBitmapTag = 'g',  // tags terminated by ImageSerializationTag::kEnd (see
@@ -64,7 +69,8 @@ enum SerializationTag {
                           // -> ImageBitmap (ref)
   kImageBitmapTransferTag =
       'G',  // index:uint32_t -> ImageBitmap. For ImageBitmap transfer
-  kOffscreenCanvasTransferTag = 'H',  // index, width, height, id:uint32_t ->
+  kOffscreenCanvasTransferTag = 'H',  // index, width, height, id,
+                                      // filter_quality::uint32_t ->
                                       // OffscreenCanvas. For OffscreenCanvas
                                       // transfer
   kReadableStreamTransferTag = 'r',   // index:uint32_t
@@ -98,12 +104,14 @@ enum SerializationTag {
                              // pemCertificate:WebCoreString
   kDetectedBarcodeTag =
       'B',  // raw_value:WebCoreString, bounding_box:DOMRectReadOnly,
-            // corner_points:Point2D[length] -> DetectedBarcode (ref)
+            // format:String, corner_points:Point2D[length] ->
+            // DetectedBarcode (ref)
   kDetectedFaceTag =
       'F',  // raw_value:WebCoreString, bounding_box:DOMRectReadOnly,
             // corner_points:Point2D[length] -> DetectedText (ref)
   kDetectedTextTag = 't',  // bounding_box:DOMRectReadOnly,
                            // landmarks:Landmark[length] -> DetectedFace (ref)
+  kDOMExceptionTag = 'x',  // name:String,message:String,stack:String
   kVersionTag = 0xFF       // version:uint32_t -> Uses this as the file version.
 };
 

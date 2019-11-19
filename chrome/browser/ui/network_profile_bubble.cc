@@ -4,9 +4,8 @@
 
 #include "chrome/browser/ui/network_profile_bubble.h"
 
-#include <windows.h>
 #include <stdint.h>
-
+#include <windows.h>
 #include <wtsapi32.h>
 
 #include "base/bind.h"
@@ -113,8 +112,8 @@ void NetworkProfileBubble::CheckNetworkProfile(
   // Checking for RDP is cheaper than checking for a network drive so do this
   // one first.
   if (!::WTSQuerySessionInformation(WTS_CURRENT_SERVER, WTS_CURRENT_SESSION,
-                                    WTSClientProtocolType,
-                                    &buffer, &buffer_length)) {
+                                    WTSClientProtocolType, &buffer,
+                                    &buffer_length)) {
     RecordUmaEvent(METRIC_CHECK_FAILED);
     return;
   }
@@ -140,8 +139,8 @@ void NetworkProfileBubble::CheckNetworkProfile(
     }
     if (profile_on_network) {
       RecordUmaEvent(METRIC_PROFILE_ON_NETWORK);
-      base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                               base::BindOnce(&NotifyNetworkProfileDetected));
+      base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                     base::BindOnce(&NotifyNetworkProfileDetected));
     } else {
       RecordUmaEvent(METRIC_PROFILE_NOT_ON_NETWORK);
     }
@@ -167,8 +166,7 @@ void NetworkProfileBubble::RegisterProfilePrefs(
 
 // static
 void NetworkProfileBubble::RecordUmaEvent(MetricNetworkedProfileCheck event) {
-  UMA_HISTOGRAM_ENUMERATION(kMetricNetworkedProfileCheck,
-                            event,
+  UMA_HISTOGRAM_ENUMERATION(kMetricNetworkedProfileCheck, event,
                             METRIC_NETWORKED_PROFILE_CHECK_SIZE);
 }
 

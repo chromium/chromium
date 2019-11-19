@@ -8,6 +8,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/payments/payment_validation_errors.h"
+#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -197,6 +198,7 @@ struct ValidationErrorsTestCase {
   ValidationErrorsTestCase(bool expected_valid)
       : expected_valid(expected_valid) {}
 
+  const char* m_error = "";
   const char* m_payer_email = "";
   const char* m_payer_name = "";
   const char* m_payer_phone = "";
@@ -242,6 +244,7 @@ PaymentValidationErrors* toPaymentValidationErrors(
   shipping_address->setRegion(test_case.m_shipping_address_region);
   shipping_address->setSortingCode(test_case.m_shipping_address_sorting_code);
 
+  errors->setError(test_case.m_error);
   errors->setPayer(payer);
   errors->setShippingAddress(shipping_address);
 
@@ -266,6 +269,7 @@ INSTANTIATE_TEST_SUITE_P(
     PaymentValidationErrorss,
     PaymentsErrorMessageValidatorTest,
     testing::Values(
+        VALIDATION_ERRORS_TEST_CASE(error, "test", true),
         VALIDATION_ERRORS_TEST_CASE(payer_email, "test", true),
         VALIDATION_ERRORS_TEST_CASE(payer_name, "test", true),
         VALIDATION_ERRORS_TEST_CASE(payer_phone, "test", true),
@@ -288,6 +292,7 @@ INSTANTIATE_TEST_SUITE_P(
         VALIDATION_ERRORS_TEST_CASE(shipping_address_sorting_code,
                                     "test",
                                     true),
+        VALIDATION_ERRORS_TEST_CASE(error, LongString2049(), false),
         VALIDATION_ERRORS_TEST_CASE(payer_email, LongString2049(), false),
         VALIDATION_ERRORS_TEST_CASE(payer_name, LongString2049(), false),
         VALIDATION_ERRORS_TEST_CASE(payer_phone, LongString2049(), false),
@@ -335,6 +340,8 @@ TEST(PaymentMethodValidatorTest, IsValidPaymentMethod) {
                     {"https://pay.bobpay.com/pay", true},
                     {"https://pay.bobpay.com/pay?version=1", true},
                     {"https://pay.bobpay.com/pay#", true},
+                    {"http://localhost", true},
+                    {"http://localhost:8080", true},
                     {"http://bobpay.com", false},
                     {"https://username:password@bobpay.com", false},
                     {"https://username@bobpay.com", false},
@@ -343,10 +350,22 @@ TEST(PaymentMethodValidatorTest, IsValidPaymentMethod) {
                     {"Basic-card", false}};
 
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.expected_valid, PaymentsValidators::IsValidMethodFormat(
-                                            test_case.payment_method));
+    EXPECT_EQ(test_case.expected_valid,
+              PaymentsValidators::IsValidMethodFormat(test_case.payment_method))
+        << test_case.payment_method << " should be "
+        << (test_case.expected_valid ? "valid" : "invalid");
   }
 }
-}  // namespace
 
+TEST(PaymentMethodValidatorTest, IsValidPaymentMethodWhitelisted) {
+  EXPECT_FALSE(PaymentsValidators::IsValidMethodFormat("http://alicepay.com"))
+      << "http://alicepay.com is not a valid method format by default";
+
+  SecurityPolicy::AddOriginToTrustworthySafelist("http://alicepay.com");
+
+  EXPECT_TRUE(PaymentsValidators::IsValidMethodFormat("http://alicepay.com"))
+      << "http://alicepay.com should be valid if whitelisted";
+}
+
+}  // namespace
 }  // namespace blink

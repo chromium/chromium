@@ -1,17 +1,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [500, 400],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [500, 400],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [500, 400],
       "contentsOpaque": true,
@@ -23,12 +12,17 @@
           "reason": "incremental"
         },
         {
-          "object": "LayoutBlockFlow HTML",
-          "rect": [8, 299, 61, 23],
+          "object": "LayoutView #document",
+          "rect": [0, 0, 500, 200],
+          "reason": "chunk disappeared"
+        },
+        {
+          "object": "LayoutNGBlockFlow HTML",
+          "rect": [8, 300, 61, 22],
           "reason": "chunk appeared"
         },
         {
-          "object": "LayoutView #document",
+          "object": "VerticalScrollbar",
           "rect": [485, 0, 15, 200],
           "reason": "chunk disappeared"
         }

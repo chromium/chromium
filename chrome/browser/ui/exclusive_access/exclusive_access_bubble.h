@@ -47,11 +47,6 @@ class ExclusiveAccessBubble : public gfx::AnimationDelegate {
   static const int kPositionCheckHz;  // How fast to check the mouse position
   // Height of region triggering slide-in.
   static const int kSlideInRegionHeightPx;
-  static const int kSlideInDurationMs;   // Duration of slide-in animation
-  static const int kSlideOutDurationMs;  // Duration of slide-out animation
-  // Duration of the quick slide-out animation. Used when the bubble is
-  // interrupted and needs to be hidden quickly.
-  static const int kQuickSlideOutDurationMs;
   // Space between the popup and the top of the screen (excluding shadow).
   static const int kPopupTopPx;
   // Space between top of screen and popup, in simplified UI.

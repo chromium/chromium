@@ -29,8 +29,8 @@ interface ProxyResolvingSocket {
   // |result| is a network error code.
   UpgradeToTLS(HostPortPair host_port_pair,
                MutableNetworkTrafficAnnotationTag traffic_annotation,
-               TLSClientSocket& request,
-               SocketObserver? observer)
+               pending_receiver<TLSClientSocket> receiver,
+               pending_remote<SocketObserver>? observer)
       => (int32 net_error,
           handle<data_pipe_consumer>? receive_stream,
           handle<data_pipe_producer>? send_stream);
@@ -67,8 +67,8 @@ interface ProxyResolvingSocketFactory {
   CreateProxyResolvingSocket(url.mojom.Url url,
       ProxyResolvingSocketOptions? options,
       MutableNetworkTrafficAnnotationTag traffic_annotation,
-      ProxyResolvingSocket& socket,
-      SocketObserver? observer)
+      pending_receiver<ProxyResolvingSocket> socket,
+      pending_remote<SocketObserver>? observer)
      => (int32 result,
          network.mojom.IPEndPoint? local_addr,
          network.mojom.IPEndPoint? peer_addr,

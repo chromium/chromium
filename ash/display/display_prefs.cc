@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 #include "ash/public/cpp/ash_pref_names.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/stl_util.h"
@@ -36,32 +36,6 @@
 using chromeos::DisplayPowerState;
 
 namespace ash {
-
-class DisplayPrefs::LocalState {
- public:
-  explicit LocalState(std::unique_ptr<base::Value> initial_prefs)
-      : initial_prefs_(std::move(initial_prefs)) {}
-  ~LocalState() = default;
-
-  bool has_initial_prefs() const { return !!initial_prefs_.get(); }
-  void set_pref_service(PrefService* pref_service) {
-    pref_service_ = pref_service;
-  }
-  PrefService* pref_service() { return pref_service_; }
-
-  const base::Value* Get(const std::string& path) const {
-    if (pref_service_)
-      return pref_service_->Get(path);
-    CHECK(initial_prefs_);
-    return initial_prefs_->FindKey(path);
-  }
-
- private:
-  std::unique_ptr<base::Value> initial_prefs_;
-  class PrefService* pref_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalState);
-};
 
 namespace {
 
@@ -207,7 +181,7 @@ display::DisplayManager* GetDisplayManager() {
 // Returns true id the current user can write display preferences to
 // Local State.
 bool UserCanSaveDisplayPreference() {
-  SessionController* controller = Shell::Get()->session_controller();
+  SessionControllerImpl* controller = Shell::Get()->session_controller();
   auto user_type = controller->GetUserType();
   if (!user_type)
     return false;
@@ -217,7 +191,7 @@ bool UserCanSaveDisplayPreference() {
          *user_type == user_manager::USER_TYPE_KIOSK_APP;
 }
 
-void LoadDisplayLayouts(DisplayPrefs::LocalState* local_state) {
+void LoadDisplayLayouts(PrefService* local_state) {
   display::DisplayLayoutStore* layout_store =
       GetDisplayManager()->layout_store();
 
@@ -246,7 +220,7 @@ void LoadDisplayLayouts(DisplayPrefs::LocalState* local_state) {
   }
 }
 
-void LoadDisplayProperties(DisplayPrefs::LocalState* local_state) {
+void LoadDisplayProperties(PrefService* local_state) {
   const base::Value* properties = local_state->Get(prefs::kDisplayProperties);
   for (const auto& it : properties->DictItems()) {
     const base::DictionaryValue* dict_value = nullptr;
@@ -258,16 +232,12 @@ void LoadDisplayProperties(DisplayPrefs::LocalState* local_state) {
       continue;
     }
     display::Display::Rotation rotation = display::Display::ROTATE_0;
-    float ui_scale = 1.0f;
     const gfx::Insets* insets_to_set = nullptr;
 
     int rotation_value = 0;
     if (dict_value->GetInteger("rotation", &rotation_value)) {
       rotation = static_cast<display::Display::Rotation>(rotation_value);
     }
-    int ui_scale_value = 0;
-    if (dict_value->GetInteger("ui-scale", &ui_scale_value))
-      ui_scale = static_cast<float>(ui_scale_value) / 1000.0f;
 
     int width = 0, height = 0;
     dict_value->GetInteger("width", &width);
@@ -297,12 +267,12 @@ void LoadDisplayProperties(DisplayPrefs::LocalState* local_state) {
     dict_value->GetDouble(kDisplayZoom, &display_zoom);
 
     GetDisplayManager()->RegisterDisplayProperty(
-        id, rotation, ui_scale, insets_to_set, resolution_in_pixels,
-        device_scale_factor, display_zoom, refresh_rate, is_interlaced);
+        id, rotation, insets_to_set, resolution_in_pixels, device_scale_factor,
+        display_zoom, refresh_rate, is_interlaced);
   }
 }
 
-void LoadDisplayRotationState(DisplayPrefs::LocalState* local_state) {
+void LoadDisplayRotationState(PrefService* local_state) {
   const base::Value* properties = local_state->Get(prefs::kDisplayRotationLock);
   DCHECK(properties->is_dict());
   const base::Value* rotation_lock =
@@ -320,7 +290,7 @@ void LoadDisplayRotationState(DisplayPrefs::LocalState* local_state) {
       static_cast<display::Display::Rotation>(rotation->GetInt()));
 }
 
-void LoadDisplayTouchAssociations(DisplayPrefs::LocalState* local_state) {
+void LoadDisplayTouchAssociations(PrefService* local_state) {
   const base::Value* properties =
       local_state->Get(prefs::kDisplayTouchAssociations);
   DCHECK(properties->is_dict());
@@ -378,7 +348,7 @@ void LoadDisplayTouchAssociations(DisplayPrefs::LocalState* local_state) {
       calibration_data_to_set = &calibration_data;
 
     if (calibration_data_to_set) {
-      if (!base::ContainsKey(touch_associations, fallback_identifier)) {
+      if (!base::Contains(touch_associations, fallback_identifier)) {
         touch_associations.emplace(
             fallback_identifier,
             display::TouchDeviceManager::AssociationInfoMap());
@@ -430,7 +400,7 @@ void LoadDisplayTouchAssociations(DisplayPrefs::LocalState* local_state) {
 
 // Loads mirror info for each external display, the info will later be used to
 // restore mirror mode.
-void LoadExternalDisplayMirrorInfo(DisplayPrefs::LocalState* local_state) {
+void LoadExternalDisplayMirrorInfo(PrefService* local_state) {
   const base::Value* pref_data =
       local_state->Get(prefs::kExternalDisplayMirrorInfo);
   std::set<int64_t> external_display_mirror_info;
@@ -451,7 +421,7 @@ void LoadExternalDisplayMirrorInfo(DisplayPrefs::LocalState* local_state) {
 
 // Loads mixed mirror mode parameters which will later be used to restore mixed
 // mirror mode. Return false if the parameters fail to be loaded.
-void LoadDisplayMixedMirrorModeParams(DisplayPrefs::LocalState* local_state) {
+void LoadDisplayMixedMirrorModeParams(PrefService* local_state) {
   const base::Value* pref_data =
       local_state->Get(prefs::kDisplayMixedMirrorModeParams);
 
@@ -540,7 +510,7 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
   const display::TouchDeviceIdentifier& fallback_identifier =
       display::TouchDeviceIdentifier::GetFallbackTouchDeviceIdentifier();
   display::TouchDeviceManager::AssociationInfoMap legacy_data_map;
-  if (base::ContainsKey(
+  if (base::Contains(
           display_manager->touch_device_manager()->touch_associations(),
           fallback_identifier)) {
     legacy_data_map =
@@ -564,11 +534,6 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
                                static_cast<int>(info.GetRotation(
                                    display::Display::RotationSource::USER)));
 
-    // We store a negative ui scale to let us know the next time we boot that it
-    // is not the first boot with display zoom mode enabled.
-    // TODO(oshima|malaykeshav): Remove this in m71.
-    property_value->SetInteger("ui-scale", -1000);
-
     display::ManagedDisplayMode mode;
     if (!display.IsInternal() &&
         display_manager->GetSelectedModeForDisplayId(id, &mode) &&
@@ -589,7 +554,7 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
 
     // Store the legacy format touch calibration data. This can be removed after
     // a couple of milestones when every device has migrated to the new format.
-    if (legacy_data_map.size() && base::ContainsKey(legacy_data_map, id)) {
+    if (legacy_data_map.size() && base::Contains(legacy_data_map, id)) {
       TouchDataToValue(legacy_data_map.at(id).calibration_data,
                        property_value.get());
     }
@@ -750,7 +715,7 @@ void StoreExternalDisplayMirrorInfo(PrefService* pref_service) {
   const std::set<int64_t>& external_display_mirror_info =
       GetDisplayManager()->external_display_mirror_info();
   for (const auto& id : external_display_mirror_info)
-    pref_data->GetList().emplace_back(base::Value(base::NumberToString(id)));
+    pref_data->Append(base::Value(base::NumberToString(id)));
 }
 
 // Stores mixed mirror mode parameters. Clear the preferences if
@@ -771,7 +736,7 @@ void StoreDisplayMixedMirrorModeParams(
 
   base::ListValue mirroring_destination_ids_value;
   for (const auto& id : mixed_params->destination_ids) {
-    mirroring_destination_ids_value.GetList().emplace_back(
+    mirroring_destination_ids_value.Append(
         base::Value(base::NumberToString(id)));
   }
   pref_data->SetKey(kMirroringDestinationIds,
@@ -786,95 +751,28 @@ void StoreCurrentDisplayMixedMirrorModeParams(PrefService* pref_service) {
 }  // namespace
 
 // static
-std::unique_ptr<base::Value>
-DisplayPrefs::GetInitialDisplayPrefsFromPrefService(PrefService* pref_service) {
-  auto initial_display_prefs =
-      std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
-  initial_display_prefs->SetKey(
-      ash::prefs::kDisplayMixedMirrorModeParams,
-      pref_service->Get(ash::prefs::kDisplayMixedMirrorModeParams)->Clone());
-  initial_display_prefs->SetKey(
-      ash::prefs::kDisplayPowerState,
-      pref_service->Get(ash::prefs::kDisplayPowerState)->Clone());
-  initial_display_prefs->SetKey(
-      ash::prefs::kDisplayProperties,
-      pref_service->Get(ash::prefs::kDisplayProperties)->Clone());
-  initial_display_prefs->SetKey(
-      ash::prefs::kDisplayRotationLock,
-      pref_service->Get(ash::prefs::kDisplayRotationLock)->Clone());
-  initial_display_prefs->SetKey(
-      ash::prefs::kDisplayTouchAssociations,
-      pref_service->Get(ash::prefs::kDisplayTouchAssociations)->Clone());
-  initial_display_prefs->SetKey(
-      ash::prefs::kDisplayTouchPortAssociations,
-      pref_service->Get(ash::prefs::kDisplayTouchPortAssociations)->Clone());
-  initial_display_prefs->SetKey(
-      ash::prefs::kExternalDisplayMirrorInfo,
-      pref_service->Get(ash::prefs::kExternalDisplayMirrorInfo)->Clone());
-  initial_display_prefs->SetKey(
-      ash::prefs::kSecondaryDisplays,
-      pref_service->Get(ash::prefs::kSecondaryDisplays)->Clone());
-  return initial_display_prefs;
-}
-
-// static
 void DisplayPrefs::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(prefs::kSecondaryDisplays,
-                                   PrefRegistry::PUBLIC);
-  registry->RegisterDictionaryPref(prefs::kDisplayProperties,
-                                   PrefRegistry::PUBLIC);
-  registry->RegisterStringPref(prefs::kDisplayPowerState, kDisplayPowerAllOn,
-                               PrefRegistry::PUBLIC);
-  registry->RegisterDictionaryPref(prefs::kDisplayRotationLock,
-                                   PrefRegistry::PUBLIC);
-  registry->RegisterDictionaryPref(prefs::kDisplayTouchAssociations,
-                                   PrefRegistry::PUBLIC);
-  registry->RegisterDictionaryPref(prefs::kDisplayTouchPortAssociations,
-                                   PrefRegistry::PUBLIC);
-  registry->RegisterListPref(prefs::kExternalDisplayMirrorInfo,
-                             PrefRegistry::PUBLIC);
-  registry->RegisterDictionaryPref(prefs::kDisplayMixedMirrorModeParams,
-                                   PrefRegistry::PUBLIC);
+  registry->RegisterDictionaryPref(prefs::kSecondaryDisplays);
+  registry->RegisterDictionaryPref(prefs::kDisplayProperties);
+  registry->RegisterStringPref(prefs::kDisplayPowerState, kDisplayPowerAllOn);
+  registry->RegisterDictionaryPref(prefs::kDisplayRotationLock);
+  registry->RegisterDictionaryPref(prefs::kDisplayTouchAssociations);
+  registry->RegisterDictionaryPref(prefs::kDisplayTouchPortAssociations);
+  registry->RegisterListPref(prefs::kExternalDisplayMirrorInfo);
+  registry->RegisterDictionaryPref(prefs::kDisplayMixedMirrorModeParams);
 }
 
-// static
-void DisplayPrefs::RegisterForeignPrefs(PrefRegistry* registry) {
-  registry->RegisterForeignPref(prefs::kSecondaryDisplays);
-  registry->RegisterForeignPref(prefs::kDisplayProperties);
-  registry->RegisterForeignPref(prefs::kDisplayPowerState);
-  registry->RegisterForeignPref(prefs::kDisplayRotationLock);
-  registry->RegisterForeignPref(prefs::kDisplayTouchAssociations);
-  registry->RegisterForeignPref(prefs::kDisplayTouchPortAssociations);
-  registry->RegisterForeignPref(prefs::kExternalDisplayMirrorInfo);
-  registry->RegisterForeignPref(prefs::kDisplayMixedMirrorModeParams);
-}
-
-DisplayPrefs::DisplayPrefs(std::unique_ptr<base::Value> initial_prefs)
-    : local_state_(std::make_unique<LocalState>(std::move(initial_prefs))) {
-  Shell::Get()->AddShellObserver(this);
+DisplayPrefs::DisplayPrefs(PrefService* local_state)
+    : local_state_(local_state) {
   Shell::Get()->session_controller()->AddObserver(this);
-  // If |initial_prefs| is not null, load the initial display prefs. Otherwise
-  // the initial prefs will be loaded from OnLocalStatePrefServiceInitialized.
-  if (local_state_->has_initial_prefs())
+
+  // |local_state_| could be null in tests.
+  if (local_state_)
     LoadDisplayPreferences();
 }
 
 DisplayPrefs::~DisplayPrefs() {
   Shell::Get()->session_controller()->RemoveObserver(this);
-  Shell::Get()->RemoveShellObserver(this);
-}
-
-void DisplayPrefs::OnLocalStatePrefServiceInitialized(
-    PrefService* pref_service) {
-  DCHECK(!local_state_->pref_service());
-  local_state_->set_pref_service(pref_service);
-
-  // Only load the display prefs if no initial prefs were provided.
-  if (!local_state_->has_initial_prefs())
-    LoadDisplayPreferences();
-
-  if (store_requested_)
-    MaybeStoreDisplayPrefs();
 }
 
 void DisplayPrefs::OnFirstSessionStarted() {
@@ -884,17 +782,12 @@ void DisplayPrefs::OnFirstSessionStarted() {
 
 void DisplayPrefs::MaybeStoreDisplayPrefs() {
   DCHECK(local_state_);
-  PrefService* pref_service = local_state_->pref_service();
-  if (!pref_service) {
-    store_requested_ = true;
-    return;
-  }
 
   // Stores the power state regardless of the login status, because the power
   // state respects to the current status (close/open) of the lid which can be
   // changed in any situation. See http://crbug.com/285360
-  StoreCurrentDisplayPowerState(pref_service);
-  StoreCurrentDisplayRotationLockPrefs(pref_service);
+  StoreCurrentDisplayPowerState(local_state_);
+  StoreCurrentDisplayRotationLockPrefs(local_state_);
 
   // We cannot really decide whether to store display prefs until there is an
   // active user session. |OnFirstSessionStarted()| should eventually attempt to
@@ -913,21 +806,33 @@ void DisplayPrefs::MaybeStoreDisplayPrefs() {
   }
 
   store_requested_ = false;
-  StoreCurrentDisplayLayoutPrefs(pref_service);
-  StoreCurrentDisplayProperties(pref_service);
-  StoreDisplayTouchAssociations(pref_service);
-  StoreExternalDisplayMirrorInfo(pref_service);
-  StoreCurrentDisplayMixedMirrorModeParams(pref_service);
+  StoreCurrentDisplayLayoutPrefs(local_state_);
+  StoreCurrentDisplayProperties(local_state_);
+  StoreDisplayTouchAssociations(local_state_);
+  StoreExternalDisplayMirrorInfo(local_state_);
+  StoreCurrentDisplayMixedMirrorModeParams(local_state_);
+
+  // The display prefs need to be committed immediately to guarantee they're not
+  // lost, and are restored properly on reboot. https://crbug.com/936884.
+  // This sends a request via mojo to commit the prefs to disk.
+  local_state_->CommitPendingWrite();
 }
 
 void DisplayPrefs::LoadDisplayPreferences() {
-  LocalState* local_state = local_state_.get();
-  LoadDisplayLayouts(local_state);
-  LoadDisplayProperties(local_state);
-  LoadExternalDisplayMirrorInfo(local_state);
-  LoadDisplayMixedMirrorModeParams(local_state);
-  LoadDisplayRotationState(local_state);
-  LoadDisplayTouchAssociations(local_state);
+  LoadDisplayLayouts(local_state_);
+  LoadDisplayProperties(local_state_);
+  LoadExternalDisplayMirrorInfo(local_state_);
+  LoadDisplayMixedMirrorModeParams(local_state_);
+  LoadDisplayRotationState(local_state_);
+  LoadDisplayTouchAssociations(local_state_);
+
+  // Now that the display prefs have been loaded, request to reconfigure the
+  // displays, but signal the display manager to restore the mirror state of
+  // external displays from the loaded prefs (if any).
+  Shell::Get()
+      ->display_manager()
+      ->set_should_restore_mirror_mode_from_display_prefs(true);
+  Shell::Get()->display_configurator()->OnConfigurationChanged();
 
   // Ensure that we have a reasonable initial display power state if
   // powerd fails to send us one over D-Bus. Otherwise, we won't restore
@@ -940,7 +845,7 @@ void DisplayPrefs::LoadDisplayPreferences() {
 
   // Restore DisplayPowerState:
   const std::string value =
-      local_state->Get(prefs::kDisplayPowerState)->GetString();
+      local_state_->Get(prefs::kDisplayPowerState)->GetString();
   chromeos::DisplayPowerState power_state;
   if (GetDisplayPowerStateFromString(value, &power_state))
     Shell::Get()->display_configurator()->SetInitialDisplayPower(power_state);
@@ -949,30 +854,28 @@ void DisplayPrefs::LoadDisplayPreferences() {
 void DisplayPrefs::StoreDisplayRotationPrefsForTest(
     display::Display::Rotation rotation,
     bool rotation_lock) {
-  StoreDisplayRotationPrefs(local_state_->pref_service(), rotation,
-                            rotation_lock);
+  StoreDisplayRotationPrefs(local_state_, rotation, rotation_lock);
 }
 
 void DisplayPrefs::StoreDisplayLayoutPrefForTest(
     const display::DisplayIdList& list,
     const display::DisplayLayout& layout) {
-  StoreDisplayLayoutPref(local_state_->pref_service(), list, layout);
+  StoreDisplayLayoutPref(local_state_, list, layout);
 }
 
 void DisplayPrefs::StoreDisplayPowerStateForTest(
     DisplayPowerState power_state) {
-  StoreDisplayPowerState(local_state_->pref_service(), power_state);
+  StoreDisplayPowerState(local_state_, power_state);
 }
 
 void DisplayPrefs::LoadTouchAssociationPreferenceForTest() {
-  LoadDisplayTouchAssociations(local_state_.get());
+  LoadDisplayTouchAssociations(local_state_);
 }
 
 void DisplayPrefs::StoreLegacyTouchDataForTest(
     int64_t display_id,
     const display::TouchCalibrationData& data) {
-  DictionaryPrefUpdate update(local_state_->pref_service(),
-                              prefs::kDisplayProperties);
+  DictionaryPrefUpdate update(local_state_, prefs::kDisplayProperties);
   base::DictionaryValue* pref_data = update.Get();
   std::unique_ptr<base::DictionaryValue> property_value =
       std::make_unique<base::DictionaryValue>();
@@ -988,12 +891,11 @@ bool DisplayPrefs::ParseTouchCalibrationStringForTest(
 
 void DisplayPrefs::StoreDisplayMixedMirrorModeParamsForTest(
     const base::Optional<display::MixedMirrorModeParams>& mixed_params) {
-  StoreDisplayMixedMirrorModeParams(local_state_->pref_service(), mixed_params);
+  StoreDisplayMixedMirrorModeParams(local_state_, mixed_params);
 }
 
-void DisplayPrefs::SetPrefServiceForTest(PrefService* pref_service) {
-  DCHECK(local_state_);
-  local_state_->set_pref_service(pref_service);
+void DisplayPrefs::SetPrefServiceForTest(PrefService* local_state) {
+  local_state_ = local_state;
 }
 
 }  // namespace ash

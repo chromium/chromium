@@ -22,6 +22,21 @@
 
 namespace variations {
 
+enum LoadPermanentConsistencyCountryResult {
+  LOAD_COUNTRY_NO_PREF_NO_SEED = 0,
+  LOAD_COUNTRY_NO_PREF_HAS_SEED,
+  LOAD_COUNTRY_INVALID_PREF_NO_SEED,
+  LOAD_COUNTRY_INVALID_PREF_HAS_SEED,
+  LOAD_COUNTRY_HAS_PREF_NO_SEED_VERSION_EQ,
+  LOAD_COUNTRY_HAS_PREF_NO_SEED_VERSION_NEQ,
+  LOAD_COUNTRY_HAS_BOTH_VERSION_EQ_COUNTRY_EQ,
+  LOAD_COUNTRY_HAS_BOTH_VERSION_EQ_COUNTRY_NEQ,
+  LOAD_COUNTRY_HAS_BOTH_VERSION_NEQ_COUNTRY_EQ,
+  LOAD_COUNTRY_HAS_BOTH_VERSION_NEQ_COUNTRY_NEQ,
+  LOAD_COUNTRY_HAS_PERMANENT_OVERRIDDEN_COUNTRY,
+  LOAD_COUNTRY_MAX,
+};
+
 class PlatformFieldTrials;
 class SafeSeedManager;
 class VariationsServiceClient;
@@ -58,16 +73,26 @@ class VariationsFieldTrialCreator {
   // |safe_seed_manager| should be notified of the combined server and client
   // state that was activated to create the field trials (only when the return
   // value is true).
-  bool SetupFieldTrials(const char* kEnableGpuBenchmarking,
-                        const char* kEnableFeatures,
-                        const char* kDisableFeatures,
-                        const std::set<std::string>& unforceable_field_trials,
-                        const std::vector<std::string>& variation_ids,
-                        std::unique_ptr<const base::FieldTrial::EntropyProvider>
-                            low_entropy_provider,
-                        std::unique_ptr<base::FeatureList> feature_list,
-                        PlatformFieldTrials* platform_field_trials,
-                        SafeSeedManager* safe_seed_manager);
+  // |extra_overrides| gives a list of feature overrides that should be applied
+  // after the features explicitly disabled/enabled from the command line via
+  // --disable-features and --enable-features, but before field trials.
+  // Note: The ordering of the FeatureList method calls is such that the
+  // explicit --disable-features and --enable-features from the command line
+  // take precedence over the |extra_overrides|, which take precedence over the
+  // field trials.
+  bool SetupFieldTrials(
+      const char* kEnableGpuBenchmarking,
+      const char* kEnableFeatures,
+      const char* kDisableFeatures,
+      const std::set<std::string>& unforceable_field_trials,
+      const std::vector<std::string>& variation_ids,
+      const std::vector<base::FeatureList::FeatureOverrideInfo>&
+          extra_overrides,
+      std::unique_ptr<const base::FieldTrial::EntropyProvider>
+          low_entropy_provider,
+      std::unique_ptr<base::FeatureList> feature_list,
+      PlatformFieldTrials* platform_field_trials,
+      SafeSeedManager* safe_seed_manager);
 
   // Returns all of the client state used for filtering studies.
   // As a side-effect, may update the stored permanent consistency country.
@@ -87,6 +112,10 @@ class VariationsFieldTrialCreator {
   void StorePermanentCountry(const base::Version& version,
                              const std::string& country);
 
+  // Sets the stored permanent variations overridden country pref for this
+  // client.
+  void StoreVariationsOverriddenCountry(const std::string& country);
+
   // Records the time of the most recent successful fetch.
   void RecordLastFetchTime();
 
@@ -104,8 +133,8 @@ class VariationsFieldTrialCreator {
   const std::string& application_locale() const { return application_locale_; }
 
   // Returns the short hardware class value used to evaluate variations hardware
-  // class filters. Only implemented on CrOS - returns empty string on other
-  // platforms.
+  // class filters. Only implemented on CrOS and Android - returns empty string
+  // on other platforms.
   static std::string GetShortHardwareClass();
 
  private:

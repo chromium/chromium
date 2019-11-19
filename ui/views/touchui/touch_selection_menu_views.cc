@@ -27,12 +27,6 @@ namespace {
 
 constexpr int kMenuCommands[] = {IDS_APP_CUT, IDS_APP_COPY, IDS_APP_PASTE};
 constexpr int kSpacingBetweenButtons = 2;
-constexpr int kButtonSeparatorColor = SkColorSetARGB(13, 0, 0, 0);
-constexpr int kMenuButtonMinHeight = 38;
-constexpr int kMenuButtonMinWidth = 63;
-constexpr int kMenuMargin = 1;
-
-constexpr char kEllipsesButtonText[] = "...";
 constexpr int kEllipsesButtonTag = -1;
 
 }  // namespace
@@ -49,13 +43,15 @@ TouchSelectionMenuViews::TouchSelectionMenuViews(
 
   set_shadow(BubbleBorder::SMALL_SHADOW);
   set_parent_window(context);
-  set_margins(gfx::Insets(kMenuMargin, kMenuMargin, kMenuMargin, kMenuMargin));
+  constexpr gfx::Insets kMenuMargins = gfx::Insets(1);
+  set_margins(kMenuMargins);
   SetCanActivate(false);
   set_adjust_if_offscreen(true);
   EnableCanvasFlippingForRTLUI(true);
 
-  SetLayoutManager(std::make_unique<BoxLayout>(
-      BoxLayout::kHorizontal, gfx::Insets(), kSpacingBetweenButtons));
+  SetLayoutManager(
+      std::make_unique<BoxLayout>(BoxLayout::Orientation::kHorizontal,
+                                  gfx::Insets(), kSpacingBetweenButtons));
 }
 
 void TouchSelectionMenuViews::ShowMenu(const gfx::Rect& anchor_rect,
@@ -98,11 +94,11 @@ bool TouchSelectionMenuViews::IsMenuAvailable(
     const ui::TouchSelectionMenuClient* client) {
   DCHECK(client);
 
-  for (size_t i = 0; i < base::size(kMenuCommands); i++) {
-    if (client->IsCommandIdEnabled(kMenuCommands[i]))
-      return true;
-  }
-  return false;
+  const auto is_enabled = [client](int command) {
+    return client->IsCommandIdEnabled(command);
+  };
+  return std::any_of(std::cbegin(kMenuCommands), std::cend(kMenuCommands),
+                     is_enabled);
 }
 
 void TouchSelectionMenuViews::CloseMenu() {
@@ -116,8 +112,7 @@ void TouchSelectionMenuViews::CloseMenu() {
 TouchSelectionMenuViews::~TouchSelectionMenuViews() = default;
 
 void TouchSelectionMenuViews::CreateButtons() {
-  for (size_t i = 0; i < base::size(kMenuCommands); i++) {
-    int command_id = kMenuCommands[i];
+  for (int command_id : kMenuCommands) {
     if (!client_->IsCommandIdEnabled(command_id))
       continue;
 
@@ -127,9 +122,8 @@ void TouchSelectionMenuViews::CreateButtons() {
   }
 
   // Finally, add ellipses button.
-  AddChildView(
-      CreateButton(base::UTF8ToUTF16(kEllipsesButtonText), kEllipsesButtonTag));
-  Layout();
+  AddChildView(CreateButton(base::ASCIIToUTF16("..."), kEllipsesButtonTag));
+  InvalidateLayout();
 }
 
 LabelButton* TouchSelectionMenuViews::CreateButton(const base::string16& title,
@@ -137,7 +131,8 @@ LabelButton* TouchSelectionMenuViews::CreateButton(const base::string16& title,
   base::string16 label =
       gfx::RemoveAcceleratorChar(title, '&', nullptr, nullptr);
   LabelButton* button = new LabelButton(this, label, style::CONTEXT_TOUCH_MENU);
-  button->SetMinSize(gfx::Size(kMenuButtonMinWidth, kMenuButtonMinHeight));
+  constexpr gfx::Size kMenuButtonMinSize = gfx::Size(63, 38);
+  button->SetMinSize(kMenuButtonMinSize);
   button->SetFocusForPlatform();
   button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   button->set_tag(tag);
@@ -152,11 +147,14 @@ void TouchSelectionMenuViews::DisconnectOwner() {
 
 void TouchSelectionMenuViews::OnPaint(gfx::Canvas* canvas) {
   BubbleDialogDelegateView::OnPaint(canvas);
+  if (children().empty())
+    return;
 
   // Draw separator bars.
-  for (int i = 0; i < child_count() - 1; ++i) {
-    View* child = child_at(i);
+  for (auto i = children().cbegin(); i != std::prev(children().cend()); ++i) {
+    const View* child = *i;
     int x = child->bounds().right() + kSpacingBetweenButtons / 2;
+    constexpr SkColor kButtonSeparatorColor = SkColorSetA(SK_ColorBLACK, 13);
     canvas->FillRect(gfx::Rect(x, 0, 1, child->height()),
                      kButtonSeparatorColor);
   }
@@ -181,5 +179,9 @@ void TouchSelectionMenuViews::ButtonPressed(Button* sender,
   else
     client_->RunContextMenu();
 }
+
+BEGIN_METADATA(TouchSelectionMenuViews)
+METADATA_PARENT_CLASS(BubbleDialogDelegateView)
+END_METADATA()
 
 }  // namespace views

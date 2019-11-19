@@ -15,18 +15,12 @@ android_java_prebuilt("guava_android_java") {
 
   # Avoids dependency cycle.
   no_build_hooks = true
-}
 
-java_prebuilt("guava_java") {
-  # Since our build tooling depends on this target, we need it to not be
-  # "testonly = true", but production code must not depend on this as it results
-  # in size regressions. Thus we specify exact packages through visibility.
-  visibility = [
-    "//third_party/auto:*",
-    "//third_party/robolectric:*",
-
-    # jni_processor is a build tool even though it's in base.
-    "//base/android/jni_generator:*",
+  # Depend on this to replace excluded ListenableFuture.class
+  deps = [
+    "//third_party/android_deps:com_google_guava_listenablefuture_java",
   ]
-  jar_path = "lib/guava.jar"
+
+  # Avoid class conflict in com_google_guava_listenablefuture.
+  jar_excluded_patterns = [ "*/ListenableFuture.class" ]
 }

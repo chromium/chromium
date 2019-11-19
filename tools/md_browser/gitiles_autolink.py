@@ -6,14 +6,20 @@
 
 This extention auto links basic URLs that aren't bracketed by <...>.
 
-https://gerrit.googlesource.com/gitiles/+/master/gitiles-servlet/src/main/java/com/google/gitiles/Linkifier.java
+https://gerrit.googlesource.com/gitiles/+/master/java/com/google/gitiles/Linkifier.java
 """
 
 from markdown.inlinepatterns import (AutolinkPattern, Pattern)
 from markdown.extensions import Extension
 
 
-AUTOLINK_RE = r'([Hh][Tt][Tt][Pp][Ss]?://[^>]*)'
+# Best effort attempt to match URLs without matching past the end of the URL.
+# The first "[]" is copied from Linkifier.java (safe, reserved, and unsafe
+# characters). The second "[]" is similar to the first, but with English
+# punctuation removed, since the gitiles parser treats these as punction in the
+# sentence, rather than the final character of the URL.
+AUTOLINK_RE = (r'(https?://[a-zA-Z0-9$_.+!*\',%;:@=?#/~<>-]+'
+               r'[a-zA-Z0-9$_+*\'%@=#/~<-])')
 
 
 class _GitilesSmartQuotesExtension(Extension):

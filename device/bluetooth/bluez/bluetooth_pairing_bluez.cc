@@ -53,32 +53,31 @@ BluetoothPairingBlueZ::~BluetoothPairingBlueZ() {
   }
 
   if (!pincode_callback_.is_null()) {
-    pincode_callback_.Run(
-        bluez::BluetoothAgentServiceProvider::Delegate::CANCELLED, "");
+    std::move(pincode_callback_)
+        .Run(bluez::BluetoothAgentServiceProvider::Delegate::CANCELLED, "");
   }
 
   if (!passkey_callback_.is_null()) {
-    passkey_callback_.Run(
-        bluez::BluetoothAgentServiceProvider::Delegate::CANCELLED, 0);
+    std::move(passkey_callback_)
+        .Run(bluez::BluetoothAgentServiceProvider::Delegate::CANCELLED, 0);
   }
 
   if (!confirmation_callback_.is_null()) {
-    confirmation_callback_.Run(
-        bluez::BluetoothAgentServiceProvider::Delegate::CANCELLED);
+    std::move(confirmation_callback_)
+        .Run(bluez::BluetoothAgentServiceProvider::Delegate::CANCELLED);
   }
 
   pairing_delegate_ = NULL;
 }
 
 void BluetoothPairingBlueZ::RequestPinCode(
-    const bluez::BluetoothAgentServiceProvider::Delegate::PinCodeCallback&
-        callback) {
+    bluez::BluetoothAgentServiceProvider::Delegate::PinCodeCallback callback) {
   UMA_HISTOGRAM_ENUMERATION("Bluetooth.PairingMethod",
                             UMA_PAIRING_METHOD_REQUEST_PINCODE,
                             UMA_PAIRING_METHOD_COUNT);
 
   ResetCallbacks();
-  pincode_callback_ = callback;
+  pincode_callback_ = std::move(callback);
   pairing_delegate_used_ = true;
   pairing_delegate_->RequestPinCode(device_);
 }
@@ -91,9 +90,8 @@ void BluetoothPairingBlueZ::SetPinCode(const std::string& pincode) {
   if (pincode_callback_.is_null())
     return;
 
-  pincode_callback_.Run(bluez::BluetoothAgentServiceProvider::Delegate::SUCCESS,
-                        pincode);
-  pincode_callback_.Reset();
+  std::move(pincode_callback_)
+      .Run(bluez::BluetoothAgentServiceProvider::Delegate::SUCCESS, pincode);
 
   // If this is not an outgoing connection to the device, clean up the pairing
   // context since the pairing is done. The outgoing connection case is cleaned
@@ -119,14 +117,13 @@ void BluetoothPairingBlueZ::DisplayPinCode(const std::string& pincode) {
 }
 
 void BluetoothPairingBlueZ::RequestPasskey(
-    const bluez::BluetoothAgentServiceProvider::Delegate::PasskeyCallback&
-        callback) {
+    bluez::BluetoothAgentServiceProvider::Delegate::PasskeyCallback callback) {
   UMA_HISTOGRAM_ENUMERATION("Bluetooth.PairingMethod",
                             UMA_PAIRING_METHOD_REQUEST_PASSKEY,
                             UMA_PAIRING_METHOD_COUNT);
 
   ResetCallbacks();
-  passkey_callback_ = callback;
+  passkey_callback_ = std::move(callback);
   pairing_delegate_used_ = true;
   pairing_delegate_->RequestPasskey(device_);
 }
@@ -139,9 +136,8 @@ void BluetoothPairingBlueZ::SetPasskey(uint32_t passkey) {
   if (passkey_callback_.is_null())
     return;
 
-  passkey_callback_.Run(bluez::BluetoothAgentServiceProvider::Delegate::SUCCESS,
-                        passkey);
-  passkey_callback_.Reset();
+  std::move(passkey_callback_)
+      .Run(bluez::BluetoothAgentServiceProvider::Delegate::SUCCESS, passkey);
 
   // If this is not an outgoing connection to the device, clean up the pairing
   // context since the pairing is done. The outgoing connection case is cleaned
@@ -173,26 +169,26 @@ void BluetoothPairingBlueZ::KeysEntered(uint16_t entered) {
 
 void BluetoothPairingBlueZ::RequestConfirmation(
     uint32_t passkey,
-    const bluez::BluetoothAgentServiceProvider::Delegate::ConfirmationCallback&
+    bluez::BluetoothAgentServiceProvider::Delegate::ConfirmationCallback
         callback) {
   UMA_HISTOGRAM_ENUMERATION("Bluetooth.PairingMethod",
                             UMA_PAIRING_METHOD_CONFIRM_PASSKEY,
                             UMA_PAIRING_METHOD_COUNT);
 
   ResetCallbacks();
-  confirmation_callback_ = callback;
+  confirmation_callback_ = std::move(callback);
   pairing_delegate_used_ = true;
   pairing_delegate_->ConfirmPasskey(device_, passkey);
 }
 
 void BluetoothPairingBlueZ::RequestAuthorization(
-    const bluez::BluetoothAgentServiceProvider::Delegate::ConfirmationCallback&
+    bluez::BluetoothAgentServiceProvider::Delegate::ConfirmationCallback
         callback) {
   UMA_HISTOGRAM_ENUMERATION("Bluetooth.PairingMethod", UMA_PAIRING_METHOD_NONE,
                             UMA_PAIRING_METHOD_COUNT);
 
   ResetCallbacks();
-  confirmation_callback_ = callback;
+  confirmation_callback_ = std::move(callback);
   pairing_delegate_used_ = true;
   pairing_delegate_->AuthorizePairing(device_);
 }
@@ -205,9 +201,8 @@ void BluetoothPairingBlueZ::ConfirmPairing() {
   if (confirmation_callback_.is_null())
     return;
 
-  confirmation_callback_.Run(
-      bluez::BluetoothAgentServiceProvider::Delegate::SUCCESS);
-  confirmation_callback_.Reset();
+  std::move(confirmation_callback_)
+      .Run(bluez::BluetoothAgentServiceProvider::Delegate::SUCCESS);
 
   // If this is not an outgoing connection to the device, clean up the pairing
   // context since the pairing is done. The outgoing connection case is cleaned
@@ -243,20 +238,17 @@ bool BluetoothPairingBlueZ::RunPairingCallbacks(
 
   bool callback_run = false;
   if (!pincode_callback_.is_null()) {
-    pincode_callback_.Run(status, "");
-    pincode_callback_.Reset();
+    std::move(pincode_callback_).Run(status, "");
     callback_run = true;
   }
 
   if (!passkey_callback_.is_null()) {
-    passkey_callback_.Run(status, 0);
-    passkey_callback_.Reset();
+    std::move(passkey_callback_).Run(status, 0);
     callback_run = true;
   }
 
   if (!confirmation_callback_.is_null()) {
-    confirmation_callback_.Run(status);
-    confirmation_callback_.Reset();
+    std::move(confirmation_callback_).Run(status);
     callback_run = true;
   }
 

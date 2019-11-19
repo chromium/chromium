@@ -8,10 +8,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/process/process.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -28,7 +30,9 @@ namespace {
 // caught (e.g., the system suspends before a OnSuspend() event can be fired).
 constexpr int kMaxFailedPingsCount = 3;
 
-constexpr base::TimeDelta kHungDeadline = base::TimeDelta::FromMinutes(1);
+// The default deadline after which we consider the audio thread hung.
+constexpr base::TimeDelta kDefaultHangDeadline =
+    base::TimeDelta::FromMinutes(3);
 
 }  // namespace
 
@@ -37,15 +41,16 @@ AudioThreadHangMonitor::SharedAtomicFlag::~SharedAtomicFlag() {}
 
 // static
 AudioThreadHangMonitor::Ptr AudioThreadHangMonitor::Create(
-    bool dump_on_hang,
+    HangAction hang_action,
+    base::Optional<base::TimeDelta> hang_deadline,
     const base::TickClock* clock,
     scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner,
     scoped_refptr<base::SequencedTaskRunner> monitor_task_runner) {
   if (!monitor_task_runner)
-    monitor_task_runner = base::CreateSequencedTaskRunnerWithTraits({});
+    monitor_task_runner = base::CreateSequencedTaskRunner({base::ThreadPool()});
 
   auto monitor =
-      Ptr(new AudioThreadHangMonitor(dump_on_hang, clock,
+      Ptr(new AudioThreadHangMonitor(hang_action, hang_deadline, clock,
                                      std::move(audio_thread_task_runner)),
           base::OnTaskRunnerDeleter(monitor_task_runner));
 
@@ -65,13 +70,19 @@ bool AudioThreadHangMonitor::IsAudioThreadHung() const {
 }
 
 AudioThreadHangMonitor::AudioThreadHangMonitor(
-    bool dump_on_hang,
+    HangAction hang_action,
+    base::Optional<base::TimeDelta> hang_deadline,
     const base::TickClock* clock,
     scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner)
     : clock_(clock),
       alive_flag_(base::MakeRefCounted<SharedAtomicFlag>()),
       audio_task_runner_(std::move(audio_thread_task_runner)),
-      dump_on_hang_(dump_on_hang),
+      hang_action_(hang_action),
+      ping_interval_((hang_deadline ? hang_deadline.value().is_zero()
+                                          ? kDefaultHangDeadline
+                                          : hang_deadline.value()
+                                    : kDefaultHangDeadline) /
+                     kMaxFailedPingsCount),
       timer_(clock_) {
   DETACH_FROM_SEQUENCE(monitor_sequence_);
 }
@@ -88,7 +99,7 @@ void AudioThreadHangMonitor::StartTimer() {
 
   // |this| owns |timer_|, so Unretained is safe.
   timer_.Start(
-      FROM_HERE, kHungDeadline,
+      FROM_HERE, ping_interval_,
       base::BindRepeating(&AudioThreadHangMonitor::CheckIfAudioThreadIsAlive,
                           base::Unretained(this)));
 }
@@ -112,7 +123,7 @@ void AudioThreadHangMonitor::CheckIfAudioThreadIsAlive() {
   // An unexpected |time_since_last_check| may indicate that the system has been
   // in sleep mode, in which case the audio thread may have had insufficient
   // time to respond to the ping. In such a case, skip the check for now.
-  if (time_since_last_check > kHungDeadline + base::TimeDelta::FromSeconds(1))
+  if (time_since_last_check > ping_interval_ + base::TimeDelta::FromSeconds(1))
     return;
 
   const bool audio_thread_responded_to_last_ping = alive_flag_->flag_;
@@ -135,11 +146,20 @@ void AudioThreadHangMonitor::CheckIfAudioThreadIsAlive() {
     // this object.
     if (-recent_ping_state_ >= kMaxFailedPingsCount &&
         NeverLoggedThreadHung()) {
+      LOG(ERROR)
+          << "Audio thread hang has been detected. You may need to restart "
+             "your browser. Please file a bug at https://crbug.com/new";
+
       audio_thread_status_ = ThreadStatus::kHung;
       LogHistogramThreadStatus();
 
-      if (dump_on_hang_) {
-        base::debug::DumpWithoutCrashing();
+      if (hang_action_ == HangAction::kDump ||
+          hang_action_ == HangAction::kDumpAndTerminateCurrentProcess) {
+        DumpWithoutCrashing();
+      }
+      if (hang_action_ == HangAction::kTerminateCurrentProcess ||
+          hang_action_ == HangAction::kDumpAndTerminateCurrentProcess) {
+        TerminateCurrentProcess();
       }
     }
   }
@@ -156,6 +176,29 @@ void AudioThreadHangMonitor::CheckIfAudioThreadIsAlive() {
 void AudioThreadHangMonitor::LogHistogramThreadStatus() {
   UMA_HISTOGRAM_ENUMERATION("Media.AudioThreadStatus",
                             audio_thread_status_.load());
+}
+
+void AudioThreadHangMonitor::SetHangActionCallbacksForTesting(
+    base::RepeatingClosure dump_callback,
+    base::RepeatingClosure terminate_process_callback) {
+  dump_callback_ = std::move(dump_callback);
+  terminate_process_callback_ = std::move(terminate_process_callback);
+}
+
+void AudioThreadHangMonitor::DumpWithoutCrashing() {
+  LOG(ERROR) << "Creating non-crash dump for audio thread hang.";
+  if (!dump_callback_.is_null())
+    dump_callback_.Run();
+  else
+    base::debug::DumpWithoutCrashing();
+}
+
+void AudioThreadHangMonitor::TerminateCurrentProcess() {
+  LOG(ERROR) << "Terminating process for audio thread hang.";
+  if (!terminate_process_callback_.is_null())
+    terminate_process_callback_.Run();
+  else
+    base::Process::TerminateCurrentProcessImmediately(1);
 }
 
 }  // namespace media

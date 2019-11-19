@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace device {
 
@@ -83,8 +83,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristic {
   enum class NotificationType { kNotification = 1, kIndication };
 
   // The ErrorCallback is used by methods to asynchronously report errors.
-  typedef base::Callback<void(BluetoothGattService::GattErrorCode)>
-      ErrorCallback;
+  using ErrorCallback =
+      base::OnceCallback<void(BluetoothGattService::GattErrorCode)>;
 
   // Identifier used to uniquely identify a GATT characteristic object. This is
   // different from the characteristic UUID: while multiple characteristics with

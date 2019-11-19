@@ -102,7 +102,7 @@ class CustomizationWallpaperDownloader {
   // Callback supplied by caller.
   base::Callback<void(bool success, const GURL&)> on_wallpaper_fetch_completed_;
 
-  base::WeakPtrFactory<CustomizationWallpaperDownloader> weak_factory_;
+  base::WeakPtrFactory<CustomizationWallpaperDownloader> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CustomizationWallpaperDownloader);
 };

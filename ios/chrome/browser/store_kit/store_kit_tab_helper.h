@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #import "ios/chrome/browser/store_kit/store_kit_launcher.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#import "ios/web/public/web_state_user_data.h"
 
 // A Tab Helper object that can open to a page on iOS App Store for a given
 // app product ID.

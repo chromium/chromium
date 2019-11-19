@@ -5,9 +5,12 @@
 #include "chromeos/cryptohome/cryptohome_util.h"
 
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/logging.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "chromeos/dbus/constants/cryptohome_key_delegate_constants.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "components/device_event_log/device_event_log.h"
@@ -242,19 +245,36 @@ const std::string& MountExReplyToMountHash(const BaseReply& reply) {
 
 AuthorizationRequest CreateAuthorizationRequest(const std::string& label,
                                                 const std::string& secret) {
-  cryptohome::AuthorizationRequest auth_request;
-  Key* key = auth_request.mutable_key();
-  if (!label.empty())
-    key->mutable_data()->set_label(label);
+  return CreateAuthorizationRequestFromKeyDef(
+      KeyDefinition::CreateForPassword(secret, label, PRIV_DEFAULT));
+}
 
-  key->set_secret(secret);
+AuthorizationRequest CreateAuthorizationRequestFromKeyDef(
+    const KeyDefinition& key_def) {
+  cryptohome::AuthorizationRequest auth_request;
+  KeyDefinitionToKey(key_def, auth_request.mutable_key());
+
+  switch (key_def.type) {
+    case KeyDefinition::TYPE_PASSWORD:
+      break;
+    case KeyDefinition::TYPE_CHALLENGE_RESPONSE:
+      // Specify the additional KeyDelegate information that allows cryptohomed
+      // to call back to Chrome to perform cryptographic challenges.
+      auth_request.mutable_key_delegate()->set_dbus_service_name(
+          cryptohome::kCryptohomeKeyDelegateServiceName);
+      auth_request.mutable_key_delegate()->set_dbus_object_path(
+          cryptohome::kCryptohomeKeyDelegateServicePath);
+      break;
+  }
+
   return auth_request;
 }
 
 // TODO(crbug.com/797848): Finish testing this method.
 void KeyDefinitionToKey(const KeyDefinition& key_def, Key* key) {
   KeyData* data = key->mutable_data();
-  data->set_label(key_def.label);
+  if (!key_def.label.empty())
+    data->set_label(key_def.label);
 
   switch (key_def.type) {
     case KeyDefinition::TYPE_PASSWORD:
@@ -306,6 +326,10 @@ MountError CryptohomeErrorToMountError(CryptohomeErrorCode code) {
     case CRYPTOHOME_ERROR_MOUNT_FATAL:
     case CRYPTOHOME_ERROR_KEY_QUOTA_EXCEEDED:
     case CRYPTOHOME_ERROR_BACKING_STORE_FAILURE:
+    case CRYPTOHOME_ERROR_INSTALL_ATTRIBUTES_FINALIZE_FAILED:
+    case CRYPTOHOME_ERROR_INSTALL_ATTRIBUTES_GET_FAILED:
+    case CRYPTOHOME_ERROR_INSTALL_ATTRIBUTES_SET_FAILED:
+    case CRYPTOHOME_ERROR_INVALID_ARGUMENT:
       return MOUNT_ERROR_FATAL;
     case CRYPTOHOME_ERROR_AUTHORIZATION_KEY_NOT_FOUND:
     case CRYPTOHOME_ERROR_KEY_NOT_FOUND:
@@ -344,6 +368,11 @@ MountError CryptohomeErrorToMountError(CryptohomeErrorCode code) {
     case CRYPTOHOME_ERROR_FIRMWARE_MANAGEMENT_PARAMETERS_INVALID:
     case CRYPTOHOME_ERROR_FIRMWARE_MANAGEMENT_PARAMETERS_CANNOT_STORE:
     case CRYPTOHOME_ERROR_FIRMWARE_MANAGEMENT_PARAMETERS_CANNOT_REMOVE:
+    case CRYPTOHOME_ERROR_UPDATE_USER_ACTIVITY_TIMESTAMP_FAILED:
+    case CRYPTOHOME_ERROR_FAILED_TO_EXTEND_PCR:
+    case CRYPTOHOME_ERROR_FAILED_TO_READ_PCR:
+    case CRYPTOHOME_ERROR_PCR_ALREADY_EXTENDED:
+    case CRYPTOHOME_ERROR_TPM_UPDATE_REQUIRED:
       NOTREACHED();
       return MOUNT_ERROR_FATAL;
   }

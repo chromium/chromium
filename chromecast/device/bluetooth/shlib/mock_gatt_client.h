@@ -19,9 +19,7 @@ class MockGattClient : public GattClient {
   ~MockGattClient() override;
   MOCK_METHOD0(IsSupported, bool());
   MOCK_METHOD1(Connect, bool(const Addr&));
-  void SetDelegate(Gatt::Client::Delegate* delegate) override {
-    delegate_ = delegate;
-  }
+  MOCK_METHOD1(SetDelegate, void(Gatt::Client::Delegate*));
   MOCK_METHOD0(Enable, bool());
   MOCK_METHOD0(Disable, bool());
   MOCK_METHOD1(Disconnect, bool(const Addr&));
@@ -53,6 +51,8 @@ class MockGattClient : public GattClient {
   MOCK_METHOD5(ConnectionParameterUpdate,
                bool(const Addr&, int, int, int, int));
   MOCK_METHOD1(GetServices, bool(const Addr&));
+  MOCK_METHOD1(ClearPendingConnect, bool(const Addr&));
+  MOCK_METHOD1(ClearPendingDisconnect, bool(const Addr&));
 
   Gatt::Client::Delegate* delegate() const { return delegate_; }
 
@@ -60,7 +60,11 @@ class MockGattClient : public GattClient {
   Gatt::Client::Delegate* delegate_ = nullptr;
 };
 
-inline MockGattClient::MockGattClient() = default;
+inline MockGattClient::MockGattClient() {
+  ON_CALL(*this, SetDelegate(::testing::_))
+      .WillByDefault(
+          [this](Gatt::Client::Delegate* delegate) { delegate_ = delegate; });
+}
 inline MockGattClient::~MockGattClient() = default;
 
 }  // namespace bluetooth_v2_shlib

@@ -15,11 +15,14 @@
 #include "content/browser/dom_storage/session_storage_area_impl.h"
 #include "content/browser/dom_storage/session_storage_data_map.h"
 #include "content/browser/dom_storage/session_storage_metadata.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom.h"
 #include "url/origin.h"
+
+namespace storage {
+class AsyncDomStorageDatabase;
+}
 
 namespace content {
 
@@ -35,10 +38,10 @@ namespace content {
 //    SessionStorageNamespaceImplMojo. PopulateFromMetadata is called with the
 //    data from the other namespace, and then |Bind| can be called afterwards.
 // 3. The namespace is being created as a clone, but the |Clone| call from the
-//    source namespace hasn't been called yet. |SetWaitingForClonePopulation| is
-//    called first, after which |Bind| can be called. The actually binding
-//    doesn't happen until |PopulateAsClone| is finally called with the source
-//    namespace data.
+//    source namespace hasn't been called yet.
+//    |set_pending_population_from_namespace| is called first, after which
+//    |Bind| can be called. The actually binding doesn't happen until
+//    |PopulateAsClone| is finally called with the source namespace data.
 // Note: The reason for cases 2 and 3 is because there are two ways the Session
 // Storage system knows about clones. First, it gets the |Clone| call on the
 // source namespace, coming from the renderer doing the navigation, and in the
@@ -51,6 +54,22 @@ class CONTENT_EXPORT SessionStorageNamespaceImplMojo final
  public:
   using OriginAreas =
       std::map<url::Origin, std::unique_ptr<SessionStorageAreaImpl>>;
+
+  enum class State {
+    // This is the default state when a namespace is first constructed. It has
+    // no |database_| yet and is not connected to disk.
+    kNotPopulated,
+    // This is the same as kNotPopulated but it also means that this namespace
+    // was created by Cloning from a 'parent' namespace (see
+    // SessionStorageContext.CloneStorageNamespace), but the Clone call has not
+    // yet been called on the parent's SessionStorageNamespaceImplMojo (from
+    // mojo).
+    kNotPopulatedAndPendingClone,
+    // This means the namespace is connected to disk, |database_| is populated,
+    // and it is operating normally. This happens when PopulateFromMetadata or
+    // PopulateAsClone is called.
+    kPopulated
+  };
 
   class Delegate {
    public:
@@ -86,47 +105,60 @@ class CONTENT_EXPORT SessionStorageNamespaceImplMojo final
 
   ~SessionStorageNamespaceImplMojo() override;
 
+  State state() const { return state_; }
+
+  // Sets the |pending_population_from_namespace_| to the given namespace and
+  // sets the state() to State::kNotPopulatedAndPendingClone.
+  void SetPendingPopulationFromParentNamespace(
+      const std::string& from_namespace);
+
+  const std::string& pending_population_from_parent_namespace() const {
+    return pending_population_from_parent_namespace_;
+  }
+
+  void AddChildNamespaceWaitingForClone(const std::string& namespace_id);
+  bool HasChildNamespacesWaitingForClone() const;
+  void ClearChildNamespacesWaitingForClone();
+
   // Returns if a storage area exists for the given origin in this map.
   bool HasAreaForOrigin(const url::Origin& origin) const;
-
-  void SetWaitingForClonePopulation() { waiting_on_clone_population_ = true; }
-
-  bool waiting_on_clone_population() { return waiting_on_clone_population_; }
 
   // Called when this is a new namespace, or when the namespace was loaded from
   // disk. Should be called before |Bind|.
   void PopulateFromMetadata(
-      leveldb::mojom::LevelDBDatabase* database,
+      storage::AsyncDomStorageDatabase* database,
       SessionStorageMetadata::NamespaceEntry namespace_metadata);
 
   // Can either be called before |Bind|, or if the source namespace isn't
   // available yet, |SetWaitingForClonePopulation| can be called. Then |Bind|
   // will work, and hold onto the request until after this method is called.
   void PopulateAsClone(
-      leveldb::mojom::LevelDBDatabase* database,
+      storage::AsyncDomStorageDatabase* database,
       SessionStorageMetadata::NamespaceEntry namespace_metadata,
       const OriginAreas& areas_to_clone);
 
   // Resets to a pre-populated and pre-bound state. Used when the owner needs to
-  // delete & recreate the database.
+  // delete & recreate the database. This call should happen on every namespace
+  // at once, and the logic relies on that.
+  // TODO(dmurph): It's unclear if we need this or not - we might just want to
+  // destruct the object instead of having this method.
   void Reset();
 
   SessionStorageMetadata::NamespaceEntry namespace_entry() {
     return namespace_entry_;
   }
 
-  bool IsPopulated() const { return populated_; }
+  bool IsPopulated() const { return state_ == State::kPopulated; }
 
   // Must be preceded by a call to |PopulateFromMetadata|, |PopulateAsClone|, or
   // |SetWaitingForClonePopulation|. For the later case, |PopulateAsClone| must
-  // eventually be called before the SessionStorageNamespaceRequest can be
-  // bound.
-  void Bind(blink::mojom::SessionStorageNamespaceRequest request,
-            int process_id,
-            base::OnceClosure bind_done);
+  // eventually be called before the PendingReceiver can be bound.
+  void Bind(
+      mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver,
+      int process_id);
 
   bool IsBound() const {
-    return !bindings_.empty() || bind_waiting_on_clone_population_;
+    return !receivers_.empty() || bind_waiting_on_population_;
   }
 
   // Removes any StorageAreas bound in |OpenArea| that are no longer bound.
@@ -142,22 +174,27 @@ class CONTENT_EXPORT SessionStorageNamespaceImplMojo final
   // origin. Before connection, it checks to make sure the |process_id| given to
   // the |Bind| method can access the given origin.
   void OpenArea(const url::Origin& origin,
-                blink::mojom::StorageAreaAssociatedRequest database) override;
+                mojo::PendingAssociatedReceiver<blink::mojom::StorageArea>
+                    receiver) override;
 
   // Simply calls the |add_namespace_callback_| callback with this namespace's
   // data.
   void Clone(const std::string& clone_to_namespace) override;
 
+  // Clones all namespaces that are waiting to be cloned from this namespace.
+  // This handles edge cases like:
+  // * If this namespace is populated
+  // * If this namespace has a parent
+  // * If the parent is populated
+  // * If the parent has a parent.
+  void CloneAllNamespacesWaitingForClone(
+      storage::AsyncDomStorageDatabase* database,
+      SessionStorageMetadata* metadata,
+      const std::map<std::string,
+                     std::unique_ptr<SessionStorageNamespaceImplMojo>>&
+          namespaces_map);
+
   void FlushOriginForTesting(const url::Origin& origin);
-
-  void AddNamespacesWaitingForClone(const std::string& namespace_id) {
-    namespaces_waiting_for_clone_call_.insert(namespace_id);
-  }
-
-  bool HasNamespacesWaitingForClone() const {
-    return !namespaces_waiting_for_clone_call_.empty();
-  }
-  void CloneAllNamespacesWaitingForClone();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SessionStorageContextMojoTest,
@@ -167,24 +204,25 @@ class CONTENT_EXPORT SessionStorageNamespaceImplMojo final
 
   const std::string namespace_id_;
   SessionStorageMetadata::NamespaceEntry namespace_entry_;
-  leveldb::mojom::LevelDBDatabase* database_ = nullptr;
+  storage::AsyncDomStorageDatabase* database_ = nullptr;
 
   SessionStorageDataMap::Listener* data_map_listener_;
   SessionStorageAreaImpl::RegisterNewAreaMap register_new_map_callback_;
   Delegate* delegate_;
 
-  bool waiting_on_clone_population_ = false;
-  bool bind_waiting_on_clone_population_ = false;
-  std::vector<base::OnceClosure> run_after_clone_population_;
+  State state_ = State::kNotPopulated;
+  std::string pending_population_from_parent_namespace_;
+  bool bind_waiting_on_population_ = false;
+  std::vector<base::OnceClosure> run_after_population_;
+
   // Namespaces that are waiting for the |Clone| call to be called on this
   // namespace. If this namespace is destructed, then these namespaces are still
   // waiting and should be unblocked.
-  base::flat_set<std::string> namespaces_waiting_for_clone_call_;
+  base::flat_set<std::string> child_namespaces_waiting_for_clone_call_;
 
-  bool populated_ = false;
   OriginAreas origin_areas_;
   // The context is the process id.
-  mojo::BindingSet<blink::mojom::SessionStorageNamespace, int> bindings_;
+  mojo::ReceiverSet<blink::mojom::SessionStorageNamespace, int> receivers_;
 };
 
 }  // namespace content

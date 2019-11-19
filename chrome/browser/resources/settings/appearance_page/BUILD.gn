@@ -12,12 +12,17 @@ js_type_check("closure_compile") {
     ":fonts_browser_proxy",
     ":home_url_input",
   ]
+
+  if (is_chromeos) {
+    deps += [ ":wallpaper_browser_proxy" ]
+  }
 }
 
 js_library("appearance_fonts_page") {
   deps = [
     ":fonts_browser_proxy",
     "../controls:settings_dropdown_menu",
+    "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js:i18n_behavior",
     "//ui/webui/resources/js:web_ui_listener_behavior",
@@ -41,6 +46,7 @@ js_library("appearance_browser_proxy") {
 js_library("appearance_page") {
   deps = [
     ":appearance_browser_proxy",
+    ":wallpaper_browser_proxy",
     "..:page_visibility",
     "..:route",
     "../controls:settings_dropdown_menu",
@@ -73,4 +79,11 @@ js_library("home_url_input") {
     "//ui/webui/resources/js:load_time_data",
   ]
   externs_list = [ "$externs_path/settings_private.js" ]
+}
+
+js_library("wallpaper_browser_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
 }

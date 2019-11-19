@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.preferences.privacy;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -87,11 +89,10 @@ public final class BrowsingDataBridge {
      * @param listener A listener to call back when the clearing is finished.
      * @param dataTypes An array of browsing data types to delete, represented as values from
      *                  the shared enum {@link BrowsingDataType}.
-     * @param timePeriod The time period for which to delete the data, represented as a value from
-     *                   the shared enum {@link TimePeriod}.
+     * @param timePeriod The time period for which to delete the data.
      */
     public void clearBrowsingData(
-            OnClearBrowsingDataListener listener, int[] dataTypes, int timePeriod) {
+            OnClearBrowsingDataListener listener, int[] dataTypes, @TimePeriod int timePeriod) {
         clearBrowsingDataExcludingDomains(listener, dataTypes, timePeriod, new String[0],
                 new int[0], new String[0], new int[0]);
     }
@@ -104,8 +105,7 @@ public final class BrowsingDataBridge {
      * @param listener A listener to call back when the clearing is finished.
      * @param dataTypes An array of browsing data types to delete, represented as values from
      *                  the shared enum {@link BrowsingDataType}.
-     * @param timePeriod The time period for which to delete the data, represented as a value from
-     *                   the shared enum {@link TimePeriod}.
+     * @param timePeriod The time period for which to delete the data.
      * @param blacklistDomains A list of registerable domains that we don't clear data for.
      * @param blacklistedDomainReasons A list of the reason metadata for the blacklisted domains.
      * @param ignoredDomains A list of ignored domains that the user chose to not blacklist. We use
@@ -113,12 +113,28 @@ public final class BrowsingDataBridge {
      * @param ignoredDomainReasons A list of reason metadata for the ignored domains.
      */
     public void clearBrowsingDataExcludingDomains(OnClearBrowsingDataListener listener,
-            int[] dataTypes, int timePeriod, String[] blacklistDomains,
+            int[] dataTypes, @TimePeriod int timePeriod, String[] blacklistDomains,
             int[] blacklistedDomainReasons, String[] ignoredDomains, int[] ignoredDomainReasons) {
         assert mClearBrowsingDataListener == null;
         mClearBrowsingDataListener = listener;
-        nativeClearBrowsingData(getProfile(), dataTypes, timePeriod, blacklistDomains,
-                blacklistedDomainReasons, ignoredDomains, ignoredDomainReasons);
+        BrowsingDataBridgeJni.get().clearBrowsingData(BrowsingDataBridge.this, getProfile(),
+                dataTypes, timePeriod, blacklistDomains, blacklistedDomainReasons, ignoredDomains,
+                ignoredDomainReasons);
+    }
+
+    /**
+     * This method tests clearing of specified types of browsing data for incognito profile.
+     * @param dataTypes An array of browsing data types to delete, represented as values from
+     *                  the shared enum {@link BrowsingDataType}.
+     * @param timePeriod The time period for which to delete the data.
+     */
+    public void clearBrowsingDataIncognitoForTesting(
+            OnClearBrowsingDataListener listener, int[] dataTypes, @TimePeriod int timePeriod) {
+        assert mClearBrowsingDataListener == null;
+        mClearBrowsingDataListener = listener;
+        BrowsingDataBridgeJni.get().clearBrowsingData(BrowsingDataBridge.this,
+                getProfile().getOffTheRecordProfile(), dataTypes, timePeriod, new String[0],
+                new int[0], new String[0], new int[0]);
     }
 
     /**
@@ -131,7 +147,7 @@ public final class BrowsingDataBridge {
      * @param callback The callback that will be used to set the list of important sites.
      */
     public static void fetchImportantSites(ImportantSitesCallback callback) {
-        nativeFetchImportantSites(getProfile(), callback);
+        BrowsingDataBridgeJni.get().fetchImportantSites(getProfile(), callback);
     }
 
     /**
@@ -139,13 +155,13 @@ public final class BrowsingDataBridge {
      *         This is a constant that won't change.
      */
     public static int getMaxImportantSites() {
-        return nativeGetMaxImportantSites();
+        return BrowsingDataBridgeJni.get().getMaxImportantSites();
     }
 
     /** This lets us mark an origin as important for testing. */
     @VisibleForTesting
     public static void markOriginAsImportantForTesting(String origin) {
-        nativeMarkOriginAsImportantForTesting(getProfile(), origin);
+        BrowsingDataBridgeJni.get().markOriginAsImportantForTesting(getProfile(), origin);
     }
 
     /**
@@ -155,7 +171,8 @@ public final class BrowsingDataBridge {
      */
     public void requestInfoAboutOtherFormsOfBrowsingHistory(
             OtherFormsOfBrowsingHistoryListener listener) {
-        nativeRequestInfoAboutOtherFormsOfBrowsingHistory(getProfile(), listener);
+        BrowsingDataBridgeJni.get().requestInfoAboutOtherFormsOfBrowsingHistory(
+                BrowsingDataBridge.this, getProfile(), listener);
     }
 
     /**
@@ -166,14 +183,90 @@ public final class BrowsingDataBridge {
         return Profile.getLastUsedProfile().getOriginalProfile();
     }
 
-    private native void nativeClearBrowsingData(Profile profile, int[] dataTypes, int timePeriod,
-            String[] blacklistDomains, int[] blacklistedDomainReasons, String[] ignoredDomains,
-            int[] ignoredDomainReasons);
-    private native void nativeRequestInfoAboutOtherFormsOfBrowsingHistory(
-            Profile profile, OtherFormsOfBrowsingHistoryListener listener);
-    private static native void nativeFetchImportantSites(
-            Profile profile, ImportantSitesCallback callback);
-    private static native int nativeGetMaxImportantSites();
-    private static native void nativeMarkOriginAsImportantForTesting(
-            Profile profile, String origin);
+    /**
+     * Checks the state of deletion preference for a certain browsing data type.
+     * @param dataType The requested browsing data type (from the shared enum
+     *      {@link org.chromium.chrome.browser.browsing_data.BrowsingDataType}).
+     * @param clearBrowsingDataTab Indicates if this is a checkbox on the default, basic or advanced
+     *      tab to apply the right preference.
+     * @return The state of the corresponding deletion preference.
+     */
+    public boolean getBrowsingDataDeletionPreference(int dataType, int clearBrowsingDataTab) {
+        return BrowsingDataBridgeJni.get().getBrowsingDataDeletionPreference(
+                BrowsingDataBridge.this, dataType, clearBrowsingDataTab);
+    }
+
+    /**
+     * Sets the state of deletion preference for a certain browsing data type.
+     * @param dataType The requested browsing data type (from the shared enum
+     *      {@link org.chromium.chrome.browser.browsing_data.BrowsingDataType}).
+     * @param clearBrowsingDataTab Indicates if this is a checkbox on the default, basic or advanced
+     *      tab to apply the right preference.
+     * @param value The state to be set.
+     */
+    public void setBrowsingDataDeletionPreference(
+            int dataType, int clearBrowsingDataTab, boolean value) {
+        BrowsingDataBridgeJni.get().setBrowsingDataDeletionPreference(
+                BrowsingDataBridge.this, dataType, clearBrowsingDataTab, value);
+    }
+
+    /**
+     * Gets the time period for which browsing data will be deleted.
+     * @param clearBrowsingDataTab Indicates if this is a timeperiod on the default, basic or
+     *      advanced tab to apply the right preference.
+     * @return The currently selected browsing data deletion time period.
+     */
+    public @TimePeriod int getBrowsingDataDeletionTimePeriod(int clearBrowsingDataTab) {
+        return BrowsingDataBridgeJni.get().getBrowsingDataDeletionTimePeriod(
+                BrowsingDataBridge.this, clearBrowsingDataTab);
+    }
+
+    /**
+     * Sets the time period for which browsing data will be deleted.
+     * @param clearBrowsingDataTab Indicates if this is a timeperiod on the default, basic or
+     *      advanced tab to apply the right preference.
+     * @param timePeriod The selected browsing data deletion time period.
+     */
+    public void setBrowsingDataDeletionTimePeriod(
+            int clearBrowsingDataTab, @TimePeriod int timePeriod) {
+        BrowsingDataBridgeJni.get().setBrowsingDataDeletionTimePeriod(
+                BrowsingDataBridge.this, clearBrowsingDataTab, timePeriod);
+    }
+
+    /**
+     * @return The index of the tab last visited by the user in the CBD dialog.
+     *         Index 0 is for the basic tab, 1 is the advanced tab.
+     */
+    public int getLastSelectedClearBrowsingDataTab() {
+        return BrowsingDataBridgeJni.get().getLastClearBrowsingDataTab(BrowsingDataBridge.this);
+    }
+
+    /**
+     * Set the index of the tab last visited by the user.
+     * @param tabIndex The last visited tab index, 0 for basic, 1 for advanced.
+     */
+    public void setLastSelectedClearBrowsingDataTab(int tabIndex) {
+        BrowsingDataBridgeJni.get().setLastClearBrowsingDataTab(BrowsingDataBridge.this, tabIndex);
+    }
+
+    @NativeMethods
+    interface Natives {
+        void clearBrowsingData(BrowsingDataBridge caller, Profile profile, int[] dataTypes,
+                int timePeriod, String[] blacklistDomains, int[] blacklistedDomainReasons,
+                String[] ignoredDomains, int[] ignoredDomainReasons);
+        void requestInfoAboutOtherFormsOfBrowsingHistory(BrowsingDataBridge caller, Profile profile,
+                OtherFormsOfBrowsingHistoryListener listener);
+        void fetchImportantSites(Profile profile, ImportantSitesCallback callback);
+        int getMaxImportantSites();
+        void markOriginAsImportantForTesting(Profile profile, String origin);
+        boolean getBrowsingDataDeletionPreference(
+                BrowsingDataBridge caller, int dataType, int clearBrowsingDataTab);
+        void setBrowsingDataDeletionPreference(
+                BrowsingDataBridge caller, int dataType, int clearBrowsingDataTab, boolean value);
+        int getBrowsingDataDeletionTimePeriod(BrowsingDataBridge caller, int clearBrowsingDataTab);
+        void setBrowsingDataDeletionTimePeriod(
+                BrowsingDataBridge caller, int clearBrowsingDataTab, int timePeriod);
+        int getLastClearBrowsingDataTab(BrowsingDataBridge caller);
+        void setLastClearBrowsingDataTab(BrowsingDataBridge caller, int lastTab);
+    }
 }

@@ -10,10 +10,10 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/geo/test_region_data_loader.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/autofill/core/browser/test_region_data_loader.h"
 #include "ios/chrome/browser/payments/payment_request_test_util.h"
 #include "ios/chrome/browser/payments/payment_request_unittest_base.h"
 #include "ios/chrome/browser/payments/test_payment_request.h"
@@ -88,6 +88,7 @@ class PaymentRequestContactInfoEditCoordinatorTest
 
   // PlatformTest:
   void SetUp() override {
+    PlatformTest::SetUp();
     DoSetUp();
 
     personal_data_manager_.SetPrefService(pref_service());
@@ -105,6 +106,7 @@ class PaymentRequestContactInfoEditCoordinatorTest
     personal_data_manager_.SetPrefService(nullptr);
 
     DoTearDown();
+    PlatformTest::TearDown();
   }
 
   autofill::TestPersonalDataManager personal_data_manager_;

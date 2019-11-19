@@ -10,15 +10,11 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_undo_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/undo/undo_manager.h"
-
-namespace bookmarks {
-class BookmarkModel;
-class BookmarkModelObserver;
-}
 
 // BookmarkUndoService --------------------------------------------------------
 
@@ -49,12 +45,12 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
   void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
   void BookmarkNodeMoved(bookmarks::BookmarkModel* model,
                          const bookmarks::BookmarkNode* old_parent,
-                         int old_index,
+                         size_t old_index,
                          const bookmarks::BookmarkNode* new_parent,
-                         int new_index) override;
+                         size_t new_index) override;
   void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
                          const bookmarks::BookmarkNode* parent,
-                         int index) override;
+                         size_t index) override;
   void OnWillChangeBookmarkNode(bookmarks::BookmarkModel* model,
                                 const bookmarks::BookmarkNode* node) override;
   void OnWillReorderBookmarkNode(bookmarks::BookmarkModel* model,
@@ -68,14 +64,14 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
   void OnBookmarkNodeRemoved(
       bookmarks::BookmarkModel* model,
       const bookmarks::BookmarkNode* parent,
-      int index,
+      size_t index,
       std::unique_ptr<bookmarks::BookmarkNode> node) override;
 
   bookmarks::BookmarkModel* model_;
   bookmarks::BookmarkUndoProvider* undo_provider_;
   UndoManager undo_manager_;
   ScopedObserver<bookmarks::BookmarkModel, bookmarks::BookmarkModelObserver>
-      scoped_observer_;
+      scoped_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkUndoService);
 };

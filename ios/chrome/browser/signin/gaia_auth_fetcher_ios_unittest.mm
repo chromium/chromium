@@ -14,8 +14,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/gaia_auth_fetcher_ios_wk_webview_bridge.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
-#include "net/url_request/test_url_fetcher_factory.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -94,7 +93,7 @@ class GaiaAuthFetcherIOSTest : public PlatformTest {
     return wkWebviewBridge->GetWKWebView();
   }
 
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   // BrowserState, required for WKWebView creation.
   std::unique_ptr<ios::ChromeBrowserState> browser_state_;
   MockGaiaConsumer consumer_;

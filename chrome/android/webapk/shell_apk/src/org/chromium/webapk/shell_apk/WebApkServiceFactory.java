@@ -39,6 +39,10 @@ public class WebApkServiceFactory extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         final String hostBrowserPackage = HostBrowserUtils.getCachedHostBrowserPackage(this);
+        if (!HostBrowserUtils.doesBrowserSupportWebApks(hostBrowserPackage)) {
+            Log.w(TAG, "Host browser does not support WebAPKs.");
+            return null;
+        }
         ClassLoader webApkClassLoader = HostBrowserClassLoader.getClassLoaderInstance(
                 this, hostBrowserPackage, WEBAPK_SERVICE_IMPL_CLASS_NAME);
         if (webApkClassLoader == null) {
@@ -53,7 +57,7 @@ public class WebApkServiceFactory extends Service {
                     webApkServiceImplClass.getConstructor(Context.class, Bundle.class);
             int hostBrowserUid = WebApkUtils.getRemotePackageUid(this, hostBrowserPackage);
             Bundle bundle = new Bundle();
-            bundle.putInt(KEY_SMALL_ICON_ID, R.drawable.notification_badge);
+            bundle.putInt(KEY_SMALL_ICON_ID, WebApkUtils.getNotificationSmallIconId());
             bundle.putInt(KEY_HOST_BROWSER_UID, hostBrowserUid);
             IBinder webApkServiceImpl =
                     (IBinder) webApkServiceImplConstructor.newInstance(new Object[] {this, bundle});

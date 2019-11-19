@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
+#include "url/gurl.h"
 
 namespace dbus {
 class MethodCall;
@@ -42,6 +43,10 @@ class ASH_EXPORT UrlHandlerServiceProvider
   // CrosDBusService::ServiceProviderInterface overrides:
   void Start(scoped_refptr<dbus::ExportedObject> exported_object) override;
 
+  // Returns true if |gurl| is allowed to be opened in a new tab.
+  // Visible for testing.
+  bool UrlAllowed(const GURL& gurl) const;
+
  private:
   // Called on UI thread in response to a D-Bus request.
   void OpenUrl(dbus::MethodCall* method_call,
@@ -52,7 +57,7 @@ class ASH_EXPORT UrlHandlerServiceProvider
 
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
-  base::WeakPtrFactory<UrlHandlerServiceProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<UrlHandlerServiceProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UrlHandlerServiceProvider);
 };

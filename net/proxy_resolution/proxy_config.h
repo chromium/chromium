@@ -15,7 +15,6 @@
 
 namespace base {
 class Value;
-class DictionaryValue;
 }
 
 namespace net {
@@ -32,7 +31,7 @@ class ProxyInfo;
 // take precedence over the manual ones.
 //
 // For more details see:
-// http://www.chromium.org/developers/design-documents/proxy-settings-fallback
+// http://www.chromium.org/developers/design-documents/network-stack/proxy-settings-fallback
 class NET_EXPORT ProxyConfig {
  public:
   // ProxyRules describes the "manual" proxy settings.
@@ -162,7 +161,7 @@ class NET_EXPORT ProxyConfig {
   void ClearAutomaticSettings();
 
   // Creates a Value dump of this configuration.
-  std::unique_ptr<base::DictionaryValue> ToValue() const;
+  base::Value ToValue() const;
 
   ProxyRules& proxy_rules() {
     return proxy_rules_;

@@ -12,10 +12,11 @@ FakeDeviceSyncObserver::FakeDeviceSyncObserver() = default;
 
 FakeDeviceSyncObserver::~FakeDeviceSyncObserver() = default;
 
-mojom::DeviceSyncObserverPtr FakeDeviceSyncObserver::GenerateInterfacePtr() {
-  mojom::DeviceSyncObserverPtr interface_ptr;
-  bindings_.AddBinding(this, mojo::MakeRequest(&interface_ptr));
-  return interface_ptr;
+mojo::PendingRemote<mojom::DeviceSyncObserver>
+FakeDeviceSyncObserver::GenerateRemote() {
+  mojo::PendingRemote<mojom::DeviceSyncObserver> remote;
+  receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+  return remote;
 }
 
 void FakeDeviceSyncObserver::OnEnrollmentFinished() {

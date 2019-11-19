@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/android/build_info.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/task/post_task.h"
@@ -33,14 +34,19 @@ const float kDefaultVolume = 1.0;
 
 }  // namespace
 
-MediaPlayerRenderer::MediaPlayerRenderer(int process_id,
-                                         int routing_id,
-                                         WebContents* web_contents)
-    : render_process_id_(process_id),
+MediaPlayerRenderer::MediaPlayerRenderer(
+    int process_id,
+    int routing_id,
+    WebContents* web_contents,
+    mojo::PendingReceiver<RendererExtension> renderer_extension_receiver,
+    mojo::PendingRemote<ClientExtension> client_extension_remote)
+    : client_extension_(std::move(client_extension_remote)),
+      render_process_id_(process_id),
       routing_id_(routing_id),
       has_error_(false),
       volume_(kDefaultVolume),
-      weak_factory_(this) {
+      renderer_extension_receiver_(this,
+                                   std::move(renderer_extension_receiver)) {
   DCHECK_EQ(static_cast<RenderFrameHostImpl*>(
                 RenderFrameHost::FromID(process_id, routing_id))
                 ->delegate()
@@ -68,7 +74,7 @@ MediaPlayerRenderer::~MediaPlayerRenderer() {
 
 void MediaPlayerRenderer::Initialize(media::MediaResource* media_resource,
                                      media::RendererClient* client,
-                                     const media::PipelineStatusCB& init_cb) {
+                                     media::PipelineStatusCallback init_cb) {
   DVLOG(1) << __func__;
 
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -77,7 +83,7 @@ void MediaPlayerRenderer::Initialize(media::MediaResource* media_resource,
 
   if (media_resource->GetType() != media::MediaResource::Type::URL) {
     DLOG(ERROR) << "MediaResource is not of Type URL";
-    init_cb.Run(media::PIPELINE_ERROR_INITIALIZATION_FAILED);
+    std::move(init_cb).Run(media::PIPELINE_ERROR_INITIALIZATION_FAILED);
     return;
   }
 
@@ -85,53 +91,59 @@ void MediaPlayerRenderer::Initialize(media::MediaResource* media_resource,
       media::MediaServiceThrottler::GetInstance()->GetDelayForClientCreation();
 
   if (creation_delay.is_zero()) {
-    CreateMediaPlayer(media_resource->GetMediaUrlParams(), init_cb);
+    CreateMediaPlayer(media_resource->GetMediaUrlParams(), std::move(init_cb));
     return;
   }
 
-  base::PostDelayedTaskWithTraits(
+  base::PostDelayedTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&MediaPlayerRenderer::CreateMediaPlayer,
                      weak_factory_.GetWeakPtr(),
-                     media_resource->GetMediaUrlParams(), init_cb),
+                     media_resource->GetMediaUrlParams(), std::move(init_cb)),
       creation_delay);
 }
 
 void MediaPlayerRenderer::CreateMediaPlayer(
     const media::MediaUrlParams& url_params,
-    const media::PipelineStatusCB& init_cb) {
+    media::PipelineStatusCallback init_cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Force the initialization of |media_resource_getter_| first. If it fails,
   // the RenderFrameHost may have been destroyed already.
   if (!GetMediaResourceGetter()) {
     DLOG(ERROR) << "Unable to retrieve MediaResourceGetter";
-    init_cb.Run(media::PIPELINE_ERROR_INITIALIZATION_FAILED);
+    std::move(init_cb).Run(media::PIPELINE_ERROR_INITIALIZATION_FAILED);
     return;
   }
 
   const std::string user_agent = GetContentClient()->browser()->GetUserAgent();
 
+  // Never allow credentials on KitKat. See https://crbug.com/936566.
+  bool allow_credentials = url_params.allow_credentials &&
+                           base::android::BuildInfo::GetInstance()->sdk_int() >
+                               base::android::SDK_VERSION_KITKAT;
+
   media_player_.reset(new media::MediaPlayerBridge(
-      url_params.media_url, url_params.site_for_cookies, user_agent,
+      url_params.media_url, url_params.site_for_cookies,
+      url_params.top_frame_origin, user_agent,
       false,  // hide_url_log
-      this,
-      true));  // allow_crendentials
+      this,   // MediaPlayerBridge::Client
+      allow_credentials, url_params.is_hls));
 
   media_player_->Initialize();
   UpdateVolume();
 
-  init_cb.Run(media::PIPELINE_OK);
+  std::move(init_cb).Run(media::PIPELINE_OK);
 }
 
 void MediaPlayerRenderer::SetCdm(media::CdmContext* cdm_context,
-                                 const media::CdmAttachedCB& cdm_attached_cb) {
+                                 media::CdmAttachedCB cdm_attached_cb) {
   NOTREACHED();
 }
 
-void MediaPlayerRenderer::Flush(const base::Closure& flush_cb) {
+void MediaPlayerRenderer::Flush(base::OnceClosure flush_cb) {
   DVLOG(3) << __func__;
-  flush_cb.Run();
+  std::move(flush_cb).Run();
 }
 
 void MediaPlayerRenderer::StartPlayingFrom(base::TimeDelta time) {
@@ -153,7 +165,8 @@ void MediaPlayerRenderer::StartPlayingFrom(base::TimeDelta time) {
   // the buffering state.
   //
   // TODO(tguilbert): Investigate the effect of this call on UMAs.
-  renderer_client_->OnBufferingStateChange(media::BUFFERING_HAVE_ENOUGH);
+  renderer_client_->OnBufferingStateChange(
+      media::BUFFERING_HAVE_ENOUGH, media::BUFFERING_CHANGE_REASON_UNKNOWN);
 }
 
 void MediaPlayerRenderer::SetPlaybackRate(double playback_rate) {
@@ -179,7 +192,8 @@ void MediaPlayerRenderer::OnScopedSurfaceRequestCompleted(
   media_player_->SetVideoSurface(std::move(surface));
 }
 
-base::UnguessableToken MediaPlayerRenderer::InitiateScopedSurfaceRequest() {
+void MediaPlayerRenderer::InitiateScopedSurfaceRequest(
+    InitiateScopedSurfaceRequestCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   CancelScopedSurfaceRequest();
@@ -189,7 +203,7 @@ base::UnguessableToken MediaPlayerRenderer::InitiateScopedSurfaceRequest() {
           base::Bind(&MediaPlayerRenderer::OnScopedSurfaceRequestCompleted,
                      weak_factory_.GetWeakPtr()));
 
-  return surface_request_token_;
+  std::move(callback).Run(surface_request_token_);
 }
 
 void MediaPlayerRenderer::SetVolume(float volume) {
@@ -240,7 +254,7 @@ void MediaPlayerRenderer::OnMediaDurationChanged(base::TimeDelta duration) {
 
   if (duration_ != duration) {
     duration_ = duration;
-    renderer_client_->OnDurationChange(duration);
+    client_extension_->OnDurationChange(duration);
   }
 }
 
@@ -269,7 +283,10 @@ void MediaPlayerRenderer::OnVideoSizeChanged(int width, int height) {
   gfx::Size new_size = gfx::Size(width, height);
   if (video_size_ != new_size) {
     video_size_ = new_size;
-    renderer_client_->OnVideoNaturalSizeChange(video_size_);
+    // Send via |client_extension_| instead of |renderer_client_|, so
+    // MediaPlayerRendererClient can update its texture size.
+    // MPRClient will then continue propagating changes via its RendererClient.
+    client_extension_->OnVideoSizeChange(video_size_);
   }
 }
 

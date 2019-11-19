@@ -39,7 +39,7 @@ struct CertificateRequests::CertificateRequestState {
   std::map<std::string, CertificateInfoList> extension_to_certificates;
 
   // The callback that must be run with the final list of certificates.
-  base::Callback<void(net::ClientCertIdentityList)> callback;
+  base::OnceCallback<void(net::ClientCertIdentityList)> callback;
 };
 
 CertificateRequests::CertificateRequests() {}
@@ -48,16 +48,16 @@ CertificateRequests::~CertificateRequests() {}
 
 int CertificateRequests::AddRequest(
     const std::vector<std::string>& extension_ids,
-    const base::Callback<void(net::ClientCertIdentityList)>& callback,
-    const base::Callback<void(int)>& timeout_callback) {
-  std::unique_ptr<CertificateRequestState> state(new CertificateRequestState);
-  state->callback = callback;
+    base::OnceCallback<void(net::ClientCertIdentityList)> callback,
+    base::OnceCallback<void(int)> timeout_callback) {
+  auto state = std::make_unique<CertificateRequestState>();
+  state->callback = std::move(callback);
   state->pending_extensions.insert(extension_ids.begin(), extension_ids.end());
 
   const int request_id = next_free_request_id_++;
   state->timeout.Start(
       FROM_HERE, base::TimeDelta::FromMinutes(kGetCertificatesTimeoutInMinutes),
-      base::Bind(timeout_callback, request_id));
+      base::BindOnce(std::move(timeout_callback), request_id));
 
   const auto insert_result =
       requests_.insert(std::make_pair(request_id, std::move(state)));
@@ -87,14 +87,14 @@ bool CertificateRequests::SetCertificates(
 bool CertificateRequests::RemoveRequest(
     int request_id,
     std::map<std::string, CertificateInfoList>* certificates,
-    base::Callback<void(net::ClientCertIdentityList)>* callback) {
+    base::OnceCallback<void(net::ClientCertIdentityList)>* callback) {
   const auto it = requests_.find(request_id);
   if (it == requests_.end())
     return false;
 
   CertificateRequestState& state = *it->second;
   *certificates = state.extension_to_certificates;
-  *callback = state.callback;
+  *callback = std::move(state.callback);
   requests_.erase(it);
   DVLOG(2) << "Completed certificate request " << request_id;
   return true;

@@ -1,0 +1,42 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="app_item.html">
+<link rel="import" href="shared_style.html">
+<link rel="import" href="store_client.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+
+<dom-module id="app-management-main-view">
+  <template>
+    <style include="app-management-shared-css">
+      .app-management-item-arrow {
+        margin-inline-end: 8px;
+        padding: 12px;
+      }
+
+      #no-apps-label {
+        @apply --cr-secondary-text;
+        text-align: center;
+      }
+    </style>
+
+    <div id="app-list">
+      <template is="dom-repeat" items="[[appList_]]" as="app">
+        <app-management-app-item app="[[app]]">
+          <cr-icon-button slot="right-content"
+              class="subpage-arrow app-management-item-arrow"
+              aria-label$="[[app.title]]"
+              role="link"
+              actionable>
+          </cr-icon-button>
+        </app-management-app-item>
+      </template>
+    </div>
+
+    <template is="dom-if" if="[[isAppListEmpty_(appList_)]]">
+      <div id="no-apps-label">
+        $i18n{appManagementNoAppsFound}
+      </div>
+    </template>
+  </template>
+  <script src="main_view.js"></script>
+</dom-module>

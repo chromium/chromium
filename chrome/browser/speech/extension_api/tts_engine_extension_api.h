@@ -40,8 +40,7 @@ class TtsExtensionEngine : public content::TtsEngineDelegate {
 
 // Function that allows tts engines to update its list of supported voices at
 // runtime.
-class ExtensionTtsEngineUpdateVoicesFunction
-    : public UIThreadExtensionFunction {
+class ExtensionTtsEngineUpdateVoicesFunction : public ExtensionFunction {
  private:
   ~ExtensionTtsEngineUpdateVoicesFunction() override {}
   ResponseAction Run() override;
@@ -50,8 +49,7 @@ class ExtensionTtsEngineUpdateVoicesFunction
 
 // Hidden/internal extension function used to allow TTS engine extensions
 // to send events back to the client that's calling tts.speak().
-class ExtensionTtsEngineSendTtsEventFunction
-    : public UIThreadExtensionFunction {
+class ExtensionTtsEngineSendTtsEventFunction : public ExtensionFunction {
  private:
   ~ExtensionTtsEngineSendTtsEventFunction() override {}
   ResponseAction Run() override;

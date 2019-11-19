@@ -95,6 +95,7 @@ class ServiceProviderTestHelper {
   dbus::ExportedObject::MethodCallCallback method_callback_;
   dbus::ObjectProxy::SignalCallback on_signal_callback_;
   std::unique_ptr<base::MessageLoop> message_loop_;
+  std::string exported_method_name_;
 };
 
 }  // namespace chromeos

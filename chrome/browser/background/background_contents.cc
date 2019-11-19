@@ -7,15 +7,12 @@
 #include <utility>
 
 #include "chrome/browser/background/background_contents_service.h"
-#include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/data_use_measurement/data_use_web_contents_observer.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/common/url_constants.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -35,9 +32,7 @@ using content::WebContents;
 BackgroundContents::BackgroundContents(
     scoped_refptr<SiteInstance> site_instance,
     content::RenderFrameHost* opener,
-    int32_t routing_id,
-    int32_t main_frame_routing_id,
-    int32_t main_frame_widget_routing_id,
+    bool is_new_browsing_instance,
     Delegate* delegate,
     const std::string& partition_id,
     content::SessionStorageNamespace* session_storage_namespace)
@@ -52,10 +47,12 @@ BackgroundContents::BackgroundContents(
       opener ? opener->GetProcess()->GetID() : MSG_ROUTING_NONE;
   create_params.opener_render_frame_id =
       opener ? opener->GetRoutingID() : MSG_ROUTING_NONE;
-  create_params.routing_id = routing_id;
-  create_params.main_frame_routing_id = main_frame_routing_id;
-  create_params.main_frame_widget_routing_id = main_frame_widget_routing_id;
-  create_params.renderer_initiated_creation = routing_id != MSG_ROUTING_NONE;
+  create_params.is_never_visible = true;
+
+  // This isn't semantically sensible, but it is what the old code implicitly
+  // did.
+  create_params.renderer_initiated_creation = !is_new_browsing_instance;
+
   if (session_storage_namespace) {
     content::SessionStorageNamespaceMap session_storage_namespace_map;
     session_storage_namespace_map.insert(
@@ -69,45 +66,21 @@ BackgroundContents::BackgroundContents(
       web_contents_.get(), extensions::VIEW_TYPE_BACKGROUND_CONTENTS);
   web_contents_->SetDelegate(this);
   content::WebContentsObserver::Observe(web_contents_.get());
-  data_use_measurement::DataUseWebContentsObserver::CreateForWebContents(
-      web_contents_.get());
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
       web_contents_.get());
 
   // Add the TaskManager-specific tag for the BackgroundContents.
   task_manager::WebContentsTags::CreateForBackgroundContents(
       web_contents_.get(), this);
-
-  // Close ourselves when the application is shutting down.
-  registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                 content::NotificationService::AllSources());
-
-  // Register for our parent profile to shutdown, so we can shut ourselves down
-  // as well (should only be called for OTR profiles, as we should receive
-  // APP_TERMINATING before non-OTR profiles are destroyed).
-  registrar_.Add(this, chrome::NOTIFICATION_PROFILE_DESTROYED,
-                 content::Source<Profile>(profile_));
 }
 
 // Exposed to allow creating mocks.
-BackgroundContents::BackgroundContents()
-    : delegate_(NULL),
-      profile_(NULL) {
-}
+BackgroundContents::BackgroundContents() = default;
 
 BackgroundContents::~BackgroundContents() {
   if (!web_contents_.get())   // Will be null for unit tests.
     return;
 
-  // Unregister for any notifications before notifying observers that we are
-  // going away - this prevents any re-entrancy due to chained notifications
-  // (http://crbug.com/237781).
-  registrar_.RemoveAll();
-
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_BACKGROUND_CONTENTS_DELETED,
-      content::Source<Profile>(profile_),
-      content::Details<BackgroundContents>(this));
   for (auto& observer : deferred_start_render_host_observer_list_)
     observer.OnDeferredStartRenderHostDestroyed(this);
 
@@ -124,11 +97,8 @@ void BackgroundContents::CreateRenderViewSoon(const GURL& url) {
 }
 
 void BackgroundContents::CloseContents(WebContents* source) {
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_BACKGROUND_CONTENTS_CLOSED,
-      content::Source<Profile>(profile_),
-      content::Details<BackgroundContents>(this));
-  delete this;
+  delegate_->OnBackgroundContentsClosed(this);
+  // |this| is deleted.
 }
 
 bool BackgroundContents::ShouldSuppressDialogs(WebContents* source) {
@@ -143,10 +113,7 @@ void BackgroundContents::DidNavigateMainFramePostCommit(WebContents* tab) {
   // some way to scope navigation of a background page to its opener's security
   // origin. Note: if the first navigation is to a URL outside the app's
   // extent a background page will be opened but will remain at about:blank.
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_BACKGROUND_CONTENTS_NAVIGATED,
-      content::Source<Profile>(profile_),
-      content::Details<BackgroundContents>(this));
+  delegate_->OnBackgroundContentsNavigated(this);
 }
 
 // Forward requests to add a new WebContents to our delegate.
@@ -168,16 +135,8 @@ bool BackgroundContents::IsNeverVisible(content::WebContents* web_contents) {
 }
 
 void BackgroundContents::RenderProcessGone(base::TerminationStatus status) {
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_BACKGROUND_CONTENTS_TERMINATED,
-      content::Source<Profile>(profile_),
-      content::Details<BackgroundContents>(this));
-
-  // Our RenderView went away, so we should go away also, so killing the process
-  // via the TaskManager doesn't permanently leave a BackgroundContents hanging
-  // around the system, blocking future instances from being created
-  // <http://crbug.com/65189>.
-  delete this;
+  delegate_->OnBackgroundContentsTerminated(this);
+  // |this| is deleted.
 }
 
 void BackgroundContents::DidStartLoading() {
@@ -192,23 +151,6 @@ void BackgroundContents::DidStopLoading() {
   // it has stopped loading.
   for (auto& observer : deferred_start_render_host_observer_list_)
     observer.OnDeferredStartRenderHostDidStopFirstLoad(this);
-}
-
-void BackgroundContents::Observe(int type,
-                                 const content::NotificationSource& source,
-                                 const content::NotificationDetails& details) {
-  // TODO(rafaelw): Implement pagegroup ref-counting so that non-persistent
-  // background pages are closed when the last referencing frame is closed.
-  switch (type) {
-    case chrome::NOTIFICATION_PROFILE_DESTROYED:
-    case chrome::NOTIFICATION_APP_TERMINATING: {
-      delete this;
-      break;
-    }
-    default:
-      NOTREACHED() << "Unexpected notification sent.";
-      break;
-  }
 }
 
 void BackgroundContents::CreateRenderViewNow() {

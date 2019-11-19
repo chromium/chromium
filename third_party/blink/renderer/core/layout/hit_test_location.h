@@ -24,10 +24,10 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -46,35 +46,42 @@ class CORE_EXPORT HitTestLocation {
   // scroll offset. See:
   // http://www.chromium.org/developers/design-documents/blink-coordinate-spaces
   HitTestLocation();
-  explicit HitTestLocation(const LayoutPoint&);
+  explicit HitTestLocation(const PhysicalOffset&);
   explicit HitTestLocation(const IntPoint&);
   explicit HitTestLocation(const FloatPoint&);
   explicit HitTestLocation(const DoublePoint&);
   explicit HitTestLocation(const FloatPoint&, const FloatQuad&);
-  explicit HitTestLocation(const LayoutRect&);
-  HitTestLocation(const HitTestLocation&, const LayoutSize& offset);
+  explicit HitTestLocation(const PhysicalRect&);
+
+  // The bounding box isn't always a 1x1 rect even when the hit test is not
+  // rect-based. When we hit test a transformed box and transform the hit test
+  // location into the box's local coordinate space, the bounding box should
+  // also be transformed accordingly.
+  explicit HitTestLocation(const FloatPoint& point,
+                           const PhysicalRect& bounding_box);
+
+  HitTestLocation(const HitTestLocation&, const PhysicalOffset& offset);
   HitTestLocation(const HitTestLocation&);
   ~HitTestLocation();
   HitTestLocation& operator=(const HitTestLocation&);
 
-  const LayoutPoint& Point() const { return point_; }
+  const PhysicalOffset& Point() const { return point_; }
   IntPoint RoundedPoint() const { return RoundedIntPoint(point_); }
 
   // Rect-based hit test related methods.
   bool IsRectBasedTest() const { return is_rect_based_; }
   bool IsRectilinear() const { return is_rectilinear_; }
-  const LayoutRect& BoundingBox() const { return bounding_box_; }
+  const PhysicalRect& BoundingBox() const { return bounding_box_; }
   IntRect EnclosingIntRect() const {
     return ::blink::EnclosingIntRect(bounding_box_);
   }
 
   // Returns the 1px x 1px hit test rect for a point.
-  // TODO(pdr): Should we be using a one-layout-unit rect instead?
-  static LayoutRect RectForPoint(const LayoutPoint& point) {
-    return LayoutRect(FlooredIntPoint(point), IntSize(1, 1));
+  static PhysicalRect RectForPoint(const PhysicalOffset& point) {
+    return PhysicalRect(point, PhysicalSize(LayoutUnit(1), LayoutUnit(1)));
   }
 
-  bool Intersects(const LayoutRect&) const;
+  bool Intersects(const PhysicalRect&) const;
   // Uses floating-point intersection, which uses inclusive intersection
   // (see LayoutRect::InclusiveIntersect for a definition)
   bool Intersects(const FloatRect&) const;
@@ -88,12 +95,12 @@ class CORE_EXPORT HitTestLocation {
  private:
   template <typename RectType>
   bool IntersectsRect(const RectType&, const RectType& bounding_box) const;
-  void Move(const LayoutSize& offset);
+  void Move(const PhysicalOffset& offset);
 
   // These are cached forms of the more accurate |transformed_point_| and
   // |transformed_rect_|, below.
-  LayoutPoint point_;
-  LayoutRect bounding_box_;
+  PhysicalOffset point_;
+  PhysicalRect bounding_box_;
 
   FloatPoint transformed_point_;
   FloatQuad transformed_rect_;

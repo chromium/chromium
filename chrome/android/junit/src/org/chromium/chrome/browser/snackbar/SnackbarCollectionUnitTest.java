@@ -38,7 +38,7 @@ public class SnackbarCollectionUnitTest {
 
     @Test
     @Feature({"Browser", "Snackbar"})
-    public void testActionCoversNotification() throws Exception {
+    public void testActionCoversNotification() {
         SnackbarCollection collection = new SnackbarCollection();
         assertTrue(collection.isEmpty());
 
@@ -61,7 +61,7 @@ public class SnackbarCollectionUnitTest {
 
     @Test
     @Feature({"Browser", "Snackbar"})
-    public void testNotificationGoesUnderAction() throws Exception {
+    public void testNotificationGoesUnderAction() {
         SnackbarCollection collection = new SnackbarCollection();
         assertTrue(collection.isEmpty());
 
@@ -89,7 +89,7 @@ public class SnackbarCollectionUnitTest {
 
     @Test
     @Feature({"Browser", "Snackbar"})
-    public void testClear() throws Exception {
+    public void testClear() {
         SnackbarCollection collection = new SnackbarCollection();
         for (int i = 0; i < 3; i++) {
             collection.add(makeActionSnackbar());
@@ -103,7 +103,7 @@ public class SnackbarCollectionUnitTest {
 
     @Test
     @Feature({"Browser", "Snackbar"})
-    public void testRemoveMatchingSnackbars() throws Exception {
+    public void testRemoveMatchingSnackbars() {
         SnackbarCollection collection = new SnackbarCollection();
         for (int i = 0; i < 3; i++) {
             collection.add(makeActionSnackbar());
@@ -124,7 +124,7 @@ public class SnackbarCollectionUnitTest {
 
     @Test
     @Feature({"Browser", "Snackbar"})
-    public void testRemoveMatchingSnackbarsWithData() throws Exception {
+    public void testRemoveMatchingSnackbarsWithData() {
         SnackbarCollection collection = new SnackbarCollection();
         for (int i = 0; i < 3; i++) {
             collection.add(makeActionSnackbar().setAction(ACTION_TITLE, i));

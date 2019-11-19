@@ -9,7 +9,7 @@
 #include "base/bind_helpers.h"
 #include "cc/layers/video_frame_provider_client_impl.h"
 #include "cc/test/fake_video_frame_provider.h"
-#include "cc/test/layer_test_common.h"
+#include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/draw_quad.h"
@@ -38,7 +38,7 @@ TEST(VideoLayerImplTest, Occlusion) {
   gfx::Size layer_size(1000, 1000);
   gfx::Size viewport_size(1000, 1000);
 
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
   scoped_refptr<media::VideoFrame> video_frame = media::VideoFrame::CreateFrame(
@@ -48,10 +48,11 @@ TEST(VideoLayerImplTest, Occlusion) {
   provider.set_frame(video_frame);
 
   VideoLayerImpl* video_layer_impl =
-      impl.AddChildToRoot<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
+  CopyProperties(impl.root_layer(), video_layer_impl);
 
   impl.CalcDrawProps(viewport_size);
 
@@ -60,10 +61,9 @@ TEST(VideoLayerImplTest, Occlusion) {
     gfx::Rect occluded;
     impl.AppendQuadsWithOcclusion(video_layer_impl, occluded);
 
-    LayerTestCommon::VerifyQuadsExactlyCoverRect(impl.quad_list(),
-                                                 gfx::Rect(layer_size));
+    VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect(layer_size));
 
-    LayerTestCommon::VerifyQuadsExactlyCoverRect(
+    VerifyQuadsExactlyCoverRect(
         impl.quad_list(),
         impl.quad_list().cbegin()->shared_quad_state->visible_quad_layer_rect);
     EXPECT_EQ(1u, impl.quad_list().size());
@@ -74,7 +74,7 @@ TEST(VideoLayerImplTest, Occlusion) {
     gfx::Rect occluded(video_layer_impl->visible_layer_rect());
     impl.AppendQuadsWithOcclusion(video_layer_impl, occluded);
 
-    LayerTestCommon::VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect());
+    VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect());
     EXPECT_EQ(impl.quad_list().size(), 0u);
   }
 
@@ -84,9 +84,9 @@ TEST(VideoLayerImplTest, Occlusion) {
     impl.AppendQuadsWithOcclusion(video_layer_impl, occluded);
 
     size_t partially_occluded_count = 0;
-    LayerTestCommon::VerifyQuadsAreOccluded(
-        impl.quad_list(), occluded, &partially_occluded_count);
-    LayerTestCommon::VerifyQuadsExactlyCoverRect(
+    VerifyQuadsAreOccluded(impl.quad_list(), occluded,
+                           &partially_occluded_count);
+    VerifyQuadsExactlyCoverRect(
         impl.quad_list(),
         impl.quad_list().cbegin()->shared_quad_state->visible_quad_layer_rect);
     // The layer outputs one quad, which is partially occluded.
@@ -99,31 +99,26 @@ TEST(VideoLayerImplTest, OccludesOtherLayers) {
   gfx::Size layer_size(1000, 1000);
   gfx::Rect visible(layer_size);
 
-  LayerTestCommon::LayerImplTest impl;
-  impl.host_impl()->active_tree()->SetDeviceViewportSize(layer_size);
+  LayerTreeImplTestBase impl;
+  impl.host_impl()->active_tree()->SetDeviceViewportRect(visible);
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
   auto* active_tree = impl.host_impl()->active_tree();
 
   // Create a video layer with no frame on top of another layer.
-  std::unique_ptr<LayerImpl> layer_impl = LayerImpl::Create(active_tree, 3);
-  layer_impl->test_properties()->force_render_surface = true;
-  layer_impl->SetBounds(layer_size);
-  layer_impl->SetDrawsContent(true);
-  const auto& draw_properties = layer_impl->draw_properties();
+  LayerImpl* root = impl.root_layer();
+  root->SetBounds(layer_size);
+  root->SetDrawsContent(true);
+  const auto& draw_properties = root->draw_properties();
 
   FakeVideoFrameProvider provider;
-  std::unique_ptr<VideoLayerImpl> video_layer_impl = VideoLayerImpl::Create(
-      active_tree, 4, &provider, media::VIDEO_ROTATION_0);
+  VideoLayerImpl* video_layer_impl =
+      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   video_layer_impl->SetContentsOpaque(true);
+  CopyProperties(root, video_layer_impl);
 
-  layer_impl->test_properties()->AddChild(std::move(video_layer_impl));
-  active_tree->SetRootLayerForTesting(std::move(layer_impl));
-
-  active_tree->BuildLayerListAndPropertyTreesForTesting();
-
-  active_tree->UpdateDrawProperties();
+  impl.CalcDrawProps(layer_size);
 
   // We don't have a frame yet, so the video doesn't occlude the layer below it.
   EXPECT_FALSE(draw_properties.occlusion_in_content_space.IsOccluded(visible));
@@ -140,12 +135,13 @@ TEST(VideoLayerImplTest, OccludesOtherLayers) {
 }
 
 TEST(VideoLayerImplTest, DidBecomeActiveShouldSetActiveVideoLayer) {
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
   FakeVideoFrameProvider provider;
   VideoLayerImpl* video_layer_impl =
-      impl.AddChildToRoot<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+  CopyProperties(impl.root_layer(), video_layer_impl);
 
   VideoFrameProviderClientImpl* client =
       static_cast<VideoFrameProviderClientImpl*>(provider.client());
@@ -160,7 +156,7 @@ TEST(VideoLayerImplTest, Rotated0) {
   gfx::Size layer_size(100, 50);
   gfx::Size viewport_size(1000, 500);
 
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
   scoped_refptr<media::VideoFrame> video_frame = media::VideoFrame::CreateFrame(
@@ -170,9 +166,10 @@ TEST(VideoLayerImplTest, Rotated0) {
   provider.set_frame(video_frame);
 
   VideoLayerImpl* video_layer_impl =
-      impl.AddChildToRoot<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
+  CopyProperties(impl.root_layer(), video_layer_impl);
 
   impl.CalcDrawProps(viewport_size);
   gfx::Rect occluded;
@@ -196,7 +193,7 @@ TEST(VideoLayerImplTest, Rotated90) {
   gfx::Size layer_size(100, 50);
   gfx::Size viewport_size(1000, 500);
 
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
   scoped_refptr<media::VideoFrame> video_frame = media::VideoFrame::CreateFrame(
@@ -206,9 +203,10 @@ TEST(VideoLayerImplTest, Rotated90) {
   provider.set_frame(video_frame);
 
   VideoLayerImpl* video_layer_impl =
-      impl.AddChildToRoot<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_90);
+      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_90);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
+  CopyProperties(impl.root_layer(), video_layer_impl);
 
   impl.CalcDrawProps(viewport_size);
   gfx::Rect occluded;
@@ -232,7 +230,7 @@ TEST(VideoLayerImplTest, Rotated180) {
   gfx::Size layer_size(100, 50);
   gfx::Size viewport_size(1000, 500);
 
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
   scoped_refptr<media::VideoFrame> video_frame = media::VideoFrame::CreateFrame(
@@ -242,9 +240,10 @@ TEST(VideoLayerImplTest, Rotated180) {
   provider.set_frame(video_frame);
 
   VideoLayerImpl* video_layer_impl =
-      impl.AddChildToRoot<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_180);
+      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_180);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
+  CopyProperties(impl.root_layer(), video_layer_impl);
 
   impl.CalcDrawProps(viewport_size);
   gfx::Rect occluded;
@@ -268,7 +267,7 @@ TEST(VideoLayerImplTest, Rotated270) {
   gfx::Size layer_size(100, 50);
   gfx::Size viewport_size(1000, 500);
 
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
   scoped_refptr<media::VideoFrame> video_frame = media::VideoFrame::CreateFrame(
@@ -278,9 +277,10 @@ TEST(VideoLayerImplTest, Rotated270) {
   provider.set_frame(video_frame);
 
   VideoLayerImpl* video_layer_impl =
-      impl.AddChildToRoot<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_270);
+      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_270);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
+  CopyProperties(impl.root_layer(), video_layer_impl);
 
   impl.CalcDrawProps(viewport_size);
   gfx::Rect occluded;
@@ -303,7 +303,7 @@ TEST(VideoLayerImplTest, Rotated270) {
 TEST(VideoLayerImplTest, SoftwareVideoFrameGeneratesYUVQuad) {
   gfx::Size layer_size(1000, 1000);
 
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
   gpu::MailboxHolder mailbox_holder;
@@ -317,18 +317,20 @@ TEST(VideoLayerImplTest, SoftwareVideoFrameGeneratesYUVQuad) {
   provider.set_frame(video_frame);
 
   VideoLayerImpl* video_layer_impl =
-      impl.AddChildToRoot<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
-  impl.host_impl()->active_tree()->BuildLayerListAndPropertyTreesForTesting();
+  CopyProperties(impl.root_layer(), video_layer_impl);
+
+  impl.CalcDrawProps(layer_size);
 
   gfx::Rect occluded;
   impl.AppendQuadsWithOcclusion(video_layer_impl, occluded);
 
   EXPECT_EQ(1u, impl.quad_list().size());
   const viz::DrawQuad* draw_quad = impl.quad_list().ElementAt(0);
-  ASSERT_EQ(viz::DrawQuad::YUV_VIDEO_CONTENT, draw_quad->material);
+  ASSERT_EQ(viz::DrawQuad::Material::kYuvVideoContent, draw_quad->material);
 
   const auto* yuv_draw_quad =
       static_cast<const viz::YUVVideoDrawQuad*>(draw_quad);
@@ -341,7 +343,7 @@ TEST(VideoLayerImplTest, SoftwareVideoFrameGeneratesYUVQuad) {
 TEST(VideoLayerImplTest, HibitSoftwareVideoFrameGeneratesYUVQuad) {
   gfx::Size layer_size(1000, 1000);
 
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
   gpu::MailboxHolder mailbox_holder;
@@ -355,18 +357,20 @@ TEST(VideoLayerImplTest, HibitSoftwareVideoFrameGeneratesYUVQuad) {
   provider.set_frame(video_frame);
 
   VideoLayerImpl* video_layer_impl =
-      impl.AddChildToRoot<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
-  impl.host_impl()->active_tree()->BuildLayerListAndPropertyTreesForTesting();
+  CopyProperties(impl.root_layer(), video_layer_impl);
+
+  impl.CalcDrawProps(layer_size);
 
   gfx::Rect occluded;
   impl.AppendQuadsWithOcclusion(video_layer_impl, occluded);
 
   EXPECT_EQ(1u, impl.quad_list().size());
   const viz::DrawQuad* draw_quad = impl.quad_list().ElementAt(0);
-  ASSERT_EQ(viz::DrawQuad::YUV_VIDEO_CONTENT, draw_quad->material);
+  ASSERT_EQ(viz::DrawQuad::Material::kYuvVideoContent, draw_quad->material);
 
   const auto* yuv_draw_quad =
       static_cast<const viz::YUVVideoDrawQuad*>(draw_quad);
@@ -377,7 +381,7 @@ TEST(VideoLayerImplTest, HibitSoftwareVideoFrameGeneratesYUVQuad) {
 TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
   gfx::Size layer_size(1000, 1000);
 
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
   gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes];
@@ -397,18 +401,19 @@ TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
   provider.set_frame(video_frame);
 
   VideoLayerImpl* video_layer_impl =
-      impl.AddChildToRoot<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
-  impl.host_impl()->active_tree()->BuildLayerListAndPropertyTreesForTesting();
+  CopyProperties(impl.root_layer(), video_layer_impl);
+  impl.CalcDrawProps(layer_size);
 
   gfx::Rect occluded;
   impl.AppendQuadsWithOcclusion(video_layer_impl, occluded);
 
   EXPECT_EQ(1u, impl.quad_list().size());
   const viz::DrawQuad* draw_quad = impl.quad_list().ElementAt(0);
-  ASSERT_EQ(viz::DrawQuad::YUV_VIDEO_CONTENT, draw_quad->material);
+  ASSERT_EQ(viz::DrawQuad::Material::kYuvVideoContent, draw_quad->material);
 
   const auto* yuv_draw_quad =
       static_cast<const viz::YUVVideoDrawQuad*>(draw_quad);
@@ -421,7 +426,7 @@ TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
 TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {
   gfx::Size layer_size(1000, 1000);
 
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
   gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes];
@@ -440,18 +445,20 @@ TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {
   provider.set_frame(video_frame);
 
   VideoLayerImpl* video_layer_impl =
-      impl.AddChildToRoot<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
-  impl.host_impl()->active_tree()->BuildLayerListAndPropertyTreesForTesting();
+  CopyProperties(impl.root_layer(), video_layer_impl);
+
+  impl.CalcDrawProps(layer_size);
 
   gfx::Rect occluded;
   impl.AppendQuadsWithOcclusion(video_layer_impl, occluded);
 
   EXPECT_EQ(1u, impl.quad_list().size());
   const viz::DrawQuad* draw_quad = impl.quad_list().ElementAt(0);
-  ASSERT_EQ(viz::DrawQuad::TEXTURE_CONTENT, draw_quad->material);
+  ASSERT_EQ(viz::DrawQuad::Material::kTextureContent, draw_quad->material);
 
   const viz::TextureDrawQuad* texture_draw_quad =
       viz::TextureDrawQuad::MaterialCast(draw_quad);

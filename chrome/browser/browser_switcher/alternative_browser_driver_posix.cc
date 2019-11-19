@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
+#include "chrome/grit/generated_resources.h"
 #include "url/gurl.h"
 
 #include "third_party/re2/src/re2/re2.h"
@@ -43,12 +44,13 @@ const char kSafariVarName[] = "${safari}";
 const struct {
   const char* var_name;
   const char* executable_name;
+  const char* browser_name;
 } kBrowserVarMappings[] = {
-    {kChromeVarName, kChromeExecutableName},
-    {kFirefoxVarName, kFirefoxExecutableName},
-    {kOperaVarName, kOperaExecutableName},
+    {kChromeVarName, kChromeExecutableName, ""},
+    {kFirefoxVarName, kFirefoxExecutableName, "Mozilla Firefox"},
+    {kOperaVarName, kOperaExecutableName, "Opera"},
 #if defined(OS_MACOSX)
-    {kSafariVarName, kSafariExecutableName},
+    {kSafariVarName, kSafariExecutableName, "Safari"},
 #endif
 };
 
@@ -148,11 +150,13 @@ AlternativeBrowserDriverImpl::AlternativeBrowserDriverImpl(
 AlternativeBrowserDriverImpl::~AlternativeBrowserDriverImpl() {}
 
 bool AlternativeBrowserDriverImpl::TryLaunch(const GURL& url) {
+#if !defined(OS_MACOSX)
   if (prefs_->GetAlternativeBrowserPath().empty()) {
     LOG(ERROR) << "Alternative browser not configured. "
                << "Aborting browser switch.";
     return false;
   }
+#endif
 
   VLOG(2) << "Launching alternative browser...";
   VLOG(2) << "  path = " << prefs_->GetAlternativeBrowserPath();
@@ -169,6 +173,21 @@ bool AlternativeBrowserDriverImpl::TryLaunch(const GURL& url) {
     return false;
   }
   return true;
+}
+
+std::string AlternativeBrowserDriverImpl::GetBrowserName() const {
+  std::string path = prefs_->GetAlternativeBrowserPath();
+#if defined(OS_MACOSX)
+  // Unlike most POSIX platforms, MacOS always has another browser than Chrome,
+  // so admins don't have to explicitly configure one.
+  if (path.empty())
+    path = kSafariVarName;
+#endif
+  for (const auto& mapping : kBrowserVarMappings) {
+    if (!path.compare(mapping.var_name))
+      return std::string(mapping.browser_name);
+  }
+  return std::string();
 }
 
 base::CommandLine AlternativeBrowserDriverImpl::CreateCommandLine(

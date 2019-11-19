@@ -1,0 +1,20 @@
+include_rules = [
+  "+chromeos/constants/chromeos_features.h",
+  "+components/signin/internal/base",
+  "+components/signin/public/base",
+  "+components/signin/public/identity_manager",
+  "+components/signin/public/webdata",
+  "+mojo/public",
+]
+
+specific_include_rules = {
+  "account_tracker_service.cc": [
+    "+components/signin/core/browser/android/jni_headers/AccountTrackerService_jni.h",
+  ],
+  "child_account_info_fetcher_android.cc": [
+    "+components/signin/core/browser/android/jni_headers/ChildAccountInfoFetcher_jni.h",
+  ],
+  "oauth2_token_service_delegate_android.cc": [
+    "+components/signin/core/browser/android/jni_headers/OAuth2TokenService_jni.h",
+  ],
+}

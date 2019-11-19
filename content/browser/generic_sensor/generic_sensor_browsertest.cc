@@ -19,8 +19,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
 #include "device/base/synchronization/one_writer_seqlock.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/device/public/cpp/device_features.h"
@@ -43,7 +42,7 @@ class GenericSensorBrowserTest : public ContentBrowserTest {
  public:
   GenericSensorBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kGenericSensor, features::kGenericSensorExtraClasses}, {});
+        {features::kGenericSensorExtraClasses}, {});
 
     // Because Device Service also runs in this process (browser process), here
     // we can directly set our binder to intercept interface requests against
@@ -51,7 +50,7 @@ class GenericSensorBrowserTest : public ContentBrowserTest {
     service_manager::ServiceBinding::OverrideInterfaceBinderForTesting(
         device::mojom::kServiceName,
         base::BindRepeating(
-            &GenericSensorBrowserTest::BindSensorProviderRequest,
+            &GenericSensorBrowserTest::BindSensorProviderReceiver,
             base::Unretained(this)));
   }
 
@@ -78,7 +77,8 @@ class GenericSensorBrowserTest : public ContentBrowserTest {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
-  void BindSensorProviderRequest(device::mojom::SensorProviderRequest request) {
+  void BindSensorProviderReceiver(
+      mojo::PendingReceiver<device::mojom::SensorProvider> receiver) {
     if (!sensor_provider_available_)
       return;
 
@@ -87,7 +87,7 @@ class GenericSensorBrowserTest : public ContentBrowserTest {
       fake_sensor_provider_->SetAmbientLightSensorData(50);
     }
 
-    fake_sensor_provider_->Bind(std::move(request));
+    fake_sensor_provider_->Bind(std::move(receiver));
   }
 
   void set_sensor_provider_available(bool sensor_provider_available) {

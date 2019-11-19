@@ -11,6 +11,7 @@
   "orientation": "portrait",
   "theme_color": "2147483648L",
   "background_color": "2147483648L",
+  "background_color_xml": "#F8F9FA",
   "icon_urls_and_icon_murmur2_hashes": "https://maps.gstatic.com/mapfiles/maps_lite/pwa/icons/maps_pwa_icon_v0920_48x48.png 0 https://maps.gstatic.com/mapfiles/maps_lite/pwa/icons/maps_pwa_icon_v0920_72x72 0",
   "web_manifest_url": "https://maps.gstatic.com/tactile/worker/ml.json",
   "distributor": "other",

@@ -133,6 +133,14 @@ Try tapping the mic to ask me anything.
         Turn on Bluetooth to discover nearby devices
       </message>
 
+      <!-- Managed guest session warnings -->
+      <message name="IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_FULL_WARNING" desc="Text shown in the public account user pod in case of risky configuration, informing the user that this session is managed and admin can monitor all activity.">
+        <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> manages this device and has access to all user activity, including webpages visited, passwords, and email.
+      </message>
+      <message name="IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_SOFT_WARNING" desc="Text shown in the public account user pod in case of non-risky configuration, informing the user that this session is managed and admin can monitor all activity.">
+        <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> manages this device and may be able to monitor your activity.
+      </message>
+
       <!-- Status tray enterprise management. -->
       <message name="IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY" desc="Text for notifications showing that this device is enterpise managed. Used when the organization's domain name is available.">
         This device is managed by <ph name="DOMAIN">$1<ex>acmecorp.com</ex></ph>.
@@ -176,8 +184,66 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ASH_SHELF_APP_LIST_LAUNCHER_TITLE" desc="The title used for the Ash Launcher in the Shelf (not mentioning 'Apps' since this is a general launcher).">
         Launcher
       </message>
-      <message name="IDS_ASH_SHELF_APP_LIST_LAUNCHER_SYNCING_TITLE" desc="The title used for the Ash Launcher in the Shelf to indicate loading/syncinc apps.">
-        Launcher (syncing apps...)
+
+      <!-- Password expiry notifications -->
+      <message name="IDS_PASSWORD_CHANGE_OVERDUE_TITLE" desc="Message title for a notification that tells the user they are already late in changing their password, since the password has already expired.">
+        Password change overdue
+      </message>
+      <message name="IDS_PASSWORD_EXPIRES_AFTER_TIME_TITLE" desc="Message title for a notification that tells the user their password will expire at a certain time. This time could be X days(s) or X hour(s) or X minute(s). The alternative text 'Password expires in: $1' is okay if this would make more sense in the grammar of the target language.">
+        Password expires in <ph name="TIME">$1<ex>5 days</ex></ph>
+      </message>
+      <message name="IDS_PASSWORD_EXPIRY_CALL_TO_ACTION" desc="Message body on a notification that politely requests the user to choose a new password since their old password is expiring soon. (The title makes clear that the password is expiring.)">
+        Choose a new one now
+      </message>
+      <message name="IDS_PASSWORD_EXPIRY_CALL_TO_ACTION_CRITICAL" desc="Message body on a notification that *URGENTLY* requests the user to choose a new password since their old password is expiring *VERY* soon. (The title makes clear that the password is expiring.)">
+        Choose a new one immediately
+      </message>
+      <message name="IDS_PASSWORD_EXPIRY_CHANGE_PASSWORD_BUTTON" desc="Text on a button that takes the user to page to change their password">
+        Change password
+      </message>
+
+      <!-- In-session password change -->
+      <message name="IDS_PASSWORD_CHANGE_CONFIRM_DIALOG_TITLE" desc="Title for the dialog where a user corrects and confirms their old and new passwords in order to complete a password change">
+        Confirm change
+      </message>
+      <message name="IDS_PASSWORD_CHANGE_CONFIRM_DIALOG_BOTH_PASSWORDS_PROMPT" desc="Text on the password-change confirmation dialog explaining that the user has to enter both their old and new passwords again to finish the password change.">
+        To finish, enter your old and new passwords
+      </message>
+      <message name="IDS_PASSWORD_CHANGE_CONFIRM_DIALOG_OLD_PASSWORD_PROMPT" desc="Text on the password-change confirmation dialog explaining that the user has to enter their old password again to finish the password change.">
+        To finish, enter your old password
+      </message>
+      <message name="IDS_PASSWORD_CHANGE_CONFIRM_DIALOG_NEW_PASSWORD_PROMPT" desc="Text on the password-change confirmation dialog explaining that the user has to enter their new password again to finish the password change.">
+        To finish, enter your new password
+      </message>
+      <message name="IDS_PASSWORD_CHANGE_OLD_PASSWORD_LABEL" desc="Label for a box where the user enters their old password">
+        Old password
+      </message>
+      <message name="IDS_PASSWORD_CHANGE_NEW_PASSWORD_LABEL" desc="Label for a box where the user enters their new password">
+        New password
+      </message>
+      <message name="IDS_PASSWORD_CHANGE_CONFIRM_NEW_PASSWORD_LABEL" desc="Label for the second box where the user enters their new password again, to ensure they don't mistype it">
+        Confirm new password
+      </message>
+      <message name="IDS_PASSWORD_CHANGE_CONFIRM_SAVE_BUTTON" desc="Text on a button that confirms the change to the password and saves the new password in place of the old one">
+        Save
+      </message>
+      <message name="IDS_PASSWORD_CHANGE_PASSWORDS_DONT_MATCH" desc="Error text in the case that the user entered their new password twice into two different boxes as required, but the two entries do not match">
+        Passwords do not match
+      </message>
+
+      <!-- Kerberos ticket expiry notifications -->
+      <message name="IDS_KERBEROS_TICKET_EXPIRY_TITLE" desc="Title of the notification shown when a Kerberos ticket is about to expire (shown below the display source and above the body).">
+        Kerberos ticket expires soon
+      </message>
+      <message name="IDS_KERBEROS_TICKET_EXPIRY_BODY" desc="Body of the notification shown when a Kerberos ticket is about to expire (shown below the title).">
+        Refresh ticket for <ph name="PRINCIPAL_NAME">$1<ex>user@EXAMPLE.COM</ex></ph>
+      </message>
+      <message name="IDS_KERBEROS_TICKET_EXPIRY_BUTTON" desc="Button label of the notification shown when a Kerberos ticket is about to expire.">
+        REFRESH
+      </message>
+
+      <message name="IDS_IME_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process providing the input methods.">
+        Chrome OS Input Method Service
       </message>
     </messages>
   </release>

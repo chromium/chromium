@@ -20,10 +20,10 @@
 //   Remote page:              [                             trailingButton]
 //
 // Other screen size:
-//   Large newTabButton, transparent background.
+//   Large newTabButton, floating layout without UIToolbar.
 //   Incognito & Regular page: [                               newTabButton]
 //   Remote page:              [                                           ]
-@interface TabGridBottomToolbar : UIToolbar
+@interface TabGridBottomToolbar : UIView
 // This property together with self.traitCollection control the items shown
 // in toolbar and its background color. Setting this property will also set it
 // on |newTabButton|.
@@ -32,11 +32,9 @@
 // contents, visibility and actions.
 @property(nonatomic, strong, readonly) UIBarButtonItem* leadingButton;
 @property(nonatomic, strong, readonly) UIBarButtonItem* trailingButton;
-// Clang does not allow property getters to start with the reserved word "new",
-// but provides a workaround. The getter must be set before the property is
-// declared.
-- (TabGridNewTabButton*)newTabButton __attribute__((objc_method_family(none)));
-@property(nonatomic, strong, readonly) TabGridNewTabButton* newTabButton;
+
+// Sets target/action for tapping event on new tab button.
+- (void)setNewTabButtonTarget:(id)target action:(SEL)action;
 
 // Hides components and uses a black background color for tab grid transition
 // animation.

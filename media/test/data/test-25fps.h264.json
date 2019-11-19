@@ -2,6 +2,7 @@
   "profile": "H264PROFILE_MAIN",
   "width": 320,
   "height": 240,
+  "frame_rate": 25,
   "num_frames": 250,
   "num_fragments": 258,
   "md5_checksums": [

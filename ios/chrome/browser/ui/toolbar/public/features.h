@@ -9,16 +9,14 @@
 
 #include "base/feature_list.h"
 
+extern const base::Feature kToolbarNewTabButton;
+
 // Enum for the different icons for the search button.
 typedef NS_ENUM(NSUInteger, ToolbarSearchButtonIcon) {
   ToolbarSearchButtonIconGrey,
   ToolbarSearchButtonIconColorful,
   ToolbarSearchButtonIconMagnifying,
 };
-
-// Feature to choose whether to use the memex prototype tab switcher or the
-// regular native tab switcher.
-extern const base::Feature kMemexTabSwitcher;
 
 // Feature for changing the different icons for search icon in the bottom
 // toolbar.

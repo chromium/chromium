@@ -17,7 +17,7 @@
 class FFDecryptorServerChannelListener;
 
 namespace base {
-class MessageLoopForIO;
+class SingleThreadTaskExecutor;
 }
 
 // On OS X NSSDecryptor needs to run in a separate process. To allow us to use
@@ -44,7 +44,7 @@ class FFUnitTestDecryptorProxy {
 #if defined(OS_MACOSX)
   base::Process child_process_;
   std::unique_ptr<FFDecryptorServerChannelListener> listener_;
-  std::unique_ptr<base::MessageLoopForIO> message_loop_;
+  std::unique_ptr<base::SingleThreadTaskExecutor> main_task_executor_;
 #else
   NSSDecryptor decryptor_;
 #endif  // !OS_MACOSX

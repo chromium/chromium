@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.task.SequencedTaskRunner;
+import org.chromium.base.task.TaskRunner;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 
 import java.io.File;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 /**
  * Policy that handles the Activity specific behaviors regarding the persistence of tab data.
@@ -53,15 +54,15 @@ public interface TabPersistencePolicy {
      * can include cleanups or migrations that must occur before the tab state information can be
      * read reliably.
      *
-     * @param executor The executor that any asynchronous tasks should be run on.
+     * @param taskRunner The task runner that any asynchronous tasks should be run on.
      * @return Whether any blocking initialization is necessary.
      */
-    boolean performInitialization(Executor executor);
+    boolean performInitialization(TaskRunner taskRunner);
 
     /**
      * Waits for the any pending initialization to finish.
      *
-     * @see #performInitialization(Executor)
+     * @see #performInitialization(TaskRunner)
      */
     void waitForInitializationToFinish();
 
@@ -111,4 +112,12 @@ public interface TabPersistencePolicy {
      * Notify that persistent store has been destroyed.
      */
     void destroy();
+
+    /**
+     * Provide a sequenced task runner for the TabPersistencePolicy to coordinate tasks between
+     * {@link TabPersistentStore} and the persistence policy.
+     *
+     * @param taskRunner The same SequencedTaskRunner as {@link TabPersistentStore} is using.
+     */
+    default void setTaskRunner(SequencedTaskRunner taskRunner) {}
 }

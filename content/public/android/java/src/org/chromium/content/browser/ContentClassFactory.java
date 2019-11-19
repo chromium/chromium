@@ -49,10 +49,7 @@ public class ContentClassFactory {
      */
     public SelectionInsertionHandleObserver createHandleObserver(
             SelectionPopupControllerImpl.ReadbackViewCallback callback) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P
-                || !ContentFeatureList.isEnabled(
-                           ContentFeatureList.ENHANCED_SELECTION_INSERTION_HANDLE))
-            return null;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return null;
         return new MagnifierAnimator(new MagnifierWrapperImpl(callback));
     }
 

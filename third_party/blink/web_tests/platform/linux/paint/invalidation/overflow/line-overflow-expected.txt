@@ -1,109 +1,68 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "InlineTextBox ' eleifend'",
+          "object": "NGPhysicalTextFragment ' eleifend'",
           "rect": [8, 122, 195, 99],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'convallis.'",
+          "object": "NGPhysicalTextFragment 'convallis.'",
+          "rect": [8, 122, 195, 99],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'lacus, at sagittis eros leo'",
           "rect": [8, 122, 195, 99],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'lacus, at sagittis eros leo'",
+          "object": "NGPhysicalTextFragment 'pulvinar velit. Integer'",
           "rect": [8, 122, 195, 99],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'pulvinar velit. Integer'",
+          "object": "NGPhysicalTextFragment 'sollicitudin nisi ut urna blandit'",
           "rect": [8, 122, 195, 99],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'sollicitudin nisi ut urna blandit'",
-          "rect": [8, 122, 195, 99],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox ' eleifend lacus,'",
+          "object": "NGPhysicalTextFragment ' eleifend lacus,'",
           "rect": [8, 142, 195, 79],
           "reason": "disappeared"
         },
         {
-          "object": "InlineTextBox 'at sagittis eros leo pulvinar'",
-          "rect": [8, 142, 195, 79],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'urna blandit convallis.'",
-          "rect": [8, 142, 195, 79],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'velit. Integer sollicitudin nisi ut'",
-          "rect": [8, 142, 195, 79],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'Cras faucibus. Nunc'",
+          "object": "NGPhysicalTextFragment 'Cras faucibus. Nunc'",
           "rect": [8, 82, 192, 59],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'adipiscing, enim in scelerisque'",
+          "object": "NGPhysicalTextFragment 'adipiscing, enim in scelerisque'",
           "rect": [8, 82, 192, 59],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'augue '",
+          "object": "NGPhysicalTextFragment 'convallis, augue '",
           "rect": [8, 82, 192, 59],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'augue'",
-          "rect": [8, 82, 192, 59],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'convallis,\n'",
-          "rect": [8, 82, 192, 59],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'convallis,\n'",
-          "rect": [8, 82, 192, 59],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineFlowBox",
+          "object": "NGPhysicalBoxFragment LayoutInline SPAN id='t'",
           "rect": [114, 92, 35, 49],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'purus'",
+          "object": "NGPhysicalTextFragment 'purus'",
           "rect": [114, 122, 35, 19],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'purus'",
+          "object": "NGPhysicalTextFragment 'purus'",
           "rect": [38, 142, 35, 19],
           "reason": "disappeared"
         }

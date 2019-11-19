@@ -5,6 +5,7 @@
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -12,7 +13,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,9 +21,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "content/browser/browser_main_loop.h"
+#include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
@@ -31,7 +33,6 @@
 #include "content/browser/indexed_db/indexed_db_quota_client.h"
 #include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
-#include "content/browser/indexed_db/leveldb/leveldb_env.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_switches.h"
@@ -68,7 +69,6 @@ void GetAllOriginsAndPaths(const base::FilePath& indexeddb_path,
     if (file_path.Extension() == indexed_db::kLevelDBExtension &&
         file_path.RemoveExtension().Extension() ==
             indexed_db::kIndexedDBExtension) {
-      // TODO(dmurph): Unittest this.
       std::string origin_id = file_path.BaseName()
                                   .RemoveExtension()
                                   .RemoveExtension()
@@ -86,30 +86,36 @@ IndexedDBContextImpl::IndexedDBContextImpl(
     const base::FilePath& data_path,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-    indexed_db::LevelDBFactory* leveldb_factory)
-    : force_keep_session_state_(false),
+    base::Clock* clock,
+    scoped_refptr<base::SequencedTaskRunner> custom_task_runner)
+    : IndexedDBContext(
+          custom_task_runner
+              ? custom_task_runner
+              : (base::CreateSequencedTaskRunner(
+                    {base::ThreadPool(), base::MayBlock(),
+                     base::WithBaseSyncPrimitives(),
+                     base::TaskPriority::USER_VISIBLE,
+                     // BLOCK_SHUTDOWN to support clearing session-only storage.
+                     base::TaskShutdownBehavior::BLOCK_SHUTDOWN}))),
+      force_keep_session_state_(false),
       special_storage_policy_(special_storage_policy),
       quota_manager_proxy_(quota_manager_proxy),
-      task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::WithBaseSyncPrimitives(),
-           base::TaskPriority::USER_VISIBLE,
-           // BLOCK_SHUTDOWN to support clearing session-only storage.
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
-      leveldb_factory_(leveldb_factory) {
+      task_runner_(owning_task_runner()),
+      clock_(clock) {
   IDB_TRACE("init");
   if (!data_path.empty())
     data_path_ = data_path.Append(kIndexedDBDirectory);
   quota_manager_proxy->RegisterClient(new IndexedDBQuotaClient(this));
 }
 
-IndexedDBFactory* IndexedDBContextImpl::GetIDBFactory() {
+IndexedDBFactoryImpl* IndexedDBContextImpl::GetIDBFactory() {
   DCHECK(TaskRunner()->RunsTasksInCurrentSequence());
   if (!indexeddb_factory_.get()) {
     // Prime our cache of origins with existing databases so we can
     // detect when dbs are newly created.
     GetOriginSet();
-    indexeddb_factory_ = base::MakeRefCounted<IndexedDBFactoryImpl>(
-        this, leveldb_factory_, base::DefaultClock::GetInstance());
+    indexeddb_factory_ = std::make_unique<IndexedDBFactoryImpl>(
+        this, IndexedDBClassFactory::Get(), clock_);
   }
   return indexeddb_factory_.get();
 }
@@ -173,15 +179,13 @@ base::ListValue* IndexedDBContextImpl::GetAllOriginsDetails() {
       list->Append(std::move(info));
       continue;
     }
-    std::pair<IndexedDBFactory::OriginDBMapIterator,
-              IndexedDBFactory::OriginDBMapIterator>
-        range = indexeddb_factory_->GetOpenDatabasesForOrigin(origin);
+    std::vector<IndexedDBDatabase*> databases =
+        indexeddb_factory_->GetOpenDatabasesForOrigin(origin);
     // TODO(jsbell): Sort by name?
     std::unique_ptr<base::ListValue> database_list(
         std::make_unique<base::ListValue>());
 
-    for (auto it = range.first; it != range.second; ++it) {
-      const IndexedDBDatabase* db = it->second;
+    for (IndexedDBDatabase* db : databases) {
       std::unique_ptr<base::DictionaryValue> db_info(
           std::make_unique<base::DictionaryValue>());
 
@@ -322,7 +326,8 @@ void IndexedDBContextImpl::DeleteForOrigin(const Origin& origin) {
   EnsureDiskUsageCacheInitialized(origin);
 
   leveldb::Status s =
-      indexed_db::DefaultLevelDBFactory().DestroyLevelDB(idb_directory);
+      IndexedDBClassFactory::Get()->leveldb_factory().DestroyLevelDB(
+          idb_directory);
   if (!s.ok()) {
     LOG(WARNING) << "Failed to delete LevelDB database: "
                  << idb_directory.AsUTF8Unsafe();
@@ -375,9 +380,8 @@ void IndexedDBContextImpl::CopyOriginData(const Origin& origin,
 void IndexedDBContextImpl::ForceClose(const Origin origin,
                                       ForceCloseReason reason) {
   DCHECK(TaskRunner()->RunsTasksInCurrentSequence());
-  UMA_HISTOGRAM_ENUMERATION("WebCore.IndexedDB.Context.ForceCloseReason",
-                            reason, FORCE_CLOSE_REASON_MAX);
-
+  base::UmaHistogramEnumeration("WebCore.IndexedDB.Context.ForceCloseReason",
+                                reason, FORCE_CLOSE_REASON_MAX);
   if (!HasOrigin(origin))
     return;
 
@@ -425,25 +429,33 @@ size_t IndexedDBContextImpl::GetConnectionCount(const Origin& origin) {
 
 std::vector<base::FilePath> IndexedDBContextImpl::GetStoragePaths(
     const Origin& origin) const {
-  std::vector<base::FilePath> paths;
-  paths.push_back(GetLevelDBPath(origin));
-  paths.push_back(GetBlobStorePath(origin));
+  std::vector<base::FilePath> paths = {GetLevelDBPath(origin),
+                                       GetBlobStorePath(origin)};
   return paths;
 }
 
 base::FilePath IndexedDBContextImpl::GetFilePathForTesting(
-    const Origin& origin) const {
+    const Origin& origin) {
   return GetLevelDBPath(origin);
-}
-
-void IndexedDBContextImpl::SetTaskRunnerForTesting(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  task_runner_ = std::move(task_runner);
 }
 
 void IndexedDBContextImpl::ResetCachesForTesting() {
   origin_set_.reset();
   origin_size_map_.clear();
+}
+
+void IndexedDBContextImpl::SetForceKeepSessionState() {
+  force_keep_session_state_ = true;
+}
+
+void IndexedDBContextImpl::FactoryOpened(const Origin& origin) {
+  DCHECK(TaskRunner()->RunsTasksInCurrentSequence());
+  if (GetOriginSet()->insert(origin).second) {
+    // A newly created db, notify the quota system.
+    QueryDiskAndUpdateQuotaUsage(origin);
+  } else {
+    EnsureDiskUsageCacheInitialized(origin);
+  }
 }
 
 void IndexedDBContextImpl::ConnectionOpened(const Origin& origin,
@@ -482,6 +494,10 @@ void IndexedDBContextImpl::DatabaseDeleted(const Origin& origin) {
   QueryDiskAndUpdateQuotaUsage(origin);
 }
 
+void IndexedDBContextImpl::BlobFilesCleaned(const url::Origin& origin) {
+  QueryDiskAndUpdateQuotaUsage(origin);
+}
+
 void IndexedDBContextImpl::AddObserver(
     IndexedDBContextImpl::Observer* observer) {
   DCHECK(!observers_.HasObserver(observer));
@@ -508,22 +524,20 @@ void IndexedDBContextImpl::NotifyIndexedDBContentChanged(
   }
 }
 
-void IndexedDBContextImpl::BlobFilesCleaned(const url::Origin& origin) {
-  QueryDiskAndUpdateQuotaUsage(origin);
-}
-
 IndexedDBContextImpl::~IndexedDBContextImpl() {
-  if (indexeddb_factory_.get()) {
-    TaskRunner()->PostTask(FROM_HERE,
-                           base::BindOnce(&IndexedDBFactory::ContextDestroyed,
-                                          std::move(indexeddb_factory_)));
-  }
+  DCHECK(TaskRunner()->RunsTasksInCurrentSequence());
+  if (indexeddb_factory_.get())
+    indexeddb_factory_->ContextDestroyed();
 }
 
 void IndexedDBContextImpl::Shutdown() {
+  // Important: This function is NOT called on the IDB Task Runner. All variable
+  // access must be thread-safe.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (is_incognito())
     return;
 
+  // TODO(dmurph): Make this variable atomic.
   if (force_keep_session_state_)
     return;
 
@@ -534,11 +548,14 @@ void IndexedDBContextImpl::Shutdown() {
         FROM_HERE,
         base::BindOnce(
             [](const base::FilePath& indexeddb_path,
-               scoped_refptr<IndexedDBFactory> factory,
+               scoped_refptr<IndexedDBContextImpl> context,
                scoped_refptr<storage::SpecialStoragePolicy>
                    special_storage_policy) {
               std::vector<Origin> origins;
               std::vector<base::FilePath> file_paths;
+              // This function only needs the factory, and not the context, but
+              // the context is used because passing that is thread-safe.
+              IndexedDBFactoryImpl* factory = context->GetIDBFactory();
               GetAllOriginsAndPaths(indexeddb_path, &origins, &file_paths);
               DCHECK_EQ(origins.size(), file_paths.size());
               auto file_path = file_paths.cbegin();
@@ -549,12 +566,12 @@ void IndexedDBContextImpl::Shutdown() {
                   continue;
                 if (special_storage_policy->IsStorageProtected(origin_url))
                   continue;
-                if (factory.get())
-                  factory->ForceClose(*origin);
+                if (factory)
+                  factory->ForceClose(*origin, false);
                 base::DeleteFile(*file_path, true);
               }
             },
-            data_path_, indexeddb_factory_, special_storage_policy_));
+            data_path_, base::WrapRefCounted(this), special_storage_policy_));
   }
 }
 
@@ -612,7 +629,7 @@ std::set<Origin>* IndexedDBContextImpl::GetOriginSet() {
   return origin_set_.get();
 }
 
-base::SequencedTaskRunner* IndexedDBContextImpl::TaskRunner() const {
+base::SequencedTaskRunner* IndexedDBContextImpl::TaskRunner() {
   DCHECK(task_runner_.get());
   return task_runner_.get();
 }

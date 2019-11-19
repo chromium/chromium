@@ -1,3 +1,5 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_SECTION xml-roles:region
 ++++ROLE_SYSTEM_STATICTEXT name='This is a section element.'
+++IA2_ROLE_LANDMARK name='section' xml-roles:region
+++++ROLE_SYSTEM_STATICTEXT name='This is a named section element.'

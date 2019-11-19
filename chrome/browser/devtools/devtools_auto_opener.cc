@@ -22,8 +22,7 @@ void DevToolsAutoOpener::OnTabStripModelChanged(
   if (change.type() != TabStripModelChange::kInserted)
     return;
 
-  for (const auto& delta : change.deltas()) {
-    if (!DevToolsWindow::IsDevToolsWindow(delta.insert.contents))
-      DevToolsWindow::OpenDevToolsWindow(delta.insert.contents);
-  }
+  for (const auto& contents : change.GetInsert()->contents)
+    if (!DevToolsWindow::IsDevToolsWindow(contents.contents))
+      DevToolsWindow::OpenDevToolsWindow(contents.contents);
 }

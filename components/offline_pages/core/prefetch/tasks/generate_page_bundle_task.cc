@@ -144,15 +144,14 @@ std::unique_ptr<UrlAndIds> SelectUrlsToPrefetchSync(sql::Database* db) {
 GeneratePageBundleTask::GeneratePageBundleTask(
     PrefetchDispatcher* prefetch_dispatcher,
     PrefetchStore* prefetch_store,
-    PrefetchGCMHandler* gcm_handler,
+    const std::string& gcm_token,
     PrefetchNetworkRequestFactory* request_factory,
     PrefetchRequestFinishedCallback callback)
     : prefetch_dispatcher_(prefetch_dispatcher),
       prefetch_store_(prefetch_store),
-      gcm_handler_(gcm_handler),
+      gcm_token_(gcm_token),
       request_factory_(request_factory),
-      callback_(std::move(callback)),
-      weak_factory_(this) {}
+      callback_(std::move(callback)) {}
 
 GeneratePageBundleTask::~GeneratePageBundleTask() {}
 
@@ -173,18 +172,7 @@ void GeneratePageBundleTask::StartGeneratePageBundle(
   DCHECK(!url_and_ids->urls.empty());
   DCHECK_EQ(url_and_ids->urls.size(), url_and_ids->ids.size());
 
-  gcm_handler_->GetGCMToken(base::AdaptCallbackForRepeating(
-      base::BindOnce(&GeneratePageBundleTask::GotRegistrationId,
-                     weak_factory_.GetWeakPtr(), std::move(url_and_ids))));
-}
-
-void GeneratePageBundleTask::GotRegistrationId(
-    std::unique_ptr<UrlAndIds> url_and_ids,
-    const std::string& id,
-    instance_id::InstanceID::Result result) {
-  DCHECK(url_and_ids);
-  // TODO(dimich): Add UMA reporting on instance_id::InstanceID::Result.
-  request_factory_->MakeGeneratePageBundleRequest(url_and_ids->urls, id,
+  request_factory_->MakeGeneratePageBundleRequest(url_and_ids->urls, gcm_token_,
                                                   std::move(callback_));
   prefetch_dispatcher_->GeneratePageBundleRequested(
       std::make_unique<PrefetchDispatcher::IdsVector>(

@@ -85,7 +85,6 @@ std::unique_ptr<PosixFileDescriptorInfo> CreateDefaultPosixFilesToMap(
   int fd = base::FieldTrialList::GetFieldTrialDescriptor();
   DCHECK_NE(fd, -1);
   files_to_register->Share(service_manager::kFieldTrialDescriptor, fd);
-#endif
 
   DCHECK(mojo_channel_remote_endpoint.is_valid());
   files_to_register->Share(
@@ -94,7 +93,6 @@ std::unique_ptr<PosixFileDescriptorInfo> CreateDefaultPosixFilesToMap(
 
   // TODO(jcivelli): remove this "if defined" by making
   // GetAdditionalMappedFilesForChildProcess a no op on Mac.
-#if !defined(OS_MACOSX)
   GetContentClient()->browser()->GetAdditionalMappedFilesForChildProcess(
       *command_line, child_process_id, files_to_register.get());
 #endif

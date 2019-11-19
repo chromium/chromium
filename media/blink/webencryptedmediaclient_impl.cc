@@ -32,6 +32,24 @@ namespace {
 const char kKeySystemSupportUMAPrefix[] =
     "Media.EME.RequestMediaKeySystemAccess.";
 
+// A helper function to complete blink::WebContentDecryptionModuleResult. Used
+// to convert blink::WebContentDecryptionModuleResult to a callback.
+void CompleteWebContentDecryptionModuleResult(
+    std::unique_ptr<blink::WebContentDecryptionModuleResult> result,
+    blink::WebContentDecryptionModule* cdm,
+    const std::string& error_message) {
+  DCHECK(result);
+
+  if (!cdm) {
+    result->CompleteWithError(
+        blink::kWebContentDecryptionModuleExceptionNotSupportedError, 0,
+        blink::WebString::FromUTF8(error_message));
+    return;
+  }
+
+  result->CompleteWithContentDecryptionModule(cdm);
+}
+
 }  // namespace
 
 // Report usage of key system to UMA. There are 2 different counts logged:
@@ -84,8 +102,7 @@ WebEncryptedMediaClientImpl::WebEncryptedMediaClientImpl(
     CdmFactory* cdm_factory,
     MediaPermission* media_permission)
     : cdm_factory_(cdm_factory),
-      key_system_config_selector_(KeySystems::GetInstance(), media_permission),
-      weak_factory_(this) {
+      key_system_config_selector_(KeySystems::GetInstance(), media_permission) {
   DCHECK(cdm_factory_);
 }
 
@@ -108,9 +125,10 @@ void WebEncryptedMediaClientImpl::CreateCdm(
     const blink::WebSecurityOrigin& security_origin,
     const CdmConfig& cdm_config,
     std::unique_ptr<blink::WebContentDecryptionModuleResult> result) {
-  WebContentDecryptionModuleImpl::Create(cdm_factory_, key_system.Utf16(),
-                                         security_origin, cdm_config,
-                                         std::move(result));
+  WebContentDecryptionModuleImpl::Create(
+      cdm_factory_, key_system.Utf16(), security_origin, cdm_config,
+      base::BindOnce(&CompleteWebContentDecryptionModuleResult,
+                     std::move(result)));
 }
 
 void WebEncryptedMediaClientImpl::OnRequestSucceeded(

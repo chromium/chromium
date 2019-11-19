@@ -52,14 +52,14 @@ class GetUpdateStatusApiTest : public ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GetUpdateStatusApiTest, Progress) {
-  UpdateEngineClient::Status status_not_available;
-  status_not_available.status = UpdateEngineClient::UPDATE_STATUS_IDLE;
-  UpdateEngineClient::Status status_updating;
-  status_updating.status = UpdateEngineClient::UPDATE_STATUS_DOWNLOADING;
-  status_updating.download_progress = 0.5;
-  UpdateEngineClient::Status status_boot_needed;
-  status_boot_needed.status =
-      UpdateEngineClient::UPDATE_STATUS_UPDATED_NEED_REBOOT;
+  update_engine::StatusResult status_not_available;
+  status_not_available.set_current_operation(update_engine::Operation::IDLE);
+  update_engine::StatusResult status_updating;
+  status_updating.set_current_operation(update_engine::Operation::DOWNLOADING);
+  status_updating.set_progress(0.5);
+  update_engine::StatusResult status_boot_needed;
+  status_boot_needed.set_current_operation(
+      update_engine::Operation::UPDATED_NEED_REBOOT);
 
   // The fake client returns the last status in this order.
   fake_update_engine_client_->PushLastStatus(status_not_available);

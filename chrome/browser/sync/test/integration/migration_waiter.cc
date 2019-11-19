@@ -20,15 +20,12 @@ MigrationWaiter::~MigrationWaiter() {
 
 // Returns true when sync reports that there is no pending migration, and
 // migration is complete for all data types in |expected_types_|.
-bool MigrationWaiter::IsExitConditionSatisfied() {
+bool MigrationWaiter::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting to migrate (" + ModelTypeSetToString(expected_types_) +
+             "); " + "Currently migrated: (" +
+             ModelTypeSetToString(watcher_->GetMigratedTypes()) + ")";
   return watcher_->GetMigratedTypes().HasAll(expected_types_) &&
          !watcher_->HasPendingBackendMigration();
-}
-
-std::string MigrationWaiter::GetDebugMessage() const {
-  return "Waiting to migrate (" + ModelTypeSetToString(expected_types_) +
-         "); " + "Currently migrated: (" +
-         ModelTypeSetToString(watcher_->GetMigratedTypes()) + ")";
 }
 
 void MigrationWaiter::OnMigrationStateChange() {

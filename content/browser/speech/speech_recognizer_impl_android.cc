@@ -13,12 +13,12 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "content/public/android/content_jni_headers/SpeechRecognitionImpl_jni.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/browser/speech_recognition_manager.h"
 #include "content/public/browser/speech_recognition_session_config.h"
-#include "jni/SpeechRecognitionImpl_jni.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
@@ -42,13 +42,13 @@ void SpeechRecognizerImplAndroid::StartRecognition(
     const std::string& device_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // TODO(xians): Open the correct device for speech on Android.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&SpeechRecognitionEventListener::OnRecognitionStart,
                      base::Unretained(listener()), session_id()));
   SpeechRecognitionSessionConfig config =
       SpeechRecognitionManager::GetInstance()->GetSessionConfig(session_id());
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &content::SpeechRecognizerImplAndroid::StartRecognitionOnUIThread,
@@ -71,7 +71,7 @@ void SpeechRecognizerImplAndroid::StartRecognitionOnUIThread(
 void SpeechRecognizerImplAndroid::AbortRecognition() {
   if (BrowserThread::CurrentlyOn(BrowserThread::IO)) {
     state_ = STATE_IDLE;
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&content::SpeechRecognizerImplAndroid::AbortRecognition,
                        this));
@@ -85,7 +85,7 @@ void SpeechRecognizerImplAndroid::AbortRecognition() {
 
 void SpeechRecognizerImplAndroid::StopAudioCapture() {
   if (BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&content::SpeechRecognizerImplAndroid::StopAudioCapture,
                        this));
@@ -111,10 +111,9 @@ void SpeechRecognizerImplAndroid::OnAudioStart(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&SpeechRecognizerImplAndroid::OnAudioStart, this,
-                       nullptr, nullptr));
+    base::PostTask(FROM_HERE, {BrowserThread::IO},
+                   base::BindOnce(&SpeechRecognizerImplAndroid::OnAudioStart,
+                                  this, nullptr, nullptr));
     return;
   }
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -126,10 +125,9 @@ void SpeechRecognizerImplAndroid::OnSoundStart(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&SpeechRecognizerImplAndroid::OnSoundStart, this,
-                       nullptr, nullptr));
+    base::PostTask(FROM_HERE, {BrowserThread::IO},
+                   base::BindOnce(&SpeechRecognizerImplAndroid::OnSoundStart,
+                                  this, nullptr, nullptr));
     return;
   }
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -139,10 +137,9 @@ void SpeechRecognizerImplAndroid::OnSoundStart(
 void SpeechRecognizerImplAndroid::OnSoundEnd(JNIEnv* env,
                                              const JavaParamRef<jobject>& obj) {
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&SpeechRecognizerImplAndroid::OnSoundEnd, this, nullptr,
-                       nullptr));
+    base::PostTask(FROM_HERE, {BrowserThread::IO},
+                   base::BindOnce(&SpeechRecognizerImplAndroid::OnSoundEnd,
+                                  this, nullptr, nullptr));
     return;
   }
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -152,10 +149,9 @@ void SpeechRecognizerImplAndroid::OnSoundEnd(JNIEnv* env,
 void SpeechRecognizerImplAndroid::OnAudioEnd(JNIEnv* env,
                                              const JavaParamRef<jobject>& obj) {
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&SpeechRecognizerImplAndroid::OnAudioEnd, this, nullptr,
-                       nullptr));
+    base::PostTask(FROM_HERE, {BrowserThread::IO},
+                   base::BindOnce(&SpeechRecognizerImplAndroid::OnAudioEnd,
+                                  this, nullptr, nullptr));
     return;
   }
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -185,7 +181,7 @@ void SpeechRecognizerImplAndroid::OnRecognitionResults(
         options[i], static_cast<double>(scores[i])));
   }
   result->is_provisional = provisional;
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &SpeechRecognizerImplAndroid::OnRecognitionResultsOnIOThread, this,
@@ -203,7 +199,7 @@ void SpeechRecognizerImplAndroid::OnRecognitionError(
     const JavaParamRef<jobject>& obj,
     jint error) {
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&SpeechRecognizerImplAndroid::OnRecognitionError, this,
                        nullptr, nullptr, error));
@@ -221,7 +217,7 @@ void SpeechRecognizerImplAndroid::OnRecognitionEnd(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&SpeechRecognizerImplAndroid::OnRecognitionEnd, this,
                        nullptr, nullptr));

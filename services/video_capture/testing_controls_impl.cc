@@ -4,11 +4,11 @@
 
 #include "services/video_capture/testing_controls_impl.h"
 
+#include "base/logging.h"
+
 namespace video_capture {
 
-TestingControlsImpl::TestingControlsImpl(
-    std::unique_ptr<service_manager::ServiceContextRef> service_ref)
-    : service_ref_(std::move(service_ref)) {}
+TestingControlsImpl::TestingControlsImpl() = default;
 
 TestingControlsImpl::~TestingControlsImpl() = default;
 

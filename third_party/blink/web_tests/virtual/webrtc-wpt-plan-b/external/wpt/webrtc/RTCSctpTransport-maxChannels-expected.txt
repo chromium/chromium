@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Cannot read property 'state' of null
+FAIL An unconnected peerconnection must not have maxChannels set assert_not_equals: RTCSctpTransport must be available got disallowed value null
+FAIL maxChannels gets instantiated after connecting promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'maxChannels' of null"
+Harness: the test ran to completion.
+

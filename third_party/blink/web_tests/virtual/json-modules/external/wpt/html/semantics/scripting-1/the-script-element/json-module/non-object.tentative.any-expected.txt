@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Non-object: null
+PASS Non-object: true
+PASS Non-object: false
+PASS Non-object: string
+PASS Non-object: array
+Harness: the test ran to completion.
+

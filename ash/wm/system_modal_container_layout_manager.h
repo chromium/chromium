@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/wm/wm_snap_to_pixel_layout_manager.h"
+#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
+#include "ash/wm/wm_default_layout_manager.h"
 #include "base/macros.h"
 #include "ui/aura/window_observer.h"
-#include "ui/keyboard/keyboard_controller_observer.h"
 
 namespace gfx {
 class Rect;
@@ -26,16 +26,16 @@ class WindowDimmer;
 // System modal windows which are centered on the screen will be kept centered
 // when the container size changes.
 class ASH_EXPORT SystemModalContainerLayoutManager
-    : public wm::WmSnapToPixelLayoutManager,
+    : public WmDefaultLayoutManager,
       public aura::WindowObserver,
-      public keyboard::KeyboardControllerObserver {
+      public KeyboardControllerObserver {
  public:
   explicit SystemModalContainerLayoutManager(aura::Window* container);
   ~SystemModalContainerLayoutManager() override;
 
   bool has_window_dimmer() const { return window_dimmer_ != nullptr; }
 
-  // Overridden from WmSnapToPixelLayoutManager:
+  // Overridden from WmDefaultLayoutManager:
   void OnChildWindowVisibilityChanged(aura::Window* child,
                                       bool visible) override;
   void OnWindowResized() override;
@@ -49,9 +49,8 @@ class ASH_EXPORT SystemModalContainerLayoutManager
                                const void* key,
                                intptr_t old) override;
 
-  // Overridden from keyboard::KeyboardControllerObserver:
-  void OnKeyboardWorkspaceOccludedBoundsChanged(
-      const gfx::Rect& new_bounds) override;
+  // Overridden from KeyboardControllerObserver:
+  void OnKeyboardOccludedBoundsChanged(const gfx::Rect& new_bounds) override;
 
   // True if the window is either contained by the top most modal window,
   // or contained by its transient children.

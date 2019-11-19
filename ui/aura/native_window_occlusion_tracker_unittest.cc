@@ -7,10 +7,13 @@
 #include <winuser.h>
 
 #include "base/win/scoped_gdi_object.h"
+#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/win/window_impl.h"
+
+#include "dwmapi.h"
 
 namespace aura {
 
@@ -152,6 +155,18 @@ TEST_F(NativeWindowOcclusionTrackerTest, ComplexRegionWindow) {
   base::win::ScopedRegion region(CreateRoundRectRgn(1, 1, 100, 100, 5, 5));
   SetWindowRgn(hwnd, region.get(), /*redraw=*/TRUE);
   // Windows with complex regions are not considered visible and fully opaque.
+  EXPECT_FALSE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));
+}
+
+TEST_F(NativeWindowOcclusionTrackerTest, CloakedWindow) {
+  // Cloaking is only supported in Windows 8 and above.
+  if (base::win::GetVersion() < base::win::Version::WIN8)
+    return;
+  HWND hwnd = CreateNativeWindow(/*ex_style=*/0);
+  gfx::Rect win_rect;
+  BOOL cloak = TRUE;
+  DwmSetWindowAttribute(hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
+  // Cloaked Windows are not considered visible.
   EXPECT_FALSE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));
 }
 

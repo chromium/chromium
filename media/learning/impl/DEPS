@@ -1,0 +1,9 @@
+include_rules = [
+  "+services/metrics",
+]
+
+specific_include_rules = {
+  "distribution_reporter_unittest.cc" : [
+    "+components/ukm",
+  ],
+}

@@ -8,9 +8,10 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_executor.h"
 #include "tools/accessibility/inspect/ax_event_server.h"
 
 namespace {
@@ -63,7 +64,7 @@ int main(int argc, char** argv) {
   }
 
   base::AtExitManager exit_manager;
-  base::MessageLoopForUI message_loop;
+  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
   const auto server = std::make_unique<tools::AXEventServer>(pid, pattern_str);
   base::RunLoop().Run();
   return 0;

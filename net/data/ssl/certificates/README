@@ -69,6 +69,11 @@ unit tests.
 - www.ahrn.com.pem: A certificate issued by the Legacy Symantec PKI in 2014,
   expires on 2019-10-27.
 
+- treadclimber.pem: A chain where the leaf does not contain embedded SCTs,
+  and which has a notBefore date after 2018/10/15. Expires 2020/02/07.
+- treadclimber.sctlist: The TLS encoded SignedCertificateTimestampList for the
+  treadclimber.pem leaf certificate.
+
 ===== Manually generated certificates
 - client.p12 : A PKCS #12 file containing a client certificate and a private
      key created for testing.  The password is "12345".
@@ -89,10 +94,6 @@ unit tests.
      key in unittest.key.bin. The common name is "unittest".
 
 - unittest.key.bin : private key stored unencrypted.
-
-- unittest.originbound.der: A test origin-bound certificate for
-     https://www.google.com:443.
-- unittest.originbound.key.der: matching PrivateKeyInfo.
 
 - multivalue_rdn.pem : A regression test for http://crbug.com/101009. A
      certificate with all of the AttributeTypeAndValues stored within a single
@@ -352,3 +353,13 @@ unit tests.
 - key_usage_p256_both.pem
      Self-signed P-256 certificates with various combinations of keyUsage
      flags. Their private key is key_usage_p256.key.
+
+===== From net/data/ssl/scripts/generate-name-normalization-certs.py
+- name-normalization-printable-utf8.pem
+     Leaf's issuer CN is PrintableString, intermediate's subject CN is
+     UTF8String.
+- name-normalization-case-folding.pem
+     Leaf's issuer CN and intermediate's subject CN are both PrintableString
+     but have differing case on the first character.
+- name-normalization-byteequal.pem
+     Names are byte-equal.

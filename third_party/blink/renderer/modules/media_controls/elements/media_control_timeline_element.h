@@ -27,8 +27,6 @@ class MediaControlTimelineElement : public MediaControlSliderElement {
   void SetPosition(double);
   void SetDuration(double);
 
-  void OnPlaying();
-
   void OnMediaKeyboardEvent(Event* event) { DefaultEventHandler(*event); }
 
   void RenderBarSegments();

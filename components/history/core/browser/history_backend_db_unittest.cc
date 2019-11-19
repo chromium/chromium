@@ -27,6 +27,7 @@
 #include "base/bind.h"
 #include "base/format_macros.h"
 #include "base/guid.h"
+#include "base/i18n/case_conversion.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -36,6 +37,7 @@
 #include "components/history/core/browser/download_row.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_database.h"
+#include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/page_usage_data.h"
 #include "components/history/core/test/history_backend_db_base_test.h"
 #include "components/history/core/test/test_history_database.h"
@@ -1697,6 +1699,44 @@ TEST_F(HistoryBackendDBTest,
   VisitRow visit_row;
   db_->GetRowForVisit(visit_id, &visit_row);
   EXPECT_FALSE(visit_row.incremented_omnibox_typed_score);
+}
+
+// Tests that the migration code correctly replaces the lower_term column in the
+// keyword search terms table which normalized_term which contains the
+// normalized search term during migration to version 42.
+TEST_F(HistoryBackendDBTest, MigrateKeywordSearchTerms) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(41));
+
+  const KeywordID keyword_id = 12;
+  const URLID url_id = 34;
+  const base::string16 term = base::ASCIIToUTF16("WEEKLY  NEWS  ");
+  const base::string16 lower_term = base::i18n::ToLower(term);
+  const base::string16 normalized_term =
+      base::CollapseWhitespace(lower_term, false);
+
+  sql::Database db;
+  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+  sql::Statement insert_statement(
+      db.GetUniqueStatement("INSERT INTO keyword_search_terms (keyword_id, "
+                            "url_id, lower_term, term) VALUES (?,?,?,?)"));
+  insert_statement.BindInt64(0, keyword_id);
+  insert_statement.BindInt64(1, url_id);
+  insert_statement.BindString16(2, lower_term);
+  insert_statement.BindString16(3, term);
+  ASSERT_TRUE(insert_statement.Run());
+
+  // Re-open the db, triggering migration.
+  CreateBackendAndDatabase();
+
+  // The version should have been updated.
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 42);
+
+  history::KeywordSearchTermRow keyword_search_term_row;
+  ASSERT_TRUE(db_->GetKeywordSearchTermRow(url_id, &keyword_search_term_row));
+  EXPECT_EQ(keyword_id, keyword_search_term_row.keyword_id);
+  EXPECT_EQ(url_id, keyword_search_term_row.url_id);
+  EXPECT_EQ(term, keyword_search_term_row.term);
+  EXPECT_EQ(normalized_term, keyword_search_term_row.normalized_term);
 }
 
 // Test to verify the left-over typed_url sync metadata gets cleared correctly

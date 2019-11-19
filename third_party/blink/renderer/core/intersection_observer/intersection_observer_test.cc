@@ -2,22 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
+
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_delegate.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_init.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+
 namespace blink {
 
 namespace {
@@ -41,14 +44,11 @@ class TestIntersectionObserverDelegate : public IntersectionObserverDelegate {
   int CallCount() const { return call_count_; }
   int EntryCount() const { return entries_.size(); }
   const IntersectionObserverEntry* LastEntry() const { return entries_.back(); }
-  FloatRect LastIntersectionRect() const {
+  PhysicalRect LastIntersectionRect() const {
     if (entries_.IsEmpty())
-      return FloatRect();
+      return PhysicalRect();
     const IntersectionGeometry& geometry = entries_.back()->GetGeometry();
-    return FloatRect(geometry.IntersectionRect().X(),
-                     geometry.IntersectionRect().Y(),
-                     geometry.IntersectionRect().Width(),
-                     geometry.IntersectionRect().Height());
+    return geometry.IntersectionRect();
   }
 
   void Trace(blink::Visitor* visitor) override {
@@ -108,15 +108,15 @@ TEST_F(IntersectionObserverTest, NotificationSentWhenRootRemoved) {
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
   main_resource.Complete(R"HTML(
-<style>
-#target {
-  width: 100px;
-  height: 100px;
-}
-</style>
-<div id='root'>
-  <div id='target'></div>
-</div>
+    <style>
+    #target {
+      width: 100px;
+      height: 100px;
+    }
+    </style>
+    <div id='root'>
+      <div id='target'></div>
+    </div>
   )HTML");
 
   Element* root = GetDocument().getElementById("root");
@@ -306,7 +306,7 @@ TEST_F(IntersectionObserverTest, HitTestAfterMutation) {
   GetDocument().View()->LayoutViewport()->SetScrollOffset(ScrollOffset(0, 300),
                                                           kProgrammaticScroll);
 
-  HitTestLocation location(LayoutPoint(0, 0));
+  HitTestLocation location{PhysicalOffset()};
   HitTestResult result(
       HitTestRequest(HitTestRequest::kReadOnly | HitTestRequest::kActive |
                      HitTestRequest::kAllowChildFrameContent),
@@ -339,6 +339,10 @@ TEST_F(IntersectionObserverTest, DisconnectClearsNotifications) {
   Element* target = GetDocument().getElementById("target");
   ASSERT_TRUE(target);
   observer->observe(target, exception_state);
+  EXPECT_EQ(GetDocument()
+                .EnsureIntersectionObserverController()
+                .GetTrackedTargetCountForTesting(),
+            1u);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -350,6 +354,10 @@ TEST_F(IntersectionObserverTest, DisconnectClearsNotifications) {
                                                           kProgrammaticScroll);
   Compositor().BeginFrame();
   observer->disconnect();
+  EXPECT_EQ(GetDocument()
+                .EnsureIntersectionObserverController()
+                .GetTrackedTargetCountForTesting(),
+            0u);
   test::RunPendingTasks();
   EXPECT_EQ(observer_delegate->CallCount(), 1);
 }
@@ -401,7 +409,7 @@ TEST_F(IntersectionObserverTest, RootIntersectionWithForceZeroLayoutHeight) {
   test::RunPendingTasks();
   ASSERT_EQ(observer_delegate->CallCount(), 2);
   EXPECT_FALSE(observer_delegate->LastIntersectionRect().IsEmpty());
-  EXPECT_EQ(FloatRect(200, 400, 100, 100),
+  EXPECT_EQ(PhysicalRect(200, 400, 100, 100),
             observer_delegate->LastIntersectionRect());
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(ScrollOffset(0, 1200),
@@ -410,6 +418,83 @@ TEST_F(IntersectionObserverTest, RootIntersectionWithForceZeroLayoutHeight) {
   test::RunPendingTasks();
   ASSERT_EQ(observer_delegate->CallCount(), 3);
   EXPECT_TRUE(observer_delegate->LastIntersectionRect().IsEmpty());
+}
+
+TEST_F(IntersectionObserverTest, TrackedTargetBookkeeping) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <style>
+    </style>
+    <div id='target'></div>
+  )HTML");
+
+  Element* target = GetDocument().getElementById("target");
+  ASSERT_TRUE(target);
+  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+  DummyExceptionStateForTesting exception_state;
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  IntersectionObserver* observer1 = IntersectionObserver::Create(
+      observer_init, *observer_delegate, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  observer1->observe(target, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  IntersectionObserver* observer2 = IntersectionObserver::Create(
+      observer_init, *observer_delegate, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  observer2->observe(target, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  IntersectionObserverController& controller =
+      GetDocument().EnsureIntersectionObserverController();
+  EXPECT_EQ(controller.GetTrackedTargetCountForTesting(), 1u);
+  observer1->unobserve(target, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  EXPECT_EQ(controller.GetTrackedTargetCountForTesting(), 1u);
+  observer2->unobserve(target, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  EXPECT_EQ(controller.GetTrackedTargetCountForTesting(), 0u);
+}
+
+TEST_F(IntersectionObserverTest, RootMarginDevicePixelRatio) {
+  WebView().SetZoomFactorForDeviceScaleFactor(3.5f);
+  WebView().MainFrameWidget()->Resize(WebSize(2800, 2100));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <style>
+    body {
+      margin: 0;
+    }
+    #target {
+      height: 30px;
+    }
+    </style>
+    <div id='target'>Hello, world!</div>
+  )HTML");
+  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+  observer_init->setRootMargin("-31px 0px 0px 0px");
+  DummyExceptionStateForTesting exception_state;
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  IntersectionObserver* observer = IntersectionObserver::Create(
+      observer_init, *observer_delegate, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  Element* target = GetDocument().getElementById("target");
+  ASSERT_TRUE(target);
+  observer->observe(target, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+  EXPECT_EQ(PixelSnappedIntRect(
+                observer_delegate->LastEntry()->GetGeometry().RootRect()),
+            IntRect(0, 31, 800, 600 - 31));
 }
 
 TEST_F(IntersectionObserverV2Test, TrackVisibilityInit) {
@@ -483,7 +568,7 @@ TEST_F(IntersectionObserverV2Test, BasicOcclusion) {
   EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
   EXPECT_TRUE(observer_delegate->LastEntry()->isVisible());
 
-  occluder->SetInlineStyleProperty(CSSPropertyMarginTop, "-10px");
+  occluder->SetInlineStyleProperty(CSSPropertyID::kMarginTop, "-10px");
   Compositor().BeginFrame();
   test::RunPendingTasks();
   ASSERT_FALSE(Compositor().NeedsBeginFrame());
@@ -493,7 +578,7 @@ TEST_F(IntersectionObserverV2Test, BasicOcclusion) {
   EXPECT_FALSE(observer_delegate->LastEntry()->isVisible());
 
   // Zero-opacity objects should not count as occluding.
-  occluder->SetInlineStyleProperty(CSSPropertyOpacity, "0");
+  occluder->SetInlineStyleProperty(CSSPropertyID::kOpacity, "0");
   Compositor().BeginFrame();
   test::RunPendingTasks();
   ASSERT_FALSE(Compositor().NeedsBeginFrame());
@@ -542,7 +627,7 @@ TEST_F(IntersectionObserverV2Test, BasicOpacity) {
   EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
   EXPECT_TRUE(observer_delegate->LastEntry()->isVisible());
 
-  transparent->SetInlineStyleProperty(CSSPropertyOpacity, "0.99");
+  transparent->SetInlineStyleProperty(CSSPropertyID::kOpacity, "0.99");
   Compositor().BeginFrame();
   test::RunPendingTasks();
   ASSERT_FALSE(Compositor().NeedsBeginFrame());
@@ -593,7 +678,7 @@ TEST_F(IntersectionObserverV2Test, BasicTransform) {
 
   // 2D translations and proportional upscaling is permitted.
   transformed->SetInlineStyleProperty(
-      CSSPropertyTransform, "translateX(10px) translateY(20px) scale(2)");
+      CSSPropertyID::kTransform, "translateX(10px) translateY(20px) scale(2)");
   Compositor().BeginFrame();
   test::RunPendingTasks();
   ASSERT_FALSE(Compositor().NeedsBeginFrame());
@@ -601,7 +686,8 @@ TEST_F(IntersectionObserverV2Test, BasicTransform) {
   EXPECT_EQ(observer_delegate->EntryCount(), 1);
 
   // Any other transform is not permitted.
-  transformed->SetInlineStyleProperty(CSSPropertyTransform, "skewX(10deg)");
+  transformed->SetInlineStyleProperty(CSSPropertyID::kTransform,
+                                      "skewX(10deg)");
   Compositor().BeginFrame();
   test::RunPendingTasks();
   ASSERT_FALSE(Compositor().NeedsBeginFrame());

@@ -21,7 +21,7 @@ StackingController::~StackingController() = default;
 
 aura::Window* StackingController::GetDefaultParent(aura::Window* window,
                                                    const gfx::Rect& bounds) {
-  return wm::GetDefaultParent(window, bounds);
+  return GetDefaultParentForWindow(window, bounds);
 }
 
 }  // namespace ash

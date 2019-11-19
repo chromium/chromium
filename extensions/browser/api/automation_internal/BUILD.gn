@@ -1,0 +1,29 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("automation_internal") {
+  sources = [
+    "automation_event_router.cc",
+    "automation_event_router.h",
+    "automation_event_router_interface.h",
+    "automation_internal_api.cc",
+    "automation_internal_api.h",
+    "automation_internal_api_delegate.cc",
+    "automation_internal_api_delegate.h",
+  ]
+
+  public_deps = [
+    "//extensions/browser:browser_sources",
+  ]
+
+  deps = [
+    "//components/prefs",
+    "//extensions/common/api",
+  ]
+}

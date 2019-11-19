@@ -5,18 +5,15 @@
 #include "extensions/renderer/bindings/api_request_handler.h"
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/values.h"
-#include "content/public/common/content_features.h"
 #include "content/public/renderer/v8_value_converter.h"
+#include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_response_validator.h"
 #include "extensions/renderer/bindings/exception_handler.h"
 #include "extensions/renderer/bindings/js_runner.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
-#include "third_party/blink/public/web/web_scoped_user_gesture.h"
-#include "third_party/blink/public/web/web_user_gesture_indicator.h"
 
 namespace extensions {
 
@@ -67,6 +64,149 @@ APIRequestHandler::ArgumentAdapter::GetArguments(
   return v8_arguments_;
 }
 
+// A helper class to handler delivering the results of an API call to a handler,
+// which can be either a callback or a promise.
+class APIRequestHandler::AsyncResultHandler {
+ public:
+  // A callback-based result handler.
+  AsyncResultHandler(
+      v8::Isolate* isolate,
+      v8::Local<v8::Function> callback,
+      base::Optional<std::vector<v8::Global<v8::Value>>> callback_args);
+  // A promise-based result handler.
+  AsyncResultHandler(v8::Isolate* isolate,
+                     v8::Local<v8::Promise::Resolver> promise_resolver);
+
+  ~AsyncResultHandler();
+
+  // Delivers the result to the result handler.
+  void DeliverResult(v8::Local<v8::Context> context,
+                     APILastError* last_error,
+                     const std::vector<v8::Local<v8::Value>>& response_args,
+                     const std::string& error);
+
+  // Returns true if the request handler is using a custom callback.
+  bool has_custom_callback() const { return !!callback_arguments_; }
+
+ private:
+  void DeliverPromiseResult(
+      v8::Local<v8::Context> context,
+      const std::vector<v8::Local<v8::Value>>& response_args,
+      const std::string& error);
+
+  void DeliverCallbackResult(
+      v8::Local<v8::Context> context,
+      APILastError* last_error,
+      const std::vector<v8::Local<v8::Value>>& response_args,
+      const std::string& error);
+
+  // Callback-based handlers. Mutually exclusive with promise-based handlers.
+  v8::Global<v8::Function> callback_;
+  base::Optional<std::vector<v8::Global<v8::Value>>> callback_arguments_;
+
+  // Promise-based handlers. Mutually exclusive with callback-based handlers.
+  v8::Global<v8::Promise::Resolver> promise_resolver_;
+
+  DISALLOW_COPY_AND_ASSIGN(AsyncResultHandler);
+};
+
+APIRequestHandler::AsyncResultHandler::AsyncResultHandler(
+    v8::Isolate* isolate,
+    v8::Local<v8::Function> callback,
+    base::Optional<std::vector<v8::Global<v8::Value>>> callback_args)
+    : callback_arguments_(std::move(callback_args)) {
+  DCHECK(!callback.IsEmpty());
+  callback_.Reset(isolate, callback);
+}
+
+APIRequestHandler::AsyncResultHandler::AsyncResultHandler(
+    v8::Isolate* isolate,
+    v8::Local<v8::Promise::Resolver> promise_resolver) {
+  // NOTE(devlin): We'll need to handle an empty promise resolver if
+  // v8::Promise::Resolver::New() isn't guaranteed.
+  DCHECK(!promise_resolver.IsEmpty());
+  promise_resolver_.Reset(isolate, promise_resolver);
+}
+
+APIRequestHandler::AsyncResultHandler::~AsyncResultHandler() {}
+
+void APIRequestHandler::AsyncResultHandler::DeliverResult(
+    v8::Local<v8::Context> context,
+    APILastError* last_error,
+    const std::vector<v8::Local<v8::Value>>& response_args,
+    const std::string& error) {
+  if (!promise_resolver_.IsEmpty()) {
+    DCHECK(callback_.IsEmpty());
+    DCHECK(!callback_arguments_);
+    DeliverPromiseResult(context, response_args, error);
+  } else {
+    DeliverCallbackResult(context, last_error, response_args, error);
+  }
+}
+
+void APIRequestHandler::AsyncResultHandler::DeliverPromiseResult(
+    v8::Local<v8::Context> context,
+    const std::vector<v8::Local<v8::Value>>& response_args,
+    const std::string& error) {
+  DCHECK_LE(response_args.size(), 1u);
+
+  v8::Isolate* isolate = context->GetIsolate();
+
+  v8::Local<v8::Promise::Resolver> resolver = promise_resolver_.Get(isolate);
+  if (error.empty()) {
+    v8::Local<v8::Value> result;
+    if (!response_args.empty())
+      result = response_args[0];
+    else
+      result = v8::Undefined(isolate);
+
+    v8::Maybe<bool> promise_result = resolver->Resolve(context, result);
+    // TODO(devlin): It's potentially possible that this could throw if V8
+    // is terminating on a worker thread; however, it's unclear what happens in
+    // that scenario (we may appropriately shutdown the thread, or any future
+    // access of v8 may cause crashes). Make this a CHECK() to flush out any
+    // situations in which this is a concern. If there are no crashes after
+    // some time, we may be able to downgrade this.
+    CHECK(promise_result.IsJust());
+  } else {
+    v8::Local<v8::Value> v8_error =
+        v8::Exception::Error(gin::StringToV8(isolate, error));
+    v8::Maybe<bool> promise_result = resolver->Reject(context, v8_error);
+    // See comment above.
+    CHECK(promise_result.IsJust());
+  }
+}
+
+void APIRequestHandler::AsyncResultHandler::DeliverCallbackResult(
+    v8::Local<v8::Context> context,
+    APILastError* last_error,
+    const std::vector<v8::Local<v8::Value>>& response_args,
+    const std::string& error) {
+  v8::Isolate* isolate = context->GetIsolate();
+  std::vector<v8::Local<v8::Value>> full_args;
+  size_t curried_argument_size =
+      callback_arguments_ ? callback_arguments_->size() : 0u;
+  full_args.reserve(response_args.size() + curried_argument_size);
+  if (callback_arguments_) {
+    for (const auto& arg : *callback_arguments_)
+      full_args.push_back(arg.Get(isolate));
+  }
+  full_args.insert(full_args.end(), response_args.begin(), response_args.end());
+
+  if (!error.empty())
+    last_error->SetError(context, error);
+
+  JSRunner::Get(context)->RunJSFunction(callback_.Get(isolate), context,
+                                        full_args.size(), full_args.data());
+
+  // Arbitrary JS ran; context might have been invalidated.
+  if (!binding::IsContextValid(context))
+    return;
+
+  if (!error.empty())
+    last_error->ClearError(context, true);
+}
+
 APIRequestHandler::Request::Request() {}
 APIRequestHandler::Request::~Request() = default;
 
@@ -74,27 +214,16 @@ APIRequestHandler::PendingRequest::PendingRequest(
     v8::Isolate* isolate,
     v8::Local<v8::Context> context,
     const std::string& method_name,
-    v8::Local<v8::Function> request_callback,
-    const base::Optional<std::vector<v8::Local<v8::Value>>>&
-        local_callback_args,
-    const base::Optional<blink::WebUserGestureToken>& gesture_token)
-    : isolate(isolate), context(isolate, context), method_name(method_name) {
-  if (!request_callback.IsEmpty()) {
-    callback.emplace(isolate, request_callback);
-    user_gesture_token = gesture_token;
-
-    if (local_callback_args) {
-      callback_arguments = std::vector<v8::Global<v8::Value>>();
-      callback_arguments->reserve(local_callback_args->size());
-      for (const auto& arg : *local_callback_args)
-        callback_arguments->emplace_back(isolate, arg);
-    }
-  } else {
-    DCHECK(!local_callback_args.has_value())
-        << "Cannot specify callback arguments without a callback.";
-    DCHECK(!user_gesture_token.has_value())
-        << "Cannot specify a user gesture token without a callback.";
-  }
+    std::unique_ptr<AsyncResultHandler> async_handler,
+    std::unique_ptr<InteractionProvider::Token> gesture_token)
+    : isolate(isolate),
+      context(isolate, context),
+      method_name(method_name),
+      async_handler(std::move(async_handler)) {
+  // Only curry the user gesture through if there's something to handle the
+  // response.
+  if (this->async_handler)
+    user_gesture_token = std::move(gesture_token);
 }
 
 APIRequestHandler::PendingRequest::~PendingRequest() {}
@@ -106,12 +235,11 @@ APIRequestHandler::APIRequestHandler(
     SendRequestMethod send_request,
     APILastError last_error,
     ExceptionHandler* exception_handler,
-    GetUserActivationState get_user_activation_state_callback)
+    const InteractionProvider* interaction_provider)
     : send_request_(std::move(send_request)),
       last_error_(std::move(last_error)),
       exception_handler_(exception_handler),
-      get_user_activation_state_callback_(
-          std::move(get_user_activation_state_callback)) {}
+      interaction_provider_(interaction_provider) {}
 
 APIRequestHandler::~APIRequestHandler() {}
 
@@ -119,27 +247,13 @@ int APIRequestHandler::StartRequest(v8::Local<v8::Context> context,
                                     const std::string& method,
                                     std::unique_ptr<base::ListValue> arguments,
                                     v8::Local<v8::Function> callback,
-                                    v8::Local<v8::Function> custom_callback,
-                                    binding::RequestThread thread) {
-  auto request = std::make_unique<Request>();
-
-  // The request id is primarily used in the renderer to associate an API
-  // request with the associated callback, but it's also used in the browser as
-  // an identifier for the extension function (e.g. by the pageCapture API).
-  // TODO(devlin): We should probably fix this, since the request id is only
-  // unique per-isolate, rather than globally.
-  // TODO(devlin): We could *probably* get away with just using an integer
-  // here, but it's a little less foolproof. How slow is GenerateGUID? Should
-  // we use that instead? It means updating the IPC
-  // (ExtensionHostMsg_Request).
-  // base::UnguessableToken is another good option.
-  int request_id = next_request_id_++;
-  request->request_id = request_id;
-
-  base::Optional<std::vector<v8::Local<v8::Value>>> callback_args;
-  v8::Isolate* isolate = context->GetIsolate();
-  base::Optional<blink::WebUserGestureToken> user_gesture_token;
+                                    v8::Local<v8::Function> custom_callback) {
+  std::unique_ptr<AsyncResultHandler> async_handler;
+  int request_id = GetNextRequestId();
   if (!custom_callback.IsEmpty() || !callback.IsEmpty()) {
+    v8::Isolate* isolate = context->GetIsolate();
+    base::Optional<std::vector<v8::Global<v8::Value>>> callback_args;
+
     // In the JS bindings, custom callbacks are called with the arguments of
     // name, the full request object (see below), the original callback, and
     // the responses from the API. The responses from the API are handled by the
@@ -156,27 +270,39 @@ int APIRequestHandler::StartRequest(v8::Local<v8::Context> context,
       v8::Local<v8::Value> callback_to_pass = callback;
       if (callback_to_pass.IsEmpty())
         callback_to_pass = v8::Undefined(isolate);
-      callback_args = std::vector<v8::Local<v8::Value>>{
-          gin::StringToSymbol(isolate, method), request, callback_to_pass};
+
+      v8::Global<v8::Value> args[] = {
+          v8::Global<v8::Value>(isolate, gin::StringToSymbol(isolate, method)),
+          v8::Global<v8::Value>(isolate, request),
+          v8::Global<v8::Value>(isolate, callback_to_pass)};
+      callback_args.emplace(std::make_move_iterator(std::begin(args)),
+                            std::make_move_iterator(std::end(args)));
       callback = custom_callback;
     }
 
-    user_gesture_token =
-        blink::WebUserGestureIndicator::CurrentUserGestureToken();
-    request->has_callback = true;
+    async_handler = std::make_unique<AsyncResultHandler>(
+        isolate, callback, std::move(callback_args));
   }
-  pending_requests_.emplace(request_id,
-                            PendingRequest(isolate, context, method, callback,
-                                           callback_args, user_gesture_token));
 
-  request->has_user_gesture = get_user_activation_state_callback_.Run(context);
-  request->arguments = std::move(arguments);
-  request->method_name = method;
-  request->thread = thread;
-
-  last_sent_request_id_ = request_id;
-  send_request_.Run(std::move(request), context);
+  StartRequestImpl(context, request_id, method, std::move(arguments),
+                   std::move(async_handler));
   return request_id;
+}
+
+std::pair<int, v8::Local<v8::Promise>>
+APIRequestHandler::StartPromiseBasedRequest(
+    v8::Local<v8::Context> context,
+    const std::string& method,
+    std::unique_ptr<base::ListValue> arguments) {
+  v8::Isolate* isolate = context->GetIsolate();
+  v8::Local<v8::Promise::Resolver> resolver =
+      v8::Promise::Resolver::New(context).ToLocalChecked();
+  auto async_handler = std::make_unique<AsyncResultHandler>(isolate, resolver);
+  int request_id = GetNextRequestId();
+  StartRequestImpl(context, request_id, method, std::move(arguments),
+                   std::move(async_handler));
+
+  return {request_id, resolver->GetPromise()};
 }
 
 void APIRequestHandler::CompleteRequest(int request_id,
@@ -194,18 +320,21 @@ void APIRequestHandler::CompleteRequest(
 
 int APIRequestHandler::AddPendingRequest(v8::Local<v8::Context> context,
                                          v8::Local<v8::Function> callback) {
-  int request_id = next_request_id_++;
+  int request_id = GetNextRequestId();
 
   // NOTE(devlin): We ignore the UserGestureToken for synthesized requests like
   // these that aren't sent to the browser. It is the caller's responsibility to
   // handle any user gesture behavior. This prevents an issue where messaging
   // handling would create an extra scoped user gesture, causing issues. See
   // https://crbug.com/921141.
-  base::Optional<blink::WebUserGestureToken> null_user_gesture_token;
+  std::unique_ptr<InteractionProvider::Token> null_user_gesture_token;
+
+  auto async_handler = std::make_unique<AsyncResultHandler>(
+      context->GetIsolate(), callback, base::nullopt);
   pending_requests_.emplace(
-      request_id,
-      PendingRequest(context->GetIsolate(), context, std::string(), callback,
-                     base::nullopt, null_user_gesture_token));
+      request_id, PendingRequest(context->GetIsolate(), context, std::string(),
+                                 std::move(async_handler),
+                                 std::move(null_user_gesture_token)));
   return request_id;
 }
 
@@ -232,6 +361,50 @@ std::set<int> APIRequestHandler::GetPendingRequestIdsForTesting() const {
   return result;
 }
 
+int APIRequestHandler::GetNextRequestId() {
+  // The request id is primarily used in the renderer to associate an API
+  // request with the associated callback, but it's also used in the browser as
+  // an identifier for the extension function (e.g. by the pageCapture API).
+  // TODO(devlin): We should probably fix this, since the request id is only
+  // unique per-isolate, rather than globally.
+  // TODO(devlin): We could *probably* get away with just using an integer
+  // here, but it's a little less foolproof. How slow is GenerateGUID? Should
+  // we use that instead? It means updating the IPC
+  // (ExtensionHostMsg_Request).
+  // base::UnguessableToken is another good option.
+  return next_request_id_++;
+}
+
+void APIRequestHandler::StartRequestImpl(
+    v8::Local<v8::Context> context,
+    int request_id,
+    const std::string& method,
+    std::unique_ptr<base::ListValue> arguments,
+    std::unique_ptr<AsyncResultHandler> async_handler) {
+  auto request = std::make_unique<Request>();
+  request->request_id = request_id;
+
+  std::unique_ptr<InteractionProvider::Token> user_gesture_token;
+  if (async_handler) {
+    user_gesture_token = interaction_provider_->GetCurrentToken(context);
+    request->has_callback = true;
+  }
+
+  v8::Isolate* isolate = context->GetIsolate();
+  pending_requests_.emplace(
+      request_id,
+      PendingRequest(isolate, context, method, std::move(async_handler),
+                     std::move(user_gesture_token)));
+
+  request->has_user_gesture =
+      interaction_provider_->HasActiveInteraction(context);
+  request->arguments = std::move(arguments);
+  request->method_name = method;
+
+  last_sent_request_id_ = request_id;
+  send_request_.Run(std::move(request), context);
+}
+
 void APIRequestHandler::CompleteRequestImpl(int request_id,
                                             const ArgumentAdapter& arguments,
                                             const std::string& error) {
@@ -249,45 +422,29 @@ void APIRequestHandler::CompleteRequestImpl(int request_id,
   v8::Local<v8::Context> context = pending_request.context.Get(isolate);
   v8::Context::Scope context_scope(context);
 
-  if (!pending_request.callback) {
-    // If there's no callback associated with the request, but there is an
+  if (!pending_request.async_handler) {
+    // If there's no async handler associated with the request, but there is an
     // error, report the error as if it were unchecked.
     if (!error.empty()) {
       // TODO(devlin): Use pending_requeset.method_name here?
       last_error_.ReportUncheckedError(context, error);
     }
-    // No callback to trigger, so we're done!
+    // No async handler to trigger, so we're done!
     return;
   }
 
-  std::vector<v8::Local<v8::Value>> full_args;
   const std::vector<v8::Local<v8::Value>>& response_args =
       arguments.GetArguments(context);
-  size_t curried_argument_size =
-      pending_request.callback_arguments
-          ? pending_request.callback_arguments->size()
-          : 0u;
-  full_args.reserve(response_args.size() + curried_argument_size);
-  if (pending_request.callback_arguments) {
-    for (const auto& arg : *pending_request.callback_arguments)
-      full_args.push_back(arg.Get(isolate));
-  }
-  full_args.insert(full_args.end(), response_args.begin(), response_args.end());
 
-  std::unique_ptr<blink::WebScopedUserGesture> user_gesture;
-  // UserActivationV2 replaces the concept of (scoped) tokens with a frame-wide
-  // state, hence skips token forwarding.
-  if (!base::FeatureList::IsEnabled(features::kUserActivationV2) &&
-      pending_request.user_gesture_token) {
-    user_gesture = std::make_unique<blink::WebScopedUserGesture>(
-        *pending_request.user_gesture_token);
+  std::unique_ptr<InteractionProvider::Scope> user_gesture;
+  if (pending_request.user_gesture_token) {
+    user_gesture = interaction_provider_->CreateScopedInteraction(
+        context, std::move(pending_request.user_gesture_token));
   }
-
-  if (!error.empty())
-    last_error_.SetError(context, error);
 
   if (response_validator_) {
-    bool has_custom_callback = !!pending_request.callback_arguments;
+    bool has_custom_callback =
+        pending_request.async_handler->has_custom_callback();
     response_validator_->ValidateResponse(
         context, pending_request.method_name, response_args, error,
         has_custom_callback
@@ -296,11 +453,15 @@ void APIRequestHandler::CompleteRequestImpl(int request_id,
   }
 
   v8::TryCatch try_catch(isolate);
-  // args.size() is converted to int, but args is controlled by chrome and is
-  // never close to std::numeric_limits<int>::max.
-  JSRunner::Get(context)->RunJSFunction(pending_request.callback->Get(isolate),
-                                        context, full_args.size(),
-                                        full_args.data());
+
+  pending_request.async_handler->DeliverResult(context, &last_error_,
+                                               response_args, error);
+
+  // Since arbitrary JS has ran, the context may have been invalidated. If it
+  // was, bail.
+  if (!binding::IsContextValid(context))
+    return;
+
   if (try_catch.HasCaught()) {
     v8::Local<v8::Message> v8_message = try_catch.Message();
     base::Optional<std::string> message;
@@ -309,9 +470,6 @@ void APIRequestHandler::CompleteRequestImpl(int request_id,
     exception_handler_->HandleException(context, "Error handling response",
                                         &try_catch);
   }
-
-  if (!error.empty())
-    last_error_.ClearError(context, true);
 }
 
 }  // namespace extensions

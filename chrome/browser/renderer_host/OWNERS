@@ -1,8 +1,5 @@
 per-file chrome_extension_message_filter.*=file://extensions/OWNERS
 
-per-file site_per_process_*=file://content/OWNERS
-per-file site_per_process_*=kenrb@chromium.org
-
 # Mac files
 per-file *.mm=avi@chromium.org
 per-file *.mm=ccameron@chromium.org

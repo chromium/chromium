@@ -30,7 +30,7 @@ void ChromeAsyncExtensionFunction::SetError(const std::string& error) {
 }
 
 const std::string& ChromeAsyncExtensionFunction::GetError() const {
-  return error_.empty() ? UIThreadExtensionFunction::GetError() : error_;
+  return error_.empty() ? ExtensionFunction::GetError() : error_;
 }
 
 void ChromeAsyncExtensionFunction::SendResponse(bool success) {

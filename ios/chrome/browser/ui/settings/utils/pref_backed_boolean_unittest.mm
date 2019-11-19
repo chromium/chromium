@@ -11,7 +11,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/ui/settings/utils/fake_observable_boolean.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -42,7 +42,7 @@ class PrefBackedBooleanTest : public PlatformTest {
 
   PrefBackedBoolean* GetObservableBoolean() { return observable_boolean_; }
 
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   PrefBackedBoolean* observable_boolean_;
 };

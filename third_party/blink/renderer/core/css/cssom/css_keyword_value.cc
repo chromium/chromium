@@ -26,24 +26,29 @@ CSSKeywordValue* CSSKeywordValue::Create(const String& keyword,
 }
 
 CSSKeywordValue* CSSKeywordValue::FromCSSValue(const CSSValue& value) {
-  if (value.IsInheritedValue())
-    return MakeGarbageCollected<CSSKeywordValue>(getValueName(CSSValueInherit));
-  if (value.IsInitialValue())
-    return MakeGarbageCollected<CSSKeywordValue>(getValueName(CSSValueInitial));
-  if (value.IsUnsetValue())
-    return MakeGarbageCollected<CSSKeywordValue>(getValueName(CSSValueUnset));
-  if (value.IsIdentifierValue()) {
+  if (value.IsInheritedValue()) {
     return MakeGarbageCollected<CSSKeywordValue>(
-        getValueName(ToCSSIdentifierValue(value).GetValueID()));
+        getValueName(CSSValueID::kInherit));
   }
-  if (value.IsCustomIdentValue()) {
-    const CSSCustomIdentValue& ident_value = ToCSSCustomIdentValue(value);
-    if (ident_value.IsKnownPropertyID()) {
+  if (value.IsInitialValue()) {
+    return MakeGarbageCollected<CSSKeywordValue>(
+        getValueName(CSSValueID::kInitial));
+  }
+  if (value.IsUnsetValue()) {
+    return MakeGarbageCollected<CSSKeywordValue>(
+        getValueName(CSSValueID::kUnset));
+  }
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    return MakeGarbageCollected<CSSKeywordValue>(
+        getValueName(identifier_value->GetValueID()));
+  }
+  if (const auto* ident_value = DynamicTo<CSSCustomIdentValue>(value)) {
+    if (ident_value->IsKnownPropertyID()) {
       // CSSPropertyID represents the LHS of a CSS declaration, and
       // CSSKeywordValue represents a RHS.
       return nullptr;
     }
-    return MakeGarbageCollected<CSSKeywordValue>(ident_value.Value());
+    return MakeGarbageCollected<CSSKeywordValue>(ident_value->Value());
   }
   NOTREACHED();
   return nullptr;
@@ -75,14 +80,15 @@ CSSValueID CSSKeywordValue::KeywordValueID() const {
 const CSSValue* CSSKeywordValue::ToCSSValue() const {
   CSSValueID keyword_id = KeywordValueID();
   switch (keyword_id) {
-    case (CSSValueInherit):
+    case (CSSValueID::kInherit):
       return CSSInheritedValue::Create();
-    case (CSSValueInitial):
+    case (CSSValueID::kInitial):
       return CSSInitialValue::Create();
-    case (CSSValueUnset):
+    case (CSSValueID::kUnset):
       return cssvalue::CSSUnsetValue::Create();
-    case (CSSValueInvalid):
-      return CSSCustomIdentValue::Create(AtomicString(keyword_value_));
+    case (CSSValueID::kInvalid):
+      return MakeGarbageCollected<CSSCustomIdentValue>(
+          AtomicString(keyword_value_));
     default:
       return CSSIdentifierValue::Create(keyword_id);
   }

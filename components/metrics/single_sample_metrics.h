@@ -6,12 +6,13 @@
 #define COMPONENTS_METRICS_SINGLE_SAMPLE_METRICS_H_
 
 #include "base/callback.h"
-#include "components/metrics/public/interfaces/single_sample_metrics.mojom.h"
+#include "components/metrics/public/mojom/single_sample_metrics.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace metrics {
 
-using CreateProviderCB =
-    base::RepeatingCallback<void(mojom::SingleSampleMetricsProviderRequest)>;
+using CreateProviderCB = base::RepeatingCallback<void(
+    mojo::PendingReceiver<mojom::SingleSampleMetricsProvider>)>;
 
 // Initializes and sets the base::SingleSampleMetricsFactory for the current
 // process. |create_provider_cb| is used to create provider instances per each
@@ -34,7 +35,7 @@ extern void InitializeSingleSampleMetricsFactory(
 // that has a deterministic shutdown path and which serves as a stable endpoint
 // for the factory created by the above initialize method in another process.
 extern void CreateSingleSampleMetricsProvider(
-    mojom::SingleSampleMetricsProviderRequest request);
+    mojo::PendingReceiver<mojom::SingleSampleMetricsProvider> receiver);
 
 }  // namespace metrics
 

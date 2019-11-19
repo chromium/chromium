@@ -7,11 +7,11 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
-#include "ash/app_list/pagination_model.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_container_view.h"
@@ -21,6 +21,7 @@
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
@@ -28,7 +29,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
-#include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/chromeos/search_box/search_box_view_base.h"
 #include "ui/gfx/geometry/insets.h"
@@ -37,9 +38,8 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/public/activation_client.h"
 
-namespace app_list {
+namespace ash {
 
 ////////////////////////////////////////////////////////////////////////////////
 // AppListMainView:
@@ -70,7 +70,7 @@ void AppListMainView::Init(int initial_apps_page,
   AddContentsViews();
 
   // Switch the apps grid view to the specified page.
-  app_list::PaginationModel* pagination_model = GetAppsPaginationModel();
+  ash::PaginationModel* pagination_model = GetAppsPaginationModel();
   if (pagination_model->is_valid_page(initial_apps_page))
     pagination_model->SelectPage(initial_apps_page, false);
 }
@@ -84,34 +84,6 @@ void AppListMainView::AddContentsViews() {
   AddChildView(contents_view_);
 
   search_box_view_->set_contents_view(contents_view_);
-
-  // Clear the old query and start search.
-  search_box_view_->ClearSearch();
-}
-
-void AppListMainView::ShowAppListWhenReady() {
-  // After switching to tablet mode, other app windows may be active. Show the
-  // app list without activating it to avoid breaking other windows' state.
-  const aura::Window* active_window =
-      wm::GetActivationClient(
-          app_list_view_->GetWidget()->GetNativeView()->GetRootWindow())
-          ->GetActiveWindow();
-  if (app_list_view_->is_tablet_mode() && active_window)
-    GetWidget()->ShowInactive();
-  else
-    GetWidget()->Show();
-}
-
-void AppListMainView::ResetForShow() {
-  contents_view_->SetActiveState(ash::AppListState::kStateStart);
-  contents_view_->GetAppsContainerView()->ResetForShowApps();
-  // We clear the search when hiding so when app list appears it is not showing
-  // search results.
-  search_box_view_->ClearSearch();
-}
-
-void AppListMainView::Close() {
-  contents_view_->CancelDrag();
 }
 
 void AppListMainView::ModelChanged() {
@@ -131,7 +103,7 @@ void AppListMainView::SetDragAndDropHostOfCurrentAppList(
   contents_view_->SetDragAndDropHostOfCurrentAppList(drag_and_drop_host);
 }
 
-PaginationModel* AppListMainView::GetAppsPaginationModel() {
+ash::PaginationModel* AppListMainView::GetAppsPaginationModel() {
   return contents_view_->GetAppsContainerView()
       ->apps_grid_view()
       ->pagination_model();
@@ -163,9 +135,14 @@ void AppListMainView::ActivateApp(AppListItem* item, int event_flags) {
                               kFullscreenAppListFolders, kMaxFolderOpened);
   } else {
     base::RecordAction(base::UserMetricsAction("AppList_ClickOnApp"));
-    delegate_->ActivateItem(item->id(), event_flags);
-    UMA_HISTOGRAM_BOOLEAN(kAppListAppLaunchedFullscreen,
-                          false /*not a suggested app*/);
+
+    // Avoid using |item->id()| as the parameter. In some rare situations,
+    // activating the item may destruct it. Using the reference to an object
+    // which may be destroyed during the procedure as the function parameter
+    // may bring the crash like https://crbug.com/990282.
+    const std::string id = item->id();
+    delegate_->ActivateItem(id, event_flags,
+                            ash::AppListLaunchedFrom::kLaunchedFromGrid);
   }
 }
 
@@ -198,6 +175,9 @@ void AppListMainView::QueryChanged(search_box::SearchBoxViewBase* sender) {
 void AppListMainView::ActiveChanged(search_box::SearchBoxViewBase* sender) {
   if (!app_list_features::IsZeroStateSuggestionsEnabled())
     return;
+  // Do not update views on closing.
+  if (app_list_view_->app_list_state() == ash::AppListViewState::kClosed)
+    return;
 
   if (search_box_view_->is_search_box_active()) {
     // Show zero state suggestions when search box is activated with an empty
@@ -223,14 +203,12 @@ void AppListMainView::SearchBoxFocusChanged(
 
   SearchResultBaseView* first_result_view =
       contents_view_->search_results_page_view()->first_result_view();
-  if (!first_result_view || !first_result_view->background_highlighted())
+  if (!first_result_view || !first_result_view->selected())
     return;
-
-  first_result_view->SetBackgroundHighlighted(false);
+  first_result_view->SetSelected(false, base::nullopt);
 }
 
 void AppListMainView::AssistantButtonPressed() {
-  DCHECK(chromeos::switches::IsAssistantEnabled());
   delegate_->StartAssistant();
 }
 
@@ -239,4 +217,4 @@ void AppListMainView::BackButtonPressed() {
     app_list_view_->Dismiss();
 }
 
-}  // namespace app_list
+}  // namespace ash

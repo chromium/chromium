@@ -153,15 +153,15 @@ verify_channel() {
   case $CHANNEL in
     stable )
       CHANNEL=stable
-      RELEASENOTES="http://googlechromereleases.blogspot.com/search/label/Stable%20updates"
+      RELEASENOTES="https://chromereleases.googleblog.com/search/label/Stable%20updates"
       ;;
-    unstable|dev|alpha )
-      CHANNEL=unstable
-      RELEASENOTES="http://googlechromereleases.blogspot.com/search/label/Dev%20updates"
-      ;;
-    testing|beta )
+    beta|testing )
       CHANNEL=beta
-      RELEASENOTES="http://googlechromereleases.blogspot.com/search/label/Beta%20updates"
+      RELEASENOTES="https://chromereleases.googleblog.com/search/label/Beta%20updates"
+      ;;
+    dev|unstable|alpha )
+      CHANNEL=unstable
+      RELEASENOTES="https://chromereleases.googleblog.com/search/label/Dev%20updates"
       ;;
     * )
       echo

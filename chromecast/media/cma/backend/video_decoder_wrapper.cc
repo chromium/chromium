@@ -4,6 +4,8 @@
 
 #include "chromecast/media/cma/backend/video_decoder_wrapper.h"
 
+#include <utility>
+
 #include "chromecast/media/cma/base/decoder_buffer_base.h"
 
 namespace chromecast {
@@ -69,7 +71,8 @@ void VideoDecoderWrapper::SetDelegate(
 
 media::CmaBackend::BufferStatus VideoDecoderWrapper::PushBuffer(
     scoped_refptr<media::DecoderBufferBase> buffer) {
-  return decoder_->PushBuffer(buffer.get());
+  pushed_buffer_ = std::move(buffer);
+  return decoder_->PushBuffer(pushed_buffer_.get());
 }
 
 bool VideoDecoderWrapper::SetConfig(const media::VideoConfig& config) {

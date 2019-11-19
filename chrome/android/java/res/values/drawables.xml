@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <drawable name="ntp_search_box">@drawable/modern_toolbar_text_box_background</drawable>
+    <drawable name="badge_update">@drawable/badge_update_dark</drawable>
+    <drawable name="ic_error_24dp_filled">@drawable/ic_error_grey800_24dp_filled</drawable>
+    <drawable name="ic_more_vert_24dp">@drawable/ic_more_vert_24dp_on_light_bg</drawable>
+    <drawable name="ic_offline_pin_24dp">@drawable/ic_offline_pin_24dp_on_light_bg</drawable>
+    <drawable name="ic_play_circle_filled_24dp">
+        @drawable/ic_play_circle_filled_24dp_on_light_bg
+    </drawable>
+    <drawable name="shared_clipboard_zero_state">@drawable/shared_clipboard_zero_state_light</drawable>
+</resources>

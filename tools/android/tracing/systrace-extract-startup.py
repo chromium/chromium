@@ -6,6 +6,8 @@
 # This script parses result of build/android/adb_profile_chrome_startup and
 # prints various information.
 
+from __future__ import print_function
+
 import argparse
 import collections
 import glob
@@ -18,7 +20,8 @@ import re
 def HumanSortingKey(string):
   # From https://goo.gl/65xrva
   def _ToInt(string):
-      return int(string) if string.isdigit() else string
+    return int(string) if string.isdigit() else string
+
   return [_ToInt(c) for c in re.split('(\d+)', string)]
 
 
@@ -54,14 +57,14 @@ class LogIndenter(object):
 
 def log(message, *arguments):
   if not message:
-    print
+    print()
     return
 
   if arguments:
     message = message.format(*arguments)
   if LogIndenter.indentation() > 0:
     message = '  ' * LogIndenter.indentation() + message
-  print message
+  print(message)
 
 
 def ParseTraceDatas(trace_file_path):
@@ -446,8 +449,8 @@ def PrintReport(file_paths, options):
         ]
       table.append(row)
 
-  print
-  print '\n'.join(separator.join(str(v) for v in row) for row in table)
+  print()
+  print('\n'.join(separator.join(str(v) for v in row) for row in table))
 
 
 def PrintTrace(trace_file_path, options):

@@ -1,0 +1,32 @@
+<!--
+@MAC-ALLOW:AXRole*
+@WIN-ALLOW:xml-roles*
+@WIN-ALLOW:IA2_STATE_VERTICAL
+@WIN-ALLOW:SELECTABLE
+@UIA-WIN-ALLOW:Value.IsReadOnly*
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@AURALINUX-ALLOW:xml-roles*
+@AURALINUX-ALLOW:posinset*
+@AURALINUX-ALLOW:setsize*
+@AURALINUX-ALLOW:enabled
+-->
+<!DOCTYPE html>
+<html>
+
+<body>
+
+  <select>
+    <optgroup label="Swedish Cars" aria-label="Swedish Cars Label">
+      <option value="volvo" aria-label="Volvo Label">Volvo</option>
+      <option value="saab" aria-label="Saab Label">Saab</option>
+    </optgroup>
+    <optgroup label="German Cars">
+      <option selected value="mercedes" aria-label="Mercedes Label">Mercedes</option>
+      <option value="audi" aria-label="Audi Label">Audi</option>
+    </optgroup>
+  </select>
+
+</body>
+
+</html>

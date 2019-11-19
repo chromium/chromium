@@ -1,0 +1,49 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/internal_rules.gni")
+
+# Generates a script in the bin directory that runs
+# //build/android/resource_sizes.py against the provided apk.
+#
+# Only one of apk_name or file_path should be provided.
+#
+# Variables:
+#   apk_name: The name of the apk, without the extension.
+#   file_path: The path to the apk or .minimal.apks.
+template("android_resource_sizes_test") {
+  generate_android_wrapper(target_name) {
+    executable = "//build/android/resource_sizes.py"
+    wrapper_script = "$root_out_dir/bin/${target_name}"
+
+    assert(defined(invoker.apk_name) != defined(invoker.file_path),
+           "Exactly one of apk_name or file_path should be provided.")
+
+    data_deps = [
+      "//build/android:resource_sizes_py",
+    ]
+    if (defined(invoker.data_deps)) {
+      data_deps += invoker.data_deps
+    }
+
+    data = []
+    if (defined(invoker.apk_name)) {
+      _file_path = "$root_out_dir/apks/${invoker.apk_name}.apk"
+      data += [ "$root_out_dir/arsc/apks/${invoker.apk_name}.ap_" ]
+    } else if (defined(invoker.file_path)) {
+      _file_path = invoker.file_path
+    }
+    _rebased_file_path = rebase_path(_file_path, root_build_dir)
+
+    data += [ _file_path ]
+
+    executable_args = [
+      "--output-format",
+      "histograms",
+      "@WrappedPath(${_rebased_file_path})",
+      "--chromium-output-directory",
+      "@WrappedPath(.)",
+    ]
+  }
+}

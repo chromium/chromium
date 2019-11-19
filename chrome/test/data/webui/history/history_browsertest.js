@@ -6,10 +6,7 @@
  * @fileoverview Test suite for the Material Design history page.
  */
 
-const ROOT_PATH = '../../../../../';
-
-GEN_INCLUDE(
-    [ROOT_PATH + 'chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "base/command_line.h"');
 GEN('#include "chrome/test/data/webui/history_ui_browsertest.h"');
 
@@ -23,9 +20,11 @@ HistoryBrowserTest.prototype = {
   /** @override */
   runAccessibilityChecks: false,
 
-  extraLibraries: PolymerTest.getLibraries(ROOT_PATH).concat([
+  extraLibraries: [
+    ...PolymerTest.prototype.extraLibraries,
+    '../test_util.js',
     'test_util.js',
-  ]),
+  ],
 
   /** @override */
   setUp: function() {
@@ -190,7 +189,6 @@ HistorySyncedTabsTest.prototype = {
   __proto__: HistoryBrowserTest.prototype,
 
   extraLibraries: HistoryBrowserTest.prototype.extraLibraries.concat([
-    '../settings/test_util.js',
     'history_synced_tabs_test.js',
   ]),
 };

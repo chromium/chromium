@@ -1,5 +1,6 @@
 rootWebArea
-++genericContainer
-++++button name='Bullet'
-++menu
-++++button name='Bullet'
+++genericContainer ignored
+++++genericContainer
+++++++button inputType='image' name='Bullet'
+++++menu
+++++++button inputType='image' name='Bullet'

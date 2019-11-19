@@ -1,0 +1,174 @@
+syntax = "proto2";
+
+// Used to generate the ChromeOS C++ namespace
+package chromeos.time_limit_consistency;
+
+// Used to generate the Java package
+option java_package = "com.google.kids.timelimit.consistency";
+option java_multiple_files = true;
+
+// The platforms where the test suite may be supported.
+enum SupportedPlatform {
+  UNSPECIFIED_PLATFORM = 0;
+  ANDROID = 1;
+  CHROME_OS = 2;
+}
+
+// Policies which may be active.
+enum ConsistencyGoldenPolicy {
+  UNSPECIFIED_POLICY = 0;
+  NO_ACTIVE_POLICY = 1;
+  OVERRIDE = 2;
+  FIXED_LIMIT = 3;
+  USAGE_LIMIT = 4;
+}
+
+// Actions that an override can take.
+enum ConsistencyGoldenOverrideAction {
+  UNSPECIFIED_ACTION = 0;
+  LOCK = 1;
+  UNLOCK_USAGE_LIMIT = 2;
+  UNLOCK_WINDOW_LIMIT = 3;
+  // Deprecated but kept here for easier conversion to/from the original enum.
+  UNLOCK_LOCK_OVERRIDE = 4 [deprecated = true];
+  UNLOCK_WITH_DEADLINE = 5;
+  UNLOCK_UNTIL_LOCK_DEADLINE = 6;
+}
+
+// Days of the week.
+enum ConsistencyGoldenEffectiveDay {
+  UNSPECIFIED_EFFECTIVE_DAY = 0;
+  MONDAY = 1;
+  TUESDAY = 2;
+  WEDNESDAY = 3;
+  THURSDAY = 4;
+  FRIDAY = 5;
+  SATURDAY = 6;
+  SUNDAY = 7;
+}
+
+// The main object, represents one test suite (and one golden file).
+message ConsistencyGolden {
+  // The platforms where the test is supported. Required
+  repeated SupportedPlatform supported_platforms = 1;
+
+  // A list of test cases. Required
+  repeated ConsistencyGoldenCase cases = 2;
+}
+
+// Message representing one test case
+message ConsistencyGoldenCase {
+  // Input policy data. Required
+  optional ConsistencyGoldenInput input = 1;
+
+  // Simulates the current state when executing. Required
+  optional ConsistencyGoldenCurrentState current_state = 2;
+
+  // The test's output, used for both the expected and the actual results.
+  // Required
+  optional ConsistencyGoldenOutput output = 3;
+}
+
+// The policies configured by the parent.
+message ConsistencyGoldenInput {
+  // List of bedtime configurations for different days of the week.
+  repeated ConsistencyGoldenWindowLimitEntry window_limits = 1;
+
+  // Time of day when the usage time counter is reset. Optional, will default
+  // to 6am if unset.
+  optional ConsistencyGoldenTimeOfDay usage_limit_resets_at = 2;
+
+  // List of usage time configurations for different days of the week.
+  repeated ConsistencyGoldenUsageLimitEntry usage_limits = 3;
+
+  // List of overrides currently active.
+  repeated ConsistencyGoldenOverride overrides = 4;
+}
+
+// Bedtime configuration for a given day.
+message ConsistencyGoldenWindowLimitEntry {
+  // Which day of the week this configuration relates to. Required
+  optional ConsistencyGoldenEffectiveDay effective_day = 1;
+
+  // At which hour and minute this bedtime should start. Required
+  optional ConsistencyGoldenTimeOfDay starts_at = 2;
+
+  // At which hour and minute this bedtime should end. Required
+  optional ConsistencyGoldenTimeOfDay ends_at = 3;
+
+  // The moment when this configuration was last updated. Optional but some more
+  // complex scenarios may require it.
+  optional int64 last_updated_millis = 4;
+}
+
+// Usage limit configuration for a given day.
+message ConsistencyGoldenUsageLimitEntry {
+  // Which day of the week this configuration relates to. Required
+  optional ConsistencyGoldenEffectiveDay effective_day = 1;
+
+  // Available usage quota for this day in minutes. Required (0 means no quota).
+  optional int32 usage_quota_mins = 2;
+
+  // The moment when this configuration was last updated. Optional but some more
+  // complex scenarios may require it.
+  optional int64 last_updated_millis = 3;
+}
+
+// Represents an override that is currently active.
+message ConsistencyGoldenOverride {
+  // What this override does. Required
+  optional ConsistencyGoldenOverrideAction action = 1;
+
+  // Moment when this override was created, in millis. Required.
+  optional int64 created_at_millis = 2;
+
+  // The duration of the unlock, if it is of type "UNLOCK_UNTIL_LOCK_DEADLINE".
+  optional int64 duration_millis = 3;
+}
+
+// Represents a moment of a day.
+message ConsistencyGoldenTimeOfDay {
+  // A given hour. [0-23]. Required
+  optional int32 hour = 1;
+
+  // A given minute. [0-59]. Required
+  optional int32 minute = 2;
+}
+
+// Information to represent the current state when executing.
+message ConsistencyGoldenCurrentState {
+  // A timestamp for the desired current time. Required
+  optional int64 time_millis = 1;
+
+  // String representing the desired timezone, formatted like "GMT+2"/"GMT-3"
+  // or "America/Sao_Paulo". Required
+  optional string timezone = 2;
+
+  // How much usage time was already spent, in milliseconds.
+  // Optional, will be treated as zero if unset.
+  optional int64 usage_millis = 3;
+
+  // Timestamp representing the moment when usage data was last collected.
+  // Optional, will default to |time_millis| if unset.
+  optional int64 usage_timestamp = 4;
+}
+
+// Information on the output.
+message ConsistencyGoldenOutput {
+  // Whether the device is locked. Required
+  optional bool is_locked = 1;
+
+  // What is the policy currently taking place. Required
+  optional ConsistencyGoldenPolicy active_policy = 2;
+
+  // Timestamp of when is the device supposed to unlock.
+  // This field must be present if and only if the device is locked.
+  optional int64 next_unlocking_time_millis = 3;
+
+  // Policy that is expected to be active when next state begins. Required
+  optional ConsistencyGoldenPolicy next_active_policy = 4;
+
+  // How much time in millis is still available in the current day's quota.
+  // Required only if dealing with usage limits.
+  optional int64 remaining_quota_millis = 5;
+}

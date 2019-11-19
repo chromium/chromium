@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -53,7 +54,7 @@ bool ShouldShowFirstRunDialog() {
   if (g_forced_show_dialog_state != ForcedShowDialogState::kNotForced)
     return g_forced_show_dialog_state == ForcedShowDialogState::kForceShown;
 
-#if !defined(GOOGLE_CHROME_BUILD)
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // On non-official builds, only --force-first-run-dialog will show the dialog.
   return false;
 #endif

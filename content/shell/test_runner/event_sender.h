@@ -132,13 +132,6 @@ class TEST_RUNNER_EXPORT EventSender {
 
   void DumpFilenameBeingDragged();
 
-  void GestureFlingCancel();
-  void GestureFlingStart(float x,
-                         float y,
-                         float velocity_x,
-                         float velocity_y,
-                         gin::Arguments* args);
-  bool IsFlinging();
   void GestureScrollFirstPoint(float x, float y);
 
   void TouchStart(gin::Arguments* args);
@@ -331,7 +324,7 @@ class TEST_RUNNER_EXPORT EventSender {
   // Timestamp of the last event that was dispatched
   base::TimeTicks last_event_timestamp_;
 
-  base::WeakPtrFactory<EventSender> weak_factory_;
+  base::WeakPtrFactory<EventSender> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EventSender);
 };

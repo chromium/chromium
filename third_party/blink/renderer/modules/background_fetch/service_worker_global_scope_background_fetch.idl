@@ -6,7 +6,7 @@
 
 [
     ImplementedAs=ServiceWorkerGlobalScopeBackgroundFetch,
-    OriginTrialEnabled=BackgroundFetch
+    RuntimeEnabled=BackgroundFetch
 ] partial interface ServiceWorkerGlobalScope {
     attribute EventHandler onbackgroundfetchsuccess;
     attribute EventHandler onbackgroundfetchfail;

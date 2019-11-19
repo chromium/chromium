@@ -13,6 +13,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <fstream>
 #include <map>
 #include <memory>
 #include <set>
@@ -43,8 +44,38 @@ namespace base {
 
 namespace {
 
+// The /proc path to max_user_watches.
+constexpr char kInotifyMaxUserWatchesPath[] =
+    "/proc/sys/fs/inotify/max_user_watches";
+
+// This is a soft limit. If there are more than |kExpectedFilePathWatches|
+// FilePathWatchers for a user, than they might affect each other's inotify
+// watchers limit.
+constexpr int kExpectedFilePathWatchers = 16;
+
+// The default max inotify watchers limit per user, if reading
+// /proc/sys/fs/inotify/max_user_watches fails.
+constexpr int kDefaultInotifyMaxUserWatches = 8192;
+
 class FilePathWatcherImpl;
 class InotifyReader;
+
+// Get the maximum number of inotify watches can be used by a FilePathWatcher
+// instance. This is based on /proc/sys/fs/inotify/max_user_watches entry.
+int GetMaxNumberOfInotifyWatches() {
+  const static int max = []() {
+    int max_number_of_inotify_watches = 0;
+
+    std::ifstream in(kInotifyMaxUserWatchesPath);
+    if (!in.is_open() || !(in >> max_number_of_inotify_watches)) {
+      LOG(ERROR) << "Failed to read " << kInotifyMaxUserWatchesPath;
+      return kDefaultInotifyMaxUserWatches / kExpectedFilePathWatchers;
+    }
+
+    return max_number_of_inotify_watches / kExpectedFilePathWatchers;
+  }();
+  return max;
+}
 
 class InotifyReaderThreadDelegate final : public PlatformThread::Delegate {
  public:
@@ -67,6 +98,7 @@ class InotifyReader {
  public:
   using Watch = int;  // Watch descriptor used by AddWatch() and RemoveWatch().
   static constexpr Watch kInvalidWatch = -1;
+  static constexpr Watch kWatchLimitExceeded = -2;
 
   // Watch directory |path| for changes. |watcher| will be notified on each
   // change. Returns |kInvalidWatch| on failure.
@@ -124,6 +156,14 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
                          bool created,
                          bool deleted,
                          bool is_dir);
+
+  // Increase the number of inotify watches associated to this
+  // FilePathWatcherImpl instance.
+  bool IncreaseWatch();
+
+  // Decrease the number of inotify watches associated to this
+  // FilePathWatcherImpl instance.
+  void DecreaseWatch();
 
  private:
   void OnFilePathChangedOnOriginSequence(InotifyReader::Watch fired_watch,
@@ -200,6 +240,9 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   // |target_| and always stores an empty next component name in |subdir|.
   std::vector<WatchEntry> watches_;
 
+  // The number of inotify watches currently associated with this instance.
+  int number_of_inotify_watches_ = 0;
+
   std::unordered_map<InotifyReader::Watch, FilePath> recursive_paths_by_watch_;
   std::map<FilePath, InotifyReader::Watch> recursive_watches_by_path_;
 
@@ -209,7 +252,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   // appear after it, that is not possible.
   WeakPtr<FilePathWatcherImpl> weak_ptr_;
 
-  WeakPtrFactory<FilePathWatcherImpl> weak_factory_;
+  WeakPtrFactory<FilePathWatcherImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FilePathWatcherImpl);
 };
@@ -296,13 +339,19 @@ InotifyReader::Watch InotifyReader::AddWatch(
   AutoLock auto_lock(lock_);
 
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::WILL_BLOCK);
+
+  if (!watcher->IncreaseWatch())
+    return kWatchLimitExceeded;
   Watch watch = inotify_add_watch(inotify_fd_, path.value().c_str(),
                                   IN_ATTRIB | IN_CREATE | IN_DELETE |
                                   IN_CLOSE_WRITE | IN_MOVE |
                                   IN_ONLYDIR);
 
-  if (watch == kInvalidWatch)
+  if (watch == kInvalidWatch) {
+    // This watch shouldn't be counted.
+    watcher->DecreaseWatch();
     return kInvalidWatch;
+  }
 
   watchers_[watch].insert(watcher);
 
@@ -316,6 +365,7 @@ void InotifyReader::RemoveWatch(Watch watch, FilePathWatcherImpl* watcher) {
   AutoLock auto_lock(lock_);
 
   watchers_[watch].erase(watcher);
+  watcher->DecreaseWatch();
 
   if (watchers_[watch].empty()) {
     watchers_.erase(watch);
@@ -341,7 +391,7 @@ void InotifyReader::OnInotifyEvent(const inotify_event* event) {
   }
 }
 
-FilePathWatcherImpl::FilePathWatcherImpl() : weak_factory_(this) {
+FilePathWatcherImpl::FilePathWatcherImpl() {
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
 
@@ -446,11 +496,28 @@ void FilePathWatcherImpl::OnFilePathChangedOnOriginSequence(
     }
   }
 
-  if (ContainsKey(recursive_paths_by_watch_, fired_watch)) {
+  if (Contains(recursive_paths_by_watch_, fired_watch)) {
     if (!did_update)
       UpdateRecursiveWatches(fired_watch, is_dir);
     callback_.Run(target_, false /* error */);
   }
+}
+
+bool FilePathWatcherImpl::IncreaseWatch() {
+  if (number_of_inotify_watches_ >= GetMaxNumberOfInotifyWatches()) {
+    // Notify that error happened since we are hitting the inotify watches
+    // limit.
+    callback_.Run(target_, true /* error */);
+    return false;
+  }
+  ++number_of_inotify_watches_;
+  return true;
+}
+
+void FilePathWatcherImpl::DecreaseWatch() {
+  --number_of_inotify_watches_;
+  // Sanity check:
+  DCHECK_GE(number_of_inotify_watches_, 0);
 }
 
 bool FilePathWatcherImpl::Watch(const FilePath& path,
@@ -506,6 +573,8 @@ void FilePathWatcherImpl::UpdateWatches() {
     watch_entry.watch = InotifyReader::kInvalidWatch;
     watch_entry.linkname.clear();
     watch_entry.watch = g_inotify_reader.Get().AddWatch(path, this);
+    if (watch_entry.watch == InotifyReader::kWatchLimitExceeded)
+      break;
     if (watch_entry.watch == InotifyReader::kInvalidWatch) {
       // Ignore the error code (beyond symlink handling) to attempt to add
       // watches on accessible children of unreadable directories. Note that
@@ -538,7 +607,7 @@ void FilePathWatcherImpl::UpdateRecursiveWatches(
 
   // Check to see if this is a forced update or if some component of |target_|
   // has changed. For these cases, redo the watches for |target_| and below.
-  if (!ContainsKey(recursive_paths_by_watch_, fired_watch) &&
+  if (!Contains(recursive_paths_by_watch_, fired_watch) &&
       fired_watch != watches_.back().watch) {
     UpdateRecursiveWatchesForPath(target_);
     return;
@@ -548,10 +617,9 @@ void FilePathWatcherImpl::UpdateRecursiveWatches(
   if (!is_dir)
     return;
 
-  const FilePath& changed_dir =
-      ContainsKey(recursive_paths_by_watch_, fired_watch) ?
-      recursive_paths_by_watch_[fired_watch] :
-      target_;
+  const FilePath& changed_dir = Contains(recursive_paths_by_watch_, fired_watch)
+                                    ? recursive_paths_by_watch_[fired_watch]
+                                    : target_;
 
   auto start_it = recursive_watches_by_path_.lower_bound(changed_dir);
   auto end_it = start_it;
@@ -561,6 +629,9 @@ void FilePathWatcherImpl::UpdateRecursiveWatches(
       break;
     if (!DirectoryExists(cur_path))
       g_inotify_reader.Get().RemoveWatch(end_it->second, this);
+
+    // Keep it in sync with |recursive_watches_by_path_| crbug.com/995196.
+    recursive_paths_by_watch_.erase(end_it->second);
   }
   recursive_watches_by_path_.erase(start_it, end_it);
   UpdateRecursiveWatchesForPath(changed_dir);
@@ -583,10 +654,12 @@ void FilePathWatcherImpl::UpdateRecursiveWatchesForPath(const FilePath& path) {
        current = enumerator.Next()) {
     DCHECK(enumerator.GetInfo().IsDirectory());
 
-    if (!ContainsKey(recursive_watches_by_path_, current)) {
+    if (!Contains(recursive_watches_by_path_, current)) {
       // Add new watches.
       InotifyReader::Watch watch =
           g_inotify_reader.Get().AddWatch(current, this);
+      if (watch == InotifyReader::kWatchLimitExceeded)
+        break;
       TrackWatchForRecursion(watch, current);
     } else {
       // Update existing watches.
@@ -594,6 +667,8 @@ void FilePathWatcherImpl::UpdateRecursiveWatchesForPath(const FilePath& path) {
       DCHECK_NE(InotifyReader::kInvalidWatch, old_watch);
       InotifyReader::Watch watch =
           g_inotify_reader.Get().AddWatch(current, this);
+      if (watch == InotifyReader::kWatchLimitExceeded)
+        break;
       if (watch != old_watch) {
         g_inotify_reader.Get().RemoveWatch(old_watch, this);
         recursive_paths_by_watch_.erase(old_watch);
@@ -613,8 +688,8 @@ void FilePathWatcherImpl::TrackWatchForRecursion(InotifyReader::Watch watch,
   if (watch == InotifyReader::kInvalidWatch)
     return;
 
-  DCHECK(!ContainsKey(recursive_paths_by_watch_, watch));
-  DCHECK(!ContainsKey(recursive_watches_by_path_, path));
+  DCHECK(!Contains(recursive_paths_by_watch_, watch));
+  DCHECK(!Contains(recursive_watches_by_path_, path));
   recursive_paths_by_watch_[watch] = path;
   recursive_watches_by_path_[path] = watch;
 }

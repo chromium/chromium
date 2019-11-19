@@ -1,0 +1,49 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+enum RemotingStopReason {
+  ROUTE_TERMINATED,  // User-initiated disconnect, etc.
+  LOCAL_PLAYBACK,  // Media switched back to local playback.
+  SOURCE_GONE,  // RemotingSource has been destroyed.
+  MESSAGE_SEND_FAILED,  // Failed to send a message to the sink.
+  DATA_SEND_FAILED,  // Failed to consume from a data pipe or send to the sink.
+  UNEXPECTED_FAILURE,  // Unexpected failure or inconsistent state encountered.
+  SERVICE_GONE,  // Mirror service disconnected.
+  USER_DISABLED,  // Media Remoting was disabled by user.
+};
+
+enum RemotingStartFailReason {
+  CANNOT_START_MULTIPLE,  // Remoting was already active.
+  ROUTE_TERMINATED,  // User-initated disconnect while starting remoting.
+  INVALID_ANSWER_MESSAGE,  // Invalid ANSWER message.
+};
+
+enum RemotingSinkFeature {
+  RENDERING,
+  CONTENT_DECRYPTION,
+};
+
+enum RemotingSinkAudioCapability {
+  CODEC_BASELINE_SET,
+  CODEC_AAC,
+  CODEC_OPUS,
+};
+
+enum RemotingSinkVideoCapability {
+  SUPPORT_4K,
+  CODEC_BASELINE_SET,
+  CODEC_H264,
+  CODEC_VP8,
+  CODEC_VP9,
+  CODEC_HEVC,
+};
+
+struct RemotingSinkMetadata {
+  array<RemotingSinkFeature> features;
+  array<RemotingSinkAudioCapability> audio_capabilities;
+  array<RemotingSinkVideoCapability> video_capabilities;
+  string friendly_name;
+};

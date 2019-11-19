@@ -1,0 +1,5 @@
+Verifies that isolated worlds can be created after same-process navigation
+Isolated world evaluation result: 56
+Reload.
+Isolated world evaluation result: 56
+

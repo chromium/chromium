@@ -20,12 +20,17 @@ StubWindow::StubWindow(PlatformWindowDelegate* delegate,
 
 StubWindow::~StubWindow() {}
 
-void StubWindow::Show() {}
+void StubWindow::Show(bool inactive) {}
 
 void StubWindow::Hide() {}
 
 void StubWindow::Close() {
   delegate_->OnClosed();
+}
+
+bool StubWindow::IsVisible() const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return true;
 }
 
 void StubWindow::PrepareForShutdown() {}
@@ -61,7 +66,22 @@ void StubWindow::Minimize() {}
 void StubWindow::Restore() {}
 
 PlatformWindowState StubWindow::GetPlatformWindowState() const {
-  return PlatformWindowState::PLATFORM_WINDOW_STATE_UNKNOWN;
+  return PlatformWindowState::kUnknown;
+}
+
+void StubWindow::Activate() {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void StubWindow::Deactivate() {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void StubWindow::SetUseNativeFrame(bool use_native_frame) {}
+
+bool StubWindow::ShouldUseNativeFrame() const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
 }
 
 void StubWindow::SetCursor(PlatformCursor cursor) {}
@@ -70,14 +90,15 @@ void StubWindow::MoveCursorTo(const gfx::Point& location) {}
 
 void StubWindow::ConfineCursorToBounds(const gfx::Rect& bounds) {}
 
-PlatformImeController* StubWindow::GetPlatformImeController() {
-  return nullptr;
-}
-
 void StubWindow::SetRestoredBoundsInPixels(const gfx::Rect& bounds) {}
 
 gfx::Rect StubWindow::GetRestoredBoundsInPixels() const {
   return gfx::Rect();
 }
+
+void StubWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
+                                const gfx::ImageSkia& app_icon) {}
+
+void StubWindow::SizeConstraintsChanged() {}
 
 }  // namespace ui

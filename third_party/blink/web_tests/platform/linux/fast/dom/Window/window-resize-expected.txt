@@ -1,0 +1,143 @@
+This test makes sure that we have similar behavior as other browsers when resizing and moving a window outside of the screen. This test will fail in some dimensions when run manually because of inconsistencies of when the window can and cannot go behind the doc.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+
+
+window.resizeTo Tests
+
+
+Testing - resizeTo: Too Big
+FAIL window.outerWidth == screen.availWidth should be true. Was false.
+
+
+Testing - resizeTo: Too Small
+PASS window.outerWidth == 100 is true
+
+
+Testing - resizeTo: Full Screen Out of Bounds
+FAIL window.screenY == screen.availTop should be true. Was false.
+PASS window.outerHeight == screen.availHeight is true
+FAIL window.screenX == screen.availLeft should be true. Was false.
+PASS window.outerWidth == screen.availWidth is true
+
+
+Testing - resizeTo: Not Full Screen Out of Bounds
+FAIL window.outerHeight + window.screenY - screen.availTop == screen.availHeight should be true. Was false.
+FAIL window.outerWidth + window.screenX - screen.availLeft == screen.availWidth should be true. Was false.
+
+
+window.resizeBy Tests
+
+
+Testing - resizeBy: Too Small
+PASS window.outerWidth == 100 is true
+
+
+Testing - resizeBy: Too Big
+FAIL window.outerWidth == screen.availWidth should be true. Was false.
+
+
+window.moveTo Tests
+
+
+Testing - moveTo: Top Left
+FAIL window.screenY == screen.availTop should be true. Was false.
+FAIL window.screenX == screen.availLeft should be true. Was false.
+
+
+Testing - moveTo: Top
+FAIL window.screenY == screen.availTop should be true. Was false.
+PASS window.screenX == screen.availLeft is true
+
+
+Testing - moveTo: Top Right
+FAIL window.screenY == screen.availTop should be true. Was false.
+PASS window.outerWidth == screen.availWidth is true
+
+
+Testing - moveTo: Right
+PASS window.screenY == screen.availTop is true
+PASS window.outerWidth == screen.availWidth is true
+
+
+Testing - moveTo: Bottom Right
+PASS window.outerHeight == screen.availHeight is true
+PASS window.outerWidth == screen.availWidth is true
+
+
+Testing - moveTo: Bottom
+PASS window.outerHeight == screen.availHeight is true
+PASS window.screenX == screen.availLeft is true
+
+
+Testing - moveTo: Bottom Left
+PASS window.outerHeight == screen.availHeight is true
+FAIL window.screenX == screen.availLeft should be true. Was false.
+
+
+Testing - moveTo: Left
+PASS window.screenY == screen.availTop is true
+FAIL window.screenX == screen.availLeft should be true. Was false.
+
+
+window.moveBy Tests
+
+
+Testing - moveBy: Zero Zero
+PASS window.screenX == previousScreenX is true
+PASS window.screenY == previousScreenY is true
+
+
+Testing - moveBy: One Zero
+PASS window.screenX == previousScreenX + 1 is true
+PASS window.screenY == previousScreenY is true
+
+
+Testing - moveBy: Zero One
+PASS window.screenX == previousScreenX is true
+PASS window.screenY == previousScreenY + 1 is true
+
+
+Testing - moveBy: Top Left
+FAIL window.screenY == screen.availTop should be true. Was false.
+FAIL window.screenX == screen.availLeft should be true. Was false.
+
+
+Testing - moveBy: Top
+FAIL window.screenY == screen.availTop should be true. Was false.
+FAIL window.screenX == screen.availLeft should be true. Was false.
+
+
+Testing - moveBy: Top Right
+FAIL window.screenY == screen.availTop should be true. Was false.
+PASS window.outerWidth == screen.availWidth is true
+
+
+Testing - moveBy: Right
+FAIL window.screenY == screen.availTop should be true. Was false.
+PASS window.outerWidth == screen.availWidth is true
+
+
+Testing - moveBy: Bottom Right
+PASS window.outerHeight == screen.availHeight is true
+PASS window.outerWidth == screen.availWidth is true
+
+
+Testing - moveBy: Bottom
+PASS window.outerHeight == screen.availHeight is true
+
+
+Testing - moveBy: Bottom Left
+PASS window.outerHeight == screen.availHeight is true
+FAIL window.screenX == screen.availLeft should be true. Was false.
+
+
+Testing - moveBy: Left
+FAIL window.screenX == screen.availLeft should be true. Was false.
+
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

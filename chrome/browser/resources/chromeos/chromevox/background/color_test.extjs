@@ -1,0 +1,72 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Include test fixture.
+GEN_INCLUDE(['//chrome/browser/resources/chromeos/chromevox/testing/chromevox_next_e2e_test_base.js']);
+
+/**
+ * Test fixture for Color.
+ * @constructor
+ * @extends {ChromeVoxE2ETest}
+ */
+function ChromeVoxColorTest() {
+  ChromeVoxNextE2ETest.call(this);
+}
+
+ChromeVoxColorTest.prototype = {
+  __proto__: ChromeVoxNextE2ETest.prototype,
+};
+
+SYNC_TEST_F('ChromeVoxColorTest', 'FindDistanceTest', function() {
+  // Hexadecimal representations of colors.
+  var red = 0xff0000;
+  var lime = 0x00ff00;
+  var blue = 0x0000ff;
+  var opaqueRed = 0xffff0000;
+  var transparentLime = 0x0000ff00;
+
+  assertEquals(Color.findDistance(red,lime), Color.findDistance(lime, blue));
+  // Opacity should not factor into this calculation.
+  assertEquals(Color.findDistance(red,lime), Color.findDistance(opaqueRed, transparentLime));
+});
+
+SYNC_TEST_F('ChromeVoxColorTest', 'FindClosestMatchingColorTest', function() {
+  var white = 0xffffff;
+  var red = 0xff0000;
+  var lime = 0x00ff00;
+  var blue = 0x0000ff;
+  var black = 0x000000;
+
+  var gmailDefaultTextColor = 0x222222;
+  var looksLikePink = 0xF4CCCC;
+  var looksLikeGreen = 0x38761D;
+  var looksLikeDarkGrey = 0x0C343D;
+  var unknownColor = 0x003DAC;
+
+  // Exact matches.
+  assertEquals('White', Color.findClosestMatchingColor(white));
+  assertEquals('Red', Color.findClosestMatchingColor(red));
+  assertEquals('Lime', Color.findClosestMatchingColor(lime));
+  assertEquals('Blue', Color.findClosestMatchingColor(blue));
+  assertEquals('Black', Color.findClosestMatchingColor(black));
+
+  // Inexact matches.
+  assertEquals('Black', Color.findClosestMatchingColor(gmailDefaultTextColor));
+  assertEquals('Pink', Color.findClosestMatchingColor(looksLikePink));
+  assertEquals('Forest Green', Color.findClosestMatchingColor(looksLikeGreen));
+  assertEquals('Dark Slate Grey', Color.findClosestMatchingColor(looksLikeDarkGrey));
+
+  // No match.
+  assertEquals('', Color.findClosestMatchingColor(unknownColor));
+});
+
+SYNC_TEST_F('ChromeVoxColorTest', 'GetOpacityPercentageTest', function() {
+  var opaqueRed = 0xffff0000;
+  var transparentLime = 0x0000ff00;
+  var translucentBlue = 0x800000ff;
+
+  assertEquals(100, Color.getOpacityPercentage(opaqueRed));
+  assertEquals(0, Color.getOpacityPercentage(transparentLime));
+  assertEquals(50, Color.getOpacityPercentage(translucentBlue));
+});

@@ -136,7 +136,7 @@ void HidServiceMac::Connect(const std::string& device_guid,
     return;
   }
 
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE, kBlockingTaskTraits,
       base::BindOnce(&HidServiceMac::OpenOnBlockingThread, map_entry->second),
       base::BindOnce(&HidServiceMac::DeviceOpened, weak_factory_.GetWeakPtr(),

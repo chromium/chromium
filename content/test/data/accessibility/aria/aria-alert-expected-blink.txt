@@ -1,4 +1,5 @@
 rootWebArea
-++alert liveStatus='assertive' containerLiveAtomic=true liveAtomic=true
-++++staticText name='This test is for aria role="alert"' containerLiveAtomic=true
-++++++inlineTextBox name='This test is for aria role="alert"'
+++genericContainer ignored
+++++alert liveStatus='assertive' containerLiveAtomic=true liveAtomic=true
+++++++staticText name='This test is for aria role="alert"' containerLiveAtomic=true
+++++++++inlineTextBox name='This test is for aria role="alert"'

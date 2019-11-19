@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.suggestions;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Exposes the data of a suggestion that can be saved offline.

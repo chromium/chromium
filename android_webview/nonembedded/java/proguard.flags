@@ -1,0 +1,55 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+-keepclassmembers class org.chromium.android_webview.AwPdfExporter {
+    android.view.ViewGroup mContainerView;
+}
+
+# Keep the factory and its public members; it's the main entry point used by the
+# framework.
+-keep class com.android.webview.chromium.WebViewChromiumFactoryProvider {
+    public *;
+}
+
+-keep class * implements android.webkit.WebViewFactoryProvider$Statics {
+    *;
+}
+
+-keep class com.android.webview.chromium.ContentSettingsAdapter {
+    public *;
+}
+
+-keep class com.android.webview.chromium.WebViewChromiumFactoryProviderFor* {
+    public *;
+}
+
+-keep class com.android.webview.chromium.WebViewDatabaseAdapter {
+  public *;
+}
+
+# This is the main entry point for APIs. It is kept to make developing with
+# unreleased Android easier.
+-keep class com.android.webview.chromium.WebViewChromium {
+  public *;
+}
+
+# Functor classes with native methods implemented in Android.
+-keep class com.android.webview.chromium.DrawFunctor
+-keep class com.android.webview.chromium.DrawGLFunctor
+-keep class com.android.webview.chromium.GraphicsUtils
+
+-keep class org.chromium.android_webview.AwBrowserProcess {
+    java.nio.channels.FileLock sExclusiveFileLock;
+}
+
+# Workaround for crbug/1002847. Methods of BaseGmsClient are incorrectly
+# removed even though they are required for the derived class GmsClient
+# to correctly implement Api$Client.
+# TODO: remove once crbug/1002847 resolved.
+-keep public class com.google.android.gms.common.internal.BaseGmsClient {
+  public void disconnect();
+  public void dump(java.lang.String,java.io.FileDescriptor,java.io.PrintWriter,java.lang.String[]);
+  public int getMinApkVersion();
+  public boolean requiresSignIn();
+}

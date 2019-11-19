@@ -20,6 +20,7 @@
 #include "extensions/renderer/bindings/api_request_handler.h"
 #include "extensions/renderer/bindings/api_type_reference_map.h"
 #include "extensions/renderer/bindings/argument_spec.h"
+#include "extensions/renderer/bindings/test_interaction_provider.h"
 #include "gin/handle.h"
 
 namespace extensions {
@@ -92,19 +93,22 @@ class DeclarativeEventTest : public APIBindingTest {
       type_refs_.AddSpec("condition", std::move(condition));
     }
 
+    interaction_provider_ = std::make_unique<TestInteractionProvider>();
     request_handler_ = std::make_unique<APIRequestHandler>(
         base::BindRepeating(&DeclarativeEventTest::OnRequest,
                             base::Unretained(this)),
         APILastError(APILastError::GetParent(), binding::AddConsoleError()),
-        nullptr, base::BindRepeating(&GetTestUserActivationState));
+        nullptr, interaction_provider_.get());
   }
 
   void TearDown() override {
     request_handler_.reset();
+    interaction_provider_.reset();
     APIBindingTest::TearDown();
   }
 
   APITypeReferenceMap type_refs_;
+  std::unique_ptr<TestInteractionProvider> interaction_provider_;
   std::unique_ptr<APIRequestHandler> request_handler_;
   std::unique_ptr<APIRequestHandler::Request> last_request_;
 

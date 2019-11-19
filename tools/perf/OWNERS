@@ -1,13 +1,26 @@
-charliea@chromium.org
 crouleau@chromium.org
-eyaich@chromium.org
-sullivan@chromium.org
+
+# Sharding, triggering, and builder configurations.
+jbudorick@chromium.org
+#hypan@google.com  Uncomment when hypan@ becomes a committer.
+
+# For core cli_tools, system health memory benchmarks, and
+# memory-infra related changes.
+perezju@chromium.org
 
 # For changes related to ChromeOS.
 achuith@chromium.org
 
-# For system health memory benchmarks & memory-infra related changes.
-perezju@chromium.org
+# For expectations.config file format infrastructure changes.
+rmhasan@google.com
+
+# For gtest perf tests
+bsheedy@chromium.org
+
+# For system health stories.
+charliea@chromium.org
+eyaich@chromium.org
+sullivan@chromium.org
 
 # For page_cycler and loading benchmarks related changes.
 kouhei@chromium.org

@@ -22,7 +22,7 @@
           body.focus();
 
           var firstChild = accessibilityController.focusedElement.childAtIndex(0);
-          shouldBe("firstChild.role", "'AXRole: AXLink'");
+          shouldBeTrue("firstChild.isIgnored");
     }
 
 </script>

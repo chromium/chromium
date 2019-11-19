@@ -65,12 +65,7 @@ in buckets are restricted to 1GB, you'll have to shard the file over many
 files. Select gzip compression and use `<your_bucket>/site_urls.*.json.gz` as
 your destination.
 
-Once exported, you can download the files from your bucket and extract them
-into a single file for processing:
-
-```sh
-ls site_urls.*.gz | xargs gunzip -c > site_urls
-```
+Once exported, you can download the files from your bucket.
 
 ## 2. Acquire a filter list in the indexed format
 Chromium's tools are designed to work with a binary indexed version of filter
@@ -89,7 +84,7 @@ An example using [EasyList](https://easylist.to/easylist/easylist.txt) follows:
 ## 3. Generate the smaller filter list
 ```sh
 1. ninja -C out/Release subresource_filter_tools
-2. out/Release/subresource_filter_tool --ruleset=easylist_indexed match_rules --input_file=site_urls > ordered_list.txt
+2. cat site_urls.*.json.gz | gunzip - | out/Release/subresource_filter_tool --ruleset=easylist_indexed match_rules > ordered_list.txt
 3. head -n 1000 ordered_list.txt | cut -d' ' -f2 > smaller_list.txt
 ```
 

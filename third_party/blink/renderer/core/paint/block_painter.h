@@ -9,16 +9,17 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/order_iterator.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-struct PaintInfo;
-class ScopedPaintState;
 class InlineBox;
 class LayoutBlock;
 class LayoutBox;
-class LayoutPoint;
+class ScopedPaintState;
+struct PaintInfo;
+struct PhysicalOffset;
+struct PhysicalRect;
 
 class BlockPainter {
   STACK_ALLOCATED();
@@ -27,12 +28,10 @@ class BlockPainter {
   BlockPainter(const LayoutBlock& block) : layout_block_(block) {}
 
   void Paint(const PaintInfo&);
-  void PaintObject(const PaintInfo&, const LayoutPoint& paint_offset);
-  void PaintContents(const PaintInfo&, const LayoutPoint& paint_offset);
+  void PaintObject(const PaintInfo&, const PhysicalOffset& paint_offset);
+  void PaintContents(const PaintInfo&, const PhysicalOffset& paint_offset);
   void PaintChildren(const PaintInfo&);
   void PaintChild(const LayoutBox&, const PaintInfo&);
-  void PaintOverflowControlsIfNeeded(const PaintInfo&,
-                                     const LayoutPoint& paint_offset);
 
   // See ObjectPainter::PaintAllPhasesAtomically().
   void PaintAllChildPhasesAtomically(const LayoutBox&, const PaintInfo&);
@@ -40,15 +39,13 @@ class BlockPainter {
   static void PaintInlineBox(const InlineBox&, const PaintInfo&);
 
  private:
-  // Paint scroll hit test placeholders in the correct paint order (see:
-  // ScrollHitTestDisplayItem.h).
-  void PaintScrollHitTestDisplayItem(const PaintInfo&);
-  void PaintBlockFlowContents(const PaintInfo&, const LayoutPoint&);
-  void PaintCarets(const PaintInfo&, const LayoutPoint& paint_offset);
+  void PaintBlockFlowContents(const PaintInfo&, const PhysicalOffset&);
+  void PaintCarets(const PaintInfo&, const PhysicalOffset& paint_offset);
 
   bool ShouldPaint(const ScopedPaintState&) const;
 
-  CORE_EXPORT LayoutRect OverflowRectForCullRectTesting(bool is_printing) const;
+  CORE_EXPORT PhysicalRect
+  OverflowRectForCullRectTesting(bool is_printing) const;
 
   FRIEND_TEST_ALL_PREFIXES(BlockPainterTest, OverflowRectForCullRectTesting);
   FRIEND_TEST_ALL_PREFIXES(BlockPainterTest,

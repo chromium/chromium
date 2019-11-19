@@ -4,18 +4,22 @@
 
 #include "components/bookmarks/browser/bookmark_node_data.h"
 
+#include <algorithm>
 #include <string>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 namespace bookmarks {
 
 #if !defined(OS_MACOSX)
+namespace {
+constexpr size_t kMaxVectorPreallocateSize = 10000;
+}  // namespace
+
 const char BookmarkNodeData::kClipboardFormatString[] =
     "chromium/x-bookmark-entries";
 #endif
@@ -32,8 +36,8 @@ BookmarkNodeData::Element::Element(const BookmarkNode* node)
       id_(node->id()) {
   if (node->GetMetaInfoMap())
     meta_info_map = *node->GetMetaInfoMap();
-  for (int i = 0; i < node->child_count(); ++i)
-    children.push_back(Element(node->GetChild(i)));
+  for (const auto& child : node->children())
+    children.push_back(Element(child.get()));
 }
 
 BookmarkNodeData::Element::Element(const Element& other) = default;
@@ -86,12 +90,23 @@ bool BookmarkNodeData::Element::ReadFromPickle(base::PickleIterator* iterator) {
   }
   children.clear();
   if (!is_url) {
-    uint32_t children_count;
-    if (!iterator->ReadUInt32(&children_count))
+    uint32_t children_count_tmp;
+    if (!iterator->ReadUInt32(&children_count_tmp))
       return false;
-    children.reserve(children_count);
+    if (!base::IsValueInRangeForNumericType<size_t>(children_count_tmp)) {
+      LOG(WARNING) << "children_count failed bounds check";
+      return false;
+    }
+    // Note: do not preallocate the children vector. A pickle could be
+    // constructed to contain N nested Elements. By continually recursing on
+    // this ReadFromPickle function, the fast-fail logic is subverted. Each
+    // child would claim it contains M more children. The first (and only) child
+    // provided would claim M more children. We would allocate N * M Elements
+    // along the way, while only receiving N Elements.
+    const size_t children_count =
+        base::checked_cast<size_t>(children_count_tmp);
     for (size_t i = 0; i < children_count; ++i) {
-      children.push_back(Element());
+      children.emplace_back();
       if (!children.back().ReadFromPickle(iterator))
         return false;
     }
@@ -124,7 +139,7 @@ BookmarkNodeData::~BookmarkNodeData() {
 bool BookmarkNodeData::ClipboardContainsBookmarks() {
   return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
       ui::ClipboardFormatType::GetType(kClipboardFormatString),
-      ui::CLIPBOARD_TYPE_COPY_PASTE);
+      ui::ClipboardBuffer::kCopyPaste);
 }
 #endif
 
@@ -160,7 +175,7 @@ bool BookmarkNodeData::ReadFromTuple(const GURL& url,
 
 #if !defined(OS_MACOSX)
 void BookmarkNodeData::WriteToClipboard() {
-  ui::ScopedClipboardWriter scw(ui::CLIPBOARD_TYPE_COPY_PASTE);
+  ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
 
 #if defined(OS_WIN)
   const base::string16 kEOL(L"\r\n");
@@ -201,8 +216,8 @@ void BookmarkNodeData::WriteToClipboard() {
       pickle, ui::ClipboardFormatType::GetType(kClipboardFormatString));
 }
 
-bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardType type) {
-  DCHECK_EQ(type, ui::CLIPBOARD_TYPE_COPY_PASTE);
+bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer buffer) {
+  DCHECK_EQ(buffer, ui::ClipboardBuffer::kCopyPaste);
   std::string data;
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   clipboard->ReadData(ui::ClipboardFormatType::GetType(kClipboardFormatString),
@@ -242,13 +257,23 @@ void BookmarkNodeData::WriteToPickle(const base::FilePath& profile_path,
 
 bool BookmarkNodeData::ReadFromPickle(base::Pickle* pickle) {
   base::PickleIterator data_iterator(*pickle);
-  uint32_t element_count;
+  uint32_t element_count_tmp;
   if (profile_path_.ReadFromPickle(&data_iterator) &&
-      data_iterator.ReadUInt32(&element_count)) {
+      data_iterator.ReadUInt32(&element_count_tmp)) {
+    if (!base::IsValueInRangeForNumericType<size_t>(element_count_tmp)) {
+      LOG(WARNING) << "element_count failed bounds check";
+      return false;
+    }
+    const size_t element_count = base::checked_cast<size_t>(element_count_tmp);
+    // Restrict vector preallocation to prevent OOM crashes on invalid or
+    // malicious pickles.
+    if (element_count > kMaxVectorPreallocateSize)
+      LOG(WARNING) << "element_count exceeds kMaxVectorPreallocateSize";
     std::vector<Element> tmp_elements;
-    tmp_elements.resize(element_count);
+    tmp_elements.reserve(std::min(element_count, kMaxVectorPreallocateSize));
     for (size_t i = 0; i < element_count; ++i) {
-      if (!tmp_elements[i].ReadFromPickle(&data_iterator)) {
+      tmp_elements.emplace_back();
+      if (!tmp_elements.back().ReadFromPickle(&data_iterator)) {
         return false;
       }
     }

@@ -4,6 +4,8 @@
 
 #include "ui/views/controls/button/button.h"
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -19,6 +21,8 @@
 #include "ui/views/animation/test/test_ink_drop.h"
 #include "ui/views/animation/test/test_ink_drop_host.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/controls/button/button_controller.h"
+#include "ui/views/controls/button/button_observer.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -47,13 +51,13 @@ namespace {
 // No-op test double of a ContextMenuController.
 class TestContextMenuController : public ContextMenuController {
  public:
-  TestContextMenuController() {}
-  ~TestContextMenuController() override {}
+  TestContextMenuController() = default;
+  ~TestContextMenuController() override = default;
 
   // ContextMenuController:
-  void ShowContextMenuForView(View* source,
-                              const gfx::Point& point,
-                              ui::MenuSourceType source_type) override {}
+  void ShowContextMenuForViewImpl(View* source,
+                                  const gfx::Point& point,
+                                  ui::MenuSourceType source_type) override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestContextMenuController);
@@ -65,10 +69,10 @@ class TestButton : public Button, public ButtonListener {
     set_has_ink_drop_action_on_click(has_ink_drop_action_on_click);
   }
 
-  ~TestButton() override {}
+  ~TestButton() override = default;
 
   KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override {
-    if (custom_key_click_action_ == KeyClickAction::CLICK_NONE)
+    if (custom_key_click_action_ == KeyClickAction::kNone)
       return Button::GetKeyClickActionForEvent(event);
     return custom_key_click_action_;
   }
@@ -113,66 +117,116 @@ class TestButton : public Button, public ButtonListener {
   int ink_drop_layer_add_count_ = 0;
   int ink_drop_layer_remove_count_ = 0;
 
-  KeyClickAction custom_key_click_action_ = KeyClickAction::CLICK_NONE;
+  KeyClickAction custom_key_click_action_ = KeyClickAction::kNone;
 
   DISALLOW_COPY_AND_ASSIGN(TestButton);
+};
+
+class TestButtonObserver : public ButtonObserver {
+ public:
+  TestButtonObserver() = default;
+  ~TestButtonObserver() override = default;
+
+  void OnHighlightChanged(views::Button* observed_button,
+                          bool highlighted) override {
+    observed_button_ = observed_button;
+    highlighted_ = highlighted;
+  }
+
+  void OnStateChanged(views::Button* observed_button,
+                      views::Button::ButtonState old_state) override {
+    observed_button_ = observed_button;
+    state_changed_ = true;
+  }
+
+  void Reset() {
+    observed_button_ = nullptr;
+    highlighted_ = false;
+    state_changed_ = false;
+  }
+
+  views::Button* observed_button() { return observed_button_; }
+  bool highlighted() const { return highlighted_; }
+  bool state_changed() const { return state_changed_; }
+
+ private:
+  views::Button* observed_button_ = nullptr;
+  bool highlighted_ = false;
+  bool state_changed_ = false;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(TestButtonObserver);
 };
 
 }  // namespace
 
 class ButtonTest : public ViewsTestBase {
  public:
-  ButtonTest() {}
-  ~ButtonTest() override {}
+  ButtonTest() = default;
+  ~ButtonTest() override = default;
 
   void SetUp() override {
     ViewsTestBase::SetUp();
 
     // Create a widget so that the Button can query the hover state
     // correctly.
-    widget_.reset(new Widget);
+    widget_ = std::make_unique<Widget>();
     Widget::InitParams params =
         CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = gfx::Rect(0, 0, 650, 650);
-    widget_->Init(params);
+    widget_->Init(std::move(params));
     widget_->Show();
 
-    button_ = new TestButton(false);
-    widget_->SetContentsView(button_);
+    button_ = std::make_unique<TestButton>(false);
+    widget_->SetContentsView(button_.get());
   }
 
   void TearDown() override {
+    if (button_observer_)
+      button_->RemoveButtonObserver(button_observer_.get());
+
+    button_observer_.reset();
+    button_.reset();
     widget_.reset();
+
     ViewsTestBase::TearDown();
   }
 
   void CreateButtonWithInkDrop(std::unique_ptr<InkDrop> ink_drop,
                                bool has_ink_drop_action_on_click) {
-    delete button_;
-    button_ = new TestButton(has_ink_drop_action_on_click);
-    InkDropHostViewTestApi(button_).SetInkDrop(std::move(ink_drop));
-    widget_->SetContentsView(button_);
+    button_ = std::make_unique<TestButton>(has_ink_drop_action_on_click);
+    InkDropHostViewTestApi(button_.get()).SetInkDrop(std::move(ink_drop));
+    widget_->SetContentsView(button_.get());
   }
 
   void CreateButtonWithRealInkDrop() {
-    delete button_;
-    button_ = new TestButton(false);
-    InkDropHostViewTestApi(button_).SetInkDrop(
-        std::make_unique<InkDropImpl>(button_, button_->size()));
-    widget_->SetContentsView(button_);
+    button_ = std::make_unique<TestButton>(false);
+    InkDropHostViewTestApi(button_.get())
+        .SetInkDrop(
+            std::make_unique<InkDropImpl>(button_.get(), button_->size()));
+    widget_->SetContentsView(button_.get());
+  }
+
+  void CreateButtonWithObserver() {
+    button_ = std::make_unique<TestButton>(false);
+    button_observer_ = std::make_unique<TestButtonObserver>();
+    button_->AddButtonObserver(button_observer_.get());
+    widget_->SetContentsView(button_.get());
   }
 
  protected:
   Widget* widget() { return widget_.get(); }
-  TestButton* button() { return button_; }
+  TestButton* button() { return button_.get(); }
+  TestButtonObserver* button_observer() { return button_observer_.get(); }
   void SetDraggedView(View* dragged_view) {
     widget_->dragged_view_ = dragged_view;
   }
 
  private:
   std::unique_ptr<Widget> widget_;
-  TestButton* button_ = nullptr;
+  std::unique_ptr<TestButton> button_;
+  std::unique_ptr<TestButtonObserver> button_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(ButtonTest);
 };
@@ -207,7 +261,7 @@ TEST_F(ButtonTest, HoverStateOnVisibilityChange) {
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = gfx::Rect(700, 700, 10, 10);
-    second_widget.Init(params);
+    second_widget.Init(std::move(params));
     second_widget.Show();
     second_widget.GetNativeWindow()->SetCapture();
 
@@ -280,7 +334,8 @@ TEST_F(ButtonTest, NotifyAction) {
 
   // Set the notify action to its listener on mouse press.
   button()->Reset();
-  button()->set_notify_action(Button::NOTIFY_ON_PRESS);
+  button()->button_controller()->set_notify_action(
+      ButtonController::NotifyAction::kOnPress);
   button()->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
@@ -314,7 +369,8 @@ TEST_F(ButtonTest, NotifyActionNoClick) {
 
   // Set the notify action to its listener on mouse press.
   button()->Reset();
-  button()->set_notify_action(Button::NOTIFY_ON_PRESS);
+  button()->button_controller()->set_notify_action(
+      ButtonController::NotifyAction::kOnPress);
   button()->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
       ui::EF_RIGHT_MOUSE_BUTTON, ui::EF_RIGHT_MOUSE_BUTTON));
@@ -536,9 +592,9 @@ TEST_F(ButtonTest, HideInkDropHighlightWhenRemoved) {
   // being removed.
   views::View parent_test_container;
   parent_test_container.set_owned_by_client();
+  widget()->SetContentsView(&parent_test_container);
   parent_test_container.AddChildView(&test_container);
   test_container.AddChildView(button());
-  widget()->SetContentsView(&parent_test_container);
 
   // Trigger hovering and then remove from the indirect parent. This should
   // propagate down to Button which should remove the highlight effect.
@@ -555,7 +611,6 @@ TEST_F(ButtonTest, HideInkDropHighlightWhenRemoved) {
   // Remove references to and delete button() which cannot be removed by owned
   // containers as it's permanently set as owned by client.
   test_container.RemoveAllChildViews(false);
-  delete button();
 
   // Set the widget contents view to a new View so widget() doesn't contain a
   // stale reference to the test containers that are about to go out of scope.
@@ -570,7 +625,8 @@ TEST_F(ButtonTest, InkDropShowHideOnMouseDraggedNotifyOnRelease) {
 
   TestInkDrop* ink_drop = new TestInkDrop();
   CreateButtonWithInkDrop(base::WrapUnique(ink_drop), false);
-  button()->set_notify_action(Button::NOTIFY_ON_RELEASE);
+  button()->button_controller()->set_notify_action(
+      ButtonController::NotifyAction::kOnRelease);
 
   button()->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
@@ -611,7 +667,8 @@ TEST_F(ButtonTest, InkDropShowHideOnMouseDraggedNotifyOnPress) {
 
   TestInkDrop* ink_drop = new TestInkDrop();
   CreateButtonWithInkDrop(base::WrapUnique(ink_drop), true);
-  button()->set_notify_action(Button::NOTIFY_ON_PRESS);
+  button()->button_controller()->set_notify_action(
+      ButtonController::NotifyAction::kOnPress);
 
   button()->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
@@ -684,7 +741,7 @@ TEST_F(ButtonTest, InkDropStaysHiddenWhileDragging) {
 TEST_F(ButtonTest, NoLayerAddedForWidgetVisibilityChanges) {
   CreateButtonWithRealInkDrop();
 
-  EXPECT_TRUE(button()->visible());
+  EXPECT_TRUE(button()->GetVisible());
   EXPECT_FALSE(button()->layer());
 
   widget()->Hide();
@@ -708,8 +765,6 @@ TEST_F(ButtonTest, NoLayerAddedForWidgetVisibilityChanges) {
   EXPECT_FALSE(button()->layer());
   EXPECT_EQ(0, button()->ink_drop_layer_add_count());
   EXPECT_EQ(0, button()->ink_drop_layer_remove_count());
-
-  delete button();
 }
 
 // Verify that the Space key clicks the button on key-press on Mac, and
@@ -776,9 +831,8 @@ TEST_F(ButtonTest, CustomActionOnKeyPressedEvent) {
   button()->RequestFocus();
   EXPECT_TRUE(button()->HasFocus());
 
-  // Set the button to handle any key pressed event as |CLICK_ON_KEY_PRESS|.
-  button()->set_custom_key_click_action(
-      Button::KeyClickAction::CLICK_ON_KEY_PRESS);
+  // Set the button to handle any key pressed event as kOnKeyPress.
+  button()->set_custom_key_click_action(Button::KeyClickAction::kOnKeyPress);
 
   ui::KeyEvent control_press(ui::ET_KEY_PRESSED, ui::VKEY_CONTROL, ui::EF_NONE);
   EXPECT_TRUE(button()->OnKeyPressed(control_press));
@@ -788,6 +842,59 @@ TEST_F(ButtonTest, CustomActionOnKeyPressedEvent) {
   ui::KeyEvent control_release(ui::ET_KEY_RELEASED, ui::VKEY_CONTROL,
                                ui::EF_NONE);
   EXPECT_FALSE(button()->OnKeyReleased(control_release));
+}
+
+// Verifies that ButtonObserver is notified when the button activition highlight
+// state is changed. Also verifies the |observed_button| and |highlighted|
+// passed to observer are correct.
+TEST_F(ButtonTest, ChangingHighlightStateNotifiesListener) {
+  CreateButtonWithObserver();
+  EXPECT_FALSE(button_observer()->highlighted());
+
+  button()->SetHighlighted(/*bubble_visible=*/true);
+  EXPECT_EQ(button_observer()->observed_button(), button());
+  EXPECT_TRUE(button_observer()->highlighted());
+
+  button()->SetHighlighted(/*bubble_visible=*/false);
+  EXPECT_EQ(button_observer()->observed_button(), button());
+  EXPECT_FALSE(button_observer()->highlighted());
+}
+
+// Verifies that ButtonObserver is notified when the button state is changed,
+// and that the |observed_button| is passed to observer correctly.
+TEST_F(ButtonTest, ClickingButtonNotifiesObserverOfStateChanges) {
+  CreateButtonWithObserver();
+  ui::test::EventGenerator generator(GetRootWindow(widget()));
+
+  generator.PressLeftButton();
+  EXPECT_EQ(button_observer()->observed_button(), button());
+  EXPECT_TRUE(button_observer()->state_changed());
+
+  button_observer()->Reset();
+  EXPECT_EQ(button_observer()->observed_button(), nullptr);
+  EXPECT_FALSE(button_observer()->state_changed());
+
+  generator.ReleaseLeftButton();
+  EXPECT_EQ(button_observer()->observed_button(), button());
+  EXPECT_TRUE(button_observer()->state_changed());
+}
+
+// Verifies the ButtonObserver is notified whenever Button::SetState() is
+// called directly.
+TEST_F(ButtonTest, SetStateNotifiesObserver) {
+  CreateButtonWithObserver();
+
+  button()->SetState(Button::ButtonState::STATE_HOVERED);
+  EXPECT_EQ(button_observer()->observed_button(), button());
+  EXPECT_TRUE(button_observer()->state_changed());
+
+  button_observer()->Reset();
+  EXPECT_EQ(button_observer()->observed_button(), nullptr);
+  EXPECT_FALSE(button_observer()->state_changed());
+
+  button()->SetState(Button::ButtonState::STATE_NORMAL);
+  EXPECT_EQ(button_observer()->observed_button(), button());
+  EXPECT_TRUE(button_observer()->state_changed());
 }
 
 }  // namespace views

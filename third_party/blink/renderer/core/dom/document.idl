@@ -34,6 +34,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 // https://html.spec.whatwg.org/C/#documents
 
 [
+    Exposed=Window,
     Constructor(),
     ConstructorCallWith=Document
 ] interface Document : Node {
@@ -115,14 +116,14 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 
     // dynamic markup insertion
     [CallWith=Isolate, CEReactions, CustomElementCallbacks, RaisesException, MeasureAs=DocumentOpenTwoArgs] Document open(optional DOMString type = "text/html", optional DOMString replace = "");
-    [CallWith=Isolate, RaisesException, MeasureAs=DocumentOpenThreeArgs] Window open(URLString url, DOMString name, DOMString features);
+    [CallWith=Isolate, RaisesException, MeasureAs=DocumentOpenThreeArgs] Window open(USVString url, DOMString name, DOMString features);
     [CEReactions, RaisesException] void close();
     [CallWith=Isolate, CEReactions, CustomElementCallbacks, RaisesException] void write(DOMString... text);
     [CallWith=Isolate, CEReactions, CustomElementCallbacks, RaisesException] void writeln(DOMString... text);
 
     // TrustedTypes variants of the above.
-    // Note: This should be gated on [OriginTrialEnabled=TrustedDOMTypes], but
-    // since OriginTrialEnabled isn't compatible with overloaded methods, we're
+    // Note: This should be gated on [RuntimeEnabled=TrustedDOMTypes], but
+    // since RuntimeEnabled isn't compatible with overloaded methods, we're
     // handling these unconditionally.
     [CallWith=Isolate, CEReactions, CustomElementCallbacks, RaisesException] void write(TrustedHTML text);
     [CallWith=Isolate, CEReactions, CustomElementCallbacks, RaisesException] void writeln(TrustedHTML text);
@@ -169,7 +170,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // Custom Elements
     // https://w3c.github.io/webcomponents/spec/custom/#extensions-to-document-interface-to-register
     // FIXME: The registerElement return type should be Function.
-    [OriginTrialEnabled=CustomElementsV0, CallWith=ScriptState, CustomElementCallbacks, RaisesException, DeprecateAs=DocumentRegisterElement] any registerElement(DOMString type, optional ElementRegistrationOptions options);
+    [RuntimeEnabled=CustomElementsV0, CallWith=ScriptState, CustomElementCallbacks, RaisesException, DeprecateAs=DocumentRegisterElement] any registerElement(DOMString type, optional ElementRegistrationOptions options);
     // https://w3c.github.io/webcomponents/spec/custom/#extensions-to-document-interface-to-instantiate
     [CustomElementCallbacks, PerWorldBindings, RaisesException, ImplementedAs=CreateElementForBinding] Element createElement(DOMString localName, (DOMString or ElementCreationOptions) options);
     [CustomElementCallbacks, RaisesException] Element createElementNS(DOMString? namespaceURI, DOMString qualifiedName, (DOMString or ElementCreationOptions) options);
@@ -178,15 +179,18 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // https://w3c.github.io/page-visibility/#extensions-to-the-document-interface
     readonly attribute boolean hidden;
     readonly attribute VisibilityState visibilityState;
-    [RuntimeEnabled=PageLifecycle] readonly attribute boolean wasDiscarded;
+    readonly attribute boolean wasDiscarded;
 
     // CORS and RFC1918
     // https://wicg.github.io/cors-rfc1918/#feature-detect
-    [RuntimeEnabled=CorsRFC1918, ImplementedAs=addressSpaceForBindings] readonly attribute AddressSpace addressSpace;
+    [RuntimeEnabled=AddressSpace, ImplementedAs=addressSpaceForBindings] readonly attribute AddressSpace addressSpace;
 
     // Non-standard APIs
     [MeasureAs=DocumentCaretRangeFromPoint] Range caretRangeFromPoint([DefaultValue=Undefined] optional long x, [DefaultValue=Undefined] optional long y);
 
+    // Storage Access API
+    [CallWith=ScriptState, NewObject, RuntimeEnabled=StorageAccessAPI] Promise<boolean> hasStorageAccess();
+    [CallWith=ScriptState, NewObject, RuntimeEnabled=StorageAccessAPI] Promise<void> requestStorageAccess();
 
     // https://w3c.github.io/webappsec-feature-policy/#the-policy-object
     [RuntimeEnabled=FeaturePolicyJavaScriptInterface] readonly attribute FeaturePolicy featurePolicy;
@@ -201,16 +205,16 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     attribute EventHandler onbeforecopy;
     attribute EventHandler onbeforecut;
     attribute EventHandler onbeforepaste;
-    [RuntimeEnabled=PageLifecycle] attribute EventHandler onfreeze;
-    [RuntimeEnabled=PageLifecycle] attribute EventHandler onresume;
+    attribute EventHandler onfreeze;
+    attribute EventHandler onresume;
     attribute EventHandler onsearch;
-    [RuntimeEnabled=ExperimentalContentSecurityPolicyFeatures] attribute EventHandler onsecuritypolicyviolation;
+    attribute EventHandler onsecuritypolicyviolation;
     attribute EventHandler onvisibilitychange;
 };
 
-Document implements GlobalEventHandlers;
-Document implements DocumentAndElementEventHandlers;
-Document implements ParentNode;
-Document implements NonElementParentNode;
-Document implements DocumentOrShadowRoot;
-Document implements FontFaceSource;
+Document includes GlobalEventHandlers;
+Document includes DocumentAndElementEventHandlers;
+Document includes ParentNode;
+Document includes NonElementParentNode;
+Document includes DocumentOrShadowRoot;
+Document includes FontFaceSource;

@@ -5,6 +5,8 @@
 
 """Lists unused Java strings and other resources."""
 
+from __future__ import print_function
+
 import optparse
 import re
 import subprocess
@@ -124,27 +126,30 @@ def main(args=None):
 
   # aapt dump fails silently. Notify the user if things look wrong.
   if not defined_resources:
-    print >> sys.stderr, (
-        'Warning: No resources found. Did you provide the correct R.txt paths?')
+    print(
+        'Warning: No resources found. Did you provide the correct R.txt paths?',
+        file=sys.stderr)
   if not used_resources:
-    print >> sys.stderr, (
+    print(
         'Warning: No resources referenced from Java or resource files. Did you '
-        'provide the correct source paths?')
+        'provide the correct source paths?',
+        file=sys.stderr)
   if undefined_resources:
-    print >> sys.stderr, (
+    print(
         'Warning: found %d "undefined" resources that are referenced by Java '
         'files or by other resources, but are not defined anywhere. Run with '
-        '-v to see them.' % len(undefined_resources))
+        '-v to see them.' % len(undefined_resources),
+        file=sys.stderr)
 
   if verbose:
-    print '%d undefined resources:' % len(undefined_resources)
-    print FormatResources(undefined_resources), '\n'
-    print '%d resources defined:' % len(defined_resources)
-    print FormatResources(defined_resources), '\n'
-    print '%d used resources:' % len(used_resources)
-    print FormatResources(used_resources), '\n'
-    print '%d unused resources:' % len(unused_resources)
-  print FormatResources(unused_resources)
+    print('%d undefined resources:' % len(undefined_resources))
+    print(FormatResources(undefined_resources), '\n')
+    print('%d resources defined:' % len(defined_resources))
+    print(FormatResources(defined_resources), '\n')
+    print('%d used resources:' % len(used_resources))
+    print(FormatResources(used_resources), '\n')
+    print('%d unused resources:' % len(unused_resources))
+  print(FormatResources(unused_resources))
 
 
 if __name__ == '__main__':

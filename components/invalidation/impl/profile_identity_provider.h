@@ -8,20 +8,19 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "components/invalidation/public/identity_provider.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace invalidation {
 
-// An identity provider implementation that's backed by
-// ProfileOAuth2TokenService and SigninManager.
+// An identity provider implementation that's backed by IdentityManager
 class ProfileIdentityProvider : public IdentityProvider,
-                                public identity::IdentityManager::Observer {
+                                public signin::IdentityManager::Observer {
  public:
-  ProfileIdentityProvider(identity::IdentityManager* identity_manager);
+  ProfileIdentityProvider(signin::IdentityManager* identity_manager);
   ~ProfileIdentityProvider() override;
 
   // IdentityProvider:
-  std::string GetActiveAccountId() override;
+  CoreAccountId GetActiveAccountId() override;
   bool IsActiveAccountWithRefreshToken() override;
   std::unique_ptr<ActiveAccountAccessTokenFetcher> FetchAccessToken(
       const std::string& oauth_consumer_name,
@@ -29,17 +28,18 @@ class ProfileIdentityProvider : public IdentityProvider,
       ActiveAccountAccessTokenCallback callback) override;
   void InvalidateAccessToken(const identity::ScopeSet& scopes,
                              const std::string& access_token) override;
-  void SetActiveAccountId(const std::string& account_id) override;
+  void SetActiveAccountId(const CoreAccountId& account_id) override;
 
-  // identity::IdentityManager::Observer:
+  // signin::IdentityManager::Observer:
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
-  void OnRefreshTokenRemovedForAccount(const std::string& account_id) override;
+  void OnRefreshTokenRemovedForAccount(
+      const CoreAccountId& account_id) override;
 
  private:
-  identity::IdentityManager* const identity_manager_;
+  signin::IdentityManager* const identity_manager_;
 
-  std::string active_account_id_;
+  CoreAccountId active_account_id_;
 
   DISALLOW_COPY_AND_ASSIGN(ProfileIdentityProvider);
 };

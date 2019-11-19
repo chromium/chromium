@@ -10,14 +10,12 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 
 namespace net {
-
-class IOBuffer;
-class IOBufferWithSize;
 
 // Represents a WebSocket frame header.
 //
@@ -61,15 +59,13 @@ struct NET_EXPORT WebSocketFrameHeader {
     kMaskingKeyLength = 4
   };
 
+  // Contains four-byte data representing "masking key" of WebSocket frames.
+  struct WebSocketMaskingKey {
+    char key[WebSocketFrameHeader::kMaskingKeyLength];
+  };
+
   // Constructor to avoid a lot of repetitive initialisation.
-  explicit WebSocketFrameHeader(OpCode opCode)
-      : final(false),
-        reserved1(false),
-        reserved2(false),
-        reserved3(false),
-        opcode(opCode),
-        masked(false),
-        payload_length(0) {}
+  explicit WebSocketFrameHeader(OpCode opCode) : opcode(opCode) {}
 
   // Create a clone of this object on the heap.
   std::unique_ptr<WebSocketFrameHeader> Clone() const;
@@ -79,13 +75,14 @@ struct NET_EXPORT WebSocketFrameHeader {
 
   // Members below correspond to each item in WebSocket frame header.
   // See <http://tools.ietf.org/html/rfc6455#section-5.2> for details.
-  bool final;
-  bool reserved1;
-  bool reserved2;
-  bool reserved3;
+  bool final = false;
+  bool reserved1 = false;
+  bool reserved2 = false;
+  bool reserved3 = false;
   OpCode opcode;
-  bool masked;
-  uint64_t payload_length;
+  bool masked = false;
+  WebSocketMaskingKey masking_key = {};
+  uint64_t payload_length = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebSocketFrameHeader);
@@ -102,9 +99,17 @@ struct NET_EXPORT_PRIVATE WebSocketFrame {
   // |header| is always present.
   WebSocketFrameHeader header;
 
-  // |data| is always unmasked even if the frame is masked. The size of |data|
-  // is given by |header.payload_length|.
-  scoped_refptr<IOBuffer> data;
+  // |payload| is always unmasked even if the frame is masked. The size of
+  // |payload| is given by |header.payload_length|.
+  // The lifetime of |payload| is not defined by WebSocketFrameChunk. It is the
+  // responsibility of the creator to ensure it remains valid for the lifetime
+  // of this object. This should be documented in the code that creates this
+  // object.
+  // TODO(yoicho): Find more better way to clarify the life cycle.
+  const char* payload = nullptr;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(WebSocketFrame);
 };
 
 // Structure describing one chunk of a WebSocket frame.
@@ -135,15 +140,20 @@ struct NET_EXPORT WebSocketFrameChunk {
   // Indicates this part is the last chunk of a frame.
   bool final_chunk;
 
-  // |data| is always unmasked even if the frame is masked. |data| might be
-  // null in the first chunk.
-  scoped_refptr<IOBufferWithSize> data;
+  // |payload| is always unmasked even if the frame is masked. |payload| might
+  // be empty in the first chunk.
+  // The lifetime of |payload| is not defined by WebSocketFrameChunk. It is the
+  // responsibility of the creator to ensure it remains valid for the lifetime
+  // of this object. This should be documented in the code that creates this
+  // object.
+  // TODO(yoicho): Find more better way to clarify the life cycle.
+  base::span<const char> payload;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(WebSocketFrameChunk);
 };
 
-// Contains four-byte data representing "masking key" of WebSocket frames.
-struct WebSocketMaskingKey {
-  char key[WebSocketFrameHeader::kMaskingKeyLength];
-};
+using WebSocketMaskingKey = WebSocketFrameHeader::WebSocketMaskingKey;
 
 // Returns the size of WebSocket frame header. The size of WebSocket frame
 // header varies from 2 bytes to 14 bytes depending on the payload length

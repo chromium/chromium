@@ -1,6 +1,5 @@
 include_rules = [
+  "+components/about_ui/android/about_ui_jni_headers",
   "+components/grit/components_resources.h",
-  "+jni",
-  "+third_party/brotli",
   "+ui/base",
 ]

@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" />에서 이 기기를 관리하며 내 활동을 모니터링할 수도 있습니다.</translation>
 <translation id="1510238584712386396">런처</translation>
 <translation id="1734367976349034509">기업에서 관리하는 기기입니다.</translation>
+<translation id="1930797645656624981">Chrome OS 입력 방법 서비스</translation>
+<translation id="1979103255016296513">비밀번호 변경 기한 지남</translation>
 <translation id="2049639323467105390">기기는 <ph name="DOMAIN" />에서 관리합니다.</translation>
 <translation id="2083960536266308407">화면에 정보가 없습니다.</translation>
 <translation id="2338501278241028356">블루투스를 사용 설정하여 근처 기기 탐색</translation>
 <translation id="2805756323405976993">앱</translation>
 <translation id="2872961005593481000">종료</translation>
-<translation id="3147142846278915599">런처(앱 동기화 중...)</translation>
+<translation id="3008341117444806826">새로고침</translation>
+<translation id="3838338534323494292">새 비밀번호</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" />에서 이 기기를 관리하고 방문한 웹페이지, 비밀번호, 이메일을 비롯한 모든 사용자 활동에 액세스합니다.</translation>
+<translation id="4227825898293920515">비밀번호가 <ph name="TIME" /> 후에 만료됨</translation>
+<translation id="4429881212383817840">Kerberos 티켓이 곧 만료됨</translation>
+<translation id="445059817448385655">이전 비밀번호</translation>
+<translation id="467510802200863975">비밀번호가 일치하지 않습니다.</translation>
 <translation id="4731797938093519117">부모 액세스</translation>
+<translation id="4890353053343094602">지금 바로 새 비밀번호를 선택하세요.</translation>
 <translation id="5212543919916444558">화면에 도움을 드릴 수 있는 항목이 보이지 않습니다.
 마이크를 탭하여 무엇이든지 물어보세요.</translation>
 <translation id="5222676887888702881">로그아웃</translation>
+<translation id="5317780077021120954">저장</translation>
+<translation id="5332948983412042822">지금 새 비밀번호를 선택하세요.</translation>
 <translation id="5457599981699367932">게스트로 로그인</translation>
 <translation id="54609108002486618">관리</translation>
 <translation id="5832805196449965646">사용자 추가</translation>
 <translation id="5895138241574237353">다시 시작</translation>
+<translation id="6058625436358447366">완료하려면 이전 및 새 비밀번호를 입력하세요.</translation>
+<translation id="6106186594183574873">완료하려면 이전 비밀번호를 입력하세요.</translation>
+<translation id="6146993107019042706">완료하려면 새 비밀번호를 입력하세요.</translation>
 <translation id="7658239707568436148">취소</translation>
+<translation id="7690294790491645610">새 비밀번호 확인</translation>
+<translation id="808894953321890993">비밀번호 변경</translation>
+<translation id="8747900814994928677">변경사항 확인</translation>
+<translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> 티켓을 새로고침하세요.</translation>
 <translation id="9111102763498581341">잠금 해제</translation>
 </translationbundle>

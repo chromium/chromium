@@ -4,7 +4,7 @@ Tests that shorthand is marked as overloaded if all its longhands are overloaded
 element.style { ()
 
 [expanded] 
-.foo { (<style>…</style>)
+.foo { (<style>)
     font-style: normal;
     font-variant-ligatures: normal;
     font-variant-caps: normal;
@@ -22,7 +22,7 @@ element.style { ()
     /-- overloaded --/     margin-left: 10px;
 
 [expanded] 
-div { (<style>…</style>)
+div { (<style>)
     margin-left: 0px !important;
     margin-right: 0px !important;
     margin-top: 0px !important;
@@ -34,7 +34,7 @@ div { (user agent stylesheet)
 
 ======== Inherited from body ========
 [expanded] 
-body { (<style>…</style>)
+body { (<style>)
 /-- overloaded --/     font: 1.2em "Arial", sans-serif;
     /-- overloaded --/     font-style: normal;
     /-- overloaded --/     font-variant-ligatures: normal;

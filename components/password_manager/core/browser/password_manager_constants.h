@@ -10,13 +10,10 @@
 namespace password_manager {
 
 extern const base::FilePath::CharType kAffiliationDatabaseFileName[];
-extern const base::FilePath::CharType kLoginDataFileName[];
-#if defined(USE_X11)
-extern const base::FilePath::CharType kSecondLoginDataFileName[];
-#endif  // defined(USE_X11)
+extern const base::FilePath::CharType kLoginDataForProfileFileName[];
+extern const base::FilePath::CharType kLoginDataForAccountFileName[];
 
 // URL to the password manager account dashboard.
-// TODO(crbug.com/862269): remove when "Smart Lock" is completely gone.
 extern const char kPasswordManagerAccountDashboardURL[];
 
 // URL to the help center article about Smart Lock;

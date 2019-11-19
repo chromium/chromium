@@ -21,8 +21,12 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/network_isolation_key.h"
 #include "net/cookies/cookie_store.h"
+#include "net/http/http_auth.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/network_context.h"
@@ -43,27 +47,27 @@ void StorePartitionNameAndQuitLoop(base::RunLoop* loop,
   loop->Quit();
 }
 
-void AddEntryToHttpAuthCache(net::URLRequestContext* url_request_context) {
-  net::HttpAuthCache* http_auth_cache =
-      url_request_context->http_transaction_factory()
-          ->GetSession()
-          ->http_auth_cache();
-  http_auth_cache->Add(GURL("http://whatever.com/"), "",
-                       net::HttpAuth::AUTH_SCHEME_BASIC, "",
-                       net::AuthCredentials(), "");
+void AddEntryToHttpAuthCache(network::NetworkContext* network_context) {
+  net::HttpAuthCache* http_auth_cache = network_context->url_request_context()
+                                            ->http_transaction_factory()
+                                            ->GetSession()
+                                            ->http_auth_cache();
+  http_auth_cache->Add(GURL(kEmbedderUrl), net::HttpAuth::AUTH_PROXY, "",
+                       net::HttpAuth::AUTH_SCHEME_BASIC,
+                       net::NetworkIsolationKey(), "", net::AuthCredentials(),
+                       "");
 }
 
-void IsEntryInHttpAuthCache(
-    net::URLRequestContextGetter* url_request_context_getter,
-    bool* out_entry_found) {
-  net::HttpAuthCache* http_auth_cache =
-      url_request_context_getter->GetURLRequestContext()
-          ->http_transaction_factory()
-          ->GetSession()
-          ->http_auth_cache();
+void IsEntryInHttpAuthCache(network::NetworkContext* network_context,
+                            bool* out_entry_found) {
+  net::HttpAuthCache* http_auth_cache = network_context->url_request_context()
+                                            ->http_transaction_factory()
+                                            ->GetSession()
+                                            ->http_auth_cache();
   *out_entry_found =
-      http_auth_cache->Lookup(GURL("http://whatever.com/"), "",
-                              net::HttpAuth::AUTH_SCHEME_BASIC) != nullptr;
+      http_auth_cache->Lookup(GURL(kEmbedderUrl), net::HttpAuth::AUTH_PROXY, "",
+                              net::HttpAuth::AUTH_SCHEME_BASIC,
+                              net::NetworkIsolationKey()) != nullptr;
 }
 
 }  // namespace
@@ -77,25 +81,34 @@ class SigninPartitionManagerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
 
     signin_browser_context_ = std::make_unique<TestingProfile>();
+    // Wait for the Network Service to initialize on the IO thread.
+    content::RunAllPendingInMessageLoop(content::BrowserThread::IO);
+
+    auto network_context = std::make_unique<network::NetworkContext>(
+        network::NetworkService::GetNetworkServiceForTesting(),
+        signin_network_context_remote_.BindNewPipeAndPassReceiver(),
+        network::mojom::NetworkContextParams::New());
+    signin_network_context_ = network_context.get();
+    TestingProfile::Builder()
+        .BuildIncognito(signin_browser_context_.get())
+        ->SetNetworkContext(std::move(network_context));
 
     signin_ui_web_contents_ = content::WebContentsTester::CreateTestWebContents(
         GetSigninProfile(), content::SiteInstance::Create(GetSigninProfile()));
 
-    // Let Profile creation finish, which creates the NetworkService instance.
-    base::RunLoop().RunUntilIdle();
-    network::mojom::NetworkContextParamsPtr params =
-        network::mojom::NetworkContextParams::New();
     system_network_context_ = std::make_unique<network::NetworkContext>(
         network::NetworkService::GetNetworkServiceForTesting(),
-        mojo::MakeRequest(&system_network_context_ptr_), std::move(params));
+        system_network_context_remote_.BindNewPipeAndPassReceiver(),
+        network::mojom::NetworkContextParams::New());
 
     GURL url(kEmbedderUrl);
     content::WebContentsTester::For(signin_ui_web_contents())
         ->NavigateAndCommit(url);
 
     GetSigninPartitionManager()->SetClearStoragePartitionTaskForTesting(
-        base::Bind(&SigninPartitionManagerTest::ClearStoragePartitionTask,
-                   base::Unretained(this)));
+        base::BindRepeating(
+            &SigninPartitionManagerTest::ClearStoragePartitionTask,
+            base::Unretained(this)));
     GetSigninPartitionManager()->SetGetSystemNetworkContextForTesting(
         base::BindRepeating(
             &SigninPartitionManagerTest::GetSystemNetworkContext,
@@ -103,6 +116,8 @@ class SigninPartitionManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    system_network_context_.reset();
+
     signin_ui_web_contents_.reset();
 
     signin_browser_context_.reset();
@@ -148,12 +163,16 @@ class SigninPartitionManagerTest : public ChromeRenderViewHostTestHarness {
     return partition_name;
   }
 
-  net::URLRequestContext* GetSystemURLRequestContext() {
-    return system_network_context_->url_request_context();
-  }
-
   network::mojom::NetworkContext* GetSystemNetworkContext() {
     return system_network_context_.get();
+  }
+
+  network::NetworkContext* GetSystemNetworkContextImpl() {
+    return system_network_context_.get();
+  }
+
+  network::NetworkContext* GetSigninNetworkContextImpl() {
+    return signin_network_context_;
   }
 
  private:
@@ -162,10 +181,12 @@ class SigninPartitionManagerTest : public ChromeRenderViewHostTestHarness {
     pending_clear_tasks_.push_back({partition, std::move(clear_done_closure)});
   }
 
+  mojo::Remote<network::mojom::NetworkContext> system_network_context_remote_;
   std::unique_ptr<network::NetworkContext> system_network_context_;
-  network::mojom::NetworkContextPtr system_network_context_ptr_;
 
   std::unique_ptr<TestingProfile> signin_browser_context_;
+  mojo::Remote<network::mojom::NetworkContext> signin_network_context_remote_;
+  network::NetworkContext* signin_network_context_;
 
   // Web contents of the sign-in UI, embedder of the signin-frame webview.
   std::unique_ptr<content::WebContents> signin_ui_web_contents_;
@@ -222,25 +243,21 @@ TEST_F(SigninPartitionManagerTest, TestSubsequentAttempts) {
 
 TEST_F(SigninPartitionManagerTest, HttpAuthCacheTransferred) {
   base::RunLoop loop_prepare;
-  base::PostTaskWithTraitsAndReply(
+  base::PostTaskAndReply(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(AddEntryToHttpAuthCache,
-                     base::Unretained(GetSystemURLRequestContext())),
+                     base::Unretained(GetSystemNetworkContextImpl())),
       loop_prepare.QuitClosure());
   loop_prepare.Run();
 
   RunStartSigninSesssion(signin_ui_web_contents());
-  net::URLRequestContextGetter* signin_url_request_context_getter =
-      GetSigninPartitionManager()
-          ->GetCurrentStoragePartition()
-          ->GetURLRequestContext();
 
   bool entry_found = false;
   base::RunLoop loop_check;
-  base::PostTaskWithTraitsAndReply(
+  base::PostTaskAndReply(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(IsEntryInHttpAuthCache,
-                     base::RetainedRef(signin_url_request_context_getter),
+                     base::Unretained(GetSigninNetworkContextImpl()),
                      &entry_found),
       loop_check.QuitClosure());
   loop_check.Run();

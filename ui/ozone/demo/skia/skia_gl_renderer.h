@@ -5,6 +5,8 @@
 #ifndef UI_OZONE_DEMO_SKIA_SKIA_GL_RENDERER_H_
 #define UI_OZONE_DEMO_SKIA_SKIA_GL_RENDERER_H_
 
+#include <memory>
+
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -29,12 +31,14 @@ class GLSurface;
 }  // namespace gl
 
 namespace ui {
+class PlatformWindowSurface;
 
 class SkiaGlRenderer : public RendererBase,
                        public base::DelegateSimpleThread::Delegate {
  public:
   SkiaGlRenderer(gfx::AcceleratedWidget widget,
-                 const scoped_refptr<gl::GLSurface>& surface,
+                 std::unique_ptr<PlatformWindowSurface> window_surface,
+                 const scoped_refptr<gl::GLSurface>& gl_surface,
                  const gfx::Size& size);
   ~SkiaGlRenderer() override;
 
@@ -50,6 +54,8 @@ class SkiaGlRenderer : public RendererBase,
   void StartDDLRenderThreadIfNecessary(SkSurface* sk_surface);
   void StopDDLRenderThread();
   std::unique_ptr<SkDeferredDisplayList> GetDDL();
+
+  std::unique_ptr<PlatformWindowSurface> window_surface_;
 
   scoped_refptr<gl::GLSurface> gl_surface_;
   scoped_refptr<gl::GLContext> gl_context_;
@@ -78,7 +84,7 @@ class SkiaGlRenderer : public RendererBase,
   SkSurfaceCharacterization surface_charaterization_;
   base::queue<std::unique_ptr<SkDeferredDisplayList>> ddls_;
 
-  base::WeakPtrFactory<SkiaGlRenderer> weak_ptr_factory_;
+  base::WeakPtrFactory<SkiaGlRenderer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SkiaGlRenderer);
 };

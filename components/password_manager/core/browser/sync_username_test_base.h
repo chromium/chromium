@@ -10,10 +10,10 @@
 
 #include <string>
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/common/password_form.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/driver/test_sync_service.h"
-#include "services/identity/public/cpp/identity_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
@@ -23,7 +23,7 @@ class SyncUsernameTestBase : public testing::Test {
   SyncUsernameTestBase();
   ~SyncUsernameTestBase() override;
 
-  // Instruct the signin manager to sign in with |email| or out.
+  // Instruct the identity manager to sign in with |email| or out.
   void FakeSigninAs(const std::string& email);
 
   // Produce a sample PasswordForm.
@@ -38,13 +38,13 @@ class SyncUsernameTestBase : public testing::Test {
 
   const syncer::SyncService* sync_service() const { return &sync_service_; }
 
-  const identity::IdentityManager* identity_manager() {
+  signin::IdentityManager* identity_manager() {
     return identity_test_env_.identity_manager();
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_env_;
-  identity::IdentityTestEnvironment identity_test_env_;
+  base::test::TaskEnvironment scoped_task_env_;
+  signin::IdentityTestEnvironment identity_test_env_;
   syncer::TestSyncService sync_service_;
 };
 

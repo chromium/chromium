@@ -35,11 +35,12 @@ class CONTENT_EXPORT SpeechRecognizerImpl
       public media::AudioCapturerSource::CaptureCallback,
       public SpeechRecognitionEngine::Delegate {
  public:
-  static const int kAudioSampleRate;
-  static const media::ChannelLayout kChannelLayout;
-  static const int kNumBitsPerAudioSample;
-  static const int kNoSpeechTimeoutMs;
-  static const int kEndpointerEstimationTimeMs;
+  static constexpr int kAudioSampleRate = 16000;
+  static constexpr media::ChannelLayout kChannelLayout =
+      media::CHANNEL_LAYOUT_MONO;
+  static constexpr int kNumBitsPerAudioSample = 16;
+  static constexpr int kNoSpeechTimeoutMs = 8000;
+  static constexpr int kEndpointerEstimationTimeMs = 300;
 
   static void SetAudioEnvironmentForTesting(
       media::AudioSystem* audio_system,
@@ -142,7 +143,7 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   // media::AudioCapturerSource::CaptureCallback methods.
   void OnCaptureStarted() final {}
   void Capture(const media::AudioBus* audio_bus,
-               int audio_delay_milliseconds,
+               base::TimeTicks audio_capture_time,
                double volume,
                bool key_pressed) final;
   void OnCaptureError(const std::string& message) final;
@@ -183,7 +184,7 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   // output format.
   std::unique_ptr<SpeechRecognizerImpl::OnDataConverter> audio_converter_;
 
-  base::WeakPtrFactory<SpeechRecognizerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<SpeechRecognizerImpl> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(SpeechRecognizerImpl);
 };
 

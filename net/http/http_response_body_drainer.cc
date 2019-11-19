@@ -22,7 +22,7 @@ HttpResponseBodyDrainer::HttpResponseBodyDrainer(HttpStream* stream)
     : stream_(stream),
       next_state_(STATE_NONE),
       total_read_(0),
-      session_(NULL) {}
+      session_(nullptr) {}
 
 HttpResponseBodyDrainer::~HttpResponseBodyDrainer() = default;
 
@@ -73,10 +73,9 @@ int HttpResponseBodyDrainer::DoDrainResponseBody() {
   next_state_ = STATE_DRAIN_RESPONSE_BODY_COMPLETE;
 
   return stream_->ReadResponseBody(
-      read_buf_.get(),
-      kDrainBodyBufferSize - total_read_,
-      base::Bind(&HttpResponseBodyDrainer::OnIOComplete,
-                 base::Unretained(this)));
+      read_buf_.get(), kDrainBodyBufferSize - total_read_,
+      base::BindOnce(&HttpResponseBodyDrainer::OnIOComplete,
+                     base::Unretained(this)));
 }
 
 int HttpResponseBodyDrainer::DoDrainResponseBodyComplete(int result) {

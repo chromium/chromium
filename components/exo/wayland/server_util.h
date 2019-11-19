@@ -16,16 +16,6 @@
 
 struct wl_resource;
 
-namespace display {
-class Display;
-}
-
-namespace gfx {
-class Insets;
-class Rect;
-class Size;
-}  // namespace gfx
-
 namespace exo {
 
 class DataOffer;
@@ -69,19 +59,6 @@ void SetSurfaceResource(Surface* surface, wl_resource* resource);
 wl_resource* GetDataOfferResource(const DataOffer* data_offer);
 void SetDataOfferResource(DataOffer* data_offer,
                           wl_resource* data_offer_resource);
-
-// Create the insets make sure that work area will be within the chrome's
-// work area when converted to the pixel on client side.
-// This is deprecatd and replaced with |GetWorkAreaInsetsInClientPixel|.
-gfx::Insets GetAdjustedInsets(const display::Display& display);
-
-// Create the insets in client's pixel coordinates in such way that
-// work area will be within the chrome's work area.
-gfx::Insets GetWorkAreaInsetsInClientPixel(
-    const display::Display& display,
-    float default_dsf,
-    const gfx::Size& size_in_client_pixel,
-    const gfx::Rect& work_area_in_dp);
 
 }  // namespace wayland
 }  // namespace exo

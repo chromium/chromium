@@ -11,11 +11,12 @@
 #include <string.h>
 
 #include "base/logging.h"
+#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
-#include "media/filters/jpeg_parser.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
+#include "media/parsers/jpeg_parser.h"
 
 namespace media {
 
@@ -206,7 +207,7 @@ size_t FillJpegHeader(const gfx::Size& input_size,
     for (size_t j = 0; j < kDctSize; ++j) {
       uint32_t scaled_quant_value =
           (quant_table.value[kZigZag8x8[j]] * quality_normalized) / 100;
-      scaled_quant_value = std::min(255u, std::max(1u, scaled_quant_value));
+      scaled_quant_value = base::ClampToRange(scaled_quant_value, 1u, 255u);
       header[idx++] = static_cast<uint8_t>(scaled_quant_value);
     }
   }
@@ -375,11 +376,11 @@ bool VaapiJpegEncoder::Encode(const gfx::Size& input_size,
     return false;
   }
 
-  std::vector<uint8_t> jpeg_header;
-  size_t jpeg_header_size = exif_buffer_size > 0
-                                ? kJpegDefaultHeaderSize + exif_buffer_size
-                                : kJpegDefaultHeaderSize + kJFIFApp0Size;
-  jpeg_header.resize(jpeg_header_size);
+  size_t jpeg_header_size =
+      exif_buffer_size > 0
+          ? kJpegDefaultHeaderSize + kJFIFApp1HeaderSize + exif_buffer_size
+          : kJpegDefaultHeaderSize + kJFIFApp0Size;
+  std::vector<uint8_t> jpeg_header(jpeg_header_size);
   size_t length_in_bits =
       FillJpegHeader(input_size, exif_buffer, exif_buffer_size, quality,
                      jpeg_header.data(), exif_offset);

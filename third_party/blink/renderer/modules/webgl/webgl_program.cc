@@ -46,9 +46,7 @@ WebGLProgram::WebGLProgram(WebGLRenderingContextBase* ctx)
   SetObject(ctx->ContextGL()->CreateProgram());
 }
 
-WebGLProgram::~WebGLProgram() {
-  RunDestructor();
-}
+WebGLProgram::~WebGLProgram() = default;
 
 void WebGLProgram::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
   gl->DeleteProgram(object_);
@@ -162,8 +160,16 @@ void WebGLProgram::CacheInfoIfNeeded(WebGLRenderingContextBase* context) {
   if (!object_)
     return;
   gpu::gles2::GLES2Interface* gl = context->ContextGL();
-  link_status_ = 0;
-  gl->GetProgramiv(object_, GL_LINK_STATUS, &link_status_);
+  GLint link_status = 0;
+  gl->GetProgramiv(object_, GL_LINK_STATUS, &link_status);
+  setLinkStatus(link_status);
+}
+
+void WebGLProgram::setLinkStatus(bool link_status) {
+  if (info_valid_)
+    return;
+
+  link_status_ = link_status;
   if (link_status_ == GL_TRUE) {
     required_transform_feedback_buffer_count_ =
         required_transform_feedback_buffer_count_after_next_link_;

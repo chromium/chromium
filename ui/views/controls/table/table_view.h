@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_CONTROLS_TABLE_TABLE_VIEW_VIEWS_H_
-#define UI_VIEWS_CONTROLS_TABLE_TABLE_VIEW_VIEWS_H_
+#ifndef UI_VIEWS_CONTROLS_TABLE_TABLE_VIEW_H_
+#define UI_VIEWS_CONTROLS_TABLE_TABLE_VIEW_H_
 
 #include <memory>
 #include <vector>
@@ -44,6 +44,7 @@ namespace views {
 class AXVirtualView;
 class FocusRing;
 struct GroupRange;
+class ScrollView;
 class TableGrouper;
 class TableHeader;
 class TableViewObserver;
@@ -62,8 +63,7 @@ class VIEWS_EXPORT TableView
     : public views::View,
       public ui::TableModelObserver {
  public:
-  // Internal class name.
-  static const char kViewClassName[];
+  METADATA_HEADER(TableView);
 
   // Used by AdvanceActiveVisibleColumn(), AdvanceSelection() and
   // ResizeColumnViaKeyboard() to determine the direction to change the
@@ -82,27 +82,27 @@ class VIEWS_EXPORT TableView
     ui::TableColumn column;
 
     // Starting x-coordinate of the column.
-    int x;
+    int x = 0;
 
     // Width of the column.
-    int width;
+    int width = 0;
   };
 
   // Describes a sorted column.
   struct VIEWS_EXPORT SortDescriptor {
-    SortDescriptor() : column_id(-1), ascending(true) {}
+    SortDescriptor() = default;
     SortDescriptor(int column_id, bool ascending)
         : column_id(column_id),
           ascending(ascending) {}
 
     // ID of the sorted column.
-    int column_id;
+    int column_id = -1;
 
     // Is the sort ascending?
-    bool ascending;
+    bool ascending = true;
   };
 
-  typedef std::vector<SortDescriptor> SortDescriptors;
+  using SortDescriptors = std::vector<SortDescriptor>;
 
   // Creates a new table using the model and columns specified.
   // The table type applies to the content of the first column (text, icon and
@@ -113,6 +113,10 @@ class VIEWS_EXPORT TableView
             bool single_selection);
   ~TableView() override;
 
+  // Returns a new ScrollView that contains the given |table|.
+  static std::unique_ptr<ScrollView> CreateScrollViewWithTable(
+      std::unique_ptr<TableView> table);
+
   // Assigns a new model to the table view, detaching the old one if present.
   // If |model| is NULL, the table view cannot be used after this call. This
   // should be called in the containing view's destructor to avoid destruction
@@ -120,21 +124,18 @@ class VIEWS_EXPORT TableView
   void SetModel(ui::TableModel* model);
   ui::TableModel* model() const { return model_; }
 
-  // Returns a new ScrollView that contains the receiver.
-  View* CreateParentIfNecessary();
-
   // Sets the TableGrouper. TableView does not own |grouper| (common use case is
   // to have TableModel implement TableGrouper).
   void SetGrouper(TableGrouper* grouper);
 
   // Returns the number of rows in the TableView.
-  int RowCount() const;
+  int GetRowCount() const;
 
   // Selects the specified item, making sure it's visible.
   void Select(int model_row);
 
   // Returns the first selected row in terms of the model.
-  int FirstSelectedRow();
+  int GetFirstSelectedRow() const;
 
   const ui::ListSelectionModel& selection_model() const {
     return selection_model_;
@@ -152,11 +153,7 @@ class VIEWS_EXPORT TableView
   bool HasColumn(int id) const;
 
   // Returns whether an active row and column have been set.
-  bool HasFocusIndicator() const;
-
-  // Moves the focus ring to its new location if the active cell has changed, or
-  // hides the focus ring if the table is not focused.
-  void ResetFocusIndicator();
+  bool GetHasFocusIndicator() const;
 
   void set_observer(TableViewObserver* observer) { observer_ = observer; }
   TableViewObserver* observer() const { return observer_; }
@@ -185,7 +182,7 @@ class VIEWS_EXPORT TableView
 
   const SortDescriptors& sort_descriptors() const { return sort_descriptors_; }
   void SetSortDescriptors(const SortDescriptors& descriptors);
-  bool is_sorted() const { return !sort_descriptors_.empty(); }
+  bool GetIsSorted() const { return !sort_descriptors_.empty(); }
 
   // Maps from the index in terms of the model to that of the view.
   int ModelToView(int model_index) const;
@@ -193,23 +190,30 @@ class VIEWS_EXPORT TableView
   // Maps from the index in terms of the view to that of the model.
   int ViewToModel(int view_index) const;
 
-  int row_height() const { return row_height_; }
+  int GetRowHeight() const { return row_height_; }
 
-  void set_select_on_remove(bool select_on_remove) {
-    select_on_remove_ = select_on_remove;
-  }
+  bool GetSelectOnRemove() const;
+  void SetSelectOnRemove(bool select_on_remove);
+
+  // WARNING: this function forces a sort on every paint, and is therefore
+  // expensive! It assumes you are calling SchedulePaint() at intervals for
+  // the whole table. If your model is properly notifying the table, this is
+  // not needed. This is only used in th extremely rare case, where between the
+  // time the SchedulePaint() is called and the paint is processed, the
+  // underlying data may change. Also, this only works if the number of rows
+  // remains the same.
+  bool GetSortOnPaint() const;
+  void SetSortOnPaint(bool sort_on_paint);
+
+  TableTypes GetTableType() const;
 
   // View overrides:
   void Layout() override;
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  bool GetTooltipText(const gfx::Point& p,
-                      base::string16* tooltip) const override;
-  bool GetTooltipTextOrigin(const gfx::Point& p,
-                            gfx::Point* loc) const override;
+  base::string16 GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
 
@@ -229,6 +233,8 @@ class VIEWS_EXPORT TableView
 
  private:
   friend class TableViewTestHelper;
+
+  class HighlightPathGenerator;
   struct GroupSortHelper;
   struct SortHelper;
 
@@ -240,10 +246,10 @@ class VIEWS_EXPORT TableView
     PaintRegion();
     ~PaintRegion();
 
-    int min_row;
-    int max_row;
-    int min_column;
-    int max_column;
+    int min_row = 0;
+    int max_row = 0;
+    int min_column = 0;
+    int max_column = 0;
   };
 
   // Returns the horizontal margin between the bounds of a cell and its
@@ -258,8 +264,10 @@ class VIEWS_EXPORT TableView
   void NumRowsChanged();
 
   // Does the actual sort and updates the mappings (|view_to_model_| and
-  // |model_to_view_|) appropriately.
-  void SortItemsAndUpdateMapping();
+  // |model_to_view_|) appropriately. If |schedule_paint| is true,
+  // schedules a paint. This should be true, unless called from
+  // OnPaint.
+  void SortItemsAndUpdateMapping(bool schedule_paint);
 
   // Used to sort the two rows. Returns a value < 0, == 0 or > 0 indicating
   // whether the row2 comes before row1, row2 is the same as row1 or row1 comes
@@ -273,6 +281,9 @@ class VIEWS_EXPORT TableView
   // into |visible_columns_|.
   gfx::Rect GetCellBounds(int row, int visible_column_index) const;
 
+  // Returns the bounds of the active cell.
+  gfx::Rect GetActiveCellBounds() const;
+
   // Adjusts |bounds| based on where the text should be painted. |bounds| comes
   // from GetCellBounds() and |visible_column_index| is the corresponding column
   // (in terms of |visible_columns_|).
@@ -280,7 +291,7 @@ class VIEWS_EXPORT TableView
                                gfx::Rect* bounds) const;
 
   // Creates |header_| if necessary.
-  void CreateHeaderIfNecessary();
+  void CreateHeaderIfNecessary(ScrollView* scroll_view);
 
   // Updates the |x| and |width| of each of the columns in |visible_columns_|.
   void UpdateVisibleColumnSizes();
@@ -328,13 +339,6 @@ class VIEWS_EXPORT TableView
   // 1.
   GroupRange GetGroupRange(int model_index) const;
 
-  // Used by both GetTooltipText methods. Returns true if there is a tooltip and
-  // sets |tooltip| and/or |tooltip_origin| as appropriate, each of which may be
-  // NULL.
-  bool GetTooltipImpl(const gfx::Point& location,
-                      base::string16* tooltip,
-                      gfx::Point* tooltip_origin) const;
-
   // Updates a set of accessibility views that expose the visible table contents
   // to assistive software.
   void UpdateVirtualAccessibilityChildren();
@@ -353,7 +357,11 @@ class VIEWS_EXPORT TableView
   // |visible_column_index| indexes into |visible_columns_|.
   AXVirtualView* GetVirtualAccessibilityCell(int row, int visible_column_index);
 
-  ui::TableModel* model_;
+  // Returns |rect|, adjusted for use in AXRelativeBounds by converting it to
+  // gfx::RectF and translating it into screen coordinates.
+  gfx::RectF AdjustRectForAXRelativeBounds(gfx::Rect rect) const;
+
+  ui::TableModel* model_ = nullptr;
 
   std::vector<ui::TableColumn> columns_;
 
@@ -363,14 +371,14 @@ class VIEWS_EXPORT TableView
 
   // The active visible column. Used for keyboard access to functionality such
   // as sorting and resizing. -1 if no visible column is active.
-  int active_visible_column_index_;
+  int active_visible_column_index_ = -1;
 
   // Used to draw a focus indicator around the active cell.
-  std::unique_ptr<FocusRing> focus_ring_;
+  std::unique_ptr<FocusRing> focus_ring_ = FocusRing::Install(this);
 
   // The header. This is only created if more than one column is specified or
   // the first column has a non-empty title.
-  TableHeader* header_;
+  TableHeader* header_ = nullptr;
 
   const TableTypes table_type_;
 
@@ -383,7 +391,9 @@ class VIEWS_EXPORT TableView
   // is selected then.
   bool select_on_remove_ = true;
 
-  TableViewObserver* observer_;
+  TableViewObserver* observer_ = nullptr;
+  // If |sort_on_paint_| is true, table will sort before painting.
+  bool sort_on_paint_ = false;
 
   // The selection, in terms of the model.
   ui::ListSelectionModel selection_model_;
@@ -394,10 +404,10 @@ class VIEWS_EXPORT TableView
 
   // Width of the ScrollView last time Layout() was invoked. Used to determine
   // when we should invoke UpdateVisibleColumnSizes().
-  int last_parent_width_;
+  int last_parent_width_ = 0;
 
   // The width we layout to. This may differ from |last_parent_width_|.
-  int layout_width_;
+  int layout_width_ = 0;
 
   // Current sort.
   SortDescriptors sort_descriptors_;
@@ -406,14 +416,14 @@ class VIEWS_EXPORT TableView
   std::vector<int> view_to_model_;
   std::vector<int> model_to_view_;
 
-  TableGrouper* grouper_;
+  TableGrouper* grouper_ = nullptr;
 
   // True if in SetVisibleColumnWidth().
-  bool in_set_visible_column_width_;
+  bool in_set_visible_column_width_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(TableView);
 };
 
 }  // namespace views
 
-#endif  // UI_VIEWS_CONTROLS_TABLE_TABLE_VIEW_VIEWS_H_
+#endif  // UI_VIEWS_CONTROLS_TABLE_TABLE_VIEW_H_

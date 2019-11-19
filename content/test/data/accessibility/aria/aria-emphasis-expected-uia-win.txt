@@ -1,0 +1,7 @@
+document LocalizedControlType='document'
+++emphasis LocalizedControlType='emphasis'
+++++description LocalizedControlType='text' Name='role'
+++description LocalizedControlType='text' Name='element (no name)'
+++description LocalizedControlType='text' Name=' '
+++emphasis LocalizedControlType='emphasis' Name='include me'
+++++description LocalizedControlType='text' Name='element (with name)'

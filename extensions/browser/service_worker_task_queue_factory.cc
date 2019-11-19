@@ -6,7 +6,6 @@
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_registry_factory.h"
-#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/service_worker_task_queue.h"
 
 using content::BrowserContext;
@@ -40,8 +39,7 @@ KeyedService* ServiceWorkerTaskQueueFactory::BuildServiceInstanceFor(
 
 BrowserContext* ServiceWorkerTaskQueueFactory::GetBrowserContextToUse(
     BrowserContext* context) const {
-  // Redirected in incognito.
-  return ExtensionsBrowserClient::Get()->GetOriginalContext(context);
+  return context;
 }
 
 }  // namespace extensions

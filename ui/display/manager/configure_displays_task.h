@@ -50,11 +50,11 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
     PARTIAL_SUCCESS,
   };
 
-  typedef base::Callback<void(Status)> ResponseCallback;
+  using ResponseCallback = base::OnceCallback<void(Status)>;
 
   ConfigureDisplaysTask(NativeDisplayDelegate* delegate,
                         const std::vector<DisplayConfigureRequest>& requests,
-                        const ResponseCallback& callback);
+                        ResponseCallback callback);
   ~ConfigureDisplaysTask() override;
 
   // Starts the configuration task.
@@ -88,7 +88,7 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
 
   Status task_status_;
 
-  base::WeakPtrFactory<ConfigureDisplaysTask> weak_ptr_factory_;
+  base::WeakPtrFactory<ConfigureDisplaysTask> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ConfigureDisplaysTask);
 };

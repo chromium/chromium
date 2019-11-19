@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/time/time.h"
@@ -20,6 +21,11 @@ class ChromeUserMetricsExtension;
 // Performs metrics logging for the stack sampling profiler.
 class CallStackProfileMetricsProvider : public MetricsProvider {
  public:
+  // A callback type that can be registered to intercept profiles, for testing
+  // purposes.
+  using InterceptorCallback =
+      base::RepeatingCallback<void(SampledProfile profile)>;
+
   CallStackProfileMetricsProvider();
   ~CallStackProfileMetricsProvider() override;
 
@@ -36,15 +42,24 @@ class CallStackProfileMetricsProvider : public MetricsProvider {
   static void ReceiveSerializedProfile(base::TimeTicks profile_start_time,
                                        std::string serialized_sampled_profile);
 
+  // Allows tests to intercept received CPU profiles, to validate that the
+  // expected profiles are received. This function must be invoked prior to
+  // starting any profiling since the callback is accessed asynchronously on the
+  // profiling thread.
+  static void SetCpuInterceptorCallbackForTesting(InterceptorCallback callback);
+
   // MetricsProvider:
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
   void ProvideCurrentSessionData(
       ChromeUserMetricsExtension* uma_proto) override;
 
+  // Enables reporting of sampling heap profiles.
+  static const base::Feature kHeapProfilerReporting;
+
  protected:
-  // base::Feature for reporting profiles. Provided here for test use.
-  static const base::Feature kEnableReporting;
+  // base::Feature for reporting CPU profiles. Provided here for test use.
+  static const base::Feature kSamplingProfilerReporting;
 
   // Reset the static state to the defaults after startup.
   static void ResetStaticStateForTesting();

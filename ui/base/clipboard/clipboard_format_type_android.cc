@@ -22,12 +22,12 @@ const char kBookmarkFormat[] = "bookmark";
 }  // namespace
 
 // ClipboardFormatType implementation.
-ClipboardFormatType::ClipboardFormatType() {}
+ClipboardFormatType::ClipboardFormatType() = default;
 
 ClipboardFormatType::ClipboardFormatType(const std::string& native_format)
     : data_(native_format) {}
 
-ClipboardFormatType::~ClipboardFormatType() {}
+ClipboardFormatType::~ClipboardFormatType() = default;
 
 std::string ClipboardFormatType::Serialize() const {
   return data_;

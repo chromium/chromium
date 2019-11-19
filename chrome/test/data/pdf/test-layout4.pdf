@@ -1,0 +1,73 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /MediaBox [ 0 0 70 100 ]
+  /Count 4
+  /Kids [ 3 0 R 4 0 R 5 0 R 6 0 R ]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Rotate 0
+  /Contents 7 0 R
+>>
+endobj
+4 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Rotate 90
+  /Contents 7 0 R
+>>
+endobj
+5 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Rotate 180
+  /Contents 7 0 R
+>>
+endobj
+6 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Rotate 270
+  /Contents 7 0 R
+>>
+endobj
+% An asymmetrical "F" figure.
+7 0 obj <<
+  /Length 107
+>>
+stream
+2 0 0 2 10 25 cm
+0.0 G 0.5 g
+5 0 m
+5 25 l 20 25 l 20 20 l 10 20 l
+10 15 l 15 15 l 15 10 l 10 10 l
+10 0 l
+b
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000015 00000 n 
+0000000068 00000 n 
+0000000178 00000 n 
+0000000259 00000 n 
+0000000341 00000 n 
+0000000424 00000 n 
+0000000537 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 8
+>>
+startxref
+696
+%%EOF

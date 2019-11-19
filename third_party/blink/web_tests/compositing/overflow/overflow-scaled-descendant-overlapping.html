@@ -5,8 +5,6 @@
     https://bugs.webkit.org/show_bug.cgi?id=76850 -->
     <script>
         window.onload = function() {
-            if (window.testRunner)
-                testRunner.dumpAsTextWithPixelResults();
             if (window.internals) {
                 internals.setPageScaleFactorLimits(0.5, 0.5);
                 internals.setPageScaleFactor(0.5);
@@ -34,7 +32,7 @@
         }
 
         .transformed {
-            transform: translateZ(0);
+            will-change: transform;
         }
 
         .clip {

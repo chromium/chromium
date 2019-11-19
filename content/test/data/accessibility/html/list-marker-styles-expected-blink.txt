@@ -1,0 +1,46 @@
+rootWebArea
+++genericContainer ignored
+++++list
+++++++listItem
+++++++++staticText name='none'
+++++++++++inlineTextBox name='none'
+++++list
+++++++listItem listStyle=circle
+++++++++listMarker name='◦ '
+++++++++staticText name='circle'
+++++++++++inlineTextBox name='circle'
+++++list
+++++++listItem listStyle=disc
+++++++++listMarker name='• '
+++++++++staticText name='disc'
+++++++++++inlineTextBox name='disc'
+++++list
+++++++listItem listStyle=image
+++++++++listMarker name='  '
+++++++++staticText name='image'
+++++++++++inlineTextBox name='image'
+++++list
+++++++listItem listStyle=square
+++++++++listMarker name='■ '
+++++++++staticText name='square'
+++++++++++inlineTextBox name='square'
+++++list
+++++++listItem listStyle=numeric
+++++++++listMarker name='1. '
+++++++++staticText name='decimal'
+++++++++++inlineTextBox name='decimal'
+++++list
+++++++listItem listStyle=other
+++++++++listMarker name='I. '
+++++++++staticText name='upper-roman'
+++++++++++inlineTextBox name='upper-roman'
+++++list
+++++++listItem listStyle=other
+++++++++listMarker name='Ա. '
+++++++++staticText name='armenian'
+++++++++++inlineTextBox name='armenian'
+++++list
+++++++listItem listStyle=other
+++++++++listMarker name='a. '
+++++++++staticText name='lower-alpha'
+++++++++++inlineTextBox name='lower-alpha'

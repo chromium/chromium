@@ -11,7 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_api_component_factory.h"
 #include "components/version_info/version_info.h"
@@ -45,13 +45,16 @@ class ProfileSyncComponentsFactoryImpl
       BrowserSyncClient* sync_client,
       version_info::Channel channel,
       const char* history_disabled_pref,
-      const scoped_refptr<base::SingleThreadTaskRunner>& ui_thread,
-      const scoped_refptr<base::SingleThreadTaskRunner>& db_thread,
+      const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
+      const scoped_refptr<base::SequencedTaskRunner>& db_thread,
       const scoped_refptr<autofill::AutofillWebDataService>&
           web_data_service_on_disk,
       const scoped_refptr<autofill::AutofillWebDataService>&
           web_data_service_in_memory,
-      const scoped_refptr<password_manager::PasswordStore>& password_store,
+      const scoped_refptr<password_manager::PasswordStore>&
+          profile_password_store,
+      const scoped_refptr<password_manager::PasswordStore>&
+          account_password_store,
       sync_bookmarks::BookmarkSyncService* bookmark_sync_service);
   ~ProfileSyncComponentsFactoryImpl() override;
 
@@ -75,19 +78,17 @@ class ProfileSyncComponentsFactoryImpl
       const std::string& name,
       invalidation::InvalidationService* invalidator,
       const base::WeakPtr<syncer::SyncPrefs>& sync_prefs) override;
-  syncer::SyncApiComponentFactory::SyncComponents CreateBookmarkSyncComponents(
-      std::unique_ptr<syncer::DataTypeErrorHandler> error_handler,
-      syncer::UserShare* user_share) override;
-
-  // Sets a bit that determines whether PREFERENCES should be registered with a
-  // ModelTypeController for testing purposes.
-  static void OverridePrefsForUssTest(bool use_uss);
 
  private:
   // Factory function for ModelTypeController instances for models living on
   // |ui_thread_|.
   std::unique_ptr<syncer::ModelTypeController>
   CreateModelTypeControllerForModelRunningOnUIThread(syncer::ModelType type);
+
+  // Factory function for ModelTypeControllerDelegate instances for models
+  // living in |ui_thread_| that have their delegate accessible via SyncClient.
+  std::unique_ptr<syncer::ModelTypeControllerDelegate>
+  CreateForwardingControllerDelegate(syncer::ModelType type);
 
   // Factory function for ModelTypeController instances for wallet-related
   // datatypes, which live in |db_thread_| and have a delegate accessible via
@@ -112,17 +113,15 @@ class ProfileSyncComponentsFactoryImpl
   BrowserSyncClient* const sync_client_;
   const version_info::Channel channel_;
   const char* history_disabled_pref_;
-  const scoped_refptr<base::SingleThreadTaskRunner> ui_thread_;
-  const scoped_refptr<base::SingleThreadTaskRunner> db_thread_;
+  const scoped_refptr<base::SequencedTaskRunner> ui_thread_;
+  const scoped_refptr<base::SequencedTaskRunner> db_thread_;
   const scoped_refptr<autofill::AutofillWebDataService>
       web_data_service_on_disk_;
   const scoped_refptr<autofill::AutofillWebDataService>
       web_data_service_in_memory_;
-  const scoped_refptr<password_manager::PasswordStore> password_store_;
+  const scoped_refptr<password_manager::PasswordStore> profile_password_store_;
+  const scoped_refptr<password_manager::PasswordStore> account_password_store_;
   sync_bookmarks::BookmarkSyncService* const bookmark_sync_service_;
-
-  // Whether to override PREFERENCES to use USS.
-  static bool override_prefs_controller_to_uss_for_test_;
 
   DISALLOW_COPY_AND_ASSIGN(ProfileSyncComponentsFactoryImpl);
 };

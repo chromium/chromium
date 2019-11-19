@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SPELLCHECKER_SPELLCHECK_LANGUAGE_POLICY_HANDLER_H_
 #define CHROME_BROWSER_SPELLCHECKER_SPELLCHECK_LANGUAGE_POLICY_HANDLER_H_
 
+#include <vector>
+
 #include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
@@ -22,6 +24,9 @@ class SpellcheckLanguagePolicyHandler
                            PrefValueMap* prefs) override;
 
  private:
+  void SortForcedLanguages(const policy::PolicyMap& policies,
+                           std::vector<base::Value>* const forced,
+                           std::vector<std::string>* const unknown);
   DISALLOW_COPY_AND_ASSIGN(SpellcheckLanguagePolicyHandler);
 };
 

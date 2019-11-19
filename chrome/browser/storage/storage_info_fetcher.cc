@@ -31,7 +31,7 @@ void StorageInfoFetcher::FetchStorageInfo(const FetchCallback& fetch_callback) {
 
   // QuotaManager must be called on IO thread, but the callback must then be
   // called on the UI thread.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &StorageInfoFetcher::GetUsageInfo, this,
@@ -47,7 +47,7 @@ void StorageInfoFetcher::ClearStorage(const std::string& host,
   clear_callback_ = clear_callback;
   type_to_delete_ = type;
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &storage::QuotaManager::DeleteHostData, quota_manager_, host, type,
@@ -66,9 +66,8 @@ void StorageInfoFetcher::OnGetUsageInfoInternal(
 
   entries_ = std::move(entries);
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&StorageInfoFetcher::OnFetchCompleted, this));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&StorageInfoFetcher::OnFetchCompleted, this));
 }
 
 void StorageInfoFetcher::OnFetchCompleted() {
@@ -85,7 +84,7 @@ void StorageInfoFetcher::OnUsageClearedInternal(
 
   quota_manager_->ResetUsageTracker(type_to_delete_);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&StorageInfoFetcher::OnClearCompleted, this, code));
 }

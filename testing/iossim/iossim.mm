@@ -113,9 +113,13 @@ NSArray* Runtimes(NSDictionary* simctl_list) {
   NSMutableArray* runtimes =
       [[simctl_list[@"runtimes"] mutableCopy] autorelease];
   for (NSDictionary* runtime in simctl_list[@"runtimes"]) {
+    BOOL available =
+        [runtime[@"availability"] isEqualToString:@"(available)"] ||
+        runtime[@"isAvailable"];
+
     if (![runtime[@"identifier"]
             hasPrefix:@"com.apple.CoreSimulator.SimRuntime.iOS"] ||
-        ![runtime[@"availability"] isEqualToString:@"(available)"]) {
+        !available) {
       [runtimes removeObject:runtime];
     }
   }
@@ -190,12 +194,35 @@ NSString* GetDeviceBySDKAndName(NSDictionary* simctl_list,
                                 NSString* sdk_version) {
   NSString* sdk = [@"iOS " stringByAppendingString:sdk_version];
   NSArray* devices = [simctl_list[@"devices"] objectForKey:sdk];
+  // Pre-Xcode 10.2's simulator, xcrun simctl -j returned "devices" that looked
+  // like "iOS 12.1".  Now they look like
+  // com.apple.CoreSimulator.SimRuntime.iOS-12-1. Only use this block when all
+  // bots move to Xcode 10.2+
+  if (devices == nil || [devices count] == 0) {
+    sdk_version = [sdk_version stringByReplacingOccurrencesOfString:@"."
+                                                         withString:@"-"];
+    NSString* sdk = [@"com.apple.CoreSimulator.SimRuntime.iOS-"
+        stringByAppendingString:sdk_version];
+    devices = [simctl_list[@"devices"] objectForKey:sdk];
+  }
   for (NSDictionary* device in devices) {
     if ([device[@"name"] isEqualToString:device_name]) {
       return device[@"udid"];
     }
   }
   return nil;
+}
+
+// Create and a redturn a device udid of |device| and |sdk_version|.
+NSString* CreateDeviceBySDKAndName(NSString* device, NSString* sdk_version) {
+  NSString* sdk = [@"iOS" stringByAppendingString:sdk_version];
+  XCRunTask* create = [[[XCRunTask alloc]
+      initWithArguments:@[ @"simctl", @"create", device, device, sdk ]]
+      autorelease];
+  [create run];
+
+  NSDictionary* simctl_list = GetSimulatorList();
+  return GetDeviceBySDKAndName(simctl_list, device, sdk_version);
 }
 
 bool FindDeviceByUDID(NSDictionary* simctl_list, NSString* udid) {
@@ -422,10 +449,13 @@ int main(int argc, char* const argv[]) {
   if (udid == nil) {
     udid = GetDeviceBySDKAndName(simctl_list, device_name, sdk_version);
     if (udid == nil) {
-      LogError(@"Unable to find a device %@ with SDK %@.", device_name,
-               sdk_version);
-      PrintSupportedDevices(simctl_list);
-      exit(kExitInvalidArguments);
+      udid = CreateDeviceBySDKAndName(device_name, sdk_version);
+      if (udid == nil) {
+        LogError(@"Unable to find a device %@ with SDK %@.", device_name,
+                 sdk_version);
+        PrintSupportedDevices(simctl_list);
+        exit(kExitInvalidArguments);
+      }
     }
   } else {
     if (!FindDeviceByUDID(simctl_list, udid)) {

@@ -30,12 +30,17 @@
       }
     </style>
 
-    <div class="disc-wrapper">
+    <div
+        role="presentation"
+        class="disc-wrapper"
+        id="button"
+        tabindex="0"
+        on-keydown="onInputKeydown_">
       <div class="disc-border"></div>
       <div class="disc"></div>
     </div>
 
-    <div id="labelWrapper">
+    <div id="labelWrapper" role="presentation">
       <span>[[label]]</span>
     </div>
 

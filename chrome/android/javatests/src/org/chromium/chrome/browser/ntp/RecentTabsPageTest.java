@@ -15,17 +15,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
@@ -57,7 +57,7 @@ public class RecentTabsPageTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         leaveRecentTabsPage();
         RecentTabsManager.setRecentlyClosedTabManagerForTests(null);
     }
@@ -65,7 +65,7 @@ public class RecentTabsPageTest {
     @Test
     @MediumTest
     @Feature({"RecentTabsPage"})
-    public void testRecentlyClosedTabs() throws InterruptedException, ExecutionException {
+    public void testRecentlyClosedTabs() throws ExecutionException {
         // Set a recently closed tab and confirm a view is rendered for it.
         List<RecentlyClosedTab> tabs = setRecentlyClosedTabs(1);
         Assert.assertEquals(1, mManager.getRecentlyClosedTabs(1).size());
@@ -84,19 +84,16 @@ public class RecentTabsPageTest {
      */
     private List<RecentlyClosedTab> setRecentlyClosedTabs(final int tabCount) {
         final List<RecentlyClosedTab> tabs = new ArrayList<>();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < tabCount; i++) {
-                    tabs.add(new RecentlyClosedTab(i, "RecentlyClosedTab title " + i, "url " + i));
-                }
-                mManager.setRecentlyClosedTabs(tabs);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            for (int i = 0; i < tabCount; i++) {
+                tabs.add(new RecentlyClosedTab(i, "RecentlyClosedTab title " + i, "url " + i));
             }
+            mManager.setRecentlyClosedTabs(tabs);
         });
         return tabs;
     }
 
-    private RecentTabsPage loadRecentTabsPage() throws InterruptedException {
+    private RecentTabsPage loadRecentTabsPage() {
         mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
         CriteriaHelper.pollUiThread(new Criteria("RecentTabsPage never fully loaded") {
             @Override
@@ -111,7 +108,7 @@ public class RecentTabsPageTest {
     /**
      * Leaves and destroys the {@link RecentTabsPage} by navigating the tab to {@code about:blank}.
      */
-    private void leaveRecentTabsPage() throws InterruptedException {
+    private void leaveRecentTabsPage() {
         mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         CriteriaHelper.pollUiThread(new Criteria("RecentTabsPage is still there") {
             @Override

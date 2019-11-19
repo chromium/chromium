@@ -6,8 +6,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "components/policy/android/jni_headers/CombinedPolicyProvider_jni.h"
 #include "components/policy/core/browser/android/policy_converter.h"
-#include "jni/CombinedPolicyProvider_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

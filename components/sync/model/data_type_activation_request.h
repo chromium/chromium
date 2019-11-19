@@ -8,8 +8,9 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "components/sync/base/storage_option.h"
+#include "components/sync/base/sync_mode.h"
 #include "components/sync/model/model_error.h"
+#include "google_apis/gaia/core_account_id.h"
 
 namespace syncer {
 
@@ -26,9 +27,9 @@ struct DataTypeActivationRequest {
   DataTypeActivationRequest& operator=(DataTypeActivationRequest&& request);
 
   ModelErrorHandler error_handler;
-  std::string authenticated_account_id;
+  CoreAccountId authenticated_account_id;
   std::string cache_guid;
-  StorageOption storage_option = STORAGE_ON_DISK;
+  SyncMode sync_mode = SyncMode::kFull;
 
   // The start time of the confuguration this activation is part of.
   base::Time configuration_start_time;

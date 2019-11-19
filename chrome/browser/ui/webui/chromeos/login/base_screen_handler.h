@@ -11,19 +11,46 @@
 
 namespace chromeos {
 
+class BaseScreen;
+
 // Base class for the OOBE/Login WebUI handlers which provide methods specific
 // to a particular OobeScreen.
 class BaseScreenHandler : public BaseWebUIHandler {
  public:
-  BaseScreenHandler(OobeScreen oobe_screen,
+  BaseScreenHandler(OobeScreenId oobe_screen,
                     JSCallsContainer* js_calls_container);
   ~BaseScreenHandler() override;
 
-  OobeScreen oobe_screen() const { return oobe_screen_; }
+  OobeScreenId oobe_screen() const { return oobe_screen_; }
+
+  void SetBaseScreen(BaseScreen* base_screen);
+
+  // BaseWebUIHandler:
+  void RegisterMessages() override;
+
+ protected:
+  // Set the method identifier for a userActed callback. The actual callback
+  // will be registered in RegisterMessages so this should be called in the
+  // constructor. This takes the full method path, ie,
+  // "login.WelcomeScreen.userActed".
+  //
+  // If this is not called then userActed-style callbacks will not be available
+  // for the screen.
+  void set_user_acted_method_path(const std::string& user_acted_method_path) {
+    user_acted_method_path_ = user_acted_method_path;
+  }
 
  private:
+  // Handles user action.
+  void HandleUserAction(const std::string& action_id);
+
+  // Path that is used to invoke user actions.
+  std::string user_acted_method_path_;
+
   // OobeScreen that this handler corresponds to.
-  OobeScreen oobe_screen_ = OobeScreen::SCREEN_UNKNOWN;
+  OobeScreenId oobe_screen_ = OobeScreen::SCREEN_UNKNOWN;
+
+  BaseScreen* base_screen_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(BaseScreenHandler);
 };

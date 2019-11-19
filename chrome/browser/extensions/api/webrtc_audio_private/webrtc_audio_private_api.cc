@@ -19,8 +19,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/system_connector.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/service_manager_connection.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/error_utils.h"
@@ -35,8 +35,6 @@ namespace extensions {
 
 using content::BrowserThread;
 namespace wap = api::webrtc_audio_private;
-
-using api::webrtc_audio_private::RequestInfo;
 
 static base::LazyInstance<BrowserContextKeyedAPIFactory<
     WebrtcAudioPrivateEventService>>::DestructorAtExit
@@ -137,49 +135,10 @@ std::string WebrtcAudioPrivateFunction::device_id_salt() const {
 media::AudioSystem* WebrtcAudioPrivateFunction::GetAudioSystem() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!audio_system_) {
-    audio_system_ = audio::CreateAudioSystem(
-        content::ServiceManagerConnection::GetForProcess()
-            ->GetConnector()
-            ->Clone());
+    audio_system_ =
+        audio::CreateAudioSystem(content::GetSystemConnector()->Clone());
   }
   return audio_system_.get();
-}
-
-// TODO(hlundin): Stolen from WebrtcLoggingPrivateFunction.
-// Consolidate and improve. http://crbug.com/710371
-content::RenderProcessHost*
-WebrtcAudioPrivateFunction::GetRenderProcessHostFromRequest(
-    const RequestInfo& request,
-    const std::string& security_origin) {
-  // If |guest_process_id| is defined, directly use this id to find the
-  // corresponding RenderProcessHost.
-  if (request.guest_process_id)
-    return content::RenderProcessHost::FromID(*request.guest_process_id);
-
-  // Otherwise, use the |tab_id|. If there's no |tab_id| and no
-  // |guest_process_id|, we can't look up the RenderProcessHost.
-  if (!request.tab_id) {
-    error_ = "No tab ID or guest process ID specified.";
-    return nullptr;
-  }
-
-  int tab_id = *request.tab_id;
-  content::WebContents* contents = nullptr;
-  if (!ExtensionTabUtil::GetTabById(tab_id, GetProfile(), true, nullptr,
-                                    nullptr, &contents, nullptr)) {
-    error_ = extensions::ErrorUtils::FormatErrorMessage(
-        extensions::tabs_constants::kTabNotFoundError,
-        base::NumberToString(tab_id));
-    return nullptr;
-  }
-  GURL expected_origin = contents->GetLastCommittedURL().GetOrigin();
-  if (expected_origin.spec() != security_origin) {
-    error_ = base::StringPrintf(
-        "Invalid security origin. Expected=%s, actual=%s",
-        expected_origin.spec().c_str(), security_origin.c_str());
-    return nullptr;
-  }
-  return contents->GetMainFrame()->GetProcess();
 }
 
 bool WebrtcAudioPrivateGetSinksFunction::RunAsync() {
@@ -276,51 +235,6 @@ void WebrtcAudioPrivateGetAssociatedSinkFunction::Reply(
     results_ = wap::GetAssociatedSink::Results::Create(associated_sink_id);
   }
   SendResponse(true);
-}
-
-WebrtcAudioPrivateSetAudioExperimentsFunction::
-    WebrtcAudioPrivateSetAudioExperimentsFunction() {}
-
-WebrtcAudioPrivateSetAudioExperimentsFunction::
-    ~WebrtcAudioPrivateSetAudioExperimentsFunction() {}
-
-bool WebrtcAudioPrivateSetAudioExperimentsFunction::RunAsync() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::unique_ptr<wap::SetAudioExperiments::Params> params(
-      wap::SetAudioExperiments::Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
-
-  // Currently the only available experiment is AEC3, so we expect this to be
-  // set if this extension is called.
-  if (!params->audio_experiments.enable_aec3.get()) {
-    SetError("No experiment specified");
-    SendResponse(false);
-    return false;
-  }
-
-  content::RenderProcessHost* host =
-      GetRenderProcessHostFromRequest(params->request, params->security_origin);
-  if (!host) {
-    // Error message has been set in GetRenderProcessHostFromRequest().
-    SendResponse(false);
-    return false;
-  }
-
-  host->SetEchoCanceller3(
-      *params->audio_experiments.enable_aec3,
-      base::BindOnce(
-          &WebrtcAudioPrivateSetAudioExperimentsFunction::FireCallback, this));
-
-  return true;
-}
-
-void WebrtcAudioPrivateSetAudioExperimentsFunction::FireCallback(
-    bool success,
-    const std::string& error_message) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!success)
-    SetError(error_message);
-  SendResponse(success);
 }
 
 }  // namespace extensions

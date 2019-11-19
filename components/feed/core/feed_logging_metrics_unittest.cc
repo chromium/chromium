@@ -8,12 +8,16 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "components/feed/core/pref_names.h"
+#include "components/feed/core/user_classifier.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/mojo/window_open_disposition.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 using testing::ElementsAre;
 using testing::IsEmpty;
+using testing::SizeIs;
 
 namespace feed {
 namespace {
@@ -52,8 +56,13 @@ class FeedLoggingMetricsTest : public testing::Test {
     EXPECT_TRUE(base::Time::FromUTCString(kNowString, &now));
     test_clock_.SetNow(now);
 
+    feed::RegisterProfilePrefs(prefs_.registry());
+    scheduler_host_ =
+        std::make_unique<FeedSchedulerHost>(&prefs_, &prefs_, &test_clock_);
+
     feed_logging_metrics_ = std::make_unique<FeedLoggingMetrics>(
-        base::BindRepeating(&CheckURLVisit), &test_clock_);
+        base::BindRepeating(&CheckURLVisit), &test_clock_,
+        scheduler_host_.get());
   }
 
   FeedLoggingMetrics* feed_logging_metrics() {
@@ -64,6 +73,10 @@ class FeedLoggingMetricsTest : public testing::Test {
  private:
   base::SimpleTestClock test_clock_;
 
+  TestingPrefServiceSimple prefs_;
+
+  std::unique_ptr<FeedSchedulerHost> scheduler_host_;
+
   std::unique_ptr<FeedLoggingMetrics> feed_logging_metrics_;
 
   DISALLOW_COPY_AND_ASSIGN(FeedLoggingMetricsTest);
@@ -73,17 +86,21 @@ TEST_F(FeedLoggingMetricsTest, ShouldLogOnSuggestionsShown) {
   base::HistogramTester histogram_tester;
   feed_logging_metrics()->OnSuggestionShown(
       /*position=*/1, test_clock()->Now(),
-      /*score=*/0.01f, test_clock()->Now() - base::TimeDelta::FromHours(2));
+      /*score=*/0.01f, test_clock()->Now() - base::TimeDelta::FromHours(2),
+      /*is_available_offline=*/false);
   // Test corner cases for score.
   feed_logging_metrics()->OnSuggestionShown(
       /*position=*/2, test_clock()->Now(),
-      /*score=*/0.0f, test_clock()->Now() - base::TimeDelta::FromHours(2));
+      /*score=*/0.0f, test_clock()->Now() - base::TimeDelta::FromHours(2),
+      /*is_available_offline=*/true);
   feed_logging_metrics()->OnSuggestionShown(
       /*position=*/3, test_clock()->Now(),
-      /*score=*/1.0f, test_clock()->Now() - base::TimeDelta::FromHours(2));
+      /*score=*/1.0f, test_clock()->Now() - base::TimeDelta::FromHours(2),
+      /*is_available_offline=*/true);
   feed_logging_metrics()->OnSuggestionShown(
       /*position=*/4, test_clock()->Now(),
-      /*score=*/8.0f, test_clock()->Now() - base::TimeDelta::FromHours(2));
+      /*score=*/8.0f, test_clock()->Now() - base::TimeDelta::FromHours(2),
+      /*is_available_offline=*/true);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("NewTabPage.ContentSuggestions.Shown"),
@@ -98,6 +115,10 @@ TEST_F(FeedLoggingMetricsTest, ShouldLogOnSuggestionsShown) {
                   base::Bucket(/*min=*/1, /*count=*/1),
                   base::Bucket(/*min=*/10, /*count=*/1),
                   base::Bucket(/*min=*/11, /*count=*/1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "ContentSuggestions.Feed.AvailableOffline.Shown"),
+              ElementsAre(base::Bucket(/*min=*/0, /*count=*/1),
+                          base::Bucket(/*min=*/1, /*count=*/3)));
 }
 
 TEST_F(FeedLoggingMetricsTest, ShouldLogOnPageShown) {
@@ -112,16 +133,16 @@ TEST_F(FeedLoggingMetricsTest, ShouldLogOnSuggestionOpened) {
   base::HistogramTester histogram_tester;
   feed_logging_metrics()->OnSuggestionOpened(
       /*position=*/11, test_clock()->Now(),
-      /*score=*/1.0f);
+      /*score=*/1.0f, /*is_available_offline=*/false);
   feed_logging_metrics()->OnSuggestionOpened(
       /*position=*/13, test_clock()->Now(),
-      /*score=*/1.0f);
+      /*score=*/1.0f, /*is_available_offline=*/false);
   feed_logging_metrics()->OnSuggestionOpened(
       /*position=*/15, test_clock()->Now(),
-      /*score=*/1.0f);
+      /*score=*/1.0f, /*is_available_offline=*/false);
   feed_logging_metrics()->OnSuggestionOpened(
       /*position=*/23, test_clock()->Now(),
-      /*score=*/1.0f);
+      /*score=*/1.0f, /*is_available_offline=*/true);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("NewTabPage.ContentSuggestions.Opened"),
@@ -129,6 +150,10 @@ TEST_F(FeedLoggingMetricsTest, ShouldLogOnSuggestionOpened) {
                   base::Bucket(/*min=*/13, /*count=*/1),
                   base::Bucket(/*min=*/15, /*count=*/1),
                   base::Bucket(/*min=*/23, /*count=*/1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "ContentSuggestions.Feed.AvailableOffline.Opened"),
+              ElementsAre(base::Bucket(/*min=*/0, /*count=*/3),
+                          base::Bucket(/*min=*/1, /*count=*/1)));
 }
 
 TEST_F(FeedLoggingMetricsTest, ShouldLogOnSuggestionWindowOpened) {
@@ -199,6 +224,34 @@ TEST_F(FeedLoggingMetricsTest, ShouldReportOnPietFrameRenderingEvent) {
                           base::Bucket(/*min=*/1, /*count=*/1),
                           base::Bucket(/*min=*/6, /*count=*/1),
                           base::Bucket(/*min=*/7, /*count=*/1)));
+}
+
+TEST_F(FeedLoggingMetricsTest, ShouldLogOnTaskFinished) {
+  base::HistogramTester histogram_tester;
+  feed_logging_metrics()->OnTaskFinished(/*KExecuteUploadActionRequest=*/10, 8,
+                                         8);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "ContentSuggestions.Feed.Task.ExecuteUploadActionRequest.DelayTime"),
+      ElementsAre(base::Bucket(/*min=*/8, /*count=*/1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "ContentSuggestions.Feed.Task.ExecuteUploadActionRequest.TaskTime"),
+      ElementsAre(base::Bucket(/*min=*/8, /*count=*/1)));
+}
+
+TEST_F(FeedLoggingMetricsTest, ShouldLogOnMoreButtonClicked) {
+  base::HistogramTester histogram_tester;
+
+  feed_logging_metrics()->OnMoreButtonClicked(1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "NewTabPage.ContentSuggestions.MoreButtonClicked.Articles"),
+              ElementsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+
+  // User classifier should have been informed of a suggestion being consumed.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "NewTabPage.UserClassifier.AverageHoursToUseSuggestions"),
+              SizeIs(1));
 }
 
 }  // namespace feed

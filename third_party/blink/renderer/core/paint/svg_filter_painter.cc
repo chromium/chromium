@@ -20,7 +20,7 @@ namespace blink {
 
 GraphicsContext* SVGFilterRecordingContext::BeginContent() {
   // Create a new context so the contents of the filter can be drawn and cached.
-  paint_controller_ = PaintController::Create();
+  paint_controller_ = std::make_unique<PaintController>();
   context_ = std::make_unique<GraphicsContext>(*paint_controller_);
 
   // Use initial_context_'s current paint chunk properties so that any new
@@ -98,7 +98,7 @@ GraphicsContext* SVGFilterPainter::PrepareEffect(
     return nullptr;
   }
 
-  SVGFilterGraphNodeMap* node_map = SVGFilterGraphNodeMap::Create();
+  auto* node_map = MakeGarbageCollected<SVGFilterGraphNodeMap>();
   FilterEffectBuilder builder(object.ObjectBoundingBox(), 1);
   Filter* filter = builder.BuildReferenceFilter(
       ToSVGFilterElement(*filter_.GetElement()), nullptr, node_map);
@@ -109,7 +109,7 @@ GraphicsContext* SVGFilterPainter::PrepareEffect(
       Intersection(filter->FilterRegion(), object.StrokeBoundingBox()));
   filter->GetSourceGraphic()->SetSourceRect(source_region);
 
-  FilterData* filter_data = FilterData::Create();
+  auto* filter_data = MakeGarbageCollected<FilterData>();
   filter_data->last_effect = filter->LastEffect();
   filter_data->node_map = node_map;
   DCHECK_EQ(filter_data->state_, FilterData::kInitial);

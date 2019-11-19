@@ -16,15 +16,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/image_fetcher/core/image_fetcher.h"
-#include "components/ntp_snippets/breaking_news/breaking_news_listener.h"
 #include "components/ntp_snippets/category_rankers/category_ranker.h"
 #include "components/ntp_snippets/features.h"
 #include "components/ntp_snippets/pref_names.h"
@@ -164,30 +161,6 @@ bool IsPushedSuggestionsNotificationsEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kNotificationsFeature, kEnablePushedSuggestionsNotificationsParamName,
       kEnablePushedSuggestionsNotificationsDefault);
-}
-
-// Whether signed-in users should be subscribed for pushed suggestions.
-const bool kEnableSignedInUsersSubscriptionForPushedSuggestionsDefault = true;
-const char kEnableSignedInUsersSubscriptionForPushedSuggestionsParamName[] =
-    "enable_signed_in_users_subscription_for_pushed_suggestions";
-
-bool IsSignedInUsersSubscriptionForPushedSuggestionsEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kBreakingNewsPushFeature,
-      kEnableSignedInUsersSubscriptionForPushedSuggestionsParamName,
-      kEnableSignedInUsersSubscriptionForPushedSuggestionsDefault);
-}
-
-// Whether signed-out users should be subscribed for pushed suggestions.
-const bool kEnableSignedOutUsersSubscriptionForPushedSuggestionsDefault = false;
-const char kEnableSignedOutUsersSubscriptionForPushedSuggestionsParamName[] =
-    "enable_signed_out_users_subscription_for_pushed_suggestions";
-
-bool IsSignedOutUsersSubscriptionForPushedSuggestionsEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kBreakingNewsPushFeature,
-      kEnableSignedOutUsersSubscriptionForPushedSuggestionsParamName,
-      kEnableSignedOutUsersSubscriptionForPushedSuggestionsDefault);
 }
 
 // Whether notification info is overriden for fetched suggestions. Note that
@@ -368,8 +341,6 @@ RemoteSuggestionsProviderImpl::RemoteSuggestionsProviderImpl(
     std::unique_ptr<RemoteSuggestionsDatabase> database,
     std::unique_ptr<RemoteSuggestionsStatusService> status_service,
     std::unique_ptr<PrefetchedPagesTracker> prefetched_pages_tracker,
-    std::unique_ptr<BreakingNewsListener> breaking_news_raw_data_provider,
-    Logger* debug_logger,
     std::unique_ptr<base::OneShotTimer> fetch_timeout_timer)
     : RemoteSuggestionsProvider(observer),
       state_(State::NOT_INITED),
@@ -387,12 +358,8 @@ RemoteSuggestionsProviderImpl::RemoteSuggestionsProviderImpl(
       clear_cached_suggestions_when_initialized_(false),
       clock_(base::DefaultClock::GetInstance()),
       prefetched_pages_tracker_(std::move(prefetched_pages_tracker)),
-      breaking_news_raw_data_provider_(
-          std::move(breaking_news_raw_data_provider)),
-      debug_logger_(debug_logger),
       fetch_timeout_timer_(std::move(fetch_timeout_timer)),
       request_status_(FetchRequestStatus::NONE) {
-  DCHECK(debug_logger_);
   DCHECK(fetch_timeout_timer_);
   RestoreCategoriesFromPrefs();
   // The articles category always exists. Add it if we didn't get it from prefs.
@@ -423,10 +390,6 @@ RemoteSuggestionsProviderImpl::RemoteSuggestionsProviderImpl(
 }
 
 RemoteSuggestionsProviderImpl::~RemoteSuggestionsProviderImpl() {
-  if (breaking_news_raw_data_provider_ &&
-      breaking_news_raw_data_provider_->IsListening()) {
-    breaking_news_raw_data_provider_->StopListening();
-  }
 }
 
 // static
@@ -492,7 +455,7 @@ RemoteSuggestionsProviderImpl::suggestions_fetcher_for_debugging() const {
 
 GURL RemoteSuggestionsProviderImpl::GetUrlWithFavicon(
     const ContentSuggestion::ID& suggestion_id) const {
-  DCHECK(base::ContainsKey(category_contents_, suggestion_id.category()));
+  DCHECK(base::Contains(category_contents_, suggestion_id.category()));
 
   const CategoryContent& content =
       category_contents_.at(suggestion_id.category());
@@ -520,9 +483,6 @@ void RemoteSuggestionsProviderImpl::FetchSuggestionsWithLoadingIndicator(
     // If the article section is not AVAILABLE, we cannot safely flip its status
     // to AVAILABLE_LOADING and back. Instead, we fallback to the standard
     // background refetch.
-    debug_logger_->Log(
-        FROM_HERE,
-        "fallback because the articles category is not displayed yet");
     FetchSuggestions(interactive_request, std::move(callback));
     return;
   }
@@ -564,7 +524,6 @@ void RemoteSuggestionsProviderImpl::
 void RemoteSuggestionsProviderImpl::FetchSuggestions(
     bool interactive_request,
     FetchStatusCallback callback) {
-  debug_logger_->Log(FROM_HERE, /*message=*/std::string());
   if (!ready()) {
     if (callback) {
       std::move(callback).Run(
@@ -597,8 +556,6 @@ void RemoteSuggestionsProviderImpl::Fetch(
     const Category& category,
     const std::set<std::string>& known_suggestion_ids,
     FetchDoneCallback callback) {
-  debug_logger_->Log(FROM_HERE, /*message=*/std::string());
-
   if (!ready()) {
     CallWithEmptyResults(std::move(callback),
                          Status(StatusCode::TEMPORARY_ERROR,
@@ -801,7 +758,7 @@ int RemoteSuggestionsProviderImpl::
 
 GURL RemoteSuggestionsProviderImpl::FindSuggestionImageUrl(
     const ContentSuggestion::ID& suggestion_id) const {
-  DCHECK(base::ContainsKey(category_contents_, suggestion_id.category()));
+  DCHECK(base::Contains(category_contents_, suggestion_id.category()));
 
   const CategoryContent& content =
       category_contents_.at(suggestion_id.category());
@@ -819,7 +776,7 @@ void RemoteSuggestionsProviderImpl::OnDatabaseLoaded(
     return;
   }
   DCHECK(state_ == State::NOT_INITED);
-  DCHECK(base::ContainsKey(category_contents_, articles_category_));
+  DCHECK(base::Contains(category_contents_, articles_category_));
 
   base::TimeDelta database_load_time =
       base::TimeTicks::Now() - database_load_start_;
@@ -918,7 +875,6 @@ void RemoteSuggestionsProviderImpl::OnFetchFinished(
     bool interactive_request,
     Status status,
     RemoteSuggestionsFetcher::OptionalFetchedCategories fetched_categories) {
-  debug_logger_->Log(FROM_HERE, /*message=*/std::string());
 
   FetchRequestStatus request_status = request_status_;
   // TODO(jkrcal): This is potentially incorrect if there is another concurrent
@@ -999,12 +955,6 @@ void RemoteSuggestionsProviderImpl::OnFetchFinished(
   // If suggestions were fetched successfully, update our |category_contents_|
   // from each category provided by the server.
   if (fetched_categories) {
-    if (Logger::IsLoggingEnabled()) {
-      debug_logger_->Log(
-          FROM_HERE,
-          base::StringPrintf("fetched categories count = %d",
-                             static_cast<int>(fetched_categories->size())));
-    }
 
     // TODO(treib): Reorder |category_contents_| to match the order we received
     // from the server. crbug.com/653816
@@ -1016,14 +966,6 @@ void RemoteSuggestionsProviderImpl::OnFetchFinished(
             std::min(fetched_category.suggestions.size(),
                      static_cast<size_t>(kMaxNormalFetchSuggestionCount)));
         response_includes_article_category = true;
-
-        if (Logger::IsLoggingEnabled()) {
-          debug_logger_->Log(
-              FROM_HERE,
-              base::StringPrintf(
-                  "articles category size = %d",
-                  static_cast<int>(fetched_category.suggestions.size())));
-        }
       }
 
       CategoryContent* content =
@@ -1238,7 +1180,7 @@ void RemoteSuggestionsProviderImpl::PrependArticleSuggestion(
       [&content](const std::unique_ptr<RemoteSuggestion>& suggestion) {
         const std::vector<std::string>& ids = suggestion->GetAllIDs();
         for (const auto& archived_suggestion : content->archived) {
-          if (base::ContainsValue(ids, archived_suggestion->id())) {
+          if (base::Contains(ids, archived_suggestion->id())) {
             return true;
           }
         }
@@ -1374,7 +1316,6 @@ void RemoteSuggestionsProviderImpl::ClearHistoryDependentState() {
     return;
   }
 
-  debug_logger_->Log(FROM_HERE, /*message=*/std::string());
   NukeAllSuggestions();
   remote_suggestions_scheduler_->OnHistoryCleared();
 }
@@ -1385,7 +1326,6 @@ void RemoteSuggestionsProviderImpl::ClearCachedSuggestionsImpl() {
     return;
   }
 
-  debug_logger_->Log(FROM_HERE, /*message=*/std::string());
   NukeAllSuggestions();
   remote_suggestions_scheduler_->OnSuggestionsCleared();
 }
@@ -1425,7 +1365,7 @@ void RemoteSuggestionsProviderImpl::NukeAllSuggestions() {
 
 GURL RemoteSuggestionsProviderImpl::GetImageURLToFetch(
     const ContentSuggestion::ID& suggestion_id) const {
-  if (!base::ContainsKey(category_contents_, suggestion_id.category())) {
+  if (!base::Contains(category_contents_, suggestion_id.category())) {
     return GURL();
   }
   return FindSuggestionImageUrl(suggestion_id);
@@ -1463,46 +1403,6 @@ void RemoteSuggestionsProviderImpl::FetchSuggestionImageData(
   image_fetcher_.FetchSuggestionImage(suggestion_id, image_url,
                                       std::move(callback),
                                       ntp_snippets::ImageFetchedCallback());
-}
-
-void RemoteSuggestionsProviderImpl::
-    UpdatePushedSuggestionsSubscriptionDueToStatusChange(
-        RemoteSuggestionsStatus new_status) {
-  if (!breaking_news_raw_data_provider_) {
-    return;
-  }
-
-  bool should_be_subscribed = false;
-  switch (new_status) {
-    case RemoteSuggestionsStatus::ENABLED_AND_SIGNED_IN:
-      should_be_subscribed =
-          IsSignedInUsersSubscriptionForPushedSuggestionsEnabled();
-      break;
-
-    case RemoteSuggestionsStatus::ENABLED_AND_SIGNED_OUT:
-      should_be_subscribed =
-          IsSignedOutUsersSubscriptionForPushedSuggestionsEnabled();
-      break;
-
-    case RemoteSuggestionsStatus::EXPLICITLY_DISABLED:
-      should_be_subscribed = false;
-      break;
-  }
-
-  if (should_be_subscribed) {
-    if (!breaking_news_raw_data_provider_->IsListening()) {
-      breaking_news_raw_data_provider_->StartListening(
-          base::Bind(&RemoteSuggestionsProviderImpl::PrependArticleSuggestion,
-                     base::Unretained(this)),
-          base::Bind(&RemoteSuggestionsProviderImpl::
-                         RefreshSuggestionsUponPushToRefreshRequest,
-                     base::Unretained(this)));
-    }
-  } else {
-    if (breaking_news_raw_data_provider_->IsListening()) {
-      breaking_news_raw_data_provider_->StopListening();
-    }
-  }
 }
 
 void RemoteSuggestionsProviderImpl::FinishInitialization() {
@@ -1560,8 +1460,6 @@ void RemoteSuggestionsProviderImpl::OnStatusChanged(
       EnterState(State::DISABLED);
       break;
   }
-
-  UpdatePushedSuggestionsSubscriptionDueToStatusChange(new_status);
 }
 
 void RemoteSuggestionsProviderImpl::EnterState(State state) {
@@ -1620,10 +1518,6 @@ void RemoteSuggestionsProviderImpl::EnterState(State state) {
       ClearCachedSuggestionsImpl();
       clear_cached_suggestions_when_initialized_ = false;
 
-      if (breaking_news_raw_data_provider_ &&
-          breaking_news_raw_data_provider_->IsListening()) {
-        breaking_news_raw_data_provider_->StopListening();
-      }
       UpdateAllCategoryStatus(CategoryStatus::CATEGORY_EXPLICITLY_DISABLED);
       break;
 
@@ -1791,9 +1685,11 @@ void RemoteSuggestionsProviderImpl::RestoreCategoriesFromPrefs() {
     // serialization / deserialization should not be done inside this
     // class. We should move that into a central place that also knows how to
     // parse data we received from remote backends.
+    // We don't want to use the restored title for BuildArticleCategoryInfo to
+    // avoid using a title that was calculated for a stale locale.
     CategoryInfo info =
         category == articles_category_
-            ? BuildArticleCategoryInfo(title)
+            ? BuildArticleCategoryInfo(base::nullopt)
             : BuildRemoteCategoryInfo(title, allow_fetching_more_results);
     CategoryContent* content = UpdateCategoryInfo(category, info);
     content->included_in_last_server_response =

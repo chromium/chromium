@@ -28,14 +28,55 @@ source_set("manifest") {
 
   deps = [
     "//base",
-    "//device/usb/public/mojom",
-    "//device/usb/public/mojom:test",
     "//services/device/public/mojom",
     "//services/device/public/mojom:generic_sensor",
+    "//services/device/public/mojom:usb",
+    "//services/device/public/mojom:usb_test",
     "//services/service_manager/public/cpp",
   ]
 
   if (is_chromeos && use_dbus) {
     defines = [ "USE_DBUS=1" ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test/fake_sensor_and_provider.cc",
+    "test/fake_sensor_and_provider.h",
+    "test/fake_serial_port_manager.cc",
+    "test/fake_serial_port_manager.h",
+    "test/fake_usb_device.cc",
+    "test/fake_usb_device.h",
+    "test/fake_usb_device_info.cc",
+    "test/fake_usb_device_info.h",
+    "test/fake_usb_device_manager.cc",
+    "test/fake_usb_device_manager.h",
+    "test/mock_usb_mojo_device.cc",
+    "test/mock_usb_mojo_device.h",
+    "test/scoped_geolocation_overrider.cc",
+    "test/scoped_geolocation_overrider.h",
+    "test/test_wake_lock_provider.cc",
+    "test/test_wake_lock_provider.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//services/device/public/cpp/generic_sensor",
+    "//services/device/public/cpp/geolocation",
+    "//services/device/public/cpp/usb",
+    "//services/device/public/mojom",
+    "//services/device/public/mojom:usb",
+    "//services/service_manager/public/cpp",
+  ]
+
+  deps = [
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
 }

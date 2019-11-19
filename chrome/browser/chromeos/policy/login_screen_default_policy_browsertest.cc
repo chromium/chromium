@@ -85,7 +85,6 @@ class LoginScreenDefaultPolicyBrowsertestBase
   ~LoginScreenDefaultPolicyBrowsertestBase() override;
 
   // DevicePolicyCrosBrowserTest:
-  void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
 
   void RefreshDevicePolicyAndWaitForPrefChange(const char* pref_name);
@@ -135,13 +134,6 @@ LoginScreenDefaultPolicyBrowsertestBase::
 
 LoginScreenDefaultPolicyBrowsertestBase::
     ~LoginScreenDefaultPolicyBrowsertestBase() {
-}
-
-void LoginScreenDefaultPolicyBrowsertestBase::
-    SetUpInProcessBrowserTestFixture() {
-  InstallOwnerKey();
-  MarkAsEnterpriseOwned();
-  DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
 }
 
 void LoginScreenDefaultPolicyBrowsertestBase::SetUpOnMainThread() {

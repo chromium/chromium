@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 
+#include <utility>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -43,10 +45,10 @@ WebContents* ChromeWebContentsHandler::OpenURLFromTab(
     // TODO(erg): OpenURLParams should pass a user_gesture flag, pass it to
     // CreateParams, and pass the real value to nav_params below.
     browser =
-        new Browser(Browser::CreateParams(Browser::TYPE_TABBED, profile, true));
+        new Browser(Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
   }
   NavigateParams nav_params(browser, params.url, params.transition);
-  nav_params.referrer = params.referrer;
+  nav_params.FillNavigateParamsFromOpenURLParams(params);
   if (source && source->IsCrashed() &&
       params.disposition == WindowOpenDisposition::CURRENT_TAB &&
       ui::PageTransitionCoreTypeIs(params.transition,
@@ -56,7 +58,6 @@ WebContents* ChromeWebContentsHandler::OpenURLFromTab(
     nav_params.disposition = params.disposition;
   }
   nav_params.window_action = NavigateParams::SHOW_WINDOW;
-  nav_params.user_gesture = true;
   Navigate(&nav_params);
 
   // Close the browser if chrome::Navigate created a new one.
@@ -88,7 +89,7 @@ void ChromeWebContentsHandler::AddNewContents(
   const bool browser_created = !browser;
   if (!browser) {
     browser = new Browser(
-        Browser::CreateParams(Browser::TYPE_TABBED, profile, user_gesture));
+        Browser::CreateParams(Browser::TYPE_NORMAL, profile, user_gesture));
   }
   NavigateParams params(browser, std::move(new_contents));
   params.source_contents = source;

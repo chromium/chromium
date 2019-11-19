@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import argparse
 
 
@@ -42,7 +44,7 @@ class CustomHelpAction(argparse.Action):
     self._help_text = custom_help_text
 
   def __call__(self, parser, namespace, values, option_string=None):
-    print self._help_text
+    print(self._help_text)
     parser.exit()
 
   @staticmethod

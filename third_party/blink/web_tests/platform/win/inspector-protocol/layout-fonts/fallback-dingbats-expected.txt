@@ -1,0 +1,12 @@
+Test passes if the #dingbats_segoe_ui_semilight block uses the Segoe UI Semilight font instead of the Arial font to display a .notdef tofu block.
+❘
+#dingbats_segoe_ui_semilight:
+"Segoe UI Semilight" : 1
+
+✀✁✂✃✄✅✆✇✈✉✊✋✌✍✎✏✐✑✒✓✔✕✖✗✘✙✚✛✜✝✞✟✠✡✢✣✤✥✦✧✨✩✪✫✬✭✮✯✰✱✲✳✴✵✶✷✸✹✺✻✼✽✾✿❀❁❂❃❄❅❆❇❈❉❊❋❌❍❎❏❐❑❒❓❔❕❖❗❘❙❚❛❜❝❞❟❠❡❢❣❤❥❦❧❨❩❪❫❬❭❮❯❰❱❲❳❴❵❶❷❸❹❺❻❼❽❾❿➀➁➂➃➄➅➆➇➈➉➊➋➌➍➎➏➐➑➒➓➔➕➖➗➘➙➚➛➜➝➞➟➠➡➢➣➤➥➦➧➨➩➪➫➬➭➮➯➰➱➲➳➴➵➶➷➸➹➺➻➼➽➾➿
+#dingbats_unicode_block:
+"Segoe UI Symbol" : 175,
+"Segoe UI Emoji" : 17
+
+PASS
+

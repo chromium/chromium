@@ -1,0 +1,21 @@
+Verifies that when we get a non-secure set-cookie header that would overwrite a secure one, we get a Network.ResponseReceivedExtraInfo event with the blocked cookie.
+set-cookie that would overwrite secure cookie blocked set-cookies: [
+  {
+    "blockedReasons": [
+      "OverwriteSecure"
+    ],
+    "cookieLine": "name=value",
+    "cookie": {
+      "name": "name",
+      "value": "value",
+      "domain": "cookie.test",
+      "path": "/inspector-protocol/network/resources",
+      "expires": -1,
+      "size": 9,
+      "httpOnly": false,
+      "secure": false,
+      "session": true
+    }
+  }
+]
+

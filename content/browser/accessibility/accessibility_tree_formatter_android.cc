@@ -68,8 +68,11 @@ class AccessibilityTreeFormatterAndroid
   AccessibilityTreeFormatterAndroid();
   ~AccessibilityTreeFormatterAndroid() override;
 
+  void AddDefaultFilters(
+      std::vector<PropertyFilter>* property_filters) override;
+
  private:
-  const base::FilePath::StringType GetExpectedFileSuffix() override;
+  base::FilePath::StringType GetExpectedFileSuffix() override;
   const std::string GetAllowEmptyString() override;
   const std::string GetAllowString() override;
   const std::string GetDenyString() override;
@@ -88,12 +91,12 @@ AccessibilityTreeFormatter::Create() {
 }
 
 // static
-std::vector<AccessibilityTreeFormatter::FormatterFactory>
+std::vector<AccessibilityTreeFormatter::TestPass>
 AccessibilityTreeFormatter::GetTestPasses() {
   // Note: Android doesn't do a "blink" pass; the blink tree is different on
   // Android because we exclude inline text boxes, for performance.
   return {
-      &AccessibilityTreeFormatter::Create,
+      {"android", &AccessibilityTreeFormatter::Create},
   };
 }
 
@@ -101,6 +104,14 @@ AccessibilityTreeFormatterAndroid::AccessibilityTreeFormatterAndroid() {}
 
 AccessibilityTreeFormatterAndroid::~AccessibilityTreeFormatterAndroid() {}
 
+void AccessibilityTreeFormatterAndroid::AddDefaultFilters(
+    std::vector<PropertyFilter>* property_filters) {
+  AddPropertyFilter(property_filters, "hint=*");
+  AddPropertyFilter(property_filters, "interesting", PropertyFilter::DENY);
+  AddPropertyFilter(property_filters, "has_character_locations",
+                    PropertyFilter::DENY);
+  AddPropertyFilter(property_filters, "has_image", PropertyFilter::DENY);
+}
 void AccessibilityTreeFormatterAndroid::AddProperties(
     const BrowserAccessibility& node,
     base::DictionaryValue* dict) {
@@ -139,7 +150,7 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->SetBoolean("interesting", android_node->IsInterestingOnAndroid());
 
   // String attributes.
-  dict->SetString("name", android_node->GetText());
+  dict->SetString("name", android_node->GetInnerText());
   dict->SetString("hint", android_node->GetHint());
   dict->SetString("role_description", android_node->GetRoleDescription());
 
@@ -188,7 +199,7 @@ base::string16 AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
 
   base::string16 class_value;
   dict.GetString("class", &class_value);
-  WriteAttribute(true, base::UTF16ToUTF8(class_value), &line);
+  WriteAttribute(true, class_value, &line);
 
   std::string role_description;
   dict.GetString("role_description", &role_description);
@@ -225,7 +236,7 @@ base::string16 AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
   return line;
 }
 
-const base::FilePath::StringType
+base::FilePath::StringType
 AccessibilityTreeFormatterAndroid::GetExpectedFileSuffix() {
   return FILE_PATH_LITERAL("-expected-android.txt");
 }

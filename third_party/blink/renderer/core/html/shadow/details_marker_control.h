@@ -41,21 +41,13 @@ class HTMLSummaryElement;
 class DetailsMarkerControl final : public HTMLDivElement {
  public:
   explicit DetailsMarkerControl(Document&);
-  static DetailsMarkerControl* Create(Document&);
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override;
 
   HTMLSummaryElement* SummaryElement() const;
 };
-
-inline DetailsMarkerControl* DetailsMarkerControl::Create(Document& document) {
-  DetailsMarkerControl* element =
-      MakeGarbageCollected<DetailsMarkerControl>(document);
-  element->SetShadowPseudoId(AtomicString("-webkit-details-marker"));
-  return element;
-}
 
 }  // namespace blink
 

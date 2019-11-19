@@ -51,8 +51,7 @@ PositionInFlatTree PreviousSentencePositionInternal(
       // "move_by_sentence_boundary.html" requires to skip a space characters
       // between sentences.
       const unsigned offset = FindLastNonSpaceCharacter(text, passed_offset);
-      TextBreakIterator* iterator =
-          SentenceBreakIterator(text.Characters16(), text.length());
+      TextBreakIterator* iterator = SentenceBreakIterator(text.Span16());
       const int result = iterator->preceding(offset);
       if (result == kTextBreakDone)
         return Position();
@@ -82,8 +81,7 @@ PositionInFlatTree StartOfSentenceInternal(const PositionInFlatTree& position) {
       // "move_by_sentence_boundary.html" requires to skip a space characters
       // between sentences.
       const unsigned offset = FindNonSpaceCharacter(text, passed_offset);
-      TextBreakIterator* iterator =
-          SentenceBreakIterator(text.Characters16(), text.length());
+      TextBreakIterator* iterator = SentenceBreakIterator(text.Span16());
       const int result = iterator->preceding(offset);
       if (result == kTextBreakDone) {
         if (text.length()) {
@@ -117,8 +115,7 @@ PositionInFlatTree EndOfSentenceInternal(const PositionInFlatTree& position) {
    public:
     Position Find(const String text, unsigned passed_offset) final {
       DCHECK_LE(passed_offset, text.length());
-      TextBreakIterator* iterator =
-          SentenceBreakIterator(text.Characters16(), text.length());
+      TextBreakIterator* iterator = SentenceBreakIterator(text.Span16());
       // "move_by_sentence_boundary.html" requires to skip a space characters
       // between sentences.
       const unsigned offset = FindNonSpaceCharacter(text, passed_offset);
@@ -164,8 +161,7 @@ PositionInFlatTree NextSentencePositionInternal(
         should_stop_finding_ = true;
         return Position();
       }
-      TextBreakIterator* it =
-          SentenceBreakIterator(text.Characters16(), text.length());
+      TextBreakIterator* it = SentenceBreakIterator(text.Span16());
       const int result = it->following(offset);
       if (result == kTextBreakDone)
         return Position();

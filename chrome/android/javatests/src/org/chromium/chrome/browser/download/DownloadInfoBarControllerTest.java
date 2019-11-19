@@ -14,18 +14,18 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.UUID;
 
@@ -61,7 +61,7 @@ public class DownloadInfoBarControllerTest {
     @Before
     public void before() {
         RecordHistogram.setDisabledForTests(true);
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mTestController = new TestDownloadInfoBarController(); });
     }
 
@@ -105,9 +105,8 @@ public class DownloadInfoBarControllerTest {
             return true;
         }
 
-        @Override
         public void onItemUpdated(OfflineItem item) {
-            super.onItemUpdated(item.clone());
+            super.onItemUpdated(item.clone(), null);
         }
 
         void verify(String message) {
@@ -164,6 +163,7 @@ public class DownloadInfoBarControllerTest {
     @Test
     @SmallTest
     @Feature({"Download"})
+    @Features.DisableFeatures(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)
     public void testAccelerated() {
         OfflineItem offlineItem = createOfflineItem(OfflineItemState.IN_PROGRESS);
         offlineItem.isAccelerated = true;
@@ -174,6 +174,7 @@ public class DownloadInfoBarControllerTest {
     @Test
     @SmallTest
     @Feature({"Download"})
+    @Features.DisableFeatures(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)
     public void testMultipleDownloadInProgress() {
         OfflineItem item1 = createOfflineItem(OfflineItemState.IN_PROGRESS);
         mTestController.onDownloadItemUpdated(createDownloadItem(item1));
@@ -187,6 +188,7 @@ public class DownloadInfoBarControllerTest {
     @Test
     @SmallTest
     @Feature({"Download"})
+    @Features.DisableFeatures(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)
     public void testAcceleratedChangesToDownloadingAfterDelay() {
         OfflineItem item1 = createOfflineItem(OfflineItemState.IN_PROGRESS);
         item1.isAccelerated = true;

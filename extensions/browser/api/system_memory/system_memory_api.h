@@ -10,7 +10,7 @@
 
 namespace extensions {
 
-class SystemMemoryGetInfoFunction : public UIThreadExtensionFunction {
+class SystemMemoryGetInfoFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("system.memory.getInfo", SYSTEM_MEMORY_GETINFO)
   SystemMemoryGetInfoFunction();
@@ -18,7 +18,7 @@ class SystemMemoryGetInfoFunction : public UIThreadExtensionFunction {
  private:
   ~SystemMemoryGetInfoFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
   void OnGetMemoryInfoCompleted(bool success);

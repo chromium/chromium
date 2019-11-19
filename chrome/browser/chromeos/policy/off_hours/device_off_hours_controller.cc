@@ -130,8 +130,11 @@ void DeviceOffHoursController::OffHoursModeIsChanged() const {
 }
 
 void DeviceOffHoursController::UpdateOffHoursMode() {
-  if (off_hours_intervals_.empty() || !network_synchronized_) {
-    if (!network_synchronized_) {
+  // Assume that time is network synchronized if response from dbus call is not
+  // arrived.
+  bool is_time_network_synchronized = network_synchronized_.value_or(true);
+  if (off_hours_intervals_.empty() || !is_time_network_synchronized) {
+    if (!is_time_network_synchronized) {
       VLOG(1) << "The system time isn't network synchronized. OffHours mode is "
                  "unavailable.";
     }

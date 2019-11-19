@@ -119,6 +119,45 @@ complete nor stable.
 </p>
 
 <p>
+<span class="availability">Starting from Chrome 79</span>, request header
+modifications affect Cross-Origin Resource Sharing (CORS) checks. If modified
+headers for cross-origin requests do not meet the criteria, it will result in
+sending a CORS preflight to ask the server if such headers can be accepted.
+If you really need to modify headers in a way to violate the CORS protocol, you
+need to specify <code>'extraHeaders'</code> in <code>opt_extraInfoSpec</code>.
+On the other hand, response header modifications do not work to deceive CORS
+checks. If you need to deceive the CORS protocol, you also need to specify
+<code>'extraHeaders'</code> for the response modifications.
+</p>
+
+<p>
+<span class="availability">Starting from Chrome 79</span>, the webRequest API
+<strong>does not</strong> intercept CORS preflight requests and responses by
+default. A CORS preflight for a request URL is visible to an extension if there
+is a listener with <code>'extraHeaders'</code> specified in
+<code>opt_extraInfoSpec</code> for the request URL. <code>onBeforeRequest</code>
+can also take <code>'extraHeaders'</code> from Chrome 79.
+</p>
+
+<p>
+<span class="availability">Starting from Chrome 79</span>, the following request
+header is <strong>not provided</strong> and cannot be modified or removed
+without specifying <code>'extraHeaders'</code> in
+<code>opt_extraInfoSpec</code>:
+<ul>
+  <li>Origin</li>
+</ul>
+</p>
+
+<p>
+<span class="availability">Starting from Chrome 72</span>, if you need to
+modify responses before
+<a href="https://chromium.googlesource.com/chromium/src/+/master/services/network/cross_origin_read_blocking_explainer.md">Cross Origin Read Blocking (CORB)</a>
+can block the response, you need to specify <code>'extraHeaders'</code> in
+<code>opt_extraInfpSpec</code>.
+</p>
+
+<p>
 <span class="availability">Starting from Chrome 72</span>, the following request
 headers are <strong>not provided</strong> and cannot be modified or removed
 without specifying <code>'extraHeaders'</code> in

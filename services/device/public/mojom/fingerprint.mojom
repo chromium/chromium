@@ -84,7 +84,7 @@ interface Fingerprint {
   DestroyAllRecords() => (bool success);
 
   // Adds fingerprint observers and notifies them when receiving signals.
-  AddFingerprintObserver(FingerprintObserver observer);
+  AddFingerprintObserver(pending_remote<FingerprintObserver> observer);
 
   // Requests the type of biometric.
   RequestType() => (BiometricType type);

@@ -31,7 +31,8 @@ enum class SmbMountResult {
   ABORTED = 10,                // The operation was aborted.
   IO_ERROR = 11,               // An I/O error occured.
   TOO_MANY_OPENED = 12,        // There are too many shares open.
-  kMaxValue = TOO_MANY_OPENED  // Max enum value for use in metrics.
+  INVALID_SSO_URL = 13,        // The share URL is not valid when using SSO.
+  kMaxValue = INVALID_SSO_URL  // Max enum value for use in metrics.
 };
 
 // Translates an smbprovider::ErrorType to a base::File::Error. Since

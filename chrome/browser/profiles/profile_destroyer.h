@@ -42,8 +42,10 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
   // Called by the timer to cancel the pending destruction and do it now.
   void DestroyProfile();
 
-  // Fetch the list of render process hosts that still refer to the profile.
-  static HostSet GetHostsForProfile(Profile* const profile);
+  // Fetch the list of render process hosts that still point to |profile_ptr|.
+  // |profile_ptr| is a void* because the Profile object may be freed. Only
+  // pointer comparison is allowed, it will never be dereferenced as a Profile.
+  static HostSet GetHostsForProfile(void* const profile_ptr);
 
   // We need access to all pending destroyers so we can cancel them.
   static DestroyerSet* pending_destroyers_;
@@ -58,7 +60,7 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
   // another instance of ProfileDestroyer that this instance is canceled.
   Profile* profile_;
 
-  base::WeakPtrFactory<ProfileDestroyer> weak_ptr_factory_;
+  base::WeakPtrFactory<ProfileDestroyer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProfileDestroyer);
 };

@@ -64,6 +64,9 @@ class TestModuleSnapshot final : public ModuleSnapshot {
     uuid_ = uuid;
     age_ = age;
   }
+  void SetBuildID(const std::vector<uint8_t>& build_id) {
+    build_id_ = build_id;
+  }
   void SetDebugFileName(const std::string& debug_file_name) {
     debug_file_name_ = debug_file_name;
   }
@@ -101,6 +104,7 @@ class TestModuleSnapshot final : public ModuleSnapshot {
   ModuleType GetModuleType() const override;
   void UUIDAndAge(crashpad::UUID* uuid, uint32_t* age) const override;
   std::string DebugFileName() const override;
+  std::vector<uint8_t> BuildID() const override;
   std::vector<std::string> AnnotationsVector() const override;
   std::map<std::string, std::string> AnnotationsSimpleMap() const override;
   std::vector<AnnotationSnapshot> AnnotationObjects() const override;
@@ -117,6 +121,7 @@ class TestModuleSnapshot final : public ModuleSnapshot {
   ModuleType module_type_;
   uint32_t age_;
   crashpad::UUID uuid_;
+  std::vector<uint8_t> build_id_;
   std::string debug_file_name_;
   std::vector<std::string> annotations_vector_;
   std::map<std::string, std::string> annotations_simple_map_;

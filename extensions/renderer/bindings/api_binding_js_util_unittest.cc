@@ -169,40 +169,27 @@ TEST_F(APIBindingJSUtilUnittest, TestSendRequestWithOptions) {
 
   const char kSendRequestWithNoOptions[] =
       "obj.sendRequest('alpha.functionWithCallback',\n"
-      "                ['someString', function() {}], undefined, undefined);";
+      "                ['someString', function() {}], undefined);";
   CallFunctionOnObject(context, v8_util, kSendRequestWithNoOptions);
   ASSERT_TRUE(last_request());
   EXPECT_EQ("alpha.functionWithCallback", last_request()->method_name);
   EXPECT_EQ("[\"someString\"]", ValueToString(*last_request()->arguments));
-  EXPECT_EQ(binding::RequestThread::UI, last_request()->thread);
-  reset_last_request();
-
-  const char kSendRequestForIOThread[] =
-      "obj.sendRequest('alpha.functionWithCallback',\n"
-      "                ['someOtherString', function() {}], undefined,\n"
-      "                {__proto__: null, forIOThread: true});";
-  CallFunctionOnObject(context, v8_util, kSendRequestForIOThread);
-  ASSERT_TRUE(last_request());
-  EXPECT_EQ("alpha.functionWithCallback", last_request()->method_name);
-  EXPECT_EQ("[\"someOtherString\"]", ValueToString(*last_request()->arguments));
-  EXPECT_EQ(binding::RequestThread::IO, last_request()->thread);
   reset_last_request();
 
   const char kSendRequestForUIThread[] =
       "obj.sendRequest('alpha.functionWithCallback',\n"
-      "                ['someOtherString', function() {}], undefined,\n"
-      "                {__proto__: null, forIOThread: false});";
+      "                ['someOtherString', function() {}],\n"
+      "                {__proto__: null});";
   CallFunctionOnObject(context, v8_util, kSendRequestForUIThread);
   ASSERT_TRUE(last_request());
   EXPECT_EQ("alpha.functionWithCallback", last_request()->method_name);
   EXPECT_EQ("[\"someOtherString\"]", ValueToString(*last_request()->arguments));
-  EXPECT_EQ(binding::RequestThread::UI, last_request()->thread);
   reset_last_request();
 
   const char kSendRequestWithCustomCallback[] =
       R"(obj.sendRequest(
              'alpha.functionWithCallback',
-             ['stringy', function() {}], undefined,
+             ['stringy', function() {}],
              {
                __proto__: null,
                customCallback: function() {
@@ -213,7 +200,6 @@ TEST_F(APIBindingJSUtilUnittest, TestSendRequestWithOptions) {
   ASSERT_TRUE(last_request());
   EXPECT_EQ("alpha.functionWithCallback", last_request()->method_name);
   EXPECT_EQ("[\"stringy\"]", ValueToString(*last_request()->arguments));
-  EXPECT_EQ(binding::RequestThread::UI, last_request()->thread);
   bindings_system()->CompleteRequest(last_request()->request_id,
                                      base::ListValue(), std::string());
   EXPECT_EQ("true", GetStringPropertyFromObject(context->Global(), context,
@@ -234,12 +220,11 @@ TEST_F(APIBindingJSUtilUnittest, TestSendRequestSerializationFailure) {
   const char kSendRequest[] =
       R"(obj.sendRequest('alpha.functionWithCallback',
                          [undefined, 1/0, function() {}],
-                         undefined, undefined);)";
+                         undefined);)";
   CallFunctionOnObject(context, v8_util, kSendRequest);
   ASSERT_TRUE(last_request());
   EXPECT_EQ("alpha.functionWithCallback", last_request()->method_name);
   EXPECT_EQ("[null,null]", ValueToString(*last_request()->arguments));
-  EXPECT_EQ(binding::RequestThread::UI, last_request()->thread);
   reset_last_request();
 }
 

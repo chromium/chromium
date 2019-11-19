@@ -13,10 +13,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/net/wake_on_wifi_connection_observer.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/device_state.h"
@@ -27,8 +28,6 @@
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -82,8 +81,7 @@ bool WakeOnWifiManager::IsWakeOnPacketEnabled(WakeOnWifiFeature feature) {
 WakeOnWifiManager::WakeOnWifiManager()
     : current_feature_(WakeOnWifiManager::INVALID),
       wifi_properties_received_(false),
-      extension_event_observer_(new ExtensionEventObserver()),
-      weak_ptr_factory_(this) {
+      extension_event_observer_(new ExtensionEventObserver()) {
   // This class must be constructed before any users are logged in, i.e., before
   // any profiles are created or added to the ProfileManager.  Additionally,
   // IsUserLoggedIn always returns true when we are not running on a Chrome OS
@@ -95,12 +93,7 @@ WakeOnWifiManager::WakeOnWifiManager()
 
   g_wake_on_wifi_manager = this;
 
-  registrar_.Add(this,
-                 chrome::NOTIFICATION_PROFILE_ADDED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-  registrar_.Add(this,
-                 chrome::NOTIFICATION_PROFILE_DESTROYED,
-                 content::NotificationService::AllBrowserContextsAndSources());
+  g_browser_process->profile_manager()->AddObserver(this);
 
   NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
 
@@ -108,13 +101,13 @@ WakeOnWifiManager::WakeOnWifiManager()
 }
 
 WakeOnWifiManager::~WakeOnWifiManager() {
-  DCHECK(g_wake_on_wifi_manager);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  g_browser_process->profile_manager()->RemoveObserver(this);
   if (current_feature_ != NOT_SUPPORTED) {
     NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
                                                                    FROM_HERE);
   }
-  g_wake_on_wifi_manager = NULL;
+  DCHECK_EQ(this, g_wake_on_wifi_manager);
+  g_wake_on_wifi_manager = nullptr;
 }
 
 void WakeOnWifiManager::OnPreferenceChanged(
@@ -142,21 +135,21 @@ bool WakeOnWifiManager::WakeOnWifiSupported() {
   return current_feature_ != NOT_SUPPORTED && current_feature_ != INVALID;
 }
 
-void WakeOnWifiManager::Observe(int type,
-                                const content::NotificationSource& source,
-                                const content::NotificationDetails& details) {
-  switch (type) {
-    case chrome::NOTIFICATION_PROFILE_ADDED: {
-      OnProfileAdded(content::Source<Profile>(source).ptr());
-      break;
-    }
-    case chrome::NOTIFICATION_PROFILE_DESTROYED: {
-      OnProfileDestroyed(content::Source<Profile>(source).ptr());
-      break;
-    }
-    default:
-      NOTREACHED();
-  }
+void WakeOnWifiManager::OnProfileAdded(Profile* profile) {
+  auto result = connection_observers_.find(profile);
+
+  // Only add the profile if it is not already present.
+  if (result != connection_observers_.end())
+    return;
+
+  connection_observers_[profile] =
+      std::make_unique<WakeOnWifiConnectionObserver>(
+          profile, wifi_properties_received_, current_feature_,
+          NetworkHandler::Get()->network_device_handler());
+
+  gcm::GCMProfileServiceFactory::GetForProfile(profile)
+      ->driver()
+      ->WakeFromSuspendForHeartbeat(IsWakeOnPacketEnabled(current_feature_));
 }
 
 void WakeOnWifiManager::DeviceListChanged() {
@@ -223,8 +216,8 @@ void WakeOnWifiManager::GetDevicePropertiesCallback(
     connection_observers_.clear();
     NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
                                                                    FROM_HERE);
-    registrar_.RemoveAll();
     extension_event_observer_.reset();
+    g_browser_process->profile_manager()->RemoveObserver(this);
 
     return;
   }
@@ -248,28 +241,6 @@ void WakeOnWifiManager::GetDevicePropertiesCallback(
   for (const auto& kv_pair : connection_observers_) {
     kv_pair.second->HandleWifiDevicePropertiesReady();
   }
-}
-
-void WakeOnWifiManager::OnProfileAdded(Profile* profile) {
-  auto result = connection_observers_.find(profile);
-
-  // Only add the profile if it is not already present.
-  if (result != connection_observers_.end())
-    return;
-
-  connection_observers_[profile] =
-      base::WrapUnique(new WakeOnWifiConnectionObserver(
-          profile, wifi_properties_received_, current_feature_,
-          NetworkHandler::Get()->network_device_handler()));
-
-  gcm::GCMProfileServiceFactory::GetForProfile(profile)
-      ->driver()
-      ->WakeFromSuspendForHeartbeat(
-          IsWakeOnPacketEnabled(current_feature_));
-}
-
-void WakeOnWifiManager::OnProfileDestroyed(Profile* profile) {
-  connection_observers_.erase(profile);
 }
 
 }  // namespace chromeos

@@ -15,27 +15,27 @@ using Traits = StructTraits<blink::mojom::URLLoaderFactoryBundleDataView,
                             std::unique_ptr<blink::URLLoaderFactoryBundleInfo>>;
 
 // static
-network::mojom::URLLoaderFactoryPtrInfo Traits::default_factory(
+mojo::PendingRemote<network::mojom::URLLoaderFactory> Traits::default_factory(
     BundleInfoType& bundle) {
-  return std::move(bundle->default_factory_info());
+  return std::move(bundle->pending_default_factory());
 }
 
 // static
-network::mojom::URLLoaderFactoryPtrInfo Traits::appcache_factory(
+mojo::PendingRemote<network::mojom::URLLoaderFactory> Traits::appcache_factory(
     BundleInfoType& bundle) {
-  return std::move(bundle->appcache_factory_info());
+  return std::move(bundle->pending_appcache_factory());
 }
 
 // static
 blink::URLLoaderFactoryBundleInfo::SchemeMap Traits::scheme_specific_factories(
     BundleInfoType& bundle) {
-  return std::move(bundle->scheme_specific_factory_infos());
+  return std::move(bundle->pending_scheme_specific_factories());
 }
 
 // static
-blink::URLLoaderFactoryBundleInfo::OriginMap
-Traits::initiator_specific_factories(BundleInfoType& bundle) {
-  return std::move(bundle->initiator_specific_factory_infos());
+blink::URLLoaderFactoryBundleInfo::OriginMap Traits::isolated_world_factories(
+    BundleInfoType& bundle) {
+  return std::move(bundle->pending_isolated_world_factories());
 }
 
 // static
@@ -48,16 +48,18 @@ bool Traits::Read(blink::mojom::URLLoaderFactoryBundleDataView data,
                   BundleInfoType* out_bundle) {
   *out_bundle = std::make_unique<blink::URLLoaderFactoryBundleInfo>();
 
-  (*out_bundle)->default_factory_info() =
-      data.TakeDefaultFactory<network::mojom::URLLoaderFactoryPtrInfo>();
-  (*out_bundle)->appcache_factory_info() =
-      data.TakeAppcacheFactory<network::mojom::URLLoaderFactoryPtrInfo>();
+  (*out_bundle)->pending_default_factory() = data.TakeDefaultFactory<
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>>();
+  (*out_bundle)->pending_appcache_factory() = data.TakeAppcacheFactory<
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>>();
   if (!data.ReadSchemeSpecificFactories(
-          &(*out_bundle)->scheme_specific_factory_infos()))
+          &(*out_bundle)->pending_scheme_specific_factories())) {
     return false;
-  if (!data.ReadInitiatorSpecificFactories(
-          &(*out_bundle)->initiator_specific_factory_infos()))
+  }
+  if (!data.ReadIsolatedWorldFactories(
+          &(*out_bundle)->pending_isolated_world_factories())) {
     return false;
+  }
 
   (*out_bundle)->set_bypass_redirect_checks(data.bypass_redirect_checks());
 

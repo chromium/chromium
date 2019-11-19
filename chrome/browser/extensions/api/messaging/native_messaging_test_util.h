@@ -29,12 +29,16 @@ class ScopedTestNativeMessagingHost {
  public:
   static const char kHostName[];
   static const char kBinaryMissingHostName[];
+  static const char kSupportsNativeInitiatedConnectionsHostName[];
+
   static const char kExtensionId[];
 
   ScopedTestNativeMessagingHost();
   ~ScopedTestNativeMessagingHost();
 
   void RegisterTestHost(bool user_level);
+
+  const base::FilePath& temp_dir() { return temp_dir_.GetPath(); }
 
  private:
   base::ScopedTempDir temp_dir_;

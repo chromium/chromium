@@ -4,17 +4,33 @@
 
 /**
  * @fileoverview Define accessibility tests for the MANAGE_ACCESSIBILITY route.
+ * Chrome OS only.
  */
-
-// This is only for Chrome OS.
-GEN('#if defined(OS_CHROMEOS)');
 
 // SettingsAccessibilityTest fixture.
 GEN_INCLUDE([
+  '//chrome/test/data/webui/polymer_browser_test_base.js',
   'settings_accessibility_test.js',
 ]);
 
-AccessibilityTest.define('SettingsAccessibilityTest', {
+GEN('#include "chromeos/constants/chromeos_features.h"');
+
+// eslint-disable-next-line no-var
+var ManageAccessibilityA11yTest = class extends PolymerTest {
+  /** @override */
+  get featureList() {
+    // Always test with SplitSettings on because the pages are the same in the
+    // legacy combined settings and we don't want to test everything twice.
+    return {enabled: ['chromeos::features::kSplitSettings']};
+  }
+
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/';
+  }
+};
+
+AccessibilityTest.define('ManageAccessibilityA11yTest', {
   /** @override */
   name: 'MANAGE_ACCESSIBILITY',
   /** @override */
@@ -29,5 +45,3 @@ AccessibilityTest.define('SettingsAccessibilityTest', {
   /** @override */
   violationFilter: SettingsAccessibilityTest.violationFilter,
 });
-
-GEN('#endif  // defined(OS_CHROMEOS)');

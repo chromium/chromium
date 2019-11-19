@@ -29,7 +29,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.infobar.IPHInfoBarSupport.IPHBubbleDelegate;
 import org.chromium.chrome.browser.infobar.IPHInfoBarSupport.PopupState;
 import org.chromium.chrome.browser.infobar.InfoBarContainerLayout.Item;
-import org.chromium.chrome.browser.widget.textbubble.TextBubble;
+import org.chromium.chrome.browser.ui.widget.textbubble.TextBubble;
 
 /** Tests {@link IPHInfoBarSupport}. */
 @RunWith(BaseRobolectricTestRunner.class)

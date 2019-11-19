@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include <iterator>
+#include <utility>
 
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -39,11 +40,6 @@ std::vector<std::string>& GetMutableSavableSchemes() {
 
 // This set contains serialized canonicalized origins as well as hostname
 // patterns. The latter are canonicalized by component.
-std::vector<std::string>& GetMutableSecureOriginsAndPatterns() {
-  static base::NoDestructor<std::vector<std::string>> origins;
-  return *origins;
-}
-
 std::vector<std::string>& GetMutableServiceWorkerSchemes() {
   static base::NoDestructor<std::vector<std::string>> schemes;
   return *schemes;
@@ -111,16 +107,10 @@ void RegisterContentSchemes(bool lock_schemes) {
                                     schemes.savable_schemes.end());
 
   GetMutableServiceWorkerSchemes() = std::move(schemes.service_worker_schemes);
-
-  GetMutableSecureOriginsAndPatterns() = std::move(schemes.secure_origins);
 }
 
 const std::vector<std::string>& GetSavableSchemes() {
   return GetMutableSavableSchemes();
-}
-
-const std::vector<std::string>& GetSecureOriginsAndPatterns() {
-  return GetMutableSecureOriginsAndPatterns();
 }
 
 const std::vector<std::string>& GetServiceWorkerSchemes() {

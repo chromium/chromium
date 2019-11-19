@@ -1,0 +1,19 @@
+Name: XNU
+Short Name: xnu
+URL: https://opensource.apple.com/source/xnu/
+URL: https://opensource.apple.com/tarballs/xnu/
+Version: 4903.221.2 (from macOS 10.14.1)
+License: APSL 2.0
+License File: APPLE_LICENSE
+Security Critical: no
+
+Description:
+XNU is the operating system kernel used on macOS and other Apple systems.
+
+Local Modifications:
+ - Only EXTERNAL_HEADERS/mach-o/loader.h is included. Its #includes of
+   <mach/machine/thread_status.h> and <architecture/byte_order.h> have been
+   removed as unnecessary. Note that its #includes of <mach/machine.h> and
+   <mach/vm_prot.h> have been retained but these headers have not been provided.
+   External headers must be made available to provide the cpu_type_t,
+   cpu_subtype_t, and vm_prot_t types.

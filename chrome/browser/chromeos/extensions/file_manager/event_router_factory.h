@@ -24,7 +24,7 @@ class EventRouterFactory : public BrowserContextKeyedServiceFactory {
   static EventRouterFactory* GetInstance();
 
  protected:
-  // BrowserContextKeyedBaseFactory overrides:
+  // BrowserContextKeyedServiceFactory overrides:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;

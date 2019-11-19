@@ -13,7 +13,7 @@ namespace metrics {
 
 DesktopProfileSessionDurationsService::DesktopProfileSessionDurationsService(
     syncer::SyncService* sync_service,
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     DesktopSessionDurationTracker* tracker)
     : metrics_recorder_(
           std::make_unique<syncer::SyncSessionDurationsMetricsRecorder>(
@@ -41,7 +41,8 @@ void DesktopProfileSessionDurationsService::OnSessionStarted(
 }
 
 void DesktopProfileSessionDurationsService::OnSessionEnded(
-    base::TimeDelta session_length) {
+    base::TimeDelta session_length,
+    base::TimeTicks session_end) {
   metrics_recorder_->OnSessionEnded(session_length);
 }
 

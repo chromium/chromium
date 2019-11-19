@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="container">
   <table id="table1" role="grid">
@@ -35,7 +34,7 @@
 <div id="console"></div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
   var axTable = accessibilityController.accessibleElementById('table1');
   assert_equals(axTable.role, "AXRole: AXGrid");
 
@@ -43,7 +42,7 @@ test_after_layout_and_paint(function(t) {
   assert_equals(axTable.columnCount, 2);
 }, "Test table with ARIA grid role on just table element.");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
   var axTable = accessibilityController.accessibleElementById('table2');
   assert_equals(axTable.role, "AXRole: AXGrid");
 
@@ -51,7 +50,7 @@ test_after_layout_and_paint(function(t) {
   assert_equals(axTable.columnCount, 2);
 }, "Test table with ARIA grid role on table and row role on rows.");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
   var axTable = accessibilityController.accessibleElementById('table3');
   assert_equals(axTable.role, "AXRole: AXGrid");
 

@@ -5,9 +5,6 @@
 import("//build/config/features.gni")
 
 declare_args() {
-  # If true, prune things down as needed for proto-quic build.
-  is_proto_quic = false
-
   # Disables support for file URLs.  File URL support requires use of icu.
   disable_file_support = false
 
@@ -18,8 +15,7 @@ declare_args() {
 
   # Enable Kerberos authentication. It is disabled by default on iOS, Fuchsia
   # and Chromecast, at least for now. This feature needs configuration
-  # (krb5.conf and so on). On Chrome OS it is only supported on Active
-  # Directory managed devices.
+  # (krb5.conf and so on).
   # TODO(fuchsia): Enable kerberos on Fuchsia when it's implemented there.
   use_kerberos = !is_ios && !is_chromecast && !is_fuchsia
 
@@ -43,4 +39,11 @@ declare_args() {
   # Platforms where the cert verifier comparison trial is supported.
   # See https://crbug.com/649026.
   trial_comparison_cert_verifier_supported = is_desktop_linux || is_mac
+
+  # Platforms where both the builtin cert verifier and a platform verifier are
+  # supported and may be switched between using the CertVerifierBuiltin feature
+  # flag. This does not include platforms where the builtin cert verifier is
+  # the only verifier supported.
+  builtin_cert_verifier_feature_supported =
+      is_desktop_linux || is_mac || is_chromeos
 }

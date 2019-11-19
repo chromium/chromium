@@ -53,6 +53,11 @@ bool SurfaceRange::HasDifferentFrameSinkIds() const {
   return start_ && start_->frame_sink_id() != end_.frame_sink_id();
 }
 
+bool SurfaceRange::HasDifferentEmbedTokens() const {
+  return start_ && start_->local_surface_id().embed_token() !=
+                       end_.local_surface_id().embed_token();
+}
+
 bool SurfaceRange::IsValid() const {
   if (!end_.is_valid())
     return false;

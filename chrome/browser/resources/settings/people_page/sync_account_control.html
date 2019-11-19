@@ -1,12 +1,12 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="profile_info_browser_proxy.html">
 <link rel="import" href="sync_browser_proxy.html">
 <link rel="import" href="../i18n_setup.html">
@@ -78,13 +78,14 @@
         right: initial;
       }
 
-      :host-context([dark]) #sync-icon-container {
-        background: var(--google-green-refresh-300);
-        border-color: var(--google-grey-900);
+      @media (prefers-color-scheme: dark) {
+        #sync-icon-container {
+          background: var(--google-green-refresh-300);
+          border-color: var(--google-grey-900);
+        }
       }
 
-      #sync-icon-container.sync-problem,
-      :host-context([dark]) #sync-icon-container.sync-problem {
+      #sync-icon-container.sync-problem {
         background: var(--settings-error-color);
       }
 
@@ -92,16 +93,20 @@
         background: var(--google-blue-500);
       }
 
-      :host-context([dark]) #sync-icon-container.sync-paused {
-        background: var(--google-blue-refresh-300);
+      @media (prefers-color-scheme: dark) {
+        #sync-icon-container.sync-paused {
+          background: var(--google-blue-refresh-300);
+        }
       }
 
       #sync-icon-container.sync-disabled {
         background: var(--google-grey-400);
       }
 
-      :host-context([dark]) #sync-icon-container.sync-disabled {
-        background: var(--google-grey-refresh-500);
+      @media (prefers-color-scheme: dark) {
+        #sync-icon-container.sync-disabled {
+          background: var(--google-grey-refresh-500);
+        }
       }
 
       #sync-icon-container iron-icon {
@@ -112,6 +117,7 @@
       }
 
       #sign-in {
+        margin: auto 8px;
         min-width: 100px;
       }
 
@@ -120,48 +126,34 @@
         background-size: 100% auto;
         display: none;
         padding-top: calc(120 / 680 * 100%); /* Keep background ratio. */
-
-        @apply --promo-banner;
       }
 
-      :host-context([dark]) #banner {
-        background-image: url(../images/sync_banner_dark.svg);
+      @media (prefers-color-scheme: dark) {
+        #banner {
+          background-image: url(../images/sync_banner_dark.svg);
+        }
       }
 
       :host([showing-promo]) #banner {
         display: block;
       }
-
-      :host([showing-promo]) #promo-title {
-        @apply --promo-title;
-      }
-
-      :host([showing-promo]) #promo-description {
-        @apply --promo-description;
-      }
-
-      :host([showing-promo]) #promo-separator {
-        @apply --promo-separator;
-      }
     </style>
-    <div id="banner" hidden="[[syncStatus.signedIn]]"></div>
+    <div id="banner" hidden="[[syncStatus.signedIn]]" part="banner"></div>
     <div class$="settings-box first
                  [[getPromoHeaderClass_(subLabel_)]]"
         id="promo-header" hidden="[[syncStatus.signedIn]]">
       <div class="start settings-box-text">
-        <div id="promo-title">
+        <div id="promo-title" part="title">
           [[getLabel_(promoLabelWithAccount,
               promoLabelWithNoAccount, shownAccount_)]]
         </div>
         <div class="secondary">[[subLabel_]]</div>
       </div>
-      <div id="promo-separator" class="separator"
-          hidden="[[shouldShowAvatarRow_]]"></div>
-      <paper-button class="action-button" on-click="onSigninTap_"
-          disabled="[[syncStatus.setupInProgress]]" id="sign-in"
+      <cr-button class="action-button" on-click="onSigninTap_"
+          disabled="[[syncStatus.firstSetupInProgress]]" id="sign-in"
           hidden="[[shouldShowAvatarRow_]]">
         $i18n{peopleSignIn}
-      </paper-button>
+      </cr-button>
     </div>
     <template is="dom-if" if="[[shouldShowAvatarRow_]]">
       <div class="settings-box first two-line" id="avatar-row">
@@ -189,48 +181,44 @@
               [[getAccountLabel_(
                   '$i18nPolymer{syncingTo}', shownAccount_.email,
                   syncStatus.hasError, syncStatus.signedIn,
-                  syncStatus.disabled, syncStatus.setupInProgress,
-                  unifiedConsentEnabled)]]
+                  syncStatus.disabled, syncStatus.firstSetupInProgress)]]
             </div>
           </div>
         </div>
-        <paper-icon-button-light class="icon-arrow-dropdown"
-            hidden="[[syncStatus.signedIn]]">
-          <button on-click="onMenuButtonTap_" id="dropdown-arrow"
-              aria-label="$i18n{useAnotherAccount}">
-          </button>
-        </paper-icon-button-light>
+        <cr-icon-button class="icon-arrow-dropdown"
+            hidden="[[syncStatus.signedIn]]" on-click="onMenuButtonTap_"
+            id="dropdown-arrow" aria-label="$i18n{useAnotherAccount}">
+        </cr-icon-button>
         <div class="separator" hidden="[[syncStatus.signedIn]]"></div>
-        <paper-button id="sync-button" class="action-button"
+        <cr-button id="sync-button" class="action-button"
             hidden="[[syncStatus.signedIn]]" on-click="onSyncButtonTap_"
-            disabled="[[syncStatus.setupInProgress]]">
+            disabled="[[syncStatus.firstSetupInProgress]]">
           $i18n{peopleSignIn}
-        </paper-button>
-        <paper-button id="turn-off" class="secondary-button"
+        </cr-button>
+        <cr-button id="turn-off"
             hidden="[[!shouldShowTurnOffButton_(syncStatus.signedIn,
                 showSetupButtons_)]]"
             on-click="onTurnOffButtonTap_"
-            disabled="[[syncStatus.setupInProgress]]">
+            disabled="[[syncStatus.firstSetupInProgress]]">
           $i18n{turnOffSync}
-        </paper-button>
-        <paper-button id="sync-error-button" class="action-button"
+        </cr-button>
+        <cr-button id="sync-error-button" class="action-button"
             hidden="[[!shouldShowErrorActionButton_(syncStatus,
                 showSetupButtons_)]]"
             on-click="onErrorButtonTap_"
-            disabled="[[syncStatus.setupInProgress]]">
+            disabled="[[syncStatus.firstSetupInProgress]]">
           [[syncStatus.statusActionText]]
-        </paper-button>
+        </cr-button>
         <div id="setup-buttons" hidden="[[!showSetupButtons_]]">
-          <paper-button class="secondary-button" on-click="onSetupCancel_">
-            $i18n{cancel}
-          </paper-button>
-          <paper-button class="action-button" on-click="onSetupConfirm_">
+          <cr-button on-click="onSetupCancel_">$i18n{cancel}</cr-button>
+          <cr-button class="action-button" on-click="onSetupConfirm_">
             $i18n{confirm}
-          </paper-button>
+          </cr-button>
         </div>
       </div>
       <template is="dom-if" if="[[!syncStatus.signedIn]]" restamp>
-        <cr-action-menu id="menu" auto-reposition>
+        <cr-action-menu id="menu" auto-reposition
+            role-description="$i18n{menu}">
           <template is="dom-repeat" items="[[storedAccounts_]]">
             <button class="dropdown-item" on-click="onAccountTap_">
               <img class="account-icon small" alt=""
@@ -239,13 +227,13 @@
             </button>
           </template>
           <button class="dropdown-item" on-click="onSigninTap_"
-              disabled="[[syncStatus.setupInProgress]]" id="sign-in-item">
+              disabled="[[syncStatus.firstSetupInProgress]]" id="sign-in-item">
             <img class="account-icon small" alt=""
                 src="chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE">
             <span>$i18n{useAnotherAccount}</span>
           </button>
           <button class="dropdown-item" on-click="onSignoutTap_"
-              disabled="[[syncStatus.setupInProgress]]" id="sign-out-item">
+              disabled="[[syncStatus.firstSetupInProgress]]" id="sign-out-item">
             <iron-icon icon="settings:exit-to-app"></iron-icon>
             <span>$i18n{peopleSignOut}</span>
           </button>

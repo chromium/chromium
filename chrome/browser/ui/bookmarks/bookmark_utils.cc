@@ -34,13 +34,17 @@
 #endif
 
 #if defined(TOOLKIT_VIEWS)
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/scoped_canvas.h"
 #endif
 
 #if defined(OS_WIN) || defined(OS_MACOSX)
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/resources/grit/ui_resources.h"
 #endif
 
 using bookmarks::BookmarkModel;
@@ -94,12 +98,33 @@ BookmarkShortcutDisposition GetBookmarkShortcutDisposition(Profile* profile) {
   return BOOKMARK_SHORTCUT_DISPOSITION_UNCHANGED;
 }
 
-#if defined(TOOLKIT_VIEWS) && !defined(OS_WIN)
+#if defined(TOOLKIT_VIEWS)
+// Image source that flips the supplied source image in RTL.
+class RTLFlipSource : public gfx::ImageSkiaSource {
+ public:
+  explicit RTLFlipSource(gfx::ImageSkia source) : source_(std::move(source)) {}
+  ~RTLFlipSource() override = default;
+
+  // gfx::ImageSkiaSource:
+  gfx::ImageSkiaRep GetImageForScale(float scale) override {
+    gfx::Canvas canvas(source_.size(), scale, false);
+    gfx::ScopedCanvas scoped_canvas(&canvas);
+    scoped_canvas.FlipIfRTL(source_.width());
+    canvas.DrawImageInt(source_, 0, 0);
+    return gfx::ImageSkiaRep(canvas.GetBitmap(), scale);
+  }
+
+ private:
+  const gfx::ImageSkia source_;
+};
+
+#if !defined(OS_WIN) && !defined(OS_MACOSX)
 gfx::ImageSkia GetFolderIcon(const gfx::VectorIcon& icon, SkColor text_color) {
   return gfx::CreateVectorIcon(icon,
                                color_utils::DeriveDefaultIconColor(text_color));
 }
-#endif
+#endif  // !defined(OS_WIN) && !defined(OS_MACOSX)
+#endif  // defined(TOOLKIT_VIEWS)
 
 }  // namespace
 
@@ -163,12 +188,12 @@ bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile) {
              bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
 }
 
-bool ShouldRemoveBookmarkThisPageUI(Profile* profile) {
+bool ShouldRemoveBookmarkThisTabUI(Profile* profile) {
   return GetBookmarkShortcutDisposition(profile) ==
          BOOKMARK_SHORTCUT_DISPOSITION_REMOVED;
 }
 
-bool ShouldRemoveBookmarkOpenPagesUI(Profile* profile) {
+bool ShouldRemoveBookmarkAllTabsUI(Profile* profile) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);
@@ -181,7 +206,7 @@ bool ShouldRemoveBookmarkOpenPagesUI(Profile* profile) {
   for (extensions::ExtensionSet::const_iterator i = extension_set.begin();
        i != extension_set.end();
        ++i) {
-    if (extensions::CommandService::RemovesBookmarkOpenPagesShortcut(i->get()))
+    if (extensions::CommandService::RemovesBookmarkAllTabsShortcut(i->get()))
       return true;
   }
 #endif
@@ -222,7 +247,7 @@ int GetBookmarkDropOperation(Profile* profile,
                              const ui::DropTargetEvent& event,
                              const bookmarks::BookmarkNodeData& data,
                              const BookmarkNode* parent,
-                             int index) {
+                             size_t index) {
   const base::FilePath& profile_path = profile->GetPath();
 
   if (data.IsFromProfilePath(profile_path) && data.size() > 1)
@@ -256,7 +281,7 @@ int GetBookmarkDropOperation(Profile* profile,
 bool IsValidBookmarkDropLocation(Profile* profile,
                                  const bookmarks::BookmarkNodeData& data,
                                  const BookmarkNode* drop_parent,
-                                 int index) {
+                                 size_t index) {
   if (!drop_parent->is_folder()) {
     NOTREACHED();
     return false;
@@ -278,7 +303,8 @@ bool IsValidBookmarkDropLocation(Profile* profile,
       const BookmarkNode* node = nodes[i];
       int node_index = (drop_parent == node->parent()) ?
           drop_parent->GetIndexOf(nodes[i]) : -1;
-      if (node_index != -1 && (index == node_index || index == node_index + 1))
+      if (node_index != -1 &&
+          (index == size_t{node_index} || index == size_t{node_index} + 1))
         return false;
 
       // drop_parent can't accept a child that is an ancestor.
@@ -294,34 +320,44 @@ bool IsValidBookmarkDropLocation(Profile* profile,
 #if defined(TOOLKIT_VIEWS)
 // TODO(bsep): vectorize the Windows versions: crbug.com/564112
 gfx::ImageSkia GetBookmarkFolderIcon(SkColor text_color) {
+  gfx::ImageSkia folder;
 #if defined(OS_WIN)
-  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      IDR_BOOKMARK_BAR_FOLDER);
+  folder = *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+      IDR_FOLDER_CLOSED);
 #elif defined(OS_MACOSX)
-  int resource_id = color_utils::IsDark(text_color)
-                        ? IDR_BOOKMARK_BAR_FOLDER
-                        : IDR_BOOKMARK_BAR_FOLDER_WHITE;
-  return *ui::ResourceBundle::GetSharedInstance()
-              .GetNativeImageNamed(resource_id)
-              .ToImageSkia();
+  int resource_id = color_utils::IsDark(text_color) ? IDR_FOLDER_CLOSED
+                                                    : IDR_FOLDER_CLOSED_WHITE;
+  folder = *ui::ResourceBundle::GetSharedInstance()
+                .GetNativeImageNamed(resource_id)
+                .ToImageSkia();
 #else
-  return GetFolderIcon(ui::MaterialDesignController::touch_ui()
-                           ? vector_icons::kFolderTouchIcon
-                           : vector_icons::kFolderIcon,
-                       text_color);
+  folder = GetFolderIcon(ui::MaterialDesignController::touch_ui()
+                             ? vector_icons::kFolderTouchIcon
+                             : vector_icons::kFolderIcon,
+                         text_color);
 #endif
+  return gfx::ImageSkia(std::make_unique<RTLFlipSource>(folder), folder.size());
 }
 
 gfx::ImageSkia GetBookmarkManagedFolderIcon(SkColor text_color) {
+  gfx::ImageSkia folder;
 #if defined(OS_WIN)
-  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+  folder = *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
       IDR_BOOKMARK_BAR_FOLDER_MANAGED);
+#elif defined(OS_MACOSX)
+  int resource_id = color_utils::IsDark(text_color)
+                        ? IDR_BOOKMARK_BAR_FOLDER_MANAGED
+                        : IDR_BOOKMARK_BAR_FOLDER_MANAGED_WHITE;
+  folder = *ui::ResourceBundle::GetSharedInstance()
+                .GetNativeImageNamed(resource_id)
+                .ToImageSkia();
 #else
-  return GetFolderIcon(ui::MaterialDesignController::touch_ui()
-                           ? vector_icons::kFolderManagedTouchIcon
-                           : vector_icons::kFolderManagedIcon,
-                       text_color);
+  folder = GetFolderIcon(ui::MaterialDesignController::touch_ui()
+                             ? vector_icons::kFolderManagedTouchIcon
+                             : vector_icons::kFolderManagedIcon,
+                         text_color);
 #endif
+  return gfx::ImageSkia(std::make_unique<RTLFlipSource>(folder), folder.size());
 }
 #endif
 

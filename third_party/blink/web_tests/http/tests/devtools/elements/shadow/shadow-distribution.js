@@ -65,6 +65,14 @@
           var parent = resolveElement(parentId);
           parent.appendChild(element);
       }
+
+      // In order for the elements tree to reflect the changes made during this test,
+      // there needs to be a step that ensures that Shadow DOM distributions are updated.
+      // Forcing a style recalc ensures that Shadow DOM distributions are updated, and that
+      // the relevant DevTools CDP events are sent to the front end.
+      function updateDistributionIfNeeded() {
+        getComputedStyle(document.documentElement).left;
+      }
   `);
 
   TestRunner.runTestSuite([
@@ -134,7 +142,11 @@
   ]);
 
   function evalAndDump(code, nodeId, next) {
-    TestRunner.evaluateInPage(code, ElementsTestRunner.expandElementsTree.bind(ElementsTestRunner, dump));
+    TestRunner.evaluateInPage(code, ElementsTestRunner.expandElementsTree.bind(ElementsTestRunner, callback));
+
+    function callback() {
+      TestRunner.evaluateInPage('updateDistributionIfNeeded()', ElementsTestRunner.expandElementsTree.bind(ElementsTestRunner, dump));
+    }
 
     function dump() {
       ElementsTestRunner.dumpElementsTree(ElementsTestRunner.expandedNodeWithId(nodeId));

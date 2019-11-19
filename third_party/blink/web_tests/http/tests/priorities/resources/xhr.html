@@ -1,12 +1,12 @@
 <script src="common.js"></script>
 <script>
+  const url = new URL('../../resources/dummy.html', location);
+  observeAndReportResourceLoadPriority(url);
+
   const xhr = new XMLHttpRequest();
-  xhr.open('GET', '../../resources/dummy.html');
+  xhr.open('GET', url);
   xhr.send();
 
-  xhr.onload = e => {
-    reportPriority(xhr.responseURL);
-  }
-
+  xhr.onload = reportLoaded;
   xhr.onerror = reportFailure;
 </script>

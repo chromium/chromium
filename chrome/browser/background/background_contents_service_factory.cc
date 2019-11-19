@@ -59,7 +59,3 @@ bool BackgroundContentsServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
 }
-
-bool BackgroundContentsServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
-}

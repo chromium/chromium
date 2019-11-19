@@ -84,16 +84,16 @@ ExtensionsRenderFrameObserver::ExtensionsRenderFrameObserver(
     : content::RenderFrameObserver(render_frame),
       webview_visually_deemphasized_(false) {
   registry->AddInterface(
-      base::Bind(&ExtensionsRenderFrameObserver::BindAppWindowRequest,
+      base::Bind(&ExtensionsRenderFrameObserver::BindAppWindowReceiver,
                  base::Unretained(this)));
 }
 
 ExtensionsRenderFrameObserver::~ExtensionsRenderFrameObserver() {
 }
 
-void ExtensionsRenderFrameObserver::BindAppWindowRequest(
-    mojom::AppWindowRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void ExtensionsRenderFrameObserver::BindAppWindowReceiver(
+    mojo::PendingReceiver<mojom::AppWindow> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void ExtensionsRenderFrameObserver::SetVisuallyDeemphasized(bool deemphasized) {

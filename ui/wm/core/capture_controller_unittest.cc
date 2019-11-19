@@ -57,7 +57,7 @@ class CaptureControllerTest : public aura::test::AuraTestBase {
 
   void SetUp() override {
     AuraTestBase::SetUp();
-    capture_controller_.reset(new ScopedCaptureClient(root_window()));
+    capture_controller_ = std::make_unique<ScopedCaptureClient>(root_window());
 
     second_host_ = aura::WindowTreeHost::Create(
         ui::PlatformWindowInitProperties{gfx::Rect(0, 0, 800, 600)});

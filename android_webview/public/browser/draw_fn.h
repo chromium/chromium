@@ -39,23 +39,8 @@ struct AwDrawFn_DrawGLParams {
   int width;
   int height;
 
-  // Input: is the View rendered into an independent layer.
-  // If false, the surface is likely to hold to the full screen contents, with
-  // the scissor box set by the caller to the actual View location and size.
-  // Also the transformation matrix will contain at least a translation to the
-  // position of the View to render, plus any other transformations required as
-  // part of any ongoing View animation. View translucency (alpha) is ignored,
-  // although the framework will set is_layer to true for non-opaque cases.
-  // Can be requested via the View.setLayerType(View.LAYER_TYPE_NONE, ...)
-  // Android API method.
-  //
-  // If true, the surface is dedicated to the View and should have its size.
-  // The viewport and scissor box are set by the caller to the whole surface.
-  // Animation transformations are handled by the caller and not reflected in
-  // the provided transformation matrix. Translucency works normally.
-  // Can be requested via the View.setLayerType(View.LAYER_TYPE_HARDWARE, ...)
-  // Android API method.
-  bool is_layer;
+  // Used to be is_layer.
+  bool deprecated_0;
 
   // Input: current transformation matrix in surface pixels.
   // Uses the column-based OpenGL matrix format.
@@ -97,8 +82,7 @@ struct AwDrawFn_DrawVkParams {
   int width;
   int height;
 
-  // Input: is the render target a FBO
-  bool is_layer;
+  bool deprecated_0;
 
   // Input: current transform matrix
   float transform[16];

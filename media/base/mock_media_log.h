@@ -43,9 +43,7 @@ class MockMediaLog : public MediaLog {
   // Trampoline method to workaround GMOCK problems with std::unique_ptr<>.
   // Also simplifies tests to be able to string match on the log string
   // representation on the added event.
-  void AddEventLocked(std::unique_ptr<MediaLogEvent> event) override {
-    DoAddEventLogString(MediaEventToLogString(*event));
-  }
+  void AddEventLocked(std::unique_ptr<MediaLogEvent> event) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockMediaLog);

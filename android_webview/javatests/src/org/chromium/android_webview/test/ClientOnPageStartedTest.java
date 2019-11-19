@@ -16,9 +16,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
@@ -79,12 +80,12 @@ public class ClientOnPageStartedTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         setTestAwContentsClient(new TestAwContentsClient());
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
     }
 
-    private void setTestAwContentsClient(TestAwContentsClient contentsClient) throws Exception {
+    private void setTestAwContentsClient(TestAwContentsClient contentsClient) {
         mContentsClient = contentsClient;
         final AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -210,7 +211,7 @@ public class ClientOnPageStartedTest {
         int shouldOverrideUrlLoadingCount =
                 mContentsClient.getShouldOverrideUrlLoadingHelper().getCallCount();
         int onLoadResourceCount = mContentsClient.getOnLoadResourceHelper().getCallCount();
-        ThreadUtils.runOnUiThread(() -> {
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             mAwContents.evaluateJavaScript(
                     "window.location.assign(\"" + downloadUrl + "\");", null);
         });
@@ -246,7 +247,7 @@ public class ClientOnPageStartedTest {
                 mContentsClient.getShouldOverrideUrlLoadingHelper().getCallCount();
         int onLoadResourceCount = mContentsClient.getOnLoadResourceHelper().getCallCount();
         int hangingRequestCount = mHangingRequestCallbackHelper.getCallCount();
-        ThreadUtils.runOnUiThread(() -> {
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             mAwContents.evaluateJavaScript(
                     "window.location.assign(\"" + mHangingUrl + "\");", null);
         });
@@ -317,7 +318,7 @@ public class ClientOnPageStartedTest {
                 mContentsClient.getShouldOverrideUrlLoadingHelper().getCallCount();
         int onLoadResourceCount = mContentsClient.getOnLoadResourceHelper().getCallCount();
         int hangingRequestCount = mHangingRequestCallbackHelper.getCallCount();
-        ThreadUtils.runOnUiThread(() -> {
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             mAwContents.evaluateJavaScript(
                     "window.location.assign(\"" + mRedirectToHangingUrl + "\");", null);
         });

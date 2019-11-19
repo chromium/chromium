@@ -1,5 +1,0 @@
-Test for bug 21752: Referencing XHR constructor for a not yet loaded frame permanently breaks it.
-
-Should say SUCCESS:
-
-SUCCESS

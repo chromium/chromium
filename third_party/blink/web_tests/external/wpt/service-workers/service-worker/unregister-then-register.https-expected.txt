@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Unregister then register resolves to a new value
+FAIL Unregister then register does not resolve to the original value even if the registration is in use. assert_not_equals: Unregister and register should always create a new registration got disallowed value object "[object ServiceWorkerRegistration]"
+PASS Unregister then register does not affect existing controllee
+FAIL Unregister then register does not resurrect the registration assert_equals: Registration is new expected null but got object "[object ServiceWorker]"
+Harness: the test ran to completion.
+

@@ -1,60 +1,49 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow DIV class='scroller'",
-      "position": [8, 8],
-      "bounds": [300, 300]
-    },
-    {
-      "name": "Scrolling Layer",
-      "position": [8, 8],
-      "bounds": [285, 285],
-      "drawsContent": false
+      "name": "LayoutNGBlockFlow DIV class='scroller'",
+      "bounds": [300, 300],
+      "transform": 1
     },
     {
       "name": "Scrolling Contents Layer",
-      "position": [8, 8],
-      "bounds": [1000, 1000]
+      "bounds": [1000, 1000],
+      "transform": 1
     },
     {
-      "name": "Overflow Controls Host Layer",
-      "position": [8, 8],
-      "bounds": [300, 300],
-      "drawsContent": false
-    },
-    {
-      "name": "Horizontal Scrollbar Layer",
-      "position": [8, 293],
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 285],
       "bounds": [285, 15],
-      "drawsContent": false
+      "transform": 1
     },
     {
-      "name": "Vertical Scrollbar Layer",
-      "position": [293, 8],
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [285, 0],
       "bounds": [15, 285],
-      "drawsContent": false
+      "transform": 1
     },
     {
       "name": "Scroll Corner Layer",
-      "position": [293, 293],
-      "bounds": [15, 15]
+      "position": [285, 285],
+      "bounds": [15, 15],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
     }
   ]
 }

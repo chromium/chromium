@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Could not decode image: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Localisation used, but default_locale wasn't specified in the manifest.</translation>
 <translation id="2576842806987913196">There is already a CRX file present with this name.</translation>
-<translation id="2753617847762399167">Illegal path (absolute or relative with '..'): '<ph name="IMAGE_PATH" />'</translation>
 <translation id="2785530881066938471">Could not load file '<ph name="RELATIVE_PATH" />' for content script. It isn't UTF-8 encoded.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") is blocked by the administrator. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Could not install package: '<ph name="ERROR_CODE" />'</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Shaped windows are not supported.</translation>
 <translation id="5456409301717116725">This extension includes the key file '<ph name="KEY_PATH" />'. You probably don't want to do that.</translation>
 <translation id="5486326529110362464">Input value for private key must exist.</translation>
-<translation id="5627523580512561598">extension <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">The administrator of this machine requires <ph name="EXTENSION_NAME" /> to be installed. It cannot be uninstalled.</translation>
 <translation id="6027032947578871493">Unknown product <ph name="PRODUCT_ID" /> from <ph name="VENDOR_NAME" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> from vendor <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" is requesting access to one or more of your devices:</translation>
 <translation id="657064425229075395">Could not load background script '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> from <ph name="VENDOR_NAME" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Could not create directory for unzipping: '<ph name="DIRECTORY_PATH" />'</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">This extension reloaded itself too frequently.</translation>
 <translation id="7003844668372540529">Unknown product <ph name="PRODUCT_ID" /> from <ph name="VENDOR_NAME" /></translation>

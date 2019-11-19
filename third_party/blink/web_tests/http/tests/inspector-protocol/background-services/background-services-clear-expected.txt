@@ -1,0 +1,6 @@
+Tests that background service events are received when appropriate.
+Has events initially: false
+Completed "my-fetch-with-recording"
+Has events with recording on: true
+Has events initially: false
+

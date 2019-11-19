@@ -5,6 +5,9 @@
 # This target creates a stamp file that depends on all the sources in the grit
 # directory. By depending on this, a target can force itself to be rebuilt if
 # grit itself changes.
+
+import("//build/config/sanitizers/sanitizers.gni")
+
 action("grit_sources") {
   depfile = "$target_out_dir/grit_sources.d"
   script = "stamp_grit_sources.py"
@@ -24,4 +27,28 @@ action("grit_sources") {
     rebase_path(outputs[0], root_build_dir),
     rebase_path(depfile, root_build_dir),
   ]
+}
+
+group("grit_python_unittests") {
+  testonly = true
+
+  data = [
+    "//testing/scripts/common.py",
+    "//testing/scripts/run_isolated_script_test.py",
+    "//testing/xvfb.py",
+    "//tools/grit/",
+    "//third_party/catapult/third_party/typ/",
+  ]
+}
+
+# See https://crbug.com/983200
+if (is_mac && is_asan) {
+  create_bundle("brotli_mac_asan_workaround") {
+    bundle_root_dir = "$target_out_dir/$target_name"
+    bundle_executable_dir = bundle_root_dir
+
+    public_deps = [
+      "//third_party/brotli:brotli($host_toolchain)",
+    ]
+  }
 }

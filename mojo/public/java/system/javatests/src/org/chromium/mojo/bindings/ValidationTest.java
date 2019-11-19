@@ -5,7 +5,8 @@
 package org.chromium.mojo.bindings;
 
 import android.annotation.SuppressLint;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;

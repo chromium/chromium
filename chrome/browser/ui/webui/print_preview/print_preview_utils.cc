@@ -48,11 +48,9 @@ void PrintersToValues(const PrinterList& printer_list,
     auto printer_info = std::make_unique<base::DictionaryValue>();
     printer_info->SetString(kSettingDeviceName, printer.printer_name);
 
-    const auto printer_name_description = GetPrinterNameAndDescription(printer);
-    const std::string& printer_name = printer_name_description.first;
-    const std::string& printer_description = printer_name_description.second;
-    printer_info->SetString(kSettingPrinterName, printer_name);
-    printer_info->SetString(kSettingPrinterDescription, printer_description);
+    printer_info->SetString(kSettingPrinterName, printer.display_name);
+    printer_info->SetString(kSettingPrinterDescription,
+                            printer.printer_description);
 
     auto options = std::make_unique<base::DictionaryValue>();
     for (const auto opt_it : printer.options)
@@ -60,14 +58,14 @@ void PrintersToValues(const PrinterList& printer_list,
 
     printer_info->SetBoolean(
         kCUPSEnterprisePrinter,
-        base::ContainsKey(printer.options, kCUPSEnterprisePrinter) &&
+        base::Contains(printer.options, kCUPSEnterprisePrinter) &&
             printer.options.at(kCUPSEnterprisePrinter) == kValueTrue);
 
     printer_info->Set(kSettingPrinterOptions, std::move(options));
 
     printers->Append(std::move(printer_info));
 
-    VLOG(1) << "Found printer " << printer_name << " with device name "
+    VLOG(1) << "Found printer " << printer.display_name << " with device name "
             << printer.printer_name;
   }
 }
@@ -75,7 +73,7 @@ void PrintersToValues(const PrinterList& printer_list,
 template <typename Predicate>
 base::Value GetFilteredList(const base::Value* list, Predicate pred) {
   auto out_list = list->Clone();
-  base::EraseIf(out_list.GetList(), pred);
+  out_list.EraseListValueIf(pred);
   return out_list;
 }
 
@@ -122,44 +120,40 @@ base::Value ValidateCddForPrintPreview(base::Value cdd) {
     const auto& key = capability.first;
     base::Value* value = &capability.second;
 
-    base::Value* list = nullptr;
+    base::Value* list_value = nullptr;
     if (value->is_dict())
-      list = value->FindKeyOfType(kOptionKey, base::Value::Type::LIST);
+      list_value = value->FindKeyOfType(kOptionKey, base::Value::Type::LIST);
     else if (value->is_list())
-      list = value;
+      list_value = value;
 
-    if (!list) {
+    if (!list_value) {
       out_caps.SetKey(key, std::move(*value));
       continue;
     }
 
     bool is_vendor_capability = key == kVendorCapabilityKey;
-    base::EraseIf(list->GetList(),
-                  is_vendor_capability ? VendorCapabilityInvalid : ValueIsNull);
-    if (list->GetList().empty())  // leave out empty lists.
+    list_value->EraseListValueIf(is_vendor_capability ? VendorCapabilityInvalid
+                                                      : ValueIsNull);
+    if (list_value->GetList().empty())  // leave out empty lists.
       continue;
 
     if (is_vendor_capability) {
       // Need to also filter the individual capability lists.
-      for (auto& vendor_option : list->GetList()) {
-        const base::Value* option_type =
-            vendor_option.FindKeyOfType(kTypeKey, base::Value::Type::STRING);
-        if (option_type->GetString() != kSelectString)
+      for (auto& vendor_option : list_value->GetList()) {
+        if (*vendor_option.FindStringKey(kTypeKey) != kSelectString)
           continue;
 
-        base::Value* options_dict = vendor_option.FindKeyOfType(
-            kSelectCapKey, base::Value::Type::DICTIONARY);
-        base::Value* options_list =
-            options_dict->FindKeyOfType(kOptionKey, base::Value::Type::LIST);
-        base::EraseIf(options_list->GetList(), ValueIsNull);
+        vendor_option.FindDictKey(kSelectCapKey)
+            ->FindListKey(kOptionKey)
+            ->EraseListValueIf(ValueIsNull);
       }
     }
     if (value->is_dict()) {
       base::Value option_dict(base::Value::Type::DICTIONARY);
-      option_dict.SetKey(kOptionKey, std::move(*list));
+      option_dict.SetKey(kOptionKey, std::move(*list_value));
       out_caps.SetKey(key, std::move(option_dict));
     } else {
-      out_caps.SetKey(key, std::move(*list));
+      out_caps.SetKey(key, std::move(*list_value));
     }
   }
   cdd.SetKey(kPrinter, std::move(out_caps));
@@ -167,7 +161,7 @@ base::Value ValidateCddForPrintPreview(base::Value cdd) {
 }
 
 void ConvertPrinterListForCallback(
-    const PrinterHandler::AddedPrintersCallback& callback,
+    PrinterHandler::AddedPrintersCallback callback,
     PrinterHandler::GetPrintersDoneCallback done_callback,
     const PrinterList& printer_list) {
   base::ListValue printers;
@@ -214,15 +208,12 @@ bool ParseSettings(const base::Value& settings,
                    std::string* out_capabilities,
                    gfx::Size* out_page_size,
                    base::Value* out_ticket) {
-  const std::string* destination_id_opt =
-      settings.FindStringKey(kSettingDeviceName);
   const std::string* ticket_opt = settings.FindStringKey(kSettingTicket);
   const std::string* capabilities_opt =
       settings.FindStringKey(kSettingCapabilities);
   out_page_size->SetSize(settings.FindIntKey(kSettingPageWidth).value_or(0),
                          settings.FindIntKey(kSettingPageHeight).value_or(0));
-  if (!destination_id_opt || !ticket_opt || !capabilities_opt ||
-      out_page_size->IsEmpty()) {
+  if (!ticket_opt || !capabilities_opt || out_page_size->IsEmpty()) {
     NOTREACHED();
     return false;
   }
@@ -231,7 +222,7 @@ bool ParseSettings(const base::Value& settings,
   if (!ticket_value)
     return false;
 
-  *out_destination_id = *destination_id_opt;
+  *out_destination_id = *settings.FindStringKey(kSettingDeviceName);
   *out_capabilities = *capabilities_opt;
   *out_ticket = std::move(*ticket_value);
   return true;

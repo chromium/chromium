@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<script src="../../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../../../fast/forms/resources/common.js"></script>
+<body style="background-color: blue">
+
+<!-- no style for reference -->
+<input type="radio">
+<input type="radio" name="group">
+<input type="radio" name="group" checked> <br>
+
+<!-- border -->
+<input type="radio" style="border: 3px solid lime;">
+<input type="radio" style="border-radius: 6px;"> <br>
+
+<!-- background -->
+<input type="radio" style="background: linear-gradient(to bottom, #dea 0%,#9c7 44%,#494 100%);"> <br>
+
+<!-- shadow -->
+<input type="radio" style="box-shadow: 4px 4px 10px rgba(255,0,0,0.5), inset 4px 4px 4px rgba(0,255,0,0.5);"> <br>
+
+<!-- size -->
+<input type="radio" style="width: 8px; height; 8px;">
+<input type="radio" style="width: 16px; height; 16px;">
+<input type="radio" style="width: 24px; height; 24px;">
+<input type="radio" style="width: 26px; height: 20px;">
+<input type="radio" style="width: 1px; height: 1px;"> <br>
+
+<!-- disabled -->
+<input type="radio" disabled>
+<input type="radio" disabled checked> <br>
+
+<!-- zoom -->
+<input type="radio" style="zoom: 1.5;">
+<input type="radio" style="zoom: 2;">
+<input type="radio" style="zoom: 4;"> <br>
+
+<div style="background-color: white">
+  <input type="radio" disabled>
+  <input type="radio" disabled checked> <br>
+  <input type="radio" checked> <br>
+  <input type="radio" id="hoverTarget"/>
+</div>
+
+<script>
+
+runAfterLayoutAndPaint(function() {
+  var target = document.getElementById('hoverTarget');
+  hoverOverElement(target);
+}, true);
+
+</script>
+</body>

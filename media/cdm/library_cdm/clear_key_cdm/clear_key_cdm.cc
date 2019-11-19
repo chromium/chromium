@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -187,20 +188,9 @@ void* CreateCdmInstance(int cdm_interface_version,
     return nullptr;
   }
 
-  // We support CDM_9, CDM_10 and CDM_11.
-  using CDM_9 = cdm::ContentDecryptionModule_9;
+  // We support CDM_10 and CDM_11.
   using CDM_10 = cdm::ContentDecryptionModule_10;
   using CDM_11 = cdm::ContentDecryptionModule_11;
-
-  if (cdm_interface_version == CDM_9::kVersion) {
-    CDM_9::Host* host = static_cast<CDM_9::Host*>(
-        get_cdm_host_func(CDM_9::Host::kVersion, user_data));
-    if (!host)
-      return nullptr;
-
-    DVLOG(1) << __func__ << ": Create ClearKeyCdm with CDM_9::Host.";
-    return static_cast<CDM_9*>(new media::ClearKeyCdm(host, key_system_string));
-  }
 
   if (cdm_interface_version == CDM_10::kVersion) {
     CDM_10::Host* host = static_cast<CDM_10::Host*>(
@@ -289,40 +279,9 @@ namespace media {
 
 namespace {
 
-cdm::InputBuffer_2 ToInputBuffer_2(cdm::InputBuffer_1 encrypted_buffer) {
-  cdm::InputBuffer_2 buffer = {};
-  buffer.data = encrypted_buffer.data;
-  buffer.data_size = encrypted_buffer.data_size;
-  buffer.key_id = encrypted_buffer.key_id;
-  buffer.key_id_size = encrypted_buffer.key_id_size;
-  buffer.iv = encrypted_buffer.iv;
-  buffer.iv_size = encrypted_buffer.iv_size;
-  buffer.subsamples = encrypted_buffer.subsamples;
-  buffer.num_subsamples = encrypted_buffer.num_subsamples;
-  buffer.timestamp = encrypted_buffer.timestamp;
-  // InputBuffer_1 must be either 'cenc' or unencrypted.
-  buffer.encryption_scheme = (buffer.iv_size == 0)
-                                 ? cdm::EncryptionScheme::kUnencrypted
-                                 : cdm::EncryptionScheme::kCenc;
-  buffer.pattern = {0, 0};
-  return buffer;
-}
-
 // See ISO 23001-8:2016, section 7. Value 2 means "Unspecified".
 constexpr cdm::ColorSpace kUnspecifiedColorSpace = {2, 2, 2,
                                                     cdm::ColorRange::kInvalid};
-
-cdm::VideoDecoderConfig_3 ToVideoDecoderConfig_3(
-    cdm::VideoDecoderConfig_1 config) {
-  // VideoDecoderConfig_1 doesn't specify the encryption scheme, but only
-  // supports 'cenc' or unencrypted media, so expect encrypted video.
-  cdm::VideoDecoderConfig_3 result = {
-      config.codec,           config.profile,
-      config.format,          kUnspecifiedColorSpace,
-      config.coded_size,      config.extra_data,
-      config.extra_data_size, cdm::EncryptionScheme::kCenc};
-  return result;
-}
 
 cdm::VideoDecoderConfig_3 ToVideoDecoderConfig_3(
     cdm::VideoDecoderConfig_2 config) {
@@ -385,7 +344,8 @@ ClearKeyCdm::ClearKeyCdm(HostInterface* host, const std::string& key_system)
 ClearKeyCdm::~ClearKeyCdm() = default;
 
 void ClearKeyCdm::Initialize(bool allow_distinctive_identifier,
-                             bool allow_persistent_state) {
+                             bool allow_persistent_state,
+                             bool /* use_hw_secure_codecs */) {
   // Implementation doesn't use distinctive identifier and will only need
   // to check persistent state permission.
   allow_persistent_state_ = allow_persistent_state;
@@ -398,12 +358,6 @@ void ClearKeyCdm::Initialize(bool allow_distinctive_identifier,
   }
 
   cdm_host_proxy_->OnInitialized(true);
-}
-
-void ClearKeyCdm::Initialize(bool allow_distinctive_identifier,
-                             bool allow_persistent_state,
-                             bool use_hw_secure_codecs) {
-  Initialize(allow_distinctive_identifier, allow_persistent_state);
 }
 
 void ClearKeyCdm::GetStatusForPolicy(uint32_t promise_id,
@@ -548,7 +502,7 @@ void ClearKeyCdm::OnUpdateSuccess(uint32_t promise_id,
     // 100 years after 01 January 1970 UTC.
     expiration = 3153600000.0;  // 100 * 365 * 24 * 60 * 60;
 
-    if (!has_set_renewal_timer_) {
+    if (!has_set_timer_) {
       // Make sure the CDM can get time and sleep if necessary.
       constexpr auto kSleepDuration = base::TimeDelta::FromSeconds(1);
       auto start_time = base::Time::Now();
@@ -556,8 +510,7 @@ void ClearKeyCdm::OnUpdateSuccess(uint32_t promise_id,
       auto time_elapsed = base::Time::Now() - start_time;
       CHECK_GE(time_elapsed, kSleepDuration);
 
-      ScheduleNextRenewal();
-      has_set_renewal_timer_ = true;
+      ScheduleNextTimer();
     }
 
     // Also send an individualization request if never sent before. Only
@@ -628,19 +581,27 @@ void ClearKeyCdm::SetServerCertificate(uint32_t promise_id,
 
 void ClearKeyCdm::TimerExpired(void* context) {
   DVLOG(1) << __func__;
-  DCHECK(has_set_renewal_timer_);
+  DCHECK(has_set_timer_);
   std::string renewal_message;
-  if (!next_renewal_message_.empty() && context == &next_renewal_message_[0]) {
-    renewal_message = next_renewal_message_;
-  } else {
-    renewal_message = "ERROR: Invalid timer context found!";
+
+  if (key_system_ == kExternalClearKeyMessageTypeTestKeySystem) {
+    if (!next_renewal_message_.empty() &&
+        context == &next_renewal_message_[0]) {
+      renewal_message = next_renewal_message_;
+    } else {
+      renewal_message = "ERROR: Invalid timer context found!";
+    }
+
+    cdm_host_proxy_->OnSessionMessage(
+        last_session_id_.data(), last_session_id_.length(),
+        cdm::kLicenseRenewal, renewal_message.data(), renewal_message.length());
+  } else if (key_system_ == kExternalClearKeyOutputProtectionTestKeySystem) {
+    // Check output protection again.
+    cdm_host_proxy_->QueryOutputProtectionStatus();
   }
 
-  cdm_host_proxy_->OnSessionMessage(
-      last_session_id_.data(), last_session_id_.length(), cdm::kLicenseRenewal,
-      renewal_message.data(), renewal_message.length());
-
-  ScheduleNextRenewal();
+  // Start the timer to schedule another timeout.
+  ScheduleNextTimer();
 }
 
 static void CopyDecryptResults(media::Decryptor::Status* status_copy,
@@ -649,11 +610,6 @@ static void CopyDecryptResults(media::Decryptor::Status* status_copy,
                                scoped_refptr<DecoderBuffer> buffer) {
   *status_copy = status;
   *buffer_copy = std::move(buffer);
-}
-
-cdm::Status ClearKeyCdm::Decrypt(const cdm::InputBuffer_1& encrypted_buffer,
-                                 cdm::DecryptedBlock* decrypted_block) {
-  return Decrypt(ToInputBuffer_2(encrypted_buffer), decrypted_block);
 }
 
 cdm::Status ClearKeyCdm::Decrypt(const cdm::InputBuffer_2& encrypted_buffer,
@@ -683,21 +639,6 @@ cdm::Status ClearKeyCdm::Decrypt(const cdm::InputBuffer_2& encrypted_buffer,
 }
 
 cdm::Status ClearKeyCdm::InitializeAudioDecoder(
-    const cdm::AudioDecoderConfig_1& audio_decoder_config) {
-  // AudioDecoderConfig_1 doesn't specify the encryption scheme, but only
-  // supports 'cenc' or unencrypted media, so expect encrypted audio.
-  cdm::AudioDecoderConfig_2 audio_config = {
-      audio_decoder_config.codec,
-      audio_decoder_config.channel_count,
-      audio_decoder_config.bits_per_channel,
-      audio_decoder_config.samples_per_second,
-      audio_decoder_config.extra_data,
-      audio_decoder_config.extra_data_size,
-      cdm::EncryptionScheme::kCenc};
-  return InitializeAudioDecoder(audio_config);
-}
-
-cdm::Status ClearKeyCdm::InitializeAudioDecoder(
     const cdm::AudioDecoderConfig_2& audio_decoder_config) {
   if (key_system_ == kExternalClearKeyDecryptOnlyKeySystem ||
       key_system_ == kExternalClearKeyCdmProxyKeySystem) {
@@ -716,11 +657,6 @@ cdm::Status ClearKeyCdm::InitializeAudioDecoder(
 #else
   return cdm::kInitializationError;
 #endif  // CLEAR_KEY_CDM_USE_FFMPEG_DECODER
-}
-
-cdm::Status ClearKeyCdm::InitializeVideoDecoder(
-    const cdm::VideoDecoderConfig_1& video_decoder_config) {
-  return InitializeVideoDecoder(ToVideoDecoderConfig_3(video_decoder_config));
 }
 
 cdm::Status ClearKeyCdm::InitializeVideoDecoder(
@@ -781,13 +717,6 @@ void ClearKeyCdm::DeinitializeDecoder(cdm::StreamType decoder_type) {
 }
 
 cdm::Status ClearKeyCdm::DecryptAndDecodeFrame(
-    const cdm::InputBuffer_1& encrypted_buffer,
-    cdm::VideoFrame* decoded_frame) {
-  return DecryptAndDecodeFrame(ToInputBuffer_2(encrypted_buffer),
-                               decoded_frame);
-}
-
-cdm::Status ClearKeyCdm::DecryptAndDecodeFrame(
     const cdm::InputBuffer_2& encrypted_buffer,
     cdm::VideoFrame* decoded_frame) {
   CdmVideoFrameAdapter adapted_frame(decoded_frame);
@@ -807,13 +736,6 @@ cdm::Status ClearKeyCdm::DecryptAndDecodeFrame(
     return status;
 
   return video_decoder_->Decode(buffer, decoded_frame);
-}
-
-cdm::Status ClearKeyCdm::DecryptAndDecodeSamples(
-    const cdm::InputBuffer_1& encrypted_buffer,
-    cdm::AudioFrames* audio_frames) {
-  return DecryptAndDecodeSamples(ToInputBuffer_2(encrypted_buffer),
-                                 audio_frames);
 }
 
 cdm::Status ClearKeyCdm::DecryptAndDecodeSamples(
@@ -856,8 +778,9 @@ void ClearKeyCdm::Destroy() {
   delete this;
 }
 
-void ClearKeyCdm::ScheduleNextRenewal() {
-  // Prepare the next renewal message and set timer.
+void ClearKeyCdm::ScheduleNextTimer() {
+  // Prepare the next renewal message and set timer. Renewal message is only
+  // needed for the renewal test, and is ignored for other uses of the timer.
   std::ostringstream msg_stream;
   msg_stream << "Renewal from ClearKey CDM set at time "
              << base::Time::FromDoubleT(cdm_host_proxy_->GetCurrentWallTime())
@@ -865,6 +788,7 @@ void ClearKeyCdm::ScheduleNextRenewal() {
   next_renewal_message_ = msg_stream.str();
 
   cdm_host_proxy_->SetTimer(timer_delay_ms_, &next_renewal_message_[0]);
+  has_set_timer_ = true;
 
   // Use a smaller timer delay at start-up to facilitate testing. Increase the
   // timer delay up to a limit to avoid message spam.
@@ -924,27 +848,38 @@ void ClearKeyCdm::OnQueryOutputProtectionStatus(
     cdm::QueryResult result,
     uint32_t link_mask,
     uint32_t output_protection_mask) {
-  DVLOG(1) << __func__;
+  DVLOG(1) << __func__ << " result:" << result << ", link_mask:" << link_mask
+           << ", output_protection_mask:" << output_protection_mask;
 
   if (!is_running_output_protection_test_) {
     NOTREACHED() << "OnQueryOutputProtectionStatus() called unexpectedly.";
     return;
   }
 
-  is_running_output_protection_test_ = false;
-
-// On Chrome OS, status query will fail on Linux Chrome OS build. So we ignore
-// the query result. On all other platforms, status query should succeed.
-// TODO(xhwang): Improve the check on Chrome OS builds. For example, use
-// base::SysInfo::IsRunningOnChromeOS() to differentiate between real Chrome OS
-// build and Linux Chrome OS build.
-#if !defined(OS_CHROMEOS)
-  if (result != cdm::kQuerySucceeded || link_mask != 0) {
-    OnUnitTestComplete(false);
-    return;
+  // If the query fails or it succeeds and link mask contains kLinkTypeNetwork,
+  // send a 'keystatuschange' event with a key marked as output-restricted.
+  // As the JavaScript test doesn't check key IDs, use a dummy key ID.
+  //
+  // Note that QueryOutputProtectionStatus() is known to fail on Linux Chrome
+  // OS builds.
+  //
+  // Note that this does not modify any keys, so if the caller does not check
+  // the 'keystatuschange' event, nothing will happen as decoding will continue
+  // to work.
+  if (result != cdm::kQuerySucceeded || (link_mask & cdm::kLinkTypeNetwork)) {
+    // A session ID is needed, so use |last_session_id_|. However, if this is
+    // called before a session has been created, we have no session to send
+    // this to. Note that this only works with a single session, the same as
+    // renewal messages.
+    if (!last_session_id_.empty()) {
+      const uint8_t kDummyKeyId[] = {'d', 'u', 'm', 'm', 'y'};
+      std::vector<cdm::KeyInformation> keys_vector = {
+          {kDummyKeyId, base::size(kDummyKeyId), cdm::kOutputRestricted, 0}};
+      cdm_host_proxy_->OnSessionKeysChange(
+          last_session_id_.data(), last_session_id_.length(), false,
+          keys_vector.data(), keys_vector.size());
+    }
   }
-#endif
-  OnUnitTestComplete(true);
 }
 
 void ClearKeyCdm::OnStorageId(uint32_t version,
@@ -1058,6 +993,9 @@ void ClearKeyCdm::StartOutputProtectionTest() {
   DVLOG(1) << __func__;
   is_running_output_protection_test_ = true;
   cdm_host_proxy_->QueryOutputProtectionStatus();
+
+  // Also start the timer to run this periodically.
+  ScheduleNextTimer();
 }
 
 void ClearKeyCdm::StartPlatformVerificationTest() {

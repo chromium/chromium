@@ -15,7 +15,7 @@ class MyControl1 extends HTMLElement {
     this.value_ = v;
     this.internals_.setFormValue(v);
   }
-  restoreValueCallback(v, mode) {
+  formStateRestoreCallback(v, mode) {
     this.value = v;
     this.lastRestoreMode = mode;
   }
@@ -26,6 +26,10 @@ customElements.define('my-control-1', MyControl1);
 
 <form action="../../resources/back.html" id="form1">
 <my-control-1></my-control-1>
+<my-control-1 id="nested-focus"><my-control-1 id="focus" tabindex=0></my-control-1></my-control-1>
+<my-control-1 id="disabled" disabled></my-control-1>
+<my-control-1 id="readonly" readonly></my-control-1>
+<fieldset disabled><my-control-1 id="fieldset-disabled"></my-control-1></fieldset>
 <my-control-2></my-control-2>
 </form>
 
@@ -48,7 +52,7 @@ function upgradeMyControl2() {
       this.value_ = v;
       this.internals_.setFormValue(v);
     }
-    restoreValueCallback(v, mode) {
+    formStateRestoreCallback(v, mode) {
       this.value = v;
       this.lastRestoreMode = mode;
     }
@@ -65,6 +69,11 @@ function runTest() {
     upgradeMyControl2();
 
     $('my-control-1').value = 'edit1';
+    $('#focus').value = 'edit3';
+    $('#nested-focus').value = 'edit4';
+    $('#disabled').value = 'edit5';
+    $('#readonly').value = 'edit6';
+    $('#fieldset-disabled').value = 'edit7';
     $('my-control-2').value = 'edit2';
     setTimeout(() => { $('form').submit(); }, 100);
   } else {
@@ -73,6 +82,10 @@ function runTest() {
     parent.doneTest();
   }
 }
-runTest();
+
+$('#focus').focus();
+window.onload = () => {
+  setTimeout(runTest, 1);
+};
 </script>
 </body>

@@ -14,10 +14,7 @@ namespace offline_pages {
 UpdateRequestTask::UpdateRequestTask(RequestQueueStore* store,
                                      int64_t request_id,
                                      RequestQueueStore::UpdateCallback callback)
-    : store_(store),
-      request_id_(request_id),
-      callback_(std::move(callback)),
-      weak_ptr_factory_(this) {}
+    : store_(store), request_id_(request_id), callback_(std::move(callback)) {}
 
 UpdateRequestTask::~UpdateRequestTask() {}
 

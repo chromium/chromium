@@ -15,10 +15,10 @@ MockGpuMemoryBufferVideoFramePool::MockGpuMemoryBufferVideoFramePool(
 MockGpuMemoryBufferVideoFramePool::~MockGpuMemoryBufferVideoFramePool() {}
 
 void MockGpuMemoryBufferVideoFramePool::MaybeCreateHardwareFrame(
-    const scoped_refptr<VideoFrame>& video_frame,
+    scoped_refptr<VideoFrame> video_frame,
     FrameReadyCB frame_ready_cb) {
   frame_ready_cbs_->push_back(
-      base::BindOnce(std::move(frame_ready_cb), video_frame));
+      base::BindOnce(std::move(frame_ready_cb), std::move(video_frame)));
 }
 
 }  // namespace media

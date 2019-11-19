@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
-#include "ui/base/cursor/cursor_type.h"
+#include "ui/base/cursor/types/cursor_types.h"
 #include "ui/base/ui_base_export.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"

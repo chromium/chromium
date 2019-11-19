@@ -1,0 +1,75 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//build/config/python.gni")
+
+# Writes an implementation of
+# |org.chromium.components.module_installer.builder.ModuleDescriptor| for a
+# particular module to Java. The module loader backend expects such an
+# implementation for each module to automate module setup on first access.
+# Instantiations of this template can be depended on like |android_library|
+# targets.
+#
+# Supports the following variables:
+#   module_name: Name of the module.
+#   shared_libraries: (Optional) List of shared_library targets the module
+#     requires at runtime. Will consider all transitively depended on
+#     shared_libraries.
+#   paks: (Optional) PAK files going into the module.
+template("module_desc_java") {
+  _target_name = target_name
+
+  _libraries = "${target_gen_dir}/${_target_name}.libraries"
+  _rebased_libraries = rebase_path(_libraries, root_out_dir)
+  generated_file("${_target_name}__libraries") {
+    if (defined(invoker.shared_libraries)) {
+      deps = invoker.shared_libraries
+    }
+    outputs = [
+      _libraries,
+    ]
+    data_keys = [ "shared_libraries" ]
+    walk_keys = [ "shared_libraries_barrier" ]
+    rebase = root_build_dir
+    output_conversion = "json"
+  }
+
+  _srcjar = "$target_gen_dir/${_target_name}__srcjar.srcjar"
+  action_with_pydeps("${_target_name}__srcjar") {
+    script = "//components/module_installer/android/module_desc_java.py"
+    deps = [
+      ":${_target_name}__libraries",
+    ]
+    inputs = [
+      _libraries,
+    ]
+    outputs = [
+      _srcjar,
+    ]
+    args = [
+      "--module",
+      invoker.module_name,
+      "--libraries",
+      "@FileArg($_rebased_libraries)",
+      "--output",
+      rebase_path(_srcjar, root_out_dir),
+    ]
+    if (defined(invoker.paks)) {
+      _rebased_paks = []
+      foreach(_pak, invoker.paks) {
+        _rebased_paks += [ rebase_path(_pak, root_out_dir) ]
+      }
+      args += [ "--paks=$_rebased_paks" ]
+    }
+  }
+
+  android_library(_target_name) {
+    deps = [
+      "//base:base_java",
+      "//components/module_installer/android:module_installer_java",
+    ]
+    srcjar_deps = [ ":${_target_name}__srcjar" ]
+  }
+}

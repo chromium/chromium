@@ -59,6 +59,7 @@ class SplitVariationsCmdUnittest(unittest.TestCase):
     data_lists = [
         split[switch_name] for split in splits if switch_name in split]
     if len(data_lists) == 0:
+      self.assertFalse(ref_switch_data)
       return
     max_size = max(len(data) for data in data_lists)
     min_size = min(len(data) for data in data_lists)
@@ -69,6 +70,7 @@ class SplitVariationsCmdUnittest(unittest.TestCase):
       joined_switch_data.extend(data)
     self.assertEqual(ref_switch_data, joined_switch_data)
 
+
   def testLoadFromFileAndSaveToStrings(self):
     # Verifies we load data from the file and save it to a list of strings,
     # the two data sets contain the same command line switches.
@@ -78,19 +80,54 @@ class SplitVariationsCmdUnittest(unittest.TestCase):
     cmd_list = split_variations_cmd.VariationsCmdToStrings(data)
     self.assertTrue(self._CompareCommandLineSwitches(data_file, cmd_list))
 
-  def testSplitVariationsCmd(self):
+
+  def _testSplitVariationsCmdHelper(self, input_data):
     # Verifies we correctly and (almost) evenly split one set of command line
     # switches into two sets.
-    data_file = os.path.join(self._GetUnittestDataDir(), 'variations_cmd.txt')
-    assert os.path.isfile(data_file)
-    data = split_variations_cmd.ParseVariationsCmdFromFile(data_file)
-    splits = split_variations_cmd.SplitVariationsCmd(data)
+    splits = split_variations_cmd.SplitVariationsCmd(input_data)
     switches = [_ENABLE_FEATURES_SWITCH_NAME,
                 _DISABLE_FEATURES_SWITCH_NAME,
                 _FORCE_FIELD_TRIALS_SWITCH_NAME,
                 _FORCE_FIELD_TRIAL_PARAMS_SWITCH_NAME]
     for switch in switches:
-      self._VerifySplits(switch, splits, data[switch])
+      self._VerifySplits(switch, splits, input_data.get(switch, []))
+    # Verify both split variations are valid.
+    for variations_cmd in splits:
+      cmd_list = split_variations_cmd.VariationsCmdToStrings(variations_cmd)
+      split_variations_cmd.ParseVariationsCmdFromString(' '.join(cmd_list))
+
+
+  def testSplitVariationsCmd(self):
+    input_file = os.path.join(self._GetUnittestDataDir(), 'variations_cmd.txt')
+    assert os.path.isfile(input_file)
+    data = split_variations_cmd.ParseVariationsCmdFromFile(input_file)
+    self._testSplitVariationsCmdHelper(data)
+
+
+  def testSplitVariationsCmdWithMissingEnableDisableFeatures(self):
+    input_string = (
+        '--force-fieldtrials="Tria1/Disabled/*Trial2/Enabled/" '
+        '--force-fieldtrial-params="Trial2.Enabled:age/18/gender/male" '
+        '--disable-features="FeatureA<FeatureA"')
+    data = split_variations_cmd.ParseVariationsCmdFromString(input_string)
+    self._testSplitVariationsCmdHelper(data)
+
+
+  def testSplitVariationsCmdWithMissingForceFieldTrialParams(self):
+    input_string = (
+        '--force-fieldtrials="*Trial2/Enabled/" '
+        '--enable-features="FeatureA<FeatureA,FeatureB<FeatureB" '
+        '--disable-features="FeatureC<FeatureC,FeatureD<FeatureD"')
+    data = split_variations_cmd.ParseVariationsCmdFromString(input_string)
+    self._testSplitVariationsCmdHelper(data)
+
+  def testSplitVariationsCmdNoFurtherSplit(self):
+    input_string = (
+        '--force-fieldtrials="*Trial2/Enabled/" '
+        '--enable-features="FeatureA<FeatureA" '
+        '--disable-features="FeatureC<FeatureC"')
+    splits = split_variations_cmd.SplitVariationsCmdFromString(input_string)
+    self.assertEqual(1, len(splits))
 
 
 if __name__ == '__main__':

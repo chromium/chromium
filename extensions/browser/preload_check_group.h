@@ -50,7 +50,7 @@ class PreloadCheckGroup : public PreloadCheck {
   int running_checks_ = 0;
   Errors errors_;
 
-  base::WeakPtrFactory<PreloadCheckGroup> weak_ptr_factory_;
+  base::WeakPtrFactory<PreloadCheckGroup> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PreloadCheckGroup);
 };

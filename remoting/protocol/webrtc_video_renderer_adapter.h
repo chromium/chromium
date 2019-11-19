@@ -80,7 +80,7 @@ class WebrtcVideoRendererAdapter
   std::list<std::pair<uint32_t, ClientFrameStats>> client_stats_queue_;
   std::list<std::pair<uint32_t, HostFrameStats>> host_stats_queue_;
 
-  base::WeakPtrFactory<WebrtcVideoRendererAdapter> weak_factory_;
+  base::WeakPtrFactory<WebrtcVideoRendererAdapter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebrtcVideoRendererAdapter);
 };

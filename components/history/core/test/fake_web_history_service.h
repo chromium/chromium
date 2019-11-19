@@ -38,7 +38,9 @@ class FakeWebHistoryService : public WebHistoryService {
   void SetupFakeResponse(bool emulate_success, int emulate_response_code);
 
   // Adds a fake visit.
-  void AddSyncedVisit(std::string url, base::Time timestamp);
+  void AddSyncedVisit(const std::string& url,
+                      base::Time timestamp,
+                      const std::string& icon_url = std::string(""));
 
   // Clears all fake visits.
   void ClearSyncedVisits();
@@ -52,7 +54,14 @@ class FakeWebHistoryService : public WebHistoryService {
   void SetOtherFormsOfBrowsingHistoryPresent(bool present);
 
  protected:
-  typedef std::pair<std::string, base::Time> Visit;
+  struct Visit {
+    Visit(const std::string& url,
+          base::Time timestamp,
+          const std::string& icon_url);
+    std::string url;
+    base::Time timestamp;
+    std::string icon_url;
+  };
 
   // Returns up to |count| results from |visits_| between |begin| and |end.
   // Results are sorted from most recent to least recent, prioritizing more

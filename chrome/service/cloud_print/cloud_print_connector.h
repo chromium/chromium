@@ -204,7 +204,7 @@ class CloudPrintConnector
   // Partial network traffic annotation for network requests.
   const net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation_;
 
-  base::WeakPtrFactory<CloudPrintConnector> stats_ptr_factory_;
+  base::WeakPtrFactory<CloudPrintConnector> stats_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CloudPrintConnector);
 };

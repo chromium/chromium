@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/arc/arc_optin_uma.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/dm_token_storage.h"
@@ -17,6 +18,7 @@
 #include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
+#include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -40,7 +42,7 @@ std::string GetClientId() {
 }
 
 std::string GetDmServerUrl() {
-  return GetDeviceManagementService()->GetServerUrl();
+  return GetDeviceManagementService()->configuration()->GetDMServerUrl();
 }
 
 }  // namespace
@@ -49,7 +51,7 @@ namespace arc {
 
 ArcActiveDirectoryEnrollmentTokenFetcher::
     ArcActiveDirectoryEnrollmentTokenFetcher(ArcSupportHost* support_host)
-    : support_host_(support_host), weak_ptr_factory_(this) {
+    : support_host_(support_host) {
   DCHECK(support_host_);
   support_host_->SetAuthDelegate(this);
 }
@@ -89,19 +91,23 @@ void ArcActiveDirectoryEnrollmentTokenFetcher::DoFetchEnrollmentToken() {
   VLOG(1) << "Fetching enrollment token";
 
   policy::DeviceManagementService* service = GetDeviceManagementService();
-  fetch_request_job_.reset(service->CreateJob(
-      policy::DeviceManagementRequestJob::
-          TYPE_ACTIVE_DIRECTORY_ENROLL_PLAY_USER,
-      url_loader_factory_for_testing()
-          ? url_loader_factory_for_testing()
-          : g_browser_process->system_network_context_manager()
-                ->GetSharedURLLoaderFactory()));
+  std::unique_ptr<policy::DMServerJobConfiguration> config =
+      std::make_unique<policy::DMServerJobConfiguration>(
+          service,
+          policy::DeviceManagementService::JobConfiguration::
+              TYPE_ACTIVE_DIRECTORY_ENROLL_PLAY_USER,
+          GetClientId(), /*critical=*/false,
+          policy::DMAuth::FromDMToken(dm_token_), /*oauth_token=*/base::nullopt,
+          url_loader_factory_for_testing()
+              ? url_loader_factory_for_testing()
+              : g_browser_process->system_network_context_manager()
+                    ->GetSharedURLLoaderFactory(),
+          base::Bind(&ArcActiveDirectoryEnrollmentTokenFetcher::
+                         OnEnrollmentTokenResponseReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
 
-  fetch_request_job_->SetAuthData(policy::DMAuth::FromDMToken(dm_token_));
-  fetch_request_job_->SetClientID(GetClientId());
   em::ActiveDirectoryEnrollPlayUserRequest* enroll_request =
-      fetch_request_job_->GetRequest()
-          ->mutable_active_directory_enroll_play_user_request();
+      config->request()->mutable_active_directory_enroll_play_user_request();
   if (!auth_session_id_.empty()) {
     // Happens after going through SAML flow. Call DM server again with the
     // given |auth_session_id_|.
@@ -109,14 +115,12 @@ void ArcActiveDirectoryEnrollmentTokenFetcher::DoFetchEnrollmentToken() {
     auth_session_id_.clear();
   }
 
-  fetch_request_job_->Start(
-      base::Bind(&ArcActiveDirectoryEnrollmentTokenFetcher::
-                     OnEnrollmentTokenResponseReceived,
-                 weak_ptr_factory_.GetWeakPtr()));
+  fetch_request_job_ = service->CreateJob(std::move(config));
 }
 
 void ArcActiveDirectoryEnrollmentTokenFetcher::
     OnEnrollmentTokenResponseReceived(
+        policy::DeviceManagementService::Job* job,
         policy::DeviceManagementStatus dm_status,
         int net_error,
         const em::DeviceManagementResponse& response) {

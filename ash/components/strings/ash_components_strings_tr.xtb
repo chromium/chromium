@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="1036550831858290950">Geçerli sekmenizi yer işareti olarak kaydeder</translation>
 <translation id="104962181688258143">Dosyalar uygulamasını açar</translation>
 <translation id="1122869341872663659"><ph name="QUERY" /> için <ph name="N" /> arama sonucu gösteriliyor</translation>
 <translation id="1195667586424773550">Bağlantıyı sekmenin adres çubuğuna sürükleyin</translation>
@@ -12,6 +13,7 @@
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> veya <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">Satırın sonuna gider</translation>
+<translation id="1499072997694708844">Açık durumdaki tüm bulma pencerelerini kapat veya geçerli sayfanın yüklenmesini durdur</translation>
 <translation id="1510238584712386396">Başlatıcı</translation>
 <translation id="152892567002884378">Sesi açar</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, daha sonra <ph name="ESC" /></translation>
@@ -21,6 +23,7 @@
 <translation id="169515659049020177">ÜstKrktr</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Adres çubuğuna yazdığınız metnin başına www. ve sonuna .com ifadelerini ekleyip sayfayı açar</translation>
+<translation id="1872219238824176091">Geçerli masayı kaldır</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, daha sonra <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> veya <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Sonraki sekmeye gider</translation>
 <translation id="2010818616644390445">Penceredeki son sekmeye gider</translation>
@@ -33,20 +36,23 @@
 <translation id="2185166372312820725">Önceki sekmeye gider</translation>
 <translation id="2194790690264064655"><ph name="CTRL" /> tuşunu basılı tutarken bağlantıyı tıklayın</translation>
 <translation id="2246352309084894470">Tam ekran başlatıcıyı açar/kapatır</translation>
+<translation id="2354531887393764880">nokta</translation>
 <translation id="2382644247745281995">Geçerli klavye düzeninde desteklenmiyor</translation>
 <translation id="2397416548179033562">Chrome menüsünü göster</translation>
 <translation id="2424073332829844142">Caps Lock'u açar ve kapatır</translation>
 <translation id="2441202986792279177">Pencereler arasında hızlı geçiş yapar</translation>
 <translation id="2454251766545114447">Görüntüyü Uzaklaştır</translation>
 <translation id="2478303094958140141">ChromeVox'u (sesli geri bildirim) açar veya kapatır</translation>
+<translation id="2480851840841871861">Google Asistan'ı aç</translation>
+<translation id="2488661730534396940">Soldaki masayı etkinleştir</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2530339807289914946">Web sayfasını aşağı doğru kaydırır</translation>
 <translation id="2574014812750545982">Sayfadaki yakınlaştırma düzeyini sıfırla</translation>
 <translation id="2596078834055697711">Pencerenin ekran görüntüsünü alır</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, daha sonra <ph name="TAB" /> veya <ph name="RIGHT" /></translation>
-<translation id="2699509451653686398">Geçerli web sayfanızı yer işareti olarak kaydeder</translation>
 <translation id="2750942583782703988">Geçerli sayfanızı yeniden yükler</translation>
 <translation id="2764005613199379871">Odağı arama adres çubuğuna taşır</translation>
+<translation id="2774822903829597107">Yeni bir masa oluştur</translation>
 <translation id="2789868185375229787">Sayfayı uzaklaştırır</translation>
 <translation id="2804480015716812239"><ph name="ALT" /> tuşunu basılı tutarken bağlantıyı tıklayın</translation>
 <translation id="2830827904629746450">Pencereyi sağa yerleştirir</translation>
@@ -78,6 +84,7 @@
 <translation id="3792178297143798024">Rafınızda vurgulanan öğeyi açar</translation>
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 ile 8 arasındaki tuşlar</translation>
 <translation id="3837047332182291558">Klavyenin ışığını açar (yalnızca arkadan aydınlatmalı klavyeler için)</translation>
+<translation id="3949671998904569433">virgül</translation>
 <translation id="3976863468609830880">Rafınızdaki son simgeyi tıklar</translation>
 <translation id="3994783594793697310">Görüntü yakınlaştırma seviyesini sıfırla</translation>
 <translation id="4026843240379844265">Etkin pencereyi ekranlar arasında taşıma</translation>
@@ -97,6 +104,7 @@
 <translation id="4642092649622328492">Kısmi ekran görüntüsü alır</translation>
 <translation id="4698850295812410683">Ekran kalemi araçlarını görüntüler</translation>
 <translation id="4801989101741319327">Sonraki kelimenin sonuna gider</translation>
+<translation id="4866066940972151697">Sağdaki masayı etkinleştir</translation>
 <translation id="4916163929714267752">Bağlantıyı yeni bir pencerede açar</translation>
 <translation id="5030659775136592441">Yer işareti yöneticisini görüntüler</translation>
 <translation id="5034421018520995080">Sayfanın başına gider</translation>
@@ -112,6 +120,7 @@
 <translation id="5554139136362089836">Geçerli sayfada arama yapar</translation>
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> tuşlarına basın ve bir bağlantıyı tıklayın</translation>
 <translation id="561814908794220892">Web sayfasını yeni bir sekmede açar</translation>
+<translation id="5620219513321115856">Etkin pencereyi sağdaki masaya taşı</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> veya <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Bağlantıyı sekmede açar</translation>
 <translation id="5757474750054631686">Klavyenin ışığını kısar (yalnızca arkadan aydınlatmalı klavyeler için)</translation>
@@ -122,7 +131,6 @@
 <translation id="6045998054441862242">Yüksek kontrast modunu etkinleştirir</translation>
 <translation id="6052614013050385269">Bağlantıyı sağ tıklar</translation>
 <translation id="6129953537138746214">Boşluk</translation>
-<translation id="613146727819833328">Pencereyi ortaya taşır</translation>
 <translation id="6143669479988153888">Sayfayı yakınlaştırır</translation>
 <translation id="6185696379715117369">Bir sayfa yukarı</translation>
 <translation id="6228457605945141550">Parlaklığı azaltır</translation>
@@ -160,18 +168,20 @@
 <translation id="7422707470576323858">Sonraki dil giriş yöntemine geçer</translation>
 <translation id="743754632698445141">Uygulamanın sabitlemesini kaldırır</translation>
 <translation id="7439718573248533901">Sonraki harfi siler (ileri doğru silme)</translation>
+<translation id="7500368597227394048">kısa çizgi</translation>
 <translation id="7611271430932669992">Odağı pop-up'lara ve iletişim kutularına taşır</translation>
 <translation id="766326951329901120">Panodaki içeriği düz metin olarak yapıştırır</translation>
+<translation id="7703010453515335249">sol parantez</translation>
 <translation id="7724603315864178912">Kes</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, daha sonra <ph name="SPACE" /> veya <ph name="ENTER" /></translation>
 <translation id="7787242579016742662">Bir dosyayı tarayıcıda açar</translation>
-<translation id="7917881398263220094">Geçerli sayfanızın yüklenmesini durdurur</translation>
 <translation id="7952165122793773711">1 ile 8 arasındaki sekmelere gider</translation>
 <translation id="8026334261755873520">Tarama verilerini temizle</translation>
 <translation id="8130528849632411619">Dokümanın başına gider</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> veya <ph name="E" /></translation>
 <translation id="8232835244134740473">Odak noktasını şunlar arasında değiştirir: Durum alanı (hesap resminizin göründüğü yer), Başlatıcı, Adres çubuğu, Yer işaretleri çubuğu (görünüyorsa), Açık olan web sayfası ve İndirilenler çubuğu (görünüyorsa).</translation>
 <translation id="8234414138295101081">Ekranı 90 derece döndürür</translation>
+<translation id="8241665785394195545">sağ parantez</translation>
 <translation id="8264941229485248811">Geliştirici Araçları denetleyicisini gösterir veya gizler</translation>
 <translation id="836869401750819675">İndirilenler sayfasını açar</translation>
 <translation id="8388247778047144397">Bağlantıyı sekme şeridindeki boş bir alana sürükleyin</translation>
@@ -184,6 +194,7 @@
 <translation id="8717459106217102612">Önceki kelimeyi veya harfi seçer</translation>
 <translation id="8727232706774971183">Bildirimlerinizi gösterir</translation>
 <translation id="8855885154700222542">Tam ekran tuşu</translation>
+<translation id="8881584919399569791">Etkin pencereyi soldaki masaya taşı</translation>
 <translation id="88986195241502842">Bir sayfa aşağı gider</translation>
 <translation id="8924883688469390268">Önceki kullanıcıya geçer</translation>
 <translation id="8977648847395357314">Adres çubuğundaki içeriği seçer</translation>

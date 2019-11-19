@@ -3,17 +3,13 @@
 # found in the LICENSE file.
 
 # KSV: Keyboard Shortcut Viewer
-source_set("lib") {
+source_set("shortcut_viewer") {
   sources = [
     "keyboard_shortcut_item.cc",
     "keyboard_shortcut_item.h",
     "keyboard_shortcut_viewer_metadata.cc",
     "keyboard_shortcut_viewer_metadata.h",
     "ksv_export.h",
-    "last_window_closed_observer.cc",
-    "last_window_closed_observer.h",
-    "shortcut_viewer_application.cc",
-    "shortcut_viewer_application.h",
     "views/bubble_view.cc",
     "views/bubble_view.h",
     "views/keyboard_shortcut_item_list_view.cc",
@@ -29,13 +25,11 @@ source_set("lib") {
   defines = [ "KSV_IMPLEMENTATION" ]
 
   deps = [
-    "//ash/components/shortcut_viewer/public/mojom",
     "//ash/components/shortcut_viewer/vector_icons",
     "//ash/components/strings",
     "//ash/public/cpp",
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
     "//cc/paint",
-    "//services/service_manager/public/cpp/",
     "//ui/accessibility",
     "//ui/aura",
     "//ui/chromeos/events",
@@ -44,8 +38,6 @@ source_set("lib") {
     "//ui/events/devices",
     "//ui/events/ozone:events_ozone_layout",
     "//ui/views",
-    "//ui/views/mus",
-    "//ui/views/mus:resources",
   ]
 }
 
@@ -55,12 +47,13 @@ source_set("unit_tests") {
     "views/keyboard_shortcut_view_unittest.cc",
   ]
   deps = [
-    ":lib",
+    ":shortcut_viewer",
     "//ash:test_support",
     "//base/test:test_support",
-    "//services/ws/public/cpp/input_devices:test_support",
     "//testing/gtest",
+    "//ui/compositor:test_support",
     "//ui/events:test_support",
+    "//ui/events/devices:test_support",
     "//ui/views",
   ]
 }

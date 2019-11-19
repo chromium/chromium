@@ -2,5 +2,5 @@
 ++[section]
 ++++[static]
 ++++++[panel]
-++++++++[text] name='ruby text'
-++++++[text] name='ruby base'
+++++++++[static] name='ruby text'
+++++++[static] name='ruby base'

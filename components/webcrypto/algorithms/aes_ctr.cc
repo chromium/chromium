@@ -6,9 +6,10 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <memory>
+
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
 #include "components/webcrypto/algorithms/aes.h"
 #include "components/webcrypto/algorithms/util.h"
@@ -257,7 +258,7 @@ class AesCtrImplementation : public AesAlgorithm {
 }  // namespace
 
 std::unique_ptr<AlgorithmImplementation> CreateAesCtrImplementation() {
-  return base::WrapUnique(new AesCtrImplementation);
+  return std::make_unique<AesCtrImplementation>();
 }
 
 }  // namespace webcrypto

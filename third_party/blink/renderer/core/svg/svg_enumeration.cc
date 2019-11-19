@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_enumeration.h"
 
-#include "third_party/blink/renderer/core/svg/svg_animation_element.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 
 namespace blink {
@@ -75,22 +74,14 @@ void SVGEnumerationBase::Add(SVGPropertyBase*, SVGElement*) {
 }
 
 void SVGEnumerationBase::CalculateAnimatedValue(
-    SVGAnimationElement* animation_element,
+    const SVGAnimateElement& animation_element,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from,
     SVGPropertyBase* to,
     SVGPropertyBase*,
     SVGElement*) {
-  DCHECK(animation_element);
-  uint16_t from_enumeration =
-      animation_element->GetAnimationMode() == kToAnimation
-          ? value_
-          : ToSVGEnumerationBase(from)->Value();
-  uint16_t to_enumeration = ToSVGEnumerationBase(to)->Value();
-
-  animation_element->AnimateDiscreteType<uint16_t>(percentage, from_enumeration,
-                                                   to_enumeration, value_);
+  NOTREACHED();
 }
 
 float SVGEnumerationBase::CalculateDistance(SVGPropertyBase*, SVGElement*) {

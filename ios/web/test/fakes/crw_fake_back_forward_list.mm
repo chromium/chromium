@@ -87,4 +87,12 @@
   return [NSArray arrayWithArray:array];
 }
 
+- (WKBackForwardListItem*)backItem {
+  return self.backList.lastObject;
+}
+
+- (WKBackForwardListItem*)forwardItem {
+  return self.forwardList.firstObject;
+}
+
 @end

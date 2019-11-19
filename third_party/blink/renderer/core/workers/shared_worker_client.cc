@@ -7,8 +7,8 @@
 #include "base/logging.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/workers/shared_worker.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -42,8 +42,12 @@ void SharedWorkerClient::OnConnected(
 }
 
 void SharedWorkerClient::OnScriptLoadFailed() {
-  worker_->DispatchEvent(*Event::CreateCancelable(event_type_names::kError));
   worker_->SetIsBeingConnected(false);
+  worker_->DispatchEvent(*Event::CreateCancelable(event_type_names::kError));
+  // |this| can be destroyed at this point, for example, when a frame hosting
+  // this shared worker is detached in the error handler, and closes mojo's
+  // strong bindings bound with |this| in
+  // SharedWorkerClientHolder::ContextDestroyed().
 }
 
 void SharedWorkerClient::OnFeatureUsed(mojom::WebFeature feature) {

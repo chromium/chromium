@@ -52,7 +52,7 @@ class TracingControllerAndroid {
       size_t approximate_event_count);
 
   JavaObjectWeakGlobalRef weak_java_object_;
-  base::WeakPtrFactory<TracingControllerAndroid> weak_factory_;
+  base::WeakPtrFactory<TracingControllerAndroid> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TracingControllerAndroid);
 };

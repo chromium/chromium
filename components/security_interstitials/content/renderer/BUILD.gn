@@ -1,0 +1,13 @@
+static_library("security_interstitial_page_controller") {
+  sources = [
+    "security_interstitial_page_controller.cc",
+    "security_interstitial_page_controller.h",
+  ]
+  deps = [
+    "//base",
+    "//components/security_interstitials/core:",
+    "//content/public/renderer",
+    "//gin",
+    "//third_party/blink/public:blink",
+  ]
+}

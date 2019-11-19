@@ -25,7 +25,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_item_impl.h"
-#include "components/download/public/common/download_request_handle_interface.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "components/download/public/common/download_ukm_helper.h"
@@ -40,7 +39,6 @@
 #include "content/browser/frame_host/frame_tree.h"
 #include "content/browser/frame_host/frame_tree_node.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
-#include "content/browser/loader/resource_dispatcher_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -125,25 +123,11 @@ bool CanSaveAsComplete(const std::string& contents_mime_type) {
          contents_mime_type == "application/xhtml+xml";
 }
 
-// Request handle for SavePackage downloads. Currently doesn't support
-// pause/resume, but returns a WebContents.
-class SavePackageRequestHandle
-    : public download::DownloadRequestHandleInterface {
- public:
-  explicit SavePackageRequestHandle(base::WeakPtr<SavePackage> save_package)
-      : save_package_(save_package) {}
-
-  // DownloadRequestHandleInterface
-  void PauseRequest() override {}
-  void ResumeRequest() override {}
-  void CancelRequest(bool user_cancel) override {
-    if (save_package_.get() && !save_package_->canceled())
-      save_package_->Cancel(user_cancel, false);
-  }
-
- private:
-  base::WeakPtr<SavePackage> const save_package_;
-};
+void CancelSavePackage(base::WeakPtr<SavePackage> save_package,
+                       bool user_cancel) {
+  if (save_package.get() && !save_package->canceled())
+    save_package->Cancel(user_cancel, false);
+}
 
 }  // namespace
 
@@ -287,16 +271,13 @@ bool SavePackage::Init(
     return false;
   }
 
-  std::unique_ptr<download::DownloadRequestHandleInterface> request_handle(
-      new SavePackageRequestHandle(AsWeakPtr()));
-
   RenderFrameHost* frame_host = web_contents()->GetMainFrame();
   download_manager_->CreateSavePackageDownloadItem(
       saved_main_file_path_, page_url_,
       ((save_type_ == SAVE_PAGE_TYPE_AS_MHTML) ? "multipart/related"
                                                : "text/html"),
       frame_host->GetProcess()->GetID(), frame_host->GetRoutingID(),
-      std::move(request_handle),
+      base::BindOnce(&CancelSavePackage, AsWeakPtr()),
       base::Bind(&SavePackage::InitWithDownloadItem, AsWeakPtr(),
                  download_created_callback));
   return true;
@@ -353,7 +334,7 @@ void SavePackage::OnMHTMLGenerated(int64_t size) {
 
   auto* delegate = download_manager_->GetDelegate();
   if (!delegate || delegate->ShouldCompleteDownload(
-                       download_, base::Bind(&SavePackage::Finish, this))) {
+                       download_, base::BindOnce(&SavePackage::Finish, this))) {
     Finish();
   }
 }
@@ -489,7 +470,7 @@ bool SavePackage::GenerateFileName(const std::string& disposition,
       base::FilePath::StringType new_name =
           base_file_name + base::StringPrintf(FILE_PATH_LITERAL("(%d)"), i) +
           file_name_ext;
-      if (!base::ContainsKey(file_name_set_, new_name)) {
+      if (!base::Contains(file_name_set_, new_name)) {
         // Resolved name conflict.
         file_name = new_name;
         file_name_count_map_[base_file_name] = ++i;
@@ -594,7 +575,7 @@ void SavePackage::PutInProgressItemToSavedMap(SaveItem* save_item) {
 
   SaveItemIdMap& map = save_item->success() ?
       saved_success_items_ : saved_failed_items_;
-  DCHECK(!base::ContainsKey(map, save_item->id()));
+  DCHECK(!base::Contains(map, save_item->id()));
   map[save_item->id()] = std::move(owned_item);
 }
 
@@ -804,7 +785,7 @@ void SavePackage::SaveNextFile(bool process_all_remaining_items) {
     waiting_item_queue_.pop_front();
 
     // Add the item to |in_progress_items_|.
-    DCHECK(!base::ContainsKey(in_progress_items_, save_item->id()));
+    DCHECK(!base::Contains(in_progress_items_, save_item->id()));
     in_progress_items_[save_item_ptr->id()] = std::move(save_item);
     save_item_ptr->Start();
 
@@ -830,8 +811,7 @@ void SavePackage::SaveNextFile(bool process_all_remaining_items) {
         requester_frame->GetProcess()->GetID(),
         requester_frame->render_view_host()->GetRoutingID(),
         requester_frame->routing_id(), save_item_ptr->save_source(),
-        save_item_ptr->full_path(),
-        web_contents()->GetBrowserContext()->GetResourceContext(),
+        save_item_ptr->full_path(), web_contents()->GetBrowserContext(),
         web_contents()
             ->GetRenderViewHost()
             ->GetProcess()
@@ -1024,7 +1004,8 @@ void SavePackage::GetSerializedHtmlWithLocalLinksForFrame(
 
   // Ask target frame to serialize itself.
   target->Send(new FrameMsg_GetSerializedHtmlWithLocalLinks(
-      target->GetRoutingID(), url_to_local_path, routing_id_to_local_path));
+      target->GetRoutingID(), url_to_local_path, routing_id_to_local_path,
+      web_contents()->GetBrowserContext()->IsOffTheRecord()));
 }
 
 // Process the serialized HTML content data of a specified frame
@@ -1056,7 +1037,7 @@ void SavePackage::OnSerializedHtmlWithLocalLinksResponse(
       }
     }
 
-    if (base::ContainsKey(saved_failed_items_, save_item->id()))
+    if (base::Contains(saved_failed_items_, save_item->id()))
       wrote_to_failed_file_ = true;
 
     return;
@@ -1259,12 +1240,10 @@ void SavePackage::GetSaveInfo() {
   // need before calling to it.
   base::FilePath website_save_dir;
   base::FilePath download_save_dir;
-  bool skip_dir_check = false;
   auto* delegate = download_manager_->GetDelegate();
   if (delegate) {
-    delegate->GetSaveDir(
-        web_contents()->GetBrowserContext(), &website_save_dir,
-        &download_save_dir, &skip_dir_check);
+    delegate->GetSaveDir(web_contents()->GetBrowserContext(), &website_save_dir,
+                         &download_save_dir);
   }
   std::string mime_type = web_contents()->GetContentsMimeType();
   bool can_save_as_complete = CanSaveAsComplete(mime_type);
@@ -1272,7 +1251,7 @@ void SavePackage::GetSaveInfo() {
       download::GetDownloadTaskRunner().get(), FROM_HERE,
       base::Bind(&SavePackage::CreateDirectoryOnFileThread, title_, page_url_,
                  can_save_as_complete, mime_type, website_save_dir,
-                 download_save_dir, skip_dir_check),
+                 download_save_dir),
       base::Bind(&SavePackage::ContinueGetSaveInfo, this,
                  can_save_as_complete));
 }
@@ -1284,8 +1263,7 @@ base::FilePath SavePackage::CreateDirectoryOnFileThread(
     bool can_save_as_complete,
     const std::string& mime_type,
     const base::FilePath& website_save_dir,
-    const base::FilePath& download_save_dir,
-    bool skip_dir_check) {
+    const base::FilePath& download_save_dir) {
   DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
 
   base::FilePath suggested_filename = filename_generation::GenerateFilename(
@@ -1293,8 +1271,7 @@ base::FilePath SavePackage::CreateDirectoryOnFileThread(
 
   base::FilePath save_dir;
   // If the default html/websites save folder doesn't exist...
-  // We skip the directory check for gdata directories on ChromeOS.
-  if (!skip_dir_check && !base::DirectoryExists(website_save_dir)) {
+  if (!base::DirectoryExists(website_save_dir)) {
     // If the default download dir doesn't exist, create it.
     if (!base::DirectoryExists(download_save_dir)) {
       bool res = base::CreateDirectory(download_save_dir);

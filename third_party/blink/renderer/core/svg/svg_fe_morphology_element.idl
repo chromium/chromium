@@ -39,4 +39,4 @@
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber radiusY;
 };
 
-SVGFEMorphologyElement implements SVGFilterPrimitiveStandardAttributes;
+SVGFEMorphologyElement includes SVGFilterPrimitiveStandardAttributes;

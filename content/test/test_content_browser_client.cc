@@ -45,7 +45,7 @@ void TestContentBrowserClient::GetQuotaSettings(
   std::move(callback).Run(storage::GetHardCodedSettings(100 * 1024 * 1024));
 }
 
-std::string TestContentBrowserClient::GetUserAgent() const {
+std::string TestContentBrowserClient::GetUserAgent() {
   return std::string("TestContentClient");
 }
 

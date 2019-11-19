@@ -1,0 +1,15 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ios") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "send_tab_to_self_model_bridge_observer.h",
+    "send_tab_to_self_model_bridge_observer.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/send_tab_to_self",
+  ]
+}

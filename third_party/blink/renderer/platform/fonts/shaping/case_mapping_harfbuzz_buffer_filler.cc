@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/case_mapping_harfbuzz_buffer_filler.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/case_map.h"
+
 namespace blink {
 
 static const uint16_t* ToUint16(const UChar* src) {
@@ -32,9 +34,10 @@ CaseMappingHarfBuzzBufferFiller::CaseMappingHarfBuzzBufferFiller(
                           text.length(), start_index, num_characters);
     }
   } else {
+    CaseMap case_map(locale);
     String case_mapped_text = case_map_intend == CaseMapIntend::kUpperCase
-                                  ? text.UpperUnicode(locale)
-                                  : text.LowerUnicode(locale);
+                                  ? case_map.ToUpper(text)
+                                  : case_map.ToLower(text);
     case_mapped_text.Ensure16Bit();
 
     if (case_mapped_text.length() != text.length()) {
@@ -66,6 +69,7 @@ void CaseMappingHarfBuzzBufferFiller::FillSlowCase(
   hb_buffer_add_utf16(harfbuzz_buffer_, ToUint16(buffer), buffer_length,
                       start_index, 0);
 
+  CaseMap case_map(locale);
   for (unsigned char_index = start_index;
        char_index < start_index + num_characters;) {
     unsigned new_char_index = char_index;
@@ -73,9 +77,9 @@ void CaseMappingHarfBuzzBufferFiller::FillSlowCase(
     String char_by_char(&buffer[char_index], new_char_index - char_index);
     String case_mapped_char;
     if (case_map_intend == CaseMapIntend::kUpperCase)
-      case_mapped_char = char_by_char.UpperUnicode(locale);
+      case_mapped_char = case_map.ToUpper(char_by_char);
     else
-      case_mapped_char = char_by_char.LowerUnicode(locale);
+      case_mapped_char = case_map.ToLower(char_by_char);
 
     for (unsigned j = 0; j < case_mapped_char.length();) {
       UChar32 codepoint = 0;

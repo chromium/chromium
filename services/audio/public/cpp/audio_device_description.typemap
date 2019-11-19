@@ -12,6 +12,4 @@ sources = [
 deps = [
   "//media",
 ]
-type_mappings = [
-  "audio.mojom.AudioDeviceDescription=media::AudioDeviceDescription[move_only]",
-]
+type_mappings = [ "audio.mojom.AudioDeviceDescription=::media::AudioDeviceDescription[move_only]" ]

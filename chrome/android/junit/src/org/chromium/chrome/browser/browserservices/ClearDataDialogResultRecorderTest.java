@@ -26,7 +26,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.preferences.ChromePreferenceManager;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /**
  * Tests for {@link ClearDataDialogResultRecorder}.
@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceManager;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ClearDataDialogResultRecorderTest {
-    private final ChromePreferenceManager mPrefsManager = ChromePreferenceManager.getInstance();
+    private final SharedPreferencesManager mPrefsManager = SharedPreferencesManager.getInstance();
     @Mock ChromeBrowserInitializer mBrowserInitializer;
     @Mock TrustedWebActivityUmaRecorder mUmaRecorder;
     @Captor ArgumentCaptor<Runnable> mTaskOnNativeInitCaptor;

@@ -1,9 +1,11 @@
 # primary reviewers.
 shuchen@chromium.org
 yhanada@chromium.org
+keithlee@chromium.org
 
 # backup reviewers.
 yukishiino@chromium.org
 
 # For Windows.
 yukawa@chromium.org
+# COMPONENT: UI>Input>Text>IME

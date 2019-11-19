@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/process/memory.h"
 #include "base/stl_util.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -19,7 +20,9 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -191,20 +194,20 @@ void GLRendererCopier::CopyFromTextureOrFramebuffer(
 
   switch (request->result_format()) {
     case ResultFormat::RGBA_BITMAP:
+      EnsureTextureDefinedWithSize(context_provider_->ContextGL(),
+                                   result_rect.size(), &things->result_texture,
+                                   &things->result_texture_size);
       RenderResultTexture(*request, flipped_source, color_space, source_texture,
                           source_texture_size, sampling_rect, result_rect,
-                          things.get());
+                          things->result_texture, things.get());
       StartReadbackFromTexture(std::move(request), result_rect, color_space,
                                things.get());
       break;
 
     case ResultFormat::RGBA_TEXTURE:
-      RenderResultTexture(*request, flipped_source, color_space, source_texture,
-                          source_texture_size, sampling_rect, result_rect,
-                          things.get());
-      SendTextureResult(std::move(request), things->result_texture, result_rect,
-                        color_space);
-      things->result_texture = 0;  // SendTextureResult() took ownership.
+      RenderAndSendTextureResult(
+          std::move(request), flipped_source, color_space, source_texture,
+          source_texture_size, sampling_rect, result_rect, things.get());
       break;
 
     case ResultFormat::I420_PLANES:
@@ -250,12 +253,9 @@ void GLRendererCopier::RenderResultTexture(
     const gfx::Size& source_texture_size,
     const gfx::Rect& sampling_rect,
     const gfx::Rect& result_rect,
+    GLuint result_texture,
     ReusableThings* things) {
   DCHECK_NE(request.result_format(), ResultFormat::I420_PLANES);
-
-  EnsureTextureDefinedWithSize(context_provider_->ContextGL(),
-                               result_rect.size(), &things->result_texture,
-                               &things->result_texture_size);
 
   GLScaler::Parameters params;
   PopulateScalerParameters(request, source_color_space, source_color_space,
@@ -284,7 +284,7 @@ void GLRendererCopier::RenderResultTexture(
 
   const bool success = things->scaler->Scale(
       source_texture, source_texture_size, sampling_rect.OffsetFromOrigin(),
-      things->result_texture, result_rect);
+      result_texture, result_rect);
   DCHECK(success);
 }
 
@@ -440,8 +440,13 @@ class GLPixelBufferRGBAResult : public CopyOutputResult {
       return *cached_bitmap();
 
     SkBitmap result_bitmap;
-    result_bitmap.allocPixels(SkImageInfo::MakeN32Premul(
-        size().width(), size().height(), GetRGBAColorSpace().ToSkColorSpace()));
+    // size() was clamped to render pass or framebuffer size. If we can't
+    // allocate it then OOM.
+    auto info = SkImageInfo::MakeN32Premul(
+        size().width(), size().height(), GetRGBAColorSpace().ToSkColorSpace());
+    if (!result_bitmap.tryAllocPixels(info, info.minRowBytes()))
+      base::TerminateBecauseOutOfMemory(info.computeMinByteSize());
+
     ReadRGBAPlane(static_cast<uint8_t*>(result_bitmap.getPixels()),
                   result_bitmap.rowBytes());
     *cached_bitmap() = result_bitmap;
@@ -569,21 +574,31 @@ void GLRendererCopier::StartReadbackFromFramebuffer(
       query, base::BindOnce(&ReadPixelsWorkflow::Finish, std::move(workflow)));
 }
 
-void GLRendererCopier::SendTextureResult(
+void GLRendererCopier::RenderAndSendTextureResult(
     std::unique_ptr<CopyOutputRequest> request,
-    GLuint result_texture,
+    bool flipped_source,
+    const gfx::ColorSpace& color_space,
+    GLuint source_texture,
+    const gfx::Size& source_texture_size,
+    const gfx::Rect& sampling_rect,
     const gfx::Rect& result_rect,
-    const gfx::ColorSpace& color_space) {
+    ReusableThings* things) {
   DCHECK_EQ(request->result_format(), ResultFormat::RGBA_TEXTURE);
 
-  auto* const gl = context_provider_->ContextGL();
-
-  // Package the |result_texture| into a mailbox with the required
-  // synchronization mechanisms. This lets the requestor ensure operations
-  // within its own GL context will be using the texture at a point in time
-  // after the texture has been rendered (via GLRendererCopier's GL context).
-  gpu::Mailbox mailbox;
-  gl->ProduceTextureDirectCHROMIUM(result_texture, mailbox.name);
+  auto* sii = context_provider_->SharedImageInterface();
+  gpu::Mailbox mailbox =
+      sii->CreateSharedImage(ResourceFormat::RGBA_8888, result_rect.size(),
+                             color_space, gpu::SHARED_IMAGE_USAGE_GLES2);
+  auto* gl = context_provider_->ContextGL();
+  gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+  GLuint texture = gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
+  gl->BeginSharedImageAccessDirectCHROMIUM(
+      texture, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+  RenderResultTexture(*request, flipped_source, color_space, source_texture,
+                      source_texture_size, sampling_rect, result_rect, texture,
+                      things);
+  gl->EndSharedImageAccessDirectCHROMIUM(texture);
+  gl->DeleteTextures(1, &texture);
   gpu::SyncToken sync_token;
   gl->GenSyncTokenCHROMIUM(sync_token.GetData());
 
@@ -593,7 +608,7 @@ void GLRendererCopier::SendTextureResult(
   // significant performance benefit. Instead, such clients should use the video
   // capture services provided by VIZ.
   auto release_callback =
-      texture_deleter_->GetReleaseCallback(context_provider_, result_texture);
+      texture_deleter_->GetReleaseCallback(context_provider_, mailbox);
 
   request->SendResult(std::make_unique<CopyOutputTextureResult>(
       result_rect, mailbox, sync_token, color_space,

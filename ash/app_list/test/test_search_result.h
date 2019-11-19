@@ -11,7 +11,7 @@
 #include "ash/app_list/model/search/search_result.h"
 #include "base/macros.h"
 
-namespace app_list {
+namespace ash {
 
 // A test search result which does nothing.
 class TestSearchResult : public SearchResult {
@@ -25,6 +25,6 @@ class TestSearchResult : public SearchResult {
   DISALLOW_COPY_AND_ASSIGN(TestSearchResult);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_TEST_TEST_SEARCH_RESULT_H_

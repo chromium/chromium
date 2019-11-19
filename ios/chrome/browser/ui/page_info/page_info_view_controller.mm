@@ -22,6 +22,8 @@
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/material_timing.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
@@ -66,18 +68,6 @@ const CGFloat kImageSpacing = 16;
 const CGFloat kImageSize = 24;
 // The height of the headline label.
 const CGFloat kHeadlineHeight = 19;
-// The hex color for the help button text.
-const int kPageInfoHelpButtonRGB = 0x3b8cfe;
-// The grey scale color for the text within the page info alert.
-const CGFloat kPageInfoTextGreyComponent = 0.2;
-
-inline UIColor* PageInfoTextColor() {
-  return [UIColor colorWithWhite:kPageInfoTextGreyComponent alpha:1];
-}
-
-inline UIColor* PageInfoHelpButtonColor() {
-  return UIColorFromRGB(kPageInfoHelpButtonRGB);
-}
 
 inline UIFont* PageInfoHeadlineFont() {
   return [[MDCTypography fontLoader] mediumFontOfSize:16];
@@ -101,6 +91,8 @@ const CGFloat kTextXPosition =
 const CGFloat kButtonXOffset = kTextXPosition;
 
 }  // namespace
+
+#pragma mark - PageInfoModelBubbleBridge
 
 PageInfoModelBubbleBridge::PageInfoModelBubbleBridge()
     : controller_(nil), weak_ptr_factory_(this) {}
@@ -136,70 +128,46 @@ void PageInfoModelBubbleBridge::PerformLayout() {
   [controller_ performLayout];
 }
 
-@interface PageInfoViewController ()<UIGestureRecognizerDelegate> {
+#pragma mark - PageInfoViewController
+
+@interface PageInfoViewController () {
   // Scroll View inside the PageInfoView used to display content that exceeds
   // the available space.
-  UIScrollView* scrollView_;
+  UIScrollView* _scrollView;
   // Container View added inside the Scroll View. All content is added to this
-  // view instead of PopupMenuController.containerView_.
-  BidiContainerView* innerContainerView_;
+  // view.
+  BidiContainerView* _innerContainerView;
 
   // Origin of the arrow at the top of the popup window.
-  CGPoint origin_;
+  CGPoint _arrowOriginPoint;
 
   // Model for the data to display.
-  std::unique_ptr<PageInfoModel> model_;
+  std::unique_ptr<PageInfoModel> _model;
 
   // Thin bridge that pushes model-changed notifications from C++ to Cocoa.
-  std::unique_ptr<PageInfoModelObserver> bridge_;
+  std::unique_ptr<PageInfoModelObserver> _modelBridge;
 
   // Width of the view. Depends on the device (iPad/iPhone).
-  CGFloat viewWidth_;
+  CGFloat _viewWidth;
 
   // Width of the text fields.
-  CGFloat textWidth_;
+  CGFloat _textWidth;
 
   // YES when the popup has finished animating in. NO otherwise.
-  BOOL animateInCompleted_;
+  BOOL _displayAnimationCompleted;
 }
-
-// Adds the state image at a pre-determined x position and the given y. This
-// does not affect the next Y position because the image is placed next to
-// a text field that is larger and accounts for the image's size.
-- (void)addImageViewForInfo:(const PageInfoModel::SectionInfo&)info
-                 toSubviews:(NSMutableArray*)subviews
-                   atOffset:(CGFloat)offset;
-
-// Adds the title text field at the given x,y position, and returns the y
-// position for the next element.
-- (CGFloat)addHeadlineViewForInfo:(const PageInfoModel::SectionInfo&)info
-                       toSubviews:(NSMutableArray*)subviews
-                          atPoint:(CGPoint)point;
-
-// Adds the description text field at the given x,y position, and returns the y
-// position for the next element.
-- (CGFloat)addDescriptionViewForInfo:(const PageInfoModel::SectionInfo&)info
-                          toSubviews:(NSMutableArray*)subviews
-                             atPoint:(CGPoint)point;
-
-// Returns a button with title and action configured for |buttonAction|.
-- (UIButton*)buttonForAction:(PageInfoModel::ButtonAction)buttonAction;
-
-// Adds the the button |buttonAction| that explains the icons. Returns the y
-// position delta for the next offset.
-- (CGFloat)addButton:(PageInfoModel::ButtonAction)buttonAction
-          toSubviews:(NSMutableArray*)subviews
-            atOffset:(CGFloat)offset;
 
 @property(nonatomic, strong) UIView* containerView;
 @property(nonatomic, strong) UIView* popupContainer;
+// An invisible button added to the |containerView|. Closes the popup just like
+// the tap on the background. Exposed purely for voiceover purposes.
+@property(nonatomic, strong) UIButton* closeButton;
+
 @end
 
 @implementation PageInfoViewController
 
-@synthesize containerView = containerView_;
-@synthesize popupContainer = popupContainer_;
-@synthesize dispatcher = dispatcher_;
+#pragma mark public
 
 - (id)initWithModel:(PageInfoModel*)model
                   bridge:(PageInfoModelObserver*)bridge
@@ -209,73 +177,71 @@ void PageInfoModelBubbleBridge::PerformLayout() {
   DCHECK(provider);
   self = [super init];
   if (self) {
-    scrollView_ =
+    _scrollView =
         [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 240, 128)];
-    [scrollView_ setMultipleTouchEnabled:YES];
-    [scrollView_ setClipsToBounds:YES];
-    [scrollView_ setShowsHorizontalScrollIndicator:NO];
-    [scrollView_ setIndicatorStyle:UIScrollViewIndicatorStyleBlack];
-    [scrollView_
+    [_scrollView setMultipleTouchEnabled:YES];
+    [_scrollView setClipsToBounds:YES];
+    [_scrollView setShowsHorizontalScrollIndicator:NO];
+    [_scrollView setIndicatorStyle:UIScrollViewIndicatorStyleBlack];
+    [_scrollView
         setAutoresizingMask:(UIViewAutoresizingFlexibleTrailingMargin() |
                              UIViewAutoresizingFlexibleTopMargin)];
 
-    innerContainerView_ =
+    _innerContainerView =
         [[BidiContainerView alloc] initWithFrame:CGRectMake(0, 0, 194, 327)];
-    [innerContainerView_ setBackgroundColor:[UIColor clearColor]];
-    [innerContainerView_
+    [_innerContainerView
         setAccessibilityLabel:@"Page Security Info Scroll Container"];
-    [innerContainerView_
+    [_innerContainerView
         setAutoresizingMask:(UIViewAutoresizingFlexibleTrailingMargin() |
                              UIViewAutoresizingFlexibleBottomMargin)];
 
-    model_.reset(model);
-    bridge_.reset(bridge);
-    origin_ = sourcePoint;
-    dispatcher_ = dispatcher;
+    _model.reset(model);
+    _modelBridge.reset(bridge);
+    _arrowOriginPoint = sourcePoint;
+    _dispatcher = dispatcher;
 
     UIInterfaceOrientation orientation =
         [[UIApplication sharedApplication] statusBarOrientation];
-    viewWidth_ = IsCompactWidth() ? kViewWidthCompact : kViewWidthRegular;
+    _viewWidth = IsCompactWidth() ? kViewWidthCompact : kViewWidthRegular;
     // Special case iPhone landscape.
     if (!IsIPadIdiom() && UIInterfaceOrientationIsLandscape(orientation))
-      viewWidth_ = kViewWidthiPhoneLandscape;
+      _viewWidth = kViewWidthiPhoneLandscape;
 
-    textWidth_ = viewWidth_ - (kImageSize + kImageSpacing + kFramePadding * 2 +
+    _textWidth = _viewWidth - (kImageSize + kImageSpacing + kFramePadding * 2 +
                                kScrollViewInset * 2);
 
-    UILongPressGestureRecognizer* touchDownRecognizer =
-        [[UILongPressGestureRecognizer alloc]
-            initWithTarget:self
-                    action:@selector(rootViewTapped:)];
-    // Setting the duration to .001 makes this similar to a control event
-    // UIControlEventTouchDown.
-    [touchDownRecognizer setMinimumPressDuration:.001];
-    [touchDownRecognizer setDelegate:self];
-
-    containerView_ = [[UIView alloc] init];
-    [containerView_ addGestureRecognizer:touchDownRecognizer];
-    [containerView_
-        setBackgroundColor:[UIColor colorWithWhite:0 alpha:kShieldAlpha]];
-    [containerView_ setOpaque:NO];
-    [containerView_ setAlpha:0];
-    [containerView_ setAccessibilityViewIsModal:YES];
-    containerView_.accessibilityIdentifier =
+    _containerView = [[UIView alloc] init];
+    [_containerView setBackgroundColor:[UIColor colorWithWhite:0
+                                                         alpha:kShieldAlpha]];
+    [_containerView setOpaque:NO];
+    [_containerView setAlpha:0];
+    [_containerView setAccessibilityViewIsModal:YES];
+    _containerView.accessibilityIdentifier =
         kPageInfoViewAccessibilityIdentifier;
 
-    popupContainer_ = [[UIView alloc] initWithFrame:CGRectZero];
-    [popupContainer_ setBackgroundColor:[UIColor whiteColor]];
-    [popupContainer_ setClipsToBounds:YES];
-    [containerView_ addSubview:popupContainer_];
+    // Set up an invisible button that closes the popup.
+    _closeButton = [[UIButton alloc] init];
+    _closeButton.accessibilityLabel = l10n_util::GetNSString(IDS_DONE);
+    [_closeButton addTarget:dispatcher
+                     action:@selector(hidePageInfo)
+           forControlEvents:UIControlEventTouchDown];
+    [_containerView addSubview:_closeButton];
 
-    [self.popupContainer addSubview:scrollView_];
-    [scrollView_ addSubview:innerContainerView_];
-    [scrollView_ setAccessibilityIdentifier:@"Page Security Scroll View"];
+    _popupContainer = [[UIView alloc] initWithFrame:CGRectZero];
+    [_popupContainer setBackgroundColor:UIColor.cr_systemBackgroundColor];
+    [_popupContainer setClipsToBounds:YES];
+    _popupContainer.userInteractionEnabled = YES;
+    [_containerView addSubview:_popupContainer];
+
+    [self.popupContainer addSubview:_scrollView];
+    [_scrollView addSubview:_innerContainerView];
+    [_scrollView setAccessibilityIdentifier:@"Page Security Scroll View"];
     [provider presentPageInfoView:self.containerView];
     [self performLayout];
 
     [self animatePageInfoViewIn:sourcePoint];
     UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
-                                    containerView_);
+                                    _containerView);
   }
 
   return self;
@@ -287,11 +253,11 @@ void PageInfoModelBubbleBridge::PerformLayout() {
   // Keep the new subviews in an array that gets replaced at the end.
   NSMutableArray* subviews = [NSMutableArray array];
 
-  int sectionCount = model_->GetSectionCount();
+  int sectionCount = _model->GetSectionCount();
   PageInfoModel::ButtonAction action = PageInfoModel::BUTTON_NONE;
 
   for (int i = 0; i < sectionCount; i++) {
-    PageInfoModel::SectionInfo info = model_->GetSectionInfo(i);
+    PageInfoModel::SectionInfo info = _model->GetSectionInfo(i);
 
     if (action == PageInfoModel::BUTTON_NONE &&
         info.button != PageInfoModel::BUTTON_NONE) {
@@ -301,7 +267,7 @@ void PageInfoModelBubbleBridge::PerformLayout() {
     }
 
     // Only certain sections have images. This affects the X position.
-    BOOL hasImage = model_->GetIconImage(info.icon_id) != nil;
+    BOOL hasImage = _model->GetIconImage(info.icon_id) != nil;
     CGFloat xPosition = (hasImage ? kTextXPosition : kTextXPositionNoImage);
 
     // Insert the image subview for sections that are appropriate.
@@ -345,8 +311,8 @@ void PageInfoModelBubbleBridge::PerformLayout() {
 
   // Add the bottom padding.
   offset += kVerticalSpacing;
-  CGRect frame =
-      CGRectMake(kInitialFramePosition, origin_.y, viewWidth_, offset);
+  CGRect frame = CGRectMake(kInitialFramePosition, _arrowOriginPoint.y,
+                            _viewWidth, offset);
 
   // Increase the size of the frame by the amount used for drawing rounded
   // corners and shadow.
@@ -360,13 +326,13 @@ void PageInfoModelBubbleBridge::PerformLayout() {
     frame.size.height = [[self containerView] superview].bounds.size.height -
                         kFrameBottomPadding - frame.origin.y;
 
-    [scrollView_ setScrollEnabled:YES];
-    [scrollView_ flashScrollIndicators];
+    [_scrollView setScrollEnabled:YES];
+    [_scrollView flashScrollIndicators];
   } else {
-    [scrollView_ setScrollEnabled:NO];
+    [_scrollView setScrollEnabled:NO];
   }
 
-  CGRect containerBounds = [containerView_ bounds];
+  CGRect containerBounds = [_containerView bounds];
   CGRect popupFrame = frame;
   popupFrame.origin.x =
       CGRectGetMidX(containerBounds) - CGRectGetWidth(popupFrame) / 2.0;
@@ -377,34 +343,35 @@ void PageInfoModelBubbleBridge::PerformLayout() {
   CGRect innerFrame = CGRectMake(0, 0, popupFrame.size.width, offset);
 
   // If the initial animation has completed, animate the new frames.
-  if (animateInCompleted_) {
+  if (_displayAnimationCompleted) {
     [UIView cr_animateWithDuration:ios::material::kDuration3
                              delay:0
                              curve:ios::material::CurveEaseInOut
                            options:0
                         animations:^{
-                          [popupContainer_ setFrame:popupFrame];
-                          [scrollView_ setFrame:[popupContainer_ bounds]];
-                          [innerContainerView_ setFrame:innerFrame];
+                          [_popupContainer setFrame:popupFrame];
+                          [_scrollView setFrame:[_popupContainer bounds]];
+                          [_innerContainerView setFrame:innerFrame];
                         }
                         completion:nil];
   } else {
     // Popup hasn't finished animating in yet. Set frames immediately.
-    [popupContainer_ setFrame:popupFrame];
-    [scrollView_ setFrame:[popupContainer_ bounds]];
-    [innerContainerView_ setFrame:innerFrame];
+    [_popupContainer setFrame:popupFrame];
+    [_scrollView setFrame:[_popupContainer bounds]];
+    [_innerContainerView setFrame:innerFrame];
   }
 
-  for (UIView* view in [innerContainerView_ subviews]) {
+  for (UIView* view in [_innerContainerView subviews]) {
     [view removeFromSuperview];
   }
 
   for (UIView* view in subviews) {
-    [innerContainerView_ addSubview:view];
-    [innerContainerView_ setSubviewNeedsAdjustmentForRTL:view];
+    [_innerContainerView addSubview:view];
+    [_innerContainerView setSubviewNeedsAdjustmentForRTL:view];
   }
 
-  [scrollView_ setContentSize:innerContainerView_.frame.size];
+  [_scrollView setContentSize:_innerContainerView.frame.size];
+  _closeButton.frame = _containerView.bounds;
 }
 
 - (void)dismiss {
@@ -413,49 +380,158 @@ void PageInfoModelBubbleBridge::PerformLayout() {
                                   nil);
 }
 
+#pragma mark - internal
+
+- (BOOL)accessibilityPerformEscape {
+  [self.dispatcher hidePageInfo];
+  return YES;
+}
+
+- (void)animatePageInfoViewIn:(CGPoint)sourcePoint {
+  // Animate the info card itself.
+  CATransform3D scaleTransform = PageInfoAnimationScale();
+
+  CABasicAnimation* scaleAnimation =
+      [CABasicAnimation animationWithKeyPath:@"transform"];
+  [scaleAnimation setFromValue:[NSValue valueWithCATransform3D:scaleTransform]];
+
+  CABasicAnimation* positionAnimation =
+      [CABasicAnimation animationWithKeyPath:@"position"];
+  [positionAnimation setFromValue:[NSValue valueWithCGPoint:sourcePoint]];
+
+  CAAnimationGroup* sizeAnimation = [CAAnimationGroup animation];
+  [sizeAnimation setAnimations:@[ scaleAnimation, positionAnimation ]];
+  [sizeAnimation
+      setTimingFunction:TimingFunction(ios::material::CurveEaseInOut)];
+  [sizeAnimation setDuration:ios::material::kDuration3];
+
+  CABasicAnimation* fadeAnimation =
+      [CABasicAnimation animationWithKeyPath:@"opacity"];
+  [fadeAnimation setTimingFunction:TimingFunction(ios::material::CurveEaseOut)];
+  [fadeAnimation setDuration:ios::material::kDuration6];
+  [fadeAnimation setFromValue:@0];
+  [fadeAnimation setToValue:@1];
+
+  [[_popupContainer layer] addAnimation:fadeAnimation forKey:@"fade"];
+  [[_popupContainer layer] addAnimation:sizeAnimation forKey:@"size"];
+
+  // Animation the background grey overlay.
+  CABasicAnimation* overlayAnimation =
+      [CABasicAnimation animationWithKeyPath:@"opacity"];
+  [overlayAnimation
+      setTimingFunction:TimingFunction(ios::material::CurveEaseOut)];
+  [overlayAnimation setDuration:ios::material::kDuration3];
+  [overlayAnimation setFromValue:@0];
+  [overlayAnimation setToValue:@1];
+
+  [[_containerView layer] addAnimation:overlayAnimation forKey:@"fade"];
+  [_containerView setAlpha:1];
+
+  // Animate the contents of the info card.
+  CALayer* contentsLayer = [_innerContainerView layer];
+
+  CGRect startFrame = CGRectOffset([_innerContainerView frame], 0, -32);
+  CAAnimation* contentSlideAnimation = FrameAnimationMake(
+      contentsLayer, startFrame, [_innerContainerView frame]);
+  [contentSlideAnimation
+      setTimingFunction:TimingFunction(ios::material::CurveEaseOut)];
+  [contentSlideAnimation setDuration:ios::material::kDuration5];
+  contentSlideAnimation =
+      DelayedAnimationMake(contentSlideAnimation, ios::material::kDuration2);
+  [contentsLayer addAnimation:contentSlideAnimation forKey:@"slide"];
+
+  [CATransaction begin];
+  [CATransaction setCompletionBlock:^{
+    [_innerContainerView setAlpha:1];
+    _displayAnimationCompleted = YES;
+  }];
+  CAAnimation* contentFadeAnimation = OpacityAnimationMake(0.0, 1.0);
+  [contentFadeAnimation
+      setTimingFunction:TimingFunction(ios::material::CurveEaseOut)];
+  [contentFadeAnimation setDuration:ios::material::kDuration5];
+  contentFadeAnimation =
+      DelayedAnimationMake(contentFadeAnimation, ios::material::kDuration1);
+  [contentsLayer addAnimation:contentFadeAnimation forKey:@"fade"];
+  [CATransaction commit];
+
+  // Since the animations have delay on them, the alpha of the content view
+  // needs to be set to zero and then one after the animation starts. If these
+  // steps are not taken, there will be a visible flash/jump from the initial
+  // spot during the animation.
+  [_innerContainerView setAlpha:0];
+}
+
+- (void)animatePageInfoViewOut {
+  [CATransaction begin];
+  [CATransaction setCompletionBlock:^{
+    [self.containerView removeFromSuperview];
+  }];
+
+  CABasicAnimation* opacityAnimation =
+      [CABasicAnimation animationWithKeyPath:@"opacity"];
+  [opacityAnimation
+      setTimingFunction:TimingFunction(ios::material::CurveEaseIn)];
+  [opacityAnimation setDuration:ios::material::kDuration3];
+  [opacityAnimation setFromValue:@1];
+  [opacityAnimation setToValue:@0];
+  [[_containerView layer] addAnimation:opacityAnimation forKey:@"animateOut"];
+
+  [_popupContainer setAlpha:0];
+  [_containerView setAlpha:0];
+  [CATransaction commit];
+}
+
 #pragma mark - Helper methods to create subviews.
 
+// Adds the state image at a pre-determined x position and the given y. This
+// does not affect the next Y position because the image is placed next to
+// a text field that is larger and accounts for the image's size.
 - (void)addImageViewForInfo:(const PageInfoModel::SectionInfo&)info
                  toSubviews:(NSMutableArray*)subviews
                    atOffset:(CGFloat)offset {
   CGRect frame = CGRectMake(kFramePadding, offset, kImageSize, kImageSize);
   UIImageView* imageView = [[UIImageView alloc] initWithFrame:frame];
-  [imageView setImage:model_->GetIconImage(info.icon_id)->ToUIImage()];
+  imageView.tintColor = UIColor.cr_labelColor;
+  UIImage* image = [_model->GetIconImage(info.icon_id)->ToUIImage()
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  [imageView setImage:image];
   [subviews addObject:imageView];
 }
 
+// Adds the title text field at the given x,y position, and returns the y
+// position for the next element.
 - (CGFloat)addHeadlineViewForInfo:(const PageInfoModel::SectionInfo&)info
                        toSubviews:(NSMutableArray*)subviews
                           atPoint:(CGPoint)point {
-  CGRect frame = CGRectMake(point.x, point.y, textWidth_, kHeadlineHeight);
+  CGRect frame = CGRectMake(point.x, point.y, _textWidth, kHeadlineHeight);
   UILabel* label = [[UILabel alloc] initWithFrame:frame];
   [label setTextAlignment:NSTextAlignmentNatural];
   [label setText:base::SysUTF16ToNSString(info.headline)];
-  [label setTextColor:PageInfoTextColor()];
+  [label setTextColor:UIColor.cr_labelColor];
   [label setFont:PageInfoHeadlineFont()];
-  [label setBackgroundColor:[UIColor clearColor]];
   [label setFrame:frame];
   [label setLineBreakMode:NSLineBreakByTruncatingHead];
   [subviews addObject:label];
   return CGRectGetHeight(frame);
 }
 
+// Adds the description text field at the given x,y position, and returns the y
+// position for the next element.
 - (CGFloat)addDescriptionViewForInfo:(const PageInfoModel::SectionInfo&)info
                           toSubviews:(NSMutableArray*)subviews
                              atPoint:(CGPoint)point {
-  CGRect frame = CGRectMake(point.x, point.y, textWidth_, kImageSize);
+  CGRect frame = CGRectMake(point.x, point.y, _textWidth, kImageSize);
   UILabel* label = [[UILabel alloc] initWithFrame:frame];
   [label setTextAlignment:NSTextAlignmentNatural];
   NSString* description = base::SysUTF16ToNSString(info.description);
   UIFont* font = [MDCTypography captionFont];
-  [label setTextColor:PageInfoTextColor()];
+  [label setTextColor:UIColor.cr_labelColor];
   [label setText:description];
   [label setFont:font];
   [label setNumberOfLines:0];
-  [label setBackgroundColor:[UIColor clearColor]];
 
   // If the text is oversized, resize the text field.
-  CGSize constraintSize = CGSizeMake(textWidth_, CGFLOAT_MAX);
+  CGSize constraintSize = CGSizeMake(_textWidth, CGFLOAT_MAX);
   CGSize sizeToFit =
       [description cr_boundingSizeWithSize:constraintSize font:font];
   frame.size.height = sizeToFit.height;
@@ -464,6 +540,7 @@ void PageInfoModelBubbleBridge::PerformLayout() {
   return CGRectGetHeight(frame);
 }
 
+// Returns a button with title and action configured for |buttonAction|.
 - (UIButton*)buttonForAction:(PageInfoModel::ButtonAction)buttonAction {
   if (buttonAction == PageInfoModel::BUTTON_NONE) {
     return nil;
@@ -500,6 +577,8 @@ void PageInfoModelBubbleBridge::PerformLayout() {
   return button;
 }
 
+// Adds the the button |buttonAction| that explains the icons. Returns the y
+// position delta for the next offset.
 - (CGFloat)addButton:(PageInfoModel::ButtonAction)buttonAction
           toSubviews:(NSMutableArray*)subviews
             atOffset:(CGFloat)offset {
@@ -523,124 +602,14 @@ void PageInfoModelBubbleBridge::PerformLayout() {
 
   [button.titleLabel setFont:font];
   [button.titleLabel setTextAlignment:NSTextAlignmentLeft];
-  [button setTitleColor:PageInfoHelpButtonColor()
+  [button setTitleColor:[UIColor colorNamed:kBlueColor]
                forState:UIControlStateNormal];
-  [button setTitleColor:PageInfoHelpButtonColor()
+  [button setTitleColor:[UIColor colorNamed:kBlueColor]
                forState:UIControlStateSelected];
-  [button setBackgroundColor:[UIColor clearColor]];
 
   [subviews addObject:button];
 
   return CGRectGetHeight([button frame]);
-}
-
-#pragma mark - UIGestureRecognizerDelegate Implemenation
-
-- (void)rootViewTapped:(UIGestureRecognizer*)sender {
-  CGPoint pt = [sender locationInView:containerView_];
-  if (!CGRectContainsPoint([popupContainer_ frame], pt)) {
-    [self.dispatcher hidePageInfo];
-  }
-}
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
-       shouldReceiveTouch:(UITouch*)touch {
-  CGPoint pt = [touch locationInView:containerView_];
-  return !CGRectContainsPoint([popupContainer_ frame], pt);
-}
-
-- (void)animatePageInfoViewIn:(CGPoint)sourcePoint {
-  // Animate the info card itself.
-  CATransform3D scaleTransform = PageInfoAnimationScale();
-
-  CABasicAnimation* scaleAnimation =
-      [CABasicAnimation animationWithKeyPath:@"transform"];
-  [scaleAnimation setFromValue:[NSValue valueWithCATransform3D:scaleTransform]];
-
-  CABasicAnimation* positionAnimation =
-      [CABasicAnimation animationWithKeyPath:@"position"];
-  [positionAnimation setFromValue:[NSValue valueWithCGPoint:sourcePoint]];
-
-  CAAnimationGroup* sizeAnimation = [CAAnimationGroup animation];
-  [sizeAnimation setAnimations:@[ scaleAnimation, positionAnimation ]];
-  [sizeAnimation
-      setTimingFunction:TimingFunction(ios::material::CurveEaseInOut)];
-  [sizeAnimation setDuration:ios::material::kDuration3];
-
-  CABasicAnimation* fadeAnimation =
-      [CABasicAnimation animationWithKeyPath:@"opacity"];
-  [fadeAnimation setTimingFunction:TimingFunction(ios::material::CurveEaseOut)];
-  [fadeAnimation setDuration:ios::material::kDuration6];
-  [fadeAnimation setFromValue:@0];
-  [fadeAnimation setToValue:@1];
-
-  [[popupContainer_ layer] addAnimation:fadeAnimation forKey:@"fade"];
-  [[popupContainer_ layer] addAnimation:sizeAnimation forKey:@"size"];
-
-  // Animation the background grey overlay.
-  CABasicAnimation* overlayAnimation =
-      [CABasicAnimation animationWithKeyPath:@"opacity"];
-  [overlayAnimation
-      setTimingFunction:TimingFunction(ios::material::CurveEaseOut)];
-  [overlayAnimation setDuration:ios::material::kDuration3];
-  [overlayAnimation setFromValue:@0];
-  [overlayAnimation setToValue:@1];
-
-  [[containerView_ layer] addAnimation:overlayAnimation forKey:@"fade"];
-  [containerView_ setAlpha:1];
-
-  // Animate the contents of the info card.
-  CALayer* contentsLayer = [innerContainerView_ layer];
-
-  CGRect startFrame = CGRectOffset([innerContainerView_ frame], 0, -32);
-  CAAnimation* contentSlideAnimation = FrameAnimationMake(
-      contentsLayer, startFrame, [innerContainerView_ frame]);
-  [contentSlideAnimation
-      setTimingFunction:TimingFunction(ios::material::CurveEaseOut)];
-  [contentSlideAnimation setDuration:ios::material::kDuration5];
-  contentSlideAnimation =
-      DelayedAnimationMake(contentSlideAnimation, ios::material::kDuration2);
-  [contentsLayer addAnimation:contentSlideAnimation forKey:@"slide"];
-
-  [CATransaction begin];
-  [CATransaction setCompletionBlock:^{
-    [innerContainerView_ setAlpha:1];
-    animateInCompleted_ = YES;
-  }];
-  CAAnimation* contentFadeAnimation = OpacityAnimationMake(0.0, 1.0);
-  [contentFadeAnimation
-      setTimingFunction:TimingFunction(ios::material::CurveEaseOut)];
-  [contentFadeAnimation setDuration:ios::material::kDuration5];
-  contentFadeAnimation =
-      DelayedAnimationMake(contentFadeAnimation, ios::material::kDuration1);
-  [contentsLayer addAnimation:contentFadeAnimation forKey:@"fade"];
-  [CATransaction commit];
-
-  // Since the animations have delay on them, the alpha of the content view
-  // needs to be set to zero and then one after the animation starts. If these
-  // steps are not taken, there will be a visible flash/jump from the initial
-  // spot during the animation.
-  [innerContainerView_ setAlpha:0];
-}
-
-- (void)animatePageInfoViewOut {
-  [CATransaction begin];
-  [CATransaction setCompletionBlock:^{
-    [self.containerView removeFromSuperview];
-  }];
-
-  CABasicAnimation* opacityAnimation =
-      [CABasicAnimation animationWithKeyPath:@"opacity"];
-  [opacityAnimation
-      setTimingFunction:TimingFunction(ios::material::CurveEaseIn)];
-  [opacityAnimation setDuration:ios::material::kDuration3];
-  [opacityAnimation setFromValue:@1];
-  [opacityAnimation setToValue:@0];
-  [[containerView_ layer] addAnimation:opacityAnimation forKey:@"animateOut"];
-
-  [popupContainer_ setAlpha:0];
-  [containerView_ setAlpha:0];
-  [CATransaction commit];
 }
 
 @end

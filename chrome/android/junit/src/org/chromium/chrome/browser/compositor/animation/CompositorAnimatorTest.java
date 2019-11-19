@@ -21,12 +21,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
-import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
+import org.chromium.chrome.browser.compositor.layouts.MockLayoutUpdateHost;
 import org.chromium.chrome.browser.util.MathUtils;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Unit tests for the {@link CompositorAnimator} class.
@@ -38,46 +38,12 @@ import java.util.ArrayList;
         sdk = Build.VERSION_CODES.N_MR1)
 public final class CompositorAnimatorTest {
     /** A mock implementation of {@link LayoutUpdateHost} that tracks update requests. */
-    private static class MockLayoutUpdateHost implements LayoutUpdateHost {
+    private static class MockLayoutUpdateHostWithCallback extends MockLayoutUpdateHost {
         private final CallbackHelper mUpdateCallbackHelper = new CallbackHelper();
 
         @Override
         public void requestUpdate() {
             mUpdateCallbackHelper.notifyCalled();
-        }
-
-        @Override
-        public void startHiding(int nextTabId, boolean hintAtTabSelection) {}
-
-        @Override
-        public void doneHiding() {}
-
-        @Override
-        public void doneShowing() {}
-
-        @Override
-        public boolean isActiveLayout(Layout layout) {
-            return true;
-        }
-
-        @Override
-        public void initLayoutTabFromHost(final int tabId) {}
-
-        @Override
-        public LayoutTab createLayoutTab(int id, boolean incognito, boolean showCloseButton,
-                boolean isTitleNeeded, float maxContentWidth, float maxContentHeight) {
-            return null;
-        }
-
-        @Override
-        public void releaseTabLayout(int id) {}
-
-        @Override
-        public void releaseResourcesForTab(int tabId) {}
-
-        @Override
-        public CompositorAnimationHandler getAnimationHandler() {
-            return null;
         }
     }
 
@@ -116,7 +82,7 @@ public final class CompositorAnimatorTest {
     }
 
     /** A mock {@link LayoutUpdateHost} to track update requests. */
-    private MockLayoutUpdateHost mHost;
+    private MockLayoutUpdateHostWithCallback mHost;
 
     /** The handler that is responsible for managing all {@link CompositorAnimator}s. */
     private CompositorAnimationHandler mHandler;
@@ -130,12 +96,19 @@ public final class CompositorAnimatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mHost = new MockLayoutUpdateHost();
+        mHost = new MockLayoutUpdateHostWithCallback();
 
         mHandler = new CompositorAnimationHandler(mHost);
 
         mUpdateListener = new TestUpdateListener();
         mListener = new TestAnimatorListener();
+    }
+
+    @Test
+    public void testUnityScale() {
+        // Make sure the testing environment doesn't have ANIMATOR_DURATION_SCALE set to a value
+        // other than 1.
+        assertEquals(CompositorAnimator.sDurationScale, 1, 0);
     }
 
     @Test
@@ -246,6 +219,46 @@ public final class CompositorAnimatorTest {
         mHandler.pushUpdate(5);
 
         assertEquals("The animated value is incorrect.", 100, animator.getAnimatedValue(),
+                MathUtils.EPSILON);
+
+        assertEquals(
+                "There should be no active animations.", 0, mHandler.getActiveAnimationCount());
+    }
+
+    @Test
+    public void testAnimationDynamicValue() {
+        CompositorAnimator animator = new CompositorAnimator(mHandler);
+        animator.setDuration(10);
+        final AtomicInteger startValue = new AtomicInteger(50);
+        final AtomicInteger endValue = new AtomicInteger(100);
+
+        animator.setValues(startValue::floatValue, endValue::floatValue);
+        LinearInterpolator interpolator = new LinearInterpolator();
+        animator.setInterpolator(interpolator);
+
+        animator.start();
+
+        assertEquals("The animated value is incorrect.", 50, animator.getAnimatedValue(),
+                MathUtils.EPSILON);
+
+        mHandler.pushUpdate(5);
+
+        assertEquals("The animated value is incorrect.", 75, animator.getAnimatedValue(),
+                MathUtils.EPSILON);
+
+        startValue.set(0);
+        endValue.set(20);
+        assertEquals("The animated value is incorrect.", 10, animator.getAnimatedValue(),
+                MathUtils.EPSILON);
+
+        mHandler.pushUpdate(5);
+
+        assertEquals("The animated value is incorrect.", 20, animator.getAnimatedValue(),
+                MathUtils.EPSILON);
+
+        startValue.set(200);
+        endValue.set(300);
+        assertEquals("The animated value is incorrect.", 300, animator.getAnimatedValue(),
                 MathUtils.EPSILON);
 
         assertEquals(

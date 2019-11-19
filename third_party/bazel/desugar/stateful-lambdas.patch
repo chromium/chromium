@@ -1,0 +1,64 @@
+diff --git a/src/tools/android/java/com/google/devtools/build/android/desugar/LambdaClassFixer.java b/src/tools/android/java/com/google/devtools/build/android/desugar/LambdaClassFixer.java
+index ff3e351996..f857e61d1e 100644
+--- a/src/tools/android/java/com/google/devtools/build/android/desugar/LambdaClassFixer.java
++++ b/src/tools/android/java/com/google/devtools/build/android/desugar/LambdaClassFixer.java
+@@ -93,7 +93,7 @@ class LambdaClassFixer extends ClassVisitor {
+     checkArgument(BitFlags.noneSet(access, Opcodes.ACC_INTERFACE), "Not a class: %s", name);
+     checkState(this.originalInternalName == null, "not intended for reuse but reused for %s", name);
+     originalInternalName = name;
+-    hasState = false;
++    hasState = true;
+     hasFactory = false;
+     desc = null;
+     this.signature = null;
+@@ -136,7 +136,7 @@ class LambdaClassFixer extends ClassVisitor {
+     } else if ("<init>".equals(name)) {
+       this.desc = desc;
+       this.signature = signature;
+-      if (!lambdaInfo.needFactory() && !desc.startsWith("()")) {
++      if (!lambdaInfo.needFactory()) {
+         access &= ~Opcodes.ACC_PRIVATE; // make constructor accessible if we'll call it directly
+       }
+     }
+@@ -156,10 +156,6 @@ class LambdaClassFixer extends ClassVisitor {
+ 
+   @Override
+   public void visitEnd() {
+-    checkState(
+-        !hasState || hasFactory,
+-        "Expected factory method for capturing lambda %s",
+-        getInternalName());
+     if (!hasState) {
+       checkState(
+           signature == null,
+diff --git a/src/tools/android/java/com/google/devtools/build/android/desugar/LambdaDesugaring.java b/src/tools/android/java/com/google/devtools/build/android/desugar/LambdaDesugaring.java
+index 8f90d25ff5..f5ed6d524a 100644
+--- a/src/tools/android/java/com/google/devtools/build/android/desugar/LambdaDesugaring.java
++++ b/src/tools/android/java/com/google/devtools/build/android/desugar/LambdaDesugaring.java
+@@ -423,8 +423,7 @@ class LambdaDesugaring extends ClassVisitor {
+         String lambdaClassName = internalName + "$$Lambda$" + (lambdaCount++);
+         Type[] capturedTypes = Type.getArgumentTypes(desc);
+         boolean needFactory =
+-            capturedTypes.length != 0
+-                && !attemptAllocationBeforeArgumentLoads(lambdaClassName, capturedTypes);
++                !attemptAllocationBeforeArgumentLoads(lambdaClassName, capturedTypes);
+         lambdas.generateLambdaClass(
+             internalName,
+             LambdaInfo.create(
+@@ -435,7 +434,7 @@ class LambdaDesugaring extends ClassVisitor {
+                 bridgeInfo.bridgeMethod()),
+             bsmMethod,
+             args);
+-        if (desc.startsWith("()")) {
++        if (false) {
+           // For stateless lambda classes we'll generate a singleton instance that we can just load
+           checkState(capturedTypes.length == 0);
+           super.visitFieldInsn(
+@@ -493,7 +492,6 @@ class LambdaDesugaring extends ClassVisitor {
+      * @return {@code true} if we were able to insert a new/dup, {@code false} otherwise
+      */
+     private boolean attemptAllocationBeforeArgumentLoads(String internalName, Type[] paramTypes) {
+-      checkArgument(paramTypes.length > 0, "Expected at least one param for %s", internalName);
+       // Walk backwards past loads corresponding to constructor arguments to find the instruction
+       // after which we need to insert our NEW/DUP pair
+       AbstractInsnNode insn = instructions.getLast();

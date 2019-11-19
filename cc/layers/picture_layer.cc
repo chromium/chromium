@@ -17,8 +17,6 @@
 #include "cc/trees/transform_node.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
-static constexpr int kMaxNumberOfSlowPathsBeforeReporting = 5;
-
 namespace cc {
 
 PictureLayer::PictureLayerInputs::PictureLayerInputs() = default;
@@ -30,9 +28,7 @@ scoped_refptr<PictureLayer> PictureLayer::Create(ContentLayerClient* client) {
 }
 
 PictureLayer::PictureLayer(ContentLayerClient* client)
-    : instrumentation_object_tracker_(id()),
-      update_source_frame_number_(-1),
-      mask_type_(LayerMaskType::NOT_MASK) {
+    : instrumentation_object_tracker_(id()), update_source_frame_number_(-1) {
   picture_layer_inputs_.client = client;
 }
 
@@ -46,25 +42,26 @@ PictureLayer::~PictureLayer() = default;
 
 std::unique_ptr<LayerImpl> PictureLayer::CreateLayerImpl(
     LayerTreeImpl* tree_impl) {
-  return PictureLayerImpl::Create(tree_impl, id(), mask_type_);
+  return PictureLayerImpl::Create(tree_impl, id());
 }
 
 void PictureLayer::PushPropertiesTo(LayerImpl* base_layer) {
   // TODO(enne): http://crbug.com/918126 debugging
   CHECK(this);
 
+  PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(base_layer);
+
   Layer::PushPropertiesTo(base_layer);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "PictureLayer::PushPropertiesTo");
-  PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(base_layer);
-  layer_impl->SetLayerMaskType(mask_type());
   DropRecordingSourceContentIfInvalid();
 
   layer_impl->SetNearestNeighbor(picture_layer_inputs_.nearest_neighbor);
   layer_impl->SetUseTransformedRasterization(
       ShouldUseTransformedRasterization());
   layer_impl->set_gpu_raster_max_texture_size(
-      layer_tree_host()->device_viewport_size());
+      layer_tree_host()->device_viewport_rect().size());
+  layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
 
   // TODO(enne): http://crbug.com/918126 debugging
   CHECK(this);
@@ -82,7 +79,7 @@ void PictureLayer::PushPropertiesTo(LayerImpl* base_layer) {
   }
 
   layer_impl->UpdateRasterSource(recording_source_->CreateRasterSource(),
-                                 &last_updated_invalidation_, nullptr);
+                                 &last_updated_invalidation_, nullptr, nullptr);
   DCHECK(last_updated_invalidation_.IsEmpty());
 }
 
@@ -91,10 +88,6 @@ void PictureLayer::SetLayerTreeHost(LayerTreeHost* host) {
 
   if (!host)
     return;
-
-  if (!host->GetSettings().enable_mask_tiling &&
-      mask_type_ == LayerMaskType::MULTI_TEXTURE_MASK)
-    mask_type_ = LayerMaskType::SINGLE_TEXTURE_MASK;
 
   if (!recording_source_)
     recording_source_.reset(new RecordingSource);
@@ -154,7 +147,7 @@ bool PictureLayer::Update() {
         layer_tree_host()->recording_scale_factor());
 
     SetNeedsPushProperties();
-    paint_count_++;
+    IncreasePaintCount();
   } else {
     // If this invalidation did not affect the recording source, then it can be
     // cleared as an optimization.
@@ -162,15 +155,6 @@ bool PictureLayer::Update() {
   }
 
   return updated;
-}
-
-void PictureLayer::SetLayerMaskType(LayerMaskType mask_type) {
-  // We do not allow converting SINGLE_TEXTURE_MASK to MULTI_TEXTURE_MASK in
-  // order to avoid rerastering when a mask's transform is being animated.
-  if (mask_type_ == LayerMaskType::SINGLE_TEXTURE_MASK &&
-      mask_type == LayerMaskType::MULTI_TEXTURE_MASK)
-    return;
-  mask_type_ = mask_type;
 }
 
 sk_sp<SkPicture> PictureLayer::GetPicture() const {
@@ -203,22 +187,6 @@ sk_sp<SkPicture> PictureLayer::GetPicture() const {
   return raster_source->GetFlattenedPicture();
 }
 
-bool PictureLayer::HasSlowPaths() const {
-  // The display list needs to be created (see: UpdateAndExpandInvalidation)
-  // before checking for slow paths. There are cases where an update will not
-  // create a display list (e.g., if the size is empty). We return false in
-  // these cases because the slow paths bit sticks true.
-  return picture_layer_inputs_.display_list &&
-         picture_layer_inputs_.display_list->NumSlowPaths() >
-             kMaxNumberOfSlowPathsBeforeReporting;
-}
-
-bool PictureLayer::HasNonAAPaint() const {
-  // We return false by default, as this bit sticks true.
-  return picture_layer_inputs_.display_list &&
-         picture_layer_inputs_.display_list->HasNonAAPaint();
-}
-
 void PictureLayer::ClearClient() {
   picture_layer_inputs_.client = nullptr;
   UpdateDrawsContent(HasDrawableContent());
@@ -244,17 +212,29 @@ bool PictureLayer::HasDrawableContent() const {
   return picture_layer_inputs_.client && Layer::HasDrawableContent();
 }
 
+void PictureLayer::SetIsBackdropFilterMask(bool is_backdrop_filter_mask) {
+  if (picture_layer_inputs_.is_backdrop_filter_mask == is_backdrop_filter_mask)
+    return;
+
+  picture_layer_inputs_.is_backdrop_filter_mask = is_backdrop_filter_mask;
+  SetNeedsCommit();
+}
+
 void PictureLayer::RunMicroBenchmark(MicroBenchmark* benchmark) {
   benchmark->RunOnLayer(this);
 }
 
 void PictureLayer::CaptureContent(const gfx::Rect& rect,
-                                  std::vector<NodeHolder>* content) {
+                                  std::vector<NodeId>* content) {
   if (!DrawsContent())
     return;
 
   const DisplayItemList* display_item_list = GetDisplayItemList();
   if (!display_item_list)
+    return;
+
+  // We could run into this situation as CaptureContent could start at any time.
+  if (transform_tree_index() == TransformTree::kInvalidNodeId)
     return;
 
   gfx::Transform inverse_screen_space_transform;

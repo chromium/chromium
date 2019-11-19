@@ -4,6 +4,12 @@
 
 #include "content/public/renderer/window_features_converter.h"
 
+// This converter only converts WebWindowFeatures members
+// which should be used across process boundaries.
+// All the members of WebWindowFeatures are listed in web_window_features.h,
+// and classified to two groups, one is transferred by this converter
+// and one is not.
+
 namespace content {
 
 blink::mojom::WindowFeaturesPtr ConvertWebWindowFeaturesToMojoWindowFeatures(

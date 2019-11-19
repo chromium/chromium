@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Sandboxed Cross-Origin-Opener-Policy popup should result in a network error assert_unreached: A COOP popup was created from a sandboxed frame Reached unreachable code
+Harness: the test ran to completion.
+

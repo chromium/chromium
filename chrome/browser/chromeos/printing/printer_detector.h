@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/callback.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
 
@@ -23,7 +24,7 @@ namespace chromeos {
 // an up-to-date list of the printers detected is this:
 //
 // auto detector_ = PrinterDetectorImplementation::Create();
-// detector_->AddObserver(this);
+// detector_->RegisterPrintersFoundCallback(cb);
 // printers_ = detector_->GetPrinters();
 //
 class CHROMEOS_EXPORT PrinterDetector {
@@ -37,28 +38,12 @@ class CHROMEOS_EXPORT PrinterDetector {
     PrinterSearchData ppd_search_data;
   };
 
-  class Observer {
-   public:
-    virtual ~Observer() = default;
-
-    // Called with a collection of printers as they are discovered.  On each
-    // call |printers| is the full set of known printers; it is not
-    // incremental; printers may be added or removed.
-    //
-    // To avoid race conditions of printer state changes, you should register
-    // your Observer and call PrinterDetector::GetPrinters() to populate the
-    // initial state in the same sequenced atom.
-    virtual void OnPrintersFound(
-        const std::vector<DetectedPrinter>& printers) = 0;
-  };
+  using OnPrintersFoundCallback = base::RepeatingCallback<void(
+      const std::vector<DetectedPrinter>& printers)>;
 
   virtual ~PrinterDetector() = default;
 
-  // Observer management.  Observer callbacks will be performed on the calling
-  // sequence, but observers do not need to be on the same sequence as each
-  // other or the detector.
-  virtual void AddObserver(Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
+  virtual void RegisterPrintersFoundCallback(OnPrintersFoundCallback cb) = 0;
 
   // Get the current list of known printers.
   virtual std::vector<DetectedPrinter> GetPrinters() = 0;

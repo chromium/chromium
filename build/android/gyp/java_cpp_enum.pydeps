@@ -4,4 +4,5 @@
 java_cpp_enum.py
 util/__init__.py
 util/build_utils.py
+util/java_cpp_utils.py
 util/md5_check.py

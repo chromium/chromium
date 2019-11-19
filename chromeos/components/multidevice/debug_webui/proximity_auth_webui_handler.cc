@@ -26,7 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace chromeos {
 
@@ -79,6 +79,7 @@ std::unique_ptr<base::DictionaryValue> LogMessageToDictionary(
 const char kExternalDevicePublicKey[] = "publicKey";
 const char kExternalDevicePublicKeyTruncated[] = "publicKeyTruncated";
 const char kExternalDeviceFriendlyName[] = "friendlyDeviceName";
+const char kExternalDeviceNoPiiName[] = "noPiiName";
 const char kExternalDeviceUnlockKey[] = "unlockKey";
 const char kExternalDeviceMobileHotspot[] = "hasMobileHotspot";
 const char kExternalDeviceConnectionStatus[] = "connectionStatus";
@@ -138,8 +139,7 @@ ProximityAuthWebUIHandler::ProximityAuthWebUIHandler(
     secure_channel::SecureChannelClient* secure_channel_client)
     : device_sync_client_(device_sync_client),
       secure_channel_client_(secure_channel_client),
-      web_contents_initialized_(false),
-      weak_ptr_factory_(this) {}
+      web_contents_initialized_(false) {}
 
 ProximityAuthWebUIHandler::~ProximityAuthWebUIHandler() {
   multidevice::LogBuffer::GetInstance()->RemoveObserver(this);
@@ -327,9 +327,15 @@ void ProximityAuthWebUIHandler::GetLocalState(const base::ListValue* args) {
 
 std::unique_ptr<base::Value>
 ProximityAuthWebUIHandler::GetTruncatedLocalDeviceId() {
-  return std::make_unique<base::Value>(
-      device_sync_client_->GetLocalDeviceMetadata()
-          ->GetTruncatedDeviceIdForLogs());
+  base::Optional<multidevice::RemoteDeviceRef> local_device_metadata =
+      device_sync_client_->GetLocalDeviceMetadata();
+
+  std::string device_id =
+      local_device_metadata
+          ? local_device_metadata->GetTruncatedDeviceIdForLogs()
+          : "Missing Device ID";
+
+  return std::make_unique<base::Value>(device_id);
 }
 
 std::unique_ptr<base::ListValue>
@@ -376,6 +382,8 @@ ProximityAuthWebUIHandler::RemoteDeviceToDictionary(
   dictionary->SetString(kExternalDevicePublicKeyTruncated,
                         remote_device.GetTruncatedDeviceIdForLogs());
   dictionary->SetString(kExternalDeviceFriendlyName, remote_device.name());
+  dictionary->SetString(kExternalDeviceNoPiiName,
+                        remote_device.pii_free_name());
   dictionary->SetBoolean(kExternalDeviceUnlockKey,
                          remote_device.GetSoftwareFeatureState(
                              multidevice::SoftwareFeature::kSmartLockHost) ==
@@ -485,8 +493,7 @@ void ProximityAuthWebUIHandler::OnForceSyncNow(bool success) {
 void ProximityAuthWebUIHandler::OnSetSoftwareFeatureState(
     const std::string public_key,
     device_sync::mojom::NetworkRequestResult result_code) {
-  std::string device_id =
-      multidevice::RemoteDeviceRef::GenerateDeviceId(public_key);
+  std::string device_id = RemoteDevice::GenerateDeviceId(public_key);
 
   if (result_code == device_sync::mojom::NetworkRequestResult::kSuccess) {
     PA_LOG(VERBOSE) << "Successfully set SoftwareFeature state for device: "

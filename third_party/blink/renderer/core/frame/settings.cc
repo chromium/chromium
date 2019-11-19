@@ -30,7 +30,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 
 namespace blink {
 
@@ -64,10 +64,6 @@ static const bool kDefaultSelectTrailingWhitespaceEnabled = false;
 Settings::Settings()
     : text_autosizing_enabled_(false) SETTINGS_INITIALIZER_LIST {}
 
-std::unique_ptr<Settings> Settings::Create() {
-  return base::WrapUnique(new Settings);
-}
-
 SETTINGS_SETTER_BODIES
 
 void Settings::SetDelegate(SettingsDelegate* delegate) {
@@ -98,25 +94,12 @@ void Settings::SetTextAutosizingWindowSizeOverride(
   Invalidate(SettingsDelegate::kTextAutosizingChange);
 }
 
-void Settings::SetMockScrollbarsEnabled(bool flag) {
-  ScrollbarTheme::SetMockScrollbarsEnabled(flag);
-}
-
-bool Settings::MockScrollbarsEnabled() {
-  return ScrollbarTheme::MockScrollbarsEnabled();
-}
-
 void Settings::SetForceDarkModeEnabled(bool enabled) {
   if (force_dark_mode_ == enabled)
     return;
   force_dark_mode_ = enabled;
-
-  if (force_dark_mode_) {
-    SetHighContrastMode(HighContrastMode::kInvertLightness);
-    SetHighContrastImagePolicy(HighContrastImagePolicy::kFilterSmart);
-  } else {
-    SetHighContrastMode(HighContrastMode::kOff);
-  }
+  SetDarkModeEnabled(force_dark_mode_);
+  Invalidate(SettingsDelegate::kColorSchemeChange);
 }
 
 }  // namespace blink

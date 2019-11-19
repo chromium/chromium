@@ -8,17 +8,20 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "media/audio/audio_debug_recording_test.h"
 #include "media/audio/mock_audio_debug_recording_manager.h"
 #include "media/audio/mock_audio_manager.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/cpp/debug_recording_session.h"
 #include "services/audio/public/mojom/debug_recording.mojom.h"
 #include "services/audio/traced_service_ref.h"
 #include "services/service_manager/public/cpp/service_keepalive.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using testing::_;
+    using testing::_;
 using testing::Exactly;
 
 namespace audio {
@@ -35,9 +38,10 @@ void FileCreated(base::File file) {}
 
 class MockFileProvider : public mojom::DebugRecordingFileProvider {
  public:
-  MockFileProvider(mojom::DebugRecordingFileProviderRequest request,
-                   const base::FilePath& file_name_base)
-      : binding_(this, std::move(request)) {}
+  MockFileProvider(
+      mojo::PendingReceiver<mojom::DebugRecordingFileProvider> receiver,
+      const base::FilePath& file_name_base)
+      : receiver_(this, std::move(receiver)) {}
 
   MOCK_METHOD2(DoCreateWavFile,
                void(media::AudioDebugRecordingStreamType stream_type,
@@ -50,7 +54,7 @@ class MockFileProvider : public mojom::DebugRecordingFileProvider {
   }
 
  private:
-  mojo::Binding<mojom::DebugRecordingFileProvider> binding_;
+  mojo::Receiver<mojom::DebugRecordingFileProvider> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(MockFileProvider);
 };
@@ -75,8 +79,10 @@ class DebugRecordingTest : public media::AudioDebugRecordingTest,
   MOCK_METHOD0(OnNoServiceRefs, void());
 
   void CreateDebugRecording() {
+    if (remote_debug_recording_)
+      remote_debug_recording_.reset();
     debug_recording_ = std::make_unique<DebugRecording>(
-        mojo::MakeRequest(&debug_recording_ptr_),
+        remote_debug_recording_.BindNewPipeAndPassReceiver(),
         static_cast<media::AudioManager*>(mock_audio_manager_.get()),
         TracedServiceRef(service_keepalive_.CreateRef(),
                          "audio::DebugRecording Binding"));
@@ -84,17 +90,17 @@ class DebugRecordingTest : public media::AudioDebugRecordingTest,
   }
 
   void EnableDebugRecording() {
-    mojom::DebugRecordingFileProviderPtr file_provider_ptr;
+    mojo::PendingRemote<mojom::DebugRecordingFileProvider> remote_file_provider;
     DebugRecordingSession::DebugRecordingFileProvider file_provider(
-        mojo::MakeRequest(&file_provider_ptr), base::FilePath(kBaseFileName));
-    ASSERT_TRUE(file_provider_ptr.is_bound());
-    debug_recording_ptr_->Enable(std::move(file_provider_ptr));
+        remote_file_provider.InitWithNewPipeAndPassReceiver(),
+        base::FilePath(kBaseFileName));
+    remote_debug_recording_->Enable(std::move(remote_file_provider));
     EXPECT_FALSE(service_keepalive_.HasNoRefs());
   }
 
   void DestroyDebugRecording() {
-    debug_recording_ptr_.reset();
-    scoped_task_environment_.RunUntilIdle();
+    remote_debug_recording_.reset();
+    task_environment_.RunUntilIdle();
     EXPECT_TRUE(service_keepalive_.HasNoRefs());
   }
 
@@ -102,7 +108,7 @@ class DebugRecordingTest : public media::AudioDebugRecordingTest,
   void OnIdleTimeout() override { OnNoServiceRefs(); }
 
   std::unique_ptr<DebugRecording> debug_recording_;
-  mojom::DebugRecordingPtr debug_recording_ptr_;
+  mojo::Remote<mojom::DebugRecording> remote_debug_recording_;
   service_manager::ServiceKeepalive service_keepalive_;
 
  private:
@@ -132,13 +138,14 @@ TEST_F(DebugRecordingTest, CreateWavFileCallsFileProviderCreateWavFile) {
   EXPECT_CALL(*this, OnNoServiceRefs()).Times(Exactly(1));
   CreateDebugRecording();
 
-  mojom::DebugRecordingFileProviderPtr file_provider_ptr;
-  MockFileProvider mock_file_provider(mojo::MakeRequest(&file_provider_ptr),
-                                      base::FilePath(kBaseFileName));
+  mojo::PendingRemote<mojom::DebugRecordingFileProvider> remote_file_provider;
+  MockFileProvider mock_file_provider(
+      remote_file_provider.InitWithNewPipeAndPassReceiver(),
+      base::FilePath(kBaseFileName));
 
   EXPECT_CALL(*mock_debug_recording_manager_, EnableDebugRecording(_));
-  debug_recording_ptr_->Enable(std::move(file_provider_ptr));
-  scoped_task_environment_.RunUntilIdle();
+  remote_debug_recording_->Enable(std::move(remote_file_provider));
+  task_environment_.RunUntilIdle();
 
   const int id = 1;
   EXPECT_CALL(
@@ -146,7 +153,7 @@ TEST_F(DebugRecordingTest, CreateWavFileCallsFileProviderCreateWavFile) {
       DoCreateWavFile(media::AudioDebugRecordingStreamType::kInput, id));
   debug_recording_->CreateWavFile(media::AudioDebugRecordingStreamType::kInput,
                                   id, base::BindOnce(&FileCreated));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_CALL(*mock_debug_recording_manager_, DisableDebugRecording());
   DestroyDebugRecording();

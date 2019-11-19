@@ -12,7 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "components/visitedlink/common/visitedlink.mojom.h"
 #include "components/visitedlink/common/visitedlink_common.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace visitedlink {
 
@@ -24,7 +25,8 @@ class VisitedLinkSlave : public VisitedLinkCommon,
   VisitedLinkSlave();
   ~VisitedLinkSlave() override;
 
-  base::Callback<void(mojom::VisitedLinkNotificationSinkRequest)>
+  base::Callback<
+      void(mojo::PendingReceiver<mojom::VisitedLinkNotificationSink>)>
   GetBindCallback();
 
   // mojom::VisitedLinkNotificationSink overrides.
@@ -37,13 +39,13 @@ class VisitedLinkSlave : public VisitedLinkCommon,
  private:
   void FreeTable();
 
-  void Bind(mojom::VisitedLinkNotificationSinkRequest request);
+  void Bind(mojo::PendingReceiver<mojom::VisitedLinkNotificationSink> receiver);
 
   base::ReadOnlySharedMemoryMapping table_mapping_;
 
-  mojo::Binding<mojom::VisitedLinkNotificationSink> binding_;
+  mojo::Receiver<mojom::VisitedLinkNotificationSink> receiver_{this};
 
-  base::WeakPtrFactory<VisitedLinkSlave> weak_factory_;
+  base::WeakPtrFactory<VisitedLinkSlave> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VisitedLinkSlave);
 };

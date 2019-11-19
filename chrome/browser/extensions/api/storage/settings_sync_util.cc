@@ -4,12 +4,14 @@
 
 #include "chrome/browser/extensions/api/storage/settings_sync_util.h"
 
+#include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/storage/sync_value_store_cache.h"
 #include "components/sync/protocol/app_setting_specifics.pb.h"
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
 
@@ -18,6 +20,15 @@ namespace extensions {
 namespace settings_sync_util {
 
 namespace {
+
+base::WeakPtr<syncer::SyncableService> GetSyncableServiceOnBackendSequence(
+    base::WeakPtr<SyncValueStoreCache> sync_cache,
+    syncer::ModelType type) {
+  DCHECK(IsOnBackendSequence());
+  if (!sync_cache)
+    return nullptr;
+  return sync_cache->GetSyncableService(type)->AsWeakPtr();
+}
 
 void PopulateExtensionSettingSpecifics(
     const std::string& extension_id,
@@ -108,14 +119,23 @@ syncer::SyncChange CreateDelete(
       CreateData(extension_id, key, no_value, type));
 }
 
-syncer::SyncableService* GetSyncableService(content::BrowserContext* context,
-                                            syncer::ModelType type) {
-  DCHECK(IsOnBackendSequence());
+base::OnceCallback<base::WeakPtr<syncer::SyncableService>()>
+GetSyncableServiceProvider(content::BrowserContext* context,
+                           syncer::ModelType type) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(context);
   DCHECK(type == syncer::APP_SETTINGS || type == syncer::EXTENSION_SETTINGS);
   StorageFrontend* frontend = StorageFrontend::Get(context);
+  // StorageFrontend can be null in tests.
+  if (!frontend) {
+    return base::BindOnce(
+        []() { return base::WeakPtr<syncer::SyncableService>(); });
+  }
   SyncValueStoreCache* sync_cache = static_cast<SyncValueStoreCache*>(
       frontend->GetValueStoreCache(settings_namespace::SYNC));
-  return sync_cache->GetSyncableService(type);
+  DCHECK(sync_cache);
+  return base::BindOnce(&GetSyncableServiceOnBackendSequence,
+                        sync_cache->AsWeakPtr(), type);
 }
 
 }  // namespace settings_sync_util

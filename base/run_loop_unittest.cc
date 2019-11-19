@@ -19,7 +19,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -152,7 +152,7 @@ class TestBoundDelegate final : public InjectableTestDelegate {
   }
 
  private:
-  void Run(bool application_tasks_allowed) override {
+  void Run(bool application_tasks_allowed, TimeDelta timeout) override {
     if (nested_run_allowing_tasks_incoming_) {
       EXPECT_TRUE(RunLoop::IsNestedOnCurrentThread());
       EXPECT_TRUE(application_tasks_allowed);
@@ -195,7 +195,7 @@ class TestBoundDelegate final : public InjectableTestDelegate {
 };
 
 enum class RunLoopTestType {
-  // Runs all RunLoopTests under a ScopedTaskEnvironment to make sure real world
+  // Runs all RunLoopTests under a TaskEnvironment to make sure real world
   // scenarios work.
   kRealEnvironment,
 
@@ -211,7 +211,7 @@ class RunLoopTestEnvironment {
   RunLoopTestEnvironment(RunLoopTestType type) {
     switch (type) {
       case RunLoopTestType::kRealEnvironment: {
-        task_environment_ = std::make_unique<test::ScopedTaskEnvironment>();
+        task_environment_ = std::make_unique<test::TaskEnvironment>();
         break;
       }
       case RunLoopTestType::kTestDelegate: {
@@ -225,7 +225,7 @@ class RunLoopTestEnvironment {
 
  private:
   // Instantiates one or the other based on the RunLoopTestType.
-  std::unique_ptr<test::ScopedTaskEnvironment> task_environment_;
+  std::unique_ptr<test::TaskEnvironment> task_environment_;
   std::unique_ptr<InjectableTestDelegate> test_delegate_;
 };
 
@@ -286,7 +286,7 @@ TEST_P(RunLoopTest, QuitWhenIdleClosure) {
 // Verify that the QuitWhenIdleClosure() can run after the RunLoop has been
 // deleted. It should have no effect.
 TEST_P(RunLoopTest, QuitWhenIdleClosureAfterRunLoopScope) {
-  Closure quit_when_idle_closure;
+  RepeatingClosure quit_when_idle_closure;
   {
     RunLoop run_loop;
     quit_when_idle_closure = run_loop.QuitWhenIdleClosure();
@@ -496,7 +496,7 @@ TEST_P(RunLoopTest, NestingObservers) {
 
   RunLoop::AddNestingObserverOnCurrentThread(&nesting_observer);
 
-  const RepeatingClosure run_nested_loop = Bind([]() {
+  const RepeatingClosure run_nested_loop = BindRepeating([]() {
     RunLoop nested_run_loop(RunLoop::Type::kNestableTasksAllowed);
     ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                             nested_run_loop.QuitClosure());
@@ -549,7 +549,7 @@ INSTANTIATE_TEST_SUITE_P(Mock,
                          testing::Values(RunLoopTestType::kTestDelegate));
 
 TEST(ScopedRunTimeoutForTestTest, TimesOut) {
-  test::ScopedTaskEnvironment task_environment;
+  test::TaskEnvironment task_environment;
   RunLoop run_loop;
 
   static constexpr auto kArbitraryTimeout =
@@ -574,7 +574,7 @@ TEST(ScopedRunTimeoutForTestTest, TimesOut) {
 }
 
 TEST(ScopedRunTimeoutForTestTest, RunTasksUntilTimeout) {
-  test::ScopedTaskEnvironment task_environment;
+  test::TaskEnvironment task_environment;
   RunLoop run_loop;
 
   static constexpr auto kArbitraryTimeout =

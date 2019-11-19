@@ -41,7 +41,7 @@ void SetLastChooseEntryDirectory(ExtensionPrefs* prefs,
 
 }  // namespace file_system_api
 
-class FileSystemGetDisplayPathFunction : public UIThreadExtensionFunction {
+class FileSystemGetDisplayPathFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystem.getDisplayPath",
                              FILESYSTEM_GETDISPLAYPATH)
@@ -51,7 +51,7 @@ class FileSystemGetDisplayPathFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class FileSystemEntryFunction : public UIThreadExtensionFunction {
+class FileSystemEntryFunction : public ExtensionFunction {
  protected:
   FileSystemEntryFunction();
 
@@ -104,7 +104,7 @@ class FileSystemGetWritableEntryFunction : public FileSystemEntryFunction {
   base::FilePath path_;
 };
 
-class FileSystemIsWritableEntryFunction : public UIThreadExtensionFunction {
+class FileSystemIsWritableEntryFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystem.isWritableEntry",
                              FILESYSTEM_ISWRITABLEENTRY)
@@ -180,7 +180,7 @@ class FileSystemChooseEntryFunction : public FileSystemEntryFunction {
   base::FilePath initial_path_;
 };
 
-class FileSystemRetainEntryFunction : public UIThreadExtensionFunction {
+class FileSystemRetainEntryFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystem.retainEntry", FILESYSTEM_RETAINENTRY)
 
@@ -198,7 +198,7 @@ class FileSystemRetainEntryFunction : public UIThreadExtensionFunction {
                        std::unique_ptr<base::File::Info> file_info);
 };
 
-class FileSystemIsRestorableFunction : public UIThreadExtensionFunction {
+class FileSystemIsRestorableFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystem.isRestorable", FILESYSTEM_ISRESTORABLE)
 
@@ -218,7 +218,7 @@ class FileSystemRestoreEntryFunction : public FileSystemEntryFunction {
 
 #if !defined(OS_CHROMEOS)
 // Stub for non Chrome OS operating systems.
-class FileSystemRequestFileSystemFunction : public UIThreadExtensionFunction {
+class FileSystemRequestFileSystemFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystem.requestFileSystem",
                              FILESYSTEM_REQUESTFILESYSTEM)
@@ -226,12 +226,12 @@ class FileSystemRequestFileSystemFunction : public UIThreadExtensionFunction {
  protected:
   ~FileSystemRequestFileSystemFunction() override {}
 
-  // UIThreadExtensionFunction overrides.
+  // ExtensionFunction overrides.
   ExtensionFunction::ResponseAction Run() override;
 };
 
 // Stub for non Chrome OS operating systems.
-class FileSystemGetVolumeListFunction : public UIThreadExtensionFunction {
+class FileSystemGetVolumeListFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystem.getVolumeList",
                              FILESYSTEM_GETVOLUMELIST)
@@ -239,13 +239,13 @@ class FileSystemGetVolumeListFunction : public UIThreadExtensionFunction {
  protected:
   ~FileSystemGetVolumeListFunction() override {}
 
-  // UIThreadExtensionFunction overrides.
+  // ExtensionFunction overrides.
   ExtensionFunction::ResponseAction Run() override;
 };
 
 #else
 // Requests a file system for the specified volume id.
-class FileSystemRequestFileSystemFunction : public UIThreadExtensionFunction {
+class FileSystemRequestFileSystemFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystem.requestFileSystem",
                              FILESYSTEM_REQUESTFILESYSTEM)
@@ -254,7 +254,7 @@ class FileSystemRequestFileSystemFunction : public UIThreadExtensionFunction {
  protected:
   ~FileSystemRequestFileSystemFunction() override;
 
-  // UIThreadExtensionFunction overrides.
+  // ExtensionFunction overrides.
   ExtensionFunction::ResponseAction Run() override;
 
  private:
@@ -265,7 +265,7 @@ class FileSystemRequestFileSystemFunction : public UIThreadExtensionFunction {
 };
 
 // Requests a list of available volumes.
-class FileSystemGetVolumeListFunction : public UIThreadExtensionFunction {
+class FileSystemGetVolumeListFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystem.getVolumeList",
                              FILESYSTEM_GETVOLUMELIST)
@@ -274,7 +274,7 @@ class FileSystemGetVolumeListFunction : public UIThreadExtensionFunction {
  protected:
   ~FileSystemGetVolumeListFunction() override;
 
-  // UIThreadExtensionFunction overrides.
+  // ExtensionFunction overrides.
   ExtensionFunction::ResponseAction Run() override;
 
  private:

@@ -28,6 +28,12 @@ enum AccessibilityExpanded {
   kExpandedExpanded,
 };
 
+enum AccessibilityGrabbedState {
+  kGrabbedStateUndefined = 0,
+  kGrabbedStateFalse,
+  kGrabbedStateTrue,
+};
+
 enum AccessibilitySelectedState {
   kSelectedStateUndefined = 0,
   kSelectedStateFalse,
@@ -36,6 +42,18 @@ enum AccessibilitySelectedState {
 
 enum class AXBoolAttribute {
   kAriaBusy,
+};
+
+enum class AXIntAttribute {
+  kAriaColumnCount,
+  kAriaRowCount,
+};
+
+enum class AXUIntAttribute {
+  kAriaColumnIndex,
+  kAriaColumnSpan,
+  kAriaRowIndex,
+  kAriaRowSpan,
 };
 
 enum class AXStringAttribute {

@@ -12,11 +12,11 @@
 #include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "url/gurl.h"
 
 class SearchTermsData;
-class TemplateURLService;
 
 // A helper class that watches for changes to the base URL of the default search
 // engine. Typically this changes when a different DSE is selected. For Google,
@@ -48,7 +48,8 @@ class SearchEngineBaseURLTracker : public TemplateURLServiceObserver {
   std::unique_ptr<SearchTermsData> search_terms_data_;
   BaseURLChangedCallback base_url_changed_callback_;
 
-  ScopedObserver<TemplateURLService, TemplateURLServiceObserver> observer_;
+  ScopedObserver<TemplateURLService, TemplateURLServiceObserver> observer_{
+      this};
 
   // Used to check whether notifications from TemplateURLService indicate a
   // change that affects the default search provider.

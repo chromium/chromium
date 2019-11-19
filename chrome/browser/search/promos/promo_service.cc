@@ -8,94 +8,132 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/extension_checkup.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/ntp_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/google/core/browser/google_url_tracker.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
-#include "content/public/common/service_manager_connection.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "content/public/browser/system_connector.h"
+#include "extensions/common/extension_features.h"
 #include "net/base/load_flags.h"
+#include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/safe_json_parser.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// The number of days until a blocklist entry expires.
+const int kDaysThatBlocklistExpiresIn = 28;
 
 const char kNewTabPromosApiPath[] = "/async/newtab_promos";
 
 const char kXSSIResponsePreamble[] = ")]}'";
 
-// Parses an update proto from |value|. Will return base::nullopt if |value|
-// is not of the form: {"update":{"promos":{"log_url":"","middle":""}}}
-// Resolves the log_url against the base_url to form a valid GURL.
-base::Optional<PromoData> JsonToPromoData(const base::Value& value,
-                                          const GURL& base_url) {
+bool CanBlockPromos() {
+  return base::FeatureList::IsEnabled(ntp_features::kDismissPromos);
+}
+
+GURL GetGoogleBaseUrl() {
+  GURL google_base_url = google_util::CommandLineGoogleBaseURL();
+  if (!google_base_url.is_valid()) {
+    google_base_url = GURL(google_util::kGoogleHomepageURL);
+  }
+  return google_base_url;
+}
+
+GURL GetApiUrl() {
+  return GetGoogleBaseUrl().Resolve(kNewTabPromosApiPath);
+}
+
+// Parses an update proto from |value|. Will return false if |value| is not of
+// the form: {"update":{"promos":{"middle": ""}}}, and true otherwise.
+// Additionally, there can be a "log_url" or "id" field in the promo. Those are
+// populated if found. They're not set for emergency promos. |data| will never
+// be base::nullopt if top level dictionary keys of "update" and "promos" are
+// present. Note: the "log_url" (if found), is resolved against
+// GetGoogleBaseUrl() to form a valid GURL.
+bool JsonToPromoData(const base::Value& value,
+                     base::Optional<PromoData>* data) {
+  *data = base::nullopt;
+
   const base::DictionaryValue* dict = nullptr;
   if (!value.GetAsDictionary(&dict)) {
     DVLOG(1) << "Parse error: top-level dictionary not found";
-    return base::nullopt;
+    return false;
   }
 
   const base::DictionaryValue* update = nullptr;
   if (!dict->GetDictionary("update", &update)) {
     DVLOG(1) << "Parse error: no update";
-    return base::nullopt;
+    return false;
   }
 
   const base::DictionaryValue* promos = nullptr;
   if (!update->GetDictionary("promos", &promos)) {
     DVLOG(1) << "Parse error: no promos";
-    return base::nullopt;
-  }
-
-  std::string middle = std::string();
-  if (!promos->GetString("middle", &middle)) {
-    DVLOG(1) << "No middle promo";
-    return base::nullopt;
+    return false;
   }
 
   PromoData result;
-  result.promo_html = middle;
+  *data = result;
 
-  std::string log_url = std::string();
-  if (!promos->GetString("log_url", &log_url)) {
-    DVLOG(1) << "No promo log_url";
-    return base::nullopt;
+  std::string middle;
+  if (!promos->GetString("middle", &middle)) {
+    DVLOG(1) << "No middle promo";
+    return false;
   }
 
-  GURL promo_log_url = base_url.Resolve(log_url);
-  result.promo_log_url = promo_log_url;
+  std::string log_url;
+  // Emergency promos don't have these, so it's OK if this key is missing.
+  promos->GetString("log_url", &log_url);
 
-  return result;
+  GURL promo_log_url;
+  if (!log_url.empty())
+    promo_log_url = GetGoogleBaseUrl().Resolve(log_url);
+
+  std::string promo_id;
+  if (CanBlockPromos()) {
+    if (!promos->GetString("id", &promo_id))
+      net::GetValueForKeyInQuery(promo_log_url, "id", &promo_id);
+  }
+
+  // Emergency promos may not have IDs, which is OK. They also can't be
+  // dismissed (because of this).
+
+  result.promo_html = middle;
+  result.promo_log_url = promo_log_url;
+  result.promo_id = promo_id;
+
+  *data = result;
+
+  return true;
 }
 
 }  // namespace
 
 PromoService::PromoService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    GoogleURLTracker* google_url_tracker)
-    : url_loader_factory_(url_loader_factory),
-      google_url_tracker_(google_url_tracker),
-      weak_ptr_factory_(this) {}
+    Profile* profile)
+    : url_loader_factory_(url_loader_factory), profile_(profile) {}
 
 PromoService::~PromoService() = default;
 
-GURL PromoService::GetGoogleBaseUrl() const {
-  GURL google_base_url = google_util::CommandLineGoogleBaseURL();
-  if (!google_base_url.is_valid()) {
-    google_base_url = google_url_tracker_->google_url();
-  }
-
-  return google_base_url;
-}
-
-GURL PromoService::GetApiUrl() const {
-  GURL api_url = GetGoogleBaseUrl().Resolve(kNewTabPromosApiPath);
-
-  return api_url;
-}
-
 void PromoService::Refresh() {
+  if (extensions::ShouldShowExtensionsCheckupPromo(profile_)) {
+    ServeExtensionCheckupPromo();
+    return;
+  }
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("promo_service", R"(
         semantics {
@@ -122,7 +160,8 @@ void PromoService::Refresh() {
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GetApiUrl();
-  resource_request->load_flags = net::LOAD_DO_NOT_SEND_AUTH_DATA;
+  resource_request->request_initiator =
+      url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
 
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     traffic_annotation);
@@ -130,6 +169,30 @@ void PromoService::Refresh() {
       url_loader_factory_.get(),
       base::BindOnce(&PromoService::OnLoadDone, base::Unretained(this)),
       1024 * 1024);
+}
+
+void PromoService::ServeExtensionCheckupPromo() {
+  const int checkup_message = base::GetFieldTrialParamByFeatureAsInt(
+      extensions_features::kExtensionsCheckupTool,
+      extensions_features::kExtensionsCheckupToolBannerMessageParameter, 2);
+  PromoData checkup_promo;
+  int promo_idr = -1;
+  switch (static_cast<extensions::CheckupMessage>(checkup_message)) {
+    case extensions::CheckupMessage::PERFORMANCE:
+      promo_idr = IDS_EXTENSIONS_PROMO_PERFORMANCE;
+      break;
+    case extensions::CheckupMessage::PRIVACY:
+      promo_idr = IDS_EXTENSIONS_PROMO_PRIVACY;
+      break;
+    default:
+      promo_idr = IDS_EXTENSIONS_PROMO_NEUTRAL;
+      break;
+  }
+  std::string promo_message = l10n_util::GetStringUTF8(promo_idr);
+  std::string promo_html = base::StrCat({"<div>", promo_message, "</div>"});
+  checkup_promo.promo_html = promo_html;
+  checkup_promo.can_open_privileged_links = true;
+  PromoDataLoaded(Status::OK_WITH_PROMO, checkup_promo);
 }
 
 void PromoService::OnLoadDone(std::unique_ptr<std::string> response_body) {
@@ -150,25 +213,32 @@ void PromoService::OnLoadDone(std::unique_ptr<std::string> response_body) {
     response = response.substr(strlen(kXSSIResponsePreamble));
   }
 
-  data_decoder::SafeJsonParser::Parse(
-      content::ServiceManagerConnection::GetForProcess()->GetConnector(),
-      response,
-      base::BindRepeating(&PromoService::OnJsonParsed,
-                          weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&PromoService::OnJsonParseFailed,
-                          weak_ptr_factory_.GetWeakPtr()));
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      response, base::BindOnce(&PromoService::OnJsonParsed,
+                               weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PromoService::OnJsonParsed(std::unique_ptr<base::Value> value) {
-  const GURL google_base_url = GetGoogleBaseUrl();
-  base::Optional<PromoData> result = JsonToPromoData(*value, google_base_url);
-  PromoDataLoaded(result.has_value() ? Status::OK : Status::FATAL_ERROR,
-                  result);
-}
+void PromoService::OnJsonParsed(
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.value) {
+    DVLOG(1) << "Parsing JSON failed: " << *result.error;
+    PromoDataLoaded(Status::FATAL_ERROR, base::nullopt);
+    return;
+  }
 
-void PromoService::OnJsonParseFailed(const std::string& message) {
-  DVLOG(1) << "Parsing JSON failed: " << message;
-  PromoDataLoaded(Status::FATAL_ERROR, base::nullopt);
+  base::Optional<PromoData> data;
+  PromoService::Status status;
+
+  if (JsonToPromoData(*result.value, &data)) {
+    bool is_blocked = IsBlockedAfterClearingExpired(data->promo_id);
+    if (is_blocked)
+      data = PromoData();
+    status = is_blocked ? Status::OK_BUT_BLOCKED : Status::OK_WITH_PROMO;
+  } else {
+    status = data ? Status::OK_WITHOUT_PROMO : Status::FATAL_ERROR;
+  }
+
+  PromoDataLoaded(status, data);
 }
 
 void PromoService::Shutdown() {
@@ -179,12 +249,35 @@ void PromoService::Shutdown() {
   DCHECK(!observers_.might_have_observers());
 }
 
+// static
+void PromoService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(prefs::kNtpPromoBlocklist);
+}
+
 void PromoService::AddObserver(PromoServiceObserver* observer) {
   observers_.AddObserver(observer);
 }
 
 void PromoService::RemoveObserver(PromoServiceObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void PromoService::BlocklistPromo(const std::string& promo_id) {
+  if (!CanBlockPromos() || promo_id.empty() ||
+      IsBlockedAfterClearingExpired(promo_id)) {
+    return;
+  }
+
+  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kNtpPromoBlocklist);
+  double now = base::Time::Now().ToDeltaSinceWindowsEpoch().InSecondsF();
+  update->SetDoubleKey(promo_id, now);
+
+  if (promo_data_ && promo_data_->promo_id == promo_id) {
+    promo_data_ = PromoData();
+    promo_status_ = Status::OK_BUT_BLOCKED;
+    NotifyObservers();
+    // TODO(crbug.com/1003508): hide promos on existing, already-opened NTPs.
+  }
 }
 
 void PromoService::PromoDataLoaded(Status status,
@@ -202,6 +295,38 @@ void PromoService::NotifyObservers() {
   for (auto& observer : observers_) {
     observer.OnPromoDataUpdated();
   }
+}
+
+bool PromoService::IsBlockedAfterClearingExpired(
+    const std::string& promo_id) const {
+  if (promo_id.empty() || !CanBlockPromos())
+    return false;
+
+  auto expired_delta = base::TimeDelta::FromDays(kDaysThatBlocklistExpiresIn);
+  auto expired_time = base::Time::Now() - expired_delta;
+  double expired = expired_time.ToDeltaSinceWindowsEpoch().InSecondsF();
+
+  bool found = false;
+
+  std::vector<std::string> expired_ids;
+
+  for (const auto& blocked : profile_->GetPrefs()
+                                 ->GetDictionary(prefs::kNtpPromoBlocklist)
+                                 ->DictItems()) {
+    if (!blocked.second.is_double() || blocked.second.GetDouble() < expired)
+      expired_ids.emplace_back(blocked.first);
+    else if (!found && blocked.first == promo_id)
+      found = true;  // Don't break; keep clearing expired prefs.
+  }
+
+  if (!expired_ids.empty()) {
+    DictionaryPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kNtpPromoBlocklist);
+    for (const std::string& key : expired_ids)
+      update->RemoveKey(key);
+  }
+
+  return found;
 }
 
 GURL PromoService::GetLoadURLForTesting() const {

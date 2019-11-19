@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test that NFCWriter.push succeeds when message is DOMString. promise_test: Unhandled rejection with value: object "ReferenceError: NFCWriter is not defined"
-Harness: the test ran to completion.
-

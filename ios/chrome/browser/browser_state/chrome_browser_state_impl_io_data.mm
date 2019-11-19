@@ -24,20 +24,20 @@
 #include "ios/chrome/browser/chrome_constants.h"
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
 #include "ios/chrome/browser/net/cookie_util.h"
-#include "ios/chrome/browser/net/http_server_properties_manager_factory.h"
+#include "ios/chrome/browser/net/http_server_properties_factory.h"
 #include "ios/chrome/browser/net/ios_chrome_network_delegate.h"
 #include "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/net/cookies/cookie_store_ios.h"
 #import "ios/net/cookies/ns_http_system_cookie_store.h"
 #import "ios/net/cookies/system_cookie_store.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "net/base/cache_type.h"
 #include "net/cookies/cookie_store.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
-#include "net/http/http_server_properties_manager.h"
+#include "net/http/http_server_properties.h"
 #include "net/url_request/url_request_intercepting_job_factory.h"
 #include "net/url_request/url_request_job_factory_impl.h"
 
@@ -97,28 +97,6 @@ ChromeBrowserStateImplIOData::Handle::CreateMainRequestContextGetter(
   return main_request_context_getter_;
 }
 
-scoped_refptr<IOSChromeURLRequestContextGetter>
-ChromeBrowserStateImplIOData::Handle::CreateIsolatedAppRequestContextGetter(
-    const base::FilePath& partition_path) const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  // Check that the partition_path is not the same as the base profile path. We
-  // expect isolated partition, which will never go to the default profile path.
-  CHECK(partition_path != browser_state_->GetStatePath());
-  LazyInitialize();
-
-  // Keep a map of request context getters, one per requested storage partition.
-  IOSChromeURLRequestContextGetterMap::iterator iter =
-      app_request_context_getter_map_.find(partition_path);
-  if (iter != app_request_context_getter_map_.end())
-    return iter->second;
-
-  IOSChromeURLRequestContextGetter* context =
-      IOSChromeURLRequestContextGetter::CreateForIsolatedApp(
-          browser_state_->GetRequestContext(), io_data_, partition_path);
-  app_request_context_getter_map_[partition_path] = context;
-  return context;
-}
-
 ChromeBrowserStateIOData* ChromeBrowserStateImplIOData::Handle::io_data()
     const {
   LazyInitialize();
@@ -131,7 +109,7 @@ void ChromeBrowserStateImplIOData::Handle::ClearNetworkingHistorySince(
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   LazyInitialize();
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {web::WebThread::IO},
       base::BindOnce(
           &ChromeBrowserStateImplIOData::ClearNetworkingHistorySinceOnIOThread,
@@ -186,8 +164,9 @@ void ChromeBrowserStateImplIOData::InitializeInternal(
       profile_path_.Append(kIOSChromeNetworkPersistentStateFilename));
   network_json_store_ = new JsonPrefStore(
       network_json_store_filepath, std::unique_ptr<PrefFilter>(),
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
   network_json_store_->ReadPrefsAsync(nullptr);
 
@@ -198,8 +177,9 @@ void ChromeBrowserStateImplIOData::InitializeInternal(
 
   ApplyProfileParamsToContext(main_context);
 
-  set_http_server_properties(HttpServerPropertiesManagerFactory::CreateManager(
-      network_json_store_, io_thread->net_log()));
+  set_http_server_properties(
+      HttpServerPropertiesFactory::CreateHttpServerProperties(
+          network_json_store_, io_thread->net_log()));
 
   main_context->set_transport_security_state(transport_security_state());
 
@@ -246,71 +226,12 @@ void ChromeBrowserStateImplIOData::InitializeInternal(
                                              std::move(main_backend));
   main_context->set_http_transaction_factory(main_http_factory_.get());
 
-  std::unique_ptr<net::URLRequestJobFactoryImpl> main_job_factory(
-      new net::URLRequestJobFactoryImpl());
-  InstallProtocolHandlers(main_job_factory.get(), protocol_handlers);
+  main_job_factory_ = std::make_unique<net::URLRequestJobFactoryImpl>();
+  InstallProtocolHandlers(main_job_factory_.get(), protocol_handlers);
 
-  main_job_factory_ = SetUpJobFactoryDefaults(std::move(main_job_factory),
-                                              main_context->network_delegate());
   main_context->set_job_factory(main_job_factory_.get());
 
   lazy_params_.reset();
-}
-
-ChromeBrowserStateIOData::AppRequestContext*
-ChromeBrowserStateImplIOData::InitializeAppRequestContext(
-    net::URLRequestContext* main_context) const {
-  // Copy most state from the main context.
-  AppRequestContext* context = new AppRequestContext();
-  context->CopyFrom(main_context);
-
-  // Build a new HttpNetworkSession.
-  net::HttpNetworkSession::Context session_context =
-      http_network_session_->context();
-  std::unique_ptr<net::HttpNetworkSession> http_network_session(
-      new net::HttpNetworkSession(http_network_session_->params(),
-                                  session_context));
-
-  // Use a separate HTTP disk cache for isolated apps.
-  std::unique_ptr<net::HttpCache::BackendFactory> app_backend =
-      net::HttpCache::DefaultBackend::InMemory(0);
-  std::unique_ptr<net::HttpCache> app_http_cache =
-      CreateHttpFactory(http_network_session.get(), std::move(app_backend));
-
-  cookie_util::CookieStoreConfig ios_cookie_config(
-      base::FilePath(),
-      cookie_util::CookieStoreConfig::EPHEMERAL_SESSION_COOKIES,
-      cookie_util::CookieStoreConfig::COOKIE_STORE_IOS, nullptr);
-  // TODO(crbug.com/779106): Check if cookiestore type should be changed.
-  std::unique_ptr<net::CookieStore> cookie_store =
-      cookie_util::CreateCookieStore(
-          ios_cookie_config, std::make_unique<net::NSHTTPSystemCookieStore>(),
-          main_context->net_log());
-
-  // Transfer ownership of the HttpNetworkSession, cookies, and
-  // cache to AppRequestContext.
-  context->SetHttpNetworkSession(std::move(http_network_session));
-  context->SetCookieStore(std::move(cookie_store));
-  context->SetHttpTransactionFactory(std::move(app_http_cache));
-
-  std::unique_ptr<net::URLRequestJobFactoryImpl> job_factory(
-      new net::URLRequestJobFactoryImpl());
-  std::unique_ptr<net::URLRequestJobFactory> top_job_factory(
-      SetUpJobFactoryDefaults(std::move(job_factory),
-                              main_context->network_delegate()));
-  context->SetJobFactory(std::move(top_job_factory));
-
-  return context;
-}
-
-ChromeBrowserStateIOData::AppRequestContext*
-ChromeBrowserStateImplIOData::AcquireIsolatedAppRequestContext(
-    net::URLRequestContext* main_context) const {
-  // We create per-app contexts on demand, unlike the others above.
-  AppRequestContext* app_request_context =
-      InitializeAppRequestContext(main_context);
-  DCHECK(app_request_context);
-  return app_request_context;
 }
 
 void ChromeBrowserStateImplIOData::ClearNetworkingHistorySinceOnIOThread(
@@ -320,9 +241,12 @@ void ChromeBrowserStateImplIOData::ClearNetworkingHistorySinceOnIOThread(
   DCHECK(initialized());
   DCHECK(transport_security_state());
   auto barrier = base::BarrierClosure(
-      2, base::BindOnce(base::IgnoreResult(&base::PostTaskWithTraits),
-                        FROM_HERE, base::TaskTraits(web::WebThread::UI),
-                        std::move(completion)));
+      2, base::BindOnce(
+             [](base::Closure completion) {
+               base::PostTask(FROM_HERE, base::TaskTraits(web::WebThread::UI),
+                              std::move(completion));
+             },
+             std::move(completion)));
 
   transport_security_state()->DeleteAllDynamicDataSince(time, barrier);
   http_server_properties()->Clear(barrier);

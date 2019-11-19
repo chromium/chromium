@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.preferences.privacy;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.text.TextUtilsCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
@@ -25,7 +25,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTab;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.browser.preferences.Preferences;
 import org.chromium.chrome.browser.profiles.Profile;
 
@@ -86,7 +85,7 @@ public class ClearBrowsingDataTabsFragment extends Fragment {
         TabLayout tabLayout = view.findViewById(R.id.clear_browsing_data_tabs);
         tabLayout.setupWithViewPager(viewPager);
         int tabIndex = adjustIndexForDirectionality(
-                PrefServiceBridge.getInstance().getLastSelectedClearBrowsingDataTab());
+                BrowsingDataBridge.getInstance().getLastSelectedClearBrowsingDataTab());
         TabLayout.Tab tab = tabLayout.getTabAt(tabIndex);
         if (tab != null) {
             tab.select();
@@ -160,7 +159,7 @@ public class ClearBrowsingDataTabsFragment extends Fragment {
         @Override
         public void onTabSelected(TabLayout.Tab tab) {
             int tabIndex = adjustIndexForDirectionality(tab.getPosition());
-            PrefServiceBridge.getInstance().setLastSelectedClearBrowsingDataTab(tabIndex);
+            BrowsingDataBridge.getInstance().setLastSelectedClearBrowsingDataTab(tabIndex);
             if (tabIndex == ClearBrowsingDataTab.BASIC) {
                 RecordUserAction.record("ClearBrowsingData_SwitchTo_BasicTab");
             } else {
@@ -188,9 +187,9 @@ public class ClearBrowsingDataTabsFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            HelpAndFeedback.getInstance(getActivity())
-                    .show(getActivity(), getString(R.string.help_context_clear_browsing_data),
-                            Profile.getLastUsedProfile(), null);
+            HelpAndFeedback.getInstance().show(getActivity(),
+                    getString(R.string.help_context_clear_browsing_data),
+                    Profile.getLastUsedProfile(), null);
             return true;
         }
         return false;

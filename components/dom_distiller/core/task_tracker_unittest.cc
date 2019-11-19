@@ -8,15 +8,15 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/dom_distiller/core/article_distillation_update.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/distilled_content_store.h"
 #include "components/dom_distiller/core/fake_distiller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::Return;
 using testing::_;
+using testing::Return;
 
 namespace dom_distiller {
 namespace test {
@@ -69,16 +69,14 @@ class DomDistillerTaskTrackerTest : public testing::Test {
 
   ArticleEntry GetDefaultEntry() {
     ArticleEntry entry;
-    entry.set_entry_id(entry_id_);
-    ArticleEntryPage* page0 = entry.add_pages();
-    ArticleEntryPage* page1 = entry.add_pages();
-    page0->set_url(page_0_url_.spec());
-    page1->set_url(page_1_url_.spec());
+    entry.entry_id = entry_id_;
+    entry.pages.push_back(page_0_url_);
+    entry.pages.push_back(page_1_url_);
     return entry;
   }
 
  protected:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::string entry_id_;
   GURL page_0_url_;
   GURL page_1_url_;
@@ -219,10 +217,10 @@ TEST_F(DomDistillerTaskTrackerTest,
 DistilledArticleProto CreateDistilledArticleForEntry(
     const ArticleEntry& entry) {
   DistilledArticleProto article;
-  for (int i = 0; i < entry.pages_size(); ++i) {
+  for (const GURL& url : entry.pages) {
     DistilledPageProto* page = article.add_pages();
-    page->set_url(entry.pages(i).url());
-    page->set_html("<div>" + entry.pages(i).url() + "</div>");
+    page->set_url(url.spec());
+    page->set_html("<div>" + url.spec() + "</div>");
   }
   return article;
 }
@@ -235,8 +233,8 @@ TEST_F(DomDistillerTaskTrackerTest, TestBlobFetcher) {
   content_store.InjectContent(entry_with_blob, stored_distilled_article);
   TestCancelCallback cancel_callback;
 
-  TaskTracker task_tracker(
-      entry_with_blob, cancel_callback.GetCallback(), &content_store);
+  TaskTracker task_tracker(entry_with_blob, cancel_callback.GetCallback(),
+                           &content_store);
 
   FakeViewRequestDelegate viewer_delegate;
   std::unique_ptr<ViewerHandle> handle(
@@ -269,8 +267,8 @@ TEST_F(DomDistillerTaskTrackerTest, TestBlobFetcherFinishesFirst) {
   InMemoryContentStore content_store(kDefaultMaxNumCachedEntries);
   content_store.InjectContent(entry_with_blob, stored_distilled_article);
   TestCancelCallback cancel_callback;
-  TaskTracker task_tracker(
-      entry_with_blob, cancel_callback.GetCallback(), &content_store);
+  TaskTracker task_tracker(entry_with_blob, cancel_callback.GetCallback(),
+                           &content_store);
 
   FakeViewRequestDelegate viewer_delegate;
   std::unique_ptr<ViewerHandle> handle(
@@ -311,8 +309,8 @@ TEST_F(DomDistillerTaskTrackerTest, TestBlobFetcherWithoutBlob) {
       new DistilledArticleProto(CreateDistilledArticleForEntry(entry)));
 
   TestCancelCallback cancel_callback;
-  TaskTracker task_tracker(
-      GetDefaultEntry(), cancel_callback.GetCallback(), &content_store);
+  TaskTracker task_tracker(GetDefaultEntry(), cancel_callback.GetCallback(),
+                           &content_store);
 
   FakeViewRequestDelegate viewer_delegate;
   std::unique_ptr<ViewerHandle> handle(
@@ -345,8 +343,8 @@ TEST_F(DomDistillerTaskTrackerTest, TestDistillerFailsFirst) {
   MockContentStore content_store;
 
   TestCancelCallback cancel_callback;
-  TaskTracker task_tracker(
-      GetDefaultEntry(), cancel_callback.GetCallback(), &content_store);
+  TaskTracker task_tracker(GetDefaultEntry(), cancel_callback.GetCallback(),
+                           &content_store);
 
   FakeViewRequestDelegate viewer_delegate;
   std::unique_ptr<ViewerHandle> handle(
@@ -386,8 +384,8 @@ TEST_F(DomDistillerTaskTrackerTest, ContentIsSaved) {
 
   MockContentStore content_store;
   TestCancelCallback cancel_callback;
-  TaskTracker task_tracker(
-      GetDefaultEntry(), cancel_callback.GetCallback(), &content_store);
+  TaskTracker task_tracker(GetDefaultEntry(), cancel_callback.GetCallback(),
+                           &content_store);
 
   FakeViewRequestDelegate viewer_delegate;
   std::unique_ptr<ViewerHandle> handle(

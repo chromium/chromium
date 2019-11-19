@@ -63,6 +63,12 @@ class LeScanManager {
 
   virtual void ClearScanResults() = 0;
 
+  virtual void PauseScan() {}
+
+  virtual void RestartScan() {}
+
+  virtual void SetScanParameters(int scan_interval_ms, int scan_window_ms) {}
+
  protected:
   LeScanManager() = default;
   virtual ~LeScanManager() = default;

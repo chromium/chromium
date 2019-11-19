@@ -61,7 +61,9 @@ group("nacl") {
   if (target_cpu != "arm") {
     data_deps += [ ":partly_invalid($newlib)" ]
   }
-  if (target_cpu != "mipsel") {
+  if (target_cpu != "mipsel" && !is_mac) {
+    # GlibC tools are not available for MIPS
+    # The GlibC toolchain is based on gcc, which no longer runs on mac
     glibc = "//build/toolchain/nacl:glibc_${target_cpu}"
     data_deps += [
       ":exit_status_test($glibc)",
@@ -612,6 +614,10 @@ if (is_linux && is_clang) {
     # Do not use any sanitizers or coverage tools, which require a few symbols.
     configs -= [ "//build/config/sanitizers:default_sanitizer_flags" ]
     configs -= [ "//build/config/coverage:default_coverage" ]
+
+    # Disable default_init_stack_vars because it inserts memset() calls, but
+    # memset() is not available in this libc-free context.
+    configs -= [ "//build/config/compiler:default_init_stack_vars" ]
     configs += [ ":nonsfi_libc_free_nexe_config" ]
   }
 

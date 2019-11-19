@@ -4,6 +4,8 @@
 
 module content.mojom;
 
+import "url/mojom/origin.mojom";
+
 // This interface is being developed to support Web Platform Tests for Web
 // Bluetooth.
 // https://docs.google.com/document/d/1Nhv_oVDCodd1pEH_jj9k8gF4rPGb_84VYaZ9IG8M_WY
@@ -24,34 +26,36 @@ module content.mojom;
 // Indicates the types of Bluetooth chooser events.
 enum ChooserEventType {
   CHOOSER_OPENED,
-  SCAN_STARTED,
-  DEVICE_UPDATE,
+  CHOOSER_CLOSED,
   ADAPTER_REMOVED,
   ADAPTER_DISABLED,
   ADAPTER_ENABLED,
   DISCOVERY_FAILED_TO_START,
   DISCOVERING,
   DISCOVERY_IDLE,
-  ADD_DEVICE,
+  ADD_OR_UPDATE_DEVICE,
 };
 
 // FakeBluetoothChooser allows clients to control the global state of the
 // Bluetooth chooser during a web test.
 interface FakeBluetoothChooser {
-  // Waits until at least |num_of_events| have been recorded before returning
-  // |num_of_events| FakeBluetoothChooserEvents.
-  WaitForEvents(
-      uint32 num_of_events) => (array<FakeBluetoothChooserEvent> events);
-
   // Simulates a user selecting the given |peripheral_address| in the Bluetooth
   // chooser.
-  SelectPeripheral(string peripheral_address) => ();
+  SelectPeripheral(string peripheral_address);
 
   // Calls the event handler function with the CANCELLED event.
-  Cancel() => ();
+  Cancel();
 
   // Calls the event handler function with the RESCAN event.
-  Rescan() => ();
+  Rescan();
+};
+
+// FakeBluetoothChooserFactory ensures that FakeBluetoothChoosers are created
+// with an associated FakeBluetoothChooserClient.
+interface FakeBluetoothChooserFactory {
+  CreateFakeBluetoothChooser(
+      pending_receiver<FakeBluetoothChooser> fake_chooser,
+      pending_associated_remote<FakeBluetoothChooserClient> client);
 };
 
 // FakeBluetoothChooserEvent describes the type of chooser event that has been
@@ -61,8 +65,13 @@ struct FakeBluetoothChooserEvent {
 
   // Describes the origin the chooser is currently displaying.
   // This field will be used by the |CHOOSER_OPENED| event type.
-  string? origin;
+  url.mojom.Origin? origin;
 
   // Describes the MAC address of the Bluetooth device.
   string? peripheral_address;
+};
+
+// Classes that implement this interface will be notified of chooser events.
+interface FakeBluetoothChooserClient {
+  OnEvent(FakeBluetoothChooserEvent event);
 };

@@ -15,6 +15,8 @@
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/info_map.h"
+#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
 namespace chromecast {
@@ -26,34 +28,34 @@ class CastExtensionURLLoader : public network::mojom::URLLoader,
                                public network::mojom::URLLoaderClient {
  public:
   static void CreateAndStart(
-      network::mojom::URLLoaderRequest loader_request,
+      mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
       int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
-      network::mojom::URLLoaderClientPtr client,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       scoped_refptr<network::SharedURLLoaderFactory> network_factory) {
-    // Owns itself. Will live as long as its URLLoader and URLLoaderClientPtr
+    // Owns itself. Will live as long as its URLLoader and URLLoaderClient
     // bindings are alive - essentially until either the client gives up or all
     // data has been sent to it.
     auto* cast_extension_url_loader = new CastExtensionURLLoader(
-        std::move(loader_request), std::move(client));
+        std::move(loader_receiver), std::move(client));
     cast_extension_url_loader->Start(routing_id, request_id, options,
                                      std::move(request), traffic_annotation,
                                      network_factory);
   }
 
  private:
-  CastExtensionURLLoader(network::mojom::URLLoaderRequest loader_request,
-                         network::mojom::URLLoaderClientPtr client)
-      : original_loader_binding_(this, std::move(loader_request)),
-        original_client_(std::move(client)),
-        network_client_binding_(this) {
+  CastExtensionURLLoader(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client)
+      : original_loader_receiver_(this, std::move(loader_receiver)),
+        original_client_(std::move(client)) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    // If there is a client error, clean up the request.
-    original_client_.set_connection_error_handler(base::BindOnce(
-        &CastExtensionURLLoader::OnClientError, base::Unretained(this)));
+    // If |original_client_| is disconnected, clean up the request.
+    original_client_.set_disconnect_handler(base::BindOnce(
+        &CastExtensionURLLoader::OnMojoDisconnect, base::Unretained(this)));
   }
 
   ~CastExtensionURLLoader() override = default;
@@ -66,18 +68,16 @@ class CastExtensionURLLoader : public network::mojom::URLLoader,
              scoped_refptr<network::SharedURLLoaderFactory> network_factory) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-    network::mojom::URLLoaderClientPtr network_client;
-    network_client_binding_.Bind(mojo::MakeRequest(&network_client));
-
     network_factory->CreateLoaderAndStart(
         mojo::MakeRequest(&network_loader_), routing_id, request_id, options,
-        request, std::move(network_client), traffic_annotation);
+        request, network_client_receiver_.BindNewPipeAndPassRemote(),
+        traffic_annotation);
 
-    network_client_binding_.set_connection_error_handler(base::BindOnce(
+    network_client_receiver_.set_disconnect_handler(base::BindOnce(
         &CastExtensionURLLoader::OnNetworkError, base::Unretained(this)));
   }
 
-  void OnClientError() { delete this; }
+  void OnMojoDisconnect() { delete this; }
 
   void OnNetworkError() {
     if (original_client_)
@@ -94,10 +94,6 @@ class CastExtensionURLLoader : public network::mojom::URLLoader,
         << "The original client shouldn't have been notified of any redirects";
   }
 
-  void ProceedWithResponse() override {
-    network_loader_->ProceedWithResponse();
-  }
-
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {
     network_loader_->SetPriority(priority, intra_priority_value);
@@ -112,12 +108,12 @@ class CastExtensionURLLoader : public network::mojom::URLLoader,
   }
 
   // network::mojom::URLLoaderClient:
-  void OnReceiveResponse(const network::ResourceResponseHead& head) override {
-    original_client_->OnReceiveResponse(head);
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override {
+    original_client_->OnReceiveResponse(std::move(head));
   }
 
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
-                         const network::ResourceResponseHead& head) override {
+                         network::mojom::URLResponseHeadPtr head) override {
     // Don't tell the original client since it thinks this is a local load and
     // just follow the redirect.
     network_loader_->FollowRedirect(std::vector<std::string>(),
@@ -131,8 +127,8 @@ class CastExtensionURLLoader : public network::mojom::URLLoader,
                                        std::move(callback));
   }
 
-  void OnReceiveCachedMetadata(const std::vector<uint8_t>& data) override {
-    original_client_->OnReceiveCachedMetadata(data);
+  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {
+    original_client_->OnReceiveCachedMetadata(std::move(data));
   }
 
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
@@ -151,16 +147,17 @@ class CastExtensionURLLoader : public network::mojom::URLLoader,
 
   // This is the URLLoader that was passed in to
   // CastExtensionURLLoaderFactory.
-  mojo::Binding<network::mojom::URLLoader> original_loader_binding_;
+  mojo::Receiver<network::mojom::URLLoader> original_loader_receiver_;
 
   // This is the URLLoaderClient that was passed in to
   // CastExtensionURLLoaderFactory. We'll send the data to it but not
   // information about redirects etc... as it should think the extension
   // resources are loaded locally.
-  network::mojom::URLLoaderClientPtr original_client_;
+  mojo::Remote<network::mojom::URLLoaderClient> original_client_;
 
   // This is the URLLoaderClient passed to the network URLLoaderFactory.
-  mojo::Binding<network::mojom::URLLoaderClient> network_client_binding_;
+  mojo::Receiver<network::mojom::URLLoaderClient> network_client_receiver_{
+      this};
 
   // This is the URLLoader from the network URLLoaderFactory.
   network::mojom::URLLoaderPtr network_loader_;
@@ -184,12 +181,12 @@ CastExtensionURLLoaderFactory::CastExtensionURLLoaderFactory(
 CastExtensionURLLoaderFactory::~CastExtensionURLLoaderFactory() = default;
 
 void CastExtensionURLLoaderFactory::CreateLoaderAndStart(
-    network::mojom::URLLoaderRequest loader_request,
+    mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
     int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
-    network::mojom::URLLoaderClientPtr client,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const GURL& url = request.url;
@@ -205,7 +202,7 @@ void CastExtensionURLLoaderFactory::CreateLoaderAndStart(
   if (!CastRedirectHandler::ParseUrl(&cast_url, extension, url)) {
     // Defer to the default handler to load from disk.
     extension_factory_->CreateLoaderAndStart(
-        std::move(loader_request), routing_id, request_id, options, request,
+        std::move(loader_receiver), routing_id, request_id, options, request,
         std::move(client), traffic_annotation);
     return;
   }
@@ -229,14 +226,14 @@ void CastExtensionURLLoaderFactory::CreateLoaderAndStart(
   // Force a redirect to the new URL but without changing where the webpage
   // thinks it is.
   CastExtensionURLLoader::CreateAndStart(
-      std::move(loader_request), routing_id, request_id, options,
+      std::move(loader_receiver), routing_id, request_id, options,
       std::move(new_request), std::move(client), traffic_annotation,
       network_factory_);
 }
 
 void CastExtensionURLLoaderFactory::Clone(
-    network::mojom::URLLoaderFactoryRequest factory_request) {
-  bindings_.AddBinding(this, std::move(factory_request));
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver) {
+  receivers_.Add(this, std::move(factory_receiver));
 }
 
 }  // namespace shell

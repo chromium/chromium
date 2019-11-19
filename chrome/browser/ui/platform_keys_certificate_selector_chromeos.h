@@ -18,7 +18,7 @@ class WebContents;
 namespace net {
 class X509Certificate;
 typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
-}
+}  // namespace net
 
 namespace chromeos {
 

@@ -42,7 +42,9 @@ class MockVideoCaptureClient : public VideoCaptureDevice::Client {
   void OnIncomingCapturedData(const uint8_t* data,
                               int length,
                               const VideoCaptureFormat& format,
+                              const gfx::ColorSpace& color_space,
                               int rotation,
+                              bool flip_y,
                               base::TimeTicks reference_time,
                               base::TimeDelta timestamp,
                               int frame_feedback_id) override;
@@ -64,6 +66,7 @@ class MockVideoCaptureClient : public VideoCaptureDevice::Client {
   void OnIncomingCapturedBufferExt(
       Buffer buffer,
       const VideoCaptureFormat& format,
+      const gfx::ColorSpace& color_space,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       gfx::Rect visible_rect,
@@ -73,6 +76,8 @@ class MockVideoCaptureClient : public VideoCaptureDevice::Client {
   base::OnceClosure frame_cb_;
   base::OnceClosure quit_cb_;
 };
+
+using NiceMockVideoCaptureClient = ::testing::NiceMock<MockVideoCaptureClient>;
 
 }  // namespace unittest_internal
 }  // namespace media

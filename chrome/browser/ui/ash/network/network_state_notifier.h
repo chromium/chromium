@@ -55,6 +55,13 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   static const char kNetworkOutOfCreditsNotificationId[];
 
  private:
+  struct VpnDetails {
+    VpnDetails(const std::string& guid, const std::string& name)
+        : guid(guid), name(name) {}
+    std::string guid;
+    std::string name;
+  };
+
   // NetworkConnectionObserver
   void ConnectToNetworkRequested(const std::string& service_path) override;
   void ConnectSucceeded(const std::string& service_path) override;
@@ -80,7 +87,7 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
       const std::string& error_name,
       const std::string& service_path,
       const base::DictionaryValue& shill_properties);
-  void ShowVpnDisconnectedNotification(const NetworkState* vpn);
+  void ShowVpnDisconnectedNotification(VpnDetails* vpn);
 
   // Removes any existing connect notifications.
   void RemoveConnectNotification();
@@ -89,7 +96,7 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   bool UpdateDefaultNetwork(const NetworkState* network);
 
   // Helper methods to update state and check for notifications.
-  void UpdateVpnConnectionState(const NetworkState* vpn);
+  void UpdateVpnConnectionState(const NetworkState* active_vpn);
   void UpdateCellularOutOfCredits();
   void UpdateCellularActivating(const NetworkState* cellular);
 
@@ -99,9 +106,9 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   // Shows the mobile setup dialog for |network_id|.
   void ShowMobileSetup(const std::string& network_id);
 
-  // Set to the GUID of the connected VPN network if any, otherwise empty.
-  // Used for displaying VPN disconnected notification.
-  std::string connected_vpn_guid_;
+  // The details of the connected VPN network if any, otherwise null.
+  // Used for displaying the VPN disconnected notification.
+  std::unique_ptr<VpnDetails> connected_vpn_;
 
   // Tracks state for out of credits notification.
   bool did_show_out_of_credits_ = false;
@@ -112,7 +119,7 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   // Tracks GUIDs of activating cellular networks for activation notification.
   std::set<std::string> cellular_activating_guids_;
 
-  base::WeakPtrFactory<NetworkStateNotifier> weak_ptr_factory_;
+  base::WeakPtrFactory<NetworkStateNotifier> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkStateNotifier);
 };

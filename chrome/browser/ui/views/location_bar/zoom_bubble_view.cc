@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 
 #include <cmath>
+#include <memory>
 
 #include "base/auto_reset.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -22,7 +24,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_container_view.h"
 #include "chrome/browser/ui/views/page_action/zoom_view.h"
 #include "chrome/common/extensions/api/extension_action/action_info.h"
 #include "chrome/grit/generated_resources.h"
@@ -39,9 +40,12 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -60,18 +64,32 @@ constexpr base::TimeDelta kBubbleCloseDelayDefault =
 constexpr base::TimeDelta kBubbleCloseDelayLong =
     base::TimeDelta::FromMilliseconds(5000);
 
-// Creates an ImageButton using vector |icon|, sets a tooltip with |tooltip_id|.
-// Returns the button.
-std::unique_ptr<views::Button> CreateZoomButton(views::ButtonListener* listener,
-                                                const gfx::VectorIcon& icon,
-                                                int tooltip_id) {
-  std::unique_ptr<views::ImageButton> button(
-      views::CreateVectorImageButton(listener));
-  views::SetImageFromVectorIcon(button.get(), icon);
-  button->SetFocusForPlatform();
-  button->SetTooltipText(l10n_util::GetStringUTF16(tooltip_id));
-  return std::move(button);
-}
+class ZoomButtonHighlightPathGenerator : public views::HighlightPathGenerator {
+ public:
+  ZoomButtonHighlightPathGenerator() = default;
+
+  SkPath GetHighlightPath(const views::View* view) override {
+    constexpr int kCircleRadiusDp = 24 / 2;
+    const gfx::Point center = view->GetLocalBounds().CenterPoint();
+    return SkPath().addCircle(center.x(), center.y(), kCircleRadiusDp);
+  }
+};
+
+class ZoomButton : public views::ImageButton {
+ public:
+  explicit ZoomButton(views::ButtonListener* listener,
+                      const gfx::VectorIcon& icon,
+                      int tooltip_id)
+      : ImageButton(listener) {
+    views::ConfigureVectorImageButton(this);
+    views::SetImageFromVectorIcon(this, icon);
+    SetFocusForPlatform();
+    SetTooltipText(l10n_util::GetStringUTF16(tooltip_id));
+    views::HighlightPathGenerator::Install(
+        this, std::make_unique<ZoomButtonHighlightPathGenerator>());
+  }
+  ~ZoomButton() override = default;
+};
 
 class ZoomValue : public views::Label {
  public:
@@ -118,18 +136,17 @@ bool IsBrowserFullscreen(Browser* browser) {
   return browser->window()->IsFullscreen();
 }
 
-PageActionIconContainerView* GetAnchorViewForBrowser(Browser* browser,
-                                                     bool is_fullscreen) {
+views::View* GetAnchorViewForBrowser(Browser* browser, bool is_fullscreen) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (!is_fullscreen ||
       browser_view->immersive_mode_controller()->IsRevealed()) {
-    return browser_view->toolbar_button_provider()
-        ->GetPageActionIconContainerView();
+    return browser_view->toolbar_button_provider()->GetAnchorView(
+        PageActionIconType::kZoom);
   }
   return nullptr;
 }
 
-PageActionIconContainerView* GetAnchorViewForBrowser(Browser* browser) {
+views::View* GetAnchorViewForBrowser(Browser* browser) {
   const bool is_fullscreen = IsBrowserFullscreen(browser);
   return GetAnchorViewForBrowser(browser, is_fullscreen);
 }
@@ -140,30 +157,16 @@ ImmersiveModeController* GetImmersiveModeControllerForBrowser(
   return browser_view->immersive_mode_controller();
 }
 
-void ParentToViewsBrowser(Browser* browser,
-                          ZoomBubbleView* zoom_bubble,
-                          views::View* anchor_view,
-                          content::WebContents* web_contents) {
-  // If the anchor view exists the zoom icon should be highlighed.
-  if (anchor_view) {
-    zoom_bubble->SetHighlightedButton(
-        BrowserView::GetBrowserViewForBrowser(browser)
-            ->toolbar_button_provider()
-            ->GetPageActionIconContainerView()
-            ->GetPageActionIconView(PageActionIconType::kZoom));
-  } else {
-    // If we do not have an anchor view, parent the bubble to the content area.
-    zoom_bubble->set_parent_window(web_contents->GetNativeView());
-  }
-
-  views::BubbleDialogDelegateView::CreateBubble(zoom_bubble);
-}
-
 void ParentToBrowser(Browser* browser,
                      ZoomBubbleView* zoom_bubble,
                      views::View* anchor_view,
                      content::WebContents* web_contents) {
-  ParentToViewsBrowser(browser, zoom_bubble, anchor_view, web_contents);
+  zoom_bubble->SetHighlightedButton(
+      BrowserView::GetBrowserViewForBrowser(browser)
+          ->toolbar_button_provider()
+          ->GetPageActionIconView(PageActionIconType::kZoom));
+
+  views::BubbleDialogDelegateView::CreateBubble(zoom_bubble);
 }
 
 // Find the extension that initiated the zoom change, if any.
@@ -182,7 +185,6 @@ ZoomBubbleView* ZoomBubbleView::zoom_bubble_ = nullptr;
 
 // static
 void ZoomBubbleView::ShowBubble(content::WebContents* web_contents,
-                                const gfx::Point& anchor_point,
                                 DisplayReason reason) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   // |web_contents| could have been unloaded if a tab gets closed and a mouse
@@ -202,8 +204,8 @@ void ZoomBubbleView::ShowBubble(content::WebContents* web_contents,
   ImmersiveModeController* immersive_mode_controller =
       GetImmersiveModeControllerForBrowser(browser);
 
-  zoom_bubble_ = new ZoomBubbleView(anchor_view, anchor_point, web_contents,
-                                    reason, immersive_mode_controller);
+  zoom_bubble_ = new ZoomBubbleView(anchor_view, web_contents, reason,
+                                    immersive_mode_controller);
 
   const extensions::ExtensionZoomRequestClient* client =
       GetExtensionZoomRequestClient(web_contents);
@@ -215,7 +217,6 @@ void ZoomBubbleView::ShowBubble(content::WebContents* web_contents,
 
   ParentToBrowser(browser, zoom_bubble_, anchor_view, web_contents);
 
-  // Adjust for fullscreen after creation as it relies on the content size.
   if (is_fullscreen)
     zoom_bubble_->AdjustForFullscreen(browser->window()->GetBounds());
 
@@ -275,29 +276,24 @@ ZoomBubbleView* ZoomBubbleView::GetZoomBubble() {
 
 void ZoomBubbleView::Refresh() {
   UpdateZoomPercent();
-  GetWidget()->GetRootView()->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                                       true);
+  zoom_level_alert_->GetCustomData().SetName(GetAccessibleWindowTitle());
+  zoom_level_alert_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert);
   StartTimerIfNecessary();
 }
 
 ZoomBubbleView::ZoomBubbleView(
     views::View* anchor_view,
-    const gfx::Point& anchor_point,
     content::WebContents* web_contents,
     DisplayReason reason,
     ImmersiveModeController* immersive_mode_controller)
-    : LocationBarBubbleDelegateView(anchor_view, anchor_point, web_contents),
+    : LocationBarBubbleDelegateView(anchor_view, web_contents),
       auto_close_duration_(kBubbleCloseDelayDefault),
-      image_button_(nullptr),
-      label_(nullptr),
-      zoom_out_button_(nullptr),
-      zoom_in_button_(nullptr),
-      reset_button_(nullptr),
       auto_close_(reason == AUTOMATIC),
-      ignore_close_bubble_(false),
       immersive_mode_controller_(immersive_mode_controller),
       session_id_(
           chrome::FindBrowserWithWebContents(web_contents)->session_id()) {
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_NONE);
+
   set_notify_enter_exit_on_child(true);
   if (immersive_mode_controller_)
     immersive_mode_controller_->AddObserver(this);
@@ -312,19 +308,12 @@ ZoomBubbleView::~ZoomBubbleView() {
 
 base::string16 ZoomBubbleView::GetAccessibleWindowTitle() const {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  PageActionIconContainerView* page_action_icon_container_view =
-      GetAnchorViewForBrowser(browser);
-  if (!page_action_icon_container_view)
-    return base::string16();
-
-  PageActionIconView* zoom_view =
-      page_action_icon_container_view->GetPageActionIconView(
-          PageActionIconType::kZoom);
-  return zoom_view->GetTextForTooltipAndAccessibleName();
-}
-
-int ZoomBubbleView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_NONE;
+  if (!browser)
+    return {};
+  return BrowserView::GetBrowserViewForBrowser(browser)
+      ->toolbar_button_provider()
+      ->GetPageActionIconView(PageActionIconType::kZoom)
+      ->GetTextForTooltipAndAccessibleName();
 }
 
 void ZoomBubbleView::OnFocus() {
@@ -374,24 +363,25 @@ void ZoomBubbleView::OnMouseExited(const ui::MouseEvent& event) {
 
 void ZoomBubbleView::Init() {
   // Set up the layout of the zoom bubble.
+  constexpr int kPercentLabelPadding = 64;
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   const int spacing =
       provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
   auto box_layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kHorizontal,
+      views::BoxLayout::Orientation::kHorizontal,
       provider->GetInsetsMetric(INSETS_TOAST) - margins(), spacing);
   box_layout->set_main_axis_alignment(
-      views::BoxLayout::MAIN_AXIS_ALIGNMENT_CENTER);
+      views::BoxLayout::MainAxisAlignment::kCenter);
   box_layout->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_CENTER);
+      views::BoxLayout::CrossAxisAlignment::kCenter);
   SetLayoutManager(std::move(box_layout));
 
   // Calculate child views margins in |this| client view.
   const int label_vertical_spacing =
       provider->GetDistanceMetric(DISTANCE_TOAST_LABEL_VERTICAL);
-  const gfx::Insets label_vertical_margin(
-      label_vertical_spacing - margins().top(), 0,
-      label_vertical_spacing - margins().bottom(), 0);
+  const gfx::Insets label_margin(label_vertical_spacing - margins().top(), 0,
+                                 label_vertical_spacing - margins().bottom(),
+                                 kPercentLabelPadding - spacing);
 
   // Account for the apparent margins that vector buttons have around icons.
   const int control_vertical_spacing =
@@ -406,51 +396,45 @@ void ZoomBubbleView::Init() {
   // If this zoom change was initiated by an extension, that extension will be
   // attributed by showing its icon in the zoom bubble.
   if (extension_info_.icon_image) {
-    image_button_ = new views::ImageButton(this);
-    image_button_->SetTooltipText(
+    auto image_button = std::make_unique<views::ImageButton>(this);
+    image_button->SetTooltipText(
         l10n_util::GetStringFUTF16(IDS_TOOLTIP_ZOOM_EXTENSION_ICON,
                                    base::UTF8ToUTF16(extension_info_.name)));
-    image_button_->SetImage(views::Button::STATE_NORMAL,
-                            &extension_info_.icon_image->image_skia());
-    AddChildView(image_button_);
+    image_button->SetImage(views::Button::STATE_NORMAL,
+                           &extension_info_.icon_image->image_skia());
+    image_button_ = AddChildView(std::move(image_button));
   }
 
   // Add zoom label with the new zoom percent.
-  label_ = new ZoomValue(web_contents());
+  auto label = std::make_unique<ZoomValue>(web_contents());
+  label->SetProperty(views::kMarginsKey, gfx::Insets(label_margin));
+  label_ = label.get();
   UpdateZoomPercent();
-  label_->SetProperty(views::kMarginsKey,
-                      new gfx::Insets(label_vertical_margin));
-  AddChildView(label_);
-
-  // Add extra padding between the zoom percent label and the buttons.
-  constexpr int kPercentLabelPadding = 64;
-  auto* label_padding_view = new views::View();
-  label_padding_view->SetPreferredSize(gfx::Size(
-      kPercentLabelPadding - spacing * 2, label_->GetPreferredSize().height()));
-  AddChildView(label_padding_view);
+  AddChildView(std::move(label));
 
   // Add Zoom Out ("-") button.
-  std::unique_ptr<views::Button> zoom_out_button =
-      CreateZoomButton(this, kRemoveIcon, IDS_ACCNAME_ZOOM_MINUS2);
-  zoom_out_button_ = zoom_out_button.get();
+  zoom_out_button_ = AddChildView(
+      std::make_unique<ZoomButton>(this, kRemoveIcon, IDS_ACCNAME_ZOOM_MINUS2));
   zoom_out_button_->SetProperty(views::kMarginsKey,
-                                new gfx::Insets(vector_button_margin));
-  AddChildView(zoom_out_button.release());
+                                gfx::Insets(vector_button_margin));
 
   // Add Zoom In ("+") button.
-  std::unique_ptr<views::Button> zoom_in_button =
-      CreateZoomButton(this, kAddIcon, IDS_ACCNAME_ZOOM_PLUS2);
-  zoom_in_button_ = zoom_in_button.get();
+  zoom_in_button_ = AddChildView(
+      std::make_unique<ZoomButton>(this, kAddIcon, IDS_ACCNAME_ZOOM_PLUS2));
   zoom_in_button_->SetProperty(views::kMarginsKey,
-                               new gfx::Insets(vector_button_margin));
-  AddChildView(zoom_in_button.release());
+                               gfx::Insets(vector_button_margin));
 
   // Add "Reset" button.
-  reset_button_ = views::MdTextButton::CreateSecondaryUiButton(
+  auto reset_button = views::MdTextButton::CreateSecondaryUiButton(
       this, l10n_util::GetStringUTF16(IDS_ZOOM_SET_DEFAULT));
-  reset_button_->SetTooltipText(
+  reset_button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ACCNAME_ZOOM_SET_DEFAULT));
-  AddChildView(reset_button_);
+  reset_button_ = AddChildView(std::move(reset_button));
+
+  auto zoom_level_alert = std::make_unique<views::AXVirtualView>();
+  zoom_level_alert->GetCustomData().role = ax::mojom::Role::kAlert;
+  zoom_level_alert_ = zoom_level_alert.get();
+  GetViewAccessibility().AddVirtualChildView(std::move(zoom_level_alert));
 
   StartTimerIfNecessary();
 }
@@ -475,21 +459,6 @@ void ZoomBubbleView::CloseBubble() {
   LocationBarBubbleDelegateView::CloseBubble();
 }
 
-void ZoomBubbleView::Layout() {
-  View::Layout();
-
-  for (auto* button : {zoom_in_button_, zoom_out_button_}) {
-    constexpr int kCircleDiameterDp = 24;
-    auto highlight_path = std::make_unique<SkPath>();
-    // Use a centered circular shape for inkdrops and focus rings.
-    gfx::Rect circle_rect(button->GetLocalBounds());
-    circle_rect.ClampToCenteredSize(
-        gfx::Size(kCircleDiameterDp, kCircleDiameterDp));
-    highlight_path->addOval(gfx::RectToSkRect(circle_rect));
-    button->SetProperty(views::kHighlightPathKey, highlight_path.release());
-  }
-}
-
 void ZoomBubbleView::ButtonPressed(views::Button* sender,
                                    const ui::Event& event) {
   // No button presses in this dialog should cause the dialog to close,
@@ -503,9 +472,11 @@ void ZoomBubbleView::ButtonPressed(views::Button* sender,
   if (sender == image_button_) {
     DCHECK(extension_info_.icon_image) << "Invalid button press.";
     Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+    DCHECK(browser);
     chrome::AddSelectedTabWithURL(
-        browser, GURL(base::StringPrintf("chrome://extensions?id=%s",
-                                         extension_info_.id.c_str())),
+        browser,
+        GURL(base::StringPrintf("chrome://extensions?id=%s",
+                                extension_info_.id.c_str())),
         ui::PAGE_TRANSITION_FROM_API);
   } else if (sender == zoom_out_button_) {
     zoom::PageZoom::Zoom(web_contents(), content::PAGE_ZOOM_OUT);
@@ -552,9 +523,9 @@ void ZoomBubbleView::SetExtensionInfo(const extensions::Extension* extension) {
   bool has_default_sized_icon =
       !icons.Get(gfx::kFaviconSize, ExtensionIconSet::MATCH_EXACTLY).empty();
   if (has_default_sized_icon) {
-    extension_info_.icon_image.reset(new extensions::IconImage(
+    extension_info_.icon_image = std::make_unique<extensions::IconImage>(
         web_contents()->GetBrowserContext(), extension, icons, icon_size,
-        default_extension_icon_image, this));
+        default_extension_icon_image, this);
     return;
   }
 
@@ -581,11 +552,8 @@ void ZoomBubbleView::UpdateZoomIconVisibility() {
   // may also be destroyed: the call to WindowClosing() may be triggered by
   // parent window destruction tearing down its child windows.
   Browser* browser = chrome::FindBrowserWithID(session_id_);
-  if (browser && browser->window() &&
-      browser->window()->GetPageActionIconContainer()) {
-    browser->window()->GetPageActionIconContainer()->UpdatePageActionIcon(
-        PageActionIconType::kZoom);
-  }
+  if (browser && browser->window())
+    browser->window()->UpdatePageActionIcon(PageActionIconType::kZoom);
 }
 
 void ZoomBubbleView::StartTimerIfNecessary() {

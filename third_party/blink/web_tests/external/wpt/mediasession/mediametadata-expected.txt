@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS Test that mediaSession.metadata is properly set
+PASS Test that changes to metadata propagate properly
+PASS Test that resetting metadata to null is reflected
+PASS Test that MediaMetadata is constructed using a dictionary
+PASS Test that MediaMetadata constructor can take no parameter
+PASS Test the different values allowed in MediaMetadata init dictionary
+PASS Test the default values for MediaMetadata with empty init dictionary
+PASS Test the default values for MediaMetadata with no init dictionary
+PASS Test that passing unknown values to the dictionary is a no-op
+PASS Test that MediaMetadata is read/write
+PASS Test that MediaMetadat.artwork can't be modified
+PASS Test that MediaMetadata.artwork will not expose unknown properties
+PASS Test that MediaMetadata.artwork is Frozen
+PASS Test that MediaMetadata.artwork returns parsed urls
+PASS Test that MediaMetadata throws when setting an invalid url
+PASS Test MediaImage default values
+PASS Test that MediaImage.src is required
+FAIL Test that the base URL of MediaImage is the base URL of entry setting object assert_equals: expected "http://web-platform.test:8001/foo" but got "http://web-platform.test:8001/mediasession/foo"
+Harness: the test ran to completion.
+

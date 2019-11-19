@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.preferences.download;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +13,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
+import org.chromium.chrome.browser.download.DownloadLocationDialogBridge;
 import org.chromium.chrome.browser.download.DownloadUtils;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.download.R;
 
 import java.util.ArrayList;
@@ -168,7 +169,7 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
 
         int selectedId = NO_SELECTED_ITEM_ID;
 
-        String defaultLocation = PrefServiceBridge.getInstance().getDownloadDefaultDirectory();
+        String defaultLocation = DownloadLocationDialogBridge.getDownloadDefaultDirectory();
         for (int i = 0; i < getCount(); i++) {
             DirectoryOption option = (DirectoryOption) getItem(i);
             if (option == null) continue;
@@ -192,7 +193,7 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
             DirectoryOption option = (DirectoryOption) getItem(i);
             if (option == null) continue;
             if (option.availableSpace > 0) {
-                PrefServiceBridge.getInstance().setDownloadAndSaveFileDefaultDirectory(
+                DownloadLocationDialogBridge.setDownloadAndSaveFileDefaultDirectory(
                         option.location);
                 mSelectedPosition = i;
                 return i;

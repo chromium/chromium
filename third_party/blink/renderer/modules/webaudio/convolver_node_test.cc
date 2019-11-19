@@ -12,7 +12,7 @@
 namespace blink {
 
 TEST(ConvolverNodeTest, ReverbLifetime) {
-  std::unique_ptr<DummyPageHolder> page = DummyPageHolder::Create();
+  auto page = std::make_unique<DummyPageHolder>();
   OfflineAudioContext* context = OfflineAudioContext::Create(
       &page->GetDocument(), 2, 1, 48000, ASSERT_NO_EXCEPTION);
   ConvolverNode* node = context->createConvolver(ASSERT_NO_EXCEPTION);

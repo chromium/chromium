@@ -35,12 +35,14 @@ class SelfDeleteInstaller
                       const GURL& sw_url,
                       const GURL& scope,
                       const std::string& method,
+                      const SupportedDelegations& supported_delegations,
                       PaymentAppInstaller::InstallPaymentAppCallback callback)
       : app_name_(app_name),
         app_icon_(app_icon),
         sw_url_(sw_url),
         scope_(scope),
         method_(method),
+        supported_delegations_(supported_delegations),
         callback_(std::move(callback)) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
   }
@@ -138,33 +140,36 @@ class SelfDeleteInstaller
     scoped_refptr<PaymentAppContextImpl> payment_app_context =
         partition->GetPaymentAppContext();
 
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&SelfDeleteInstaller::SetPaymentAppInfoOnIO, this,
-                       payment_app_context, registration_id_, scope_.spec(),
-                       app_name_, app_icon_, method_));
+    RunOrPostTaskOnThread(
+        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
+        base::BindOnce(&SelfDeleteInstaller::SetPaymentAppInfoOnCoreThread,
+                       this, payment_app_context, registration_id_,
+                       scope_.spec(), app_name_, app_icon_, method_,
+                       supported_delegations_));
   }
 
-  void SetPaymentAppInfoOnIO(
+  void SetPaymentAppInfoOnCoreThread(
       scoped_refptr<PaymentAppContextImpl> payment_app_context,
       int64_t registration_id,
       const std::string& instrument_key,
       const std::string& name,
       const std::string& app_icon,
-      const std::string& method) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+      const std::string& method,
+      const SupportedDelegations& supported_delegations) {
+    DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
     payment_app_context->payment_app_database()
         ->SetPaymentAppInfoForRegisteredServiceWorker(
             registration_id, instrument_key, name, app_icon, method,
+            supported_delegations,
             base::BindOnce(&SelfDeleteInstaller::OnSetPaymentAppInfo, this));
   }
 
   void OnSetPaymentAppInfo(payments::mojom::PaymentHandlerStatus status) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
+    RunOrPostTaskOnThread(
+        FROM_HERE, BrowserThread::UI,
         base::BindOnce(&SelfDeleteInstaller::FinishInstallation, this,
                        status == payments::mojom::PaymentHandlerStatus::SUCCESS
                            ? true
@@ -199,6 +204,7 @@ class SelfDeleteInstaller
   GURL sw_url_;
   GURL scope_;
   std::string method_;
+  SupportedDelegations supported_delegations_;
   PaymentAppInstaller::InstallPaymentAppCallback callback_;
 
   int64_t registration_id_ = -1;  // Take -1 as an invalid registration Id.
@@ -210,18 +216,21 @@ class SelfDeleteInstaller
 }  // namespace.
 
 // Static
-void PaymentAppInstaller::Install(WebContents* web_contents,
-                                  const std::string& app_name,
-                                  const std::string& app_icon,
-                                  const GURL& sw_url,
-                                  const GURL& scope,
-                                  bool use_cache,
-                                  const std::string& method,
-                                  InstallPaymentAppCallback callback) {
+void PaymentAppInstaller::Install(
+    WebContents* web_contents,
+    const std::string& app_name,
+    const std::string& app_icon,
+    const GURL& sw_url,
+    const GURL& scope,
+    bool use_cache,
+    const std::string& method,
+    const SupportedDelegations& supported_delegations,
+    InstallPaymentAppCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto installer = base::MakeRefCounted<SelfDeleteInstaller>(
-      app_name, app_icon, sw_url, scope, method, std::move(callback));
+      app_name, app_icon, sw_url, scope, method, supported_delegations,
+      std::move(callback));
   installer->Init(web_contents, use_cache);
 }
 

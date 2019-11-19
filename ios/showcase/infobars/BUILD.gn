@@ -1,0 +1,75 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("infobars") {
+  sources = [
+    "sc_infobar_banner_coordinator.h",
+    "sc_infobar_banner_coordinator.mm",
+    "sc_infobar_banner_no_modal_coordinator.h",
+    "sc_infobar_banner_no_modal_coordinator.mm",
+    "sc_infobar_container_view_controller.h",
+    "sc_infobar_container_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/ui/infobars/banners",
+    "//ios/chrome/browser/ui/infobars/coordinators",
+    "//ios/chrome/browser/ui/infobars/modals",
+    "//ios/chrome/browser/ui/infobars/presentation",
+    "//ios/showcase/common",
+  ]
+  libs = [ "UIKit.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("constants") {
+  sources = [
+    "sc_infobar_constants.h",
+    "sc_infobar_constants.mm",
+  ]
+  deps = []
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "sc_infobar_banner_coordinator_egtest.mm",
+    "sc_infobar_banner_no_modal_coordinator_egtest.mm",
+  ]
+  deps = [
+    ":constants",
+    "//ios/chrome/browser/ui/infobars/banners:public",
+    "//ios/chrome/browser/ui/infobars/modals:public",
+    "//ios/showcase/test:eg2_test",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+  libs = [ "UIKit.framework" ]
+}
+
+source_set("eg_tests") {
+  testonly = true
+  defines = [ "CHROME_EARL_GREY_1" ]
+  sources = [
+    "sc_infobar_banner_coordinator_egtest.mm",
+    "sc_infobar_banner_no_modal_coordinator_egtest.mm",
+  ]
+  deps = [
+    ":constants",
+    "//ios/chrome/browser/ui/infobars/banners:public",
+    "//ios/chrome/browser/ui/infobars/modals:public",
+    "//ios/chrome/test/earl_grey:test_support",
+    "//ios/showcase/infobars",
+    "//ios/showcase/test",
+    "//ios/testing/earl_grey:earl_grey_support",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

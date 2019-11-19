@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL H.264 and VP8 should be supported in initial offer assert_true: H.264 is supported expected true got false
-FAIL H.264 and VP8 should be negotiated after handshake assert_true: expected true got false
-PASS All H.264 codecs MUST include profile-level-id
-Harness: the test ran to completion.
-

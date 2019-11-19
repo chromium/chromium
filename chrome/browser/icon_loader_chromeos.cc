@@ -195,8 +195,7 @@ IconLoader::IconGroup IconLoader::GroupForFilepath(
 scoped_refptr<base::TaskRunner> IconLoader::GetReadIconTaskRunner() {
   // ReadIcon touches non thread safe ResourceBundle images, so it must be on
   // the UI thread.
-  return base::CreateSingleThreadTaskRunnerWithTraits(
-      {content::BrowserThread::UI});
+  return base::CreateSingleThreadTaskRunner({content::BrowserThread::UI});
 }
 
 void IconLoader::ReadIcon() {
@@ -207,7 +206,7 @@ void IconLoader::ReadIcon() {
   gfx::ImageSkia image_skia(ResizeImage(*(rb.GetImageNamed(idr)).ToImageSkia(),
                                         IconSizeToDIPSize(icon_size_)));
   image_skia.MakeThreadSafe();
-  std::unique_ptr<gfx::Image> image = std::make_unique<gfx::Image>(image_skia);
+  gfx::Image image(image_skia);
   target_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback_), std::move(image), group_));

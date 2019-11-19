@@ -1,0 +1,21 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test") {
+  testonly = true
+  sources = [
+    "fake_overlay_request_coordinator.h",
+    "fake_overlay_request_coordinator.mm",
+    "fake_overlay_request_coordinator_delegate.cc",
+    "fake_overlay_request_coordinator_delegate.h",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/overlays:coordinators",
+    "//testing/gtest",
+  ]
+}

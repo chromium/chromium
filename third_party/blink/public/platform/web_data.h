@@ -34,14 +34,13 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 #if INSIDE_BLINK
 #include "base/memory/scoped_refptr.h"
 #endif
 
 namespace blink {
-
-class SharedBuffer;
 
 // A container for raw bytes.  It is inexpensive to copy a WebData object.
 //
@@ -81,7 +80,7 @@ class BLINK_PLATFORM_EXPORT WebData {
   // Same as SharedBuffer::CopyAs, copies the segmented data into a
   // contiguous buffer.  Use GetSomeData() or ForEachSegment() whenever
   // possible, if a copy can be avoided.
-  WebVector<char> Copy() const;
+  WebVector<uint8_t> Copy() const;
 
   // Helper for applying a lambda to all data segments, sequentially:
   //

@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
@@ -23,20 +22,37 @@
 
 namespace settings {
 
-ProtocolHandlersHandler::ProtocolHandlersHandler() {
+namespace {
+
+void GetHandlersAsListValue(
+    const ProtocolHandlerRegistry& registry,
+    const ProtocolHandlerRegistry::ProtocolHandlerList& handlers,
+    base::ListValue* handler_list) {
+  ProtocolHandlerRegistry::ProtocolHandlerList::const_iterator handler;
+  for (handler = handlers.begin(); handler != handlers.end(); ++handler) {
+    std::unique_ptr<base::DictionaryValue> handler_value(
+        new base::DictionaryValue());
+    handler_value->SetString("protocol_display_name",
+                             handler->GetProtocolDisplayName());
+    handler_value->SetString("protocol", handler->protocol());
+    handler_value->SetString("spec", handler->url().spec());
+    handler_value->SetString("host", handler->url().host());
+    handler_value->SetBoolean("is_default", registry.IsDefault(*handler));
+    handler_list->Append(std::move(handler_value));
+  }
 }
 
-ProtocolHandlersHandler::~ProtocolHandlersHandler() {
-}
+}  // namespace
+
+ProtocolHandlersHandler::ProtocolHandlersHandler() = default;
+ProtocolHandlersHandler::~ProtocolHandlersHandler() = default;
 
 void ProtocolHandlersHandler::OnJavascriptAllowed() {
-  notification_registrar_.Add(
-      this, chrome::NOTIFICATION_PROTOCOL_HANDLER_REGISTRY_CHANGED,
-      content::Source<Profile>(Profile::FromWebUI(web_ui())));
+  registry_observer_.Add(GetProtocolHandlerRegistry());
 }
 
 void ProtocolHandlersHandler::OnJavascriptDisallowed() {
-  notification_registrar_.RemoveAll();
+  registry_observer_.RemoveAll();
 }
 
 void ProtocolHandlersHandler::RegisterMessages() {
@@ -64,27 +80,9 @@ void ProtocolHandlersHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-ProtocolHandlerRegistry* ProtocolHandlersHandler::GetProtocolHandlerRegistry() {
-  return ProtocolHandlerRegistryFactory::GetForBrowserContext(
-      Profile::FromWebUI(web_ui()));
-}
-
-static void GetHandlersAsListValue(
-    const ProtocolHandlerRegistry& registry,
-    const ProtocolHandlerRegistry::ProtocolHandlerList& handlers,
-    base::ListValue* handler_list) {
-  ProtocolHandlerRegistry::ProtocolHandlerList::const_iterator handler;
-  for (handler = handlers.begin(); handler != handlers.end(); ++handler) {
-    std::unique_ptr<base::DictionaryValue> handler_value(
-        new base::DictionaryValue());
-    handler_value->SetString("protocol_display_name",
-                             handler->GetProtocolDisplayName());
-    handler_value->SetString("protocol", handler->protocol());
-    handler_value->SetString("spec", handler->url().spec());
-    handler_value->SetString("host", handler->url().host());
-    handler_value->SetBoolean("is_default", registry.IsDefault(*handler));
-    handler_list->Append(std::move(handler_value));
-  }
+void ProtocolHandlersHandler::OnProtocolHandlerRegistryChanged() {
+  SendHandlersEnabledValue();
+  UpdateHandlerList();
 }
 
 void ProtocolHandlersHandler::GetHandlersForProtocol(
@@ -183,13 +181,9 @@ ProtocolHandler ProtocolHandlersHandler::ParseHandlerFromArgs(
                                                 GURL(base::UTF16ToUTF8(url)));
 }
 
-void ProtocolHandlersHandler::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_PROTOCOL_HANDLER_REGISTRY_CHANGED, type);
-  SendHandlersEnabledValue();
-  UpdateHandlerList();
+ProtocolHandlerRegistry* ProtocolHandlersHandler::GetProtocolHandlerRegistry() {
+  return ProtocolHandlerRegistryFactory::GetForBrowserContext(
+      Profile::FromWebUI(web_ui()));
 }
 
 }  // namespace settings

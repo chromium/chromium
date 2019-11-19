@@ -70,8 +70,14 @@ SignaturePair GetAPISignatureFromDictionary(const base::DictionaryValue* dict) {
   const base::ListValue* params = nullptr;
   CHECK(dict->GetList("parameters", &params));
 
+  bool supports_promises = false;
+  dict->GetBoolean("supportsPromises", &supports_promises);
+
   SignaturePair result;
   result.method_signature = std::make_unique<APISignature>(*params);
+  result.method_signature->set_promise_support(
+      supports_promises ? binding::PromiseSupport::kAllowed
+                        : binding::PromiseSupport::kDisallowed);
   // If response validation is enabled, parse the callback signature. Otherwise,
   // there's no reason to, so don't bother.
   if (result.method_signature->has_callback() &&
@@ -105,18 +111,14 @@ void RunAPIBindingHandlerCallback(
 }  // namespace
 
 struct APIBinding::MethodData {
-  MethodData(std::string full_name,
-             const APISignature* signature,
-             binding::RequestThread thread)
-      : full_name(std::move(full_name)), signature(signature), thread(thread) {}
+  MethodData(std::string full_name, const APISignature* signature)
+      : full_name(std::move(full_name)), signature(signature) {}
 
   // The fully-qualified name of this api (e.g. runtime.sendMessage instead of
   // sendMessage).
   const std::string full_name;
   // The expected API signature.
   const APISignature* signature;
-  // Thread to invoke the method on.
-  const binding::RequestThread thread;
   // The callback used by the v8 function.
   APIBinding::HandlerCallback callback;
 };
@@ -218,8 +220,7 @@ APIBinding::APIBinding(const std::string& api_name,
       type_refs_(type_refs),
       request_handler_(request_handler),
       event_handler_(event_handler),
-      access_checker_(access_checker),
-      weak_factory_(this) {
+      access_checker_(access_checker) {
   // TODO(devlin): It might make sense to instantiate the object_template_
   // directly here, which would avoid the need to hold on to
   // |property_definitions_| and |enums_|. However, there are *some* cases where
@@ -235,15 +236,10 @@ APIBinding::APIBinding(const std::string& api_name,
 
       SignaturePair signatures = GetAPISignatureFromDictionary(func_dict);
 
-      bool for_io_thread = false;
-      func_dict->GetBoolean("forIOThread", &for_io_thread);
-
       std::string full_name =
           base::StringPrintf("%s.%s", api_name_.c_str(), name.c_str());
       methods_[name] = std::make_unique<MethodData>(
-          full_name, signatures.method_signature.get(),
-          for_io_thread ? binding::RequestThread::IO
-                        : binding::RequestThread::UI);
+          full_name, signatures.method_signature.get());
       type_refs->AddAPIMethodSignature(full_name,
                                        std::move(signatures.method_signature));
       if (signatures.callback_signature) {
@@ -418,7 +414,7 @@ void APIBinding::InitializeTemplate(v8::Isolate* isolate) {
     DCHECK(method.callback.is_null());
     method.callback =
         base::BindRepeating(&APIBinding::HandleCall, weak_factory_.GetWeakPtr(),
-                            method.full_name, method.signature, method.thread);
+                            method.full_name, method.signature);
 
     object_template->Set(
         gin::StringToSymbol(isolate, key_value.first),
@@ -594,7 +590,6 @@ void APIBinding::GetCustomPropertyObject(
 
 void APIBinding::HandleCall(const std::string& name,
                             const APISignature* signature,
-                            const binding::RequestThread thread,
                             gin::Arguments* arguments) {
   std::string error;
   v8::Isolate* isolate = arguments->isolate();
@@ -631,6 +626,11 @@ void APIBinding::HandleCall(const std::string& name,
         DCHECK(try_catch.HasCaught());
         try_catch.ReThrow();
         return;
+      case APIBindingHooks::RequestResult::CONTEXT_INVALIDATED:
+        DCHECK(!binding::IsContextValid(context));
+        // The context was invalidated during the course of running the custom
+        // hooks. Bail.
+        return;
       case APIBindingHooks::RequestResult::HANDLED:
         if (!hooks_result.return_value.IsEmpty())
           arguments->Return(hooks_result.return_value);
@@ -658,8 +658,7 @@ void APIBinding::HandleCall(const std::string& name,
     return;
   }
 
-  std::unique_ptr<base::ListValue> converted_arguments;
-  v8::Local<v8::Function> callback;
+  APISignature::JSONParseResult parse_result;
   {
     v8::TryCatch try_catch(isolate);
 
@@ -672,33 +671,38 @@ void APIBinding::HandleCall(const std::string& name,
     // here, but it also means we can't auto-generate the params for the
     // function on the browser side.
     if (updated_args) {
-      bool success = signature->ConvertArgumentsIgnoringSchema(
-          context, argument_list, &converted_arguments, &callback);
-      if (!success) {
-        // Converted arguments passed to us by our bindings should never fail.
-        NOTREACHED();
-        return;
-      }
+      parse_result =
+          signature->ConvertArgumentsIgnoringSchema(context, argument_list);
+      // Converted arguments passed to us by our bindings should never fail.
+      DCHECK(parse_result.succeeded());
     } else {
-      invalid_invocation = !signature->ParseArgumentsToJSON(
-          context, argument_list, *type_refs_, &converted_arguments, &callback,
-          &error);
+      parse_result =
+          signature->ParseArgumentsToJSON(context, argument_list, *type_refs_);
     }
 
     if (try_catch.HasCaught()) {
-      DCHECK(!converted_arguments);
+      DCHECK(!parse_result.succeeded());
       try_catch.ReThrow();
       return;
     }
   }
-  if (invalid_invocation) {
+  if (!parse_result.succeeded()) {
     arguments->ThrowTypeError(api_errors::InvocationError(
-        name, signature->GetExpectedSignature(), error));
+        name, signature->GetExpectedSignature(), *parse_result.error));
     return;
   }
 
-  request_handler_->StartRequest(context, name, std::move(converted_arguments),
-                                 callback, custom_callback, thread);
+  if (parse_result.async_type == binding::AsyncResponseType::kPromise) {
+    int request_id = 0;
+    v8::Local<v8::Promise> promise;
+    std::tie(request_id, promise) = request_handler_->StartPromiseBasedRequest(
+        context, name, std::move(parse_result.arguments));
+    arguments->Return(promise);
+  } else {
+    request_handler_->StartRequest(context, name,
+                                   std::move(parse_result.arguments),
+                                   parse_result.callback, custom_callback);
+  }
 }
 
 }  // namespace extensions

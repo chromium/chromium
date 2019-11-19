@@ -25,6 +25,10 @@
 #include "sandbox/win/fuzzer/fuzzer_types.h"
 #endif
 
+#include <stddef.h>
+#include <memory>
+#include <vector>
+
 #include "base/memory/ref_counted.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_types.h"
@@ -33,6 +37,7 @@
 namespace sandbox {
 
 class BrokerServices;
+class PolicyDiagnosticsReceiver;
 class ProcessState;
 class TargetPolicy;
 class TargetServices;
@@ -96,6 +101,18 @@ class BrokerServices {
   //   more information.
   virtual ResultCode WaitForAllTargets() = 0;
 
+  // This call creates a snapshot of policies managed by the sandbox and
+  // returns them via a helper class.
+  // Parameters:
+  //   receiver: The |PolicyDiagnosticsReceiver| implementation will be
+  //   called to accept the results of the call.
+  // Returns:
+  //   ALL_OK if the request was dispatched. All other return values
+  //   imply failure, and the responder will not receive its completion
+  //   callback.
+  virtual ResultCode GetPolicyDiagnostics(
+      std::unique_ptr<PolicyDiagnosticsReceiver> receiver) = 0;
+
  protected:
   ~BrokerServices() {}
 };
@@ -143,6 +160,36 @@ class TargetServices {
 
  protected:
   ~TargetServices() {}
+};
+
+class PolicyInfo {
+ public:
+  // Returns a JSON representation of the policy snapshot.
+  // This pointer has the same lifetime as this PolicyInfo object.
+  virtual const char* JsonString() = 0;
+  virtual ~PolicyInfo() {}
+};
+
+// This is returned by BrokerServices::GetPolicyDiagnostics().
+// PolicyInfo entries need not be ordered.
+class PolicyList {
+ public:
+  virtual std::vector<std::unique_ptr<PolicyInfo>>::iterator begin() = 0;
+  virtual std::vector<std::unique_ptr<PolicyInfo>>::iterator end() = 0;
+  virtual size_t size() const = 0;
+  virtual ~PolicyList() {}
+};
+
+// This class mediates calls to BrokerServices::GetPolicyDiagnostics().
+class PolicyDiagnosticsReceiver {
+ public:
+  // ReceiveDiagnostics() should return quickly and should not block the
+  // thread on which it is called.
+  virtual void ReceiveDiagnostics(std::unique_ptr<PolicyList> policies) = 0;
+  // OnError() is passed any errors encountered and |ReceiveDiagnostics|
+  // will not be called.
+  virtual void OnError(ResultCode code) = 0;
+  virtual ~PolicyDiagnosticsReceiver() {}
 };
 
 }  // namespace sandbox

@@ -37,7 +37,7 @@
   function onShowView(viewId, isUserGesture, viewPromise) {
     viewPromise.then(() => {
       var releaseNoteView = UI.viewManager.view('release-note');
-      var releaseNoteElement = releaseNoteView[UI.View._widgetSymbol].contentElement;
+      var releaseNoteElement = releaseNoteView[UI.View.widgetSymbol].contentElement;
       TestRunner.addResult('Dumping release note text:');
       TestRunner.addResult(releaseNoteElement.innerText);
       TestRunner.addResult('Last version of release note seen should be updated:');

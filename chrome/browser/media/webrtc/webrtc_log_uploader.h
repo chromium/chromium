@@ -12,13 +12,15 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
-#include "base/threading/thread_checker.h"
-#include "chrome/browser/media/webrtc/webrtc_logging_handler_host.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "chrome/browser/media/webrtc/webrtc_log_buffer.h"
+#include "url/gurl.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -26,18 +28,23 @@ class SimpleURLLoader;
 
 typedef struct z_stream_s z_stream;
 
-// Used when uploading is done to perform post-upload actions. |log_path| is
-// also used pre-upload.
-struct WebRtcLogUploadDoneData : public WebRtcLogPaths {
-  WebRtcLogUploadDoneData();
-  WebRtcLogUploadDoneData(const WebRtcLogUploadDoneData& other);
-  ~WebRtcLogUploadDoneData();
+struct WebRtcLogPaths {
+  base::FilePath directory;
+  base::FilePath incoming_rtp_dump;
+  base::FilePath outgoing_rtp_dump;
+};
 
-  WebRtcLoggingHandlerHost::UploadDoneCallback callback;
-  scoped_refptr<WebRtcLoggingHandlerHost> host;
-  std::string local_log_id;
-  // Used for statistics. See |WebRtcLoggingHandlerHost::web_app_id_|.
-  int web_app_id;
+typedef std::map<std::string, std::string> WebRtcLogMetaDataMap;
+
+// Upload failure reasons used for UMA stats. A failure reason can be one of
+// those listed here or a response code for the upload HTTP request. The
+// values in this list must be less than 100 and cannot be changed.
+struct WebRtcLogUploadFailureReason {
+  enum {
+    kInvalidState = 0,
+    kStoredLogNotFound = 1,
+    kNetworkError = 2,
+  };
 };
 
 // WebRtcLogUploader uploads WebRTC logs, keeps count of how many logs have
@@ -46,6 +53,24 @@ struct WebRtcLogUploadDoneData : public WebRtcLogPaths {
 // only be one object of this type.
 class WebRtcLogUploader {
  public:
+  typedef base::Callback<void(bool, const std::string&)> GenericDoneCallback;
+  typedef base::Callback<void(bool, const std::string&, const std::string&)>
+      UploadDoneCallback;
+
+  // Used when uploading is done to perform post-upload actions. |paths| is
+  // also used pre-upload.
+  struct UploadDoneData {
+    UploadDoneData();
+    UploadDoneData(const UploadDoneData& other);
+    ~UploadDoneData();
+
+    WebRtcLogPaths paths;
+    UploadDoneCallback callback;
+    std::string local_log_id;
+    // Used for statistics. See |WebRtcLoggingHandlerHost::web_app_id_|.
+    int web_app_id;
+  };
+
   WebRtcLogUploader();
   ~WebRtcLogUploader();
 
@@ -68,26 +93,25 @@ class WebRtcLogUploader {
   // |upload_done_data.local_log_id| is set and used internally and should be
   // left empty.
   void LoggingStoppedDoUpload(std::unique_ptr<WebRtcLogBuffer> log_buffer,
-                              std::unique_ptr<MetaDataMap> meta_data,
-                              const WebRtcLogUploadDoneData& upload_done_data);
+                              std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
+                              const UploadDoneData& upload_done_data);
 
   // Uploads a previously stored log (see LoggingStoppedDoStore()).
-  void UploadStoredLog(const WebRtcLogUploadDoneData& upload_data);
+  void UploadStoredLog(const UploadDoneData& upload_data);
 
   // Similarly to LoggingStoppedDoUpload(), we store the log in compressed
   // format on disk but add the option to specify a unique |log_id| for later
   // identification and potential upload.
-  void LoggingStoppedDoStore(
-      const WebRtcLogPaths& log_paths,
-      const std::string& log_id,
-      std::unique_ptr<WebRtcLogBuffer> log_buffer,
-      std::unique_ptr<MetaDataMap> meta_data,
-      const WebRtcLoggingHandlerHost::GenericDoneCallback& done_callback);
+  void LoggingStoppedDoStore(const WebRtcLogPaths& log_paths,
+                             const std::string& log_id,
+                             std::unique_ptr<WebRtcLogBuffer> log_buffer,
+                             std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
+                             const GenericDoneCallback& done_callback);
 
   // Cancels URL fetcher operation by deleting all URL fetchers. This cancels
   // any pending uploads and releases SystemURLRequestContextGetter references.
-  // Sets |shutting_down_| which prevent new fetchers to be created.
-  void StartShutdown();
+  // Sets |shutdown_| which prevents new fetchers from being created.
+  void Shutdown();
 
   // For testing purposes. If called, the multipart will not be uploaded, but
   // written to |post_data_| instead.
@@ -116,10 +140,6 @@ class WebRtcLogUploader {
   FRIEND_TEST_ALL_PREFIXES(WebRtcLogUploaderTest,
                            AddUploadedLogInfoToUploadListFile);
 
-  void InitURLLoaderFactoryIfNeeded();
-
-  void OnFactoryConnectionClosed();
-
   // Sets up a multipart body to be uploaded. The body is produced according
   // to RFC 2046.
   void SetupMultipart(std::string* post_data,
@@ -130,37 +150,35 @@ class WebRtcLogUploader {
 
   std::string CompressLog(WebRtcLogBuffer* buffer);
 
-  void UploadCompressedLog(const WebRtcLogUploadDoneData& upload_done_data,
+  void UploadCompressedLog(const UploadDoneData& upload_done_data,
                            std::unique_ptr<std::string> post_data);
 
   void DecreaseLogCount();
-
-  void ShutdownOnIOThread();
 
   // Must be called on the FILE thread.
   void WriteCompressedLogToFile(const std::string& compressed_log,
                                 const base::FilePath& log_file_path);
 
-  void PrepareMultipartPostData(
-      const std::string& compressed_log,
-      std::unique_ptr<MetaDataMap> meta_data,
-      const WebRtcLogUploadDoneData& upload_done_data);
+  void PrepareMultipartPostData(const std::string& compressed_log,
+                                std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
+                                const UploadDoneData& upload_done_data);
 
   // Append information (upload time, report ID and local ID) about a log to a
   // log list file, limited to |kLogListLimitLines| entries. This list is used
   // for viewing the logs under chrome://webrtc-logs, see WebRtcLogUploadList.
-  // The list has the format
-  // upload_time,report_id,local_id
-  // upload_time,report_id,local_id
-  // etc.
-  // where each line represents a log. "upload_time" is the time when the log
-  // was uploaded in Unix time. "report_id" is the ID reported back by the
-  // server. "local_id" is the ID for the locally stored log. It's the time
-  // stored in Unix time and it's also used as file name.
-  // AddLocallyStoredLogInfoToUploadListFile() will first be called,
-  // "upload_time" and "report_id" is the left empty in the entry written to the
-  // list file. If uploading is successful, AddUploadedLogInfoToUploadListFile()
-  // is called and those empty items are filled out.
+  // The list has the format:
+  //   [upload_time],[report_id],[local_id],[capture_time]
+  // Each line represents a log.
+  // * |upload_time| is the time when the log was uploaded in Unix time.
+  // * |report_id| is the ID reported back by the server.
+  // * |local_id| is the ID for the locally stored log. It's the time stored
+  //   in Unix time and it's also used as file name.
+  // * |capture_time| is the Unix time when the log was captured.
+  // AddLocallyStoredLogInfoToUploadListFile() will first be called.
+  // |upload_time| and |report_id| will be left empty in the entry written to
+  // the list file. If uploading is successful,
+  // AddUploadedLogInfoToUploadListFile() will be called and those empty fields
+  // will be filled out.
   // Must be called on the FILE thread.
   void AddLocallyStoredLogInfoToUploadListFile(
       const base::FilePath& upload_list_path,
@@ -174,45 +192,43 @@ class WebRtcLogUploader {
   // |response_code| not having a value means that no response code could be
   // retrieved, in which case |network_error_code| should be something other
   // than net::OK.
-  void NotifyUploadDoneAndLogStats(
-      base::Optional<int> response_code,
-      int network_error_code,
-      const std::string& report_id,
-      const WebRtcLogUploadDoneData& upload_done_data);
+  void NotifyUploadDoneAndLogStats(base::Optional<int> response_code,
+                                   int network_error_code,
+                                   const std::string& report_id,
+                                   const UploadDoneData& upload_done_data);
 
   using SimpleURLLoaderList =
       std::list<std::unique_ptr<network::SimpleURLLoader>>;
 
   void OnSimpleLoaderComplete(SimpleURLLoaderList::iterator it,
-                              const WebRtcLogUploadDoneData& upload_done_data,
+                              const UploadDoneData& upload_done_data,
                               std::unique_ptr<std::string> response_body);
 
-  // This is the UI thread for Chromium. Some other thread for tests.
-  THREAD_CHECKER(create_thread_checker_);
+  SEQUENCE_CHECKER(main_sequence_checker_);
+
+  // Main sequence where this class was constructed.
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   // Background sequence where we run background, potentially blocking,
   // operations.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
-  // Keeps track of number of currently open logs. Must be accessed on the IO
-  // thread.
+  // Keeps track of number of currently open logs. Must only be accessed from
+  // the main sequence.
   int log_count_ = 0;
 
   // For testing purposes, see OverrideUploadWithBufferForTesting. Only accessed
-  // on the FILE thread.
+  // on the background sequence
   std::string* post_data_ = nullptr;
 
   // For testing purposes.
   GURL upload_url_for_testing_;
 
-  // Only accessed on the IO thread.
+  // Only accessed on the main sequence.
   SimpleURLLoaderList pending_uploads_;
 
-  // When shutting down, don't create new URL loaders.
-  bool shutting_down_ = false;
-
-  // URLLoaderFactory bound to the IO thread.
-  network::mojom::URLLoaderFactoryPtr url_loader_factory_;
+  // When true, don't create new URL loaders.
+  bool shutdown_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WebRtcLogUploader);
 };

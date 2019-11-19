@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 
 namespace blink {
 
@@ -13,7 +14,8 @@ PlatformNotificationAction::PlatformNotificationAction(
 
 PlatformNotificationAction::~PlatformNotificationAction() {}
 
-PlatformNotificationData::PlatformNotificationData() {}
+PlatformNotificationData::PlatformNotificationData()
+    : direction(mojom::NotificationDirection::LEFT_TO_RIGHT) {}
 
 PlatformNotificationData::PlatformNotificationData(
     const PlatformNotificationData& other) = default;

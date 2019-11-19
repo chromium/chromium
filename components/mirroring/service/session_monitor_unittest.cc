@@ -10,7 +10,7 @@
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/default_tick_clock.h"
 #include "components/mirroring/service/message_dispatcher.h"
 #include "components/mirroring/service/mirror_settings.h"
@@ -18,7 +18,8 @@
 #include "components/mirroring/service/wifi_status_monitor.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/test/utility/net_utility.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,12 +50,12 @@ void VerifyBoolValue(const base::Value& raw_value,
   EXPECT_EQ(expected_value, data);
 }
 
-void VerifyIntValue(const base::Value& raw_value,
-                    const std::string& key,
-                    int32_t expected_value) {
-  int32_t data;
-  EXPECT_TRUE(GetInt(raw_value, key, &data));
-  EXPECT_EQ(expected_value, data);
+void VerifyDoubleValue(const base::Value& raw_value,
+                       const std::string& key,
+                       double expected_value) {
+  double data;
+  EXPECT_TRUE(GetDouble(raw_value, key, &data));
+  EXPECT_NEAR(expected_value, data, DBL_EPSILON * 2);
 }
 
 void VerifyWifiStatus(const base::Value& raw_value,
@@ -66,7 +67,7 @@ void VerifyWifiStatus(const base::Value& raw_value,
   EXPECT_TRUE(found && found->is_dict());
   auto* wifi_status = found->FindKey("receiverWifiStatus");
   EXPECT_TRUE(wifi_status && wifi_status->is_list());
-  const base::Value::ListStorage& status_list = wifi_status->GetList();
+  base::span<const base::Value> status_list = wifi_status->GetList();
   EXPECT_EQ(num_of_status, static_cast<int>(status_list.size()));
   for (int i = 0; i < num_of_status; ++i) {
     double snr = -1;
@@ -87,9 +88,8 @@ class SessionMonitorTest : public mojom::CastMessageChannel,
  public:
   SessionMonitorTest()
       : receiver_address_(media::cast::test::GetFreeLocalPort().address()),
-        binding_(this),
-        message_dispatcher_(CreateInterfacePtrAndBind(),
-                            mojo::MakeRequest(&inbound_channel_),
+        message_dispatcher_(receiver_.BindNewPipeAndPassRemote(),
+                            inbound_channel_.BindNewPipeAndPassReceiver(),
                             error_callback_.Get()) {}
   ~SessionMonitorTest() override {}
 
@@ -99,12 +99,13 @@ class SessionMonitorTest : public mojom::CastMessageChannel,
 
   void CreateSessionMonitor(int max_bytes, std::string* expected_settings) {
     EXPECT_CALL(*this, Send(::testing::_)).Times(::testing::AtLeast(1));
-    network::mojom::URLLoaderFactoryPtr url_loader_factory;
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
     auto test_url_loader_factory =
         std::make_unique<network::TestURLLoaderFactory>();
     url_loader_factory_ = test_url_loader_factory.get();
-    mojo::MakeStrongBinding(std::move(test_url_loader_factory),
-                            mojo::MakeRequest(&url_loader_factory));
+    mojo::MakeSelfOwnedReceiver(
+        std::move(test_url_loader_factory),
+        url_loader_factory.InitWithNewPipeAndPassReceiver());
     MirrorSettings mirror_settings;
     base::Value session_tags(base::Value::Type::DICTIONARY);
     base::Value settings = mirror_settings.ToDictionaryValue();
@@ -142,37 +143,37 @@ class SessionMonitorTest : public mojom::CastMessageChannel,
           "\"wifiFcsError\": [12, 13, 12, 12]}"  // This will be ignored.
           "}";
       inbound_channel_->Send(message.Clone());
-      scoped_task_environment_.RunUntilIdle();
+      task_environment_.RunUntilIdle();
     }
   }
 
   void StartStreamingSession() {
     cast_environment_ = new media::cast::CastEnvironment(
         base::DefaultTickClock::GetInstance(),
-        scoped_task_environment_.GetMainThreadTaskRunner(),
-        scoped_task_environment_.GetMainThreadTaskRunner(),
-        scoped_task_environment_.GetMainThreadTaskRunner());
+        task_environment_.GetMainThreadTaskRunner(),
+        task_environment_.GetMainThreadTaskRunner(),
+        task_environment_.GetMainThreadTaskRunner());
     EXPECT_TRUE(session_monitor_);
     auto wifi_status_monitor =
         std::make_unique<WifiStatusMonitor>(&message_dispatcher_);
     session_monitor_->StartStreamingSession(
         cast_environment_, std::move(wifi_status_monitor),
         SessionMonitor::AUDIO_AND_VIDEO, false /* is_remoting */);
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   void StopStreamingSession() {
     EXPECT_TRUE(session_monitor_);
     session_monitor_->StopStreamingSession();
     cast_environment_ = nullptr;
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   std::vector<SessionMonitor::EventsAndStats> AssembleBundleAndVerify(
       const std::vector<int32_t>& bundle_sizes) {
     std::vector<SessionMonitor::EventsAndStats> bundles =
         session_monitor_->AssembleBundlesAndClear(bundle_sizes);
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     EXPECT_EQ(bundle_sizes.size(), bundles.size());
     for (size_t i = 0; i < bundles.size(); ++i) {
       EXPECT_FALSE(bundles[i].first.empty());
@@ -197,32 +198,26 @@ class SessionMonitorTest : public mojom::CastMessageChannel,
     url_loader_factory_->AddResponse(
         "http://" + receiver_address_.ToString() + ":8008/setup/eureka_info",
         setup_info);
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   void TakeSnapshot() {
     ASSERT_TRUE(session_monitor_);
     session_monitor_->TakeSnapshot();
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   void ReportError(SessionError error) {
     ASSERT_TRUE(session_monitor_);
     session_monitor_->OnStreamingError(error);
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
  private:
-  mojom::CastMessageChannelPtr CreateInterfacePtrAndBind() {
-    mojom::CastMessageChannelPtr outbound_channel_ptr;
-    binding_.Bind(mojo::MakeRequest(&outbound_channel_ptr));
-    return outbound_channel_ptr;
-  }
-
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   const net::IPAddress receiver_address_;
-  mojo::Binding<mojom::CastMessageChannel> binding_;
-  mojom::CastMessageChannelPtr inbound_channel_;
+  mojo::Receiver<mojom::CastMessageChannel> receiver_{this};
+  mojo::Remote<mojom::CastMessageChannel> inbound_channel_;
   base::MockCallback<MessageDispatcher::ErrorCallback> error_callback_;
   MessageDispatcher message_dispatcher_;
   network::TestURLLoaderFactory* url_loader_factory_ = nullptr;
@@ -242,7 +237,7 @@ TEST_F(SessionMonitorTest, ProvidesExpectedTags) {
       AssembleBundleAndVerify(bundle_sizes);
 
   base::Value stats = ReadStats(bundles[0].second);
-  const base::Value::ListStorage& stats_list = stats.GetList();
+  base::span<const base::Value> stats_list = stats.GetList();
   ASSERT_EQ(1u, stats_list.size());
   // Verify tags.
   EXPECT_TRUE(stats_list[0].is_dict());
@@ -277,7 +272,7 @@ TEST_F(SessionMonitorTest, MultipleSessions) {
   std::vector<SessionMonitor::EventsAndStats> bundles =
       AssembleBundleAndVerify(bundle_sizes);
   base::Value stats = ReadStats(bundles[0].second);
-  const base::Value::ListStorage& stats_list = stats.GetList();
+  base::span<const base::Value> stats_list = stats.GetList();
   // There should be two sessions in the recorded stats.
   EXPECT_EQ(2u, stats_list.size());
 }
@@ -296,7 +291,7 @@ TEST_F(SessionMonitorTest, ConfigureMaxRetentionBytes) {
   std::vector<SessionMonitor::EventsAndStats> bundles =
       AssembleBundleAndVerify(bundle_sizes);
   base::Value stats = ReadStats(bundles[0].second);
-  const base::Value::ListStorage& stats_list = stats.GetList();
+  base::span<const base::Value> stats_list = stats.GetList();
   // Expect to only record the second session.
   ASSERT_EQ(1u, stats_list.size());
   VerifyWifiStatus(stats_list[0], 54, 3000, 5);
@@ -316,14 +311,14 @@ TEST_F(SessionMonitorTest, AssembleBundlesWithVaryingSizes) {
 
   // Expect the first bundle has only one session.
   base::Value stats = ReadStats(bundles[0].second);
-  const base::Value::ListStorage& stats_list = stats.GetList();
+  base::span<const base::Value> stats_list = stats.GetList();
   // Expect to only record the second session.
   ASSERT_EQ(1u, stats_list.size());
   VerifyWifiStatus(stats_list[0], 54, 3000, 5);
 
   // Expect the second bundle has both sessions.
   stats = ReadStats(bundles[1].second);
-  const base::Value::ListStorage& stats_list2 = stats.GetList();
+  base::span<const base::Value> stats_list2 = stats.GetList();
   ASSERT_EQ(2u, stats_list2.size());
   VerifyWifiStatus(stats_list2[0], 34, 2000, 5);
   VerifyWifiStatus(stats_list2[1], 54, 3000, 5);
@@ -342,7 +337,7 @@ TEST_F(SessionMonitorTest, ErrorTags) {
   std::vector<SessionMonitor::EventsAndStats> bundles =
       AssembleBundleAndVerify(bundle_sizes);
   base::Value stats = ReadStats(bundles[0].second);
-  const base::Value::ListStorage& stats_list = stats.GetList();
+  base::span<const base::Value> stats_list = stats.GetList();
   // There should be three snapshots in the bundle.
   ASSERT_EQ(3u, stats_list.size());
 
@@ -375,7 +370,7 @@ TEST_F(SessionMonitorTest, ReceiverSetupInfo) {
       "\"connected\": true,"
       "\"ethernet_connected\": false,"
       "\"has_update\": false,"
-      "\"uptime\": 132536 }";
+      "\"uptime\": 13253.6 }";
 
   SendReceiverSetupInfo(receiver_setup_info);
 
@@ -386,7 +381,7 @@ TEST_F(SessionMonitorTest, ReceiverSetupInfo) {
   std::vector<SessionMonitor::EventsAndStats> bundles =
       AssembleBundleAndVerify(bundle_sizes);
   base::Value stats = ReadStats(bundles[0].second);
-  const base::Value::ListStorage& stats_list = stats.GetList();
+  base::span<const base::Value> stats_list = stats.GetList();
   // There should be two snapshots in the bundle.
   EXPECT_EQ(2u, stats_list.size());
 
@@ -406,7 +401,7 @@ TEST_F(SessionMonitorTest, ReceiverSetupInfo) {
   VerifyBoolValue(*tags, "receiverConnected", true);
   VerifyBoolValue(*tags, "receiverOnEthernet", false);
   VerifyBoolValue(*tags, "receiverHasUpdatePending", false);
-  VerifyIntValue(*tags, "receiverUptimeSeconds", 132536);
+  VerifyDoubleValue(*tags, "receiverUptimeSeconds", 13253.6);
 }
 
 }  // namespace mirroring

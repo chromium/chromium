@@ -40,11 +40,6 @@ AXSlider::AXSlider(LayoutObject* layout_object,
                    AXObjectCacheImpl& ax_object_cache)
     : AXLayoutObject(layout_object, ax_object_cache) {}
 
-AXSlider* AXSlider::Create(LayoutObject* layout_object,
-                           AXObjectCacheImpl& ax_object_cache) {
-  return MakeGarbageCollected<AXSlider>(layout_object, ax_object_cache);
-}
-
 ax::mojom::Role AXSlider::DetermineAccessibilityRole() {
   if ((aria_role_ = DetermineAriaRoleAttribute()) != ax::mojom::Role::kUnknown)
     return aria_role_;
@@ -61,7 +56,7 @@ AccessibilityOrientation AXSlider::Orientation() const {
   if (!style)
     return kAccessibilityOrientationHorizontal;
 
-  ControlPart style_appearance = style->Appearance();
+  ControlPart style_appearance = style->EffectiveAppearance();
   switch (style_appearance) {
     case kSliderThumbHorizontalPart:
     case kSliderHorizontalPart:
@@ -92,7 +87,7 @@ void AXSlider::AddChildren() {
 
   // Before actually adding the value indicator to the hierarchy,
   // allow the platform to make a final decision about it.
-  if (thumb->AccessibilityIsIgnored())
+  if (!thumb->AccessibilityIsIncludedInTree())
     cache.Remove(thumb->AXObjectID());
   else
     children_.push_back(thumb);
@@ -118,6 +113,10 @@ bool AXSlider::OnNativeSetValueAction(const String& value) {
 
   // Fire change event manually, as LayoutSlider::setValueForPosition does.
   input->DispatchFormControlChangeEvent();
+
+  // Ensure the AX node is updated.
+  AXObjectCache().MarkAXObjectDirty(this, false);
+
   return true;
 }
 
@@ -128,10 +127,6 @@ HTMLInputElement* AXSlider::GetInputElement() const {
 AXSliderThumb::AXSliderThumb(AXObjectCacheImpl& ax_object_cache)
     : AXMockObject(ax_object_cache) {}
 
-AXSliderThumb* AXSliderThumb::Create(AXObjectCacheImpl& ax_object_cache) {
-  return MakeGarbageCollected<AXSliderThumb>(ax_object_cache);
-}
-
 LayoutObject* AXSliderThumb::LayoutObjectForRelativeBounds() const {
   if (!parent_)
     return nullptr;
@@ -140,7 +135,7 @@ LayoutObject* AXSliderThumb::LayoutObjectForRelativeBounds() const {
   if (!slider_layout_object || !slider_layout_object->IsSlider())
     return nullptr;
   Element* thumb_element =
-      ToElement(slider_layout_object->GetNode())
+      To<Element>(slider_layout_object->GetNode())
           ->UserAgentShadowRoot()
           ->getElementById(shadow_element_names::SliderThumb());
   DCHECK(thumb_element);

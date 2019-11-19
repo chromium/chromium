@@ -60,7 +60,15 @@ class BASE_EXPORT ScopedMachVM {
     }
   }
 
+  // Resets the scoper to manage a new memory region. Both |address| and |size|
+  // must be page-aligned. If the new region is a smaller subset of the
+  // existing region (i.e. the new and old regions overlap), the non-
+  // overlapping part of the old region is deallocated.
   void reset(vm_address_t address = 0, vm_size_t size = 0);
+
+  // Like reset() but does not DCHECK that |address| and |size| are page-
+  // aligned.
+  void reset_unaligned(vm_address_t address, vm_size_t size);
 
   vm_address_t address() const {
     return address_;

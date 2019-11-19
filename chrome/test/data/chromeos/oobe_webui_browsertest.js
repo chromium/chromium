@@ -34,9 +34,9 @@ OobeWebUITest.prototype = {
   /** @override */
   testGenPreamble: function() {
     // OobeWebUI should run in fullscreen.
-    GEN('  FullscreenNotificationObserver fullscreen_observer;');
-    GEN('  chrome::ToggleFullscreenMode(browser());');
-    GEN('  fullscreen_observer.Wait();');
+    GEN('FullscreenNotificationObserver fullscreen_observer(browser());');
+    GEN('chrome::ToggleFullscreenMode(browser());');
+    GEN('fullscreen_observer.Wait();');
   },
 
   /** @override */

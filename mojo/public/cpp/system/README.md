@@ -145,10 +145,10 @@ memory:
 
 ``` cpp
 mojo::ScopedSharedBufferMapping mapping = buffer->Map(64);
-static_cast<int*>(mapping.get()) = 42;
+static_cast<int*>(mapping.get())[0] = 42;
 
 mojo::ScopedSharedBufferMapping another_mapping = buffer->MapAtOffset(64, 4);
-static_cast<int*>(mapping.get()) = 43;
+static_cast<int*>(mapping.get())[0] = 43;
 ```
 
 When `mapping` and `another_mapping` are destroyed, they automatically unmap
@@ -452,7 +452,7 @@ int main(int argc, char** argv) {
   mojo::core::Init();
   base::Thread ipc_thread("ipc!");
   ipc_thread.StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+      base::Thread::Options(base::MessagePumpType::IO, 0));
   mojo::core::ScopedIPCSupport ipc_support(
       ipc_thread.task_runner(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
@@ -486,15 +486,15 @@ mojo::Binding<foo::mojom::Bar> binding(
 // Process B
 auto invitation = mojo::IncomingInvitation::Accept(...);
 auto pipe = invitation->ExtractMessagePipe("x");
-foo::mojom::BarPtr bar(foo::mojom::BarPtrInfo(std::move(pipe), 0));
+mojo::Remote<foo::mojom::Bar> bar(mojo::PendingRemote<foo::mojom::Bar>(std::move(pipe), 0));
 
 // Will asynchronously invoke bar_impl.DoSomething() in process A.
 bar->DoSomething();
 ```
 
 And just to be sure, the usage here could be reversed: the invitation sender
-could just as well treat its pipe endpoint as a `BarPtr` while the receiver
-treats theirs as a `BarRequest` to be bound.
+could just as well treat its pipe endpoint as a `Remote<Bar>` while the receiver
+treats theirs as a `PendingReceiver<Bar>` to be bound.
 
 ### Process Networks
 Accepting an invitation admits the accepting process into the sender's connected

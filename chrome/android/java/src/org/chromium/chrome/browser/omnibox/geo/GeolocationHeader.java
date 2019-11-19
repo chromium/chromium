@@ -7,33 +7,33 @@ package org.chromium.chrome.browser.omnibox.geo;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Process;
 import android.os.SystemClock;
 import android.provider.Settings;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
 import android.support.v4.util.ObjectsCompat;
 import android.util.Base64;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ContentSettingsType;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
 import org.chromium.chrome.browser.preferences.website.ContentSettingValues;
 import org.chromium.chrome.browser.preferences.website.PermissionInfo;
 import org.chromium.chrome.browser.preferences.website.WebsitePreferenceBridge;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.util.UrlUtilities;
+import org.chromium.chrome.browser.util.UrlConstants;
+import org.chromium.chrome.browser.util.UrlUtilitiesJni;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -250,7 +250,7 @@ public class GeolocationHeader {
         if (isIncognito) return HeaderState.INCOGNITO;
 
         // Only send X-Geo header to Google domains.
-        if (!UrlUtilities.nativeIsGoogleSearchUrl(url)) return HeaderState.UNSUITABLE_URL;
+        if (!UrlUtilitiesJni.get().isGoogleSearchUrl(url)) return HeaderState.UNSUITABLE_URL;
 
         Uri uri = Uri.parse(url);
         if (!UrlConstants.HTTPS_SCHEME.equals(uri.getScheme())) return HeaderState.NOT_HTTPS;
@@ -401,8 +401,7 @@ public class GeolocationHeader {
                 // could be called for an origin that isn't the default search engine. Otherwise
                 // remove this line.
                 WebsitePreferenceBridge.isPermissionControlledByDSE(
-                        ContentSettingsType.CONTENT_SETTINGS_TYPE_GEOLOCATION, uri.toString(),
-                        isIncognito)
+                        ContentSettingsType.GEOLOCATION, uri.toString(), isIncognito)
                 && locationContentSettingForUrl(uri, isIncognito) == ContentSettingValues.ALLOW;
         return !enabled;
     }
@@ -437,12 +436,9 @@ public class GeolocationHeader {
 
     /** Returns the location source. */
     @LocationSource
-    // We should replace our usage of LOCATION_PROVIDERS_ALLOWED when the min API is 19.
-    @SuppressWarnings("deprecation")
     private static int getLocationSource() {
         if (sUseLocationSourceForTesting) return sLocationSourceForTesting;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             int locationMode;
             try {
                 locationMode = Settings.Secure.getInt(
@@ -461,21 +457,6 @@ public class GeolocationHeader {
             } else {
                 return LocationSource.MASTER_OFF;
             }
-        } else {
-            String locationProviders = Settings.Secure.getString(
-                    ContextUtils.getApplicationContext().getContentResolver(),
-                    Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-            if (locationProviders.contains(LocationManager.GPS_PROVIDER)
-                    && locationProviders.contains(LocationManager.NETWORK_PROVIDER)) {
-                return LocationSource.HIGH_ACCURACY;
-            } else if (locationProviders.contains(LocationManager.GPS_PROVIDER)) {
-                return LocationSource.GPS_ONLY;
-            } else if (locationProviders.contains(LocationManager.NETWORK_PROVIDER)) {
-                return LocationSource.BATTERY_SAVING;
-            } else {
-                return LocationSource.MASTER_OFF;
-            }
-        }
     }
 
     private static boolean isNetworkLocationEnabled() {

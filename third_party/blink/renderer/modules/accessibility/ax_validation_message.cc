@@ -4,11 +4,12 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_validation_message.h"
 
-#include "SkMatrix44.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/skia/include/core/SkMatrix44.h"
 
 namespace blink {
 
@@ -43,15 +44,15 @@ void AXValidationMessage::GetRelativeBounds(AXObject** out_container,
   if (!listed_element)
     return;
 
-  HTMLElement* form_control = ToHTMLElement(listed_element);
-  if (!form_control || !form_control->GetLayoutObject())
+  HTMLElement& form_control = listed_element->ToHTMLElement();
+  if (!form_control.GetLayoutObject())
     return;
 
   *out_container = ParentObject();
 
-  if (form_control->GetLayoutObject()) {
+  if (form_control.GetLayoutObject()) {
     out_bounds_in_container =
-        FloatRect(form_control->GetLayoutObject()->AbsoluteBoundingBoxRect());
+        FloatRect(form_control.GetLayoutObject()->AbsoluteBoundingBoxRect());
   }
 }
 
@@ -116,19 +117,20 @@ String AXValidationMessage::TextAlternative(
   if (!form_control_element)
     return String();
 
-  String message = form_control_element->validationMessage();
+  StringBuilder message;
+  message.Append(form_control_element->validationMessage());
   if (form_control_element->ValidationSubMessage()) {
-    message.append(' ');
-    message.append(form_control_element->ValidationSubMessage());
+    message.Append(' ');
+    message.Append(form_control_element->ValidationSubMessage());
   }
 
   if (name_sources) {
     name_sources->push_back(NameSource(true));
     name_sources->back().type = ax::mojom::NameFrom::kContents;
-    name_sources->back().text = message;
+    name_sources->back().text = message.ToString();
   }
 
-  return message;
+  return message.ToString();
 }
 
 }  // namespace blink

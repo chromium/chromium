@@ -143,70 +143,154 @@ bool PlanesAreFilledWithValues(const VideoFrame& frame, const uint8_t* values) {
   return true;
 }
 
-TEST(InterprocessFramePoolTest, ResurrectsDeliveredFramesOnly) {
+TEST(InterprocessFramePoolTest, ResurrectFrameThatIsNotInUse) {
   InterprocessFramePool pool(2);
+  const gfx::ColorSpace kArbitraryColorSpace = gfx::ColorSpace::CreateREC709();
 
-  // Reserve a frame, populate it, but release it before delivery.
+  // Reserve a frame, populate it, mark it, and release it.
   scoped_refptr<media::VideoFrame> frame =
       pool.ReserveVideoFrame(kFormat, kSize);
   ASSERT_TRUE(frame);
-  media::FillYUV(frame.get(), 0x11, 0x22, 0x33);
-  frame = nullptr;  // Returns frame to pool.
-
-  // The pool should fail to resurrect the last frame because it was never
-  // delivered.
-  frame = pool.ResurrectLastVideoFrame(kFormat, kSize);
-  ASSERT_FALSE(frame);
-
-  // Reserve a frame and populate it with different color values; only this
-  // time, signal that it will be delivered before releasing it.
-  frame = pool.ReserveVideoFrame(kFormat, kSize);
-  ASSERT_TRUE(frame);
-  const uint8_t kValues[3] = {0x44, 0x55, 0x66};
+  const uint8_t kValues[3] = {0x11, 0x22, 0x33};
   media::FillYUV(frame.get(), kValues[0], kValues[1], kValues[2]);
-  {
-    auto handle = pool.CloneHandleForDelivery(frame.get());
-    ExpectValidHandleForDelivery(handle);
-  }
+  frame->set_color_space(kArbitraryColorSpace);
+  pool.MarkFrame(*frame);
   frame = nullptr;  // Returns frame to pool.
 
-  // Confirm that the last frame can be resurrected repeatedly.
+  ASSERT_TRUE(pool.HasMarkedFrameWithSize(kSize));
+  const gfx::Size kDifferentSize(kSize.width() - 2, kSize.height() + 2);
+  ASSERT_FALSE(pool.HasMarkedFrameWithSize(kDifferentSize));
+
+  // Resurrect the frame and expect it to still have the same content, size,
+  // format, and color space. Release and repeat that a few times.
   for (int i = 0; i < 3; ++i) {
-    frame = pool.ResurrectLastVideoFrame(kFormat, kSize);
+    frame = pool.ResurrectOrDuplicateContentFromMarkedFrame();
     ASSERT_TRUE(frame);
+    ASSERT_EQ(kFormat, frame->format());
+    ASSERT_EQ(kSize, frame->coded_size());
+    ASSERT_EQ(kSize, frame->visible_rect().size());
+    ASSERT_EQ(kSize, frame->natural_size());
+    ASSERT_EQ(kArbitraryColorSpace, frame->ColorSpace());
     ASSERT_TRUE(PlanesAreFilledWithValues(*frame, kValues));
-    frame = nullptr;  // Returns frame to pool.
+    frame = nullptr;
   }
+}
 
-  // A frame that is being delivered cannot be resurrected.
-  for (int i = 0; i < 2; ++i) {
-    if (i == 0) {  // Test this for a resurrected frame.
-      frame = pool.ResurrectLastVideoFrame(kFormat, kSize);
-      ASSERT_TRUE(frame);
-      ASSERT_TRUE(PlanesAreFilledWithValues(*frame, kValues));
-    } else {  // Test this for a normal frame.
-      frame = pool.ReserveVideoFrame(kFormat, kSize);
-      ASSERT_TRUE(frame);
-      media::FillYUV(frame.get(), 0x77, 0x88, 0x99);
-    }
-    {
-      auto handle = pool.CloneHandleForDelivery(frame.get());
-      ExpectValidHandleForDelivery(handle);
-    }
-    scoped_refptr<media::VideoFrame> should_be_null =
-        pool.ResurrectLastVideoFrame(kFormat, kSize);
-    ASSERT_FALSE(should_be_null);
-    frame = nullptr;  // Returns frame to pool.
-  }
+TEST(InterprocessFramePoolTest, ResurrectContentFromFrameThatIsStillInUse) {
+  InterprocessFramePool pool(2);
+  const gfx::ColorSpace kArbitraryColorSpace = gfx::ColorSpace::CreateREC709();
 
-  // Finally, reserve a frame, populate it, and don't deliver it. Expect that,
-  // still, undelivered frames cannot be resurrected.
-  frame = pool.ReserveVideoFrame(kFormat, kSize);
+  // Reserve a frame, populate it, mark it, and hold on to it.
+  scoped_refptr<media::VideoFrame> frame =
+      pool.ReserveVideoFrame(kFormat, kSize);
   ASSERT_TRUE(frame);
-  media::FillYUV(frame.get(), 0xaa, 0xbb, 0xcc);
-  frame = nullptr;  // Returns frame to pool.
-  frame = pool.ResurrectLastVideoFrame(kFormat, kSize);
+  const uint8_t kValues[3] = {0x11, 0x22, 0x33};
+  media::FillYUV(frame.get(), kValues[0], kValues[1], kValues[2]);
+  frame->set_color_space(kArbitraryColorSpace);
+  pool.MarkFrame(*frame);
+
+  ASSERT_TRUE(pool.HasMarkedFrameWithSize(kSize));
+  const gfx::Size kDifferentSize(kSize.width() - 2, kSize.height() + 2);
+  ASSERT_FALSE(pool.HasMarkedFrameWithSize(kDifferentSize));
+
+  scoped_refptr<media::VideoFrame> frame2 =
+      pool.ResurrectOrDuplicateContentFromMarkedFrame();
+  ASSERT_TRUE(frame2);
+  ASSERT_NE(frame, frame2);
+  ASSERT_NE(frame->data(0), frame2->data(0));
+  ASSERT_EQ(kFormat, frame2->format());
+  ASSERT_EQ(kSize, frame2->coded_size());
+  ASSERT_EQ(kSize, frame2->visible_rect().size());
+  ASSERT_EQ(kSize, frame2->natural_size());
+  ASSERT_EQ(kArbitraryColorSpace, frame2->ColorSpace());
+  ASSERT_TRUE(PlanesAreFilledWithValues(*frame2, kValues));
+}
+
+TEST(InterprocessFramePoolTest, ResurrectWhenAtCapacity) {
+  InterprocessFramePool pool(2);
+  const gfx::ColorSpace kArbitraryColorSpace = gfx::ColorSpace::CreateREC709();
+
+  // Reserve two frames and hold on to them
+  scoped_refptr<media::VideoFrame> frame1 =
+      pool.ReserveVideoFrame(kFormat, kSize);
+  scoped_refptr<media::VideoFrame> frame2 =
+      pool.ReserveVideoFrame(kFormat, kSize);
+  ASSERT_TRUE(frame1);
+  ASSERT_TRUE(frame2);
+  // Fill and mark one of them
+  const uint8_t kValues[3] = {0x11, 0x22, 0x33};
+  media::FillYUV(frame1.get(), kValues[0], kValues[1], kValues[2]);
+  frame1->set_color_space(kArbitraryColorSpace);
+  pool.MarkFrame(*frame1);
+
+  // Attempt to resurrect. This should fail, because the pool is already at
+  // capacity.
+  scoped_refptr<media::VideoFrame> frame3 =
+      pool.ResurrectOrDuplicateContentFromMarkedFrame();
+  ASSERT_FALSE(frame3);
+
+  // Release the first frame
+  frame1 = nullptr;
+
+  // Now, resurrecting should work again.
+  frame3 = pool.ResurrectOrDuplicateContentFromMarkedFrame();
+  ASSERT_TRUE(frame3);
+  ASSERT_EQ(kFormat, frame3->format());
+  ASSERT_EQ(kSize, frame3->coded_size());
+  ASSERT_EQ(kArbitraryColorSpace, frame3->ColorSpace());
+  ASSERT_TRUE(PlanesAreFilledWithValues(*frame3, kValues));
+}
+
+TEST(InterprocessFramePoolTest, ResurrectWhenNoFrameMarked) {
+  InterprocessFramePool pool(2);
+
+  // Attempt to resurrect before any frame was ever reserved.
+  scoped_refptr<media::VideoFrame> frame =
+      pool.ResurrectOrDuplicateContentFromMarkedFrame();
   ASSERT_FALSE(frame);
+
+  // Reserve a frame and release it without marking it.
+  scoped_refptr<media::VideoFrame> frame2 =
+      pool.ReserveVideoFrame(kFormat, kSize);
+  ASSERT_TRUE(frame2);
+  frame2 = nullptr;  // Returns frame to pool.
+
+  // Attempt to resurrect. This should fail, because no frame was marked.
+  scoped_refptr<media::VideoFrame> frame3 =
+      pool.ResurrectOrDuplicateContentFromMarkedFrame();
+  ASSERT_FALSE(frame3);
+}
+
+TEST(InterprocessFramePoolTest, FrameMarkingIsLostWhenBufferIsReallocated) {
+  InterprocessFramePool pool(2);
+
+  // Reserve enough frames to hit capacity.
+  scoped_refptr<media::VideoFrame> frame1 =
+      pool.ReserveVideoFrame(kFormat, kSize);
+  scoped_refptr<media::VideoFrame> frame2 =
+      pool.ReserveVideoFrame(kFormat, kSize);
+  ASSERT_TRUE(frame1);
+  ASSERT_TRUE(frame2);
+
+  // Mark one of them
+  pool.MarkFrame(*frame1);
+  ASSERT_TRUE(pool.HasMarkedFrameWithSize(kSize));
+
+  // Release all frames
+  frame1 = nullptr;
+  frame2 = nullptr;
+
+  // Reserve all frames again but this time request a bigger size.
+  // This should lead to all buffers being reallocated and the marking being
+  // lost.
+  gfx::Size kBiggerSize(kSize.width() + 2, kSize.height() + 2);
+  frame1 = pool.ReserveVideoFrame(kFormat, kBiggerSize);
+  frame2 = pool.ReserveVideoFrame(kFormat, kBiggerSize);
+  ASSERT_TRUE(frame1);
+  ASSERT_TRUE(frame2);
+
+  ASSERT_FALSE(pool.HasMarkedFrameWithSize(kSize));
+  ASSERT_FALSE(pool.HasMarkedFrameWithSize(kBiggerSize));
 }
 
 TEST(InterprocessFramePoolTest, ReportsCorrectUtilization) {
@@ -219,7 +303,7 @@ TEST(InterprocessFramePoolTest, ReportsCorrectUtilization) {
     // Reserve the frame and expect 1/2 the pool to be utilized.
     scoped_refptr<media::VideoFrame> frame =
         (i == 0) ? pool.ReserveVideoFrame(kFormat, kSize)
-                 : pool.ResurrectLastVideoFrame(kFormat, kSize);
+                 : pool.ResurrectOrDuplicateContentFromMarkedFrame();
     ASSERT_TRUE(frame);
     ASSERT_EQ(0.5f, pool.GetUtilization());
 
@@ -230,6 +314,9 @@ TEST(InterprocessFramePoolTest, ReportsCorrectUtilization) {
       ExpectValidHandleForDelivery(handle);
     }
     ASSERT_EQ(0.5f, pool.GetUtilization());
+
+    // Mark the frame for later resurrection.
+    pool.MarkFrame(*frame);
 
     // Finally, release the frame to indicate it has been delivered and is no
     // longer in-use by downstream consumers. This should cause the utilization

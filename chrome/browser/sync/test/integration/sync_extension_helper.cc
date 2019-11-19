@@ -20,7 +20,6 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/pending_extension_info.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
-#include "chrome/browser/extensions/signin/gaia_auth_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -227,11 +226,6 @@ SyncExtensionHelper::ExtensionStateMap
       extensions::ExtensionSystem::Get(profile)->extension_service();
   for (const scoped_refptr<const Extension>& extension : *extensions) {
     const std::string& id = extension->id();
-    // When doing Chrome account sign in though the Gaia extension, the Gaia
-    // extensions gets installed once and used by multiple profiles.  This will
-    // cause extension list of profiles to not match.
-    if (id == extensions::kGaiaAuthExtensionId)
-      continue;
     ExtensionState& extension_state = extension_state_map[id];
     extension_state.enabled_state =
         extension_service->IsExtensionEnabled(id) ?

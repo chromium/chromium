@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
@@ -17,6 +16,10 @@
 #include "content/public/browser/notification_registrar.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "url/gurl.h"
+
+#if defined(USE_AURA)
+#include "ui/wm/public/activation_change_observer.h"
+#endif
 
 class ExtensionViewViews;
 
@@ -30,6 +33,9 @@ class ExtensionViewHost;
 
 // The bubble used for hosting a browser-action popup provided by an extension.
 class ExtensionPopup : public views::BubbleDialogDelegateView,
+#if defined(USE_AURA)
+                       public wm::ActivationChangeObserver,
+#endif
                        public ExtensionViewViews::Container,
                        public content::NotificationObserver,
                        public TabStripModelObserver,
@@ -40,7 +46,13 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
     SHOW_AND_INSPECT,
   };
 
-  ~ExtensionPopup() override;
+  // The min/max height of popups.
+  // The minimum is just a little larger than the size of the button itself.
+  // The maximum is an arbitrary number and should be smaller than most screens.
+  static constexpr int kMinWidth = 25;
+  static constexpr int kMinHeight = 25;
+  static constexpr int kMaxWidth = 800;
+  static constexpr int kMaxHeight = 600;
 
   // Creates and shows a popup with the given |host| positioned adjacent to
   // |anchor_view|.
@@ -55,54 +67,54 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
                         views::BubbleBorder::Arrow arrow,
                         ShowAction show_action);
 
+  ~ExtensionPopup() override;
+
   extensions::ExtensionViewHost* host() const { return host_.get(); }
 
-  // views::BubbleDialogDelegateView overrides.
-  int GetDialogButtons() const override;
+  // views::BubbleDialogDelegateView:
+  gfx::Size CalculatePreferredSize() const override;
+  void AddedToWidget() override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
-  bool ShouldHaveRoundCorners() const override;
+#if defined(USE_AURA)
+  void OnWidgetDestroying(views::Widget* widget) override;
 
-  // content::NotificationObserver overrides.
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
+#endif
+
+  // ExtensionViewViews::Container:
+  void OnExtensionSizeChanged(ExtensionViewViews* view) override;
+
+  // content::NotificationObserver:
   void Observe(int type,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
-  // ExtensionViewViews::Container overrides.
-  void OnExtensionSizeChanged(ExtensionViewViews* view) override;
-
-  // views::View overrides.
-  gfx::Size CalculatePreferredSize() const override;
-  void AddedToWidget() override;
-
-  // TabStripModelObserver overrides.
+  // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
-  // The min/max height of popups.
-  static const int kMinWidth;
-  static const int kMinHeight;
-  static const int kMaxWidth;
-  static const int kMaxHeight;
-
- protected:
-  ExtensionPopup(extensions::ExtensionViewHost* host,
-                 views::View* anchor_view,
-                 views::BubbleBorder::Arrow arrow,
-                 ShowAction show_action);
-
-  void CloseUnlessUnderInspection();
-
- private:
-  // Shows the bubble, focuses its content, and registers listeners.
-  void ShowBubble();
-
-  // content::DevToolsAgentHostObserver overrides.
+  // content::DevToolsAgentHostObserver:
   void DevToolsAgentHostAttached(
       content::DevToolsAgentHost* agent_host) override;
   void DevToolsAgentHostDetached(
       content::DevToolsAgentHost* agent_host) override;
+
+ private:
+  ExtensionPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
+                 views::View* anchor_view,
+                 views::BubbleBorder::Arrow arrow,
+                 ShowAction show_action);
+
+  // Shows the bubble, focuses its content, and registers listeners.
+  void ShowBubble();
+
+  // Closes the bubble if the devtools window is not attached.
+  void CloseUnlessUnderInspection();
 
   ExtensionViewViews* GetExtensionView();
 
@@ -112,7 +124,6 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   ShowAction show_action_;
 
   content::NotificationRegistrar registrar_;
-  ScopedObserver<TabStripModel, TabStripModelObserver> observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionPopup);
 };

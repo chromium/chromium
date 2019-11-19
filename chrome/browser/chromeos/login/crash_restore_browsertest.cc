@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
@@ -19,21 +20,30 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager_test_api.h"
+#include "chrome/browser/chromeos/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
+#include "chrome/browser/chromeos/login/test/user_policy_mixin.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/cryptohome_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_session_manager_client.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/login/auth/user_context.h"
+#include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -63,14 +73,11 @@ class CrashRestoreSimpleTest : public InProcessBrowserTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    // Redirect session_manager DBus calls to FakeSessionManagerClient.
-    session_manager_client_ = new FakeSessionManagerClient;
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetSessionManagerClient(
-        std::unique_ptr<SessionManagerClient>(session_manager_client_));
-    session_manager_client_->StartSession(cryptohome_id1_);
+    // Override FakeSessionManagerClient. This will be shut down by the browser.
+    SessionManagerClient::InitializeFakeInMemory();
+    FakeSessionManagerClient::Get()->StartSession(cryptohome_id1_);
   }
 
-  FakeSessionManagerClient* session_manager_client_;
   const AccountId account_id1_ = AccountId::FromUserEmail(kUserId1);
   const AccountId account_id2_ = AccountId::FromUserEmail(kUserId2);
   const AccountId account_id3_ = AccountId::FromUserEmail(kUserId3);
@@ -152,8 +159,8 @@ class CrashRestoreComplexTest : public CrashRestoreSimpleTest {
 
   void SetUpInProcessBrowserTestFixture() override {
     CrashRestoreSimpleTest::SetUpInProcessBrowserTestFixture();
-    session_manager_client_->StartSession(cryptohome_id2_);
-    session_manager_client_->StartSession(cryptohome_id3_);
+    FakeSessionManagerClient::Get()->StartSession(cryptohome_id2_);
+    FakeSessionManagerClient::Get()->StartSession(cryptohome_id3_);
   }
 
   // Register test users so that UserManager knows them and make kUserId3 as the
@@ -257,6 +264,78 @@ IN_PROC_BROWSER_TEST_F(CrashRestoreComplexTest, RestoreSessionForThreeUsers) {
   EXPECT_EQ(session_manager->sessions()[0].user_account_id, account_id1_);
   EXPECT_EQ(session_manager->sessions()[1].user_account_id, account_id2_);
   EXPECT_EQ(session_manager->sessions()[2].user_account_id, account_id3_);
+}
+
+// Tests crash restore flow for child user.
+class CrashRestoreChildUserTest : public MixinBasedInProcessBrowserTest {
+ protected:
+  CrashRestoreChildUserTest() {
+    login_manager_.set_session_restore_enabled();
+
+    // Setup mixins needed for smoother child login in PRE test only, as this is
+    // the test that goes through login flow. These are set up to provide OAuth2
+    // token and fresh child user policy during login (session start is blocked
+    // on fetching the policy - this eventually times out, but adds unnecessary
+    // test runtime).
+    if (content::IsPreTest()) {
+      embedded_test_server_setup_ =
+          std::make_unique<EmbeddedTestServerSetupMixin>(
+              &mixin_host_, embedded_test_server());
+      fake_gaia_ =
+          std::make_unique<FakeGaiaMixin>(&mixin_host_, embedded_test_server());
+      policy_server_ =
+          std::make_unique<LocalPolicyTestServerMixin>(&mixin_host_);
+    }
+    user_policy_mixin_ = std::make_unique<UserPolicyMixin>(
+        &mixin_host_, test_user_.account_id, policy_server_.get());
+  }
+
+  ~CrashRestoreChildUserTest() override = default;
+
+  // MixinBasedInProcessBrowserTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    // Child users require a user policy, set up an empty one so the user can
+    // get through login.
+    ASSERT_TRUE(user_policy_mixin_->RequestPolicyUpdate());
+    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void SetUpOnMainThread() override {
+    if (fake_gaia_) {
+      host_resolver()->AddRule("*", "127.0.0.1");
+      fake_gaia_->SetupFakeGaiaForChildUser(
+          test_user_.account_id.GetUserEmail(),
+          test_user_.account_id.GetGaiaId(), "fake-refresh-token",
+          false /*issue_any_scope_token*/);
+    }
+
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  const LoginManagerMixin::TestUserInfo test_user_{
+      AccountId::FromUserEmailGaiaId("user@test.com", "123456789"),
+      user_manager::USER_TYPE_CHILD};
+
+  LoginManagerMixin login_manager_{&mixin_host_, {test_user_}};
+
+  std::unique_ptr<LocalPolicyTestServerMixin> policy_server_;
+  std::unique_ptr<UserPolicyMixin> user_policy_mixin_;
+
+  std::unique_ptr<EmbeddedTestServerSetupMixin> embedded_test_server_setup_;
+  std::unique_ptr<FakeGaiaMixin> fake_gaia_;
+};
+
+IN_PROC_BROWSER_TEST_F(CrashRestoreChildUserTest, PRE_SessionRestore) {
+  UserContext user_context =
+      LoginManagerMixin::CreateDefaultUserContext(test_user_);
+  user_context.SetRefreshToken("fake-refresh-token");
+
+  // Verify that child user can log in.
+  login_manager_.LoginAndWaitForActiveSession(user_context);
+}
+
+IN_PROC_BROWSER_TEST_F(CrashRestoreChildUserTest, SessionRestore) {
+  // Verify that there is no crash on chrome restart.
 }
 
 }  // namespace chromeos

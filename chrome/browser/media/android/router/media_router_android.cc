@@ -28,21 +28,19 @@ namespace media_router {
 MediaRouterAndroid::PresentationConnectionProxy::PresentationConnectionProxy(
     MediaRouterAndroid* media_router_android,
     const MediaRoute::Id& route_id)
-    : binding_(this),
-      media_router_android_(media_router_android),
-      route_id_(route_id) {}
+    : media_router_android_(media_router_android), route_id_(route_id) {}
 
 MediaRouterAndroid::PresentationConnectionProxy::
     ~PresentationConnectionProxy() = default;
 
 mojom::RoutePresentationConnectionPtr
 MediaRouterAndroid::PresentationConnectionProxy::Init() {
-  auto request = mojo::MakeRequest(&peer_);
-  peer_.set_connection_error_handler(
+  auto receiver = peer_.BindNewPipeAndPassReceiver();
+  peer_.set_disconnect_handler(
       base::BindOnce(&MediaRouterAndroid::OnPresentationConnectionError,
                      base::Unretained(media_router_android_), route_id_));
   peer_->DidChangeState(blink::mojom::PresentationConnectionState::CONNECTED);
-  return mojom::RoutePresentationConnection::New(Bind(), std::move(request));
+  return mojom::RoutePresentationConnection::New(Bind(), std::move(receiver));
 }
 
 void MediaRouterAndroid::PresentationConnectionProxy::OnMessage(
@@ -66,15 +64,14 @@ void MediaRouterAndroid::PresentationConnectionProxy::DidClose(
   });
 }
 
-blink::mojom::PresentationConnectionPtrInfo
+mojo::PendingRemote<blink::mojom::PresentationConnection>
 MediaRouterAndroid::PresentationConnectionProxy::Bind() {
-  blink::mojom::PresentationConnectionPtrInfo conn_info;
-  auto request = mojo::MakeRequest(&conn_info);
-  binding_.Bind(std::move(request));
-  binding_.set_connection_error_handler(
+  mojo::PendingRemote<blink::mojom::PresentationConnection> connection_remote;
+  receiver_.Bind(connection_remote.InitWithNewPipeAndPassReceiver());
+  receiver_.set_disconnect_handler(
       base::BindOnce(&MediaRouterAndroid::OnPresentationConnectionError,
                      base::Unretained(media_router_android_), route_id_));
-  return conn_info;
+  return connection_remote;
 }
 
 void MediaRouterAndroid::PresentationConnectionProxy::SendMessage(

@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -71,12 +71,14 @@ void IconHelper::DidUpdateFaviconURL(
             WasUnableToDownloadFavicon(i->icon_url)) {
           break;
         }
-        web_contents()->DownloadImage(i->icon_url,
-            true,  // Is a favicon
-            0,  // No maximum size
+        web_contents()->DownloadImage(
+            i->icon_url,
+            true,   // Is a favicon
+            0,      // No preferred size
+            0,      // No maximum size
             false,  // Normal cache policy
-            base::Bind(
-                &IconHelper::DownloadFaviconCallback, base::Unretained(this)));
+            base::BindOnce(&IconHelper::DownloadFaviconCallback,
+                           base::Unretained(this)));
         break;
       case content::FaviconURL::IconType::kTouchIcon:
         if (listener_)
@@ -104,12 +106,12 @@ void IconHelper::DidStartNavigationToPendingEntry(
 }
 
 void IconHelper::MarkUnableToDownloadFavicon(const GURL& icon_url) {
-  MissingFaviconURLHash url_hash = base::Hash(icon_url.spec());
+  MissingFaviconURLHash url_hash = base::FastHash(icon_url.spec());
   missing_favicon_urls_.insert(url_hash);
 }
 
 bool IconHelper::WasUnableToDownloadFavicon(const GURL& icon_url) const {
-  MissingFaviconURLHash url_hash = base::Hash(icon_url.spec());
+  MissingFaviconURLHash url_hash = base::FastHash(icon_url.spec());
   return missing_favicon_urls_.find(url_hash) != missing_favicon_urls_.end();
 }
 

@@ -55,18 +55,18 @@ void CSSToStyleMap::MapFillAttachment(StyleResolverState&,
     return;
   }
 
-  if (!value.IsIdentifierValue())
+  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value)
     return;
 
-  const CSSIdentifierValue& identifier_value = ToCSSIdentifierValue(value);
-  switch (identifier_value.GetValueID()) {
-    case CSSValueFixed:
+  switch (identifier_value->GetValueID()) {
+    case CSSValueID::kFixed:
       layer->SetAttachment(EFillAttachment::kFixed);
       break;
-    case CSSValueScroll:
+    case CSSValueID::kScroll:
       layer->SetAttachment(EFillAttachment::kScroll);
       break;
-    case CSSValueLocal:
+    case CSSValueID::kLocal:
       layer->SetAttachment(EFillAttachment::kLocal);
       break;
     default:
@@ -82,11 +82,11 @@ void CSSToStyleMap::MapFillClip(StyleResolverState&,
     return;
   }
 
-  if (!value.IsIdentifierValue())
+  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value)
     return;
 
-  const CSSIdentifierValue& identifier_value = ToCSSIdentifierValue(value);
-  layer->SetClip(identifier_value.ConvertTo<EFillBox>());
+  layer->SetClip(identifier_value->ConvertTo<EFillBox>());
 }
 
 void CSSToStyleMap::MapFillComposite(StyleResolverState&,
@@ -97,11 +97,11 @@ void CSSToStyleMap::MapFillComposite(StyleResolverState&,
     return;
   }
 
-  if (!value.IsIdentifierValue())
+  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value)
     return;
 
-  const CSSIdentifierValue& identifier_value = ToCSSIdentifierValue(value);
-  layer->SetComposite(identifier_value.ConvertTo<CompositeOperator>());
+  layer->SetComposite(identifier_value->ConvertTo<CompositeOperator>());
 }
 
 void CSSToStyleMap::MapFillBlendMode(StyleResolverState&,
@@ -112,11 +112,11 @@ void CSSToStyleMap::MapFillBlendMode(StyleResolverState&,
     return;
   }
 
-  if (!value.IsIdentifierValue())
+  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value)
     return;
 
-  const CSSIdentifierValue& identifier_value = ToCSSIdentifierValue(value);
-  layer->SetBlendMode(identifier_value.ConvertTo<BlendMode>());
+  layer->SetBlendMode(identifier_value->ConvertTo<BlendMode>());
 }
 
 void CSSToStyleMap::MapFillOrigin(StyleResolverState&,
@@ -127,11 +127,11 @@ void CSSToStyleMap::MapFillOrigin(StyleResolverState&,
     return;
   }
 
-  if (!value.IsIdentifierValue())
+  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value)
     return;
 
-  const CSSIdentifierValue& identifier_value = ToCSSIdentifierValue(value);
-  layer->SetOrigin(identifier_value.ConvertTo<EFillBox>());
+  layer->SetOrigin(identifier_value->ConvertTo<EFillBox>());
 }
 
 void CSSToStyleMap::MapFillImage(StyleResolverState& state,
@@ -143,8 +143,8 @@ void CSSToStyleMap::MapFillImage(StyleResolverState& state,
   }
 
   CSSPropertyID property = layer->GetType() == EFillLayerType::kBackground
-                               ? CSSPropertyBackgroundImage
-                               : CSSPropertyWebkitMaskImage;
+                               ? CSSPropertyID::kBackgroundImage
+                               : CSSPropertyID::kWebkitMaskImage;
   layer->SetImage(state.GetStyleImage(property, value));
 }
 
@@ -156,11 +156,11 @@ void CSSToStyleMap::MapFillRepeatX(StyleResolverState&,
     return;
   }
 
-  if (!value.IsIdentifierValue())
+  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value)
     return;
 
-  const CSSIdentifierValue& identifier_value = ToCSSIdentifierValue(value);
-  layer->SetRepeatX(identifier_value.ConvertTo<EFillRepeat>());
+  layer->SetRepeatX(identifier_value->ConvertTo<EFillRepeat>());
 }
 
 void CSSToStyleMap::MapFillRepeatY(StyleResolverState&,
@@ -171,11 +171,11 @@ void CSSToStyleMap::MapFillRepeatY(StyleResolverState&,
     return;
   }
 
-  if (!value.IsIdentifierValue())
+  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value)
     return;
 
-  const CSSIdentifierValue& identifier_value = ToCSSIdentifierValue(value);
-  layer->SetRepeatY(identifier_value.ConvertTo<EFillRepeat>());
+  layer->SetRepeatY(identifier_value->ConvertTo<EFillRepeat>());
 }
 
 void CSSToStyleMap::MapFillSize(StyleResolverState& state,
@@ -187,24 +187,24 @@ void CSSToStyleMap::MapFillSize(StyleResolverState& state,
     return;
   }
 
-  if (!value.IsIdentifierValue() && !value.IsPrimitiveValue() &&
-      !value.IsValuePair())
+  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value && !value.IsPrimitiveValue() && !value.IsValuePair())
     return;
 
-  if (value.IsIdentifierValue() &&
-      ToCSSIdentifierValue(value).GetValueID() == CSSValueContain)
+  if (identifier_value &&
+      identifier_value->GetValueID() == CSSValueID::kContain)
     layer->SetSizeType(EFillSizeType::kContain);
-  else if (value.IsIdentifierValue() &&
-           ToCSSIdentifierValue(value).GetValueID() == CSSValueCover)
+  else if (identifier_value &&
+           identifier_value->GetValueID() == CSSValueID::kCover)
     layer->SetSizeType(EFillSizeType::kCover);
   else
     layer->SetSizeType(EFillSizeType::kSizeLength);
 
   LengthSize b = FillLayer::InitialFillSizeLength(layer->GetType());
 
-  if (value.IsIdentifierValue() &&
-      (ToCSSIdentifierValue(value).GetValueID() == CSSValueContain ||
-       ToCSSIdentifierValue(value).GetValueID() == CSSValueCover)) {
+  if (identifier_value &&
+      (identifier_value->GetValueID() == CSSValueID::kContain ||
+       identifier_value->GetValueID() == CSSValueID::kCover)) {
     layer->SetSizeLength(b);
     return;
   }
@@ -212,12 +212,11 @@ void CSSToStyleMap::MapFillSize(StyleResolverState& state,
   Length first_length;
   Length second_length;
 
-  if (value.IsValuePair()) {
-    const CSSValuePair& pair = ToCSSValuePair(value);
+  if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
     first_length =
-        StyleBuilderConverter::ConvertLengthOrAuto(state, pair.First());
+        StyleBuilderConverter::ConvertLengthOrAuto(state, pair->First());
     second_length =
-        StyleBuilderConverter::ConvertLengthOrAuto(state, pair.Second());
+        StyleBuilderConverter::ConvertLengthOrAuto(state, pair->Second());
   } else {
     DCHECK(value.IsPrimitiveValue() || value.IsIdentifierValue());
     first_length = StyleBuilderConverter::ConvertLengthOrAuto(state, value);
@@ -237,24 +236,25 @@ void CSSToStyleMap::MapFillPositionX(StyleResolverState& state,
     return;
   }
 
-  if (!value.IsIdentifierValue() && !value.IsPrimitiveValue() &&
-      !value.IsValuePair())
+  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value && !value.IsPrimitiveValue() && !value.IsValuePair())
     return;
 
   Length length;
-  if (value.IsValuePair())
-    length = ToCSSPrimitiveValue(ToCSSValuePair(value).Second())
+  auto* pair = DynamicTo<CSSValuePair>(value);
+  if (pair)
+    length = To<CSSPrimitiveValue>(pair->Second())
                  .ConvertToLength(state.CssToLengthConversionData());
   else
-    length = StyleBuilderConverter::ConvertPositionLength<CSSValueLeft,
-                                                          CSSValueRight>(state,
-                                                                         value);
+    length = StyleBuilderConverter::ConvertPositionLength<CSSValueID::kLeft,
+                                                          CSSValueID::kRight>(
+        state, value);
 
   layer->SetPositionX(length);
-  if (value.IsValuePair())
-    layer->SetBackgroundXOrigin(
-        ToCSSIdentifierValue(ToCSSValuePair(value).First())
-            .ConvertTo<BackgroundEdgeOrigin>());
+  if (pair) {
+    layer->SetBackgroundXOrigin(To<CSSIdentifierValue>(pair->First())
+                                    .ConvertTo<BackgroundEdgeOrigin>());
+  }
 }
 
 void CSSToStyleMap::MapFillPositionY(StyleResolverState& state,
@@ -265,24 +265,25 @@ void CSSToStyleMap::MapFillPositionY(StyleResolverState& state,
     return;
   }
 
-  if (!value.IsIdentifierValue() && !value.IsPrimitiveValue() &&
-      !value.IsValuePair())
+  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value && !value.IsPrimitiveValue() && !value.IsValuePair())
     return;
 
   Length length;
-  if (value.IsValuePair())
-    length = ToCSSPrimitiveValue(ToCSSValuePair(value).Second())
+  auto* pair = DynamicTo<CSSValuePair>(value);
+  if (pair)
+    length = To<CSSPrimitiveValue>(pair->Second())
                  .ConvertToLength(state.CssToLengthConversionData());
   else
-    length = StyleBuilderConverter::ConvertPositionLength<CSSValueTop,
-                                                          CSSValueBottom>(
+    length = StyleBuilderConverter::ConvertPositionLength<CSSValueID::kTop,
+                                                          CSSValueID::kBottom>(
         state, value);
 
   layer->SetPositionY(length);
-  if (value.IsValuePair())
-    layer->SetBackgroundYOrigin(
-        ToCSSIdentifierValue(ToCSSValuePair(value).First())
-            .ConvertTo<BackgroundEdgeOrigin>());
+  if (pair) {
+    layer->SetBackgroundYOrigin(To<CSSIdentifierValue>(pair->First())
+                                    .ConvertTo<BackgroundEdgeOrigin>());
+  }
 }
 
 void CSSToStyleMap::MapFillMaskSourceType(StyleResolverState&,
@@ -294,17 +295,18 @@ void CSSToStyleMap::MapFillMaskSourceType(StyleResolverState&,
     return;
   }
 
-  if (!value.IsIdentifierValue())
+  const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value)
     return;
 
-  switch (ToCSSIdentifierValue(value).GetValueID()) {
-    case CSSValueAlpha:
+  switch (identifier_value->GetValueID()) {
+    case CSSValueID::kAlpha:
       type = EMaskSourceType::kAlpha;
       break;
-    case CSSValueLuminance:
+    case CSSValueID::kLuminance:
       type = EMaskSourceType::kLuminance;
       break;
-    case CSSValueAuto:
+    case CSSValueID::kAuto:
       break;
     default:
       NOTREACHED();
@@ -316,7 +318,7 @@ void CSSToStyleMap::MapFillMaskSourceType(StyleResolverState&,
 double CSSToStyleMap::MapAnimationDelay(const CSSValue& value) {
   if (value.IsInitialValue())
     return CSSTimingData::InitialDelay();
-  return ToCSSPrimitiveValue(value).ComputeSeconds();
+  return To<CSSPrimitiveValue>(value).ComputeSeconds();
 }
 
 Timing::PlaybackDirection CSSToStyleMap::MapAnimationDirection(
@@ -324,14 +326,14 @@ Timing::PlaybackDirection CSSToStyleMap::MapAnimationDirection(
   if (value.IsInitialValue())
     return CSSAnimationData::InitialDirection();
 
-  switch (ToCSSIdentifierValue(value).GetValueID()) {
-    case CSSValueNormal:
+  switch (To<CSSIdentifierValue>(value).GetValueID()) {
+    case CSSValueID::kNormal:
       return Timing::PlaybackDirection::NORMAL;
-    case CSSValueAlternate:
+    case CSSValueID::kAlternate:
       return Timing::PlaybackDirection::ALTERNATE_NORMAL;
-    case CSSValueReverse:
+    case CSSValueID::kReverse:
       return Timing::PlaybackDirection::REVERSE;
-    case CSSValueAlternateReverse:
+    case CSSValueID::kAlternateReverse:
       return Timing::PlaybackDirection::ALTERNATE_REVERSE;
     default:
       NOTREACHED();
@@ -342,21 +344,21 @@ Timing::PlaybackDirection CSSToStyleMap::MapAnimationDirection(
 double CSSToStyleMap::MapAnimationDuration(const CSSValue& value) {
   if (value.IsInitialValue())
     return CSSTimingData::InitialDuration();
-  return ToCSSPrimitiveValue(value).ComputeSeconds();
+  return To<CSSPrimitiveValue>(value).ComputeSeconds();
 }
 
 Timing::FillMode CSSToStyleMap::MapAnimationFillMode(const CSSValue& value) {
   if (value.IsInitialValue())
     return CSSAnimationData::InitialFillMode();
 
-  switch (ToCSSIdentifierValue(value).GetValueID()) {
-    case CSSValueNone:
+  switch (To<CSSIdentifierValue>(value).GetValueID()) {
+    case CSSValueID::kNone:
       return Timing::FillMode::NONE;
-    case CSSValueForwards:
+    case CSSValueID::kForwards:
       return Timing::FillMode::FORWARDS;
-    case CSSValueBackwards:
+    case CSSValueID::kBackwards:
       return Timing::FillMode::BACKWARDS;
-    case CSSValueBoth:
+    case CSSValueID::kBoth:
       return Timing::FillMode::BOTH;
     default:
       NOTREACHED();
@@ -367,27 +369,28 @@ Timing::FillMode CSSToStyleMap::MapAnimationFillMode(const CSSValue& value) {
 double CSSToStyleMap::MapAnimationIterationCount(const CSSValue& value) {
   if (value.IsInitialValue())
     return CSSAnimationData::InitialIterationCount();
-  if (value.IsIdentifierValue() &&
-      ToCSSIdentifierValue(value).GetValueID() == CSSValueInfinite)
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (identifier_value &&
+      identifier_value->GetValueID() == CSSValueID::kInfinite)
     return std::numeric_limits<double>::infinity();
-  return ToCSSPrimitiveValue(value).GetFloatValue();
+  return To<CSSPrimitiveValue>(value).GetFloatValue();
 }
 
 AtomicString CSSToStyleMap::MapAnimationName(const CSSValue& value) {
   if (value.IsInitialValue())
     return CSSAnimationData::InitialName();
-  if (value.IsCustomIdentValue())
-    return AtomicString(ToCSSCustomIdentValue(value).Value());
-  DCHECK_EQ(ToCSSIdentifierValue(value).GetValueID(), CSSValueNone);
+  if (auto* custom_ident_value = DynamicTo<CSSCustomIdentValue>(value))
+    return AtomicString(custom_ident_value->Value());
+  DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
   return CSSAnimationData::InitialName();
 }
 
 EAnimPlayState CSSToStyleMap::MapAnimationPlayState(const CSSValue& value) {
   if (value.IsInitialValue())
     return CSSAnimationData::InitialPlayState();
-  if (ToCSSIdentifierValue(value).GetValueID() == CSSValuePaused)
+  if (To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kPaused)
     return EAnimPlayState::kPaused;
-  DCHECK_EQ(ToCSSIdentifierValue(value).GetValueID(), CSSValueRunning);
+  DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kRunning);
   return EAnimPlayState::kPlaying;
 }
 
@@ -395,17 +398,16 @@ CSSTransitionData::TransitionProperty CSSToStyleMap::MapAnimationProperty(
     const CSSValue& value) {
   if (value.IsInitialValue())
     return CSSTransitionData::InitialProperty();
-  if (value.IsCustomIdentValue()) {
-    const CSSCustomIdentValue& custom_ident_value =
-        ToCSSCustomIdentValue(value);
-    if (custom_ident_value.IsKnownPropertyID())
+  if (const auto* custom_ident_value = DynamicTo<CSSCustomIdentValue>(value)) {
+    if (custom_ident_value->IsKnownPropertyID()) {
       return CSSTransitionData::TransitionProperty(
-          custom_ident_value.ValueAsPropertyID());
-    return CSSTransitionData::TransitionProperty(custom_ident_value.Value());
+          custom_ident_value->ValueAsPropertyID());
+    }
+    return CSSTransitionData::TransitionProperty(custom_ident_value->Value());
   }
-  if (ToCSSIdentifierValue(value).GetValueID() == CSSValueAll)
+  if (To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kAll)
     return CSSTransitionData::InitialProperty();
-  DCHECK_EQ(ToCSSIdentifierValue(value).GetValueID(), CSSValueNone);
+  DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
   return CSSTransitionData::TransitionProperty(
       CSSTransitionData::kTransitionNone);
 }
@@ -417,27 +419,26 @@ scoped_refptr<TimingFunction> CSSToStyleMap::MapAnimationTimingFunction(
   // currently get into here with initial since the parser expands unset
   // properties in shorthands to initial.
 
-  if (value.IsIdentifierValue()) {
-    const CSSIdentifierValue& identifier_value = ToCSSIdentifierValue(value);
-    switch (identifier_value.GetValueID()) {
-      case CSSValueLinear:
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    switch (identifier_value->GetValueID()) {
+      case CSSValueID::kLinear:
         return LinearTimingFunction::Shared();
-      case CSSValueEase:
+      case CSSValueID::kEase:
         return CubicBezierTimingFunction::Preset(
             CubicBezierTimingFunction::EaseType::EASE);
-      case CSSValueEaseIn:
+      case CSSValueID::kEaseIn:
         return CubicBezierTimingFunction::Preset(
             CubicBezierTimingFunction::EaseType::EASE_IN);
-      case CSSValueEaseOut:
+      case CSSValueID::kEaseOut:
         return CubicBezierTimingFunction::Preset(
             CubicBezierTimingFunction::EaseType::EASE_OUT);
-      case CSSValueEaseInOut:
+      case CSSValueID::kEaseInOut:
         return CubicBezierTimingFunction::Preset(
             CubicBezierTimingFunction::EaseType::EASE_IN_OUT);
-      case CSSValueStepStart:
+      case CSSValueID::kStepStart:
         return StepsTimingFunction::Preset(
             StepsTimingFunction::StepPosition::START);
-      case CSSValueStepEnd:
+      case CSSValueID::kStepEnd:
         return StepsTimingFunction::Preset(
             StepsTimingFunction::StepPosition::END);
       default:
@@ -446,26 +447,18 @@ scoped_refptr<TimingFunction> CSSToStyleMap::MapAnimationTimingFunction(
     }
   }
 
-  if (value.IsCubicBezierTimingFunctionValue()) {
-    const cssvalue::CSSCubicBezierTimingFunctionValue& cubic_timing_function =
-        cssvalue::ToCSSCubicBezierTimingFunctionValue(value);
+  if (const auto* cubic_timing_function =
+          DynamicTo<cssvalue::CSSCubicBezierTimingFunctionValue>(value)) {
     return CubicBezierTimingFunction::Create(
-        cubic_timing_function.X1(), cubic_timing_function.Y1(),
-        cubic_timing_function.X2(), cubic_timing_function.Y2());
+        cubic_timing_function->X1(), cubic_timing_function->Y1(),
+        cubic_timing_function->X2(), cubic_timing_function->Y2());
   }
 
   if (value.IsInitialValue())
     return CSSTimingData::InitialTimingFunction();
 
-  if (value.IsFramesTimingFunctionValue()) {
-    const cssvalue::CSSFramesTimingFunctionValue& frames_timing_function =
-        cssvalue::ToCSSFramesTimingFunctionValue(value);
-    return FramesTimingFunction::Create(
-        frames_timing_function.NumberOfFrames());
-  }
-
-  const cssvalue::CSSStepsTimingFunctionValue& steps_timing_function =
-      cssvalue::ToCSSStepsTimingFunctionValue(value);
+  const auto& steps_timing_function =
+      To<cssvalue::CSSStepsTimingFunctionValue>(value);
   return StepsTimingFunction::Create(steps_timing_function.NumberOfSteps(),
                                      steps_timing_function.GetStepPosition());
 }
@@ -474,52 +467,53 @@ void CSSToStyleMap::MapNinePieceImage(StyleResolverState& state,
                                       CSSPropertyID property,
                                       const CSSValue& value,
                                       NinePieceImage& image) {
+  // Retrieve the border image value.
+  const auto* border_image = DynamicTo<CSSValueList>(value);
+
   // If we're not a value list, then we are "none" and don't need to alter the
   // empty image at all.
-  if (!value.IsValueList())
+  if (!border_image)
     return;
-
-  // Retrieve the border image value.
-  const CSSValueList& border_image = ToCSSValueList(value);
 
   // Set the image (this kicks off the load).
   CSSPropertyID image_property;
-  if (property == CSSPropertyWebkitBorderImage)
-    image_property = CSSPropertyBorderImageSource;
-  else if (property == CSSPropertyWebkitMaskBoxImage)
-    image_property = CSSPropertyWebkitMaskBoxImageSource;
+  if (property == CSSPropertyID::kWebkitBorderImage)
+    image_property = CSSPropertyID::kBorderImageSource;
+  else if (property == CSSPropertyID::kWebkitMaskBoxImage)
+    image_property = CSSPropertyID::kWebkitMaskBoxImageSource;
   else
     image_property = property;
 
-  for (unsigned i = 0; i < border_image.length(); ++i) {
-    const CSSValue& current = border_image.Item(i);
+  for (unsigned i = 0; i < border_image->length(); ++i) {
+    const CSSValue& current = border_image->Item(i);
 
     if (current.IsImageValue() || current.IsImageGeneratorValue() ||
         current.IsImageSetValue()) {
       image.SetImage(state.GetStyleImage(image_property, current));
     } else if (current.IsBorderImageSliceValue()) {
       MapNinePieceImageSlice(state, current, image);
-    } else if (current.IsValueList()) {
-      const CSSValueList& slash_list = ToCSSValueList(current);
-      size_t length = slash_list.length();
+    } else if (const auto* slash_list = DynamicTo<CSSValueList>(current)) {
+      size_t length = slash_list->length();
       // Map in the image slices.
-      if (length && slash_list.Item(0).IsBorderImageSliceValue())
-        MapNinePieceImageSlice(state, slash_list.Item(0), image);
+      if (length && slash_list->Item(0).IsBorderImageSliceValue())
+        MapNinePieceImageSlice(state, slash_list->Item(0), image);
 
       // Map in the border slices.
-      if (length > 1)
-        image.SetBorderSlices(MapNinePieceImageQuad(state, slash_list.Item(1)));
+      if (length > 1) {
+        image.SetBorderSlices(
+            MapNinePieceImageQuad(state, slash_list->Item(1)));
+      }
 
       // Map in the outset.
       if (length > 2)
-        image.SetOutset(MapNinePieceImageQuad(state, slash_list.Item(2)));
+        image.SetOutset(MapNinePieceImageQuad(state, slash_list->Item(2)));
     } else if (current.IsPrimitiveValue() || current.IsValuePair()) {
       // Set the appropriate rules for stretch/round/repeat of the slices.
       MapNinePieceImageRepeat(state, current, image);
     }
   }
 
-  if (property == CSSPropertyWebkitBorderImage) {
+  if (property == CSSPropertyID::kWebkitBorderImage) {
     // We have to preserve the legacy behavior of -webkit-border-image and make
     // the border slices also set the border widths. We don't need to worry
     // about percentages, since we don't even support those on real borders yet.
@@ -551,22 +545,23 @@ static Length ConvertBorderImageSliceSide(const CSSPrimitiveValue& value) {
 void CSSToStyleMap::MapNinePieceImageSlice(StyleResolverState&,
                                            const CSSValue& value,
                                            NinePieceImage& image) {
-  if (!value.IsBorderImageSliceValue())
+  if (!IsA<cssvalue::CSSBorderImageSliceValue>(value))
     return;
 
   // Retrieve the border image value.
-  const cssvalue::CSSBorderImageSliceValue& border_image_slice =
-      cssvalue::ToCSSBorderImageSliceValue(value);
+  const auto& border_image_slice =
+      To<cssvalue::CSSBorderImageSliceValue>(value);
 
   // Set up a length box to represent our image slices.
   LengthBox box;
   const CSSQuadValue& slices = border_image_slice.Slices();
-  box.top_ = ConvertBorderImageSliceSide(ToCSSPrimitiveValue(*slices.Top()));
+  box.top_ = ConvertBorderImageSliceSide(To<CSSPrimitiveValue>(*slices.Top()));
   box.bottom_ =
-      ConvertBorderImageSliceSide(ToCSSPrimitiveValue(*slices.Bottom()));
-  box.left_ = ConvertBorderImageSliceSide(ToCSSPrimitiveValue(*slices.Left()));
+      ConvertBorderImageSliceSide(To<CSSPrimitiveValue>(*slices.Bottom()));
+  box.left_ =
+      ConvertBorderImageSliceSide(To<CSSPrimitiveValue>(*slices.Left()));
   box.right_ =
-      ConvertBorderImageSliceSide(ToCSSPrimitiveValue(*slices.Right()));
+      ConvertBorderImageSliceSide(To<CSSPrimitiveValue>(*slices.Right()));
   image.SetImageSlices(box);
 
   // Set our fill mode.
@@ -575,10 +570,9 @@ void CSSToStyleMap::MapNinePieceImageSlice(StyleResolverState&,
 
 static BorderImageLength ToBorderImageLength(const StyleResolverState& state,
                                              const CSSValue& value) {
-  if (value.IsPrimitiveValue()) {
-    const CSSPrimitiveValue& primitive_value = ToCSSPrimitiveValue(value);
-    if (primitive_value.IsNumber())
-      return primitive_value.GetDoubleValue();
+  if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
+    if (primitive_value->IsNumber())
+      return primitive_value->GetDoubleValue();
   }
   return StyleBuilderConverter::ConvertLengthOrAuto(state, value);
 }
@@ -586,40 +580,41 @@ static BorderImageLength ToBorderImageLength(const StyleResolverState& state,
 BorderImageLengthBox CSSToStyleMap::MapNinePieceImageQuad(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (!value.IsQuadValue())
+  const auto* slices = DynamicTo<CSSQuadValue>(value);
+  if (!slices)
     return BorderImageLengthBox(Length::Auto());
 
-  const CSSQuadValue& slices = ToCSSQuadValue(value);
   // Set up a border image length box to represent our image slices.
-  return BorderImageLengthBox(ToBorderImageLength(state, *slices.Top()),
-                              ToBorderImageLength(state, *slices.Right()),
-                              ToBorderImageLength(state, *slices.Bottom()),
-                              ToBorderImageLength(state, *slices.Left()));
+  return BorderImageLengthBox(ToBorderImageLength(state, *slices->Top()),
+                              ToBorderImageLength(state, *slices->Right()),
+                              ToBorderImageLength(state, *slices->Bottom()),
+                              ToBorderImageLength(state, *slices->Left()));
 }
 
 void CSSToStyleMap::MapNinePieceImageRepeat(StyleResolverState&,
                                             const CSSValue& value,
                                             NinePieceImage& image) {
-  if (!value.IsValuePair())
+  const auto* pair = DynamicTo<CSSValuePair>(value);
+  if (!pair)
     return;
 
-  const CSSValuePair& pair = ToCSSValuePair(value);
-  CSSValueID first_identifier = ToCSSIdentifierValue(pair.First()).GetValueID();
+  CSSValueID first_identifier =
+      To<CSSIdentifierValue>(pair->First()).GetValueID();
   CSSValueID second_identifier =
-      ToCSSIdentifierValue(pair.Second()).GetValueID();
+      To<CSSIdentifierValue>(pair->Second()).GetValueID();
 
   ENinePieceImageRule horizontal_rule;
   switch (first_identifier) {
-    case CSSValueStretch:
+    case CSSValueID::kStretch:
       horizontal_rule = kStretchImageRule;
       break;
-    case CSSValueRound:
+    case CSSValueID::kRound:
       horizontal_rule = kRoundImageRule;
       break;
-    case CSSValueSpace:
+    case CSSValueID::kSpace:
       horizontal_rule = kSpaceImageRule;
       break;
-    default:  // CSSValueRepeat
+    default:  // CSSValueID::kRepeat
       horizontal_rule = kRepeatImageRule;
       break;
   }
@@ -627,16 +622,16 @@ void CSSToStyleMap::MapNinePieceImageRepeat(StyleResolverState&,
 
   ENinePieceImageRule vertical_rule;
   switch (second_identifier) {
-    case CSSValueStretch:
+    case CSSValueID::kStretch:
       vertical_rule = kStretchImageRule;
       break;
-    case CSSValueRound:
+    case CSSValueID::kRound:
       vertical_rule = kRoundImageRule;
       break;
-    case CSSValueSpace:
+    case CSSValueID::kSpace:
       vertical_rule = kSpaceImageRule;
       break;
-    default:  // CSSValueRepeat
+    default:  // CSSValueID::kRepeat
       vertical_rule = kRepeatImageRule;
       break;
   }

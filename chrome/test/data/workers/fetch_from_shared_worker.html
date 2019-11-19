@@ -1,14 +1,13 @@
 <script>
-const worker = new SharedWorker('fetch_from_shared_worker.js');
-worker.port.onmessage = e => {
-  document.body.innerText += e.data;
-  document.title = 'DONE';
-};
-worker.port.start();
+  const worker = new SharedWorker('fetch_from_shared_worker.js');
 
-function fetch_from_shared_worker(url) {
-  document.title = 'Fetching';
-  document.body.innerText = '';
-  worker.port.postMessage({url: url});
-}
+  let resolve;
+  worker.port.onmessage = e => { resolve(e.data); };
+  worker.port.start();
+
+  function fetch_from_shared_worker(url) {
+    let p = new Promise(r => { resolve = r; });
+    worker.port.postMessage({ url });
+    return p;
+  }
 </script>

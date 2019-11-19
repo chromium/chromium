@@ -40,42 +40,36 @@ Benchmark timings are output by telemetry to stdout and written to
 
 """
 
-import logging
 import json
 import optparse
 import os
-import posixpath
 import shutil
-import subprocess
 import sys
 import tempfile
-from time import sleep
+import time
 import urllib
 
 REPOSITORY_ROOT = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..', '..', '..'))
 
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'tools', 'perf'))
-from core import path_util
-sys.path.append(path_util.GetTelemetryDir())
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'build', 'android'))
-sys.path.append(os.path.join(
-    REPOSITORY_ROOT, 'third_party', 'catapult', 'devil'))
-sys.path.append(os.path.join(REPOSITORY_ROOT, 'components', 'cronet', 'tools'))
+sys.path.append(os.path.join(REPOSITORY_ROOT, 'components'))
 
-import android_rndis_forwarder
+# pylint: disable=wrong-import-position
 from chrome_telemetry_build import chromium_config
 from devil.android import device_utils
 from devil.android.sdk import intent
+from core import benchmark_runner
+from cronet.tools import android_rndis_forwarder
+from cronet.tools import perf_test_utils
 import lighttpd_server
 from pylib import constants
 from telemetry import android
 from telemetry import benchmark
-from telemetry import benchmark_runner
 from telemetry import story
-from telemetry.value import scalar
 from telemetry.web_perf import timeline_based_measurement
-import perf_test_utils
+# pylint: enable=wrong-import-position
 
 
 def GetDevice():
@@ -114,7 +108,7 @@ class CronetPerfTestAndroidStory(android.AndroidStory):
   def Run(self, shared_user_story_state):
     while not self._device.FileExists(
         perf_test_utils.GetConfig(self._device)['DONE_FILE']):
-      sleep(1.0)
+      time.sleep(1.0)
 
 
 class CronetPerfTestStorySet(story.StorySet):
@@ -145,8 +139,7 @@ class CronetPerfTestMeasurement(
     jsonResults = json.loads(self._device.ReadFile(
         perf_test_utils.GetConfig(self._device)['RESULTS_FILE']))
     for test in jsonResults:
-      results.AddValue(scalar.ScalarValue(results.current_page, test,
-          'ms', jsonResults[test]))
+      results.AddMeasurement(test, 'ms', jsonResults[test])
 
   def DidRunStory(self, platform, results):
     # Skip parent implementation which calls into tracing_controller which this
@@ -190,7 +183,8 @@ def main():
   http_server_doc_root = perf_test_utils.GenerateHttpTestResources()
   config_file = tempfile.NamedTemporaryFile()
   http_server = lighttpd_server.LighttpdServer(http_server_doc_root,
-      port=perf_test_utils.HTTP_PORT, base_config_path=config_file.name)
+      port=perf_test_utils.HTTP_PORT,
+      base_config_path=config_file.name)
   perf_test_utils.GenerateLighttpdConfig(config_file, http_server_doc_root,
                                          http_server)
   assert http_server.StartupHttpServer()

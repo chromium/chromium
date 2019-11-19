@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/power/ml/user_activity_event.pb.h"
@@ -24,6 +24,19 @@ namespace power {
 namespace ml {
 
 namespace {
+
+// Arbitrary inactivity score for the fake ML Service client to return:
+constexpr float kTestInactivityScore = -3.7;
+// Quantized into the range [0, 100] via sigmoid transform:
+constexpr int kQuantizedTestInactivityScore = 2;
+
+// Arbitrary dim thresholds lower/higher than kTestInactivityScore, implying
+// no/yes dim decisions respectively.
+constexpr double kLowDimThreshold = -10.0;
+constexpr double kHighDimThreshold = -0.1;
+// Same values quantized into the range [0, 100] via sigmoid transform:
+constexpr int kQuantizedLowDimThreshold = 0;
+constexpr int kQuantizedHighDimThreshold = 47;
 
 UserActivityEvent::Features DefaultFeatures() {
   UserActivityEvent::Features features;
@@ -64,24 +77,15 @@ class SmartDimFeatureFlags {
  public:
   SmartDimFeatureFlags() = default;
 
-  void Initialize(const bool use_ml_service, const double dim_threshold) {
+  void Initialize(const double dim_threshold) {
     const std::map<std::string, std::string> params = {
         {"dim_threshold", base::NumberToString(dim_threshold)}};
     smart_dim_feature_override_.InitAndEnableFeatureWithParameters(
         features::kUserActivityPrediction, params);
-
-    if (use_ml_service) {
-      ml_service_feature_override_.InitAndEnableFeature(
-          features::kUserActivityPredictionMlService);
-    } else {
-      ml_service_feature_override_.InitAndDisableFeature(
-          features::kUserActivityPredictionMlService);
-    }
   }
 
  private:
   base::test::ScopedFeatureList smart_dim_feature_override_;
-  base::test::ScopedFeatureList ml_service_feature_override_;
 
   DISALLOW_COPY_AND_ASSIGN(SmartDimFeatureFlags);
 };
@@ -97,8 +101,7 @@ class FakeMlServiceClient : public MlServiceClient {
       base::RepeatingCallback<UserActivityEvent::ModelPrediction(float)>
           get_prediction_callback,
       SmartDimModel::DimDecisionCallback decision_callback) override {
-    // Corresponds to DefaultFeatures() with TfNativeModel:
-    const float inactivity_score = -3.6615708;
+    const float inactivity_score = kTestInactivityScore;
 
     UserActivityEvent::ModelPrediction model_prediction =
         get_prediction_callback.Run(inactivity_score);
@@ -113,81 +116,34 @@ class FakeMlServiceClient : public MlServiceClient {
 
 }  // namespace
 
-// Parameterized test fixture. The bool parameter is whether to test the ML
-// Service codepath. If false, the old TFNative codepath is tested.
-class SmartDimModelImplTest : public testing::TestWithParam<bool> {
+class SmartDimModelImplTest : public testing::Test {
  public:
   SmartDimModelImplTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO,
-            base::test::ScopedTaskEnvironment::ExecutionMode::QUEUED) {}
+      : task_environment_(
+            base::test::TaskEnvironment::MainThreadType::IO,
+            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
 
   ~SmartDimModelImplTest() override = default;
 
  protected:
-  // More readable name for the test parameter:
-  bool UsesMlService() const { return GetParam(); }
-
   // Sets a fake MlServiceClient into |impl|.
   void InjectFakeMlServiceClient(SmartDimModelImpl* const impl) {
     impl->SetMlServiceClientForTesting(std::make_unique<FakeMlServiceClient>());
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SmartDimModelImplTest);
 };
 
-// For the TFNative model, test a hard-coded known-good model result.
-TEST(SmartDimTfNativeModelTest, Basic) {
-  base::test::ScopedTaskEnvironment env;
+// With a high dim threshold, NO_DIM decision is expected.
+TEST_F(SmartDimModelImplTest, ShouldNotDim) {
   SmartDimFeatureFlags flags;
-  flags.Initialize(false /* use_ml_service */, -0.1 /* dim_threshold */);
+  flags.Initialize(kHighDimThreshold);
 
   SmartDimModelImpl smart_dim_model;
-
-  float inactivity_score;
-  EXPECT_EQ(SmartDimModelResult::kSuccess,
-            smart_dim_model.CalculateInactivityScoreTfNative(
-                DefaultFeatures(), &inactivity_score));
-  // Score has been calculated outside of chrome.
-  EXPECT_FLOAT_EQ(-3.6615708, inactivity_score);
-}
-
-// For the TFNative model, test a known-good result with empty features.
-TEST(SmartDimTfNativeModelTest, OptionalFeaturesMissing) {
-  base::test::ScopedTaskEnvironment env;
-  SmartDimFeatureFlags flags;
-  flags.Initialize(false /* use_ml_service */, -0.1 /* dim_threshold */);
-
-  SmartDimModelImpl smart_dim_model;
-
-  UserActivityEvent::Features features = DefaultFeatures();
-  features.clear_battery_percent();
-  features.clear_time_since_last_key_sec();
-  features.clear_time_since_last_mouse_sec();
-  features.clear_time_since_video_ended_sec();
-  features.clear_source_id();
-  features.clear_has_form_entry();
-  features.clear_engagement_score();
-  features.clear_tab_domain();
-
-  float inactivity_score;
-  EXPECT_EQ(SmartDimModelResult::kSuccess,
-            smart_dim_model.CalculateInactivityScoreTfNative(
-                features, &inactivity_score));
-  // Score has been calculated outside of chrome.
-  EXPECT_FLOAT_EQ(-1.9680425, inactivity_score);
-}
-
-TEST_P(SmartDimModelImplTest, ShouldNotDim) {
-  SmartDimFeatureFlags flags;
-  flags.Initialize(UsesMlService(), -0.1 /* dim_threshold */);
-
-  SmartDimModelImpl smart_dim_model;
-  if (UsesMlService())
-    InjectFakeMlServiceClient(&smart_dim_model);
+  InjectFakeMlServiceClient(&smart_dim_model);
 
   bool callback_done = false;
   smart_dim_model.RequestDimDecision(
@@ -197,22 +153,24 @@ TEST_P(SmartDimModelImplTest, ShouldNotDim) {
                                EXPECT_EQ(
                                    UserActivityEvent::ModelPrediction::NO_DIM,
                                    prediction.response());
-                               EXPECT_EQ(47, prediction.decision_threshold());
-                               EXPECT_EQ(2, prediction.inactivity_score());
+                               EXPECT_EQ(kQuantizedHighDimThreshold,
+                                         prediction.decision_threshold());
+                               EXPECT_EQ(kQuantizedTestInactivityScore,
+                                         prediction.inactivity_score());
                                *callback_done = true;
                              },
                              &callback_done));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_done);
 }
 
-TEST_P(SmartDimModelImplTest, ShouldDim) {
+// With a low dim threshold, DIM decision is expected.
+TEST_F(SmartDimModelImplTest, ShouldDim) {
   SmartDimFeatureFlags flags;
-  flags.Initialize(UsesMlService(), -10.0 /* dim_threshold */);
+  flags.Initialize(kLowDimThreshold);
 
   SmartDimModelImpl smart_dim_model;
-  if (UsesMlService())
-    InjectFakeMlServiceClient(&smart_dim_model);
+  InjectFakeMlServiceClient(&smart_dim_model);
 
   bool callback_done = false;
   smart_dim_model.RequestDimDecision(
@@ -222,24 +180,25 @@ TEST_P(SmartDimModelImplTest, ShouldDim) {
                                EXPECT_EQ(
                                    UserActivityEvent::ModelPrediction::DIM,
                                    prediction.response());
-                               EXPECT_EQ(0, prediction.decision_threshold());
-                               EXPECT_EQ(2, prediction.inactivity_score());
+                               EXPECT_EQ(kQuantizedLowDimThreshold,
+                                         prediction.decision_threshold());
+                               EXPECT_EQ(kQuantizedTestInactivityScore,
+                                         prediction.inactivity_score());
                                *callback_done = true;
                              },
                              &callback_done));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_done);
 }
 
 // Check that CancelableCallback ensures a callback doesn't execute twice, in
 // case two RequestDimDecision() calls were made before any callback ran.
-TEST_P(SmartDimModelImplTest, CheckCancelableCallback) {
+TEST_F(SmartDimModelImplTest, CheckCancelableCallback) {
   SmartDimFeatureFlags flags;
-  flags.Initialize(UsesMlService(), -10.0 /* dim_threshold */);
+  flags.Initialize(kLowDimThreshold);
 
   SmartDimModelImpl smart_dim_model;
-  if (UsesMlService())
-    InjectFakeMlServiceClient(&smart_dim_model);
+  InjectFakeMlServiceClient(&smart_dim_model);
 
   bool callback_done = false;
   int num_callbacks_run = 0;
@@ -251,27 +210,28 @@ TEST_P(SmartDimModelImplTest, CheckCancelableCallback) {
                UserActivityEvent::ModelPrediction prediction) {
               EXPECT_EQ(UserActivityEvent::ModelPrediction::DIM,
                         prediction.response());
-              EXPECT_EQ(0, prediction.decision_threshold());
-              EXPECT_EQ(2, prediction.inactivity_score());
+              EXPECT_EQ(kQuantizedLowDimThreshold,
+                        prediction.decision_threshold());
+              EXPECT_EQ(kQuantizedTestInactivityScore,
+                        prediction.inactivity_score());
               *callback_done = true;
               (*num_callbacks_run)++;
             },
             &callback_done, &num_callbacks_run));
   }
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_done);
   EXPECT_EQ(1, num_callbacks_run);
 }
 
 // Check that CancelPreviousRequest() can successfully prevent a previous
 // requested dim decision request from running.
-TEST_P(SmartDimModelImplTest, CheckCanceledRequest) {
+TEST_F(SmartDimModelImplTest, CheckCanceledRequest) {
   SmartDimFeatureFlags flags;
-  flags.Initialize(UsesMlService(), -10.0 /* dim_threshold */);
+  flags.Initialize(kLowDimThreshold);
 
   SmartDimModelImpl smart_dim_model;
-  if (UsesMlService())
-    InjectFakeMlServiceClient(&smart_dim_model);
+  InjectFakeMlServiceClient(&smart_dim_model);
 
   bool callback_done = false;
   smart_dim_model.RequestDimDecision(
@@ -282,13 +242,9 @@ TEST_P(SmartDimModelImplTest, CheckCanceledRequest) {
                              },
                              &callback_done));
   smart_dim_model.CancelPreviousRequest();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(callback_done);
 }
-
-INSTANTIATE_TEST_SUITE_P(SmartDimModelImplTests,
-                         SmartDimModelImplTest,
-                         testing::Bool());
 
 }  // namespace ml
 }  // namespace power

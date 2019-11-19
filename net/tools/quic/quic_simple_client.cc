@@ -20,13 +20,14 @@
 #include "net/quic/quic_chromium_packet_writer.h"
 #include "net/socket/udp_client_socket.h"
 #include "net/spdy/spdy_http_utils.h"
-#include "net/third_party/quic/core/crypto/quic_random.h"
-#include "net/third_party/quic/core/http/spdy_utils.h"
-#include "net/third_party/quic/core/quic_connection.h"
-#include "net/third_party/quic/core/quic_packets.h"
-#include "net/third_party/quic/core/quic_server_id.h"
-#include "net/third_party/quic/platform/api/quic_flags.h"
-#include "net/third_party/quic/platform/api/quic_ptr_util.h"
+#include "net/third_party/quiche/src/quic/core/crypto/quic_random.h"
+#include "net/third_party/quiche/src/quic/core/http/spdy_utils.h"
+#include "net/third_party/quiche/src/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quic/core/quic_server_id.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_ptr_util.h"
+#include "net/third_party/quiche/src/quic/tools/quic_simple_client_session.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 
 using std::string;
@@ -46,9 +47,9 @@ QuicSimpleClient::QuicSimpleClient(
           CreateQuicAlarmFactory(),
           quic::QuicWrapUnique(
               new QuicClientMessageLooplNetworkHelper(&clock_, this)),
-          std::move(proof_verifier)),
-      initialized_(false),
-      weak_factory_(this) {
+          std::move(proof_verifier),
+          nullptr),
+      initialized_(false) {
   set_server_address(server_address);
 }
 
@@ -58,6 +59,14 @@ QuicSimpleClient::~QuicSimpleClient() {
         quic::QUIC_PEER_GOING_AWAY, "Shutting down",
         quic::ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET);
   }
+}
+
+std::unique_ptr<quic::QuicSession> QuicSimpleClient::CreateQuicClientSession(
+    const quic::ParsedQuicVersionVector& supported_versions,
+    quic::QuicConnection* connection) {
+  return std::make_unique<quic::QuicSimpleClientSession>(
+      *config(), supported_versions, connection, server_id(), crypto_config(),
+      push_promise_index(), drop_response_body());
 }
 
 QuicChromiumConnectionHelper* QuicSimpleClient::CreateQuicConnectionHelper() {

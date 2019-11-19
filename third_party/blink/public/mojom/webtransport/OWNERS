@@ -1,0 +1,7 @@
+file://third_party/blink/renderer/modules/webtransport/OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+# TEAM: blink-network-dev@chromium.org
+# COMPONENT: Blink>Network>WebTransport

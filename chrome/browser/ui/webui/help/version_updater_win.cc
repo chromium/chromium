@@ -40,8 +40,10 @@ void VersionUpdaterWin::OnUpdateCheckComplete(
   if (new_version.empty()) {
     // Google Update says that no new version is available. Check to see if a
     // restart is needed for a previously-applied update to take effect.
-    base::PostTaskWithTraitsAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+    base::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::ThreadPool(), base::MayBlock(),
+         base::TaskPriority::USER_VISIBLE},
         base::Bind(&upgrade_util::IsUpdatePendingRestart),
         base::Bind(&VersionUpdaterWin::OnPendingRestartCheck,
                    weak_factory_.GetWeakPtr()));

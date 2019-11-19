@@ -67,9 +67,9 @@ class WindowTypeLauncher : public views::WidgetDelegateView,
   void ExecuteCommand(int id, int event_flags) override;
 
   // Override from views::ContextMenuController:
-  void ShowContextMenuForView(views::View* source,
-                              const gfx::Point& point,
-                              ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(views::View* source,
+                                  const gfx::Point& point,
+                                  ui::MenuSourceType source_type) override;
 
   views::Button* create_button_;
   views::Button* create_nonresizable_button_;

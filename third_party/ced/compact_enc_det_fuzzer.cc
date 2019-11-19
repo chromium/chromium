@@ -5,11 +5,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include <vector>
 
-#include "base/test/fuzzed_data_provider.h"
 #include "third_party/ced/src/compact_enc_det/compact_enc_det.h"
 
+namespace {
+constexpr size_t kMaxInputSize = 64 * 1024;
+}
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Early out if there isn't enough data to extract options and pass data to
@@ -17,7 +21,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (size < 3 * sizeof(int32_t) + 1)
     return 0;
 
-  base::FuzzedDataProvider data_provider(data, size);
+  // Limit the input size to avoid timing out on clusterfuzz.
+  if (size > kMaxInputSize)
+    return 0;
+
+  FuzzedDataProvider data_provider(data, size);
 
   CompactEncDet::TextCorpusType corpus =
       static_cast<CompactEncDet::TextCorpusType>(

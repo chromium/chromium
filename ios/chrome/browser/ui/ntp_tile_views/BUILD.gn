@@ -9,6 +9,8 @@ source_set("ntp_tile_views") {
     "ntp_most_visited_tile_view.mm",
     "ntp_shortcut_tile_view.h",
     "ntp_shortcut_tile_view.mm",
+    "ntp_tile_layout_util.h",
+    "ntp_tile_layout_util.mm",
     "ntp_tile_view.h",
     "ntp_tile_view.mm",
   ]
@@ -19,11 +21,27 @@ source_set("ntp_tile_views") {
     "resources:ntp_most_visited_tile",
     "resources:ntp_readinglist_icon",
     "resources:ntp_recent_icon",
+    "//base",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/colors",
     "//ios/chrome/common/favicon",
     "//ios/chrome/common/ui_util",
     "//ios/third_party/material_components_ios",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "ntp_tile_layout_util_unittest.mm",
+  ]
+  deps = [
+    ":ntp_tile_views",
+    "//base",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("constants") {

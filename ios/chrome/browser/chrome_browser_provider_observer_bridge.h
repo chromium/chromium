@@ -37,8 +37,8 @@ class ChromeBrowserProviderObserverBridge
 
   __weak id<ChromeBrowserProviderObserver> observer_;
   ScopedObserver<ios::ChromeBrowserProvider,
-                 ChromeBrowserProviderObserverBridge>
-      scoped_observer_;
+                 ios::ChromeBrowserProvider::Observer>
+      scoped_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserProviderObserverBridge);
 };

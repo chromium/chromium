@@ -56,7 +56,7 @@ class ThemeMap {
     }
 #endif
 
-    id_map_ = StringIntMap(std::move(storage), base::KEEP_FIRST_OF_DUPES);
+    id_map_ = StringIntMap(std::move(storage));
   }
 
   int GetId(const std::string& resource_name) const {

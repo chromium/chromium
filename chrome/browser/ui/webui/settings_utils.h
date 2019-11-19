@@ -48,12 +48,6 @@ void ValidateSavedFonts(PrefService* prefs);
 // fallback is handled in CSS.
 std::string ResolveFontList(const std::string& font_name_or_list);
 
-// Returns the localized name of a font so that settings can find it within
-// the list of system fonts. On Windows, the list of system fonts has names
-// only for the system locale, but the pref value may be in the English name.
-// For example, "MS Gothic" becomes "ＭＳ ゴシック" on localized Windows.
-std::string MaybeGetLocalizedFontName(const std::string& font_name_or_list);
-
 }  // namespace settings_utils
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_UTILS_H_

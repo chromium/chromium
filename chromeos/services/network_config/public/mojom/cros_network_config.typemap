@@ -1,0 +1,20 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom =
+    "//chromeos/services/network_config/public/mojom/cros_network_config.mojom"
+
+public_deps = [
+  "//components/proxy_config",
+]
+
+traits_headers = [ "//chromeos/services/network_config/public/mojom/cros_network_config_mojom_traits.h" ]
+
+type_mappings =
+    [ "chromeos.cros_network_config.mojom.ProxyMode=::ProxyPrefs::ProxyMode" ]
+
+sources = [
+  "//chromeos/services/network_config/public/mojom/cros_network_config_mojom_traits.cc",
+  "//chromeos/services/network_config/public/mojom/cros_network_config_mojom_traits.h",
+]

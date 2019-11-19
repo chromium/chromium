@@ -41,7 +41,6 @@ class SettingsResetPromptDialog : public views::DialogDelegateView {
   bool ShouldShowCloseButton() const override;
 
   // views::DialogDelegate overrides.
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool Accept() override;
   bool Cancel() override;
   // We override |Close()| because we want to distinguish in our metrics between

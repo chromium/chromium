@@ -7,11 +7,16 @@
 #include <string>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
+#include "base/guid.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/engine/engine_util.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "ui/gfx/favicon_size.h"
 #include "url/gurl.h"
@@ -19,6 +24,45 @@
 namespace sync_bookmarks {
 
 namespace {
+
+// Maximum number of bytes to allow in a title (must match sync's internal
+// limits; see write_node.cc).
+const int kTitleLimitBytes = 255;
+
+// Used in metrics: "Sync.InvalidBookmarkSpecifics". These values are
+// persisted to logs. Entries should not be renumbered and numeric values
+// should never be reused.
+enum class InvalidBookmarkSpecificsError {
+  kEmptySpecifics = 0,
+  kInvalidURL = 1,
+  kIconURLWithoutFavicon = 2,
+  kInvalidIconURL = 3,
+  kNonUniqueMetaInfoKeys = 4,
+  kInvalidGUID = 5,
+
+  kMaxValue = kInvalidGUID,
+};
+
+void LogInvalidSpecifics(InvalidBookmarkSpecificsError error) {
+  base::UmaHistogramEnumeration("Sync.InvalidBookmarkSpecifics", error);
+}
+
+base::string16 NodeTitleFromSpecificsTitle(const std::string& specifics_title) {
+  // Adjust the title for backward compatibility with legacy clients.
+  std::string node_title;
+  syncer::ServerNameToSyncAPIName(specifics_title, &node_title);
+  return base::UTF8ToUTF16(node_title);
+}
+
+std::string SpecificsTitleFromNodeTitle(const base::string16& node_title) {
+  // Adjust the title for backward compatibility with legacy clients.
+  std::string specifics_title;
+  syncer::SyncAPINameToServerName(base::UTF16ToUTF8(node_title),
+                                  &specifics_title);
+  base::TruncateUTF8ToByteSize(specifics_title, kTitleLimitBytes,
+                               &specifics_title);
+  return specifics_title;
+}
 
 void UpdateBookmarkSpecificsMetaInfo(
     const bookmarks::BookmarkNode::MetaInfoMap* metainfo_map,
@@ -96,7 +140,12 @@ sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
   if (!node->is_folder()) {
     bm_specifics->set_url(node->url().spec());
   }
-  bm_specifics->set_title(base::UTF16ToUTF8(node->GetTitle()));
+
+  DCHECK(!node->guid().empty());
+  DCHECK(base::IsValidGUID(node->guid()));
+
+  bm_specifics->set_guid(node->guid());
+  bm_specifics->set_title(SpecificsTitleFromNodeTitle(node->GetTitle()));
   bm_specifics->set_creation_time_us(
       node->date_added().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
@@ -137,29 +186,31 @@ sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
 const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
     const sync_pb::BookmarkSpecifics& specifics,
     const bookmarks::BookmarkNode* parent,
-    int index,
+    size_t index,
     bool is_folder,
     bookmarks::BookmarkModel* model,
     favicon::FaviconService* favicon_service) {
   DCHECK(parent);
   DCHECK(model);
   DCHECK(favicon_service);
+  DCHECK(base::IsValidGUID(specifics.guid()));
 
   bookmarks::BookmarkNode::MetaInfoMap metainfo =
       GetBookmarkMetaInfo(specifics);
   const bookmarks::BookmarkNode* node;
   if (is_folder) {
-    node = model->AddFolderWithMetaInfo(
-        parent, index, base::UTF8ToUTF16(specifics.title()), &metainfo);
+    node = model->AddFolder(parent, index,
+                            NodeTitleFromSpecificsTitle(specifics.title()),
+                            &metainfo, specifics.guid());
   } else {
     const int64_t create_time_us = specifics.creation_time_us();
     base::Time create_time = base::Time::FromDeltaSinceWindowsEpoch(
         // Use FromDeltaSinceWindowsEpoch because create_time_us has
         // always used the Windows epoch.
         base::TimeDelta::FromMicroseconds(create_time_us));
-    node = model->AddURLWithCreationTimeAndMetaInfo(
-        parent, index, base::UTF8ToUTF16(specifics.title()),
-        GURL(specifics.url()), create_time, &metainfo);
+    node = model->AddURL(
+        parent, index, NodeTitleFromSpecificsTitle(specifics.title()),
+        GURL(specifics.url()), &metainfo, create_time, specifics.guid());
   }
   if (node) {
     SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
@@ -175,36 +226,83 @@ void UpdateBookmarkNodeFromSpecifics(
   DCHECK(node);
   DCHECK(model);
   DCHECK(favicon_service);
+  // We shouldn't try to update the properties of the BookmarkNode before
+  // resolving any conflict in GUID. Either GUIDs are the same, or the GUID in
+  // specifics is invalid, and hence we can ignore it.
+  DCHECK(specifics.guid() == node->guid() ||
+         !base::IsValidGUID(specifics.guid()) ||
+         !base::FeatureList::IsEnabled(
+             switches::kUpdateBookmarkGUIDWithNodeReplacement));
 
   if (!node->is_folder()) {
     model->SetURL(node, GURL(specifics.url()));
   }
 
-  model->SetTitle(node, base::UTF8ToUTF16(specifics.title()));
+  model->SetTitle(node, NodeTitleFromSpecificsTitle(specifics.title()));
   model->SetNodeMetaInfoMap(node, GetBookmarkMetaInfo(specifics));
   SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
 }
 
+// TODO(crbug.com/1005219): Replace this function to move children between
+// parent nodes more efficiently.
+const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
+    const bookmarks::BookmarkNode* node,
+    const std::string& guid,
+    bookmarks::BookmarkModel* model) {
+  if (!base::FeatureList::IsEnabled(
+          switches::kUpdateBookmarkGUIDWithNodeReplacement)) {
+    return node;
+  }
+  const bookmarks::BookmarkNode* new_node;
+  DCHECK(base::IsValidGUID(guid));
+  if (node->is_folder()) {
+    new_node =
+        model->AddFolder(node->parent(), node->parent()->GetIndexOf(node),
+                         node->GetTitle(), node->GetMetaInfoMap(), guid);
+  } else {
+    new_node = model->AddURL(node->parent(), node->parent()->GetIndexOf(node),
+                             node->GetTitle(), node->url(),
+                             node->GetMetaInfoMap(), node->date_added(), guid);
+  }
+  for (size_t i = node->children().size(); i > 0; --i) {
+    model->Move(node->children()[i - 1].get(), new_node, 0);
+  }
+  model->Remove(node);
+
+  return new_node;
+}
+
 bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics,
                               bool is_folder) {
+  bool is_valid = true;
   if (specifics.ByteSize() == 0) {
     DLOG(ERROR) << "Invalid bookmark: empty specifics.";
-    return false;
+    LogInvalidSpecifics(InvalidBookmarkSpecificsError::kEmptySpecifics);
+    is_valid = false;
+  }
+  if (!base::IsValidGUID(specifics.guid()) && !specifics.guid().empty()) {
+    DLOG(ERROR) << "Invalid bookmark: invalid GUID in the specifics.";
+    LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidGUID);
+    is_valid = false;
   }
   if (!is_folder) {
     if (!GURL(specifics.url()).is_valid()) {
       DLOG(ERROR) << "Invalid bookmark: invalid url in the specifics.";
-      return false;
+      LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidURL);
+      is_valid = false;
     }
     if (specifics.favicon().empty() && !specifics.icon_url().empty()) {
       DLOG(ERROR) << "Invalid bookmark: specifics cannot have an icon_url "
                      "without having a favicon.";
-      return false;
+      LogInvalidSpecifics(
+          InvalidBookmarkSpecificsError::kIconURLWithoutFavicon);
+      is_valid = false;
     }
     if (!specifics.icon_url().empty() &&
         !GURL(specifics.icon_url()).is_valid()) {
       DLOG(ERROR) << "Invalid bookmark: invalid icon_url in specifics.";
-      return false;
+      LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidIconURL);
+      is_valid = false;
     }
   }
 
@@ -213,10 +311,12 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics,
   for (const sync_pb::MetaInfo& meta_info : specifics.meta_info()) {
     if (!keys.insert(meta_info.key()).second) {
       DLOG(ERROR) << "Invalid bookmark: keys in meta_info aren't unique.";
-      return false;
+      LogInvalidSpecifics(
+          InvalidBookmarkSpecificsError::kNonUniqueMetaInfoKeys);
+      is_valid = false;
     }
   }
-  return true;
+  return is_valid;
 }
 
 }  // namespace sync_bookmarks

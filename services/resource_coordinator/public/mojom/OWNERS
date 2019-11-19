@@ -1,4 +1,2 @@
-per-file BUILD.gn=file://services/resource_coordinator/memory_instrumentation/OWNERS
-
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

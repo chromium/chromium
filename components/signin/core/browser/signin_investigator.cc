@@ -6,20 +6,12 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/signin/core/browser/signin_metrics.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 using signin_metrics::AccountEquality;
 using signin_metrics::LogAccountEquality;
-
-namespace {
-void LogSigninScenario(InvestigatedScenario scenario) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Signin.InvestigatedScenario", static_cast<int>(scenario),
-      static_cast<int>(InvestigatedScenario::HISTOGRAM_COUNT));
-}
-}  // namespace
 
 SigninInvestigator::SigninInvestigator(const std::string& current_email,
                                        const std::string& current_id,
@@ -62,19 +54,13 @@ InvestigatedScenario SigninInvestigator::Investigate() {
   if (provider_->GetPrefs()
           ->GetString(prefs::kGoogleServicesLastUsername)
           .empty()) {
-    scenario = IsUpgradeHighRisk() ? InvestigatedScenario::UPGRADE_HIGH_RISK
-                                   : InvestigatedScenario::UPGRADE_LOW_RISK;
+    scenario = InvestigatedScenario::kFirstSignIn;
   } else if (AreAccountsEqualWithFallback()) {
-    scenario = InvestigatedScenario::SAME_ACCOUNT;
+    scenario = InvestigatedScenario::kSameAccount;
   } else {
-    scenario = InvestigatedScenario::DIFFERENT_ACCOUNT;
+    scenario = InvestigatedScenario::kDifferentAccount;
   }
 
-  LogSigninScenario(scenario);
+  UMA_HISTOGRAM_ENUMERATION("Signin.InvestigatedScenario", scenario);
   return scenario;
-}
-
-bool SigninInvestigator::IsUpgradeHighRisk() {
-  // TODO(skym): Add logic to make this decision, crbug.com/572754.
-  return false;
 }

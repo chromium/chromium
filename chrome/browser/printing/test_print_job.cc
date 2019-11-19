@@ -16,17 +16,15 @@
 
 namespace printing {
 
-void TestPrintJob::Initialize(PrinterQuery* query,
+void TestPrintJob::Initialize(std::unique_ptr<PrinterQuery> query,
                               const base::string16& name,
                               int page_count) {
   // Since we do not actually print in these tests, just let this get destroyed
   // when this function exits.
   std::unique_ptr<PrintJobWorker> worker = query->DetachWorker();
 
-  set_settings(query->settings());
-
   scoped_refptr<PrintedDocument> new_doc =
-      base::MakeRefCounted<PrintedDocument>(query->settings(), name,
+      base::MakeRefCounted<PrintedDocument>(query->ExtractSettings(), name,
                                             query->cookie());
 
   new_doc->set_page_count(page_count);
@@ -51,7 +49,7 @@ bool TestPrintJob::FlushJob(base::TimeDelta timeout) {
 
 #if defined(OS_WIN)
 void TestPrintJob::StartPdfToEmfConversion(
-    const scoped_refptr<base::RefCountedMemory>& bytes,
+    scoped_refptr<base::RefCountedMemory> bytes,
     const gfx::Size& page_size,
     const gfx::Rect& content_area) {
   page_size_ = page_size;
@@ -60,7 +58,7 @@ void TestPrintJob::StartPdfToEmfConversion(
 }
 
 void TestPrintJob::StartPdfToPostScriptConversion(
-    const scoped_refptr<base::RefCountedMemory>& bytes,
+    scoped_refptr<base::RefCountedMemory> bytes,
     const gfx::Rect& content_area,
     const gfx::Point& physical_offsets,
     bool ps_level2) {
@@ -71,7 +69,7 @@ void TestPrintJob::StartPdfToPostScriptConversion(
 }
 
 void TestPrintJob::StartPdfToTextConversion(
-    const scoped_refptr<base::RefCountedMemory>& bytes,
+    scoped_refptr<base::RefCountedMemory> bytes,
     const gfx::Size& page_size) {
   page_size_ = page_size;
   type_ = PrintSettings::PrinterType::TYPE_TEXTONLY;

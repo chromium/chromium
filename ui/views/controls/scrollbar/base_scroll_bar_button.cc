@@ -13,11 +13,10 @@ namespace views {
 
 BaseScrollBarButton::BaseScrollBarButton(ButtonListener* listener)
     : Button(listener),
-      repeater_(base::Bind(&BaseScrollBarButton::RepeaterNotifyClick,
-                           base::Unretained(this))) {}
+      repeater_(base::BindRepeating(&BaseScrollBarButton::RepeaterNotifyClick,
+                                    base::Unretained(this))) {}
 
-BaseScrollBarButton::~BaseScrollBarButton() {
-}
+BaseScrollBarButton::~BaseScrollBarButton() = default;
 
 bool BaseScrollBarButton::OnMousePressed(const ui::MouseEvent& event) {
   Button::NotifyClick(event);
@@ -42,5 +41,9 @@ void BaseScrollBarButton::RepeaterNotifyClick() {
                        ui::EF_LEFT_MOUSE_BUTTON);
   Button::NotifyClick(event);
 }
+
+BEGIN_METADATA(BaseScrollBarButton)
+METADATA_PARENT_CLASS(Button)
+END_METADATA()
 
 }  // namespace views

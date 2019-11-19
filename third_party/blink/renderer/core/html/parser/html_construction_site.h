@@ -63,7 +63,7 @@ struct HTMLConstructionSiteTask {
     // It's sort of ugly, but we store the |oldParent| in the |child| field of
     // the task so that we don't bloat the HTMLConstructionSiteTask object in
     // the common case of the Insert operation.
-    return ToContainerNode(child.Get());
+    return To<ContainerNode>(child.Get());
   }
 
   Operation operation;

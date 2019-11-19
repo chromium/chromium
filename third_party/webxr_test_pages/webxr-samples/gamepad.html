@@ -1,0 +1,327 @@
+<!doctype html>
+<!--
+Copyright 2018 The Immersive Web Community Group
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+
+    <!-- Origin Trial Token, feature = WebXR Device API (For Chrome M76+), origin = storage.googleapis.com, expires = 2019-07-24 -->
+    <meta http-equiv="origin-trial" data-feature="WebXR Device API (For Chrome M76+)" data-expires="2019-07-24" content="Ap6io/uhkGK7vXCD+golNnQfj8wJ4so790EzZoqb8YOljMXIBTvBEQFPTHYIz5d/BgtuwZTKOLrmHAOt30f38g8AAABxeyJvcmlnaW4iOiJodHRwczovL3N0b3JhZ2UuZ29vZ2xlYXBpcy5jb206NDQzIiwiZmVhdHVyZSI6IldlYlhSRGV2aWNlTTc2IiwiZXhwaXJ5IjoxNTY0MDA5MzU2LCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+
+    <title>Gamepad</title>
+
+    <link href='css/common.css' rel='stylesheet'></link>
+
+    <!--The polyfill is not needed for browser that have native API support,
+        but is linked by these samples for wider compatibility.-->
+    <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='js/xrray-polyfill.js' type='module'></script>
+    <script src='js/webxr-polyfill.js'></script>
+
+    <script src='js/webxr-button.js'></script>
+  </head>
+  <body>
+    <header>
+      <details open>
+        <summary>Gamepad</summary>
+        <p>
+          This sample demonstrates using XRInputSource Gamepad button presses
+          to change box color and joystick/touchpad input to move boxes in 2
+          dimensions.
+          <a class="back" href="./index.html">Back</a>
+        </p>
+      </details>
+    </header>
+    <div id="gamepad-details">
+      <!-- Tables updated in real-time data from WebXR gamepads will be
+           displayed here if requested. -->
+    </div>
+    <script type="module">
+      import {Scene} from './js/cottontail/src/scenes/scene.js';
+      import {Renderer, createWebGLContext} from './js/cottontail/src/core/renderer.js';
+      import {Gltf2Node} from './js/cottontail/src/nodes/gltf2.js';
+      import {QueryArgs} from './js/cottontail/src/util/query-args.js';
+      import {FallbackHelper} from './js/cottontail/src/util/fallback-helper.js';
+      import {Node} from './js/cottontail/src/core/node.js';
+      import {PbrMaterial} from './js/cottontail/src/materials/pbr.js';
+      import {BoxBuilder} from './js/cottontail/src/geometry/box-builder.js';
+      import {mat4, vec3, quat} from './js/cottontail/src/math/gl-matrix.js';
+      import {GamepadTableManager} from './js/gamepad-data-tables.js';
+
+      // If requested, initialize the WebXR polyfill
+      if (QueryArgs.getBool('allowPolyfill', false)) {
+        var polyfill = new WebXRPolyfill();
+      }
+
+      // If requested, don't display the frame rate info.
+      let hideStats = QueryArgs.getBool('hideStats', false);
+
+      // Display HTML tables updated in real-time with gamepad data. Useful for
+      // testing + debugging.
+      let displayTables = QueryArgs.getBool('displayTables', false);
+      let tableManager = null;
+      if (displayTables) {
+        tableManager = new GamepadTableManager();
+      }
+
+      // XR globals.
+      let xrButton = null;
+      let xrRefSpace = null;
+
+      // WebGL scene globals.
+      let gl = null;
+      let renderer = null;
+      let scene = new Scene();
+      if (hideStats) {
+        scene.enableStats(false);
+      }
+      scene.addNode(new Gltf2Node({url: '../media/gltf/cube-room/cube-room.gltf'}));
+      scene.standingStats(true);
+
+      let floorSize = 10;
+      let floorPosition = [0, -floorSize / 2 + 0.01, 0];
+      let floorNode = null;
+
+      let boxTable = {};
+
+      class GamepadBox {
+        constructor(position) {
+          this.position = position;
+          let boxBuilder = new BoxBuilder();
+          boxBuilder.pushCube([0, 0, 0], 0.4);
+          let boxPrimitive = boxBuilder.finishPrimitive(renderer);
+          let boxMaterial = new PbrMaterial();
+          boxMaterial.baseColorFactor.value = [1, 0, 0, 1]; // red
+          this.renderPrimitive = renderer.createRenderPrimitive(boxPrimitive, boxMaterial);
+
+          this.node = new Node();
+          this.node.addRenderPrimitive(this.renderPrimitive);
+          scene.addNode(this.node);
+
+          this.color_state = true;
+          this.is_button_pressed = false;
+        }
+
+        toggle_color() {
+          this.renderPrimitive.uniforms.baseColorFactor.value = this.color_state ?
+              [0, 1, 0, 1] : // green
+              [1, 0, 0, 1];  // red
+          this.color_state = !this.color_state;
+        }
+
+        // If this was something like a full-fledged game instead of just a
+        // sample, timestamps should be used when calculating how much to move
+        // on each frame. The way this code is right now, having a higher frame
+        // rate means the boxes move faster.
+        move(dx, dy) {
+          const inv_speed = 100;
+          let translation = [dx / inv_speed, dy / inv_speed, 0];
+          vec3.add(this.position, this.position, translation);
+        }
+
+        // Returns true iff button which was previously pressed is not pressed
+        // anymore. The WebXR + Gamepad APIs don't support button press events
+        // (yet) which is why keeping track of the state this way is necessary.
+        update_button_state(is_button_pressed) {
+          let did_button_fire = this.is_button_pressed && !is_button_pressed;
+          this.is_button_pressed = is_button_pressed;
+          return did_button_fire;
+        }
+      }
+
+      class GamepadBoxSet {
+        constructor(button_count, y) {
+          // Place the boxes in a horizontal line 2 meters in front of the user.
+          this.boxes = [];
+          let x_shift = button_count / 2;
+          for (let x = 1; x <= button_count; ++x) {
+            this.boxes.push(new GamepadBox([x - x_shift, y, -2]));
+          }
+        }
+
+        update_state(gamepad) {
+          // A button press (pressing and then releasing a button) will change
+          // the associated box's color from red to green (or from green to red
+          // if it's currently green).
+          for (let i = 0; i < gamepad.buttons.length; ++i) {
+            if (this.boxes[i].update_button_state(gamepad.buttons[i].pressed)) {
+              this.boxes[i].toggle_color();
+            }
+          }
+
+          if (gamepad.mapping == "xr-standard") {
+            if (gamepad.buttons.length >= 3 && gamepad.axes.length >= 2) {
+              // Handle touchpad movement.
+              // Invert the y axis because gamepads follow the convention that -1
+              // is up/forwards, but we want to have a forward joystick/touchpad
+              // input result in forward motion for the box.
+              let dx = gamepad.axes[0];
+              let dy = -gamepad.axes[1];
+              this.boxes[2].move(dx, dy);
+            }
+
+            if (gamepad.buttons.length >= 4 && gamepad.axes.length >= 4) {
+              // Handle thumbstick movement.
+              let dx = gamepad.axes[2];
+              let dy = -gamepad.axes[3];
+              this.boxes[3].move(dx, dy);
+            }
+          }
+        }
+
+        update() {
+          // Update the matrix for each box so that they are rendered in the
+          // correct positions.
+          for (let box of this.boxes) {
+            mat4.identity(box.node.matrix);
+            mat4.translate(box.node.matrix, box.node.matrix, box.position);
+          }
+        }
+      }
+
+      function ProcessInputSource(input_source) {
+        if (displayTables) {
+          tableManager.update(input_source);
+        }
+
+        let hand = input_source.handedness;
+        let gamepad = input_source.gamepad;
+        if (!(hand in boxTable)) {
+          const y_positions = {
+            "left" : 1,
+            "right" : 2,
+            "none" : 3,
+          };
+          boxTable[hand] = new GamepadBoxSet(gamepad.buttons.length, y_positions[hand]);
+        }
+
+        boxTable[hand].update_state(gamepad);
+      }
+
+      // Don't bother starting an inline session in this sample since WebXR
+      // gamepads are not available during inline sessions.
+      function initXR() {
+        xrButton = new XRDeviceButton({
+          onRequestSession: onRequestSession,
+          onEndSession: (session) => session.end(),
+          supportedSessionTypes: ['immersive-vr']
+        });
+        xrButton.addToHeader();
+      }
+
+      function initGL() {
+        if (gl)
+          return;
+
+        gl = createWebGLContext({
+          xrCompatible: true
+        });
+        document.body.appendChild(gl.canvas);
+
+        function onResize() {
+          gl.canvas.width = (gl.canvas.offsetWidth * window.devicePixelRatio);
+          gl.canvas.height = (gl.canvas.offsetHeight * window.devicePixelRatio);
+        }
+        window.addEventListener('resize', onResize);
+        onResize();
+
+        renderer = new Renderer(gl);
+
+        scene.setRenderer(renderer);
+        scene.inputRenderer.setControllerMesh(new Gltf2Node({url: '../media/gltf/controller/controller.gltf'}));
+
+        addFloorBox();
+      }
+
+      function addFloorBox() {
+        let boxBuilder = new BoxBuilder();
+        boxBuilder.pushCube([0, 0, 0], floorSize);
+        let boxPrimitive = boxBuilder.finishPrimitive(renderer);
+
+        let boxMaterial = new PbrMaterial();
+        boxMaterial.baseColorFactor.value = [0.3, 0.3, 0.3, 1.0];
+        let boxRenderPrimitive = renderer.createRenderPrimitive(boxPrimitive, boxMaterial);
+
+        floorNode = new Node();
+        floorNode.addRenderPrimitive(boxRenderPrimitive);
+        floorNode.selectable = true;
+        scene.addNode(floorNode);
+        mat4.identity(floorNode.matrix);
+        mat4.translate(floorNode.matrix, floorNode.matrix, floorPosition);
+      }
+
+      function onRequestSession() {
+        navigator.xr.requestSession('immersive-vr', {requiredFeatures: ['local-floor']}).then((session) => {
+          xrButton.setSession(session);
+          onSessionStarted(session);
+        });
+      }
+
+      function onSessionStarted(session) {
+        session.addEventListener('end', () => xrButton.setSession(null));
+
+        initGL();
+
+        session.updateRenderState({
+          baseLayer : new XRWebGLLayer(session, gl)
+        });
+
+        session.requestReferenceSpace('local-floor').then((refSpace) => {
+          // Save the session-specific reference space.
+          xrRefSpace = refSpace;
+          session.requestAnimationFrame(onXRFrame);
+        });
+      }
+
+      function onXRFrame(time, frame) {
+        let session = frame.session;
+        let pose = frame.getViewerPose(xrRefSpace);
+        scene.startFrame();
+        session.requestAnimationFrame(onXRFrame);
+
+        // Check for and respond to any gamepad state changes.
+        for (let source of session.inputSources) {
+          if (source.gamepad) {
+            ProcessInputSource(source);
+          }
+        }
+
+        if (displayTables) {
+          tableManager.nextFrame();
+        }
+
+        for (let hand in boxTable) {
+          boxTable[hand].update();
+        }
+
+        scene.updateInputSources(frame, xrRefSpace);
+        scene.drawXRFrame(frame, pose);
+        scene.endFrame();
+      }
+
+      // Start the XR application.
+      initXR();
+    </script>
+  </body>
+</html>

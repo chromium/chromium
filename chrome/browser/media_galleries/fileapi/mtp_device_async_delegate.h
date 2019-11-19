@@ -10,8 +10,8 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"
-#include "storage/browser/fileapi/async_file_util.h"
-#include "storage/browser/fileapi/watcher_manager.h"
+#include "storage/browser/file_system/async_file_util.h"
+#include "storage/browser/file_system/watcher_manager.h"
 #include "url/gurl.h"
 
 namespace base {

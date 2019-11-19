@@ -1,3 +1,11 @@
 include_rules = [
  "+third_party/libaddressinput",
 ]
+
+specific_include_rules = {
+  "chrome_payment_request_delegate\.cc": [
+    # This delegate is hardcoded to construct a Views dialog right now, since it
+    # is only used on Views platforms.
+    "+chrome/browser/ui/views",
+  ],
+}

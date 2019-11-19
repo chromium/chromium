@@ -2,12 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {addWebUIListener, removeWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {Action} from 'chrome://resources/js/cr/ui/store.m.js';
+import {createBookmark, editBookmark, moveBookmark, removeBookmark, reorderChildren, refreshNodes, setIncognitoAvailability, setCanEditBookmarks} from './actions.js';
+import {BrowserProxy} from './browser_proxy.js';
+import {IncognitoAvailability} from './constants.js';
+import {Debouncer} from './debouncer.js';
+import {Store} from './store.js';
+import {normalizeNodes} from './util.js';
+
 /**
  * @fileoverview Listener functions which translate events from the
  * chrome.bookmarks API into actions to modify the local page state.
  */
-
-cr.define('bookmarks.ApiListener', function() {
 
   /** @type {boolean} */
   let trackUpdates = false;
@@ -23,12 +31,12 @@ cr.define('bookmarks.ApiListener', function() {
    */
   function batchUIUpdates() {
     if (!debouncer) {
-      debouncer = new bookmarks.Debouncer(
-          () => bookmarks.Store.getInstance().endBatchUpdate());
+      debouncer = new Debouncer(
+          () => Store.getInstance().endBatchUpdate());
     }
 
     if (debouncer.done()) {
-      bookmarks.Store.getInstance().beginBatchUpdate();
+      Store.getInstance().beginBatchUpdate();
       debouncer.reset();
     }
 
@@ -38,7 +46,7 @@ cr.define('bookmarks.ApiListener', function() {
   /**
    * Tracks any items that are created or moved.
    */
-  function trackUpdatedItems() {
+  export function trackUpdatedItems() {
     trackUpdates = true;
   }
 
@@ -59,16 +67,16 @@ cr.define('bookmarks.ApiListener', function() {
    * called. Should be called after a user action causes new items to appear in
    * the main list.
    */
-  function highlightUpdatedItems() {
+  export function highlightUpdatedItems() {
     // Ensure that the items are highlighted after the current batch update (if
     // there is one) is completed.
     assert(debouncer);
     debouncer.promise.then(highlightUpdatedItemsImpl);
   }
 
-  /** @param {cr.ui.Action} action */
+  /** @param {Action} action */
   function dispatch(action) {
-    bookmarks.Store.getInstance().dispatch(action);
+    Store.getInstance().dispatch(action);
   }
 
   /**
@@ -76,7 +84,7 @@ cr.define('bookmarks.ApiListener', function() {
    * @param {{title: string, url: (string|undefined)}} changeInfo
    */
   function onBookmarkChanged(id, changeInfo) {
-    dispatch(bookmarks.actions.editBookmark(id, changeInfo));
+    dispatch(editBookmark(id, changeInfo));
   }
 
   /**
@@ -88,7 +96,7 @@ cr.define('bookmarks.ApiListener', function() {
     if (trackUpdates) {
       updatedItems.push(id);
     }
-    dispatch(bookmarks.actions.createBookmark(id, treeNode));
+    dispatch(createBookmark(id, treeNode));
   }
 
   /**
@@ -97,8 +105,8 @@ cr.define('bookmarks.ApiListener', function() {
    */
   function onBookmarkRemoved(id, removeInfo) {
     batchUIUpdates();
-    const nodes = bookmarks.Store.getInstance().data.nodes;
-    dispatch(bookmarks.actions.removeBookmark(
+    const nodes = Store.getInstance().data.nodes;
+    dispatch(removeBookmark(
         id, removeInfo.parentId, removeInfo.index, nodes));
   }
 
@@ -116,7 +124,7 @@ cr.define('bookmarks.ApiListener', function() {
     if (trackUpdates) {
       updatedItems.push(id);
     }
-    dispatch(bookmarks.actions.moveBookmark(
+    dispatch(moveBookmark(
         id, moveInfo.parentId, moveInfo.index, moveInfo.oldParentId,
         moveInfo.oldIndex));
   }
@@ -126,7 +134,7 @@ cr.define('bookmarks.ApiListener', function() {
    * @param {{childIds: !Array<string>}} reorderInfo
    */
   function onChildrenReordered(id, reorderInfo) {
-    dispatch(bookmarks.actions.reorderChildren(id, reorderInfo.childIds));
+    dispatch(reorderChildren(id, reorderInfo.childIds));
   }
 
   /**
@@ -139,8 +147,8 @@ cr.define('bookmarks.ApiListener', function() {
 
   function onImportEnded() {
     chrome.bookmarks.getTree(function(results) {
-      dispatch(bookmarks.actions.refreshNodes(
-          bookmarks.util.normalizeNodes(results[0])));
+      dispatch(refreshNodes(
+          normalizeNodes(results[0])));
     });
     chrome.bookmarks.onCreated.addListener(onBookmarkCreated);
   }
@@ -149,14 +157,14 @@ cr.define('bookmarks.ApiListener', function() {
    * @param {IncognitoAvailability} availability
    */
   function onIncognitoAvailabilityChanged(availability) {
-    dispatch(bookmarks.actions.setIncognitoAvailability(availability));
+    dispatch(setIncognitoAvailability(availability));
   }
 
   /**
    * @param {boolean} canEdit
    */
   function onCanEditBookmarksChanged(canEdit) {
-    dispatch(bookmarks.actions.setCanEditBookmarks(canEdit));
+    dispatch(setCanEditBookmarks(canEdit));
   }
 
   const listeners = [
@@ -169,31 +177,35 @@ cr.define('bookmarks.ApiListener', function() {
     {api: chrome.bookmarks.onImportEnded, fn: onImportEnded},
   ];
 
-  function init() {
+  /** @type {?{eventName: string, uid: number}} */
+  let incognitoAvailabilityListener = null;
+
+  /** @type {?{eventName: string, uid: number}} */
+  let canEditBookmarksListener = null;
+
+  export function init() {
     listeners.forEach((listener) => listener.api.addListener(listener.fn));
 
-    cr.sendWithPromise('getIncognitoAvailability')
-        .then(onIncognitoAvailabilityChanged);
-    cr.addWebUIListener(
+    const browserProxy = BrowserProxy.getInstance();
+    browserProxy.getIncognitoAvailability().then(
+        onIncognitoAvailabilityChanged);
+    incognitoAvailabilityListener = addWebUIListener(
         'incognito-availability-changed', onIncognitoAvailabilityChanged);
 
-    cr.sendWithPromise('getCanEditBookmarks').then(onCanEditBookmarksChanged);
-    cr.addWebUIListener(
+    browserProxy.getCanEditBookmarks().then(onCanEditBookmarksChanged);
+    canEditBookmarksListener = addWebUIListener(
         'can-edit-bookmarks-changed', onCanEditBookmarksChanged);
   }
 
-  function destroy() {
+  export function destroy() {
     listeners.forEach((listener) => listener.api.removeListener(listener.fn));
-    cr.removeWebUIListener(
-        'incognito-availability-changed', onIncognitoAvailabilityChanged);
-    cr.removeWebUIListener(
-        'can-edit-bookmarks-changed', onCanEditBookmarksChanged);
+    if (incognitoAvailabilityListener) {
+      removeWebUIListener(/** @type {{eventName: string, uid: number}} */ (
+          incognitoAvailabilityListener));
+    }
+    if (canEditBookmarksListener) {
+      removeWebUIListener(/** @type {{eventName: string, uid: number}} */ (
+          canEditBookmarksListener));
+    }
   }
 
-  return {
-    init: init,
-    destroy: destroy,
-    trackUpdatedItems: trackUpdatedItems,
-    highlightUpdatedItems: highlightUpdatedItems,
-  };
-});

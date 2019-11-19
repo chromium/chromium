@@ -42,27 +42,14 @@ namespace sql {
 class DatabaseMemoryDumpProvider;
 class Statement;
 
-// To allow some test classes to be friended.
 namespace test {
-class ScopedCommitHook;
 class ScopedErrorExpecter;
-class ScopedScalarFunction;
-class ScopedMockTimeSource;
 }  // namespace test
-
-// Exposes private Database functionality to unit tests.
-//
-// This class is only defined in test targets.
-class DatabaseTestPeer;
 
 // Handle to an open SQLite database.
 //
 // Instances of this class are thread-unsafe and DCHECK that they are accessed
 // on the same sequence.
-//
-// TODO(pwnall): This should be renamed to Database. Class instances are
-// typically named "db_" / "db", and the class' equivalents in other systems
-// used by Chrome are named LevelDB::DB and blink::IDBDatabase.
 class COMPONENT_EXPORT(SQL) Database {
  private:
   class StatementRef;  // Forward declaration, see real one below.
@@ -461,11 +448,6 @@ class COMPONENT_EXPORT(SQL) Database {
   // OnSqliteError implementation).
   static bool IsExpectedSqliteError(int error);
 
-  // Collect various diagnostic information and post a crash dump to aid
-  // debugging.  Dump rate per database is limited to prevent overwhelming the
-  // crash server.
-  void ReportDiagnosticInfo(int extended_error, Statement* stmt);
-
   // Computes the path of a database's rollback journal.
   //
   // The journal file is created at the beginning of the database's first
@@ -515,12 +497,6 @@ class COMPONENT_EXPORT(SQL) Database {
   // Statement accesses StatementRef which we don't want to expose to everybody
   // (they should go through Statement).
   friend class Statement;
-
-  friend class DatabaseTestPeer;
-
-  friend class test::ScopedCommitHook;
-  friend class test::ScopedScalarFunction;
-  friend class test::ScopedMockTimeSource;
 
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, CachedStatement);
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, CollectDiagnosticInfo);
@@ -684,23 +660,6 @@ class COMPONENT_EXPORT(SQL) Database {
   // Returns the results of sqlite3_db_filename(), which should match the path
   // passed to Open().
   base::FilePath DbPath() const;
-
-  // Helper to prevent uploading too many diagnostic dumps for a given database,
-  // since every dump will likely show the same problem.  Returns |true| if this
-  // function was not previously called for this database, and the persistent
-  // storage which tracks state was updated.
-  //
-  // |false| is returned if the function was previously called for this
-  // database, even across restarts.  |false| is also returned if the persistent
-  // storage cannot be updated, possibly indicating problems requiring user or
-  // admin intervention, such as filesystem corruption or disk full.  |false| is
-  // also returned if the persistent storage contains invalid data or is not
-  // readable.
-  //
-  // TODO(shess): It would make sense to reset the persistent state if the
-  // database is razed or recovered, or if the diagnostic code adds new
-  // capabilities.
-  bool RegisterIntentToUpload() const;
 
   // Helper to collect diagnostic info for a corrupt database.
   std::string CollectCorruptionInfo();

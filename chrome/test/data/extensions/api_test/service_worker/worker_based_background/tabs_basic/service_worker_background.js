@@ -7,7 +7,7 @@ var tabProps = [];
 var createTabUtil = function(urlToLoad, createdCallback) {
   try {
     chrome.tabs.create({url: urlToLoad}, function(tab) {
-      createdCallback({id: tab.id, url: tab.url});
+      createdCallback({id: tab.id, url: tab.pendingUrl});
     });
   } catch (e) {
     chrome.test.fail(e);
@@ -17,7 +17,7 @@ var createTabUtil = function(urlToLoad, createdCallback) {
 var getTabUtil = function(tabId, getCallback) {
   try {
     chrome.tabs.get(tabId, function(tab) {
-      getCallback({id: tab.id, url: tab.url});
+      getCallback({id: tab.id, url: tab.pendingUrl || tab.url});
     });
   } catch (e) {
     chrome.test.fail(e);
@@ -36,14 +36,14 @@ chrome.test.runTests([
   // Get the info for the tab that was automatically created.
   function testTabQueryInitial() {
     queryTabUtil({currentWindow: true}, function(tabs) {
-        chrome.test.assertEq(1, tabs.length);
-        tabProps.push({id: tabs[0].id, url: tabs[0].url});
-        chrome.test.succeed();
+      chrome.test.assertEq(1, tabs.length);
+      tabProps.push({id: tabs[0].id, url: tabs[0].url});
+      chrome.test.succeed();
     });
   },
   // Create a new tab.
   function testTabCreate1() {
-    var expectedUrl = 'chrome://newtab/';
+    var expectedUrl = 'chrome://version/';
     createTabUtil(expectedUrl, function(tabData) {
       chrome.test.assertEq(expectedUrl, tabData.url);
       tabProps.push(tabData);
@@ -122,8 +122,10 @@ chrome.test.runTests([
       // This loop works because tab IDs are unique.
       for (var i = 0; i < tabs.length; ++i) {
         for (var j = 0; j < tabProps.length; ++j) {
+          // Get the URL of the tab, which may still be pending.
+          var tabUrl = tabs[i].pendingUrl || tabs[i].url;
           if (tabs[i].id === tabProps[j].id &&
-              tabs[i].url === tabProps[j].url) {
+              tabUrl === tabProps[j].url) {
             ++countFound;
             break;
           }

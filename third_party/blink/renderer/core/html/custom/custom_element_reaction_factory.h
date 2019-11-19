@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_REACTION_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_REACTION_FACTORY_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -13,7 +13,7 @@ namespace blink {
 class CustomElementDefinition;
 class CustomElementReaction;
 class Document;
-class FileOrUSVString;
+class FileOrUSVStringOrFormData;
 class HTMLFormElement;
 class QualifiedName;
 
@@ -42,12 +42,12 @@ class CustomElementReactionFactory {
       HTMLFormElement* nullable_form);
   static CustomElementReaction& CreateFormReset(
       CustomElementDefinition& definition);
-  static CustomElementReaction& CreateDisabledStateChanged(
+  static CustomElementReaction& CreateFormDisabled(
       CustomElementDefinition& definition,
       bool is_disabled);
-  static CustomElementReaction& CreateRestoreValue(
+  static CustomElementReaction& CreateFormStateRestore(
       CustomElementDefinition& definition,
-      const FileOrUSVString& value,
+      const FileOrUSVStringOrFormData& value,
       const String& mode);
 };
 

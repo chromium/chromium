@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.CommandLine;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**
@@ -45,8 +44,6 @@ public class PrivacyPreferencesManagerTest {
 
     @Test
     public void testUsageAndCrashReportingAccessors() {
-        CommandLine.init(null);
-
         // TODO(yolandyan): Use Junit4 parameters to clean up this test structure.
         runTest(CONNECTED, UNMETERED, METRICS_REPORTING_ENABLED, METRICS_UPLOAD_PERMITTED,
                 CRASH_NETWORK_AVAILABLE);

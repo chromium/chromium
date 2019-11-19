@@ -1,0 +1,37 @@
+From 23ef510bb7a3f38ecf2d05edd04ccc5bcf210c0d Mon Sep 17 00:00:00 2001
+From: Sorin Jianu <sorin@chromium.org>
+Date: Thu, 13 Jun 2019 15:45:01 -0700
+Subject: [PATCH] fix atlverify
+
+---
+ third_party/wtl/include/atlapp.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/third_party/wtl/include/atlapp.h b/third_party/wtl/include/atlapp.h
+index c61be7e18faf..6c4d9b0f6e2a 100644
+--- a/third_party/wtl/include/atlapp.h
++++ b/third_party/wtl/include/atlapp.h
+@@ -187,7 +187,7 @@ inline HFONT AtlGetDefaultGuiFont()
+ inline HFONT AtlCreateControlFont()
+ {
+ 	LOGFONT lf = {};
+-	ATLVERIFY(::SystemParametersInfo(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, 0) != FALSE);
++	ATLVERIFY(::SystemParametersInfo(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, 0));
+ 	HFONT hFont = ::CreateFontIndirect(&lf);
+ 	ATLASSERT(hFont != NULL);
+ 	return hFont;
+@@ -199,9 +199,9 @@ inline HFONT AtlCreateBoldFont(HFONT hFont = NULL)
+ {
+ 	LOGFONT lf = {};
+ 	if(hFont == NULL)
+-		ATLVERIFY(::SystemParametersInfo(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, 0) != FALSE);
++		ATLVERIFY(::SystemParametersInfo(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, 0));
+ 	else
+-		ATLVERIFY(::GetObject(hFont, sizeof(LOGFONT), &lf) == sizeof(LOGFONT));
++		(void)(ATLVERIFY(::GetObject(hFont, sizeof(LOGFONT), &lf) == sizeof(LOGFONT)));
+ 	lf.lfWeight = FW_BOLD;
+ 	HFONT hFontBold =  ::CreateFontIndirect(&lf);
+ 	ATLASSERT(hFontBold != NULL);
+-- 
+2.21.0.windows.1
+

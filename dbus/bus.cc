@@ -15,10 +15,11 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
 #include "dbus/object_manager.h"
@@ -102,8 +103,7 @@ class Watch {
 // calls.
 class Timeout {
  public:
-  explicit Timeout(DBusTimeout* timeout)
-      : raw_timeout_(timeout), weak_ptr_factory_(this) {
+  explicit Timeout(DBusTimeout* timeout) : raw_timeout_(timeout) {
     // Associated |this| with the underlying DBusTimeout.
     dbus_timeout_set_data(raw_timeout_, this, nullptr);
   }
@@ -140,7 +140,7 @@ class Timeout {
 
   DBusTimeout* raw_timeout_;
 
-  base::WeakPtrFactory<Timeout> weak_ptr_factory_;
+  base::WeakPtrFactory<Timeout> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Timeout);
 };
@@ -171,8 +171,8 @@ Bus::Bus(const Options& options)
   dbus_threads_init_default();
   // The origin message loop is unnecessary if the client uses synchronous
   // functions only.
-  if (base::ThreadTaskRunnerHandle::IsSet())
-    origin_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  if (base::SequencedTaskRunnerHandle::IsSet())
+    origin_task_runner_ = base::SequencedTaskRunnerHandle::Get();
 }
 
 Bus::~Bus() {
@@ -625,10 +625,23 @@ DBusMessage* Bus::SendWithReplyAndBlock(DBusMessage* request,
   DCHECK(connection_);
   AssertOnDBusThread();
 
+  base::ElapsedTimer elapsed;
+
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  return dbus_connection_send_with_reply_and_block(
+  DBusMessage* reply = dbus_connection_send_with_reply_and_block(
       connection_, request, timeout_ms, error);
+
+  constexpr base::TimeDelta kLongCall = base::TimeDelta::FromSeconds(1);
+  LOG_IF(WARNING, elapsed.Elapsed() >= kLongCall)
+      << "Bus::SendWithReplyAndBlock took "
+      << elapsed.Elapsed().InMilliseconds() << "ms to process message: "
+      << "type=" << dbus_message_type_to_string(dbus_message_get_type(request))
+      << ", path=" << dbus_message_get_path(request)
+      << ", interface=" << dbus_message_get_interface(request)
+      << ", member=" << dbus_message_get_member(request);
+
+  return reply;
 }
 
 void Bus::SendWithReply(DBusMessage* request,
@@ -844,12 +857,16 @@ bool Bus::HasDBusThread() {
 }
 
 void Bus::AssertOnOriginThread() {
-  DCHECK_EQ(origin_thread_id_, base::PlatformThread::CurrentId());
+  if (origin_task_runner_) {
+    CHECK(origin_task_runner_->RunsTasksInCurrentSequence());
+  } else {
+    CHECK_EQ(origin_thread_id_, base::PlatformThread::CurrentId());
+  }
 }
 
 void Bus::AssertOnDBusThread() {
   if (dbus_task_runner_) {
-    DCHECK(dbus_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(dbus_task_runner_->RunsTasksInCurrentSequence());
   } else {
     AssertOnOriginThread();
   }
@@ -962,7 +979,7 @@ void Bus::ListenForServiceOwnerChangeInternal(
   // Check if the callback has already been added.
   std::vector<GetServiceOwnerCallback>& callbacks = it->second;
   for (size_t i = 0; i < callbacks.size(); ++i) {
-    if (callbacks[i].Equals(callback))
+    if (callbacks[i] == callback)
       return;
   }
   callbacks.push_back(callback);
@@ -994,7 +1011,7 @@ void Bus::UnlistenForServiceOwnerChangeInternal(
 
   std::vector<GetServiceOwnerCallback>& callbacks = it->second;
   for (size_t i = 0; i < callbacks.size(); ++i) {
-    if (callbacks[i].Equals(callback)) {
+    if (callbacks[i] == callback) {
       callbacks.erase(callbacks.begin() + i);
       break;  // There can be only one.
     }

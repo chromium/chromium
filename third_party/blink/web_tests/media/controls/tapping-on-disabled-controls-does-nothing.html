@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<title>Test that when disabled media controls are tapped, they don't do anything.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video controls width=500 preload=none src="../content/unsupported_track.mov"></video>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+  const muteBtn = muteButton(video);
+  const fullscreenBtn = fullscreenButton(video);
+  enableTestMode(video);
+
+  // onerror will fire since the video is unsupported, disabling all controls.
+  video.addEventListener("error", t.step_func(() => {
+    // Check that the mute button does nothing when tapped.
+    assert_true(muteBtn.disabled, "mute button should be disabled");
+    assert_false(video.muted, "video should start unmuted");
+    singleTouchOnControl(muteBtn, t.step_func(() => {
+      assert_false(video.muted, "touching the disabled mute button should not mute the video");
+
+      // Check that the fullscreen button does nothing when tapped.
+      assert_true(fullscreenBtn.disabled, "fullscreen button should be disabled");
+      assert_false(document.fullscreen, "video should not start in fullscreen");
+      singleTouchOnControl(fullscreenBtn, t.step_func_done(() => {
+        assert_false(document.fullscreen, "touching the disabled fullscreen button should not fullscreen the video");
+      }));
+    }));
+  }));
+
+  video.load();
+});
+</script>
+</html>

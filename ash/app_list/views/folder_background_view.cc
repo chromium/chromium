@@ -5,14 +5,18 @@
 #include "ash/app_list/views/folder_background_view.h"
 
 #include "ash/app_list/views/app_list_folder_view.h"
-#include "ui/keyboard/keyboard_controller.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 
-namespace app_list {
+namespace ash {
 
 FolderBackgroundView::FolderBackgroundView(AppListFolderView* folder_view)
     : folder_view_(folder_view) {}
 
 FolderBackgroundView::~FolderBackgroundView() = default;
+
+const char* FolderBackgroundView::GetClassName() const {
+  return "FolderBackgroundView";
+}
 
 bool FolderBackgroundView::OnMousePressed(const ui::MouseEvent& event) {
   HandleClickOrTap();
@@ -30,7 +34,7 @@ void FolderBackgroundView::OnGestureEvent(ui::GestureEvent* event) {
 
 void FolderBackgroundView::HandleClickOrTap() {
   // If the virtual keyboard is visible, dismiss the keyboard and return early
-  auto* const keyboard_controller = keyboard::KeyboardController::Get();
+  auto* const keyboard_controller = keyboard::KeyboardUIController::Get();
   if (keyboard_controller->IsKeyboardVisible()) {
     keyboard_controller->HideKeyboardByUser();
     return;
@@ -40,4 +44,4 @@ void FolderBackgroundView::HandleClickOrTap() {
   folder_view_->CloseFolderPage();
 }
 
-}  // namespace app_list
+}  // namespace ash

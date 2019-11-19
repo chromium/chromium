@@ -112,7 +112,7 @@ class Match {
    */
   addSelectHighlight() {
     for (let i = 0; i < this.nodes.length; ++i) {
-      this.nodes[i].className = (this.nodes[i].className || '') + ' findysel';
+      this.nodes[i].classList.add(CSS_CLASS_NAME_SELECT);
     }
   }
 
@@ -122,8 +122,7 @@ class Match {
    */
   removeSelectHighlight() {
     for (let i = 0; i < this.nodes.length; ++i) {
-      this.nodes[i].className =
-          (this.nodes[i].className || '').replace(/\sfindysel/g, '');
+      this.nodes[i].classList.remove(CSS_CLASS_NAME_SELECT);
     }
   }
 }
@@ -135,10 +134,18 @@ class Match {
 __gCrWeb.findInPage.matches = [];
 
 /**
- * Index of the current highlighted choice.  -1 means none.
+ * Index of the currently selected match relative to all visible matches
+ * on the frame. -1 if there is no currently selected match.
  * @type {number}
  */
-__gCrWeb.findInPage.selectedMatchIndex = -1;
+let selectedVisibleMatchIndex_ = -1;
+
+/**
+ * Index of the currently selected match relative to
+ * __gCrWeb.findInPage.matches. -1 if there is no currently selected match.
+ * @type {number}
+ */
+let selectedMatchIndex_ = -1;
 
 /**
  * The ID for the next Match found in |allText_|. This ID is used for
@@ -238,7 +245,13 @@ let replacementsIndex_ = 0;
  * The total number of visible matches found.
  * @type {Number}
  */
-let visibleFound_ = 0;
+let visibleMatchCount_ = 0;
+
+/**
+ * The last index from which the match counting process left off.
+ * This is necessary since the counting might be interrupted by pumping.
+ */
+let visibleMatchesCountIndexIterator_ = 0;
 
 
 /**
@@ -318,10 +331,16 @@ const IGNORE_NODE_NAMES = new Set(['SCRIPT', 'STYLE', 'EMBED',
   'OBJECT', 'SELECT', 'TEXTAREA', 'IFRAME']);
 
 /**
- * Class name of CSS element.
+ * Class name of CSS element that highlights matches with yellow.
  * @type {string}
  */
 const CSS_CLASS_NAME = 'find_in_page';
+
+/**
+ * Class name of CSS element that selects a highlighted match with orange.
+ * @type {string}
+ */
+const CSS_CLASS_NAME_SELECT = 'find_selected';
 
 /**
  * ID of CSS style.
@@ -342,10 +361,14 @@ const TIMEOUT = -1;
 const REGEX_ESCAPER = /([.?*+^$[\]\\(){}|-])/g;
 
 /**
- * @return {Match} The currently selected Match.
+ * @return {Match} The currently selected Match. Returns null if no
+ * currently selected match.
  */
 function getCurrentSelectedMatch_() {
-  return __gCrWeb.findInPage.matches[__gCrWeb.findInPage.selectedMatchIndex];
+   if (selectedMatchIndex_ < 0) {
+    return null;
+   }
+  return __gCrWeb.findInPage.matches[selectedMatchIndex_];
 };
 
 /**
@@ -403,11 +426,11 @@ __gCrWeb.findInPage.findString = function(string, timeout) {
   // Holds what nodes we have not processed yet.
   __gCrWeb.findInPage.stack = [document.body];
 
-  // Number of visible elements found.
-  visibleFound_ = 0;
+  // Number of visible matches found.
+  visibleMatchCount_ = 0;
 
   // Index tracking variables so search can be broken up into multiple calls.
-  visibleIndex_ = 0;
+  visibleMatchesCountIndexIterator_ = 0;
 
   __gCrWeb.findInPage.regex = getRegex_(string);
 
@@ -525,31 +548,42 @@ __gCrWeb.findInPage.pumpSearch = function(timeout) {
     replacements_[i].doSwap();
   }
 
-  // Count visible elements.
+  let visibleMatchCount = countVisibleMatches_(timer);
+
+  searchInProgress_ = false;
+
+  return visibleMatchCount;
+};
+
+/**
+ * Counts the total number of visible matches.
+ * @param {Timer} used to pause the counting if overall search
+ * has taken too long.
+ * @return {Number} of visible matches.
+ */
+function countVisibleMatches_(timer) {
   let max = __gCrWeb.findInPage.matches.length;
   let maxVisible = MAX_VISIBLE_ELEMENTS;
-  for (let index = visibleIndex_; index < max; index++) {
+  var currentlyVisibleMatchCount = 0;
+  for (let index = visibleMatchesCountIndexIterator_; index < max; index++) {
     let match = __gCrWeb.findInPage.matches[index];
-    if (timer.overtime()) {
-      visibleIndex_ = index;
+    if (timer && timer.overtime()) {
+      visibleMatchesCountIndexIterator_ = index;
       return TIMEOUT;
     }
 
     // Stop after |maxVisible| elements.
-    if (visibleFound_ > maxVisible) {
-      match.visibleIndex = maxVisible;
+    if (currentlyVisibleMatchCount > maxVisible) {
       continue;
     }
 
     if (match.visible()) {
-      visibleFound_++;
-      match.visibleIndex = visibleFound_;
+      currentlyVisibleMatchCount++;
     }
   }
-
-  searchInProgress_ = false;
-
-  return visibleFound_;
+  visibleMatchCount_ = currentlyVisibleMatchCount;
+  visibleMatchesCountIndexIterator_ = 0;
+  return currentlyVisibleMatchCount;
 };
 
 /**
@@ -566,7 +600,8 @@ function cleanUp_() {
   sectionsIndex_ = 0;
 
   __gCrWeb.findInPage.matches = [];
-  __gCrWeb.findInPage.selectedMatchIndex = -1;
+  selectedMatchIndex_ = -1;
+  selectedVisibleMatchIndex_ = -1;
   matchId_ = 0;
   partialMatches_ = [];
 
@@ -575,143 +610,107 @@ function cleanUp_() {
 };
 
 /**
- * Increments the index of the current selected Match or, if the index is
- * already at the end, sets it to the index of the first Match in the page.
+ * Selects the |index|-th visible matchand scrolls to that match. The total
+ * visible matches count is also recalculated.
+ * If there is no longer an |index|-th visible match, then the last visible
+ * match will be selected if |index| is less than the currently selected
+ * match or the first visible match will be selected if |index| is greater.
+ * If there are currently no visible matches, sets
+ * |selectedVisibleMatchIndex_| to -1.
+ * No-op if invalid |index| is passed.
+ * @param {Number} index of visible match to highlight.
+ * @return {Dictionary} of currently visible matches and currently selected
+ * match index.
  */
-__gCrWeb.findInPage.incrementIndex = function() {
-  if (__gCrWeb.findInPage.selectedMatchIndex >=
-      __gCrWeb.findInPage.matches.length - 1) {
-    __gCrWeb.findInPage.selectedMatchIndex = 0;
-  } else {
-    __gCrWeb.findInPage.selectedMatchIndex++;
+__gCrWeb.findInPage.selectAndScrollToVisibleMatch = function(index) {
+  if (index >= visibleMatchCount_ || index < 0) {
+    // Do nothing if invalid index is passed or if there are no matches.
+    return {matches: visibleMatchCount_, index: selectedMatchIndex_};
   }
-};
 
-/**
- * Switches to the next result, animating a little highlight in the process.
- * @return {string} JSON encoded array of coordinates to scroll to, or blank if
- *     nothing happened.
- */
-__gCrWeb.findInPage.goNext = function() {
-  if (!__gCrWeb.findInPage.matches || __gCrWeb.findInPage.matches.length == 0) {
-    return '';
+  // Remove previous highlight.
+  let match = getCurrentSelectedMatch_();
+  if (match) {
+    match.removeSelectHighlight();
   }
-  if (__gCrWeb.findInPage.selectedMatchIndex >= 0) {
-    // Remove previous highlight.
-    getCurrentSelectedMatch_().removeSelectHighlight();
+
+  let previouslySelectedMatchIndex = selectedMatchIndex_;
+
+  // Recalculate total visible matches in case it has changed.
+  let visibleMatchCount = countVisibleMatches_(null);
+
+  if (visibleMatchCount == 0) {
+    selectedMatchIndex_ = -1;
+    selectedVisibleMatchIndex_ = -1;
+    return {matches: visibleMatchCount, index: -1};
   }
-  // Iterate through to the next index, but because they might not be visible,
-  // keep trying until you find one that is.  Make sure we don't loop forever by
-  // stopping on what we are currently highlighting.
-  let oldIndex = __gCrWeb.findInPage.selectedMatchIndex;
-  __gCrWeb.findInPage.incrementIndex();
-  while (!getCurrentSelectedMatch_().visible()) {
-    if (oldIndex === __gCrWeb.findInPage.selectedMatchIndex) {
-      // Checked all matches but didn't find anything else visible.
-      return '';
+
+  if (index >= visibleMatchCount) {
+    // There are no longer that many visible matches.
+    // Select the last match if moving to previous match.
+    // Select the first currently visible match if moving to next match.
+    index = index > selectedVisibleMatchIndex_ ? 0 : visibleMatchCount-1;
+  }
+
+  let total_match_index = 0;
+  var visible_match_count = index;
+  // Select the |index|-th visible match.
+  while (total_match_index < __gCrWeb.findInPage.matches.length) {
+    if (__gCrWeb.findInPage.matches[total_match_index].visible()) {
+      visible_match_count--;
+      if (visible_match_count < 0) {
+        break;
+      }
     }
-    __gCrWeb.findInPage.incrementIndex();
-    if (0 === __gCrWeb.findInPage.selectedMatchIndex && oldIndex < 0) {
-      // Didn't find anything visible and haven't highlighted anything yet.
-      return '';
+    total_match_index++;
+  }
+
+  selectedMatchIndex_ = total_match_index;
+  selectedVisibleMatchIndex_ = index;
+
+  match = getCurrentSelectedMatch_();
+  match.addSelectHighlight();
+  scrollToCurrentlySelectedMatch_();
+
+  // Get string consisting of the text contents of the match nodes and the
+  // nodes before and after them, if applicable.
+  // This will be read out as an accessibility notification for the match.
+  // The siblings's textContent are added into the node array, because the
+  // nextSibling and previousSibling properties to the match nodes sometimes
+  // are text nodes, not HTML nodes. This results in '[object Text]' string
+  // being added to the array instead of the object.
+  let nodes = match.nodes.slice();
+  if (match.nodes[0].previousSibling) {
+    nodes.unshift([match.nodes[0].previousSibling.textContent]);
+  }
+  if (match.nodes[match.nodes.length-1].nextSibling) {
+    nodes.push([match.nodes[match.nodes.length-1].nextSibling.textContent]);
+  }
+  let contextString = nodes.map(function(node) {
+    if (node.textContent) {
+      return node.textContent;
+    } else {
+      return node;
     }
-  }
-  // Return scroll dimensions.
-  return findScrollDimensions_();
+  }).join("");
+
+  return {
+    matches: visibleMatchCount,
+    index: index,
+    contextString: contextString
+  };
 };
 
 /**
- * Decrements the index of the current selected Match or, if the index is
- * already at the beginning, sets it to the index of the last Match in the page.
+ * Scrolls to the position of the currently selected match.
  */
-__gCrWeb.findInPage.decrementIndex = function() {
-  if (__gCrWeb.findInPage.selectedMatchIndex <= 0) {
-    __gCrWeb.findInPage.selectedMatchIndex =
-        __gCrWeb.findInPage.matches.length - 1;
-  } else {
-    __gCrWeb.findInPage.selectedMatchIndex--;
-  }
-};
-
-/**
- * Switches to the previous result, animating a little highlight in the process.
- * @return {string} JSON encoded array of coordinates to scroll to, or blank if
- *     nothing happened.
- */
-__gCrWeb.findInPage.goPrev = function() {
-  if (!__gCrWeb.findInPage.matches || __gCrWeb.findInPage.matches.length == 0) {
-    return '';
-  }
-  if (__gCrWeb.findInPage.selectedMatchIndex >= 0) {
-    // Remove previous highlight.
-    getCurrentSelectedMatch_().removeSelectHighlight();
-  }
-  // Iterate through to the next index, but because they might not be visible,
-  // keep trying until you find one that is.  Make sure we don't loop forever by
-  // stopping on what we are currently highlighting.
-  let old = __gCrWeb.findInPage.selectedMatchIndex;
-  __gCrWeb.findInPage.decrementIndex();
-  while (!getCurrentSelectedMatch_().visible()) {
-    __gCrWeb.findInPage.decrementIndex();
-    if (old == __gCrWeb.findInPage.selectedMatchIndex) {
-      // Checked all matches but didn't find anything.
-      return '';
-    }
-  }
-
-  // Return scroll dimensions.
-  return findScrollDimensions_();
-};
-
-/**
- * Normalize coordinates according to the current document dimensions. Don't go
- * too far off the screen in either direction. Try to center if possible.
- * @param {Element} elem Element to find normalized coordinates for.
- * @return {Array<number>} Normalized coordinates.
- */
-function getNormalizedCoordinates_(elem) {
-  let pos = findAbsolutePosition_(elem);
-  let maxX = Math.max(getBodyWidth_(), pos[0] + elem.offsetWidth);
-  let maxY = Math.max(getBodyHeight_(), pos[1] + elem.offsetHeight);
-  // Don't go too far off the screen in either direction.  Try to center if
-  // possible.
-  let xPos = Math.max(
-      0, Math.min(maxX - window.innerWidth, pos[0] - (window.innerWidth / 2)));
-  let yPos = Math.max(
-      0,
-      Math.min(maxY - window.innerHeight, pos[1] - (window.innerHeight / 2)));
-  return [xPos, yPos];
-};
-
-/**
- * Scale coordinates according to the width of the screen, in case the screen
- * is zoomed out.
- * @param {Array<number>} coordinates Coordinates to scale.
- * @return {Array<number>} Scaled coordinates.
- */
-function scaleCoordinates_(coordinates) {
-  let scaleFactor = pageWidth_ / window.innerWidth;
-  return [coordinates[0] * scaleFactor, coordinates[1] * scaleFactor];
-};
-
-/**
- * Finds the position of the result.
- * @return {string} JSON encoded array of the scroll coordinates "[x, y]".
- */
-function findScrollDimensions_() {
+function scrollToCurrentlySelectedMatch_() {
   let match = getCurrentSelectedMatch_();
   if (!match) {
-    return '';
+    return;
   }
-  let normalized = getNormalizedCoordinates_(match.nodes[0]);
-  let xPos = normalized[0];
-  let yPos = normalized[1];
 
-  match.addSelectHighlight();
-  let scaled = scaleCoordinates_(normalized);
-  let index = match.visibleIndex;
-  scaled.unshift(index);
-  return __gCrWeb.stringify(scaled);
+  match.nodes[0].scrollIntoView({block: "center", inline: "center"});
 };
 
 /**
@@ -751,7 +750,7 @@ function addDocumentStyle_(thisDocument) {
           'padding:0px;margin:0px;' +
           'overflow:visible !important;');
   addCSSRule(
-      '.findysel',
+      '.' + CSS_CLASS_NAME_SELECT,
       'background-color:#ff9632 !important;' +
           'padding:0px;margin:0px;' +
           'overflow:visible !important;');
@@ -775,12 +774,12 @@ function removeStyle_() {
 
 /**
  * Disables the __gCrWeb.findInPage module.
- * Basically just removes the style and class names.
+ * Removes any matches and the style and class names.
  */
-__gCrWeb.findInPage.disable = function() {
+__gCrWeb.findInPage.stop = function() {
   if (styleElement_) {
     removeStyle_();
-    window.setTimeout(cleanUp_, 0);
+    cleanUp_();
   }
   __gCrWeb.findInPage.hasInitialized = false;
 };
@@ -914,6 +913,6 @@ function escapeRegex_(text) {
   return text.replace(REGEX_ESCAPER, '\\$1');
 };
 
-window.addEventListener('pagehide', __gCrWeb.findInPage.disable);
+window.addEventListener('pagehide', __gCrWeb.findInPage.stop);
 
 })();

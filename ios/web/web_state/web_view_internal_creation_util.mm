@@ -58,11 +58,11 @@ WKWebView* BuildWKWebView(CGRect frame,
   web_view.scrollView.decelerationRate = UIScrollViewDecelerationRateNormal;
 
   if (context_menu_delegate) {
-    CRWContextMenuController* context_menu_controller = [
-        [CRWContextMenuController alloc] initWithWebView:web_view
-                                            browserState:browser_state
-                                      injectionEvaluator:nil
-                                                delegate:context_menu_delegate];
+    CRWContextMenuController* context_menu_controller =
+        [[CRWContextMenuController alloc]
+            initWithWebView:web_view
+               browserState:browser_state
+                   delegate:context_menu_delegate];
     void* associated_object_key = (__bridge void*)context_menu_controller;
     objc_setAssociatedObject(web_view, associated_object_key,
                              context_menu_controller,

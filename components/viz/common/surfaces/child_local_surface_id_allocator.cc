@@ -22,16 +22,6 @@ ChildLocalSurfaceIdAllocator::ChildLocalSurfaceIdAllocator(
 ChildLocalSurfaceIdAllocator::ChildLocalSurfaceIdAllocator()
     : ChildLocalSurfaceIdAllocator(base::DefaultTickClock::GetInstance()) {}
 
-// static
-std::unique_ptr<ChildLocalSurfaceIdAllocator>
-ChildLocalSurfaceIdAllocator::CreateWithChildSequenceNumber(uint32_t value) {
-  std::unique_ptr<ChildLocalSurfaceIdAllocator> allocator =
-      std::make_unique<ChildLocalSurfaceIdAllocator>();
-  allocator->current_local_surface_id_allocation_.local_surface_id_
-      .child_sequence_number_ = value;
-  return allocator;
-}
-
 bool ChildLocalSurfaceIdAllocator::UpdateFromParent(
     const LocalSurfaceIdAllocation& parent_local_surface_id_allocation) {
   const LocalSurfaceId& current_local_surface_id =
@@ -42,8 +32,10 @@ bool ChildLocalSurfaceIdAllocator::UpdateFromParent(
   // If the parent has not incremented its parent sequence number or updated its
   // embed token then there is nothing to do here. This allocator already has
   // the latest LocalSurfaceId.
-  if (current_local_surface_id.parent_component().IsNewerThan(
-          parent_allocated_local_surface_id.parent_component())) {
+  if (current_local_surface_id.parent_sequence_number() >=
+          parent_allocated_local_surface_id.parent_sequence_number() &&
+      current_local_surface_id.embed_token() ==
+          parent_allocated_local_surface_id.embed_token()) {
     return false;
   }
 
@@ -80,17 +72,20 @@ bool ChildLocalSurfaceIdAllocator::UpdateFromParent(
         parent_local_surface_id_allocation.allocation_time();
   }
 
-  current_local_surface_id_allocation_.local_surface_id_.parent_component_ =
-      parent_allocated_local_surface_id.parent_component_;
+  current_local_surface_id_allocation_.local_surface_id_
+      .parent_sequence_number_ =
+      parent_allocated_local_surface_id.parent_sequence_number_;
+  current_local_surface_id_allocation_.local_surface_id_.embed_token_ =
+      parent_allocated_local_surface_id.embed_token_;
 
   return true;
 }
 
 void ChildLocalSurfaceIdAllocator::GenerateId() {
   // UpdateFromParent must be called before we can generate a valid ID.
-  DCHECK(current_local_surface_id_allocation_.local_surface_id()
-             .parent_component()
-             .is_valid());
+  DCHECK_NE(current_local_surface_id_allocation_.local_surface_id_
+                .parent_sequence_number(),
+            kInvalidParentSequenceNumber);
 
   ++current_local_surface_id_allocation_.local_surface_id_
         .child_sequence_number_;
@@ -113,15 +108,6 @@ void ChildLocalSurfaceIdAllocator::GenerateId() {
       TRACE_EVENT_FLAG_FLOW_OUT, "step",
       "ChildLocalSurfaceIdAllocator::GenerateId", "local_surface_id",
       current_local_surface_id_allocation_.local_surface_id_.ToString());
-}
-
-void ChildLocalSurfaceIdAllocator::GenerateIdOrIncrementChild() {
-  if (current_local_surface_id_allocation_.IsValid()) {
-    GenerateId();
-  } else {
-    ++current_local_surface_id_allocation_.local_surface_id_
-          .child_sequence_number_;
-  }
 }
 
 }  // namespace viz

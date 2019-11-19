@@ -25,6 +25,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace chromeos {
 
@@ -47,8 +48,8 @@ constexpr LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MULTIPLE_DEVICE_HEADER},
     {"startSetupPageSingleDeviceHeader",
      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_SINGLE_DEVICE_HEADER},
-    {"startSetupPageFeatureListHeader",
-     IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FEATURE_LIST_HEADER},
+    {"startSetupPageOfflineDeviceOption",
+     IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_OFFLINE_DEVICE_OPTION},
     {"startSetupPageFeatureListInstallApps",
      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_INSTALL_APPS_DESCRIPTION},
     {"startSetupPageFeatureListAddFeatures",
@@ -59,6 +60,8 @@ constexpr LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
      IDS_MULTIDEVICE_SETUP_SETUP_SUCCEEDED_PAGE_MESSAGE},
     {"startSetupPageHeader", IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_HEADER},
     {"tryAgain", IDS_MULTIDEVICE_SETUP_TRY_AGAIN_LABEL},
+    {"dialogAccessibilityTitle",
+     IDS_MULTIDEVICE_SETUP_DIALOG_ACCESSIBILITY_TITLE},
 };
 
 struct LocalizedStringWithName {
@@ -76,10 +79,14 @@ GetLocalizedStringsWithPlaceholders() {
       localized_strings([] {
         std::vector<LocalizedStringWithName> localized_strings;
 
+        // TODO(crbug.com/964547): Refactor so that any change to these strings
+        // will surface in both the OOBE and post-OOBE UIs without having to
+        // adjust both localization calls separately.
         localized_strings.emplace_back(
             "startSetupPageMessage",
             l10n_util::GetStringFUTF16(
                 IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE,
+                ui::GetChromeOSDeviceName(),
                 base::ASCIIToUTF16(kFootnoteMarker),
                 base::UTF8ToUTF16(
                     chromeos::multidevice_setup::
@@ -91,6 +98,12 @@ GetLocalizedStringsWithPlaceholders() {
             l10n_util::GetStringFUTF16(
                 IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE,
                 base::ASCIIToUTF16(kFootnoteMarker)));
+
+        localized_strings.emplace_back(
+            "startSetupPageFeatureListHeader",
+            l10n_util::GetStringFUTF16(
+                IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FEATURE_LIST_HEADER,
+                ui::GetChromeOSDeviceName()));
 
         localized_strings.emplace_back(
             "startSetupPageFeatureListAwm",
@@ -120,8 +133,30 @@ void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
   for (const auto& entry : kLocalizedStringsWithoutPlaceholders)
     builder->Add(entry.name, entry.id);
 
-  for (const auto& entry : GetLocalizedStringsWithPlaceholders())
-    builder->Add(entry.name, entry.localized_string);
+  // TODO(crbug.com/964547): Refactor so that any change to these strings will
+  // surface in both the OOBE and post-OOBE UIs without having to adjust both
+  // localization calls separately.
+  builder->AddF(
+      "startSetupPageMessage", IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE,
+      ui::GetChromeOSDeviceName(), base::ASCIIToUTF16(kFootnoteMarker),
+      base::UTF8ToUTF16(chromeos::multidevice_setup::
+                            GetBoardSpecificBetterTogetherSuiteLearnMoreUrl()
+                                .spec()));
+
+  builder->AddF("startSetupPageFeatureListHeader",
+                IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FEATURE_LIST_HEADER,
+                ui::GetChromeOSDeviceName());
+
+  builder->AddF("startSetupPageFootnote",
+                IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE,
+                base::ASCIIToUTF16(kFootnoteMarker));
+
+  builder->AddF(
+      "startSetupPageFeatureListAwm",
+      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_AWM_DESCRIPTION,
+      base::UTF8ToUTF16(
+          chromeos::multidevice_setup::GetBoardSpecificMessagesLearnMoreUrl()
+              .spec()));
 }
 
 }  // namespace multidevice_setup

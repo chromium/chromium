@@ -8,13 +8,13 @@
 
     <group android:id="@+id/normal_menu_group"
         android:visible="false" >
-        <!-- Icon tint of the info menu item is changed programmatically. -->
         <item
-            android:id="@+id/info_menu_id"
-            android:icon="@drawable/btn_info"
-            android:title="@string/show_info"
+            android:id="@+id/settings_menu_id"
+            android:icon="@drawable/settings_cog"
+            android:title="@string/preferences"
             android:visible="false"
-            app:showAsAction="ifRoom" />
+            app:showAsAction="ifRoom"
+            app:iconTint="@color/standard_mode_tint" />
         <item
             android:id="@+id/search_menu_id"
             android:icon="@drawable/ic_search"
@@ -28,29 +28,6 @@
             android:title="@string/close"
             app:showAsAction="ifRoom"
             app:iconTint="@color/standard_mode_tint" />
-     </group>
-    <group android:id="@+id/with_settings_normal_menu_group"
-        android:visible="false" >
-        <item
-            android:id="@+id/settings_menu_id"
-            android:icon="@drawable/settings_cog"
-            android:title="@string/preferences"
-            android:visible="false"
-            app:showAsAction="ifRoom"
-            app:iconTint="@color/standard_mode_tint" />
-        <item
-            android:id="@+id/with_settings_search_menu_id"
-            android:icon="@drawable/ic_search"
-            android:title="@string/search"
-            android:visible="false"
-            app:showAsAction="ifRoom"
-            app:iconTint="@color/standard_mode_tint" />
-        <item
-            android:id="@+id/with_settings_close_menu_id"
-            android:icon="@drawable/btn_close"
-            android:title="@string/close"
-            app:showAsAction="ifRoom"
-            app:iconTint="@color/standard_mode_tint" />
     </group>
      <group
         android:id="@+id/selection_mode_menu_group"
@@ -60,12 +37,12 @@
             android:icon="@drawable/ic_share_white_24dp"
             android:title="@string/share"
             app:showAsAction="ifRoom"
-            app:iconTint="@color/menu_item_tint" />
+            app:iconTint="@color/tint_on_blue_bg" />
         <item
             android:id="@+id/selection_mode_delete_menu_id"
             android:icon="@drawable/ic_delete_white_24dp"
             android:title="@string/delete"
             app:showAsAction="ifRoom"
-            app:iconTint="@color/menu_item_tint" />
+            app:iconTint="@color/tint_on_blue_bg" />
      </group>
 </menu>

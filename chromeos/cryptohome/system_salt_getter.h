@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) SystemSaltGetter {
   // List of callbacks waiting for system salt ready event.
   std::vector<base::Closure> on_system_salt_ready_;
 
-  base::WeakPtrFactory<SystemSaltGetter> weak_ptr_factory_;
+  base::WeakPtrFactory<SystemSaltGetter> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SystemSaltGetter);
 };

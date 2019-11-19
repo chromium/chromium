@@ -4,12 +4,19 @@
 
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 
+#include <utility>
+
 #include "ui/ozone/common/linux/drm_util_linux.h"
 #include "ui/ozone/common/linux/gbm_buffer.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 
 namespace ui {
+
+DrmFramebuffer::AddFramebufferParams::AddFramebufferParams() = default;
+DrmFramebuffer::AddFramebufferParams::AddFramebufferParams(
+    const AddFramebufferParams& other) = default;
+DrmFramebuffer::AddFramebufferParams::~AddFramebufferParams() = default;
 
 // static
 scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
@@ -46,13 +53,14 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
   return base::MakeRefCounted<DrmFramebuffer>(
       std::move(drm_device), framebuffer_id, params.format,
       opaque_framebuffer_id, opaque_format, params.modifier,
-      gfx::Size(params.width, params.height));
+      params.preferred_modifiers, gfx::Size(params.width, params.height));
 }
 
 // static
 scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
     scoped_refptr<DrmDevice> drm,
-    const GbmBuffer* buffer) {
+    const GbmBuffer* buffer,
+    std::vector<uint64_t> preferred_modifiers) {
   gfx::Size size = buffer->GetSize();
   AddFramebufferParams params;
   params.format = buffer->GetFormat();
@@ -60,6 +68,7 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
   params.width = size.width();
   params.height = size.height();
   params.num_planes = buffer->GetNumPlanes();
+  params.preferred_modifiers = preferred_modifiers;
   for (size_t i = 0; i < params.num_planes; ++i) {
     params.handles[i] = buffer->GetPlaneHandle(i);
     params.strides[i] = buffer->GetPlaneStride(i);
@@ -84,6 +93,7 @@ DrmFramebuffer::DrmFramebuffer(scoped_refptr<DrmDevice> drm_device,
                                uint32_t opaque_framebuffer_id,
                                uint32_t opaque_framebuffer_pixel_format,
                                uint64_t format_modifier,
+                               std::vector<uint64_t> modifiers,
                                const gfx::Size& size)
     : drm_device_(std::move(drm_device)),
       framebuffer_id_(framebuffer_id),
@@ -91,6 +101,7 @@ DrmFramebuffer::DrmFramebuffer(scoped_refptr<DrmDevice> drm_device,
       opaque_framebuffer_id_(opaque_framebuffer_id),
       opaque_framebuffer_pixel_format_(opaque_framebuffer_pixel_format),
       format_modifier_(format_modifier),
+      preferred_modifiers_(modifiers),
       size_(size) {}
 
 DrmFramebuffer::~DrmFramebuffer() {

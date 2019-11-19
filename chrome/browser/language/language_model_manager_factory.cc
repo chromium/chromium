@@ -15,6 +15,7 @@
 #include "components/language/content/browser/geo_language_model.h"
 #include "components/language/content/browser/geo_language_provider.h"
 #include "components/language/core/browser/baseline_language_model.h"
+#include "components/language/core/browser/fluent_language_model.h"
 #include "components/language/core/browser/heuristic_language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/pref_names.h"
@@ -26,49 +27,48 @@ namespace {
 
 void PrepareLanguageModels(Profile* const profile,
                            language::LanguageModelManager* const manager) {
-  language::OverrideLanguageModel override_model_mode =
       language::GetOverrideLanguageModel();
 
-  // Create all of the models required based on the state of experiments. There
-  // may be more than one, the primary one is set below.
-  if (override_model_mode == language::OverrideLanguageModel::HEURISTIC) {
-    manager->AddModel(
-        language::LanguageModelManager::ModelType::HEURISTIC,
-        std::make_unique<language::HeuristicLanguageModel>(
-            profile->GetPrefs(), g_browser_process->GetApplicationLocale(),
-            language::prefs::kAcceptLanguages,
-            language::prefs::kUserLanguageProfile));
-  }
-
-  if (override_model_mode == language::OverrideLanguageModel::GEO) {
-    manager->AddModel(language::LanguageModelManager::ModelType::GEO,
-                      std::make_unique<language::GeoLanguageModel>(
-                          language::GeoLanguageProvider::GetInstance()));
-  }
-
-  if (override_model_mode == language::OverrideLanguageModel::DEFAULT) {
-    manager->AddModel(
-        language::LanguageModelManager::ModelType::BASELINE,
-        std::make_unique<language::BaselineLanguageModel>(
-            profile->GetPrefs(), g_browser_process->GetApplicationLocale(),
-            language::prefs::kAcceptLanguages));
-  }
-
-  // Set the primary Language Model to use based on the state of experiments.
-  switch (override_model_mode) {
-    case language::OverrideLanguageModel::HEURISTIC:
-      manager->SetPrimaryModel(
-          language::LanguageModelManager::ModelType::HEURISTIC);
-      break;
-    case language::OverrideLanguageModel::GEO:
-      manager->SetPrimaryModel(language::LanguageModelManager::ModelType::GEO);
-      break;
-    case language::OverrideLanguageModel::DEFAULT:
-    default:
-      manager->SetPrimaryModel(
-          language::LanguageModelManager::ModelType::BASELINE);
-      break;
-  }
+      // Create and set the primary Language Model to use based on the state of
+      // experiments.
+      switch (language::GetOverrideLanguageModel()) {
+        case language::OverrideLanguageModel::FLUENT:
+          manager->AddModel(
+              language::LanguageModelManager::ModelType::FLUENT,
+              std::make_unique<language::FluentLanguageModel>(
+                  profile->GetPrefs(), language::prefs::kAcceptLanguages));
+          manager->SetPrimaryModel(
+              language::LanguageModelManager::ModelType::FLUENT);
+          break;
+        case language::OverrideLanguageModel::HEURISTIC:
+          manager->AddModel(
+              language::LanguageModelManager::ModelType::HEURISTIC,
+              std::make_unique<language::HeuristicLanguageModel>(
+                  profile->GetPrefs(),
+                  g_browser_process->GetApplicationLocale(),
+                  language::prefs::kAcceptLanguages,
+                  language::prefs::kUserLanguageProfile));
+          manager->SetPrimaryModel(
+              language::LanguageModelManager::ModelType::HEURISTIC);
+          break;
+        case language::OverrideLanguageModel::GEO:
+          manager->AddModel(language::LanguageModelManager::ModelType::GEO,
+                            std::make_unique<language::GeoLanguageModel>(
+                                language::GeoLanguageProvider::GetInstance()));
+          manager->SetPrimaryModel(
+              language::LanguageModelManager::ModelType::GEO);
+          break;
+        case language::OverrideLanguageModel::DEFAULT:
+        default:
+          manager->AddModel(language::LanguageModelManager::ModelType::BASELINE,
+                            std::make_unique<language::BaselineLanguageModel>(
+                                profile->GetPrefs(),
+                                g_browser_process->GetApplicationLocale(),
+                                language::prefs::kAcceptLanguages));
+          manager->SetPrimaryModel(
+              language::LanguageModelManager::ModelType::BASELINE);
+          break;
+      }
 }
 
 }  // namespace

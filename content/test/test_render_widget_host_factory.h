@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "content/browser/renderer_host/render_widget_host_factory.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
 
@@ -22,11 +23,11 @@ class TestRenderWidgetHostFactory : public RenderWidgetHostFactory {
   TestRenderWidgetHostFactory();
   ~TestRenderWidgetHostFactory() override;
 
-  RenderWidgetHostImpl* CreateRenderWidgetHost(
+  std::unique_ptr<RenderWidgetHostImpl> CreateRenderWidgetHost(
       RenderWidgetHostDelegate* delegate,
       RenderProcessHost* process,
       int32_t routing_id,
-      mojom::WidgetPtr widget_interface,
+      mojo::PendingRemote<mojom::Widget> widget_interface,
       bool hidden) override;
 
  private:

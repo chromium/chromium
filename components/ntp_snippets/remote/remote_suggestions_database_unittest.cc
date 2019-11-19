@@ -76,12 +76,20 @@ class RemoteSuggestionsDatabaseTest : public testing::Test {
         std::make_unique<FakeDB<SnippetImageProto>>(&image_db_storage_);
     suggestion_db_ = suggestion_db.get();
     image_db_ = image_db.get();
-    db_ = std::make_unique<RemoteSuggestionsDatabase>(
-        std::move(suggestion_db), std::move(image_db), base::FilePath());
+    db_ = std::make_unique<RemoteSuggestionsDatabase>(std::move(suggestion_db),
+                                                      std::move(image_db));
   }
 
+  void ForceDBError() { db_->OnDatabaseError(); }
+
   FakeDB<SnippetProto>* suggestion_db() { return suggestion_db_; }
+  std::map<std::string, SnippetProto>& suggestion_db_storage() {
+    return suggestion_db_storage_;
+  }
   FakeDB<SnippetImageProto>* image_db() { return image_db_; }
+  std::map<std::string, SnippetImageProto>& image_db_storage() {
+    return image_db_storage_;
+  }
 
   RemoteSuggestionsDatabase* db() { return db_.get(); }
 
@@ -114,8 +122,8 @@ TEST_F(RemoteSuggestionsDatabaseTest, Init) {
   CreateDatabase();
   EXPECT_FALSE(db()->IsInitialized());
 
-  suggestion_db()->InitCallback(true);
-  image_db()->InitCallback(true);
+  suggestion_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  image_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
 
   EXPECT_TRUE(db()->IsInitialized());
 }
@@ -132,8 +140,8 @@ TEST_F(RemoteSuggestionsDatabaseTest, LoadBeforeInit) {
                   base::BindOnce(&RemoteSuggestionsDatabaseTest::OnImageLoaded,
                                  base::Unretained(this)));
 
-  suggestion_db()->InitCallback(true);
-  image_db()->InitCallback(true);
+  suggestion_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  image_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   EXPECT_TRUE(db()->IsInitialized());
 
   EXPECT_CALL(*this, OnSnippetsLoadedImpl(_));
@@ -153,8 +161,8 @@ TEST_F(RemoteSuggestionsDatabaseTest, LoadAfterInit) {
 
   EXPECT_CALL(*this, OnSnippetsLoadedImpl(_)).Times(0);
 
-  suggestion_db()->InitCallback(true);
-  image_db()->InitCallback(true);
+  suggestion_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  image_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   EXPECT_TRUE(db()->IsInitialized());
 
   Mock::VerifyAndClearExpectations(this);
@@ -174,8 +182,8 @@ TEST_F(RemoteSuggestionsDatabaseTest, LoadAfterInit) {
 
 TEST_F(RemoteSuggestionsDatabaseTest, Save) {
   CreateDatabase();
-  suggestion_db()->InitCallback(true);
-  image_db()->InitCallback(true);
+  suggestion_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  image_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   ASSERT_TRUE(db()->IsInitialized());
 
   std::unique_ptr<RemoteSuggestion> snippet = CreateTestSuggestion();
@@ -206,8 +214,8 @@ TEST_F(RemoteSuggestionsDatabaseTest, Save) {
 
 TEST_F(RemoteSuggestionsDatabaseTest, SavePersist) {
   CreateDatabase();
-  suggestion_db()->InitCallback(true);
-  image_db()->InitCallback(true);
+  suggestion_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  image_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   ASSERT_TRUE(db()->IsInitialized());
 
   std::unique_ptr<RemoteSuggestion> snippet = CreateTestSuggestion();
@@ -221,8 +229,8 @@ TEST_F(RemoteSuggestionsDatabaseTest, SavePersist) {
 
   // They should still exist after recreating the database.
   CreateDatabase();
-  suggestion_db()->InitCallback(true);
-  image_db()->InitCallback(true);
+  suggestion_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  image_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   ASSERT_TRUE(db()->IsInitialized());
 
   EXPECT_CALL(*this,
@@ -241,8 +249,8 @@ TEST_F(RemoteSuggestionsDatabaseTest, SavePersist) {
 
 TEST_F(RemoteSuggestionsDatabaseTest, Update) {
   CreateDatabase();
-  suggestion_db()->InitCallback(true);
-  image_db()->InitCallback(true);
+  suggestion_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  image_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   ASSERT_TRUE(db()->IsInitialized());
 
   std::unique_ptr<RemoteSuggestion> snippet = CreateTestSuggestion();
@@ -267,8 +275,8 @@ TEST_F(RemoteSuggestionsDatabaseTest, Update) {
 
 TEST_F(RemoteSuggestionsDatabaseTest, Delete) {
   CreateDatabase();
-  suggestion_db()->InitCallback(true);
-  image_db()->InitCallback(true);
+  suggestion_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  image_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   ASSERT_TRUE(db()->IsInitialized());
 
   std::unique_ptr<RemoteSuggestion> snippet = CreateTestSuggestion();
@@ -301,8 +309,8 @@ TEST_F(RemoteSuggestionsDatabaseTest, Delete) {
 
 TEST_F(RemoteSuggestionsDatabaseTest, DeleteSnippetDoesNotDeleteImage) {
   CreateDatabase();
-  suggestion_db()->InitCallback(true);
-  image_db()->InitCallback(true);
+  suggestion_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  image_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   ASSERT_TRUE(db()->IsInitialized());
 
   std::unique_ptr<RemoteSuggestion> snippet = CreateTestSuggestion();
@@ -344,8 +352,8 @@ TEST_F(RemoteSuggestionsDatabaseTest, DeleteSnippetDoesNotDeleteImage) {
 
 TEST_F(RemoteSuggestionsDatabaseTest, DeleteImage) {
   CreateDatabase();
-  suggestion_db()->InitCallback(true);
-  image_db()->InitCallback(true);
+  suggestion_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  image_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   ASSERT_TRUE(db()->IsInitialized());
 
   std::unique_ptr<RemoteSuggestion> snippet = CreateTestSuggestion();
@@ -378,8 +386,8 @@ TEST_F(RemoteSuggestionsDatabaseTest, DeleteImage) {
 
 TEST_F(RemoteSuggestionsDatabaseTest, ShouldGarbageCollectImages) {
   CreateDatabase();
-  suggestion_db()->InitCallback(true);
-  image_db()->InitCallback(true);
+  suggestion_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  image_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   ASSERT_TRUE(db()->IsInitialized());
 
   // Store images.
@@ -429,6 +437,30 @@ TEST_F(RemoteSuggestionsDatabaseTest, ShouldGarbageCollectImages) {
                   base::BindOnce(&RemoteSuggestionsDatabaseTest::OnImageLoaded,
                                  base::Unretained(this)));
   image_db()->GetCallback(true);
+}
+
+TEST_F(RemoteSuggestionsDatabaseTest, TryOperationsAfterError) {
+  CreateDatabase();
+  suggestion_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  image_db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  ASSERT_TRUE(db()->IsInitialized());
+
+  ForceDBError();
+  ASSERT_TRUE(db()->IsErrorState());
+
+  std::unique_ptr<RemoteSuggestion> snippet = CreateTestSuggestion();
+  std::string image_data("pretty image");
+
+  db()->SaveSnippet(*snippet);
+  db()->SaveImage(snippet->id(), image_data);
+  ASSERT_TRUE(suggestion_db_storage().empty());
+  ASSERT_TRUE(image_db_storage().empty());
+
+  db()->DeleteImage("foo");
+  db()->GarbageCollectImages(
+      std::make_unique<std::set<std::string>>(std::set<std::string>({"foo"})));
+
+  SUCCEED() << "This test passes if it doesn't crash";
 }
 
 }  // namespace ntp_snippets

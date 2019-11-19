@@ -32,10 +32,10 @@ bool GetCanvasClipBounds(SkCanvas* canvas, gfx::Rect* clip_bounds) {
 }
 
 void FillTextContent(const PaintOpBuffer* buffer,
-                     std::vector<NodeHolder>* content) {
+                     std::vector<NodeId>* content) {
   for (auto* op : PaintOpBuffer::Iterator(buffer)) {
     if (op->GetType() == PaintOpType::DrawTextBlob) {
-      content->push_back(static_cast<DrawTextBlobOp*>(op)->node_holder);
+      content->push_back(static_cast<DrawTextBlobOp*>(op)->node_id);
     } else if (op->GetType() == PaintOpType::DrawRecord) {
       FillTextContent(static_cast<DrawRecordOp*>(op)->record.get(), content);
     }
@@ -44,12 +44,12 @@ void FillTextContent(const PaintOpBuffer* buffer,
 
 void FillTextContentByOffsets(const PaintOpBuffer* buffer,
                               const std::vector<size_t>& offsets,
-                              std::vector<NodeHolder>* content) {
+                              std::vector<NodeId>* content) {
   if (!buffer)
     return;
   for (auto* op : PaintOpBuffer::OffsetIterator(buffer, &offsets)) {
     if (op->GetType() == PaintOpType::DrawTextBlob) {
-      content->push_back(static_cast<DrawTextBlobOp*>(op)->node_holder);
+      content->push_back(static_cast<DrawTextBlobOp*>(op)->node_id);
     } else if (op->GetType() == PaintOpType::DrawRecord) {
       FillTextContent(static_cast<DrawRecordOp*>(op)->record.get(), content);
     }
@@ -82,7 +82,7 @@ void DisplayItemList::Raster(SkCanvas* canvas,
 }
 
 void DisplayItemList::CaptureContent(const gfx::Rect& rect,
-                                     std::vector<NodeHolder>* content) const {
+                                     std::vector<NodeId>* content) const {
   std::vector<size_t> offsets;
   rtree_.Search(rect, &offsets);
   FillTextContentByOffsets(&paint_op_buffer_, offsets, content);
@@ -144,20 +144,31 @@ DisplayItemList::CreateTracedValue(bool include_items) const {
   auto state = std::make_unique<base::trace_event::TracedValue>();
   state->BeginDictionary("params");
 
+  gfx::Rect bounds;
+  if (rtree_.has_valid_bounds()) {
+    bounds = rtree_.GetBoundsOrDie();
+  } else {
+    // For tracing code, just use the entire positive quadrant if the |rtree_|
+    // has invalid bounds.
+    bounds = gfx::Rect(INT_MAX, INT_MAX);
+  }
+
   if (include_items) {
     state->BeginArray("items");
 
     PlaybackParams params(nullptr, SkMatrix::I());
-    const auto& bounds = rtree_.GetAllBoundsForTracing();
-    size_t i = 0;
+    std::map<size_t, gfx::Rect> visual_rects = rtree_.GetAllBoundsForTracing();
     for (const PaintOp* op : PaintOpBuffer::Iterator(&paint_op_buffer_)) {
       state->BeginDictionary();
       state->SetString("name", PaintOpTypeToString(op->GetType()));
-      MathUtil::AddToTracedValue("visual_rect", bounds[i++], state.get());
+
+      MathUtil::AddToTracedValue(
+          "visual_rect",
+          visual_rects[paint_op_buffer_.GetOpOffsetForTracing(op)],
+          state.get());
 
       SkPictureRecorder recorder;
-      SkCanvas* canvas =
-          recorder.beginRecording(gfx::RectToSkRect(rtree_.GetBounds()));
+      SkCanvas* canvas = recorder.beginRecording(gfx::RectToSkRect(bounds));
       op->Raster(canvas, params);
       sk_sp<SkPicture> picture = recorder.finishRecordingAsPicture();
 
@@ -173,12 +184,11 @@ DisplayItemList::CreateTracedValue(bool include_items) const {
     state->EndArray();  // "items".
   }
 
-  MathUtil::AddToTracedValue("layer_rect", rtree_.GetBounds(), state.get());
+  MathUtil::AddToTracedValue("layer_rect", bounds, state.get());
   state->EndDictionary();  // "params".
 
   {
     SkPictureRecorder recorder;
-    gfx::Rect bounds = rtree_.GetBounds();
     SkCanvas* canvas = recorder.beginRecording(gfx::RectToSkRect(bounds));
     canvas->translate(-bounds.x(), -bounds.y());
     canvas->clipRect(gfx::RectToSkRect(bounds));
@@ -194,7 +204,16 @@ DisplayItemList::CreateTracedValue(bool include_items) const {
 
 void DisplayItemList::GenerateDiscardableImagesMetadata() {
   DCHECK(usage_hint_ == kTopLevelDisplayItemList);
-  image_map_.Generate(&paint_op_buffer_, rtree_.GetBounds());
+
+  gfx::Rect bounds;
+  if (rtree_.has_valid_bounds()) {
+    bounds = rtree_.GetBoundsOrDie();
+  } else {
+    // Bounds are only used to size an SkNoDrawCanvas, pass INT_MAX.
+    bounds = gfx::Rect(INT_MAX, INT_MAX);
+  }
+
+  image_map_.Generate(&paint_op_buffer_, bounds);
 }
 
 void DisplayItemList::Reset() {
@@ -228,7 +247,7 @@ bool DisplayItemList::GetColorIfSolidInRect(const gfx::Rect& rect,
   DCHECK(usage_hint_ == kTopLevelDisplayItemList);
   std::vector<size_t>* offsets_to_use = nullptr;
   std::vector<size_t> offsets;
-  if (!rect.Contains(rtree_.GetBounds())) {
+  if (rtree_.has_valid_bounds() && !rect.Contains(rtree_.GetBoundsOrDie())) {
     rtree_.Search(rect, &offsets);
     offsets_to_use = &offsets;
   }

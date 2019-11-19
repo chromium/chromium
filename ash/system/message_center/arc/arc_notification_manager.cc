@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/arc_app_id_provider.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/system/message_center/arc/arc_notification_constants.h"
 #include "ash/system/message_center/arc/arc_notification_delegate.h"
@@ -17,7 +18,7 @@
 #include "base/command_line.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/arc/mojo_channel.h"
+#include "components/arc/session/mojo_channel.h"
 #include "ui/message_center/lock_screen/lock_screen_controller.h"
 #include "ui/message_center/message_center_impl.h"
 #include "ui/message_center/message_center_observer.h"
@@ -54,7 +55,8 @@ std::unique_ptr<message_center::MessageView> CreateCustomMessageView(
 
 class DoNotDisturbManager : public message_center::MessageCenterObserver {
  public:
-  DoNotDisturbManager(ArcNotificationManager* manager) : manager_(manager) {}
+  explicit DoNotDisturbManager(ArcNotificationManager* manager)
+      : manager_(manager) {}
   void OnQuietModeChanged(bool in_quiet_mode) override {
     manager_->SetDoNotDisturbStatusOnAndroid(in_quiet_mode);
   }
@@ -190,10 +192,11 @@ void ArcNotificationManager::OnNotificationPosted(ArcNotificationDataPtr data) {
     it = result.first;
   }
 
-  delegate_->GetAppIdByPackageName(
-      data->package_name.value_or(std::string()),
-      base::BindOnce(&ArcNotificationManager::OnGotAppId,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(data)));
+  std::string app_id =
+      data->package_name
+          ? ArcAppIdProvider::Get()->GetAppIdByPackageName(*data->package_name)
+          : std::string();
+  it->second->OnUpdatedFromAndroid(std::move(data), app_id);
 }
 
 void ArcNotificationManager::OnNotificationUpdated(
@@ -234,10 +237,11 @@ void ArcNotificationManager::OnNotificationUpdated(
     previously_focused_notification_key_.clear();
   }
 
-  delegate_->GetAppIdByPackageName(
-      data->package_name.value_or(std::string()),
-      base::BindOnce(&ArcNotificationManager::OnGotAppId,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(data)));
+  std::string app_id =
+      data->package_name
+          ? ArcAppIdProvider::Get()->GetAppIdByPackageName(*data->package_name)
+          : std::string();
+  it->second->OnUpdatedFromAndroid(std::move(data), app_id);
 }
 
 void ArcNotificationManager::OpenMessageCenter() {
@@ -372,6 +376,31 @@ void ArcNotificationManager::SendNotificationClickedOnChrome(
       key, ArcNotificationEvent::BODY_CLICKED);
 }
 
+void ArcNotificationManager::SendNotificationActivatedInChrome(
+    const std::string& key,
+    bool activated) {
+  if (items_.find(key) == items_.end()) {
+    VLOG(3)
+        << "Chrome requests to fire an activation event on notification (key: "
+        << key << "), but it is gone.";
+    return;
+  }
+
+  auto* notifications_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      instance_owner_->holder(), SendNotificationEventToAndroid);
+
+  // On shutdown, the ARC channel may quit earlier than notifications.
+  if (!notifications_instance) {
+    VLOG(2) << "ARC Notification (key: " << key
+            << ") is (de)activated, but the ARC channel has already gone.";
+    return;
+  }
+
+  notifications_instance->SendNotificationEventToAndroid(
+      key, activated ? ArcNotificationEvent::ACTIVATED
+                     : ArcNotificationEvent::DEACTIVATED);
+}
+
 void ArcNotificationManager::CreateNotificationWindow(const std::string& key) {
   if (items_.find(key) == items_.end()) {
     VLOG(3) << "Chrome requests to create window on notification (key: " << key
@@ -421,7 +450,7 @@ void ArcNotificationManager::OpenNotificationSettings(const std::string& key) {
 
 void ArcNotificationManager::OpenNotificationSnoozeSettings(
     const std::string& key) {
-  if (!base::ContainsKey(items_, key)) {
+  if (!base::Contains(items_, key)) {
     DVLOG(3) << "Chrome requests to show a snooze setting gut on the"
              << "notification (key: " << key << "), but it is gone.";
     return;
@@ -478,17 +507,14 @@ bool ArcNotificationManager::ShouldIgnoreNotification(
     return true;
   }
 
+  // Media Notifications may be ignored if we have the native views based media
+  // session notifications enabled.
+  if (data->is_media_notification &&
+      features::IsHideArcMediaNotificationsEnabled()) {
+    return true;
+  }
+
   return false;
-}
-
-void ArcNotificationManager::OnGotAppId(ArcNotificationDataPtr data,
-                                        const std::string& app_id) {
-  const std::string& key = data->key;
-  auto it = items_.find(key);
-  if (it == items_.end())
-    return;
-
-  it->second->OnUpdatedFromAndroid(std::move(data), app_id);
 }
 
 void ArcNotificationManager::OnDoNotDisturbStatusUpdated(

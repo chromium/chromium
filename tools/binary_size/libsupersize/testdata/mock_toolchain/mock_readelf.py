@@ -44,23 +44,23 @@ Section Headers:
   [ 9] .rel.dyn          REL             00003904 003904 288498 08   A  3   0  4
   [10] .rel.plt          REL             0029fbec 29fbec 000b00 08   A  3   0  4
   [11] .plt              PROGBITS        002a06ec 2a06ec 001094 00  AX  0   0  4
-  [12] .text             PROGBITS       002a1780 2a1780 223cd28 00  AX  0   0 64
+  [12] .text             PROGBITS       0028d900 28d900 2250ba8 00  AX  0   0 64
   [13] .rodata           PROGBITS      0266e5f0 000084 5a72e4 00   A  0   0 256
   [14] .ARM.exidx        ARM_EXIDX      02bd3d10 2bd3d10 1771c8 08  AL 12   0  4
   [15] .ARM.extab        PROGBITS       02bd5858 2bd5858 02cd50 00   A  0   0  4
-  [16] .data.rel.ro.local PROGBITS      02bdac40 2bd9c40 0c0e08 00  WA  0   0 16
-  [17] .data.rel.ro      PROGBITS       02c9d420 2c9c420 104108 00  WA  0   0 16
-  [18] .init_array       INIT_ARRAY     02da4680 2da3680 000008 00  WA  0   0  4
-  [19] .fini_array       FINI_ARRAY     02da4774 2da3774 000008 00  WA  0   0  4
-  [20] .dynamic          DYNAMIC        02da477c 2da377c 000130 08  WA  4   0  4
-  [21] .got              PROGBITS       02da48b4 2da38b4 00a7cc 00  WA  0   0  4
-  [22] .data             PROGBITS       02db0000 2daf000 018d88 00  WA  0   0 32
-  [23] .bss              NOBITS         02dc8220 2dc7220 13d7e8 00  WA  0   0 32
-  [35] .note.gnu.gold-version NOTE     00000000 226c41e8 00001c 00      0   0  4
-  [36] .ARM.attributes  ARM_ATTRIBUTES 00000000 226c4204 00003c 00      0   0  1
-  [37] .symtab           SYMTAB    00000000 226c4240 105ef20 10     38 901679  4
-  [38] .strtab           STRTAB       00000000 23487ea0 213a4fe 00      0   0  1
-  [39] .shstrtab         STRTAB        00000000 25777c2a 0001b4 00      0   0  1
+  [16] .data.rel.ro.local PROGBITS      02c176f0 2c166f0 0c0e08 00  WA  0   0 16
+  [17] .data.rel.ro      PROGBITS       02cd8500 2cd8500 104108 00  WA  0   0 16
+  [18] .init_array       INIT_ARRAY     02ddc608 2ddc608 000008 00  WA  0   0  4
+  [19] .fini_array       FINI_ARRAY     02ddc6f4 2ddc6f4 000008 00  WA  0   0  4
+  [20] .dynamic          DYNAMIC        02ddc6fc 2ddc6fc 000130 08  WA  4   0  4
+  [21] .got              PROGBITS       02ddc834 2ddc834 00a7cc 00  WA  0   0  4
+  [22] .data             PROGBITS       02de7000 2de7000 018d88 00  WA  0   0 32
+  [23] .bss              NOBITS         02dffda0 2dffda0 13d7e8 00  WA  0   0 32
+  [35] .note.gnu.gold-version NOTE     00000000 22700c98 00001c 00      0   0  4
+  [36] .ARM.attributes  ARM_ATTRIBUTES 00000000 22700cb4 00003c 00      0   0  1
+  [37] .symtab           SYMTAB    00000000 22700cf0 105ef20 10     38 901679  4
+  [38] .strtab           STRTAB       00000000 234c4950 213a4fe 00      0   0  1
+  [39] .shstrtab         STRTAB        00000000 257b46da 0001b4 00      0   0  1
 Key to Flags:
   W (write), A (alloc), X (execute), M (merge), S (strings)
   I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)

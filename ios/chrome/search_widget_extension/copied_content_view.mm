@@ -35,6 +35,9 @@ const CGFloat kURLButtonMargin = 10;
 // The button-shaped background view shown when there is a copied URL to open.
 @property(nonatomic, strong) UIView* copiedButtonView;
 
+@property(nonatomic, strong) UIVisualEffectView* primaryEffectView;
+@property(nonatomic, strong) UIVisualEffectView* secondaryEffectView;
+
 // Updates the view to show the currently set |type| and |copiedText|.
 - (void)updateUI;
 
@@ -57,13 +60,33 @@ const CGFloat kURLButtonMargin = 10;
         [UIVibrancyEffect widgetPrimaryVibrancyEffect];
     UIVibrancyEffect* secondaryEffect =
         [UIVibrancyEffect widgetSecondaryVibrancyEffect];
+    UIVibrancyEffect* backgroundEffect =
+        [UIVibrancyEffect widgetSecondaryVibrancyEffect];
+    UIVibrancyEffect* hairlineEffect =
+        [UIVibrancyEffect widgetSecondaryVibrancyEffect];
+    if (@available(iOS 13, *)) {
+      primaryEffect = [UIVibrancyEffect
+          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleLabel];
+      secondaryEffect = [UIVibrancyEffect
+          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
+      backgroundEffect = [UIVibrancyEffect
+          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleTertiaryFill];
+      hairlineEffect = [UIVibrancyEffect
+          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSeparator];
+    }
 
-    UIVisualEffectView* primaryEffectView =
+    _primaryEffectView =
         [[UIVisualEffectView alloc] initWithEffect:primaryEffect];
-    UIVisualEffectView* secondaryEffectView =
+    _secondaryEffectView =
         [[UIVisualEffectView alloc] initWithEffect:secondaryEffect];
-    for (UIVisualEffectView* effectView in
-         @[ primaryEffectView, secondaryEffectView ]) {
+    UIVisualEffectView* backgroundEffectView =
+        [[UIVisualEffectView alloc] initWithEffect:backgroundEffect];
+    UIVisualEffectView* hairlineEffectView =
+        [[UIVisualEffectView alloc] initWithEffect:hairlineEffect];
+    for (UIVisualEffectView* effectView in @[
+           _primaryEffectView, _secondaryEffectView, backgroundEffectView,
+           hairlineEffectView
+         ]) {
       [self addSubview:effectView];
       effectView.translatesAutoresizingMaskIntoConstraints = NO;
       AddSameConstraints(self, effectView);
@@ -71,29 +94,39 @@ const CGFloat kURLButtonMargin = 10;
     }
 
     _hairlineView = [[UIView alloc] initWithFrame:CGRectZero];
-    _hairlineView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.05];
+    // The new widget vibrancy style API requires new colors for the views.
+    if (@available(iOS 13, *)) {
+      _hairlineView.backgroundColor = UIColor.separatorColor;
+    } else {
+      _hairlineView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.05];
+    }
     _hairlineView.translatesAutoresizingMaskIntoConstraints = NO;
-    [secondaryEffectView.contentView addSubview:_hairlineView];
+    [hairlineEffectView.contentView addSubview:_hairlineView];
 
     _copiedButtonView = [[UIView alloc] init];
-    _copiedButtonView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.05];
+    // The new widget vibrancy style API requires new colors for the views.
+    if (@available(iOS 13, *)) {
+      _copiedButtonView.backgroundColor = UIColor.whiteColor;
+    } else {
+      _copiedButtonView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.05];
+    }
     _copiedButtonView.layer.cornerRadius = 5;
     _copiedButtonView.translatesAutoresizingMaskIntoConstraints = NO;
-    [secondaryEffectView.contentView addSubview:_copiedButtonView];
+    [backgroundEffectView.contentView addSubview:_copiedButtonView];
 
     _openCopiedContentTitleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _openCopiedContentTitleLabel.textAlignment = NSTextAlignmentCenter;
     _openCopiedContentTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _openCopiedContentTitleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-    [primaryEffectView.contentView addSubview:_openCopiedContentTitleLabel];
+    [_primaryEffectView.contentView addSubview:_openCopiedContentTitleLabel];
 
     _copiedContentLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _copiedContentLabel.textAlignment = NSTextAlignmentCenter;
     _copiedContentLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _copiedContentLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    [secondaryEffectView.contentView addSubview:_copiedContentLabel];
+    [_secondaryEffectView.contentView addSubview:_copiedContentLabel];
 
     [NSLayoutConstraint activateConstraints:@[
       [_hairlineView.topAnchor constraintEqualToAnchor:self.topAnchor],
@@ -133,6 +166,10 @@ const CGFloat kURLButtonMargin = 10;
           constraintEqualToAnchor:_openCopiedContentTitleLabel.trailingAnchor],
     ]];
     [self setCopiedContentType:CopiedContentTypeNone copiedText:nil];
+    self.highlightableViews = @[
+      _hairlineView, _copiedButtonView, _openCopiedContentTitleLabel,
+      _copiedContentLabel
+    ];
   }
   return self;
 }
@@ -151,8 +188,22 @@ const CGFloat kURLButtonMargin = 10;
   self.hairlineView.hidden = hasContent;
   self.accessibilityTraits =
       (hasContent) ? UIAccessibilityTraitLink : UIAccessibilityTraitNone;
-  self.copiedContentLabel.alpha = (hasContent) ? 1 : 0.5;
-  self.openCopiedContentTitleLabel.alpha = (hasContent) ? 1 : 0.5;
+  if (@available(iOS 13, *)) {
+    if (hasContent) {
+      self.primaryEffectView.effect = [UIVibrancyEffect
+          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleLabel];
+      self.secondaryEffectView.effect = [UIVibrancyEffect
+          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
+    } else {
+      self.primaryEffectView.effect = [UIVibrancyEffect
+          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
+      self.secondaryEffectView.effect = [UIVibrancyEffect
+          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleTertiaryLabel];
+    }
+  } else {
+    self.copiedContentLabel.alpha = (hasContent) ? 1 : 0.5;
+    self.openCopiedContentTitleLabel.alpha = (hasContent) ? 1 : 0.5;
+  }
 
   NSString* titleText;
   NSString* contentText;

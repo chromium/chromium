@@ -6,9 +6,6 @@ package org.chromium.chrome.browser.preferences;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Build;
-import android.support.annotation.IntDef;
-import android.support.annotation.StringRes;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -24,9 +21,12 @@ import android.widget.BaseAdapter;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ContentSettingsType;
@@ -35,9 +35,10 @@ import org.chromium.chrome.browser.preferences.website.ContentSettingValues;
 import org.chromium.chrome.browser.preferences.website.PermissionInfo;
 import org.chromium.chrome.browser.preferences.website.SingleWebsitePreferences;
 import org.chromium.chrome.browser.preferences.website.WebsitePreferenceBridge;
-import org.chromium.chrome.browser.search_engines.TemplateUrl;
-import org.chromium.chrome.browser.search_engines.TemplateUrlService;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -55,7 +56,7 @@ import java.util.List;
 public class SearchEngineAdapter extends BaseAdapter
         implements TemplateUrlService.LoadListener, TemplateUrlService.TemplateUrlServiceObserver,
                 OnClickListener {
-    private static final String TAG = "cr_SearchEngines";
+    private static final String TAG = "SearchEngines";
 
     private static final int VIEW_TYPE_ITEM = 0;
     private static final int VIEW_TYPE_DIVIDER = 1;
@@ -118,7 +119,7 @@ public class SearchEngineAdapter extends BaseAdapter
      */
     public void start() {
         refreshData();
-        TemplateUrlService.getInstance().addObserver(this);
+        TemplateUrlServiceFactory.get().addObserver(this);
     }
 
     /**
@@ -126,10 +127,11 @@ public class SearchEngineAdapter extends BaseAdapter
      */
     public void stop() {
         if (mHasLoadObserver) {
-            TemplateUrlService.getInstance().unregisterLoadListener(this);
+            TemplateUrlServiceFactory.get().unregisterLoadListener(this);
             mHasLoadObserver = false;
         }
-        TemplateUrlService.getInstance().removeObserver(this);
+
+        TemplateUrlServiceFactory.get().removeObserver(this);
     }
 
     @VisibleForTesting
@@ -151,7 +153,7 @@ public class SearchEngineAdapter extends BaseAdapter
      * Initialize the search engine list.
      */
     private void refreshData() {
-        TemplateUrlService templateUrlService = TemplateUrlService.getInstance();
+        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.get();
         if (!templateUrlService.isLoaded()) {
             mHasLoadObserver = true;
             templateUrlService.registerLoadListener(this);
@@ -199,8 +201,9 @@ public class SearchEngineAdapter extends BaseAdapter
         }
 
         if (mSelectedSearchEnginePosition == -1) {
-            throw new IllegalStateException(
-                    "Default search engine index did not match any available search engines.");
+            throw new IllegalStateException("Default search engine, "
+                    + defaultSearchEngineTemplateUrl
+                    + ", index did not match any available search engines.");
         }
 
         mInitialEnginePosition = mSelectedSearchEnginePosition;
@@ -362,18 +365,8 @@ public class SearchEngineAdapter extends BaseAdapter
         view.setOnClickListener(this);
         view.setTag(position);
 
-        // TODO(finnur): There's a tinting bug in the AppCompat lib (see http://crbug.com/474695),
-        // which causes the first radiobox to always appear selected, even if it is not. It is being
-        // addressed, but in the meantime we should use the native RadioButton instead.
-        RadioButton radioButton = (RadioButton) view.findViewById(R.id.radiobutton);
-        // On Lollipop this removes the redundant animation ring on selection but on older versions
-        // it would cause the radio button to disappear.
-        // TODO(finnur): Remove the encompassing if statement once we go back to using the AppCompat
-        // control.
+        RadioButton radioButton = view.findViewById(R.id.radiobutton);
         final boolean selected = position == mSelectedSearchEnginePosition;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            radioButton.setBackgroundResource(0);
-        }
         radioButton.setChecked(selected);
 
         TextView description = (TextView) view.findViewById(R.id.name);
@@ -409,8 +402,9 @@ public class SearchEngineAdapter extends BaseAdapter
 
         TextView link = (TextView) view.findViewById(R.id.location_permission);
         link.setVisibility(View.GONE);
-        if (TemplateUrlService.getInstance().getSearchEngineUrlFromTemplateUrl(
-                templateUrl.getKeyword()) == null) {
+        if (TemplateUrlServiceFactory.get().getSearchEngineUrlFromTemplateUrl(
+                    templateUrl.getKeyword())
+                == null) {
             Log.e(TAG, "Invalid template URL found: %s", templateUrl);
             assert false;
         } else if (selected) {
@@ -424,7 +418,7 @@ public class SearchEngineAdapter extends BaseAdapter
 
     @Override
     public void onTemplateUrlServiceLoaded() {
-        TemplateUrlService.getInstance().unregisterLoadListener(this);
+        TemplateUrlServiceFactory.get().unregisterLoadListener(this);
         mHasLoadObserver = false;
         refreshData();
     }
@@ -450,7 +444,7 @@ public class SearchEngineAdapter extends BaseAdapter
         mSelectedSearchEnginePosition = position;
 
         String keyword = toKeyword(mSelectedSearchEnginePosition);
-        TemplateUrlService.getInstance().setSearchEngine(keyword);
+        TemplateUrlServiceFactory.get().setSearchEngine(keyword);
 
         // If the user has manually set the default search engine, disable auto switching.
         boolean manualSwitch = mSelectedSearchEnginePosition != mInitialEnginePosition;
@@ -464,7 +458,7 @@ public class SearchEngineAdapter extends BaseAdapter
 
     private void onPermissionsLinkClicked() {
         mIsLocationPermissionChanged = true;
-        String url = TemplateUrlService.getInstance().getSearchEngineUrlFromTemplateUrl(
+        String url = TemplateUrlServiceFactory.get().getSearchEngineUrlFromTemplateUrl(
                 toKeyword(mSelectedSearchEnginePosition));
         int linkBeingShown = getPermissionsLinkMessage(url);
         assert linkBeingShown != 0;
@@ -485,7 +479,7 @@ public class SearchEngineAdapter extends BaseAdapter
             return "";
         }
 
-        String url = TemplateUrlService.getInstance().getSearchEngineUrlFromTemplateUrl(
+        String url = TemplateUrlServiceFactory.get().getSearchEngineUrlFromTemplateUrl(
                 templateUrl.getKeyword());
         if (url == null) {
             Log.e(TAG, "Invalid template URL found: %s", templateUrl);
@@ -504,12 +498,12 @@ public class SearchEngineAdapter extends BaseAdapter
                 new PermissionInfo(PermissionInfo.Type.NOTIFICATION, url, null, false);
         boolean notificationsAllowed = settings.getContentSetting() == ContentSettingValues.ALLOW
                 && WebsitePreferenceBridge.isPermissionControlledByDSE(
-                        ContentSettingsType.CONTENT_SETTINGS_TYPE_NOTIFICATIONS, url, false);
+                        ContentSettingsType.NOTIFICATIONS, url, false);
 
         settings = new PermissionInfo(PermissionInfo.Type.GEOLOCATION, url, null, false);
         boolean locationAllowed = settings.getContentSetting() == ContentSettingValues.ALLOW
                 && WebsitePreferenceBridge.isPermissionControlledByDSE(
-                        ContentSettingsType.CONTENT_SETTINGS_TYPE_GEOLOCATION, url, false);
+                        ContentSettingsType.GEOLOCATION, url, false);
 
         boolean systemLocationAllowed =
                 LocationUtils.getInstance().isSystemLocationSettingEnabled();

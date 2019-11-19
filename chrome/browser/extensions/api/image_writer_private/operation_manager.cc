@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/lazy_instance.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/image_writer_private/destroy_partitions_operation.h"
@@ -20,12 +21,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/service_manager_connection.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/notification_types.h"
-#include "services/service_manager/public/cpp/connector.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/file_manager/path_util.h"
@@ -39,9 +38,7 @@ namespace image_writer {
 using content::BrowserThread;
 
 OperationManager::OperationManager(content::BrowserContext* context)
-    : browser_context_(context),
-      extension_registry_observer_(this),
-      weak_factory_(this) {
+    : browser_context_(context) {
   extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   registrar_.Add(this,
@@ -84,15 +81,16 @@ void OperationManager::StartWriteFromUrl(
     return;
   }
 
-  network::mojom::URLLoaderFactoryPtrInfo url_loader_factory_info;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+      url_loader_factory_remote;
   content::BrowserContext::GetDefaultStoragePartition(browser_context_)
       ->GetURLLoaderFactoryForBrowserProcess()
-      ->Clone(mojo::MakeRequest(&url_loader_factory_info));
+      ->Clone(url_loader_factory_remote.InitWithNewPipeAndPassReceiver());
 
-  scoped_refptr<Operation> operation(new WriteFromUrlOperation(
-      weak_factory_.GetWeakPtr(), CreateConnector(), extension_id,
-      std::move(url_loader_factory_info), url, hash, device_path,
-      GetAssociatedDownloadFolder()));
+  auto operation = base::MakeRefCounted<WriteFromUrlOperation>(
+      weak_factory_.GetWeakPtr(), extension_id,
+      std::move(url_loader_factory_remote), url, hash, device_path,
+      GetAssociatedDownloadFolder());
   operations_[extension_id] = operation;
   operation->PostTask(base::BindOnce(&Operation::Start, operation));
 
@@ -116,9 +114,9 @@ void OperationManager::StartWriteFromFile(
     return;
   }
 
-  scoped_refptr<Operation> operation(new WriteFromFileOperation(
-      weak_factory_.GetWeakPtr(), CreateConnector(), extension_id, path,
-      device_path, GetAssociatedDownloadFolder()));
+  auto operation = base::MakeRefCounted<WriteFromFileOperation>(
+      weak_factory_.GetWeakPtr(), extension_id, path, device_path,
+      GetAssociatedDownloadFolder());
   operations_[extension_id] = operation;
   operation->PostTask(base::BindOnce(&Operation::Start, operation));
   std::move(callback).Run(true, "");
@@ -149,9 +147,9 @@ void OperationManager::DestroyPartitions(
     return;
   }
 
-  scoped_refptr<Operation> operation(new DestroyPartitionsOperation(
-      weak_factory_.GetWeakPtr(), CreateConnector(), extension_id, device_path,
-      GetAssociatedDownloadFolder()));
+  auto operation = base::MakeRefCounted<DestroyPartitionsOperation>(
+      weak_factory_.GetWeakPtr(), extension_id, device_path,
+      GetAssociatedDownloadFolder());
   operations_[extension_id] = operation;
   operation->PostTask(base::BindOnce(&Operation::Start, operation));
   std::move(callback).Run(true, "");
@@ -243,13 +241,6 @@ void OperationManager::OnExtensionUnloaded(
     const Extension* extension,
     UnloadedExtensionReason reason) {
   DeleteOperation(extension->id());
-}
-
-std::unique_ptr<service_manager::Connector>
-OperationManager::CreateConnector() {
-  return content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->Clone();
 }
 
 void OperationManager::Observe(int type,

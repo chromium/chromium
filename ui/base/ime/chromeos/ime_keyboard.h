@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/observer_list.h"
-#include "ui/base/ime/ui_base_ime_export.h"
 
 namespace chromeos {
 namespace input_method {
@@ -20,7 +20,7 @@ struct AutoRepeatRate {
   unsigned int repeat_interval_in_ms;
 };
 
-class UI_BASE_IME_EXPORT ImeKeyboard {
+class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ImeKeyboard {
  public:
   class Observer {
    public:
@@ -90,15 +90,6 @@ class UI_BASE_IME_EXPORT ImeKeyboard {
   // interval in ms.  Returns true on success. Do not call the function from
   // non-UI threads.
   virtual bool SetAutoRepeatRate(const AutoRepeatRate& rate) = 0;
-
-  // On success, set current auto repeat rate on |out_rate| and returns true.
-  // Returns false otherwise. This function is protected: for testability.
-  static UI_BASE_IME_EXPORT bool GetAutoRepeatRateForTesting(
-      AutoRepeatRate* out_rate);
-
-  // Returns false if |layout_name| contains a bad character.
-  static UI_BASE_IME_EXPORT bool CheckLayoutNameForTesting(
-      const std::string& layout_name);
 
   bool caps_lock_is_enabled_;
   std::string last_layout_;

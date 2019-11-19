@@ -23,6 +23,9 @@
 namespace autofill {
 
 using features::kAutofillKeyboardAccessory;
+using mojom::FocusedFieldType;
+using mojom::SubmissionIndicatorEvent;
+using mojom::SubmissionSource;
 
 const char kAutofillKeyboardAccessoryAnimationDurationKey[] =
     "animation_duration_millis";
@@ -51,8 +54,7 @@ struct Compare : base::CaseInsensitiveCompareASCII<Char> {
 }  // namespace
 
 bool IsFeatureSubstringMatchEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableSuggestionsWithSubstringMatch);
+  return base::FeatureList::IsEnabled(features::kAutofillTokenPrefixMatching);
 }
 
 bool IsShowAutofillSignaturesEnabled() {
@@ -63,6 +65,14 @@ bool IsShowAutofillSignaturesEnabled() {
 bool IsKeyboardAccessoryEnabled() {
 #if defined(OS_ANDROID)
   return base::FeatureList::IsEnabled(kAutofillKeyboardAccessory);
+#else  // !defined(OS_ANDROID)
+  return false;
+#endif
+}
+
+bool IsTouchToFillEnabled() {
+#if defined(OS_ANDROID)
+  return base::FeatureList::IsEnabled(features::kAutofillTouchToFill);
 #else  // !defined(OS_ANDROID)
   return false;
 #endif
@@ -160,24 +170,24 @@ bool ShouldSkipField(const FormFieldData& field) {
 }
 
 bool IsCheckable(const FormFieldData::CheckStatus& check_status) {
-  return check_status != FormFieldData::CheckStatus::NOT_CHECKABLE;
+  return check_status != FormFieldData::CheckStatus::kNotCheckable;
 }
 
 bool IsChecked(const FormFieldData::CheckStatus& check_status) {
-  return check_status == FormFieldData::CheckStatus::CHECKED;
+  return check_status == FormFieldData::CheckStatus::kChecked;
 }
 
 void SetCheckStatus(FormFieldData* form_field_data,
                     bool isCheckable,
                     bool isChecked) {
   if (isChecked) {
-    form_field_data->check_status = FormFieldData::CheckStatus::CHECKED;
+    form_field_data->check_status = FormFieldData::CheckStatus::kChecked;
   } else {
     if (isCheckable) {
       form_field_data->check_status =
-          FormFieldData::CheckStatus::CHECKABLE_BUT_UNCHECKED;
+          FormFieldData::CheckStatus::kCheckableButUnchecked;
     } else {
-      form_field_data->check_status = FormFieldData::CheckStatus::NOT_CHECKABLE;
+      form_field_data->check_status = FormFieldData::CheckStatus::kNotCheckable;
     }
   }
 }
@@ -208,6 +218,36 @@ bool ShouldAutoselectFirstSuggestionOnArrowDown() {
 #else
   return false;
 #endif
+}
+
+bool IsFillable(FocusedFieldType focused_field_type) {
+  return focused_field_type == FocusedFieldType::kFillableTextArea ||
+         focused_field_type == FocusedFieldType::kFillableSearchField ||
+         focused_field_type == FocusedFieldType::kFillableNonSearchField ||
+         focused_field_type == FocusedFieldType::kFillableUsernameField ||
+         focused_field_type == FocusedFieldType::kFillablePasswordField;
+}
+
+SubmissionIndicatorEvent ToSubmissionIndicatorEvent(SubmissionSource source) {
+  switch (source) {
+    case SubmissionSource::NONE:
+      return SubmissionIndicatorEvent::NONE;
+    case SubmissionSource::SAME_DOCUMENT_NAVIGATION:
+      return SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+    case SubmissionSource::XHR_SUCCEEDED:
+      return SubmissionIndicatorEvent::XHR_SUCCEEDED;
+    case SubmissionSource::FRAME_DETACHED:
+      return SubmissionIndicatorEvent::FRAME_DETACHED;
+    case SubmissionSource::DOM_MUTATION_AFTER_XHR:
+      return SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR;
+    case SubmissionSource::PROBABLY_FORM_SUBMITTED:
+      return SubmissionIndicatorEvent::PROBABLE_FORM_SUBMISSION;
+    case SubmissionSource::FORM_SUBMISSION:
+      return SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
+  }
+
+  NOTREACHED();
+  return SubmissionIndicatorEvent::NONE;
 }
 
 }  // namespace autofill

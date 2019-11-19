@@ -6,7 +6,6 @@
 
 #include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
-#include "services/network/cert_verifier_config_type_converter.h"
 #include "services/network/ssl_config_type_converter.h"
 
 namespace network {
@@ -33,21 +32,19 @@ bool IsSubdomain(const base::StringPiece hostname,
 
 SSLConfigServiceMojo::SSLConfigServiceMojo(
     mojom::SSLConfigPtr initial_config,
-    mojom::SSLConfigClientRequest ssl_config_client_request,
+    mojo::PendingReceiver<mojom::SSLConfigClient> ssl_config_client_receiver,
     CRLSetDistributor* crl_set_distributor)
-    : binding_(this),
-      crl_set_distributor_(crl_set_distributor),
+    : crl_set_distributor_(crl_set_distributor),
       client_cert_pooling_policy_(
           initial_config ? initial_config->client_cert_pooling_policy
                          : std::vector<std::string>()) {
   if (initial_config) {
-    cert_verifier_config_ =
-        mojo::ConvertTo<net::CertVerifier::Config>(initial_config->Clone());
-    ssl_config_ = mojo::ConvertTo<net::SSLConfig>(std::move(initial_config));
+    cert_verifier_config_ = MojoSSLConfigToCertVerifierConfig(initial_config);
+    ssl_context_config_ = MojoSSLConfigToSSLContextConfig(initial_config);
   }
 
-  if (ssl_config_client_request)
-    binding_.Bind(std::move(ssl_config_client_request));
+  if (ssl_config_client_receiver)
+    receiver_.Bind(std::move(ssl_config_client_receiver));
 
   crl_set_distributor_->AddObserver(this);
   cert_verifier_config_.crl_set = crl_set_distributor_->crl_set();
@@ -70,21 +67,20 @@ void SSLConfigServiceMojo::OnSSLConfigUpdated(mojom::SSLConfigPtr ssl_config) {
       client_cert_pooling_policy_ != ssl_config->client_cert_pooling_policy;
   client_cert_pooling_policy_ = ssl_config->client_cert_pooling_policy;
 
-  net::SSLConfig old_config = ssl_config_;
-  ssl_config_ = mojo::ConvertTo<net::SSLConfig>(ssl_config->Clone());
-  ProcessConfigUpdate(old_config, ssl_config_, force_notification);
+  net::SSLContextConfig old_config = ssl_context_config_;
+  ssl_context_config_ = MojoSSLConfigToSSLContextConfig(ssl_config);
+  ProcessConfigUpdate(old_config, ssl_context_config_, force_notification);
 
   net::CertVerifier::Config old_cert_verifier_config = cert_verifier_config_;
-  cert_verifier_config_ =
-      mojo::ConvertTo<net::CertVerifier::Config>(std::move(ssl_config));
+  cert_verifier_config_ = MojoSSLConfigToCertVerifierConfig(ssl_config);
   cert_verifier_config_.crl_set = old_cert_verifier_config.crl_set;
   if (cert_verifier_ && (old_cert_verifier_config != cert_verifier_config_)) {
     cert_verifier_->SetConfig(cert_verifier_config_);
   }
 }
 
-void SSLConfigServiceMojo::GetSSLConfig(net::SSLConfig* ssl_config) {
-  *ssl_config = ssl_config_;
+net::SSLContextConfig SSLConfigServiceMojo::GetSSLContextConfig() {
+  return ssl_context_config_;
 }
 
 bool SSLConfigServiceMojo::CanShareConnectionWithClientCerts(

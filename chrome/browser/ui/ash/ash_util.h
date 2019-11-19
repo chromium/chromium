@@ -13,23 +13,7 @@ namespace aura {
 class Window;
 }
 
-namespace service_manager {
-class Connector;
-}
-
-namespace ui {
-class Accelerator;
-class KeyEvent;
-}  // namespace ui
-
 namespace ash_util {
-
-// Returns true if the given |accelerator| has been deprecated and hence can
-// be consumed by web contents if needed.
-bool IsAcceleratorDeprecated(const ui::Accelerator& accelerator);
-
-// Returns true if ash has an accelerator for |key_event| that is enabled.
-bool WillAshProcessAcceleratorForEvent(const ui::KeyEvent& key_event);
 
 // Sets up |params| to place the widget in an ash shell window container on
 // the primary display. See ash/public/cpp/shell_window_ids.h for |container_id|
@@ -43,16 +27,7 @@ void SetupWidgetInitParamsForContainer(views::Widget::InitParams* params,
 // lock screen.
 int GetSystemModalDialogContainerId();
 
-// Returns InitParams for a frameless window with no shadow.
-views::Widget::InitParams GetFramelessInitParams();
-
-// Returns the connector from ServiceManagerConnection::GetForProcess().
-// May be null in unit tests.
-service_manager::Connector* GetServiceManagerConnector();
-
-// Triggers the window bounce animation inside ash. Handled on the ash side so
-// the window frame is included in the bounce and to avoid sending IPCs for
-// window transform updates.
+// Triggers the window bounce animation.
 void BounceWindow(aura::Window* window);
 
 }  // namespace ash_util

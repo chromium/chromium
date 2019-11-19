@@ -21,6 +21,9 @@ class NotificationHiddenView : public views::View, views::ButtonListener {
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
+  // views::View:
+  const char* GetClassName() const override;
+
   views::Button* change_button_for_testing() { return change_button_; }
 
  private:

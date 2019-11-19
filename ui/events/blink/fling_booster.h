@@ -9,76 +9,52 @@
 
 namespace ui {
 
-// TODO(dcheng): This class should probably be using base::TimeTicks internally.
+// This class is used to track fling state and provide "fling boosting".
+// Boosting is a feature where successive flings can repeatedly increase the
+// fling velocity so that users can scroll through long documents. This
+// boosting logic occurs only in certain circumstances so we track the state
+// and conditions in this class. The FlingController will request the velocity
+// for all flings from this class; if FlingBooster decides the fling should be
+// boosted it'll add the new fling's velocity to the previous one's.
 class FlingBooster {
  public:
-  FlingBooster(const gfx::Vector2dF& fling_velocity,
-               blink::WebGestureDevice source_device,
-               int modifiers);
+  FlingBooster() = default;
 
-  // Returns true if the event should be suppressed due to to an active,
-  // boost-enabled fling, in which case further processing should cease.
-  bool FilterGestureEventForFlingBoosting(
-      const blink::WebGestureEvent& gesture_event,
-      bool* out_cancel_current_fling);
-
-  bool MustCancelDeferredFling() const;
-
-  void set_last_fling_animation_time(double last_fling_animate_time_seconds) {
-    last_fling_animate_time_seconds_ = last_fling_animate_time_seconds;
-  }
-
-  gfx::Vector2dF current_fling_velocity() const {
-    return current_fling_velocity_;
-  }
-
-  void set_current_fling_velocity(const gfx::Vector2dF& fling_velocity) {
-    current_fling_velocity_ = fling_velocity;
-  }
-
-  bool fling_boosted() const { return fling_boosted_; }
-
-  bool fling_cancellation_is_deferred() const {
-    return !!deferred_fling_cancel_time_seconds_;
-  }
-
-  blink::WebGestureEvent last_boost_event() const {
-    return last_fling_boost_event_;
-  }
+  gfx::Vector2dF GetVelocityForFlingStart(
+      const blink::WebGestureEvent& gesture_start);
+  void ObserveGestureEvent(const blink::WebGestureEvent& gesture_event);
+  void ObserveProgressFling(const gfx::Vector2dF& current_velocity);
+  void Reset();
 
  private:
   bool ShouldBoostFling(const blink::WebGestureEvent& fling_start_event);
 
-  bool ShouldSuppressScrollForFlingBoosting(
-      const blink::WebGestureEvent& scroll_update_event);
 
-  // Set a time in the future after which a boost-enabled fling will terminate
-  // without further momentum from the user.
-  void ExtendBoostedFlingTimeout(const blink::WebGestureEvent& event);
+  // When non-null, the current gesture stream is being considered for
+  // boosting. If a fling hasn't occurred by this time, we won't cause a boost.
+  // Note, however, that we'll extend this time as we see scroll updates.
+  base::TimeTicks cutoff_time_for_boost_;
 
+  // Tracks the (possibly boosted) velocity used at the previous FlingStart.
+  // When a new fling is started and we decide to boost, we'll add this
+  // velocity to it.
+  gfx::Vector2dF previous_fling_starting_velocity_;
+
+  // Tracks the current fling's velocity as it decays. We'll prevent boosting
+  // if this crosses the kMinBoostFlingSpeedSquare threshold.
   gfx::Vector2dF current_fling_velocity_;
 
-  // These store the current active fling source device and modifiers since a
-  // new fling start event must have the same source device and modifiers to be
-  // able to boost the active fling.
-  blink::WebGestureDevice source_device_;
-  int modifiers_;
+  // These store the current active fling source device and modifier keys (e.g.
+  // Ctrl) since a new fling start event must have the same source device and
+  // modifiers to be able to boost the active fling.
+  blink::WebGestureDevice source_device_ =
+      blink::WebGestureDevice::kUninitialized;
+  int modifiers_ = 0;
 
-  // Time at which an active fling should expire due to a deferred cancellation
-  // event.
-  double deferred_fling_cancel_time_seconds_;
-
-  // Time at which the last fling animation has happened.
-  double last_fling_animate_time_seconds_;
-
-  // Whether the current active fling is boosted or replaced by a new fling
-  // start event.
-  bool fling_boosted_;
-
-  // The last event that extended the lifetime of the boosted fling. If the
-  // event was a scroll gesture, a GestureScrollBegin needs to be inserted if
-  // the fling terminates.
-  blink::WebGestureEvent last_fling_boost_event_;
+  // Track the last timestamp we've seen a scroll update that we're evaluating
+  // as a boost. This is used to calculate the velocity; if it's too slow we'll
+  // avoid boosting.
+  base::TimeTicks previous_boosting_scroll_timestamp_;
 
   DISALLOW_COPY_AND_ASSIGN(FlingBooster);
 };

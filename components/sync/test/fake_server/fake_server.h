@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/location.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
@@ -27,6 +28,7 @@
 #include "components/sync/protocol/client_commands.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "net/http/http_status_code.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace fake_server {
 
@@ -95,6 +97,13 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // was created.
   std::string GetTopLevelPermanentItemId(syncer::ModelType model_type);
 
+  // Returns all keystore keys from the server.
+  const std::vector<std::string>& GetKeystoreKeys() const;
+
+  // Triggers the keystore key rotation events on the server side: generating
+  // new keystore key and touching the Nigori node.
+  void TriggerKeystoreKeyRotation();
+
   // Adds |entity| to the server's collection of entities. This method makes no
   // guarantees that the added entity will result in successful server
   // operations.
@@ -103,7 +112,18 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // Sets the Wallet card and address data to be served in following GetUpdates
   // requests (any further GetUpdates response will be empty, indicating no
   // change, if the client already has received |wallet_entities|).
-  void SetWalletData(const std::vector<sync_pb::SyncEntity>& wallet_entities);
+  //
+  // The returned value represents the timestamp of the write, such that any
+  // progress marker greater or equal to this timestamp must have processed the
+  // changes. See GetWalletProgressMarkerTimestamp() below.
+  base::Time SetWalletData(
+      const std::vector<sync_pb::SyncEntity>& wallet_entities);
+
+  // Allows the caller to know the wallet timestamp corresponding to
+  // |progress_marker| as annotated by the FakeServer during the GetUpdates
+  // request that returned the progress marker.
+  static base::Time GetWalletProgressMarkerTimestamp(
+      const sync_pb::DataTypeProgressMarker& progress_marker);
 
   // Modifies the entity on the server with the given |id|. The entity's
   // EntitySpecifics are replaced with |updated_specifics| and its version is
@@ -135,16 +155,21 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   void SetClientCommand(const sync_pb::ClientCommand& client_command);
 
   // Force the server to return |error_type| in the error_code field of
-  // ClientToServerResponse on all subsequent sync requests. This method should
-  // not be called if TriggerActionableError has previously been called. Returns
-  // true if error triggering was successfully configured.
-  bool TriggerError(const sync_pb::SyncEnums::ErrorType& error_type);
+  // ClientToServerResponse on all subsequent commit requests. If any of errors
+  // triggerings currently configured it must be called only with
+  // sync_pb::SyncEnums::SUCCESS.
+  void TriggerCommitError(const sync_pb::SyncEnums::ErrorType& error_type);
+
+  // Force the server to return |error_type| in the error_code field of
+  // ClientToServerResponse on all subsequent sync requests. If any of errors
+  // triggerings currently configured it must be called only with
+  // sync_pb::SyncEnums::SUCCESS.
+  void TriggerError(const sync_pb::SyncEnums::ErrorType& error_type);
 
   // Force the server to return the given data as part of the error field of
-  // ClientToServerResponse on all subsequent sync requests. This method should
-  // not be called if TriggerError has previously been called. Returns true if
-  // error triggering was successfully configured.
-  bool TriggerActionableError(const sync_pb::SyncEnums::ErrorType& error_type,
+  // ClientToServerResponse on all subsequent sync requests. Must not be called
+  // if any of errors triggerings currently configured.
+  void TriggerActionableError(const sync_pb::SyncEnums::ErrorType& error_type,
                               const std::string& description,
                               const std::string& url,
                               const sync_pb::SyncEnums::Action& action);
@@ -176,6 +201,8 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // Sets the bag of chips returned by the server.
   void SetBagOfChips(const sync_pb::ChipBag& bag_of_chips);
 
+  void TriggerMigrationDoneError(syncer::ModelTypeSet types);
+
   // Implement LoopbackServer::ObserverForTests:
   void OnCommit(const std::string& committer_id,
                 syncer::ModelTypeSet committed_model_types) override;
@@ -196,27 +223,37 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
       syncer::LoopbackServer::ResponseTypeProvider response_type_override);
 
  private:
+  // Analogous to HandleCommand() but deals with parsed protos.
+  net::HttpStatusCode HandleParsedCommand(
+      const sync_pb::ClientToServerMessage& message,
+      sync_pb::ClientToServerResponse* response);
+
   // Returns whether a triggered error should be sent for the request.
   bool ShouldSendTriggeredError() const;
-  net::HttpStatusCode SendToLoopbackServer(const std::string& request,
-                                           std::string* response);
-  void InjectClientCommand(std::string* response);
-  void HandleWalletRequest(
-      const sync_pb::ClientToServerMessage& request,
-      const sync_pb::DataTypeProgressMarker& old_wallet_marker,
-      std::string* response_string);
+  bool HasTriggeredError() const;
+  net::HttpStatusCode SendToLoopbackServer(
+      const sync_pb::ClientToServerMessage& message,
+      sync_pb::ClientToServerResponse* response);
+
+  // Logs a string that is meant to be shown in case the running test fails.
+  void LogForTestFailure(const base::Location& location,
+                         const std::string& title,
+                         const std::string& body);
+
+  // List used to implement LogForTestFailure().
+  std::vector<std::unique_ptr<testing::ScopedTrace>> gtest_scoped_traces_;
 
   // If set, the server will return HTTP errors.
   base::Optional<net::HttpStatusCode> http_error_status_code_;
 
-  // All Keystore keys known to the server.
-  std::vector<std::string> keystore_keys_;
-
   // All URLs received via history sync (powered by SESSIONS).
   std::set<std::string> committed_history_urls_;
 
-  // Used as the error_code field of ClientToServerResponse on all responses
-  // except when |triggered_actionable_error_| is set.
+  // Used as the error_code field of ClientToServerResponse on all commit
+  // requests.
+  sync_pb::SyncEnums::ErrorType commit_error_type_;
+
+  // Used as the error_code field of ClientToServerResponse on all responses.
   sync_pb::SyncEnums::ErrorType error_type_;
 
   // Used as the error field of ClientToServerResponse when its pointer is not
@@ -256,7 +293,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
 
   // Creates WeakPtr versions of the current FakeServer. This must be the last
   // data member!
-  base::WeakPtrFactory<FakeServer> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeServer> weak_ptr_factory_{this};
 };
 
 }  // namespace fake_server

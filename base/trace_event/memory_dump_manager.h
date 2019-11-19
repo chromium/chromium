@@ -116,7 +116,7 @@ class BASE_EXPORT MemoryDumpManager {
   // thread on which CreateProcessDump() was called. This method should only be
   // used by the memory-infra service while creating a global memory dump.
   void CreateProcessDump(const MemoryDumpRequestArgs& args,
-                         const ProcessMemoryDumpCallback& callback);
+                         ProcessMemoryDumpCallback callback);
 
   // Lets tests see if a dump provider is registered.
   bool IsDumpProviderRegisteredForTesting(MemoryDumpProvider*);

@@ -14,6 +14,14 @@ cr.define('cr.ui', function() {
   const INDENT = 20;
 
   /**
+   * A custom rowElement depth (indent) style handler where undefined uses the
+   * default depth INDENT styling, see cr.ui.TreeItem.setDepth_().
+   *
+   * @type {function(!cr.ui.TreeItem,number)|undefined}
+   */
+  let customRowElementDepthStyleHandler = undefined;
+
+  /**
    * Returns the computed style for an element.
    * @param {!Element} el The element to get the computed style for.
    * @return {!CSSStyleDeclaration} The computed style.
@@ -60,8 +68,27 @@ cr.define('cr.ui', function() {
       this.addEventListener('keydown', this.handleKeyDown);
 
       if (!this.hasAttribute('role')) {
-        this.setAttribute('role', 'group');
+        this.setAttribute('role', 'tree');
       }
+    },
+
+    /**
+     * Returns the tree item rowElement style handler.
+     *
+     * @return {function(!cr.ui.TreeItem,number)|undefined}
+     */
+    get rowElementDepthStyleHandler() {
+      return customRowElementDepthStyleHandler;
+    },
+
+    /**
+     * Sets a tree item rowElement style handler, which allows Tree users to
+     * customize the depth (indent) style of tree item rowElements.
+     *
+     * @param {function(!cr.ui.TreeItem,number)|undefined} handler
+     */
+    set rowElementDepthStyleHandler(handler) {
+      customRowElementDepthStyleHandler = handler;
     },
 
     /**
@@ -265,10 +292,11 @@ cr.define('cr.ui', function() {
    * @type {!HTMLElement}
    */
   const treeItemProto = (function() {
-    const treeItem = cr.doc.createElement('div');
+    const treeItem = document.createElement('div');
     treeItem.className = 'tree-item';
     treeItem.innerHTML = '<div class="tree-row">' +
         '<span class="expand-icon"></span>' +
+        '<span class="tree-label-icon"></span>' +
         '<span class="tree-label"></span>' +
         '</div>' +
         '<div class="tree-children" role="group"></div>';
@@ -324,8 +352,13 @@ cr.define('cr.ui', function() {
      */
     setDepth_: function(depth) {
       if (depth != this.depth_) {
-        this.rowElement.style.paddingInlineStart =
-            Math.max(0, depth - 1) * INDENT + 'px';
+        const rowDepth = Math.max(0, depth - 1);
+        if (!customRowElementDepthStyleHandler) {
+          this.rowElement.style.paddingInlineStart = rowDepth * INDENT + 'px';
+        } else {
+          customRowElementDepthStyleHandler(this, rowDepth);
+        }
+
         this.depth_ = depth;
         const items = this.items;
         for (let i = 0, item; item = items[i]; i++) {
@@ -459,11 +492,11 @@ cr.define('cr.ui', function() {
     },
 
     /**
-     * The element containing the label text and the icon.
+     * The element containing the label text.
      * @type {!HTMLElement}
      */
     get labelElement() {
-      return this.firstElementChild.lastElementChild;
+      return this.rowElement.lastElementChild;
     },
 
     /**
@@ -478,17 +511,6 @@ cr.define('cr.ui', function() {
     },
 
     /**
-     * The URL for the icon.
-     * @type {string}
-     */
-    get icon() {
-      return getComputedStyle(this.labelElement).backgroundImage.slice(4, -1);
-    },
-    set icon(icon) {
-      return this.labelElement.style.backgroundImage = getUrlForCss(icon);
-    },
-
-    /**
      * Whether the tree item is selected or not.
      * @type {boolean}
      */
@@ -499,7 +521,7 @@ cr.define('cr.ui', function() {
       if (this.selected == b) {
         return;
       }
-      const rowItem = this.firstElementChild;
+      const rowItem = this.rowElement;
       const tree = this.tree;
       if (b) {
         this.setAttribute('selected', '');
@@ -526,7 +548,7 @@ cr.define('cr.ui', function() {
       return this.hasAttribute('may-have-children');
     },
     set mayHaveChildren_(b) {
-      const rowItem = this.firstElementChild;
+      const rowItem = this.rowElement;
       if (b) {
         this.setAttribute('may-have-children', '');
         rowItem.setAttribute('may-have-children', '');
@@ -549,7 +571,7 @@ cr.define('cr.ui', function() {
      * @type {boolean}
      */
     set hasChildren(b) {
-      const rowItem = this.firstElementChild;
+      const rowItem = this.rowElement;
       this.setAttribute('has-children', b);
       rowItem.setAttribute('has-children', b);
       if (b) {

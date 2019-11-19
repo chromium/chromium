@@ -104,7 +104,7 @@ class CONTENT_EXPORT MainThreadEventQueue
   void SetNeedsLowLatency(bool low_latency);
   void SetNeedsUnbufferedInputForDebugger(bool unbuffered);
 
-  void HasPointerRawMoveEventHandlers(bool has_handlers);
+  void HasPointerRawUpdateEventHandlers(bool has_handlers);
 
   // Request unbuffered input events until next pointerup.
   void RequestUnbufferedInputEvents();
@@ -133,7 +133,7 @@ class CONTENT_EXPORT MainThreadEventQueue
                                const ui::LatencyInfo& latency,
                                HandledEventCallback handled_callback);
 
-  bool IsRawMoveEvent(
+  bool IsRawUpdateEvent(
       const std::unique_ptr<MainThreadEventQueueTask>& item) const;
   bool ShouldFlushQueue(
       const std::unique_ptr<MainThreadEventQueueTask>& item) const;
@@ -155,7 +155,7 @@ class CONTENT_EXPORT MainThreadEventQueue
   bool needs_unbuffered_input_for_debugger_;
   bool allow_raf_aligned_input_;
   bool needs_low_latency_until_pointer_up_ = false;
-  bool has_pointerrawmove_handlers_ = false;
+  bool has_pointerrawupdate_handlers_ = false;
 
   // Contains data to be shared between main thread and compositor thread.
   struct SharedState {

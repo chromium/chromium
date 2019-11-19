@@ -11,6 +11,8 @@ namespace android_webview {
 
 void EnableCrashReporter(const std::string& process_type);
 
+bool CrashReporterEnabled();
+
 }  // namespace android_webview
 
 #endif  // ANDROID_WEBVIEW_COMMON_CRASH_REPORTER_AW_CRASH_REPORTER_CLIENT_H_

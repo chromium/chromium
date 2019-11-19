@@ -7,8 +7,6 @@
 
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 
-#include <array>
-
 namespace blink {
 
 // Represents the type of a CSSNumericValue, which is a map of base types to
@@ -93,7 +91,7 @@ class CORE_EXPORT CSSNumericValueType {
     return num_non_zero_entries_ == 1 && Exponent(base_type) == value;
   }
 
-  std::array<int, kNumBaseTypes> exponents_{};  // zero-initialize
+  Vector<int, kNumBaseTypes> exponents_;
   BaseType percent_hint_ = BaseType::kPercent;
   bool has_percent_hint_ = false;
   unsigned num_non_zero_entries_ = 0;

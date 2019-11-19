@@ -40,6 +40,12 @@ class EVENTS_DEVICES_EXPORT DeviceHotplugEventObserver {
   virtual void OnTouchpadDevicesUpdated(
       const std::vector<InputDevice>& devices) = 0;
 
+  // On a hotplug event this is called with the list of the available
+  // uncategorized input devices, which means not touchscreens, keyboards, mice
+  // and touchpads.
+  virtual void OnUncategorizedDevicesUpdated(
+      const std::vector<InputDevice>& devices) = 0;
+
   // On completion of the initial startup scan. This means all of the above
   // OnDevicesUpdated() methods have been called with a complete list.
   virtual void OnDeviceListsComplete() = 0;

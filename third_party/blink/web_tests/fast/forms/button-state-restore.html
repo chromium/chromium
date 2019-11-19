@@ -1,6 +1,11 @@
 <html>
 <head>
     <script>
+        if (window.testRunner) {
+            testRunner.dumpAsText();
+            testRunner.waitUntilDone();
+        }
+
         function loaded()
         {
             var beenHere = document.getElementById("beenHere");
@@ -21,11 +26,6 @@
                 return;
             }
 
-            if (window.testRunner) {
-                testRunner.dumpAsText();
-                testRunner.waitUntilDone();
-            }
-
             beenHere.value = "FAIL";
 
             input.value = "FAIL";
@@ -38,7 +38,7 @@
     </script>
 </head>
 <!-- the unload handler keeps this page out of the B/F cache -->
-<body onunload="" onload="loaded()">
+<body onunload="" onload="setTimeout(loaded, 1)">
     <p>
         This is a test for <i><a href="http://bugs.webkit.org/show_bug.cgi?id=14400">http://bugs.webkit.org/show_bug.cgi?id=14400</a>
         Assertion failure (SHOULD NEVER BE REACHED) going back on YouTube</i>.

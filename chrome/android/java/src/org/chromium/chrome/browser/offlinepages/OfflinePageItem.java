@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 /**
  * Simple object representing an offline page.

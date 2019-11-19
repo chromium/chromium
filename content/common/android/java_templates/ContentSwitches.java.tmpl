@@ -1,0 +1,71 @@
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.content_public.common;
+
+/**
+ * Contains all of the command line switches that are specific to the content/
+ * portion of Chromium on Android.
+ */
+public final class ContentSwitches {{
+    // Tell Java to use the official command line, loaded from the
+    // official-command-line.xml files.  WARNING this is not done
+    // immediately on startup, so early running Java code will not see
+    // these flags.
+    public static final String ADD_OFFICIAL_COMMAND_LINE = "add-official-command-line";
+
+    // Enables test intent handling.
+    public static final String ENABLE_TEST_INTENTS = "enable-test-intents";
+
+    // Dump frames-per-second to the log
+    public static final String LOG_FPS = "log-fps";
+
+    // Whether Chromium should use a mobile user agent.
+    public static final String USE_MOBILE_UA = "use-mobile-user-agent";
+
+    // Change the url of the JavaScript that gets injected when accessibility mode is enabled.
+    public static final String ACCESSIBILITY_JAVASCRIPT_URL = "accessibility-js-url";
+
+    // How much of the browser controls need to be shown before they will auto show.
+    public static final String TOP_CONTROLS_SHOW_THRESHOLD = "top-controls-show-threshold";
+
+    // How much of the browser controls need to be hidden before they will auto hide.
+    public static final String TOP_CONTROLS_HIDE_THRESHOLD = "top-controls-hide-threshold";
+
+    // Native switch - chrome_switches::kDisablePopupBlocking
+    public static final String DISABLE_POPUP_BLOCKING = "disable-popup-blocking";
+
+    // Native switch kRendererProcessLimit
+    public static final String RENDER_PROCESS_LIMIT = "renderer-process-limit";
+
+    // Native switch kProcessType
+    public static final String SWITCH_PROCESS_TYPE = "type";
+
+    // Native switch kRendererProcess
+    public static final String SWITCH_RENDERER_PROCESS = "renderer";
+
+    // Native switch kUtilityProcess
+    public static final String SWITCH_UTILITY_PROCESS = "utility";
+
+    // Native switch kGPUProcess
+    public static final String SWITCH_GPU_PROCESS = "gpu-process";
+
+    // Use fake device for Media Stream to replace actual camera and microphone.
+    public static final String USE_FAKE_DEVICE_FOR_MEDIA_STREAM =
+            "use-fake-device-for-media-stream";
+
+    // Native switch kHostResolverRules
+    public static final String HOST_RESOLVER_RULES = "host-resolver-rules";
+
+    // Native switch kServiceSandboxType
+    public static final String SWITCH_SERVICE_SANDBOX_TYPE = "service-sandbox-type";
+
+    // Native switch value kNetworkSandbox
+    public static final String NETWORK_SANDBOX_TYPE = "network";
+
+{NATIVE_STRINGS}
+
+    // Prevent instantiation.
+    private ContentSwitches() {{}}
+}}

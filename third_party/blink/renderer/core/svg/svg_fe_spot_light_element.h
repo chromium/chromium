@@ -28,8 +28,6 @@ class SVGFESpotLightElement final : public SVGFELightElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(SVGFESpotLightElement);
-
   explicit SVGFESpotLightElement(Document&);
 
  private:

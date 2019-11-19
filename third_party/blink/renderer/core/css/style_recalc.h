@@ -41,6 +41,11 @@ class StyleRecalcChange {
     return {RecalcDescendants() ? kRecalcDescendants : kNo, reattach_,
             calc_invisible_};
   }
+  StyleRecalcChange ForPseudoElement() const {
+    if (propagate_ == kUpdatePseudoElements)
+      return {kRecalcChildren, reattach_, calc_invisible_};
+    return *this;
+  }
   StyleRecalcChange EnsureAtLeast(Propagate propagate) const {
     if (propagate > propagate_)
       return {propagate, reattach_, calc_invisible_};

@@ -54,8 +54,7 @@ class ConnectionAttemptBase : public ConnectionAttempt<FailureDetailType> {
       base::Clock* clock = base::DefaultClock::GetInstance())
       : ConnectionAttempt<FailureDetailType>(delegate,
                                              clock,
-                                             connection_attempt_details),
-        weak_ptr_factory_(this) {}
+                                             connection_attempt_details) {}
 
   ~ConnectionAttemptBase() override {
     if (operation_)
@@ -79,7 +78,7 @@ class ConnectionAttemptBase : public ConnectionAttempt<FailureDetailType> {
     ConnectionPriority priority_before_add =
         GetHighestRemainingConnectionPriority();
 
-    if (base::ContainsKey(id_to_request_map_, request->GetRequestId())) {
+    if (base::Contains(id_to_request_map_, request->GetRequestId())) {
       PA_LOG(ERROR) << "ConnectionAttemptBase::"
                     << "ProcessAddingNewConnectionRequest(): Processing "
                     << "request whose ID has already been processed.";
@@ -176,7 +175,7 @@ class ConnectionAttemptBase : public ConnectionAttempt<FailureDetailType> {
       id_to_request_map_;
 
   base::WeakPtrFactory<ConnectionAttemptBase<FailureDetailType>>
-      weak_ptr_factory_;
+      weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ConnectionAttemptBase);
 };

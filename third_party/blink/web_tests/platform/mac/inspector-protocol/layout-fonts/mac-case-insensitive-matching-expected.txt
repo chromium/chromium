@@ -1,0 +1,23 @@
+Test passes if each of the test divs uses the Hiragino Kaku Gothic ProN independently of capitalization of the font family name..
+クローミアム
+#mixed_case_1:
+"Hiragino Kaku Gothic ProN" : 6
+
+クローミアム
+#mixed_case_2:
+"Hiragino Kaku Gothic ProN" : 6
+
+クローミアム
+#all_lower_case:
+"Hiragino Kaku Gothic ProN" : 6
+
+クローミアム
+#all_upper_case:
+"Hiragino Kaku Gothic ProN" : 6
+
+クローミアム
+#exact_case:
+"Hiragino Kaku Gothic ProN" : 6
+
+PASS
+

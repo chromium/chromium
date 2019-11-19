@@ -30,3 +30,12 @@ button {
     /* Fixed padding provided by ThemeMac::ControlPadding() - 1px for broder */
     padding: 1px 7px 2px;
 }
+
+:-internal-spatial-navigation-interest {
+    outline: auto 5px -webkit-focus-ring-color;
+    box-shadow: none !important
+}
+
+:focus {
+    outline: auto 5px -webkit-focus-ring-color
+}

@@ -126,11 +126,12 @@ class ExtensionHost : public DeferredStartRenderHost,
       content::MediaResponseCallback callback) override;
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const GURL& security_origin,
-                                  blink::MediaStreamType type) override;
+                                  blink::mojom::MediaStreamType type) override;
   bool IsNeverVisible(content::WebContents* web_contents) override;
-  gfx::Size EnterPictureInPicture(content::WebContents* web_contents,
-                                  const viz::SurfaceId& surface_id,
-                                  const gfx::Size& natural_size) override;
+  content::PictureInPictureResult EnterPictureInPicture(
+      content::WebContents* web_contents,
+      const viz::SurfaceId& surface_id,
+      const gfx::Size& natural_size) override;
   void ExitPictureInPicture() override;
 
   // ExtensionRegistryObserver:

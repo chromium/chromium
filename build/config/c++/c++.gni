@@ -11,7 +11,8 @@ declare_args() {
   # Don't check in changes that set this to false for more platforms; doing so
   # is not supported.
   use_custom_libcxx =
-      is_fuchsia || is_android || is_mac ||
+      is_fuchsia || is_android || is_mac || (is_ios && !use_xcode_clang) ||
+      (is_win && is_clang) ||
       (is_linux &&
        (!is_chromeos || default_toolchain != "//build/toolchain/cros:target"))
 
@@ -22,18 +23,32 @@ declare_args() {
   # expected usage is to set use_custom_libcxx=false and
   # use_custom_libcxx_for_host=true in the passed in buildargs.
   use_custom_libcxx_for_host = false
+
+  # Builds libcxx Natvis into the symbols for type visualization.
+  # Set to false to workaround http://crbug.com/966676 and
+  # http://crbug.com/966687.
+  libcxx_natvis_include = true
 }
 
 use_custom_libcxx =
     use_custom_libcxx || (use_custom_libcxx_for_host && current_cpu == host_cpu)
 use_custom_libcxx = use_custom_libcxx && !is_nacl
 
+declare_args() {
+  # WARNING: Setting this to a non-default value is highly discouraged.
+  # If true, libc++ will be built as a shared library; otherwise libc++ will be
+  # linked statically. Setting this to something other than the default is
+  # unsupported and can be broken by libc++ rolls. Note that if this is set to
+  # true, you must also set libcxx_abi_unstable=false, which is bad for
+  # performance and memory use.
+  libcxx_is_shared = use_custom_libcxx && is_component_build
+}
+
 # libc++abi needs to be exported from executables to be picked up by shared
-# libraries on certian instrumented builds.
+# libraries on certain instrumented builds.
 export_libcxxabi_from_executables =
     use_custom_libcxx && !is_win && !is_component_build &&
     (is_asan || is_ubsan_vptr)
-libcxx_is_shared = use_custom_libcxx && is_component_build
 
 # On Android, many shared libraries get loaded from the context of a JRE.  In
 # this case, there's no "main executable" to export libc++abi from.  We could
@@ -42,8 +57,8 @@ libcxx_is_shared = use_custom_libcxx && is_component_build
 # subtle, hard-to-fix problems down the line if the dependency is missing.
 #
 # export_libcxxabi_from_executables was added to avoid having an RPATH set in
-# static sanitizer builds just for exectuables to find libc++.  But on Android,
-# the Bionic dyanmic loader doesn't even look at RPATH; instead, LD_LIBRARY_PATH
+# static sanitizer builds just for executables to find libc++.  But on Android,
+# the Bionic dynamic loader doesn't even look at RPATH; instead, LD_LIBRARY_PATH
 # is set for tests. Because of this, we make libc++ a shared library on android
 # since it should get loaded properly.
 if (is_android && export_libcxxabi_from_executables) {

@@ -78,6 +78,7 @@ class ImeListView : public TrayDetailedView {
 
   // views::View:
   void VisibilityChanged(View* starting_from, bool is_visible) override;
+  const char* GetClassName() const override;
 
  private:
   friend class ImeListViewTestApi;

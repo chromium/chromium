@@ -4,9 +4,13 @@
 
 #include "chrome/browser/download/offline_item_model.h"
 
+#include <string>
+
 #include "base/time/time.h"
 #include "chrome/browser/download/offline_item_model_manager.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "components/offline_items_collection/core/fail_state.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 
@@ -29,9 +33,9 @@ OfflineItemModel::OfflineItemModel(OfflineItemModelManager* manager,
                                    const OfflineItem& offline_item)
     : manager_(manager),
       offline_item_(std::make_unique<OfflineItem>(offline_item)) {
+  Profile* profile = Profile::FromBrowserContext(manager_->browser_context());
   offline_items_collection::OfflineContentAggregator* aggregator =
-      OfflineContentAggregatorFactory::GetForBrowserContext(
-          manager_->browser_context());
+      OfflineContentAggregatorFactory::GetForKey(profile->GetProfileKey());
   offline_item_observer_ =
       std::make_unique<FilteredOfflineItemObserver>(aggregator);
   offline_item_observer_->AddObserver(offline_item_->id, this);
@@ -144,7 +148,7 @@ download::DownloadItem::DownloadState OfflineItemModel::GetState() const {
       return download::DownloadItem::COMPLETE;
     case OfflineItemState::CANCELLED:
       return download::DownloadItem::CANCELLED;
-    case OfflineItemState::MAX_DOWNLOAD_STATE:
+    case OfflineItemState::NUM_ENTRIES:
       NOTREACHED();
       return download::DownloadItem::CANCELLED;
   }
@@ -181,7 +185,7 @@ bool OfflineItemModel::IsDone() const {
       FALLTHROUGH;
     case OfflineItemState::CANCELLED:
       return true;
-    case OfflineItemState::MAX_DOWNLOAD_STATE:
+    case OfflineItemState::NUM_ENTRIES:
       NOTREACHED();
   }
   return false;
@@ -214,9 +218,9 @@ bool OfflineItemModel::ShouldRemoveFromShelfWhenComplete() const {
 }
 
 OfflineContentProvider* OfflineItemModel::GetProvider() const {
+  Profile* profile = Profile::FromBrowserContext(manager_->browser_context());
   offline_items_collection::OfflineContentAggregator* aggregator =
-      OfflineContentAggregatorFactory::GetForBrowserContext(
-          manager_->browser_context());
+      OfflineContentAggregatorFactory::GetForKey(profile->GetProfileKey());
   return aggregator;
 }
 
@@ -226,7 +230,9 @@ void OfflineItemModel::OnItemRemoved(const ContentId& id) {
   offline_item_.reset();
 }
 
-void OfflineItemModel::OnItemUpdated(const OfflineItem& item) {
+void OfflineItemModel::OnItemUpdated(
+    const OfflineItem& item,
+    const base::Optional<UpdateDelta>& update_delta) {
   offline_item_ = std::make_unique<OfflineItem>(item);
   for (auto& obs : observers_)
     obs.OnDownloadUpdated();

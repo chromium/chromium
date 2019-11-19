@@ -9,13 +9,13 @@
 
 #include "base/memory/ptr_util.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
-#include "device/bluetooth/bluetooth_uuid.h"
 #include "device/bluetooth/bluez/bluetooth_gatt_service_bluez.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_application_service_provider_impl.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_characteristic_delegate_wrapper.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_descriptor_delegate_wrapper.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_gatt_application_service_provider.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace bluez {

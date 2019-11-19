@@ -16,8 +16,6 @@ component("views") {
     "event_utils.cc",
     "event_utils.h",
     "tab_icon_view_model.h",
-    "tabs/tab_renderer_data.cc",
-    "tabs/tab_renderer_data.h",
     "tabs/tab_strip_observer.cc",
     "tabs/tab_strip_observer.h",
     "tabs/tab_strip_types.h",
@@ -27,7 +25,9 @@ component("views") {
 
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
     "//components/keep_alive_registry",
     "//components/vector_icons",
     "//content/public/browser",

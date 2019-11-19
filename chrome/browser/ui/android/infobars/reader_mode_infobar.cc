@@ -7,11 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "chrome/android/chrome_jni_headers/ReaderModeInfoBar_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/ReaderModeInfoBar_jni.h"
 #include "ui/android/window_android.h"
 
 using base::android::JavaParamRef;

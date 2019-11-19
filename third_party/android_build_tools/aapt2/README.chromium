@@ -1,6 +1,6 @@
 Name: Android SDK tool aapt2
 Short name: aapt2
-Version: 3.3.0-beta01-5013011
+Version: unknown
 URL:  https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2/${Version}/aapt2-${Version}-linux.jar
 Security Critical: no
 License: Apache Version 2.0
@@ -12,4 +12,6 @@ file that contains host-specific binaries, which must be extracted. They are
 distributed here as a CIPD package instead. See cipd.yaml for details.
 
 Local Modifications:
-None
+ToT aapt2 branch:goog/master (@9a7341806913471f2f5ab5b2077ff09cdc9285ec)
+This is after 3.6.0-alpha05 (latest released version at time of cut) but before
+3.7.0-alpha01 (the next major version release).

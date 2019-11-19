@@ -46,5 +46,5 @@ int main(int argc, char** argv) {
 
   return base::LaunchUnitTests(
       argc, argv,
-      base::Bind(&UIAndroidTestSuite::Run, base::Unretained(&test_suite)));
+      base::BindOnce(&UIAndroidTestSuite::Run, base::Unretained(&test_suite)));
 }

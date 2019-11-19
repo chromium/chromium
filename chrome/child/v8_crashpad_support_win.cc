@@ -12,10 +12,7 @@ namespace v8_crashpad_support {
 
 void SetUp() {
 #if defined(ARCH_CPU_X86_64)
-  gin::Debug::SetCodeRangeCreatedCallback(
-      &RegisterNonABICompliantCodeRange_ExportThunk);
-  gin::Debug::SetCodeRangeDeletedCallback(
-      &UnregisterNonABICompliantCodeRange_ExportThunk);
+  gin::Debug::SetUnhandledExceptionCallback(&CrashForException_ExportThunk);
 #endif
 }
 

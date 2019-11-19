@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+FAIL e.style['content'] = "counter(foo, none)" should not set the property value assert_equals: expected "" but got "counter(foo, none)"
+FAIL e.style['content'] = "counters(foo, \"\", none)" should not set the property value assert_equals: expected "" but got "counter(foo, none)"
+PASS e.style['content'] = "counter(foo, unset)" should not set the property value
+PASS e.style['content'] = "counters(foo, \"\", unset)" should not set the property value
+PASS e.style['content'] = "counter(foo, initial)" should not set the property value
+PASS e.style['content'] = "counters(foo, \"\", initial)" should not set the property value
+PASS e.style['content'] = "counter(foo, inherit)" should not set the property value
+PASS e.style['content'] = "counters(foo, \"\", inherit)" should not set the property value
+FAIL e.style['content'] = "\"z\" counter(foo, none)" should not set the property value assert_equals: expected "" but got "\"z\" counter(foo, none)"
+FAIL e.style['content'] = "\"z\" counters(foo, \"\", none)" should not set the property value assert_equals: expected "" but got "\"z\" counter(foo, none)"
+PASS e.style['content'] = "\"z\" counter(foo, unset)" should not set the property value
+PASS e.style['content'] = "\"z\" counters(foo, \"\", unset)" should not set the property value
+PASS e.style['content'] = "\"z\" counter(foo, initial)" should not set the property value
+PASS e.style['content'] = "\"z\" counters(foo, \"\", initial)" should not set the property value
+PASS e.style['content'] = "\"z\" counter(foo, inherit)" should not set the property value
+PASS e.style['content'] = "\"z\" counters(foo, \"\", inherit)" should not set the property value
+FAIL e.style['content'] = "counter(foo, none) \"z\"" should not set the property value assert_equals: expected "" but got "counter(foo, none) \"z\""
+FAIL e.style['content'] = "counters(foo, \"\", none) \"z\"" should not set the property value assert_equals: expected "" but got "counter(foo, none) \"z\""
+PASS e.style['content'] = "counter(foo, unset) \"z\"" should not set the property value
+PASS e.style['content'] = "counters(foo, \"\", unset) \"z\"" should not set the property value
+PASS e.style['content'] = "counter(foo, initial) \"z\"" should not set the property value
+PASS e.style['content'] = "counters(foo, \"\", initial) \"z\"" should not set the property value
+PASS e.style['content'] = "counter(foo, inherit) \"z\"" should not set the property value
+PASS e.style['content'] = "counters(foo, \"\", inherit) \"z\"" should not set the property value
+Harness: the test ran to completion.
+

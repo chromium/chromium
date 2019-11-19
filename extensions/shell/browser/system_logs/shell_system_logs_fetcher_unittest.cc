@@ -60,8 +60,8 @@ TEST_F(ShellSystemLogsFetcherTest, TestLogSources) {
   EXPECT_TRUE(registry);
 
   std::vector<scoped_refptr<const Extension>> extensions{
-      BuildExtension("My First Extension", "1.1", std::string(32, 'a')),
-      BuildExtension("My Second Extension", "1.2", std::string(32, 'b'))};
+      BuildExtension("My First Extension", "1.1", std::string(32, 'g')),
+      BuildExtension("My Second Extension", "1.2", std::string(32, 'h'))};
   for (const scoped_refptr<const Extension>& extension : extensions)
     registry->AddEnabled(extension);
 

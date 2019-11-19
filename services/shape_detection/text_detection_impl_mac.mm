@@ -8,18 +8,20 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/sdk_forward_declarations.h"
 #include "base/strings/sys_string_conversions.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/shape_detection/detection_utils_mac.h"
 #include "services/shape_detection/text_detection_impl.h"
 
 namespace shape_detection {
 
 // static
-void TextDetectionImpl::Create(mojom::TextDetectionRequest request) {
+void TextDetectionImpl::Create(
+    mojo::PendingReceiver<mojom::TextDetection> receiver) {
   // Text detection needs at least MAC OS X 10.11.
   if (@available(macOS 10.11, *)) {
-    mojo::MakeStrongBinding(std::make_unique<TextDetectionImplMac>(),
-                            std::move(request));
+    mojo::MakeSelfOwnedReceiver(std::make_unique<TextDetectionImplMac>(),
+                                std::move(receiver));
   }
 }
 

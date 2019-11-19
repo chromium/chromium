@@ -24,7 +24,6 @@ UISourceCode is content script: false
 Highlighter type: text/javascript
 UISourceCode content: var foo=1;
 
-
 Running: testScriptResource
 Creating script resource.
 UISourceCode: http://127.0.0.1:8000/devtools/sources/debugger/resources/script1.js

@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+PASS Property clear has initial value none
+PASS Property clear does not inherit
+PASS Property float has initial value none
+PASS Property float does not inherit
+PASS Property margin-bottom has initial value 0px
+PASS Property margin-bottom does not inherit
+PASS Property margin-left has initial value 0px
+PASS Property margin-left does not inherit
+PASS Property margin-right has initial value 0px
+PASS Property margin-right does not inherit
+PASS Property margin-top has initial value 0px
+PASS Property margin-top does not inherit
+FAIL Property margin-trim has initial value none assert_true: margin-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property margin-trim does not inherit assert_true: expected true got false
+PASS Property padding-bottom has initial value 0px
+PASS Property padding-bottom does not inherit
+PASS Property padding-left has initial value 0px
+PASS Property padding-left does not inherit
+PASS Property padding-right has initial value 0px
+PASS Property padding-right does not inherit
+PASS Property padding-top has initial value 0px
+PASS Property padding-top does not inherit
+PASS Property visibility has initial value visible
+PASS Property visibility inherits
+Harness: the test ran to completion.
+

@@ -11,7 +11,7 @@
 #include "chromeos/audio/audio_device.h"
 #include "chromeos/audio/audio_devices_pref_handler.h"
 #include "chromeos/constants/chromeos_pref_names.h"
-#include "chromeos/dbus/audio_node.h"
+#include "chromeos/dbus/audio/audio_node.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -126,7 +126,7 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
     audio_pref_handler_ = new AudioDevicesPrefHandlerImpl(pref_service_.get());
   }
 
-  void TearDown() override { audio_pref_handler_ = NULL; }
+  void TearDown() override { audio_pref_handler_.reset(); }
 
  protected:
   void ReloadPrefHandler() {

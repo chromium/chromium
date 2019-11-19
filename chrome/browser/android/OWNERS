@@ -1,7 +1,4 @@
-dtrainor@chromium.org
-nyquist@chromium.org
-tedchoc@chromium.org
-yfriedman@chromium.org
+file://chrome/android/OWNERS
 
 per-file shortcut_*=dominickn@chromium.org
 

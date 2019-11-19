@@ -58,7 +58,9 @@ class FileUtilsWrapper {
 
   bool DeleteFile(const base::FilePath& path, bool recursive);
 
-  DISALLOW_COPY_AND_ASSIGN(FileUtilsWrapper);
+  virtual bool DeleteFileRecursively(const base::FilePath& path);
+
+  DISALLOW_ASSIGN(FileUtilsWrapper);
 };
 
 }  // namespace web_app

@@ -94,7 +94,7 @@ class TrackerImpl : public Tracker, public base::SupportsUserData {
   // is cleared after the initialization has happened.
   std::vector<OnInitializedCallback> on_initialized_callbacks_;
 
-  base::WeakPtrFactory<TrackerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<TrackerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TrackerImpl);
 };

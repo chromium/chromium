@@ -16,7 +16,7 @@ namespace disk_cache {
 // This class provides support for simple maps of bits.
 class NET_EXPORT_PRIVATE Bitmap {
  public:
-  Bitmap() : map_(NULL), num_bits_(0), array_size_(0), alloc_(false) {}
+  Bitmap() : map_(nullptr), num_bits_(0), array_size_(0), alloc_(false) {}
 
   // This constructor will allocate on a uint32_t boundary. If |clear_bits| is
   // false, the bitmap bits will not be initialized.

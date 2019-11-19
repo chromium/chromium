@@ -13,7 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_validator.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "net/cert/x509_util_nss.h"
 
 namespace enterprise_management {
@@ -130,7 +130,7 @@ class SessionManagerOperation {
   std::unique_ptr<enterprise_management::ChromeDeviceSettingsProto>
       device_settings_;
 
-  base::WeakPtrFactory<SessionManagerOperation> weak_factory_;
+  base::WeakPtrFactory<SessionManagerOperation> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SessionManagerOperation);
 };
@@ -177,7 +177,7 @@ class StoreSettingsOperation : public SessionManagerOperation {
 
   std::unique_ptr<enterprise_management::PolicyFetchResponse> policy_;
 
-  base::WeakPtrFactory<StoreSettingsOperation> weak_factory_;
+  base::WeakPtrFactory<StoreSettingsOperation> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(StoreSettingsOperation);
 };

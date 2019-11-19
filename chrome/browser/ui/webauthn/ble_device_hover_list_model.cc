@@ -29,9 +29,8 @@ std::map<int, std::string>::iterator FindElementByValue(
 }
 
 bool ShouldShowItemInView(const AuthenticatorReference& authenticator) {
-  return authenticator.is_in_pairing_mode() && !authenticator.is_paired() &&
-         authenticator.transport() ==
-             AuthenticatorTransport::kBluetoothLowEnergy;
+  return authenticator.is_in_pairing_mode && !authenticator.is_paired &&
+         authenticator.transport == AuthenticatorTransport::kBluetoothLowEnergy;
 }
 
 }  // namespace
@@ -42,8 +41,7 @@ BleDeviceHoverListModel::BleDeviceHoverListModel(
     : authenticator_list_(authenticator_list), delegate_(delegate) {
   int tag_counter = 0;
   for (const auto& authenticator : authenticator_list_->authenticator_list()) {
-    authenticator_tags_.emplace(++tag_counter,
-                                authenticator.authenticator_id());
+    authenticator_tags_.emplace(++tag_counter, authenticator.authenticator_id);
   }
 
   authenticator_list_->SetObserver(this);
@@ -69,15 +67,19 @@ base::string16 BleDeviceHoverListModel::GetPlaceholderText() const {
       IDS_WEBAUTHN_BLE_DEVICE_SELECTION_SEARCHING_LABEL);
 }
 
-const gfx::VectorIcon& BleDeviceHoverListModel::GetPlaceholderIcon() const {
+const gfx::VectorIcon* BleDeviceHoverListModel::GetPlaceholderIcon() const {
   return GetTransportVectorIcon(AuthenticatorTransport::kBluetoothLowEnergy);
 }
 
 base::string16 BleDeviceHoverListModel::GetItemText(int item_tag) const {
-  return GetAuthenticator(item_tag)->authenticator_display_name();
+  return GetAuthenticator(item_tag)->authenticator_display_name;
 }
 
-const gfx::VectorIcon& BleDeviceHoverListModel::GetItemIcon(
+base::string16 BleDeviceHoverListModel::GetDescriptionText(int item_tag) const {
+  return base::string16();
+}
+
+const gfx::VectorIcon* BleDeviceHoverListModel::GetItemIcon(
     int item_tag) const {
   return GetTransportVectorIcon(AuthenticatorTransport::kBluetoothLowEnergy);
 }
@@ -108,12 +110,16 @@ size_t BleDeviceHoverListModel::GetPreferredItemCount() const {
   return kDefaultItemViewCount;
 }
 
+bool BleDeviceHoverListModel::StyleForTwoLines() const {
+  return false;
+}
+
 void BleDeviceHoverListModel::OnAuthenticatorAdded(
     const AuthenticatorReference& authenticator) {
   auto item_tag = authenticator_tags_.empty()
                       ? 0
                       : (--authenticator_tags_.end())->first + 1;
-  authenticator_tags_.emplace(item_tag, authenticator.authenticator_id());
+  authenticator_tags_.emplace(item_tag, authenticator.authenticator_id);
 
   if (ShouldShowItemInView(authenticator) && observer())
     observer()->OnListItemAdded(item_tag);
@@ -121,7 +127,7 @@ void BleDeviceHoverListModel::OnAuthenticatorAdded(
 
 void BleDeviceHoverListModel::OnAuthenticatorRemoved(
     const AuthenticatorReference& removed_authenticator) {
-  const auto& authenticator_id = removed_authenticator.authenticator_id();
+  const auto& authenticator_id = removed_authenticator.authenticator_id;
   auto it = FindElementByValue(&authenticator_tags_, authenticator_id);
   CHECK(it != authenticator_tags_.end());
   const auto item_tag = it->first;
@@ -136,7 +142,7 @@ void BleDeviceHoverListModel::OnAuthenticatorPairingModeChanged(
     return;
 
   auto it = FindElementByValue(&authenticator_tags_,
-                               changed_authenticator.authenticator_id());
+                               changed_authenticator.authenticator_id);
   CHECK(it != authenticator_tags_.end());
   const auto changed_item_tag = it->first;
   if (ShouldShowItemInView(changed_authenticator)) {
@@ -153,5 +159,5 @@ void BleDeviceHoverListModel::OnAuthenticatorIdChanged(
     base::StringPiece previous_id) {
   auto it = FindElementByValue(&authenticator_tags_, previous_id);
   CHECK(it != authenticator_tags_.end());
-  it->second = changed_authenticator.authenticator_id();
+  it->second = changed_authenticator.authenticator_id;
 }

@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/modules/locks/lock_manager.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
@@ -54,7 +53,7 @@ class NavigatorLocksImpl final : public GarbageCollected<NavigatorLocksImpl<T>>,
   }
 
  private:
-  mutable TraceWrapperMember<LockManager> lock_manager_;
+  mutable Member<LockManager> lock_manager_;
 };
 
 // static

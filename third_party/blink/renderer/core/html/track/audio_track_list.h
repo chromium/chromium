@@ -14,8 +14,6 @@ class CORE_EXPORT AudioTrackList final : public TrackListBase<AudioTrack> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static AudioTrackList* Create(HTMLMediaElement&);
-
   explicit AudioTrackList(HTMLMediaElement&);
   ~AudioTrackList() override;
 

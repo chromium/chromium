@@ -1,0 +1,44 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":cr_button",
+  ]
+}
+
+js_library("cr_button") {
+  deps = [
+    "//third_party/polymer/v1_0/components-chromium/paper-behaviors:paper-ripple-behavior-extracted",
+    "//ui/webui/resources/js/cr/ui:focus_outline_manager",
+  ]
+}
+
+polymer_modulizer("cr_button") {
+  js_file = "cr_button.js"
+  html_file = "cr_button.html"
+  html_type = "dom-module"
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":cr_button.m",
+  ]
+}
+
+js_library("cr_button.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/cr_button/cr_button.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/paper-behaviors:paper-ripple-behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
+  ]
+  extra_deps = [ ":cr_button_module" ]
+}

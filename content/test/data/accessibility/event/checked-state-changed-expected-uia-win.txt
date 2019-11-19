@@ -1,0 +1,4 @@
+AriaProperties changed on role=checkbox, name=My Checkbox
+AriaProperties changed on role=treeitem, name=Treeitem
+ToggleToggleState changed on role=checkbox, name=My Checkbox
+ToggleToggleState changed on role=treeitem, name=Treeitem

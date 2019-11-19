@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/crostini/crostini_manager.h"
+#include "chrome/browser/chromeos/crostini/crostini_simple_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/base/resource/scale_factor.h"
 
@@ -87,6 +87,8 @@ class CrostiniRegistryService : public KeyedService {
     std::set<std::string> Keywords() const;
     bool NoDisplay() const;
 
+    std::string PackageId() const;
+
     base::Time InstallTime() const;
     base::Time LastLaunchTime() const;
 
@@ -139,10 +141,9 @@ class CrostiniRegistryService : public KeyedService {
   //
   // First try to return a desktop file id matching the |window_startup_id|.
   //
-  // If the given window app id is not for Crostini (i.e. Arc++), returns an
-  // empty string. If we can uniquely identify a registry entry, returns the
-  // crostini app id for that. Otherwise, returns the string pointed to by
-  // |window_app_id|, prefixed by "crostini:".
+  // If the app id is empty, returns empty string. If we can uniquely identify
+  // a registry entry, returns the crostini app id for that. Otherwise, returns
+  // the string pointed to by |window_app_id|, prefixed by "crostini:".
   //
   // As the window app id is derived from fields set by the app itself, it is
   // possible for an app to masquerade as a different app.
@@ -152,7 +153,8 @@ class CrostiniRegistryService : public KeyedService {
   bool IsCrostiniShelfAppId(const std::string& shelf_app_id);
 
   // Return all installed apps. This always includes the Terminal app.
-  std::vector<std::string> GetRegisteredAppIds() const;
+  std::map<std::string, CrostiniRegistryService::Registration>
+  GetRegisteredApps() const;
 
   // Return null if |app_id| is not found in the registry.
   base::Optional<CrostiniRegistryService::Registration> GetRegistration(
@@ -205,7 +207,7 @@ class CrostiniRegistryService : public KeyedService {
   // Callback for when we request an icon from the container.
   void OnContainerAppIcon(const std::string& app_id,
                           ui::ScaleFactor scale_factor,
-                          CrostiniResult result,
+                          bool success,
                           const std::vector<Icon>& icons);
   // Callback for our internal call for saving out icon data.
   void OnIconInstalled(const std::string& app_id,
@@ -237,7 +239,7 @@ class CrostiniRegistryService : public KeyedService {
   std::map<std::string, uint32_t> active_icon_requests_;
   std::map<std::string, uint32_t> retry_icon_requests_;
 
-  base::WeakPtrFactory<CrostiniRegistryService> weak_ptr_factory_;
+  base::WeakPtrFactory<CrostiniRegistryService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CrostiniRegistryService);
 };

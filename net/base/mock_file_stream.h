@@ -98,7 +98,7 @@ class MockFileStream : public FileStream {
   base::OnceClosure throttled_task_;
   base::FilePath path_;
 
-  base::WeakPtrFactory<MockFileStream> weak_factory_;
+  base::WeakPtrFactory<MockFileStream> weak_factory_{this};
 };
 
 }  // namespace testing

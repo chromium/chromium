@@ -18,14 +18,19 @@ VersionHandler::~VersionHandler() {}
 
 void VersionHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      version_ui::kRequestVersionInfo,
-      base::BindRepeating(&VersionHandler::HandleRequestVersionInfo,
+      version_ui::kRequestVariationInfo,
+      base::BindRepeating(&VersionHandler::HandleRequestVariationInfo,
                           base::Unretained(this)));
 }
 
-void VersionHandler::HandleRequestVersionInfo(const base::ListValue* args) {
+void VersionHandler::HandleRequestVariationInfo(const base::ListValue* args) {
   // Respond with the variations info immediately.
-  base::Value variations_list = version_ui::GetVariationsList()->Clone();
-  std::vector<const base::Value*> params{&variations_list};
-  web_ui()->CallJavascriptFunction(version_ui::kReturnVariationInfo, params);
+  std::string callback_id;
+  CHECK_EQ(2U, args->GetSize());
+  CHECK(args->GetString(0, &callback_id));
+
+  base::Value response(base::Value::Type::DICTIONARY);
+  response.SetKey(version_ui::kKeyVariationsList,
+                  std::move(*version_ui::GetVariationsList()));
+  web_ui()->ResolveJavascriptCallback(base::Value(callback_id), response);
 }

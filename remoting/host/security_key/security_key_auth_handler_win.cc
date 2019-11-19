@@ -104,7 +104,7 @@ class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler {
   // Ensures SecurityKeyAuthHandlerWin methods are called on the same thread.
   base::ThreadChecker thread_checker_;
 
-  base::WeakPtrFactory<SecurityKeyAuthHandlerWin> weak_factory_;
+  base::WeakPtrFactory<SecurityKeyAuthHandlerWin> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SecurityKeyAuthHandlerWin);
 };
@@ -122,8 +122,7 @@ std::unique_ptr<SecurityKeyAuthHandler> SecurityKeyAuthHandler::Create(
 SecurityKeyAuthHandlerWin::SecurityKeyAuthHandlerWin(
     ClientSessionDetails* client_session_details)
     : client_session_details_(client_session_details),
-      disconnect_timeout_(kInitialRequestTimeout),
-      weak_factory_(this) {
+      disconnect_timeout_(kInitialRequestTimeout) {
   DCHECK(client_session_details_);
 }
 

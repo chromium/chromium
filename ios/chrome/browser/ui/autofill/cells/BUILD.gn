@@ -15,13 +15,11 @@ source_set("cells") {
   ]
 
   deps = [
-    "resources:autofill_edit_item_icon",
     "//components/resources",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/autofill:autofill_ui",
     "//ios/chrome/browser/ui/collection_view/cells",
@@ -42,7 +40,6 @@ source_set("cells") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "autofill_edit_item_unittest.mm",
     "cvc_item_unittest.mm",
     "legacy_autofill_edit_item_unittest.mm",
     "status_item_unittest.mm",

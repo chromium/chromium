@@ -6,9 +6,9 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/bind.h"
-#include "chrome/services/media_gallery_util/public/mojom/constants.mojom.h"
+#include "chrome/grit/generated_resources.h"
+#include "content/public/browser/service_process_host.h"
 #include "media/media_buildflags.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "third_party/libyuv/include/libyuv.h"
 
 #if BUILDFLAG(ENABLE_FFMPEG)
@@ -22,14 +22,17 @@ MediaParserProvider::MediaParserProvider() = default;
 
 MediaParserProvider::~MediaParserProvider() = default;
 
-void MediaParserProvider::RetrieveMediaParser(
-    service_manager::Connector* connector) {
-  DCHECK(!media_parser_factory_ptr_);
-  DCHECK(!media_parser_ptr_);
+void MediaParserProvider::RetrieveMediaParser() {
+  DCHECK(!remote_media_parser_factory_);
+  DCHECK(!remote_media_parser_);
 
-  connector->BindInterface(chrome::mojom::kMediaGalleryUtilServiceName,
-                           mojo::MakeRequest(&media_parser_factory_ptr_));
-  media_parser_factory_ptr_.set_connection_error_handler(base::BindOnce(
+  content::ServiceProcessHost::Launch(
+      remote_media_parser_factory_.BindNewPipeAndPassReceiver(),
+      content::ServiceProcessHost::Options()
+          .WithDisplayName(IDS_UTILITY_PROCESS_MEDIA_GALLERY_UTILITY_NAME)
+          .WithSandboxType(service_manager::SANDBOX_TYPE_UTILITY)
+          .Pass());
+  remote_media_parser_factory_.set_disconnect_handler(base::BindOnce(
       &MediaParserProvider::OnConnectionError, base::Unretained(this)));
 
   int libyuv_cpu_flags = libyuv::InitCpuFlags();
@@ -40,23 +43,22 @@ void MediaParserProvider::RetrieveMediaParser(
   int avutil_cpu_flags = -1;
 #endif
 
-  media_parser_factory_ptr_->CreateMediaParser(
+  remote_media_parser_factory_->CreateMediaParser(
       libyuv_cpu_flags, avutil_cpu_flags,
       base::BindOnce(&MediaParserProvider::OnMediaParserCreatedImpl,
                      base::Unretained(this)));
 }
 
 void MediaParserProvider::OnMediaParserCreatedImpl(
-    chrome::mojom::MediaParserPtr media_parser_ptr) {
-  media_parser_ptr_ = std::move(media_parser_ptr);
-  media_parser_ptr_.set_connection_error_handler(base::BindOnce(
+    mojo::PendingRemote<chrome::mojom::MediaParser> remote_media_parser) {
+  remote_media_parser_.Bind(std::move(remote_media_parser));
+  remote_media_parser_.set_disconnect_handler(base::BindOnce(
       &MediaParserProvider::OnConnectionError, base::Unretained(this)));
-  media_parser_factory_ptr_.reset();
 
   OnMediaParserCreated();
 }
 
 void MediaParserProvider::ResetMediaParser() {
-  media_parser_ptr_.reset();
-  media_parser_factory_ptr_.reset();
+  remote_media_parser_.reset();
+  remote_media_parser_factory_.reset();
 }

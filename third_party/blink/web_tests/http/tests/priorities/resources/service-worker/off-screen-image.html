@@ -1,0 +1,8 @@
+<script src="../common.js"></script>
+<script>
+  const image = new Image();
+  image.src = '../../../resources/square.png?getPriority';
+
+  image.onload = reportLoaded;
+  image.onerror = reportFailure;
+</script>

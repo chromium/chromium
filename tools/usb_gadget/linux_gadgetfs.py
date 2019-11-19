@@ -10,6 +10,8 @@ ABI is documented here:
 https://github.com/torvalds/linux/blob/master/drivers/usb/gadget/inode.c
 """
 
+from __future__ import print_function
+
 import errno
 import multiprocessing
 import os
@@ -124,7 +126,7 @@ class LinuxGadgetfs(object):
     event_type, = struct.unpack_from('=I', buf, 8)
 
     if event_type == GADGETFS_NOP:
-      print 'NOP'
+      print('NOP')
     elif event_type == GADGETFS_CONNECT:
       speed, = struct.unpack('=Ixxxxxxxx', buf)
       self.Connected(speed)
@@ -135,31 +137,31 @@ class LinuxGadgetfs(object):
           '<BBHHHxxxx', buf)
       self.HandleSetup(request_type, request, value, index, length)
     elif event_type == GADGETFS_SUSPEND:
-      print 'SUSPEND'
+      print('SUSPEND')
     else:
-      print 'Unknown gadgetfs event type:', event_type
+      print('Unknown gadgetfs event type:', event_type)
 
   def Connected(self, speed):
-    print 'CONNECT speed={}'.format(speed)
+    print('CONNECT speed={}'.format(speed))
     self._gadget.Connected(self, speed)
 
   def Disconnected(self):
-    print 'DISCONNECT'
+    print('DISCONNECT')
     for endpoint_addr in self._ep_fds.keys():
       self.StopEndpoint(endpoint_addr)
     self._ep_fds.clear()
     self._gadget.Disconnected()
 
   def HandleSetup(self, request_type, request, value, index, length):
-    print ('SETUP bmRequestType=0x{:02X} bRequest=0x{:02X} wValue=0x{:04X} '
-           'wIndex=0x{:04X} wLength={}'
-           .format(request_type, request, value, index, length))
+    print('SETUP bmRequestType=0x{:02X} bRequest=0x{:02X} wValue=0x{:04X} '
+          'wIndex=0x{:04X} wLength={}'.format(request_type, request, value,
+                                              index, length))
 
     if request_type & usb_constants.Dir.IN:
       data = self._gadget.ControlRead(
           request_type, request, value, index, length)
       if data is None:
-        print 'SETUP STALL'
+        print('SETUP STALL')
         try:
           os.read(self._fd, 0)  # Backwards I/O stalls the pipe.
         except OSError, e:
@@ -175,7 +177,7 @@ class LinuxGadgetfs(object):
       result = self._gadget.ControlWrite(
           request_type, request, value, index, data)
       if result is None:
-        print 'SETUP STALL'
+        print('SETUP STALL')
         try:
           os.write(self._fd, '')  # Backwards I/O stalls the pipe.
         except OSError, e:
@@ -269,7 +271,7 @@ class LinuxGadgetfs(object):
       self._ep_fds[endpoint_addr] = fd, child, pipe_r
 
     child.start()
-    print 'Started endpoint 0x{:02X}.'.format(endpoint_addr)
+    print('Started endpoint 0x{:02X}.'.format(endpoint_addr))
 
   def StopEndpoint(self, endpoint_addr):
     """Deactivate the given endpoint."""
@@ -280,7 +282,7 @@ class LinuxGadgetfs(object):
     if not endpoint_addr & usb_constants.Dir.IN:
       self._io_loop.remove_handler(pipe_fd)
     os.close(fd)
-    print 'Stopped endpoint 0x{:02X}.'.format(endpoint_addr)
+    print('Stopped endpoint 0x{:02X}.'.format(endpoint_addr))
 
   def SendPacket(self, endpoint_addr, data):
     """Send a packet on the given endpoint."""

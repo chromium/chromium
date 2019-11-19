@@ -9,11 +9,11 @@ import os
 import sys
 import zipfile
 
-REPOSITORY_ROOT = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '..', '..', '..'))
+REPOSITORY_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 
-sys.path.append(os.path.join(REPOSITORY_ROOT, 'build/android/gyp/util'))
-import build_utils
+sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'build/android/gyp'))
+from util import build_utils  # pylint: disable=wrong-import-position
 
 JAVA_PACKAGE_PREFIX = 'org/chromium/'
 

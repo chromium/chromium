@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/memory/shared_memory_handle.h"
 #include "content/common/content_export.h"
 #include "content/common/content_param_traits.h"
 #include "ipc/ipc_message_macros.h"
@@ -31,13 +30,6 @@ struct SyncCompositorDemandDrawHwParams {
   gfx::Rect clip;
   gfx::Rect viewport_rect_for_tile_priority;
   gfx::Transform transform_for_tile_priority;
-};
-
-struct SyncCompositorSetSharedMemoryParams {
-  SyncCompositorSetSharedMemoryParams();
-
-  uint32_t buffer_size;
-  base::SharedMemoryHandle shm_handle;
 };
 
 struct SyncCompositorDemandDrawSwParams {
@@ -80,11 +72,6 @@ IPC_STRUCT_TRAITS_BEGIN(content::SyncCompositorDemandDrawHwParams)
   IPC_STRUCT_TRAITS_MEMBER(viewport_size)
   IPC_STRUCT_TRAITS_MEMBER(viewport_rect_for_tile_priority)
   IPC_STRUCT_TRAITS_MEMBER(transform_for_tile_priority)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(content::SyncCompositorSetSharedMemoryParams)
-  IPC_STRUCT_TRAITS_MEMBER(buffer_size)
-  IPC_STRUCT_TRAITS_MEMBER(shm_handle)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(content::SyncCompositorDemandDrawSwParams)

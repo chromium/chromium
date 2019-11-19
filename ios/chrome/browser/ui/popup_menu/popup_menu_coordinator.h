@@ -18,6 +18,12 @@ class WebStateList;
 // Coordinator for the popup menu, handling the commands.
 @interface PopupMenuCoordinator : ChromeCoordinator<PopupMenuLongPressDelegate>
 
+// PopupMenuCoordinator needs to be initialized with a Browser.
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                              browserState:
+                                  (ios::ChromeBrowserState*)browserState
+    NS_UNAVAILABLE;
+
 // Dispatcher used by this coordinator to receive the PopupMenuCommands.
 @property(nonatomic, weak) CommandDispatcher* dispatcher;
 // The WebStateList this coordinator is handling.

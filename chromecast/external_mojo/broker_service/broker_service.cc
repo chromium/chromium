@@ -10,9 +10,11 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread.h"
+#include "chromecast/external_mojo/public/cpp/common.h"
 #include "chromecast/external_mojo/public/cpp/external_mojo_broker.h"
 #include "services/service_manager/public/cpp/manifest_builder.h"
 
@@ -60,14 +62,15 @@ BrokerService::BrokerService(service_manager::mojom::ServiceRequest request)
     : service_binding_(this, std::move(request)) {
   io_thread_ = std::make_unique<base::Thread>("external_mojo");
   io_thread_->StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+      base::Thread::Options(base::MessagePumpType::IO, 0));
 
   std::vector<std::string> external_services_to_proxy;
   const service_manager::Manifest& manifest = GetManifest();
   for (const auto& sub_manifest : manifest.packaged_services) {
     external_services_to_proxy.push_back(sub_manifest.service_name);
   }
-  broker_ = base::SequenceBound<ExternalMojoBroker>(io_thread_->task_runner());
+  broker_ = base::SequenceBound<ExternalMojoBroker>(io_thread_->task_runner(),
+                                                    GetBrokerPath());
   broker_.Post(FROM_HERE, &ExternalMojoBroker::InitializeChromium,
                service_binding_.GetConnector()->Clone(),
                external_services_to_proxy);

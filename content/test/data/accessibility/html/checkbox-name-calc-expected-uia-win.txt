@@ -1,0 +1,7 @@
+document
+++checkbox Name='Title0' Toggle.ToggleState='Off'
+++checkbox Name='Label1' Toggle.ToggleState='Off'
+++checkbox Name='AriaLabel2' Toggle.ToggleState='Off'
+++checkbox Name='LabelledBy3' Toggle.ToggleState='Off'
+++checkbox Name='LabelledBy4' Toggle.ToggleState='Off'
+++checkbox Toggle.ToggleState='Off'

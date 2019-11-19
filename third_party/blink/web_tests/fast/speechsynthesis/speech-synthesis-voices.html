@@ -11,29 +11,46 @@
     if (window.internals)
         internals.enableMockSpeechSynthesizer(window);
 
+    if (window.testRunner)
+        testRunner.waitUntilDone();
+
+    window.jsTestIsAsync = true;
+
     description("This tests that we can get synthesizer voices on the Mac");
 
-    var speech = window.speechSynthesis;
-    var list = speech.getVoices();
-
-    var foundDefaultVoice = false;
-    var foundEnglishVoice = false;
-    var voiceCount = list.length;
-
-    for (var k = 0; k < list.length; k++ ) {
-        var voice = list[k];
-        if (voice.lang == "en-US") {
-            foundEnglishVoice = true;
-        }
-        if (voice.default) {
-            foundDefaultVoice = true;
-        }
+    var list;
+    speechSynthesis.onvoiceschanged = function() {
+        list = speechSynthesis.getVoices();
+        continueTest();
     }
 
-    shouldBeTrue("voiceCount > 0");
-    shouldBeTrue("foundEnglishVoice");
-    shouldBeTrue("foundDefaultVoice");
+    var foundDefaultVoice;
+    var foundEnglishVoice;
+    var voiceCount;
 
+    function continueTest() {
+        list = speechSynthesis.getVoices();
+
+        foundDefaultVoice = false;
+        foundEnglishVoice = false;
+        voiceCount = list.length;
+
+        for (var k = 0; k < list.length; k++ ) {
+            var voice = list[k];
+            if (voice.lang == "en-US") {
+                foundEnglishVoice = true;
+            }
+            if (voice.default) {
+                foundDefaultVoice = true;
+            }
+        }
+
+        shouldBeTrue("voiceCount > 0");
+        shouldBeTrue("foundEnglishVoice");
+        shouldBeTrue("foundDefaultVoice");
+
+        finishJSTest();
+    }
 </script>
 
 </body>

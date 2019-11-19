@@ -8,20 +8,18 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "components/services/unzip/public/mojom/unzipper.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace base {
 class FilePath;
-}
-
-namespace service_manager {
-class Connector;
 }
 
 namespace unzip {
 
 // Unzips |zip_file| into |output_dir|.
 using UnzipCallback = base::OnceCallback<void(bool result)>;
-void Unzip(std::unique_ptr<service_manager::Connector> connector,
+void Unzip(mojo::PendingRemote<mojom::Unzipper> unzipper,
            const base::FilePath& zip_file,
            const base::FilePath& output_dir,
            UnzipCallback result_callback);
@@ -30,7 +28,7 @@ void Unzip(std::unique_ptr<service_manager::Connector> connector,
 // Note that |filter_callback| may be invoked from a background thread.
 using UnzipFilterCallback =
     base::RepeatingCallback<bool(const base::FilePath& path)>;
-void UnzipWithFilter(std::unique_ptr<service_manager::Connector> connector,
+void UnzipWithFilter(mojo::PendingRemote<mojom::Unzipper> unzipper,
                      const base::FilePath& zip_file,
                      const base::FilePath& output_dir,
                      UnzipFilterCallback filter_callback,

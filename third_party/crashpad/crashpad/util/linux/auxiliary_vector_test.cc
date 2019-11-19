@@ -120,8 +120,9 @@ void TestAgainstCloneOrSelf(pid_t pid) {
 
 #if defined(AT_SYSINFO_EHDR)
   LinuxVMAddress vdso_addr;
-  ASSERT_TRUE(aux.GetValue(AT_SYSINFO_EHDR, &vdso_addr));
-  EXPECT_TRUE(mappings.FindMapping(vdso_addr));
+  if (aux.GetValue(AT_SYSINFO_EHDR, &vdso_addr)) {
+    EXPECT_TRUE(mappings.FindMapping(vdso_addr));
+  }
 #endif  // AT_SYSINFO_EHDR
 
 #if defined(AT_EXECFN)

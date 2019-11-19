@@ -10,9 +10,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "components/language/core/common/language_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_download_manager.h"
-#include "components/translate/core/common/translate_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace translate {
@@ -41,7 +41,7 @@ bool TranslateAcceptLanguages::CanBeAcceptLanguage(
   SCOPED_UMA_HISTOGRAM_TIMER("Translate.AcceptLanguages.CanBeAcceptDuration");
 
   std::string accept_language = language;
-  translate::ToChromeLanguageSynonym(&accept_language);
+  language::ToChromeLanguageSynonym(&accept_language);
 
   const std::string locale =
       TranslateDownloadManager::GetInstance()->application_locale();
@@ -51,7 +51,7 @@ bool TranslateAcceptLanguages::CanBeAcceptLanguage(
 
 bool TranslateAcceptLanguages::IsAcceptLanguage(const std::string& language) {
   std::string accept_language = language;
-  translate::ToChromeLanguageSynonym(&accept_language);
+  language::ToChromeLanguageSynonym(&accept_language);
   return accept_languages_.find(accept_language) != accept_languages_.end();
 }
 

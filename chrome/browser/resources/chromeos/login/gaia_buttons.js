@@ -6,56 +6,66 @@ Polymer({
   is: 'gaia-button',
 
   properties: {
-    disabled: {type: Boolean, value: false, reflectToAttribute: true},
-
-    type: {
-      type: String,
-      value: '',
+    disabled: {
+      type: Boolean,
+      value: false,
       reflectToAttribute: true,
-      observer: 'typeChanged_'
-    }
+    },
+
+    link: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+      observer: 'onLinkChanged_',
+    },
   },
 
   focus: function() {
     this.$.button.focus();
   },
 
-  focusedChanged_: function() {
-    if (this.type == 'link' || this.type == 'dialog')
-      return;
-    this.$.button.raised = this.$.button.focused;
+  /** @private */
+  onLinkChanged_: function() {
+    this.$.button.classList.toggle('action-button', !this.link);
   },
 
-  typeChanged_: function() {
-    if (this.type == 'link')
-      this.$.button.setAttribute('noink', '');
-    else
-      this.$.button.removeAttribute('noink');
-  },
-
+  /**
+   * @param {!Event} e
+   * @private
+   */
   onClick_: function(e) {
-    if (this.disabled)
+    if (this.disabled) {
       e.stopPropagation();
-  }
+    }
+  },
 });
 
 Polymer({
   is: 'gaia-icon-button',
 
   properties: {
-    disabled: {type: Boolean, value: false, reflectToAttribute: true},
+    disabled: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    },
 
     icon: String,
 
-    ariaLabel: String
+    ariaLabel: String,
   },
 
   focus: function() {
     this.$.iconButton.focus();
   },
 
+  /**
+   * @param {!Event} e
+   * @private
+   */
   onClick_: function(e) {
-    if (this.disabled)
+    if (this.disabled) {
       e.stopPropagation();
-  }
+    }
+  },
 });

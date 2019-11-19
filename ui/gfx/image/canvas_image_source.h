@@ -38,7 +38,7 @@ class GFX_EXPORT CanvasImageSource : public ImageSkiaSource {
   // edges as specified by |insets|.
   static ImageSkia CreatePadded(const ImageSkia& image, const Insets& insets);
 
-  CanvasImageSource(const Size& size, bool is_opaque);
+  explicit CanvasImageSource(const Size& size);
   ~CanvasImageSource() override {}
 
   // Called when a new image needs to be drawn for a scale factor.
@@ -52,7 +52,6 @@ class GFX_EXPORT CanvasImageSource : public ImageSkiaSource {
 
  protected:
   const Size size_;
-  const bool is_opaque_;
   DISALLOW_COPY_AND_ASSIGN(CanvasImageSource);
 };
 

@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/sha1.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
@@ -129,7 +129,7 @@ WebSocket::ParseResult WebSocket::Read(std::string* message) {
 }
 
 void WebSocket::Send(
-    const std::string& message,
+    base::StringPiece message,
     const net::NetworkTrafficAnnotationTag traffic_annotation) {
   if (closed_)
     return;

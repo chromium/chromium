@@ -50,10 +50,6 @@ class BlinkGCPluginConsumer : public clang::ASTConsumer {
 
   void CheckFinalization(RecordInfo* info);
 
-  void CheckUnneededFinalization(RecordInfo* info);
-
-  bool HasNonEmptyFinalizer(RecordInfo* info);
-
   // This is the main entry for tracing method definitions.
   void CheckTracingMethod(clang::CXXMethodDecl* method);
 

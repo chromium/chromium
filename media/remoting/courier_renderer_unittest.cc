@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/media_util.h"
 #include "media/base/pipeline_status.h"
@@ -49,6 +49,8 @@ PipelineStatistics DefaultStats() {
   stats.audio_memory_usage = 5678;
   stats.video_memory_usage = 6789;
   stats.video_keyframe_distance_average = base::TimeDelta::Max();
+  stats.audio_decoder_info = {false, false, "Default"};
+  stats.video_decoder_info = {false, false, "Default"};
   return stats;
 }
 
@@ -61,7 +63,7 @@ class RendererClientImpl final : public RendererClient {
     ON_CALL(*this, OnPipelineStatus(_))
         .WillByDefault(
             Invoke(this, &RendererClientImpl::DelegateOnPipelineStatus));
-    ON_CALL(*this, OnBufferingStateChange(_))
+    ON_CALL(*this, OnBufferingStateChange(_, _))
         .WillByDefault(
             Invoke(this, &RendererClientImpl::DelegateOnBufferingStateChange));
     ON_CALL(*this, OnAudioConfigChange(_))
@@ -76,9 +78,6 @@ class RendererClientImpl final : public RendererClient {
     ON_CALL(*this, OnVideoOpacityChange(_))
         .WillByDefault(
             Invoke(this, &RendererClientImpl::DelegateOnVideoOpacityChange));
-    ON_CALL(*this, OnDurationChange(_))
-        .WillByDefault(
-            Invoke(this, &RendererClientImpl::DelegateOnDurationChange));
   }
   ~RendererClientImpl() = default;
 
@@ -86,19 +85,22 @@ class RendererClientImpl final : public RendererClient {
   void OnError(PipelineStatus status) override {}
   void OnEnded() override {}
   MOCK_METHOD1(OnStatisticsUpdate, void(const PipelineStatistics& stats));
-  MOCK_METHOD1(OnBufferingStateChange, void(BufferingState state));
+  MOCK_METHOD2(OnBufferingStateChange,
+               void(BufferingState state, BufferingStateChangeReason reason));
   MOCK_METHOD1(OnAudioConfigChange, void(const AudioDecoderConfig& config));
   MOCK_METHOD1(OnVideoConfigChange, void(const VideoDecoderConfig& config));
   void OnWaiting(WaitingReason reason) override {}
   MOCK_METHOD1(OnVideoNaturalSizeChange, void(const gfx::Size& size));
   MOCK_METHOD1(OnVideoOpacityChange, void(bool opaque));
-  MOCK_METHOD1(OnDurationChange, void(base::TimeDelta duration));
   MOCK_METHOD1(OnRemotePlayStateChange, void(MediaStatus::State state));
 
   void DelegateOnStatisticsUpdate(const PipelineStatistics& stats) {
     stats_ = stats;
   }
-  void DelegateOnBufferingStateChange(BufferingState state) { state_ = state; }
+  void DelegateOnBufferingStateChange(BufferingState state,
+                                      BufferingStateChangeReason reason) {
+    state_ = state;
+  }
   void DelegateOnAudioConfigChange(const AudioDecoderConfig& config) {
     audio_decoder_config_ = config;
   }
@@ -107,9 +109,6 @@ class RendererClientImpl final : public RendererClient {
   }
   void DelegateOnVideoNaturalSizeChange(const gfx::Size& size) { size_ = size; }
   void DelegateOnVideoOpacityChange(bool opaque) { opaque_ = opaque; }
-  void DelegateOnDurationChange(base::TimeDelta duration) {
-    duration_ = duration;
-  }
 
   MOCK_METHOD1(OnPipelineStatus, void(PipelineStatus status));
   void DelegateOnPipelineStatus(PipelineStatus status) {
@@ -123,7 +122,6 @@ class RendererClientImpl final : public RendererClient {
   BufferingState state() const { return state_; }
   gfx::Size size() const { return size_; }
   bool opaque() const { return opaque_; }
-  base::TimeDelta duration() const { return duration_; }
   VideoDecoderConfig video_decoder_config() const {
     return video_decoder_config_;
   }
@@ -136,7 +134,6 @@ class RendererClientImpl final : public RendererClient {
   BufferingState state_ = BUFFERING_HAVE_NOTHING;
   gfx::Size size_;
   bool opaque_ = false;
-  base::TimeDelta duration_;
   PipelineStatistics stats_;
   VideoDecoderConfig video_decoder_config_;
   AudioDecoderConfig audio_decoder_config_;
@@ -258,9 +255,10 @@ class CourierRendererTest : public testing::Test {
     controller_->GetRpcBroker()->SetMessageCallbackForTesting(base::Bind(
         &CourierRendererTest::RpcMessageResponseBot, base::Unretained(this)));
     RunPendingTasks();
-    renderer_->Initialize(media_resource_.get(), render_client_.get(),
-                          base::Bind(&RendererClientImpl::OnPipelineStatus,
-                                     base::Unretained(render_client_.get())));
+    renderer_->Initialize(
+        media_resource_.get(), render_client_.get(),
+        base::BindOnce(&RendererClientImpl::OnPipelineStatus,
+                       base::Unretained(render_client_.get())));
     RunPendingTasks();
     // Redirect RPC message back to save for later check.
     controller_->GetRpcBroker()->SetMessageCallbackForTesting(base::Bind(
@@ -359,6 +357,18 @@ class CourierRendererTest : public testing::Test {
     message->set_video_frames_dropped(stats.video_frames_dropped);
     message->set_audio_memory_usage(stats.audio_memory_usage);
     message->set_video_memory_usage(stats.video_memory_usage);
+    message->mutable_audio_decoder_info()->set_is_platform_decoder(
+        stats.audio_decoder_info.is_platform_decoder);
+    message->mutable_audio_decoder_info()->set_has_decrypting_demuxer_stream(
+        stats.audio_decoder_info.has_decrypting_demuxer_stream);
+    message->mutable_audio_decoder_info()->set_decoder_name(
+        stats.audio_decoder_info.decoder_name);
+    message->mutable_video_decoder_info()->set_is_platform_decoder(
+        stats.video_decoder_info.is_platform_decoder);
+    message->mutable_video_decoder_info()->set_has_decrypting_demuxer_stream(
+        stats.video_decoder_info.has_decrypting_demuxer_stream);
+    message->mutable_video_decoder_info()->set_decoder_name(
+        stats.video_decoder_info.decoder_name);
     OnReceivedRpc(std::move(rpc));
     RunPendingTasks();
   }
@@ -380,7 +390,7 @@ class CourierRendererTest : public testing::Test {
     RunPendingTasks();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<RendererController> controller_;
   std::unique_ptr<RendererClientImpl> render_client_;
   std::unique_ptr<FakeMediaResource> media_resource_;
@@ -432,8 +442,8 @@ TEST_F(CourierRendererTest, InitializeFailed) {
 
   ResetReceivedRpcMessage();
   EXPECT_CALL(*render_client_, OnFlushCallback()).Times(1);
-  renderer_->Flush(base::Bind(&RendererClientImpl::OnFlushCallback,
-                              base::Unretained(render_client_.get())));
+  renderer_->Flush(base::BindOnce(&RendererClientImpl::OnFlushCallback,
+                                  base::Unretained(render_client_.get())));
   RunPendingTasks();
   ASSERT_EQ(0, ReceivedRpcMessageCount());
 
@@ -464,8 +474,8 @@ TEST_F(CourierRendererTest, Flush) {
       &CourierRendererTest::RpcMessageResponseBot, base::Unretained(this)));
   RunPendingTasks();
   EXPECT_CALL(*render_client_, OnFlushCallback()).Times(1);
-  renderer_->Flush(base::Bind(&RendererClientImpl::OnFlushCallback,
-                              base::Unretained(render_client_.get())));
+  renderer_->Flush(base::BindOnce(&RendererClientImpl::OnFlushCallback,
+                                  base::Unretained(render_client_.get())));
   RunPendingTasks();
 }
 
@@ -541,15 +551,16 @@ TEST_F(CourierRendererTest, OnTimeUpdate) {
 
 TEST_F(CourierRendererTest, OnBufferingStateChange) {
   InitializeRenderer();
-  EXPECT_CALL(*render_client_, OnBufferingStateChange(BUFFERING_HAVE_NOTHING))
+  EXPECT_CALL(*render_client_,
+              OnBufferingStateChange(BUFFERING_HAVE_NOTHING, _))
       .Times(1);
   IssuesBufferingStateRpc(BufferingState::BUFFERING_HAVE_NOTHING);
 }
 
 TEST_F(CourierRendererTest, OnAudioConfigChange) {
-  const AudioDecoderConfig kNewAudioConfig(kCodecVorbis, kSampleFormatPlanarF32,
-                                           CHANNEL_LAYOUT_STEREO, 44100,
-                                           EmptyExtraData(), Unencrypted());
+  const AudioDecoderConfig kNewAudioConfig(
+      kCodecVorbis, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO, 44100,
+      EmptyExtraData(), EncryptionScheme::kUnencrypted);
   InitializeRenderer();
   // Make sure initial audio config does not match the one we intend to send.
   ASSERT_FALSE(render_client_->audio_decoder_config().Matches(kNewAudioConfig));
@@ -652,36 +663,6 @@ TEST_F(CourierRendererTest, OnStatisticsUpdate) {
   EXPECT_EQ(DefaultStats(), render_client_->stats());
 }
 
-TEST_F(CourierRendererTest, OnDurationChange) {
-  InitializeRenderer();
-  ASSERT_NE(render_client_->duration(),
-            base::TimeDelta::FromMicroseconds(1234));
-  // Issues RPC_RC_ONDURATIONCHANGE RPC message.
-  EXPECT_CALL(*render_client_,
-              OnDurationChange(base::TimeDelta::FromMicroseconds(1234)))
-      .Times(1);
-  std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
-  rpc->set_handle(5);
-  rpc->set_proc(pb::RpcMessage::RPC_RC_ONDURATIONCHANGE);
-  rpc->set_integer64_value(1234);
-  OnReceivedRpc(std::move(rpc));
-  RunPendingTasks();
-  ASSERT_EQ(render_client_->duration(),
-            base::TimeDelta::FromMicroseconds(1234));
-}
-
-TEST_F(CourierRendererTest, OnDurationChangeWithInvalidValue) {
-  InitializeRenderer();
-  // Issues RPC_RC_ONDURATIONCHANGE RPC message.
-  EXPECT_CALL(*render_client_, OnDurationChange(_)).Times(0);
-  std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
-  rpc->set_handle(5);
-  rpc->set_proc(pb::RpcMessage::RPC_RC_ONDURATIONCHANGE);
-  rpc->set_integer64_value(-345);
-  OnReceivedRpc(std::move(rpc));
-  RunPendingTasks();
-}
-
 TEST_F(CourierRendererTest, OnPacingTooSlowly) {
   InitializeRenderer();
 
@@ -691,7 +672,7 @@ TEST_F(CourierRendererTest, OnPacingTooSlowly) {
   // There should be no error reported with this playback rate.
   renderer_->SetPlaybackRate(0.8);
   RunPendingTasks();
-  EXPECT_CALL(*render_client_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH))
+  EXPECT_CALL(*render_client_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _))
       .Times(1);
   IssuesBufferingStateRpc(BufferingState::BUFFERING_HAVE_ENOUGH);
   clock_.Advance(base::TimeDelta::FromSeconds(3));

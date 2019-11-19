@@ -83,7 +83,7 @@ class CONTENT_EXPORT HistoryEntry {
  private:
   std::unique_ptr<HistoryNode> root_;
 
-  base::WeakPtrFactory<HistoryEntry> weak_ptr_factory_;
+  base::WeakPtrFactory<HistoryEntry> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HistoryEntry);
 };

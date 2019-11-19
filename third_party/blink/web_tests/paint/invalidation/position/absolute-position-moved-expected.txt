@@ -1,39 +1,28 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 2016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow (positioned) DIV class='fixed red'",
+          "object": "LayoutNGBlockFlow (positioned) DIV class='fixed red'",
           "rect": [108, 1100, 100, 100],
           "reason": "chunk disappeared"
         },
         {
-          "object": "LayoutBlockFlow (positioned) DIV id='absoluteDiv' class='absolute green'",
+          "object": "LayoutNGBlockFlow (positioned) DIV id='absoluteDiv' class='absolute green'",
           "rect": [100, 100, 100, 100],
           "reason": "chunk appeared"
         },
         {
-          "object": "LayoutBlockFlow (positioned) DIV class='fixed red'",
+          "object": "LayoutNGBlockFlow (positioned) DIV class='fixed red'",
           "rect": [8, 1000, 100, 100],
           "reason": "chunk appeared"
         },
         {
-          "object": "LayoutBlockFlow (positioned) DIV class='fixed red'",
+          "object": "LayoutNGBlockFlow (positioned) DIV class='fixed red'",
           "rect": [8, 1000, 100, 100],
           "reason": "chunk disappeared"
         }

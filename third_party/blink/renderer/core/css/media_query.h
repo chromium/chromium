@@ -34,6 +34,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -44,12 +45,11 @@ class MediaQueryExp;
 using ExpressionHeapVector = Vector<MediaQueryExp>;
 
 class CORE_EXPORT MediaQuery {
+  USING_FAST_MALLOC(MediaQuery);
+
  public:
   enum RestrictorType { kOnly, kNot, kNone };
 
-  static std::unique_ptr<MediaQuery> Create(RestrictorType,
-                                            String media_type,
-                                            ExpressionHeapVector);
   static std::unique_ptr<MediaQuery> CreateNotAll();
 
   MediaQuery(RestrictorType, String media_type, ExpressionHeapVector);

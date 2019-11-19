@@ -16,4 +16,3 @@ Local Modifications:
 - Auxiliary fuzzer runners removed from fuzz/
 - common/dictionary.bin*: Removed.
 - BUILD.gn: Added.
-- brotli.gni: Added.

@@ -8,8 +8,8 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "remoting/protocol/fake_connection_to_host.h"
 #include "remoting/signaling/fake_signal_strategy.h"
 #include "remoting/test/connection_setup_info.h"
@@ -53,7 +53,8 @@ class TestChromotingClientTest : public ::testing::Test,
                               protocol::ErrorCode error_code) override;
   void ConnectionReady(bool ready) override;
 
-  base::MessageLoopForIO message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
   DISALLOW_COPY_AND_ASSIGN(TestChromotingClientTest);
 };

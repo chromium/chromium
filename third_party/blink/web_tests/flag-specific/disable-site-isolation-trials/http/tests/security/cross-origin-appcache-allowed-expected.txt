@@ -1,0 +1,14 @@
+CONSOLE WARNING: Application Cache API manifest selection is deprecated and will be removed in M82, around April 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+This iframe should have a cache:
+
+This iframe should have a cache:
+
+--------
+Frame: '<!--framePath //<!--frame0-->-->'
+--------
+Cache found
+
+--------
+Frame: '<!--framePath //<!--frame1-->-->'
+--------
+Cache found

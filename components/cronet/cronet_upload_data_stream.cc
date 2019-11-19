@@ -17,8 +17,7 @@ CronetUploadDataStream::CronetUploadDataStream(Delegate* delegate, int64_t size)
       waiting_on_rewind_(false),
       rewind_in_progress_(false),
       at_front_of_stream_(true),
-      delegate_(delegate),
-      weak_factory_(this) {}
+      delegate_(delegate) {}
 
 CronetUploadDataStream::~CronetUploadDataStream() {
   delegate_->OnUploadDataStreamDestroyed();

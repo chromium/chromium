@@ -2,35 +2,77 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(!is_ios, "Optimization Guide is not available on iOS.")
+
 static_library("optimization_guide") {
   sources = [
+    "bloom_filter.cc",
+    "bloom_filter.h",
+    "command_line_top_host_provider.cc",
+    "command_line_top_host_provider.h",
+    "hint_cache.cc",
+    "hint_cache.h",
     "hints_component_info.h",
     "hints_component_util.cc",
     "hints_component_util.h",
+    "hints_fetcher.cc",
+    "hints_fetcher.h",
+    "hints_processing_util.cc",
+    "hints_processing_util.h",
+    "optimization_filter.cc",
+    "optimization_filter.h",
     "optimization_guide_constants.cc",
     "optimization_guide_constants.h",
+    "optimization_guide_decider.h",
+    "optimization_guide_enums.h",
+    "optimization_guide_features.cc",
+    "optimization_guide_features.h",
+    "optimization_guide_prefs.cc",
+    "optimization_guide_prefs.h",
     "optimization_guide_service.cc",
     "optimization_guide_service.h",
     "optimization_guide_service_observer.h",
+    "optimization_guide_store.cc",
+    "optimization_guide_store.h",
+    "optimization_guide_switches.cc",
+    "optimization_guide_switches.h",
+    "store_update_data.cc",
+    "store_update_data.h",
+    "top_host_provider.h",
     "url_pattern_with_wildcards.cc",
     "url_pattern_with_wildcards.h",
   ]
 
+  public_deps = [
+    "//third_party/re2",
+  ]
+
   deps = [
     "//base",
+    "//components/leveldb_proto",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs",
+    "//content/public/browser",
+    "//google_apis",
+    "//net:net",
+    "//services/network/public/cpp",
+    "//third_party/smhasher:murmurhash3",
+    "//url:url",
   ]
 }
 
 static_library("test_support") {
   testonly = true
   sources = [
+    "proto_database_provider_test_base.cc",
+    "proto_database_provider_test_base.h",
     "test_hints_component_creator.cc",
     "test_hints_component_creator.h",
   ]
   deps = [
     ":optimization_guide",
     "//base",
+    "//components/leveldb_proto",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//testing/gtest",
   ]
@@ -39,16 +81,34 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "bloom_filter_unittest.cc",
+    "command_line_top_host_provider_unittest.cc",
+    "hint_cache_unittest.cc",
     "hints_component_util_unittest.cc",
+    "hints_fetcher_unittest.cc",
+    "hints_processing_util_unittest.cc",
+    "optimization_filter_unittest.cc",
+    "optimization_guide_features_unittest.cc",
     "optimization_guide_service_unittest.cc",
+    "optimization_guide_store_unittest.cc",
+    "optimization_guide_switches_unittest.cc",
+    "store_update_data_unittest.cc",
     "url_pattern_with_wildcards_unittest.cc",
   ]
 
   deps = [
     ":optimization_guide",
+    ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/leveldb_proto:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs:test_support",
+    "//net:test_support",
+    "//services/network:network_service",
+    "//services/network:test_support",
+    "//testing/gmock",
     "//testing/gtest",
+    "//url:url",
   ]
 }

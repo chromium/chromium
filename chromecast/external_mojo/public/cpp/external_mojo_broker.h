@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "chromecast/external_mojo/public/mojom/connector.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace service_manager {
 class Connector;
@@ -22,7 +24,8 @@ namespace external_mojo {
 // either in a standalone broker process, or embedded into a Chromium process.
 class ExternalMojoBroker {
  public:
-  ExternalMojoBroker();
+  explicit ExternalMojoBroker(const std::string& broker_path);
+
   ~ExternalMojoBroker();
 
   // Initializes the embedded into a Chromium process (eg in cast_shell).
@@ -32,6 +35,8 @@ class ExternalMojoBroker {
   void InitializeChromium(
       std::unique_ptr<service_manager::Connector> connector,
       const std::vector<std::string>& external_services_to_proxy);
+
+  mojo::PendingRemote<mojom::ExternalConnector> CreateConnector();
 
  private:
   class ConnectorImpl;

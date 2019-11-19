@@ -2,12 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {isMac} from 'chrome://resources/js/cr.m.js';
+import {TestStore} from 'chrome://test/bookmarks/test_store.js';
+import {Command, CommandManager, DialogFocusManager, createBookmark, getDisplayedList, MenuSource, selectFolder} from 'chrome://bookmarks/bookmarks.js';
+import {TestCommandManager} from 'chrome://test/bookmarks/test_command_manager.js';
+import {createFolder, createItem, customClick, findFolderNode, normalizeIterable, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
+import {pressAndReleaseKeyOn, tap} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {flushTasks} from 'chrome://test/test_util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 suite('<bookmarks-command-manager>', function() {
   let commandManager;
+  let testCommandManager;
   let store;
   let lastCommand;
   let lastCommandIds;
   let bmpCopyFunction;
+  let bmpCutFunction;
   let bmpPasteFunction;
 
   suiteSetup(function() {
@@ -33,7 +44,7 @@ suite('<bookmarks-command-manager>', function() {
       bulkChildren.push(createItem(id, {url: `http://${id}/`}));
     }
 
-    store = new bookmarks.TestStore({
+    store = new TestStore({
       nodes: testTree(
           createFolder(
               '1',
@@ -72,11 +83,11 @@ suite('<bookmarks-command-manager>', function() {
     });
     store.replaceSingleton();
 
-    commandManager = new TestCommandManager();
+    testCommandManager = new TestCommandManager();
+    commandManager = testCommandManager.getCommandManager();
     replaceBody(commandManager);
-    document.body.appendChild(
-        document.createElement('bookmarks-toast-manager'));
-    bookmarks.DialogFocusManager.instance_ = null;
+    document.body.appendChild(document.createElement('cr-toast-manager'));
+    DialogFocusManager.instance_ = null;
   });
 
   test('Copy URL is only active for single URL items', function() {
@@ -91,7 +102,7 @@ suite('<bookmarks-command-manager>', function() {
     store.notifyObservers();
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
-    Polymer.dom.flush();
+    flush();
 
     const commandHidden = {};
     commandManager.root.querySelectorAll('.dropdown-item').forEach(element => {
@@ -106,35 +117,35 @@ suite('<bookmarks-command-manager>', function() {
   });
 
   test('edit shortcut triggers when valid', function() {
-    const key = cr.isMac ? 'Enter' : 'F2';
+    const key = isMac ? 'Enter' : 'F2';
 
     store.data.selection.items = new Set(['13']);
     store.notifyObservers();
 
-    MockInteractions.pressAndReleaseKeyOn(document.body, '', [], key);
-    commandManager.assertLastCommand(Command.EDIT, ['13']);
+    pressAndReleaseKeyOn(document.body, '', [], key);
+    testCommandManager.assertLastCommand(Command.EDIT, ['13']);
 
     // Doesn't trigger when multiple items are selected.
     store.data.selection.items = new Set(['11', '13']);
     store.notifyObservers();
 
-    MockInteractions.pressAndReleaseKeyOn(document.body, '', [], key);
-    commandManager.assertLastCommand(null);
+    pressAndReleaseKeyOn(document.body, '', [], key);
+    testCommandManager.assertLastCommand(null);
 
     // Doesn't trigger when nothing is selected.
     store.data.selection.items = new Set();
     store.notifyObservers();
 
-    MockInteractions.pressAndReleaseKeyOn(document.body, '', [], key);
-    commandManager.assertLastCommand(null);
+    pressAndReleaseKeyOn(document.body, '', [], key);
+    testCommandManager.assertLastCommand(null);
   });
 
   test('delete command triggers', function() {
     store.data.selection.items = new Set(['12', '13']);
     store.notifyObservers();
 
-    MockInteractions.pressAndReleaseKeyOn(document.body, 46, '', 'Delete');
-    commandManager.assertLastCommand(Command.DELETE, ['12', '13']);
+    pressAndReleaseKeyOn(document.body, 46, '', 'Delete');
+    testCommandManager.assertLastCommand(Command.DELETE, ['12', '13']);
   });
 
   test('copy command triggers', function() {
@@ -142,7 +153,7 @@ suite('<bookmarks-command-manager>', function() {
     store.notifyObservers();
 
     document.dispatchEvent(new Event('copy'));
-    commandManager.assertLastCommand(Command.COPY, ['11', '13']);
+    testCommandManager.assertLastCommand(Command.COPY, ['11', '13']);
   });
 
   test('sublabels are shown', function() {
@@ -174,18 +185,44 @@ suite('<bookmarks-command-manager>', function() {
   });
 
   test('undo and redo commands trigger', function() {
-    const undoModifier = cr.isMac ? 'meta' : 'ctrl';
+    const undoModifier = isMac ? 'meta' : 'ctrl';
     const undoKey = 'z';
-    const redoModifier = cr.isMac ? ['meta', 'shift'] : 'ctrl';
-    const redoKey = cr.isMac ? 'Z' : 'y';
+    const redoModifier = isMac ? ['meta', 'shift'] : 'ctrl';
+    const redoKey = isMac ? 'Z' : 'y';
 
-    MockInteractions.pressAndReleaseKeyOn(
+    pressAndReleaseKeyOn(
         document.body, '', undoModifier, undoKey);
-    commandManager.assertLastCommand(Command.UNDO);
+    testCommandManager.assertLastCommand(Command.UNDO);
 
-    MockInteractions.pressAndReleaseKeyOn(
+    pressAndReleaseKeyOn(
         document.body, '', redoModifier, redoKey);
-    commandManager.assertLastCommand(Command.REDO);
+    testCommandManager.assertLastCommand(Command.REDO);
+  });
+
+  test('undo triggered when bookmarks-toolbar element has focus', function() {
+    const element = document.createElement('bookmarks-toolbar');
+    document.body.appendChild(element);
+    pressAndReleaseKeyOn(
+        element, '', isMac ? 'meta' : 'ctrl', 'z');
+    testCommandManager.assertLastCommand(Command.UNDO);
+  });
+
+  test('undo not triggered when most other elements have focus', function() {
+    const element = document.createElement('div');
+    document.body.appendChild(element);
+    pressAndReleaseKeyOn(
+        element, '', isMac ? 'meta' : 'ctrl', 'z');
+    testCommandManager.assertLastCommand(null);
+  });
+
+  test('undo not triggered when toolbar input has focus', function() {
+    const toolbar = document.createElement('bookmarks-toolbar');
+    const input = document.createElement('input');
+    toolbar.appendChild(input);
+    document.body.appendChild(toolbar);
+    pressAndReleaseKeyOn(
+        input, '', isMac ? 'meta' : 'ctrl', 'z');
+    testCommandManager.assertLastCommand(null);
   });
 
   test('Show In Folder is only available during search', function() {
@@ -193,7 +230,7 @@ suite('<bookmarks-command-manager>', function() {
     store.notifyObservers();
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
-    Polymer.dom.flush();
+    flush();
 
     const showInFolderItem = commandManager.root.querySelector(
         `[command='${Command.SHOW_IN_FOLDER}']`);
@@ -257,8 +294,8 @@ suite('<bookmarks-command-manager>', function() {
       lastCreate = createConfig;
     };
 
-    MockInteractions.pressAndReleaseKeyOn(document.body, 13, 'shift', 'Enter');
-    commandManager.assertLastCommand(Command.OPEN_NEW_WINDOW, ['12', '13']);
+    pressAndReleaseKeyOn(document.body, 13, 'shift', 'Enter');
+    testCommandManager.assertLastCommand(Command.OPEN_NEW_WINDOW, ['12', '13']);
     assertDeepEquals(['http://121/', 'http://13/'], lastCreate.url);
     assertFalse(lastCreate.incognito);
   });
@@ -269,8 +306,8 @@ suite('<bookmarks-command-manager>', function() {
     store.data.selection.items = new Set(['13']);
     store.notifyObservers();
 
-    MockInteractions.pressAndReleaseKeyOn(document.body, 13, 'shift', 'Enter');
-    commandManager.assertLastCommand(Command.OPEN_NEW_WINDOW);
+    pressAndReleaseKeyOn(document.body, 13, 'shift', 'Enter');
+    testCommandManager.assertLastCommand(Command.OPEN_NEW_WINDOW);
   });
 
   test('opening many items causes a confirmation dialog', function() {
@@ -290,7 +327,7 @@ suite('<bookmarks-command-manager>', function() {
     assertTrue(dialog.open);
 
     // Pressing 'cancel' should not open the window.
-    MockInteractions.tap(dialog.querySelector('.cancel-button'));
+    tap(dialog.querySelector('.cancel-button'));
     assertFalse(dialog.open);
     assertEquals(null, lastCreate);
 
@@ -298,7 +335,7 @@ suite('<bookmarks-command-manager>', function() {
     assertTrue(dialog.open);
 
     // Pressing 'yes' will open all the URLs.
-    MockInteractions.tap(dialog.querySelector('.action-button'));
+    tap(dialog.querySelector('.action-button'));
     assertFalse(dialog.open);
     assertEquals(20, lastCreate.url.length);
   });
@@ -310,7 +347,7 @@ suite('<bookmarks-command-manager>', function() {
     store.data.selection.items = items;
 
     commandManager.openCommandMenuAtPosition(0, 0, MenuSource.ITEM);
-    Polymer.dom.flush();
+    flush();
 
     const commandItem = {};
     commandManager.root.querySelectorAll('.dropdown-item').forEach(element => {
@@ -362,23 +399,23 @@ suite('<bookmarks-command-manager>', function() {
     commandManager.root.querySelectorAll('.dropdown-item').forEach(element => {
       commandItem[element.getAttribute('command')] = element;
     });
-    MockInteractions.tap(commandItem[Command.EDIT]);
-    commandManager.assertLastCommand(null);
+    tap(commandItem[Command.EDIT]);
+    testCommandManager.assertLastCommand(null);
   });
 
   test('keyboard shortcuts are disabled while a dialog is open', function() {
-    assertFalse(bookmarks.DialogFocusManager.getInstance().hasOpenDialog());
-    items = new Set(['12']);
+    assertFalse(DialogFocusManager.getInstance().hasOpenDialog());
+    let items = new Set(['12']);
     store.data.selection.items = items;
     store.notifyObservers();
 
-    const editKey = cr.isMac ? 'Enter' : 'F2';
-    MockInteractions.pressAndReleaseKeyOn(document.body, '', '', editKey);
-    commandManager.assertLastCommand(Command.EDIT);
-    assertTrue(bookmarks.DialogFocusManager.getInstance().hasOpenDialog());
+    const editKey = isMac ? 'Enter' : 'F2';
+    pressAndReleaseKeyOn(document.body, '', '', editKey);
+    testCommandManager.assertLastCommand(Command.EDIT);
+    assertTrue(DialogFocusManager.getInstance().hasOpenDialog());
 
-    MockInteractions.pressAndReleaseKeyOn(document.body, '', '', 'Delete');
-    commandManager.assertLastCommand(null);
+    pressAndReleaseKeyOn(document.body, '', '', 'Delete');
+    testCommandManager.assertLastCommand(null);
   });
 
   test('toolbar menu options are disabled when appropriate', function() {
@@ -429,7 +466,7 @@ suite('<bookmarks-command-manager>', function() {
       index: 0,
       url: 'https://www.example.com',
     };
-    store.dispatch(bookmarks.actions.createBookmark(item1.id, item1));
+    store.dispatch(createBookmark(item1.id, item1));
     assertFalse(commandManager.canExecute(Command.SORT, new Set()));
 
     const item2 = {
@@ -438,7 +475,7 @@ suite('<bookmarks-command-manager>', function() {
       index: 1,
       url: 'https://www.example.com',
     };
-    store.dispatch(bookmarks.actions.createBookmark(item2.id, item2));
+    store.dispatch(createBookmark(item2.id, item2));
     assertTrue(commandManager.canExecute(Command.SORT, new Set()));
   });
 });
@@ -449,9 +486,10 @@ suite('<bookmarks-item> CommandManager integration', function() {
   let commandManager;
   let openedTabs;
   let rootNode;
+  let store;
 
   setup(function() {
-    store = new bookmarks.TestStore({
+    store = new TestStore({
       nodes: testTree(createFolder(
           '1',
           [
@@ -478,7 +516,7 @@ suite('<bookmarks-item> CommandManager integration', function() {
     rootNode.itemId = '1';
     rootNode.depth = 0;
     document.body.appendChild(rootNode);
-    Polymer.dom.flush();
+    flush();
 
     items = list.root.querySelectorAll('bookmarks-item');
 
@@ -557,8 +595,8 @@ suite('<bookmarks-item> CommandManager integration', function() {
   });
 
   test('copy/cut/paste for folder nodes independent of selection', function() {
-    bmpCopyFunction = chrome.bookmarkManagerPrivate.copy;
-    bmpCutFunction = chrome.bookmarkManagerPrivate.cut;
+    let bmpCopyFunction = chrome.bookmarkManagerPrivate.copy;
+    let bmpCutFunction = chrome.bookmarkManagerPrivate.cut;
 
     let lastCut;
     let lastCopy;
@@ -569,30 +607,38 @@ suite('<bookmarks-item> CommandManager integration', function() {
       lastCut = idList.sort();
     };
 
-    const modifier = cr.isMac ? 'meta' : 'ctrl';
+    const modifier = isMac ? 'meta' : 'ctrl';
 
     store.data.selection.items = new Set(['12', '13']);
     store.notifyObservers();
     const targetNode = findFolderNode(rootNode, '11');
-    MockInteractions.pressAndReleaseKeyOn(targetNode, '', modifier, 'c');
+    pressAndReleaseKeyOn(targetNode, '', modifier, 'c');
     assertDeepEquals(['11'], lastCopy);
 
-    MockInteractions.pressAndReleaseKeyOn(targetNode, '', modifier, 'x');
+    pressAndReleaseKeyOn(targetNode, '', modifier, 'x');
     assertDeepEquals(['11'], lastCut);
 
     chrome.bookmarkManagerPrivate.copy = bmpCopyFunction;
     chrome.bookmarkManagerPrivate.cut = bmpCutFunction;
   });
 
-  test('context menu disappears immediately on right click', function() {
+  test('context menu disappears immediately on right click', async function() {
+    commandManager.updateForPaste_ = function() {
+      this.canPaste_ = true;
+      return Promise.resolve();
+    };
+
     customClick(items[0], {button: 1}, 'contextmenu');
     assertDeepEquals(['11'], normalizeIterable(store.data.selection.items));
-    let dropdown = commandManager.$.dropdown.getIfExists();
-    let dialog = dropdown.getDialog();
+
+    await flushTasks();
+
+    const dropdown = commandManager.$.dropdown.getIfExists();
+    const dialog = dropdown.getDialog();
     assertTrue(dropdown.open);
 
-    let x = dialog.offsetLeft + dialog.offsetWidth + 5;
-    let y = dialog.offsetHeight;
+    const x = dialog.offsetLeft + dialog.offsetWidth + 5;
+    const y = dialog.offsetHeight;
 
     // Ensure the dialog is the target even when clicking outside it, and send
     // a context menu event which should immediately dismiss the dialog,
@@ -634,22 +680,22 @@ suite('<bookmarks-command-manager> whole page integration', function() {
   });
 
   setup(async function() {
-    store = new bookmarks.TestStore({});
+    store = new TestStore({});
     store.replaceSingleton();
     store.setReducersEnabled(true);
     const promise = store.acceptInitOnce();
     const app = document.createElement('bookmarks-app');
     replaceBody(app);
 
-    commandManager = bookmarks.CommandManager.getInstance();
+    commandManager = CommandManager.getInstance();
 
     await promise;
 
-    store.dispatch(bookmarks.actions.selectFolder(testFolderId));
+    store.dispatch(selectFolder(testFolderId));
   });
 
   test('paste selects newly created items', async function() {
-    const displayedIdsBefore = bookmarks.util.getDisplayedList(store.data);
+    const displayedIdsBefore = getDisplayedList(store.data);
     commandManager.handle(Command.SELECT_ALL, new Set());
     commandManager.handle(Command.COPY, new Set(displayedIdsBefore));
 
@@ -658,7 +704,7 @@ suite('<bookmarks-command-manager> whole page integration', function() {
 
     const action = await store.waitForAction('select-items');
 
-    const displayedIdsAfter = bookmarks.util.getDisplayedList(store.data);
+    const displayedIdsAfter = getDisplayedList(store.data);
     assertEquals(4, displayedIdsAfter.length);
 
     // The start of the list shouldn't change.

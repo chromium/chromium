@@ -31,8 +31,8 @@
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -80,7 +80,7 @@ void HRTFDatabaseLoader::LoadTask() {
   // thread.
   MutexLocker locker(lock_);
   // Load the default HRTF database.
-  hrtf_database_ = HRTFDatabase::Create(database_sample_rate_);
+  hrtf_database_ = std::make_unique<HRTFDatabase>(database_sample_rate_);
 }
 
 void HRTFDatabaseLoader::LoadAsynchronously() {
@@ -95,11 +95,11 @@ void HRTFDatabaseLoader::LoadAsynchronously() {
 
   // Start the asynchronous database loading process.
   thread_ = Platform::Current()->CreateThread(
-      ThreadCreationParams(WebThreadType::kHRTFDatabaseLoaderThread));
+      ThreadCreationParams(ThreadType::kHRTFDatabaseLoaderThread));
   // TODO(alexclarke): Should this be posted as a loading task?
   PostCrossThreadTask(*thread_->GetTaskRunner(), FROM_HERE,
-                      CrossThreadBind(&HRTFDatabaseLoader::LoadTask,
-                                      CrossThreadUnretained(this)));
+                      CrossThreadBindOnce(&HRTFDatabaseLoader::LoadTask,
+                                          CrossThreadUnretained(this)));
 }
 
 HRTFDatabase* HRTFDatabaseLoader::Database() {
@@ -128,9 +128,9 @@ void HRTFDatabaseLoader::WaitForLoaderThreadCompletion() {
   base::WaitableEvent sync;
   // TODO(alexclarke): Should this be posted as a loading task?
   PostCrossThreadTask(*thread_->GetTaskRunner(), FROM_HERE,
-                      CrossThreadBind(&HRTFDatabaseLoader::CleanupTask,
-                                      CrossThreadUnretained(this),
-                                      CrossThreadUnretained(&sync)));
+                      CrossThreadBindOnce(&HRTFDatabaseLoader::CleanupTask,
+                                          CrossThreadUnretained(this),
+                                          CrossThreadUnretained(&sync)));
   sync.Wait();
   thread_.reset();
 }

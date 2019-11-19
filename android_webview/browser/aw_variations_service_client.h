@@ -30,8 +30,8 @@ class AwVariationsServiceClient : public variations::VariationsServiceClient {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   version_info::Channel GetChannel() override;
-  bool GetSupportsPermanentConsistency() override;
   bool OverridesRestrictParameter(std::string* parameter) override;
+  bool IsEnterprise() override;
 
   DISALLOW_COPY_AND_ASSIGN(AwVariationsServiceClient);
 };

@@ -6,7 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "components/grit/components_resources.h"
-#import "ios/web/public/test/fakes/crw_test_js_injection_receiver.h"
+#import "ios/web/public/deprecated/crw_test_js_injection_receiver.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -21,11 +21,10 @@ class JsTranslateManagerTest : public PlatformTest {
   JsTranslateManagerTest() {
     receiver_ = [[CRWTestJSInjectionReceiver alloc] init];
     manager_ = [[JsTranslateManager alloc] initWithReceiver:receiver_];
-    base::StringPiece script =
-        ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+    std::string script =
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_TRANSLATE_JS);
-    [manager_ setScript:base::SysUTF8ToNSString(script.as_string() +
-                                                "('DummyKey');")];
+    [manager_ setScript:base::SysUTF8ToNSString(script + "('DummyKey');")];
   }
 
   bool IsDefined(NSString* name) {

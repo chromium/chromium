@@ -38,10 +38,13 @@
 #include <google/protobuf/util/internal/structured_objectwriter.h>
 #include <google/protobuf/stubs/bytestream.h>
 
+#include <google/protobuf/port_def.inc>
+
 namespace google {
 namespace protobuf {
 namespace util {
 namespace converter {
+
 
 // An ObjectWriter implementation that outputs JSON. This ObjectWriter
 // supports writing a compact form or a pretty printed form.
@@ -82,32 +85,32 @@ namespace converter {
 // uint64 would lose precision if rendered as numbers.
 //
 // JsonObjectWriter is thread-unsafe.
-class LIBPROTOBUF_EXPORT JsonObjectWriter : public StructuredObjectWriter {
+class PROTOBUF_EXPORT JsonObjectWriter : public StructuredObjectWriter {
  public:
-  JsonObjectWriter(StringPiece indent_string,
-                   google::protobuf::io::CodedOutputStream* out)
+  JsonObjectWriter(StringPiece indent_string, io::CodedOutputStream* out)
       : element_(new Element(/*parent=*/nullptr, /*is_json_object=*/false)),
         stream_(out),
         sink_(out),
-        indent_string_(indent_string.ToString()),
+        indent_string_(indent_string),
         use_websafe_base64_for_bytes_(false) {}
   virtual ~JsonObjectWriter();
 
   // ObjectWriter methods.
-  virtual JsonObjectWriter* StartObject(StringPiece name);
-  virtual JsonObjectWriter* EndObject();
-  virtual JsonObjectWriter* StartList(StringPiece name);
-  virtual JsonObjectWriter* EndList();
-  virtual JsonObjectWriter* RenderBool(StringPiece name, bool value);
-  virtual JsonObjectWriter* RenderInt32(StringPiece name, int32 value);
-  virtual JsonObjectWriter* RenderUint32(StringPiece name, uint32 value);
-  virtual JsonObjectWriter* RenderInt64(StringPiece name, int64 value);
-  virtual JsonObjectWriter* RenderUint64(StringPiece name, uint64 value);
-  virtual JsonObjectWriter* RenderDouble(StringPiece name, double value);
-  virtual JsonObjectWriter* RenderFloat(StringPiece name, float value);
-  virtual JsonObjectWriter* RenderString(StringPiece name, StringPiece value);
-  virtual JsonObjectWriter* RenderBytes(StringPiece name, StringPiece value);
-  virtual JsonObjectWriter* RenderNull(StringPiece name);
+  virtual JsonObjectWriter* StartObject(StringPiece name) override;
+  virtual JsonObjectWriter* EndObject() override;
+  virtual JsonObjectWriter* StartList(StringPiece name) override;
+  virtual JsonObjectWriter* EndList() override;
+  virtual JsonObjectWriter* RenderBool(StringPiece name, bool value) override;
+  virtual JsonObjectWriter* RenderInt32(StringPiece name, int32 value) override;
+  virtual JsonObjectWriter* RenderUint32(StringPiece name, uint32 value) override;
+  virtual JsonObjectWriter* RenderInt64(StringPiece name, int64 value) override;
+  virtual JsonObjectWriter* RenderUint64(StringPiece name, uint64 value) override;
+  virtual JsonObjectWriter* RenderDouble(StringPiece name, double value) override;
+  virtual JsonObjectWriter* RenderFloat(StringPiece name, float value) override;
+  virtual JsonObjectWriter* RenderString(StringPiece name,
+                                         StringPiece value) override;
+  virtual JsonObjectWriter* RenderBytes(StringPiece name, StringPiece value) override;
+  virtual JsonObjectWriter* RenderNull(StringPiece name) override;
   virtual JsonObjectWriter* RenderNullAsEmpty(StringPiece name);
 
   void set_use_websafe_base64_for_bytes(bool value) {
@@ -115,7 +118,7 @@ class LIBPROTOBUF_EXPORT JsonObjectWriter : public StructuredObjectWriter {
   }
 
  protected:
-  class LIBPROTOBUF_EXPORT Element : public BaseElement {
+  class PROTOBUF_EXPORT Element : public BaseElement {
    public:
     Element(Element* parent, bool is_json_object)
         : BaseElement(parent),
@@ -143,22 +146,21 @@ class LIBPROTOBUF_EXPORT JsonObjectWriter : public StructuredObjectWriter {
     GOOGLE_DISALLOW_IMPLICIT_CONSTRUCTORS(Element);
   };
 
-  virtual Element* element() { return element_.get(); }
+  Element* element() override { return element_.get(); }
 
  private:
-  class LIBPROTOBUF_EXPORT ByteSinkWrapper : public strings::ByteSink {
+  class PROTOBUF_EXPORT ByteSinkWrapper : public strings::ByteSink {
    public:
-    explicit ByteSinkWrapper(google::protobuf::io::CodedOutputStream* stream)
-        : stream_(stream) {}
-    virtual ~ByteSinkWrapper() {}
+    explicit ByteSinkWrapper(io::CodedOutputStream* stream) : stream_(stream) {}
+    ~ByteSinkWrapper() override {}
 
     // ByteSink methods.
-    virtual void Append(const char* bytes, size_t n) {
+    void Append(const char* bytes, size_t n) override {
       stream_->WriteRaw(bytes, n);
     }
 
    private:
-    google::protobuf::io::CodedOutputStream* stream_;
+    io::CodedOutputStream* stream_;
 
     GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(ByteSinkWrapper);
   };
@@ -166,7 +168,8 @@ class LIBPROTOBUF_EXPORT JsonObjectWriter : public StructuredObjectWriter {
   // Renders a simple value as a string. By default all non-string Render
   // methods convert their argument to a string and call this method. This
   // method can then be used to render the simple value without escaping it.
-  JsonObjectWriter* RenderSimple(StringPiece name, const string& value) {
+  JsonObjectWriter* RenderSimple(StringPiece name,
+                                 const std::string& value) {
     WritePrefix(name);
     stream_->WriteString(value);
     return this;
@@ -209,9 +212,9 @@ class LIBPROTOBUF_EXPORT JsonObjectWriter : public StructuredObjectWriter {
   void WriteChar(const char c) { stream_->WriteRaw(&c, sizeof(c)); }
 
   std::unique_ptr<Element> element_;
-  google::protobuf::io::CodedOutputStream* stream_;
+  io::CodedOutputStream* stream_;
   ByteSinkWrapper sink_;
-  const string indent_string_;
+  const std::string indent_string_;
 
   // Whether to use regular or websafe base64 encoding for byte fields. Defaults
   // to regular base64 encoding.
@@ -223,6 +226,8 @@ class LIBPROTOBUF_EXPORT JsonObjectWriter : public StructuredObjectWriter {
 }  // namespace converter
 }  // namespace util
 }  // namespace protobuf
-
 }  // namespace google
+
+#include <google/protobuf/port_undef.inc>
+
 #endif  // GOOGLE_PROTOBUF_UTIL_CONVERTER_JSON_OBJECTWRITER_H__

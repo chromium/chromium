@@ -23,8 +23,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ASCII_FAST_PATH_H_
 
 #include <stdint.h>
+
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/wtf/cpu.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
@@ -148,7 +149,7 @@ inline void CopyLCharsFromUCharSource(LChar* destination,
     DCHECK(!(source[i] & 0xff00));
     destination[i] = static_cast<LChar>(source[i]);
   }
-#elif defined(COMPILER_GCC) && WTF_CPU_ARM_NEON && \
+#elif defined(COMPILER_GCC) && defined(CPU_ARM_NEON) && \
     !defined(ARCH_CPU_BIG_ENDIAN) && defined(NDEBUG)
   const LChar* const end = destination + length;
   const uintptr_t kMemoryAccessSize = 8;

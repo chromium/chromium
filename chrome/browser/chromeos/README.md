@@ -16,6 +16,5 @@ Example:
 
 * The notification controller for network portal detection lives in:
   `chrome/browser/ui/ash/network/network_portal_notification_controller.cc`
-  (which depends on *chrome/browser/ui*,
-  *ash/public/cpp/vector_icons/vector_icons.h*, and
+  (which depends on *chrome/browser/ui*, and
   *chrome/browser/chromeos/net/network_portal_detector_impl.h*.

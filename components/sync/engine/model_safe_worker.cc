@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 
 namespace syncer {
@@ -52,12 +53,6 @@ std::string ModelSafeGroupToString(ModelSafeGroup group) {
   switch (group) {
     case GROUP_UI:
       return "Group UI";
-    case GROUP_DB:
-      return "Group DB";
-    case GROUP_FILE:
-      return "Group File";
-    case GROUP_HISTORY:
-      return "Group History";
     case GROUP_PASSIVE:
       return "Group Passive";
     case GROUP_PASSWORD:
@@ -121,7 +116,10 @@ SyncerError ModelSafeWorker::DoWorkAndWaitUntilDone(WorkCallback work) {
 
   // Unblocked when the task runs or is deleted or when RequestStop() is called
   // before the task starts running.
-  work_done_or_abandoned_.Wait();
+  {
+    base::ScopedAllowBaseSyncPrimitives allow_wait;
+    work_done_or_abandoned_.Wait();
+  }
 
   return did_run ? error : SyncerError(SyncerError::CANNOT_DO_WORK);
 }

@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.gcore;
 
 import android.text.format.DateUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.RemovableInRelease;
 
 /**
@@ -52,7 +53,7 @@ public abstract class ConnectedTask<T extends ChromeGoogleApiClient> implements 
 
     /**
      * @param client
-     * @param logPrefix used for logging and tracing.
+     * @param logPrefix used for logging and tracing. Must be string literal.
      */
     public ConnectedTask(T client, String logPrefix) {
         assert logPrefix != null;
@@ -73,8 +74,7 @@ public abstract class ConnectedTask<T extends ChromeGoogleApiClient> implements 
     protected abstract void doWhenConnected(T client);
 
     /**
-     * Returns a name of a task. Implementations should not have side effects
-     * as we want to have the logging related calls removed.
+     * Returns a name of a task (for debug logging).
      */
     @RemovableInRelease
     protected abstract String getName();
@@ -93,39 +93,43 @@ public abstract class ConnectedTask<T extends ChromeGoogleApiClient> implements 
      */
     protected void connectionFailed() {}
 
+    private void debugLog(String message) {
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "%s:%s %s", mLogPrefix, getName(), message);
+        }
+    }
+
     @Override
     @VisibleForTesting
+    // We always only pass in a string literal here.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public final void run() {
         TraceEvent.begin("GCore:" + mLogPrefix + ":run");
         try {
-            Log.d(TAG, "%s:%s started", mLogPrefix, getName());
+            debugLog("started");
             if (mClient.connectWithTimeout(CONNECTION_TIMEOUT_MS)) {
                 try {
-                    Log.d(TAG, "%s:%s connected", mLogPrefix, getName());
+                    debugLog("connected");
                     doWhenConnected(mClient);
-                    Log.d(TAG, "%s:%s finished", mLogPrefix, getName());
+                    debugLog("finished");
                 } finally {
                     mClient.disconnect();
-                    Log.d(TAG, "%s:%s disconnected", mLogPrefix, getName());
+                    debugLog("disconnected");
                     cleanUp();
-                    Log.d(TAG, "%s:%s cleaned up", mLogPrefix, getName());
+                    debugLog("cleaned up");
                 }
             } else {
                 mRetryNumber++;
                 if (mRetryNumber < RETRY_NUMBER_LIMIT && mClient.isGooglePlayServicesAvailable()) {
-                    Log.d(TAG, "%s:%s calling retry", mLogPrefix, getName());
+                    debugLog("calling retry");
                     retry(this, CONNECTION_RETRY_TIME_MS);
                 } else {
                     connectionFailed();
-                    Log.d(TAG, "%s:%s number of retries exceeded", mLogPrefix, getName());
+                    debugLog("number of retries exceeded");
                     cleanUp();
-                    Log.d(TAG, "%s:%s cleaned up", mLogPrefix, getName());
+                    debugLog("cleaned up");
                 }
             }
-        } catch (RuntimeException e) {
-            Log.e(TAG, "%s:%s runtime exception %s: %s", mLogPrefix, getName(),
-                    e.getClass().getName(), e.getMessage());
-            throw e;
         } finally {
             TraceEvent.end("GCore:" + mLogPrefix + ":run");
         }

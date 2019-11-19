@@ -7,4 +7,14 @@ import("//build/config/android/rules.gni")
 android_apk("webview_log_verbosifier_apk") {
   apk_name = "WebViewLogVerbosifier"
   android_manifest = "AndroidManifest.xml"
+  deps = [
+    ":webview_log_verbosifier_resources",
+  ]
+  min_sdk_version = 21
+  target_sdk_version = 28
+}
+
+android_resources("webview_log_verbosifier_resources") {
+  resource_dirs = [ "res" ]
+  custom_package = "org.chromium.webview_log_verbosifier"
 }

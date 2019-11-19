@@ -29,9 +29,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_H_
 
-#include "base/debug/stack_trace.h"
 #include "base/optional.h"
 #include "base/unguessable_token.h"
+#include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
 #include "third_party/blink/public/common/frame/user_activation_update_source.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
@@ -56,7 +56,6 @@ class Document;
 class FrameClient;
 class FrameOwner;
 class HTMLFrameOwnerElement;
-class KURL;
 class LayoutEmbeddedContent;
 class LocalFrame;
 class Page;
@@ -65,6 +64,7 @@ class Settings;
 class WindowProxy;
 class WindowProxyManager;
 struct FrameLoadRequest;
+class WindowAgentFactory;
 
 enum class FrameDetachType { kRemove, kSwap };
 
@@ -74,7 +74,7 @@ enum class UserGestureStatus { kActive, kNone };
 // Frame is the base class of LocalFrame and RemoteFrame and should only contain
 // functionality shared between both. In particular, any method related to
 // input, layout, or painting probably belongs on LocalFrame.
-class CORE_EXPORT Frame : public GarbageCollectedFinalized<Frame> {
+class CORE_EXPORT Frame : public GarbageCollected<Frame> {
  public:
   virtual ~Frame();
 
@@ -83,30 +83,13 @@ class CORE_EXPORT Frame : public GarbageCollectedFinalized<Frame> {
   virtual bool IsLocalFrame() const = 0;
   virtual bool IsRemoteFrame() const = 0;
 
-  // Asynchronously schedules a task to begin a navigation: this roughly
-  // corresponds to "queue a task to navigate the target browsing context to
-  // resource" in https://whatwg.org/C/links.html#following-hyperlinks.
-  //
-  // Note that there's currently an exception for same-origin same-document
-  // navigations: these are never scheduled and are always synchronously
-  // processed.
-  //
-  // TODO(dcheng): Note that despite the comment, most navigations in the spec
-  // are *not* currently queued. See https://github.com/whatwg/html/issues/3730.
-  // How this discussion is resolved will affect how https://crbug.com/848171 is
-  // eventually fixed.
-  virtual void ScheduleNavigation(Document& origin_document,
-                                  const KURL&,
-                                  WebFrameLoadType,
-                                  UserGestureStatus) = 0;
-  // Synchronously begins a navigation.
   virtual void Navigate(const FrameLoadRequest&, WebFrameLoadType) = 0;
 
   void Detach(FrameDetachType);
   void DisconnectOwnerElement();
   virtual bool ShouldClose() = 0;
-  virtual void DidFreeze() = 0;
-  virtual void DidResume() = 0;
+  virtual void HookBackForwardCacheEviction() = 0;
+  virtual void RemoveBackForwardCacheEviction() = 0;
 
   FrameClient* Client() const;
 
@@ -120,6 +103,14 @@ class CORE_EXPORT Frame : public GarbageCollectedFinalized<Frame> {
   // LocalFrame::IsLocalRoot() is more appropriate. If you are unsure, please
   // reach out to site-isolation-dev@chromium.org.
   bool IsMainFrame() const;
+
+  // Note that the result of this function should not be cached: a frame is
+  // not necessarily detached when it is navigated, so the return value can
+  // change.
+  // In addition, this function will always return true for a detached frame.
+  // TODO(dcheng): Move this to LocalDOMWindow and figure out the right
+  // behavior for detached windows.
+  bool IsCrossOriginSubframe() const;
 
   FrameOwner* Owner() const;
   void SetOwner(FrameOwner*);
@@ -138,7 +129,7 @@ class CORE_EXPORT Frame : public GarbageCollectedFinalized<Frame> {
   // dispatch unload events, abort XHR requests and detach the document.
   // Returns true if the frame is ready to receive the next commit, or false
   // otherwise.
-  virtual bool PrepareForCommit() = 0;
+  virtual bool DetachDocument() = 0;
 
   // LayoutObject for the element that contains this frame.
   LayoutEmbeddedContent* OwnerLayoutObject() const;
@@ -178,6 +169,9 @@ class CORE_EXPORT Frame : public GarbageCollectedFinalized<Frame> {
 
   void ClearActivation() { user_activation_state_.Clear(); }
 
+  // Transfers user activation state from |other| frame into |this|.
+  void TransferUserActivationFrom(Frame* other);
+
   void SetDocumentHasReceivedUserGestureBeforeNavigation(bool value) {
     has_received_user_gesture_before_nav_ = value;
   }
@@ -211,22 +205,56 @@ class CORE_EXPORT Frame : public GarbageCollectedFinalized<Frame> {
   const base::UnguessableToken& GetDevToolsFrameToken() const {
     return devtools_frame_token_;
   }
-  const CString& ToTraceValue();
-
-  // TODO(dcheng): temporary for debugging https://crbug.com/838348.
-  const base::debug::StackTrace& CreateStackForDebugging() {
-    return create_stack_;
-  }
-  const base::debug::StackTrace& DetachStackForDebugging() {
-    return detach_stack_;
-  }
+  const std::string& ToTraceValue();
 
   NavigationRateLimiter& navigation_rate_limiter() {
     return navigation_rate_limiter_;
   }
 
+  // Called to get the opener's FeatureState if any. This works with disowned
+  // openers, i.e., even if WebFrame::Opener() is nullptr, there could be a
+  // non-empty feature state which is taken from the the original opener of the
+  // frame. This is similar to how sandbox flags are propagated to the opened
+  // new browsing contexts.
+  const FeaturePolicy::FeatureState& OpenerFeatureState() const {
+    return opener_feature_state_;
+  }
+
+  // Sets the opener's FeatureState for the main frame. Once a non-empty
+  // |opener_feature_state| is set, it can no longer be modified (due to the
+  // fact that the original opener which passed down the FeatureState cannot be
+  // modified either).
+  void SetOpenerFeatureState(const FeaturePolicy::FeatureState& state) {
+    DCHECK(state.empty() || IsMainFrame());
+    DCHECK(opener_feature_state_.empty());
+    opener_feature_state_ = state;
+  }
+
+  WindowAgentFactory& window_agent_factory() const {
+    return *window_agent_factory_;
+  }
+
+  bool GetVisibleToHitTesting() const { return visible_to_hit_testing_; }
+  void UpdateVisibleToHitTesting();
+
+  // Called when the focus controller changes the focus to this frame.
+  virtual void DidFocus() = 0;
+
  protected:
-  Frame(FrameClient*, Page&, FrameOwner*, WindowProxyManager*);
+  // |inheriting_agent_factory| should basically be set to the parent frame or
+  // opener's WindowAgentFactory. Pass nullptr if the frame is isolated from
+  // other frames (i.e. if it and its child frames shall never be script
+  // accessible from other frames), and a new WindowAgentFactory will be
+  // created.
+  Frame(FrameClient*,
+        Page&,
+        FrameOwner*,
+        WindowProxyManager*,
+        WindowAgentFactory* inheriting_agent_factory);
+
+  // Perform initialization that must happen after the constructor has run so
+  // that vtables are initialized.
+  void Initialize();
 
   // DetachImpl() may be re-entered multiple times, if a frame is detached while
   // already being detached.
@@ -238,14 +266,16 @@ class CORE_EXPORT Frame : public GarbageCollectedFinalized<Frame> {
     return lifecycle_.GetState() == FrameLifecycle::kDetached;
   }
 
+  virtual void DidChangeVisibleToHitTesting() = 0;
+
   mutable FrameTree tree_node_;
 
   Member<Page> page_;
   Member<FrameOwner> owner_;
   Member<DOMWindow> dom_window_;
 
-  // The user activation state of the current frame.  See
-  // FrameTreeNode::user_activation_state_ for details.
+  // The user activation state of the current frame.  See |UserActivationState|
+  // for details on how this state is maintained.
   UserActivationState user_activation_state_;
 
   bool has_received_user_gesture_before_nav_ = false;
@@ -257,6 +287,8 @@ class CORE_EXPORT Frame : public GarbageCollectedFinalized<Frame> {
 
   TouchAction inherited_effective_touch_action_ = TouchAction::kTouchActionAuto;
 
+  bool visible_to_hit_testing_ = true;
+
  private:
   Member<FrameClient> client_;
   const Member<WindowProxyManager> window_proxy_manager_;
@@ -264,13 +296,16 @@ class CORE_EXPORT Frame : public GarbageCollectedFinalized<Frame> {
 
   NavigationRateLimiter navigation_rate_limiter_;
 
+  // Feature policy state inherited from an opener. It is always empty for child
+  // frames.
+  FeaturePolicy::FeatureState opener_feature_state_;
+
+  Member<WindowAgentFactory> window_agent_factory_;
+
   // TODO(sashab): Investigate if this can be represented with m_lifecycle.
   bool is_loading_;
   base::UnguessableToken devtools_frame_token_;
-  base::Optional<CString> trace_value_;
-
-  base::debug::StackTrace create_stack_;
-  base::debug::StackTrace detach_stack_;
+  base::Optional<std::string> trace_value_;
 };
 
 inline FrameClient* Frame::Client() const {
@@ -293,8 +328,8 @@ DEFINE_COMPARISON_OPERATORS_WITH_REFERENCES(Frame)
 // in a TRACE_EVENT_XXX macro. Example:
 //
 // TRACE_EVENT1("category", "event_name", "frame", ToTraceValue(GetFrame()));
-static inline CString ToTraceValue(Frame* frame) {
-  return frame ? frame->ToTraceValue() : CString();
+static inline std::string ToTraceValue(Frame* frame) {
+  return frame ? frame->ToTraceValue() : std::string();
 }
 
 }  // namespace blink

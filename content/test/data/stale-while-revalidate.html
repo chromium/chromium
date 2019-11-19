@@ -1,0 +1,24 @@
+<script>
+function wait25ms() {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve();
+    }, 25);
+  });
+}
+
+// runTest() will be called by the browser test.
+async function runTest() {
+  const url = 'stale-script.js';
+  const response = await fetch(url).then(r => r.text());
+  const response2 = await fetch(url).then(r => r.text());
+  while(true) {
+    const revalidation_check = await fetch('stale-script.js');
+    if (performance.getEntriesByName(new URL(url, document.location)).length == 2) {
+      document.title = "Pass";
+      break;
+    }
+    await wait25ms();
+  }
+}
+</script>

@@ -7,5 +7,8 @@ See the
 
 ## Adding hardware
 
-This documentation is under construction. In the meantime, please reach out to
-benchmarking-dev@chromium.org.
+Googlers can see specs for our current devices at
+[go/chrome-speed-devices](http://go/chrome-speed-devices).
+
+If you need other hardware not listed there, please reach out to
+benchmarking-dev@google.com or crouleau@chromium.org.

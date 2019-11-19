@@ -7,7 +7,7 @@ module blink.mojom;
 // Represents ServiceWorkerState from the Service Workers spec:
 // https://w3c.github.io/ServiceWorker/#enumdef-serviceworkerstate
 enum ServiceWorkerState {
-  kUnknown,
+  kParsed,
   kInstalling,
   kInstalled,
   kActivating,

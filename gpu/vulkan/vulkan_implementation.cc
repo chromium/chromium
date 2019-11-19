@@ -11,7 +11,12 @@
 
 namespace gpu {
 
-VulkanImplementation::VulkanImplementation() {}
+VulkanImplementation::VulkanImplementation(bool use_swiftshader,
+                                           bool allow_protected_memory,
+                                           bool enforce_protected_memory)
+    : use_swiftshader_(use_swiftshader),
+      allow_protected_memory_(allow_protected_memory),
+      enforce_protected_memory_(enforce_protected_memory) {}
 
 VulkanImplementation::~VulkanImplementation() {}
 
@@ -19,49 +24,22 @@ std::unique_ptr<VulkanDeviceQueue> CreateVulkanDeviceQueue(
     VulkanImplementation* vulkan_implementation,
     uint32_t option) {
   auto device_queue = std::make_unique<VulkanDeviceQueue>(
-      vulkan_implementation->GetVulkanInstance()->vk_instance());
+      vulkan_implementation->GetVulkanInstance()->vk_instance(),
+      vulkan_implementation->enforce_protected_memory());
   auto callback = base::BindRepeating(
       &VulkanImplementation::GetPhysicalDevicePresentationSupport,
       base::Unretained(vulkan_implementation));
   std::vector<const char*> required_extensions =
       vulkan_implementation->GetRequiredDeviceExtensions();
-  if (!device_queue->Initialize(option, std::move(required_extensions),
-                                callback)) {
+  if (!device_queue->Initialize(
+          option, vulkan_implementation->GetVulkanInstance()->vulkan_info(),
+          std::move(required_extensions),
+          vulkan_implementation->allow_protected_memory(), callback)) {
     device_queue->Destroy();
     return nullptr;
   }
 
   return device_queue;
-}
-
-bool VulkanImplementation::SubmitSignalSemaphore(VkQueue vk_queue,
-                                                 VkSemaphore vk_semaphore,
-                                                 VkFence vk_fence) {
-  // Structure specifying a queue submit operation.
-  VkSubmitInfo submit_info = {VK_STRUCTURE_TYPE_SUBMIT_INFO};
-  submit_info.signalSemaphoreCount = 1;
-  submit_info.pSignalSemaphores = &vk_semaphore;
-  const unsigned int submit_count = 1;
-  if (vkQueueSubmit(vk_queue, submit_count, &submit_info, vk_fence) !=
-      VK_SUCCESS) {
-    return false;
-  }
-  return true;
-}
-
-bool VulkanImplementation::SubmitWaitSemaphore(VkQueue vk_queue,
-                                               VkSemaphore vk_semaphore,
-                                               VkFence vk_fence) {
-  // Structure specifying a queue submit operation.
-  VkSubmitInfo submit_info = {VK_STRUCTURE_TYPE_SUBMIT_INFO};
-  submit_info.waitSemaphoreCount = 1;
-  submit_info.pWaitSemaphores = &vk_semaphore;
-  const unsigned int submit_count = 1;
-  if (vkQueueSubmit(vk_queue, submit_count, &submit_info, vk_fence) !=
-      VK_SUCCESS) {
-    return false;
-  }
-  return true;
 }
 
 }  // namespace gpu

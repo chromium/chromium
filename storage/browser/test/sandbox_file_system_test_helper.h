@@ -11,11 +11,11 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "storage/browser/fileapi/file_system_url.h"
-#include "storage/browser/fileapi/file_system_usage_cache.h"
-#include "storage/browser/fileapi/task_runner_bound_observer_list.h"
-#include "storage/common/fileapi/file_system_types.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/file_system/file_system_usage_cache.h"
+#include "storage/browser/file_system/task_runner_bound_observer_list.h"
+#include "storage/common/file_system/file_system_types.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 
@@ -32,6 +32,7 @@ class FileSystemContext;
 class FileSystemFileUtil;
 class FileSystemOperationContext;
 class FileSystemOperationRunner;
+class ObfuscatedFileUtilDelegate;
 }
 
 namespace content {
@@ -92,6 +93,8 @@ class SandboxFileSystemTestHelper {
   }
   storage::FileSystemFileUtil* file_util() const { return file_util_; }
   storage::FileSystemUsageCache* usage_cache();
+
+  storage::ObfuscatedFileUtilDelegate* file_util_delegate();
 
  private:
   void SetUpFileSystem();

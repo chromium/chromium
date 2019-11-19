@@ -4,8 +4,6 @@
 
 package org.chromium.android_webview.test;
 
-import static org.junit.Assert.assertNotEquals;
-
 import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
 
 import android.support.test.InstrumentationRegistry;
@@ -22,13 +20,13 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.android_webview.test.util.JavascriptEventObserver;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 
 import java.util.concurrent.TimeoutException;
@@ -63,7 +61,7 @@ public class AwContentsClientFullScreenTest {
     private AwTestContainerView mTestContainerView;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContentsClient = new FullScreenVideoTestAwContentsClient(
                 mActivityTestRule.getActivity(), mActivityTestRule.isHardwareAcceleratedTest());
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -198,7 +196,7 @@ public class AwContentsClientFullScreenTest {
         doOnShowCustomViewTest(videoTestUrl);
         Assert.assertTrue(DOMUtils.isMediaPaused(getWebContentsOnUiThread(), VIDEO_ID));
 
-        tapPlayButton();
+        playVideo();
         DOMUtils.waitForMediaPlay(getWebContentsOnUiThread(), VIDEO_ID);
     }
 
@@ -252,7 +250,7 @@ public class AwContentsClientFullScreenTest {
         assertKeepScreenOnActive(customView, false);
 
         // Play and verify that there is an active power save blocker.
-        tapPlayButton();
+        playVideo();
         assertWaitForKeepScreenOnActive(customView, true);
 
         // Stop the video and verify that the power save blocker is gone.
@@ -271,7 +269,7 @@ public class AwContentsClientFullScreenTest {
         assertKeepScreenOnActive(mTestContainerView, false);
 
         // Play and verify that there is an active power save blocker.
-        tapPlayButton();
+        playVideoOnEmbedderView();
         assertWaitForKeepScreenOnActive(mTestContainerView, true);
 
         // Stop the video and verify that the power save blocker is gone.
@@ -287,7 +285,7 @@ public class AwContentsClientFullScreenTest {
         loadTestPage(VIDEO_INSIDE_DIV_TEST_URL);
 
         // Play and verify that there is an active power save blocker.
-        tapPlayButton();
+        playVideoOnEmbedderView();
         assertWaitForKeepScreenOnActive(mTestContainerView, true);
 
         // Enter fullscreen and verify that the power save blocker is
@@ -317,7 +315,7 @@ public class AwContentsClientFullScreenTest {
 
         // Play and verify that there is an active power save blocker
         // in fullscreen.
-        tapPlayButton();
+        playVideoOnEmbedderView();
         assertWaitForKeepScreenOnActive(customView, true);
 
         // Exit fullscreen and verify that the power save blocker is
@@ -327,21 +325,57 @@ public class AwContentsClientFullScreenTest {
         assertKeepScreenOnActive(customView, true);
     }
 
-    private void tapPlayButton() throws Exception {
+    private boolean shouldPlayOnFullScreenView() throws Exception {
         String testUrl = mTestContainerView.getAwContents().getUrl();
-        if (VIDEO_TEST_URL.equals(testUrl)
-                && DOMUtils.isFullscreen(getWebContentsOnUiThread())) {
-            // The VIDEO_TEST_URL page goes fullscreen on the <video> element. In fullscreen
-            // the button with id CUSTOM_PLAY_CONTROL_ID will not be visible, but the standard
-            // html5 video controls are. The standard html5 controls are shadow html elements
-            // without any ids so it is difficult to retrieve its precise location. However,
-            // a large play control is rendered in the center of the custom view
-            // (containing the fullscreen <video>) so we just rely on that fact here.
-            TouchCommon.singleClickView(mContentsClient.getCustomView());
+        return VIDEO_TEST_URL.equals(testUrl) && DOMUtils.isFullscreen(getWebContentsOnUiThread());
+    }
+
+    private void playVideo() throws Exception {
+        if (shouldPlayOnFullScreenView()) {
+            playVideoOnFullScreenView();
         } else {
-            JSUtils.clickNodeWithUserGesture(
-                    mTestContainerView.getWebContents(), CUSTOM_PLAY_CONTROL_ID);
+            playVideoOnEmbedderView();
         }
+    }
+
+    private void playVideoOnEmbedderView() throws Exception {
+        Assert.assertFalse(shouldPlayOnFullScreenView());
+        waitUntilHaveEnoughDataForPlay();
+        JSUtils.clickNodeWithUserGesture(
+                mTestContainerView.getWebContents(), CUSTOM_PLAY_CONTROL_ID);
+    }
+
+    private void waitUntilHaveEnoughDataForPlay() {
+        // crbug.com/936757: you are expected to wait before media playback is ready.
+        CriteriaHelper.pollInstrumentationThread(new Criteria() {
+            @Override
+            public boolean isSatisfied() {
+                try {
+                    // Checking HTMLMediaElement.readyState == 4 (HAVE_ENOUGH_DATA).
+                    int readyState = DOMUtils.getNodeField(
+                            "readyState", getWebContentsOnUiThread(), VIDEO_ID, Integer.class);
+                    updateFailureReason(
+                            "Expected readyState == 4, but timed out when readyState == "
+                            + readyState);
+                    return readyState == 4; // HAVE_ENOUGH_DATA
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+    private void playVideoOnFullScreenView() throws Exception {
+        Assert.assertTrue(shouldPlayOnFullScreenView());
+        waitUntilHaveEnoughDataForPlay();
+        // JSUtils.clickNodeWithUserGesture(getWebContentsOnUiThread(), nodeId);
+        // The VIDEO_TEST_URL page goes fullscreen on the <video> element. In fullscreen
+        // the button with id CUSTOM_PLAY_CONTROL_ID will not be visible, but the standard
+        // html5 video controls are. The standard html5 controls are shadow html elements
+        // without any ids so it is difficult to retrieve its precise location. However,
+        // a large play control is rendered in the center of the custom view
+        // (containing the fullscreen <video>) so we just rely on that fact here.
+        TouchCommon.singleClickView(mContentsClient.getCustomView());
     }
 
     /**
@@ -358,7 +392,7 @@ public class AwContentsClientFullScreenTest {
                     return getKeepScreenOnOnInstrumentationThread(view) == expected
                             && DOMUtils.isMediaPaused(getWebContentsOnUiThread(), VIDEO_ID)
                             != expected;
-                } catch (InterruptedException | TimeoutException e) {
+                } catch (TimeoutException e) {
                     Assert.fail(e.getMessage());
                     return false;
                 }
@@ -366,15 +400,25 @@ public class AwContentsClientFullScreenTest {
         });
     }
 
-    private void assertKeepScreenOnActive(final View view, final boolean expected)
+    private void assertKeepScreenOnActive(final View view, final boolean expectKeepScreenOn)
             throws Exception {
-        Assert.assertEquals(expected, getKeepScreenOnOnInstrumentationThread(view));
-        assertNotEquals(expected, DOMUtils.isMediaPaused(getWebContentsOnUiThread(), VIDEO_ID));
+        Assert.assertEquals(expectKeepScreenOn, getKeepScreenOnOnInstrumentationThread(view));
+
+        // Note: we're currently checking this after the above assertion to ensure that the timing
+        // of failure is as close to the assertEquals check below.
+        boolean ended = DOMUtils.isMediaEnded(getWebContentsOnUiThread(), VIDEO_ID);
+        // If this fails, consider increasing the media length.
+        Assert.assertFalse("Media playback should not end too early to test this.", ended);
+
+        boolean expectPaused = !expectKeepScreenOn;
+        boolean paused = DOMUtils.isMediaPaused(getWebContentsOnUiThread(), VIDEO_ID);
+        Assert.assertEquals(
+                "The playback should be paused/not paused as expected.", expectPaused, paused);
     }
 
     private boolean getKeepScreenOnOnInstrumentationThread(final View view) {
         try {
-            return ThreadUtils.runOnUiThreadBlocking(() -> getKeepScreenOnOnUiThread(view));
+            return TestThreadUtils.runOnUiThreadBlocking(() -> getKeepScreenOnOnUiThread(view));
         } catch (Exception e) {
             Assert.fail(e.getMessage());
             return false;
@@ -402,7 +446,7 @@ public class AwContentsClientFullScreenTest {
             public boolean isSatisfied() {
                 try {
                     return DOMUtils.isFullscreen(getWebContentsOnUiThread());
-                } catch (InterruptedException | TimeoutException e) {
+                } catch (TimeoutException e) {
                     Assert.fail(e.getMessage());
                     return false;
                 }
@@ -417,7 +461,7 @@ public class AwContentsClientFullScreenTest {
             public boolean isSatisfied() {
                 try {
                     return !DOMUtils.isFullscreen(getWebContentsOnUiThread());
-                } catch (InterruptedException | TimeoutException e) {
+                } catch (TimeoutException e) {
                     Assert.fail(e.getMessage());
                     return false;
                 }
@@ -426,7 +470,7 @@ public class AwContentsClientFullScreenTest {
         // TODO: Test that inline video is actually displayed.
     }
 
-    private JavascriptEventObserver registerObserver(final String observerName) throws Throwable {
+    private JavascriptEventObserver registerObserver(final String observerName) {
         final JavascriptEventObserver observer = new JavascriptEventObserver();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> observer.register(mTestContainerView.getWebContents(), observerName));
@@ -462,7 +506,7 @@ public class AwContentsClientFullScreenTest {
 
     private WebContents getWebContentsOnUiThread() {
         try {
-            return ThreadUtils.runOnUiThreadBlocking(() -> mTestContainerView.getWebContents());
+            return TestThreadUtils.runOnUiThreadBlocking(() -> mTestContainerView.getWebContents());
         } catch (Exception e) {
             Assert.fail(e.getMessage());
             return null;

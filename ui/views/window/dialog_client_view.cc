@@ -15,7 +15,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/event_utils.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
@@ -30,12 +29,12 @@ namespace {
 
 // The group used by the buttons.  This name is chosen voluntarily big not to
 // conflict with other groups that could be in the dialog content.
-const int kButtonGroup = 6666;
+constexpr int kButtonGroup = 6666;
 
 // Returns true if the given view should be shown (i.e. exists and is
 // visible).
 bool ShouldShow(View* view) {
-  return view && view->visible();
+  return view && view->GetVisible();
 }
 
 // Returns the bounding box required to contain |size1| and |size2|, placed one
@@ -77,8 +76,8 @@ DialogClientView::DialogClientView(Widget* owner, View* contents_view)
   // Doing this now ensures this accelerator will have lower priority than
   // one set by the contents view.
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-  button_row_container_ = new ButtonRowContainer(this);
-  AddChildView(button_row_container_);
+  button_row_container_ =
+      AddChildView(std::make_unique<ButtonRowContainer>(this));
 }
 
 DialogClientView::~DialogClientView() {
@@ -167,9 +166,7 @@ gfx::Size DialogClientView::GetMaximumSize() const {
 
 void DialogClientView::VisibilityChanged(View* starting_from, bool is_visible) {
   ClientView::VisibilityChanged(starting_from, is_visible);
-
-  if (is_visible)
-    view_shown_time_stamp_ = base::TimeTicks::Now();
+  input_protector_.VisibilityChanged(is_visible);
 }
 
 void DialogClientView::Layout() {
@@ -223,12 +220,12 @@ void DialogClientView::ViewHierarchyChanged(
     extra_view_ = nullptr;
 }
 
-void DialogClientView::OnNativeThemeChanged(const ui::NativeTheme* theme) {
+void DialogClientView::OnThemeChanged() {
   // The old dialog style needs an explicit background color, while the new
   // dialog style simply inherits the bubble's frame view color.
   const DialogDelegate* dialog = GetDialogDelegate();
 
-  if (dialog && !dialog->ShouldUseCustomFrame()) {
+  if (dialog && !dialog->use_custom_frame()) {
     SetBackground(views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
         ui::NativeTheme::kColorId_DialogBackground)));
   }
@@ -242,7 +239,7 @@ void DialogClientView::ButtonPressed(Button* sender, const ui::Event& event) {
   if (!GetDialogDelegate())
     return;
 
-  if (IsPossiblyUnintendedInteraction(view_shown_time_stamp_, event))
+  if (input_protector_.IsPossiblyUnintendedInteraction(event))
     return;
 
   if (sender == ok_button_)
@@ -254,7 +251,7 @@ void DialogClientView::ButtonPressed(Button* sender, const ui::Event& event) {
 }
 
 void DialogClientView::ResetViewShownTimeStampForTesting() {
-  view_shown_time_stamp_ = base::TimeTicks();
+  input_protector_.ResetForTesting();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -264,16 +261,11 @@ DialogDelegate* DialogClientView::GetDialogDelegate() const {
   return GetWidget()->widget_delegate()->AsDialogDelegate();
 }
 
-void DialogClientView::ChildPreferredSizeChanged(View* child) {
-  if (!adding_or_removing_views_ && child == extra_view_)
-    Layout();
-}
-
 void DialogClientView::ChildVisibilityChanged(View* child) {
   // Showing or hiding |extra_view_| can alter which columns have linked sizes.
   if (child == extra_view_)
     UpdateDialogButtons();
-  ChildPreferredSizeChanged(child);
+  InvalidateLayout();
 }
 
 void DialogClientView::OnDialogChanged() {
@@ -294,41 +286,38 @@ void DialogClientView::UpdateDialogButton(LabelButton** member,
     return;
   }
 
-  if (!*member) {
-    // In theory, this should only need to assign a newly constructed Button to
-    // |*member|. DialogDelegate::UpdateButton(), and any overrides of that,
-    // should be responsible for the rest. TODO(tapted): When there is only
-    // MdTextButton, make it so. Note that some overrides may not always update
-    // the title (they should). See http://crbug.com/697303 .
-    const base::string16 title = delegate->GetDialogButtonLabel(type);
-    LabelButton* button = nullptr;
+  const bool is_default = delegate->GetDefaultDialogButton() == type &&
+                          (type != ui::DIALOG_BUTTON_CANCEL ||
+                           PlatformStyle::kDialogDefaultButtonCanBeCancel);
+  const base::string16 title = delegate->GetDialogButtonLabel(type);
 
-    const bool is_default = delegate->GetDefaultDialogButton() == type &&
-                            (type != ui::DIALOG_BUTTON_CANCEL ||
-                             PlatformStyle::kDialogDefaultButtonCanBeCancel);
-
-    button = is_default ? MdTextButton::CreateSecondaryUiBlueButton(this, title)
-                        : MdTextButton::CreateSecondaryUiButton(this, title);
-
-    const int minimum_width = LayoutProvider::Get()->GetDistanceMetric(
-        views::DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH);
-    button->SetMinSize(gfx::Size(minimum_width, 0));
-
-    button->SetGroup(kButtonGroup);
-
-    *member = button;
+  if (*member) {
+    LabelButton* button = *member;
+    button->SetEnabled(delegate->IsDialogButtonEnabled(type));
+    button->SetIsDefault(is_default);
+    button->SetText(title);
+    return;
   }
 
-  delegate->UpdateButton(*member, type);
+  std::unique_ptr<LabelButton> button =
+      is_default ? MdTextButton::CreateSecondaryUiBlueButton(this, title)
+                 : MdTextButton::CreateSecondaryUiButton(this, title);
+
+  button->SetIsDefault(is_default);
+  button->SetEnabled(delegate->IsDialogButtonEnabled(type));
+
+  const int minimum_width = LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH);
+  button->SetMinSize(gfx::Size(minimum_width, 0));
+
+  button->SetGroup(kButtonGroup);
+
+  *member = button_row_container_->AddChildView(std::move(button));
 }
 
 int DialogClientView::GetExtraViewSpacing() const {
   if (!ShouldShow(extra_view_) || !(ok_button_ || cancel_button_))
     return 0;
-
-  int extra_view_padding = 0;
-  if (GetDialogDelegate()->GetExtraViewPadding(&extra_view_padding))
-    return extra_view_padding;
 
   return LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
@@ -351,19 +340,26 @@ void DialogClientView::SetupLayout() {
 
   // Clobber any existing LayoutManager since it has weak references to child
   // Views which may be removed by SetupViews().
-  GridLayout* layout = button_row_container_->SetLayoutManager(
-      std::make_unique<views::GridLayout>(button_row_container_));
-  layout->set_minimum_size(minimum_size_);
+  button_row_container_->SetLayoutManager(nullptr);
 
   SetupViews();
+
   const std::array<View*, kNumButtons> views = GetButtonRowViews();
 
   // Visibility changes on |extra_view_| must be observed to re-Layout. However,
   // when hidden it's not included in the button row (it can't influence layout)
   // and it can't be added to |button_row_container_| (GridLayout complains).
   // So add it, hidden, to |this| so it can be observed.
-  if (extra_view_ && !views[0])
-    AddChildView(extra_view_);
+  if (extra_view_) {
+    if (!views[0])
+      AddChildView(extra_view_);
+    else
+      button_row_container_->AddChildViewAt(extra_view_, 0);
+  }
+
+  GridLayout* layout = button_row_container_->SetLayoutManager(
+      std::make_unique<views::GridLayout>());
+  layout->set_minimum_size(minimum_size_);
 
   if (std::count(views.begin(), views.end(), nullptr) == kNumButtons)
     return;
@@ -400,15 +396,23 @@ void DialogClientView::SetupLayout() {
 
   // Track which columns to link sizes under MD.
   constexpr int kViewToColumnIndex[] = {1, 3, 5};
-  int link[] = {-1, -1, -1};
-  size_t link_index = 0;
+  std::vector<int> columns_to_link;
+
+  // Skip views that are not a button, or are a specific subclass of Button
+  // that should never be linked. Otherwise, link everything.
+  auto should_link = [](views::View* view) {
+    return Button::AsButton(view) &&
+           view->GetClassName() != Checkbox::kViewClassName &&
+           view->GetClassName() != ImageButton::kViewClassName;
+  };
 
   layout->StartRowWithPadding(kFixed, kButtonRowId, kFixed,
                               button_row_insets_.top());
   for (size_t view_index = 0; view_index < kNumButtons; ++view_index) {
     if (views[view_index]) {
-      layout->AddView(views[view_index]);
-      link[link_index++] = kViewToColumnIndex[view_index];
+      layout->AddExistingView(views[view_index]);
+      if (should_link(views[view_index]))
+        columns_to_link.push_back(kViewToColumnIndex[view_index]);
     } else {
       layout->SkipColumns(1);
     }
@@ -416,19 +420,7 @@ void DialogClientView::SetupLayout() {
 
   column_set->set_linked_column_size_limit(
       layout_provider->GetDistanceMetric(DISTANCE_BUTTON_MAX_LINKABLE_WIDTH));
-
-  // If |views[0]| is non-null, it is a visible |extra_view_| and its column
-  // will be in |link[0]|. Skip that if it is not a button, or if it is a
-  // specific subclass of Button that should never be linked. Otherwise, link
-  // everything.
-  bool skip_first_link =
-      views[0] && (!Button::AsButton(views[0]) ||
-                   views[0]->GetClassName() == Checkbox::kViewClassName ||
-                   views[0]->GetClassName() == ImageButton::kViewClassName);
-  if (skip_first_link)
-    column_set->LinkColumnSizes(link[1], link[2], -1);
-  else
-    column_set->LinkColumnSizes(link[0], link[1], link[2], -1);
+  column_set->LinkColumnSizes(columns_to_link);
 
   layout->AddPaddingRow(kFixed, button_row_insets_.bottom());
 
@@ -442,21 +434,24 @@ void DialogClientView::SetupLayout() {
 }
 
 void DialogClientView::SetupViews() {
-  button_row_container_->RemoveAllChildViews(false /* delete children */);
-  // If SetupLayout() "stored" a hidden |extra_view_| in |this|, ensure it can
-  // be re-added to the layout when becoming visible.
-  if (extra_view_)
-    RemoveChildView(extra_view_);
-
-  UpdateDialogButton(&ok_button_, ui::DIALOG_BUTTON_OK);
-  UpdateDialogButton(&cancel_button_, ui::DIALOG_BUTTON_CANCEL);
+  if (PlatformStyle::kIsOkButtonLeading) {
+    UpdateDialogButton(&ok_button_, ui::DIALOG_BUTTON_OK);
+    UpdateDialogButton(&cancel_button_, ui::DIALOG_BUTTON_CANCEL);
+  } else {
+    UpdateDialogButton(&cancel_button_, ui::DIALOG_BUTTON_CANCEL);
+    UpdateDialogButton(&ok_button_, ui::DIALOG_BUTTON_OK);
+  }
 
   if (extra_view_)
     return;
 
-  extra_view_ = GetDialogDelegate()->CreateExtraView();
+  extra_view_ = GetDialogDelegate()->DisownExtraView().release();
   if (extra_view_ && Button::AsButton(extra_view_))
     extra_view_->SetGroup(kButtonGroup);
 }
+
+BEGIN_METADATA(DialogClientView)
+METADATA_PARENT_CLASS(ClientView)
+END_METADATA()
 
 }  // namespace views

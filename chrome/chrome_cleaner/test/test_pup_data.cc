@@ -20,10 +20,6 @@ const PUPData::UwSSignature kEmptyPUP = {PUPData::kInvalidUwSId,
                                          kNoRegistry,
                                          kNoCustomMatcher};
 
-const PUPData::UwSSignature kEmptyPUPs[] = {
-    kEmptyPUP,
-};
-
 }  // namespace
 
 TestPUPData* TestPUPData::current_test_ = nullptr;
@@ -31,22 +27,17 @@ TestPUPData* TestPUPData::previous_test_ = nullptr;
 
 SimpleTestPUP::SimpleTestPUP() : PUPData::PUP(&kEmptyPUP) {}
 
-TestPUPData::TestPUPData()
-    : previous_catalogs_(PUPData::GetUwSCatalogs()),
-      previous_pups_(PUPData::kPUPs) {
+TestPUPData::TestPUPData() : previous_catalogs_(PUPData::GetUwSCatalogs()) {
   // Make sure tests don't step on each other.
   previous_test_ = current_test_;
   current_test_ = this;
 
-  // Assume there will be no UwSCatalogs used during the test. If not, the
-  // caller can call Reset again with an explicit list of catalogs.
+  // Assume there will be no additional UwSCatalogs used during the test. If
+  // not, the caller can call Reset again with an explicit list of catalogs.
   Reset({});
 }
 
 TestPUPData::~TestPUPData() {
-  // So that next tests start fresh.
-  PUPData::kPUPs = previous_pups_;
-
   // Reset the global PUP data to the non-test version.
   PUPData::InitializePUPData(previous_catalogs_);
 
@@ -54,15 +45,14 @@ TestPUPData::~TestPUPData() {
   current_test_ = previous_test_;
 }
 
-void TestPUPData::Reset(const PUPData::UwSCatalogs& test_uws_catalogs) {
+void TestPUPData::Reset(const PUPData::UwSCatalogs& additional_uws_catalogs) {
   CHECK_EQ(this, current_test_);
-  PUPData::kPUPs = kEmptyPUPs;
-  PUPData::kRemovedPUPs = kEmptyPUPs;
-  PUPData::kObservedPUPs = kEmptyPUPs;
   cpp_pup_footprints_.clear();
   mirror_pup_footprints_.clear();
 
-  PUPData::InitializePUPData(test_uws_catalogs);
+  PUPData::UwSCatalogs uws_catalogs = additional_uws_catalogs;
+  uws_catalogs.push_back(this);
+  PUPData::InitializePUPData(uws_catalogs);
 }
 
 void TestPUPData::AddPUP(UwSId pup_id,
@@ -189,14 +179,51 @@ size_t TestPUPData::EnsurePUP(UwSId pup_id) {
   new_pup.custom_matchers = cpp_pup_footprints_[pup_id].custom_matchers.data();
 
   mirror_pup_footprints_.insert(mirror_pup_footprints_.end() - 1, new_pup);
-  PUPData::kPUPs = mirror_pup_footprints_.data();
 
   // Add any newly-created UwS to the cache. Don't touch anything that already
   // existed, since this is often called during tests that have pointers to
   // that UwS.
-  PUPData::UpdateCachedUwS();
+  PUPData::UpdateCachedUwSForTesting();
 
   return index;
+}
+
+std::vector<UwSId> TestPUPData::GetUwSIds() const {
+  std::vector<UwSId> ids;
+  ids.reserve(mirror_pup_footprints_.size());
+  for (const PUPData::UwSSignature& signature : mirror_pup_footprints_) {
+    if (signature.id != PUPData::kInvalidUwSId)
+      ids.push_back(signature.id);
+  }
+  return ids;
+}
+
+bool TestPUPData::IsEnabledForScanning(UwSId id) const {
+  DCHECK_NE(id, PUPData::kInvalidUwSId);
+  for (const PUPData::UwSSignature& signature : mirror_pup_footprints_) {
+    if (signature.id == id)
+      return true;
+  }
+  return false;
+}
+
+bool TestPUPData::IsEnabledForCleaning(UwSId id) const {
+  DCHECK_NE(id, PUPData::kInvalidUwSId);
+  for (const PUPData::UwSSignature& signature : mirror_pup_footprints_) {
+    if (signature.id == id && signature.flags & PUPData::FLAGS_ACTION_REMOVE)
+      return true;
+  }
+  return false;
+}
+
+std::unique_ptr<PUPData::PUP> TestPUPData::CreatePUPForId(UwSId id) const {
+  DCHECK_NE(id, PUPData::kInvalidUwSId);
+  for (const PUPData::UwSSignature& signature : mirror_pup_footprints_) {
+    if (signature.id == id)
+      return std::make_unique<PUPData::PUP>(&signature);
+  }
+  NOTREACHED() << id << " not in TestPUPData";
+  return nullptr;
 }
 
 }  // namespace chrome_cleaner

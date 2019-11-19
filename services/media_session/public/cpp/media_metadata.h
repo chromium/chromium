@@ -24,7 +24,7 @@ namespace media_session {
 
 // The MediaMetadata is a structure carrying information associated to a
 // MediaSession.
-struct COMPONENT_EXPORT(MEDIA_SESSION_CPP) MediaMetadata {
+struct COMPONENT_EXPORT(MEDIA_SESSION_BASE_CPP) MediaMetadata {
   MediaMetadata();
   ~MediaMetadata();
 

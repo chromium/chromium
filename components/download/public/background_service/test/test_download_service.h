@@ -48,6 +48,8 @@ class TestDownloadService : public DownloadService {
 
   void SetIsReady(bool is_ready);
 
+  void SetHash256(const std::string& hash256);
+
   void set_client(Client* client) { client_ = client; }
 
  private:
@@ -67,6 +69,7 @@ class TestDownloadService : public DownloadService {
   std::unique_ptr<Logger> logger_;
 
   bool is_ready_;
+  std::string hash256_;
   std::string failed_download_id_;
   bool fail_at_start_;
   uint64_t file_size_;

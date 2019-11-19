@@ -25,6 +25,9 @@ namespace image_fetcher {
 
 namespace {
 
+// The prefix of the file names for images that need transcoding before use.
+constexpr char kNeedsTranscodingPrefix[] = "ntr_";
+
 const FilePath::CharType kPathPostfix[] =
     FILE_PATH_LITERAL("image_data_storage");
 
@@ -40,19 +43,39 @@ InitializationStatus InitializeImpl(FilePath storage_path) {
   return InitializationStatus::INIT_FAILURE;
 }
 
+base::FilePath BuildFilePath(const FilePath& storage_path,
+                             const std::string& key,
+                             bool needs_transcoding) {
+  if (needs_transcoding)
+    return storage_path.AppendASCII(kNeedsTranscodingPrefix + key);
+  return storage_path.AppendASCII(key);
+}
+
 void SaveImageImpl(FilePath storage_path,
                    const std::string& key,
-                   std::string data) {
-  FilePath file_path = storage_path.AppendASCII(key);
+                   std::string data,
+                   bool needs_transcoding) {
+  FilePath file_path = BuildFilePath(storage_path, key, needs_transcoding);
 
   int len = base::WriteFile(file_path, data.c_str(), data.length());
   if (len == -1 || (size_t)len != data.length()) {
     DVLOG(1) << "WriteFile failed.";
   }
+
+  if (!needs_transcoding) {
+    // Attempt to delete the image data there that needs transcoding.
+    bool success = base::DeleteFile(
+        BuildFilePath(storage_path, key, /* needs_transcoding */ true), false);
+    if (!success) {
+      DVLOG(1) << "Deleting the transcoded file failed.";
+    }
+  }
 }
 
-std::string LoadImageImpl(FilePath storage_path, const std::string& key) {
-  FilePath file_path = storage_path.AppendASCII(key);
+std::string LoadImageImpl(FilePath storage_path,
+                          const std::string& key,
+                          bool needs_transcoding) {
+  FilePath file_path = BuildFilePath(storage_path, key, needs_transcoding);
 
   if (!base::PathExists(file_path)) {
     return "";
@@ -64,10 +87,19 @@ std::string LoadImageImpl(FilePath storage_path, const std::string& key) {
 }
 
 void DeleteImageImpl(FilePath storage_path, const std::string& key) {
-  FilePath file_path = storage_path.AppendASCII(key);
-
+  FilePath file_path =
+      BuildFilePath(storage_path, key, /* needs_transcoding */ false);
   bool success = base::DeleteFile(file_path, false);
-  if (!success) {
+  if (success) {
+    // We don't know if this image came from network or from an untranscoded
+    // file. Instead of checking, we can simply blindly delete the untranscoded
+    // file.
+    if (!base::DeleteFile(
+            BuildFilePath(storage_path, key, /* needs_transcoding */ true),
+            false)) {
+      DVLOG(1) << "Attempting to delete " << kNeedsTranscodingPrefix << ".";
+    }
+  } else {
     DVLOG(1) << "DeleteFile failed.";
   }
 }
@@ -90,8 +122,7 @@ ImageDataStoreDisk::ImageDataStoreDisk(
     FilePath generic_storage_path,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : initialization_status_(InitializationStatus::UNINITIALIZED),
-      task_runner_(task_runner),
-      weak_ptr_factory_(this) {
+      task_runner_(task_runner) {
   storage_path_ = generic_storage_path.Append(kPathPostfix);
 }
 
@@ -111,25 +142,31 @@ bool ImageDataStoreDisk::IsInitialized() {
 }
 
 void ImageDataStoreDisk::SaveImage(const std::string& key,
-                                   std::string image_data) {
+                                   std::string image_data,
+                                   bool needs_transcoding) {
   if (!IsInitialized()) {
     return;
   }
 
-  task_runner_->PostTask(FROM_HERE, base::BindOnce(SaveImageImpl, storage_path_,
-                                                   key, std::move(image_data)));
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(SaveImageImpl, storage_path_, key,
+                                std::move(image_data), needs_transcoding));
 }
 
 void ImageDataStoreDisk::LoadImage(const std::string& key,
+                                   bool needs_transcoding,
                                    ImageDataCallback callback) {
   if (!IsInitialized()) {
-    std::move(callback).Run(std::string());
+    std::move(callback).Run(/* needs_transcoding */ false, std::string());
     return;
   }
 
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
-      base::BindOnce(LoadImageImpl, storage_path_, key), std::move(callback));
+      base::BindOnce(LoadImageImpl, storage_path_, key, needs_transcoding),
+      base::BindOnce(&ImageDataStoreDisk::OnImageLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), needs_transcoding,
+                     std::move(callback)));
 }
 
 void ImageDataStoreDisk::DeleteImage(const std::string& key) {
@@ -157,6 +194,12 @@ void ImageDataStoreDisk::OnInitializationComplete(
     InitializationStatus initialization_status) {
   initialization_status_ = initialization_status;
   std::move(callback).Run();
+}
+
+void ImageDataStoreDisk::OnImageLoaded(bool needs_transcoding,
+                                       ImageDataCallback callback,
+                                       std::string data) {
+  std::move(callback).Run(needs_transcoding, std::move(data));
 }
 
 }  // namespace image_fetcher

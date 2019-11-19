@@ -1,22 +1,21 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_types.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
 <link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/chromeos/onc_mojo.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="network_password_input.html">
 <link rel="import" href="network_shared_css.html">
 
 <dom-module id="network-siminfo">
   <template>
-    <style include="network-shared iron-flex paper-button-style">
+    <style include="network-shared iron-flex">
       :host {
         cursor: default
       }
@@ -52,7 +51,7 @@
 
     <!-- SIM missing UI -->
     <div class="property-box two-line"
-        hidden$="[[networkProperties.Cellular.SIMPresent]]">
+        hidden$="[[!showSimMissing_(deviceState)]]">
       <div class="start layout horizontal center">
         <iron-icon icon="cr:sim-card-alert"></iron-icon>
         <div class="error">[[i18n('networkSimCardMissing')]]</div>
@@ -61,27 +60,27 @@
 
     <!-- SIM locked -->
     <div class="property-box two-line"
-        hidden$="[[!showSimLocked_(networkProperties)]]">
+        hidden$="[[!showSimLocked_(deviceState)]]">
       <div class="start layout horizontal center">
         <iron-icon icon="cr:sim-lock"></iron-icon>
         <div class="error">[[i18n('networkSimCardLocked')]]</div>
       </div>
       <div class="separator"></div>
-      <paper-button id="unlockPinButton" on-tap="onUnlockPinTap_">
+      <cr-button id="unlockPinButton" on-click="onUnlockPinTap_">
         [[i18n('networkSimUnlock')]]
-      </paper-button>
+      </cr-button>
     </div>
 
     <!-- SIM unlocked -->
     <div class="property-box two-line"
-        hidden$="[[!showSimUnlocked_(networkProperties)]]">
+        hidden$="[[!showSimUnlocked_(deviceState)]]">
       <div id="simLockToggleLabel" class="start">
         [[i18n('networkSimLockEnable')]]
       </div>
-      <paper-button id="changePinButton" on-tap="onChangePinTap_"
-          hidden$="[[!networkProperties.Cellular.SIMLockStatus.LockEnabled]]">
+      <cr-button id="changePinButton" on-click="onChangePinTap_"
+          hidden$="[[!deviceState.simLockStatus.lockEnabled]]">
         [[i18n('networkSimChangePin')]]
-      </paper-button>
+      </cr-button>
       <cr-toggle id="simLockButton"
           on-change="onSimLockEnabledChange_" checked="{{lockEnabled_}}"
           aria-labelledby="simLockToggleLabel">
@@ -99,17 +98,17 @@
             disabled="[[inProgress_]]">
         </network-password-input>
         <div class="dialog-error">
-          [[getErrorMsg_(error_, networkProperties)]]
+          [[getErrorMsg_(error_, deviceState)]]
         </div>
       </div>
       <div slot="button-container">
-        <paper-button class="cancel-button" on-tap="closeDialogs_">
+        <cr-button class="cancel-button" on-click="closeDialogs_">
           [[i18n('cancel')]]
-        </paper-button>
-        <paper-button class="action-button" on-tap="sendEnterPin_"
+        </cr-button>
+        <cr-button class="action-button" on-click="sendEnterPin_"
             disabled="[[!enterPinEnabled_]]">
           [[i18n('networkSimEnter')]]
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
 
@@ -131,17 +130,17 @@
             on-enter="sendChangePin_" disabled="[[inProgress_]]">
         </network-password-input>
         <div class="dialog-error">
-          [[getErrorMsg_(error_, networkProperties)]]
+          [[getErrorMsg_(error_, deviceState)]]
         </div>
       </div>
       <div slot="button-container">
-        <paper-button class="cancel-button" on-tap="closeDialogs_">
+        <cr-button class="cancel-button" on-click="closeDialogs_">
           [[i18n('cancel')]]
-        </paper-button>
-        <paper-button class="action-button" on-tap="sendChangePin_"
+        </cr-button>
+        <cr-button class="action-button" on-click="sendChangePin_"
             disabled="[[!changePinEnabled_]]">
           [[i18n('networkSimChange')]]
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
 
@@ -155,17 +154,17 @@
             disabled="[[inProgress_]]">
         </network-password-input>
         <div class="dialog-error">
-          [[getErrorMsg_(error_, networkProperties)]]
+          [[getErrorMsg_(error_, deviceState)]]
         </div>
       </div>
       <div slot="button-container">
-        <paper-button class="cancel-button" on-tap="closeDialogs_">
+        <cr-button class="cancel-button" on-click="closeDialogs_">
           [[i18n('cancel')]]
-        </paper-button>
-        <paper-button class="action-button" on-tap="sendUnlockPin_"
+        </cr-button>
+        <cr-button class="action-button" on-click="sendUnlockPin_"
             disabled="[[!enterPinEnabled_]]">
           [[i18n('networkSimUnlock')]]
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
 
@@ -193,17 +192,17 @@
           [[i18n('networkSimLockedWarning')]]
         </div>
         <div class="dialog-error">
-          [[getErrorMsg_(error_, networkProperties)]]
+          [[getErrorMsg_(error_, deviceState)]]
         </div>
       </div>
       <div slot="button-container">
-        <paper-button class="cancel-button" on-tap="closeDialogs_">
+        <cr-button class="cancel-button" on-click="closeDialogs_">
           [[i18n('cancel')]]
-        </paper-button>
-        <paper-button class="action-button" on-tap="sendUnlockPuk_"
+        </cr-button>
+        <cr-button class="action-button" on-click="sendUnlockPuk_"
             disabled="[[!enterPukEnabled_]]">
           [[i18n('networkSimUnlock')]]
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
   </template>

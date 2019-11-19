@@ -11,7 +11,7 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_counter_wrapper.h"
 #include "ios/chrome/browser/browsing_data/cache_counter.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -30,7 +30,7 @@ class ClearDataItemTest : public PlatformTest {
   }
 
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
 };
 
 // Test that if the counter is not set, then [item hasCounter] returns false.
@@ -39,39 +39,6 @@ TEST_F(ClearDataItemTest, ConfigureCellTestCounterNil) {
   ClearBrowsingDataItem* item =
       [[ClearBrowsingDataItem alloc] initWithType:0 counter:std::move(counter)];
   EXPECT_FALSE([item hasCounter]);
-}
-
-// Test that if the counter is set, then [item hasCounter] returns true.
-TEST_F(ClearDataItemTest, ConfigureCellTestCounterNotNil) {
-  std::unique_ptr<BrowsingDataCounterWrapper> counter =
-      BrowsingDataCounterWrapper::CreateCounterWrapper(
-          browsing_data::prefs::kDeleteBrowsingHistory, browser_state_.get(),
-          browser_state_.get()->GetPrefs(),
-          base::BindRepeating(
-              ^(const browsing_data::BrowsingDataCounter::Result& result){
-              }));
-
-  ClearBrowsingDataItem* item =
-      [[ClearBrowsingDataItem alloc] initWithType:0 counter:std::move(counter)];
-  EXPECT_FALSE([item hasCounter]);
-}
-
-// Test that calling [item restartCounter] sets the detailText to "None"
-TEST_F(ClearDataItemTest, ConfigureCellTestRestartCounter) {
-  std::unique_ptr<BrowsingDataCounterWrapper> counter =
-      BrowsingDataCounterWrapper::CreateCounterWrapper(
-          browsing_data::prefs::kDeleteBrowsingHistory, browser_state_.get(),
-          browser_state_.get()->GetPrefs(),
-          base::BindRepeating(
-              ^(const browsing_data::BrowsingDataCounter::Result& result) {
-                NSString* detail_text = base::SysUTF16ToNSString(
-                    browsing_data::GetCounterTextFromResult(&result));
-                EXPECT_EQ(@"None", detail_text);
-              }));
-  ClearBrowsingDataItem* item =
-      [[ClearBrowsingDataItem alloc] initWithType:0 counter:std::move(counter)];
-
-  [item restartCounter];
 }
 
 }  // namespace

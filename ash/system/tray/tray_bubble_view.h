@@ -8,23 +8,16 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/mouse_watcher.h"
-
-namespace aura {
-class Env;
-}
-
-namespace ui {
-class LayerOwner;
-}
 
 namespace views {
 class BoxLayout;
@@ -41,18 +34,8 @@ namespace ash {
 class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
                                   public views::MouseWatcherListener {
  public:
-  // AnchorAlignment determines to which side of the anchor the bubble will
-  // align itself.
-  enum AnchorAlignment {
-    ANCHOR_ALIGNMENT_BOTTOM,
-    ANCHOR_ALIGNMENT_LEFT,
-    ANCHOR_ALIGNMENT_RIGHT,
-  };
-
   class ASH_EXPORT Delegate {
    public:
-    typedef TrayBubbleView::AnchorAlignment AnchorAlignment;
-
     Delegate() {}
     virtual ~Delegate();
 
@@ -100,7 +83,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     AnchorMode anchor_mode = AnchorMode::kView;
     // Only used if anchor_mode == AnchorMode::kRect.
     gfx::Rect anchor_rect;
-    AnchorAlignment anchor_alignment = ANCHOR_ALIGNMENT_BOTTOM;
+    ShelfAlignment shelf_alignment = SHELF_ALIGNMENT_BOTTOM;
     int min_width = 0;
     int max_width = 0;
     int max_height = 0;
@@ -153,7 +136,12 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   void ChangeAnchorRect(const gfx::Rect& anchor_rect);
 
   // Change anchor alignment mode when anchoring either the rect or view.
-  void ChangeAnchorAlignment(AnchorAlignment alignment);
+  void ChangeAnchorAlignment(ShelfAlignment alignment);
+
+  // Returns true if the bubble is an anchored status area bubble. Override
+  // this function for a bubble which is not anchored directly to the status
+  // area.
+  virtual bool IsAnchoredToStatusArea() const;
 
   Delegate* delegate() { return delegate_; }
 
@@ -179,6 +167,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  const char* GetClassName() const override;
 
   // Overridden from MouseWatcherListener
   void MouseMovedOutOfHost() override;
@@ -186,13 +175,16 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
  protected:
   // Overridden from views::BubbleDialogDelegateView.
   int GetDialogButtons() const override;
-  ax::mojom::Role GetAccessibleWindowRole() const override;
-  void SizeToContents() override;
+  ax::mojom::Role GetAccessibleWindowRole() override;
 
   // Overridden from views::View.
   void ChildPreferredSizeChanged(View* child) override;
   void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
+      const views::ViewHierarchyChangedDetails& details) override;
+
+  // Changes the insets from the bubble border. These were initially set using
+  // the InitParams.insets, but may need to be reset programmatically.
+  void SetBubbleBorderInsets(gfx::Insets insets);
 
  private:
   // This reroutes receiving key events to the TrayBubbleView passed in the
@@ -203,7 +195,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // process accelerator as menu is currently open.
   class RerouteEventHandler : public ui::EventHandler {
    public:
-    RerouteEventHandler(TrayBubbleView* tray_bubble_view, aura::Env* aura_env);
+    RerouteEventHandler(TrayBubbleView* tray_bubble_view);
     ~RerouteEventHandler() override;
 
     // Overridden from ui::EventHandler
@@ -212,11 +204,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
    private:
     // TrayBubbleView to which key events are going to be rerouted. Not owned.
     TrayBubbleView* tray_bubble_view_;
-
-    // The aura::Env where this EventHandler is installed. Needed because
-    // SingleProcessMash has more than one aura::Env. Cached so this object
-    // can unregister itself during TrayBubbleView teardown.
-    aura::Env* aura_env_;
 
     DISALLOW_COPY_AND_ASSIGN(RerouteEventHandler);
   };
@@ -234,7 +221,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // the latter ensures we don't leak it before passing off ownership.
   views::BubbleBorder* bubble_border_;
   std::unique_ptr<views::BubbleBorder> owned_bubble_border_;
-  std::unique_ptr<ui::LayerOwner> bubble_content_mask_;
   bool is_gesture_dragging_;
 
   // True once the mouse cursor was actively moved by the user over the bubble.

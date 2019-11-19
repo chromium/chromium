@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/memory.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom.h"
 
 namespace content {
@@ -36,9 +37,9 @@ class MemoryHandler : public DevToolsDomainHandler,
   void OnLeakDetectorIsGone();
 
   int process_host_id_;
-  blink::mojom::LeakDetectorPtr leak_detector_;
+  mojo::Remote<blink::mojom::LeakDetector> leak_detector_;
   std::unique_ptr<PrepareForLeakDetectionCallback> leak_detection_callback_;
-  base::WeakPtrFactory<MemoryHandler> weak_factory_;
+  base::WeakPtrFactory<MemoryHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MemoryHandler);
 };

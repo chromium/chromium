@@ -16,10 +16,6 @@ class SystemTimeChangeNotifierAndroid : public SystemTimeChangeNotifier {
   SystemTimeChangeNotifierAndroid();
   ~SystemTimeChangeNotifierAndroid() override;
 
-  // SystemTimeChangeNotifier implementation:
-  void Initialize() override;
-  void Finalize() override;
-
   // Called from Java.
   void OnTimeChanged(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& jobj);

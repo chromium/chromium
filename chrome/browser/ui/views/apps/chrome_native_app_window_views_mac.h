@@ -36,9 +36,6 @@ class ChromeNativeAppWindowViewsMac : public ChromeNativeAppWindowViews {
   // ui::BaseWindow implementation.
   bool IsMaximized() const override;
   gfx::Rect GetRestoredBounds() const override;
-  void Show() override;
-  void ShowInactive() override;
-  void Activate() override;
   void Maximize() override;
   void Restore() override;
   void FlashFrame(bool flash) override;
@@ -46,26 +43,12 @@ class ChromeNativeAppWindowViewsMac : public ChromeNativeAppWindowViews {
   // WidgetObserver implementation.
   void OnWidgetCreated(views::Widget* widget) override;
 
-  // NativeAppWindow implementation.
-  // These are used to simulate Mac-style hide/show. Since windows can be hidden
-  // and shown using the app.window API, this sets is_hidden_with_app_ to
-  // differentiate the reason a window was hidden.
-  void ShowWithApp() override;
-  void HideWithApp() override;
-
  private:
-  // Unset is_hidden_with_app_ and tell the shim to unhide.
-  void UnhideWithoutActivation();
-
   // Used to notify us about certain NSWindow events.
   base::scoped_nsobject<ResizeNotificationObserver> nswindow_observer_;
 
   // The bounds of the window just before it was last maximized.
   NSRect bounds_before_maximize_;
-
-  // Whether this window last became hidden due to a request to hide the entire
-  // app, e.g. via the dock menu or Cmd+H. This is set by Hide/ShowWithApp.
-  bool is_hidden_with_app_ = false;
 
   // Set true during an exit fullscreen transition, so that the live resize
   // event AppKit sends can be distinguished from a zoom-triggered live resize.

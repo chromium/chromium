@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ssl/ssl_blocking_page_base.h"
-#include "chrome/browser/ssl/ssl_cert_reporter.h"
+#include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/ssl_errors/error_classification.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "net/ssl/ssl_info.h"
@@ -41,21 +41,17 @@ class BadClockBlockingPage : public SSLBlockingPageBase {
                        const GURL& request_url,
                        const base::Time& time_triggered,
                        ssl_errors::ClockState clock_state,
-                       std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
-                       const base::Callback<void(
-                           content::CertificateRequestResultType)>& callback);
+                       std::unique_ptr<SSLCertReporter> ssl_cert_reporter);
 
   ~BadClockBlockingPage() override;
 
   // InterstitialPageDelegate method:
-  InterstitialPageDelegate::TypeID GetTypeForTesting() const override;
+  InterstitialPageDelegate::TypeID GetTypeForTesting() override;
 
  protected:
   // InterstitialPageDelegate implementation:
   void CommandReceived(const std::string& command) override;
   void OverrideEntry(content::NavigationEntry* entry) override;
-  void OverrideRendererPrefs(blink::mojom::RendererPreferences* prefs) override;
-  void OnDontProceed() override;
 
   // SecurityInterstitialPage implementation:
   bool ShouldCreateNewNavigation() const override;
@@ -63,9 +59,6 @@ class BadClockBlockingPage : public SSLBlockingPageBase {
       base::DictionaryValue* load_time_data) override;
 
  private:
-  void NotifyDenyCertificate();
-
-  base::Callback<void(content::CertificateRequestResultType)> callback_;
   const net::SSLInfo ssl_info_;
 
   const std::unique_ptr<security_interstitials::BadClockUI> bad_clock_ui_;

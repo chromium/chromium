@@ -9,6 +9,9 @@
 
 syntax = "proto2";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
 option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
@@ -74,7 +77,7 @@ message UserConsentSpecifics {
   // redundant.
   //
   // For semantics and usage of the |account_id| in the signin codebase,
-  // see SigninManagerBase::GetAuthenticatedAccountId()
+  // see PrimaryAccountManager::GetAuthenticatedAccountId()
   // or AccountInfo::account_id.
   optional string account_id = 6;
 

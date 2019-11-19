@@ -16,7 +16,9 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/navigation_entry.h"
@@ -104,11 +106,9 @@ class AppApiTest : public extensions::ExtensionApiTest {
                                           ->GetID()));
     EXPECT_FALSE(browser()->tab_strip_model()->GetWebContentsAt(1)->GetWebUI());
 
-    content::WindowedNotificationObserver tab_added_observer(
-        chrome::NOTIFICATION_TAB_ADDED,
-        content::NotificationService::AllSources());
+    ui_test_utils::TabAddedWaiter tab_add(browser());
     chrome::NewTab(browser());
-    tab_added_observer.Wait();
+    tab_add.Wait();
     LOG(INFO) << "New tab.";
     ui_test_utils::NavigateToURL(browser(),
                                  base_url.Resolve("path2/empty.html"));
@@ -197,11 +197,9 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, DISABLED_AppProcess) {
   EXPECT_FALSE(browser()->tab_strip_model()->GetWebContentsAt(2)->GetWebUI());
   LOG(INFO) << "Nav 2.";
 
-  content::WindowedNotificationObserver tab_added_observer(
-      chrome::NOTIFICATION_TAB_ADDED,
-      content::NotificationService::AllSources());
+  ui_test_utils::TabAddedWaiter tab_add(browser());
   chrome::NewTab(browser());
-  tab_added_observer.Wait();
+  tab_add.Wait();
   LOG(INFO) << "New tab.";
   ui_test_utils::NavigateToURL(browser(), base_url.Resolve("path3/empty.html"));
   LOG(INFO) << "Nav 3.";
@@ -352,11 +350,9 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, MAYBE_BookmarkAppGetsNormalProcess) {
                                          ->GetID()));
   EXPECT_FALSE(browser()->tab_strip_model()->GetWebContentsAt(1)->GetWebUI());
 
-  content::WindowedNotificationObserver tab_added_observer(
-      chrome::NOTIFICATION_TAB_ADDED,
-      content::NotificationService::AllSources());
+  ui_test_utils::TabAddedWaiter tab_add(browser());
   chrome::NewTab(browser());
-  tab_added_observer.Wait();
+  tab_add.Wait();
   ui_test_utils::NavigateToURL(browser(), base_url.Resolve("path2/empty.html"));
   EXPECT_FALSE(process_map->Contains(browser()
                                          ->tab_strip_model()
@@ -643,17 +639,12 @@ IN_PROC_BROWSER_TEST_F(BlockedAppApiTest, MAYBE_OpenAppFromIframe) {
 
   ui_test_utils::NavigateToURL(
       browser(), GetTestBaseURL("app_process").Resolve("path3/container.html"));
+  ui_test_utils::WaitForViewVisibility(browser(), VIEW_ID_CONTENT_SETTING_POPUP,
+                                       true);
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   PopupBlockerTabHelper* popup_blocker_tab_helper =
       PopupBlockerTabHelper::FromWebContents(tab);
-  if (!popup_blocker_tab_helper->GetBlockedPopupsCount()) {
-    content::WindowedNotificationObserver observer(
-        chrome::NOTIFICATION_WEB_CONTENT_SETTINGS_CHANGED,
-        content::NotificationService::AllSources());
-    observer.Wait();
-  }
-
   EXPECT_EQ(1u, popup_blocker_tab_helper->GetBlockedPopupsCount());
 }
 

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabGravity="center"
+        app:tabPaddingEnd="20dp"
+        app:tabPaddingStart="20dp"
+        app:tabIndicatorFullWidth="true"
+        style="@style/TabLayoutStyle" >
+
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/qr_code_share_tab_label" />
+
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/qr_code_scan_tab_label" />
+    </android.support.design.widget.TabLayout>
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/close_button"
+        style="@style/ToolbarButton"
+        android:src="@drawable/btn_close"
+        android:contentDescription="@string/close"
+        app:tint="@color/standard_mode_tint" />
+
+    <ImageView
+        android:id="@+id/tab_line"
+        android:layout_width="match_parent"
+        style="@style/TabBarShadow"
+        android:layout_below="@+id/tab_layout"
+        android:importantForAccessibility="no"/>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/qrcode_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/tab_line"/>
+</RelativeLayout>

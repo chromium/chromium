@@ -3,9 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/path_service.h"
+#include "base/run_loop.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/login/login_manager_test.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
@@ -69,17 +74,28 @@ IN_PROC_BROWSER_TEST_F(OemAppPositionTest, PRE_ValidOemAppPosition) {
 IN_PROC_BROWSER_TEST_F(OemAppPositionTest, ValidOemAppPosition) {
   LoginUser(AccountId::FromUserEmailGaiaId(kTestUser, kTestUserGaiaId));
 
+  // Ensure apps that are installed upon sign-in are registered with the App
+  // Service, resolving any pending messages as a result of running async
+  // callbacks.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  ASSERT_TRUE(proxy);
+  proxy->FlushMojoCallsForTesting();
+
   AppListClientImpl* client = AppListClientImpl::GetInstance();
   ASSERT_TRUE(client);
   client->UpdateProfile();
   AppListModelUpdater* model_updater = test::GetModelUpdater(client);
 
+  // Ensure async callbacks are run.
+  base::RunLoop().RunUntilIdle();
+
   const ChromeAppListItem* oem_app = model_updater->FindItem(kOemAppId);
-  EXPECT_TRUE(oem_app);
+  ASSERT_TRUE(oem_app);
   EXPECT_TRUE(oem_app->position().IsValid());
 
   const ChromeAppListItem* oem_folder =
       model_updater->FindItem(ash::kOemFolderId);
-  EXPECT_TRUE(oem_folder);
+  ASSERT_TRUE(oem_folder);
   EXPECT_TRUE(oem_folder->position().IsValid());
 }

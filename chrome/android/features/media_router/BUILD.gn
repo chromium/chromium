@@ -14,11 +14,13 @@ android_library("java") {
     "$google_play_services_package:google_play_services_cast_framework_java",
     "$google_play_services_package:google_play_services_cast_java",
     "//base:base_java",
+    "//base:jni_java",
     "//chrome/android:chrome_java",
     "//services/media_session/public/cpp/android:media_session_java",
-    "//third_party/android_deps:android_support_compat_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/android_deps:android_support_v7_mediarouter_java",
+    "//third_party/android_deps:com_android_support_collections_java",
+    "//third_party/android_deps:com_android_support_mediarouter_v7_java",
+    "//third_party/android_deps:com_android_support_support_compat_java",
     "//third_party/android_media:android_media_java",
   ]
   java_files = [
@@ -62,6 +64,16 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/media/router/caf/remoting/RemotingNotificationController.java",
     "java/src/org/chromium/chrome/browser/media/router/caf/remoting/RemotingSessionController.java",
     "java/src/org/chromium/chrome/browser/media/router/caf/remoting/StreamPositionExtrapolator.java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouter.java",
+    "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterDialogController.java",
+    "java/src/org/chromium/chrome/browser/media/router/FlingingControllerBridge.java",
+    "java/src/org/chromium/chrome/browser/media/router/MediaStatusBridge.java",
   ]
 }
 
@@ -111,7 +123,6 @@ junit_binary("media_router_junit_tests") {
     ":java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//chrome/android:chrome_junit_test_support",
   ]
 }
 
@@ -129,22 +140,24 @@ java_strings_grd("java_strings_grd") {
   defines = chrome_grit_defines
   grd_file = "java/strings/android_chrome_media_router_strings.grd"
   outputs = [
+    "values/android_chrome_media_router_strings.xml",
     "values-am/android_chrome_media_router_strings.xml",
     "values-ar/android_chrome_media_router_strings.xml",
     "values-bg/android_chrome_media_router_strings.xml",
+    "values-bn/android_chrome_media_router_strings.xml",
     "values-ca/android_chrome_media_router_strings.xml",
     "values-cs/android_chrome_media_router_strings.xml",
     "values-da/android_chrome_media_router_strings.xml",
     "values-de/android_chrome_media_router_strings.xml",
     "values-el/android_chrome_media_router_strings.xml",
-    "values/android_chrome_media_router_strings.xml",
     "values-en-rGB/android_chrome_media_router_strings.xml",
     "values-es/android_chrome_media_router_strings.xml",
     "values-es-rUS/android_chrome_media_router_strings.xml",
+    "values-et/android_chrome_media_router_strings.xml",
     "values-fa/android_chrome_media_router_strings.xml",
     "values-fi/android_chrome_media_router_strings.xml",
-    "values-tl/android_chrome_media_router_strings.xml",
     "values-fr/android_chrome_media_router_strings.xml",
+    "values-gu/android_chrome_media_router_strings.xml",
     "values-hi/android_chrome_media_router_strings.xml",
     "values-hr/android_chrome_media_router_strings.xml",
     "values-hu/android_chrome_media_router_strings.xml",
@@ -152,11 +165,15 @@ java_strings_grd("java_strings_grd") {
     "values-it/android_chrome_media_router_strings.xml",
     "values-iw/android_chrome_media_router_strings.xml",
     "values-ja/android_chrome_media_router_strings.xml",
+    "values-kn/android_chrome_media_router_strings.xml",
     "values-ko/android_chrome_media_router_strings.xml",
     "values-lt/android_chrome_media_router_strings.xml",
     "values-lv/android_chrome_media_router_strings.xml",
-    "values-nl/android_chrome_media_router_strings.xml",
+    "values-ml/android_chrome_media_router_strings.xml",
+    "values-mr/android_chrome_media_router_strings.xml",
+    "values-ms/android_chrome_media_router_strings.xml",
     "values-nb/android_chrome_media_router_strings.xml",
+    "values-nl/android_chrome_media_router_strings.xml",
     "values-pl/android_chrome_media_router_strings.xml",
     "values-pt-rBR/android_chrome_media_router_strings.xml",
     "values-pt-rPT/android_chrome_media_router_strings.xml",
@@ -167,7 +184,10 @@ java_strings_grd("java_strings_grd") {
     "values-sr/android_chrome_media_router_strings.xml",
     "values-sv/android_chrome_media_router_strings.xml",
     "values-sw/android_chrome_media_router_strings.xml",
+    "values-ta/android_chrome_media_router_strings.xml",
+    "values-te/android_chrome_media_router_strings.xml",
     "values-th/android_chrome_media_router_strings.xml",
+    "values-tl/android_chrome_media_router_strings.xml",
     "values-tr/android_chrome_media_router_strings.xml",
     "values-uk/android_chrome_media_router_strings.xml",
     "values-vi/android_chrome_media_router_strings.xml",

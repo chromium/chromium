@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
-#include "chromeos/dbus/shill_property_changed_observer.h"
+#include "chromeos/dbus/shill/shill_property_changed_observer.h"
 
 namespace base {
 class DictionaryValue;
@@ -95,7 +95,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   base::ObserverList<Observer, true>::Unchecked observers_;
   std::vector<std::unique_ptr<NetworkSmsDeviceHandler>> device_handlers_;
   std::vector<std::unique_ptr<base::DictionaryValue>> received_messages_;
-  base::WeakPtrFactory<NetworkSmsHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<NetworkSmsHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkSmsHandler);
 };

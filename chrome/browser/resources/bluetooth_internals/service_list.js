@@ -8,17 +8,17 @@
  */
 
 cr.define('service_list', function() {
-  /** @const */ var ArrayDataModel = cr.ui.ArrayDataModel;
-  /** @const */ var ExpandableList = expandable_list.ExpandableList;
-  /** @const */ var ExpandableListItem = expandable_list.ExpandableListItem;
-  /** @const */ var Snackbar = snackbar.Snackbar;
-  /** @const */ var SnackbarType = snackbar.SnackbarType;
+  const ArrayDataModel = cr.ui.ArrayDataModel;
+  const ExpandableList = expandable_list.ExpandableList;
+  const ExpandableListItem = expandable_list.ExpandableListItem;
+  const Snackbar = snackbar.Snackbar;
+  const SnackbarType = snackbar.SnackbarType;
 
   /**
    * Property names that will be displayed in the ObjectFieldSet which contains
    * the ServiceInfo object.
    */
-  var PROPERTY_NAMES = {
+  const PROPERTY_NAMES = {
     id: 'ID',
     'uuid.uuid': 'UUID',
     isPrimary: 'Type',
@@ -36,7 +36,7 @@ cr.define('service_list', function() {
    * @constructor
    */
   function ServiceListItem(serviceInfo, deviceAddress) {
-    var listItem = new ExpandableListItem();
+    const listItem = new ExpandableListItem();
     listItem.__proto__ = ServiceListItem.prototype;
 
     /** @type {!bluetooth.mojom.ServiceInfo} */
@@ -69,30 +69,30 @@ cr.define('service_list', function() {
       });
 
       // Create content for display in brief content container.
-      var serviceHeaderText = document.createElement('div');
+      const serviceHeaderText = document.createElement('div');
       serviceHeaderText.textContent = 'Service:';
 
-      var serviceHeaderValue = document.createElement('div');
+      const serviceHeaderValue = document.createElement('div');
       serviceHeaderValue.textContent = this.info.uuid.uuid;
 
-      var serviceHeader = document.createElement('div');
+      const serviceHeader = document.createElement('div');
       serviceHeader.appendChild(serviceHeaderText);
       serviceHeader.appendChild(serviceHeaderValue);
       this.briefContent_.appendChild(serviceHeader);
 
       // Create content for display in expanded content container.
-      var serviceInfoHeader = document.createElement('h4');
+      const serviceInfoHeader = document.createElement('h4');
       serviceInfoHeader.textContent = 'Service Info';
 
-      var serviceDiv = document.createElement('div');
+      const serviceDiv = document.createElement('div');
       serviceDiv.classList.add('flex');
       serviceDiv.appendChild(this.serviceFieldSet_);
 
-      var characteristicsListHeader = document.createElement('h4');
+      const characteristicsListHeader = document.createElement('h4');
       characteristicsListHeader.textContent = 'Characteristics';
       this.characteristicList_ = new characteristic_list.CharacteristicList();
 
-      var infoDiv = document.createElement('div');
+      const infoDiv = document.createElement('div');
       infoDiv.classList.add('info-container');
       infoDiv.appendChild(serviceInfoHeader);
       infoDiv.appendChild(serviceDiv);
@@ -113,7 +113,7 @@ cr.define('service_list', function() {
    * @constructor
    * @extends {expandable_list.ExpandableList}
    */
-  var ServiceList = cr.ui.define('list');
+  const ServiceList = cr.ui.define('list');
 
   ServiceList.prototype = {
     __proto__: ExpandableList.prototype,

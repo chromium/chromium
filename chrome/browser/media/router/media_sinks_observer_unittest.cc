@@ -2,20 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/media/router/media_sinks_observer.h"
+
 #include "chrome/browser/media/router/test/mock_media_router.h"
 #include "chrome/browser/media/router/test/test_helper.h"
-#include "chrome/common/media_router/media_source_helper.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "chrome/common/media_router/media_source.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_router {
 
 TEST(MediaSinksObserverTest, OriginMatching) {
-  content::TestBrowserThreadBundle thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
   MockMediaRouter router;
   MediaSource source(
-      MediaSourceForPresentationUrl(GURL("https://presentation.com")));
+      MediaSource::ForPresentationUrl(GURL("https://presentation.com")));
   url::Origin origin = url::Origin::Create(GURL("https://origin.com"));
   std::vector<url::Origin> origin_list({origin});
   std::vector<MediaSink> sink_list;

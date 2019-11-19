@@ -1,0 +1,25 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//chrome/chrome_cleaner/mojom/pup.mojom"
+
+public_headers = [ "//chrome/chrome_cleaner/pup_data/pup_data.h" ]
+
+public_deps = [
+  "//chrome/chrome_cleaner/os:common_os",
+  "//chrome/chrome_cleaner/proto:shared_pup_enums_proto",
+  "//chrome/chrome_cleaner/pup_data:pup_data_base",
+  "//chrome/chrome_cleaner/settings:settings",
+  "//mojo/public/cpp/bindings:struct_traits",
+]
+
+traits_headers = [ "//chrome/chrome_cleaner/mojom/typemaps/pup_mojom_traits.h" ]
+sources = [
+  "//chrome/chrome_cleaner/mojom/typemaps/pup_mojom_traits.cc",
+]
+
+type_mappings = [
+  "chrome_cleaner.mojom.TraceLocation=::chrome_cleaner::UwS::TraceLocation",
+  "chrome_cleaner.mojom.PUP=::chrome_cleaner::PUPData::PUP",
+]

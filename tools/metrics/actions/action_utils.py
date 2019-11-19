@@ -9,6 +9,10 @@ infrastructure. Any changes to this file should also be done (manually) to the
 internal copy. Please contact tools/metrics/OWNERS for more details.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 
 class Error(Exception):
   pass
@@ -109,8 +113,8 @@ def CreateActionsFromSuffixes(actions_dict, action_suffix_nodes):
 
   # If action_to_suffixes_dict is not empty by the end, we have missing actions.
   if action_to_suffixes_dict:
-    raise UndefinedActionItemError('Following actions are missing: %s.'
-                                   %(action_to_suffixes_dict.keys()))
+    raise UndefinedActionItemError('Following actions are missing: %s.' %
+                                   (list(action_to_suffixes_dict.keys())))
 
 
 def _CreateActionToSuffixesDict(action_suffix_nodes):
@@ -173,7 +177,7 @@ def _CreateActionsFromSuffixes(actions_dict, action_to_suffixes_dict):
   """Creates new actions with action-suffix pairs and adds them to actions_dict.
 
   For every key (action name) in action_to_suffixes_dict, This function looks
-  to see wether it exists in actions_dict. If so it combines the Action object
+  to see whether it exists in actions_dict. If so it combines the Action object
   from actions_dict with all the Suffix objects from action_to_suffixes_dict to
   create new Action objects. New Action objects are added to actions_dict and
   the action name is removed from action_to_suffixes_dict.
@@ -187,7 +191,7 @@ def _CreateActionsFromSuffixes(actions_dict, action_to_suffixes_dict):
     True if any new action was added, False otherwise.
   """
   expanded_actions = set()
-  for action_name, suffixes in action_to_suffixes_dict.iteritems():
+  for action_name, suffixes in action_to_suffixes_dict.items():
     if action_name in actions_dict:
       existing_action = actions_dict[action_name]
       for suffix in suffixes:
@@ -220,8 +224,8 @@ def _CreateActionFromSuffix(actions_dict, action, suffix):
   else:
     (before, dot, after) = action.name.partition('.')
     if not after:
-      raise InvalidAffecteddActionNameError("Action name '%s' must contain a "
-                                            "'.'.", action.name)
+      raise InvalidAffecteddActionNameError(
+          "Action name '%s' must contain a '.'." % action.name)
     new_action_name = before + dot + suffix.name + suffix.separator + after
 
   new_action_description = action.description + ' ' + suffix.description

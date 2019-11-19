@@ -57,6 +57,7 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
   // Performs the load on a background thread.
   void DoLoadOnBackgroundThread(
       const base::FilePath& profile_path,
+      bool emit_experimental_uma,
       scoped_refptr<base::SequencedTaskRunner> main_sequenced_task_runner,
       std::unique_ptr<BookmarkLoadDetails> details,
       LoadCallback callback);

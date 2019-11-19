@@ -18,10 +18,6 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 
-#if defined(OS_POSIX)
-#include "base/files/file.h"
-#endif
-
 namespace base {
 
 class Pickle;

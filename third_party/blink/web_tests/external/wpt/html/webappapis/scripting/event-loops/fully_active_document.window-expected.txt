@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Tasks for documents that are not fully active are stored, and run when the documents becomes fully-active assert_equals: expected (string) "true" but got (object) null
+Harness: the test ran to completion.
+

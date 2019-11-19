@@ -45,10 +45,10 @@ ASH_EXPORT gfx::Rect GetDisplayWorkAreaBoundsInParent(aura::Window* window);
 ASH_EXPORT gfx::Rect GetDisplayWorkAreaBoundsInParentForLockScreen(
     aura::Window* window);
 
-// Returns the display's work area bounds on the default container.
-ASH_EXPORT gfx::Rect GetDisplayWorkAreaBoundsInParentForDefaultContainer(
+// Returns the display's work area bounds on the active desk container.
+ASH_EXPORT gfx::Rect GetDisplayWorkAreaBoundsInParentForActiveDeskContainer(
     aura::Window* window);
-ASH_EXPORT gfx::Rect GetDisplayWorkAreaBoundsInScreenForDefaultContainer(
+ASH_EXPORT gfx::Rect GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
     aura::Window* window);
 
 // Returns the bounds of the physical display containing the shelf for

@@ -1,13 +1,14 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into reffy-reports
 // (https://github.com/tidoust/reffy-reports)
-// Source: Service Workers 1 (https://w3c.github.io/ServiceWorker/v1/)
+// Source: Service Workers Nightly (https://w3c.github.io/ServiceWorker/)
 
 [SecureContext, Exposed=(Window,Worker)]
 interface ServiceWorker : EventTarget {
   readonly attribute USVString scriptURL;
   readonly attribute ServiceWorkerState state;
-  void postMessage(any message, optional sequence<object> transfer = []);
+  void postMessage(any message, sequence<object> transfer);
+  void postMessage(any message, optional PostMessageOptions options = {});
 
   // event
   attribute EventHandler onstatechange;
@@ -15,6 +16,7 @@ interface ServiceWorker : EventTarget {
 ServiceWorker includes AbstractWorker;
 
 enum ServiceWorkerState {
+  "parsed",
   "installing",
   "installed",
   "activating",
@@ -27,6 +29,7 @@ interface ServiceWorkerRegistration : EventTarget {
   readonly attribute ServiceWorker? installing;
   readonly attribute ServiceWorker? waiting;
   readonly attribute ServiceWorker? active;
+  [SameObject] readonly attribute NavigationPreloadManager navigationPreload;
 
   readonly attribute USVString scope;
   readonly attribute ServiceWorkerUpdateViaCache updateViaCache;
@@ -57,7 +60,7 @@ interface ServiceWorkerContainer : EventTarget {
   readonly attribute ServiceWorker? controller;
   readonly attribute Promise<ServiceWorkerRegistration> ready;
 
-  [NewObject] Promise<ServiceWorkerRegistration> register(USVString scriptURL, optional RegistrationOptions options);
+  [NewObject] Promise<ServiceWorkerRegistration> register(USVString scriptURL, optional RegistrationOptions options = {});
 
   [NewObject] Promise<any> getRegistration(optional USVString clientURL = "");
   [NewObject] Promise<FrozenArray<ServiceWorkerRegistration>> getRegistrations();
@@ -76,10 +79,24 @@ dictionary RegistrationOptions {
   ServiceWorkerUpdateViaCache updateViaCache = "imports";
 };
 
+[SecureContext, Exposed=(Window,Worker)]
+interface NavigationPreloadManager {
+  Promise<void> enable();
+  Promise<void> disable();
+  Promise<void> setHeaderValue(ByteString value);
+  Promise<NavigationPreloadState> getState();
+};
+
+dictionary NavigationPreloadState {
+  boolean enabled = false;
+  ByteString headerValue;
+};
+
 [Global=(Worker,ServiceWorker), Exposed=ServiceWorker]
 interface ServiceWorkerGlobalScope : WorkerGlobalScope {
   [SameObject] readonly attribute Clients clients;
   [SameObject] readonly attribute ServiceWorkerRegistration registration;
+  [SameObject] readonly attribute ServiceWorker serviceWorker;
 
   [NewObject] Promise<void> skipWaiting();
 
@@ -87,8 +104,7 @@ interface ServiceWorkerGlobalScope : WorkerGlobalScope {
   attribute EventHandler onactivate;
   attribute EventHandler onfetch;
 
-  // event
-  attribute EventHandler onmessage; // event.source of the message events is Client object
+  attribute EventHandler onmessage;
   attribute EventHandler onmessageerror;
 };
 
@@ -98,7 +114,8 @@ interface Client {
   readonly attribute FrameType frameType;
   readonly attribute DOMString id;
   readonly attribute ClientType type;
-  void postMessage(any message, optional sequence<object> transfer = []);
+  void postMessage(any message, sequence<object> transfer);
+  void postMessage(any message, optional PostMessageOptions options = {});
 };
 
 [Exposed=ServiceWorker]
@@ -121,7 +138,7 @@ enum FrameType {
 interface Clients {
   // The objects returned will be new instances every time
   [NewObject] Promise<any> get(DOMString id);
-  [NewObject] Promise<FrozenArray<Client>> matchAll(optional ClientQueryOptions options);
+  [NewObject] Promise<FrozenArray<Client>> matchAll(optional ClientQueryOptions options = {});
   [NewObject] Promise<WindowClient?> openWindow(USVString url);
   [NewObject] Promise<void> claim();
 };
@@ -138,8 +155,9 @@ enum ClientType {
   "all"
 };
 
-[Constructor(DOMString type, optional ExtendableEventInit eventInitDict), Exposed=ServiceWorker]
+[Exposed=ServiceWorker]
 interface ExtendableEvent : Event {
+  constructor(DOMString type, optional ExtendableEventInit eventInitDict = {});
   void waitUntil(Promise<any> f);
 };
 
@@ -147,21 +165,29 @@ dictionary ExtendableEventInit : EventInit {
   // Defined for the forward compatibility across the derived events
 };
 
-[Constructor(DOMString type, FetchEventInit eventInitDict), Exposed=ServiceWorker]
+[Exposed=ServiceWorker]
 interface FetchEvent : ExtendableEvent {
+  constructor(DOMString type, FetchEventInit eventInitDict);
   [SameObject] readonly attribute Request request;
+  readonly attribute Promise<any> preloadResponse;
   readonly attribute DOMString clientId;
+  readonly attribute DOMString resultingClientId;
+  readonly attribute DOMString replacesClientId;
 
   void respondWith(Promise<Response> r);
 };
 
 dictionary FetchEventInit : ExtendableEventInit {
   required Request request;
+  Promise<any> preloadResponse;
   DOMString clientId = "";
+  DOMString resultingClientId = "";
+  DOMString replacesClientId = "";
 };
 
-[Constructor(DOMString type, optional ExtendableMessageEventInit eventInitDict), Exposed=ServiceWorker]
+[Exposed=ServiceWorker]
 interface ExtendableMessageEvent : ExtendableEvent {
+  constructor(DOMString type, optional ExtendableMessageEventInit eventInitDict = {});
   readonly attribute any data;
   readonly attribute USVString origin;
   readonly attribute DOMString lastEventId;
@@ -177,19 +203,19 @@ dictionary ExtendableMessageEventInit : ExtendableEventInit {
   sequence<MessagePort> ports = [];
 };
 
-partial interface WindowOrWorkerGlobalScope {
+partial interface mixin WindowOrWorkerGlobalScope {
   [SecureContext, SameObject] readonly attribute CacheStorage caches;
 };
 
 [SecureContext, Exposed=(Window,Worker)]
 interface Cache {
-  [NewObject] Promise<any> match(RequestInfo request, optional CacheQueryOptions options);
-  [NewObject] Promise<FrozenArray<Response>> matchAll(optional RequestInfo request, optional CacheQueryOptions options);
+  [NewObject] Promise<any> match(RequestInfo request, optional CacheQueryOptions options = {});
+  [NewObject] Promise<FrozenArray<Response>> matchAll(optional RequestInfo request, optional CacheQueryOptions options = {});
   [NewObject] Promise<void> add(RequestInfo request);
   [NewObject] Promise<void> addAll(sequence<RequestInfo> requests);
   [NewObject] Promise<void> put(RequestInfo request, Response response);
-  [NewObject] Promise<boolean> delete(RequestInfo request, optional CacheQueryOptions options);
-  [NewObject] Promise<FrozenArray<Request>> keys(optional RequestInfo request, optional CacheQueryOptions options);
+  [NewObject] Promise<boolean> delete(RequestInfo request, optional CacheQueryOptions options = {});
+  [NewObject] Promise<FrozenArray<Request>> keys(optional RequestInfo request, optional CacheQueryOptions options = {});
 };
 
 dictionary CacheQueryOptions {
@@ -200,7 +226,7 @@ dictionary CacheQueryOptions {
 
 [SecureContext, Exposed=(Window,Worker)]
 interface CacheStorage {
-  [NewObject] Promise<any> match(RequestInfo request, optional MultiCacheQueryOptions options);
+  [NewObject] Promise<any> match(RequestInfo request, optional MultiCacheQueryOptions options = {});
   [NewObject] Promise<boolean> has(DOMString cacheName);
   [NewObject] Promise<Cache> open(DOMString cacheName);
   [NewObject] Promise<boolean> delete(DOMString cacheName);

@@ -93,7 +93,7 @@ bool SyncErrorInfoBarDelegate::Accept() {
   if (ShouldShowSyncSignin(error_state_)) {
     [presenter_ showReauthenticateSignin];
   } else if (ShouldShowSyncSettings(error_state_)) {
-    [presenter_ showSyncSettings];
+    [presenter_ showGoogleServicesSettings];
   } else if (ShouldShowSyncPassphraseSettings(error_state_)) {
     [presenter_ showSyncPassphraseSettings];
   }

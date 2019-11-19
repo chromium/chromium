@@ -5,6 +5,7 @@
 #include "cc/test/geometry_test_utils.h"
 
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/transform.h"
 
@@ -19,7 +20,8 @@ void ExpectTransformationMatrixEq(const gfx::Transform& expected,
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
       EXPECT_FLOAT_EQ(expected.matrix().get(row, col),
-                      actual.matrix().get(row, col));
+                      actual.matrix().get(row, col))
+          << "row: " << row << " col: " << col;
     }
   }
 }
@@ -30,7 +32,8 @@ void ExpectTransformationMatrixNear(const gfx::Transform& expected,
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
       EXPECT_NEAR(expected.matrix().get(row, col),
-                  actual.matrix().get(row, col), abs_error);
+                  actual.matrix().get(row, col), abs_error)
+          << "row: " << row << " col: " << col;
     }
   }
 }

@@ -4,8 +4,13 @@
 
 #include "chromecast/media/cma/backend/alsa/mixer_output_stream_alsa.h"
 
+#include <algorithm>
+#include <limits>
+#include <string>
+
 #include "base/command_line.h"
 #include "base/stl_util.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/media/cma/backend/alsa/alsa_wrapper.h"
@@ -104,6 +109,12 @@ constexpr unsigned int kFallbackSampleRateHiRes = 96000;
 // the direction explicitly.
 constexpr int* kAlsaDirDontCare = nullptr;
 
+// The snd_pcm_resume function can return EAGAIN error code, so call should be
+// retried. Below constants define retries params.
+constexpr int kRestoreAfterSuspensionAttempts = 10;
+constexpr base::TimeDelta kRestoreAfterSuspensionAttemptDelay =
+    base::TimeDelta::FromMilliseconds(20);
+
 // These sample formats will be tried in order. 32 bit samples is ideal, but
 // some devices do not support 32 bit samples.
 constexpr snd_pcm_format_t kPreferredSampleFormats[] = {
@@ -180,6 +191,10 @@ bool MixerOutputStreamAlsa::Start(int sample_rate, int channels) {
   return true;
 }
 
+int MixerOutputStreamAlsa::GetNumChannels() {
+  return num_output_channels_;
+}
+
 int MixerOutputStreamAlsa::GetSampleRate() {
   return sample_rate_;
 }
@@ -226,6 +241,11 @@ bool MixerOutputStreamAlsa::Write(const float* data,
     while ((frames_or_error =
                 alsa_->PcmWritei(pcm_, output_data, frames_left)) < 0) {
       *out_playback_interrupted = true;
+      if (frames_or_error == -EBADFD &&
+          MaybeRecoverDeviceFromSuspendedState()) {
+        // Write data again, if recovered.
+        continue;
+      }
       RETURN_FALSE_ON_ERROR(PcmRecover, pcm_, frames_or_error,
                             kPcmRecoverIsSilent);
     }
@@ -267,8 +287,8 @@ void MixerOutputStreamAlsa::Stop() {
   LOG(INFO) << "snd_pcm_close: handle=" << pcm_;
   int err = alsa_->PcmClose(pcm_);
   if (err < 0) {
-   LOG(ERROR) << "snd_pcm_close error, leaking handle: "
-              << alsa_->StrError(err);
+    LOG(ERROR) << "snd_pcm_close error, leaking handle: "
+               << alsa_->StrError(err);
   }
   pcm_ = nullptr;
 }
@@ -491,6 +511,34 @@ void MixerOutputStreamAlsa::UpdateRenderingDelay() {
   rendering_delay_.delay_microseconds = static_cast<int64_t>(delay_frames) *
                                         base::Time::kMicrosecondsPerSecond /
                                         sample_rate_;
+}
+
+bool MixerOutputStreamAlsa::MaybeRecoverDeviceFromSuspendedState() {
+  if (alsa_->PcmState(pcm_) != SND_PCM_STATE_SUSPENDED) {
+    LOG(WARNING) << "Alsa output is not suspended";
+    return false;
+  }
+  if (alsa_->PcmHwParamsCanResume(pcm_hw_params_)) {
+    LOG(INFO) << "Trying to resume output";
+    for (int attempt = 0; attempt < kRestoreAfterSuspensionAttempts;
+         ++attempt) {
+      int err = alsa_->PcmResume(pcm_);
+      if (err == 0) {
+        LOG(INFO) << "ALSA output is resumed from suspended state";
+        return true;
+      }
+      if (err != -EAGAIN) {
+        // If PcmResume failed or device doesn't support resume, try to use
+        // PcmPrepare.
+        err = alsa_->PcmPrepare(pcm_);
+        LOG_IF(INFO, err == 0)
+            << "ALSA output is recovered from suspended state";
+        return err == 0;
+      }
+      base::PlatformThread::Sleep(kRestoreAfterSuspensionAttemptDelay);
+    }
+  }
+  return false;
 }
 
 }  // namespace media

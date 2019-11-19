@@ -11,13 +11,13 @@ namespace syncer {
 FakeEncryptor::~FakeEncryptor() {}
 
 bool FakeEncryptor::EncryptString(const std::string& plaintext,
-                                  std::string* ciphertext) {
+                                  std::string* ciphertext) const {
   base::Base64Encode(plaintext, ciphertext);
   return true;
 }
 
 bool FakeEncryptor::DecryptString(const std::string& ciphertext,
-                                  std::string* plaintext) {
+                                  std::string* plaintext) const {
   return base::Base64Decode(ciphertext, plaintext);
 }
 

@@ -9,7 +9,7 @@
 Polymer({
   is: 'oobe-welcome-md',
 
-  behaviors: [I18nBehavior, OobeDialogHostBehavior],
+  behaviors: [I18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 
   properties: {
     /**
@@ -74,8 +74,13 @@ Polymer({
     /**
      * Controls displaying of "Enable debugging features" link.
      */
-    debuggingLinkVisible: Boolean,
+    debuggingLinkVisible_: Boolean,
   },
+
+  /** Overridden from LoginScreenBehavior. */
+  EXTERNAL_API: [
+    'onInputMethodIdSetFromBackend',
+  ],
 
   /**
    * Flag that ensures that OOBE configuration is applied only once.
@@ -85,14 +90,29 @@ Polymer({
 
   /** @override */
   ready: function() {
+    this.initializeLoginScreen('WelcomeScreen', {
+      resetAllowed: true,
+      enableDebuggingAllowed: true,
+      enterDemoModeAllowed: true,
+      noAnimatedTransition: true,
+      postponeEnrollmentAllowed: true,
+    });
     this.updateLocalizedContent();
   },
 
-  onBeforeShow: function() {
+  /**
+   * Event handler that is invoked just before the screen is shown.
+   * TODO (https://crbug.com/948932): Define this type.
+   * @param {Object} data Screen init payload.
+   */
+  onBeforeShow: function(data) {
     this.behaviors.forEach((behavior) => {
       if (behavior.onBeforeShow)
         behavior.onBeforeShow.call(this);
     });
+
+    this.debuggingLinkVisible_ =
+        data && 'isDeveloperMode' in data && data['isDeveloperMode'];
 
     if (this.fullScreenDialog)
       this.$.welcomeScreen.fullScreenDialog = true;
@@ -111,12 +131,17 @@ Polymer({
 
   /**
    * This is called when UI strings are changed.
+   * Overridden from LoginScreenBehavior.
    */
   updateLocalizedContent: function() {
-    this.languages = loadTimeData.getValue('languageList');
-    this.keyboards = loadTimeData.getValue('inputMethodsList');
-    this.timezones = loadTimeData.getValue('timezoneList');
-    this.highlightStrength = loadTimeData.getValue('highlightStrength');
+    this.languages = /** @type {!Array<OobeTypes.LanguageDsc>} */ (
+        loadTimeData.getValue('languageList'));
+    this.keyboards = /** @type {!Array<OobeTypes.IMEDsc>} */ (
+        loadTimeData.getValue('inputMethodsList'));
+    this.timezones = /** @type {!Array<OobeTypes.TimezoneDsc>} */ (
+        loadTimeData.getValue('timezoneList'));
+    this.highlightStrength =
+        /** @type {string} */ (loadTimeData.getValue('highlightStrength'));
 
     this.$.welcomeScreen.i18nUpdateLocale();
     this.i18nUpdateLocale();
@@ -135,6 +160,7 @@ Polymer({
 
   /**
    * Called when OOBE configuration is loaded.
+   * Overridden from LoginScreenBehavior.
    * @param {!OobeTypes.OobeConfiguration} configuration
    */
   updateOobeConfiguration: function(configuration) {
@@ -156,7 +182,7 @@ Polymer({
     if (configuration.language) {
       var currentLanguage = loadTimeData.getString('language');
       if (currentLanguage != configuration.language) {
-        this.screen.onLanguageSelected_(configuration.language);
+        this.applySelectedLanguage_(configuration.language);
         // Trigger language change without marking it as applied.
         // applyOobeConfiguration will be called again once language change
         // was applied.
@@ -164,7 +190,7 @@ Polymer({
       }
     }
     if (configuration.inputMethod)
-      this.screen.onKeyboardSelected_(configuration.inputMethod);
+      this.applySelectedLkeyboard_(configuration.inputMethod);
 
     if (configuration.welcomeNext)
       this.onWelcomeNextButtonClicked_();
@@ -177,7 +203,8 @@ Polymer({
 
   /**
    * Updates "device in tablet mode" state when tablet mode is changed.
-   * @param {Boolean} isInTabletMode True when in tablet mode.
+   * Overridden from LoginScreenBehavior.
+   * @param {boolean} isInTabletMode True when in tablet mode.
    */
   setTabletModeState: function(isInTabletMode) {
     this.$.welcomeScreen.isInTabletMode = isInTabletMode;
@@ -260,6 +287,15 @@ Polymer({
   },
 
   /**
+   * Handles "enable-debugging" link for "Welcome" screen.
+   *
+   * @private
+   */
+  onEnableDebuggingClicked_: function() {
+    cr.ui.Oobe.handleAccelerator(ACCELERATOR_ENABLE_DEBBUGING);
+  },
+
+  /**
    * Handle "launch-advanced-options" button for "Welcome" screen.
    *
    * @private
@@ -305,7 +341,17 @@ Polymer({
     var item = event.detail;
     var languageId = item.value;
     this.currentLanguage = item.title;
-    this.screen.onLanguageSelected_(languageId);
+    this.applySelectedLanguage_(languageId);
+  },
+
+  /**
+   * Switch UI language.
+   *
+   * @param {string} languageId
+   * @private
+   */
+  applySelectedLanguage_: function(languageId) {
+    chrome.send('WelcomeScreen.setLocaleId', [languageId]);
   },
 
   /**
@@ -318,14 +364,25 @@ Polymer({
     var item = event.detail;
     var inputMethodId = item.value;
     this.currentKeyboard = item.title;
-    this.screen.onKeyboardSelected_(inputMethodId);
+    this.applySelectedLkeyboard_(inputMethodId);
+  },
+
+  /**
+   * Switch keyboard layout.
+   *
+   * @param {string} inputMethodId
+   * @private
+   */
+  applySelectedLkeyboard_: function(inputMethodId) {
+    chrome.send('WelcomeScreen.setInputMethodId', [inputMethodId]);
   },
 
   onLanguagesChanged_: function() {
-    this.currentLanguage = getSelectedTitle(this.languages);
+    this.currentLanguage =
+        getSelectedTitle(/** @type {!SelectListType} */ (this.languages));
   },
 
-  setSelectedKeyboard: function(keyboard_id) {
+  onInputMethodIdSetFromBackend: function(keyboard_id) {
     var found = false;
     for (var i = 0; i < this.keyboards.length; ++i) {
       if (this.keyboards[i].value != keyboard_id) {
@@ -376,8 +433,9 @@ Polymer({
    * @param {!Event} event
    */
   onA11yOptionChanged_: function(event) {
-    chrome.send(
-        event.currentTarget.chromeMessage, [event.currentTarget.checked]);
+    var a11ytarget = /** @type {{chromeMessage: string, checked: boolean}} */ (
+        event.currentTarget);
+    chrome.send(a11ytarget.chromeMessage, [a11ytarget.checked]);
   },
 
   /** ******************** Timezone section ******************* */
@@ -402,7 +460,7 @@ Polymer({
     if (!item)
       return;
 
-    this.screen.onTimezoneSelected_(item.value);
+    chrome.send('WelcomeScreen.setTimezoneId', [item.value]);
   },
 
   /** ******************** AdvancedOptions section ******************* */

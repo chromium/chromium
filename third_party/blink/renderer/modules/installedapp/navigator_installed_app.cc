@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "third_party/blink/public/platform/modules/installedapp/web_related_application.h"
 #include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -19,6 +18,7 @@
 #include "third_party/blink/renderer/modules/installedapp/installed_app_controller.h"
 #include "third_party/blink/renderer/modules/installedapp/related_application.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -51,31 +51,14 @@ ScriptPromise NavigatorInstalledApp::getInstalledRelatedApps(
       script_state);
 }
 
-class RelatedAppArray {
-  STATIC_ONLY(RelatedAppArray);
-
- public:
-  using WebType = const WebVector<WebRelatedApplication>&;
-
-  static HeapVector<Member<RelatedApplication>> Take(
-      ScriptPromiseResolver*,
-      const WebVector<WebRelatedApplication>& web_info) {
-    HeapVector<Member<RelatedApplication>> applications;
-    for (const auto& web_application : web_info)
-      applications.push_back(RelatedApplication::Create(
-          web_application.platform, web_application.url, web_application.id));
-    return applications;
-  }
-};
-
 ScriptPromise NavigatorInstalledApp::getInstalledRelatedApps(
     ScriptState* script_state) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
   InstalledAppController* app_controller = Controller();
   if (!app_controller) {  // If the associated frame is detached
-    DOMException* exception = DOMException::Create(
+    auto* exception = MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "The object is no longer associated to a document.");
     resolver->Reject(exception);
@@ -83,16 +66,17 @@ ScriptPromise NavigatorInstalledApp::getInstalledRelatedApps(
   }
 
   if (!app_controller->GetSupplementable()->IsMainFrame()) {
-    DOMException* exception =
-        DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                             "getInstalledRelatedApps() is only supported in "
-                             "top-level browsing contexts.");
+    auto* exception = MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "getInstalledRelatedApps() is only supported in "
+        "top-level browsing contexts.");
     resolver->Reject(exception);
     return promise;
   }
 
   app_controller->GetInstalledRelatedApps(
-      std::make_unique<CallbackPromiseAdapter<RelatedAppArray, void>>(
+      std::make_unique<
+          CallbackPromiseAdapter<HeapVector<Member<RelatedApplication>>, void>>(
           resolver));
   return promise;
 }

@@ -66,10 +66,9 @@ class ExtensionWebUI {
 
   // Get the favicon for the extension by getting an icon from the manifest.
   // Note. |callback| is always run asynchronously.
-  static void GetFaviconForURL(
-      Profile* profile,
-      const GURL& page_url,
-      const favicon_base::FaviconResultsCallback& callback);
+  static void GetFaviconForURL(Profile* profile,
+                               const GURL& page_url,
+                               favicon_base::FaviconResultsCallback callback);
 
  private:
   // Unregister the specified override, and if it's the currently active one,

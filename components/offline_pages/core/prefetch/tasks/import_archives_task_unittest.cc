@@ -29,20 +29,62 @@ namespace {
 const int64_t kTestOfflineID = 1111;
 const int64_t kTestOfflineID2 = 223344;
 const int64_t kTestOfflineID3 = 987;
-const GURL kTestURL("http://sample.org");
-const GURL kTestURL2("http://sample.org");
-const GURL kTestFinalURL("https://sample.org/foo");
-const GURL kTestFinalURL2("https://sample.org/foo");
-const std::string kTestGUID("C56A4180-65AA-42EC-A945-5FD21DEC0538");
-const ClientId kTestClientID("Foo", kTestGUID);
-const std::string kTestGUID2("784f1b8b-6a32-4535-9751-ade05f947aa9");
-const ClientId kTestClientID2("Foo2", kTestGUID2);
-const base::string16 kTestTitle = base::ASCIIToUTF16("Hello");
-const base::string16 kTestTitle2 = base::ASCIIToUTF16("Hello2");
-const base::FilePath kTestFilePath(FILE_PATH_LITERAL("foo"));
-const base::FilePath kTestFilePath2(FILE_PATH_LITERAL("foo2"));
+GURL TestURL() {
+  return GURL("http://sample.org");
+}
+GURL TestURL2() {
+  return GURL("http://sample.org");
+}
+GURL TestFinalURL() {
+  return GURL("https://sample.org/foo");
+}
+GURL TestFinalURL2() {
+  return GURL("https://sample.org/foo");
+}
+std::string TestGUID() {
+  return "C56A4180-65AA-42EC-A945-5FD21DEC0538";
+}
+ClientId TestClientID() {
+  return ClientId("Foo", TestGUID());
+}
+std::string TestGUID2() {
+  return "784f1b8b-6a32-4535-9751-ade05f947aa9";
+}
+ClientId TestClientID2() {
+  return ClientId("Foo2", TestGUID2());
+}
+base::string16 TestTitle() {
+  return base::UTF8ToUTF16("Hello");
+}
+base::string16 TestTitle2() {
+  return base::UTF8ToUTF16("Hello2");
+}
+base::FilePath TestFilePath() {
+  return base::FilePath(FILE_PATH_LITERAL("foo"));
+}
+base::FilePath TestFilePath2() {
+  return base::FilePath(FILE_PATH_LITERAL("foo2"));
+}
 const int64_t kTestFileSize = 88888;
 const int64_t kTestFileSize2 = 999;
+GURL TestFaviconURL() {
+  return GURL("http://sample.org/favicon.png");
+}
+GURL TestFaviconURL2() {
+  return GURL("http://sample.org/favicon2.png");
+}
+std::string TestSnippet() {
+  return "test snippet";
+}
+std::string TestSnippet2() {
+  return "test snippet 2";
+}
+std::string TestAttribution() {
+  return "test attribution";
+}
+std::string TestAttribution2() {
+  return "test attribution 2";
+}
 
 class TestPrefetchImporter : public PrefetchImporter {
  public:
@@ -82,29 +124,35 @@ void ImportArchivesTaskTest::SetUp() {
   PrefetchItem item;
   item.offline_id = kTestOfflineID;
   item.state = PrefetchItemState::DOWNLOADED;
-  item.url = kTestURL;
-  item.guid = kTestGUID;
-  item.final_archived_url = kTestFinalURL;
-  item.client_id = kTestClientID;
-  item.title = kTestTitle;
-  item.file_path = kTestFilePath;
+  item.url = TestURL();
+  item.guid = TestGUID();
+  item.final_archived_url = TestFinalURL();
+  item.client_id = TestClientID();
+  item.title = TestTitle();
+  item.file_path = TestFilePath();
   item.file_size = kTestFileSize;
   item.creation_time = base::Time::Now();
   item.freshness_time = item.creation_time;
+  item.favicon_url = TestFaviconURL();
+  item.snippet = TestSnippet();
+  item.attribution = TestAttribution();
   EXPECT_TRUE(store_util()->InsertPrefetchItem(item));
 
   PrefetchItem item2;
   item2.offline_id = kTestOfflineID2;
   item2.state = PrefetchItemState::DOWNLOADED;
-  item2.url = kTestURL2;
-  item2.guid = kTestGUID2;
-  item2.final_archived_url = kTestFinalURL2;
-  item2.client_id = kTestClientID2;
-  item2.title = kTestTitle2;
-  item2.file_path = kTestFilePath2;
+  item2.url = TestURL2();
+  item2.guid = TestGUID2();
+  item2.final_archived_url = TestFinalURL2();
+  item2.client_id = TestClientID2();
+  item2.title = TestTitle2();
+  item2.file_path = TestFilePath2();
   item2.file_size = kTestFileSize2;
   item2.creation_time = base::Time::Now();
   item2.freshness_time = item.creation_time;
+  item2.favicon_url = TestFaviconURL2();
+  item2.snippet = TestSnippet2();
+  item2.attribution = TestAttribution2();
   EXPECT_TRUE(store_util()->InsertPrefetchItem(item2));
 
   PrefetchItem item3;
@@ -149,20 +197,26 @@ TEST_F(ImportArchivesTaskTest, Importing) {
     archive2 = importer()->archives()[0];
   }
   EXPECT_EQ(kTestOfflineID, archive1.offline_id);
-  EXPECT_EQ(kTestClientID, archive1.client_id);
-  EXPECT_EQ(kTestURL, archive1.url);
-  EXPECT_EQ(kTestFinalURL, archive1.final_archived_url);
-  EXPECT_EQ(kTestTitle, archive1.title);
-  EXPECT_EQ(kTestFilePath, archive1.file_path);
+  EXPECT_EQ(TestClientID(), archive1.client_id);
+  EXPECT_EQ(TestURL(), archive1.url);
+  EXPECT_EQ(TestFinalURL(), archive1.final_archived_url);
+  EXPECT_EQ(TestTitle(), archive1.title);
+  EXPECT_EQ(TestFilePath(), archive1.file_path);
   EXPECT_EQ(kTestFileSize, archive1.file_size);
+  EXPECT_EQ(TestFaviconURL(), archive1.favicon_url);
+  EXPECT_EQ(TestSnippet(), archive1.snippet);
+  EXPECT_EQ(TestAttribution(), archive1.attribution);
 
   EXPECT_EQ(kTestOfflineID2, archive2.offline_id);
-  EXPECT_EQ(kTestClientID2, archive2.client_id);
-  EXPECT_EQ(kTestURL2, archive2.url);
-  EXPECT_EQ(kTestFinalURL2, archive2.final_archived_url);
-  EXPECT_EQ(kTestTitle2, archive2.title);
-  EXPECT_EQ(kTestFilePath2, archive2.file_path);
+  EXPECT_EQ(TestClientID2(), archive2.client_id);
+  EXPECT_EQ(TestURL2(), archive2.url);
+  EXPECT_EQ(TestFinalURL2(), archive2.final_archived_url);
+  EXPECT_EQ(TestTitle2(), archive2.title);
+  EXPECT_EQ(TestFilePath2(), archive2.file_path);
   EXPECT_EQ(kTestFileSize2, archive2.file_size);
+  EXPECT_EQ(TestFaviconURL2(), archive2.favicon_url);
+  EXPECT_EQ(TestSnippet2(), archive2.snippet);
+  EXPECT_EQ(TestAttribution2(), archive2.attribution);
 }
 
 }  // namespace offline_pages

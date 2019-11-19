@@ -22,7 +22,7 @@
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/chrome/test/testing_application_context.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "net/log/test_net_log.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -65,7 +65,7 @@ class BandwidthManagementTableViewControllerTest
         initWithBrowserState:chrome_browser_state_.get()];
   }
 
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   net::TestNetLog net_log_;
   IOSChromeScopedTestingLocalState local_state_;
 

@@ -21,8 +21,7 @@ ImageController::ImageController(
     base::SequencedTaskRunner* origin_task_runner,
     scoped_refptr<base::SequencedTaskRunner> worker_task_runner)
     : worker_task_runner_(std::move(worker_task_runner)),
-      origin_task_runner_(origin_task_runner),
-      weak_ptr_factory_(this) {
+      origin_task_runner_(origin_task_runner) {
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -129,11 +128,6 @@ void ImageController::StopWorkerTasks() {
   image_decode_queue_.clear();
 }
 
-void ImageController::SetPaintWorkletLayerPainter(
-    std::unique_ptr<PaintWorkletLayerPainter> painter) {
-  paint_worklet_image_cache_.SetPaintWorkletLayerPainter(std::move(painter));
-}
-
 void ImageController::SetImageDecodeCache(ImageDecodeCache* cache) {
   DCHECK(!cache_ || !cache);
 
@@ -152,27 +146,7 @@ void ImageController::SetImageDecodeCache(ImageDecodeCache* cache) {
   }
 }
 
-void ImageController::ConvertPaintWorkletImagesToTask(
-    std::vector<DrawImage>* sync_decoded_images,
-    std::vector<scoped_refptr<TileTask>>* tasks) {
-  for (auto it = sync_decoded_images->begin();
-       it != sync_decoded_images->end();) {
-    if (!it->paint_image().IsPaintWorklet()) {
-      ++it;
-      continue;
-    }
-    scoped_refptr<TileTask> result =
-        paint_worklet_image_cache_.GetTaskForPaintWorkletImage(*it);
-    DCHECK(result);
-    tasks->push_back(std::move(result));
-    // Remove it so that there is no need to check whether an image is
-    // PaintWorklet generated or not in TileManager's
-    // work_to_schedule->extra_prepaint_images.insert.
-    it = sync_decoded_images->erase(it);
-  }
-}
-
-void ImageController::ConvertDataImagesToTasks(
+void ImageController::ConvertImagesToTasks(
     std::vector<DrawImage>* sync_decoded_images,
     std::vector<scoped_refptr<TileTask>>* tasks,
     bool* has_at_raster_images,
@@ -181,10 +155,10 @@ void ImageController::ConvertDataImagesToTasks(
   *has_at_raster_images = false;
   for (auto it = sync_decoded_images->begin();
        it != sync_decoded_images->end();) {
-    if (it->paint_image().IsPaintWorklet()) {
-      ++it;
-      continue;
-    }
+    // PaintWorklet images should not be included in this set; they have already
+    // been painted before raster and so do not need raster-time work.
+    DCHECK(!it->paint_image().IsPaintWorklet());
+
     ImageDecodeCache::TaskResult result =
         cache_->GetTaskForImageAndRef(*it, tracing_info);
     *has_at_raster_images |= result.IsAtRaster();
@@ -212,8 +186,8 @@ std::vector<scoped_refptr<TileTask>> ImageController::SetPredecodeImages(
     const ImageDecodeCache::TracingInfo& tracing_info) {
   std::vector<scoped_refptr<TileTask>> new_tasks;
   bool has_at_raster_images = false;
-  ConvertDataImagesToTasks(&images, &new_tasks, &has_at_raster_images,
-                           tracing_info);
+  ConvertImagesToTasks(&images, &new_tasks, &has_at_raster_images,
+                       tracing_info);
   UnrefImages(predecode_locked_images_);
   predecode_locked_images_ = std::move(images);
   return new_tasks;

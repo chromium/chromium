@@ -31,10 +31,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_H_
 
 #include <stdint.h>
+#include <memory>
 
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
@@ -47,8 +50,54 @@ WTF_EXPORT bool IsBeforeThreadCreated();
 WTF_EXPORT void WillCreateThread();
 #endif
 
+class AtomicStringTable;
+struct ICUConverterWrapper;
+
+class WTF_EXPORT Threading {
+  DISALLOW_NEW();
+
+ public:
+  Threading();
+  ~Threading();
+
+  AtomicStringTable& GetAtomicStringTable() { return *atomic_string_table_; }
+
+  ICUConverterWrapper& CachedConverterICU() { return *cached_converter_icu_; }
+
+  base::PlatformThreadId ThreadId() const { return thread_id_; }
+
+  // Must be called on the main thread before any callers to wtfThreadData().
+  static void Initialize();
+
+#if defined(OS_WIN) && defined(COMPILER_MSVC)
+  static size_t ThreadStackSize();
+#endif
+
+ private:
+  std::unique_ptr<AtomicStringTable> atomic_string_table_;
+  std::unique_ptr<ICUConverterWrapper> cached_converter_icu_;
+
+  base::PlatformThreadId thread_id_;
+
+#if defined(OS_WIN) && defined(COMPILER_MSVC)
+  size_t thread_stack_size_ = 0u;
+#endif
+
+  static ThreadSpecific<Threading>* static_data_;
+  friend Threading& WtfThreading();
+
+  DISALLOW_COPY_AND_ASSIGN(Threading);
+};
+
+inline Threading& WtfThreading() {
+  DCHECK(Threading::static_data_);
+  return **Threading::static_data_;
+}
+
 }  // namespace WTF
 
 using WTF::CurrentThread;
+using WTF::Threading;
+using WTF::WtfThreading;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_H_

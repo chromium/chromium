@@ -13,7 +13,7 @@ namespace mojo {
 namespace {
 
 content::mojom::ResourceTypeStatPtr StatToMojo(
-    const blink::WebCache::ResourceTypeStat& obj) {
+    const blink::WebCacheResourceTypeStat& obj) {
   content::mojom::ResourceTypeStatPtr stat =
       content::mojom::ResourceTypeStat::New();
   stat->count = obj.count;
@@ -22,9 +22,9 @@ content::mojom::ResourceTypeStatPtr StatToMojo(
   return stat;
 }
 
-blink::WebCache::ResourceTypeStat StatFromMojo(
+blink::WebCacheResourceTypeStat StatFromMojo(
     const content::mojom::ResourceTypeStat& obj) {
-  blink::WebCache::ResourceTypeStat stat;
+  blink::WebCacheResourceTypeStat stat;
   stat.count = base::saturated_cast<size_t>(obj.count);
   stat.size = base::saturated_cast<size_t>(obj.size);
   stat.decoded_size = base::saturated_cast<size_t>(obj.decoded_size);
@@ -36,8 +36,8 @@ blink::WebCache::ResourceTypeStat StatFromMojo(
 // static
 content::mojom::ResourceTypeStatsPtr
 TypeConverter<content::mojom::ResourceTypeStatsPtr,
-              blink::WebCache::ResourceTypeStats>::
-    Convert(const blink::WebCache::ResourceTypeStats& obj) {
+              blink::WebCacheResourceTypeStats>::
+    Convert(const blink::WebCacheResourceTypeStats& obj) {
   content::mojom::ResourceTypeStatsPtr stats =
       content::mojom::ResourceTypeStats::New();
   stats->images = StatToMojo(obj.images);
@@ -50,15 +50,15 @@ TypeConverter<content::mojom::ResourceTypeStatsPtr,
 }
 
 // static
-blink::WebCache::ResourceTypeStats
-TypeConverter<blink::WebCache::ResourceTypeStats,
+blink::WebCacheResourceTypeStats
+TypeConverter<blink::WebCacheResourceTypeStats,
               content::mojom::ResourceTypeStats>::
     Convert(const content::mojom::ResourceTypeStats& obj) {
   if (!obj.images || !obj.css_style_sheets || !obj.scripts ||
       !obj.xsl_style_sheets || !obj.fonts || !obj.other) {
     return {};
   }
-  blink::WebCache::ResourceTypeStats stats;
+  blink::WebCacheResourceTypeStats stats;
   stats.images = StatFromMojo(*obj.images);
   stats.css_style_sheets = StatFromMojo(*obj.css_style_sheets);
   stats.scripts = StatFromMojo(*obj.scripts);

@@ -64,8 +64,8 @@ class CSPHandler : public ManifestHandler {
   CSPHandler();
   ~CSPHandler() override;
 
+  // ManifestHandler override:
   bool Parse(Extension* extension, base::string16* error) override;
-  bool AlwaysParseForType(Manifest::Type type) const override;
 
  private:
   // Parses the "content_security_policy" dictionary in the manifest.
@@ -76,6 +76,7 @@ class CSPHandler : public ManifestHandler {
   bool ParseExtensionPagesCSP(Extension* extension,
                               base::string16* error,
                               base::StringPiece manifest_key,
+                              bool secure_only,
                               const base::Value* content_security_policy);
 
   // Parses the content security policy specified in the manifest for isolated
@@ -89,9 +90,11 @@ class CSPHandler : public ManifestHandler {
                        base::StringPiece manifest_key,
                        const base::Value* sandbox_csp);
 
-  // Sets the default CSP value for the extension.
-  bool SetDefaultExtensionPagesCSP(Extension* extension,
-                                   base::StringPiece manifest_key);
+  // Helper to set the extension pages content security policy manifest data.
+  bool SetExtensionPagesCSP(Extension* extension,
+                            base::StringPiece manifest_key,
+                            bool secure_only,
+                            std::string content_security_policy);
 
   // Helper to set the isolated world content security policy manifest data.
   void SetIsolatedWorldCSP(Extension* extension,
@@ -100,6 +103,8 @@ class CSPHandler : public ManifestHandler {
   // Helper to set the sandbox content security policy manifest data.
   void SetSandboxCSP(Extension* extension, std::string sandbox_csp);
 
+  // ManifestHandler overrides:
+  bool AlwaysParseForType(Manifest::Type type) const override;
   base::span<const char* const> Keys() const override;
 
   DISALLOW_COPY_AND_ASSIGN(CSPHandler);

@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "components/viz/service/viz_service_export.h"
-#include "services/viz/privileged/interfaces/compositing/frame_sink_video_capture.mojom.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 
 namespace viz {
 

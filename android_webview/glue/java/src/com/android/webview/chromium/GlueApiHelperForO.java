@@ -12,7 +12,7 @@ import android.webkit.WebViewClient;
 import android.webkit.WebViewDelegate;
 
 import org.chromium.android_webview.AwRenderProcessGoneDetail;
-import org.chromium.base.annotations.DoNotInline;
+import org.chromium.base.annotations.VerifiesOnO;
 
 /**
  * Utility class to use new APIs that were added in O (API level 26). These need to exist in a
@@ -21,7 +21,7 @@ import org.chromium.base.annotations.DoNotInline;
  * in base/, for reasons such as using system APIs or instantiating an adapter class that is
  * specific to glue layer.
  */
-@DoNotInline
+@VerifiesOnO
 @TargetApi(Build.VERSION_CODES.O)
 public final class GlueApiHelperForO {
     private GlueApiHelperForO() {}

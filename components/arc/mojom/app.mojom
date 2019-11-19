@@ -1,0 +1,501 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 44
+
+module arc.mojom;
+
+import "components/arc/mojom/app_permissions.mojom";
+import "components/arc/mojom/gfx.mojom";
+import "components/arc/mojom/scale_factor.mojom";
+import "ui/accessibility/mojom/ax_assistant_structure.mojom";
+
+// Describes installation result.
+struct InstallationResult {
+  string package_name;
+  bool success;  // true if app was installed successfully.
+};
+
+// Describes ARC app.
+struct AppInfo {
+  string name;
+  string package_name;
+  string activity;
+  [MinVersion=2] bool sticky;  // true if the app cannot be uninstalled
+  [MinVersion=7] bool notifications_enabled;
+  [MinVersion=35] bool suspended;
+};
+
+// Describes the data required to install a web app.
+struct WebAppInfo {
+  string title;
+
+  // The URL which should be opened when the web app starts.
+  string start_url;
+
+  // The scope of URLs which are captured by the web app.
+  string scope_url;
+
+  // The color used for the title bar of the app. Passed as a 32 bit ARGB value.
+  // INT_MAX+1 represents an invalid color.
+  int64 theme_color;
+};
+
+// Describes ARC package.
+struct ArcPackageInfo {
+  string package_name;
+  int32 package_version;
+  int64 last_backup_android_id;
+  int64 last_backup_time;
+  bool sync;  // true if package installation should be synced
+  [MinVersion=11] bool system;  // true if package is system package.
+  // true if package registers VPNService intent.
+  [MinVersion=25] bool vpn_provider;
+
+  // If non-null, signifies this package represents a web app that should be
+  // installed on the browser side.
+  [MinVersion=38] WebAppInfo? web_app_info;
+
+  // Deprecated in favour of |permission_states|
+  [MinVersion=41] map<AppPermission, bool>? permissions;
+
+  [MinVersion=43] map<AppPermission, PermissionState>? permission_states;
+};
+
+// Describes ARC app shortcut.
+struct ShortcutInfo {
+  string name;
+  string package_name;
+  string icon_resource_id;
+  string intent_uri;
+};
+
+// Page for ShowPackageInfoOnPage.
+[Extensible]
+enum ShowPackageInfoPage {
+  // The main package info page.
+  MAIN = 0,
+
+  // Page for managing links assigned to the app.
+  MANAGE_LINKS = 1,
+};
+
+// Describes a Play Store app discovery result.
+struct AppDiscoveryResult {
+  string? launch_intent_uri;
+  string? install_intent_uri;
+  string? label;
+  bool is_instant_app;
+  bool is_recent;
+  string? publisher_name;
+  string? formatted_price;
+  float review_score;
+  array<uint8> icon_png_data;
+  [MinVersion=22] string? package_name;
+};
+
+// Describes the status of an app discovery request, including completed
+// states and all possible anomalies.
+[Extensible]
+enum AppDiscoveryRequestState {
+  // Request handled successfully.
+  SUCCESS = 0,
+  // Request canceled when a newer request is sent.
+  CANCELED = 1,
+  // Request failed due to any communication error or Play Store internal error.
+  ERROR_DEPRECATED = 2,
+
+  // All possible reasons of ending a request:
+  //   PlayStoreProxyService is not available.
+  PLAY_STORE_PROXY_NOT_AVAILABLE = 3,
+  //   It fails to cancel the previous request.
+  FAILED_TO_CALL_CANCEL = 4,
+  //   It fails to call findApps API.
+  FAILED_TO_CALL_FINDAPPS = 5,
+  //   It comes with invalid parameters.
+  REQUEST_HAS_INVALID_PARAMS = 6,
+  //   It times out.
+  REQUEST_TIMEOUT = 7,
+  //   At least one result returned from Phonesky has an unmatched request code.
+  PHONESKY_RESULT_REQUEST_CODE_UNMATCHED = 8,
+  //   At least one result returned from Phonesky has an unmatched session id.
+  PHONESKY_RESULT_SESSION_ID_UNMATCHED = 9,
+  //   Phonesky returns with an unmatched request code.
+  PHONESKY_REQUEST_REQUEST_CODE_UNMATCHED = 10,
+  //   The app discovery service is not available.
+  PHONESKY_APP_DISCOVERY_NOT_AVAILABLE = 11,
+  //   The installed Phonesky version doesn't support app discovery.
+  PHONESKY_VERSION_NOT_SUPPORTED = 12,
+  //   It gets an unexpected exception from Phonesky.
+  PHONESKY_UNEXPECTED_EXCEPTION = 13,
+  //   The Phonesky app discovery service thinks it's malformed.
+  PHONESKY_MALFORMED_QUERY = 14,
+  //   An internal error happens in Phonesky while processing the request.
+  PHONESKY_INTERNAL_ERROR = 15,
+  //   At least one result returned with invalid app data.
+  PHONESKY_RESULT_INVALID_DATA = 16,
+};
+
+// Describes the type/category of an app data search result.
+[Extensible]
+enum AppDataResultType {
+  PERSON = 0,         // Person search result.
+  NOTE_DOCUMENT = 1,  // Note document search result.
+};
+
+// Describes an app data search result.
+struct AppDataResult {
+  // Intent uri to launch the result.
+  string launch_intent_uri@0;
+  // Label for the result.
+  string label@1;
+  // Text information for the result.
+  string text@3;
+  // Icon information in png format. It could be null if not provided. Decoded
+  // in the utility process.
+  array<uint8>? icon_png_data@2;
+  // Type of this app data search result.
+  [MinVersion=28] AppDataResultType type@4;
+};
+
+// Describes the status of an app data search request, including completed
+// states and all possible anomalies.
+[Extensible]
+enum AppDataRequestState {
+  // Request is handled successfully.
+  REQUEST_SUCCESS = 0,
+  // Request is canceled.
+  REQUEST_CANCELED = 1,
+  // Request times out.
+  REQUEST_TIMEOUT = 2,
+  // Request fails for the case of an interrupted status.
+  REQUEST_INTERRUPTED = 3,
+  // Request fails for the case of response document error.
+  RESPONSE_DOCUMENT_ERROR = 4,
+  // Request has an unexpected exception of call to GmsCore.
+  REQUEST_UNEXPECTED_EXCEPTION = 5,
+  // Request has invalid parameters.
+  REQUEST_HAS_INVALID_PARAMS = 6,
+  // AppDataSearchProxyService is not available.
+  APP_DATA_SEARCH_PROXY_NOT_AVAILABLE = 7,
+  // Failed to call globalQuery to GmsCore.
+  FAILED_TO_CALL_GLOBALQUERY = 8,
+  // Failed to sign into GmsCore.
+  NOT_SIGNED_IN = 9,
+};
+
+// Describes the category type of app shortcut item.
+[Extensible]
+enum AppShortcutItemType {
+  // Static shortcut, which means it was published from AndroidManifest.xml.
+  kStatic = 0,
+
+  // Dynamic shortcut, which means it was published at runtime using the
+  // ShortcutManagerAPI. Dynamic shortcuts are links to specific,
+  // context-sensitive actions within the app.
+  kDynamic = 1,
+};
+
+[Extensible]
+enum AppReinstallState {
+    // Request and response successful.
+    REQUEST_SUCCESS = 0,
+    // Request Timeout
+    REQUEST_TIMEOUT = 1,
+    // No Account.
+    REQUEST_NO_ACCOUNT = 2,
+    // Null data from aidl.
+    REQUEST_NULL_DATA = 3,
+    // Data that can't be converted from aidl bundle to mojom struct.
+    REQUEST_BUNDLE_ERROR = 4,
+    // Request failure other reason.
+    REQUEST_UNKNOWN_FAILURE = 5,
+};
+
+// Describes app reinstall candidates that are shown to users as suggestions.
+struct AppReinstallCandidate {
+  // The package name of this in the Play Store.
+  string package_name;
+
+  // The title of this package in the Play Store.
+  string title;
+
+  // The url of an icon for this package. Optional, a default icon is used if
+  // unset.
+  string? icon_url;
+
+  // Ratings Count from Play Store for this package. e.g. "17103" .
+  // Default of 0 if not set.
+  int64 rating_count;
+
+  // Mean star rating for this package, [1, 5]. 0 indicates missing.
+  float star_rating;
+};
+
+// Describes app shortcut that is published by Android's ShortcutManager.
+struct AppShortcutItem {
+  // The ID of this shortcut. Unique within each publisher app and stable across
+  // devices.
+  string shortcut_id;
+
+  // The short description of this shortcut.
+  string short_label;
+
+  // The icon for this shortcut, decoded in the utility process.
+  array<uint8> icon_png;
+
+  // The package name of the publisher app.
+  [MinVersion=31] string? package_name;
+
+  // The category type of this shortcut.
+  [MinVersion=32] AppShortcutItemType type;
+
+  // "Rank" of a shortcut, which is a non-negative, sequential value.
+  [MinVersion=32] int32 rank;
+};
+
+[Extensible]
+enum PaiFlowState {
+    // PAI flow succeeded.
+    SUCCEEDED = 0,
+    // PAI flow state was not returned.
+    UNKNOWN = 1,
+    // PAI flow failed due to no account was provided.
+    NO_ACCOUNT = 2,
+    // PAI flow failed due Play Store returned no app to install.
+    NO_APPS = 3,
+    // PAI flow was interrupted.
+    INTERRUPTED = 4,
+    // PAI flow failed due to no response from Play Store.
+    PLAY_STORE_NOT_RESPONDED = 5,
+    // PAI flow failed due to no access to Play Store.
+    PLAY_STORE_NO_ACCESS = 6,
+    // PAI flow failed due to no ArcGmsProxy found.
+    PROXY_NOT_FOUND = 7,
+    // PAI flow failed due to no ArcGmsProxy access.
+    PROXY_NO_ACCESS = 8,
+    // PAI flow timeout occurred.
+    TIMEOUT = 9,
+};
+
+// Next method ID: 18
+// Deprecated method IDs: 1
+interface AppHost {
+  // Sends newly added ARC app to Chrome. This message is sent when ARC receives
+  // package added notification. Multiple apps may be added in the one package.
+  [MinVersion=1] OnAppAddedDeprecated@2(AppInfo app);
+
+  // Receives a list of available ARC apps to Chrome. Members of AppInfo must
+  // contain non-empty string.
+  OnAppListRefreshed@0(array<AppInfo> apps);
+
+  // Notifies that a package has been added.
+  [MinVersion=8] OnPackageAdded@8(ArcPackageInfo arcPackageInfo);
+
+  // Notifies that a package list of apps has been updated.
+  [MinVersion=14] OnPackageAppListRefreshed@13(string package_name,
+                                               array<AppInfo> apps);
+
+  // Receives a list of available ARC packages to Chrome. Members of
+  // PackageInfo must contain non-empty string.
+  [MinVersion=8] OnPackageListRefreshed@9(array<ArcPackageInfo> packages);
+
+  // Notifies that a package has been modified.
+  [MinVersion=8] OnPackageModified@10(ArcPackageInfo arcPackageInfo);
+
+  // Sends removed ARC package to Chrome. |package_name| must contain non-empty
+  // string. This message is sent when ARC receives package removed
+  // notification. Removing one package can potentially remove more than one
+  // app.
+  [MinVersion=1] OnPackageRemoved@3(string package_name);
+
+  // Sends information about newly created task |package_name| and |activity|
+  // specifies launch activity and |intent| is initial intent used to start
+  // new task.
+  [MinVersion=4] OnTaskCreated@4(int32 task_id@0,
+                                 string package_name@1,
+                                 string activity@2,
+                                 [MinVersion=13] string? name@3,
+                                 [MinVersion=15] string? intent@4);
+
+  // Sends task label and icon.
+  [MinVersion=19] OnTaskDescriptionUpdated@17(int32 task_id,
+                                              string label,
+                                              array<uint8> icon_png_data);
+
+  // Notifies that task has been destroyed.
+  [MinVersion=4] OnTaskDestroyed@5(int32 task_id);
+
+  // Notifies that task has been activated.
+  [MinVersion=4] OnTaskSetActive@6(int32 task_id);
+
+  // Notifies that notifications enabled settings in Android is changed.
+  [MinVersion=7] OnNotificationsEnabledChanged@7(string package_name,
+                                                 bool enabled);
+
+  // Notifies that an application shortcut needs to be created.
+  [MinVersion=9] OnInstallShortcut@11(ShortcutInfo shortcut);
+
+  // Notifies that Play Store installation has been started. |package_name|
+  // specifies installation package
+  [MinVersion=16] OnInstallationStarted@14(
+      [MinVersion=17] string? package_name@0);
+
+  // Notifies that Play Store installation is finished. |result| contains
+  // details of installation result.
+  [MinVersion=16] OnInstallationFinished@15(
+      [MinVersion=17] InstallationResult? result@1);
+
+  // Notifies that an application shortcut needs to be deleted. Shortcut is
+  // defined by its |intent_uri| and |package_name|.
+  [MinVersion=18] OnUninstallShortcut@16(string package_name,
+                                         string intent_uri);
+};
+
+// TODO(lhchavez): Migrate all request/response messages to Mojo.
+// Next method ID: 35
+// Deprecated method IDs: 2, 3, 13
+interface AppInstance {
+  // DEPRECATED: Please use Init@21 instead.
+  InitDeprecated@0(AppHost host_ptr);
+
+  // Establishes full-duplex communication with the host.
+  [MinVersion=26] Init@21(AppHost host_ptr) => ();
+
+  [MinVersion=1] CanHandleResolutionDeprecated@4(
+      string package_name, string activity, Rect dimension) =>
+          (bool can_handle);
+
+  // Closes the the given task.
+  [MinVersion=4] CloseTask@8(int32 task_id);
+
+  // Requests information about task.
+  [MinVersion=3] GetTaskInfo@6(int32 task_id) => (string package_name,
+                                                  string activity);
+
+  // Sends a request to ARC to install package.
+  [MinVersion=8] InstallPackage@11(ArcPackageInfo arcPackageInfo);
+
+  LaunchAppDeprecated@1(string package_name, string activity,
+                        [MinVersion=1] Rect? dimension_on_screen);
+
+  // Sends a request to ARC to launch an ARC app defined by |package_name| and
+  // |activity|, which cannot be empty.
+  [MinVersion=23] LaunchApp@18(string package_name, string activity,
+                               int64 display_id);
+
+  // Sends a request to ARC for the Android launcher to launch the specified app
+  // shortcut.
+  [MinVersion=30] LaunchAppShortcutItem@24(
+      string package_name, string shortcut_id, int64 display_id);
+
+  [MinVersion=9] LaunchIntentDeprecated@12(string intent_uri,
+                                           Rect? dimension_on_screen);
+
+  // Sends a request to ARC to launch an intent. The intent is encoded as a URI
+  // string. See Intent.toUri().
+  [MinVersion=23] LaunchIntent@19(string intent_uri, int64 display_id);
+
+  // Sends a request for the ARC shortcut icon of a given resource id and
+  // |pixel_size|.
+  [MinVersion=36] RequestAppIcon@27(string package_name,
+                                    string activity,
+                                    int32 pixel_size) =>
+                                        (array<uint8> icon_png_data);
+
+  // Sends a request for the ARC shortcut icon of a given resource id and
+  // |pixel_size|.
+  [MinVersion=36] RequestShortcutIcon@28(string icon_resource_id,
+                                         int32 pixel_size) =>
+                                             (array<uint8> icon_png_data);
+
+  // Sends a request for the ARC icon for a given |package_name| and
+  // |pixel_size|. If |normalize| is true, the icon will be normalized per
+  // Android's icon guidelines, otherwise, the raw unnormalized icon is
+  // returned. Returns an empty array if an error occurred.
+  [MinVersion=38] RequestPackageIcon@30(string package_name,
+                                        int32 pixel_size,
+                                        bool normalize) =>
+                                            (array<uint8> icon_png_data);
+
+  // Removes cached shortcut icon with the given resource id.
+  [MinVersion=9] RemoveCachedIcon@14(string icon_resource_id);
+
+  // Activates the given task and move it to foreground.
+  [MinVersion=4] SetTaskActive@7(int32 task_id);
+
+  [MinVersion=5] ShowPackageInfoDeprecated@9(string package_name,
+                                             Rect dimension_on_screen);
+
+  [MinVersion=10] ShowPackageInfoOnPageDeprecated@15(string package_name,
+                                                     ShowPackageInfoPage page,
+                                                     Rect dimension_on_screen);
+
+  // Sends a request to ARC to show package info for given package on the
+  // specified page.
+  [MinVersion=23] ShowPackageInfoOnPage@20(string package_name,
+                                           ShowPackageInfoPage page,
+                                           int64 display_id);
+
+  // Sets notification setting for the package.
+  [MinVersion=6] SetNotificationsEnabled@10(string package_name, bool enabled);
+
+  // Sends a request to ARC to start PAI flow.
+  [MinVersion=21] StartPaiFlowDeprecated@17();
+
+  // Sends a request to ARC to start PAI flow and receives result status.
+  [MinVersion=40] StartPaiFlow@32() => (PaiFlowState state);
+
+  // Sends a request to ARC to start FastAppReinstall flow.
+  [MinVersion=33] StartFastAppReinstallFlow@25(array<string> arc_package_names);
+
+  // Sends a request to ARC to retrieve an array of app reinstall
+  // candidates for this user on this device. Order of results is in an
+  // unspecified order of relevance from Play Store.
+  [MinVersion=39] GetAppReinstallCandidates@31() =>
+      (AppReinstallState state, array<AppReinstallCandidate> candidates);
+
+  // Sends a request to ARC to uninstall the given package.  Error (if ever
+  // happens) is ignored, and uninstall option should appear in the UI.
+  [MinVersion=2] UninstallPackage@5(string package_name);
+
+  // Returns Android instance id as it is registered on Google servers. 0 is
+  // reserved for the case when Android instance id could not be determined,
+  // however this should not normally happen once app instance is connected
+  // after ARC provisioning that includes registering Android instance on
+  // Google servers (known as initial Check-in flow).
+  [MinVersion=42] GetAndroidId@33() => (int64 android_id);
+
+  // Sends a request to ARC to get app shortcuts for apps in global scope that
+  // match a |query|. Limits the results to only return |max_results|.
+  [MinVersion=34] GetAppShortcutGlobalQueryItems@26(
+      string query, int32 max_results) =>
+          (array<AppShortcutItem> shortcut_items);
+
+  // Sends a request to ARC to get app shortcuts for app with |package_name|.
+  [MinVersion=29] GetAppShortcutItems@23(string package_name) =>
+      (array<AppShortcutItem> shortcut_items);
+
+  // Starts a query for app data, which is querying icing indexable contents.
+  [MinVersion=27] GetIcingGlobalQueryResults@22(
+      string query, int32 max_results) =>
+          (AppDataRequestState state, array<AppDataResult> results);
+
+  // Starts a query for Play Store apps.
+  [MinVersion=20] GetRecentAndSuggestedAppsFromPlayStore@16(
+      string query, int32 max_results) =>
+          (AppDiscoveryRequestState state@1,
+           array<AppDiscoveryResult> results@0);
+
+  // Requests assist structure.
+  [MinVersion=37] RequestAssistStructure@29() =>
+        (ax.mojom.AssistantExtra? assistant_extra,
+         ax.mojom.AssistantTree? assistant_tree);
+
+  // Queries whether |package_name| is installable for the current user. This
+  // may return false if the user has already installed |package_name|, or if
+  // it isn't available in the user's store.
+  [MinVersion=43] IsInstallable@34(string package_name) =>
+      (bool is_installable);
+};

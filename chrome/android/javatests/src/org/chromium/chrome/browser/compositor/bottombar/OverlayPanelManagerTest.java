@@ -343,7 +343,7 @@ public class OverlayPanelManagerTest {
     @SmallTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
-    public void testManagerObserver() throws InterruptedException, TimeoutException {
+    public void testManagerObserver() throws TimeoutException {
         Context context = InstrumentationRegistry.getTargetContext();
 
         final CallbackHelper shownHelper = new CallbackHelper();

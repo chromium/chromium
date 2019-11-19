@@ -8,7 +8,7 @@
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -20,13 +20,13 @@ class MODULES_EXPORT AppBannerController final
  public:
   explicit AppBannerController(LocalFrame&);
 
-  static void BindMojoRequest(LocalFrame*,
-                              mojom::blink::AppBannerControllerRequest);
+  static void BindMojoRequest(
+      LocalFrame*,
+      mojo::PendingReceiver<mojom::blink::AppBannerController>);
 
-  void BannerPromptRequest(mojom::blink::AppBannerServicePtr,
-                           mojom::blink::AppBannerEventRequest,
+  void BannerPromptRequest(mojo::PendingRemote<mojom::blink::AppBannerService>,
+                           mojo::PendingReceiver<mojom::blink::AppBannerEvent>,
                            const Vector<String>& platforms,
-                           bool require_gesture,
                            BannerPromptRequestCallback) override;
 
  private:

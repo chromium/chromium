@@ -38,6 +38,10 @@ class ASH_EXPORT RootWindowTransformer {
   // Returns the insets that specifies the effective area of
   // the host window.
   virtual gfx::Insets GetHostInsets() const = 0;
+
+  // Returns the transform for applying host insets and magnifier scale. It is
+  // similar to GetTransform() but without the screen rotation.
+  virtual gfx::Transform GetInsetsAndScaleTransform() const = 0;
 };
 
 }  // namespace ash

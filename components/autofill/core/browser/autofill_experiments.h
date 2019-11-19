@@ -9,12 +9,9 @@
 
 #include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/sync_utils.h"
 
 class PrefService;
-
-namespace base {
-struct Feature;
-}
 
 namespace syncer {
 class SyncService;
@@ -22,30 +19,30 @@ class SyncService;
 
 namespace autofill {
 
-// Parameterized Features (grouped with parameter name and options)
-#if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
-extern const base::Feature kAutofillDropdownLayoutExperiment;
-extern const char kAutofillDropdownLayoutParameterName[];
-extern const char kAutofillDropdownLayoutParameterLeadingIcon[];
-extern const char kAutofillDropdownLayoutParameterTrailingIcon[];
-extern const char kAutofillDropdownLayoutParameterTwoLinesLeadingIcon[];
-#endif  // defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
+class LogManager;
+class PersonalDataManager;
 
 // Returns true if uploading credit cards to Wallet servers is enabled. This
 // requires the appropriate flags and user settings to be true and the user to
 // be a member of a supported domain.
 bool IsCreditCardUploadEnabled(const PrefService* pref_service,
                                const syncer::SyncService* sync_service,
-                               const std::string& user_email);
+                               const std::string& user_email,
+                               const AutofillSyncSigninState sync_state,
+                               LogManager* log_manager);
+
+// Returns true if autofill local card migration flow is enabled.
+bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
+                                  PrefService* pref_service,
+                                  syncer::SyncService* sync_service,
+                                  bool is_test_mode,
+                                  LogManager* log_manager);
 
 // Returns true if autofill suggestions are disabled via experiment. The
 // disabled experiment isn't the same as disabling autofill completely since we
 // still want to run detection code for metrics purposes. This experiment just
 // disables providing suggestions.
 bool IsInAutofillSuggestionsDisabledExperiment();
-
-// Returns whether the Autofill credit card assist infobar should be shown.
-bool IsAutofillCreditCardAssistEnabled();
 
 // Returns whether locally saving card when credit card upload succeeds should
 // be disabled.
@@ -58,22 +55,6 @@ bool OfferStoreUnmaskedCards(bool is_off_the_record);
 
 // Returns whether the account of the active signed-in user should be used.
 bool ShouldUseActiveSignedInAccount();
-
-#if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
-enum class ForcedPopupLayoutState {
-  kDefault,       // No popup layout forced by experiment.
-  kLeadingIcon,   // Experiment forces leading (left in LTR) icon layout.
-  kTrailingIcon,  // Experiment forces trailing (right in LTR) icon layout.
-  kTwoLinesLeadingIcon,  // Experiment forces leading (left in LTR) icon layout.
-                         // with two lines display.
-};
-
-// Returns kDefault if no experimental behavior is enabled for
-// kAutofillDropdownLayoutExperiment; returns kLeftIcon or kRightIcon
-// if the experiment param matches kAutofillDropdownLayoutParameterLeadingIcon
-// or kAutofillDropdownLayoutParameterTrailingIcon, respectively.
-ForcedPopupLayoutState GetForcedPopupLayoutState();
-#endif  // defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
 
 }  // namespace autofill
 

@@ -11,6 +11,7 @@
   "orientation": "portrait",
   "theme_color": "2147483648L",
   "background_color": "2147483648L",
+  "background_color_xml": "#F8F9FA",
   "icon_urls_and_icon_murmur2_hashes": "http://www.pwa.rocks/icon1.png 0 http://www.pwa.rocks/icon2.png 0",
   "web_manifest_url": "https://pwa.rocks/pwa.webmanifest",
   "distributor": "browser",
@@ -22,19 +23,19 @@
   },
   "share_template": [{
 	  "index": "0",
-	  "title": "Share All",
+	  "title": "Share Text and Images",
 	  "action": "https://pwa.rocks/share.html",
+          "method": "POST",
+          "enctype": "multipart/form-data",
 	  "param_title": "title",
 	  "param_text": "text",
-	  "param_url": "url"
-  },
-  {
-	  "index": "1",
-	  "title": "Share Title",
-	  "action": "https://pwa.rocks/share_title.html",
-	  "param_title": "title",
-	  "param_text": "text",
-	  "param_url": "url"
-  }]
-
+	  "param_url": "url",
+          "is_file_upload": true,
+          "param_names": "[&quot;param_name&quot;]",
+          "param_accepts": "[[&quot;image/*&quot;]]",
+          "mime_types": [{
+            "mime_type": "image/*"
+          }]
+  }],
+  "has_maskable_icon": true
 }

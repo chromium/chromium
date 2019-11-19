@@ -36,19 +36,13 @@
     background-color: red;
   }
   </style>
+  <script src="../../../resources/run-after-layout-and-paint.js"></script>
   <script type="text/javascript" charset="utf-8">
-    if (window.testRunner) {
-      testRunner.dumpAsTextWithPixelResults();
-      testRunner.waitUntilDone();
-    }
-    
     function doTest()
     {
-      window.setTimeout(function() {
+      runAfterLayoutAndPaint(function() {
         document.getElementById('target').style.webkitTransformOriginZ = '100px';
-        if (window.testRunner)
-          testRunner.notifyDone();
-      }, 0);
+      }, true);
     }
 
     window.addEventListener('load', doTest, false);

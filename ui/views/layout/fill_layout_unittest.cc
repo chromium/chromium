@@ -18,7 +18,7 @@ class FillLayoutTest : public testing::Test {
   static const int kDefaultHostWidth = 100;
   static const int kDefaultHostHeight = 200;
 
-  FillLayoutTest() : layout_(nullptr), host_(new View) {
+  FillLayoutTest() : host_(new View) {
     layout_ = host_->SetLayoutManager(std::make_unique<FillLayout>());
     SetHostSize(kDefaultHostWidth, kDefaultHostHeight);
   }
@@ -50,7 +50,7 @@ class FillLayoutTest : public testing::Test {
   }
 
   // The test target.
-  FillLayout* layout_;
+  FillLayout* layout_ = nullptr;
 
   std::unique_ptr<View> host_;
 

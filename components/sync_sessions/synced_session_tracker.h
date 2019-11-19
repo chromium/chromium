@@ -67,10 +67,6 @@ class SyncedSessionTracker {
   // session having tag |session_tag|.
   std::set<int> LookupTabNodeIds(const std::string& session_tag) const;
 
-  // Returns tabs that are unmapped for session with tag |session_tag|.
-  std::vector<const sessions::SessionTab*> LookupUnmappedTabs(
-      const std::string& session_tag) const;
-
   // Attempts to look up the session windows associatd with the session given
   // by |session_tag|. Ownership of SessionWindows stays within the
   // SyncedSessionTracker.

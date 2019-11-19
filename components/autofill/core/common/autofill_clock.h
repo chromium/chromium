@@ -16,7 +16,7 @@ namespace autofill {
 // with a customizable clock to facilitate testing.
 class AutofillClock {
  public:
-  // Returns the current time based on |clock_|.
+  // Returns the current time based last set clock.
   static base::Time Now();
 
  private:
@@ -26,7 +26,7 @@ class AutofillClock {
   static void SetClock();
 
   // Sets the clock to be used for tests.
-  static void SetTestClock(base::Clock* clock);
+  static void SetTestClock(const base::Clock* clock);
 
   AutofillClock() = delete;
   ~AutofillClock() = delete;

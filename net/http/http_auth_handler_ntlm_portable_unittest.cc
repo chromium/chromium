@@ -202,9 +202,8 @@ TEST_F(HttpAuthHandlerNtlmPortableTest, InvalidBase64Encoding) {
   ASSERT_EQ(OK, GetGenerateAuthTokenResult());
 
   // Token isn't valid base64.
-  ASSERT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
+  ASSERT_EQ(HttpAuth::AUTHORIZATION_RESULT_INVALID,
             HandleAnotherChallenge("NTLM !!!!!!!!!!!!!"));
-  ASSERT_EQ(ERR_UNEXPECTED, GetGenerateAuthTokenResult());
 }
 
 TEST_F(HttpAuthHandlerNtlmPortableTest, CantChangeSchemeMidway) {

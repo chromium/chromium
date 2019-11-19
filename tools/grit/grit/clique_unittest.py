@@ -5,14 +5,17 @@
 
 '''Unit tests for grit.clique'''
 
+from __future__ import print_function
+
 import os
 import sys
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import re
-import StringIO
 import unittest
+
+from six import StringIO
 
 from grit import clique
 from grit import exception
@@ -90,7 +93,7 @@ class MessageCliqueUnittest(unittest.TestCase):
 
   def testAllInUberClique(self):
     resources = grd_reader.Parse(
-        StringIO.StringIO(u'''<?xml version="1.0" encoding="UTF-8"?>
+        StringIO(u'''<?xml version="1.0" encoding="UTF-8"?>
 <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
   <release seq="3">
     <messages>
@@ -117,7 +120,7 @@ class MessageCliqueUnittest(unittest.TestCase):
   def testCorrectExceptionIfWrongEncodingOnResourceFile(self):
     '''This doesn't really belong in this unittest file, but what the heck.'''
     resources = grd_reader.Parse(
-        StringIO.StringIO(u'''<?xml version="1.0" encoding="UTF-8"?>
+        StringIO(u'''<?xml version="1.0" encoding="UTF-8"?>
 <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
   <release seq="3">
     <structures>

@@ -11,8 +11,14 @@
 
 namespace base {
 
+ReadOnlySharedMemoryRegion::CreateFunction*
+    ReadOnlySharedMemoryRegion::create_hook_ = nullptr;
+
 // static
 MappedReadOnlyRegion ReadOnlySharedMemoryRegion::Create(size_t size) {
+  if (create_hook_)
+    return create_hook_(size);
+
   subtle::PlatformSharedMemoryRegion handle =
       subtle::PlatformSharedMemoryRegion::CreateWritable(size);
   if (!handle.IsValid())

@@ -8,11 +8,11 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "components/autofill/core/browser/autofill_profile.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/signin/core/browser/account_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 namespace autofill {
 
@@ -28,11 +28,13 @@ class TestPersonalDataManager : public PersonalDataManager {
   // for various tests, whether to skip calls to uncreated databases/services,
   // or to make things easier in general to toggle.
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
+  AutofillSyncSigninState GetSyncSigninState() const override;
   void RecordUseOf(const AutofillDataModel& data_model) override;
   std::string SaveImportedProfile(
       const AutofillProfile& imported_profile) override;
   std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card) override;
+  void AddVPA(const std::string& vpa) override;
   void AddProfile(const AutofillProfile& profile) override;
   void UpdateProfile(const AutofillProfile& profile) override;
   void RemoveByGUID(const std::string& guid) override;
@@ -90,11 +92,9 @@ class TestPersonalDataManager : public PersonalDataManager {
     return num_times_save_imported_credit_card_called_;
   }
 
-  bool sync_service_initialized() const { return sync_service_initialized_; }
+  int num_times_save_vpa_called() const { return num_times_save_vpa_called_; }
 
-  void SetAutofillEnabled(bool autofill_enabled) {
-    autofill_enabled_ = autofill_enabled;
-  }
+  bool sync_service_initialized() const { return sync_service_initialized_; }
 
   void SetAutofillCreditCardEnabled(bool autofill_credit_card_enabled) {
     autofill_credit_card_enabled_ = autofill_credit_card_enabled;
@@ -115,6 +115,10 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   void SetSyncFeatureEnabled(bool enabled) { sync_feature_enabled_ = enabled; }
 
+  void SetSyncAndSignInState(AutofillSyncSigninState sync_and_signin_state) {
+    sync_and_signin_state_ = sync_and_signin_state;
+  }
+
   void SetAccountInfoForPayments(const CoreAccountInfo& account_info) {
     account_info_ = account_info;
   }
@@ -124,11 +128,13 @@ class TestPersonalDataManager : public PersonalDataManager {
   std::string default_country_code_;
   int num_times_save_imported_profile_called_ = 0;
   int num_times_save_imported_credit_card_called_ = 0;
-  base::Optional<bool> autofill_enabled_;
+  int num_times_save_vpa_called_ = 0;
   base::Optional<bool> autofill_profile_enabled_;
   base::Optional<bool> autofill_credit_card_enabled_;
   base::Optional<bool> autofill_wallet_import_enabled_;
   bool sync_feature_enabled_ = false;
+  AutofillSyncSigninState sync_and_signin_state_ =
+      AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled;
   bool sync_service_initialized_ = false;
   CoreAccountInfo account_info_;
 

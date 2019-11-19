@@ -235,9 +235,6 @@ void ParamTraits<ppapi::proxy::SerializedHandle>::Write(base::Pickle* m,
                                                         const param_type& p) {
   ppapi::proxy::SerializedHandle::WriteHeader(p.header(), m);
   switch (p.type()) {
-    case ppapi::proxy::SerializedHandle::SHARED_MEMORY:
-      WriteParam(m, p.shmem());
-      break;
     case ppapi::proxy::SerializedHandle::SHARED_MEMORY_REGION:
       WriteParam(m, const_cast<param_type&>(p).TakeSharedMemoryRegion());
       break;
@@ -260,13 +257,6 @@ bool ParamTraits<ppapi::proxy::SerializedHandle>::Read(
   if (!ppapi::proxy::SerializedHandle::ReadHeader(iter, &header))
     return false;
   switch (header.type) {
-    case ppapi::proxy::SerializedHandle::SHARED_MEMORY: {
-      base::SharedMemoryHandle handle;
-      if (!ReadParam(m, iter, &handle))
-        return false;
-      r->set_shmem(handle, header.size);
-      break;
-    }
     case ppapi::proxy::SerializedHandle::SHARED_MEMORY_REGION: {
       base::subtle::PlatformSharedMemoryRegion region;
       if (!ReadParam(m, iter, &region))

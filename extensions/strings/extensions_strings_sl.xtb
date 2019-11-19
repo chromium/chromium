@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Slike ni bilo mogoče dekodirati: »<ph name="IMAGE_NAME" />«</translation>
 <translation id="2350172092385603347">Uporabljena je bila lokalizacija, vendar v manifestu ni bil naveden parameter default_locale.</translation>
 <translation id="2576842806987913196">Datoteka CRX s tem imenom že obstaja.</translation>
-<translation id="2753617847762399167">Neveljavna pot (absolutna ali v povezavi z »..«): »<ph name="IMAGE_PATH" />«</translation>
 <translation id="2785530881066938471">Datoteke »<ph name="RELATIVE_PATH" />« ni mogoče naložiti. Ni kodirana z UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ID razširitve »<ph name="EXTENSION_ID" />«) je blokiral skrbnik. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Paketa »<ph name="ERROR_CODE" />« ni bilo mogoče namestiti</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Oblikovana okna niso podprta.</translation>
 <translation id="5456409301717116725">Ta razširitev vključuje datoteko s ključem »<ph name="KEY_PATH" />«. Verjetno ne želite narediti tega.</translation>
 <translation id="5486326529110362464">Obstajati mora vrednost vnosa za zasebni ključ.</translation>
-<translation id="5627523580512561598">razširitev <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Skrbnik te naprave zahteva, da je nameščena razširitev <ph name="EXTENSION_NAME" />. Odstranitev ni mogoča.</translation>
 <translation id="6027032947578871493">Neznan izdelek <ph name="PRODUCT_ID" /> dobavitelja <ph name="VENDOR_NAME" /> (serijska številka <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> dobavitelja <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">Aplikacija »<ph name="APP_NAME" />« zahteva dostop do ene ali več vaših naprav:</translation>
 <translation id="657064425229075395">Skripta za ozadje »<ph name="BACKGROUND_SCRIPT" />« ni bilo mogoče naložiti.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> proizvajalca <ph name="VENDOR_NAME" /> (serijska številka <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Imenika za odpakiranje ni bilo mogoče ustvariti: »<ph name="DIRECTORY_PATH" />«</translation>
 <translation id="677806580227005219">Komponenta mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Ta razširitev se je prepogosto naložila znova.</translation>
 <translation id="7003844668372540529">Neznan izdelek <ph name="PRODUCT_ID" /> dobavitelja <ph name="VENDOR_NAME" /></translation>

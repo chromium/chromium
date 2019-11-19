@@ -1,9 +1,12 @@
 This is a testharness.js-based test.
-Found 54 tests; 11 PASS, 43 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 57 tests; 14 PASS, 43 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Entries API: IDL
 PASS Partial interface File: original interface defined
+PASS Partial interface File: member names are unique
 PASS Partial interface HTMLInputElement: original interface defined
+PASS Partial interface HTMLInputElement: member names are unique
 PASS Partial interface DataTransferItem: original interface defined
+PASS Partial interface DataTransferItem: member names are unique
 PASS File interface: attribute webkitRelativePath
 PASS File interface: new File([], "example.txt") must inherit property "webkitRelativePath" with the proper type
 PASS HTMLInputElement interface: attribute webkitdirectory

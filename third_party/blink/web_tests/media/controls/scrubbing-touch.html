@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<title>Test that player will behave correctly when scrubbing with touch events.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video controls width=400 src="../content/60_sec_video.webm"></video>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+  const timeline = timelineElement(video);
+  const thumb = timelineThumb(video);
+  const scrubbingMessage = scrubbingMessageElement(video);
+
+  video.addEventListener('playing', t.step_func(() => {
+    // Get the coordinates of the thumb and the timeline.
+    const thumbCoordinates = elementCoordinates(thumb);
+    const timelineCoordinates = elementCoordinates(timeline);
+
+    // Simulate a touch start event and then move the touch to the middle of
+    // the timeline to simulate a scrub.
+    if (window.eventSender) {
+      eventSender.addTouchPoint(thumbCoordinates[0], thumbCoordinates[1]);
+      eventSender.touchStart();
+
+      eventSender.updateTouchPoint(
+          0, timelineCoordinates[0], timelineCoordinates[1]);
+      eventSender.touchMove();
+    }
+
+    // Check the scrubbing UI is shown with the correct time.
+    checkControlsHasClass(video, 'state-scrubbing');
+
+    // Check the scrubbing message is shown.
+    assert_true(isControlVisible(scrubbingMessage));
+
+    // Ensure that the timeline now has a value in the middle.
+    assert_equals(30, Math.round(timeline.value));
+
+    // Add an event listener for when we start playing again after seeking.
+    video.addEventListener('playing', t.step_func_done(() => {
+      checkControlsDoesNotHaveClass(video, 'state-scrubbing');
+
+      // Check the scrubbing message is no longer shown.
+      assert_false(isControlVisible(scrubbingMessage));
+    }), { once: true });
+
+    // Release the touch.
+    if (window.eventSender) {
+      eventSender.releaseTouchPoint(0);
+      eventSender.touchEnd();
+    }
+  }), { once: true });
+
+  video.play();
+});
+</script>
+</html>

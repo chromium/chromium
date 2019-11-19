@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "url/gurl.h"
 
@@ -28,6 +29,8 @@ class AnswerCardResult : public ChromeSearchResult {
   ~AnswerCardResult() override;
 
   void Open(int event_flags) override;
+
+  ash::SearchResultType GetSearchResultType() const override;
 
   const GURL& search_result_url() const { return search_result_url_; }
 

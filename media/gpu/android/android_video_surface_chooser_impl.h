@@ -89,7 +89,7 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooserImpl
   // Time at which we most recently got a failed overlay request.
   base::TimeTicks most_recent_overlay_failure_;
 
-  base::WeakPtrFactory<AndroidVideoSurfaceChooserImpl> weak_factory_;
+  base::WeakPtrFactory<AndroidVideoSurfaceChooserImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AndroidVideoSurfaceChooserImpl);
 };

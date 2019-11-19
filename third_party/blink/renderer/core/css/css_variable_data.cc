@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 
-#include "third_party/blink/renderer/core/css/css_syntax_descriptor.h"
+#include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -63,8 +63,6 @@ void CSSVariableData::ConsumeAndUpdateTokens(const CSSParserTokenRange& range) {
     CSSParserToken token = local_range.Consume();
     if (token.HasStringBacking())
       string_builder.Append(token.Value());
-    needs_url_resolution_ |=
-        (token.GetType() == kUrlToken || token.FunctionId() == CSSValueUrl);
     has_font_units_ |= IsFontUnitToken(token);
     has_root_font_units_ |= IsRootFontUnitToken(token);
   }
@@ -83,7 +81,6 @@ CSSVariableData::CSSVariableData(const CSSParserTokenRange& range,
                                  const WTF::TextEncoding& charset)
     : is_animation_tainted_(is_animation_tainted),
       needs_variable_resolution_(needs_variable_resolution),
-      needs_url_resolution_(needs_variable_resolution_),
       has_font_units_(false),
       has_root_font_units_(false),
       absolutized_(false),
@@ -94,7 +91,7 @@ CSSVariableData::CSSVariableData(const CSSParserTokenRange& range,
 }
 
 const CSSValue* CSSVariableData::ParseForSyntax(
-    const CSSSyntaxDescriptor& syntax,
+    const CSSSyntaxDefinition& syntax,
     SecureContextMode secure_context_mode) const {
   DCHECK(!NeedsVariableResolution());
   // TODO(timloh): This probably needs a proper parser context for

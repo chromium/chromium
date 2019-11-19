@@ -12,23 +12,10 @@
 
 namespace ui {
 
-// Builds OSExchangeDataProviders. We need to be able to switch providers at
-// runtime based on the configuration flags. If no factory is set,
-// CreateProvider() will default to the current operating system's default.
+// Builds platform specific OSExchangeDataProviders.
 class UI_BASE_EXPORT OSExchangeDataProviderFactory {
  public:
-  class Factory {
-   public:
-    virtual std::unique_ptr<OSExchangeData::Provider> BuildProvider() = 0;
-  };
-
-  // Sets the factory which builds the providers.
-  static void SetFactory(Factory* factory);
-
-  // Returns the current factory and sets the factory to null.
-  static Factory* TakeFactory();
-
-  // Creates a Provider based on the current configuration.
+  // Creates a Provider based on the current platform.
   static std::unique_ptr<OSExchangeData::Provider> CreateProvider();
 };
 

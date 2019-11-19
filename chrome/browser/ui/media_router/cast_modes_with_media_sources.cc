@@ -31,8 +31,8 @@ void CastModesWithMediaSources::RemoveSource(MediaCastMode cast_mode,
 
 bool CastModesWithMediaSources::HasSource(MediaCastMode cast_mode,
                                           const MediaSource& source) const {
-  return base::ContainsKey(cast_modes_, cast_mode)
-             ? base::ContainsKey(cast_modes_.at(cast_mode), source)
+  return base::Contains(cast_modes_, cast_mode)
+             ? base::Contains(cast_modes_.at(cast_mode), source)
              : false;
 }
 

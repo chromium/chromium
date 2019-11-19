@@ -19,7 +19,6 @@ template("ash_test_resources") {
 
     sources = [
       "$root_gen_dir/ash/app_list/resources/app_list_resources_${percent}_percent.pak",
-      "$root_gen_dir/ash/components/resources/ash_components_resources_${percent}_percent.pak",
       "$root_gen_dir/ash/login/resources/login_resources_${percent}_percent.pak",
       "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
       "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_${percent}_percent.pak",
@@ -40,7 +39,6 @@ template("ash_test_resources") {
 
     deps = [
       "//ash/app_list/resources",
-      "//ash/components/resources",
       "//ash/login/resources",
       "//ash/public/cpp/resources:ash_public_unscaled_resources",
       "//mojo/public/js:resources",
@@ -76,13 +74,13 @@ ash_test_resources("200_percent") {
 ash_test_resources("with_content_100_percent") {
   percent = "100"
   sources = [
-    "$root_gen_dir/content/app/strings/content_strings_en-US.pak",
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
+    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
   ]
   deps = [
     "//content:resources",
-    "//content/app/strings",
     "//third_party/blink/public:scaled_resources_100_percent",
+    "//third_party/blink/public/strings",
   ]
 }

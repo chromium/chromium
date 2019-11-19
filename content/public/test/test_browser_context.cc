@@ -9,49 +9,22 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/null_task_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/test/mock_resource_context.h"
 #include "content/test/mock_background_sync_controller.h"
 #include "content/test/mock_ssl_host_state_delegate.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_getter.h"
-#include "net/url_request/url_request_test_util.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace {
-
-class TestContextURLRequestContextGetter : public net::URLRequestContextGetter {
- public:
-  TestContextURLRequestContextGetter()
-      : null_task_runner_(new base::NullTaskRunner) {
-  }
-
-  net::URLRequestContext* GetURLRequestContext() override { return &context_; }
-
-  scoped_refptr<base::SingleThreadTaskRunner> GetNetworkTaskRunner()
-      const override {
-    return null_task_runner_;
-  }
-
- private:
-  ~TestContextURLRequestContextGetter() override {}
-
-  net::TestURLRequestContext context_;
-  scoped_refptr<base::SingleThreadTaskRunner> null_task_runner_;
-};
-
-}  // namespace
 
 namespace content {
 
 TestBrowserContext::TestBrowserContext(
     base::FilePath browser_context_dir_path) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI))
-      << "Please construct content::TestBrowserThreadBundle before "
+      << "Please construct content::BrowserTaskEnvironment before "
       << "constructing TestBrowserContext instances.  "
       << BrowserThread::GetDCheckCurrentlyOnErrorMessage(BrowserThread::UI);
 
@@ -66,18 +39,18 @@ TestBrowserContext::TestBrowserContext(
 TestBrowserContext::~TestBrowserContext() {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI))
       << "Please destruct content::TestBrowserContext before destructing "
-      << "the TestBrowserThreadBundle instance.  "
+      << "the BrowserTaskEnvironment instance.  "
       << BrowserThread::GetDCheckCurrentlyOnErrorMessage(BrowserThread::UI);
 
   NotifyWillBeDestroyed(this);
   ShutdownStoragePartitions();
 
-  // disk_cache::SimpleBackendImpl performs all disk IO on the TaskScheduler
+  // disk_cache::SimpleBackendImpl performs all disk IO on the ThreadPool
   // threads. The cache is initialized in the directory owned by
   // |browser_context_dir_| and so ScopedTempDir destructor may race with cache
   // IO (see https://crbug.com/910029 for example). Let all pending IO
   // operations finish before destroying |browser_context_dir_|.
-  base::TaskScheduler::GetInstance()->FlushForTesting();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
 }
 
 base::FilePath TestBrowserContext::TakePath() {
@@ -94,14 +67,7 @@ void TestBrowserContext::SetPermissionControllerDelegate(
   permission_controller_delegate_ = std::move(delegate);
 }
 
-net::URLRequestContextGetter* TestBrowserContext::GetRequestContext() {
-  if (!request_context_.get()) {
-    request_context_ = new TestContextURLRequestContextGetter();
-  }
-  return request_context_.get();
-}
-
-base::FilePath TestBrowserContext::GetPath() const {
+base::FilePath TestBrowserContext::GetPath() {
   return browser_context_dir_.GetPath();
 }
 
@@ -112,7 +78,7 @@ std::unique_ptr<ZoomLevelDelegate> TestBrowserContext::CreateZoomLevelDelegate(
 }
 #endif  // !defined(OS_ANDROID)
 
-bool TestBrowserContext::IsOffTheRecord() const {
+bool TestBrowserContext::IsOffTheRecord() {
   return is_off_the_record_;
 }
 
@@ -135,6 +101,11 @@ storage::SpecialStoragePolicy* TestBrowserContext::GetSpecialStoragePolicy() {
 }
 
 PushMessagingService* TestBrowserContext::GetPushMessagingService() {
+  return nullptr;
+}
+
+StorageNotificationService*
+TestBrowserContext::GetStorageNotificationService() {
   return nullptr;
 }
 
@@ -169,36 +140,6 @@ BrowsingDataRemoverDelegate*
 TestBrowserContext::GetBrowsingDataRemoverDelegate() {
   // Most BrowsingDataRemover tests do not require a delegate
   // (not even a mock one).
-  return nullptr;
-}
-
-net::URLRequestContextGetter* TestBrowserContext::CreateRequestContext(
-      content::ProtocolHandlerMap* protocol_handlers,
-      content::URLRequestInterceptorScopedVector request_interceptors) {
-  request_interceptors_ = std::move(request_interceptors);
-  return GetRequestContext();
-}
-
-net::URLRequestContextGetter*
-TestBrowserContext::CreateRequestContextForStoragePartition(
-    const base::FilePath& partition_path,
-    bool in_memory,
-    ProtocolHandlerMap* protocol_handlers,
-    URLRequestInterceptorScopedVector request_interceptors) {
-  request_interceptors_ = std::move(request_interceptors);
-  // Simply returns the same RequestContext since no tests is relying on the
-  // expected behavior.
-  return GetRequestContext();
-}
-
-net::URLRequestContextGetter* TestBrowserContext::CreateMediaRequestContext() {
-  return nullptr;
-}
-
-net::URLRequestContextGetter*
-TestBrowserContext::CreateMediaRequestContextForStoragePartition(
-    const base::FilePath& partition_path,
-    bool in_memory) {
   return nullptr;
 }
 

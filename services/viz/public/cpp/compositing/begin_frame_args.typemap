@@ -2,17 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-mojom = "//services/viz/public/interfaces/compositing/begin_frame_args.mojom"
+mojom = "//services/viz/public/mojom/compositing/begin_frame_args.mojom"
 public_headers = [ "//components/viz/common/frame_sinks/begin_frame_args.h" ]
 traits_headers =
-    [ "//services/viz/public/cpp/compositing/begin_frame_args_struct_traits.h" ]
+    [ "//services/viz/public/cpp/compositing/begin_frame_args_mojom_traits.h" ]
 deps = [
   "//components/viz/common",
 ]
 sources = [
-  "//services/viz/public/cpp/compositing/begin_frame_args_struct_traits.cc",
+  "//services/viz/public/cpp/compositing/begin_frame_args_mojom_traits.cc",
 ]
 type_mappings = [
-  "viz.mojom.BeginFrameArgs=viz::BeginFrameArgs",
-  "viz.mojom.BeginFrameAck=viz::BeginFrameAck",
+  "viz.mojom.BeginFrameArgs=::viz::BeginFrameArgs",
+  "viz.mojom.BeginFrameAck=::viz::BeginFrameAck",
 ]

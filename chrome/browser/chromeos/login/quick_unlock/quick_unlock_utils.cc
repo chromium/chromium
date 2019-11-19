@@ -4,9 +4,11 @@
 
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
 
+#include <string>
+#include <vector>
+
+#include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
-#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -57,8 +60,8 @@ base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(
       return base::TimeDelta::FromHours(6);
     case PasswordConfirmationFrequency::TWELVE_HOURS:
       return base::TimeDelta::FromHours(12);
-    case PasswordConfirmationFrequency::DAY:
-      return base::TimeDelta::FromDays(1);
+    case PasswordConfirmationFrequency::TWO_DAYS:
+      return base::TimeDelta::FromDays(2);
     case PasswordConfirmationFrequency::WEEK:
       return base::TimeDelta::FromDays(7);
   }
@@ -74,7 +77,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       base::Value(std::move(quick_unlock_whitelist_default)));
   registry->RegisterIntegerPref(
       prefs::kQuickUnlockTimeout,
-      static_cast<int>(PasswordConfirmationFrequency::DAY));
+      static_cast<int>(PasswordConfirmationFrequency::TWO_DAYS));
 
   // Preferences related the lock screen pin unlock.
   registry->RegisterIntegerPref(prefs::kPinUnlockMinimumLength,
@@ -110,17 +113,34 @@ bool IsPinEnabled(PrefService* pref_service) {
   return base::FeatureList::IsEnabled(features::kQuickUnlockPin);
 }
 
+// Returns fingerprint location depending on the commandline switch.
+// TODO(rsorokin): Add browser tests for different assets.
+FingerprintLocation GetFingerprintLocation() {
+  const FingerprintLocation default_location =
+      FingerprintLocation::TABLET_POWER_BUTTON;
+  const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
+  if (!cl->HasSwitch(switches::kFingerprintSensorLocation))
+    return default_location;
+
+  const std::string location_info =
+      cl->GetSwitchValueASCII(switches::kFingerprintSensorLocation);
+  if (location_info == "power-button-top-left")
+    return FingerprintLocation::TABLET_POWER_BUTTON;
+  if (location_info == "keyboard-bottom-right")
+    return FingerprintLocation::KEYBOARD_BOTTOM_RIGHT;
+  if (location_info == "keyboard-top-right")
+    return FingerprintLocation::KEYBOARD_TOP_RIGHT;
+  NOTREACHED() << "Not handled value: " << location_info;
+  return default_location;
+}
+
 bool IsFingerprintEnabled(Profile* profile) {
   if (enable_for_testing_)
     return true;
 
-  // Disable fingerprint if the device does not have a fingerprint reader
-  // TODO(yulunwu): http://crbug.com/922270
-  base::ThreadRestrictions::ScopedAllowIO allow_io;
-
-  static const base::NoDestructor<base::FilePath> kFingerprintSensorPath(
-      base::FilePath("/dev/cros_fp"));
-  if (!base::PathExists(*kFingerprintSensorPath))
+  // Disable fingerprint if the device does not have a fingerprint reader.
+  const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
+  if (!cl->HasSwitch(switches::kFingerprintSensorLocation))
     return false;
 
   // Disable fingerprint if the profile does not belong to the primary user.
@@ -135,12 +155,8 @@ bool IsFingerprintEnabled(Profile* profile) {
   return base::FeatureList::IsEnabled(features::kQuickUnlockFingerprint);
 }
 
-void EnableForTesting() {
-  enable_for_testing_ = true;
-}
-
-bool IsEnabledForTesting() {
-  return enable_for_testing_;
+void EnabledForTesting(bool state) {
+  enable_for_testing_ = state;
 }
 
 void DisablePinByPolicyForTesting(bool disable) {

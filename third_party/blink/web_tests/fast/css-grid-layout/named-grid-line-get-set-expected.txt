@@ -1,4 +1,3 @@
-CONSOLE WARNING: Percentages row tracks and gutters for indefinite height grid containers will be resolved against the intrinsic height instead of being treated as auto and zero respectively. This change will happen in M70, around October 2018. See https://www.chromestatus.com/feature/6708326821789696 for more details.
 Test that setting and getting grid-template-columns and grid-template-rows works as expected
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
@@ -78,9 +77,9 @@ PASS element.style.gridTemplateColumns is "[foo bar] auto [foo] auto [bar]"
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "[foo bar] 0px [foo] 0px [bar]"
 PASS element.style.gridTemplateRows is "[foo bar] auto [foo] auto [bar]"
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "[first] 0px [foo bar] 20px [foo bar] 20px"
-PASS element.style.gridTemplateColumns is "[first] auto [foo bar] 20px [foo bar] 20px"
+PASS element.style.gridTemplateColumns is "[first] auto repeat(2, [foo bar] 20px)"
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "220px [foo] 300px [baz]"
-PASS element.style.gridTemplateRows is "220px [foo] 50% [baz]"
+PASS element.style.gridTemplateRows is "220px [foo] repeat(1, 50% [baz])"
 
 
 Test getting invalid grid-template-columns and grid-template-rows set through CSS

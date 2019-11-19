@@ -58,15 +58,11 @@ std::string SysInfo::OperatingSystemVersion() {
 void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* minor_version,
                                             int32_t* bugfix_version) {
-  if (@available(macOS 10.10, *)) {
-    NSOperatingSystemVersion version =
-        [[NSProcessInfo processInfo] operatingSystemVersion];
-    *major_version = version.majorVersion;
-    *minor_version = version.minorVersion;
-    *bugfix_version = version.patchVersion;
-  } else {
-    NOTREACHED();
-  }
+  NSOperatingSystemVersion version =
+      [[NSProcessInfo processInfo] operatingSystemVersion];
+  *major_version = version.majorVersion;
+  *minor_version = version.minorVersion;
+  *bugfix_version = version.patchVersion;
 }
 
 // static

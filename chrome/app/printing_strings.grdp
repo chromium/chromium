@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Printing specific strings (included from generated_resources.grd). -->
 <grit-part>
-  <message name="IDS_UTILITY_PROCESS_PDF_COMPOSITOR_SERVICE_NAME" desc="The name of the utility process used for PDF compositing.">
-    PDF Compositor Service
-  </message>
   <if expr="enable_print_preview or is_win">
     <message name="IDS_UTILITY_PROCESS_PRINTING_SERVICE_NAME" desc="The name of the utility process used for printing conversions.">
       Printing Service
     </message>
   </if>
 
-  <!-- Print Preview -->
   <message name="IDS_PRINT_INVALID_PRINTER_SETTINGS" desc="Message to display when selected printer is not reachable or its settings are invalid.">
-    The selected printer is not available or not installed correctly. <ph name="BR">&lt;br&gt;</ph> Check your printer or try selecting another printer.
+    The selected printer is not available or not installed correctly. Check your printer or try selecting another printer.
   </message>
 
+  <!-- Print Preview -->
   <if expr="enable_print_preview">
     <message name="IDS_PRINT_PREVIEW_TITLE" desc="Fallback title for print preview page.">
       Print
@@ -24,6 +21,9 @@
     </message>
     <message name="IDS_PRINT_PREVIEW_FAILED" desc="Message to display when print preview fails.">
       Print preview failed.
+    </message>
+    <message name="IDS_PRINT_PREVIEW_INVALID_PRINTER_SETTINGS" desc="Message to display when selected printer is not reachable or its settings are invalid. Identical to IDS_PRINT_INVALID_PRINTER_SETTINGS, but includes a line break.">
+      The selected printer is not available or not installed correctly. <ph name="BR">&lt;br&gt;</ph> Check your printer or try selecting another printer.
     </message>
     <message name="IDS_PRINT_PREVIEW_UNSUPPORTED_CLOUD_PRINTER" desc="Message to display when an unsupported cloud printer is selected.">
       The selected Google Cloud Print device is no longer supported. <ph name="BR">&lt;br&gt;</ph> Try setting up the printer in your computer's system settings.
@@ -67,6 +67,15 @@
     <message name="IDS_PRINT_PREVIEW_OPTION_TWO_SIDED" desc="Option to do two-sided (duplex) printing.">
       Two-sided
     </message>
+    <message name="IDS_PRINT_PREVIEW_PRINT_ON_BOTH_SIDES_LABEL" desc="Label for checkbox to print on both sides of paper">
+      Print on both sides
+    </message>
+    <message name="IDS_PRINT_PREVIEW_OPTION_LONG_EDGE" desc="Option to do two-sided (duplex) printing with the page flipped on the long edge of the paper.">
+      Flip on long edge
+    </message>
+    <message name="IDS_PRINT_PREVIEW_OPTION_SHORT_EDGE" desc="Option to do two-sided (duplex) printing with the page flipped on the short edge of the paper.">
+      Flip on short edge
+    </message>
     <message name="IDS_PRINT_PREVIEW_PAGES_LABEL" desc="Page range option label.">
       Pages
     </message>
@@ -79,10 +88,10 @@
     <message name="IDS_PRINT_PREVIEW_SCALING_LABEL" desc="Scaling option label.">
       Scale
     </message>
-    <message name="IDS_PRINT_PREVIEW_OPTION_DEFAULT_SCALING" desc="Option to print with default (100%) scaling.">
+    <message name="IDS_PRINT_PREVIEW_OPTION_DEFAULT_SCALING" desc="Dropdown option to print with default (100%) scaling.">
       Default
     </message>
-    <message name="IDS_PRINT_PREVIEW_OPTION_CUSTOM_SCALING" desc="Option to print with custom scaling.">
+    <message name="IDS_PRINT_PREVIEW_OPTION_CUSTOM_SCALING" desc="Dropdown option to print with custom scaling.">
       Custom
     </message>
     <message name="IDS_PRINT_PREVIEW_PAGES_PER_SHEET_LABEL" desc="Pages per sheet option label.">
@@ -101,6 +110,9 @@
     </message>
     <message name="IDS_PRINT_PREVIEW_SUMMARY_FORMAT_SHORT" desc="Print summary, explaining to the user how many pages will be printed.">
       Total: <ph name="NUMBER_OF_SHEETS">$1<ex>10</ex></ph> <ph name="SHEETS_LABEL">$2<ex>sheets of paper</ex></ph>
+    </message>
+    <message name="IDS_PRINT_PREVIEW_NEW_SUMMARY_FORMAT_SHORT" desc="Print summary, explaining to the user how many pages will be printed. Same use as above, but omits the 'Total: '.">
+      <ph name="NUMBER_OF_SHEETS">$1<ex>10</ex></ph> <ph name="SHEETS_LABEL">$2<ex>sheets of paper</ex></ph>
     </message>
     <message name="IDS_PRINT_PREVIEW_SHEETS_LABEL_PLURAL" desc="Label shown in the print preview summary.">
       sheets of paper
@@ -135,8 +147,11 @@
     <message name="IDS_PRINT_PREVIEW_OPTION_HEADER_FOOTER" desc="Checkbox label that provides a choice to print the headers and footers.">
       Headers and footers
     </message>
-    <message name="IDS_PRINT_PREVIEW_OPTION_FIT_TO_PAGE" desc="Checkbox label shown in print preview page to auto fit the PDF page.">
-      Fit to page
+    <message name="IDS_PRINT_PREVIEW_OPTION_FIT_TO_PAGE" desc="Dropdown option shown in print preview page to auto fit the PDF page to the paper's printable area.">
+      Fit to printable area
+    </message>
+    <message name="IDS_PRINT_PREVIEW_OPTION_FIT_TO_PAPER" desc="Dropdown option shown in print preview page to auto fit the PDF page to the paper size.">
+      Fit to paper
     </message>
     <message name="IDS_PRINT_PREVIEW_OPTION_BACKGROUND_COLORS_AND_IMAGES" desc="Checkbox label shown in print preview page to print webpage backgrounds.">
       Background graphics
@@ -295,6 +310,15 @@
       These settings are enforced by your administrator
     </message>
     <if expr="chromeos">
+      <message name="IDS_PRINT_PREVIEW_OPTION_PIN" desc="Option to print with pin.">
+        Enable user pin
+      </message>
+      <message name="IDS_PRINT_PREVIEW_PIN_ERROR_MESSAGE" desc="Message shown to the user when they attempt to print with pin, but don't enter pin in correct form.">
+        Enter a pin to print
+      </message>
+      <message name="IDS_PRINT_PREVIEW_PIN_PLACEHOLDER" desc="Text to put in a pin textfield when user has not entered any pin value.">
+        Enter 4 digit pin (0000-9999)
+      </message>
       <message name="IDS_PRINT_CONFIGURING_IN_PROGRESS_TEXT" desc="Message shown to user while their printer is being setup in Chrome OS.">
         Setting up
       </message>
@@ -329,16 +353,18 @@
   </message>
 
   <!-- Cloud Print proxy strings -->
-  <message name="IDS_CLOUD_PRINT_REGISTER_PRINTER_FAILED" desc="Status message to be sent to the server when we failed to retrieve information about a printer to register.">
-    An error occurred while retrieving printer capabilities for printer <ph name="PRINTER_NAME">$1<ex>HP Laserjet 7900</ex></ph>. This printer could not be registered with <ph name="CLOUD_PRINT_NAME">$2<ex>Google Cloud Print</ex></ph>.
-  </message>
-  <message name="IDS_CLOUD_PRINT_ZOMBIE_PRINTER" desc="Status message to be sent to the server when we get a notification for a printer that we can't find locally.">
-    Received a notification for an unknown printer.
-  </message>
-  <message name="IDS_CLOUD_PRINT_ENUM_FAILED" desc="Status message to be sent to the Cloud Print server when enumerating printers failed.">
-    There was a problem listing printers. Some of your printers may not have registered successfully with <ph name="CLOUD_PRINT_NAME">$1<ex>Google Cloud Print</ex></ph>.
-  </message>
-  <message name="IDS_SERVICE_CRASH_RECOVERY_CONTENT" desc="Text content telling the user the service process has crashed.">
-    The <ph name="CLOUD_PRINT_NAME">$1<ex>Google Cloud Print</ex></ph> connector process has crashed. Restart?
-  </message>
+  <if expr="not is_android">
+    <message name="IDS_CLOUD_PRINT_REGISTER_PRINTER_FAILED" desc="Status message to be sent to the server when we failed to retrieve information about a printer to register.">
+      An error occurred while retrieving printer capabilities for printer <ph name="PRINTER_NAME">$1<ex>HP Laserjet 7900</ex></ph>. This printer could not be registered with <ph name="CLOUD_PRINT_NAME">$2<ex>Google Cloud Print</ex></ph>.
+    </message>
+    <message name="IDS_CLOUD_PRINT_ZOMBIE_PRINTER" desc="Status message to be sent to the server when we get a notification for a printer that we can't find locally.">
+      Received a notification for an unknown printer.
+    </message>
+    <message name="IDS_CLOUD_PRINT_ENUM_FAILED" desc="Status message to be sent to the Cloud Print server when enumerating printers failed.">
+      There was a problem listing printers. Some of your printers may not have registered successfully with <ph name="CLOUD_PRINT_NAME">$1<ex>Google Cloud Print</ex></ph>.
+    </message>
+    <message name="IDS_SERVICE_CRASH_RECOVERY_CONTENT" desc="Text content telling the user the service process has crashed.">
+      The <ph name="CLOUD_PRINT_NAME">$1<ex>Google Cloud Print</ex></ph> connector process has crashed. Restart?
+    </message>
+  </if>
 </grit-part>

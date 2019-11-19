@@ -3,15 +3,64 @@
 # found in the LICENSE file.
 
 import("//build_overrides/build.gni")
+import("//third_party/abseil-cpp/abseil_clients.gni")
 
+# Usage of Abseil in Chromium is guarded by an explicit opt-in list, before
+# adding projects to this list please reach out to cxx@chromium.org and CC:
+# - https://cs.chromium.org/chromium/src/third_party/abseil-cpp/OWNERS
+#
+# More information can be found at:
+# https://docs.google.com/document/d/1DgS1-A3rzboTLjpf4m1sqkJgWjnY_Ru2dokk1X1vBDU
 if (build_with_chromium) {
-  visibility = [
-    "//third_party/webrtc/*",
-    "//third_party/abseil-cpp/*",
-    "//third_party/googletest:gtest",
-  ]
+  visibility = absl_visibility
 } else {
   visibility = [ "*" ]
+}
+
+source_set("atomic_hook") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/atomic_hook.h",
+  ]
+  deps = [
+    ":core_headers",
+  ]
+  visibility = []
+  visibility += [ "../*" ]
+}
+
+source_set("log_severity") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  sources = [
+    "log_severity.cc",
+  ]
+  public = [
+    "log_severity.h",
+  ]
+  deps = [
+    ":core_headers",
+  ]
+}
+
+source_set("raw_logging_internal") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  visibility = []
+  visibility += [ "../*" ]
 }
 
 source_set("spinlock_wait") {
@@ -138,6 +187,9 @@ source_set("base_internal") {
     "internal/invoke.h",
     "internal/scheduling_mode.h",
   ]
+  deps = [
+    "../meta:type_traits",
+  ]
   visibility = []
   visibility += [ "../*" ]
 }
@@ -160,7 +212,6 @@ source_set("base") {
   public = [
     "call_once.h",
     "casts.h",
-    "internal/atomic_hook.h",
     "internal/cycleclock.h",
     "internal/low_level_scheduling.h",
     "internal/per_thread_tls.h",
@@ -170,14 +221,16 @@ source_set("base") {
     "internal/thread_identity.h",
     "internal/tsan_mutex_interface.h",
     "internal/unscaledcycleclock.h",
-    "log_severity.h",
   ]
   deps = [
+    ":atomic_hook",
     ":base_internal",
     ":config",
     ":core_headers",
     ":dynamic_annotations",
+    ":log_severity",
     ":spinlock_wait",
+    "../meta:type_traits",
   ]
 }
 
@@ -309,6 +362,26 @@ source_set("bits") {
   ]
   deps = [
     ":core_headers",
+  ]
+  visibility = []
+  visibility += [ "../*" ]
+}
+
+source_set("scoped_set_env") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public = [
+    "internal/scoped_set_env.h",
+  ]
+  sources = [
+    "internal/scoped_set_env.cc",
+  ]
+  deps = [
+    ":base",
   ]
   visibility = []
   visibility += [ "../*" ]

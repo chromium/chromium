@@ -1,0 +1,133 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//chrome/common/features.gni")
+import("//components/feed/features.gni")
+
+java_strings_grd("java_strings_grd") {
+  defines = chrome_grit_defines
+  grd_file = "java/strings/android_chrome_start_surface_strings.grd"
+  outputs = [
+    "values/android_chrome_start_surface_strings.xml",
+    "values-am/android_chrome_start_surface_strings.xml",
+    "values-ar/android_chrome_start_surface_strings.xml",
+    "values-bg/android_chrome_start_surface_strings.xml",
+    "values-bn/android_chrome_start_surface_strings.xml",
+    "values-ca/android_chrome_start_surface_strings.xml",
+    "values-cs/android_chrome_start_surface_strings.xml",
+    "values-da/android_chrome_start_surface_strings.xml",
+    "values-de/android_chrome_start_surface_strings.xml",
+    "values-el/android_chrome_start_surface_strings.xml",
+    "values-en-rGB/android_chrome_start_surface_strings.xml",
+    "values-es/android_chrome_start_surface_strings.xml",
+    "values-es-rUS/android_chrome_start_surface_strings.xml",
+    "values-et/android_chrome_start_surface_strings.xml",
+    "values-fa/android_chrome_start_surface_strings.xml",
+    "values-fi/android_chrome_start_surface_strings.xml",
+    "values-fr/android_chrome_start_surface_strings.xml",
+    "values-gu/android_chrome_start_surface_strings.xml",
+    "values-hi/android_chrome_start_surface_strings.xml",
+    "values-hr/android_chrome_start_surface_strings.xml",
+    "values-hu/android_chrome_start_surface_strings.xml",
+    "values-in/android_chrome_start_surface_strings.xml",
+    "values-it/android_chrome_start_surface_strings.xml",
+    "values-iw/android_chrome_start_surface_strings.xml",
+    "values-ja/android_chrome_start_surface_strings.xml",
+    "values-kn/android_chrome_start_surface_strings.xml",
+    "values-ko/android_chrome_start_surface_strings.xml",
+    "values-lt/android_chrome_start_surface_strings.xml",
+    "values-lv/android_chrome_start_surface_strings.xml",
+    "values-ml/android_chrome_start_surface_strings.xml",
+    "values-mr/android_chrome_start_surface_strings.xml",
+    "values-ms/android_chrome_start_surface_strings.xml",
+    "values-nb/android_chrome_start_surface_strings.xml",
+    "values-nl/android_chrome_start_surface_strings.xml",
+    "values-pl/android_chrome_start_surface_strings.xml",
+    "values-pt-rBR/android_chrome_start_surface_strings.xml",
+    "values-pt-rPT/android_chrome_start_surface_strings.xml",
+    "values-ro/android_chrome_start_surface_strings.xml",
+    "values-ru/android_chrome_start_surface_strings.xml",
+    "values-sk/android_chrome_start_surface_strings.xml",
+    "values-sl/android_chrome_start_surface_strings.xml",
+    "values-sr/android_chrome_start_surface_strings.xml",
+    "values-sv/android_chrome_start_surface_strings.xml",
+    "values-sw/android_chrome_start_surface_strings.xml",
+    "values-ta/android_chrome_start_surface_strings.xml",
+    "values-te/android_chrome_start_surface_strings.xml",
+    "values-th/android_chrome_start_surface_strings.xml",
+    "values-tl/android_chrome_start_surface_strings.xml",
+    "values-tr/android_chrome_start_surface_strings.xml",
+    "values-uk/android_chrome_start_surface_strings.xml",
+    "values-vi/android_chrome_start_surface_strings.xml",
+    "values-zh-rCN/android_chrome_start_surface_strings.xml",
+    "values-zh-rTW/android_chrome_start_surface_strings.xml",
+  ]
+}
+
+android_resources("java_resources") {
+  resource_dirs = [ "java/res" ]
+  if (enable_feed_in_chrome) {
+    resource_dirs += [ "java/explore_res" ]
+  }
+  deps = [
+    ":java_strings_grd",
+    "//chrome/android:chrome_app_java_resources",
+  ]
+  custom_package = "org.chromium.chrome.start_surface"
+}
+
+android_library("java") {
+  java_files = [
+    "java/src/org/chromium/chrome/features/start_surface/BottomBarCoordinator.java",
+    "java/src/org/chromium/chrome/features/start_surface/BottomBarView.java",
+    "java/src/org/chromium/chrome/features/start_surface/BottomBarViewBinder.java",
+    "java/src/org/chromium/chrome/features/start_surface/ReturnToStartSurfaceUtil.java",
+    "java/src/org/chromium/chrome/features/start_surface/StartSurfaceCoordinator.java",
+    "java/src/org/chromium/chrome/features/start_surface/StartSurfaceDelegate.java",
+    "java/src/org/chromium/chrome/features/start_surface/StartSurfaceLayout.java",
+    "java/src/org/chromium/chrome/features/start_surface/StartSurfaceMediator.java",
+    "java/src/org/chromium/chrome/features/start_surface/StartSurfaceProperties.java",
+    "java/src/org/chromium/chrome/features/start_surface/SecondaryTasksSurfaceViewBinder.java",
+    "java/src/org/chromium/chrome/features/start_surface/TasksSurfaceViewBinder.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/ui/android/widget:java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_deps:com_android_support_design_java",
+    "//ui/android:ui_full_java",
+  ]
+
+  if (enable_feed_in_chrome) {
+    java_files += [
+      "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceActionHandler.java",
+      "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceCoordinator.java",
+      "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceNavigationDelegate.java",
+      "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceStreamLifecycleManager.java",
+      "java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceViewBinder.java",
+    ]
+
+    deps += [
+      "//chrome/android/public/profiles:java",
+      "//content/public/android:content_java",
+      "//third_party/android_sdk/androidx_browser:androidx_browser_java",
+      "//third_party/feed:feed_lib_java",
+      "//ui/android:ui_utils_java",
+      "//ui/base/mojom:mojom_java",
+    ]
+  } else {
+    java_files += [ "dummy/java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceCoordinator.java" ]
+  }
+
+  if (!is_java_debug) {
+    if (!defined(proguard_configs)) {
+      proguard_configs = []
+    }
+    proguard_configs += [ "proguard.flags" ]
+  }
+}

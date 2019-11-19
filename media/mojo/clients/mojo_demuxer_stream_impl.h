@@ -11,8 +11,9 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/demuxer_stream.h"
-#include "media/mojo/interfaces/demuxer_stream.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "media/mojo/mojom/demuxer_stream.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace media {
 
@@ -26,7 +27,7 @@ class MojoDemuxerStreamImpl : public mojom::DemuxerStream {
   // |stream| is the underlying DemuxerStream we are proxying for.
   // Note: |this| does not take ownership of |stream|.
   MojoDemuxerStreamImpl(media::DemuxerStream* stream,
-                        mojo::InterfaceRequest<mojom::DemuxerStream> request);
+                        mojo::PendingReceiver<mojom::DemuxerStream> receiver);
   ~MojoDemuxerStreamImpl() override;
 
   // mojom::DemuxerStream implementation.
@@ -38,8 +39,8 @@ class MojoDemuxerStreamImpl : public mojom::DemuxerStream {
 
   // Sets an error handler that will be called if a connection error occurs on
   // the bound message pipe.
-  void set_connection_error_handler(const base::Closure& error_handler) {
-    binding_.set_connection_error_handler(error_handler);
+  void set_disconnect_handler(const base::Closure& error_handler) {
+    receiver_.set_disconnect_handler(error_handler);
   }
 
  private:
@@ -50,14 +51,14 @@ class MojoDemuxerStreamImpl : public mojom::DemuxerStream {
                      Status status,
                      scoped_refptr<DecoderBuffer> buffer);
 
-  mojo::Binding<mojom::DemuxerStream> binding_;
+  mojo::Receiver<mojom::DemuxerStream> receiver_;
 
   // See constructor.  We do not own |stream_|.
   media::DemuxerStream* stream_;
 
   std::unique_ptr<MojoDecoderBufferWriter> mojo_decoder_buffer_writer_;
 
-  base::WeakPtrFactory<MojoDemuxerStreamImpl> weak_factory_;
+  base::WeakPtrFactory<MojoDemuxerStreamImpl> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(MojoDemuxerStreamImpl);
 };
 

@@ -95,9 +95,11 @@ const char* RealEGLApi::eglQueryStringFn(EGLDisplay dpy, EGLint name) {
   if (name == EGL_EXTENSIONS) {
     auto it = filtered_exts_.find(dpy);
     if (it == filtered_exts_.end()) {
-      it = filtered_exts_.insert(std::make_pair(
-          dpy, FilterGLExtensionList(EGLApiBase::eglQueryStringFn(dpy, name),
-                                     disabled_exts_))).first;
+      it = filtered_exts_
+               .emplace(dpy, FilterGLExtensionList(
+                                 EGLApiBase::eglQueryStringFn(dpy, name),
+                                 disabled_exts_))
+               .first;
     }
     return (*it).second.c_str();
   }

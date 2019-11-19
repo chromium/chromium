@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CHROME_WEB_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_CHROME_WEB_DIALOG_VIEW_H_
 
+#include "base/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
@@ -23,7 +24,18 @@ gfx::NativeWindow ShowWebDialogWithParams(
     gfx::NativeView parent,
     content::BrowserContext* context,
     ui::WebDialogDelegate* delegate,
-    const views::Widget::InitParams* extra_params);
+    base::Optional<views::Widget::InitParams> extra_params);
+
+// The implementation is more aligned with the appearance of constrained
+// web dialog.
+// |show| indicates whether to show the web dialog after it is created.
+// TODO(weili): Solely use this function on non-ChromeOS platform, and
+// above ShowWebDialogWithParams() on ChromeOS. Or merge these two if possible.
+gfx::NativeWindow CreateWebDialogWithBounds(gfx::NativeView parent,
+                                            content::BrowserContext* context,
+                                            ui::WebDialogDelegate* delegate,
+                                            const gfx::Rect& bounds,
+                                            bool show = true);
 
 }  // namespace chrome
 

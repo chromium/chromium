@@ -55,15 +55,16 @@ class WebHTTPBody {
     } type;
     WebData data;
     WebString file_path;
-    long long file_start;
-    long long file_length;  // -1 means to the end of the file.
+    int64_t file_start;
+    int64_t file_length;  // -1 means to the end of the file.
     double modification_time;
     WebString blob_uuid;
     uint64_t blob_length;
     mojo::ScopedMessagePipeHandle optional_blob_handle;
-    // |data_pipe_getter| is a network::mojom::DataPipeGetterPtr. It's declared
-    // as a generic ScopedMessagePipeHandle so it can be "cast" between Blink
-    // and non-Blink variant types.
+    // |data_pipe_getter| is a
+    // mojo::PendingRemote<network::mojom::DataPipeGetter>. It's declared as a
+    // generic ScopedMessagePipeHandle so it can be "cast" between Blink and
+    // non-Blink variant types.
     mojo::ScopedMessagePipeHandle data_pipe_getter;
   };
 
@@ -94,8 +95,8 @@ class WebHTTPBody {
   BLINK_PLATFORM_EXPORT void AppendFile(const WebString&);
   // Passing -1 to |file_length| means to the end of the file.
   BLINK_PLATFORM_EXPORT void AppendFileRange(const WebString&,
-                                             long long file_start,
-                                             long long file_length,
+                                             int64_t file_start,
+                                             int64_t file_length,
                                              double modification_time);
   BLINK_PLATFORM_EXPORT void AppendBlob(const WebString& uuid);
   // TODO(shimazu): Remove this once Network Service is enabled.
@@ -103,9 +104,10 @@ class WebHTTPBody {
       const WebString& uuid,
       uint64_t length,
       mojo::ScopedMessagePipeHandle blob_handle);
-  // |data_pipe_getter| is a network::mojom::DataPipeGetterPtr. It's declared
-  // as a generic ScopedMessagePipeHandle so it can be "cast" between Blink
-  // and non-Blink variant types.
+  // |data_pipe_getter| is a
+  // mojo::PendingRemote<network::mojom::DataPipeGetter>. It's declared as a
+  // generic ScopedMessagePipeHandle so it can be "cast" between Blink and
+  // non-Blink variant types.
   BLINK_PLATFORM_EXPORT void AppendDataPipe(
       mojo::ScopedMessagePipeHandle data_pipe_getter);
 
@@ -113,8 +115,8 @@ class WebHTTPBody {
 
   // Identifies a particular form submission instance. A value of 0 is
   // used to indicate an unspecified identifier.
-  BLINK_PLATFORM_EXPORT long long Identifier() const;
-  BLINK_PLATFORM_EXPORT void SetIdentifier(long long);
+  BLINK_PLATFORM_EXPORT int64_t Identifier() const;
+  BLINK_PLATFORM_EXPORT void SetIdentifier(int64_t);
 
   BLINK_PLATFORM_EXPORT bool ContainsPasswordData() const;
   BLINK_PLATFORM_EXPORT void SetContainsPasswordData(bool);

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/sys_byteorder.h"
 #include "base/task/post_task.h"
@@ -18,6 +17,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/address_family.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_interfaces.h"
@@ -50,9 +51,8 @@ void OnGetNetworkList(
       "lo", "lo", 0, net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
       localhost_prefix, 8, net::IP_ADDRESS_ATTRIBUTE_NONE));
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::IO},
-      base::BindOnce(std::move(callback), std::move(ip4_networks)));
+  base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                 base::BindOnce(std::move(callback), std::move(ip4_networks)));
 }
 
 void GetNetworkListOnUIThread(
@@ -65,13 +65,14 @@ void GetNetworkListOnUIThread(
 
 void CreateUDPSocketOnUIThread(
     content::BrowserContext* profile,
-    network::mojom::UDPSocketRequest request,
-    network::mojom::UDPSocketReceiverPtr receiver_ptr) {
+    mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
+    mojo::PendingRemote<network::mojom::UDPSocketListener> listener_remote) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   network::mojom::NetworkContext* network_context =
       content::BrowserContext::GetDefaultStoragePartition(profile)
           ->GetNetworkContext();
-  network_context->CreateUDPSocket(std::move(request), std::move(receiver_ptr));
+  network_context->CreateUDPSocket(std::move(receiver),
+                                   std::move(listener_remote));
 }
 
 }  // namespace
@@ -80,27 +81,25 @@ namespace cloud_print {
 
 PrivetTrafficDetector::PrivetTrafficDetector(
     content::BrowserContext* profile,
-    const base::RepeatingClosure& on_traffic_detected)
+    base::RepeatingClosure on_traffic_detected)
     : helper_(new Helper(profile, on_traffic_detected)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::IO},
-      base::BindOnce(&PrivetTrafficDetector::Helper::ScheduleRestart,
-                     base::Unretained(helper_)));
+  base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                 base::BindOnce(&PrivetTrafficDetector::Helper::ScheduleRestart,
+                                base::Unretained(helper_)));
 }
 
 PrivetTrafficDetector::~PrivetTrafficDetector() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
-  content::BrowserThread::DeleteSoon(content::BrowserThread::IO, FROM_HERE,
-                                     helper_);
+  base::DeleteSoon(FROM_HERE, {content::BrowserThread::IO}, helper_);
 }
 
 void PrivetTrafficDetector::OnConnectionChanged(
     network::mojom::ConnectionType type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&PrivetTrafficDetector::Helper::HandleConnectionChanged,
                      base::Unretained(helper_), type));
@@ -108,12 +107,10 @@ void PrivetTrafficDetector::OnConnectionChanged(
 
 PrivetTrafficDetector::Helper::Helper(
     content::BrowserContext* profile,
-    const base::RepeatingClosure& on_traffic_detected)
+    base::RepeatingClosure on_traffic_detected)
     : profile_(profile),
       on_traffic_detected_(on_traffic_detected),
-      restart_attempts_(kMaxRestartAttempts),
-      receiver_binding_(this),
-      weak_ptr_factory_(this) {
+      restart_attempts_(kMaxRestartAttempts) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -134,7 +131,7 @@ void PrivetTrafficDetector::Helper::ScheduleRestart() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   ResetConnection();
   weak_ptr_factory_.InvalidateWeakPtrs();
-  base::PostDelayedTaskWithTraits(
+  base::PostDelayedTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(
           &GetNetworkListOnUIThread,
@@ -151,20 +148,11 @@ void PrivetTrafficDetector::Helper::Restart(
 
 void PrivetTrafficDetector::Helper::Bind() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  if (!start_time_.is_null()) {
-    base::TimeDelta time_delta = base::Time::Now() - start_time_;
-    UMA_HISTOGRAM_LONG_TIMES("LocalDiscovery.DetectorRestartTime", time_delta);
-  }
-  start_time_ = base::Time::Now();
 
-  network::mojom::UDPSocketReceiverPtr receiver_ptr;
-  network::mojom::UDPSocketReceiverRequest receiver_request =
-      mojo::MakeRequest(&receiver_ptr);
-  receiver_binding_.Bind(std::move(receiver_request));
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(&CreateUDPSocketOnUIThread, profile_,
-                     mojo::MakeRequest(&socket_), std::move(receiver_ptr)));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(&CreateUDPSocketOnUIThread, profile_,
+                                socket_.BindNewPipeAndPassReceiver(),
+                                listener_receiver_.BindNewPipeAndPassRemote()));
 
   network::mojom::UDPSocketOptionsPtr socket_options =
       network::mojom::UDPSocketOptions::New();
@@ -247,7 +235,7 @@ void PrivetTrafficDetector::Helper::OnJoinGroupComplete(int rv) {
 void PrivetTrafficDetector::Helper::ResetConnection() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   socket_.reset();
-  receiver_binding_.Close();
+  listener_receiver_.reset();
 }
 
 void PrivetTrafficDetector::Helper::OnReceived(
@@ -263,10 +251,8 @@ void PrivetTrafficDetector::Helper::OnReceived(
   recv_addr_ = src_addr.value();
   if (IsPrivetPacket(data.value())) {
     ResetConnection();
-    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                             on_traffic_detected_);
-    base::TimeDelta time_delta = base::Time::Now() - start_time_;
-    UMA_HISTOGRAM_LONG_TIMES("LocalDiscovery.DetectorTriggerTime", time_delta);
+    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                   on_traffic_detected_);
   } else {
     socket_->ReceiveMoreWithBufferSize(1, net::dns_protocol::kMaxMulticastSize);
   }

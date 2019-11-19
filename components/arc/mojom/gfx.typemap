@@ -1,0 +1,25 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//components/arc/mojom/gfx.mojom"
+
+public_headers = [
+  "//ui/gfx/geometry/rect.h",
+  "//ui/gfx/range/range.h",
+]
+
+deps = [
+  "//ui/gfx",
+]
+
+traits_headers = [ "//components/arc/mojom/arc_gfx_mojom_traits.h" ]
+
+sources = [
+  "//components/arc/mojom/arc_gfx_mojom_traits.cc",
+]
+
+type_mappings = [
+  "arc.mojom.Rect=::gfx::Rect",
+  "arc.mojom.Range=::gfx::Range",
+]

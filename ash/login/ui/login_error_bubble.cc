@@ -8,6 +8,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
@@ -32,8 +33,8 @@ LoginErrorBubble::LoginErrorBubble(views::View* content,
                                    bool is_persistent)
     : LoginBaseBubbleView(anchor_view), is_persistent_(is_persistent) {
   auto* alert_view = new NonAccessibleView("AlertIconContainer");
-  alert_view->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(views::BoxLayout::kHorizontal));
+  alert_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
   views::ImageView* alert_icon = new views::ImageView();
   alert_icon->SetPreferredSize(gfx::Size(kAlertIconSizeDp, kAlertIconSizeDp));
   alert_icon->SetImage(

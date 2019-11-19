@@ -40,10 +40,10 @@ source_set("drive") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//components/signin/public/identity_manager",
     "//crypto",
     "//google_apis:google_apis",
     "//net",
-    "//services/identity/public/cpp:cpp",
     "//services/network/public/cpp",
   ]
 }

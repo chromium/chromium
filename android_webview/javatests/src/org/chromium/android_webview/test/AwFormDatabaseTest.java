@@ -22,7 +22,7 @@ public class AwFormDatabaseTest {
 
     @Test
     @SmallTest
-    public void testSmoke() throws Throwable {
+    public void testSmoke() {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             AwFormDatabase.clearFormData();
             Assert.assertFalse(AwFormDatabase.hasFormData());

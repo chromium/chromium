@@ -1,0 +1,34 @@
+[ca]
+default_ca = CA_root
+preserve   = yes
+
+[CA_root]
+dir            = out
+new_certs_dir  = $dir
+database       = $dir/index.txt
+serial         = $dir/serial
+certificate    = ../../../../net/data/ssl/certificates/root_ca_cert.pem
+private_key    = ../../../../net/data/ssl/certificates/root_ca_cert.pem
+default_md     = sha256
+unique_subject = no
+policy         = policy_anything
+
+[sxg_cert]
+basicConstraints = CA:FALSE
+# OID required for sxg since d54c469
+1.3.6.1.4.1.11129.2.1.22 = ASN1:NULL
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid,issuer
+subjectAltName=DNS:test.example.org
+
+[policy_anything]
+# Default signing policy
+countryName            = optional
+stateOrProvinceName    = optional
+localityName           = optional
+organizationName       = optional
+organizationalUnitName = optional
+commonName             = optional
+emailAddress           = optional

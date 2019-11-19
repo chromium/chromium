@@ -27,14 +27,16 @@ android_apk("custom_tabs_client_example_apk") {
     "src/Application/src/main/java/org/chromium/customtabsclient/SessionHelper.java",
   ]
   android_manifest = "src/Application/src/main/AndroidManifest.xml"
+  min_sdk_version = 16
+  target_sdk_version = 21
   apk_name = "CustomTabsClientExample"
   deps = [
     ":chrome_tabs_client_example_apk_resources",
     ":custom_tabs_client_shared_java",
     ":custom_tabs_support_java",
     "//third_party/android_deps:android_arch_lifecycle_common_java",
-    "//third_party/android_deps:android_support_annotations_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_deps:com_android_support_support_annotations_java",
   ]
   chromium_code = false
 }
@@ -63,6 +65,7 @@ android_library("custom_tabs_support_java") {
     "src/customtabs/src/android/support/customtabs/browseractions/BrowserActionsIntent.java",
     "src/customtabs/src/android/support/customtabs/browseractions/BrowserServiceFileProvider.java",
     "src/customtabs/src/android/support/customtabs/browseractions/BrowserServiceImageReadTask.java",
+    "src/customtabs/src/android/support/customtabs/trusted/TrustedWebActivityBuilder.java",
     "src/customtabs/src/android/support/customtabs/trusted/TrustedWebActivityService.java",
     "src/customtabs/src/android/support/customtabs/trusted/TrustedWebActivityServiceWrapper.java",
     "src/customtabs/src/android/support/customtabs/trusted/TrustedWebActivityServiceConnectionManager.java",
@@ -73,6 +76,7 @@ android_library("custom_tabs_support_java") {
     "src/customtabs/src/android/support/customtabs/CustomTabsServiceConnection.java",
     "src/customtabs/src/android/support/customtabs/CustomTabsSession.java",
     "src/customtabs/src/android/support/customtabs/CustomTabsSessionToken.java",
+    "src/customtabs/src/android/support/customtabs/CustomTabColorSchemeParams.java",
     "src/customtabs/src/android/support/customtabs/PostMessageBackend.java",
     "src/customtabs/src/android/support/customtabs/PostMessageService.java",
     "src/customtabs/src/android/support/customtabs/PostMessageServiceConnection.java",
@@ -80,9 +84,11 @@ android_library("custom_tabs_support_java") {
   ]
   deps = [
     ":custom_tabs_support_resources",
-    "//third_party/android_deps:android_support_annotations_java",
-    "//third_party/android_deps:android_support_compat_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_deps:com_android_support_collections_java",
+    "//third_party/android_deps:com_android_support_interpolator_java",
+    "//third_party/android_deps:com_android_support_support_annotations_java",
+    "//third_party/android_deps:com_android_support_support_compat_java",
   ]
   srcjar_deps = [ ":chrome_custom_tabs_service_aidl" ]
   android_manifest_for_lint = "src/customtabs/AndroidManifest.xml"

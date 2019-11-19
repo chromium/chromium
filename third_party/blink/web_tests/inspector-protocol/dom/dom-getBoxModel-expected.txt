@@ -21,12 +21,12 @@ DIV style,position:absolute;top:200;left:100;width:100;height:100;background:gre
 ]
 DIV style,position:absolute;top:150;left:50;width:100;height:100;background:blue;transform:rotate(45deg); [
     [0] : 100
-    [1] : 129.289321899414
-    [2] : 170.710678100586
+    [1] : 129.28932189941406
+    [2] : 170.71067810058594
     [3] : 200
     [4] : 100
     [5] : 270.710693359375
-    [6] : 29.2893218994141
+    [6] : 29.289321899414062
     [7] : 200
 ]
 DIV style,width:100px;height:100px;background:orange [

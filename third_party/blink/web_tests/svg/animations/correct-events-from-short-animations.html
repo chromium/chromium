@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<title>Correct events from short elements</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<svg viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg">
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="0ms;last.end+20ms" dur="10ms" fill="freeze"
+      id="first"/>
+    <animate attributeName="opacity" from="1" to="0" begin="last.end" dur="1ms" fill="freeze"/>
+    <rect x="0" y="0" width="50" height="50" fill="#0F0"/>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" from="1" to="1" begin="first.end+40ms" dur="100ms" fill="freeze"
+      id="last" onend="onend_filling()"/>
+    <animate attributeName="opacity" from="1" to="0" begin="last.end" dur="1ms" fill="freeze"
+      onend="onend_clearing()"/>
+    <rect x="50" y="0" width="50" height="50" fill="#0F0"/>
+  </g>
+</svg>
+<script>
+  let onend_filling = null;
+  let onend_clearing = null;
+  async_test(t => {
+    var passed = false;
+    var end_events = 0;
+    onend_filling = t.step_func(() => {
+      end_events++;
+      if (end_events != 2) return;
+      assert_unreached("Should only get one 'end' event");
+    });
+    // Finished if we get one of these
+    onend_clearing = t.step_func_done(() => {});
+  });
+</script>

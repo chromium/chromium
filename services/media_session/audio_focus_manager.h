@@ -8,12 +8,13 @@
 #include <list>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_ptr.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/media_session/media_controller.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
@@ -28,7 +29,15 @@ namespace test {
 class MockMediaSession;
 }  // namespace test
 
+class AudioFocusRequest;
 class MediaController;
+class MediaPowerDelegate;
+
+struct EnforcementState {
+  bool should_duck = false;
+  bool should_stop = false;
+  bool should_suspend = false;
+};
 
 class AudioFocusManager : public mojom::AudioFocusManager,
                           public mojom::AudioFocusManagerDebug,
@@ -41,21 +50,31 @@ class AudioFocusManager : public mojom::AudioFocusManager,
   using RequestId = base::UnguessableToken;
 
   // mojom::AudioFocusManager.
-  void RequestAudioFocus(mojom::AudioFocusRequestClientRequest request,
-                         mojom::MediaSessionPtr media_session,
-                         mojom::MediaSessionInfoPtr session_info,
-                         mojom::AudioFocusType type,
-                         RequestAudioFocusCallback callback) override;
-  void RequestGroupedAudioFocus(mojom::AudioFocusRequestClientRequest request,
-                                mojom::MediaSessionPtr media_session,
-                                mojom::MediaSessionInfoPtr session_info,
-                                mojom::AudioFocusType type,
-                                const base::UnguessableToken& group_id,
-                                RequestAudioFocusCallback callback) override;
+  void RequestAudioFocus(
+      mojo::PendingReceiver<mojom::AudioFocusRequestClient> receiver,
+      mojo::PendingRemote<mojom::MediaSession> media_session,
+      mojom::MediaSessionInfoPtr session_info,
+      mojom::AudioFocusType type,
+      RequestAudioFocusCallback callback) override;
+  void RequestGroupedAudioFocus(
+      const base::UnguessableToken& request_id,
+      mojo::PendingReceiver<mojom::AudioFocusRequestClient> receiver,
+      mojo::PendingRemote<mojom::MediaSession> media_session,
+      mojom::MediaSessionInfoPtr session_info,
+      mojom::AudioFocusType type,
+      const base::UnguessableToken& group_id,
+      RequestGroupedAudioFocusCallback callback) override;
   void GetFocusRequests(GetFocusRequestsCallback callback) override;
-  void AddObserver(mojom::AudioFocusObserverPtr observer) override;
-  void SetSourceName(const std::string& name) override;
+  void AddObserver(
+      mojo::PendingRemote<mojom::AudioFocusObserver> observer) override;
+  void SetSource(const base::UnguessableToken& identity,
+                 const std::string& name) override;
   void SetEnforcementMode(mojom::EnforcementMode mode) override;
+  void AddSourceObserver(
+      const base::UnguessableToken& source_id,
+      mojo::PendingRemote<mojom::AudioFocusObserver> observer) override;
+  void GetSourceFocusRequests(const base::UnguessableToken& source_id,
+                              GetFocusRequestsCallback callback) override;
 
   // mojom::AudioFocusManagerDebug.
   void GetDebugInfoForRequest(const RequestId& request_id,
@@ -63,97 +82,113 @@ class AudioFocusManager : public mojom::AudioFocusManager,
 
   // mojom::MediaControllerManager.
   void CreateActiveMediaController(
-      mojom::MediaControllerRequest request) override;
+      mojo::PendingReceiver<mojom::MediaController> receiver) override;
   void CreateMediaControllerForSession(
-      mojom::MediaControllerRequest request,
-      const base::UnguessableToken& request_id) override;
+      mojo::PendingReceiver<mojom::MediaController> receiver,
+      const base::UnguessableToken& receiver_id) override;
+  void SuspendAllSessions() override;
 
-  // Bind to a mojom::AudioFocusManagerRequest.
-  void BindToInterface(mojom::AudioFocusManagerRequest request);
+  // Bind to a receiver of mojom::AudioFocusManager.
+  void BindToInterface(
+      mojo::PendingReceiver<mojom::AudioFocusManager> receiver);
 
-  // Bind to a mojom::AudioFocusManagerDebugRequest.
-  void BindToDebugInterface(mojom::AudioFocusManagerDebugRequest request);
+  // Bind to a receiver of mojom::AudioFocusManagerDebug.
+  void BindToDebugInterface(
+      mojo::PendingReceiver<mojom::AudioFocusManagerDebug> receiver);
 
-  // Bind to a mojom::MediaControllerManagerRequest.
+  // Bind to a receiver of mojom::MediaControllerManager.
   void BindToControllerManagerInterface(
-      mojom::MediaControllerManagerRequest request);
+      mojo::PendingReceiver<mojom::MediaControllerManager> receiver);
 
  private:
   friend class AudioFocusManagerTest;
+  friend class AudioFocusRequest;
   friend class MediaControllerTest;
   friend class test::MockMediaSession;
 
-  // StackRow is an AudioFocusRequestClient and allows a media session to
-  // control its audio focus.
-  class StackRow;
+  class SourceObserverHolder;
 
-  // BindingContext stores associated metadata for mojo binding.
-  struct BindingContext {
+  // ReceiverContext stores associated metadata for mojo binding.
+  struct ReceiverContext {
     // The source name is associated with a binding when a client calls
     // |SetSourceName|. It is used to provide more granularity than a
     // service_manager::Identity for metrics and for identifying where an audio
     // focus request originated from.
     std::string source_name;
+
+    // The identity associated with the binding when it was created.
+    base::UnguessableToken identity;
   };
 
-  struct EnforcementState {
-    bool should_duck = false;
-    bool should_stop = false;
-    bool should_suspend = false;
-  };
-
-  void RequestAudioFocusInternal(std::unique_ptr<StackRow>,
-                                 mojom::AudioFocusType,
-                                 base::OnceCallback<void()>);
+  void RequestAudioFocusInternal(std::unique_ptr<AudioFocusRequest>,
+                                 mojom::AudioFocusType);
   void AbandonAudioFocusInternal(RequestId);
 
   void EnforceAudioFocus();
 
   void MaybeUpdateActiveSession();
 
-  std::unique_ptr<StackRow> RemoveFocusEntryIfPresent(RequestId id);
+  std::unique_ptr<AudioFocusRequest> RemoveFocusEntryIfPresent(RequestId id);
+
+  bool IsFocusEntryPresent(const base::UnguessableToken& id) const;
 
   // Returns the source name of the binding currently accessing the Audio
   // Focus Manager API over mojo.
   const std::string& GetBindingSourceName() const;
 
+  // Returns the identity of the binding currently accessing the Audio Focus
+  // Manager API over mojo.
+  const base::UnguessableToken& GetBindingIdentity() const;
+
   bool IsSessionOnTopOfAudioFocusStack(RequestId id,
                                        mojom::AudioFocusType type) const;
 
-  bool ShouldSessionBeSuspended(const StackRow* session,
+  bool ShouldSessionBeSuspended(const AudioFocusRequest* session,
                                 const EnforcementState& state) const;
-  bool ShouldSessionBeDucked(const StackRow* session,
+  bool ShouldSessionBeDucked(const AudioFocusRequest* session,
                              const EnforcementState& state) const;
 
-  void EnforceSingleSession(StackRow* session, const EnforcementState& state);
+  void EnforceSingleSession(AudioFocusRequest* session,
+                            const EnforcementState& state);
+
+  // Removes unbound or faulty source observers.
+  void CleanupSourceObservers();
 
   // This |MediaController| acts as a proxy for controlling the active
   // |MediaSession| over mojo.
   MediaController active_media_controller_;
 
-  // Holds mojo bindings for the Audio Focus Manager API.
-  mojo::BindingSet<mojom::AudioFocusManager, std::unique_ptr<BindingContext>>
-      bindings_;
+  // Holds mojo receivers for the Audio Focus Manager API.
+  mojo::ReceiverSet<mojom::AudioFocusManager, std::unique_ptr<ReceiverContext>>
+      receivers_;
 
-  // Holds mojo bindings for the Audio Focus Manager Debug API.
-  mojo::BindingSet<mojom::AudioFocusManagerDebug> debug_bindings_;
+  // Holds mojo receivers for the Audio Focus Manager Debug API.
+  mojo::ReceiverSet<mojom::AudioFocusManagerDebug> debug_receivers_;
 
-  // Holds mojo bindings for the Media Controller Manager API.
-  mojo::BindingSet<mojom::MediaControllerManager> controller_bindings_;
+  // Holds mojo receivers for the Media Controller Manager API.
+  mojo::ReceiverSet<mojom::MediaControllerManager> controller_receivers_;
 
   // Weak reference of managed observers. Observers are expected to remove
   // themselves before being destroyed.
-  mojo::InterfacePtrSet<mojom::AudioFocusObserver> observers_;
+  mojo::RemoteSet<mojom::AudioFocusObserver> observers_;
+
+  // Manages individual source observers.
+  std::vector<std::unique_ptr<SourceObserverHolder>> source_observers_;
 
   // A stack of Mojo interface pointers and their requested audio focus type.
   // A MediaSession must abandon audio focus before its destruction.
-  std::list<std::unique_ptr<StackRow>> audio_focus_stack_;
+  std::list<std::unique_ptr<AudioFocusRequest>> audio_focus_stack_;
+
+  // Controls media playback when device power events occur.
+  std::unique_ptr<MediaPowerDelegate> power_delegate_;
 
   mojom::EnforcementMode enforcement_mode_;
 
   // Adding observers should happen on the same thread that the service is
   // running on.
   THREAD_CHECKER(thread_checker_);
+
+  base::WeakPtrFactory<AudioFocusManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AudioFocusManager);
 };

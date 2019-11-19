@@ -1,7 +1,9 @@
 Tests that data is correctly loaded by IndexedDBModel from IndexedDB object store and index.
 
-key generator value: 1
-key generator value: 7
+entries count: 6
+key gen value: 1
+entries count: 6
+key gen value: 7
 Dumping values, fromIndex = false, skipCount = 0, pageSize = 2, idbKeyRange = null
     Key = key_01, primaryKey = key_01, value = {"key":"key_01","value":"value_01"}
     Key = key_02, primaryKey = key_02, value = {"key":"key_02","value":"value_02"}

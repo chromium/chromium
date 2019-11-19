@@ -37,7 +37,7 @@ class ExtensionStatusesHandler : public content::WebUIMessageHandler {
   void DidGetExtensionStatuses(const base::ListValue& list);
 
   Profile* profile_;
-  base::WeakPtrFactory<ExtensionStatusesHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<ExtensionStatusesHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionStatusesHandler);
 };

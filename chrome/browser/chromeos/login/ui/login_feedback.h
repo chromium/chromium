@@ -50,7 +50,7 @@ class LoginFeedback {
 
   std::unique_ptr<FeedbackExtensionLoader> feedback_extension_loader_;
 
-  base::WeakPtrFactory<LoginFeedback> weak_factory_;
+  base::WeakPtrFactory<LoginFeedback> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LoginFeedback);
 };

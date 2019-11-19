@@ -4,27 +4,22 @@
 
 #include "ui/views/view_tracker.h"
 
-#include "ui/views/view.h"
-
 namespace views {
 
-ViewTracker::ViewTracker(View* view) : view_(nullptr) {
+ViewTracker::ViewTracker(View* view) {
   SetView(view);
 }
 
-ViewTracker::~ViewTracker() {
-  SetView(nullptr);
-}
+ViewTracker::~ViewTracker() = default;
 
 void ViewTracker::SetView(View* view) {
   if (view == view_)
     return;
 
-  if (view_)
-    view_->RemoveObserver(this);
+  observer_.RemoveAll();
   view_ = view;
   if (view_)
-    view_->AddObserver(this);
+    observer_.Add(view_);
 }
 
 void ViewTracker::OnViewIsDeleting(View* observed_view) {

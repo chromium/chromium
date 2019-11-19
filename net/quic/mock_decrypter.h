@@ -10,17 +10,17 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "net/third_party/quic/core/crypto/quic_decrypter.h"
-#include "net/third_party/quic/core/quic_types.h"
-#include "net/third_party/quic/platform/api/quic_export.h"
-#include "net/third_party/quic/platform/api/quic_string_piece.h"
+#include "net/third_party/quiche/src/quic/core/crypto/quic_decrypter.h"
+#include "net/third_party/quiche/src/quic/core/quic_types.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_string_piece.h"
 
 namespace net {
 
-// A MockDecrypter is a QuicDecrypter that does no validation of
-// the given ciphertext and returns it untouched, ignoring the
-// associated data. This is used to allow fuzzing to mutate
-// plaintext packets.
+// A MockDecrypter is a QuicDecrypter that strips the last 12 bytes of
+// ciphertext (which should be zeroes, but are ignored), and returns the
+// remaining ciphertext untouched and ignores the associated data. This is used
+// to allow fuzzing to mutate plaintext packets.
 class MockDecrypter : public quic::QuicDecrypter {
  public:
   explicit MockDecrypter(quic::Perspective perspective);
@@ -29,6 +29,7 @@ class MockDecrypter : public quic::QuicDecrypter {
   // QuicDecrypter implementation
   bool SetKey(quic::QuicStringPiece key) override;
   bool SetNoncePrefix(quic::QuicStringPiece nonce_prefix) override;
+  bool SetHeaderProtectionKey(quic::QuicStringPiece key) override;
   bool SetIV(quic::QuicStringPiece iv) override;
   bool SetPreliminaryKey(quic::QuicStringPiece key) override;
   bool SetDiversificationNonce(
@@ -40,9 +41,12 @@ class MockDecrypter : public quic::QuicDecrypter {
                      size_t* output_length,
                      size_t max_output_length) override;
   size_t GetKeySize() const override;
+  size_t GetNoncePrefixSize() const override;
   size_t GetIVSize() const override;
   quic::QuicStringPiece GetKey() const override;
   quic::QuicStringPiece GetNoncePrefix() const override;
+  std::string GenerateHeaderProtectionMask(
+      quic::QuicDataReader* sample_reader) override;
 
   uint32_t cipher_id() const override;
 

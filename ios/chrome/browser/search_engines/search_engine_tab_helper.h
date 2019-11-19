@@ -8,8 +8,8 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "components/favicon/ios/web_favicon_driver.h"
-#import "ios/web/public/web_state/web_state_observer.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
 
 namespace web {
 class WebState;
@@ -58,10 +58,9 @@ class SearchEngineTabHelper
   // Handles messages from JavaScript. Messages can be:
   //   1. A OSDD <link> is found;
   //   2. A searchable URL is generated from <form> submission.
-  bool OnJsMessage(const base::DictionaryValue& message,
+  void OnJsMessage(const base::DictionaryValue& message,
                    const GURL& page_url,
-                   bool has_user_gesture,
-                   bool form_in_main_frame,
+                   bool user_is_interacting,
                    web::WebFrame* sender_frame);
 
   // favicon::FaviconDriverObserver implementation.
@@ -72,7 +71,7 @@ class SearchEngineTabHelper
                         const gfx::Image& image) override;
 
   // Manages observation relationship between |this| and WebFaviconDriver.
-  ScopedObserver<favicon::WebFaviconDriver, favicon::FaviconDriverObserver>
+  ScopedObserver<favicon::FaviconDriver, favicon::FaviconDriverObserver>
       favicon_driver_observer_{this};
 
   // WebState this tab helper is attached to.
@@ -85,6 +84,9 @@ class SearchEngineTabHelper
   // successfully, this ivar will be used to add a new TemplateURL and then it
   // will be set to empty GURL again.
   GURL searchable_url_;
+
+  // Subscription for JS message.
+  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 

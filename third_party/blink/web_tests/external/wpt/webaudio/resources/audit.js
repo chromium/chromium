@@ -788,21 +788,31 @@ window.Audit = (function() {
       }
 
       // Compare against the expected sequence.
-      for (let j = 0; j < this._expected.length; j++) {
-        if (this._expected[j] !== indexedActual[j].value) {
-          firstErrorIndex = indexedActual[j].index;
-          passed = false;
-          break;
+      let failMessage =
+          '${actual} expected to have the value sequence of ${expected} but ' +
+          'got ';
+      if (this._expected.length === indexedActual.length) {
+        for (let j = 0; j < this._expected.length; j++) {
+          if (this._expected[j] !== indexedActual[j].value) {
+            firstErrorIndex = indexedActual[j].index;
+            passed = false;
+            failMessage += this._actual[firstErrorIndex] + ' at index ' +
+                firstErrorIndex + '.';
+            break;
+          }
         }
+      } else {
+        passed = false;
+        let indexedValues = indexedActual.map(x => x.value);
+        failMessage += `${indexedActual.length} values, [${
+            indexedValues}], instead of ${this._expected.length}.`;
       }
 
       return this._assert(
           passed,
           '${actual} contains all the expected values in the correct order: ' +
               '${expected}.',
-          '${actual} expected to have the value sequence of ${expected} but ' +
-              'got ' + this._actual[firstErrorIndex] + ' at index ' +
-              firstErrorIndex + '.');
+          failMessage);
     }
 
     /**
@@ -1177,7 +1187,21 @@ window.Audit = (function() {
           '> [' + this._label + '] ' +
           (this._description ? this._description : ''));
 
-      this._taskFunction(this, this.should.bind(this));
+      // Ideally we would just use testharness async_test instead of reinventing
+      // that wheel, but since it's been reinvented...  At least make sure that
+      // an exception while running a task doesn't preclude us running all the
+      // _other_ tasks for the test.
+      try {
+        this._taskFunction(this, this.should.bind(this));
+      } catch (e) {
+        // Log the failure.
+        test(() => { throw e; }, `Executing "${this.label}"`);
+        if (this.state != TaskState.FINISHED) {
+          // We threw before calling done(), so do that manually to run our
+          // other tasks.
+          this.done();
+        }
+      }
     }
 
     // Update the task success based on the individual assertion/test inside.
@@ -1208,6 +1232,18 @@ window.Audit = (function() {
       }
 
       this._taskRunner._runNextTask();
+    }
+
+    // Runs |subTask| |time| milliseconds later. |setTimeout| is not allowed in
+    // WPT linter, so a thin wrapper around the harness's |step_timeout| is
+    // used here.
+    timeout(subTask, time) {
+      async_test((test) => {
+        test.step_timeout(() => {
+          subTask();
+          test.done();
+        }, time);
+      });
     }
 
     isPassed() {

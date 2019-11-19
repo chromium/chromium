@@ -12,12 +12,12 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
-#include "services/service_manager/public/cpp/service_context_ref.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 class UtilWinImpl : public chrome::mojom::UtilWin {
  public:
-  explicit UtilWinImpl(
-      std::unique_ptr<service_manager::ServiceContextRef> service_ref);
+  explicit UtilWinImpl(mojo::PendingReceiver<chrome::mojom::UtilWin> receiver);
   ~UtilWinImpl() override;
 
  private:
@@ -36,7 +36,7 @@ class UtilWinImpl : public chrome::mojom::UtilWin {
   void GetAntiVirusProducts(bool report_full_names,
                             GetAntiVirusProductsCallback callback) override;
 
-  const std::unique_ptr<service_manager::ServiceContextRef> service_ref_;
+  mojo::Receiver<chrome::mojom::UtilWin> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(UtilWinImpl);
 };

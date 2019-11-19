@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/fetch/fetch_request_data.h"
 
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_request.h"
+#include "net/base/request_priority.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -19,7 +21,51 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 
+namespace {
+
+::blink::ResourceLoadPriority ConvertRequestPriorityToResourceLoadPriority(
+    net::RequestPriority priority) {
+  switch (priority) {
+    case net::RequestPriority::THROTTLED:
+      break;
+    case net::RequestPriority::IDLE:
+      return ::blink::ResourceLoadPriority::kVeryLow;
+    case net::RequestPriority::LOWEST:
+      return ::blink::ResourceLoadPriority::kLow;
+    case net::RequestPriority::LOW:
+      return ::blink::ResourceLoadPriority::kMedium;
+    case net::RequestPriority::MEDIUM:
+      return ::blink::ResourceLoadPriority::kHigh;
+    case net::RequestPriority::HIGHEST:
+      return ::blink::ResourceLoadPriority::kVeryHigh;
+  }
+
+  NOTREACHED() << priority;
+  return blink::ResourceLoadPriority::kUnresolved;
+}
+
+}  // namespace
+
 namespace blink {
+
+namespace {
+
+bool IsExcludedHeaderForServiceWorkerFetchEvent(const String& header_name) {
+  // Excluding Sec-Fetch-... headers as suggested in
+  // https://crbug.com/949997#c4.
+  if (header_name.StartsWithIgnoringASCIICase("sec-fetch-")) {
+    return true;
+  }
+
+  if (Platform::Current()->IsExcludedHeaderForServiceWorkerFetchEvent(
+          header_name)) {
+    return true;
+  }
+
+  return false;
+}
+
+}  // namespace
 
 FetchRequestData* FetchRequestData::Create() {
   return MakeGarbageCollected<FetchRequestData>();
@@ -27,40 +73,8 @@ FetchRequestData* FetchRequestData::Create() {
 
 FetchRequestData* FetchRequestData::Create(
     ScriptState* script_state,
-    const WebServiceWorkerRequest& web_request) {
-  FetchRequestData* request = FetchRequestData::Create();
-  request->url_ = web_request.Url();
-  request->method_ = web_request.Method();
-  for (HTTPHeaderMap::const_iterator it = web_request.Headers().begin();
-       it != web_request.Headers().end(); ++it)
-    request->header_list_->Append(it->key, it->value);
-  if (scoped_refptr<EncodedFormData> body = web_request.Body()) {
-    request->SetBuffer(MakeGarbageCollected<BodyStreamBuffer>(
-        script_state,
-        MakeGarbageCollected<FormDataBytesConsumer>(
-            ExecutionContext::From(script_state), std::move(body)),
-        nullptr /* AbortSignal */));
-  }
-  request->SetContext(web_request.GetRequestContext());
-  request->SetReferrerString(web_request.ReferrerUrl().GetString());
-  request->SetReferrerPolicy(web_request.GetReferrerPolicy());
-  request->SetMode(web_request.Mode());
-  request->SetCredentials(web_request.CredentialsMode());
-  request->SetCacheMode(web_request.CacheMode());
-  request->SetRedirect(web_request.RedirectMode());
-  request->SetMIMEType(request->header_list_->ExtractMIMEType());
-  request->SetIntegrity(web_request.Integrity());
-  request->SetPriority(
-      static_cast<ResourceLoadPriority>(web_request.Priority()));
-  request->SetKeepalive(web_request.Keepalive());
-  request->SetIsHistoryNavigation(web_request.IsHistoryNavigation());
-  request->SetWindowId(web_request.GetWindowId());
-  return request;
-}
-
-FetchRequestData* FetchRequestData::Create(
-    ScriptState* script_state,
-    const mojom::blink::FetchAPIRequest& fetch_api_request) {
+    const mojom::blink::FetchAPIRequest& fetch_api_request,
+    ForServiceWorkerFetchEvent for_service_worker_fetch_event) {
   FetchRequestData* request = FetchRequestData::Create();
   request->url_ = fetch_api_request.url;
   request->method_ = AtomicString(fetch_api_request.method);
@@ -69,15 +83,28 @@ FetchRequestData* FetchRequestData::Create(
     // whether we really need this filter.
     if (DeprecatedEqualIgnoringCase(pair.key, "referer"))
       continue;
+    if (for_service_worker_fetch_event == ForServiceWorkerFetchEvent::kTrue &&
+        IsExcludedHeaderForServiceWorkerFetchEvent(pair.key)) {
+      continue;
+    }
     request->header_list_->Append(pair.key, pair.value);
   }
+
   if (fetch_api_request.blob) {
+    DCHECK(!fetch_api_request.body);
     request->SetBuffer(MakeGarbageCollected<BodyStreamBuffer>(
         script_state,
         MakeGarbageCollected<BlobBytesConsumer>(
             ExecutionContext::From(script_state), fetch_api_request.blob),
         nullptr /* AbortSignal */));
+  } else if (fetch_api_request.body) {
+    request->SetBuffer(MakeGarbageCollected<BodyStreamBuffer>(
+        script_state,
+        MakeGarbageCollected<FormDataBytesConsumer>(
+            ExecutionContext::From(script_state), fetch_api_request.body),
+        nullptr /* AbortSignal */));
   }
+
   request->SetContext(fetch_api_request.request_context_type);
   request->SetReferrerString(AtomicString(Referrer::NoReferrer()));
   if (fetch_api_request.referrer) {
@@ -89,10 +116,14 @@ FetchRequestData* FetchRequestData::Create(
   request->SetCredentials(fetch_api_request.credentials_mode);
   request->SetCacheMode(fetch_api_request.cache_mode);
   request->SetRedirect(fetch_api_request.redirect_mode);
-  request->SetMIMEType(request->header_list_->ExtractMIMEType());
+  request->SetMimeType(request->header_list_->ExtractMIMEType());
   request->SetIntegrity(fetch_api_request.integrity);
   request->SetKeepalive(fetch_api_request.keepalive);
   request->SetIsHistoryNavigation(fetch_api_request.is_history_navigation);
+  request->SetPriority(
+      ConvertRequestPriorityToResourceLoadPriority(fetch_api_request.priority));
+  if (fetch_api_request.fetch_window_id)
+    request->SetWindowId(fetch_api_request.fetch_window_id.value());
   return request;
 }
 
@@ -102,7 +133,7 @@ FetchRequestData* FetchRequestData::CloneExceptBody() {
   request->method_ = method_;
   request->header_list_ = header_list_->Clone();
   request->origin_ = origin_;
-  request->same_origin_data_url_flag_ = same_origin_data_url_flag_;
+  request->isolated_world_origin_ = isolated_world_origin_;
   request->context_ = context_;
   request->referrer_string_ = referrer_string_;
   request->referrer_policy_ = referrer_policy_;
@@ -134,7 +165,8 @@ FetchRequestData* FetchRequestData::Clone(ScriptState* script_state,
     request->buffer_ = new2;
   }
   if (url_loader_factory_) {
-    url_loader_factory_->Clone(MakeRequest(&request->url_loader_factory_));
+    url_loader_factory_->Clone(
+        request->url_loader_factory_.BindNewPipeAndPassReceiver());
   }
   return request;
 }
@@ -158,15 +190,14 @@ FetchRequestData::~FetchRequestData() {}
 
 FetchRequestData::FetchRequestData()
     : method_(http_names::kGET),
-      header_list_(FetchHeaderList::Create()),
+      header_list_(MakeGarbageCollected<FetchHeaderList>()),
       context_(mojom::RequestContextType::UNSPECIFIED),
-      same_origin_data_url_flag_(false),
       referrer_string_(Referrer::ClientReferrerString()),
       referrer_policy_(network::mojom::ReferrerPolicy::kDefault),
-      mode_(network::mojom::FetchRequestMode::kNoCors),
-      credentials_(network::mojom::FetchCredentialsMode::kOmit),
+      mode_(network::mojom::RequestMode::kNoCors),
+      credentials_(network::mojom::CredentialsMode::kOmit),
       cache_mode_(mojom::FetchCacheMode::kDefault),
-      redirect_(network::mojom::FetchRedirectMode::kFollow),
+      redirect_(network::mojom::RedirectMode::kFollow),
       importance_(mojom::FetchImportanceMode::kImportanceAuto),
       response_tainting_(kBasicTainting),
       priority_(ResourceLoadPriority::kUnresolved),

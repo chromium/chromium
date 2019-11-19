@@ -18,12 +18,12 @@ class DataSegment;
 
 // UploadJob can be used to upload screenshots and logfiles to the cloud.
 // Data is uploaded via a POST request of type "multipart/form-data". The class
-// relies on OAuth2TokenService to acquire an access token with a sufficient
-// scope. Data segments can be added to the upload queue using AddDataSegment()
-// and the upload is started by calling Start(). Calls to AddDataSegment() are
-// only allowed prior to the first call to Start().
-// An Upload instance may be destroyed at any point in time, the pending
-// operations are guaranteed to be canceled and the Delegate::OnSuccess() and
+// relies on OAuth2AccessTokenManager to acquire an access token with a
+// sufficient scope. Data segments can be added to the upload queue using
+// AddDataSegment() and the upload is started by calling Start(). Calls to
+// AddDataSegment() are only allowed prior to the first call to Start(). An
+// Upload instance may be destroyed at any point in time, the pending operations
+// are guaranteed to be canceled and the Delegate::OnSuccess() and
 // Delegate::OnFailure() methods will not be invoked.
 class UploadJob {
  public:

@@ -25,13 +25,8 @@ namespace extensions {
 
 class Extension;
 class ExtensionAPI;
-class InfoMap;
-class IOThreadExtensionMessageFilter;
 class ProcessMap;
 class WindowController;
-
-// A factory function for creating new ExtensionFunction instances.
-typedef ExtensionFunction* (*ExtensionFunctionFactory)();
 
 // ExtensionFunctionDispatcher receives requests to execute functions from
 // Chrome extensions running in a RenderFrameHost and dispatches them to the
@@ -69,16 +64,6 @@ class ExtensionFunctionDispatcher
    protected:
     virtual ~Delegate() {}
   };
-
-  // Dispatches an IO-thread extension function. Only used for specific
-  // functions that must be handled on the IO-thread.
-  static void DispatchOnIOThread(
-      InfoMap* extension_info_map,
-      void* profile_id,
-      int render_process_id,
-      base::WeakPtr<IOThreadExtensionMessageFilter> ipc_sender,
-      int routing_id,
-      const ExtensionHostMsg_Request_Params& params);
 
   // Public constructor. Callers must ensure that:
   // - This object outlives any RenderFrameHost's passed to created
@@ -140,7 +125,7 @@ class ExtensionFunctionDispatcher
   // Helper to create an ExtensionFunction to handle the function given by
   // |params|. Can be called on any thread.
   // Does not set subclass properties, or include_incognito.
-  static ExtensionFunction* CreateExtensionFunction(
+  static scoped_refptr<ExtensionFunction> CreateExtensionFunction(
       const ExtensionHostMsg_Request_Params& params,
       const Extension* extension,
       int requesting_process_id,
@@ -152,8 +137,7 @@ class ExtensionFunctionDispatcher
   // Helper to run the response callback with an access denied error. Can be
   // called on any thread.
   static void SendAccessDenied(
-      const ExtensionFunction::ResponseCallback& callback,
-      functions::HistogramValue histogram_value);
+      const ExtensionFunction::ResponseCallback& callback);
 
   void DispatchWithCallbackInternal(
       const ExtensionHostMsg_Request_Params& params,

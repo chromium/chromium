@@ -11,9 +11,8 @@ MockAutocompleteProviderClient::MockAutocompleteProviderClient() {
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
 
-  contextual_suggestions_service_ =
-      std::make_unique<ContextualSuggestionsService>(
-          /*identity_manager=*/nullptr, GetURLLoaderFactory());
+  remote_suggestions_service_ =
+      std::make_unique<RemoteSuggestionsService>(GetURLLoaderFactory());
   document_suggestions_service_ = std::make_unique<DocumentSuggestionsService>(
       /*identity_manager=*/nullptr, GetURLLoaderFactory());
   pedal_provider_ = std::make_unique<OmniboxPedalProvider>(*this);

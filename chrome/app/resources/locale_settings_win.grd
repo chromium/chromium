@@ -337,16 +337,6 @@
         DFKai-SB
       </message>
 
-      <!-- The default value for |WebPreference::default_font_size| -->
-      <message name="IDS_DEFAULT_FONT_SIZE" use_name_for_id="true">
-        16
-      </message>
-
-      <!-- The default value for |WebPreference::default_fixed_font_size| -->
-      <message name="IDS_DEFAULT_FIXED_FONT_SIZE" use_name_for_id="true">
-        13
-      </message>
-
       <!-- The default value for |WebPreference::minimum_font_size| -->
       <message name="IDS_MINIMUM_FONT_SIZE" use_name_for_id="true">
         0

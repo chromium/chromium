@@ -1,0 +1,22 @@
+{
+  "name": "Console Error Metrics",
+  "description": "Counts the number of console errors seen in the trace.",
+  "histograms": [
+    {
+      "name": "all_errors",
+      "description": "Number of all console error messages",
+      "requiredCategories": ["v8", "blink.console"],
+      "unit": "count_smallerIsBetter"
+    },
+    {
+      "name": "js_errors",
+      "description": "Number of js console error messages",
+      "unit": "count_smallerIsBetter"
+    },
+    {
+      "name": "network_errors",
+      "description": "Number of network console error messages",
+      "unit": "count_smallerIsBetter"
+    }
+  ]
+}

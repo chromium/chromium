@@ -16,7 +16,8 @@
 #include "content/public/browser/storage_partition.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -45,10 +46,10 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
       network::mojom::NetworkContext* network_context,
       const GURL& source_url,
       ProxyResolutionServiceProvider::NotifyCallback notify_callback)
-      : binding_(this), notify_callback_(std::move(notify_callback)) {
-    network::mojom::ProxyLookupClientPtr proxy_lookup_client;
-    binding_.Bind(mojo::MakeRequest(&proxy_lookup_client));
-    binding_.set_connection_error_handler(base::BindOnce(
+      : notify_callback_(std::move(notify_callback)) {
+    mojo::PendingRemote<network::mojom::ProxyLookupClient> proxy_lookup_client =
+        receiver_.BindNewPipeAndPassRemote();
+    receiver_.set_disconnect_handler(base::BindOnce(
         &ProxyLookupRequest::OnProxyLookupComplete, base::Unretained(this),
         net::ERR_ABORTED, base::nullopt));
 
@@ -73,13 +74,13 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
       result = proxy_info->ToPacString();
     }
 
-    binding_.Close();
+    receiver_.reset();
     std::move(notify_callback_).Run(error, result);
     delete this;
   }
 
  private:
-  mojo::Binding<network::mojom::ProxyLookupClient> binding_;
+  mojo::Receiver<network::mojom::ProxyLookupClient> receiver_{this};
   ProxyResolutionServiceProvider::NotifyCallback notify_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(ProxyLookupRequest);
@@ -88,8 +89,7 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
 }  // namespace
 
 ProxyResolutionServiceProvider::ProxyResolutionServiceProvider()
-    : origin_thread_(base::ThreadTaskRunnerHandle::Get()),
-      weak_ptr_factory_(this) {}
+    : origin_thread_(base::ThreadTaskRunnerHandle::Get()) {}
 
 ProxyResolutionServiceProvider::~ProxyResolutionServiceProvider() {
   DCHECK(OnOriginThread());

@@ -11,9 +11,9 @@
 #include "media/cdm/cdm_context_ref_impl.h"
 #include "media/mojo/services/mojo_cdm_service.h"
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#if BUILDFLAG(ENABLE_CDM_PROXY)
 #include "media/mojo/services/mojo_cdm_proxy_service.h"
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 namespace media {
 
@@ -27,7 +27,7 @@ int GetNextCdmId() {
   return g_next_cdm_id++;
 }
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#if BUILDFLAG(ENABLE_CDM_PROXY)
 class CdmProxyContextRef : public CdmContextRef, public CdmContext {
  public:
   explicit CdmProxyContextRef(base::WeakPtr<CdmContext> cdm_context)
@@ -61,7 +61,7 @@ class CdmProxyContextRef : public CdmContextRef, public CdmContext {
 
   DISALLOW_COPY_AND_ASSIGN(CdmProxyContextRef);
 };
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 }  // namespace
 
@@ -83,7 +83,7 @@ void MojoCdmServiceContext::UnregisterCdm(int cdm_id) {
   cdm_services_.erase(cdm_id);
 }
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#if BUILDFLAG(ENABLE_CDM_PROXY)
 int MojoCdmServiceContext::RegisterCdmProxy(
     MojoCdmProxyService* cdm_proxy_service) {
   DCHECK(cdm_proxy_service);
@@ -98,7 +98,7 @@ void MojoCdmServiceContext::UnregisterCdmProxy(int cdm_id) {
   DCHECK(cdm_proxy_services_.count(cdm_id));
   cdm_proxy_services_.erase(cdm_id);
 }
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 std::unique_ptr<CdmContextRef> MojoCdmServiceContext::GetCdmContextRef(
     int cdm_id) {
@@ -114,14 +114,14 @@ std::unique_ptr<CdmContextRef> MojoCdmServiceContext::GetCdmContextRef(
     return std::make_unique<CdmContextRefImpl>(cdm_service->second->GetCdm());
   }
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#if BUILDFLAG(ENABLE_CDM_PROXY)
   // Next check all CdmProxies.
   auto cdm_proxy_service = cdm_proxy_services_.find(cdm_id);
   if (cdm_proxy_service != cdm_proxy_services_.end()) {
     return std::make_unique<CdmProxyContextRef>(
         cdm_proxy_service->second->GetCdmContext());
   }
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
   LOG(ERROR) << "CdmContextRef cannot be obtained for CDM ID: " << cdm_id;
   return nullptr;

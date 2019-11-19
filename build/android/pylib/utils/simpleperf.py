@@ -12,6 +12,7 @@ import tempfile
 from devil import devil_env
 from devil.android import device_signal
 from devil.android.sdk import version_codes
+from pylib import constants
 
 
 def _ProcessType(proc):
@@ -246,13 +247,13 @@ def ConvertSimpleperfToPprof(simpleperf_out_path, build_directory,
 
     # Run the script to annotate symbols and convert from simpleperf format to
     # pprof format.
-    llvm_symbolizer_path = devil_env.config.LocalPath('llvm-symbolizer')
     pprof_converter_script = os.path.join(
         script_dir, 'pprof_proto_generator.py')
-    pprof_converter_cmd = [sys.executable, pprof_converter_script,
-                           '-i', simpleperf_out_path,
-                           '-o', os.path.abspath(pprof_out_path),
-                           '--addr2line', llvm_symbolizer_path]
+    pprof_converter_cmd = [
+        sys.executable, pprof_converter_script, '-i', simpleperf_out_path, '-o',
+        os.path.abspath(pprof_out_path), '--ndk_path',
+        constants.ANDROID_NDK_ROOT
+    ]
     subprocess.check_output(pprof_converter_cmd, stderr=subprocess.STDOUT,
                             cwd=processing_dir)
   finally:

@@ -46,7 +46,7 @@ class ImportCatalogTask : public Task {
   bool result_ = false;
   BooleanCallback callback_;
 
-  base::WeakPtrFactory<ImportCatalogTask> weak_ptr_factory_;
+  base::WeakPtrFactory<ImportCatalogTask> weak_ptr_factory_{this};
 };
 
 }  // namespace explore_sites

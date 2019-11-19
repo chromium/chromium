@@ -20,26 +20,25 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
-#import <CoreFoundation/CFBase.h>
-#import <Foundation/NSObject.h>
-#include "third_party/blink/renderer/platform/wtf/retain_ptr.h"
+#import <Foundation/Foundation.h>
+#include "base/mac/foundation_util.h"
 
 namespace WTF {
 
-// Use HardAutorelease to return an object made by a CoreFoundation
-// "create" or "copy" function as an autoreleased and garbage collected
-// object. CF objects need to be "made collectable" for autorelease to work
-// properly under GC.
-
-static inline id HardAutorelease(CFTypeRef object) {
-  if (object)
-    CFMakeCollectable(object);
-  [(id)object autorelease];
-  return (id)object;
+base::ScopedCFTypeRef<CFStringRef> StringImpl::CreateCFString() {
+  return base::ScopedCFTypeRef<CFStringRef>(
+      Is8Bit()
+          ? CFStringCreateWithBytes(
+                kCFAllocatorDefault,
+                reinterpret_cast<const UInt8*>(Characters8()), length_,
+                kCFStringEncodingISOLatin1, false)
+          : CFStringCreateWithCharacters(
+                kCFAllocatorDefault,
+                reinterpret_cast<const UniChar*>(Characters16()), length_));
 }
 
 StringImpl::operator NSString*() {
-  return HardAutorelease(CreateCFString().LeakRef());
+  return [base::mac::CFToNSCast(CreateCFString().release()) autorelease];
 }
 
 }  // namespace WTF

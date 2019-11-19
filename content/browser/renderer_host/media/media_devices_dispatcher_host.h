@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/media/media_devices_manager.h"
 #include "content/common/content_export.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 #include "url/origin.h"
 
@@ -30,16 +31,18 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
                              MediaStreamManager* media_stream_manager);
   ~MediaDevicesDispatcherHost() override;
 
-  static void Create(int render_process_id,
-                     int render_frame_id,
-                     MediaStreamManager* media_stream_manager,
-                     blink::mojom::MediaDevicesDispatcherHostRequest request);
+  static void Create(
+      int render_process_id,
+      int render_frame_id,
+      MediaStreamManager* media_stream_manager,
+      mojo::PendingReceiver<blink::mojom::MediaDevicesDispatcherHost> receiver);
 
   // blink::mojom::MediaDevicesDispatcherHost implementation.
   void EnumerateDevices(bool request_audio_input,
                         bool request_video_input,
                         bool request_audio_output,
                         bool request_video_input_capabilities,
+                        bool request_audio_input_capabilities,
                         EnumerateDevicesCallback client_callback) override;
   void GetVideoInputCapabilities(
       GetVideoInputCapabilitiesCallback client_callback) override;
@@ -55,7 +58,8 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       bool subscribe_audio_input,
       bool subscribe_video_input,
       bool subscribe_audio_output,
-      blink::mojom::MediaDevicesListenerPtr listener) override;
+      mojo::PendingRemote<blink::mojom::MediaDevicesListener> listener)
+      override;
 
  private:
   using GetVideoInputDeviceFormatsCallback =
@@ -125,7 +129,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
 
   std::vector<uint32_t> subscription_ids_;
 
-  base::WeakPtrFactory<MediaDevicesDispatcherHost> weak_factory_;
+  base::WeakPtrFactory<MediaDevicesDispatcherHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaDevicesDispatcherHost);
 };

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <!-- Menu Dimensions -->
+    <!-- Necessary to align the menu icon with the actual button. -->
+    <dimen name="menu_negative_software_vertical_offset">6dp</dimen>
+</resources>
+

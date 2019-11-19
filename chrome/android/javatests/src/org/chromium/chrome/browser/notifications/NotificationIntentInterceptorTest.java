@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.R;
@@ -98,6 +99,7 @@ public class NotificationIntentInterceptorTest {
      * different.
      */
     @Test
+    @DisabledTest(message = "https://crbug.com/910870")
     @MediumTest
     @RetryOnFailure
     @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)

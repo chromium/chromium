@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_LONG_TASK_TIMING_H_
 
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
-#include "third_party/blink/renderer/core/timing/sub_task_attribution.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -20,23 +19,12 @@ class PerformanceLongTaskTiming final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static PerformanceLongTaskTiming* Create(
-      double start_time,
-      double end_time,
-      const AtomicString& name,
-      const String& frame_src,
-      const String& frame_id,
-      const String& frame_name,
-      const SubTaskAttribution::EntriesVector& sub_task_attributions);
-
-  PerformanceLongTaskTiming(
-      double start_time,
-      double end_time,
-      const AtomicString& name,
-      const String& frame_src,
-      const String& frame_id,
-      const String& frame_name,
-      const SubTaskAttribution::EntriesVector& sub_task_attributions);
+  PerformanceLongTaskTiming(double start_time,
+                            double end_time,
+                            const AtomicString& name,
+                            const String& frame_src,
+                            const String& frame_id,
+                            const String& frame_name);
 
   AtomicString entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;

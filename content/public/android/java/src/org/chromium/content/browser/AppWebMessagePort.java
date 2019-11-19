@@ -10,7 +10,9 @@ import android.os.Looper;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.CloneableMessage;
+import org.chromium.blink.mojom.NativeFileSystemTransferToken;
 import org.chromium.blink.mojom.SerializedArrayBufferContents;
 import org.chromium.blink.mojom.SerializedBlob;
 import org.chromium.blink.mojom.TransferableMessage;
@@ -108,7 +110,8 @@ public class AppWebMessagePort implements MessagePort {
         public void handleMessage(android.os.Message msg) {
             if (msg.what == MESSAGE_RECEIVED) {
                 MessagePortMessage message = (MessagePortMessage) msg.obj;
-                String decodedMessage = nativeDecodeStringMessage(message.encodedMessage);
+                String decodedMessage =
+                        AppWebMessagePortJni.get().decodeStringMessage(message.encodedMessage);
                 if (decodedMessage == null) {
                     Log.w(TAG, "Undecodable message received, dropping message");
                     return;
@@ -164,6 +167,11 @@ public class AppWebMessagePort implements MessagePort {
         AppWebMessagePort[] ports = new AppWebMessagePort[] {
                 new AppWebMessagePort(handles.first), new AppWebMessagePort(handles.second)};
         return ports;
+    }
+
+    // Called to create a port from handle.
+    public static AppWebMessagePort create(MessagePipeHandle handle) {
+        return new AppWebMessagePort(handle);
     }
 
     private MessagePipeHandle passHandle() {
@@ -250,9 +258,11 @@ public class AppWebMessagePort implements MessagePort {
 
         TransferableMessage msg = new TransferableMessage();
         msg.message = new CloneableMessage();
-        msg.message.encodedMessage =
-                BigBufferUtil.createBigBufferFromBytes(nativeEncodeStringMessage(message));
+        msg.message.encodedMessage = BigBufferUtil.createBigBufferFromBytes(
+                AppWebMessagePortJni.get().encodeStringMessage(message));
         msg.message.blobs = new SerializedBlob[0];
+        msg.message.nativeFileSystemTokens = new NativeFileSystemTransferToken[0];
+        msg.message.senderOrigin = null;
         msg.arrayBufferContentsArray = new SerializedArrayBufferContents[0];
         msg.imageBitmapContentsArray = new Bitmap[0];
         msg.ports = ports;
@@ -260,6 +270,9 @@ public class AppWebMessagePort implements MessagePort {
         mConnector.accept(msg.serializeWithHeader(mMojoCore, MESSAGE_HEADER));
     }
 
-    private static native String nativeDecodeStringMessage(byte[] encodedData);
-    private static native byte[] nativeEncodeStringMessage(String message);
+    @NativeMethods
+    interface Natives {
+        String decodeStringMessage(byte[] encodedData);
+        byte[] encodeStringMessage(String message);
+    }
 }

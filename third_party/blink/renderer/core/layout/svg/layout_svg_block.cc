@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_block.h"
 
+#include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/layout_geometry_map.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
@@ -29,7 +30,6 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
-#include "third_party/blink/renderer/platform/transforms/transform_state.h"
 
 namespace blink {
 
@@ -37,13 +37,7 @@ LayoutSVGBlock::LayoutSVGBlock(SVGElement* element)
     : LayoutBlockFlow(element) {}
 
 SVGElement* LayoutSVGBlock::GetElement() const {
-  return ToSVGElement(LayoutObject::GetNode());
-}
-
-void LayoutSVGBlock::AbsoluteRects(Vector<IntRect>&, const LayoutPoint&) const {
-  // This code path should never be taken for SVG, as we're assuming
-  // useTransforms=true everywhere, absoluteQuads should be used.
-  NOTREACHED();
+  return To<SVGElement>(LayoutObject::GetNode());
 }
 
 void LayoutSVGBlock::WillBeDestroyed() {
@@ -89,7 +83,7 @@ void LayoutSVGBlock::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                                         TransformState& transform_state,
                                         MapCoordinatesFlags flags) const {
   // Convert from local HTML coordinates to local SVG coordinates.
-  transform_state.Move(LocationOffset());
+  transform_state.Move(PhysicalLocation());
   // Apply other mappings on local SVG coordinates.
   SVGLayoutSupport::MapLocalToAncestor(this, ancestor, transform_state, flags);
 }
@@ -103,21 +97,21 @@ void LayoutSVGBlock::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
   // Map to local SVG coordinates.
   SVGLayoutSupport::MapAncestorToLocal(*this, ancestor, transform_state, flags);
   // Convert from local SVG coordinates to local HTML coordinates.
-  transform_state.Move(LocationOffset());
+  transform_state.Move(PhysicalLocation());
 }
 
 const LayoutObject* LayoutSVGBlock::PushMappingToContainer(
     const LayoutBoxModelObject* ancestor_to_stop_at,
     LayoutGeometryMap& geometry_map) const {
   // Convert from local HTML coordinates to local SVG coordinates.
-  geometry_map.Push(this, LocationOffset());
+  geometry_map.Push(this, PhysicalLocation());
   // Apply other mappings on local SVG coordinates.
   return SVGLayoutSupport::PushMappingToContainer(this, ancestor_to_stop_at,
                                                   geometry_map);
 }
 
-LayoutRect LayoutSVGBlock::VisualRectInDocument() const {
-  return SVGLayoutSupport::VisualRectInAncestorSpace(*this, *View());
+PhysicalRect LayoutSVGBlock::VisualRectInDocument(VisualRectFlags flags) const {
+  return SVGLayoutSupport::VisualRectInAncestorSpace(*this, *View(), flags);
 }
 
 bool LayoutSVGBlock::MapToVisualRectInAncestorSpaceInternal(
@@ -125,9 +119,9 @@ bool LayoutSVGBlock::MapToVisualRectInAncestorSpaceInternal(
     TransformState& transform_state,
     VisualRectFlags) const {
   transform_state.Flatten();
-  LayoutRect rect(transform_state.LastPlanarQuad().BoundingBox());
+  PhysicalRect rect(LayoutRect(transform_state.LastPlanarQuad().BoundingBox()));
   // Convert from local HTML coordinates to local SVG coordinates.
-  rect.MoveBy(Location());
+  rect.Move(PhysicalLocation());
   // Apply other mappings on local SVG coordinates.
   bool retval = SVGLayoutSupport::MapToVisualRectInAncestorSpace(
       *this, ancestor, FloatRect(rect), rect);
@@ -137,7 +131,7 @@ bool LayoutSVGBlock::MapToVisualRectInAncestorSpaceInternal(
 
 bool LayoutSVGBlock::NodeAtPoint(HitTestResult&,
                                  const HitTestLocation&,
-                                 const LayoutPoint&,
+                                 const PhysicalOffset&,
                                  HitTestAction) {
   NOTREACHED();
   return false;

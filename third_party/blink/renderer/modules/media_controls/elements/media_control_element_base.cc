@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_element_base.h"
 
+#include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 
@@ -30,29 +32,25 @@ bool MediaControlElementBase::DoesFit() const {
   return does_fit_;
 }
 
-MediaControlElementType MediaControlElementBase::DisplayType() const {
-  return display_type_;
-}
-
 bool MediaControlElementBase::HasOverflowButton() const {
   return false;
 }
 
 MediaControlElementBase::MediaControlElementBase(
     MediaControlsImpl& media_controls,
-    MediaControlElementType display_type,
     HTMLElement* element)
     : media_controls_(&media_controls),
-      display_type_(display_type),
       element_(element),
       is_wanted_(true),
       does_fit_(true) {}
 
 void MediaControlElementBase::UpdateShownState() {
-  if (is_wanted_ && does_fit_)
-    element_->RemoveInlineStyleProperty(CSSPropertyDisplay);
-  else
-    element_->SetInlineStyleProperty(CSSPropertyDisplay, CSSValueNone);
+  if (is_wanted_ && does_fit_) {
+    element_->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+  } else {
+    element_->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                     CSSValueID::kNone);
+  }
 }
 
 MediaControlsImpl& MediaControlElementBase::GetMediaControls() const {
@@ -62,11 +60,6 @@ MediaControlsImpl& MediaControlElementBase::GetMediaControls() const {
 
 HTMLMediaElement& MediaControlElementBase::MediaElement() const {
   return GetMediaControls().MediaElement();
-}
-
-void MediaControlElementBase::SetDisplayType(
-    MediaControlElementType display_type) {
-  display_type_ = display_type;
 }
 
 void MediaControlElementBase::Trace(blink::Visitor* visitor) {

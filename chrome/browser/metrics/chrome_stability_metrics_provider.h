@@ -7,7 +7,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/process/kill.h"
 #include "base/scoped_observer.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"

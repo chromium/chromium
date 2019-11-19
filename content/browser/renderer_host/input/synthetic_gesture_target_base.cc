@@ -85,7 +85,7 @@ void SyntheticGestureTargetBase::DispatchInputEventToPlatform(
     const WebGestureEvent& web_pinch =
         static_cast<const WebGestureEvent&>(event);
     // Touchscreen pinches should be injected as touch events.
-    DCHECK_EQ(blink::kWebGestureDeviceTouchpad, web_pinch.SourceDevice());
+    DCHECK_EQ(blink::WebGestureDevice::kTouchpad, web_pinch.SourceDevice());
     if (event.GetType() == WebInputEvent::kGesturePinchBegin &&
         !PointIsWithinContents(web_pinch.PositionInWidget().x,
                                web_pinch.PositionInWidget().y)) {
@@ -98,7 +98,7 @@ void SyntheticGestureTargetBase::DispatchInputEventToPlatform(
     const WebGestureEvent& web_fling =
         static_cast<const WebGestureEvent&>(event);
     // Touchscreen swipe should be injected as touch events.
-    DCHECK_EQ(blink::kWebGestureDeviceTouchpad, web_fling.SourceDevice());
+    DCHECK_EQ(blink::WebGestureDevice::kTouchpad, web_fling.SourceDevice());
     if (event.GetType() == WebInputEvent::kGestureFlingStart &&
         !PointIsWithinContents(web_fling.PositionInWidget().x,
                                web_fling.PositionInWidget().y)) {

@@ -13,6 +13,9 @@ usage: generate_token.py [-h] [--key-file KEY_FILE]
 
 Run "generate_token.py -h" for more help on usage.
 """
+
+from __future__ import print_function
+
 import argparse
 import base64
 from datetime import datetime
@@ -168,23 +171,24 @@ def main():
   try:
     ed25519.checkvalid(signature, data_to_sign, private_key[32:])
   except Exception, exc:
-    print "There was an error generating the signature."
-    print "(The original error was: %s)" % exc
+    print("There was an error generating the signature.")
+    print("(The original error was: %s)" % exc)
     sys.exit(1)
 
 
   # Output the token details
-  print "Token details:"
-  print " Origin: %s" % args.origin
-  print " Is Subdomain: %s" % args.is_subdomain
-  print " Feature: %s" % args.trial_name
-  print " Expiry: %d (%s UTC)" % (expiry, datetime.utcfromtimestamp(expiry))
-  print " Signature: %s" % ", ".join('0x%02x' % ord(x) for x in signature)
-  print " Signature (Base64): %s" % base64.b64encode(signature)
-  print
+  print("Token details:")
+  print(" Origin: %s" % args.origin)
+  print(" Is Subdomain: %s" % args.is_subdomain)
+  print(" Feature: %s" % args.trial_name)
+  print(" Expiry: %d (%s UTC)" % (expiry, datetime.utcfromtimestamp(expiry)))
+  print(" Signature: %s" % ", ".join('0x%02x' % ord(x) for x in signature))
+  print(" Signature (Base64): %s" % base64.b64encode(signature))
+  print()
 
   # Output the properly-formatted token.
-  print FormatToken(VERSION, signature, token_data)
+  print(FormatToken(VERSION, signature, token_data))
+
 
 if __name__ == "__main__":
   main()

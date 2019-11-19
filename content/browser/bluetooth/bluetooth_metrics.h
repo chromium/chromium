@@ -8,7 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "third_party/blink/public/platform/modules/bluetooth/web_bluetooth.mojom.h"
+#include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 namespace base {
 class TimeDelta;

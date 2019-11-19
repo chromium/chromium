@@ -55,8 +55,11 @@ class DisassemblerWin32 : public Disassembler {
   // which will be checked against the detected one.
   static bool QuickDetect(const uint8_t* start, size_t length, uint16_t magic);
 
-  bool ParseAbs32Relocs();
-  void ParseRel32RelocsFromSections();
+  // Returns true if the given RVA range lies within [0, |size_of_image_|).
+  bool IsRvaRangeInBounds(size_t start, size_t length);
+
+  // Returns whether all sections lie within image.
+  bool CheckSectionRanges();
 
   // Disassembler interfaces.
   bool ExtractAbs32Locations() override;
@@ -91,7 +94,7 @@ class DisassemblerWin32 : public Disassembler {
                             InstructionReceptor* receptor) const = 0;
   // Returns true if type is recognized.
   virtual bool SupportsRelTableType(int type) const = 0;
-  virtual uint16_t OffsetOfDataDirectories() const = 0;
+  virtual uint16_t RelativeOffsetOfDataDirectories() const = 0;
 
 #if COURGETTE_HISTOGRAM_TARGETS
   void HistogramTargets(const char* kind, const std::map<RVA, int>& map) const;
@@ -132,6 +135,7 @@ class DisassemblerWin32 : public Disassembler {
   RVA base_of_data_ = 0;
 
   uint64_t image_base_ = 0;  // Range limited to 32 bits for 32 bit executable.
+  // Specifies size of loaded PE in memory, and provides bound on RVA.
   uint32_t size_of_image_ = 0;
   int number_of_data_directories_ = 0;
 

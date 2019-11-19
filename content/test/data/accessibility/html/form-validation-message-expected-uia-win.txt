@@ -1,0 +1,6 @@
+document
+++form
+++++description
+++++++description Name='Pet name:'
+++++textbox Name='Pet name:' IsRequiredForForm=true
+++alert Name='Please enter pet name'

@@ -38,7 +38,7 @@ SerialChooserController::SerialChooserController(
   DCHECK(chooser_context_);
 
   chooser_context_->GetPortManager()->GetDevices(base::BindOnce(
-      &SerialChooserController::OnGetDevices, base::Unretained(this)));
+      &SerialChooserController::OnGetDevices, weak_factory_.GetWeakPtr()));
 }
 
 SerialChooserController::~SerialChooserController() {

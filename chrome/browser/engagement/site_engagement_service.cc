@@ -91,7 +91,7 @@ std::set<GURL> GetEngagementOriginsFromContentSettings(
 
   // Fetch URLs of sites with engagement details stored.
   for (const auto& site :
-       GetContentSettingsFromMap(map, CONTENT_SETTINGS_TYPE_SITE_ENGAGEMENT)) {
+       GetContentSettingsFromMap(map, ContentSettingsType::SITE_ENGAGEMENT)) {
     urls.insert(GURL(site.primary_pattern.ToString()));
   }
 
@@ -131,7 +131,9 @@ std::vector<mojom::SiteEngagementDetails> GetAllDetailsImpl(
 //  b. clicking on an omnibox suggestion brought up by typing a keyword
 //  c. clicking on a bookmark or opening a bookmark app
 //  d. a custom search engine keyword search (e.g. Wikipedia search box added as
-//  search engine).
+//  search engine)
+//  e. an automatically generated top level navigation (e.g. command line
+//  navigation, in product help link).
 bool IsEngagementNavigation(ui::PageTransition transition) {
   return ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_TYPED) ||
          ui::PageTransitionCoreTypeIs(transition,
@@ -139,7 +141,9 @@ bool IsEngagementNavigation(ui::PageTransition transition) {
          ui::PageTransitionCoreTypeIs(transition,
                                       ui::PAGE_TRANSITION_AUTO_BOOKMARK) ||
          ui::PageTransitionCoreTypeIs(transition,
-                                      ui::PAGE_TRANSITION_KEYWORD_GENERATED);
+                                      ui::PAGE_TRANSITION_KEYWORD_GENERATED) ||
+         ui::PageTransitionCoreTypeIs(transition,
+                                      ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 }
 
 }  // namespace
@@ -184,12 +188,10 @@ SiteEngagementService::GetAllDetailsInBackground(
 
 SiteEngagementService::SiteEngagementService(Profile* profile)
     : SiteEngagementService(profile, base::DefaultClock::GetInstance()) {
-  content::BrowserThread::PostAfterStartupTask(
-      FROM_HERE,
-      base::CreateSingleThreadTaskRunnerWithTraits(
-          {content::BrowserThread::UI}),
-      base::BindOnce(&SiteEngagementService::AfterStartupTask,
-                     weak_factory_.GetWeakPtr()));
+  base::PostTask(FROM_HERE,
+                 {content::BrowserThread::UI, base::TaskPriority::BEST_EFFORT},
+                 base::BindOnce(&SiteEngagementService::AfterStartupTask,
+                                weak_factory_.GetWeakPtr()));
 
   if (!g_updated_from_variations) {
     SiteEngagementScore::UpdateFromVariations(kEngagementParams);
@@ -345,7 +347,7 @@ void SiteEngagementService::SetAndroidService(
 
 SiteEngagementService::SiteEngagementService(Profile* profile,
                                              base::Clock* clock)
-    : profile_(profile), clock_(clock), weak_factory_(this) {
+    : profile_(profile), clock_(clock) {
   // May be null in tests.
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
@@ -402,7 +404,7 @@ void SiteEngagementService::CleanupEngagementScores(
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile_);
   for (const auto& site : GetContentSettingsFromProfile(
-           profile_, CONTENT_SETTINGS_TYPE_SITE_ENGAGEMENT)) {
+           profile_, ContentSettingsType::SITE_ENGAGEMENT)) {
     GURL origin(site.primary_pattern.ToString());
 
     if (origin.is_valid()) {
@@ -444,7 +446,7 @@ void SiteEngagementService::CleanupEngagementScores(
 
     // This origin has a score of 0. Wipe it from content settings.
     settings_map->SetWebsiteSettingDefaultScope(
-        origin, GURL(), CONTENT_SETTINGS_TYPE_SITE_ENGAGEMENT,
+        origin, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
         content_settings::ResourceIdentifier(), nullptr);
   }
 
@@ -473,16 +475,16 @@ void SiteEngagementService::MaybeRecordMetrics() {
   // purposes.
   //
   // The profile and its KeyedServices are normally destroyed before the
-  // TaskScheduler shuts down background threads, so the task needs to hold a
+  // ThreadPool shuts down background threads, so the task needs to hold a
   // strong reference to HostContentSettingsMap (which supports outliving the
   // profile), and needs to avoid using any members of SiteEngagementService
   // (which does not). See https://crbug.com/900022.
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::TaskPriority::BEST_EFFORT,
+      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(
-          &GetAllDetailsInBackground, clock_->Now(),
+          &GetAllDetailsInBackground, now,
           base::WrapRefCounted(
               HostContentSettingsMapFactory::GetForProfile(profile_))),
       base::BindOnce(&SiteEngagementService::RecordMetrics,
@@ -534,6 +536,9 @@ bool SiteEngagementService::ShouldRecordEngagement(const GURL& url) const {
 }
 
 base::Time SiteEngagementService::GetLastEngagementTime() const {
+  if (profile_->IsOffTheRecord())
+    return base::Time();
+
   return base::Time::FromInternalValue(
       profile_->GetPrefs()->GetInt64(prefs::kSiteEngagementLastUpdateTime));
 }
@@ -625,15 +630,18 @@ void SiteEngagementService::OnEngagementEvent(
 }
 
 bool SiteEngagementService::IsLastEngagementStale() const {
-  // Only happens on first run when no engagement has ever been recorded.
+  // |last_engagement_time| will be null when no engagement has been recorded
+  // (first run or post clearing site data), or if we are running in incognito.
+  // Do not regard these cases as stale.
   base::Time last_engagement_time = GetLastEngagementTime();
   if (last_engagement_time.is_null())
     return false;
 
   // Stale is either too *far* back, or any amount *forward* in time. This could
   // occur due to a changed clock, or extended non-use of the browser.
-  return (clock_->Now() - last_engagement_time) >= GetStalePeriod() ||
-         (clock_->Now() < last_engagement_time);
+  base::Time now = clock_->Now();
+  return (now - last_engagement_time) >= GetStalePeriod() ||
+         (now < last_engagement_time);
 }
 
 void SiteEngagementService::OnURLsDeleted(
@@ -661,7 +669,7 @@ int SiteEngagementService::OriginsWithMaxDailyEngagement() const {
 
   // We cannot call GetScoreMap as we need the score objects, not raw scores.
   for (const auto& site : GetContentSettingsFromProfile(
-           profile_, CONTENT_SETTINGS_TYPE_SITE_ENGAGEMENT)) {
+           profile_, ContentSettingsType::SITE_ENGAGEMENT)) {
     GURL origin(site.primary_pattern.ToString());
 
     if (!origin.is_valid())
@@ -707,7 +715,7 @@ void SiteEngagementService::UpdateEngagementScores(
     // Remove origins that have no urls left.
     if (remaining == 0) {
       settings_map->SetWebsiteSettingDefaultScope(
-          origin, GURL(), CONTENT_SETTINGS_TYPE_SITE_ENGAGEMENT,
+          origin, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
           content_settings::ResourceIdentifier(), nullptr);
       continue;
     }

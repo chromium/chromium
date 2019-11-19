@@ -137,7 +137,7 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
   void VerifyClipboardURLExists(const char* expected_url) {
     base::Optional<GURL> optional_gurl =
         clipboard_content_->GetRecentURLFromClipboard();
-    EXPECT_TRUE(optional_gurl.has_value());
+    ASSERT_TRUE(optional_gurl.has_value());
     EXPECT_STREQ(expected_url, optional_gurl.value().spec().c_str());
   }
 
@@ -148,7 +148,7 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
   void VerifyClipboardTextExists(const char* expected_text) {
     base::Optional<base::string16> optional_text =
         clipboard_content_->GetRecentTextFromClipboard();
-    EXPECT_TRUE(optional_text.has_value());
+    ASSERT_TRUE(optional_text.has_value());
     EXPECT_STREQ(expected_text,
                  base::UTF16ToUTF8(optional_text.value()).c_str());
   }

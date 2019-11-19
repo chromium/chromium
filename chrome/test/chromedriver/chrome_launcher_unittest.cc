@@ -74,6 +74,27 @@ TEST(ProcessExtensions, GenerateIds) {
             "_generated_background_page.html", bg_pages[2]);
 }
 
+TEST(ProcessExtensions, GenerateIdCrx3) {
+  std::vector<std::string> extensions;
+  base::ScopedTempDir extension_dir;
+  Switches switches;
+  std::vector<std::string> bg_pages;
+
+  ASSERT_TRUE(AddExtensionForInstall("same_key_as_header.crx3", &extensions));
+
+  ASSERT_TRUE(extension_dir.CreateUniqueTempDir());
+
+  Status status = internal::ProcessExtensions(
+      extensions, extension_dir.GetPath(), false, &switches, &bg_pages);
+
+  ASSERT_EQ(kOk, status.code()) << status.message();
+  ASSERT_EQ(1u, bg_pages.size());
+  ASSERT_EQ(
+      "chrome-extension://dfdeoklpcichfcnoaomfpagfiibhomnh/"
+      "_generated_background_page.html",
+      bg_pages[0]);
+}
+
 TEST(ProcessExtensions, SingleExtensionWithBgPage) {
   std::vector<std::string> extensions;
   ASSERT_TRUE(AddExtensionForInstall("ext_slow_loader.crx", &extensions));
@@ -100,14 +121,21 @@ TEST(ProcessExtensions, SingleExtensionWithBgPage) {
   std::string key;
   ASSERT_TRUE(manifest_dict->GetString("key", &key));
   ASSERT_EQ(
-      "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8qhZthEHjTIA3IYMzi79s2KFepVziY0du"
-      "JzHcqRUB/YHSGseIUqcYXGazJhDz/"
-      "4FbRg8ef9fQazL1UbMMGBIf4za1kJ2os2MsRrNXzHslkbtcLVj2VfofhuHJmu+"
-      "CnKJ77UWamJiNAaQSiclu4duwnEWrkx+g/8ChQfhZzC4jvQIDAQAB",
+      "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAxbE7gPHcoZQX7Nv1Tpq8Osz3hhC"
+      "fUPZpMCcsYALXYsICUMdFNPvsq4AsfzcIJN2Qc6C9GwlDgBEYQgC6zD9ULoSnHu3iJem49b"
+      "yAzBciO5zMCXBKHx3HN63QJBOKXhIZMdpZePx22fnZjfeLA6zOnGoH6F0YXX+uNsU5qgV9l"
+      "G4je2XwU050l1u1DAcuzrPVcma32rbfXC3mwZjQxgghCqn/hI0/OBcCU37sWBgPci8uk4Wd"
+      "Ee1frQTN2vpQJ0fJl0SaPGCNmpmJ708n/qwpVvmqK99JPznJoT5dahuZoTyoGl092sbpstY"
+      "H+nQ/66yDoztwerywl+lRYgMJstLlRUgrTwmaA4klweuctSfSA40+2kMWSOL+myCyziZ7Ec"
+      "E98ZEGtLaPW5OYxO8r4aQz11q4NyGL/wVDevWHJmprlrjP/zd3GAo6/nwhu+WvdtHlnkGHr"
+      "OVtOdjUPhL+FCvqaj/sMt3ELgIK5h8nt42xPxf8P/cYV+aRuZCd2hAqiNXOQ6HLU0TIdc2X"
+      "dnQtotb3/wuPvRFXqU0o0SAeEwGRoOxr6WqkOLuBuvwNtcKc/cCqxWMlcnId5TWX+tPEpUM"
+      "4Imgbf6jIB2FPpSXQMLHQkag+k95aiXqkpirlhUaBA5yrClFLjw+Ld2yqJfh961yncxF+IB"
+      "EmivSdNH0cYZBISf8CAwEAAQ==",
       key);
   ASSERT_EQ(1u, bg_pages.size());
   ASSERT_EQ(
-      "chrome-extension://jijhlkpcmmeckhlgdipjhnchhoabdjae/"
+      "chrome-extension://ejapkfeonjhabbbnlpmcgholnoicapdb/"
       "_generated_background_page.html",
       bg_pages[0]);
 }

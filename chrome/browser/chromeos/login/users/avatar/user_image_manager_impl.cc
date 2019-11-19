@@ -32,6 +32,7 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_downloader.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -39,6 +40,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/storage_partition.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
@@ -300,13 +302,13 @@ class UserImageManagerImpl::Job {
   GURL image_url_;
   base::FilePath image_path_;
 
-  base::WeakPtrFactory<Job> weak_factory_;
+  base::WeakPtrFactory<Job> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 UserImageManagerImpl::Job::Job(UserImageManagerImpl* parent)
-    : parent_(parent), run_(false), weak_factory_(this) {}
+    : parent_(parent), run_(false) {}
 
 UserImageManagerImpl::Job::~Job() {}
 
@@ -560,10 +562,9 @@ UserImageManagerImpl::UserImageManagerImpl(
       user_manager_(user_manager),
       downloading_profile_image_(false),
       profile_image_requested_(false),
-      has_managed_image_(false),
-      weak_factory_(this) {
-  background_task_runner_ = base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      has_managed_image_(false) {
+  background_task_runner_ = base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 }
 
@@ -791,8 +792,16 @@ int UserImageManagerImpl::GetDesiredImageSideLength() const {
   return GetCurrentUserImageSize();
 }
 
-Profile* UserImageManagerImpl::GetBrowserProfile() {
-  return ProfileHelper::Get()->GetProfileByUserUnsafe(GetUser());
+signin::IdentityManager* UserImageManagerImpl::GetIdentityManager() {
+  return IdentityManagerFactory::GetForProfile(
+      ProfileHelper::Get()->GetProfileByUserUnsafe(GetUser()));
+}
+
+network::mojom::URLLoaderFactory* UserImageManagerImpl::GetURLLoaderFactory() {
+  return content::BrowserContext::GetDefaultStoragePartition(
+             ProfileHelper::Get()->GetProfileByUserUnsafe(GetUser()))
+      ->GetURLLoaderFactoryForBrowserProcess()
+      .get();
 }
 
 std::string UserImageManagerImpl::GetCachedPictureURL() const {

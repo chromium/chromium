@@ -23,8 +23,7 @@ bool OobeConfiguration::skip_check_for_testing_ = false;
 OobeConfiguration::OobeConfiguration()
     : check_completed_(false),
       configuration_(
-          std::make_unique<base::Value>(base::Value::Type::DICTIONARY)),
-      weak_factory_(this) {
+          std::make_unique<base::Value>(base::Value::Type::DICTIONARY)) {
   DCHECK(!OobeConfiguration::Get());
   OobeConfiguration::instance = this;
 }

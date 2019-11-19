@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/win/scoped_handle.h"
-#include "chrome/chrome_cleaner/interfaces/parser_interface.mojom.h"
+#include "chrome/chrome_cleaner/mojom/parser_interface.mojom.h"
 #include "chrome/chrome_cleaner/os/file_path_set.h"
 
 namespace chrome_cleaner {

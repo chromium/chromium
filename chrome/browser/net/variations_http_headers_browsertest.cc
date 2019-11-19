@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
@@ -27,6 +28,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/network_connection_change_simulator.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
@@ -34,12 +36,11 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "net/url_request/url_fetcher.h"
-#include "net/url_request/url_fetcher_delegate.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/service_worker/service_worker_utils.h"
 #include "url/gurl.h"
 
 namespace {
@@ -79,6 +80,9 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+
+    content::NetworkConnectionChangeSimulator().SetConnectionType(
+        network::mojom::ConnectionType::CONNECTION_ETHERNET);
 
     host_resolver()->AddRule("*", "127.0.0.1");
 
@@ -132,6 +136,8 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
     return it->second.find(header) != it->second.end();
   }
 
+  void ClearReceivedHeaders() { received_headers_.clear(); }
+
   bool FetchResource(const GURL& url) {
     if (!url.is_valid())
       return false;
@@ -161,11 +167,9 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
     GURL url =
         GetGoogleUrlWithPath("/service_worker/create_service_worker.html");
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-    const std::string scope = "/";
-    EXPECT_EQ("DONE",
-              EvalJs(GetWebContents(), base::StrCat({"register('", worker_path,
-                                                     "', '", scope, "');"})));
+    EXPECT_EQ("DONE", EvalJs(GetWebContents(),
+                             base::StringPrintf("register('%s', '/');",
+                                                worker_path.c_str())));
   }
 
   // Registers the given service worker for google.com then tests navigation and
@@ -256,24 +260,6 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(VariationsHttpHeadersBrowserTest);
 };
 
-class BlockingURLFetcherDelegate : public net::URLFetcherDelegate {
- public:
-  BlockingURLFetcherDelegate() = default;
-  ~BlockingURLFetcherDelegate() override = default;
-
-  void OnURLFetchComplete(const net::URLFetcher* source) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop_.QuitClosure());
-  }
-
-  void AwaitResponse() { run_loop_.Run(); }
-
- private:
-  base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingURLFetcherDelegate);
-};
-
 std::unique_ptr<net::test_server::HttpResponse>
 VariationsHttpHeadersBrowserTest::RequestHandler(
     const net::test_server::HttpRequest& request) {
@@ -332,8 +318,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
 }
 
 // Verify in an integration that that the variations header (X-Client-Data) is
-// correctly attached and stripped from network requests that are triggered via
-// a URLFetcher.
+// correctly attached and stripped from network requests.
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
                        TestStrippingHeadersFromSubresourceRequest) {
   GURL url = server()->GetURL("/simple_page.html");
@@ -368,6 +353,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Wait for the response to complete.
   loader_helper.WaitForCallback();
+  EXPECT_EQ(net::OK, loader->NetError());
   EXPECT_TRUE(loader_helper.response_body());
 
   EXPECT_TRUE(HasReceivedHeader(GetGoogleRedirectUrl1(), "X-Client-Data"));
@@ -399,6 +385,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Wait for the response to complete.
   loader_helper.WaitForCallback();
+  EXPECT_EQ(net::OK, loader->NetError());
   EXPECT_TRUE(loader_helper.response_body());
 
   EXPECT_TRUE(HasReceivedHeader(GetGoogleRedirectUrl1(), "X-Client-Data"));
@@ -440,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
 }
 
 // Verify in an integration test that the variations header (X-Client-Data) is
-// attached to requests for service worker scripts.
+// attached to requests for service worker scripts when installing and updating.
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, ServiceWorkerScript) {
   // Register a service worker that imports scripts.
   GURL absolute_import = GetExampleUrlWithPath("/service_worker/empty.js");
@@ -459,6 +446,24 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, ServiceWorkerScript) {
 
   // But not on requests not to Google.
   EXPECT_FALSE(HasReceivedHeader(absolute_import, "X-Client-Data"));
+
+  // Prepare for the update case.
+  ClearReceivedHeaders();
+
+  // Tries to update the service worker.
+  EXPECT_EQ("DONE", EvalJs(GetWebContents(), "update();"));
+
+  // Test that the header is present on the main script request.
+  EXPECT_TRUE(
+      HasReceivedHeader(GetGoogleUrlWithPath(worker_path), "X-Client-Data"));
+
+  if (blink::ServiceWorkerUtils::IsImportedScriptUpdateCheckEnabled()) {
+    // And on import script requests to Google.
+    EXPECT_TRUE(HasReceivedHeader(
+        GetGoogleUrlWithPath("/service_worker/empty.js"), "X-Client-Data"));
+    // But not on requests not to Google.
+    EXPECT_FALSE(HasReceivedHeader(absolute_import, "X-Client-Data"));
+  }
 }
 
 // Verify in an integration test that the variations header (X-Client-Data) is

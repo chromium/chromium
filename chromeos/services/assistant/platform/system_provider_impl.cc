@@ -18,7 +18,7 @@ namespace assistant {
 
 SystemProviderImpl::SystemProviderImpl(
     std::unique_ptr<PowerManagerProviderImpl> power_manager_provider,
-    device::mojom::BatteryMonitorPtr battery_monitor)
+    mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor)
     : power_manager_provider_(std::move(power_manager_provider)),
       battery_monitor_(std::move(battery_monitor)) {
   battery_monitor_->QueryNextStatus(base::BindOnce(

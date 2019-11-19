@@ -25,20 +25,14 @@ namespace net {
 class IPEndPoint;
 }
 
-namespace media {
-namespace cast {
-struct FrameReceiverConfig;
-}
-}
-
 namespace extensions {
-class ExtensionBindingsSystem;
+class NativeExtensionBindingsSystem;
 
 // Native code that handle chrome.webrtc custom bindings.
 class CastStreamingNativeHandler : public ObjectBackedNativeHandler {
  public:
   CastStreamingNativeHandler(ScriptContext* context,
-                             ExtensionBindingsSystem* bindings_system);
+                             NativeExtensionBindingsSystem* bindings_system);
   ~CastStreamingNativeHandler() override;
 
   // ObjectBackedNativeHandler:
@@ -103,15 +97,6 @@ class CastStreamingNativeHandler : public ObjectBackedNativeHandler {
   CastRtpStream* GetRtpStreamOrThrow(int stream_id) const;
   CastUdpTransport* GetUdpTransportOrThrow(int transport_id) const;
 
-  // Fills out a media::cast::FrameReceiverConfig from the v8
-  // equivialent. (cast.streaming.receiverSession.RtpReceiverParams)
-  // Returns true if everything was ok, raises a v8 exception and
-  // returns false if anything went wrong.
-  bool FrameReceiverConfigFromArg(
-      v8::Isolate* isolate,
-      const v8::Local<v8::Value>& arg,
-      media::cast::FrameReceiverConfig* config) const;
-
   bool IPEndPointFromArg(v8::Isolate* isolate,
                          const v8::Local<v8::Value>& arg,
                          net::IPEndPoint* ip_endpoint) const;
@@ -130,9 +115,9 @@ class CastStreamingNativeHandler : public ObjectBackedNativeHandler {
   RtpStreamCallbackMap get_raw_events_callbacks_;
   RtpStreamCallbackMap get_stats_callbacks_;
 
-  ExtensionBindingsSystem* bindings_system_;
+  NativeExtensionBindingsSystem* bindings_system_;
 
-  base::WeakPtrFactory<CastStreamingNativeHandler> weak_factory_;
+  base::WeakPtrFactory<CastStreamingNativeHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CastStreamingNativeHandler);
 };

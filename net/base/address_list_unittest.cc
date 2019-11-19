@@ -10,7 +10,10 @@
 #include "net/base/ip_address.h"
 #include "net/base/sockaddr_storage.h"
 #include "net/base/sys_addrinfo.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::ElementsAre;
 
 namespace net {
 namespace {
@@ -134,6 +137,40 @@ TEST(AddressListTest, CreateFromIPAddressList) {
   std::string canonical_name;
   EXPECT_EQ(kCanonicalName, test_list.canonical_name());
   EXPECT_EQ(base::size(tests), test_list.size());
+}
+
+TEST(AddressListTest, DeduplicatesEmptyAddressList) {
+  AddressList empty;
+  empty.Deduplicate();
+  EXPECT_EQ(empty.size(), 0u);
+}
+
+TEST(AddressListTest, DeduplicatesSingletonAddressList) {
+  AddressList singleton;
+  singleton.push_back(IPEndPoint());
+  singleton.Deduplicate();
+  EXPECT_THAT(singleton.endpoints(), ElementsAre(IPEndPoint()));
+}
+
+TEST(AddressListTest, DeduplicatesLongerAddressList) {
+  AddressList several;
+  several.endpoints() = {IPEndPoint(IPAddress(0, 0, 0, 1), 0),
+                         IPEndPoint(IPAddress(0, 0, 0, 2), 0),
+                         IPEndPoint(IPAddress(0, 0, 0, 2), 0),
+                         IPEndPoint(IPAddress(0, 0, 0, 3), 0),
+                         IPEndPoint(IPAddress(0, 0, 0, 2), 0),
+                         IPEndPoint(IPAddress(0, 0, 0, 1), 0),
+                         IPEndPoint(IPAddress(0, 0, 0, 2), 0),
+                         IPEndPoint(IPAddress(0, 0, 0, 3), 0),
+                         IPEndPoint(IPAddress(0, 0, 0, 2), 0)};
+  several.Deduplicate();
+
+  // Deduplication should preserve the order of the first instances
+  // of the unique addresses.
+  EXPECT_THAT(several.endpoints(),
+              ElementsAre(IPEndPoint(IPAddress(0, 0, 0, 1), 0),
+                          IPEndPoint(IPAddress(0, 0, 0, 2), 0),
+                          IPEndPoint(IPAddress(0, 0, 0, 3), 0)));
 }
 
 }  // namespace

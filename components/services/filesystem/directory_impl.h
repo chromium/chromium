@@ -12,9 +12,8 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
-#include "components/services/filesystem/public/interfaces/directory.mojom.h"
+#include "components/services/filesystem/public/mojom/directory.mojom.h"
 #include "components/services/filesystem/shared_temp_dir.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 
 namespace filesystem {
 
@@ -32,7 +31,7 @@ class DirectoryImpl : public mojom::Directory {
   // |Directory| implementation:
   void Read(ReadCallback callback) override;
   void OpenFile(const std::string& path,
-                mojom::FileRequest file,
+                mojo::PendingReceiver<mojom::File> receiver,
                 uint32_t open_flags,
                 OpenFileCallback callback) override;
   void OpenFileHandle(const std::string& path,
@@ -41,7 +40,7 @@ class DirectoryImpl : public mojom::Directory {
   void OpenFileHandles(std::vector<mojom::FileOpenDetailsPtr> details,
                        OpenFileHandlesCallback callback) override;
   void OpenDirectory(const std::string& path,
-                     mojom::DirectoryRequest directory,
+                     mojo::PendingReceiver<mojom::Directory> receiver,
                      uint32_t open_flags,
                      OpenDirectoryCallback callback) override;
   void Rename(const std::string& path,
@@ -58,7 +57,7 @@ class DirectoryImpl : public mojom::Directory {
                   IsWritableCallback callback) override;
   void Flush(FlushCallback callback) override;
   void StatFile(const std::string& path, StatFileCallback callback) override;
-  void Clone(mojom::DirectoryRequest directory) override;
+  void Clone(mojo::PendingReceiver<mojom::Directory> receiver) override;
   void ReadEntireFile(const std::string& path,
                       ReadEntireFileCallback callback) override;
   void WriteFile(const std::string& path,

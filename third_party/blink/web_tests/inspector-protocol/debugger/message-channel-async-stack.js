@@ -31,10 +31,6 @@
   testRunner.log('paused at breakpoint');
   dp.Debugger.stepInto({breakOnAsyncCall: true});
   testRunner.log('requested stepInto with breakOnAsyncCall flag');
-  let {params: {asyncCallStackTraceId}} = await dp.Debugger.oncePaused();
-  dp.Debugger.pauseOnAsyncCall({parentStackTraceId: asyncCallStackTraceId});
-  testRunner.log('scheduled pause on async call');
-  dp.Debugger.resume();
   let {params: {callFrames, asyncStackTrace, asyncStackTraceId}} =
       await dp.Debugger.oncePaused();
   await testRunner.logStackTrace(
@@ -44,12 +40,6 @@
 
   testRunner.log('\nrequested stepInto with breakOnAsyncCall flag');
   dp.Debugger.stepInto({breakOnAsyncCall: true});
-  ({params: {asyncCallStackTraceId, callFrames}} =
-       await dp.Debugger.oncePaused());
-  testRunner.log('scheduled pause on async call');
-
-  dp.Debugger.pauseOnAsyncCall({parentStackTraceId: asyncCallStackTraceId});
-  dp.Debugger.resume();
   ({params: {callFrames, asyncStackTrace, asyncStackTraceId}} =
        await dp.Debugger.oncePaused());
   await testRunner.logStackTrace(

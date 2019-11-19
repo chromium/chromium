@@ -140,14 +140,16 @@ BluetoothBrailleDisplayManager.prototype = {
     localStorage['preferredBrailleDisplayAddress'] = display.address;
     if (!display.connected) {
       chrome.bluetoothPrivate.connect(display.address, (result) => {
-        if (!display.paired)
+        if (!display.paired) {
           chrome.bluetoothPrivate.pair(display.address);
+        }
       });
       return;
     }
 
-    if (!display.paired)
+    if (!display.paired) {
       chrome.bluetoothPrivate.pair(display.address);
+    }
   },
 
   /**
@@ -190,14 +192,17 @@ BluetoothBrailleDisplayManager.prototype = {
           return device.name && device.name.search(name) == 0;
         });
       });
-      if (displayList.length == 0)
+      if (displayList.length == 0) {
         return;
-      if (opt_device && !displayList.find((i) => i.name == opt_device.name))
+      }
+      if (opt_device && !displayList.find((i) => i.name == opt_device.name)) {
         return;
+      }
 
       displayList.forEach((display) => {
-        if (this.preferredDisplayAddress_ == display.address)
+        if (this.preferredDisplayAddress_ == display.address) {
           this.handlePreferredDisplayConnectionStateChanged(display);
+        }
       });
       this.listeners_.forEach((listener) => {
         listener.onDisplayListChanged(displayList);
@@ -221,15 +226,17 @@ BluetoothBrailleDisplayManager.prototype = {
    * @protected
    */
   handlePreferredDisplayConnectionStateChanged: function(display) {
-    if (display.connected === this.preferredDisplayConnected_)
+    if (display.connected === this.preferredDisplayConnected_) {
       return;
+    }
 
     this.preferredDisplayConnected_ = display.connected;
 
     // We do not clear the address seen by Brltty unless the caller explicitly
     // disconnects or forgets the display via the public methods of this class.
-    if (display.connected)
+    if (display.connected) {
       chrome.brailleDisplayPrivate.updateBluetoothBrailleDisplayAddress(
           display.address);
+    }
   }
 };

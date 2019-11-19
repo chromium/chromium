@@ -266,7 +266,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
 
   // This is used to ensure that an EmbedderRenderProcessHostObserver will not
   // call into this GuestViewManager after it has been destroyed.
-  base::WeakPtrFactory<GuestViewManager> weak_ptr_factory_;
+  base::WeakPtrFactory<GuestViewManager> weak_ptr_factory_{this};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GuestViewManager);

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
@@ -39,7 +40,8 @@ class WebNavigationControl : public WebLocalFrame {
   // TODO(dgozman): return mojom::CommitResult.
   virtual void CommitNavigation(
       std::unique_ptr<WebNavigationParams> navigation_params,
-      std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) = 0;
+      std::unique_ptr<WebDocumentLoader::ExtraData> extra_data,
+      base::OnceClosure call_before_attaching_new_document) = 0;
 
   // Commits a same-document navigation in the frame. For history navigations, a
   // valid WebHistoryItem should be provided. Returns CommitResult::Ok if the
@@ -79,22 +81,27 @@ class WebNavigationControl : public WebLocalFrame {
   virtual void SetCommittedFirstRealLoad() = 0;
   virtual bool HasCommittedFirstRealLoad() = 0;
 
+  // Marks the frame as loading, before WebLocalFrameClient issues a navigation
+  // request through the browser process on behalf of the frame.
+  // This runs some JavaScript event listeners, which may cancel the navigation
+  // or detach the frame. In this case the method returns false and client
+  // should not proceed with the navigation.
+  virtual bool WillStartNavigation(
+      const WebNavigationInfo&,
+      bool is_history_navigation_in_new_child_frame) = 0;
+
   // Informs the frame that the navigation it asked the client to do was
   // dropped.
-  virtual void ClientDroppedNavigation() = 0;
+  virtual void DidDropNavigation() = 0;
 
   // Marks the frame as loading, without performing any loading. Used for
   // initial history navigations in child frames, which may actually happen
   // in another process.
   virtual void MarkAsLoading() = 0;
 
-  // Marks the frame as loading and creates a placeholder document loader.
-  // This placeholder informs Blink that the navigation is ongoing, while it
-  // is actually being handled by the client.
-  // TODO(dgozman): remove this together with placeholder document loader.
-  virtual bool CreatePlaceholderDocumentLoader(
-      const WebNavigationInfo&,
-      std::unique_ptr<WebDocumentLoader::ExtraData>) = 0;
+  // TODO(ahemery): Remove all IsClientNavigationInitialHistoryLoad functions
+  // when IsPerNavigationMojoInterface is enabled.
+  virtual bool IsClientNavigationInitialHistoryLoad() = 0;
 
  protected:
   explicit WebNavigationControl(WebTreeScopeType scope)

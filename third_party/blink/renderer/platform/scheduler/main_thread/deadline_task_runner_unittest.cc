@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,11 +19,8 @@ class DeadlineTaskRunnerTest : public testing::Test {
  public:
   DeadlineTaskRunnerTest()
       : task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME,
-            base::test::ScopedTaskEnvironment::ExecutionMode::QUEUED) {
-    // Null clock might trigger some assertions.
-    task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(5));
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
   ~DeadlineTaskRunnerTest() override = default;
 
   void SetUp() override {
@@ -40,7 +37,7 @@ class DeadlineTaskRunnerTest : public testing::Test {
 
   void TestTask() { run_times_.push_back(Now()); }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<DeadlineTaskRunner> deadline_task_runner_;
   std::vector<base::TimeTicks> run_times_;
 };

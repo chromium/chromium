@@ -24,7 +24,7 @@ void DesktopTaskSwitchMetricRecorder::OnWindowActivated(
     ::wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,
     aura::Window* lost_active) {
-  if (gained_active && wm::IsWindowUserPositionable(gained_active)) {
+  if (gained_active && window_util::IsWindowUserPositionable(gained_active)) {
     if (last_active_task_window_ != gained_active &&
         reason ==
             ::wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT) {

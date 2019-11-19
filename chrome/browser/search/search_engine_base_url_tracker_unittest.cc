@@ -15,46 +15,12 @@ TEST_F(SearchEngineBaseURLTrackerTest, DispatchDefaultSearchProviderChanged) {
   base::MockCallback<SearchEngineBaseURLTracker::BaseURLChangedCallback>
       callback;
   SearchEngineBaseURLTracker tracker(
-      template_url_service_,
-      std::make_unique<UIThreadSearchTermsData>(profile()), callback.Get());
+      template_url_service_, std::make_unique<UIThreadSearchTermsData>(),
+      callback.Get());
 
   // Changing the search provider should invoke the callback.
   EXPECT_CALL(
       callback,
       Run(SearchEngineBaseURLTracker::ChangeReason::DEFAULT_SEARCH_PROVIDER));
   SetUserSelectedDefaultSearchProvider("https://bar.com/");
-}
-
-TEST_F(SearchEngineBaseURLTrackerTest, DispatchGoogleURLUpdated) {
-  base::MockCallback<SearchEngineBaseURLTracker::BaseURLChangedCallback>
-      callback;
-  SearchEngineBaseURLTracker tracker(
-      template_url_service_,
-      std::make_unique<UIThreadSearchTermsData>(profile()), callback.Get());
-
-  // While Google is the default search provider, changes to the Google base URL
-  // should invoke the callback.
-  EXPECT_CALL(callback,
-              Run(SearchEngineBaseURLTracker::ChangeReason::GOOGLE_BASE_URL));
-  NotifyGoogleBaseURLUpdate("https://www.google.es/");
-}
-
-TEST_F(SearchEngineBaseURLTrackerTest,
-       DontDispatchGoogleURLUpdatedForNonGoogleSearchProvider) {
-  base::MockCallback<SearchEngineBaseURLTracker::BaseURLChangedCallback>
-      callback;
-  SearchEngineBaseURLTracker tracker(
-      template_url_service_,
-      std::make_unique<UIThreadSearchTermsData>(profile()), callback.Get());
-
-  // Set up a non-Google default search provider.
-  EXPECT_CALL(
-      callback,
-      Run(SearchEngineBaseURLTracker::ChangeReason::DEFAULT_SEARCH_PROVIDER));
-  SetUserSelectedDefaultSearchProvider("https://bar.com/");
-  testing::Mock::VerifyAndClearExpectations(&callback);
-
-  // Now, a change to the Google base URL should not invoke the callback.
-  EXPECT_CALL(callback, Run(testing::_)).Times(0);
-  NotifyGoogleBaseURLUpdate("https://www.google.es/");
 }

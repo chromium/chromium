@@ -70,7 +70,7 @@ void PrintContext::ComputePageRects(const FloatSize& print_size) {
   }
 
   auto* view = frame_->GetDocument()->GetLayoutView();
-  const IntRect& document_rect = view->DocumentRect();
+  const PhysicalRect& document_rect = view->DocumentRect();
   FloatSize page_size = frame_->ResizePageRectsKeepingRatio(
       print_size, FloatSize(document_rect.Width(), document_rect.Height()));
   ComputePageRectsWithPageSizeInternal(page_size);
@@ -89,7 +89,7 @@ void PrintContext::ComputePageRectsWithPageSizeInternal(
 
   auto* view = frame_->GetDocument()->GetLayoutView();
 
-  IntRect doc_rect = view->DocumentRect();
+  IntRect snapped_doc_rect = PixelSnappedIntRect(view->DocumentRect());
 
   int page_width = page_size_in_pixels.Width();
   // We scaled with floating point arithmetic and need to ensure results like
@@ -99,14 +99,15 @@ void PrintContext::ComputePageRectsWithPageSizeInternal(
 
   bool is_horizontal = view->StyleRef().IsHorizontalWritingMode();
 
-  int doc_logical_height = is_horizontal ? doc_rect.Height() : doc_rect.Width();
+  int doc_logical_height =
+      is_horizontal ? snapped_doc_rect.Height() : snapped_doc_rect.Width();
   int page_logical_height = is_horizontal ? page_height : page_width;
   int page_logical_width = is_horizontal ? page_width : page_height;
 
-  int inline_direction_start = doc_rect.X();
-  int inline_direction_end = doc_rect.MaxX();
-  int block_direction_start = doc_rect.Y();
-  int block_direction_end = doc_rect.MaxY();
+  int inline_direction_start = snapped_doc_rect.X();
+  int inline_direction_end = snapped_doc_rect.MaxX();
+  int block_direction_start = snapped_doc_rect.Y();
+  int block_direction_end = snapped_doc_rect.MaxY();
   if (!is_horizontal) {
     std::swap(block_direction_start, inline_direction_start);
     std::swap(block_direction_end, inline_direction_end);
@@ -204,10 +205,10 @@ void PrintContext::CollectLinkedDestinations(Node* node) {
   for (Node* i = node->firstChild(); i; i = i->nextSibling())
     CollectLinkedDestinations(i);
 
-  if (!node->IsLink() || !node->IsElementNode())
+  auto* element = DynamicTo<Element>(node);
+  if (!node->IsLink() || !element)
     return;
-  const AtomicString& href =
-      ToElement(node)->getAttribute(html_names::kHrefAttr);
+  const AtomicString& href = element->getAttribute(html_names::kHrefAttr);
   if (href.IsNull())
     return;
   KURL url = node->GetDocument().CompleteURL(href);
@@ -251,7 +252,8 @@ String PrintContext::PageProperty(LocalFrame* frame,
   // want to collect @page rules and figure out what declarations apply on a
   // given page (that may or may not exist).
   print_context->BeginPrintMode(800, 1000);
-  scoped_refptr<ComputedStyle> style = document->StyleForPage(page_number);
+  scoped_refptr<const ComputedStyle> style =
+      document->StyleForPage(page_number);
 
   // Implement formatters for properties we care about.
   if (!strcmp(property_name, "margin-left")) {

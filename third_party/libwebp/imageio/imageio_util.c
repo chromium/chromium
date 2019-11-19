@@ -18,6 +18,7 @@
 #endif
 #include <stdlib.h>
 #include <string.h>
+#include "../examples/unicode.h"
 
 // -----------------------------------------------------------------------------
 // File I/O
@@ -73,7 +74,7 @@ int ImgIoUtilReadFile(const char* const file_name,
   uint8_t* file_data;
   size_t file_size;
   FILE* in;
-  const int from_stdin = (file_name == NULL) || !strcmp(file_name, "-");
+  const int from_stdin = (file_name == NULL) || !WSTRCMP(file_name, "-");
 
   if (from_stdin) return ImgIoUtilReadFromStdin(data, data_size);
 
@@ -81,9 +82,9 @@ int ImgIoUtilReadFile(const char* const file_name,
   *data = NULL;
   *data_size = 0;
 
-  in = fopen(file_name, "rb");
+  in = WFOPEN(file_name, "rb");
   if (in == NULL) {
-    fprintf(stderr, "cannot open input file '%s'\n", file_name);
+    WFPRINTF(stderr, "cannot open input file '%s'\n", (const W_CHAR*)file_name);
     return 0;
   }
   fseek(in, 0, SEEK_END);
@@ -93,16 +94,16 @@ int ImgIoUtilReadFile(const char* const file_name,
   file_data = (uint8_t*)malloc(file_size + 1);
   if (file_data == NULL) {
     fclose(in);
-    fprintf(stderr, "memory allocation failure when reading file %s\n",
-            file_name);
+    WFPRINTF(stderr, "memory allocation failure when reading file %s\n",
+             (const W_CHAR*)file_name);
     return 0;
   }
   ok = (fread(file_data, file_size, 1, in) == 1);
   fclose(in);
 
   if (!ok) {
-    fprintf(stderr, "Could not read %d bytes of data from file %s\n",
-            (int)file_size, file_name);
+    WFPRINTF(stderr, "Could not read %d bytes of data from file %s\n",
+             (int)file_size, (const W_CHAR*)file_name);
     free(file_data);
     return 0;
   }
@@ -118,14 +119,15 @@ int ImgIoUtilWriteFile(const char* const file_name,
                        const uint8_t* data, size_t data_size) {
   int ok;
   FILE* out;
-  const int to_stdout = (file_name == NULL) || !strcmp(file_name, "-");
+  const int to_stdout = (file_name == NULL) || !WSTRCMP(file_name, "-");
 
   if (data == NULL) {
     return 0;
   }
-  out = to_stdout ? ImgIoUtilSetBinaryMode(stdout) : fopen(file_name, "wb");
+  out = to_stdout ? ImgIoUtilSetBinaryMode(stdout) : WFOPEN(file_name, "wb");
   if (out == NULL) {
-    fprintf(stderr, "Error! Cannot open output file '%s'\n", file_name);
+    WFPRINTF(stderr, "Error! Cannot open output file '%s'\n",
+             (const W_CHAR*)file_name);
     return 0;
   }
   ok = (fwrite(data, data_size, 1, out) == 1);

@@ -12,14 +12,17 @@
 #include <vector>
 
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/interfaces/first_run_helper.mojom.h"
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/chromeos/first_run/first_run_actor.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "ui/gfx/geometry/size.h"
 
 class Profile;
+
+namespace ash {
+class FirstRunHelper;
+}
 
 namespace content {
 class WebContents;
@@ -40,8 +43,7 @@ class Step;
 // FirstRunController creates and manages first-run tutorial.
 // Object manages its lifetime and deletes itself after completion of the
 // tutorial.
-class FirstRunController : public FirstRunActor::Delegate,
-                           public ash::mojom::FirstRunHelperClient {
+class FirstRunController : public FirstRunActor::Delegate {
  public:
   ~FirstRunController() override;
 
@@ -60,9 +62,7 @@ class FirstRunController : public FirstRunActor::Delegate,
   // Stops the tutorial and records early cancellation metrics.
   void Cancel();
 
-  const ash::mojom::FirstRunHelperPtr& first_run_helper_ptr() {
-    return first_run_helper_ptr_;
-  }
+  ash::FirstRunHelper* first_run_helper() { return first_run_helper_.get(); }
 
  private:
   friend class FirstRunUIBrowserTest;
@@ -82,8 +82,7 @@ class FirstRunController : public FirstRunActor::Delegate,
   void OnActorFinalized() override;
   void OnActorDestroyed() override;
 
-  // ash::mojom::FirstRunHelperClient:
-  void OnCancelled() override;
+  void OnCancelled();
 
   void RegisterSteps();
   void ShowNextStep();
@@ -94,11 +93,7 @@ class FirstRunController : public FirstRunActor::Delegate,
   // FirstRunController.
   FirstRunActor* actor_;
 
-  // Mojo interface for manipulating and retrieving information from ash.
-  ash::mojom::FirstRunHelperPtr first_run_helper_ptr_;
-
-  // Binding for callbacks from ash.
-  mojo::Binding<ash::mojom::FirstRunHelperClient> binding_{this};
+  std::unique_ptr<ash::FirstRunHelper> first_run_helper_;
 
   // List of all tutorial steps.
   std::vector<std::unique_ptr<first_run::Step>> steps_;

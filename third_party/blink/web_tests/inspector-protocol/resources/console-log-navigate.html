@@ -1,29 +1,35 @@
 <script>
-function navigate()
+function navigateOnce()
 {
+  let ran = false;
+  return function() {
+    if (ran)
+      return; 
+    ran = true;
     anchor = document.createElement("a");
     anchor.href = "about:blank";
     anchor.click();
+  }
 }
 
 function logArray()
 {
     array = [];
-    array.__defineGetter__(0, () => navigate());
+    array.__defineGetter__(0, navigateOnce());
     console.log(array);
 }
 
 function logDate()
 {
     var a = new Date();
-    a.toString = () => navigate();
+    a.toString = navigateOnce();
     console.log(a);
 }
 
 function logDateWithArg()
 {
     var a = new Date();
-    a.toString = () => navigate();
+    a.toString = navigateOnce();
     console.log(42, a);
 }
 </script>

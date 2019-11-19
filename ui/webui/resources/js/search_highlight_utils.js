@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+
 cr.define('cr.search_highlight_utils', function() {
   /** @type {string} */
   const WRAPPER_CSS_CLASS = 'search-highlight-wrapper';
@@ -20,8 +22,8 @@ cr.define('cr.search_highlight_utils', function() {
    * search nodes.
    * @param {!Array<!Node>} wrappers
    */
-  function removeHighlights(wrappers) {
-    for (let wrapper of wrappers) {
+  /* #export */ function removeHighlights(wrappers) {
+    for (const wrapper of wrappers) {
       // If wrapper is already removed, do nothing.
       if (!wrapper.parentElement) {
         continue;
@@ -40,7 +42,7 @@ cr.define('cr.search_highlight_utils', function() {
    * exists under |node|.
    * @param {!Node} node
    */
-  function findAndRemoveHighlights(node) {
+  /* #export */ function findAndRemoveHighlights(node) {
     const wrappers = Array.from(node.querySelectorAll(`.${WRAPPER_CSS_CLASS}`));
     assert(wrappers.length == 1);
     removeHighlights(wrappers);
@@ -57,7 +59,7 @@ cr.define('cr.search_highlight_utils', function() {
    *     'barfoobar foo bar'.split(r) => ['bar', 'foo', 'bar ', 'foo', ' bar']
    * @return {!Node} The new highlight wrapper.
    */
-  function highlight(node, tokens) {
+  /* #export */ function highlight(node, tokens) {
     const wrapper = document.createElement('span');
     wrapper.classList.add(WRAPPER_CSS_CLASS);
     // Use existing node as placeholder to determine where to insert the
@@ -79,7 +81,8 @@ cr.define('cr.search_highlight_utils', function() {
       } else {
         const hitSpan = document.createElement('span');
         hitSpan.classList.add(HIT_CSS_CLASS);
-        hitSpan.style.backgroundColor = '#ffeb3b';  // --var(--paper-yellow-500)
+        hitSpan.style.backgroundColor = '#ffeb3b';  // var(--paper-yellow-500)
+        hitSpan.style.color = '#202124';            // var(--google-grey-900)
         hitSpan.textContent = tokens[i];
         wrapper.appendChild(hitSpan);
       }
@@ -94,9 +97,8 @@ cr.define('cr.search_highlight_utils', function() {
    * @param {string} rawQuery The search query.
    * @return {?Node} The search bubble that was added, or null if no new bubble
    *     was added.
-   * @private
    */
-  function highlightControlWithBubble(element, rawQuery) {
+  /* #export */ function highlightControlWithBubble(element, rawQuery) {
     let searchBubble = element.querySelector(`.${SEARCH_BUBBLE_CSS_CLASS}`);
     // If the element has already been highlighted, there is no need to do
     // anything.
@@ -127,6 +129,7 @@ cr.define('cr.search_highlight_utils', function() {
     return searchBubble;
   }
 
+  // #cr_define_end
   return {
     removeHighlights: removeHighlights,
     findAndRemoveHighlights: findAndRemoveHighlights,

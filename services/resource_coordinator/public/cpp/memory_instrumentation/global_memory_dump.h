@@ -5,6 +5,8 @@
 #ifndef SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_MEMORY_INSTRUMENTATION_GLOBAL_MEMORY_DUMP_H_
 #define SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_MEMORY_INSTRUMENTATION_GLOBAL_MEMORY_DUMP_H_
 
+#include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -33,6 +35,9 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
 
     base::ProcessId pid() const { return raw_dump_->pid; }
     mojom::ProcessType process_type() const { return raw_dump_->process_type; }
+    const base::Optional<std::string>& service_name() const {
+      return raw_dump_->service_name;
+    }
 
     const mojom::OSMemDump& os_dump() const { return *raw_dump_->os_dump; }
 
@@ -46,17 +51,25 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
       AggregatedMetrics {
    public:
-    AggregatedMetrics(mojom::AggregatedMetricsPtr aggregated_metrics);
+    explicit AggregatedMetrics(mojom::AggregatedMetricsPtr aggregated_metrics);
     ~AggregatedMetrics();
 
-    size_t native_library_resident_kb() const {
-      if (!aggregated_metrics_)
-        return 0;
+    int32_t native_library_resident_kb() const {
       return aggregated_metrics_->native_library_resident_kb;
     }
 
+    int32_t native_library_resident_not_ordered_kb() const {
+      return aggregated_metrics_->native_library_resident_not_ordered_kb;
+    }
+
+    int32_t native_library_not_resident_ordered_kb() const {
+      return aggregated_metrics_->native_library_not_resident_ordered_kb;
+    }
+
+    static constexpr int32_t kInvalid = -1;
+
    private:
-    mojom::AggregatedMetricsPtr aggregated_metrics_;
+    const mojom::AggregatedMetricsPtr aggregated_metrics_;
 
     DISALLOW_COPY_AND_ASSIGN(AggregatedMetrics);
   };

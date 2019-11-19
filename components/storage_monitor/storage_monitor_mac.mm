@@ -306,8 +306,8 @@ void StorageMonitorMac::EjectDevice(
   options->bsd_name = bsd_name;
   options->callback = callback;
   options->disk = std::move(disk);
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                           base::BindOnce(EjectDisk, options));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(EjectDisk, options));
 }
 
 // static
@@ -339,8 +339,9 @@ void StorageMonitorMac::GetDiskInfoAndUpdate(
 
   base::ScopedCFTypeRef<CFDictionaryRef> dict(DADiskCopyDescription(disk));
   std::string* bsd_name = new std::string;
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&BuildStorageInfo, dict, bsd_name),
       base::BindOnce(&StorageMonitorMac::UpdateDisk, AsWeakPtr(), update_type,
                      base::Owned(bsd_name)));

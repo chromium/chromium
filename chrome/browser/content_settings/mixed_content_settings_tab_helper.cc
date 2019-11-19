@@ -4,11 +4,13 @@
 
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 
-#include "chrome/common/content_settings_renderer.mojom.h"
+#include "chrome/common/content_settings_agent.mojom.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 using content::BrowserThread;
@@ -48,15 +50,24 @@ void MixedContentSettingsTabHelper::RenderFrameCreated(
   if (!is_running_insecure_content_allowed_)
     return;
 
-  chrome::mojom::ContentSettingsRendererAssociatedPtr renderer;
-  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&renderer);
-  renderer->SetAllowRunningInsecureContent();
+  mojo::AssociatedRemote<chrome::mojom::ContentSettingsAgent> agent;
+  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&agent);
+  agent->SetAllowRunningInsecureContent();
 }
 
 void MixedContentSettingsTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
     return;
+
+  // We will not be able to restore the state of these variables if we navigate
+  // back and the page is in the BackForwardCache, so do not store it if we were
+  // to lose that state.
+  if (is_running_insecure_content_allowed_ || insecure_content_site_instance_) {
+    content::BackForwardCache::DisableForRenderFrameHost(
+        navigation_handle->GetPreviousRenderFrameHostId(),
+        "MixedContentSettingsTabHelper");
+  }
 
   // Resets mixed content settings on a successful navigation of the main frame
   // to a different SiteInstance. This follows the renderer side behavior which

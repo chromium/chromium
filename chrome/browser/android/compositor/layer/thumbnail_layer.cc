@@ -6,7 +6,6 @@
 
 #include "cc/layers/ui_resource_layer.h"
 #include "chrome/browser/android/thumbnail/thumbnail.h"
-#include "content/public/browser/android/compositor.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
 namespace android {

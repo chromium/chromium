@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+// These are regression tests for
+// https://bugs.chromium.org/p/chromium/issues/detail?id=803008. Checking the
+// message text of exceptions is not normally good practice but here it is the
+// only way to verify that the bug is fixed.
+
+test(() => {
+  const ws = new WritableStream();
+  ws.getWriter();
+  let error;
+  try {
+    ws.getWriter();
+  } catch (e) {
+    error = e;
+  }
+  assert_not_equals(error, undefined);
+  assert_equals(
+      error.message,
+      'Failed to execute \'getWriter\' on \'WritableStream\': Cannot ' +
+          'create writer when WritableStream is locked',
+      'message should be relevant');
+}, 'getWriter on locked WritableStream should have an appropriate message');
+</script>

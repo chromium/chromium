@@ -96,8 +96,7 @@ PhishingTermFeatureExtractor::PhishingTermFeatureExtractor(
       murmurhash3_seed_(murmurhash3_seed),
       max_shingles_per_page_(max_shingles_per_page),
       shingle_size_(shingle_size),
-      clock_(clock),
-      weak_factory_(this) {
+      clock_(clock) {
   Clear();
 }
 
@@ -111,7 +110,7 @@ void PhishingTermFeatureExtractor::ExtractFeatures(
     const base::string16* page_text,
     FeatureMap* features,
     std::set<uint32_t>* shingle_hashes,
-    const DoneCallback& done_callback) {
+    DoneCallback done_callback) {
   // The RenderView should have called CancelPendingExtraction() before
   // starting a new extraction, so DCHECK this.
   CheckNoPendingExtraction();
@@ -121,8 +120,7 @@ void PhishingTermFeatureExtractor::ExtractFeatures(
 
   page_text_ = page_text;
   features_ = features;
-  shingle_hashes_ = shingle_hashes,
-  done_callback_ = done_callback;
+  shingle_hashes_ = shingle_hashes, done_callback_ = std::move(done_callback);
 
   state_.reset(new ExtractionState(*page_text_, clock_->Now()));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -282,7 +280,7 @@ void PhishingTermFeatureExtractor::RunCallback(bool success) {
                       clock_->Now() - state_->start_time);
 
   DCHECK(!done_callback_.is_null());
-  done_callback_.Run(success);
+  std::move(done_callback_).Run(success);
   Clear();
 }
 

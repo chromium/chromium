@@ -42,8 +42,7 @@ TEST_F(WMITest, TestCreateClassMethod) {
   ASSERT_NE(wmi_services.Get(), nullptr);
   ComPtr<IWbemClassObject> class_method = nullptr;
   EXPECT_TRUE(CreateWmiClassMethodObject(
-      wmi_services.Get(), STRING16_LITERAL("Win32_ShortcutFile"),
-      STRING16_LITERAL("Rename"), &class_method));
+      wmi_services.Get(), L"Win32_ShortcutFile", L"Rename", &class_method));
   ASSERT_NE(class_method.Get(), nullptr);
   ULONG refs = class_method.Reset();
   EXPECT_EQ(0u, refs);
@@ -54,8 +53,7 @@ TEST_F(WMITest, TestCreateClassMethod) {
 // Creates an instance of cmd which executes 'echo' and exits immediately.
 TEST_F(WMITest, TestLaunchProcess) {
   int pid = 0;
-  bool result =
-      WmiLaunchProcess(STRING16_LITERAL("cmd.exe /c echo excelent!"), &pid);
+  bool result = WmiLaunchProcess(L"cmd.exe /c echo excelent!", &pid);
   EXPECT_TRUE(result);
   EXPECT_GT(pid, 0);
 }

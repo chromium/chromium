@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "device/fido/fido_parsing_utils.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/constants.mojom.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -25,9 +27,9 @@ MATCHER_P(IsCtapHidCommand, expected_command, "") {
 
 MockFidoHidConnection::MockFidoHidConnection(
     device::mojom::HidDeviceInfoPtr device,
-    device::mojom::HidConnectionRequest request,
-    std::vector<uint8_t> connection_channel_id)
-    : binding_(this, std::move(request)),
+    mojo::PendingReceiver<device::mojom::HidConnection> receiver,
+    std::array<uint8_t, 4> connection_channel_id)
+    : receiver_(this, std::move(receiver)),
       device_(std::move(device)),
       connection_channel_id_(connection_channel_id) {}
 
@@ -86,21 +88,22 @@ void MockFidoHidConnection::ExpectHidWriteWithCommand(
           }));
 }
 
-bool FakeHidConnection::mock_connection_error_ = false;
+bool FakeFidoHidConnection::mock_connection_error_ = false;
 
-FakeHidConnection::FakeHidConnection(device::mojom::HidDeviceInfoPtr device)
+FakeFidoHidConnection::FakeFidoHidConnection(
+    device::mojom::HidDeviceInfoPtr device)
     : device_(std::move(device)) {}
 
-FakeHidConnection::~FakeHidConnection() = default;
+FakeFidoHidConnection::~FakeFidoHidConnection() = default;
 
-void FakeHidConnection::Read(ReadCallback callback) {
+void FakeFidoHidConnection::Read(ReadCallback callback) {
   std::vector<uint8_t> buffer = {'F', 'a', 'k', 'e', ' ', 'H', 'i', 'd'};
   std::move(callback).Run(true, 0, buffer);
 }
 
-void FakeHidConnection::Write(uint8_t report_id,
-                              const std::vector<uint8_t>& buffer,
-                              WriteCallback callback) {
+void FakeFidoHidConnection::Write(uint8_t report_id,
+                                  const std::vector<uint8_t>& buffer,
+                                  WriteCallback callback) {
   if (mock_connection_error_) {
     std::move(callback).Run(false);
     return;
@@ -109,31 +112,34 @@ void FakeHidConnection::Write(uint8_t report_id,
   std::move(callback).Run(true);
 }
 
-void FakeHidConnection::GetFeatureReport(uint8_t report_id,
-                                         GetFeatureReportCallback callback) {
+void FakeFidoHidConnection::GetFeatureReport(
+    uint8_t report_id,
+    GetFeatureReportCallback callback) {
   NOTREACHED();
 }
 
-void FakeHidConnection::SendFeatureReport(uint8_t report_id,
-                                          const std::vector<uint8_t>& buffer,
-                                          SendFeatureReportCallback callback) {
+void FakeFidoHidConnection::SendFeatureReport(
+    uint8_t report_id,
+    const std::vector<uint8_t>& buffer,
+    SendFeatureReportCallback callback) {
   NOTREACHED();
 }
 
-FakeHidManager::FakeHidManager() = default;
+FakeFidoHidManager::FakeFidoHidManager() = default;
 
-FakeHidManager::~FakeHidManager() = default;
+FakeFidoHidManager::~FakeFidoHidManager() = default;
 
-void FakeHidManager::AddBinding(mojo::ScopedMessagePipeHandle handle) {
-  bindings_.AddBinding(this,
-                       device::mojom::HidManagerRequest(std::move(handle)));
+void FakeFidoHidManager::AddReceiver(mojo::ScopedMessagePipeHandle handle) {
+  receivers_.Add(this, mojo::PendingReceiver<device::mojom::HidManager>(
+                           std::move(handle)));
 }
 
-void FakeHidManager::AddBinding2(device::mojom::HidManagerRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void FakeFidoHidManager::AddReceiver2(
+    mojo::PendingReceiver<device::mojom::HidManager> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
-void FakeHidManager::AddFidoHidDevice(std::string guid) {
+void FakeFidoHidManager::AddFidoHidDevice(std::string guid) {
   auto c_info = device::mojom::HidCollectionInfo::New();
   c_info->usage = device::mojom::HidUsageAndPage::New(1, 0xf1d0);
   auto device = device::mojom::HidDeviceInfo::New();
@@ -147,17 +153,15 @@ void FakeHidManager::AddFidoHidDevice(std::string guid) {
   AddDevice(std::move(device));
 }
 
-void FakeHidManager::GetDevicesAndSetClient(
-    device::mojom::HidManagerClientAssociatedPtrInfo client,
+void FakeFidoHidManager::GetDevicesAndSetClient(
+    mojo::PendingAssociatedRemote<device::mojom::HidManagerClient> client,
     GetDevicesCallback callback) {
   GetDevices(std::move(callback));
 
-  device::mojom::HidManagerClientAssociatedPtr client_ptr;
-  client_ptr.Bind(std::move(client));
-  clients_.AddPtr(std::move(client_ptr));
+  clients_.Add(std::move(client));
 }
 
-void FakeHidManager::GetDevices(GetDevicesCallback callback) {
+void FakeFidoHidManager::GetDevices(GetDevicesCallback callback) {
   std::vector<device::mojom::HidDeviceInfoPtr> device_list;
   for (auto& map_entry : devices_)
     device_list.push_back(map_entry.second->Clone());
@@ -165,55 +169,57 @@ void FakeHidManager::GetDevices(GetDevicesCallback callback) {
   std::move(callback).Run(std::move(device_list));
 }
 
-void FakeHidManager::Connect(const std::string& device_guid,
-                             ConnectCallback callback) {
+void FakeFidoHidManager::Connect(
+    const std::string& device_guid,
+    mojo::PendingRemote<mojom::HidConnectionClient> connection_client,
+    mojo::PendingRemote<mojom::HidConnectionWatcher> watcher,
+    ConnectCallback callback) {
   auto device_it = devices_.find(device_guid);
   auto connection_it = connections_.find(device_guid);
   if (device_it == devices_.end() || connection_it == connections_.end()) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(mojo::NullRemote());
     return;
   }
 
   std::move(callback).Run(std::move(connection_it->second));
 }
 
-void FakeHidManager::AddDevice(device::mojom::HidDeviceInfoPtr device) {
+void FakeFidoHidManager::AddDevice(device::mojom::HidDeviceInfoPtr device) {
   device::mojom::HidDeviceInfo* device_info = device.get();
-  clients_.ForAllPtrs([device_info](device::mojom::HidManagerClient* client) {
+  for (auto& client : clients_)
     client->DeviceAdded(device_info->Clone());
-  });
 
   devices_[device->guid] = std::move(device);
 }
 
-void FakeHidManager::AddDeviceAndSetConnection(
+void FakeFidoHidManager::AddDeviceAndSetConnection(
     device::mojom::HidDeviceInfoPtr device,
-    device::mojom::HidConnectionPtr connection) {
+    mojo::PendingRemote<device::mojom::HidConnection> connection) {
   connections_[device->guid] = std::move(connection);
   AddDevice(std::move(device));
 }
 
-void FakeHidManager::RemoveDevice(const std::string device_guid) {
+void FakeFidoHidManager::RemoveDevice(const std::string device_guid) {
   auto it = devices_.find(device_guid);
   if (it == devices_.end())
     return;
 
   device::mojom::HidDeviceInfo* device_info = it->second.get();
-  clients_.ForAllPtrs([device_info](device::mojom::HidManagerClient* client) {
+  for (auto& client : clients_)
     client->DeviceRemoved(device_info->Clone());
-  });
   devices_.erase(it);
 }
 
-ScopedFakeHidManager::ScopedFakeHidManager() {
-  service_manager::mojom::ConnectorRequest request;
-  connector_ = service_manager::Connector::Create(&request);
+ScopedFakeFidoHidManager::ScopedFakeFidoHidManager() {
+  mojo::PendingReceiver<service_manager::mojom::Connector> receiver;
+  connector_ = service_manager::Connector::Create(&receiver);
   connector_->OverrideBinderForTesting(
       service_manager::ServiceFilter::ByName(device::mojom::kServiceName),
       device::mojom::HidManager::Name_,
-      base::BindRepeating(&FakeHidManager::AddBinding, base::Unretained(this)));
+      base::BindRepeating(&FakeFidoHidManager::AddReceiver,
+                          base::Unretained(this)));
 }
 
-ScopedFakeHidManager::~ScopedFakeHidManager() = default;
+ScopedFakeFidoHidManager::~ScopedFakeFidoHidManager() = default;
 
 }  // namespace device

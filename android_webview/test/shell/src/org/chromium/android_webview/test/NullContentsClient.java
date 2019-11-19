@@ -20,12 +20,12 @@ import org.chromium.android_webview.AwGeolocationPermissions;
 import org.chromium.android_webview.AwHttpAuthHandler;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwRenderProcessGoneDetail;
-import org.chromium.android_webview.AwSafeBrowsingResponse;
 import org.chromium.android_webview.AwWebResourceResponse;
 import org.chromium.android_webview.JsPromptResultReceiver;
 import org.chromium.android_webview.JsResultReceiver;
 import org.chromium.android_webview.SafeBrowsingAction;
 import org.chromium.android_webview.permission.AwPermissionRequest;
+import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 

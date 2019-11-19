@@ -5,49 +5,34 @@
 #ifndef CHROME_BROWSER_UI_ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_CLIENT_H_
 #define CHROME_BROWSER_UI_ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_CLIENT_H_
 
-#include "ash/public/interfaces/accessibility_controller.mojom.h"
+#include "ash/public/cpp/accessibility_controller_client.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 
-// Handles method calls from ash to do accessibility related service in chrome.
+// Handles method calls from ash to do accessibility-related work in chrome.
 class AccessibilityControllerClient
-    : public ash::mojom::AccessibilityControllerClient {
+    : public ash::AccessibilityControllerClient {
  public:
   AccessibilityControllerClient();
-  ~AccessibilityControllerClient() override;
+  virtual ~AccessibilityControllerClient();
 
-  // Initializes and connects to ash.
-  void Init();
-
-  // ash::mojom::AccessibilityControllerClient:
-  void TriggerAccessibilityAlert(ash::mojom::AccessibilityAlert alert) override;
-  void PlayEarcon(int32_t sound_key) override;
-  void PlayShutdownSound(PlayShutdownSoundCallback callback) override;
+  // ash::AccessibilityControllerClient:
+  void TriggerAccessibilityAlert(ash::AccessibilityAlert alert) override;
+  void TriggerAccessibilityAlertWithMessage(
+      const std::string& message) override;
+  void PlayEarcon(int sound_key) override;
+  base::TimeDelta PlayShutdownSound() override;
   void HandleAccessibilityGesture(ax::mojom::Gesture gesture) override;
-  void ToggleDictation(ToggleDictationCallback callback) override;
+  bool ToggleDictation() override;
   void SilenceSpokenFeedback() override;
   void OnTwoFingerTouchStart() override;
   void OnTwoFingerTouchStop() override;
-  void ShouldToggleSpokenFeedbackViaTouch(
-      ShouldToggleSpokenFeedbackViaTouchCallback callback) override;
+  bool ShouldToggleSpokenFeedbackViaTouch() const override;
   void PlaySpokenFeedbackToggleCountdown(int tick_count) override;
   void RequestSelectToSpeakStateChange() override;
-
-  // Flushes the mojo pipe to ash.
-  void FlushForTesting();
+  void RequestAutoclickScrollableBoundsForPoint(
+      gfx::Point& point_in_screen) override;
 
  private:
-  // Binds this object to its mojo interface and sets it as the ash client.
-  void BindAndSetClient();
-
-  // Binds to the client interface.
-  mojo::Binding<ash::mojom::AccessibilityControllerClient> binding_;
-
-  // AccessibilityController interface in ash. Holding the interface pointer
-  // keeps the pipe alive to receive mojo return values.
-  ash::mojom::AccessibilityControllerPtr accessibility_controller_;
-
   DISALLOW_COPY_AND_ASSIGN(AccessibilityControllerClient);
 };
 

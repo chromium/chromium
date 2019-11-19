@@ -15,6 +15,7 @@
 #include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/loader/web_url_request_util.h"
 #include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 
 namespace content {
@@ -26,21 +27,28 @@ ServiceWorkerFetchContextImpl::ServiceWorkerFetchContextImpl(
         url_loader_factory_info,
     std::unique_ptr<network::SharedURLLoaderFactoryInfo>
         script_loader_factory_info,
-    int service_worker_provider_id,
+    const GURL& script_url_to_skip_throttling,
     std::unique_ptr<URLLoaderThrottleProvider> throttle_provider,
     std::unique_ptr<WebSocketHandshakeThrottleProvider>
         websocket_handshake_throttle_provider,
-    blink::mojom::RendererPreferenceWatcherRequest preference_watcher_request)
+    mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
+        preference_watcher_receiver,
+    mojo::PendingReceiver<blink::mojom::SubresourceLoaderUpdater>
+        pending_subresource_loader_updater,
+    int32_t service_worker_route_id)
     : renderer_preferences_(renderer_preferences),
       worker_script_url_(worker_script_url),
       url_loader_factory_info_(std::move(url_loader_factory_info)),
       script_loader_factory_info_(std::move(script_loader_factory_info)),
-      service_worker_provider_id_(service_worker_provider_id),
+      script_url_to_skip_throttling_(script_url_to_skip_throttling),
       throttle_provider_(std::move(throttle_provider)),
       websocket_handshake_throttle_provider_(
           std::move(websocket_handshake_throttle_provider)),
-      preference_watcher_binding_(this),
-      preference_watcher_request_(std::move(preference_watcher_request)) {}
+      preference_watcher_pending_receiver_(
+          std::move(preference_watcher_receiver)),
+      pending_subresource_loader_updater_(
+          std::move(pending_subresource_loader_updater)),
+      service_worker_route_id_(service_worker_route_id) {}
 
 ServiceWorkerFetchContextImpl::~ServiceWorkerFetchContextImpl() {}
 
@@ -55,7 +63,10 @@ void ServiceWorkerFetchContextImpl::InitializeOnWorkerThread(
   resource_dispatcher_ = std::make_unique<ResourceDispatcher>();
   resource_dispatcher_->set_terminate_sync_load_event(
       terminate_sync_load_event_);
-  preference_watcher_binding_.Bind(std::move(preference_watcher_request_));
+  preference_watcher_receiver_.Bind(
+      std::move(preference_watcher_pending_receiver_));
+  subresource_loader_updater_.Bind(
+      std::move(pending_subresource_loader_updater_));
 
   web_url_loader_factory_ = std::make_unique<WebURLLoaderFactoryImpl>(
       resource_dispatcher_->GetWeakPtr(),
@@ -84,7 +95,7 @@ ServiceWorkerFetchContextImpl::WrapURLLoaderFactory(
   return std::make_unique<WebURLLoaderFactoryImpl>(
       resource_dispatcher_->GetWeakPtr(),
       base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
-          network::mojom::URLLoaderFactoryPtrInfo(
+          mojo::PendingRemote<network::mojom::URLLoaderFactory>(
               std::move(url_loader_factory_handle),
               network::mojom::URLLoaderFactory::Version_)));
 }
@@ -97,27 +108,43 @@ ServiceWorkerFetchContextImpl::GetScriptLoaderFactory() {
 void ServiceWorkerFetchContextImpl::WillSendRequest(
     blink::WebURLRequest& request) {
   if (renderer_preferences_.enable_do_not_track) {
-    request.SetHTTPHeaderField(blink::WebString::FromUTF8(kDoNotTrackHeader),
+    request.SetHttpHeaderField(blink::WebString::FromUTF8(kDoNotTrackHeader),
                                "1");
   }
   auto extra_data = std::make_unique<RequestExtraData>();
-  extra_data->set_service_worker_provider_id(service_worker_provider_id_);
   extra_data->set_originated_from_service_worker(true);
-  extra_data->set_initiated_in_secure_context(true);
-  if (throttle_provider_) {
+  extra_data->set_render_frame_id(service_worker_route_id_);
+
+  const bool needs_to_skip_throttling =
+      static_cast<GURL>(request.Url()) == script_url_to_skip_throttling_ &&
+      (request.GetRequestContext() ==
+           blink::mojom::RequestContextType::SERVICE_WORKER ||
+       request.GetRequestContext() == blink::mojom::RequestContextType::SCRIPT);
+  if (needs_to_skip_throttling) {
+    // Throttling is needed when the skipped script is loaded again because it's
+    // served from ServiceWorkerInstalledScriptLoader after the second time,
+    // while at the first time the script comes from
+    // ServiceWorkerUpdatedScriptLoader which uses ThrottlingURLLoader in the
+    // browser process. See also comments at
+    // EmbeddedWorkerStartParams::script_url_to_skip_throttling.
+    // TODO(https://crbug.com/993641): need to simplify throttling for service
+    // worker scripts.
+    script_url_to_skip_throttling_ = GURL();
+  } else if (throttle_provider_) {
     extra_data->set_url_loader_throttles(throttle_provider_->CreateThrottles(
         MSG_ROUTING_NONE, request, WebURLRequestToResourceType(request)));
   }
+
   request.SetExtraData(std::move(extra_data));
 
   if (!renderer_preferences_.enable_referrers) {
-    request.SetHTTPReferrer(blink::WebString(),
+    request.SetHttpReferrer(blink::WebString(),
                             network::mojom::ReferrerPolicy::kDefault);
   }
 }
 
 blink::mojom::ControllerServiceWorkerMode
-ServiceWorkerFetchContextImpl::IsControlledByServiceWorker() const {
+ServiceWorkerFetchContextImpl::GetControllerServiceWorkerMode() const {
   return blink::mojom::ControllerServiceWorkerMode::kNoController;
 }
 
@@ -131,8 +158,6 @@ blink::WebURL ServiceWorkerFetchContextImpl::SiteForCookies() const {
 
 base::Optional<blink::WebSecurityOrigin>
 ServiceWorkerFetchContextImpl::TopFrameOrigin() const {
-  // TODO(jkarlin): Determine what the top-frame-origin of a service worker is.
-  // See https://crbug.com/918868.
   return base::nullopt;
 }
 
@@ -143,6 +168,15 @@ ServiceWorkerFetchContextImpl::CreateWebSocketHandshakeThrottle(
     return nullptr;
   return websocket_handshake_throttle_provider_->CreateThrottle(
       MSG_ROUTING_NONE, std::move(task_runner));
+}
+
+void ServiceWorkerFetchContextImpl::UpdateSubresourceLoaderFactories(
+    std::unique_ptr<blink::URLLoaderFactoryBundleInfo>
+        subresource_loader_factories) {
+  web_url_loader_factory_ = std::make_unique<WebURLLoaderFactoryImpl>(
+      resource_dispatcher_->GetWeakPtr(),
+      network::SharedURLLoaderFactory::Create(
+          std::move(subresource_loader_factories)));
 }
 
 void ServiceWorkerFetchContextImpl::NotifyUpdate(

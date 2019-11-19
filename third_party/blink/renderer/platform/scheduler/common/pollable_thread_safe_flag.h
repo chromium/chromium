@@ -8,6 +8,7 @@
 #include "base/atomicops.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 // A PollableThreadSafeFlag can be polled without requiring a lock, but can only
 // be updated if a lock is held. This enables lock-free checking as to whether a
@@ -16,6 +17,8 @@
 // lock-protected critical section as any other variables on which the condition
 // depends.
 class PollableThreadSafeFlag {
+  DISALLOW_NEW();
+
  public:
   explicit PollableThreadSafeFlag(base::Lock* write_lock);
   ~PollableThreadSafeFlag();

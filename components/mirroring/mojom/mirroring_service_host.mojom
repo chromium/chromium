@@ -17,10 +17,10 @@ interface MirroringServiceHost {
   // the messages from the mirroring receiver to the Mirroring Service.
   // To stop the session, just close the message pipe.
   Start(SessionParameters params,
-        SessionObserver observer,
-        CastMessageChannel outbound_channel,
-        CastMessageChannel& inbound_channel);
+        pending_remote<SessionObserver> observer,
+        pending_remote<CastMessageChannel> outbound_channel,
+        pending_receiver<CastMessageChannel> inbound_channel);
 
-  // TODO(xjz): Add interfaces to get the streaming events/stats and mirroring
-  // logs.
+  // TODO(crbug.com/1015461): Add interfaces to get the streaming events/stats
+  // and mirroring logs.
 };

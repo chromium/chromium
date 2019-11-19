@@ -7,4 +7,9 @@
 dictionary PaymentHandlerResponse {
     DOMString methodName;
     object details;
+    [RuntimeEnabled=PaymentHandlerHandlesShippingAndContact] DOMString? payerName;
+    [RuntimeEnabled=PaymentHandlerHandlesShippingAndContact] DOMString? payerEmail;
+    [RuntimeEnabled=PaymentHandlerHandlesShippingAndContact] DOMString? payerPhone;
+    [RuntimeEnabled=PaymentHandlerHandlesShippingAndContact] PaymentAddressInit shippingAddress;
+    [RuntimeEnabled=PaymentHandlerHandlesShippingAndContact] DOMString? shippingOption;
 };

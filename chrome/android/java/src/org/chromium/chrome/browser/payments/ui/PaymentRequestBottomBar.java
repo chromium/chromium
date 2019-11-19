@@ -7,11 +7,8 @@ package org.chromium.chrome.browser.payments.ui;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
-import android.view.ViewGroup.MarginLayoutParams;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 
 /** This class represents a bar to display at the bottom of the payment request UI. */
@@ -107,7 +104,7 @@ public class PaymentRequestBottomBar extends ViewGroup {
 
         int childLeft;
         int childRight;
-        boolean isRtl = ApiCompatibilityUtils.isLayoutRtl(this);
+        boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
         if (isRtl) {
             childRight = viewWidth - rightSpace;
             childLeft = childRight;

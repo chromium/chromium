@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0"
+      current_release="1"
+      output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/sync_driver_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="sync_driver_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_INDEX_HTML" file="resources/index.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" compress="gzip" />
+      <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_INDEX_JS" file="resources/sync_index.js" type="BINDATA" compress="gzip" />
+      <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_CHROME_SYNC_JS" file="resources/chrome_sync.js" type="BINDATA" compress="gzip" />
+      <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_TYPES_JS" file="resources/types.js" type="BINDATA" compress="gzip" />
+      <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_SYNC_LOG_JS" file="resources/sync_log.js" type="BINDATA" compress="gzip" />
+      <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_SYNC_NODE_BROWSER_JS" file="resources/sync_node_browser.js" type="BINDATA" compress="gzip" />
+      <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_SYNC_SEARCH_JS" file="resources/sync_search.js" type="BINDATA" compress="gzip" />
+      <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_ABOUT_JS" file="resources/about.js" type="BINDATA" compress="gzip" />
+      <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_DATA_JS" file="resources/data.js" type="BINDATA" compress="gzip" />
+      <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_EVENTS_JS" file="resources/events.js" type="BINDATA" compress="gzip" />
+      <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_SEARCH_JS" file="resources/search.js" type="BINDATA" compress="gzip" />
+      <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_USER_EVENTS_JS" file="resources/user_events.js" type="BINDATA" compress="gzip" />
+      <include name="IDR_SYNC_DRIVER_SYNC_INTERNALS_TRAFFIC_LOG_JS"  file="resources/traffic_log.js" type="BINDATA" compress="gzip" />
+    </includes>
+  </release>
+</grit>

@@ -1,0 +1,5 @@
+CONSOLE ERROR: line 3017: Uncaught Error: assert_equals: Normal defer script execution order comparison expected "Inline1;Sync1;Inline2;Sync2;EndOfBody;Defer1;Defer2;DOMContentLoaded;" but got "EndOfBody;Inline1;Sync1;Inline2;Sync2;Defer1;Defer2;DOMContentLoaded;"
+This is a testharness.js-based test.
+FAIL Defer Script Execution Order Uncaught Error: assert_equals: Normal defer script execution order comparison expected "Inline1;Sync1;Inline2;Sync2;EndOfBody;Defer1;Defer2;DOMContentLoaded;" but got "EndOfBody;Inline1;Sync1;Inline2;Sync2;Defer1;Defer2;DOMContentLoaded;"
+Harness: the test ran to completion.
+

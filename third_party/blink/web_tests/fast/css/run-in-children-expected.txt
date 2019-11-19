@@ -1,4 +1,0 @@
-This tests if all children in run-in block will be displayed.
-
-foobar
-foo

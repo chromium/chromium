@@ -7,8 +7,8 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
@@ -155,16 +155,16 @@ class AomVideoDecoderTest : public testing::Test {
     return status;
   }
 
-  void FrameReady(const scoped_refptr<VideoFrame>& frame) {
+  void FrameReady(scoped_refptr<VideoFrame> frame) {
     DCHECK(!frame->metadata()->IsTrue(VideoFrameMetadata::END_OF_STREAM));
-    output_frames_.push_back(frame);
+    output_frames_.push_back(std::move(frame));
   }
 
   MOCK_METHOD1(DecodeDone, void(DecodeStatus));
 
   testing::StrictMock<MockMediaLog> media_log_;
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<AomVideoDecoder> decoder_;
 
   scoped_refptr<DecoderBuffer> i_frame_buffer_;

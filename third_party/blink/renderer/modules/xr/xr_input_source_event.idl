@@ -5,9 +5,9 @@
 [
     SecureContext,
     Exposed=Window,
-    OriginTrialEnabled=WebXR,
+    RuntimeEnabled=WebXR,
     Constructor(DOMString type, XRInputSourceEventInit eventInitDict)
 ] interface XRInputSourceEvent : Event {
-  readonly attribute XRFrame frame;
-  readonly attribute XRInputSource inputSource;
+  [SameObject] readonly attribute XRFrame frame;
+  [SameObject] readonly attribute XRInputSource inputSource;
 };

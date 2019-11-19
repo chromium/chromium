@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.CollectionUtil;
-import org.chromium.base.VisibleForTesting;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 
 import java.util.HashSet;
 import java.util.Locale;
@@ -59,7 +61,9 @@ class ContextualSearchEntityHeuristic extends ContextualSearchHeuristic {
      *        out the words around what has been tapped.
      */
     ContextualSearchEntityHeuristic(ContextualSearchContext contextualSearchContext) {
-        this(contextualSearchContext, ContextualSearchFieldTrial.isNotAnEntitySuppressionEnabled());
+        this(contextualSearchContext,
+                ContextualSearchFieldTrial.getSwitch(
+                        ContextualSearchSwitch.IS_NOT_AN_ENTITY_SUPPRESSION_ENABLED));
     }
 
     /**

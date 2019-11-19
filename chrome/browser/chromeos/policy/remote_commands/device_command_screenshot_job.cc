@@ -52,11 +52,12 @@ const char* const kUploadUrlFieldName = "fileUploadUrl";
 
 // A helper function which invokes |store_screenshot_callback| on |task_runner|.
 void RunStoreScreenshotOnTaskRunner(
-    const ui::GrabWindowSnapshotAsyncPNGCallback& store_screenshot_callback,
+    ui::GrabWindowSnapshotAsyncPNGCallback store_screenshot_callback,
     scoped_refptr<base::TaskRunner> task_runner,
     scoped_refptr<base::RefCountedMemory> png_data) {
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(store_screenshot_callback, png_data));
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(store_screenshot_callback), png_data));
 }
 
 }  // namespace
@@ -90,8 +91,7 @@ std::unique_ptr<std::string> DeviceCommandScreenshotJob::Payload::Serialize() {
 DeviceCommandScreenshotJob::DeviceCommandScreenshotJob(
     std::unique_ptr<Delegate> screenshot_delegate)
     : num_pending_screenshots_(0),
-      screenshot_delegate_(std::move(screenshot_delegate)),
-      weak_ptr_factory_(this) {
+      screenshot_delegate_(std::move(screenshot_delegate)) {
   DCHECK(screenshot_delegate_);
 }
 
@@ -223,10 +223,11 @@ void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult succeeded_callback,
     gfx::Rect rect = root_window->bounds();
     screenshot_delegate_->TakeSnapshot(
         root_window, rect,
-        base::Bind(&RunStoreScreenshotOnTaskRunner,
-                   base::Bind(&DeviceCommandScreenshotJob::StoreScreenshot,
-                              weak_ptr_factory_.GetWeakPtr(), screen),
-                   base::ThreadTaskRunnerHandle::Get()));
+        base::BindOnce(
+            &RunStoreScreenshotOnTaskRunner,
+            base::BindOnce(&DeviceCommandScreenshotJob::StoreScreenshot,
+                           weak_ptr_factory_.GetWeakPtr(), screen),
+            base::ThreadTaskRunnerHandle::Get()));
   }
 }
 

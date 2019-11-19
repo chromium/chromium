@@ -32,6 +32,10 @@ void PopulateSSLDebuggingStrings(const net::SSLInfo ssl_info,
 // For determining whether to use the old or new icon sets.
 void PopulateNewIconStrings(base::DictionaryValue* load_time_data);
 
+// Populate a 'darkModeAvailable' boolean in |load_time_data| that specifies
+// whether dark mode styling is available.
+void PopulateDarkModeDisplaySetting(base::DictionaryValue* load_time_data);
+
 }  // common_string_util
 
 }  // namespace security_interstitials

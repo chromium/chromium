@@ -8,11 +8,8 @@
 
 // <include src="test_util.js">
 // <include src="../../../../../ui/login/screen.js">
-// <include src="screen_context.js">
-// <include src="apps_menu.js">
 // <include src="../../../../../ui/login/bubble.js">
 // <include src="../../../../../ui/login/display_manager.js">
-// <include src="md_header_bar.js">
 // <include src="demo_mode_test_helper.js">
 
 // <include
@@ -21,13 +18,10 @@
 // <include src="../../../../../ui/login/login_ui_tools.js">
 // <include
 // src="../../../../../ui/login/account_picker/chromeos_user_pod_row.js">
-// <include src="../../../../../ui/login/resource_loader.js">
 // <include src="cr_ui.js">
 // <include src="oobe_screen_reset.js">
 // <include src="oobe_screen_autolaunch.js">
 // <include src="oobe_screen_enable_kiosk.js">
-// <include src="oobe_screen_terms_of_service.js">
-// <include src="oobe_screen_user_image.js">
 // <include src="oobe_screen_supervision_transition.js">
 // <include src="oobe_screen_assistant_optin_flow.js">
 // <include src="oobe_select.js">
@@ -36,14 +30,12 @@
 // <include src="screen_arc_kiosk_splash.js">
 // <include src="screen_arc_terms_of_service.js">
 // <include src="screen_error_message.js">
-// <include src="screen_gaia_signin.js">
 // <include src="screen_password_changed.js">
 // <include src="screen_tpm_error.js">
 // <include src="screen_wrong_hwid.js">
 // <include src="screen_confirm_password.js">
 // <include src="screen_fatal_error.js">
 // <include src="screen_device_disabled.js">
-// <include src="screen_unrecoverable_cryptohome_error.js">
 // <include src="screen_active_directory_password_change.js">
 // <include src="screen_encryption_migration.js">
 // <include src="screen_update_required.js">
@@ -79,15 +71,12 @@ cr.define('cr.ui.Oobe', function() {
       cr.ui.login.DisplayManager.initialize();
       login.WrongHWIDScreen.register();
       login.AccountPickerScreen.register();
-      login.GaiaSigninScreen.register();
-      login.UserImageScreen.register(/* lazyInit= */ true);
       login.ResetScreen.register();
       login.AutolaunchScreen.register();
       login.KioskEnableScreen.register();
       login.ErrorMessageScreen.register();
       login.TPMErrorMessageScreen.register();
       login.PasswordChangedScreen.register();
-      login.TermsOfServiceScreen.register();
       login.SyncConsentScreen.register();
       login.FingerprintSetupScreen.register();
       login.ArcTermsOfServiceScreen.register();
@@ -98,7 +87,6 @@ cr.define('cr.ui.Oobe', function() {
       login.ConfirmPasswordScreen.register();
       login.FatalErrorScreen.register();
       login.DeviceDisabledScreen.register();
-      login.UnrecoverableCryptohomeErrorScreen.register();
       login.ActiveDirectoryPasswordChangeScreen.register(/* lazyInit= */ true);
       login.EncryptionMigrationScreen.register();
       login.SupervisionTransitionScreen.register();
@@ -107,18 +95,15 @@ cr.define('cr.ui.Oobe', function() {
       login.MarketingOptInScreen.register();
       login.AssistantOptInFlowScreen.register();
       login.MultiDeviceSetupScreen.register();
+      login.UpdateRequiredScreen.register();
 
       cr.ui.Bubble.decorate($('bubble-persistent'));
       $('bubble-persistent').persistent = true;
       $('bubble-persistent').hideOnKeyPress = false;
 
       cr.ui.Bubble.decorate($('bubble'));
-      login.HeaderBar.decorate($('login-header-bar'));
 
       chrome.send('screenStateInitialize');
-
-      if (Oobe.getInstance().showingViewsLogin)
-        chrome.send('showAddUser');
     },
 
     // Dummy Oobe functions not present with stripped login UI.

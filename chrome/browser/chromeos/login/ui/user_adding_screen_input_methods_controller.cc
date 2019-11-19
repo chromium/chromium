@@ -32,7 +32,7 @@ void UserAddingScreenInputMethodsController::OnUserAddingFinished() {
   if (user_manager::UserManager::Get()->GetActiveUser() == active_user_on_show_)
     input_method::InputMethodManager::Get()->SetState(saved_ime_state_);
 
-  saved_ime_state_ = NULL;
+  saved_ime_state_.reset();
 }
 
 }  // namespace chromeos

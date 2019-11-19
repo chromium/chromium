@@ -7,14 +7,6 @@
 
 #include "content/common/content_export.h"
 
-namespace gfx {
-class Size;
-}  // namespace gfx
-
-namespace viz {
-class SurfaceId;
-}  // namespace viz
-
 namespace content {
 class OverlayWindow;
 class WebContents;
@@ -34,12 +26,11 @@ class PictureInPictureWindowController {
   virtual ~PictureInPictureWindowController() = default;
 
   // Shows the Picture-in-Picture window.
-  // Returns the size of the window in pixels.
-  virtual gfx::Size Show() = 0;
+  virtual void Show() = 0;
 
   // Called to notify the controller that the window was requested to be closed
   // by the user or the content.
-  virtual void Close(bool should_pause_video, bool should_reset_pip_player) = 0;
+  virtual void Close(bool should_pause_video) = 0;
 
   // Called to notify the controller that the window was requested to be closed
   // by the content and that initiator should be focused.
@@ -49,18 +40,13 @@ class PictureInPictureWindowController {
   // window was requested to be closed and destroyed by the system.
   virtual void OnWindowDestroyed() = 0;
 
-  virtual void EmbedSurface(const viz::SurfaceId& surface_id,
-                            const gfx::Size& natural_size) = 0;
   virtual OverlayWindow* GetWindowForTesting() = 0;
   virtual void UpdateLayerBounds() = 0;
   virtual bool IsPlayerActive() = 0;
-  virtual bool IsPlayerMuted() = 0;
   virtual WebContents* GetInitiatorWebContents() = 0;
   virtual void UpdatePlaybackState(bool is_playing,
                                    bool reached_end_of_stream) = 0;
-  virtual void UpdateMutedState() = 0;
   virtual void SetAlwaysHidePlayPauseButton(bool is_visible) = 0;
-  virtual void SetAlwaysHideMuteButton(bool is_visible) = 0;
 
   // Called when the user interacts with the "Skip Ad" control.
   virtual void SkipAd() = 0;
@@ -75,9 +61,6 @@ class PictureInPictureWindowController {
   // Returns true if the player is active (i.e. currently playing) after this
   // call.
   virtual bool TogglePlayPause() = 0;
-
-  // Returns true if the player is muted after this call.
-  virtual bool ToggleMute() = 0;
 
  protected:
   // Use PictureInPictureWindowController::GetOrCreateForWebContents() to

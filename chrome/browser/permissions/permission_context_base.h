@@ -27,7 +27,7 @@ class RenderFrameHost;
 class WebContents;
 }
 
-using BrowserPermissionCallback = base::Callback<void(ContentSetting)>;
+using BrowserPermissionCallback = base::OnceCallback<void(ContentSetting)>;
 
 // This base class contains common operations for granting permissions.
 // It offers the following functionality:
@@ -75,7 +75,7 @@ class PermissionContextBase : public KeyedService {
                                  const PermissionRequestID& id,
                                  const GURL& requesting_frame,
                                  bool user_gesture,
-                                 const BrowserPermissionCallback& callback);
+                                 BrowserPermissionCallback callback);
 
   // Returns whether the permission has been granted, denied etc.
   // |render_frame_host| may be nullptr if the call is coming from a context
@@ -84,6 +84,10 @@ class PermissionContextBase : public KeyedService {
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const;
+
+  // Returns whether the permission is usable by requesting/embedding origins.
+  bool IsPermissionAvailableToOrigins(const GURL& requesting_origin,
+                                      const GURL& embedding_origin) const;
 
   // Update |result| with any modifications based on the device state. For
   // example, if |result| is ALLOW but Chrome does not have the relevant
@@ -115,14 +119,14 @@ class PermissionContextBase : public KeyedService {
                                 const GURL& requesting_origin,
                                 const GURL& embedding_origin,
                                 bool user_gesture,
-                                const BrowserPermissionCallback& callback);
+                                BrowserPermissionCallback callback);
 
   // Updates stored content setting if persist is set, updates tab indicators
   // and runs the callback to finish the request.
   virtual void NotifyPermissionSet(const PermissionRequestID& id,
                                    const GURL& requesting_origin,
                                    const GURL& embedding_origin,
-                                   const BrowserPermissionCallback& callback,
+                                   BrowserPermissionCallback callback,
                                    bool persist,
                                    ContentSetting content_setting);
 
@@ -162,7 +166,7 @@ class PermissionContextBase : public KeyedService {
   void PermissionDecided(const PermissionRequestID& id,
                          const GURL& requesting_origin,
                          const GURL& embedding_origin,
-                         const BrowserPermissionCallback& callback,
+                         BrowserPermissionCallback callback,
                          ContentSetting content_setting);
 
   // Called when the user has made a permission decision. This is a hook for
@@ -181,7 +185,7 @@ class PermissionContextBase : public KeyedService {
 
   // Must be the last member, to ensure that it will be
   // destroyed first, which will invalidate weak pointers
-  base::WeakPtrFactory<PermissionContextBase> weak_factory_;
+  base::WeakPtrFactory<PermissionContextBase> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_PERMISSION_CONTEXT_BASE_H_

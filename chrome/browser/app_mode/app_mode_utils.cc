@@ -38,6 +38,7 @@ bool IsCommandAllowedInAppMode(int command_id) {
       IDC_BACK,
       IDC_FORWARD,
       IDC_RELOAD,
+      IDC_CLOSE_FIND_OR_STOP,
       IDC_STOP,
       IDC_RELOAD_BYPASSING_CACHE,
       IDC_RELOAD_CLEARING_CACHE,
@@ -66,7 +67,9 @@ bool IsRunningInAppMode() {
 bool IsRunningInForcedAppMode() {
   return GetForcedAppModeApp().has_value() ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kForceAndroidAppMode);
+             switches::kForceAndroidAppMode) ||
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kForceWebAppMode);
 }
 
 bool IsRunningInForcedAppModeForApp(const std::string& app_id) {

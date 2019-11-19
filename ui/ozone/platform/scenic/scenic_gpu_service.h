@@ -8,9 +8,11 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "ui/ozone/public/interfaces/scenic_gpu_host.mojom.h"
-#include "ui/ozone/public/interfaces/scenic_gpu_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "ui/ozone/public/mojom/scenic_gpu_host.mojom.h"
+#include "ui/ozone/public/mojom/scenic_gpu_service.mojom.h"
 
 namespace ui {
 
@@ -22,23 +24,24 @@ namespace ui {
 // so that surfaces can present to Scenic views managed by the browser.
 class ScenicGpuService : public mojom::ScenicGpuService {
  public:
-  ScenicGpuService(mojom::ScenicGpuHostRequest gpu_host_request);
+  ScenicGpuService(
+      mojo::PendingReceiver<mojom::ScenicGpuHost> gpu_host_receiver);
   ~ScenicGpuService() override;
 
-  base::RepeatingCallback<void(mojom::ScenicGpuServiceRequest)>
+  base::RepeatingCallback<void(mojo::PendingReceiver<mojom::ScenicGpuService>)>
   GetBinderCallback();
 
   // mojom::ScenicGpuService:
-  void Initialize(mojom::ScenicGpuHostPtr gpu_host) override;
+  void Initialize(mojo::PendingRemote<mojom::ScenicGpuHost> gpu_host) override;
 
  private:
-  void AddBinding(mojom::ScenicGpuServiceRequest request);
+  void AddReceiver(mojo::PendingReceiver<mojom::ScenicGpuService> receiver);
 
-  mojom::ScenicGpuHostRequest gpu_host_request_;
+  mojo::PendingReceiver<mojom::ScenicGpuHost> gpu_host_receiver_;
 
-  mojo::BindingSet<mojom::ScenicGpuService> binding_set_;
+  mojo::ReceiverSet<mojom::ScenicGpuService> receiver_set_;
 
-  base::WeakPtrFactory<ScenicGpuService> weak_ptr_factory_;
+  base::WeakPtrFactory<ScenicGpuService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ScenicGpuService);
 };

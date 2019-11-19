@@ -41,8 +41,9 @@ window.CLOSURE_IMPORT_SCRIPT = function(src) {
     }
     goog.dependencies_.written[src] = true;
     function loadNextScript() {
-      if (goog.global.queue_.length == 0)
+      if (goog.global.queue_.length == 0) {
         return;
+      }
 
       var src = goog.global.queue_[0];
 

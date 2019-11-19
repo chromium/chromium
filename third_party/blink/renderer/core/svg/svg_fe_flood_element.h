@@ -29,14 +29,13 @@ class SVGFEFloodElement final : public SVGFilterPrimitiveStandardAttributes {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(SVGFEFloodElement);
-
   explicit SVGFEFloodElement(Document&);
 
  private:
   bool SetFilterEffectAttribute(FilterEffect*,
                                 const QualifiedName& attr_name) override;
   FilterEffect* Build(SVGFilterBuilder*, Filter*) override;
+  bool TaintsOrigin() const override;
 };
 
 }  // namespace blink

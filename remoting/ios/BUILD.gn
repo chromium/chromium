@@ -34,8 +34,7 @@ source_set("ios_core") {
     "//remoting/ios/domain",
     "//remoting/ios/facade",
     "//remoting/ios/session",
-    "//third_party/webrtc/modules/desktop_capture:primitives",
-    "//third_party/webrtc/rtc_base:rtc_base",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 
   deps = [

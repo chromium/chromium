@@ -16,19 +16,20 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
-#include "net/disk_cache/disk_cache.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/blob_data_snapshot.h"
+#include "storage/browser/blob/blob_impl.h"
+#include "storage/browser/test/fake_blob_data_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using FileCreationInfo = storage::BlobMemoryController::FileCreationInfo;
@@ -36,8 +37,6 @@ using FileCreationInfo = storage::BlobMemoryController::FileCreationInfo;
 namespace storage {
 namespace {
 using base::TestSimpleTaskRunner;
-
-const int kTestDiskCacheStreamIndex = 0;
 
 const std::string kBlobStorageDirectory = "blob_storage";
 const size_t kTestBlobStorageIPCThresholdBytes = 20;
@@ -47,43 +46,6 @@ const size_t kTestBlobStorageMaxBlobMemorySize = 400;
 const uint64_t kTestBlobStorageMaxDiskSpace = 4000;
 const uint64_t kTestBlobStorageMinFileSizeBytes = 10;
 const uint64_t kTestBlobStorageMaxFileSizeBytes = 100;
-
-// Our disk cache tests don't need a real data handle since the tests themselves
-// scope the disk cache and entries.
-class EmptyDataHandle : public storage::BlobDataBuilder::DataHandle {
- private:
-  ~EmptyDataHandle() override = default;
-};
-
-std::unique_ptr<disk_cache::Backend> CreateInMemoryDiskCache() {
-  std::unique_ptr<disk_cache::Backend> cache;
-  net::TestCompletionCallback callback;
-  int rv = disk_cache::CreateCacheBackend(
-      net::MEMORY_CACHE, net::CACHE_BACKEND_DEFAULT, base::FilePath(), 0, false,
-      nullptr, &cache, callback.callback());
-  EXPECT_EQ(net::OK, callback.GetResult(rv));
-
-  return cache;
-}
-
-disk_cache::ScopedEntryPtr CreateDiskCacheEntry(disk_cache::Backend* cache,
-                                                const char* key,
-                                                const std::string& data) {
-  disk_cache::Entry* temp_entry = nullptr;
-  net::TestCompletionCallback callback;
-  int rv =
-      cache->CreateEntry(key, net::HIGHEST, &temp_entry, callback.callback());
-  if (callback.GetResult(rv) != net::OK)
-    return nullptr;
-  disk_cache::ScopedEntryPtr entry(temp_entry);
-
-  scoped_refptr<net::StringIOBuffer> iobuffer =
-      base::MakeRefCounted<net::StringIOBuffer>(data);
-  rv = entry->WriteData(kTestDiskCacheStreamIndex, 0, iobuffer.get(),
-                        iobuffer->size(), callback.callback(), false);
-  EXPECT_EQ(static_cast<int>(data.size()), callback.GetResult(rv));
-  return entry;
-}
 
 void SaveBlobStatus(BlobStatus* status_ptr, BlobStatus status) {
   *status_ptr = status;
@@ -125,7 +87,7 @@ class BlobStorageContextTest : public testing::Test {
 
   std::unique_ptr<BlobDataHandle> SetupBasicBlob(const std::string& id) {
     auto builder = std::make_unique<BlobDataBuilder>(id);
-    builder->AppendData("1", 1);
+    builder->AppendData(std::string("1"));
     builder->set_content_type("text/plain");
     return context_->AddFinishedBlob(std::move(builder));
   }
@@ -150,11 +112,25 @@ class BlobStorageContextTest : public testing::Test {
     context_->DecrementBlobRefCount(uuid);
   }
 
+  std::string UUIDFromBlob(blink::mojom::Blob* blob) {
+    base::RunLoop loop;
+    std::string received_uuid;
+    blob->GetInternalUUID(base::BindOnce(
+        [](base::OnceClosure quit_closure, std::string* uuid_out,
+           const std::string& uuid) {
+          *uuid_out = uuid;
+          std::move(quit_closure).Run();
+        },
+        loop.QuitClosure(), &received_uuid));
+    loop.Run();
+    return received_uuid;
+  }
+
   std::vector<FileCreationInfo> files_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<TestSimpleTaskRunner> file_runner_ = new TestSimpleTaskRunner();
 
-  base::MessageLoop fake_io_message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<BlobStorageContext> context_;
 };
 
@@ -183,7 +159,7 @@ TEST_F(BlobStorageContextTest, BuildBlobAsync) {
 
   EXPECT_EQ(10u, context_->memory_controller().memory_usage());
 
-  future_data.Populate(base::make_span("abcdefghij", 10), 0);
+  future_data.Populate(base::as_bytes(base::make_span("abcdefghij", 10)), 0);
   context_->NotifyTransportComplete(kId);
 
   // Check we're done.
@@ -492,19 +468,13 @@ TEST_F(BlobStorageContextTest, AddFinishedBlob_LargeOffset) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(BlobStorageContextTest, BuildDiskCacheBlob) {
-  scoped_refptr<BlobDataBuilder::DataHandle>
-      data_handle = new EmptyDataHandle();
+TEST_F(BlobStorageContextTest, BuildReadableDataHandleBlob) {
+  const std::string kTestBlobData = "Test Blob Data";
+  auto data_handle =
+      base::MakeRefCounted<storage::FakeBlobDataHandle>(kTestBlobData, "");
 
   {
     BlobStorageContext context;
-
-    std::unique_ptr<disk_cache::Backend> cache = CreateInMemoryDiskCache();
-    ASSERT_TRUE(cache);
-
-    const std::string kTestBlobData = "Test Blob Data";
-    disk_cache::ScopedEntryPtr entry =
-        CreateDiskCacheEntry(cache.get(), "test entry", kTestBlobData);
 
     const std::string kId1Prime("id1.prime");
     BlobDataBuilder canonicalized_blob_data(kId1Prime);
@@ -513,8 +483,7 @@ TEST_F(BlobStorageContextTest, BuildDiskCacheBlob) {
     const std::string kId1("id1");
     auto builder = std::make_unique<BlobDataBuilder>(kId1);
 
-    builder->AppendDiskCacheEntry(data_handle, entry.get(),
-                                  kTestDiskCacheStreamIndex);
+    builder->AppendReadableDataHandle(data_handle);
 
     std::unique_ptr<BlobDataSnapshot> builder_data = builder->CreateSnapshot();
     std::unique_ptr<BlobDataHandle> blob_data_handle =
@@ -618,18 +587,15 @@ TEST_F(BlobStorageContextTest, CompoundBlobs) {
 
   auto blob_data3_builder = std::make_unique<BlobDataBuilder>(kId3);
   blob_data3_builder->AppendData("Data4");
-  std::unique_ptr<disk_cache::Backend> cache = CreateInMemoryDiskCache();
-  ASSERT_TRUE(cache);
-  disk_cache::ScopedEntryPtr disk_cache_entry =
-      CreateDiskCacheEntry(cache.get(), "another key", "Data5");
-  blob_data3_builder->AppendDiskCacheEntry(
-      new EmptyDataHandle(), disk_cache_entry.get(), kTestDiskCacheStreamIndex);
+  auto data_handle =
+      base::MakeRefCounted<storage::FakeBlobDataHandle>("Data5", "");
+  blob_data3_builder->AppendReadableDataHandle(std::move(data_handle));
   std::unique_ptr<BlobDataSnapshot> blob_data3 =
       blob_data3_builder->CreateSnapshot();
 
   BlobDataBuilder canonicalized_blob_data2(kId2);
   canonicalized_blob_data2.AppendData("Data3");
-  canonicalized_blob_data2.AppendData("a2___", 2);
+  canonicalized_blob_data2.AppendData("a2");
   canonicalized_blob_data2.AppendFile(
       base::FilePath(FILE_PATH_LITERAL("File1.txt")), 10, 98, time1);
   canonicalized_blob_data2.AppendFile(
@@ -655,31 +621,33 @@ TEST_F(BlobStorageContextTest, CompoundBlobs) {
 TEST_F(BlobStorageContextTest, PublicBlobUrls) {
   // Build up a basic blob.
   const std::string kId("id");
-  std::unique_ptr<BlobDataHandle> first_handle = SetupBasicBlob(kId);
+  mojo::PendingRemote<blink::mojom::Blob> pending_blob_remote;
+  BlobImpl::Create(SetupBasicBlob(kId),
+                   pending_blob_remote.InitWithNewPipeAndPassReceiver());
 
   // Now register a url for that blob.
   GURL kUrl("blob:id");
-  context_->RegisterPublicBlobURL(kUrl, kId);
-  std::unique_ptr<BlobDataHandle> blob_data_handle =
-      context_->GetBlobDataFromPublicURL(kUrl);
-  ASSERT_TRUE(blob_data_handle.get());
-  EXPECT_EQ(kId, blob_data_handle->uuid());
-  std::unique_ptr<BlobDataSnapshot> data = blob_data_handle->CreateSnapshot();
-  blob_data_handle.reset();
-  first_handle.reset();
+  context_->RegisterPublicBlobURL(kUrl, std::move(pending_blob_remote));
+  pending_blob_remote = context_->GetBlobFromPublicURL(kUrl);
+  ASSERT_TRUE(pending_blob_remote);
+  mojo::Remote<blink::mojom::Blob> blob_remote(std::move(pending_blob_remote));
+  EXPECT_EQ(kId, UUIDFromBlob(blob_remote.get()));
+  blob_remote.reset();
   base::RunLoop().RunUntilIdle();
 
   // The url registration should keep the blob alive even after
   // explicit references are dropped.
-  blob_data_handle = context_->GetBlobDataFromPublicURL(kUrl);
-  EXPECT_TRUE(blob_data_handle);
-  blob_data_handle.reset();
+  pending_blob_remote = context_->GetBlobFromPublicURL(kUrl);
+  EXPECT_TRUE(pending_blob_remote);
+  pending_blob_remote.reset();
 
   base::RunLoop().RunUntilIdle();
   // Finally get rid of the url registration and the blob.
   context_->RevokePublicBlobURL(kUrl);
-  blob_data_handle = context_->GetBlobDataFromPublicURL(kUrl);
-  EXPECT_FALSE(blob_data_handle.get());
+  pending_blob_remote = context_->GetBlobFromPublicURL(kUrl);
+  EXPECT_FALSE(pending_blob_remote);
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_FALSE(context_->registry().HasEntry(kId));
 }
 
@@ -733,7 +701,7 @@ TEST_F(BlobStorageContextTest, TestUnknownBrokenAndBuildingBlobReference) {
 namespace {
 constexpr size_t kTotalRawBlobs = 200;
 constexpr size_t kTotalSlicedBlobs = 100;
-constexpr char kTestDiskCacheData[] = "Test Blob Data";
+constexpr char kTestDataHandleData[] = "Test Blob Data";
 
 // Appends data and data types that depend on the index. This is designed to
 // exercise all types of combinations of data, future data, files, future files,
@@ -743,14 +711,14 @@ size_t AppendDataInBuilder(
     std::vector<BlobDataBuilder::FutureData>* future_datas,
     std::vector<BlobDataBuilder::FutureFile>* future_files,
     size_t index,
-    disk_cache::Entry* cache_entry) {
+    scoped_refptr<storage::BlobDataItem::DataHandle> data_handle) {
   size_t size = 0;
   // We can't have both future data and future files, so split those up.
   if (index % 2 != 0) {
     future_datas->emplace_back(builder->AppendFutureData(5u));
     size += 5u;
     if (index % 3 == 1) {
-      builder->AppendData("abcdefghij", 4u);
+      builder->AppendData("abcd");
       size += 4u;
     }
     if (index % 3 == 0) {
@@ -768,11 +736,8 @@ size_t AppendDataInBuilder(
     size += 20u;
   }
   if (index % 3 != 0) {
-    scoped_refptr<BlobDataBuilder::DataHandle> disk_cache_data_handle =
-        new EmptyDataHandle();
-    builder->AppendDiskCacheEntry(disk_cache_data_handle, cache_entry,
-                                  kTestDiskCacheStreamIndex);
-    size += strlen(kTestDiskCacheData);
+    builder->AppendReadableDataHandle(data_handle);
+    size += strlen(kTestDataHandleData);
   }
   return size;
 }
@@ -787,9 +752,9 @@ void PopulateDataInBuilder(
     size_t index,
     base::TaskRunner* file_runner) {
   if (index % 2 != 0) {
-    (*future_datas)[0].Populate(base::make_span("abcde", 5), 0);
+    (*future_datas)[0].Populate(base::as_bytes(base::make_span("abcde", 5)), 0);
     if (index % 3 == 0) {
-      (*future_datas)[1].Populate(base::make_span("1", 1), 0);
+      (*future_datas)[1].Populate(base::as_bytes(base::make_span("1", 1)), 0);
     }
   } else if (index % 3 == 0) {
     scoped_refptr<ShareableFileReference> file_ref =
@@ -809,10 +774,8 @@ TEST_F(BlobStorageContextTest, BuildBlobCombinations) {
       std::make_unique<BlobStorageContext>(temp_dir_.GetPath(), file_runner_);
 
   SetTestMemoryLimits();
-  std::unique_ptr<disk_cache::Backend> cache = CreateInMemoryDiskCache();
-  ASSERT_TRUE(cache);
-  disk_cache::ScopedEntryPtr entry =
-      CreateDiskCacheEntry(cache.get(), "test entry", kTestDiskCacheData);
+  auto data_handle = base::MakeRefCounted<storage::FakeBlobDataHandle>(
+      kTestDataHandleData, "");
 
   // This tests mixed blob content with both synchronous and asynchronous
   // construction. Blobs should also be paged to disk during execution.
@@ -826,7 +789,7 @@ TEST_F(BlobStorageContextTest, BuildBlobCombinations) {
     future_files.emplace_back();
     auto& builder = *builders.back();
     size_t size = AppendDataInBuilder(&builder, &future_datas.back(),
-                                      &future_files.back(), i, entry.get());
+                                      &future_files.back(), i, data_handle);
     EXPECT_NE(0u, size);
     sizes.push_back(size);
   }

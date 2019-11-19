@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-window.onload = function() {
-  // Make a 1000-character long title.
-  var title = "";
-  for (var i = 0; i < 1000; i++) {
-    title += "x";
+// Make a 1000-character long title.
+var title = "";
+for (var i = 0; i < 1000; i++) {
+  title += "x";
+}
+chrome.test.log("creating item");
+chrome.contextMenus.create({"title":title}, function() {
+  if (!chrome.runtime.lastError) {
+    chrome.test.sendMessage("created");
   }
-  chrome.test.log("creating item");
-  chrome.contextMenus.create({"title":title}, function() {
-    if (!chrome.runtime.lastError) {
-      chrome.test.sendMessage("created");
-    }
-  });
-};
+});

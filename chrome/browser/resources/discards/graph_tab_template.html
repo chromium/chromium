@@ -1,20 +1,4 @@
-<!--
-Copyright 2018 The Chromium Authors. All rights reserved.
-Use of this source code is governed by a BSD-style license that can be
-found in the LICENSE file.
 
-This is an internal only page meant for debugging. It is not intended for
-general use and is not localized.
--->
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="mojo_api.html">
-
-<dom-module id="graph-tab">
-  <template>
     <webview id="webView" src="${data_url}" on-contentload="onWebViewReady_"
         allowscaling>
     </webview>
-  </template>
-  <script src="graph_tab.js"></script>
-</dom-module>

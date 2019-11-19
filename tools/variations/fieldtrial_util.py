@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import json
 import sys
 
@@ -78,11 +80,11 @@ def GenerateArgs(config_path, platforms):
         param_list.append(param['key'])
         param_list.append(param['value'])
     if len(param_list):
-       # Escape the variables for the command-line.
-       selected_study = [_escape(x) for x in selected_study]
-       param_list = [_escape(x) for x in param_list]
-       param = '%s:%s' % ('.'.join(selected_study), '/'.join(param_list))
-       params.append(param)
+      # Escape the variables for the command-line.
+      selected_study = [_escape(x) for x in selected_study]
+      param_list = [_escape(x) for x in param_list]
+      param = '%s:%s' % ('.'.join(selected_study), '/'.join(param_list))
+      params.append(param)
     for feature in experiment.get('enable_features', []):
       enable_features.append(feature + '<' + study_name)
     for feature in experiment.get('disable_features', []):
@@ -102,24 +104,25 @@ def GenerateArgs(config_path, platforms):
 
 def main():
   if len(sys.argv) < 3:
-    print 'Usage: fieldtrial_util.py [config_path] [platform]'
-    print 'Optionally pass \'shell_cmd\' as an extra argument to print'
-    print 'quoted command line arguments.'
+    print('Usage: fieldtrial_util.py [config_path] [platform]')
+    print('Optionally pass \'shell_cmd\' as an extra argument to print')
+    print('quoted command line arguments.')
     exit(-1)
   print_shell_cmd = len(sys.argv) >= 4 and sys.argv[3] == 'shell_cmd'
 
   supported_platforms = ['android', 'android_webview', 'chromeos', 'ios',
                          'linux', 'mac', 'windows']
   if sys.argv[2] not in supported_platforms:
-    print ('\'%s\' is an unknown platform. Supported platforms: %s' %
-        (sys.argv[2], supported_platforms))
+    print('\'%s\' is an unknown platform. Supported platforms: %s' %
+          (sys.argv[2], supported_platforms))
     exit(-1)
 
   generated_args = GenerateArgs(sys.argv[1], [sys.argv[2]])
   if print_shell_cmd:
-    print " ".join(map((lambda arg: '"{0}"'.format(arg)), generated_args))
+    print(" ".join(map((lambda arg: '"{0}"'.format(arg)), generated_args)))
   else:
-    print generated_args
+    print(generated_args)
+
 
 if __name__ == '__main__':
   main()

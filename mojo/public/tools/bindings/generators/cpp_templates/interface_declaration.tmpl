@@ -9,6 +9,9 @@ class {{interface.name}}RequestValidator;
 class {{interface.name}}ResponseValidator;
 {%- endif %}
 
+{%- set interface_prefix = "%s.%s"|format(module_prefix, interface.name) %}
+
+{{ kythe_annotation(interface_prefix) }}
 class {{export_attribute}} {{interface.name}}
     : public {{interface.name}}InterfaceBase {
  public:
@@ -17,6 +20,7 @@ class {{export_attribute}} {{interface.name}}
   static constexpr bool PassesAssociatedKinds_ = {% if interface|passes_associated_kinds %}true{% else %}false{% endif %};
   static constexpr bool HasSyncMethods_ = {% if interface|has_sync_methods %}true{% else %}false{% endif %};
 
+  using Base_ = {{interface.name}}InterfaceBase;
   using Proxy_ = {{interface.name}}Proxy;
 
   template <typename ImplRefTraits>
@@ -38,11 +42,13 @@ class {{export_attribute}} {{interface.name}}
 
 {#--- Enums #}
 {%- for enum in interface.enums %}
+  {{ kythe_annotation(enum|get_full_mojom_name_for_kind()) }}
   using {{enum.name}} = {{enum|get_name_for_kind(flatten_nested_kind=True)}};
 {%- endfor %}
 
 {#--- Constants #}
 {%- for constant in interface.constants %}
+  {{ kythe_annotation("%s.%s"|format(interface_prefix, constant.name)) }}
   static {{constant|format_constant_declaration(nested=True)}};
 {%- endfor %}
 
@@ -54,11 +60,13 @@ class {{export_attribute}} {{interface.name}}
 {%-     if method.sync %}
   // Sync method. This signature is used by the client side; the service side
   // should implement the signature with callback below.
+  {{ kythe_annotation("%s.%s"|format(interface_prefix, method.name)) }}
   virtual bool {{method.name}}({{interface_macros.declare_sync_method_params("", method)}});
 {%-     endif %}
 
   using {{method.name}}Callback = {{interface_macros.declare_callback(method, for_blink)}};
 {%-   endif %}
+  {{ kythe_annotation("%s.%s"|format(interface_prefix, method.name)) }}
   virtual void {{method.name}}({{interface_macros.declare_request_params("", method)}}) = 0;
 {%- endfor %}
 };

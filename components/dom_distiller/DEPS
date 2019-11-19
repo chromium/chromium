@@ -1,16 +1,13 @@
 include_rules = [
-  "+components/data_use_measurement/core",
   "+components/grit/components_resources.h",
   "+components/leveldb_proto",
   "+components/pref_registry",
   "+components/prefs",
   "+components/strings/grit/components_strings.h",
-  "+components/sync/model",
-  "+components/sync/protocol",
   "+components/sync_preferences",
   "+components/variations",
+  "+crypto", # For sha256
   "+google", # For third_party/protobuf.
-  "+jni",
   "+third_party/dom_distiller_js",
   "+third_party/re2",
   "+net/base",

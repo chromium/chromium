@@ -14,16 +14,17 @@
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
+#include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/common/persistent_notification_status.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
-#include "third_party/blink/public/platform/modules/permissions/permission_status.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -80,12 +81,12 @@ class PersistentNotificationHandlerTest : public ::testing::Test {
                 base::BindRepeating(
                     &MockNotificationMetricsLogger::FactoryForTests)));
 
-    PlatformNotificationServiceImpl::GetInstance()
+    PlatformNotificationServiceFactory::GetForProfile(&profile_)
         ->ClearClosedNotificationsForTesting();
   }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfileWithPermissionManager profile_;
   NotificationDisplayServiceTester display_service_tester_;
 
@@ -121,10 +122,9 @@ TEST_F(PersistentNotificationHandlerTest,
 
     EXPECT_CALL(*mock_logger_, LogPersistentNotificationShown());
 
-    PlatformNotificationServiceImpl::GetInstance()
+    PlatformNotificationServiceFactory::GetForProfile(&profile_)
         ->DisplayPersistentNotification(
-            &profile_, kExampleNotificationId,
-            origin_ /* service_worker_scope */, origin_,
+            kExampleNotificationId, origin_ /* service_worker_scope */, origin_,
             blink::PlatformNotificationData(), blink::NotificationResources());
 
     run_loop.Run();

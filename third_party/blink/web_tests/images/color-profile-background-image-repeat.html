@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html>
-<script src="../resources/run-after-layout-and-paint.js"></script>
-
 <style>
   div {
     background-image: url("resources/red-at-12-oclock-with-color-profile.jpg");
@@ -22,16 +20,4 @@
   <!-- Same for the <div> background image: should be at 12 o'clock. -->
   <div></div>
 </body>
-
-<script>
-window.onload = function() {
-  if (window.testRunner)
-    runAfterLayoutAndPaint(function() { testRunner.notifyDone() });
-};
-
-if (window.testRunner) {
-  testRunner.dumpAsTextWithPixelResults();
-  testRunner.waitUntilDone();
-}
-</script>
 </html>

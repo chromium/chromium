@@ -1,3 +1,9 @@
 include_rules = [
-    "+device",
+  "+device",
 ]
+
+specific_include_rules = {
+  "authenticator_impl_unittest\.cc": [
+    "+components/autofill/content/browser/webauthn/internal_authenticator_impl.h"
+  ]
+}

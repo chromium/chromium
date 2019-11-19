@@ -23,7 +23,8 @@ namespace device {
 // request parameter for AuthenticatorMakeCredential.
 class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialParams {
  public:
-  struct CredentialInfo {
+  struct COMPONENT_EXPORT(DEVICE_FIDO) CredentialInfo {
+    bool operator==(const CredentialInfo& other) const;
     CredentialType type = CredentialType::kPublicKey;
     int algorithm = base::strict_cast<int>(CoseAlgorithmIdentifier::kCoseEs256);
   };
@@ -39,7 +40,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialParams {
   PublicKeyCredentialParams& operator=(PublicKeyCredentialParams&& other);
   ~PublicKeyCredentialParams();
 
-  cbor::Value ConvertToCBOR() const;
   const std::vector<CredentialInfo>& public_key_credential_params() const {
     return public_key_credential_params_;
   }
@@ -47,6 +47,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialParams {
  private:
   std::vector<CredentialInfo> public_key_credential_params_;
 };
+
+cbor::Value AsCBOR(const PublicKeyCredentialParams&);
 
 }  // namespace device
 

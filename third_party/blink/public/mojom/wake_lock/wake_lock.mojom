@@ -14,5 +14,5 @@ interface WakeLockService {
   GetWakeLock(device.mojom.WakeLockType type,
               device.mojom.WakeLockReason reason,
               string description,
-              device.mojom.WakeLock& wake_lock);
+              pending_receiver<device.mojom.WakeLock> wake_lock);
 };

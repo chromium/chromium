@@ -12,6 +12,7 @@
 #endif
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
@@ -30,36 +31,47 @@
 
 namespace {
 
-bool g_initialized = false;
-gfx::ImageSkia* g_default_favicon = nullptr;
+gfx::ImageSkia CreateDefaultFavicon() {
+  gfx::ImageSkia icon;
+#if defined(OS_WIN)
+  // The default window icon is the application icon, not the default favicon.
+  HICON app_icon = GetAppIcon();
+  icon = gfx::ImageSkia(gfx::ImageSkiaRep(
+      IconUtil::CreateSkBitmapFromHICON(app_icon, gfx::Size(16, 16)), 1.0f));
+  DestroyIcon(app_icon);
+#else
+  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  icon = *rb.GetImageSkiaNamed(IDR_PRODUCT_LOGO_16);
+#endif
+  return icon;
+}
+
+class DefaultFavicon {
+ public:
+  static const DefaultFavicon& GetInstance() {
+    static base::NoDestructor<DefaultFavicon> default_favicon;
+    return *default_favicon;
+  }
+
+  gfx::ImageSkia icon() const { return icon_; }
+
+ private:
+  friend class base::NoDestructor<DefaultFavicon>;
+
+  DefaultFavicon() : icon_(CreateDefaultFavicon()) {}
+
+  const gfx::ImageSkia icon_;
+
+  DISALLOW_COPY_AND_ASSIGN(DefaultFavicon);
+};
 
 }  // namespace
 
-// static
-void TabIconView::InitializeIfNeeded() {
-  if (!g_initialized) {
-    g_initialized = true;
-
-#if defined(OS_WIN)
-    // The default window icon is the application icon, not the default
-    // favicon.
-    HICON app_icon = GetAppIcon();
-    g_default_favicon = new gfx::ImageSkia(gfx::ImageSkiaRep(
-        IconUtil::CreateSkBitmapFromHICON(app_icon, gfx::Size(16, 16)), 1.0f));
-    DestroyIcon(app_icon);
-#else
-    ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-    g_default_favicon = rb.GetImageSkiaNamed(IDR_PRODUCT_LOGO_16);
-#endif
-  }
-}
-
 TabIconView::TabIconView(TabIconViewModel* model,
-                         views::MenuButtonListener* listener)
+                         views::ButtonListener* listener)
     : views::MenuButton(base::string16(), listener),
       model_(model),
       is_light_(false) {
-  InitializeIfNeeded();
   // Inheriting from Button causes this View to be focusable, but it us
   // purely decorative and should not be exposed as focusable in accessibility.
   SetFocusBehavior(FocusBehavior::NEVER);
@@ -138,5 +150,5 @@ void TabIconView::PaintButtonContents(gfx::Canvas* canvas) {
   }
 
   if (!rendered)
-    PaintFavicon(canvas, *g_default_favicon);
+    PaintFavicon(canvas, DefaultFavicon::GetInstance().icon());
 }

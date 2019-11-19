@@ -4,9 +4,12 @@
 
 #include "content/browser/media/webaudio/audio_context_manager_impl.h"
 
+#include <vector>
+
 #include "base/test/simple_test_tick_clock.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/test_renderer_host.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace content {
@@ -20,9 +23,9 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
 
     clock_.SetNowTicks(base::TimeTicks::Now());
 
-    blink::mojom::AudioContextManagerPtr service_ptr;
+    mojo::Remote<blink::mojom::AudioContextManager> service_remote;
     audio_context_manager_ = new AudioContextManagerImpl(
-        main_rfh(), mojo::MakeRequest(&service_ptr));
+        main_rfh(), service_remote.BindNewPipeAndPassReceiver());
     audio_context_manager_->set_clock_for_testing(&clock_);
   }
 

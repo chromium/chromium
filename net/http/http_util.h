@@ -21,6 +21,7 @@
 #include "net/http/http_byte_range.h"
 #include "net/http/http_version.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 // This is a macro to support extending this string literal at compile time.
 // Please excuse me polluting your global namespace!
@@ -87,31 +88,29 @@ class NET_EXPORT HttpUtil {
 
   // Returns true if the request method is "safe" (per section 4.2.1 of
   // RFC 7231).
-  static bool IsMethodSafe(const std::string& method);
+  static bool IsMethodSafe(base::StringPiece method);
 
   // Returns true if the request method is idempotent (per section 4.2.2 of
   // RFC 7231).
-  static bool IsMethodIdempotent(const std::string& method);
+  static bool IsMethodIdempotent(base::StringPiece method);
 
   // Returns true if it is safe to allow users and scripts to specify the header
-  // named |name|.
-  static bool IsSafeHeader(const std::string& name);
+  // named |name|. Returns true for headers not in the list at
+  // https://fetch.spec.whatwg.org/#forbidden-header-name. Does not check header
+  // validity.
+  static bool IsSafeHeader(base::StringPiece name);
 
   // Returns true if |name| is a valid HTTP header name.
-  static bool IsValidHeaderName(const base::StringPiece& name);
+  static bool IsValidHeaderName(base::StringPiece name);
 
   // Returns false if |value| contains NUL or CRLF. This method does not perform
   // a fully RFC-2616-compliant header value validation.
-  static bool IsValidHeaderValue(const base::StringPiece& value);
+  static bool IsValidHeaderValue(base::StringPiece value);
 
   // Multiple occurances of some headers cannot be coalesced into a comma-
   // separated list since their values are (or contain) unquoted HTTP-date
   // values, which may contain a comma (see RFC 2616 section 3.3.1).
-  static bool IsNonCoalescingHeader(std::string::const_iterator name_begin,
-                                    std::string::const_iterator name_end);
-  static bool IsNonCoalescingHeader(const std::string& name) {
-    return IsNonCoalescingHeader(name.begin(), name.end());
-  }
+  static bool IsNonCoalescingHeader(base::StringPiece name);
 
   // Return true if the character is HTTP "linear white space" (SP | HT).
   // This definition corresponds with the HTTP_LWS macro, and does not match
@@ -126,40 +125,27 @@ class NET_EXPORT HttpUtil {
   // Whether the character is a valid |tchar| as defined in RFC 7230 Sec 3.2.6.
   static bool IsTokenChar(char c);
   // Whether the string is a valid |token| as defined in RFC 7230 Sec 3.2.6.
-  static bool IsToken(const base::StringPiece& str);
+  static bool IsToken(base::StringPiece str);
 
   // Whether the string is a valid |parmname| as defined in RFC 5987 Sec 3.2.1.
-  static bool IsParmName(std::string::const_iterator begin,
-                         std::string::const_iterator end);
-  static bool IsParmName(const std::string& str) {
-    return IsParmName(str.begin(), str.end());
-  }
+  static bool IsParmName(base::StringPiece str);
 
   // RFC 2616 Sec 2.2:
   // quoted-string = ( <"> *(qdtext | quoted-pair ) <"> )
   // Unquote() strips the surrounding quotemarks off a string, and unescapes
   // any quoted-pair to obtain the value contained by the quoted-string.
   // If the input is not quoted, then it works like the identity function.
-  static std::string Unquote(std::string::const_iterator begin,
-                             std::string::const_iterator end);
-
-  // Same as above.
-  static std::string Unquote(const std::string& str);
+  static std::string Unquote(base::StringPiece str);
 
   // Similar to Unquote(), but additionally validates that the string being
   // unescaped actually is a valid quoted string. Returns false for an empty
   // string, a string without quotes, a string with mismatched quotes, and
   // a string with unescaped embeded quotes.
-  static bool StrictUnquote(std::string::const_iterator begin,
-                            std::string::const_iterator end,
-                            std::string* out) WARN_UNUSED_RESULT;
-
-  // Same as above.
-  static bool StrictUnquote(const std::string& str,
+  static bool StrictUnquote(base::StringPiece str,
                             std::string* out) WARN_UNUSED_RESULT;
 
   // The reverse of Unquote() -- escapes and surrounds with "
-  static std::string Quote(const std::string& str);
+  static std::string Quote(base::StringPiece str);
 
   // Returns the start of the status line, or std::string::npos if no status
   // line was found. This allows for 4 bytes of junk to precede the status line
@@ -188,15 +174,14 @@ class NET_EXPORT HttpUtil {
   // Assemble "raw headers" in the format required by HttpResponseHeaders.
   // This involves normalizing line terminators, converting [CR]LF to \0 and
   // handling HTTP line continuations (i.e., lines starting with LWS are
-  // continuations of the previous line).  |buf_len| indicates the position of
-  // the end-of-headers marker as defined by LocateEndOfHeaders.
-  // If a \0 appears within the headers themselves, it will be stripped. This
-  // is a workaround to avoid later code from incorrectly interpreting it as
-  // a line terminator.
+  // continuations of the previous line). |buf| should end at the
+  // end-of-headers marker as defined by LocateEndOfHeaders. If a \0 appears
+  // within the headers themselves, it will be stripped. This is a workaround to
+  // avoid later code from incorrectly interpreting it as a line terminator.
   //
   // TODO(crbug.com/671799): Should remove or internalize this to
   //                         HttpResponseHeaders.
-  static std::string AssembleRawHeaders(const char* buf, size_t buf_len);
+  static std::string AssembleRawHeaders(base::StringPiece buf);
 
   // Converts assembled "raw headers" back to the HTTP response format. That is
   // convert each \0 occurence to CRLF. This is used by DevTools.
@@ -215,9 +200,9 @@ class NET_EXPORT HttpUtil {
   // Given a comma separated ordered list of language codes, return
   // the list with a qvalue appended to each language.
   // The way qvalues are assigned is rather simple. The qvalue
-  // starts with 1.0 and is decremented by 0.2 for each successive entry
-  // in the list until it reaches 0.2. All the entries after that are
-  // assigned the same qvalue of 0.2. Also, note that the 1st language
+  // starts with 1.0 and is decremented by 0.1 for each successive entry
+  // in the list until it reaches 0.1. All the entries after that are
+  // assigned the same qvalue of 0.1. Also, note that the 1st language
   // will not have a qvalue added because the absence of a qvalue implicitly
   // means q=1.0.
   //
@@ -306,6 +291,9 @@ class NET_EXPORT HttpUtil {
     std::string name() const {
       return std::string(name_begin_, name_end_);
     }
+    base::StringPiece name_piece() const {
+      return base::StringPiece(name_begin_, name_end_);
+    }
 
     std::string::const_iterator values_begin() const {
       return values_begin_;
@@ -315,6 +303,9 @@ class NET_EXPORT HttpUtil {
     }
     std::string values() const {
       return std::string(values_begin_, values_end_);
+    }
+    base::StringPiece values_piece() const {
+      return base::StringPiece(values_begin_, values_end_);
     }
 
    private:
@@ -356,6 +347,9 @@ class NET_EXPORT HttpUtil {
     }
     std::string value() const {
       return std::string(value_begin_, value_end_);
+    }
+    base::StringPiece value_piece() const {
+      return base::StringPiece(value_begin_, value_end_);
     }
 
    private:
@@ -414,6 +408,9 @@ class NET_EXPORT HttpUtil {
     std::string::const_iterator name_begin() const { return name_begin_; }
     std::string::const_iterator name_end() const { return name_end_; }
     std::string name() const { return std::string(name_begin_, name_end_); }
+    base::StringPiece name_piece() const {
+      return base::StringPiece(name_begin_, name_end_);
+    }
 
     // The value of the current name-value pair.
     std::string::const_iterator value_begin() const {
@@ -425,6 +422,10 @@ class NET_EXPORT HttpUtil {
     std::string value() const {
       return value_is_quoted_ ? unquoted_value_ : std::string(value_begin_,
                                                               value_end_);
+    }
+    base::StringPiece value_piece() const {
+      return value_is_quoted_ ? unquoted_value_
+                              : base::StringPiece(value_begin_, value_end_);
     }
 
     bool value_is_quoted() const { return value_is_quoted_; }

@@ -17,6 +17,7 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -31,6 +32,11 @@
 #include "device/bluetooth/dbus/bluetooth_input_client.h"
 #include "device/bluetooth/dbus/bluetooth_profile_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_profile_service_provider.h"
+
+#if defined(OS_CHROMEOS)
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/data_decoder/public/mojom/ble_scan_parser.mojom.h"
+#endif  // defined(OS_CHROMEOS)
 
 namespace base {
 class TimeDelta;
@@ -68,7 +74,7 @@ class BluetoothPairingBlueZ;
 //
 // When adding methods to this class verify shutdown behavior in
 // BluetoothBlueZTest, Shutdown.
-class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ
+class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
     : public device::BluetoothAdapter,
       public bluez::BluetoothAdapterClient::Observer,
       public bluez::BluetoothDeviceClient::Observer,
@@ -83,6 +89,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ
   using ServiceRecordCallback = base::Callback<void(uint32_t)>;
   using ServiceRecordErrorCallback =
       base::Callback<void(BluetoothServiceRecordBlueZ::ErrorCode)>;
+
+#if defined(OS_CHROMEOS)
+  using ScanRecordPtr = data_decoder::mojom::ScanRecordPtr;
+  using ScanRecordCallback = base::OnceCallback<void(ScanRecordPtr)>;
+#endif  // defined(OS_CHROMEOS)
 
   // Calls |init_callback| after a BluetoothAdapter is fully initialized.
   static base::WeakPtr<BluetoothAdapter> CreateAdapter(
@@ -174,6 +185,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ
                                          int16_t rssi,
                                          const std::vector<uint8_t>& eir);
 
+#if defined(OS_CHROMEOS)
+  // Announce to observers advertisement received from |device|.
+  void OnAdvertisementReceived(std::string device_address,
+                               std::string device_name,
+                               uint8_t rssi,
+                               uint16_t device_appearance,
+                               ScanRecordPtr scan_record);
+#endif  // defined(OS_CHROMEOS)
+
   // Announce to observers that |device| has changed its connected state.
   void NotifyDeviceConnectedStateChanged(BluetoothDeviceBlueZ* device,
                                          bool is_now_connected);
@@ -237,21 +257,20 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ
       device::BluetoothDevice::PairingDelegate* pairing_delegate) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(BluetoothBlueZTest, Shutdown);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothBlueZTest, Shutdown_OnStartDiscovery);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothBlueZTest, Shutdown_OnStartDiscoveryError);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothBlueZTest, Shutdown_OnStopDiscovery);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothBlueZTest, Shutdown_OnStopDiscoveryError);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothBlueZTest,
+                           StartDiscovery_DiscoveringStopped_StartAgain);
   friend class BluetoothBlueZTest;
-  friend class BluetoothBlueZTest_Shutdown_Test;
-  friend class BluetoothBlueZTest_Shutdown_OnStartDiscovery_Test;
-  friend class BluetoothBlueZTest_Shutdown_OnStartDiscoveryError_Test;
-  friend class BluetoothBlueZTest_Shutdown_OnStopDiscovery_Test;
-  friend class BluetoothBlueZTest_Shutdown_OnStopDiscoveryError_Test;
   friend class device::BluetoothTestBlueZ;
 
   // typedef for callback parameters that are passed to AddDiscoverySession
   // and RemoveDiscoverySession. This is used to queue incoming requests while
   // a call to BlueZ is pending.
-  using DiscoveryParamTuple = std::tuple<device::BluetoothDiscoveryFilter*,
-                                         base::Closure,
-                                         DiscoverySessionErrorCallback>;
-  using DiscoveryCallbackQueue = base::queue<DiscoveryParamTuple>;
+  using DiscoveryCallbackQueue = base::queue<DiscoverySessionResultCallback>;
 
   // Callback pair for the profile registration queue.
   using RegisterProfileCompletionPair =
@@ -287,22 +306,22 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ
   // bluez::BluetoothAgentServiceProvider::Delegate override.
   void Released() override;
   void RequestPinCode(const dbus::ObjectPath& device_path,
-                      const PinCodeCallback& callback) override;
+                      PinCodeCallback callback) override;
   void DisplayPinCode(const dbus::ObjectPath& device_path,
                       const std::string& pincode) override;
   void RequestPasskey(const dbus::ObjectPath& device_path,
-                      const PasskeyCallback& callback) override;
+                      PasskeyCallback callback) override;
   void DisplayPasskey(const dbus::ObjectPath& device_path,
                       uint32_t passkey,
                       uint16_t entered) override;
   void RequestConfirmation(const dbus::ObjectPath& device_path,
                            uint32_t passkey,
-                           const ConfirmationCallback& callback) override;
+                           ConfirmationCallback callback) override;
   void RequestAuthorization(const dbus::ObjectPath& device_path,
-                            const ConfirmationCallback& callback) override;
+                            ConfirmationCallback callback) override;
   void AuthorizeService(const dbus::ObjectPath& device_path,
                         const std::string& uuid,
-                        const ConfirmationCallback& callback) override;
+                        ConfirmationCallback callback) override;
   void Cancel() override;
 
   // Called by dbus:: on completion of the D-Bus method call to register the
@@ -353,19 +372,19 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ
                                  bool success);
 
   // BluetoothAdapter:
+  base::WeakPtr<BluetoothAdapter> GetWeakPtr() override;
   bool SetPoweredImpl(bool powered) override;
-  void AddDiscoverySession(
-      device::BluetoothDiscoveryFilter* discovery_filter,
-      const base::Closure& callback,
-      DiscoverySessionErrorCallback error_callback) override;
-  void RemoveDiscoverySession(
-      device::BluetoothDiscoveryFilter* discovery_filter,
-      const base::Closure& callback,
-      DiscoverySessionErrorCallback error_callback) override;
+  void StartScanWithFilter(
+      std::unique_ptr<device::BluetoothDiscoveryFilter> discovery_filter,
+      DiscoverySessionResultCallback callback) override;
+  void UpdateFilter(
+      std::unique_ptr<device::BluetoothDiscoveryFilter> discovery_filter,
+      DiscoverySessionResultCallback callback) override;
+  void StopScan(DiscoverySessionResultCallback callback) override;
   void SetDiscoveryFilter(
       std::unique_ptr<device::BluetoothDiscoveryFilter> discovery_filter,
       const base::Closure& callback,
-      DiscoverySessionErrorCallback error_callback) override;
+      DiscoverySessionErrorCallback error_callback);
 
   // Called by dbus:: on completion of the D-Bus method call to start discovery.
   void OnStartDiscovery(const base::Closure& callback,
@@ -412,12 +431,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ
   // remain.
   void RemoveProfile(const device::BluetoothUUID& uuid);
 
-  // Processes the queued discovery requests. For each DiscoveryParamTuple in
-  // the queue, this method will try to add a new discovery session. This method
-  // is called whenever a pending D-Bus call to start or stop discovery has
-  // ended (with either success or failure).
-  void ProcessQueuedDiscoveryRequests();
-
   // Make the call to GattManager1 to unregister then re-register the GATT
   // application. If the ignore_unregister_failure flag is set, we attempt to
   // register even if the initial unregister call fails.
@@ -448,22 +461,22 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ
       const std::string& error_name,
       const std::string& error_message);
 
+#if defined(OS_CHROMEOS)
+  // Inform DBus of the current list of long term keys.
+  void SetLongTermKeys();
+
+  // Called by dbus:: on an error while trying to set long term keys, see
+  // SetLongTermKeys().
+  void SetLongTermKeysError(const std::string& error_name,
+                            const std::string& error_message);
+#endif
+
   InitCallback init_callback_;
 
   bool initialized_;
 
   // Set in |Shutdown()|, makes IsPresent()| return false.
   bool dbus_is_shutdown_;
-
-  // Number of discovery sessions that have been added.
-  int num_discovery_sessions_;
-
-  // True, if there is a pending request to start or stop discovery.
-  bool discovery_request_pending_;
-
-  // If true that means the last pending stop discovery operation should assume
-  // that the discovery sessions have been deactivated even though it failed.
-  bool force_deactivate_discovery_;
 
   // List of queued requests to add new discovery sessions. While there is a
   // pending request to BlueZ to start or stop discovery, many requests from
@@ -497,8 +510,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ
   std::map<device::BluetoothUUID, std::vector<RegisterProfileCompletionPair>*>
       profile_queues_;
 
-  std::unique_ptr<device::BluetoothDiscoveryFilter> current_filter_;
-
   // List of GATT services that are owned by this adapter.
   std::map<dbus::ObjectPath, std::unique_ptr<BluetoothLocalGattServiceBlueZ>>
       owned_gatt_services_;
@@ -520,9 +531,20 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ
   // crbug.com/687396.
   std::vector<scoped_refptr<BluetoothAdvertisementBlueZ>> advertisements_;
 
+#if defined(OS_CHROMEOS)
+  // Timer used to schedule a second update to BlueZ's long term keys. This
+  // second update is necessary in a first-time install situation, where field
+  // trials might not yet have been available. By scheduling a second update
+  // sometime later, the field trials will be guaranteed to be present.
+  base::OneShotTimer set_long_term_keys_after_first_time_install_timer_;
+
+  // Pointer for parsing BLE advertising packets out of process.
+  mojo::Remote<data_decoder::mojom::BleScanParser> ble_scan_parser_;
+#endif
+
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<BluetoothAdapterBlueZ> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothAdapterBlueZ> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterBlueZ);
 };

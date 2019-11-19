@@ -16,7 +16,8 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "media/gpu/image_processor.h"
+#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
+#include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/test/video_frame_helpers.h"
 
 namespace base {
@@ -110,6 +111,8 @@ class ImageProcessorClient {
   scoped_refptr<VideoFrame> CreateOutputFrame(const Image& output_image) const;
 
   std::unique_ptr<ImageProcessor> image_processor_;
+
+  std::unique_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 
   // VideoFrameProcessors that will process the video frames produced by
   // |image_processor_|.

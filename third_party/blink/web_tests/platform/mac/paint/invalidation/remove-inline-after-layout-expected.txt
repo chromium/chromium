@@ -1,51 +1,30 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "InlineTextBox 'This span should disappear.\n'",
-          "rect": [112, 194, 181, 18],
+          "object": "NGPhysicalTextFragment 'This span should disappear. '",
+          "rect": [111, 194, 182, 18],
           "reason": "disappeared"
         },
         {
-          "object": "LayoutBlockFlow DIV",
+          "object": "LayoutNGBlockFlow DIV",
           "rect": [292, 108, 101, 100],
           "reason": "geometry"
         },
         {
-          "object": "LayoutBlockFlow DIV",
-          "rect": [112, 108, 100, 100],
+          "object": "LayoutNGBlockFlow DIV",
+          "rect": [111, 108, 101, 100],
           "reason": "geometry"
         },
         {
-          "object": "LayoutBlockFlow DIV",
-          "rect": [8, 108, 100, 100],
+          "object": "NGPhysicalTextFragment ' '",
+          "rect": [108, 194, 4, 18],
           "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox '\n'",
-          "rect": [108, 194, 4, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '\n'",
-          "rect": [108, 194, 4, 18],
-          "reason": "disappeared"
         }
       ]
     }

@@ -15,25 +15,24 @@
 
 namespace ash {
 
-class AppListButton;
-class AssistantIconBackground;
-class AssistantIcon;
+class HomeButton;
 
 class ASH_EXPORT AssistantOverlay : public views::View {
  public:
-  explicit AssistantOverlay(AppListButton* host_view);
+  explicit AssistantOverlay(HomeButton* host_view);
   ~AssistantOverlay() override;
 
   void StartAnimation(bool show_icon);
   void EndAnimation();
   void BurstAnimation();
-  void WaitingAnimation();
   void HideAnimation();
   bool IsBursting() const {
     return AnimationState::BURSTING == animation_state_;
   }
-  bool IsWaiting() const { return AnimationState::WAITING == animation_state_; }
   bool IsHidden() const { return AnimationState::HIDDEN == animation_state_; }
+
+  // views::View:
+  const char* GetClassName() const override;
 
  private:
   enum class AnimationState {
@@ -43,16 +42,12 @@ class ASH_EXPORT AssistantOverlay : public views::View {
     STARTING,
     // Indicates the current animation is in the bursting phase, which means no
     // turning back.
-    BURSTING,
-    // Indicates currently playing the waiting animation.
-    WAITING
+    BURSTING
   };
 
   std::unique_ptr<ui::Layer> ripple_layer_;
-  std::unique_ptr<AssistantIcon> icon_layer_;
-  std::unique_ptr<AssistantIconBackground> background_layer_;
 
-  AppListButton* host_view_;
+  HomeButton* host_view_;
 
   AnimationState animation_state_ = AnimationState::HIDDEN;
 

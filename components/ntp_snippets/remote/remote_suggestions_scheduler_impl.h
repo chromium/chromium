@@ -15,7 +15,6 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/content_suggestions_provider.h"
-#include "components/ntp_snippets/logger.h"
 #include "components/ntp_snippets/remote/persistent_scheduler.h"
 #include "components/ntp_snippets/remote/remote_suggestions_scheduler.h"
 #include "components/ntp_snippets/remote/request_throttler.h"
@@ -41,8 +40,7 @@ class RemoteSuggestionsSchedulerImpl : public RemoteSuggestionsScheduler {
                                  const UserClassifier* user_classifier,
                                  PrefService* profile_prefs,
                                  PrefService* local_state_prefs,
-                                 base::Clock* clock,
-                                 Logger* debug_logger);
+                                 base::Clock* clock);
 
   ~RemoteSuggestionsSchedulerImpl() override;
 
@@ -174,9 +172,6 @@ class RemoteSuggestionsSchedulerImpl : public RemoteSuggestionsScheduler {
   std::set<TriggerType> queued_triggers_;
 
   base::Time background_fetches_allowed_after_;
-
-  // Additional logging, accesible through snippets-internals.
-  Logger* debug_logger_;
 
   DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsSchedulerImpl);
 };

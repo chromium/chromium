@@ -7,24 +7,40 @@
  */
 cr.define('usb_internals', function() {
   class UsbInternals {
-    constructor() {
+    constructor() {}
+
+    async initializeViews() {
+      // window.setupFn() provides a hook for the test suite to perform setup
+      // actions after the page is loaded but before any script is run.
+      await window.setupFn();
+
+      const pageHandler = mojom.UsbInternalsPageHandler.getRemote();
+
       // Connection to the UsbInternalsPageHandler instance running in the
       // browser process.
-      this.usbManagerTest = null;
+      /** @type {device.mojom.UsbDeviceManagerRemote} */
+      const usbManager = new device.mojom.UsbDeviceManagerRemote;
+      await pageHandler.bindUsbDeviceManagerInterface(
+          usbManager.$.bindNewPipeAndPassReceiver());
 
-      const pageHandler = mojom.UsbInternalsPageHandler.getProxy();
-      this.usbManagerTest = new device.mojom.UsbDeviceManagerTestProxy;
-      pageHandler.bindTestInterface(this.usbManagerTest.$.createRequest());
+      /** @private {devices_page.DevicesPage} */
+      this.devicesPage_ = new devices_page.DevicesPage(usbManager);
 
-      cr.ui.decorate('tabbox', cr.ui.TabBox);
+      /** @private {device.mojom.UsbDeviceManagerTestRemote} */
+      this.usbManagerTest_ = new device.mojom.UsbDeviceManagerTestRemote;
+      await pageHandler.bindTestInterface(
+          this.usbManagerTest_.$.bindNewPipeAndPassReceiver());
+
       $('add-test-device-form').addEventListener('submit', (event) => {
         this.addTestDevice(event);
       });
-      this.refreshDeviceList();
+      this.refreshTestDeviceList();
+
+      cr.ui.decorate('tabbox', cr.ui.TabBox);
     }
 
-    async refreshDeviceList() {
-      const response = await this.usbManagerTest.getTestDevices();
+    async refreshTestDeviceList() {
+      const response = await this.usbManagerTest_.getTestDevices();
 
       const tableBody = $('test-device-list');
       tableBody.innerHTML = '';
@@ -41,8 +57,8 @@ cr.define('usb_internals', function() {
 
         const removeButton = clone.querySelector('button');
         removeButton.addEventListener('click', async () => {
-          await this.usbManagerTest.removeDeviceForTesting(device.guid);
-          this.refreshDeviceList();
+          await this.usbManagerTest_.removeDeviceForTesting(device.guid);
+          this.refreshTestDeviceList();
         });
 
         tableBody.appendChild(clone);
@@ -52,11 +68,11 @@ cr.define('usb_internals', function() {
     async addTestDevice(event) {
       event.preventDefault();
 
-      const response = await this.usbManagerTest.addDeviceForTesting(
+      const response = await this.usbManagerTest_.addDeviceForTesting(
           $('test-device-name').value, $('test-device-serial').value,
           $('test-device-landing-page').value);
       if (response.success) {
-        this.refreshDeviceList();
+        this.refreshTestDeviceList();
       }
 
       $('add-test-device-result').textContent = response.message;
@@ -70,6 +86,11 @@ cr.define('usb_internals', function() {
   };
 });
 
+window.setupFn = window.setupFn || function() {
+  return Promise.resolve();
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-  new usb_internals.UsbInternals();
+  const usbInternalsPage = new usb_internals.UsbInternals();
+  usbInternalsPage.initializeViews();
 });

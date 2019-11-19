@@ -5,7 +5,7 @@
 #ifndef STORAGE_BROWSER_TEST_TEST_FILE_SYSTEM_OPTIONS_H_
 #define STORAGE_BROWSER_TEST_TEST_FILE_SYSTEM_OPTIONS_H_
 
-#include "storage/browser/fileapi/file_system_options.h"
+#include "storage/browser/file_system/file_system_options.h"
 
 namespace content {
 

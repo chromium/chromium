@@ -442,6 +442,7 @@ bool VideoCaptureDeviceMac::Init(VideoCaptureApi capture_api_type) {
 void VideoCaptureDeviceMac::ReceiveFrame(const uint8_t* video_frame,
                                          int video_frame_length,
                                          const VideoCaptureFormat& frame_format,
+                                         const gfx::ColorSpace color_space,
                                          int aspect_numerator,
                                          int aspect_denominator,
                                          base::TimeDelta timestamp) {
@@ -454,7 +455,9 @@ void VideoCaptureDeviceMac::ReceiveFrame(const uint8_t* video_frame,
   }
 
   client_->OnIncomingCapturedData(video_frame, video_frame_length, frame_format,
-                                  0, base::TimeTicks::Now(), timestamp);
+                                  color_space, 0 /* clockwise_rotation */,
+                                  false /* flip_y */, base::TimeTicks::Now(),
+                                  timestamp);
 }
 
 void VideoCaptureDeviceMac::OnPhotoTaken(const uint8_t* image_data,

@@ -11,7 +11,7 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
     EXTERNAL_API: [
       'setMetricsMode', 'setBackupAndRestoreMode', 'setLocationServicesMode',
       'loadPlayStoreToS', 'setArcManaged', 'hideSkipButton', 'setupForDemoMode',
-      'clearDemoMode', 'setTosForTesting'
+      'clearDemoMode', 'setTosForTesting', 'setTosHostNameForTesting'
     ],
 
     /** @override */
@@ -19,7 +19,12 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
       this.countryCode_ = null;
       this.language_ = null;
       this.pageReady_ = false;
+
+      /* The hostname of the url where the terms of service will be fetched.
+       * Overwritten by tests to load terms of service from local test server.*/
+      this.termsOfServiceHostName_ = 'https://play.google.com';
     },
+
 
     /**
      * Returns current language that can be updated in OOBE flow. If OOBE flow
@@ -28,11 +33,14 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
      * @private
      */
     getCurrentLanguage_: function() {
-      var languageList = loadTimeData.getValue('languageList');
-      if (languageList) {
-        var language = getSelectedValue(languageList);
-        if (language) {
-          return language;
+      const LANGUAGE_LIST_ID = 'languageList';
+      if (loadTimeData.valueExists(LANGUAGE_LIST_ID)) {
+        var languageList = loadTimeData.getValue(LANGUAGE_LIST_ID);
+        if (languageList) {
+          var language = getSelectedValue(languageList);
+          if (language) {
+            return language;
+          }
         }
       }
       return navigator.language;
@@ -73,7 +81,7 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
 
       termsView.addContentScripts([{
         name: 'postProcess',
-        matches: ['https://play.google.com/*'],
+        matches: [this.getTermsOfServiceHostNameForMatchPattern_() + '/*'],
         css: {files: ['playstore.css']},
         js: {files: ['playstore.js']},
         run_at: 'document_end'
@@ -148,9 +156,6 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
       metrics.querySelector('#learn-more-link-metrics').onclick = function() {
         self.showLearnMoreOverlay(leanMoreStatisticsText);
       };
-      // For device owner set up, this may come after the page is loaded.
-      // Recaculate the ToS webview height.
-      this.updateTermViewHight_();
     },
 
     /**
@@ -223,10 +228,11 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
       scriptSetParameters += 'document.viewMode = \'large-view\';';
 
       var termsView = this.getElement_('arc-tos-view');
+
       termsView.removeContentScripts(['preProcess']);
       termsView.addContentScripts([{
         name: 'preProcess',
-        matches: ['https://play.google.com/*'],
+        matches: [this.getTermsOfServiceHostNameForMatchPattern_() + '/*'],
         js: {code: scriptSetParameters},
         run_at: 'document_start'
       }]);
@@ -258,6 +264,26 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
     },
 
     /**
+     * Sets Play Store hostname url used to fetch terms of service for testing.
+     * @param {string} hostname hostname used to fetch terms of service.
+     */
+    setTosHostNameForTesting: function(hostname) {
+      this.termsOfServiceHostName_ = hostname;
+
+      // Enable loading content script 'playstore.js' when fetching ToS from
+      // the test server.
+      var termsView = this.getElement_('arc-tos-view');
+      termsView.removeContentScripts(['postProcess']);
+      termsView.addContentScripts([{
+        name: 'postProcess',
+        matches: [this.getTermsOfServiceHostNameForMatchPattern_() + '/*'],
+        css: {files: ['playstore.css']},
+        js: {files: ['playstore.js']},
+        run_at: 'document_end'
+      }]);
+    },
+
+    /**
      * Sets if Arc is managed. ToS webview should not be visible if Arc is
      * manged.
      * @param {boolean} managed Defines whether this setting is set by policy.
@@ -265,50 +291,6 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
     setArcManaged: function(managed) {
       var visibility = managed ? 'hidden' : 'visible';
       this.getElement_('arc-tos-view-container').style.visibility = visibility;
-    },
-
-    /**
-     * Buttons in Oobe wizard's button strip.
-     * @type {array} Array of Buttons.
-     */
-    get buttons() {
-      var buttons = [];
-
-      var skipButton = this.ownerDocument.createElement('button');
-      skipButton.id = 'arc-tos-skip-button';
-      skipButton.disabled = this.classList.contains('arc-tos-loading');
-      skipButton.classList.add('preserve-disabled-state');
-      skipButton.textContent =
-          loadTimeData.getString('arcTermsOfServiceSkipButton');
-      skipButton.addEventListener('click', this.onSkip.bind(this));
-      buttons.push(skipButton);
-
-      var retryButton = this.ownerDocument.createElement('button');
-      retryButton.id = 'arc-tos-retry-button';
-      retryButton.textContent =
-          loadTimeData.getString('arcTermsOfServiceRetryButton');
-      retryButton.addEventListener('click', this.reloadPlayStoreToS.bind(this));
-      buttons.push(retryButton);
-
-      var nextButton = this.ownerDocument.createElement('button');
-      nextButton.id = 'arc-tos-next-button';
-      nextButton.disabled = this.classList.contains('arc-tos-loading');
-      nextButton.classList.add('preserve-disabled-state');
-      nextButton.textContent =
-          loadTimeData.getString('arcTermsOfServiceNextButton');
-      nextButton.addEventListener('click', this.onNext.bind(this));
-      buttons.push(nextButton);
-
-      var acceptButton = this.ownerDocument.createElement('button');
-      acceptButton.id = 'arc-tos-accept-button';
-      acceptButton.disabled = this.classList.contains('arc-tos-loading');
-      acceptButton.classList.add('preserve-disabled-state');
-      acceptButton.textContent =
-          loadTimeData.getString('arcTermsOfServiceAcceptButton');
-      acceptButton.addEventListener('click', this.onAccept.bind(this));
-      buttons.push(acceptButton);
-
-      return buttons;
     },
 
     /**
@@ -322,9 +304,7 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
       if (!isDemoModeSetup) {
         this.getElement_('arc-review-settings').hidden = false;
       }
-      this.getElement_('arc-tos-container').style.overflowY = 'auto';
-      this.getElement_('arc-tos-container').scrollTop =
-          this.getElement_('arc-tos-container').scrollHeight;
+      $('arc-tos-root').getElement('arc-tos-dialog').scrollToBottom();
       this.getElement_('arc-tos-next-button').hidden = true;
       this.getElement_('arc-tos-accept-button').hidden = false;
       this.getElement_('arc-tos-accept-button').focus();
@@ -429,7 +409,7 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
       this.termsError = false;
       this.usingOfflineTerms_ = false;
       var termsView = this.getElement_('arc-tos-view');
-      termsView.src = 'https://play.google.com/about/play-terms.html';
+      termsView.src = this.termsOfServiceHostName_ + '/about/play-terms.html';
       this.removeClass_('arc-tos-loaded');
       this.removeClass_('error');
       this.addClass_('arc-tos-loading');
@@ -482,6 +462,17 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
       return $('arc-tos-root')
           .getElement('arc-tos-dialog')
           .classList.contains(className);
+    },
+
+    /**
+     * Returns a match pattern compatible version of termsOfServiceHostName_ by
+     * stripping the port number part of the hostname. During tests
+     * termsOfServiceHostName_ will contain a port number part.
+     * @return {string}
+     * @private
+     */
+    getTermsOfServiceHostNameForMatchPattern_: function() {
+      return this.termsOfServiceHostName_.replace(/:[0-9]+/, '');
     },
 
     /**
@@ -538,31 +529,9 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
       this.getElement_('arc-pai-service').hidden = true;
       this.getElement_('arc-google-service-confirmation').hidden = true;
       this.getElement_('arc-review-settings').hidden = true;
-      this.getElement_('arc-tos-container').style.overflow = 'hidden';
       this.getElement_('arc-tos-accept-button').hidden = true;
       this.getElement_('arc-tos-next-button').hidden = false;
       this.getElement_('arc-tos-next-button').focus();
-
-      this.updateTermViewHight_();
-    },
-
-    /**
-     * Updates ToS webview height.
-     *
-     * @private
-     */
-    updateTermViewHight_() {
-      var termsView = this.getElement_('arc-tos-view');
-      var termsViewContainer = this.getElement_('arc-tos-view-container');
-      var setTermsHeight = function() {
-        // Reset terms-view height in order to stabilize style computation.
-        // For some reason, child webview affects final result.
-        termsView.style.height = '0px';
-        var style = window.getComputedStyle(termsViewContainer, null);
-        var height = style.getPropertyValue('height');
-        termsView.style.height = height;
-      };
-      setTimeout(setTermsHeight, 0);
     },
 
     /**
@@ -602,13 +571,7 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
     onBeforeShow: function(data) {
       this.setLearnMoreHandlers_();
 
-      Oobe.getInstance().headerHidden = true;
-
       this.hideOverlay();
-      // ToS content may be loaded before the page is shown. In that case,
-      // height of ToS webview is not correctly calculated. Recalculate the
-      // height here.
-      this.updateTermViewHight_();
       this.focusButton_();
 
       $('arc-tos-root').onBeforeShow();
@@ -644,13 +607,11 @@ login.createScreen('ArcTermsOfServiceScreen', 'arc-tos', function() {
       this.getElement_('arc-pai-service').hidden = true;
       this.getElement_('arc-google-service-confirmation').hidden = true;
       this.getElement_('arc-review-settings').hidden = true;
-      this.getElement_('arc-tos-container').style.overflowY = 'auto';
-      this.getElement_('arc-tos-container').scrollTop =
-          this.getElement_('arc-tos-container').scrollHeight;
       this.getElement_('arc-tos-next-button').hidden = false;
       this.getElement_('arc-tos-accept-button').hidden = true;
       this.getElement_('arc-tos-next-button').focus();
       this.removeClass_('arc-tos-disable-skip');
+      $('arc-tos-root').getElement('arc-tos-dialog').scrollToBottom();
     },
 
     /**

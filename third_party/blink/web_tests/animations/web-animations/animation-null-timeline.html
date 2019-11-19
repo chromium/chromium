@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>Operating on an animation with a null timeline</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<script>
+// Ensure that operations on an animation object are well behaved with a
+// null timeline. TODO(crbug.com/967416) Consider moving to WPT once edge cases
+// for handling of null timelines are fully flushed out.
+
+// crbug.com/967509
+test(t => {
+  const effect = new KeyframeEffect(null, null, 1000);
+  const animation = new Animation(effect, null);
+  animation.finish();
+  assert_equals(animation.startTime, null);
+  assert_equals(animation.currentTime, 1000);
+  assert_equals(animation.playState, 'finished');
+}, 'Animation finished with a null timeline');
+
+// crbug.com/967507
+test(t => {
+  const effect = new KeyframeEffect(null, null, 1000);
+  const animation1 = document.body.animate([], 1000);
+  assert_true(!!animation1.effect.target);
+  const animation2 = new Animation(effect, null);
+  assert_false(!!animation2.effect.target);
+  animation2.pause();
+  animation2.currentTime = 500;
+  assert_equals(animation2.playState, 'paused');
+  assert_equals(animation2.currentTime, 500);
+  animation1.effect = effect;
+  assert_false(!!animation1.effect.target);
+  assert_false(!!animation2.effect);
+  assert_equals(animation2.playState, 'idle');
+}, 'Set effect with a null timeline');
+</script>

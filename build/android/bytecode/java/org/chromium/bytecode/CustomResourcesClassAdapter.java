@@ -8,7 +8,7 @@ import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
 import static org.objectweb.asm.Opcodes.ACONST_NULL;
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ARETURN;
-import static org.objectweb.asm.Opcodes.ASM5;
+import static org.objectweb.asm.Opcodes.ASM7;
 import static org.objectweb.asm.Opcodes.BIPUSH;
 import static org.objectweb.asm.Opcodes.GETSTATIC;
 import static org.objectweb.asm.Opcodes.IFNE;
@@ -78,7 +78,7 @@ class CustomResourcesClassAdapter extends ClassVisitor {
 
     CustomResourcesClassAdapter(ClassVisitor visitor, String className, String superClassName,
             ClassLoader classLoader) {
-        super(ASM5, visitor);
+        super(ASM7, visitor);
         this.mClassName = className;
         this.mSuperClassName = superClassName;
         this.mClassLoader = classLoader;
@@ -165,7 +165,7 @@ class CustomResourcesClassAdapter extends ClassVisitor {
      */
     private static final class RewriteGetIdentifierMethodVisitor extends MethodVisitor {
         RewriteGetIdentifierMethodVisitor(MethodVisitor mv) {
-            super(ASM5, mv);
+            super(ASM7, mv);
         }
 
         @Override

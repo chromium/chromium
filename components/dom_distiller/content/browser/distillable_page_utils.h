@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_DOM_DISTILLER_CONTENT_BROWSER_DISTILLABLE_PAGE_UTILS_H_
 #define COMPONENTS_DOM_DISTILLER_CONTENT_BROWSER_DISTILLABLE_PAGE_UTILS_H_
 
+#include <ostream>
+
 #include "base/callback.h"
+#include "base/observer_list_types.h"
+#include "base/optional.h"
 
 namespace content {
 class WebContents;
@@ -24,15 +28,29 @@ void IsDistillablePageForDetector(content::WebContents* web_contents,
                                   const DistillablePageDetector* detector,
                                   base::Callback<void(bool)> callback);
 
-// Set the delegate to receive the result of whether the page is distillable.
+struct DistillabilityResult {
+  bool is_distillable;
+  bool is_last;
+  bool is_mobile_friendly;
+};
+std::ostream& operator<<(std::ostream& os, const DistillabilityResult& result);
+
+class DistillabilityObserver : public base::CheckedObserver {
+ public:
+  virtual void OnResult(const DistillabilityResult& result) = 0;
+};
+
+// Add/remove objects to the list of observers to notify when the distillability
+// service returns a result.
 //
-// |web_contents| must be non-null.
-using DistillabilityDelegate =
-    base::RepeatingCallback<void(bool /* is_distillable */,
-                                 bool /* is_last */,
-                                 bool /* is_mobile_friendly */)>;
-void SetDelegate(content::WebContents* web_contents,
-                 DistillabilityDelegate delegate);
+// |web_contents| and |observer| must both be non-null.
+void AddObserver(content::WebContents* web_contents,
+                 DistillabilityObserver* observer);
+void RemoveObserver(content::WebContents* web_contents,
+                    DistillabilityObserver* observer);
+
+base::Optional<DistillabilityResult> GetLatestResult(
+    content::WebContents* web_contents);
 
 }  // namespace dom_distiller
 

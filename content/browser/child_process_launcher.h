@@ -59,6 +59,7 @@ struct ChildProcessLauncherPriority {
   ChildProcessLauncherPriority(bool visible,
                                bool has_media_stream,
                                bool has_foreground_service_worker,
+                               bool has_only_low_priority_frames,
                                unsigned int frame_depth,
                                bool intersects_viewport,
                                bool boost_for_pending_views
@@ -70,6 +71,7 @@ struct ChildProcessLauncherPriority {
       : visible(visible),
         has_media_stream(has_media_stream),
         has_foreground_service_worker(has_foreground_service_worker),
+        has_only_low_priority_frames(has_only_low_priority_frames),
         frame_depth(frame_depth),
         intersects_viewport(intersects_viewport),
         boost_for_pending_views(boost_for_pending_views)
@@ -105,6 +107,10 @@ struct ChildProcessLauncherPriority {
   // worker that may need to service timely events from other, possibly visible,
   // processes.
   bool has_foreground_service_worker;
+
+  // True if this ChildProcessLauncher has a non-zero number of frames attached
+  // to it and they're all low priority.
+  bool has_only_low_priority_frames;
 
   // |frame_depth| is the depth of the shallowest frame this process is
   // responsible for which has |visible| visibility. It only makes sense to
@@ -142,6 +148,10 @@ class CONTENT_EXPORT ChildProcessLauncher {
 
     virtual void OnProcessLaunchFailed(int error_code) {}
 
+#if defined(OS_ANDROID)
+    // Whether the process can use pre-warmed up connection.
+    virtual bool CanUseWarmUpConnection();
+#endif
    protected:
     virtual ~Client() {}
   };
@@ -210,6 +220,10 @@ class CONTENT_EXPORT ChildProcessLauncher {
   // support multiple shell context creation in unit_tests.
   static void ResetRegisteredFilesForTesting();
 
+#if defined(OS_ANDROID)
+  // Dumps the stack of the child process without crashing it.
+  void DumpProcessStack();
+#endif
  private:
   friend class internal::ChildProcessLauncherHelper;
 
@@ -218,7 +232,6 @@ class CONTENT_EXPORT ChildProcessLauncher {
               int error_code);
 
   Client* client_;
-  BrowserThread::ID client_thread_id_;
 
   // The process associated with this ChildProcessLauncher. Set in Notify by
   // ChildProcessLauncherHelper once the process was started.
@@ -236,7 +249,7 @@ class CONTENT_EXPORT ChildProcessLauncher {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<ChildProcessLauncher> weak_factory_;
+  base::WeakPtrFactory<ChildProcessLauncher> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChildProcessLauncher);
 };

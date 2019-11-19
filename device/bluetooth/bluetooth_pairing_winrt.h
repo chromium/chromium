@@ -89,7 +89,7 @@ class BluetoothPairingWinrt {
       ABI::Windows::Devices::Enumeration::IDevicePairingRequestedEventArgs>
       pairing_requested_;
 
-  base::WeakPtrFactory<BluetoothPairingWinrt> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothPairingWinrt> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothPairingWinrt);
 };

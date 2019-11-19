@@ -14,6 +14,7 @@
 #include "chrome/services/printing/public/mojom/pdf_to_emf_converter.mojom.h"
 #include "content/public/common/child_process_host_delegate.h"
 #include "ipc/ipc_platform_file.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "services/service_manager/public/cpp/identity.h"
 
@@ -124,9 +125,10 @@ class ServiceUtilityProcessHost : public content::ChildProcessHostDelegate {
   // ChildProcessHostDelegate implementation:
   void OnChildDisconnected() override;
   bool OnMessageReceived(const IPC::Message& message) override;
-  const base::Process& GetProcess() const override;
+  const base::Process& GetProcess() override;
   void BindInterface(const std::string& interface_name,
                      mojo::ScopedMessagePipeHandle interface_pipe) override;
+  void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
 
  private:
   // Starts a process.  Returns true iff it succeeded.
@@ -142,7 +144,7 @@ class ServiceUtilityProcessHost : public content::ChildProcessHostDelegate {
 
   // PdfToEmfState callbacks:
   void OnRenderPDFPagesToMetafilesPageCount(
-      printing::mojom::PdfToEmfConverterPtr converter,
+      mojo::PendingRemote<printing::mojom::PdfToEmfConverter> converter,
       uint32_t page_count);
   void OnRenderPDFPagesToMetafilesPageDone(
       base::ReadOnlySharedMemoryRegion emf_region,
@@ -175,7 +177,7 @@ class ServiceUtilityProcessHost : public content::ChildProcessHostDelegate {
       service_manager_connection_;
   service_manager::Identity utility_service_instance_identity_;
 
-  base::WeakPtrFactory<ServiceUtilityProcessHost> weak_ptr_factory_;
+  base::WeakPtrFactory<ServiceUtilityProcessHost> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServiceUtilityProcessHost);
 };

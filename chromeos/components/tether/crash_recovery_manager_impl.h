@@ -71,7 +71,7 @@ class CrashRecoveryManagerImpl : public CrashRecoveryManager {
   ActiveHost* active_host_;
   HostScanCache* host_scan_cache_;
 
-  base::WeakPtrFactory<CrashRecoveryManagerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<CrashRecoveryManagerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CrashRecoveryManagerImpl);
 };

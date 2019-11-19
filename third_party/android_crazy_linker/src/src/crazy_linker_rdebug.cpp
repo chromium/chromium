@@ -7,135 +7,85 @@
 #include <elf.h>
 #include <inttypes.h>
 #include <limits.h>
+#include <sys/auxv.h>
 #include <sys/mman.h>
 #include <unistd.h>
 
 #include "crazy_linker_debug.h"
 #include "crazy_linker_globals.h"
-#include "crazy_linker_proc_maps.h"
 #include "crazy_linker_system.h"
 #include "crazy_linker_util.h"
-#include "crazy_linker_util_threads.h"
 #include "elf_traits.h"
 
 namespace crazy {
 
 namespace {
 
-// Find the full path of the current executable. On success return true
-// and sets |exe_path|. On failure, return false and sets errno.
-bool FindExecutablePath(String* exe_path) {
-  // /proc/self/exe is a symlink to the full path. Read it with
-  // readlink().
-  exe_path->Resize(512);
-  ssize_t ret = TEMP_FAILURE_RETRY(
-      readlink("/proc/self/exe", exe_path->ptr(), exe_path->size()));
-  if (ret < 0) {
-    LOG_ERRNO("Could not get /proc/self/exe link");
+// The <sys/auxv.h> header only declares getauxval for API level >= 18.
+// Declare the same function as a weak import here so we can detect at
+// runtime that getauxval() is not provided, i.e. this is running on an
+// older Android release.
+extern "C" unsigned long getauxval(unsigned long) __attribute__((weak));
+
+// Retrieve the address of the current process' dynamic section.
+bool FindElfDynamicSection(size_t* dynamic_address, size_t* dynamic_size) {
+  // Sanity check. Prevents crashing when running on an Android release older
+  // than KitKat / API 18. The linker will still work, but debugging and
+  // stack crashes will not be supported.
+  if (!getauxval) {
+    LOG("Android API level 18 or higher is needed for stack trace support!");
     return false;
   }
 
-  exe_path->Resize(static_cast<size_t>(ret));
-  LOG("Current executable: %s", exe_path->c_str());
+  // Use getauxval() to get the address and size of the executable's
+  // program table entry. Note: On Android, getauxval() is only available
+  // starting with API level 18.
+  const size_t phdr_num = static_cast<size_t>(getauxval(AT_PHNUM));
+  const auto* phdr_table = reinterpret_cast<ELF::Phdr*>(getauxval(AT_PHDR));
+  LOG("Found phdr table at %p, count=%d", phdr_table, phdr_num);
+  if (!phdr_table) {
+    LOG_ERRNO("Could not retrieve program header with AT_PHDR");
+    return false;
+  }
+
+  // NOTE: The program header table contains the following interesting entries:
+  // - A PT_PHDR entry corresponding to the program header table itself!
+  // - A PT_DYNAMIC entry corresponding to the dynamic section.
+  const ELF::Phdr* pt_phdr = nullptr;
+  const ELF::Phdr* pt_dynamic = nullptr;
+  for (size_t n = 0; n < phdr_num; ++n) {
+    const ELF::Phdr* phdr = &phdr_table[n];
+    if (phdr->p_type == PT_PHDR && !pt_phdr)
+      pt_phdr = phdr;
+    else if (phdr->p_type == PT_DYNAMIC && !pt_dynamic)
+      pt_dynamic = phdr;
+  }
+
+  if (!pt_phdr) {
+    LOG("Could not find PT_PHDR entry!?");
+    return false;
+  }
+  if (!pt_dynamic) {
+    LOG("Could not find PT_DYNAMIC entry!?");
+    return false;
+  }
+
+  LOG("Found PT_PHDR [address=%p vaddr=%lu size=%lu] and "
+      "PT_DYNAMIC [vaddr=%lu, size=%lu]",
+      pt_phdr, static_cast<unsigned long>(pt_phdr->p_vaddr),
+      static_cast<unsigned long>(pt_phdr->p_memsz),
+      static_cast<unsigned long>(pt_dynamic->p_vaddr),
+      static_cast<unsigned long>(pt_dynamic->p_memsz));
+
+  auto pt_hdr_address = reinterpret_cast<ptrdiff_t>(pt_phdr);
+  auto load_bias = pt_hdr_address - static_cast<ptrdiff_t>(pt_phdr->p_vaddr);
+
+  *dynamic_address = static_cast<size_t>(load_bias + pt_dynamic->p_vaddr);
+  *dynamic_size = static_cast<size_t>(pt_dynamic->p_memsz);
+
+  LOG("Dynamic section addr=%p size=%p", (void*)*dynamic_address,
+      (void*)*dynamic_size);
   return true;
-}
-
-// Given an ELF binary at |path| that is _already_ mapped in the process,
-// find the address of its dynamic section and its size.
-// |path| is the full path of the binary (as it appears in /proc/self/maps.
-// On success, return true and set |*dynamic_address| and |*dynamic_size|.
-bool FindElfDynamicSection(const char* path,
-                           size_t* dynamic_address,
-                           size_t* dynamic_size) {
-  // Read the ELF header first.
-  ELF::Ehdr header[1];
-
-  crazy::FileDescriptor fd(path);
-  if (!fd.IsOk() || !fd.ReadFull(header, sizeof(header))) {
-    LOG_ERRNO("Could not load ELF binary header");
-    return false;
-  }
-
-  // Sanity check.
-  if (header->e_ident[0] != 127 || header->e_ident[1] != 'E' ||
-      header->e_ident[2] != 'L' || header->e_ident[3] != 'F' ||
-      header->e_ident[4] != ELF::kElfClass) {
-    LOG("Not a %d-bit ELF binary: %s", ELF::kElfBits, path);
-    return false;
-  }
-
-  if (header->e_phoff == 0 || header->e_phentsize != sizeof(ELF::Phdr)) {
-    LOG("Invalid program header values: %s", path);
-    return false;
-  }
-
-  // Scan the program header table.
-  if (fd.SeekTo(header->e_phoff) < 0) {
-    LOG_ERRNO("Could not find ELF program header table");
-    return false;
-  }
-
-  ELF::Phdr phdr_load0 = {0, };
-  ELF::Phdr phdr_dyn = {0, };
-  bool found_load0 = false;
-  bool found_dyn = false;
-
-  for (size_t n = 0; n < header->e_phnum; ++n) {
-    ELF::Phdr phdr;
-    if (!fd.ReadFull(&phdr, sizeof(phdr))) {
-      LOG_ERRNO("Could not read program header entry");
-      return false;
-    }
-
-    if (phdr.p_type == PT_LOAD && !found_load0) {
-      phdr_load0 = phdr;
-      found_load0 = true;
-    } else if (phdr.p_type == PT_DYNAMIC && !found_dyn) {
-      phdr_dyn = phdr;
-      found_dyn = true;
-    }
-  }
-
-  if (!found_load0) {
-    LOG("Could not find loadable segment!?");
-    return false;
-  }
-  if (!found_dyn) {
-    LOG("Could not find dynamic segment!?");
-    return false;
-  }
-
-  LOG("Found first loadable segment [offset=%p vaddr=%p]",
-      (void*)phdr_load0.p_offset, (void*)phdr_load0.p_vaddr);
-
-  LOG("Found dynamic segment [offset=%p vaddr=%p size=%p]",
-      (void*)phdr_dyn.p_offset, (void*)phdr_dyn.p_vaddr,
-      (void*)phdr_dyn.p_memsz);
-
-  // Parse /proc/self/maps to find the load address of the first
-  // loadable segment.
-  size_t path_len = strlen(path);
-  ProcMaps self_maps;
-  for (const ProcMaps::Entry& entry : self_maps.entries()) {
-    if (!entry.path || entry.path_len != path_len ||
-        memcmp(entry.path, path, path_len) != 0)
-      continue;
-
-    LOG("Found executable segment mapped [%p-%p offset=%p]",
-        (void*)entry.vma_start, (void*)entry.vma_end, (void*)entry.load_offset);
-
-    size_t load_bias = entry.vma_start - phdr_load0.p_vaddr;
-    LOG("Load bias is %p", (void*)load_bias);
-
-    *dynamic_address = load_bias + phdr_dyn.p_vaddr;
-    *dynamic_size = phdr_dyn.p_memsz;
-    LOG("Dynamic section addr=%p size=%p", (void*)*dynamic_address,
-        (void*)*dynamic_size);
-    return true;
-  }
-
-  LOG("Executable is not mapped in current process.");
-  return false;
 }
 
 // Helper function for AddEntryImpl and DelEntryImpl.
@@ -192,14 +142,8 @@ bool RDebug::Init() {
 
   size_t dynamic_addr = 0;
   size_t dynamic_size = 0;
-  String path;
 
-  // Find the current executable's full path, and its dynamic section
-  // information.
-  if (!FindExecutablePath(&path))
-    return false;
-
-  if (!FindElfDynamicSection(path.c_str(), &dynamic_addr, &dynamic_size)) {
+  if (!FindElfDynamicSection(&dynamic_addr, &dynamic_size)) {
     return false;
   }
 
@@ -209,8 +153,8 @@ bool RDebug::Init() {
   while (dynamic_size >= sizeof(*dyn_section)) {
     if (dyn_section->d_tag == DT_DEBUG) {
       // Found it!
-      LOG("Found DT_DEBUG entry inside %s at %p, pointing to %p", path.c_str(),
-          dyn_section, dyn_section->d_un.d_ptr);
+      LOG("Found DT_DEBUG entry at %p, pointing to %p", dyn_section,
+          dyn_section->d_un.d_ptr);
       if (dyn_section->d_un.d_ptr) {
         r_debug_ = reinterpret_cast<r_debug*>(dyn_section->d_un.d_ptr);
         LOG("r_debug [r_version=%d r_map=%p r_brk=%p r_ldbase=%p]",

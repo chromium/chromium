@@ -28,10 +28,6 @@
       testRunner.log('Opaque background color: should be red');
       await testGetBgColors('.opaqueBgColor p');
     },
-    async function testNoDirectText() {
-      testRunner.log('No direct text: should be red');
-      await testGetBgColors('.noDirectText p');
-    },
     async function testLayeredOpaqueBgColors() {
       testRunner.log('Opaque background color in front of another opaque background color: should be blue');
       await testGetBgColors('.layeredOpaqueBgColors p');

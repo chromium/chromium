@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -42,19 +43,28 @@ const SVGEnumerationMap& GetEnumerationMap<CompositeOperationType>() {
   return entries;
 }
 
-inline SVGFECompositeElement::SVGFECompositeElement(Document& document)
+SVGFECompositeElement::SVGFECompositeElement(Document& document)
     : SVGFilterPrimitiveStandardAttributes(svg_names::kFECompositeTag,
                                            document),
-      k1_(SVGAnimatedNumber::Create(this, svg_names::kK1Attr, 0.0f)),
-      k2_(SVGAnimatedNumber::Create(this, svg_names::kK2Attr, 0.0f)),
-      k3_(SVGAnimatedNumber::Create(this, svg_names::kK3Attr, 0.0f)),
-      k4_(SVGAnimatedNumber::Create(this, svg_names::kK4Attr, 0.0f)),
-      in1_(SVGAnimatedString::Create(this, svg_names::kInAttr)),
-      in2_(SVGAnimatedString::Create(this, svg_names::kIn2Attr)),
-      svg_operator_(SVGAnimatedEnumeration<CompositeOperationType>::Create(
-          this,
-          svg_names::kOperatorAttr,
-          FECOMPOSITE_OPERATOR_OVER)) {
+      k1_(MakeGarbageCollected<SVGAnimatedNumber>(this,
+                                                  svg_names::kK1Attr,
+                                                  0.0f)),
+      k2_(MakeGarbageCollected<SVGAnimatedNumber>(this,
+                                                  svg_names::kK2Attr,
+                                                  0.0f)),
+      k3_(MakeGarbageCollected<SVGAnimatedNumber>(this,
+                                                  svg_names::kK3Attr,
+                                                  0.0f)),
+      k4_(MakeGarbageCollected<SVGAnimatedNumber>(this,
+                                                  svg_names::kK4Attr,
+                                                  0.0f)),
+      in1_(MakeGarbageCollected<SVGAnimatedString>(this, svg_names::kInAttr)),
+      in2_(MakeGarbageCollected<SVGAnimatedString>(this, svg_names::kIn2Attr)),
+      svg_operator_(
+          MakeGarbageCollected<SVGAnimatedEnumeration<CompositeOperationType>>(
+              this,
+              svg_names::kOperatorAttr,
+              FECOMPOSITE_OPERATOR_OVER)) {
   AddToPropertyMap(k1_);
   AddToPropertyMap(k2_);
   AddToPropertyMap(k3_);
@@ -74,8 +84,6 @@ void SVGFECompositeElement::Trace(blink::Visitor* visitor) {
   visitor->Trace(svg_operator_);
   SVGFilterPrimitiveStandardAttributes::Trace(visitor);
 }
-
-DEFINE_NODE_FACTORY(SVGFECompositeElement)
 
 bool SVGFECompositeElement::SetFilterEffectAttribute(
     FilterEffect* effect,
@@ -124,7 +132,7 @@ FilterEffect* SVGFECompositeElement::Build(SVGFilterBuilder* filter_builder,
   DCHECK(input1);
   DCHECK(input2);
 
-  FilterEffect* effect = FEComposite::Create(
+  auto* effect = MakeGarbageCollected<FEComposite>(
       filter, svg_operator_->CurrentValue()->EnumValue(),
       k1_->CurrentValue()->Value(), k2_->CurrentValue()->Value(),
       k3_->CurrentValue()->Value(), k4_->CurrentValue()->Value());

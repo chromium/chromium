@@ -14,12 +14,50 @@ interface AbortSignal : EventTarget
     getter onabort
     method constructor
     setter onabort
+interface BackgroundFetchEvent : ExtendableEvent
+    attribute @@toStringTag
+    getter registration
+    method constructor
+interface BackgroundFetchManager
+    attribute @@toStringTag
+    method constructor
+    method fetch
+    method get
+    method getIds
+interface BackgroundFetchRecord
+    attribute @@toStringTag
+    getter request
+    getter responseReady
+    method constructor
+interface BackgroundFetchRegistration : EventTarget
+    attribute @@toStringTag
+    getter downloadTotal
+    getter downloaded
+    getter failureReason
+    getter id
+    getter onprogress
+    getter recordsAvailable
+    getter result
+    getter uploadTotal
+    getter uploaded
+    method abort
+    method constructor
+    method match
+    method matchAll
+    setter onprogress
+interface BackgroundFetchUpdateUIEvent : BackgroundFetchEvent
+    attribute @@toStringTag
+    method constructor
+    method updateUI
 interface Blob
     attribute @@toStringTag
     getter size
     getter type
+    method arrayBuffer
     method constructor
     method slice
+    method stream
+    method text
 interface BroadcastChannel : EventTarget
     attribute @@toStringTag
     getter name
@@ -31,8 +69,10 @@ interface BroadcastChannel : EventTarget
     setter onmessage
     setter onmessageerror
 interface ByteLengthQueuingStrategy
+    attribute @@toStringTag
+    getter highWaterMark
+    getter size
     method constructor
-    method size
 interface CSSSkewX : CSSTransformComponent
     attribute @@toStringTag
     getter ax
@@ -99,8 +139,10 @@ interface CloseEvent : Event
     getter wasClean
     method constructor
 interface CountQueuingStrategy
+    attribute @@toStringTag
+    getter highWaterMark
+    getter size
     method constructor
-    method size
 interface Crypto
     attribute @@toStringTag
     getter subtle
@@ -488,6 +530,7 @@ interface IDBCursor
     getter direction
     getter key
     getter primaryKey
+    getter request
     getter source
     method advance
     method constructor
@@ -604,6 +647,7 @@ interface IDBTransaction : EventTarget
     getter oncomplete
     getter onerror
     method abort
+    method commit
     method constructor
     method objectStore
     setter onabort
@@ -622,6 +666,11 @@ interface ImageBitmap
     getter width
     method close
     method constructor
+interface ImageBitmapRenderingContext
+    attribute @@toStringTag
+    getter canvas
+    method constructor
+    method transferFromImageBitmap
 interface ImageData
     attribute @@toStringTag
     getter data
@@ -641,6 +690,10 @@ interface LockManager
     method constructor
     method query
     method request
+interface MediaCapabilities
+    attribute @@toStringTag
+    method constructor
+    method decodingInfo
 interface MessageChannel
     attribute @@toStringTag
     getter port1
@@ -768,6 +821,7 @@ interface OffscreenCanvasRenderingContext2D
     method fillText
     method getImageData
     method getLineDash
+    method getTransform
     method isPointInPath
     method isPointInStroke
     method lineTo
@@ -839,6 +893,7 @@ interface PaymentRequestEvent : ExtendableEvent
     getter paymentRequestOrigin
     getter topOrigin
     getter total
+    method changePaymentMethod
     method constructor
     method openWindow
     method respondWith
@@ -869,9 +924,11 @@ interface PerformanceEntry
     method toJSON
 interface PerformanceMark : PerformanceEntry
     attribute @@toStringTag
+    getter detail
     method constructor
 interface PerformanceMeasure : PerformanceEntry
     attribute @@toStringTag
+    getter detail
     method constructor
 interface PerformanceObserver
     static getter supportedEntryTypes
@@ -971,6 +1028,13 @@ interface ReadableStream
     method pipeThrough
     method pipeTo
     method tee
+interface ReadableStreamDefaultReader
+    attribute @@toStringTag
+    getter closed
+    method cancel
+    method constructor
+    method read
+    method releaseLock
 interface Request
     attribute @@toStringTag
     getter bodyUsed
@@ -1015,12 +1079,38 @@ interface Response
     method formData
     method json
     method text
+interface SecurityPolicyViolationEvent : Event
+    attribute @@toStringTag
+    getter blockedURI
+    getter columnNumber
+    getter disposition
+    getter documentURI
+    getter effectiveDirective
+    getter lineNumber
+    getter originalPolicy
+    getter referrer
+    getter sample
+    getter sourceFile
+    getter statusCode
+    getter violatedDirective
+    method constructor
+interface ServiceWorker : EventTarget
+    attribute @@toStringTag
+    getter onerror
+    getter onstatechange
+    getter scriptURL
+    getter state
+    method constructor
+    method postMessage
+    setter onerror
+    setter onstatechange
 interface ServiceWorkerGlobalScope : WorkerGlobalScope
     attribute @@toStringTag
     method constructor
 interface ServiceWorkerRegistration : EventTarget
     attribute @@toStringTag
     getter active
+    getter backgroundFetch
     getter installing
     getter navigationPreload
     getter onupdatefound
@@ -1093,6 +1183,14 @@ interface TextEncoderStream
     getter readable
     getter writable
     method constructor
+interface TextMetrics
+    attribute @@toStringTag
+    getter actualBoundingBoxAscent
+    getter actualBoundingBoxDescent
+    getter actualBoundingBoxLeft
+    getter actualBoundingBoxRight
+    getter width
+    method constructor
 interface TransformStream
     attribute @@toStringTag
     getter readable
@@ -1141,6 +1239,11 @@ interface URLSearchParams
     method sort
     method toString
     method values
+interface UserActivation
+    attribute @@toStringTag
+    getter hasBeenActive
+    getter isActive
+    method constructor
 interface WebGL2RenderingContext
     attribute @@toStringTag
     attribute ACTIVE_ATTRIBUTES
@@ -1849,6 +1952,7 @@ interface WebGL2RenderingContext
     method isVertexArray
     method lineWidth
     method linkProgram
+    method makeXRCompatible
     method pauseTransformFeedback
     method pixelStorei
     method polygonOffset
@@ -2341,6 +2445,7 @@ interface WebGLRenderingContext
     method isTexture
     method lineWidth
     method linkProgram
+    method makeXRCompatible
     method pixelStorei
     method polygonOffset
     method readPixels
@@ -2465,7 +2570,6 @@ interface WorkerGlobalScope : EventTarget
     getter self
     method atob
     method btoa
-    method cancelAnimationFrame
     method clearInterval
     method clearTimeout
     method constructor
@@ -2473,7 +2577,6 @@ interface WorkerGlobalScope : EventTarget
     method fetch
     method importScripts
     method queueMicrotask
-    method requestAnimationFrame
     method setInterval
     method setTimeout
     setter onerror
@@ -2506,6 +2609,7 @@ interface WorkerNavigator
     getter language
     getter languages
     getter locks
+    getter mediaCapabilities
     getter onLine
     getter permissions
     getter platform
@@ -2520,6 +2624,16 @@ interface WritableStream
     method abort
     method constructor
     method getWriter
+interface WritableStreamDefaultWriter
+    attribute @@toStringTag
+    getter closed
+    getter desiredSize
+    getter ready
+    method abort
+    method close
+    method constructor
+    method releaseLock
+    method write
 [GLOBAL OBJECT]
     attribute console
     attribute globalThis
@@ -2527,6 +2641,10 @@ interface WritableStream
     getter clients
     getter onabortpayment
     getter onactivate
+    getter onbackgroundfetchabort
+    getter onbackgroundfetchclick
+    getter onbackgroundfetchfail
+    getter onbackgroundfetchsuccess
     getter oncanmakepayment
     getter onfetch
     getter oninstall
@@ -2537,11 +2655,15 @@ interface WritableStream
     getter onpush
     getter onsync
     getter registration
-    method fetch
+    getter serviceWorker
     method gc
     method skipWaiting
     setter onabortpayment
     setter onactivate
+    setter onbackgroundfetchabort
+    setter onbackgroundfetchclick
+    setter onbackgroundfetchfail
+    setter onbackgroundfetchsuccess
     setter oncanmakepayment
     setter onfetch
     setter oninstall

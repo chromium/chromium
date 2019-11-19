@@ -110,8 +110,7 @@ class AutofillKeysChecker : public MultiClientStatusChangeChecker {
   AutofillKeysChecker(int profile_a, int profile_b);
 
   // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
   const int profile_a_;
@@ -127,8 +126,7 @@ class AutofillProfileChecker : public StatusChangeChecker,
 
   // StatusChangeChecker implementation.
   bool Wait() override;
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // autofill::PersonalDataManager implementation.
   void OnPersonalDataChanged() override;

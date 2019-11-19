@@ -7,7 +7,7 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "ppapi/c/pp_errors.h"
-#include "third_party/blink/public/web/web_view.h"
+#include "third_party/blink/public/platform/web_scoped_page_pauser.h"
 
 using ppapi::thunk::PPB_Flash_MessageLoop_API;
 
@@ -91,11 +91,10 @@ int32_t PPB_Flash_MessageLoop_Impl::InternalRun(
   // destroyed when the nested run loop exits.
   scoped_refptr<State> state_protector(state_);
   {
-    blink::WebView::WillEnterModalLoop();
+    std::unique_ptr<blink::WebScopedPagePauser> pauser =
+        blink::WebScopedPagePauser::Create();
 
     run_loop.Run();
-
-    blink::WebView::DidExitModalLoop();
   }
   // Don't access data members of the class below.
 

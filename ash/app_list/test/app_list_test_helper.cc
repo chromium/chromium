@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/app_list/presenter/app_list_presenter_impl.h"
+#include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/shell.h"
 #include "base/run_loop.h"
@@ -22,28 +22,27 @@ AppListTestHelper::AppListTestHelper() {
 
   // Use a new app list client for each test
   app_list_client_ = std::make_unique<TestAppListClient>();
-  app_list_controller_->SetClient(
-      app_list_client_->CreateInterfacePtrAndBind());
+  app_list_controller_->SetClient(app_list_client_.get());
 }
 
-AppListTestHelper::~AppListTestHelper() = default;
+AppListTestHelper::~AppListTestHelper() {
+  app_list_controller_->SetClient(nullptr);
+}
 
 void AppListTestHelper::WaitUntilIdle() {
-  app_list_controller_->FlushForTesting();
   base::RunLoop().RunUntilIdle();
 }
 
 void AppListTestHelper::ShowAndRunLoop(uint64_t display_id) {
-  ShowAndRunLoop(display_id, app_list::AppListShowSource::kSearchKey);
+  ShowAndRunLoop(display_id, AppListShowSource::kSearchKey);
 }
 
 void AppListTestHelper::Show(uint64_t display_id) {
-  ShowAndRunLoop(display_id, app_list::AppListShowSource::kSearchKey);
+  ShowAndRunLoop(display_id, AppListShowSource::kSearchKey);
 }
 
-void AppListTestHelper::ShowAndRunLoop(
-    uint64_t display_id,
-    app_list::AppListShowSource show_source) {
+void AppListTestHelper::ShowAndRunLoop(uint64_t display_id,
+                                       AppListShowSource show_source) {
   app_list_controller_->Show(display_id, show_source, base::TimeTicks());
   WaitUntilIdle();
 }
@@ -58,12 +57,11 @@ void AppListTestHelper::Dismiss() {
 }
 
 void AppListTestHelper::ToggleAndRunLoop(uint64_t display_id) {
-  ToggleAndRunLoop(display_id, app_list::AppListShowSource::kSearchKey);
+  ToggleAndRunLoop(display_id, AppListShowSource::kSearchKey);
 }
 
-void AppListTestHelper::ToggleAndRunLoop(
-    uint64_t display_id,
-    app_list::AppListShowSource show_source) {
+void AppListTestHelper::ToggleAndRunLoop(uint64_t display_id,
+                                         AppListShowSource show_source) {
   app_list_controller_->ToggleAppList(display_id, show_source,
                                       base::TimeTicks());
   WaitUntilIdle();
@@ -74,11 +72,11 @@ void AppListTestHelper::CheckVisibility(bool visible) {
   EXPECT_EQ(visible, app_list_controller_->GetTargetVisibility());
 }
 
-void AppListTestHelper::CheckState(app_list::AppListViewState state) {
+void AppListTestHelper::CheckState(ash::AppListViewState state) {
   EXPECT_EQ(state, app_list_controller_->GetAppListViewState());
 }
 
-app_list::AppListView* AppListTestHelper::GetAppListView() {
+AppListView* AppListTestHelper::GetAppListView() {
   return app_list_controller_->presenter()->GetView();
 }
 

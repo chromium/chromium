@@ -48,6 +48,9 @@ class VIZ_COMMON_EXPORT SurfaceRange {
   // Returns whether the start and end of the range have differing FrameSinkIds.
   bool HasDifferentFrameSinkIds() const;
 
+  // Returns whether the start and end of the range have different embed tokens.
+  bool HasDifferentEmbedTokens() const;
+
   bool IsValid() const;
 
   const base::Optional<SurfaceId>& start() const { return start_; }

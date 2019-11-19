@@ -70,8 +70,7 @@ NSSCertDatabase::NSSCertDatabase(crypto::ScopedPK11Slot public_slot,
                                  crypto::ScopedPK11Slot private_slot)
     : public_slot_(std::move(public_slot)),
       private_slot_(std::move(private_slot)),
-      observer_list_(new base::ObserverListThreadSafe<Observer>),
-      weak_factory_(this) {
+      observer_list_(new base::ObserverListThreadSafe<Observer>) {
   CHECK(public_slot_);
 
   CertDatabase* cert_db = CertDatabase::GetInstance();
@@ -83,14 +82,11 @@ NSSCertDatabase::NSSCertDatabase(crypto::ScopedPK11Slot public_slot,
 
 NSSCertDatabase::~NSSCertDatabase() = default;
 
-ScopedCERTCertificateList NSSCertDatabase::ListCertsSync() {
-  return ListCertsImpl(crypto::ScopedPK11Slot());
-}
-
 void NSSCertDatabase::ListCerts(ListCertsCallback callback) {
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&NSSCertDatabase::ListCertsImpl, crypto::ScopedPK11Slot()),
       std::move(callback));
 }
@@ -98,9 +94,10 @@ void NSSCertDatabase::ListCerts(ListCertsCallback callback) {
 void NSSCertDatabase::ListCertsInSlot(ListCertsCallback callback,
                                       PK11SlotInfo* slot) {
   DCHECK(slot);
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&NSSCertDatabase::ListCertsImpl,
                      crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot))),
       std::move(callback));
@@ -393,9 +390,10 @@ bool NSSCertDatabase::DeleteCertAndKey(CERTCertificate* cert) {
 
 void NSSCertDatabase::DeleteCertAndKeyAsync(ScopedCERTCertificate cert,
                                             DeleteCertCallback callback) {
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&NSSCertDatabase::DeleteCertAndKeyImplScoped,
                      std::move(cert)),
       base::BindOnce(&NSSCertDatabase::NotifyCertRemovalAndCallBack,

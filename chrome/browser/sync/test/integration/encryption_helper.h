@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_ENCRYPTION_HELPER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_ENCRYPTION_HELPER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
-#include "components/sync/base/cryptographer.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
+#include "components/sync/syncable/directory_cryptographer.h"
 #include "components/sync/test/fake_server/fake_server.h"
 
 namespace encryption_helper {
@@ -30,9 +31,9 @@ void SetNigoriInFakeServer(fake_server::FakeServer* fake_server,
 // Nigori is encrypted (by design), the provided |passphrase| will be used to
 // decrypt it. This function will fail the test (using ASSERT) if the Nigori is
 // not a custom passphrase one, or if the key cannot be decrypted.
-void InitCustomPassphraseCryptographerFromNigori(
+std::unique_ptr<syncer::Cryptographer>
+InitCustomPassphraseCryptographerFromNigori(
     const sync_pb::NigoriSpecifics& nigori,
-    syncer::Cryptographer* cryptographer,
     const std::string& passphrase);
 
 // Returns an EntitySpecifics containing encrypted data corresponding to the
@@ -52,29 +53,56 @@ sync_pb::NigoriSpecifics CreateCustomPassphraseNigori(
 // available on the server.
 class ServerNigoriChecker : public SingleClientStatusChangeChecker {
  public:
-  ServerNigoriChecker(browser_sync::ProfileSyncService* service,
+  ServerNigoriChecker(syncer::ProfileSyncService* service,
                       fake_server::FakeServer* fake_server,
                       syncer::PassphraseType expected_passphrase_type);
 
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  fake_server::FakeServer* fake_server_;
-  syncer::PassphraseType expected_passphrase_type_;
+  fake_server::FakeServer* const fake_server_;
+  const syncer::PassphraseType expected_passphrase_type_;
+};
+
+// Checker used to block until a Nigori with a given keybag encryption key name
+// is available on the server.
+class ServerNigoriKeyNameChecker : public SingleClientStatusChangeChecker {
+ public:
+  ServerNigoriKeyNameChecker(const std::string& expected_key_name,
+                             syncer::ProfileSyncService* service,
+                             fake_server::FakeServer* fake_server);
+
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  fake_server::FakeServer* const fake_server_;
+  const std::string expected_key_name_;
 };
 
 // Checker used to block until Sync requires or stops requiring a passphrase.
 class PassphraseRequiredStateChecker : public SingleClientStatusChangeChecker {
  public:
-  PassphraseRequiredStateChecker(browser_sync::ProfileSyncService* service,
+  PassphraseRequiredStateChecker(syncer::ProfileSyncService* service,
                                  bool desired_state);
 
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  bool desired_state_;
+  const bool desired_state_;
+};
+
+// Checker used to block until Sync requires or stops requiring trusted vault
+// keys.
+class TrustedVaultKeyRequiredStateChecker
+    : public SingleClientStatusChangeChecker {
+ public:
+  TrustedVaultKeyRequiredStateChecker(syncer::ProfileSyncService* service,
+                                      bool desired_state);
+
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  const bool desired_state_;
 };
 
 // Helper for setting scrypt-related feature flags.

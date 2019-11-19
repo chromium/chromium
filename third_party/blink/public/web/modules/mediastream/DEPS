@@ -1,0 +1,23 @@
+include_rules = [
+    "+base/atomicops.h",
+    "+base/compiler_specific.h",
+    "+base/logging.h",
+    "+base/gtest_prod_util.h",
+    "+base/memory/weak_ptr.h",
+    "+base/sequence_checker.h",
+    "+base/single_thread_task_runner.h",
+    "+base/synchronization/lock.h",
+    "+base/threading/thread_checker.h",
+    "+build/build_config.h",
+    "+media/base",
+    "+media/capture",
+    "+media/renderers/paint_canvas_video_renderer.h",
+    "+media/video/gpu_video_accelerator_factories.h",
+    "+ui/gfx/geometry/size.h"
+]
+
+specific_include_rules = {
+    "mock_media_stream_video_(source|sink).h" : [
+        "+testing/gmock/include/gmock/gmock.h",
+    ],
+}

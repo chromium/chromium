@@ -27,6 +27,7 @@
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chromeos/components/drivefs/drivefs_util.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_system_core_util.h"
@@ -131,8 +132,8 @@ GURL ReadUrlFromGDocAsync(const base::FilePath& file_path) {
 
 // Parse a local file to extract the Docs url and open this url.
 void OpenGDocUrlFromFile(const base::FilePath& file_path, Profile* profile) {
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
       base::BindOnce(&ReadUrlFromGDocAsync, file_path),
       base::BindOnce(&OpenNewTab, profile));
 }
@@ -144,7 +145,7 @@ void OpenHostedDriveFsFile(const base::FilePath& file_path,
                            drivefs::mojom::FileMetadataPtr metadata) {
   if (error != drive::FILE_ERROR_OK)
     return;
-  if (metadata->type != drivefs::mojom::FileMetadata::Type::kHosted) {
+  if (drivefs::IsLocal(metadata->type)) {
     OpenGDocUrlFromFile(file_path, profile);
     return;
   }
@@ -158,7 +159,8 @@ void OpenHostedDriveFsFile(const base::FilePath& file_path,
 }  // namespace
 
 bool OpenFileWithBrowser(Profile* profile,
-                         const storage::FileSystemURL& file_system_url) {
+                         const storage::FileSystemURL& file_system_url,
+                         const std::string& action_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(profile);
 
@@ -167,7 +169,8 @@ bool OpenFileWithBrowser(Profile* profile,
   // For things supported natively by the browser, we should open it
   // in a tab.
   if (IsViewableInBrowser(file_path) ||
-      ShouldBeOpenedWithPlugin(profile, file_path.Extension())) {
+      ShouldBeOpenedWithPlugin(profile, file_path.Extension(), action_id) ||
+      (action_id == "view-in-browser" && file_path.Extension() == "")) {
     // Use external file URL if it is provided for the file system.
     GURL page_url = chromeos::FileSystemURLToExternalFileURL(file_system_url);
     if (page_url.is_empty())
@@ -209,14 +212,14 @@ bool OpenFileWithBrowser(Profile* profile,
 }
 
 // If a bundled plugin is enabled, we should open pdf/swf files in a tab.
-bool ShouldBeOpenedWithPlugin(
-    Profile* profile,
-    const base::FilePath::StringType& file_extension) {
+bool ShouldBeOpenedWithPlugin(Profile* profile,
+                              const base::FilePath::StringType& file_extension,
+                              const std::string& action_id) {
   DCHECK(profile);
 
   const base::FilePath file_path =
       base::FilePath::FromUTF8Unsafe("dummy").AddExtension(file_extension);
-  if (file_path.MatchesExtension(kPdfExtension))
+  if (file_path.MatchesExtension(kPdfExtension) || action_id == "view-pdf")
     return IsPdfPluginEnabled(profile);
   if (file_path.MatchesExtension(kSwfExtension))
     return IsFlashPluginEnabled(profile);

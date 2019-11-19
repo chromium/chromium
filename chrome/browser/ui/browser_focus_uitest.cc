@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/location.h"
-#include "base/message_loop/message_loop.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -18,7 +17,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -41,6 +39,7 @@
 #include "content/public/browser/interstitial_page.h"
 #include "content/public/browser/interstitial_page_delegate.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -50,17 +49,10 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-using content::RenderViewHost;
-using content::WebContents;
-
 namespace {
 
-bool PressTabAndWait(const Browser* browser,
-                     int type,
-                     const content::NotificationSource& source) {
-  return ui_test_utils::SendKeyPressAndWait(browser, ui::VKEY_TAB, false, false,
-                                            false, false, type, source);
-}
+using content::RenderViewHost;
+using content::WebContents;
 
 #if defined(OS_POSIX)
 // The delay waited in some cases where we don't have a notifications for an
@@ -83,15 +75,13 @@ class BrowserFocusTest : public InProcessBrowserTest {
     return ui_test_utils::IsViewFocused(browser(), vid);
   }
 
-  void ClickOnView(ViewID vid) {
-    ui_test_utils::ClickOnView(browser(), vid);
-  }
+  void ClickOnView(ViewID vid) { ui_test_utils::ClickOnView(browser(), vid); }
 
   void TestFocusTraversal(RenderViewHost* render_view_host, bool reverse) {
     const char kGetFocusedElementJS[] =
         "window.domAutomationController.send(getFocusedElement());";
-    const char* kExpectedIDs[] = { "textEdit", "searchButton", "luckyButton",
-                                   "googleLink", "gmailLink", "gmapLink" };
+    const char* kExpectedIDs[] = {"textEdit",   "searchButton", "luckyButton",
+                                  "googleLink", "gmailLink",    "gmapLink"};
     SCOPED_TRACE(base::StringPrintf("TestFocusTraversal: reverse=%d", reverse));
     ui::KeyboardCode key = ui::VKEY_TAB;
 #if defined(OS_MACOSX)
@@ -108,23 +98,21 @@ class BrowserFocusTest : public InProcessBrowserTest {
       // iff "Full Keyboard Access" is enabled. In reverse, four Tab key presses
       // are required to traverse the back/forward buttons and the tab strip.
 #if defined(OS_MACOSX)
+      constexpr int kFocusableElementsBeforeOmnibox = 4;
+      constexpr int kFocusableElementsAfterOmnibox = 1;
       if (ui_controls::IsFullKeyboardAccessEnabled()) {
-        ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-            browser(), key, false, reverse, false, false));
-        if (reverse) {
-          for (int j = 0; j < 3; ++j) {
-            ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-                browser(), key, false, reverse, false, false));
-          }
+        for (int j = 0; j < (reverse ? kFocusableElementsBeforeOmnibox
+                                     : kFocusableElementsAfterOmnibox);
+             ++j) {
+          ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key, false,
+                                                      reverse, false, false));
         }
       }
 #endif
 
       if (reverse) {
-        ASSERT_TRUE(ui_test_utils::SendKeyPressAndWait(
-            browser(), key, false, reverse, false, false,
-            content::NOTIFICATION_ALL,
-            content::NotificationService::AllSources()));
+        ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key, false,
+                                                    reverse, false, false));
       }
 
       for (size_t j = 0; j < base::size(kExpectedIDs); ++j) {
@@ -134,11 +122,17 @@ class BrowserFocusTest : public InProcessBrowserTest {
         bool is_editable_node = index == 0;
 
         // Press Tab (or Shift+Tab) and check the focused element id.
-        ASSERT_TRUE(ui_test_utils::SendKeyPressAndWaitWithDetails(
-            browser(), key, false, reverse, false, false,
-            content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
-            content::Source<RenderViewHost>(render_view_host),
-            content::Details<bool>(&is_editable_node)));
+        auto source = content::Source<RenderViewHost>(render_view_host);
+        ui_test_utils::WindowedNotificationObserverWithDetails<bool> observer(
+            content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE, source);
+        ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key, false,
+                                                    reverse, false, false));
+        observer.Wait();
+        bool observed_editable_node;
+        ASSERT_TRUE(
+            observer.GetDetailsFor(source.map_key(), &observed_editable_node));
+        EXPECT_EQ(is_editable_node, observed_editable_node);
+
         std::string focused_id;
         EXPECT_TRUE(content::ExecuteScriptAndExtractString(
             WebContents::FromRenderViewHost(render_view_host),
@@ -146,32 +140,33 @@ class BrowserFocusTest : public InProcessBrowserTest {
         EXPECT_STREQ(kExpectedIDs[index], focused_id.c_str());
       }
 
-#if defined(OS_MACOSX)
-      // TODO(msw): Mac doesn't post NOTIFICATION_FOCUS_RETURNED_TO_BROWSER and
-      // would also apparently require extra Tab key presses here. Sigh...
-      chrome::FocusLocationBar(browser());
-#else
       // On the last Tab key press, focus returns to the browser.
-      ASSERT_TRUE(ui_test_utils::SendKeyPressAndWait(
-          browser(), key, false, reverse, false, false,
-          chrome::NOTIFICATION_FOCUS_RETURNED_TO_BROWSER,
-          content::Source<Browser>(browser())));
-      EXPECT_TRUE(
-          IsViewFocused(reverse ? VIEW_ID_OMNIBOX : VIEW_ID_LOCATION_ICON));
+      ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key, false,
+                                                  reverse, false, false));
 
-      ASSERT_TRUE(ui_test_utils::SendKeyPressAndWait(
-          browser(), key, false, reverse, false, false,
-          content::NOTIFICATION_ALL,
-          content::NotificationService::AllSources()));
+      // Except on Mac, where extra tabs are once again required to traverse the
+      // other top chrome elements.
+#if defined(OS_MACOSX)
+      if (ui_controls::IsFullKeyboardAccessEnabled()) {
+        for (int j = 0; j < (reverse ? kFocusableElementsAfterOmnibox
+                                     : kFocusableElementsBeforeOmnibox);
+             ++j) {
+          ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key, false,
+                                                      reverse, false, false));
+        }
+      }
 #endif
-      content::RunAllPendingInMessageLoop();
-      EXPECT_TRUE(
-          IsViewFocused(reverse ? VIEW_ID_LOCATION_ICON : VIEW_ID_OMNIBOX));
+
+      ui_test_utils::WaitForViewFocus(
+          browser(), reverse ? VIEW_ID_OMNIBOX : VIEW_ID_LOCATION_ICON, true);
+
+      ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key, false,
+                                                  reverse, false, false));
+      ui_test_utils::WaitForViewFocus(
+          browser(), reverse ? VIEW_ID_LOCATION_ICON : VIEW_ID_OMNIBOX, true);
       if (reverse) {
-        ASSERT_TRUE(ui_test_utils::SendKeyPressAndWait(
-            browser(), key, false, false, false, false,
-            content::NOTIFICATION_ALL,
-            content::NotificationService::AllSources()));
+        ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key, false,
+                                                    false, false, false));
       }
     }
   }
@@ -266,23 +261,26 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, BrowsersRememberFocus) {
 }
 
 // Tabs remember focus.
-IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabsRememberFocus) {
+#if defined(THREAD_SANITIZER)
+// TODO(crbug.com/995181): This test is flaky on Linux TSan.
+#define MAYBE_TabsRememberFocus DISABLED_TabsRememberFocus
+#else
+#define MAYBE_TabsRememberFocus TabsRememberFocus
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_TabsRememberFocus) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   const GURL url = embedded_test_server()->GetURL(kSimplePage);
   ui_test_utils::NavigateToURL(browser(), url);
 
   // Create several tabs.
   for (int i = 0; i < 4; ++i) {
-    chrome::AddSelectedTabWithURL(browser(), url,
-                                  ui::PAGE_TRANSITION_TYPED);
+    chrome::AddSelectedTabWithURL(browser(), url, ui::PAGE_TRANSITION_TYPED);
   }
 
   // Alternate focus for the tab.
-  const bool kFocusPage[3][5] = {
-    { true, true, true, true, false },
-    { false, false, false, false, false },
-    { false, true, false, true, false }
-  };
+  const bool kFocusPage[3][5] = {{true, true, true, true, false},
+                                 {false, false, false, false, false},
+                                 {false, true, false, true, false}};
 
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 5; j++) {
@@ -313,24 +311,24 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabsRememberFocus) {
     // Try the above, but with ctrl+tab. Since tab normally changes focus,
     // this has regressed in the past. Loop through several times to be sure.
     for (int j = 0; j < 15; j++) {
-      ViewID vid = kFocusPage[i][j % 5] ? VIEW_ID_TAB_CONTAINER :
-                                          VIEW_ID_OMNIBOX;
+      ViewID vid =
+          kFocusPage[i][j % 5] ? VIEW_ID_TAB_CONTAINER : VIEW_ID_OMNIBOX;
       ASSERT_TRUE(IsViewFocused(vid));
 
-      ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-          browser(), ui::VKEY_TAB, true, false, false, false));
+      ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, true,
+                                                  false, false, false));
     }
 
     // As above, but with ctrl+shift+tab.
     browser()->tab_strip_model()->ActivateTabAt(
         4, {TabStripModel::GestureType::kOther});
     for (int j = 14; j >= 0; --j) {
-      ViewID vid = kFocusPage[i][j % 5] ? VIEW_ID_TAB_CONTAINER :
-                                          VIEW_ID_OMNIBOX;
+      ViewID vid =
+          kFocusPage[i][j % 5] ? VIEW_ID_TAB_CONTAINER : VIEW_ID_OMNIBOX;
       ASSERT_TRUE(IsViewFocused(vid));
 
-      ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-          browser(), ui::VKEY_TAB, true, true, false, false));
+      ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, true,
+                                                  true, false, false));
     }
   }
 }
@@ -425,8 +423,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, LocationBarLockFocus) {
   chrome::FocusLocationBar(browser());
 
   ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "stealFocus();"));
+      browser()->tab_strip_model()->GetActiveWebContents(), "stealFocus();"));
 
   // Make sure the location bar is still focused.
   ASSERT_TRUE(IsViewFocused(VIEW_ID_OMNIBOX));
@@ -507,19 +504,19 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_FindFocusTest) {
   ui_test_utils::NavigateToURL(browser(), url);
   EXPECT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
 
-  chrome::ShowFindBar(browser());
+  chrome::Find(browser());
   EXPECT_TRUE(IsViewFocused(VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
 
   chrome::FocusLocationBar(browser());
   EXPECT_TRUE(IsViewFocused(VIEW_ID_OMNIBOX));
 
-  chrome::ShowFindBar(browser());
+  chrome::Find(browser());
   EXPECT_TRUE(IsViewFocused(VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
 
   ClickOnView(VIEW_ID_TAB_CONTAINER);
   EXPECT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
 
-  chrome::ShowFindBar(browser());
+  chrome::Find(browser());
   EXPECT_TRUE(IsViewFocused(VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
 }
 
@@ -547,8 +544,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabInitialFocus) {
   EXPECT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
 
   // Open about:blank, focus should be on the location bar.
-  chrome::AddSelectedTabWithURL(
-      browser(), GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_LINK);
+  chrome::AddSelectedTabWithURL(browser(), GURL(url::kAboutBlankURL),
+                                ui::PAGE_TRANSITION_LINK);
   ASSERT_NO_FATAL_FAILURE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
   EXPECT_TRUE(IsViewFocused(VIEW_ID_OMNIBOX));
@@ -570,8 +567,10 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusOnReload) {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::Source<content::NavigationController>(
-            &browser()->tab_strip_model()->GetActiveWebContents()->
-                GetController()));
+            &browser()
+                 ->tab_strip_model()
+                 ->GetActiveWebContents()
+                 ->GetController()));
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
     observer.Wait();
   }
@@ -587,8 +586,10 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusOnReload) {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::Source<content::NavigationController>(
-            &browser()->tab_strip_model()->GetActiveWebContents()->
-                GetController()));
+            &browser()
+                 ->tab_strip_model()
+                 ->GetActiveWebContents()
+                 ->GetController()));
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
     observer.Wait();
   }
@@ -599,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusOnReload) {
 }
 
 // Tests that focus goes where expected when using reload on a crashed tab.
-#if (defined(OS_CHROMEOS) || defined(OS_LINUX)) && !defined(NDEBUG)
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
 // Hangy, http://crbug.com/50025.
 #define MAYBE_FocusOnReloadCrashedTab DISABLED_FocusOnReloadCrashedTab
 #else
@@ -616,8 +617,10 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_FocusOnReloadCrashedTab) {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::Source<content::NavigationController>(
-            &browser()->tab_strip_model()->GetActiveWebContents()->
-                GetController()));
+            &browser()
+                 ->tab_strip_model()
+                 ->GetActiveWebContents()
+                 ->GetController()));
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
     observer.Wait();
   }
@@ -654,8 +657,12 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NavigateFromOmniboxIntoNewTab) {
   // Focus the omnibox.
   chrome::FocusLocationBar(browser());
 
-  OmniboxEditController* controller = browser()->window()->GetLocationBar()->
-      GetOmniboxView()->model()->controller();
+  OmniboxEditController* controller = browser()
+                                          ->window()
+                                          ->GetLocationBar()
+                                          ->GetOmniboxView()
+                                          ->model()
+                                          ->controller();
 
   // Simulate an alt-enter.
   controller->OnAutocompleteAccept(
@@ -686,8 +693,9 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, DISABLED_FocusOnNavigate) {
 
   // Navigate to another page.
   const base::FilePath::CharType* kEmptyFile = FILE_PATH_LITERAL("empty.html");
-  GURL file_url(ui_test_utils::GetTestUrl(base::FilePath(
-      base::FilePath::kCurrentDirectory), base::FilePath(kEmptyFile)));
+  GURL file_url(ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(kEmptyFile)));
   ui_test_utils::NavigateToURL(browser(), file_url);
 
   ClickOnView(VIEW_ID_TAB_CONTAINER);
@@ -731,7 +739,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, AboutBlankNavigationLocationTest) {
   const GURL url2 = embedded_test_server()->GetURL("/title2.html");
   const std::string spoof =
       "var w = window.open('about:blank'); w.opener = null;"
-      "w.document.location = '" + url2.spec() + "';";
+      "w.document.location = '" +
+      url2.spec() + "';";
 
   ASSERT_TRUE(content::ExecuteScript(web_contents, spoof));
   EXPECT_EQ(url1, web_contents->GetVisibleURL());
@@ -784,22 +793,17 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, PopupLocationBar) {
   EXPECT_TRUE(
       ui_test_utils::IsViewFocused(popup_browser, VIEW_ID_TAB_CONTAINER));
 
-  ASSERT_TRUE(PressTabAndWait(popup_browser,
-                              chrome::NOTIFICATION_FOCUS_RETURNED_TO_BROWSER,
-                              content::Source<Browser>(popup_browser)));
-  EXPECT_TRUE(
-      ui_test_utils::IsViewFocused(popup_browser, VIEW_ID_LOCATION_ICON));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(popup_browser, ui::VKEY_TAB,
+                                              false, false, false, false));
+  ui_test_utils::WaitForViewFocus(popup_browser, VIEW_ID_LOCATION_ICON, true);
 
-  ASSERT_TRUE(PressTabAndWait(popup_browser,
-                              chrome::NOTIFICATION_OMNIBOX_FOCUS_CHANGED,
-                              content::NotificationService::AllSources()));
-  EXPECT_TRUE(ui_test_utils::IsViewFocused(popup_browser, VIEW_ID_OMNIBOX));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(popup_browser, ui::VKEY_TAB,
+                                              false, false, false, false));
+  ui_test_utils::WaitForViewFocus(popup_browser, VIEW_ID_OMNIBOX, true);
 
-  ASSERT_TRUE(PressTabAndWait(popup_browser,
-                              chrome::NOTIFICATION_OMNIBOX_FOCUS_CHANGED,
-                              content::NotificationService::AllSources()));
-  EXPECT_TRUE(
-      ui_test_utils::IsViewFocused(popup_browser, VIEW_ID_TAB_CONTAINER));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(popup_browser, ui::VKEY_TAB,
+                                              false, false, false, false));
+  ui_test_utils::WaitForViewFocus(popup_browser, VIEW_ID_TAB_CONTAINER, true);
 }
 
 // Tests that the location bar is not focusable when hidden, which is the case
@@ -813,10 +817,10 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, AppLocationBar) {
   ui_test_utils::FocusView(app_browser, VIEW_ID_TAB_CONTAINER);
   EXPECT_TRUE(ui_test_utils::IsViewFocused(app_browser, VIEW_ID_TAB_CONTAINER));
 
-  ASSERT_TRUE(PressTabAndWait(app_browser,
-                              chrome::NOTIFICATION_FOCUS_RETURNED_TO_BROWSER,
-                              content::Source<Browser>(app_browser)));
-  EXPECT_TRUE(ui_test_utils::IsViewFocused(app_browser, VIEW_ID_TAB_CONTAINER));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(app_browser, ui::VKEY_TAB, false,
+                                              false, false, false));
+  base::RunLoop().RunUntilIdle();
+  ui_test_utils::WaitForViewFocus(app_browser, VIEW_ID_TAB_CONTAINER, true);
 }
 
 }  // namespace

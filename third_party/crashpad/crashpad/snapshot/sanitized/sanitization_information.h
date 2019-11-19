@@ -18,6 +18,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "util/misc/address_types.h"
@@ -45,8 +46,27 @@ struct SanitizationInformation {
   //!     if there is no target module.
   VMAddress target_module_address;
 
+  //! \brief The address in the client process' address space of a
+  //!     a \a SanitizationMemoryRangeWhitelist, a list of whitelisted address
+  //!     ranges allowed to be accessed by ProcessMemorySanitized. This value
+  //!     is 0 if no memory is allowed to be read using ProcessMemorySanitized.
+  VMAddress memory_range_whitelist_address;
+
   //! \brief Non-zero if stacks should be sanitized for possible PII.
   uint8_t sanitize_stacks;
+};
+
+//! \brief Describes a list of white listed memory ranges.
+struct SanitizationMemoryRangeWhitelist {
+  //! \brief Describes a range of memory.
+  struct Range {
+    VMAddress base;
+    VMSize length;
+  };
+
+  //! \brief Address of an array of |size| elements of type Range.
+  VMAddress entries;
+  VMSize size;
 };
 
 #pragma pack(pop)
@@ -62,6 +82,19 @@ struct SanitizationInformation {
 bool ReadAnnotationsWhitelist(const ProcessMemoryRange& memory,
                               VMAddress whitelist_address,
                               std::vector<std::string>* whitelist);
+
+//! \brief Reads a memory range whitelist from another process.
+//!
+//! \param[in] memory A memory reader for the target process.
+//! \param[in] whitelist_address The address in the target process' address
+//!     space of a nullptr terminated array of NUL-terminated strings.
+//! \param[out] whitelist A list of whitelisted memory regions, valid only if
+//!     this function returns `true`.
+//! \return `true` on success, `false` on failure with a message logged.
+bool ReadMemoryRangeWhitelist(
+    const ProcessMemoryRange& memory,
+    VMAddress whitelist_address,
+    std::vector<std::pair<VMAddress, VMAddress>>* whitelist);
 
 }  // namespace crashpad
 

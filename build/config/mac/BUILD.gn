@@ -40,15 +40,6 @@ config("compiler") {
 
   ldflags = common_mac_flags
 
-  # Create a new read-only segment for protected memory. The default segments
-  # (__TEXT and __DATA) are mapped read-execute and read-write by default.
-  ldflags += [
-    "-segprot",
-    "PROTECTED_MEMORY",
-    "rw",
-    "r",
-  ]
-
   if (save_unstripped_output) {
     ldflags += [ "-Wcrl,unstripped," + rebase_path(root_out_dir) ]
   }
@@ -77,7 +68,7 @@ config("runtime_library") {
   # macros that collide with common names, like 'check', 'require', and
   # 'verify'.
   # http://opensource.apple.com/source/CarbonHeaders/CarbonHeaders-18.1/AssertMacros.h
-  defines = [ "__ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORE=0" ]
+  defines = [ "__ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES=0" ]
 }
 
 # On Mac, this is used for everything except static libraries.

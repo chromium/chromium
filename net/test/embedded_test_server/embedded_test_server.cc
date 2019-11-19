@@ -11,13 +11,14 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
 #include "base/message_loop/message_loop_current.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "crypto/rsa_private_key.h"
@@ -50,8 +51,7 @@ EmbeddedTestServer::EmbeddedTestServer(Type type)
     : is_using_ssl_(type == TYPE_HTTPS),
       connection_listener_(nullptr),
       port_(0),
-      cert_(CERT_OK),
-      weak_factory_(this) {
+      cert_(CERT_OK) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (!is_using_ssl_)
@@ -110,7 +110,7 @@ bool EmbeddedTestServer::InitializeAndListen(int port) {
       return false;
     }
 
-    listen_socket_.reset(new TCPServerSocket(nullptr, NetLogSource()));
+    listen_socket_ = std::make_unique<TCPServerSocket>(nullptr, NetLogSource());
 
     int result =
         listen_socket_->ListenWithAddressAndPort("127.0.0.1", port, 10);
@@ -166,16 +166,18 @@ void EmbeddedTestServer::InitializeSSLServerContext() {
 
   std::unique_ptr<crypto::RSAPrivateKey> server_key(
       crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(key_vector));
+  CHECK(server_key);
   context_ =
       CreateSSLServerContext(GetCertificate().get(), *server_key, ssl_config_);
 }
 
 void EmbeddedTestServer::StartAcceptingConnections() {
+  DCHECK(Started());
   DCHECK(!io_thread_.get())
       << "Server must not be started while server is running";
   base::Thread::Options thread_options;
-  thread_options.message_loop_type = base::MessageLoop::TYPE_IO;
-  io_thread_.reset(new base::Thread("EmbeddedTestServer IO Thread"));
+  thread_options.message_pump_type = base::MessagePumpType::IO;
+  io_thread_ = std::make_unique<base::Thread>("EmbeddedTestServer IO Thread");
   CHECK(io_thread_->StartWithOptions(thread_options));
   CHECK(io_thread_->WaitUntilThreadStarted());
 
@@ -236,8 +238,7 @@ void EmbeddedTestServer::HandleRequest(HttpConnection* connection,
   if (!response) {
     LOG(WARNING) << "Request not handled. Returning 404: "
                  << request->relative_url;
-    std::unique_ptr<BasicHttpResponse> not_found_response(
-        new BasicHttpResponse);
+    auto not_found_response = std::make_unique<BasicHttpResponse>();
     not_found_response->set_code(HTTP_NOT_FOUND);
     response = std::move(not_found_response);
   }
@@ -310,12 +311,18 @@ std::string EmbeddedTestServer::GetCertificateName() const {
       return "localhost_cert.pem";
     case CERT_EXPIRED:
       return "expired_cert.pem";
+    case CERT_CHAIN_WRONG_ROOT:
+      // This chain uses its own dedicated test root certificate to avoid
+      // side-effects that may affect testing.
+      return "redundant-server-chain.pem";
     case CERT_COMMON_NAME_ONLY:
       return "common_name_only.pem";
     case CERT_SHA1_LEAF:
       return "sha1_leaf.pem";
     case CERT_OK_BY_INTERMEDIATE:
       return "ok_cert_by_intermediate.pem";
+    case CERT_BAD_VALIDITY:
+      return "bad_validity.pem";
   }
 
   return "ok_cert.pem";
@@ -383,10 +390,10 @@ std::unique_ptr<StreamSocket> EmbeddedTestServer::DoSSLUpgrade(
 }
 
 void EmbeddedTestServer::DoAcceptLoop() {
-  while (
-      listen_socket_->Accept(&accepted_socket_,
-                             base::Bind(&EmbeddedTestServer::OnAcceptCompleted,
-                                        base::Unretained(this))) == OK) {
+  while (listen_socket_->Accept(
+             &accepted_socket_,
+             base::BindOnce(&EmbeddedTestServer::OnAcceptCompleted,
+                            base::Unretained(this))) == OK) {
     HandleAcceptResult(std::move(accepted_socket_));
   }
 }
@@ -434,8 +441,8 @@ void EmbeddedTestServer::HandleAcceptResult(
     SSLServerSocket* ssl_socket =
         static_cast<SSLServerSocket*>(http_connection->socket_.get());
     int rv = ssl_socket->Handshake(
-        base::Bind(&EmbeddedTestServer::OnHandshakeDone, base::Unretained(this),
-                   http_connection));
+        base::BindOnce(&EmbeddedTestServer::OnHandshakeDone,
+                       base::Unretained(this), http_connection));
     if (rv != ERR_IO_PENDING)
       OnHandshakeDone(http_connection, rv);
   } else {
@@ -445,9 +452,9 @@ void EmbeddedTestServer::HandleAcceptResult(
 
 void EmbeddedTestServer::ReadData(HttpConnection* connection) {
   while (true) {
-    int rv =
-        connection->ReadData(base::Bind(&EmbeddedTestServer::OnReadCompleted,
-                                        base::Unretained(this), connection));
+    int rv = connection->ReadData(
+        base::BindOnce(&EmbeddedTestServer::OnReadCompleted,
+                       base::Unretained(this), connection));
     if (rv == ERR_IO_PENDING)
       return;
     if (!HandleReadResult(connection, rv))
@@ -502,14 +509,14 @@ bool EmbeddedTestServer::PostTaskToIOThreadAndWait(
   // base::ThreadTaskRunnerHandle::Get() to return a task runner for posting
   // the reply task. However, in order to make EmbeddedTestServer universally
   // usable, it needs to cope with the situation where it's running on a thread
-  // on which a message loop is not (yet) available or as has been destroyed
+  // on which a task executor is not (yet) available or as has been destroyed
   // already.
   //
-  // To handle this situation, create temporary message loop to support the
-  // PostTaskAndReply operation if the current thread has no message loop.
-  std::unique_ptr<base::MessageLoop> temporary_loop;
+  // To handle this situation, create temporary task executor to support the
+  // PostTaskAndReply operation if the current thread has no task executor.
+  std::unique_ptr<base::SingleThreadTaskExecutor> temporary_loop;
   if (!base::MessageLoopCurrent::Get())
-    temporary_loop.reset(new base::MessageLoop());
+    temporary_loop = std::make_unique<base::SingleThreadTaskExecutor>();
 
   base::RunLoop run_loop;
   if (!io_thread_->task_runner()->PostTaskAndReply(FROM_HERE, closure,

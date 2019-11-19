@@ -8,12 +8,6 @@ import("//testing/test.gni")
 import("//third_party/blink/renderer/platform/platform.gni")
 
 declare_args() {
-  # Build Blink with incremental marking infrastructure for Oilpan.
-  #
-  # To turn on incremental marking also use
-  #   --enable-blink-features=HeapIncrementalMarking
-  enable_blink_heap_incremental_marking = true
-
   # Enables heap verification.
   enable_blink_heap_verification = false
 }
@@ -22,10 +16,7 @@ buildflag_header("blink_heap_buildflags") {
   header = "heap_buildflags.h"
   header_dir = "third_party/blink/renderer/platform/heap"
 
-  flags = [
-    "BLINK_HEAP_INCREMENTAL_MARKING=$enable_blink_heap_incremental_marking",
-    "BLINK_HEAP_VERIFICATION=$enable_blink_heap_verification",
-  ]
+  flags = [ "BLINK_HEAP_VERIFICATION=$enable_blink_heap_verification" ]
 }
 
 blink_platform_sources("heap") {
@@ -33,9 +24,13 @@ blink_platform_sources("heap") {
     "address_cache.cc",
     "address_cache.h",
     "atomic_entry_flag.h",
+    "blink_gc.cc",
     "blink_gc.h",
     "blink_gc_memory_dump_provider.cc",
     "blink_gc_memory_dump_provider.h",
+    "cancelable_task_scheduler.cc",
+    "cancelable_task_scheduler.h",
+    "disallow_new_wrapper.h",
     "finalizer_traits.h",
     "garbage_collected.h",
     "gc_info.cc",
@@ -54,6 +49,7 @@ blink_platform_sources("heap") {
     "heap_stats_collector.cc",
     "heap_stats_collector.h",
     "heap_traits.h",
+    "marking_verifier.cc",
     "marking_verifier.h",
     "marking_visitor.cc",
     "marking_visitor.h",
@@ -69,13 +65,11 @@ blink_platform_sources("heap") {
     "process_heap.cc",
     "process_heap.h",
     "self_keep_alive.h",
-    "sparse_heap_bitmap.cc",
-    "sparse_heap_bitmap.h",
-    "stack_frame_depth.cc",
-    "stack_frame_depth.h",
     "thread_state.cc",
     "thread_state.h",
     "thread_state_scopes.h",
+    "thread_state_statistics.cc",
+    "thread_state_statistics.h",
     "threading_traits.h",
     "trace_traits.h",
     "unified_heap_controller.cc",
@@ -96,6 +90,21 @@ blink_platform_sources("heap") {
   ]
 }
 
+jumbo_source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "heap_test_utilities.cc",
+    "heap_test_utilities.h",
+  ]
+
+  deps = [
+    "//testing/gtest",
+    "//third_party/blink/public/mojom:mojom_platform_blink_headers",
+    "//third_party/blink/renderer/platform:bindings_buildflags",
+  ]
+}
+
 test("blink_heap_unittests") {
   deps = [
     ":blink_heap_unittests_sources",
@@ -113,23 +122,25 @@ test("blink_heap_unittests") {
 jumbo_source_set("blink_heap_unittests_sources") {
   testonly = true
   sources = [
+    "../testing/run_all_tests.cc",
     "address_cache_test.cc",
     "blink_gc_memory_dump_provider_test.cc",
+    "cancelable_task_scheduler_test.cc",
     "gc_info_test.cc",
     "heap_compact_test.cc",
     "heap_stats_collector_test.cc",
     "heap_test.cc",
-    "heap_test_utilities.cc",
-    "heap_test_utilities.h",
     "heap_thread_test.cc",
     "heap_traits_test.cc",
     "incremental_marking_test.cc",
+    "marking_verifier_test.cc",
     "name_trait_test.cc",
     "object_start_bitmap_test.cc",
     "persistent_test.cc",
-    "run_all_tests.cc",
     "thread_state_scheduling_test.cc",
+    "weakness_marking_test.cc",
     "worklist_test.cc",
+    "write_barrier_perftest.cc",
   ]
 
   configs += [
@@ -141,10 +152,14 @@ jumbo_source_set("blink_heap_unittests_sources") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform/wtf",
   ]
+
+  if (is_fuchsia) {
+    # Needed for ../testing/run_all_tests.cc.
+    deps += [ "//skia:test_fonts" ]
+  }
 }

@@ -4,9 +4,12 @@
 
 #include "ui/ozone/platform/drm/gpu/proxy_helpers.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,7 +19,7 @@ namespace ui {
 class ProxyHelpersTest : public testing::Test {
  public:
   void SetUp() override {
-    drm_thread_.reset(new base::Thread("drm_thread"));
+    drm_thread_ = std::make_unique<base::Thread>("drm_thread");
     drm_thread_->Start();
   }
 
@@ -29,7 +32,7 @@ class ProxyHelpersTest : public testing::Test {
   void QuitFunction(int a) {
     EXPECT_TRUE(drm_checker_.CalledOnValidThread());
 
-    message_loop_.task_runner()->PostTask(
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&ProxyHelpersTest::QuitFunctionCallback,
                                   base::Unretained(this), 8));
   }
@@ -39,7 +42,7 @@ class ProxyHelpersTest : public testing::Test {
     EXPECT_TRUE(main_checker_.CalledOnValidThread());
 
     auto quitter = run_loop_.QuitWhenIdleClosure();
-    message_loop_.task_runner()->PostTask(FROM_HERE, quitter);
+    task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE, quitter);
   }
 
   void SetDrmChecker() { drm_checker_.DetachFromThread(); }
@@ -87,7 +90,7 @@ class ProxyHelpersTest : public testing::Test {
 
  protected:
   // Main thread message loop.
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::RunLoop run_loop_;
 
   // Thread to simulate the drm thread in ozone viz process.
@@ -120,8 +123,7 @@ TEST_F(ProxyHelpersTest, PostTask) {
                      std::move(safe_value_callback)));
 
   // Test passing a move-only type.
-  move_type_.reset(new int);
-  *move_type_ = 50;
+  move_type_ = std::make_unique<int>(50);
 
   auto move_callback = base::BindOnce(&ProxyHelpersTest::MoveTypeCallback,
                                       base::Unretained(this));

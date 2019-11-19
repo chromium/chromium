@@ -318,10 +318,8 @@ SSLErrorAssistant::GetErrorAssistantProtoFromResourceBundle() {
   auto proto = std::make_unique<chrome_browser_ssl::SSLErrorAssistantConfig>();
   DCHECK(proto);
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  base::StringPiece data =
-      bundle.GetRawDataResource(IDR_SSL_ERROR_ASSISTANT_PB);
-  google::protobuf::io::ArrayInputStream stream(data.data(), data.size());
-  return proto->ParseFromZeroCopyStream(&stream) ? std::move(proto) : nullptr;
+  std::string data = bundle.LoadDataResourceString(IDR_SSL_ERROR_ASSISTANT_PB);
+  return proto->ParseFromString(data) ? std::move(proto) : nullptr;
 }
 
 void SSLErrorAssistant::SetErrorAssistantProto(

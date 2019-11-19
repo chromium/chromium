@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <iterator>
-#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
@@ -22,8 +21,8 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -52,7 +51,7 @@ class AXSelectionSerializer final {
       return {};
     SerializeSubtree(subtree);
     DCHECK_EQ(tree_level_, 0);
-    return builder_.ToString().Utf8().data();
+    return builder_.ToString().Utf8();
   }
 
  private:
@@ -163,8 +162,7 @@ class AXSelectionSerializer final {
       const auto position = AXPosition::CreatePositionBeforeObject(*child);
       HandleSelection(position);
       ++tree_level_;
-      builder_.Append(
-          String::FromUTF8(std::string(tree_level_ * 2, '+').c_str()));
+      builder_.Append(String::FromUTF8(std::string(tree_level_ * 2, '+')));
       if (position.IsTextPosition()) {
         HandleTextObject(*child);
       } else {
@@ -207,7 +205,7 @@ class AXSelectionDeserializer final {
   // parts of the tree indicated by the selection markers in the snippet.
   const Vector<AXSelection> Deserialize(const std::string& html_snippet,
                                         HTMLElement& element) {
-    element.SetInnerHTMLFromString(String::FromUTF8(html_snippet.c_str()));
+    element.SetInnerHTMLFromString(String::FromUTF8(html_snippet));
     element.GetDocument().View()->UpdateAllLifecyclePhases(
         DocumentLifecycle::LifecycleUpdateReason::kTest);
     AXObject* root = ax_object_cache_->GetOrCreate(&element);
@@ -254,7 +252,7 @@ class AXSelectionDeserializer final {
 
  private:
   void HandleCharacterData(const AXObject& text_object) {
-    CharacterData* const node = ToCharacterData(text_object.GetNode());
+    auto* const node = To<CharacterData>(text_object.GetNode());
     Vector<int> base_offsets;
     Vector<int> extent_offsets;
     unsigned number_of_markers = 0;
@@ -395,29 +393,29 @@ void AccessibilitySelectionTest::RunSelectionTest(
     const std::string& test_name) const {
   static const std::string separator_line = '\n' + std::string(80, '=') + '\n';
   const String relative_path = String::FromUTF8(kSelectionTestsRelativePath) +
-                               String::FromUTF8(test_name.c_str());
+                               String::FromUTF8(test_name);
   const String test_path = AccessibilityTestDataPath(relative_path);
 
   const String test_file = test_path + String::FromUTF8(kTestFileSuffix);
   scoped_refptr<SharedBuffer> test_file_buffer = ReadFromFile(test_file);
-  auto test_file_chars = test_file_buffer->CopyAs<std::vector<char>>();
+  auto test_file_chars = test_file_buffer->CopyAs<Vector<char>>();
   std::string test_file_contents;
   std::copy(test_file_chars.begin(), test_file_chars.end(),
             std::back_inserter(test_file_contents));
   ASSERT_FALSE(test_file_contents.empty())
       << "Test file cannot be empty.\n"
-      << test_file.Utf8().data()
+      << test_file.Utf8()
       << "\nDid you forget to add a data dependency to the BUILD file?";
 
   const String ax_file = test_path + String::FromUTF8(kAXTestExpectationSuffix);
   scoped_refptr<SharedBuffer> ax_file_buffer = ReadFromFile(ax_file);
-  auto ax_file_chars = ax_file_buffer->CopyAs<std::vector<char>>();
+  auto ax_file_chars = ax_file_buffer->CopyAs<Vector<char>>();
   std::string ax_file_contents;
   std::copy(ax_file_chars.begin(), ax_file_chars.end(),
             std::back_inserter(ax_file_contents));
   ASSERT_FALSE(ax_file_contents.empty())
       << "Expectations file cannot be empty.\n"
-      << ax_file.Utf8().data()
+      << ax_file.Utf8()
       << "\nDid you forget to add a data dependency to the BUILD file?";
 
   HTMLElement* body = GetDocument().body();
@@ -430,7 +428,7 @@ void AccessibilitySelectionTest::RunSelectionTest(
   for (auto& ax_selection : ax_selections) {
     ax_selection.Select();
     actual_ax_file_contents += separator_line;
-    actual_ax_file_contents += ax_selection.ToString().Utf8().data();
+    actual_ax_file_contents += ax_selection.ToString().Utf8();
     actual_ax_file_contents += separator_line;
     actual_ax_file_contents += GetCurrentSelectionText();
   }

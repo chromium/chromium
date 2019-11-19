@@ -47,7 +47,7 @@ HRESULT GetPrinterDriverDir(base::FilePath* path) {
 
 bool IsSystem64Bit() {
   base::win::OSInfo::WindowsArchitecture arch =
-      base::win::OSInfo::GetInstance()->architecture();
+      base::win::OSInfo::GetArchitecture();
   return (arch == base::win::OSInfo::X64_ARCHITECTURE) ||
          (arch == base::win::OSInfo::IA64_ARCHITECTURE);
 }

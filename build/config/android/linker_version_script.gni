@@ -10,8 +10,8 @@ import("//build/config/python.gni")
 # Variables:
 #    export_java_symbols: Optional. If true, also export all Java_* symbols
 #      exported for JNI.
-#    export_symbol_whitelist_file: Optional. Path to an input file containing
-#      a whitelist of exported symbols.
+#    export_symbol_whitelist_files: Optional. List of paths to input files containing
+#      lists of symbols to export.
 #    linker_script: Path to output linker version script.
 #
 template("generate_linker_version_script") {
@@ -27,11 +27,19 @@ template("generate_linker_version_script") {
       args += [ "--export-java-symbols" ]
     }
 
-    if (defined(invoker.export_symbol_whitelist_file)) {
-      inputs += [ invoker.export_symbol_whitelist_file ]
-      args +=
-          [ "--export-symbol-whitelist-file=" +
-            rebase_path(invoker.export_symbol_whitelist_file, root_build_dir) ]
+    if (defined(invoker.export_feature_registrations) &&
+        invoker.export_feature_registrations) {
+      args += [ "--export-feature-registrations" ]
+    }
+
+    if (defined(invoker.export_symbol_whitelist_files)) {
+      foreach(file_, invoker.export_symbol_whitelist_files) {
+        inputs += [ file_ ]
+        args += [
+          "--export-symbol-whitelist-file",
+          rebase_path(file_, root_build_dir),
+        ]
+      }
     }
   }
 }

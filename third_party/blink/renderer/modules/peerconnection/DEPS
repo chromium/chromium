@@ -1,5 +1,4 @@
 include_rules = [
-    "+services/metrics/public/cpp/ukm_builders.h",
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/crypto",
     "+third_party/blink/renderer/modules/event_modules.h",
@@ -7,14 +6,33 @@ include_rules = [
     "+third_party/blink/renderer/modules/mediastream",
     "+third_party/blink/renderer/modules/modules_export.h",
     "+third_party/blink/renderer/modules/peerconnection",
-    "+net/third_party/quic",
+    "+third_party/blink/renderer/modules/p2p",
+
+    "+base/hash/md5.h",
+    "+base/lazy_instance.h",
+    # TODO(crbug.com/787254): Replace StringPrintf uses here.
+    "+base/strings/stringprintf.h",
+    "+base/values.h",
+    "+crypto/openssl_util.h",
+    "+jingle/glue/thread_wrapper.h",
+    "+media/base",
+    "+media/media_buildflags.h",
+    "+media/video/gpu_video_accelerator_factories.h",
+    "+net/third_party/quiche/src/quic",
     "+net/quic/chromium",
     "+net/quic",
     "+net/test",
+    "+services/metrics/public/cpp/ukm_builders.h",
 ]
 
 specific_include_rules = {
-    "rtc_data_channel_test\.cc" : [
+    ".*test.*": [
         "+base/run_loop.h",
+        "+base/test/bind_test_util.h",
+        "+base/test/test_timeouts.h",
+        "+base/threading/thread.h",
+        "+media/audio/audio_sink_parameters.h",
+        "+media/audio/audio_source_parameters.h",
+        "+ui/gfx/color_space.h",
     ],
 }

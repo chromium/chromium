@@ -24,7 +24,6 @@
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/policy/policy_constants.h"
-#include "remoting/host/dns_blackhole_checker.h"
 #include "remoting/host/third_party_auth_config.h"
 #include "remoting/protocol/port_range.h"
 
@@ -171,8 +170,9 @@ std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetDefaultPolicies() {
               std::make_unique<base::ListValue>());
   result->Set(key::kRemoteAccessHostDomainList,
               std::make_unique<base::ListValue>());
-  result->SetString(key::kRemoteAccessHostTalkGadgetPrefix,
-                    kDefaultHostTalkGadgetPrefix);
+  // TODO(yuweih): kRemoteAccessHostTalkGadgetPrefix is not used any more. Clean
+  // this up.
+  result->SetString(key::kRemoteAccessHostTalkGadgetPrefix, std::string());
   result->SetString(key::kRemoteAccessHostTokenUrl, std::string());
   result->SetString(key::kRemoteAccessHostTokenValidationUrl, std::string());
   result->SetString(key::kRemoteAccessHostTokenValidationCertificateIssuer,
@@ -183,6 +183,9 @@ std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetDefaultPolicies() {
   result->SetString(key::kRemoteAccessHostUdpPortRange, "");
   result->SetBoolean(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance,
                      false);
+#if !defined(OS_CHROMEOS)
+  result->SetBoolean(key::kRemoteAccessHostAllowFileTransfer, true);
+#endif
   return result;
 }
 
@@ -229,7 +232,7 @@ bool PolicyWatcher::NormalizePolicies(base::DictionaryValue* policy_dict) {
   // 3) policies not supported on all OS-s (i.e. RemoteAccessHostMatchUsername
   //    is not supported on Windows and therefore policy_templates.json omits
   //    schema for this policy on this particular platform).
-  auto strategy = policy::SCHEMA_ALLOW_UNKNOWN_TOPLEVEL;
+  auto strategy = policy::SCHEMA_ALLOW_UNKNOWN;
 
   std::string path;
   std::string error;

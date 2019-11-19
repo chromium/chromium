@@ -7,18 +7,17 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "components/invalidation/impl/json_unsafe_parser.h"
 #include "net/url_request/test_url_fetcher_factory.h"
 #include "net/url_request/url_request_test_util.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,11 +50,11 @@ MATCHER_P(EqualsJSON, json, "equals JSON") {
   return *expected == *actual;
 }
 
-network::ResourceResponseHead CreateHeadersForTest(int responce_code) {
-  network::ResourceResponseHead head;
-  head.headers = new net::HttpResponseHeaders(base::StringPrintf(
+network::mojom::URLResponseHeadPtr CreateHeadersForTest(int responce_code) {
+  auto head = network::mojom::URLResponseHead::New();
+  head->headers = new net::HttpResponseHeaders(base::StringPrintf(
       "HTTP/1.1 %d OK\nContent-type: text/html\n\n", responce_code));
-  head.mime_type = "text/html";
+  head->mime_type = "text/html";
   return head;
 }
 
@@ -66,7 +65,7 @@ class PerUserTopicRegistrationRequestTest : public testing::Test {
   PerUserTopicRegistrationRequestTest() {}
 
   GURL url(PerUserTopicRegistrationRequest* request) {
-    return request->getUrl();
+    return request->GetUrlForTesting();
   }
 
   network::TestURLLoaderFactory* url_loader_factory() {
@@ -74,7 +73,8 @@ class PerUserTopicRegistrationRequestTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   network::TestURLLoaderFactory url_loader_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(PerUserTopicRegistrationRequestTest);
@@ -95,15 +95,13 @@ TEST_F(PerUserTopicRegistrationRequestTest,
 
   PerUserTopicRegistrationRequest::Builder builder;
   std::unique_ptr<PerUserTopicRegistrationRequest> request =
-      builder.SetToken(token)
+      builder.SetInstanceIdToken(token)
           .SetScope(url)
           .SetPublicTopicName(topic)
           .SetProjectId(project_id)
           .SetType(type)
           .Build();
-  request->Start(callback.Get(),
-                 base::BindRepeating(&syncer::JsonUnsafeParser::Parse),
-                 url_loader_factory());
+  request->Start(callback.Get(), url_loader_factory());
   base::RunLoop().RunUntilIdle();
 
   // Destroy the request before getting any response.
@@ -127,7 +125,7 @@ TEST_F(PerUserTopicRegistrationRequestTest, ShouldSubscribeWithoutErrors) {
 
   PerUserTopicRegistrationRequest::Builder builder;
   std::unique_ptr<PerUserTopicRegistrationRequest> request =
-      builder.SetToken(token)
+      builder.SetInstanceIdToken(token)
           .SetScope(base_url)
           .SetPublicTopicName(topic)
           .SetProjectId(project_id)
@@ -145,9 +143,7 @@ TEST_F(PerUserTopicRegistrationRequestTest, ShouldSubscribeWithoutErrors) {
   url_loader_factory()->AddResponse(url(request.get()),
                                     CreateHeadersForTest(net::HTTP_OK),
                                     response_body, response_status);
-  request->Start(callback.Get(),
-                 base::BindRepeating(&syncer::JsonUnsafeParser::Parse),
-                 url_loader_factory());
+  request->Start(callback.Get(), url_loader_factory());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(status.code, StatusCode::SUCCESS);
@@ -172,7 +168,7 @@ TEST_F(PerUserTopicRegistrationRequestTest,
 
   PerUserTopicRegistrationRequest::Builder builder;
   std::unique_ptr<PerUserTopicRegistrationRequest> request =
-      builder.SetToken(token)
+      builder.SetInstanceIdToken(token)
           .SetScope(base_url)
           .SetPublicTopicName(topic)
           .SetProjectId(project_id)
@@ -190,9 +186,7 @@ TEST_F(PerUserTopicRegistrationRequestTest,
   url_loader_factory()->AddResponse(url(request.get()),
                                     CreateHeadersForTest(net::HTTP_OK),
                                     response_body, response_status);
-  request->Start(callback.Get(),
-                 base::BindRepeating(&syncer::JsonUnsafeParser::Parse),
-                 url_loader_factory());
+  request->Start(callback.Get(), url_loader_factory());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(status.code, StatusCode::FAILED);
@@ -217,7 +211,7 @@ TEST_F(PerUserTopicRegistrationRequestTest,
 
   PerUserTopicRegistrationRequest::Builder builder;
   std::unique_ptr<PerUserTopicRegistrationRequest> request =
-      builder.SetToken(token)
+      builder.SetInstanceIdToken(token)
           .SetScope(base_url)
           .SetPublicTopicName(topic)
           .SetProjectId(project_id)
@@ -233,13 +227,11 @@ TEST_F(PerUserTopicRegistrationRequestTest,
   url_loader_factory()->AddResponse(url(request.get()),
                                     CreateHeadersForTest(net::HTTP_OK),
                                     response_body, response_status);
-  request->Start(callback.Get(),
-                 base::BindRepeating(&syncer::JsonUnsafeParser::Parse),
-                 url_loader_factory());
+  request->Start(callback.Get(), url_loader_factory());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(status.code, StatusCode::FAILED);
-  EXPECT_EQ(status.message, "Body parse error");
+  EXPECT_EQ(status.message, "Missing topic name");
 }
 
 TEST_F(PerUserTopicRegistrationRequestTest, ShouldUnsubscribe) {
@@ -260,7 +252,7 @@ TEST_F(PerUserTopicRegistrationRequestTest, ShouldUnsubscribe) {
 
   PerUserTopicRegistrationRequest::Builder builder;
   std::unique_ptr<PerUserTopicRegistrationRequest> request =
-      builder.SetToken(token)
+      builder.SetInstanceIdToken(token)
           .SetScope(base_url)
           .SetPublicTopicName(topic)
           .SetProjectId(project_id)
@@ -276,9 +268,7 @@ TEST_F(PerUserTopicRegistrationRequestTest, ShouldUnsubscribe) {
   url_loader_factory()->AddResponse(url(request.get()),
                                     CreateHeadersForTest(net::HTTP_OK),
                                     response_body, response_status);
-  request->Start(callback.Get(),
-                 base::BindRepeating(&syncer::JsonUnsafeParser::Parse),
-                 url_loader_factory());
+  request->Start(callback.Get(), url_loader_factory());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(status.code, StatusCode::SUCCESS);
@@ -314,7 +304,7 @@ TEST_P(PerUserTopicRegistrationRequestParamTest,
 
   PerUserTopicRegistrationRequest::Builder builder;
   std::unique_ptr<PerUserTopicRegistrationRequest> request =
-      builder.SetToken(token)
+      builder.SetInstanceIdToken(token)
           .SetScope(base_url)
           .SetPublicTopicName(topic)
           .SetProjectId(project_id)
@@ -325,9 +315,7 @@ TEST_P(PerUserTopicRegistrationRequestParamTest,
   url_loader_factory()->AddResponse(
       url(request.get()), CreateHeadersForTest(GetParam()),
       /* response_body */ std::string(), response_status);
-  request->Start(callback.Get(),
-                 base::BindRepeating(&syncer::JsonUnsafeParser::Parse),
-                 url_loader_factory());
+  request->Start(callback.Get(), url_loader_factory());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(status.code, StatusCode::FAILED_NON_RETRIABLE);

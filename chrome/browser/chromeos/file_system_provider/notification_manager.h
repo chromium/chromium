@@ -15,6 +15,7 @@
 #include "chrome/browser/chromeos/file_system_provider/notification_manager_interface.h"
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ui/app_icon_loader.h"
+#include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 class Profile;
@@ -71,8 +72,8 @@ class NotificationManager : public NotificationManagerInterface,
   ProvidedFileSystemInfo file_system_info_;
   CallbackMap callbacks_;
   std::unique_ptr<AppIconLoader> icon_loader_;
-  std::unique_ptr<gfx::Image> extension_icon_;
-  base::WeakPtrFactory<NotificationManager> weak_factory_;
+  gfx::Image extension_icon_;
+  base::WeakPtrFactory<NotificationManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NotificationManager);
 };

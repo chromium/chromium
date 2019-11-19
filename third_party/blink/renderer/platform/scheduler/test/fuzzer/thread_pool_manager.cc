@@ -12,7 +12,7 @@ namespace sequence_manager {
 
 ThreadPoolManager::ThreadPoolManager(SequenceManagerFuzzerProcessor* processor)
     : processor_(processor),
-      next_time_(TimeTicks::Max()),
+      next_time_(base::TimeTicks::Max()),
       ready_to_compute_time_(&lock_),
       ready_to_advance_time_(&lock_),
       ready_to_terminate_(&lock_),
@@ -32,7 +32,7 @@ ThreadPoolManager::~ThreadPoolManager() = default;
 void ThreadPoolManager::CreateThread(
     const google::protobuf::RepeatedPtrField<
         SequenceManagerTestDescription::Action>& initial_thread_actions,
-    TimeTicks time) {
+    base::TimeTicks time) {
   SimpleThread* thread;
   {
     AutoLock lock(lock_);
@@ -81,7 +81,7 @@ void ThreadPoolManager::AdvanceClockSynchronouslyByPendingTaskDelay(
 
 void ThreadPoolManager::AdvanceClockSynchronouslyToTime(
     ThreadManager* thread_manager,
-    TimeTicks time) {
+    base::TimeTicks time) {
   ThreadReadyToComputeTime();
   {
     AutoLock lock(lock_);
@@ -118,7 +118,7 @@ void ThreadPoolManager::AdvanceThreadClock(ThreadManager* thread_manager) {
     threads_waiting_to_advance_time_ = 0;
     threads_ready_for_next_round_ = 0;
     all_threads_ready_ = true;
-    next_time_ = TimeTicks::Max();
+    next_time_ = base::TimeTicks::Max();
     ready_for_next_round_.Broadcast();
   }
 }
@@ -132,7 +132,7 @@ void ThreadPoolManager::StartInitialThreads() {
 }
 
 void ThreadPoolManager::WaitForAllThreads() {
-  if (threads_.empty())
+  if (threads_.IsEmpty())
     return;
   AutoLock lock(lock_);
   while (threads_ready_to_terminate_ != threads_.size())
@@ -154,13 +154,13 @@ SequenceManagerFuzzerProcessor* ThreadPoolManager::processor() const {
 
 ThreadManager* ThreadPoolManager::GetThreadManagerFor(uint64_t thread_id) {
   AutoLock lock(lock_);
-  if (thread_managers_.empty())
+  if (thread_managers_.IsEmpty())
     return nullptr;
   int id = thread_id % thread_managers_.size();
   return thread_managers_[id];
 }
 
-std::vector<ThreadManager*> ThreadPoolManager::GetAllThreadManagers() {
+Vector<ThreadManager*> ThreadPoolManager::GetAllThreadManagers() {
   AutoLock lock(lock_);
   return thread_managers_;
 }

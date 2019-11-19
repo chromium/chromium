@@ -38,29 +38,37 @@ int HumanReadableNetworkHandle(NetworkChangeNotifier::NetworkHandle network) {
 // Return a dictionary of values that provide information about a
 // network-specific change. This also includes relevant current state
 // like the default network, and the types of active networks.
-std::unique_ptr<base::Value> NetworkSpecificNetLogCallback(
-    NetworkChangeNotifier::NetworkHandle network,
-    NetLogCaptureMode capture_mode) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetInteger("changed_network_handle",
-                   HumanReadableNetworkHandle(network));
-  dict->SetString(
+base::Value NetworkSpecificNetLogParams(
+    NetworkChangeNotifier::NetworkHandle network) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetIntKey("changed_network_handle", HumanReadableNetworkHandle(network));
+  dict.SetStringKey(
       "changed_network_type",
       NetworkChangeNotifier::ConnectionTypeToString(
           NetworkChangeNotifier::GetNetworkConnectionType(network)));
-  dict->SetInteger(
+  dict.SetIntKey(
       "default_active_network_handle",
       HumanReadableNetworkHandle(NetworkChangeNotifier::GetDefaultNetwork()));
   NetworkChangeNotifier::NetworkList networks;
   NetworkChangeNotifier::GetConnectedNetworks(&networks);
   for (NetworkChangeNotifier::NetworkHandle active_network : networks) {
-    dict->SetString(
+    dict.SetStringKey(
         "current_active_networks." +
             base::NumberToString(HumanReadableNetworkHandle(active_network)),
         NetworkChangeNotifier::ConnectionTypeToString(
             NetworkChangeNotifier::GetNetworkConnectionType(active_network)));
   }
-  return std::move(dict);
+  return dict;
+}
+
+void NetLogNetworkSpecific(NetLog* net_log,
+                           NetLogEventType type,
+                           NetworkChangeNotifier::NetworkHandle network) {
+  if (!net_log)
+    return;
+
+  net_log->AddGlobalEntry(type,
+                          [&] { return NetworkSpecificNetLogParams(network); });
 }
 
 }  // namespace
@@ -96,9 +104,9 @@ void LoggingNetworkChangeObserver::OnConnectionTypeChanged(
   VLOG(1) << "Observed a change to network connectivity state "
           << type_as_string;
 
-  net_log_->AddGlobalEntry(
-      NetLogEventType::NETWORK_CONNECTIVITY_CHANGED,
-      NetLog::StringCallback("new_connection_type", &type_as_string));
+  net_log_->AddGlobalEntryWithStringParams(
+      NetLogEventType::NETWORK_CONNECTIVITY_CHANGED, "new_connection_type",
+      type_as_string);
 }
 
 void LoggingNetworkChangeObserver::OnNetworkChanged(
@@ -108,41 +116,40 @@ void LoggingNetworkChangeObserver::OnNetworkChanged(
 
   VLOG(1) << "Observed a network change to state " << type_as_string;
 
-  net_log_->AddGlobalEntry(
-      NetLogEventType::NETWORK_CHANGED,
-      NetLog::StringCallback("new_connection_type", &type_as_string));
+  net_log_->AddGlobalEntryWithStringParams(
+      NetLogEventType::NETWORK_CHANGED, "new_connection_type", type_as_string);
 }
 
 void LoggingNetworkChangeObserver::OnNetworkConnected(
     NetworkChangeNotifier::NetworkHandle network) {
   VLOG(1) << "Observed network " << network << " connect";
 
-  net_log_->AddGlobalEntry(NetLogEventType::SPECIFIC_NETWORK_CONNECTED,
-                           base::Bind(&NetworkSpecificNetLogCallback, network));
+  NetLogNetworkSpecific(net_log_, NetLogEventType::SPECIFIC_NETWORK_CONNECTED,
+                        network);
 }
 
 void LoggingNetworkChangeObserver::OnNetworkDisconnected(
     NetworkChangeNotifier::NetworkHandle network) {
   VLOG(1) << "Observed network " << network << " disconnect";
 
-  net_log_->AddGlobalEntry(NetLogEventType::SPECIFIC_NETWORK_DISCONNECTED,
-                           base::Bind(&NetworkSpecificNetLogCallback, network));
+  NetLogNetworkSpecific(
+      net_log_, NetLogEventType::SPECIFIC_NETWORK_DISCONNECTED, network);
 }
 
 void LoggingNetworkChangeObserver::OnNetworkSoonToDisconnect(
     NetworkChangeNotifier::NetworkHandle network) {
   VLOG(1) << "Observed network " << network << " soon to disconnect";
 
-  net_log_->AddGlobalEntry(NetLogEventType::SPECIFIC_NETWORK_SOON_TO_DISCONNECT,
-                           base::Bind(&NetworkSpecificNetLogCallback, network));
+  NetLogNetworkSpecific(
+      net_log_, NetLogEventType::SPECIFIC_NETWORK_SOON_TO_DISCONNECT, network);
 }
 
 void LoggingNetworkChangeObserver::OnNetworkMadeDefault(
     NetworkChangeNotifier::NetworkHandle network) {
   VLOG(1) << "Observed network " << network << " made the default network";
 
-  net_log_->AddGlobalEntry(NetLogEventType::SPECIFIC_NETWORK_MADE_DEFAULT,
-                           base::Bind(&NetworkSpecificNetLogCallback, network));
+  NetLogNetworkSpecific(
+      net_log_, NetLogEventType::SPECIFIC_NETWORK_MADE_DEFAULT, network);
 }
 
 }  // namespace net

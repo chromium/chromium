@@ -16,8 +16,9 @@
 #include "base/sequence_checker.h"
 #include "components/viz/service/viz_service_export.h"
 #include "media/base/video_types.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/viz/privileged/interfaces/compositing/frame_sink_video_capture.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
@@ -78,8 +79,9 @@ class VIZ_SERVICE_EXPORT VideoCaptureOverlay
   using OnceRenderer = base::OnceCallback<void(media::VideoFrame*)>;
 
   // |frame_source| must outlive this instance.
-  VideoCaptureOverlay(FrameSource* frame_source,
-                      mojom::FrameSinkVideoCaptureOverlayRequest request);
+  VideoCaptureOverlay(
+      FrameSource* frame_source,
+      mojo::PendingReceiver<mojom::FrameSinkVideoCaptureOverlay> receiver);
 
   ~VideoCaptureOverlay() final;
 
@@ -159,7 +161,7 @@ class VIZ_SERVICE_EXPORT VideoCaptureOverlay
 
   FrameSource* const frame_source_;
 
-  mojo::Binding<mojom::FrameSinkVideoCaptureOverlay> binding_;
+  mojo::Receiver<mojom::FrameSinkVideoCaptureOverlay> receiver_;
 
   // The currently-set overlay image.
   SkBitmap image_;

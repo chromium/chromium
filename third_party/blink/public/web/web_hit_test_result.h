@@ -60,6 +60,9 @@ class WebHitTestResult {
   // ContentBoxOffset removed if the node has box layout.
   BLINK_EXPORT WebPoint LocalPointWithoutContentBoxOffset() const;
 
+  // Returns whether the content box contains the hit test point.
+  BLINK_EXPORT bool ContentBoxContainsPoint() const;
+
   // If a link (eg. anchor or area tag) is hit, return the element.
   // Return null otheriwse.
   BLINK_EXPORT WebElement UrlElement() const;

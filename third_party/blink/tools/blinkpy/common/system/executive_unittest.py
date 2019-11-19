@@ -138,7 +138,11 @@ class ExecutiveTest(unittest.TestCase):
 
     def test_kill_process(self):
         executive = Executive()
-        process = subprocess.Popen(never_ending_command(), stdout=subprocess.PIPE)
+        if sys.platform == 'win32':
+            process = subprocess.Popen(never_ending_command(), stdout=subprocess.PIPE)
+        else:
+            process = subprocess.Popen(never_ending_command(), stdout=subprocess.PIPE, preexec_fn=lambda: os.setpgid(0, 0))
+
         self.assertEqual(process.poll(), None)  # Process is running
         executive.kill_process(process.pid)
 

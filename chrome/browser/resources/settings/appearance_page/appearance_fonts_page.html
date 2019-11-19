@@ -1,8 +1,8 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="fonts_browser_proxy.html">
 <link rel="import" href="../controls/settings_slider.html">
 <link rel="import" href="../controls/settings_dropdown_menu.html">
@@ -11,9 +11,19 @@
 
 <dom-module id="settings-appearance-fonts-page">
   <template>
-    <style include="settings-shared"></style>
+    <style include="settings-shared">
+      #minimumSize {
+        align-items: flex-end;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #minimumSizeSample {
+        text-align: end;
+      }
+    </style>
     <div class="settings-box first">
-      <div class="start">$i18n{fontSize}</div>
+      <div class="start settings-box-text">$i18n{fontSize}</div>
       <settings-slider id="sizeSlider"
           pref="{{prefs.webkit.webprefs.default_font_size}}"
           ticks="[[fontSizeRange_]]"
@@ -21,21 +31,23 @@
       </settings-slider>
     </div>
     <div class="settings-box">
-      <div class="start">$i18n{minimumFont}</div>
-      <div style="
-          font-size:[[computeMinimumFontSize_(
-              prefs.webkit.webprefs.minimum_font_size.value)]]px;
-          font-family:
-              '[[prefs.webkit.webprefs.fonts.standard.Zyyy.value]]';">
-        [[computeMinimumFontSize_(
-                prefs.webkit.webprefs.minimum_font_size.value)]]:
-        $i18n{quickBrownFox}
+      <div class="start settings-box-text">$i18n{minimumFont}</div>
+      <div id="minimumSize">
+        <settings-slider  pref="{{prefs.webkit.webprefs.minimum_font_size}}"
+            ticks="[[minimumFontSizeRange_]]" label-min="$i18n{tiny}"
+            label-max="$i18n{huge}"></settings-slider>
+        <div id="minimumSizeSample"
+            style="
+                font-size:[[computeMinimumFontSize_(
+                    prefs.webkit.webprefs.minimum_font_size.value)]]px;
+                font-family:
+                    '[[prefs.webkit.webprefs.fonts.standard.Zyyy.value]]';"
+            hidden>
+          [[computeMinimumFontSize_(
+                  prefs.webkit.webprefs.minimum_font_size.value)]]:
+          $i18n{quickBrownFox}
+        </div>
       </div>
-      <settings-slider id="minimumSizeSlider"
-          pref="{{prefs.webkit.webprefs.minimum_font_size}}"
-          ticks="[[minimumFontSizeRange_]]"
-          label-min="$i18n{tiny}" label-max="$i18n{huge}">
-      </settings-slider>
     </div>
     <div class="settings-box">
       <h2>$i18n{standardFont}</h2>
@@ -47,7 +59,7 @@
             menu-options="[[fontOptions_]]">
         </settings-dropdown-menu>
       </div>
-      <div class="list-item underbar"
+      <div class="list-item settings-box-text"
           style="
               font-size:[[prefs.webkit.webprefs.default_font_size.value]]px;
               font-family:
@@ -68,7 +80,7 @@
             menu-options="[[fontOptions_]]">
         </settings-dropdown-menu>
       </div>
-      <div class="list-item underbar"
+      <div class="list-item settings-box-text"
           style="
               font-size:[[prefs.webkit.webprefs.default_font_size.value]]px;
               font-family:
@@ -89,7 +101,7 @@
             menu-options="[[fontOptions_]]">
         </settings-dropdown-menu>
       </div>
-      <div class="list-item underbar"
+      <div class="list-item settings-box-text"
           style="
               font-size:[[prefs.webkit.webprefs.default_font_size.value]]px;
               font-family:
@@ -110,7 +122,7 @@
             menu-options="[[fontOptions_]]">
         </settings-dropdown-menu>
       </div>
-      <div class="list-item"
+      <div class="list-item settings-box-text"
           style="
               font-size:
                   [[prefs.webkit.webprefs.default_fixed_font_size.value]]px;
@@ -121,19 +133,9 @@
       </div>
     </div>
     <template is="dom-if" if="[[!isGuest_]]">
-      <div class="settings-box two-line" id="advancedButton"
-          on-click="openAdvancedExtension_" actionable>
-        <div class="start">
-          $i18n{advancedFontSettings}
-          <div class="secondary" id="advancedButtonSublabel">
-            [[advancedExtensionSublabel_]]
-          </div>
-        </div>
-        <paper-icon-button-light class="icon-external">
-          <button aria-label="$i18n{advancedFontSettings}"
-              aria-describedby="advancedButtonSublabel"></button>
-        </paper-icon-button-light>
-      </div>
+      <cr-link-row id="advancedButton" class="hr"
+          on-click="openAdvancedExtension_" label="$i18n{advancedFontSettings}"
+          sub-label="[[advancedExtensionSublabel_]]" external></cr-link-row>
     </template>
   </template>
   <script src="appearance_fonts_page.js"></script>

@@ -7,12 +7,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/task/post_task.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Tests that DeletePasswordsDirectory() actually deletes the directory.
 TEST(PasswordsDirectoryUtilTest, Deletion) {
-  base::test::ScopedTaskEnvironment environment;
+  base::test::TaskEnvironment environment;
   base::FilePath dir;
   ASSERT_TRUE(password_manager::GetPasswordsDirectory(&dir));
   ASSERT_TRUE(CreateDirectory(dir));

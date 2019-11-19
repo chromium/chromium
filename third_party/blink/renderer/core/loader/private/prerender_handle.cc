@@ -30,11 +30,12 @@
 
 #include "third_party/blink/renderer/core/loader/private/prerender_handle.h"
 
-#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/loader/prerenderer_client.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/prerender.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
@@ -50,10 +51,12 @@ PrerenderHandle* PrerenderHandle::Create(Document& document,
   if (!document.GetFrame())
     return nullptr;
 
-  Prerender* prerender = Prerender::Create(
+  auto* prerender = MakeGarbageCollected<Prerender>(
       client, url, prerender_rel_types,
-      SecurityPolicy::GenerateReferrer(document.GetReferrerPolicy(), url,
-                                       document.OutgoingReferrer()));
+      SecurityPolicy::GenerateReferrer(document.GetReferrerPolicy(),
+                                       document.GetSecurityOrigin(), url,
+                                       document.OutgoingReferrer()),
+      document.GetSecurityOrigin());
 
   PrerendererClient* prerenderer_client =
       PrerendererClient::From(document.GetPage());
@@ -67,7 +70,9 @@ PrerenderHandle* PrerenderHandle::Create(Document& document,
 PrerenderHandle::PrerenderHandle(Document& document, Prerender* prerender)
     : ContextLifecycleObserver(&document), prerender_(prerender) {}
 
-PrerenderHandle::~PrerenderHandle() {
+PrerenderHandle::~PrerenderHandle() = default;
+
+void PrerenderHandle::Dispose() {
   if (prerender_) {
     prerender_->Abandon();
     Detach();

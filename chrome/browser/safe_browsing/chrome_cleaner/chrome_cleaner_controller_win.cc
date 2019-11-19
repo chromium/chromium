@@ -4,45 +4,33 @@
 
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 
+#include <ostream>
+
+#include "base/metrics/histogram_macros.h"
+
 namespace safe_browsing {
 
 using UserResponse = ChromeCleanerController::UserResponse;
 
+// Keep the printable names of these enums short since they're used in tests
+// with very long parameter lists.
+//
 std::ostream& operator<<(std::ostream& out,
                          ChromeCleanerController::State state) {
-  switch (state) {
-    case ChromeCleanerController::State::kIdle:
-      return out << "Idle";
-    case ChromeCleanerController::State::kReporterRunning:
-      return out << "ReporterRunning";
-    case ChromeCleanerController::State::kScanning:
-      return out << "Scanning";
-    case ChromeCleanerController::State::kInfected:
-      return out << "Infected";
-    case ChromeCleanerController::State::kCleaning:
-      return out << "Cleaning";
-    case ChromeCleanerController::State::kRebootRequired:
-      return out << "RebootRequired";
-    default:
-      NOTREACHED();
-      return out << "UnknownUserResponse" << state;
-  }
+  return out << "State" << static_cast<int>(state);
 }
 
 std::ostream& operator<<(std::ostream& out, UserResponse response) {
-  switch (response) {
-    case UserResponse::kAcceptedWithLogs:
-      return out << "UserAcceptedWithLogs";
-    case UserResponse::kAcceptedWithoutLogs:
-      return out << "UserAcceptedWithoutLogs";
-    case UserResponse::kDenied:
-      return out << "UserDenied";
-    case UserResponse::kDismissed:
-      return out << "UserDismissed";
-    default:
-      NOTREACHED();
-      return out << "UnknownUserResponse";
-  }
+  return out << "Resp" << static_cast<int>(response);
 }
+
+void RecordCleanupStartedHistogram(CleanupStartedHistogramValue value) {
+  UMA_HISTOGRAM_ENUMERATION("SoftwareReporter.CleanupStarted", value,
+                            CLEANUP_STARTED_MAX);
+}
+
+ChromeCleanerController::ChromeCleanerController() = default;
+
+ChromeCleanerController::~ChromeCleanerController() = default;
 
 }  // namespace safe_browsing

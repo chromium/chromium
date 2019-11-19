@@ -4,12 +4,13 @@
 
 #include "chrome/browser/extensions/clipboard_extension_helper_chromeos.h"
 
-#include "base/callback_helpers.h"
+#include <utility>
+
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/synchronization/cancellation_flag.h"
+#include "base/synchronization/atomic_flag.h"
 #include "chrome/browser/image_decoder.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -104,13 +105,12 @@ void ClipboardExtensionHelper::DecodeAndSaveImageData(
 }
 
 void ClipboardExtensionHelper::OnImageDecodeFailure() {
-  base::ResetAndReturn(&image_save_error_callback_)
-      .Run("Image data decoding failed.");
+  std::move(image_save_error_callback_).Run("Image data decoding failed.");
 }
 
 void ClipboardExtensionHelper::OnImageDecoded(const SkBitmap& bitmap) {
   {
-    ui::ScopedClipboardWriter scw(ui::CLIPBOARD_TYPE_COPY_PASTE);
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
     // Write the decoded image data to clipboard.
     if (!bitmap.empty() && !bitmap.isNull())
       scw.WriteImage(bitmap);
@@ -122,11 +122,11 @@ void ClipboardExtensionHelper::OnImageDecoded(const SkBitmap& bitmap) {
         scw.WriteHTML(base::UTF8ToUTF16(item.data), std::string());
     }
   }
-  base::ResetAndReturn(&image_save_success_callback_).Run();
+  std::move(image_save_success_callback_).Run();
 }
 
 void ClipboardExtensionHelper::OnImageDecodeCancel() {
-  base::ResetAndReturn(&image_save_error_callback_).Run("Request canceled.");
+  std::move(image_save_error_callback_).Run("Request canceled.");
 }
 
 }  // namespace extensions

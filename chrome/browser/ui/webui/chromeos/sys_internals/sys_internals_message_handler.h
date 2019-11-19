@@ -59,7 +59,7 @@ class SysInternalsMessageHandler : public content::WebUIMessageHandler {
   //
   void ReplySysInfo(base::Value callback_id, base::Value result);
 
-  base::WeakPtrFactory<SysInternalsMessageHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<SysInternalsMessageHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SysInternalsMessageHandler);
 };

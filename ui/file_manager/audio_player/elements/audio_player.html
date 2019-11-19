@@ -12,8 +12,9 @@
 <dom-module id="audio-player">
   <link rel="import" type="css" href="audio_player.css">
   <template>
-    <track-info-panel id="trackInfo"
-        expanded="{{trackInfoExpanded}}"></track-info-panel>
+    <track-info-panel id="trackInfo" expanded="{{trackInfoExpanded}}"
+        aria-expand-artwork-label="[[ariaExpandArtworkLabel]]">
+    </track-info-panel>
     <track-list id="trackList"
         expanded$="[[playlistExpanded]]"
         shuffle="[[shuffle]]"

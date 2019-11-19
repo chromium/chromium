@@ -11,6 +11,7 @@
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "services/device/hid/hid_device_info.h"
 #include "services/device/hid/hid_service.h"
@@ -29,7 +30,7 @@ class HidServiceLinux : public HidService {
 
  private:
   struct ConnectParams;
-  class BlockingTaskHelper;
+  class BlockingTaskRunnerHelper;
 
 // These functions implement the process of locating, requesting access to and
 // opening a device. Because this operation crosses multiple threads these
@@ -51,8 +52,8 @@ class HidServiceLinux : public HidService {
 
   // |helper_| lives on the sequence |blocking_task_runner_| posts to and holds
   // a weak reference back to the service that owns it.
-  std::unique_ptr<BlockingTaskHelper> helper_;
-  base::WeakPtrFactory<HidServiceLinux> weak_factory_;
+  std::unique_ptr<BlockingTaskRunnerHelper, base::OnTaskRunnerDeleter> helper_;
+  base::WeakPtrFactory<HidServiceLinux> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HidServiceLinux);
 };

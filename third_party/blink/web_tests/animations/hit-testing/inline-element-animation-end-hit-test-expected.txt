@@ -1,9 +1,0 @@
-Tests that when a LayoutObject loses its PaintLayer due to completion of an animation of an inline statically positioned element, we correctly update the locations of descendent layers.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS document.elementFromPoint(150, 150) === box is true
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

@@ -18,7 +18,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
-#include "components/favicon/core/favicon_server_fetcher_params.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/fallback_icon_style.h"
 #include "components/favicon_base/favicon_types.h"
@@ -55,14 +54,13 @@ void RecordFaviconFetchResult(FaviconFetchResult result) {
 
 ContentSuggestionsService::ContentSuggestionsService(
     State state,
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     history::HistoryService* history_service,
     favicon::LargeIconService* large_icon_service,
     PrefService* pref_service,
     std::unique_ptr<CategoryRanker> category_ranker,
     std::unique_ptr<UserClassifier> user_classifier,
-    std::unique_ptr<RemoteSuggestionsScheduler> remote_suggestions_scheduler,
-    std::unique_ptr<Logger> debug_logger)
+    std::unique_ptr<RemoteSuggestionsScheduler> remote_suggestions_scheduler)
     : state_(state),
       identity_manager_observer_(this),
       history_service_observer_(this),
@@ -71,8 +69,7 @@ ContentSuggestionsService::ContentSuggestionsService(
       pref_service_(pref_service),
       remote_suggestions_scheduler_(std::move(remote_suggestions_scheduler)),
       user_classifier_(std::move(user_classifier)),
-      category_ranker_(std::move(category_ranker)),
-      debug_logger_(std::move(debug_logger)) {
+      category_ranker_(std::move(category_ranker)) {
   // Can be null in tests.
   if (identity_manager) {
     identity_manager_observer_.Add(identity_manager);
@@ -81,8 +78,6 @@ ContentSuggestionsService::ContentSuggestionsService(
   if (history_service) {
     history_service_observer_.Add(history_service);
   }
-
-  debug_logger_->Log(FROM_HERE, /*message=*/std::string());
 
   RestoreDismissedCategoriesFromPrefs();
 }
@@ -296,9 +291,9 @@ void ContentSuggestionsService::OnGetFaviconFromCacheFinished(
         })");
   large_icon_service_
       ->GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-          favicon::FaviconServerFetcherParams::CreateForMobile(
-              publisher_url, minimum_size_in_pixel, desired_size_in_pixel),
-          /*may_page_url_be_private=*/false, traffic_annotation,
+          publisher_url,
+          /*may_page_url_be_private=*/false,
+          /*should_trim_page_url_path=*/false, traffic_annotation,
           base::Bind(
               &ContentSuggestionsService::OnGetFaviconFromGoogleServerFinished,
               base::Unretained(this), publisher_url, minimum_size_in_pixel,
@@ -520,7 +515,7 @@ void ContentSuggestionsService::OnSuggestionInvalidated(
     observer.OnSuggestionInvalidated(suggestion_id);
   }
 }
-// identity::IdentityManager::Observer implementation
+// signin::IdentityManager::Observer implementation
 void ContentSuggestionsService::OnPrimaryAccountSet(
     const CoreAccountInfo& account_info) {
   OnSignInStateChanged(/*has_signed_in=*/true);
@@ -603,7 +598,7 @@ bool ContentSuggestionsService::TryRegisterProviderForCategory(
 void ContentSuggestionsService::RegisterCategory(
     Category category,
     ContentSuggestionsProvider* provider) {
-  DCHECK(!base::ContainsKey(providers_by_category_, category));
+  DCHECK(!base::Contains(providers_by_category_, category));
   DCHECK(!IsCategoryDismissed(category));
 
   providers_by_category_[category] = provider;
@@ -667,12 +662,12 @@ void ContentSuggestionsService::OnSignInStateChanged(bool has_signed_in) {
 }
 
 bool ContentSuggestionsService::IsCategoryDismissed(Category category) const {
-  return base::ContainsKey(dismissed_providers_by_category_, category);
+  return base::Contains(dismissed_providers_by_category_, category);
 }
 
 void ContentSuggestionsService::RestoreDismissedCategory(Category category) {
   auto dismissed_it = dismissed_providers_by_category_.find(category);
-  DCHECK(base::ContainsKey(dismissed_providers_by_category_, category));
+  DCHECK(base::Contains(dismissed_providers_by_category_, category));
 
   // Keep the reference to the provider and remove it from the dismissed ones,
   // because the category registration enforces that it's not dismissed.

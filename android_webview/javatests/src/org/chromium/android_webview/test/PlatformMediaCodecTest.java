@@ -12,11 +12,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Test that a page with a non-Chrome media codec can playback correctly; this
@@ -32,7 +32,7 @@ public class PlatformMediaCodecTest {
     private WebContents mWebContents;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContentsClient = new TestAwContentsClient();
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mWebContents = mTestContainerView.getWebContents();
@@ -53,7 +53,7 @@ public class PlatformMediaCodecTest {
 
     private WebContents getWebContentsOnUiThread() {
         try {
-            return ThreadUtils.runOnUiThreadBlocking(() -> mWebContents);
+            return TestThreadUtils.runOnUiThreadBlocking(() -> mWebContents);
         } catch (Exception e) {
             Assert.fail(e.getMessage());
             return null;

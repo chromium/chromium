@@ -6,7 +6,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/time/time.h"
-#include "jni/MidiInputPortAndroid_jni.h"
+#include "media/midi/midi_jni_headers/MidiInputPortAndroid_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -33,7 +33,6 @@ void MidiInputPortAndroid::Close() {
 }
 
 void MidiInputPortAndroid::OnData(JNIEnv* env,
-                                  const JavaParamRef<jobject>& caller,
                                   const JavaParamRef<jbyteArray>& data,
                                   jint offset,
                                   jint size,

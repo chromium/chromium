@@ -12,11 +12,11 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/image_writer_private/image_writer_utility_client.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -204,7 +204,7 @@ class ImageWriterUnitTestBase : public testing::Test {
 
   ImageWriterTestUtils test_utils_;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 }  // namespace image_writer

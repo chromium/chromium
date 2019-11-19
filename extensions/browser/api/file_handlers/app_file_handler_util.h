@@ -18,10 +18,13 @@ namespace content {
 class BrowserContext;
 }
 
+namespace apps {
+struct FileHandlerInfo;
+}
+
 namespace extensions {
 
 struct EntryInfo;
-struct FileHandlerInfo;
 struct FileHandlerMatch;
 struct GrantedFileEntry;
 
@@ -34,8 +37,8 @@ extern const char kSecurityError[];
 
 // Returns the file handler with the specified |handler_id|, or NULL if there
 // is no such handler.
-const FileHandlerInfo* FileHandlerForId(const Extension& app,
-                                        const std::string& handler_id);
+const apps::FileHandlerInfo* FileHandlerForId(const Extension& app,
+                                              const std::string& handler_id);
 
 // Returns the handlers that can handle all files in |entries|
 // along with metadata about how the handler matched (MIME or file extension)
@@ -43,7 +46,13 @@ std::vector<FileHandlerMatch> FindFileHandlerMatchesForEntries(
     const Extension& extension,
     const std::vector<EntryInfo>& entries);
 
-bool FileHandlerCanHandleEntry(const FileHandlerInfo& handler,
+// Returns the handlers that can handle all files in |entries|
+// along with metadata about how the handler matched (MIME or file)
+std::vector<FileHandlerMatch> MatchesFromFileHandlersForEntries(
+    const FileHandlersInfo& file_handlers,
+    const std::vector<EntryInfo>& entries);
+
+bool FileHandlerCanHandleEntry(const apps::FileHandlerInfo& handler,
                                const EntryInfo& entry);
 
 // Creates a new file entry and allows |renderer_id| to access |path|. This

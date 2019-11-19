@@ -22,4 +22,11 @@ float SystemSuggestedFontSizeMultiplier(UIContentSizeCategory category,
                                         UIContentSizeCategory min_category,
                                         UIContentSizeCategory max_category);
 
+// Returns an UIFont* calculated by |style| and
+// min(|currentCategory|,|maxCategory|).
+UIFont* PreferredFontForTextStyleWithMaxCategory(
+    UIFontTextStyle style,
+    UIContentSizeCategory currentCategory,
+    UIContentSizeCategory maxCategory);
+
 #endif  // IOS_CHROME_BROWSER_UI_UTIL_DYNAMIC_TYPE_UTIL_H_

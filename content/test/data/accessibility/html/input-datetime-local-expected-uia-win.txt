@@ -1,0 +1,23 @@
+document
+++group
+++++textbox LocalizedControlType='local date and time picker'
+++++++group
+++++++++group
+++++++++++spinbutton Name='Month' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=12.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++description Name='mm'
+++++++++++description Name='/'
+++++++++++spinbutton Name='Day' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=31.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++description Name='dd'
+++++++++++description Name='/'
+++++++++++spinbutton Name='Year' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=275760.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++description Name='yyyy'
+++++++++++description Name=' '
+++++++++++spinbutton Name='Hours' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=12.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++description Name='--'
+++++++++++description Name=':'
+++++++++++spinbutton Name='Minutes' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=59.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++description Name='--'
+++++++++++description Name=' '
+++++++++++spinbutton Name='AM/PM' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=2.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++description Name='--'
+++++++menu Name='Show date picker' ExpandCollapse.ExpandCollapseState='Collapsed'

@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var browserTarget = new content.mojom.BrowserTargetPtr;
-Mojo.bindInterface(content.mojom.BrowserTarget.name,
-                   mojo.makeRequest(browserTarget).handle);
+(async () => {
+  const browserTarget = content.mojom.BrowserTarget.getRemote(true);
 
-browserTarget.start().then(function() {
+  await browserTarget.start();
   browserTarget.stop();
-});
+})();

@@ -41,32 +41,6 @@ bool IsAlsEnabled() {
   return exit_code == 0;
 }
 
-// Returns whether the ALS step config is what we need. This function is only
-// called if an ALS is enabled. This should run in another thread to be
-// non-blocking to the main thread.
-// TODO(jiameng): we assume one specific device now, and only check if the
-// number of steps is 7.
-bool VerifyAlsConfig() {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  base::CommandLine command_line{
-      base::FilePath(FILE_PATH_LITERAL("check_powerd_config"))};
-  command_line.AppendArg("--internal_backlight_ambient_light_steps");
-  int exit_code = 0;
-  std::string output;
-  const bool result =
-      base::GetAppOutputWithExitCode(command_line, &output, &exit_code);
-
-  if (!result || exit_code != 0) {
-    LOG(ERROR) << "Cannot run check_powerd_config "
-                  "--internal_backlight_ambient_light_steps";
-    return false;
-  }
-
-  const std::vector<base::StringPiece> num_steps = base::SplitStringPiece(
-      output, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  return num_steps.size() == 7;
-}
-
 // Returns ALS path. This should run in another thread to be non-blocking to the
 // main thread.
 std::string GetAlsPath() {
@@ -111,10 +85,10 @@ constexpr int AlsReaderImpl::kMaxInitialAttempts;
 constexpr base::TimeDelta AlsReaderImpl::kAlsPollInterval;
 
 AlsReaderImpl::AlsReaderImpl()
-    : blocking_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
-      weak_ptr_factory_(this) {}
+    : blocking_task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
+           base::MayBlock(),
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {}
 
 AlsReaderImpl::~AlsReaderImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -158,7 +132,6 @@ void AlsReaderImpl::InitForTesting(const base::FilePath& ambient_light_path) {
 }
 
 void AlsReaderImpl::FailForTesting() {
-  OnAlsConfigCheckDone(false);
   OnAlsEnableCheckDone(false);
   for (int i = 0; i <= kMaxInitialAttempts; i++)
     OnAlsPathReadAttempted("");
@@ -168,20 +141,6 @@ void AlsReaderImpl::OnAlsEnableCheckDone(const bool is_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_enabled) {
     status_ = AlsInitStatus::kDisabled;
-    OnInitializationComplete();
-    return;
-  }
-
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE, base::BindOnce(&VerifyAlsConfig),
-      base::BindOnce(&AlsReaderImpl::OnAlsConfigCheckDone,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void AlsReaderImpl::OnAlsConfigCheckDone(const bool is_config_valid) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!is_config_valid) {
-    status_ = AlsInitStatus::kIncorrectConfig;
     OnInitializationComplete();
     return;
   }

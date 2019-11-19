@@ -21,8 +21,7 @@ PageNumber::PageNumber()
     : ranges_(NULL),
       page_number_(-1),
       page_range_index_(-1),
-      document_page_count_(0) {
-}
+      document_page_count_(0) {}
 
 void PageNumber::operator=(const PageNumber& other) {
   ranges_ = other.ranges_;
@@ -60,8 +59,8 @@ int PageNumber::operator++() {
     ++page_number_;
     // Page ranges are inclusive.
     if (page_number_ > (*ranges_)[page_range_index_].to) {
-      DCHECK(ranges_->size() <= static_cast<size_t>(
-          std::numeric_limits<int>::max()));
+      DCHECK(ranges_->size() <=
+             static_cast<size_t>(std::numeric_limits<int>::max()));
       if (++page_range_index_ == static_cast<int>(ranges_->size())) {
         // Finished.
         *this = npos();

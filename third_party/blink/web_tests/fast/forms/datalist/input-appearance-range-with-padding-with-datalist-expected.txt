@@ -1,3 +1,0 @@
-Tests if tick marks are drawn in the correct positions even when the element has padding. Bug 93791
-
-   

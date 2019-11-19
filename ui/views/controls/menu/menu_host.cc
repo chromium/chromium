@@ -118,8 +118,8 @@ void MenuHost::InitMenuHost(Widget* parent,
   bool rounded_border = menu_config.CornerRadiusForMenu(menu_controller) != 0;
   bool bubble_border = submenu_->GetScrollViewContainer() &&
                        submenu_->GetScrollViewContainer()->HasBubbleBorder();
-  params.shadow_type = bubble_border ? Widget::InitParams::SHADOW_TYPE_NONE
-                                     : Widget::InitParams::SHADOW_TYPE_DROP;
+  params.shadow_type = bubble_border ? Widget::InitParams::ShadowType::kNone
+                                     : Widget::InitParams::ShadowType::kDrop;
   params.opacity = (bubble_border || rounded_border) ?
       Widget::InitParams::TRANSLUCENT_WINDOW :
       Widget::InitParams::OPAQUE_WINDOW;
@@ -136,11 +136,12 @@ void MenuHost::InitMenuHost(Widget* parent,
   // revert this change once http://crbug.com/125248 is fixed.
   params.force_software_compositing = true;
 #endif
-  Init(params);
+  Init(std::move(params));
 
 #if !defined(OS_MACOSX)
-  pre_dispatch_handler_.reset(new internal::PreMenuEventDispatchHandler(
-      menu_controller, submenu_, GetNativeView()));
+  pre_dispatch_handler_ =
+      std::make_unique<internal::PreMenuEventDispatchHandler>(
+          menu_controller, submenu_, GetNativeView());
 #endif
 
   DCHECK(!owner_);
@@ -230,7 +231,7 @@ void MenuHost::OnMouseCaptureLost() {
   MenuController* menu_controller =
       submenu_->GetMenuItem()->GetMenuController();
   if (menu_controller && !menu_controller->drag_in_progress())
-    menu_controller->CancelAll();
+    menu_controller->Cancel(MenuController::ExitType::kAll);
   Widget::OnMouseCaptureLost();
 }
 
@@ -251,7 +252,7 @@ void MenuHost::OnOwnerClosing() {
   MenuController* menu_controller =
       submenu_->GetMenuItem()->GetMenuController();
   if (menu_controller && !menu_controller->drag_in_progress())
-    menu_controller->CancelAll();
+    menu_controller->Cancel(MenuController::ExitType::kAll);
 }
 
 void MenuHost::OnDragWillStart() {

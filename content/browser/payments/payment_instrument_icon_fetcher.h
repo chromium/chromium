@@ -23,7 +23,7 @@ class PaymentInstrumentIconFetcher {
   using PaymentInstrumentIconFetcherCallback =
       base::OnceCallback<void(const std::string&)>;
 
-  // Should be called on IO thread.
+  // Should be called on the service worker core thread.
   static void Start(
       const GURL& scope,
       std::unique_ptr<std::vector<GlobalFrameRoutingId>> provider_hosts,

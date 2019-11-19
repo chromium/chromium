@@ -63,8 +63,7 @@ TetherConnectorImpl::TetherConnectorImpl(
       notification_presenter_(notification_presenter),
       host_connection_metrics_logger_(host_connection_metrics_logger),
       disconnect_tethering_request_sender_(disconnect_tethering_request_sender),
-      wifi_hotspot_disconnector_(wifi_hotspot_disconnector),
-      weak_ptr_factory_(this) {}
+      wifi_hotspot_disconnector_(wifi_hotspot_disconnector) {}
 
 TetherConnectorImpl::~TetherConnectorImpl() {
   if (connect_tethering_operation_)

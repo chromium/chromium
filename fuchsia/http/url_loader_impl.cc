@@ -7,6 +7,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/message_loop/message_loop_current.h"
 #include "base/task/post_task.h"
+#include "fuchsia/base/mem_buffer_util.h"
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
@@ -30,21 +31,9 @@ oldhttp::URLBodyPtr CreateURLBodyFromBuffer(net::GrowableIOBuffer* buffer) {
   // The response buffer size is exactly the offset.
   size_t total_size = buffer->offset();
 
-  ::fuchsia::mem::Buffer mem_buffer;
-  mem_buffer.size = total_size;
-  zx_status_t result =
-      zx::vmo::create(total_size, ZX_VMO_NON_RESIZABLE, &mem_buffer.vmo);
-  if (result != ZX_OK) {
-    ZX_DLOG(WARNING, result) << "zx_vmo_create";
-    return nullptr;
-  }
-
-  result = mem_buffer.vmo.write(buffer->StartOfBuffer(), 0, total_size);
-  if (result != ZX_OK) {
-    ZX_DLOG(WARNING, result) << "zx_vmo_write";
-    return nullptr;
-  }
-  body->set_buffer(std::move(mem_buffer));
+  body->set_buffer(cr_fuchsia::MemBufferFromString(
+      base::StringPiece(buffer->StartOfBuffer(), total_size),
+      "cr-http-url-body"));
 
   return body;
 }
@@ -232,7 +221,7 @@ void URLLoaderImpl::OnReceivedRedirect(net::URLRequest* request,
 }
 
 void URLLoaderImpl::OnAuthRequired(net::URLRequest* request,
-                                   net::AuthChallengeInfo* auth_info) {
+                                   const net::AuthChallengeInfo& auth_info) {
   NOTIMPLEMENTED();
   DCHECK_EQ(net_request_.get(), request);
   request->CancelAuth();
@@ -247,6 +236,7 @@ void URLLoaderImpl::OnCertificateRequested(
 }
 
 void URLLoaderImpl::OnSSLCertificateError(net::URLRequest* request,
+                                          int net_error,
                                           const net::SSLInfo& ssl_info,
                                           bool fatal) {
   NOTIMPLEMENTED();
@@ -420,12 +410,13 @@ oldhttp::URLResponse URLLoaderImpl::BuildResponse(int net_error) {
     size_t iter = 0;
     std::string header_name;
     std::string header_value;
+    response.headers.emplace();
     while (response_headers->EnumerateHeaderLines(&iter, &header_name,
                                                   &header_value)) {
       oldhttp::HttpHeader header;
       header.name = header_name;
       header.value = header_value;
-      response.headers.push_back(header);
+      response.headers->push_back(header);
     }
   }
 

@@ -4,8 +4,8 @@
 
 package org.chromium.net.impl;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.net.CronetException;
 import org.chromium.net.RequestFinishedInfo;

@@ -1,0 +1,21 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("content") {
+  sources = [
+    "unzip_service.cc",
+    "unzip_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/strings",
+    "//content/public/browser",
+  ]
+
+  public_deps = [
+    "//components/services/unzip/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}

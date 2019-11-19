@@ -15,10 +15,6 @@ namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
 
-namespace ui {
-class SystemInputInjectorFactory;
-}  // namespace ui
-
 namespace remoting {
 
 // TODO(sergeyu): Move ClipboardStub implementation to Clipboard.
@@ -31,8 +27,7 @@ class InputInjector : public protocol::ClipboardStub,
   // thread.
   static std::unique_ptr<InputInjector> Create(
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      ui::SystemInputInjectorFactory* chromeos_system_input_injector_factory);
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
 
   // Returns true if the InputInjector returned by Create() supports
   // InjectTouchEvent() on this platform.

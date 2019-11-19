@@ -47,9 +47,7 @@ class TreeScope;
 class CORE_EXPORT TreeScopeEventContext final
     : public GarbageCollected<TreeScopeEventContext> {
  public:
-  static TreeScopeEventContext* Create(TreeScope&);
-
-  TreeScopeEventContext(TreeScope&);
+  explicit TreeScopeEventContext(TreeScope&);
   void Trace(Visitor*);
 
   TreeScope& GetTreeScope() const { return *tree_scope_; }
@@ -109,10 +107,8 @@ inline void TreeScopeEventContext::CheckReachableNode(EventTarget& target) {
   // FIXME: Checks also for SVG elements.
   if (target.ToNode()->IsSVGElement())
     return;
-  DCHECK(target.ToNode()
-             ->GetTreeScope()
-             .IsInclusiveOlderSiblingShadowRootOrAncestorTreeScopeOf(
-                 GetTreeScope()));
+  DCHECK(target.ToNode()->GetTreeScope().IsInclusiveAncestorTreeScopeOf(
+      GetTreeScope()));
 }
 #else
 inline void TreeScopeEventContext::CheckReachableNode(EventTarget&) {}

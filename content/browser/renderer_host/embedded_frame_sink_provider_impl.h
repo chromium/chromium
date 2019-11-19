@@ -10,8 +10,10 @@
 #include "base/containers/flat_map.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "third_party/blink/public/platform/modules/frame_sinks/embedded_frame_sink.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom.h"
 
 namespace viz {
 class HostFrameSinkManager;
@@ -30,27 +32,32 @@ class CONTENT_EXPORT EmbeddedFrameSinkProviderImpl
       uint32_t renderer_client_id);
   ~EmbeddedFrameSinkProviderImpl() override;
 
-  void Add(blink::mojom::EmbeddedFrameSinkProviderRequest request);
+  void Add(
+      mojo::PendingReceiver<blink::mojom::EmbeddedFrameSinkProvider> receiver);
 
   // blink::mojom::EmbeddedFrameSinkProvider implementation.
   void RegisterEmbeddedFrameSink(
       const viz::FrameSinkId& parent_frame_sink_id,
       const viz::FrameSinkId& frame_sink_id,
-      blink::mojom::EmbeddedFrameSinkClientPtr client) override;
+      mojo::PendingRemote<blink::mojom::EmbeddedFrameSinkClient> client)
+      override;
   void CreateCompositorFrameSink(
       const viz::FrameSinkId& frame_sink_id,
-      viz::mojom::CompositorFrameSinkClientPtr sink_client,
-      viz::mojom::CompositorFrameSinkRequest sink_request) override;
+      mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> sink_client,
+      mojo::PendingReceiver<viz::mojom::CompositorFrameSink> sink_receiver)
+      override;
   void CreateSimpleCompositorFrameSink(
       const viz::FrameSinkId& parent_frame_sink_id,
       const viz::FrameSinkId& frame_sink_id,
-      blink::mojom::EmbeddedFrameSinkClientPtr embedded_frame_sink_client,
-      viz::mojom::CompositorFrameSinkClientPtr compositor_frame_sink_client,
-      viz::mojom::CompositorFrameSinkRequest compositor_frame_sink_request)
-      override;
-  void ConnectToEmbedder(
-      const viz::FrameSinkId& child_frame_sink_id,
-      blink::mojom::SurfaceEmbedderRequest surface_embedder_request) override;
+      mojo::PendingRemote<blink::mojom::EmbeddedFrameSinkClient>
+          embedded_frame_sink_client,
+      mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient>
+          compositor_frame_sink_client,
+      mojo::PendingReceiver<viz::mojom::CompositorFrameSink>
+          compositor_frame_sink_receiver) override;
+  void ConnectToEmbedder(const viz::FrameSinkId& child_frame_sink_id,
+                         mojo::PendingReceiver<blink::mojom::SurfaceEmbedder>
+                             surface_embedder_receiver) override;
 
  private:
   friend class EmbeddedFrameSinkProviderImplTest;
@@ -64,7 +71,7 @@ class CONTENT_EXPORT EmbeddedFrameSinkProviderImpl
   // FrameSinkIds for embedded frame sinks must use the renderer client id.
   const uint32_t renderer_client_id_;
 
-  mojo::BindingSet<blink::mojom::EmbeddedFrameSinkProvider> bindings_;
+  mojo::ReceiverSet<blink::mojom::EmbeddedFrameSinkProvider> receivers_;
 
   base::flat_map<viz::FrameSinkId, std::unique_ptr<EmbeddedFrameSinkImpl>>
       frame_sink_map_;

@@ -37,7 +37,7 @@
 
 namespace blink {
 
-class RTCVoidRequest : public GarbageCollectedFinalized<RTCVoidRequest> {
+class RTCVoidRequest : public GarbageCollected<RTCVoidRequest> {
  public:
   virtual ~RTCVoidRequest() = default;
 

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="trusted-types *'">
+<script>
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+        testRunner.waitUntilDone();
+    }
+
+    tests = 2;
+
+    window.addEventListener("message", function(message) {
+        alert("message: " + message.data);
+        tests -= 1;
+        test();
+    }, false);
+
+    function setup() {
+        // This is needed because isolated worlds are not reset between test
+        // runs and a previous test's CSP may interfere with this test. See
+        // https://crbug.com/415845.
+        testRunner.setIsolatedWorldInfo(1, null, null);
+    }
+
+    function test() {
+        function setScript() {
+            try {
+                document.getElementById("target").textContent = "2+2;";
+                window.postMessage("pass", "*");
+            } catch (e) {
+                window.postMessage("blocked", "*");
+            }
+        }
+
+        alert("Running test #" + tests);
+        switch (tests) {
+            case 2:
+                setScript();
+                break;
+            case 1:
+                testRunner.setIsolatedWorldInfo(1, 'chrome-extension://123', '');
+                testRunner.evaluateScriptInIsolatedWorld(1, setScript.toString() + " setScript();");
+                break;
+            case 0:
+                // Reset isolated worlds for other tests.
+                testRunner.setIsolatedWorldInfo(1, null, null);
+                testRunner.notifyDone();
+                break;
+        }
+    }
+</script>
+<script id="target"></script>
+</head>
+<body onload="setup(); test();">
+    <p>
+        This test ensures that scripts run in isolated worlds marked with their
+        own Content Security Policy aren't affected by the page's content
+        security policy. Extensions, for example, should not be restricted by the
+        page's Trusted Types policy.
+    </p>
+</body>
+</html>

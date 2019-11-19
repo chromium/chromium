@@ -2,17 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
 static_library("common") {
   sources = [
     "sandboxed_zip_archiver.cc",
     "sandboxed_zip_archiver.h",
+    "zip_archiver.h",
   ]
 
   deps = [
     "//chrome/chrome_cleaner/constants:quarantine_constants",
-    "//chrome/chrome_cleaner/interfaces:zip_archiver_interface",
     "//chrome/chrome_cleaner/ipc:mojo_task_runner",
     "//chrome/chrome_cleaner/ipc:sandbox",
+    "//chrome/chrome_cleaner/mojom:zip_archiver_interface",
     "//chrome/chrome_cleaner/os:common_os",
     "//chrome/chrome_cleaner/zip_archiver/broker:common",
     "//mojo/public/cpp/system:system",
@@ -28,7 +32,7 @@ source_set("test_support") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//testing/gtest",
     "//third_party/zlib:minizip",
   ]
@@ -44,8 +48,8 @@ source_set("unittest_sources") {
   deps = [
     "//base/test:test_support",
     "//chrome/chrome_cleaner/constants:quarantine_constants",
-    "//chrome/chrome_cleaner/interfaces:zip_archiver_interface",
     "//chrome/chrome_cleaner/ipc:mojo_task_runner",
+    "//chrome/chrome_cleaner/mojom:zip_archiver_interface",
     "//chrome/chrome_cleaner/os:common_os",
     "//chrome/chrome_cleaner/zip_archiver:common",
     "//chrome/chrome_cleaner/zip_archiver:test_support",

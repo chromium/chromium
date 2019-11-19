@@ -4,38 +4,29 @@ As of Chrome 48, MemoryInfra supports heap profiling. Chrome will track all live
 allocations (calls to new or malloc without a subsequent call to delete or free)
 along with sufficient metadata to identify the code that made the allocation.
 
+By default, MemoryInfra traces will not contain heap dumps. Heap profiling must
+be enabled via chrome://memory-internals or about://flags.
+
 [TOC]
 
 ## How to obtain a heap dump (M66+, Linux, macOS, Windows)
 
- 1. Navigate to chrome://flags and search for `memlog`.
-
- 2. Choose the process types you want to profile with the `memlog` flag. The
-    most common setting is `Only Browser`.
-
- 3. By default, small, infrequent allocations are omitted. If you want to see a
-    full heap dump, enable `memlog-keep-small-allocations`.
-
- 4. By default, stack traces use native stack traces, which does not contain any
-    thread information. To include the thread at time of allocation, set
-    `memlog-stack-mode` to `native with thread names`.
-
- 5. Restart Chrome.
-
- 6. Grab a [MemoryInfra][memory-infra] trace.
-
- 7. Save the trace.
-
- 8. To symbolize the trace:
+ 1. Navigate to chrome://memory-internals.
+    * There will be an error message at the top if heap-profiling is not
+      supported on the current configuration
+ 2. Enable heap profiling for the relevant processes. Future allocations will be
+    tracked. Refresh the page to view tracked processes.
+    * To enable tracking at process start, navigate to chrome://flags and search
+      for `memlog`.
+ 3. To take a heap dump, click `save dump`. This is stored as a
+    [MemoryInfra][memory-infra] trace.
+ 4. To symbolize the trace:
    * Windows only: build `addr2line-pdb` from the chromium repository. For subsequent commands, add the flag `--addr2line-executable=<path_to_addr2lin-pdb>`
    * If this is a local build, run the command `./third_party/catapult/tracing/bin/symbolize_trace --is-local-build <path_to_trace>`
    * If this is an official Chrome build,  run `./third_party/catapult/tracing/bin/symbolize_trace <path_to_trace>`. This will request authentication with google cloud storage to obtain symbol files [googlers only].
    * If this is an official macOS or Linux Chrome build, add the flag `--use-breakpad-symbols`.
    * If the trace is from a different device, add the flag `--only-symbolize-chrome-symbols`.
-
- 9. Turn off heap profiling in chrome://flags. Restart Chrome.
-
- 10. Load the (now symbolized) trace in chrome://tracing.
+ 5. Load the (now symbolized) trace in chrome://tracing.
 
 ## How to obtain a heap dump (M66+, Android)
 

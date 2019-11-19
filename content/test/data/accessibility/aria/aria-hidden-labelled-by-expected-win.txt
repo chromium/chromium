@@ -1,0 +1,7 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION name='span-2'
+++IA2_ROLE_SECTION name='span-4'
+++IA2_ROLE_SECTION name='span-1'
+++IA2_ROLE_SECTION name='span-2'
+++IA2_ROLE_SECTION name='span-3'
+++IA2_ROLE_SECTION name='span-4'

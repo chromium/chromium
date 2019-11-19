@@ -7,9 +7,11 @@
   await TestRunner.showPanel('sources');
 
   var MockProject = class extends Workspace.ProjectStore {
-    requestFileContent(uri, callback) {
+    requestFileContent(uri) {
       TestRunner.addResult('Content is requested from SourceCodeProvider.');
-      setTimeout(callback.bind(null, 'var x = 0;'), 0);
+      return new Promise(resolve => {
+        setTimeout(() => resolve({ content: 'var x = 0;', error: null, isEncoded: false }));
+      });
     }
 
     mimeType() {
@@ -31,14 +33,14 @@
 
   TestRunner.runTestSuite([function testUISourceCode(next) {
     var uiSourceCode = new Workspace.UISourceCode(new MockProject(), 'url', Common.resourceTypes.Script);
-    function didRequestContent(callNumber, content) {
+    function didRequestContent(callNumber, { content, error, isEncoded }) {
       TestRunner.addResult('Callback ' + callNumber + ' is invoked.');
       TestRunner.assertEquals('text/javascript', uiSourceCode.mimeType());
       TestRunner.assertEquals('var x = 0;', content);
 
       if (callNumber === 3) {
         // Check that sourceCodeProvider.requestContent won't be called anymore.
-        uiSourceCode.requestContent().then(function(content) {
+        uiSourceCode.requestContent().then(function({ content, error, isEncoded }) {
           TestRunner.assertEquals('text/javascript', uiSourceCode.mimeType());
           TestRunner.assertEquals('var x = 0;', content);
           next();

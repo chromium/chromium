@@ -1,7 +1,7 @@
 [document web]
 ++[paragraph]
-++++[text] name='This is '
-++++[text] name='"'
-++++[text] name='Chromium Blink'
-++++[text] name='"'
-++++[text] name=' based browser.'
+++++[static] name='This is '
+++++[static] name='"'
+++++[static] name='Chromium Blink'
+++++[static] name='"'
+++++[static] name=' based browser.'

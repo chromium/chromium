@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -80,6 +81,7 @@ class TabModalConfirmDialogDelegate : public content::NotificationObserver {
 
   // Title for the accept and the cancel buttons.
   // The default implementation uses IDS_OK and IDS_CANCEL.
+  virtual int GetDialogButtons() const;
   virtual base::string16 GetAcceptButtonTitle();
   virtual base::string16 GetCancelButtonTitle();
 
@@ -92,6 +94,12 @@ class TabModalConfirmDialogDelegate : public content::NotificationObserver {
   // the buttons have no stock icons.
   virtual const char* GetAcceptButtonIcon();
   virtual const char* GetCancelButtonIcon();
+
+  // Allow the delegate to customize which button is default, and which is
+  // initially focused. If returning base::nullopt, the dialog uses default
+  // behavior.
+  virtual base::Optional<int> GetDefaultDialogButton();
+  virtual base::Optional<int> GetInitiallyFocusedButton();
 
  protected:
   TabModalConfirmDialogCloseDelegate* close_delegate() {

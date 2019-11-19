@@ -14,20 +14,18 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_destination_observer.h"
 #include "components/download/public/common/download_file_factory.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item_impl_delegate.h"
-#include "components/download/public/common/download_request_handle_interface.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/mock_download_file.h"
 #include "components/download/public/common/mock_download_item.h"
@@ -101,13 +99,6 @@ class MockDelegate : public DownloadItemImplDelegate {
     EXPECT_CALL(*this, ShouldOpenDownload(_, _)).WillRepeatedly(Return(true));
     EXPECT_CALL(*this, IsOffTheRecord()).WillRepeatedly(Return(false));
   }
-};
-
-class MockRequestHandle : public DownloadRequestHandleInterface {
- public:
-  MOCK_METHOD0(PauseRequest, void());
-  MOCK_METHOD0(ResumeRequest, void());
-  MOCK_METHOD1(CancelRequest, void(bool));
 };
 
 class TestDownloadItemObserver : public DownloadItem::Observer {
@@ -201,7 +192,7 @@ ACTION_P3(ScheduleRenameAndUniquifyCallback,
 // Schedules a task to invoke the RenameCompletionCallback with |new_path| on
 // the |task_runner|. Should only be used as the action for
 // MockDownloadFile::RenameAndAnnotate as follows:
-//   EXPECT_CALL(download_file, RenameAndAnnotate(_,_,_,_,_))
+//   EXPECT_CALL(download_file, RenameAndAnnotate(_,_,_,_,_,_))
 //       .WillOnce(ScheduleRenameAndAnnotateCallback(
 //           DOWNLOAD_INTERRUPT_REASON_NONE, new_path, task_runner));
 ACTION_P3(ScheduleRenameAndAnnotateCallback,
@@ -209,7 +200,7 @@ ACTION_P3(ScheduleRenameAndAnnotateCallback,
           new_path,
           task_runner) {
   task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(arg4, interrupt_reason, new_path));
+                        base::BindOnce(arg5, interrupt_reason, new_path));
 }
 
 // Schedules a task to invoke a callback that's bound to the specified
@@ -241,8 +232,8 @@ class DownloadItemTest : public testing::Test {
  public:
   DownloadItemTest()
       : task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI,
-            base::test::ScopedTaskEnvironment::ExecutionMode::QUEUED),
+            base::test::TaskEnvironment::MainThreadType::UI,
+            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED),
         next_download_id_(DownloadItem::kInvalidId + 1) {
     create_info_.reset(new DownloadCreateInfo());
     create_info_->save_info =
@@ -298,10 +289,8 @@ class DownloadItemTest : public testing::Test {
           .WillRepeatedly(ReturnRefOfCopy(base::FilePath()));
     }
 
-    std::unique_ptr<MockRequestHandle> request_handle =
-        std::make_unique<NiceMock<MockRequestHandle>>();
-    item->Start(std::move(download_file), std::move(request_handle),
-                *create_info_, nullptr, nullptr);
+    item->Start(std::move(download_file), base::DoNothing(), *create_info_,
+                URLLoaderFactoryProvider::GetNullPtr());
     task_environment_.RunUntilIdle();
 
     // So that we don't have a function writing to a stack variable
@@ -342,7 +331,7 @@ class DownloadItemTest : public testing::Test {
     EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload(_, _))
         .WillOnce(Return(true));
     base::FilePath final_path(kDummyTargetPath);
-    EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _))
+    EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _))
         .WillOnce(ScheduleRenameAndAnnotateCallback(
             DOWNLOAD_INTERRUPT_REASON_NONE, final_path,
             base::ThreadTaskRunnerHandle::Get()));
@@ -384,13 +373,18 @@ class DownloadItemTest : public testing::Test {
 
   DownloadCreateInfo* create_info() { return create_info_.get(); }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  void CancelRequest(bool user_cancel) { canceled_ = true; }
+
+  bool canceled() { return canceled_; }
+
+  base::test::TaskEnvironment task_environment_;
 
  private:
   StrictMock<MockDelegate> mock_delegate_;
   std::map<DownloadItem*, std::unique_ptr<DownloadItem>> allocated_downloads_;
   std::unique_ptr<DownloadCreateInfo> create_info_;
   uint32_t next_download_id_ = DownloadItem::kInvalidId + 1;
+  bool canceled_ = false;
 };
 
 // Tests to ensure calls that change a DownloadItem generate an update
@@ -517,7 +511,7 @@ TEST_F(DownloadItemTest, NotificationAfterOnContentCheckCompleted) {
 
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload(_, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _));
+  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _));
   unsafeurl_item->ValidateDangerousDownload();
   EXPECT_TRUE(unsafeurl_observer.CheckAndResetDownloadUpdated());
   CleanupItem(unsafeurl_item, download_file, DownloadItem::IN_PROGRESS);
@@ -535,7 +529,7 @@ TEST_F(DownloadItemTest, NotificationAfterOnContentCheckCompleted) {
 
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload(_, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _));
+  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _));
   unsafefile_item->ValidateDangerousDownload();
   EXPECT_TRUE(unsafefile_observer.CheckAndResetDownloadUpdated());
   CleanupItem(unsafefile_item, download_file, DownloadItem::IN_PROGRESS);
@@ -578,13 +572,11 @@ TEST_F(DownloadItemTest, NotificationAfterTogglePause) {
   TestDownloadItemObserver observer(item);
   MockDownloadFile* mock_download_file(new MockDownloadFile);
   std::unique_ptr<DownloadFile> download_file(mock_download_file);
-  std::unique_ptr<DownloadRequestHandleInterface> request_handle(
-      new NiceMock<MockRequestHandle>);
 
   EXPECT_CALL(*mock_download_file, Initialize(_, _, _, _));
   EXPECT_CALL(*mock_delegate(), DetermineDownloadTarget(_, _));
-  item->Start(std::move(download_file), std::move(request_handle),
-              *create_info(), nullptr, nullptr);
+  item->Start(std::move(download_file), base::DoNothing(), *create_info(),
+              URLLoaderFactoryProvider::GetNullPtr());
 
   item->Pause();
   ASSERT_TRUE(observer.CheckAndResetDownloadUpdated());
@@ -770,8 +762,9 @@ TEST_F(DownloadItemTest, UnresumableInterrupt) {
   // Fail final rename with unresumable reason.
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload(item, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*download_file,
-              RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _))
+  EXPECT_CALL(
+      *download_file,
+      RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _))
       .WillOnce(ScheduleRenameAndAnnotateCallback(
           DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED, base::FilePath(),
           base::ThreadTaskRunnerHandle::Get()));
@@ -804,7 +797,6 @@ TEST_F(DownloadItemTest, AutomaticResumption_AttemptLimit) {
   TestDownloadItemObserver observer(item);
   MockDownloadFile* mock_download_file_ref = nullptr;
   std::unique_ptr<MockDownloadFile> mock_download_file;
-  std::unique_ptr<MockRequestHandle> mock_request_handle;
   DownloadItemImplDelegate::DownloadTargetCallback callback;
 
   EXPECT_CALL(*mock_delegate(), DetermineDownloadTarget(item, _))
@@ -823,15 +815,14 @@ TEST_F(DownloadItemTest, AutomaticResumption_AttemptLimit) {
 
     mock_download_file = std::make_unique<NiceMock<MockDownloadFile>>();
     mock_download_file_ref = mock_download_file.get();
-    mock_request_handle = std::make_unique<NiceMock<MockRequestHandle>>();
 
     ON_CALL(*mock_download_file_ref, FullPath())
         .WillByDefault(ReturnRefOfCopy(base::FilePath()));
 
     // Copied key parts of DoIntermediateRename & CallDownloadItemStart
     // to allow for holding onto the request handle.
-    item->Start(std::move(mock_download_file), std::move(mock_request_handle),
-                *create_info(), nullptr, nullptr);
+    item->Start(std::move(mock_download_file), base::DoNothing(),
+                *create_info(), URLLoaderFactoryProvider::GetNullPtr());
     task_environment_.RunUntilIdle();
 
     base::FilePath target_path(kDummyTargetPath);
@@ -849,10 +840,10 @@ TEST_F(DownloadItemTest, AutomaticResumption_AttemptLimit) {
     EXPECT_CALL(*mock_download_file_ref, RenameAndUniquify(_, _)).Times(i == 0);
 
     ASSERT_FALSE(callback.is_null());
-    base::ResetAndReturn(&callback).Run(
-        target_path, DownloadItem::TARGET_DISPOSITION_OVERWRITE,
-        DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS, intermediate_path,
-        DOWNLOAD_INTERRUPT_REASON_NONE);
+    std::move(callback).Run(target_path,
+                            DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+                            DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+                            intermediate_path, DOWNLOAD_INTERRUPT_REASON_NONE);
     task_environment_.RunUntilIdle();
 
     // Use a continuable interrupt.
@@ -1161,11 +1152,9 @@ TEST_F(DownloadItemTest, Start) {
   std::unique_ptr<DownloadFile> download_file(mock_download_file);
   DownloadItemImpl* item = CreateDownloadItem();
   EXPECT_CALL(*mock_download_file, Initialize(_, _, _, _));
-  std::unique_ptr<DownloadRequestHandleInterface> request_handle(
-      new NiceMock<MockRequestHandle>);
   EXPECT_CALL(*mock_delegate(), DetermineDownloadTarget(item, _));
-  item->Start(std::move(download_file), std::move(request_handle),
-              *create_info(), nullptr, nullptr);
+  item->Start(std::move(download_file), base::DoNothing(), *create_info(),
+              URLLoaderFactoryProvider::GetNullPtr());
   task_environment_.RunUntilIdle();
 
   CleanupItem(item, mock_download_file, DownloadItem::IN_PROGRESS);
@@ -1176,12 +1165,9 @@ TEST_F(DownloadItemTest, Start) {
 TEST_F(DownloadItemTest, InitDownloadFileFails) {
   DownloadItemImpl* item = CreateDownloadItem();
   std::unique_ptr<MockDownloadFile> file = std::make_unique<MockDownloadFile>();
-  std::unique_ptr<MockRequestHandle> request_handle =
-      std::make_unique<MockRequestHandle>();
 
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*file, Cancel());
-  EXPECT_CALL(*request_handle, CancelRequest(_));
   EXPECT_CALL(*file, Initialize(_, _, _, _))
       .WillOnce(ScheduleCallbackWithParams(
           DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED, 0,
@@ -1191,8 +1177,10 @@ TEST_F(DownloadItemTest, InitDownloadFileFails) {
   EXPECT_CALL(*mock_delegate(), DetermineDownloadTarget(item, _))
       .WillOnce(SaveArg<1>(&download_target_callback));
 
-  item->Start(std::move(file), std::move(request_handle), *create_info(),
-              nullptr, nullptr);
+  item->Start(
+      std::move(file),
+      base::Bind(&DownloadItemTest::CancelRequest, base::Unretained(this)),
+      *create_info(), URLLoaderFactoryProvider::GetNullPtr());
   task_environment_.RunUntilIdle();
 
   download_target_callback.Run(base::FilePath(kDummyTargetPath),
@@ -1207,6 +1195,7 @@ TEST_F(DownloadItemTest, InitDownloadFileFails) {
             item->GetLastReason());
   EXPECT_FALSE(item->GetTargetFilePath().empty());
   EXPECT_TRUE(item->GetFullPath().empty());
+  EXPECT_TRUE(canceled());
   histogram_tester.ExpectBucketCount(
       "Download.InterruptedReason",
       ToHistogramSample<DownloadInterruptReason>(
@@ -1224,12 +1213,11 @@ TEST_F(DownloadItemTest, StartFailedDownload) {
   // DownloadFile and DownloadRequestHandleInterface objects aren't created for
   // failed downloads.
   std::unique_ptr<DownloadFile> null_download_file;
-  std::unique_ptr<DownloadRequestHandleInterface> null_request_handle;
   DownloadItemImplDelegate::DownloadTargetCallback download_target_callback;
   EXPECT_CALL(*mock_delegate(), DetermineDownloadTarget(item, _))
       .WillOnce(SaveArg<1>(&download_target_callback));
-  item->Start(std::move(null_download_file), std::move(null_request_handle),
-              *create_info(), nullptr, nullptr);
+  item->Start(std::move(null_download_file), base::DoNothing(), *create_info(),
+              URLLoaderFactoryProvider::GetNullPtr());
   EXPECT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
   task_environment_.RunUntilIdle();
 
@@ -1279,7 +1267,7 @@ TEST_F(DownloadItemTest, CallbackAfterRename) {
 
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload(item, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*download_file, RenameAndAnnotate(final_path, _, _, _, _))
+  EXPECT_CALL(*download_file, RenameAndAnnotate(final_path, _, _, _, _, _))
       .WillOnce(ScheduleRenameAndAnnotateCallback(
           DOWNLOAD_INTERRUPT_REASON_NONE, final_path,
           base::ThreadTaskRunnerHandle::Get()));
@@ -1698,7 +1686,7 @@ TEST_F(DownloadItemTest, EnabledActionsForNormalDownload) {
   EXPECT_TRUE(item->CanOpenDownload());
 
   // Complete
-  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _))
+  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _))
       .WillOnce(ScheduleRenameAndAnnotateCallback(
           DOWNLOAD_INTERRUPT_REASON_NONE, base::FilePath(kDummyTargetPath),
           base::ThreadTaskRunnerHandle::Get()));
@@ -1734,7 +1722,7 @@ TEST_F(DownloadItemTest, EnabledActionsForTemporaryDownload) {
   // Complete Temporary
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload(item, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _))
+  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _))
       .WillOnce(ScheduleRenameAndAnnotateCallback(
           DOWNLOAD_INTERRUPT_REASON_NONE, base::FilePath(kDummyTargetPath),
           base::ThreadTaskRunnerHandle::Get()));
@@ -1800,8 +1788,9 @@ TEST_F(DownloadItemTest, CompleteDelegate_ReturnTrue) {
   EXPECT_FALSE(item->IsDangerous());
 
   // Make sure the download can complete.
-  EXPECT_CALL(*download_file,
-              RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _))
+  EXPECT_CALL(
+      *download_file,
+      RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _))
       .WillOnce(ScheduleRenameAndAnnotateCallback(
           DOWNLOAD_INTERRUPT_REASON_NONE, base::FilePath(kDummyTargetPath),
           base::ThreadTaskRunnerHandle::Get()));
@@ -1840,8 +1829,9 @@ TEST_F(DownloadItemTest, CompleteDelegate_BlockOnce) {
   EXPECT_FALSE(item->IsDangerous());
 
   // Make sure the download can complete.
-  EXPECT_CALL(*download_file,
-              RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _))
+  EXPECT_CALL(
+      *download_file,
+      RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _))
       .WillOnce(ScheduleRenameAndAnnotateCallback(
           DOWNLOAD_INTERRUPT_REASON_NONE, base::FilePath(kDummyTargetPath),
           base::ThreadTaskRunnerHandle::Get()));
@@ -1883,8 +1873,9 @@ TEST_F(DownloadItemTest, CompleteDelegate_SetDanger) {
   EXPECT_TRUE(item->IsDangerous());
 
   // Make sure the download doesn't complete until we've validated it.
-  EXPECT_CALL(*download_file,
-              RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _))
+  EXPECT_CALL(
+      *download_file,
+      RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _))
       .WillOnce(ScheduleRenameAndAnnotateCallback(
           DOWNLOAD_INTERRUPT_REASON_NONE, base::FilePath(kDummyTargetPath),
           base::ThreadTaskRunnerHandle::Get()));
@@ -1935,8 +1926,9 @@ TEST_F(DownloadItemTest, CompleteDelegate_BlockTwice) {
   EXPECT_FALSE(item->IsDangerous());
 
   // Make sure the download can complete.
-  EXPECT_CALL(*download_file,
-              RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _))
+  EXPECT_CALL(
+      *download_file,
+      RenameAndAnnotate(base::FilePath(kDummyTargetPath), _, _, _, _, _))
       .WillOnce(ScheduleRenameAndAnnotateCallback(
           DOWNLOAD_INTERRUPT_REASON_NONE, base::FilePath(kDummyTargetPath),
           base::ThreadTaskRunnerHandle::Get()));
@@ -2047,7 +2039,7 @@ TEST_F(DownloadItemTest, AnnotationWithEmptyURLInIncognito) {
       DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
   // Target file should be annotated with the source URL.
   EXPECT_CALL(*download_file,
-              RenameAndAnnotate(_, _, create_info()->url(), _, _))
+              RenameAndAnnotate(_, _, create_info()->url(), _, _, _))
       .WillOnce(ScheduleRenameAndAnnotateCallback(
           DOWNLOAD_INTERRUPT_REASON_NONE, base::FilePath(kDummyTargetPath),
           base::ThreadTaskRunnerHandle::Get()));
@@ -2065,7 +2057,7 @@ TEST_F(DownloadItemTest, AnnotationWithEmptyURLInIncognito) {
   download_file =
       DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
   // Target file should be annotated with an empty URL.
-  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, GURL(), _, _))
+  EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, GURL(), _, _, _))
       .WillOnce(ScheduleRenameAndAnnotateCallback(
           DOWNLOAD_INTERRUPT_REASON_NONE, base::FilePath(kDummyTargetPath),
           base::ThreadTaskRunnerHandle::Get()));
@@ -2262,8 +2254,7 @@ class DownloadItemDestinationUpdateRaceTest
  public:
   DownloadItemDestinationUpdateRaceTest()
       : item_(CreateDownloadItem()),
-        file_(new ::testing::StrictMock<MockDownloadFile>()),
-        request_handle_(new ::testing::StrictMock<MockRequestHandle>()) {
+        file_(new ::testing::StrictMock<MockDownloadFile>()) {
     DCHECK_EQ(GetParam().size(), static_cast<unsigned>(kEventCount));
   }
 
@@ -2294,7 +2285,6 @@ class DownloadItemDestinationUpdateRaceTest
 
   DownloadItemImpl* item_;
   std::unique_ptr<MockDownloadFile> file_;
-  std::unique_ptr<MockRequestHandle> request_handle_;
 
   base::queue<base::Closure> successful_update_events_;
   base::queue<base::Closure> failing_update_events_;
@@ -2316,13 +2306,14 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, DownloadCancelledByUser) {
   // Expect that the download file and the request will be cancelled as a
   // result.
   EXPECT_CALL(*file_, Cancel());
-  EXPECT_CALL(*request_handle_, CancelRequest(_));
 
   DownloadFile::InitializeCallback initialize_callback;
   EXPECT_CALL(*file_, Initialize(_, _, _, _))
       .WillOnce(SaveArg<0>(&initialize_callback));
-  item_->Start(std::move(file_), std::move(request_handle_), *create_info(),
-               nullptr, nullptr);
+  item_->Start(
+      std::move(file_),
+      base::Bind(&DownloadItemTest::CancelRequest, base::Unretained(this)),
+      *create_info(), URLLoaderFactoryProvider::GetNullPtr());
   task_environment_.RunUntilIdle();
 
   base::WeakPtr<DownloadDestinationObserver> destination_observer =
@@ -2347,6 +2338,7 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, DownloadCancelledByUser) {
                       DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS, base::FilePath(),
                       DOWNLOAD_INTERRUPT_REASON_NONE);
   EXPECT_EQ(DownloadItem::CANCELLED, item_->GetState());
+  EXPECT_TRUE(canceled());
   task_environment_.RunUntilIdle();
 }
 
@@ -2355,7 +2347,6 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, IntermediateRenameFails) {
   // Expect that the download file and the request will be cancelled as a
   // result.
   EXPECT_CALL(*file_, Cancel());
-  EXPECT_CALL(*request_handle_, CancelRequest(_));
 
   // Intermediate rename loop is not used immediately, but let's set up the
   // DownloadFile expectations since we are about to transfer its ownership to
@@ -2368,8 +2359,10 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, IntermediateRenameFails) {
   EXPECT_CALL(*file_, Initialize(_, _, _, _))
       .WillOnce(SaveArg<0>(&initialize_callback));
 
-  item_->Start(std::move(file_), std::move(request_handle_), *create_info(),
-               nullptr, nullptr);
+  item_->Start(
+      std::move(file_),
+      base::Bind(&DownloadItemTest::CancelRequest, base::Unretained(this)),
+      *create_info(), URLLoaderFactoryProvider::GetNullPtr());
   task_environment_.RunUntilIdle();
 
   base::WeakPtr<DownloadDestinationObserver> destination_observer =
@@ -2405,6 +2398,7 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, IntermediateRenameFails) {
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(DownloadItem::INTERRUPTED, item_->GetState());
+  EXPECT_TRUE(canceled());
 }
 
 // Run through the DII workflow. Download file initialization, target
@@ -2415,7 +2409,6 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, IntermediateRenameSucceeds) {
   // DownloadFile will Detach()). It depends on the list of observations that
   // are given to us.
   EXPECT_CALL(*file_, Cancel()).Times(::testing::AnyNumber());
-  EXPECT_CALL(*request_handle_, CancelRequest(_)).Times(::testing::AnyNumber());
   EXPECT_CALL(*file_, Detach()).Times(::testing::AnyNumber());
 
   EXPECT_CALL(*file_, FullPath())
@@ -2432,8 +2425,8 @@ TEST_P(DownloadItemDestinationUpdateRaceTest, IntermediateRenameSucceeds) {
   EXPECT_CALL(*file_, Initialize(_, _, _, _))
       .WillOnce(SaveArg<0>(&initialize_callback));
 
-  item_->Start(std::move(file_), std::move(request_handle_), *create_info(),
-               nullptr, nullptr);
+  item_->Start(std::move(file_), base::DoNothing(), *create_info(),
+               URLLoaderFactoryProvider::GetNullPtr());
   task_environment_.RunUntilIdle();
 
   base::WeakPtr<DownloadDestinationObserver> destination_observer =

@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
-#import "ios/web/public/web_state/web_state_observer_bridge.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #include "url/gurl.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,9 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class PasswordFormHelper;
 
 namespace autofill {
-struct PasswordForm;
-struct PasswordFormFillData;
 struct FormData;
+struct PasswordFormFillData;
 }  // namespace autofill
 
 namespace password_manager {
@@ -38,7 +37,7 @@ class WebState;
 @protocol PasswordFormHelperDelegate
 // Called when the password form is submitted.
 - (void)formHelper:(PasswordFormHelper*)formHelper
-     didSubmitForm:(const autofill::PasswordForm&)form
+     didSubmitForm:(const autofill::FormData&)form
        inMainFrame:(BOOL)inMainFrame;
 @end
 
@@ -58,7 +57,7 @@ class WebState;
 // extracted information used for matching and saving passwords. Calls
 // |completionHandler| with an empty vector if no password forms are found.
 - (void)findPasswordFormsWithCompletionHandler:
-    (nullable void (^)(const std::vector<autofill::PasswordForm>&))
+    (nullable void (^)(const std::vector<autofill::FormData>&))
         completionHandler;
 
 // Autofills credentials into the page. Credentials and input fields are

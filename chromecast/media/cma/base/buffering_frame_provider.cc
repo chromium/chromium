@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "chromecast/media/cma/base/buffering_state.h"
 #include "chromecast/media/cma/base/decoder_buffer_base.h"
 #include "media/base/bind_to_current_loop.h"
@@ -134,10 +133,9 @@ void BufferingFrameProvider::CompleteReadIfNeeded() {
   if (!buffer_with_config.buffer()->end_of_stream())
     total_buffer_size_ -= buffer_with_config.buffer()->data_size();
 
-  base::ResetAndReturn(&read_cb_).Run(
-      buffer_with_config.buffer(),
-      buffer_with_config.audio_config(),
-      buffer_with_config.video_config());
+  std::move(read_cb_).Run(buffer_with_config.buffer(),
+                          buffer_with_config.audio_config(),
+                          buffer_with_config.video_config());
 }
 
 }  // namespace media

@@ -38,7 +38,7 @@ class CastUdpTransport {
   const scoped_refptr<CastSession> cast_session_;
   net::IPEndPoint remote_address_;
   std::unique_ptr<base::DictionaryValue> options_;
-  base::WeakPtrFactory<CastUdpTransport> weak_factory_;
+  base::WeakPtrFactory<CastUdpTransport> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CastUdpTransport);
 };

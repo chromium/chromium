@@ -48,6 +48,7 @@ CALLBACK_INTERFACE_CPP_INCLUDES = frozenset([
     'bindings/core/v8/v8_binding_for_core.h',
     'core/execution_context/execution_context.h',
     'platform/bindings/exception_messages.h',
+    'platform/bindings/script_forbidden_scope.h',
 ])
 LEGACY_CALLBACK_INTERFACE_H_INCLUDES = frozenset([
     'platform/bindings/dom_wrapper_world.h',
@@ -75,7 +76,7 @@ def _cpp_type(idl_type):
 IdlTypeBase.callback_cpp_type = property(_cpp_type)
 
 
-def callback_interface_context(callback_interface, _):
+def callback_interface_context(callback_interface, _, component_info):
     is_legacy_callback_interface = len(callback_interface.constants) > 0
 
     includes.clear()
@@ -102,7 +103,7 @@ def callback_interface_context(callback_interface, _):
                 break
 
     return {
-        'constants': [constant_context(constant, callback_interface)
+        'constants': [constant_context(constant, callback_interface, component_info)
                       for constant in callback_interface.constants],
         'cpp_class': callback_interface.name,
         'do_not_check_constants': 'DoNotCheckConstants' in callback_interface.extended_attributes,

@@ -17,8 +17,8 @@
 
 namespace net {
 
-// SerialWorker executes a job on TaskScheduler serially -- **once at a time**.
-// On |WorkNow|, a call to |DoWork| is scheduled on TaskScheduler. Once it
+// SerialWorker executes a job on ThreadPool serially -- **once at a time**.
+// On |WorkNow|, a call to |DoWork| is scheduled on ThreadPool. Once it
 // completes, |OnWorkFinished| is called on the origin thread. If |WorkNow| is
 // called (1 or more times) while |DoWork| is already under way, |DoWork| will
 // be called once: after current |DoWork| completes, before a call to
@@ -38,7 +38,7 @@ class NET_EXPORT_PRIVATE SerialWorker
  public:
   SerialWorker();
 
-  // Unless already scheduled, post |DoWork| to TaskScheduler.
+  // Unless already scheduled, post |DoWork| to ThreadPool.
   // Made virtual to allow mocking.
   virtual void WorkNow();
 
@@ -53,7 +53,7 @@ class NET_EXPORT_PRIVATE SerialWorker
   // protected to allow sub-classing, but prevent deleting
   virtual ~SerialWorker();
 
-  // Executed on TaskScheduler, at most once at a time.
+  // Executed on ThreadPool, at most once at a time.
   virtual void DoWork() = 0;
 
   // Executed on origin thread after |DoRead| completes.
@@ -67,7 +67,7 @@ class NET_EXPORT_PRIVATE SerialWorker
   enum State {
     CANCELLED = -1,
     IDLE = 0,
-    WORKING,  // |DoWorkJob| posted to TaskScheduler, until |OnWorkJobFinished|
+    WORKING,  // |DoWorkJob| posted to ThreadPool, until |OnWorkJobFinished|
     PENDING,  // |WorkNow| while WORKING, must re-do work
   };
 
@@ -76,7 +76,7 @@ class NET_EXPORT_PRIVATE SerialWorker
 
   State state_;
 
-  base::WeakPtrFactory<SerialWorker> weak_factory_;
+  base::WeakPtrFactory<SerialWorker> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SerialWorker);
 };

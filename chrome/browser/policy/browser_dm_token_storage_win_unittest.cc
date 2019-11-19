@@ -9,7 +9,7 @@
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "chrome/installer/util/install_util.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -82,7 +82,7 @@ class BrowserDMTokenStorageWinTest : public testing::Test {
                            dm_token.size(), REG_BINARY) == ERROR_SUCCESS);
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   registry_util::RegistryOverrideManager registry_override_manager_;
 };
 

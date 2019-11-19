@@ -13,6 +13,8 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "content/common/content_export.h"
 #include "content/renderer/pepper/video_encoder_shim.h"
 #include "gpu/command_buffer/client/gpu_control_client.h"
@@ -51,7 +53,7 @@ class CONTENT_EXPORT PepperVideoEncoderHost
 
   // Shared memory buffers.
   struct ShmBuffer {
-    ShmBuffer(uint32_t id, std::unique_ptr<base::SharedMemory> shm);
+    ShmBuffer(uint32_t id, base::UnsafeSharedMemoryRegion shm_region);
     ~ShmBuffer();
 
     media::BitstreamBuffer ToBitstreamBuffer();
@@ -59,7 +61,8 @@ class CONTENT_EXPORT PepperVideoEncoderHost
     // Index of the buffer in the |shm_buffers_|. Buffers have the same id in
     // the plugin and the host.
     uint32_t id;
-    std::unique_ptr<base::SharedMemory> shm;
+    base::UnsafeSharedMemoryRegion region;
+    base::WritableSharedMemoryMapping mapping;
     bool in_use;
   };
 
@@ -175,7 +178,7 @@ class CONTENT_EXPORT PepperVideoEncoderHost
   bool lost_context_ = false;
 #endif
 
-  base::WeakPtrFactory<PepperVideoEncoderHost> weak_ptr_factory_;
+  base::WeakPtrFactory<PepperVideoEncoderHost> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperVideoEncoderHost);
 };

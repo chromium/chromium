@@ -76,3 +76,12 @@ imageset("activity_services_request_mobile_site") {
     "activity_services_request_mobile_site.imageset/activity_services_request_mobile_site-76@2x.png",
   ]
 }
+
+imageset("activity_services_send_tab_to_self") {
+  sources = [
+    "activity_services_send_tab_to_self.imageset/Contents.json",
+    "activity_services_send_tab_to_self.imageset/activity_services_send_tab_to_self-60@2x.png",
+    "activity_services_send_tab_to_self.imageset/activity_services_send_tab_to_self-60@3x.png",
+    "activity_services_send_tab_to_self.imageset/activity_services_send_tab_to_self-76@2x.png",
+  ]
+}

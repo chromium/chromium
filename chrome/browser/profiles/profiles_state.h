@@ -23,8 +23,6 @@ class SigninErrorController;
 
 namespace base { class FilePath; }
 
-struct AccountInfo;
-
 namespace profiles {
 
 // Assortment of methods for dealing with profiles.
@@ -66,15 +64,12 @@ base::string16 GetProfileSwitcherTextForItem(const AvatarMenu::Item& item);
 void UpdateProfileName(Profile* profile,
                        const base::string16& new_profile_name);
 
-// Returns the list of secondary accounts for a specific
-// |profile|. Note that the profile must be signed in.
-std::vector<AccountInfo> GetSecondaryAccountsForSignedInProfile(
-    Profile* profile);
 #endif  // !defined(OS_CHROMEOS)
 
-// Returns whether the |browser|'s profile is a non-incognito or guest profile.
-// The distinction is needed because guest profiles are implemented as
-// incognito profiles.
+// Returns whether the |browser|'s profile is not incognito (a regular profile
+// or a guest session).
+// The distinction is needed because guest profiles and incognito profiles are
+// implemented as off-the-record profiles.
 bool IsRegularOrGuestSession(Browser* browser);
 
 // Returns true if sign in is required to browse as this profile.  Call with

@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+FAIL .grid 1 assert_equals: 
+<div class="grid">
+  <div data-offset-x="5" data-offset-y="0" data-expected-width="40" data-expected-height="80" class="firstRowFirstColumn verticalLR">X XX X</div>
+  <div data-offset-x="180" data-offset-y="60" data-expected-width="60" data-expected-height="90" class="firstRowSecondColumn verticalRL">XX X<br>X XXX X<br>XX XXX</div>
+  <div data-offset-x="0" data-offset-y="160" data-expected-width="90" data-expected-height="30" class="secondRowFirstColumn RTL">X XX X</div>
+  <div data-offset-x="105" data-offset-y="160" data-expected-width="70" data-expected-height="80" class="secondRowSecondColumn verticalLR RTL">XX X<br>X XXX<br>X<br>XX XXX</div>
+</div>
+offsetLeft expected 180 but got 210
+FAIL .grid 2 assert_equals: 
+<div class="grid RTL">
+  <div data-offset-x="155" data-offset-y="0" data-expected-width="40" data-expected-height="80" class="firstRowFirstColumn verticalLR">X XX X</div>
+  <div data-offset-x="80" data-offset-y="60" data-expected-width="60" data-expected-height="90" class="firstRowSecondColumn verticalRL">XX X<br>X XXX X<br>XX XXX</div>
+  <div data-offset-x="160" data-offset-y="160" data-expected-width="90" data-expected-height="30" class="secondRowFirstColumn LTR">X XX X</div>
+  <div data-offset-x="35" data-offset-y="160" data-expected-width="70" data-expected-height="80" class="secondRowSecondColumn verticalRL RTL">XX X<br>X XXX<br>X<br>XX XXX</div>
+</div>
+offsetLeft expected 80 but got 110
+PASS .grid 3
+FAIL .grid 4 assert_equals: 
+<div class="grid verticalRL">
+  <div data-offset-x="105" data-offset-y="70" data-expected-width="90" data-expected-height="30" class="firstRowFirstColumn horizontal">X XX X</div>
+  <div data-offset-x="140" data-offset-y="150" data-expected-width="100" data-expected-height="50" class="firstRowSecondColumn horizontal">XX X<br>X XXX X<br>XX XXX</div>
+  <div data-offset-x="5" data-offset-y="10" data-expected-width="90" data-expected-height="30" class="secondRowFirstColumn horizontal RTL">X XX X</div>
+  <div data-offset-x="5" data-offset-y="115" data-expected-width="70" data-expected-height="80" class="secondRowSecondColumn verticalLR">XX X<br>X XXX<br>X<br>XX XXX</div>
+</div>
+offsetLeft expected 105 but got 75
+Harness: the test ran to completion.
+

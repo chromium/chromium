@@ -5,12 +5,14 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_GCP_UTILS_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_GCP_UTILS_H_
 
+#include <memory>
 #include <string>
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "chrome/credential_provider/gaiacp/scoped_handle.h"
@@ -53,6 +55,10 @@ constexpr int kMaxUsernameAttempts = 10;
 // First index to append to a username when another user with the same name
 // already exists.
 constexpr int kInitialDuplicateUsernameIndex = 2;
+
+// Default extension used as a fallback if the picture_url returned from gaia
+// does not have a file extension.
+extern const wchar_t kDefaultProfilePictureFileExtension[];
 
 // Because of some strange dependency problems with windows header files,
 // define STATUS_SUCCESS here instead of including ntstatus.h or SubAuth.h
@@ -191,6 +197,15 @@ HRESULT GetCommandLineForEntrypoint(HINSTANCE dll_handle,
                                     const wchar_t* entrypoint,
                                     base::CommandLine* command_line);
 
+// Looks up the name associated to the |sid| (if any). Returns an error on any
+// failure or no name is associated with the |sid|.
+HRESULT LookupLocalizedNameBySid(PSID sid, base::string16* localized_name);
+
+// Looks up the name associated to the well known |sid_type| (if any). Returns
+// an error on any failure or no name is associated with the |sid_type|.
+HRESULT LookupLocalizedNameForWellKnownSid(WELL_KNOWN_SID_TYPE sid_type,
+                                           base::string16* localized_name);
+
 // Handles the writing and deletion of a startup sentinel file used to ensure
 // that the GCPW does not crash continuously on startup and render the
 // winlogon process unusable.
@@ -203,16 +218,44 @@ base::string16 GetStringResource(int base_message_id);
 // Gets the language selected by the base::win::i18n::LanguageSelector.
 base::string16 GetSelectedLanguage();
 
-// Helpers to get strings from DictionaryValues.
-base::string16 GetDictString(const base::DictionaryValue* dict,
+// Securely clear a base::Value that may be a dictionary value that may
+// have a password field.
+void SecurelyClearDictionaryValue(base::Optional<base::Value>* value);
+void SecurelyClearDictionaryValueWithKey(base::Optional<base::Value>* value,
+                                         const std::string& password_key);
+
+// Securely clear base:string16 and std::string.
+void SecurelyClearString(base::string16& str);
+void SecurelyClearString(std::string& str);
+
+// Securely clear a given |buffer| with size |length|.
+void SecurelyClearBuffer(void* buffer, size_t length);
+
+// Helpers to get strings from base::Values that are expected to be
+// DictionaryValues.
+
+base::string16 GetDictString(const base::Value& dict, const char* name);
+base::string16 GetDictString(const std::unique_ptr<base::Value>& dict,
                              const char* name);
-base::string16 GetDictString(const std::unique_ptr<base::DictionaryValue>& dict,
-                             const char* name);
-std::string GetDictStringUTF8(const base::DictionaryValue* dict,
+// Perform a recursive search on a nested dictionary object. Note that the
+// names provided in the input should be in order. Below is an example : Lets
+// say the json object is {"key1": {"key2": {"key3": "value1"}}, "key4":
+// "value2"}. Then to search for the key "key3", this method should be called
+// by providing the names vector as {"key1", "key2", "key3"}.
+std::string SearchForKeyInStringDictUTF8(
+    const std::string& json_string,
+    const std::initializer_list<base::StringPiece>& path);
+std::string GetDictStringUTF8(const base::Value& dict, const char* name);
+std::string GetDictStringUTF8(const std::unique_ptr<base::Value>& dict,
                               const char* name);
-std::string GetDictStringUTF8(
-    const std::unique_ptr<base::DictionaryValue>& dict,
-    const char* name);
+
+// Returns the major build version of Windows by reading the registry.
+// See:
+// https://stackoverflow.com/questions/31072543/reliable-way-to-get-windows-version-from-registry
+base::string16 GetWindowsVersion();
+
+// Returns the minimum supported version of Chrome for GCPW.
+base::Version GetMinimumSupportedChromeVersion();
 
 class OSUserManager;
 class OSProcessManager;

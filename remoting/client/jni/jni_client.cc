@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/logging.h"
-#include "jni/Client_jni.h"
+#include "remoting/android/jni_headers/Client_jni.h"
 #include "remoting/client/audio/audio_player_android.h"
 #include "remoting/client/chromoting_client_runtime.h"
 #include "remoting/client/chromoting_session.h"
@@ -19,13 +19,14 @@
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
+using base::android::JavaObjectArrayReader;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace remoting {
 
 JniClient::JniClient(base::android::ScopedJavaGlobalRef<jobject> java_client)
-    : java_client_(java_client), weak_factory_(this) {
+    : java_client_(java_client) {
   runtime_ = ChromotingClientRuntime::GetInstance();
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
@@ -148,6 +149,7 @@ void JniClient::Connect(
     const base::android::JavaParamRef<jstring>& username,
     const base::android::JavaParamRef<jstring>& auth_token,
     const base::android::JavaParamRef<jstring>& host_jid,
+    const base::android::JavaParamRef<jstring>& host_ftl_id,
     const base::android::JavaParamRef<jstring>& host_id,
     const base::android::JavaParamRef<jstring>& host_pubkey,
     const base::android::JavaParamRef<jstring>& pair_id,
@@ -161,6 +163,7 @@ void JniClient::Connect(
   info.username = ConvertJavaStringToUTF8(env, username);
   info.auth_token = ConvertJavaStringToUTF8(env, auth_token);
   info.host_jid = ConvertJavaStringToUTF8(env, host_jid);
+  info.host_ftl_id = ConvertJavaStringToUTF8(env, host_ftl_id);
   info.host_id = ConvertJavaStringToUTF8(env, host_id);
   info.host_pubkey = ConvertJavaStringToUTF8(env, host_pubkey);
   info.pairing_id = ConvertJavaStringToUTF8(env, pair_id);
@@ -245,14 +248,10 @@ void JniClient::SendTouchEvent(
 
   // Iterate over the elements in the object array and transfer the data from
   // the java object to a native event object.
-  jsize length = env->GetArrayLength(touchEventObjectArray);
-  DCHECK_GE(length, 0);
-  for (jsize i = 0; i < length; ++i) {
+  JavaObjectArrayReader<jobject> java_touch_events(touchEventObjectArray);
+  DCHECK_GE(java_touch_events.size(), 0);
+  for (auto java_touch_event : java_touch_events) {
     protocol::TouchEventPoint* touch_point = touch_event.add_touch_points();
-
-    ScopedJavaLocalRef<jobject> java_touch_event(
-        env, env->GetObjectArrayElement(touchEventObjectArray, i));
-
     JniTouchEventData::CopyTouchPointData(env, java_touch_event, touch_point);
   }
 

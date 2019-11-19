@@ -1,0 +1,84 @@
+.bower.json
+bower.json
+BUILD.gn
+build.log
+build.sh
+*/demo/
+demo*.html
+*/demos/
+docs.html
+*.d.ts
+.eslintrc.json
+*gen-tsd.json
+.github
+.gitignore
+hero.svg
+index.html
+*.js.map
+manifest.json
+*.md
+metadata.html
+.npmignore
+package.json
+package-lock.json
+*/test/
+*/tests/
+.travis.yml
+*wct.conf.json
+
+# app-layout specific
+*/patterns/
+*/site/
+*/templates/
+
+# iron-autogrow-textarea
+iron-autogrow-textarea/*
+
+# iron-checked-element-behavior
+iron-checked-element-behavior/*
+
+# iron-form-element-behavior
+iron-form-element-behavior/*
+
+# iron-test-helpers
+iron-test-helpers/iron-test-helpers.js
+iron-test-helpers/test-helpers.js
+
+# paper-behaviors
+paper-behaviors/paper-button-behavior.js
+paper-behaviors/paper-checked-element-behavior.js
+
+# paper-input
+paper-input/paper-input-behavior.js
+paper-input/paper-input-char-counter.js
+paper-input/paper-input.js
+paper-input/paper-textarea.js
+
+# paper-spinner
+paper-spinner/paper-spinner.js
+
+# paper-styles
+paper-styles/paper-styles-classes.js
+paper-styles/paper-styles.js
+
+# neon-animations
+neon-animation/animations/cascaded-animation.js
+neon-animation/animations/hero-animation.js
+neon-animation/animations/opaque-animation.js
+neon-animation/animations/reverse-ripple-animation.js
+neon-animation/animations/ripple-animation.js
+neon-animation/animations/scale-down-animation.js
+neon-animation/animations/scale-up-animation.js
+neon-animation/animations/slide-down-animation.js
+neon-animation/animations/slide-from-bottom-animation.js
+neon-animation/animations/slide-from-left-animation.js
+neon-animation/animations/slide-from-right-animation.js
+neon-animation/animations/slide-from-top-animation.js
+neon-animation/animations/slide-left-animation.js
+neon-animation/animations/slide-right-animation.js
+neon-animation/animations/slide-up-animation.js
+neon-animation/animations/transform-animation.js
+neon-animation/neon-animation.js
+neon-animation/neon-animations.js
+neon-animation/neon-shared-element-animatable-behavior.js
+neon-animation/neon-shared-element-animation-behavior.js

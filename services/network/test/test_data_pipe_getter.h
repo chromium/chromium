@@ -9,7 +9,7 @@
 #include <string>
 
 #include "mojo/public/c/system/data_pipe.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 
 namespace network {
@@ -21,7 +21,7 @@ namespace network {
 class TestDataPipeGetter : public mojom::DataPipeGetter {
  public:
   TestDataPipeGetter(const std::string& string_to_write,
-                     mojom::DataPipeGetterRequest request);
+                     mojo::PendingReceiver<mojom::DataPipeGetter> receiver);
   ~TestDataPipeGetter() override;
 
   // If set to anything other than net::OK, won't bother to write the data.
@@ -35,7 +35,7 @@ class TestDataPipeGetter : public mojom::DataPipeGetter {
   // mojom::DataPipeGetter implementation:
   void Read(mojo::ScopedDataPipeProducerHandle pipe,
             ReadCallback callback) override;
-  void Clone(mojom::DataPipeGetterRequest request) override;
+  void Clone(mojo::PendingReceiver<mojom::DataPipeGetter> receiver) override;
 
  private:
   void MojoReadyCallback(MojoResult result,
@@ -46,7 +46,7 @@ class TestDataPipeGetter : public mojom::DataPipeGetter {
   int32_t start_error_ = 0;  // net::OK
   bool pipe_closed_early_ = false;
 
-  mojo::BindingSet<mojom::DataPipeGetter> bindings_;
+  mojo::ReceiverSet<mojom::DataPipeGetter> receivers_;
 
   mojo::ScopedDataPipeProducerHandle pipe_;
   // Must be below |pipe_|, so it's deleted first.

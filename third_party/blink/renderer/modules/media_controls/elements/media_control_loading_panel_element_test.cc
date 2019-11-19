@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -23,7 +24,7 @@ class MediaControlLoadingPanelElementTest : public PageTestBase {
   void SetUp() final {
     // Create page and add a video element with controls.
     PageTestBase::SetUp();
-    media_element_ = HTMLVideoElement::Create(GetDocument());
+    media_element_ = MakeGarbageCollected<HTMLVideoElement>(GetDocument());
     media_element_->SetBooleanAttribute(html_names::kControlsAttr, true);
     GetDocument().body()->AppendChild(media_element_);
 
@@ -57,7 +58,8 @@ class MediaControlLoadingPanelElementTest : public PageTestBase {
   void SimulateLoadingMetadata() {
     SetMediaElementState(HTMLMediaElement::kHaveNothing,
                          HTMLMediaElement::kNetworkLoading);
-    EXPECT_EQ(media_controls_->State(), MediaControlsImpl::kLoadingMetadata);
+    EXPECT_EQ(media_controls_->State(),
+              MediaControlsImpl::kLoadingMetadataPaused);
     loading_element_->UpdateDisplayState();
   }
 

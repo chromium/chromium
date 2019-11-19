@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
+#include "ui/gfx/native_widget_types.h"
 
 class Profile;
 
@@ -16,7 +17,12 @@ class Profile;
 class ExtensionUninstaller
     : public extensions::ExtensionUninstallDialog::Delegate {
  public:
-  ExtensionUninstaller(Profile* profile, const std::string& extension_id);
+  // If |parent_window| is specified, the uninstall dialog will be created as a
+  // modal dialog anchored at |parent_window|. Otherwise, the browser
+  // window will be used as the anchor.
+  ExtensionUninstaller(Profile* profile,
+                       const std::string& extension_id,
+                       gfx::NativeWindow parent_window = nullptr);
   ~ExtensionUninstaller() override;
 
   void Run();
@@ -30,6 +36,7 @@ class ExtensionUninstaller
 
   Profile* profile_;
   std::string app_id_;
+  gfx::NativeWindow parent_window_;  // Can be null.
   std::unique_ptr<extensions::ExtensionUninstallDialog> dialog_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionUninstaller);

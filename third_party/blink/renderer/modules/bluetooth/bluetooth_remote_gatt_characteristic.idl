@@ -4,13 +4,12 @@
 
 // https://webbluetoothcg.github.io/web-bluetooth/#bluetoothremotegattcharacteristic
 
-// Implement BluetoothRemoteGATTCharacteristic interface: https://crbug.com/483344
-
 [
+    Exposed=Window,
     ActiveScriptWrappable,
     RuntimeEnabled=WebBluetooth,
     SecureContext
-] interface BluetoothRemoteGATTCharacteristic : EventTarget {//: CharacteristicEventHandlers {
+] interface BluetoothRemoteGATTCharacteristic : EventTarget {
     [SameObject] readonly attribute BluetoothRemoteGATTService service;
     readonly attribute UUID uuid;
     readonly attribute BluetoothCharacteristicProperties properties;

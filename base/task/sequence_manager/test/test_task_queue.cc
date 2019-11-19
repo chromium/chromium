@@ -11,7 +11,7 @@ namespace sequence_manager {
 
 TestTaskQueue::TestTaskQueue(std::unique_ptr<internal::TaskQueueImpl> impl,
                              const TaskQueue::Spec& spec)
-    : TaskQueue(std::move(impl), spec), weak_factory_(this) {}
+    : TaskQueue(std::move(impl), spec) {}
 
 TestTaskQueue::~TestTaskQueue() = default;
 

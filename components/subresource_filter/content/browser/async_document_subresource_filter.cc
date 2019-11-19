@@ -104,8 +104,7 @@ AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
     InitializationParams params,
     base::OnceCallback<void(mojom::ActivationState)> activation_state_callback)
     : task_runner_(ruleset_handle->task_runner()),
-      core_(new Core(), base::OnTaskRunnerDeleter(task_runner_)),
-      weak_ptr_factory_(this) {
+      core_(new Core(), base::OnTaskRunnerDeleter(task_runner_)) {
   DCHECK_NE(mojom::ActivationLevel::kDisabled,
             params.parent_activation_state.activation_level);
 

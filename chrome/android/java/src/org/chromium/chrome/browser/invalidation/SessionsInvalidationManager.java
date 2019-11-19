@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.invalidation;
 
 import android.text.format.DateUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 

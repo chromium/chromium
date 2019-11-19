@@ -1,133 +1,133 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/services/heap_profiling/heap_profiling_service.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/task/post_task.h"
+#include "components/services/heap_profiling/connection_manager.h"
 #include "components/services/heap_profiling/public/mojom/heap_profiling_client.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-#include "services/resource_coordinator/public/cpp/resource_coordinator_features.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
-#include "services/resource_coordinator/public/mojom/service_constants.mojom.h"
 
 namespace heap_profiling {
 
-HeapProfilingService::HeapProfilingService(
-    service_manager::mojom::ServiceRequest request)
-    : service_binding_(this, std::move(request)) {}
+namespace {
 
-HeapProfilingService::~HeapProfilingService() = default;
+class ProfilingServiceImpl;
 
-// static
-base::RepeatingCallback<void(service_manager::mojom::ServiceRequest)>
-HeapProfilingService::GetServiceFactory() {
-  return base::BindRepeating(
-      [](service_manager::mojom::ServiceRequest request) {
-        // base::WithBaseSyncPrimitives() and thus DEDICATED are needed
-        // because the thread owned by ConnectionManager::Connection is doing
-        // blocking Join during dectruction.
-        scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-            base::CreateSingleThreadTaskRunnerWithTraits(
-                {base::TaskPriority::BEST_EFFORT,
-                 base::WithBaseSyncPrimitives()},
-                base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-        task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                [](service_manager::mojom::ServiceRequest request) {
-                  service_manager::Service::RunAsyncUntilTermination(
-                      std::make_unique<heap_profiling::HeapProfilingService>(
-                          std::move(request)));
-                },
-                std::move(request)));
-      });
-}
+class ProfilingServiceImpl
+    : public mojom::ProfilingService,
+      public memory_instrumentation::mojom::HeapProfiler {
+ public:
+  ProfilingServiceImpl(
+      mojo::PendingReceiver<memory_instrumentation::mojom::HeapProfiler>
+          profiler_receiver,
+      mojo::PendingRemote<memory_instrumentation::mojom::HeapProfilerHelper>
+          helper)
+      : heap_profiler_receiver_(this, std::move(profiler_receiver)),
+        helper_(std::move(helper)) {}
 
-void HeapProfilingService::OnStart() {
-  registry_.AddInterface(
-      base::Bind(&HeapProfilingService::OnProfilingServiceRequest,
-                 base::Unretained(this)));
-  registry_.AddInterface(base::Bind(
-      &HeapProfilingService::OnHeapProfilerRequest, base::Unretained(this)));
-}
+  ~ProfilingServiceImpl() override = default;
 
-void HeapProfilingService::OnBindInterface(
-    const service_manager::BindSourceInfo& source_info,
-    const std::string& interface_name,
-    mojo::ScopedMessagePipeHandle interface_pipe) {
-  registry_.BindInterface(interface_name, std::move(interface_pipe));
-}
-
-void HeapProfilingService::OnProfilingServiceRequest(
-    mojom::ProfilingServiceRequest request) {
-  binding_.Bind(std::move(request));
-}
-
-void HeapProfilingService::OnHeapProfilerRequest(
-    memory_instrumentation::mojom::HeapProfilerRequest request) {
-  heap_profiler_binding_.Bind(std::move(request));
-}
-
-void HeapProfilingService::AddProfilingClient(
-    base::ProcessId pid,
-    mojom::ProfilingClientPtr client,
-    mojo::ScopedHandle pipe_receiver,
-    mojom::ProcessType process_type,
-    mojom::ProfilingParamsPtr params) {
-  if (params->sampling_rate == 0)
-    params->sampling_rate = 1;
-  connection_manager_.OnNewConnection(pid, std::move(client),
-                                      std::move(pipe_receiver), process_type,
-                                      std::move(params));
-}
-
-void HeapProfilingService::SetKeepSmallAllocations(
-    bool keep_small_allocations) {
-  keep_small_allocations_ = keep_small_allocations;
-}
-
-void HeapProfilingService::GetProfiledPids(GetProfiledPidsCallback callback) {
-  std::move(callback).Run(connection_manager_.GetConnectionPids());
-}
-
-void HeapProfilingService::DumpProcessesForTracing(
-    bool strip_path_from_mapped_files,
-    DumpProcessesForTracingCallback callback) {
-  if (!helper_) {
-    service_binding_.GetConnector()->BindInterface(
-        resource_coordinator::mojom::kServiceName, &helper_);
+  // mojom::ProfilingService implementation:
+  void AddProfilingClient(base::ProcessId pid,
+                          mojo::PendingRemote<mojom::ProfilingClient> client,
+                          mojom::ProcessType process_type,
+                          mojom::ProfilingParamsPtr params) override {
+    if (params->sampling_rate == 0)
+      params->sampling_rate = 1;
+    connection_manager_.OnNewConnection(pid, std::move(client), process_type,
+                                        std::move(params));
   }
 
-  std::vector<base::ProcessId> pids =
-      connection_manager_.GetConnectionPidsThatNeedVmRegions();
-  if (pids.empty()) {
-    connection_manager_.DumpProcessesForTracing(
-        keep_small_allocations_, strip_path_from_mapped_files,
-        std::move(callback), VmRegions());
-  } else {
+  void GetProfiledPids(GetProfiledPidsCallback callback) override {
+    std::move(callback).Run(connection_manager_.GetConnectionPids());
+  }
+
+  // memory_instrumentation::mojom::HeapProfiler implementation:
+  void DumpProcessesForTracing(
+      bool strip_path_from_mapped_files,
+      DumpProcessesForTracingCallback callback) override {
+    std::vector<base::ProcessId> pids =
+        connection_manager_.GetConnectionPidsThatNeedVmRegions();
+    if (pids.empty()) {
+      connection_manager_.DumpProcessesForTracing(
+          strip_path_from_mapped_files, std::move(callback), VmRegions());
+      return;
+    }
+
     // Need a memory map to make sense of the dump. The dump will be triggered
     // in the memory map global dump callback.
     helper_->GetVmRegionsForHeapProfiler(
         pids,
-        base::BindOnce(&HeapProfilingService::
+        base::BindOnce(&ProfilingServiceImpl::
                            OnGetVmRegionsCompleteForDumpProcessesForTracing,
                        weak_factory_.GetWeakPtr(), strip_path_from_mapped_files,
                        std::move(callback)));
   }
+
+ private:
+  void OnGetVmRegionsCompleteForDumpProcessesForTracing(
+      bool strip_path_from_mapped_files,
+      DumpProcessesForTracingCallback callback,
+      VmRegions vm_regions) {
+    connection_manager_.DumpProcessesForTracing(strip_path_from_mapped_files,
+                                                std::move(callback),
+                                                std::move(vm_regions));
+  }
+
+  mojo::Receiver<memory_instrumentation::mojom::HeapProfiler>
+      heap_profiler_receiver_{this};
+  mojo::Remote<memory_instrumentation::mojom::HeapProfilerHelper> helper_;
+  ConnectionManager connection_manager_;
+
+  base::WeakPtrFactory<ProfilingServiceImpl> weak_factory_{this};
+
+  DISALLOW_COPY_AND_ASSIGN(ProfilingServiceImpl);
+};
+
+void RunHeapProfilingService(
+    mojo::PendingReceiver<mojom::ProfilingService> receiver,
+    mojo::PendingReceiver<memory_instrumentation::mojom::HeapProfiler>
+        profiler_receiver,
+    mojo::PendingRemote<memory_instrumentation::mojom::HeapProfilerHelper>
+        helper) {
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<ProfilingServiceImpl>(std::move(profiler_receiver),
+                                             std::move(helper)),
+      std::move(receiver));
 }
 
-void HeapProfilingService::OnGetVmRegionsCompleteForDumpProcessesForTracing(
-    bool strip_path_from_mapped_files,
-    DumpProcessesForTracingCallback callback,
-    VmRegions vm_regions) {
-  connection_manager_.DumpProcessesForTracing(
-      keep_small_allocations_, strip_path_from_mapped_files,
-      std::move(callback), std::move(vm_regions));
+}  // namespace
+
+mojo::PendingRemote<mojom::ProfilingService> LaunchService(
+    mojo::PendingReceiver<memory_instrumentation::mojom::HeapProfiler>
+        profiler_receiver,
+    mojo::PendingRemote<memory_instrumentation::mojom::HeapProfilerHelper>
+        helper) {
+  mojo::PendingRemote<mojom::ProfilingService> remote;
+  auto task_runner = base::CreateSingleThreadTaskRunner(
+      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
+       base::WithBaseSyncPrimitives()},
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RunHeapProfilingService,
+                     remote.InitWithNewPipeAndPassReceiver(),
+                     std::move(profiler_receiver), std::move(helper)));
+  return remote;
 }
 
 }  // namespace heap_profiling

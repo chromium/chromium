@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,6 +40,9 @@
 #include <atomic>
 #include <cassert>
 #include <cstdint>
+#include <new>
+#include <type_traits>
+
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/internal/thread_identity.h"
 #include "absl/base/optimization.h"
@@ -81,6 +84,7 @@ static void MaybeBecomeIdle() {
 #define FUTEX_BITSET_MATCH_ANY 0xFFFFFFFF
 #endif
 #endif
+
 class Futex {
  public:
   static int WaitUntil(std::atomic<int32_t> *v, int32_t val,
@@ -326,6 +330,43 @@ void Waiter::Poke() {
 
 #elif ABSL_WAITER_MODE == ABSL_WAITER_MODE_WIN32
 
+class Waiter::WinHelper {
+ public:
+  static SRWLOCK *GetLock(Waiter *w) {
+    return reinterpret_cast<SRWLOCK *>(&w->mu_storage_);
+  }
+
+  static CONDITION_VARIABLE *GetCond(Waiter *w) {
+    return reinterpret_cast<CONDITION_VARIABLE *>(&w->cv_storage_);
+  }
+
+  static_assert(sizeof(SRWLOCK) == sizeof(Waiter::SRWLockStorage),
+                "SRWLockStorage does not have the same size as SRWLOCK");
+  static_assert(
+      alignof(SRWLOCK) == alignof(Waiter::SRWLockStorage),
+      "SRWLockStorage does not have the same alignment as SRWLOCK");
+
+  static_assert(sizeof(CONDITION_VARIABLE) ==
+                    sizeof(Waiter::ConditionVariableStorage),
+                "ABSL_CONDITION_VARIABLE_STORAGE does not have the same size "
+                "as CONDITION_VARIABLE");
+  static_assert(alignof(CONDITION_VARIABLE) ==
+                    alignof(Waiter::ConditionVariableStorage),
+                "ConditionVariableStorage does not have the same "
+                "alignment as CONDITION_VARIABLE");
+
+  // The SRWLOCK and CONDITION_VARIABLE types must be trivially constuctible
+  // and destructible because we never call their constructors or destructors.
+  static_assert(std::is_trivially_constructible<SRWLOCK>::value,
+                "The SRWLOCK type must be trivially constructible");
+  static_assert(std::is_trivially_constructible<CONDITION_VARIABLE>::value,
+                "The CONDITION_VARIABLE type must be trivially constructible");
+  static_assert(std::is_trivially_destructible<SRWLOCK>::value,
+                "The SRWLOCK type must be trivially destructible");
+  static_assert(std::is_trivially_destructible<CONDITION_VARIABLE>::value,
+                "The CONDITION_VARIABLE type must be trivially destructible");
+};
+
 class LockHolder {
  public:
   explicit LockHolder(SRWLOCK* mu) : mu_(mu) {
@@ -344,14 +385,19 @@ class LockHolder {
 };
 
 void Waiter::Init() {
-  InitializeSRWLock(&mu_);
-  InitializeConditionVariable(&cv_);
+  auto *mu = ::new (static_cast<void *>(&mu_storage_)) SRWLOCK;
+  auto *cv = ::new (static_cast<void *>(&cv_storage_)) CONDITION_VARIABLE;
+  InitializeSRWLock(mu);
+  InitializeConditionVariable(cv);
   waiter_count_.store(0, std::memory_order_relaxed);
   wakeup_count_.store(0, std::memory_order_relaxed);
 }
 
 bool Waiter::Wait(KernelTimeout t) {
-  LockHolder h(&mu_);
+  SRWLOCK *mu = WinHelper::GetLock(this);
+  CONDITION_VARIABLE *cv = WinHelper::GetCond(this);
+
+  LockHolder h(mu);
   waiter_count_.fetch_add(1, std::memory_order_relaxed);
 
   // Loop until we find a wakeup to consume or timeout.
@@ -369,8 +415,7 @@ bool Waiter::Wait(KernelTimeout t) {
     }
 
     // No wakeups available, time to wait.
-    if (!SleepConditionVariableSRW(
-            &cv_, &mu_, t.InMillisecondsFromNow(), 0)) {
+    if (!SleepConditionVariableSRW(cv, mu, t.InMillisecondsFromNow(), 0)) {
       // GetLastError() returns a Win32 DWORD, but we assign to
       // unsigned long to simplify the ABSL_RAW_LOG case below.  The uniform
       // initialization guarantees this is not a narrowing conversion.
@@ -397,11 +442,11 @@ void Waiter::Poke() {
     return;
   }
   // Potentially a waker. Take the lock and check again.
-  LockHolder h(&mu_);
+  LockHolder h(WinHelper::GetLock(this));
   if (waiter_count_.load(std::memory_order_relaxed) == 0) {
     return;
   }
-  WakeConditionVariable(&cv_);
+  WakeConditionVariable(WinHelper::GetCond(this));
 }
 
 #else

@@ -24,11 +24,29 @@ class Profile;
 
 // Any new values should be inserted immediately prior to NUM.
 enum class PermissionSourceUI {
+  // Permission prompt.
   PROMPT = 0,
+
+  // Origin info bubble.
+  // https://www.chromium.org/Home/chromium-security/enamel/goals-for-the-origin-info-bubble
   OIB = 1,
+
+  // chrome://settings/content/siteDetails?site=[SITE]
+  // chrome://settings/content/[PERMISSION TYPE]
   SITE_SETTINGS = 2,
+
+  // Page action bubble.
   PAGE_ACTION = 3,
+
+  // Permission settings from Android.
+  // Currently this value is only used when revoking notification permission in
+  // Android O+ system channel settings.
   ANDROID_SETTINGS = 4,
+
+  // Permission settings as part of the event's UI.
+  // Currently this value is only used when revoking notification permission
+  // through the notification UI.
+  INLINE_SETTINGS = 5,
 
   // Always keep this at the end.
   NUM,
@@ -91,6 +109,8 @@ class PermissionUmaUtil {
       PermissionAction permission_action);
 
   static void RecordWithBatteryBucket(const std::string& histogram);
+
+  static void RecordInfobarDetailsExpanded(bool expanded);
 
  private:
   friend class PermissionUmaUtilTest;

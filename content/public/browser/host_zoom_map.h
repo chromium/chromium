@@ -112,19 +112,18 @@ class HostZoomMap {
   // description for details.
   //
   // This may be called on any thread.
-  virtual double GetZoomLevelForHostAndScheme(
-      const std::string& scheme,
-      const std::string& host) const = 0;
+  virtual double GetZoomLevelForHostAndScheme(const std::string& scheme,
+                                              const std::string& host) = 0;
 
   // Returns true if the specified |scheme| and/or |host| has a zoom level
   // currently set.
   //
   // This may be called on any thread.
   virtual bool HasZoomLevel(const std::string& scheme,
-                            const std::string& host) const = 0;
+                            const std::string& host) = 0;
 
   // Returns all non-temporary zoom levels. Can be called on any thread.
-  virtual ZoomLevelVector GetAllZoomLevels() const = 0;
+  virtual ZoomLevelVector GetAllZoomLevels() = 0;
 
   // Here |host| is the host portion of URL, or (in the absence of a host)
   // the complete spec of the URL.
@@ -156,7 +155,7 @@ class HostZoomMap {
   // Returns whether the view manages its zoom level independently of other
   // views displaying content from the same host.
   virtual bool UsesTemporaryZoomLevel(int render_process_id,
-                                      int render_view_id) const = 0;
+                                      int render_view_id) = 0;
 
   // Sets the temporary zoom level that's only valid for the lifetime of this
   // WebContents.
@@ -179,7 +178,7 @@ class HostZoomMap {
                                        int render_view_id) = 0;
 
   // Get/Set the default zoom level for pages that don't override it.
-  virtual double GetDefaultZoomLevel() const = 0;
+  virtual double GetDefaultZoomLevel() = 0;
   virtual void SetDefaultZoomLevel(double level) = 0;
 
   typedef base::Callback<void(const ZoomLevelChange&)> ZoomLevelChangedCallback;

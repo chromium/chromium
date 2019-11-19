@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -86,8 +87,7 @@ NexeLoadManager::NexeLoadManager(PP_Instance pp_instance)
       exit_status_(-1),
       nexe_size_(0),
       plugin_instance_(content::PepperPluginInstance::Get(pp_instance)),
-      nonsfi_(false),
-      weak_factory_(this) {
+      nonsfi_(false) {
   set_exit_status(-1);
   SetLastError("");
   HistogramEnumerateOsArch(GetSandboxArch());
@@ -101,8 +101,6 @@ NexeLoadManager::~NexeLoadManager() {
     base::TimeDelta uptime = base::Time::Now() - ready_time_;
     HistogramTimeLarge("NaCl.ModuleUptime.Normal", uptime.InMilliseconds());
   }
-  if (base::SharedMemory::IsHandleValid(crash_info_shmem_handle_))
-    base::SharedMemory::CloseHandle(crash_info_shmem_handle_);
 }
 
 void NexeLoadManager::NexeFileDidOpen(int32_t pp_error,
@@ -260,23 +258,15 @@ void NexeLoadManager::NexeDidCrash() {
   // invocation will just be a no-op, since the entire crash log will
   // have been received and we'll just get an EOF indication.
 
-  base::SharedMemory shmem(crash_info_shmem_handle_, true);
-  // When shmem goes out of scope, the handle will be closed. Invalidate
-  // our handle so our destructor doesn't try to close it again.
-  crash_info_shmem_handle_ = base::SharedMemoryHandle();
-  if (shmem.Map(kNaClCrashInfoShmemSize)) {
-    uint32_t crash_log_length;
-    // We cast the length value to volatile here to prevent the compiler from
-    // reordering instructions in a way that could introduce a TOCTTOU race.
-    crash_log_length = *(static_cast<volatile uint32_t*>(shmem.memory()));
-    crash_log_length = std::min<uint32_t>(crash_log_length,
-                                          kNaClCrashInfoMaxLogSize);
-
-    std::unique_ptr<char[]> crash_log_data(new char[kNaClCrashInfoShmemSize]);
-    memcpy(crash_log_data.get(),
-           static_cast<char*>(shmem.memory()) + sizeof(uint32_t),
-           crash_log_length);
-    std::string crash_log(crash_log_data.get(), crash_log_length);
+  base::ReadOnlySharedMemoryMapping shmem_mapping =
+      crash_info_shmem_region_.MapAt(0, kNaClCrashInfoShmemSize);
+  if (shmem_mapping.IsValid()) {
+    base::BufferIterator<const uint8_t> buffer =
+        shmem_mapping.GetMemoryAsBufferIterator<uint8_t>();
+    const uint32_t* crash_log_length = buffer.Object<uint32_t>();
+    base::span<const uint8_t> data = buffer.Span<uint8_t>(
+        std::min<uint32_t>(*crash_log_length, kNaClCrashInfoMaxLogSize));
+    std::string crash_log(data.begin(), data.end());
     CopyCrashLogToJsConsole(crash_log);
   }
 }

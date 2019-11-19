@@ -9,9 +9,8 @@ dictionary TrustedTypePolicyOptions {
    CreateScriptCallback createScript;
    CreateURLCallback createScriptURL;
    CreateURLCallback createURL;
-   boolean exposed = false;
 };
 
-callback CreateHTMLCallback = DOMString (DOMString input);
-callback CreateScriptCallback = DOMString (DOMString input);
-callback CreateURLCallback = USVString (DOMString input);
+callback CreateHTMLCallback = DOMString? (DOMString input);
+callback CreateScriptCallback = DOMString? (DOMString input);
+callback CreateURLCallback = USVString? (DOMString input);

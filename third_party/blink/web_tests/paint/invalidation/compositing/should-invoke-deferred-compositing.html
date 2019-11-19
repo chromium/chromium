@@ -15,7 +15,7 @@
 <style>
 
 .composited {
-  transform: translatez(0);
+  will-change: transform;
 }
 
 .box {
@@ -37,6 +37,9 @@ canvas {
 </style>
 
 <script>
+  if (window.internals)
+    internals.runtimeFlags.accelerated2dCanvasEnabled = true;
+
   function repaintTest() {
     var canvasElement = document.createElement("canvas");
     canvasElement.width = 200;

@@ -11,9 +11,10 @@
 #include "components/vector_icons/cc_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 
-namespace views {
+#define DECLARE_VECTOR_COMMAND(x) using gfx::x;
+DECLARE_VECTOR_COMMANDS
 
-using namespace gfx;
+namespace views {
 
 TEMPLATE_PLACEHOLDER
 

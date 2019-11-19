@@ -1,0 +1,37 @@
+This test verifies text editor's enabling and disabling tab moves focus behavior
+
+
+Running: testDefaultTabBehavior
+Focus is on:
+TEXTAREA:Code editor
+After pressing tab, focus is on:
+TEXTAREA:Code editor
+..|function.foo().{
+..var.x.=.11;
+..return.x
+}
+
+Running: testEnableTabMovesFocus
+Enable tab moves focus and press Tab key
+Focus is on:
+TEXTAREA:Code editor
+After pressing tab, focus is on:
+BUTTON:Select an element in the page to inspect it
+|function.foo().{
+..var.x.=.11;
+..return.x
+}
+After pressing shift + tab, focus is on:
+TEXTAREA:Code editor
+
+Running: testDisableTabMovesFocus
+Disable tab moves focus and press Tab key
+Focus is on:
+TEXTAREA:Code editor
+After pressing tab, focus is on:
+TEXTAREA:Code editor
+..|function.foo().{
+..var.x.=.11;
+..return.x
+}
+

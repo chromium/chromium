@@ -1,3 +1,15 @@
 include_rules = [
   "+chrome/services/app_service/public",
 ]
+
+specific_include_rules = {
+  "app_service_proxy\.cc": [
+    # App Service Proxy hosts the actual Mojo App Service as a private
+    # implementation detail. Allow the impl to be included there, but don't
+    # expose it to any other files except through the public mojo interface.
+    "+chrome/services/app_service/app_service_impl.h",
+  ],
+  "app_service_test\.cc": [
+    "+chrome/services/app_service/app_service.h",
+  ],
+}

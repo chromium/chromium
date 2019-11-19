@@ -31,6 +31,9 @@ class FCMSyncNetworkChannel : public NetworkChannel {
   FCMSyncNetworkChannel();
   ~FCMSyncNetworkChannel() override;
 
+  virtual void StartListening() = 0;
+  virtual void StopListening() = 0;
+
   void SetMessageReceiver(MessageCallback incoming_receiver) override;
   void SetTokenReceiver(TokenCallback token_receiver) override;
 

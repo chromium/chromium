@@ -77,6 +77,20 @@
     "dependencies": ["permission:audio"],
     "contexts": ["blessed_extension"]
   },
+  "automationInternal": {
+    "internal": true,
+    "dependencies": ["manifest:automation"],
+    "contexts": ["blessed_extension"]
+  },
+  "automation": {
+    "dependencies": ["manifest:automation"],
+    "contexts": ["blessed_extension"]
+  },
+  "automation.languageAnnotationForStringAttribute": {
+    "command_line_switch": "enable-experimental-accessibility-chromevox-sub-node-language-switching",
+    "channel": "dev",
+    "contexts": ["blessed_extension"]
+  },
   "bluetooth": [{
     "dependencies": ["manifest:bluetooth"],
     "contexts": ["blessed_extension"]
@@ -85,6 +99,9 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://bluetooth-pairing/*",
+      // TODO(maybelle): Audit and remove chrome://settings or
+      // chrome://os-settings as appropriate
+      "chrome://os-settings/*",
       "chrome://settings/*"
     ]
   }],
@@ -101,6 +118,9 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://bluetooth-pairing/*",
+      // TODO(maybelle): Audit and remove chrome://settings or
+      // chrome://os-settings as appropriate
+      "chrome://os-settings/*",
       "chrome://settings/*"
     ]
   }],
@@ -126,17 +146,18 @@
     "dependencies": ["permission:declarativeNetRequest"],
     "contexts": ["blessed_extension"]
   },
-  "declarativeNetRequest.addDynamicRules": {
+  "declarativeNetRequest.getMatchedRules": {
     "dependencies": ["permission:declarativeNetRequest"],
     "contexts": ["blessed_extension"],
     "channel": "trunk"
   },
-  "declarativeNetRequest.removeDynamicRules": {
-    "dependencies": ["permission:declarativeNetRequest"],
+  "declarativeNetRequest.onRuleMatchedDebug": {
+    "dependencies": ["permission:declarativeNetRequest", "permission:declarativeNetRequestFeedback"],
     "contexts": ["blessed_extension"],
-    "channel": "trunk"
+    "channel": "trunk",
+    "location": "unpacked"
   },
-  "declarativeNetRequest.getDynamicRules": {
+  "declarativeNetRequest.setActionCountAsBadgeText": {
     "dependencies": ["permission:declarativeNetRequest"],
     "contexts": ["blessed_extension"],
     "channel": "trunk"
@@ -170,21 +191,6 @@
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "contexts": ["blessed_extension"]
   },
-  "extensionViewInternal": [
-    {
-      "internal": true,
-      "contexts": ["blessed_extension"],
-      "dependencies": ["permission:extensionview"]
-    }, {
-      "internal": true,
-      "channel": "stable",
-      "contexts": ["webui"],
-      "matches": [
-        "chrome://cast/*",
-        "chrome://media-router/*"
-      ]
-    }
-  ],
   "events": {
     "internal": true,
     "channel": "stable",
@@ -202,7 +208,8 @@
   },
   "fileSystem": {
     "dependencies": ["permission:fileSystem"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["blessed_extension"],
+    "disallow_for_service_workers": true
   },
   "guestViewInternal": [
     {
@@ -214,17 +221,19 @@
       "channel": "stable",
       "contexts": ["webui"],
       "matches": [
+        "chrome://add-supervision/*",
+        "chrome://assistant-optin/*",
         "chrome://cast/*",
+        "chrome://cellular-setup/*",
         "chrome://discards/*",
-        "chrome://extensions-frame/*",
+        "chrome://extensions-frame/*",  // TODO(dbeam): still needed?
         "chrome://extensions/*",
         "chrome://home/*",
         "chrome://chrome-signin/*",
         "chrome://hats/*",
-        "chrome://media-router/*",
         "chrome://mobilesetup/*",
         "chrome://oobe/*",
-        "chrome://assistant-optin/*"
+        "chrome://password-change/*"
       ]
     }
   ],
@@ -260,8 +269,10 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://extensions/*",
-      "chrome://extensions-frame/*",
-      "chrome://chrome/extensions/*",
+      "chrome://extensions-frame/*",  // TODO(dbeam): still needed?
+      // TODO(maybelle): Audit and remove chrome://settings or
+      // chrome://os-settings as appropriate
+      "chrome://os-settings/*",
       "chrome://settings/*"
     ]
   }],
@@ -274,6 +285,22 @@
     "dependencies": [],
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
+  },
+  "management.canInstallReplacementAndroidApp": {
+    "dependencies": ["manifest:replacement_android_app"],
+    // TODO(jshikaram): add test coverage before trunk promotion.
+    "channel": "trunk",
+    "extension_types": ["platform_app"]
+  },
+  "management.installReplacementAndroidApp": {
+    "dependencies": ["manifest:replacement_android_app"],
+    "channel": "trunk",
+    "extension_types": ["platform_app"]
+  },
+  "management.installReplacementWebApp": {
+    "dependencies": ["manifest:replacement_web_app"],
+    "channel": "stable",
+    "extension_types": ["extension", "platform_app"]
   },
   "management.uninstallSelf": {
     "dependencies": [],
@@ -294,6 +321,9 @@
     "matches": [
       "chrome://bookmarks/*",
       "chrome://extensions/*",
+      // TODO(maybelle): Audit and remove chrome://settings or
+      // chrome://os-settings as appropriate
+      "chrome://os-settings/*",
       "chrome://settings/*",
       "chrome://sync-confirmation/*",
       "chrome://welcome/*"
@@ -310,11 +340,6 @@
       "12E618C3C6E97495AAECF2AC12DEB082353241C6",  // QO component extension
       "3727DD3E564B6055387425027AD74C58784ACC15",  // Editor
       "C41AD9DCD670210295614257EF8C9945AD68D86E",  // Google Now
-      // TODO(michaelpg): Determine whether these three extensions (D5736E4,
-      // D57DE39, 3F65507) require this feature: crbug.com/652433.
-      "D5736E4B5CF695CB93A2FB57E4FDC6E5AFAB6FE2",  // http://crbug.com/312900.
-      "D57DE394F36DC1C3220E7604C575D29C51A6C495",  // http://crbug.com/319444.
-      "3F65507A3B39259B38C8173C6FFA3D12DF64CCE9",  // http://crbug.com/371562.
       "D7986543275120831B39EF28D1327552FC343960",  // http://crbug.com/378067
       "A291B26E088FA6BA53FFD72F0916F06EBA7C585A",  // http://crbug.com/378067
       "07BD6A765FFC289FF755D7CAB2893A40EC337FEC",  // http://crbug.com/456214
@@ -334,7 +359,8 @@
       "898FB5A39687D210766B8998BA4530B99C9E6586",  // http://crbug.com/819404
       "82F30B65397BC3E4ADE627BBD857AB8A58210648",  // http://crbug.com/819404
       "A3E3DE9E9F16B41D4A2FAD106BD6CA76B94A0C94",  // http://crbug.com/932466
-      "B41E7F08E1179CC03CBD1F49E57CF353A40ADE07"   // http://crbug.com/932466
+      "B41E7F08E1179CC03CBD1F49E57CF353A40ADE07",  // http://crbug.com/932466
+      "C74B2AF138F9EDECD04D0965AB36CA66C8290466"   // http://crbug.com/957772
     ]
   },
   "mimeHandlerPrivate": {
@@ -378,6 +404,9 @@
       "chrome://oobe/*",
       "chrome://internet-config-dialog/*",
       "chrome://internet-detail-dialog/*",
+      // TODO(maybelle): Audit and remove chrome://settings or
+      // chrome://os-settings as appropriate
+      "chrome://os-settings/*",
       "chrome://settings/*"
     ]
   }],
@@ -387,17 +416,30 @@
   },
   "printerProvider": {
     "dependencies": ["permission:printerProvider"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["blessed_extension"],
+    "disallow_for_service_workers": true
   },
   "printerProviderInternal": {
     "internal": true,
     "dependencies": ["permission:printerProvider"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["blessed_extension"],
+    "disallow_for_service_workers": true
   },
   "runtime": {
     "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "contexts": ["blessed_extension", "lock_screen_extension", "extension_service_worker"]
+    "extension_types": [
+      "extension",
+      "legacy_packaged_app",
+      "platform_app",
+      "login_screen_extension"
+    ],
+    "contexts": [
+      "blessed_extension",
+      "lock_screen_extension"
+    ]
+  },
+  "runtime.getBackgroundPage": {
+    "disallow_for_service_workers": true
   },
   "runtime.getManifest": {
     "contexts": [
@@ -454,7 +496,6 @@
   },
   "runtime.onConnectNative": {
     "dependencies": ["permission:nativeMessaging"],
-    "channel": "trunk",
     "contexts": ["blessed_extension"]
   },
   "runtime.onMessage": {
@@ -503,8 +544,7 @@
   },
   "storage": {
     "dependencies": ["permission:storage"],
-    "contexts": ["blessed_extension", "unblessed_extension", "content_script",
-                 "extension_service_worker"]
+    "contexts": ["blessed_extension", "unblessed_extension", "content_script"]
   },
   "system.cpu": {
     "dependencies": ["permission:system.cpu"],
@@ -512,11 +552,15 @@
   },
   "system.display": [{
     "dependencies": ["permission:system.display"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["blessed_extension"],
+    "disallow_for_service_workers": true
   }, {
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
+      // TODO(maybelle): Audit and remove chrome://settings or
+      // chrome://os-settings as appropriate
+      "chrome://os-settings/*",
       "chrome://settings/*"
     ]
   }],
@@ -548,7 +592,6 @@
       "blessed_extension",
       "blessed_web_page",
       "content_script",
-      "extension_service_worker",
       "lock_screen_extension",
       "unblessed_extension"
     ]
@@ -557,21 +600,13 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://extensions/*",
-      "chrome://extensions-frame/*",
-      "chrome://chrome/extensions/*"
+      "chrome://extensions-frame/*"  // TODO(dbeam): still needed?
     ]
   }],
   "types": {
     "internal": true,
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "contexts": ["blessed_extension"]
-  },
-  "types.private": {
-    // preferencesPrivate is the only API that uses types.private.
-    // If any other APIs need it then they'll need to be added in
-    // separate rules.
-    "dependencies": ["permission:preferencesPrivate"],
     "contexts": ["blessed_extension"]
   },
   "usb": {
@@ -600,14 +635,16 @@
     "internal": true,
     "contexts": ["webui"],
     "matches": [
+      "chrome://add-supervision/*",
+      "chrome://assistant-optin/*",
+      "chrome://cellular-setup/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
       "chrome://hats/*",
       "chrome://home/*",
-      "chrome://media-router/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
-      "chrome://assistant-optin/*"
+      "chrome://password-change/*"
     ]
   }],
   "webViewInternal": [{
@@ -619,14 +656,16 @@
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
+      "chrome://add-supervision/*",
+      "chrome://assistant-optin/*",
+      "chrome://cellular-setup/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
       "chrome://hats/*",
       "chrome://home/*",
-      "chrome://media-router/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
-      "chrome://assistant-optin/*"
+      "chrome://password-change/*"
     ]
   }],
   "webViewRequest": [{
@@ -636,14 +675,15 @@
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
+      "chrome://add-supervision/*",
+      "chrome://assistant-optin/*",
+      "chrome://cellular-setup/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
       "chrome://hats/*",
       "chrome://home/*",
-      "chrome://media-router/*",
       "chrome://mobilesetup/*",
-      "chrome://oobe/*",
-      "chrome://assistant-optin/*"
+      "chrome://oobe/*"
     ]
   }]
 }

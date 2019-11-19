@@ -6,6 +6,10 @@ import("//build/config/nacl/config.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
+if (is_mac) {
+  import("//third_party/protobuf/proto_library.gni")
+}
+
 component("embedder_internal") {
   output_name = "mojo_core_embedder_internal"
   public_deps = [
@@ -115,7 +119,7 @@ template("core_impl_source_set") {
       public_deps += [ "//third_party/fuchsia-sdk/sdk:fdio" ]
     }
 
-    if (is_posix) {
+    if (is_posix && !is_mac) {
       if (!is_nacl || is_nacl_nonsfi) {
         sources += [
           "broker_posix.cc",
@@ -124,11 +128,8 @@ template("core_impl_source_set") {
       }
     }
 
-    if (is_mac && !is_ios) {
-      sources += [
-        "mach_port_relay.cc",
-        "mach_port_relay.h",
-      ]
+    if (is_mac) {
+      sources += [ "channel_mac.cc" ]
     }
 
     if (!is_nacl || is_nacl_nonsfi) {
@@ -163,6 +164,8 @@ template("core_impl_source_set") {
     if (is_android || target_os == "chromeos") {
       defines += [ "MOJO_CORE_LEGACY_PROTOCOL" ]
     }
+
+    configs += [ "//build/config/compiler:noshadowing" ]
   }
 }
 
@@ -345,6 +348,57 @@ fuzzer_test("mojo_core_channel_fuzzer") {
     "//base",
     "//mojo/public/cpp/platform",
   ]
+}
+
+if (is_mac) {
+  protoc_convert("mojo_core_channel_mac_fuzzer_convert_corpus") {
+    sources = [
+      "test/data/channel_mac/bad_handshake1.textproto",
+      "test/data/channel_mac/bad_handshake2.textproto",
+      "test/data/channel_mac/bad_handshake3.textproto",
+      "test/data/channel_mac/bad_message1.textproto",
+      "test/data/channel_mac/complex_messages.textproto",
+      "test/data/channel_mac/double_handshake.textproto",
+      "test/data/channel_mac/handshake.textproto",
+      "test/data/channel_mac/invalid_handles.textproto",
+      "test/data/channel_mac/non_complex_with_descriptor_count.textproto",
+      "test/data/channel_mac/ool_type_mismatch.textproto",
+      "test/data/channel_mac/simple_message1.textproto",
+      "test/data/channel_mac/simple_message2.textproto",
+    ]
+
+    inputs = [
+      "test/data/channel_mac/channel_mac.proto",
+      "//testing/libfuzzer/fuzzers/mach/mach_message.proto",
+    ]
+
+    output_pattern = "$target_gen_dir/mojo_core_channel_mac_corpus/{{source_name_part}}.binarypb"
+
+    args = [
+      "--encode=mojo_fuzzer.ChannelMac",
+      "-I",
+      rebase_path("//testing/libfuzzer/fuzzers/mach"),
+      "-I",
+      rebase_path("//mojo/core/test/data/channel_mac"),
+      "channel_mac.proto",
+    ]
+  }
+
+  fuzzer_test("mojo_core_channel_mac_fuzzer") {
+    sources = [
+      "channel_mac_fuzzer.cc",
+    ]
+    seed_corpus = "$target_gen_dir/mojo_core_channel_mac_corpus"
+    seed_corpus_deps = [ ":mojo_core_channel_mac_fuzzer_convert_corpus" ]
+    deps = [
+      ":core_impl_for_fuzzers",
+      "test:channel_mac_proto",
+      "//base",
+      "//base/test:test_support",
+      "//testing/libfuzzer/fuzzers/mach:converter",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
 }
 
 fuzzer_test("mojo_core_node_channel_fuzzer") {

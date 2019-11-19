@@ -51,8 +51,8 @@ class DisplayAndroidManager : public display::ScreenBase {
 
  private:
   friend class WindowAndroid;
-  friend void SetScreenAndroid();
-  DisplayAndroidManager();
+  friend void SetScreenAndroid(bool use_display_wide_color_gamut);
+  explicit DisplayAndroidManager(bool use_display_wide_color_gamut);
 
   static void DoUpdateDisplay(display::Display* display,
                               gfx::Size size_in_pixels,
@@ -62,6 +62,7 @@ class DisplayAndroidManager : public display::ScreenBase {
                               int bitsPerComponent,
                               bool isWideColorGamut);
 
+  const bool use_display_wide_color_gamut_;
   int primary_display_id_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(DisplayAndroidManager);

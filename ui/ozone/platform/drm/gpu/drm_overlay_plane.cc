@@ -5,6 +5,8 @@
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 
 #include <stddef.h>
+#include <memory>
+#include <utility>
 
 #include "ui/gfx/gpu_fence.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"

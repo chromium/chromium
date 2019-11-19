@@ -5,9 +5,10 @@
 #include "services/preferences/public/cpp/pref_store_client.h"
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,16 +43,16 @@ class PrefStoreClientTest : public testing::Test {
     std::vector<mojom::PrefUpdatePtr> updates;
     updates.push_back(mojom::PrefUpdate::New(
         key, mojom::PrefUpdateValue::NewAtomicUpdate(value.Clone()), 0));
-    observer_ptr_->OnPrefsChanged(std::move(updates));
+    observer_remote_->OnPrefsChanged(std::move(updates));
   }
   void OnInitializationCompleted() {
-    observer_ptr_->OnInitializationCompleted(true);
+    observer_remote_->OnInitializationCompleted(true);
   }
 
   // testing::Test:
   void SetUp() override {
     store_ = new PrefStoreClient(mojom::PrefStoreConnection::New(
-        mojo::MakeRequest(&observer_ptr_),
+        observer_remote_.BindNewPipeAndPassReceiver(),
         base::Value(base::Value::Type::DICTIONARY), false));
     store_->AddObserver(&observer_);
   }
@@ -61,12 +62,12 @@ class PrefStoreClientTest : public testing::Test {
   }
 
  private:
-  mojom::PrefStoreObserverPtr observer_ptr_;
+  mojo::Remote<mojom::PrefStoreObserver> observer_remote_;
   PrefStoreObserverMock observer_;
   scoped_refptr<PrefStoreClient> store_;
 
   // Required by mojo binding code within PrefStoreClient.
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(PrefStoreClientTest);
 };
@@ -161,7 +162,7 @@ TEST_F(PrefStoreClientTest, MultipleObservers) {
 }
 
 TEST_F(PrefStoreClientTest, Initialized) {
-  mojom::PrefStoreObserverPtr observer_ptr;
+  mojo::Remote<mojom::PrefStoreObserver> observer_remote;
   PrefStoreObserverMock observer;
   const char key[] = "hey";
   const int kValue = 42;
@@ -169,7 +170,8 @@ TEST_F(PrefStoreClientTest, Initialized) {
   prefs.SetKey(key, base::Value(kValue));
   auto store =
       base::MakeRefCounted<PrefStoreClient>(mojom::PrefStoreConnection::New(
-          mojo::MakeRequest(&observer_ptr), std::move(prefs), true));
+          observer_remote.BindNewPipeAndPassReceiver(), std::move(prefs),
+          true));
   store->AddObserver(&observer);
 
   const base::Value* value = nullptr;
@@ -180,7 +182,7 @@ TEST_F(PrefStoreClientTest, Initialized) {
   EXPECT_EQ(kValue, actual_value);
   EXPECT_CALL(observer, OnInitializationCompleted(_)).Times(0);
   EXPECT_CALL(observer, OnPrefValueChanged(_)).Times(0);
-  observer_ptr.FlushForTesting();
+  observer_remote.FlushForTesting();
 
   store->RemoveObserver(&observer);
 }

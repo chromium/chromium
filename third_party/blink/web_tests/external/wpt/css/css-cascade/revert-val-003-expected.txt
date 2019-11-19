@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL revert works with transitions assert_not_equals: Margin mid transition got disallowed value "0px"
+Harness: the test ran to completion.
+

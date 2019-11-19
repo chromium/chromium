@@ -33,7 +33,8 @@
     uiSourceCode.requestContent().then(step6);
   }
 
-  function step6(loadedScript) {
+  function step6({ content, error, isEncoded }) {
+    let loadedScript = content;
     var expected = 'console.log(\'finished\');\n';
     TestRunner.assertTrue(!!loadedScript, 'No script content');
     loadedScript = loadedScript.replace(/\r\n/g, '\n');  // on windows we receive additional symbol \r at line end.

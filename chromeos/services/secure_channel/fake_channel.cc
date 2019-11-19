@@ -12,19 +12,17 @@ namespace {
 const char kDisconnectionDescription[] = "Remote device disconnected.";
 }  // namespace
 
-FakeChannel::FakeChannel() : binding_(this) {}
+FakeChannel::FakeChannel() = default;
 
 FakeChannel::~FakeChannel() = default;
 
-mojom::ChannelPtr FakeChannel::GenerateInterfacePtr() {
-  mojom::ChannelPtr interface_ptr;
-  binding_.Bind(mojo::MakeRequest(&interface_ptr));
-  return interface_ptr;
+mojo::PendingRemote<mojom::Channel> FakeChannel::GenerateRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
 }
 
-void FakeChannel::DisconnectGeneratedPtr() {
-  binding_.CloseWithReason(mojom::Channel::kConnectionDroppedReason,
-                           kDisconnectionDescription);
+void FakeChannel::DisconnectGeneratedRemote() {
+  receiver_.ResetWithReason(mojom::Channel::kConnectionDroppedReason,
+                            kDisconnectionDescription);
 }
 
 void FakeChannel::SendMessage(const std::string& message,

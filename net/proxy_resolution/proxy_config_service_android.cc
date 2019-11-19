@@ -20,8 +20,8 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "jni/ProxyChangeListener_jni.h"
 #include "net/base/host_port_pair.h"
+#include "net/net_jni_headers/ProxyChangeListener_jni.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -528,6 +528,14 @@ ProxyConfigServiceAndroid::ProxyConfigServiceAndroid(
                              get_property_callback)) {
   delegate_->SetupJNI();
   delegate_->FetchInitialConfig();
+}
+
+void ProxyConfigServiceAndroid::ProxySettingsChangedTo(
+    const std::string& host,
+    int port,
+    const std::string& pac_url,
+    const std::vector<std::string>& exclusion_list) {
+  delegate_->ProxySettingsChangedTo(host, port, pac_url, exclusion_list);
 }
 
 void ProxyConfigServiceAndroid::ProxySettingsChanged() {

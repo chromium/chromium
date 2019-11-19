@@ -51,7 +51,7 @@ void BrowserWindowPropertyManager::UpdateWindowProperties() {
   // Set the app user model id for this application to that of the application
   // name. See http://crbug.com/7028.
   base::string16 app_id =
-      browser->is_app()
+      browser->deprecated_is_app()
           ? shell_integration::win::GetAppModelIdForProfile(
                 base::UTF8ToWide(browser->app_name()), profile->GetPath())
           : shell_integration::win::GetChromiumModelIdForProfile(
@@ -63,7 +63,7 @@ void BrowserWindowPropertyManager::UpdateWindowProperties() {
   ProfileShortcutManager* shortcut_manager = nullptr;
 
   // Apps set their relaunch details based on app's details.
-  if (browser->is_app()) {
+  if (browser->deprecated_is_app()) {
     ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
     const extensions::Extension* extension = registry->GetExtensionById(
         web_app::GetAppIdFromApplicationName(browser->app_name()),
@@ -79,7 +79,7 @@ void BrowserWindowPropertyManager::UpdateWindowProperties() {
   if (profile_manager)
     shortcut_manager = profile_manager->profile_shortcut_manager();
 
-  if (!browser->is_app() && shortcut_manager &&
+  if (!browser->deprecated_is_app() && shortcut_manager &&
       profile->GetPrefs()->HasPrefPath(prefs::kProfileIconVersion)) {
     const base::FilePath& profile_path = profile->GetPath();
 

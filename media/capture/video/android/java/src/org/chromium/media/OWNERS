@@ -1,5 +1,7 @@
-mcasas@chromium.org
 qinmin@chromium.org
 
-# media-capture-and-streams@grotations.appspotmail.com
+# Original (legacy) owner.
+mcasas@chromium.org
+
+# webrtc-dev@chromium.org
 # COMPONENT: Blink>GetUserMedia>WebCam

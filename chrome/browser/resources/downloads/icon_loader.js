@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('downloads', function() {
-  class IconLoader {
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {getFileIconUrl} from 'chrome://resources/js/icon.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+
+  export class IconLoader {
     constructor() {
       /** @private {!Object<!PromiseResolver<boolean>>} */
       this.iconResolvers_ = {};
@@ -18,7 +22,7 @@ cr.define('downloads', function() {
      * @return {!Promise<boolean>} Whether or not the icon loaded successfully.
      */
     loadIcon(imageEl, filePath) {
-      const url = cr.icon.getFileIconUrl(filePath);
+      const url = getFileIconUrl(filePath);
 
       if (!this.iconResolvers_[url]) {
         this.iconResolvers_[url] = new PromiseResolver();
@@ -47,7 +51,4 @@ cr.define('downloads', function() {
     }
   }
 
-  cr.addSingletonGetter(IconLoader);
-
-  return {IconLoader: IconLoader};
-});
+  addSingletonGetter(IconLoader);

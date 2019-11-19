@@ -27,10 +27,4 @@ char* PartitionAllocator::AllocateVectorBacking<char>(size_t size) {
       AllocateBacking(size, "PartitionAllocator::allocateVectorBacking<char>"));
 }
 
-template <>
-char* PartitionAllocator::AllocateExpandedVectorBacking<char>(size_t size) {
-  return reinterpret_cast<char*>(AllocateBacking(
-      size, "PartitionAllocator::allocateExpandedVectorBacking<char>"));
-}
-
 }  // namespace WTF

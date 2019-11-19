@@ -79,7 +79,7 @@ void ReportValidationError(ValidationContext* context,
     if (context->message()) {
       context->message()->NotifyBadMessage(
           base::StringPrintf("Validation failed for %s [%s (%s)]",
-                             context->description().data(),
+                             context->GetFullDescription().c_str(),
                              ValidationErrorToString(error), description));
     }
   } else {
@@ -88,18 +88,23 @@ void ReportValidationError(ValidationContext* context,
     if (context->message()) {
       context->message()->NotifyBadMessage(
           base::StringPrintf("Validation failed for %s [%s]",
-                             context->description().data(),
+                             context->GetFullDescription().c_str(),
                              ValidationErrorToString(error)));
     }
   }
 }
 
-void ReportValidationErrorForMessage(
-    mojo::Message* message,
-    ValidationError error,
-    const char* description) {
-  ValidationContext validation_context(nullptr, 0, 0, 0, message, description);
-  ReportValidationError(&validation_context, error, description);
+void ReportValidationErrorForMessage(mojo::Message* message,
+                                     ValidationError error,
+                                     const char* interface_name,
+                                     unsigned int method_ordinal,
+                                     bool is_response) {
+  std::string description =
+      base::StringPrintf("%s.%d %s", interface_name, method_ordinal,
+                         is_response ? " response" : "");
+  ValidationContext validation_context(nullptr, 0, 0, 0, message,
+                                       description.c_str());
+  ReportValidationError(&validation_context, error, description.c_str());
 }
 
 ScopedSuppressValidationErrorLoggingForTests
@@ -114,8 +119,8 @@ ScopedSuppressValidationErrorLoggingForTests
 }
 
 ValidationErrorObserverForTesting::ValidationErrorObserverForTesting(
-    const base::Closure& callback)
-    : last_error_(VALIDATION_ERROR_NONE), callback_(callback) {
+    base::RepeatingClosure callback)
+    : last_error_(VALIDATION_ERROR_NONE), callback_(std::move(callback)) {
   DCHECK(!g_validation_error_observer);
   g_validation_error_observer = this;
 }

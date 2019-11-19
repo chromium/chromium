@@ -15,7 +15,7 @@ def GetWriter(config):
   GetWriter method because the TemplateFormatter uses this method to
   instantiate a Writer.
   '''
-  return ADMLWriter(['win'], config)
+  return ADMLWriter(['win', 'win7'], config)
 
 
 class ADMLWriter(xml_formatted_writer.XMLFormattedWriter,
@@ -79,6 +79,9 @@ class ADMLWriter(xml_formatted_writer.XMLFormattedWriter,
 
     policy_desc = policy.get('desc')
     example_value_text = self._GetExampleValueText(policy)
+
+    if policy_desc is not None and self.HasExpandedPolicyDescription(policy):
+      policy_desc += '\n' + self.GetExpandedPolicyDescription(policy) + '\n'
 
     if policy_desc is not None and example_value_text is not None:
       policy_explain = policy_desc + '\n\n' + example_value_text
@@ -158,6 +161,8 @@ class ADMLWriter(xml_formatted_writer.XMLFormattedWriter,
     the ADMX file but not related to any specific Policy-Group or Policy.
     '''
     self._AddString(self.config['win_supported_os'],
+                    self.messages['win_supported_all']['text'])
+    self._AddString(self.config['win_supported_os_win7'],
                     self.messages['win_supported_win7']['text'])
     categories = self.winconfig['mandatory_category_path'] + \
                   self.winconfig['recommended_category_path']
@@ -182,12 +187,12 @@ class ADMLWriter(xml_formatted_writer.XMLFormattedWriter,
 
     # Strings are simple - just return them as-is, on the same line.
     if isinstance(example_value, str):
-      return self._GetLocalizedMessage('example_value') + ' ' + example_value
+      return self.GetLocalizedMessage('example_value') + ' ' + example_value
 
     # Dicts are pretty simple - json.dumps them onto multiple lines.
     if isinstance(example_value, dict):
       value_as_text = json.dumps(example_value, indent=2)
-      return self._GetLocalizedMessage('example_value') + '\n\n' + value_as_text
+      return self.GetLocalizedMessage('example_value') + '\n\n' + value_as_text
 
     # Lists are the more complicated - the example value we show the user
     # depends on if they need to enter the list into a textbox (using JSON
@@ -216,19 +221,15 @@ class ADMLWriter(xml_formatted_writer.XMLFormattedWriter,
         raise Exception(
             'Unexpected policy type with list example value: %s' % policy_type)
 
-      return self._GetLocalizedMessage('example_value') + '\n\n' + value_as_text
+      return self.GetLocalizedMessage('example_value') + '\n\n' + value_as_text
 
     # Other types - mostly booleans - we don't show example values.
     return None
 
   def _GetLegacySingleLineLabel(self, policy_label):
     '''Generates a label for a legacy single-line textbox.'''
-    return (self._GetLocalizedMessage('legacy_single_line_label').replace(
+    return (self.GetLocalizedMessage('legacy_single_line_label').replace(
         '$6', policy_label))
-
-  def _GetLocalizedMessage(self, msg_id):
-    '''Returns the localized message of the given message ID.'''
-    return self.messages['doc_' + msg_id]['text']
 
   def BeginTemplate(self):
     dom_impl = minidom.getDOMImplementation('')
@@ -253,7 +254,7 @@ class ADMLWriter(xml_formatted_writer.XMLFormattedWriter,
     # Map of all strings seen.
     self.strings_seen = {}
     # Shortcut to platform-specific ADMX/ADM specific configuration.
-    assert len(self.platforms) == 1
+    assert len(self.platforms) <= 2
     self.winconfig = self.config['win_config'][self.platforms[0]]
 
   def GetTemplateText(self):

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL load event of blob URL assert_true: The iframe element should represent a nested browsing context. expected true got false
-FAIL load event of initial about:blank assert_true: The object element should represent a nested browsing context. expected true got false
-Harness: the test ran to completion.
-

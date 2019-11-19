@@ -8,7 +8,8 @@
 #include "png.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+
 #include "third_party/skia/include/core/SkImage.h"
 
 // web_tests/images/resources/png-animated-idat-part-of-animation.png
@@ -110,7 +111,7 @@ void TestRepetitionCount(const char* png_file, int expected_repetition_count) {
 }
 
 struct PublicFrameInfo {
-  TimeDelta duration;
+  base::TimeDelta duration;
   IntRect frame_rect;
   ImageFrame::AlphaBlendSource alpha_blend;
   ImageFrame::DisposalMethod disposal_method;
@@ -119,19 +120,19 @@ struct PublicFrameInfo {
 // This is the frame data for the following PNG image:
 // web_tests/images/resources/png-animated-idat-part-of-animation.png
 static PublicFrameInfo g_png_animated_frame_info[] = {
-    {TimeDelta::FromMilliseconds(500),
+    {base::TimeDelta::FromMilliseconds(500),
      {IntPoint(0, 0), IntSize(5, 5)},
      ImageFrame::kBlendAtopBgcolor,
      ImageFrame::kDisposeKeep},
-    {TimeDelta::FromMilliseconds(900),
+    {base::TimeDelta::FromMilliseconds(900),
      {IntPoint(1, 1), IntSize(3, 1)},
      ImageFrame::kBlendAtopBgcolor,
      ImageFrame::kDisposeOverwriteBgcolor},
-    {TimeDelta::FromMilliseconds(2000),
+    {base::TimeDelta::FromMilliseconds(2000),
      {IntPoint(1, 2), IntSize(3, 2)},
      ImageFrame::kBlendAtopPreviousFrame,
      ImageFrame::kDisposeKeep},
-    {TimeDelta::FromMilliseconds(1500),
+    {base::TimeDelta::FromMilliseconds(1500),
      {IntPoint(1, 2), IntSize(3, 1)},
      ImageFrame::kBlendAtopBgcolor,
      ImageFrame::kDisposeKeep},
@@ -547,6 +548,69 @@ TEST(AnimatedPNGTests, fdatBeforeIdat) {
   }
 }
 
+TEST(AnimatedPNGTests, FrameOverflowX) {
+  const char* png_file =
+      "/images/resources/"
+      "png-animated-idat-part-of-animation.png";
+  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
+  ASSERT_FALSE(data->IsEmpty());
+
+  // Change the x_offset for frame 1
+  const size_t kFctlOffset = 172u;
+  scoped_refptr<SharedBuffer> modified_data =
+      SharedBuffer::Create(data->Data(), kFctlOffset);
+  const size_t kFctlSize = 38u;
+  png_byte fctl[kFctlSize];
+  memcpy(fctl, data->Data() + kFctlOffset, kFctlSize);
+
+  // Set the x_offset to a value that will overflow
+  WriteUint32(4294967295, fctl + 20);
+  // Correct the crc
+  WriteUint32(689600712, fctl + 34);
+  modified_data->Append((const char*)fctl, kFctlSize);
+  const size_t kAfterFctl = kFctlOffset + kFctlSize;
+  modified_data->Append(data->Data() + kAfterFctl, data->size() - kAfterFctl);
+
+  auto decoder = CreatePNGDecoder();
+  decoder->SetData(modified_data.get(), true);
+  for (size_t i = 0; i < decoder->FrameCount(); i++) {
+    decoder->DecodeFrameBufferAtIndex(i);
+  }
+  ASSERT_TRUE(decoder->Failed());
+}
+
+// This test is exactly the same as above, except it changes y_offset.
+TEST(AnimatedPNGTests, FrameOverflowY) {
+  const char* png_file =
+      "/images/resources/"
+      "png-animated-idat-part-of-animation.png";
+  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
+  ASSERT_FALSE(data->IsEmpty());
+
+  // Change the y_offset for frame 1
+  const size_t kFctlOffset = 172u;
+  scoped_refptr<SharedBuffer> modified_data =
+      SharedBuffer::Create(data->Data(), kFctlOffset);
+  const size_t kFctlSize = 38u;
+  png_byte fctl[kFctlSize];
+  memcpy(fctl, data->Data() + kFctlOffset, kFctlSize);
+
+  // Set the y_offset to a value that will overflow
+  WriteUint32(4294967295, fctl + 24);
+  // Correct the crc
+  WriteUint32(2094185741, fctl + 34);
+  modified_data->Append((const char*)fctl, kFctlSize);
+  const size_t kAfterFctl = kFctlOffset + kFctlSize;
+  modified_data->Append(data->Data() + kAfterFctl, data->size() - kAfterFctl);
+
+  auto decoder = CreatePNGDecoder();
+  decoder->SetData(modified_data.get(), true);
+  for (size_t i = 0; i < decoder->FrameCount(); i++) {
+    decoder->DecodeFrameBufferAtIndex(i);
+  }
+  ASSERT_TRUE(decoder->Failed());
+}
+
 TEST(AnimatedPNGTests, IdatSizeMismatch) {
   // The default image must fill the image
   const char* png_file =
@@ -572,6 +636,40 @@ TEST(AnimatedPNGTests, IdatSizeMismatch) {
   auto decoder = CreatePNGDecoder();
   decoder->SetData(modified_data.get(), true);
   ExpectStatic(decoder.get());
+}
+
+TEST(AnimatedPNGTests, EmptyFdatFails) {
+  const char* png_file =
+      "/images/resources/"
+      "png-animated-idat-part-of-animation.png";
+  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
+  ASSERT_FALSE(data->IsEmpty());
+
+  // Modify the third fdAT to be empty.
+  constexpr size_t kOffsetThirdFdat = 352;
+  scoped_refptr<SharedBuffer> modified_data =
+      SharedBuffer::Create(data->Data(), kOffsetThirdFdat);
+  png_byte four_bytes[4u];
+  WriteUint32(0, four_bytes);
+  modified_data->Append(reinterpret_cast<char*>(four_bytes), 4u);
+
+  // fdAT tag
+  modified_data->Append(data->Data() + kOffsetThirdFdat + 4u, 4u);
+
+  // crc computed from modified fdAT chunk
+  WriteUint32(4122214294, four_bytes);
+  modified_data->Append(reinterpret_cast<char*>(four_bytes), 4u);
+
+  // IEND
+  constexpr size_t kIENDOffset = 422u;
+  modified_data->Append(data->Data() + kIENDOffset, 12u);
+
+  auto decoder = CreatePNGDecoder();
+  decoder->SetData(std::move(modified_data), true);
+  for (size_t i = 0; i < decoder->FrameCount(); i++) {
+    decoder->DecodeFrameBufferAtIndex(i);
+  }
+  ASSERT_TRUE(decoder->Failed());
 }
 
 // Originally, the third frame has an offset of (1,2) and a size of (3,2). By
@@ -713,11 +811,11 @@ TEST(AnimatedPNGTests, MixedDataChunks) {
       SharedBuffer::Create(full_data->Data(), kPostIDAT);
   const size_t kFcTLSize = 38u;
   const size_t kFdATSize = 31u;
-  png_byte fd_at[kFdATSize];
-  memcpy(fd_at, full_data->Data() + kPostIDAT + kFcTLSize, kFdATSize);
+  png_byte fdat[kFdATSize];
+  memcpy(fdat, full_data->Data() + kPostIDAT + kFcTLSize, kFdATSize);
   // Modify the sequence number
-  WriteUint32(1u, fd_at + 8);
-  data->Append((const char*)fd_at, kFdATSize);
+  WriteUint32(1u, fdat + 8);
+  data->Append((const char*)fdat, kFdATSize);
   const size_t kIENDOffset = 422u;
   data->Append(full_data->Data() + kIENDOffset,
                full_data->size() - kIENDOffset);
@@ -981,7 +1079,7 @@ TEST(StaticPNGTests, sizeTest) {
 
 TEST(StaticPNGTests, MetaDataTest) {
   const size_t kExpectedFrameCount = 1;
-  const TimeDelta kExpectedDuration;
+  const base::TimeDelta kExpectedDuration;
   auto decoder =
       CreatePNGDecoderWithPngData("/images/resources/png-simple.png");
   EXPECT_EQ(kExpectedFrameCount, decoder->FrameCount());
@@ -1008,7 +1106,7 @@ struct PNGSample {
   bool is_transparent;
   bool is_high_bit_depth;
   scoped_refptr<SharedBuffer> png_contents;
-  std::vector<float> expected_pixels;
+  Vector<float> expected_pixels;
 };
 
 static void TestHighBitDepthPNGDecoding(const PNGSample& png_sample,
@@ -1057,7 +1155,7 @@ static void TestHighBitDepthPNGDecoding(const PNGSample& png_sample,
       skcms_AlphaFormat_Unpremul, nullptr, decoded_pixels_float_32,
       skcms_PixelFormat_RGBA_ffff, skcms_AlphaFormat_Unpremul, nullptr, 4));
 
-  std::vector<float> expected_pixels = png_sample.expected_pixels;
+  Vector<float> expected_pixels = png_sample.expected_pixels;
   bool test_succeed = true;
   const float decoding_tolerance = 0.001;
   for (int i = 0; i < 16; i++) {
@@ -1074,7 +1172,7 @@ static void TestHighBitDepthPNGDecoding(const PNGSample& png_sample,
   ASSERT_TRUE(test_succeed);
 }
 
-static void FillPNGSamplesSourcePixels(std::vector<PNGSample>& png_samples) {
+static void FillPNGSamplesSourcePixels(Vector<PNGSample>& png_samples) {
   // Color components of opaque and transparent 16 bit PNG, read with libpng
   // in BigEndian and scaled to [0,1]. The values are read from non-interlaced
   // samples, but used for both interlaced and non-interlaced test cases.
@@ -1083,63 +1181,63 @@ static void FillPNGSamplesSourcePixels(std::vector<PNGSample>& png_samples) {
   // Adobe software created a non-matching color profile (see crbug.com/874939).
   // Hence, SkEncoder was used to generate the e-sRGB file (see the skia fiddle
   // here: https://fiddle.skia.org/c/17beedfd66dac1ec930f0c414c50f847).
-  static const std::vector<float> source_pixels_opaque_srgb = {
+  static const Vector<float> source_pixels_opaque_srgb = {
       0.4986953536, 0.5826657511, 0.7013199054, 1,   // Top left pixel
       0.907988098,  0.8309605554, 0.492011902,  1,   // Top right pixel
       0.6233157855, 0.9726558328, 0.9766536965, 1,   // Bottom left pixel
       0.8946517128, 0.9663080797, 0.9053025101, 1};  // Bottom right pixel
-  static const std::vector<float> source_pixels_opaque_adobe_rgb = {
+  static const Vector<float> source_pixels_opaque_adobe_rgb = {
       0.4448004883, 0.5216296635, 0.6506294347, 1,   // Top left pixel
       0.8830548562, 0.7978179599, 0.4323186084, 1,   // Top right pixel
       0.6841992828, 0.9704280156, 0.9711299306, 1,   // Bottom left pixel
       0.8874799725, 0.96099794,   0.8875715267, 1};  // Bottom right pixel
-  static const std::vector<float> source_pixels_opaque_p3 = {
+  static const Vector<float> source_pixels_opaque_p3 = {
       0.515648127,  0.5802243076, 0.6912489509, 1,   // Top left pixel
       0.8954146639, 0.8337987335, 0.5691767758, 1,   // Top right pixel
       0.772121767,  0.9671625849, 0.973510338,  1,   // Bottom left pixel
       0.9118944076, 0.9645685512, 0.9110704204, 1};  // Bottom right pixel
-  static const std::vector<float> source_pixels_opaque_e_srgb = {
+  static const Vector<float> source_pixels_opaque_e_srgb = {
       0.6977539062, 0.5839843750, 0.4978027344, 1,   // Top left pixel
       0.4899902344, 0.8310546875, 0.9096679688, 1,   // Top right pixel
       0.9760742188, 0.9721679688, 0.6230468750, 1,   // Bottom left pixel
       0.9057617188, 0.9643554688, 0.8940429688, 1};  // Bottom right pixel
-  static const std::vector<float> source_pixels_opaque_prophoto = {
+  static const Vector<float> source_pixels_opaque_prophoto = {
       0.5032883192, 0.5191271839, 0.6309147784, 1,   // Top left pixel
       0.8184176394, 0.8002899214, 0.5526970321, 1,   // Top right pixel
       0.842526894,  0.945616846,  0.9667048142, 1,   // Bottom left pixel
       0.9119554437, 0.9507133593, 0.9001754788, 1};  // Bottom right pixel
-  static const std::vector<float> source_pixels_opaque_rec2020 = {
+  static const Vector<float> source_pixels_opaque_rec2020 = {
       0.5390554665, 0.5766842145, 0.6851758602, 1,   // Top left pixel
       0.871061265,  0.831326772,  0.5805294881, 1,   // Top right pixel
       0.8386205844, 0.9599603265, 0.9727168688, 1,   // Bottom left pixel
       0.9235217823, 0.9611200122, 0.9112840467, 1};  // Bottom right pixel
 
-  static const std::vector<float> source_pixels_transparent_srgb = {
+  static const Vector<float> source_pixels_transparent_srgb = {
       0.3733272297,  0.4783093004, 0.6266422522, 0.8,   // Top left pixel
       0.8466468299,  0.7182879377, 0.153322652,  0.6,   // Top right pixel
       0.05831998169, 0.9316395819, 0.9416495003, 0.4,   // Bottom left pixel
       0.4733043412,  0.8316319524, 0.5266346227, 0.2};  // Bottom right pixel
-  static const std::vector<float> source_pixels_transparent_adobe_rgb = {
+  static const Vector<float> source_pixels_transparent_adobe_rgb = {
       0.305943389,  0.4019836728, 0.5632867933,  0.8,   // Top left pixel
       0.8051117723, 0.6630197604, 0.05374227512, 0.6,   // Top right pixel
       0.210482948,  0.926115816,  0.9278248264,  0.4,   // Bottom left pixel
       0.4374456397, 0.8050812543, 0.4379644465,  0.2};  // Bottom right pixel
-  static const std::vector<float> source_pixels_transparent_p3 = {
+  static const Vector<float> source_pixels_transparent_p3 = {
       0.3945372702, 0.475257496,  0.6140383001, 0.8,   // Top left pixel
       0.8257114519, 0.7230182345, 0.2819256886, 0.6,   // Top right pixel
       0.4302738994, 0.9179064622, 0.933806363,  0.4,   // Bottom left pixel
       0.5595330739, 0.8228122377, 0.5554436561, 0.2};  // Bottom right pixel
-  static const std::vector<float> source_pixels_transparent_e_srgb = {
+  static const Vector<float> source_pixels_transparent_e_srgb = {
       0.6230468750, 0.4782714844, 0.3723144531, 0.8,   // Top left pixel
       0.1528320312, 0.7172851562, 0.8466796875, 0.6,   // Top right pixel
       0.9409179688, 0.9331054688, 0.0588073730, 0.4,   // Bottom left pixel
       0.5253906250, 0.8310546875, 0.4743652344, 0.2};  // Bottom right pixel
-  static const std::vector<float> source_pixels_transparent_prophoto = {
+  static const Vector<float> source_pixels_transparent_prophoto = {
       0.379064622,  0.3988708324, 0.5386282139, 0.8,   // Top left pixel
       0.6973525597, 0.6671396963, 0.2544289311, 0.6,   // Top right pixel
       0.6063477531, 0.864103151,  0.9168078126, 0.4,   // Bottom left pixel
       0.5598077363, 0.7536278325, 0.5009384298, 0.2};  // Bottom right pixel
-  static const std::vector<float> source_pixels_transparent_rec2020 = {
+  static const Vector<float> source_pixels_transparent_rec2020 = {
       0.4237735561, 0.4708323796, 0.6064698253, 0.8,   // Top left pixel
       0.7851224537, 0.7188677806, 0.3008468757, 0.6,   // Top right pixel
       0.5965819791, 0.8999618524, 0.9318532082, 0.4,   // Bottom left pixel
@@ -1176,33 +1274,36 @@ static void FillPNGSamplesSourcePixels(std::vector<PNGSample>& png_samples) {
   }
 }
 
-static std::vector<PNGSample> GetPNGSamplesInfo(bool include_8bit_pngs) {
-  std::vector<PNGSample> png_samples;
-  std::vector<String> interlace_status = {"", "_interlaced"};
-  std::vector<String> color_spaces = {"sRGB",   "AdobeRGB", "DisplayP3",
-                                      "e-sRGB", "ProPhoto", "Rec2020"};
-  std::vector<String> alpha_status = {"_opaque", "_transparent"};
+static Vector<PNGSample> GetPNGSamplesInfo(bool include_8bit_pngs) {
+  Vector<PNGSample> png_samples;
+  Vector<String> interlace_status = {"", "_interlaced"};
+  Vector<String> color_spaces = {"sRGB",   "AdobeRGB", "DisplayP3",
+                                 "e-sRGB", "ProPhoto", "Rec2020"};
+  Vector<String> alpha_status = {"_opaque", "_transparent"};
 
   for (String color_space : color_spaces) {
     for (String alpha : alpha_status) {
       PNGSample png_sample;
-      png_sample.filename.append("_");
-      png_sample.filename.append(color_space);
-      png_sample.filename.append(alpha);
-      png_sample.filename.append(".png");
+      StringBuilder filename;
+      filename.Append("_");
+      filename.Append(color_space);
+      filename.Append(alpha);
+      filename.Append(".png");
+      png_sample.filename = filename.ToString();
       png_sample.color_space = color_space;
       png_sample.is_transparent = (alpha == "_transparent");
 
       for (String interlace : interlace_status) {
         PNGSample high_bit_depth_sample(png_sample);
-        high_bit_depth_sample.filename.insert(interlace, 0);
-        high_bit_depth_sample.filename.insert("2x2_16bit", 0);
+        high_bit_depth_sample.filename =
+            "2x2_16bit" + interlace + high_bit_depth_sample.filename;
         high_bit_depth_sample.is_high_bit_depth = true;
         png_samples.push_back(high_bit_depth_sample);
       }
       if (include_8bit_pngs) {
         PNGSample regular_bit_depth_sample(png_sample);
-        regular_bit_depth_sample.filename.insert("2x2_8bit", 0);
+        regular_bit_depth_sample.filename =
+            "2x2_8bit" + regular_bit_depth_sample.filename;
         regular_bit_depth_sample.is_high_bit_depth = false;
         png_samples.push_back(regular_bit_depth_sample);
       }
@@ -1214,13 +1315,12 @@ static std::vector<PNGSample> GetPNGSamplesInfo(bool include_8bit_pngs) {
 
 TEST(StaticPNGTests, DecodeHighBitDepthPngToHalfFloat) {
   const bool include_8bit_pngs = false;
-  std::vector<PNGSample> png_samples = GetPNGSamplesInfo(include_8bit_pngs);
+  Vector<PNGSample> png_samples = GetPNGSamplesInfo(include_8bit_pngs);
   FillPNGSamplesSourcePixels(png_samples);
   String path = "/images/resources/png-16bit/";
   for (PNGSample& png_sample : png_samples) {
-    String full_path = path;
-    full_path.append(png_sample.filename);
-    png_sample.png_contents = ReadFile(full_path.Ascii().data());
+    String full_path = path + png_sample.filename;
+    png_sample.png_contents = ReadFile(full_path);
     auto decoder = Create16BitPNGDecoder();
     TestHighBitDepthPNGDecoding(png_sample, decoder.get());
   }
@@ -1228,14 +1328,13 @@ TEST(StaticPNGTests, DecodeHighBitDepthPngToHalfFloat) {
 
 TEST(StaticPNGTests, ImageIsHighBitDepth) {
   const bool include_8bit_pngs = true;
-  std::vector<PNGSample> png_samples = GetPNGSamplesInfo(include_8bit_pngs);
+  Vector<PNGSample> png_samples = GetPNGSamplesInfo(include_8bit_pngs);
   IntSize size(2, 2);
 
   String path = "/images/resources/png-16bit/";
   for (PNGSample& png_sample : png_samples) {
-    String full_path = path;
-    full_path.append(png_sample.filename);
-    png_sample.png_contents = ReadFile(full_path.Ascii().data());
+    String full_path = path + png_sample.filename;
+    png_sample.png_contents = ReadFile(full_path);
     ASSERT_TRUE(png_sample.png_contents.get());
 
     std::unique_ptr<ImageDecoder> decoders[] = {CreatePNGDecoder(),
@@ -1350,6 +1449,25 @@ TEST(PNGTests, crbug827754) {
   auto* frame = decoder->DecodeFrameBufferAtIndex(0);
   ASSERT_TRUE(frame);
   ASSERT_FALSE(decoder->Failed());
+}
+
+TEST(AnimatedPNGTests, TrnsMeansAlpha) {
+  const char* png_file =
+      "/images/resources/"
+      "png-animated-idat-part-of-animation.png";
+  auto decoder = CreatePNGDecoderWithPngData(png_file);
+  auto* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame->HasAlpha());
+}
+
+TEST(PNGTests, CriticalPrivateChunkBeforeIHDR) {
+  auto decoder = CreatePNGDecoder();
+  scoped_refptr<SharedBuffer> data =
+      ReadFile(kDecodersTestingDir, "private-critical-chunk-before-ihdr.png");
+  EXPECT_FALSE(data->IsEmpty());
+  decoder->SetData(data.get(), true);
+  EXPECT_FALSE(decoder->IsSizeAvailable());
+  EXPECT_TRUE(decoder->Failed());
 }
 
 }  // namespace blink

@@ -4,6 +4,7 @@
 *.html
 hydrolysis/hydrolysis.js
 */jsdoc2md/
+*.lock
 *.md
 *.png
 *.sh
@@ -13,3 +14,8 @@ hydrolysis/hydrolysis.js
 @types
 *.woff
 *.yml
+Makefile
+source-map.debug.js
+powered-test/es6-destructuring-assignments.js
+*.map
+typescript/lib/*

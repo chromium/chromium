@@ -4,6 +4,7 @@
 
 #include "chrome/browser/pepper_broker_infobar_delegate.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/content_settings/tab_specific_content_settings.h"
@@ -26,11 +27,11 @@ void PepperBrokerInfoBarDelegate::Create(
     const base::string16& plugin_name,
     HostContentSettingsMap* content_settings,
     TabSpecificContentSettings* tab_content_settings,
-    const base::Callback<void(bool)>& callback) {
+    base::OnceCallback<void(bool)> callback) {
   infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate>(
-          new PepperBrokerInfoBarDelegate(url, plugin_name, content_settings,
-                                          tab_content_settings, callback))));
+      base::WrapUnique(new PepperBrokerInfoBarDelegate(
+          url, plugin_name, content_settings, tab_content_settings,
+          std::move(callback)))));
 }
 
 PepperBrokerInfoBarDelegate::PepperBrokerInfoBarDelegate(
@@ -38,17 +39,17 @@ PepperBrokerInfoBarDelegate::PepperBrokerInfoBarDelegate(
     const base::string16& plugin_name,
     HostContentSettingsMap* content_settings,
     TabSpecificContentSettings* tab_content_settings,
-    const base::Callback<void(bool)>& callback)
+    base::OnceCallback<void(bool)> callback)
     : ConfirmInfoBarDelegate(),
       url_(url),
       plugin_name_(plugin_name),
       content_settings_(content_settings),
       tab_content_settings_(tab_content_settings),
-      callback_(callback) {}
+      callback_(std::move(callback)) {}
 
 PepperBrokerInfoBarDelegate::~PepperBrokerInfoBarDelegate() {
   if (!callback_.is_null())
-    callback_.Run(false);
+    std::move(callback_).Run(false);
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
@@ -94,10 +95,9 @@ void PepperBrokerInfoBarDelegate::DispatchCallback(bool result) {
   base::RecordAction(
       result ? base::UserMetricsAction("PPAPI.BrokerInfobarClickedAllow")
              : base::UserMetricsAction("PPAPI.BrokerInfobarClickedDeny"));
-  callback_.Run(result);
-  callback_ = base::Callback<void(bool)>();
+  std::move(callback_).Run(result);
   content_settings_->SetContentSettingDefaultScope(
-      url_, GURL(), CONTENT_SETTINGS_TYPE_PPAPI_BROKER, std::string(),
+      url_, GURL(), ContentSettingsType::PPAPI_BROKER, std::string(),
       result ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
   tab_content_settings_->SetPepperBrokerAllowed(result);
 }

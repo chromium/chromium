@@ -16,20 +16,20 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/sync_socket.h"
+#include "base/test/gmock_callback_support.h"
 #include "build/build_config.h"
 #include "content/browser/media/capture/audio_mirroring_manager.h"
 #include "content/browser/media/media_internals.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_observer.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "media/audio/audio_output_controller.h"
 #include "media/audio/audio_system_impl.h"
 #include "media/audio/fake_audio_input_stream.h"
 #include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/bind_to_current_loop.h"
-#include "media/base/gmock_callback_support.h"
 #include "media/base/media_switches.h"
 #include "media/base/user_input_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -138,18 +138,18 @@ class MockMediaStreamProviderListener : public MediaStreamProviderListener {
   ~MockMediaStreamProviderListener() override {}
 
   MOCK_METHOD2(Opened,
-               void(blink::MediaStreamType stream_type,
-                    int capture_session_id));
-  void Closed(blink::MediaStreamType stream_type,
-              int capture_session_id) override {}
-  void Aborted(blink::MediaStreamType stream_type,
-               int capture_session_id) override {}
+               void(blink::mojom::MediaStreamType stream_type,
+                    const base::UnguessableToken& capture_session_id));
+  void Closed(blink::mojom::MediaStreamType stream_type,
+              const base::UnguessableToken& capture_session_id) override {}
+  void Aborted(blink::mojom::MediaStreamType stream_type,
+               const base::UnguessableToken& capture_session_id) override {}
 };
 
 class AudioInputDelegateTest : public testing::Test {
  public:
   AudioInputDelegateTest()
-      : thread_bundle_(base::in_place),
+      : task_environment_(base::in_place),
         audio_manager_(std::make_unique<media::TestAudioThread>(true)),
         audio_system_(&audio_manager_),
         media_stream_manager_(&audio_system_, audio_manager_.GetTaskRunner()) {
@@ -163,26 +163,30 @@ class AudioInputDelegateTest : public testing::Test {
     audio_manager_.Shutdown();
 
     // MediaStreamManager expects to outlive the IO thread.
-    thread_bundle_.reset();
+    task_environment_.reset();
   }
 
  protected:
   // Streams must be opened with AudioInputDeviceManager before
   // AudioInputDelegateImpl will allow them to be used.
-  int MakeDeviceAvailable(const std::string& device_id,
-                          const std::string& name) {
+  base::UnguessableToken MakeDeviceAvailable(const std::string& device_id,
+                                             const std::string& name) {
     // Authorize device for use and wait for completion.
     MockMediaStreamProviderListener listener;
     media_stream_manager_.audio_input_device_manager()->RegisterListener(
         &listener);
 
-    int session_id = media_stream_manager_.audio_input_device_manager()->Open(
-        blink::MediaStreamDevice(blink::MEDIA_DEVICE_AUDIO_CAPTURE, device_id,
-                                 name));
+    base::UnguessableToken session_id =
+        media_stream_manager_.audio_input_device_manager()->Open(
+            blink::MediaStreamDevice(
+                blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, device_id,
+                name));
 
     // Block for completion.
     base::RunLoop loop;
-    EXPECT_CALL(listener, Opened(blink::MEDIA_DEVICE_AUDIO_CAPTURE, session_id))
+    EXPECT_CALL(
+        listener,
+        Opened(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, session_id))
         .WillOnce(InvokeWithoutArgs(&loop, &base::RunLoop::Quit));
     loop.Run();
     media_stream_manager_.audio_input_device_manager()->UnregisterListener(
@@ -193,7 +197,7 @@ class AudioInputDelegateTest : public testing::Test {
 
   std::unique_ptr<media::AudioInputDelegate> CreateDelegate(
       uint32_t shared_memory_count,
-      int session_id,
+      const base::UnguessableToken& session_id,
       bool enable_agc) {
     return AudioInputDelegateImpl::Create(
         &audio_manager_, AudioMirroringManager::GetInstance(),
@@ -215,7 +219,7 @@ class AudioInputDelegateTest : public testing::Test {
     run_loop.Run();
   }
 
-  base::Optional<TestBrowserThreadBundle> thread_bundle_;
+  base::Optional<BrowserTaskEnvironment> task_environment_;
   media::MockAudioManager audio_manager_;
   media::AudioSystemImpl audio_system_;
   MediaStreamManager media_stream_manager_;
@@ -228,7 +232,8 @@ class AudioInputDelegateTest : public testing::Test {
 
 TEST_F(AudioInputDelegateTest,
        CreateWithoutAuthorization_FailsDelegateCreation) {
-  EXPECT_EQ(CreateDelegate(kDefaultSharedMemoryCount, 0, kDoNotEnableAGC),
+  EXPECT_EQ(CreateDelegate(kDefaultSharedMemoryCount, base::UnguessableToken(),
+                           kDoNotEnableAGC),
             nullptr);
 
   // Ensure |event_handler_| didn't get any notifications.
@@ -237,7 +242,8 @@ TEST_F(AudioInputDelegateTest,
 
 TEST_F(AudioInputDelegateTest,
        CreateWithTooManySegments_FailsDelegateCreation) {
-  int session_id = MakeDeviceAvailable(kDefaultDeviceId, kDefaultDeviceName);
+  base::UnguessableToken session_id =
+      MakeDeviceAvailable(kDefaultDeviceId, kDefaultDeviceName);
 
   EXPECT_EQ(CreateDelegate(std::numeric_limits<uint32_t>::max(), session_id,
                            kDoNotEnableAGC),
@@ -249,7 +255,7 @@ TEST_F(AudioInputDelegateTest,
 }
 
 TEST_F(AudioInputDelegateTest, CreateWebContentsCaptureStream) {
-  int session_id = MakeDeviceAvailable(
+  base::UnguessableToken session_id = MakeDeviceAvailable(
       base::StringPrintf("web-contents-media-stream://%d:%d", kRenderProcessId,
                          kRenderFrameId),
       "Web contents stream");
@@ -260,7 +266,8 @@ TEST_F(AudioInputDelegateTest, CreateWebContentsCaptureStream) {
 }
 
 TEST_F(AudioInputDelegateTest, CreateOrdinaryCaptureStream) {
-  int session_id = MakeDeviceAvailable(kDefaultDeviceId, kDefaultDeviceName);
+  base::UnguessableToken session_id =
+      MakeDeviceAvailable(kDefaultDeviceId, kDefaultDeviceName);
 
   StrictMock<MockAudioInputStream> stream;
   EXPECT_CALL(stream, Open()).WillOnce(Return(true));
@@ -282,7 +289,8 @@ TEST_F(AudioInputDelegateTest, CreateOrdinaryCaptureStream) {
 }
 
 TEST_F(AudioInputDelegateTest, CreateOrdinaryStreamWithAGC_AGCPropagates) {
-  int session_id = MakeDeviceAvailable(kDefaultDeviceId, kDefaultDeviceName);
+  base::UnguessableToken session_id =
+      MakeDeviceAvailable(kDefaultDeviceId, kDefaultDeviceName);
 
   StrictMock<MockAudioInputStream> stream;
   EXPECT_CALL(stream, Open()).WillOnce(Return(true));
@@ -304,7 +312,8 @@ TEST_F(AudioInputDelegateTest, CreateOrdinaryStreamWithAGC_AGCPropagates) {
 }
 
 TEST_F(AudioInputDelegateTest, Record) {
-  int session_id = MakeDeviceAvailable(kDefaultDeviceId, kDefaultDeviceName);
+  base::UnguessableToken session_id =
+      MakeDeviceAvailable(kDefaultDeviceId, kDefaultDeviceName);
 
   StrictMock<MockAudioInputStream> stream;
   EXPECT_CALL(stream, Open()).WillOnce(Return(true));
@@ -331,7 +340,8 @@ TEST_F(AudioInputDelegateTest, Record) {
 }
 
 TEST_F(AudioInputDelegateTest, SetVolume) {
-  int session_id = MakeDeviceAvailable(kDefaultDeviceId, kDefaultDeviceName);
+  base::UnguessableToken session_id =
+      MakeDeviceAvailable(kDefaultDeviceId, kDefaultDeviceName);
 
   StrictMock<MockAudioInputStream> stream;
   EXPECT_CALL(stream, Open()).WillOnce(Return(true));

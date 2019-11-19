@@ -28,7 +28,8 @@ BeginFrameArgs CreateBeginFrameArgsForTesting(
   return BeginFrameArgs::Create(
       location, source_id, sequence_number, frame_time,
       frame_time + BeginFrameArgs::DefaultInterval() -
-          BeginFrameArgs::DefaultEstimatedParentDrawTime(),
+          BeginFrameArgs::DefaultEstimatedDisplayDrawTime(
+              BeginFrameArgs::DefaultInterval()),
       BeginFrameArgs::DefaultInterval(), BeginFrameArgs::NORMAL);
 }
 
@@ -70,7 +71,8 @@ BeginFrameArgs CreateBeginFrameArgsForTesting(
   return BeginFrameArgs::Create(
       location, source_id, sequence_number, now,
       now + BeginFrameArgs::DefaultInterval() -
-          BeginFrameArgs::DefaultEstimatedParentDrawTime(),
+          BeginFrameArgs::DefaultEstimatedDisplayDrawTime(
+              BeginFrameArgs::DefaultInterval()),
       BeginFrameArgs::DefaultInterval(), BeginFrameArgs::NORMAL);
 }
 

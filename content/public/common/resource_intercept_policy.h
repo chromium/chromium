@@ -22,7 +22,7 @@ enum class ResourceInterceptPolicy {
   // Disallow any type of interceptions.
   //
   // TODO(crbug/930951): the current implementation doesn't completely honor
-  // this description. When the resource type is |RESOURCE_TYPE_OBJECT|, mime
+  // this description. When the resource type is |ResourceType::kObject|, mime
   // sniffing would still check the existence of plugins and may intercept it as
   // a stream.
   kAllowNone = 1,

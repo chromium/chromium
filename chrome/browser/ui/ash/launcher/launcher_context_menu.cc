@@ -8,11 +8,15 @@
 #include <string>
 
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/metrics/user_metrics.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/crostini/crostini_registry_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ui/app_list/extension_uninstaller.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/ash/launcher/arc_launcher_context_menu.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
@@ -20,12 +24,23 @@
 #include "chrome/browser/ui/ash/launcher/crostini_shelf_context_menu.h"
 #include "chrome/browser/ui/ash/launcher/extension_launcher_context_menu.h"
 #include "chrome/browser/ui/ash/launcher/internal_app_shelf_context_menu.h"
-#include "chrome/browser/ui/ash/tablet_mode_client.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/vector_icons.h"
+
+namespace {
+
+void UninstallApp(Profile* profile, const std::string& app_id) {
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  DCHECK(proxy);
+  proxy->Uninstall(app_id, nullptr /* parent_window */);
+  return;
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<LauncherContextMenu> LauncherContextMenu::Create(
@@ -107,7 +122,7 @@ void LauncherContextMenu::ExecuteCommand(int command_id, int event_flags) {
         controller_->Close(item_.id);
       }
       base::RecordAction(base::UserMetricsAction("CloseFromContextMenu"));
-      if (TabletModeClient::Get()->tablet_mode_enabled()) {
+      if (ash::TabletMode::Get()->InTabletMode()) {
         base::RecordAction(
             base::UserMetricsAction("Tablet_WindowCloseFromContextMenu"));
       }
@@ -117,6 +132,9 @@ void LauncherContextMenu::ExecuteCommand(int command_id, int event_flags) {
         controller_->UnpinAppWithID(item_.id.app_id);
       else
         controller_->PinAppWithID(item_.id.app_id);
+      break;
+    case ash::UNINSTALL:
+      UninstallApp(controller_->profile(), item_.id.app_id);
       break;
     default:
       NOTREACHED();
@@ -151,6 +169,7 @@ bool LauncherContextMenu::ExecuteCommonCommand(int command_id,
     case ash::MENU_OPEN_NEW:
     case ash::MENU_CLOSE:
     case ash::MENU_PIN:
+    case ash::UNINSTALL:
       LauncherContextMenu::ExecuteCommand(command_id, event_flags);
       return true;
     default:
@@ -161,13 +180,13 @@ bool LauncherContextMenu::ExecuteCommonCommand(int command_id,
 void LauncherContextMenu::AddContextMenuOption(ui::SimpleMenuModel* menu_model,
                                                ash::CommandId type,
                                                int string_id) {
+  // Do not include disabled items.
+  if (!IsCommandIdEnabled(type))
+    return;
+
   const gfx::VectorIcon& icon = GetCommandIdVectorIcon(type, string_id);
   if (!icon.is_empty()) {
-    const views::MenuConfig& menu_config = views::MenuConfig::instance();
-    menu_model->AddItemWithStringIdAndIcon(
-        type, string_id,
-        gfx::CreateVectorIcon(icon, menu_config.touchable_icon_size,
-                              menu_config.touchable_icon_color));
+    menu_model->AddItemWithStringIdAndIcon(type, string_id, icon);
     return;
   }
   // If the MenuType is a check item.
@@ -198,6 +217,10 @@ const gfx::VectorIcon& LauncherContextMenu::GetCommandIdVectorIcon(
       return views::kOpenIcon;
     case ash::MENU_CLOSE:
       return views::kCloseIcon;
+    case ash::SHOW_APP_INFO:
+      return views::kInfoIcon;
+    case ash::UNINSTALL:
+      return views::kUninstallIcon;
     case ash::MENU_PIN:
       return controller_->IsPinned(item_.id) ? views::kUnpinIcon
                                              : views::kPinIcon;

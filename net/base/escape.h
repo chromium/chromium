@@ -50,6 +50,11 @@ NET_EXPORT std::string EscapeUrlEncodedData(base::StringPiece path,
 // Escapes all non-ASCII input, as well as escaping % to %25.
 NET_EXPORT std::string EscapeNonASCIIAndPercent(base::StringPiece input);
 
+// Escapes all non-ASCII input. Note this function leaves % unescaped, which
+// means the unescaping the resulting string will not give back the original
+// input.
+NET_EXPORT std::string EscapeNonASCII(base::StringPiece input);
+
 // Escapes characters in text suitable for use as an external protocol handler
 // command.
 // We %XX everything except alphanumerics and -_.!~*'() and the restricted
@@ -130,9 +135,6 @@ NET_EXPORT std::string UnescapeURLComponent(base::StringPiece escaped_text,
 // be converted into a base::string16 and returned.  |adjustments| provides
 // information on how the original string was adjusted to get the string
 // returned.
-NET_EXPORT base::string16 UnescapeAndDecodeUTF8URLComponent(
-    base::StringPiece text,
-    UnescapeRule::Type rules);
 NET_EXPORT base::string16 UnescapeAndDecodeUTF8URLComponentWithAdjustments(
     base::StringPiece text,
     UnescapeRule::Type rules,
@@ -144,16 +146,20 @@ NET_EXPORT base::string16 UnescapeAndDecodeUTF8URLComponentWithAdjustments(
 // be used when displaying the decoded data to the user.
 //
 // Only the NORMAL and REPLACE_PLUS_WITH_SPACE rules are allowed.
-// |escaped_text| and |unescaped_text| can be the same string.
-NET_EXPORT void UnescapeBinaryURLComponent(const std::string& escaped_text,
-                                           UnescapeRule::Type rules,
-                                           std::string* unescaped_text);
-NET_EXPORT inline void UnescapeBinaryURLComponent(
-    const std::string& escaped_text,
-    std::string* unescaped_text) {
-  UnescapeBinaryURLComponent(escaped_text, UnescapeRule::NORMAL,
-                             unescaped_text);
-}
+NET_EXPORT std::string UnescapeBinaryURLComponent(
+    base::StringPiece escaped_text,
+    UnescapeRule::Type rules = UnescapeRule::NORMAL);
+
+// Variant of UnescapeBinaryURLComponent().  Writes output to |unescaped_text|.
+// Returns true on success, returns false and clears |unescaped_text| on
+// failure. Fails on characters escaped that are unsafe to unescape in some
+// contexts, which are defined as characters "\0" through "\x1F" (Which includes
+// CRLF but not space), and optionally path separators. Path separators include
+// both forward and backward slashes on all platforms. Does not fail if any of
+// those characters appear unescaped in the input string.
+NET_EXPORT bool UnescapeBinaryURLComponentSafe(base::StringPiece escaped_text,
+                                               bool fail_on_path_separators,
+                                               std::string* unescaped_text);
 
 // Unescapes the following ampersand character codes from |text|:
 // &lt; &gt; &amp; &quot; &#39;

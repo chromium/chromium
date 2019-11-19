@@ -16,7 +16,7 @@ class FakeTaskRunner;
 }  // namespace scheduler
 
 class BytesConsumerTestReader final
-    : public GarbageCollectedFinalized<BytesConsumerTestReader>,
+    : public GarbageCollected<BytesConsumerTestReader>,
       public BytesConsumer::Client {
   USING_GARBAGE_COLLECTED_MIXIN(BytesConsumerTestReader);
 

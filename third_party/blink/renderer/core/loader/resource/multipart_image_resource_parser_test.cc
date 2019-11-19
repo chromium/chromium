@@ -22,7 +22,7 @@ String ToString(const Vector<char>& data) {
   return String(data.data(), data.size());
 }
 
-class MockClient final : public GarbageCollectedFinalized<MockClient>,
+class MockClient final : public GarbageCollected<MockClient>,
                          public MultipartImageResourceParser::Client {
   USING_GARBAGE_COLLECTED_MIXIN(MockClient);
 
@@ -86,8 +86,8 @@ TEST(MultipartResponseTest, FindBoundary) {
 TEST(MultipartResponseTest, NoStartBoundary) {
   ResourceResponse response(NullURL());
   response.SetMimeType("multipart/x-mixed-replace");
-  response.SetHTTPHeaderField("Foo", "Bar");
-  response.SetHTTPHeaderField("Content-type", "text/plain");
+  response.SetHttpHeaderField("Foo", "Bar");
+  response.SetHttpHeaderField("Content-type", "text/plain");
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
   boundary.Append("bound", 5);
@@ -114,8 +114,8 @@ TEST(MultipartResponseTest, NoStartBoundary) {
 TEST(MultipartResponseTest, NoEndBoundary) {
   ResourceResponse response(NullURL());
   response.SetMimeType("multipart/x-mixed-replace");
-  response.SetHTTPHeaderField("Foo", "Bar");
-  response.SetHTTPHeaderField("Content-type", "text/plain");
+  response.SetHttpHeaderField("Foo", "Bar");
+  response.SetHttpHeaderField("Content-type", "text/plain");
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
   boundary.Append("bound", 5);
@@ -140,8 +140,8 @@ TEST(MultipartResponseTest, NoEndBoundary) {
 TEST(MultipartResponseTest, NoStartAndEndBoundary) {
   ResourceResponse response(NullURL());
   response.SetMimeType("multipart/x-mixed-replace");
-  response.SetHTTPHeaderField("Foo", "Bar");
-  response.SetHTTPHeaderField("Content-type", "text/plain");
+  response.SetHttpHeaderField("Foo", "Bar");
+  response.SetHttpHeaderField("Content-type", "text/plain");
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
   boundary.Append("bound", 5);
@@ -167,8 +167,8 @@ TEST(MultipartResponseTest, MalformedBoundary) {
   // Some servers send a boundary that is prefixed by "--".  See bug 5786.
   ResourceResponse response(NullURL());
   response.SetMimeType("multipart/x-mixed-replace");
-  response.SetHTTPHeaderField("Foo", "Bar");
-  response.SetHTTPHeaderField("Content-type", "text/plain");
+  response.SetHttpHeaderField("Foo", "Bar");
+  response.SetHttpHeaderField("Content-type", "text/plain");
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
   boundary.Append("--bound", 7);
@@ -321,7 +321,7 @@ TEST(MultipartResponseTest, BreakInData) {
 TEST(MultipartResponseTest, SmallChunk) {
   ResourceResponse response(NullURL());
   response.SetMimeType("multipart/x-mixed-replace");
-  response.SetHTTPHeaderField("Content-type", "text/plain");
+  response.SetHttpHeaderField("Content-type", "text/plain");
   MockClient* client = MakeGarbageCollected<MockClient>();
   Vector<char> boundary;
   boundary.Append("bound", 5);

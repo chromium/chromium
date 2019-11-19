@@ -17,12 +17,8 @@ LayerTreeHostEmbedder::LayerTreeHostEmbedder(
     cc::LayerTreeHostClient* client,
     cc::LayerTreeHostSingleThreadClient* single_thread_client) {
   cc::LayerTreeSettings settings;
-  settings.layer_transforms_should_scale_layer_contents = true;
   settings.single_thread_proxy_scheduler = false;
-  settings.use_layer_lists =
-      RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
-      RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled();
-
+  settings.use_layer_lists = true;
   animation_host_ = cc::AnimationHost::CreateMainInstance();
   cc::LayerTreeHost::InitParams params;
   params.client = client ? client : &layer_tree_host_client_;

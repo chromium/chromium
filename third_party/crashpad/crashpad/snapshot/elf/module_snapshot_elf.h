@@ -41,11 +41,15 @@ class ModuleSnapshotElf final : public ModuleSnapshot {
   //! \param[in] name The pathname used to load the module from disk.
   //! \param[in] elf_reader An image reader for the module.
   //! \param[in] type The module's type.
-  //! \param[in] process_memory_range A memory reader for the target process.
+  //! \param[in] process_memory_range A memory reader giving protected access
+  //!     to the target process.
+  //! \param[in] process_memory A memory reader for the target process which can
+  //!     be used to initialize a MemorySnapshot.
   ModuleSnapshotElf(const std::string& name,
                     ElfImageReader* elf_reader,
                     ModuleSnapshot::ModuleType type,
-                    ProcessMemoryRange* process_memory_range);
+                    ProcessMemoryRange* process_memory_range,
+                    const ProcessMemory* process_memory);
   ~ModuleSnapshotElf() override;
 
   //! \brief Initializes the object.
@@ -77,6 +81,7 @@ class ModuleSnapshotElf final : public ModuleSnapshot {
   ModuleType GetModuleType() const override;
   void UUIDAndAge(crashpad::UUID* uuid, uint32_t* age) const override;
   std::string DebugFileName() const override;
+  std::vector<uint8_t> BuildID() const override;
   std::vector<std::string> AnnotationsVector() const override;
   std::map<std::string, std::string> AnnotationsSimpleMap() const override;
   std::vector<AnnotationSnapshot> AnnotationObjects() const override;
@@ -87,9 +92,12 @@ class ModuleSnapshotElf final : public ModuleSnapshot {
   std::string name_;
   ElfImageReader* elf_reader_;
   ProcessMemoryRange* process_memory_range_;
+  const ProcessMemory* process_memory_;
   std::unique_ptr<CrashpadInfoReader> crashpad_info_;
   ModuleType type_;
   InitializationStateDcheck initialized_;
+  // Too const-y: https://crashpad.chromium.org/bug/9.
+  mutable std::vector<std::unique_ptr<const UserMinidumpStream>> streams_;
 
   DISALLOW_COPY_AND_ASSIGN(ModuleSnapshotElf);
 };

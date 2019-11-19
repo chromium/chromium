@@ -6,7 +6,8 @@ package org.chromium.chromoting;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.support.annotation.IntDef;
+
+import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

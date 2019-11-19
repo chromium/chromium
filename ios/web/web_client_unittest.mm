@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "net/ssl/ssl_info.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
@@ -26,9 +27,18 @@ TEST_F(WebClientTest, PrepareErrorPage) {
                           code:NSURLErrorNotConnectedToInternet
                       userInfo:@{NSLocalizedDescriptionKey : description}];
 
-  NSString* html = nil;
+  base::Optional<net::SSLInfo> info = base::nullopt;
+  __block bool callback_called = false;
+  __block NSString* html = nil;
   web_client.PrepareErrorPage(/*web_state*/ nullptr, GURL::EmptyGURL(), error,
                               /*is_post=*/false,
-                              /*is_off_the_record=*/false, &html);
+                              /*is_off_the_record=*/false,
+                              /*info=*/info,
+                              /*navigation_id=*/0,
+                              base::BindOnce(^(NSString* error_html) {
+                                html = error_html;
+                                callback_called = true;
+                              }));
+  EXPECT_TRUE(callback_called);
   EXPECT_NSEQ(description, html);
 }

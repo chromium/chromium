@@ -52,8 +52,7 @@ public class PauseOnHeadsetUnplugTest {
     @Test
     @SmallTest
     @RetryOnFailure
-    public void testPause()
-            throws IllegalArgumentException, InterruptedException, TimeoutException {
+    public void testPause() throws IllegalArgumentException, TimeoutException {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
         Assert.assertTrue(DOMUtils.isMediaPaused(tab.getWebContents(), VIDEO_ID));
@@ -66,13 +65,13 @@ public class PauseOnHeadsetUnplugTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PATH));
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 

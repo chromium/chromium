@@ -85,7 +85,7 @@ class ChannelMultiplexer : public StreamChannelFactory {
   BufferedSocketWriter writer_;
   MessageReader reader_;
 
-  base::WeakPtrFactory<ChannelMultiplexer> weak_factory_;
+  base::WeakPtrFactory<ChannelMultiplexer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChannelMultiplexer);
 };

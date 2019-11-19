@@ -11,9 +11,9 @@
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
@@ -153,7 +153,8 @@ class SecurityKeyExtensionSessionTest : public testing::Test {
   void CreateSecurityKeyConnection();
 
  protected:
-  base::MessageLoopForIO message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
   // Object under test.
   std::unique_ptr<SecurityKeyExtensionSession> security_key_extension_session_;

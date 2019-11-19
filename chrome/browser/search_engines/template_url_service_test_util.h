@@ -15,12 +15,11 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 
-class GURL;
 class KeywordWebDataService;
 class TemplateURLService;
 class TestingProfile;
-class TestingSearchTermsData;
 
 // Sets the managed preferences for the default search provider.
 // enabled arg enables/disables use of managed engine by DefaultSearchManager.
@@ -63,9 +62,6 @@ class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
   // TemplateURLService::SetKeywordSearchTermsForURL and clears the search term.
   base::string16 GetAndClearSearchTerm();
 
-  // Sets the google base url.  |base_url| must be valid.
-  void SetGoogleBaseURL(const GURL& base_url);
-
   // Adds extension controlled TemplateURL to the model and overrides default
   // search pref in an extension controlled preferences, if extension wants to
   // be default.
@@ -87,8 +83,8 @@ class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
   int changed_count_;
   base::string16 search_term_;
   scoped_refptr<KeywordWebDataService> web_data_service_;
-  TestingSearchTermsData* search_terms_data_;
   std::unique_ptr<TemplateURLService> model_;
+  data_decoder::test::InProcessDataDecoder data_decoder_;
 
   DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceTestUtil);
 };

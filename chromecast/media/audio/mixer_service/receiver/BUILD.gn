@@ -1,0 +1,62 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+
+cast_source_set("receiver") {
+  sources = [
+    "receiver.cc",
+    "receiver.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast/base",
+    "//chromecast/media/audio/mixer_service:audio_socket_service",
+    "//chromecast/media/audio/mixer_service:common",
+    "//net",
+  ]
+
+  public_deps = [
+    "//chromecast/media/audio/mixer_service:proto",
+  ]
+}
+
+cast_source_set("receiver_cma") {
+  sources = [
+    "cma_backend_shim.cc",
+    "cma_backend_shim.h",
+    "receiver_cma.cc",
+    "receiver_cma.h",
+  ]
+
+  deps = [
+    ":receiver",
+    "//base",
+    "//chromecast/base",
+    "//chromecast/media/audio/mixer_service:common",
+    "//chromecast/media/audio/mixer_service:proto",
+    "//chromecast/media/cma/backend",
+    "//chromecast/media/cma/base",
+    "//chromecast/public",
+    "//chromecast/public/media",
+    "//media",
+    "//net",
+  ]
+}
+
+cast_source_set("receiver_creation") {
+  sources = [
+    "receiver_creation.cc",
+    "receiver_creation.h",
+  ]
+
+  deps = [
+    ":receiver_cma",
+    "//base",
+    "//chromecast/media/audio:audio_io_thread",
+    "//chromecast/media/audio/mixer_service:buildflags",
+    "//chromecast/media/audio/mixer_service:common",
+  ]
+}

@@ -1,0 +1,3 @@
+[document web]
+++[timer] atomic:false container-atomic:false live:polite
+++++[static] name='This test is for aria-role = timer' atomic:false container-atomic:false

@@ -1,0 +1,78 @@
+<!doctype html>
+<p>Here are two links that (due to their parent divs' limited width) split over two lines:</p>
+
+<div style="font: 6px Ahem; line-height: 9px;">
+  <a id="start" href="www">Random start link</a>.
+  <div style="width: 230px; background: yellow; position: relative; margin-left: 20px;">
+    <a id="fragmentedA" href="www">This is a long bla bla bla fragmented link.</a>
+    Hey <a id="now_reachableA" href="www">previously</a> <a id="now_reachableB" href="www">unreachable</a>.
+
+    <div style="position: absolute; right: -100px; top: 0px; width: 100px">
+      <a id="anotherA" href="www">AnotherA random link</a>
+    </div>
+    <div style="position: absolute; left: -15px; top: 0px; width: 100px">
+      <a id="B" href="www">B</a>
+    </div>
+  </div>
+  <br>
+  <div style="width: 230px; background: yellow; position: relative; margin-left: 20px;">
+    This is a <a id="short" href="www">short</a> bla bla <a id="fragmentedB" href="www">fragmented liiiiiink.</a>
+    Hey now <a id="now_reachableC" href="www">reachable</a>.
+
+    <div style="position: absolute; right: -100px; top: 0px; width: 100px">
+      <a id="anotherC" href="www">AnotherC random link</a>
+    </div>
+    <div style="position: absolute; left: -15px; top: 0px; width: 100px">
+      <a id="D" href="www">D</a>
+    </div>
+  </div>
+  <a id="end" href="www">Random end link</a>.
+</div>
+
+<p>The yellow background highlights a fragmented link's bounding box</em>.<br>
+This bounding box covers another link. Here we test that SpatNav can reach that link.</p>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Down", "start"],
+    ["Down", "fragmentedA"],
+    ["Right", "now_reachableA"],  // We searched *inside* #fragmentedA's box.
+    ["Right", "now_reachableB"],
+    ["Right", "anotherA"],
+    ["Down", "anotherC"],         // #anotherA and #anotherC are perfectly aligned.
+    ["Up", "anotherA"],
+    ["Left", "fragmentedA"],
+    ["Left", "now_reachableB"],   // We searched *inside* #fragmentedA's box.
+    ["Left", "now_reachableA"],
+    ["Left", "B"],                // We don't go to the enclosing #fragmentedA. If we did, holding
+                                  // Left would cause a loop inside #fragmentedA's bounding box.
+    ["Right", "fragmentedA"],
+    // Down searches *inside* #fragmentedA's box.
+    ["Down", "now_reachableB"],   // #now_reachableB is wider than #now_reachableA.
+    ["Left", "now_reachableA"],
+    ["Right", "now_reachableB"],
+    ["Right", "anotherA"],        // We don't go to #fragmentedB because Right from #fragmentedB goes back to #short.
+                                  // This avoids an endless loop between #fragmentedB and #short if Right is held.
+    ["Down", "anotherC"],
+    ["Left", "fragmentedB"],
+    ["Right", "short"],           // We searched *inside* #fragmentedB's box.
+    ["Down", "end"],              // This avoids an endless loop between #fragmentedB and #short if Down is held.
+    ["Up", "fragmentedB"],
+    ["Down", "short"],            // We searched *inside* #fragmentedB's box.
+    ["Right", "now_reachableC"],
+    ["Right", "anotherC"],
+    ["Left", "fragmentedB"],
+    ["Left", "now_reachableC"],   // We searched *inside* #fragmentedB's box.
+    ["Down", "end"]
+  ];
+  snav.assertFocusMoves(resultMap);
+</script>
+
+<p><em>Manual test instruction: Ensure that all links are reachable.</em></p>
+
+<p>Also, when holding one of the four directional keys, ensure that the page is fully
+scrolled in that direction. Especially, ensure that focus does not get stuck inside the
+fragmented link's bounding box.</p>

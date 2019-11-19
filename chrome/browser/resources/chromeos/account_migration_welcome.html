@@ -1,0 +1,47 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <title>$i18n{welcomePageTitle}</title>
+  <meta charset="utf-8">
+  <link rel="import" href="chrome://resources/html/polymer.html">
+  <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+  <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+  <link rel="import" href="account_migration_browser_proxy.html">
+
+  <link rel="stylesheet" href="chrome://resources/css/chrome_shared.css">
+  <link rel="stylesheet" href="account_manager_shared.css">
+  <custom-style>
+    <style is="custom-style" include="cr-shared-style">
+    </style>
+  </custom-style>
+
+  <script src="chrome://resources/js/cr.js"></script>
+  <script src="chrome://resources/js/load_time_data.js"></script>
+  <script src="chrome://resources/js/util.js"></script>
+  <script src="strings.js"></script>
+  <script src="account_migration_welcome.js"></script>
+</head>
+
+<body>
+  <div id="content">
+    <if expr="_google_chrome">
+      <img id="google-logo" src="googleg.svg" alt="">
+    </if>
+    <h1 id="welcome-title"></h1>
+    <p id="welcome-message"></p>
+    <if expr="_google_chrome">
+      <img id="welcome-image" alt=""
+          srcset="account_manager_welcome_1x.png 1x,
+                  account_manager_welcome_2x.png 2x">
+    </if>
+    <div class="button-container">
+      <cr-button id="cancel-button" class="cancel-button">
+        $i18n{cancelButton}
+      </cr-button>
+      <cr-button id="migrate-button" class="action-button">
+        $i18n{migrateButton}
+      </cr-button>
+    </div>
+  </div>
+</body>
+</html>

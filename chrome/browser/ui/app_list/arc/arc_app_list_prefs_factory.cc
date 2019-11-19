@@ -9,8 +9,8 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
@@ -71,10 +71,9 @@ KeyedService* ArcAppListPrefsFactory::BuildServiceInstanceFor(
 
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager)
-    return nullptr;
+    return nullptr;  // ARC is not supported
 
-  return ArcAppListPrefs::Create(
-      profile, arc_service_manager->arc_bridge_service()->app());
+  return ArcAppListPrefs::Create(profile);
 }
 
 content::BrowserContext* ArcAppListPrefsFactory::GetBrowserContextToUse(

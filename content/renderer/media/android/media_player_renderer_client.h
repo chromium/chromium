@@ -18,27 +18,35 @@
 #include "media/base/renderer_client.h"
 #include "media/base/video_renderer_sink.h"
 #include "media/mojo/clients/mojo_renderer.h"
+#include "media/mojo/clients/mojo_renderer_wrapper.h"
+#include "media/mojo/mojom/renderer_extensions.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
 // MediaPlayerRendererClient lives in Renderer process and mirrors a
 // MediaPlayerRenderer living in the Browser process.
 //
-// It is responsible for forwarding media::Renderer calls from WMPI to the
-// MediaPlayerRenderer, using |mojo_renderer|. It also manages a StreamTexture,
-// (via |stream_texture_wrapper_|) and notifies the VideoRendererSink when new
+// It is primarily used as a media::Renderer that forwards calls from WMPI to
+// the MediaPlayerRenderer, by inheriting from MojoRendererWrapper.
+// It also manages a StreamTexture, and notifies the VideoRendererSink when new
 // frames are available.
 //
 // This class handles all calls on |media_task_runner_|, except for
 // OnFrameAvailable(), which is called on |compositor_task_runner_|.
-//
-// N.B: This class implements media::RendererClient, in order to intercept
-// OnVideoNaturalSizeChange() events, to update StreamTextureWrapper. All events
-// (including OnVideoNaturalSizeChange()) are bubbled up to |client_|.
-class CONTENT_EXPORT MediaPlayerRendererClient : public media::Renderer,
-                                                 public media::RendererClient {
+class CONTENT_EXPORT MediaPlayerRendererClient
+    : public media::mojom::MediaPlayerRendererClientExtension,
+      public media::MojoRendererWrapper {
  public:
+  using RendererExtention = media::mojom::MediaPlayerRendererExtension;
+  using ClientExtention = media::mojom::MediaPlayerRendererClientExtension;
+
   MediaPlayerRendererClient(
+      mojo::PendingRemote<RendererExtention> renderer_extension_remote,
+      mojo::PendingReceiver<ClientExtention> client_extension_receiver,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       std::unique_ptr<media::MojoRenderer> mojo_renderer,
@@ -47,30 +55,18 @@ class CONTENT_EXPORT MediaPlayerRendererClient : public media::Renderer,
 
   ~MediaPlayerRendererClient() override;
 
-  // media::Renderer implementation.
+  // media::Renderer implementation (inherited from media::MojoRendererWrapper).
+  // We override normal initialization to set up |stream_texture_wrapper_|,
+  // and do not support encrypted media.
   void Initialize(media::MediaResource* media_resource,
                   media::RendererClient* client,
-                  const media::PipelineStatusCB& init_cb) override;
+                  media::PipelineStatusCallback init_cb) override;
   void SetCdm(media::CdmContext* cdm_context,
-              const media::CdmAttachedCB& cdm_attached_cb) override;
-  void Flush(const base::Closure& flush_cb) override;
-  void StartPlayingFrom(base::TimeDelta time) override;
-  void SetPlaybackRate(double playback_rate) override;
-  void SetVolume(float volume) override;
-  base::TimeDelta GetMediaTime() override;
+              media::CdmAttachedCB cdm_attached_cb) override;
 
-  // media::RendererClient implementation.
-  void OnError(media::PipelineStatus status) override;
-  void OnEnded() override;
-  void OnStatisticsUpdate(const media::PipelineStatistics& stats) override;
-  void OnBufferingStateChange(media::BufferingState state) override;
-  void OnWaiting(media::WaitingReason reason) override;
-  void OnAudioConfigChange(const media::AudioDecoderConfig& config) override;
-  void OnVideoConfigChange(const media::VideoDecoderConfig& config) override;
-  void OnVideoNaturalSizeChange(const gfx::Size& size) override;
-  void OnVideoOpacityChange(bool opaque) override;
+  // media::mojom::MediaPlayerRendererClientExtension implementation
   void OnDurationChange(base::TimeDelta duration) override;
-  void OnRemotePlayStateChange(media::MediaStatus::State state) override;
+  void OnVideoSizeChange(const gfx::Size& size) override;
 
   // Called on |compositor_task_runner_| whenever |stream_texture_wrapper_| has
   // a new frame.
@@ -83,8 +79,9 @@ class CONTENT_EXPORT MediaPlayerRendererClient : public media::Renderer,
 
   void OnScopedSurfaceRequested(const base::UnguessableToken& request_token);
 
-  // Used to forward calls to the MediaPlayerRenderer living in the Browser.
-  std::unique_ptr<media::MojoRenderer> mojo_renderer_;
+  // The underlying type should always be a MediaUrlDemuxer, but we only use
+  // methods from the MediaResource interface.
+  media::MediaResource* media_resource_;
 
   // Owns the StreamTexture whose surface is used by MediaPlayerRenderer.
   // Provides the VideoFrames to |sink_|.
@@ -100,10 +97,27 @@ class CONTENT_EXPORT MediaPlayerRendererClient : public media::Renderer,
   // VideoFrames to |sink_| on the right thread.
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
 
-  media::PipelineStatusCB init_cb_;
+  media::PipelineStatusCallback init_cb_;
+
+  // This class is constructed on the main task runner, and used on
+  // |media_task_runner_|. These member are used to delay calls to Bind() for
+  // |renderer_extension_ptr_| and |client_extension_binding_|, until we are on
+  // |media_task_runner_|.
+  // Both are set in the constructor, and consumed in Initialize().
+  mojo::PendingReceiver<ClientExtention>
+      delayed_bind_client_extension_receiver_;
+  mojo::PendingRemote<RendererExtention>
+      delayed_bind_renderer_extention_remote_;
+
+  // Used to call methods on the MediaPlayerRenderer in the browser process.
+  mojo::Remote<RendererExtention> renderer_extension_remote_;
+
+  // Used to receive events from MediaPlayerRenderer in the browser process.
+  mojo::Receiver<MediaPlayerRendererClientExtension> client_extension_receiver_{
+      this};
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<MediaPlayerRendererClient> weak_factory_;
+  base::WeakPtrFactory<MediaPlayerRendererClient> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaPlayerRendererClient);
 };

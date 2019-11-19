@@ -10,11 +10,14 @@
 // clang-format off
 #include "third_party/blink/renderer/bindings/tests/results/core/v8_test_interface_2.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_configuration.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_for_each_iterator_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_test_interface_empty.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -25,6 +28,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 
 namespace blink {
@@ -117,7 +121,7 @@ static void SetItemMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
   value = V8TestInterfaceEmpty::ToImplWithTypeCheck(info.GetIsolate(), info[1]);
   if (!value) {
-    exception_state.ThrowTypeError("parameter 2 is not of type 'TestInterfaceEmpty'.");
+    exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(1, "TestInterfaceEmpty"));
     return;
   }
 
@@ -190,7 +194,7 @@ static void SetNamedItemMethod(const v8::FunctionCallbackInfo<v8::Value>& info) 
 
   value = V8TestInterfaceEmpty::ToImplWithTypeCheck(info.GetIsolate(), info[1]);
   if (!value && !IsUndefinedOrNull(info[1])) {
-    exception_state.ThrowTypeError("parameter 2 is not of type 'TestInterfaceEmpty'.");
+    exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(1, "TestInterfaceEmpty"));
     return;
   }
 
@@ -269,18 +273,18 @@ static void ForEachMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
     return;
   }
 
-  ScriptValue callback;
+  V8ForEachIteratorCallback* callback;
   ScriptValue this_arg;
   if (info[0]->IsFunction()) {
-    callback = ScriptValue(ScriptState::Current(info.GetIsolate()), info[0]);
+    callback = V8ForEachIteratorCallback::Create(info[0].As<v8::Function>());
   } else {
     exception_state.ThrowTypeError("The callback provided as parameter 1 is not a function.");
     return;
   }
 
-  this_arg = ScriptValue(ScriptState::Current(info.GetIsolate()), info[1]);
+  this_arg = ScriptValue(info.GetIsolate(), info[1]);
 
-  impl->forEachForBinding(script_state, ScriptValue(script_state, info.Holder()), callback, this_arg, exception_state);
+  impl->forEachForBinding(script_state, ScriptValue(info.GetIsolate(), info.Holder()), callback, this_arg, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -301,7 +305,7 @@ static void HasMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
   TestInterfaceEmpty* value;
   value = V8TestInterfaceEmpty::ToImplWithTypeCheck(info.GetIsolate(), info[0]);
   if (!value) {
-    exception_state.ThrowTypeError("parameter 1 is not of type 'TestInterfaceEmpty'.");
+    exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(0, "TestInterfaceEmpty"));
     return;
   }
 
@@ -361,12 +365,12 @@ CORE_EXPORT void ConstructorCallback(const v8::FunctionCallbackInfo<v8::Value>& 
 
 static void NamedPropertyGetter(const AtomicString& name,
                                 const v8::PropertyCallbackInfo<v8::Value>& info) {
-  const CString& name_in_utf8 = name.Utf8();
+  const std::string& name_in_utf8 = name.Utf8();
   ExceptionState exception_state(
       info.GetIsolate(),
       ExceptionState::kGetterContext,
       "TestInterface2",
-      name_in_utf8.data());
+      name_in_utf8.c_str());
 
   TestInterface2* impl = V8TestInterface2::ToImpl(info.Holder());
   TestInterfaceEmpty* result = impl->namedItem(name, exception_state);
@@ -379,12 +383,12 @@ static void NamedPropertySetter(
     const AtomicString& name,
     v8::Local<v8::Value> v8_value,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  const CString& name_in_utf8 = name.Utf8();
+  const std::string& name_in_utf8 = name.Utf8();
   ExceptionState exception_state(
       info.GetIsolate(),
       ExceptionState::kSetterContext,
       "TestInterface2",
-      name_in_utf8.data());
+      name_in_utf8.c_str());
 
   TestInterface2* impl = V8TestInterface2::ToImpl(info.Holder());
   TestInterfaceEmpty* property_value = V8TestInterfaceEmpty::ToImplWithTypeCheck(info.GetIsolate(), v8_value);
@@ -403,12 +407,12 @@ static void NamedPropertySetter(
 
 static void NamedPropertyDeleter(
     const AtomicString& name, const v8::PropertyCallbackInfo<v8::Boolean>& info) {
-  const CString& name_in_utf8 = name.Utf8();
+  const std::string& name_in_utf8 = name.Utf8();
   ExceptionState exception_state(
       info.GetIsolate(),
       ExceptionState::kDeletionContext,
       "TestInterface2",
-      name_in_utf8.data());
+      name_in_utf8.c_str());
 
   TestInterface2* impl = V8TestInterface2::ToImpl(info.Holder());
 
@@ -422,12 +426,12 @@ static void NamedPropertyDeleter(
 
 static void NamedPropertyQuery(
     const AtomicString& name, const v8::PropertyCallbackInfo<v8::Integer>& info) {
-  const CString& name_in_utf8 = name.Utf8();
+  const std::string& name_in_utf8 = name.Utf8();
   ExceptionState exception_state(
       info.GetIsolate(),
       ExceptionState::kGetterContext,
       "TestInterface2",
-      name_in_utf8.data());
+      name_in_utf8.c_str());
 
   TestInterface2* impl = V8TestInterface2::ToImpl(info.Holder());
 
@@ -722,10 +726,6 @@ void V8TestInterface2::IndexedPropertyDefinerCallback(
   // Return nothing and fall back to indexedPropertySetterCallback.
 }
 
-static constexpr V8DOMConfiguration::AccessorConfiguration kV8TestInterface2Accessors[] = {
-    { "size", V8TestInterface2::SizeAttributeGetterCallback, nullptr, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::DontEnum | v8::ReadOnly), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-};
-
 static constexpr V8DOMConfiguration::MethodConfiguration kV8TestInterface2Methods[] = {
     {"item", V8TestInterface2::ItemMethodCallback, 1, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds},
     {"setItem", V8TestInterface2::SetItemMethodCallback, 2, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds},
@@ -759,9 +759,14 @@ void V8TestInterface2::InstallV8TestInterface2Template(
 
   // Register IDL constants, attributes and operations.
   static_assert(1 == TestInterface2::kConstValue1, "the value of TestInterface2_kConstValue1 does not match with implementation");
+  static constexpr V8DOMConfiguration::AccessorConfiguration
+  kAccessorConfigurations[] = {
+      { "size", V8TestInterface2::SizeAttributeGetterCallback, nullptr, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::DontEnum | v8::ReadOnly), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+  };
   V8DOMConfiguration::InstallAccessors(
       isolate, world, instance_template, prototype_template, interface_template,
-      signature, kV8TestInterface2Accessors, base::size(kV8TestInterface2Accessors));
+      signature, kAccessorConfigurations,
+      base::size(kAccessorConfigurations));
   V8DOMConfiguration::InstallMethods(
       isolate, world, instance_template, prototype_template, interface_template,
       signature, kV8TestInterface2Methods, base::size(kV8TestInterface2Methods));
@@ -813,7 +818,7 @@ void V8TestInterface2::InstallRuntimeEnabledFeaturesOnTemplate(
   ALLOW_UNUSED_LOCAL(prototype_template);
 
   // Register IDL constants, attributes and operations.
-  if (RuntimeEnabledFeatures::FeatureNameEnabled()) {
+  if (RuntimeEnabledFeatures::RuntimeFeatureEnabled()) {
     static constexpr V8DOMConfiguration::ConstantConfiguration kConfigurations[] = {
         {"CONST_VALUE_1", V8DOMConfiguration::kConstantTypeUnsignedShort, static_cast<int>(1)},
     };

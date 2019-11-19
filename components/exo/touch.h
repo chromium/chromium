@@ -18,6 +18,7 @@ class TouchEvent;
 }
 
 namespace exo {
+class Seat;
 class TouchDelegate;
 class TouchStylusDelegate;
 
@@ -25,7 +26,7 @@ class TouchStylusDelegate;
 // touch devices.
 class Touch : public ui::EventHandler, public SurfaceObserver {
  public:
-  explicit Touch(TouchDelegate* delegate);
+  Touch(TouchDelegate* delegate, Seat* seat);
   ~Touch() override;
 
   TouchDelegate* delegate() const { return delegate_; }
@@ -46,6 +47,8 @@ class Touch : public ui::EventHandler, public SurfaceObserver {
 
   // The delegate instance that all events are dispatched to.
   TouchDelegate* const delegate_;
+
+  Seat* const seat_;
 
   // The delegate instance that all stylus related events are dispatched to.
   TouchStylusDelegate* stylus_delegate_ = nullptr;

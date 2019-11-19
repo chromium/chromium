@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/platform/testing/fake_graphics_layer_client.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace cc {
 class AnimationHost;
@@ -20,6 +21,8 @@ class FakeGraphicsLayer;
 class LayerTreeHostEmbedder;
 
 class ViewportLayersSetup {
+  DISALLOW_NEW();
+
  public:
   ViewportLayersSetup();
   ~ViewportLayersSetup();
@@ -31,10 +34,8 @@ class ViewportLayersSetup {
   cc::AnimationHost* animation_host();
 
  private:
+  std::unique_ptr<FakeGraphicsLayer> root_layer_;
   std::unique_ptr<FakeGraphicsLayer> graphics_layer_;
-  std::unique_ptr<FakeGraphicsLayer> page_scale_layer_;
-  std::unique_ptr<FakeGraphicsLayer> scroll_elasticity_layer_;
-  std::unique_ptr<FakeGraphicsLayer> clip_layer_;
   FakeGraphicsLayerClient client_;
   std::unique_ptr<LayerTreeHostEmbedder> layer_tree_;
 };

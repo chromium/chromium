@@ -35,7 +35,7 @@ bool ScanFilter::Matches(const LeScanResult& scan_result) const {
       return false;
     }
 
-    if (!base::ContainsValue(*all_uuids, *service_uuid)) {
+    if (!base::Contains(*all_uuids, *service_uuid)) {
       return false;
     }
   }

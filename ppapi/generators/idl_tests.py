@@ -5,17 +5,19 @@
 
 """ Test runner for IDL Generator changes """
 
+from __future__ import print_function
+
 import subprocess
 import sys
 
 def TestIDL(testname, args):
-  print '\nRunning unit tests for %s.' % testname
+  print('\nRunning unit tests for %s.' % testname)
   try:
     args = [sys.executable, testname] + args
     subprocess.check_call(args)
     return 0
   except subprocess.CalledProcessError as err:
-    print 'Failed with %s.' % str(err)
+    print('Failed with %s.' % str(err))
     return 1
 
 def main(args):
@@ -36,7 +38,7 @@ def main(args):
   assert errors == 0
 
   if errors:
-    print '\nFailed tests.'
+    print('\nFailed tests.')
   return errors
 
 

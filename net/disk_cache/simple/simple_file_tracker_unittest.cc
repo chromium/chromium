@@ -51,11 +51,10 @@ class SimpleFileTrackerTest : public DiskCacheTest {
       std::unique_ptr<SimpleSynchronousEntry, SyncEntryDeleter>;
 
   SyncEntryPointer MakeSyncEntry(uint64_t hash) {
-    return SyncEntryPointer(
-        new SimpleSynchronousEntry(net::DISK_CACHE, cache_path_, "dummy", hash,
-                                   /* had_index=*/true, &file_tracker_,
-                                   /*trailer_prefetch_size=*/-1),
-        SyncEntryDeleter(this));
+    return SyncEntryPointer(new SimpleSynchronousEntry(
+                                net::DISK_CACHE, cache_path_, "dummy", hash,
+                                &file_tracker_, /*trailer_prefetch_size=*/-1),
+                            SyncEntryDeleter(this));
   }
 
   void UpdateEntryFileKey(SimpleSynchronousEntry* sync_entry,

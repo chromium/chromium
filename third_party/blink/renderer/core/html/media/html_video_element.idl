@@ -23,9 +23,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://html.spec.whatwg.org/C/#the-video-element
+// https://html.spec.whatwg.org/multipage/media.html#htmlvideoelement
 
 [
+    Exposed=Window,
     HTMLConstructor,
     ActiveScriptWrappable
 ] interface HTMLVideoElement : HTMLMediaElement {
@@ -34,9 +35,6 @@
     readonly attribute unsigned long videoWidth;
     readonly attribute unsigned long videoHeight;
     [CEReactions, Reflect, URL, Measure] attribute DOMString poster;
-
-    // github.com/ojanvafai/intrinsicsize-attribute/blob/master/README.md
-    [RuntimeEnabled=ExperimentalProductivityFeatures, CEReactions, Reflect] attribute DOMString intrinsicSize;
 
     // Non-standard APIs
     [RuntimeEnabled=PrefixedVideoFullscreen, DeprecateAs=PrefixedVideoSupportsFullscreen] readonly attribute boolean webkitSupportsFullscreen;
@@ -56,4 +54,6 @@
     // The number of decoded frames that have been dropped by the player
     // for performance reasons during playback.
     [MeasureAs=PrefixedVideoDroppedFrameCount] readonly attribute unsigned long webkitDroppedFrameCount;
+
+    [CEReactions, Reflect] attribute boolean playsInline;
 };

@@ -1,0 +1,21 @@
+name: "Lottie Web"
+description:
+    "Lottie is a library for Android, iOS, Web, and Windows that parses Adobe "
+    "After Effects animations exported as json with Bodymovin and renders them "
+    "natively on mobile and on the web. The library imported here is the "
+    "lottie-web library which is a javascript file that can run animations on "
+    "the web."
+
+third_party {
+  url {
+    type: HOMEPAGE
+    value: "https://airbnb.io/lottie"
+  }
+  url {
+    type: GIT
+    value: "https://github.com/airbnb/lottie-web"
+  }
+  version: "v5.5.2"
+  last_upgrade_date { year: 2019 month: 5 day: 17 }
+  license_type: NOTICE
+}

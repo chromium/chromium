@@ -5,14 +5,14 @@
 package org.chromium.chrome.browser.preferences.password;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.MaterialProgressBar;
+import org.chromium.chrome.browser.ui.widget.MaterialProgressBar;
 
 /**
  * Shows the dialog that informs the user about the progress of preparing passwords for export and

@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "content/common/content_export.h"
-#include "media/mojo/interfaces/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_output_stream.mojom.h"
 
 namespace content {
 

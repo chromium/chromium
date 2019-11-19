@@ -2,8 +2,20 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+/* This file contains style used across ALL platforms. Platform-specific styling
+ * should be placed in the corresponding file (e.g. desktop style goes in
+ * distilledpage_desktop.css).*/
+
 /* Set the global 'box-sizing' state to 'border-box'.
  * *::after and *::before used to select pseudo-elements not selectable by *. */
+
+:root {
+  --google-blue-700: 25, 103, 210;
+  --google-brown-900: 62, 39, 35;
+  --google-purple-700: 132, 48, 206;
+  --google-yellow-50: 254, 247, 224;
+  --google-yellow-100: 254, 239, 195;
+}
 
 *,
 *::after,
@@ -76,21 +88,22 @@ th {
 /* Base typography. */
 
 html {
+  /* This has to be in sync with |baseSize| in dom_distiller_viewer.js. */
   font-size: 14px;
 }
 
 body {
-  min-height: 100vh;
+  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
   line-height: 1.714;
-  margin: 0px auto;
-  text-rendering: optimizeLegibility;
-  transition-property: color, background-color;
-  transition-duration: 0.5s;
-  transition-timing-function: ease;
+  margin: 0 auto;
+  min-height: 100vh;
   overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+  text-rendering: optimizeLegibility;
+  transition-duration: 500ms;
+  transition-property: color, background-color;
+  transition-timing-function: ease;
 }
 
 /* Classes for light, dark and sepia themes.
@@ -98,36 +111,42 @@ body {
  * and with CSS class constants in viewer.cc */
 
 .light {
-  color: #424242;
   background-color: #FAFAFA;
+  color: #424242;
 }
 
 .dark {
-  color: #E0E0E0;
   background-color: #212121;
+  color: #E0E0E0;
 }
 
 .sepia {
-  color: #000;
-  background-color: rgb(203, 173, 141);
+  background-color: rgb(var(--google-yellow-50));
+  color: rgb(var(--google-brown-900));
 }
 
-.light a:link,
+.light a:link {
+  color: rgb(85, 85, 255);
+}
+
 .sepia a:link {
-  color: #55F;
+  color: rgb(var(--google-blue-700));
 }
 
 .dark a:link {
-  color: #88F;
+  color: rgb(136, 136, 255);
 }
 
-.light a:visited,
+.light a:visited {
+  color: rgb(144, 34, 144);
+}
+
 .sepia a:visited {
-  color: #902290;
+  color: rgb(var(--google-purple-700));
 }
 
 .dark a:visited {
-  color: #D872D8;
+  color: rgb(216, 114, 216);
 }
 
 .light code,
@@ -138,8 +157,8 @@ body {
 
 .sepia code,
 .sepia pre {
-  background-color: rgb(217, 196, 175);
-  border-color: rgb(147, 125, 102);
+  background-color: rgb(var(--google-yellow-100));
+  border-color: rgba(var(--google-brown-900), 0.5);
 }
 
 .dark code,
@@ -152,7 +171,8 @@ body {
   background-color: #EEE;
 }
 
-.light th, .light td {
+.light th,
+.light td {
   border-left: 1px solid #AAA;
 }
 
@@ -160,7 +180,8 @@ body {
   background-color: rgb(217, 196, 175);
 }
 
-.sepia th, .sepia td {
+.sepia th,
+.sepia td {
   border-left: 1px solid rgb(147, 125, 102);
 }
 
@@ -168,13 +189,19 @@ body {
   background-color: #333;
 }
 
-.dark th, .dark td {
+.dark th,
+.dark td {
   border-left: 1px solid #555;
 }
 
 /* #contentWrap is added to be more specific than the color theme rules */
-#contentWrap th:first-child { border-left: none; }
-#contentWrap td:first-child { border-left: none; }
+#contentWrap th:first-child {
+  border-left: none;
+}
+
+#contentWrap td:first-child {
+  border-left: none;
+}
 
 
 /* Font settings */
@@ -227,11 +254,12 @@ h6 {
 /* Content. */
 
 #loadingIndicator {
-  width: 100%;
   padding-bottom: 2em;
+  width: 100%;
 }
 
-#loadingIndicator > img, #loadingIndicator > svg {
+#loadingIndicator > img,
+#loadingIndicator > svg {
   display: block;
   height: 2.5em;
   margin: auto;
@@ -242,17 +270,17 @@ h6 {
 
 .light #closeReaderView {
   border-top: 1px solid #E0E0E0;
-  color: #4285F4;
+  color: rgb(66, 133, 244);
 }
 
 .dark #closeReaderView {
   border-top: 1px solid #555;
-  color: #3adaff;
+  color: rgb(58, 218, 255);
 }
 
 .sepia #closeReaderView {
   border-top: 1px solid rgb(147, 125, 102);
-  color: #55F;
+  color: rgb(85, 85, 255);
 }
 
 video::-webkit-media-controls-fullscreen-button {
@@ -267,10 +295,10 @@ video::-webkit-media-controls-fullscreen-button {
   display: none;
   flex: 0 0 auto;
   font-family: 'Roboto', sans-serif;
+  font-size: 14px;
   font-weight: 700;
   line-height: 14px;
   padding: 24px 16px;
-  font-size: 14px;
   text-align: right;
   text-decoration: none;
   text-transform: uppercase;
@@ -283,14 +311,8 @@ video::-webkit-media-controls-fullscreen-button {
 
 #mainContent {
   flex: 1 1 auto;
-  margin: 0px auto;
+  margin: 0 auto;
   width: 100%;
-}
-
-@media screen {
-  #mainContent {
-    max-width: 35em;
-  }
 }
 
 #articleHeader {
@@ -310,23 +332,23 @@ blockquote {
 }
 
 cite {
-  opacity: .8;
   font-style: italic;
+  opacity: .8;
 }
 
 hr {
-  opacity: .5;
   border-style: solid;
   height: 1px 0 0 0;
+  opacity: .5;
   width: 75%;
 }
 
 
 q {
-  opacity: .8;
-  display:block;
+  display: block;
   font-style: italic;
   font-weight: 600;
+  opacity: .8;
 }
 
 embed,
@@ -351,11 +373,11 @@ figcaption,
 img+[class*='caption'],
 object+[class*='caption'],
 video+[class*='caption'] {
-  opacity: .8;
   display: table;
-  margin-bottom: 1rem;
   font-size: 0.857rem;
   line-height: 1.667;
+  margin-bottom: 1rem;
+  opacity: .8;
 }
 
 ol,
@@ -363,7 +385,8 @@ ul {
   margin-left: 1.296rem;
 }
 
-code, pre {
+code,
+pre {
   border: 1px solid;
   border-radius: 2px;
 }
@@ -388,7 +411,7 @@ body .hidden {
 
 /* Iframe sizing. */
 .youtubeContainer {
-  height: 0px;
+  height: 0;
   /* This is the perecnt height of a standard HD video. */
   padding-bottom: 56.25%;
   position: relative;
@@ -397,9 +420,8 @@ body .hidden {
 
 .youtubeIframe {
   height: 100%;
-  left: 0px;
+  left: 0;
   position: absolute;
-  top: 0px;
+  top: 0;
   width: 100%;
 }
-

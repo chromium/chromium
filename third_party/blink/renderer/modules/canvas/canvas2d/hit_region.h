@@ -11,15 +11,12 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/hit_region_options.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
 
 namespace blink {
 
-class HitRegion final : public GarbageCollectedFinalized<HitRegion> {
+class HitRegion final : public GarbageCollected<HitRegion> {
  public:
-  static HitRegion* Create(const Path& path, const HitRegionOptions* options) {
-    return MakeGarbageCollected<HitRegion>(path, options);
-  }
-
   HitRegion(const Path&, const HitRegionOptions*);
   virtual ~HitRegion() = default;
 
@@ -42,11 +39,8 @@ class HitRegion final : public GarbageCollectedFinalized<HitRegion> {
 
 class HitRegionManager final : public GarbageCollected<HitRegionManager> {
  public:
-  static HitRegionManager* Create() {
-    return MakeGarbageCollected<HitRegionManager>();
-  }
-
   HitRegionManager() = default;
+  ~HitRegionManager() {}
 
   void AddHitRegion(HitRegion*);
 
@@ -65,7 +59,7 @@ class HitRegionManager final : public GarbageCollected<HitRegionManager> {
   void Trace(blink::Visitor*);
 
  private:
-  typedef HeapListHashSet<Member<HitRegion>> HitRegionList;
+  typedef HeapLinkedHashSet<Member<HitRegion>> HitRegionList;
   typedef HitRegionList::const_reverse_iterator HitRegionIterator;
   typedef HeapHashMap<String, Member<HitRegion>> HitRegionIdMap;
   typedef HeapHashMap<Member<const Element>, Member<HitRegion>>

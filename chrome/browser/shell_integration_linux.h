@@ -11,6 +11,10 @@
 #include "chrome/common/buildflags.h"
 #include "url/gurl.h"
 
+#if defined(OS_CHROMEOS)
+#error shell_integration_linux is for desktop linux only.
+#endif
+
 namespace base {
 class CommandLine;
 class Environment;
@@ -34,9 +38,6 @@ std::string GetProgramClassName();
 
 // Gets the name for use as the res_class of the window's WM_CLASS property.
 std::string GetProgramClassClass();
-
-// Returns filename of the desktop shortcut used to launch the browser.
-std::string GetDesktopName(base::Environment* env);
 
 // Returns name of the browser icon (without a path or file extension).
 std::string GetIconName();
@@ -68,6 +69,7 @@ std::string GetDesktopFileContents(const base::FilePath& chrome_exe_path,
                                    const std::string& icon_name,
                                    const base::FilePath& profile_path,
                                    const std::string& categories,
+                                   const std::string& mime_type,
                                    bool no_display);
 
 // Returns contents for .desktop file that executes command_line. This is a more
@@ -80,20 +82,13 @@ std::string GetDesktopFileContentsForCommand(
     const base::string16& title,
     const std::string& icon_name,
     const std::string& categories,
+    const std::string& mime_type,
     bool no_display);
 
 // Returns contents for .directory file named |title| with icon |icon_name|. If
 // |icon_name| is empty, will use the Chrome icon.
 std::string GetDirectoryFileContents(const base::string16& title,
                                      const std::string& icon_name);
-
-#if BUILDFLAG(ENABLE_APP_LIST)
-// Create shortcuts in the application menu for the app launcher. Duplicate
-// shortcuts are avoided, so if a requested shortcut already exists it is
-// deleted first. Also creates the icon required by the shortcut.
-bool CreateAppListDesktopShortcut(const std::string& wm_class,
-                                  const std::string& title);
-#endif
 
 // Windows that correspond to web apps need to have a deterministic (and
 // different) WMClass than normal chrome windows so the window manager groups

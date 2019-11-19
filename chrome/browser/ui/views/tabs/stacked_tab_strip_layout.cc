@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
+#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 
 using base::UserMetricsAction;
@@ -248,7 +249,7 @@ void StackedTabStripLayout::SetActiveTabLocation(int x) {
   if (index <= pinned_tab_count_)
     return;
 
-  x = std::min(GetMaxX(index), std::max(x, GetMinX(index)));
+  x = ConstrainActiveX(x);
   if (x == ideal_x(index))
     return;
 
@@ -340,9 +341,9 @@ void StackedTabStripLayout::MakeVisible(int index) {
 
   // Move the active tab to the left so that all tabs between the active tab
   // and |index| (inclusive) can be made visible.
-  const int active_x = std::max(GetMinX(active_index()),
-                                std::min(ideal_x(index) - ideal_delta,
-                                         ideal_x(active_index())));
+  const int active_x =
+      base::ClampToRange(ideal_x(index) - ideal_delta, GetMinX(active_index()),
+                         ideal_x(active_index()));
   SetIdealBoundsAt(active_index(), active_x);
   LayoutByTabOffsetBefore(active_index());
   LayoutByTabOffsetAfter(active_index());
@@ -366,8 +367,8 @@ void StackedTabStripLayout::MakeVisible(int index) {
 }
 
 int StackedTabStripLayout::ConstrainActiveX(int x) const {
-  return std::min(GetMaxX(active_index()),
-                  std::max(GetMinX(active_index()), x));
+  return base::ClampToRange(x, GetMinX(active_index()),
+                            GetMaxX(active_index()));
 }
 
 void StackedTabStripLayout::SetActiveBoundsAndLayoutFromActiveTab() {
@@ -398,23 +399,20 @@ void StackedTabStripLayout::LayoutByTabOffsetBefore(int index) {
 
 void StackedTabStripLayout::LayoutUsingCurrentAfter(int index) {
   for (int i = index + 1; i < tab_count(); ++i) {
+    int x = std::min(ideal_x(i), ideal_x(i - 1) + tab_offset());
     int min_x = width_ - width_for_count(tab_count() - i);
-    int x = std::max(min_x,
-                     std::min(ideal_x(i), ideal_x(i - 1) + tab_offset()));
-    x = std::min(GetMaxX(i), x);
-    SetIdealBoundsAt(i, x);
+    SetIdealBoundsAt(i, base::ClampToRange(x, min_x, GetMaxX(i)));
   }
 }
 
 void StackedTabStripLayout::LayoutUsingCurrentBefore(int index) {
   for (int i = index - 1; i >= pinned_tab_count_; --i) {
+    int x = std::max(ideal_x(i), ideal_x(i + 1) - tab_offset());
     int max_x = x_ + width_for_count(i - pinned_tab_count_);
     if (i > pinned_tab_count_)
       max_x -= overlap_;
-    max_x = std::min(max_x, ideal_x(i + 1) - stacked_padding_);
-    SetIdealBoundsAt(
-        i, std::min(max_x,
-                    std::max(ideal_x(i), ideal_x(i + 1) - tab_offset())));
+    SetIdealBoundsAt(i,
+                     std::min({x, ideal_x(i + 1) - stacked_padding_, max_x}));
   }
 }
 
@@ -432,8 +430,7 @@ void StackedTabStripLayout::LayoutForDragAfter(int index) {
   for (int i = index + 1; i < tab_count(); ++i) {
     const int min_x = ideal_x(i - 1) + stacked_padding_;
     const int max_x = ideal_x(i - 1) + tab_offset();
-    SetIdealBoundsAt(
-        i, std::max(min_x, std::min(ideal_x(i), max_x)));
+    SetIdealBoundsAt(i, base::ClampToRange(ideal_x(i), min_x, max_x));
   }
 }
 
@@ -441,8 +438,7 @@ void StackedTabStripLayout::LayoutForDragBefore(int index) {
   for (int i = index - 1; i >= pinned_tab_count_; --i) {
     const int max_x = ideal_x(i + 1) - stacked_padding_;
     const int min_x = ideal_x(i + 1) - tab_offset();
-    SetIdealBoundsAt(
-        i, std::max(min_x, std::min(ideal_x(i), max_x)));
+    SetIdealBoundsAt(i, base::ClampToRange(ideal_x(i), min_x, max_x));
   }
 
   if (pinned_tab_count_ == 0)

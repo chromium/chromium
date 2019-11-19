@@ -22,7 +22,7 @@ template <typename T>
 class ArrayDataViewImpl<
     T,
     typename std::enable_if<
-        BelongsTo<T, MojomTypeCategory::POD>::value>::type> {
+        BelongsTo<T, MojomTypeCategory::kPOD>::value>::type> {
  public:
   using Data_ = typename MojomTypeTraits<ArrayDataView<T>>::Data;
 
@@ -42,7 +42,7 @@ template <typename T>
 class ArrayDataViewImpl<
     T,
     typename std::enable_if<
-        BelongsTo<T, MojomTypeCategory::BOOLEAN>::value>::type> {
+        BelongsTo<T, MojomTypeCategory::kBoolean>::value>::type> {
  public:
   using Data_ = typename MojomTypeTraits<ArrayDataView<T>>::Data;
 
@@ -60,7 +60,7 @@ template <typename T>
 class ArrayDataViewImpl<
     T,
     typename std::enable_if<
-        BelongsTo<T, MojomTypeCategory::ENUM>::value>::type> {
+        BelongsTo<T, MojomTypeCategory::kEnum>::value>::type> {
  public:
   static_assert(sizeof(T) == sizeof(int32_t), "Unexpected enum size");
 
@@ -88,10 +88,10 @@ class ArrayDataViewImpl<
     T,
     typename std::enable_if<
         BelongsTo<T,
-                  MojomTypeCategory::ASSOCIATED_INTERFACE |
-                      MojomTypeCategory::ASSOCIATED_INTERFACE_REQUEST |
-                      MojomTypeCategory::INTERFACE |
-                      MojomTypeCategory::INTERFACE_REQUEST>::value>::type> {
+                  MojomTypeCategory::kAssociatedInterface |
+                      MojomTypeCategory::kAssociatedInterfaceRequest |
+                      MojomTypeCategory::kInterface |
+                      MojomTypeCategory::kInterfaceRequest>::value>::type> {
  public:
   using Data_ = typename MojomTypeTraits<ArrayDataView<T>>::Data;
 
@@ -115,7 +115,7 @@ template <typename T>
 class ArrayDataViewImpl<
     T,
     typename std::enable_if<
-        BelongsTo<T, MojomTypeCategory::HANDLE>::value>::type> {
+        BelongsTo<T, MojomTypeCategory::kHandle>::value>::type> {
  public:
   using Data_ = typename MojomTypeTraits<ArrayDataView<T>>::Data;
 
@@ -135,12 +135,13 @@ class ArrayDataViewImpl<
 };
 
 template <typename T>
-class ArrayDataViewImpl<T,
-                        typename std::enable_if<BelongsTo<
-                            T,
-                            MojomTypeCategory::ARRAY | MojomTypeCategory::MAP |
-                                MojomTypeCategory::STRING |
-                                MojomTypeCategory::STRUCT>::value>::type> {
+class ArrayDataViewImpl<
+    T,
+    typename std::enable_if<
+        BelongsTo<T,
+                  MojomTypeCategory::kArray | MojomTypeCategory::kMap |
+                      MojomTypeCategory::kString |
+                      MojomTypeCategory::kStruct>::value>::type> {
  public:
   using Data_ = typename MojomTypeTraits<ArrayDataView<T>>::Data;
 
@@ -165,7 +166,7 @@ template <typename T>
 class ArrayDataViewImpl<
     T,
     typename std::enable_if<
-        BelongsTo<T, MojomTypeCategory::UNION>::value>::type> {
+        BelongsTo<T, MojomTypeCategory::kUnion>::value>::type> {
  public:
   using Data_ = typename MojomTypeTraits<ArrayDataView<T>>::Data;
 

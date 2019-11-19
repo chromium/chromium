@@ -25,7 +25,15 @@ FakeLoopbackGroupMember::FakeLoopbackGroupMember(
 FakeLoopbackGroupMember::~FakeLoopbackGroupMember() = default;
 
 void FakeLoopbackGroupMember::SetChannelTone(int ch, double frequency) {
-  frequency_by_channel_[ch] = frequency;
+  if (ch == kSetAllChannels) {
+    for (double& channel_frequency : frequency_by_channel_) {
+      channel_frequency = frequency;
+    }
+  } else {
+    CHECK_LE(0, ch);
+    CHECK_LT(ch, params_.channels());
+    frequency_by_channel_[ch] = frequency;
+  }
 }
 
 void FakeLoopbackGroupMember::SetVolume(double volume) {
@@ -59,14 +67,12 @@ std::string FakeLoopbackGroupMember::GetDeviceId() const {
   return media::AudioDeviceDescription::kDefaultDeviceId;
 }
 
-void FakeLoopbackGroupMember::StartSnooping(Snooper* snooper,
-                                            SnoopingMode mode) {
+void FakeLoopbackGroupMember::StartSnooping(Snooper* snooper) {
   CHECK(!snooper_);
   snooper_ = snooper;
 }
 
-void FakeLoopbackGroupMember::StopSnooping(Snooper* snooper,
-                                           SnoopingMode mode) {
+void FakeLoopbackGroupMember::StopSnooping(Snooper* snooper) {
   snooper_ = nullptr;
 }
 

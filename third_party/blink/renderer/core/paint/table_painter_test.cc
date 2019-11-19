@@ -174,7 +174,9 @@ TEST_P(TablePainterTest, CollapsedBorderAndOverflow) {
     </table>
   )HTML");
 
-  auto& cell = *ToLayoutTableCell(GetLayoutObjectByElementId("cell"));
+  const LayoutObject* cell_layout_object = GetLayoutObjectByElementId("cell");
+  const LayoutNGTableCellInterface* cell =
+      ToInterface<LayoutNGTableCellInterface>(cell_layout_object);
   InvalidateAll(RootPaintController());
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
   // Intersects the overflowing part of cell but not border box.
@@ -183,12 +185,51 @@ TEST_P(TablePainterTest, CollapsedBorderAndOverflow) {
   // We should paint all display items of cell.
   EXPECT_THAT(
       RootPaintController().GetDisplayItemList(),
-      ElementsAre(IsSameId(&ViewScrollingBackgroundClient(),
-                           DisplayItem::kDocumentBackground),
-                  IsSameId(&cell, DisplayItem::kBoxDecorationBackground),
-                  IsSameId(cell.Row(), DisplayItem::kTableCollapsedBorders),
-                  IsSameId(&cell, DisplayItem::PaintPhaseToDrawingType(
-                                      PaintPhase::kSelfOutlineOnly))));
+      ElementsAre(
+          IsSameId(&ViewScrollingBackgroundClient(),
+                   DisplayItem::kDocumentBackground),
+          IsSameId(cell_layout_object, DisplayItem::kBoxDecorationBackground),
+          IsSameId(cell->RowInterface()->ToLayoutObject(),
+                   DisplayItem::kTableCollapsedBorders),
+          IsSameId(cell_layout_object, DisplayItem::PaintPhaseToDrawingType(
+                                           PaintPhase::kSelfOutlineOnly))));
+}
+
+TEST_P(TablePainterTest, DontPaintEmptyDecorationBackground) {
+  SetBodyInnerHTML(R"HTML(
+    <table id="table1" style="border: 1px solid yellow">
+      <tr>
+        <td style="width: 100px; height: 100px; border: 2px solid blue"></td>
+      </tr>
+    </tr>
+    <table id="table2"
+           style="border-collapse: collapse; border: 1px solid yellow">
+      <tr>
+        <td style="width: 100px; height: 100px; border: 2px solid blue"></td>
+      </tr>
+    </tr>
+  )HTML");
+
+  auto* table1 = GetLayoutObjectByElementId("table1");
+  auto* table2 = GetLayoutObjectByElementId("table2");
+  const LayoutObject* table_1_descendant =
+      ToInterface<LayoutNGTableInterface>(table1)
+          ->FirstBodyInterface()
+          ->FirstRowInterface()
+          ->FirstCellInterface()
+          ->ToLayoutObject();
+  const LayoutObject* table_2_descendant =
+      ToInterface<LayoutNGTableInterface>(table2)
+          ->FirstBodyInterface()
+          ->FirstRowInterface()
+          ->ToLayoutObject();
+  EXPECT_THAT(
+      RootPaintController().GetDisplayItemList(),
+      ElementsAre(
+          IsSameId(&ViewScrollingBackgroundClient(), kDocumentBackgroundType),
+          IsSameId(table1, kBackgroundType),
+          IsSameId(table_1_descendant, kBackgroundType),
+          IsSameId(table_2_descendant, DisplayItem::kTableCollapsedBorders)));
 }
 
 }  // namespace blink

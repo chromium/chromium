@@ -1,0 +1,29 @@
+Acid3 test 77, checking text metric functionality
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS text.getNumberOfChars() is 3
+FAIL text.getComputedTextLength() should be 4776. Was 5550.
+FAIL text.getSubStringLength(0,1) should be 42. Was 1775.
+FAIL text.getSubStringLength(0,2) should be 65. Was 3775.
+FAIL text.getSubStringLength(1,1) should be 23. Was 2000.
+PASS text.getSubStringLength(1,0) is 0
+FAIL text.getSubStringLength(1, 3) should be 4734. Was 3775.
+FAIL text.getSubStringLength(0, 4) should be 4776. Was 5550.
+PASS text.getSubStringLength(3, 0) threw exception IndexSizeError: Failed to execute 'getSubStringLength' on 'SVGTextContentElement': The charnum provided (3) is greater than or equal to the maximum bound (3)..
+PASS text.getSubStringLength(-17, 20) threw exception IndexSizeError: Failed to execute 'getSubStringLength' on 'SVGTextContentElement': The charnum provided (4294967279) is greater than the maximum bound (3)..
+PASS text.getStartPositionOfChar(0).x is 0
+FAIL text.getStartPositionOfChar(1).x should be 42. Was 1775.
+FAIL text.getStartPositionOfChar(2).x should be 65. Was 3775.
+PASS text.getStartPositionOfChar(0).y is 4000
+PASS text.getEndPositionOfChar(-1) threw exception IndexSizeError: Failed to execute 'getEndPositionOfChar' on 'SVGTextContentElement': The charnum provided (4294967295) is greater than the maximum bound (3)..
+PASS text.getEndPositionOfChar(4) threw exception IndexSizeError: Failed to execute 'getEndPositionOfChar' on 'SVGTextContentElement': The charnum provided (4) is greater than the maximum bound (3)..
+FAIL text.getEndPositionOfChar(0).x should be 42. Was 1775.
+FAIL text.getEndPositionOfChar(1).x should be 65. Was 3775.
+FAIL text.getEndPositionOfChar(2).x should be 4776. Was 5550.
+PASS text.getEndPositionOfChar(-17) threw exception IndexSizeError: Failed to execute 'getEndPositionOfChar' on 'SVGTextContentElement': The charnum provided (4294967279) is greater than the maximum bound (3)..
+PASS text.getEndPositionOfChar(4) threw exception IndexSizeError: Failed to execute 'getEndPositionOfChar' on 'SVGTextContentElement': The charnum provided (4) is greater than the maximum bound (3)..
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

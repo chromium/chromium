@@ -1,0 +1,16 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.khronos.org/registry/webgl/extensions/proposals/WEBGL_video_texture/
+
+[
+    RuntimeEnabled=WebGLDraftExtensions,
+    DoNotCheckConstants,
+    NoInterfaceObject
+] interface WebGLVideoTexture {
+    const GLenum TEXTURE_VIDEO_IMAGE = 0x9248;
+    const GLenum SAMPLER_VIDEO_IMAGE = 0x9249;
+
+    [CallWith=ExecutionContext, RaisesException] WebGLVideoFrameMetadata VideoElementTargetVideoTexture(GLenum target, HTMLVideoElement video);
+};

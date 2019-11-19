@@ -77,7 +77,7 @@ void SystemRestorePointComponent::PreCleanup() {
   // continue with the restore point anyway even if doing so fails. See
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa378941.aspx for
   // more information.
-  if (base::win::GetVersion() >= base::win::VERSION_WIN8) {
+  if (base::win::GetVersion() >= base::win::Version::WIN8) {
     base::win::RegKey system_restore_key(HKEY_LOCAL_MACHINE, kSystemRestoreKey,
                                          KEY_SET_VALUE | KEY_QUERY_VALUE);
     if (system_restore_key.Valid() &&

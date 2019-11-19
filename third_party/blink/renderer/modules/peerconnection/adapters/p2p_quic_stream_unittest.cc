@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_stream.h"
 #include "net/test/gtest_util.h"
-#include "net/third_party/quic/core/quic_data_writer.h"
-#include "net/third_party/quic/test_tools/quic_test_utils.h"
+#include "net/third_party/quiche/src/quic/core/quic_data_writer.h"
+#include "net/third_party/quiche/src/quic/test_tools/quic_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_stream_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/test/mock_p2p_quic_stream_delegate.h"
@@ -174,7 +174,23 @@ TEST_F(P2PQuicStreamTest, StreamClosedAfterReceivingReset) {
 
   quic::QuicRstStreamFrame rst_frame(quic::kInvalidControlFrameId, kStreamId,
                                      quic::QUIC_STREAM_CANCELLED, 0);
+  if (!VersionHasIetfQuicFrames(connection_->version().transport_version)) {
+    // Google RST_STREAM closes the stream in both directions. A RST_STREAM
+    // is then sent to the peer to communicate the final byte offset.
+    EXPECT_CALL(session_,
+                SendRstStream(kStreamId, quic::QUIC_RST_ACKNOWLEDGEMENT, 0));
+  }
   stream_->OnStreamReset(rst_frame);
+  if (VersionHasIetfQuicFrames(connection_->version().transport_version)) {
+    // In IETF QUIC, the RST_STREAM only closes the stream in one direction.
+    // A STOP_SENDING frame in require to induce the a RST_STREAM being
+    // send to close the other direction.
+    EXPECT_CALL(*connection_, SendControlFrame(_));
+    EXPECT_CALL(*connection_, OnStreamReset(kStreamId, testing::_));
+    quic::QuicStopSendingFrame stop_sending_frame(quic::kInvalidControlFrameId,
+                                                  kStreamId, 0);
+    session_.OnStopSendingFrame(stop_sending_frame);
+  }
 
   EXPECT_TRUE(stream_->IsClosedForTesting());
 }

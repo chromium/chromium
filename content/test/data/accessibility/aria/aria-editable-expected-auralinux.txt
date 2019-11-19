@@ -1,8 +1,8 @@
 [document web]
 ++[section] editable selectable-text
 ++++[paragraph] editable
-++++++[text] name='Editable text/' editable
+++++++[static] name='Editable text/' editable
 ++++[paragraph]
-++++++[text] name='Non-editable text'
+++++++[static] name='Non-editable text'
 ++[section] editable
-++++[text] name='Fake-editable' editable
+++++[static] name='Fake-editable' editable

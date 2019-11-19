@@ -100,8 +100,8 @@ class FullscreenControllerStateTest {
   // Checks that window state matches the expected controller state.
   virtual void VerifyWindowState();
 
-  // Wait for NOTIFICATION_FULLSCREEN_CHANGED if a notification should have been
-  // sent in transitioning to |state_| from the previous persistent state.
+  // Wait for a fullscreen change if a notification should have been sent in
+  // transitioning to |state_| from the previous persistent state.
   void MaybeWaitForNotification();
 
   // Tests all states with all permutations of multiple events to detect
@@ -164,6 +164,8 @@ class FullscreenControllerStateTest {
   virtual void VerifyWindowStateExpectations(
       FullscreenForBrowserExpectation fullscreen_for_browser,
       FullscreenForTabExpectation fullscreen_for_tab);
+
+  void TearDown();
 
   virtual Browser* GetBrowser() = 0;
   FullscreenController* GetFullscreenController();

@@ -67,7 +67,7 @@ public final class RemoteObjectImplTest {
     private RemoteObjectImpl.ObjectIdAllocator mIdAllocator;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 

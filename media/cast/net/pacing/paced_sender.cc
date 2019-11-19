@@ -80,8 +80,7 @@ PacedSender::PacedSender(
       next_max_burst_size_(target_burst_size_),
       next_next_max_burst_size_(target_burst_size_),
       current_burst_size_(0),
-      state_(State_Unblocked),
-      weak_factory_(this) {}
+      state_(State_Unblocked) {}
 
 PacedSender::~PacedSender() = default;
 

@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
@@ -46,7 +46,7 @@ void RemoveObsoleteBluetoothDevicesFromList(
     const std::set<BluetoothAddress>& new_device_address_list) {
   base::EraseIf(*device_list, [&new_device_address_list](
                                   const BluetoothDeviceInfoPtr& info) {
-    return !base::ContainsKey(new_device_address_list, info->address);
+    return !base::Contains(new_device_address_list, info->address);
   });
 }
 

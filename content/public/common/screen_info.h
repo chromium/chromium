@@ -38,6 +38,10 @@ struct CONTENT_EXPORT ScreenInfo {
     // This can be true for black and white printers
     bool is_monochrome = false;
 
+    // The display frequency in Hz of the monitor. Set to 0 if it fails in the
+    // monitor frequency query.
+    int display_frequency = 0;
+
     // The display monitor rectangle in virtual-screen coordinates. Note that
     // this may be negative.
     gfx::Rect rect;

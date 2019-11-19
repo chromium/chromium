@@ -1,8 +1,8 @@
 Name: Closure compiler
 Short Name: closure-compiler
 URL: http://github.com/google/closure-compiler
-Version: v20190106
-Date: 2019/01/16 02:48
+Version: v20190929
+Date: 2019/10/07 21:43
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no

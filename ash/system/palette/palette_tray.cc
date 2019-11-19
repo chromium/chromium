@@ -6,22 +6,23 @@
 
 #include <memory>
 
-#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/stylus_utils.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_constants.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/palette/palette_tool_manager.h"
 #include "ash/system/palette/palette_utils.h"
 #include "ash/system/palette/palette_welcome_bubble.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
-#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -35,7 +36,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/events/devices/input_device_manager.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/color_palette.h"
@@ -66,16 +67,22 @@ constexpr int kPalettePaddingOnBottom = 2;
 constexpr int kPaddingBetweenTitleAndLeftEdge = 12;
 constexpr int kPaddingBetweenTitleAndSeparator = 3;
 
-// Color of the separator.
-const SkColor kPaletteSeparatorColor = SkColorSetARGB(0x1E, 0x00, 0x00, 0x00);
-
 // Returns true if the |palette_tray| is on an internal display or on every
 // display if requested from the command line.
 bool ShouldShowOnDisplay(PaletteTray* palette_tray) {
+  if (stylus_utils::IsPaletteEnabledOnEveryDisplay())
+    return true;
+
+  // |widget| is null when this function is called from PaletteTray constructor
+  // before it is added to a widget.
+  views::Widget* const widget = palette_tray->GetWidget();
+  if (!widget)
+    return false;
+
   const display::Display& display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(
-          palette_tray->GetWidget()->GetNativeWindow());
-  return display.IsInternal() || stylus_utils::IsPaletteEnabledOnEveryDisplay();
+          widget->GetNativeWindow());
+  return display.IsInternal();
 }
 
 class TitleView : public views::View, public views::ButtonListener {
@@ -83,10 +90,10 @@ class TitleView : public views::View, public views::ButtonListener {
   explicit TitleView(PaletteTray* palette_tray) : palette_tray_(palette_tray) {
     // TODO(tdanderson|jdufault): Use TriView to handle the layout of the title.
     // See crbug.com/614453.
-    auto box_layout =
-        std::make_unique<views::BoxLayout>(views::BoxLayout::kHorizontal);
+    auto box_layout = std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal);
     box_layout->set_cross_axis_alignment(
-        views::BoxLayout::CROSS_AXIS_ALIGNMENT_CENTER);
+        views::BoxLayout::CrossAxisAlignment::kCenter);
     views::BoxLayout* layout_ptr = SetLayoutManager(std::move(box_layout));
 
     auto* title_label =
@@ -109,6 +116,9 @@ class TitleView : public views::View, public views::ButtonListener {
 
   ~TitleView() override = default;
 
+  // views::View:
+  const char* GetClassName() const override { return "TitleView"; }
+
  private:
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override {
@@ -116,13 +126,13 @@ class TitleView : public views::View, public views::ButtonListener {
       palette_tray_->RecordPaletteOptionsUsage(
           PaletteTrayOptions::PALETTE_SETTINGS_BUTTON,
           PaletteInvocationMethod::MENU);
-      Shell::Get()->system_tray_model()->client_ptr()->ShowPaletteSettings();
+      Shell::Get()->system_tray_model()->client()->ShowPaletteSettings();
       palette_tray_->HidePalette();
     } else if (sender == help_button_) {
       palette_tray_->RecordPaletteOptionsUsage(
           PaletteTrayOptions::PALETTE_HELP_BUTTON,
           PaletteInvocationMethod::MENU);
-      Shell::Get()->system_tray_model()->client_ptr()->ShowPaletteHelp();
+      Shell::Get()->system_tray_model()->client()->ShowPaletteHelp();
       palette_tray_->HidePalette();
     } else {
       NOTREACHED();
@@ -167,11 +177,9 @@ PaletteTray::PaletteTray(Shelf* shelf)
       palette_tool_manager_(std::make_unique<PaletteToolManager>(this)),
       welcome_bubble_(std::make_unique<PaletteWelcomeBubble>(this)),
       stylus_event_handler_(std::make_unique<StylusEventHandler>(this)),
-      scoped_session_observer_(this),
-      weak_factory_(this) {
+      scoped_session_observer_(this) {
   PaletteTool::RegisterToolInstances(palette_tool_manager_.get());
 
-  SetInkDropMode(InkDropMode::ON);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   icon_ = new views::ImageView();
   icon_->set_tooltip_text(
@@ -182,30 +190,31 @@ PaletteTray::PaletteTray(Shelf* shelf)
   tray_container()->AddChildView(icon_);
 
   Shell::Get()->AddShellObserver(this);
+
+  InitializeWithLocalState();
 }
 
 PaletteTray::~PaletteTray() {
   if (bubble_)
     bubble_->bubble_view()->ResetDelegate();
 
-  ui::InputDeviceManager::GetInstance()->RemoveObserver(this);
+  ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
 }
 
 // static
 void PaletteTray::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kHasSeenStylus, false,
-                                PrefRegistry::PUBLIC);
+  registry->RegisterBooleanPref(prefs::kHasSeenStylus, false);
 }
 
 // static
 void PaletteTray::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kEnableStylusTools, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF | PrefRegistry::PUBLIC);
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
       prefs::kLaunchPaletteOnEjectEvent, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF | PrefRegistry::PUBLIC);
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 bool PaletteTray::ContainsPointInScreen(const gfx::Point& point) {
@@ -222,8 +231,8 @@ bool PaletteTray::ShouldShowPalette() const {
 }
 
 void PaletteTray::OnStylusEvent(const ui::TouchEvent& event) {
-  if (!HasSeenStylus() && local_state_pref_service_)
-    local_state_pref_service_->SetBoolean(prefs::kHasSeenStylus, true);
+  if (!HasSeenStylus() && local_state_)
+    local_state_->SetBoolean(prefs::kHasSeenStylus, true);
 
   // Attempt to show the welcome bubble.
   if (!welcome_bubble_->HasBeenShown() && active_user_pref_service_) {
@@ -277,27 +286,6 @@ void PaletteTray::OnLockStateChanged(bool locked) {
   }
 }
 
-void PaletteTray::OnLocalStatePrefServiceInitialized(
-    PrefService* pref_service) {
-  local_state_pref_service_ = pref_service;
-
-  // If a device has an internal stylus or the flag to force stylus is set, mark
-  // the has seen stylus flag as true since we know the user has a stylus.
-  if (stylus_utils::HasInternalStylus() ||
-      stylus_utils::HasForcedStylusInput()) {
-    local_state_pref_service_->SetBoolean(prefs::kHasSeenStylus, true);
-  }
-
-  pref_change_registrar_local_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_local_->Init(local_state_pref_service_);
-  pref_change_registrar_local_->Add(
-      prefs::kHasSeenStylus,
-      base::BindRepeating(&PaletteTray::OnHasSeenStylusPrefChanged,
-                          base::Unretained(this)));
-
-  OnHasSeenStylusPrefChanged();
-}
-
 void PaletteTray::ClickedOutsideBubble() {
   if (num_actions_in_bubble_ == 0) {
     RecordPaletteOptionsUsage(PaletteTrayOptions::PALETTE_CLOSED_NO_ACTION,
@@ -328,7 +316,7 @@ void PaletteTray::OnStylusStateChanged(ui::StylusState stylus_state) {
     return;
 
   // Don't do anything if the palette tray is not shown.
-  if (!visible())
+  if (!GetVisible())
     return;
 
   // Auto show/hide the palette if allowed by the user.
@@ -440,7 +428,7 @@ void PaletteTray::AnchorUpdated() {
 
 void PaletteTray::Initialize() {
   TrayBackgroundView::Initialize();
-  ui::InputDeviceManager::GetInstance()->AddObserver(this);
+  ui::DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
 bool PaletteTray::PerformAction(const ui::Event& event) {
@@ -482,7 +470,7 @@ void PaletteTray::ShowBubble(bool show_by_click) {
   init_params.delegate = this;
   init_params.parent_window = GetBubbleWindowContainer();
   init_params.anchor_view = GetBubbleAnchor();
-  init_params.anchor_alignment = GetAnchorAlignment();
+  init_params.shelf_alignment = shelf()->alignment();
   init_params.min_width = kPaletteWidth;
   init_params.max_width = kPaletteWidth;
   init_params.close_on_deactivate = true;
@@ -506,7 +494,9 @@ void PaletteTray::ShowBubble(bool show_by_click) {
 
   // Add horizontal separator between the title and tools.
   auto* separator = new views::Separator();
-  separator->SetColor(kPaletteSeparatorColor);
+  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparator,
+      AshColorProvider::AshColorMode::kLight));
   separator->SetBorder(views::CreateEmptyBorder(gfx::Insets(
       kPaddingBetweenTitleAndSeparator, 0, kMenuSeparatorVerticalPadding, 0)));
   bubble_view->AddChildView(separator);
@@ -528,11 +518,39 @@ TrayBubbleView* PaletteTray::GetBubbleView() {
   return bubble_ ? bubble_->bubble_view() : nullptr;
 }
 
+const char* PaletteTray::GetClassName() const {
+  return "PaletteTray";
+}
+
+void PaletteTray::InitializeWithLocalState() {
+  DCHECK(!local_state_);
+  local_state_ = Shell::Get()->local_state();
+  // |local_state_| could be null in tests.
+  if (!local_state_)
+    return;
+
+  // If a device has an internal stylus or the flag to force stylus is set, mark
+  // the has seen stylus flag as true since we know the user has a stylus.
+  if (stylus_utils::HasInternalStylus() ||
+      stylus_utils::HasForcedStylusInput()) {
+    local_state_->SetBoolean(prefs::kHasSeenStylus, true);
+  }
+
+  pref_change_registrar_local_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_local_->Init(local_state_);
+  pref_change_registrar_local_->Add(
+      prefs::kHasSeenStylus,
+      base::BindRepeating(&PaletteTray::OnHasSeenStylusPrefChanged,
+                          base::Unretained(this)));
+
+  OnHasSeenStylusPrefChanged();
+}
+
 void PaletteTray::UpdateTrayIcon() {
   icon_->SetImage(CreateVectorIcon(
       palette_tool_manager_->GetActiveTrayIcon(
           palette_tool_manager_->GetActiveTool(PaletteGroup::MODE)),
-      kTrayIconSize, kShelfIconColor));
+      kTrayIconSize, ShelfConfig::Get()->shelf_icon_color()));
 }
 
 void PaletteTray::OnPaletteEnabledPrefChanged() {
@@ -540,7 +558,7 @@ void PaletteTray::OnPaletteEnabledPrefChanged() {
       prefs::kEnableStylusTools);
 
   if (!is_palette_enabled_) {
-    SetVisible(false);
+    SetVisiblePreferred(false);
     palette_tool_manager_->DisableActiveTool(PaletteGroup::MODE);
   } else {
     UpdateIconVisibility();
@@ -548,7 +566,7 @@ void PaletteTray::OnPaletteEnabledPrefChanged() {
 }
 
 void PaletteTray::OnHasSeenStylusPrefChanged() {
-  DCHECK(local_state_pref_service_);
+  DCHECK(local_state_);
 
   UpdateIconVisibility();
 }
@@ -569,14 +587,14 @@ bool PaletteTray::DeactivateActiveTool() {
 }
 
 bool PaletteTray::HasSeenStylus() {
-  return local_state_pref_service_ &&
-         local_state_pref_service_->GetBoolean(prefs::kHasSeenStylus);
+  return local_state_ && local_state_->GetBoolean(prefs::kHasSeenStylus);
 }
 
 void PaletteTray::UpdateIconVisibility() {
-  SetVisible(HasSeenStylus() && is_palette_enabled_ &&
-             stylus_utils::HasStylusInput() && ShouldShowOnDisplay(this) &&
-             palette_utils::IsInUserSession());
+  SetVisiblePreferred(HasSeenStylus() && is_palette_enabled_ &&
+                      stylus_utils::HasStylusInput() &&
+                      ShouldShowOnDisplay(this) &&
+                      palette_utils::IsInUserSession());
 }
 
 }  // namespace ash

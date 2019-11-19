@@ -23,10 +23,10 @@ class CastCrashReporterClient : public crash_reporter::CrashReporterClient {
 
   // crash_reporter::CrashReporterClient implementation:
   bool EnableBreakpadForProcess(const std::string& process_type) override;
-  bool HandleCrashDump(const char* crashdump_filename) override;
+  bool HandleCrashDump(const char* crashdump_filename,
+                       uint64_t crash_pid) override;
 
  private:
-  static const char* GetProcessType();
   static uint64_t GetProcessStartTime();
 
   DISALLOW_COPY_AND_ASSIGN(CastCrashReporterClient);

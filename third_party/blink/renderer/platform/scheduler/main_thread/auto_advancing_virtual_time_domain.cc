@@ -4,16 +4,12 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/auto_advancing_virtual_time_domain.h"
 
+#include <atomic>
+
 #include "base/atomicops.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
-
-// windows.h #defines MemoryBarrier on x64. So we copy this bit
-// from base/atomicops.h to be independent of the include order in this file.
-#if defined(OS_WIN) && defined(ARCH_CPU_64_BITS)
-#undef MemoryBarrier
-#endif
 
 namespace blink {
 namespace scheduler {
@@ -35,7 +31,7 @@ AutoAdvancingVirtualTimeDomain::AutoAdvancingVirtualTimeDomain(
   AutoAdvancingVirtualTimeDomain::g_time_domain_ = this;
 
   // GetVirtualTime / GetVirtualTimeTicks access g_time_domain_.
-  base::subtle::MemoryBarrier();
+  std::atomic_thread_fence(std::memory_order_seq_cst);
 
   if (policy == BaseTimeOverridePolicy::OVERRIDE) {
     time_overrides_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
@@ -53,7 +49,7 @@ AutoAdvancingVirtualTimeDomain::~AutoAdvancingVirtualTimeDomain() {
 
   // GetVirtualTime / GetVirtualTimeTicks (the functions we may have
   // temporariliy installed in the constructor) access g_time_domain_.
-  base::subtle::MemoryBarrier();
+  std::atomic_thread_fence(std::memory_order_seq_cst);
 
   DCHECK_EQ(AutoAdvancingVirtualTimeDomain::g_time_domain_, this);
   AutoAdvancingVirtualTimeDomain::g_time_domain_ = nullptr;

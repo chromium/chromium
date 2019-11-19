@@ -8,9 +8,10 @@
 #include <memory>
 #include <set>
 
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
 #include "ios/web/public/download/download_task_observer.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#import "ios/web/public/web_state_user_data.h"
 
 @protocol PassKitTabHelperDelegate;
 namespace web {
@@ -68,7 +69,8 @@ class PassKitTabHelper : public web::WebStateUserData<PassKitTabHelper>,
   web::WebState* web_state_;
   __weak id<PassKitTabHelperDelegate> delegate_ = nil;
   // Set of unfinished download tasks.
-  std::set<std::unique_ptr<web::DownloadTask>> tasks_;
+  std::set<std::unique_ptr<web::DownloadTask>, base::UniquePtrComparator>
+      tasks_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 

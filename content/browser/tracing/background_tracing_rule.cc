@@ -8,15 +8,17 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/rand_util.h"
 #include "base/strings/safe_sprintf.h"
+#include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "components/tracing/common/tracing_messages.h"
+#include "components/tracing/common/background_tracing_agent.mojom.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
-#include "content/browser/tracing/trace_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -30,6 +32,7 @@ const char kConfigRuleTriggerChance[] = "trigger_chance";
 const char kConfigRuleStopTracingOnRepeatedReactive[] =
     "stop_tracing_on_repeated_reactive";
 const char kConfigRuleArgsKey[] = "args";
+const char kConfigRuleIdKey[] = "rule_id";
 
 const char kConfigRuleHistogramNameKey[] = "histogram_name";
 const char kConfigRuleHistogramValueOldKey[] = "histogram_value";
@@ -86,6 +89,10 @@ int BackgroundTracingRule::GetTraceDelay() const {
   return trigger_delay_;
 }
 
+std::string BackgroundTracingRule::GetDefaultRuleId() const {
+  return "org.chromium.background_tracing.trigger";
+}
+
 void BackgroundTracingRule::IntoDict(base::DictionaryValue* dict) const {
   DCHECK(dict);
   if (trigger_chance_ < 1.0)
@@ -98,6 +105,9 @@ void BackgroundTracingRule::IntoDict(base::DictionaryValue* dict) const {
     dict->SetBoolean(kConfigRuleStopTracingOnRepeatedReactive,
                      stop_tracing_on_repeated_reactive_);
   }
+  if (rule_id_ != GetDefaultRuleId()) {
+    dict->SetString(kConfigRuleIdKey, rule_id_);
+  }
 
   if (category_preset_ != BackgroundTracingConfigImpl::CATEGORY_PRESET_UNSET) {
     dict->SetString(
@@ -106,11 +116,19 @@ void BackgroundTracingRule::IntoDict(base::DictionaryValue* dict) const {
   }
 }
 
+void BackgroundTracingRule::GenerateMetadataProto(
+    BackgroundTracingRule::MetadataProto* out) const {}
+
 void BackgroundTracingRule::Setup(const base::DictionaryValue* dict) {
   dict->GetDouble(kConfigRuleTriggerChance, &trigger_chance_);
   dict->GetInteger(kConfigRuleTriggerDelay, &trigger_delay_);
   dict->GetBoolean(kConfigRuleStopTracingOnRepeatedReactive,
                    &stop_tracing_on_repeated_reactive_);
+  if (dict->HasKey(kConfigRuleIdKey)) {
+    dict->GetString(kConfigRuleIdKey, &rule_id_);
+  } else {
+    rule_id_ = GetDefaultRuleId();
+  }
 }
 
 namespace {
@@ -138,17 +156,38 @@ class NamedTriggerRule : public BackgroundTracingRule {
     dict->SetString(kConfigRuleTriggerNameKey, named_event_.c_str());
   }
 
+  void GenerateMetadataProto(
+      BackgroundTracingRule::MetadataProto* out) const override {
+    DCHECK(out);
+    BackgroundTracingRule::GenerateMetadataProto(out);
+    out->set_trigger_type(MetadataProto::MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED);
+    auto* named_rule = out->set_named_rule();
+    if (named_event_ == "startup-config") {
+      named_rule->set_event_type(MetadataProto::NamedRule::STARTUP);
+    } else if (named_event_ == "navigation-config") {
+      named_rule->set_event_type(MetadataProto::NamedRule::NAVIGATION);
+    } else if (named_event_ == "session-restore-config") {
+      named_rule->set_event_type(MetadataProto::NamedRule::SESSION_RESTORE);
+    } else if (named_event_ == "preemptive_test") {
+      named_rule->set_event_type(MetadataProto::NamedRule::TEST_RULE);
+    }
+  }
+
   bool ShouldTriggerNamedEvent(const std::string& named_event) const override {
     return named_event == named_event_;
+  }
+
+ protected:
+  std::string GetDefaultRuleId() const override {
+    return base::StrCat({"org.chromium.background_tracing.", named_event_});
   }
 
  private:
   std::string named_event_;
 };
 
-class HistogramRule
-    : public BackgroundTracingRule,
-      public BackgroundTracingManagerImpl::TraceMessageFilterObserver {
+class HistogramRule : public BackgroundTracingRule,
+                      public BackgroundTracingManagerImpl::AgentObserver {
  private:
   HistogramRule(const std::string& histogram_name,
                 int histogram_lower_value,
@@ -199,8 +238,7 @@ class HistogramRule
   ~HistogramRule() override {
     base::StatisticsRecorder::ClearCallback(histogram_name_);
     if (installed_) {
-      BackgroundTracingManagerImpl::GetInstance()
-          ->RemoveTraceMessageFilterObserver(this);
+      BackgroundTracingManagerImpl::GetInstance()->RemoveAgentObserver(this);
     }
   }
 
@@ -212,8 +250,7 @@ class HistogramRule
                    base::Unretained(this), histogram_name_,
                    histogram_lower_value_, histogram_upper_value_, repeat_));
 
-    BackgroundTracingManagerImpl::GetInstance()->AddTraceMessageFilterObserver(
-        this);
+    BackgroundTracingManagerImpl::GetInstance()->AddAgentObserver(this);
     installed_ = true;
   }
 
@@ -227,11 +264,23 @@ class HistogramRule
     dict->SetBoolean(kConfigRuleHistogramRepeatKey, repeat_);
   }
 
+  void GenerateMetadataProto(
+      BackgroundTracingRule::MetadataProto* out) const override {
+    DCHECK(out);
+    BackgroundTracingRule::GenerateMetadataProto(out);
+    out->set_trigger_type(
+        MetadataProto::MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE);
+    auto* rule = out->set_histogram_rule();
+    rule->set_histogram_name_hash(base::HashMetricName(histogram_name_));
+    rule->set_histogram_min_trigger(histogram_lower_value_);
+    rule->set_histogram_max_trigger(histogram_upper_value_);
+  }
+
   void OnHistogramTrigger(const std::string& histogram_name) const override {
     if (histogram_name != histogram_name_)
       return;
 
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(
             &BackgroundTracingManagerImpl::OnRuleTriggered,
@@ -240,22 +289,21 @@ class HistogramRule
   }
 
   void AbortTracing() {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(
             &BackgroundTracingManagerImpl::AbortScenario,
             base::Unretained(BackgroundTracingManagerImpl::GetInstance())));
   }
 
-  // BackgroundTracingManagerImpl::TraceMessageFilterObserver implementation
-  void OnTraceMessageFilterAdded(TraceMessageFilter* filter) override {
-    filter->Send(
-        new TracingMsg_SetUMACallback(histogram_name_, histogram_lower_value_,
-                                      histogram_upper_value_, repeat_));
+  // BackgroundTracingManagerImpl::AgentObserver implementation
+  void OnAgentAdded(tracing::mojom::BackgroundTracingAgent* agent) override {
+    agent->SetUMACallback(histogram_name_, histogram_lower_value_,
+                          histogram_upper_value_, repeat_);
   }
 
-  void OnTraceMessageFilterRemoved(TraceMessageFilter* filter) override {
-    filter->Send(new TracingMsg_ClearUMACallback(histogram_name_));
+  void OnAgentRemoved(tracing::mojom::BackgroundTracingAgent* agent) override {
+    agent->ClearUMACallback(histogram_name_);
   }
 
   void OnHistogramChangedCallback(const std::string& histogram_name,
@@ -281,6 +329,11 @@ class HistogramRule
 
   bool ShouldTriggerNamedEvent(const std::string& named_event) const override {
     return named_event == histogram_name_;
+  }
+
+ protected:
+  std::string GetDefaultRuleId() const override {
+    return base::StrCat({"org.chromium.background_tracing.", histogram_name_});
   }
 
  private:
@@ -317,8 +370,21 @@ class TraceForNSOrTriggerOrFullRule : public BackgroundTracingRule {
     dict->SetString(kConfigRuleTriggerNameKey, named_event_.c_str());
   }
 
+  void GenerateMetadataProto(
+      BackgroundTracingRule::MetadataProto* out) const override {
+    DCHECK(out);
+    BackgroundTracingRule::GenerateMetadataProto(out);
+    out->set_trigger_type(MetadataProto::MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED);
+    out->set_named_rule()->set_event_type(MetadataProto::NamedRule::NAVIGATION);
+  }
+
   bool ShouldTriggerNamedEvent(const std::string& named_event) const override {
     return named_event == named_event_;
+  }
+
+ protected:
+  std::string GetDefaultRuleId() const override {
+    return base::StrCat({"org.chromium.background_tracing.", named_event_});
   }
 
  private:
@@ -357,6 +423,12 @@ class TraceAtRandomIntervalsRule : public BackgroundTracingRule {
     dict->SetString(kConfigRuleKey, kConfigRuleTypeTraceAtRandomIntervals);
     dict->SetInteger(kConfigRuleRandomIntervalTimeoutMin, timeout_min_);
     dict->SetInteger(kConfigRuleRandomIntervalTimeoutMax, timeout_max_);
+  }
+
+  void GenerateMetadataProto(
+      BackgroundTracingRule::MetadataProto* out) const override {
+    // TODO(ssid): Add config if we enabled this  type of trigger.
+    NOTREACHED();
   }
 
   void Install() override {

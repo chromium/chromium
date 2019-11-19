@@ -18,9 +18,10 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwRenderProcessGoneDetail;
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.util.concurrent.CountDownLatch;
@@ -65,9 +66,8 @@ public class AwContentsClientOnRendererUnresponsiveTest {
         }
 
         void transientlyBlockBlinkThread(final AwContents awContents) {
-            ThreadUtils.runOnUiThread(() -> {
-                awContents.evaluateJavaScript("blocker.block();", null);
-            });
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                    () -> { awContents.evaluateJavaScript("blocker.block();", null); });
         }
 
         void awaitRecovery() throws Exception {
@@ -111,9 +111,8 @@ public class AwContentsClientOnRendererUnresponsiveTest {
         }
 
         void permanentlyBlockBlinkThread(final AwContents awContents) {
-            ThreadUtils.runOnUiThread(() -> {
-                awContents.evaluateJavaScript("blocker.block();", null);
-            });
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                    () -> { awContents.evaluateJavaScript("blocker.block();", null); });
         }
 
         void awaitRendererTermination() throws Exception {
@@ -143,13 +142,13 @@ public class AwContentsClientOnRendererUnresponsiveTest {
     }
 
     private void sendInputEvent(final AwContents awContents) {
-        ThreadUtils.runOnUiThread(() -> {
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             awContents.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
         });
     }
 
     private void addJsBlockerInterface(final AwContents awContents, final JSBlocker blocker) {
-        ThreadUtils.runOnUiThread(() -> { awContents.addJavascriptInterface(blocker, "blocker"); });
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents, blocker, "blocker");
     }
 
     // This test requires the ability to terminate the renderer in order to recover from a

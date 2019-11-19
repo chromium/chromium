@@ -8,8 +8,11 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "printing/backend/cups_ipp_util.h"
 #include "printing/backend/cups_printer.h"
+#include "printing/printing_features_chromeos.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -80,6 +83,16 @@ class PrintBackendCupsIppUtilTest : public ::testing::Test {
   ipp_t* ipp_;
   std::unique_ptr<MockCupsOptionProvider> printer_;
 };
+
+ipp_attribute_t* MakeInteger(ipp_t* ipp, int value) {
+  return ippAddInteger(ipp, IPP_TAG_PRINTER, IPP_TAG_INTEGER, "TEST_DATA",
+                       value);
+}
+
+ipp_attribute_t* MakeIntCollection(ipp_t* ipp, const std::vector<int>& values) {
+  return ippAddIntegers(ipp, IPP_TAG_PRINTER, IPP_TAG_INTEGER, "TEST_DATA",
+                        values.size(), values.data());
+}
 
 ipp_attribute_t* MakeRange(ipp_t* ipp, int lower_bound, int upper_bound) {
   return ippAddRange(ipp, IPP_TAG_PRINTER, "TEST_DATA", lower_bound,
@@ -173,9 +186,9 @@ TEST_F(PrintBackendCupsIppUtilTest, A4PaperSupported) {
   CapsAndDefaultsFromPrinter(*printer_, &caps);
 
   PrinterSemanticCapsAndDefaults::Paper paper = caps.papers[0];
-  // media display name localization is handled in
-  // GetPrinterCapabilitiesOnBlockingPoolThread().
-  EXPECT_EQ("", paper.display_name);
+  // media display name localization is handled more fully in
+  // GetPrinterCapabilitiesOnBlockingTaskRunner().
+  EXPECT_EQ("iso a4", paper.display_name);
   EXPECT_EQ("iso_a4_210x297mm", paper.vendor_id);
   EXPECT_EQ(210000, paper.size_um.width());
   EXPECT_EQ(297000, paper.size_um.height());
@@ -186,12 +199,87 @@ TEST_F(PrintBackendCupsIppUtilTest, LegalPaperDefault) {
 
   PrinterSemanticCapsAndDefaults caps;
   CapsAndDefaultsFromPrinter(*printer_, &caps);
-  // media display name localization is handled in
-  // GetPrinterCapabilitiesOnBlockingPoolThread().
-  EXPECT_EQ("", caps.default_paper.display_name);
+  // media display name localization is handled more fully in
+  // GetPrinterCapabilitiesOnBlockingTaskRunner().
+  EXPECT_EQ("na legal", caps.default_paper.display_name);
   EXPECT_EQ("na_legal_8.5x14in", caps.default_paper.vendor_id);
   EXPECT_EQ(215900, caps.default_paper.size_um.width());
   EXPECT_EQ(355600, caps.default_paper.size_um.height());
+}
+
+TEST_F(PrintBackendCupsIppUtilTest, PinSupported) {
+  printer_->SetSupportedOptions("job-password", MakeInteger(ipp_, 4));
+  printer_->SetSupportedOptions("job-password-encryption",
+                                MakeStringCollection(ipp_, {"none"}));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_TRUE(caps.pin_supported);
+}
+
+TEST_F(PrintBackendCupsIppUtilTest, PinNotSupported) {
+  // Pin support missing, no setup.
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_FALSE(caps.pin_supported);
+}
+
+TEST_F(PrintBackendCupsIppUtilTest, PinEncryptionNotSupported) {
+  printer_->SetSupportedOptions("job-password", MakeInteger(ipp_, 4));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_FALSE(caps.pin_supported);
+}
+
+TEST_F(PrintBackendCupsIppUtilTest, PinTooShort) {
+  printer_->SetSupportedOptions("job-password", MakeInteger(ipp_, 3));
+  printer_->SetSupportedOptions("job-password-encryption",
+                                MakeStringCollection(ipp_, {"none"}));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_FALSE(caps.pin_supported);
+}
+
+TEST_F(PrintBackendCupsIppUtilTest, AdvancedCaps) {
+  base::HistogramTester histograms;
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(printing::kAdvancedPpdAttributes);
+
+  printer_->SetSupportedOptions(
+      "job-creation-attributes",
+      MakeStringCollection(
+          ipp_, {"copies", "ipp-attribute-fidelity", "finishings", "job-name",
+                 "output-bin", "print-quality"}));
+  printer_->SetSupportedOptions("finishings",
+                                MakeIntCollection(ipp_, {3, 7, 10}));
+  printer_->SetSupportedOptions(
+      "output-bin", MakeStringCollection(ipp_, {"face-down", "face-up"}));
+  printer_->SetSupportedOptions("print-quality",
+                                MakeIntCollection(ipp_, {3, 4, 5}));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  EXPECT_EQ(6u, caps.advanced_capabilities.size());
+  EXPECT_EQ("ipp-attribute-fidelity", caps.advanced_capabilities[0].name);
+  EXPECT_EQ(base::Value::Type::BOOLEAN, caps.advanced_capabilities[0].type);
+  EXPECT_EQ("finishings/7", caps.advanced_capabilities[1].name);
+  EXPECT_EQ(base::Value::Type::BOOLEAN, caps.advanced_capabilities[1].type);
+  EXPECT_EQ("finishings/10", caps.advanced_capabilities[2].name);
+  EXPECT_EQ(base::Value::Type::BOOLEAN, caps.advanced_capabilities[2].type);
+  EXPECT_EQ("job-name", caps.advanced_capabilities[3].name);
+  EXPECT_EQ(base::Value::Type::STRING, caps.advanced_capabilities[3].type);
+  EXPECT_EQ("output-bin", caps.advanced_capabilities[4].name);
+  EXPECT_EQ(2u, caps.advanced_capabilities[4].values.size());
+  EXPECT_EQ("print-quality", caps.advanced_capabilities[5].name);
+  EXPECT_EQ(3u, caps.advanced_capabilities[5].values.size());
+  histograms.ExpectUniqueSample("Printing.CUPS.IppAttributesCount", 5, 1);
 }
 
 }  // namespace printing

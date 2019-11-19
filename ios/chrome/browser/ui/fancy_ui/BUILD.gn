@@ -14,6 +14,7 @@ source_set("fancy_ui") {
     "//base",
     "//base:i18n",
     "//ios/chrome/browser/ui/colors",
+    "//ios/chrome/common/colors",
   ]
   public_deps = [
     "//ios/third_party/material_components_ios",

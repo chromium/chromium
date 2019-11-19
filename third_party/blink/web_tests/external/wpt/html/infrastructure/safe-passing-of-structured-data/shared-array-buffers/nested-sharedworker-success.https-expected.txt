@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL postMessaging to a dedicated sub-worker allows them to see each others' modifications Worker is not defined
+FAIL Bonus: self.crossOriginIsolated assert_true: expected true got undefined
+Harness: the test ran to completion.
+

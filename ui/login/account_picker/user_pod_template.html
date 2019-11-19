@@ -4,7 +4,11 @@
   </template>
 </dom-module>
 
-<style is="custom-style" include="user-pod-template-shared-styles"></style>
+<custom-style>
+  <style is="custom-style" include="user-pod-template-shared-styles"></style>
+</custom-style>
+
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 
 <iron-iconset-svg name="user-pod" size="24">
   <svg>
@@ -34,7 +38,8 @@
   </div>
 <if expr="chromeos">
   <div class="pin-container pin-disabled pin-tag">
-    <pin-keyboard enable-password hide-input enable-placeholder></pin-keyboard>
+    <pin-keyboard enable-password hide-input enable-placeholder
+        enable-letters></pin-keyboard>
   </div>
 </if>
   <div class="main-pane">
@@ -63,10 +68,9 @@
           <img class="capslock-hint"
                src="chrome://theme/IDR_LOGIN_PASSWORD_CAPS_LOCK" alt>
         </div>
-        <paper-icon-button class="submit-button" disabled
+        <cr-icon-button class="submit-button" disabled
             aria-label="$i18n{submitButtonAccessibleName}"
-            icon="user-pod:arrow-forward" tabindex="-1">
-        </paper-icon-button>
+            iron-icon="user-pod:arrow-forward" tabindex="-1"></cr-icon-button>
 </if>
       </div>
       <!-- User Click Authentication -->
@@ -80,9 +84,6 @@
       <div class="reauth-hint-container">
         <span class="reauth-warning"></span>
         <span class="reauth-name-hint"></span>
-      </div>
-      <div class="launch-app-button-container" hidden>
-        <button class="launch-app-button">$i18n{launchAppButton}</button>
       </div>
     </div>
   </div>
@@ -142,13 +143,11 @@
       <div class="action-box-remove-legacy-supervised-user-warning-text">
         $i18n{removeLegacySupervisedUserWarningText}
       </div>
-      <div class="action-box-remove-non-owner-user-warning-text">
-        $i18n{removeNonOwnerUserWarningText}
-      </div>
-      <!-- paper-button is imported inside user_manager.html -->
-      <paper-button class="remove-warning-button action-button">
+      <div class="action-box-remove-non-owner-user-warning-text"></div>
+      <!-- cr-button is imported inside user_manager.html -->
+      <cr-button class="remove-warning-button action-button">
         $i18n{removeUserWarningButtonTitle}
-      </paper-button>
+      </cr-button>
     </div>
   </div>
   <div class="user-type-bubble">
@@ -215,10 +214,10 @@
       </div>
       <div class="horizontal-line"></div>
       <div class="bottom-container">
-        <paper-button raised class="enter-button"
+        <cr-button class="action-button enter-button"
             aria-label="$i18n{publicAccountEnterAccessibleName}">
           $i18n{publicAccountEnter}
-        </paper-button>
+        </cr-button>
         <div class="language-and-input-container">
           <a class="language-and-input" href="#" role="button">
             $i18n{publicSessionLanguageAndInput}

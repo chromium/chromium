@@ -158,8 +158,8 @@ struct ArrayValueTypes {
   array<int64> f3;
   array<float> f4;
   array<double> f5;
-  array<SomeInterface> f6;
-  array<SomeInterface&> f7;
+  array<pending_remote<SomeInterface>> f6;
+  array<pending_receiver<SomeInterface>> f7;
 };
 
 // Used to verify that various float and double values can be encoded and
@@ -378,7 +378,7 @@ interface SomeInterface {
 };
 
 struct ContainsInterface {
-  SomeInterface some_interface;
+  pending_remote<SomeInterface> some_interface;
 };
 
 // Verify that a field can be called |other|.
@@ -390,7 +390,7 @@ struct ContainsOther {
 // Used to verify that structs can contain interface requests.
 
 struct ContainsInterfaceRequest {
-  SomeInterface& request;
+  pending_receiver<SomeInterface> request;
 };
 
 // Used to verify that boolean fields are correctly serialized/deserialized.

@@ -3,6 +3,9 @@ sky@chromium.org
 # For WebRTC files.
 tommi@chromium.org
 
+# For Accessibility related files
+per-file *accessibility*=file://ui/accessibility/OWNERS
+
 # For Background Sync related files.
 per-file *background_sync*=file://content/browser/background_sync/OWNERS
 

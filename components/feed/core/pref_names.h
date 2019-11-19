@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FEED_CORE_PREF_NAMES_H_
 #define COMPONENTS_FEED_CORE_PREF_NAMES_H_
 
+class PrefRegistrySimple;
+
 namespace feed {
 
 namespace prefs {
@@ -43,7 +45,14 @@ extern const char kUserClassifierLastTimeToViewSuggestions[];
 // The pref name for the last time content suggestions were used by the user.
 extern const char kUserClassifierLastTimeToUseSuggestions[];
 
+// The pref name for the feed host override.
+extern const char kHostOverrideHost[];
+// The pref name for the feed host override auth token.
+extern const char kHostOverrideBlessNonce[];
+
 }  // namespace prefs
+
+void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace feed
 

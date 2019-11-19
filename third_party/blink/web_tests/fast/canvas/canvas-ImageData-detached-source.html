@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="canvas" width="1" height="1"></canvas>
+<script src="../../resources/js-test.js"></script>
+<script>
+jsTestIsAsync = true;
+var worker = new Worker('./resources/worker-onmessage-noop.js');
+
+description("Tests how putImageData and createImageBitmap would react when the source data is detached");
+
+var imageWidth = 1;
+var imageHeight = 1;
+var arrBuffer = new Uint8ClampedArray(new ArrayBuffer(4));
+arrBuffer[0] = 255;
+arrBuffer[1] = 0;
+arrBuffer[2] = 0;
+arrBuffer[3] = 255;
+var image = new ImageData(arrBuffer, imageWidth, imageHeight);
+var context = document.getElementById("canvas").getContext("2d");
+
+var len = image.data.byteLength;
+shouldBe("len", "4");
+shouldBe("image.data[0]", "255");
+shouldBe("image.data[1]", "0");
+shouldBe("image.data[2]", "0");
+shouldBe("image.data[3]", "255");
+
+context.putImageData(image, 0, 0);
+var newImage = context.getImageData(0, 0, 1, 1);
+shouldBe("newImage.data[0]", "255");
+shouldBe("newImage.data[1]", "0");
+shouldBe("newImage.data[2]", "0");
+shouldBe("newImage.data[3]", "255");
+
+// transfer the array buffer to the worker so that the source data is now detached
+worker.postMessage({data: image.data.buffer}, [image.data.buffer]);
+
+len = image.data.byteLength;
+shouldBe("len", "0");
+shouldBe("image.data[0]", "undefined");
+shouldBe("image.data[1]", "undefined");
+shouldBe("image.data[2]", "undefined");
+shouldBe("image.data[3]", "undefined");
+
+shouldThrow("context.putImageData(image, 0, 0)");
+
+createImageBitmap(image).then(function() {
+    testFailed('Promise resolved unexpectedly');
+    finishJSTest();
+}, function(err) {
+    testPassed('Promise rejected as expected: ' + err);
+    finishJSTest();
+});
+
+</script>
+</body>
+</html>

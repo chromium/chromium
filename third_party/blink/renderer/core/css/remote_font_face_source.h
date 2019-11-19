@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/css/css_font_face_source.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -48,7 +48,7 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
 
   // For UMA reporting
   bool HadBlankText() override { return histograms_.HadBlankText(); }
-  void PaintRequested() { histograms_.FallbackFontPainted(period_); }
+  void PaintRequested() override { histograms_.FallbackFontPainted(period_); }
 
   void Trace(blink::Visitor*) override;
 
@@ -82,8 +82,7 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
     };
 
     FontLoadHistograms()
-        : load_start_time_(0),
-          blank_paint_time_(0),
+        : blank_paint_time_recorded_(false),
           is_long_limit_exceeded_(false),
           data_source_(kFromUnknown) {}
     void LoadStarted();
@@ -91,7 +90,7 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
     void LongLimitExceeded();
     void RecordFallbackTime();
     void RecordRemoteFont(const FontResource*);
-    bool HadBlankText() { return blank_paint_time_; }
+    bool HadBlankText() { return !blank_paint_time_.is_null(); }
     DataSource GetDataSource() { return data_source_; }
     void MaySetDataSource(DataSource);
 
@@ -102,10 +101,14 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
     }
 
    private:
-    void RecordLoadTimeHistogram(const FontResource*, int duration);
+    void RecordLoadTimeHistogram(const FontResource*, base::TimeDelta duration);
     CacheHitMetrics DataSourceMetricsValue();
-    double load_start_time_;
-    double blank_paint_time_;
+    base::TimeTicks load_start_time_;
+    base::TimeTicks blank_paint_time_;
+    // |blank_paint_time_recorded_| is used to prevent
+    // WebFont.BlankTextShownTime to be reported incorrectly when the web font
+    // fallbacks immediately. See https://crbug.com/591304
+    bool blank_paint_time_recorded_;
     bool is_long_limit_exceeded_;
     DataSource data_source_;
   };

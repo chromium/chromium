@@ -4,6 +4,7 @@
 
 // See https://webaudio.github.io/web-audio-api/#stereopannernode
 [
+    Exposed=Window,
     Constructor(BaseAudioContext context, optional StereoPannerOptions options),
     RaisesException=Constructor,
     Measure

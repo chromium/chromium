@@ -5,66 +5,72 @@
 #include "ios/web/public/test/element_selector.h"
 
 #include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-namespace web {
-namespace test {
+@interface ElementSelector ()
 
-// Static.
-const ElementSelector ElementSelector::ElementSelectorId(
-    const std::string element_id) {
-  return ElementSelector(
-      base::StringPrintf("document.getElementById('%s')", element_id.c_str()),
-      base::StringPrintf("with ID %s", element_id.c_str()));
+- (instancetype)initWithSelectorScript:(NSString*)selectorScript
+                   selectorDescription:(NSString*)selectorDescription;
+
+@end
+
+@implementation ElementSelector
+
++ (ElementSelector*)selectorWithElementID:(const std::string&)elementID {
+  NSString* script = [NSString
+      stringWithFormat:@"document.getElementById('%s')", elementID.c_str()];
+  NSString* description =
+      [NSString stringWithFormat:@"with ID %s", elementID.c_str()];
+  return [[ElementSelector alloc] initWithSelectorScript:script
+                                     selectorDescription:description];
 }
 
-// Static.
-const ElementSelector ElementSelector::ElementSelectorIdInFrame(
-    const std::string element_id,
-    const int frame_index) {
-  return ElementSelector(
-      base::StringPrintf("window.frames[%d].document.getElementById('%s')",
-                         frame_index, element_id.c_str()),
-      base::StringPrintf("in iframe with index %d, with ID %s", frame_index,
-                         element_id.c_str()));
++ (ElementSelector*)selectorWithElementID:(const std::string&)elementID
+                         inFrameWithIndex:(int)frameIndex {
+  NSString* script = [NSString
+      stringWithFormat:@"window.frames[%d].document.getElementById('%s')",
+                       frameIndex, elementID.c_str()];
+  NSString* description =
+      [NSString stringWithFormat:@"in iframe with index %d, with ID %s",
+                                 frameIndex, elementID.c_str()];
+  return [[ElementSelector alloc] initWithSelectorScript:script
+                                     selectorDescription:description];
 }
 
-// Static.
-const ElementSelector ElementSelector::ElementSelectorCss(
-    const std::string css_selector) {
-  const std::string script(base::StringPrintf("document.querySelector(\"%s\")",
-                                              css_selector.c_str()));
-  const std::string description(
-      base::StringPrintf("with CSS selector '%s'", css_selector.c_str()));
-  return ElementSelector(std::move(script), std::move(description));
++ (ElementSelector*)selectorWithCSSSelector:(const std::string&)selector {
+  NSString* script = [NSString
+      stringWithFormat:@"document.querySelector(\"%s\")", selector.c_str()];
+  NSString* description =
+      [NSString stringWithFormat:@"with CSS selector '%s'", selector.c_str()];
+  return [[ElementSelector alloc] initWithSelectorScript:script
+                                     selectorDescription:description];
 }
 
-// Static.
-const ElementSelector ElementSelector::ElementSelectorXPath(
-    const std::string xpath_selector) {
-  const std::string script(base::StringPrintf(
-      "document.evaluate(`%s`, document, "
-      "null,XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue",
-      xpath_selector.c_str()));
-  const std::string description(
-      base::StringPrintf("with xpath '%s'", xpath_selector.c_str()));
-  return ElementSelector(std::move(script), std::move(description));
++ (ElementSelector*)selectorWithXPathQuery:(const std::string&)query {
+  NSString* script = [NSString
+      stringWithFormat:
+          @"document.evaluate(`%s`, document, "
+          @"null,XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue",
+          query.c_str()];
+
+  NSString* description =
+      [NSString stringWithFormat:@"with xpath '%s'", query.c_str()];
+
+  return [[ElementSelector alloc] initWithSelectorScript:script
+                                     selectorDescription:description];
 }
 
-ElementSelector::ElementSelector(const std::string&& script,
-                                 const std::string&& description)
-    : script_(script), description_(description) {}
-
-const std::string ElementSelector::GetSelectorScript() const {
-  return script_;
+- (instancetype)initWithSelectorScript:(NSString*)selectorScript
+                   selectorDescription:(NSString*)selectorDescription {
+  if ((self = [super init])) {
+    _selectorScript = [selectorScript copy];
+    _selectorDescription = [selectorDescription copy];
+  }
+  return self;
 }
 
-const std::string ElementSelector::GetSelectorDescription() const {
-  return description_;
-}
-
-}  // namespace test
-}  // namespace web
+@end

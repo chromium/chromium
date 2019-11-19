@@ -4,7 +4,7 @@
 
 #import "ios/chrome/test/app/web_view_interaction_test_util.h"
 
-#import "ios/chrome/test/app/chrome_test_util.h"
+#import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

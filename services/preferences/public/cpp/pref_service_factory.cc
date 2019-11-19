@@ -16,6 +16,7 @@
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_store.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/preferences/public/cpp/persistent_pref_store_client.h"
 #include "services/preferences/public/cpp/pref_registry_serializer.h"
 #include "services/preferences/public/cpp/pref_store_client.h"
@@ -27,19 +28,18 @@ namespace {
 
 // Used to implement a "fire and forget" pattern where we call an interface
 // method, with an attached error handler, but don't care to hold on to the
-// InterfacePtr after.
+// Remote after.
 template <typename Interface>
-class RefCountedInterfacePtr
-    : public base::RefCounted<RefCountedInterfacePtr<Interface>> {
+class RefCountedRemote : public base::RefCounted<RefCountedRemote<Interface>> {
  public:
-  mojo::InterfacePtr<Interface>& get() { return ptr_; }
-  void reset() { ptr_.reset(); }
+  mojo::Remote<Interface>& get() { return remote_; }
+  void reset() { remote_.reset(); }
 
  private:
-  friend class base::RefCounted<RefCountedInterfacePtr<Interface>>;
-  ~RefCountedInterfacePtr() = default;
+  friend class base::RefCounted<RefCountedRemote<Interface>>;
+  ~RefCountedRemote() = default;
 
-  mojo::InterfacePtr<Interface> ptr_;
+  mojo::Remote<Interface> remote_;
 };
 
 scoped_refptr<PrefStore> CreatePrefStoreClient(
@@ -74,8 +74,7 @@ void RegisterRemoteDefaults(PrefRegistry* pref_registry,
 }
 
 void OnConnect(
-    scoped_refptr<RefCountedInterfacePtr<mojom::PrefStoreConnector>>
-        connector_ptr,
+    scoped_refptr<RefCountedRemote<mojom::PrefStoreConnector>> connector_remote,
     scoped_refptr<PrefRegistry> pref_registry,
     ConnectCallback callback,
     mojom::PersistentPrefStoreConnectionPtr persistent_pref_store_connection,
@@ -135,31 +134,33 @@ void OnConnect(
       callback.Run(nullptr);
       break;
   }
-  connector_ptr->reset();
+  connector_remote->reset();
 }
 
-void OnConnectError(
-    scoped_refptr<RefCountedInterfacePtr<mojom::PrefStoreConnector>>
-        connector_ptr,
+void OnMojoDisconnect(
+    scoped_refptr<RefCountedRemote<mojom::PrefStoreConnector>> connector_remote,
     ConnectCallback callback) {
   callback.Run(nullptr);
-  connector_ptr->reset();
+  connector_remote->reset();
 }
 
 }  // namespace
 
-void ConnectToPrefService(mojom::PrefStoreConnectorPtr connector,
-                          scoped_refptr<PrefRegistry> pref_registry,
-                          ConnectCallback callback) {
-  auto connector_ptr =
-      base::MakeRefCounted<RefCountedInterfacePtr<mojom::PrefStoreConnector>>();
-  connector_ptr->get() = std::move(connector);
-  connector_ptr->get().set_connection_error_handler(base::Bind(
-      &OnConnectError, connector_ptr, base::Passed(ConnectCallback{callback})));
+void ConnectToPrefService(
+    mojo::PendingRemote<mojom::PrefStoreConnector> connector,
+    scoped_refptr<PrefRegistry> pref_registry,
+    base::Optional<base::Token> client_token,
+    ConnectCallback callback) {
+  auto connector_remote =
+      base::MakeRefCounted<RefCountedRemote<mojom::PrefStoreConnector>>();
+  connector_remote->get().Bind(std::move(connector));
+  connector_remote->get().set_disconnect_handler(
+      base::Bind(&OnMojoDisconnect, connector_remote,
+                 base::Passed(ConnectCallback{callback})));
   auto serialized_pref_registry = SerializePrefRegistry(*pref_registry);
-  connector_ptr->get()->Connect(
-      std::move(serialized_pref_registry),
-      base::BindOnce(&OnConnect, connector_ptr, std::move(pref_registry),
+  connector_remote->get()->Connect(
+      std::move(serialized_pref_registry), client_token,
+      base::BindOnce(&OnConnect, connector_remote, std::move(pref_registry),
                      std::move(callback)));
 }
 
@@ -167,10 +168,11 @@ void ConnectToPrefService(service_manager::Connector* connector,
                           scoped_refptr<PrefRegistry> pref_registry,
                           ConnectCallback callback,
                           base::StringPiece service_name) {
-  mojom::PrefStoreConnectorPtr pref_connector;
-  connector->BindInterface(service_name.as_string(), &pref_connector);
+  mojo::PendingRemote<mojom::PrefStoreConnector> pref_connector;
+  connector->Connect(service_name.as_string(),
+                     pref_connector.InitWithNewPipeAndPassReceiver());
   ConnectToPrefService(std::move(pref_connector), std::move(pref_registry),
-                       std::move(callback));
+                       base::nullopt, std::move(callback));
 }
 
 }  // namespace prefs

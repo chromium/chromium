@@ -17,7 +17,7 @@ SettingsUIBrowserTest.prototype = {
 
   /** @override */
   extraLibraries: SettingsPageBrowserTest.prototype.extraLibraries.concat([
-    'test_util.js',
+    '../test_util.js',
   ]),
 };
 
@@ -26,13 +26,8 @@ SettingsUIBrowserTest.prototype = {
 // and several times that in a Debug build. See https://crbug.com/558434
 // and http://crbug.com/711256.
 
-GEN('#if !defined(NDEBUG) || defined(OS_MACOSX) || defined(OS_WINDOWS)');
-GEN('#define MAYBE_All DISABLED_All');
-GEN('#else');
-GEN('#define MAYBE_All All');
-GEN('#endif');
-
-TEST_F('SettingsUIBrowserTest', 'MAYBE_All', function() {
+// Disabling everywhere, see flaky failures at crbug.com/986985.
+TEST_F('SettingsUIBrowserTest', 'DISABLED_All', function() {
   suite('settings-ui', function() {
     let toolbar;
     let ui;
@@ -48,13 +43,17 @@ TEST_F('SettingsUIBrowserTest', 'MAYBE_All', function() {
       Polymer.dom.flush();
     });
 
-    test('basic', function() {
+    test('showing menu in toolbar is dependent on narrow mode', function() {
       toolbar = assert(ui.$$('cr-toolbar'));
+      toolbar.narrow = true;
       assertTrue(toolbar.showMenu);
+
+      toolbar.narrow = false;
+      assertFalse(toolbar.showMenu);
     });
 
     test('app drawer', function() {
-      assertEquals(null, ui.$$('settings-menu'));
+      assertEquals(null, ui.$$('cr-drawer settings-menu'));
       const drawer = ui.$.drawer;
       assertFalse(!!drawer.open);
 
@@ -64,7 +63,7 @@ TEST_F('SettingsUIBrowserTest', 'MAYBE_All', function() {
 
       // Validate that dialog is open and menu is shown so it will animate.
       assertTrue(drawer.open);
-      assertTrue(!!ui.$$('settings-menu'));
+      assertTrue(!!ui.$$('cr-drawer settings-menu'));
 
       return whenDone
           .then(function() {
@@ -76,39 +75,78 @@ TEST_F('SettingsUIBrowserTest', 'MAYBE_All', function() {
             // Drawer is closed, but menu is still stamped so
             // its contents remain visible as the drawer slides
             // out.
-            assertTrue(!!ui.$$('settings-menu'));
+            assertTrue(!!ui.$$('cr-drawer settings-menu'));
           });
+    });
+
+    test('app drawer closes when exiting narrow mode', async () => {
+      const drawer = ui.$.drawer;
+      const toolbar = ui.$$('cr-toolbar');
+
+      // Mimic narrow mode and open the drawer
+      toolbar.narrow = true;
+      drawer.openDrawer();
+      Polymer.dom.flush();
+      await test_util.eventToPromise('cr-drawer-opened', drawer);
+
+      toolbar.narrow = false;
+      Polymer.dom.flush();
+      await test_util.eventToPromise('close', drawer);
+      assertFalse(drawer.open);
     });
 
     test('advanced UIs stay in sync', function() {
       const main = ui.$$('settings-main');
+      const floatingMenu = ui.$$('#left settings-menu');
       assertTrue(!!main);
+      assertTrue(!!floatingMenu);
 
-      assertFalse(!!ui.$$('settings-menu'));
-      assertFalse(ui.advancedOpened_);
+      assertFalse(!!ui.$$('cr-drawer settings-menu'));
+      assertFalse(ui.advancedOpenedInMain_);
+      assertFalse(ui.advancedOpenedInMenu_);
+      assertFalse(floatingMenu.advancedOpened);
       assertFalse(main.advancedToggleExpanded);
 
       main.advancedToggleExpanded = true;
       Polymer.dom.flush();
 
-      assertFalse(!!ui.$$('settings-menu'));
-      assertTrue(ui.advancedOpened_);
+      assertFalse(!!ui.$$('cr-drawer settings-menu'));
+      assertTrue(ui.advancedOpenedInMain_);
+      assertTrue(ui.advancedOpenedInMenu_);
+      assertTrue(floatingMenu.advancedOpened);
       assertTrue(main.advancedToggleExpanded);
 
       ui.$.drawerTemplate.if = true;
       Polymer.dom.flush();
 
-      const menu = ui.$$('settings-menu');
-      assertTrue(!!menu);
-      assertTrue(menu.advancedOpened);
+      const drawerMenu = ui.$$('cr-drawer settings-menu');
+      assertTrue(!!drawerMenu);
+      assertTrue(floatingMenu.advancedOpened);
+      assertTrue(drawerMenu.advancedOpened);
 
-      menu.$.advancedButton.click();
+      // Collapse 'Advanced' in the menu
+      drawerMenu.$.advancedButton.click();
       Polymer.dom.flush();
 
-      // Check that all values are updated in unison.
-      assertFalse(menu.advancedOpened);
-      assertFalse(ui.advancedOpened_);
-      assertFalse(main.advancedToggleExpanded);
+      // Collapsing it in the menu should not collapse it in the main area
+      assertFalse(drawerMenu.advancedOpened);
+      assertFalse(floatingMenu.advancedOpened);
+      assertFalse(ui.advancedOpenedInMenu_);
+      assertTrue(main.advancedToggleExpanded);
+      assertTrue(ui.advancedOpenedInMain_);
+
+      // Expand both 'Advanced's again
+      drawerMenu.$.advancedButton.click();
+
+      // Collapse 'Advanced' in the main area
+      main.advancedToggleExpanded = false;
+      Polymer.dom.flush();
+
+      // Collapsing it in the main area should not collapse it in the menu
+      assertFalse(ui.advancedOpenedInMain_);
+      assertTrue(drawerMenu.advancedOpened);
+      assertTrue(floatingMenu.advancedOpened);
+      assertTrue(ui.advancedOpenedInMenu_);
     });
 
     test('URL initiated search propagates to search box', function() {

@@ -1,3 +1,9 @@
+{%- macro kythe_annotation(name) %}
+{%- if enable_kythe_annotations %}
+// @generated_from: {{name}}
+{%- endif %}
+{%- endmacro %}
+
 {%- set class_name = union.name ~ "_Data" -%}
 {%- set enum_name = union.name ~ "_Tag" -%}
 {%- import "struct_macros.tmpl" as struct_macros %}
@@ -59,6 +65,7 @@ class {{export_attribute}} {{class_name}} {
 
   enum class {{enum_name}} : uint32_t {
 {%  for field in union.fields %}
+    {{ kythe_annotation("%s.%s"|format(union|get_full_mojom_name_for_kind(), field.name)) }}
     {{field.name|upper}},
 {%- endfor %}
   };

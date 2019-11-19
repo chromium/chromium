@@ -18,7 +18,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/lock_screen_apps/fake_lock_screen_profile_creator.h"
 #include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
@@ -31,8 +31,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/arc/arc_service_manager.h"
-#include "components/arc/arc_session.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "components/arc/session/arc_session.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
@@ -156,7 +156,7 @@ class LockScreenAppManagerImplTest
     // Initialize arc session manager - NoteTakingHelper expects it to be set.
     arc_session_manager_ = std::make_unique<arc::ArcSessionManager>(
         std::make_unique<arc::ArcSessionRunner>(
-            base::Bind(&ArcSessionFactory)));
+            base::BindRepeating(&ArcSessionFactory)));
 
     chromeos::NoteTakingHelper::Initialize();
     chromeos::NoteTakingHelper::Get()->SetProfileWithEnabledLockScreenApps(
@@ -440,7 +440,7 @@ class LockScreenAppManagerImplTest
   void OnNoteTakingChanged() { ++note_taking_changed_count_; }
 
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
-  content::TestBrowserThreadBundle threads_;
+  content::BrowserTaskEnvironment task_environment_;
 
   chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   chromeos::ScopedTestUserManager user_manager_;

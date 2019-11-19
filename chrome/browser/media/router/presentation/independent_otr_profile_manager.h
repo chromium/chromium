@@ -12,9 +12,10 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
+#include "base/scoped_observer.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 class Profile;
 
@@ -42,9 +43,8 @@ class Profile;
 // original profile is being destroyed.
 //
 // All methods must be called on the UI thread.
-class IndependentOTRProfileManager final
-    : public BrowserListObserver,
-      public content::NotificationObserver {
+class IndependentOTRProfileManager final : public BrowserListObserver,
+                                           public ProfileObserver {
  public:
   class OTRProfileRegistration {
    public:
@@ -84,21 +84,19 @@ class IndependentOTRProfileManager final
   bool HasDependentProfiles(Profile* profile) const;
   void UnregisterProfile(Profile* profile);
 
-  // chrome::BrowserListObserver overrides.
+  // chrome::BrowserListObserver:
   void OnBrowserAdded(Browser* browser) final;
   void OnBrowserRemoved(Browser* browser) final;
 
-  // content::NotificationObserver overrides.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) final;
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) final;
 
   // Counts the number of Browser instances referencing an independent OTR
   // profile plus 1 for the OTRProfileRegistration object that created it.
   base::flat_map<Profile*, int32_t> refcounts_map_;
   base::flat_map<Profile*, ProfileDestroyedCallback> callbacks_map_;
 
-  content::NotificationRegistrar registrar_;
+  ScopedObserver<Profile, ProfileObserver> observed_original_profiles_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IndependentOTRProfileManager);
 };

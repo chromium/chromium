@@ -1,0 +1,19 @@
+{
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAx1nP6oOqlQh79uPMoPJQT1aj7z1vM4UkQ3y8rhgnH56FApNWIIr8NqRqSBc1WeCXskdQjctvjW/1ZSYmYAplLziEjlFED2yfCATRl8V5spsZjCqtBw4O8IjzKkEhsNYBlBrpOu0jSLP4Nr/enJvzLwe4tQ80XuLSItJzxF72SoPbxCQCCbm3NKe5dyqZYKmroiLDjwDa8jz3FM6uohfJaWVFzp+fSK1CiKPRxlGvp0Oy5LM03vJFDGwdwJM6nXdy3eM4tIH5arbJ1EfPs5M2AKPNPo55wOLhFjyZzo1TBj9wP1V/r6WmR4Q8XVvpWTIVcRH5VxeOTWoFKYRGQ6OICQIDAQAB",
+  "description": "This extension helps in retrieving the CPU/memory usage stats for MR extension.",
+  "name": "MR Test Extension",
+  "version": "1.0",
+  "manifest_version": 2,
+  "externally_connectable": {
+    "matches": [
+      "http://127.0.0.1:*/*"
+    ]
+  },
+  "background": {
+    "scripts": ["script.js"],
+    "persistent": true
+  },
+  "permissions": [
+    "processes"
+  ]
+}

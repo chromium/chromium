@@ -24,9 +24,9 @@ illustrating connection to the Identity Manager from a client
 
 There is no way to obtain the information of the primary account synchronously,
 i.e., there is no literal equivalent to
-SigninManagerBase::GetAuthenticatedAccountInfo(). Instead, you should call the
+PrimaryAccountManager::GetAuthenticatedAccountInfo(). Instead, you should call the
 asynchronous method IdentityManager::GetPrimaryAccountInfo(). To date, all use
-cases of SigninManagerBase::GetAuthenticatedAccountInfo() that we have seen have
+cases of PrimaryAccountManager::GetAuthenticatedAccountInfo() that we have seen have
 been part of a larger asynchronous flow (e.g., obtaining an access token in
 response to an invocation of the chrome.identity extension API). In these use
 cases, you can simply fold the asynchronous obtaining of the authenticated
@@ -42,11 +42,11 @@ blundell@chromium.org.
 
 ## Obtaining an Access Token
 
-Where you would have called OAuth2TokenService::StartRequest(), you should
+Where you would have called ProfileOAuth2TokenService::StartRequest(), you should
 instead call IdentityManager::GetAccessToken(). This interface is a 1:1
 correspondence that should transparently work in all use cases, although there
 are currently still some input parameters that need to be added to its API to
-match esoteric variants of the OAuth2TokenService API. Here is an [example
+match esoteric variants of the ProfileOAuth2TokenService API. Here is an [example
 CL](https://chromium-review.googlesource.com/c/514047/) that illustrates
 conversion of a client.
 
@@ -57,8 +57,8 @@ to work this class into the Identity Service interface.
 
 ## Being Notified on Signin of the Primary Account
 
-If you were previously listening to SigninManagerBase::GoogleSigninSucceeded()
-or OAuth2TokenService::OnRefreshTokenIsAvailable() to determine when the primary
+If you were previously listening to PrimaryAccountManager::GoogleSigninSucceeded()
+or ProfileOAuth2TokenService::OnRefreshTokenIsAvailable() to determine when the primary
 account is available, you should call
 IdentityManager::GetPrimaryAccountWhenAvailable(). This method will fire when
 the authenticated account is signed in, has a refresh token available, and the
@@ -73,7 +73,7 @@ pattern.
 ## Determining if an Account Has a Refresh Token Available
 
 There is no way to determine this information synchronously, i.e., there is no
-literal equivalent to OAuth2TokenService::IsRefreshTokenAvailable().  To date,
+literal equivalent to ProfileOAuth2TokenService::IsRefreshTokenAvailable().  To date,
 all use cases of this method that we have seen have been part of a larger
 asynchronous flow (e.g., determining whether the user needs to sign in before we
 can obtain an access token in response to an invocation of the chrome.identity
@@ -89,7 +89,7 @@ blundell@chromium.org.
 
 ## Being Notified When An Account Has a Refresh Token Available
 
-All of the use cases of OAuth2TokenService::OnRefreshTokenAvailable() that we
+All of the use cases of ProfileOAuth2TokenService::OnRefreshTokenAvailable() that we
 have seen to date have been for the purpose of knowing when the authenticated
 account is available (i.e., signed in with a refresh token available). For this
 purpose, you should call IdentityManager::GetPrimaryAccountWhenAvailable(). Here
@@ -101,10 +101,10 @@ blundell@chromium.org.
 ## Observing Signin-Related Events
 
 There are plans to build a unified Observer interface that will supersede the
-various current Observer interfaces (AccountTracker, OAuth2TokenService,
-SigninManager, AccountTrackerService). However, this functionality has not yet
-been built. Contact blundell@chromium.org with your use case, which can help
-drive the bringup of this interface.
+various current Observer interfaces (AccountTracker, ProfileOAuth2TokenService,
+PrimaryAccountManager, AccountTrackerService). However, this functionality has
+not yet been built. Contact blundell@chromium.org with your use case, which can
+help drive the bringup of this interface.
 
 ## Other Needs
 

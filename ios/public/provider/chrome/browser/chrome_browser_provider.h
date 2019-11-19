@@ -22,6 +22,7 @@ class BrowserURLRewriterProvider;
 class FullscreenProvider;
 class MailtoHandlerProvider;
 class OmahaServiceProvider;
+class OverridesProvider;
 class SpotlightProvider;
 class UserFeedbackProvider;
 class VoiceSearchProvider;
@@ -31,16 +32,15 @@ class CommandLine;
 }
 
 namespace web {
+class SerializableUserDataManager;
 class WebState;
 }
 
+class GURL;
 @protocol LogoVendor;
-@protocol TextFieldStyling;
-@class Tab;
 @class TabModel;
 @class UITextField;
 @class UIView;
-@protocol UrlLoader;
 
 namespace ios {
 
@@ -108,18 +108,22 @@ class ChromeBrowserProvider {
   virtual GeolocationUpdaterProvider* GetGeolocationUpdaterProvider();
   // Returns risk data used in Wallet requests.
   virtual std::string GetRiskData();
-  // Creates and returns a new styled text field with the given |frame|.
-  virtual UITextField<TextFieldStyling>* CreateStyledTextField(
-      CGRect frame) const NS_RETURNS_RETAINED;
+  // Creates and returns a new styled text field.
+  virtual UITextField* CreateStyledTextField() const NS_RETURNS_RETAINED;
+  // Allow embedders to inject data.
+  virtual void AddSerializableData(
+      web::SerializableUserDataManager* user_data_manager,
+      web::WebState* web_state);
+  // Allow embedders to block a specific URL.
+  virtual bool ShouldBlockUrlDuringRestore(const GURL& url,
+                                           web::WebState* web_state);
 
   // Initializes the cast service.  Should be called soon after the given
   // |main_tab_model| is created.
   virtual void InitializeCastService(TabModel* main_tab_model) const;
 
-  // Attaches any embedder-specific tab helpers to the given |web_state|.  The
-  // owning |tab| is included for helpers that need access to information that
-  // is not yet available through web::WebState.
-  virtual void AttachTabHelpers(web::WebState* web_state, Tab* tab) const;
+  // Attaches any embedder-specific tab helpers to the given |web_state|.
+  virtual void AttachTabHelpers(web::WebState* web_state) const;
 
   // Returns an instance of the voice search provider, if one exists.
   virtual VoiceSearchProvider* GetVoiceSearchProvider() const;
@@ -130,8 +134,7 @@ class ChromeBrowserProvider {
   // Creates and returns an object that can fetch and vend search engine logos.
   // The caller assumes ownership of the returned object.
   virtual id<LogoVendor> CreateLogoVendor(
-      ios::ChromeBrowserState* browser_state,
-      id<UrlLoader> loader) const NS_RETURNS_RETAINED;
+      ios::ChromeBrowserState* browser_state) const NS_RETURNS_RETAINED;
 
   // Returns an instance of the omaha service provider.
   virtual OmahaServiceProvider* GetOmahaServiceProvider() const;
@@ -160,6 +163,9 @@ class ChromeBrowserProvider {
 
   // Returns an instance of the BrowserURLRewriter provider.
   virtual BrowserURLRewriterProvider* GetBrowserURLRewriterProvider() const;
+
+  // Returns an instance of the Overrides provider;
+  virtual OverridesProvider* GetOverridesProvider() const;
 
   // Adds and removes observers.
   void AddObserver(Observer* observer);

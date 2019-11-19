@@ -42,7 +42,7 @@ void MultiProfileBrowserStatusMonitor::ActiveUserChanged(
 
   // Remove old (tabbed V1) applications.
   for (Browser* browser : *browser_list) {
-    if (!browser->is_app() && browser->is_type_tabbed() &&
+    if (browser->is_type_normal() &&
         !multi_user_util::IsProfileFromActiveUser(browser->profile())) {
       for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
         launcher_controller_->UpdateAppState(
@@ -53,7 +53,7 @@ void MultiProfileBrowserStatusMonitor::ActiveUserChanged(
 
   // Handle apps in browser tabs: Add new (tabbed V1) applications.
   for (Browser* browser : *browser_list) {
-    if (!browser->is_app() && browser->is_type_tabbed() &&
+    if (browser->is_type_normal() &&
         multi_user_util::IsProfileFromActiveUser(browser->profile())) {
       for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
         launcher_controller_->UpdateAppState(
@@ -68,8 +68,8 @@ void MultiProfileBrowserStatusMonitor::ActiveUserChanged(
 }
 
 void MultiProfileBrowserStatusMonitor::AddV1AppToShelf(Browser* browser) {
-  DCHECK(browser->is_type_popup() && browser->is_app());
-  DCHECK(!base::ContainsValue(app_list_, browser));
+  DCHECK(browser->deprecated_is_app());
+  DCHECK(!base::Contains(app_list_, browser));
   app_list_.push_back(browser);
   if (multi_user_util::IsProfileFromActiveUser(browser->profile())) {
     BrowserStatusMonitor::AddV1AppToShelf(browser);
@@ -77,7 +77,7 @@ void MultiProfileBrowserStatusMonitor::AddV1AppToShelf(Browser* browser) {
 }
 
 void MultiProfileBrowserStatusMonitor::RemoveV1AppFromShelf(Browser* browser) {
-  DCHECK(browser->is_type_popup() && browser->is_app());
+  DCHECK(browser->deprecated_is_app());
   AppList::iterator it = std::find(app_list_.begin(), app_list_.end(), browser);
   DCHECK(it != app_list_.end());
   app_list_.erase(it);

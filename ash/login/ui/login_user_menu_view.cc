@@ -5,13 +5,14 @@
 #include "ash/login/ui/login_user_menu_view.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/views_utils.h"
-#include "ash/public/cpp/ash_constants.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -63,8 +64,8 @@ class RemoveUserButton : public views::Button {
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets(kUserMenuMarginAroundRemoveUserButtonDp,
                     kUserMenuMarginAroundRemoveUserButtonDp)));
-    SetFocusPainter(views::Painter::CreateSolidFocusPainter(
-        kFocusBorderColor, kFocusBorderThickness, gfx::InsetsF()));
+    SetInstallFocusRingOnFocus(true);
+    focus_ring()->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
   }
 
   ~RemoveUserButton() override = default;
@@ -91,24 +92,6 @@ class RemoveUserButton : public views::Button {
   LoginUserMenuView* bubble_;
 
   DISALLOW_COPY_AND_ASSIGN(RemoveUserButton);
-};
-
-// A view that has a customizable accessible name.
-class ViewWithAccessibleName : public views::View {
- public:
-  ViewWithAccessibleName(const base::string16& accessible_name)
-      : accessible_name_(accessible_name) {}
-  ~ViewWithAccessibleName() override = default;
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kStaticText;
-    node_data->SetName(accessible_name_);
-  }
-
- private:
-  const base::string16 accessible_name_;
-  DISALLOW_COPY_AND_ASSIGN(ViewWithAccessibleName);
 };
 
 LoginUserMenuView::TestApi::TestApi(LoginUserMenuView* bubble)
@@ -150,7 +133,7 @@ LoginUserMenuView::LoginUserMenuView(
       kUserMenuMarginWidth);
   auto setup_horizontal_margin_container = [&](views::View* container) {
     container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::kVertical,
+        views::BoxLayout::Orientation::kVertical,
         gfx::Insets(0, margins.left(), 0, margins.right())));
     AddChildView(container);
     return container;
@@ -164,7 +147,7 @@ LoginUserMenuView::LoginUserMenuView(
   };
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical,
+      views::BoxLayout::Orientation::kVertical,
       gfx::Insets(margins.top(), 0, margins.bottom(), 0)));
 
   // User information.
@@ -221,8 +204,10 @@ LoginUserMenuView::LoginUserMenuView(
     base::string16 part2 = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_2, email);
 
-    remove_user_confirm_data_ = setup_horizontal_margin_container(
-        new ViewWithAccessibleName(part1 + base::ASCIIToUTF16(" ") + part2));
+    warning_message_ = part1 + base::ASCIIToUTF16(" ") + part2;
+
+    remove_user_confirm_data_ =
+        setup_horizontal_margin_container(new views::View());
     remove_user_confirm_data_->SetVisible(false);
 
     // Account for margin that was removed below the separator for the add
@@ -246,8 +231,8 @@ LoginUserMenuView::LoginUserMenuView(
         kRemoveUserInitialColor);
     remove_user_button_ = new RemoveUserButton(this, remove_user_label_, this);
     remove_user_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-    remove_user_button_->set_id(kUserMenuRemoveUserButtonIdForTest);
-    remove_user_button_->SetAccessibleName(remove_user_label_->text());
+    remove_user_button_->SetID(kUserMenuRemoveUserButtonIdForTest);
+    remove_user_button_->SetAccessibleName(remove_user_label_->GetText());
     container->AddChildView(remove_user_button_);
   }
 }
@@ -258,6 +243,9 @@ void LoginUserMenuView::ResetState() {
   if (remove_user_confirm_data_) {
     remove_user_confirm_data_->SetVisible(false);
     remove_user_label_->SetEnabledColor(kRemoveUserInitialColor);
+    // Reset button's description to none.
+    remove_user_button_->GetViewAccessibility().OverrideDescription(
+        base::string16());
   }
 }
 
@@ -269,19 +257,16 @@ void LoginUserMenuView::ButtonPressed(views::Button* sender,
                                       const ui::Event& event) {
   // Show confirmation warning. The user has to click the button again before
   // we actually allow the exit.
-  if (!remove_user_confirm_data_->visible()) {
+  if (!remove_user_confirm_data_->GetVisible()) {
     remove_user_confirm_data_->SetVisible(true);
     remove_user_label_->SetEnabledColor(kRemoveUserConfirmColor);
 
     Layout();
 
-    // Fire an accessibility alert to make ChromeVox read the warning message
-    // and remove button.
-    remove_user_confirm_data_->NotifyAccessibilityEvent(
-        ax::mojom::Event::kAlert, true /*send_native_event*/);
-    remove_user_button_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                                  true /*send_native_event*/);
-
+    // Change the node's description to force assistive technologies, like
+    // ChromeVox, to report the updated description.
+    remove_user_button_->GetViewAccessibility().OverrideDescription(
+        warning_message_);
     if (on_remove_user_warning_shown_)
       std::move(on_remove_user_warning_shown_).Run();
     return;

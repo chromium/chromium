@@ -8,20 +8,18 @@
 
 #include <vector>
 
-#include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
-#include "components/task_scheduler_util/variations_util.h"
-#include "ios/web/public/app/web_main_runner.h"
+#include "ios/web/public/init/web_main_runner.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
-base::Time* g_start_time;
+base::TimeTicks* g_start_time;
 }  // namespace
 
 IOSChromeMain::IOSChromeMain() {
@@ -46,8 +44,6 @@ IOSChromeMain::IOSChromeMain() {
   }
   main_params.argv = argv;
 
-  main_params.get_task_scheduler_init_params_callback = base::BindOnce(
-      &task_scheduler_util::GetTaskSchedulerInitParamsForBrowser);
   // Chrome registers an AtExitManager in main in order to initialize breakpad
   // early, so prevent a second registration by WebMainRunner.
   main_params.register_exit_manager = false;
@@ -61,11 +57,11 @@ IOSChromeMain::~IOSChromeMain() {
 // static
 void IOSChromeMain::InitStartTime() {
   DCHECK(!g_start_time);
-  g_start_time = new base::Time(base::Time::Now());
+  g_start_time = new base::TimeTicks(base::TimeTicks::Now());
 }
 
 // static
-const base::Time& IOSChromeMain::StartTime() {
+const base::TimeTicks& IOSChromeMain::StartTime() {
   CHECK(g_start_time);
   return *g_start_time;
 }

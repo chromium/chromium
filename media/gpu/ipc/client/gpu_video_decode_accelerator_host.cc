@@ -21,8 +21,7 @@ GpuVideoDecodeAcceleratorHost::GpuVideoDecodeAcceleratorHost(
       decoder_route_id_(MSG_ROUTING_NONE),
       client_(nullptr),
       impl_(impl),
-      media_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      weak_this_factory_(this) {
+      media_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   DCHECK(channel_);
   DCHECK(impl_);
 
@@ -104,21 +103,23 @@ bool GpuVideoDecodeAcceleratorHost::Initialize(const Config& config,
   return true;
 }
 
-void GpuVideoDecodeAcceleratorHost::Decode(
-    const BitstreamBuffer& bitstream_buffer) {
+void GpuVideoDecodeAcceleratorHost::Decode(BitstreamBuffer bitstream_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!channel_)
     return;
-  BitstreamBuffer buffer_to_send = bitstream_buffer;
-  base::SharedMemoryHandle handle =
-      channel_->ShareToGpuProcess(bitstream_buffer.handle());
-  if (!base::SharedMemory::IsHandleValid(handle)) {
-    NOTREACHED() << "Failed to duplicate buffer handler";
-    return;
+  if (channel_->IsLost()) {
+    Send(new AcceleratedVideoDecoderMsg_Decode(
+        decoder_route_id_,
+        BitstreamBuffer(bitstream_buffer.id(),
+                        base::subtle::PlatformSharedMemoryRegion(),
+                        bitstream_buffer.size(), bitstream_buffer.offset(),
+                        bitstream_buffer.presentation_timestamp())));
+  } else {
+    // The legacy IPC call will duplicate the shared memory region in
+    // bitstream_buffer.
+    Send(new AcceleratedVideoDecoderMsg_Decode(decoder_route_id_,
+                                               bitstream_buffer));
   }
-  buffer_to_send.set_handle(handle);
-  Send(
-      new AcceleratedVideoDecoderMsg_Decode(decoder_route_id_, buffer_to_send));
 }
 
 void GpuVideoDecodeAcceleratorHost::AssignPictureBuffers(

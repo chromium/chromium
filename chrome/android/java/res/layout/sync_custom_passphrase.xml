@@ -11,7 +11,7 @@
     <LinearLayout
         android:orientation="vertical"
         style="@style/AlertDialogContent">
-        <org.chromium.chrome.browser.widget.AlertDialogEditText
+        <org.chromium.chrome.browser.ui.widget.text.AlertDialogEditText
             android:id="@+id/passphrase"
             android:hint="@string/sync_enter_custom_passphrase_hint"
             android:layout_width="match_parent"
@@ -19,7 +19,7 @@
             android:inputType="textPassword"
             android:singleLine="true"
             android:imeOptions="actionNext" />
-        <org.chromium.chrome.browser.widget.AlertDialogEditText
+        <org.chromium.chrome.browser.ui.widget.text.AlertDialogEditText
             android:id="@+id/confirm_passphrase"
             android:hint="@string/sync_enter_custom_passphrase_hint_confirm"
             android:layout_width="match_parent"

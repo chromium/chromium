@@ -33,11 +33,11 @@ class MenuControllerDelegate {
   virtual void SiblingMenuCreated(MenuItemView* menu) = 0;
 
  protected:
-  virtual ~MenuControllerDelegate() {}
+  virtual ~MenuControllerDelegate() = default;
 };
 
 }  // namespace internal
 
-}  // namespace view
+}  // namespace views
 
 #endif  // UI_VIEWS_CONTROLS_MENU_MENU_CONTROLLER_DELEGATE_H_

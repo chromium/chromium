@@ -27,6 +27,7 @@
 
 #include <memory>
 #include "base/memory/memory_pressure_listener.h"
+#include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_image_decoder.h"
@@ -58,7 +59,7 @@ class ImageDecodingStoreTest : public testing::Test,
 
   size_t FrameCount() override { return 1; }
   int RepetitionCount() const override { return kAnimationNone; }
-  TimeDelta FrameDuration() const override { return TimeDelta(); }
+  base::TimeDelta FrameDuration() const override { return base::TimeDelta(); }
 
  protected:
   void EvictOneCache() {
@@ -77,7 +78,7 @@ class ImageDecodingStoreTest : public testing::Test,
 
 TEST_F(ImageDecodingStoreTest, insertDecoder) {
   const SkISize size = SkISize::Make(1, 1);
-  std::unique_ptr<ImageDecoder> decoder = MockImageDecoder::Create(this);
+  auto decoder = std::make_unique<MockImageDecoder>(this);
   decoder->SetSize(1, 1);
   const ImageDecoder* ref_decoder = decoder.get();
   ImageDecodingStore::Instance().InsertDecoder(
@@ -99,9 +100,9 @@ TEST_F(ImageDecodingStoreTest, insertDecoder) {
 }
 
 TEST_F(ImageDecodingStoreTest, evictDecoder) {
-  std::unique_ptr<ImageDecoder> decoder1 = MockImageDecoder::Create(this);
-  std::unique_ptr<ImageDecoder> decoder2 = MockImageDecoder::Create(this);
-  std::unique_ptr<ImageDecoder> decoder3 = MockImageDecoder::Create(this);
+  auto decoder1 = std::make_unique<MockImageDecoder>(this);
+  auto decoder2 = std::make_unique<MockImageDecoder>(this);
+  auto decoder3 = std::make_unique<MockImageDecoder>(this);
   decoder1->SetSize(1, 1);
   decoder2->SetSize(2, 2);
   decoder3->SetSize(3, 3);
@@ -131,9 +132,9 @@ TEST_F(ImageDecodingStoreTest, evictDecoder) {
 }
 
 TEST_F(ImageDecodingStoreTest, decoderInUseNotEvicted) {
-  std::unique_ptr<ImageDecoder> decoder1 = MockImageDecoder::Create(this);
-  std::unique_ptr<ImageDecoder> decoder2 = MockImageDecoder::Create(this);
-  std::unique_ptr<ImageDecoder> decoder3 = MockImageDecoder::Create(this);
+  auto decoder1 = std::make_unique<MockImageDecoder>(this);
+  auto decoder2 = std::make_unique<MockImageDecoder>(this);
+  auto decoder3 = std::make_unique<MockImageDecoder>(this);
   decoder1->SetSize(1, 1);
   decoder2->SetSize(2, 2);
   decoder3->SetSize(3, 3);
@@ -169,7 +170,7 @@ TEST_F(ImageDecodingStoreTest, decoderInUseNotEvicted) {
 
 TEST_F(ImageDecodingStoreTest, removeDecoder) {
   const SkISize size = SkISize::Make(1, 1);
-  std::unique_ptr<ImageDecoder> decoder = MockImageDecoder::Create(this);
+  auto decoder = std::make_unique<MockImageDecoder>(this);
   decoder->SetSize(1, 1);
   const ImageDecoder* ref_decoder = decoder.get();
   ImageDecodingStore::Instance().InsertDecoder(
@@ -200,7 +201,7 @@ TEST_F(ImageDecodingStoreTest, MultipleClientsForSameGenerator) {
 
   const SkISize size = SkISize::Make(1, 1);
 
-  std::unique_ptr<ImageDecoder> decoder = MockImageDecoder::Create(this);
+  auto decoder = std::make_unique<MockImageDecoder>(this);
   ImageDecoder* decoder_1 = decoder.get();
   decoder_1->SetSize(1, 1);
   auto client_id_1 = cc::PaintImage::GetNextGeneratorClientId();
@@ -208,7 +209,7 @@ TEST_F(ImageDecodingStoreTest, MultipleClientsForSameGenerator) {
                                                std::move(decoder));
   EXPECT_EQ(ImageDecodingStore::Instance().CacheEntries(), 1);
 
-  decoder = MockImageDecoder::Create(this);
+  decoder = std::make_unique<MockImageDecoder>(this);
   ImageDecoder* decoder_2 = decoder.get();
   decoder_2->SetSize(1, 1);
   auto client_id_2 = cc::PaintImage::GetNextGeneratorClientId();
@@ -235,7 +236,7 @@ TEST_F(ImageDecodingStoreTest, MultipleClientsForSameGenerator) {
 }
 
 TEST_F(ImageDecodingStoreTest, OnMemoryPressure) {
-  std::unique_ptr<ImageDecoder> decoder = MockImageDecoder::Create(this);
+  auto decoder = std::make_unique<MockImageDecoder>(this);
   decoder->SetSize(1, 1);
   ImageDecodingStore::Instance().InsertDecoder(
       generator_.get(), cc::PaintImage::kDefaultGeneratorClientId,

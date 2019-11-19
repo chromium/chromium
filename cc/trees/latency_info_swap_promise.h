@@ -13,6 +13,12 @@
 
 namespace cc {
 
+// Associates a |LatencyInfo| with a compositor frame's metadata before that
+// frame is sent to the downstream display compositor. The |LatencyInfo|
+// instances used here track latencies of pieces of the input handling
+// pipeline. Compositor frame consumers can combine their internal latency
+// measurements with these measurements to generate end-to-end reports of input
+// latency.
 class CC_EXPORT LatencyInfoSwapPromise : public SwapPromise {
  public:
   explicit LatencyInfoSwapPromise(const ui::LatencyInfo& latency_info);
@@ -21,7 +27,7 @@ class CC_EXPORT LatencyInfoSwapPromise : public SwapPromise {
   void DidActivate() override {}
   void WillSwap(viz::CompositorFrameMetadata* metadata) override;
   void DidSwap() override;
-  void DidNotSwap(DidNotSwapReason reason) override;
+  DidNotSwapAction DidNotSwap(DidNotSwapReason reason) override;
   void OnCommit() override;
 
   int64_t TraceId() const override;

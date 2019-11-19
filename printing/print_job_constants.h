@@ -14,7 +14,6 @@ PRINTING_EXPORT extern const char kPreviewRequestID[];
 PRINTING_EXPORT extern const char kPreviewUIID[];
 PRINTING_EXPORT extern const char kSettingCapabilities[];
 PRINTING_EXPORT extern const char kSettingCloudPrintId[];
-PRINTING_EXPORT extern const char kSettingCloudPrintDialog[];
 PRINTING_EXPORT extern const char kSettingCollate[];
 PRINTING_EXPORT extern const char kSettingColor[];
 PRINTING_EXPORT extern const char kSettingSetColorAsDefault[];
@@ -27,7 +26,6 @@ PRINTING_EXPORT extern const char kSettingDpiDefault[];
 PRINTING_EXPORT extern const char kSettingDpiHorizontal[];
 PRINTING_EXPORT extern const char kSettingDpiVertical[];
 PRINTING_EXPORT extern const char kSettingDuplexMode[];
-PRINTING_EXPORT extern const char kSettingFitToPageEnabled[];
 PRINTING_EXPORT extern const char kSettingFitToPageScaling[];
 PRINTING_EXPORT extern const char kSettingHeaderFooterEnabled[];
 PRINTING_EXPORT extern const float kSettingHeaderFooterInterstice;
@@ -53,12 +51,12 @@ PRINTING_EXPORT extern const char kSettingPageRangeTo[];
 PRINTING_EXPORT extern const char kSettingPageWidth[];
 PRINTING_EXPORT extern const char kSettingPageHeight[];
 PRINTING_EXPORT extern const char kSettingPagesPerSheet[];
+PRINTING_EXPORT extern const char kSettingPinValue[];
 PRINTING_EXPORT extern const char kSettingPolicies[];
+PRINTING_EXPORT extern const char kSettingPreviewIsFromArc[];
+PRINTING_EXPORT extern const char kSettingPreviewIsPdf[];
 PRINTING_EXPORT extern const char kSettingPreviewModifiable[];
 PRINTING_EXPORT extern const char kSettingPrintToGoogleDrive[];
-PRINTING_EXPORT extern const char kSettingPrintToPDF[];
-PRINTING_EXPORT extern const char kSettingPrintWithPrivet[];
-PRINTING_EXPORT extern const char kSettingPrintWithExtension[];
 PRINTING_EXPORT extern const char kSettingPrintableAreaHeight[];
 PRINTING_EXPORT extern const char kSettingPrintableAreaWidth[];
 PRINTING_EXPORT extern const char kSettingPrintableAreaX[];
@@ -66,20 +64,23 @@ PRINTING_EXPORT extern const char kSettingPrintableAreaY[];
 PRINTING_EXPORT extern const char kSettingPrinterDescription[];
 PRINTING_EXPORT extern const char kSettingPrinterName[];
 PRINTING_EXPORT extern const char kSettingPrinterOptions[];
+PRINTING_EXPORT extern const char kSettingPrinterType[];
 PRINTING_EXPORT extern const char kSettingRasterizePdf[];
 PRINTING_EXPORT extern const char kSettingScaleFactor[];
+PRINTING_EXPORT extern const char kSettingScalingType[];
 PRINTING_EXPORT extern const char kSettingTicket[];
 PRINTING_EXPORT extern const char kSettingSendUserInfo[];
 PRINTING_EXPORT extern const char kSettingShouldPrintBackgrounds[];
 PRINTING_EXPORT extern const char kSettingShouldPrintSelectionOnly[];
 PRINTING_EXPORT extern const char kSettingShowSystemDialog[];
 PRINTING_EXPORT extern const char kSettingUsername[];
+PRINTING_EXPORT extern const char kSettingAdvancedSettings[];
 
 PRINTING_EXPORT extern const int FIRST_PAGE_INDEX;
 PRINTING_EXPORT extern const int COMPLETE_PREVIEW_DOCUMENT_INDEX;
 PRINTING_EXPORT extern const char kSettingOpenPDFInPreview[];
 
-#if defined (USE_CUPS)
+#if defined(USE_CUPS)
 // Printer color models
 PRINTING_EXPORT extern const char kBlack[];
 PRINTING_EXPORT extern const char kCMYK[];
@@ -109,17 +110,10 @@ enum DuplexMode {
 };
 
 // Specifies the horizontal alignment of the headers and footers.
-enum HorizontalHeaderFooterPosition {
-  LEFT,
-  CENTER,
-  RIGHT
-};
+enum HorizontalHeaderFooterPosition { LEFT, CENTER, RIGHT };
 
 // Specifies the vertical alignment of the Headers and Footers.
-enum VerticalHeaderFooterPosition {
-  TOP,
-  BOTTOM
-};
+enum VerticalHeaderFooterPosition { TOP, BOTTOM };
 
 // Print job color mode values.
 enum ColorModel {
@@ -157,6 +151,26 @@ enum MarginType {
   PRINTABLE_AREA_MARGINS,
   CUSTOM_MARGINS,
   MARGIN_TYPE_LAST = CUSTOM_MARGINS
+};
+
+// Must match print_preview.ScalingType in
+// chrome/browser/resources/print_preview/data/scaling.js
+enum ScalingType {
+  DEFAULT,
+  FIT_TO_PAGE,
+  FIT_TO_PAPER,
+  CUSTOM,
+  SCALING_TYPE_LAST = CUSTOM
+};
+
+// Must match print_preview.PrinterType in
+// chrome/browser/resources/print_preview/data/destination_match.js
+enum PrinterType {
+  kPrivetPrinter,
+  kExtensionPrinter,
+  kPdfPrinter,
+  kLocalPrinter,
+  kCloudPrinter
 };
 
 }  // namespace printing

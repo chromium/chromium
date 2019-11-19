@@ -1,3 +1,0 @@
-CONSOLE ERROR: line 12: Uncaught TypeError: embed.setWillBeDestroyed is not a function
-
-This tests whether a NPP_SetWindow is called during plugin destruction.

@@ -21,21 +21,19 @@ class DownloadInProgressDialogView : public views::DialogDelegateView {
   // the download should be canceled, or false if the download should proceed.
   static void Show(gfx::NativeWindow parent_window,
                    int download_count,
-                   Browser::DownloadClosePreventionType dialog_type,
+                   Browser::DownloadCloseType dialog_type,
                    bool app_modal,
                    const base::Callback<void(bool)>& callback);
 
  private:
   DownloadInProgressDialogView(int download_count,
-                               Browser::DownloadClosePreventionType dialog_type,
+                               Browser::DownloadCloseType dialog_type,
                                bool app_modal,
                                const base::Callback<void(bool)>& callback);
   ~DownloadInProgressDialogView() override;
 
   // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
-  int GetDefaultDialogButton() const override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool Cancel() override;
   bool Accept() override;
   ui::ModalType GetModalType() const override;

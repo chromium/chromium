@@ -53,9 +53,6 @@
           "name": "fullscreen",
           "description": "Fullscreen window state."
         }, {
-          "name": "docked",
-          "description": "<i>Deprecated since Chrome M59.</i> Docked windows are no longer supported. This state will be converted to \"normal\"."
-        }, {
           "name": "locked-fullscreen",
           "nodoc": true,
           "description": "Locked fullscreen window state. This fullscreen state cannot be exited by user action and is available only to allowlisted extensions on Chrome OS."
@@ -117,7 +114,7 @@
             "optional": true,
             "description": "",
             "properties": {
-              "populate": {"type": "boolean", "optional": true, "description": "If true, the $(ref:windows.Window) object has a <var>tabs</var> property that contains a list of the $(ref:tabs.Tab) objects. The <code>Tab</code> objects only contain the <code>url</code>, <code>title</code>, and <code>favIconUrl</code> properties if the extension's manifest file includes the <code>\"tabs\"</code> permission." },
+              "populate": {"type": "boolean", "optional": true, "description": "If true, the $(ref:windows.Window) object has a <var>tabs</var> property that contains a list of the $(ref:tabs.Tab) objects. The <code>Tab</code> objects only contain the <code>url</code>, <code>pendingUrl</code>, <code>title</code>, and <code>favIconUrl</code> properties if the extension's manifest file includes the <code>\"tabs\"</code> permission." },
               "windowTypes": {"type": "array", "items": { "$ref": "WindowType" }, "optional": true, "description": "If set, the $(ref:windows.Window) returned is filtered based on its type. If unset, the default filter is set to <code>['normal', 'popup']</code>."}
             }
           },
@@ -143,7 +140,7 @@
             "optional": true,
             "description": "",
             "properties": {
-              "populate": {"type": "boolean", "optional": true, "description": "If true, the $(ref:windows.Window) object has a <var>tabs</var> property that contains a list of the $(ref:tabs.Tab) objects. The <code>Tab</code> objects only contain the <code>url</code>, <code>title</code>, and <code>favIconUrl</code> properties if the extension's manifest file includes the <code>\"tabs\"</code> permission." },
+              "populate": {"type": "boolean", "optional": true, "description": "If true, the $(ref:windows.Window) object has a <var>tabs</var> property that contains a list of the $(ref:tabs.Tab) objects. The <code>Tab</code> objects only contain the <code>url</code>, <code>pendingUrl</code>, <code>title</code>, and <code>favIconUrl</code> properties if the extension's manifest file includes the <code>\"tabs\"</code> permission." },
               "windowTypes": {"type": "array", "items": { "$ref": "WindowType" }, "optional": true, "description": "If set, the $(ref:windows.Window) returned is filtered based on its type. If unset, the default filter is set to <code>['normal', 'popup']</code>."}
             }
           },
@@ -169,7 +166,7 @@
             "optional": true,
             "description": "",
             "properties": {
-              "populate": {"type": "boolean", "optional": true, "description": "If true, the $(ref:windows.Window) object has a <var>tabs</var> property that contains a list of the $(ref:tabs.Tab) objects. The <code>Tab</code> objects only contain the <code>url</code>, <code>title</code>, and <code>favIconUrl</code> properties if the extension's manifest file includes the <code>\"tabs\"</code> permission." },
+              "populate": {"type": "boolean", "optional": true, "description": "If true, the $(ref:windows.Window) object has a <var>tabs</var> property that contains a list of the $(ref:tabs.Tab) objects. The <code>Tab</code> objects only contain the <code>url</code>, <code>pendingUrl</code>, <code>title</code>, and <code>favIconUrl</code> properties if the extension's manifest file includes the <code>\"tabs\"</code> permission." },
               "windowTypes": {"type": "array", "items": { "$ref": "WindowType" }, "optional": true, "description": "If set, the $(ref:windows.Window) returned is filtered based on its type. If unset, the default filter is set to <code>['normal', 'popup']</code>."}
             }
           },
@@ -195,7 +192,7 @@
             "optional": true,
             "description": "",
             "properties": {
-              "populate": {"type": "boolean", "optional": true, "description": "If true, each $(ref:windows.Window) object has a <var>tabs</var> property that contains a list of the $(ref:tabs.Tab) objects for that window. The <code>Tab</code> objects only contain the <code>url</code>, <code>title</code>, and <code>favIconUrl</code> properties if the extension's manifest file includes the <code>\"tabs\"</code> permission." },
+              "populate": {"type": "boolean", "optional": true, "description": "If true, each $(ref:windows.Window) object has a <var>tabs</var> property that contains a list of the $(ref:tabs.Tab) objects for that window. The <code>Tab</code> objects only contain the <code>url</code>, <code>pendingUrl</code>, <code>title</code>, and <code>favIconUrl</code> properties if the extension's manifest file includes the <code>\"tabs\"</code> permission." },
               "windowTypes": {"type": "array", "items": { "$ref": "WindowType" }, "optional": true, "description": "If set, the $(ref:windows.Window) returned is filtered based on its type. If unset, the default filter is set to <code>['normal', 'popup']</code>."}
             }
           },

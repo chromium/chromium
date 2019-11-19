@@ -7,6 +7,7 @@
 #include <linux/input.h>
 
 #include <algorithm>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -20,8 +21,7 @@ namespace ui {
 
 InputControllerEvdev::InputControllerEvdev(KeyboardEvdev* keyboard,
                                            MouseButtonMapEvdev* button_map)
-    : keyboard_(keyboard), button_map_(button_map), weak_ptr_factory_(this) {
-}
+    : keyboard_(keyboard), button_map_(button_map) {}
 
 InputControllerEvdev::~InputControllerEvdev() {
 }
@@ -158,6 +158,16 @@ void InputControllerEvdev::SetMouseReverseScroll(bool enabled) {
   ScheduleUpdateDeviceSettings();
 }
 
+void InputControllerEvdev::SetMouseAcceleration(bool enabled) {
+  input_device_settings_.mouse_acceleration_enabled = enabled;
+  ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::SetTouchpadAcceleration(bool enabled) {
+  input_device_settings_.touchpad_acceleration_enabled = enabled;
+  ScheduleUpdateDeviceSettings();
+}
+
 void InputControllerEvdev::SetTapToClickPaused(bool state) {
   input_device_settings_.tap_to_click_paused = state;
   ScheduleUpdateDeviceSettings();
@@ -177,6 +187,12 @@ void InputControllerEvdev::GetTouchEventLog(const base::FilePath& out_dir,
     input_device_factory_->GetTouchEventLog(out_dir, std::move(reply));
   else
     std::move(reply).Run(std::vector<base::FilePath>());
+}
+
+void InputControllerEvdev::GetGesturePropertiesService(
+    mojo::PendingReceiver<ozone::mojom::GesturePropertiesService> receiver) {
+  if (input_device_factory_)
+    input_device_factory_->GetGesturePropertiesService(std::move(receiver));
 }
 
 void InputControllerEvdev::ScheduleUpdateDeviceSettings() {

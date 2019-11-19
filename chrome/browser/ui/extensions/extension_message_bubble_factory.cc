@@ -6,7 +6,6 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
@@ -32,31 +31,12 @@ namespace {
 ExtensionMessageBubbleFactory::OverrideForTesting g_override_for_testing =
     ExtensionMessageBubbleFactory::NO_OVERRIDE;
 
-const char kEnableDevModeWarningExperimentName[] =
-    "ExtensionDeveloperModeWarning";
-
-#if !defined(OS_WIN) && !defined(OS_MACOSX)
-const char kEnableProxyWarningExperimentName[] = "ExtensionProxyWarning";
-#endif
-
 // A set of all profiles evaluated, so we can tell if it's the initial check.
 // TODO(devlin): It would be nice to coalesce all the "profiles evaluated" maps
 // that are in the different bubble controllers.
 std::set<Profile*>& GetEvaluatedProfiles() {
   static base::NoDestructor<std::set<Profile*>> s;
   return *s;
-}
-
-bool IsExperimentEnabled(const char* experiment_name) {
-  // Don't allow turning it off via command line.
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kForceFieldTrials)) {
-    std::string forced_trials =
-        command_line->GetSwitchValueASCII(switches::kForceFieldTrials);
-    if (forced_trials.find(experiment_name))
-      return true;
-  }
-  return base::FieldTrialList::FindFullName(experiment_name) == "Enabled";
 }
 
 bool EnableSuspiciousExtensionsBubble() {
@@ -79,8 +59,7 @@ bool EnableProxyOverrideBubble() {
   return true;
 #else
   return g_override_for_testing ==
-             ExtensionMessageBubbleFactory::OVERRIDE_ENABLED ||
-         IsExperimentEnabled(kEnableProxyWarningExperimentName);
+         ExtensionMessageBubbleFactory::OVERRIDE_ENABLED;
 #endif
 }
 
@@ -102,8 +81,7 @@ bool EnableDevModeBubble() {
 #endif
 
   return g_override_for_testing ==
-             ExtensionMessageBubbleFactory::OVERRIDE_ENABLED ||
-         IsExperimentEnabled(kEnableDevModeWarningExperimentName);
+         ExtensionMessageBubbleFactory::OVERRIDE_ENABLED;
 }
 
 }  // namespace
@@ -148,10 +126,11 @@ ExtensionMessageBubbleFactory::GetController() {
     // browser was restarted, then we always do a session restore (rather than
     // showing normal startup pages).
     if (is_initial_check && !StartupBrowserCreator::WasRestarted()) {
-      controller.reset(new extensions::ExtensionMessageBubbleController(
+      controller =
+          std::make_unique<extensions::ExtensionMessageBubbleController>(
               new extensions::SettingsApiBubbleDelegate(
                   browser_->profile(), extensions::BUBBLE_TYPE_STARTUP_PAGES),
-                  browser_));
+              browser_);
       if (controller->ShouldShow())
         return controller;
     }

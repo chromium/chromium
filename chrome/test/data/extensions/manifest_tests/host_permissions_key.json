@@ -1,0 +1,12 @@
+{
+  "name": "Host permissions manifest key",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "extension with hosts in both |permissions| and |host_permissions|",
+  "permissions": [
+    "https://google.com/*"
+  ],
+  "host_permissions": [
+    "https://example.com/*"
+  ]
+}

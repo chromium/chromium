@@ -7,7 +7,7 @@
 
 #include <string.h>
 #include "third_party/blink/renderer/core/css/hash_tools.h"
-#include "third_party/blink/renderer/platform/wtf/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -43,6 +43,26 @@ const Property* FindProperty(const char* str, unsigned int len) {
 CSSPropertyID cssPropertyID(const String& string)
 {
     return resolveCSSPropertyID(unresolvedCSSPropertyID(string));
+}
+
+mojom::blink::CSSSampleId GetCSSSampleId(CSSPropertyID id) {
+  switch (id) {
+  {% for key in property_keys: %}
+    case CSSPropertyID::{{key}}:
+      return mojom::blink::CSSSampleId::{{key}};
+  {% endfor %}
+
+    case CSSPropertyID::kVariable:
+      return mojom::blink::CSSSampleId::kVariable;
+
+    case CSSPropertyID::kInvalid:
+      return mojom::blink::CSSSampleId::kInvalid;
+
+    // IMPORTANT: Do not add a default case to ensure a compile error if we have
+    // a mismatch.
+  }
+
+  NOTREACHED();
 }
 
 }  // namespace blink

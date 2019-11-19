@@ -5,7 +5,7 @@
 #include "chrome/browser/android/app_hooks.h"
 
 #include "base/android/jni_android.h"
-#include "jni/AppHooks_jni.h"
+#include "chrome/android/chrome_jni_headers/AppHooks_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

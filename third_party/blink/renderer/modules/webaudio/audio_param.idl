@@ -32,6 +32,7 @@ enum AutomationRate {
    "k-rate"
 };
 
+[Exposed=Window]
 interface AudioParam {
     [RaisesException=Setter] attribute float value;
     [RaisesException=Setter] attribute AutomationRate automationRate;

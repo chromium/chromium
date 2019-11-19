@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/mac/io_surface.h"
+#include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image_io_surface.h"
 
@@ -123,7 +124,7 @@ GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
     return scoped_refptr<gl::GLImage>();
   }
 
-  unsigned internalformat = gpu::InternalFormatForGpuMemoryBufferFormat(format);
+  unsigned internalformat = gl::BufferFormatToGLInternalFormat(format);
   scoped_refptr<gl::GLImageIOSurface> image(
       gl::GLImageIOSurface::Create(size, internalformat));
   if (!image->Initialize(it->second.get(), handle.id, format)) {
@@ -169,7 +170,7 @@ GpuMemoryBufferFactoryIOSurface::CreateAnonymousImage(const gfx::Size& size,
     LOG(ERROR) << "Failed to create IOSurface mach port.";
   }
 
-  unsigned internalformat = gpu::InternalFormatForGpuMemoryBufferFormat(format);
+  unsigned internalformat = gl::BufferFormatToGLInternalFormat(format);
   scoped_refptr<gl::GLImageIOSurface> image(
       gl::GLImageIOSurface::Create(size, internalformat));
   // Use an invalid GMB id so that we can differentiate between anonymous and

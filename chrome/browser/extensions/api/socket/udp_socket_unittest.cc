@@ -19,6 +19,8 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/api/socket/udp_socket.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/test_completion_callback.h"
@@ -37,14 +39,15 @@ class UDPSocketUnitTest : public extensions::ExtensionServiceTestBase {
     network::mojom::NetworkContext* network_context =
         content::BrowserContext::GetDefaultStoragePartition(profile())
             ->GetNetworkContext();
-    network::mojom::UDPSocketPtrInfo socket;
-    network::mojom::UDPSocketReceiverPtr receiver_ptr;
-    network::mojom::UDPSocketReceiverRequest receiver_request =
-        mojo::MakeRequest(&receiver_ptr);
-    network_context->CreateUDPSocket(mojo::MakeRequest(&socket),
-                                     std::move(receiver_ptr));
-    return std::make_unique<UDPSocket>(
-        std::move(socket), std::move(receiver_request), "abcdefghijklmnopqrst");
+    mojo::PendingRemote<network::mojom::UDPSocket> socket;
+    mojo::PendingRemote<network::mojom::UDPSocketListener> listener_remote;
+    mojo::PendingReceiver<network::mojom::UDPSocketListener> listener_receiver =
+        listener_remote.InitWithNewPipeAndPassReceiver();
+    network_context->CreateUDPSocket(socket.InitWithNewPipeAndPassReceiver(),
+                                     std::move(listener_remote));
+    return std::make_unique<UDPSocket>(std::move(socket),
+                                       std::move(listener_receiver),
+                                       "abcdefghijklmnopqrst");
   }
 };
 
@@ -79,9 +82,9 @@ TEST_F(UDPSocketUnitTest, TestUDPSocketRecvFrom) {
   // Confirm that we can call two RecvFroms in quick succession without
   // triggering crbug.com/146606.
   socket->Connect(CreateAddressList("127.0.0.1", 40000),
-                  base::BindRepeating(&OnConnected));
-  socket->RecvFrom(4096, base::BindRepeating(&OnCompleted));
-  socket->RecvFrom(4096, base::BindRepeating(&OnCompleted));
+                  base::BindOnce(&OnConnected));
+  socket->RecvFrom(4096, base::BindOnce(&OnCompleted));
+  socket->RecvFrom(4096, base::BindOnce(&OnCompleted));
 }
 
 TEST_F(UDPSocketUnitTest, TestUDPMulticastJoinGroup) {
@@ -123,7 +126,7 @@ TEST_F(UDPSocketUnitTest, TestUDPMulticastTimeToLive) {
   EXPECT_NE(0, socket->SetMulticastTimeToLive(-1));  // Negative TTL shall fail.
   EXPECT_EQ(0, socket->SetMulticastTimeToLive(3));
   socket->Connect(CreateAddressList(kGroup, 13333),
-                  base::BindRepeating(&OnConnected));
+                  base::BindOnce(&OnConnected));
 }
 
 TEST_F(UDPSocketUnitTest, TestUDPMulticastLoopbackMode) {
@@ -132,7 +135,7 @@ TEST_F(UDPSocketUnitTest, TestUDPMulticastLoopbackMode) {
 
   EXPECT_EQ(0, socket->SetMulticastLoopbackMode(false));
   socket->Connect(CreateAddressList(kGroup, 13333),
-                  base::BindRepeating(&OnConnected));
+                  base::BindOnce(&OnConnected));
 }
 
 // Send a test multicast packet every second.
@@ -143,7 +146,7 @@ static void SendMulticastPacket(const base::Closure& quit_run_loop,
   if (result == 0) {
     scoped_refptr<net::IOBuffer> data =
         base::MakeRefCounted<net::WrappedIOBuffer>(kTestMessage);
-    src->Write(data, kTestMessageLength, base::BindRepeating(&OnSendCompleted));
+    src->Write(data, kTestMessageLength, base::BindOnce(&OnSendCompleted));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&SendMulticastPacket, quit_run_loop, src, result),
@@ -174,7 +177,7 @@ TEST_F(UDPSocketUnitTest, TestUDPMulticastRecv) {
   std::unique_ptr<UDPSocket> src = CreateSocket();
   std::unique_ptr<UDPSocket> dest = CreateSocket();
 
-  // Receiver
+  // Listener
   {
     net::TestCompletionCallback callback;
     dest->Bind("0.0.0.0", kPort, callback.callback());
@@ -187,15 +190,15 @@ TEST_F(UDPSocketUnitTest, TestUDPMulticastRecv) {
   }
   base::RunLoop run_loop;
   // |dest| is used with Bind(), so use RecvFrom() instead of Read().
-  dest->RecvFrom(1024,
-                 base::BindRepeating(&OnMulticastReadCompleted,
-                                     run_loop.QuitClosure(), &packet_received));
+  dest->RecvFrom(
+      1024, base::BindOnce(&OnMulticastReadCompleted, run_loop.QuitClosure(),
+                           &packet_received));
 
   // Sender
   EXPECT_EQ(0, src->SetMulticastTimeToLive(0));
-  src->Connect(CreateAddressList(kGroup, kPort),
-               base::BindRepeating(&SendMulticastPacket, run_loop.QuitClosure(),
-                                   src.get()));
+  src->Connect(
+      CreateAddressList(kGroup, kPort),
+      base::BindOnce(&SendMulticastPacket, run_loop.QuitClosure(), src.get()));
 
   // If not received within the test action timeout, quit the message loop.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(

@@ -67,6 +67,13 @@ class VideoCaptureDeviceLinux : public VideoCaptureDevice {
 
   base::Thread v4l2_thread_;  // Thread used for reading data from the device.
 
+  // SetRotation() may get called even when the device is not started. When that
+  // is the case we remember the value here and use it as soon as the device
+  // gets started.
+  int rotation_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureDeviceLinux);
 };
 

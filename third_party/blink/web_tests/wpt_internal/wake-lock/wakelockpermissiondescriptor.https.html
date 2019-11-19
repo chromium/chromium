@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<link rel="help" href="https://w3c.github.io/wake-lock/#the-wakelockpermissiondescriptor-dictionary">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+// TODO(https://crbug.com/1015327): Move this to WPT once we can change
+// permissions via testdriver.js.
+
+promise_test(t => {
+  return navigator.permissions.query({name:'wake-lock', type: 'screen'}).then(status => {
+    assert_class_string(status, "PermissionStatus");
+    assert_equals(status.state, "denied");
+  });
+}, "WakeLockPermissionDescriptor with type=screen works");
+
+promise_test(t => {
+  return navigator.permissions.query({ name: 'wake-lock', type: 'system' }).then(status => {
+    assert_class_string(status, "PermissionStatus");
+    assert_equals(status.state, "denied");
+  });
+}, "WakeLockPermissionDescriptor with type=system works");
+</script>

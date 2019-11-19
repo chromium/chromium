@@ -30,10 +30,10 @@
         .then(ApplicationTestRunner.addCacheEntry.bind(this, 'testCache1', 'http://fake.request.com/2', 'Not Found'))
         .then(ApplicationTestRunner.addCacheEntryWithBlobType.bind(this, 'testCache1', 'http://fake.request.com/T', 'image/png'))
         .then(ApplicationTestRunner.addCacheEntry.bind(this, 'testCache2', 'http://fake.request.com/1', 'OK'))
-        .then(ApplicationTestRunner.addCacheEntry.bind(this, 'testCache2', 'http://fake.request.com/2', 'Not Found'))
+        .then(ApplicationTestRunner.addCacheEntry.bind(this, 'testCache2', 'http://fake.request.com/2?query=19940123', 'Not Found'))
         .then(ApplicationTestRunner.addCacheEntry.bind(this, 'testCache2', 'http://fake.request.com/L/11', 'OK'))
         .then(ApplicationTestRunner.addCacheEntry.bind(this, 'testCache2', 'http://fake.request.com/H/22', 'OK'))
-        // Note: tesrCache1, testCache2 both have entries from '.../T' but these two entries have different blob types intentionally
+        // Note: testCache1, testCache2 both have entries from '.../T' but these two entries have different blob types intentionally
         .then(ApplicationTestRunner.addCacheEntryWithBlobType.bind(this, 'testCache2', 'http://fake.request.com/T', 'text/javascript'))
         .then(ApplicationTestRunner.addCacheEntryWithNoCorsRequest.bind(this, 'testCache3', TestRunner.url('../resources/image.png')))
         .then(ApplicationTestRunner.addCacheEntryWithVarsResponse.bind(this, 'testCache3', 'http://fake.request.com/vars'))

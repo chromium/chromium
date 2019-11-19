@@ -24,7 +24,7 @@ function buildPaymentRequest() {
  * Launches the PaymentRequest UI with Bob Pay as one of multiple payment
  * methods.
  */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   try {
     buildPaymentRequest()
         .show()
@@ -50,7 +50,7 @@ function buy() {  // eslint-disable-line no-unused-vars
 /**
  * Queries CanMakePayment but does not show the PaymentRequest after.
  */
-function canMakePayment() {  // eslint-disable-line no-unused-vars
+function canMakePayment() { // eslint-disable-line no-unused-vars
   try {
     buildPaymentRequest()
         .canMakePayment()

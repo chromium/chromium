@@ -17,7 +17,7 @@ FidoBlePairingDelegate::~FidoBlePairingDelegate() = default;
 
 void FidoBlePairingDelegate::RequestPinCode(device::BluetoothDevice* device) {
   auto it = bluetooth_device_pincode_map_.find(
-      FidoBleDevice::GetId(device->GetAddress()));
+      FidoBleDevice::GetIdForAddress(device->GetAddress()));
   if (it == bluetooth_device_pincode_map_.end()) {
     device->CancelPairing();
     return;
@@ -28,7 +28,7 @@ void FidoBlePairingDelegate::RequestPinCode(device::BluetoothDevice* device) {
 
 void FidoBlePairingDelegate::RequestPasskey(device::BluetoothDevice* device) {
   auto it = bluetooth_device_pincode_map_.find(
-      FidoBleDevice::GetId(device->GetAddress()));
+      FidoBleDevice::GetIdForAddress(device->GetAddress()));
   if (it == bluetooth_device_pincode_map_.end()) {
     device->CancelPairing();
     return;
@@ -97,7 +97,8 @@ void FidoBlePairingDelegate::CancelPairingOnAllKnownDevices(
     auto it = std::find_if(
         bluetooth_devices.begin(), bluetooth_devices.end(),
         [&authenticator_id](const auto* device) {
-          return FidoBleDevice::GetId(device->GetAddress()) == authenticator_id;
+          return FidoBleDevice::GetIdForAddress(device->GetAddress()) ==
+                 authenticator_id;
         });
     if (it == bluetooth_devices.end())
       continue;

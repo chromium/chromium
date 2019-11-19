@@ -2,198 +2,164 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var kNewInputMethodTemplate = '_comp_ime_{EXT_ID}xkb:fr::fra';
-var kInitialInputMethodRegex = /_comp_ime_([a-z]{32})xkb:us::eng/;
-var kInvalidInputMethod = 'xx::xxx';
-
-var testParams = {
+const testParams = {
   initialInputMethod: '',
   newInputMethod: '',
   dictionaryLoaded: null,
 };
 
-// The tests needs to be executed in order.
-
-function initTests() {
-  console.log('initTest: Getting initial inputMethod');
-  chrome.inputMethodPrivate.getCurrentInputMethod(function(inputMethod) {
-    testParams.initialInputMethod = inputMethod;
-
-    var match = inputMethod.match(kInitialInputMethodRegex);
-    chrome.test.assertTrue(!!match);
-    chrome.test.assertEq(2, match.length);
-    var extensionId = match[1];
-    testParams.newInputMethod =
-        kNewInputMethodTemplate.replace('{EXT_ID}', extensionId);
-    chrome.test.succeed();
-  });
-}
-
-function setTest() {
-  chrome.test.assertTrue(!!testParams.newInputMethod);
-  console.log(
-      'setTest: Changing input method to: ' + testParams.newInputMethod);
-  chrome.inputMethodPrivate.setCurrentInputMethod(testParams.newInputMethod,
-    function() {
-      chrome.test.assertTrue(
-          !chrome.runtime.lastError,
-          chrome.runtime.lastError ? chrome.runtime.lastError.message : '');
-      chrome.test.succeed();
+// Wrap inputMethodPrivate in a promise-based API to simplify test code.
+function wrapAsync(apiFunction) {
+  return (...args) => {
+    return new Promise((resolve, reject) => {
+      apiFunction(...args, (...result) => {
+        if (!!chrome.runtime.lastError) {
+          reject(Error(chrome.runtime.lastError));
+        } else {
+          resolve(...result);
+        }
+      });
     });
+  }
 }
 
-function getTest() {
-  chrome.test.assertTrue(!!testParams.newInputMethod);
-  console.log('getTest: Getting current input method.');
-  chrome.inputMethodPrivate.getCurrentInputMethod(function(inputMethod) {
+const asyncInputMethodPrivate = {
+  getCurrentInputMethod:
+      wrapAsync(chrome.inputMethodPrivate.getCurrentInputMethod),
+  setCurrentInputMethod:
+      wrapAsync(chrome.inputMethodPrivate.setCurrentInputMethod),
+  getInputMethods:
+      wrapAsync(chrome.inputMethodPrivate.getInputMethods),
+  fetchAllDictionaryWords:
+      wrapAsync(chrome.inputMethodPrivate.fetchAllDictionaryWords),
+  addWordToDictionary:
+      wrapAsync(chrome.inputMethodPrivate.addWordToDictionary)
+};
+
+chrome.test.sendMessage('ready');
+
+chrome.test.runTests([
+  // Queries the system for basic information needed for tests.
+  // Needs to run first.
+  async function initTests() {
+    console.log('initTest: Getting initial inputMethod');
+
+    const initialInputMethod =
+        await asyncInputMethodPrivate.getCurrentInputMethod();
+    const match = initialInputMethod.match(/_comp_ime_([a-z]{32})xkb:us::eng/);
+    chrome.test.assertTrue(!!match);
+
+    const extensionId = match[1];
+    testParams.initialInputMethod = initialInputMethod;
+    testParams.newInputMethod = `_comp_ime_${extensionId}xkb:fr::fra`;
+    chrome.test.succeed();
+  },
+
+  async function setTest() {
+    console.log(
+        'setTest: Changing input method to: ' + testParams.newInputMethod);
+    await asyncInputMethodPrivate.setCurrentInputMethod(
+        testParams.newInputMethod);
+    chrome.test.succeed();
+  },
+
+  async function getTest() {
+    console.log('getTest: Getting current input method.');
+    const inputMethod = await asyncInputMethodPrivate.getCurrentInputMethod();
     chrome.test.assertEq(testParams.newInputMethod, inputMethod);
     chrome.test.succeed();
-  });
-}
+  },
 
-function observeTest() {
-  chrome.test.assertTrue(!!testParams.initialInputMethod);
-  console.log('observeTest: Adding input method event listener.');
+  async function observeTest() {
+    console.log('observeTest: Adding input method event listener.');
 
-  var listener = function(inputMethod) {
-    chrome.inputMethodPrivate.onChanged.removeListener(listener);
-    chrome.test.assertEq(testParams.initialInputMethod, inputMethod);
-    chrome.test.succeed();
-  };
-  chrome.inputMethodPrivate.onChanged.addListener(listener);
+    chrome.inputMethodPrivate.onChanged.addListener(
+        function listener (inputMethod) {
+          chrome.inputMethodPrivate.onChanged.removeListener(listener);
+          chrome.test.assertEq(testParams.initialInputMethod, inputMethod);
+          chrome.test.succeed();
+        });
 
-  console.log('observeTest: Changing input method to: ' +
-                  testParams.initialInputMethod);
-  chrome.inputMethodPrivate.setCurrentInputMethod(
-      testParams.initialInputMethod);
-}
+    console.log('observeTest: Changing input method to: ' +
+                    testParams.initialInputMethod);
+    await asyncInputMethodPrivate.setCurrentInputMethod(
+        testParams.initialInputMethod);
+  },
 
+  async function setInvalidTest() {
+    const kInvalidInputMethod = 'xx::xxx';
+    console.log(
+          'setInvalidTest: Changing input method to: ' + kInvalidInputMethod);
+    asyncInputMethodPrivate.setCurrentInputMethod(kInvalidInputMethod)
+        .catch(chrome.test.succeed);
+  },
 
-function setInvalidTest() {
-  console.log(
-      'setInvalidTest: Changing input method to: ' + kInvalidInputMethod);
-  chrome.inputMethodPrivate.setCurrentInputMethod(kInvalidInputMethod,
-    function() {
-      chrome.test.assertTrue(!!chrome.runtime.lastError);
-      chrome.test.succeed();
-    });
-}
+  async function getListTest() {
+    console.log('getListTest: Getting input method list.');
 
-function getListTest() {
-  chrome.test.assertTrue(!!testParams.initialInputMethod);
-  chrome.test.assertTrue(!!testParams.newInputMethod);
-  console.log('getListTest: Getting input method list.');
-
-  chrome.inputMethodPrivate.getInputMethods(function(inputMethods) {
+    const inputMethods = await asyncInputMethodPrivate.getInputMethods();
     chrome.test.assertEq(7, inputMethods.length);
-    var foundInitialInputMethod = false;
-    var foundNewInputMethod = false;
-    for (var i = 0; i < inputMethods.length; ++i) {
-      if (inputMethods[i].id == testParams.initialInputMethod)
-        foundInitialInputMethod = true;
-      if (inputMethods[i].id == testParams.newInputMethod)
-        foundNewInputMethod = true;
-    }
-    chrome.test.assertTrue(foundInitialInputMethod);
-    chrome.test.assertTrue(foundNewInputMethod);
+
+    chrome.test.assertTrue(
+        inputMethods.some((im) => im.id == testParams.initialInputMethod));
+    chrome.test.assertTrue(
+        inputMethods.some((im) => im.id == testParams.newInputMethod));
     chrome.test.succeed();
-  });
-}
+  },
 
-// Helper function
-function getFetchPromise() {
-  return new Promise(function(resolve, reject) {
-    chrome.inputMethodPrivate.fetchAllDictionaryWords(function(words) {
-      if (!!chrome.runtime.lastError) {
-        reject(Error(chrome.runtime.lastError));
-      } else {
-        resolve(words);
-      }
-    });
-  });
-}
+  async function loadDictionaryAsyncTest() {
+    console.log('loadDictionaryAsyncTest: ');
 
-// Helper function
-function getAddPromise(word) {
-  return new Promise(function(resolve, reject) {
-    chrome.inputMethodPrivate.addWordToDictionary(word, function() {
-      if (!!chrome.runtime.lastError) {
-        reject(Error(chrome.runtime.lastError));
-      } else {
-        resolve();
-      }
-    });
-  });
-}
-
-function loadDictionaryAsyncTest() {
-  testParams.dictionaryLoaded = new Promise(function(resolve, reject) {
-    var message = 'before';
-    chrome.inputMethodPrivate.onDictionaryLoaded.addListener(
-        function listener() {
+    testParams.dictionaryLoaded = new Promise((resolve, reject) => {
+      var message = 'before';
+      chrome.inputMethodPrivate.onDictionaryLoaded.addListener(
+        function listener () {
           chrome.inputMethodPrivate.onDictionaryLoaded.removeListener(listener);
           chrome.test.assertEq(message, 'after');
           resolve();
         });
-    message = 'after';
-  });
-  // We don't need to wait for the promise to resolve before continuing since
-  // promises are async wrappers.
-  chrome.test.succeed();
-}
+      message = 'after';
+    });
+    // We don't need to wait for the promise to resolve before continuing since
+    // promises are async wrappers.
+    chrome.test.succeed();
+  },
 
-function fetchDictionaryTest() {
-  testParams.dictionaryLoaded
-      .then(function () {
-        return getFetchPromise();
-      })
-      .then(function confirmFetch(words) {
-        chrome.test.assertTrue(words !== undefined);
-        chrome.test.assertTrue(words.length === 0);
+  async function fetchDictionaryTest() {
+    await testParams.dictionaryLoaded;
+    const words = await asyncInputMethodPrivate.fetchAllDictionaryWords();
+    chrome.test.assertTrue(words !== undefined);
+    chrome.test.assertEq(0, words.length);
+    chrome.test.succeed();
+  },
+
+  async function addWordToDictionaryTest() {
+    const wordToAdd = 'helloworld';
+    await testParams.dictionaryLoaded;
+    await asyncInputMethodPrivate.addWordToDictionary(wordToAdd);
+    const words = await asyncInputMethodPrivate.fetchAllDictionaryWords();
+    chrome.test.assertEq(1, words.length);
+    chrome.test.assertEq(words[0], wordToAdd);
+    chrome.test.succeed();
+  },
+
+  async function addDuplicateWordToDictionaryTest() {
+    await testParams.dictionaryLoaded;
+    asyncInputMethodPrivate.addWordToDictionary('helloworld')
+        .catch(chrome.test.succeed);
+  },
+
+  async function dictionaryChangedTest() {
+    const wordToAdd = 'helloworld2';
+    await testParams.dictionaryLoaded;
+    chrome.inputMethodPrivate.onDictionaryChanged.addListener(
+      function listener(added, removed) {
+        chrome.inputMethodPrivate.onDictionaryChanged.removeListener(listener);
+        chrome.test.assertEq(1, added.length);
+        chrome.test.assertEq(0, removed.length);
+        chrome.test.assertEq(added[0], wordToAdd);
         chrome.test.succeed();
       });
-}
-
-function addWordToDictionaryTest() {
-  var wordToAdd = 'helloworld';
-  testParams.dictionaryLoaded
-      .then(function() {
-        return getAddPromise(wordToAdd);
-      })
-      // Adding the same word results in an error.
-      .then(function() {
-        return getAddPromise(wordToAdd);
-      })
-      .catch(function(error) {
-        chrome.test.assertTrue(!!error.message);
-        return getFetchPromise();
-      })
-      .then(function(words) {
-        chrome.test.assertTrue(words.length === 1);
-        chrome.test.assertEq(words[0], wordToAdd);
-        chrome.test.succeed();
-      });
-}
-
-function dictionaryChangedTest() {
-  var wordToAdd = 'helloworld2';
-  testParams.dictionaryLoaded
-      .then(function() {
-        chrome.inputMethodPrivate.onDictionaryChanged.addListener(
-            function(added, removed) {
-              chrome.test.assertTrue(added.length === 1);
-              chrome.test.assertTrue(removed.length === 0);
-              chrome.test.assertEq(added[0], wordToAdd);
-              chrome.test.succeed();
-            });
-      })
-      .then(function() {
-        return getAddPromise(wordToAdd);
-      });
-}
-
-chrome.test.sendMessage('ready');
-chrome.test.runTests(
-    [initTests, setTest, getTest, observeTest, setInvalidTest, getListTest,
-     loadDictionaryAsyncTest, fetchDictionaryTest, addWordToDictionaryTest,
-     dictionaryChangedTest]);
+    await asyncInputMethodPrivate.addWordToDictionary(wordToAdd);
+  }
+]);

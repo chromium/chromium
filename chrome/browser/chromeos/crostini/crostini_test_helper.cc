@@ -4,13 +4,19 @@
 
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
 
+#include "base/feature_list.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/crostini/crostini_registry_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_registry_service_factory.h"
-#include "chrome/browser/chromeos/login/users/mock_user_manager.h"
+#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -20,17 +26,20 @@ using vm_tools::apps::ApplicationList;
 
 namespace crostini {
 
-CrostiniTestHelper::CrostiniTestHelper(Profile* profile, bool enable_crostini)
-    : profile_(profile) {
+CrostiniTestHelper::CrostiniTestHelper(TestingProfile* profile,
+                                       bool enable_crostini)
+    : profile_(profile), initialized_dbus_(false) {
   scoped_feature_list_.InitAndEnableFeature(features::kCrostini);
 
   chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
-  chromeos::MockUserManager* mock_user_manager =
-      new testing::NiceMock<chromeos::MockUserManager>();
-  mock_user_manager->SetActiveUser(
-      AccountId::FromUserEmail("test@example.com"));
   scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      base::WrapUnique(mock_user_manager));
+      std::make_unique<chromeos::FakeChromeUserManager>());
+  auto* fake_user_manager = static_cast<chromeos::FakeChromeUserManager*>(
+      user_manager::UserManager::Get());
+  auto account = AccountId::FromUserEmailGaiaId("test@example.com", "12345");
+  fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
+      account, false, user_manager::USER_TYPE_REGULAR, profile);
+  fake_user_manager->LoginUser(account);
 
   if (enable_crostini)
     EnableCrostini(profile);
@@ -42,6 +51,14 @@ CrostiniTestHelper::CrostiniTestHelper(Profile* profile, bool enable_crostini)
 CrostiniTestHelper::~CrostiniTestHelper() {
   chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(false);
   DisableCrostini(profile_);
+  if (initialized_dbus_) {
+    crostini::CrostiniManager* crostini_manager =
+        crostini::CrostiniManager::GetForProfile(profile_);
+    if (crostini_manager) {
+      crostini_manager->OnDBusShuttingDownForTesting();
+    }
+    chromeos::DBusThreadManager::Shutdown();
+  }
 }
 
 void CrostiniTestHelper::SetupDummyApps() {
@@ -72,6 +89,41 @@ void CrostiniTestHelper::RemoveApp(int i) {
   UpdateRegistry();
 }
 
+void CrostiniTestHelper::ReInitializeAppServiceIntegration() {
+  // Some Crostini-related tests add apps to the registry, which queues
+  // (asynchronous) icon loading requests, which depends on D-Bus. These
+  // requests are merely queued, not executed, so without further action, D-Bus
+  // can be ignored.
+  //
+  // Separately, the App Service is a Mojo IPC service, and explicit
+  // RunUntilIdle or FlushMojoCallsForTesting calls are required to pump the
+  // IPCs, not just during this method, but also during the actual test code.
+  // Those calls have a side effect of executing those icon loading requests.
+  //
+  // It is simpler if those RunUntilIdle calls are unconditional, so we also
+  // initialize D-Bus (if it wasn't already initialized) regardless of
+  // whether the App Service is enabled.
+  initialized_dbus_ = !chromeos::DBusThreadManager::IsInitialized();
+  if (initialized_dbus_) {
+    chromeos::DBusThreadManager::Initialize();
+  }
+
+  // The App Service is originally initialized when the Profile is created,
+  // but this class' constructor takes the Profile* as an argument, which
+  // means that the fake user (created during that constructor) is
+  // necessarily configured after the App Service's initialization.
+  //
+  // Without further action, in tests (but not in production which looks at
+  // real users, not fakes), the App Service serves no Crostini apps, as at
+  // the time it looked, the profile/user doesn't have Crostini enabled.
+  //
+  // We therefore manually have the App Service re-examine whether Crostini
+  // is enabled for this profile.
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  proxy->ReInitializeCrostiniForTesting(profile_);
+  proxy->FlushMojoCallsForTesting();
+}
+
 void CrostiniTestHelper::UpdateAppKeywords(
     vm_tools::apps::App& app,
     const std::map<std::string, std::set<std::string>>& keywords) {
@@ -85,11 +137,11 @@ void CrostiniTestHelper::UpdateAppKeywords(
 }
 
 // static
-void CrostiniTestHelper::EnableCrostini(Profile* profile) {
+void CrostiniTestHelper::EnableCrostini(TestingProfile* profile) {
   profile->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled, true);
 }
 // static
-void CrostiniTestHelper::DisableCrostini(Profile* profile) {
+void CrostiniTestHelper::DisableCrostini(TestingProfile* profile) {
   profile->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled, false);
 }
 

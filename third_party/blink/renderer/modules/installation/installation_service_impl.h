@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INSTALLATION_INSTALLATION_SERVICE_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INSTALLATION_INSTALLATION_SERVICE_IMPL_H_
 
-#include "third_party/blink/public/platform/modules/installation/installation.mojom-blink.h"
+#include "third_party/blink/public/mojom/installation/installation.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
@@ -18,7 +18,9 @@ class MODULES_EXPORT InstallationServiceImpl final
  public:
   explicit InstallationServiceImpl(LocalFrame&);
 
-  static void Create(LocalFrame*, mojom::blink::InstallationServiceRequest);
+  static void Create(
+      LocalFrame*,
+      mojo::PendingReceiver<mojom::blink::InstallationService> receiver);
 
   void OnInstall() override;
 

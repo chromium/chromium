@@ -5,7 +5,7 @@
 mojom = "//third_party/blink/public/mojom/messaging/cloneable_message.mojom"
 public_headers =
     [ "//third_party/blink/renderer/core/messaging/blink_cloneable_message.h" ]
-traits_headers = [ "//third_party/blink/renderer/core/messaging/blink_cloneable_message_struct_traits.h" ]
+traits_headers = [ "//third_party/blink/renderer/core/messaging/blink_cloneable_message_mojom_traits.h" ]
 
 deps = [
   "//mojo/public/cpp/bindings",

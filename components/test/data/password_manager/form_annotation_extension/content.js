@@ -18,8 +18,9 @@ function reduceClassName(list, doc) {
   for (i = 0; i < list.length; i++) {
     var className = list.item(i);
     var count = doc.getElementsByClassName(className).length;
-    if (count == 1)
+    if (count == 1) {
       return '.' + className;
+    }
     if (count < minCount) {
       minCount = count;
       minCountClasses = '.' + className;
@@ -31,8 +32,9 @@ function reduceClassName(list, doc) {
       var className2 = list.item(j);
       var count =
           doc.getElementsByClassName(className1 + ' ' + className2).length;
-      if (count == 1)
+      if (count == 1) {
         return '.' + className1 + '.' + className2;
+      }
       if (count < minCount) {
         minCount = count;
         minCountClasses = '.' + className1 + '.' + className2;
@@ -53,8 +55,9 @@ function getIndexInChildrenList(elem) {
   var result = 1;
   var sibling = elem.previousSibling;
   while (sibling) {
-    if (sibling.tagName == 'LI')
+    if (sibling.tagName == 'LI') {
       result++;
+    }
     sibling = sibling.previousSibling;
   }
   return result;
@@ -74,16 +77,21 @@ function getSmartSelector(elem) {
   var doc = elem.ownerDocument;
   var result = elem.tagName;
 
-  if (elem.id)
-    result += "[id='" + elem.id + "']";  // Works for IDs started with a digit.
-  if (elem.name)
-    result += "[name='" + elem.name + "']";
-  if (elem.tagName == 'INPUT' && elem.type)
-    result += "[type='" + elem.type + "']";
-  if (elem.classList.length > 0)
+  if (elem.id) {
+    result += '[id=\'' + elem.id + '\']';
+  }  // Works for IDs started with a digit.
+  if (elem.name) {
+    result += '[name=\'' + elem.name + '\']';
+  }
+  if (elem.tagName == 'INPUT' && elem.type) {
+    result += '[type=\'' + elem.type + '\']';
+  }
+  if (elem.classList.length > 0) {
     result += reduceClassName(elem.classList, doc);
-  if (elem.tagName == 'LI')
+  }
+  if (elem.tagName == 'LI') {
     result += ':nth-child(' + getIndexInChildrenList(elem) + ')';
+  }
 
   // If failed to build a unique selector for |elem|, try to add the parent CSS
   // selector.
@@ -118,8 +126,8 @@ function getFrames(elem) {
       console.error('frameElement is null. Unable to fetch data about iframes');
       break;
     }
-    var iframe_selector = getSmartSelector(frameElement);
-    frames.unshift(iframe_selector);
+    var iframeSelector = getSmartSelector(frameElement);
+    frames.unshift(iframeSelector);
     elem = elem.ownerDocument.defaultView.frameElement;
   }
   return frames;
@@ -147,19 +155,23 @@ function isClickableElementOrInput(element) {
  * @return {Element} The clicable element.
  */
 function fixElementSelection(element) {
-  if (isClickableElementOrInput(element))
+  if (isClickableElementOrInput(element)) {
     return element;
+  }
   var clickableChildren = element.querySelectorAll(
       ':scope input, :scope a, :scope button, :scope submit, :scope [href]');
-  if (clickableChildren.length > 0)
+  if (clickableChildren.length > 0) {
     return clickableChildren[0];
+  }
   var parent = element;
   for (var i = 0; i < 5; i++) {
     parent = parent.parentElement;
-    if (!parent)
+    if (!parent) {
       break;
-    if (isClickableElementOrInput(parent))
+    }
+    if (isClickableElementOrInput(parent)) {
       return parent;
+    }
   }
   return element;
 }

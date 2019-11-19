@@ -12,6 +12,8 @@
 #error "Printing must be enabled"
 #endif
 
+class Profile;
+
 namespace printing {
 
 // An abstraction of a printer manager dialog. This is used for the printing
@@ -20,7 +22,7 @@ namespace printing {
 class PrinterManagerDialog {
  public:
   // Displays the native printer manager dialog.
-  static void ShowPrinterManagerDialog();
+  static void ShowPrinterManagerDialog(Profile* profile);
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(PrinterManagerDialog);

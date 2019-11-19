@@ -16,8 +16,9 @@ namespace internal {
 
 // Called by platform_util.cc on desktop platforms to invoke platform specific
 // logic to open |path| using a suitable handler. |path| has been verified to be
-// of type |type|.
-// Always called on the blocking pool.
+// of type |type|. Called on the thread pool with
+// base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN semantics (and thus can't
+// use global state torn down during shutdown).
 void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type);
 
 // Prevent shell or external applications from being invoked during testing.

@@ -1,8 +1,9 @@
 # core/streams/
 
-This directory contains the Blink implementation of [the WHATWG Streams standard][1].
+This directory contains the Blink implementation of [the WHATWG Streams
+standard][1].
 
-We use [V8 extras][2] to implement it.
+See [Streams C++ port design doc][2].
 
 [1]: https://streams.spec.whatwg.org/
-[2]: https://docs.google.com/document/d/1AT5-T0aHGp7Lt29vPWFr2-qG8r3l9CByyvKwEuA8Ec0
+[2]: https://docs.google.com/document/d/1n0IIRmJb0R-DFc2IhhJfS2-LUwl6iKSBNaR0klr3o40/edit

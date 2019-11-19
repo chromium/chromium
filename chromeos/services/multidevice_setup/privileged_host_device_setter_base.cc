@@ -12,9 +12,9 @@ PrivilegedHostDeviceSetterBase::PrivilegedHostDeviceSetterBase() = default;
 
 PrivilegedHostDeviceSetterBase::~PrivilegedHostDeviceSetterBase() = default;
 
-void PrivilegedHostDeviceSetterBase::BindRequest(
-    mojom::PrivilegedHostDeviceSetterRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void PrivilegedHostDeviceSetterBase::BindReceiver(
+    mojo::PendingReceiver<mojom::PrivilegedHostDeviceSetter> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 }  // namespace multidevice_setup

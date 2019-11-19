@@ -127,14 +127,13 @@ bool GamepadStateCompareResult::CompareGamepads(GamepadList* old_gamepads,
         CompareAxes(old_gamepad, new_gamepad, i, compare_all_axes);
     bool any_button_updated =
         CompareButtons(old_gamepad, new_gamepad, i, compare_all_buttons);
-    bool pose_changed = ComparePose(old_gamepad, new_gamepad);
 
     if (newly_connected)
       gamepad_connected_.set(i);
     if (newly_disconnected)
       gamepad_disconnected_.set(i);
     if (newly_connected || newly_disconnected || any_axis_updated ||
-        any_button_updated || pose_changed) {
+        any_button_updated) {
       any_change = true;
     }
   }
@@ -224,67 +223,6 @@ bool GamepadStateCompareResult::CompareButtons(Gamepad* old_gamepad,
     }
   }
   return any_button_changed;
-}
-
-bool GamepadStateCompareResult::ComparePose(Gamepad* old_gamepad,
-                                            Gamepad* new_gamepad) {
-  if (!new_gamepad)
-    return false;
-  const auto* new_pose = new_gamepad->pose();
-  const auto* old_pose = old_gamepad ? old_gamepad->pose() : nullptr;
-  if (old_pose && new_pose) {
-    // Both poses are non-null. Compare pose members until a difference is
-    // found.
-    if (CompareFloat32Array(old_pose->orientation(), new_pose->orientation())) {
-      return true;
-    }
-    if (CompareFloat32Array(old_pose->position(), new_pose->position())) {
-      return true;
-    }
-    if (CompareFloat32Array(old_pose->angularVelocity(),
-                            new_pose->angularVelocity())) {
-      return true;
-    }
-    if (CompareFloat32Array(old_pose->linearVelocity(),
-                            new_pose->linearVelocity())) {
-      return true;
-    }
-    if (CompareFloat32Array(old_pose->angularAcceleration(),
-                            new_pose->angularAcceleration())) {
-      return true;
-    }
-    if (CompareFloat32Array(old_pose->linearAcceleration(),
-                            new_pose->linearAcceleration())) {
-      return true;
-    }
-  } else if (old_pose != new_pose) {
-    // Exactly one pose is non-null.
-    return true;
-  }
-  // Both poses are null, or the poses are identical.
-  return false;
-}
-
-bool GamepadStateCompareResult::CompareFloat32Array(
-    DOMFloat32Array* old_array,
-    DOMFloat32Array* new_array) {
-  if (old_array && new_array) {
-    // Both arrays are non-null. Compare elements until a difference is found.
-    uint32_t length = old_array->length();
-    if (length != new_array->length())
-      return true;
-    const float* old_data = old_array->Data();
-    const float* new_data = new_array->Data();
-    for (uint32_t i = 0; i < length; ++i) {
-      if (old_data[i] != new_data[i])
-        return true;
-    }
-  } else if (old_array != new_array) {
-    // Exactly one array is non-null.
-    return true;
-  }
-  // Both arrays are null, or the arrays are identical.
-  return false;
 }
 
 GamepadStateCompareResult GamepadComparisons::Compare(

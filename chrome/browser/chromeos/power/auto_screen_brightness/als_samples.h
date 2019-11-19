@@ -14,6 +14,11 @@ namespace chromeos {
 namespace power {
 namespace auto_screen_brightness {
 
+struct AlsAvgStdDev {
+  double avg = 0;
+  double stddev = 0;
+};
+
 // AmbientLightSampleBuffer stores most recent ambient light samples, with
 // horizon defined in its ctor.
 class AmbientLightSampleBuffer {
@@ -32,10 +37,13 @@ class AmbientLightSampleBuffer {
   // |sample| must be later than any previously added sample.
   void SaveToBuffer(const Sample& sample);
 
-  // Returns average ambient lux from the buffer (discarding samples that are
-  // now too old). |now| must be no earlier than any previously added sample. If
-  // there are no valid samples, returns nullopt.
-  base::Optional<double> AverageAmbient(base::TimeTicks now);
+  // Clears out all the samples in the buffer.
+  void ClearBuffer();
+
+  // Returns average and std-dev of ambient lux from the buffer (discarding
+  // samples that are now too old). |now| must be no earlier than any previously
+  // added sample. If there are no valid samples, returns nullopt.
+  base::Optional<AlsAvgStdDev> AverageAmbientWithStdDev(base::TimeTicks now);
 
   // Returns the number of recorded samples within |horizon| of the last
   // observed time point. |now| must be no earlier than any previously added

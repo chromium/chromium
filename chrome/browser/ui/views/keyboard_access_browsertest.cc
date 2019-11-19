@@ -8,7 +8,6 @@
 
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -16,7 +15,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -50,9 +48,7 @@ class ViewFocusChangeWaiter : public views::FocusChangeListener {
  public:
   ViewFocusChangeWaiter(views::FocusManager* focus_manager,
                         int previous_view_id)
-      : focus_manager_(focus_manager),
-        previous_view_id_(previous_view_id),
-        weak_factory_(this) {
+      : focus_manager_(focus_manager), previous_view_id_(previous_view_id) {
     focus_manager_->AddFocusChangeListener(this);
     // Call the focus change notification once in case the focus has
     // already changed.
@@ -74,7 +70,7 @@ class ViewFocusChangeWaiter : public views::FocusChangeListener {
 
   void OnDidChangeFocus(views::View* focused_before,
                         views::View* focused_now) override {
-    if (focused_now && focused_now->id() != previous_view_id_) {
+    if (focused_now && focused_now->GetID() != previous_view_id_) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
     }
@@ -82,7 +78,7 @@ class ViewFocusChangeWaiter : public views::FocusChangeListener {
 
   views::FocusManager* focus_manager_;
   int previous_view_id_;
-  base::WeakPtrFactory<ViewFocusChangeWaiter> weak_factory_;
+  base::WeakPtrFactory<ViewFocusChangeWaiter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ViewFocusChangeWaiter);
 };
@@ -153,7 +149,7 @@ class KeyboardAccessTest : public InProcessBrowserTest {
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
     const views::FocusManager* focus_manager = widget->GetFocusManager();
     const views::View* focused_view = focus_manager->GetFocusedView();
-    return focused_view ? focused_view->id() : -1;
+    return focused_view ? focused_view->GetID() : -1;
   }
 
   void WaitForFocusedViewIDToChange(int original_view_id) {
@@ -198,9 +194,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
   // page menu, then wait until the focused view changes.
   int original_view_id = GetFocusedViewID();
 
-  content::WindowedNotificationObserver new_tab_observer(
-      chrome::NOTIFICATION_TAB_ADDED,
-      content::Source<content::WebContentsDelegate>(browser()));
+  ui_test_utils::TabAddedWaiter tab_add(browser());
 
   BrowserView* browser_view = reinterpret_cast<BrowserView*>(
       browser()->window());
@@ -209,7 +203,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
       false);
 
   if (focus_omnibox)
-    browser()->window()->GetLocationBar()->FocusLocation();
+    browser()->window()->GetLocationBar()->FocusLocation(false);
 
 #if defined(OS_CHROMEOS)
   // Chrome OS doesn't have a way to just focus the app menu, so we use Alt+F to
@@ -244,7 +238,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
 #endif
 
   // Wait for the new tab to appear.
-  new_tab_observer.Wait();
+  tab_add.Wait();
 
   // Make sure that the new tab index is 1.
   ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
@@ -279,9 +273,7 @@ void KeyboardAccessTest::TestSystemMenuWithKeyboard() {
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
-  content::WindowedNotificationObserver new_tab_observer(
-      chrome::NOTIFICATION_TAB_ADDED,
-      content::Source<content::WebContentsDelegate>(browser()));
+  ui_test_utils::TabAddedWaiter tab_add(browser());
   // Sending the Alt space keys to the browser will bring up the system menu
   // which runs a model loop. We set a CBT hook to look for the menu and send
   // keystrokes to it.
@@ -297,7 +289,7 @@ void KeyboardAccessTest::TestSystemMenuWithKeyboard() {
 
   if (ret) {
     // Wait for the new tab to appear.
-    new_tab_observer.Wait();
+    tab_add.Wait();
     // Make sure that the new tab index is 1.
     EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
   }
@@ -343,9 +335,7 @@ void KeyboardAccessTest::TestSystemMenuReopenClosedTabWithKeyboard() {
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
-  content::WindowedNotificationObserver new_tab_observer(
-      chrome::NOTIFICATION_TAB_PARENTED,
-      content::NotificationService::AllSources());
+  ui_test_utils::TabAddedWaiter tab_add(browser());
   // Sending the Alt space keys to the browser will bring up the system menu
   // which runs a model loop. We set a CBT hook to look for the menu and send
   // keystrokes to it.
@@ -360,7 +350,7 @@ void KeyboardAccessTest::TestSystemMenuReopenClosedTabWithKeyboard() {
 
   if (ret) {
     // Wait for the new tab to appear.
-    new_tab_observer.Wait();
+    tab_add.Wait();
     // Make sure that the new tab index is 1.
     EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
   }
@@ -384,7 +374,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccessAndDismiss() {
       browser_view->toolbar_button_provider()->GetAppMenuButton(), browser(),
       true);
 
-  browser()->window()->GetLocationBar()->FocusLocation();
+  browser()->window()->GetLocationBar()->FocusLocation(false);
 
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_F10, false, false, false, false));
@@ -456,18 +446,12 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, TestMenuKeyboardOpenDismiss) {
 }
 #endif
 
-#if defined(OS_MACOSX)
-// Focusing or input is not completely working on Mac: http://crbug.com/824418
-#define MAYBE_ReserveKeyboardAccelerators DISABLED_ReserveKeyboardAccelerators
-#else
-#define MAYBE_ReserveKeyboardAccelerators ReserveKeyboardAccelerators
-#endif
 // Test that JavaScript cannot intercept reserved keyboard accelerators like
 // ctrl-t to open a new tab or ctrl-f4 to close a tab.
 // TODO(isherman): This test times out on ChromeOS.  We should merge it with
 // BrowserKeyEventsTest.ReservedAccelerators, but just disable for now.
 // If this flakes, use http://crbug.com/62311.
-IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, MAYBE_ReserveKeyboardAccelerators) {
+IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, ReserveKeyboardAccelerators) {
   const std::string kBadPage =
       "<html><script>"
       "document.onkeydown = function() {"
@@ -490,18 +474,17 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, MAYBE_ReserveKeyboardAccelerators) {
   ASSERT_EQ(2, browser()->tab_strip_model()->active_index());
 
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+#if defined(OS_MACOSX)
+      browser(), ui::VKEY_W, false, false, false, true));
+#else
       browser(), ui::VKEY_W, true, false, false, false));
+#endif
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
 }
 
 #if defined(OS_WIN)  // These keys are Windows-only.
-// Disabled on debug due to high flake rate; see https://crbug.com/846623.
-#if !defined(NDEBUG)
-#define MAYBE_BackForwardKeys DISABLED_BackForwardKeys
-#else
-#define MAYBE_BackForwardKeys BackForwardKeys
-#endif
-IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, MAYBE_BackForwardKeys) {
+// Disabled due to high flake rate; see https://crbug.com/846623.
+IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, DISABLED_BackForwardKeys) {
   // Navigate to create some history.
   ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/"));
   ui_test_utils::NavigateToURL(browser(), GURL("chrome://about/"));

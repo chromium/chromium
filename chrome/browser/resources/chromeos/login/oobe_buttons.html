@@ -2,13 +2,12 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
-<link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 
 <iron-iconset-svg name="oobe-buttons-20" size="20">
@@ -55,17 +54,17 @@
   <template>
     <style include="iron-flex iron-flex-alignment iron-positioning"></style>
     <link rel="stylesheet" href="oobe_iron_flex_layout_fix.css">
-    <style include="paper-button-style cr-icons cr-shared-style"></style>
+    <style include="cr-icons cr-shared-style"></style>
     <link rel="stylesheet" href="oobe_fonts.css">
     <link rel="stylesheet" href="oobe_text_buttons.css">
-    <paper-button id="textButton" on-tap="onClick_" disabled="[[disabled]]"
+    <cr-button id="textButton" on-tap="onClick_" disabled="[[disabled]]"
         inverse$="[[inverse]]" aria-label$="[[labelForAria]]"
-        border$="[[border]]" android$="[[android]]">
+        border$="[[border]]">
       <div id="container"
           class="flex layout horizontal center center-justified self-stretch">
         <slot></slot>
       </div>
-    </paper-button>
+    </cr-button>
   </template>
 </dom-module>
 
@@ -74,12 +73,12 @@
   Text is blue, background is white.
 
   Example:
-    <oobe-back-button on-tap="handleOnTap_"></oobe-back-button>
+    <oobe-back-button on-click="handleOnClick_"></oobe-back-button>
 
   (Note that there is no space between opening and closing tag.)
 
   Content is optional, "Back" and "Next" will be used if not specified.
-    <oobe-back-button on-tap="handleOnTap_">
+    <oobe-back-button on-click="handleOnClick_">
       Continue
     </oobe-back-button>
 
@@ -92,11 +91,11 @@
   <template>
     <style include="iron-flex iron-flex-alignment iron-positioning"></style>
     <link rel="stylesheet" href="oobe_iron_flex_layout_fix.css">
-    <style include="paper-button-style cr-icons cr-shared-style"></style>
+    <style include="cr-icons cr-shared-style"></style>
     <link rel="stylesheet" href="oobe_fonts.css">
     <link rel="stylesheet" href="oobe_text_buttons.css">
     <link rel="stylesheet" href="oobe_back_button.css">
-    <paper-button id="button" on-tap="onClick_" disabled="[[disabled]]"
+    <cr-button id="button" on-click="onClick_" disabled="[[disabled]]"
         aria-label$="[[labelForAria]]">
       <div class="flex horizontal layout start center">
         <hd-iron-icon
@@ -107,7 +106,7 @@
           <div id="text" i18n-content="back"></div>
         </slot>
       </div>
-    </paper-button>
+    </cr-button>
   </template>
 </dom-module>
 
@@ -115,11 +114,11 @@
   <template>
     <style include="iron-flex iron-flex-alignment iron-positioning"></style>
     <link rel="stylesheet" href="oobe_iron_flex_layout_fix.css">
-    <style include="paper-button-style cr-icons cr-shared-style"></style>
+    <style include="cr-icons cr-shared-style"></style>
     <link rel="stylesheet" href="oobe_fonts.css">
     <link rel="stylesheet" href="oobe_text_buttons.css">
     <link rel="stylesheet" href="oobe_next_button.css">
-    <paper-button id="button" on-tap="onClick_" disabled="[[disabled]]"
+    <cr-button id="button" on-tap="onClick_" disabled="[[disabled]]"
         class="action-button">
       <div class="flex horizontal layout start center">
         <slot>
@@ -130,7 +129,7 @@
             icon2x="oobe-buttons-40:arrow-forward">
         </hd-iron-icon>
       </div>
-    </paper-button>
+    </cr-button>
   </template>
 </dom-module>
 
@@ -139,7 +138,7 @@
 
   Example:
     <oobe-welcome-secondary-button icon="close">
-      <div i18n-content="oobeCloseButtonText"></div>
+      <div>[[i18nDynamic(locale, 'offlineLoginCloseBtn')]]</div>
     </oobe-welcome-secondary-button>
 
   Attributes:
@@ -152,11 +151,11 @@
   <template>
     <style include="iron-flex iron-flex-alignment iron-positioning"></style>
     <link rel="stylesheet" href="oobe_iron_flex_layout_fix.css">
-    <style include="paper-button-style cr-icons cr-shared-style"></style>
+    <style include="cr-icons cr-shared-style"></style>
     <link rel="stylesheet" href="oobe_fonts.css">
     <link rel="stylesheet" href="oobe_text_buttons.css">
     <link rel="stylesheet" href="oobe_welcome_secondary_button.css">
-    <paper-button id="button" aria-label$="[[labelForAria]]">
+    <cr-button id="button" aria-label$="[[labelForAria]]">
       <div id="container" class="flex vertical layout center self-stretch">
         <div class="flex layout horizontal center self-stretch center-justified">
           <hd-iron-icon id="icon" icon1x="[[icon1x]]" icon2x="[[icon2x]]"
@@ -165,6 +164,6 @@
           <slot></slot>
         </div>
       </div>
-    </paper-button>
+    </cr-button>
   </template>
 </dom-module>

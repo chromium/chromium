@@ -1,0 +1,67 @@
+Test CSS clip with composited layers. Left and right sides should look the same.
+
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='composited box'",
+      "position": [5, 15],
+      "bounds": [90, 80],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='composited inner'",
+      "bounds": [120, 120],
+      "backgroundColor": "#00000033",
+      "transform": 4
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, 20, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [210, 10, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 1]
+      ]
+    }
+  ]
+}
+

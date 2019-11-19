@@ -7,7 +7,8 @@ package org.chromium.android_webview.policy;
 import android.content.Context;
 import android.os.Bundle;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.policy.AppRestrictionsProvider;
 
 /**

@@ -3,49 +3,30 @@
 // found in the LICENSE file.
 
 #include "android_webview/browser/aw_content_browser_client.h"
+
 #include "android_webview/browser/aw_feature_list_creator.h"
+#include "base/test/task_environment.h"
+#include "mojo/core/embedder/embedder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace android_webview {
 
-class AwContentBrowserClientTest : public testing::Test {};
+class AwContentBrowserClientTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    mojo::core::Init();
+  }
 
-TEST_F(AwContentBrowserClientTest, DisableCreatingTaskScheduler) {
+  base::test::TaskEnvironment task_environment_;
+};
+
+TEST_F(AwContentBrowserClientTest, DisableCreatingThreadPool) {
   AwFeatureListCreator aw_feature_list_creator;
   AwContentBrowserClient client(&aw_feature_list_creator);
-  EXPECT_TRUE(client.ShouldCreateTaskScheduler());
+  EXPECT_TRUE(client.ShouldCreateThreadPool());
 
-  AwContentBrowserClient::DisableCreatingTaskScheduler();
-  EXPECT_FALSE(client.ShouldCreateTaskScheduler());
-}
-
-// Tests that constraints on trust for Symantec-issued certificates are not
-// enforced for the NetworkContext, as it should behave like the Android system.
-TEST_F(AwContentBrowserClientTest, SymantecPoliciesExempted) {
-  AwFeatureListCreator aw_feature_list_creator;
-  AwContentBrowserClient client(&aw_feature_list_creator);
-  network::mojom::NetworkContextParamsPtr network_context_params =
-      client.GetNetworkContextParams();
-
-  ASSERT_TRUE(network_context_params);
-  ASSERT_TRUE(network_context_params->initial_ssl_config);
-  ASSERT_TRUE(network_context_params->initial_ssl_config
-                  ->symantec_enforcement_disabled);
-}
-
-// Tests that SHA-1 is still allowed for locally-installed trust anchors,
-// including those in application manifests, as it should behave like
-// the Android system.
-TEST_F(AwContentBrowserClientTest, SHA1LocalAnchorsAllowed) {
-  AwFeatureListCreator aw_feature_list_creator;
-  AwContentBrowserClient client(&aw_feature_list_creator);
-  network::mojom::NetworkContextParamsPtr network_context_params =
-      client.GetNetworkContextParams();
-
-  ASSERT_TRUE(network_context_params);
-  ASSERT_TRUE(network_context_params->initial_ssl_config);
-  ASSERT_TRUE(
-      network_context_params->initial_ssl_config->sha1_local_anchors_enabled);
+  AwContentBrowserClient::DisableCreatingThreadPool();
+  EXPECT_FALSE(client.ShouldCreateThreadPool());
 }
 
 }  // namespace android_webview

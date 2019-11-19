@@ -9,7 +9,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
@@ -54,7 +53,6 @@ class InstantController : public TabStripModelObserver {
   void UpdateInfoForInstantTab();
 
   Profile* const profile_;
-  ScopedObserver<TabStripModel, TabStripModelObserver> tab_strip_observer_;
 
   // Observes the currently active tab, and calls us back if it becomes an NTP.
   std::unique_ptr<TabObserver> tab_observer_;

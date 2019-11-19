@@ -7,7 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/manifest/web_display_mode.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -21,7 +21,7 @@ blink::Manifest GetValidManifest() {
   manifest.name = ToNullableUTF16("foo");
   manifest.short_name = ToNullableUTF16("bar");
   manifest.start_url = GURL("http://example.com");
-  manifest.display = blink::kWebDisplayModeStandalone;
+  manifest.display = blink::mojom::DisplayMode::kStandalone;
 
   blink::Manifest::ImageResource icon;
   icon.type = base::ASCIIToUTF16("image/png");

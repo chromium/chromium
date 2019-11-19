@@ -10,9 +10,9 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/ios/wait_util.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
-#include "components/password_manager/core/browser/log_manager.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
@@ -21,7 +21,7 @@
 #include "components/password_manager/ios/test_helpers.h"
 #include "ios/web/public/test/fakes/test_web_client.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 
@@ -170,10 +170,10 @@ struct GetSubmittedPasswordFormTestData {
   NSString* java_script;
   // 0 based index of the form on the page to submit.
   const int index_of_the_form_to_submit;
-  // True if expected to find the form on submission.
-  const bool expected_form_found;
-  // Expected username element.
-  const char* expected_username_element;
+  // Expected number of fields in found form.
+  const size_t expected_number_of_fields;
+  // Expected form name.
+  const char* expected_form_name;
 };
 
 // Check that HTML forms are captured and converted correctly into
@@ -193,7 +193,7 @@ TEST_F(PasswordFormHelperTest, GetSubmittedPasswordForm) {
       "<input type='submit' id='s2'>"
       "</form>",
       @"document.getElementById('s2').click()",
-      1, true, "user2"
+      1, 2, "gChrome~form~1"
     },
     // Two forms with explicit names.
     {
@@ -207,17 +207,17 @@ TEST_F(PasswordFormHelperTest, GetSubmittedPasswordForm) {
       "<input type='password' name='pass2' value='pw2'>"
       "</form>",
       @"document.getElementById('s1').click()",
-      0, true, "user1"
+      0, 2, "test2a"
     },
-    // No password forms.
+    // Not-password form.
     {
-      @"<form action='javascript:;'>"
+      @"<form action='javascript:;' name='form1'>"
       "<input type='text' name='user1' value='user1'>"
       "<input type='text' name='not_pass1' value='text1'>"
       "<input type='submit' id='s1'>"
       "</form>",
       @"document.getElementById('s1').click()",
-      0, false, nullptr
+      0, 2, "form1"
     },
     // Form with quotes in the form and field names.
     {
@@ -226,7 +226,7 @@ TEST_F(PasswordFormHelperTest, GetSubmittedPasswordForm) {
       "<input type='password' id='s1' name=\"pass1'\" value='pw2'>"
       "</form>",
       @"document.getElementById('s1').click()",
-      0, true, "user1'"
+      0, 2, "foo'"
     },
   };
   // clang-format on
@@ -239,13 +239,10 @@ TEST_F(PasswordFormHelperTest, GetSubmittedPasswordForm) {
     LoadHtml(data.html_string);
     ExecuteJavaScript(data.java_script);
     __block BOOL block_was_called = NO;
-    id completion_handler = ^(BOOL found, const PasswordForm& form) {
+    id completion_handler = ^(BOOL found, const FormData& form) {
       block_was_called = YES;
-      ASSERT_EQ(data.expected_form_found, found);
-      if (data.expected_form_found) {
-        EXPECT_EQ(base::ASCIIToUTF16(data.expected_username_element),
-                  form.username_element);
-      }
+      EXPECT_EQ(data.expected_number_of_fields, form.fields.size());
+      EXPECT_EQ(data.expected_form_name, base::UTF16ToUTF8(form.name));
     };
     [helper_
         extractSubmittedPasswordForm:GetFormId(data.index_of_the_form_to_submit)
@@ -262,10 +259,10 @@ struct FindPasswordFormTestData {
   NSString* html_string;
   // True if expected to find the form.
   const bool expected_form_found;
-  // Expected username element.
-  const char* const expected_username_element;
-  // Expected password element.
-  const char* const expected_password_element;
+  // Expected number of fields in found form.
+  const size_t expected_number_of_fields;
+  // Expected form name.
+  const char* expected_form_name;
 };
 
 // Check that HTML forms are converted correctly into PasswordForms.
@@ -274,86 +271,52 @@ TEST_F(PasswordFormHelperTest, FindPasswordFormsInView) {
   const FindPasswordFormTestData test_data[] = {
     // Normal form: a username and a password element.
     {
-      @"<form>"
+      @"<form name='form1'>"
       "<input type='text' name='user0'>"
       "<input type='password' name='pass0'>"
       "</form>",
-      true, "user0", "pass0"
+      true, 2, "form1"
     },
     // User name is captured as an email address (HTML5).
     {
-      @"<form>"
+      @"<form name='form1'>"
       "<input type='email' name='email1'>"
       "<input type='password' name='pass1'>"
       "</form>",
-      true, "email1", "pass1"
+      true, 2, "form1"
     },
-    // No username element.
+    // No form found.
     {
-      @"<form>"
-      "<input type='password' name='not_user2'>"
-      "<input type='password' name='pass2'>"
-      "</form>",
-      true, "", "not_user2"
-    },
-    // No username element before password.
-    {
-      @"<form>"
-      "<input type='password' name='pass3'>"
-      "<input type='text' name='user3'>"
-      "</form>",
-      true, "", "pass3"
+      @"<div>",
+      false, 0, nullptr
     },
     // Disabled username element.
     {
-      @"<form>"
-      "<input type='text' name='user4' disabled='disabled'>"
-      "<input type='password' name='pass4'>"
+      @"<form name='form1'>"
+      "<input type='text' name='user2' disabled='disabled'>"
+      "<input type='password' name='pass2'>"
       "</form>",
-      true, "user4", "pass4"
-    },
-    // Username element has autocomplete='off'.
-    {
-      @"<form>"
-      "<input type='text' name='user5' AUTOCOMPLETE='off'>"
-      "<input type='password' name='pass5'>"
-      "</form>",
-      true, "user5", "pass5"
+      true, 2, "form1"
     },
     // No password element.
     {
-      @"<form>"
-      "<input type='text' name='user6'>"
-      "<input type='text' name='pass6'>"
+      @"<form name='form1'>"
+      "<input type='text' name='user3'>"
       "</form>",
-      false, nullptr, nullptr
-    },
-    // Password element has autocomplete='off'.
-    {
-      @"<form>"
-      "<input type='text' name='user7'>"
-      "<input type='password' name='pass7' AUTOCOMPLETE='OFF'>"
-      "</form>",
-      true, "user7", "pass7"
-    },
-    // Form element has autocomplete='off'.
-    {
-      @"<form autocomplete='off'>"
-      "<input type='text' name='user8'>"
-      "<input type='password' name='pass8'>"
-      "</form>",
-      true, "user8", "pass8"
+      false, 0, nullptr
     },
   };
   // clang-format on
 
   for (const FindPasswordFormTestData& data : test_data) {
-    SCOPED_TRACE(testing::Message() << "for html_string=" << data.html_string);
+    SCOPED_TRACE(testing::Message()
+                 << "for html_string="
+                 << base::SysNSStringToUTF8(data.html_string));
     LoadHtml(data.html_string);
-    __block std::vector<PasswordForm> forms;
+    __block std::vector<FormData> forms;
     __block BOOL block_was_called = NO;
     [helper_ findPasswordFormsWithCompletionHandler:^(
-                 const std::vector<PasswordForm>& result) {
+                 const std::vector<FormData>& result) {
       block_was_called = YES;
       forms = result;
     }];
@@ -363,10 +326,8 @@ TEST_F(PasswordFormHelperTest, FindPasswordFormsInView) {
         }));
     if (data.expected_form_found) {
       ASSERT_EQ(1U, forms.size());
-      EXPECT_EQ(base::ASCIIToUTF16(data.expected_username_element),
-                forms[0].username_element);
-      EXPECT_EQ(base::ASCIIToUTF16(data.expected_password_element),
-                forms[0].password_element);
+      EXPECT_EQ(data.expected_number_of_fields, forms[0].fields.size());
+      EXPECT_EQ(data.expected_form_name, base::UTF16ToUTF8(forms[0].name));
     } else {
       ASSERT_TRUE(forms.empty());
     }

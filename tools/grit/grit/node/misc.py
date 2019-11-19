@@ -5,18 +5,29 @@
 """Miscellaneous node types.
 """
 
+from __future__ import print_function
+
 import os.path
 import re
 import sys
+
+import six
 
 from grit import constants
 from grit import exception
 from grit import util
 from grit.extern import FP
-import grit.format.rc_header
 from grit.node import base
 from grit.node import message
 from grit.node import node_io
+
+
+# Python 3 doesn't have long() as int() works everywhere.  But we really do need
+# the long() behavior on Python 2 as our ids are much too large for int().
+try:
+  long
+except NameError:
+  long = int
 
 
 # RTL languages
@@ -47,7 +58,7 @@ def _ReadFirstIdsFromFile(filename, defines):
                                               first_ids_dict['SRCDIR']))
 
   def ReplaceVariable(matchobj):
-    for key, value in defines.iteritems():
+    for key, value in defines.items():
       if matchobj.group(1) == key:
         return value
     return ''
@@ -85,7 +96,7 @@ def _ComputeIds(root, predetermined_tids):
   Args:
     predetermined_tids: Dict of textual id -> numeric id to use in return dict.
   """
-  from grit.node import empty, include, message, misc, structure
+  from grit.node import empty, include, misc, structure
 
   ids = {}  # Maps numeric id to textual id
   tids = {}  # Maps textual id to numeric id
@@ -93,7 +104,7 @@ def _ComputeIds(root, predetermined_tids):
   group = None
   last_id = None
   predetermined_ids = {value: key
-                       for key, value in predetermined_tids.iteritems()}
+                       for key, value in predetermined_tids.items()}
 
   for item in root:
     if isinstance(item, empty.GroupingNode):
@@ -134,21 +145,21 @@ def _ComputeIds(root, predetermined_tids):
 
       elif ('offset' in item.attrs and group and
             group.attrs.get('first_id', '') != ''):
-         offset_text = item.attrs['offset']
-         parent_text = group.attrs['first_id']
+        offset_text = item.attrs['offset']
+        parent_text = group.attrs['first_id']
 
-         try:
-           offset_id = long(offset_text)
-         except ValueError:
-           offset_id = tids[offset_text]
+        try:
+          offset_id = long(offset_text)
+        except ValueError:
+          offset_id = tids[offset_text]
 
-         try:
-           parent_id = long(parent_text)
-         except ValueError:
-           parent_id = tids[parent_text]
+        try:
+          parent_id = long(parent_text)
+        except ValueError:
+          parent_id = tids[parent_text]
 
-         id = parent_id + offset_id
-         reason = 'first_id %d + offset %d' % (parent_id, offset_id)
+        id = parent_id + offset_id
+        reason = 'first_id %d + offset %d' % (parent_id, offset_id)
 
       # We try to allocate IDs sequentially for blocks of items that might
       # be related, for instance strings in a stringtable (as their IDs might be
@@ -191,8 +202,8 @@ def _ComputeIds(root, predetermined_tids):
                                        % (id, id_reasons[id], reason))
 
       if id < 101:
-        print ('WARNING: Numeric resource IDs should be greater than 100 to\n'
-               'avoid conflicts with system-defined resource IDs.')
+        print('WARNING: Numeric resource IDs should be greater than 100 to\n'
+              'avoid conflicts with system-defined resource IDs.')
 
       if tid not in predetermined_tids and id in predetermined_ids:
         raise exception.IdRangeOverlap('ID %d overlaps between %s and %s'
@@ -291,9 +302,6 @@ class ReleaseNode(base.Node):
   def DefaultAttributes(self):
     return { 'allow_pseudo' : 'true' }
 
-  def GetReleaseNumber():
-    """Returns the sequence number of this release."""
-    return self.attribs['seq']
 
 class GritNode(base.Node):
   """The <grit> root element."""
@@ -505,7 +513,8 @@ class GritNode(base.Node):
     """Returns the distinct (language, context, fallback_to_default_layout)
     triples from the output nodes.
     """
-    return set((n.GetLanguage(), n.GetContext(), n.GetFallbackToDefaultLayout()) for n in self.GetOutputFiles())
+    return set((n.GetLanguage(), n.GetContext(), n.GetFallbackToDefaultLayout())
+               for n in self.GetOutputFiles())
 
   def GetSubstitutionMessages(self):
     """Returns the list of <message sub_variable="true"> nodes."""
@@ -571,7 +580,7 @@ class GritNode(base.Node):
     assert self._id_map is None, 'AssignFirstIds() after InitializeIds()'
     # If the input is a stream, then we're probably in a unit test and
     # should skip this step.
-    if type(filename_or_stream) not in (str, unicode):
+    if not isinstance(filename_or_stream, six.string_types):
       return
 
     # Nothing to do if the first_ids_filename attribute isn't set.
@@ -599,18 +608,18 @@ class GritNode(base.Node):
 
         try:
           id_list = first_ids[filename][node.name]
-        except KeyError, e:
-          print '-' * 78
-          print 'Resource id not set for %s (%s)!' % (filename, node.name)
-          print ('Please update %s to include an entry for %s.  See the '
-                 'comments in resource_ids for information on why you need to '
-                 'update that file.' % (first_ids_filename, filename))
-          print '-' * 78
+        except KeyError as e:
+          print('-' * 78)
+          print('Resource id not set for %s (%s)!' % (filename, node.name))
+          print('Please update %s to include an entry for %s.  See the '
+                'comments in resource_ids for information on why you need to '
+                'update that file.' % (first_ids_filename, filename))
+          print('-' * 78)
           raise e
 
         try:
           node.attrs['first_id'] = str(id_list.pop(0))
-        except IndexError, e:
+        except IndexError as e:
           raise Exception('Please update %s and add a first id for %s (%s).'
                           % (first_ids_filename, filename, node.name))
 

@@ -31,25 +31,25 @@
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/user_manager/user_names.h"
+#include "components/viz/common/switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
-#include "gpu/ipc/host/gpu_switches.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "services/service_manager/sandbox/switches.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/compositor/compositor_switches.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/event_switches.h"
+#include "ui/gfx/switches.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/wm/core/wm_core_switches.h"
@@ -84,7 +84,6 @@ void DeriveCommandLine(const GURL& start_url,
     ::switches::kBlinkSettings,
     ::switches::kDisable2dCanvasImageChromium,
     ::switches::kDisableAccelerated2dCanvas,
-    ::switches::kDisableAcceleratedJpegDecoding,
     ::switches::kDisableAcceleratedMjpegDecode,
     ::switches::kDisableAcceleratedVideoDecode,
     ::switches::kDisableAcceleratedVideoEncode,
@@ -101,10 +100,10 @@ void DeriveCommandLine(const GURL& start_url,
     ::switches::kDisablePartialRaster,
     ::switches::kDisablePepper3DImageChromium,
     ::switches::kDisablePreferCompositingToLCDText,
-    ::switches::kDisablePanelFitting,
     ::switches::kDisableRGBA4444Textures,
     ::switches::kDisableThreadedScrolling,
     ::switches::kDisableTouchDragDrop,
+    ::switches::kDisableYUVImageDecoding,
     ::switches::kDisableZeroCopy,
     ::switches::kEnableBlinkFeatures,
     ::switches::kEnableGpuMemoryBufferVideoFrames,
@@ -113,12 +112,11 @@ void DeriveCommandLine(const GURL& start_url,
     ::switches::kEnableLowResTiling,
     ::switches::kEnableNativeGpuMemoryBuffers,
     ::switches::kEnableOopRasterization,
-    ::switches::kEnablePartialRaster,
-    ::switches::kEnablePinch,
     ::switches::kEnablePreferCompositingToLCDText,
     ::switches::kEnableRGBA4444Textures,
     ::switches::kEnableTouchDragDrop,
     ::switches::kEnableUnifiedDesktop,
+    ::switches::kEnableUseHDRTransferFunction,
     ::switches::kEnableUseZoomForDSF,
     ::switches::kEnableViewport,
     ::switches::kEnableZeroCopy,
@@ -154,10 +152,10 @@ void DeriveCommandLine(const GURL& start_url,
     ::switches::kUserDataDir,
     ::switches::kV,
     ::switches::kVModule,
+    ::switches::kVideoCaptureUseGpuMemoryBuffer,
     ::switches::kEnableWebGLDraftExtensions,
     ::switches::kDisableWebGLImageChromium,
     ::switches::kEnableWebGLImageChromium,
-    ::switches::kEnableWebVR,
     ::switches::kEnableUnsafeWebGPU,
     ::switches::kDisableWebRtcHWDecoding,
     ::switches::kDisableWebRtcHWEncoding,
@@ -202,7 +200,6 @@ void DeriveCommandLine(const GURL& start_url,
     chromeos::switches::kEnableArc,
     chromeos::switches::kEnterpriseDisableArc,
     chromeos::switches::kEnterpriseEnableForcedReEnrollment,
-    chromeos::switches::kHasChromeOSDiamondKey,
     chromeos::switches::kHasChromeOSKeyboard,
     chromeos::switches::kLoginProfile,
     chromeos::switches::kNaturalScrollDefault,
@@ -299,7 +296,7 @@ void ChromeRestartRequest::RestartJob() {
   // Ownership of local_auth_fd is passed to the callback that is to be
   // called on completion of this method call. This keeps the browser end
   // of the socket-pair alive for the duration of the RPC.
-  DBusThreadManager::Get()->GetSessionManagerClient()->RestartJob(
+  SessionManagerClient::Get()->RestartJob(
       remote_auth_fd.get(), argv_,
       base::Bind(&ChromeRestartRequest::OnRestartJob, AsWeakPtr(),
                  base::Passed(&local_auth_fd)));
@@ -350,7 +347,7 @@ void RestartChrome(const base::CommandLine& command_line) {
   }
   restart_requested = true;
 
-  if (!base::SysInfo::IsRunningOnChromeOS()) {
+  if (!SessionManagerClient::Get()->SupportsBrowserRestart()) {
     // Do nothing when running as test on bots or a dev box.
     const base::CommandLine* current_command_line =
         base::CommandLine::ForCurrentProcess();

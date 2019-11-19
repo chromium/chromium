@@ -10,6 +10,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "base/scoped_observer.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/compositor/layer_animator.h"
@@ -72,7 +73,7 @@ class LoginBubbleHandler : public ui::EventHandler {
       return;
     }
 
-    if (!bubble_->visible())
+    if (!bubble_->GetVisible())
       return;
 
     if (bubble_->GetBubbleOpener() && bubble_->GetBubbleOpener()->HasFocus())
@@ -87,7 +88,7 @@ class LoginBubbleHandler : public ui::EventHandler {
 
  private:
   void ProcessPressedEvent(const ui::LocatedEvent* event) {
-    if (!bubble_->visible())
+    if (!bubble_->GetVisible())
       return;
 
     gfx::Point screen_location = event->location();
@@ -122,7 +123,7 @@ LoginBaseBubbleView::LoginBaseBubbleView(views::View* anchor_view,
     : anchor_view_(anchor_view),
       bubble_handler_(std::make_unique<LoginBubbleHandler>(this)) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical,
+      views::BoxLayout::Orientation::kVertical,
       gfx::Insets(kBubbleTopMarginDp, kBubbleHorizontalMarginDp,
                   kBubbleBottomMarginDp, kBubbleHorizontalMarginDp),
       kBubbleBetweenChildSpacingDp));
@@ -197,7 +198,7 @@ void LoginBaseBubbleView::Layout() {
   // If a Layout() is called while the bubble is visible (i.e. due to Show()),
   // its bounds may change because of the parent's LayoutManager. This allows
   // the bubbles to always determine their own size and position.
-  if (visible()) {
+  if (GetVisible()) {
     SetSize(GetPreferredSize());
     SetPosition(CalculatePosition());
   }

@@ -7,7 +7,7 @@
 
 #include <iosfwd>
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
@@ -36,17 +36,34 @@ class StyleDifference {
   StyleDifference()
       : paint_invalidation_type_(kNoPaintInvalidation),
         layout_type_(kNoLayout),
+        needs_collect_inlines_(false),
+        needs_reshape_(false),
         recompute_overflow_(false),
         visual_rect_update_(false),
         property_specific_differences_(0),
         scroll_anchor_disabling_property_changed_(false),
-        composited_reasons_changed_(false) {}
+        compositing_reasons_changed_(false) {}
+
+  void Merge(StyleDifference other) {
+    paint_invalidation_type_ =
+        std::max(paint_invalidation_type_, other.paint_invalidation_type_);
+    layout_type_ = std::max(layout_type_, other.layout_type_);
+    needs_collect_inlines_ |= other.needs_collect_inlines_;
+    needs_reshape_ |= other.needs_reshape_;
+    recompute_overflow_ |= other.recompute_overflow_;
+    visual_rect_update_ |= other.visual_rect_update_;
+    property_specific_differences_ |= other.property_specific_differences_;
+    scroll_anchor_disabling_property_changed_ |=
+        other.scroll_anchor_disabling_property_changed_;
+    compositing_reasons_changed_ |= other.compositing_reasons_changed_;
+  }
 
   bool HasDifference() const {
-    return paint_invalidation_type_ || layout_type_ ||
-           property_specific_differences_ || recompute_overflow_ ||
-           visual_rect_update_ || scroll_anchor_disabling_property_changed_ ||
-           composited_reasons_changed_;
+    return paint_invalidation_type_ || layout_type_ || needs_collect_inlines_ ||
+           needs_reshape_ || property_specific_differences_ ||
+           recompute_overflow_ || visual_rect_update_ ||
+           scroll_anchor_disabling_property_changed_ ||
+           compositing_reasons_changed_;
   }
 
   bool HasAtMostPropertySpecificDifferences(
@@ -90,6 +107,12 @@ class StyleDifference {
 
   bool NeedsFullLayout() const { return layout_type_ == kFullLayout; }
   void SetNeedsFullLayout() { layout_type_ = kFullLayout; }
+
+  bool NeedsCollectInlines() const { return needs_collect_inlines_; }
+  void SetNeedsCollectInlines() { needs_collect_inlines_ = true; }
+
+  bool NeedsReshape() const { return needs_reshape_; }
+  void SetNeedsReshape() { needs_reshape_ = true; }
 
   bool NeedsRecomputeOverflow() const { return recompute_overflow_; }
   void SetNeedsRecomputeOverflow() { recompute_overflow_ = true; }
@@ -167,8 +190,10 @@ class StyleDifference {
   void SetScrollAnchorDisablingPropertyChanged() {
     scroll_anchor_disabling_property_changed_ = true;
   }
-  bool CompositingReasonsChanged() const { return composited_reasons_changed_; }
-  void SetCompositingReasonsChanged() { composited_reasons_changed_ = true; }
+  bool CompositingReasonsChanged() const {
+    return compositing_reasons_changed_;
+  }
+  void SetCompositingReasonsChanged() { compositing_reasons_changed_ = true; }
 
  private:
   static constexpr int kPropertyDifferenceCount = 10;
@@ -185,11 +210,13 @@ class StyleDifference {
 
   enum LayoutType { kNoLayout = 0, kPositionedMovement, kFullLayout };
   unsigned layout_type_ : 2;
+  unsigned needs_collect_inlines_ : 1;
+  unsigned needs_reshape_ : 1;
   unsigned recompute_overflow_ : 1;
   unsigned visual_rect_update_ : 1;
   unsigned property_specific_differences_ : kPropertyDifferenceCount;
   unsigned scroll_anchor_disabling_property_changed_ : 1;
-  unsigned composited_reasons_changed_ : 1;
+  unsigned compositing_reasons_changed_ : 1;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const StyleDifference&);

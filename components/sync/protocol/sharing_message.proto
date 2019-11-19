@@ -1,0 +1,95 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+import "sharing_click_to_call_message.proto";
+import "sharing_peer_connection_messages.proto";
+import "sharing_remote_copy_message.proto";
+import "sharing_shared_clipboard_message.proto";
+import "sharing_sms_fetch_message.proto";
+
+package chrome_browser_sharing;
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+// Enum for identifying a message type.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep this in sync with
+// SharingMessageType in enums.xml.
+enum MessageType {
+  UNKNOWN_MESSAGE = 0;
+  PING_MESSAGE = 1;
+  ACK_MESSAGE = 2;
+  CLICK_TO_CALL_MESSAGE = 3;
+  SHARED_CLIPBOARD_MESSAGE = 4;
+  SMS_FETCH_REQUEST = 5;
+  REMOTE_COPY_MESSAGE = 6;
+  SIGNALLING_MESSAGE = 7;
+  ICE_CANDIDATE_MESSAGE = 8;
+}
+
+// Message for sending between devices in Sharing.
+// Next tag: 12
+message SharingMessage {
+  // Identifier of sender. required except for AckMessage.
+  string sender_guid = 1;
+
+  // Payload of the message, contains one of the messages below. required.
+  oneof payload {
+    PingMessage ping_message = 2;
+    AckMessage ack_message = 3;
+    ClickToCallMessage click_to_call_message = 4;
+    SharedClipboardMessage shared_clipboard_message = 5;
+    SmsFetchRequest sms_fetch_request = 8;
+    RemoteCopyMessage remote_copy_message = 9;
+    SignallingMessage signalling_message = 10;
+    IceCandidateMessage ice_candidate_message = 11;
+  }
+
+  // RecipientInfo for responding an AckMessage to the sender. optional.
+  RecipientInfo sender_info = 6;
+
+  // The name of the device sending this message. optional.
+  string sender_device_name = 7;
+}
+
+// Message for pinging the receiver expecting an acknowledgement.
+message PingMessage {
+  // Intentionally empty.
+}
+
+// Message for acknowledging the sender after a non-AckMessage is received.
+message AckMessage {
+  // required.
+  string original_message_id = 1;
+
+  // The type of message that this is acknowledging. optional.
+  MessageType original_message_type = 2;
+
+  // Response of the message, optional.
+  ResponseMessage response_message = 3;
+}
+
+// Message for responding to a SharingMessage.
+message ResponseMessage {
+  // Payload of the response, contains one of the messages below. required.
+  oneof payload {
+    SmsFetchResponse sms_fetch_response = 1;
+    SignallingMessage signalling_message_response = 2;
+  }
+}
+
+// Message for data necessary to send an AckMessage to the sender.
+message RecipientInfo {
+  // FCM registration token of device. required.
+  string fcm_token = 1;
+
+  // Subscription public key required for RFC 8291.
+  bytes p256dh = 2;
+
+  // Auth secret key required for RFC 8291.
+  bytes auth_secret = 3;
+}

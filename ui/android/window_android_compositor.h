@@ -33,11 +33,11 @@ class UI_ANDROID_EXPORT WindowAndroidCompositor {
   virtual viz::FrameSinkId GetFrameSinkId() = 0;
   virtual void AddChildFrameSink(const viz::FrameSinkId& frame_sink_id) = 0;
   virtual void RemoveChildFrameSink(const viz::FrameSinkId& frame_sink_id) = 0;
-  virtual std::unique_ptr<CompositorLock> GetCompositorLock(
-      CompositorLockClient* client,
-      base::TimeDelta timeout) = 0;
   virtual bool IsDrawingFirstVisibleFrame() const = 0;
   virtual void SetVSyncPaused(bool paused) = 0;
+  virtual void OnUpdateRefreshRate(float refresh_rate) = 0;
+  virtual void OnUpdateSupportedRefreshRates(
+      const std::vector<float>& supported_refresh_rates) = 0;
 };
 
 }  // namespace ui

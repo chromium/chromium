@@ -33,7 +33,7 @@
     .alternate-reverse {
       animation-direction: alternate-reverse;
     }
-    
+
     @keyframes move1 {
       from { left: 0px; }
       to { left: 200px; }
@@ -53,29 +53,33 @@
   test(function() {
     const epsilon = 0.002;
 
+    // ease = cubicBezier(0.25, 0.1, 0.25, 1)
+    // ease(0.1) = 0.0947963055884654 ==> position = 18.9593
+    // ease(0.9) = 0.9943164775463438 ==> position = 198.863
+
     box1.style.animationDelay = '-0.2s';
-    assert_approx_equals(computedLeft(box1), 18.6525, epsilon, 'early box1');
+    assert_approx_equals(computedLeft(box1), 18.9593, epsilon, 'early box1');
 
     box2.style.animationDelay = '-0.2s';
-    assert_approx_equals(computedLeft(box2), 18.6525, epsilon, 'early box2');
+    assert_approx_equals(computedLeft(box2), 18.9593, epsilon, 'early box2');
 
     box3.style.animationDelay = '-0.2s';
-    assert_approx_equals(computedLeft(box3), 198.864, epsilon, 'early box3');
+    assert_approx_equals(computedLeft(box3), 198.863, epsilon, 'early box3');
 
     box4.style.animationDelay = '-0.2s';
-    assert_approx_equals(computedLeft(box4), 198.864, epsilon, 'early box4');
+    assert_approx_equals(computedLeft(box4), 198.863, epsilon, 'early box4');
 
 
     box1.style.animationDelay = '-2.2s';
-    assert_approx_equals(computedLeft(box1), 18.6525, epsilon, 'late box1');
+    assert_approx_equals(computedLeft(box1), 18.9593, epsilon, 'late box1');
 
     box2.style.animationDelay = '-2.2s';
-    assert_approx_equals(computedLeft(box2), 198.864, epsilon, 'late box2');
+    assert_approx_equals(computedLeft(box2), 198.863, epsilon, 'late box2');
 
     box3.style.animationDelay = '-2.2s';
-    assert_approx_equals(computedLeft(box3), 198.864, epsilon, 'late box3');
+    assert_approx_equals(computedLeft(box3), 198.863, epsilon, 'late box3');
 
     box4.style.animationDelay = '-2.2s';
-    assert_approx_equals(computedLeft(box4), 18.6525, epsilon, 'late box4');
+    assert_approx_equals(computedLeft(box4), 18.9593, epsilon, 'late box4');
   }, "animation-direction works with timing functions");
 </script>

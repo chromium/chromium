@@ -1,0 +1,17 @@
+<!doctype HTML>
+<meta charset="utf8">
+<title>Display Locking: intrinsic-size is larger than height (ref)</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<style>
+#container {
+  contain: style layout size;
+  width: 200px;
+  height: 100px;
+  overflow: auto;
+  background: lightblue;
+}
+</style>
+
+<div id=container></div>

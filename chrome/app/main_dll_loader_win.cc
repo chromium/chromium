@@ -18,6 +18,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -30,9 +31,9 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/shlwapi.h"
 #include "base/win/windows_version.h"
+#include "build/branding_buildflags.h"
 #include "chrome/app/chrome_watcher_client_win.h"
 #include "chrome/app/chrome_watcher_command_line_win.h"
-#include "chrome/app/file_pre_reader_win.h"
 #include "chrome/browser/active_use_util.h"
 #include "chrome/chrome_watcher/chrome_watcher_main_api.h"
 #include "chrome/common/chrome_constants.h"
@@ -57,7 +58,7 @@ typedef void (*RelaunchChromeBrowserWithNewCommandLineIfNeededFunc)();
 // reference to the loaded module on success, or null on error.
 HMODULE LoadModuleWithDirectory(const base::FilePath& module) {
   ::SetCurrentDirectoryW(module.DirName().value().c_str());
-  PreReadFile(module);
+  base::PreReadFile(module, /*is_executable=*/true);
   return ::LoadLibraryExW(module.value().c_str(), nullptr,
                           LOAD_WITH_ALTERED_SEARCH_PATH);
 }
@@ -275,7 +276,7 @@ class ChromiumDllLoader : public MainDllLoader {
 };
 
 MainDllLoader* MakeMainDllLoader() {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return new ChromeDllLoader();
 #else
   return new ChromiumDllLoader();

@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/beverloo/contact-api
+// https://wicg.github.io/contact-api/spec/#contacts-manager
 
-enum ContactProperty { "email", "name", "tel" };
+enum ContactProperty { "address", "email", "icon", "name", "tel" };
 
 dictionary ContactsSelectOptions {
-    sequence<ContactProperty> properties;
     boolean multiple = false;
 };

@@ -27,10 +27,15 @@ class FakeTileManagerClient : public TileManagerClient {
   std::unique_ptr<EvictionTilePriorityQueue> BuildEvictionQueue(
       TreePriority tree_priority) override;
   void SetIsLikelyToRequireADraw(bool is_likely_to_require_a_draw) override {}
-  RasterColorSpace GetRasterColorSpace() const override;
+  const gfx::ColorSpace& GetRasterColorSpace() const override;
   void RequestImplSideInvalidationForCheckerImagedTiles() override {}
   size_t GetFrameIndexForImage(const PaintImage& paint_image,
                                WhichTree tree) const override;
+  int GetMSAASampleCountForRaster(
+      const scoped_refptr<DisplayItemList>& display_list) override;
+
+ private:
+  gfx::ColorSpace color_space_;
 };
 
 }  // namespace cc

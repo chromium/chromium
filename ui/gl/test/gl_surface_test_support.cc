@@ -9,11 +9,14 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "ui/base/platform_window_defaults.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/init/gl_factory.h"
+
+#if defined(OS_LINUX)
+#include "ui/platform_window/common/platform_window_defaults.h"  // nogncheck
+#endif
 
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -37,10 +40,11 @@ void InitializeOneOffHelper(bool init_extensions) {
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForGPU(params);
-  ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
 #endif
 
+#if defined(OS_LINUX)
   ui::test::EnableTestConfigForPlatformWindows();
+#endif
 
   bool use_software_gl = true;
 
@@ -114,7 +118,6 @@ void GLSurfaceTestSupport::InitializeOneOffWithMockBindings() {
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForGPU(params);
-  ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
 #endif
 
   InitializeOneOffImplementation(kGLImplementationMockGL, false);
@@ -126,7 +129,6 @@ void GLSurfaceTestSupport::InitializeOneOffWithStubBindings() {
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForGPU(params);
-  ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
 #endif
 
   InitializeOneOffImplementation(kGLImplementationStubGL, false);

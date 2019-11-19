@@ -5,7 +5,6 @@
 package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.AwActivityTestRule.CHECK_INTERVAL;
-import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -24,12 +23,12 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.gfx.AwGLFunctor;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 /**
@@ -59,7 +58,7 @@ public class AwContentsGarbageCollectionTest {
     private TestDependencyFactory mOverridenFactory;
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mOverridenFactory = null;
     }
 
@@ -100,7 +99,7 @@ public class AwContentsGarbageCollectionTest {
     @DisableHardwareAccelerationForTest
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testCreateAndGcOneTime() throws Throwable {
+    public void testCreateAndGcOneTime() {
         gcAndCheckAllAwContentsDestroyed();
 
         TestAwContentsClient client = new TestAwContentsClient();
@@ -142,9 +141,8 @@ public class AwContentsGarbageCollectionTest {
             // It is difficult to show keyboard and wait until input method window shows up.
             // Instead, we simply emulate Android's behavior by keeping strong references.
             // See crbug.com/595613 for details.
-            resultReceivers[i] = ThreadUtils.runOnUiThreadBlocking(
-                    ()
-                            -> ImeAdapter.fromWebContents(containerView.getWebContents())
+            resultReceivers[i] = TestThreadUtils.runOnUiThreadBlocking(
+                    () -> ImeAdapter.fromWebContents(containerView.getWebContents())
                                        .getNewShowKeyboardReceiver());
         }
 
@@ -160,7 +158,7 @@ public class AwContentsGarbageCollectionTest {
     @DisableHardwareAccelerationForTest
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testAccessibility() throws Throwable {
+    public void testAccessibility() {
         gcAndCheckAllAwContentsDestroyed();
 
         TestAwContentsClient client = new TestAwContentsClient();
@@ -171,7 +169,7 @@ public class AwContentsGarbageCollectionTest {
             containerViews[i] = containerView;
             mActivityTestRule.loadUrlAsync(
                     containerViews[i].getAwContents(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-            ThreadUtils.runOnUiThreadBlocking(() -> {
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
                 WebContentsAccessibility webContentsA11y =
                         WebContentsAccessibility.fromWebContents(containerView.getWebContents());
                 webContentsA11y.setState(true);
@@ -195,7 +193,7 @@ public class AwContentsGarbageCollectionTest {
     @DisableHardwareAccelerationForTest
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testReferenceFromClient() throws Throwable {
+    public void testReferenceFromClient() {
         gcAndCheckAllAwContentsDestroyed();
 
         AwTestContainerView containerViews[] = new AwTestContainerView[MAX_IDLE_INSTANCES + 1];
@@ -218,7 +216,7 @@ public class AwContentsGarbageCollectionTest {
     @DisableHardwareAccelerationForTest
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testReferenceFromContext() throws Throwable {
+    public void testReferenceFromContext() {
         gcAndCheckAllAwContentsDestroyed();
 
         TestAwContentsClient client = new TestAwContentsClient();
@@ -245,7 +243,7 @@ public class AwContentsGarbageCollectionTest {
     @DisableHardwareAccelerationForTest
     @LargeTest
     @Feature({"AndroidWebView"})
-    public void testCreateAndGcManyTimes() throws Throwable {
+    public void testCreateAndGcManyTimes() {
         gcAndCheckAllAwContentsDestroyed();
 
         final int concurrentInstances = 4;
@@ -308,8 +306,7 @@ public class AwContentsGarbageCollectionTest {
             AwActivityTestRule.enableJavaScriptOnUiThread(containerViews[i].getAwContents());
             final AwContents awContents = containerViews[i].getAwContents();
             final Test jsObject = new Test(i, awContents);
-            InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                    () -> awContents.addJavascriptInterface(jsObject, "test"));
+            AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents, jsObject, "test");
             mActivityTestRule.loadDataSync(
                     awContents, contentsClient.getOnPageFinishedHelper(), html, "text/html", false);
             Assert.assertEquals(String.valueOf(i),
@@ -324,7 +321,7 @@ public class AwContentsGarbageCollectionTest {
         gcAndCheckAllAwContentsDestroyed();
     }
 
-    private void removeAllViews() throws Throwable {
+    private void removeAllViews() {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> mActivityTestRule.getActivity().removeAllViews());
     }
@@ -336,7 +333,7 @@ public class AwContentsGarbageCollectionTest {
             @Override
             public boolean isSatisfied() {
                 try {
-                    return ThreadUtils.runOnUiThreadBlocking(() -> {
+                    return TestThreadUtils.runOnUiThreadBlocking(() -> {
                         int count_aw_contents = AwContents.getNativeInstanceCount();
                         int count_aw_functor = AwGLFunctor.getNativeInstanceCount();
                         return count_aw_contents <= MAX_IDLE_INSTANCES
@@ -352,7 +349,7 @@ public class AwContentsGarbageCollectionTest {
         // that the WebView still has transient references during load so it does not get
         // gc-ed in the one gc-call above. Instead call gc again if exit criteria fails to
         // catch this case.
-        final long timeoutBetweenGcMs = scaleTimeout(1000);
+        final long timeoutBetweenGcMs = 1000L;
         for (int i = 0; i < 15; ++i) {
             try {
                 CriteriaHelper.pollInstrumentationThread(

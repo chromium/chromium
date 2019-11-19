@@ -25,7 +25,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
-#include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
+#include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 namespace WTF {
@@ -71,17 +71,6 @@ AtomicString AtomicString::FromUTF8(const char* chars) {
   return AtomicString(AtomicStringTable::Instance().AddUTF8(chars, nullptr));
 }
 
-AtomicString AtomicString::DeprecatedLower() const {
-  // Note: This is a hot function in the Dromaeo benchmark.
-  StringImpl* impl = this->Impl();
-  if (UNLIKELY(!impl))
-    return *this;
-  scoped_refptr<StringImpl> new_impl = impl->LowerUnicode();
-  if (LIKELY(new_impl == impl))
-    return *this;
-  return AtomicString(String(std::move(new_impl)));
-}
-
 AtomicString AtomicString::LowerASCII() const {
   StringImpl* impl = this->Impl();
   if (UNLIKELY(!impl))
@@ -97,36 +86,6 @@ AtomicString AtomicString::UpperASCII() const {
   if (UNLIKELY(!impl))
     return *this;
   return AtomicString(impl->UpperASCII());
-}
-
-template <typename IntegerType>
-static AtomicString IntegerToAtomicString(IntegerType input) {
-  IntegerToStringConverter<IntegerType> converter(input);
-  return AtomicString(converter.Characters8(), converter.length());
-}
-
-AtomicString AtomicString::Number(int number) {
-  return IntegerToAtomicString(number);
-}
-
-AtomicString AtomicString::Number(unsigned number) {
-  return IntegerToAtomicString(number);
-}
-
-AtomicString AtomicString::Number(long number) {
-  return IntegerToAtomicString(number);
-}
-
-AtomicString AtomicString::Number(unsigned long number) {
-  return IntegerToAtomicString(number);
-}
-
-AtomicString AtomicString::Number(long long number) {
-  return IntegerToAtomicString(number);
-}
-
-AtomicString AtomicString::Number(unsigned long long number) {
-  return IntegerToAtomicString(number);
 }
 
 AtomicString AtomicString::Number(double number, unsigned precision) {

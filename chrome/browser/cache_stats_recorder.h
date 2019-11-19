@@ -14,7 +14,8 @@ class CacheStatsRecorder : public chrome::mojom::CacheStatsRecorder {
 
   static void Create(
       int render_process_id,
-      chrome::mojom::CacheStatsRecorderAssociatedRequest request);
+      mojo::PendingAssociatedReceiver<chrome::mojom::CacheStatsRecorder>
+          receiver);
 
  private:
   // chrome::mojom::CacheStatsRecorder:

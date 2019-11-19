@@ -12,12 +12,41 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/resource_type.h"
 
 using content::BrowserThread;
 
 namespace predictors {
 
 namespace {
+
+net::RequestPriority GetRequestPriority(content::ResourceType resource_type) {
+  switch (resource_type) {
+    case content::ResourceType::kMainFrame:
+    case content::ResourceType::kStylesheet:
+    case content::ResourceType::kFontResource:
+      return net::HIGHEST;
+    case content::ResourceType::kScript:
+      return net::MEDIUM;
+    case content::ResourceType::kSubFrame:
+    case content::ResourceType::kImage:
+    case content::ResourceType::kSubResource:
+    case content::ResourceType::kObject:
+    case content::ResourceType::kMedia:
+    case content::ResourceType::kWorker:
+    case content::ResourceType::kSharedWorker:
+    case content::ResourceType::kPrefetch:
+    case content::ResourceType::kFavicon:
+    case content::ResourceType::kXhr:
+    case content::ResourceType::kPing:
+    case content::ResourceType::kServiceWorker:
+    case content::ResourceType::kCspReport:
+    case content::ResourceType::kPluginResource:
+    case content::ResourceType::kNavigationPreloadMainFrame:
+    case content::ResourceType::kNavigationPreloadSubFrame:
+      return net::LOWEST;
+  }
+}
 
 bool IsHandledNavigation(content::NavigationHandle* navigation_handle) {
   return navigation_handle->IsInMainFrame() &&
@@ -114,6 +143,8 @@ void LoadingPredictorTabHelper::DidLoadResourceFromMemoryCache(
   resource_load_info.mime_type = mime_type;
   resource_load_info.resource_type = resource_type;
   resource_load_info.method = "GET";
+  resource_load_info.request_priority =
+      GetRequestPriority(resource_load_info.resource_type);
   resource_load_info.network_info =
       content::mojom::CommonNetworkInfo::New(false, false, base::nullopt);
   predictor_->loading_data_collector()->RecordResourceLoadComplete(

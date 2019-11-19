@@ -14,7 +14,6 @@
 #include "components/offline_pages/core/background/scheduler.h"
 #include "components/offline_pages/core/background/scheduler_stub.h"
 #include "components/offline_pages/core/background/test_request_queue_store.h"
-#include "components/offline_pages/core/offline_pages_ukm_reporter_stub.h"
 #include "services/network/test/test_network_quality_tracker.h"
 
 namespace offline_pages {
@@ -33,7 +32,6 @@ RequestCoordinatorStubTaco::RequestCoordinatorStubTaco() {
   scheduler_ = std::make_unique<SchedulerStub>();
   network_quality_tracker_ =
       std::make_unique<network::TestNetworkQualityTracker>();
-  ukm_reporter_ = std::make_unique<OfflinePagesUkmReporterStub>();
   active_tab_info_ = std::make_unique<ActiveTabInfo>();
 }
 
@@ -78,11 +76,6 @@ void RequestCoordinatorStubTaco::SetNetworkQualityProvider(
   network_quality_tracker_ = std::move(network_quality_tracker);
 }
 
-void RequestCoordinatorStubTaco::SetOfflinePagesUkmReporter(
-    std::unique_ptr<offline_pages::OfflinePagesUkmReporter> ukm_reporter) {
-  ukm_reporter_ = std::move(ukm_reporter);
-}
-
 void RequestCoordinatorStubTaco::SetRequestCoordinatorDelegate(
     std::unique_ptr<RequestCoordinator::ActiveTabInfo> active_tab_info) {
   active_tab_info_ = std::move(active_tab_info);
@@ -94,7 +87,7 @@ void RequestCoordinatorStubTaco::CreateRequestCoordinator() {
   owned_request_coordinator_ = std::make_unique<RequestCoordinator>(
       std::move(policy_), std::move(offliner_), std::move(queue_),
       std::move(scheduler_), network_quality_tracker_.get(),
-      std::move(ukm_reporter_), std::move(active_tab_info_));
+      std::move(active_tab_info_));
   request_coordinator_ = owned_request_coordinator_.get();
 }
 

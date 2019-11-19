@@ -6,8 +6,8 @@
 
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -16,7 +16,7 @@ using ShellNaClBrowserDelegateTest = testing::Test;
 
 // Verifies that the returned version string has a valid format.
 TEST_F(ShellNaClBrowserDelegateTest, VersionString) {
-  content::TestBrowserThreadBundle thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
   content::TestBrowserContext browser_context;
   ShellNaClBrowserDelegate delegate(&browser_context);
 

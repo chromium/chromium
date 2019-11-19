@@ -4,6 +4,7 @@
 
 #include "ash/system/screen_layout_observer.h"
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
@@ -53,13 +54,20 @@ class ScreenLayoutObserverTest : public AshTestBase {
 
   base::string16 GetUnifiedDisplayName();
 
+  bool IsNotificationShown() const;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   const message_center::Notification* GetDisplayNotification() const;
 
   DISALLOW_COPY_AND_ASSIGN(ScreenLayoutObserverTest);
 };
 
-ScreenLayoutObserverTest::ScreenLayoutObserverTest() = default;
+ScreenLayoutObserverTest::ScreenLayoutObserverTest() {
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kReduceDisplayNotifications);
+}
 
 ScreenLayoutObserverTest::~ScreenLayoutObserverTest() = default;
 
@@ -116,6 +124,11 @@ base::string16 ScreenLayoutObserverTest::GetUnifiedDisplayName() {
       display_manager()->GetDisplayNameForId(display::kUnifiedDisplayId));
 }
 
+bool ScreenLayoutObserverTest::IsNotificationShown() const {
+  return !(GetDisplayNotificationText().empty() &&
+           GetDisplayNotificationAdditionalText().empty());
+}
+
 const message_center::Notification*
 ScreenLayoutObserverTest::GetDisplayNotification() const {
   const message_center::NotificationList::Notifications notifications =
@@ -157,8 +170,7 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotifications) {
   // No-update
   CloseNotification();
   UpdateDisplay("400x400");
-  EXPECT_TRUE(GetDisplayNotificationText().empty());
-  EXPECT_TRUE(GetDisplayNotificationAdditionalText().empty());
+  EXPECT_FALSE(IsNotificationShown());
 
   // Extended.
   CloseNotification();
@@ -176,8 +188,8 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotifications) {
   display::ManagedDisplayInfo second_display_info =
       display::CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 500, 500));
   std::vector<display::ManagedDisplayInfo> display_info_list;
-  display_info_list.emplace_back(first_display_info);
-  display_info_list.emplace_back(second_display_info);
+  display_info_list.push_back(first_display_info);
+  display_info_list.push_back(second_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
   // Simulate that device can support at most two displays and user
@@ -195,7 +207,7 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotifications) {
   CloseNotification();
 
   // Start tablet mode and wait until display mode is updated.
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   base::RunLoop().RunUntilIdle();
 
   // Exit mirror mode manually. Now display mode should be extending mode.
@@ -221,7 +233,7 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotifications) {
   // updated.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
       .ResetMaximumDisplay();
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(false);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   base::RunLoop().RunUntilIdle();
 
   // Turn on mirror mode.
@@ -242,7 +254,7 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotifications) {
 
   // Restore mirror mode.
   CloseNotification();
-  display_info_list.emplace_back(second_display_info);
+  display_info_list.push_back(second_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRRORING,
                                        GetMirroringDisplayNames()),
@@ -271,6 +283,74 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotifications) {
       display_manager()->GetSecondaryDisplay().id());
   UpdateDisplay("400x400@1.5");
   EXPECT_TRUE(GetDisplayNotificationText().empty());
+}
+
+TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kReduceDisplayNotifications);
+  Shell::Get()->screen_layout_observer()->set_show_notifications_for_testing(
+      true);
+
+  UpdateDisplay("400x400");
+  display::Display::SetInternalDisplayId(display_manager()->first_display_id());
+  EXPECT_TRUE(GetDisplayNotificationText().empty());
+
+  // Rotation.
+  UpdateDisplay("400x400/r");
+  EXPECT_FALSE(IsNotificationShown());
+
+  // Extended.
+  UpdateDisplay("400x400,200x200");
+  EXPECT_FALSE(IsNotificationShown());
+
+  const int64_t first_display_id =
+      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const int64_t second_display_id = first_display_id + 1;
+  display::ManagedDisplayInfo first_display_info =
+      display::CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 500, 500));
+  display::ManagedDisplayInfo second_display_info =
+      display::CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 500, 500));
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(first_display_info);
+  display_info_list.push_back(second_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  // Simulate that device can support at most two displays and user
+  // connects it with three displays. Notification should still be created to
+  // warn user of it. See issue 827406 (https://crbug.com/827406).
+  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+      .set_maximum_display(2u);
+  UpdateDisplay("400x400,200x200,100x100");
+  EXPECT_TRUE(GetDisplayNotificationText().empty());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
+            GetDisplayNotificationAdditionalText());
+  EXPECT_TRUE(GetDisplayNotificationText().empty());
+  UpdateDisplay("400x400,200x200");
+  CloseNotification();
+
+  // Start tablet mode and wait until display mode is updated.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  base::RunLoop().RunUntilIdle();
+
+  // Exit mirror mode manually. Now display mode should be extending mode.
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  EXPECT_FALSE(IsNotificationShown());
+
+  // Simulate that device can support at most two displays and user connects
+  // it with three displays. Because device is in tablet mode, display mode
+  // becomes mirror mode from extending mode. Under this circumstance, user is
+  // still notified of connecting more displays than maximum. See issue 827406
+  // (https://crbug.com/827406). Notification should still be shown.
+  UpdateDisplay("400x400,200x200,100x100");
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
+            GetDisplayNotificationAdditionalText());
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRRORING,
+                                       GetMirroringDisplayNames()),
+            GetDisplayNotificationText());
+  CloseNotification();
 }
 
 // Zooming in Unified Mode results in display size changes rather than changes
@@ -371,14 +451,12 @@ TEST_F(ScreenLayoutObserverTest, OverscanDisplay) {
 
   // /o creates the default overscan.
   UpdateDisplay("400x400, 300x300/o");
-  EXPECT_TRUE(GetDisplayNotificationText().empty());
-  EXPECT_TRUE(GetDisplayNotificationAdditionalText().empty());
+  EXPECT_FALSE(IsNotificationShown());
 
   // Reset the overscan.
   Shell::Get()->display_manager()->SetOverscanInsets(
       display_manager()->GetSecondaryDisplay().id(), gfx::Insets());
-  EXPECT_TRUE(GetDisplayNotificationText().empty());
-  EXPECT_TRUE(GetDisplayNotificationAdditionalText().empty());
+  EXPECT_FALSE(IsNotificationShown());
 }
 
 // Tests that exiting mirror mode by closing the lid shows the correct "exiting
@@ -515,8 +593,7 @@ TEST_F(ScreenLayoutObserverTest, DockedModeWithExternalPrimaryDisplayMessage) {
 
   // Close the lid. We go to docked mode, but we show no notifications.
   UpdateDisplay("400x400");
-  EXPECT_TRUE(GetDisplayNotificationText().empty());
-  EXPECT_TRUE(GetDisplayNotificationAdditionalText().empty());
+  EXPECT_FALSE(IsNotificationShown());
 }
 
 // Tests that rotation notifications are only shown when the rotation source is
@@ -532,8 +609,7 @@ TEST_F(ScreenLayoutObserverTest, RotationNotification) {
   display_manager()->SetDisplayRotation(
       primary_id, display::Display::ROTATE_90,
       display::Display::RotationSource::ACCELEROMETER);
-  EXPECT_TRUE(GetDisplayNotificationText().empty());
-  EXPECT_TRUE(GetDisplayNotificationAdditionalText().empty());
+  EXPECT_FALSE(IsNotificationShown());
 
   // The user source.
   display_manager()->SetDisplayRotation(primary_id,
@@ -556,7 +632,7 @@ TEST_F(ScreenLayoutObserverTest, RotationNotification) {
             GetDisplayNotificationAdditionalText());
 
   // Switch to Tablet
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   // The accelerometer source.
   display_manager()->SetDisplayRotation(

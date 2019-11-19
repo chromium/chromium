@@ -23,6 +23,7 @@
 // https://svgwg.org/svg2-draft/types.html#InterfaceSVGAngle
 
 [
+    Exposed=Window,
     ImplementedAs=SVGAngleTearOff
 ] interface SVGAngle {
     // Angle Unit Types

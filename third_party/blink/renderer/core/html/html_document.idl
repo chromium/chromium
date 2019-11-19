@@ -22,6 +22,6 @@
 // writable, configurable, non-enumerable property named HTMLDocument
 // whose value is the Document interface object."
 // https://html.spec.whatwg.org/C/#the-window-object
-
+[Exposed=Window]
 interface HTMLDocument : Document {
 };

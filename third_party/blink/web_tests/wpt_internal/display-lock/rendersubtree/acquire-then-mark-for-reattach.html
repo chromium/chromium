@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Display Locking: marking descendant for reattachment after acquire</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="pass-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="resources/utils.js"></script>
+
+<div id="log"></div>
+<div id="host"><div id="slotted"></div></div>
+
+<script>
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  takeScreenshot();
+}
+
+function runTest() {
+  // Set up locked element within shadow root.
+  let shadowRoot = host.attachShadow({ mode: "open" });
+  let locked = document.createElement("div");
+  shadowRoot.appendChild(locked);
+  locked.innerHTML = "<slot></slot>";
+  locked.getBoundingClientRect();
+  setInvisible(locked);
+
+  // Slotted will be recalced, because style dirtiness propagated
+  // to the DOM ancestor (host) instead of flat-tree (<slot>), and
+  // will trigger layout reattachment.
+  slotted.style = "display: none";
+  // Do layout outside the locked subtree, shouldn't crash.
+  host.getBoundingClientRect();
+
+  // Check that everything is OK after we commit.
+  setVisible(locked).then(() => {
+    locked.remove();
+    finishTest("PASS");
+  });
+}
+
+window.onload = runTest;
+</script>
+</html>

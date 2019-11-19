@@ -14,7 +14,7 @@
 namespace extensions {
 namespace api {
 
-class CecPrivateFunction : public UIThreadExtensionFunction {
+class CecPrivateFunction : public ExtensionFunction {
  public:
   CecPrivateFunction();
 

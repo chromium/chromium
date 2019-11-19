@@ -26,7 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_FREE_LIST_ARENA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_FREE_LIST_ARENA_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/pod_arena.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
@@ -34,6 +34,8 @@ namespace WTF {
 
 template <class T>
 class PODFreeListArena : public RefCounted<PODFreeListArena<T>> {
+  USING_FAST_MALLOC(PODFreeListArena);
+
  public:
   static scoped_refptr<PODFreeListArena> Create() {
     return base::AdoptRef(new PODFreeListArena);

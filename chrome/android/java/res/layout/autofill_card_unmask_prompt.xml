@@ -103,6 +103,7 @@
                 android:layout_marginStart="16dp"
                 android:ems="5"
                 android:imeOptions="actionDone"
+                android:imeActionLabel="@string/autofill_save_card_prompt_confirm"
                 android:hint="@string/card_unmask_input_hint" />
 
             <ImageView
@@ -165,6 +166,19 @@
                 android:text="@string/autofill_card_unmask_prompt_storage_checkbox" />
 
         </RelativeLayout>
+
+        <CheckBox
+            android:id="@+id/use_screenlock_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="17dp"
+            android:layout_marginEnd="10dp"
+            android:enabled="true"
+            android:textAppearance="@style/TextAppearance.AutofillCardCheckBoxText"
+            android:text="@string/autofill_card_unmask_prompt_enable_fido_auth_checkbox" />
+
     </LinearLayout>
 
     <LinearLayout

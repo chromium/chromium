@@ -55,8 +55,8 @@ struct GlyphBoundsAccumulator {
 
   // Unite a glyph bounding box to |bounds|.
   template <bool is_horizontal_run>
-  void Unite(const HarfBuzzRunGlyphData& glyph_data,
-             FloatRect bounds_for_glyph) {
+  void Unite(FloatRect bounds_for_glyph,
+             ShapeResult::GlyphOffset glyph_offset) {
     if (UNLIKELY(bounds_for_glyph.IsEmpty()))
       return;
 
@@ -67,17 +67,17 @@ struct GlyphBoundsAccumulator {
       bounds_for_glyph.SetX(bounds_for_glyph.X() + origin);
     else
       bounds_for_glyph.SetY(bounds_for_glyph.Y() + origin);
-    bounds_for_glyph.Move(glyph_data.offset);
+    bounds_for_glyph.Move(glyph_offset);
 
     bounds.Unite(bounds_for_glyph);
   }
 
   // Non-template version of |Unite()|, see above.
   void Unite(bool is_horizontal_run,
-             const HarfBuzzRunGlyphData& glyph,
-             FloatRect bounds_for_glyph) {
-    is_horizontal_run ? Unite<true>(glyph, bounds_for_glyph)
-                      : Unite<false>(glyph, bounds_for_glyph);
+             FloatRect bounds_for_glyph,
+             ShapeResult::GlyphOffset glyph_offset) {
+    is_horizontal_run ? Unite<true>(bounds_for_glyph, glyph_offset)
+                      : Unite<false>(bounds_for_glyph, glyph_offset);
   }
 
   // Convert vertical run glyph bounding box to logical. Horizontal runs do not

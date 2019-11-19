@@ -12,6 +12,8 @@ static_library("test_support") {
     "access_token_fetcher.h",
     "chromoting_test_driver_environment.cc",
     "chromoting_test_driver_environment.h",
+    "cli_util.cc",
+    "cli_util.h",
     "connection_setup_info.cc",
     "connection_setup_info.h",
     "connection_time_observer.cc",
@@ -22,6 +24,8 @@ static_library("test_support") {
     "fake_access_token_fetcher.h",
     "fake_host_list_fetcher.cc",
     "fake_host_list_fetcher.h",
+    "fake_ice_connection.cc",
+    "fake_ice_connection.h",
     "fake_network_dispatcher.cc",
     "fake_network_dispatcher.h",
     "fake_network_manager.cc",
@@ -32,6 +36,8 @@ static_library("test_support") {
     "fake_socket_factory.h",
     "fake_test_token_storage.cc",
     "fake_test_token_storage.h",
+    "fake_webrtc_connection.cc",
+    "fake_webrtc_connection.h",
     "frame_generator_util.cc",
     "frame_generator_util.h",
     "host_info.cc",
@@ -49,6 +55,10 @@ static_library("test_support") {
     "scroll_frame_generator.h",
     "test_chromoting_client.cc",
     "test_chromoting_client.h",
+    "test_device_id_provider.cc",
+    "test_device_id_provider.h",
+    "test_oauth_token_getter.cc",
+    "test_oauth_token_getter.h",
     "test_token_storage.cc",
     "test_token_storage.h",
     "test_video_renderer.cc",
@@ -69,16 +79,20 @@ static_library("test_support") {
     "//remoting/protocol",
     "//remoting/signaling",
     "//services/network:test_support",
-    "//third_party/webrtc/modules/desktop_capture",
+    "//third_party/webrtc_overrides:webrtc_component",
     "//ui/gfx",
   ]
 
   deps = [
     "//google_apis",
+    "//remoting/base:authorization",
+    "//remoting/base:test_support",
+    "//services/network:network_service",
+    "//services/network/public/mojom",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/webrtc_overrides",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }
 
@@ -115,6 +129,26 @@ if (enable_remoting_host && !is_android && !is_chromeos) {
     ]
   }
 
+  if (!is_win) {
+    # A binary for starting an IT2ME host from command line.
+    executable("it2me_cli_host") {
+      testonly = true
+      sources = [
+        "it2me_cli_host.cc",
+        "it2me_cli_host.h",
+        "it2me_cli_host_main.cc",
+      ]
+      deps = [
+        ":test_support",
+        "//mojo/core/embedder",
+        "//remoting/base",
+        "//remoting/host",
+        "//remoting/host/it2me:common",
+        "//remoting/host/native_messaging",
+      ]
+    }
+  }
+
   static_library("it2me_standalone_host") {
     testonly = true
 
@@ -126,7 +160,7 @@ if (enable_remoting_host && !is_android && !is_chromeos) {
     deps = [
       ":fake_connection_event_logger",
       "//base/test:test_support",
-      "//third_party/webrtc/modules/desktop_capture",
+      "//third_party/webrtc_overrides:webrtc_component",
     ]
 
     public_deps = [
@@ -176,6 +210,22 @@ if (enable_remoting_host && !is_android && !is_chromeos) {
   }
 }
 
+# A binary for testing and fiddling FTL services.
+executable("ftl_services_playground") {
+  testonly = true
+  sources = [
+    "ftl_services_playground.cc",
+    "ftl_services_playground.h",
+    "ftl_services_playground_main.cc",
+  ]
+  deps = [
+    ":test_support",
+    "//mojo/core/embedder",
+    "//remoting/base",
+    "//remoting/signaling",
+  ]
+}
+
 # A binary for testing and fiddling the FTL signaling process.
 executable("ftl_signaling_playground") {
   testonly = true
@@ -183,20 +233,12 @@ executable("ftl_signaling_playground") {
     "ftl_signaling_playground.cc",
     "ftl_signaling_playground.h",
     "ftl_signaling_playground_main.cc",
-    "test_oauth_token_factory.cc",
-    "test_oauth_token_factory.h",
-    "test_token_storage.cc",
-    "test_token_storage.h",
   ]
   deps = [
-    "//google_apis",
+    ":test_support",
     "//mojo/core/embedder",
     "//remoting/base",
-    "//remoting/base:authorization",
-    "//remoting/base:test_support",
     "//remoting/signaling",
-    "//services/network:network_service",
-    "//services/network/public/mojom",
   ]
 }
 
@@ -220,6 +262,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libyuv",
-    "//third_party/webrtc/modules/desktop_capture",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }

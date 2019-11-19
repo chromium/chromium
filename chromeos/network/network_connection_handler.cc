@@ -7,17 +7,18 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill_manager_client.h"
-#include "chromeos/dbus/shill_service_client.h"
+#include "chromeos/dbus/shill/shill_manager_client.h"
+#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/client_cert_resolver.h"
 #include "chromeos/network/client_cert_util.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
+#include "chromeos/network/network_connection_handler_impl.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state.h"
@@ -63,7 +64,7 @@ const char NetworkConnectionHandler::kErrorTetherAttemptWithNoDelegate[] =
     "tether-with-no-delegate";
 
 NetworkConnectionHandler::NetworkConnectionHandler()
-    : tether_delegate_(nullptr), weak_ptr_factory_(this) {}
+    : tether_delegate_(nullptr) {}
 
 NetworkConnectionHandler::~NetworkConnectionHandler() = default;
 
@@ -131,6 +132,18 @@ void NetworkConnectionHandler::InitiateTetherNetworkDisconnection(
       base::Bind(&NetworkConnectionHandler::InvokeConnectErrorCallback,
                  weak_ptr_factory_.GetWeakPtr(), tether_network_guid,
                  error_callback));
+}
+
+// static
+std::unique_ptr<NetworkConnectionHandler>
+NetworkConnectionHandler::InitializeForTesting(
+    NetworkStateHandler* network_state_handler,
+    NetworkConfigurationHandler* network_configuration_handler,
+    ManagedNetworkConfigurationHandler* managed_network_configuration_handler) {
+  NetworkConnectionHandlerImpl* handler = new NetworkConnectionHandlerImpl();
+  handler->Init(network_state_handler, network_configuration_handler,
+                managed_network_configuration_handler);
+  return base::WrapUnique(handler);
 }
 
 }  // namespace chromeos

@@ -1,0 +1,18 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+typemaps = [
+  "//components/arc/mojom/app.typemap",
+  "//components/arc/mojom/bitmap.typemap",
+  "//components/arc/mojom/bluetooth.typemap",
+  "//components/arc/mojom/file_system.typemap",
+  "//components/arc/mojom/gfx.typemap",
+  "//components/arc/mojom/ime.typemap",
+  "//components/arc/mojom/intent_helper.typemap",
+  "//components/arc/mojom/print.typemap",
+  "//components/arc/mojom/timer.typemap",
+  "//components/arc/mojom/video_common.typemap",
+  "//components/arc/mojom/video_encode_accelerator.typemap",
+  "//components/arc/mojom/volume_mounter.typemap",
+]

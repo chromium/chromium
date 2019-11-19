@@ -15,16 +15,16 @@
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "content/public/common/service_manager_connection.h"
+#include "content/public/browser/service_process_host.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/zip_reader.h"
 
 namespace {
 
-void TestCallback(bool* out_success, const base::Closure& quit, bool success) {
+void TestCallback(bool* out_success, base::OnceClosure quit, bool success) {
   *out_success = success;
-  quit.Run();
+  std::move(quit).Run();
 }
 
 bool CreateFile(const base::FilePath& file, const std::string& content) {
@@ -47,6 +47,13 @@ class ZipFileCreatorTest : public InProcessBrowserTest {
     return dir_.GetPath().AppendASCII("files");
   }
 
+  mojo::PendingRemote<chrome::mojom::FileUtilService> LaunchService() {
+    mojo::PendingRemote<chrome::mojom::FileUtilService> service;
+    content::ServiceProcessHost::Launch(
+        service.InitWithNewPipeAndPassReceiver());
+    return service;
+  }
+
  protected:
   base::ScopedTempDir dir_;
 };
@@ -60,13 +67,11 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, FailZipForAbsentFile) {
   std::vector<base::FilePath> paths;
   paths.push_back(base::FilePath(FILE_PATH_LITERAL("not.exist")));
   (new ZipFileCreator(
-       base::Bind(&TestCallback, &success,
-                  content::GetDeferredQuitTaskForRunLoop(&run_loop)),
+       base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
        zip_base_dir(), paths, zip_archive_path()))
-      ->Start(
-          content::ServiceManagerConnection::GetForProcess()->GetConnector());
+      ->Start(LaunchService());
 
-  content::RunThisRunLoop(&run_loop);
+  run_loop.Run();
   EXPECT_FALSE(success);
 }
 
@@ -93,13 +98,11 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, SomeFilesZip) {
   paths.push_back(kFile1);
   paths.push_back(kFile2);
   (new ZipFileCreator(
-       base::Bind(&TestCallback, &success,
-                  content::GetDeferredQuitTaskForRunLoop(&run_loop)),
+       base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
        zip_base_dir(), paths, zip_archive_path()))
-      ->Start(
-          content::ServiceManagerConnection::GetForProcess()->GetConnector());
+      ->Start(LaunchService());
 
-  content::RunThisRunLoop(&run_loop);
+  run_loop.Run();
   EXPECT_TRUE(success);
 
   base::ScopedAllowBlockingForTesting allow_io;
@@ -189,13 +192,13 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, ZipDirectoryWithManyFiles) {
   bool success = false;
   base::RunLoop run_loop;
   (new ZipFileCreator(
-       base::Bind(&TestCallback, &success, run_loop.QuitClosure()), root_dir,
+       base::BindOnce(&TestCallback, &success, run_loop.QuitClosure()),
+       root_dir,
        std::vector<base::FilePath>(),  // Empty means zip everything in dir.
        zip_archive_path()))
-      ->Start(
-          content::ServiceManagerConnection::GetForProcess()->GetConnector());
+      ->Start(LaunchService());
 
-  content::RunThisRunLoop(&run_loop);
+  run_loop.Run();
   EXPECT_TRUE(success);
 
   // Check the archive content.

@@ -6,7 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "components/url_formatter/url_formatter.h"
-#include "ios/web/public/referrer_util.h"
+#include "ios/web/common/referrer_util.h"
 #import "ios/web/web_state/context_menu_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

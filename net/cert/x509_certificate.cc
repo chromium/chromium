@@ -35,7 +35,9 @@
 #include "net/cert/internal/verify_signed_data.h"
 #include "net/cert/pem_tokenizer.h"
 #include "net/cert/x509_util.h"
+#include "net/der/encode_values.h"
 #include "net/der/parser.h"
+#include "net/dns/dns_util.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/pkcs7.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
@@ -73,39 +75,6 @@ void SplitOnChar(const base::StringPiece& src,
     *left = src.substr(0, pos);
     *right = src.substr(pos);
   }
-}
-
-// Converts a GeneralizedTime struct to a base::Time, returning true on success
-// or false if |generalized| was invalid or cannot be represented by
-// base::Time.
-bool GeneralizedTimeToBaseTime(const der::GeneralizedTime& generalized,
-                               base::Time* result) {
-  base::Time::Exploded exploded = {0};
-  exploded.year = generalized.year;
-  exploded.month = generalized.month;
-  exploded.day_of_month = generalized.day;
-  exploded.hour = generalized.hours;
-  exploded.minute = generalized.minutes;
-  exploded.second = generalized.seconds;
-
-  if (base::Time::FromUTCExploded(exploded, result))
-    return true;
-
-  // Fail on obviously bad dates.
-  if (!exploded.HasValidValues())
-    return false;
-
-  // TODO(mattm): consider consolidating this with
-  // SaturatedTimeFromUTCExploded from cookie_util.cc
-  if (static_cast<int>(generalized.year) > base::Time::kExplodedMaxYear) {
-    *result = base::Time::Max();
-    return true;
-  }
-  if (static_cast<int>(generalized.year) < base::Time::kExplodedMinYear) {
-    *result = base::Time::Min();
-    return true;
-  }
-  return false;
 }
 
 // Sets |value| to the Value from a DER Sequence Tag-Length-Value and return
@@ -248,7 +217,7 @@ scoped_refptr<X509Certificate> X509Certificate::CreateFromBytesUnsafeOptions(
   bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer =
       CreateCertBufferFromBytes(data, length);
   if (!cert_buffer)
-    return NULL;
+    return nullptr;
 
   scoped_refptr<X509Certificate> cert =
       CreateFromBufferUnsafeOptions(std::move(cert_buffer), {}, options);
@@ -358,7 +327,7 @@ CertificateList X509Certificate::CreateCertificateListFromBytes(
   return results;
 }
 
-void X509Certificate::Persist(base::Pickle* pickle) {
+void X509Certificate::Persist(base::Pickle* pickle) const {
   DCHECK(cert_buffer_);
   // This would be an absolutely insane number of intermediates.
   if (intermediate_ca_certs_.size() > static_cast<size_t>(INT_MAX) - 1) {
@@ -455,7 +424,7 @@ bool X509Certificate::EqualsIncludingChain(const X509Certificate* other) const {
 }
 
 bool X509Certificate::IsIssuedByEncoded(
-    const std::vector<std::string>& valid_issuers) {
+    const std::vector<std::string>& valid_issuers) const {
   std::vector<std::string> normalized_issuers;
   CertErrors errors;
   for (const auto& raw_issuer : valid_issuers) {
@@ -471,13 +440,13 @@ bool X509Certificate::IsIssuedByEncoded(
   std::string normalized_cert_issuer;
   if (!GetNormalizedCertIssuer(cert_buffer_.get(), &normalized_cert_issuer))
     return false;
-  if (base::ContainsValue(normalized_issuers, normalized_cert_issuer))
+  if (base::Contains(normalized_issuers, normalized_cert_issuer))
     return true;
 
   for (const auto& intermediate : intermediate_ca_certs_) {
     if (!GetNormalizedCertIssuer(intermediate.get(), &normalized_cert_issuer))
       return false;
-    if (base::ContainsValue(normalized_issuers, normalized_cert_issuer))
+    if (base::Contains(normalized_issuers, normalized_cert_issuer))
       return true;
   }
   return false;
@@ -507,11 +476,8 @@ bool X509Certificate::VerifyHostname(
       "[" + hostname + "]" : hostname;
   url::CanonHostInfo host_info;
   std::string reference_name = CanonicalizeHost(host_or_ip, &host_info);
-  // CanonicalizeHost does not normalize absolute vs relative DNS names. If
-  // the input name was absolute (included trailing .), normalize it as if it
-  // was relative.
-  if (!reference_name.empty() && *reference_name.rbegin() == '.')
-    reference_name.resize(reference_name.size() - 1);
+
+  // If the host cannot be canonicalized, fail fast.
   if (reference_name.empty())
     return false;
 
@@ -520,8 +486,23 @@ bool X509Certificate::VerifyHostname(
     base::StringPiece ip_addr_string(
         reinterpret_cast<const char*>(host_info.address),
         host_info.AddressLength());
-    return base::ContainsValue(cert_san_ip_addrs, ip_addr_string);
+    return base::Contains(cert_san_ip_addrs, ip_addr_string);
   }
+
+  // The host portion of a URL may support a variety of name resolution formats
+  // and services. However, the only supported name types in this code are IP
+  // addresses, which have been handled above via iPAddress subjectAltNames,
+  // and DNS names, via dNSName subjectAltNames.
+  // Validate that the host conforms to the DNS preferred name syntax, in
+  // either relative or absolute form, and exclude the "root" label for DNS.
+  if (reference_name == "." || !IsValidDNSDomain(reference_name))
+    return false;
+
+  // CanonicalizeHost does not normalize absolute vs relative DNS names. If
+  // the input name was absolute (included trailing .), normalize it as if it
+  // was relative.
+  if (reference_name.back() == '.')
+    reference_name.pop_back();
 
   // |reference_domain| is the remainder of |host| after the leading host
   // component is stripped off, but includes the leading dot e.g.
@@ -869,8 +850,8 @@ bool X509Certificate::Initialize(UnsafeCreateOptions options) {
     return false;
   }
 
-  if (!GeneralizedTimeToBaseTime(tbs.validity_not_before, &valid_start_) ||
-      !GeneralizedTimeToBaseTime(tbs.validity_not_after, &valid_expiry_)) {
+  if (!der::GeneralizedTimeToTime(tbs.validity_not_before, &valid_start_) ||
+      !der::GeneralizedTimeToTime(tbs.validity_not_after, &valid_expiry_)) {
     return false;
   }
   serial_number_ = tbs.serial_number.AsString();

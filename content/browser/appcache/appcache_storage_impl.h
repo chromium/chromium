@@ -130,8 +130,10 @@ class AppCacheStorageImpl : public AppCacheStorage {
   void LazilyCommitLastAccessTimes();
   void OnLazyCommitTimer();
 
+  // If there is appcache data to be deleted (|force_keep_session_state| is
+  // false), deletes session-only appcache data.
   static void ClearSessionOnlyOrigins(
-      AppCacheDatabase* database,
+      std::unique_ptr<AppCacheDatabase> database,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       bool force_keep_session_state);
 
@@ -145,14 +147,15 @@ class AppCacheStorageImpl : public AppCacheStorage {
       scoped_refptr<AppCache> newest_cache,
       scoped_refptr<DelegateReference> delegate_ref);
 
-  void CallOnMainResponseFound(DelegateReferenceVector* delegates,
-                               const GURL& url,
-                               const AppCacheEntry& entry,
-                               const GURL& namespace_entry_url,
-                               const AppCacheEntry& fallback_entry,
-                               int64_t cache_id,
-                               int64_t group_id,
-                               const GURL& manifest_url);
+  void CallOnMainResponseFound(
+      std::vector<scoped_refptr<DelegateReference>>* delegates,
+      const GURL& url,
+      const AppCacheEntry& entry,
+      const GURL& namespace_entry_url,
+      const AppCacheEntry& fallback_entry,
+      int64_t cache_id,
+      int64_t group_id,
+      const GURL& manifest_url);
 
   // Don't call this when |is_disabled_| is true.
   CONTENT_EXPORT AppCacheDiskCache* disk_cache();
@@ -180,7 +183,7 @@ class AppCacheStorageImpl : public AppCacheStorage {
   int64_t last_deletable_response_rowid_;
 
   // Created on the IO thread, but only used on the DB thread.
-  AppCacheDatabase* database_;
+  std::unique_ptr<AppCacheDatabase> database_;
 
   // Set if we discover a fatal error like a corrupt SQL database or
   // disk cache and cannot continue.
@@ -200,7 +203,7 @@ class AppCacheStorageImpl : public AppCacheStorage {
   // Used to short-circuit certain operations without having to schedule
   // any tasks on the background database thread.
   base::circular_deque<base::OnceClosure> pending_simple_tasks_;
-  base::WeakPtrFactory<AppCacheStorageImpl> weak_factory_;
+  base::WeakPtrFactory<AppCacheStorageImpl> weak_factory_{this};
 
   friend class content::AppCacheStorageImplTest;
   friend class content::ChromeAppCacheServiceTest;

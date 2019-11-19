@@ -19,18 +19,15 @@ class MockNudgeHandler : public NudgeHandler {
 
   void NudgeForInitialDownload(ModelType type) override;
   void NudgeForCommit(ModelType type) override;
-  void NudgeForRefresh(ModelType type) override;
 
   int GetNumInitialDownloadNudges() const;
   int GetNumCommitNudges() const;
-  int GetNumRefreshNudges() const;
 
   void ClearCounters();
 
  private:
   int num_initial_nudges_;
   int num_commit_nudges_;
-  int num_refresh_nudges_;
 
   DISALLOW_COPY_AND_ASSIGN(MockNudgeHandler);
 };

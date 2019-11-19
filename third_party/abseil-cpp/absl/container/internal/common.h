@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -77,8 +77,16 @@ class node_handle_base {
  protected:
   friend struct CommonAccess;
 
-  node_handle_base(const allocator_type& a, slot_type* s) : alloc_(a) {
+  struct transfer_tag_t {};
+  node_handle_base(transfer_tag_t, const allocator_type& a, slot_type* s)
+      : alloc_(a) {
     PolicyTraits::transfer(alloc(), slot(), s);
+  }
+
+  struct move_tag_t {};
+  node_handle_base(move_tag_t, const allocator_type& a, slot_type* s)
+      : alloc_(a) {
+    PolicyTraits::construct(alloc(), slot(), s);
   }
 
   void destroy() {
@@ -121,7 +129,7 @@ class node_handle : public node_handle_base<PolicyTraits, Alloc> {
  private:
   friend struct CommonAccess;
 
-  node_handle(const Alloc& a, typename Base::slot_type* s) : Base(a, s) {}
+  using Base::Base;
 };
 
 // For maps.
@@ -148,7 +156,7 @@ class node_handle<Policy, PolicyTraits, Alloc,
  private:
   friend struct CommonAccess;
 
-  node_handle(const Alloc& a, typename Base::slot_type* s) : Base(a, s) {}
+  using Base::Base;
 };
 
 // Provide access to non-public node-handle functions.
@@ -164,8 +172,13 @@ struct CommonAccess {
   }
 
   template <typename T, typename... Args>
-  static T Make(Args&&... args) {
-    return T(std::forward<Args>(args)...);
+  static T Transfer(Args&&... args) {
+    return T(typename T::transfer_tag_t{}, std::forward<Args>(args)...);
+  }
+
+  template <typename T, typename... Args>
+  static T Move(Args&&... args) {
+    return T(typename T::move_tag_t{}, std::forward<Args>(args)...);
   }
 };
 

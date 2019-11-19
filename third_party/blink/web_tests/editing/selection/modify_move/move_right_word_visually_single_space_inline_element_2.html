@@ -1,0 +1,56 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="rtl">|אאא <span>בב</span></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|אאא <span>בב</span></div>',
+  '2-0 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">א|אא <span>בב</span></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|אאא <span>בב</span></div>',
+  '2-1 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אא|א <span>בב</span></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|אאא <span>בב</span></div>',
+  '2-2 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אאא| <span>בב</span></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|אאא <span>בב</span></div>',
+  '2-3 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אאא |<span>בב</span></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|אאא <span>בב</span></div>',
+  '2-4 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אאא <span>|בב</span></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|אאא <span>בב</span></div>',
+  '2-5 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אאא <span>ב|ב</span></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אאא |<span>בב</span></div>',
+  '2-6 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אאא <span>בב|</span></div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">אאא |<span>בב</span></div>',
+  '2-7 right word');
+</script>

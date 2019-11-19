@@ -31,14 +31,14 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_PLAYER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_PLAYER_H_
 
-#include "base/optional.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "third_party/blink/public/platform/web_callbacks.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_media_source.h"
 #include "third_party/blink/public/platform/web_set_sink_id_callbacks.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/webaudiosourceprovider_impl.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace cc {
@@ -54,7 +54,6 @@ class GLES2Interface;
 
 namespace blink {
 
-class WebAudioSourceProvider;
 class WebContentDecryptionModule;
 class WebMediaPlayerSource;
 class WebString;
@@ -123,6 +122,7 @@ class WebMediaPlayer {
     int frame_id = -1;
     gfx::Rect visible_rect = {};
     base::TimeDelta timestamp = {};
+    base::TimeDelta expected_timestamp = {};
     bool skipped = false;
   };
 
@@ -149,6 +149,12 @@ class WebMediaPlayer {
   virtual void SetRate(double) = 0;
   virtual void SetVolume(double) = 0;
 
+  // Set a target value for media pipeline latency for post-decode buffering.
+  // |seconds| is a target value for post-decode buffering latency. As a default
+  // |seconds| may also be NaN, indicating no preference. NaN will also be the
+  // value if the hint is cleared.
+  virtual void SetLatencyHint(double seconds) = 0;
+
   // The associated media element is going to enter Picture-in-Picture. This
   // method should make sure the player is set up for this and has a SurfaceId
   // as it will be needed.
@@ -165,8 +171,8 @@ class WebMediaPlayer {
   virtual WebTimeRanges Seekable() const = 0;
 
   // Attempts to switch the audio output device.
-  virtual void SetSinkId(const WebString& sink_id,
-                         std::unique_ptr<WebSetSinkIdCallbacks>) = 0;
+  virtual void SetSinkId(const WebString& sing_id,
+                         WebSetSinkIdCompleteCallback) = 0;
 
   // True if the loaded media has a playable video/audio track.
   virtual bool HasVideo() const = 0;
@@ -214,6 +220,10 @@ class WebMediaPlayer {
   virtual unsigned CorruptedFrameCount() const { return 0; }
   virtual uint64_t AudioDecodedByteCount() const = 0;
   virtual uint64_t VideoDecodedByteCount() const = 0;
+
+  // Returns true if the player has a frame available for presentation. Usually
+  // this just means the first frame has been delivered.
+  virtual bool HasAvailableVideoFrame() const = 0;
 
   // |already_uploaded_id| indicates the unique_id of the frame last uploaded
   //   to this destination. It should only be set by the caller if the contents
@@ -326,7 +336,20 @@ class WebMediaPlayer {
     return false;
   }
 
-  virtual WebAudioSourceProvider* GetAudioSourceProvider() { return nullptr; }
+  // Share video frame texture to |texture|. If the sharing is impossible or
+  // fails, it returns false.
+  virtual bool PrepareVideoFrameForWebGL(
+      gpu::gles2::GLES2Interface* gl,
+      unsigned target,
+      unsigned texture,
+      int already_uploaded_id = -1,
+      WebMediaPlayer::VideoFrameUploadMetadata* out_metadata = nullptr) {
+    return false;
+  }
+
+  virtual scoped_refptr<WebAudioSourceProviderImpl> GetAudioSourceProvider() {
+    return nullptr;
+  }
 
   virtual void SetContentDecryptionModule(
       WebContentDecryptionModule* cdm,
@@ -408,6 +431,18 @@ class WebMediaPlayer {
   virtual base::Optional<viz::SurfaceId> GetSurfaceId() {
     return base::nullopt;
   }
+
+  // Provide the media URL, after any redirects are applied.  May return an
+  // empty GURL, which will be interpreted as "use the original URL".
+  virtual GURL GetSrcAfterRedirects() { return GURL(); }
+
+  // Register a request to be notified the next time a video frame is presented
+  // to the compositor. The video frame and its metadata will be surfaced via
+  // WebMediaPlayerClient::OnRequestAnimationFrame().
+  // TODO(https://crbug.com/1022186): Add pointer to spec.
+  virtual void RequestAnimationFrame() {}
+
+  virtual base::WeakPtr<WebMediaPlayer> AsWeakPtr() = 0;
 };
 
 }  // namespace blink

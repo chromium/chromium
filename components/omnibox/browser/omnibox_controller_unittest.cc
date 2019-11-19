@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_client.h"
@@ -33,7 +33,7 @@ class OmniboxControllerTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
   std::unique_ptr<OmniboxController> omnibox_controller_;
 

@@ -41,10 +41,8 @@ function imageLoaded() {
 }
 
 function runTests() {
-    if (window.testRunner) {
-	    testRunner.dumpAsTextWithPixelResults();
+    if (window.testRunner)
         testRunner.waitUntilDone();
-    }
     
     i = new Image();
     i.onload = imageLoaded;

@@ -6,11 +6,6 @@
 
 namespace blink {
 
-AuthenticatorResponse* AuthenticatorResponse::Create(
-    DOMArrayBuffer* client_data_json) {
-  return MakeGarbageCollected<AuthenticatorResponse>(client_data_json);
-}
-
 AuthenticatorResponse::AuthenticatorResponse(DOMArrayBuffer* client_data_json)
     : client_data_json_(client_data_json) {}
 

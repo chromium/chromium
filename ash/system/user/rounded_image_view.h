@@ -31,9 +31,10 @@ class RoundedImageView : public views::View {
                       int bottom_right,
                       int bottom_left);
 
-  // Overridden from views::View.
+  // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
+  const char* GetClassName() const override;
 
   // Gets the image painted by RoundedImageView for test.
   const gfx::ImageSkia& image_for_test() const { return resized_image_; }

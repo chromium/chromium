@@ -296,6 +296,22 @@ FT_BEGIN_HEADER
 
   /**************************************************************************
    *
+   * Brotli support.
+   *
+   *   FreeType uses the Brotli library to provide support for decompressing
+   *   WOFF2 streams.
+   *
+   *   Define this macro if you want to enable this 'feature'.
+   *
+   *   If you use a build system like cmake or the `configure` script,
+   *   options set by those programs have precedence, overwriting the value
+   *   here with the configured one.
+   */
+/* #define FT_CONFIG_OPTION_USE_BROTLI */
+
+
+  /**************************************************************************
+   *
    * Glyph Postscript Names handling
    *
    *   By default, FreeType 2 is compiled with the 'psnames' module.  This
@@ -873,9 +889,11 @@ FT_BEGIN_HEADER
    *
    * Compile 'autofit' module with fallback Indic script support, covering
    * some scripts that the 'latin' submodule of the 'autofit' module doesn't
-   * (yet) handle.
+   * (yet) handle.  Currently, this needs option `AF_CONFIG_OPTION_CJK`.
    */
+#ifdef AF_CONFIG_OPTION_CJK
 #define AF_CONFIG_OPTION_INDIC
+#endif
 
 
   /**************************************************************************

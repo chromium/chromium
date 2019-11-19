@@ -9,24 +9,24 @@ import "mojo/public/interfaces/bindings/tests/ping_service.mojom";
 interface FooInterface {};
 
 struct StructContainsAssociated {
-  associated FooInterface? foo_interface;
-  associated FooInterface& foo_request;
-  array<associated FooInterface> foo_interfaces;
-  array<associated FooInterface&> foo_requests;
+  pending_associated_remote<FooInterface>? foo_remote;
+  pending_associated_receiver<FooInterface> foo_receiver;
+  array<pending_associated_remote<FooInterface>> foo_remotes;
+  array<pending_associated_receiver<FooInterface>> foo_receivers;
 };
 
 union UnionContainsAssociated {
-  associated FooInterface foo_interface;
-  associated FooInterface& foo_request;
-  array<associated FooInterface> foo_interfaces;
-  array<associated FooInterface&> foo_requests;
+  pending_associated_remote<FooInterface>? foo_remote;
+  pending_associated_receiver<FooInterface> foo_receiver;
+  array<pending_associated_remote<FooInterface>> foo_remotes;
+  array<pending_associated_receiver<FooInterface>> foo_receivers;
 };
 
 interface InterfacePassesAssociated {
-  PassFoo(associated FooInterface foo_interface,
-          associated FooInterface& foo_request) =>
-         (associated FooInterface foo_interface,
-          associated FooInterface& foo_request);
+  PassFoo(pending_associated_remote<FooInterface> foo_remote,
+          pending_associated_receiver<FooInterface> foo_receiver) =>
+         (pending_associated_remote<FooInterface> foo_remote,
+          pending_associated_receiver<FooInterface> foo_receiver);
 
   PassStruct(StructContainsAssociated foo_struct) =>
             (StructContainsAssociated foo_struct);
@@ -46,24 +46,24 @@ interface StringSender {
 };
 
 interface IntegerSenderConnection {
-  GetSender(associated IntegerSender& sender);
-  AsyncGetSender() => (associated IntegerSender sender);
+  GetSender(pending_associated_receiver<IntegerSender> receiver);
+  AsyncGetSender() => (pending_associated_remote<IntegerSender> sender);
 };
 
 interface IntegerSenderConnectionAtBothEnds {
-  GetSender(associated IntegerSender& sender);
-  SetSender(associated IntegerSender sender) => (int32 value);
+  GetSender(pending_associated_receiver<IntegerSender> receiver);
+  SetSender(pending_associated_remote<IntegerSender> sender) => (int32 value);
 };
 
 interface SenderConnection {
-  GetIntegerSender(associated IntegerSender& sender);
-  GetStringSender(associated StringSender& sender);
+  GetIntegerSender(pending_associated_receiver<IntegerSender> receiver);
+  GetStringSender(pending_associated_receiver<StringSender> receiver);
 };
 
 interface AssociatedPingProvider {
-  GetPing(associated PingService& request);
+  GetPing(pending_associated_receiver<PingService> receiver);
 };
 
 interface AssociatedPingProviderProvider {
-  GetPingProvider(associated AssociatedPingProvider& request);
+  GetPingProvider(pending_associated_receiver<AssociatedPingProvider> receiver);
 };

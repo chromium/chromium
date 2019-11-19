@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+PASS The SharedWorkerGlobalScope interface object should not be exposed.
+PASS The AbstractView interface object should not be exposed.
+PASS The AbstractWorker interface object should not be exposed.
+PASS The ApplicationCache interface object should not be exposed.
+PASS The Location interface object should not be exposed.
+PASS The Navigator interface object should not be exposed.
+PASS The Audio interface object should not be exposed.
+PASS The HTMLCanvasElement interface object should not be exposed.
+PASS The Path interface object should not be exposed.
+PASS The CanvasProxy interface object should not be exposed.
+PASS The CanvasRenderingContext2D interface object should not be exposed.
+PASS The DrawingStyle interface object should not be exposed.
+PASS The BeforeUnloadEvent interface object should not be exposed.
+PASS The PopStateEvent interface object should not be exposed.
+PASS The HashChangeEvent interface object should not be exposed.
+PASS The PageTransitionEvent interface object should not be exposed.
+PASS The DOMImplementation interface object should not be exposed.
+FAIL The ReadableStreamDefaultReader interface object should not be exposed. assert_false: expected false got true
+PASS The ReadableStreamBYOBReader interface object should not be exposed.
+PASS The ReadableStreamDefaultController interface object should not be exposed.
+PASS The ReadableByteStreamController interface object should not be exposed.
+FAIL The WritableStreamDefaultWriter interface object should not be exposed. assert_false: expected false got true
+PASS The WritableStreamDefaultController interface object should not be exposed.
+PASS The IDBEnvironment interface object should not be exposed.
+PASS The Database interface object should not be exposed.
+PASS The UIEvent interface object should not be exposed.
+PASS The FocusEvent interface object should not be exposed.
+PASS The MouseEvent interface object should not be exposed.
+PASS The WheelEvent interface object should not be exposed.
+PASS The InputEvent interface object should not be exposed.
+PASS The KeyboardEvent interface object should not be exposed.
+PASS The CompositionEvent interface object should not be exposed.
+PASS The VTTCue interface object should not be exposed.
+PASS The VTTRegion interface object should not be exposed.
+Harness: the test ran to completion.
+

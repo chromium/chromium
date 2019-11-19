@@ -63,7 +63,7 @@ function end_test() {
 }
 </script>
 </head>
-<body onload="internals.updateLayoutIgnorePendingStylesheetsAndRunPostLayoutTasks(); test();">
+<body onload="internals.updateLayoutAndRunPostLayoutTasks(); test();">
 <embed type="application/x-blink-deprecated-test-plugin" width=100 height=40 mousedownscript="popup_by_mousedown()" windowedplugin="false"></embed><br>
 <embed type="application/x-blink-deprecated-test-plugin" width=100 height=40 keydownscript="popup_by_keydown()" windowedplugin="false"></embed><br>
 Specify a script and a mouse/keyboard event to the plugin. The specified script will be evaluated in the browser when the specified event is received by the plugin. The test is for bug https://bugs.webkit.org/show_bug.cgi?id=41292.<br>

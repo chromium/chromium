@@ -10,17 +10,35 @@
 #include "base/android/jni_android.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
-#include "jni/SurfaceTexturePlatformWrapper_jni.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/android/surface_texture_listener.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_jni_headers/SurfaceTexturePlatformWrapper_jni.h"
+
+#ifndef GL_ANGLE_texture_storage_external
+#define GL_ANGLE_texture_storage_external 1
+#define GL_TEXTURE_NATIVE_ID_ANGLE 0x3481
+#endif /* GL_ANGLE_texture_storage_external */
 
 namespace gl {
 
 scoped_refptr<SurfaceTexture> SurfaceTexture::Create(int texture_id) {
+  int native_id = texture_id;
+
+  // ANGLE emulates texture IDs so query the native ID of the texture.
+  if (texture_id != 0 &&
+      gl::g_current_gl_driver->ext.b_GL_ANGLE_texture_external_update) {
+    GLint prev_texture = 0;
+    glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &prev_texture);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, texture_id);
+    glGetTexParameteriv(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_NATIVE_ID_ANGLE,
+                        &native_id);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, prev_texture);
+  }
+
   JNIEnv* env = base::android::AttachCurrentThread();
   return new SurfaceTexture(
-      Java_SurfaceTexturePlatformWrapper_create(env, texture_id));
+      Java_SurfaceTexturePlatformWrapper_create(env, native_id));
 }
 
 SurfaceTexture::SurfaceTexture(
@@ -58,6 +76,10 @@ void SurfaceTexture::UpdateTexImage() {
   base::debug::ScopedCrashKeyString scoped_crash_key(kCrashKey, "1");
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SurfaceTexturePlatformWrapper_updateTexImage(env, j_surface_texture_);
+
+  // Notify ANGLE that the External texture binding has changed
+  if (gl::g_current_gl_driver->ext.b_GL_ANGLE_texture_external_update)
+    glInvalidateTextureANGLE(GL_TEXTURE_EXTERNAL_OES);
 }
 
 void SurfaceTexture::GetTransformMatrix(float mtx[16]) {
@@ -76,12 +98,24 @@ void SurfaceTexture::GetTransformMatrix(float mtx[16]) {
 }
 
 void SurfaceTexture::AttachToGLContext() {
-  int texture_id;
-  glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &texture_id);
+  // ANGLE emulates texture IDs so query the native ID of the texture.
+  int texture_id = 0;
+  if (gl::g_current_gl_driver->ext.b_GL_ANGLE_texture_external_update) {
+    glGetTexParameteriv(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_NATIVE_ID_ANGLE,
+                        &texture_id);
+  } else {
+    glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &texture_id);
+  }
   DCHECK(texture_id);
+
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SurfaceTexturePlatformWrapper_attachToGLContext(env, j_surface_texture_,
                                                        texture_id);
+
+  // Notify ANGLE that the External texture binding has changed
+  if (gl::g_current_gl_driver->ext.b_GL_ANGLE_texture_external_update) {
+    glInvalidateTextureANGLE(GL_TEXTURE_EXTERNAL_OES);
+  }
 }
 
 void SurfaceTexture::DetachFromGLContext() {

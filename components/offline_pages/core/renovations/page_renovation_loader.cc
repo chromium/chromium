@@ -85,7 +85,7 @@ bool PageRenovationLoader::LoadSource() {
   // Our script file is stored in the resource bundle. Get this script.
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   combined_source_ = base::UTF8ToUTF16(
-      rb.GetRawDataResource(IDR_OFFLINE_PAGES_RENOVATIONS_JS).as_string());
+      rb.LoadDataResourceString(IDR_OFFLINE_PAGES_RENOVATIONS_JS));
 
   // If built correctly, IDR_OFFLINE_PAGES_RENOVATIONS_JS should
   // always exist in the resource pack and loading should never fail.

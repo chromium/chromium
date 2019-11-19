@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
@@ -11,86 +10,64 @@
 
 #include "base/bind.h"
 #include "base/ios/ios_util.h"
+#include "base/mac/foundation_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/reading_list/core/reading_list_model.h"
-#import "ios/chrome/browser/reading_list/features.h"
-#include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
-#include "ios/chrome/browser/system_flags.h"
-#import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_table_view_controller.h"
-#import "ios/chrome/browser/ui/reading_list/reading_list_toolbar_button_identifiers.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_url_cell_favicon_badge_view.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
-#import "ios/chrome/browser/ui/table_view/table_view_empty_view.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
+#import "ios/chrome/browser/ui/table_view/table_view_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/chrome/grit/ios_theme_resources.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
-#include "ios/chrome/test/app/navigation_test_util.h"
-#import "ios/chrome/test/app/tab_test_util.h"
-#import "ios/chrome/test/earl_grey/accessibility_util.h"
+#import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/third_party/material_components_ios/src/components/Snackbar/src/MaterialSnackbar.h"
-#include "ios/web/public/features.h"
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/reload_type.h"
-#import "ios/web/public/test/web_view_content_test_util.h"
-#import "ios/web/public/web_state/web_state.h"
-#include "net/base/network_change_notifier.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/navigation/reload_type.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 
+#include "net/base/network_change_notifier.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+using base::test::ios::kWaitForUIElementTimeout;
+
 namespace {
 const char kContentToRemove[] = "Text that distillation should remove.";
 const char kContentToKeep[] = "Text that distillation should keep.";
-const char kDistillableTitle[] = "Tomato";
+NSString* const kDistillableTitle = @"Tomato";
 const char kDistillableURL[] = "/potato";
 const char kNonDistillableURL[] = "/beans";
-const char kReadTitle[] = "foobar";
-const char kReadURL[] = "http://readfoobar.com";
-const char kUnreadTitle[] = "I am an unread entry";
-const char kUnreadURL[] = "http://unreadfoobar.com";
-const char kReadURL2[] = "http://kReadURL2.com";
-const char kReadTitle2[] = "read item 2";
-const char kUnreadTitle2[] = "I am another unread entry";
-const char kUnreadURL2[] = "http://unreadfoobar2.com";
+NSString* const kReadTitle = @"foobar";
+NSString* const kReadURL = @"http://readfoobar.com";
+NSString* const kUnreadTitle = @"I am an unread entry";
+NSString* const kUnreadURL = @"http://unreadfoobar.com";
+NSString* const kReadURL2 = @"http://kReadURL2.com";
+NSString* const kReadTitle2 = @"read item 2";
+NSString* const kUnreadTitle2 = @"I am another unread entry";
+NSString* const kUnreadURL2 = @"http://unreadfoobar2.com";
 const size_t kNumberReadEntries = 2;
 const size_t kNumberUnreadEntries = 2;
 const CFTimeInterval kSnackbarAppearanceTimeout = 5;
-const CFTimeInterval kSnackbarDisappearanceTimeout =
-    MDCSnackbarMessageDurationMax + 1;
+// kSnackbarDisappearanceTimeout = MDCSnackbarMessageDurationMax + 1
+const CFTimeInterval kSnackbarDisappearanceTimeout = 10 + 1;
 const CFTimeInterval kDelayForSlowWebServer = 4;
 const CFTimeInterval kLoadOfflineTimeout = kDelayForSlowWebServer + 1;
 const CFTimeInterval kLongPressDuration = 1.0;
 const CFTimeInterval kDistillationTimeout = 5;
 const CFTimeInterval kServerOperationDelay = 1;
-const char kReadHeader[] = "Read";
-const char kUnreadHeader[] = "Unread";
-
-// Overrides the NetworkChangeNotifier to enable distillation even if the device
-// does not have network.
-class WifiNetworkChangeNotifier : public net::NetworkChangeNotifier {
- public:
-  WifiNetworkChangeNotifier() : net::NetworkChangeNotifier() {}
-
-  ConnectionType GetCurrentConnectionType() const override {
-    return CONNECTION_WIFI;
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WifiNetworkChangeNotifier);
-};
+NSString* const kReadHeader = @"Read";
+NSString* const kUnreadHeader = @"Unread";
 
 // Returns the string concatenated |n| times.
 std::string operator*(const std::string& s, unsigned int n) {
@@ -100,30 +77,10 @@ std::string operator*(const std::string& s, unsigned int n) {
   return out.str();
 }
 
-// Returns the reading list model.
-ReadingListModel* GetReadingListModel() {
-  ReadingListModel* model =
-      ReadingListModelFactory::GetInstance()->GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState());
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(2,
-                                                   ^{
-                                                     return model->loaded();
-                                                   }),
-      @"Reading List model did not load");
-  return model;
-}
-
 // Scroll to the top of the Reading List.
 void ScrollToTop() {
-  NSError* error = nil;
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID([
-                                          [ReadingListTableViewController class]
-                                          accessibilityIdentifier])]
-      performAction:grey_scrollToContentEdgeWithStartPoint(kGREYContentEdgeTop,
-                                                           0.5, 0.5)
-              error:&error];
-  [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
+      performAction:[ChromeActionsAppInterface scrollToTop]];
 }
 
 // Asserts that the "mark" toolbar button is visible and has the a11y label of
@@ -133,7 +90,7 @@ void AssertToolbarMarkButtonText(int a11y_label_id) {
       selectElementWithMatcher:
           grey_allOf(
               grey_accessibilityID(kReadingListToolbarMarkButtonID),
-              grey_ancestor(grey_kindOfClass([UIToolbar class])),
+              grey_ancestor(grey_kindOfClassName(@"UIToolbar")),
               chrome_test_util::ButtonWithAccessibilityLabelId(a11y_label_id),
               nil)] assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -142,8 +99,8 @@ void AssertToolbarMarkButtonText(int a11y_label_id) {
 void AssertToolbarButtonNotVisibleWithID(NSString* button_id) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(button_id),
-                                          grey_ancestor(grey_kindOfClass(
-                                              [UIToolbar class])),
+                                          grey_ancestor(grey_kindOfClassName(
+                                              @"UIToolbar")),
                                           nil)]
       assertWithMatcher:grey_notVisible()];
 }
@@ -152,8 +109,8 @@ void AssertToolbarButtonNotVisibleWithID(NSString* button_id) {
 void AssertToolbarButtonVisibleWithID(NSString* button_id) {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(button_id),
-                                          grey_ancestor(grey_kindOfClass(
-                                              [UIToolbar class])),
+                                          grey_ancestor(grey_kindOfClassName(
+                                              @"UIToolbar")),
                                           nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -173,45 +130,40 @@ void TapContextMenuButtonWithA11yLabelID(int a11y_label_id) {
 
 // Performs |action| on the entry with the title |entryTitle|. The view can be
 // scrolled down to find the entry.
-void PerformActionOnEntry(const std::string& entryTitle,
-                          id<GREYAction> action) {
+void PerformActionOnEntry(NSString* entryTitle, id<GREYAction> action) {
   ScrollToTop();
   id<GREYMatcher> matcher =
-      grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(
-                     base::SysUTF8ToNSString(entryTitle)),
-                 grey_ancestor(grey_kindOfClass([TableViewURLCell class])),
+      grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(entryTitle),
+                 grey_ancestor(grey_kindOfClassName(@"TableViewURLCell")),
                  grey_sufficientlyVisible(), nil);
   [[[EarlGrey selectElementWithMatcher:matcher]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
-      onElementWithMatcher:grey_accessibilityID(
-                               [ReadingListTableViewController class])]
+      onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       performAction:action];
 }
 
 // Taps the entry with the title |entryTitle|.
-void TapEntry(const std::string& entryTitle) {
+void TapEntry(NSString* entryTitle) {
   PerformActionOnEntry(entryTitle, grey_tap());
 }
 
 // Long-presses the entry with the title |entryTitle|.
-void LongPressEntry(const std::string& entryTitle) {
+void LongPressEntry(NSString* entryTitle) {
   PerformActionOnEntry(entryTitle,
                        grey_longPressWithDuration(kLongPressDuration));
 }
 
 // Asserts that the entry with the title |entryTitle| is visible.
-void AssertEntryVisible(const std::string& entryTitle) {
+void AssertEntryVisible(NSString* entryTitle) {
   ScrollToTop();
   [[[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(
-                         base::SysUTF8ToNSString(entryTitle)),
-                     grey_ancestor(grey_kindOfClass([TableViewURLCell class])),
-                     grey_sufficientlyVisible(), nil)]
+          grey_allOf(
+              chrome_test_util::StaticTextWithAccessibilityLabel(entryTitle),
+              grey_ancestor(grey_kindOfClassName(@"TableViewURLCell")),
+              grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
-      onElementWithMatcher:grey_accessibilityID(
-                               [[ReadingListTableViewController class]
-                                   accessibilityIdentifier])]
+      onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -230,75 +182,97 @@ void AssertAllEntriesVisible() {
 }
 
 // Asserts that the entry |title| is not visible.
-void AssertEntryNotVisible(std::string title) {
+void AssertEntryNotVisible(NSString* title) {
   [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
   ScrollToTop();
   NSError* error;
 
   [[[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(
-                         base::SysUTF8ToNSString(title)),
-                     grey_ancestor(grey_kindOfClass([TableViewURLCell class])),
+          grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(title),
+                     grey_ancestor(grey_kindOfClassName(@"TableViewURLCell")),
                      grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
-      onElementWithMatcher:grey_accessibilityID(
-                               [[ReadingListTableViewController class]
-                                   accessibilityIdentifier])]
+      onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
       assertWithMatcher:grey_notNil()
                   error:&error];
   GREYAssertNotNil(error, @"Entry is visible");
 }
 
 // Asserts |header| is visible.
-void AssertHeaderNotVisible(std::string header) {
+void AssertHeaderNotVisible(NSString* header) {
   [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
   ScrollToTop();
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          StaticTextWithAccessibilityLabel(
-                                              base::SysUTF8ToNSString(header))]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabel(header)]
       assertWithMatcher:grey_notVisible()];
 }
 
-// Opens the reading list menu using command line.
+// Opens the reading list menu.
 void OpenReadingList() {
-  [chrome_test_util::BrowserCommandDispatcherForMainBVC() showReadingList];
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::ReadingListMenuButton()];
 }
 
-// Adds a read and an unread entry to the model, opens the reading list menu and
-// enter edit mode.
-void AddEntriesAndEnterEdit() {
-  ReadingListModel* model = GetReadingListModel();
-  model->AddEntry(GURL(kReadURL), std::string(kReadTitle),
-                  reading_list::ADDED_VIA_CURRENT_APP);
-  model->SetReadStatus(GURL(kReadURL), true);
-  model->AddEntry(GURL(kReadURL2), std::string(kReadTitle2),
-                  reading_list::ADDED_VIA_CURRENT_APP);
-  model->SetReadStatus(GURL(kReadURL2), true);
-  model->AddEntry(GURL(kUnreadURL), std::string(kUnreadTitle),
-                  reading_list::ADDED_VIA_CURRENT_APP);
-  model->AddEntry(GURL(kUnreadURL2), std::string(kUnreadTitle2),
-                  reading_list::ADDED_VIA_CURRENT_APP);
+// Adds 20 read and 20 unread entries to the model, opens the reading list menu
+// and enter edit mode.
+void AddLotOfEntriesAndEnterEdit() {
+  for (NSInteger index = 0; index < 10; index++) {
+    NSString* url_to_be_added =
+        [kReadURL stringByAppendingPathComponent:[@(index) stringValue]];
+    GREYAssertNil([ReadingListAppInterface
+                      addEntryWithURL:[NSURL URLWithString:url_to_be_added]
+                                title:kReadTitle
+                                 read:YES],
+                  @"Unable to add Reading List item");
+  }
+  for (NSInteger index = 0; index < 10; index++) {
+    NSString* url_to_be_added =
+        [kUnreadURL stringByAppendingPathComponent:[@(index) stringValue]];
+    GREYAssertNil([ReadingListAppInterface
+                      addEntryWithURL:[NSURL URLWithString:url_to_be_added]
+                                title:kReadTitle
+                                 read:NO],
+                  @"Unable to add Reading List item");
+  }
   OpenReadingList();
 
   TapToolbarButtonWithID(kReadingListToolbarEditButtonID);
 }
 
-// Computes the number of read entries in the model.
-size_t ModelReadSize(ReadingListModel* model) {
-  size_t size = 0;
-  for (const auto& url : model->Keys()) {
-    if (model->GetEntryByURL(url)->IsRead()) {
-      size++;
-    }
-  }
-  return size;
+// Adds a read and an unread entry to the model, opens the reading list menu and
+// enter edit mode.
+void AddEntriesAndEnterEdit() {
+  GREYAssertNil(
+      [ReadingListAppInterface addEntryWithURL:[NSURL URLWithString:kReadURL]
+                                         title:kReadTitle
+                                          read:YES],
+      @"Unable to add Reading List item");
+  GREYAssertNil(
+      [ReadingListAppInterface addEntryWithURL:[NSURL URLWithString:kReadURL2]
+                                         title:kReadTitle2
+                                          read:YES],
+      @"Unable to add Reading List item");
+  GREYAssertNil(
+      [ReadingListAppInterface addEntryWithURL:[NSURL URLWithString:kUnreadURL]
+                                         title:kUnreadTitle
+                                          read:NO],
+      @"Unable to add Reading List item");
+  GREYAssertNil(
+      [ReadingListAppInterface addEntryWithURL:[NSURL URLWithString:kUnreadURL2]
+                                         title:kUnreadTitle2
+                                          read:NO],
+      @"Unable to add Reading List item");
+
+  OpenReadingList();
+
+  TapToolbarButtonWithID(kReadingListToolbarEditButtonID);
 }
 
 // Returns a match for the Reading List Empty Collection Background.
 id<GREYMatcher> EmptyBackground() {
-  return grey_accessibilityID(
-      [[TableViewEmptyView class] accessibilityIdentifier]);
+  return grey_accessibilityID(kTableViewEmptyViewID);
 }
 
 // Adds the current page to the Reading List.
@@ -335,20 +309,17 @@ void AddCurrentPageToReadingList() {
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  kSnackbarDisappearanceTimeout, wait_for_disappearance),
              @"Snackbar did not disappear.");
-  if (net::NetworkChangeNotifier::IsOffline()) {
-    net::NetworkChangeNotifier::NotifyObserversOfConnectionTypeChangeForTests(
-        net::NetworkChangeNotifier::CONNECTION_WIFI);
-  }
+  [ReadingListAppInterface notifyWifiConnection];
 }
 
 // Wait until one element is distilled.
 void WaitForDistillation() {
-  NSString* a11y_id =
-      [TableViewURLCellFaviconBadgeView accessibilityIdentifier];
   ConditionBlock wait_for_distillation_date = ^{
     NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(a11y_id)]
-        assertWithMatcher:grey_notNil()
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityID(
+                                     kTableViewURLCellFaviconBadgeViewID)]
+        assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;
   };
@@ -397,10 +368,38 @@ void OpenPageSecurityInfoBubble() {
       tapToolsMenuButton:grey_accessibilityID(kToolsMenuSiteInformation)];
 }
 
+// Waits for a static html view containing |text|. If the condition is not met
+// within a timeout, a GREYAssert is induced.
+void WaitForStaticHtmlViewContainingText(NSString* text) {
+  bool has_static_view =
+      base::test::ios::WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+        return [ReadingListAppInterface staticHTMLViewContainingText:text];
+      });
+
+  NSString* error_description = [NSString
+      stringWithFormat:@"Failed to find static html view containing %@", text];
+  GREYAssert(has_static_view, error_description);
+}
+
+// Waits for there to be no static html view, or a static html view that does
+// not contain |text|. If the condition is not met within a timeout, a
+// GREYAssert is induced.
+void WaitForStaticHtmlViewNotContainingText(NSString* text) {
+  bool no_static_view =
+      base::test::ios::WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+        return ![ReadingListAppInterface staticHTMLViewContainingText:text];
+      });
+
+  NSString* error_description = [NSString
+      stringWithFormat:@"Failed, there was a static html view containing %@",
+                       text];
+  GREYAssert(no_static_view, error_description);
+}
+
 void AssertIsShowingDistillablePageNoNativeContent(
     bool online,
     const GURL& distillable_url) {
-  [ChromeEarlGrey waitForWebViewContainingText:kContentToKeep];
+  [ChromeEarlGrey waitForWebStateContainingText:kContentToKeep];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
                                           distillable_url.GetContent())]
@@ -408,11 +407,11 @@ void AssertIsShowingDistillablePageNoNativeContent(
 
   // Test that the offline and online pages are properly displayed.
   if (online) {
-    [ChromeEarlGrey waitForWebViewContainingText:kContentToRemove];
-    [ChromeEarlGrey waitForWebViewContainingText:kContentToKeep];
+    [ChromeEarlGrey waitForWebStateContainingText:kContentToRemove];
+    [ChromeEarlGrey waitForWebStateContainingText:kContentToKeep];
   } else {
-    [ChromeEarlGrey waitForWebViewNotContainingText:kContentToRemove];
-    [ChromeEarlGrey waitForWebViewContainingText:kContentToKeep];
+    [ChromeEarlGrey waitForWebStateNotContainingText:kContentToRemove];
+    [ChromeEarlGrey waitForWebStateContainingText:kContentToKeep];
   }
 
   // Test the presence of the omnibox offline chip.
@@ -430,18 +429,17 @@ void AssertIsShowingDistillablePageNativeContent(bool online,
   // There will be multiple reloads, wait for the page to be displayed.
   if (online) {
     // Due to the reloads, a timeout longer than what is provided in
-    // [ChromeEarlGrey waitForWebViewContainingText] is required, so call
+    // [ChromeEarlGrey waitForWebStateContainingText] is required, so call
     // WebViewContainingText directly.
     GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                    kLoadOfflineTimeout,
                    ^bool {
-                     return web::test::IsWebViewContainingText(
-                         chrome_test_util::GetCurrentWebState(),
-                         kContentToKeep);
+                     return [ChromeEarlGreyAppInterface
+                         webStateContainsText:@(kContentToKeep)];
                    }),
                @"Waiting for online page.");
   } else {
-    [ChromeEarlGrey waitForStaticHTMLViewContainingText:contentToKeep];
+    WaitForStaticHtmlViewContainingText(contentToKeep);
   }
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
@@ -451,11 +449,11 @@ void AssertIsShowingDistillablePageNativeContent(bool online,
   // Test that the offline and online pages are properly displayed.
   if (online) {
     [ChromeEarlGrey
-        waitForWebViewContainingText:base::SysNSStringToUTF8(contentToKeep)];
-    [ChromeEarlGrey waitForStaticHTMLViewNotContainingText:contentToKeep];
+        waitForWebStateContainingText:base::SysNSStringToUTF8(contentToKeep)];
+    WaitForStaticHtmlViewNotContainingText(contentToKeep);
   } else {
-    [ChromeEarlGrey waitForWebViewNotContainingText:kContentToKeep];
-    [ChromeEarlGrey waitForStaticHTMLViewContainingText:contentToKeep];
+    [ChromeEarlGrey waitForWebStateNotContainingText:kContentToKeep];
+    WaitForStaticHtmlViewContainingText(contentToKeep);
   }
 
   // Test the presence of the omnibox offline chip.
@@ -469,7 +467,7 @@ void AssertIsShowingDistillablePageNativeContent(bool online,
 
 // Tests that the correct version of kDistillableURL is displayed.
 void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
-  if (reading_list::IsOfflinePageWithoutNativeContentEnabled()) {
+  if ([ReadingListAppInterface isOfflinePageWithoutNativeContentEnabled]) {
     return AssertIsShowingDistillablePageNoNativeContent(online,
                                                          distillable_url);
   }
@@ -486,7 +484,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // The delay after which self.testServer will send a response.
 @property(atomic) NSTimeInterval serverResponseDelay;
-;
 @end
 
 @implementation ReadingListTestCase
@@ -495,9 +492,8 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 - (void)setUp {
   [super setUp];
-  ReadingListModel* model = GetReadingListModel();
-  for (const GURL& url : model->Keys())
-    model->RemoveEntryByURL(url);
+  GREYAssertNil([ReadingListAppInterface clearEntries],
+                @"Unable to clear Reading List entries");
   self.testServer->RegisterRequestHandler(base::BindRepeating(
       &net::test_server::HandlePrefixedRequest, kDistillableURL,
       base::BindRepeating(&HandleQueryOrCloseSocket,
@@ -512,27 +508,30 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 
+- (void)tearDown {
+  [super tearDown];
+  [ReadingListAppInterface resetConnectionType];
+}
+
 // Tests that the Reading List view is accessible.
 - (void)testAccessibility {
   AddEntriesAndEnterEdit();
   // In edit mode.
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
   TapToolbarButtonWithID(kReadingListToolbarCancelButtonID);
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
 // Tests that sharing a web page to the Reading List results in a snackbar
 // appearing, and that the Reading List entry is present in the Reading List.
 // Loads offline version via context menu.
 - (void)testSavingToReadingListAndLoadDistilled {
-  auto network_change_disabler =
-      std::make_unique<net::NetworkChangeNotifier::DisableForTest>();
-  auto wifi_network = std::make_unique<WifiNetworkChangeNotifier>();
+  [ReadingListAppInterface forceConnectionToWifi];
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   GURL nonDistillablePageURL(self.testServer->GetURL(kNonDistillableURL));
-  std::string pageTitle(kDistillableTitle);
   // Open http://potato
   [ChromeEarlGrey loadURL:distillablePageURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   AddCurrentPageToReadingList();
 
@@ -542,14 +541,17 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   // Verify that an entry with the correct title is present in the reading list.
   OpenReadingList();
-  AssertEntryVisible(pageTitle);
+  AssertEntryVisible(kDistillableTitle);
 
   WaitForDistillation();
 
   // Long press the entry, and open it offline.
-  LongPressEntry(pageTitle);
+  LongPressEntry(kDistillableTitle);
+
   TapContextMenuButtonWithA11yLabelID(
       IDS_IOS_READING_LIST_CONTENT_CONTEXT_OFFLINE);
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(1));
   AssertIsShowingDistillablePage(false, distillablePageURL);
 
   // Tap the Omnibox' Info Bubble to open the Page Info.
@@ -562,22 +564,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
       assertWithMatcher:grey_notNil()];
 
   // Verify that the webState's title is correct.
-  XCTAssertTrue(chrome_test_util::GetCurrentWebState()->GetTitle() ==
-                base::ASCIIToUTF16(pageTitle.c_str()));
+  GREYAssertEqualObjects([ChromeEarlGreyAppInterface currentTabTitle],
+                         kDistillableTitle, @"Wrong page name");
 }
 
 // Tests that sharing a web page to the Reading List results in a snackbar
 // appearing, and that the Reading List entry is present in the Reading List.
 // Loads online version by tapping on entry.
 - (void)testSavingToReadingListAndLoadNormal {
-  // TODO(crbug.com/874649): re-enable this test.
-  if (base::FeatureList::IsEnabled(web::features::kSlimNavigationManager))
-    EARL_GREY_TEST_DISABLED(@"Test disabled on SlimNavigationManager.");
-
-  auto network_change_disabler =
-      std::make_unique<net::NetworkChangeNotifier::DisableForTest>();
-  auto wifi_network = std::make_unique<WifiNetworkChangeNotifier>();
-  std::string pageTitle(kDistillableTitle);
+  [ReadingListAppInterface forceConnectionToWifi];
   GURL distillableURL = self.testServer->GetURL(kDistillableURL);
   // Open http://potato
   [ChromeEarlGrey loadURL:distillableURL];
@@ -590,11 +585,11 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   // Verify that an entry with the correct title is present in the reading list.
   OpenReadingList();
-  AssertEntryVisible(pageTitle);
+  AssertEntryVisible(kDistillableTitle);
   WaitForDistillation();
 
   // Press the entry, and open it online.
-  TapEntry(pageTitle);
+  TapEntry(kDistillableTitle);
 
   AssertIsShowingDistillablePage(true, distillableURL);
   // Stop server to reload offline.
@@ -602,8 +597,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   base::test::ios::SpinRunLoopWithMinDelay(
       base::TimeDelta::FromSecondsD(kServerOperationDelay));
 
-  chrome_test_util::GetCurrentWebState()->GetNavigationManager()->Reload(
-      web::ReloadType::NORMAL, false);
+  [ChromeEarlGreyAppInterface startReloading];
   AssertIsShowingDistillablePage(false, distillableURL);
 }
 
@@ -611,18 +605,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // appearing, and that the Reading List entry is present in the Reading List.
 // Loads offline version by tapping on entry without web server.
 - (void)testSavingToReadingListAndLoadNoNetwork {
-  // TODO(crbug.com/874649): re-enable this test.
-  if (base::FeatureList::IsEnabled(web::features::kSlimNavigationManager))
-    EARL_GREY_TEST_DISABLED(@"Test disabled on SlimNavigationManager.");
-
-  // TODO(crbug.com/936773): re-enable this test.
-  if (reading_list::IsOfflinePageWithoutNativeContentEnabled())
-    EARL_GREY_TEST_DISABLED(@"Test disabled on SlimNavigationManager.");
-
-  auto network_change_disabler =
-      std::make_unique<net::NetworkChangeNotifier::DisableForTest>();
-  auto wifi_network = std::make_unique<WifiNetworkChangeNotifier>();
-  std::string pageTitle(kDistillableTitle);
+  [ReadingListAppInterface forceConnectionToWifi];
   GURL distillableURL = self.testServer->GetURL(kDistillableURL);
   // Open http://potato
   [ChromeEarlGrey loadURL:distillableURL];
@@ -636,7 +619,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   // Verify that an entry with the correct title is present in the reading list.
   OpenReadingList();
-  AssertEntryVisible(pageTitle);
+  AssertEntryVisible(kDistillableTitle);
   WaitForDistillation();
 
   // Stop server to generate error.
@@ -644,21 +627,26 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   base::test::ios::SpinRunLoopWithMinDelay(
       base::TimeDelta::FromSecondsD(kServerOperationDelay));
   // Long press the entry, and open it offline.
-  TapEntry(pageTitle);
+  TapEntry(kDistillableTitle);
   AssertIsShowingDistillablePage(false, distillableURL);
 
   // Reload. As server is still down, the offline page should show again.
-  chrome_test_util::GetCurrentWebState()->GetNavigationManager()->Reload(
-      web::ReloadType::NORMAL, false);
+  [ChromeEarlGreyAppInterface startReloading];
   AssertIsShowingDistillablePage(false, distillableURL);
+
+  // TODO(crbug.com/954248) This DCHECK's (but works) with slimnav disabled.
+  if ([ChromeEarlGrey isSlimNavigationManagerEnabled]) {
+    [ChromeEarlGrey goBack];
+    [ChromeEarlGrey goForward];
+    AssertIsShowingDistillablePage(false, distillableURL);
+  }
 
   // Start server to reload online error.
   self.serverRespondsWithContent = YES;
   base::test::ios::SpinRunLoopWithMinDelay(
       base::TimeDelta::FromSecondsD(kServerOperationDelay));
 
-  chrome_test_util::GetCurrentWebState()->GetNavigationManager()->Reload(
-      web::ReloadType::NORMAL, false);
+  [ChromeEarlGreyAppInterface startReloading];
   AssertIsShowingDistillablePage(true, distillableURL);
 }
 
@@ -666,18 +654,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // appearing, and that the Reading List entry is present in the Reading List.
 // Loads offline version by tapping on entry with delayed web server.
 - (void)testSavingToReadingListAndLoadBadNetwork {
-  // TODO(crbug.com/905839): re-enable this test.
-  if (base::FeatureList::IsEnabled(web::features::kSlimNavigationManager))
-    EARL_GREY_TEST_DISABLED(@"Test disabled on SlimNavigationManager.");
-
-  // TODO(crbug.com/936773): re-enable this test.
-  if (reading_list::IsOfflinePageWithoutNativeContentEnabled())
-    EARL_GREY_TEST_DISABLED(@"Test disabled on SlimNavigationManager.");
-
-  auto network_change_disabler =
-      std::make_unique<net::NetworkChangeNotifier::DisableForTest>();
-  auto wifi_network = std::make_unique<WifiNetworkChangeNotifier>();
-  std::string pageTitle(kDistillableTitle);
+  [ReadingListAppInterface forceConnectionToWifi];
   GURL distillableURL = self.testServer->GetURL(kDistillableURL);
   // Open http://potato
   [ChromeEarlGrey loadURL:distillableURL];
@@ -690,29 +667,35 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   // Verify that an entry with the correct title is present in the reading
   OpenReadingList();
-  AssertEntryVisible(pageTitle);
+  AssertEntryVisible(kDistillableTitle);
   WaitForDistillation();
 
   self.serverResponseDelay = kDelayForSlowWebServer;
   // Open the entry.
-  TapEntry(pageTitle);
+  TapEntry(kDistillableTitle);
 
   AssertIsShowingDistillablePage(false, distillableURL);
 
+  [ChromeEarlGrey goBack];
+  [ChromeEarlGrey goForward];
+  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(1));
+  AssertIsShowingDistillablePage(false, distillableURL);
+
   // Reload should load online page.
-  chrome_test_util::GetCurrentWebState()->GetNavigationManager()->Reload(
-      web::ReloadType::NORMAL, false);
+  [ChromeEarlGreyAppInterface startReloading];
   AssertIsShowingDistillablePage(true, distillableURL);
   // Reload should load offline page.
-  chrome_test_util::GetCurrentWebState()->GetNavigationManager()->Reload(
-      web::ReloadType::NORMAL, false);
+  [ChromeEarlGreyAppInterface startReloading];
   AssertIsShowingDistillablePage(false, distillableURL);
 }
 
 // Tests that only the "Edit" button is showing when not editing.
 - (void)testVisibleButtonsNonEditingMode {
-  GetReadingListModel()->AddEntry(GURL(kUnreadURL), std::string(kUnreadTitle),
-                                  reading_list::ADDED_VIA_CURRENT_APP);
+  GREYAssertNil(
+      [ReadingListAppInterface addEntryWithURL:[NSURL URLWithString:kUnreadURL]
+                                         title:kUnreadTitle
+                                          read:NO],
+      @"Unable to add Reading List entry.");
   OpenReadingList();
 
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteButtonID);
@@ -785,8 +768,10 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   AssertEntryNotVisible(kReadTitle2);
   AssertEntryVisible(kUnreadTitle);
   AssertEntryVisible(kUnreadTitle2);
-  XCTAssertEqual(kNumberReadEntries - 1, ModelReadSize(GetReadingListModel()));
-  XCTAssertEqual(kNumberUnreadEntries, GetReadingListModel()->unread_size());
+  XCTAssertEqual([ReadingListAppInterface readEntriesCount],
+                 static_cast<long>(kNumberReadEntries - 1));
+  XCTAssertEqual([ReadingListAppInterface unreadEntriesCount],
+                 kNumberUnreadEntries);
 }
 
 // Tests the deletion of all read entries.
@@ -800,8 +785,9 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   AssertHeaderNotVisible(kReadHeader);
   AssertEntryVisible(kUnreadTitle);
   AssertEntryVisible(kUnreadTitle2);
-  XCTAssertEqual((size_t)0, ModelReadSize(GetReadingListModel()));
-  XCTAssertEqual(kNumberUnreadEntries, GetReadingListModel()->unread_size());
+  XCTAssertEqual(0l, [ReadingListAppInterface readEntriesCount]);
+  XCTAssertEqual(kNumberUnreadEntries,
+                 [ReadingListAppInterface unreadEntriesCount]);
 }
 
 // Marks all unread entries as read.
@@ -817,9 +803,9 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   AssertHeaderNotVisible(kUnreadHeader);
   AssertAllEntriesVisible();
-  XCTAssertEqual(kNumberUnreadEntries + kNumberReadEntries,
-                 ModelReadSize(GetReadingListModel()));
-  XCTAssertEqual((size_t)0, GetReadingListModel()->unread_size());
+  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries + kNumberReadEntries),
+                 [ReadingListAppInterface readEntriesCount]);
+  XCTAssertEqual(0l, [ReadingListAppInterface unreadEntriesCount]);
 }
 
 // Marks all read entries as unread.
@@ -835,9 +821,24 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   AssertHeaderNotVisible(kReadHeader);
   AssertAllEntriesVisible();
-  XCTAssertEqual(kNumberUnreadEntries + kNumberReadEntries,
-                 GetReadingListModel()->unread_size());
-  XCTAssertEqual((size_t)0, ModelReadSize(GetReadingListModel()));
+  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries + kNumberReadEntries),
+                 [ReadingListAppInterface unreadEntriesCount]);
+  XCTAssertEqual(0l, [ReadingListAppInterface readEntriesCount]);
+}
+
+// Marks all read entries as unread, when there is a lot of entries. This is to
+// prevent crbug.com/1013708 from regressing.
+- (void)testMarkAllUnreadLotOfEntry {
+  AddLotOfEntriesAndEnterEdit();
+
+  AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_ALL_BUTTON);
+  TapToolbarButtonWithID(kReadingListToolbarMarkButtonID);
+
+  // Tap the action sheet.
+  TapContextMenuButtonWithA11yLabelID(
+      IDS_IOS_READING_LIST_MARK_ALL_UNREAD_ACTION);
+
+  AssertHeaderNotVisible(kReadHeader);
 }
 
 // Selects an unread entry and mark it as read.
@@ -849,9 +850,10 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   TapToolbarButtonWithID(kReadingListToolbarMarkButtonID);
 
   AssertAllEntriesVisible();
-  XCTAssertEqual(kNumberReadEntries + 1, ModelReadSize(GetReadingListModel()));
-  XCTAssertEqual(kNumberUnreadEntries - 1,
-                 GetReadingListModel()->unread_size());
+  XCTAssertEqual(static_cast<long>(kNumberReadEntries + 1),
+                 [ReadingListAppInterface readEntriesCount]);
+  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries - 1),
+                 [ReadingListAppInterface unreadEntriesCount]);
 }
 
 // Selects an read entry and mark it as unread.
@@ -863,9 +865,10 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   TapToolbarButtonWithID(kReadingListToolbarMarkButtonID);
 
   AssertAllEntriesVisible();
-  XCTAssertEqual(kNumberReadEntries - 1, ModelReadSize(GetReadingListModel()));
-  XCTAssertEqual(kNumberUnreadEntries + 1,
-                 GetReadingListModel()->unread_size());
+  XCTAssertEqual(static_cast<long>(kNumberReadEntries - 1),
+                 [ReadingListAppInterface readEntriesCount]);
+  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries + 1),
+                 [ReadingListAppInterface unreadEntriesCount]);
 }
 
 // Selects read and unread entries and mark them as unread.
@@ -881,9 +884,10 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   TapContextMenuButtonWithA11yLabelID(IDS_IOS_READING_LIST_MARK_UNREAD_BUTTON);
 
   AssertAllEntriesVisible();
-  XCTAssertEqual(kNumberReadEntries - 1, ModelReadSize(GetReadingListModel()));
-  XCTAssertEqual(kNumberUnreadEntries + 1,
-                 GetReadingListModel()->unread_size());
+  XCTAssertEqual(static_cast<long>(kNumberReadEntries - 1),
+                 [ReadingListAppInterface readEntriesCount]);
+  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries + 1),
+                 [ReadingListAppInterface unreadEntriesCount]);
 }
 
 // Selects read and unread entries and mark them as read.
@@ -899,22 +903,24 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   TapContextMenuButtonWithA11yLabelID(IDS_IOS_READING_LIST_MARK_READ_BUTTON);
 
   AssertAllEntriesVisible();
-  XCTAssertEqual(kNumberReadEntries + 1, ModelReadSize(GetReadingListModel()));
-  XCTAssertEqual(kNumberUnreadEntries - 1,
-                 GetReadingListModel()->unread_size());
+  XCTAssertEqual(static_cast<long>(kNumberReadEntries + 1),
+                 [ReadingListAppInterface readEntriesCount]);
+  XCTAssertEqual(static_cast<long>(kNumberUnreadEntries - 1),
+                 [ReadingListAppInterface unreadEntriesCount]);
 }
 
 // Tests that you can delete multiple read items in the Reading List without
 // creating a crash (crbug.com/701956).
 - (void)testDeleteMultipleItems {
   // Add entries.
-  ReadingListModel* model = GetReadingListModel();
   for (int i = 0; i < 11; i++) {
-    std::string increment = std::to_string(i);
-    model->AddEntry(GURL(kReadURL + increment),
-                    std::string(kReadTitle + increment),
-                    reading_list::ADDED_VIA_CURRENT_APP);
-    model->SetReadStatus(GURL(kReadURL + increment), true);
+    NSURL* url =
+        [NSURL URLWithString:[kReadURL stringByAppendingFormat:@"%d", i]];
+    NSString* title = [kReadURL stringByAppendingFormat:@"%d", i];
+    GREYAssertNil([ReadingListAppInterface addEntryWithURL:url
+                                                     title:title
+                                                      read:YES],
+                  @"Unable to add Reading List entry.");
   }
 
   // Delete them from the Reading List view.
@@ -927,6 +933,35 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // Verify the background string is displayed.
   [[EarlGrey selectElementWithMatcher:EmptyBackground()]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the VC can be dismissed by swiping down.
+- (void)testSwipeDownDismiss {
+  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
+  }
+  if (![ChromeEarlGreyAppInterface isCollectionsCardPresentationStyleEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+  }
+
+  GREYAssertNil(
+      [ReadingListAppInterface addEntryWithURL:[NSURL URLWithString:kUnreadURL]
+                                         title:kUnreadTitle
+                                          read:NO],
+      @"Unable to add Reading List entry.");
+  OpenReadingList();
+
+  // Check that the TableView is presented.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
+      assertWithMatcher:grey_notNil()];
+
+  // Swipe TableView down.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the TableView has been dismissed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

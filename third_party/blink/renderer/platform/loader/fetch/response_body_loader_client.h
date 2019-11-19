@@ -10,7 +10,7 @@ namespace blink {
 // A ResponseBodyLoaderClient receives signals for loading a response body.
 class ResponseBodyLoaderClient : public GarbageCollectedMixin {
  public:
-  ~ResponseBodyLoaderClient() = default;
+  virtual ~ResponseBodyLoaderClient() = default;
 
   // Called when reading a chunk, with the chunk.
   virtual void DidReceiveData(base::span<const char> data) = 0;

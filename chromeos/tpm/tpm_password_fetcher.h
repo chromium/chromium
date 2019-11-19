@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) TpmPasswordFetcher {
 
   TpmPasswordFetcherDelegate* delegate_;
 
-  base::WeakPtrFactory<TpmPasswordFetcher> weak_factory_;
+  base::WeakPtrFactory<TpmPasswordFetcher> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TpmPasswordFetcher);
 };

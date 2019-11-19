@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -45,10 +46,9 @@ class ValueStoreFrontend::Backend : public base::RefCountedThreadSafe<Backend> {
                    << " failed: " << result.status().message;
     }
 
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&ValueStoreFrontend::Backend::RunCallback, this,
-                       callback, std::move(value)));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(&ValueStoreFrontend::Backend::RunCallback,
+                                  this, callback, std::move(value)));
   }
 
   void Set(const std::string& key, std::unique_ptr<base::Value> value) {
@@ -114,7 +114,7 @@ class ValueStoreFrontend::Backend : public base::RefCountedThreadSafe<Backend> {
 ValueStoreFrontend::ValueStoreFrontend(
     const scoped_refptr<ValueStoreFactory>& store_factory,
     BackendType backend_type)
-    : backend_(new Backend(store_factory, backend_type)) {
+    : backend_(base::MakeRefCounted<Backend>(store_factory, backend_type)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 

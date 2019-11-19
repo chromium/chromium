@@ -130,7 +130,14 @@ void File::Info::FromStat(const stat_wrapper_t& stat_info) {
   is_symbolic_link = S_ISLNK(stat_info.st_mode);
   size = stat_info.st_size;
 
-#if defined(OS_LINUX)
+  // Get last modification time, last access time, and creation time from
+  // |stat_info|.
+  // Note: st_ctime is actually last status change time when the inode was last
+  // updated, which happens on any metadata change. It is not the file's
+  // creation time. However, other than on Mac & iOS where the actual file
+  // creation time is included as st_birthtime, the rest of POSIX platforms have
+  // no portable way to get the creation time.
+#if defined(OS_LINUX) || defined(OS_FUCHSIA)
   time_t last_modified_sec = stat_info.st_mtim.tv_sec;
   int64_t last_modified_nsec = stat_info.st_mtim.tv_nsec;
   time_t last_accessed_sec = stat_info.st_atim.tv_sec;
@@ -144,7 +151,14 @@ void File::Info::FromStat(const stat_wrapper_t& stat_info) {
   int64_t last_accessed_nsec = stat_info.st_atime_nsec;
   time_t creation_time_sec = stat_info.st_ctime;
   int64_t creation_time_nsec = stat_info.st_ctime_nsec;
-#elif defined(OS_MACOSX) || defined(OS_IOS) || defined(OS_BSD)
+#elif defined(OS_MACOSX) || defined(OS_IOS)
+  time_t last_modified_sec = stat_info.st_mtimespec.tv_sec;
+  int64_t last_modified_nsec = stat_info.st_mtimespec.tv_nsec;
+  time_t last_accessed_sec = stat_info.st_atimespec.tv_sec;
+  int64_t last_accessed_nsec = stat_info.st_atimespec.tv_nsec;
+  time_t creation_time_sec = stat_info.st_birthtimespec.tv_sec;
+  int64_t creation_time_nsec = stat_info.st_birthtimespec.tv_nsec;
+#elif defined(OS_BSD)
   time_t last_modified_sec = stat_info.st_mtimespec.tv_sec;
   int64_t last_modified_nsec = stat_info.st_mtimespec.tv_nsec;
   time_t last_accessed_sec = stat_info.st_atimespec.tv_sec;

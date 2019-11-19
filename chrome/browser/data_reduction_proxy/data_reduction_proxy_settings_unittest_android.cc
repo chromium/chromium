@@ -16,9 +16,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/base64.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
@@ -35,8 +35,6 @@
 #include "components/proxy_config/proxy_prefs.h"
 #include "net/base/proxy_server.h"
 #include "net/socket/socket_test_util.h"
-#include "net/url_request/url_request_context_storage.h"
-#include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -73,6 +71,13 @@ void data_reduction_proxy::DataReductionProxySettingsTestBase::ResetSettings(
     base::Clock* clock) {
   MockDataReductionProxySettings<C>* settings =
       new MockDataReductionProxySettings<C>();
+  if (settings_) {
+    settings->data_reduction_proxy_service_ =
+        std::move(settings_->data_reduction_proxy_service_);
+  } else {
+    settings->data_reduction_proxy_service_ = test_context_->TakeService();
+  }
+  settings->data_reduction_proxy_service_->SetSettingsForTesting(settings);
   settings->config_ = test_context_->config();
   test_context_->config()->ResetParamFlagsForTest();
   EXPECT_CALL(*settings, GetOriginalProfilePrefs())
@@ -82,8 +87,6 @@ void data_reduction_proxy::DataReductionProxySettingsTestBase::ResetSettings(
       .Times(AnyNumber())
       .WillRepeatedly(Return(test_context_->pref_service()));
   settings_.reset(settings);
-  settings_->data_reduction_proxy_service_ =
-      test_context_->CreateDataReductionProxyService(settings_.get());
 }
 
 template void data_reduction_proxy::DataReductionProxySettingsTestBase::
@@ -152,29 +155,20 @@ TEST_F(DataReductionProxyMockSettingsAndroidTest,
 class DataReductionProxySettingsAndroidTest : public ::testing::Test {
  public:
   DataReductionProxySettingsAndroidTest()
-      : env_(base::android::AttachCurrentThread()),
-        context_(true),
-        context_storage_(&context_) {
-    context_.set_client_socket_factory(&mock_socket_factory_);
-  }
+      : env_(base::android::AttachCurrentThread()) {}
 
   void Init() {
     drp_test_context_ =
         data_reduction_proxy::DataReductionProxyTestContext::Builder()
-            .WithURLRequestContext(&context_)
-            .WithMockClientSocketFactory(&mock_socket_factory_)
             .Build();
 
     drp_test_context_->DisableWarmupURLFetch();
-    drp_test_context_->AttachToURLRequestContext(&context_storage_);
-    context_.Init();
 
     android_settings_.reset(new TestDataReductionProxySettingsAndroid(
         drp_test_context_->settings()));
   }
 
   JNIEnv* env() { return env_; }
-  net::TestURLRequestContext* context() { return &context_; }
   data_reduction_proxy::DataReductionProxyTestContext* drp_test_context() {
     return drp_test_context_.get();
   }
@@ -189,10 +183,9 @@ class DataReductionProxySettingsAndroidTest : public ::testing::Test {
   }
 
  private:
-  base::MessageLoopForIO message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   JNIEnv* env_;
-  net::TestURLRequestContext context_;
-  net::URLRequestContextStorage context_storage_;
   net::MockClientSocketFactory mock_socket_factory_;
   std::unique_ptr<data_reduction_proxy::DataReductionProxyTestContext>
       drp_test_context_;
@@ -340,7 +333,6 @@ TEST_F(DataReductionProxySettingsAndroidTest,
 
 TEST_F(DataReductionProxySettingsAndroidTest,
        MaybeRewriteWebliteUrlWithHoldbackEnabled) {
-  base::FieldTrialList field_trial_list(nullptr);
   ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(
       "DataCompressionProxyHoldback", "Enabled"));
 

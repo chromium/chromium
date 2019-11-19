@@ -26,6 +26,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/keyword_id.h"
 
@@ -36,7 +37,6 @@ class FilePath;
 namespace history {
 
 class HistoryBackendTestBase;
-class HistoryService;
 class InMemoryDatabase;
 class InMemoryHistoryBackendTest;
 class URLRow;
@@ -92,7 +92,7 @@ class InMemoryHistoryBackend : public HistoryServiceObserver {
   std::unique_ptr<InMemoryDatabase> db_;
 
   ScopedObserver<HistoryService, HistoryServiceObserver>
-      history_service_observer_;
+      history_service_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InMemoryHistoryBackend);
 };

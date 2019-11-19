@@ -6,12 +6,20 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
 
 import java.util.Locale;
 
@@ -24,13 +32,26 @@ public class ContextualSearchEntityHeuristicTest {
             "Now Barack Obama, Michelle are not the best examples.  And Clinton is ambiguous.";
     private static final String UTF_8 = "UTF-8";
 
-    private ContextualSearchContextForTest mContext;
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
+    @Mock
+    private ContextualSearchContext.Natives mContextJniMock;
+
+    private ContextualSearchContext mContext;
     private ContextualSearchEntityHeuristic mEntityHeuristic;
 
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        mocker.mock(ContextualSearchContextJni.TEST_HOOKS, mContextJniMock);
+    }
+
     private void setupInstanceToTest(Locale locale, int tapOffset) {
-        mContext = new ContextualSearchContextForTest();
+        mContext = new ContextualSearchContext.ChangeIgnoringContext();
         mContext.setSurroundingText(UTF_8, SAMPLE_TEXT, tapOffset, tapOffset);
-        mContext.setLanguageToDetect(locale.getLanguage());
+        when(mContextJniMock.detectLanguage(anyLong(), eq(mContext)))
+                .thenReturn(locale.getLanguage());
         mEntityHeuristic = ContextualSearchEntityHeuristic.testInstance(mContext, true);
     }
 
@@ -88,8 +109,8 @@ public class ContextualSearchEntityHeuristicTest {
 
     private ContextualSearchEntityHeuristic setupHeuristic(
             String language, String start, String text) {
-        ContextualSearchContextForTest context = new ContextualSearchContextForTest();
-        context.setLanguageToDetect(language);
+        ContextualSearchContext context = new ContextualSearchContext.ChangeIgnoringContext();
+        when(mContextJniMock.detectLanguage(anyLong(), eq(context))).thenReturn(language);
         assert text.startsWith(start);
         int tapOffset = start.length();
         context.setSurroundingText(UTF_8, text, tapOffset, tapOffset);

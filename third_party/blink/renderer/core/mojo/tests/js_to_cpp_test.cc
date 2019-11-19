@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/stl_util.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
@@ -14,10 +14,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/mojo/mojo_handle.h"
-#include "third_party/blink/renderer/core/mojo/tests/JsToCpp.mojom-blink.h"
+#include "third_party/blink/renderer/core/mojo/tests/js_to_cpp.mojom-blink.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 namespace {
@@ -52,22 +52,16 @@ const float kExpectedFloatNan = std::numeric_limits<float>::quiet_NaN();
 #define EXPECT_NAN(x) EXPECT_NE(x, x)
 
 String MojoBindingsScriptPath() {
-  String filepath = test::ExecutableDir();
-  filepath.append("/gen/mojo/public/js/mojo_bindings.js");
-  return filepath;
+  return test::ExecutableDir() + "/gen/mojo/public/js/mojo_bindings.js";
 }
 
 String TestBindingsScriptPath() {
-  String filepath = test::ExecutableDir();
-  filepath.append(
-      "/gen/third_party/blink/renderer/core/mojo/tests/JsToCpp.mojom.js");
-  return filepath;
+  return test::ExecutableDir() +
+         "/gen/third_party/blink/renderer/core/mojo/tests/js_to_cpp.mojom.js";
 }
 
 String TestScriptPath() {
-  String filepath = test::BlinkRootDir();
-  filepath.append("/renderer/core/mojo/tests/JsToCppTest.js");
-  return filepath;
+  return test::BlinkRootDir() + "/renderer/core/mojo/tests/JsToCppTest.js";
 }
 
 v8::Local<v8::Value> ExecuteScript(const String& script_path,
@@ -222,18 +216,17 @@ void CheckCorruptedEchoArgsList(const js_to_cpp::blink::EchoArgsListPtr& list) {
 // run_loop().
 class CppSideConnection : public js_to_cpp::blink::CppSide {
  public:
-  CppSideConnection() : mishandled_messages_(0), binding_(this) {}
+  CppSideConnection() : mishandled_messages_(0) {}
   ~CppSideConnection() override = default;
 
-  void set_js_side(js_to_cpp::blink::JsSidePtr js_side) {
+  void set_js_side(mojo::Remote<js_to_cpp::blink::JsSide> js_side) {
     js_side_ = std::move(js_side);
   }
-  js_to_cpp::blink::JsSide* js_side() { return js_side_.get(); }
 
-  void Bind(mojo::InterfaceRequest<js_to_cpp::blink::CppSide> request) {
-    binding_.Bind(std::move(request));
+  void Bind(mojo::PendingReceiver<js_to_cpp::blink::CppSide> receiver) {
+    receiver_.Bind(std::move(receiver));
     // Keep the pipe open even after validation errors.
-    binding_.EnableTestingMode();
+    receiver_.EnableTestingMode();
   }
 
   // js_to_cpp::CppSide:
@@ -258,9 +251,9 @@ class CppSideConnection : public js_to_cpp::blink::CppSide {
   }
 
  protected:
-  js_to_cpp::blink::JsSidePtr js_side_;
+  mojo::Remote<js_to_cpp::blink::JsSide> js_side_;
   int mishandled_messages_;
-  mojo::Binding<js_to_cpp::blink::CppSide> binding_;
+  mojo::Receiver<js_to_cpp::blink::CppSide> receiver_{this};
 };
 
 // Trivial test to verify a message sent from JS is received.
@@ -378,13 +371,13 @@ class BackPointerCppSideConnection : public CppSideConnection {
 class JsToCppTest : public testing::Test {
  public:
   void RunTest(CppSideConnection* cpp_side) {
-    js_to_cpp::blink::CppSidePtr cpp_side_ptr;
-    cpp_side->Bind(MakeRequest(&cpp_side_ptr));
+    mojo::PendingRemote<js_to_cpp::blink::CppSide> cpp_side_remote;
+    cpp_side->Bind(cpp_side_remote.InitWithNewPipeAndPassReceiver());
 
-    js_to_cpp::blink::JsSidePtr js_side_ptr;
-    auto js_side_request = MakeRequest(&js_side_ptr);
-    js_side_ptr->SetCppSide(std::move(cpp_side_ptr));
-    cpp_side->set_js_side(std::move(js_side_ptr));
+    mojo::Remote<js_to_cpp::blink::JsSide> js_side_remote;
+    auto js_side_receiver = js_side_remote.BindNewPipeAndPassReceiver();
+    js_side_remote->SetCppSide(std::move(cpp_side_remote));
+    cpp_side->set_js_side(std::move(js_side_remote));
 
     V8TestingScope scope;
     scope.GetPage().GetSettings().SetScriptEnabled(true);
@@ -397,8 +390,8 @@ class JsToCppTest : public testing::Test {
     ASSERT_TRUE(start_fn->IsFunction());
     v8::Local<v8::Object> global_proxy = scope.GetContext()->Global();
     v8::Local<v8::Value> args[1] = {
-        ToV8(MojoHandle::Create(
-                 mojo::ScopedHandle::From(js_side_request.PassMessagePipe())),
+        ToV8(MakeGarbageCollected<MojoHandle>(
+                 mojo::ScopedHandle::From(js_side_receiver.PassPipe())),
              global_proxy, scope.GetIsolate())};
     V8ScriptRunner::CallFunction(start_fn.As<v8::Function>(),
                                  scope.GetExecutionContext(), global_proxy,
@@ -419,7 +412,8 @@ TEST_F(JsToCppTest, Echo) {
   EXPECT_TRUE(cpp_side_connection.DidSucceed());
 }
 
-TEST_F(JsToCppTest, BitFlip) {
+// Flaky. http://crbug.com/952627
+TEST_F(JsToCppTest, DISABLED_BitFlip) {
   // These tests generate a lot of expected validation errors. Suppress logging.
   mojo::internal::ScopedSuppressValidationErrorLoggingForTests log_suppression;
 

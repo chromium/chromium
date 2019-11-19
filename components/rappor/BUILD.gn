@@ -38,7 +38,6 @@ jumbo_static_library("rappor") {
 
   deps = [
     "//base",
-    "//components/data_use_measurement/core",
     "//components/metrics",
     "//components/prefs",
     "//components/variations",
@@ -57,7 +56,7 @@ jumbo_static_library("rappor_recorder") {
 
   public_deps = [
     "//base",
-    "//components/rappor/public/interfaces",
+    "//components/rappor/public/mojom",
   ]
 
   deps = [

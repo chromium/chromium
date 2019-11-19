@@ -6,7 +6,7 @@
 
 #include <cctype>
 
-#include "base/sha1.h"
+#include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -45,7 +45,7 @@ std::string StripDigitsIfRequired(const base::string16& input) {
 
 FormSignature CalculateFormSignature(const FormData& form_data) {
   const GURL& target_url = form_data.action;
-  const GURL& source_url = form_data.origin;
+  const GURL& source_url = form_data.url;
   std::string scheme(target_url.scheme());
   std::string host(target_url.host());
 

@@ -12,38 +12,33 @@
 #include "base/memory/ptr_util.h"
 #include "components/infobars/core/infobar.h"
 #include "components/language/core/browser/language_model_manager.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/page_translated_details.h"
 #include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_manager.h"
-#include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/language_detection_details.h"
-#include "components/translate/core/common/language_detection_logging_helper.h"
-#include "components/translate/core/common/translation_logging_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar.h"
 #include "ios/chrome/browser/infobars/infobar_controller.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #include "ios/chrome/browser/language/language_model_manager_factory.h"
-#include "ios/chrome/browser/pref_names.h"
-#import "ios/chrome/browser/translate/after_translate_infobar_controller.h"
-#import "ios/chrome/browser/translate/before_translate_infobar_controller.h"
 #import "ios/chrome/browser/translate/language_selection_handler.h"
-#import "ios/chrome/browser/translate/never_translate_infobar_controller.h"
 #include "ios/chrome/browser/translate/translate_accept_languages_factory.h"
 #import "ios/chrome/browser/translate/translate_infobar_controller.h"
-#import "ios/chrome/browser/translate/translate_message_infobar_controller.h"
 #import "ios/chrome/browser/translate/translate_option_selection_handler.h"
 #include "ios/chrome/browser/translate/translate_ranker_factory.h"
 #include "ios/chrome/browser/translate/translate_service_ios.h"
+#import "ios/chrome/browser/ui/infobars/coordinators/infobar_translate_coordinator.h"
+#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/translate/translate_notification_handler.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #include "ios/web/public/browser_state.h"
-#include "ios/web/public/navigation_item.h"
-#include "ios/web/public/navigation_manager.h"
-#import "ios/web/public/web_state/web_state.h"
+#include "ios/web/public/navigation/navigation_item.h"
+#include "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
 #include "third_party/metrics_proto/translate_event.pb.h"
 #include "url/gurl.h"
 
@@ -86,7 +81,8 @@ ChromeIOSTranslateClient::~ChromeIOSTranslateClient() {
 std::unique_ptr<translate::TranslatePrefs>
 ChromeIOSTranslateClient::CreateTranslatePrefs(PrefService* prefs) {
   return std::unique_ptr<translate::TranslatePrefs>(
-      new translate::TranslatePrefs(prefs, prefs::kAcceptLanguages, nullptr));
+      new translate::TranslatePrefs(prefs, language::prefs::kAcceptLanguages,
+                                    nullptr));
 }
 
 translate::TranslateManager* ChromeIOSTranslateClient::GetTranslateManager() {
@@ -97,7 +93,12 @@ translate::TranslateManager* ChromeIOSTranslateClient::GetTranslateManager() {
 
 std::unique_ptr<infobars::InfoBar> ChromeIOSTranslateClient::CreateInfoBar(
     std::unique_ptr<translate::TranslateInfoBarDelegate> delegate) const {
-  if (base::FeatureList::IsEnabled(translate::kCompactTranslateInfobarIOS)) {
+  if (IsTranslateInfobarMessagesUIEnabled()) {
+    TranslateInfobarCoordinator* coordinator =
+        [[TranslateInfobarCoordinator alloc]
+            initWithInfoBarDelegate:delegate.get()];
+    return std::make_unique<InfoBarIOS>(coordinator, std::move(delegate));
+  } else {
     TranslateInfoBarController* controller = [[TranslateInfoBarController alloc]
         initWithInfoBarDelegate:delegate.get()];
     controller.languageSelectionHandler = language_selection_handler_;
@@ -106,40 +107,7 @@ std::unique_ptr<infobars::InfoBar> ChromeIOSTranslateClient::CreateInfoBar(
     controller.translateNotificationHandler = translate_notification_handler_;
     return std::make_unique<InfoBarIOS>(controller, std::move(delegate));
   }
-
-  translate::TranslateStep step = delegate->translate_step();
-
-  InfoBarController* controller;
-  switch (step) {
-    case translate::TRANSLATE_STEP_AFTER_TRANSLATE:
-      controller = [[AfterTranslateInfoBarController alloc]
-          initWithInfoBarDelegate:delegate.get()];
-      break;
-    case translate::TRANSLATE_STEP_BEFORE_TRANSLATE: {
-      BeforeTranslateInfoBarController* beforeController =
-          [[BeforeTranslateInfoBarController alloc]
-              initWithInfoBarDelegate:delegate.get()];
-      beforeController.languageSelectionHandler = language_selection_handler_;
-      controller = beforeController;
-      break;
-    }
-    case translate::TRANSLATE_STEP_NEVER_TRANSLATE:
-      controller = [[NeverTranslateInfoBarController alloc]
-          initWithInfoBarDelegate:delegate.get()];
-      break;
-    case translate::TRANSLATE_STEP_TRANSLATING:
-    case translate::TRANSLATE_STEP_TRANSLATE_ERROR:
-      controller = [[TranslateMessageInfoBarController alloc]
-          initWithInfoBarDelegate:delegate.get()];
-      break;
-    default:
-      NOTREACHED();
-  }
-  return std::make_unique<InfoBarIOS>(controller, std::move(delegate));
 }
-
-void ChromeIOSTranslateClient::RecordTranslateEvent(
-    const metrics::TranslateEventProto& translate_event) {}
 
 bool ChromeIOSTranslateClient::ShowTranslateUI(
     translate::TranslateStep step,
@@ -191,9 +159,6 @@ ChromeIOSTranslateClient::GetTranslateAcceptLanguages() {
 int ChromeIOSTranslateClient::GetInfobarIconID() const {
   return IDR_IOS_INFOBAR_TRANSLATE;
 }
-
-void ChromeIOSTranslateClient::RecordLanguageDetectionEvent(
-    const translate::LanguageDetectionDetails& details) const {}
 
 bool ChromeIOSTranslateClient::IsTranslatableURL(const GURL& url) {
   return TranslateServiceIOS::IsTranslatableURL(url);

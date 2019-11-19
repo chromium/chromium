@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NGLayoutAlgorithm_h
-#define NGLayoutAlgorithm_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LAYOUT_ALGORITHM_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LAYOUT_ALGORITHM_H_
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/min_max_size.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class ComputedStyle;
+class NGEarlyBreak;
 class NGLayoutResult;
 struct MinMaxSizeInput;
 
@@ -37,6 +39,29 @@ class NGLayoutAlgorithmOperations {
   }
 };
 
+// Parameters to pass when creating a layout algorithm for a block node.
+struct NGLayoutAlgorithmParams {
+  STACK_ALLOCATED();
+
+ public:
+  NGLayoutAlgorithmParams(NGBlockNode node,
+                          const NGFragmentGeometry& fragment_geometry,
+                          const NGConstraintSpace& space,
+                          const NGBlockBreakToken* break_token = nullptr,
+                          const NGEarlyBreak* early_break = nullptr)
+      : node(node),
+        fragment_geometry(fragment_geometry),
+        space(space),
+        break_token(break_token),
+        early_break(early_break) {}
+
+  NGBlockNode node;
+  const NGFragmentGeometry& fragment_geometry;
+  const NGConstraintSpace& space;
+  const NGBlockBreakToken* break_token;
+  const NGEarlyBreak* early_break;
+};
+
 // Base class for all LayoutNG algorithms.
 template <typename NGInputNodeType,
           typename NGBoxFragmentBuilderType,
@@ -57,14 +82,12 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
                            space.GetWritingMode(),
                            direction) {}
 
-  NGLayoutAlgorithm(NGInputNodeType node,
-                    const NGConstraintSpace& space,
-                    const NGBreakTokenType* break_token)
-      : NGLayoutAlgorithm(node,
-                          &node.Style(),
-                          space,
-                          space.Direction(),
-                          break_token) {}
+  NGLayoutAlgorithm(const NGLayoutAlgorithmParams& params)
+      : NGLayoutAlgorithm(params.node,
+                          &params.node.Style(),
+                          params.space,
+                          params.space.Direction(),
+                          params.break_token) {}
 
   virtual ~NGLayoutAlgorithm() = default;
 
@@ -96,4 +119,4 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
 
 }  // namespace blink
 
-#endif  // NGLayoutAlgorithm_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LAYOUT_ALGORITHM_H_

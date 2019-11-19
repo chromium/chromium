@@ -43,7 +43,7 @@ class AddPageTask : public Task {
   OfflinePageItem offline_page_;
   AddPageTaskCallback callback_;
 
-  base::WeakPtrFactory<AddPageTask> weak_ptr_factory_;
+  base::WeakPtrFactory<AddPageTask> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AddPageTask);
 };
 

@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/public/interfaces/constants.mojom.h"
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/stl_util.h"
@@ -26,8 +25,6 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/service_manager_connection.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using base::UserMetricsAction;
@@ -46,11 +43,7 @@ const char* const kSkipShowNotificationLanguages[4] = {"en", "de", "fr", "it"};
 
 }  // anonymous namespace
 
-LocaleChangeGuard::LocaleChangeGuard(Profile* profile)
-    : profile_(profile),
-      reverted_(false),
-      session_started_(false),
-      main_frame_loaded_(false) {
+LocaleChangeGuard::LocaleChangeGuard(Profile* profile) : profile_(profile) {
   DCHECK(profile_);
   DeviceSettingsService::Get()->AddObserver(this);
 }
@@ -61,28 +54,13 @@ LocaleChangeGuard::~LocaleChangeGuard() {
 }
 
 void LocaleChangeGuard::OnLogin() {
-  registrar_.Add(this, chrome::NOTIFICATION_SESSION_STARTED,
-                 content::NotificationService::AllSources());
+  session_observer_.Add(session_manager::SessionManager::Get());
   registrar_.Add(this, content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
                  content::NotificationService::AllBrowserContextsAndSources());
 }
 
-void LocaleChangeGuard::ConnectToLocaleUpdateController() {
-  content::ServiceManagerConnection* connection =
-      content::ServiceManagerConnection::GetForProcess();
-  service_manager::Connector* connector =
-      connection ? connection->GetConnector() : nullptr;
-  // Unit tests may not have a connector.
-  if (!connector)
-    return;
-
-  connector->BindInterface(ash::mojom::kServiceName, &notification_controller_);
-}
-
 void LocaleChangeGuard::RevertLocaleChange() {
-  if (profile_ == NULL ||
-      from_locale_.empty() ||
-      to_locale_.empty()) {
+  if (from_locale_.empty() || to_locale_.empty()) {
     NOTREACHED();
     return;
   }
@@ -90,44 +68,30 @@ void LocaleChangeGuard::RevertLocaleChange() {
     return;
   reverted_ = true;
   base::RecordAction(UserMetricsAction("LanguageChange_Revert"));
-  profile_->ChangeAppLocale(
-      from_locale_, Profile::APP_LOCALE_CHANGED_VIA_REVERT);
+  profile_->ChangeAppLocale(from_locale_,
+                            Profile::APP_LOCALE_CHANGED_VIA_REVERT);
   chrome::AttemptUserExit();
 }
 
 void LocaleChangeGuard::Observe(int type,
                                 const content::NotificationSource& source,
                                 const content::NotificationDetails& details) {
-  if (profile_ == NULL) {
-    NOTREACHED();
+  DCHECK_EQ(type, content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME);
+  if (profile_ != content::Source<WebContents>(source)->GetBrowserContext())
     return;
-  }
-  switch (type) {
-    case chrome::NOTIFICATION_SESSION_STARTED: {
-      session_started_ = true;
-      registrar_.Remove(this, chrome::NOTIFICATION_SESSION_STARTED,
-                        content::NotificationService::AllSources());
-      if (main_frame_loaded_)
-        Check();
-      break;
-    }
-    case content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME: {
-      if (profile_ ==
-          content::Source<WebContents>(source)->GetBrowserContext()) {
-        main_frame_loaded_ = true;
-        // We need to perform locale change check only once, so unsubscribe.
-        registrar_.Remove(this, content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-                          content::NotificationService::AllSources());
-        if (session_started_)
-          Check();
-      }
-      break;
-    }
-    default: {
-      NOTREACHED();
-      break;
-    }
-  }
+
+  main_frame_loaded_ = true;
+  // We need to perform locale change check only once, so unsubscribe.
+  registrar_.Remove(this, content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
+                    content::NotificationService::AllSources());
+  if (session_manager::SessionManager::Get()->IsSessionStarted())
+    Check();
+}
+
+void LocaleChangeGuard::OnUserSessionStarted(bool is_primary_user) {
+  session_observer_.RemoveAll();
+  if (main_frame_loaded_)
+    Check();
 }
 
 void LocaleChangeGuard::OwnershipStatusChanged() {
@@ -186,34 +150,29 @@ void LocaleChangeGuard::Check() {
   // Showing notification.
   if (from_locale_ != from_locale || to_locale_ != to_locale) {
     // Falling back to showing message in current locale.
-    LOG(ERROR) <<
-        "Showing locale change notification in current (not previous) language";
+    LOG(ERROR) << "Showing locale change notification in current (not "
+                  "previous) language";
     PrepareChangingLocale(from_locale, to_locale);
   }
 
-  if (!notification_controller_)
-    ConnectToLocaleUpdateController();
-
-  notification_controller_->OnLocaleChanged(
+  ash::LocaleUpdateController::Get()->OnLocaleChanged(
       cur_locale, from_locale_, to_locale_,
       base::Bind(&LocaleChangeGuard::OnResult, AsWeakPtr()));
 }
 
-void LocaleChangeGuard::OnResult(ash::mojom::LocaleNotificationResult result) {
+void LocaleChangeGuard::OnResult(ash::LocaleNotificationResult result) {
   switch (result) {
-    case ash::mojom::LocaleNotificationResult::ACCEPT:
+    case ash::LocaleNotificationResult::kAccept:
       AcceptLocaleChange();
       break;
-    case ash::mojom::LocaleNotificationResult::REVERT:
+    case ash::LocaleNotificationResult::kRevert:
       RevertLocaleChange();
       break;
   }
 }
 
 void LocaleChangeGuard::AcceptLocaleChange() {
-  if (profile_ == NULL ||
-      from_locale_.empty() ||
-      to_locale_.empty()) {
+  if (from_locale_.empty() || to_locale_.empty()) {
     NOTREACHED();
     return;
   }
@@ -234,8 +193,8 @@ void LocaleChangeGuard::AcceptLocaleChange() {
   prefs->SetString(prefs::kApplicationLocaleAccepted, to_locale_);
 }
 
-void LocaleChangeGuard::PrepareChangingLocale(
-    const std::string& from_locale, const std::string& to_locale) {
+void LocaleChangeGuard::PrepareChangingLocale(const std::string& from_locale,
+                                              const std::string& to_locale) {
   std::string cur_locale = g_browser_process->GetApplicationLocale();
   if (!from_locale.empty())
     from_locale_ = from_locale;
@@ -256,7 +215,7 @@ bool LocaleChangeGuard::ShouldShowLocaleChangeNotification(
   if (from_lang != to_lang)
     return true;
 
-  return !base::ContainsValue(kSkipShowNotificationLanguages, from_lang);
+  return !base::Contains(kSkipShowNotificationLanguages, from_lang);
 }
 
 // static

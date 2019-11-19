@@ -113,7 +113,8 @@ namespace socket {
 
   dictionary TLSVersionConstraints {
     // The minimum and maximum acceptable versions of TLS. These will
-    // be <code>tls1</code>, <code>tls1.1</code>, or <code>tls1.2</code>.
+    // be <code>tls1</code>, <code>tls1.1</code>, <code>tls1.2</code>, or
+    // <code>tls1.3</code>.
     DOMString? min;
     DOMString? max;
   };

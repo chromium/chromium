@@ -62,8 +62,8 @@ class AsyncAudioDecoder {
   // appropriately when finished.
   void DecodeAsync(DOMArrayBuffer* audio_data,
                    float sample_rate,
-                   V8PersistentCallbackFunction<V8DecodeSuccessCallback>*,
-                   V8PersistentCallbackFunction<V8DecodeErrorCallback>*,
+                   V8DecodeSuccessCallback*,
+                   V8DecodeErrorCallback*,
                    ScriptPromiseResolver*,
                    BaseAudioContext*);
 
@@ -72,18 +72,17 @@ class AsyncAudioDecoder {
   static void DecodeOnBackgroundThread(
       DOMArrayBuffer* audio_data,
       float sample_rate,
-      V8PersistentCallbackFunction<V8DecodeSuccessCallback>*,
-      V8PersistentCallbackFunction<V8DecodeErrorCallback>*,
+      V8DecodeSuccessCallback*,
+      V8DecodeErrorCallback*,
       ScriptPromiseResolver*,
       BaseAudioContext*,
       scoped_refptr<base::SingleThreadTaskRunner>);
-  static void NotifyComplete(
-      DOMArrayBuffer* audio_data,
-      V8PersistentCallbackFunction<V8DecodeSuccessCallback>*,
-      V8PersistentCallbackFunction<V8DecodeErrorCallback>*,
-      AudioBus*,
-      ScriptPromiseResolver*,
-      BaseAudioContext*);
+  static void NotifyComplete(DOMArrayBuffer* audio_data,
+                             V8DecodeSuccessCallback*,
+                             V8DecodeErrorCallback*,
+                             AudioBus*,
+                             ScriptPromiseResolver*,
+                             BaseAudioContext*);
 
   DISALLOW_COPY_AND_ASSIGN(AsyncAudioDecoder);
 };

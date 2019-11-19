@@ -5,11 +5,11 @@
 #ifndef EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_CHANGE_H_
 #define EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_CHANGE_H_
 
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "base/values.h"
 
 class ValueStoreChange;
@@ -23,8 +23,8 @@ class ValueStoreChange {
   static std::string ToJson(const ValueStoreChangeList& changes);
 
   ValueStoreChange(const std::string& key,
-                   std::unique_ptr<base::Value> old_value,
-                   std::unique_ptr<base::Value> new_value);
+                   base::Optional<base::Value> old_value,
+                   base::Optional<base::Value> new_value);
 
   ValueStoreChange(const ValueStoreChange& other);
 
@@ -45,12 +45,12 @@ class ValueStoreChange {
   class Inner : public base::RefCountedThreadSafe<Inner> {
    public:
     Inner(const std::string& key,
-          std::unique_ptr<base::Value> old_value,
-          std::unique_ptr<base::Value> new_value);
+          base::Optional<base::Value> old_value,
+          base::Optional<base::Value> new_value);
 
     const std::string key_;
-    const std::unique_ptr<base::Value> old_value_;
-    const std::unique_ptr<base::Value> new_value_;
+    const base::Optional<base::Value> old_value_;
+    const base::Optional<base::Value> new_value_;
 
    private:
     friend class base::RefCountedThreadSafe<Inner>;

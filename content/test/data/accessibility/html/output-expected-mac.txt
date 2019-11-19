@@ -1,7 +1,7 @@
 AXWebArea
 ++AXGroup
-++++AXTextField
+++++AXIncrementor
 ++++AXStaticText AXValue=' + '
-++++AXTextField
+++++AXIncrementor
 ++++AXStaticText AXValue=' ='
 ++++AXGroup

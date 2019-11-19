@@ -26,16 +26,15 @@ constexpr const char kNetLogTracingCategory[] = "netlog";
 
 class TracedValue : public base::trace_event::ConvertableToTraceFormat {
  public:
-  explicit TracedValue(std::unique_ptr<base::Value> value)
-      : value_(std::move(value)) {}
+  explicit TracedValue(base::Value value) : value_(std::move(value)) {}
 
  private:
   ~TracedValue() override = default;
 
   void AppendAsTraceFormat(std::string* out) const override {
-    if (value_) {
+    if (!value_.is_none()) {
       std::string tmp;
-      base::JSONWriter::Write(*value_, &tmp);
+      base::JSONWriter::Write(value_, &tmp);
       *out += tmp;
     } else {
       *out += "\"\"";
@@ -43,13 +42,12 @@ class TracedValue : public base::trace_event::ConvertableToTraceFormat {
   }
 
  private:
-  std::unique_ptr<base::Value> value_;
+  base::Value value_;
 };
 
 }  // namespace
 
-TraceNetLogObserver::TraceNetLogObserver()
-    : net_log_to_watch_(nullptr), weak_factory_(this) {}
+TraceNetLogObserver::TraceNetLogObserver() : net_log_to_watch_(nullptr) {}
 
 TraceNetLogObserver::~TraceNetLogObserver() {
   DCHECK(!net_log_to_watch_);
@@ -57,29 +55,29 @@ TraceNetLogObserver::~TraceNetLogObserver() {
 }
 
 void TraceNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
-  std::unique_ptr<base::Value> params(entry.ParametersToValue());
-  switch (entry.phase()) {
+  base::Value params = entry.params.Clone();
+  switch (entry.phase) {
     case NetLogEventPhase::BEGIN:
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-          kNetLogTracingCategory, NetLog::EventTypeToString(entry.type()),
-          entry.source().id, "source_type",
-          NetLog::SourceTypeToString(entry.source().type), "params",
+          kNetLogTracingCategory, NetLog::EventTypeToString(entry.type),
+          entry.source.id, "source_type",
+          NetLog::SourceTypeToString(entry.source.type), "params",
           std::unique_ptr<base::trace_event::ConvertableToTraceFormat>(
               new TracedValue(std::move(params))));
       break;
     case NetLogEventPhase::END:
       TRACE_EVENT_NESTABLE_ASYNC_END2(
-          kNetLogTracingCategory, NetLog::EventTypeToString(entry.type()),
-          entry.source().id, "source_type",
-          NetLog::SourceTypeToString(entry.source().type), "params",
+          kNetLogTracingCategory, NetLog::EventTypeToString(entry.type),
+          entry.source.id, "source_type",
+          NetLog::SourceTypeToString(entry.source.type), "params",
           std::unique_ptr<base::trace_event::ConvertableToTraceFormat>(
               new TracedValue(std::move(params))));
       break;
     case NetLogEventPhase::NONE:
       TRACE_EVENT_NESTABLE_ASYNC_INSTANT2(
-          kNetLogTracingCategory, NetLog::EventTypeToString(entry.type()),
-          entry.source().id, "source_type",
-          NetLog::SourceTypeToString(entry.source().type), "params",
+          kNetLogTracingCategory, NetLog::EventTypeToString(entry.type),
+          entry.source.id, "source_type",
+          NetLog::SourceTypeToString(entry.source.type), "params",
           std::unique_ptr<base::trace_event::ConvertableToTraceFormat>(
               new TracedValue(std::move(params))));
       break;
@@ -118,7 +116,7 @@ void TraceNetLogObserver::OnTraceLogEnabled() {
   if (!enabled)
     return;
 
-  net_log_to_watch_->AddObserver(this, NetLogCaptureMode::Default());
+  net_log_to_watch_->AddObserver(this, NetLogCaptureMode::kDefault);
 }
 
 void TraceNetLogObserver::OnTraceLogDisabled() {

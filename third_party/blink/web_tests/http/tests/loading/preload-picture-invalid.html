@@ -12,9 +12,9 @@
     shouldBeTrue("internals.isPreloaded('resources/image2.png');");
     loadFromImg(1);
     loadFromImg(2);
-    loadFromSource(3);
-    loadFromSource(4);
-    loadFromSource(5);
+    loadFromImg(3);
+    loadFromImg(4);
+    loadFromImg(5);
     loadFromImg(6);
     loadFromImg(7);
 </script>
@@ -43,7 +43,7 @@
     <source sizes="400px" srcset="resources/base-image1.png?2 200w, resources/base-image3.png?2 400w, resources/base-image2.png?2 800w">
     <img src="resources/preload-test.jpg?2">
 </picture>
-<!-- Here we preload the correct resource, since document.write is not modifying the DOM -->
+<!-- Here we preload the wrong resource, as we encounter a script element -->
 <picture>
     <script>document.write("bla");</script>
     <source sizes="400px" srcset="resources/base-image1.png?3 200w, resources/base-image3.png?3 400w, resources/base-image2.png?3 800w">
@@ -81,5 +81,6 @@
     <script>document.write('<source sizes="400px" srcset="resources/base-image1.png?7 200w, resources/base-image3.png?7 400w, resources/base-image2.png?7 800w">');</script>
     <img src="resources/preload-test.jpg?7">
 </picture>
-</body>
-</html>
+<!-- This one below makes sure that the preloadScanner doesn't crash -->
+<picture>
+<source media="(max-width: 2000px)" sizes="2000px" srcset="../../hidpi/resources/image-set-1x.png?1 400w"> <script src="../../forms/resources/picker-common.js">

@@ -5,8 +5,9 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shaping_line_breaker.h"
 
 #include <unicode/uscript.h>
+
 #include "base/time/time.h"
-#include "cc/base/lap_timer.h"
+#include "base/timer/lap_timer.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
@@ -77,7 +78,7 @@ class ShapingLineBreakerPerfTest : public testing::Test {
   unsigned start_index = 0;
   unsigned num_glyphs = 0;
   hb_script_t script = HB_SCRIPT_INVALID;
-  cc::LapTimer timer_;
+  base::LapTimer timer_;
 };
 
 TEST_F(ShapingLineBreakerPerfTest, ShapeLatinText) {

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<grit-part>
-  <include name="IDR_CONTAINED_HOME_BG_JS" file="chromeos/contained_home/bg.js" type="BINDATA" />
-  <include name="IDR_CONTAINED_HOME_ICON_192" file="chromeos/contained_home/static/icon192.png" type="BINDATA" />
-  <include name="IDR_CONTAINED_HOME_MAIN_HTML" file="chromeos/contained_home/main.html" type="chrome_html" />
-  <include name="IDR_CONTAINED_HOME_API_JS" file="chromeos/contained_home/api.js" type="BINDATA" />
-  <include name="IDR_CONTAINED_HOME_API_IMPL_JS" file="chromeos/contained_home/api_impl.js" type="BINDATA" />
-</grit-part>

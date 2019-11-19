@@ -32,15 +32,16 @@
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/hosts_using_features.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/loader/appcache/application_cache_host_for_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
 ApplicationCache::ApplicationCache(LocalFrame* frame) : DOMWindowClient(frame) {
-  ApplicationCacheHost* cache_host = GetApplicationCacheHost();
+  ApplicationCacheHostForFrame* cache_host = GetApplicationCacheHost();
   if (cache_host)
     cache_host->SetApplicationCache(this);
 }
@@ -50,7 +51,8 @@ void ApplicationCache::Trace(blink::Visitor* visitor) {
   DOMWindowClient::Trace(visitor);
 }
 
-ApplicationCacheHost* ApplicationCache::GetApplicationCacheHost() const {
+ApplicationCacheHostForFrame* ApplicationCache::GetApplicationCacheHost()
+    const {
   if (!GetFrame() || !GetFrame()->Loader().GetDocumentLoader())
     return nullptr;
   return GetFrame()->Loader().GetDocumentLoader()->GetApplicationCacheHost();
@@ -78,7 +80,7 @@ uint16_t ApplicationCache::status() const {
                 "");
 
   RecordAPIUseType();
-  ApplicationCacheHost* cache_host = GetApplicationCacheHost();
+  ApplicationCacheHostForFrame* cache_host = GetApplicationCacheHost();
   if (!cache_host) {
     return static_cast<uint16_t>(
         mojom::AppCacheStatus::APPCACHE_STATUS_UNCACHED);
@@ -88,7 +90,7 @@ uint16_t ApplicationCache::status() const {
 
 void ApplicationCache::update(ExceptionState& exception_state) {
   RecordAPIUseType();
-  ApplicationCacheHost* cache_host = GetApplicationCacheHost();
+  ApplicationCacheHostForFrame* cache_host = GetApplicationCacheHost();
   if (!cache_host || !cache_host->Update()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -98,7 +100,7 @@ void ApplicationCache::update(ExceptionState& exception_state) {
 
 void ApplicationCache::swapCache(ExceptionState& exception_state) {
   RecordAPIUseType();
-  ApplicationCacheHost* cache_host = GetApplicationCacheHost();
+  ApplicationCacheHostForFrame* cache_host = GetApplicationCacheHost();
   if (!cache_host || !cache_host->SwapCache()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -107,7 +109,7 @@ void ApplicationCache::swapCache(ExceptionState& exception_state) {
 }
 
 void ApplicationCache::abort() {
-  ApplicationCacheHost* cache_host = GetApplicationCacheHost();
+  ApplicationCacheHostForFrame* cache_host = GetApplicationCacheHost();
   if (cache_host)
     cache_host->Abort();
 }
@@ -153,7 +155,8 @@ void ApplicationCache::RecordAPIUseType() const {
     return;
 
   if (document->IsSecureContext()) {
-    UseCounter::Count(document, WebFeature::kApplicationCacheAPISecureOrigin);
+    Deprecation::CountDeprecation(document,
+                                  WebFeature::kApplicationCacheAPISecureOrigin);
   } else {
     Deprecation::CountDeprecation(
         document, WebFeature::kApplicationCacheAPIInsecureOrigin);

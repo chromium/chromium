@@ -7,6 +7,7 @@
 <meta name="flags" content="ahem">
 <link rel="match" href="reference/word-break-break-all-010-ref.html">
 <meta name="assert" content="A single leading white-space should account as soft breaking opportunity, honoring the 'white-space: pre-wrap', on top to the ones provided by 'word-break: break-all'.">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <style>
 div {
   position: relative;
@@ -21,10 +22,11 @@ div {
   width: 100px;
   height: 100px;
   z-index: -1;
+  white-space: pre;
 }
+span { color: green; }
 .test {
   color: green;
-  background: green;
   width: 1ch;
   white-space: pre-wrap;
   word-break: break-all;
@@ -32,6 +34,6 @@ div {
 </style>
 <body>
   <p>Test passes if there is a <strong>filled green square</strong> and <strong>no red</strong>.</p>
-  <div class="red">X<br>X<br>X</div>
+  <div class="red"> <br>X<br>X</div>
   <div class="test"> XX</div>
 </body>

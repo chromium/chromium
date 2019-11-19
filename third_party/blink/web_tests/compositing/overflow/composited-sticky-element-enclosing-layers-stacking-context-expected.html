@@ -4,6 +4,11 @@ onload = function() {
 }
 </script>
 <style>
+.composited {
+  /* Triggers promotion and creates a stacking context */
+  will-change: transform;
+}
+
 #scroller {
   overflow: scroll;
   height: 200px;
@@ -22,7 +27,7 @@ onload = function() {
   background: green;
 }
 </style>
-<div id="scroller">
+<div id="scroller" class="composited">
   <div class="container">
     <div class="relative"></div>
   </div>

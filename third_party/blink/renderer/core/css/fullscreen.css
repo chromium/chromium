@@ -1,4 +1,4 @@
-:not(:root):-webkit-full-screen {
+:not(:root):fullscreen {
     position: fixed !important;
     top: 0 !important;
     right: 0 !important;
@@ -18,14 +18,14 @@
     object-fit: contain;
 }
 
-iframe:-webkit-full-screen {
+iframe:fullscreen {
     border: none !important;
     padding: 0 !important;
 }
 
 /* TODO(foolip): In the spec, there's a ::backdrop block with the properties
    shared with dialog::backdrop (see html.css). */
-:not(:root):-webkit-full-screen::backdrop {
+:not(:root):fullscreen::backdrop {
     position: fixed;
     top: 0;
     right: 0;
@@ -45,7 +45,7 @@ iframe:-webkit-full-screen {
     overflow: hidden !important;
 }
 
-:-webkit-full-screen:-internal-video-persistent-ancestor :not(:-internal-video-persistent-ancestor) {
+:fullscreen:-internal-video-persistent-ancestor :not(:-internal-video-persistent-ancestor) {
   display: none !important;
 }
 
@@ -64,4 +64,11 @@ iframe:-webkit-full-screen {
 
   background-color: black !important;
   z-index: 2147483647 !important;
+}
+
+/* WebXR DOM Overlay for handheld AR needs a transparent background for both the
+   fullscreened element and its backdrop. */
+:-internal-xr-immersive-dom-overlay :fullscreen,
+:-internal-xr-immersive-dom-overlay :fullscreen::backdrop {
+  background-color: rgba(0,0,0,0) !important;
 }

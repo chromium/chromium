@@ -1,34 +1,23 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "InlineTextBox 'Find-in-page 'findme', then click here)'",
+          "object": "NGPhysicalTextFragment 'Find-in-page 'findme', then click here)'",
           "rect": [18, 128, 256, 36],
           "reason": "disappeared"
         },
         {
-          "object": "InlineTextBox 'To be changed: findme (Manual testing:'",
+          "object": "NGPhysicalTextFragment 'To be changed: findme (Manual testing:'",
           "rect": [18, 128, 256, 36],
           "reason": "disappeared"
         },
         {
-          "object": "InlineTextBox 'After change'",
+          "object": "NGPhysicalTextFragment 'After change'",
           "rect": [18, 128, 84, 18],
           "reason": "appeared"
         },

@@ -218,7 +218,7 @@ public class AndroidMessageSenderService extends IntentService {
     if (networkEndpointId == null) {
       // No GCM registration; buffer the message to send when we become registered.
       logger.info("Buffering message to the data center: no GCM registration id");
-      AndroidChannelPreferences.bufferMessage(this, outgoingMessage);
+      AndroidChannelPreferences.bufferMessage(outgoingMessage);
       return;
     }
     logger.fine("Delivering outbound message: %s bytes", outgoingMessage.length);
@@ -288,12 +288,11 @@ public class AndroidMessageSenderService extends IntentService {
    * to the data center.
    */
   private void handleGcmRegIdChange() {
-    
-    byte[] bufferedMessage = AndroidChannelPreferences.takeBufferedMessage(this);
-    if (bufferedMessage != null) {
-      // Rejoin the start of the code path that handles sending outbound messages.
-      requestAuthTokenForMessage(bufferedMessage, null);
-    }
+      byte[] bufferedMessage = AndroidChannelPreferences.takeBufferedMessage();
+      if (bufferedMessage != null) {
+          // Rejoin the start of the code path that handles sending outbound messages.
+          requestAuthTokenForMessage(bufferedMessage, null);
+      }
   }
 
   /**
@@ -356,8 +355,8 @@ public class AndroidMessageSenderService extends IntentService {
     connection.setRequestProperty("Content-Type", HttpConstants.PROTO_CONTENT_TYPE);
     connection.setRequestProperty(
         "User-Agent", context.getApplicationInfo().className + "(" + Build.VERSION.RELEASE + ")");
-    
-    String echoToken = AndroidChannelPreferences.getEchoToken(context);
+
+    String echoToken = AndroidChannelPreferences.getEchoToken();
     if (echoToken != null) {
       // If we have a token to echo to the server, echo it.
       connection.setRequestProperty(HttpConstants.ECHO_HEADER, echoToken);
@@ -389,20 +388,20 @@ public class AndroidMessageSenderService extends IntentService {
     String clientKey;
 
     // Select the registration token to use.
-    if (AndroidChannelPreferences.getGcmChannelType(context) == GcmChannelType.UPDATED) {
-      registrationId = AndroidChannelPreferences.getRegistrationToken(context);
-      clientKey = GcmSharedConstants.ANDROID_ENDPOINT_ID_CLIENT_KEY;
+    if (AndroidChannelPreferences.getGcmChannelType() == GcmChannelType.UPDATED) {
+        registrationId = AndroidChannelPreferences.getRegistrationToken();
+        clientKey = GcmSharedConstants.ANDROID_ENDPOINT_ID_CLIENT_KEY;
     } else {
-      // No client key when using old style registration id.
-      clientKey = "";
-      try {
-        registrationId = GCMRegistrar.getRegistrationId(context);
-      } catch (RuntimeException exception) {
-        // GCMRegistrar#getRegistrationId occasionally throws a runtime exception. Catching the
-        // exception rather than crashing.
-        logger.warning("Unable to get GCM registration id: %s", exception);
-        registrationId = null;
-      }
+        // No client key when using old style registration id.
+        clientKey = "";
+        try {
+            registrationId = GCMRegistrar.getRegistrationId(context);
+        } catch (RuntimeException exception) {
+            // GCMRegistrar#getRegistrationId occasionally throws a runtime exception. Catching the
+            // exception rather than crashing.
+            logger.warning("Unable to get GCM registration id: %s", exception);
+            registrationId = null;
+        }
     }
     if ((registrationId == null) || registrationId.isEmpty()) {
       // No registration with GCM; we cannot compute a network id. The GCM documentation says the

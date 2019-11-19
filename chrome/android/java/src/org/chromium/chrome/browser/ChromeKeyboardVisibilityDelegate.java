@@ -6,8 +6,9 @@ package org.chromium.chrome.browser;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.view.View;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 
@@ -59,8 +60,8 @@ public class ChromeKeyboardVisibilityDelegate extends SingleWindowKeyboardVisibi
         boolean wasManualFillingViewShowing = false;
         if (activity != null) {
             wasManualFillingViewShowing =
-                    activity.getManualFillingController().isFillingViewShown(view);
-            activity.getManualFillingController().hide();
+                    activity.getManualFillingComponent().isFillingViewShown(view);
+            activity.getManualFillingComponent().hide();
         }
         return super.hideKeyboard(view) || wasManualFillingViewShowing;
     }
@@ -70,6 +71,6 @@ public class ChromeKeyboardVisibilityDelegate extends SingleWindowKeyboardVisibi
         ChromeActivity activity = getActivity();
         return super.isKeyboardShowing(context, view)
                 || (activity != null
-                           && activity.getManualFillingController().isFillingViewShown(view));
+                        && activity.getManualFillingComponent().isFillingViewShown(view));
     }
 }

@@ -7,45 +7,69 @@
 <translation id="1627744224761163218">4×4</translation>
 <translation id="1664224225747386870">Ништа није снимљено</translation>
 <translation id="1862930711583847113">Извоз датотеке <ph name="FILE" /> није успео</translation>
+<translation id="1899697626337024495">Резолуција слике</translation>
 <translation id="2036868001356139588">Трајање тајмера</translation>
+<translation id="2050339315714019657">Вертикално</translation>
 <translation id="2064538373111010176">Kamera <ph name="CAMERA" /> је активна</translation>
 <translation id="229579744168541441">Извези на диск</translation>
-<translation id="2501278716633472235">Иди назад</translation>
+<translation id="2501278716633472235">Назад</translation>
 <translation id="2501853267655415902">Снимање је заустављено</translation>
 <translation id="2501953888035679275">Снимајте слике и видео снимке помоћу камере.</translation>
 <translation id="2549985041256363841">Започни снимање</translation>
+<translation id="2599796128805996109">Задња камера</translation>
+<translation id="2912439424121107408">Режим за стручњаке није подржан на овом уређају</translation>
 <translation id="2968794441791257519">Слике и видео снимци који су снимљени помоћу камере ће се преместити у директоријум Преузимања. Можете да им приступите у Датотекама.
 
         Апликације са дозволама за приступ меморијском простору ће имати приступ сликама и видео снимцима.</translation>
 <translation id="3081586908890909590">Пређи на режим за снимање видеа</translation>
+<translation id="313467653172006084">30 кадр/с</translation>
 <translation id="3183731565330012717">Тип мреже</translation>
 <translation id="3227137524299004712">Микрофон</translation>
+<translation id="3259149966178251584">Резолуција камере</translation>
+<translation id="3517926952904427380">Снимање усправне слике није успело</translation>
 <translation id="3569311554794739032">Желите ли стварно да уклоните датотеку <ph name="FILE" />?</translation>
+<translation id="3810838688059735925">Видео</translation>
 <translation id="4279490309300973883">Пресликавање</translation>
+<translation id="4329152592498422850">Пређи на режим за снимање слика у облику квадрата</translation>
 <translation id="4445542136948522167">Заустави снимање слике</translation>
+<translation id="4497569853498380347">Мегапиксели: <ph name="MEGAPIXEL" /> (<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />)</translation>
+<translation id="4570032796877367747">Предња камера</translation>
+<translation id="4628948037717959914">Слика</translation>
 <translation id="4649291346448517080">Чување датотеке није успело</translation>
 <translation id="4890010094662541459">3×3</translation>
 <translation id="5057360777601936059">Камера тренутно није доступна.
         Проверите да ли је камера исправно повезана.</translation>
 <translation id="5152121255775685072">Иди у галерију</translation>
+<translation id="5671277269877808209">Квадрат</translation>
+<translation id="5775960006311140197">Режим за стручњаке</translation>
 <translation id="5869546221129391014">Мрежа</translation>
 <translation id="6073451960410192870">Заустави снимање</translation>
+<translation id="6197807149213783179">Сачувај метаподатке</translation>
 <translation id="6233780560267770709">3 са 3</translation>
 <translation id="6243827288366940320">Златни пресек</translation>
+<translation id="6248749904681914629">Спољна камера</translation>
+<translation id="6420689864531458495">Мегапиксели: <ph name="MEGAPIXEL" /> (<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />)</translation>
 <translation id="6681668084120808868">Снимите фотографију</translation>
 <translation id="6778482348691154169">Снимање слике није успело</translation>
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="698156982839284926">3 секунде</translation>
 <translation id="712848772518857951">Желите ли стварно да уклоните ове ставке (<ph name="COUNT" />)?</translation>
+<translation id="7243947652761655814">Резолуција видео снимка</translation>
 <translation id="7337660886763914220">Грешке система датотека.</translation>
 <translation id="7557677699350329807">Пређи на следећу камеру</translation>
 <translation id="7608223098072244877">4 са 4</translation>
 <translation id="7649070708921625228">Помоћ</translation>
 <translation id="7658239707568436148">Откажи</translation>
+<translation id="7670511624014457267">60 кадр/с</translation>
 <translation id="8049189770492311300">Тајмер</translation>
+<translation id="8067883171444229417">Пусти видео</translation>
+<translation id="8131740175452115882">Потврди</translation>
 <translation id="8145038249676204903">Пређи на режим за снимање слика</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8428213095426709021">Подешавања</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" /> пиксела (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8732462232047530626">Прикажи метаподатке</translation>
+<translation id="8815966864175525708">Пређи на режим за снимање усправних слика</translation>
 <translation id="8870695351537079478">Снимање није могло да почне</translation>
 <translation id="9045155556724273246">10 секунди</translation>
 <translation id="945522503751344254">Пошаљи повратне информације</translation>

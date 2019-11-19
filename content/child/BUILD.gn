@@ -6,6 +6,9 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//third_party/blink/public/public_features.gni")
+if (is_android) {
+  import("//build/config/android/config.gni")
+}
 
 if (is_component_build) {
   link_target_type = "source_set"
@@ -35,6 +38,8 @@ target(link_target_type, "child") {
     "assert_matching_enums.cc",
     "blink_platform_impl.cc",
     "blink_platform_impl.h",
+    "browser_exposed_child_interfaces.cc",
+    "browser_exposed_child_interfaces.h",
     "browser_font_resource_trusted.cc",
     "browser_font_resource_trusted.h",
     "child_histogram_fetcher_impl.cc",
@@ -59,20 +64,20 @@ target(link_target_type, "child") {
     "field_trial.h",
     "font_warmup_win.cc",
     "font_warmup_win.h",
-    "image_decoder.cc",
-    "image_decoder.h",
+    "image_decoder_utils.cc",
     "runtime_features.cc",
     "runtime_features.h",
     "scoped_child_process_reference.cc",
     "scoped_child_process_reference.h",
-    "service_factory.cc",
-    "service_factory.h",
     "thread_safe_sender.cc",
     "thread_safe_sender.h",
     "webthemeengine_impl_android.cc",
     "webthemeengine_impl_android.h",
+    "webthemeengine_impl_conversions.cc",
+    "webthemeengine_impl_conversions.h",
     "webthemeengine_impl_default.cc",
     "webthemeengine_impl_default.h",
+    "webthemeengine_impl_mac.cc",
     "webthemeengine_impl_mac.h",
   ]
 
@@ -88,13 +93,13 @@ target(link_target_type, "child") {
     "//base",
     "//cc/paint",
     "//components/discardable_memory/client",
-    "//components/discardable_memory/public/interfaces",
+    "//components/discardable_memory/public/mojom",
     "//components/tracing",
     "//components/tracing:startup_tracing",
+    "//components/tracing/common:interfaces",
     "//components/variations",
     "//components/webcrypto",
     "//content/app/resources",
-    "//content/app/strings",
     "//content/common",
     "//content/public/common:common_sources",
     "//crypto:platform",
@@ -114,10 +119,10 @@ target(link_target_type, "child") {
     "//storage/common",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public:buildflags",
-    "//third_party/blink/public:mojo_bindings",
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources",
     "//third_party/blink/public/common",
+    "//third_party/blink/public/strings",
     "//third_party/ced",
     "//third_party/zlib/google:compression_utils",
     "//ui/base",
@@ -131,21 +136,18 @@ target(link_target_type, "child") {
     "//v8",
   ]
 
-  if (!use_default_render_theme) {
+  if (is_android) {
+    deps += [ "//third_party/android_ndk:cpu_features" ]
     sources -= [
       "webthemeengine_impl_default.cc",
       "webthemeengine_impl_default.h",
     ]
   }
 
-  if (is_android) {
-    deps += [ "//third_party/android_tools:cpu_features" ]
-  }
-
   if (is_linux) {
     deps += [
       "//components/services/font/public/cpp",
-      "//components/services/font/public/interfaces",
+      "//components/services/font/public/mojom",
       "//services/service_manager/zygote",
     ]
   }

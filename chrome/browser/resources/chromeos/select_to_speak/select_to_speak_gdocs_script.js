@@ -16,8 +16,9 @@ function RemoveAriaHiddenFromGoogleDocsContent() {
     element.setAttribute('aria-hidden', 'false');
   } else {
     tries--;
-    if (tries > 0)
+    if (tries > 0) {
       window.setTimeout(RemoveAriaHiddenFromGoogleDocsContent, 1000);
+    }
   }
 }
 

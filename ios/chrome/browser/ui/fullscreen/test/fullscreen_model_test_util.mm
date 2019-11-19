@@ -51,7 +51,6 @@ CGFloat GetFullscreenOffsetDeltaForProgress(FullscreenModel* model,
 
 CGFloat GetFullscreenBaseOffsetForProgress(FullscreenModel* model,
                                            CGFloat progress) {
-  EXPECT_TRUE(model->has_base_offset());
   return model->GetYContentOffset() -
          (1.0 - progress) * model->toolbar_height_delta();
 }

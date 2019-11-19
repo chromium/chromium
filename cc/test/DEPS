@@ -5,15 +5,13 @@ include_rules = [
   "+gpu/command_buffer/client/gles2_implementation.h",
   "+gpu/command_buffer/client/raster_implementation_gles.h",
   "+gpu/command_buffer/client/shared_memory_limits.h",
-  "+gpu/command_buffer/common/context_creation_attribs.h",
   "+gpu/command_buffer/common/skia_utils.h",
-  "+gpu/command_buffer/service/image_factory.h",
+  "+gpu/command_buffer/service/gpu_switches.h",
   "+gpu/config/gpu_feature_type.h",
   "+gpu/config/gpu_info.h",
   "+gpu/ipc",
-  "+gpu/skia_bindings/grcontext_for_gles2_interface.h",
-  "+mojo/public/cpp/bindings/strong_binding.h",
-  "+services/viz/privileged/interfaces/gl/gpu_host.mojom.h",
+  "+services/viz/privileged/mojom/gl/gpu_host.mojom.h",
+  "+services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h",
 ]
 
 specific_include_rules = {

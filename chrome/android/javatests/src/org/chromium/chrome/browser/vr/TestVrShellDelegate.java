@@ -9,9 +9,9 @@ import android.os.Build;
 
 import org.junit.runner.Description;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.vr.rules.VrModuleNotInstalled;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Class for accessing VrShellDelegate internals for testing purposes.
@@ -32,7 +32,8 @@ public class TestVrShellDelegate extends VrShellDelegate {
         // Cannot make VrShellDelegate if we are faking that the VR module is not installed.
         if (sTestDescription.getAnnotation(VrModuleNotInstalled.class) != null) return;
         if (sInstance != null) return;
-        ThreadUtils.runOnUiThreadBlocking(() -> { sInstance = new TestVrShellDelegate(activity); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { sInstance = new TestVrShellDelegate(activity); });
     }
 
     // TODO(bsheedy): Maybe remove this and switch to setting a VrShellDelegateFactory instead.
@@ -79,11 +80,6 @@ public class TestVrShellDelegate extends VrShellDelegate {
     @Override
     public boolean isBlackOverlayVisible() {
         return super.isBlackOverlayVisible();
-    }
-
-    @Override
-    public boolean isListeningForWebVrActivate() {
-        return super.isListeningForWebVrActivate();
     }
 
     @Override

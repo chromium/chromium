@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-hr-element
-[HTMLConstructor]
-interface HTMLHRElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLHRElement : HTMLElement {
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLHRElement-partial
     [CEReactions, Reflect] attribute DOMString align;

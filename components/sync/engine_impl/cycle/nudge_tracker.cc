@@ -26,7 +26,7 @@ base::TimeDelta GetDefaultDelayForType(ModelType model_type,
     case USER_EVENTS:
       // Accompany types rely on nudges from other types, and hence have long
       // nudge delays.
-      return base::TimeDelta::FromSeconds(kDefaultShortPollIntervalSeconds);
+      return base::TimeDelta::FromSeconds(kDefaultPollIntervalSeconds);
     case BOOKMARKS:
     case PREFERENCES:
     case SESSIONS:
@@ -133,7 +133,7 @@ void NudgeTracker::RecordInitialSyncDone(ModelTypeSet types) {
 base::TimeDelta NudgeTracker::RecordLocalChange(ModelTypeSet types) {
   // Start with the longest delay.
   base::TimeDelta delay =
-      base::TimeDelta::FromSeconds(kDefaultShortPollIntervalSeconds);
+      base::TimeDelta::FromSeconds(kDefaultPollIntervalSeconds);
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
     DCHECK(tracker_it != type_trackers_.end());

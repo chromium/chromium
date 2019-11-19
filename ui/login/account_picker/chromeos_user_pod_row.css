@@ -206,12 +206,11 @@ html[dir=rtl] .pod.focused:not(.multiprofiles-policy-applied):not(.public-accoun
 }
 
 .auth-container .submit-button {
-  color: #FFFFFF;
-  height: 20px;
+  --cr-icon-button--icon-size: 20px;
+  --cr-icon-button-size: 20px;
+  --cr-icon-button-color: white;
   margin: 15px 0 5px 0;
   opacity: 1;
-  padding: 0;
-  width: 20px;
 }
 
 .auth-container .custom-icon-shown .submit-button {
@@ -496,20 +495,6 @@ html[dir=rtl] .pod.focused:not(.multiprofiles-policy-applied):not(.public-accoun
   width: 27px;
 }
 
-.launch-app-button-container {
-  display: block;
-  flex: auto;
-  text-align: center;
-}
-
-.launch-app-button {
-  display: inline;
-  margin-top: 6px !important;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .pod[auth-type='onlineSignIn'] .reauth-hint-container {
   display: flex;
   justify-content: center;
@@ -560,11 +545,11 @@ html[dir=rtl] .pod.focused:not(.multiprofiles-policy-applied):not(.public-accoun
 }
 
 .action-box-button {
-  -webkit-margin-start: 8px;
-  height: 24px;
+  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-size: 28px;
+  margin-inline-end: 0;
+  margin-inline-start: 8px;
   margin-top: 3px;
-  padding: 0;
-  width: 24px;
 }
 
 .action-box-button.ripple-circle {
@@ -587,12 +572,12 @@ html[dir=rtl] .pod.focused:not(.multiprofiles-policy-applied):not(.public-accoun
 }
 
 .action-box-area .action-box-icon {
-  /* overriden in chrome/browser/resources/md_user_manager/user_manager.css */
+  /* overriden in chrome/browser/resources/user_manager/user_manager.css */
   display: none;
 }
 
 .user-image-gradient-area {
-  /* overriden in chrome/browser/resources/md_user_manager/user_manager.css */
+  /* overriden in chrome/browser/resources/user_manager/user_manager.css */
   display: none;
 }
 
@@ -980,9 +965,9 @@ html[dir=rtl] .pod.public-account .button-container {
 }
 
 .public-account-submit-button {
-  color: #FFF;
+  --cr-icon-button-color: #FFF;
+  --cr-icon-button-size: 40px;
   opacity: 1;
-  padding: 10px 7px 8px 11px;
 }
 
 .monitoring-container {

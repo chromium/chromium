@@ -3,7 +3,6 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../assert_selection.js"></script>
 <script>
-const usesBidiAffinity = window.internals && internals.runtimeFlags.bidiCaretAffinityEnabled;
 
 selection_test(
   '<div contenteditable dir="ltr">|ab<span>c\u05D0\u05D1\u05D2def</span></div>',
@@ -32,29 +31,25 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">ab<span>c|\u05D0\u05D1\u05D2def</span></div>',
   selection => selection.modify('move', 'left', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr">ab<span>c\u05d0|\u05d1\u05d2def</span></div>'
-      : '<div contenteditable dir="ltr">ab|<span>c\u05D0\u05D1\u05D2def</span></div>',
+  '<div contenteditable dir="ltr">ab|<span>c\u05D0\u05D1\u05D2def</span></div>',
   '31-4 ltr left character');
 
 selection_test(
   '<div contenteditable dir="ltr">ab<span>c\u05D0|\u05D1\u05D2def</span></div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="ltr">ab<span>c\u05D0\u05D1|\u05D2def</span></div>',
+  '<div contenteditable dir="ltr">ab<span>c|\u05D0\u05D1\u05D2def</span></div>',
   '31-5 ltr left character');
 
 selection_test(
   '<div contenteditable dir="ltr">ab<span>c\u05D0\u05D1|\u05D2def</span></div>',
   selection => selection.modify('move', 'left', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr">ab<span>c\u05d0\u05d1\u05d2|def</span></div>'
-      : '<div contenteditable dir="ltr">ab<span>c|\u05D0\u05D1\u05D2def</span></div>',
+  '<div contenteditable dir="ltr">ab<span>c\u05D0|\u05D1\u05D2def</span></div>',
   '31-6 ltr left character');
 
 selection_test(
   '<div contenteditable dir="ltr">ab<span>c\u05D0\u05D1\u05D2|def</span></div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="ltr">ab<span>c\u05D0|\u05D1\u05D2def</span></div>',
+  '<div contenteditable dir="ltr">ab<span>c\u05D0\u05D1|\u05D2def</span></div>',
   '31-7 ltr left character');
 
 selection_test(

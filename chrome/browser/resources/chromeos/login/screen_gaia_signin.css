@@ -2,20 +2,9 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#gaia-signin {
+:host(.saml-interstitial) {
   height: 528px;
   width: 448px;
-}
-
-#gaia-signin.full-width {
-  padding: 44px 0 0;
-  width: 562px;
-}
-
-#gaia-signin.v2 {
-  height: unset;
-  padding: unset;
-  width: unset;
 }
 
 .signin-link {
@@ -30,34 +19,37 @@
   transition: outline-color 200ms;
 }
 
-#gaia-signin-form-container,
-#signin-frame {
+#gaia-signin-form-container {
   height: 100%;
   position: relative;
   width: 100%;
 }
 
-#signin-frame {
-  display: block;
+.transparent {
   opacity: 0;
-  overflow: hidden;
   transition: opacity 500ms ease-in;
 }
 
-#signin-frame.show {
+.non-transparent {
   opacity: 1;
   transition: opacity 500ms ease-out;
 }
 
-#signin-frame-container-v2 #signin-frame {
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  height: 560px;
-  position: static;
-  width: 768px;
+#signin-frame,
+#signin-frame-container {
+  height: 100%;
+  width: 100%;
 }
 
-#gaia-signin .step-contents {
+#signin-frame {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  display: block;
+  overflow: hidden;
+  position: static;
+}
+
+:host .step-contents {
   -webkit-box-pack: center;
   display: -webkit-box;
   height: 100%;
@@ -77,8 +69,8 @@
 }
 
 #saml-notice-recording-indicator {
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-inline-end: 10px;
+  padding-inline-start: 10px;
 }
 
 #saml-notice-message {
@@ -86,13 +78,16 @@
   font-size: 13px;
 }
 
-#gaia-signin.whitelist-error .step-contents,
-#gaia-signin.whitelist-error .gaia-dialog {
-  visibility: hidden;
-}
-
-#gaia-signin.whitelist-error .step-loading {
-  visibility: hidden;
+.step-loading {
+  align-items: center;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  min-height: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 #gaia-whitelist-error {
@@ -105,50 +100,6 @@
   visibility: hidden;
 }
 
-#gaia-signin.whitelist-error #gaia-whitelist-error {
-  visibility: visible;
-}
-
-#gaia-navigation {
-  color: white;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  z-index: 1;
-}
-
-.loading #gaia-navigation,
-.full-width #gaia-navigation {
-  color: rgba(0, 0, 0, .54);
-}
-
-#gaia-signin.v2 #gaia-navigation,
-#gaia-signin.v2 #gaia-step-contents {
-  display: none;
-}
-
-#gaia-signin:not(.v2) #signin-frame-dialog {
-  display: none;
-}
-
-#gaia-signin.v2.saml #signin-frame {
-  height: 516px;
+:host(.saml) #signin-frame-container {
   padding-top: 44px;
-}
-
-#signin-frame-dialog #buttons-container {
-  padding: 0 calc(32px - 4px); /* real width - button margin */
-}
-
-#signin-frame-dialog[full-screen-dialog] #buttons-container {
-  padding: 0 calc(64px - 4px); /* real width - button margin */
-}
-
-#gaia-screen-navigation-buttons {
-  height: 100%;
-}
-
-#gaia-screen-buttons-overlay {
-  background: rgba(0, 0, 0, 0.6);
 }

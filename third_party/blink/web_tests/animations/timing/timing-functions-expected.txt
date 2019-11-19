@@ -6,7 +6,6 @@ PASS - "left" property for "box5" element at 0.25s saw something close to: 100
 PASS - "left" property for "box6" element at 0.25s saw something close to: 100
 PASS - "left" property for "box7" element at 0.25s saw something close to: 133
 PASS - "left" property for "box8" element at 0.25s saw something close to: 100
-PASS - "left" property for "box9" element at 0.25s saw something close to: 100
 PASS - "left" property for "box1" element at 0.5s saw something close to: 180
 PASS - "left" property for "box2" element at 0.5s saw something close to: 180
 PASS - "left" property for "box3" element at 0.5s saw something close to: 150
@@ -15,7 +14,6 @@ PASS - "left" property for "box5" element at 0.5s saw something close to: 100
 PASS - "left" property for "box6" element at 0.5s saw something close to: 133
 PASS - "left" property for "box7" element at 0.5s saw something close to: 166
 PASS - "left" property for "box8" element at 0.5s saw something close to: 133
-PASS - "left" property for "box9" element at 0.5s saw something close to: 150
 PASS - "left" property for "box1" element at 0.75s saw something close to: 196
 PASS - "left" property for "box2" element at 0.75s saw something close to: 196
 PASS - "left" property for "box3" element at 0.75s saw something close to: 175
@@ -24,5 +22,4 @@ PASS - "left" property for "box5" element at 0.75s saw something close to: 100
 PASS - "left" property for "box6" element at 0.75s saw something close to: 166
 PASS - "left" property for "box7" element at 0.75s saw something close to: 200
 PASS - "left" property for "box8" element at 0.75s saw something close to: 166
-PASS - "left" property for "box9" element at 0.75s saw something close to: 200
 

@@ -16,8 +16,8 @@
 #include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chromeos/dbus/power_manager_client.h"
-#include "components/arc/common/policy.mojom.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "components/arc/mojom/policy.mojom.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 class Profile;
@@ -87,6 +87,12 @@ class AppInstallEventLogCollector
   void OnCloudDpsFailed(base::Time time,
                         const std::string& package_name,
                         arc::mojom::InstallErrorReason reason) override;
+  void OnReportDirectInstall(
+      base::Time time,
+      const std::set<std::string>& package_names) override;
+  void OnReportForceInstallMainLoopFailed(
+      base::Time time,
+      const std::set<std::string>& package_names) override;
 
   // ArcAppListPrefs::Observer:
   void OnInstallationStarted(const std::string& package_name) override;

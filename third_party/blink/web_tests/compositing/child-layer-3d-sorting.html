@@ -6,39 +6,31 @@
 <style type="text/css" media="screen">
     #parent {
         -webkit-transform-style: preserve-3d;
-        transform: translateZ(0);
+        will-change: transform;
     }
     #child {
         width: 200px;
         height: 200px;
-        transform: translateZ(0px);
+        will-change: transform;
         background: blue;
     }
     #child > div {
         width: 100px;
         height: 100px;
-        transform: translateZ(0px);
+        will-change: transform;
         background: green;
     }
 </style>
+<script src="../resources/run-after-layout-and-paint.js"></script>
 <script type="text/javascript" charset="utf-8">
-    if (window.testRunner) {
-        testRunner.waitUntilDone();
-        testRunner.dumpAsTextWithPixelResults();
-    }
     function doTest()
     {
         var child = document.getElementById('child');
 
-        window.setTimeout(function() {
+        runAfterLayoutAndPaint(function() {
             // Move the parent forward
             child.style.webkitTransform = "translateZ(10px)";
-            if (window.testRunner) {
-                window.setTimeout(function() {
-                    testRunner.notifyDone();
-                }, 0);
-            }
-        }, 0);
+        }, true);
     }
 
     window.addEventListener('load', doTest, false);

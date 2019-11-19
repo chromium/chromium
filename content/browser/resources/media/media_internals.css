@@ -5,11 +5,11 @@
 html,
 body,
 #container {
+  font-family: Arial;
+  height: 100%;
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
-  font-family:Arial;
 }
 
 tabbox {
@@ -29,27 +29,27 @@ tabpanel {
 }
 
 table {
-  font-family: sans-serif;
   -webkit-font-smoothing: antialiased;
-  font-size: 115%;
-  width: auto;
-  overflow: auto;
   display: block;
+  font-family: sans-serif;
+  font-size: 115%;
+  overflow: auto;
+  width: auto;
 }
 th {
-  background-color: #4AA9E4;
-  font-weight: normal;
+  background-color: rgb(74, 169, 228);
   color: white;
+  font-weight: normal;
+  min-width: 230px;
   padding: 2px;
   text-align: center;
-  min-width: 230px;
 }
 td {
   background-color: rgb(238, 238, 238);
-  padding: 2px;
   color: rgb(111, 111, 111);
-  word-wrap: break-word;
   min-width: 230px;
+  padding: 2px;
+  word-wrap: break-word;
 }
 
 h1,
@@ -59,32 +59,32 @@ h3 {
 }
 
 #container {
+  align-content: stretch;
+  align-items: flex-start;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-between;
-  align-items: flex-start;
-  align-content: stretch;
 }
 
 #container > * {
-  padding: 0;
-  padding-left: 25px;
   margin: 0;
+  padding: 0;
+  padding-inline-start: 25px;
 }
 
 #list-wrapper {
+  align-content: stretch;
+  align-items: flex-start;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: flex-start;
-  align-content: stretch;
 }
 
 #player-list-wrapper,
 #audio-component-list-wrapper {
-  flex-grow: 1;
   align-self: stretch;
+  flex-grow: 1;
   min-width: 200px;
   overflow: auto;
 }
@@ -93,25 +93,25 @@ h3 {
 #player-list-wrapper li,
 #audio-component-list-wrapper ul,
 #audio-component-list-wrapper li {
-  padding: 0px;
   list-style-type: none;
+  padding: 0;
 }
 #list-wrapper button {
-  padding: 0px;
+  padding: 0;
 }
 
 .property-wrapper,
 #log-wrapper {
   align-self: stretch;
-  display:block;
+  display: block;
   flex-grow: 0.25;
-  overflow: auto;
   margin-bottom: 10px;
+  overflow: auto;
 }
 
 #video-capture-capabilities-wrapper {
-  flex-grow: 0.5;
   align-self: stretch;
+  flex-grow: 0.5;
   overflow: auto;
 }
 
@@ -124,9 +124,9 @@ h3 {
 }
 
 #clipboard-dialog {
-  top: 0;
   bottom: 0;
   padding-top: 0;
+  top: 0;
 }
 
 ::backdrop {
@@ -139,58 +139,58 @@ h3 {
 }
 
 #video-capture-capabilities-table {
-  margin-bottom:30px;
+  margin-bottom: 30px;
 }
 
 #video-capture-capabilities-table th,
 #video-capture-capabilities-table td {
-  min-width:120px;
+  min-width: 120px;
 }
 
 #video-capture-capabilities-table td {
-  padding:5px;
+  padding: 5px;
 }
 
 #video-capture-capabilities-table tr td {
-  font-size:13px;
-  text-align:center;
+  font-size: 13px;
+  text-align: center;
 }
 
 #video-capture-capabilities-table .video-capture-formats-table th,
 #video-capture-capabilities-table .video-capture-formats-table td {
-  text-align:right;
-  min-width:80px;
+  min-width: 80px;
+  text-align: end;
 }
 
 #video-capture-capabilities-table .video-capture-formats-table th {
-  background:none;
-  color:#666;
-  font-size:13px;
-  font-weight:bold;
+  background: none;
+  color: #666;
+  font-size: 13px;
+  font-weight: bold;
 }
 
 #video-capture-capabilities-table .video-capture-formats-table td {
-  padding:2px;
+  padding: 2px;
 }
 
-.show-none-if-empty:empty:after {
-  content: "none";
+.show-none-if-empty:empty::after {
   color: rgba(0, 0, 0, .5);
+  content: 'none';
 }
 
 label.audio-focus-session,
 label.selectable-button {
-  display: block;
   border: solid 1px #999;
   border-radius: 3px;
-  padding: 6px;
-  margin: 4px 0;
+  display: block;
   line-height: 1.4;
+  margin: 4px 0;
+  padding: 6px;
   word-break: break-all;
 }
 
 label.selectable-button {
-  background: #BDF;
+  background: rgb(187, 221, 255);
   cursor: pointer;
   user-select: none;
 }
@@ -200,7 +200,7 @@ input.selectable-button {
 }
 
 input.selectable-button:checked + label.selectable-button {
-  background-color: #2196F3;
+  background-color: rgb(33, 150, 243);
   border-color: #666;
   color: #FFF;
 }
@@ -220,9 +220,9 @@ label.destructed-player {
 
 .player-frame {
   font-style: italic;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .no-players-selected #players .property-wrapper,
@@ -236,4 +236,19 @@ label.destructed-player {
 
 #audio-focus-session-list {
   list-style: none;
+}
+
+#devtools-notice-window {
+  background-color: rgb(252, 247, 134);
+  border: 1px solid black;
+  border-radius: 4px;
+  font-size: 10px;
+  height: 40px;
+  left: 50%;
+  line-height: 20px;
+  margin-inline-start: -300px;
+  position: fixed;
+  text-align: center;
+  top: 10px;
+  width: 450px;
 }

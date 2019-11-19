@@ -1,0 +1,49 @@
+endpoint_type: REMOTE
+fuzz_handshake: true
+messages: [
+  {
+    local_port: SEND
+    id: 0x6d6a6873
+    include_body_if_not_complex: true
+  },
+  {
+    id: 0x4d4f4a4f
+    include_body_if_not_complex: false
+    [mojo_fuzzer.MojoMessage.mojo_message]: {
+      data: "a simple message with no descriptors"
+    }
+  },
+  {
+    id: 0x4d4f4a4f
+    include_body_if_not_complex: false
+    descriptors: [
+      { port: RECEIVE },
+      { port: SEND },
+      { port: DEAD_NAME }
+    ]
+    [mojo_fuzzer.MojoMessage.mojo_message]: {
+      data: "A message with descriptors"
+    }
+  },
+  {
+    id: 0x4d4f4a4f
+    include_body_if_not_complex: false
+    [mojo_fuzzer.MojoMessage.mojo_message]: {
+      data: "Another simple message"
+    }
+  },
+  {
+    id: 0x4d4f4a2b
+    include_body_if_not_complex: false
+    descriptors: [
+      { ool: { data: "Message data transferred OOL" } }
+    ]
+  },
+  {
+    id: 0x4d4f4a4f
+    include_body_if_not_complex: false
+    [mojo_fuzzer.MojoMessage.mojo_message]: {
+      data: "more simple messages"
+    }
+  }
+]

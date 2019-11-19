@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace sandbox {
 class BrokerServices;
@@ -126,11 +125,11 @@ class MainUIWindow {
 
   // Shows a standard File Open dialog and returns the DLL filename selected or
   // blank string if the user cancelled (or an error occurred).
-  base::string16 OnShowBrowseForDllDlg(HWND owner);
+  std::wstring OnShowBrowseForDllDlg(HWND owner);
 
   // Shows a standard Save As dialog and returns the log filename selected or
   // blank string if the user cancelled (or an error occurred).
-  base::string16 OnShowBrowseForLogFileDlg(HWND owner);
+  std::wstring OnShowBrowseForLogFileDlg(HWND owner);
 
   // Formats a message using the supplied format string and prints it in the
   // listview in the main UI window. Passing a NULL param in 'fmt' results in
@@ -166,20 +165,20 @@ class MainUIWindow {
 
   // This is essentially a command line to a target executable that the
   // broker will spawn and ask to load the DLL.
-  base::string16 spawn_target_;
+  std::wstring spawn_target_;
 
   // A handle to the current instance of the app. Passed in to this class
   // through CreateMainWindowAndLoop.
   HINSTANCE instance_handle_;
 
   // A path to the DLL that the target should load once it executes.
-  base::string16 dll_path_;
+  std::wstring dll_path_;
 
   // The name of the entry point the target should call after it loads the DLL.
-  base::string16 entry_point_;
+  std::wstring entry_point_;
 
   // The name of the log file to use.
-  base::string16 log_file_;
+  std::wstring log_file_;
 
   // This is a static handle to the list view that fills up the entire main
   // UI window. The list view is used to display debugging information to the

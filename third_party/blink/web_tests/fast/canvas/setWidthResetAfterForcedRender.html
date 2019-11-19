@@ -4,22 +4,15 @@
 <head>
 <script src="../../resources/run-after-layout-and-paint.js"></script>
 <script>
-if (window.testRunner) {
-  testRunner.dumpAsTextWithPixelResults();
-  testRunner.waitUntilDone();
-}
-
 function repaintTest()
 {
     var canvas = document.getElementById('c1');
     var offset = document.body.offsetLeft; // Forces layout
     canvas.width = canvas.width; // Should wipe canvas clean
-    if (window.testRunner)
-        testRunner.notifyDone();
 }
 </script>
 </head>
-<body onload="runAfterLayoutAndPaint(repaintTest);">
+<body onload="runAfterLayoutAndPaint(repaintTest, true);">
 <p><b>BUG ID:</b> <a href="https://bugs.webkit.org/show_bug.cgi?id=43341">Bugzilla bug 43341</a>
 Setting canvas width after canvas already rendered resets canvas data appropriately, but doesn't repaint immediately.
 <p id="success" style="background-color:palegreen; padding:3px;"><b>TEST PASS:</b>

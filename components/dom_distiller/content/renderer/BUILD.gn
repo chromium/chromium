@@ -19,7 +19,7 @@ static_library("renderer") {
   ]
   deps = [
     "//base",
-    "//components/dom_distiller/content/common:mojo_bindings",
+    "//components/dom_distiller/content/common/mojom",
     "//components/dom_distiller/core",
     "//content/public/common",
     "//content/public/renderer",

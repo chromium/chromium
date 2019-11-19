@@ -4,7 +4,7 @@
 
 package org.chromium.chromoting.jni;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 import org.chromium.chromoting.R;
 
@@ -73,7 +73,7 @@ public interface ConnectionListener {
             case Error.SIGNALING_ERROR:
                 return R.string.error_p2p_failure;
             case Error.SIGNALING_TIMEOUT:
-                return R.string.error_p2p_failure;
+                return R.string.error_host_is_offline;
             case Error.HOST_OVERLOAD:
                 return R.string.error_host_overload;
             case Error.MAX_SESSION_LENGTH:

@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -39,7 +40,7 @@ void InstallOriginTrialFeaturesForModules(
 }
 
 void InstallPendingOriginTrialFeatureForModules(
-    const String& feature,
+    OriginTrialFeature feature,
     const ScriptState* script_state) {
   (*g_original_install_pending_origin_trial_feature_function)(feature,
                                                              script_state);

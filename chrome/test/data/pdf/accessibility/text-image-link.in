@@ -1,0 +1,286 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+  /StructTreeRoot 8 0 R
+  /Lang (en-US)
+  /MarkInfo <<
+    /Marked true
+  >>
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /Count 2
+  /Kids [3 0 R 4 0 R]
+  /MediaBox [0 0 612 792]
+  /CropBox [0 0 612 792]
+  /Resources <<
+    /Font <<
+      /F1 13 0 R
+      /F2 14 0 R
+    >>
+  >>
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 5 0 R
+  /Annots [15 0 R 16 0 R 17 0 R 18 0 R]
+  /Group <<
+    /CS /DeviceRGB
+    /I true
+    /S /Transparency
+  >>
+  /Resources <<
+    /ProcSet [/PDF /ImageC /ImageI /ImageB]
+    /XObject <<
+      /Tr8 19 0 R
+      /Im7 20 0 R
+    >>
+    /ExtGState <<
+      /EGS9 7 0 R
+    >>
+  >>
+  /StructParents 0
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 6 0 R
+>>
+endobj
+{{object 5 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+70 700 Td
+/F1 18 Tf
+(Link Annotations - Page 1) Tj
+10 -85 Td
+/F2 14 Tf
+(Link with destination to second page) Tj
+-12 -84 Td
+/F2 10 Tf
+(PDF Reference, Version 1.7, Section 8.4.5 defines Annotations) Tj
+2 -53 Td
+(3. Hello World) Tj
+0 -18 Td
+(https://pdfium.googlesource.com/pdfium is link in plain text, not link annotation. These are referred to) Tj
+0 -17 Td
+(as WebLinks in PDFium.)Tj
+ET
+0.1 w
+/Artifact
+BMC
+q
+0 0 612 792 re
+W* n
+EMC
+/Figure<</MCID 0>>
+BDC
+Q
+q
+281 685.3 50 50 re
+W* n
+q
+49.9 0 0 50 281.1 685.4 cm
+/Im7 Do
+Q
+EMC
+/Figure<</MCID 1>>
+BDC
+Q
+q
+281 485.3 20 20 re
+W* n
+q
+20 0 0 20 281.1 485.4 cm
+/Im7 Do
+Q
+EMC
+/Figure<</MCID 2>>
+BDC
+Q
+q
+281 285.3 0 0 re
+W* n
+q
+0 0 0 0 281.1 285.4 cm
+/Im7 Do
+Q
+EMC
+Q
+q
+EGS9 gs /Tr8 Do
+Q
+endstream
+endobj
+{{object 6 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+70 700 Td
+/F1 18 Tf
+(Second Page) Tj
+ET
+endstream
+endobj
+{{object 7 0}} <<
+  /ca 0.5
+  /CA 0.5
+>>
+endobj
+{{object 8 0}} <<
+  /Type /StructTreeRoot
+  /ParentTree <<
+    /Nums [0 [10 0 R 11 0 R]]
+  >>
+  /K [9 0 R]
+  /RoleMap <<
+    /Document /Document
+    /Standard /P
+    /Figure /Figure
+  >>
+>>
+endobj
+{{object 9 0}} <<
+  /Type /StructElem
+  /S /Document
+  /K [12 0 R]
+  /P 8 0 R
+  /T (TitleText)
+  /Pg 3 0 R
+>>
+endobj
+{{object 10 0}} <<
+  /Type /StructElem
+  /S /Figure
+  /K 0
+  /P 12 0 R
+  /Alt <feff0049006d00610067006500200031>
+  /Pg 3 0 R
+>>
+endobj
+{{object 11 0}} <<
+  /Type /StructElem
+  /S /Figure
+  /K 1
+  /P 12 0 R
+  /Pg 3 0 R
+>>
+endobj
+{{object 12 0}} <<
+  /Type /StructElem
+  /S /Standard
+  /K [10 0 R 11 0 R]
+  /P 9 0 R
+  /T <feff00730079006d0062006f006c003a0020003100300030006b>
+  /Pg 3 0 R
+>>
+endobj
+{{object 13 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+{{object 14 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica
+>>
+endobj
+{{object 15 0}} <<
+  /Type /Annot
+  /Subtype /Link
+  /BS <<
+    /W 0
+  >>
+  /Rect [80 613 542 633]
+  /Dest [4 0 R /XYZ 200 725 0]
+  /F 4
+>>
+endobj
+{{object 16 0}} <<
+  /Type /Annot
+  /Subtype /Link
+  /BS <<
+    /W 0
+  >>
+  /Rect [196 544 66 529]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (https://www.adobe.com)
+  >>
+  /F 4
+>>
+endobj
+{{object 17 0}} <<
+  /Type /Annot
+  /Subtype /Link
+  /BS <<
+    /W 0
+  >>
+  /Rect [83 430 178 453]
+  /QuadPoints [83 453 178 453 83 440 178 440 83 440 178 440 83 430 178 430]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (https://cs.chromium.org)
+  >>
+  /F 4
+>>
+endobj
+{{object 18 0}} <<
+  /Type /Annot
+  /Subtype /Link
+  /BS <<
+    /W 0
+  >>
+  /Rect [40 80 60 100]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (https://www.google.com)
+  >>
+  /F 4
+>>
+endobj
+{{object 19 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [-140 395 753 395.1]
+  /Group <<
+    /CS /DeviceRGB
+    /K true
+    /S /Transparency
+  >>
+  {{streamlen}}
+>>
+stream
+endstream
+endobj
+{{object 20 0}} <<
+  /Type /XObject
+  /Subtype /Image
+  /Width 50
+  /Height 50
+  /BitsPerComponent 8
+  /ColorSpace /DeviceRGB
+  /Filter [/ASCIIHexDecode /FlateDecode]
+  {{streamlen}}
+>>
+stream
+789cedc13101000000c2a0f54fed6f06a00000000000000078031d4c0001
+endstream
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

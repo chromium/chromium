@@ -9,10 +9,8 @@ import android.view.View;
 
 import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.widget.ViewHighlighter;
-import org.chromium.chrome.browser.widget.textbubble.TextBubble;
+import org.chromium.chrome.browser.ui.widget.highlight.ViewHighlighter;
+import org.chromium.chrome.browser.ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -24,12 +22,11 @@ import java.util.ArrayList;
  */
 public class ToolbarUtils {
     /**
-     * Sets up feature engagement tracker for the download settings in-product-help text bubble.
+     * Sets up feature engagement tracker for the download settings in-product help text bubble.
+     * @param tracker The {@link Tracker} to use for the in-product help.
      * @param toolbar The toolbar that contains the settings menu.
-     * @param profile The profile used to get tracker.
      */
-    public static void setupTrackerForDownloadSettingsIPH(View toolbar, Profile profile) {
-        final Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+    public static void setupTrackerForDownloadSettingsIPH(Tracker tracker, View toolbar) {
         tracker.addOnInitializedCallback(
                 success -> ToolbarUtils.maybeShowDownloadSettingsTextBubble(tracker, toolbar));
     }

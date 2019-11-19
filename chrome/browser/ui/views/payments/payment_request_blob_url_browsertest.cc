@@ -16,12 +16,12 @@ class PaymentRequestBlobUrlTest : public PaymentRequestBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestBlobUrlTest, ConnectionTerminated) {
   NavigateTo("/payment_request_blob_url_test.html");
-  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  ResetEventWaiter(DialogEvent::NOT_SUPPORTED_ERROR);
   ASSERT_TRUE(content::ExecuteScript(
       GetActiveWebContents(),
       "(function() { document.getElementById('buy').click(); })();"));
   WaitForObservedEvent();
-  ExpectBodyContains({"Rejected: UnknownError: Request failed"});
+  ExpectBodyContains({"Rejected: NotSupportedError"});
 }
 
 }  // namespace payments

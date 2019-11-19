@@ -42,8 +42,12 @@ class TextCodecUTF16 final : public TextCodec {
                 FlushBehavior,
                 bool stop_on_error,
                 bool& saw_error) override;
-  CString Encode(const UChar*, wtf_size_t length, UnencodableHandling) override;
-  CString Encode(const LChar*, wtf_size_t length, UnencodableHandling) override;
+  std::string Encode(const UChar*,
+                     wtf_size_t length,
+                     UnencodableHandling) override;
+  std::string Encode(const LChar*,
+                     wtf_size_t length,
+                     UnencodableHandling) override;
 
  private:
   bool little_endian_;

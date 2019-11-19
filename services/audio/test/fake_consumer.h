@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/macros.h"
 
 namespace media {
@@ -46,6 +47,10 @@ class FakeConsumer {
   // Returns the amplitude of the given |frequency| in the given |channel| just
   // before the given |end_frame| position.
   double ComputeAmplitudeAt(int channel, double frequency, int end_frame) const;
+
+  // Saves the recorded content to a WAV-format file, overwriting it if it
+  // exists.
+  void SaveToFile(const base::FilePath& path) const;
 
  private:
   const int sample_rate_;

@@ -31,7 +31,7 @@
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/test/test_history_database.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -246,7 +246,7 @@ class AndroidProviderBackendTest : public testing::Test {
     return true;
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   AndroidProviderBackendNotifier notifier_;
   scoped_refptr<HistoryBackend> history_backend_;
@@ -575,8 +575,9 @@ TEST_F(AndroidProviderBackendTest, InsertHistoryAndBookmark) {
             (*notifier_.modified_details())[0].title());
   EXPECT_FALSE(notifier_.favicon_changed());
   content::RunAllPendingInMessageLoop();
-  ASSERT_EQ(1, bookmark_model_->mobile_node()->child_count());
-  const BookmarkNode* child = bookmark_model_->mobile_node()->GetChild(0);
+  ASSERT_EQ(1u, bookmark_model_->mobile_node()->children().size());
+  const BookmarkNode* child =
+      bookmark_model_->mobile_node()->children().front().get();
   ASSERT_TRUE(child);
   EXPECT_EQ(row1.title(), child->GetTitle());
   EXPECT_EQ(row1.url(), child->url());
@@ -675,8 +676,9 @@ TEST_F(AndroidProviderBackendTest, DeleteHistoryAndBookmarks) {
   ASSERT_TRUE(backend->InsertHistoryAndBookmark(row2));
   // Verify the row1 has been added in bookmark model.
   content::RunAllPendingInMessageLoop();
-  ASSERT_EQ(1, bookmark_model_->mobile_node()->child_count());
-  const BookmarkNode* child = bookmark_model_->mobile_node()->GetChild(0);
+  ASSERT_EQ(1u, bookmark_model_->mobile_node()->children().size());
+  const BookmarkNode* child =
+      bookmark_model_->mobile_node()->children().front().get();
   ASSERT_TRUE(child);
   EXPECT_EQ(row1.title(), child->GetTitle());
   EXPECT_EQ(row1.url(), child->url());
@@ -690,7 +692,7 @@ TEST_F(AndroidProviderBackendTest, DeleteHistoryAndBookmarks) {
   EXPECT_EQ(1, deleted_count);
   // Verify the row1 was removed from bookmark model.
   content::RunAllPendingInMessageLoop();
-  ASSERT_EQ(0, bookmark_model_->mobile_node()->child_count());
+  ASSERT_EQ(0u, bookmark_model_->mobile_node()->children().size());
 
   // Verify notifications
   ASSERT_TRUE(notifier_.deleted_details());
@@ -865,8 +867,9 @@ TEST_F(AndroidProviderBackendTest, UpdateURL) {
 
   // Verify the row1 has been added in bookmark model.
   content::RunAllPendingInMessageLoop();
-  ASSERT_EQ(1, bookmark_model_->mobile_node()->child_count());
-  const BookmarkNode* child = bookmark_model_->mobile_node()->GetChild(0);
+  ASSERT_EQ(1u, bookmark_model_->mobile_node()->children().size());
+  const BookmarkNode* child =
+      bookmark_model_->mobile_node()->children().front().get();
   ASSERT_TRUE(child);
   EXPECT_EQ(row1.title(), child->GetTitle());
   EXPECT_EQ(row1.url(), child->url());
@@ -942,8 +945,9 @@ TEST_F(AndroidProviderBackendTest, UpdateURL) {
 
   // Verify the bookmark model was updated.
   content::RunAllPendingInMessageLoop();
-  ASSERT_EQ(1, bookmark_model_->mobile_node()->child_count());
-  const BookmarkNode* child1 = bookmark_model_->mobile_node()->GetChild(0);
+  ASSERT_EQ(1u, bookmark_model_->mobile_node()->children().size());
+  const BookmarkNode* child1 =
+      bookmark_model_->mobile_node()->children().front().get();
   ASSERT_TRUE(child1);
   EXPECT_EQ(row1.title(), child1->GetTitle());
   EXPECT_EQ(update_row1.url(), child1->url());
@@ -1626,8 +1630,9 @@ TEST_F(AndroidProviderBackendTest, DeleteHistory) {
 
   // Verify the row1 has been added in bookmark model.
   content::RunAllPendingInMessageLoop();
-  ASSERT_EQ(1, bookmark_model_->mobile_node()->child_count());
-  const BookmarkNode* child = bookmark_model_->mobile_node()->GetChild(0);
+  ASSERT_EQ(1u, bookmark_model_->mobile_node()->children().size());
+  const BookmarkNode* child =
+      bookmark_model_->mobile_node()->children().front().get();
   ASSERT_TRUE(child);
   EXPECT_EQ(row1.title(), child->GetTitle());
   EXPECT_EQ(row1.url(), child->url());
@@ -1649,8 +1654,9 @@ TEST_F(AndroidProviderBackendTest, DeleteHistory) {
 
   // Verify the row1 is still in bookmark model.
   content::RunAllPendingInMessageLoop();
-  ASSERT_EQ(1, bookmark_model_->mobile_node()->child_count());
-  const BookmarkNode* child1 = bookmark_model_->mobile_node()->GetChild(0);
+  ASSERT_EQ(1u, bookmark_model_->mobile_node()->children().size());
+  const BookmarkNode* child1 =
+      bookmark_model_->mobile_node()->children().front().get();
   ASSERT_TRUE(child1);
   EXPECT_EQ(row1.title(), child1->GetTitle());
   EXPECT_EQ(row1.url(), child1->url());
@@ -1951,8 +1957,9 @@ TEST_F(AndroidProviderBackendTest, InsertWithoutThumbnailDB) {
             (*notifier_.modified_details())[0].title());
   EXPECT_FALSE(notifier_.favicon_changed());
   content::RunAllPendingInMessageLoop();
-  ASSERT_EQ(1, bookmark_model_->mobile_node()->child_count());
-  const BookmarkNode* child = bookmark_model_->mobile_node()->GetChild(0);
+  ASSERT_EQ(1u, bookmark_model_->mobile_node()->children().size());
+  const BookmarkNode* child =
+      bookmark_model_->mobile_node()->children().front().get();
   ASSERT_TRUE(child);
   EXPECT_EQ(row1.title(), child->GetTitle());
   EXPECT_EQ(row1.url(), child->url());
@@ -2006,8 +2013,9 @@ TEST_F(AndroidProviderBackendTest, DeleteWithoutThumbnailDB) {
     ASSERT_TRUE(backend->InsertHistoryAndBookmark(row2));
     // Verify the row1 has been added in bookmark model.
     content::RunAllPendingInMessageLoop();
-    ASSERT_EQ(1, bookmark_model_->mobile_node()->child_count());
-    const BookmarkNode* child = bookmark_model_->mobile_node()->GetChild(0);
+    ASSERT_EQ(1u, bookmark_model_->mobile_node()->children().size());
+    const BookmarkNode* child =
+        bookmark_model_->mobile_node()->children().front().get();
     ASSERT_TRUE(child);
     EXPECT_EQ(row1.title(), child->GetTitle());
     EXPECT_EQ(row1.url(), child->url());
@@ -2027,7 +2035,7 @@ TEST_F(AndroidProviderBackendTest, DeleteWithoutThumbnailDB) {
   EXPECT_EQ(2, deleted_count);
   // Verify the rows was removed from bookmark model.
   content::RunAllPendingInMessageLoop();
-  ASSERT_EQ(0, bookmark_model_->mobile_node()->child_count());
+  ASSERT_EQ(0u, bookmark_model_->mobile_node()->children().size());
 
   // Verify notifications
   ASSERT_TRUE(notifier_.deleted_details());

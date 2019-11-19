@@ -123,6 +123,7 @@ TEST_F(GLTest, FeatureFlagsMatchCapabilities) {
   EXPECT_EQ(caps.image_ycbcr_420v, flags.chromium_image_ycbcr_420v);
   EXPECT_EQ(caps.image_xr30, flags.chromium_image_xr30);
   EXPECT_EQ(caps.image_xb30, flags.chromium_image_xb30);
+  EXPECT_EQ(caps.image_ycbcr_p010, flags.chromium_image_ycbcr_p010);
   EXPECT_EQ(caps.render_buffer_format_bgra8888,
             flags.ext_render_buffer_format_bgra8888);
   EXPECT_EQ(caps.occlusion_query_boolean, flags.occlusion_query_boolean);

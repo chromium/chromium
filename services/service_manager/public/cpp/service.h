@@ -10,11 +10,14 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/optional.h"
+#include "base/process/process_handle.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "services/service_manager/public/cpp/bind_source_info.h"
+#include "services/service_manager/public/mojom/service.mojom.h"
 
 namespace service_manager {
-
-struct BindSourceInfo;
 
 // The primary contract between a Service and the Service Manager, receiving
 // lifecycle notifications and connection requests.
@@ -48,14 +51,46 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) Service {
   // before this.
   virtual void OnStart();
 
-  // Called when the service identified by |source.identity| requests this
-  // service bind a request for |interface_name|. If this method has been
-  // called, the service manager has already determined that policy permits this
-  // interface to be bound, so the implementation of this method can trust that
-  // it should just blindly bind it under most conditions.
+  // Called when the service instance identified by |source.identity| requests
+  // to have a receiver for |interface_name| connected through the Service
+  // Manager, and the Service Manager routes the request to |this|. By the time
+  // this method has been called, the Service Manager has already determined
+  // that policy allows for such a connection to be fulfilled.
+  //
+  // |receiver_pipe| is a message pipe handle that can be used to construct a
+  // mojo::PendingReceiver<T>, where T should dynamically correspond to the
+  // interface named by |interface_name|. Services can use a BinderMap to
+  // simplify the work of mapping incoming requests to methods which bind
+  // specific types of interfaces.
+  //
+  // NOTE: Do not override |OnBindInterface()| if overriding this method. This
+  // method always takes precedence, so |OnBindInterface()| will never be called
+  // if this is overridden.
+  virtual void OnConnect(const ConnectSourceInfo& source,
+                         const std::string& interface_name,
+                         mojo::ScopedMessagePipeHandle receiver_pipe);
+
+  // DEPRECATED: Same as above, but deprecated naming. Prefer to override
+  // |OnConnect()| instead. In any case, do not override both!
   virtual void OnBindInterface(const BindSourceInfo& source,
                                const std::string& interface_name,
                                mojo::ScopedMessagePipeHandle interface_pipe);
+
+  // Called by the Service Manager when it wants this service to launch a new
+  // instance of a packaged service listed in this service's Manifest. The
+  // packaged service to launch is identified by |service_name|, and the
+  // Service receiver pipe in |service_receiver| should be used to construct
+  // a new Service instance for the packaged service. If and when that instance
+  // is created, |callback| should be invoked with the new instance's PID (which
+  // may be the same as this service's PID if they will share a process). If the
+  // requested service is not launched, |callback| should be invoked with
+  // |base::nullopt|.
+  using CreatePackagedServiceInstanceCallback =
+      base::OnceCallback<void(base::Optional<base::ProcessId>)>;
+  virtual void CreatePackagedServiceInstance(
+      const std::string& service_name,
+      mojo::PendingReceiver<mojom::Service> service_receiver,
+      CreatePackagedServiceInstanceCallback callback);
 
   // Called when the Service Manager has stopped tracking this instance. Once
   // invoked, no further Service interface methods will be called on this

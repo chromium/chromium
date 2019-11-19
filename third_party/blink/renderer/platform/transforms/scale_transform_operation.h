@@ -58,6 +58,8 @@ class PLATFORM_EXPORT ScaleTransformOperation final
   void Apply(TransformationMatrix& transform, const FloatSize&) const override {
     transform.Scale3d(x_, y_, z_);
   }
+  scoped_refptr<TransformOperation> Accumulate(
+      const TransformOperation& other) override;
   scoped_refptr<TransformOperation> Blend(
       const TransformOperation* from,
       double progress,
@@ -83,6 +85,8 @@ class PLATFORM_EXPORT ScaleTransformOperation final
   bool HasNonTrivial3DComponent() const override { return z_ != 1.0; }
 
   scoped_refptr<TransformOperation> Zoom(double factor) final { return this; }
+
+  bool PreservesAxisAlignment() const final { return true; }
 
   ScaleTransformOperation(double sx, double sy, double sz, OperationType type)
       : x_(sx), y_(sy), z_(sz), type_(type) {

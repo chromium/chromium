@@ -134,7 +134,7 @@ class NativeMessageProcessHost : public NativeMessageHost {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  base::WeakPtrFactory<NativeMessageProcessHost> weak_factory_;
+  base::WeakPtrFactory<NativeMessageProcessHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NativeMessageProcessHost);
 };

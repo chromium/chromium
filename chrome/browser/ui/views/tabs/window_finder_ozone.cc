@@ -18,5 +18,5 @@ gfx::NativeWindow WindowFinder::GetLocalProcessWindowAtPoint(
     if (views::Widget::GetWidgetForNativeWindow(window))
       break;
   }
-  return (window && !base::ContainsKey(ignore, window)) ? window : nullptr;
+  return (window && !base::Contains(ignore, window)) ? window : nullptr;
 }

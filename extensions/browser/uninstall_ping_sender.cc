@@ -5,14 +5,13 @@
 #include "extensions/browser/uninstall_ping_sender.h"
 
 #include "base/version.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/updater/update_service.h"
 
 namespace extensions {
 
 UninstallPingSender::UninstallPingSender(ExtensionRegistry* registry,
                                          const Filter& filter)
-    : filter_(filter), observer_(this) {
+    : filter_(filter) {
   observer_.Add(registry);
 }
 

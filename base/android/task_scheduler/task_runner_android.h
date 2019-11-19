@@ -20,15 +20,13 @@ class TaskRunnerAndroid {
   explicit TaskRunnerAndroid(scoped_refptr<TaskRunner> task_runner);
   ~TaskRunnerAndroid();
 
-  void Destroy(JNIEnv* env, const base::android::JavaRef<jobject>& caller);
+  void Destroy(JNIEnv* env);
 
   void PostDelayedTask(JNIEnv* env,
-                       const base::android::JavaRef<jobject>& caller,
                        const base::android::JavaRef<jobject>& task,
                        jlong delay);
 
-  bool BelongsToCurrentThread(JNIEnv* env,
-                              const base::android::JavaRef<jobject>& caller);
+  bool BelongsToCurrentThread(JNIEnv* env);
 
  private:
   const scoped_refptr<TaskRunner> task_runner_;

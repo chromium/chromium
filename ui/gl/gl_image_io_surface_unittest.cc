@@ -52,7 +52,7 @@ class GLImageIOSurfaceTestDelegate : public GLImageTestDelegateBase {
       memcpy(corrected_color, color, base::size(corrected_color));
     }
 
-    for (size_t plane = 0; plane < NumberOfPlanesForBufferFormat(format);
+    for (size_t plane = 0; plane < NumberOfPlanesForLinearBufferFormat(format);
          ++plane) {
       void* data = IOSurfaceGetBaseAddressOfPlane(surface_ref, plane);
       GLImageTestSupport::SetBufferDataToColor(

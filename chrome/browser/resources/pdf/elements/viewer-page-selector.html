@@ -1,0 +1,47 @@
+    <style>
+      :host {
+        color: #fff;
+        display: flex;
+        font-size: 0.81rem;
+      }
+
+      :host ::selection {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      #pageselector-container,
+      #pagelength-spacer {
+        padding: 0 3px;
+        text-align: start;
+        /* --page-length-digits is set through JavaScript */
+        width: calc(var(--page-length-digits, 1) * 1ch);
+      }
+
+      #pageselector-container:focus-within,
+      #pageselector-container:hover {
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      #pageselector {
+        --cr-input-focus-color: transparent;
+        --cr-input-error-display: none;
+        --cr-input-background-color: transparent;
+        --cr-input-color: white;
+      }
+
+      #pageselector::part(input) {
+        caret-color: var(--cr-input-color);
+        padding: 0;
+        text-align: end;
+      }
+    </style>
+    <div id="pageselector-container">
+      <cr-input id="pageselector" value="[[pageNo]]" on-mouseup="select"
+          on-value-changed="onInputValueChange_" on-change="pageNoCommitted"
+          aria-label$="{{strings.labelPageNumber}}">
+      </cr-input>
+    </div>
+    <span id="slash">/</span>
+    <span id="pagelength-spacer">
+      <span id="pagelength">{{docLength}}</span>
+    </span>

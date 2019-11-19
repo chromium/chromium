@@ -9,5 +9,5 @@ dictionary StorageUsageDetails {
     unsigned long long indexedDB;
     unsigned long long caches;
     unsigned long long serviceWorkerRegistrations;
-    unsigned long long websql;
+    unsigned long long fileSystem;
 };

@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 // https://github.com/dtapuska/useractivation
-[RuntimeEnabled=UserActivationAPI]
-interface UserActivation {
+[
+    RuntimeEnabled=UserActivationAPI,
+    Exposed=(Window,Worker,AudioWorklet)
+] interface UserActivation {
   [Measure] readonly attribute boolean hasBeenActive;
   [Measure] readonly attribute boolean isActive;
 };

@@ -8,13 +8,13 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
+#include "sampled_profile.pb.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace metrics {
@@ -28,6 +28,17 @@ namespace {
 //
 // TODO(wittman): Remove this threshold after crbug.com/903972 is fixed.
 const size_t kMaxPendingProfiles = 1250;
+
+// Provides access to the singleton interceptor callback instance for CPU
+// profiles. Accessed asynchronously on the profiling thread after profiling has
+// been started.
+CallStackProfileMetricsProvider::InterceptorCallback&
+GetCpuInterceptorCallbackInstance() {
+  static base::NoDestructor<
+      CallStackProfileMetricsProvider::InterceptorCallback>
+      instance;
+  return *instance;
+}
 
 // PendingProfiles ------------------------------------------------------------
 
@@ -83,7 +94,12 @@ class PendingProfiles {
 
   // If true, profiles provided to MaybeCollect*Profile should be collected.
   // Otherwise they will be ignored.
-  bool collection_enabled_ GUARDED_BY(lock_);
+  // |collection_enabled_| is initialized to true to collect any profiles that
+  // are generated prior to creation of the CallStackProfileMetricsProvider.
+  // The ultimate disposition of these pre-creation collected profiles will be
+  // determined by the initial recording state provided to
+  // CallStackProfileMetricsProvider.
+  bool collection_enabled_ GUARDED_BY(lock_) = true;
 
   // The last time collection was disabled. Used to determine if collection was
   // disabled at any point since a profile was started.
@@ -115,7 +131,6 @@ std::vector<SampledProfile> PendingProfiles::RetrieveProfiles() {
   }
 
   // Deserialize all serialized profiles, skipping over any that fail to parse.
-  base::ElapsedTimer timer;
   std::vector<SampledProfile> profiles;
   profiles.reserve(serialized_profiles.size());
   for (const auto& serialized_profile : serialized_profiles) {
@@ -125,8 +140,6 @@ std::vector<SampledProfile> PendingProfiles::RetrieveProfiles() {
       profiles.push_back(std::move(profile));
     }
   }
-  UMA_HISTOGRAM_TIMES("StackSamplingProfiler.DeserializeAllPendingProfilesTime",
-                      timer.Elapsed());
 
   return profiles;
 }
@@ -210,28 +223,39 @@ void PendingProfiles::ResetToDefaultStateForTesting() {
   serialized_profiles_.clear();
 }
 
-// |collection_enabled_| is initialized to true to collect any profiles that are
-// generated prior to creation of the CallStackProfileMetricsProvider. The
-// ultimate disposition of these pre-creation collected profiles will be
-// determined by the initial recording state provided to
-// CallStackProfileMetricsProvider.
-PendingProfiles::PendingProfiles() : collection_enabled_(true) {}
+PendingProfiles::PendingProfiles() = default;
 
 }  // namespace
 
 // CallStackProfileMetricsProvider --------------------------------------------
 
-const base::Feature CallStackProfileMetricsProvider::kEnableReporting = {
-    "SamplingProfilerReporting", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature
+    CallStackProfileMetricsProvider::kSamplingProfilerReporting = {
+        "SamplingProfilerReporting", base::FEATURE_ENABLED_BY_DEFAULT};
 
-CallStackProfileMetricsProvider::CallStackProfileMetricsProvider() {}
+const base::Feature CallStackProfileMetricsProvider::kHeapProfilerReporting{
+    "HeapProfilerReporting", base::FEATURE_DISABLED_BY_DEFAULT};
 
-CallStackProfileMetricsProvider::~CallStackProfileMetricsProvider() {}
+CallStackProfileMetricsProvider::CallStackProfileMetricsProvider() = default;
+CallStackProfileMetricsProvider::~CallStackProfileMetricsProvider() = default;
 
 // static
 void CallStackProfileMetricsProvider::ReceiveProfile(
     base::TimeTicks profile_start_time,
     SampledProfile profile) {
+  if (GetCpuInterceptorCallbackInstance() &&
+      (profile.trigger_event() == SampledProfile::PROCESS_STARTUP ||
+       profile.trigger_event() == SampledProfile::PERIODIC_COLLECTION)) {
+    GetCpuInterceptorCallbackInstance().Run(std::move(profile));
+    return;
+  }
+
+  const base::Feature& feature =
+      profile.trigger_event() == SampledProfile::PERIODIC_HEAP_COLLECTION
+          ? kHeapProfilerReporting
+          : kSamplingProfilerReporting;
+  if (!base::FeatureList::IsEnabled(feature))
+    return;
   PendingProfiles::GetInstance()->MaybeCollectProfile(profile_start_time,
                                                       std::move(profile));
 }
@@ -240,13 +264,33 @@ void CallStackProfileMetricsProvider::ReceiveProfile(
 void CallStackProfileMetricsProvider::ReceiveSerializedProfile(
     base::TimeTicks profile_start_time,
     std::string serialized_profile) {
+  // Heap profiler does not use this path as it only reports profiles
+  // from the browser process.
+  if (GetCpuInterceptorCallbackInstance()) {
+    SampledProfile profile;
+    if (profile.ParseFromArray(serialized_profile.data(),
+                               serialized_profile.size())) {
+      DCHECK(profile.trigger_event() == SampledProfile::PROCESS_STARTUP ||
+             profile.trigger_event() == SampledProfile::PERIODIC_COLLECTION);
+      GetCpuInterceptorCallbackInstance().Run(std::move(profile));
+    }
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(kSamplingProfilerReporting))
+    return;
   PendingProfiles::GetInstance()->MaybeCollectSerializedProfile(
       profile_start_time, std::move(serialized_profile));
 }
 
+// static
+void CallStackProfileMetricsProvider::SetCpuInterceptorCallbackForTesting(
+    InterceptorCallback callback) {
+  GetCpuInterceptorCallbackInstance() = std::move(callback);
+}
+
 void CallStackProfileMetricsProvider::OnRecordingEnabled() {
-  PendingProfiles::GetInstance()->SetCollectionEnabled(
-      base::FeatureList::IsEnabled(kEnableReporting));
+  PendingProfiles::GetInstance()->SetCollectionEnabled(true);
 }
 
 void CallStackProfileMetricsProvider::OnRecordingDisabled() {
@@ -258,7 +302,9 @@ void CallStackProfileMetricsProvider::ProvideCurrentSessionData(
   std::vector<SampledProfile> profiles =
       PendingProfiles::GetInstance()->RetrieveProfiles();
 
-  DCHECK(base::FeatureList::IsEnabled(kEnableReporting) || profiles.empty());
+  DCHECK(base::FeatureList::IsEnabled(kSamplingProfilerReporting) ||
+         base::FeatureList::IsEnabled(kHeapProfilerReporting) ||
+         profiles.empty());
 
   for (auto& profile : profiles)
     *uma_proto->add_sampled_profile() = std::move(profile);

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL reports true -> false when initially played assert_true: expected true got undefined
-FAIL reports true -> false when paused assert_true: expected true got undefined
-Harness: the test ran to completion.
-

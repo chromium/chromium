@@ -89,8 +89,9 @@ SelectToSpeakOptionsPage.prototype = {
         return a.voiceName.localeCompare(b.voiceName);
       });
       voices.forEach(function(voice) {
-        if (!voice.voiceName)
+        if (!voice.voiceName) {
           return;
+        }
         if (!voice.eventTypes.includes('start') ||
             !voice.eventTypes.includes('end') ||
             !voice.eventTypes.includes('word') ||
@@ -210,8 +211,9 @@ SelectToSpeakOptionsPage.prototype = {
           e.stopPropagation();
           let checkbox = document.getElementById('wordHighlight');
           // Make sure it isn't the auto-generated click itself.
-          if (e.srcElement !== checkbox)
+          if (e.srcElement !== checkbox) {
             checkbox.click();
+          }
         });
   },
 
@@ -222,8 +224,8 @@ SelectToSpeakOptionsPage.prototype = {
   setUpTtsButtonClickListener_: function() {
     let button = document.getElementById('ttsSettingsBtn');
     button.addEventListener('click', () => {
-      let url = 'chrome://settings/manageAccessibility/tts';
-      chrome.tabs.create({url: url});
+      chrome.accessibilityPrivate.openSettingsSubpage(
+          'manageAccessibility/tts');
     });
   }
 };

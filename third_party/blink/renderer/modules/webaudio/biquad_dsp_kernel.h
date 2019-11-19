@@ -49,16 +49,24 @@ class BiquadDSPKernel final : public AudioDSPKernel {
                uint32_t frames_to_process) override;
   void Reset() override { biquad_.Reset(); }
 
-  // Get the magnitude and phase response of the filter at the given
-  // set of frequencies (in Hz). The phase response is in radians.
-  void GetFrequencyResponse(int n_frequencies,
-                            const float* frequency_hz,
-                            float* mag_response,
-                            float* phase_response);
+  // Get the magnitude and phase response of the given BiquadDSPKernel at the
+  // given set of frequencies (in Hz). The phase response is in radians.  This
+  // must be called from the main thread.
+  static void GetFrequencyResponse(BiquadDSPKernel& kernel,
+                                   int n_frequencies,
+                                   const float* frequency_hz,
+                                   float* mag_response,
+                                   float* phase_response);
 
   bool RequiresTailProcessing() const final;
   double TailTime() const override;
   double LatencyTime() const override;
+  // Update the biquad cofficients with the given parameters
+  void UpdateCoefficients(int number_of_frames,
+                          const float* frequency,
+                          const float* q,
+                          const float* gain,
+                          const float* detune);
 
  protected:
   Biquad biquad_;
@@ -69,12 +77,6 @@ class BiquadDSPKernel final : public AudioDSPKernel {
   // To prevent audio glitches when parameters are changed,
   // dezippering is used to slowly change the parameters.
   void UpdateCoefficientsIfNecessary(int);
-  // Update the biquad cofficients with the given parameters
-  void UpdateCoefficients(int,
-                          const float* frequency,
-                          const float* q,
-                          const float* gain,
-                          const float* detune);
 
  private:
   // Compute the tail time using the BiquadFilter coefficients at

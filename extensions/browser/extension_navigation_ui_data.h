@@ -16,8 +16,8 @@ class NavigationHandle;
 
 namespace extensions {
 
-// PlzNavigate: initialized on the UI thread for all navigations. A copy is used
-// on the IO thread by the WebRequest API to access to the FrameData.
+// Initialized on the UI thread for all navigations. A copy is used on the IO
+// thread by the WebRequest API to access to the FrameData.
 class ExtensionNavigationUIData {
  public:
   ExtensionNavigationUIData();

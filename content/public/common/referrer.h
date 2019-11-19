@@ -9,6 +9,7 @@
 #include "content/common/content_export.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "third_party/blink/public/mojom/referrer.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -23,15 +24,28 @@ struct CONTENT_EXPORT Referrer {
   Referrer(const GURL& url, network::mojom::ReferrerPolicy policy)
       : url(url), policy(policy) {}
   Referrer() : policy(network::mojom::ReferrerPolicy::kDefault) {}
+  explicit Referrer(const blink::mojom::Referrer& referrer);
 
   GURL url;
   network::mojom::ReferrerPolicy policy;
 
   static Referrer SanitizeForRequest(const GURL& request,
                                      const Referrer& referrer);
+  static blink::mojom::ReferrerPtr SanitizeForRequest(
+      const GURL& request,
+      const blink::mojom::Referrer& referrer);
 
-  static void SetReferrerForRequest(net::URLRequest* request,
-                                    const Referrer& referrer);
+  // Returns |initiator| origin sanitized by |policy| so that it can be used
+  // when requesting |request| URL.
+  //
+  // Note that the URL-based sanitization (e.g. SanitizeForRequest above) cannot
+  // be used for cases where the referrer URL is missing (e.g. about:blank) but
+  // the initiator origin still needs to be used (e.g. when calculating the
+  // value of the `Origin` header to use in a POST request).
+  static url::Origin SanitizeOriginForRequest(
+      const GURL& request,
+      const url::Origin& initiator,
+      network::mojom::ReferrerPolicy policy);
 
   static net::URLRequest::ReferrerPolicy ReferrerPolicyForUrlRequest(
       network::mojom::ReferrerPolicy referrer_policy);
@@ -40,6 +54,11 @@ struct CONTENT_EXPORT Referrer {
       net::URLRequest::ReferrerPolicy net_policy);
 
   static net::URLRequest::ReferrerPolicy GetDefaultReferrerPolicy();
+
+  // Validates |policy| to make sure it represents one of the valid
+  // net::mojom::ReferrerPolicy enum values and returns it.  The relatively safe
+  // |kNever| value is returned if |policy| is not a valid value.
+  static network::mojom::ReferrerPolicy ConvertToPolicy(int32_t policy);
 };
 
 }  // namespace content

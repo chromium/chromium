@@ -1,0 +1,1 @@
+AutomationFocusChanged on role=group, name=tbody

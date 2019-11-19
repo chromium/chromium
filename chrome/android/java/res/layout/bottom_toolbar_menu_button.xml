@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<org.chromium.chrome.browser.toolbar.MenuButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:importantForAccessibility="no"
+    android:layout_gravity="center"
+    android:id="@+id/menu_button_wrapper">
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/menu_button"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:background="@null"
+        android:src="@drawable/ic_more_vert_24dp"
+        android:importantForAccessibility="no"
+        android:layout_gravity="center"
+        app:tint="@color/standard_mode_tint" />
+
+    <ImageView
+        android:id="@+id/menu_badge"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:background="@null"
+        android:src="@drawable/badge_update_dark"
+        tools:ignore="ContentDescription"
+        android:importantForAccessibility="no"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
+
+</org.chromium.chrome.browser.toolbar.MenuButton>
+

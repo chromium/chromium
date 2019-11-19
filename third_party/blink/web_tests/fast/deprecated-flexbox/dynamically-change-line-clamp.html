@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="../../resources/ahem.js"></script>
+<p>There should only be two lines below as the third line is hidden via -webkit-line-clamp.</p>
+<div style="font: 20px/1 Ahem; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden" id="webkitbox">
+    xxx<br>
+    xxx<br>
+    xxx<br>
+</div>
+<script>
+  var webkitbox = document.getElementById("webkitbox");
+  // Referencing |offsetWidth| ensures a layout happens before changing the
+  // line-clamp. This is done to ensure toggling line-clamp works.
+  webkitbox.offsetWidth;
+  webkitbox.style.webkitLineClamp = 2;
+</script>

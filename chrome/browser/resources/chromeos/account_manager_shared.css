@@ -1,0 +1,61 @@
+/* Copyright 2019 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  height: calc(100% - 50px);
+  margin-inline-end: 32px;
+  margin-inline-start: 32px;
+  margin-top: 20px;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: normal;
+  margin-bottom: 16px;
+  margin-top: 28px;
+}
+
+p {
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+a {
+  color: var(--cr-link-color);
+  text-decoration: none;
+}
+
+#content {
+  height: 100%;
+  padding-inline-end: 32px;
+  padding-inline-start: 32px;
+  position: relative;
+}
+
+#google-logo {
+  height: 32px;
+  margin-top: 10px;
+  width: 32px;
+}
+
+#welcome-image {
+  display: block;
+  margin-inline-end: auto;
+  margin-inline-start: auto;
+  margin-top: 60px;
+  width: 338px;
+}
+
+.button-container {
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  right: 0;
+}
+
+html[dir='rtl'] .button-container {
+  left: 0;
+  right: auto;
+}

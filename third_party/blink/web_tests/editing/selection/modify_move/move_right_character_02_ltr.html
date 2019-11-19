@@ -3,35 +3,28 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../assert_selection.js"></script>
 <script>
-const usesBidiAffinity = window.internals && internals.runtimeFlags.bidiCaretAffinityEnabled;
 
 selection_test(
   '<div contenteditable dir="ltr">|\u05D0\u05D1\u05D2</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr">|\u05D0\u05D1\u05D2</div>'
-      : '<div contenteditable dir="ltr">\u05D0\u05D1|\u05D2</div>',
+  '<div contenteditable dir="ltr">\u05D0|\u05D1\u05D2</div>',
   '2-0 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr">\u05D0|\u05D1\u05D2</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr">|\u05D0\u05D1\u05D2</div>'
-      : '<div contenteditable dir="ltr">\u05D0\u05D1\u05D2|</div>',
+  '<div contenteditable dir="ltr">\u05D0\u05D1|\u05D2</div>',
   '2-1 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr">\u05D0\u05D1|\u05D2</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr">\u05D0|\u05D1\u05D2</div>',
+  '<div contenteditable dir="ltr">\u05D0\u05D1\u05D2|</div>',
   '2-2 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr">\u05D0\u05D1\u05D2|</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr">\u05D0\u05D1|\u05D2</div>'
-      : '<div contenteditable dir="ltr">\u05D0\u05D1\u05D2|</div>',
+  '<div contenteditable dir="ltr">\u05D0\u05D1\u05D2|</div>',
   '2-3 ltr right character');
 </script>

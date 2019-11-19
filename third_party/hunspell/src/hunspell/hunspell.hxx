@@ -85,7 +85,7 @@
 
 #define SPELL_XML "<?xml?>"
 
-#define MAXSUGGESTION 15
+#define MAXSUGGESTION 5
 #define MAXSHARPS 5
 
 #ifndef MAXWORDLEN

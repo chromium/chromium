@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/win/registry.h"
+#include "build/branding_buildflags.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/setup_util.h"
 #include "chrome/installer/util/google_update_settings.h"
@@ -42,7 +43,6 @@ InstallerState::InstallerState()
       level_(UNKNOWN_LEVEL),
       root_key_(NULL),
       msi_(false),
-      background_mode_(false),
       verbose_logging_(false),
       is_migrating_to_single_(false) {}
 
@@ -51,7 +51,6 @@ InstallerState::InstallerState(Level level)
       level_(UNKNOWN_LEVEL),
       root_key_(NULL),
       msi_(false),
-      background_mode_(false),
       verbose_logging_(false),
       is_migrating_to_single_(false) {
   // Use set_level() so that root_key_ is updated properly.
@@ -235,7 +234,7 @@ void InstallerState::WriteInstallerResult(
       system_install, install_static::GetClientStateKeyPath(), status,
       string_resource_id, launch_cmd, install_list.get());
   if (is_migrating_to_single() && InstallUtil::GetInstallReturnCode(status)) {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // Write to the binaries on error if this is a migration back to
     // single-install for Google Chrome builds. Skip this for Chromium builds
     // because they lump the "ClientState" and "Clients" keys into a single

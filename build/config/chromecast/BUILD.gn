@@ -34,11 +34,15 @@ config("ldconfig") {
   # This is explicitly disabled in Chrome for security reasons (see comments in
   # //build/config/gcc/BUILD.gn), but necessary on Chromecast so that OEM's may
   # override the default libraries shipped in the Cast receiver package.
-  ldflags = [
-    "-Wl,-rpath=/oem_cast_shlib",
-    "-Wl,-rpath=\$ORIGIN/lib",
-    "-Wl,-rpath=\$ORIGIN",
-  ]
+  if (target_rpath == "") {
+    ldflags = [
+      "-Wl,-rpath=/oem_cast_shlib",
+      "-Wl,-rpath=\$ORIGIN/lib",
+      "-Wl,-rpath=\$ORIGIN",
+    ]
+  } else {
+    ldflags = [ "-Wl,-rpath=${target_rpath}" ]
+  }
 
   # Binaries which don't live in the same directory as Chrome component
   # libraries may still depend on them. Explicitly add the component library

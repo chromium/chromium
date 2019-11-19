@@ -27,18 +27,20 @@
 namespace storage {
 
 class ClientUsageTracker;
-class StorageMonitor;
 
 // A helper class that gathers and tracks the amount of data stored in
 // all quota clients.
-// An instance of this class is created per storage type.
+//
+// Ownership: Each QuotaManager instance owns 3 instances of this class (one per
+// storage type: Persistent, Temporary, Syncable).
+// Thread-safety: All methods except the constructor must be called on the same
+// sequence.
 class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
     : public QuotaTaskObserver {
  public:
   UsageTracker(const std::vector<QuotaClient*>& clients,
                blink::mojom::StorageType type,
-               SpecialStoragePolicy* special_storage_policy,
-               StorageMonitor* storage_monitor);
+               SpecialStoragePolicy* special_storage_policy);
   ~UsageTracker() override;
 
   blink::mojom::StorageType type() const {
@@ -73,7 +75,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   struct AccumulateInfo {
     AccumulateInfo();
     ~AccumulateInfo();
-    int pending_clients = 0;
+    size_t pending_clients = 0;
     int64_t usage = 0;
     int64_t unlimited_usage = 0;
     blink::mojom::UsageBreakdownPtr usage_breakdown =
@@ -103,11 +105,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   std::map<std::string, std::vector<UsageWithBreakdownCallback>>
       host_usage_callbacks_;
 
-  StorageMonitor* storage_monitor_;
-
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<UsageTracker> weak_factory_;
+  base::WeakPtrFactory<UsageTracker> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(UsageTracker);
 };
 

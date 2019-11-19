@@ -1,0 +1,9 @@
+include_rules = [
+  "+chrome/app:generated_resources",
+  "+chrome/browser:resources_grit",
+  "+content/public/renderer",
+  "+third_party/blink",
+  "+ui/base",
+  "+url",
+  "+v8",
+]

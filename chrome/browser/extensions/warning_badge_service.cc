@@ -142,7 +142,7 @@ void WarningBadgeService::UpdateBadgeStatus() {
   const std::set<Warning>& warnings = GetCurrentWarnings();
   bool non_suppressed_warnings_exist = false;
   for (auto i = warnings.begin(); i != warnings.end(); ++i) {
-    if (!base::ContainsKey(suppressed_warnings_, *i)) {
+    if (!base::Contains(suppressed_warnings_, *i)) {
       non_suppressed_warnings_exist = true;
       break;
     }

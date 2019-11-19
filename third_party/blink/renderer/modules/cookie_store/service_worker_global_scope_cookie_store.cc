@@ -8,6 +8,7 @@
 
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/modules/cookie_store/cookie_store.h"
 #include "third_party/blink/renderer/modules/cookie_store/global_cookie_store_impl.h"
@@ -19,14 +20,20 @@ template <>
 CookieStore* GlobalCookieStoreImpl<WorkerGlobalScope>::BuildCookieStore(
     ExecutionContext* execution_context,
     service_manager::InterfaceProvider* interface_provider) {
-  network::mojom::blink::RestrictedCookieManagerPtr cookie_manager_ptr;
-  interface_provider->GetInterface(mojo::MakeRequest(&cookie_manager_ptr));
+  mojo::Remote<network::mojom::blink::RestrictedCookieManager>
+      cookie_manager_remote;
+  interface_provider->GetInterface(
+      cookie_manager_remote.BindNewPipeAndPassReceiver(
+          execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
 
-  blink::mojom::blink::CookieStorePtr cookie_store_ptr;
-  interface_provider->GetInterface(mojo::MakeRequest(&cookie_store_ptr));
+  mojo::Remote<blink::mojom::blink::CookieStore> cookie_store_remote;
+  execution_context->GetBrowserInterfaceBroker().GetInterface(
+      cookie_store_remote.BindNewPipeAndPassReceiver(
+          execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
 
-  return CookieStore::Create(execution_context, std::move(cookie_manager_ptr),
-                             std::move(cookie_store_ptr));
+  return MakeGarbageCollected<CookieStore>(execution_context,
+                                           std::move(cookie_manager_remote),
+                                           std::move(cookie_store_remote));
 }
 
 CookieStore* ServiceWorkerGlobalScopeCookieStore::cookieStore(

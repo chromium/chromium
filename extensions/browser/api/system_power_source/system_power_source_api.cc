@@ -7,7 +7,7 @@
 #include <cmath>
 
 #include "base/no_destructor.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/system_power_source.h"
 

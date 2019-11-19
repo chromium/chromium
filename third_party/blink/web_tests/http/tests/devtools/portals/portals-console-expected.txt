@@ -1,0 +1,20 @@
+Tests that the console works correctly with portals
+
+Running: testMainConsole
+!!window.portalHost = false
+window.location.pathname = "/devtools/portals/resources/append-predecessor-host.html"
+
+Running: testPortalConsole
+!!window.portalHost = true
+window.location.pathname = "/devtools/portals/resources/append-predecessor.html"
+
+Running: activate
+
+Running: testMainConsoleAfterActivation
+!!window.portalHost = false
+window.location.pathname = "/devtools/portals/resources/append-predecessor.html"
+
+Running: testPortalConsoleAfterActivation
+!!window.portalHost = true
+window.location.pathname = "/devtools/portals/resources/append-predecessor-host.html"
+

@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "cc/base/math_util.h"
 #include "cc/test/fake_output_surface_client.h"
@@ -90,7 +89,12 @@ class PictureLayerTilingIteratorTest : public testing::Test {
       base::RepeatingCallback<void(Tile* tile, const gfx::Rect& geometry_rect)>;
 
   PictureLayerTilingIteratorTest() = default;
+  PictureLayerTilingIteratorTest(const PictureLayerTilingIteratorTest&) =
+      delete;
   ~PictureLayerTilingIteratorTest() override = default;
+
+  PictureLayerTilingIteratorTest& operator=(
+      const PictureLayerTilingIteratorTest&) = delete;
 
   void Initialize(const gfx::Size& tile_size,
                   float contents_scale,
@@ -218,9 +222,6 @@ class PictureLayerTilingIteratorTest : public testing::Test {
   FakePictureLayerTilingClient client_;
   std::unique_ptr<TestablePictureLayerTiling> tiling_;
   bool loose_texel_extent_check_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PictureLayerTilingIteratorTest);
 };
 
 TEST_F(PictureLayerTilingIteratorTest, ResizeDeletesTiles) {

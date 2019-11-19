@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL HTMLTrackElement Text Track Selection Task Order assert_equals: Text track selection hasn't started yet. expected "disabled" but got "showing"
+Harness: the test ran to completion.
+

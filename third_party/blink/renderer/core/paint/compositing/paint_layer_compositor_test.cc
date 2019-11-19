@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 
+#include "third_party/blink/renderer/core/animation/animatable.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
-#include "third_party/blink/renderer/core/animation/element_animation.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -16,12 +16,12 @@ namespace {
 class PaintLayerCompositorTest : public RenderingTest {
  public:
   PaintLayerCompositorTest()
-      : RenderingTest(SingleChildLocalFrameClient::Create()) {}
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 
  private:
   void SetUp() override {
-    RenderingTest::SetUp();
     EnableCompositing();
+    RenderingTest::SetUp();
   }
 };
 }  // namespace
@@ -77,10 +77,8 @@ TEST_F(PaintLayerCompositorTest,
   EXPECT_EQ(DocumentLifecycle::kPaintClean,
             GetDocument().Lifecycle().GetState());
 
-  HeapVector<Member<Animation>> boxAnimations =
-      ElementAnimation::getAnimations(*box);
-  HeapVector<Member<Animation>> otherBoxAnimations =
-      ElementAnimation::getAnimations(*box);
+  HeapVector<Member<Animation>> boxAnimations = box->getAnimations();
+  HeapVector<Member<Animation>> otherBoxAnimations = otherBox->getAnimations();
 
   EXPECT_EQ(1ul, boxAnimations.size());
   EXPECT_EQ(1ul, otherBoxAnimations.size());
@@ -88,26 +86,35 @@ TEST_F(PaintLayerCompositorTest,
             otherBoxAnimations.front()->CompositorGroup());
 }
 
-TEST_F(PaintLayerCompositorTest, UpdateDoesNotOrphanMainGraphicsLayer) {
+TEST_F(PaintLayerCompositorTest, CompositingInputsUpdateStopsContainStrict) {
   SetHtmlInnerHTML(R"HTML(
-    <style> * { margin: 0 } </style>
-    <div id='box'></div>
+    <style>
+      div {
+        position: relative;
+      }
+      #wrapper {
+        contain: strict;
+        }
+    </style>
+    <div id='wrapper'>
+      <div id='target'></div>
+    </div>
   )HTML");
 
-  auto* main_graphics_layer = GetDocument()
-                                  .GetLayoutView()
-                                  ->Layer()
-                                  ->GetCompositedLayerMapping()
-                                  ->MainGraphicsLayer();
-  auto* main_graphics_layer_parent = main_graphics_layer->Parent();
-  EXPECT_NE(nullptr, main_graphics_layer_parent);
+  PaintLayer* wrapper = GetPaintLayerByElementId("wrapper");
+  PaintLayer* target = GetPaintLayerByElementId("target");
+  EXPECT_FALSE(wrapper->NeedsCompositingInputsUpdate());
+  EXPECT_FALSE(target->NeedsCompositingInputsUpdate());
 
-  // Force CompositedLayerMapping to update the internal layer hierarchy.
-  auto* box = GetDocument().getElementById("box");
-  box->setAttribute(html_names::kStyleAttr, "height: 1000px;");
-  UpdateAllLifecyclePhasesForTest();
+  target->SetNeedsCompositingInputsUpdate();
+  EXPECT_FALSE(wrapper->NeedsCompositingInputsUpdate());
+  EXPECT_TRUE(target->NeedsCompositingInputsUpdate());
 
-  EXPECT_EQ(main_graphics_layer_parent, main_graphics_layer->Parent());
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean();
+  EXPECT_EQ(DocumentLifecycle::kCompositingInputsClean,
+            GetDocument().Lifecycle().GetState());
+  EXPECT_FALSE(wrapper->NeedsCompositingInputsUpdate());
+  EXPECT_FALSE(target->NeedsCompositingInputsUpdate());
 }
 
 }  // namespace blink

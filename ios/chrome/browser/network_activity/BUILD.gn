@@ -1,0 +1,44 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("network_activity") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "network_activity_indicator_manager.h",
+    "network_activity_indicator_manager.mm",
+  ]
+  deps = [
+    "//base",
+  ]
+}
+
+source_set("tab_helper") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "network_activity_indicator_tab_helper.h",
+    "network_activity_indicator_tab_helper.mm",
+  ]
+  deps = [
+    ":network_activity",
+    "//base",
+    "//ios/web/public",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "network_activity_indicator_manager_unittest.mm",
+    "network_activity_indicator_tab_helper_unittest.mm",
+  ]
+  deps = [
+    ":network_activity",
+    ":tab_helper",
+    "//ios/web/public",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}

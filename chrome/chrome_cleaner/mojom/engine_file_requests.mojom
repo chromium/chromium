@@ -1,0 +1,46 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome_cleaner.mojom;
+
+import "chrome/chrome_cleaner/mojom/footprints.mojom";
+
+// Handles returned by FindFirstFile aren't real handles, so we can't pass them
+// through mojo as handles, since they can't be duplicated.
+struct FindHandle {
+  int64 find_handle;
+};
+
+struct FindFileData {
+  array<uint8> data;
+};
+
+// Passes file handling requests from the low-privilege sandbox target process
+// to the high-privilege broker process. It is implemented in
+// EngineFileRequestsImpl in engines/broker.
+//
+// This interface is used in scanning and cleaning mode, and when initializing
+// the engine (which may need to load auxiliary file resources.)
+interface EngineFileRequests {
+  // Calls ::FindFirstFile for the given path, returning the results from
+  // ::FindFirstFile.
+  SandboxFindFirstFile(FilePath file_name) =>
+    (uint32 result, FindFileData win32_find_data, FindHandle find_handle);
+
+  // Calls ::FindNextFile for the given handle, returning the results from
+  // ::FindNextFile.
+  SandboxFindNextFile(FindHandle find_handle) =>
+    (uint32 result, FindFileData win32_find_data);
+
+  // Calls ::FindClose on the given handle, returning the results from
+  // ::FindClose.
+  SandboxFindClose(FindHandle find_handle) => (uint32 result);
+
+  // Returns a read-only file handle for the given file. The only acceptable
+  // values for |dwFlagsAndAttributes| are FILE_FLAG_NO_BUFFERING,
+  // FILE_FLAG_SEQUENTIAL_SCAN, FILE_FLAG_RANDOM_ACCESS, and
+  // FILE_FLAG_OPEN_REPARSE_POINT.
+  SandboxOpenReadOnlyFile(FilePath file_name, uint32 dwFlagsAndAttributes) =>
+    (handle result);
+};

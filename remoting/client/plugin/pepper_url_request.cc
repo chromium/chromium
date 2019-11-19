@@ -5,8 +5,8 @@
 #include "remoting/client/plugin/pepper_url_request.h"
 
 #include <memory>
+#include <utility>
 
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ppapi/cpp/url_response_info.h"
@@ -66,7 +66,7 @@ void PepperUrlRequest::OnUrlOpened(int32_t result) {
 
   if (result < 0) {
     LOG(WARNING) << "pp::URLLoader for " << url_ << " failed: " << result;
-    base::ResetAndReturn(&on_result_callback_).Run(Result::Failed());
+    std::move(on_result_callback_).Run(Result::Failed());
     return;
   }
 
@@ -89,7 +89,7 @@ void PepperUrlRequest::OnResponseBodyRead(int32_t result) {
   if (result < 0) {
     LOG(WARNING) << "Failed to read HTTP response body when fetching "
                  << url_ << ", error: " << result;
-    base::ResetAndReturn(&on_result_callback_).Run(Result::Failed());
+    std::move(on_result_callback_).Run(Result::Failed());
     return;
   }
 
@@ -104,7 +104,7 @@ void PepperUrlRequest::OnResponseBodyRead(int32_t result) {
     return;
   }
 
-  base::ResetAndReturn(&on_result_callback_)
+  std::move(on_result_callback_)
       .Run(Result(url_loader_.GetResponseInfo().GetStatusCode(), response_));
 }
 

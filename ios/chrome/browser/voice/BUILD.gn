@@ -53,14 +53,14 @@ source_set("tts") {
   deps = [
     ":voice",
     "//base",
-    "//components/google/core/browser",
+    "//components/google/core/common",
     "//components/prefs",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/public/provider/chrome/browser/voice",
     "//ios/web",
+    "//ios/web/public/deprecated",
     "//net",
-    "//third_party/google_toolbox_for_mac",
     "//url",
   ]
 }
@@ -80,9 +80,8 @@ source_set("unit_tests") {
     ":voice",
     "//base",
     "//base/test:test_support",
-    "//ios/web",
+    "//ios/web/common",
     "//ios/web/public/test",
     "//testing/gtest",
-    "//third_party/google_toolbox_for_mac",
   ]
 }

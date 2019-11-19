@@ -72,7 +72,7 @@ enum RTCPeerConnectionState {
 ] interface RTCPeerConnection : EventTarget {
     [CallWith=ScriptState] Promise<RTCSessionDescription> createOffer(optional RTCOfferOptions options);
     [CallWith=ScriptState] Promise<RTCSessionDescription> createAnswer(optional RTCAnswerOptions options);
-    [CallWith=ScriptState] Promise<void> setLocalDescription(RTCSessionDescriptionInit description);
+    [CallWith=ScriptState] Promise<void> setLocalDescription(optional RTCSessionDescriptionInit description = {});
     readonly attribute RTCSessionDescription? localDescription;
     readonly attribute RTCSessionDescription? currentLocalDescription;
     readonly attribute RTCSessionDescription? pendingLocalDescription;
@@ -86,6 +86,7 @@ enum RTCPeerConnectionState {
     readonly attribute RTCIceConnectionState iceConnectionState;
     readonly attribute RTCPeerConnectionState connectionState;
     // readonly attribute boolean? canTrickleIceCandidates;
+    void restartIce();
     [CallWith=ScriptState] RTCConfiguration getConfiguration();
     [CallWith=ScriptState, RaisesException] void setConfiguration(RTCConfiguration configuration);
     void close();
@@ -95,6 +96,7 @@ enum RTCPeerConnectionState {
     attribute EventHandler oniceconnectionstatechange;
     attribute EventHandler onconnectionstatechange;
     attribute EventHandler onicegatheringstatechange;
+    attribute EventHandler onicecandidateerror;
 
     // https://w3c.github.io/webrtc-pc/#legacy-interface-extensions
     // These methods return Promise<void> because having Promise-based versions requires that all overloads return Promises.
@@ -109,23 +111,25 @@ enum RTCPeerConnectionState {
     [CallWith=ScriptState] Promise<void> setRemoteDescription(RTCSessionDescriptionInit description, VoidFunction successCallback, optional RTCPeerConnectionErrorCallback? failureCallback);
     [CallWith=ScriptState, RaisesException, MeasureAs=RTCPeerConnectionAddIceCandidateLegacy] Promise<void> addIceCandidate((RTCIceCandidateInit or RTCIceCandidate) candidate, VoidFunction successCallback, RTCPeerConnectionErrorCallback failureCallback);
 
-    // Legacy getStats() API. The returned metrics are a completely different
-    // set of metrics than the standard compliant version, presented in a
-    // different format. They are undocumented, implementation-specific and
+    // getStats() has a standardized version and a legacy non-standard version.
+    //
+    // In the legacy getStats() API the returned metrics are a completely
+    // different set of metrics than the standard compliant version, presented
+    // in a different format. They are undocumented, implementation-specific and
     // should go away but it is still heavily used. The selector argument can
     // optionally be used to filter the results only to return metrics relevant
     // for the selector.
     // TODO(hbos): Deprecate and remove this API. https://crbug.com/822696
-    [CallWith=ScriptState, LegacyInterfaceTypeChecking] Promise<void> getStats(RTCStatsCallback successCallback, MediaStreamTrack? selector);
+    //
     // Due to a limitation of generated V8 bindings (https://crbug.com/828401),
     // it is not possible to express both legacy and spec-compliant versions of
     // getStats() in IDL. This version implements two different APIs with custom
-    // bindings to resolve which one to call in RTCPeerConnection.cpp:
+    // bindings to resolve which one to call in rtc_peer_connection.cc:
     //
     // 1. Promise<void> getStats(RTCStatsCallback successCallback, optional MediaStreamTrack? selector);
-    //    This is the legacy getStats() API handling the case when the selector
-    //    argument is missing, for more details on the legacy API and the IDL
-    //    for when the selector is present, see above.
+    //    Promise<void> getStats(RTCStatsCallback successCallback, any ignoredArgument)
+    //    This is the legacy getStats() API, for more details on the legacy API
+    //    and the IDL for when the selector is present, see above.
     //
     // 2. Promise<RTCStatsReport> getStats(optional MediaStreamTrack? selector = null);
     //    This is the spec-compliant version of getStats(). Spec for API:
@@ -134,11 +138,11 @@ enum RTCPeerConnectionState {
     //    List of implemented stats:
     //    https://cs.chromium.org/chromium/src/third_party/webrtc/api/stats/rtcstats_objects.h
     //    See also RTCRtpSender.getStats() and RTCRtpReceiver.getStats().
-    [CallWith=ScriptState] Promise<any> getStats(optional any callbackOrSelector);
+    [CallWith=ScriptState, RaisesException] Promise<any> getStats(optional any callbackOrSelector, optional any legacySelector);
 
     // RTP Media API
     // https://w3c.github.io/webrtc-pc/#dom-rtcpeerconnection-gettransceivers
-    [Measure] sequence<RTCRtpTranceiver> getTransceivers();
+    [Measure] sequence<RTCRtpTransceiver> getTransceivers();
     // https://w3c.github.io/webrtc-pc/#dom-rtcpeerconnection-getsenders
     [Measure] sequence<RTCRtpSender> getSenders();
     // https://w3c.github.io/webrtc-pc/#dom-rtcpeerconnection-getreceivers
@@ -155,6 +159,7 @@ enum RTCPeerConnectionState {
     attribute EventHandler ontrack;
 
     // https://w3c.github.io/webrtc-pc/#peer-to-peer-data-api
+    [RuntimeEnabled=RTCSctpTransport] readonly attribute RTCSctpTransport? sctp;
     [CallWith=ScriptState, RaisesException] RTCDataChannel createDataChannel(USVString label, optional RTCDataChannelInit dataChannelDict);
     attribute EventHandler ondatachannel;
 

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 303 tests; 299 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 304 tests; 300 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing origin: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -262,6 +262,7 @@ PASS Parsing origin: <sc:\../> against <about:blank>
 PASS Parsing origin: <sc::a@example.net> against <about:blank>
 PASS Parsing origin: <wow:%NBD> against <about:blank>
 PASS Parsing origin: <wow:%1G> against <about:blank>
+PASS Parsing origin: <wow:￿> against <about:blank>
 PASS Parsing origin: <ftp://%e2%98%83> against <about:blank>
 PASS Parsing origin: <https://%e2%98%83> against <about:blank>
 PASS Parsing origin: <http://127.0.0.1:10100/relative_import.html> against <about:blank>

@@ -1,0 +1,413 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [550, 350, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [535, 325, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [535, 325, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [520, 300, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [520, 300, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [505, 275, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [505, 275, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [490, 250, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [490, 250, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [475, 225, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [475, 225, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [460, 200, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [460, 200, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [445, 175, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [445, 175, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [430, 150, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [430, 150, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [415, 125, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [415, 125, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow (positioned) div id='html' class='outerBox'",
+          "rect": [400, 100, 150, 150],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [250, 350, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [235, 325, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [235, 325, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [220, 300, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [220, 300, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [205, 275, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [205, 275, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [190, 250, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [190, 250, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [175, 225, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [175, 225, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [160, 200, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [160, 200, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [145, 175, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [145, 175, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [130, 150, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [130, 150, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [115, 125, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [115, 125, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [100, 100, 150, 150],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [575, 375, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [560, 350, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [560, 350, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [545, 325, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [545, 325, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [530, 300, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [530, 300, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [515, 275, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [515, 275, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [500, 250, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [500, 250, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [485, 225, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [485, 225, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [470, 200, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [470, 200, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [455, 175, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [455, 175, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [440, 150, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [440, 150, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGBlockFlow div class='innerBox'",
+          "rect": [425, 125, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [275, 375, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [260, 350, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [260, 350, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [245, 325, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [245, 325, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [230, 300, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [230, 300, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [215, 275, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [215, 275, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [200, 250, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [200, 250, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [185, 225, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [185, 225, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [170, 200, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [170, 200, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [155, 175, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [155, 175, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [140, 150, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [140, 150, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot (positioned) svg id='svg'",
+          "rect": [125, 125, 100, 100],
+          "reason": "paint property change"
+        }
+      ]
+    }
+  ]
+}
+

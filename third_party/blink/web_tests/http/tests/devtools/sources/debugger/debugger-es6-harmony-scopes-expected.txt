@@ -15,22 +15,22 @@ Block
     block1: "block {...}"
     const1: 1
 Local
+    x: 2014
     innerFunctionBlockVar: 2116
     innerFunctionLocalVar: 2016
     negInf: -Infinity
     negZero: -0
     this: undefined
-    x: 2014
 Block
     makeClosureDeeperBlockVar: "block.deep.TextParam"
 Closure (window.makeClosure)
-    makeClosureBlockVar: "block.TextParam"
-    makeClosureDeeperLocalVar: "local.deep.TextParam"
-    makeClosureLocalVar: "local.TextParam"
     n: "TextParam"
+    makeClosureBlockVar: "block.TextParam"
+    makeClosureLocalVar: "local.TextParam"
+    makeClosureDeeperLocalVar: "local.deep.TextParam"
 Script
-    globalScriptConst: 42
     globalScriptLet: 41
+    globalScriptConst: 42
 WindowGlobal
     <section collapsed>
 Script execution resumed.

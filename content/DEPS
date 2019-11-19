@@ -16,7 +16,7 @@ include_rules = [
 
   "-components",
   # Content can depend on components that are:
-  #   1) related to the implementation of the web platform
+  #   1) related to the implementation of the web platform, or,
   #   2) shared code between third_party/blink and content
   # It should not depend on chrome features or implementation details, i.e. the
   # original components/ directories which was code split out from chrome/ to be
@@ -29,7 +29,6 @@ include_rules = [
 
   "+crypto",
   "+grit/blink_resources.h",
-  "+grit/content_strings.h",
 
   "+dbus",
   "+gpu",
@@ -115,7 +114,8 @@ include_rules = [
   "+storage/common",
 
   # For generated JNI includes.
-  "+jni",
+  "+content/public/android/content_jni_headers",
+  "+content/public/android/jar_jni",
 ]
 
 specific_include_rules = {
@@ -123,15 +123,5 @@ specific_include_rules = {
     # content -> content/shell dependency is disallowed, except browser tests.
     "+content/shell/browser",
     "+content/shell/common",
-
-    # components/variations/variations_params_manager.h is allowed from tests
-    # (it is part of //components/variations:test_support target).
-    "+components/variations/variations_params_manager.h",
-  ],
-
-  "test_utils\.cc": [
-    # components/variations/variations_params_manager.h is allowed from tests
-    # (it is part of //components/variations:test_support target).
-    "+components/variations/variations_params_manager.h",
   ],
 }

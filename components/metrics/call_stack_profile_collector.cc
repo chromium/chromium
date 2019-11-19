@@ -9,7 +9,7 @@
 
 #include "components/metrics/call_stack_profile_encoding.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace metrics {
 
@@ -19,9 +19,9 @@ CallStackProfileCollector::~CallStackProfileCollector() = default;
 
 // static
 void CallStackProfileCollector::Create(
-    mojom::CallStackProfileCollectorRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<CallStackProfileCollector>(),
-                          std::move(request));
+    mojo::PendingReceiver<mojom::CallStackProfileCollector> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<CallStackProfileCollector>(),
+                              std::move(receiver));
 }
 
 void CallStackProfileCollector::Collect(base::TimeTicks start_timestamp,

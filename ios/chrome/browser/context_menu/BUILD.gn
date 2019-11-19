@@ -4,6 +4,7 @@
 
 source_set("eg_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
+  defines = [ "CHROME_EARL_GREY_1" ]
   testonly = true
   sources = [
     "context_menu_egtest.mm",
@@ -13,20 +14,42 @@ source_set("eg_tests") {
     "//base/test:test_support",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui",
-    "//ios/chrome/test/app:test_support",
+    "//ios/chrome/browser/ui/fullscreen/test:eg_test_support",
     "//ios/chrome/test/earl_grey:test_support",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/ui",
     "//ios/testing/earl_grey:earl_grey_support",
     "//ios/third_party/earl_grey:earl_grey+link",
-    "//ios/web:earl_grey_test_support",
-    "//ios/web/public",
-    "//ios/web/public/test/http_server",
+    "//ios/web/public/test:element_selector",
+    "//net:test_support",
     "//url",
   ]
   libs = [
     "UIKit.framework",
     "XCTest.framework",
   ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "context_menu_egtest.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/fullscreen/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test:element_selector",
+    "//net:test_support",
+    "//url",
+  ]
+  libs = [ "UIKit.framework" ]
 }

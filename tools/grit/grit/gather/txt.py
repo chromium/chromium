@@ -5,6 +5,8 @@
 '''Supports making amessage from a text file.
 '''
 
+from __future__ import print_function
+
 from grit.gather import interface
 from grit import tclib
 

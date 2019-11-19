@@ -26,10 +26,6 @@ function runTestStep() {
   var field = document.getElementById('field');
 
   if (hash == "") {
-    if (window.testRunner) {
-      testRunner.dumpAsText();
-      testRunner.waitUntilDone();
-    }
     // Location changes need to happen outside the onload handler to generate history entries.
     setTimeout(function() {
       navigateToHash(field);
@@ -42,8 +38,12 @@ function runTestStep() {
   }
 }
 
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+}
 </script>
-<body onload='runTestStep()' onunload='/*suppress page cache*/'>
+<body onload='setTimeout(runTestStep, 1)' onunload='/*suppress page cache*/'>
   <input id='field'></input>
   <a id='anchor' href='resources/back-on-load.html'>go away and come back</a>
 </body>

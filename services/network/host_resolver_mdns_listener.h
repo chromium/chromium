@@ -11,6 +11,8 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
@@ -30,7 +32,7 @@ class HostResolverMdnsListener
                            net::DnsQueryType query_type);
   ~HostResolverMdnsListener() override;
 
-  int Start(mojom::MdnsListenClientPtr response_client,
+  int Start(mojo::PendingRemote<mojom::MdnsListenClient> response_client,
             base::OnceClosure cancellation_callback);
 
   // net::HostResolver::MdnsListenerDelegate implementation
@@ -54,7 +56,7 @@ class HostResolverMdnsListener
   void OnConnectionError();
 
   std::unique_ptr<net::HostResolver::MdnsListener> internal_listener_;
-  mojom::MdnsListenClientPtr response_client_;
+  mojo::Remote<mojom::MdnsListenClient> response_client_;
 
   base::OnceClosure cancellation_callback_;
 

@@ -7,17 +7,19 @@
 #include <stdint.h>
 
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -30,7 +32,6 @@
 namespace {
 
 const char kLowDiskId[] = "low_disk";
-const char kStoragePage[] = "storage";
 const char kNotifierLowDisk[] = "ash.disk";
 const uint64_t kNotificationThreshold = 1 << 30;          // 1GB
 const uint64_t kNotificationSevereThreshold = 512 << 20;  // 512MB
@@ -42,14 +43,14 @@ constexpr base::TimeDelta kNotificationInterval =
 namespace chromeos {
 
 LowDiskNotification::LowDiskNotification()
-    : notification_interval_(kNotificationInterval), weak_ptr_factory_(this) {
-  DCHECK(DBusThreadManager::Get()->GetCryptohomeClient());
-  DBusThreadManager::Get()->GetCryptohomeClient()->AddObserver(this);
+    : notification_interval_(kNotificationInterval) {
+  DCHECK(CryptohomeClient::Get());
+  CryptohomeClient::Get()->AddObserver(this);
 }
 
 LowDiskNotification::~LowDiskNotification() {
-  DCHECK(DBusThreadManager::Get()->GetCryptohomeClient());
-  DBusThreadManager::Get()->GetCryptohomeClient()->RemoveObserver(this);
+  DCHECK(CryptohomeClient::Get());
+  CryptohomeClient::Get()->RemoveObserver(this);
 }
 
 void LowDiskNotification::LowDiskSpace(uint64_t free_disk_bytes) {
@@ -105,8 +106,8 @@ LowDiskNotification::CreateNotification(Severity severity) {
   auto on_click = base::BindRepeating([](base::Optional<int> button_index) {
     if (button_index) {
       DCHECK_EQ(0, *button_index);
-      chrome::ShowSettingsSubPageForProfile(
-          ProfileManager::GetActiveUserProfile(), kStoragePage);
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          ProfileManager::GetActiveUserProfile(), chrome::kStorageSubPage);
     }
   });
   std::unique_ptr<message_center::Notification> notification =
@@ -114,7 +115,7 @@ LowDiskNotification::CreateNotification(Severity severity) {
           message_center::NOTIFICATION_TYPE_SIMPLE, kLowDiskId, title, message,
           base::string16(), GURL(), notifier_id, optional_fields,
           new message_center::HandleNotificationClickDelegate(on_click),
-          ash::kNotificationStorageFullIcon, warning_level);
+          kNotificationStorageFullIcon, warning_level);
 
   return notification;
 }

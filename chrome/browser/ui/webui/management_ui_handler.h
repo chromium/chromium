@@ -9,20 +9,21 @@
 #include <set>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
+#include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/common/url_constants.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "extensions/buildflags/buildflags.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "components/policy/core/common/policy_service.h"
 #include "extensions/browser/extension_registry_observer.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/buildflags/buildflags.h"
+#include "url/gurl.h"
 
+#if defined(OS_CHROMEOS)
 // Constants defining the IDs for the localized strings sent to the page as
 // load time data.
 extern const char kManagementLogUploadEnabled[];
@@ -30,8 +31,10 @@ extern const char kManagementReportActivityTimes[];
 extern const char kManagementReportHardwareStatus[];
 extern const char kManagementReportNetworkInterfaces[];
 extern const char kManagementReportUsers[];
+extern const char kManagementPrinting[];
+extern const char kManagementCrostini[];
+#endif  // defined(OS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 extern const char kCloudReportingExtensionId[];
 extern const char kOnPremReportingExtensionStableId[];
 extern const char kOnPremReportingExtensionBetaId[];
@@ -44,6 +47,14 @@ extern const char kManagementExtensionReportExtensionsPlugin[];
 extern const char kManagementExtensionReportSafeBrowsingWarnings[];
 extern const char kManagementExtensionReportPerfCrash[];
 extern const char kManagementExtensionReportUserBrowsingData[];
+
+extern const char kThreatProtectionTitle[];
+extern const char kManagementDataLossPreventionName[];
+extern const char kManagementDataLossPreventionPermissions[];
+extern const char kManagementMalwareScanningName[];
+extern const char kManagementMalwareScanningPermissions[];
+extern const char kManagementEnterpriseReportingName[];
+extern const char kManagementEnterpriseReportingPermissions[];
 
 extern const char kPolicyKeyReportMachineIdData[];
 extern const char kPolicyKeyReportUserIdData[];
@@ -60,8 +71,6 @@ extern const char kReportingTypeSecurity[];
 extern const char kReportingTypeUser[];
 extern const char kReportingTypeUserActivity[];
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
 namespace base {
 class ListValue;
 }  // namespace base
@@ -77,42 +86,47 @@ class PolicyService;
 class Profile;
 
 // The JavaScript message handler for the chrome://management page.
-// TODO(ydago): Increase test coverage of this class
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 class ManagementUIHandler : public content::WebUIMessageHandler,
                             public extensions::ExtensionRegistryObserver,
-                            public policy::PolicyService::Observer {
-#else
-class ManagementUIHandler : public content::WebUIMessageHandler {
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+                            public policy::PolicyService::Observer,
+                            public BitmapFetcherDelegate {
  public:
   ManagementUIHandler();
   ~ManagementUIHandler() override;
 
-  void InitializeManagementContextualStrings(
-      Profile* profile,
-      content::WebUIDataSource* web_data_source);
+  static void Initialize(content::WebUI* web_ui,
+                         content::WebUIDataSource* source);
+
   // content::WebUIMessageHandler implementation.
   void RegisterMessages() override;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+  void SetAccountManagedForTesting(bool managed) { account_managed_ = managed; }
+  void SetDeviceManagedForTesting(bool managed) { device_managed_ = managed; }
+
+  static std::string GetAccountDomain(Profile* profile);
+
+  void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
  protected:
-  void AddExtensionReportingInfo(base::Value* report_sources);
+  // Protected for testing.
+  static void InitializeInternal(content::WebUI* web_ui,
+                                 content::WebUIDataSource* source,
+                                 Profile* profile);
+  void AddReportingInfo(base::Value* report_sources);
 
-  virtual const policy::PolicyService* GetPolicyService() const;
+  base::DictionaryValue GetContextualManagedData(Profile* profile);
+  base::Value GetThreatProtectionInfo(Profile* profile) const;
+  virtual policy::PolicyService* GetPolicyService() const;
   virtual const extensions::Extension* GetEnabledExtension(
       const std::string& extensionId) const;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if defined(OS_CHROMEOS)
+  // Protected for testing.
+  virtual const std::string GetDeviceDomain() const;
+#endif  // defined(OS_CHROMEOS)
  private:
-  std::unique_ptr<base::DictionaryValue>
-  GetDataManagementContextualSourceUpdate(Profile* profile) const;
-
-  base::string16 GetEnterpriseManagementStatusString();
-
-  void HandleGetDeviceManagementStatus(const base::ListValue* args);
+  void GetManagementStatus(Profile* profile, base::Value* status) const;
 
 #if defined(OS_CHROMEOS)
   void HandleGetDeviceReportingInfo(const base::ListValue* args);
@@ -124,10 +138,17 @@ class ManagementUIHandler : public content::WebUIMessageHandler {
   void HandleGetLocalTrustRootsInfo(const base::ListValue* args);
 #endif  // defined(OS_CHROMEOS)
 
+  void HandleGetContextualManagedData(const base::ListValue* args);
+  void HandleGetThreatProtectionInfo(const base::ListValue* args);
   void HandleInitBrowserReportingInfo(const base::ListValue* args);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+  void AsyncUpdateLogo();
+
+  // BitmapFetcherDelegate
+  void OnFetchComplete(const GURL& url, const SkBitmap* bitmap) override;
+
   void NotifyBrowserReportingInfoUpdated();
+  void NotifyThreatProtectionInfoUpdated();
 
   // extensions::ExtensionRegistryObserver implementation.
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -136,7 +157,7 @@ class ManagementUIHandler : public content::WebUIMessageHandler {
                            const extensions::Extension* extension,
                            extensions::UnloadedExtensionReason reason) override;
 
-  void OnManagedStateChanged();
+  void UpdateManagedState();
 
   // policy::PolicyService::Observer
   void OnPolicyUpdated(const policy::PolicyNamespace& ns,
@@ -146,16 +167,20 @@ class ManagementUIHandler : public content::WebUIMessageHandler {
   void AddObservers();
   void RemoveObservers();
 
+  bool managed_() const { return account_managed_ || device_managed_; }
+  bool account_managed_ = false;
+  bool device_managed_ = false;
   // To avoid double-removing the observers, which would cause a DCHECK()
   // failure.
   bool has_observers_ = false;
-  bool managed_ = false;
   std::string web_ui_data_source_name_;
 
   PrefChangeRegistrar pref_registrar_;
 
   std::set<extensions::ExtensionId> reporting_extension_ids_;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  GURL logo_url_;
+  std::string fetched_image_;
+  std::unique_ptr<BitmapFetcher> icon_fetcher_;
 
   DISALLOW_COPY_AND_ASSIGN(ManagementUIHandler);
 };

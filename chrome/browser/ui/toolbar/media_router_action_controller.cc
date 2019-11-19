@@ -85,7 +85,7 @@ void MediaRouterActionController::OnDialogHidden() {
       observer.DeactivateIcon();
     // Call MaybeAddOrRemoveAction() asynchronously, so that the action icon
     // doesn't get hidden until we have a chance to show a context menu.
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&MediaRouterActionController::MaybeAddOrRemoveAction,
                        weak_factory_.GetWeakPtr()));
@@ -95,8 +95,9 @@ void MediaRouterActionController::OnDialogHidden() {
 void MediaRouterActionController::OnContextMenuShown() {
   DCHECK(!context_menu_shown_);
   context_menu_shown_ = true;
-  // If the context menu was shown, right mouse button must have been released.
-  keep_visible_for_right_mouse_button_ = false;
+  // Once the context menu is shown, we no longer need to keep track of the
+  // mouse or touch press.
+  keep_visible_for_right_click_or_hold_ = false;
   MaybeAddOrRemoveAction();
 }
 
@@ -106,13 +107,14 @@ void MediaRouterActionController::OnContextMenuHidden() {
   MaybeAddOrRemoveAction();
 }
 
-void MediaRouterActionController::KeepIconOnRightMousePressed() {
-  DCHECK(!keep_visible_for_right_mouse_button_);
-  keep_visible_for_right_mouse_button_ = true;
+void MediaRouterActionController::KeepIconShownOnPressed() {
+  DCHECK(!keep_visible_for_right_click_or_hold_);
+  keep_visible_for_right_click_or_hold_ = true;
+  MaybeAddOrRemoveAction();
 }
 
-void MediaRouterActionController::MaybeHideIconOnRightMouseReleased() {
-  keep_visible_for_right_mouse_button_ = false;
+void MediaRouterActionController::MaybeHideIconOnReleased() {
+  keep_visible_for_right_click_or_hold_ = false;
   MaybeAddOrRemoveAction();
 }
 
@@ -127,7 +129,7 @@ void MediaRouterActionController::RemoveObserver(Observer* observer) {
 bool MediaRouterActionController::ShouldEnableAction() const {
   return shown_by_policy_ || has_local_display_route_ || has_issue_ ||
          dialog_count_ || context_menu_shown_ ||
-         keep_visible_for_right_mouse_button_ ||
+         keep_visible_for_right_click_or_hold_ ||
          GetAlwaysShowActionPref(profile_);
 }
 
@@ -138,8 +140,7 @@ MediaRouterActionController::MediaRouterActionController(
       media_router::MediaRoutesObserver(router),
       profile_(profile),
       shown_by_policy_(
-          MediaRouterActionController::IsActionShownByPolicy(profile)),
-      weak_factory_(this) {
+          MediaRouterActionController::IsActionShownByPolicy(profile)) {
   CHECK(profile_);
   media_router::IssuesObserver::Init();
   pref_change_registrar_.Init(profile->GetPrefs());

@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/svg/svg_angle_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -39,32 +40,37 @@ const SVGEnumerationMap& GetEnumerationMap<SVGMarkerUnitsType>() {
   return entries;
 }
 
-inline SVGMarkerElement::SVGMarkerElement(Document& document)
+SVGMarkerElement::SVGMarkerElement(Document& document)
     : SVGElement(svg_names::kMarkerTag, document),
       SVGFitToViewBox(this),
-      ref_x_(SVGAnimatedLength::Create(this,
-                                       svg_names::kRefXAttr,
-                                       SVGLengthMode::kWidth,
-                                       SVGLength::Initial::kUnitlessZero)),
-      ref_y_(SVGAnimatedLength::Create(this,
-                                       svg_names::kRefYAttr,
-                                       SVGLengthMode::kHeight,
-                                       SVGLength::Initial::kUnitlessZero)),
+      ref_x_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kRefXAttr,
+          SVGLengthMode::kWidth,
+          SVGLength::Initial::kUnitlessZero)),
+      ref_y_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kRefYAttr,
+          SVGLengthMode::kHeight,
+          SVGLength::Initial::kUnitlessZero)),
       // Spec: If the markerWidth/markerHeight attribute is not specified, the
       // effect is as if a value of "3" were specified.
-      marker_width_(SVGAnimatedLength::Create(this,
-                                              svg_names::kMarkerWidthAttr,
-                                              SVGLengthMode::kWidth,
-                                              SVGLength::Initial::kNumber3)),
-      marker_height_(SVGAnimatedLength::Create(this,
-                                               svg_names::kMarkerHeightAttr,
-                                               SVGLengthMode::kHeight,
-                                               SVGLength::Initial::kNumber3)),
-      orient_angle_(SVGAnimatedAngle::Create(this)),
-      marker_units_(SVGAnimatedEnumeration<SVGMarkerUnitsType>::Create(
+      marker_width_(MakeGarbageCollected<SVGAnimatedLength>(
           this,
-          svg_names::kMarkerUnitsAttr,
-          kSVGMarkerUnitsStrokeWidth)) {
+          svg_names::kMarkerWidthAttr,
+          SVGLengthMode::kWidth,
+          SVGLength::Initial::kNumber3)),
+      marker_height_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kMarkerHeightAttr,
+          SVGLengthMode::kHeight,
+          SVGLength::Initial::kNumber3)),
+      orient_angle_(MakeGarbageCollected<SVGAnimatedAngle>(this)),
+      marker_units_(
+          MakeGarbageCollected<SVGAnimatedEnumeration<SVGMarkerUnitsType>>(
+              this,
+              svg_names::kMarkerUnitsAttr,
+              kSVGMarkerUnitsStrokeWidth)) {
   AddToPropertyMap(ref_x_);
   AddToPropertyMap(ref_y_);
   AddToPropertyMap(marker_width_);
@@ -83,8 +89,6 @@ void SVGMarkerElement::Trace(blink::Visitor* visitor) {
   SVGElement::Trace(visitor);
   SVGFitToViewBox::Trace(visitor);
 }
-
-DEFINE_NODE_FACTORY(SVGMarkerElement)
 
 AffineTransform SVGMarkerElement::ViewBoxToViewTransform(
     float view_width,
@@ -144,7 +148,8 @@ void SVGMarkerElement::setOrientToAngle(SVGAngleTearOff* angle) {
   setAttribute(svg_names::kOrientAttr, AtomicString(target->ValueAsString()));
 }
 
-LayoutObject* SVGMarkerElement::CreateLayoutObject(const ComputedStyle&) {
+LayoutObject* SVGMarkerElement::CreateLayoutObject(const ComputedStyle&,
+                                                   LegacyLayout) {
   return new LayoutSVGResourceMarker(this);
 }
 

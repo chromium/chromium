@@ -10,15 +10,14 @@
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/ui/payments/cells/payments_is_selectable.h"
 #import "ios/chrome/browser/ui/payments/cells/payments_text_item.h"
 #import "ios/chrome/browser/ui/payments/payment_request_selector_view_controller_actions.h"
 #import "ios/chrome/browser/ui/payments/payment_request_selector_view_controller_data_source.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -186,6 +185,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.styler.cellStyle = MDCCollectionViewCellStyleCard;
   self.styler.separatorInset =
       UIEdgeInsetsMake(0, kSeparatorEdgeInset, 0, kSeparatorEdgeInset);
+  self.styler.separatorColor = [UIColor colorNamed:kSeparatorColor];
 }
 
 #pragma mark UICollectionViewDataSource
@@ -205,8 +205,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
             base::mac::ObjCCastStrict<PaymentsTextCell>(cell);
         textCell.textLabel.textColor =
             self.dataSource.state == PaymentRequestSelectorStateError
-                ? [[MDCPalette cr_redPalette] tint600]
-                : [[MDCPalette greyPalette] tint600];
+                ? [UIColor colorNamed:kRedColor]
+                : [UIColor colorNamed:kTextSecondaryColor];
       }
       break;
     }
@@ -217,7 +217,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         // Style call to action cells.
         if (paymentsTextCell.cellType == PaymentsTextCellTypeCallToAction) {
           paymentsTextCell.textLabel.textColor =
-              [[MDCPalette cr_bluePalette] tint500];
+              [UIColor colorNamed:kBlueColor];
         }
       }
       break;

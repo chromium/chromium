@@ -1,0 +1,25 @@
+<!--
+@WIN-DENY:EVENT_OBJECT_FOCUS*
+@UIA-WIN-DENY:AutomationFocusChanged*
+-->
+<!DOCTYPE html>
+<input id="text" type="text">
+
+<script>
+  var go_passes = [
+    () => document.querySelector('#text').setAttribute('disabled', true),
+    () => document.querySelector('#text').removeAttribute('disabled'),
+    () => document.querySelector('#text').setAttribute('readonly', true),
+    () => document.querySelector('#text').removeAttribute('readonly'),
+    () => document.querySelector('#text').setAttribute('aria-readonly', true),
+    () => document.querySelector('#text').setAttribute('aria-readonly', false),
+    () => document.querySelector('#text').setAttribute('aria-disabled', true),
+    () => document.querySelector('#text').setAttribute('aria-disabled', false),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>

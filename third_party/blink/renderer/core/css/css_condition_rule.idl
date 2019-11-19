@@ -4,7 +4,9 @@
 
 // https://drafts.csswg.org/css-conditional/#the-cssconditionrule-interface
 
-interface CSSConditionRule : CSSGroupingRule {
+[
+    Exposed=Window
+] interface CSSConditionRule : CSSGroupingRule {
     // TODO(xing.xu): readonly should be removed.
     readonly attribute DOMString conditionText;
 };

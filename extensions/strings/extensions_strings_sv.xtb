@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Det gick inte att avkoda bilden: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">Lokalisering används, men default_locale specificeras inte i manifestet.</translation>
 <translation id="2576842806987913196">Det finns redan en CRX-fil med det här namnet.</translation>
-<translation id="2753617847762399167">Illegal sökväg (absolut eller relativ med ".."): <ph name="IMAGE_PATH" /></translation>
 <translation id="2785530881066938471">Det gick inte att läsa in filen <ph name="RELATIVE_PATH" /> för innehållsskriptet. Den har inte kodats i UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (tilläggs-id <ph name="EXTENSION_ID" />) har blockerats av administratören. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Det gick inte att installera paketet <ph name="ERROR_CODE" /></translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Formade fönster stöds inte.</translation>
 <translation id="5456409301717116725">Detta tillägg omfattar nyckelfilen <ph name="KEY_PATH" />. Du vill antagligen inte göra detta.</translation>
 <translation id="5486326529110362464">Det angivna värdet för den privata nyckeln måste finnas.</translation>
-<translation id="5627523580512561598">tillägget <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">Tilläggsvy: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Administratören för den här datorn kräver att <ph name="EXTENSION_NAME" /> installeras. Det kan inte avinstalleras.</translation>
 <translation id="6027032947578871493">Okänd produkt (<ph name="PRODUCT_ID" />) från <ph name="VENDOR_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> från leverantören <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354"><ph name="APP_NAME" /> begär åtkomst till en eller flera av dina enheter:</translation>
 <translation id="657064425229075395">Det gick inte att läsa in bakgrundsskriptet <ph name="BACKGROUND_SCRIPT" />.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> från <ph name="VENDOR_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Det gick inte att skapa en katalog för uppackning: <ph name="DIRECTORY_PATH" /></translation>
 <translation id="677806580227005219">Mime-hanterare: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Det här tillägget lästes in på nytt för ofta.</translation>
 <translation id="7003844668372540529">Okänd produkt (<ph name="PRODUCT_ID" />) från <ph name="VENDOR_NAME" /></translation>

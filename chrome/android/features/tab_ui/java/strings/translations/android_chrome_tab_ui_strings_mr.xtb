@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="mr">
+<translation id="1075622780330595106">तुमच्या <ph name="NUMBER_OF_TABS" /> चा काही दिवसांपासून वापर केला गेला नाही. ते बंद करायचे आहेत का?</translation>
+<translation id="1181037720776840403">काढून टाका</translation>
+<translation id="125153950246128346">दुसरा टॅब पाहण्यासाठी टॅप करा</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
+<translation id="257674075312929031">गट</translation>
+<translation id="2613747923081026172">गट तयार करा</translation>
+<translation id="2671423594960767771">गट शेअर करा</translation>
+<translation id="2977480621796371840">गटामधून काढून टाका</translation>
+<translation id="4212246570487010370">ब्राउझ करणे सुरू ठेवा</translation>
+<translation id="4648718555153979859">तुमचे टॅब येथे एकत्रित केले आहेत</translation>
+<translation id="5007392906805964215">पुनरावलोकन करा</translation>
+<translation id="5073204694187207510">फुलस्क्रीन ग्रिड लपवा</translation>
+<translation id="5082793167783849073">गट बनवून त्वरित पेजशी तुलना करा. सुरू करण्यासाठी, लिंकला स्पर्श करा आणि धरून ठेवा.</translation>
+<translation id="5580090775658607195"><ph name="TAB_COUNT" /> टॅबची गटामध्ये विभागणी केली आहे</translation>
+<translation id="5792534911093536736">अधिक टॅब</translation>
+<translation id="58326064309361797">त्यांचा गट बनवण्यासाठी टॅबना ड्रॅग करा</translation>
+<translation id="6040143037577758943">बंद करा</translation>
+<translation id="6193448654517602979">टॅब निवडा</translation>
+<translation id="6615455863669487791">मला दर्शवा</translation>
+<translation id="6840760312327750441">टॅबचा गट करण्यासाठी, टॅबला स्पर्श करा आणि धरून ठेवा. नंतर, तो दुसऱ्या टॅबवर ड्रॅग करा.</translation>
+<translation id="7151209024774799310">गटामधून टॅब काढून टाका</translation>
+<translation id="7559245342362162951">फुलस्क्रीन ग्रिडमध्ये गटाचे टॅब दाखवा</translation>
+<translation id="9150694013019234766">स्क्रीनच्या तळाजवळ तुमच्या टॅब गटातील टॅब दरम्यान स्विच करा</translation>
+<translation id="9169594135889675189">गटामध्ये नवीन टॅब जोडा</translation>
+<translation id="959682366969460160">व्यवस्‍थापित करा</translation>
+</translationbundle>

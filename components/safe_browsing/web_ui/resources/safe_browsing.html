@@ -25,6 +25,7 @@
         <tab id="csbrr">ClientSafeBrowsingReportRequests</tab>
         <tab id="download-protection">Download Protection</tab>
         <tab id="password-protection">Password Protection</tab>
+        <tab id="rt-lookup">RT Lookup</tab>
         <tab id="referrer-chain">Referrer Chain</tab>
         <tab id="log">Log Messages</tab>
       </tabs>
@@ -37,6 +38,10 @@
           <h2>Preferences</h2>
           <div class="content">
             <p id="preferences-list"></p>
+          </div>
+          <h2>Safe Browsing Cookie</h2>
+          <div class="content">
+            <p id="cookie-panel"></p>
           </div>
         </tabpanel>
         <tabpanel>
@@ -76,8 +81,16 @@
           <div class="content">
             <p id="pg-event-log"></p>
           </div>
+          <h2>Security Events</h2>
+          <div class="content">
+            <p id="security-event-log"></p>
+          </div>
           <h2>Password Protection Pings</h2>
           <table id="pg-ping-list" class="request-response"></table>
+        </tabpanel>
+        <tabpanel>
+          <h2>RT Lookup Pings</h2>
+          <table id="rt-lookup-ping-list" class="request-response"></table>
         </tabpanel>
         <tabpanel>
           <h2>Referrer Chain</h2>
@@ -86,7 +99,7 @@
             <input type="submit" value="Get Chain">
           </form>
           <div class="content">
-            <p id="referrer-chain"></p>
+            <p id="referrer-chain-content"></p>
           </div>
         </tabpanel>
         <tabpanel>

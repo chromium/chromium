@@ -8,8 +8,9 @@
   <body>
     <script>
 // These tests are testing the non-standard "sdpFormat" extension.
-promise_test(function() {
-  pc = new RTCPeerConnection({sdpSemantics: "plan-b"});
+promise_test(async t => {
+  const pc = new RTCPeerConnection({sdpSemantics: "plan-b"});
+  t.add_cleanup(() => pc.close());
   return navigator.mediaDevices.getUserMedia({audio:true})
     .then(stream => {
       stream2 = stream.clone();
@@ -23,8 +24,9 @@ promise_test(function() {
     });
 }, 'Plan B createOffer creates only one media section for two audio tracks');
 
-promise_test(function() {
-  pc = new RTCPeerConnection({sdpSemantics: "unified-plan"});
+promise_test(async t => {
+  const pc = new RTCPeerConnection({sdpSemantics: "unified-plan"});
+  t.add_cleanup(() => pc.close());
   return navigator.mediaDevices.getUserMedia({audio:true})
     .then(stream => {
       stream2 = stream.clone();
@@ -39,8 +41,9 @@ promise_test(function() {
 }, 'Unified plan createOffer for audio creates two media sections ' +
    'for two audio tracks');
 
-promise_test(function() {
-  pc = new RTCPeerConnection({sdpSemantics: "plan-b"});
+promise_test(async t => {
+  const pc = new RTCPeerConnection({sdpSemantics: "plan-b"});
+  t.add_cleanup(() => pc.close());
   return navigator.mediaDevices.getUserMedia({video:true})
     .then(stream => {
       stream2 = stream.clone();
@@ -55,8 +58,9 @@ promise_test(function() {
 }, 'Plan B createOffer for video creates one media section for two ' +
    'video tracks');
 
-promise_test(function() {
-  pc = new RTCPeerConnection({sdpSemantics: "unified-plan"});
+promise_test(async t => {
+  const pc = new RTCPeerConnection({sdpSemantics: "unified-plan"});
+  t.add_cleanup(() => pc.close());
   return navigator.mediaDevices.getUserMedia({video:true})
     .then(stream => {
       stream2 = stream.clone();
@@ -73,9 +77,11 @@ promise_test(function() {
 
 // TODO(hta): Add a test case with both audio and video tracks.
 
-promise_test(function() {
-  pc1 = new RTCPeerConnection({sdpSemantics: "plan-b"});
-  pc2 = new RTCPeerConnection({sdpSemantics: "plan-b"});
+promise_test(async t => {
+  const pc1 = new RTCPeerConnection({sdpSemantics: "plan-b"});
+  t.add_cleanup(() => pc1.close());
+  const pc2 = new RTCPeerConnection({sdpSemantics: "plan-b"});
+  t.add_cleanup(() => pc2.close());
   return navigator.mediaDevices.getUserMedia({video: true})
     .then(stream => {
       pc1.addTrack(stream.getVideoTracks()[0]);
@@ -94,9 +100,11 @@ promise_test(function() {
     });
 }, 'Plan B can connect to itself');
 
-promise_test(function() {
-  pc1 = new RTCPeerConnection({sdpSemantics: "unified-plan"});
-  pc2 = new RTCPeerConnection({sdpSemantics: "unified-plan"});
+promise_test(async t => {
+  const pc1 = new RTCPeerConnection({sdpSemantics: "unified-plan"});
+  t.add_cleanup(() => pc1.close());
+  const pc2 = new RTCPeerConnection({sdpSemantics: "unified-plan"});
+  t.add_cleanup(() => pc2.close());
   return navigator.mediaDevices.getUserMedia({video: true})
     .then(stream => {
       pc1.addTrack(stream.getVideoTracks()[0]);
@@ -115,9 +123,11 @@ promise_test(function() {
     });
 }, 'Unified Plan can connect to itself');
 
-promise_test(function() {
-  pc1 = new RTCPeerConnection({sdpSemantics: "unified-plan"});
-  pc2 = new RTCPeerConnection({sdpSemantics: "plan-b"});
+promise_test(async t => {
+  const pc1 = new RTCPeerConnection({sdpSemantics: "unified-plan"});
+  t.add_cleanup(() => pc1.close());
+  const pc2 = new RTCPeerConnection({sdpSemantics: "plan-b"});
+  t.add_cleanup(() => pc2.close());
   return navigator.mediaDevices.getUserMedia({video: true})
     .then(stream => {
       pc1.addTrack(stream.getVideoTracks()[0]);
@@ -137,7 +147,7 @@ promise_test(function() {
 
 }, 'Unified plan with one video track can connect to Plan B');
 
-promise_test(function() {
+promise_test(async t => {
   pc1 = new RTCPeerConnection({sdpSemantics: "plan-b"});
   pc2 = new RTCPeerConnection({sdpSemantics: "unified-plan"});
   return navigator.mediaDevices.getUserMedia({video: true})

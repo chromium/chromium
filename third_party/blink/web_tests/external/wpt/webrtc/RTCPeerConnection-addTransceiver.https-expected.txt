@@ -12,13 +12,13 @@ FAIL addTransceiver() with rid containing invalid non-alphanumeric characters sh
         sendEncodings: [{
           rid: '@Invalid!'
         }]
-      })" did not throw
+      })" threw object "InvalidAccessError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': Invalid RID value provided." ("InvalidAccessError") expected object "TypeError" ("TypeError")
 FAIL addTransceiver() with rid longer than 16 characters should throw TypeError assert_throws: function "() =>
       pc.addTransceiver('audio', {
         sendEncodings: [{
           rid: 'a'.repeat(17)
         }]
-      })" did not throw
+      })" threw object "InvalidAccessError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': Invalid RID value provided." ("InvalidAccessError") expected object "TypeError" ("TypeError")
 PASS addTransceiver() with valid rid value should succeed
 PASS addTransceiver() with valid sendEncodings should succeed
 Harness: the test ran to completion.

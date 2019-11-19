@@ -45,11 +45,23 @@ declare_args() {
 # iOS toolchains.
 _verify_sdk = is_chrome_branded && is_official_build && target_os != "ios"
 
-find_sdk_args = [ "--print_sdk_path" ]
+# The path to the hermetic install of Xcode. Only relevant when
+# use_system_xcode = false.
+if (!use_system_xcode) {
+  _hermetic_xcode_path =
+      rebase_path("//build/${target_os}_files/xcode_binaries",
+                  "",
+                  root_build_dir)
+}
+
+find_sdk_args = [
+  "--print_sdk_path",
+  "--print_bin_path",
+]
 if (!use_system_xcode) {
   find_sdk_args += [
     "--developer_dir",
-    hermetic_xcode_path,
+    _hermetic_xcode_path,
   ]
 }
 if (_verify_sdk) {
@@ -66,9 +78,16 @@ if (_verify_sdk) {
 # second line.
 find_sdk_lines =
     exec_script("//build/mac/find_sdk.py", find_sdk_args, "list lines")
-mac_sdk_version = find_sdk_lines[1]
+mac_sdk_version = find_sdk_lines[2]
 if (mac_sdk_path == "") {
   mac_sdk_path = find_sdk_lines[0]
+}
+mac_bin_path = find_sdk_lines[1]
+
+# If we're using hermetic Xcode, then we want the paths to be relative so that
+# generated ninja files are independent of the directory location.
+if (!use_system_xcode) {
+  mac_bin_path = rebase_path(mac_bin_path, root_build_dir)
 }
 
 script_name = "//build/config/mac/sdk_info.py"
@@ -76,7 +95,7 @@ sdk_info_args = []
 if (!use_system_xcode) {
   sdk_info_args += [
     "--developer_dir",
-    hermetic_xcode_path,
+    _hermetic_xcode_path,
   ]
 }
 sdk_info_args += [ mac_sdk_name ]

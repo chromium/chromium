@@ -11,7 +11,8 @@
     android:paddingStart="@dimen/navigation_popup_default_padding"
     android:paddingEnd="@dimen/navigation_popup_default_padding"
     android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="?attr/selectableItemBackground">
 
     <FrameLayout
       android:layout_width="wrap_content"
@@ -38,5 +39,5 @@
         android:layout_marginStart="@dimen/navigation_popup_default_padding"
         android:minHeight="@dimen/navigation_popup_item_height"
         android:textAppearance="@style/TextAppearance.BlackTitle1"
-        android:singleLine="true" />
+        android:singleLine="true"/>
 </LinearLayout>

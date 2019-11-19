@@ -1,0 +1,73 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox 'The color of this'",
+          "rect": [380, 267, 286, 59],
+          "reason": "style change"
+        },
+        {
+          "object": "InlineTextBox 'should be green'",
+          "rect": [380, 267, 286, 59],
+          "reason": "style change"
+        },
+        {
+          "object": "InlineTextBox 'text in the reflection'",
+          "rect": [380, 267, 286, 59],
+          "reason": "style change"
+        },
+        {
+          "object": "InlineTextBox 'The color of this'",
+          "rect": [70, 267, 286, 59],
+          "reason": "style change"
+        },
+        {
+          "object": "InlineTextBox 'should be green'",
+          "rect": [70, 267, 286, 59],
+          "reason": "style change"
+        },
+        {
+          "object": "InlineTextBox 'text in the reflection'",
+          "rect": [70, 267, 286, 59],
+          "reason": "style change"
+        },
+        {
+          "object": "InlineTextBox 'The color of this'",
+          "rect": [305, 34, 126, 182],
+          "reason": "style change"
+        },
+        {
+          "object": "InlineTextBox 'should be green'",
+          "rect": [305, 34, 126, 182],
+          "reason": "style change"
+        },
+        {
+          "object": "InlineTextBox 'text in the reflection'",
+          "rect": [305, 34, 126, 182],
+          "reason": "style change"
+        },
+        {
+          "object": "InlineTextBox 'The color of this'",
+          "rect": [305, 377, 126, 156],
+          "reason": "style change"
+        },
+        {
+          "object": "InlineTextBox 'should be green'",
+          "rect": [305, 377, 126, 156],
+          "reason": "style change"
+        },
+        {
+          "object": "InlineTextBox 'text in the reflection'",
+          "rect": [305, 377, 126, 156],
+          "reason": "style change"
+        }
+      ]
+    }
+  ]
+}
+

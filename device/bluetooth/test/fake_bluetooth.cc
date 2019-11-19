@@ -9,7 +9,8 @@
 #include "base/memory/ptr_util.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace bluetooth {
 
@@ -21,9 +22,10 @@ FakeBluetooth::FakeBluetooth()
 FakeBluetooth::~FakeBluetooth() = default;
 
 // static
-void FakeBluetooth::Create(mojom::FakeBluetoothRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<FakeBluetooth>(),
-                          std::move(request));
+void FakeBluetooth::Create(
+    mojo::PendingReceiver<mojom::FakeBluetooth> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<FakeBluetooth>(),
+                              std::move(receiver));
 }
 
 void FakeBluetooth::SetLESupported(bool supported,
@@ -34,11 +36,11 @@ void FakeBluetooth::SetLESupported(bool supported,
 
 void FakeBluetooth::SimulateCentral(mojom::CentralState state,
                                     SimulateCentralCallback callback) {
-  mojom::FakeCentralPtr fake_central_ptr;
+  mojo::PendingRemote<mojom::FakeCentral> fake_central;
   fake_central_ = base::MakeRefCounted<FakeCentral>(
-      state, mojo::MakeRequest(&fake_central_ptr));
+      state, fake_central.InitWithNewPipeAndPassReceiver());
   device::BluetoothAdapterFactory::SetAdapterForTesting(fake_central_);
-  std::move(callback).Run(std::move(fake_central_ptr));
+  std::move(callback).Run(std::move(fake_central));
 }
 
 void FakeBluetooth::AllResponsesConsumed(

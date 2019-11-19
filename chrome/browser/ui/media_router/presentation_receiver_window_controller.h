@@ -92,20 +92,13 @@ class PresentationReceiverWindowController final
   bool ShouldFocusPageAfterCrash() final;
   void CanDownload(const GURL& url,
                    const std::string& request_method,
-                   const base::Callback<void(bool)>& callback) final;
-  bool ShouldCreateWebContents(
-      content::WebContents* web_contents,
-      content::RenderFrameHost* opener,
+                   base::OnceCallback<void(bool)> callback) final;
+  bool IsWebContentsCreationOverridden(
       content::SiteInstance* source_site_instance,
-      int32_t route_id,
-      int32_t main_frame_route_id,
-      int32_t main_frame_widget_route_id,
       content::mojom::WindowContainerType window_container_type,
       const GURL& opener_url,
       const std::string& frame_name,
-      const GURL& target_url,
-      const std::string& partition_id,
-      content::SessionStorageNamespace* session_storage_namespace) final;
+      const GURL& target_url) override;
 
   // The profile used for the presentation.
   std::unique_ptr<IndependentOTRProfileManager::OTRProfileRegistration>

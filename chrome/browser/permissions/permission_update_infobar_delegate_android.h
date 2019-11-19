@@ -43,11 +43,11 @@ class PermissionUpdateInfoBarDelegate : public ConfirmInfoBarDelegate {
   // added.
   //
   // This function can only be called with one of
-  // CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC,
-  // CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA or
-  // CONTENT_SETTINGS_TYPE_GEOLOCATION, or with both
-  // CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC and
-  // CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA.
+  // ContentSettingsType::MEDIASTREAM_MIC,
+  // ContentSettingsType::MEDIASTREAM_CAMERA or
+  // ContentSettingsType::GEOLOCATION, or with both
+  // ContentSettingsType::MEDIASTREAM_MIC and
+  // ContentSettingsType::MEDIASTREAM_CAMERA.
   //
   // The |callback| will not be triggered if this is deleted.
   static infobars::InfoBar* Create(

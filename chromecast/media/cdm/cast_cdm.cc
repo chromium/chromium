@@ -48,7 +48,7 @@ class CastCdmContextImpl : public CastCdmContext {
 
   std::unique_ptr<DecryptContextImpl> GetDecryptContext(
       const std::string& key_id,
-      const EncryptionScheme& encryption_scheme) override {
+      EncryptionScheme encryption_scheme) override {
     return cast_cdm_->GetDecryptContext(key_id, encryption_scheme);
   }
 
@@ -104,7 +104,6 @@ int HdcpVersionX10(::media::HdcpVersion hdcp_version) {
 CastCdm::CastCdm(MediaResourceTracker* media_resource_tracker)
     : media_resource_tracker_(media_resource_tracker),
       cast_cdm_context_(new CastCdmContextImpl(this)) {
-  DCHECK(media_resource_tracker);
   thread_checker_.DetachFromThread();
 }
 
@@ -112,7 +111,6 @@ CastCdm::~CastCdm() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(player_tracker_impl_.get());
   player_tracker_impl_->NotifyCdmUnset();
-  media_resource_tracker_->DecrementUsageCount();
 }
 
 void CastCdm::Initialize(
@@ -122,7 +120,11 @@ void CastCdm::Initialize(
     const ::media::SessionExpirationUpdateCB& session_expiration_update_cb) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  media_resource_tracker_->IncrementUsageCount();
+  if (media_resource_tracker_) {
+    media_resource_usage_ = std::make_unique<MediaResourceTracker::ScopedUsage>(
+        media_resource_tracker_);
+  }
+
   player_tracker_impl_.reset(new ::media::PlayerTrackerImpl());
 
   session_message_cb_ = session_message_cb;

@@ -18,7 +18,7 @@ namespace blink {
 
 MediaControlVolumeSliderElement::MediaControlVolumeSliderElement(
     MediaControlsImpl& media_controls)
-    : MediaControlSliderElement(media_controls, kMediaIgnore) {
+    : MediaControlSliderElement(media_controls) {
   setAttribute(html_names::kMaxAttr, "1");
   setAttribute(html_names::kAriaValuemaxAttr, "100");
   setAttribute(html_names::kAriaValueminAttr, "0");
@@ -26,9 +26,7 @@ MediaControlVolumeSliderElement::MediaControlVolumeSliderElement(
   SetShadowPseudoId(AtomicString("-webkit-media-controls-volume-slider"));
   SetVolumeInternal(MediaElement().volume());
 
-  // The slider starts closed in modern media controls.
-  if (MediaControlsImpl::IsModern())
-    CloseSlider();
+  CloseSlider();
 }
 
 void MediaControlVolumeSliderElement::SetVolume(double volume) {

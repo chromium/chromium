@@ -11,6 +11,7 @@ include_rules = [
   "+chromeos/cryptohome",
   "+chromeos/dbus",
   "+chromeos/login/login_state",
+  "+chromeos/tpm",
   "+components/account_id",
   "+components/device_event_log",
   "+components/password_manager",
@@ -19,6 +20,7 @@ include_rules = [
   "+google_apis",
   "+net",
   "+testing",
+  "+third_party/boringssl/src/include",
   "+third_party/cros_system_api",
   "+url",
 ]

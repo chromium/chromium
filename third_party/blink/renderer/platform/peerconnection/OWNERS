@@ -1,3 +1,5 @@
 file://third_party/blink/renderer/modules/peerconnection/OWNERS
 
+per-file rtc_video_*=file://media/gpu/OWNERS
+
 # COMPONENT: Blink>WebRTC

@@ -18,11 +18,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/cert_report_helper.h"
 #include "chrome/browser/ssl/certificate_error_reporter.h"
-#include "chrome/browser/ssl/ssl_cert_reporter.h"
+#include "chrome/browser/ssl/chrome_ssl_blocking_page.h"
 #include "chrome/browser/ssl/ssl_error_controller_client.h"
 #include "components/captive_portal/captive_portal_detector.h"
 #include "components/captive_portal/captive_portal_metrics.h"
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/strings/grit/components_strings.h"
@@ -72,11 +73,9 @@ CaptivePortalBlockingPage::CaptivePortalBlockingPage(
     const GURL& login_url,
     std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
     const net::SSLInfo& ssl_info,
-    int cert_error,
-    const base::Callback<void(content::CertificateRequestResultType)>& callback)
+    int cert_error)
     : SSLBlockingPageBase(
           web_contents,
-          cert_error,
           CertificateErrorReport::INTERSTITIAL_CAPTIVE_PORTAL,
           ssl_info,
           request_url,
@@ -90,16 +89,15 @@ CaptivePortalBlockingPage::CaptivePortalBlockingPage(
               request_url,
               CreateCaptivePortalMetricsHelper(web_contents, request_url))),
       login_url_(login_url),
-      ssl_info_(ssl_info),
-      callback_(callback) {
+      ssl_info_(ssl_info) {
   captive_portal::CaptivePortalMetrics::LogCaptivePortalBlockingPageEvent(
       captive_portal::CaptivePortalMetrics::SHOW_ALL);
+  ChromeSSLBlockingPage::DoChromeSpecificSetup(this);
 }
 
-CaptivePortalBlockingPage::~CaptivePortalBlockingPage() {
-}
+CaptivePortalBlockingPage::~CaptivePortalBlockingPage() = default;
 
-const void* CaptivePortalBlockingPage::GetTypeForTesting() const {
+const void* CaptivePortalBlockingPage::GetTypeForTesting() {
   return CaptivePortalBlockingPage::kTypeForTesting;
 }
 
@@ -270,20 +268,4 @@ void CaptivePortalBlockingPage::CommandReceived(const std::string& command) {
 
 void CaptivePortalBlockingPage::OverrideEntry(content::NavigationEntry* entry) {
   entry->GetSSL() = content::SSLStatus(ssl_info_);
-}
-
-void CaptivePortalBlockingPage::OnProceed() {
-  NOTREACHED()
-      << "Cannot proceed through the error on a captive portal interstitial.";
-}
-
-void CaptivePortalBlockingPage::OnDontProceed() {
-  OnInterstitialClosing();
-
-  // Need to explicity deny the certificate via the callback, otherwise memory
-  // is leaked.
-  if (!callback_.is_null()) {
-    callback_.Run(content::CERTIFICATE_REQUEST_RESULT_TYPE_CANCEL);
-    callback_.Reset();
-  }
 }

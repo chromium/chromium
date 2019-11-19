@@ -19,6 +19,8 @@ per-file package_mac_toolchain.py=erikchen@chromium.org
 per-file package_mac_toolchain.py=justincohen@chromium.org
 per-file whitespace_file.txt=*
 per-file OWNERS.status=*
+per-file OWNERS.setnoparent=set noparent
+per-file OWNERS.setnoparent=file://ENG_REVIEW_OWNERS
 
 # gn-dev is probably a better team here, but the tooling won't let us
 # have more than one team per component, and infra-dev is a catch-all

@@ -47,14 +47,14 @@ class ChromeBookmarkClient : public bookmarks::BookmarkClient {
   base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(
       const GURL& page_url,
       favicon_base::IconType type,
-      const favicon_base::FaviconImageCallback& callback,
+      favicon_base::FaviconImageCallback callback,
       base::CancelableTaskTracker* tracker) override;
   bool SupportsTypedCountForUrls() override;
   void GetTypedCountForUrls(UrlTypedCountMap* url_typed_count_map) override;
   bool IsPermanentNodeVisible(
       const bookmarks::BookmarkPermanentNode* node) override;
   void RecordAction(const base::UserMetricsAction& action) override;
-  bookmarks::LoadExtraCallback GetLoadExtraNodesCallback() override;
+  bookmarks::LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
   bool CanSetPermanentNodeTitle(
       const bookmarks::BookmarkNode* permanent_node) override;
   bool CanSyncNode(const bookmarks::BookmarkNode* node) override;

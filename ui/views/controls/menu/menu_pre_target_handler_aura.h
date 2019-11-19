@@ -12,7 +12,6 @@
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace aura {
-class Env;
 class Window;
 }  // namespace aura
 
@@ -49,7 +48,6 @@ class VIEWS_EXPORT MenuPreTargetHandlerAura
  private:
   void Cleanup();
 
-  aura::Env* aura_env_ = nullptr;
   MenuController* controller_;
   aura::Window* root_;
 

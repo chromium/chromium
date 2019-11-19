@@ -11,7 +11,7 @@ var request;
 /**
  * Launches the PaymentRequest UI that accepts credit cards.
  */
-function ccBuy() {  // eslint-disable-line no-unused-vars
+function ccBuy() { // eslint-disable-line no-unused-vars
   try {
     var details = {
       total: {
@@ -81,7 +81,7 @@ function ccBuy() {  // eslint-disable-line no-unused-vars
 /**
  * Launches the PaymentRequest UI which accepts only Android Pay.
  */
-function androidPayBuy() {  // eslint-disable-line no-unused-vars
+function androidPayBuy() { // eslint-disable-line no-unused-vars
   try {
     request = new PaymentRequest(
         [{
@@ -127,7 +127,7 @@ function androidPayBuy() {  // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI which accepts only Android Pay and does not
  * require any other information.
  */
-function androidPaySkipUiBuy() {  // eslint-disable-line no-unused-vars
+function androidPaySkipUiBuy() { // eslint-disable-line no-unused-vars
   try {
     request = new PaymentRequest(
         [{
@@ -161,7 +161,7 @@ function androidPaySkipUiBuy() {  // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI which accepts only an unsupported payment
  * method.
  */
-function noSupported() {  // eslint-disable-line no-unused-vars
+function noSupported() { // eslint-disable-line no-unused-vars
   try {
     request = new PaymentRequest(
         [{
@@ -206,7 +206,7 @@ function noSupported() {  // eslint-disable-line no-unused-vars
 /**
  * Launches the PaymentRequest UI which accepts credit cards and Bob Pay.
  */
-function cardsAndBobPayBuy() {  // eslint-disable-line no-unused-vars
+function cardsAndBobPayBuy() { // eslint-disable-line no-unused-vars
   try {
     request = new PaymentRequest(
         [
@@ -259,7 +259,7 @@ function cardsAndBobPayBuy() {  // eslint-disable-line no-unused-vars
 /**
  * Launches the PaymentRequest UI that requests contact information.
  */
-function contactInfoBuy() {  // eslint-disable-line no-unused-vars
+function contactInfoBuy() { // eslint-disable-line no-unused-vars
   try {
     new PaymentRequest(
         [
@@ -298,7 +298,7 @@ function contactInfoBuy() {  // eslint-disable-line no-unused-vars
 /**
  * Aborts the current PaymentRequest.
  */
-function abort() {  // eslint-disable-line no-unused-vars
+function abort() { // eslint-disable-line no-unused-vars
   try {
     request.abort()
         .then(function() {

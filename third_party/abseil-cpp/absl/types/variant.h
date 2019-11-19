@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@
 
 #ifdef ABSL_HAVE_STD_VARIANT
 
-#include <variant>
+#include <variant>  // IWYU pragma: export
 
 namespace absl {
 using std::bad_variant_access;
@@ -129,7 +129,12 @@ class variant;
 // type (in which case, they will be swapped) or to two different types (in
 // which case the values will need to be moved).
 //
-template <typename... Ts>
+template <
+    typename... Ts,
+    absl::enable_if_t<
+        absl::conjunction<std::is_move_constructible<Ts>...,
+                          type_traits_internal::IsSwappable<Ts>...>::value,
+        int> = 0>
 void swap(variant<Ts...>& v, variant<Ts...>& w) noexcept(noexcept(v.swap(w))) {
   v.swap(w);
 }
@@ -688,12 +693,12 @@ class variant<T0, Tn...> : private variant_internal::VariantBase<T0, Tn...> {
   //
   // Swaps the values of two variant objects.
   //
-  // TODO(calabrese)
-  //   `variant::swap()` and `swap()` rely on `std::is_(nothrow)_swappable()`
-  //   which is introduced in C++17. So we assume `is_swappable()` is always
-  //   true and `is_nothrow_swappable()` is same as `std::is_trivial()`.
   void swap(variant& rhs) noexcept(
-      absl::conjunction<std::is_trivial<T0>, std::is_trivial<Tn>...>::value) {
+      absl::conjunction<
+          std::is_nothrow_move_constructible<T0>,
+          std::is_nothrow_move_constructible<Tn>...,
+          type_traits_internal::IsNothrowSwappable<T0>,
+          type_traits_internal::IsNothrowSwappable<Tn>...>::value) {
     return variant_internal::VisitIndices<sizeof...(Tn) + 1>::Run(
         variant_internal::Swap<T0, Tn...>{this, &rhs}, rhs.index());
   }

@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SUPPLEMENTABLE_H_
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -205,9 +204,8 @@ class Supplementable : public GarbageCollectedMixin {
   void Trace(blink::Visitor* visitor) override { visitor->Trace(supplements_); }
 
  protected:
-  using SupplementMap = HeapHashMap<const char*,
-                                    TraceWrapperMember<Supplement<T>>,
-                                    PtrHash<const char>>;
+  using SupplementMap =
+      HeapHashMap<const char*, Member<Supplement<T>>, PtrHash<const char>>;
   SupplementMap supplements_;
 
   Supplementable()

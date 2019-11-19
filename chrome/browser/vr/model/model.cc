@@ -138,4 +138,14 @@ ControllerModel& Model::mutable_primary_controller() {
   return controllers[0];
 }
 
+void Model::set_omnibox_text_field_info(EditedText text) {
+  omnibox_text_field_info = std::move(text);
+  omnibox_text_field_touched = current_time;
+}
+
+void Model::set_web_input_text_field_info(EditedText text) {
+  web_input_text_field_info = std::move(text);
+  web_input_text_field_touched = current_time;
+}
+
 }  // namespace vr

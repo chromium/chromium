@@ -6,7 +6,7 @@
 
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "content/public/browser/browser_thread.h"
-#include "mojo/public/cpp/bindings/strong_associated_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 
 CacheStatsRecorder::CacheStatsRecorder(int render_process_id)
     : render_process_id_(render_process_id) {}
@@ -16,10 +16,11 @@ CacheStatsRecorder::~CacheStatsRecorder() = default;
 // static
 void CacheStatsRecorder::Create(
     int render_process_id,
-    chrome::mojom::CacheStatsRecorderAssociatedRequest request) {
-  mojo::MakeStrongAssociatedBinding(
+    mojo::PendingAssociatedReceiver<chrome::mojom::CacheStatsRecorder>
+        receiver) {
+  mojo::MakeSelfOwnedAssociatedReceiver(
       std::make_unique<CacheStatsRecorder>(render_process_id),
-      std::move(request));
+      std::move(receiver));
 }
 
 void CacheStatsRecorder::RecordCacheStats(uint64_t capacity, uint64_t size) {

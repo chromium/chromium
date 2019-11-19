@@ -13,7 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/time/time.h"
-#include "media/audio/sounds/test_data.h"
+#include "media/audio/test_data.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "testing/gtest/include/gtest/gtest.h"

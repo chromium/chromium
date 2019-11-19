@@ -10,38 +10,32 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "build/build_config.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
-#include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_binding.h"
-#include "services/service_manager/public/mojom/service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/shape_detection/public/mojom/shape_detection_service.mojom.h"
 
 namespace shape_detection {
 
-class ShapeDetectionService : public service_manager::Service {
+class ShapeDetectionService : public mojom::ShapeDetectionService {
  public:
   explicit ShapeDetectionService(
-      service_manager::mojom::ServiceRequest request);
+      mojo::PendingReceiver<mojom::ShapeDetectionService> receiver);
   ~ShapeDetectionService() override;
 
-  void OnStart() override;
-  void OnBindInterface(const service_manager::BindSourceInfo& source_info,
-                       const std::string& interface_name,
-                       mojo::ScopedMessagePipeHandle interface_pipe) override;
- private:
-#if defined(OS_ANDROID)
-  // Binds |java_interface_provider_| to an interface registry that exposes
-  // factories for the interfaces that are provided via Java on Android.
-  service_manager::InterfaceProvider* GetJavaInterfaces();
+  // mojom::ShapeDetectionService implementation:
+  void BindBarcodeDetectionProvider(
+      mojo::PendingReceiver<mojom::BarcodeDetectionProvider> receiver) override;
+  void BindFaceDetectionProvider(
+      mojo::PendingReceiver<mojom::FaceDetectionProvider> receiver) override;
+  void BindTextDetection(
+      mojo::PendingReceiver<mojom::TextDetection> receiver) override;
 
-  // InterfaceProvider that is bound to the Java-side interface registry.
-  std::unique_ptr<service_manager::InterfaceProvider> java_interface_provider_;
-#elif defined(OS_MACOSX)
+ private:
+  mojo::Receiver<mojom::ShapeDetectionService> receiver_;
+
+#if defined(OS_MACOSX)
   void* vision_framework_;
 #endif
-
-  service_manager::ServiceBinding service_binding_;
-  service_manager::BinderRegistry registry_;
 
   DISALLOW_COPY_AND_ASSIGN(ShapeDetectionService);
 };

@@ -52,6 +52,14 @@ void HostControlDispatcher::SetVideoLayout(const VideoLayout& layout) {
 void HostControlDispatcher::InjectClipboardEvent(const ClipboardEvent& event) {
   ControlMessage message;
   message.mutable_clipboard_event()->CopyFrom(event);
+  std::size_t message_size = message.ByteSizeLong();
+  if (message_size > max_message_size_) {
+    // Better to drop the event than drop the connection, which can happen if
+    // the browser receives a message larger than it can handle.
+    LOG(WARNING) << "Clipboard message dropped because message size "
+                 << message_size << " is larger than " << max_message_size_;
+    return;
+  }
   message_pipe()->Send(&message, base::Closure());
 }
 
@@ -59,6 +67,14 @@ void HostControlDispatcher::SetCursorShape(
     const CursorShapeInfo& cursor_shape) {
   ControlMessage message;
   message.mutable_cursor_shape()->CopyFrom(cursor_shape);
+  std::size_t message_size = message.ByteSizeLong();
+  if (message_size > max_message_size_) {
+    // Better to drop the event than drop the connection, which can happen if
+    // the browser receives a message larger than it can handle.
+    LOG(WARNING) << "Cursor message dropped because message size "
+                 << message_size << " is larger than " << max_message_size_;
+    return;
+  }
   message_pipe()->Send(&message, base::Closure());
 }
 

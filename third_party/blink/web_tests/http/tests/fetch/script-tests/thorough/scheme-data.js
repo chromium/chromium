@@ -26,11 +26,6 @@ var TEST_TARGETS = [
    [fetchResolved, noContentLength, hasContentType, noServerHeader, hasBody,
     typeBasic],
    [checkJsonpSuccess]],
-  [BASE_URL + 'url=' + encodeURIComponent(url) +
-   '&mode=same-origin&method=HEAD',
-   [fetchResolved, noContentLength, hasContentType, noServerHeader, hasBody,
-    typeBasic],
-   [checkJsonpSuccess]],
 
 // data: requests with same-origin redirects.
   [REDIRECT_URL + encodeURIComponent(url) + '&mode=same-origin&method=GET',

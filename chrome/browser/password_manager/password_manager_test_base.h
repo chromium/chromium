@@ -116,6 +116,11 @@ class BubbleObserver {
   // PasswordManagerBrowserTestBase.
   void WaitForAutomaticSavePrompt() const;
 
+  // Returns once the update prompt pops up or it's already shown.
+  // |web_contents| must be the custom one returned by
+  // PasswordManagerBrowserTestBase.
+  void WaitForAutomaticUpdatePrompt() const;
+
   // Returns true if the browser shows the fallback for saving password within
   // the allotted timeout.
   // |web_contents| must be the custom one returned by
@@ -137,7 +142,6 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   // InProcessBrowserTest:
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
-  void TearDownInProcessBrowserTestFixture() override;
 
   // Bring up a new Chrome tab set up with password manager test hooks.
   // @param[in] browser the browser running the password manager test, upon

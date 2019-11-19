@@ -14,7 +14,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
 namespace chromeos {
@@ -51,7 +50,7 @@ ImageLoader::ImageLoader(const base::FilePath& path) : path_(path) {}
 
 ImageLoader::~ImageLoader() {}
 
-std::unique_ptr<gfx::ImageSkia> ImageLoader::Load() {
+gfx::ImageSkia ImageLoader::Load() {
   std::string image_data;
   {
     base::ScopedAllowBlockingForTesting allow_io;
@@ -63,16 +62,16 @@ std::unique_ptr<gfx::ImageSkia> ImageLoader::Load() {
            : ImageDecoder::ROBUST_PNG_CODEC);
   ImageDecoder::StartWithOptions(this, image_data, codec, false);
   run_loop_.Run();
-  return std::move(decoded_image_);
+  return decoded_image_;
 }
 
 void ImageLoader::OnImageDecoded(const SkBitmap& decoded_image) {
-  decoded_image_.reset(
-      new gfx::ImageSkia(gfx::ImageSkiaRep(decoded_image, 1.0f)));
+  decoded_image_ = gfx::ImageSkia(gfx::ImageSkiaRep(decoded_image, 1.0f));
   run_loop_.Quit();
 }
 
 void ImageLoader::OnDecodeImageFailed() {
+  decoded_image_ = gfx::ImageSkia();
   run_loop_.Quit();
 }
 

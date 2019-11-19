@@ -40,7 +40,7 @@ class QueuedTaskPoster {
 
   bool transfer_task_scheduled_ = false;
 
-  base::WeakPtrFactory<QueuedTaskPoster> weak_factory_;
+  base::WeakPtrFactory<QueuedTaskPoster> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(QueuedTaskPoster);
 };

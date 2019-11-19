@@ -1,0 +1,7 @@
+AXWebArea
+++AXOutline AXARIASetSize='2'
+++++AXRow AXTitle='card content' AXARIASetSize='2' AXARIAPosInSet='1'
+++++++AXStaticText AXValue='card content'
+++++AXGroup
+++++AXRow AXTitle='card content' AXARIASetSize='2' AXARIAPosInSet='2'
+++++++AXStaticText AXValue='card content'

@@ -4,6 +4,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
 
 import collections
 import optparse
@@ -105,9 +106,9 @@ def _PrintSymbolized(asan_input, arch):
       # that usually one wants to display the last list item, not the first.
       # The code below takes the first, is this the best choice here?
       s = all_symbols[m.library][m.rel_address][0]
-      print '%s%s %s %s' % (m.prefix, m.pos, s[0], s[1])
+      print('%s%s %s %s' % (m.prefix, m.pos, s[0], s[1]))
     else:
-      print log_line.raw
+      print(log_line.raw)
 
 
 def main():

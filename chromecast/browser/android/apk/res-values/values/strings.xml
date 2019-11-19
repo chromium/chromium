@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2014 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+ -->
+
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+           xmlns:tools="http://schemas.android.com/tools"
+           tools:ignore="MissingTranslation,UnusedResources">
+    <string name="app_name">Chromecast Android Shell</string>
+    <string name="browser_process_initialization_failed">Initialization failed.</string>
+</resources>

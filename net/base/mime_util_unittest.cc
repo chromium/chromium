@@ -37,6 +37,8 @@ TEST(MimeUtilTest, ExtensionTest) {
     // These are test cases for testing platform mime types on Chrome OS.
     {FILE_PATH_LITERAL("epub"), "application/epub+zip", true},
     {FILE_PATH_LITERAL("apk"), "application/vnd.android.package-archive", true},
+    {FILE_PATH_LITERAL("cer"), "application/x-x509-ca-cert", true},
+    {FILE_PATH_LITERAL("crt"), "application/x-x509-ca-cert", true},
     {FILE_PATH_LITERAL("zip"), "application/zip", true},
     {FILE_PATH_LITERAL("ics"), "text/calendar", true},
 #endif
@@ -189,13 +191,13 @@ TEST(MimeUtilTest, MatchesMimeType) {
 
 TEST(MimeUtilTest, TestParseMimeTypeWithoutParameter) {
   std::string nonAscii("application/nonutf8");
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter(nonAscii, NULL, NULL));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter(nonAscii, nullptr, nullptr));
 #if defined(OS_WIN)
   nonAscii.append(base::WideToUTF8(L"\u2603"));
 #else
   nonAscii.append("\u2603");  // unicode snowman
 #endif
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter(nonAscii, NULL, NULL));
+  EXPECT_FALSE(ParseMimeTypeWithoutParameter(nonAscii, nullptr, nullptr));
 
   std::string top_level_type;
   std::string subtype;
@@ -205,57 +207,64 @@ TEST(MimeUtilTest, TestParseMimeTypeWithoutParameter) {
   EXPECT_EQ("mime", subtype);
 
   // Various allowed subtype forms.
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("application/json", NULL, NULL));
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter(
-      "application/x-suggestions+json", NULL, NULL));
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("application/+json", NULL, NULL));
+  EXPECT_TRUE(
+      ParseMimeTypeWithoutParameter("application/json", nullptr, nullptr));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("application/x-suggestions+json",
+                                            nullptr, nullptr));
+  EXPECT_TRUE(
+      ParseMimeTypeWithoutParameter("application/+json", nullptr, nullptr));
 
   // Upper case letters are allowed.
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("text/mime", NULL, NULL));
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("TEXT/mime", NULL, NULL));
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("Text/mime", NULL, NULL));
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("TeXt/mime", NULL, NULL));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("text/mime", nullptr, nullptr));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("TEXT/mime", nullptr, nullptr));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("Text/mime", nullptr, nullptr));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("TeXt/mime", nullptr, nullptr));
 
   // Experimental types are also considered to be valid.
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("x-video/mime", NULL, NULL));
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("X-Video/mime", NULL, NULL));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("x-video/mime", nullptr, nullptr));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("X-Video/mime", nullptr, nullptr));
 
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text", NULL, NULL));
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text/", NULL, NULL));
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text/ ", NULL, NULL));
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("te(xt/ ", NULL, NULL));
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text/()plain", NULL, NULL));
+  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text", nullptr, nullptr));
+  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text/", nullptr, nullptr));
+  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text/ ", nullptr, nullptr));
+  EXPECT_FALSE(ParseMimeTypeWithoutParameter("te(xt/ ", nullptr, nullptr));
+  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text/()plain", nullptr, nullptr));
 
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("x-video", NULL, NULL));
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("x-video/", NULL, NULL));
+  EXPECT_FALSE(ParseMimeTypeWithoutParameter("x-video", nullptr, nullptr));
+  EXPECT_FALSE(ParseMimeTypeWithoutParameter("x-video/", nullptr, nullptr));
 
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("application/a/b/c", NULL, NULL));
+  EXPECT_FALSE(
+      ParseMimeTypeWithoutParameter("application/a/b/c", nullptr, nullptr));
 
   // Test leading and trailing whitespace
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter(" text/plain", NULL, NULL));
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("text/plain ", NULL, NULL));
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text /plain", NULL, NULL));
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text/ plain ", NULL, NULL));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter(" text/plain", nullptr, nullptr));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("text/plain ", nullptr, nullptr));
+  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text /plain", nullptr, nullptr));
+  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text/ plain ", nullptr, nullptr));
 
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("\ttext/plain", NULL, NULL));
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("text/plain\t", NULL, NULL));
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text\t/plain", NULL, NULL));
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text/\tplain ", NULL, NULL));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("\ttext/plain", nullptr, nullptr));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("text/plain\t", nullptr, nullptr));
+  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text\t/plain", nullptr, nullptr));
+  EXPECT_FALSE(
+      ParseMimeTypeWithoutParameter("text/\tplain ", nullptr, nullptr));
 
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("\vtext/plain", NULL, NULL));
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("text/plain\v", NULL, NULL));
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text\v/plain", NULL, NULL));
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text/\vplain ", NULL, NULL));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("\vtext/plain", nullptr, nullptr));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("text/plain\v", nullptr, nullptr));
+  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text\v/plain", nullptr, nullptr));
+  EXPECT_FALSE(
+      ParseMimeTypeWithoutParameter("text/\vplain ", nullptr, nullptr));
 
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("\rtext/plain", NULL, NULL));
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("text/plain\r", NULL, NULL));
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text\r/plain", NULL, NULL));
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text/\rplain ", NULL, NULL));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("\rtext/plain", nullptr, nullptr));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("text/plain\r", nullptr, nullptr));
+  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text\r/plain", nullptr, nullptr));
+  EXPECT_FALSE(
+      ParseMimeTypeWithoutParameter("text/\rplain ", nullptr, nullptr));
 
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("\ntext/plain", NULL, NULL));
-  EXPECT_TRUE(ParseMimeTypeWithoutParameter("text/plain\n", NULL, NULL));
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text\n/plain", NULL, NULL));
-  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text/\nplain ", NULL, NULL));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("\ntext/plain", nullptr, nullptr));
+  EXPECT_TRUE(ParseMimeTypeWithoutParameter("text/plain\n", nullptr, nullptr));
+  EXPECT_FALSE(ParseMimeTypeWithoutParameter("text\n/plain", nullptr, nullptr));
+  EXPECT_FALSE(
+      ParseMimeTypeWithoutParameter("text/\nplain ", nullptr, nullptr));
 
   //EXPECT_TRUE(ParseMimeTypeWithoutParameter("video/mime;parameter"));
 }
@@ -293,18 +302,18 @@ TEST(MimeUtilTest, TestGetExtensionsForMimeType) {
     const char* const contained_result;
     bool no_matches;
   } tests[] = {
-    {"text/plain", 2, "txt"},
-    {"text/pl", 0, NULL, true},
-    {"*", 0, NULL},
-    {"", 0, NULL, true},
-    {"message/*", 1, "eml"},
-    {"MeSsAge/*", 1, "eml"},
-    {"message/", 0, NULL, true},
-    {"image/bmp", 1, "bmp"},
-    {"video/*", 6, "mp4"},
-    {"video/*", 6, "mpeg"},
-    {"audio/*", 6, "oga"},
-    {"aUDIo/*", 6, "wav"},
+      {"text/plain", 2, "txt"},
+      {"text/pl", 0, nullptr, true},
+      {"*", 0, nullptr},
+      {"", 0, nullptr, true},
+      {"message/*", 1, "eml"},
+      {"MeSsAge/*", 1, "eml"},
+      {"message/", 0, nullptr, true},
+      {"image/bmp", 1, "bmp"},
+      {"video/*", 6, "mp4"},
+      {"video/*", 6, "mpeg"},
+      {"audio/*", 6, "oga"},
+      {"aUDIo/*", 6, "wav"},
   };
 
   for (const auto& test : tests) {
@@ -321,7 +330,7 @@ TEST(MimeUtilTest, TestGetExtensionsForMimeType) {
           test.contained_result,
           test.contained_result + strlen(test.contained_result));
 
-      bool found = base::ContainsValue(extensions, contained_result);
+      bool found = base::Contains(extensions, contained_result);
 
       ASSERT_TRUE(found) << "Must find at least the contained result within "
                          << test.mime_type;

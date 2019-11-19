@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<script>
+test(() => {
+  var bar = document.createElementNS("http://example.org/foo", "bar");
+  var shadowRoot = bar.createShadowRoot();
+  bar.computedName;
+}, "No crash when getting computed name from a node with a shadow root not attached to a document");
+
+test(() => {
+  var bar = document.createElementNS("http://example.org/foo", "bar");
+  var shadowRoot = bar.createShadowRoot();
+  bar.computedRole;
+}, "No crash when getting computed role from a node with a shadow root not attached to a document");
+
+</script>

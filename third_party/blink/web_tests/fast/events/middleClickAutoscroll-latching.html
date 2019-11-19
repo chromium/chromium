@@ -16,43 +16,7 @@
 </div>
 <script>
 setAnimationRequiresRaster();
-var testBubble = async_test("Tests that middleClickAutoscroll finds the correct ancestor layoutobject when starting in an unscrollable direction.")
 var testIFrame = async_test("Tests that middleClickAutoscroll finds the correct ancestor layoutobject when starting in an iframe, and the latching is correctly implemented.")
-
-testBubble.step(function() {
-  if (!window.eventSender)
-    return;
-  var div = document.getElementById("div");
-  var td = document.getElementById("td");
-  // Start a downward middle-click-autoscroll in the left td element.
-  var startx = td.getBoundingClientRect().left + 100;
-  var starty = td.getBoundingClientRect().top + 100;
-  var endx = startx;
-  var endy = starty + 100;
-  var scrolledY = false;
-  // Middle-mouse drag down, from start to end.
-  eventSender.mouseMoveTo(startx, starty);
-  eventSender.mouseDown(1 /* WebMouseEvent::Button::kMiddle */);
-  eventSender.mouseMoveTo(endx, endy);
-
-  window.onscroll = function() {
-    if (!scrolledY) {
-      // First time we scroll, make sure it is downward.
-      assert_not_equals(window.scrollY, 0);
-      scrolledY = true;
-      // Change the direction of the middle-click-autoscroll to rightward.
-      endx = startx + 100;
-      endy = starty;
-      eventSender.mouseMoveTo(endx, endy);
-    } else {
-      if (window.scrollX != 0) {
-        assert_equals(div.scrollLeft, 0);
-        eventSender.mouseUp(1);
-        testBubble.done();
-      }
-    }
-  };
-});
 
 testIFrame.step(function() {
   if (!window.eventSender)

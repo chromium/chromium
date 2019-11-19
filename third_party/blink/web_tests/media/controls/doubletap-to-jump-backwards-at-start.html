@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<title>Test that player will jump to the beginning if it's in the first 10 seconds.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video controls width=400 src="../content/60_sec_video.webm"></video>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+  let count = 0;
+
+  video.addEventListener('playing', t.step_func(() => {
+    // Double tap on the left side.
+    const coordinates = videoLeftEdgeCoordinates(video);
+    doubleTouchAtCoordinates(coordinates[0], coordinates[1]);
+  }), { once: true });
+
+  video.ontimeupdate = t.step_func(() => {
+    // The time should reach 0 seconds twice, the first time when playing and
+    // the second because of tapping.
+    if (Math.round(video.currentTime) == 0) {
+      count++;
+
+      if (count == 2)
+       t.done();
+    }
+  });
+
+  video.play();
+});
+</script>
+</html>

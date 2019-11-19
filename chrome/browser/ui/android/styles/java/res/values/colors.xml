@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- TODO(crbug.com/1017190): Remove the UnusedResources workaround. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
+    <color name="light_active_color">@color/modern_blue_600</color>
+
+    <!-- Toolbar colors -->
+    <color name="toolbar_background_primary">
+        @color/default_bg_color_elev_3
+    </color>
+    <color name="toolbar_background_primary_dark">
+        @color/default_bg_color_dark_elev_3
+    </color>
+
+    <!-- Control colors for toggles, checkboxes, ratio buttons, list item highlight, and accent.
+     Note that these should NOT be used for icon tint. -->
+    <color name="control_normal_color">@color/modern_grey_700</color>
+    <color name="control_highlight_color" tools:ignore="UnusedResources">
+        @color/modern_grey_800_alpha_38
+    </color>
+</resources>

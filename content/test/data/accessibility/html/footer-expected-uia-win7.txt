@@ -1,0 +1,3 @@
+document
+++contentinfo LocalizedControlType='footer'
+++++description Name='Footer element'

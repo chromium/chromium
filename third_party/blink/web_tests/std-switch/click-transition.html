@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/testdriver.js"></script>
+<script src="../resources/testdriver-vendor.js"></script>
+<body>
+<p>Some text</p>
+<script type="module">
+import 'std:elements/switch';
+
+function singleFrame() {
+  return new Promise((resolve, reject) => {
+    requestAnimationFrame(resolve);
+  });
+}
+
+function setupSwitchElement() {
+  let element = document.createElement('std-switch');
+  document.body.appendChild(element);
+
+  let thumb = internals.shadowRoot(element).getElementById('thumb');
+  element.transitionStartCounter = 0;
+  element.transitionEndCounter = 0;
+  thumb.addEventListener('transitionstart', e => {
+    ++element.transitionStartCounter;
+  });
+  thumb.addEventListener('transitionend', e => {
+    ++element.transitionEndCounter;
+  });
+  return element;
+}
+
+async function assertClickTransition(element) {
+  assert_false(element.on);
+  await test_driver.click(element);
+  assert_true(element.on, 'click');
+  await singleFrame();
+  assert_true(element.transitionStartCounter > 0, 'A transition starts');
+  if (element.transitionStartCounter > element.transitionEndCounter) {
+    await new Promise((resolve, reject) => {
+      let thumb = internals.shadowRoot(element).getElementById('thumb');
+      thumb.addEventListener('transitionend', () => {
+        if (element.transitionStartCounter == element.transitionEndCounter) {
+          resolve();
+        }
+      });
+    });
+  }
+}
+
+// This should be called just after an operation which should not start
+// transition. element.transitionStartCounter must be 0 before the operation.
+async function assertNoTransition(element) {
+  await singleFrame();
+  assert_equals(element.transitionStartCounter, 0, 'No transitionstart events');
+}
+
+promise_test(async () => {
+  let switchElement = setupSwitchElement();
+  await assertClickTransition(switchElement);
+
+  // Changing the state with an IDL attribute should not animate even after
+  // click transition.
+  switchElement.transitionStartCounter = 0;
+  switchElement.on = false;
+  await assertNoTransition(switchElement);
+}, 'Click event handler should start transition');
+
+promise_test(async () => {
+  let switchElement = setupSwitchElement();
+  switchElement.on = !switchElement.on;
+  await assertNoTransition(switchElement);
+}, 'Changing the state with an IDL attribute should not start transition');
+
+promise_test(async () => {
+  // crbug.com/992454 Transition didn't start if there is a text selection.
+  const range = document.createRange();
+  range.selectNodeContents(document.querySelector('p'));
+  window.getSelection().addRange(range);
+
+  await assertClickTransition(setupSwitchElement());
+}, 'Click event handler should start transition even with text selection');
+</script>
+</body>

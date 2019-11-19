@@ -29,6 +29,7 @@ class BackgroundFetchJobController;
 class BackgroundFetchRegistrationId;
 class BackgroundFetchRegistrationNotifier;
 class BackgroundFetchRequestInfo;
+class DevToolsBackgroundServicesContextImpl;
 
 // Maintains a list of Controllers and chooses which ones should launch new
 // downloads.
@@ -37,30 +38,33 @@ class CONTENT_EXPORT BackgroundFetchScheduler
       public ServiceWorkerContextCoreObserver {
  public:
   BackgroundFetchScheduler(
+      BackgroundFetchContext* background_fetch_context,
       BackgroundFetchDataManager* data_manager,
       BackgroundFetchRegistrationNotifier* registration_notifier,
       BackgroundFetchDelegateProxy* delegate_proxy,
+      DevToolsBackgroundServicesContextImpl* devtools_context,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
   ~BackgroundFetchScheduler() override;
 
   // Aborts the background fetch identified by |registration_id|.
   // Must only be used for background fetches aborted by the developer,
   // other cases are handled elsewhere.
-  void Abort(const BackgroundFetchRegistrationId& registration_id,
-             blink::mojom::BackgroundFetchFailureReason failure_reason,
-             blink::mojom::BackgroundFetchService::AbortCallback callback);
+  void Abort(
+      const BackgroundFetchRegistrationId& registration_id,
+      blink::mojom::BackgroundFetchFailureReason failure_reason,
+      blink::mojom::BackgroundFetchRegistrationService::AbortCallback callback);
 
   // BackgroundFetchDataManagerObserver implementation.
   void OnRegistrationCreated(
       const BackgroundFetchRegistrationId& registration_id,
-      const blink::mojom::BackgroundFetchRegistration& registration,
+      const blink::mojom::BackgroundFetchRegistrationData& registration_data,
       blink::mojom::BackgroundFetchOptionsPtr options,
       const SkBitmap& icon,
       int num_requests,
       bool start_paused) override;
   void OnRegistrationLoadedAtStartup(
       const BackgroundFetchRegistrationId& registration_id,
-      const blink::mojom::BackgroundFetchRegistration& registration,
+      const blink::mojom::BackgroundFetchRegistrationData& registration_data,
       blink::mojom::BackgroundFetchOptionsPtr options,
       const SkBitmap& icon,
       int num_completed_requests,
@@ -70,7 +74,9 @@ class CONTENT_EXPORT BackgroundFetchScheduler
   void OnServiceWorkerDatabaseCorrupted(
       int64_t service_worker_registration_id) override;
   void OnRegistrationQueried(
-      blink::mojom::BackgroundFetchRegistration* registration) override;
+      const BackgroundFetchRegistrationId& registration_id,
+      blink::mojom::BackgroundFetchRegistrationData* registration_data)
+      override;
   void OnRequestCompleted(const std::string& unique_id,
                           blink::mojom::FetchAPIRequestPtr request,
                           blink::mojom::FetchAPIResponsePtr response) override;
@@ -83,6 +89,7 @@ class CONTENT_EXPORT BackgroundFetchScheduler
  private:
   friend class BackgroundFetchJobControllerTest;
   friend class BackgroundFetchSchedulerTest;
+  enum class Event;
 
   // Schedules a download, if possible, and returns whether successful.
   bool ScheduleDownload();
@@ -101,7 +108,7 @@ class CONTENT_EXPORT BackgroundFetchScheduler
 
   std::unique_ptr<BackgroundFetchJobController> CreateInitializedController(
       const BackgroundFetchRegistrationId& registration_id,
-      const blink::mojom::BackgroundFetchRegistration& registration,
+      const blink::mojom::BackgroundFetchRegistrationData& registration_data,
       blink::mojom::BackgroundFetchOptionsPtr options,
       const SkBitmap& icon,
       int num_completed_requests,
@@ -110,6 +117,8 @@ class CONTENT_EXPORT BackgroundFetchScheduler
           active_fetch_requests,
       bool start_paused);
 
+  void DidStartRequest(const BackgroundFetchRegistrationId& registration_id,
+                       const BackgroundFetchRequestInfo* request_info);
   void DidCompleteRequest(
       const BackgroundFetchRegistrationId& registration_id,
       scoped_refptr<BackgroundFetchRequestInfo> request_info);
@@ -131,10 +140,22 @@ class CONTENT_EXPORT BackgroundFetchScheduler
 
   void DispatchClickEvent(const std::string& unique_id);
 
+  // Information needed to send over to the
+  // DevToolsBackgroundServicesContextImpl. |event| is an enum describing the
+  // stage of the fetch. |request_info| is nullptr if not available at the
+  // moment. Any additional data to log can be passed through the |metadata|
+  // map.
+  void LogBackgroundFetchEventForDevTools(
+      Event event,
+      const BackgroundFetchRegistrationId& registration_id,
+      const BackgroundFetchRequestInfo* request_info,
+      std::map<std::string, std::string> metadata = {});
+
   // Owned by BackgroundFetchContext.
   BackgroundFetchDataManager* data_manager_;
   BackgroundFetchRegistrationNotifier* registration_notifier_;
   BackgroundFetchDelegateProxy* delegate_proxy_;
+  DevToolsBackgroundServicesContextImpl* devtools_context_;
 
   BackgroundFetchEventDispatcher event_dispatcher_;
 
@@ -156,7 +177,7 @@ class CONTENT_EXPORT BackgroundFetchScheduler
   // TODO(crbug.com/857122): Clean this up when the UI is no longer showing.
   std::map<std::string,
            std::pair<BackgroundFetchRegistrationId,
-                     blink::mojom::BackgroundFetchRegistrationPtr>>
+                     blink::mojom::BackgroundFetchRegistrationDataPtr>>
       completed_fetches_;
 
   // Scheduling params - Finch configurable.
@@ -165,7 +186,7 @@ class CONTENT_EXPORT BackgroundFetchScheduler
   int num_active_registrations_ = 0;
   int num_running_downloads_ = 0;
 
-  base::WeakPtrFactory<BackgroundFetchScheduler> weak_ptr_factory_;
+  base::WeakPtrFactory<BackgroundFetchScheduler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundFetchScheduler);
 };

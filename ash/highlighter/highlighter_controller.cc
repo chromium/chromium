@@ -10,7 +10,6 @@
 #include "ash/highlighter/highlighter_gesture_util.h"
 #include "ash/highlighter/highlighter_result_view.h"
 #include "ash/highlighter/highlighter_view.h"
-#include "ash/public/cpp/scale_utility.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/shell_state.h"
@@ -43,24 +42,9 @@ gfx::RectF AdjustHorizontalStroke(const gfx::RectF& box,
                     box.width() + pen_tip_size.width(), pen_tip_size.height());
 }
 
-// This method computes the scale required to convert window-relative DIP
-// coordinates to the coordinate space of the screenshot taken from that window.
-// The transform returned by WindowTreeHost::GetRootTransform translates points
-// from DIP to physical screen pixels (by taking into account not only the
-// scale but also the rotation and the offset).
-// However, the screenshot bitmap is always oriented the same way as the window
-// from which it was taken, and has zero offset.
-// The code below deduces the scale from the transform by applying it to a pair
-// of points separated by the distance of 1, and measuring the distance between
-// the transformed points.
-float GetScreenshotScale(aura::Window* window) {
-  return GetScaleFactorForTransform(window->GetHost()->GetRootTransform());
-}
-
 }  // namespace
 
-HighlighterController::HighlighterController()
-    : binding_(this), weak_factory_(this) {
+HighlighterController::HighlighterController() {
   Shell::Get()->AddPreTargetHandler(this);
 }
 
@@ -100,19 +84,6 @@ void HighlighterController::AbortSession() {
     UpdateEnabledState(HighlighterEnabledState::kDisabledBySessionAbort);
 }
 
-void HighlighterController::BindRequest(
-    mojom::HighlighterControllerRequest request) {
-  binding_.Bind(std::move(request));
-}
-
-void HighlighterController::SetClient(
-    mojom::HighlighterControllerClientPtr client) {
-  client_ = std::move(client);
-  client_.set_connection_error_handler(
-      base::BindOnce(&HighlighterController::OnClientConnectionLost,
-                     weak_factory_.GetWeakPtr()));
-}
-
 void HighlighterController::SetEnabled(bool enabled) {
   FastInkPointerController::SetEnabled(enabled);
   if (enabled) {
@@ -132,13 +103,6 @@ void HighlighterController::SetEnabled(bool enabled) {
     if (highlighter_view_ && !highlighter_view_->animating())
       DestroyPointerView();
   }
-
-  if (client_)
-    client_->HandleEnabledStateChange(enabled);
-}
-
-void HighlighterController::ExitHighlighterMode() {
-  CallExitCallback();
 }
 
 views::View* HighlighterController::GetPointerView() const {
@@ -230,20 +194,7 @@ void HighlighterController::RecognizeGesture() {
     Shell::Get()->shell_state()->SetRootWindowForNewWindows(
         current_window->GetRootWindow());
 
-    // TODO(muyuanli): Delete the check when native assistant is default on.
-    // This is a temporary workaround to support both ARC-based assistant
-    // and native assistant. In ARC-based assistant, we send the rect in pixels
-    // to ARC side, where the app will crop the screenshot. In native assistant,
-    // we pass the rect directly to UI snapshot API, which assumes coordinates
-    // in DP.
-    const gfx::Rect selection_rect =
-        chromeos::switches::IsAssistantEnabled()
-            ? gfx::ToEnclosingRect(box)
-            : gfx::ToEnclosingRect(
-                  gfx::ScaleRect(box, GetScreenshotScale(current_window)));
-    if (client_)
-      client_->HandleSelection(selection_rect);
-
+    const gfx::Rect selection_rect = gfx::ToEnclosingRect(box);
     for (auto& observer : observers_)
       observer.OnHighlighterSelectionRecognized(selection_rect);
 
@@ -302,21 +253,9 @@ void HighlighterController::DestroyResultView() {
   result_view_.reset();
 }
 
-void HighlighterController::OnClientConnectionLost() {
-  client_.reset();
-  binding_.Close();
-  // The client has detached, force-exit the highlighter mode.
-  CallExitCallback();
-}
-
 void HighlighterController::CallExitCallback() {
   if (!exit_callback_.is_null())
     std::move(exit_callback_).Run();
-}
-
-void HighlighterController::FlushMojoForTesting() {
-  if (client_)
-    client_.FlushForTesting();
 }
 
 }  // namespace ash

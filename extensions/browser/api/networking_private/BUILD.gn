@@ -59,7 +59,6 @@ source_set("networking_private") {
                 "networking_private_chromeos.h",
                 "networking_private_event_router_chromeos.cc",
               ]
-    deps += [ "//chromeos" ]
   } else {
     not_needed([ "default_sources" ])
     sources = [

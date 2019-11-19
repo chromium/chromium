@@ -1,0 +1,11 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Experimental Scheduling API Proposal:
+// https://docs.google.com/document/d/1xU7HyNsEsbXhTgt0ZnXDbeSXm5-m5FzkLJAT6LTizEI/edit#
+[
+  ImplementedAs=WindowScheduler
+] partial interface Window {
+  [RuntimeEnabled=WebScheduler, SameObject, Replaceable] readonly attribute Scheduler scheduler;
+};

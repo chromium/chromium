@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 
-#include "third_party/blink/renderer/core/css/css_calculation_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
@@ -22,7 +21,7 @@ namespace {
 using ActiveScrollTimelineSet = HeapHashCountedSet<WeakMember<Node>>;
 ActiveScrollTimelineSet& GetActiveScrollTimelineSet() {
   DEFINE_STATIC_LOCAL(Persistent<ActiveScrollTimelineSet>, set,
-                      (new ActiveScrollTimelineSet));
+                      (MakeGarbageCollected<ActiveScrollTimelineSet>()));
   return *set;
 }
 
@@ -56,7 +55,7 @@ bool StringToScrollOffset(String scroll_offset, CSSPrimitiveValue** result) {
     return false;
 
   // We support 'auto', but for simplicity just store it as nullptr.
-  *result = value->IsIdentifierValue() ? nullptr : ToCSSPrimitiveValue(value);
+  *result = DynamicTo<CSSPrimitiveValue>(value);
   return true;
 }
 
@@ -109,18 +108,20 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
   }
 
   return MakeGarbageCollected<ScrollTimeline>(
-      scroll_source, orientation, start_scroll_offset, end_scroll_offset,
-      options->timeRange().GetAsDouble(),
+      &document, scroll_source, orientation, start_scroll_offset,
+      end_scroll_offset, options->timeRange().GetAsDouble(),
       Timing::StringToFillMode(options->fill()));
 }
 
-ScrollTimeline::ScrollTimeline(Element* scroll_source,
+ScrollTimeline::ScrollTimeline(Document* document,
+                               Element* scroll_source,
                                ScrollDirection orientation,
                                CSSPrimitiveValue* start_scroll_offset,
                                CSSPrimitiveValue* end_scroll_offset,
                                double time_range,
                                Timing::FillMode fill)
-    : scroll_source_(scroll_source),
+    : document_(document),
+      scroll_source_(scroll_source),
       resolved_scroll_source_(ResolveScrollSource(scroll_source_)),
       orientation_(orientation),
       start_scroll_offset_(start_scroll_offset),
@@ -128,18 +129,29 @@ ScrollTimeline::ScrollTimeline(Element* scroll_source,
       time_range_(time_range),
       fill_(fill) {}
 
-double ScrollTimeline::currentTime(bool& is_null) {
-  is_null = true;
-
-  // 1. If scrollSource is null, does not currently have a CSS layout box, or if
-  // its layout box is not a scroll container, return an unresolved time value.
+bool ScrollTimeline::IsActive() const {
   LayoutBox* layout_box = resolved_scroll_source_
                               ? resolved_scroll_source_->GetLayoutBox()
                               : nullptr;
-  if (!layout_box || !layout_box->HasOverflowClip()) {
+  return layout_box && layout_box->HasOverflowClip();
+}
+
+// Scroll-linked animations are initialized with the start time of zero.
+base::Optional<base::TimeDelta>
+ScrollTimeline::InitialStartTimeForAnimations() {
+  return base::TimeDelta();
+}
+
+double ScrollTimeline::currentTime(bool& is_null) {
+  is_null = true;
+
+  // 1. If scroll timeline is inactive, return an unresolved time value.
+  // https://github.com/WICG/scroll-animations/issues/31
+  // https://wicg.github.io/scroll-animations/#current-time-algorithm
+  if (!IsActive()) {
     return std::numeric_limits<double>::quiet_NaN();
   }
-
+  LayoutBox* layout_box = resolved_scroll_source_->GetLayoutBox();
   // 2. Otherwise, let current scroll offset be the current scroll offset of
   // scrollSource in the direction specified by orientation.
 
@@ -304,45 +316,22 @@ void ScrollTimeline::ResolveScrollStartAndEnd(
   }
 }
 
-void ScrollTimeline::AttachAnimation() {
+void ScrollTimeline::AnimationAttached(Animation*) {
   if (!resolved_scroll_source_)
     return;
 
   GetActiveScrollTimelineSet().insert(resolved_scroll_source_);
-  if (resolved_scroll_source_->IsElementNode())
-    ToElement(resolved_scroll_source_)->SetNeedsCompositingUpdate();
-  resolved_scroll_source_->GetDocument()
-      .GetLayoutView()
-      ->Compositor()
-      ->SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
-  LayoutBoxModelObject* object = scroll_source_->GetLayoutBoxModelObject();
-  if (object && object->HasLayer())
-    object->Layer()->SetNeedsCompositingInputsUpdate();
-  if (object)
-    object->SetNeedsPaintPropertyUpdate();
 }
 
-void ScrollTimeline::DetachAnimation() {
+void ScrollTimeline::AnimationDetached(Animation*) {
   if (!resolved_scroll_source_)
     return;
 
   GetActiveScrollTimelineSet().erase(resolved_scroll_source_);
-  if (resolved_scroll_source_->IsElementNode())
-    ToElement(resolved_scroll_source_)->SetNeedsCompositingUpdate();
-  auto* layout_view = resolved_scroll_source_->GetDocument().GetLayoutView();
-  if (layout_view && layout_view->Compositor()) {
-    layout_view->Compositor()->SetNeedsCompositingUpdate(
-        kCompositingUpdateRebuildTree);
-
-    LayoutBoxModelObject* object = scroll_source_->GetLayoutBoxModelObject();
-    if (object && object->HasLayer())
-      object->Layer()->SetNeedsCompositingInputsUpdate();
-    if (object)
-      object->SetNeedsPaintPropertyUpdate();
-  }
 }
 
 void ScrollTimeline::Trace(blink::Visitor* visitor) {
+  visitor->Trace(document_);
   visitor->Trace(scroll_source_);
   visitor->Trace(resolved_scroll_source_);
   visitor->Trace(start_scroll_offset_);

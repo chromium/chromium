@@ -12,7 +12,7 @@ namespace chromeos {
 
 namespace secure_channel {
 
-FakeTimerFactory::FakeTimerFactory() : weak_ptr_factory_(this) {}
+FakeTimerFactory::FakeTimerFactory() {}
 
 FakeTimerFactory::~FakeTimerFactory() = default;
 

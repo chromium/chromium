@@ -38,9 +38,7 @@ class UrlFetcherDownloader : public CrxDownloader {
   void OnNetworkFetcherComplete(base::FilePath file_path,
                                 int net_error,
                                 int64_t content_size);
-  void OnResponseStarted(const GURL& final_url,
-                         int response_code,
-                         int64_t content_length);
+  void OnResponseStarted(int response_code, int64_t content_length);
   void OnDownloadProgress(int64_t content_length);
 
   THREAD_CHECKER(thread_checker_);
@@ -53,7 +51,6 @@ class UrlFetcherDownloader : public CrxDownloader {
 
   base::TimeTicks download_start_time_;
 
-  GURL final_url_;
   int response_code_ = -1;
   int64_t total_bytes_ = -1;
 

@@ -6,15 +6,10 @@
  * Custom bindings for the mojoPrivate API.
  */
 
-let binding = apiBridge || require('binding').Binding.create('mojoPrivate');
-
-binding.registerCustomHook(function(bindingsAPI) {
+apiBridge.registerCustomHook(function(bindingsAPI) {
   let apiFunctions = bindingsAPI.apiFunctions;
 
   apiFunctions.setHandleRequest('requireAsync', function(moduleName) {
     return Promise.resolve(require(moduleName).returnValue);
   });
 });
-
-if (!apiBridge)
-  exports.$set('binding', binding.generate());

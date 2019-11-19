@@ -1,0 +1,35 @@
+{
+  "sandbox": {
+    "features": [
+      "deprecated-ambient-replace-as-executable",
+      "isolated-persistent-storage",
+      "isolated-temp",
+      "root-ssl-certificates",
+      "vulkan"
+    ],
+    "dev": [
+      "null",
+      "zero"
+    ],
+    "services": [
+      "fuchsia.bluetooth.gatt.Server",
+      "fuchsia.bluetooth.le.Peripheral",
+      "fuchsia.deprecatedtimezone.Timezone",
+      "fuchsia.device.NameProvider",
+      "fuchsia.fonts.Provider",
+      "fuchsia.media.Audio",
+      "fuchsia.mediacodec.CodecFactory",
+      "fuchsia.net.NameLookup",
+      "fuchsia.netstack.Netstack",
+      "fuchsia.posix.socket.Provider",
+      "fuchsia.process.Launcher",
+      "fuchsia.sys.Launcher",
+      "fuchsia.ui.input.ImeService",
+      "fuchsia.ui.input.ImeVisibilityService",
+      "fuchsia.ui.policy.Presenter",
+      "fuchsia.ui.scenic.Scenic",
+      "fuchsia.vulkan.loader.Loader",
+      "fuchsia.wlan.service.Wlan"
+    ]
+  }
+}

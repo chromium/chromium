@@ -1,0 +1,15 @@
+<style include="print-preview-shared md-select">
+  select.md-select {
+    margin: 2px;
+    --md-select-width: calc(100% - 4px);
+  }
+</style>
+<select class="md-select" disabled$="[[disabled]]"
+    value="{{selectedValue::change}}">
+  <template is="dom-repeat" items="[[capability.option]]">
+    <option selected="[[isSelected_(item, selectedValue)]]"
+        value="[[getValue_(item)]]">
+      [[getDisplayName_(item)]]
+    </option>
+  </template>
+</select>

@@ -17,6 +17,10 @@
 // changes. (This is usually when the default search engine changes).
 - (void)updateSearchByImageSupported:(BOOL)searchByImageSupported;
 
+// Notifies the consumer to set the following image as an image
+// in an omnibox with empty text
+- (void)setEmptyTextLeadingImage:(UIImage*)icon;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_CONSUMER_H_

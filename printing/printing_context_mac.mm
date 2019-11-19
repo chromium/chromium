@@ -12,7 +12,6 @@
 
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -42,7 +41,7 @@ PMPaper MatchPaper(CFArrayRef paper_list,
   PMPaper best_matching_paper = NULL;
   int num_papers = CFArrayGetCount(paper_list);
   for (int i = 0; i < num_papers; ++i) {
-    PMPaper paper = (PMPaper)[(NSArray*)paper_list objectAtIndex : i];
+    PMPaper paper = (PMPaper)[(NSArray*)paper_list objectAtIndex:i];
     double paper_width = 0.0;
     double paper_height = 0.0;
     PMPaperGetWidth(paper, &paper_width);
@@ -75,8 +74,7 @@ std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
 PrintingContextMac::PrintingContextMac(Delegate* delegate)
     : PrintingContext(delegate),
       print_info_([[NSPrintInfo sharedPrintInfo] copy]),
-      context_(NULL) {
-}
+      context_(NULL) {}
 
 PrintingContextMac::~PrintingContextMac() {
   ReleaseContext();
@@ -88,57 +86,57 @@ void PrintingContextMac::AskUserForSettings(int max_pages,
                                             PrintSettingsCallback callback) {
   // Exceptions can also happen when the NSPrintPanel is being
   // deallocated, so it must be autoreleased within this scope.
-  base::mac::ScopedNSAutoreleasePool pool;
+  @autoreleasepool {
+    DCHECK([NSThread isMainThread]);
 
-  DCHECK([NSThread isMainThread]);
+    // We deliberately don't feed max_pages into the dialog, because setting
+    // NSPrintLastPage makes the print dialog pre-select the option to only
+    // print a range.
 
-  // We deliberately don't feed max_pages into the dialog, because setting
-  // NSPrintLastPage makes the print dialog pre-select the option to only print
-  // a range.
+    // TODO(stuartmorgan): implement 'print selection only' (probably requires
+    // adding a new custom view to the panel on 10.5; 10.6 has
+    // NSPrintPanelShowsPrintSelection).
+    NSPrintPanel* panel = [NSPrintPanel printPanel];
+    NSPrintInfo* printInfo = print_info_.get();
 
-  // TODO(stuartmorgan): implement 'print selection only' (probably requires
-  // adding a new custom view to the panel on 10.5; 10.6 has
-  // NSPrintPanelShowsPrintSelection).
-  NSPrintPanel* panel = [NSPrintPanel printPanel];
-  NSPrintInfo* printInfo = print_info_.get();
+    NSPrintPanelOptions options = [panel options];
+    options |= NSPrintPanelShowsPaperSize;
+    options |= NSPrintPanelShowsOrientation;
+    options |= NSPrintPanelShowsScaling;
+    [panel setOptions:options];
 
-  NSPrintPanelOptions options = [panel options];
-  options |= NSPrintPanelShowsPaperSize;
-  options |= NSPrintPanelShowsOrientation;
-  options |= NSPrintPanelShowsScaling;
-  [panel setOptions:options];
-
-  // Set the print job title text.
-  gfx::NativeView parent_view = delegate_->GetParentView();
-  if (parent_view) {
-    NSString* job_title = [[parent_view.GetNativeNSView() window] title];
-    if (job_title) {
-      PMPrintSettings printSettings =
-          (PMPrintSettings)[printInfo PMPrintSettings];
-      PMPrintSettingsSetJobName(printSettings, (CFStringRef)job_title);
-      [printInfo updateFromPMPrintSettings];
+    // Set the print job title text.
+    gfx::NativeView parent_view = delegate_->GetParentView();
+    if (parent_view) {
+      NSString* job_title = [[parent_view.GetNativeNSView() window] title];
+      if (job_title) {
+        PMPrintSettings printSettings =
+            (PMPrintSettings)[printInfo PMPrintSettings];
+        PMPrintSettingsSetJobName(printSettings, (CFStringRef)job_title);
+        [printInfo updateFromPMPrintSettings];
+      }
     }
+
+    // TODO(stuartmorgan): We really want a tab sheet here, not a modal window.
+    // Will require restructuring the PrintingContext API to use a callback.
+
+    // This function may be called in the middle of a CATransaction, where
+    // running a modal panel is forbidden. That situation isn't ideal, but from
+    // this code's POV the right answer is to defer running the panel until
+    // after the current transaction. See https://crbug.com/849538.
+    __block auto block_callback = std::move(callback);
+    [CATransaction setCompletionBlock:^{
+      NSInteger selection = [panel runModalWithPrintInfo:printInfo];
+      if (selection == NSOKButton) {
+        print_info_.reset([[panel printInfo] retain]);
+        settings_->set_ranges(GetPageRangesFromPrintInfo());
+        InitPrintSettingsFromPrintInfo();
+        std::move(block_callback).Run(OK);
+      } else {
+        std::move(block_callback).Run(CANCEL);
+      }
+    }];
   }
-
-  // TODO(stuartmorgan): We really want a tab sheet here, not a modal window.
-  // Will require restructuring the PrintingContext API to use a callback.
-
-  // This function may be called in the middle of a CATransaction, where
-  // running a modal panel is forbidden. That situation isn't ideal, but from
-  // this code's POV the right answer is to defer running the panel until after
-  // the current transaction. See https://crbug.com/849538.
-  __block auto block_callback = std::move(callback);
-  [CATransaction setCompletionBlock:^{
-    NSInteger selection = [panel runModalWithPrintInfo:printInfo];
-    if (selection == NSOKButton) {
-      print_info_.reset([[panel printInfo] retain]);
-      settings_.set_ranges(GetPageRangesFromPrintInfo());
-      InitPrintSettingsFromPrintInfo();
-      std::move(block_callback).Run(OK);
-    } else {
-      std::move(block_callback).Run(CANCEL);
-    }
-  }];
 }
 
 gfx::Size PrintingContextMac::GetPdfPaperSizeDeviceUnits() {
@@ -153,10 +151,9 @@ gfx::Size PrintingContextMac::GetPdfPaperSizeDeviceUnits() {
   PMGetAdjustedPaperRect(page_format, &paper_rect);
 
   // Device units are in points. Units per inch is 72.
-  gfx::Size physical_size_device_units(
-      (paper_rect.right - paper_rect.left),
-      (paper_rect.bottom - paper_rect.top));
-  DCHECK(settings_.device_units_per_inch() == kPointsPerInch);
+  gfx::Size physical_size_device_units((paper_rect.right - paper_rect.left),
+                                       (paper_rect.bottom - paper_rect.top));
+  DCHECK(settings_->device_units_per_inch() == kPointsPerInch);
   return physical_size_device_units;
 }
 
@@ -164,7 +161,7 @@ PrintingContext::Result PrintingContextMac::UseDefaultSettings() {
   DCHECK(!in_print_job_);
 
   print_info_.reset([[NSPrintInfo sharedPrintInfo] copy]);
-  settings_.set_ranges(GetPageRangesFromPrintInfo());
+  settings_->set_ranges(GetPageRangesFromPrintInfo());
   InitPrintSettingsFromPrintInfo();
 
   return OK;
@@ -186,17 +183,17 @@ PrintingContext::Result PrintingContextMac::UpdatePrinterSettings(
       return OnError();
   } else {
     // Don't need this for preview.
-    if (!SetPrinter(base::UTF16ToUTF8(settings_.device_name())) ||
-        !SetCopiesInPrintSettings(settings_.copies()) ||
-        !SetCollateInPrintSettings(settings_.collate()) ||
-        !SetDuplexModeInPrintSettings(settings_.duplex_mode()) ||
-        !SetOutputColor(settings_.color())) {
+    if (!SetPrinter(base::UTF16ToUTF8(settings_->device_name())) ||
+        !SetCopiesInPrintSettings(settings_->copies()) ||
+        !SetCollateInPrintSettings(settings_->collate()) ||
+        !SetDuplexModeInPrintSettings(settings_->duplex_mode()) ||
+        !SetOutputColor(settings_->color())) {
       return OnError();
     }
   }
 
   if (!UpdatePageFormatWithPaperInfo() ||
-      !SetOrientationIsLandscape(settings_.landscape())) {
+      !SetOrientationIsLandscape(settings_->landscape())) {
     return OnError();
   }
 
@@ -211,9 +208,8 @@ bool PrintingContextMac::SetPrintPreviewJob() {
       static_cast<PMPrintSession>([print_info_.get() PMPrintSession]);
   PMPrintSettings print_settings =
       static_cast<PMPrintSettings>([print_info_.get() PMPrintSettings]);
-  return PMSessionSetDestination(
-      print_session, print_settings, kPMDestinationPreview,
-      NULL, NULL) == noErr;
+  return PMSessionSetDestination(print_session, print_settings,
+                                 kPMDestinationPreview, NULL, NULL) == noErr;
 }
 
 void PrintingContextMac::InitPrintSettingsFromPrintInfo() {
@@ -223,8 +219,8 @@ void PrintingContextMac::InitPrintSettingsFromPrintInfo() {
       static_cast<PMPageFormat>([print_info_.get() PMPageFormat]);
   PMPrinter printer;
   PMSessionGetCurrentPrinter(print_session, &printer);
-  PrintSettingsInitializerMac::InitPrintSettings(
-      printer, page_format, &settings_);
+  PrintSettingsInitializerMac::InitPrintSettings(printer, page_format,
+                                                 settings_.get());
 }
 
 bool PrintingContextMac::SetPrinter(const std::string& device_name) {
@@ -246,7 +242,7 @@ bool PrintingContextMac::SetPrinter(const std::string& device_name) {
     return false;
 
   if (CFStringCompare(new_printer_id.get(), current_printer_id, 0) ==
-          kCFCompareEqualTo) {
+      kCFCompareEqualTo) {
     return true;
   }
 
@@ -275,7 +271,7 @@ bool PrintingContextMac::UpdatePageFormatWithPaperInfo() {
   base::ScopedCFTypeRef<CFStringRef> paper_name;
   PMPaperMargins margins = {0};
 
-  const PrintSettings::RequestedMedia& media = settings_.requested_media();
+  const PrintSettings::RequestedMedia& media = settings_->requested_media();
   if (media.IsDefault()) {
     PMPaper default_paper;
     if (PMGetPageFormatPaper(default_page_format, &default_paper) != noErr ||
@@ -312,13 +308,9 @@ bool PrintingContextMac::UpdatePageFormatWithPaperInfo() {
     return true;
 
   PMPaper paper = NULL;
-  if (PMPaperCreateCustom(current_printer,
-                          CFSTR("Custom paper ID"),
-                          CFSTR("Custom paper"),
-                          page_width,
-                          page_height,
-                          &margins,
-                          &paper) != noErr) {
+  if (PMPaperCreateCustom(current_printer, CFSTR("Custom paper ID"),
+                          CFSTR("Custom paper"), page_width, page_height,
+                          &margins, &paper) != noErr) {
     return false;
   }
   bool result = UpdatePageFormatWithPaper(paper, default_page_format);
@@ -403,10 +395,8 @@ bool PrintingContextMac::SetOutputColor(int color_mode) {
   base::ScopedCFTypeRef<CFStringRef> output_color(
       base::SysUTF8ToCFStringRef(color_value));
 
-  return PMPrintSettingsSetValue(pmPrintSettings,
-                                 color_setting.get(),
-                                 output_color.get(),
-                                 false) == noErr;
+  return PMPrintSettingsSetValue(pmPrintSettings, color_setting.get(),
+                                 output_color.get(), false) == noErr;
 }
 
 PageRanges PrintingContextMac::GetPageRangesFromPrintInfo() {
@@ -438,9 +428,8 @@ PrintingContext::Result PrintingContextMac::NewDocument(
       base::SysUTF16ToCFStringRef(document_name));
   PMPrintSettingsSetJobName(print_settings, job_title.get());
 
-  OSStatus status = PMSessionBeginCGDocumentNoDialog(print_session,
-                                                     print_settings,
-                                                     page_format);
+  OSStatus status = PMSessionBeginCGDocumentNoDialog(
+      print_session, print_settings, page_format);
   if (status != noErr)
     return OnError();
 

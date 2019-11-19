@@ -4,8 +4,8 @@ PASS chromium0002 - chromium0002
 PASS chromium0003 - chromium0003
 PASS chromium0004 - chromium0004
 PASS chromium0005 - chromium0005
-FAIL chromium0006 - chromium0006 assert_equals: expected "aBc=\"zzz \" \"ppp\"" but got "aBc=\"zzz \"   \"ppp\""
-FAIL chromium0007 - chromium0007 assert_equals: expected "aBc=\"zzz \" \"ppp\"" but got "aBc=\"zzz \"   \"ppp\""
+PASS chromium0006 - chromium0006
+PASS chromium0007 - chromium0007
 PASS chromium0008 - chromium0008
 FAIL chromium0009 - chromium0009 assert_equals: expected "" but got "BLAHHH"
 FAIL chromium0010 - chromium0010 assert_equals: expected "" but got "\"BLA\\\"HHH\""

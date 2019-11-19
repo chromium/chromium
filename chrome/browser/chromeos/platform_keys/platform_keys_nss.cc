@@ -24,7 +24,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider.h"
-#include "chrome/browser/chromeos/net/client_cert_filter_chromeos.h"
 #include "chrome/browser/chromeos/net/client_cert_store_chromeos.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -149,10 +148,9 @@ void GetCertDatabase(const std::string& token_id,
                      const GetCertDBCallback& callback,
                      BrowserContext* browser_context,
                      NSSOperationState* state) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&GetCertDatabaseOnIOThread, token_id, callback,
-                     browser_context->GetResourceContext(), state));
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(&GetCertDatabaseOnIOThread, token_id, callback,
+                                browser_context->GetResourceContext(), state));
 }
 
 class GenerateRSAKeyState : public NSSOperationState {
@@ -224,8 +222,6 @@ class SignRSAState : public NSSOperationState {
 class SelectCertificatesState : public NSSOperationState {
  public:
   explicit SelectCertificatesState(
-      const std::string& username_hash,
-      const bool use_system_key_slot,
       const scoped_refptr<net::SSLCertRequestInfo>& request,
       const subtle::SelectCertificatesCallback& callback);
   ~SelectCertificatesState() override {}
@@ -243,8 +239,6 @@ class SelectCertificatesState : public NSSOperationState {
         from, base::Bind(callback_, base::Passed(&matches), error_message));
   }
 
-  const std::string username_hash_;
-  const bool use_system_key_slot_;
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_;
   std::unique_ptr<net::ClientCertStore> cert_store_;
 
@@ -395,15 +389,9 @@ SignRSAState::SignRSAState(const std::string& data,
       callback_(callback) {}
 
 SelectCertificatesState::SelectCertificatesState(
-    const std::string& username_hash,
-    const bool use_system_key_slot,
     const scoped_refptr<net::SSLCertRequestInfo>& cert_request_info,
     const subtle::SelectCertificatesCallback& callback)
-    : username_hash_(username_hash),
-      use_system_key_slot_(use_system_key_slot),
-      cert_request_info_(cert_request_info),
-      callback_(callback) {
-}
+    : cert_request_info_(cert_request_info), callback_(callback) {}
 
 GetCertificatesState::GetCertificatesState(
     const GetCertificatesCallback& callback)
@@ -472,9 +460,9 @@ void GenerateRSAKeyWithDB(std::unique_ptr<GenerateRSAKeyState> state,
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
   // This task interacts with the TPM, hence MayBlock().
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&GenerateRSAKeyOnWorkerThread, std::move(state)));
 }
@@ -566,20 +554,18 @@ void SignRSAWithDB(std::unique_ptr<SignRSAState> state,
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
   // This task interacts with the TPM, hence MayBlock().
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&SignRSAOnWorkerThread, std::move(state)));
 }
 
 // Called when ClientCertStoreChromeOS::GetClientCerts is done. Builds the list
-// of net::CertificateList and calls back. Used by
-// SelectCertificatesOnIOThread().
-void DidSelectCertificatesOnIOThread(
-    std::unique_ptr<SelectCertificatesState> state,
-    net::ClientCertIdentityList identities) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+// of net::CertificateList and calls back. Used by SelectCertificates().
+void DidSelectCertificates(std::unique_ptr<SelectCertificatesState> state,
+                           net::ClientCertIdentityList identities) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Convert the ClientCertIdentityList to a CertificateList since returning
   // ClientCertIdentities would require changing the platformKeys extension
   // api. This assumes that the necessary keys can be found later with
@@ -588,24 +574,12 @@ void DidSelectCertificatesOnIOThread(
       std::make_unique<net::CertificateList>();
   for (const std::unique_ptr<net::ClientCertIdentity>& identity : identities)
     certs->push_back(identity->certificate());
-  state->CallBack(FROM_HERE, std::move(certs), std::string() /* no error */);
-}
-
-// Continues selecting certificates on the IO thread. Used by
-// SelectClientCertificates().
-void SelectCertificatesOnIOThread(
-    std::unique_ptr<SelectCertificatesState> state) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  state->cert_store_.reset(new ClientCertStoreChromeOS(
-      nullptr,  // no additional provider
-      std::make_unique<ClientCertFilterChromeOS>(state->use_system_key_slot_,
-                                                 state->username_hash_),
-      ClientCertStoreChromeOS::PasswordDelegateFactory()));
-
-  SelectCertificatesState* state_ptr = state.get();
-  state_ptr->cert_store_->GetClientCerts(
-      *state_ptr->cert_request_info_,
-      base::Bind(&DidSelectCertificatesOnIOThread, base::Passed(&state)));
+  // DidSelectCertificates() may be called synchronously, so run the callback on
+  // a separate event loop iteration to avoid potential reentrancy bugs.
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&SelectCertificatesState::CallBack,
+                                std::move(state), FROM_HERE, std::move(certs),
+                                std::string() /* no error */));
 }
 
 // Filters the obtained certificates on a worker thread. Used by
@@ -650,9 +624,9 @@ void DidGetCertificates(std::unique_ptr<GetCertificatesState> state,
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   state->certs_ = std::move(all_certs);
   // This task interacts with the TPM, hence MayBlock().
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&FilterCertificatesOnWorkerThread, std::move(state)));
 }
@@ -873,8 +847,7 @@ void SelectClientCertificates(
     content::BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  scoped_refptr<net::SSLCertRequestInfo> cert_request_info(
-      new net::SSLCertRequestInfo);
+  auto cert_request_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
 
   // Currently we do not pass down the requested certificate type to the net
   // layer, as it does not support filtering certificates by type. Rather, we
@@ -890,12 +863,19 @@ void SelectClientCertificates(
   // device.
   const bool use_system_key_slot = user->IsAffiliated();
 
-  std::unique_ptr<SelectCertificatesState> state(new SelectCertificatesState(
-      user->username_hash(), use_system_key_slot, cert_request_info, callback));
+  auto state =
+      std::make_unique<SelectCertificatesState>(cert_request_info, callback);
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&SelectCertificatesOnIOThread, std::move(state)));
+  state->cert_store_ = std::make_unique<ClientCertStoreChromeOS>(
+      nullptr,  // no additional provider
+      use_system_key_slot, user->username_hash(),
+      ClientCertStoreChromeOS::PasswordDelegateFactory());
+
+  // Note DidSelectCertificates() may be called synchronously.
+  SelectCertificatesState* state_ptr = state.get();
+  state_ptr->cert_store_->GetClientCerts(
+      *state_ptr->cert_request_info_,
+      base::BindOnce(&DidSelectCertificates, std::move(state)));
 }
 
 }  // namespace subtle

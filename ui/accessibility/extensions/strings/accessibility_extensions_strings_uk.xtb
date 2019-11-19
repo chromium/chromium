@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Зображення замінено текстом заміщення.</translation>
 <translation id="4896660567607030658">Просто показати курсор.</translation>
 <translation id="4937901943818762779">Дозволити анімовані зображення лише раз.</translation>
+<translation id="4949131196216960195">Щоб увімкнути клавішну навігацію, натисніть клавішу &lt;span class='key'&gt;Пошук&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (клавішу збільшення яскравості або F7). Щоб вимкнути цю функцію, натисніть їх знову.</translation>
 <translation id="4954450790315188152">Коли клавішну навігацію ввімкнено:</translation>
 <translation id="5041932793799765940">Налаштування кольору</translation>
 <translation id="5094574508723441140">Збільшений контраст</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="786423340267544509">Додавайте контур до елементів за допомогою атрибутів "aria-describedat" або "longdesc".</translation>
 <translation id="7942349550061667556">Червоний</translation>
-<translation id="8254860724243898966">Щоб увімкнути клавішну навігацію, натисніть клавішу &lt;span class='key'&gt;Alt&lt;/span&gt; і значок &lt;img src='increase_brightness.png'&gt; (клавішу збільшення яскравості або F7). Натисніть її знову, щоб вимкнути цю функцію.</translation>
 <translation id="8260673944985561857">Параметри клавішної навігації</translation>
 <translation id="8321034316479930120">Правила анімації</translation>
 <translation id="8480209185614411573">Високий контраст</translation>

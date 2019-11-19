@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 /*
- * typedef void (*PushAllRegistersCallback)(SafePointBarrier*, ThreadState*, intptr_t*);
- * extern "C" void PushAllRegisters(SafePointBarrier*, ThreadState*, PushAllRegistersCallback)
+ * typedef void (*PushAllRegistersCallback)(ThreadState*, intptr_t*);
+ * extern "C" void PushAllRegisters(ThreadState*, PushAllRegistersCallback)
  */
 
 .type PushAllRegisters, %function
@@ -28,10 +28,10 @@ PushAllRegisters:
         // Note: the callee-saved floating point registers do not need to be
         // copied to the stack, because fp registers never hold heap pointers
         // and so do not need to be kept visible to the garbage collector.
-        // Pass the two first arguments untouched in a0 and a1 and the
+        // Pass the first argument untouched in a0 and the
         // stack pointer to the callback.
-        move $t9,$a2
-        move $a2,$sp
+        move $t9,$a1
+        move $a1,$sp
         jalr $t9
         // Restore return address, adjust stack and return.
         // Note: the copied registers do not need to be reloaded here,

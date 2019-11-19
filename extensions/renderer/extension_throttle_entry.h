@@ -57,17 +57,11 @@ class ExtensionThrottleEntry {
   // |url_id| is a unique entry ID.
   explicit ExtensionThrottleEntry(const std::string& url_id);
 
-  // Same as above, but exposes the option to ignore
-  // net::LOAD_MAYBE_USER_GESTURE flag of the request.
-  ExtensionThrottleEntry(const std::string& url_id,
-                         bool ignore_user_gesture_load_flag_for_tests);
-
   // The life span of instances created with this constructor is set to
   // infinite, and the number of initial errors to ignore is set to 0.
   // It is only used by unit tests.
   ExtensionThrottleEntry(const std::string& url_id,
-                         const net::BackoffEntry::Policy* backoff_policy,
-                         bool ignore_user_gesture_load_flag_for_tests);
+                         const net::BackoffEntry::Policy* backoff_policy);
 
   virtual ~ExtensionThrottleEntry();
 
@@ -79,15 +73,8 @@ class ExtensionThrottleEntry {
   void DisableBackoffThrottling();
 
   // Returns true when we have encountered server errors and are doing
-  // exponential back-off, unless |request_load_flags| indicates the
-  // request is likely to be user-initiated, or the NetworkDelegate returns
-  // false for |CanThrottleRequest(request)|.
-  //
-  // URLRequestHttpJob checks this method prior to every request; it
-  // cancels requests if this method returns true.
-  //
-  // Note: See load_flags.h for more detail on |request_load_flags|.
-  bool ShouldRejectRequest(int request_load_flags) const;
+  // exponential back-off.
+  bool ShouldRejectRequest() const;
 
   // Calculates a recommended sending time for the next request and reserves it.
   // The sending time is not earlier than the current exponential back-off
@@ -133,11 +120,6 @@ class ExtensionThrottleEntry {
   virtual const net::BackoffEntry* GetBackoffEntry() const;
   virtual net::BackoffEntry* GetBackoffEntry();
 
-  // Returns true if |load_flags| contains a flag that indicates an
-  // explicit request by the user to load the resource. We never
-  // throttle requests with such load flags.
-  static bool ExplicitUserRequest(const int load_flags);
-
   // Used by tests.
   base::TimeTicks sliding_window_release_time() const {
     return sliding_window_release_time_;
@@ -172,8 +154,6 @@ class ExtensionThrottleEntry {
 
   // Canonicalized URL string that this entry is for; used for logging only.
   const std::string url_id_;
-
-  bool ignore_user_gesture_load_flag_for_tests_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionThrottleEntry);
 };

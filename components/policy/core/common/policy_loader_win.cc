@@ -24,7 +24,6 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -66,7 +65,7 @@ const char kBlockedExtensionPrefix[] = "[BLOCKED]";
 const char* kInsecurePolicies[] = {
     key::kChromeCleanupEnabled,
     key::kChromeCleanupReportingEnabled,
-    key::kCloudPolicyOverridesMachinePolicy,
+    key::kCommandLineFlagSecurityWarningsEnabled,
     key::kDefaultSearchProviderEnabled,
     key::kHomepageIsNewTabPage,
     key::kHomepageLocation,
@@ -338,7 +337,7 @@ PolicyLoaderWin::~PolicyLoaderWin() {
 std::unique_ptr<PolicyLoaderWin> PolicyLoaderWin::Create(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::string16& chrome_policy_key) {
-  return base::WrapUnique(new PolicyLoaderWin(task_runner, chrome_policy_key));
+  return std::make_unique<PolicyLoaderWin>(task_runner, chrome_policy_key);
 }
 
 void PolicyLoaderWin::InitOnBackgroundThread() {

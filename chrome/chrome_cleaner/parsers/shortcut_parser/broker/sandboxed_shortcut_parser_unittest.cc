@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/multiprocess_test.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"
 #include "chrome/chrome_cleaner/parsers/broker/sandbox_setup_hooks.h"
@@ -36,7 +36,7 @@ const base::string16 kLnkArguments = L"-a -b -c -d GenericExample";
 class SandboxedShortcutParserTest : public base::MultiProcessTest {
  public:
   SandboxedShortcutParserTest()
-      : parser_ptr_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
+      : parser_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
         temp_dirs_with_chrome_lnk_(kDirQuantity) {}
 
   void SetUp() override {
@@ -48,9 +48,9 @@ class SandboxedShortcutParserTest : public base::MultiProcessTest {
         RESULT_CODE_SUCCESS,
         StartSandboxTarget(MakeCmdLine("SandboxedShortcutParserTargetMain"),
                            &setup_hooks, SandboxType::kTest));
-    parser_ptr_ = setup_hooks.TakeParserPtr();
+    parser_ = setup_hooks.TakeParserRemote();
     shortcut_parser_ = std::make_unique<SandboxedShortcutParser>(
-        mojo_task_runner_.get(), parser_ptr_.get());
+        mojo_task_runner_.get(), parser_.get());
 
     ASSERT_TRUE(temp_dir_without_chrome_lnk_.CreateUniqueTempDir());
     ASSERT_TRUE(base::CreateTemporaryFileInDir(
@@ -87,7 +87,7 @@ class SandboxedShortcutParserTest : public base::MultiProcessTest {
   size_t shortcut_quantity_ = 0;
 
   scoped_refptr<MojoTaskRunner> mojo_task_runner_;
-  UniqueParserPtr parser_ptr_;
+  RemoteParserPtr parser_;
   std::unique_ptr<SandboxedShortcutParser> shortcut_parser_;
 
   FilePathSet fake_chrome_exe_file_path_set_;
@@ -97,7 +97,7 @@ class SandboxedShortcutParserTest : public base::MultiProcessTest {
   base::ScopedTempDir temp_dir_without_chrome_lnk_;
   base::FilePath not_lnk_file_path_;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 MULTIPROCESS_TEST_MAIN(SandboxedShortcutParserTargetMain) {

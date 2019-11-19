@@ -10,6 +10,43 @@
 @class FaviconView;
 
 // Corresponding cell for an article in the suggestions.
+//
+// a11y font size with image:
+// +--------------------------------+
+// | Image                          |
+// | Image                          |
+// | Image                          |
+// | Title                          |
+// | Favicon AdditionalInfo         |
+// +--------------------------------+
+//
+// a11y font size without image:
+// +--------------------------------+
+// | Title                          |
+// | Favicon AdditionalInfo         |
+// +--------------------------------+
+//
+// Regular font size with image:
+// +--------------------------------+
+// | Title                    Image |
+// |                          Image |
+// | Favicon AdditionalInfo   Image |
+// +--------------------------------+
+//
+// Regular font size with image and a long title:
+// +--------------------------------+
+// | A very very very very    Image |
+// | very very very very very Image |
+// | very very very very very Image |
+// | very very long title           |
+// | Favicon AdditionalInfo         |
+// +--------------------------------+
+//
+// Regular font size without image:
+// +--------------------------------+
+// | Title                          |
+// | Favicon AdditionalInfo         |
+// +--------------------------------+
 @interface ContentSuggestionsCell : MDCCollectionViewCell
 
 @property(nonatomic, readonly, strong) UILabel* titleLabel;

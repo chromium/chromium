@@ -23,6 +23,7 @@ Please see //tools/android/kerberos/README.md for detailed instructions.
 # TODO(dgn) Replace with an EmbeddedTestServer based server in the test apk once
 # the java version is ready. See http://crbug.com/488192
 
+from __future__ import print_function
 
 import time
 import BaseHTTPServer

@@ -16,25 +16,25 @@ public abstract class ResourceLoader {
         /**
          * Called when a resource as finished loading.  Note that it is up to the caller to recycle
          * any {@link android.graphics.Bitmap}s or clean up any state after making this call.
-         * @param resType  The {@link ResourceType} that loaded the resource.
+         * @param resType  The {@link AndroidResourceType} that loaded the resource.
          * @param resId    The Android id of the loaded resource.
          * @param resource The {@link Resource} of the resource, or {@code null} if one could
          *                 not be loaded.
          */
-        void onResourceLoaded(int resType, int resId, Resource resource);
+        void onResourceLoaded(@AndroidResourceType int resType, int resId, Resource resource);
 
         /**
          * Called when a resource is unregistered (unneeded). This should only be called for
-         * dynamic bitmap resources since they change constantly and are replaced with new bitmaps.
-         * Other resource types should not need this since thay are static for the lifetime of the
+         * dynamic resources. Dynamic bitmap change constantly and are replaced with new bitmaps.
+         * Other resource types should not need this since they are static for the lifetime of the
          * application.
-         * @param resType The {@link ResourceType} of resource that was removed.
-         * @param redId The Android id of the removed resource.
+         * @param resType The {@link AndroidResourceType} of resource that was removed.
+         * @param resId The Android id of the removed resource.
          */
-        void onResourceUnregistered(int resType, int resId);
+        void onResourceUnregistered(@AndroidResourceType int resType, int resId);
     }
 
-    private final int mResourceType;
+    private final @AndroidResourceType int mResourceType;
     private final ResourceLoaderCallback mCallback;
 
     /**
@@ -51,7 +51,7 @@ public abstract class ResourceLoader {
     /**
      * @return What resource type this {@link ResourceLoader} is responsible for loading.
      */
-    public int getResourceType() {
+    public @AndroidResourceType int getResourceType() {
         return mResourceType;
     }
 

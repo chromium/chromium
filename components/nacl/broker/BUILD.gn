@@ -173,16 +173,3 @@ if (current_cpu == "x86") {
     ]
   }
 }
-
-source_set("nacl_broker_manifest") {
-  sources = [
-    "nacl_broker_manifest.cc",
-    "nacl_broker_manifest.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/nacl/common",
-    "//services/service_manager/public/cpp",
-  ]
-}

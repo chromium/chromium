@@ -46,10 +46,10 @@ class PepperURLLoaderHost : public ppapi::host::ResourceHost,
   // blink::WebAssociatedURLLoaderClient implementation.
   bool WillFollowRedirect(const blink::WebURL& new_url,
                           const blink::WebURLResponse& redir_response) override;
-  void DidSendData(unsigned long long bytes_sent,
-                   unsigned long long total_bytes_to_be_sent) override;
+  void DidSendData(uint64_t bytes_sent,
+                   uint64_t total_bytes_to_be_sent) override;
   void DidReceiveResponse(const blink::WebURLResponse& response) override;
-  void DidDownloadData(unsigned long long data_length) override;
+  void DidDownloadData(uint64_t data_length) override;
   void DidReceiveData(const char* data, int data_length) override;
   void DidFinishLoading() override;
   void DidFail(const blink::WebURLError& error) override;

@@ -5,12 +5,23 @@
 import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
 
+jumbo_component("blink_features") {
+  defines = [ "IS_BLINK_FEATURES_IMPL" ]
+
+  sources = [
+    "blink_features.cc",
+    "blink_features.h",
+  ]
+
+  deps = [
+    "//base",
+  ]
+}
+
 jumbo_source_set("blink") {
   sources = [
     "blink_event_util.cc",
     "blink_event_util.h",
-    "blink_features.cc",
-    "blink_features.h",
     "compositor_thread_event_queue.cc",
     "compositor_thread_event_queue.h",
     "did_overscroll_params.cc",
@@ -24,8 +35,15 @@ jumbo_source_set("blink") {
     "input_handler_proxy_client.h",
     "input_scroll_elasticity_controller.cc",
     "input_scroll_elasticity_controller.h",
+    "momentum_scroll_jank_tracker.cc",
+    "momentum_scroll_jank_tracker.h",
+    "prediction/empty_filter.cc",
+    "prediction/empty_filter.h",
     "prediction/empty_predictor.cc",
     "prediction/empty_predictor.h",
+    "prediction/filter_factory.cc",
+    "prediction/filter_factory.h",
+    "prediction/input_filter.h",
     "prediction/input_predictor.h",
     "prediction/kalman_filter.cc",
     "prediction/kalman_filter.h",
@@ -33,6 +51,16 @@ jumbo_source_set("blink") {
     "prediction/kalman_predictor.h",
     "prediction/least_squares_predictor.cc",
     "prediction/least_squares_predictor.h",
+    "prediction/linear_predictor.cc",
+    "prediction/linear_predictor.h",
+    "prediction/linear_resampling.cc",
+    "prediction/linear_resampling.h",
+    "prediction/one_euro_filter.cc",
+    "prediction/one_euro_filter.h",
+    "prediction/prediction_metrics_handler.cc",
+    "prediction/prediction_metrics_handler.h",
+    "prediction/predictor_factory.cc",
+    "prediction/predictor_factory.h",
     "scroll_predictor.cc",
     "scroll_predictor.h",
     "synchronous_input_handler_proxy.h",
@@ -42,9 +70,14 @@ jumbo_source_set("blink") {
     "web_input_event_traits.h",
   ]
 
+  public_deps = [
+    ":blink_features",
+  ]
+
   deps = [
     "//cc:cc",
     "//third_party/blink/public:blink_headers",
+    "//third_party/one_euro_filter",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/events:events_base",

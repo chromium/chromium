@@ -144,12 +144,8 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // AudioConverter::InputCallback implementation.
   double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;
 
-  // Reports delay stats based on |capture_time|. Detects and counts glitches
-  // based on |frames_in_buffer|, |discontinuity_flagged|, and
-  // |device_position|.
-  void ReportDelayStatsAndUpdateGlitchCount(bool discontinuity_flagged,
-                                            UINT64 device_position,
-                                            base::TimeTicks capture_time);
+  // Detects and counts glitches based on |device_position|.
+  void UpdateGlitchCount(UINT64 device_position);
 
   // Reports glitch stats and resets associated variables.
   void ReportAndResetGlitchStats();
@@ -293,11 +289,12 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // For detecting and reporting glitches.
   UINT64 expected_next_device_position_ = 0;
   int total_glitches_ = 0;
-  int total_device_position_less_than_expected_ = 0;
-  int total_discontinuities_ = 0;
-  int total_concurrent_glitch_and_discontinuities_ = 0;
   UINT64 total_lost_frames_ = 0;
   UINT64 largest_glitch_frames_ = 0;
+
+  // Enabled if the volume level of the audio session is set to zero when the
+  // session starts. Utilized in UMA histogram.
+  bool audio_session_starts_at_zero_volume_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

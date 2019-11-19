@@ -9,18 +9,11 @@
 
 namespace blink {
 
-class NeedsFinalize : public GarbageCollectedFinalized<NeedsFinalize> {
-public:
-    void Trace(Visitor*);
-    void TraceAfterDispatch(Visitor*);
-    // Needs a FinalizeGarbageCollectedObject method.
-};
-
-class NeedsDispatch : public GarbageCollectedFinalized<NeedsDispatch> {
-public:
-    void Trace(Visitor*);
-    // Needs a TraceAfterDispatch method.
-    void FinalizeGarbageCollectedObject() { };
+class NeedsDispatch : public GarbageCollected<NeedsDispatch> {
+ public:
+  void Trace(Visitor*);
+  // Needs a TraceAfterDispatch method.
+  void FinalizeGarbageCollectedObject(){};
 };
 
 class NeedsFinalizedBase : public GarbageCollected<NeedsFinalizedBase> {
@@ -30,16 +23,18 @@ public:
     void FinalizeGarbageCollectedObject() { };
 };
 
-class A : GarbageCollectedFinalized<A> {
-public:
-    void Trace(Visitor*);
-    void TraceAfterDispatch(Visitor*);
-    void FinalizeGarbageCollectedObject();
-protected:
-    enum Type { TB, TC, TD };
-    A(Type type) : m_type(type) { }
-private:
-    Type m_type;
+class A : GarbageCollected<A> {
+ public:
+  void Trace(Visitor*);
+  void TraceAfterDispatch(Visitor*);
+  void FinalizeGarbageCollectedObject();
+
+ protected:
+  enum Type { TB, TC, TD };
+  A(Type type) : m_type(type) {}
+
+ private:
+  Type m_type;
 };
 
 class B : public A {

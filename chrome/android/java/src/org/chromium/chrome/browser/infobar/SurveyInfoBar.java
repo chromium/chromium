@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.survey.SurveyController;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -55,7 +56,7 @@ public class SurveyInfoBar extends InfoBar {
     public static void showSurveyInfoBar(WebContents webContents, String siteId,
             boolean showAsBottomSheet, int displayLogoResId,
             SurveyInfoBarDelegate surveyInfoBarDelegate) {
-        nativeCreate(
+        SurveyInfoBarJni.get().create(
                 webContents, siteId, showAsBottomSheet, displayLogoResId, surveyInfoBarDelegate);
     }
 
@@ -70,7 +71,7 @@ public class SurveyInfoBar extends InfoBar {
      */
     private SurveyInfoBar(String siteId, boolean showAsBottomSheet, int displayLogoResId,
             SurveyInfoBarDelegate surveyInfoBarDelegate) {
-        super(displayLogoResId, null, null);
+        super(displayLogoResId, 0, null, null);
 
         mSiteId = siteId;
         mShowAsBottomSheet = showAsBottomSheet;
@@ -85,7 +86,7 @@ public class SurveyInfoBar extends InfoBar {
 
     @Override
     protected void createCompactLayoutContent(InfoBarCompactLayout layout) {
-        Tab tab = nativeGetTab(getNativeInfoBarPtr());
+        Tab tab = SurveyInfoBarJni.get().getTab(getNativeInfoBarPtr(), SurveyInfoBar.this);
         tab.addObserver(new EmptyTabObserver() {
             @Override
             public void onHidden(Tab tab, @TabHidingType int type) {
@@ -178,8 +179,10 @@ public class SurveyInfoBar extends InfoBar {
         super.onCloseButtonClicked();
     }
 
-    private static native void nativeCreate(WebContents webContents, String siteId,
-            boolean showAsBottomSheet, int displayLogoResId,
-            SurveyInfoBarDelegate surveyInfoBarDelegate);
-    private native Tab nativeGetTab(long nativeSurveyInfoBar);
+    @NativeMethods
+    interface Natives {
+        void create(WebContents webContents, String siteId, boolean showAsBottomSheet,
+                int displayLogoResId, SurveyInfoBarDelegate surveyInfoBarDelegate);
+        Tab getTab(long nativeSurveyInfoBar, SurveyInfoBar caller);
+    }
 }

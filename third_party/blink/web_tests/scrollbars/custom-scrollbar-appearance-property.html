@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/run-after-layout-and-paint.js"></script>
 <style>
 ::-webkit-scrollbar {
     width: 16px;
@@ -32,5 +35,10 @@
 <body>
 PASS if not crashed.
 <div class="scroll-container"><div class="overflowing"></div></div>
+<script>
+async_test(t => {
+  runAfterLayoutAndPaint(t.step_func_done(() => {}));
+}, 'Do not crash if -webkit-scrollbar* has -webkit-appearance:searchfield-cancel-button');
+</script>
 </body>
 </html>

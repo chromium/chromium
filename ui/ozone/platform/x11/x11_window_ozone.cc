@@ -4,53 +4,51 @@
 
 #include "ui/ozone/platform/x11/x11_window_ozone.h"
 
+#include <algorithm>
+#include <string>
+#include <vector>
+
 #include "base/bind.h"
+#include "base/strings/utf_string_conversions.h"
+#include "ui/base/x/x11_util.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
-#include "ui/events/ozone/events_ozone.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/x11.h"
+#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/ozone/platform/x11/x11_cursor_ozone.h"
-#include "ui/ozone/platform/x11/x11_window_manager_ozone.h"
+#include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {
 
-X11WindowOzone::X11WindowOzone(X11WindowManagerOzone* window_manager,
-                               PlatformWindowDelegate* delegate,
-                               const gfx::Rect& bounds)
-    : X11WindowBase(delegate, bounds), window_manager_(window_manager) {
-  DCHECK(window_manager);
-  auto* event_source = X11EventSourceLibevent::GetInstance();
-  if (event_source)
-    event_source->AddXEventDispatcher(this);
-}
+X11WindowOzone::X11WindowOzone(PlatformWindowDelegate* delegate)
+    : X11Window(delegate) {}
 
 X11WindowOzone::~X11WindowOzone() {
-  X11WindowOzone::PrepareForShutdown();
+  PrepareForShutdown();
+  Close();
 }
 
 void X11WindowOzone::PrepareForShutdown() {
-  auto* event_source = X11EventSourceLibevent::GetInstance();
-  if (event_source)
-    event_source->RemoveXEventDispatcher(this);
-}
-
-void X11WindowOzone::SetCapture() {
-  window_manager_->GrabEvents(this);
-}
-
-void X11WindowOzone::ReleaseCapture() {
-  window_manager_->UngrabEvents(this);
+  DCHECK(X11EventSource::GetInstance());
+  X11EventSource::GetInstance()->RemoveXEventDispatcher(this);
 }
 
 void X11WindowOzone::SetCursor(PlatformCursor cursor) {
   X11CursorOzone* cursor_ozone = static_cast<X11CursorOzone*>(cursor);
-  XDefineCursor(xdisplay(), xwindow(), cursor_ozone->xcursor());
+  XWindow::SetCursor(cursor_ozone->xcursor());
 }
 
+// CheckCanDispatchNextPlatformEvent is called by X11EventSourceLibevent to
+// determine whether X11WindowOzone instance (XEventDispatcher implementation)
+// is able to process next translated event sent by it. So, it's done through
+// |handle_next_event_| internal flag, used in subsequent CanDispatchEvent
+// call.
 void X11WindowOzone::CheckCanDispatchNextPlatformEvent(XEvent* xev) {
-  handle_next_event_ = xwindow() == x11::None ? false : IsEventForXWindow(*xev);
+  if (is_shutting_down())
+    return;
+
+  handle_next_event_ = XWindow::IsTargetedBy(*xev);
 }
 
 void X11WindowOzone::PlatformEventDispatchFinished() {
@@ -62,40 +60,21 @@ PlatformEventDispatcher* X11WindowOzone::GetPlatformEventDispatcher() {
 }
 
 bool X11WindowOzone::DispatchXEvent(XEvent* xev) {
-  if (!IsEventForXWindow(*xev))
+  if (!XWindow::IsTargetedBy(*xev))
     return false;
 
-  ProcessXWindowEvent(xev);
+  XWindow::ProcessEvent(xev);
   return true;
 }
 
 bool X11WindowOzone::CanDispatchEvent(const PlatformEvent& event) {
+  DCHECK_NE(XWindow::window(), x11::None);
   return handle_next_event_;
 }
 
-uint32_t X11WindowOzone::DispatchEvent(const PlatformEvent& event) {
-  if (!window_manager_->event_grabber() ||
-      window_manager_->event_grabber() == this) {
-    // This is unfortunately needed otherwise events that depend on global state
-    // (eg. double click) are broken.
-    DispatchEventFromNativeUiEvent(
-        event, base::BindOnce(&PlatformWindowDelegate::DispatchEvent,
-                              base::Unretained(delegate())));
-    return POST_DISPATCH_STOP_PROPAGATION;
-  }
-
-  if (event->IsLocatedEvent()) {
-    // Another X11WindowOzone has installed itself as capture. Translate the
-    // event's location and dispatch to the other.
-    ConvertEventLocationToTargetWindowLocation(
-        window_manager_->event_grabber()->GetBounds().origin(),
-        GetBounds().origin(), event->AsLocatedEvent());
-  }
-  return window_manager_->event_grabber()->DispatchEvent(event);
-}
-
-void X11WindowOzone::OnLostCapture() {
-  delegate()->OnLostCapture();
+void X11WindowOzone::SetPlatformEventDispatcher() {
+  DCHECK(X11EventSource::GetInstance());
+  X11EventSource::GetInstance()->AddXEventDispatcher(this);
 }
 
 }  // namespace ui

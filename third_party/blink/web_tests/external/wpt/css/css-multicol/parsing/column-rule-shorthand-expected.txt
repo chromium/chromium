@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS e.style['column-rule'] = "medium dotted green" should set column-rule-color
+PASS e.style['column-rule'] = "medium dotted green" should set column-rule-style
+PASS e.style['column-rule'] = "medium dotted green" should set column-rule-width
+PASS e.style['column-rule'] = "medium dotted green" should not set unrelated longhands
+FAIL e.style['column-rule'] = "100px" should set column-rule-color assert_equals: column-rule-color should be canonical expected "currentcolor" but got "initial"
+FAIL e.style['column-rule'] = "100px" should set column-rule-style assert_equals: column-rule-style should be canonical expected "none" but got "initial"
+PASS e.style['column-rule'] = "100px" should set column-rule-width
+PASS e.style['column-rule'] = "100px" should not set unrelated longhands
+PASS e.style['column-rule'] = "blue" should set column-rule-color
+FAIL e.style['column-rule'] = "blue" should set column-rule-style assert_equals: column-rule-style should be canonical expected "none" but got "initial"
+FAIL e.style['column-rule'] = "blue" should set column-rule-width assert_equals: column-rule-width should be canonical expected "medium" but got "initial"
+PASS e.style['column-rule'] = "blue" should not set unrelated longhands
+Harness: the test ran to completion.
+

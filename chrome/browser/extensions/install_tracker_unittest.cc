@@ -6,8 +6,9 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/extensions/active_install_data.h"
+#include "chrome/browser/extensions/scoped_active_install.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -56,7 +57,7 @@ class InstallTrackerTest : public testing::Test {
     EXPECT_EQ(original.percent_downloaded, retrieved.percent_downloaded);
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<InstallTracker> tracker_;
 };

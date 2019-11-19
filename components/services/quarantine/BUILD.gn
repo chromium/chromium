@@ -1,0 +1,133 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromecast_build.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+static_library("quarantine") {
+  sources = [
+    "quarantine.cc",
+    "quarantine.h",
+    "quarantine_impl.cc",
+    "quarantine_impl.h",
+    "quarantine_mac.mm",
+    "quarantine_win.cc",
+  ]
+
+  public_deps = [
+    "//components/services/quarantine/public/mojom",
+  ]
+
+  deps = [
+    ":common",
+    "//base",
+    "//net",
+    "//url",
+  ]
+
+  if (is_win) {
+    deps += [ "//components/services/quarantine/public/cpp:features" ]
+  }
+
+  if (is_mac) {
+    libs = [
+      "Carbon.framework",
+      "Foundation.framework",
+    ]
+  }
+}
+
+source_set("common") {
+  sources = [
+    "common.cc",
+    "common.h",
+    "common_mac.h",
+    "common_mac.mm",
+    "common_win.cc",
+    "common_win.h",
+  ]
+
+  deps = [
+    "//base",
+    "//url",
+  ]
+
+  if (is_mac) {
+    libs = [
+      "Carbon.framework",
+      "Foundation.framework",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_support.cc",
+    "test_support.h",
+    "test_support_mac.mm",
+    "test_support_win.cc",
+  ]
+
+  deps = [
+    ":common",
+    ":quarantine",
+    "//base",
+    "//url",
+  ]
+
+  if (is_mac) {
+    libs = [
+      "Carbon.framework",
+      "Foundation.framework",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "common_unittests.cc",
+    "quarantine_mac_unittest.mm",
+    "quarantine_service_unittest.cc",
+    "quarantine_win_unittest.cc",
+  ]
+
+  # Chromecasts do not have extended attributes enabled; even if it were
+  # enabled, the devices use tmpfs which restricts the extended attributes that
+  # can be set such that quarantining still would not work. (The platform
+  # specific tests include a runtime guard to skip tests that need xattr.)
+  if (!is_chromecast) {
+    sources += [ "quarantine_unittest.cc" ]
+  }
+
+  deps = [
+    ":common",
+    ":quarantine",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/services/quarantine/public/mojom",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  if (is_win) {
+    deps += [ "//components/services/quarantine/public/cpp:features" ]
+  }
+
+  if (is_mac) {
+    libs = [
+      "Carbon.framework",
+      "Foundation.framework",
+    ]
+  }
+}

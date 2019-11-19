@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+<script src="/js-test-resources/js-test.js"></script>
+<script>
+description("Moving pending scripts between detached and non-detached documents should not crash.");
+
+window.jsTestIsAsync = true;
+
+if (window.testRunner) {
+    testRunner.dumpAsText()
+    testRunner.waitUntilDone();
+}
+
+var iframe;
+
+function start() {
+    iframe = document.createElement('iframe');
+    iframe.src = 'resources/script-element-moved-to-detached-document-crash-frames.html';
+    iframe.onload = runTest;
+    document.getElementById('store_div').appendChild(iframe);
+}
+
+function runTest() {
+    var iframeDocument = iframe.contentWindow.document;
+    var option = document.createElement('option');
+    var element2 = iframeDocument.getElementById('element2');
+    var element3 = iframeDocument.getElementById('element3');
+    var emptyScript = document.createElement('script');
+    emptyScript.src = null;
+    document.documentElement.appendChild(emptyScript);
+    element3.ownerDocument.adoptNode(option);
+    var element2Document = element2.contentWindow.document;
+    element2.parentNode.removeChild(element2);
+
+    // Move the script element to various documents:
+
+    // Add it to the document.
+    option.appendChild(emptyScript);
+    // Add it to element2 inside the iframe, which is a detached frame element.
+    element2Document.lastChild.appendChild(emptyScript);
+    // Move back to document again.
+    document.body.appendChild(emptyScript);
+    // Pass if no asserts triggered by the above script element document transfers.
+    finishJSTest();
+}
+window.onload = start;
+</script>
+</head>
+<body>
+<div id="store_div"></div>
+</body>
+</html>

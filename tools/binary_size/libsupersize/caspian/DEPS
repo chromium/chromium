@@ -1,0 +1,6 @@
+include_rules = [
+  "+third_party/zlib",
+  "+third_party/jsoncpp",
+  "+third_party/re2",
+  "+testing/gtest/include/gtest",
+]

@@ -13,7 +13,7 @@
     style="@style/AlertDialogContent"
     android:orientation="vertical">
 
-    <org.chromium.chrome.browser.widget.AlertDialogEditText
+    <org.chromium.chrome.browser.ui.widget.text.AlertDialogEditText
         android:id="@+id/js_modal_dialog_prompt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -64,11 +64,14 @@ class ExtensionManagement : public KeyedService {
   //                        and cannot be disabled.
   // * INSTALLATION_RECOMMENDED: Extension will be installed automatically but
   //                             can be disabled.
+  // * INSTALLATION_REMOVED:  Extension cannot be installed and will be
+  //                          automatically removed.
   enum InstallationMode {
     INSTALLATION_ALLOWED = 0,
     INSTALLATION_BLOCKED,
     INSTALLATION_FORCED,
     INSTALLATION_RECOMMENDED,
+    INSTALLATION_REMOVED,
   };
 
   explicit ExtensionManagement(Profile* profile);
@@ -93,6 +96,11 @@ class ExtensionManagement : public KeyedService {
   // Returns installation mode for an extension.
   InstallationMode GetInstallationMode(const Extension* extension) const;
 
+  // Returns installation mode for an extension with id |id| and updated with
+  // |update_url|.
+  InstallationMode GetInstallationMode(const ExtensionId& extension_id,
+                                       const std::string& update_url) const;
+
   // Returns the force install list, in format specified by
   // ExternalPolicyLoader::AddExtension().
   std::unique_ptr<base::DictionaryValue> GetForceInstallList() const;
@@ -100,9 +108,18 @@ class ExtensionManagement : public KeyedService {
   // Like GetForceInstallList(), but returns recommended install list instead.
   std::unique_ptr<base::DictionaryValue> GetRecommendedInstallList() const;
 
+  // Returns |true| if there is at least one extension with
+  // |INSTALLATION_ALLOWED| as installation mode. This excludes force installed
+  // extensions.
+  bool HasWhitelistedExtension() const;
+
   // Returns if an extension with id |id| is explicitly allowed by enterprise
   // policy or not.
   bool IsInstallationExplicitlyAllowed(const ExtensionId& id) const;
+
+  // Returns if an extension with id |id| is explicitly blocked by enterprise
+  // policy or not.
+  bool IsInstallationExplicitlyBlocked(const ExtensionId& id) const;
 
   // Returns true if an extension download should be allowed to proceed.
   bool IsOffstoreInstallAllowed(const GURL& url,

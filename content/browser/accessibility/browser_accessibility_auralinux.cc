@@ -40,15 +40,21 @@ BrowserAccessibilityAuraLinux::GetNativeViewAccessible() {
   return node_->GetNativeViewAccessible();
 }
 
-void BrowserAccessibilityAuraLinux::OnDataChanged() {
-  BrowserAccessibility::OnDataChanged();
-
-  DCHECK(node_);
-  node_->DataChanged();
-}
-
 void BrowserAccessibilityAuraLinux::UpdatePlatformAttributes() {
   GetNode()->UpdateHypertext();
+}
+
+void BrowserAccessibilityAuraLinux::OnDataChanged() {
+  BrowserAccessibility::OnDataChanged();
+  DCHECK(node_);
+  node_->EnsureAtkObjectIsValid();
+}
+
+ui::AXPlatformNode* BrowserAccessibilityAuraLinux::GetAXPlatformNode() const {
+  if (!instance_active())
+    return nullptr;
+
+  return GetNode();
 }
 
 bool BrowserAccessibilityAuraLinux::IsNative() const {
@@ -56,18 +62,16 @@ bool BrowserAccessibilityAuraLinux::IsNative() const {
 }
 
 base::string16 BrowserAccessibilityAuraLinux::GetText() const {
-  return GetNode()->AXPlatformNodeAuraLinux::GetText();
+  return GetHypertext();
 }
 
-ui::AXPlatformNode* BrowserAccessibilityAuraLinux::GetFromNodeID(int32_t id) {
-  if (!instance_active())
-    return nullptr;
+base::string16 BrowserAccessibilityAuraLinux::GetHypertext() const {
+  return GetNode()->AXPlatformNodeAuraLinux::GetHypertext();
+}
 
-  BrowserAccessibility* accessibility = manager_->GetFromID(id);
-  if (!accessibility)
-    return nullptr;
-
-  return ToBrowserAccessibilityAuraLinux(accessibility)->GetNode();
+ui::TextAttributeList BrowserAccessibilityAuraLinux::ComputeTextAttributes()
+    const {
+  return GetNode()->ComputeTextAttributes();
 }
 
 }  // namespace content

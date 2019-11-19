@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS Snaps to the snap position if the snap area doesn't cover the snapport on x.
+PASS Snaps to the snap position if the snap area covers the snapport on x on the right border.
+PASS Snaps to the snap position if the snap area covers the snapport on x on the left border.
+PASS Snaps if the distance between the previous(400) and next(800) snap positions is smaller than snapport(500) on x.
+PASS Snaps if the distance between the previous(400) and next(800) snap positions is smaller than snapport(500) on y.
+PASS Snap to current scroll position which is a valid snap position, as the snap area covers snapport on x and the distance between the previous(800) and next(1400) is larger than snapport(500).
+PASS Snap to current scroll position which is a valid snap position, as the snap area covers snapport on y and the distance between the previous(800) and next(1400) is larger than snapport(500).
+PASS Snap to current scroll position which is a valid snap position, as the snap area covers snapport on x and there is no subsequent snap positions.
+PASS Snap to current scroll position which is a valid snap position, as the snap area covers snapport on y and there is no subsequent snap positions.
+FAIL Don't snap back even if scrollTo tries to scroll to positions which are outside of the scroll range and if a snap target element covers the snaport assert_equals: expected 3715 but got 2200
+PASS Snap to current scroll position on x as the area is covering x axis.However, we snap to the specified snap position on y as the area is not covering y axis.
+Harness: the test ran to completion.
+

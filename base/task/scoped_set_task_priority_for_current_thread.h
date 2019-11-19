@@ -25,9 +25,8 @@ class BASE_EXPORT ScopedSetTaskPriorityForCurrentThread {
   DISALLOW_COPY_AND_ASSIGN(ScopedSetTaskPriorityForCurrentThread);
 };
 
-// Returns the priority of the TaskScheduler task running on the current thread,
-// or TaskPriority::USER_VISIBLE if no TaskScheduler task is running on the
-// current thread.
+// Returns the priority of the task running on the current thread,
+// or TaskPriority::USER_VISIBLE if none.
 BASE_EXPORT TaskPriority GetTaskPriorityForCurrentThread();
 
 }  // namespace internal

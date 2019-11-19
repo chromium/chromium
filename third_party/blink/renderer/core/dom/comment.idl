@@ -21,6 +21,7 @@
 
 [
     Constructor(optional DOMString data = ""),
-    ConstructorCallWith=Document
+    ConstructorCallWith=Document,
+    Exposed=Window
 ] interface Comment : CharacterData {
 };

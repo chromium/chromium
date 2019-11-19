@@ -25,6 +25,10 @@ namespace chrome_cleaner {
 //
 // * A string initialized with the literal L"wide string" is formatted as
 // Lwide_string. No known workaround.
+//
+// Note that long test names can cause problems because they can be used to
+// generate file names, which have a max length of 255 on Windows. So use this
+// judiciously.
 struct GetParamNameForTest {
   template <typename ParamType>
   std::string operator()(

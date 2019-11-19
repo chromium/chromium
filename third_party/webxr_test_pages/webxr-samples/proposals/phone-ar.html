@@ -36,6 +36,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <!--The polyfill is not needed for browser that have native API support,
         but is linked by these samples for wider compatibility.-->
     <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='../js/xrray-polyfill.js' type='module'></script>
     <script src='../js/webxr-polyfill.js'></script>
 
     <script src='../js/webxr-button.js'></script>
@@ -47,7 +48,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         <p>
           This sample demonstrates use of a non-exclusive XRSession to present
           Augmented Reality content.
-          <a class="back" href="./">Back</a>
+          <a class="back" href="./index.html">Back</a>
         </p>
       </details>
     </header>
@@ -56,6 +57,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       import {Renderer, createWebGLContext} from '../js/cottontail/src/core/renderer.js';
       import {Gltf2Node} from '../js/cottontail/src/nodes/gltf2.js';
       import {QueryArgs} from '../js/cottontail/src/util/query-args.js';
+      import {Node} from '../js/cottontail/src/core/node.js';
+      import {RayNode} from '../js/cottontail/src/nodes/ray-node.js';
       import {FallbackHelper} from '../js/cottontail/src/util/fallback-helper.js';
 
       // If requested, initialize the WebXR polyfill
@@ -63,9 +66,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         var polyfill = new WebXRPolyfill();
       }
 
+      // Debug constants.
+      const visualiseOrigin = false;
+      const visualiseFloorSpace = false;
+
       // XR globals.
       let xrButton = null;
       let xrRefSpace = null;
+      let xrFloorSpace = null;
 
       // WebGL scene globals.
       let gl = null;
@@ -76,6 +84,33 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       // move around the planets more easily.
       solarSystem.scale = [0.1, 0.1, 0.1];
       scene.addNode(solarSystem);
+
+      // Visualise the origin.
+      if(visualiseOrigin) {
+        let xRay = new RayNode({direction : [5, 0, 0], baseColor : [1, 0, 0, 1]});
+        let yRay = new RayNode({direction : [0, 5, 0], baseColor : [0, 1, 0, 1]});
+        let zRay = new RayNode({direction : [0, 0, 5], baseColor : [0, 0, 1, 1]});
+
+        scene.addNode(xRay);
+        scene.addNode(yRay);
+        scene.addNode(zRay);
+      }
+
+      // Visualise the floor space.
+      let floorSpaceNode = new Node();
+      floorSpaceNode.visible = false;
+
+      if(visualiseFloorSpace) {
+        let xRay = new RayNode({direction : [5, 0, 0], baseColor : [1, 0, 0, 1]});
+        let yRay = new RayNode({direction : [0, 5, 0], baseColor : [0, 1, 0, 1]});
+        let zRay = new RayNode({direction : [0, 0, 5], baseColor : [0, 0, 1, 1]});
+
+        floorSpaceNode.addNode(xRay);
+        floorSpaceNode.addNode(yRay);
+        floorSpaceNode.addNode(zRay);
+      }
+
+      scene.addNode(floorSpaceNode);
 
       // No skybox is added to this scene, and we're not clearing the background to
       // black because we want the real world to show through.
@@ -88,58 +123,31 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           textEnterXRTitle: "START AR",
           textXRNotFoundTitle: "AR NOT FOUND",
           textExitXRTitle: "EXIT  AR",
+          supportedSessionTypes: ['immersive-ar']
         });
         document.querySelector('header').appendChild(xrButton.domElement);
-
-        if (navigator.xr) {
-          // Checks to ensure that environment integration (AR) is available,
-          // and only enables the button if so.
-          navigator.xr.supportsSessionMode('immersive-ar').then(() => {
-            xrButton.enabled = true;
-          }).catch(() => {
-            navigator.xr.supportsSessionMode('legacy-inline-ar').then(() => {
-                xrButton.enabled = true;
-            });
-          });
-        }
-      }
-
-      function makeCanvas() {
-          // Create a fullscreen canvas element for use with legacy AR mode.
-          let canvas = document.createElement('canvas');
-          canvas.style.width = '100%';
-          canvas.style.height = '100%';
-          canvas.style.left = 0;
-          canvas.style.top = 0;
-          canvas.style.right = 0;
-          canvas.style.bottom = 0;
-          canvas.style.margin = 0;
-          canvas.id = 'legacy-canvas';
-          return canvas;
       }
 
       function onRequestSession() {
         // Requests an inline (non-immersive) session with environment integration
         // to get AR via video passthrough.
 
+        // Test the new XRSessionInit dictionary by asking for a nonexistent
+        // optional feature. This should be silently ignored.
+        let options = {
+          requiredFeatures: ['local-floor'],
+          optionalFeatures: ['unicorns-and-rainbows'],
+        };
+
         // Even though this is a non-immersive session, the fact that it's
         // using environment integration means it must be requested in a user
         // activation event so that appropriate permissions can be granted.
         // This will likely prompt the user to allow camera use, so the promise
         // may remain outstanding for a while.
-        navigator.xr.requestSession({ mode: 'immersive-ar' }).then((session) => {
+        navigator.xr.requestSession('immersive-ar', options).then((session) => {
+            session.mode = 'immersive-ar';
             xrButton.setSession(session);
             onSessionStarted(session);
-        }).catch(() => {
-            let legacyCanvas = makeCanvas();
-            let legacyCtx = legacyCanvas.getContext('xrpresent');
-            navigator.xr.requestSession({ mode: 'legacy-inline-ar',
-                                          outputContext: legacyCtx
-                                        }).then((session) => {
-                document.body.appendChild(legacyCanvas);
-                xrButton.setSession(session);
-                onSessionStarted(session);
-            });
         });
       }
 
@@ -158,9 +166,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
 
-        session.requestReferenceSpace({ type: 'stationary', subtype: 'eye-level' }).then((refSpace) => {
-          xrRefSpace = refSpace;
-          session.requestAnimationFrame(onXRFrame);
+        session.requestReferenceSpace('local').then((refSpace) => {
+          session.requestReferenceSpace('local-floor').then((floorSpace) => {
+            xrRefSpace = refSpace;
+            xrFloorSpace = floorSpace;
+
+            session.requestAnimationFrame(onXRFrame);
+          });
         });
       }
 
@@ -169,9 +181,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       }
 
       function onSessionEnded(event) {
-        if (event.session.mode.startsWith('legacy')) {
-          document.body.removeChild(document.querySelector('#legacy-canvas'));
-        }
         xrButton.setSession(null);
       }
 
@@ -179,6 +188,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       function onXRFrame(t, frame) {
         let session = frame.session;
         let pose = frame.getViewerPose(xrRefSpace);
+
+        let floorSpacePose = xrFloorSpace ? frame.getPose(xrFloorSpace, xrRefSpace) : null;
+
+        if(floorSpacePose && visualiseFloorSpace) {
+          floorSpaceNode.matrix = floorSpacePose.transform.matrix;
+          floorSpaceNode.visible = true;
+        } else {
+          floorSpaceNode.visible = false;
+        }
 
         scene.startFrame();
 

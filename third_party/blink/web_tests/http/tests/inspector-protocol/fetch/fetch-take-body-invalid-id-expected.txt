@@ -1,0 +1,3 @@
+Tests that Fetch.takeResponseBodyAsStream does not trigger a DCHECK when dispatching an error.
+Error from Fetch.takeResponseBodyAsStream: {"code":-32602,"message":"Invalid InterceptionId."}
+

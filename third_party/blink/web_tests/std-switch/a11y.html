@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<body>
+<script type="module">
+import 'std:elements/switch';
+
+test(t => {
+  assert_own_property(window, 'accessibilityController');
+
+  let switchElement = document.createElement('std-switch');
+  switchElement.id = 'switch';
+  switchElement.textContent =  'child text';
+  document.body.appendChild(switchElement);
+
+  let axSwitch = accessibilityController.accessibleElementById('switch');
+  assert_equals(axSwitch.role, 'AXRole: AXSwitch');
+  assert_equals(axSwitch.name, '', 'has no "child text"');
+  assert_equals(axSwitch.checked, 'false');
+
+  switchElement.on = true;
+  // Need to get AccessibleNode again
+  axSwitch = accessibilityController.accessibleElementById('switch');
+  assert_equals(axSwitch.checked, 'true');
+}, 'Check accessibility behavior');
+
+test(t => {
+  let switchElement = document.createElement('std-switch');
+  document.body.appendChild(switchElement);
+  switchElement.on = true;
+
+  assert_false(switchElement.hasAttribute('role'), 'role');
+  assert_false(switchElement.hasAttribute('aria-checked'), 'aria-checked');
+}, 'Should have no a11y attributes');
+
+test(t => {
+  assert_own_property(window, 'accessibilityController');
+
+  let switchElement = document.createElement('std-switch');
+  switchElement.id = 'switch3';
+  switchElement.setAttribute('role', 'checkbox');
+  switchElement.setAttribute('aria-checked', 'true');
+  document.body.appendChild(switchElement);
+
+  let axSwitch = accessibilityController.accessibleElementById('switch3');
+  assert_equals(axSwitch.role, 'AXRole: AXCheckBox');
+  assert_equals(axSwitch.checked, 'true');
+}, 'Adding role=/aria-checked= should override the default');
+</script>
+</body>

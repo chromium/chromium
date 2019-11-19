@@ -21,7 +21,6 @@ class SequencedTaskRunner;
 namespace policy {
 
 class CloudExternalDataStore;
-class ExternalPolicyDataFetcherBackend;
 
 // Downloads, verifies, caches and retrieves external data referenced by
 // policies.
@@ -72,14 +71,6 @@ class CloudExternalDataManagerBase : public CloudExternalDataManager {
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
  private:
-  // The |external_policy_data_fetcher_backend_| handles network I/O for the
-  // |backend_| because URLRequestContextGetter and URLFetchers cannot be
-  // referenced from background threads. It is instantiated on the thread |this|
-  // runs on but after that, must only be accessed and eventually destroyed via
-  // the |io_task_runner_|.
-  std::unique_ptr<ExternalPolicyDataFetcherBackend>
-      external_policy_data_fetcher_backend_;
-
   // The |backend_| handles all data download scheduling, verification, caching
   // and retrieval. It is instantiated on the thread |this| runs on but after
   // that, must only be accessed and eventually destroyed via the

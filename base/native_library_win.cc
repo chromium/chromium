@@ -8,6 +8,8 @@
 
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/path_service.h"
+#include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,9 +17,11 @@
 
 namespace base {
 
-using AddDllDirectory = HMODULE (*)(PCWSTR new_directory);
-
 namespace {
+
+// forward declare
+HMODULE AddDllDirectory(PCWSTR new_directory);
+
 // This enum is used to back an UMA histogram, and should therefore be treated
 // as append-only.
 enum LoadLibraryResult {
@@ -56,8 +60,9 @@ bool AreSearchFlagsAvailable() {
   // https://msdn.microsoft.com/en-us/library/windows/desktop/ms684179(v=vs.85).aspx
   // The LOAD_LIBRARY_SEARCH_* flags are used in the LoadNativeLibraryHelper
   // method.
-  auto add_dll_dir_func = reinterpret_cast<AddDllDirectory>(
-      GetProcAddress(GetModuleHandle(L"kernel32.dll"), "AddDllDirectory"));
+  static const auto add_dll_dir_func =
+      reinterpret_cast<decltype(AddDllDirectory)*>(
+          GetProcAddress(GetModuleHandle(L"kernel32.dll"), "AddDllDirectory"));
   return !!add_dll_dir_func;
 }
 
@@ -81,7 +86,8 @@ LoadLibraryResult GetLoadLibraryResult(bool are_search_flags_available,
 
 NativeLibrary LoadNativeLibraryHelper(const FilePath& library_path,
                                       NativeLibraryLoadError* error) {
-  // LoadLibrary() opens the file off disk.
+  // LoadLibrary() opens the file off disk and acquires the LoaderLock, hence
+  // must not be called from DllMain.
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
   HMODULE module = nullptr;
@@ -105,7 +111,7 @@ NativeLibrary LoadNativeLibraryHelper(const FilePath& library_path,
     // GetLastError() needs to be called immediately after
     // LoadLibraryExW call.
     if (error)
-      error->code = GetLastError();
+      error->code = ::GetLastError();
   }
 
   // If LoadLibraryExW API/flags are unavailable or API call fails, try
@@ -126,7 +132,7 @@ NativeLibrary LoadNativeLibraryHelper(const FilePath& library_path,
 
   // GetLastError() needs to be called immediately after LoadLibraryW call.
   if (!module && error)
-    error->code = GetLastError();
+    error->code = ::GetLastError();
 
   if (restore_directory)
     SetCurrentDirectory(current_directory);
@@ -137,6 +143,40 @@ NativeLibrary LoadNativeLibraryHelper(const FilePath& library_path,
 
   return module;
 }
+
+NativeLibrary LoadSystemLibraryHelper(const FilePath& library_path,
+                                      NativeLibraryLoadError* error) {
+  // GetModuleHandleEx and subsequently LoadLibraryEx acquire the LoaderLock,
+  // hence must not be called from Dllmain.
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+  NativeLibrary module;
+  BOOL module_found =
+      ::GetModuleHandleExW(0, as_wcstr(library_path.value()), &module);
+  if (!module_found) {
+    bool are_search_flags_available = AreSearchFlagsAvailable();
+    // Prefer LOAD_LIBRARY_SEARCH_SYSTEM32 to avoid DLL preloading attacks.
+    DWORD flags = are_search_flags_available ? LOAD_LIBRARY_SEARCH_SYSTEM32
+                                             : LOAD_WITH_ALTERED_SEARCH_PATH;
+    module = ::LoadLibraryExW(as_wcstr(library_path.value()), nullptr, flags);
+
+    if (!module && error)
+      error->code = ::GetLastError();
+
+    LogLibrarayLoadResultToUMA(
+        GetLoadLibraryResult(are_search_flags_available, !!module));
+  }
+
+  return module;
+}
+
+FilePath GetSystemLibraryName(FilePath::StringPieceType name) {
+  FilePath library_path;
+  // Use an absolute path to load the DLL to avoid DLL preloading attacks.
+  if (PathService::Get(DIR_SYSTEM, &library_path))
+    library_path = library_path.Append(name);
+  return library_path;
+}
+
 }  // namespace
 
 std::string NativeLibraryLoadError::ToString() const {
@@ -165,6 +205,54 @@ std::string GetNativeLibraryName(StringPiece name) {
 
 std::string GetLoadableModuleName(StringPiece name) {
   return GetNativeLibraryName(name);
+}
+
+NativeLibrary LoadSystemLibrary(FilePath::StringPieceType name,
+                                NativeLibraryLoadError* error) {
+  FilePath library_path = GetSystemLibraryName(name);
+  if (library_path.empty()) {
+    if (error)
+      error->code = ERROR_NOT_FOUND;
+    return nullptr;
+  }
+  return LoadSystemLibraryHelper(library_path, error);
+}
+
+NativeLibrary PinSystemLibrary(FilePath::StringPieceType name,
+                               NativeLibraryLoadError* error) {
+  FilePath library_path = GetSystemLibraryName(name);
+  if (library_path.empty()) {
+    if (error)
+      error->code = ERROR_NOT_FOUND;
+    return nullptr;
+  }
+
+  // GetModuleHandleEx acquires the LoaderLock, hence must not be called from
+  // Dllmain.
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+  ScopedNativeLibrary module;
+  if (::GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN,
+                           as_wcstr(library_path.value()),
+                           ScopedNativeLibrary::Receiver(module).get())) {
+    return module.release();
+  }
+
+  // Load and pin the library since it wasn't already loaded.
+  module = ScopedNativeLibrary(LoadSystemLibraryHelper(library_path, error));
+  if (!module.is_valid())
+    return nullptr;
+
+  ScopedNativeLibrary temp;
+  if (::GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN,
+                           as_wcstr(library_path.value()),
+                           ScopedNativeLibrary::Receiver(temp).get())) {
+    return module.release();
+  }
+
+  if (error)
+    error->code = ::GetLastError();
+  // Return nullptr since we failed to pin the module.
+  return nullptr;
 }
 
 }  // namespace base

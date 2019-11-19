@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.explore_sites;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -13,13 +14,16 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.suggestions.TileGridLayout;
-import org.chromium.chrome.browser.widget.RoundedIconGenerator;
+import org.chromium.chrome.browser.suggestions.tile.TileGridLayout;
+import org.chromium.chrome.browser.ui.widget.RoundedIconGenerator;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -35,9 +39,8 @@ import java.util.List;
  */
 public class ExploreSitesCategoryCardView extends LinearLayout {
     private static final String TAG = "ExploreSitesCategoryCardView";
-    private static final int MAX_TILE_COUNT = 8;
-    private static final int MAX_ROWS = 2;
 
+    private final ExploreSitesSiteViewBinder mSiteViewBinder;
     private TextView mTitleView;
     private TileGridLayout mTileView;
     private RoundedIconGenerator mIconGenerator;
@@ -48,9 +51,34 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
             mModelChangeProcessors;
     private ExploreSitesCategory mCategory;
     private int mCategoryCardIndex;
+    private int mTileViewLayout;
+    private boolean mIsDense;
+    private int mMaxRows;
+    private int mMaxColumns;
+    private int mMaxTileCount;
 
-    private class CategoryCardInteractionDelegate
-            implements ContextMenuManager.Delegate, OnClickListener, OnCreateContextMenuListener {
+    public View getTileViewAt(int tilePosition) {
+        return mTileView.getChildAt(tilePosition);
+    }
+
+    public int getFocusedTileIndex(int defaultIndex) {
+        if (mTileView.getFocusedChild() != null) {
+            for (int i = 0; i < mTileView.getChildCount(); i++) {
+                if (mTileView.getChildAt(i).hasFocus()) {
+                    return i;
+                }
+            }
+        }
+        return defaultIndex;
+    }
+
+    public void setTileResource(int tileResource) {
+        mTileViewLayout = tileResource;
+    }
+
+    protected class CategoryCardInteractionDelegate
+            implements ContextMenuManager.Delegate, OnClickListener, OnCreateContextMenuListener,
+                       OnFocusChangeListener {
         private String mSiteUrl;
         private int mTileIndex;
 
@@ -63,6 +91,7 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
         public void onClick(View view) {
             recordCategoryClick(mCategory.getType());
             recordTileIndexClick(mCategoryCardIndex, mTileIndex);
+            RecordUserAction.record("Android.ExploreSitesPage.ClickOnSiteIcon");
             ExploreSitesBridge.recordClick(mProfile, mSiteUrl, mCategory.getType());
             mNavigationDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams(getUrl(), PageTransition.AUTO_BOOKMARK));
@@ -92,28 +121,49 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
             // should reset the tile indexes for views we keep.
             updateTileViews(mCategory);
         }
+
         @Override
         public String getUrl() {
             return mSiteUrl;
         }
 
         @Override
-        public boolean isItemSupported(@ContextMenuManager.ContextMenuItemId int menuItemId) {
-            if (menuItemId == ContextMenuManager.ContextMenuItemId.LEARN_MORE) {
-                return false;
-            }
-            return true;
+        public String getContextMenuTitle() {
+            return null;
         }
 
         @Override
-        public void onContextMenuCreated(){};
+        public boolean isItemSupported(@ContextMenuManager.ContextMenuItemId int menuItemId) {
+            return menuItemId != ContextMenuManager.ContextMenuItemId.LEARN_MORE;
+        }
+
+        @Override
+        public void onContextMenuCreated() {}
+
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (hasFocus) {
+                // Ensures the whole category card is scrolled to view when a child site has focus.
+                // Immediate should be false so scrolling will not interfere with any existing
+                // scrollers running to make the view visible.
+                getParent().requestChildRectangleOnScreen(ExploreSitesCategoryCardView.this,
+                        new Rect(/* left= */ 0, /* top= */ 0, /* right= */ getWidth(),
+                                /* bottom= */ getHeight()),
+                        /* immediate= */ false);
+            }
+        }
+    }
+
+    protected CategoryCardInteractionDelegate createInteractionDelegate(PropertyModel model) {
+        return new CategoryCardInteractionDelegate(
+                model.get(ExploreSitesSite.URL_KEY), model.get(ExploreSitesSite.TILE_INDEX_KEY));
     }
 
     // We use the MVC paradigm for the site tiles inside the category card.  We don't use the MVC
     // paradigm for the category card view itself since it is mismatched to the needs of the
     // recycler view that we use for category cards.  The controller for MVC is actually here, the
     // bind code inside the view class.
-    private class ExploreSitesSiteViewBinder
+    protected class ExploreSitesSiteViewBinder
             implements PropertyModelChangeProcessor
                                .ViewBinder<PropertyModel, ExploreSitesTileView, PropertyKey> {
         @Override
@@ -126,17 +176,18 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
             } else if (key == ExploreSitesSite.URL_KEY) {
                 // Attach click handlers.
                 CategoryCardInteractionDelegate interactionDelegate =
-                        new CategoryCardInteractionDelegate(model.get(ExploreSitesSite.URL_KEY),
-                                model.get(ExploreSitesSite.TILE_INDEX_KEY));
+                        createInteractionDelegate(model);
                 view.setOnClickListener(interactionDelegate);
                 view.setOnCreateContextMenuListener(interactionDelegate);
+                view.setOnFocusChangeListener(interactionDelegate);
             }
         }
     }
 
     public ExploreSitesCategoryCardView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mModelChangeProcessors = new ArrayList<>(MAX_TILE_COUNT);
+        mModelChangeProcessors = new ArrayList<>();
+        mSiteViewBinder = new ExploreSitesSiteViewBinder();
     }
 
     @Override
@@ -144,7 +195,17 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
         super.onFinishInflate();
         mTitleView = findViewById(R.id.category_title);
         mTileView = findViewById(R.id.category_sites);
-        mTileView.setMaxColumns(ExploreSitesCategory.MAX_COLUMNS);
+    }
+
+    public void setTileGridParams(int maxRows, int maxColumns, @DenseVariation int denseVariation) {
+        mIsDense = ExploreSitesBridge.isDense(denseVariation);
+        mMaxRows = maxRows;
+        mMaxColumns = maxColumns;
+        mMaxTileCount = mMaxRows * mMaxColumns;
+        mModelChangeProcessors.clear();
+        mModelChangeProcessors = new ArrayList<>(mMaxTileCount);
+
+        mTileView.setMaxColumns(mMaxColumns);
     }
 
     public void setCategory(ExploreSitesCategory category, int categoryCardIndex,
@@ -157,8 +218,8 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
         mCategoryCardIndex = categoryCardIndex;
         mCategory = category;
 
-        updateTitle(category.getTitle());
-        updateTileViews(category);
+        updateTitle(mCategory.getTitle());
+        updateTileViews(mCategory);
     }
 
     public void updateTitle(String categoryTitle) {
@@ -173,14 +234,9 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
         }
         mModelChangeProcessors.clear();
 
-        // Only show rows that would be fully populated by original list of sites. This is
-        // calculated within the category.
-        mTileView.setMaxRows(Math.min(category.getMaxRows(), MAX_ROWS));
-
-        // Maximum number of sites that can be shown, defined as min of
-        // numSitesToShow and maxRows * maxCols.
-        int tileMax = Math.min(category.getMaxRows() * ExploreSitesCategory.MAX_COLUMNS,
-                category.getNumDisplayed());
+        boolean incompleteAllowed = allowIncompleteRow(category);
+        int tileMax = tilesToDisplay(category, incompleteAllowed);
+        mTileView.setMaxRows(rowsToDisplay(category, incompleteAllowed));
 
         // Remove extra tiles if too many.
         if (mTileView.getChildCount() > tileMax) {
@@ -191,7 +247,7 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
         if (mTileView.getChildCount() < tileMax) {
             for (int i = mTileView.getChildCount(); i < tileMax; i++) {
                 mTileView.addView(LayoutInflater.from(getContext())
-                                          .inflate(R.layout.explore_sites_tile_view, mTileView,
+                                          .inflate(mTileViewLayout, mTileView,
                                                   /* attachToRoot = */ false));
             }
         }
@@ -209,8 +265,8 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
 
             siteModel.set(ExploreSitesSite.TILE_INDEX_KEY, tileIndex);
 
-            mModelChangeProcessors.add(PropertyModelChangeProcessor.create(
-                    siteModel, tileView, new ExploreSitesSiteViewBinder()));
+            mModelChangeProcessors.add(
+                    PropertyModelChangeProcessor.create(siteModel, tileView, mSiteViewBinder));
 
             // Fetch icon if not present already.
             if (siteModel.get(ExploreSitesSite.ICON_KEY) == null) {
@@ -232,13 +288,63 @@ public class ExploreSitesCategoryCardView extends LinearLayout {
 
     /**
      * Records UMA data for how far down the EoS page the picked tile was.
-     * @param cardNumber The number card (zero based) of the tile that was picked.
-     * @param tileNumber The number of the tile within the card.
+     * @param cardIndex The number card (zero based) of the tile that was picked.
+     * @param tileIndex The number of the tile within the card.
      */
-    public static void recordTileIndexClick(int cardIndex, int tileIndex) {
+    public void recordTileIndexClick(int cardIndex, int tileIndex) {
         // TODO(petewil): Should I get the number of sites in this category from the model instead
         // of using MAX_TILE_COUNT?
-        RecordHistogram.recordLinearCountHistogram("ExploreSites.SiteTilesClickIndex",
-                cardIndex * MAX_TILE_COUNT + tileIndex, 1, 100, 100);
+        RecordHistogram.recordLinearCountHistogram("ExploreSites.SiteTilesClickIndex2",
+                cardIndex * ExploreSitesPage.MAX_TILE_COUNT_ALL_VARIATIONS + tileIndex, 1, 100,
+                100);
+    }
+
+    /**
+     * Determine if an incomplete row will be allowed when the view is dense.
+     *
+     * An incomplete row is not allowed regardless of the below constraints if:
+     *  - The view is not dense.
+     *  - There are more sites to display than mMaxTileCount.
+     *  - The last row forms a complete row of sites.
+     *
+     * An incomplete row is allowed if any of the following constraints are satisfied:
+     *  - There are not enough sites to populate the first row.
+     *  - There is more than one site in the last row.
+     *  - There is one site in the last row as a result of the user blacklisting a site.
+     *
+     * @param category The category from which the number of incomplete row will be calculated.
+     */
+    @VisibleForTesting
+    boolean allowIncompleteRow(ExploreSitesCategory category) {
+        if (!mIsDense) return false;
+        // Do not allow incomplete row if category has more sites than mMaxTileCount.
+        if (category.getNumDisplayed() > mMaxTileCount) return false;
+
+        final int numSitesLastRow = category.getNumDisplayed() % mMaxColumns;
+        // Do not allow incomplete row if last row forms a complete row anyway.
+        if (numSitesLastRow == 0) return false;
+
+        // Allow incomplete row if category does not have enough sites to populate first row.
+        if (category.getNumDisplayed() < mMaxColumns) return true;
+
+        return (category.getNumberRemoved() > 0 || numSitesLastRow > 1);
+    }
+
+    @VisibleForTesting
+    int rowsToDisplay(ExploreSitesCategory category, boolean incompleteAllowed) {
+        if (mIsDense) {
+            int displayedRows = category.getNumDisplayed() / mMaxColumns;
+            return Math.min(displayedRows + (incompleteAllowed ? 1 : 0), mMaxRows);
+        } else {
+            return Math.min(category.getMaxRows(mMaxColumns), mMaxRows);
+        }
+    }
+
+    @VisibleForTesting
+    int tilesToDisplay(ExploreSitesCategory category, boolean incompleteAllowed) {
+        return incompleteAllowed ? Math.min(category.getNumDisplayed(), mMaxTileCount)
+                                 : Math.min(Math.min(category.getMaxRows(mMaxColumns) * mMaxColumns,
+                                                    category.getNumDisplayed()),
+                                         mMaxTileCount);
     }
 }

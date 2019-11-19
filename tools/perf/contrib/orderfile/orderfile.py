@@ -44,6 +44,9 @@ from page_sets.system_health import platforms
 from page_sets.system_health import system_health_stories
 from telemetry import benchmark
 from telemetry import story
+from telemetry.timeline import chrome_trace_category_filter
+from telemetry.timeline import chrome_trace_config
+from telemetry.web_perf import timeline_based_measurement
 
 
 class OrderfileStorySet(story.StorySet):
@@ -64,7 +67,6 @@ class OrderfileStorySet(story.StorySet):
       'background:tools:gmail',
       'browse:chrome:newtab',
       'browse:chrome:omnibox',
-      'browse:news:cnn',
       'browse:news:cnn:2018',
       'browse:news:globo',
       'browse:news:toi',
@@ -251,3 +253,45 @@ class OrderfileDebugging(_OrderfileBenchmark):
   @classmethod
   def Name(cls):
     return 'orderfile_generation.debugging'
+
+@benchmark.Owner(emails=['mattcary@chromium.org'])
+class OrderfileMemory(system_health.MobileMemorySystemHealth):
+  """Benchmark for native code memory footprint evaluation."""
+  class OrderfileMemoryStorySet(story.StorySet):
+    _STORY_SET = set([
+      'browse:news:cnn:2018',
+      'browse:social:facebook'
+    ])
+
+    def __init__(self, platform, take_memory_measurement=True):
+      super(OrderfileMemory.OrderfileMemoryStorySet, self).__init__(
+          archive_data_file=('../../page_sets/data/system_health_%s.json' %
+                             platform),
+          cloud_storage_bucket=story.PARTNER_BUCKET)
+
+      assert platform in platforms.ALL_PLATFORMS
+      for story_class in system_health_stories.IterAllSystemHealthStoryClasses():
+        if (story_class.ABSTRACT_STORY or
+            platform not in story_class.SUPPORTED_PLATFORMS or
+            story_class.NAME not in self._STORY_SET):
+          continue
+        self.AddStory(story_class(self, take_memory_measurement))
+
+
+  def CreateStorySet(self, options):
+    return self.OrderfileMemoryStorySet(platform=self.PLATFORM)
+
+  def CreateCoreTimelineBasedMeasurementOptions(self):
+    cat_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
+        filter_string='-*,disabled-by-default-memory-infra')
+    options = timeline_based_measurement.Options(cat_filter)
+    # options.config.enable_android_graphics_memtrack = True
+    options.SetTimelineBasedMetrics(['nativeCodeResidentMemoryMetric'])
+    # Setting an empty memory dump config disables periodic dumps.
+    options.config.chrome_trace_config.SetMemoryDumpConfig(
+        chrome_trace_config.MemoryDumpConfig())
+    return options
+
+  @classmethod
+  def Name(cls):
+    return 'orderfile.memory_mobile'

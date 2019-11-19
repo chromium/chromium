@@ -13,14 +13,14 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
 
 namespace {
 
-class SerialWorkerTest : public TestWithScopedTaskEnvironment {
+class SerialWorkerTest : public TestWithTaskEnvironment {
  public:
   // The class under test
   class TestSerialWorker : public SerialWorker {
@@ -53,7 +53,7 @@ class SerialWorkerTest : public TestWithScopedTaskEnvironment {
           scoped_allow_base_sync_primitives;
       work_allowed_.Wait();
     }
-    // Calling from TaskScheduler, but protected by work_allowed_/work_called_.
+    // Calling from ThreadPool, but protected by work_allowed_/work_called_.
     output_value_ = input_value_;
 
     { // This lock might be destroyed after work_called_ is signalled.

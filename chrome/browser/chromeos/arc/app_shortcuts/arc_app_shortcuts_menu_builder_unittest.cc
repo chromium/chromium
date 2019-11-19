@@ -15,7 +15,7 @@
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/display/types/display_constants.h"
@@ -53,14 +53,14 @@ class ArcAppShortcutsMenuBuilderTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   ArcAppTest arc_app_test_;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcAppShortcutsMenuBuilderTest);
 };
 
 TEST_F(ArcAppShortcutsMenuBuilderTest, Basic) {
   base::RunLoop run_loop;
-  std::unique_ptr<ui::MenuModel> menu;
+  std::unique_ptr<ui::SimpleMenuModel> menu;
   auto simple_menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
   const base::string16 first_item_label = base::UTF8ToUTF16("FirstItemLabel");
   simple_menu_model->AddItem(1, first_item_label);
@@ -71,7 +71,7 @@ TEST_F(ArcAppShortcutsMenuBuilderTest, Basic) {
   arc_app_shortcuts_menu_builder->BuildMenu(
       kFakeAppPackageName, std::move(simple_menu_model),
       base::BindLambdaForTesting(
-          [&](std::unique_ptr<ui::MenuModel> returned_menu) {
+          [&](std::unique_ptr<ui::SimpleMenuModel> returned_menu) {
             menu = std::move(returned_menu);
             run_loop.Quit();
           }));

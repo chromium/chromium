@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/task/post_task.h"
+#include "chrome/browser/bad_message.h"
 #include "chrome/browser/prerender/prerender_final_status.h"
 #include "chrome/browser/prerender/prerender_link_manager.h"
 #include "chrome/browser/prerender/prerender_link_manager_factory.h"
@@ -16,6 +17,7 @@
 #include "chrome/common/prerender_messages.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/child_process_security_policy.h"
 
 using content::BrowserThread;
 
@@ -97,7 +99,7 @@ void PrerenderMessageFilter::OverrideThreadForMessage(
 }
 
 void PrerenderMessageFilter::OnChannelClosing() {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&PrerenderMessageFilter::OnChannelClosingInUIThread,
                      this));
@@ -112,15 +114,23 @@ void PrerenderMessageFilter::OnAddPrerender(
     int prerender_id,
     const PrerenderAttributes& attributes,
     const content::Referrer& referrer,
+    const url::Origin& initiator_origin,
     const gfx::Size& size,
     int render_view_route_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!prerender_link_manager_)
     return;
+  if (!initiator_origin.opaque() &&
+      !content::ChildProcessSecurityPolicy::GetInstance()
+           ->CanAccessDataForOrigin(render_process_id_,
+                                    initiator_origin.GetURL())) {
+    bad_message::ReceivedBadMessage(this,
+                                    bad_message::PMF_INVALID_INITIATOR_ORIGIN);
+    return;
+  }
   prerender_link_manager_->OnAddPrerender(
-      render_process_id_, prerender_id,
-      attributes.url, attributes.rel_types, referrer,
-      size, render_view_route_id);
+      render_process_id_, prerender_id, attributes.url, attributes.rel_types,
+      referrer, initiator_origin, size, render_view_route_id);
 }
 
 void PrerenderMessageFilter::OnCancelPrerender(

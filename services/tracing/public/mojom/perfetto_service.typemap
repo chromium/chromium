@@ -1,6 +1,6 @@
 mojom = "//services/tracing/public/mojom/perfetto_service.mojom"
 public_headers = [
-  "//third_party/perfetto/include/perfetto/tracing/core/commit_data_request.h",
+  "//third_party/perfetto/include/perfetto/ext/tracing/core/commit_data_request.h",
   "//third_party/perfetto/include/perfetto/tracing/core/data_source_config.h",
   "//third_party/perfetto/include/perfetto/tracing/core/data_source_descriptor.h",
   "//third_party/perfetto/include/perfetto/tracing/core/chrome_config.h",
@@ -29,12 +29,15 @@ public_deps = [
   "//third_party/perfetto:libperfetto",
 ]
 type_mappings = [
-  "tracing.mojom.CommitDataRequest=perfetto::CommitDataRequest",
-  "tracing.mojom.ChunksToMove=perfetto::CommitDataRequest::ChunksToMove",
-  "tracing.mojom.ChunkPatch=perfetto::CommitDataRequest::ChunkToPatch::Patch",
-  "tracing.mojom.ChunkToPatch=perfetto::CommitDataRequest::ChunkToPatch",
-  "tracing.mojom.DataSourceConfig=perfetto::DataSourceConfig",
-  "tracing.mojom.ChromeConfig=perfetto::ChromeConfig",
-  "tracing.mojom.DataSourceRegistration=perfetto::DataSourceDescriptor",
-  "tracing.mojom.TraceConfig=perfetto::TraceConfig",
+  "tracing.mojom.BufferFillPolicy=::perfetto::TraceConfig::BufferConfig::FillPolicy",
+  "tracing.mojom.CommitDataRequest=::perfetto::CommitDataRequest",
+  "tracing.mojom.ChunksToMove=::perfetto::CommitDataRequest::ChunksToMove",
+  "tracing.mojom.ChunkPatch=::perfetto::CommitDataRequest::ChunkToPatch::Patch",
+  "tracing.mojom.ChunkToPatch=::perfetto::CommitDataRequest::ChunkToPatch",
+  "tracing.mojom.DataSourceConfig=::perfetto::DataSourceConfig",
+  "tracing.mojom.ChromeConfig=::perfetto::ChromeConfig",
+  "tracing.mojom.DataSourceRegistration=::perfetto::DataSourceDescriptor",
+  "tracing.mojom.PerfettoBuiltinDataSource=::perfetto::TraceConfig::BuiltinDataSource",
+  "tracing.mojom.IncrementalStateConfig=::perfetto::TraceConfig::IncrementalStateConfig",
+  "tracing.mojom.TraceConfig=::perfetto::TraceConfig",
 ]

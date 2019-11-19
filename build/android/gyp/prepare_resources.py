@@ -14,13 +14,12 @@ import re
 import shutil
 import sys
 
-import generate_v14_compatible_resources
-
 from util import build_utils
+from util import manifest_utils
 from util import resource_utils
 
 _AAPT_IGNORE_PATTERN = ':'.join([
-    'OWNERS',  # Allow OWNERS files within res/
+    '*OWNERS',  # Allow OWNERS files within res/
     '*.py',  # PRESUBMIT.py sometimes exist.
     '*.pyc',
     '*~',  # Some editors create these as temp files.
@@ -35,6 +34,9 @@ def _ParseArgs(args):
     An options object as from argparse.ArgumentParser.parse_args()
   """
   parser, input_opts, output_opts = resource_utils.ResourceArgsParser()
+
+  input_opts.add_argument(
+      '--aapt-path', required=True, help='Path to the Android aapt tool')
 
   input_opts.add_argument('--resource-dirs',
                         default='[]',
@@ -58,9 +60,7 @@ def _ParseArgs(args):
   output_opts.add_argument(
       '--resource-zip-out',
       help='Path to a zip archive containing all resources from '
-           '--resource-dirs, merged into a single directory tree. This will '
-           'also include auto-generated v14-compatible resources unless '
-           '--v14-skip is used.')
+      '--resource-dirs, merged into a single directory tree.')
 
   output_opts.add_argument('--srcjar-out',
                     help='Path to .srcjar to contain the generated R.java.')
@@ -69,9 +69,9 @@ def _ParseArgs(args):
                     help='Path to store the generated R.txt file.')
 
   input_opts.add_argument(
-      '--v14-skip',
+      '--strip-drawables',
       action="store_true",
-      help='Do not generate nor verify v14 resources.')
+      help='Remove drawables from the resources.')
 
   options = parser.parse_args(args)
 
@@ -132,21 +132,30 @@ def _GenerateRTxt(options, dep_subdirs, gen_dir):
   """
   # NOTE: This uses aapt rather than aapt2 because 'aapt2 compile' does not
   # support the --output-text-symbols option yet (https://crbug.com/820460).
-  package_command = [options.aapt_path,
-                     'package',
-                     '-m',
-                     '-M', resource_utils.EMPTY_ANDROID_MANIFEST_PATH,
-                     '--no-crunch',
-                     '--auto-add-overlay',
-                     '--no-version-vectors',
-                    ]
+  package_command = [
+      options.aapt_path,
+      'package',
+      '-m',
+      '-M',
+      manifest_utils.EMPTY_ANDROID_MANIFEST_PATH,
+      '--no-crunch',
+      '--auto-add-overlay',
+      '--no-version-vectors',
+  ]
   for j in options.include_resources:
     package_command += ['-I', j]
 
+  ignore_pattern = _AAPT_IGNORE_PATTERN
+  if options.strip_drawables:
+    ignore_pattern += ':*drawable*'
   package_command += [
-                     '--output-text-symbols', gen_dir,
-                     '-J', gen_dir,  # Required for R.txt generation.
-                     '--ignore-assets', _AAPT_IGNORE_PATTERN]
+      '--output-text-symbols',
+      gen_dir,
+      '-J',
+      gen_dir,  # Required for R.txt generation.
+      '--ignore-assets',
+      ignore_pattern
+  ]
 
   # Adding all dependencies as sources is necessary for @type/foo references
   # to symbols within dependencies to resolve. However, it has the side-effect
@@ -166,30 +175,18 @@ def _GenerateRTxt(options, dep_subdirs, gen_dir):
 
 
 def _GenerateResourcesZip(output_resource_zip, input_resource_dirs,
-                          v14_skip, temp_dir):
+                          strip_drawables):
   """Generate a .resources.zip file fron a list of input resource dirs.
 
   Args:
     output_resource_zip: Path to the output .resources.zip file.
     input_resource_dirs: A list of input resource directories.
-    v14_skip: If False, then v14-compatible resource will also be
-      generated in |{temp_dir}/v14| and added to the final zip.
-    temp_dir: Path to temporary directory.
   """
-  if not v14_skip:
-    # Generate v14-compatible resources in temp_dir.
-    v14_dir = os.path.join(temp_dir, 'v14')
-    build_utils.MakeDirectory(v14_dir)
 
-    for resource_dir in input_resource_dirs:
-      generate_v14_compatible_resources.GenerateV14Resources(
-          resource_dir,
-          v14_dir)
-
-    input_resource_dirs.append(v14_dir)
-
-  _ZipResources(input_resource_dirs, output_resource_zip,
-                _AAPT_IGNORE_PATTERN)
+  ignore_pattern = _AAPT_IGNORE_PATTERN
+  if strip_drawables:
+    ignore_pattern += ':*drawable*'
+  _ZipResources(input_resource_dirs, output_resource_zip, ignore_pattern)
 
 
 def _OnStaleMd5(options):
@@ -215,8 +212,9 @@ def _OnStaleMd5(options):
     if options.srcjar_out:
       package = options.custom_package
       if not package and options.android_manifest:
-        package = resource_utils.ExtractPackageFromManifest(
+        _, manifest_node, _ = manifest_utils.ParseManifest(
             options.android_manifest)
+        package = manifest_utils.GetPackage(manifest_node)
 
       # Don't create a .java file for the current resource target when no
       # package name was provided (either by manifest or build rules).
@@ -230,17 +228,17 @@ def _OnStaleMd5(options):
         if options.shared_resources:
           rjava_build_options.GenerateOnResourcesLoaded()
 
+        # Not passing in custom_root_package_name or parent to keep
+        # file names unique.
         resource_utils.CreateRJavaFiles(
-            build.srcjar_dir, package, r_txt_path,
-            options.extra_res_packages,
-            options.extra_r_text_files,
-            rjava_build_options)
+            build.srcjar_dir, package, r_txt_path, options.extra_res_packages,
+            options.extra_r_text_files, rjava_build_options, options.srcjar_out)
 
       build_utils.ZipDir(options.srcjar_out, build.srcjar_dir)
 
     if options.resource_zip_out:
       _GenerateResourcesZip(options.resource_zip_out, options.resource_dirs,
-                            options.v14_skip, build.temp_dir)
+                            options.strip_drawables)
 
 
 def main(args):
@@ -259,9 +257,9 @@ def main(args):
   # List python deps in input_strings rather than input_paths since the contents
   # of them does not change what gets written to the depsfile.
   input_strings = options.extra_res_packages + [
-    options.custom_package,
-    options.shared_resources,
-    options.v14_skip,
+      options.custom_package,
+      options.shared_resources,
+      options.strip_drawables,
   ]
 
   possible_input_paths = [
@@ -297,8 +295,7 @@ def main(args):
       input_paths=input_paths,
       input_strings=input_strings,
       output_paths=output_paths,
-      depfile_deps=depfile_deps,
-      add_pydeps=False)
+      depfile_deps=depfile_deps)
 
 
 if __name__ == '__main__':

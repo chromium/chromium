@@ -36,7 +36,7 @@ class RecordSiteClickTask : public Task {
   bool complete_ = false;
   bool result_ = false;
 
-  base::WeakPtrFactory<RecordSiteClickTask> weak_ptr_factory_;
+  base::WeakPtrFactory<RecordSiteClickTask> weak_ptr_factory_{this};
 };
 
 }  // namespace explore_sites

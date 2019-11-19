@@ -31,7 +31,8 @@ class CrashReportUploadThread;
 
 //! \brief An exception handler that writes crash reports for exception messages
 //!     to a CrashReportDatabase.
-class CrashReportExceptionHandler : public ExceptionHandlerServer::Delegate {
+class CrashReportExceptionHandler final
+    : public ExceptionHandlerServer::Delegate {
  public:
   //! \brief Creates a new object that will store crash reports in \a database.
   //!

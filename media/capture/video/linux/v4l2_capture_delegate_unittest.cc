@@ -6,8 +6,9 @@
 #include <sys/ioctl.h>
 
 #include "base/files/file_enumerator.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "media/capture/video/linux/v4l2_capture_delegate.h"
@@ -182,10 +183,11 @@ class V4L2CaptureDelegateTest : public ::testing::Test {
             v4l2_.get(),
             device_descriptor_,
             base::ThreadTaskRunnerHandle::Get(),
-            50)) {}
+            50,
+            0)) {}
   ~V4L2CaptureDelegateTest() override = default;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   VideoCaptureDeviceDescriptor device_descriptor_;
   scoped_refptr<V4L2CaptureDevice> v4l2_;
   std::unique_ptr<V4L2CaptureDelegate> delegate_;
@@ -233,7 +235,7 @@ TEST_F(V4L2CaptureDelegateTest, MAYBE_CreateAndDestroyAndVerifyControls) {
 
     base::RunLoop run_loop;
     base::Closure quit_closure = run_loop.QuitClosure();
-    EXPECT_CALL(*client_ptr, OnIncomingCapturedData(_, _, _, _, _, _, _))
+    EXPECT_CALL(*client_ptr, OnIncomingCapturedData(_, _, _, _, _, _, _, _, _))
         .Times(1)
         .WillOnce(RunClosure(quit_closure));
     run_loop.Run();

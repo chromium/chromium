@@ -54,7 +54,8 @@ class ServiceWatcher {
   };
 
   // Called when a service has been added or removed for a certain service name.
-  typedef base::Callback<void(UpdateType, const std::string&)> UpdatedCallback;
+  using UpdatedCallback =
+      base::RepeatingCallback<void(UpdateType, const std::string&)>;
 
   // Listening will automatically stop when the destructor is called.
   virtual ~ServiceWatcher() {}
@@ -114,7 +115,7 @@ class ServiceDiscoveryClient {
   // on service type |service_type|.
   virtual std::unique_ptr<ServiceWatcher> CreateServiceWatcher(
       const std::string& service_type,
-      const ServiceWatcher::UpdatedCallback& callback) = 0;
+      ServiceWatcher::UpdatedCallback callback) = 0;
 
   // Create a service resolver object for getting detailed service information
   // for the service called |service_name|.

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/feature_list.h"
@@ -21,8 +22,8 @@
 // Provides helper methods and data types that are used to determine the
 // high-level security information about a page or request.
 //
-// SecurityInfo is the main data structure, describing a page's or request's
-// security state. It is computed by the platform-independent GetSecurityInfo()
+// SecurityLevel is the main result, describing a page's or request's
+// security state. It is computed by the platform-independent GetSecurityLevel()
 // helper method, which receives platform-specific inputs from its callers in
 // the form of a VisibleSecurityState struct.
 namespace security_state {
@@ -39,7 +40,8 @@ namespace security_state {
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.security_state
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: ConnectionSecurityLevel
 enum SecurityLevel {
-  // HTTP/no URL/HTTPS but with insecure passive content on the page.
+  // Neutral; neither positively secure nor insecure. Used for e.g. some types
+  // of non-http/https URLs.
   NONE = 0,
 
   // HTTP, in a case where we want to show a visible warning about the page's
@@ -48,7 +50,8 @@ enum SecurityLevel {
   // The criteria used to classify pages as NONE vs. HTTP_SHOW_WARNING will
   // change over time. Eventually, NONE will be eliminated.
   // See https://crbug.com/647754.
-  HTTP_SHOW_WARNING = 1,
+  // DEPRECATED: Use WARNING instead in most cases.
+  // HTTP_SHOW_WARNING = 1,
 
   // HTTPS with valid EV cert.
   EV_SECURE = 2,
@@ -67,6 +70,11 @@ enum SecurityLevel {
   // insecure active content on the page, malware, phishing, or any other
   // serious security issue that could be dangerous.
   DANGEROUS = 5,
+
+  // Pages deemed insecure, where we should show a warning indicator. This
+  // includes HTTP pages (previously these were HTTP_SHOW_WARNING) and cases
+  // where we consider an HTTPS page to be insecure (e.g., legacy TLS versions).
+  WARNING = 6,
 
   SECURITY_LEVEL_COUNT
 };
@@ -90,71 +98,70 @@ enum MaliciousContentStatus {
   MALICIOUS_CONTENT_STATUS_MALWARE,
   MALICIOUS_CONTENT_STATUS_UNWANTED_SOFTWARE,
   MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING,
-  MALICIOUS_CONTENT_STATUS_SIGN_IN_PASSWORD_REUSE,
+  MALICIOUS_CONTENT_STATUS_SAVED_PASSWORD_REUSE,
+  MALICIOUS_CONTENT_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE,
+  MALICIOUS_CONTENT_STATUS_SIGNED_IN_NON_SYNC_PASSWORD_REUSE,
   MALICIOUS_CONTENT_STATUS_ENTERPRISE_PASSWORD_REUSE,
   MALICIOUS_CONTENT_STATUS_BILLING,
 };
 
-// Describes the security status of a page or request. This is the
-// main data structure provided by this class. SecurityInfo contains a
-// SecurityLevel (which
-// is a single value describing the overall security state) along with
-// information that a consumer might want to display in UI to explain or
-// elaborate on the SecurityLevel.
-struct SecurityInfo {
-  SecurityInfo();
-  ~SecurityInfo();
-  // Whether the connection security fields are initialized.
-  bool connection_info_initialized;
-  // Describes the overall security state of the page.
-  SecurityLevel security_level;
-  // Describes the nature of the page's malicious content, if any.
-  MaliciousContentStatus malicious_content_status;
-  // True if a SHA1 signature was observed anywhere in the certificate chain.
-  bool sha1_in_chain;
-  // |mixed_content_status| describes the presence of content that was
-  // loaded over a nonsecure (HTTP) connection.
-  ContentStatus mixed_content_status;
-  // |content_with_cert_errors_status| describes the presence of
-  // content that was loaded over an HTTPS connection with
-  // certificate errors.
-  ContentStatus content_with_cert_errors_status;
-  bool scheme_is_cryptographic;
-  net::CertStatus cert_status;
-  scoped_refptr<net::X509Certificate> certificate;
-  // Information about the SSL connection, such as protocol and
-  // ciphersuite. See ssl_connection_flags.h in net.
-  int connection_status;
-  // The ID of the (EC)DH group used by the key exchange. The value is zero if
-  // unknown (older cache entries may not store the value) or not applicable.
-  uint16_t key_exchange_group;
-  // The signature algorithm used by the peer in the TLS handshake, or zero if
-  // unknown (older cache entries may not store the value) or not applicable.
-  uint16_t peer_signature_algorithm;
-  // A mask that indicates which of the protocol version,
-  // key exchange, or cipher for the connection is considered
-  // obsolete. See net::ObsoleteSSLMask for specific mask values.
-  int obsolete_ssl_status;
-  // True if pinning was bypassed due to a local trust anchor.
-  bool pkp_bypassed;
-  // True if the secure page contained a form with a nonsecure target.
-  bool contained_mixed_form;
-  // True if the server's certificate does not contain a
-  // subjectAltName extension with a domain name or IP address.
-  bool cert_missing_subject_alt_name;
-  // Contains information about input events that may impact the security
-  // level of the page.
-  InsecureInputEventData insecure_input_events;
+// Describes whether the page triggers any safety tips or reputation
+// warnings.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Style note: this differs from other enums in this file to follow new
+// histogram enum naming conventions
+// (https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#usage).
+enum class SafetyTipStatus {
+  // Safety tip status is not applicable, e.g. there is no current navigation.
+  kUnknown = 0,
+  // The current page did not trigger any Safety Tip.
+  kNone = 1,
+  // The current page triggered a Safety Tip because it was bad reputation.
+  kBadReputation = 2,
+  // The current page triggered a Safety Tip because it had a lookalike URL.
+  kLookalike = 3,
+  // The current page triggered a Safety Tip because a suspicious keyword was
+  // found in its hostname.
+  kBadKeyword = 4,
+  // The current page had bad reputation, but a Safety Tip was not shown since
+  // it had been previously ignored by the user.
+  kBadReputationIgnored = 5,
+  // The current page had a lookalike URL, but a Safety Tip was not shown since
+  // it had been previously ignored by the user.
+  kLookalikeIgnored = 6,
+  kMaxValue = kLookalikeIgnored,
 };
 
-// Contains the security state relevant to computing the SecurityInfo
-// for a page. This is the input to GetSecurityInfo().
+// Information about the last safety tip shown in the UI. This is used in page
+// info and security tab (in devtools) to give more information about the safety
+// tip.
+struct SafetyTipInfo {
+  SafetyTipStatus status = SafetyTipStatus::kUnknown;
+  // The URL the safety tip suggested ("Did you mean?"). Only filled in for
+  // lookalike matches.
+  GURL safe_url;
+};
+
+// Contains the security state relevant to computing the SecurityLevel
+// for a page. This is the input to GetSecurityLevel().
 struct VisibleSecurityState {
   VisibleSecurityState();
+  VisibleSecurityState(const VisibleSecurityState& other);
+  VisibleSecurityState& operator=(const VisibleSecurityState& other);
   ~VisibleSecurityState();
+
   GURL url;
 
   MaliciousContentStatus malicious_content_status;
+
+  // What type of Safety Tip (if any) triggered on the page. Note that this
+  // field will be set even if the Safety Tip UI was not actually shown due to
+  // the feature being disabled (so that this field can be used to record
+  // metrics independent of whether the UI actually showed).
+  SafetyTipInfo safety_tip_info;
 
   // CONNECTION SECURITY FIELDS
   // Whether the connection security fields are initialized.
@@ -187,6 +194,13 @@ struct VisibleSecurityState {
   bool is_error_page;
   // True if the page is a view-source page.
   bool is_view_source;
+  // True if the page is a devtools page.
+  bool is_devtools;
+  // True if the page was loaded over a legacy TLS version.
+  bool connection_used_legacy_tls;
+  // True if the page should be excluded from a UI treatment for legacy TLS
+  // (used for control group in an experimental UI rollout).
+  bool should_suppress_legacy_tls_warning;
   // Contains information about input events that may impact the security
   // level of the page.
   InsecureInputEventData insecure_input_events;
@@ -201,17 +215,21 @@ constexpr SecurityLevel kRanInsecureContentLevel = DANGEROUS;
 // Returns true if the given |url|'s origin should be considered secure.
 using IsOriginSecureCallback = base::Callback<bool(const GURL& url)>;
 
-// Populates |result| to describe the current page.
+// Returns a SecurityLevel to describe the current page.
 // |visible_security_state| contains the relevant security state.
 // |used_policy_installed_certificate| indicates whether the page or request
 // is known to be loaded with a certificate installed by the system admin.
 // |is_origin_secure_callback| determines whether a URL's origin should be
 // considered secure.
-void GetSecurityInfo(
-    std::unique_ptr<VisibleSecurityState> visible_security_state,
+SecurityLevel GetSecurityLevel(
+    const VisibleSecurityState& visible_security_state,
     bool used_policy_installed_certificate,
-    IsOriginSecureCallback is_origin_secure_callback,
-    SecurityInfo* result);
+    IsOriginSecureCallback is_origin_secure_callback);
+
+// Returns true if the current page was loaded using a cryptographic protocol
+// and its certificate has any major errors.
+bool HasMajorCertificateError(
+    const VisibleSecurityState& visible_security_state);
 
 // Returns true for a valid |url| with a cryptographic scheme, e.g., HTTPS, WSS.
 bool IsSchemeCryptographic(const GURL& url);
@@ -226,6 +244,32 @@ bool IsSslCertificateValid(security_state::SecurityLevel security_level);
 // Returns the given prefix suffixed with a dot and the current security level.
 std::string GetSecurityLevelHistogramName(
     const std::string& prefix, security_state::SecurityLevel level);
+
+// Returns the given prefix suffixed with a dot and the given Safety Tip status.
+std::string GetSafetyTipHistogramName(const std::string& prefix,
+                                      SafetyTipStatus safety_tip_status);
+
+// Returns whether the given VisibleSecurityState would trigger a legacy TLS
+// warning (i.e., uses legacy TLS and isn't in the control group), if the user
+// were in the appropriate field trial.
+bool GetLegacyTLSWarningStatus(
+    const VisibleSecurityState& visible_security_state);
+
+// Returns the given prefix suffixed with a dot and the legacy TLS status
+// derived from the VisibleSecurityStatus.
+std::string GetLegacyTLSHistogramName(
+    const std::string& prefix,
+    const VisibleSecurityState& visible_security_state);
+
+bool IsSHA1InChain(const VisibleSecurityState& visible_security_state);
+
+// Returns whether the NONE or WARNING state should downgrade styling from
+// neutral to insecure as part of an experiment to mark non-secure
+// connections with a grey triangle icon (crbug.com/997972).
+bool ShouldDowngradeNeutralStyling(
+    security_state::SecurityLevel security_level,
+    GURL url,
+    IsOriginSecureCallback is_origin_secure_callback);
 
 }  // namespace security_state
 

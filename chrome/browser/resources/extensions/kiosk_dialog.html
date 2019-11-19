@@ -1,0 +1,120 @@
+<style include="cr-shared-style cr-icons">
+  #add-kiosk-app {
+    margin-bottom: 10px;
+    margin-top: 20px;
+  }
+
+  #add-kiosk-app cr-input {
+    width: 350px;
+  }
+
+  #add-kiosk-app cr-button {
+    margin-inline-start: 10px;
+  }
+
+  #kiosk-apps-list {
+    border: 1px solid var(--paper-grey-300);
+    padding: 10px;
+  }
+
+  .list-item {
+    align-items: center;
+    border-bottom: 1px solid var(--paper-grey-300);
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+  }
+
+  .list-item:last-of-type {
+    border-bottom: none;
+  }
+
+  .list-item:hover {
+    background-color: var(--paper-grey-300);
+  }
+
+  .item-icon {
+    vertical-align: middle;
+    width: 25px;
+  }
+
+  .item-controls {
+    visibility: hidden;
+  }
+
+  .list-item:hover .item-controls {
+    visibility: visible;
+  }
+
+  cr-icon-button {
+    margin: 0;
+  }
+</style>
+<cr-dialog id="dialog" close-text="$i18n{close}"
+    ignore-enter-key>
+  <div slot="title">$i18n{manageKioskApp}</div>
+  <div slot="body">
+    <div id="kiosk-apps-list">
+      <template is="dom-repeat" items="[[apps_]]">
+        <div class="list-item">
+          <div class="item-name">
+            <img class="item-icon" src="[[item.iconURL]]"
+                alt$="[[appOrExtension(
+                    data.type,
+                    '$i18nPolymer{appIcon}',
+                    '$i18nPolymer{extensionIcon}')]]">
+            [[item.name]]
+            <span hidden="[[!item.autoLaunch]]">
+              $i18n{kioskAutoLaunch}
+            </span>
+          </div>
+          <div class="item-controls">
+            <cr-button hidden="[[!canEditAutoLaunch_]]"
+                on-click="onAutoLaunchButtonTap_">
+              [[getAutoLaunchButtonLabel_(item.autoLaunch,
+                  '$i18nPolymer{kioskDisableAutoLaunch}',
+                  '$i18nPolymer{kioskEnableAutoLaunch}')]]
+            </cr-button>
+            <cr-icon-button class="icon-delete-gray"
+                on-click="onDeleteAppTap_"></cr-icon-button>
+          </div>
+        </div>
+      </template>
+    </div>
+    <div id="add-kiosk-app">
+      <cr-input id="add-input" label="$i18n{kioskAddApp}"
+          placeholder="$i18n{kioskAddAppHint}" value="{{addAppInput_}}"
+          invalid="[[errorAppId_]]" on-keydown="clearInputInvalid_"
+          error-message="[[getErrorMessage_(
+              '$i18nPolymer{kioskInvalidApp}', errorAppId_)]]">
+        <cr-button id="add-button" on-click="onAddAppTap_"
+            disabled="[[!addAppInput_]]" slot="suffix">
+          $i18n{add}
+        </cr-button>
+      </cr-input>
+    </div>
+    <cr-checkbox disabled="[[!canEditBailout_]]" id="bailout"
+        on-change="onBailoutChanged_" checked="[[bailoutDisabled_]]"
+        hidden="[[!canEditAutoLaunch_]]">
+      $i18n{kioskDisableBailout}
+    </cr-checkbox>
+  </div>
+  <div slot="button-container">
+    <cr-button class="action-button" on-click="onDoneTap_">
+      $i18n{done}
+    </cr-button>
+  </div>
+</cr-dialog>
+<cr-dialog id="confirm-dialog" close-text="$i18n{close}"
+    ignore-enter-key on-close="stopPropagation_">
+  <div slot="title">$i18n{kioskDisableBailoutWarningTitle}</div>
+  <div slot="body">$i18n{kioskDisableBailoutWarningBody}</div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onBailoutDialogCancelTap_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onBailoutDialogConfirmTap_">
+      $i18n{confirm}
+    </cr-button>
+  </div>
+</cr-dialog>

@@ -44,7 +44,6 @@ fuzzer_test("snappy_compress_fuzzer") {
     "snappy_compress_fuzzer.cc",
   ]
   deps = [
-    "//base",
     "//third_party/snappy:snappy",
   ]
   seed_corpus = "//third_party/snappy/src/testdata"
@@ -67,7 +66,10 @@ fuzzer_test("template_url_parser_fuzzer") {
   deps = [
     "//base",
     "//base:i18n",
-    "//components/search_engines:search_engines",
+    "//components/search_engines",
+    "//mojo/core/embedder",
+    "//services/data_decoder/public/cpp",
+    "//services/data_decoder/public/cpp:test_support",
     "//third_party/libxml:libxml",
   ]
   dict = "//third_party/libxml/fuzz/xml.dict"
@@ -400,9 +402,7 @@ proto_library("javascript_parser_proto") {
   sources = [
     "$target_gen_dir/javascript_parser.proto",
   ]
-  deps = [
-    ":gen_javascript_parser_proto",
-  ]
+  proto_deps = [ ":gen_javascript_parser_proto" ]
   proto_out_dir = ""
 }
 

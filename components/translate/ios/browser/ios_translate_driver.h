@@ -9,13 +9,12 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/translate/core/common/translate_errors.h"
 #include "components/translate/ios/browser/language_detection_controller.h"
 #include "components/translate/ios/browser/translate_controller.h"
-#include "ios/web/public/web_state/web_state_observer.h"
+#include "ios/web/public/web_state_observer.h"
 
 @class CRWJSInjectionReceiver;
 
@@ -29,9 +28,11 @@ namespace translate {
 class TranslateManager;
 
 // Content implementation of TranslateDriver.
-class IOSTranslateDriver : public TranslateDriver,
-                           public TranslateController::Observer,
-                           public web::WebStateObserver {
+class IOSTranslateDriver
+    : public TranslateDriver,
+      public TranslateController::Observer,
+      public web::WebStateObserver,
+      public language::IOSLanguageDetectionTabHelper::Observer {
  public:
   IOSTranslateDriver(web::WebState* web_state,
                      web::NavigationManager* navigation_manager,
@@ -46,14 +47,15 @@ class IOSTranslateDriver : public TranslateDriver,
     return translate_controller_.get();
   }
 
-  // Creates a callback to be used when language detection occurs.
-  language::IOSLanguageDetectionTabHelper::Callback
-  CreateLanguageDetectionCallback();
-
   // web::WebStateObserver methods.
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
+
+  // language::IOSLanguageDetectionTabHelper::Observer.
+  void OnLanguageDetermined(const LanguageDetectionDetails& details) override;
+  void IOSLanguageDetectionTabHelperWasDestroyed(
+      language::IOSLanguageDetectionTabHelper* tab_helper) override;
 
   // TranslateDriver methods.
   void OnIsPageTranslatedChanged() override;
@@ -68,6 +70,7 @@ class IOSTranslateDriver : public TranslateDriver,
   const std::string& GetContentsMimeType() override;
   const GURL& GetLastCommittedURL() override;
   const GURL& GetVisibleURL() override;
+  ukm::SourceId GetUkmSourceId() override;
   bool HasCurrentPage() override;
   void OpenUrlInNewTab(const GURL& url) override;
 
@@ -83,9 +86,6 @@ class IOSTranslateDriver : public TranslateDriver,
   // being destroyed.
   bool IsPageValid(int page_seq_no) const;
 
-  // Used to kick off translation process.
-  void OnLanguageDetermined(const LanguageDetectionDetails& details);
-
   // TranslateController::Observer methods.
   void OnTranslateScriptReady(TranslateErrors::Type error_type,
                               double load_time,
@@ -94,8 +94,14 @@ class IOSTranslateDriver : public TranslateDriver,
                            const std::string& original_language,
                            double translation_time) override;
 
-  // The WebState this instance is observing. Will be null after
-  // WebStateDestroyed has been called.
+  // Stops observing |web_state_| and sets it to null.
+  void StopObservingWebState();
+
+  // Stops observing the IOSLanguageDetectionTabHelper instance associated with
+  // |web_state_|.
+  void StopObservingIOSLanguageDetectionTabHelper();
+
+  // The WebState this instance is observing.
   web::WebState* web_state_ = nullptr;
 
   // The navigation manager of the tab we are associated with.
@@ -118,8 +124,6 @@ class IOSTranslateDriver : public TranslateDriver,
   // Parameters of the current translation.
   std::string source_language_;
   std::string target_language_;
-
-  base::WeakPtrFactory<IOSTranslateDriver> weak_method_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(IOSTranslateDriver);
 };

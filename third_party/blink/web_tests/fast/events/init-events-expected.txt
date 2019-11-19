@@ -29,20 +29,20 @@ PASS testInitEvent('Keyboard', '"a", false, true, window, "b", 1001, false, fals
 PASS testInitEvent('Keyboard', '"a", false, true, window, "b", 1001, false, false, false, false, false').keyCode is 0
 PASS testInitEvent('Keyboard', '"a", false, true, window, "b", 1001, false, false, false, false, false').charCode is 0
 PASS testInitEvent('Keyboard', '"a", false, true, window, "b", 1001, false, false, false, false, false').which is 0
-PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", window, null').type is 'a'
-PASS testInitEvent('Message', 'null, false, false, "b", "c", "d", window, null').type is 'null'
-PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", window, null').bubbles is false
-PASS testInitEvent('Message', '"a", true, false, "b", "c", "d", window, null').bubbles is true
-PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", window, null').cancelable is false
-PASS testInitEvent('Message', '"a", false, true, "b", "c", "d", window, null').cancelable is true
-PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", window, null').data is 'b'
-PASS testInitEvent('Message', '"a", false, false, null, "c", "d", window, null').data is null
-PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", window, null').origin is 'c'
-PASS testInitEvent('Message', '"a", false, false, "b", null, "d", window, null').origin is 'null'
-PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", window, null').lastEventId is 'd'
-PASS testInitEvent('Message', '"a", false, false, "b", "c", null, window, null').lastEventId is 'null'
-PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", window, null').source is window
-PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", null, null').source is null
+PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", window, undefined').type is 'a'
+PASS testInitEvent('Message', 'null, false, false, "b", "c", "d", window, undefined').type is 'null'
+PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", window, undefined').bubbles is false
+PASS testInitEvent('Message', '"a", true, false, "b", "c", "d", window, undefined').bubbles is true
+PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", window, undefined').cancelable is false
+PASS testInitEvent('Message', '"a", false, true, "b", "c", "d", window, undefined').cancelable is true
+PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", window, undefined').data is 'b'
+PASS testInitEvent('Message', '"a", false, false, null, "c", "d", window, undefined').data is null
+PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", window, undefined').origin is 'c'
+PASS testInitEvent('Message', '"a", false, false, "b", null, "d", window, undefined').origin is 'null'
+PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", window, undefined').lastEventId is 'd'
+PASS testInitEvent('Message', '"a", false, false, "b", "c", null, window, undefined').lastEventId is 'null'
+PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", window, undefined').source is window
+PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", null, undefined').source is null
 PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", null, channelArray').ports[0] is channel.port1
 PASS testInitEvent('Message', '"a", false, false, "b", "c", "d", null, channelArray').ports[1] is channel.port2
 PASS testInitEvent('Mouse', '"a", false, false, window, 1001, 1002, 1003, 1004, 1005, false, false, false, false, 1006, null').type is 'a'

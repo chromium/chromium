@@ -48,7 +48,8 @@ public class CompositorButton implements VirtualView {
 
     private final CompositorOnClickHandler mClickHandler;
 
-    private int mResource;
+    protected int mResource;
+
     private int mPressedResource;
     private int mIncognitoResource;
     private int mIncognitoPressedResource;
@@ -122,7 +123,7 @@ public class CompositorButton implements VirtualView {
     }
 
     /**
-     * @return The the x offset of the button.
+     * @return The x offset of the button.
      */
     public float getX() {
         return mBounds.left;

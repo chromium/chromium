@@ -5,9 +5,9 @@
 #include "chrome/browser/supervised_user/child_accounts/child_account_feedback_reporter_android.h"
 
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/ChildAccountFeedbackReporter_jni.h"
 #include "chrome/browser/ui/android/view_android_helper.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/ChildAccountFeedbackReporter_jni.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "url/gurl.h"

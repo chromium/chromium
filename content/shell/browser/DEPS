@@ -6,13 +6,15 @@ include_rules = [
   "+services/network/public",
   "+services/service_manager/public/cpp",
   "+services/service_manager/sandbox",
-  "+services/ws/public",
   "+ui/ozone/public",
 ]
 
 specific_include_rules = {
   "shell\.cc": [
     "+content/shell/browser/layout_test",
+  ],
+  "shell_browser_main_parts_mac\.mm": [
+    "+content/browser/sandbox_parameters_mac.h",
   ],
   "shell_devtools_manager_delegate\.cc": [
     "+content/shell/browser/layout_test",

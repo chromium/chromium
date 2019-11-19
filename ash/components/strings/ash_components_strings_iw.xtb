@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
+<translation id="1036550831858290950">שמירת הכרטיסייה הנוכחית כסימנייה</translation>
 <translation id="104962181688258143">פתיחת האפליקציה 'קבצים'</translation>
 <translation id="1122869341872663659">מוצגות <ph name="N" /> תוצאות חיפוש לגבי <ph name="QUERY" /></translation>
 <translation id="1195667586424773550">גרירת הקישור אל שורת כתובת האתר של הכרטיסייה</translation>
@@ -12,6 +13,7 @@
 <translation id="1383876407941801731">חפש</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> או <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">מעבר לסוף השורה</translation>
+<translation id="1499072997694708844">סגירה של כל חלונות החיפוש הפתוחים או הפסקת הטעינה של הדף הנוכחי</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="152892567002884378">הגברת עוצמת הקול</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> ואז <ph name="ESC" /></translation>
@@ -21,6 +23,7 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">‏הוספת www. ו-‎ .comלקלט בשורת כתובת האתר, ולאחר מכן פתיחת הדף</translation>
+<translation id="1872219238824176091">הסרת שולחן העבודה הנוכחי</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> ואז <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> או <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">מעבר לכרטיסייה הבאה</translation>
 <translation id="2010818616644390445">מעבר לכרטיסייה האחרונה בחלון</translation>
@@ -33,20 +36,23 @@
 <translation id="2185166372312820725">מעבר לכרטיסייה הקודמת</translation>
 <translation id="2194790690264064655">הקשה על <ph name="CTRL" /> ולחיצה על קישור</translation>
 <translation id="2246352309084894470">פתיחה/סגירה של מפעיל המסך המלא</translation>
+<translation id="2354531887393764880">נקודה</translation>
 <translation id="2382644247745281995">לא נתמך בפריסת המקלדת הנוכחית</translation>
 <translation id="2397416548179033562">‏הצג את תפריט Chrome</translation>
 <translation id="2424073332829844142">‏הפעלה וכיבוי של Caps Lock</translation>
 <translation id="2441202986792279177">מעבר מהיר בין חלונות</translation>
 <translation id="2454251766545114447">התרחקות מהתצוגה</translation>
 <translation id="2478303094958140141">‏הפעלה או השבתה של ChromeVox (קורא מסך קולי)</translation>
+<translation id="2480851840841871861">‏פתיחת Google Assistant</translation>
+<translation id="2488661730534396940">הפעלה של שולחן העבודה בצד ימין</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2530339807289914946">גלילת דף האינטרנט למטה</translation>
 <translation id="2574014812750545982">איפוס רמת הזום בדף</translation>
 <translation id="2596078834055697711">צילום מסך של חלון</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ואז <ph name="TAB" /> או <ph name="RIGHT" /></translation>
-<translation id="2699509451653686398">שמירת דף האינטרנט הנוכחי כסימנייה</translation>
 <translation id="2750942583782703988">טעינה מחדש של הדף הנוכחי</translation>
 <translation id="2764005613199379871">העברת המיקוד לשורת כתובת האתר</translation>
+<translation id="2774822903829597107">יצירת שולחן עבודה חדש</translation>
 <translation id="2789868185375229787">התרחקות מהדף</translation>
 <translation id="2804480015716812239">הקשה על <ph name="ALT" /> ולחיצה על קישור</translation>
 <translation id="2830827904629746450">עגינת חלון בצד ימין</translation>
@@ -78,6 +84,7 @@
 <translation id="3792178297143798024">פתיחת הפריט המסומן במדף</translation>
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 עד 8</translation>
 <translation id="3837047332182291558">הבהרת המקלדת (למקלדות עם תאורה אחורית בלבד)</translation>
+<translation id="3949671998904569433">פסיק</translation>
 <translation id="3976863468609830880">לחיצה על הסמל האחרון במדף</translation>
 <translation id="3994783594793697310">איפוס רמת הזום של התצוגה</translation>
 <translation id="4026843240379844265">העברת החלון הפעיל בין צגים</translation>
@@ -97,6 +104,7 @@
 <translation id="4642092649622328492">יצירת צילום מסך חלקי</translation>
 <translation id="4698850295812410683">הצגת כלי הסטיילוס</translation>
 <translation id="4801989101741319327">מעבר אל סוף המילה הבאה</translation>
+<translation id="4866066940972151697">הפעלה של שולחן העבודה בצד שמאל</translation>
 <translation id="4916163929714267752">פתיחת הקישור בחלון חדש</translation>
 <translation id="5030659775136592441">הצגת ניהול הסימניות</translation>
 <translation id="5034421018520995080">מעבר אל ראש הדף</translation>
@@ -112,17 +120,17 @@
 <translation id="5554139136362089836">חיפוש בדף הנוכחי</translation>
 <translation id="5563050856984839829">הקשה על <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ולחיצה על קישור</translation>
 <translation id="561814908794220892">פתיחת דף האינטרנט בכרטיסייה חדשה</translation>
+<translation id="5620219513321115856">העברת החלון הפעיל אל שולחן העבודה שמימין</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> או <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">פתיחת הקישור בכרטיסייה</translation>
 <translation id="5757474750054631686">עמעום המקלדת (למקלדות עם תאורה אחורית בלבד)</translation>
 <translation id="587531134027443617">מחיקת המילה הקודמת</translation>
 <translation id="5899919361772749550">הצגה או הסתרה של המסוף 'כלים למפתחים'</translation>
 <translation id="5921745308587794300">סיבוב החלון</translation>
-<translation id="6022924867608035986">נקה את הטקסט בתיבת החיפוש</translation>
+<translation id="6022924867608035986">ניקוי הטקסט בתיבת החיפוש</translation>
 <translation id="6045998054441862242">הפעלת מצב של ניגודיות גבוהה</translation>
 <translation id="6052614013050385269">לחיצה ימנית על קישור</translation>
 <translation id="6129953537138746214">רווח</translation>
-<translation id="613146727819833328">העברת החלון למרכז</translation>
 <translation id="6143669479988153888">התקרבות לדף</translation>
 <translation id="6185696379715117369">Page up</translation>
 <translation id="6228457605945141550">הפחתת הבהירות</translation>
@@ -160,18 +168,20 @@
 <translation id="7422707470576323858">מעבר אל שיטת הקלט הזמינה הבאה</translation>
 <translation id="743754632698445141">ביטול הצמדה של אפליקציה</translation>
 <translation id="7439718573248533901">מחיקת האות הבאה (מחיקה קדימה)</translation>
+<translation id="7500368597227394048">מקף</translation>
 <translation id="7611271430932669992">העברת ההדגשה אל חלונות קופצים ותיבות דו-שיח</translation>
 <translation id="766326951329901120">הדבקת התוכן מלוח העריכה כטקסט פשוט</translation>
+<translation id="7703010453515335249">סוגר שמאלי</translation>
 <translation id="7724603315864178912">חתוך</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ואז <ph name="SPACE" /> או <ph name="ENTER" /></translation>
 <translation id="7787242579016742662">פתיחת קובץ בדפדפן</translation>
-<translation id="7917881398263220094">הפסקת הטעינה של הדף הנוכחי</translation>
 <translation id="7952165122793773711">מעבר לכרטיסיות מס' 1 עד 8</translation>
-<translation id="8026334261755873520">נקה נתוני גלישה</translation>
+<translation id="8026334261755873520">ניקוי נתוני גלישה</translation>
 <translation id="8130528849632411619">מעבר אל תחילת המסמך</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> או <ph name="E" /></translation>
 <translation id="8232835244134740473">העברת המיקוד בין: אזור הסטטוס (האזור שבו מופיעה תמונת החשבון שלך), מרכז האפליקציות, שורת כתובת האתר, סרגל הסימניות (אם מוצג), דף האינטרנט הפתוח וסרגל ההורדות (אם מוצג).</translation>
 <translation id="8234414138295101081">סיבוב המסך ב-90 מעלות</translation>
+<translation id="8241665785394195545">סוגר ימני</translation>
 <translation id="8264941229485248811">הצגה או הסתרה של בודק 'כלים למפתחים'</translation>
 <translation id="836869401750819675">פתיחת הדף 'הורדות'</translation>
 <translation id="8388247778047144397">גרירת הקישור לאזור ריק בשורת הכרטיסיות</translation>
@@ -184,6 +194,7 @@
 <translation id="8717459106217102612">בחירת המילה או האות הקודמת</translation>
 <translation id="8727232706774971183">הצגת ההודעות שלך</translation>
 <translation id="8855885154700222542">מקש מסך מלא</translation>
+<translation id="8881584919399569791">העברת החלון הפעיל אל שולחן העבודה שמשמאל</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8924883688469390268">מעבר למשתמש הקודם</translation>
 <translation id="8977648847395357314">בחירת התוכן בשורת כתובת האתר</translation>

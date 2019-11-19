@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import glob
 import os
 import subprocess
@@ -37,16 +39,16 @@ class Change(object):
 
   def Dump(self):
     if not self.was:
-      print 'Adding %s' % self.mode
+      print('Adding %s' % self.mode)
     elif not self.now:
-      print 'Missing %s' % self.mode
+      print('Missing %s' % self.mode)
     else:
-      print 'Modifying %s' % self.mode
+      print('Modifying %s' % self.mode)
 
     for line in self.was:
-      print 'src: >>%s<<' % line
+      print('src: >>%s<<' % line)
     for line in self.now:
-      print 'gen: >>%s<<' % line
+      print('gen: >>%s<<' % line)
     print
 
 #
@@ -234,7 +236,7 @@ def FilterLinesIn(output):
         filter[nindex] = True
         filter[windex] = True
         if GetOption('verbose'):
-          print "Found %d, %d >>%s<<" % (windex + 1, nindex + 1, wline)
+          print("Found %d, %d >>%s<<" % (windex + 1, nindex + 1, wline))
   out = []
   for index in range(len(output)):
     if not filter[index]:
@@ -259,7 +261,7 @@ def GetChanges(output):
   last = None
 
   for line in lines:
-#    print "LINE=%s" % line
+    #print("LINE=%s" % line)
     if not line: continue
 
     elif line[0] == '<':
@@ -282,7 +284,7 @@ def GetChanges(output):
       was = []
       now = []
       if ValidChange(change):
-          changes.append(change)
+        changes.append(change)
       if line == 'END':
         break
 
@@ -315,7 +317,7 @@ def Main(args):
       name = os.path.split(name)[1]
       name = os.path.join(GetOption('gen'), name)
       if name not in filenames:
-        print 'Missing: %s' % name
+        print('Missing: %s' % name)
 
   for filename in filenames:
     gen = filename
@@ -336,18 +338,19 @@ def Main(args):
       changes = []
 
     if changes:
-      print "\n\nDelta between:\n  src=%s\n  gen=%s\n" % (src, gen)
+      print("\n\nDelta between:\n  src=%s\n  gen=%s\n" % (src, gen))
       for change in changes:
         change.Dump()
-      print 'Done with %s\n\n' % src
+      print('Done with %s\n\n' % src)
       if GetOption('ok'):
         open(diff, 'wt').write(output)
       if GetOption('halt'):
         return 1
     else:
-      print "\nSAME:\n  src=%s\n  gen=%s" % (src, gen)
-      if input: print '  ** Matched expected diff. **'
-      print '\n'
+      print("\nSAME:\n  src=%s\n  gen=%s" % (src, gen))
+      if input:
+        print('  ** Matched expected diff. **')
+      print('\n')
 
 
 if __name__ == '__main__':

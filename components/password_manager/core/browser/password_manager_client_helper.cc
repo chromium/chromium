@@ -12,7 +12,7 @@
 namespace password_manager {
 
 PasswordManagerClientHelper::PasswordManagerClientHelper(
-    PasswordManagerClientHelperDelegate* delegate)
+    PasswordManagerClient* delegate)
     : delegate_(delegate) {
   DCHECK(delegate_);
 }

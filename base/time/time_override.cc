@@ -7,19 +7,15 @@
 namespace base {
 namespace subtle {
 
-#if DCHECK_IS_ON()
 // static
 bool ScopedTimeClockOverrides::overrides_active_ = false;
-#endif
 
 ScopedTimeClockOverrides::ScopedTimeClockOverrides(
     TimeNowFunction time_override,
     TimeTicksNowFunction time_ticks_override,
     ThreadTicksNowFunction thread_ticks_override) {
-#if DCHECK_IS_ON()
   DCHECK(!overrides_active_);
   overrides_active_ = true;
-#endif
   if (time_override) {
     internal::g_time_now_function = time_override;
     internal::g_time_now_from_system_time_function = time_override;
@@ -36,9 +32,7 @@ ScopedTimeClockOverrides::~ScopedTimeClockOverrides() {
       &TimeNowFromSystemTimeIgnoringOverride;
   internal::g_time_ticks_now_function = &TimeTicksNowIgnoringOverride;
   internal::g_thread_ticks_now_function = &ThreadTicksNowIgnoringOverride;
-#if DCHECK_IS_ON()
   overrides_active_ = false;
-#endif
 }
 
 }  // namespace subtle

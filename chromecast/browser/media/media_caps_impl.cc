@@ -8,6 +8,7 @@
 #include "chromecast/browser/media/supported_codec_finder.h"
 #include "chromecast/media/base/media_caps.h"
 #include "chromecast/public/media/decoder_config.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromecast {
 namespace media {
@@ -38,17 +39,15 @@ void MediaCapsImpl::Initialize() {
   supported_codec_finder.FindSupportedCodecProfileLevels(this);
 }
 
-void MediaCapsImpl::AddBinding(
-    mojom::MediaCapsRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void MediaCapsImpl::AddReceiver(
+    mojo::PendingReceiver<mojom::MediaCaps> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void MediaCapsImpl::ScreenResolutionChanged(unsigned width, unsigned height) {
   screen_resolution_ = gfx::Size(width, height);
-
-  observers_.ForAllPtrs([width, height](mojom::MediaCapsObserver* observer) {
+  for (auto& observer : observers_)
     observer->ScreenResolutionChanged(width, height);
-  });
 }
 
 void MediaCapsImpl::ScreenInfoChanged(int hdcp_version,
@@ -66,30 +65,28 @@ void MediaCapsImpl::ScreenInfoChanged(int hdcp_version,
   current_mode_supports_hdr_ = current_mode_supports_hdr;
   current_mode_supports_dv_ = current_mode_supports_dv;
 
-  observers_.ForAllPtrs([hdcp_version, supported_eotfs, dolby_vision_flags,
-                         screen_width_mm, screen_height_mm,
-                         current_mode_supports_hdr, current_mode_supports_dv](
-      mojom::MediaCapsObserver* observer) {
+  for (auto& observer : observers_) {
     observer->ScreenInfoChanged(hdcp_version, supported_eotfs,
                                 dolby_vision_flags, screen_width_mm,
                                 screen_height_mm, current_mode_supports_hdr,
                                 current_mode_supports_dv);
-  });
+  }
 }
 
 void MediaCapsImpl::AddSupportedCodecProfileLevel(
     const CodecProfileLevel& codec_profile_level) {
   codec_profile_levels_.push_back(codec_profile_level);
-  observers_.ForAllPtrs(
-      [&codec_profile_level](mojom::MediaCapsObserver* observer) {
-        mojom::CodecProfileLevelPtr mojo_codec_profile_level(
-            ConvertCodecProfileLevelToMojo(codec_profile_level));
-        observer->AddSupportedCodecProfileLevel(
-            std::move(mojo_codec_profile_level));
-      });
+  for (auto& observer : observers_) {
+    mojom::CodecProfileLevelPtr mojo_codec_profile_level(
+        ConvertCodecProfileLevelToMojo(codec_profile_level));
+    observer->AddSupportedCodecProfileLevel(
+        std::move(mojo_codec_profile_level));
+  }
 }
 
-void MediaCapsImpl::AddObserver(mojom::MediaCapsObserverPtr observer) {
+void MediaCapsImpl::AddObserver(
+    mojo::PendingRemote<mojom::MediaCapsObserver> observer_remote) {
+  mojo::Remote<mojom::MediaCapsObserver> observer(std::move(observer_remote));
   observer->ScreenResolutionChanged(screen_resolution_.width(),
                                     screen_resolution_.height());
   observer->ScreenInfoChanged(hdcp_version_, supported_eotfs_,
@@ -102,7 +99,7 @@ void MediaCapsImpl::AddObserver(mojom::MediaCapsObserverPtr observer) {
     observer->AddSupportedCodecProfileLevel(
         ConvertCodecProfileLevelToMojo(codec_profile_level));
   }
-  observers_.AddPtr(std::move(observer));
+  observers_.Add(std::move(observer));
 }
 
 }  // namespace media

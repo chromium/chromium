@@ -7,10 +7,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "net/base/network_change_notifier.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/primary_account_mutator.h"
 
 namespace signin {
 
@@ -39,7 +39,7 @@ bool ShouldShowPromo(Profile* profile) {
     return false;
 
   // Display the signin promo if the user is not signed in.
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(original_profile);
   return !identity_manager->HasPrimaryAccount();
 #endif

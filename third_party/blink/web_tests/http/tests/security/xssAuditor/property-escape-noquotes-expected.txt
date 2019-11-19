@@ -1,2 +1,0 @@
-ALERT: XSS
-This test fails because the XSSAuditor allows requests that do not contain illegal URI characters. Thus, the XSSAuditor does not detect breaking out of an unquoted property. A future update may reinstate this functionality.

@@ -8,6 +8,9 @@
 #import "ios/chrome/browser/ui/find_bar/find_bar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/colors/dynamic_color_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -24,11 +27,6 @@ const CGFloat kFontSize = 15;
 const CGFloat kButtonFontSize = 17;
 const CGFloat kInputFieldHeight = 36;
 const CGFloat kButtonLength = 44;
-const CGFloat kInputFieldTextAlpha = 0.7;
-const CGFloat kPlaceholderAlpha = 0.3;
-const CGFloat kPlaceholderAlphaIncognito = 0.5;
-const CGFloat kResultsCountLabelAdditionalAlpha = 0.2;
-const CGFloat kBlueTintColor = 0x1A73E8;
 }  // namespace
 
 @interface FindBarView ()
@@ -141,30 +139,21 @@ const CGFloat kBlueTintColor = 0x1A73E8;
 
 // Sets the colors for the different subviews, based on the |darkMode|.
 - (void)setupColors {
-  UIColor* inputFieldBackground =
-      self.darkMode
-          ? [UIColor
-                colorWithWhite:1
-                         alpha:kAdaptiveLocationBarBackgroundAlphaIncognito]
-          : [UIColor colorWithWhite:0
-                              alpha:kAdaptiveLocationBarBackgroundAlpha];
-  UIColor* inputFieldPlaceHolderTextColor =
-      self.darkMode
-          ? [UIColor colorWithWhite:1 alpha:kPlaceholderAlphaIncognito]
-          : [UIColor colorWithWhite:0 alpha:kPlaceholderAlpha];
-  UIColor* inputFieldTextColor =
-      self.darkMode ? [UIColor whiteColor]
-                    : [UIColor colorWithWhite:0 alpha:kInputFieldTextAlpha];
-  UIColor* resultsCountLabelTextColor =
-      self.darkMode
-          ? [UIColor colorWithWhite:1
-                              alpha:kPlaceholderAlphaIncognito +
-                                    kResultsCountLabelAdditionalAlpha]
-          : [UIColor colorWithWhite:0
-                              alpha:kPlaceholderAlpha +
-                                    kResultsCountLabelAdditionalAlpha];
-  UIColor* buttonTintColor =
-      self.darkMode ? [UIColor whiteColor] : UIColorFromRGB(kBlueTintColor);
+  UIColor* inputFieldBackground = color::DarkModeDynamicColor(
+      [UIColor colorNamed:kTextfieldBackgroundColor], self.darkMode,
+      [UIColor colorNamed:kTextfieldBackgroundDarkColor]);
+  UIColor* inputFieldPlaceHolderTextColor = color::DarkModeDynamicColor(
+      [UIColor colorNamed:kTextfieldPlaceholderColor], self.darkMode,
+      [UIColor colorNamed:kTextfieldPlaceholderDarkColor]);
+  UIColor* inputFieldTextColor = color::DarkModeDynamicColor(
+      [UIColor colorNamed:kTextPrimaryColor], self.darkMode,
+      [UIColor colorNamed:kTextPrimaryDarkColor]);
+  UIColor* resultsCountLabelTextColor = color::DarkModeDynamicColor(
+      [UIColor colorNamed:kTextfieldPlaceholderColor], self.darkMode,
+      [UIColor colorNamed:kTextfieldPlaceholderDarkColor]);
+  UIColor* buttonTintColor = color::DarkModeDynamicColor(
+      [UIColor colorNamed:kBlueColor], self.darkMode,
+      [UIColor colorNamed:kBlueDarkColor]);
 
   self.inputField.backgroundColor = inputFieldBackground;
   NSString* placeholder = [self.inputField placeholder];

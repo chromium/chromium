@@ -33,7 +33,7 @@ public class AwDebugTest {
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
-    private static final String TAG = "cr_AwDebugTest";
+    private static final String TAG = "AwDebugTest";
 
     // These constants must match android_webview/browser/aw_debug.cc.
     private static final String WHITELISTED_DEBUG_KEY = "AW_WHITELISTED_DEBUG_KEY";

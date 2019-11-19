@@ -151,7 +151,7 @@ class ASH_EXPORT DisplayColorManager
   display::Screen* screen_to_observe_;
 
   // Factory for callbacks.
-  base::WeakPtrFactory<DisplayColorManager> weak_ptr_factory_;
+  base::WeakPtrFactory<DisplayColorManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DisplayColorManager);
 };

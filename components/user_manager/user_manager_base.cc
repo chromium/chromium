@@ -34,10 +34,6 @@
 namespace user_manager {
 namespace {
 
-// A vector pref of the the regular users known on this device, arranged in LRU
-// order.
-const char kRegularUsers[] = "LoggedInUsers";
-
 // A dictionary that maps user IDs to the displayed name.
 const char kUserDisplayName[] = "UserDisplayName";
 
@@ -98,7 +94,7 @@ const base::Feature kHideSupervisedUsers{"HideSupervisedUsers",
 
 // static
 void UserManagerBase::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(kRegularUsers);
+  registry->RegisterListPref(kRegularUsersPref);
   registry->RegisterStringPref(kLastLoggedInGaiaUser, std::string());
   registry->RegisterDictionaryPref(kUserDisplayName);
   registry->RegisterDictionaryPref(kUserGivenName);
@@ -112,7 +108,7 @@ void UserManagerBase::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 UserManagerBase::UserManagerBase(scoped_refptr<base::TaskRunner> task_runner)
-    : task_runner_(task_runner), weak_factory_(this) {}
+    : task_runner_(task_runner) {}
 
 UserManagerBase::~UserManagerBase() {
   // Can't use STLDeleteElements because of the private destructor of User.
@@ -211,6 +207,10 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
 
       case USER_TYPE_ARC_KIOSK_APP:
         ArcKioskAppLoggedIn(user);
+        break;
+
+      case USER_TYPE_WEB_KIOSK_APP:
+        WebKioskAppLoggedIn(user);
         break;
 
       default:
@@ -351,7 +351,7 @@ void UserManagerBase::RemoveUserFromList(const AccountId& account_id) {
     DCHECK(IsSupervisedAccountId(account_id));
     // Special case, removing partially-constructed supervised user during user
     // list loading.
-    ListPrefUpdate users_update(GetLocalState(), kRegularUsers);
+    ListPrefUpdate users_update(GetLocalState(), kRegularUsersPref);
     users_update->Remove(base::Value(account_id.GetUserEmail()), nullptr);
     OnUserRemoved(account_id);
   } else {
@@ -489,12 +489,6 @@ void UserManagerBase::SaveUserDisplayEmail(const AccountId& account_id,
                                base::Value(display_email));
 }
 
-std::string UserManagerBase::GetUserDisplayEmail(
-    const AccountId& account_id) const {
-  const User* user = FindUser(account_id);
-  return user ? user->display_email() : account_id.GetUserEmail();
-}
-
 void UserManagerBase::SaveUserType(const User* user) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
 
@@ -622,6 +616,16 @@ bool UserManagerBase::IsLoggedInAsKioskApp() const {
 bool UserManagerBase::IsLoggedInAsArcKioskApp() const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   return IsUserLoggedIn() && active_user_->GetType() == USER_TYPE_ARC_KIOSK_APP;
+}
+
+bool UserManagerBase::IsLoggedInAsWebKioskApp() const {
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  return IsUserLoggedIn() && active_user_->GetType() == USER_TYPE_WEB_KIOSK_APP;
+}
+
+bool UserManagerBase::IsLoggedInAsAnyKioskApp() const {
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  return IsUserLoggedIn() && active_user_->IsKioskType();
 }
 
 bool UserManagerBase::IsLoggedInAsStub() const {
@@ -805,7 +809,7 @@ void UserManagerBase::EnsureUsersLoaded() {
 
   PrefService* local_state = GetLocalState();
   const base::ListValue* prefs_regular_users =
-      local_state->GetList(kRegularUsers);
+      local_state->GetList(kRegularUsersPref);
 
   const base::DictionaryValue* prefs_display_names =
       local_state->GetDictionary(kUserDisplayName);
@@ -879,7 +883,8 @@ const User* UserManagerBase::FindUserInList(const AccountId& account_id) const {
 }
 
 bool UserManagerBase::UserExistsInList(const AccountId& account_id) const {
-  const base::ListValue* user_list = GetLocalState()->GetList(kRegularUsers);
+  const base::ListValue* user_list =
+      GetLocalState()->GetList(kRegularUsersPref);
   for (size_t i = 0; i < user_list->GetSize(); ++i) {
     std::string email;
     if (user_list->GetString(i, &email) && (account_id.GetUserEmail() == email))
@@ -904,7 +909,7 @@ void UserManagerBase::GuestUserLoggedIn() {
 
 void UserManagerBase::AddUserRecord(User* user) {
   // Add the user to the front of the user list.
-  ListPrefUpdate prefs_users_update(GetLocalState(), kRegularUsers);
+  ListPrefUpdate prefs_users_update(GetLocalState(), kRegularUsersPref);
   prefs_users_update->Insert(
       0, std::make_unique<base::Value>(user->GetAccountId().GetUserEmail()));
   users_.insert(users_.begin(), user);
@@ -949,7 +954,7 @@ void UserManagerBase::RegularUserLoggedInAsEphemeral(
   known_user::SetIsEphemeralUser(active_user_->GetAccountId(), true);
 }
 
-void UserManagerBase::NotifyActiveUserChanged(const User* active_user) {
+void UserManagerBase::NotifyActiveUserChanged(User* active_user) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   for (auto& observer : session_state_observer_list_)
     observer.ActiveUserChanged(active_user);
@@ -1028,7 +1033,7 @@ void UserManagerBase::RemoveNonCryptohomeData(const AccountId& account_id) {
 User* UserManagerBase::RemoveRegularOrSupervisedUserFromList(
     const AccountId& account_id,
     bool notify) {
-  ListPrefUpdate prefs_users_update(GetLocalState(), kRegularUsers);
+  ListPrefUpdate prefs_users_update(GetLocalState(), kRegularUsersPref);
   prefs_users_update->Clear();
   User* user = nullptr;
   for (UserList::iterator it = users_.begin(); it != users_.end();) {

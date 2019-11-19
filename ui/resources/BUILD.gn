@@ -39,6 +39,10 @@ grit("webui_resources_grd") {
   defines = [ "optimize_webui=$optimize_webui" ]
   source = "../webui/resources/webui_resources.grd"
 
+  deps = [
+    "//ui/webui/resources:modulize",
+  ]
+
   # The .grd contains references to generated files.
   source_is_generated = true
 

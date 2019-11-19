@@ -10,7 +10,7 @@
 namespace content {
 class ColorChooser;
 class WebContents;
-}
+}  // namespace content
 
 namespace chrome {
 // Shows a color chooser that reports to the given WebContents.

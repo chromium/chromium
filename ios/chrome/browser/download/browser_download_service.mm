@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
-#import "ios/chrome/browser/download/features.h"
 #include "ios/chrome/browser/download/pass_kit_mime_type.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 #include "ios/chrome/browser/download/usdz_mime_type.h"
@@ -111,8 +110,8 @@ void BrowserDownloadService::OnDownloadCreated(
     if (tab_helper) {
       tab_helper->Download(std::move(task));
     }
-  } else if (IsUsdzFileFormat(task->GetMimeType()) &&
-             download::IsUsdzPreviewEnabled()) {
+  } else if (IsUsdzFileFormat(task->GetMimeType(),
+                              task->GetSuggestedFilename())) {
     ARQuickLookTabHelper* tab_helper =
         ARQuickLookTabHelper::FromWebState(web_state);
     if (tab_helper) {

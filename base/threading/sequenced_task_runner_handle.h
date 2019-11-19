@@ -21,6 +21,11 @@ class BASE_EXPORT SequencedTaskRunnerHandle {
   // run after the current task is finished and will satisfy a SequenceChecker.
   // It should only be called if IsSet() returns true (see the comment there for
   // the requirements).
+  //
+  // DEPRECATED: Prefer base::CurrentThread() instead or
+  // base::GetContinuationTaskRunner() if you need to post a continuation of the
+  // current task. See threading_and_tasks.md for details.
+  // TODO(scheduler-dev): Migrate all instances.
   static const scoped_refptr<SequencedTaskRunner>& Get() WARN_UNUSED_RESULT;
 
   // Returns true if one of the following conditions is fulfilled:

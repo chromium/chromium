@@ -77,9 +77,12 @@ bool ScopedSVGPaintState::ApplyClipMaskAndFilterIfNecessary() {
     return true;
   }
 
-  bool is_svg_root = object_.IsSVGRoot();
-  if (is_svg_root) {
-    // Layer takes care of root opacity and blend mode.
+  // LayoutSVGRoot and LayoutSVGForeignObject always have a self-painting
+  // PaintLayer (hence comments below about PaintLayerPainter).
+  bool is_svg_root_or_foreign_object =
+      object_.IsSVGRoot() || object_.IsSVGForeignObject();
+  if (is_svg_root_or_foreign_object) {
+    // PaintLayerPainter takes care of opacity and blend mode.
     DCHECK(object_.HasLayer() || !(object_.StyleRef().HasOpacity() ||
                                    object_.StyleRef().HasBlendMode() ||
                                    object_.StyleRef().ClipPath()));
@@ -93,8 +96,8 @@ bool ScopedSVGPaintState::ApplyClipMaskAndFilterIfNecessary() {
   if (!ApplyMaskIfNecessary(resources))
     return false;
 
-  if (is_svg_root) {
-    // Layer takes care of root filter.
+  if (is_svg_root_or_foreign_object) {
+    // PaintLayerPainter takes care of filter.
     DCHECK(object_.HasLayer() || !object_.StyleRef().HasFilter());
   } else if (!ApplyFilterIfNecessary(resources)) {
     return false;
@@ -131,8 +134,10 @@ void ScopedSVGPaintState::ApplyPaintPropertyState() {
 }
 
 void ScopedSVGPaintState::ApplyClipIfNecessary() {
-  if (object_.StyleRef().ClipPath())
-    clip_path_clipper_.emplace(GetPaintInfo().context, object_, LayoutPoint());
+  if (object_.StyleRef().ClipPath()) {
+    clip_path_clipper_.emplace(GetPaintInfo().context, object_,
+                               PhysicalOffset());
+  }
 }
 
 bool ScopedSVGPaintState::ApplyMaskIfNecessary(SVGResources* resources) {

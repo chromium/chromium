@@ -26,26 +26,40 @@
 // https://w3c.github.io/IndexedDB/#idl-def-IDBCursorDirection
 
 enum IDBCursorDirection {
-    "next",
-    "nextunique",
-    "prev",
-    "prevunique"
+  "next",
+  "nextunique",
+  "prev",
+  "prevunique"
 };
 
 // https://w3c.github.io/IndexedDB/#idl-def-IDBCursor
 
 [
-    Exposed=(Window,Worker)
+  Exposed=(Window,Worker)
 ] interface IDBCursor {
-    readonly attribute (IDBObjectStore or IDBIndex) source;
-    readonly attribute IDBCursorDirection direction;
-    [CallWith=ScriptState, CachedAttribute=isKeyDirty] readonly attribute any key;
-    [CallWith=ScriptState, CachedAttribute=isPrimaryKeyDirty] readonly attribute any primaryKey;
+  readonly attribute (IDBObjectStore or IDBIndex) source;
+  readonly attribute IDBCursorDirection direction;
+  [CachedAttribute=isKeyDirty, CallWith=ScriptState] readonly attribute any key;
+  [CachedAttribute=isPrimaryKeyDirty, CallWith=ScriptState]
+  readonly attribute any primaryKey;
+  [SameObject] readonly attribute IDBRequest request;
 
-    [RaisesException] void advance([EnforceRange] unsigned long count);
-    [CallWith=ScriptState, ImplementedAs=Continue, RaisesException] void continue([DefaultValue=Undefined] optional any key);
-    [CallWith=ScriptState, RaisesException] void continuePrimaryKey(any key, any primaryKey);
+  [RaisesException] void advance([EnforceRange] unsigned long count);
 
-    [NewObject, CallWith=ScriptState, RaisesException] IDBRequest update(any value);
-    [NewObject, CallWith=ScriptState, ImplementedAs=Delete, RaisesException] IDBRequest delete();
+  [CallWith=ScriptState, ImplementedAs=Continue, RaisesException]
+  void continue([DefaultValue=Undefined] optional any key);
+
+  [CallWith=ScriptState, RaisesException]
+  void continuePrimaryKey(any key, any primaryKey);
+
+  [CallWith=ScriptState, MeasureAs=IndexedDBWrite, NewObject, RaisesException]
+  IDBRequest update(any value);
+
+  [
+    CallWith=ScriptState,
+    ImplementedAs=Delete,
+    MeasureAs=IndexedDBWrite,
+    NewObject,
+    RaisesException
+  ] IDBRequest delete();
 };

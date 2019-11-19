@@ -1,3 +1,4 @@
+file://chrome/common/extensions/docs/server2/OWNERS
 jyasskin@chromium.org
-mangini@chromium.org
 rockot@google.com
+# COMPONENT: Platform>Extensions>Documentation

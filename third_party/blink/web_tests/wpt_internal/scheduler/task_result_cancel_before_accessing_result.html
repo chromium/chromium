@@ -1,0 +1,24 @@
+<!doctype html>
+<title>Scheduling API: Canceling Task Rejects Task.result (Beforre Accessing Result)</title>
+<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
+<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+'use strict';
+
+async_test(t => {
+  (function() {
+    let task = scheduler.postTask(() => 1234);
+    task.cancel();
+    task.result.then(t.step_func((res) => {
+      assert_true(false, 'task.result should not be fulfilled when the task is canceled.');
+    }))
+    .catch(t.step_func_done((e) => {
+      assert_equals(e.name, 'AbortError');
+    }));
+  })();
+}, 'Test task.result is rejected properly when the task is canceled before accessing task.result');
+
+</script>

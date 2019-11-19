@@ -22,6 +22,7 @@ class EVENTS_DEVICES_EXPORT InputDeviceEventObserver {
   static constexpr uint8_t kMouse = 1 << 1;
   static constexpr uint8_t kTouchpad = 1 << 2;
   static constexpr uint8_t kTouchscreen = 1 << 3;
+  static constexpr uint8_t kUncategorized = 1 << 4;
 
   virtual ~InputDeviceEventObserver() {}
 

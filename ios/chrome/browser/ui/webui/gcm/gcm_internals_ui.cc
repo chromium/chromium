@@ -21,8 +21,8 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
-#include "ios/web/public/web_ui_ios_data_source.h"
 #include "ios/web/public/webui/web_ui_ios.h"
+#include "ios/web/public/webui/web_ui_ios_data_source.h"
 #include "ios/web/public/webui/web_ui_ios_message_handler.h"
 
 namespace {
@@ -162,7 +162,7 @@ GCMInternalsUI::GCMInternalsUI(web::WebUIIOS* web_ui)
   web::WebUIIOSDataSource* html_source =
       web::WebUIIOSDataSource::Create(kChromeUIGCMInternalsHost);
 
-  html_source->SetJsonPath("strings.js");
+  html_source->UseStringsJs();
 
   // Add required resources.
   html_source->AddResourcePath(gcm_driver::kGcmInternalsCSS,
@@ -170,7 +170,6 @@ GCMInternalsUI::GCMInternalsUI(web::WebUIIOS* web_ui)
   html_source->AddResourcePath(gcm_driver::kGcmInternalsJS,
                                IDR_GCM_DRIVER_GCM_INTERNALS_JS);
   html_source->SetDefaultResource(IDR_GCM_DRIVER_GCM_INTERNALS_HTML);
-  html_source->UseGzip();
 
   web::WebUIIOSDataSource::Add(ios::ChromeBrowserState::FromWebUIIOS(web_ui),
                                html_source);

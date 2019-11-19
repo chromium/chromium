@@ -4,10 +4,11 @@
 
 #include "chrome/installer/mini_installer/configuration.h"
 
-#include <windows.h>
 #include <shellapi.h>  // NOLINT
 #include <stddef.h>
+#include <windows.h>
 
+#include "build/branding_buildflags.h"
 #include "chrome/installer/mini_installer/appid.h"
 #include "chrome/installer/mini_installer/mini_installer_constants.h"
 #include "chrome/installer/mini_installer/mini_installer_resource.h"
@@ -74,7 +75,7 @@ bool Configuration::ParseCommandLine(const wchar_t* command_line) {
   for (int i = 1; i < argument_count_; ++i) {
     if (0 == ::lstrcmpi(args_[i], L"--system-level"))
       is_system_level_ = true;
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     else if (0 == ::lstrcmpi(args_[i], L"--chrome-beta"))
       chrome_app_guid_ = google_update::kBetaAppGuid;
     else if (0 == ::lstrcmpi(args_[i], L"--chrome-dev"))
@@ -126,7 +127,7 @@ void Configuration::ReadResources(HMODULE module) {
 }
 
 bool Configuration::IsUpdatingMultiChrome() const {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Only primary Chrome installs supported multi-install (not canary/SxS).
   if (chrome_app_guid_ != google_update::kAppGuid)
     return false;

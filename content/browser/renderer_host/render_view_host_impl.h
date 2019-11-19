@@ -18,6 +18,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/ref_counted.h"
 #include "base/process/kill.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/input/input_device_change_observer.h"
@@ -28,11 +29,13 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_view_host.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/mojo/window_open_disposition.mojom.h"
+#include "ui/base/window_open_disposition.h"
+#include "ui/gl/gpu_preference.h"
 #include "ui/gl/gpu_switching_observer.h"
 
 namespace content {
@@ -61,17 +64,22 @@ class TimeoutMonitor;
 //
 // For context, please see https://crbug.com/467770 and
 // https://www.chromium.org/developers/design-documents/site-isolation.
-class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
-                                          public RenderWidgetHostOwnerDelegate,
-                                          public RenderProcessHostObserver,
-                                          public ui::GpuSwitchingObserver,
-                                          public IPC::Listener {
+class CONTENT_EXPORT RenderViewHostImpl
+    : public RenderViewHost,
+      public RenderWidgetHostOwnerDelegate,
+      public RenderProcessHostObserver,
+      public ui::GpuSwitchingObserver,
+      public IPC::Listener,
+      public base::RefCounted<RenderViewHostImpl> {
  public:
   // Convenience function, just like RenderViewHost::FromID.
   static RenderViewHostImpl* FromID(int process_id, int routing_id);
 
   // Convenience function, just like RenderViewHost::From.
   static RenderViewHostImpl* From(RenderWidgetHost* rwh);
+
+  static void GetPlatformSpecificPrefs(
+      blink::mojom::RendererPreferences* prefs);
 
   RenderViewHostImpl(SiteInstance* instance,
                      std::unique_ptr<RenderWidgetHostImpl> widget,
@@ -80,30 +88,21 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
                      int32_t main_frame_routing_id,
                      bool swapped_out,
                      bool has_initialized_audio_host);
-  // TODO(ajwong): Make destructor private. Deletion of this object should only
-  // be done via ShutdownAndDestroy(). https://crbug.com/545684
-  ~RenderViewHostImpl() override;
-
-  // Shuts down this RenderViewHost and deletes it.
-  void ShutdownAndDestroy();
 
   // RenderViewHost implementation.
   bool Send(IPC::Message* msg) override;
-  RenderWidgetHostImpl* GetWidget() const override;
-  RenderProcessHost* GetProcess() const override;
-  int GetRoutingID() const override;
+  RenderWidgetHostImpl* GetWidget() override;
+  RenderProcessHost* GetProcess() override;
+  int GetRoutingID() override;
   RenderFrameHost* GetMainFrame() override;
   void EnablePreferredSizeMode() override;
   void ExecutePluginActionAtLocation(
       const gfx::Point& location,
-      const blink::WebPluginAction& action) override;
-  RenderViewHostDelegate* GetDelegate() const override;
-  SiteInstanceImpl* GetSiteInstance() const override;
-  bool IsRenderViewLive() const override;
+      const blink::PluginAction& action) override;
+  RenderViewHostDelegate* GetDelegate() override;
+  SiteInstanceImpl* GetSiteInstance() override;
+  bool IsRenderViewLive() override;
   void NotifyMoveOrResizeStarted() override;
-  void SetWebUIProperty(const std::string& name,
-                        const std::string& value) override;
-  void SyncRendererPrefs() override;
   WebPreferences GetWebkitPreferences() override;
   void UpdateWebkitPreferences(const WebPreferences& prefs) override;
   void OnWebkitPreferencesChanged() override;
@@ -113,7 +112,7 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
                            const ChildProcessTerminationInfo& info) override;
 
   // GpuSwitchingObserver implementation.
-  void OnGpuSwitched() override;
+  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
 
   // Set up the RenderView child process. Virtual because it is overridden by
   // TestRenderViewHost.
@@ -133,10 +132,6 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
       const base::UnguessableToken& devtools_frame_token,
       const FrameReplicationState& replicated_frame_state,
       bool window_was_created_with_opener);
-
-  base::TerminationStatus render_view_termination_status() const {
-    return render_view_termination_status_;
-  }
 
   // Tracks whether this RenderViewHost is in an active state (rather than
   // pending swap out or swapped out), according to its main frame
@@ -187,10 +182,12 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
   }
 
   // Creates a new RenderWidget with the given route id.
-  void CreateNewWidget(int32_t route_id, mojom::WidgetPtr widget);
+  void CreateNewWidget(int32_t route_id,
+                       mojo::PendingRemote<mojom::Widget> widget);
 
   // Creates a full screen RenderWidget.
-  void CreateNewFullscreenWidget(int32_t route_id, mojom::WidgetPtr widget);
+  void CreateNewFullscreenWidget(int32_t route_id,
+                                 mojo::PendingRemote<mojom::Widget> widget);
 
   // Send RenderViewReady to observers once the process is launched, but not
   // re-entrantly.
@@ -206,21 +203,43 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
   // view is not considered active.
   void SetMainFrameRoutingId(int routing_id);
 
-  // Increases the refcounting on this RVH. This is done by the FrameTree on
-  // creation of a RenderFrameHost or RenderFrameProxyHost.
-  void increment_ref_count() { ++frames_ref_count_; }
+  // Called when the RenderFrameHostImpls/RenderFrameProxyHosts that own this
+  // RenderViewHost enter the BackForwardCache.
+  void EnterBackForwardCache();
 
-  // Decreases the refcounting on this RVH. This is done by the FrameTree on
-  // destruction of a RenderFrameHost or RenderFrameProxyHost.
-  void decrement_ref_count() { --frames_ref_count_; }
-
-  // Returns the refcount on this RVH, that is the number of RenderFrameHosts
-  // and RenderFrameProxyHosts currently using it.
-  int ref_count() { return frames_ref_count_; }
+  // Called when the RenderFrameHostImpls/RenderFrameProxyHosts that own this
+  // RenderViewHost leave the BackForwardCache. This occurs immediately before a
+  // restored document is committed.
+  void LeaveBackForwardCache();
 
   // Called during frame eviction to return all SurfaceIds in the frame tree.
   // Marks all views in the frame tree as evicted.
   std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction();
+
+  // Resets any per page state. This should be called when a main frame
+  // associated with this RVH commits a navigation to a new document. Note that
+  // this means it should NOT be called for same document navigations or when
+  // restoring a page from the back-forward cache.
+  void ResetPerPageState();
+
+  bool did_first_visually_non_empty_paint() const {
+    return did_first_visually_non_empty_paint_;
+  }
+
+  void OnThemeColorChanged(RenderFrameHostImpl* rfh,
+                           const base::Optional<SkColor>& theme_color);
+
+  base::Optional<SkColor> theme_color() const {
+    return main_frame_theme_color_;
+  }
+
+  // Notifies that / returns whether main document's onload() handler was
+  // completed.
+  void DocumentOnLoadCompletedInMainFrame();
+  bool IsDocumentOnLoadCompletedInMainFrame();
+
+  // Manual RTTI to ensure safe downcasts in tests.
+  virtual bool IsTestRenderViewHost() const;
 
   // NOTE: Do not add functions that just send an IPC message that are called in
   // one or two places. Have the caller send the IPC message directly (unless
@@ -228,12 +247,13 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
   // to keep them consistent).
 
  protected:
+  friend class RefCounted<RenderViewHostImpl>;
+  ~RenderViewHostImpl() override;
+
   // RenderWidgetHostOwnerDelegate overrides.
   void RenderWidgetDidInit() override;
   void RenderWidgetDidClose() override;
-  void RenderWidgetNeedsToRouteCloseEvent() override;
   void RenderWidgetDidFirstVisuallyNonEmptyPaint() override;
-  void RenderWidgetDidCommitAndDrawCompositorFrame() override;
   void RenderWidgetGotFocus() override;
   void RenderWidgetLostFocus() override;
   void RenderWidgetDidForwardMouseEvent(
@@ -247,6 +267,7 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
   bool IsNeverVisible() override;
   WebPreferences GetWebkitPreferencesForWidget() override;
   FrameTreeNode* GetFocusedFrame() override;
+
   void ShowContextMenu(RenderFrameHost* render_frame_host,
                        const ContextMenuParams& params) override;
 
@@ -257,13 +278,13 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
                   bool user_gesture);
   void OnShowWidget(int widget_route_id, const gfx::Rect& initial_rect);
   void OnShowFullscreenWidget(int widget_route_id);
+  void OnRouteCloseEvent();
   void OnUpdateTargetURL(const GURL& url);
   void OnDocumentAvailableInMainFrame(bool uses_temporary_zoom_level);
   void OnDidContentsPreferredSizeChange(const gfx::Size& new_size);
   void OnPasteFromSelectionClipboard();
   void OnTakeFocus(bool reverse);
   void OnClosePageACK();
-  void OnDidZoomURL(double zoom_level, const GURL& url);
   void OnFocus();
 
  private:
@@ -312,9 +333,6 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
   // The RenderWidgetHost.
   std::unique_ptr<RenderWidgetHostImpl> render_widget_host_;
 
-  // The number of RenderFrameHosts which have a reference to this RVH.
-  int frames_ref_count_;
-
   // Our delegate, which wants to know about changes in the RenderView.
   RenderViewHostDelegate* delegate_;
 
@@ -338,13 +356,10 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
   // Set to true when waiting for a ViewHostMsg_ClosePageACK.
   // TODO(creis): Move to RenderFrameHost and RenderWidgetHost.
   // See http://crbug.com/418265.
-  bool is_waiting_for_close_ack_;
+  bool is_waiting_for_close_ack_ = false;
 
   // True if the render view can be shut down suddenly.
-  bool sudden_termination_allowed_;
-
-  // The termination status of the last render view that terminated.
-  base::TerminationStatus render_view_termination_status_;
+  bool sudden_termination_allowed_ = false;
 
   // This is updated every time UpdateWebkitPreferences is called. That method
   // is in turn called when any of the settings change that the WebPreferences
@@ -360,16 +375,35 @@ class CONTENT_EXPORT RenderViewHostImpl : public RenderViewHost,
   // This monitors input changes so they can be reflected to the interaction MQ.
   std::unique_ptr<InputDeviceChangeObserver> input_device_change_observer_;
 
-  bool updating_web_preferences_;
+  bool updating_web_preferences_ = false;
 
   // This tracks whether this RenderViewHost has notified observers about its
   // creation with RenderViewCreated.  RenderViewHosts may transition from
   // active (with a RenderFrameHost for the main frame) to inactive state and
   // then back to active, and for the latter transition, this avoids firing
   // duplicate RenderViewCreated events.
-  bool has_notified_about_creation_;
+  bool has_notified_about_creation_ = false;
 
-  base::WeakPtrFactory<RenderViewHostImpl> weak_factory_;
+  // ---------- Per page state START ------------------------------------------
+  // The following members will get reset when this RVH commits a navigation to
+  // a new document. See ResetPerPageState()
+
+  // Whether the first visually non-empty paint has occurred.
+  bool did_first_visually_non_empty_paint_ = false;
+
+  // The theme color for the underlying document as specified
+  // by theme-color meta tag.
+  base::Optional<SkColor> main_frame_theme_color_;
+
+  // ---------- Per page state END --------------------------------------------
+
+  // BackForwardCache:
+  bool is_in_back_forward_cache_ = false;
+
+  // True if the current main document finished executing onload() handler.
+  bool is_document_on_load_completed_in_main_frame_ = false;
+
+  base::WeakPtrFactory<RenderViewHostImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RenderViewHostImpl);
 };

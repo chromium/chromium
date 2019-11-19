@@ -1,0 +1,20 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("js_messaging") {
+  deps = [
+    "//base",
+    "//ios/web/public/",
+    "//url",
+  ]
+
+  sources = [
+    "web_frame.h",
+    "web_frame_user_data.h",
+    "web_frame_util.h",
+    "web_frames_manager.h",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

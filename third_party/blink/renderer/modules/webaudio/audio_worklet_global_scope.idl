@@ -8,10 +8,18 @@
     Exposed=AudioWorklet,
     Global=(Worklet,AudioWorklet)
 ] interface AudioWorkletGlobalScope : WorkletGlobalScope {
-    // TODO(yukishiino): |processorConstructor| should be of callback function
-    // type (should be: callback T = any ()).
-    [RaisesException, MeasureAs=AudioWorkletGlobalScopeRegisterProcessor] void registerProcessor(DOMString name, CallbackFunctionTreatedAsScriptValue processorConstructor);
+    [RaisesException, MeasureAs=AudioWorkletGlobalScopeRegisterProcessor] void registerProcessor(DOMString name, BlinkAudioWorkletProcessorConstructor processorCtor);
     readonly attribute unsigned long long currentFrame;
     readonly attribute double currentTime;
     readonly attribute float sampleRate;
 };
+
+// Blink-specific types
+// https://webaudio.github.io/web-audio-api/#instantiation-of-AudioWorkletNode-and-AudioWorkletProcessor
+// The name 'AudioWorkletProcessorConstructor' is already taken by a hack of
+// constructor-property-aliasing.
+callback BlinkAudioWorkletProcessorConstructor = any (any options);
+// https://webaudio.github.io/web-audio-api/#rendering-loop
+// 'Blink' prefix is added to be consistent with
+// BlinkAudioWorkletProcessorConstructor.
+callback BlinkAudioWorkletProcessCallback = any (any inputs, any outputs, any paramValues);

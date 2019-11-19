@@ -56,7 +56,7 @@ TEST_F('SettingsBasicPageBrowserTest', 'DISABLED_Load', function() {
           // All the sections must be hidden by the TestSearchManager, just like
           // the real SearchManager. Otherwise, the bug doesn't manifest.
           const sections = page.parentNode.querySelectorAll('settings-section');
-          for (let section of sections) {
+          for (const section of sections) {
             section.hiddenBySearch = !!text;
           }
 

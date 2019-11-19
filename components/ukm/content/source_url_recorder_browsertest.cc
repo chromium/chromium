@@ -6,7 +6,6 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
@@ -83,18 +82,12 @@ class SourceUrlRecorderWebContentsObserverDownloadBrowserTest
   base::ScopedTempDir downloads_directory_;
 };
 
-#if defined(OS_WIN)
-#define MAYBE_Basic DISABLED_Basic
-#else
-#define MAYBE_Basic Basic
-#endif
-IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverBrowserTest,
-                       MAYBE_Basic) {
+IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverBrowserTest, Basic) {
   using Entry = ukm::builders::DocumentCreated;
 
   GURL url = embedded_test_server()->GetURL("/title1.html");
   content::NavigationHandleObserver observer(shell()->web_contents(), url);
-  content::NavigateToURL(shell(), url);
+  EXPECT_TRUE(content::NavigateToURL(shell(), url));
   EXPECT_TRUE(observer.has_committed());
   const ukm::UkmSource* source =
       GetSourceForNavigationId(observer.navigation_id());
@@ -114,13 +107,8 @@ IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverBrowserTest,
   EXPECT_NE(source->id(), ukm_entries[0]->source_id);
 }
 
-#if defined(OS_WIN)
-#define MAYBE_IgnoreUrlInSubframe DISABLED_IgnoreUrlInSubframe
-#else
-#define MAYBE_IgnoreUrlInSubframe IgnoreUrlInSubframe
-#endif
 IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverBrowserTest,
-                       MAYBE_IgnoreUrlInSubframe) {
+                       IgnoreUrlInSubframe) {
   using Entry = ukm::builders::DocumentCreated;
 
   GURL main_url = embedded_test_server()->GetURL("/page_with_iframe.html");
@@ -130,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverBrowserTest,
                                                   main_url);
   content::NavigationHandleObserver subframe_observer(shell()->web_contents(),
                                                       subframe_url);
-  content::NavigateToURL(shell(), main_url);
+  EXPECT_TRUE(content::NavigateToURL(shell(), main_url));
   EXPECT_TRUE(main_observer.has_committed());
   EXPECT_TRUE(main_observer.is_main_frame());
   EXPECT_TRUE(subframe_observer.has_committed());
@@ -165,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverDownloadBrowserTest,
                        IgnoreDownload) {
   GURL url(embedded_test_server()->GetURL("/download-test1.lib"));
   content::NavigationHandleObserver observer(shell()->web_contents(), url);
-  content::NavigateToURL(shell(), url);
+  EXPECT_TRUE(content::NavigateToURLAndExpectNoCommit(shell(), url));
   EXPECT_FALSE(observer.has_committed());
   EXPECT_TRUE(observer.is_download());
   EXPECT_EQ(nullptr, GetSourceForNavigationId(observer.navigation_id()));

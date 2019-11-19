@@ -1,0 +1,3 @@
+document
+++group
+++++textbox LocalizedControlType='color picker' Value.Value='100% red 60% green 0% blue'

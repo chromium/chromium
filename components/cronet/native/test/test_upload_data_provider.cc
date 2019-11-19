@@ -87,6 +87,16 @@ void TestUploadDataProvider::SetRewindFailure(FailMode rewind_fail_mode) {
   rewind_fail_mode_ = rewind_fail_mode;
 }
 
+void TestUploadDataProvider::SetReadCancel(int read_cancel_index,
+                                           CancelMode read_cancel_mode) {
+  read_cancel_index_ = read_cancel_index;
+  read_cancel_mode_ = read_cancel_mode;
+}
+
+void TestUploadDataProvider::SetRewindCancel(CancelMode rewind_cancel_mode) {
+  rewind_cancel_mode_ = rewind_cancel_mode;
+}
+
 int64_t TestUploadDataProvider::GetLength() const {
   EXPECT_TRUE(!closed_.IsSet()) << "Data Provider is closed";
   if (bad_length_ != -1)
@@ -113,6 +123,9 @@ void TestUploadDataProvider::Read(Cronet_UploadDataSinkPtr upload_data_sink,
   EXPECT_TRUE(!closed_.IsSet()) << "Data Provider is closed";
 
   AssertIdle();
+
+  if (current_read_call == read_cancel_index_)
+    MaybeCancelRequest(read_cancel_mode_);
 
   if (MaybeFailRead(current_read_call, upload_data_sink)) {
     failed_ = true;
@@ -151,6 +164,8 @@ void TestUploadDataProvider::Rewind(Cronet_UploadDataSinkPtr upload_data_sink) {
   ++num_rewind_calls_;
   EXPECT_TRUE(!closed_.IsSet()) << "Data Provider is closed";
   AssertIdle();
+
+  MaybeCancelRequest(rewind_cancel_mode_);
 
   if (MaybeFailRewind(upload_data_sink)) {
     failed_ = true;
@@ -194,9 +209,9 @@ void TestUploadDataProvider::AssertIdle() const {
 bool TestUploadDataProvider::MaybeFailRead(
     int read_index,
     Cronet_UploadDataSinkPtr upload_data_sink) {
-  if (read_index != read_fail_index_)
-    return false;
   if (read_fail_mode_ == NONE)
+    return false;
+  if (read_index != read_fail_index_)
     return false;
 
   if (read_fail_mode_ == CALLBACK_SYNC) {
@@ -233,6 +248,25 @@ bool TestUploadDataProvider::MaybeFailRewind(
       },
       upload_data_sink));
   return true;
+}
+
+void TestUploadDataProvider::MaybeCancelRequest(CancelMode cancel_mode) {
+  if (cancel_mode == CANCEL_NONE)
+    return;
+
+  CHECK(url_request_);
+
+  if (cancel_mode == CANCEL_SYNC) {
+    Cronet_UrlRequest_Cancel(url_request_);
+    return;
+  }
+
+  EXPECT_EQ(cancel_mode, CANCEL_ASYNC);
+  PostTaskToExecutor(base::BindOnce(
+      [](Cronet_UrlRequestPtr url_request) {
+        Cronet_UrlRequest_Cancel(url_request);
+      },
+      url_request_));
 }
 
 void TestUploadDataProvider::Close() {

@@ -1,0 +1,30 @@
+
+================================================================================
+AXSelection from AX text position in "StaticText": "Some text. ", 0 to AX text position in "StaticText": " More text.", 0
+================================================================================
+++<GenericContainer>
+++++<GenericContainer>
+++++++<Paragraph>
+^++++++++<StaticText: ^Some text. >
+++++++++<Image: Square>
+|++++++++<StaticText: | More text.>
+
+================================================================================
+AXSelection from AX text position in "StaticText": "Some text. ", 10 to AX text position in "StaticText": " More text.", 1
+================================================================================
+++<GenericContainer>
+++++<GenericContainer>
+++++++<Paragraph>
+++++++++<StaticText: Some text.^ >
+++++++++<Image: Square>
+++++++++<StaticText:  |More text.>
+
+================================================================================
+AXSelection from AX text position in "StaticText": "Some text. ", 11 to AX text position in "StaticText": " More text.", 11
+================================================================================
+++<GenericContainer>
+++++<GenericContainer>
+++++++<Paragraph>
+++++++++<StaticText: Some text. ^>
+++++++++<Image: Square>
+++++++++<StaticText:  More text.|>

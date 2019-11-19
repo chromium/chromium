@@ -19,8 +19,8 @@ void ShellSpeechRecognitionManagerDelegate::CheckRecognitionIsAllowed(
   // Therefore we simply authorize it by calling back with is_allowed=true. The
   // first parameter, ask_user, is set to false because we don't want to prompt
   // the user for permission with an infobar.
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
-                           base::BindOnce(std::move(callback), false, true));
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(std::move(callback), false, true));
 }
 
 SpeechRecognitionEventListener*

@@ -9,12 +9,12 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/task_environment.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
-#include "media/base/gmock_callback_support.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
@@ -22,6 +22,7 @@
 #include "media/filters/decrypting_video_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+using ::base::test::RunCallback;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
@@ -49,8 +50,9 @@ static scoped_refptr<DecoderBuffer> CreateFakeEncryptedBuffer() {
 class DecryptingVideoDecoderTest : public testing::Test {
  public:
   DecryptingVideoDecoderTest()
-      : decoder_(new DecryptingVideoDecoder(message_loop_.task_runner(),
-                                            &media_log_)),
+      : decoder_(new DecryptingVideoDecoder(
+            task_environment_.GetMainThreadTaskRunner(),
+            &media_log_)),
         cdm_context_(new StrictMock<MockCdmContext>()),
         decryptor_(new StrictMock<MockDecryptor>()),
         num_decrypt_and_decode_calls_(0),
@@ -182,7 +184,7 @@ class DecryptingVideoDecoderTest : public testing::Test {
   void AbortPendingVideoDecodeCB() {
     if (pending_video_decode_cb_) {
       std::move(pending_video_decode_cb_)
-          .Run(Decryptor::kSuccess, scoped_refptr<VideoFrame>(NULL));
+          .Run(Decryptor::kSuccess, scoped_refptr<VideoFrame>(nullptr));
     }
   }
 
@@ -214,12 +216,12 @@ class DecryptingVideoDecoderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  MOCK_METHOD1(FrameReady, void(const scoped_refptr<VideoFrame>&));
+  MOCK_METHOD1(FrameReady, void(scoped_refptr<VideoFrame>));
   MOCK_METHOD1(DecodeDone, void(DecodeStatus));
 
   MOCK_METHOD1(OnWaiting, void(WaitingReason));
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   NullMediaLog media_log_;
   std::unique_ptr<DecryptingVideoDecoder> decoder_;
   std::unique_ptr<StrictMock<MockCdmContext>> cdm_context_;
@@ -299,8 +301,8 @@ TEST_F(DecryptingVideoDecoderTest, DecryptAndDecode_DecodeError) {
   Initialize();
 
   EXPECT_CALL(*decryptor_, DecryptAndDecodeVideo(_, _))
-      .WillRepeatedly(
-          RunCallback<1>(Decryptor::kError, scoped_refptr<VideoFrame>(NULL)));
+      .WillRepeatedly(RunCallback<1>(Decryptor::kError,
+                                     scoped_refptr<VideoFrame>(nullptr)));
 
   DecodeAndExpect(encrypted_buffer_, DecodeStatus::DECODE_ERROR);
 

@@ -10,7 +10,6 @@
     <style>
       :host {
         display: inline-flex;
-        margin-inline-end: -16px;
       }
 
       cr-policy-pref-indicator {
@@ -18,12 +17,14 @@
         margin-inline-start: var(--settings-controlled-by-spacing);
       }
 
-      :host-context(html:not([dark])) #labels[disabled] {
+      #labels[disabled] {
         color: var(--paper-grey-400);
       }
 
-      :host-context([dark]) #labels[disabled] {
-        opacity: var(--settings-disabled-opacity);
+      @media (prefers-color-scheme: dark) {
+        #labels[disabled] {
+          color: var(--google-grey-refresh-500);
+        }
       }
 
       div.outer {
@@ -50,7 +51,7 @@
       }
 
       #label-end {
-        -webkit-margin-begin: 4px;
+        margin-inline-start: 4px;
       }
     </style>
     <template is="dom-if" if="[[pref.controlledBy]]" restamp>
@@ -59,7 +60,8 @@
     <div class="outer">
       <cr-slider id="slider" disabled$="[[disableSlider_]]" ticks="[[ticks]]"
           on-cr-slider-value-changed="onSliderChanged_" max="[[max]]"
-          min="[[min]]" on-dragging-changed="onSliderChanged_"></cr-slider>
+          min="[[min]]" on-dragging-changed="onSliderChanged_"
+          on-updating-from-key="onSliderChanged_"></cr-slider>
       <div id="labels" disabled$="[[disableSlider_]]">
         <div id="label-begin">[[labelMin]]</div>
         <div id="label-end">[[labelMax]]</div>

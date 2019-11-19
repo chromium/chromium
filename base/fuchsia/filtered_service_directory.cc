@@ -4,51 +4,40 @@
 
 #include "base/fuchsia/filtered_service_directory.h"
 
-#include <lib/fdio/util.h>
+#include <lib/async/default.h>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/service_directory_client.h"
 
 namespace base {
 namespace fuchsia {
 
 FilteredServiceDirectory::FilteredServiceDirectory(
-    const ServiceDirectoryClient* directory)
-    : directory_(directory) {
-  outgoing_directory_ = std::make_unique<ServiceDirectory>(
-      outgoing_directory_client_.NewRequest());
+    sys::ServiceDirectory* directory)
+    : directory_(std::move(directory)) {
 }
 
-FilteredServiceDirectory::~FilteredServiceDirectory() {
-  outgoing_directory_->RemoveAllServices();
-}
+FilteredServiceDirectory::~FilteredServiceDirectory() {}
 
 void FilteredServiceDirectory::AddService(const char* service_name) {
-  outgoing_directory_->AddServiceUnsafe(
-      service_name,
-      base::BindRepeating(&FilteredServiceDirectory::HandleRequest,
-                          base::Unretained(this), service_name));
+  outgoing_directory_.AddPublicService(
+      std::make_unique<vfs::Service>(
+          [this, service_name](zx::channel channel,
+                               async_dispatcher_t* dispatcher) {
+            DCHECK_EQ(dispatcher, async_get_default_dispatcher());
+            directory_->Connect(service_name, std::move(channel));
+          }),
+      service_name);
 }
 
-fidl::InterfaceHandle<::fuchsia::io::Directory>
-FilteredServiceDirectory::ConnectClient() {
-  fidl::InterfaceHandle<::fuchsia::io::Directory> client;
-
-  // ServiceDirectory puts public services under ./public . Connect to that
+void FilteredServiceDirectory::ConnectClient(
+    fidl::InterfaceRequest<::fuchsia::io::Directory> dir_request) {
+  // sys::OutgoingDirectory puts public services under ./svc . Connect to that
   // directory and return client handle for the connection,
-  zx_status_t status = fdio_service_connect_at(
-      outgoing_directory_client_.channel().get(), "public",
-      client.NewRequest().TakeChannel().release());
-  ZX_CHECK(status == ZX_OK, status) << "fdio_service_connect_at()";
-
-  return client;
-}
-
-void FilteredServiceDirectory::HandleRequest(const char* service_name,
-                                             zx::channel channel) {
-  directory_->ConnectToServiceUnsafe(service_name, std::move(channel));
+  outgoing_directory_.GetOrCreateDirectory("svc")->Serve(
+      ::fuchsia::io::OPEN_RIGHT_READABLE | ::fuchsia::io::OPEN_RIGHT_WRITABLE,
+      dir_request.TakeChannel());
 }
 
 }  // namespace fuchsia

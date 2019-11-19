@@ -19,33 +19,8 @@ enum {
   // single frame will be disabled deferral.
   kExpensiveOverdrawThreshold = 10,
 
-// Disable Acceleration heuristic parameters
-//===========================================
-
-// When drawing very large images to canvases, there is a point where
-// GPU acceleration becomes inefficient due to texture upload overhead,
-// especially when the image is large enough that it is likely to
-// monopolize the texture cache, and when it is being downsized to the
-// point that few of the upload texels are actually sampled. When both
-// of these conditions are met, we disable acceleration.
-#if defined(OS_ANDROID)
-  // The limits in mobile platforms are halved.
-  kDrawImageTextureUploadSoftSizeLimit = 4096 * 4096 / 2,
-  kDrawImageTextureUploadHardSizeLimit = 8192 * 8192 / 2,
-#else
-  kDrawImageTextureUploadSoftSizeLimit = 4096 * 4096,
-  kDrawImageTextureUploadHardSizeLimit = 8192 * 8192,
-#endif  // defined(OS_ANDROID)
-  kDrawImageTextureUploadSoftSizeLimitScaleThreshold = 4,
-
   // GPU readback prevention heuristics
   //====================================
-
-  kGPUReadbackForcesNoAcceleration = 1,
-
-  // When gpu readback is successively invoked in following number of frames,
-  // we disable gpu acceleration to avoid the high cost of gpu readback.
-  kGPUReadbackMinSuccessiveFrames = 3,
 
   // When a canvas is used as a source image, if its destination is
   // non-accelerated and the source canvas is accelerated, a readback
@@ -78,6 +53,11 @@ enum {
   // underlying GrContext is flushed.
   kMaxDrawsBeforeContextFlush = 50,
 
+  // Canvas resource provider
+  // ========================
+
+  // The maximum number of inflight resources waiting to be used for recycling.
+  kMaxRecycledCanvasResources = 2,
 };  // enum
 
 }  // namespace canvas_heuristic_parameters

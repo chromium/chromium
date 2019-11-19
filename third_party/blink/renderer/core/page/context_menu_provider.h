@@ -38,8 +38,7 @@ namespace blink {
 
 struct WebMenuItemInfo;
 
-class ContextMenuProvider
-    : public GarbageCollectedFinalized<ContextMenuProvider> {
+class ContextMenuProvider : public GarbageCollected<ContextMenuProvider> {
  public:
   virtual ~ContextMenuProvider() = default;
   virtual void Trace(blink::Visitor* visitor) {}

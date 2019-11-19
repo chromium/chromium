@@ -7,18 +7,18 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
-#include "third_party/blink/renderer/platform/geometry/layout_point.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class FragmentData;
 class LayoutObject;
-class LayoutTableSection;
+class LayoutNGTableSectionInterface;
 class LocalFrameView;
 class PaintLayer;
 class VisualViewport;
@@ -41,9 +41,9 @@ struct PaintPropertyTreeBuilderFragmentContext {
     // to refer the object's border box, then the callee will derive its own
     // border box by translating the space with its own layout location.
     const TransformPaintPropertyNode* transform = nullptr;
-    // Corresponds to LayoutObject::PaintOffset, which does not include
+    // Corresponds to FragmentData::PaintOffset, which does not include
     // fragmentation offsets. See FragmentContext for the fragmented version.
-    LayoutPoint paint_offset;
+    PhysicalOffset paint_offset;
     // The PaintLayer corresponding to the origin of |paint_offset|.
     const LayoutObject* paint_offset_root = nullptr;
     // Whether newly created children should flatten their inherited transform
@@ -88,7 +88,7 @@ struct PaintPropertyTreeBuilderFragmentContext {
   // This is the same as current.paintOffset except when a floating object has
   // non-block ancestors under its containing block. Paint offsets of the
   // non-block ancestors should not be accumulated for the floating object.
-  LayoutPoint paint_offset_for_float;
+  PhysicalOffset paint_offset_for_float;
 
   // The effect hierarchy is applied by the stacking context tree. It is
   // guaranteed that every DOM descendant is also a stacking context descendant.
@@ -98,7 +98,7 @@ struct PaintPropertyTreeBuilderFragmentContext {
 
   // If the object is a flow thread, this records the clip rect for this
   // fragment.
-  base::Optional<LayoutRect> fragment_clip;
+  base::Optional<PhysicalRect> fragment_clip;
 
   // If the object is fragmented, this records the logical top of this fragment
   // in the flow thread.
@@ -107,9 +107,10 @@ struct PaintPropertyTreeBuilderFragmentContext {
   // A repeating object paints at multiple places, once in each fragment.
   // The repeated paintings need to add an adjustment to the calculated paint
   // offset to paint at the desired place.
-  LayoutSize repeating_paint_offset_adjustment;
+  PhysicalOffset repeating_paint_offset_adjustment;
 
-  LayoutPoint old_paint_offset;
+  FloatSize paint_offset_delta;
+  PhysicalOffset old_paint_offset;
 };
 
 struct PaintPropertyTreeBuilderContext {
@@ -124,7 +125,7 @@ struct PaintPropertyTreeBuilderContext {
 
   // The physical bounding box of all appearances of the repeating table section
   // in the flow thread or the paged LayoutView.
-  LayoutRect repeating_table_section_bounding_box;
+  PhysicalRect repeating_table_section_bounding_box;
 
 #if DCHECK_IS_ON()
   // When DCHECK_IS_ON() we create PaintPropertyTreeBuilderContext even if not
@@ -137,7 +138,7 @@ struct PaintPropertyTreeBuilderContext {
   // In a fragmented context, repeating table headers and footers and their
   // descendants in paint order repeatedly paint in all fragments after the
   // fragment where the object first appears.
-  const LayoutTableSection* repeating_table_section = nullptr;
+  const LayoutNGTableSectionInterface* repeating_table_section = nullptr;
 
   // Specifies the reason the subtree update was forced. For simplicity, this
   // only categorizes it into two categories:
@@ -187,8 +188,10 @@ class VisualViewportPaintPropertyTreeBuilder {
 
  public:
   // Update the paint properties for the visual viewport and ensure the context
-  // is up to date.
-  static void Update(VisualViewport&, PaintPropertyTreeBuilderContext&);
+  // is up to date. Returns the maximum paint property change type for any of
+  // the viewport nodes.
+  static PaintPropertyChangeType Update(VisualViewport&,
+                                        PaintPropertyTreeBuilderContext&);
 };
 
 // Creates paint property tree nodes for non-local effects in the layout tree.
@@ -221,13 +224,14 @@ class PaintPropertyTreeBuilder {
   ALWAYS_INLINE void InitFragmentPaintProperties(
       FragmentData&,
       bool needs_paint_properties,
-      const LayoutPoint& pagination_offset = LayoutPoint(),
+      const PhysicalOffset& pagination_offset = PhysicalOffset(),
       LayoutUnit logical_top_in_flow_thread = LayoutUnit());
   ALWAYS_INLINE void InitSingleFragmentFromParent(bool needs_paint_properties);
+  ALWAYS_INLINE bool ObjectTypeMightNeedMultipleFragmentData() const;
   ALWAYS_INLINE bool ObjectTypeMightNeedPaintProperties() const;
   ALWAYS_INLINE void UpdateCompositedLayerPaginationOffset();
   ALWAYS_INLINE PaintPropertyTreeBuilderFragmentContext
-  ContextForFragment(const base::Optional<LayoutRect>& fragment_clip,
+  ContextForFragment(const base::Optional<PhysicalRect>& fragment_clip,
                      LayoutUnit logical_top_in_flow_thread) const;
   ALWAYS_INLINE void CreateFragmentContextsInFlowThread(
       bool needs_paint_properties);

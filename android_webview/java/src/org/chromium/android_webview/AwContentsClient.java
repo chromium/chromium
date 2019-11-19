@@ -15,15 +15,20 @@ import android.net.http.SslError;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.Browser;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.android_webview.permission.AwPermissionRequest;
+import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.security.Principal;
@@ -238,7 +243,7 @@ public abstract class AwContentsClient {
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
 
         // Check whether the context is activity context.
-        if (AwContents.activityFromContext(context) == null) {
+        if (ContextUtils.activityFromContext(context) == null) {
             Log.w(TAG, "Cannot call startActivity on non-activity context.");
             return false;
         }
@@ -398,6 +403,10 @@ public abstract class AwContentsClient {
             onReceivedError(error.errorCode, error.description, request.url);
         }
         onReceivedError2(request, error);
+
+        // Record UMA on error code distribution here.
+        RecordHistogram.recordSparseHistogram(
+                "Android.WebView.onReceivedError.ErrorCode", error.errorCode);
     }
 
     protected abstract void onReceivedError(int errorCode, String description, String failingUrl);

@@ -1,1 +1,0 @@
-Test for https://bugs.webkit.org/show_bug.cgi?id=7293 REGRESSION: Using Javascript Bookmarklets that reference location.href on a blank tab crashes WebKit. Tests that empty frames have a document. If the test passes it will not crash.

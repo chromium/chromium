@@ -21,6 +21,7 @@ source_set("idle") {
 
   deps = [
     "//extensions/common/api",
+    "//ui/base/idle",
   ]
 
   public_deps = [

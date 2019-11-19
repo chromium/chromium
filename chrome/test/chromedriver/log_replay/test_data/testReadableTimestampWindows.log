@@ -1,0 +1,22 @@
+[08-20-2019 16:43:43.086][DEBUG]: DevTools HTTP Request: http://localhost:38037/json/version
+[08-20-2019 16:43:43.087][DEBUG]: DevTools HTTP Response: {
+   "string_key": "string_value"
+}
+
+[08-20-2019 16:43:44.264][DEBUG]: DevTools HTTP Request: http://localhost:38037/json
+[08-20-2019 16:43:44.265][DEBUG]: DevTools HTTP Response: [ {
+   "string_key1": "string_value1"
+}, {
+   "string_key2": "string_value2"
+} ]
+
+[08-20-2019 16:43:44.272][DEBUG]: DevTools WebSocket Command: Log.enable (id=1) 7A66E25ABD1F05841E3DEF9B221CBB42 {
+
+}
+[08-20-2019 16:43:44.276][DEBUG]: DevTools WebSocket Command: DOM.getDocument (id=2) 7A66E25ABD1F05841E3DEF9B221CBB42 {
+
+}
+[08-20-2019 16:43:44.278][DEBUG]: DevTools WebSocket Command: Target.setAutoAttach (id=3) 7A66E25ABD1F05841E3DEF9B221CBB42 {
+   "autoAttach": true,
+   "waitForDebuggerOnStart": false
+}

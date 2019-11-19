@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread_checker.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -28,7 +27,7 @@ class SensorReader {
   // Creates a new instance of SensorReader. At the moment, only polling
   // reader is supported.
   static std::unique_ptr<SensorReader> Create(
-      const SensorInfoLinux* sensor_device,
+      const SensorInfoLinux& sensor_info,
       base::WeakPtr<PlatformSensorLinux> sensor,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
@@ -48,10 +47,6 @@ class SensorReader {
 
   // Notifies |sensor_| about an error.
   void NotifyReadError();
-
-  // In builds with DCHECK enabled checks that methods of this
-  // and derived classes are called on a right thread.
-  THREAD_CHECKER(thread_checker_);
 
   // A sensor that this reader is owned by and notifies about errors and
   // readings to.

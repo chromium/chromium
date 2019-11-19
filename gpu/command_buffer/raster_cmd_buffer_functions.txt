@@ -11,22 +11,20 @@ GL_APICALL void         GL_APIENTRY glShallowFlushCHROMIUM (void);
 GL_APICALL void         GL_APIENTRY glOrderingBarrierCHROMIUM (void);
 GL_APICALL void         GL_APIENTRY glGenQueriesEXT (GLsizeiNotNegative n, GLuint* queries);
 GL_APICALL void         GL_APIENTRY glDeleteQueriesEXT (GLsizeiNotNegative n, const GLuint* queries);
+GL_APICALL void         GL_APIENTRY glQueryCounterEXT (GLidQuery id, GLenumQueryTarget target);
 GL_APICALL void         GL_APIENTRY glBeginQueryEXT (GLenumQueryTarget target, GLidQuery id);
 GL_APICALL void         GL_APIENTRY glEndQueryEXT (GLenumQueryTarget target);
 GL_APICALL void         GL_APIENTRY glGetQueryObjectuivEXT (GLidQuery id, GLenumQueryObjectParameter pname, GLuint* params);
+GL_APICALL void         GL_APIENTRY glGetQueryObjectui64vEXT (GLidQuery id, GLenumQueryObjectParameter pname, GLuint64* params);
 
 // Non-GL commands.
 GL_APICALL void         GL_APIENTRY glLoseContextCHROMIUM (GLenumResetStatus current, GLenumResetStatus other);
-GL_APICALL GLuint64     GL_APIENTRY glInsertFenceSyncCHROMIUM (void);
-GL_APICALL void         GL_APIENTRY glGenUnverifiedSyncTokenCHROMIUM (GLbyte* sync_token);
-GL_APICALL void         GL_APIENTRY glVerifySyncTokensCHROMIUM (GLbyte** sync_tokens, GLsizei count);
-GL_APICALL void         GL_APIENTRY glWaitSyncTokenCHROMIUM (const GLbyte* sync_token);
 
 // Extension KHR_robustness
 GL_APICALL GLenum	GL_APIENTRY glGetGraphicsResetStatusKHR (void);
 
 // Extension CHROMIUM_raster_transport
-GL_APICALL void         GL_APIENTRY glBeginRasterCHROMIUM (GLuint sk_color, GLuint msaa_sample_count, GLboolean can_use_lcd_text, GLuint color_space_transfer_cache_id, const GLbyte* mailbox);
+GL_APICALL void         GL_APIENTRY glBeginRasterCHROMIUM (GLuint sk_color, GLuint msaa_sample_count, GLboolean can_use_lcd_text, const GLbyte* mailbox);
 GL_APICALL void         GL_APIENTRY glRasterCHROMIUM (GLuint raster_shm_id, GLuint raster_shm_offset, GLuint raster_shm_size, GLuint font_shm_id, GLuint font_shm_offset, GLuint font_shm_size);
 GL_APICALL void         GL_APIENTRY glEndRasterCHROMIUM (void);
 GL_APICALL void         GL_APIENTRY glCreateTransferCacheEntryINTERNAL (GLuint entry_type, GLuint entry_id, GLuint handle_shm_id, GLuint handle_shm_offset, GLuint data_shm_id, GLuint data_shm_offset, GLuint data_size);

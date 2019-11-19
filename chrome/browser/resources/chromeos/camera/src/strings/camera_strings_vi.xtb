@@ -7,45 +7,69 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Chưa ghi dữ liệu nào</translation>
 <translation id="1862930711583847113">Không thể xuất <ph name="FILE" /></translation>
+<translation id="1899697626337024495">Độ phân giải của ảnh</translation>
 <translation id="2036868001356139588">Thời lượng bộ hẹn giờ</translation>
+<translation id="2050339315714019657">Khổ dọc</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> đang hoạt động</translation>
 <translation id="229579744168541441">Xuất ra đĩa</translation>
 <translation id="2501278716633472235">Quay lại</translation>
 <translation id="2501853267655415902">Đã dừng quay</translation>
 <translation id="2501953888035679275">Chụp ảnh và quay video bằng máy ảnh.</translation>
 <translation id="2549985041256363841">Bắt đầu ghi</translation>
-<translation id="2968794441791257519">Ảnh và video mà bạn chụp và quay bằng máy ảnh sẽ được chuyển đến thư mục Tài nguyên đã tải xuống. Bạn có thể truy cập vào những nội dung này trong ứng dụng Files.
+<translation id="2599796128805996109">Máy ảnh mặt sau</translation>
+<translation id="2912439424121107408">Thiết bị này không hỗ trợ chế độ Chuyên gia</translation>
+<translation id="2968794441791257519">Ảnh và video mà bạn chụp và quay bằng máy ảnh sẽ được chuyển đến thư mục Tệp đã tải xuống. Bạn có thể truy cập vào những nội dung này trong ứng dụng Files.
 
         Ứng dụng có quyền truy cập vào bộ nhớ sẽ có quyền truy cập vào ảnh và video của bạn.</translation>
 <translation id="3081586908890909590">Chuyển sang quay video</translation>
+<translation id="313467653172006084">30 khung hình/giây</translation>
 <translation id="3183731565330012717">Loại lưới</translation>
 <translation id="3227137524299004712">Micrô</translation>
+<translation id="3259149966178251584">Độ phân giải của máy ảnh</translation>
+<translation id="3517926952904427380">Không thể chụp ảnh chân dung</translation>
 <translation id="3569311554794739032">Bạn có thực sự muốn xóa <ph name="FILE" /> không?</translation>
+<translation id="3810838688059735925">Video</translation>
 <translation id="4279490309300973883">Đang phản chiếu</translation>
+<translation id="4329152592498422850">Chuyển sang chụp ảnh vuông</translation>
 <translation id="4445542136948522167">Dừng chụp ảnh</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
+<translation id="4570032796877367747">Máy ảnh mặt trước</translation>
+<translation id="4628948037717959914">Ảnh</translation>
 <translation id="4649291346448517080">Không thể lưu tệp</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="5057360777601936059">Máy ảnh của bạn hiện chưa sẵn sàng.
         Vui lòng kiểm tra xem máy ảnh có được kết nối đúng cách không.</translation>
 <translation id="5152121255775685072">Truy cập thư viện</translation>
+<translation id="5671277269877808209">Vuông</translation>
+<translation id="5775960006311140197">Chế độ Chuyên gia</translation>
 <translation id="5869546221129391014">Lưới</translation>
 <translation id="6073451960410192870">Dừng ghi</translation>
+<translation id="6197807149213783179">Lưu siêu dữ liệu</translation>
 <translation id="6233780560267770709">3 x 3</translation>
 <translation id="6243827288366940320">Tỷ lệ vàng</translation>
+<translation id="6248749904681914629">Máy ảnh gắn ngoài</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6681668084120808868">Chụp ảnh</translation>
 <translation id="6778482348691154169">Không thể chụp ảnh</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 giây</translation>
 <translation id="712848772518857951">Bạn có thực sự muốn xóa <ph name="COUNT" /> mục không?</translation>
+<translation id="7243947652761655814">Độ phân giải video</translation>
 <translation id="7337660886763914220">Lỗi hệ thống tệp.</translation>
 <translation id="7557677699350329807">Chuyển sang máy ảnh tiếp theo</translation>
 <translation id="7608223098072244877">4 x 4</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
 <translation id="7658239707568436148">Hủy</translation>
+<translation id="7670511624014457267">60 khung hình/giây</translation>
 <translation id="8049189770492311300">Bộ tính giờ</translation>
+<translation id="8067883171444229417">Phát video</translation>
+<translation id="8131740175452115882">Xác nhận</translation>
 <translation id="8145038249676204903">Chuyển sang chụp ảnh</translation>
 <translation id="8261506727792406068">Xóa</translation>
 <translation id="8428213095426709021">Cài đặt</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8732462232047530626">Xem trước siêu dữ liệu</translation>
+<translation id="8815966864175525708">Chuyển sang chụp ảnh chân dung</translation>
 <translation id="8870695351537079478">Không thể bắt đầu quay</translation>
 <translation id="9045155556724273246">10 giây</translation>
 <translation id="945522503751344254">Gửi phản hồi</translation>

@@ -557,7 +557,7 @@ export class Renderer {
     if (buffer._buffer) {
       let gl = this._gl;
       gl.bindBuffer(buffer._target, buffer._buffer);
-      if (offset == 0 && buffer._length == data.byteLength) {
+      if (offset == 0 && buffer._length <= data.byteLength) {
         gl.bufferData(buffer._target, data, buffer._usage);
       } else {
         gl.bufferSubData(buffer._target, offset, data);
@@ -583,6 +583,13 @@ export class Renderer {
     this._renderPrimitives[renderMaterial._renderOrder].push(renderPrimitive);
 
     return renderPrimitive;
+  }
+
+  removeRenderPrimitive(renderPrimitive) {
+    let index = this._renderPrimitives[renderPrimitive._material._renderOrder].indexOf(renderPrimitive);
+    if(index > -1) {
+      this._renderPrimitives[renderPrimitive._material._renderOrder].splice(index, 1);
+    }
   }
 
   createMesh(primitive, material) {

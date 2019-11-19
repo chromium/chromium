@@ -8,7 +8,8 @@ A resource compiler for .rc files.
 
 options:
 -h, --help     Print this message.
--I<dir>        Add include path.
+-I<dir>        Add include path, used for both headers and resources.
+-imsvc<dir>    Add system include path, used for preprocessing only.
 -D<sym>        Define a macro for the preprocessor.
 /fo<out>       Set path of output .res file.
 /nologo        Ignored (rc.py doesn't print a logo by default).
@@ -33,6 +34,7 @@ def ParseFlags():
   """Parses flags off sys.argv and returns the parsed flags."""
   # Can't use optparse / argparse because of /fo flag :-/
   includes = []
+  imsvcs = []
   defines = []
   output = None
   input = None
@@ -44,6 +46,8 @@ def ParseFlags():
       sys.exit(0)
     if flag.startswith('-I'):
       includes.append(flag)
+    elif flag.startswith('-imsvc'):
+      imsvcs.append(flag)
     elif flag.startswith('-D'):
       defines.append(flag)
     elif flag.startswith('/fo'):
@@ -72,10 +76,10 @@ def ParseFlags():
     sys.exit(1)
   if not output:
     output = os.path.splitext(input)[0] + '.res'
-  Flags = namedtuple('Flags', ['includes', 'defines', 'output', 'input',
-                               'show_includes'])
-  return Flags(includes=includes, defines=defines, output=output, input=input,
-               show_includes=show_includes)
+  Flags = namedtuple('Flags', ['includes', 'defines', 'output', 'imsvcs',
+                               'input', 'show_includes'])
+  return Flags(includes=includes, defines=defines, output=output, imsvcs=imsvcs,
+               input=input, show_includes=show_includes)
 
 
 def ReadInput(input):
@@ -120,12 +124,14 @@ def Preprocess(rc_file_data, flags):
   # can't figure out how to let write to the temp file on Windows otherwise.
   os.close(temp_handle)
   clang_cmd = [clang, '/P', '/DRC_INVOKED', '/TC', '-', '/Fi' + temp_file]
+  if flags.imsvcs:
+    clang_cmd += ['/X']
   if os.path.dirname(flags.input):
     # This must precede flags.includes.
     clang_cmd.append('-I' + os.path.dirname(flags.input))
   if flags.show_includes:
     clang_cmd.append('/showIncludes')
-  clang_cmd += flags.includes + flags.defines
+  clang_cmd += flags.imsvcs + flags.includes + flags.defines
   p = subprocess.Popen(clang_cmd, stdin=subprocess.PIPE)
   p.communicate(input=rc_file_data)
   if p.returncode != 0:
@@ -141,12 +147,7 @@ def Preprocess(rc_file_data, flags):
   # lines in the file except the preprocessor directives."""
   # Thankfully, the Microsoft headers are mostly good about putting everything
   # in the system headers behind `if !defined(RC_INVOKED)`, so regular
-  # preprocessing with RC_INVOKED defined almost works. The one exception
-  # is struct tagCRGB in dlgs.h, but that will be fixed in the next major
-  # SDK release too.
-  # TODO(thakis): Remove this once an SDK with the fix has been released.
-  preprocessed_output = re.sub('typedef struct tagCRGB\s*{[^}]*} CRGB;', '',
-                               preprocessed_output)
+  # preprocessing with RC_INVOKED defined works.
   return preprocessed_output
 
 
@@ -167,7 +168,7 @@ def RunRc(preprocessed_output, is_utf8, flags):
   rc_cmd.append('/fo' + flags.output)
   if is_utf8:
     rc_cmd.append('/utf-8')
-  # TODO(thakis): rc currently always prints full paths for /showIncludes,
+  # TODO(thakis): cl currently always prints full paths for /showIncludes,
   # but clang-cl /P doesn't.  Which one is right?
   if flags.show_includes:
     rc_cmd.append('/showIncludes')
@@ -177,7 +178,64 @@ def RunRc(preprocessed_output, is_utf8, flags):
   rc_cmd += flags.includes
   p = subprocess.Popen(rc_cmd, stdin=subprocess.PIPE)
   p.communicate(input=preprocessed_output)
+
+  if flags.show_includes and p.returncode == 0:
+    TOOL_DIR = os.path.dirname(os.path.relpath(THIS_DIR)).replace("\\", "/")
+    # Since tool("rc") can't have deps, add deps on this script and on rc.py
+    # and its deps here, so that rc edges become dirty if rc.py changes.
+    print('Note: including file: {}/tool_wrapper.py'.format(TOOL_DIR))
+    print('Note: including file: {}/rc/rc.py'.format(TOOL_DIR))
+    print(
+        'Note: including file: {}/rc/linux64/rc.sha1'.format(TOOL_DIR))
+    print('Note: including file: {}/rc/mac/rc.sha1'.format(TOOL_DIR))
+    print(
+        'Note: including file: {}/rc/win/rc.exe.sha1'.format(TOOL_DIR))
+
   return p.returncode
+
+
+def CompareToMsRcOutput(preprocessed_output, is_utf8, flags):
+  msrc_in = flags.output + '.preprocessed.rc'
+
+  # Strip preprocessor line markers.
+  preprocessed_output = re.sub(r'^#.*$', '', preprocessed_output, flags=re.M)
+  if is_utf8:
+    preprocessed_output = preprocessed_output.decode('utf-8').encode('utf-16le')
+  with open(msrc_in, 'wb') as f:
+    f.write(preprocessed_output)
+
+  msrc_out = flags.output + '_ms_rc'
+  msrc_cmd = ['rc', '/nologo', '/x', '/fo' + msrc_out]
+
+  # Make sure rc-relative resources can be found. rc.exe looks for external
+  # resource files next to the file, but the preprocessed file isn't where the
+  # input was.
+  # Note that rc searches external resource files in the order of
+  # 1. next to the input file
+  # 2. relative to cwd
+  # 3. next to -I directories
+  # Changing the cwd means we'd have to rewrite all -I flags, so just add
+  # the input file dir as -I flag. That technically gets the order of 1 and 2
+  # wrong, but in Chromium's build the cwd is the gn out dir, and generated
+  # files there are in obj/ and gen/, so this difference doesn't matter in
+  # practice.
+  if os.path.dirname(flags.input):
+    msrc_cmd += [ '-I' + os.path.dirname(flags.input) ]
+
+  # Microsoft rc.exe searches for referenced files relative to -I flags in
+  # addition to the pwd, so -I flags need to be passed both to both
+  # the preprocessor and rc.
+  msrc_cmd += flags.includes
+
+  # Input must come last.
+  msrc_cmd += [ msrc_in ]
+
+  rc_exe_exit_code = subprocess.call(msrc_cmd)
+  # Assert Microsoft rc.exe and rc.py produced identical .res files.
+  if rc_exe_exit_code == 0:
+    import filecmp
+    assert filecmp.cmp(msrc_out, flags.output)
+  return rc_exe_exit_code
 
 
 def main():
@@ -190,7 +248,17 @@ def main():
   flags = ParseFlags()
   rc_file_data, is_utf8 = ReadInput(flags.input)
   preprocessed_output = Preprocess(rc_file_data, flags)
-  return RunRc(preprocessed_output, is_utf8, flags)
+  rc_exe_exit_code = RunRc(preprocessed_output, is_utf8, flags)
+
+  # 5. On Windows, we also call Microsoft's rc.exe and check that we produced
+  #   the same output.
+  # Since Microsoft's rc has a preprocessor that only accepts 32 characters
+  # for macro names, feed the clang-preprocessed source into it instead
+  # of using ms rc's preprocessor.
+  if sys.platform == 'win32' and rc_exe_exit_code == 0:
+    rc_exe_exit_code = CompareToMsRcOutput(preprocessed_output, is_utf8, flags)
+
+  return rc_exe_exit_code
 
 
 if __name__ == '__main__':

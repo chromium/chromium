@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.photo_picker;
 
-import android.support.annotation.IntDef;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.chrome.R;
 

@@ -25,8 +25,8 @@
 
 #include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/text/character.h"
-#include "third_party/blink/renderer/platform/wtf/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 #include <unicode/uchar.h>
@@ -301,9 +301,9 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
     int pos,
     const CharacterType* str,
     int len) const {
-  DCHECK_GE(pos, 0);
+  CHECK_GE(pos, 0);
   DCHECK_GE(static_cast<unsigned>(pos), start_offset_);
-  DCHECK_LE(pos, len);
+  CHECK_LE(pos, len);
   int next_break = -1;
   UChar last_last_ch = pos > 1 ? str[pos - 2] : SecondToLastCharacter();
   UChar last_ch = pos > 0 ? str[pos - 1] : LastCharacter();
@@ -333,6 +333,12 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
             return i;
           continue;
         }
+        break;
+      case BreakSpaceType::kAfterEverySpace:
+        if (is_last_space)
+          return i;
+        if (is_space)
+          continue;
         break;
     }
 
@@ -392,6 +398,10 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
       return NextBreakablePosition<CharacterType, lineBreakType,
                                    BreakSpaceType::kBeforeSpaceRun>(pos, str,
                                                                     len);
+    case BreakSpaceType::kAfterEverySpace:
+      return NextBreakablePosition<CharacterType, lineBreakType,
+                                   BreakSpaceType::kAfterEverySpace>(pos, str,
+                                                                     len);
   }
   NOTREACHED();
   return NextBreakablePosition<CharacterType, lineBreakType,
@@ -502,6 +512,8 @@ std::ostream& operator<<(std::ostream& ostream, BreakSpaceType break_space) {
   switch (break_space) {
     case BreakSpaceType::kBeforeEverySpace:
       return ostream << "kBeforeEverySpace";
+    case BreakSpaceType::kAfterEverySpace:
+      return ostream << "kAfterEverySpace";
     case BreakSpaceType::kBeforeSpaceRun:
       return ostream << "kBeforeSpaceRun";
   }

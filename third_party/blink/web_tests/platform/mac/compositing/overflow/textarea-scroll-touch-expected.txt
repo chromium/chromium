@@ -2,17 +2,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
@@ -20,77 +9,55 @@
     },
     {
       "name": "LayoutTextControl TEXTAREA",
-      "position": [18, 18],
       "bounds": [206, 126],
-      "backgroundColor": "#CCCCCC"
-    },
-    {
-      "name": "Scrolling Layer",
-      "position": [19, 19],
-      "bounds": [189, 124],
-      "drawsContent": false
-    },
-    {
-      "name": "Scrolling Contents Layer",
-      "position": [19, 19],
-      "bounds": [189, 270],
-      "contentsOpaque": true,
       "backgroundColor": "#CCCCCC",
       "transform": 1
     },
     {
-      "name": "Overflow Controls Host Layer",
-      "position": [18, 18],
-      "bounds": [206, 126],
-      "drawsContent": false
-    },
-    {
-      "name": "Vertical Scrollbar Layer",
-      "position": [208, 19],
-      "bounds": [15, 109],
-      "drawsContent": false
-    },
-    {
-      "name": "Scroll Corner Layer",
-      "position": [208, 128],
-      "bounds": [15, 15]
-    },
-    {
-      "name": "LayoutTextControl TEXTAREA",
-      "position": [248, 18],
-      "bounds": [206, 126],
-      "backgroundColor": "#CCCCCC"
-    },
-    {
-      "name": "Scrolling Layer",
-      "position": [249, 19],
-      "bounds": [189, 124],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
-      "position": [249, 19],
+      "position": [1, 1],
       "bounds": [189, 270],
       "contentsOpaque": true,
       "backgroundColor": "#CCCCCC",
       "transform": 2
     },
     {
-      "name": "Overflow Controls Host Layer",
-      "position": [248, 18],
-      "bounds": [206, 126],
-      "drawsContent": false
-    },
-    {
-      "name": "Vertical Scrollbar Layer",
-      "position": [438, 19],
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [190, 1],
       "bounds": [15, 109],
-      "drawsContent": false
+      "transform": 1
     },
     {
       "name": "Scroll Corner Layer",
-      "position": [438, 128],
-      "bounds": [15, 15]
+      "position": [190, 110],
+      "bounds": [15, 15],
+      "transform": 1
+    },
+    {
+      "name": "LayoutTextControl TEXTAREA",
+      "bounds": [206, 126],
+      "backgroundColor": "#CCCCCC",
+      "transform": 3
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [1, 1],
+      "bounds": [189, 270],
+      "contentsOpaque": true,
+      "backgroundColor": "#CCCCCC",
+      "transform": 4
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [190, 1],
+      "bounds": [15, 109],
+      "transform": 3
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [190, 110],
+      "bounds": [15, 15],
+      "transform": 3
     }
   ],
   "transforms": [
@@ -100,19 +67,37 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [0, -50, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+        [18, 18, 0, 1]
+      ]
     },
     {
       "id": 2,
+      "parent": 1,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -50, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [248, 18, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -50, 0, 1]
+      ]
     }
   ]
 }

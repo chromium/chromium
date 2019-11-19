@@ -18,7 +18,9 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-details-element
-[HTMLConstructor]
-interface HTMLDetailsElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLDetailsElement : HTMLElement {
     [CEReactions, Reflect] attribute boolean open;
 };

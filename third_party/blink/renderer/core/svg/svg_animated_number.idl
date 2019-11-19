@@ -26,6 +26,7 @@
 
 // https://svgwg.org/svg2-draft/types.html#InterfaceSVGAnimatedNumber
 
+[Exposed=Window]
 interface SVGAnimatedNumber {
     [RaisesException=Setter] attribute float baseVal;
     readonly attribute float animVal;

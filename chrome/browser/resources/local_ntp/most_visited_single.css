@@ -4,7 +4,6 @@
 
 html {
   /* Material Design constants */
-  --md-add-size: 24px;
   --md-edit-menu-size: 20px;
   --md-fallback-letter-size: 16px;
   --md-favicon-size: 32px;
@@ -14,18 +13,16 @@ html {
   --md-menu-margin-side: 2px;
   --md-menu-margin-top: 4px;
   --md-menu-size: 12px;
-  --md-tile-height: 112px;
   --md-tile-margin: 16px;
-  --md-tile-padding-bottom: 10px;
-  --md-tile-padding-horizontal: 4px;
   --md-tile-padding-top: 16px;
-  --md-tile-width: 112px;
+  --md-tile-size: 112px;
   --md-title-font-size: 12px;
   --md-title-height: 24px;
   --md-title-max-height: 28px;
 
   /* May be overridden by themes (on the body element). */
-  --tile-title-color: #323232;
+  --icon-background-color: rgb(var(--GG100-rgb));
+  --tile-title-color: rgb(var(--GG800-rgb));
 }
 
 body {
@@ -45,30 +42,21 @@ a,
 a:active,
 a:hover,
 a:visited {
-  color: inherit;
   text-decoration: none;
 }
 
 #most-visited {
-  margin: 10px 0;
+  margin-top: 10px;
   text-align: -webkit-center;
   user-select: none;
-  width: 100%
+  width: 100%;
 }
 
 #mv-tiles,
 .mv-tiles-old {
-  display: flex;
-  flex-wrap: wrap;
   font-size: 0;
-  justify-content: center;
-  /* 5 88px tiles per row. If you change this, also change the corresponding
-   * values in local_ntp.css. */
-  max-width: calc(var(--md-tile-width) * var(--md-max-tiles-row));
   opacity: 0;
-  position: static;
-  /* This align correctly for both LTR and RTL */
-  text-align: -webkit-auto;
+  position: relative;
   transition: opacity 300ms;
   user-select: none;
 }
@@ -84,69 +72,72 @@ a:visited {
   outline: none;
 }
 
-.md-tile-container {
-  border-radius: 4px;
-  box-sizing: border-box;
-  height: var(--md-tile-height);
-  margin-bottom: var(--md-tile-margin);
-  opacity: 1;
-  position: relative;
-  transition-property:
-      background, background-color, border-color, box-shadow, opacity, filter;
-  width: var(--md-tile-width);
+.grid-tile-container {
+  position: absolute;
+  transition: transform 300ms ease-in-out;
 }
 
-.md-tile-container.reorder .md-tile {
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px 0 rgba(var(--GG800-rgb), 0.3),
-      0 4px 8px 3px rgba(var(--GG800-rgb), 0.15);
-  transition-duration: 200ms;
+.grid-tile {
+  transition: transform 300ms ease-in-out;
 }
 
-html[darkmode=true] .md-tile-container.reorder .md-tile {
-  background-color: rgb(var(--dark-mode-bg-rgb));
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4),
-      0 4px 8px 3px rgba(0, 0, 0, 0.25);
+/* Prevent transitions on the held tile in order for it to smoothly follow the
+ * mouse. */
+.reorder .grid-tile {
+  transition-duration: 0s;
 }
 
-.md-tile-container.reorder .md-tile .md-tile-inner {
-  z-index: unset;
+.reorder {
+  z-index: 10;  /* Ensure the held tile is visible. */
 }
 
 .md-tile {
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: rgb(var(--tile-title-color));
   cursor: pointer;
-  padding: var(--md-tile-padding-top) var(--md-tile-padding-horizontal)
-    var(--md-tile-padding-bottom);
+  height: var(--md-tile-size);
+  margin-bottom: var(--md-tile-margin);
+  opacity: 1;
+  padding-top: var(--md-tile-padding-top);
+  position: relative;
+  transition-property:
+      background, background-color, border-color, box-shadow, opacity, filter;
+  width: var(--md-tile-size);
 }
 
 .md-empty-tile {
   display: none;
 }
 
-body:not(.reordering) .md-tile-container:hover {
-  background-color: rgba(var(--GG900-rgb), 0.06);
+body:not(.reordering) .md-tile:hover,
+.reorder .md-tile {
+  background-color: rgba(var(--GG900-rgb), .06);
 }
 
-html[darkmode=true] body:not(.reordering) .md-tile-container:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+@media (prefers-color-scheme: dark) {
+  body:not(.reordering) .md-tile:hover,
+  .reorder .md-tile {
+    background-color: rgba(255, 255, 255, .1);
+  }
 }
 
-body.dark-theme:not(.reordering) .md-tile-container:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+body.dark-theme:not(.reordering) .md-tile:hover,
+body.dark-theme .reorder .md-tile {
+  background-color: rgba(255, 255, 255, .1);
 }
 
-body:not(.reordering) .md-tile-container:hover .md-menu {
+body:not(.reordering) .md-tile:hover .md-menu {
   opacity: 1;
   transition-delay: 500ms;
 }
 
-body.dark-theme:not(.reordering) .md-tile-container:active + .md-menu::after {
+body.dark-theme:not(.reordering) .md-tile:active + .md-menu::after {
   background-color: rgb(var(--GG400-rgb));
   transition-delay: 0ms;
 }
 
-.md-tile-container.blacklisted {
+.blacklisted {
   margin: 0;
   padding: 0;
   transform: scale(0, 0);
@@ -166,38 +157,24 @@ body.dark-theme:not(.reordering) .md-tile-container:active + .md-menu::after {
 }
 
 .md-icon {
-  margin-bottom: var(--md-icon-margin-bottom);
-  pointer-events: none;
-}
-
-.md-icon img {
-  /* Icons returned by the NTP Icon Source are always of this size. */
-  height: var(--md-icon-size);
-  width: var(--md-icon-size);
-}
-
-.md-icon-background {
   align-items: center;
-  background-color: rgb(var(--GG100-rgb));
+  background-color: var(--icon-background-color);
   border-radius: 50%;
   display: flex;
   height: var(--md-icon-size);
   justify-content: center;
+  margin-bottom: var(--md-icon-margin-bottom);
   width: var(--md-icon-size);
 }
 
-html[darkmode=true] .md-icon-background {
-  background-color: rgb(var(--GG900-rgb));
-}
-
 .md-add-icon {
-  background: url(chrome-search://most-visited/add_link.svg) no-repeat center;
-  height: var(--md-add-size);
-  width: var(--md-add-size);
+  background-image: url(chrome-search://most-visited/add_link.svg);
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-html[darkmode=true] .md-add-icon {
-  background: url(chrome-search://most-visited/add_link_white.svg) no-repeat center;
+.use-white-add-icon .md-add-icon {
+  background-image: url(chrome-search://most-visited/add_link_white.svg);
 }
 
 .md-fallback-letter {
@@ -216,7 +193,6 @@ html[darkmode=true] .md-add-icon {
 }
 
 .md-title {
-  color: rgb(var(--GG800-rgb));
   font-size: var(--md-title-font-size);
   font-weight: 500;
   max-height: var(--md-title-max-height);
@@ -224,7 +200,7 @@ html[darkmode=true] .md-add-icon {
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: 96px;
+  width: 88px;
 }
 
 .md-title span {
@@ -237,40 +213,19 @@ body.mac-chromeos .md-title {
   font-weight: 400;
 }
 
-/* Apply when Chrome is in dark mode. */
-html[darkmode=true] .md-title {
-  color: rgb(var(--GG200-rgb));
-}
-
 /* Apply when a custom background is set. */
-body.dark-theme .md-tile-container:not(.reorder) .md-title {
-  color: rgb(var(--GG050-rgb));
-  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.35));
+body.custom-background .md-title {
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, .35));
 }
 
-/* Apply only when a theme is installed. */
-body.using-theme .md-title-container {
+/* Apply only when a theme with image is installed. */
+body.use-title-container .md-title {
   background-color: white;
   /* Necessary for a "pill" shape. Using 50% creates an oval. */
   border-radius: 500px;
-  padding: 0 4px;
-}
-
-html[darkmode=true] body.using-theme .md-title-container {
-  background-color: rgb(var(--GG900-rgb));
-}
-
-html[darkmode=true] body.using-theme .md-tile-container.reorder .md-title-container {
-  background-color: rgb(var(--dark-mode-bg-rgb));
-}
-
-body.using-theme .md-tile-container:not(.reorder) .md-title {
   color: rgb(var(--GG800-rgb));
   filter: unset;
-}
-
-html[darkmode=true] body.using-theme .md-tile-container:not(.reorder) .md-title {
-  color: rgb(var(--GG200-rgb));
+  padding: 0 8px;
 }
 
 .md-menu {
@@ -299,9 +254,10 @@ body:not(.reordering) .md-menu:focus:not(.mouse-navigation) {
 /* We use ::after without content to provide the masked X element. */
 .md-menu::after {
   --mask-width: calc(var(--md-menu-size) - 2);
+  /* TODO(crbug.com/1012065): Use SVG for the "X" icon. */
   -webkit-mask-image: -webkit-image-set(
-      url(chrome-search://local-ntp/images/close_3_mask.png) 1x,
-      url(chrome-search://local-ntp/images/close_3_mask.png@2x) 2x);
+      url(chrome-search://most-visited/dont_show.png) 1x,
+      url(chrome-search://most-visited/dont_show_2x.png) 2x);
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: var(--mask-width);
   background-color: rgb(var(--GG600-rgb));
@@ -314,8 +270,10 @@ body:not(.reordering) .md-menu:focus:not(.mouse-navigation) {
   width: var(--md-menu-size);
 }
 
-html[darkmode=true] .md-menu::after {
-  background-color: rgb(var(--GG200-rgb));
+@media (prefers-color-scheme: dark) {
+  .md-menu::after {
+    background-color: rgb(var(--GG200-rgb));
+  }
 }
 
 .md-edit-menu {
@@ -335,19 +293,24 @@ body:not(.reordering) .md-menu:focus::after {
   background-color: rgb(var(--GG700-rgb));
 }
 
-html[darkmode=true] body:not(.reordering) .md-menu:hover::after,
-html[darkmode=true] body:not(.reordering) .md-menu:focus::after {
-  background-color: rgb(var(--GG400-rgb));
+@media (prefers-color-scheme: dark) {
+  body:not(.reordering) .md-menu:hover::after,
+  body:not(.reordering) .md-menu:focus::after {
+    background-color: rgb(var(--GG400-rgb));
+  }
 }
 
-body.dark-theme .md-tile-container:not(.reorder) .md-menu::after,
+body.dark-theme .md-tile .md-menu::after,
 body.dark-theme:not(.reordering) .md-menu:focus:not(.mouse-navigation)::after {
   background-color: white;
 }
 
-html[darkmode=true] body.dark-theme .md-tile-container:not(.reorder) .md-menu::after,
-html[darkmode=true] body.dark-theme:not(.reordering) .md-menu:focus:not(.mouse-navigation)::after {
-  background-color: rgb(var(--GG200-rgb));
+@media (prefers-color-scheme: dark) {
+  body.dark-theme .md-tile .md-menu::after,
+  body.dark-theme:not(.reordering)
+      .md-menu:focus:not(.mouse-navigation)::after {
+    background-color: rgb(var(--GG200-rgb));
+  }
 }
 
 body.dark-theme:not(.reordering) .md-menu:active::after,
@@ -356,8 +319,10 @@ body.dark-theme:not(.reordering) .md-menu.mouse-navigation:focus::after {
   background-color: rgb(var(--GG300-rgb));
 }
 
-html[darkmode=true] body.dark-theme:not(.reordering) .md-menu:active::after,
-html[darkmode=true] body.dark-theme:not(.reordering) .md-menu:hover::after,
-html[darkmode=true] body.dark-theme:not(.reordering) .md-menu.mouse-navigation:focus::after {
-  background-color: rgb(var(--GG400-rgb));
+@media (prefers-color-scheme: dark) {
+  body.dark-theme:not(.reordering) .md-menu:active::after,
+  body.dark-theme:not(.reordering) .md-menu:hover::after,
+  body.dark-theme:not(.reordering) .md-menu.mouse-navigation:focus::after {
+    background-color: rgb(var(--GG400-rgb));
+  }
 }

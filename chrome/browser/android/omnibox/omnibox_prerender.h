@@ -63,6 +63,7 @@ class OmniboxPrerender {
   void DoPrerender(const AutocompleteMatch& match,
                    Profile* profile,
                    content::WebContents* web_contents);
+  void DoPreconnect(const AutocompleteMatch& match, Profile* profile);
   JavaObjectWeakGlobalRef weak_java_omnibox_;
 
   DISALLOW_COPY_AND_ASSIGN(OmniboxPrerender);

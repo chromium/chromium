@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<p>PASS if no crash or DCHECK failure.</p>
+<div style="width:2000px;">
+  Tenderloin ham boudin tongue sausage venison short ribs sirloin, kielbasa beef
+  ribs. Strip steak shank bresaola salami spare ribs kielbasa fatback, cow
+  t-bone flank leberkas sirloin. Jowl pork belly ribeye, corned beef sirloin
+  chicken salami tail. Rump swine ham shank corned beef short loin, speck turkey
+  pancetta shankle frankfurter. Pancetta tail fatback, ground round brisket
+  biltong frankfurter turkey. Ham hock chicken strip steak, salami short ribs
+  beef ribs pork sirloin pastrami pork loin turducken rump brisket andouille.
+</div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+      document.body.offsetTop;
+      document.documentElement.style.writingMode = "vertical-rl";
+  }, "no crash");
+</script>

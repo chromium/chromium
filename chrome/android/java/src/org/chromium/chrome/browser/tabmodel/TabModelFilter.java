@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -26,6 +27,7 @@ public abstract class TabModelFilter extends EmptyTabModelObserver implements Ta
             Collections.unmodifiableList(new ArrayList<Tab>());
     private TabModel mTabModel;
     protected ObserverList<TabModelObserver> mFilteredObservers = new ObserverList<>();
+    private boolean mTabRestoreCompleted;
 
     public TabModelFilter(TabModel tabModel) {
         mTabModel = tabModel;
@@ -49,7 +51,7 @@ public abstract class TabModelFilter extends EmptyTabModelObserver implements Ta
     }
 
     public boolean isCurrentlySelectedFilter() {
-        return mTabModel.isCurrentModel();
+        return getTabModel().isCurrentModel();
     }
 
     /**
@@ -63,20 +65,52 @@ public abstract class TabModelFilter extends EmptyTabModelObserver implements Ta
     /**
      * @return The {@link TabModel} that the filter is acting on.
      */
-    protected TabModel getTabModel() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public TabModel getTabModel() {
         return mTabModel;
     }
 
     /**
      * Any of the concrete class can override and define a relationship that links a {@link Tab} to
-     * a list of related {@link Tab}s. By default, this returns an empty unmodifiable list. Note
-     * that the meaning of related can vary depending on the filter being applied.
+     * a list of related {@link Tab}s. By default, this returns an unmodifiable list that only
+     * contains the {@link Tab} with the given id. Note that the meaning of related can vary
+     * depending on the filter being applied.
      * @param tabId Id of the {@link Tab} try to relate with.
      * @return An unmodifiable list of {@link Tab} that relate with the given tab id.
      */
     @NonNull
     public List<Tab> getRelatedTabList(int tabId) {
-        return sEmptyRelatedTabList;
+        Tab tab = TabModelUtils.getTabById(getTabModel(), tabId);
+        if (tab == null) return sEmptyRelatedTabList;
+        List<Tab> relatedTab = new ArrayList<>();
+        relatedTab.add(tab);
+        return Collections.unmodifiableList(relatedTab);
+    }
+
+    /**
+     * @return An unmodifiable list of {@link Tab}s that are not related to any tabs
+     */
+    @NonNull
+    public final List<Tab> getTabsWithNoOtherRelatedTabs() {
+        List<Tab> tabs = new ArrayList<>();
+        TabModel tabModel = getTabModel();
+        for (int i = 0; i < tabModel.getCount(); i++) {
+            Tab tab = tabModel.getTabAt(i);
+            if (!hasOtherRelatedTabs(tab)) {
+                tabs.add(tab);
+            }
+        }
+        return Collections.unmodifiableList(tabs);
+    }
+
+    /**
+     * Any of the concrete class that defined a relationship between tabs should override this
+     * method. By default, the given {@link Tab} has no related tabs, other than itself.
+     * @param tab A {@link Tab}.
+     * @return Whether the given {@link Tab} has other related tabs that is not itself.
+     */
+    public boolean hasOtherRelatedTabs(Tab tab) {
+        return false;
     }
 
     /**
@@ -105,10 +139,53 @@ public abstract class TabModelFilter extends EmptyTabModelObserver implements Ta
      */
     protected abstract void reorder();
 
+    /**
+     * Concrete class requires to define what to clean up.
+     */
+    protected abstract void resetFilterStateInternal();
+
+    /**
+     * @return Whether the tab model is fully restored.
+     */
+    public boolean isTabModelRestored() {
+        return mTabRestoreCompleted || isIncognito();
+    }
+
+    /**
+     * Concrete class requires to define what's the behavior when {@link TabModel} removed a
+     * {@link Tab}.
+     * @param tab {@link Tab} had removed.
+     */
+    protected abstract void removeTab(Tab tab);
+
+    /**
+     * Calls {@code resetFilterStateInternal} method to clean up filter internal data, and resets
+     * the internal data based on the current {@link TabModel}.
+     */
+    protected void resetFilterState() {
+        resetFilterStateInternal();
+
+        TabModel tabModel = getTabModel();
+        for (int i = 0; i < tabModel.getCount(); i++) {
+            Tab tab = tabModel.getTabAt(i);
+            addTab(tab);
+        }
+    }
+
+    // TODO(crbug.com/948518): This is a band-aid fix for not crashing when undo the last closed
+    // tab, should remove later.
+    /**
+     * @return Whether filter should notify observers about the SetIndex call.
+     */
+    protected boolean shouldNotifyObserversOnSetIndex() {
+        return true;
+    }
+
     // TabModelObserver implementation.
     @Override
     public void didSelectTab(Tab tab, int type, int lastId) {
         selectTab(tab);
+        if (!shouldNotifyObserversOnSetIndex()) return;
         for (TabModelObserver observer : mFilteredObservers) {
             observer.didSelectTab(tab, type, lastId);
         }
@@ -137,7 +214,7 @@ public abstract class TabModelFilter extends EmptyTabModelObserver implements Ta
     }
 
     @Override
-    public void didAddTab(Tab tab, int type) {
+    public void didAddTab(Tab tab, @TabLaunchType int type) {
         addTab(tab);
         for (TabModelObserver observer : mFilteredObservers) {
             observer.didAddTab(tab, type);
@@ -161,6 +238,7 @@ public abstract class TabModelFilter extends EmptyTabModelObserver implements Ta
     @Override
     public void tabClosureUndone(Tab tab) {
         addTab(tab);
+        reorder();
         for (TabModelObserver observer : mFilteredObservers) {
             observer.tabClosureUndone(tab);
         }
@@ -174,9 +252,9 @@ public abstract class TabModelFilter extends EmptyTabModelObserver implements Ta
     }
 
     @Override
-    public void allTabsPendingClosure(List<Tab> tabs) {
+    public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
         for (TabModelObserver observer : mFilteredObservers) {
-            observer.allTabsPendingClosure(tabs);
+            observer.multipleTabsPendingClosure(tabs, isAllTabs);
         }
     }
 
@@ -189,6 +267,7 @@ public abstract class TabModelFilter extends EmptyTabModelObserver implements Ta
 
     @Override
     public void tabRemoved(Tab tab) {
+        removeTab(tab);
         for (TabModelObserver observer : mFilteredObservers) {
             observer.tabRemoved(tab);
         }
@@ -196,6 +275,8 @@ public abstract class TabModelFilter extends EmptyTabModelObserver implements Ta
 
     @Override
     public void restoreCompleted() {
+        mTabRestoreCompleted = true;
+
         if (getCount() != 0) reorder();
 
         for (TabModelObserver observer : mFilteredObservers) {

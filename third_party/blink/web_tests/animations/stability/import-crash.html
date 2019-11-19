@@ -19,14 +19,14 @@
         animation-name: anim;
     }
     </style>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
     <script type="text/javascript" charset="utf-8">
-    if (window.testRunner)
-        testRunner.dumpAsText();
+    done();
   </script>
 </head>
 <body>
   <p>This test simply loads a sheet using @import that contains keyframes, to see if https://bugs.webkit.org/show_bug.cgi?id=20855
 is fixed.
-  <p>It passes if it does not crash.
 </body>
 </html>

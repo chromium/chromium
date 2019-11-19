@@ -8,11 +8,6 @@
     </style>
     <script src="../resources/text-based-repaint.js"></script>
     <script>
-        if (window.testRunner) {
-            testRunner.waitUntilDone();
-            testRunner.dumpAsTextWithPixelResults();
-        }
-
         window.onload = function() {
             window.scrollTo(0, 100);
             runRepaintAndPixelTest();

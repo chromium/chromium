@@ -9,19 +9,13 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 namespace cssvalue {
 
 class CSSContentDistributionValue : public CSSValue {
  public:
-  static CSSContentDistributionValue* Create(CSSValueID distribution,
-                                             CSSValueID position,
-                                             CSSValueID overflow) {
-    return MakeGarbageCollected<CSSContentDistributionValue>(
-        distribution, position, overflow);
-  }
-
   CSSContentDistributionValue(CSSValueID distribution,
                               CSSValueID position,
                               CSSValueID overflow);
@@ -47,10 +41,15 @@ class CSSContentDistributionValue : public CSSValue {
   CSSValueID overflow_;
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSContentDistributionValue,
-                            IsContentDistributionValue());
-
 }  // namespace cssvalue
+
+template <>
+struct DowncastTraits<cssvalue::CSSContentDistributionValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsContentDistributionValue();
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_CONTENT_DISTRIBUTION_VALUE_H_

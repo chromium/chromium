@@ -4,7 +4,7 @@
 
 #include "chrome/browser/resource_coordinator/utils.h"
 
-#include "base/md5.h"
+#include "base/hash/md5.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
@@ -49,16 +49,6 @@ TabLifecycleUnitSource* GetTabLifecycleUnitSource() {
                      ->tab_lifecycle_unit_source();
   DCHECK(source);
   return source;
-}
-
-PageSignalReceiver* GetPageSignalReceiver() {
-  // This might get called during the destruction of the browser process, at
-  // which point there's no PageSignalReceiver anymore.
-  if (!g_browser_process)
-    return nullptr;
-  auto* page_signal_receiver =
-      g_browser_process->resource_coordinator_parts()->page_signal_receiver();
-  return page_signal_receiver;
 }
 
 }  // namespace resource_coordinator

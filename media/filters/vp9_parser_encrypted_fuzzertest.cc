@@ -5,8 +5,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include "base/numerics/safe_conversions.h"
-#include "base/test/fuzzed_data_provider.h"
 
 #include "media/base/decrypt_config.h"
 #include "media/base/subsample_entry.h"
@@ -25,7 +26,7 @@ Environment* env = new Environment();
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::FuzzedDataProvider data_provider(data, size);
+  FuzzedDataProvider data_provider(data, size);
   std::string key_id = data_provider.ConsumeBytesAsString(4);
   std::string iv = data_provider.ConsumeBytesAsString(16);
 
@@ -60,8 +61,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         media::DecryptConfig::CreateCencConfig(key_id, iv, subsamples));
     // TODO(kcwu): further fuzzing the case of Vp9Parser::kAwaitingRefresh.
     std::unique_ptr<media::DecryptConfig> null_config;
-    while (vp9_parser.ParseNextFrame(&vp9_frame_header, &null_config) ==
-           media::Vp9Parser::kOk) {
+    gfx::Size allocate_size;
+    while (vp9_parser.ParseNextFrame(&vp9_frame_header, &allocate_size,
+                                     &null_config) == media::Vp9Parser::kOk) {
       // Repeat until all frames processed.
     }
   }

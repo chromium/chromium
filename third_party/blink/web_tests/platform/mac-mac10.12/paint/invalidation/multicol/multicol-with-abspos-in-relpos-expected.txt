@@ -1,26 +1,15 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "InlineTextBox 'PASS'",
+          "object": "LayoutBlockFlow (positioned) DIV id='target'",
           "rect": [508, 27, 80, 22],
-          "reason": "appeared"
+          "reason": "chunk appeared"
         }
       ]
     }

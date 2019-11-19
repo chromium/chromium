@@ -18,7 +18,5 @@
 
     <org.chromium.chrome.browser.preferences.ChromeSwitchPreference
         android:key="prefetching_enabled"
-        android:title="@string/download_settings_enable_prefetch_title"
-        android:summary="@string/download_settings_enable_prefetch_description" />
-
+        android:title="@string/download_settings_enable_prefetch_title" />
 </PreferenceScreen>

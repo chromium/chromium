@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import sys
 
 from syscalls import syscalls
@@ -17,11 +19,11 @@ def parseEvents(z):
       tid = e['thread']
       ms = e['ms']
       calls[syscall] = calls.get(syscall, 0) + delta
-      print '%f - %f - %x - %d %s' % (
-          delta, ms, tid, syscall, syscalls.get(syscall, 'unknown'))
+      print('%f - %f - %x - %d %s' % (delta, ms, tid, syscall,
+                                      syscalls.get(syscall, 'unknown')))
 
   #for syscall, delta in calls.items():
-  #  print '%f - %d %s' % (delta, syscall, syscalls.get(syscall, 'unknown'))
+  #  print('%f - %d %s' % (delta, syscall, syscalls.get(syscall, 'unknown')))
 
 
 def main():

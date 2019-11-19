@@ -121,6 +121,8 @@ MessagePumpForUI::~MessagePumpForUI() {
 }
 
 void MessagePumpForUI::OnDelayedLooperCallback() {
+  // ALooper_pollOnce may call this after Quit() if OnNonDelayedLooperCallback()
+  // resulted in Quit() in the same round.
   if (ShouldQuit())
     return;
 
@@ -139,74 +141,103 @@ void MessagePumpForUI::OnDelayedLooperCallback() {
   // there are no obvious timing or multi-threading related issues.
   DPCHECK(ret >= 0 || errno == EAGAIN);
 
-  delayed_scheduled_time_ = base::TimeTicks();
+  delayed_scheduled_time_.reset();
 
-  base::TimeTicks next_delayed_work_time;
-  delegate_->DoDelayedWork(&next_delayed_work_time);
-  if (!next_delayed_work_time.is_null()) {
-    ScheduleDelayedWork(next_delayed_work_time);
-  }
+  Delegate::NextWorkInfo next_work_info = delegate_->DoSomeWork();
+
   if (ShouldQuit())
     return;
-  // We may be idle now, so pump the loop to find out.
-  ScheduleWork();
+
+  if (next_work_info.is_immediate()) {
+    ScheduleWork();
+    return;
+  }
+
+  DoIdleWork();
+  if (!next_work_info.delayed_run_time.is_max())
+    ScheduleDelayedWork(next_work_info.delayed_run_time);
 }
 
 void MessagePumpForUI::OnNonDelayedLooperCallback() {
-  base::TimeTicks next_delayed_work_time;
-  bool did_any_work = false;
-
-  // Runs all native tasks scheduled to run, scheduling delayed work if
-  // necessary.
-  while (true) {
-    bool did_work_this_loop = false;
-    if (ShouldQuit())
-      return;
-    did_work_this_loop = delegate_->DoWork();
-    if (ShouldQuit())
-      return;
-
-    did_work_this_loop |= delegate_->DoDelayedWork(&next_delayed_work_time);
-
-    did_any_work |= did_work_this_loop;
-
-    // If we didn't do any work, we're out of native tasks to run, and we should
-    // return control to the looper to run Java tasks.
-    if (!did_work_this_loop)
-      break;
-  }
-  // If we did any work, return control to the looper to run java tasks before
-  // we call DoIdleWork(). We haven't cleared the fd yet, so we'll get woken up
-  // again soon to check for idle-ness.
-  if (did_any_work)
-    return;
+  // ALooper_pollOnce may call this after Quit() if OnDelayedLooperCallback()
+  // resulted in Quit() in the same round.
   if (ShouldQuit())
     return;
 
-  // Read the file descriptor, resetting its contents to 0 and reading back the
-  // stored value.
-  // See http://man7.org/linux/man-pages/man2/eventfd.2.html
-  uint64_t value = 0;
-  int ret = read(non_delayed_fd_, &value, sizeof(value));
-  DPCHECK(ret >= 0);
+  // A bit added to the |non_delayed_fd_| to keep it signaled when we yield to
+  // native tasks below.
+  constexpr uint64_t kTryNativeTasksBeforeIdleBit = uint64_t(1) << 32;
 
-  // If we read a value > 1, it means we lost the race to clear the fd before a
-  // new task was posted. This is okay, we can just re-schedule work.
-  if (value > 1) {
-    ScheduleWork();
-  } else {
-    // At this point, the java looper might not be idle - it's impossible to
-    // know pre-Android-M, so we may end up doing Idle work while java tasks are
-    // still queued up. Note that this won't cause us to fail to run java tasks
-    // using QuitWhenIdle, as the JavaHandlerThread will finish running all
-    // currently scheduled tasks before it quits. Also note that we can't just
-    // add an idle callback to the java looper, as that will fire even if native
-    // tasks are still queued up.
-    DoIdleWork();
-    if (!next_delayed_work_time.is_null()) {
-      ScheduleDelayedWork(next_delayed_work_time);
-    }
+  // We're about to process all the work requested by ScheduleWork().
+  // MessagePump users are expected to do their best not to invoke
+  // ScheduleWork() again before DoSomeWork() returns a non-immediate
+  // NextWorkInfo below. Hence, capturing the file descriptor's value now and
+  // resetting its contents to 0 should be okay. The value currently stored
+  // should be greater than 0 since work having been scheduled is the reason
+  // we're here. See http://man7.org/linux/man-pages/man2/eventfd.2.html
+  uint64_t pre_work_value = 0;
+  int ret = read(non_delayed_fd_, &pre_work_value, sizeof(pre_work_value));
+  DPCHECK(ret >= 0);
+  DCHECK_GT(pre_work_value, 0U);
+
+  // Note: We can't skip DoSomeWork() even if
+  // |pre_work_value == kTryNativeTasksBeforeIdleBit| here (i.e. no additional
+  // ScheduleWork() since yielding to native) as delayed tasks might have come
+  // in and we need to re-sample |next_work_info|.
+
+  // Runs all application tasks scheduled to run.
+  Delegate::NextWorkInfo next_work_info;
+  do {
+    if (ShouldQuit())
+      return;
+
+    next_work_info = delegate_->DoSomeWork();
+  } while (next_work_info.is_immediate());
+
+  // Do not resignal |non_delayed_fd_| if we're quitting (this pump doesn't
+  // allow nesting so needing to resume in an outer loop is not an issue
+  // either).
+  if (ShouldQuit())
+    return;
+
+  // Before declaring this loop idle, yield to native tasks and arrange to be
+  // called again (unless we're already in that second call).
+  if (pre_work_value != kTryNativeTasksBeforeIdleBit) {
+    // Note: This write() is racing with potential ScheduleWork() calls. This is
+    // fine as write() is adding this bit, not overwriting the existing value,
+    // and as such racing ScheduleWork() calls would merely add 1 to the lower
+    // bits and we would find |pre_work_value != kTryNativeTasksBeforeIdleBit|
+    // in the next cycle again, retrying this.
+    ret = write(non_delayed_fd_, &kTryNativeTasksBeforeIdleBit,
+                sizeof(kTryNativeTasksBeforeIdleBit));
+    DPCHECK(ret >= 0);
+    return;
   }
+
+  // We yielded to native tasks already and they didn't generate a
+  // ScheduleWork() request so we can declare idleness. It's possible for a
+  // ScheduleWork() request to come in racily while this method unwinds, this is
+  // fine and will merely result in it being re-invoked shortly after it
+  // returns.
+  // TODO(scheduler-dev): this doesn't account for tasks that don't ever call
+  // SchedulerWork() but still keep the system non-idle (e.g., the Java Handler
+  // API). It would be better to add an API to query the presence of native
+  // tasks instead of relying on yielding once + kTryNativeTasksBeforeIdleBit.
+  DCHECK_EQ(pre_work_value, kTryNativeTasksBeforeIdleBit);
+
+  if (ShouldQuit())
+    return;
+
+  // At this point, the java looper might not be idle - it's impossible to know
+  // pre-Android-M, so we may end up doing Idle work while java tasks are still
+  // queued up. Note that this won't cause us to fail to run java tasks using
+  // QuitWhenIdle, as the JavaHandlerThread will finish running all currently
+  // scheduled tasks before it quits. Also note that we can't just add an idle
+  // callback to the java looper, as that will fire even if application tasks
+  // are still queued up.
+  DoIdleWork();
+  if (!next_work_info.delayed_run_time.is_max())
+    ScheduleDelayedWork(next_work_info.delayed_run_time);
 }
 
 void MessagePumpForUI::DoIdleWork() {
@@ -296,10 +327,8 @@ void MessagePumpForUI::ScheduleDelayedWork(const TimeTicks& delayed_work_time) {
   if (ShouldQuit())
     return;
 
-  if (!delayed_scheduled_time_.is_null() &&
-      delayed_work_time >= delayed_scheduled_time_) {
+  if (delayed_scheduled_time_ && *delayed_scheduled_time_ == delayed_work_time)
     return;
-  }
 
   DCHECK(!delayed_work_time.is_null());
   delayed_scheduled_time_ = delayed_work_time;

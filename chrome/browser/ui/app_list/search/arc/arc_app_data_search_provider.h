@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
-#include "components/arc/common/app.mojom.h"
+#include "components/arc/mojom/app.mojom.h"
 
 class AppListControllerDelegate;
 
@@ -31,7 +31,7 @@ class ArcAppDataSearchProvider : public SearchProvider {
 
   const int max_results_;
   AppListControllerDelegate* const list_controller_;  // Owned by AppListClient.
-  base::WeakPtrFactory<ArcAppDataSearchProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcAppDataSearchProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcAppDataSearchProvider);
 };

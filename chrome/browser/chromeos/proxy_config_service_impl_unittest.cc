@@ -18,8 +18,8 @@
 #include "base/task/post_task.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill_profile_client.h"
-#include "chromeos/dbus/shill_service_client.h"
+#include "chromeos/dbus/shill/shill_profile_client.h"
+#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state.h"
@@ -31,8 +31,8 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service_common_unittest.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -276,7 +276,7 @@ class ProxyConfigServiceImplTest : public testing::Test {
   void SetUpProxyConfigService(PrefService* profile_prefs) {
     config_service_impl_.reset(new ProxyConfigServiceImpl(
         profile_prefs, &pref_service_,
-        base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})));
+        base::CreateSingleThreadTaskRunner({BrowserThread::IO})));
     proxy_config_service_ =
         config_service_impl_->CreateTrackingProxyConfigService(
             std::unique_ptr<net::ProxyConfigService>());
@@ -387,7 +387,7 @@ class ProxyConfigServiceImplTest : public testing::Test {
     EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID, availability);
   }
 
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<net::ProxyConfigService> proxy_config_service_;
   std::unique_ptr<ProxyConfigServiceImpl> config_service_impl_;
   TestingPrefServiceSimple pref_service_;

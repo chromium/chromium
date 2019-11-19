@@ -4,11 +4,9 @@
 
 #include "chrome/browser/chromeos/accessibility/switch_access_panel.h"
 
-#include "ash/public/interfaces/accessibility_controller.mojom.h"
-#include "ash/public/interfaces/constants.mojom.h"
+#include "ash/public/cpp/accessibility_controller.h"
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/no_destructor.h"
-#include "content/public/common/service_manager_connection.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -34,24 +32,34 @@ SwitchAccessPanel::SwitchAccessPanel(content::BrowserContext* browser_context)
 
 void SwitchAccessPanel::Show(const gfx::Rect& element_bounds,
                              int width,
-                             int height) {
+                             int height,
+                             bool back_button_only) {
   // TODO(crbug/893752): Support multiple displays
   gfx::Rect screen_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
 
-  gfx::Rect panel_bounds =
-      CalculatePanelBounds(element_bounds, screen_bounds, width, height);
+  gfx::Rect panel_bounds;
 
-  GetAccessibilityController()->SetAccessibilityPanelBounds(
-      panel_bounds, ash::mojom::AccessibilityPanelState::BOUNDED);
+  if (back_button_only) {
+    int x = element_bounds.right();
+    int y = element_bounds.y() - height;
+    panel_bounds.SetRect(x, y, width, height);
+    panel_bounds.AdjustToFit(screen_bounds);
+  } else {
+    panel_bounds =
+        CalculatePanelBounds(element_bounds, screen_bounds, width, height);
+  }
+
+  ash::AccessibilityController::Get()->SetAccessibilityPanelBounds(
+      panel_bounds, ash::AccessibilityPanelState::BOUNDED);
 }
 
 void SwitchAccessPanel::Hide() {
   // This isn't set to (0, 0, 0, 0) because the drop shadow remains visible.
   // TODO(crbug/911344): Find the root cause and fix it.
   gfx::Rect bounds(-1, -1, 1, 1);
-  GetAccessibilityController()->SetAccessibilityPanelBounds(
-      bounds, ash::mojom::AccessibilityPanelState::BOUNDED);
+  ash::AccessibilityController::Get()->SetAccessibilityPanelBounds(
+      bounds, ash::AccessibilityPanelState::BOUNDED);
 }
 
 const gfx::Rect SwitchAccessPanel::CalculatePanelBounds(

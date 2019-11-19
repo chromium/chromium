@@ -4,11 +4,11 @@
 
 #import "ios/web_view/internal/cwv_preferences_internal.h"
 
+#include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "ios/web_view/cwv_web_view_buildflags.h"
-#include "ios/web_view/internal/pref_names.h"
 
 #if BUILDFLAG(IOS_WEB_VIEW_ENABLE_AUTOFILL)
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -43,7 +43,7 @@
 
 - (void)resetTranslationSettings {
   translate::TranslatePrefs translatePrefs(
-      _prefService, prefs::kAcceptLanguages,
+      _prefService, language::prefs::kAcceptLanguages,
       /*preferred_languages_pref=*/nullptr);
   translatePrefs.ResetToDefaults();
 }

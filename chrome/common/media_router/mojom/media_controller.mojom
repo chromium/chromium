@@ -1,0 +1,43 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media_router.mojom;
+
+import "chrome/common/media_router/mojom/media_status.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Interface for a controller to change the current state of a media content.
+// This interface should be kept free of details specific to Media Router, so
+// that it can be moved to the media namespace and be reused for other features
+// in the future.
+interface MediaController {
+  // Starts playing the media if it is paused. Is a no-op if not supported by
+  // the media or the media is already playing.
+  Play();
+
+  // Pauses the media if it is playing. Is a no-op if not supported by the media
+  // or the media is already paused.
+  Pause();
+
+  // Mutes the media if |mute| is true, and unmutes it if false. Is a no-op if
+  // not supported by the media.
+  SetMute(bool mute);
+
+  // Changes the current volume of the media, with 1 being the highest and 0
+  // being the lowest/no sound. Does not change the (un)muted state of the
+  // media. Is a no-op if not supported by the media.
+  SetVolume(float volume);
+
+  // Sets the current playback position. |time| must be less than or equal to
+  // the duration of the media. Is a no-op if the media doesn't support seeking.
+  Seek(mojo_base.mojom.TimeDelta time);
+
+  // Skips to the next media track, e.g. the next song in a playlist. It is a
+  // no-op if there is no next track.
+  NextTrack();
+
+  // Skips to the previous media track, e.g. the previous song in a playlist. It
+  // is a no-op if there is no previous track.
+  PreviousTrack();
+};

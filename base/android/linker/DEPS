@@ -1,4 +1,6 @@
 include_rules = [
-  # This code cannot depend on anything from base/
+  # This code cannot depend on anything from base/, except for the current
+  # directory.
   "-base",
+  "+base/android/linker",
 ]

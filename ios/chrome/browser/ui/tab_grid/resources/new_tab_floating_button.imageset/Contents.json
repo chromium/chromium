@@ -2,11 +2,6 @@
     "images": [
         {
             "idiom": "universal",
-            "scale": "1x",
-            "filename": "new_tab_floating_button.png"
-        },
-        {
-            "idiom": "universal",
             "scale": "2x",
             "filename": "new_tab_floating_button@2x.png"
         },

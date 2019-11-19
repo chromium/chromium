@@ -7,6 +7,12 @@ import("//media/media_options.gni")
 
 cast_source_set("cdm") {
   sources = [
+    "cast_cdm.cc",
+    "cast_cdm.h",
+    "cast_cdm_context.cc",
+    "cast_cdm_context.h",
+    "cast_cdm_factory.cc",
+    "cast_cdm_factory.h",
     "chromecast_init_data.cc",
     "chromecast_init_data.h",
   ]
@@ -14,25 +20,11 @@ cast_source_set("cdm") {
   deps = [
     "//base",
     "//chromecast/base/metrics",
+    "//chromecast/media/base",
+    "//chromecast/media/base:media_resource_tracker",
     "//media",
+    "//url",
   ]
-
-  if (is_cast_using_cma_backend) {
-    sources += [
-      "cast_cdm.cc",
-      "cast_cdm.h",
-      "cast_cdm_context.cc",
-      "cast_cdm_context.h",
-      "cast_cdm_factory.cc",
-      "cast_cdm_factory.h",
-    ]
-
-    deps += [
-      "//chromecast/media/base",
-      "//chromecast/media/base:media_resource_tracker",
-      "//url:url",
-    ]
-  }
 
   if (is_android && enable_playready) {
     sources += [

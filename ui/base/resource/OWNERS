@@ -1,1 +1,2 @@
 per-file *_android.*=file://chrome/browser/android/OWNERS
+# COMPONENT: Internals

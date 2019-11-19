@@ -1,0 +1,8 @@
+aee@chromium.org
+dbeam@chromium.org
+mahmadi@chromium.org
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+# COMPONENT: UI>Browser>NewTabPage

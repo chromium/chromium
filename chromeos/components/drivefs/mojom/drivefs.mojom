@@ -14,8 +14,8 @@ import "mojo/public/mojom/base/time.mojom";
 interface DriveFsBootstrap {
   // Initialize a DriveFS instance with its configuration and mojo connections
   // to the browser.
-  Init(DriveFsConfiguration config, DriveFs& drive_fs,
-       DriveFsDelegate delegate);
+  Init(DriveFsConfiguration config, pending_receiver<DriveFs> drive_fs,
+       pending_remote<DriveFsDelegate> delegate);
 };
 
 // Implemented by DriveFS, used from Chrome.
@@ -49,13 +49,24 @@ interface DriveFs {
       (FileError error);
 
   // Start a search query with given parameters.
-  StartSearchQuery(SearchQuery& query, QueryParameters query_params);
+  StartSearchQuery(pending_receiver<SearchQuery> query,
+                   QueryParameters query_params);
 
   // Fetches all changelogs, i.e. for My Drive and all Team Drives.
   FetchAllChangeLogs();
 
   // Fetches the changelog(s) using the provided |options|.
   FetchChangeLog(array<FetchChangeLogOptions> options);
+
+  // Send a native message |request| to DriveFS. |request| is a DriveFS
+  // specific message that looks like "native_opener/v2/$command_id/$message",
+  // where $command_id is an integer and $message is the base64 encoding of a
+  // JSPB encoded proto message.
+  //
+  // |response| is only filled out if |error| is kOk, and returns a JSPB
+  // encoded proto message.
+  SendNativeMessageRequest(string request) => (
+      FileError error, string response);
 };
 
 // Implemented by Chrome, used from DriveFS.
@@ -100,12 +111,23 @@ interface DriveFsDelegate {
   OnHeartbeat();
 };
 
-// Next MinVersion: 2
+// Next MinVersion: 5
 struct DriveFsConfiguration {
   string user_email;
 
   [MinVersion=1]
   string? access_token;
+
+  [MinVersion=2]
+  bool enable_metrics = false;
+
+  // The directory name to use for lost and found within the user's My files
+  // directory.
+  [MinVersion=3]
+  string? lost_and_found_directory_name;
+
+  [MinVersion=4]
+  bool enable_experimental_mirroring = false;
 };
 
 enum AccessTokenStatus {
@@ -156,9 +178,9 @@ struct DriveError {
   mojo_base.mojom.FilePath path;
 };
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 struct FileMetadata {
-  enum Type {
+  [Extensible] enum Type {
     // A regular file.
     kFile,
 
@@ -200,6 +222,9 @@ struct FileMetadata {
   Capabilities capabilities;
 
   [MinVersion=1] FolderFeature? folder_feature;
+
+  // Only present in QuickAccess queries.
+  [MinVersion=2] QuickAccess? quick_access;
 };
 
 struct ImageMetadata {
@@ -232,6 +257,11 @@ struct FolderFeature {
   // Identifies an external media folder, that contains one time only uploads
   // for USB devices, SD cards etc.
   bool is_external_media = false;
+};
+
+struct QuickAccess {
+  // A [0, 1] score with the probability that a user wants this document next.
+  double score;
 };
 
 struct ItemEvent {
@@ -276,6 +306,7 @@ struct FileChange {
 };
 
 // Definition of the search request sent to DriveFS.
+// Next MinVersion: 2
 struct QueryParameters {
   // Where this request should go to.
   enum QuerySource {
@@ -322,6 +353,20 @@ struct QueryParameters {
   // How to sort the returned results.
   SortField sort_field = kNone;
   SortDirection sort_direction = kAscending;
+
+  // The kind of query to perform.
+  [MinVersion=1] QueryKind query_kind = kRegular;
+};
+
+// TODO(crbug.com/896777): Put this inside QueryParameters once linked bug is
+// fixed.
+enum QueryKind {
+  // Regular search.
+  kRegular = 0,
+
+  // QuickAccess query from the ItemSuggest API. Only page_size is used in a
+  // QuickAccess query.
+  kQuickAccess = 1,
 };
 
 // Represents a search request in progress.

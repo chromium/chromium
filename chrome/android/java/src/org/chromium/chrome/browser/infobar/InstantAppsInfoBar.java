@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.instantapps.InstantAppsBannerData;
-import org.chromium.chrome.browser.widget.DualControlLayout;
+import org.chromium.chrome.browser.ui.widget.DualControlLayout;
 import org.chromium.components.url_formatter.UrlFormatter;
 
 /**
@@ -21,7 +21,7 @@ public class InstantAppsInfoBar extends ConfirmInfoBar {
     private InstantAppsBannerData mData;
 
     protected InstantAppsInfoBar(InstantAppsBannerData data) {
-        super(0, data.getIcon(), data.getAppName(), null, data.getPrimaryActionLabel(), null);
+        super(0, 0, data.getIcon(), data.getAppName(), null, data.getPrimaryActionLabel(), null);
         mData = data;
     }
 

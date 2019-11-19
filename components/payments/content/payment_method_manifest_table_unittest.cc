@@ -71,8 +71,8 @@ TEST_F(PaymentMethodManifestTableTest, AddAndGetSingleManifest) {
   retrieved_web_app_ids =
       payment_method_manifest_table->GetManifest("https://bobpay.com");
   ASSERT_EQ(web_app_ids.size(), retrieved_web_app_ids.size());
-  ASSERT_TRUE(base::ContainsValue(retrieved_web_app_ids, web_app_ids[0]));
-  ASSERT_TRUE(base::ContainsValue(retrieved_web_app_ids, web_app_ids[1]));
+  ASSERT_TRUE(base::Contains(retrieved_web_app_ids, web_app_ids[0]));
+  ASSERT_TRUE(base::Contains(retrieved_web_app_ids, web_app_ids[1]));
 }
 
 TEST_F(PaymentMethodManifestTableTest, AddAndGetMultipleManifest) {
@@ -106,14 +106,14 @@ TEST_F(PaymentMethodManifestTableTest, AddAndGetMultipleManifest) {
   bobpay_web_app_ids =
       payment_method_manifest_table->GetManifest(method_name_1);
   ASSERT_EQ(web_app_ids.size(), bobpay_web_app_ids.size());
-  ASSERT_TRUE(base::ContainsValue(bobpay_web_app_ids, web_app_ids[0]));
-  ASSERT_TRUE(base::ContainsValue(bobpay_web_app_ids, web_app_ids[1]));
+  ASSERT_TRUE(base::Contains(bobpay_web_app_ids, web_app_ids[0]));
+  ASSERT_TRUE(base::Contains(bobpay_web_app_ids, web_app_ids[1]));
 
   alicepay_web_app_ids =
       payment_method_manifest_table->GetManifest(method_name_1);
   ASSERT_EQ(web_app_ids.size(), alicepay_web_app_ids.size());
-  ASSERT_TRUE(base::ContainsValue(alicepay_web_app_ids, web_app_ids[0]));
-  ASSERT_TRUE(base::ContainsValue(alicepay_web_app_ids, web_app_ids[1]));
+  ASSERT_TRUE(base::Contains(alicepay_web_app_ids, web_app_ids[0]));
+  ASSERT_TRUE(base::Contains(alicepay_web_app_ids, web_app_ids[1]));
 }
 
 }  // namespace

@@ -51,6 +51,10 @@ source_set("common_source_set") {
     "host_view_controller.h",
     "host_view_controller.mm",
     "main.mm",
+    "notification_dialog_view_controller.h",
+    "notification_dialog_view_controller.mm",
+    "notification_presenter.h",
+    "notification_presenter.mm",
     "physical_keyboard_detector.h",
     "physical_keyboard_detector.mm",
     "pin_entry_view.h",
@@ -94,12 +98,15 @@ source_set("common_source_set") {
     "//ui/resources",
   ]
 
+  # TODO(crbug.com/875022) fix for OpenGLES deprecation.
+  defines = [ "GLES_SILENCE_DEPRECATION" ]
   foreach(locale, remoting_locales_with_underscores) {
     deps += [ "//remoting/ios/app/resources:locale_${locale}_bundle_data" ]
   }
 
   public_deps = [
     "//ios/third_party/material_components_ios",
+    "//remoting/ios/facade",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -118,6 +125,9 @@ source_set("app_source_set") {
     ":common_source_set",
     "//base",
   ]
+
+  # TODO(crbug.com/875022) fix for OpenGLES deprecation.
+  defines = [ "GLES_SILENCE_DEPRECATION" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 

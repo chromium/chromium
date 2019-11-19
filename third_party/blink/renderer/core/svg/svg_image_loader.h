@@ -28,10 +28,6 @@ class SVGImageElement;
 
 class SVGImageLoader final : public ImageLoader {
  public:
-  static SVGImageLoader* Create(SVGImageElement* element) {
-    return MakeGarbageCollected<SVGImageLoader>(element);
-  }
-
   explicit SVGImageLoader(SVGImageElement*);
 
  private:

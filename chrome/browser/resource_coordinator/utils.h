@@ -13,7 +13,6 @@
 
 namespace resource_coordinator {
 
-class PageSignalReceiver;
 class TabLifecycleUnitSource;
 
 // Serialize an Origin into the representation used by the different databases
@@ -29,10 +28,6 @@ int GetPrivateMemoryKB(base::ProcessHandle handle);
 
 // Returns the TabLifecycleUnitSource indirectly owned by g_browser_process.
 TabLifecycleUnitSource* GetTabLifecycleUnitSource();
-
-// Returns the PageSignalReceiver indirectly owned by g_browser_process. This
-// can be null if the service isn't enabled.
-PageSignalReceiver* GetPageSignalReceiver();
 
 }  // namespace resource_coordinator
 

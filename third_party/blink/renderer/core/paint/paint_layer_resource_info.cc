@@ -50,6 +50,7 @@ void PaintLayerResourceInfo::ResourceContentChanged(InvalidationModeMask) {
   // to update these properties when filter resources change.
   layout_object.SetNeedsPaintPropertyUpdate();
   layer_->SetFilterOnEffectNodeDirty();
+  layer_->SetBackdropFilterOnEffectNodeDirty();
 }
 
 void PaintLayerResourceInfo::ResourceElementChanged() {
@@ -61,6 +62,7 @@ void PaintLayerResourceInfo::ResourceElementChanged() {
   // to update these properties when filter resources change.
   layout_object.SetNeedsPaintPropertyUpdate();
   layer_->SetFilterOnEffectNodeDirty();
+  layer_->SetBackdropFilterOnEffectNodeDirty();
 }
 
 }  // namespace blink

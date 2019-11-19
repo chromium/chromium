@@ -1,0 +1,3 @@
+Tests that animation agent resumes post navigation.
+Animation started: yay!
+

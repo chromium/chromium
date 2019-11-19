@@ -46,6 +46,8 @@ fuzzer_test("origin_policy_parser_fuzzer") {
     "origin_policy_parser_fuzzer.cc",
   ]
   deps = [
+    "//base",
+    "//base:i18n",
     "//content/test:test_support",
   ]
   dict =
@@ -69,16 +71,6 @@ fuzzer_test("renderer_tree_fuzzer") {
   deps = [
     ":fuzzer_support",
   ]
-}
-
-fuzzer_test("clear_site_data_fuzzer") {
-  sources = [
-    "clear_site_data_fuzzer.cc",
-  ]
-  deps = [
-    "//content/test:test_support",
-  ]
-  seed_corpus = "//content/test/data/fuzzer_corpus/clear_site_data/"
 }
 
 fuzzer_test("renderer_proto_tree_fuzzer") {
@@ -110,14 +102,41 @@ fuzzer_test("signed_exchange_envelope_fuzzer") {
   seed_corpus = "//content/test/data/sxg/"
 }
 
-fuzzer_test("http_structured_header_fuzzer") {
+fuzzer_test("devtools_protocol_encoding_cbor_fuzzer") {
   sources = [
-    "http_structured_header_fuzzer.cc",
+    "../../browser/devtools/devtools_protocol_encoding.cc",
+    "../../browser/devtools/devtools_protocol_encoding.h",
+    "../../browser/devtools/devtools_protocol_encoding_cbor_fuzzer.cc",
   ]
   deps = [
-    "//content/test:test_support",
+    "//base",
+    "//third_party/inspector_protocol:crdtp",
   ]
-  seed_corpus = "//content/test/data/fuzzer_corpus/http_structured_header_data/"
+  seed_corpus =
+      "../../browser/devtools/devtools_protocol_encoding_cbor_fuzzer_corpus/"
+}
+
+fuzzer_test("devtools_protocol_encoding_json_fuzzer") {
+  sources = [
+    "../../browser/devtools/devtools_protocol_encoding.cc",
+    "../../browser/devtools/devtools_protocol_encoding.h",
+    "../../browser/devtools/devtools_protocol_encoding_json_fuzzer.cc",
+  ]
+  deps = [
+    "//base",
+    "//third_party/inspector_protocol:crdtp",
+  ]
+  seed_corpus = "//third_party/grpc/src/test/core/json/corpus/"
+}
+
+fuzzer_test("inspector_fuzzer") {
+  sources = [
+    "../../browser/devtools/inspector_fuzzer.cc",
+  ]
+  deps = [
+    "//third_party/inspector_protocol:crdtp",
+  ]
+  seed_corpus = "//components/cbor/reader_fuzzer_corpus/"
 }
 
 fuzzer_test("signed_exchange_certificate_chain_fuzzer") {
@@ -161,6 +180,7 @@ fuzzer_test("merkle_integrity_source_stream_fuzzer") {
     "//net:test_support",
   ]
   dict = "//content/test/data/fuzzer_dictionaries/merkle_integrity_source_stream_fuzzer.dict"
+  environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
 }
 
 proto_library("appcache_fuzzer_proto") {
@@ -210,14 +230,102 @@ if (is_win) {
       "//content/common/content_export.h",
     ]
 
+    # Don't try to link the code that calls GetContentClient(), because
+    # then we'd need to link in most of //content.
+    defines = [ "NO_CONTENT_CLIENT" ]
+
     # TODO(https://crbug.com/927728): Refactor target to not require this.
     check_includes = false
 
     deps = [
       "//base",
       "//base/test:test_support",
+      "//third_party/webrtc_overrides:webrtc_component",
       "//ui/base",
       "//url:url",
     ]
   }
+}
+
+fuzzer_test("speech_audio_encoder_fuzzer") {
+  sources = [
+    "../../browser/speech/audio_buffer.cc",
+    "../../browser/speech/audio_buffer.h",
+    "../../browser/speech/audio_encoder.cc",
+    "../../browser/speech/audio_encoder.h",
+    "../../browser/speech/audio_encoder_fuzzer.cc",
+    "//content/common/content_export.h",
+  ]
+
+  deps = [
+    "//base",
+    "//third_party/flac",
+  ]
+}
+
+fuzzer_test("browser_accessibility_fuzzer") {
+  sources = [
+    "browser_accessibility_fuzzer.cc",
+  ]
+  deps = [
+    "//content/app:both_for_content_tests",
+    "//content/browser:browser",
+    "//content/browser:browser",
+    "//content/public/browser:browser_sources",
+    "//content/test:test_support",
+    "//mojo/core/embedder",
+    "//services/network:test_support",
+    "//storage/browser:test_support",
+  ]
+}
+
+source_set("indexed_db_fuzzer_support") {
+  public_deps = [
+    "//base",
+    "//content/browser",
+    "//content/public/browser:browser_sources",
+    "//third_party/blink/public/common:headers",
+  ]
+  testonly = true
+}
+
+fuzzer_test("indexed_db_leveldb_coding_encodeidbkey_fuzzer") {
+  sources = [
+    "../../browser/indexed_db/indexed_db_leveldb_coding_encodeidbkey_fuzzer.cc",
+  ]
+  deps = [
+    ":indexed_db_fuzzer_support",
+  ]
+  seed_corpus = "../../browser/indexed_db/fuzzer_corpus/indexed_db_key"
+}
+
+fuzzer_test("indexed_db_leveldb_coding_encodeidbkeypath_fuzzer") {
+  sources = [
+    "../../browser/indexed_db/indexed_db_leveldb_coding_encodeidbkeypath_fuzzer.cc",
+  ]
+  deps = [
+    ":indexed_db_fuzzer_support",
+  ]
+  seed_corpus = "../../browser/indexed_db/fuzzer_corpus/indexed_db_key_path"
+}
+
+fuzzer_test("indexed_db_leveldb_coding_decodeidbkey_fuzzer") {
+  sources = [
+    "../../browser/indexed_db/indexed_db_leveldb_coding_decodeidbkey_fuzzer.cc",
+  ]
+  deps = [
+    ":indexed_db_fuzzer_support",
+  ]
+  seed_corpus = "../../browser/indexed_db/fuzzer_corpus/encoded_indexed_db_key"
+}
+
+fuzzer_test("indexed_db_leveldb_coding_decodeidbkeypath_fuzzer") {
+  sources = [
+    "../../browser/indexed_db/indexed_db_leveldb_coding_decodeidbkeypath_fuzzer.cc",
+  ]
+  deps = [
+    ":indexed_db_fuzzer_support",
+  ]
+  seed_corpus =
+      "../../browser/indexed_db/fuzzer_corpus/encoded_indexed_db_key_path"
 }

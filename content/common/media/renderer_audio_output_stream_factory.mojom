@@ -4,20 +4,25 @@
 
 module content.mojom;
 
-import "media/mojo/interfaces/audio_output_stream.mojom";
-import "media/mojo/interfaces/audio_parameters.mojom";
-import "media/mojo/interfaces/media_types.mojom";
+import "media/mojo/mojom/audio_output_stream.mojom";
+import "media/mojo/mojom/audio_parameters.mojom";
+import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // This interface is used to create output streams. The client supplies a
-// request for a stream provider, and then supplies the desired audio
+// mojo receiver for a stream provider, and then supplies the desired audio
 // parameters to that to create the stream.
 interface RendererAudioOutputStreamFactory {
-  // Used to request a device. The AudioOutputStreamProviderRequest will be
-  // bound to an AudioOutputStreamProvider implementation or closed
-  // (in case of an error).
+  // Used to request a device. If successful, |stream_provider_receiver| will be
+  // bound to an AudioOutputStreamProvider implementation, otherwise it will
+  // simply be discarded (won't be bound). If |session_id| is provided, it will
+  // be taken into account together with |device_id| in the selection of the
+  // audio output device to request. If not provided, only |device_id| will be
+  // taken into account in the selection of the audio output device.
   RequestDeviceAuthorization(
-      media.mojom.AudioOutputStreamProvider& stream_provider_request,
-      int32 session_id,
+      pending_receiver<media.mojom.AudioOutputStreamProvider>
+          stream_provider_receiver,
+      mojo_base.mojom.UnguessableToken? session_id,
       string device_id) =>
       (media.mojom.OutputDeviceStatus state,
        media.mojom.AudioParameters output_params,

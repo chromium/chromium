@@ -177,6 +177,8 @@ struct PaymentsCustomerData;
 //   exp_month          Expiration month: 1-12
 //   exp_year           Four-digit year: 2017
 //   bank_name          Issuer bank name of the credit card.
+//   cloud_token_data   Opaque identifier for the cloud token associated with
+//                      the payment instrument.
 //
 // unmasked_credit_cards
 //                      When a masked credit credit card is unmasked and the
@@ -273,6 +275,11 @@ struct PaymentsCustomerData;
 //                      Contains Google Payments customer data.
 //
 //   customer_id        A string representing the Google Payments customer id.
+//
+// payments_upi_vpa     Contains saved UPI/VPA payment data.
+//                      https://en.wikipedia.org/wiki/Unified_Payments_Interface
+//
+//   vpa_id             A string representing the VPA value.
 
 class AutofillTable : public WebDatabaseTable,
                       public syncer::SyncMetadataStore {
@@ -433,6 +440,9 @@ class AutofillTable : public WebDatabaseTable,
   bool GetPaymentsCustomerData(
       std::unique_ptr<PaymentsCustomerData>* customer_data) const;
 
+  // Adds |vpa| to the saved VPA ids.
+  bool InsertVPA(const std::string& vpa);
+
   // Deletes all data from the server card and profile tables. Returns true if
   // any data was deleted, false if not (so false means "commit not needed"
   // rather than "error").
@@ -452,8 +462,8 @@ class AutofillTable : public WebDatabaseTable,
   bool RemoveAutofillDataModifiedBetween(
       const base::Time& delete_begin,
       const base::Time& delete_end,
-      std::vector<std::string>* profile_guids,
-      std::vector<std::string>* credit_card_guids);
+      std::vector<std::unique_ptr<AutofillProfile>>* profiles,
+      std::vector<std::unique_ptr<CreditCard>>* credit_cards);
 
   // Removes origin URLs from the autofill_profiles and credit_cards tables if
   // they were written on or after |delete_begin| and strictly before
@@ -465,17 +475,6 @@ class AutofillTable : public WebDatabaseTable,
       const base::Time& delete_begin,
       const base::Time& delete_end,
       std::vector<std::unique_ptr<AutofillProfile>>* profiles);
-
-  // Retrieves all profiles in the database that have been deleted since last
-  // "empty" of the trash.
-  bool GetAutofillProfilesInTrash(std::vector<std::string>* guids);
-
-  // Empties the Autofill profiles "trash can".
-  bool EmptyAutofillProfilesTrash();
-
-  // Retrieves all profiles in the database that have been deleted since last
-  // "empty" of the trash.
-  bool AddAutofillGUIDToTrash(const std::string& guid);
 
   // Clear all profiles.
   bool ClearAutofillProfiles();
@@ -561,11 +560,9 @@ class AutofillTable : public WebDatabaseTable,
       AutofillTableTest,
       Autofill_RemoveFormElementsAddedBetween_OlderThan30Days);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
-                           RemoveExpiredFormElements_FlagOff_Removes);
+                           RemoveExpiredFormElements_Expires_DeleteEntry);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
-                           RemoveExpiredFormElements_FlagOn_Expires);
-  FRIEND_TEST_ALL_PREFIXES(AutofillTableTest,
-                           RemoveExpiredFormElements_FlagOn_NotOldEnough);
+                           RemoveExpiredFormElements_NotOldEnough);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, Autofill_AddFormFieldValues);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, AutofillProfile);
   FRIEND_TEST_ALL_PREFIXES(AutofillTableTest, UpdateAutofillProfile);
@@ -637,6 +634,7 @@ class AutofillTable : public WebDatabaseTable,
   bool InitAutofillSyncMetadataTable();
   bool InitModelTypeStateTable();
   bool InitPaymentsCustomerDataTable();
+  bool InitPaymentsUPIVPATable();
 
   std::unique_ptr<AutofillTableEncryptor> autofill_table_encryptor_;
 

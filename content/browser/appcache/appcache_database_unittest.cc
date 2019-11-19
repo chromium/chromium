@@ -203,6 +203,7 @@ TEST(AppCacheDatabaseTest, EntryRecords) {
   entry.flags = AppCacheEntry::MASTER;
   entry.response_id = 1;
   entry.response_size = 100;
+  entry.padding_size = 10;
   EXPECT_TRUE(db.InsertEntry(&entry));
   EXPECT_FALSE(db.InsertEntry(&entry));
 
@@ -211,6 +212,7 @@ TEST(AppCacheDatabaseTest, EntryRecords) {
   entry.flags = AppCacheEntry::EXPLICIT;
   entry.response_id = 2;
   entry.response_size = 200;
+  entry.padding_size = 20;
   EXPECT_TRUE(db.InsertEntry(&entry));
 
   entry.cache_id = 2;
@@ -218,6 +220,7 @@ TEST(AppCacheDatabaseTest, EntryRecords) {
   entry.flags = AppCacheEntry::MANIFEST;
   entry.response_id = 3;
   entry.response_size = 300;
+  entry.padding_size = 30;
   EXPECT_TRUE(db.InsertEntry(&entry));
 
   std::vector<AppCacheDatabase::EntryRecord> found;
@@ -229,6 +232,7 @@ TEST(AppCacheDatabaseTest, EntryRecords) {
   EXPECT_EQ(AppCacheEntry::MASTER, found[0].flags);
   EXPECT_EQ(1, found[0].response_id);
   EXPECT_EQ(100, found[0].response_size);
+  EXPECT_EQ(10, found[0].padding_size);
   found.clear();
 
   EXPECT_TRUE(db.AddEntryFlags(GURL("http://blah/1"), 1,
@@ -245,11 +249,13 @@ TEST(AppCacheDatabaseTest, EntryRecords) {
   EXPECT_EQ(AppCacheEntry::EXPLICIT, found[0].flags);
   EXPECT_EQ(2, found[0].response_id);
   EXPECT_EQ(200, found[0].response_size);
+  EXPECT_EQ(20, found[0].padding_size);
   EXPECT_EQ(2, found[1].cache_id);
   EXPECT_EQ(GURL("http://blah/3"), found[1].url);
   EXPECT_EQ(AppCacheEntry::MANIFEST, found[1].flags);
   EXPECT_EQ(3, found[1].response_id);
   EXPECT_EQ(300, found[1].response_size);
+  EXPECT_EQ(30, found[1].padding_size);
   found.clear();
 
   EXPECT_TRUE(db.DeleteEntriesForCache(2));
@@ -282,6 +288,7 @@ TEST(AppCacheDatabaseTest, CacheRecords) {
   record.online_wildcard = true;
   record.update_time = kZeroTime;
   record.cache_size = 100;
+  record.padding_size = 10;
   EXPECT_TRUE(db.InsertCache(&record));
   EXPECT_FALSE(db.InsertCache(&record));
 
@@ -292,6 +299,7 @@ TEST(AppCacheDatabaseTest, CacheRecords) {
   EXPECT_TRUE(record.online_wildcard);
   EXPECT_TRUE(kZeroTime == record.update_time);
   EXPECT_EQ(100, record.cache_size);
+  EXPECT_EQ(10, record.padding_size);
 
   record = kZeroRecord;
   EXPECT_TRUE(db.FindCacheForGroup(1, &record));
@@ -300,6 +308,7 @@ TEST(AppCacheDatabaseTest, CacheRecords) {
   EXPECT_TRUE(record.online_wildcard);
   EXPECT_TRUE(kZeroTime == record.update_time);
   EXPECT_EQ(100, record.cache_size);
+  EXPECT_EQ(10, record.padding_size);
 
   EXPECT_TRUE(db.DeleteCache(1));
   EXPECT_FALSE(db.FindCache(1, &record));
@@ -423,7 +432,7 @@ TEST(AppCacheDatabaseTest, GroupRecords) {
   EXPECT_TRUE(db.FindOriginsWithGroups(&origins));
   EXPECT_EQ(2U, origins.size());
   EXPECT_TRUE(origins.end() != origins.find(kOrigin));
-  EXPECT_TRUE(origins.end()  != origins.find(kOrigin2));
+  EXPECT_TRUE(origins.end() != origins.find(kOrigin2));
 
   AppCacheDatabase::CacheRecord cache_record;
   cache_record.cache_id = 1;
@@ -769,8 +778,6 @@ TEST(AppCacheDatabaseTest, OriginUsage) {
 
   std::vector<AppCacheDatabase::CacheRecord> cache_records;
   EXPECT_EQ(0, db.GetOriginUsage(kOrigin));
-  EXPECT_TRUE(db.FindCachesForOrigin(kOrigin, &cache_records));
-  EXPECT_TRUE(cache_records.empty());
 
   AppCacheDatabase::GroupRecord group_record;
   group_record.group_id = 1;
@@ -783,9 +790,10 @@ TEST(AppCacheDatabaseTest, OriginUsage) {
   cache_record.online_wildcard = true;
   cache_record.update_time = kZeroTime;
   cache_record.cache_size = 100;
+  cache_record.padding_size = 1;
   EXPECT_TRUE(db.InsertCache(&cache_record));
 
-  EXPECT_EQ(100, db.GetOriginUsage(kOrigin));
+  EXPECT_EQ(101, db.GetOriginUsage(kOrigin));
 
   group_record.group_id = 2;
   group_record.manifest_url = kManifestUrl2;
@@ -796,9 +804,10 @@ TEST(AppCacheDatabaseTest, OriginUsage) {
   cache_record.online_wildcard = true;
   cache_record.update_time = kZeroTime;
   cache_record.cache_size = 1000;
+  cache_record.padding_size = 1;
   EXPECT_TRUE(db.InsertCache(&cache_record));
 
-  EXPECT_EQ(1100, db.GetOriginUsage(kOrigin));
+  EXPECT_EQ(1102, db.GetOriginUsage(kOrigin));
 
   group_record.group_id = 3;
   group_record.manifest_url = kOtherOriginManifestUrl;
@@ -809,24 +818,68 @@ TEST(AppCacheDatabaseTest, OriginUsage) {
   cache_record.online_wildcard = true;
   cache_record.update_time = kZeroTime;
   cache_record.cache_size = 5000;
+  cache_record.padding_size = 1;
   EXPECT_TRUE(db.InsertCache(&cache_record));
 
-  EXPECT_EQ(5000, db.GetOriginUsage(kOtherOrigin));
+  EXPECT_EQ(5001, db.GetOriginUsage(kOtherOrigin));
+
+  std::map<url::Origin, int64_t> usage_map;
+  EXPECT_TRUE(db.GetAllOriginUsage(&usage_map));
+  EXPECT_EQ(2U, usage_map.size());
+  EXPECT_EQ(1102, usage_map[kOrigin]);
+  EXPECT_EQ(5001, usage_map[kOtherOrigin]);
+}
+
+TEST(AppCacheDatabaseTest, FindCachesForOrigin) {
+  const GURL kManifestUrl("http://blah/manifest");
+  const GURL kManifestUrl2("http://blah/manifest2");
+  const url::Origin kOrigin = url::Origin::Create(kManifestUrl);
+  const GURL kOtherOriginManifestUrl("http://other/manifest");
+  const url::Origin kOtherOrigin = url::Origin::Create(kOtherOriginManifestUrl);
+
+  const base::FilePath kEmptyPath;
+  AppCacheDatabase db(kEmptyPath);
+  EXPECT_TRUE(db.LazyOpen(true));
+
+  std::vector<AppCacheDatabase::CacheRecord> cache_records;
+  EXPECT_TRUE(db.FindCachesForOrigin(kOrigin, &cache_records));
+  EXPECT_TRUE(cache_records.empty());
+
+  // Create 2 Groups with the same origin, and 1 Group with a different origin.
+  AppCacheDatabase::GroupRecord group_record;
+  group_record.group_id = 1;
+  group_record.manifest_url = kManifestUrl;
+  group_record.origin = kOrigin;
+  EXPECT_TRUE(db.InsertGroup(&group_record));
+  group_record.group_id = 2;
+  group_record.manifest_url = kManifestUrl2;
+  group_record.origin = kOrigin;
+  EXPECT_TRUE(db.InsertGroup(&group_record));
+  group_record.group_id = 3;
+  group_record.manifest_url = kOtherOriginManifestUrl;
+  group_record.origin = kOtherOrigin;
+  EXPECT_TRUE(db.InsertGroup(&group_record));
+
+  // Add a Cache to each of the 3 Groups.
+  AppCacheDatabase::CacheRecord cache_record;
+  for (int i = 1; i < 4; ++i) {
+    cache_record.cache_id = i;
+    cache_record.group_id = i;
+    cache_record.online_wildcard = true;
+    cache_record.update_time = kZeroTime;
+    cache_record.cache_size = 100;
+    cache_record.padding_size = 1000;
+    EXPECT_TRUE(db.InsertCache(&cache_record));
+  }
 
   EXPECT_TRUE(db.FindCachesForOrigin(kOrigin, &cache_records));
   EXPECT_EQ(2U, cache_records.size());
   cache_records.clear();
   EXPECT_TRUE(db.FindCachesForOrigin(kOtherOrigin, &cache_records));
   EXPECT_EQ(1U, cache_records.size());
-
-  std::map<url::Origin, int64_t> usage_map;
-  EXPECT_TRUE(db.GetAllOriginUsage(&usage_map));
-  EXPECT_EQ(2U, usage_map.size());
-  EXPECT_EQ(1100, usage_map[kOrigin]);
-  EXPECT_EQ(5000, usage_map[kOtherOrigin]);
 }
 
-TEST(AppCacheDatabaseTest, UpgradeSchemaNukesDeprecatedVersion) {
+TEST(AppCacheDatabaseTest, UpgradeSchemaForVersionsWithoutSupportedMigrations) {
   // Real file on disk for this test.
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -854,10 +907,78 @@ TEST(AppCacheDatabaseTest, UpgradeSchemaNukesDeprecatedVersion) {
   AppCacheDatabase db(kDbFile);
   EXPECT_TRUE(db.LazyOpen(/*create_if_needed=*/false));
   EXPECT_FALSE(db.db_->DoesColumnExist("Unused", "id"));
-  EXPECT_TRUE(db.db_->DoesColumnExist("Groups",
-                                      "last_full_update_check_time"));
-  EXPECT_EQ(7, db.meta_table_->GetVersionNumber());
-  EXPECT_EQ(7, db.meta_table_->GetCompatibleVersionNumber());
+  EXPECT_TRUE(db.db_->DoesColumnExist("Caches", "padding_size"));
+  EXPECT_TRUE(db.db_->DoesColumnExist("Entries", "padding_size"));
+  EXPECT_EQ(8, db.meta_table_->GetVersionNumber());
+  EXPECT_EQ(8, db.meta_table_->GetCompatibleVersionNumber());
+}
+
+TEST(AppCacheDatabaseTest, UpgradeSchemaFrom7to8) {
+  // Real file on disk for this test.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath kDbFile =
+      temp_dir.GetPath().AppendASCII("upgrade7to8.db");
+
+  {
+    sql::Database db;
+    EXPECT_TRUE(db.Open(kDbFile));
+
+    sql::MetaTable meta_table;
+    EXPECT_TRUE(meta_table.Init(&db, 7, 7));
+
+    // Create a database with a table name that does not show up in the AppCache
+    // schema. Its persistence across the migration indicates that the migration
+    // did not nuke the database.
+    static const char kCreateUnusedTableSql[] =
+        "CREATE TABLE Unused(id INTEGER PRIMARY KEY)";
+    EXPECT_TRUE(db.Execute(kCreateUnusedTableSql));
+
+    // Include tables/columns that are needed to run the 7-to-8 backfill.
+    static const char kCreateGroupsSql[] =
+        "CREATE TABLE Groups(group_id INTEGER PRIMARY KEY, manifest_url TEXT)";
+    static const char kCreateCachesSql[] =
+        "CREATE TABLE Caches(cache_id INTEGER PRIMARY KEY, group_id INTEGER)";
+    static const char kCreateEntriesSql[] =
+        "CREATE TABLE Entries(cache_id INTEGER, url TEXT, response_id INTEGER)";
+    EXPECT_TRUE(db.Execute(kCreateGroupsSql));
+    EXPECT_TRUE(db.Execute(kCreateCachesSql));
+    EXPECT_TRUE(db.Execute(kCreateEntriesSql));
+
+    // Insert version 7 records (with 0 padding) to test the backfill.
+    static const char kInsertGroupSql[] =
+        "INSERT INTO Groups (group_id, manifest_url) VALUES(1, 'manifest_url')";
+    static const char kInsertCacheSql[] =
+        "INSERT INTO Caches (cache_id, group_id) VALUES(1, 1)";
+    static const char kInsertEntrySql[] =
+        "INSERT INTO Entries (cache_id, url, response_id) VALUES (1, 'url', 1)";
+    EXPECT_TRUE(db.Execute(kInsertGroupSql));
+    EXPECT_TRUE(db.Execute(kInsertCacheSql));
+    EXPECT_TRUE(db.Execute(kInsertEntrySql));
+  }
+
+  AppCacheDatabase db(kDbFile);
+  EXPECT_TRUE(db.LazyOpen(/*create_if_needed=*/false));
+  EXPECT_TRUE(db.db_->DoesColumnExist("Unused", "id"));
+  EXPECT_TRUE(db.db_->DoesColumnExist("Caches", "padding_size"));
+  EXPECT_TRUE(db.db_->DoesColumnExist("Entries", "padding_size"));
+
+  static const char kFindCacheSql[] =
+      "SELECT padding_size, cache_id FROM Caches WHERE cache_id = 1";
+  sql::Statement find_cache_statement(
+      db.db_->GetUniqueStatement(kFindCacheSql));
+  EXPECT_TRUE(find_cache_statement.Step());
+  int64_t cache_padding_size = find_cache_statement.ColumnInt64(0);
+
+  static const char kFindEntrySql[] =
+      "SELECT padding_size, response_id FROM Entries WHERE response_id = 1";
+  sql::Statement find_entry_statement(
+      db.db_->GetUniqueStatement(kFindEntrySql));
+  EXPECT_TRUE(find_entry_statement.Step());
+  int64_t entry_padding_size = find_entry_statement.ColumnInt64(0);
+
+  EXPECT_GE(cache_padding_size, 0);
+  EXPECT_EQ(cache_padding_size, entry_padding_size);
 }
 
 }  // namespace content

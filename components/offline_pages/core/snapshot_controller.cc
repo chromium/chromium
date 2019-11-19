@@ -35,8 +35,7 @@ SnapshotController::SnapshotController(
       state_(State::READY),
       delay_after_document_available_ms_(kDefaultDelayAfterDocumentAvailableMs),
       delay_after_document_on_load_completed_ms_(
-          kDelayAfterDocumentOnLoadCompletedMsForeground),
-      weak_ptr_factory_(this) {
+          kDelayAfterDocumentOnLoadCompletedMsForeground) {
   if (offline_pages::ShouldUseTestingSnapshotDelay()) {
     delay_after_document_available_ms_ = kDelayForTests;
     delay_after_document_on_load_completed_ms_ = kDelayForTests;

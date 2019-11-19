@@ -53,6 +53,7 @@ source_set("serialisation") {
     "//components/sessions",
     "//ios/chrome/browser/browser_state",
     "//ios/web",
+    "//ios/web/public/session",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -86,6 +87,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/web",
+    "//ios/web/public/session",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

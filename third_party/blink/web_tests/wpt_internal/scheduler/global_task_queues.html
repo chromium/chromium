@@ -1,0 +1,47 @@
+<!doctype html>
+<title>Scheduling API: Global Task Queues</title>
+<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
+<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+'use strict';
+
+async_test(t => {
+  function* priorityGenerator() {
+    let priorities = [
+      "immediate", "high", "default", "low", "idle"
+    ];
+    for (let i = 0; i < priorities.length; i++)
+      yield priorities[i];
+  }
+
+  function testTaskQueue(priority) {
+    let tq = scheduler.getTaskQueue(priority);
+    assert_equals(tq.priority, priority);
+
+    let task = tq.postTask(t.step_func(() => {
+      nextTaskQueue();
+    }));
+    assert_equals(task.priority, priority);
+  }
+
+  let nextPriority = priorityGenerator();
+
+  function nextTaskQueue() {
+    let next = nextPriority.next();
+    if (next.done) {
+      t.done();
+      return;
+    }
+    testTaskQueue(next.value);
+  }
+
+  // Schedule a task to kick things off.
+  scheduler.postTask(t.step_func(() => {
+    nextTaskQueue();
+  }));
+}, 'Basic functionality for the global TaskQueues returned by scheduler.taskQueue');
+
+</script>

@@ -9,18 +9,26 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/metrics/subprocess_metrics_provider.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
+#include "chrome/browser/prerender/prerender_manager.h"
+#include "chrome/browser/prerender/prerender_manager_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
@@ -31,7 +39,7 @@ void RetryForHistogramUntilCountReached(base::HistogramTester* histogram_tester,
                                         const std::string& histogram_name,
                                         size_t count) {
   base::RunLoop().RunUntilIdle();
-  for (size_t attempt = 0; attempt < 3; ++attempt) {
+  for (size_t attempt = 0; attempt < 50; ++attempt) {
     const std::vector<base::Bucket> buckets =
         histogram_tester->GetAllSamples(histogram_name);
     size_t total_count = 0;
@@ -45,7 +53,16 @@ void RetryForHistogramUntilCountReached(base::HistogramTester* histogram_tester,
   }
 }
 
-}  // namespace
+// Verifies that all URLs specified in |expected_urls| are present in
+// |urls_from_observed_prediction|. Ordering of URLs is NOT verified.
+void VerifyURLsPresent(const std::vector<GURL>& urls_from_observed_prediction,
+                       const std::vector<std::string>& expected_urls) {
+  for (const auto& expected_url : expected_urls) {
+    EXPECT_NE(urls_from_observed_prediction.end(),
+              std::find(urls_from_observed_prediction.begin(),
+                        urls_from_observed_prediction.end(), expected_url));
+  }
+}
 
 class NavigationPredictorBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest,
@@ -53,9 +70,8 @@ class NavigationPredictorBrowserTest
  public:
   NavigationPredictorBrowserTest()
       : subresource_filter::SubresourceFilterBrowserTest() {
-    const std::vector<base::Feature> features = {
-        blink::features::kNavigationPredictor};
-    feature_list_.InitWithFeatures(features, {});
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kNavigationPredictor, {});
   }
 
   void SetUp() override {
@@ -77,6 +93,7 @@ class NavigationPredictorBrowserTest
   void SetUpOnMainThread() override {
     subresource_filter::SubresourceFilterBrowserTest::SetUpOnMainThread();
     host_resolver()->ClearRules();
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
   const GURL GetTestURL(const char* file) const {
@@ -87,12 +104,79 @@ class NavigationPredictorBrowserTest
     return http_server_->GetURL(file);
   }
 
+  void WaitForLayout() {
+    const char* entry_name =
+        ukm::builders::NavigationPredictorPageLinkMetrics::kEntryName;
+
+    if (ukm_recorder_->GetEntriesByName(entry_name).empty()) {
+      base::RunLoop run_loop;
+      ukm_recorder_->SetOnAddEntryCallback(entry_name, run_loop.QuitClosure());
+      run_loop.Run();
+    }
+  }
+
+  void ResetUKM() {
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
  private:
   std::unique_ptr<net::EmbeddedTestServer> http_server_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   base::test::ScopedFeatureList feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(NavigationPredictorBrowserTest);
+};
+
+class TestObserver : public NavigationPredictorKeyedService::Observer {
+ public:
+  TestObserver() {}
+  ~TestObserver() override {}
+
+  base::Optional<NavigationPredictorKeyedService::Prediction> last_prediction()
+      const {
+    return last_prediction_;
+  }
+
+  size_t count_predictions() const { return count_predictions_; }
+
+  // Waits until the count if received notifications is at least
+  // |expected_notifications_count|.
+  void WaitUntilNotificationsCountReached(size_t expected_notifications_count) {
+    // Ensure that |wait_loop_| is null implying there is no ongoing wait.
+    ASSERT_FALSE(!!wait_loop_);
+
+    if (count_predictions_ >= expected_notifications_count)
+      return;
+    expected_notifications_count_ = expected_notifications_count;
+    wait_loop_ = std::make_unique<base::RunLoop>();
+    wait_loop_->Run();
+    wait_loop_.reset();
+  }
+
+ private:
+  void OnPredictionUpdated(
+      const base::Optional<NavigationPredictorKeyedService::Prediction>&
+          prediction) override {
+    ++count_predictions_;
+    last_prediction_ = prediction;
+    if (wait_loop_ && count_predictions_ >= expected_notifications_count_) {
+      wait_loop_->Quit();
+    }
+  }
+
+  // Count of prediction notifications received so far.
+  size_t count_predictions_ = 0u;
+
+  // last prediction received.
+  base::Optional<NavigationPredictorKeyedService::Prediction> last_prediction_;
+
+  // If |wait_loop_| is non-null, then it quits as soon as count of received
+  // notifications are at least |expected_notifications_count_|.
+  std::unique_ptr<base::RunLoop> wait_loop_;
+  base::Optional<size_t> expected_notifications_count_;
+
+  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, Pipeline) {
@@ -100,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, Pipeline) {
 
   const GURL& url = GetTestURL("/simple_page_with_anchors.html");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
 
   histogram_tester.ExpectUniqueSample(
       "AnchorElementMetrics.Visible.NumberOfAnchorElements", 5, 1);
@@ -151,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, PipelineAdsFrameTagged) {
 
   GURL url = GetTestURL("/page_with_ads_iframe.html");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
 
   histogram_tester.ExpectUniqueSample(
       "AnchorElementMetrics.Visible.NumberOfAnchorElements", 5, 1);
@@ -176,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
   GURL url = GetTestURL("/page_with_ads_iframe.html");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
 
   histogram_tester.ExpectUniqueSample(
       "AnchorElementMetrics.Visible.NumberOfAnchorElements", 7, 1);
@@ -196,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, NavigationScore) {
 
   const GURL& url = GetTestURL("/simple_page_with_anchors.html");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
 
   histogram_tester.ExpectTotalCount(
       "AnchorElementMetrics.Visible.HighestNavigationScore", 1);
@@ -210,15 +294,13 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, ClickAnchorElement) {
 
   const GURL& url = GetTestURL("/simple_page_with_anchors.html");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
 
   EXPECT_TRUE(content::ExecuteScript(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "document.getElementById('google').click();"));
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester.ExpectTotalCount(
-      "AnchorElementMetrics.Clicked.HrefEngagementScore2", 1);
   histogram_tester.ExpectTotalCount(
       "AnchorElementMetrics.Clicked.DurationLoadToFirstClick", 1);
   histogram_tester.ExpectTotalCount(
@@ -239,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
   const GURL& url = GetTestURL("/page_with_same_host_anchor_element.html");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
 
   EXPECT_TRUE(content::ExecuteScript(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -255,14 +337,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
       "NavigationPredictor.OnNonDSE.ActionTaken",
       NavigationPredictor::Action::kPrefetch, 1);
 
-  histogram_tester.ExpectTotalCount(
-      "AnchorElementMetrics.Clicked.HrefEngagementScore2", 1);
-
   histogram_tester.ExpectUniqueSample(
-      "NavigationPredictor.OnNonDSE.AccuracyActionTaken",
-      NavigationPredictor::ActionAccuracy::
-          kPrefetchActionClickToDifferentOrigin,
-      1);
+      "NavigationPredictor.LinkClickedPrerenderResult",
+      NavigationPredictor::PrerenderResult::kCrossOriginAboveThreshold, 1);
 }
 
 // Disabled because it fails when SingleProcessMash feature is enabled. Since
@@ -285,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(
 
   const GURL& url = GetTestURL("/page_with_same_host_anchor_element.html");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
 
   EXPECT_TRUE(content::ExecuteScript(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -301,59 +378,35 @@ IN_PROC_BROWSER_TEST_F(
       "NavigationPredictor.OnNonDSE.ActionTaken",
       NavigationPredictor::Action::kPrefetch, 1);
 
-  histogram_tester.ExpectTotalCount(
-      "AnchorElementMetrics.Clicked.HrefEngagementScore2", 1);
-
   histogram_tester.ExpectUniqueSample(
-      "NavigationPredictor.OnNonDSE.AccuracyActionTaken",
-      NavigationPredictor::ActionAccuracy::
-          kPrefetchActionClickToDifferentOrigin,
-      1);
-
-  // Change to visibile.
-  browser()->tab_strip_model()->GetActiveWebContents()->WasShown();
-  histogram_tester.ExpectTotalCount("NavigationPredictor.OnNonDSE.ActionTaken",
-                                    1);
-
-  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
-  histogram_tester.ExpectTotalCount("NavigationPredictor.OnNonDSE.ActionTaken",
-                                    1);
-
-  browser()->tab_strip_model()->GetActiveWebContents()->WasShown();
-  histogram_tester.ExpectTotalCount("NavigationPredictor.OnNonDSE.ActionTaken",
-                                    2);
-  histogram_tester.ExpectBucketCount(
-      "NavigationPredictor.OnNonDSE.ActionTaken",
-      NavigationPredictor::Action::kPreconnectOnVisibilityChange, 1);
-
-  // Hiding and showing the tab again should not cause change in histograms
-  // since Pre* on tab foreground is done at most once per page.
-  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
-  histogram_tester.ExpectTotalCount("NavigationPredictor.OnNonDSE.ActionTaken",
-                                    2);
-  browser()->tab_strip_model()->GetActiveWebContents()->WasShown();
-  histogram_tester.ExpectTotalCount("NavigationPredictor.OnNonDSE.ActionTaken",
-                                    2);
+      "NavigationPredictor.LinkClickedPrerenderResult",
+      NavigationPredictor::PrerenderResult::kCrossOriginAboveThreshold, 1);
 }
+
+class NavigationPredictorBrowserTestWithDefaultPredictorEnabled
+    : public NavigationPredictorBrowserTest {
+ public:
+  NavigationPredictorBrowserTestWithDefaultPredictorEnabled() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kNavigationPredictor, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // Test that the action accuracy is properly recorded and when same origin
 // preconnections are enabled, then navigation predictor initiates the
 // preconnection.
 IN_PROC_BROWSER_TEST_F(
-    NavigationPredictorBrowserTest,
+    NavigationPredictorBrowserTestWithDefaultPredictorEnabled,
     DISABLE_ON_CHROMEOS(
         ActionAccuracy_DifferentOrigin_VisibilityChangedPreconnectEnabled)) {
-  std::map<std::string, std::string> parameters;
-  base::test::ScopedFeatureList feature_list;
-  parameters["same_origin_preconnecting_allowed"] = "true";
-  feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kNavigationPredictor, parameters);
-
   base::HistogramTester histogram_tester;
 
   const GURL& url = GetTestURL("/page_with_same_host_anchor_element.html");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
 
   histogram_tester.ExpectUniqueSample(
       "AnchorElementMetrics.Visible.NumberOfAnchorElements", 2, 1);
@@ -364,46 +417,99 @@ IN_PROC_BROWSER_TEST_F(
       "NavigationPredictor.OnNonDSE.ActionTaken",
       NavigationPredictor::Action::kPrefetch, 1);
 
-  // Change to visible.
-  browser()->tab_strip_model()->GetActiveWebContents()->WasShown();
-  histogram_tester.ExpectTotalCount("NavigationPredictor.OnNonDSE.ActionTaken",
-                                    1);
+}
 
-  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
-  histogram_tester.ExpectTotalCount("NavigationPredictor.OnNonDSE.ActionTaken",
-                                    1);
+IN_PROC_BROWSER_TEST_F(
+    NavigationPredictorBrowserTestWithDefaultPredictorEnabled,
+    DISABLE_ON_CHROMEOS(PreconnectNonSearch)) {
+  base::HistogramTester histogram_tester;
 
-  browser()->tab_strip_model()->GetActiveWebContents()->WasShown();
-  histogram_tester.ExpectTotalCount("NavigationPredictor.OnNonDSE.ActionTaken",
-                                    2);
-  histogram_tester.ExpectBucketCount(
+  // This page only has non-same host links.
+  const GURL& url = GetTestURL("/anchors_different_area.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+  WaitForLayout();
+
+  histogram_tester.ExpectUniqueSample(
       "NavigationPredictor.OnNonDSE.ActionTaken",
-      NavigationPredictor::Action::kPreconnectOnVisibilityChange, 1);
+      NavigationPredictor::Action::kNone, 1);
+}
 
-  // Hiding and showing the tab again should not cause change in histograms
-  // since Pre* on tab foreground is done at most once per page.
-  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
-  histogram_tester.ExpectTotalCount("NavigationPredictor.OnNonDSE.ActionTaken",
-                                    2);
-  browser()->tab_strip_model()->GetActiveWebContents()->WasShown();
-  histogram_tester.ExpectTotalCount("NavigationPredictor.OnNonDSE.ActionTaken",
-                                    2);
-  histogram_tester.ExpectBucketCount(
+class NavigationPredictorBrowserTestWithPrefetchAfterPreconnect
+    : public NavigationPredictorBrowserTest {
+ public:
+  NavigationPredictorBrowserTestWithPrefetchAfterPreconnect()
+      : NavigationPredictorBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kNavigationPredictor,
+        {{"prefetch_after_preconnect", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    NavigationPredictorBrowserTestWithPrefetchAfterPreconnect,
+    DISABLE_ON_CHROMEOS(PrefetchAfterPreconnect)) {
+  prerender::PrerenderManager::SetMode(
+      prerender::PrerenderManager::PRERENDER_MODE_NOSTATE_PREFETCH);
+
+  const GURL& url = GetTestURL("/page_with_same_host_anchor_element.html");
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder =
+      std::make_unique<ukm::TestAutoSetUkmRecorder>();
+
+  base::HistogramTester histogram_tester;
+
+  ui_test_utils::NavigateToURL(browser(), url);
+  WaitForLayout();
+
+  EXPECT_TRUE(content::ExecuteScript(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      "document.getElementById('example').click();"));
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  histogram_tester.ExpectUniqueSample(
       "NavigationPredictor.OnNonDSE.ActionTaken",
-      NavigationPredictor::Action::kPreconnectOnVisibilityChange, 1);
+      NavigationPredictor::Action::kPrefetch, 1);
+
+  histogram_tester.ExpectTotalCount(
+      "NavigationPredictor.LinkClickedPrerenderResult", 1);
+
+  const auto& entries = ukm_recorder->GetMergedEntriesByName(
+      ukm::builders::NoStatePrefetch::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  for (const auto& kv : entries) {
+    EXPECT_TRUE(ukm_recorder->EntryHasMetric(
+        kv.second.get(),
+        ukm::builders::NoStatePrefetch::kPrefetchedRecently_FinalStatusName));
+    EXPECT_TRUE(ukm_recorder->EntryHasMetric(
+        kv.second.get(),
+        ukm::builders::NoStatePrefetch::kPrefetchedRecently_OriginName));
+    EXPECT_TRUE(ukm_recorder->EntryHasMetric(
+        kv.second.get(),
+        ukm::builders::NoStatePrefetch::kPrefetchedRecently_PrefetchAgeName));
+  }
 }
 
 // Simulate a click at the anchor element.
 // Test that the action accuracy is properly recorded.
 // User clicks on an anchor element that points to same URL as the URL
 // prefetched.
+// https://crbug.com/1008307
+#if (defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_CHROMEOS))
+#define MAYBE_ActionAccuracy_SameOrigin DISABLED_ActionAccuracy_SameOrigin
+#else
+#define MAYBE_ActionAccuracy_SameOrigin ActionAccuracy_SameOrigin
+#endif
 IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
-                       ActionAccuracy_SameOrigin) {
+                       MAYBE_ActionAccuracy_SameOrigin) {
   base::HistogramTester histogram_tester;
 
   const GURL& url = GetTestURL("/page_with_same_host_anchor_element.html");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
 
   EXPECT_TRUE(content::ExecuteScript(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -420,11 +526,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
       NavigationPredictor::Action::kPrefetch, 1);
 
   histogram_tester.ExpectTotalCount(
-      "AnchorElementMetrics.Clicked.HrefEngagementScore2", 1);
-
-  histogram_tester.ExpectUniqueSample(
-      "NavigationPredictor.OnNonDSE.AccuracyActionTaken",
-      NavigationPredictor::ActionAccuracy::kPrefetchActionClickToSameURL, 1);
+      "NavigationPredictor.LinkClickedPrerenderResult", 1);
 }
 
 // Simulate a click at the anchor element in off-the-record profile. Metrics
@@ -442,10 +544,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
   EXPECT_TRUE(content::ExecuteScript(
       incognito->tab_strip_model()->GetActiveWebContents(),
       "document.getElementById('google').click();"));
-  base::RunLoop().RunUntilIdle();
-
   histogram_tester.ExpectTotalCount(
-      "AnchorElementMetrics.Clicked.HrefEngagementScore2", 0);
+      "AnchorElementMetrics.Visible.HighestNavigationScore", 0);
 }
 
 // Simulate click at the anchor element.
@@ -456,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, AreaRank) {
   // This test file contains 5 anchors with different size.
   const GURL& url = GetTestURL("/anchors_different_area.html");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
 
   EXPECT_TRUE(content::ExecuteScript(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -477,10 +577,10 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
   const GURL& url = GetTestURL("/anchors_same_href.html");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
 
   histogram_tester.ExpectTotalCount("AnchorElementMetrics.Visible.RatioArea",
-                                    1);
+                                    2);
 
   EXPECT_TRUE(content::ExecuteScript(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -502,10 +602,10 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
   const GURL& url = GetTestURL("/anchors_same_href.html");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
 
   histogram_tester.ExpectTotalCount("AnchorElementMetrics.Visible.RatioArea",
-                                    1);
+                                    2);
 
   EXPECT_TRUE(content::ExecuteScript(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -543,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
   const GURL& url = GetTestURL("/anchors_same_href.html?q=cats");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
   EXPECT_TRUE(content::ExecuteScript(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "document.getElementById('google').click();"));
@@ -581,7 +681,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
   const GURL& url = GetTestURL("/anchors_same_href.html?q=cats");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
+
   EXPECT_TRUE(content::ExecuteScript(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "document.getElementById('google').click();"));
@@ -601,7 +702,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
   const GURL& url = GetTestURL("/simple_page_with_anchors.html");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
 
   histogram_tester.ExpectUniqueSample(
       "AnchorElementMetrics.Visible.NumberOfAnchorElements", 5, 1);
@@ -619,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
   const GURL& url = GetTestURL("/page_with_same_host_anchor_element.html");
   ui_test_utils::NavigateToURL(browser(), url);
-  base::RunLoop().RunUntilIdle();
+  WaitForLayout();
 
   histogram_tester.ExpectUniqueSample(
       "AnchorElementMetrics.Visible.NumberOfAnchorElements", 2, 1);
@@ -631,20 +732,254 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
       NavigationPredictor::Action::kPrefetch, 1);
 }
 
-// Tests that the browser only receives anchor elements that are in the
-// viewport, and from anchor elements whose target differ from document URL
-// by one digit.
+// Tests that the browser receives anchors from anywhere on the page.
 IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
                        ViewportOnlyAndUrlIncrementByOne) {
   base::HistogramTester histogram_tester;
 
   const GURL& url = GetTestURL("/long_page_with_anchors-1.html");
   ui_test_utils::NavigateToURL(browser(), url);
+  WaitForLayout();
+
+  histogram_tester.ExpectUniqueSample(
+      "AnchorElementMetrics.Visible.NumberOfAnchorElements", 3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "AnchorElementMetrics.Visible.NumberOfAnchorElementsAfterMerge", 3, 1);
+}
+
+// Test that navigation score of anchor elements can be calculated on page load
+// and the predicted URLs for the next navigation are dispatched to the single
+// observer.
+IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
+                       NavigationScoreSingleObserver) {
+  TestObserver observer;
+
+  NavigationPredictorKeyedService* service =
+      NavigationPredictorKeyedServiceFactory::GetForProfile(
+          browser()->profile());
+  EXPECT_NE(nullptr, service);
+  service->AddObserver(&observer);
+
+  base::HistogramTester histogram_tester;
+
+  const GURL& url = GetTestURL("/simple_page_with_anchors.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+  WaitForLayout();
+  observer.WaitUntilNotificationsCountReached(1);
+
+  histogram_tester.ExpectTotalCount(
+      "AnchorElementMetrics.Visible.HighestNavigationScore", 1);
+  service->RemoveObserver(&observer);
+
+  EXPECT_EQ(1u, observer.count_predictions());
+  EXPECT_EQ(url, observer.last_prediction()->source_document_url());
+  EXPECT_EQ(2u, observer.last_prediction()->sorted_predicted_urls().size());
+  EXPECT_NE(
+      observer.last_prediction()->sorted_predicted_urls().end(),
+      std::find(observer.last_prediction()->sorted_predicted_urls().begin(),
+                observer.last_prediction()->sorted_predicted_urls().end(),
+                "https://google.com/"));
+  EXPECT_NE(
+      observer.last_prediction()->sorted_predicted_urls().end(),
+      std::find(observer.last_prediction()->sorted_predicted_urls().begin(),
+                observer.last_prediction()->sorted_predicted_urls().end(),
+                "https://example.com/"));
+
+  // Doing another navigation after removing the observer should not cause a
+  // crash.
+  ui_test_utils::NavigateToURL(browser(), url);
+  WaitForLayout();
+  EXPECT_EQ(1u, observer.count_predictions());
+}
+
+// Same as NavigationScoreSingleObserver test but with more than one observer.
+IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
+                       NavigationScore_TwoObservers) {
+  TestObserver observer_1;
+  TestObserver observer_2;
+
+  NavigationPredictorKeyedService* service =
+      NavigationPredictorKeyedServiceFactory::GetForProfile(
+          browser()->profile());
+  service->AddObserver(&observer_1);
+  service->AddObserver(&observer_2);
+
+  base::HistogramTester histogram_tester;
+
+  const GURL& url = GetTestURL("/simple_page_with_anchors.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+  WaitForLayout();
+  observer_1.WaitUntilNotificationsCountReached(1);
+  observer_2.WaitUntilNotificationsCountReached(1);
+
+  histogram_tester.ExpectTotalCount(
+      "AnchorElementMetrics.Visible.HighestNavigationScore", 1);
+  service->RemoveObserver(&observer_1);
+
+  EXPECT_EQ(1u, observer_1.count_predictions());
+  EXPECT_EQ(url, observer_1.last_prediction()->source_document_url());
+  EXPECT_EQ(2u, observer_1.last_prediction()->sorted_predicted_urls().size());
+  VerifyURLsPresent(observer_1.last_prediction()->sorted_predicted_urls(),
+                    {"https://google.com/", "https://example.com/"});
+  EXPECT_EQ(1u, observer_2.count_predictions());
+  EXPECT_EQ(url, observer_2.last_prediction()->source_document_url());
+
+  // Only |observer_2| should get the notification since |observer_1| has
+  // been removed from receiving the notifications.
+  ui_test_utils::NavigateToURL(browser(), url);
+  WaitForLayout();
+  observer_2.WaitUntilNotificationsCountReached(2);
+  EXPECT_EQ(1u, observer_1.count_predictions());
+  EXPECT_EQ(2u, observer_2.count_predictions());
+  VerifyURLsPresent(observer_2.last_prediction()->sorted_predicted_urls(),
+                    {"https://google.com/", "https://example.com/"});
+}
+
+// Test that the navigation predictor keyed service is null for incognito
+// profiles.
+IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, Incognito) {
+  Browser* incognito = CreateIncognitoBrowser();
+  NavigationPredictorKeyedService* incognito_service =
+      NavigationPredictorKeyedServiceFactory::GetForProfile(
+          incognito->profile());
+  EXPECT_EQ(nullptr, incognito_service);
+}
+
+// Verify that the observers are notified of predictions on search results page.
+IN_PROC_BROWSER_TEST_F(
+    NavigationPredictorBrowserTestWithPrefetchAfterPreconnect,
+    DISABLE_ON_CHROMEOS(ObserverNotifiedOnSearchPage)) {
+  TestObserver observer;
+
+  NavigationPredictorKeyedService* service =
+      NavigationPredictorKeyedServiceFactory::GetForProfile(
+          browser()->profile());
+  service->AddObserver(&observer);
+
+  static const char kShortName[] = "test";
+  static const char kSearchURL[] =
+      "/anchors_different_area.html?q={searchTerms}";
+
+  // Set up default search engine.
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(model);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  ASSERT_TRUE(model->loaded());
+
+  TemplateURLData data;
+  data.SetShortName(base::ASCIIToUTF16(kShortName));
+  data.SetKeyword(data.short_name());
+  data.SetURL(GetTestURL(kSearchURL).spec());
+
+  TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(template_url);
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_EQ(0u, observer.count_predictions());
+
+  // This page only has non-same host links.
+  const GURL& url = GetTestURL("/anchors_different_area.html?q=cats");
+  ui_test_utils::NavigateToURL(browser(), url);
+  WaitForLayout();
+  observer.WaitUntilNotificationsCountReached(1u);
+
+  histogram_tester.ExpectUniqueSample("NavigationPredictor.OnDSE.ActionTaken",
+                                      NavigationPredictor::Action::kNone, 1);
+  EXPECT_EQ(1u, observer.count_predictions());
+  EXPECT_EQ(url, observer.last_prediction()->source_document_url());
+  EXPECT_EQ(5u, observer.last_prediction()->sorted_predicted_urls().size());
+  VerifyURLsPresent(
+      observer.last_prediction()->sorted_predicted_urls(),
+      {"https://example.com/2", "https://google.com/", "https://example.com/1",
+       "https://example.com/", "https://dummy.com/"});
+}
+
+const base::Feature kNavigationPredictorMultiplePrerenders{
+    "NavigationPredictorMultiplePrerenders", base::FEATURE_ENABLED_BY_DEFAULT};
+
+class NavigationPredictorBrowserTestMultiplePrerender
+    : public NavigationPredictorBrowserTest {
+ public:
+  NavigationPredictorBrowserTestMultiplePrerender() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kNavigationPredictor,
+          {{"prefetch_after_preconnect", "true"}}},
+         {kNavigationPredictorMultiplePrerenders, {{"prerender_limit", "4"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that multiple prerenders is working.
+IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTestMultiplePrerender,
+                       DISABLE_ON_CHROMEOS(MultiplePrerendersRecordsMetrics)) {
+  base::HistogramTester histogram_tester;
+
+  const GURL& url = GetTestURL("/anchors_large.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+  WaitForLayout();
+
+  // Force prerenders to happen quickly.
+  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
+  browser()->tab_strip_model()->GetActiveWebContents()->WasShown();
+
+  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
+  browser()->tab_strip_model()->GetActiveWebContents()->WasShown();
+
+  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
+  browser()->tab_strip_model()->GetActiveWebContents()->WasShown();
+
+  browser()->tab_strip_model()->GetActiveWebContents()->WasHidden();
+  browser()->tab_strip_model()->GetActiveWebContents()->WasShown();
+
+  // Force recording stats.
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
   base::RunLoop().RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "AnchorElementMetrics.Visible.NumberOfAnchorElements", 2, 1);
-  // Same document anchor element should be removed after merge.
+      "NavigationPredictor.CountOfURLsAboveThreshold", 5, 1);
   histogram_tester.ExpectUniqueSample(
-      "AnchorElementMetrics.Visible.NumberOfAnchorElementsAfterMerge", 2, 1);
+      "NavigationPredictor.CountOfURLsAboveThreshold.CrossOrigin", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NavigationPredictor.CountOfURLsAboveThreshold.SameOrigin", 3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NavigationPredictor.CountOfURLsInPredictedSet.CrossOrigin", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NavigationPredictor.CountOfURLsInPredictedSet.SameOrigin", 3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NavigationPredictor.CountOfStartedPrerenders", 3, 1);
+
+  // Same origin links in anchors_large.html
+  std::vector<GURL> prerendered_urls = {
+      GetTestURL("/1.html"), GetTestURL("/2.html"), GetTestURL("/3.html")};
+
+  for (auto& url : prerendered_urls) {
+    auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    ResetUKM();
+
+    // Load page from cache.
+    ui_test_utils::NavigateToURL(browser(), url);
+    WaitForLayout();
+    // Force recording PageLoad UKM.
+    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+
+    // Check that the page was loaded from cache.
+    auto entries = test_ukm_recorder->GetMergedEntriesByName(
+        ukm::builders::PageLoad::kEntryName);
+    EXPECT_EQ(1u, entries.size());
+    for (const auto& kv : entries) {
+      auto* const cached_load_entry = kv.second.get();
+      test_ukm_recorder->ExpectEntrySourceHasUrl(cached_load_entry, url);
+
+      EXPECT_TRUE(test_ukm_recorder->EntryHasMetric(
+          cached_load_entry, ukm::builders::PageLoad::kWasCachedName));
+    }
+  }
 }
+
+}  // namespace

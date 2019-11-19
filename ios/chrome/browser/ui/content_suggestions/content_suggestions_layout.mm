@@ -116,6 +116,56 @@ layoutAttributesForSupplementaryViewOfKind:(NSString*)kind
   return YES;
 }
 
+#pragma mark - MDCCollectionViewFlowLayout overrides
+// This section contains overrides of methods to avoid ugly effects during
+// rotation due to the default behavior of the MDCCollectionViewFlowLayout. See
+// http://crbug.com/949659 .
+
+- (UICollectionViewLayoutAttributes*)
+    initialLayoutAttributesForAppearingItemAtIndexPath:
+        (NSIndexPath*)itemIndexPath {
+  UICollectionViewLayoutAttributes* attribute =
+      [super initialLayoutAttributesForAppearingItemAtIndexPath:itemIndexPath];
+  attribute.alpha = 0;
+  return attribute;
+}
+
+- (UICollectionViewLayoutAttributes*)
+    initialLayoutAttributesForAppearingSupplementaryElementOfKind:
+        (NSString*)elementKind
+                                                      atIndexPath:
+                                                          (NSIndexPath*)
+                                                              elementIndexPath {
+  UICollectionViewLayoutAttributes* attribute = [super
+      initialLayoutAttributesForAppearingSupplementaryElementOfKind:elementKind
+                                                        atIndexPath:
+                                                            elementIndexPath];
+  attribute.alpha = 0;
+  return attribute;
+}
+
+- (UICollectionViewLayoutAttributes*)
+    finalLayoutAttributesForDisappearingItemAtIndexPath:
+        (NSIndexPath*)itemIndexPath {
+  UICollectionViewLayoutAttributes* attribute =
+      [super finalLayoutAttributesForDisappearingItemAtIndexPath:itemIndexPath];
+  attribute.alpha = 0;
+  return attribute;
+}
+
+- (UICollectionViewLayoutAttributes*)
+    finalLayoutAttributesForDisappearingSupplementaryElementOfKind:
+        (NSString*)elementKind
+                                                       atIndexPath:
+                                                           (NSIndexPath*)
+                                                               indexPath {
+  UICollectionViewLayoutAttributes* attribute = [super
+      finalLayoutAttributesForDisappearingSupplementaryElementOfKind:elementKind
+                                                         atIndexPath:indexPath];
+  attribute.alpha = 0;
+  return attribute;
+}
+
 #pragma mark - Private.
 
 // Returns the height of the header of the first section.

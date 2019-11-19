@@ -7,7 +7,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -18,15 +18,14 @@
 namespace net {
 
 std::string GetDirectoryListingHeader(const base::string16& title) {
-  static const base::StringPiece header(
+  scoped_refptr<base::RefCountedMemory> header(
       NetModule::GetResource(IDR_DIR_HEADER_HTML));
   // This can be null in unit tests.
-  DLOG_IF(WARNING, header.empty())
-      << "Missing resource: directory listing header";
+  DLOG_IF(WARNING, !header) << "Missing resource: directory listing header";
 
   std::string result;
-  if (!header.empty())
-    result.assign(header.data(), header.size());
+  if (header)
+    result.assign(header->front_as<char>(), header->size());
 
   result.append("<script>start(");
   base::EscapeJSONString(title, true, &result);

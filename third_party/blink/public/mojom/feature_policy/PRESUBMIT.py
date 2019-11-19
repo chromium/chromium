@@ -22,7 +22,7 @@ def _RunUmaHistogramChecks(input_api, output_api):  # pylint: disable=C0103
 
     source_path = ''
     for f in input_api.AffectedFiles():
-        if f.LocalPath().endswith('feature_policy.mojom'):
+        if f.LocalPath().endswith('feature_policy_feature.mojom'):
             source_path = f.LocalPath()
             break
     else:

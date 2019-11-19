@@ -35,12 +35,9 @@ class PathPositionMapper {
   USING_FAST_MALLOC(PathPositionMapper);
 
  public:
-  static std::unique_ptr<PathPositionMapper> Create(const Path& path,
-                                                    float computed_path_length,
-                                                    float start_offset) {
-    return base::WrapUnique(
-        new PathPositionMapper(path, computed_path_length, start_offset));
-  }
+  PathPositionMapper(const Path&,
+                     float computed_path_length,
+                     float start_offset);
 
   enum PositionType {
     kOnPath,
@@ -52,10 +49,6 @@ class PathPositionMapper {
   float StartOffset() const { return path_start_offset_; }
 
  private:
-  PathPositionMapper(const Path&,
-                     float computed_path_length,
-                     float start_offset);
-
   Path::PositionCalculator position_calculator_;
   float path_length_;
   float path_start_offset_;

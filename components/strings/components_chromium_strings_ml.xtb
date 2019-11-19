@@ -5,7 +5,7 @@
 <translation id="1838412507805038478">ഈ വെബ്‌സൈറ്റിന്റെ സർട്ടിഫിക്കറ്റ് <ph name="ISSUER" /> നൽകിയതാണെന്ന് Chromium പരിശോധിച്ചുറപ്പിച്ചു.</translation>
 <translation id="275588974610408078">Chromium-ത്തിൽ ക്രാഷ് റിപ്പോർട്ടിംഗ് ലഭ്യമല്ല.</translation>
 <translation id="3064346599913645280">നിങ്ങൾ സുരക്ഷിതമായ ഒരു Chromium പേജാണ് കാണുന്നത്</translation>
-<translation id="3550966579244642892">Chromium OS, അതിന്റെ പ്രാരംഭ സജ്ജീകരണം പൂർത്തിയാക്കിയിട്ടില്ല.</translation>
+<translation id="3550966579244642892">Chromium OS, അതിന്‍റെ പ്രാരംഭ സജ്ജീകരണം പൂർത്തിയാക്കിയിട്ടില്ല.</translation>
 <translation id="4365115785552740256">Chromium സാധ്യമായത് <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ഓപ്പൺ സോഴ്‌സ് പ്രോജക്റ്റും മറ്റ് <ph name="BEGIN_LINK_OSS" />ഓപ്പൺ സോഴ്‌സ് സോഫ്റ്റ്‌വെയറും<ph name="END_LINK_OSS" /> ഉപയോഗിച്ചാണ്</translation>
 <translation id="4559775032954821361">Chromium മെനു &gt;
           <ph name="SETTINGS_TITLE" />
@@ -17,7 +17,7 @@
           LAN ക്രമീകരണങ്ങൾ എന്നതിലേക്ക് പോകുക
           തുടർന്ന്, "നിങ്ങളുടെ LAN-നായി ഒരു പ്രോക്‌സി സെർവർ ഉപയോഗിക്കുക" ചെക്ക്‌ബോക്‌സ് തിരഞ്ഞെടുത്തത് മാറ്റുക.</translation>
 <translation id="48558539577516920">നിങ്ങളുടെ ഫയർവാളിലെയോ ആന്റിവൈറസ് ക്രമീകരണത്തിലെയോ നെറ്റ്‌വർക്ക്
-          ആക്‌സസ്സ് ചെയ്യാൻ Chromium-ത്തിനെ അനുവദിക്കുക.</translation>
+          ആക്‌സസ് ചെയ്യാൻ Chromium-നെ അനുവദിക്കുക.</translation>
 <translation id="580822234363523061">Chromium മെനുവിലേക്ക്
           പോകുക &gt;
           <ph name="SETTINGS_TITLE" />

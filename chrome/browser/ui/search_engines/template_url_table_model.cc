@@ -127,8 +127,8 @@ TemplateURL* TemplateURLTableModel::GetTemplateURL(int index) {
   // Sanity checks for https://crbug.com/781703.
   CHECK_GE(index, 0);
   CHECK_LT(static_cast<size_t>(index), entries_.size());
-  CHECK(base::ContainsValue(template_url_service_->GetTemplateURLs(),
-                            entries_[index]))
+  CHECK(
+      base::Contains(template_url_service_->GetTemplateURLs(), entries_[index]))
       << "TemplateURLTableModel is returning a pointer to a TemplateURL "
          "that has already been freed by TemplateURLService.";
 

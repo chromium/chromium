@@ -74,16 +74,6 @@ function testTransfers() {
         else
           testFailed("Sending Function object should throw a DataCloneError, got: " + e);
     }
-    try {
-        var err = new Error();
-        channel0.port1.postMessage({id:"error-object", error:err, port:c4.port1}, [c4.port1]);
-        testFailed("Sending Error object should throw");
-    } catch(e) {
-        if (e.code == DOMException.DATA_CLONE_ERR)
-          testPassed("Sending Error object has thrown " + e);
-        else
-          testPassed("Sending Error object should throw a DataCloneError, got: " + e);
-    }
     c4.port1.postMessage("Should succeed");
     channel0.port1.postMessage({id:"done"});
 

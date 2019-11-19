@@ -11,7 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
-#include "content/browser/web_package/signed_exchange_handler.h"
+#include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
@@ -21,30 +21,27 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/cert_test_util.h"
-#include "net/test/url_request/url_request_mock_http_job.h"
-#include "net/url_request/url_request_filter.h"
-#include "services/network/public/cpp/features.h"
 
 namespace content {
 
 constexpr uint64_t SignedExchangeBrowserTestHelper::kSignatureHeaderDate =
-    1520834000;  // 2018-03-12T05:53:20Z
+    1564272000;  // 2019-07-28T00:00:00Z
 constexpr uint64_t SignedExchangeBrowserTestHelper::kSignatureHeaderExpires =
-    1520837600;  // 2018-03-12T06:53:20Z
+    1564876800;  // 2019-08-04T00:00:00Z
 
 SignedExchangeBrowserTestHelper::SignedExchangeBrowserTestHelper() = default;
 
 SignedExchangeBrowserTestHelper::~SignedExchangeBrowserTestHelper() = default;
 
 void SignedExchangeBrowserTestHelper::SetUp() {
-  SignedExchangeHandler::SetVerificationTimeForTesting(
+  signed_exchange_utils::SetVerificationTimeForTesting(
       base::Time::UnixEpoch() +
       base::TimeDelta::FromSeconds(kSignatureHeaderDate));
 }
 
 void SignedExchangeBrowserTestHelper::TearDownOnMainThread() {
   interceptor_.reset();
-  SignedExchangeHandler::SetVerificationTimeForTesting(
+  signed_exchange_utils::SetVerificationTimeForTesting(
       base::Optional<base::Time>());
 }
 
@@ -64,18 +61,12 @@ SignedExchangeBrowserTestHelper::LoadCertificate() {
 void SignedExchangeBrowserTestHelper::InstallUrlInterceptor(
     const GURL& url,
     const std::string& data_path) {
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-    if (!interceptor_) {
-      interceptor_ = std::make_unique<URLLoaderInterceptor>(base::BindRepeating(
-          &SignedExchangeBrowserTestHelper::OnInterceptCallback,
-          base::Unretained(this)));
-    }
-    interceptor_data_path_map_[url] = data_path;
-  } else {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&InstallMockInterceptors, url, data_path));
+  if (!interceptor_) {
+    interceptor_ = std::make_unique<URLLoaderInterceptor>(base::BindRepeating(
+        &SignedExchangeBrowserTestHelper::OnInterceptCallback,
+        base::Unretained(this)));
   }
+  interceptor_data_path_map_[url] = data_path;
 }
 
 void SignedExchangeBrowserTestHelper::InstallMockCert(
@@ -96,16 +87,6 @@ void SignedExchangeBrowserTestHelper::InstallMockCertChainInterceptor() {
   InstallUrlInterceptor(
       GURL("https://cert.example.org/cert.msg"),
       "content/test/data/sxg/test.example.org.public.pem.cbor");
-}
-
-void SignedExchangeBrowserTestHelper::InstallMockInterceptors(
-    const GURL& url,
-    const std::string& data_path) {
-  base::FilePath root_path;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path));
-  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
-      url, net::URLRequestMockHTTPJob::CreateInterceptorForSingleFile(
-               root_path.AppendASCII(data_path)));
 }
 
 bool SignedExchangeBrowserTestHelper::OnInterceptCallback(

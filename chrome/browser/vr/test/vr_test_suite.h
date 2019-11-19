@@ -8,7 +8,7 @@
 #include "base/test/test_suite.h"
 
 namespace content {
-class TestBrowserThreadBundle;
+class BrowserTaskEnvironment;
 }  // namespace content
 
 namespace vr {
@@ -23,7 +23,7 @@ class VrTestSuite : public base::TestSuite {
   void Shutdown() override;
 
  private:
-  std::unique_ptr<content::TestBrowserThreadBundle> thread_bundle_;
+  std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(VrTestSuite);
 };

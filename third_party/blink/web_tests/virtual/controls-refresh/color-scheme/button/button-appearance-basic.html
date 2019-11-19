@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<script src="../../../../resources/run-after-layout-and-paint.js"></script>
+<body>
+
+<!-- no style for reference -->
+<ul>
+  <li>Button: <button>button</button></li>
+  <li>Type button: <input type="button" value="button"/></li>
+  <li>Type submit: <input type="submit" /></li>
+  <li>Type reset: <input type="reset" /></li>
+  <li>Type file: <input type="file" /></li>
+</ul>
+
+<!-- disabled -->
+<input type="button" disabled value="button"> <br>
+
+<!-- border -->
+<input type="button" style="border: 3px solid lime;" value="button">
+<input type="button" style="border-radius: 6px;" value="button"> <br>
+
+<!-- background -->
+<input type="button" style="background: linear-gradient(to bottom, #dea 0%,#9c7 44%,#494 100%);" value="button"> <br>
+
+<!-- shadow -->
+<input type="button" style="box-shadow: 4px 4px 10px rgba(255,0,0,0.5), inset 4px 4px 4px rgba(0,255,0,0.5);" value="button"> <br>
+
+<!-- size -->
+<input type="button" style="width: 2px; height: 2px; padding: 0;" value="button">
+<input type="button" style="width: 8px; height: 8px;" value="button">
+<input type="button" style="width: 16px; height: 16px;" value="button">
+<input type="button" style="width: 24px; height: 24px;" value="button">
+<input type="button" style="width: 26px; height: 20px;" value="button">
+<input type="button" style="width: 60px; height: 60px;" value="button"> <br>
+
+<!-- zoom -->
+<input type="button" style="zoom: 1.5;" value="button">
+<input type="button" style="zoom: 3;" value="button">
+
+<!-- webkit-appearance -->
+<div style="-webkit-appearance: button; width: 50px; height: 30px;">button</div>
+
+</body>

@@ -3,7 +3,6 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../assert_selection.js"></script>
 <script>
-const usesBidiAffinity = window.internals && internals.runtimeFlags.bidiCaretAffinityEnabled;
 
 selection_test(
   '<div contenteditable dir="ltr">|abc\u05D0def</div>',
@@ -26,17 +25,13 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc|\u05D0def</div>',
   selection => selection.modify('move', 'left', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr">abc\u05D0|def</div>'
-      : '<div contenteditable dir="ltr">ab|c\u05D0def</div>',
+  '<div contenteditable dir="ltr">ab|c\u05D0def</div>',
   '35-3 ltr left character');
 
 selection_test(
   '<div contenteditable dir="ltr">abc\u05D0|def</div>',
   selection => selection.modify('move', 'left', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr">abc\u05D0|def</div>'
-      : '<div contenteditable dir="ltr">abc|\u05D0def</div>',
+  '<div contenteditable dir="ltr">abc|\u05D0def</div>',
   '35-4 ltr left character');
 
 selection_test(

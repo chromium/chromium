@@ -65,7 +65,7 @@ public class AwContentsStaticsTest {
         callbackHelper.waitForCallback(currentCallCount);
     }
 
-    private void createContainerView() throws Exception {
+    private void createContainerView() {
         mContentsClient = new TestAwContentsClient();
         mTestContainer = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mTestContainer.getAwContents();

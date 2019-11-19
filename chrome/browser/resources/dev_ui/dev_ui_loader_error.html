@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevUI DFM Loader</title>
+  <style>
+body {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  font-family: sans, Arial, sans-serif;
+  font-size: 93.75%;
+  justify-content: flex-start;
+}
+
+#failure-message {
+  display: inline-block;
+  padding-top: 100px;
+}
+
+h1.heading {
+  color: rgb(32, 33, 36);
+  font-size: 1.6em;
+  font-weight: normal;
+  line-height: 1.25em;
+  margin: 0 0 15px 0;
+}
+
+.list-header {
+  color: #2B2B2B;
+  line-height: 1.61em;
+  margin: 0 8px 0 0;
+}
+
+ul.suggestions-list {
+  margin-top: 0;
+}
+
+ul.suggestions-list li {
+  color: #2B2B2B;
+  line-height: 1.55;
+}
+  </style>
+</head>
+<body>
+<div id="failure-message">
+  <h1 class="heading">$i18n{h1}</h1>
+  <p class="list-header">$i18n{p}</p>
+  <ul class="suggestions-list">
+    <li>$i18n{li-1}</li>
+    <li>$i18n{li-2}</li>
+  </ul>
+</div>
+</body>
+</html>

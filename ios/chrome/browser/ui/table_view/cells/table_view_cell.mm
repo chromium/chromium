@@ -7,14 +7,14 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
-const int kTableViewCustomSeparatorColor = 0xE8EAED;
-const CGFloat kTableViewCustomSeparatorHeight = 0.5;
+const CGFloat kTableViewCustomSeparatorHeight = 0.75;
 }  // namespace
 
 @interface TableViewCell ()
@@ -28,8 +28,7 @@ const CGFloat kTableViewCustomSeparatorHeight = 0.5;
   if (self) {
     _customSeparator = [[UIView alloc] init];
     _customSeparator.translatesAutoresizingMaskIntoConstraints = NO;
-    _customSeparator.backgroundColor =
-        UIColorFromRGB(kTableViewCustomSeparatorColor);
+    _customSeparator.backgroundColor = UIColor.cr_opaqueSeparatorColor;
     [self addSubview:_customSeparator];
 
     NSArray* constraints = @[

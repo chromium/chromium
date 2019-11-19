@@ -57,9 +57,7 @@ executable("remoting_client_plugin_newlib") {
     "//remoting/protocol",
     "//remoting/signaling",
     "//third_party/libyuv",
-    "//third_party/webrtc/modules/desktop_capture:primitives",
-    "//third_party/webrtc_overrides:metrics",
-    "//third_party/webrtc_overrides:task_queue_impl",
+    "//third_party/webrtc_overrides:webrtc_component",
     "//ui/events:dom_keycode_converter",
   ]
 

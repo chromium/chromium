@@ -16,6 +16,6 @@ specific_include_rules = {
     "+third_party/khronos/GLES2",
   ],
   "external_begin_frame_source_android.cc": [
-    "+jni/ExternalBeginFrameSourceAndroid_jni.h",
+    "+components/viz/service/service_jni_headers/ExternalBeginFrameSourceAndroid_jni.h",
   ],
 }

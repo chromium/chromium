@@ -28,16 +28,12 @@
     boolean embedded;
   };
 
-  callback AbortCallback = void ();
   callback GetStreamDetailsCallback = void (StreamInfo streamInfo);
   callback SetShowBeforeUnloadDialogCallback = void ();
 
   interface Functions {
     // Returns the StreamInfo for the stream for this context if there is one.
     [nocompile] static void getStreamInfo(GetStreamDetailsCallback callback);
-
-    // Aborts the stream for this context if there is one.
-    [nocompile] static void abortStream(optional AbortCallback callback);
 
     // Instructs the PluginDocument, if running in one, to show a dialog in
     // response to beforeunload events.

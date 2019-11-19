@@ -1,0 +1,7 @@
+specific_include_rules = {
+  # This file is the glue between a Profile and the local site data store, it's
+  # browser specific and needs to be able to use some browser parts.
+  "site_data_cache_facade.*\.cc": [
+      "+chrome/browser",
+  ]
+}

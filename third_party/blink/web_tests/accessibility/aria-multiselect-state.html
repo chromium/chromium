@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div role="grid" id="grid"></div>
 <div role="treegrid" id="treegrid"></div>
@@ -22,62 +21,62 @@ function axElementById(id) {
     return accessibilityController.accessibleElementById(id);
 }
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var container = axElementById("grid");
     assert_equals(container.isMultiSelectable, false);
 }, "multiselectable=false by default on grid");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var container = axElementById("treegrid");
     assert_equals(container.isMultiSelectable, false);
 }, "multiselectable=false by default on treegrid");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var container = axElementById("tree");
     assert_equals(container.isMultiSelectable, false);
 }, "multiselectable=false by default on tree");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var container = axElementById("listbox");
     assert_equals(container.isMultiSelectable, false);
 }, "multiselectable=false by default on listbox");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var container = axElementById("tablist");
     assert_equals(container.isMultiSelectable, false);
 }, "multiselectable=false by default on tablist");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var container = axElementById("multi-grid");
     assert_equals(container.isMultiSelectable, true);
 }, "multiselectable can be set on grid");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var container = axElementById("multi-treegrid");
     assert_equals(container.isMultiSelectable, true);
 }, "multiselectable can be set on treegrid");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var container = axElementById("multi-tree");
     assert_equals(container.isMultiSelectable, true);
 }, "multiselectable can be set on tree");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var container = axElementById("multi-listbox");
     assert_equals(container.isMultiSelectable, true);
 }, "multiselectable can be set on listbox");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var container = axElementById("multi-tablist");
     assert_equals(container.isMultiSelectable, true);
 }, "multiselectable can be set on tablist");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var container = axElementById("radiogroup");
     assert_equals(container.isMultiSelectable, false);
 }, "multiselectable cannot be set on radiogrup");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var container = axElementById("menu");
     assert_equals(container.isMultiSelectable, false);
 }, "multiselectable cannot be set on menu");

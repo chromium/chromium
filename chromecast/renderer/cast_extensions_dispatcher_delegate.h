@@ -19,7 +19,7 @@ class CastExtensionsDispatcherDelegate
   void RegisterNativeHandlers(
       extensions::Dispatcher* dispatcher,
       extensions::ModuleSystem* module_system,
-      extensions::ExtensionBindingsSystem* bindings_system,
+      extensions::NativeExtensionBindingsSystem* bindings_system,
       extensions::ScriptContext* context) override;
   void PopulateSourceMap(
       extensions::ResourceBundleSourceMap* source_map) override;

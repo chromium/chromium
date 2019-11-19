@@ -55,14 +55,15 @@ html.starting-up #dot-list {
 }
 
 .dot input {
-  -webkit-appearance: caret;
+  -webkit-appearance: none;
   background-color: transparent;
+  border: none;
   cursor: inherit;
   font: inherit;
   height: auto;
   margin-inline-start: 2px;
   margin-top: 2px;
-  padding: 1px 0;
+  padding: 2px 1px;
   transition: color 200ms;
   width: 90%;
 }

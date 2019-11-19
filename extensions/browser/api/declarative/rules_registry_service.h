@@ -17,6 +17,7 @@
 #include "extensions/browser/api/declarative/rules_cache_delegate.h"
 #include "extensions/browser/api/declarative/rules_registry.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 namespace content {
@@ -25,7 +26,6 @@ class BrowserContext;
 
 namespace extensions {
 class ContentRulesRegistry;
-class ExtensionRegistry;
 }
 
 namespace extensions {
@@ -165,7 +165,7 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
 
   // Listen to extension load, unloaded notification.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   content::BrowserContext* browser_context_;
 

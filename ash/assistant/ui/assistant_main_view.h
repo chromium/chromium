@@ -21,12 +21,12 @@ class AssistantViewDelegate;
 class CaptionBar;
 class DialogPlate;
 
-class COMPONENT_EXPORT(ASSISTANT_UI) AssistantMainView
+class COMPONENT_EXPORT(ASSISTANT_UI) AssistantMainViewDeprecated
     : public views::View,
       public AssistantUiModelObserver {
  public:
-  explicit AssistantMainView(AssistantViewDelegate* delegate);
-  ~AssistantMainView() override;
+  explicit AssistantMainViewDeprecated(AssistantViewDelegate* delegate);
+  ~AssistantMainViewDeprecated() override;
 
   // views::View:
   const char* GetClassName() const override;
@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantMainView
 
   int min_height_dip_;
 
-  DISALLOW_COPY_AND_ASSIGN(AssistantMainView);
+  DISALLOW_COPY_AND_ASSIGN(AssistantMainViewDeprecated);
 };
 
 }  // namespace ash

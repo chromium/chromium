@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/version.h"
@@ -45,29 +44,28 @@ base::Time GetUpdaterSettingsTime(NSString* value_name) {
 }
 
 base::Version GetVersionFromPlist(const base::FilePath& info_plist) {
-  base::mac::ScopedNSAutoreleasePool scoped_pool;
-  NSData* data =
-      [NSData dataWithContentsOfFile:
-          base::mac::FilePathToNSString(info_plist)];
-  if ([data length] == 0) {
-    return base::Version();
+  @autoreleasepool {
+    NSData* data = [NSData
+        dataWithContentsOfFile:base::mac::FilePathToNSString(info_plist)];
+    if ([data length] == 0) {
+      return base::Version();
+    }
+    NSDictionary* all_keys =
+        base::mac::ObjCCastStrict<NSDictionary>([NSPropertyListSerialization
+            propertyListWithData:data
+                         options:NSPropertyListImmutable
+                          format:nil
+                           error:nil]);
+    if (all_keys == nil) {
+      return base::Version();
+    }
+    CFStringRef version = base::mac::GetValueFromDictionary<CFStringRef>(
+        base::mac::NSToCFCast(all_keys), kCFBundleVersionKey);
+    if (version == NULL) {
+      return base::Version();
+    }
+    return base::Version(base::SysCFStringRefToUTF8(version));
   }
-  NSDictionary* all_keys = base::mac::ObjCCastStrict<NSDictionary>(
-      [NSPropertyListSerialization propertyListWithData:data
-          options:NSPropertyListImmutable
-           format:nil
-            error:nil]);
-  if (all_keys == nil) {
-    return base::Version();
-  }
-  CFStringRef version =
-      base::mac::GetValueFromDictionary<CFStringRef>(
-          base::mac::NSToCFCast(all_keys),
-          kCFBundleVersionKey);
-  if (version == NULL) {
-    return base::Version();
-  }
-  return base::Version(base::SysCFStringRefToUTF8(version));
 }
 
 }  // namespace

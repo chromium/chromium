@@ -26,7 +26,7 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(
     gpu::CommandBufferNamespace,
     gpu::CommandBufferNamespace::INVALID,
     gpu::CommandBufferNamespace::NUM_COMMAND_BUFFER_NAMESPACES - 1)
-IPC_ENUM_TRAITS_MAX_VALUE(gl::GpuPreference, gl::GpuPreferenceLast)
+IPC_ENUM_TRAITS_MAX_VALUE(gl::GpuPreference, gl::GpuPreference::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(gpu::ContextType, gpu::CONTEXT_TYPE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(gpu::ColorSpace, gpu::COLOR_SPACE_LAST)
 
@@ -139,6 +139,8 @@ IPC_STRUCT_TRAITS_BEGIN(gpu::Capabilities)
   IPC_STRUCT_TRAITS_MEMBER(dc_layers)
   IPC_STRUCT_TRAITS_MEMBER(use_dc_overlays_for_video)
   IPC_STRUCT_TRAITS_MEMBER(protected_video_swap_chain)
+  IPC_STRUCT_TRAITS_MEMBER(gpu_vsync)
+  IPC_STRUCT_TRAITS_MEMBER(shared_image_swap_chain)
   IPC_STRUCT_TRAITS_MEMBER(disable_non_empty_post_sub_buffers)
   IPC_STRUCT_TRAITS_MEMBER(avoid_stencil_buffers)
   IPC_STRUCT_TRAITS_MEMBER(disable_2d_canvas_copy_on_write)

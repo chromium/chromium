@@ -80,28 +80,6 @@ void CompoundEventFilter::RemoveHandler(ui::EventHandler* handler) {
   handlers_.RemoveObserver(handler);
 }
 
-void CompoundEventFilter::SetCursorForWindow(aura::Window* window,
-                                             const ui::Cursor& cursor) {
-  if (last_window_that_provided_cursor_.windows().empty())
-    return;
-
-  aura::Window* last_window = last_window_that_provided_cursor_.windows()[0];
-
-  // Determine if the window hierarchies match, i.e. if |window| is an ancestor
-  // or descendent of |last_window_that_provided_cursor_|.
-  if (!window->Contains(last_window) && !last_window->Contains(window))
-    return;
-
-  aura::Window* root_window = window->GetRootWindow();
-  if (!root_window)
-    return;
-
-  aura::client::CursorClient* cursor_client =
-      aura::client::GetCursorClient(root_window);
-  if (cursor_client)
-    cursor_client->SetCursor(cursor);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // CompoundEventFilter, private:
 
@@ -114,9 +92,6 @@ void CompoundEventFilter::UpdateCursor(aura::Window* target,
       aura::client::GetDragDropClient(root_window);
   if (drag_drop_client && drag_drop_client->IsDragDropInProgress())
     return;
-
-  last_window_that_provided_cursor_.RemoveAll();
-  last_window_that_provided_cursor_.Add(target);
 
   aura::client::CursorClient* cursor_client =
       aura::client::GetCursorClient(root_window);
@@ -240,7 +215,7 @@ void CompoundEventFilter::OnTouchEvent(ui::TouchEvent* event) {
       ShouldHideCursorOnTouch(*event)) {
     aura::Window* target = static_cast<aura::Window*>(event->target());
     DCHECK(target);
-    if (!target->env()->IsMouseButtonDown())
+    if (!aura::Env::GetInstance()->IsMouseButtonDown())
       SetMouseEventsEnableStateOnEvent(target, event, false);
   }
 }

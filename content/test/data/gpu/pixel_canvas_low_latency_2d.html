@@ -8,7 +8,7 @@ that the baseline images are regenerated on the next run.
 
 <html>
 <head>
-<title>Low Latency Canvas 2D Test: Green box, over large red box, over black</title>
+<title>Low Latency Canvas 2D Test: Green and blue box, over large red box, over black</title>
 <style type="text/css">
 .nomargin {
   margin: 0px auto;
@@ -22,7 +22,7 @@ let g_c2d;
 function main()
 {
   g_canvas = document.getElementById("c");
-  g_c2d = g_canvas.getContext("2d", {lowLatency: true});
+  g_c2d = g_canvas.getContext("2d", {desynchronized: true});
   draw();
 }
 
@@ -38,7 +38,10 @@ function draw2()
 {
   // Verify that incremental painting works.
   g_c2d.fillStyle = "green";
-  g_c2d.fillRect(20, 20, 60, 60);
+  g_c2d.fillRect(20, 20, 30, 30);
+  // Verify that output doesn't get flipped vertically.
+  g_c2d.fillStyle = "blue";
+  g_c2d.fillRect(50, 50, 30, 30);
   waitForFinish();
 }
 
@@ -53,7 +56,7 @@ function waitForFinish()
 }
 </script>
 </head>
-<body onload="main()">
+<body onload="main()" class="nomargin">
 <canvas id="c" width="100" height="100" class="nomargin" style="background-color:black"></canvas>
 </body>
 </html>

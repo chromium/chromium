@@ -80,6 +80,8 @@ class PermissionRequestManager
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  bool ShouldShowQuietPermissionPrompt();
+
   // Do NOT use this methods in production code. Use this methods in browser
   // tests that need to accept or deny permissions when requested in
   // JavaScript. Your test needs to set this appropriately, and then the bubble
@@ -87,6 +89,23 @@ class PermissionRequestManager
   void set_auto_response_for_test(AutoResponseType response) {
     auto_response_for_test_ = response;
   }
+
+  // WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DocumentOnLoadCompletedInMainFrame() override;
+  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
+  void WebContentsDestroyed() override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
+  // PermissionPrompt::Delegate:
+  const std::vector<PermissionRequest*>& Requests() override;
+  PermissionPrompt::DisplayNameOrOrigin GetDisplayNameOrOrigin() override;
+  void Accept() override;
+  void Deny() override;
+  void Closing() override;
 
  private:
   friend class test::PermissionRequestManagerTestApi;
@@ -102,22 +121,6 @@ class PermissionRequestManager
   FRIEND_TEST_ALL_PREFIXES(DownloadTest, TestMultipleDownloadsBubble);
 
   explicit PermissionRequestManager(content::WebContents* web_contents);
-
-  // WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-  void DocumentOnLoadCompletedInMainFrame() override;
-  void DocumentLoadedInFrame(
-      content::RenderFrameHost* render_frame_host) override;
-  void WebContentsDestroyed() override;
-  void OnVisibilityChanged(content::Visibility visibility) override;
-
-  // PermissionPrompt::Delegate:
-  const std::vector<PermissionRequest*>& Requests() override;
-  PermissionPrompt::DisplayNameOrOrigin GetDisplayNameOrOrigin() override;
-  void Accept() override;
-  void Deny() override;
-  void Closing() override;
 
   // Posts a task which will allow the bubble to become visible if it is needed.
   void ScheduleShowBubble();
@@ -169,8 +172,7 @@ class PermissionRequestManager
   // the object alive. The infobar system hides the actual infobar UI and modals
   // prevent tab switching.
   std::unique_ptr<PermissionPrompt> view_;
-  // We only show new prompts when both of these are true.
-  bool main_frame_has_fully_loaded_;
+  // We only show new prompts when |tab_is_hidden_| is false.
   bool tab_is_hidden_;
 
   std::vector<PermissionRequest*> requests_;
@@ -183,7 +185,11 @@ class PermissionRequestManager
   base::ObserverList<Observer>::Unchecked observer_list_;
   AutoResponseType auto_response_for_test_;
 
-  base::WeakPtrFactory<PermissionRequestManager> weak_factory_;
+  // Suppress notification permission prompts in this tab, regardless of the
+  // origin requesting the permission.
+  bool is_notification_prompt_cooldown_active_ = false;
+
+  base::WeakPtrFactory<PermissionRequestManager> weak_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

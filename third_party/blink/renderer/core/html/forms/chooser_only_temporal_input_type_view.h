@@ -35,15 +35,13 @@
 namespace blink {
 
 class ChooserOnlyTemporalInputTypeView final
-    : public GarbageCollectedFinalized<ChooserOnlyTemporalInputTypeView>,
+    : public GarbageCollected<ChooserOnlyTemporalInputTypeView>,
       public KeyboardClickableInputTypeView,
       public DateTimeChooserClient {
   USING_GARBAGE_COLLECTED_MIXIN(ChooserOnlyTemporalInputTypeView);
   USING_PRE_FINALIZER(ChooserOnlyTemporalInputTypeView, CloseDateTimeChooser);
 
  public:
-  static ChooserOnlyTemporalInputTypeView* Create(HTMLInputElement&,
-                                                  BaseTemporalInputType&);
   ChooserOnlyTemporalInputTypeView(HTMLInputElement&, BaseTemporalInputType&);
   ~ChooserOnlyTemporalInputTypeView() override;
   void Trace(Visitor*) override;
@@ -52,6 +50,7 @@ class ChooserOnlyTemporalInputTypeView final
   void CloseDateTimeChooser();
 
   // InputTypeView functions:
+  void Blur() final;
   void CreateShadowSubtree() override;
   void ClosePopupView() override;
   void ValueAttributeChanged() override;

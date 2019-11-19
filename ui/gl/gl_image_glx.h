@@ -24,6 +24,7 @@ class GL_EXPORT GLImageGLX : public GLImage {
   // Overridden from GLImage:
   gfx::Size GetSize() override;
   unsigned GetInternalFormat() override;
+  unsigned GetDataType() override;
   BindOrCopy ShouldBindOrCopy() override;
   bool BindTexImage(unsigned target) override;
   void ReleaseTexImage(unsigned target) override;

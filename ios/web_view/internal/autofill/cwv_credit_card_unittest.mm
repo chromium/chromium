@@ -11,7 +11,7 @@
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -59,7 +59,7 @@ TEST_F(CWVCreditCardTest, Initialization) {
   autofill::CreditCard credit_card = autofill::test::GetCreditCard();
   CWVCreditCard* cwv_credit_card =
       [[CWVCreditCard alloc] initWithCreditCard:credit_card];
-  EXPECT_EQ(credit_card, *cwv_credit_card.internalCard);
+  EXPECT_EQ(credit_card, *[cwv_credit_card internalCard]);
 
   // It is not sufficient to simply test for networkIcon != nil because
   // ui::ResourceBundle will return a placeholder image at @1x scale if the

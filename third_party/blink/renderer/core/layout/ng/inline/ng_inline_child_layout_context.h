@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_CHILD_LAYOUT_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_CHILD_LAYOUT_CONTEXT_H_
 
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_box_state.h"
 
 namespace blink {
@@ -21,6 +22,11 @@ class NGInlineChildLayoutContext {
   STACK_ALLOCATED();
 
  public:
+  NGFragmentItemsBuilder* ItemsBuilder() { return items_builder_; }
+  void SetItemsBuilder(NGFragmentItemsBuilder* builder) {
+    items_builder_ = builder;
+  }
+
   // Returns the NGInlineLayoutStateStack in this context.
   bool HasBoxStates() const { return box_states_.has_value(); }
   NGInlineLayoutStateStack* BoxStates() { return &*box_states_; }
@@ -34,9 +40,16 @@ class NGInlineChildLayoutContext {
   NGInlineLayoutStateStack* BoxStatesIfValidForItemIndex(
       const Vector<NGInlineItem>& items,
       unsigned item_index);
-  void SetItemIndex(const Vector<NGInlineItem>& items, unsigned item_index);
+  void SetItemIndex(const Vector<NGInlineItem>& items, unsigned item_index) {
+    items_ = &items;
+    item_index_ = item_index;
+  }
 
  private:
+  // TODO(kojii): Probably better to own |NGInlineChildLayoutContext|. While we
+  // transit, allocating separately is easier.
+  NGFragmentItemsBuilder* items_builder_ = nullptr;
+
   base::Optional<NGInlineLayoutStateStack> box_states_;
 
   // The items and its index this context is set up for.

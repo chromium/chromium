@@ -5,8 +5,8 @@
 #include "chrome/browser/android/webapps/webapp_registry.h"
 
 #include "base/android/jni_android.h"
+#include "chrome/android/chrome_jni_headers/WebappRegistry_jni.h"
 #include "chrome/browser/android/browsing_data/url_filter_bridge.h"
-#include "jni/WebappRegistry_jni.h"
 
 using base::android::JavaParamRef;
 

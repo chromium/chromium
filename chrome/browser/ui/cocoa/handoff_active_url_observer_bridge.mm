@@ -10,7 +10,7 @@ HandoffActiveURLObserverBridge::HandoffActiveURLObserverBridge(
     NSObject<HandoffActiveURLObserverBridgeDelegate>* delegate)
     : delegate_(delegate) {
   DCHECK(delegate_);
-  observer_.reset(new HandoffActiveURLObserver(this));
+  observer_ = std::make_unique<HandoffActiveURLObserver>(this);
 }
 
 HandoffActiveURLObserverBridge::~HandoffActiveURLObserverBridge() {}

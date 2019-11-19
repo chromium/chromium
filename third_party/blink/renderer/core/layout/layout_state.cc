@@ -87,9 +87,9 @@ LayoutState::LayoutState(LayoutBox& layout_object,
   if (LayoutObject* container = layout_object.Container()) {
     if (container->StyleRef().HasInFlowPosition() &&
         container->IsLayoutInline()) {
-      pagination_offset_ +=
-          ToLayoutInline(container)->OffsetForInFlowPositionedInline(
-              layout_object);
+      pagination_offset_ += ToLayoutInline(container)
+                                ->OffsetForInFlowPositionedInline(layout_object)
+                                .ToLayoutSize();
     }
   }
 
@@ -114,14 +114,6 @@ LayoutState::~LayoutState() {
     DCHECK_EQ(layout_object_.View()->GetLayoutState(), this);
     layout_object_.View()->PopLayoutState();
   }
-}
-
-LayoutUnit LayoutState::PageLogicalOffset(
-    const LayoutBox& child,
-    const LayoutUnit& child_logical_offset) const {
-  if (child.IsHorizontalWritingMode())
-    return pagination_offset_.Height() + child_logical_offset;
-  return pagination_offset_.Width() + child_logical_offset;
 }
 
 }  // namespace blink

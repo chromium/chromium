@@ -1,30 +1,4 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://downloads/browser_proxy.html">
-<link rel="import" href="chrome://downloads/constants.html">
-<link rel="import" href="chrome://downloads/i18n_setup.html">
-<link rel="import" href="chrome://downloads/icon_loader.html">
-<link rel="import" href="chrome://downloads/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
-<link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/html/action_link_css.html">
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_row.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_row_behavior.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-
-<dom-module id="downloads-item">
-  <template>
-    <style include="action-link cr-hidden-style cr-icons paper-button-style">
+    <style include="action-link cr-hidden-style cr-icons">
       :host {
         --controlled-by-active-color: #333;
         --controlled-by-active-link-color: var(--google-blue-600);
@@ -34,13 +8,15 @@
         outline: none;
       }
 
-      :host-context([dark]) {
-        --controlled-by-active-color: inherit;
-        --controlled-by-active-link-color: var(--cr-link-color);
-        --controlled-by-inactive-color: inherit;
+      @media (prefers-color-scheme: dark) {
+        :host {
+          --controlled-by-active-color: inherit;
+          --controlled-by-active-link-color: var(--cr-link-color);
+          --controlled-by-inactive-color: inherit;
+        }
       }
 
-      paper-button {
+      cr-button {
         font-weight: 500;
         margin: 0;
         min-width: auto;
@@ -74,8 +50,10 @@
         @apply --cr-card-elevation;
       }
 
-      :host-context(html:not([dark])) #content.is-active {
-        background-color: var(--cr-card-background-color);
+      @media (prefers-color-scheme: light) {
+        #content.is-active {
+          background-color: var(--cr-card-background-color);
+        }
       }
 
       #content:not(.is-active) {
@@ -83,9 +61,11 @@
         border: 1px var(--google-grey-300) solid;
       }
 
-      :host-context([dark]) #content:not(.is-active) {
-        background: none;  /* override */
-        border-color: var(--google-grey-800);
+      @media (prefers-color-scheme: dark) {
+        #content:not(.is-active) {
+          background: none;  /* override */
+          border-color: var(--google-grey-800);
+        }
       }
 
       #details {
@@ -100,24 +80,30 @@
         padding-top: 16px;
       }
 
-      :host-context([dark]) #details {
-        border-color: rgba(var(--google-grey-800-rgb), .8);
+      @media (prefers-color-scheme: dark) {
+        #details {
+          border-color: rgba(var(--google-grey-800-rgb), .8);
+        }
       }
 
       #content:not(.is-active) #details {
         color: rgba(27, 27, 27, .6);
       }
 
-      :host-context([dark]) #content:not(.is-active) #details {
-        color: rgba(var(--google-grey-refresh-500-rgb), .6);
+      @media (prefers-color-scheme: dark) {
+        #content:not(.is-active) #details {
+          color: rgba(var(--google-grey-refresh-500-rgb), .6);
+        }
       }
 
       #content:not(.is-active) #name {
         text-decoration: line-through;
       }
 
-      :host-context([dark]) #content:not(.is-active) :-webkit-any(#name, #tag) {
-        color: var(--google-grey-refresh-500);
+      @media (prefers-color-scheme: dark) {
+        #content:not(.is-active) :-webkit-any(#name, #tag) {
+          color: var(--google-grey-refresh-500);
+        }
       }
 
       .icon-wrapper {
@@ -158,9 +144,16 @@
         color: var(--google-red-700);
       }
 
-      :host-context([dark]) #file-icon-wrapper iron-icon[icon='cr:warning'],
-      :host-context([dark]) .dangerous #description {
-        color: var(--google-red-refresh-300);
+      #file-icon-wrapper iron-icon[icon='cr:error'],
+      .dangerous #description {
+        color: var(--google-yellow-500);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #file-icon-wrapper iron-icon[icon='cr:warning'],
+        .dangerous #description {
+          color: var(--google-red-refresh-300);
+        }
       }
 
       #name,
@@ -175,9 +168,10 @@
         word-break: break-all;
       }
 
-      :host-context(html:not([dark])) .is-active
-          :-webkit-any(#name, #file-link, #show) {
-        color: var(--google-blue-600);
+      @media (prefers-color-scheme: light) {
+        .is-active :-webkit-any(#name, #file-link, #show) {
+          color: var(--google-blue-600);
+        }
       }
 
       #name {
@@ -209,8 +203,10 @@
         margin-top: 16px;
       }
 
-      :host-context(html:not([dark])) .is-active #description {
-        color: #616161;
+      @media (prefers-color-scheme: light) {
+        .is-active #description {
+          color: #616161;
+        }
       }
 
       #progress {
@@ -220,9 +216,11 @@
         width: auto;
       }
 
-      :host-context([dark]) #progress {
-        --paper-progress-active-color: var(--google-blue-refresh-300);
-        --paper-progress-container-color: var(--google-grey-800);
+      @media (prefers-color-scheme: dark) {
+        #progress {
+          --paper-progress-active-color: var(--google-blue-refresh-300);
+          --paper-progress-container-color: var(--google-grey-800);
+        }
       }
 
       #show {
@@ -243,27 +241,15 @@
         color: var(--controlled-by-active-link-color);
       }
 
-      #remove-wrapper {
-        align-self: flex-start;
-        margin: 0;
-      }
 
-      #remove-wrapper > paper-icon-button-light {
-        --cr-icon-size: 16px;
-        color: var(--google-grey-refresh-700);
-        height: 32px;
-        margin-inline-end: 8px;
-        margin-inline-start: 0;
+      cr-icon-button {
+        --cr-icon-button-icon-size: 16px;
+        --cr-icon-button-margin-end: 8px;
         margin-top: 8px;
-        width: 32px;
-      }
-
-      :host-context([dark]) #remove-wrapper > paper-icon-button-light {
-        color: var(--google-grey-refresh-500);
       }
 
       #incognito {
-        -webkit-mask-image: url(chrome://downloads/images/incognito_marker.svg);
+        -webkit-mask-image: url(images/incognito_marker.svg);
         background-color: var(--cr-secondary-text-color);
         bottom: 20px;
         height: 16px;
@@ -283,9 +269,9 @@
       }
     </style>
 
-    <h3 id="date">[[computeDate_(data.hideDate,
-                                 data.sinceString,
-                                 data.dateString)]]</h3>
+    <div id="date" role="heading" aria-level="2">[[computeDate_(data.hideDate,
+        data.sinceString,
+        data.dateString)]]</div>
 
     <div id="content" on-dragstart="onDragStart_"
         class$="[[computeClass_(isActive_, isDangerous_, showProgress_)]]"
@@ -312,7 +298,7 @@
                                        data.fileExternallyRemoved)]]</span>
         </div>
 
-        <a id="url" target="_blank" focus-row-control
+        <a id="url" target="_blank" on-click="onUrlTap_" focus-row-control
             focus-type="url">[[chopUrl_(data.url)]]</a>
 
         <div id="description">[[computeDescription_(
@@ -332,22 +318,22 @@
               hidden="[[!completelyOnDisk_]]" focus-row-control
               focus-type="show">$i18n{controlShowInFolder}</a>
           <template is="dom-if" if="[[data.retry]]">
-            <paper-button class="action-button" on-click="onRetryTap_"
+            <cr-button class="action-button" on-click="onRetryTap_"
                 focus-row-control focus-type="retry">
               $i18n{controlRetry}
-            </paper-button>
+            </cr-button>
           </template>
           <template is="dom-if" if="[[pauseOrResumeText_]]">
-            <paper-button on-click="onPauseOrResumeTap_" id="pauseOrResume"
+            <cr-button on-click="onPauseOrResumeTap_" id="pauseOrResume"
                 focus-row-control focus-type="pauseOrResume">
               [[pauseOrResumeText_]]
-            </paper-button>
+            </cr-button>
           </template>
           <template is="dom-if" if="[[showCancel_]]">
-            <paper-button on-click="onCancelTap_" focus-row-control
+            <cr-button on-click="onCancelTap_" focus-row-control
                 focus-type="cancel">
               $i18n{controlCancel}
-            </paper-button>
+            </cr-button>
           </template>
           <span id="controlled-by"><!-- Text populated dynamically. --></span>
         </div>
@@ -356,42 +342,33 @@
           <div id="dangerous" class="controls">
             <!-- Dangerous file types (e.g. .exe, .jar). -->
             <template is="dom-if" if="[[!isMalware_]]">
-              <paper-button on-click="onDiscardDangerousTap_"
+              <cr-button on-click="onDiscardDangerousTap_"
                   class="action-button" focus-row-control
-                  focus-type="discard">$i18n{dangerDiscard}</paper-button>
-              <paper-button on-click="onSaveDangerousTap_" focus-row-control
+                  focus-type="discard">$i18n{dangerDiscard}</cr-button>
+              <cr-button on-click="onSaveDangerousTap_" focus-row-control
                   focus-type="save">
-                $i18n{dangerSave}</paper-button>
+                $i18n{dangerSave}</cr-button>
             </template>
 
             <!-- Things that safe browsing has determined to be dangerous. -->
             <template is="dom-if" if="[[isMalware_]]">
-              <paper-button on-click="onDiscardDangerousTap_"
+              <cr-button on-click="onDiscardDangerousTap_"
                   class="action-button" focus-row-control focus-type="discard">
-                $i18n{controlRemoveFromList}</paper-button>
-              <paper-button on-click="onSaveDangerousTap_" focus-row-control
+                $i18n{controlRemoveFromList}</cr-button>
+              <cr-button on-click="onSaveDangerousTap_" focus-row-control
                   focus-type="save">
-                $i18n{dangerRestore}</paper-button>
+                $i18n{dangerRestore}</cr-button>
             </template>
           </div>
         </template>
       </div>
-
-      <div id="remove-wrapper" class="icon-wrapper ">
-        <paper-icon-button-light class="icon-clear"
-            style$="[[computeRemoveStyle_(isDangerous_, showCancel_)]]">
-          <button id="remove"
-              title="$i18n{controlRemoveFromList}"
-              aria-label$="[[controlRemoveFromListAriaLabel_]]"
-              on-click="onRemoveTap_" focus-row-control focus-type="remove">
-          </button>
-        </paper-icon-button-light>
-      </div>
-
+      <cr-icon-button class="icon-clear"
+          style$="[[computeRemoveStyle_(isDangerous_, showCancel_)]]"
+          id="remove" title="$i18n{controlRemoveFromList}"
+          aria-label$="[[controlRemoveFromListAriaLabel_]]"
+          on-click="onRemoveTap_" focus-row-control focus-type="remove">
+      </cr-icon-button>
       <div id="incognito" title="$i18n{inIncognito}" hidden="[[!data.otr]]">
       </div>
     </div>
 
-  </template>
-  <script src="chrome://downloads/item.js"></script>
-</dom-module>

@@ -9,33 +9,19 @@
 
 namespace blink {
 
-StyleInitialData::StyleInitialData(const PropertyRegistry& registry)
-    : variables_(MakeGarbageCollected<
-                 HeapHashMap<AtomicString, Member<const CSSValue>>>()) {
+StyleInitialData::StyleInitialData(const PropertyRegistry& registry) {
   for (const auto& entry : registry) {
-    const CSSValue* initial = entry.value->Initial();
-    if (!initial)
+    CSSVariableData* data = entry.value->InitialVariableData();
+    if (!data)
       continue;
-    variables_->Set(entry.key, initial);
+    variables_.SetData(entry.key, data);
+    if (const CSSValue* initial = entry.value->Initial())
+      variables_.SetValue(entry.key, initial);
   }
 }
 
-StyleInitialData::StyleInitialData(StyleInitialData& other)
-    : variables_(MakeGarbageCollected<
-                 HeapHashMap<AtomicString, Member<const CSSValue>>>(
-          *other.variables_)) {}
-
 bool StyleInitialData::operator==(const StyleInitialData& other) const {
-  if (variables_->size() != other.variables_->size())
-    return false;
-
-  for (const auto& iter : *variables_) {
-    const CSSValue* other_value = other.variables_->at(iter.key);
-    if (iter.value != other_value)
-      return false;
-  }
-
-  return true;
+  return variables_ == other.variables_;
 }
 
 }  // namespace blink

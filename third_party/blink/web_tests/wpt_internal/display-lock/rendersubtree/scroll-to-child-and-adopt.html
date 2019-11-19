@@ -1,0 +1,35 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: scroll child into view, and adopt to a document</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="pass-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="resources/utils.js"></script>
+
+<div id=log></div>
+<div id=container>
+    <div id=child></div>
+</div>
+
+<script>
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  takeScreenshot();
+}
+
+function moveChild() {
+  child.scrollIntoView();
+  document.implementation.createDocument( "", null).adoptNode(child);
+  finishTest("PASS");
+}
+
+async function runTest() {
+  await setInvisible(container);
+  requestAnimationFrame(moveChild);
+}
+
+window.onload = requestAnimationFrame(runTest);
+</script>

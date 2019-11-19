@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #import "base/ios/block_types.h"
-#include "base/message_loop/message_loop.h"
+#include "base/task/task_observer.h"
 #include "ios/web/public/test/web_test.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -20,14 +20,17 @@ class WebClient;
 class WebState;
 
 // Base test fixture that provides WebState for testing.
-class WebTestWithWebState : public WebTest,
-                            public base::MessageLoop::TaskObserver {
+class WebTestWithWebState : public WebTest, public base::TaskObserver {
+ public:
+  // Destroys underlying WebState. web_state() will return null after this call.
+  void DestroyWebState();
+
  protected:
   explicit WebTestWithWebState(
-      TestWebThreadBundle::Options = TestWebThreadBundle::Options::DEFAULT);
+      WebTaskEnvironment::Options = WebTaskEnvironment::Options::DEFAULT);
   WebTestWithWebState(
       std::unique_ptr<web::WebClient> web_client,
-      TestWebThreadBundle::Options = TestWebThreadBundle::Options::DEFAULT);
+      WebTaskEnvironment::Options = WebTaskEnvironment::Options::DEFAULT);
   ~WebTestWithWebState() override;
 
   // WebTest overrides.
@@ -60,8 +63,6 @@ class WebTestWithWebState : public WebTest,
   void WaitForCondition(ConditionBlock condition);
   // Synchronously executes JavaScript and returns result as id.
   id ExecuteJavaScript(NSString* script);
-  // Destroys underlying WebState. web_state() will return null after this call.
-  void DestroyWebState();
 
   // Returns the base URL of the loaded page.
   std::string BaseUrl() const;
@@ -71,7 +72,7 @@ class WebTestWithWebState : public WebTest,
   const web::WebState* web_state() const;
 
  private:
-  // base::MessageLoop::TaskObserver overrides.
+  // base::TaskObserver overrides.
   void WillProcessTask(const base::PendingTask& pending_task) override;
   void DidProcessTask(const base::PendingTask& pending_task) override;
 

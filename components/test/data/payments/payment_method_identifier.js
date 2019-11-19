@@ -4,33 +4,45 @@
  * found in the LICENSE file.
  */
 
-const basicCardMethod = {supportedMethods: 'basic-card'};
+const basicCardMethod = { // eslint-disable-line no-unused-vars
+  supportedMethods: 'basic-card',
+};
 
-const basicVisaMethod = {
+const basicMastercardVisaMethod = { // eslint-disable-line no-unused-vars
+  supportedMethods: 'basic-card',
+  data: {
+    supportedNetworks: ['mastercard', 'visa'],
+  },
+};
+
+const basicVisaMethod = { // eslint-disable-line no-unused-vars
   supportedMethods: 'basic-card',
   data: {
     supportedNetworks: ['visa'],
   },
 };
 
-const basicMastercardMethod = {
+const basicMastercardMethod = { // eslint-disable-line no-unused-vars
   supportedMethods: 'basic-card',
   data: {
     supportedNetworks: ['mastercard'],
   },
 };
 
-const basicDebitMethod = {
+const basicDebitMethod = { // eslint-disable-line no-unused-vars
   supportedMethods: 'basic-card',
   data: {
     supportedTypes: ['debit'],
   },
 };
 
-const visaMethod = {supportedMethods: 'visa'};
-const mastercardMethod = {supportedMethods: 'mastercard'};
-const alicePayMethod = {supportedMethods: 'https://alicepay.com/webpay'};
-const bobPayMethod = {supportedMethods: 'https://bobpay.com/webpay'};
+const alicePayMethod = { // eslint-disable-line no-unused-vars
+  supportedMethods: 'https://alicepay.com/webpay',
+};
+
+const bobPayMethod = { // eslint-disable-line no-unused-vars
+  supportedMethods: 'https://bobpay.com/webpay',
+};
 
 const defaultDetails = {
   total: {
@@ -61,7 +73,7 @@ function run(testFunction) {
  * @param {sequence<PaymentMethodData>} methodData The supported methods.
  * @private
  */
-function checkCanMakePayment(methodData) {
+function checkCanMakePayment(methodData) { // eslint-disable-line no-unused-vars
   run(() => {
     const request = new PaymentRequest(methodData, defaultDetails);
     return request.canMakePayment();
@@ -72,86 +84,11 @@ function checkCanMakePayment(methodData) {
  * Calls PaymentRequest.hasEnrolledInstrument() and prints out the result.
  * @param {sequence<PaymentMethodData>} methodData The supported methods.
  */
-function checkHasEnrolledInstrument(methodData) {  // eslint-disable-line no-unused-vars, max-len
+function checkHasEnrolledInstrument(methodData) { // eslint-disable-line no-unused-vars, max-len
   run(() => {
     const request = new PaymentRequest(methodData, defaultDetails);
     return request.hasEnrolledInstrument();
   });
-}
-
-/**
- * Merchant checks for ability to pay using "basic-card" regardless of issuer
- * network.
- */
-function checkBasicCard() {  // eslint-disable-line no-unused-vars
-  checkCanMakePayment([basicCardMethod]);
-}
-
-/**
- * Merchant checks for ability to pay using debit cards.
- */
-function checkBasicDebit() {  // eslint-disable-line no-unused-vars
-  checkCanMakePayment([basicDebitMethod]);
-}
-
-/**
- * Merchant checks for ability to pay using "basic-card" with "mastercard" as
- * the supported network.
- */
-function checkBasicMasterCard() {  // eslint-disable-line no-unused-vars
-  checkCanMakePayment([basicMastercardMethod]);
-}
-
-/**
- * Merchant checks for ability to pay using "basic-card" with "visa" as the
- * supported network.
- */
-function checkBasicVisa() {  // eslint-disable-line no-unused-vars
-  checkCanMakePayment([basicVisaMethod]);
-}
-
-/**
- * Merchant checks for ability to pay using "mastercard".
- */
-function checkMasterCard() {  // eslint-disable-line no-unused-vars
-  checkCanMakePayment([mastercardMethod]);
-}
-
-/**
- * Merchant checks for ability to pay using "visa".
- */
-function checkVisa() {  // eslint-disable-line no-unused-vars
-  checkCanMakePayment([visaMethod]);
-}
-
-/**
- * Merchant checks for ability to pay using "https://alicepay.com/webpay".
- */
-function checkAlicePay() {  // eslint-disable-line no-unused-vars
-  checkCanMakePayment([alicePayMethod]);
-}
-
-/**
- * Merchant checks for ability to pay using "https://bobpay.com/webpay".
- */
-function checkBobPay() {  // eslint-disable-line no-unused-vars
-  checkCanMakePayment([bobPayMethod]);
-}
-
-/**
- * Merchant checks for ability to pay using "https://bobpay.com/webpay" or
- * "basic-card".
- */
-function checkBobPayAndBasicCard() {  // eslint-disable-line no-unused-vars
-  checkCanMakePayment([bobPayMethod, basicCardMethod]);
-}
-
-/**
- * Merchant checks for ability to pay using "https://bobpay.com/webpay" or
- * "visa".
- */
-function checkBobPayAndVisa() {  // eslint-disable-line no-unused-vars
-  checkCanMakePayment([bobPayMethod, visaMethod]);
 }
 
 /**
@@ -184,29 +121,6 @@ function buyHelper(methodData) {
  * Merchant requests payment via either "mastercard" or "basic-card" with "visa"
  * as the supported network.
  */
-function buy() {  // eslint-disable-line no-unused-vars
-  buyHelper([mastercardMethod, basicVisaMethod]);
-}
-
-/**
- * Merchant requests payment via "basic-card" with any issuer network.
- */
-function buyBasicCard() {  // eslint-disable-line no-unused-vars
-  buyHelper([basicCardMethod]);
-}
-
-/**
- * Merchant requests payment via "basic-card" with "debit" as the supported card
- * type.
- */
-function buyBasicDebit() {  // eslint-disable-line no-unused-vars
-  buyHelper([basicDebitMethod]);
-}
-
-/**
- * Merchant requests payment via "basic-card" payment method with "mastercard"
- * as the only supported network.
- */
-function buyBasicMasterCard() {  // eslint-disable-line no-unused-vars
-  buyHelper([basicMastercardMethod]);
+function buy() { // eslint-disable-line no-unused-vars
+  buyHelper([basicMastercardVisaMethod]);
 }

@@ -105,7 +105,7 @@ bool IsCacheableBySharedCache(const SignedExchangeEnvelope::HeaderMap& headers,
       net::HttpUtil::NameValuePairsIterator::Values::NOT_REQUIRED,
       net::HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
   while (it.GetNext()) {
-    auto name = it.name();
+    base::StringPiece name = it.name_piece();
     if (name == "no-store" || name == "private") {
       signed_exchange_utils::ReportErrorAndTraceEvent(
           devtools_proxy,
@@ -361,11 +361,20 @@ SignedExchangeEnvelope::BuildHttpResponseHeaders() const {
   }
   header_str.append("\r\n");
   return base::MakeRefCounted<net::HttpResponseHeaders>(
-      net::HttpUtil::AssembleRawHeaders(header_str.c_str(), header_str.size()));
+      net::HttpUtil::AssembleRawHeaders(header_str));
 }
 
 void SignedExchangeEnvelope::set_cbor_header(base::span<const uint8_t> data) {
   cbor_header_ = std::vector<uint8_t>(data.begin(), data.end());
+}
+
+net::SHA256HashValue SignedExchangeEnvelope::ComputeHeaderIntegrity() const {
+  net::SHA256HashValue hash;
+  crypto::SHA256HashString(
+      base::StringPiece(reinterpret_cast<const char*>(cbor_header().data()),
+                        cbor_header().size()),
+      &hash, sizeof(net::SHA256HashValue));
+  return hash;
 }
 
 }  // namespace content

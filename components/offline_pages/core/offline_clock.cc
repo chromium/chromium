@@ -11,16 +11,16 @@
 namespace offline_pages {
 
 namespace {
-base::Clock* custom_clock_ = nullptr;
+const base::Clock* custom_clock_ = nullptr;
 }
 
-base::Clock* OfflineClock() {
+const base::Clock* OfflineClock() {
   if (custom_clock_)
     return custom_clock_;
   return base::DefaultClock::GetInstance();
 }
 
-void SetOfflineClockForTesting(base::Clock* clock) {
+void SetOfflineClockForTesting(const base::Clock* clock) {
   DCHECK(clock == nullptr || custom_clock_ == nullptr)
       << "Offline clock is being overridden a second time, which might "
          "indicate a bug.";

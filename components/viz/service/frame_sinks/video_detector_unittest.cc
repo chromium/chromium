@@ -20,8 +20,10 @@
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
 #include "components/viz/test/surface_id_allocator_set.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/viz/public/interfaces/compositing/video_detector_observer.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -33,25 +35,25 @@ namespace {
 // Implementation that just records video state changes.
 class TestObserver : public mojom::VideoDetectorObserver {
  public:
-  TestObserver() : binding_(this) {}
+  TestObserver() = default;
 
-  void Bind(mojom::VideoDetectorObserverRequest request) {
-    binding_.Bind(std::move(request));
+  void Bind(mojo::PendingReceiver<mojom::VideoDetectorObserver> receiver) {
+    receiver_.Bind(std::move(receiver));
   }
 
   bool IsEmpty() {
-    binding_.FlushForTesting();
+    receiver_.FlushForTesting();
     return states_.empty();
   }
 
   void Reset() {
-    binding_.FlushForTesting();
+    receiver_.FlushForTesting();
     states_.clear();
   }
 
   // Pops and returns the earliest-received state.
   bool PopState() {
-    binding_.FlushForTesting();
+    receiver_.FlushForTesting();
     CHECK(!states_.empty());
     uint8_t first_state = states_.front();
     states_.pop_front();
@@ -66,7 +68,7 @@ class TestObserver : public mojom::VideoDetectorObserver {
   // States in the order they were received.
   base::circular_deque<bool> states_;
 
-  mojo::Binding<mojom::VideoDetectorObserver> binding_;
+  mojo::Receiver<mojom::VideoDetectorObserver> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
@@ -79,6 +81,7 @@ class VideoDetectorTest : public testing::Test {
       : frame_sink_manager_(&shared_bitmap_manager_),
         surface_aggregator_(frame_sink_manager_.surface_manager(),
                             nullptr,
+                            false,
                             false) {}
 
   ~VideoDetectorTest() override {}
@@ -91,8 +94,8 @@ class VideoDetectorTest : public testing::Test {
     detector_ = frame_sink_manager_.CreateVideoDetectorForTesting(
         mock_task_runner_->GetMockTickClock(), mock_task_runner_);
 
-    mojom::VideoDetectorObserverPtr video_detector_observer;
-    observer_.Bind(mojo::MakeRequest(&video_detector_observer));
+    mojo::PendingRemote<mojom::VideoDetectorObserver> video_detector_observer;
+    observer_.Bind(video_detector_observer.InitWithNewPipeAndPassReceiver());
     detector_->AddObserver(std::move(video_detector_observer));
 
     root_frame_sink_ = CreateFrameSink();
@@ -121,7 +124,8 @@ class VideoDetectorTest : public testing::Test {
 
   void CreateDisplayFrame() {
     surface_aggregator_.Aggregate(root_frame_sink_->last_activated_surface_id(),
-                                  mock_task_runner_->NowTicks());
+                                  mock_task_runner_->NowTicks(),
+                                  gfx::OVERLAY_TRANSFORM_NONE);
   }
 
   void EmbedClient(CompositorFrameSinkSupport* frame_sink) {

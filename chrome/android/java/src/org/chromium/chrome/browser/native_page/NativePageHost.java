@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.native_page;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.gesturenav.HistoryNavigationDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -48,4 +49,10 @@ public interface NativePageHost {
 
     /** @return whether the hosted native page is currently visible. */
     boolean isVisible();
+
+    /**
+     * Creates a delegate object needed for history navigation logic.
+     * @return {@link HistoryNavigationDelegate} implementation.
+     */
+    HistoryNavigationDelegate createHistoryNavigationDelegate();
 }

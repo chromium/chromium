@@ -140,10 +140,14 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
   ~ImmersiveFullscreenControllerTest() override = default;
 
   ImmersiveFullscreenController* controller() {
-    return ImmersiveFullscreenController::GetForTest(widget());
+    return ImmersiveFullscreenController::Get(widget());
   }
 
   views::NativeViewHost* content_view() { return content_view_; }
+
+  SplitViewController* split_view_controller() {
+    return SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  }
 
   views::View* top_container() {
     return NonClientFrameViewAsh::Get(window())->GetHeaderView();
@@ -176,7 +180,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
     views::Widget::InitParams params;
     params.delegate = new TestWidgetDelegate();
     params.context = CurrentContext();
-    widget_->Init(params);
+    widget_->Init(std::move(params));
     widget_->Show();
 
     SetWindowShowState(ui::SHOW_STATE_FULLSCREEN);
@@ -237,8 +241,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
 
   // Enable or disable tablet mode based on |enable|.
   void EnableTabletMode(bool enable) {
-    Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(
-        enable);
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(enable);
   }
 
  private:
@@ -566,7 +569,7 @@ TEST_F(ImmersiveFullscreenControllerTest, MouseEventsVerticalDisplayLayout) {
   event_generator->MoveMouseTo(x, y_top_edge + 1);
   EXPECT_TRUE(top_edge_hover_timer_running());
   EXPECT_EQ(y_top_edge + 1,
-            Shell::Get()->aura_env()->last_mouse_location().y());
+            aura::Env::GetInstance()->last_mouse_location().y());
 
   // The timer should continue running if the user moves the mouse to the top
   // edge even though the mouse is warped to the secondary display.
@@ -728,10 +731,9 @@ TEST_F(ImmersiveFullscreenControllerTest, WindowsInTabletMode) {
 
   // Top-of-window views will not be revealed for snapped window in splitview
   // mode either.
-  Shell::Get()->split_view_controller()->SnapWindow(window(),
-                                                    SplitViewController::LEFT);
-  EXPECT_TRUE(wm::GetWindowState(window())->IsSnapped());
-  EXPECT_TRUE(Shell::Get()->split_view_controller()->IsSplitViewModeActive());
+  split_view_controller()->SnapWindow(window(), SplitViewController::LEFT);
+  EXPECT_TRUE(WindowState::Get(window())->IsSnapped());
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   AttemptReveal(MODALITY_GESTURE_SCROLL);
   EXPECT_FALSE(controller()->IsRevealed());
 }
@@ -781,7 +783,7 @@ TEST_F(ImmersiveFullscreenControllerTest, RevealViaGestureChildConsumesEvents) {
           &child_delegate, aura::client::WINDOW_TYPE_CONTROL, 1234,
           gfx::Rect()));
   content_view()->Attach(child.get());
-  child->Show();
+  content_view()->Layout();
 
   ConsumeEventHandler handler;
   child->AddPreTargetHandler(&handler);
@@ -835,7 +837,7 @@ TEST_F(ImmersiveFullscreenControllerTest, EventsDoNotLeakToWindowUnderneath) {
 
 // Check that the window state gets properly marked for immersive fullscreen.
 TEST_F(ImmersiveFullscreenControllerTest, WindowStateImmersiveFullscreen) {
-  ash::wm::WindowState* window_state = ash::wm::GetWindowState(window());
+  ash::WindowState* window_state = ash::WindowState::Get(window());
   SetWindowShowState(ui::SHOW_STATE_NORMAL);
 
   EXPECT_FALSE(window_state->IsInImmersiveFullscreen());
@@ -933,7 +935,7 @@ TEST_F(ImmersiveFullscreenControllerTest, Transient) {
   transient_params.parent = top_container_widget->GetNativeView();
   transient_params.bounds = gfx::Rect(0, 100, 100, 100);
   std::unique_ptr<views::Widget> transient_widget(new views::Widget());
-  transient_widget->Init(transient_params);
+  transient_widget->Init(std::move(transient_params));
 
   EXPECT_FALSE(controller()->IsRevealed());
   AttemptReveal(MODALITY_MOUSE);
@@ -952,7 +954,7 @@ TEST_F(ImmersiveFullscreenControllerTest, Transient) {
   non_transient_params.bounds = gfx::Rect(0, 100, 100, 100);
   std::unique_ptr<views::Widget> non_transient_widget(new views::Widget());
   non_transient_params.context = CurrentContext();
-  non_transient_widget->Init(non_transient_params);
+  non_transient_widget->Init(std::move(non_transient_params));
 
   EXPECT_FALSE(controller()->IsRevealed());
   AttemptReveal(MODALITY_MOUSE);

@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.preferences.autofill;
 
 import android.annotation.SuppressLint;
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -28,7 +28,7 @@ import android.widget.Spinner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.MainPreferences;
 import org.chromium.chrome.browser.preferences.PreferenceUtils;
-import org.chromium.chrome.browser.widget.FadingEdgeScrollView;
+import org.chromium.chrome.browser.ui.widget.FadingEdgeScrollView;
 import org.chromium.chrome.browser.widget.prefeditor.EditorDialog;
 
 /** Base class for Autofill editors (e.g. credit cards and profiles). */

@@ -32,8 +32,6 @@ class CORE_EXPORT HTMLMeterElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HTMLMeterElement* Create(Document&);
-
   explicit HTMLMeterElement(Document&);
 
   enum GaugeRegion {
@@ -73,9 +71,9 @@ class CORE_EXPORT HTMLMeterElement final : public HTMLElement {
   bool AreAuthorShadowsAllowed() const override { return false; }
 
   bool IsLabelable() const override { return true; }
-  bool ShouldForceLegacyLayout() const final { return true; }
+  bool TypeShouldForceLegacyLayout() const final { return true; }
 
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
   void ParseAttribute(const AttributeModificationParams&) override;
 
   void DidElementStateChange();

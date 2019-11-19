@@ -13,7 +13,8 @@
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 
 namespace ppapi {
@@ -56,12 +57,13 @@ class PPAPI_SHARED_EXPORT MediaStreamBufferManager {
 
   int32_t buffer_size() const { return buffer_size_; }
 
-  base::SharedMemory* shm() { return shm_.get(); }
+  const base::UnsafeSharedMemoryRegion& region() { return region_; }
+  const base::WritableSharedMemoryMapping& mapping() { return mapping_; }
 
   // Initializes shared memory for buffers transmission.
   bool SetBuffers(int32_t number_of_buffers,
                   int32_t buffer_size,
-                  std::unique_ptr<base::SharedMemory> shm,
+                  base::UnsafeSharedMemoryRegion region,
                   bool enqueue_all_buffers);
 
   // Dequeues a buffer from |buffer_queue_|.
@@ -94,8 +96,10 @@ class PPAPI_SHARED_EXPORT MediaStreamBufferManager {
   // The number of buffers in the shared memory.
   int32_t number_of_buffers_;
 
-  // A memory block shared between renderer process and plugin process.
-  std::unique_ptr<base::SharedMemory> shm_;
+  // A memory block shared between renderer process and plugin process, and its
+  // mapping.
+  base::UnsafeSharedMemoryRegion region_;
+  base::WritableSharedMemoryMapping mapping_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaStreamBufferManager);
 };

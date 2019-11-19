@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/shortcuts_constants.h"
 #include "sql/statement.h"
@@ -33,6 +34,7 @@ struct ShortcutsDatabaseTestInfo {
   std::string text;
   std::string fill_into_edit;
   std::string destination_url;
+  AutocompleteMatch::DocumentType document_type;
   std::string contents;
   std::string contents_class;
   std::string description;
@@ -43,34 +45,79 @@ struct ShortcutsDatabaseTestInfo {
   int days_from_now;
   int number_of_hits;
 } shortcut_test_db[] = {
-  { "BD85DBA2-8C29-49F9-84AE-48E1E90880DF", "goog", "www.google.com",
-    "http://www.google.com/", "Google", "0,1,4,0", "Google", "0,1",
-    ui::PAGE_TRANSITION_GENERATED, AutocompleteMatchType::SEARCH_HISTORY,
-    "google.com", 1, 100, },
-  { "BD85DBA2-8C29-49F9-84AE-48E1E90880E0", "slash", "slashdot.org",
-    "http://slashdot.org/", "slashdot.org", "0,1",
-    "Slashdot - News for nerds, stuff that matters", "0,0",
-    ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 0,
-    100},
-  { "BD85DBA2-8C29-49F9-84AE-48E1E90880E1", "news", "slashdot.org",
-    "http://slashdot.org/", "slashdot.org", "0,1",
-    "Slashdot - News for nerds, stuff that matters", "0,0",
-    ui::PAGE_TRANSITION_LINK, AutocompleteMatchType::HISTORY_TITLE, "", 0,
-    5},
+    {"BD85DBA2-8C29-49F9-84AE-48E1E90880DF", "goog", "www.google.com",
+     "http://www.google.com/", AutocompleteMatch::DocumentType::NONE, "Google",
+     "0,1,4,0", "Google", "0,1", ui::PAGE_TRANSITION_GENERATED,
+     AutocompleteMatchType::SEARCH_HISTORY, "google.com", 1, 100},
+    {"BD85DBA2-8C29-49F9-84AE-48E1E90880E0", "slash", "slashdot.org",
+     "http://slashdot.org/", AutocompleteMatch::DocumentType::NONE,
+     "slashdot.org", "0,1", "Slashdot - News for nerds, stuff that matters",
+     "0,0", ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "",
+     0, 100},
+    {"BD85DBA2-8C29-49F9-84AE-48E1E90880E1", "news", "slashdot.org",
+     "http://slashdot.org/", AutocompleteMatch::DocumentType::NONE,
+     "slashdot.org", "0,1", "Slashdot - News for nerds, stuff that matters",
+     "0,0", ui::PAGE_TRANSITION_LINK, AutocompleteMatchType::HISTORY_TITLE, "",
+     0, 5},
 };
 
 typedef testing::Test ShortcutsDatabaseMigrationTest;
 
-// Checks that the database at |db| has the version 2 columns iff |is_v2|.
-void CheckV2ColumnExistence(const base::FilePath& db_path, bool is_v2) {
+// Checks that the database at |db_path| has the version 0 columns iff |is_v0|.
+void CheckV0ColumnExistence(const base::FilePath& db_path, bool is_v0) {
   sql::Database connection;
   ASSERT_TRUE(connection.Open(db_path));
-  EXPECT_EQ(is_v2,
+  EXPECT_EQ(is_v0,
             connection.DoesColumnExist("omni_box_shortcuts", "fill_into_edit"));
-  EXPECT_EQ(is_v2,
+  EXPECT_EQ(is_v0,
             connection.DoesColumnExist("omni_box_shortcuts", "transition"));
-  EXPECT_EQ(is_v2, connection.DoesColumnExist("omni_box_shortcuts", "type"));
-  EXPECT_EQ(is_v2, connection.DoesColumnExist("omni_box_shortcuts", "keyword"));
+  EXPECT_EQ(is_v0, connection.DoesColumnExist("omni_box_shortcuts", "type"));
+  EXPECT_EQ(is_v0, connection.DoesColumnExist("omni_box_shortcuts", "keyword"));
+}
+
+// Tests the db at |sql_path| successfully migrates to V2 when initialized.
+void CheckV2Migration(base::FilePath sql_path) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath db_path(temp_dir.GetPath().AppendASCII("TestShortcuts.db"));
+  if (!sql_path.empty())
+    ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path, sql_path));
+
+  // Check document_type column does not yet exist.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(db_path));
+    EXPECT_FALSE(
+        connection.DoesColumnExist("omni_box_shortcuts", "document_type"));
+  }
+
+  // Create a ShortcutsDatabase from the test database, which will migrate the
+  // test database to the current version.
+  {
+    scoped_refptr<ShortcutsDatabase> db(new ShortcutsDatabase(db_path));
+    db->Init();
+  }
+
+  sql::Database connection;
+  ASSERT_TRUE(connection.Open(db_path));
+
+  // Check a meta table was created.
+  ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+  // Check document_type column exists after migration.
+  EXPECT_TRUE(
+      connection.DoesColumnExist("omni_box_shortcuts", "document_type"));
+
+  // Check the column has the default value.
+  sql::Statement statement(connection.GetUniqueStatement(
+      "SELECT document_type FROM omni_box_shortcuts"));
+  ASSERT_TRUE(statement.is_valid());
+  while (statement.Step()) {
+    EXPECT_EQ(
+        AutocompleteMatch::DocumentType::NONE,
+        static_cast<AutocompleteMatch::DocumentType>(statement.ColumnInt(0)));
+  }
+  EXPECT_TRUE(statement.Succeeded());
 }
 
 const base::FilePath GetTestDataDir() {
@@ -131,9 +178,10 @@ ShortcutsDatabase::Shortcut ShortcutsDatabaseTest::ShortcutFromTestInfo(
       info.guid, ASCIIToUTF16(info.text),
       ShortcutsDatabase::Shortcut::MatchCore(
           ASCIIToUTF16(info.fill_into_edit), GURL(info.destination_url),
-          ASCIIToUTF16(info.contents), info.contents_class,
-          ASCIIToUTF16(info.description), info.description_class,
-          info.transition, info.type, ASCIIToUTF16(info.keyword)),
+          static_cast<int>(info.document_type), ASCIIToUTF16(info.contents),
+          info.contents_class, ASCIIToUTF16(info.description),
+          info.description_class, info.transition, info.type,
+          ASCIIToUTF16(info.keyword)),
       base::Time::Now() - base::TimeDelta::FromDays(info.days_from_now),
       info.number_of_hits);
 }
@@ -224,18 +272,13 @@ TEST_F(ShortcutsDatabaseTest, DeleteAllShortcuts) {
 
 TEST(ShortcutsDatabaseMigrationTest, MigrateTableAddFillIntoEdit) {
   // Use the pre-v0 test file to create a test database in a temp dir.
-  base::FilePath sql_path = GetTestDataDir().AppendASCII(
-#if defined(OS_ANDROID)
-      "Shortcuts.v1.sql");
-#else
-      "Shortcuts.no_fill_into_edit.sql");
-#endif
+  base::FilePath sql_path = GetTestDataDir().AppendASCII("Shortcuts.no_fill_into_edit.sql");
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath db_path(temp_dir.GetPath().AppendASCII("TestShortcuts.db"));
   ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path, sql_path));
 
-  CheckV2ColumnExistence(db_path, false);
+  CheckV0ColumnExistence(db_path, false);
 
   // Create a ShortcutsDatabase from the test database, which will migrate the
   // test database to the current version.
@@ -244,11 +287,15 @@ TEST(ShortcutsDatabaseMigrationTest, MigrateTableAddFillIntoEdit) {
     db->Init();
   }
 
-  CheckV2ColumnExistence(db_path, true);
+  CheckV0ColumnExistence(db_path, true);
 
-  // Check the values in each of the new columns.
   sql::Database connection;
   ASSERT_TRUE(connection.Open(db_path));
+
+  // Check a meta table was created.
+  ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+  // Check the values in each of the new columns.
   sql::Statement statement(connection.GetUniqueStatement(
       "SELECT fill_into_edit, url, transition, type, keyword "
       "FROM omni_box_shortcuts"));
@@ -266,9 +313,6 @@ TEST(ShortcutsDatabaseMigrationTest, MigrateTableAddFillIntoEdit) {
     EXPECT_TRUE(statement.ColumnString(4).empty());
   }
   EXPECT_TRUE(statement.Succeeded());
-#if !defined(OS_WIN)
-  EXPECT_TRUE(temp_dir.Delete());
-#endif
 }
 
 TEST(ShortcutsDatabaseMigrationTest, MigrateV0ToV1) {
@@ -289,25 +333,31 @@ TEST(ShortcutsDatabaseMigrationTest, MigrateV0ToV1) {
   // Check that all the old type values got converted to new values.
   sql::Database connection;
   ASSERT_TRUE(connection.Open(db_path));
+
+  // Check a meta table was created.
+  ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
   sql::Statement statement(connection.GetUniqueStatement(
       "SELECT count(1) FROM omni_box_shortcuts WHERE type in (9, 10, 11, 12)"));
   ASSERT_TRUE(statement.is_valid());
   while (statement.Step())
     EXPECT_EQ(0, statement.ColumnInt(0));
   EXPECT_TRUE(statement.Succeeded());
-#if !defined(OS_WIN)
-  EXPECT_TRUE(temp_dir.Delete());
-#endif
+}
+
+TEST(ShortcutsDatabaseMigrationTest, MigrateToV2) {
+  // Test migrating from a database with no omni_box_shortcuts table.
+  base::FilePath sql_path;
+  CheckV2Migration(sql_path);
+
+  CheckV2Migration(GetTestDataDir().AppendASCII("Shortcuts.no_fill_into_edit.sql"));
+  CheckV2Migration(GetTestDataDir().AppendASCII("Shortcuts.v0.sql"));
+  CheckV2Migration(GetTestDataDir().AppendASCII("Shortcuts.v1.sql"));
 }
 
 TEST(ShortcutsDatabaseMigrationTest, Recovery1) {
-#if defined(OS_ANDROID)
-  char kBasename[] = "Shortcuts.v1.sql";
-#else
-  char kBasename[] = "Shortcuts.no_fill_into_edit.sql";
-#endif
   // Use the pre-v0 test file to create a test database in a temp dir.
-  base::FilePath sql_path = GetTestDataDir().AppendASCII(kBasename);
+  base::FilePath sql_path = GetTestDataDir().AppendASCII("Shortcuts.no_fill_into_edit.sql");
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath db_path(temp_dir.GetPath().AppendASCII("TestShortcuts.db"));
@@ -355,7 +405,7 @@ TEST(ShortcutsDatabaseMigrationTest, Recovery1) {
     ASSERT_TRUE(expecter.SawExpectedErrors());
   }
 
-  CheckV2ColumnExistence(db_path, true);
+  CheckV0ColumnExistence(db_path, true);
 
   // The previously-broken statement works and all of the data should have been
   // recovered.

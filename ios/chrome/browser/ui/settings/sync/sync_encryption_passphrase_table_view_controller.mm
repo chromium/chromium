@@ -10,6 +10,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/google/core/common/google_util.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -33,7 +34,6 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#import "services/identity/public/objc/identity_manager_observer_bridge.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "url/gurl.h"
@@ -42,7 +42,11 @@
 #error "This file requires ARC support."
 #endif
 
-using namespace sync_encryption_passphrase;
+using sync_encryption_passphrase::ItemTypeEnterPassphrase;
+using sync_encryption_passphrase::ItemTypeError;
+using sync_encryption_passphrase::ItemTypeFooter;
+using sync_encryption_passphrase::ItemTypeMessage;
+using sync_encryption_passphrase::SectionIdentifierPassphrase;
 
 namespace {
 
@@ -60,7 +64,7 @@ const CGFloat kSpinnerButtonPadding = 18;
   NSString* savedTitle_;
   UIBarButtonItem* savedLeftButton_;
   std::unique_ptr<SyncObserverBridge> syncObserver_;
-  std::unique_ptr<identity::IdentityManagerObserverBridge>
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
       identityManagerObserver_;
   UITextField* passphrase_;
 }
@@ -81,8 +85,8 @@ const CGFloat kSpinnerButtonPadding = 18;
     self.shouldHideDoneButton = YES;
     browserState_ = browserState;
     NSString* userEmail =
-        AuthenticationServiceFactory::GetForBrowserState(browserState_)
-            ->GetAuthenticatedUserEmail();
+        [AuthenticationServiceFactory::GetForBrowserState(browserState_)
+                ->GetAuthenticatedIdentity() userEmail];
     DCHECK(userEmail);
     syncer::SyncService* service =
         ProfileSyncServiceFactory::GetForBrowserState(browserState_);
@@ -109,7 +113,7 @@ const CGFloat kSpinnerButtonPadding = 18;
     _footerMessage = l10n_util::GetNSString(IDS_IOS_SYNC_PASSPHRASE_RECOVER);
 
     identityManagerObserver_ =
-        std::make_unique<identity::IdentityManagerObserverBridge>(
+        std::make_unique<signin::IdentityManagerObserverBridge>(
             IdentityManagerFactory::GetForBrowserState(browserState_), self);
   }
   return self;
@@ -183,6 +187,13 @@ const CGFloat kSpinnerButtonPadding = 18;
   }
   [model setFooter:[self footerItem]
       forSectionWithIdentifier:SectionIdentifierPassphrase];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return ![passphrase_.text length];
 }
 
 #pragma mark - Items

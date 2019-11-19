@@ -11,6 +11,7 @@ namespace blink {
 
 class ServiceWorkerGlobalScopeSync {
  public:
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(periodicsync, kPeriodicsync)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(sync, kSync)
 };
 

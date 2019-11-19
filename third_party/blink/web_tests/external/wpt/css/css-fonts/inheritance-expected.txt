@@ -1,0 +1,40 @@
+This is a testharness.js-based test.
+PASS Property font-family inherits
+PASS Property font-feature-settings has initial value normal
+PASS Property font-feature-settings inherits
+PASS Property font-kerning has initial value auto
+PASS Property font-kerning inherits
+FAIL Property font-language-override has initial value normal assert_true: font-language-override doesn't seem to be supported in the computed style expected true got false
+FAIL Property font-language-override inherits assert_true: font-language-override doesn't seem to be supported in the computed style expected true got false
+PASS Property font-optical-sizing has initial value auto
+PASS Property font-optical-sizing inherits
+PASS Property font-size has initial value 16px
+PASS Property font-size inherits
+PASS Property font-size-adjust has initial value none
+PASS Property font-size-adjust inherits
+PASS Property font-stretch has initial value 100%
+PASS Property font-stretch inherits
+PASS Property font-style has initial value normal
+PASS Property font-style inherits
+FAIL Property font-synthesis has initial value weight style assert_true: font-synthesis doesn't seem to be supported in the computed style expected true got false
+FAIL Property font-synthesis inherits assert_true: font-synthesis doesn't seem to be supported in the computed style expected true got false
+PASS Property font-variant has initial value normal
+PASS Property font-variant inherits
+FAIL Property font-variant-alternates has initial value normal assert_true: font-variant-alternates doesn't seem to be supported in the computed style expected true got false
+FAIL Property font-variant-alternates inherits assert_true: font-variant-alternates doesn't seem to be supported in the computed style expected true got false
+PASS Property font-variant-caps has initial value normal
+PASS Property font-variant-caps inherits
+PASS Property font-variant-east-asian has initial value normal
+PASS Property font-variant-east-asian inherits
+PASS Property font-variant-ligatures has initial value normal
+PASS Property font-variant-ligatures inherits
+PASS Property font-variant-numeric has initial value normal
+PASS Property font-variant-numeric inherits
+FAIL Property font-variant-position has initial value normal assert_true: font-variant-position doesn't seem to be supported in the computed style expected true got false
+FAIL Property font-variant-position inherits assert_true: font-variant-position doesn't seem to be supported in the computed style expected true got false
+PASS Property font-variation-settings has initial value normal
+PASS Property font-variation-settings inherits
+PASS Property font-weight has initial value 400
+PASS Property font-weight inherits
+Harness: the test ran to completion.
+

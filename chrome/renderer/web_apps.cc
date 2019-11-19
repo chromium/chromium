@@ -9,13 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/json/json_reader.h"
 #include "base/strings/string16.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/web_application_info.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
@@ -37,40 +31,8 @@ using blink::WebString;
 namespace web_apps {
 namespace {
 
-// Sizes a single size (the width or height) from a 'sizes' attribute. A size
-// matches must match the following regex: [1-9][0-9]*.
-int ParseSingleIconSize(const base::StringPiece16& text) {
-  // Size must not start with 0, and be between 0 and 9.
-  if (text.empty() || !(text[0] >= L'1' && text[0] <= L'9'))
-    return 0;
-
-  // Make sure all chars are from 0-9.
-  for (size_t i = 1; i < text.length(); ++i) {
-    if (!(text[i] >= L'0' && text[i] <= L'9'))
-      return 0;
-  }
-  int output;
-  if (!base::StringToInt(text, &output))
-    return 0;
-  return output;
-}
-
-// Parses an icon size. An icon size must match the following regex:
-// [1-9][0-9]*x[1-9][0-9]*.
-// If the input couldn't be parsed, a size with a width/height == 0 is returned.
-gfx::Size ParseIconSize(const base::string16& text) {
-  std::vector<base::StringPiece16> sizes = base::SplitStringPiece(
-      text, base::string16(1, 'x'),
-      base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (sizes.size() != 2)
-    return gfx::Size();
-
-  return gfx::Size(ParseSingleIconSize(sizes[0]),
-                   ParseSingleIconSize(sizes[1]));
-}
-
 void AddInstallIcon(const WebElement& link,
-                    std::vector<WebApplicationInfo::IconInfo>* icons) {
+                    std::vector<WebApplicationIconInfo>* icons) {
   WebString href = link.GetAttribute("href");
   if (href.IsNull() || href.IsEmpty())
     return;
@@ -80,7 +42,7 @@ void AddInstallIcon(const WebElement& link,
   if (!url.is_valid())
     return;
 
-  WebApplicationInfo::IconInfo icon_info;
+  WebApplicationIconInfo icon_info;
   if (link.HasAttribute("sizes")) {
     blink::WebVector<blink::WebSize> icon_sizes =
         blink::WebIconSizesParser::ParseIconSizes(link.GetAttribute("sizes"));
@@ -96,30 +58,6 @@ void AddInstallIcon(const WebElement& link,
 }
 
 }  // namespace
-
-bool ParseIconSizes(const base::string16& text,
-                    std::vector<gfx::Size>* sizes,
-                    bool* is_any) {
-  *is_any = false;
-  std::vector<base::string16> size_strings = base::SplitString(
-      text, base::kWhitespaceASCIIAs16,
-      base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (size_t i = 0; i < size_strings.size(); ++i) {
-    if (base::EqualsASCII(size_strings[i], "any")) {
-      *is_any = true;
-    } else {
-      gfx::Size size = ParseIconSize(size_strings[i]);
-      if (size.width() <= 0 || size.height() <= 0)
-        return false;  // Bogus size.
-      sizes->push_back(size);
-    }
-  }
-  if (*is_any && !sizes->empty()) {
-    // If is_any is true, it must occur by itself.
-    return false;
-  }
-  return (*is_any || !sizes->empty());
-}
 
 void ParseWebAppFromWebDocument(WebLocalFrame* frame,
                                 WebApplicationInfo* app_info) {

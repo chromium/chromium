@@ -5,7 +5,7 @@
 #include "ash/system/palette/palette_utils.h"
 
 #include "ash/public/cpp/stylus_utils.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/palette/palette_tray.h"
@@ -28,7 +28,8 @@ bool PaletteContainsPointInScreen(const gfx::Point& point) {
 }
 
 bool IsInUserSession() {
-  SessionController* session_controller = Shell::Get()->session_controller();
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
   return session_controller->GetSessionState() ==
              session_manager::SessionState::ACTIVE &&
          !session_controller->IsRunningInAppMode();

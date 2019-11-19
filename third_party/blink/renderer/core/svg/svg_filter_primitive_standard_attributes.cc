@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -37,25 +38,30 @@ SVGFilterPrimitiveStandardAttributes::SVGFilterPrimitiveStandardAttributes(
     : SVGElement(tag_name, document),
       // Spec: If the x/y attribute is not specified, the effect is as if a
       // value of "0%" were specified.
-      x_(SVGAnimatedLength::Create(this,
-                                   svg_names::kXAttr,
-                                   SVGLengthMode::kWidth,
-                                   SVGLength::Initial::kPercent0)),
-      y_(SVGAnimatedLength::Create(this,
-                                   svg_names::kYAttr,
-                                   SVGLengthMode::kHeight,
-                                   SVGLength::Initial::kPercent0)),
+      x_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kXAttr,
+          SVGLengthMode::kWidth,
+          SVGLength::Initial::kPercent0)),
+      y_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kYAttr,
+          SVGLengthMode::kHeight,
+          SVGLength::Initial::kPercent0)),
       // Spec: If the width/height attribute is not specified, the effect is as
       // if a value of "100%" were specified.
-      width_(SVGAnimatedLength::Create(this,
-                                       svg_names::kWidthAttr,
-                                       SVGLengthMode::kWidth,
-                                       SVGLength::Initial::kPercent100)),
-      height_(SVGAnimatedLength::Create(this,
-                                        svg_names::kHeightAttr,
-                                        SVGLengthMode::kHeight,
-                                        SVGLength::Initial::kPercent100)),
-      result_(SVGAnimatedString::Create(this, svg_names::kResultAttr)) {
+      width_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kWidthAttr,
+          SVGLengthMode::kWidth,
+          SVGLength::Initial::kPercent100)),
+      height_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kHeightAttr,
+          SVGLengthMode::kHeight,
+          SVGLength::Initial::kPercent100)),
+      result_(MakeGarbageCollected<SVGAnimatedString>(this,
+                                                      svg_names::kResultAttr)) {
   AddToPropertyMap(x_);
   AddToPropertyMap(y_);
   AddToPropertyMap(width_);
@@ -159,7 +165,8 @@ void SVGFilterPrimitiveStandardAttributes::SetStandardAttributes(
 }
 
 LayoutObject* SVGFilterPrimitiveStandardAttributes::CreateLayoutObject(
-    const ComputedStyle&) {
+    const ComputedStyle&,
+    LegacyLayout) {
   return new LayoutSVGResourceFilterPrimitive(this);
 }
 
@@ -183,13 +190,11 @@ void SVGFilterPrimitiveStandardAttributes::PrimitiveAttributeChanged(
 }
 
 void InvalidateFilterPrimitiveParent(SVGElement& element) {
-  Element* parent = element.parentElement();
-  if (!parent || !parent->IsSVGElement())
+  auto* svg_parent =
+      DynamicTo<SVGFilterPrimitiveStandardAttributes>(element.parentElement());
+  if (!svg_parent)
     return;
-  SVGElement& svgparent = ToSVGElement(*parent);
-  if (!IsSVGFilterPrimitiveStandardAttributes(svgparent))
-    return;
-  ToSVGFilterPrimitiveStandardAttributes(svgparent).Invalidate();
+  svg_parent->Invalidate();
 }
 
 }  // namespace blink

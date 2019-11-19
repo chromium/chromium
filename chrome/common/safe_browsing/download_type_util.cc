@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/string_util.h"
@@ -57,6 +58,42 @@ ClientDownloadRequest::DownloadType GetDownloadType(
     return ClientDownloadRequest::MAC_EXECUTABLE;
   else if (FileTypePolicies::GetInstance()->IsArchiveFile(file))
     return ClientDownloadRequest::ARCHIVE;
+  else if (file.MatchesExtension(FILE_PATH_LITERAL(".pdf")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".doc")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".docx")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".docm")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".docb")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".dot")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".dotm")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".dotx")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".xls")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".xlsb")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".xlt")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".xlm")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".xlsx")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".xldm")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".xltx")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".xltm")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".xlsb")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".xla")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".xlam")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".xll")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".xlw")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".ppt")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".pot")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".pps")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".pptx")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".pptm")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".potx")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".potm")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".ppam")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".ppsx")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".ppsm")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".sldx")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".xldm")) ||
+           file.MatchesExtension(FILE_PATH_LITERAL(".rtf")))
+    return ClientDownloadRequest::DOCUMENT;
+
   return ClientDownloadRequest::WIN_EXECUTABLE;
 }
 

@@ -1,8 +1,10 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_components/chromeos/quick_unlock/lock_screen_constants.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
@@ -30,26 +32,43 @@
         padding-top: 24px;
       }
 
+      cr-radio-group {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .list-item {
+        width: 100%;
+      }
+
+      .list-item-end {
+        align-items: center;
+        display: flex;
+      }
+
+      .list-item-start {
+        flex: 1;
+      }
+
       #lockOptionsDiv {
         display: block;
       }
 
-      cr-radio-button {
-        --cr-radio-button-label: {
-          display: flex;
-          line-height: 154%;  /* Apply 20px line-height to paper radio button
-                                 text to match rest of settings line-heights. */
-          width: 100%;
-        };
+      #pinPasswordDiv {
+        display: flex;
       }
 
-      #pinPasswordDiv,
+      #pinPasswordLabel {
+        flex: 1;
+      }
+
+      #pinPasswordLabel,
       #pinPasswordSecondaryActionDiv {
         margin: auto;
       }
 
       .underbar {
-        border-bottom: var(--settings-separator-line);
+        border-bottom: var(--cr-separator-line);
       }
 
       #unlockType[disabled] {
@@ -83,26 +102,27 @@
                   $i18n{lockScreenPasswordOnly}
                 </div>
               </cr-radio-button>
-              <cr-radio-button name="pin+password" class="list-item">
-                <div id="pinPasswordDiv" class="start">
-                  $i18n{lockScreenPinOrPassword}
-                </div>
-                <template is="dom-if"
-                    if="[[showConfigurePinButton_(selectedUnlockType)]]">
-                  <div class="separator"></div>
-                  <div id="pinPasswordSecondaryActionDiv"
-                      class="secondary-action">
-                    <!-- Use stop-keyboard-event-propagation to prevent
-                         triggering this when focused after closing the
-                         dialog. -->
-                    <paper-button id="setupPinButton" class="secondary-button"
-                        on-click="onConfigurePin_"
-                        stop-keyboard-event-propagation>
-                      [[getSetupPinText_(hasPin)]]
-                    </paper-button>
+              <cr-radio-button name="pin+password" class="list-item-start">
+                <div id="pinPasswordDiv">
+                  <div id="pinPasswordLabel">
+                    $i18n{lockScreenPinOrPassword}
                   </div>
-                </template>
+                </div>
               </cr-radio-button>
+              <div class="list-item-end"
+                  hidden="[[!showConfigurePinButton_(selectedUnlockType)]]">
+                <div class="separator"></div>
+                <div id="pinPasswordSecondaryActionDiv"
+                    class="secondary-action">
+                  <!-- Use stop-keyboard-event-propagation to prevent
+                       triggering this when focused after closing the
+                       dialog. -->
+                  <cr-button id="setupPinButton" on-click="onConfigurePin_"
+                      stop-keyboard-event-propagation>
+                    [[getSetupPinText_(hasPin)]]
+                  </cr-button>
+                </div>
+              </div>
             </cr-radio-group>
           </div>
         </div>
@@ -144,12 +164,11 @@
           </div>
           <div class="separator"></div>
           <div class="secondary-action">
-            <paper-button class="secondary-button"
-                on-click="onEditFingerprints_"
+            <cr-button on-click="onEditFingerprints_"
                 aria-label="$i18n{lockScreenEditFingerprints}"
                 aria-descibedby="lockScreenEditFingerprintsSecondary">
               $i18n{lockScreenSetupFingerprintButton}
-            </paper-button>
+            </cr-button>
           </div>
         </div>
       </template>
@@ -158,7 +177,7 @@
         <settings-lock-screen-password-prompt-dialog
             id="lockScreenPasswordPrompt"
             on-close="onPasswordPromptDialogClose_" set-modes="{{setModes_}}"
-            auth-token="{{authToken_}}">
+            auth-token="{{authToken}}">
         </settings-lock-screen-password-prompt-dialog>
       </template>
 

@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
+#include "build/branding_buildflags.h"
 #include "chrome/installer/mini_installer/appid.h"
 #include "chrome/installer/mini_installer/mini_installer_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,17 +65,17 @@ class MiniInstallerConfigurationTest : public ::testing::Test {
   // Adds sufficient state in the registry for Configuration to think that
   // Chrome is already installed at |system_level| as per |multi_install|.
   void AddChromeRegistryState(bool system_level, bool multi_install) {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     static constexpr wchar_t kClientsPath[] =
         L"SOFTWARE\\Google\\Update\\Clients\\"
         L"{8A69D345-D564-463c-AFF1-A69D9E530F96}";
     static constexpr wchar_t kClientStatePath[] =
         L"SOFTWARE\\Google\\Update\\ClientState\\"
         L"{8A69D345-D564-463c-AFF1-A69D9E530F96}";
-#else   // GOOGLE_CHROME_BUILD
+#else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     static constexpr wchar_t kClientsPath[] = L"SOFTWARE\\Chromium";
     static constexpr wchar_t kClientStatePath[] = L"SOFTWARE\\Chromium";
-#endif  // GOOGLE_CHROME_BUILD
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     base::string16 uninstall_arguments(L"--uninstall");
     if (system_level)
       uninstall_arguments += L" --system_level";
@@ -156,7 +157,7 @@ TEST_F(MiniInstallerConfigurationTest, IsUpdatingSystemSingle) {
 
 TEST_F(MiniInstallerConfigurationTest, IsUpdatingUserMulti) {
   AddChromeRegistryState(false /* !system_level */, true /* multi_install */);
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(TestConfiguration(L"spam.exe").is_updating_multi_chrome());
 #else
   EXPECT_FALSE(TestConfiguration(L"spam.exe").is_updating_multi_chrome());
@@ -165,7 +166,7 @@ TEST_F(MiniInstallerConfigurationTest, IsUpdatingUserMulti) {
 
 TEST_F(MiniInstallerConfigurationTest, IsUpdatingSystemMulti) {
   AddChromeRegistryState(true /* system_level */, true /* multi_install */);
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(
       TestConfiguration(L"spam.exe --system-level").is_updating_multi_chrome());
 #else
@@ -174,7 +175,7 @@ TEST_F(MiniInstallerConfigurationTest, IsUpdatingSystemMulti) {
 #endif
 }
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(MiniInstallerConfigurationTest, ChromeAppGuid) {
   EXPECT_STREQ(google_update::kAppGuid,
                TestConfiguration(L"spam.exe").chrome_app_guid());

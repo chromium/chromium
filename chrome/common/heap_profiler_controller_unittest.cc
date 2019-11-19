@@ -4,81 +4,88 @@
 
 #include "chrome/common/heap_profiler_controller.h"
 
-#include "base/command_line.h"
-#include "base/metrics/metrics_hashes.h"
-#include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
-#include "base/test/test_mock_time_task_runner.h"
+#include "base/sampling_heap_profiler/sampling_heap_profiler.h"
+#include "base/test/bind_test_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stack_profile_builder.h"
-#include "content/public/common/content_switches.h"
+#include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
-constexpr size_t kAllocationSize = 42 * 1024;
+// TODO(crbug.com/961073): Fix memory leaks in tests and re-enable on LSAN.
+#ifdef LEAK_SANITIZER
+#define MAYBE_EmptyProfileIsNotEmitted DISABLED_EmptyProfileIsNotEmitted
+#else
+#define MAYBE_EmptyProfileIsNotEmitted EmptyProfileIsNotEmitted
+#endif
 
-void CheckProfile(int* profiles_count,
-                  base::TimeTicks time,
-                  metrics::SampledProfile profile) {
-  const uint64_t kMetadataCountHash =
-      base::HashMetricName("HeapProfiler.AllocationInBytes");
-  EXPECT_EQ(metrics::SampledProfile::PERIODIC_HEAP_COLLECTION,
-            profile.trigger_event());
-  EXPECT_LT(0, profile.call_stack_profile().stack_sample_size());
-  const auto& metadata_hashes =
-      profile.call_stack_profile().metadata_name_hash();
-  EXPECT_LT(0, metadata_hashes.size());
+class HeapProfilerControllerTest : public testing::Test {
+ protected:
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
 
-  const auto* metadata_count_iterator = std::find(
-      metadata_hashes.begin(), metadata_hashes.end(), kMetadataCountHash);
-  EXPECT_NE(metadata_count_iterator, metadata_hashes.end());
-  int metadata_count_index =
-      static_cast<int>(metadata_count_iterator - metadata_hashes.begin());
+TEST_F(HeapProfilerControllerTest, MAYBE_EmptyProfileIsNotEmitted) {
+  HeapProfilerController controller;
+  metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
+      base::BindLambdaForTesting(
+          [](base::TimeTicks time, metrics::SampledProfile profile) {
+            ADD_FAILURE();
+          }));
+  controller.Start();
 
-  bool found = false;
-  for (const metrics::CallStackProfile::StackSample& sample :
-       profile.call_stack_profile().stack_sample()) {
-    EXPECT_LT(0, sample.metadata_size());
-    for (const metrics::CallStackProfile::MetadataItem& item :
-         sample.metadata()) {
-      if (item.name_hash_index() == metadata_count_index &&
-          item.value() >= static_cast<int64_t>(kAllocationSize)) {
+  task_environment.FastForwardBy(base::TimeDelta::FromDays(365));
+}
+
+// Sampling profiler is not capable of unwinding stack on Android under tests.
+#if !defined(OS_ANDROID)
+TEST_F(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
+  constexpr size_t kAllocationSize = 42 * 1024;
+  constexpr int kSnapshotsToCollect = 3;
+
+  auto controller = std::make_unique<HeapProfilerController>();
+  int profile_count = 0;
+
+  auto check_profile = [&](base::TimeTicks time,
+                           metrics::SampledProfile profile) {
+    EXPECT_EQ(metrics::SampledProfile::PERIODIC_HEAP_COLLECTION,
+              profile.trigger_event());
+    EXPECT_LT(0, profile.call_stack_profile().stack_sample_size());
+
+    bool found = false;
+    for (const metrics::CallStackProfile::StackSample& sample :
+         profile.call_stack_profile().stack_sample()) {
+      if (sample.has_weight() &&
+          static_cast<size_t>(sample.weight()) >= kAllocationSize) {
         found = true;
         break;
       }
     }
-  }
-  EXPECT_TRUE(found);
+    EXPECT_TRUE(found);
 
-  ++*profiles_count;
-}
+    if (++profile_count == kSnapshotsToCollect)
+      controller.reset();
+  };
 
-#if !defined(OS_ANDROID) || \
-    BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && defined(OFFICIAL_BUILD)
-#define MAYBE_ProfileCollectionsScheduler ProfileCollectionsScheduler
-#else
-#define MAYBE_ProfileCollectionsScheduler DISABLED_ProfileCollectionsScheduler
-#endif
-TEST(HeapProfilerControllerTest, MAYBE_ProfileCollectionsScheduler) {
-  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
-
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitchASCII(switches::kSamplingHeapProfiler, "1");
-
-  int profiles_collected = 0;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      metrics::CallStackProfileMetricsProvider::kHeapProfilerReporting);
   metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
-      base::BindRepeating(&CheckProfile, &profiles_collected));
-  base::PoissonAllocationSampler::Init();
-  HeapProfilerController controller;
-  controller.SetTaskRunnerForTest(task_runner.get());
-  controller.StartIfEnabled();
+      base::BindLambdaForTesting(check_profile));
+  base::SamplingHeapProfiler::Get()->SetSamplingInterval(1024);
+
+  controller->Start();
+
   auto* sampler = base::PoissonAllocationSampler::Get();
   sampler->SuppressRandomnessForTest(true);
   sampler->RecordAlloc(reinterpret_cast<void*>(0x1337), kAllocationSize,
                        base::PoissonAllocationSampler::kMalloc, nullptr);
   sampler->RecordAlloc(reinterpret_cast<void*>(0x7331), kAllocationSize,
                        base::PoissonAllocationSampler::kMalloc, nullptr);
-  do {
-    task_runner->FastForwardBy(base::TimeDelta::FromHours(1));
-  } while (profiles_collected < 2);
+
+  task_environment.FastForwardUntilNoTasksRemain();
+  EXPECT_LE(kSnapshotsToCollect, profile_count);
 }
+#endif

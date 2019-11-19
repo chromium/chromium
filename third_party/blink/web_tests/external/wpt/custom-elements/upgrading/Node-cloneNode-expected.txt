@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS Node.prototype.cloneNode(false) must be able to clone a custom element
+PASS Node.prototype.cloneNode(false) must be able to clone as a autonomous custom element when it contains is attribute
+PASS Node.prototype.cloneNode(false) must be able to clone as a customized built-in element when it has an inconsistent "is" attribute
+PASS Node.prototype.cloneNode(false) must be able to clone a custom element inside an iframe
+PASS Node.prototype.cloneNode(true) must be able to clone a descendent custom element
+PASS Node.prototype.cloneNode(true) must set parentNode, previousSibling, and nextSibling before upgrading custom elements
+FAIL HTMLElement constructor must throw an TypeError when the top of the construction stack is marked AlreadyConstructed due to a custom element constructor constructing itself after super() call assert_equals: expected "TypeError" but got "InvalidStateError"
+FAIL HTMLElement constructor must throw an TypeError when the top of the construction stack is marked AlreadyConstructed due to a custom element constructor constructing itself before super() call assert_equals: expected "TypeError" but got "InvalidStateError"
+FAIL Upgrading a custom element must throw TypeError when the custom element's constructor returns another element assert_equals: expected "TypeError" but got "InvalidStateError"
+PASS Inserting an element must not try to upgrade a custom element when it had already failed to upgrade once
+Harness: the test ran to completion.
+

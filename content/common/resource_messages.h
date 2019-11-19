@@ -29,10 +29,6 @@
 
 #endif  // INTERNAL_CONTENT_COMMON_RESOURCE_MESSAGES_H_
 
-#define IPC_MESSAGE_START ResourceMsgStart
-#undef IPC_MESSAGE_EXPORT
-#define IPC_MESSAGE_EXPORT CONTENT_EXPORT
-
 IPC_ENUM_TRAITS_MAX_VALUE(blink::WebMixedContentContextType,
                           blink::WebMixedContentContextType::kLast)
 

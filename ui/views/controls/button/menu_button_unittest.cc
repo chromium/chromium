@@ -12,12 +12,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
-#include "ui/views/controls/button/menu_button_event_handler.h"
-#include "ui/views/controls/button/menu_button_listener.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/drag_controller.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -38,11 +40,10 @@ using test::TestInkDrop;
 // A MenuButton subclass that provides access to some MenuButton internals.
 class TestMenuButton : public MenuButton {
  public:
-  explicit TestMenuButton(MenuButtonListener* menu_button_listener)
-      : MenuButton(base::string16(ASCIIToUTF16("button")),
-                   menu_button_listener) {}
+  explicit TestMenuButton(ButtonListener* button_listener)
+      : MenuButton(base::string16(ASCIIToUTF16("button")), button_listener) {}
 
-  ~TestMenuButton() override {}
+  ~TestMenuButton() override = default;
 
   void SetInkDrop(std::unique_ptr<InkDrop> ink_drop) {
     InkDropHostViewTestApi(this).SetInkDrop(std::move(ink_drop));
@@ -54,8 +55,8 @@ class TestMenuButton : public MenuButton {
 
 class MenuButtonTest : public ViewsTestBase {
  public:
-  MenuButtonTest() : widget_(nullptr), button_(nullptr), ink_drop_(nullptr) {}
-  ~MenuButtonTest() override {}
+  MenuButtonTest() = default;
+  ~MenuButtonTest() override = default;
 
   void TearDown() override {
     generator_.reset();
@@ -75,19 +76,18 @@ class MenuButtonTest : public ViewsTestBase {
   // Creates a MenuButton with no button listener.
   void CreateMenuButtonWithNoListener() { CreateMenuButton(nullptr); }
 
-  // Creates a MenuButton with a MenuButtonListener. In this case, when the
-  // MenuButton is pushed, it notifies the MenuButtonListener to open a
+  // Creates a MenuButton with a ButtonListener. In this case, when the
+  // MenuButton is pushed, it notifies the ButtonListener to open a
   // drop-down menu.
-  void CreateMenuButtonWithMenuButtonListener(
-      MenuButtonListener* menu_button_listener) {
-    CreateMenuButton(menu_button_listener);
+  void CreateMenuButtonWithButtonListener(ButtonListener* button_listener) {
+    CreateMenuButton(button_listener);
   }
 
   gfx::Point GetOutOfButtonLocation() const {
     return gfx::Point(button_->x() - 1, button_->y() - 1);
   }
 
-  void CreateMenuButton(MenuButtonListener* menu_button_listener) {
+  void CreateMenuButton(ButtonListener* button_listener) {
     CreateWidget();
     generator_ =
         std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_));
@@ -95,7 +95,7 @@ class MenuButtonTest : public ViewsTestBase {
     // are about to create initializes its hover state in a consistent manner.
     generator_->set_current_screen_location(gfx::Point(10, 10));
 
-    button_ = new TestMenuButton(menu_button_listener);
+    button_ = new TestMenuButton(button_listener);
     button_->SetBoundsRect(gfx::Rect(0, 0, 200, 20));
 
     ink_drop_ = new test::TestInkDrop();
@@ -113,26 +113,23 @@ class MenuButtonTest : public ViewsTestBase {
     Widget::InitParams params =
         CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 200, 200);
-    widget_->Init(params);
+    widget_->Init(std::move(params));
   }
 
-  Widget* widget_;
-  TestMenuButton* button_;
+  Widget* widget_ = nullptr;
+  TestMenuButton* button_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
   // Weak ptr, |button_| owns the instance.
-  TestInkDrop* ink_drop_;
+  TestInkDrop* ink_drop_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MenuButtonTest);
 };
 
 class TestButtonListener : public ButtonListener {
  public:
-  TestButtonListener()
-      : last_sender_(nullptr),
-        last_sender_state_(Button::STATE_NORMAL),
-        last_event_type_(ui::ET_UNKNOWN) {}
-  ~TestButtonListener() override {}
+  TestButtonListener() = default;
+  ~TestButtonListener() override = default;
 
   void ButtonPressed(Button* sender, const ui::Event& event) override {
     last_sender_ = sender;
@@ -142,58 +139,37 @@ class TestButtonListener : public ButtonListener {
     last_event_type_ = event.type();
   }
 
+  void Reset() {
+    last_sender_ = nullptr;
+    last_sender_state_ = Button::STATE_NORMAL;
+    last_event_type_ = ui::ET_UNKNOWN;
+  }
+
   Button* last_sender() { return last_sender_; }
   Button::ButtonState last_sender_state() { return last_sender_state_; }
   ui::EventType last_event_type() { return last_event_type_; }
 
  private:
-  Button* last_sender_;
-  Button::ButtonState last_sender_state_;
-  ui::EventType last_event_type_;
+  Button* last_sender_ = nullptr;
+  Button::ButtonState last_sender_state_ = Button::STATE_NORMAL;
+  ui::EventType last_event_type_ = ui::ET_UNKNOWN;
 
   DISALLOW_COPY_AND_ASSIGN(TestButtonListener);
 };
 
-class TestMenuButtonListener : public MenuButtonListener {
+// A ButtonListener that will acquire a PressedLock in the
+// ButtonPressed() method and optionally release it as well.
+class PressStateButtonListener : public ButtonListener {
  public:
-  TestMenuButtonListener()
-      : last_source_(nullptr), last_source_state_(Button::STATE_NORMAL) {}
-  ~TestMenuButtonListener() override {}
-
-  void OnMenuButtonClicked(MenuButton* source,
-                           const gfx::Point& point,
-                           const ui::Event* event) override {
-    last_source_ = source;
-    Button* button = Button::AsButton(source);
-    DCHECK(button);
-    last_source_state_ = button->state();
-  }
-
-  View* last_source() { return last_source_; }
-  Button::ButtonState last_source_state() { return last_source_state_; }
-
- private:
-  View* last_source_;
-  Button::ButtonState last_source_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMenuButtonListener);
-};
-
-// A MenuButtonListener that will acquire a PressedLock in the
-// OnMenuButtonClicked() method and optionally release it as well.
-class PressStateMenuButtonListener : public MenuButtonListener {
- public:
-  explicit PressStateMenuButtonListener(bool release_lock)
+  explicit PressStateButtonListener(bool release_lock)
       : menu_button_(nullptr), release_lock_(release_lock) {}
 
-  ~PressStateMenuButtonListener() override {}
+  ~PressStateButtonListener() override = default;
 
   void set_menu_button(MenuButton* menu_button) { menu_button_ = menu_button; }
 
-  void OnMenuButtonClicked(MenuButton* source,
-                           const gfx::Point& point,
-                           const ui::Event* event) override {
-    pressed_lock_ = menu_button_->menu_button_event_handler()->TakeLock();
+  void ButtonPressed(Button* source, const ui::Event& event) override {
+    pressed_lock_ = menu_button_->button_controller()->TakeLock();
     if (release_lock_)
       pressed_lock_.reset();
   }
@@ -203,20 +179,20 @@ class PressStateMenuButtonListener : public MenuButtonListener {
  private:
   MenuButton* menu_button_;
 
-  std::unique_ptr<MenuButtonEventHandler::PressedLock> pressed_lock_;
+  std::unique_ptr<MenuButtonController::PressedLock> pressed_lock_;
 
   // The |pressed_lock_| will be released when true.
   bool release_lock_;
 
-  DISALLOW_COPY_AND_ASSIGN(PressStateMenuButtonListener);
+  DISALLOW_COPY_AND_ASSIGN(PressStateButtonListener);
 };
 
 // Basic implementation of a DragController, to test input behaviour for
 // MenuButtons that can be dragged.
 class TestDragController : public DragController {
  public:
-  TestDragController() {}
-  ~TestDragController() override {}
+  TestDragController() = default;
+  ~TestDragController() override = default;
 
   void WriteDragDataForView(View* sender,
                             const gfx::Point& press_pt,
@@ -247,7 +223,7 @@ class TestDragDropClient : public aura::client::DragDropClient,
   ~TestDragDropClient() override;
 
   // aura::client::DragDropClient:
-  int StartDragAndDrop(const ui::OSExchangeData& data,
+  int StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
                        aura::Window* root_window,
                        aura::Window* source_window,
                        const gfx::Point& screen_location,
@@ -264,23 +240,20 @@ class TestDragDropClient : public aura::client::DragDropClient,
 
  private:
   // True while receiving ui::LocatedEvents for drag operations.
-  bool drag_in_progress_;
+  bool drag_in_progress_ = false;
 
   // Target window where drag operations are occurring.
-  aura::Window* target_;
+  aura::Window* target_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestDragDropClient);
 };
 
-TestDragDropClient::TestDragDropClient()
-    : drag_in_progress_(false), target_(nullptr) {
-}
+TestDragDropClient::TestDragDropClient() = default;
 
-TestDragDropClient::~TestDragDropClient() {
-}
+TestDragDropClient::~TestDragDropClient() = default;
 
 int TestDragDropClient::StartDragAndDrop(
-    const ui::OSExchangeData& data,
+    std::unique_ptr<ui::OSExchangeData> data,
     aura::Window* root_window,
     aura::Window* source_window,
     const gfx::Point& screen_location,
@@ -318,18 +291,16 @@ void TestDragDropClient::OnMouseEvent(ui::MouseEvent* event) {
 }
 #endif  // defined(USE_AURA)
 
-class TestShowSiblingButtonListener : public MenuButtonListener {
+class TestShowSiblingButtonListener : public ButtonListener {
  public:
-  TestShowSiblingButtonListener() {}
-  ~TestShowSiblingButtonListener() override {}
+  TestShowSiblingButtonListener() = default;
+  ~TestShowSiblingButtonListener() override = default;
 
-  void OnMenuButtonClicked(MenuButton* source,
-                           const gfx::Point& point,
-                           const ui::Event* event) override {
+  void ButtonPressed(Button* source, const ui::Event& event) override {
     // The MenuButton itself doesn't set the PRESSED state during Activate() or
-    // OnMenuButtonClicked(). That should be handled by the MenuController or,
+    // ButtonPressed(). That should be handled by the MenuController or,
     // if no menu is shown, the listener.
-    EXPECT_EQ(Button::STATE_HOVERED, static_cast<MenuButton*>(source)->state());
+    EXPECT_EQ(Button::STATE_HOVERED, source->state());
   }
 
  private:
@@ -337,29 +308,51 @@ class TestShowSiblingButtonListener : public MenuButtonListener {
 };
 
 // Tests if the listener is notified correctly when a mouse click happens on a
-// MenuButton that has a MenuButtonListener.
+// MenuButton that has a ButtonListener.
 TEST_F(MenuButtonTest, ActivateDropDownOnMouseClick) {
-  TestMenuButtonListener menu_button_listener;
-  CreateMenuButtonWithMenuButtonListener(&menu_button_listener);
+  TestButtonListener button_listener;
+  CreateMenuButtonWithButtonListener(&button_listener);
 
   generator()->ClickLeftButton();
 
   // Check that MenuButton has notified the listener, while it was in pressed
   // state.
-  EXPECT_EQ(button(), menu_button_listener.last_source());
-  EXPECT_EQ(Button::STATE_HOVERED, menu_button_listener.last_source_state());
+  EXPECT_EQ(button(), button_listener.last_sender());
+  EXPECT_EQ(Button::STATE_HOVERED, button_listener.last_sender_state());
+}
+
+TEST_F(MenuButtonTest, ActivateOnKeyPress) {
+  TestButtonListener button_listener;
+  CreateMenuButtonWithButtonListener(&button_listener);
+
+  EXPECT_EQ(nullptr, button_listener.last_sender());
+  button()->OnKeyPressed(ui::KeyEvent(
+      ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_SPACE, ui::DomCode::SPACE, 0));
+  EXPECT_EQ(button(), button_listener.last_sender());
+
+  button_listener.Reset();
+  EXPECT_EQ(nullptr, button_listener.last_sender());
+
+  button()->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED,
+                                      ui::KeyboardCode::VKEY_RETURN,
+                                      ui::DomCode::ENTER, 0));
+  if (PlatformStyle::kReturnClicksFocusedControl) {
+    EXPECT_EQ(button(), button_listener.last_sender());
+  } else {
+    EXPECT_EQ(nullptr, button_listener.last_sender());
+  }
 }
 
 // Tests that the ink drop center point is set from the mouse click point.
 TEST_F(MenuButtonTest, InkDropCenterSetFromClick) {
-  TestMenuButtonListener menu_button_listener;
-  CreateMenuButtonWithMenuButtonListener(&menu_button_listener);
+  TestButtonListener button_listener;
+  CreateMenuButtonWithButtonListener(&button_listener);
 
   gfx::Point click_point(6, 8);
   generator()->MoveMouseTo(click_point);
   generator()->ClickLeftButton();
 
-  EXPECT_EQ(button(), menu_button_listener.last_source());
+  EXPECT_EQ(button(), button_listener.last_sender());
   EXPECT_EQ(
       click_point,
       InkDropHostViewTestApi(button()).GetInkDropCenterBasedOnLastEvent());
@@ -367,14 +360,14 @@ TEST_F(MenuButtonTest, InkDropCenterSetFromClick) {
 
 // Tests that the ink drop center point is set from the PressedLock constructor.
 TEST_F(MenuButtonTest, InkDropCenterSetFromClickWithPressedLock) {
-  TestMenuButtonListener menu_button_listener;
-  CreateMenuButtonWithMenuButtonListener(&menu_button_listener);
+  TestButtonListener button_listener;
+  CreateMenuButtonWithButtonListener(&button_listener);
 
   gfx::Point click_point(11, 7);
   ui::MouseEvent click_event(ui::EventType::ET_MOUSE_PRESSED, click_point,
                              click_point, base::TimeTicks(), 0, 0);
-  MenuButtonEventHandler::PressedLock pressed_lock(
-      button()->menu_button_event_handler(), false, &click_event);
+  MenuButtonController::PressedLock pressed_lock(button()->button_controller(),
+                                                 false, &click_event);
 
   EXPECT_EQ(Button::STATE_PRESSED, button()->state());
   EXPECT_EQ(
@@ -391,9 +384,8 @@ TEST_F(MenuButtonTest, ButtonStateForMenuButtonsWithPressedLocks) {
   EXPECT_EQ(Button::STATE_HOVERED, button()->state());
 
   // Introduce a PressedLock, which should make the button pressed.
-  std::unique_ptr<MenuButtonEventHandler::PressedLock> pressed_lock1(
-      new MenuButtonEventHandler::PressedLock(
-          button()->menu_button_event_handler()));
+  std::unique_ptr<MenuButtonController::PressedLock> pressed_lock1(
+      new MenuButtonController::PressedLock(button()->button_controller()));
   EXPECT_EQ(Button::STATE_PRESSED, button()->state());
 
   // Even if we move the mouse outside of the button, it should remain pressed.
@@ -401,9 +393,8 @@ TEST_F(MenuButtonTest, ButtonStateForMenuButtonsWithPressedLocks) {
   EXPECT_EQ(Button::STATE_PRESSED, button()->state());
 
   // Creating a new lock should obviously keep the button pressed.
-  std::unique_ptr<MenuButtonEventHandler::PressedLock> pressed_lock2(
-      new MenuButtonEventHandler::PressedLock(
-          button()->menu_button_event_handler()));
+  std::unique_ptr<MenuButtonController::PressedLock> pressed_lock2(
+      new MenuButtonController::PressedLock(button()->button_controller()));
   EXPECT_EQ(Button::STATE_PRESSED, button()->state());
 
   // The button should remain pressed while any locks are active.
@@ -420,7 +411,7 @@ TEST_F(MenuButtonTest, ButtonStateForMenuButtonsWithPressedLocks) {
 
   // Test that the button returns to the appropriate state after the press; if
   // the mouse ends over the button, the button should be hovered.
-  pressed_lock1 = button()->menu_button_event_handler()->TakeLock();
+  pressed_lock1 = button()->button_controller()->TakeLock();
   EXPECT_EQ(Button::STATE_PRESSED, button()->state());
   pressed_lock1.reset();
   EXPECT_EQ(Button::STATE_HOVERED, button()->state());
@@ -428,7 +419,7 @@ TEST_F(MenuButtonTest, ButtonStateForMenuButtonsWithPressedLocks) {
   // If the button is disabled before the pressed lock, it should be disabled
   // after the pressed lock.
   button()->SetState(Button::STATE_DISABLED);
-  pressed_lock1 = button()->menu_button_event_handler()->TakeLock();
+  pressed_lock1 = button()->button_controller()->TakeLock();
   EXPECT_EQ(Button::STATE_PRESSED, button()->state());
   pressed_lock1.reset();
   EXPECT_EQ(Button::STATE_DISABLED, button()->state());
@@ -437,7 +428,7 @@ TEST_F(MenuButtonTest, ButtonStateForMenuButtonsWithPressedLocks) {
 
   // Edge case: the button is disabled, a pressed lock is added, and then the
   // button is re-enabled. It should be enabled after the lock is removed.
-  pressed_lock1 = button()->menu_button_event_handler()->TakeLock();
+  pressed_lock1 = button()->button_controller()->TakeLock();
   EXPECT_EQ(Button::STATE_PRESSED, button()->state());
   button()->SetState(Button::STATE_NORMAL);
   pressed_lock1.reset();
@@ -448,29 +439,29 @@ TEST_F(MenuButtonTest, ButtonStateForMenuButtonsWithPressedLocks) {
 // PressedLock.
 TEST_F(MenuButtonTest, PressedStateWithSiblingMenu) {
   TestShowSiblingButtonListener listener;
-  CreateMenuButtonWithMenuButtonListener(&listener);
+  CreateMenuButtonWithButtonListener(&listener);
 
   // Move the mouse over the button; the button should be in a hovered state.
   generator()->MoveMouseTo(gfx::Point(10, 10));
   EXPECT_EQ(Button::STATE_HOVERED, button()->state());
   generator()->ClickLeftButton();
-  // Test is continued in TestShowSiblingButtonListener::OnMenuButtonClicked().
+  // Test is continued in TestShowSiblingButtonListener::ButtonPressed().
 }
 
 // Test that the MenuButton does not become pressed if it can be dragged, until
 // a release occurs.
 TEST_F(MenuButtonTest, DraggableMenuButtonActivatesOnRelease) {
-  TestMenuButtonListener menu_button_listener;
-  CreateMenuButtonWithMenuButtonListener(&menu_button_listener);
+  TestButtonListener button_listener;
+  CreateMenuButtonWithButtonListener(&button_listener);
   TestDragController drag_controller;
   button()->set_drag_controller(&drag_controller);
 
   generator()->PressLeftButton();
-  EXPECT_EQ(nullptr, menu_button_listener.last_source());
+  EXPECT_EQ(nullptr, button_listener.last_sender());
 
   generator()->ReleaseLeftButton();
-  EXPECT_EQ(button(), menu_button_listener.last_source());
-  EXPECT_EQ(Button::STATE_HOVERED, menu_button_listener.last_source_state());
+  EXPECT_EQ(button(), button_listener.last_sender());
+  EXPECT_EQ(Button::STATE_HOVERED, button_listener.last_sender_state());
 }
 
 TEST_F(MenuButtonTest, InkDropStateForMenuButtonActivationsWithoutListener) {
@@ -483,8 +474,8 @@ TEST_F(MenuButtonTest, InkDropStateForMenuButtonActivationsWithoutListener) {
 
 TEST_F(MenuButtonTest,
        InkDropStateForMenuButtonActivationsWithListenerThatDoesntAcquireALock) {
-  TestMenuButtonListener menu_button_listener;
-  CreateMenuButtonWithMenuButtonListener(&menu_button_listener);
+  TestButtonListener button_listener;
+  CreateMenuButtonWithButtonListener(&button_listener);
   button()->Activate(nullptr);
 
   EXPECT_EQ(InkDropState::ACTION_TRIGGERED,
@@ -494,9 +485,9 @@ TEST_F(MenuButtonTest,
 TEST_F(
     MenuButtonTest,
     InkDropStateForMenuButtonActivationsWithListenerThatDontReleaseAllLocks) {
-  PressStateMenuButtonListener menu_button_listener(false);
-  CreateMenuButtonWithMenuButtonListener(&menu_button_listener);
-  menu_button_listener.set_menu_button(button());
+  PressStateButtonListener button_listener(false);
+  CreateMenuButtonWithButtonListener(&button_listener);
+  button_listener.set_menu_button(button());
   button()->Activate(nullptr);
 
   EXPECT_EQ(InkDropState::ACTIVATED, ink_drop()->GetTargetInkDropState());
@@ -504,9 +495,9 @@ TEST_F(
 
 TEST_F(MenuButtonTest,
        InkDropStateForMenuButtonActivationsWithListenerThatReleaseAllLocks) {
-  PressStateMenuButtonListener menu_button_listener(true);
-  CreateMenuButtonWithMenuButtonListener(&menu_button_listener);
-  menu_button_listener.set_menu_button(button());
+  PressStateButtonListener button_listener(true);
+  CreateMenuButtonWithButtonListener(&button_listener);
+  button_listener.set_menu_button(button());
   button()->Activate(nullptr);
 
   EXPECT_EQ(InkDropState::DEACTIVATED, ink_drop()->GetTargetInkDropState());
@@ -515,15 +506,13 @@ TEST_F(MenuButtonTest,
 TEST_F(MenuButtonTest, InkDropStateForMenuButtonsWithPressedLocks) {
   CreateMenuButtonWithNoListener();
 
-  std::unique_ptr<MenuButtonEventHandler::PressedLock> pressed_lock1(
-      new MenuButtonEventHandler::PressedLock(
-          button()->menu_button_event_handler()));
+  std::unique_ptr<MenuButtonController::PressedLock> pressed_lock1(
+      new MenuButtonController::PressedLock(button()->button_controller()));
 
   EXPECT_EQ(InkDropState::ACTIVATED, ink_drop()->GetTargetInkDropState());
 
-  std::unique_ptr<MenuButtonEventHandler::PressedLock> pressed_lock2(
-      new MenuButtonEventHandler::PressedLock(
-          button()->menu_button_event_handler()));
+  std::unique_ptr<MenuButtonController::PressedLock> pressed_lock2(
+      new MenuButtonController::PressedLock(button()->button_controller()));
 
   EXPECT_EQ(InkDropState::ACTIVATED, ink_drop()->GetTargetInkDropState());
 
@@ -539,16 +528,14 @@ TEST_F(MenuButtonTest, InkDropStateForMenuButtonsWithPressedLocks) {
 TEST_F(MenuButtonTest, OneInkDropAnimationForReentrantPressedLocks) {
   CreateMenuButtonWithNoListener();
 
-  std::unique_ptr<MenuButtonEventHandler::PressedLock> pressed_lock1(
-      new MenuButtonEventHandler::PressedLock(
-          button()->menu_button_event_handler()));
+  std::unique_ptr<MenuButtonController::PressedLock> pressed_lock1(
+      new MenuButtonController::PressedLock(button()->button_controller()));
 
   EXPECT_EQ(InkDropState::ACTIVATED, ink_drop()->GetTargetInkDropState());
   ink_drop()->AnimateToState(InkDropState::ACTION_PENDING);
 
-  std::unique_ptr<MenuButtonEventHandler::PressedLock> pressed_lock2(
-      new MenuButtonEventHandler::PressedLock(
-          button()->menu_button_event_handler()));
+  std::unique_ptr<MenuButtonController::PressedLock> pressed_lock2(
+      new MenuButtonController::PressedLock(button()->button_controller()));
 
   EXPECT_EQ(InkDropState::ACTION_PENDING, ink_drop()->GetTargetInkDropState());
 }
@@ -557,10 +544,9 @@ TEST_F(MenuButtonTest, OneInkDropAnimationForReentrantPressedLocks) {
 // before another Activation occurs.
 TEST_F(MenuButtonTest,
        InkDropStateForMenuButtonWithPressedLockBeforeActivation) {
-  TestMenuButtonListener menu_button_listener;
-  CreateMenuButtonWithMenuButtonListener(&menu_button_listener);
-  MenuButtonEventHandler::PressedLock lock(
-      button()->menu_button_event_handler());
+  TestButtonListener button_listener;
+  CreateMenuButtonWithButtonListener(&button_listener);
+  MenuButtonController::PressedLock lock(button()->button_controller());
 
   button()->Activate(nullptr);
 
@@ -572,8 +558,8 @@ TEST_F(MenuButtonTest,
 // Tests that the MenuButton does not become pressed if it can be dragged, and a
 // DragDropClient is processing the events.
 TEST_F(MenuButtonTest, DraggableMenuButtonDoesNotActivateOnDrag) {
-  TestMenuButtonListener menu_button_listener;
-  CreateMenuButtonWithMenuButtonListener(&menu_button_listener);
+  TestButtonListener button_listener;
+  CreateMenuButtonWithButtonListener(&button_listener);
   TestDragController drag_controller;
   button()->set_drag_controller(&drag_controller);
 
@@ -583,8 +569,8 @@ TEST_F(MenuButtonTest, DraggableMenuButtonDoesNotActivateOnDrag) {
                                 ui::EventTarget::Priority::kSystem);
 
   generator()->DragMouseBy(10, 0);
-  EXPECT_EQ(nullptr, menu_button_listener.last_source());
-  EXPECT_EQ(Button::STATE_NORMAL, menu_button_listener.last_source_state());
+  EXPECT_EQ(nullptr, button_listener.last_sender());
+  EXPECT_EQ(Button::STATE_NORMAL, button_listener.last_sender_state());
   button()->RemovePreTargetHandler(&drag_client);
 }
 
@@ -594,10 +580,10 @@ TEST_F(MenuButtonTest, DraggableMenuButtonDoesNotActivateOnDrag) {
 #if !defined(OS_MACOSX) || defined(USE_AURA)
 
 // Tests if the listener is notified correctly when a gesture tap happens on a
-// MenuButton that has a MenuButtonListener.
+// MenuButton that has a ButtonListener.
 TEST_F(MenuButtonTest, ActivateDropDownOnGestureTap) {
-  TestMenuButtonListener menu_button_listener;
-  CreateMenuButtonWithMenuButtonListener(&menu_button_listener);
+  TestButtonListener button_listener;
+  CreateMenuButtonWithButtonListener(&button_listener);
 
   // Move the mouse outside the menu button so that it doesn't impact the
   // button state.
@@ -608,8 +594,8 @@ TEST_F(MenuButtonTest, ActivateDropDownOnGestureTap) {
 
   // Check that MenuButton has notified the listener, while it was in pressed
   // state.
-  EXPECT_EQ(button(), menu_button_listener.last_source());
-  EXPECT_EQ(Button::STATE_HOVERED, menu_button_listener.last_source_state());
+  EXPECT_EQ(button(), button_listener.last_sender());
+  EXPECT_EQ(Button::STATE_HOVERED, button_listener.last_sender_state());
 
   // The button should go back to it's normal state since the gesture ended.
   EXPECT_EQ(Button::STATE_NORMAL, button()->state());
@@ -618,35 +604,35 @@ TEST_F(MenuButtonTest, ActivateDropDownOnGestureTap) {
 // Tests that the button enters a hovered state upon a tap down, before becoming
 // pressed at activation.
 TEST_F(MenuButtonTest, TouchFeedbackDuringTap) {
-  TestMenuButtonListener menu_button_listener;
-  CreateMenuButtonWithMenuButtonListener(&menu_button_listener);
+  TestButtonListener button_listener;
+  CreateMenuButtonWithButtonListener(&button_listener);
   generator()->PressTouch();
   EXPECT_EQ(Button::STATE_HOVERED, button()->state());
 
   generator()->ReleaseTouch();
-  EXPECT_EQ(Button::STATE_HOVERED, menu_button_listener.last_source_state());
+  EXPECT_EQ(Button::STATE_HOVERED, button_listener.last_sender_state());
 }
 
 // Tests that a move event that exits the button returns it to the normal state,
 // and that the button did not activate the listener.
 TEST_F(MenuButtonTest, TouchFeedbackDuringTapCancel) {
-  TestMenuButtonListener menu_button_listener;
-  CreateMenuButtonWithMenuButtonListener(&menu_button_listener);
+  TestButtonListener button_listener;
+  CreateMenuButtonWithButtonListener(&button_listener);
   generator()->PressTouch();
   EXPECT_EQ(Button::STATE_HOVERED, button()->state());
 
   generator()->MoveTouch(gfx::Point(10, 30));
   generator()->ReleaseTouch();
   EXPECT_EQ(Button::STATE_NORMAL, button()->state());
-  EXPECT_EQ(nullptr, menu_button_listener.last_source());
+  EXPECT_EQ(nullptr, button_listener.last_sender());
 }
 
 #endif  // !defined(OS_MACOSX) || defined(USE_AURA)
 
 TEST_F(MenuButtonTest, InkDropHoverWhenShowingMenu) {
-  PressStateMenuButtonListener menu_button_listener(false);
-  CreateMenuButtonWithMenuButtonListener(&menu_button_listener);
-  menu_button_listener.set_menu_button(button());
+  PressStateButtonListener button_listener(false);
+  CreateMenuButtonWithButtonListener(&button_listener);
+  button_listener.set_menu_button(button());
 
   generator()->MoveMouseTo(GetOutOfButtonLocation());
   EXPECT_FALSE(ink_drop()->is_hovered());
@@ -659,33 +645,33 @@ TEST_F(MenuButtonTest, InkDropHoverWhenShowingMenu) {
 }
 
 TEST_F(MenuButtonTest, InkDropIsHoveredAfterDismissingMenuWhenMouseOverButton) {
-  PressStateMenuButtonListener menu_button_listener(false);
-  CreateMenuButtonWithMenuButtonListener(&menu_button_listener);
-  menu_button_listener.set_menu_button(button());
+  PressStateButtonListener button_listener(false);
+  CreateMenuButtonWithButtonListener(&button_listener);
+  button_listener.set_menu_button(button());
 
   generator()->MoveMouseTo(button()->bounds().CenterPoint());
   generator()->PressLeftButton();
   EXPECT_FALSE(ink_drop()->is_hovered());
-  menu_button_listener.ReleasePressedLock();
+  button_listener.ReleasePressedLock();
 
   EXPECT_TRUE(ink_drop()->is_hovered());
 }
 
 TEST_F(MenuButtonTest,
        InkDropIsntHoveredAfterDismissingMenuWhenMouseOutsideButton) {
-  PressStateMenuButtonListener menu_button_listener(false);
-  CreateMenuButtonWithMenuButtonListener(&menu_button_listener);
-  menu_button_listener.set_menu_button(button());
+  PressStateButtonListener button_listener(false);
+  CreateMenuButtonWithButtonListener(&button_listener);
+  button_listener.set_menu_button(button());
 
   generator()->MoveMouseTo(button()->bounds().CenterPoint());
   generator()->PressLeftButton();
   generator()->MoveMouseTo(GetOutOfButtonLocation());
-  menu_button_listener.ReleasePressedLock();
+  button_listener.ReleasePressedLock();
 
   EXPECT_FALSE(ink_drop()->is_hovered());
 }
 
-class DestroyButtonInGestureListener : public MenuButtonListener {
+class DestroyButtonInGestureListener : public ButtonListener {
  public:
   DestroyButtonInGestureListener() {
     menu_button_ = std::make_unique<MenuButton>(base::string16(), this);
@@ -696,10 +682,8 @@ class DestroyButtonInGestureListener : public MenuButtonListener {
   MenuButton* menu_button() { return menu_button_.get(); }
 
  private:
-  // MenuButtonListener:
-  void OnMenuButtonClicked(MenuButton* source,
-                           const gfx::Point& point,
-                           const ui::Event* event) override {
+  // ButtonListener:
+  void ButtonPressed(Button* source, const ui::Event& event) override {
     menu_button_.reset();
   }
 
@@ -709,7 +693,7 @@ class DestroyButtonInGestureListener : public MenuButtonListener {
 };
 
 // This test ensures there isn't a UAF in MenuButton::OnGestureEvent() if
-// the MenuButtonListener::OnMenuButtonClicked() deletes the MenuButton.
+// the ButtonListener::ButtonPressed() deletes the MenuButton.
 TEST_F(MenuButtonTest, DestroyButtonInGesture) {
   DestroyButtonInGestureListener listener;
   ui::GestureEvent gesture_event(0, 0, 0, base::TimeTicks::Now(),

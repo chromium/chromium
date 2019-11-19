@@ -24,6 +24,7 @@ namespace {
 
 // Prefixes for RemoteDevice fields.
 const char kDeviceNamePrefix[] = "device";
+const char kNoPiiDeviceNamePrefix[] = "no pii here";
 const char kPublicKeyPrefix[] = "pk";
 
 // The id of the user who the remote devices belong to.
@@ -42,6 +43,8 @@ const char kBeaconSeedData[] = "Beacon Seed Data";
 cryptauth::ExternalDeviceInfo CreateDeviceInfo(const std::string& suffix) {
   cryptauth::ExternalDeviceInfo device_info;
   device_info.set_friendly_device_name(std::string(kDeviceNamePrefix) + suffix);
+  device_info.set_no_pii_device_name(std::string(kNoPiiDeviceNamePrefix) +
+                                     suffix);
   device_info.set_public_key(std::string(kPublicKeyPrefix) + suffix);
   device_info.add_beacon_seeds();
   cryptauth::BeaconSeed* beacon_seed = device_info.mutable_beacon_seeds(0);
@@ -112,6 +115,8 @@ TEST_F(DeviceSyncRemoteDeviceLoaderTest, LoadOneDevice) {
   EXPECT_EQ(1u, remote_devices_.size());
   EXPECT_FALSE(remote_devices_[0].persistent_symmetric_key.empty());
   EXPECT_EQ(device_infos[0].friendly_device_name(), remote_devices_[0].name);
+  EXPECT_EQ(device_infos[0].no_pii_device_name(),
+            remote_devices_[0].pii_free_name);
   EXPECT_EQ(device_infos[0].public_key(), remote_devices_[0].public_key);
   ASSERT_EQ(1u, remote_devices_[0].beacon_seeds.size());
 

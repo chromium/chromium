@@ -32,11 +32,11 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
       int render_process_id, int render_view_id) override;
   void CopyFrom(HostZoomMap* copy) override;
   double GetZoomLevelForHostAndScheme(const std::string& scheme,
-                                      const std::string& host) const override;
+                                      const std::string& host) override;
   // TODO(wjmaclean) Should we use a GURL here? crbug.com/384486
   bool HasZoomLevel(const std::string& scheme,
-                    const std::string& host) const override;
-  ZoomLevelVector GetAllZoomLevels() const override;
+                    const std::string& host) override;
+  ZoomLevelVector GetAllZoomLevels() override;
   void SetZoomLevelForHost(const std::string& host, double level) override;
   void InitializeZoomLevelForHost(const std::string& host,
                                   double level,
@@ -45,21 +45,21 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
                                     const std::string& host,
                                     double level) override;
   bool UsesTemporaryZoomLevel(int render_process_id,
-                              int render_view_id) const override;
+                              int render_view_id) override;
   void SetTemporaryZoomLevel(int render_process_id,
                              int render_view_id,
                              double level) override;
   void ClearZoomLevels(base::Time delete_begin, base::Time delete_end) override;
   void ClearTemporaryZoomLevel(int render_process_id,
                                int render_view_id) override;
-  double GetDefaultZoomLevel() const override;
+  double GetDefaultZoomLevel() override;
   void SetDefaultZoomLevel(double level) override;
   std::unique_ptr<Subscription> AddZoomLevelChangedCallback(
       const ZoomLevelChangedCallback& callback) override;
 
   // Returns the current zoom level for the specified WebContents. This may
   // be a temporary zoom level, depending on UsesTemporaryZoomLevel().
-  double GetZoomLevelForWebContents(WebContentsImpl* web_contents_impl) const;
+  double GetZoomLevelForWebContents(WebContentsImpl* web_contents_impl);
 
   bool PageScaleFactorIsOneForWebContents(
       WebContentsImpl* web_contents_impl) const;
@@ -70,24 +70,11 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   void SetZoomLevelForWebContents(WebContentsImpl* web_contents_impl,
                                   double level);
 
-  // Sets the zoom level for the specified view. The level may be set for only
-  // this view, or for the host, depending on UsesTemporaryZoomLevel().
-  void SetZoomLevelForView(int render_process_id,
-                           int render_view_id,
-                           double level,
-                           const std::string& host);
-
   // Returns the temporary zoom level that's only valid for the lifetime of
   // the given WebContents (i.e. isn't saved and doesn't affect other
   // WebContentses) if it exists, the default zoom level otherwise.
   double GetTemporaryZoomLevel(int render_process_id,
                                int render_view_id) const;
-
-  // Returns the zoom level regardless of whether it's temporary, host-keyed or
-  // scheme+host-keyed.
-  double GetZoomLevelForView(const GURL& url,
-                             int render_process_id,
-                             int render_view_id) const;
 
   void SendErrorPageZoomLevelRefresh();
 

@@ -23,11 +23,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -39,17 +37,18 @@ import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion.MatchClassification;
-import org.chromium.chrome.browser.search_engines.TemplateUrl;
-import org.chromium.chrome.browser.search_engines.TemplateUrlService;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.searchwidget.SearchActivity.SearchActivityDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.KeyUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.util.ArrayList;
@@ -71,7 +70,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SearchActivityTest {
-    private static final long OMNIBOX_SHOW_TIMEOUT_MS = ScalableTimeout.scaleTimeout(5000);
+    private static final long OMNIBOX_SHOW_TIMEOUT_MS = 5000L;
 
     private static class TestDelegate
             extends SearchActivityDelegate implements DefaultSearchEnginePromoDialogObserver {
@@ -108,7 +107,7 @@ public class SearchActivityTest {
 
                     @Override
                     public List<TemplateUrl> getSearchEnginesForPromoDialog(int promoType) {
-                        return TemplateUrlService.getInstance().getTemplateUrls();
+                        return TemplateUrlServiceFactory.get().getTemplateUrls();
                     }
                 });
                 super.showSearchEngineDialogIfNeeded(activity, onSearchEngineFinalized);
@@ -219,12 +218,8 @@ public class SearchActivityTest {
         setUrlBarText(searchActivity, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         // Start loading native, then let the activity finish initialization.
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                searchActivity.startDelayedNativeInitialization();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> searchActivity.startDelayedNativeInitialization());
 
         Assert.assertEquals(
                 1, mTestDelegate.shouldDelayNativeInitializationCallback.getCallCount());
@@ -270,10 +265,10 @@ public class SearchActivityTest {
 
         waitForChromeTabbedActivityToStart(new Callable<Void>() {
             @Override
-            public Void call() throws InterruptedException, TimeoutException {
+            public Void call() throws TimeoutException {
                 // Finish initialization.  It should notice the URL is queued up and start the
                 // browser.
-                ThreadUtils.runOnUiThreadBlocking(
+                TestThreadUtils.runOnUiThreadBlocking(
                         () -> { searchActivity.startDelayedNativeInitialization(); });
 
                 Assert.assertEquals(
@@ -287,7 +282,7 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
-    public void testZeroSuggestBeforeNativeIsLoaded() throws Exception {
+    public void testZeroSuggestBeforeNativeIsLoaded() {
         LocaleManager.setInstanceForTest(new LocaleManager() {
             @Override
             public boolean needToCheckForSearchEnginePromo() {
@@ -300,10 +295,10 @@ public class SearchActivityTest {
         classifications.add(new MatchClassification(0, MatchClassificationStyle.NONE));
         OmniboxSuggestion mockSuggestion = new OmniboxSuggestion(0, true, 0, 0,
                 "https://google.com", classifications, "https://google.com", classifications, null,
-                "", "https://google.com", false, false);
+                "", "https://google.com", null, null, false, false);
         OmniboxSuggestion mockSuggestion2 = new OmniboxSuggestion(0, true, 0, 0,
                 "https://android.com", classifications, "https://android.com", classifications,
-                null, "", "https://android.com", false, false);
+                null, "", "https://android.com", null, null, false, false);
         List<OmniboxSuggestion> list = new ArrayList<>();
         list.add(mockSuggestion);
         list.add(mockSuggestion2);
@@ -336,12 +331,8 @@ public class SearchActivityTest {
 
         // Set some text in the search box, then continue startup.
         setUrlBarText(searchActivity, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mTestDelegate.onSearchEngineFinalizedCallback.onResult(true);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mTestDelegate.onSearchEngineFinalizedCallback.onResult(true));
 
         // Let the initialization finish completely.
         Assert.assertEquals(
@@ -424,7 +415,7 @@ public class SearchActivityTest {
         // SearchActivity should realize the failure case and prevent the user from using it.
         CriteriaHelper.pollInstrumentationThread(Criteria.equals(0, new Callable<Integer>() {
             @Override
-            public Integer call() throws Exception {
+            public Integer call() {
                 return ApplicationStatus.getRunningActivities().size();
             }
         }));
@@ -436,7 +427,7 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
-    public void testNewIntentDiscardsQuery() throws Exception {
+    public void testNewIntentDiscardsQuery() {
         final SearchActivity searchActivity = startSearchActivity();
         setUrlBarText(searchActivity, "first query");
         final SearchActivityLocationBarLayout locationBar =
@@ -458,11 +449,11 @@ public class SearchActivityTest {
         });
     }
 
-    private SearchActivity startSearchActivity() throws Exception {
+    private SearchActivity startSearchActivity() {
         return startSearchActivity(0);
     }
 
-    private SearchActivity startSearchActivity(int expectedCallCount) throws Exception {
+    private SearchActivity startSearchActivity(int expectedCallCount) {
         final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
         ActivityMonitor searchMonitor =
                 new ActivityMonitor(SearchActivity.class.getName(), null, false);
@@ -494,7 +485,7 @@ public class SearchActivityTest {
 
         CriteriaHelper.pollUiThread(Criteria.equals(expectedUrl, new Callable<String>() {
             @Override
-            public String call() throws Exception {
+            public String call() {
                 Tab tab = cta.getActivityTab();
                 if (tab == null) return null;
 
@@ -514,7 +505,7 @@ public class SearchActivityTest {
                 return false;
             }
         });
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             UrlBar urlBar = (UrlBar) activity.findViewById(R.id.url_bar);
             urlBar.setText(url);
         });

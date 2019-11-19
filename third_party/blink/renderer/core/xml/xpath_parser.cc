@@ -37,8 +37,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
 namespace blink {
-
-using namespace xpath;
+namespace xpath {
 
 Parser* Parser::current_parser_ = nullptr;
 
@@ -520,4 +519,5 @@ void Parser::DeleteString(String* s) {
   strings_.erase(s);
 }
 
+}  // namespace xpath
 }  // namespace blink

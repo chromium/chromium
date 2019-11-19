@@ -20,10 +20,11 @@
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/web/public/web_state/web_state.h"
-#import "ios/web/public/web_state/web_state_observer_bridge.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/web_client.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image.h"
 
@@ -132,13 +133,14 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
 }
 
 - (void)updateWebViewSnapshotWithCompletion:(void (^)(UIImage*))completion {
-  DCHECK(self.webState->ContentIsHTML());
+  DCHECK(!web::GetWebClient()->IsAppSpecificURL(
+      self.webState->GetLastCommittedURL()));
+
   if (![self canTakeSnapshot]) {
     if (completion) {
-      base::PostTaskWithTraits(FROM_HERE, {web::WebThread::UI},
-                               base::BindOnce(^{
-                                 completion(nil);
-                               }));
+      base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
+                       completion(nil);
+                     }));
     }
     return;
   }
@@ -151,7 +153,7 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
   __weak SnapshotGenerator* weakSelf = self;
   self.webState->TakeSnapshot(
       gfx::RectF(snapshotFrameInWebView),
-      base::BindOnce(^(const gfx::Image& image) {
+      base::BindRepeating(^(const gfx::Image& image) {
         UIImage* snapshot = nil;
         if (!image.IsEmpty()) {
           snapshot = [weakSelf
@@ -206,6 +208,8 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
              frameInBaseView:(CGRect)frameInBaseView {
   DCHECK(baseView);
   DCHECK(!CGRectIsEmpty(frameInBaseView));
+  // Note: When not using device scale, the output image size may slightly
+  // differ from the input size due to rounding.
   const CGFloat kScale =
       std::max<CGFloat>(1.0, [self.snapshotCache snapshotScaleForDevice]);
   UIGraphicsBeginImageContextWithOptions(frameInBaseView.size, YES, kScale);
@@ -251,7 +255,9 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
   DCHECK(!CGRectIsEmpty(frameInWindow));
   if (!baseImage)
     return nil;
-  DCHECK(CGSizeEqualToSize(baseImage.size, frameInWindow.size));
+  // Note: If the baseImage scale differs from device scale, the baseImage size
+  // may slightly differ from frameInWindow size due to rounding. Do not attempt
+  // to compare the baseImage size and frameInWindow size.
   if (overlays.count == 0)
     return baseImage;
   const CGFloat kScale =

@@ -9,23 +9,23 @@
 namespace blink {
 
 const PropertyTreeState& PropertyTreeState::Uninitialized() {
-  DEFINE_STATIC_REF(TransformPaintPropertyNode, transform,
+  DEFINE_STATIC_REF(const TransformPaintPropertyNode, transform,
                     TransformPaintPropertyNode::Create(
                         TransformPaintPropertyNode::Root(), {}));
-  DEFINE_STATIC_REF(ClipPaintPropertyNode, clip,
+  DEFINE_STATIC_REF(const ClipPaintPropertyNode, clip,
                     ClipPaintPropertyNode::Create(ClipPaintPropertyNode::Root(),
                                                   {transform}));
-  DEFINE_STATIC_REF(EffectPaintPropertyNode, effect,
+  DEFINE_STATIC_REF(const EffectPaintPropertyNode, effect,
                     EffectPaintPropertyNode::Create(
                         EffectPaintPropertyNode::Root(), {transform}));
-  DEFINE_STATIC_LOCAL(PropertyTreeState, uninitialized,
+  DEFINE_STATIC_LOCAL(const PropertyTreeState, uninitialized,
                       (*transform, *clip, *effect));
   return uninitialized;
 }
 
 const PropertyTreeState& PropertyTreeState::Root() {
   DEFINE_STATIC_LOCAL(
-      PropertyTreeState, root,
+      const PropertyTreeState, root,
       (TransformPaintPropertyNode::Root(), ClipPaintPropertyNode::Root(),
        EffectPaintPropertyNode::Root()));
   return root;
@@ -55,7 +55,7 @@ size_t PropertyTreeState::CacheMemoryUsageInBytes() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const PropertyTreeState& state) {
-  return os << state.ToString().Utf8().data();
+  return os << state.ToString().Utf8();
 }
 
 }  // namespace blink

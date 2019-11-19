@@ -24,16 +24,15 @@ class LayerTreeOwner;
 namespace ash {
 
 // Amount of time for the cross fade animation.
-extern const int kCrossFadeDurationMS;
+constexpr base::TimeDelta kCrossFadeDuration =
+    base::TimeDelta::FromMilliseconds(200);
 
 // Implementation of cross fading. Window is the window being cross faded. It
 // should be at the target bounds. |old_layer_owner| contains the previous layer
-// from |window|.  |tween_type| specifies the tween type of the cross fade
-// animation.
+// from |window|.
 ASH_EXPORT base::TimeDelta CrossFadeAnimation(
     aura::Window* window,
-    std::unique_ptr<ui::LayerTreeOwner> old_layer_owner,
-    gfx::Tween::Type tween_type);
+    std::unique_ptr<ui::LayerTreeOwner> old_layer_owner);
 
 ASH_EXPORT bool AnimateOnChildWindowVisibilityChanged(aura::Window* window,
                                                       bool visible);

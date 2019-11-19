@@ -11,7 +11,7 @@ package content;
 // Stores information about a Web Notification. This message is the protocol
 // buffer meant to serialize the content::NotificationDatabaseData structure.
 //
-// Next tag: 14
+// Next tag: 15
 message NotificationDatabaseDataProto {
   enum ClosedReason {
     USER = 0;
@@ -55,7 +55,7 @@ message NotificationDatabaseDataProto {
   // Actual data payload of the notification. This message is the protocol
   // buffer meant to serialize the blink::PlatformNotificationData structure.
   //
-  // Next tag: 16
+  // Next tag: 17
   message NotificationData {
     enum Direction {
       LEFT_TO_RIGHT = 0;
@@ -78,7 +78,13 @@ message NotificationDatabaseDataProto {
     optional bool require_interaction = 11;
     optional bytes data = 8;
     repeated NotificationAction actions = 10;
+    // Stored as offset from the windows epoch in microseconds.
+    optional int64 show_trigger_timestamp = 16;
   }
 
   optional NotificationData notification_data = 4;
+
+  // Keeps track if a notification with a |show_trigger_timestamp| has been
+  // displayed already.
+  optional bool has_triggered = 14;
 }

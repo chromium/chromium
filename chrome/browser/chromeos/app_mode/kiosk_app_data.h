@@ -92,6 +92,10 @@ class KioskAppData : public KioskAppDataBase,
   void OnIconLoadSuccess(const gfx::ImageSkia& icon) override;
   void OnIconLoadFailure() override;
 
+  // Tests do not always fake app data download.
+  // This allows to ignore download errors.
+  static void SetIgnoreKioskAppDataLoadFailuresForTesting(bool value);
+
  private:
   class CrxLoader;
   class WebstoreDataParser;
@@ -149,7 +153,7 @@ class KioskAppData : public KioskAppDataBase,
 
   base::FilePath crx_file_;
 
-  base::WeakPtrFactory<KioskAppData> weak_factory_;
+  base::WeakPtrFactory<KioskAppData> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(KioskAppData);
 };

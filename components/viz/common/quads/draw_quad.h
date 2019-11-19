@@ -33,19 +33,19 @@ namespace viz {
 // quad's transform maps the content space to the target space.
 class VIZ_COMMON_EXPORT DrawQuad {
  public:
-  enum Material {
-    INVALID,
-    DEBUG_BORDER,
-    PICTURE_CONTENT,
-    RENDER_PASS,
-    SOLID_COLOR,
-    STREAM_VIDEO_CONTENT,
-    SURFACE_CONTENT,
-    TEXTURE_CONTENT,
-    TILED_CONTENT,
-    YUV_VIDEO_CONTENT,
-    VIDEO_HOLE,
-    MATERIAL_LAST = VIDEO_HOLE
+  enum class Material {
+    kInvalid,
+    kDebugBorder,
+    kPictureContent,
+    kRenderPass,
+    kSolidColor,
+    kStreamVideoContent,
+    kSurfaceContent,
+    kTextureContent,
+    kTiledContent,
+    kYuvVideoContent,
+    kVideoHole,
+    kMaxValue = kVideoHole
   };
 
   DrawQuad(const DrawQuad& other);
@@ -71,20 +71,25 @@ class VIZ_COMMON_EXPORT DrawQuad {
   // during serialization.
   const SharedQuadState* shared_quad_state;
 
-  bool IsDebugQuad() const { return material == DEBUG_BORDER; }
+  bool IsDebugQuad() const { return material == Material::kDebugBorder; }
 
   bool ShouldDrawWithBlending() const {
     return needs_blending || shared_quad_state->opacity < 1.0f ||
-           shared_quad_state->blend_mode != SkBlendMode::kSrcOver;
+           shared_quad_state->blend_mode != SkBlendMode::kSrcOver ||
+           !shared_quad_state->rounded_corner_bounds.IsEmpty();
   }
 
   // Is the left edge of this tile aligned with the originating layer's
   // left edge?
-  bool IsLeftEdge() const { return !rect.x(); }
+  bool IsLeftEdge() const {
+    return rect.x() == shared_quad_state->quad_layer_rect.x();
+  }
 
   // Is the top edge of this tile aligned with the originating layer's
   // top edge?
-  bool IsTopEdge() const { return !rect.y(); }
+  bool IsTopEdge() const {
+    return rect.y() == shared_quad_state->quad_layer_rect.y();
+  }
 
   // Is the right edge of this tile aligned with the originating layer's
   // right edge?

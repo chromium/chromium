@@ -1,0 +1,50 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: locked element shifted down</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="locked-element-shifted-down-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="resources/utils.js"></script>
+
+<style>
+#container {
+  width: 150px;
+  height: 150px;
+}
+#spacer {
+  width: 100px;
+  height: 50px;
+  background: lightgreen;
+}
+#checker {
+  width: 100px;
+  height: 50px;
+  background: green;
+}
+</style>
+
+<div id="log"></div>
+<div id="spacer"></div>
+<div id="container">Lorem</div>
+<div id="checker"></div>
+
+<script>
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  takeScreenshot();
+}
+
+function runTest() {
+  const container = document.getElementById("container");
+  setInvisible(container).then(() => {
+    document.getElementById("spacer").style.height = "100px";
+    finishTest("PASS");
+  });
+}
+
+window.onload = runTest;
+</script>
+</html>

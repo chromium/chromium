@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL TextTrackCueList functionality: length, operator[], and getCueById() assert_object_equals: value is undefined, expected object
-Harness: the test ran to completion.
-

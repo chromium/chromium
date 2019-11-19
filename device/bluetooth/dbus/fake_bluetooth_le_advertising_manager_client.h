@@ -39,23 +39,23 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothLEAdvertisingManagerClient
   void RemoveObserver(Observer* observer) override;
   void RegisterAdvertisement(const dbus::ObjectPath& manager_object_path,
                              const dbus::ObjectPath& advertisement_object_path,
-                             const base::Closure& callback,
-                             const ErrorCallback& error_callback) override;
+                             base::OnceClosure callback,
+                             ErrorCallback error_callback) override;
   void UnregisterAdvertisement(
       const dbus::ObjectPath& manager_object_path,
       const dbus::ObjectPath& advertisement_object_path,
-      const base::Closure& callback,
-      const ErrorCallback& error_callback) override;
+      base::OnceClosure callback,
+      ErrorCallback error_callback) override;
 
   void SetAdvertisingInterval(const dbus::ObjectPath& manager_object_path,
                               uint16_t min_interval_ms,
                               uint16_t max_interval_ms,
-                              const base::Closure& callback,
-                              const ErrorCallback& error_callback) override;
+                              base::OnceClosure callback,
+                              ErrorCallback error_callback) override;
 
   void ResetAdvertising(const dbus::ObjectPath& manager_object_path,
-                        const base::Closure& callback,
-                        const ErrorCallback& error_callback) override;
+                        base::OnceClosure callback,
+                        ErrorCallback error_callback) override;
 
   // Register, unregister and retrieve pointers to profile server providers.
   void RegisterAdvertisementServiceProvider(

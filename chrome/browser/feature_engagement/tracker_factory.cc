@@ -14,8 +14,8 @@
 #include "chrome/common/chrome_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/leveldb_proto/content/proto_database_provider_factory.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace feature_engagement {
 
@@ -35,7 +35,6 @@ TrackerFactory::TrackerFactory()
     : BrowserContextKeyedServiceFactory(
           "feature_engagement::Tracker",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(leveldb_proto::ProtoDatabaseProviderFactory::GetInstance());
 }
 
 TrackerFactory::~TrackerFactory() = default;
@@ -45,15 +44,15 @@ KeyedService* TrackerFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                       base::TaskPriority::BEST_EFFORT});
 
   base::FilePath storage_dir = profile->GetPath().Append(
       chrome::kFeatureEngagementTrackerStorageDirname);
 
   leveldb_proto::ProtoDatabaseProvider* db_provider =
-      leveldb_proto::ProtoDatabaseProviderFactory::GetInstance()
-          ->GetForBrowserContext(context);
+      content::BrowserContext::GetDefaultStoragePartition(profile)
+          ->GetProtoDatabaseProvider();
   return feature_engagement::Tracker::Create(
       storage_dir, background_task_runner, db_provider);
 }

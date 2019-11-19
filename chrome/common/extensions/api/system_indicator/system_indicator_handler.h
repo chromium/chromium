@@ -10,6 +10,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
+class ExtensionIconSet;
+
 namespace extensions {
 
 // Parses the "system_indicator" manifest key.
@@ -18,6 +20,14 @@ class SystemIndicatorHandler : public ManifestHandler {
   SystemIndicatorHandler();
   ~SystemIndicatorHandler() override;
 
+  // Returns the default system indicator icon for the given |extension|, if
+  // the extension has a system indicator, and null otherwise. Note that if the
+  // extension has a system indicator, the result is never null (though the
+  // set may be empty).
+  static const ExtensionIconSet* GetSystemIndicatorIcon(
+      const Extension& extension);
+
+  // ManifestHandler:
   bool Parse(Extension* extension, base::string16* error) override;
 
  private:

@@ -9,9 +9,9 @@
 #include "third_party/blink/renderer/core/css/cssom/style_value_factory.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
-#include "third_party/blink/renderer/core/css/property_registration.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -26,23 +26,17 @@ CSSStyleValueVector ParseCSSStyleValue(
     ExceptionState& exception_state) {
   const CSSPropertyID property_id = cssPropertyID(property_name);
 
-  if (property_id == CSSPropertyInvalid) {
+  if (property_id == CSSPropertyID::kInvalid) {
     exception_state.ThrowTypeError("Invalid property name");
     return CSSStyleValueVector();
   }
 
-  AtomicString custom_property_name = property_id == CSSPropertyVariable
+  AtomicString custom_property_name = property_id == CSSPropertyID::kVariable
                                           ? AtomicString(property_name)
                                           : g_null_atom;
-
-  const PropertyRegistration* registration =
-      (property_id == CSSPropertyVariable)
-          ? PropertyRegistration::From(execution_context, custom_property_name)
-          : nullptr;
-
   const auto style_values = StyleValueFactory::FromString(
-      property_id, custom_property_name, registration, value,
-      CSSParserContext::Create(*execution_context));
+      property_id, custom_property_name, value,
+      MakeGarbageCollected<CSSParserContext>(*execution_context));
   if (style_values.IsEmpty()) {
     exception_state.ThrowTypeError("The value provided ('" + value +
                                    "') could not be parsed as a '" +

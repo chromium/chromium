@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<head>
+<style>
+#custom-icon::-webkit-calendar-picker-indicator {
+  background-image: -webkit-image-set(url(resources/time_icon.svg) 1x);
+}
+</style>
+<link rel="match" href="date-with-csp-expected.html">
+<meta http-equiv="content-security-policy" content="default-src 'none'">
+</head>
+<body>
+
+<!-- no style for reference -->
+<input type="date" />
+
+<!-- date with custom icon blocked by CSP -->
+<input type="data" id="custom-icon"/>
+
+</body>

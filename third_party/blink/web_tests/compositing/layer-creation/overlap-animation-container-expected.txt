@@ -2,51 +2,43 @@ Before:
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [785, 802],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='to-animate1' class='box animating1'",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='to-animate1' class='box animating1'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV class='container'",
-      "position": [47, 230],
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='container'",
+      "position": [-11, 0],
       "bounds": [144, 452],
-      "backgroundColor": "#FFFFFF"
+      "backgroundColor": "#FFFFFF",
+      "transform": 3
     },
     {
-      "name": "Squashing Containment Layer",
-      "position": [47, 230],
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutBlockFlow (relative positioned) DIV class='box gray force-layer'",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box gray force-layer'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#808080",
+      "transform": 5
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (relative positioned) DIV class='box yellow')",
+      "position": [-51, 451],
+      "bounds": [100, 100],
       "transform": 4
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV class='box yellow')",
-      "position": [18, 692],
-      "bounds": [100, 100]
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -76,8 +68,7 @@ Before:
         [...],
         [...],
         [...]
-      ],
-      "flattenInheritedTransform": false
+      ]
     },
     {
       "id": 4,
@@ -87,8 +78,17 @@ Before:
         [...],
         [...],
         [...]
-      ],
-      "flattenInheritedTransform": false
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
     }
   ]
 }
@@ -97,52 +97,43 @@ After:
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [785, 802],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV id='to-animate1' class='box animating1'",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='to-animate1' class='box animating1'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV class='container'",
-      "position": [58, 230],
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='container'",
       "bounds": [122, 452],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF"
+      "backgroundColor": "#FFFFFF",
+      "transform": 3
     },
     {
-      "name": "Squashing Containment Layer",
-      "position": [58, 230],
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutBlockFlow (relative positioned) DIV class='box gray force-layer'",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box gray force-layer'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#808080",
+      "transform": 5
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (relative positioned) DIV id='first-green-box' class='box green rotate-45deg')",
+      "position": [-51, 87],
+      "bounds": [174, 464],
       "transform": 4
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV id='first-green-box' class='box green rotate-45deg')",
-      "position": [18, 328],
-      "bounds": [174, 464]
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -172,8 +163,7 @@ After:
         [...],
         [...],
         [...]
-      ],
-      "flattenInheritedTransform": false
+      ]
     },
     {
       "id": 4,
@@ -183,8 +173,17 @@ After:
         [...],
         [...],
         [...]
-      ],
-      "flattenInheritedTransform": false
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
     }
   ]
 }

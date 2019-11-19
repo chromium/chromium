@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/service/cloud_print/cloud_print_url_fetcher.h"
+
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -127,7 +128,7 @@ class CloudPrintURLFetcherTest : public testing::Test,
   }
 
   void TearDown() override {
-    fetcher_ = NULL;
+    fetcher_.reset();
     // Deleting the fetcher causes a task to be posted to the IO thread to
     // release references to the URLRequestContextGetter. We need to run all
     // pending tasks to execute that (this is the IO thread).
@@ -139,7 +140,8 @@ class CloudPrintURLFetcherTest : public testing::Test,
   // we assume that the current thread is the IO thread where the URLFetcher
   // dispatches its requests to.  When we wish to simulate being used from
   // a UI thread, we dispatch a worker thread to do so.
-  base::MessageLoopForIO io_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   int max_retries_;
   Time start_time_;

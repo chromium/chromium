@@ -15,8 +15,8 @@
 
 <script>
 if (window.eventSender) {
-  test( () => {
-    const draggable_link = document.querySelector("#target");
+  test(() => {
+    const draggable_link = document.querySelector('#target');
 
     const clientRect = draggable_link.getBoundingClientRect();
     const centerX = (clientRect.left + clientRect.right) / 2;
@@ -25,6 +25,6 @@ if (window.eventSender) {
     eventSender.mouseDown();
     eventSender.mouseMoveTo(centerX+200, centerY+200);
     eventSender.mouseLeave();
-  }, "The renderer should not crash");
+  }, 'The renderer should not crash');
 }
 </script>

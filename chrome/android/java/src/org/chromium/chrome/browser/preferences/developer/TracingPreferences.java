@@ -5,13 +5,14 @@
 package org.chromium.chrome.browser.preferences.developer;
 
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.support.annotation.IntDef;
+import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.PreferenceUtils;
 import org.chromium.chrome.browser.tracing.TracingController;
@@ -27,7 +28,8 @@ import java.util.Set;
 /**
  * Settings fragment that shows options for recording a performance trace.
  */
-public class TracingPreferences extends PreferenceFragment implements TracingController.Observer {
+public class TracingPreferences
+        extends PreferenceFragmentCompat implements TracingController.Observer {
     static final String NON_DEFAULT_CATEGORY_PREFIX = "disabled-by-default-";
 
     @VisibleForTesting
@@ -177,8 +179,7 @@ public class TracingPreferences extends PreferenceFragment implements TracingCon
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         getActivity().setTitle(MSG_TRACING_TITLE);
         PreferenceUtils.addPreferencesFromResource(this, R.xml.tracing_preferences);
 

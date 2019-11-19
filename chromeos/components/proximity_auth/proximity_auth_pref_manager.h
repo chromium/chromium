@@ -48,22 +48,6 @@ class ProximityAuthPrefManager {
   virtual void SetPromotionShownCount(int count) = 0;
   virtual int GetPromotionShownCount() const = 0;
 
-  // These are arbitrary labels displayed in the settings page for the user
-  // to select. The actual mapping is done in the ProximityMonitorImpl.
-  enum ProximityThreshold {
-    kVeryClose = 0,
-    kClose = 1,
-    kFar = 2,
-    kVeryFar = 3
-  };
-
-  // Setter and getter for the proximity threshold. This preference is
-  // exposed to the user, allowing him / her to change how close the
-  // phone must for the unlock to be allowed.
-  // Note: These are arbitrary values,
-  virtual void SetProximityThreshold(ProximityThreshold value) = 0;
-  virtual ProximityThreshold GetProximityThreshold() const = 0;
-
   // Getter for whether EasyUnlock is allowed for ChromeOS login (in addition to
   // screen lock).
   virtual bool IsChromeOSLoginAllowed() const = 0;
@@ -72,6 +56,11 @@ class ProximityAuthPrefManager {
   // addition to screen lock).
   virtual void SetIsChromeOSLoginEnabled(bool is_enabled) = 0;
   virtual bool IsChromeOSLoginEnabled() const = 0;
+
+  // Setter and getter for whether the "Signin with Smart Lock is disabled"
+  // message on the login screen has been shown.
+  virtual void SetHasShownLoginDisabledMessage(bool has_shown) = 0;
+  virtual bool HasShownLoginDisabledMessage() const = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ProximityAuthPrefManager);

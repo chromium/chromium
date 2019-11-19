@@ -26,6 +26,9 @@ class AudioDetailedView : public TrayDetailedView {
 
   void Update();
 
+  // views::View:
+  const char* GetClassName() const override;
+
  private:
   // Helper function to add non-clickable header rows within the scrollable
   // list.

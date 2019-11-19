@@ -112,7 +112,7 @@ def main(args):
   def get_adb_command(args):
     adb_path = os.path.join(
         build_dir_path,
-        '../../third_party/android_tools/sdk/platform-tools/adb')
+        '../../third_party/android_sdk/public/platform-tools/adb')
     if options.device_id != None:
       return [adb_path, '-s', options.device_id] + args
     return [adb_path] + args

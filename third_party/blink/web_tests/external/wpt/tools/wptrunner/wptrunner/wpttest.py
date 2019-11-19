@@ -1,20 +1,28 @@
 import os
 import subprocess
+from six.moves.urllib.parse import urljoin
 from collections import defaultdict
 
-from wptmanifest.parser import atoms
+from .wptmanifest.parser import atoms
 
 atom_reset = atoms["Reset"]
-enabled_tests = set(["testharness", "reftest", "wdspec"])
+enabled_tests = {"testharness", "reftest", "wdspec"}
 
 
 class Result(object):
-    def __init__(self, status, message, expected=None, extra=None, stack=None):
+    def __init__(self,
+                 status,
+                 message,
+                 expected=None,
+                 extra=None,
+                 stack=None,
+                 known_intermittent=None):
         if status not in self.statuses:
             raise ValueError("Unrecognised status %s" % status)
         self.status = status
         self.message = message
         self.expected = expected
+        self.known_intermittent = known_intermittent if known_intermittent is not None else []
         self.extra = extra if extra is not None else {}
         self.stack = stack
 
@@ -23,7 +31,7 @@ class Result(object):
 
 
 class SubtestResult(object):
-    def __init__(self, name, status, message, stack=None, expected=None):
+    def __init__(self, name, status, message, stack=None, expected=None, known_intermittent=None):
         self.name = name
         if status not in self.statuses:
             raise ValueError("Unrecognised status %s" % status)
@@ -31,6 +39,7 @@ class SubtestResult(object):
         self.message = message
         self.stack = stack
         self.expected = expected
+        self.known_intermittent = known_intermittent if known_intermittent is not None else []
 
     def __repr__(self):
         return "<%s.%s %s %s>" % (self.__module__, self.__class__.__name__, self.name, self.status)
@@ -38,28 +47,28 @@ class SubtestResult(object):
 
 class TestharnessResult(Result):
     default_expected = "OK"
-    statuses = set(["OK", "ERROR", "INTERNAL-ERROR", "TIMEOUT", "EXTERNAL-TIMEOUT", "CRASH"])
+    statuses = {"OK", "ERROR", "INTERNAL-ERROR", "TIMEOUT", "EXTERNAL-TIMEOUT", "CRASH", "PRECONDITION_FAILED"}
 
 
 class TestharnessSubtestResult(SubtestResult):
     default_expected = "PASS"
-    statuses = set(["PASS", "FAIL", "TIMEOUT", "NOTRUN"])
+    statuses = {"PASS", "FAIL", "TIMEOUT", "NOTRUN", "PRECONDITION_FAILED"}
 
 
 class ReftestResult(Result):
     default_expected = "PASS"
-    statuses = set(["PASS", "FAIL", "ERROR", "INTERNAL-ERROR", "TIMEOUT", "EXTERNAL-TIMEOUT",
-                    "CRASH"])
+    statuses = {"PASS", "FAIL", "ERROR", "INTERNAL-ERROR", "TIMEOUT", "EXTERNAL-TIMEOUT",
+                "CRASH"}
 
 
 class WdspecResult(Result):
     default_expected = "OK"
-    statuses = set(["OK", "ERROR", "INTERNAL-ERROR", "TIMEOUT", "EXTERNAL-TIMEOUT", "CRASH"])
+    statuses = {"OK", "ERROR", "INTERNAL-ERROR", "TIMEOUT", "EXTERNAL-TIMEOUT", "CRASH"}
 
 
 class WdspecSubtestResult(SubtestResult):
     default_expected = "PASS"
-    statuses = set(["PASS", "FAIL", "ERROR"])
+    statuses = {"PASS", "FAIL", "ERROR"}
 
 
 def get_run_info(metadata_root, product, **kwargs):
@@ -71,7 +80,8 @@ class RunInfo(dict):
                  browser_version=None,
                  browser_channel=None,
                  verify=None,
-                 extras=None):
+                 extras=None,
+                 enable_webrender=False):
         import mozinfo
         self._update_mozinfo(metadata_root)
         self.update(mozinfo.info)
@@ -101,6 +111,22 @@ class RunInfo(dict):
             self["wasm"] = False
         if extras is not None:
             self.update(extras)
+
+        # Until the test harness can understand default pref values,
+        # (https://bugzilla.mozilla.org/show_bug.cgi?id=1577912) this value
+        # should by synchronized with the default pref value indicated in
+        # StaticPrefList.yaml.
+        #
+        # Currently for automation, the pref (and `sw-e10s`) defaults to true in
+        # nightly builds and false otherwise but can be overridden with
+        # `--setpref`. If overridden, the value would be initialized in
+        # `run_info_extras` and be supplied in the `extras` parameter.
+        if "sw-e10s" not in self:
+            self["sw-e10s"] = self.get("nightly_build", False)
+
+        self["headless"] = extras.get("headless", False)
+        self["webrender"] = enable_webrender
+
 
     def _update_mozinfo(self, metadata_root):
         """Add extra build information from a mozinfo.json file in a parent
@@ -279,12 +305,12 @@ class Test(object):
     @property
     def prefs(self):
         prefs = {}
-        for meta in self.itermeta():
+        for meta in reversed(list(self.itermeta())):
             meta_prefs = meta.prefs
-            prefs.update(meta_prefs)
             if atom_reset in meta_prefs:
-                del prefs[atom_reset]
-                break
+                del meta_prefs[atom_reset]
+                prefs = {}
+            prefs.update(meta_prefs)
         return prefs
 
     def expected(self, subtest=None):
@@ -298,9 +324,39 @@ class Test(object):
             return default
 
         try:
-            return metadata.get("expected")
+            expected = metadata.get("expected")
+            if isinstance(expected, (basestring)):
+                return expected
+            elif isinstance(expected, list):
+                return expected[0]
+            elif expected is None:
+                return default
         except KeyError:
             return default
+
+    def known_intermittent(self, subtest=None):
+        metadata = self._get_metadata(subtest)
+        if metadata is None:
+            return []
+
+        try:
+            expected = metadata.get("expected")
+            if isinstance(expected, list):
+                return expected[1:]
+            return []
+        except KeyError:
+            return []
+
+    def expect_any_subtest_status(self):
+        metadata = self._get_metadata()
+        if metadata is None:
+            return False
+        try:
+            # This key is used by the Blink CI to ignore subtest statuses
+            metadata.get("blink_expect_any_subtest_status")
+            return True
+        except KeyError:
+            return False
 
     def __repr__(self):
         return "<%s.%s %s>" % (self.__module__, self.__class__.__name__, self.id)
@@ -359,7 +415,7 @@ class ReftestTest(Test):
     test_type = "reftest"
 
     def __init__(self, tests_root, url, inherit_metadata, test_metadata, references,
-                 timeout=None, path=None, viewport_size=None, dpi=None, protocol="http"):
+                 timeout=None, path=None, viewport_size=None, dpi=None, fuzzy=None, protocol="http"):
         Test.__init__(self, tests_root, url, inherit_metadata, test_metadata, timeout,
                       path, protocol)
 
@@ -370,6 +426,7 @@ class ReftestTest(Test):
         self.references = references
         self.viewport_size = viewport_size
         self.dpi = dpi
+        self._fuzzy = fuzzy or {}
 
     @classmethod
     def from_manifest(cls,
@@ -398,7 +455,8 @@ class ReftestTest(Test):
                    path=manifest_test.path,
                    viewport_size=manifest_test.viewport_size,
                    dpi=manifest_test.dpi,
-                   protocol="https" if hasattr(manifest_test, "https") and manifest_test.https else "http")
+                   protocol="https" if hasattr(manifest_test, "https") and manifest_test.https else "http",
+                   fuzzy=manifest_test.fuzzy)
 
         nodes[url] = node
 
@@ -453,6 +511,32 @@ class ReftestTest(Test):
     @property
     def keys(self):
         return ("reftype", "refurl")
+
+    @property
+    def fuzzy(self):
+        return self._fuzzy
+
+    @property
+    def fuzzy_override(self):
+        values = {}
+        for meta in reversed(list(self.itermeta(None))):
+            value = meta.fuzzy
+            if not value:
+                continue
+            if atom_reset in value:
+                value.remove(atom_reset)
+                values = {}
+            for key, data in value:
+                if isinstance(key, (tuple, list)):
+                    key = list(key)
+                    key[0] = urljoin(self.url, key[0])
+                    key[1] = urljoin(self.url, key[1])
+                    key = tuple(key)
+                elif key:
+                    # Key is just a relative url to a ref
+                    key = urljoin(self.url, key)
+                values[key] = data
+        return values
 
 
 class WdspecTest(Test):

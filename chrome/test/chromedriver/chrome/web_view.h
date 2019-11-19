@@ -64,6 +64,11 @@ class WebView {
   virtual Status SendCommand(const std::string& cmd,
                              const base::DictionaryValue& params) = 0;
 
+  // Send a command to the DevTools debugger. Received from WebSocket
+  virtual Status SendCommandFromWebSocket(const std::string& cmd,
+                                          const base::DictionaryValue& params,
+                                          const int client_cmd_id) = 0;
+
   // Send a command to the DevTools debugger and wait for the result
   virtual Status SendCommandAndGetResult(
           const std::string& cmd,
@@ -117,6 +122,16 @@ class WebView {
       const base::TimeDelta& timeout,
       std::unique_ptr<base::Value>* result) = 0;
 
+  // Same as |CallFunction|, except |kJavaScriptError| or |kScriptTimeout| is
+  // used as the error code instead of |kUnknownError| in appropriate cases, and
+  // respects timeout.
+  // |result| will never be NULL on success.
+  virtual Status CallUserSyncScript(const std::string& frame,
+                                    const std::string& script,
+                                    const base::ListValue& args,
+                                    const base::TimeDelta& timeout,
+                                    std::unique_ptr<base::Value>* result) = 0;
+
   // Gets the frame ID for a frame element returned by invoking the given
   // JavaScript function. |frame| is a frame ID or an empty string for the main
   // frame.
@@ -127,16 +142,24 @@ class WebView {
 
   // Dispatch a sequence of mouse events.
   virtual Status DispatchMouseEvents(const std::list<MouseEvent>& events,
-                                     const std::string& frame) = 0;
+                                     const std::string& frame,
+                                     bool async_dispatch_events) = 0;
 
   // Dispatch a single touch event.
-  virtual Status DispatchTouchEvent(const TouchEvent& event) = 0;
+  virtual Status DispatchTouchEvent(const TouchEvent& event,
+                                    bool async_dispatch_events) = 0;
 
   // Dispatch a sequence of touch events.
-  virtual Status DispatchTouchEvents(const std::list<TouchEvent>& events) = 0;
+  virtual Status DispatchTouchEvents(const std::list<TouchEvent>& events,
+                                     bool async_dispatch_events) = 0;
 
+  // Dispatch a single touch event with more than one touch point.
+  virtual Status DispatchTouchEventWithMultiPoints(
+      const std::list<TouchEvent>& events,
+      bool async_dispatch_events) = 0;
   // Dispatch a sequence of key events.
-  virtual Status DispatchKeyEvents(const std::list<KeyEvent>& events) = 0;
+  virtual Status DispatchKeyEvents(const std::list<KeyEvent>& events,
+                                   bool async_dispatch_events) = 0;
 
   // Return all the cookies visible to the current page.
   virtual Status GetCookies(std::unique_ptr<base::ListValue>* cookies,
@@ -183,6 +206,10 @@ class WebView {
   virtual Status OverrideNetworkConditions(
       const NetworkConditions& network_conditions) = 0;
 
+  // Overrides normal download directory with given path.
+  virtual Status OverrideDownloadDirectoryIfNeeded(
+      const std::string& download_directory) = 0;
+
   // Captures the visible portions of the web view as a base64-encoded PNG.
   virtual Status CaptureScreenshot(
       std::string* screenshot,
@@ -190,10 +217,10 @@ class WebView {
 
   // Set files in a file input element.
   // |element| is the WebElement JSON Object of the input element.
-  virtual Status SetFileInputFiles(
-      const std::string& frame,
-      const base::DictionaryValue& element,
-      const std::vector<base::FilePath>& files) = 0;
+  virtual Status SetFileInputFiles(const std::string& frame,
+                                   const base::DictionaryValue& element,
+                                   const std::vector<base::FilePath>& files,
+                                   const bool append) = 0;
 
   // Take a heap snapshot which can build up a graph of Javascript objects.
   // A raw heap snapshot is in JSON format:
@@ -219,13 +246,7 @@ class WebView {
                                          int xoffset,
                                          int yoffset) = 0;
 
-  virtual Status SynthesizePinchGesture(int x, int y, double scale_factor) = 0;
-
-  virtual Status GetScreenOrientation(std::string* orientation) = 0;
-
-  virtual Status SetScreenOrientation(std::string orientation) = 0;
-
-  virtual Status DeleteScreenOrientation() = 0;
+  virtual bool IsNonBlocking() = 0;
 
   virtual bool IsOOPIF(const std::string& frame_id) = 0;
 

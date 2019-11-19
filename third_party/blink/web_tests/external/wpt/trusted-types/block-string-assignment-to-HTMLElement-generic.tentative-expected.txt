@@ -1,38 +1,10 @@
 This is a testharness.js-based test.
-PASS a.href accepts only TrustedURL
-PASS area.href accepts only TrustedURL
-PASS base.href accepts only TrustedURL
-PASS button.formAction accepts only TrustedURL
-PASS form.action accepts only TrustedURL
-PASS frame.src accepts only TrustedURL
-PASS iframe.src accepts only TrustedURL
-PASS img.src accepts only TrustedURL
-PASS input.formAction accepts only TrustedURL
-PASS input.src accepts only TrustedURL
-PASS link.href accepts only TrustedURL
-PASS video.src accepts only TrustedURL
-PASS source.src accepts only TrustedURL
-PASS track.src accepts only TrustedURL
 PASS embed.src accepts only TrustedScriptURL
 PASS object.codeBase accepts only TrustedScriptURL
 PASS object.data accepts only TrustedScriptURL
 PASS script.src accepts only TrustedScriptURL
 PASS div.innerHTML accepts only TrustedHTML
 PASS iframe.srcdoc accepts only TrustedHTML
-PASS a.href accepts string and null after default policy was created
-PASS area.href accepts string and null after default policy was created
-PASS base.href accepts string and null after default policy was created
-PASS button.formAction accepts string and null after default policy was created
-PASS form.action accepts string and null after default policy was created
-PASS frame.src accepts string and null after default policy was created
-PASS iframe.src accepts string and null after default policy was created
-PASS img.src accepts string and null after default policy was created
-PASS input.formAction accepts string and null after default policy was created
-PASS input.src accepts string and null after default policy was created
-PASS link.href accepts string and null after default policy was created
-PASS video.src accepts string and null after default policy was created
-PASS source.src accepts string and null after default policy was created
-PASS track.src accepts string and null after default policy was created
 PASS embed.src accepts string and null after default policy was created
 PASS object.codeBase accepts string and null after default policy was created
 PASS object.data accepts string and null after default policy was created

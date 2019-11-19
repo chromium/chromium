@@ -130,8 +130,6 @@ class AURA_EXPORT WindowTargeter : public ui::EventTargeter {
   // To call OnInstalled().
   friend class Window;
 
-  void UpdateMusIfNecessary();
-
   Window* FindTargetForNonKeyEvent(Window* root_window, ui::Event* event);
   Window* FindTargetForLocatedEventRecursively(Window* root_window,
                                                ui::LocatedEvent* event);

@@ -6,7 +6,7 @@
 
 #include "base/android/jni_android.h"
 
-#include "jni/ThrowUncaughtException_jni.h"
+#include "components/viz/service/service_jni_headers/ThrowUncaughtException_jni.h"
 
 namespace viz {
 

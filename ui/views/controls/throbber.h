@@ -17,6 +17,7 @@ namespace views {
 
 class VIEWS_EXPORT Throbber : public View {
  public:
+  METADATA_HEADER(Throbber);
   Throbber();
   ~Throbber() override;
 
@@ -24,7 +25,9 @@ class VIEWS_EXPORT Throbber : public View {
   virtual void Start();
   virtual void Stop();
 
-  // Stop spinning and, if checked is true, display a checkmark.
+  // Gets/Sets checked. For SetChecked, stop spinning and, if
+  // checked is true, display a checkmark.
+  bool GetChecked() const;
   void SetChecked(bool checked);
 
   // Overridden from View:
@@ -40,7 +43,7 @@ class VIEWS_EXPORT Throbber : public View {
   base::RepeatingTimer timer_;  // Used to schedule Run calls.
 
   // Whether or not we should display a checkmark.
-  bool checked_;
+  bool checked_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(Throbber);
 };
@@ -51,14 +54,18 @@ class VIEWS_EXPORT Throbber : public View {
 // a small amount of work time has passed.
 class VIEWS_EXPORT SmoothedThrobber : public Throbber {
  public:
+  METADATA_HEADER(SmoothedThrobber);
   SmoothedThrobber();
   ~SmoothedThrobber() override;
 
   void Start() override;
   void Stop() override;
 
-  void set_start_delay_ms(int value) { start_delay_ms_ = value; }
-  void set_stop_delay_ms(int value) { stop_delay_ms_ = value; }
+  base::TimeDelta GetStartDelay() const;
+  void SetStartDelay(const base::TimeDelta& start_delay);
+
+  base::TimeDelta GetStopDelay() const;
+  void SetStopDelay(const base::TimeDelta& stop_delay);
 
  private:
   // Called when the startup-delay timer fires
@@ -69,11 +76,11 @@ class VIEWS_EXPORT SmoothedThrobber : public Throbber {
   // This function stops the actual throbbing.
   void StopDelayOver();
 
-  // Delay after work starts before starting throbber, in milliseconds.
-  int start_delay_ms_;
+  // Delay after work starts before starting throbber.
+  base::TimeDelta start_delay_;
 
-  // Delay after work stops before stopping, in milliseconds.
-  int stop_delay_ms_;
+  // Delay after work stops before stopping.
+  base::TimeDelta stop_delay_;
 
   base::OneShotTimer start_timer_;
   base::OneShotTimer stop_timer_;

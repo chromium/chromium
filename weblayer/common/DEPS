@@ -1,0 +1,6 @@
+include_rules = [
+  "+content/app/resources",
+  "+content/public/common",
+  "+third_party/blink/public/strings/grit/blink_strings.h",
+  "+ui/base",
+]

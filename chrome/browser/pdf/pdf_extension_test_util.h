@@ -11,8 +11,7 @@ class WebContents;
 
 namespace pdf_extension_test_util {
 
-// Ensures through PDFScriptingAPI that a PDF has finished loading inside the
-// given |web_contents|.
+// Ensures that a PDF has finished loading inside the given |web_contents|.
 // Returns true if it loads successfully or false if it fails. If it doesn't
 // finish loading the test will hang.
 bool EnsurePDFHasLoaded(content::WebContents* web_contents);

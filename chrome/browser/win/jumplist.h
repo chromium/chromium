@@ -333,7 +333,7 @@ class JumpList : public sessions::TabRestoreServiceObserver,
   SEQUENCE_CHECKER(sequence_checker_);
 
   // For callbacks may run after destruction.
-  base::WeakPtrFactory<JumpList> weak_ptr_factory_;
+  base::WeakPtrFactory<JumpList> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(JumpList);
 };

@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
+#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/arc/mojom/intent_helper.mojom.h"
 
 namespace ui {
 struct SelectedFileInfo;
@@ -19,8 +21,7 @@ struct SelectedFileInfo;
 namespace extensions {
 
 // Cancel file selection Dialog.  Closes the dialog window.
-class FileManagerPrivateCancelDialogFunction
-    : public LoggedUIThreadExtensionFunction {
+class FileManagerPrivateCancelDialogFunction : public LoggedExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.cancelDialog",
                              FILEMANAGERPRIVATE_CANCELDIALOG)
@@ -32,8 +33,7 @@ class FileManagerPrivateCancelDialogFunction
   ResponseAction Run() override;
 };
 
-class FileManagerPrivateSelectFileFunction
-    : public LoggedUIThreadExtensionFunction {
+class FileManagerPrivateSelectFileFunction : public LoggedExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.selectFile",
                              FILEMANAGERPRIVATE_SELECTFILE)
@@ -47,13 +47,13 @@ class FileManagerPrivateSelectFileFunction
  private:
   // A callback method to handle the result of GetSelectedFileInfo.
   void GetSelectedFileInfoResponse(
+      bool for_open,
       int index,
       const std::vector<ui::SelectedFileInfo>& files);
 };
 
 // Select multiple files.  Closes the dialog window.
-class FileManagerPrivateSelectFilesFunction
-    : public LoggedUIThreadExtensionFunction {
+class FileManagerPrivateSelectFilesFunction : public LoggedExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.selectFiles",
                              FILEMANAGERPRIVATE_SELECTFILES)
@@ -67,7 +67,43 @@ class FileManagerPrivateSelectFilesFunction
  private:
   // A callback method to handle the result of GetSelectedFileInfo.
   void GetSelectedFileInfoResponse(
+      bool for_open,
       const std::vector<ui::SelectedFileInfo>& files);
+};
+
+// Get a list of Android picker apps.
+class FileManagerPrivateGetAndroidPickerAppsFunction
+    : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.getAndroidPickerApps",
+                             FILEMANAGERPRIVATE_GETANDROIDPICKERAPPS)
+
+ protected:
+  ~FileManagerPrivateGetAndroidPickerAppsFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+  void OnActivitiesLoaded(
+      std::vector<arc::mojom::IntentHandlerInfoPtr> handlers);
+
+  void OnIconsLoaded(
+      std::vector<arc::mojom::IntentHandlerInfoPtr> handlers,
+      std::unique_ptr<arc::ArcIntentHelperBridge::ActivityToIconsMap> icons);
+};
+
+// Select an Android picker app.  Closes the dialog window.
+class FileManagerPrivateSelectAndroidPickerAppFunction
+    : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.selectAndroidPickerApp",
+                             FILEMANAGERPRIVATE_SELECTANDROIDPICKERAPP)
+
+ protected:
+  ~FileManagerPrivateSelectAndroidPickerAppFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
 };
 
 }  // namespace extensions

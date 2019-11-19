@@ -102,9 +102,9 @@ class MODULES_EXPORT EventSource final
   void Trace(blink::Visitor*) override;
 
  private:
-  void DidReceiveResponse(unsigned long, const ResourceResponse&) override;
+  void DidReceiveResponse(uint64_t, const ResourceResponse&) override;
   void DidReceiveData(const char*, unsigned) override;
-  void DidFinishLoading(unsigned long) override;
+  void DidFinishLoading(uint64_t) override;
   void DidFail(const ResourceError&) override;
   void DidFailRedirectCheck() override;
 
@@ -135,7 +135,7 @@ class MODULES_EXPORT EventSource final
 
   uint64_t reconnect_delay_;
   String event_stream_origin_;
-  unsigned long resource_identifier_ = 0;
+  uint64_t resource_identifier_ = 0;
 };
 
 }  // namespace blink

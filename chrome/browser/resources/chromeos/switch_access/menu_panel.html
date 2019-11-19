@@ -5,62 +5,126 @@
 <!DOCTYPE html>
 <head>
   <meta charset="utf-8">
-  <title>Switch Access Menu</title>
+  <title class="i18n" msgid="menu_title">Switch Access Menu</title>
   <script type="text/javascript" src="closure/base.js"></script>
   <script type="text/javascript" src="switch_access_constants.js"></script>
   <script type="text/javascript" src="menu_panel.js"></script>
   <link rel="stylesheet" href="menu_panel.css">
 </head>
 <body>
-  <div id="switchaccess_menu_actions"
-      aria-label="Switch Access Menu">
-    <button class="action" id="select">
+  <!-- TODO(anastasi): Internationalize the aria-label strings. -->
+  <div id="switchaccess_menu_actions" aria-label="Switch Access Menu">
+  </div>
+  <div id="main_menu" aria-label="Main Menu" hidden>
+    <button class="action" id="select" data-position="0">
       <img src="icons/select.svg">
-      <p>Select</p>
+      <p class="i18n" msgid="select"></p>
     </button>
-    <button class="action" id="increment">
+    <button class="action" id="keyboard" data-position="1">
+      <img src="icons/keyboard.svg">
+      <p class="i18n" msgid="open_keyboard"></p>
+    </button>
+    <button class="action" id="increment" data-position="2">
       <img src="icons/increment.svg">
-      <p>Increment</p>
+      <p class="i18n" msgid="increment"></p>
     </button>
-    <button class="action" id="decrement">
+    <button class="action" id="decrement" data-position="3">
       <img src="icons/decrement.svg">
-      <p>Decrement</p>
+      <p class="i18n" msgid="decrement"></p>
     </button>
-    <button class="action" id="scrollDown">
+    <button class="action" id="scrollDown" data-position="4">
       <img src="icons/scrollDownOrForward.svg">
-      <p>Scroll down</p>
+      <p class="i18n" msgid="scroll_down"></p>
     </button>
-    <button class="action" id="scrollUp">
+    <button class="action" id="scrollUp" data-position="5">
       <img src="icons/scrollUpOrBackward.svg">
-      <p>Scroll up</p>
+      <p class="i18n" msgid="scroll_up"></p>
     </button>
-    <button class="action" id="scrollRight">
+    <button class="action" id="scrollRight" data-position="6">
       <img src="icons/scrollRight.svg">
-      <p>Scroll right</p>
+      <p class="i18n" msgid="scroll_right"></p>
     </button>
-    <button class="action" id="scrollLeft">
+    <button class="action" id="scrollLeft" data-position="7">
       <img src="icons/scrollLeft.svg">
-      <p>Scroll left</p>
+      <p class="i18n" msgid="scroll_left"></p>
     </button>
-    <button class="action" id="scrollForward">
+    <button class="action" id="scrollForward" data-position="8">
       <img src="icons/scrollDownOrForward.svg">
-      <p>Scroll forward</p>
+      <p class="i18n" msgid="scroll_forward"></p>
     </button>
-    <button class="action" id="scrollBackward">
+    <button class="action" id="scrollBackward" data-position="9">
       <img src="icons/scrollUpOrBackward.svg">
-      <p>Scroll backward</p>
+      <p class="i18n" msgid="scroll_backward"></p>
     </button>
-    <button class="action" id="dictation">
+    <button class="action" id="moveCursor" data-position="10">
+      <img src="icons/moveCursor.svg">
+      <p class="i18n" msgid="move_cursor"></p>
+    </button>
+    <button class="action" id="selectStart" data-position="11">
+      <img src="icons/textSelectionStart.svg">
+      <p class="i18n" msgid="selection_start"></p>
+    </button>
+    <button class="action" id="selectEnd" data-position="12">
+      <img src="icons/textSelectionEnd.svg">
+      <p class="i18n" msgid="selection_end"></p>
+    </button>
+    <button class="action" id="cut" data-position="13">
+      <img src="icons/cut.svg">
+      <p class="i18n" msgid="cut"></p>
+    </button>
+    <button class="action" id="copy" data-position="14">
+      <img src="icons/copy.svg">
+      <p class="i18n" msgid="copy"></p>
+    </button>
+    <button class="action" id="paste" data-position="15">
+      <img src="icons/paste.svg">
+      <p class="i18n" msgid="paste"></p>
+    </button>
+    <button class="action" id="dictation" data-position="16">
       <img src="icons/dictation.svg">
-      <p>Dictation</p>
+      <p class="i18n" msgid="dictation"></p>
     </button>
-    <button class="action" id="showContextMenu">
+    <button class="action" id="showContextMenu" data-position="17">
       <img src="icons/showContextMenu.svg">
-      <p>Show Context Menu</p>
+      <p class="i18n" msgid="show_context_menu"></p>
     </button>
-    <button class="action" id="options">
-      <img src="icons/options.svg">
-      <p>Options</p>
+    <button class="action" id="settings" data-position="18">
+      <img src="icons/settings.svg">
+      <p class="i18n" msgid="settings_action"></p>
+    </button>
+  </div>
+  <div id="text_navigation_menu" aria-label="Text Navigation Menu" hidden>
+    <button class="action" id="jumpToBeginningOfText" data-position="0">
+      <img src="icons/jumpToBeginningOfText.svg">
+      <p class="i18n" msgid="jump_to_beginning_of_text"></p>
+    </button>
+    <button class="action" id="jumpToEndOfText" data-position="1">
+      <img src="icons/jumpToEndOfText.svg">
+      <p class="i18n" msgid="jump_to_end_of_text"></p>
+    </button>
+    <button class="action" id="moveBackwardOneCharOfText" data-position="2">
+      <img src="icons/moveBackwardOneCharOfText.svg">
+      <p class="i18n" msgid="move_backward_one_char_of_text"></p>
+    </button>
+    <button class="action" id="moveBackwardOneWordOfText" data-position="3">
+      <img src="icons/moveBackwardOneWordOfText.svg">
+      <p class="i18n" msgid="move_backward_one_word_of_text"></p>
+    </button>
+    <button class="action" id="moveDownOneLineOfText" data-position="4">
+      <img src="icons/moveDownOneLineOfText.svg">
+      <p class="i18n" msgid="move_down_one_line_of_text"></p>
+    </button>
+    <button class="action" id="moveForwardOneCharOfText" data-position="5">
+      <img src="icons/moveForwardOneCharOfText.svg">
+      <p class="i18n" msgid="move_forward_one_char_of_text"></p>
+    </button>
+    <button class="action" id="moveForwardOneWordOfText" data-position="6">
+      <img src="icons/moveForwardOneWordOfText.svg">
+      <p class="i18n" msgid="move_forward_one_word_of_text"></p>
+    </button>
+    <button class="action" id="moveUpOneLineOfText" data-position="7">
+      <img src="icons/moveUpOneLineOfText.svg">
+      <p class="i18n" msgid="move_up_one_line_of_text"></p>
     </button>
   </div>
   <button id="back">

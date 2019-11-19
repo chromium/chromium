@@ -190,7 +190,7 @@ class WebInputEvent {
     kPointerTypeFirst = kPointerDown,
     kPointerUp,
     kPointerMove,
-    kPointerRawMove,  // To be only used within blink.
+    kPointerRawUpdate,  // To be only used within blink.
     kPointerCancel,
     kPointerCausedUaAction,
     kPointerTypeLast = kPointerCausedUaAction,
@@ -257,6 +257,10 @@ class WebInputEvent {
     // TODO(dtapuska): Remove this flag once we are able to bind callbacks
     // in event sending.
     kFromDebugger = 1 << 23,
+
+    // Indicates this event is targeting an OOPIF, and the iframe or one of its
+    // ancestor frames moved within its embedding page's viewport recently.
+    kTargetFrameMovedRecently = 1 << 24,
 
     // The set of non-stateful modifiers that specifically change the
     // interpretation of the key being pressed. For example; IsLeft,
@@ -412,7 +416,7 @@ class WebInputEvent {
       CASE_TYPE(PointerDown);
       CASE_TYPE(PointerUp);
       CASE_TYPE(PointerMove);
-      CASE_TYPE(PointerRawMove);
+      CASE_TYPE(PointerRawUpdate);
       CASE_TYPE(PointerCancel);
       CASE_TYPE(PointerCausedUaAction);
     }
@@ -439,6 +443,10 @@ class WebInputEvent {
   void SetTimeStamp(base::TimeTicks time_stamp) { time_stamp_ = time_stamp; }
 
   unsigned size() const { return size_; }
+
+  void SetTargetFrameMovedRecently() const {
+    const_cast<WebInputEvent*>(this)->modifiers_ |= kTargetFrameMovedRecently;
+  }
 
  protected:
   // The root frame scale.

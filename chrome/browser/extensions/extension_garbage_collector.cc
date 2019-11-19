@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/one_shot_event.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
@@ -37,7 +38,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_handlers/app_isolation_info.h"
-#include "extensions/common/one_shot_event.h"
 
 namespace extensions {
 
@@ -111,20 +111,19 @@ void CheckExtensionDirectory(const base::FilePath& path,
 
 ExtensionGarbageCollector::ExtensionGarbageCollector(
     content::BrowserContext* context)
-    : context_(context), crx_installs_in_progress_(0), weak_factory_(this) {
-
+    : context_(context), crx_installs_in_progress_(0) {
   ExtensionSystem* extension_system = ExtensionSystem::Get(context_);
   DCHECK(extension_system);
 
   extension_system->ready().PostDelayed(
       FROM_HERE,
-      base::Bind(&ExtensionGarbageCollector::GarbageCollectExtensions,
-                 weak_factory_.GetWeakPtr()),
+      base::BindOnce(&ExtensionGarbageCollector::GarbageCollectExtensions,
+                     weak_factory_.GetWeakPtr()),
       kGarbageCollectStartupDelay);
 
   extension_system->ready().Post(
       FROM_HERE,
-      base::Bind(
+      base::BindOnce(
           &ExtensionGarbageCollector::GarbageCollectIsolatedStorageIfNeeded,
           weak_factory_.GetWeakPtr()));
 

@@ -47,19 +47,11 @@
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
-
-std::unique_ptr<DedicatedWorkerObjectProxy> DedicatedWorkerObjectProxy::Create(
-    DedicatedWorkerMessagingProxy* messaging_proxy_weak_ptr,
-    ParentExecutionContextTaskRunners* parent_execution_context_task_runners) {
-  DCHECK(messaging_proxy_weak_ptr);
-  return base::WrapUnique(new DedicatedWorkerObjectProxy(
-      messaging_proxy_weak_ptr, parent_execution_context_task_runners));
-}
 
 DedicatedWorkerObjectProxy::~DedicatedWorkerObjectProxy() = default;
 
@@ -68,9 +60,9 @@ void DedicatedWorkerObjectProxy::PostMessageToWorkerObject(
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kPostedMessage),
       FROM_HERE,
-      CrossThreadBind(&DedicatedWorkerMessagingProxy::PostMessageToWorkerObject,
-                      messaging_proxy_weak_ptr_,
-                      WTF::Passed(std::move(message))));
+      CrossThreadBindOnce(
+          &DedicatedWorkerMessagingProxy::PostMessageToWorkerObject,
+          messaging_proxy_weak_ptr_, WTF::Passed(std::move(message))));
 }
 
 void DedicatedWorkerObjectProxy::ProcessMessageFromWorkerObject(
@@ -95,41 +87,41 @@ void DedicatedWorkerObjectProxy::ReportException(
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
-      CrossThreadBind(&DedicatedWorkerMessagingProxy::DispatchErrorEvent,
-                      messaging_proxy_weak_ptr_, error_message,
-                      WTF::Passed(location->Clone()), exception_id));
+      CrossThreadBindOnce(&DedicatedWorkerMessagingProxy::DispatchErrorEvent,
+                          messaging_proxy_weak_ptr_, error_message,
+                          WTF::Passed(location->Clone()), exception_id));
 }
 
 void DedicatedWorkerObjectProxy::DidFailToFetchClassicScript() {
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
-      CrossThreadBind(&DedicatedWorkerMessagingProxy::DidFailToFetchScript,
-                      messaging_proxy_weak_ptr_));
+      CrossThreadBindOnce(&DedicatedWorkerMessagingProxy::DidFailToFetchScript,
+                          messaging_proxy_weak_ptr_));
 }
 
 void DedicatedWorkerObjectProxy::DidFailToFetchModuleScript() {
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
-      CrossThreadBind(&DedicatedWorkerMessagingProxy::DidFailToFetchScript,
-                      messaging_proxy_weak_ptr_));
+      CrossThreadBindOnce(&DedicatedWorkerMessagingProxy::DidFailToFetchScript,
+                          messaging_proxy_weak_ptr_));
 }
 
 void DedicatedWorkerObjectProxy::DidEvaluateClassicScript(bool success) {
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
-      CrossThreadBind(&DedicatedWorkerMessagingProxy::DidEvaluateScript,
-                      messaging_proxy_weak_ptr_, success));
+      CrossThreadBindOnce(&DedicatedWorkerMessagingProxy::DidEvaluateScript,
+                          messaging_proxy_weak_ptr_, success));
 }
 
 void DedicatedWorkerObjectProxy::DidEvaluateModuleScript(bool success) {
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
-      CrossThreadBind(&DedicatedWorkerMessagingProxy::DidEvaluateScript,
-                      messaging_proxy_weak_ptr_, success));
+      CrossThreadBindOnce(&DedicatedWorkerMessagingProxy::DidEvaluateScript,
+                          messaging_proxy_weak_ptr_, success));
 }
 
 DedicatedWorkerObjectProxy::DedicatedWorkerObjectProxy(

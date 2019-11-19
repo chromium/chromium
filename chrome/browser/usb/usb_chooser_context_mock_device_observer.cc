@@ -4,7 +4,7 @@
 
 #include "chrome/browser/usb/usb_chooser_context_mock_device_observer.h"
 
-#include "device/usb/public/mojom/device.mojom.h"
+#include "services/device/public/mojom/usb_device.mojom.h"
 
 MockDeviceObserver::MockDeviceObserver() {}
 

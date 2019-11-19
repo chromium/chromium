@@ -98,7 +98,7 @@ DWORD DesktopDropTargetWin::OnDrop(IDataObject* data_object,
   DragDropDelegate* delegate;
   Translate(data_object, key_state, position, effect, &data, &event, &delegate);
   if (delegate) {
-    drag_operation = delegate->OnPerformDrop(*event);
+    drag_operation = delegate->OnPerformDrop(*event, std::move(data));
     DragDropClient* client = aura::client::GetDragDropClient(root_window_);
     if (client && !client->IsDragDropInProgress() &&
         drag_operation != ui::DragDropTypes::DRAG_NONE) {
@@ -146,15 +146,13 @@ void DesktopDropTargetWin::Translate(
   if (!*delegate)
     return;
 
-  data->reset(new OSExchangeData(
-      std::make_unique<OSExchangeDataProviderWin>(data_object)));
+  *data = std::make_unique<OSExchangeData>(
+      std::make_unique<OSExchangeDataProviderWin>(data_object));
   location = root_location;
   aura::Window::ConvertPointToTarget(root_window_, target_window_, &location);
-  event->reset(new ui::DropTargetEvent(
-      *(data->get()),
-      gfx::PointF(location),
-      gfx::PointF(root_location),
-      ui::DragDropTypes::DropEffectToDragOperation(effect)));
+  *event = std::make_unique<ui::DropTargetEvent>(
+      *(data->get()), gfx::PointF(location), gfx::PointF(root_location),
+      ui::DragDropTypes::DropEffectToDragOperation(effect));
   (*event)->set_flags(ConvertKeyStateToAuraEventFlags(key_state));
   if (target_window_changed)
     (*delegate)->OnDragEntered(*event->get());

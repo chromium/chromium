@@ -4,9 +4,22 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_session_state.h"
 
-#include "third_party/blink/renderer/core/inspector/protocol/Protocol.h"
+#include "third_party/inspector_protocol/crdtp/cbor.h"
 
 namespace blink {
+namespace {
+using crdtp::span;
+using crdtp::SpanFrom;
+using crdtp::cbor::CBORTokenizer;
+using crdtp::cbor::CBORTokenTag;
+using crdtp::cbor::EncodeDouble;
+using crdtp::cbor::EncodeFalse;
+using crdtp::cbor::EncodeFromLatin1;
+using crdtp::cbor::EncodeFromUTF16;
+using crdtp::cbor::EncodeInt32;
+using crdtp::cbor::EncodeNull;
+using crdtp::cbor::EncodeTrue;
+}  // namespace
 
 //
 // InspectorSessionState
@@ -22,8 +35,14 @@ const mojom::blink::DevToolsSessionState* InspectorSessionState::ReattachState()
 }
 
 void InspectorSessionState::EnqueueUpdate(const WTF::String& key,
-                                          const WTF::String& value) {
-  updates_->entries.Set(key, value);
+                                          const WebVector<uint8_t>* value) {
+  base::Optional<WTF::Vector<uint8_t>> updated_value;
+  if (value) {
+    WTF::Vector<uint8_t> payload;
+    payload.AppendRange(value->begin(), value->end());
+    updated_value = std::move(payload);
+  }
+  updates_->entries.Set(key, std::move(updated_value));
 }
 
 mojom::blink::DevToolsSessionStatePtr InspectorSessionState::TakeUpdates() {
@@ -36,56 +55,107 @@ mojom::blink::DevToolsSessionStatePtr InspectorSessionState::TakeUpdates() {
 // Encoding / Decoding routines.
 //
 /*static*/
-void InspectorAgentState::EncodeToJSON(bool v, WTF::String* out) {
-  std::unique_ptr<protocol::FundamentalValue> value =
-      blink::protocol::FundamentalValue::create(v);
-  *out = value->toJSONString();
+void InspectorAgentState::Serialize(bool v, WebVector<uint8_t>* out) {
+  out->emplace_back(v ? EncodeTrue() : EncodeFalse());
 }
 
 /*static*/
-bool InspectorAgentState::DecodeFromJSON(const WTF::String& in, bool* v) {
-  std::unique_ptr<protocol::Value> parsed = protocol::StringUtil::parseJSON(in);
-  return parsed->asBoolean(v);
+bool InspectorAgentState::Deserialize(span<uint8_t> in, bool* v) {
+  CBORTokenizer tokenizer(in);
+  if (tokenizer.TokenTag() == CBORTokenTag::TRUE_VALUE) {
+    *v = true;
+    return true;
+  }
+  if (tokenizer.TokenTag() == CBORTokenTag::FALSE_VALUE) {
+    *v = false;
+    return true;
+  }
+  return false;
 }
 
 /*static*/
-void InspectorAgentState::EncodeToJSON(int32_t v, WTF::String* out) {
-  std::unique_ptr<protocol::FundamentalValue> value =
-      blink::protocol::FundamentalValue::create(v);
-  *out = value->toJSONString();
+void InspectorAgentState::Serialize(int32_t v, WebVector<uint8_t>* out) {
+  auto encode = out->ReleaseVector();
+  EncodeInt32(v, &encode);
+  *out = std::move(encode);
 }
 
 /*static*/
-bool InspectorAgentState::DecodeFromJSON(const WTF::String& in, int32_t* v) {
-  std::unique_ptr<protocol::Value> parsed = protocol::StringUtil::parseJSON(in);
-  return parsed->asInteger(v);
+bool InspectorAgentState::Deserialize(span<uint8_t> in, int32_t* v) {
+  CBORTokenizer tokenizer(in);
+  if (tokenizer.TokenTag() == CBORTokenTag::INT32) {
+    *v = tokenizer.GetInt32();
+    return true;
+  }
+  return false;
 }
 
 /*static*/
-void InspectorAgentState::EncodeToJSON(double v, WTF::String* out) {
-  std::unique_ptr<protocol::FundamentalValue> value =
-      blink::protocol::FundamentalValue::create(v);
-  *out = value->toJSONString();
+void InspectorAgentState::Serialize(double v, WebVector<uint8_t>* out) {
+  auto encode = out->ReleaseVector();
+  EncodeDouble(v, &encode);
+  *out = std::move(encode);
 }
 
 /*static*/
-bool InspectorAgentState::DecodeFromJSON(const WTF::String& in, double* v) {
-  std::unique_ptr<protocol::Value> parsed = protocol::StringUtil::parseJSON(in);
-  return parsed->asDouble(v);
+bool InspectorAgentState::Deserialize(span<uint8_t> in, double* v) {
+  CBORTokenizer tokenizer(in);
+  if (tokenizer.TokenTag() == CBORTokenTag::DOUBLE) {
+    *v = tokenizer.GetDouble();
+    return true;
+  }
+  return false;
 }
 
 /*static*/
-void InspectorAgentState::EncodeToJSON(const WTF::String& v, WTF::String* out) {
-  std::unique_ptr<protocol::StringValue> value =
-      protocol::StringValue::create(v);
-  *out = value->toJSONString();
+void InspectorAgentState::Serialize(const WTF::String& v,
+                                    WebVector<uint8_t>* out) {
+  auto encode = out->ReleaseVector();
+  if (v.Is8Bit()) {
+    auto span8 = v.Span8();
+    EncodeFromLatin1(span<uint8_t>(span8.data(), span8.size()), &encode);
+  } else {
+    auto span16 = v.Span16();
+    EncodeFromUTF16(
+        span<uint16_t>(reinterpret_cast<const uint16_t*>(span16.data()),
+                       span16.size()),
+        &encode);
+  }
+  *out = std::move(encode);
 }
 
 /*static*/
-bool InspectorAgentState::DecodeFromJSON(const WTF::String& in,
-                                         WTF::String* v) {
-  std::unique_ptr<protocol::Value> parsed = protocol::StringUtil::parseJSON(in);
-  return parsed->asString(v);
+bool InspectorAgentState::Deserialize(span<uint8_t> in, WTF::String* v) {
+  CBORTokenizer tokenizer(in);
+  if (tokenizer.TokenTag() == CBORTokenTag::STRING8) {
+    *v = WTF::String(
+        reinterpret_cast<const char*>(tokenizer.GetString8().data()),
+        static_cast<size_t>(tokenizer.GetString8().size()));
+    return true;
+  }
+  if (tokenizer.TokenTag() == CBORTokenTag::STRING16) {
+    *v = WTF::String(
+        reinterpret_cast<const UChar*>(tokenizer.GetString16WireRep().data()),
+        tokenizer.GetString16WireRep().size() / 2);
+    return true;
+  }
+  return false;
+}
+
+/*static*/
+void InspectorAgentState::Serialize(const std::vector<uint8_t>& v,
+                                    WebVector<uint8_t>* out) {
+  // We could CBOR encode this, but since we never look at the contents
+  // anyway (except for decoding just below), we just cheat and use the
+  // blob directly.
+  out->Assign(v.data(), v.size());
+}
+
+/*static*/
+bool InspectorAgentState::Deserialize(span<uint8_t> in,
+                                      std::vector<uint8_t>* v) {
+  v->insert(v->end(), in.begin(), in.end());
+  return true;
 }
 
 //

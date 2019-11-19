@@ -29,17 +29,13 @@ class PRINTING_EXPORT PageNumber {
   void Init(const PrintSettings& settings, int document_page_count);
 
   // Converts to a page numbers.
-  int ToInt() const {
-    return page_number_;
-  }
+  int ToInt() const { return page_number_; }
 
   // Calculates the next page in the serie.
   int operator++();
 
   // Returns an instance that represents the end of a serie.
-  static const PageNumber npos() {
-    return PageNumber();
-  }
+  static const PageNumber npos() { return PageNumber(); }
 
   // Equality operator. Only the current page number is verified so that
   // "page != PageNumber::npos()" works.
@@ -62,9 +58,10 @@ class PRINTING_EXPORT PageNumber {
 };
 
 // Debug output support.
-template<class E, class T>
-inline typename std::basic_ostream<E,T>& operator<<(
-    typename std::basic_ostream<E,T>& ss, const PageNumber& page) {
+template <class E, class T>
+inline typename std::basic_ostream<E, T>& operator<<(
+    typename std::basic_ostream<E, T>& ss,
+    const PageNumber& page) {
   return ss << page.ToInt();
 }
 

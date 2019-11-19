@@ -5,16 +5,13 @@
 module chrome.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
-import "third_party/blink/public/web/window_features.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "third_party/blink/public/mojom/window_features/window_features.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 enum ImageFormat {
   JPEG,
   PNG,
 };
-
-[Native]
-enum BrowserControlsState;
 
 [Native]
 struct WebApplicationInfo;
@@ -50,11 +47,4 @@ interface ChromeRenderFrame {
 
   // Requests the web application info from the renderer.
   GetWebApplicationInfo() => (WebApplicationInfo web_application_info);
-
-  // Notifies the renderer whether hiding/showing the browser controls is
-  // enabled, what the current state should be, and whether or not to
-  // animate to the proper state.
-  UpdateBrowserControlsState(BrowserControlsState constraints,
-                             BrowserControlsState current,
-                             bool animate);
 };

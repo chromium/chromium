@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+PASS TransformStreamDefaultController should not be exported on the global object
+PASS TransformStream.prototype.constructor should have standard properties
+PASS TransformStream.prototype.constructor should be a constructor
+PASS TransformStream.prototype.readable should have standard properties
+PASS TransformStream.prototype.readable should be a getter
+PASS TransformStream.prototype.writable should have standard properties
+PASS TransformStream.prototype.writable should be a getter
+PASS TransformStream.prototype should have exactly the expected properties
+PASS TransformStreamDefaultController.prototype.constructor should have standard properties
+PASS TransformStreamDefaultController.prototype.constructor should be a constructor
+PASS TransformStreamDefaultController.prototype.desiredSize should have standard properties
+PASS TransformStreamDefaultController.prototype.desiredSize should be a getter
+PASS TransformStreamDefaultController.prototype.enqueue should have standard properties
+FAIL TransformStreamDefaultController.prototype.enqueue should be a method assert_equals: enqueue should take 1 arguments expected 1 but got 0
+PASS TransformStreamDefaultController.prototype.error should have standard properties
+FAIL TransformStreamDefaultController.prototype.error should be a method assert_equals: error should take 1 arguments expected 1 but got 0
+PASS TransformStreamDefaultController.prototype.terminate should have standard properties
+PASS TransformStreamDefaultController.prototype.terminate should be a method
+PASS TransformStreamDefaultController.prototype should have exactly the expected properties
+PASS transformer method start should be called with the right number of arguments
+PASS transformer method start should be called even when it's located on the prototype chain
+PASS unexpected properties should not be accessed when calling transformer method start
+PASS transformer method transform should be called with the right number of arguments
+PASS transformer method transform should be called even when it's located on the prototype chain
+PASS unexpected properties should not be accessed when calling transformer method transform
+PASS transformer method flush should be called with the right number of arguments
+PASS transformer method flush should be called even when it's located on the prototype chain
+PASS unexpected properties should not be accessed when calling transformer method flush
+Harness: the test ran to completion.
+

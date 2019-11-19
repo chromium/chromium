@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -14,17 +13,8 @@
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/signed_exchange_browser_test_helper.h"
-#include "services/network/public/cpp/features.h"
 
-struct SignedExchangePolicyBrowserTestParam {
-  explicit SignedExchangePolicyBrowserTestParam(bool network_service_enabled)
-      : network_service_enabled(network_service_enabled) {}
-  const bool network_service_enabled;
-};
-
-class SignedExchangePolicyBrowserTest
-    : public CertVerifierBrowserTest,
-      public testing::WithParamInterface<SignedExchangePolicyBrowserTestParam> {
+class SignedExchangePolicyBrowserTest : public CertVerifierBrowserTest {
  public:
   SignedExchangePolicyBrowserTest() = default;
   ~SignedExchangePolicyBrowserTest() override = default;
@@ -48,14 +38,6 @@ class SignedExchangePolicyBrowserTest
 
  private:
   void SetUp() override {
-    std::vector<base::Feature> enable_features;
-    std::vector<base::Feature> disable_features;
-    if (GetParam().network_service_enabled) {
-      enable_features.push_back(network::features::kNetworkService);
-    } else {
-      disable_features.push_back(network::features::kNetworkService);
-    }
-    feature_list_.InitWithFeatures(enable_features, disable_features);
     sxg_test_helper_.SetUp();
     InProcessBrowserTest::SetUp();
   }
@@ -64,13 +46,12 @@ class SignedExchangePolicyBrowserTest
     sxg_test_helper_.TearDownOnMainThread();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   content::SignedExchangeBrowserTestHelper sxg_test_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(SignedExchangePolicyBrowserTest);
 };
 
-IN_PROC_BROWSER_TEST_P(SignedExchangePolicyBrowserTest, BlackList) {
+IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlackList) {
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -120,9 +101,3 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePolicyBrowserTest, BlackList) {
       &result));
   EXPECT_TRUE(result);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    SignedExchangePolicyBrowserTest,
-    SignedExchangePolicyBrowserTest,
-    testing::Values(SignedExchangePolicyBrowserTestParam(false),
-                    SignedExchangePolicyBrowserTestParam(true)));

@@ -29,8 +29,8 @@
 #include "net/ssl/ssl_config_service.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
-#include "net/third_party/quic/core/crypto/crypto_utils.h"
-#include "net/third_party/quic/test_tools/crypto_test_utils.h"
+#include "net/third_party/quiche/src/quic/core/crypto/crypto_utils.h"
+#include "net/third_party/quiche/src/quic/test_tools/crypto_test_utils.h"
 
 using std::string;
 
@@ -51,7 +51,8 @@ class TestProofVerifierChromium : public ProofVerifierChromium {
       : ProofVerifierChromium(cert_verifier.get(),
                               ct_policy_enforcer.get(),
                               transport_security_state.get(),
-                              cert_transparency_verifier.get()),
+                              cert_transparency_verifier.get(),
+                              {"test.example.com"}),
         cert_verifier_(std::move(cert_verifier)),
         transport_security_state_(std::move(transport_security_state)),
         cert_transparency_verifier_(std::move(cert_transparency_verifier)),
@@ -59,7 +60,7 @@ class TestProofVerifierChromium : public ProofVerifierChromium {
     // Load and install the root for the validated chain.
     scoped_refptr<X509Certificate> root_cert =
         ImportCertFromFile(GetTestCertsDirectory(), cert_file);
-    scoped_root_.Reset(root_cert.get());
+    scoped_root_.Reset({root_cert});
   }
 
   ~TestProofVerifierChromium() override {}

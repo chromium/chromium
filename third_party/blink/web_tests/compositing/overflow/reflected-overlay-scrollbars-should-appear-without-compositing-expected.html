@@ -1,4 +1,10 @@
 <!DOCTYPE HTML>
+<script>
+if (window.internals) {
+    internals.useMockOverlayScrollbars();
+    internals.settings.setPreferCompositingToLCDTextEnabled(true);
+}
+</script>
 <style>
 #container {
     -webkit-box-reflect: below;
@@ -29,24 +35,10 @@
 
 #scrolled {
     width: 100px;
-    height: 300px;
+    height: 400px;
     background: green;
 }
 </style>
-<script>
-if (window.internals) {
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
-    internals.settings.setPreferCompositingToLCDTextEnabled(true);
-}
-
-if (window.testRunner)
-    testRunner.dumpAsTextWithPixelResults();
-
-onload = function() {
-    if (window.internals && window.testRunner)
-        testRunner.setCustomTextOutput(internals.layerTreeAsText(document));
-};
-</script>
 <div id="container">
   <div id="clipper">
     <div id="scroller">

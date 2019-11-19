@@ -7,11 +7,11 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/chromeos/login/screens/multidevice_setup_screen_view.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/chromeos/multidevice_setup/oobe_completion_tracker_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/chromeos/login/multidevice_setup_screen_handler.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 
@@ -25,10 +25,11 @@ constexpr const char kDeclinedSetupUserAction[] = "setup-declined";
 }  // namespace
 
 MultiDeviceSetupScreen::MultiDeviceSetupScreen(
-    BaseScreenDelegate* base_screen_delegate,
-    MultiDeviceSetupScreenView* view)
-    : BaseScreen(base_screen_delegate, OobeScreen::SCREEN_MULTIDEVICE_SETUP),
-      view_(view) {
+    MultiDeviceSetupScreenView* view,
+    const base::RepeatingClosure& exit_callback)
+    : BaseScreen(MultiDeviceSetupScreenView::kScreenId),
+      view_(view),
+      exit_callback_(exit_callback) {
   DCHECK(view_);
   view_->Bind(this);
 }
@@ -99,7 +100,7 @@ void MultiDeviceSetupScreen::RecordMultiDeviceSetupOOBEUserChoiceHistogram(
 }
 
 void MultiDeviceSetupScreen::ExitScreen() {
-  Finish(ScreenExitCode::MULTIDEVICE_SETUP_FINISHED);
+  exit_callback_.Run();
 }
 
 }  // namespace chromeos

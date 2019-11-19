@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_presentation_controller.h"
 
 #import "ios/chrome/browser/ui/image_util/image_util.h"
+#import "ios/chrome/browser/ui/util/accessibility_close_menu_button.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui_util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -23,15 +25,12 @@ const CGFloat kContainerCornerRadius = 13.0;
 
 @interface IdentityChooserPresentationController ()
 
-@property(nonatomic, strong) UIView* shieldView;
+@property(nonatomic, strong) UIButton* closeButton;
 @property(nonatomic, strong) UIView* shadowContainer;
 
 @end
 
 @implementation IdentityChooserPresentationController
-
-@synthesize shieldView = _shieldView;
-@synthesize shadowContainer = _shadowContainer;
 
 #pragma mark - UIPresentationController
 
@@ -60,13 +59,14 @@ const CGFloat kContainerCornerRadius = 13.0;
 }
 
 - (void)presentationTransitionWillBegin {
-  self.shieldView = [[UIView alloc] init];
-  self.shieldView.frame = self.containerView.bounds;
-  [self.containerView addSubview:self.shieldView];
-  [self.shieldView
-      addGestureRecognizer:[[UITapGestureRecognizer alloc]
-                               initWithTarget:self
-                                       action:@selector(handleShieldTap)]];
+  self.closeButton =
+      [AccessibilityCloseMenuButton buttonWithType:UIButtonTypeCustom];
+  [self.closeButton addTarget:self
+                       action:@selector(closeButtonAction)
+             forControlEvents:UIControlEventTouchUpInside];
+  self.closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.containerView addSubview:self.closeButton];
+  AddSameConstraints(self.containerView, self.closeButton);
 
   self.shadowContainer = [[UIView alloc] init];
 
@@ -99,14 +99,12 @@ const CGFloat kContainerCornerRadius = 13.0;
 }
 
 - (void)containerViewWillLayoutSubviews {
-  self.shieldView.frame = self.containerView.bounds;
-
   self.shadowContainer.frame = [self frameOfPresentedViewInContainerView];
 }
 
 #pragma mark - Private
 
-- (void)handleShieldTap {
+- (void)closeButtonAction {
   [self.presentedViewController dismissViewControllerAnimated:YES
                                                    completion:nil];
 }

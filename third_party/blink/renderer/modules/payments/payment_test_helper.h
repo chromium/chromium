@@ -8,6 +8,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/modules/payments/payment_details_init.h"
 #include "third_party/blink/renderer/modules/payments/payment_details_update.h"
@@ -15,16 +16,16 @@
 #include "third_party/blink/renderer/modules/payments/payment_shipping_option.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class Document;
 class PaymentMethodData;
 class ScriptState;
 class ScriptValue;
+class V8TestingScope;
 
 enum PaymentTestDetailToChange {
   kPaymentTestDetailNone,
@@ -85,7 +86,14 @@ HeapVector<Member<PaymentMethodData>> BuildPaymentMethodDataForTest();
 
 payments::mojom::blink::PaymentResponsePtr BuildPaymentResponseForTest();
 
-void MakePaymentRequestOriginSecure(Document&);
+payments::mojom::blink::PaymentAddressPtr BuildPaymentAddressForTest();
+
+class PaymentRequestV8TestingScope : public V8TestingScope {
+  STACK_ALLOCATED();
+
+ public:
+  PaymentRequestV8TestingScope();
+};
 
 class PaymentRequestMockFunctionScope {
   STACK_ALLOCATED();

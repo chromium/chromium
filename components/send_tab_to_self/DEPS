@@ -1,5 +1,11 @@
 include_rules = [
+  "+components/history",
+  "+components/infobars",
   "+components/keyed_service/core",
   "+components/sync",
+  "+components/sync_device_info",
+  "+components/sync_preferences",
   "+components/version_info",
+  "+content/public/browser",
+  "+google_apis",
 ]

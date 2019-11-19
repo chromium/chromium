@@ -6,16 +6,9 @@
 <translation id="1050693411695664090">Mahina</translation>
 <translation id="1152528166145813711">Pumili…</translation>
 <translation id="1199593201721843963">Huwag paganahin ang mga malayuang koneksyon</translation>
+<translation id="1201402288615127009">Susunod</translation>
 <translation id="1291443878853470558">Dapat mong paganahin ang mga malayuang koneksyon kung nais mong gamitin ang Chromoting upang i-access ang computer na ito.</translation>
 <translation id="1297009705180977556">Nagkaroon ng error sa pagkonekta sa <ph name="HOSTNAME" /></translation>
-<translation id="1300633907480909701">Ligtas na i-access ang iyong mga computer mula sa iyong Android device.
-
-• Sa bawat isa sa iyong mga computer, i-set up ang malayuang pag-access gamit ang Chrome Remote Desktop app mula sa Chrome Web Store: https://chrome.google.com/remotedesktop
-• Sa iyong Android device, buksan ang app at pindutin ang alinman sa iyong mga online na computer upang kumonekta.
-
-Ang mga remote na computer na may mga keyboard na hindi US-English ay maaaring makatanggap ng hindi tamang pag-input ng teksto. Paparating na ang suporta para sa iba pang mga layout ng keyboard!
-
-Para sa higit pang impormasyon tungkol sa privacy, pakitingnan ang Patakaran sa Privacy ng Google (http://goo.gl/SyrVzj) at ang Patakaran sa Privacy ng Chrome Privacy Policy (http://goo.gl/0uXE5d).</translation>
 <translation id="1324095856329524885">(hindi pa available ang feature na ito para sa iyong computer)</translation>
 <translation id="1342297293546459414">Tumingin at magkontrol ng nakabahaging computer.</translation>
 <translation id="1389790901665088353">i-download ang Host Installer ng Remote na Desktop ng Chrome</translation>
@@ -27,8 +20,8 @@ Para sa higit pang impormasyon tungkol sa privacy, pakitingnan ang Patakaran sa 
 <translation id="1624185583382384493">Nasa web na ang Remote na Desktop ng Chrome. Subukan ang aming <ph name="LINK_BEGIN" />web app<ph name="LINK_END" />—mabilis ito at libre, na may mas marami pang feature, kasama na ang pinahusay na suporta sa maraming monitor.</translation>
 <translation id="1643640058022401035">Tatapusin ng pag-alis sa pahinang ito ang iyong session ng Chromoting.</translation>
 <translation id="1654128982815600832">Pinapagana ang mga malayuang koneksyon para sa computer na ito…</translation>
+<translation id="1697532407822776718">Handa ka na!</translation>
 <translation id="170207782578677537">Nabigong irehistro ang computer na ito.</translation>
-<translation id="1727412735341161734">Remote na Desktop ng Chrome</translation>
 <translation id="174018511426417793">Wala kang mga nakarehistrong computer. Upang paganahin ang mga malayuang koneksyon sa isang computer, i-install ang Remote na Desktop ng Chrome doon at i-click ang “<ph name="BUTTON_NAME" />”.</translation>
 <translation id="1742469581923031760">Kumokonekta…</translation>
 <translation id="1770394049404108959">Hindi ko mabuksan ang application.</translation>
@@ -46,13 +39,11 @@ Para sa higit pang impormasyon tungkol sa privacy, pakitingnan ang Patakaran sa 
 <translation id="2078880767960296260">Proseso ng Host</translation>
 <translation id="20876857123010370">Trackpad mode</translation>
 <translation id="2089514346391228378">Pinagana na ang mga malayuang koneksyon para sa computer na ito.</translation>
-<translation id="2118549242412205620">Ligtas na i-access ang iyong mga computer mula sa iyong Android device.
+<translation id="2198363917176605566">Para magamit ang <ph name="PRODUCT_NAME" />, kailangan mong ibigay ang pahintulot sa 'Pag-record ng Screen' para maipadala sa malayuang machine ang mga content ng screen sa Mac na ito.
 
-• Sa bawat isa sa iyong mga computer, i-set up ang malayuang pag-access gamit ang Chrome Remote Desktop app mula sa Chrome Web Store: https://chrome.google.com/remotedesktop
-• Sa iyong Android device, buksan ang app at pindutin ang alinman sa iyong mga online na computer upang kumonekta.
+Para ibigay ang pahintulot na ito, i-click ang '<ph name="BUTTON_NAME" />' sa ibaba para buksan ang pane ng mga kagustuhan sa 'Pag-record ng Screen' at pagkatapos ay lagyan ng check ang kahon sa tabi ng '<ph name="SERVICE_SCRIPT_NAME" />.'
 
-Para sa higit pang impormasyon tungkol sa privacy, pakitingnan ang Patakaran sa Privacy ng Google (http://goo.gl/SyrVzj) at ang Patakaran sa Privacy ng Chrome (http://goo.gl/0uXE5d).</translation>
-<translation id="2124408767156847088">Ligtas na i-access ang iyong mga computer mula sa iyong Android device.</translation>
+Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito at pagkatapos ay lagyan ulit ito ng check.</translation>
 <translation id="2208514473086078157">Hindi pinapahintulutan ng mga setting ng patakaran ang pagbabahagi sa computer na ito bilang host ng Remote na Desktop ng Chrome. Makipag-ugnay sa iyong system administrator para sa tulong.</translation>
 <translation id="2220529011494928058">Mag-ulat ng isyu</translation>
 <translation id="2221097377466213233">Gamitin ang Ctrl sa kanan para sa Win key (⌘ sa Mac)</translation>
@@ -64,13 +55,13 @@ Para sa higit pang impormasyon tungkol sa privacy, pakitingnan ang Patakaran sa 
 <translation id="2314101195544969792">Ilang sandali nang hindi aktibo ang iyong session ng <ph name="APPLICATION_NAME" /> at aalisin na ito sa pagkakakonekta maya-maya.</translation>
 <translation id="2317666076142640974">Maunang makita ang bagong <ph name="LINK_BEGIN" />web app na Remote na Desktop ng Chrome<ph name="LINK_END" />. Gusto naming marinig ang iyong feedback.</translation>
 <translation id="2320166752086256636">Itago ang keyboard</translation>
-<translation id="2332192922827071008">Buksan ang Mga Kagustuhan</translation>
 <translation id="2353140552984634198">Maaari mong ligtas na i-access ang computer na ito gamit ang Chromoting.</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2366718077645204424">Hindi maabot ang host. Malamang na dahil ito sa configuration ng network na iyong ginagamit.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Huling nakitang naka-online noong <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2405928220797050937">Hindi na sinusuportahan ang app na ito. Upang matiyak na makukuha mo ang mga pinakabagong feature at update sa seguridad, pakigamit ang <ph name="LINK_BEGIN" />web app na Remote na Desktop ng Chrome<ph name="LINK_END" />.</translation>
 <translation id="2499160551253595098">Tumulong sa amin na pahusayin ang Remote na Desktop ng Chrome sa pamamagitan ng pagbibigay-daan sa amin na mangolekta ng mga statistics sa paggamit at mga ulat ng pag-crash.</translation>
+<translation id="2504109125669302160">Magbigay ng pahintulot sa 'Accessibility' sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Nakakonekta sa <ph name="HOSTNAME" /></translation>
 <translation id="2512228156274966424">TANDAAN: Upang matiyak na available ang lahat ng keyboard shortcut, maaari mong i-configure ang Remote na Desktop ng Chrome sa ‘Buksan bilang window’.</translation>
 <translation id="2540992418118313681">Gusto mo bang ibahagi ang computer na ito upang makita at makontrol ng ibang user?</translation>
@@ -86,11 +77,6 @@ Para sa higit pang impormasyon tungkol sa privacy, pakitingnan ang Patakaran sa 
 <translation id="2851754573186462851">Chromium App Streaming</translation>
 <translation id="2888969873284818612">Nagkaroon ng error sa network. Ire-restart namin ang app kapag on-line nang muli ang iyong device.</translation>
 <translation id="2891243864890517178">Para sa Mac (OS X Yosemite 10.10 at mas bago)</translation>
-<translation id="289405675947420287">Secure na i-access ang iyong computer mula sa iOS device mo. Mabilis, simple, at libre ito.
-
-• I-download ang app na Remote na Desktop ng Chrome mula sa Chrome WebStore sa computer na gusto mong i-access nang malayuan.
-• I-install ang software na Remote na Desktop ng Chrome at sundin ang mga tagubilin upang makumpleto ang pag-set up.
-• Sa iyong iOS device, buksan ang app at mag-tap sa anuman sa mga online na computer mo upang kumonekta.</translation>
 <translation id="2894654864775534701">Kasalukuyang ibinabahagi ang computer na ito sa ilalim ng ibang account.</translation>
 <translation id="2919669478609886916">Kasalukuyan mong ibinabahagi ang machine na ito sa isa pang user. Nais mo bang ituloy ang pagbabahagi?</translation>
 <translation id="2921543551052660690">Nag-sign in ka dati bilang <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />).  Upang ma-access ang iyong mga computer sa account na iyon, <ph name="LINK_BEGIN" />mag-sign in sa Chromium<ph name="LINK_END" /> gamit ang account na iyon at muling i-install ang Chromoting.</translation>
@@ -104,7 +90,6 @@ Para sa higit pang impormasyon tungkol sa privacy, pakitingnan ang Patakaran sa 
 <translation id="310979712355504754">Tanggalin lahat</translation>
 <translation id="3150823315463303127">Hindi nabasa ng host ang patakaran.</translation>
 <translation id="3171922709365450819">Hindi sinusuportahan ng client na ito ang device na ito dahil nangangailangan ito ng pag-authenticate ng third party.</translation>
-<translation id="3194245623920924351">Remote na Desktop ng Chrome</translation>
 <translation id="3197730452537982411">Remote na Desktop</translation>
 <translation id="324272851072175193">I-email ang mga tagubiling ito</translation>
 <translation id="3258789396564295715">Maaari mong ligtas na ma-access ang computer na ito gamit ang Remote na Desktop ng Chrome.</translation>
@@ -126,8 +111,6 @@ Para sa higit pang impormasyon tungkol sa privacy, pakitingnan ang Patakaran sa 
 <translation id="3695446226812920698">Alamin kung paano</translation>
 <translation id="3718805989288361841">Mayroong error sa mga setting ng patakaran para sa Remote na Desktop ng Chrome. Makipag-ugnayan sa iyong system administrator para sa tulong.</translation>
 <translation id="3776024066357219166">Natapos na ang iyong session sa Remote na Desktop ng Chrome.</translation>
-<translation id="3846148461359626420">• Mas magandang karanasan sa pag-pan at pag-zoom sa iPhone X.
-• Mga pagpapahusay sa katatagan at pag-aayos ng bug.</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3884839335308961732">Pakikumpirma ang iyong account at PIN sa ibaba upang payagan ang pag-access ng Remote na Desktop ng Chrome.</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -153,11 +136,14 @@ Para sa higit pang impormasyon tungkol sa privacy, pakitingnan ang Patakaran sa 
 <translation id="4240294130679914010">Uninstaller ng Chromoting Host</translation>
 <translation id="4277463233460010382">Naka-configure ang computer na ito na payagan ang isa o higit pang mga client na kumonekta nang hindi naglalagay ng PIN.</translation>
 <translation id="4277736576214464567">Di-wasto ang access code. Pakisubukang muli.</translation>
+<translation id="4281844954008187215">Mga Tuntunin ng Serbisyo</translation>
 <translation id="4361728918881830843">Upang paganahin ang mga malayuang koneksyon sa ibang computer, i-install ang Remote na Desktop ng Chrome doon at i-click ang “<ph name="BUTTON_NAME" />”.</translation>
 <translation id="4394049700291259645">Huwag paganahin</translation>
 <translation id="4405930547258349619">Pangunahing Library</translation>
 <translation id="4430435636878359009">Huwag paganahin ang mga malayuang koneksyon sa computer na ito</translation>
 <translation id="4430915108080446161">Bumubuo ng access code…</translation>
+<translation id="443560535555262820">Buksan ang Mga Kagustuhan sa Accessibility</translation>
+<translation id="4450893287417543264">Huwag ipakitang muli</translation>
 <translation id="4472575034687746823">Magsimula</translation>
 <translation id="4481276415609939789">Wala kang mga nakarehistrong computer. Upang paganahin ang mga malayuang koneksyon sa isang computer, i-install ang Chromoting doon at i-click ang “<ph name="BUTTON_NAME" />”.</translation>
 <translation id="4513946894732546136">Feedback</translation>
@@ -170,13 +156,6 @@ Para sa higit pang impormasyon tungkol sa privacy, pakitingnan ang Patakaran sa 
 <translation id="4660011489602794167">Ipakita ang keyboard</translation>
 <translation id="4703302905453407178">Huminto sa paggana ang isang kinakailangang bahagi. Pakiulat ang problemang ito sa mga developer.</translation>
 <translation id="4703799847237267011">Natapos na ang iyong session ng Chromoting.</translation>
-<translation id="4706355010316049867">Chrome
-Remote
-Desktop
-Access
-Suporta
-Computer
-PC</translation>
 <translation id="4736223761657662401">Kasaysayan ng Koneksyon</translation>
 <translation id="4741792197137897469">Hindi naisagawa ang pagpapatotoo. Mangyaring muling mag-sign in sa Chrome.</translation>
 <translation id="477305884757156764">Masyadong mabagal ang application.</translation>
@@ -193,9 +172,6 @@ PC</translation>
 <translation id="4973800994433240357">Sa pamamagitan ng pagda-download ng Chromoting Host Installer, sumasang-ayon ka sa <ph name="LINK_BEGIN" />Mga Tuntunin ng Serbisyo<ph name="LINK_END" /> ng Google.</translation>
 <translation id="4974476491460646149">Isinara ang koneksyon para sa <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Kailangan mo munang i-set up ang iyong computer para sa remote na access</translation>
-<translation id="5059773780693835145">May kinakailangang karagdagang hakbang sa pag-configure bago mo makontrol nang malayuan ang machine na ito gamit ang <ph name="PRODUCT_NAME" />.
-
-Para ma-enable ang functionality na ito, piliin ang '<ph name="BUTTON_NAME" />' para ipakita ang pane ng mga kagustuhan sa Seguridad at Privacy, pagkatapos ay lagyan ng check ang kahon sa tabi ng '<ph name="SERVICE_SCRIPT_NAME" />.'</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="5070121137485264635">Hinihiling sa iyo ng remote host na magpatunay sa isang website ng third-party. Upang makapagpatuloy, dapat mong bigyan ng mga karagdagang pahintulot ang Remote na Desktop ng Chrome upang ma-access ang address na ito:</translation>
 <translation id="507204348399810022">Sigurado ka bang gusto mong i-disable ang mga malayuang koneksyon sa <ph name="HOSTNAME" />?</translation>
@@ -205,8 +181,10 @@ Para ma-enable ang functionality na ito, piliin ang '<ph name="BUTTON_NAME" />' 
 <translation id="518094545883702183">Ang impormasyong ito ay ginagamit lang para sa pagda-diagnose sa problemang inuulat mo, available lang sa isang taong nagsisiyasat ng iyong ulat, at pinapanatili sa loob ng hindi hihigit sa 30 araw.</translation>
 <translation id="5204575267916639804">Mga FAQ</translation>
 <translation id="5222676887888702881">Mag-sign out</translation>
+<translation id="5234764350956374838">Balewalain</translation>
 <translation id="5254120496627797685">Tatapusin ng pag-alis sa pahinang ito ang iyong session sa Remote na Desktop ng Chrome.</translation>
 <translation id="5308380583665731573">Kumonekta</translation>
+<translation id="5327248766486351172">Pangalan</translation>
 <translation id="533625276787323658">Walang mapagkokonektahan</translation>
 <translation id="5363265567587775042">Hilingin sa user na may-ari ng computer na gusto mong i-access na i-click ang “<ph name="SHARE" />” at ibigay sa iyo ang access code.</translation>
 <translation id="5379087427956679853">Binibigyang-daan ka ng Remote na Desktop ng Chrome na ligtas na maibahagi ang iyong computer sa Web. Dapat na nagpapatakbo ang parehong user ng app ng Remote na Desktop ng Chrome, na matatagpuan sa <ph name="URL" />.</translation>
@@ -244,14 +222,19 @@ Para ma-enable ang functionality na ito, piliin ang '<ph name="BUTTON_NAME" />' 
 <translation id="6198252989419008588">Palitan ang PIN</translation>
 <translation id="6204583485351780592"><ph name="HOSTNAME" /> (luma)</translation>
 <translation id="6221358653751391898">Hindi ka naka-sign in sa Chrome. Mangyaring mag-sign in at subukang muli.</translation>
+<translation id="6223301979382383752">Buksan ang Mga Kagustuhan sa Pag-record ng Screen</translation>
 <translation id="6227369581881558336">Nasa web na ang Remote na Desktop ng Chrome at may mga bago itong feature kasama na ang paglilipat ng file! Tingnan ang aming <ph name="LINK_BEGIN" />web app<ph name="LINK_END" />.</translation>
 <translation id="6284412385303060032">Nag-shutdown ang host na tumatakbo sa console logic screen upang masuportahan ang curtain mode sa pamamagitan ng paglipat sa isang host na tumatakbo sa isang user-specific session.</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6304318647555713317">Client</translation>
 <translation id="6381670701864002291">Iba pang bagay.</translation>
 <translation id="6398765197997659313">Lumabas sa buong screen</translation>
+<translation id="6411861157501911556">Para magamit ang <ph name="PRODUCT_NAME" />, kailangan mong ibigay ang pahintulot sa 'Accessibility' para mailagay sa Mac na ito ang input mula sa malayuang machine.
+
+Para ibigay ang pahintulot na ito, i-click ang '<ph name="BUTTON_NAME" />' sa ibaba para buksan ang pane ng mga kagustuhan sa 'Accessibility' at pagkatapos ay lagyan ng check ang kahon sa tabi ng '<ph name="SERVICE_SCRIPT_NAME" />.'
+
+Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito at pagkatapos ay lagyan ulit ito ng check.</translation>
 <translation id="6441316101718669559">Hindi sinusuportahan sa platform na ito ang pagsasama sa desktop. Maaari mo pa ring gamitin ang application, ngunit hindi magiging maganda ang karanasan ng user.</translation>
-<translation id="6502629188777329097">Secure na i-acess ang computer mo</translation>
 <translation id="652218476070540101">Ina-update ang PIN para sa computer na ito…</translation>
 <translation id="6527303717912515753">Ibahagi</translation>
 <translation id="6541219117979389420">Maaaring kasama sa mga log ng application ang pribadong impormasyon, kabilang na ang iyong pagkakakilanlan (email address) at ang mga pangalan at property ng mga file at folder sa Google Drive.</translation>
@@ -295,7 +278,7 @@ Para ma-enable ang functionality na ito, piliin ang '<ph name="BUTTON_NAME" />' 
 <translation id="7606912958770842224">Paganahin ang mga malayuang koneksyon</translation>
 <translation id="7628469622942688817">Tandaan ang aking PIN sa device na ito.</translation>
 <translation id="7649070708921625228">Tulong</translation>
-<translation id="7658239707568436148">Ikansela</translation>
+<translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7665369617277396874">Magdagdag ng account</translation>
 <translation id="7672203038394118626">Hindi pinagana ang mga malayuang koneksyon para sa computer na ito.</translation>
 <translation id="7678209621226490279">I-dock sa Kaliwa</translation>
@@ -311,6 +294,7 @@ Para ma-enable ang functionality na ito, piliin ang '<ph name="BUTTON_NAME" />' 
 <translation id="7948001860594368197">Mga pagpipilian sa screen</translation>
 <translation id="7970576581263377361">Hindi naisagawa ang pagpapatotoo. Mangyaring muling mag-sign in sa Chromium.</translation>
 <translation id="7981525049612125370">Nag-expire na ang remote na session.</translation>
+<translation id="8038111231936746805">(default)</translation>
 <translation id="8041089156583427627">Magpadala ng Feedback</translation>
 <translation id="8041721485428375115">Sa pamamagitan ng pagda-download ng Host Installer ng Remote na Desktop ng Chrome, sumasang-ayon ka sa <ph name="LINK_BEGIN" />Mga Tuntunin ng Serbisyo<ph name="LINK_END" /> ng Google.</translation>
 <translation id="8060029310790625334">Help Center</translation>
@@ -320,7 +304,6 @@ Para ma-enable ang functionality na ito, piliin ang '<ph name="BUTTON_NAME" />' 
 <translation id="809687642899217504">Aking Mga Computer</translation>
 <translation id="811307782653349804">I-access ang sarili mong computer mula saanman.</translation>
 <translation id="8116630183974937060">May nangyaring error sa network. Pakitiyak na on-line ang iyong device at subukang muli.</translation>
-<translation id="8123581458650016326">Payagan ang malalayong user na kontrolin ang machine na ito</translation>
 <translation id="8178433417677596899">Pagbabahagi ng screen na user-sa-user, mainam para sa malayuang suportang panteknikal.</translation>
 <translation id="8187079423890319756">Copyright 2013 Ang Mga May-akda ng Chromium. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="8196755618196986400">Upang mabigyang-daan kaming makipag-ugnayan sa iyo para sa karagdagang impormasyon, isasama ang iyong email address sa anumang feedback na iyong isusumite.</translation>
@@ -331,20 +314,22 @@ Para ma-enable ang functionality na ito, piliin ang '<ph name="BUTTON_NAME" />' 
 <translation id="837021510621780684">Mula sa computer na ito</translation>
 <translation id="8383794970363966105">Upang magamit ang Chromoting, kakailanganin mong magdagdag ng Google Account sa iyong device.</translation>
 <translation id="8386846956409881180">Na-configure ang host gamit ang mga di-wastong kredensyal sa OAuth.</translation>
+<translation id="8397385476380433240">Magbigay ng pahintulot sa <ph name="PRODUCT_NAME" /></translation>
+<translation id="8406498562923498210">Pumili ng session na ilulunsad sa iyong environment ng Remote na Desktop ng Chrome. (Tandaang posibleng hindi sinusuportahan ng ilang uri ng session ang pagtakbo sa Remote na Desktop ng Chrome at sa lokal na console nang sabay.)</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8445362773033888690">Tingnan sa Google Play Store</translation>
 <translation id="8509907436388546015">Proseso ng Pagsasama ng Desktop</translation>
 <translation id="8513093439376855948">Host ng native na pagmemensahe para sa pagre-remote ng pamamahala ng host</translation>
 <translation id="8525306231823319788">Buong screen</translation>
 <translation id="8548209692293300397">Nag-sign in ka dati bilang <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />).  Upang ma-access ang iyong mga computer sa account na iyon, <ph name="LINK_BEGIN" />mag-sign in sa Google Chrome<ph name="LINK_END" /> gamit ang account na iyon at muling i-install ang Remote na Desktop ng Chrome.</translation>
+<translation id="858006550102277544">Magkomento</translation>
 <translation id="8642984861538780905">Medyo Malakas</translation>
-<translation id="8705151241155781642">• Nagdagdag ng suporta para sa Android 9.0 Pie.
-• Suporta para sa pagre-resize ng resolution ng remote na desktop para tumugma sa screen ng iyong Android device.</translation>
 <translation id="8712909229180978490">Hindi ko makita ang aking mga naka-save file habang on-line sa Google Drive.</translation>
 <translation id="8743328882720071828">Gusto mo bang payagan si <ph name="CLIENT_USERNAME" /> na tingnan at kontrolin ang iyong computer?</translation>
 <translation id="8747048596626351634">Nag-crash o hindi nagsimula ang session. Kung may ~/.chrome-remote-desktop-session sa malayuang computer, tiyaking nagsisimula ito ng matagal na paggana ng proseso sa foreground gaya ng desktop environment o window manager.</translation>
-<translation id="8759753423332885148">Matuto nang higit pa.</translation>
+<translation id="8759753423332885148">Matuto pa.</translation>
 <translation id="8791202241915690908">I-download ang Chromoting Host Installer</translation>
+<translation id="8804164990146287819">Patakaran sa Privacy</translation>
 <translation id="894763922177556086">Malakas</translation>
 <translation id="895780780740011433">Para sa Windows 7 at mas bago</translation>
 <translation id="897805526397249209">Upang paganahin ang mga malayuang koneksyon sa ibang computer, i-install ang Chromoting doon at i-click ang “<ph name="BUTTON_NAME" />”.</translation>
@@ -355,6 +340,8 @@ Para ma-enable ang functionality na ito, piliin ang '<ph name="BUTTON_NAME" />' 
 <translation id="9126115402994542723">Huwag muling humingi ng PIN kapag kumokonekta sa host na ito mula sa device na ito.</translation>
 <translation id="9149580767411232853">Panatilihing nakikita ang buong remote na desktop</translation>
 <translation id="9149992051684092333">Upang simulang ibahagi ang iyong desktop, ibigay ang access code sa ibaba sa taong tutulong sa iyo.</translation>
+<translation id="916856682307586697">Ilunsad ang default na XSession</translation>
+<translation id="9187628920394877737">Magbigay ng pahintulot sa 'Pag-record ng Screen' sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="9188433529406846933">Pahintulutan</translation>
 <translation id="9213184081240281106">Di-wastong configuration ng host.</translation>
 <translation id="951991426597076286">Tanggihan</translation>

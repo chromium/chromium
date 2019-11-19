@@ -1,0 +1,79 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+import "content/public/common/transferrable_url_loader.mojom";
+import "extensions/common/api/mime_handler.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+
+interface GuestView {
+  // Tells the browser to create a mime handler guest view for a plugin.
+  // This method is only called when the network service is enabled, and only
+  // for plugins added using the embedded/object tag.
+  CreateEmbeddedMimeHandlerViewGuest(
+      int32 render_frame_id,
+      int32 tab_id,
+      url.mojom.Url original_url,
+      int32 element_instance_id,
+      gfx.mojom.Size element_size,
+      content.mojom.TransferrableURLLoader transferrable_url_loader);
+
+  // Tells the browser to create a mime handler guest view for a plugin.
+  // This method is called for full-frame plugins or for all plugins when the
+  // network service is disabled.
+  CreateMimeHandlerViewGuest(
+      int32 render_frame_id,
+      string view_id,
+      int32 element_instance_id,
+      gfx.mojom.Size element_size,
+      pending_remote<extensions.mime_handler.BeforeUnloadControl>?
+          before_unload_control);
+
+  // Notifies the browser whether or not now is a good time to start loading the
+  // MimeHandlerView. |routing_id| identifies the embedder frame. If |success|
+  // is false, then MimeHandlerViewEmbedder should destroy itself. When
+  // |success| is true the MimeHandlerViewEmbedder should proceed with attaching
+  // the GuestView.
+  ReadyToCreateMimeHandlerView(int32 routing_id, bool success);
+};
+
+// An interface implemented by the renderer which is used for creating a
+// MimeHandlerViewFrameContainer. This interface is exposed on RenderFrame and
+// and is used by the browser to ask the renderer to start the MimeHandlerView
+// creation process (by creating a MimeHandlerViewFrameContainer).
+interface MimeHandlerViewContainerManager {
+  // Sets the expected |internal_id| of the plugin element that will be used
+  // to attach the MimeHandlerViewGuest.
+  SetInternalId(string token_id);
+
+  // Requests the MimeHandlerViewContainerManager to load an empty page as an
+  // HTML string. This is used in cases where MimeHandlerViewEmbedder decides
+  // not to continue with loading the embedding page for the resource at
+  // |resource_url|, e.g., due to sandbox violation.
+  LoadEmptyPage(url.mojom.Url resource_url);
+
+  // Called by the browser to request a BeforeUnloadControl interface pointer
+  // which will later be connected to the request from the extension page to
+  // provide the beforeunload API (to setup beforeunload in the embedder
+  // document). This is only relevant for the non-embedded MimeHandlerView (
+  // e.g., full page navigations to a relevant MIME type).
+  CreateBeforeUnloadControl()
+      => (pending_remote<extensions.mime_handler.BeforeUnloadControl>
+              before_unload_control);
+
+  // Asks the renderer to destroy the MimeHandlerViewFrameContainer associated
+  // with MimeHandlerViewGuest with |element_instance_id|.
+  DestroyFrameContainer(int32 element_instance_id);
+
+  // This is a signal to renderer that the the contents of MimeHandlerViewGuest
+  // finished loading and therefore the renderer can forward the postMessages
+  // to the GuestView (if any). |element_instance_id| is the instance ID for
+  // MimeHandlerViewGuest and the |resource_url| is the original request's URL
+  // that ended up creating the MimeHandlerViewGuest.
+  DidLoad(
+      int32 mime_handler_view_guest_element_instance_id,
+      url.mojom.Url resource_url);
+};

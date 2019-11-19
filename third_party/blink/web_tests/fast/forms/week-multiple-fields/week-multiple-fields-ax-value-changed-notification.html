@@ -3,36 +3,23 @@
 <head>
   <script src="../../../resources/testharness.js"></script>
   <script src="../../../resources/testharnessreport.js"></script>
+  <script src="../resources/multiple-fields-ax-value-changed-notification-helper.js"></script>
 </head>
 <body>
 <input id="test" type="week" value="2012-W10">
 <script>
 async_test((t) => {
     var testInput = document.getElementById('test');
-    var expected = [
-        [ "Focus", "Week", "10" ],
-        [ "Focus", "Year", "2012" ],
-        [ "ValueChanged", "Year", "0005" ],
-        [ "ValueChanged", "Year", "0005" ] ];
 
-    accessibilityController.addNotificationListener(
-        t.step_func((element, notification) => {
-            if (notification == 'Focus' || notification == 'ValueChanged') {
-                var next_expectation = expected.shift();
-                console.log('next_expectation: ' + JSON.stringify(next_expectation));
-                console.log('actual: [' + notification + ', ' + element.name.trim() + ', ' + element.valueDescription.substr(20) + ']');
-                assert_equals(notification, next_expectation[0]);
-                assert_equals(element.name.trim(), next_expectation[1]);
-                assert_equals(element.valueDescription.substr(20), next_expectation[2]);
-            }
-            if (expected.length === 0)
-                t.done();
-        }));
+    var listener = new TestAccessibilityControllerNotificationListener(t);
+    listener.queueExpectedNotification("Focus", "Week", "10", "\t");
+    listener.queueExpectedNotification("Focus", "Year", "2012", "4");
+    listener.queueExpectedNotification("ValueChanged", "Year", "0004");
+    listener.queueExpectedNotification("ValueChanged", "Year", "0004", "ArrowUp");
+    listener.queueExpectedNotification("ValueChanged", "Year", "0005");
+    listener.queueExpectedNotification("ValueChanged", "Year", "0005");
 
     testInput.focus();
-    eventSender.keyDown('\t');
-    eventSender.keyDown('4');
-    eventSender.keyDown('ArrowUp');
 
     window.setTimeout(function() {
         assert_unreached("Did not receive all accessibility notifications");

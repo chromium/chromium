@@ -8,8 +8,8 @@ namespace download {
 
 SavePackageDownloadJob::SavePackageDownloadJob(
     DownloadItem* download_item,
-    std::unique_ptr<DownloadRequestHandleInterface> request_handle)
-    : DownloadJob(download_item, std::move(request_handle)) {}
+    DownloadJob::CancelRequestCallback cancel_request_callback)
+    : DownloadJob(download_item, std::move(cancel_request_callback)) {}
 
 SavePackageDownloadJob::~SavePackageDownloadJob() = default;
 

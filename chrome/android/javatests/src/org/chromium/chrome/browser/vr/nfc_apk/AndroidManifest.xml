@@ -4,7 +4,6 @@
        in the LICENSE file. -->
   <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.chrome.browser.vr.nfc_apk">
-    <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="24" />
     <application>
       <activity android:name="org.chromium.chrome.browser.vr.nfc_apk.SimNfcActivity"
         android:exported="true"

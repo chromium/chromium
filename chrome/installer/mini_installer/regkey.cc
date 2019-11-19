@@ -4,6 +4,7 @@
 
 #include "chrome/installer/mini_installer/regkey.h"
 
+#include "build/branding_buildflags.h"
 #include "chrome/installer/mini_installer/mini_installer_constants.h"
 #include "chrome/installer/mini_installer/mini_string.h"
 
@@ -89,7 +90,7 @@ LONG OpenClientsKey(HKEY root_key,
   StackString<MAX_PATH> clients_key;
   if (!clients_key.assign(kClientsKeyBase))
     return ERROR_BUFFER_OVERFLOW;
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!clients_key.append(app_guid))
     return ERROR_BUFFER_OVERFLOW;
 #endif
@@ -104,7 +105,7 @@ LONG OpenClientStateKey(HKEY root_key,
   StackString<MAX_PATH> client_state_key;
   if (!client_state_key.assign(kClientStateKeyBase))
     return ERROR_BUFFER_OVERFLOW;
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!client_state_key.append(app_guid))
     return ERROR_BUFFER_OVERFLOW;
 #endif

@@ -5,51 +5,57 @@
 #ifndef CHROME_BROWSER_UI_HATS_HATS_SERVICE_H_
 #define CHROME_BROWSER_UI_HATS_HATS_SERVICE_H_
 
-#include <map>
 #include <string>
 
-#include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/optional.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class PrefRegistrySimple;
 class Profile;
-
-struct HatsFinchConfig {
-  HatsFinchConfig();
-  ~HatsFinchConfig();
-  HatsFinchConfig(const HatsFinchConfig& other);
-
-  double probability;   // This is the percent of users [0,1] that will see the
-                        // survey
-  std::string trigger;  // This is the name of the survey in question.
-
-  // This is a map between the locale being presented and the site ID used to
-  // fetch the survey.
-  std::map<std::string, std::string> site_ids;
-};
 
 // This class provides the client side logic for determining if a
 // survey should be shown for any trigger based on input from a finch
 // configuration. It is created on a per profile basis.
 class HatsService : public KeyedService {
  public:
+  struct SurveyMetadata {
+    SurveyMetadata();
+    ~SurveyMetadata();
+
+    base::Optional<int> last_major_version;
+    base::Optional<base::Time> last_survey_started_time;
+  };
+
   explicit HatsService(Profile* profile);
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // This is the public function that will launch the "satisfaction" survey if
   // it's appropriate.
   void LaunchSatisfactionSurvey();
 
+  // Returns the en-us site ID for the HaTS survey.
+  const std::string& en_site_id() const { return en_site_id_; }
+
+  void SetSurveyMetadataForTesting(const SurveyMetadata& metadata);
+
  private:
   // This returns true is the survey trigger specified should be shown.
   bool ShouldShowSurvey(const std::string& trigger) const;
 
-  // a temporary flag to ensure that hats is not launched multiple times
-  // TODO: replace with pref lookup
-  static bool launch_hats_;
-  Profile* profile_;
-  const HatsFinchConfig hats_finch_config_;
+  // Profile associated with this service.
+  Profile* const profile_;
 
-  FRIEND_TEST_ALL_PREFIXES(HatsForceEnabledTest, ParamsWithAForcedFlagTest);
+  // Trigger string identifier.
+  const std::string trigger_;
+
+  // Percent of users [0,1] that will see the survey.
+  const double probability_;
+
+  // Site ID for the survey.
+  const std::string en_site_id_;
 
   DISALLOW_COPY_AND_ASSIGN(HatsService);
 };

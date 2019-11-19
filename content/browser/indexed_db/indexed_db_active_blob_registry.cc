@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/indexed_db/indexed_db_active_blob_registry.h"
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/stl_util.h"
 #include "base/task_runner.h"
-#include "content/browser/indexed_db/indexed_db_active_blob_registry.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
@@ -14,78 +16,16 @@
 namespace content {
 
 IndexedDBActiveBlobRegistry::IndexedDBActiveBlobRegistry(
-    IndexedDBBackingStore* backing_store)
-    : backing_store_(backing_store), weak_factory_(this) {}
+    ReportOutstandingBlobsCallback report_outstanding_blobs,
+    ReportUnusedBlobCallback report_unused_blob)
+    : report_outstanding_blobs_(std::move(report_outstanding_blobs)),
+      report_unused_blob_(std::move(report_unused_blob)) {}
 
-IndexedDBActiveBlobRegistry::~IndexedDBActiveBlobRegistry() {
-}
-
-void IndexedDBActiveBlobRegistry::AddBlobRef(int64_t database_id,
-                                             int64_t blob_key) {
-  DCHECK(backing_store_);
-  DCHECK(backing_store_->task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(KeyPrefix::IsValidDatabaseId(database_id));
-  DCHECK(DatabaseMetaDataKey::IsValidBlobKey(blob_key));
-  DCHECK(!base::ContainsKey(deleted_dbs_, database_id));
-  bool need_ref = use_tracker_.empty();
-  SingleDBMap& single_db_map = use_tracker_[database_id];
-  auto iter = single_db_map.find(blob_key);
-  if (iter == single_db_map.end()) {
-    single_db_map[blob_key] = false;
-    if (need_ref) {
-      backing_store_->factory()->ReportOutstandingBlobs(
-          backing_store_->origin(), true);
-    }
-  } else {
-    DCHECK(!need_ref);
-    DCHECK(!iter->second);  // You can't add a reference once it's been deleted.
-  }
-}
-
-void IndexedDBActiveBlobRegistry::ReleaseBlobRef(int64_t database_id,
-                                                 int64_t blob_key) {
-  DCHECK(backing_store_);
-  DCHECK(backing_store_->task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(KeyPrefix::IsValidDatabaseId(database_id));
-  DCHECK(DatabaseMetaDataKey::IsValidBlobKey(blob_key));
-  const auto& db_pair = use_tracker_.find(database_id);
-  if (db_pair == use_tracker_.end()) {
-    NOTREACHED();
-    return;
-  }
-  SingleDBMap& single_db = db_pair->second;
-  auto blob_pair = single_db.find(blob_key);
-  if (blob_pair == single_db.end()) {
-    NOTREACHED();
-    return;
-  }
-  bool delete_in_backend = false;
-  const auto& db_to_delete = deleted_dbs_.find(database_id);
-  bool db_marked_for_deletion = db_to_delete != deleted_dbs_.end();
-  // Don't bother deleting the file if we're going to delete its whole
-  // database directory soon.
-  delete_in_backend = blob_pair->second && !db_marked_for_deletion;
-  single_db.erase(blob_pair);
-  if (single_db.empty()) {
-    use_tracker_.erase(db_pair);
-    if (db_marked_for_deletion) {
-      delete_in_backend = true;
-      blob_key = DatabaseMetaDataKey::kAllBlobsKey;
-      deleted_dbs_.erase(db_to_delete);
-    }
-  }
-  if (delete_in_backend)
-    backing_store_->ReportBlobUnused(database_id, blob_key);
-  if (use_tracker_.empty()) {
-    backing_store_->factory()->ReportOutstandingBlobs(backing_store_->origin(),
-                                                      false);
-  }
-}
+IndexedDBActiveBlobRegistry::~IndexedDBActiveBlobRegistry() {}
 
 bool IndexedDBActiveBlobRegistry::MarkDeletedCheckIfUsed(int64_t database_id,
                                                          int64_t blob_key) {
-  DCHECK(backing_store_);
-  DCHECK(backing_store_->task_runner()->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(KeyPrefix::IsValidDatabaseId(database_id));
   const auto& db_pair = use_tracker_.find(database_id);
   if (db_pair == use_tracker_.end())
@@ -101,8 +41,98 @@ bool IndexedDBActiveBlobRegistry::MarkDeletedCheckIfUsed(int64_t database_id,
   if (iter == single_db.end())
     return false;
 
-  iter->second = true;
+  iter->second = BlobState::kDeleted;
   return true;
+}
+
+IndexedDBBlobInfo::ReleaseCallback
+IndexedDBActiveBlobRegistry::GetFinalReleaseCallback(int64_t database_id,
+                                                     int64_t blob_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::BindRepeating(
+      &IndexedDBActiveBlobRegistry::ReleaseBlobRefThreadSafe,
+      base::SequencedTaskRunnerHandle::Get(), weak_factory_.GetWeakPtr(),
+      database_id, blob_key);
+}
+
+base::RepeatingClosure IndexedDBActiveBlobRegistry::GetAddBlobRefCallback(
+    int64_t database_id,
+    int64_t blob_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::BindRepeating(&IndexedDBActiveBlobRegistry::AddBlobRef,
+                             weak_factory_.GetWeakPtr(), database_id, blob_key);
+}
+
+void IndexedDBActiveBlobRegistry::ForceShutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  weak_factory_.InvalidateWeakPtrs();
+  use_tracker_.clear();
+  report_outstanding_blobs_.Reset();
+  report_unused_blob_.Reset();
+}
+
+void IndexedDBActiveBlobRegistry::AddBlobRef(int64_t database_id,
+                                             int64_t blob_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(report_outstanding_blobs_);
+  DCHECK(report_unused_blob_);
+
+  DCHECK(KeyPrefix::IsValidDatabaseId(database_id));
+  DCHECK(DatabaseMetaDataKey::IsValidBlobKey(blob_key));
+  DCHECK(!base::Contains(deleted_dbs_, database_id));
+  bool outstanding_blobs_in_backing_store = !use_tracker_.empty();
+  SingleDBMap& blobs_in_db = use_tracker_[database_id];
+  auto iter = blobs_in_db.find(blob_key);
+  if (iter == blobs_in_db.end()) {
+    blobs_in_db[blob_key] = BlobState::kAlive;
+    if (!outstanding_blobs_in_backing_store)
+      report_outstanding_blobs_.Run(true);
+  } else {
+    DCHECK(outstanding_blobs_in_backing_store);
+    // You can't add a reference once it's been deleted.
+    DCHECK(iter->second == BlobState::kAlive);
+  }
+}
+
+void IndexedDBActiveBlobRegistry::ReleaseBlobRef(int64_t database_id,
+                                                 int64_t blob_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(report_outstanding_blobs_);
+  DCHECK(report_unused_blob_);
+
+  DCHECK(KeyPrefix::IsValidDatabaseId(database_id));
+  DCHECK(DatabaseMetaDataKey::IsValidBlobKey(blob_key));
+  const auto& db_pair = use_tracker_.find(database_id);
+  if (db_pair == use_tracker_.end()) {
+    NOTREACHED();
+    return;
+  }
+  SingleDBMap& blobs_in_db = db_pair->second;
+  auto blob_in_db_it = blobs_in_db.find(blob_key);
+  if (blob_in_db_it == blobs_in_db.end()) {
+    NOTREACHED();
+    return;
+  }
+  bool delete_blob_in_backend = false;
+  const auto& deleted_database_it = deleted_dbs_.find(database_id);
+  bool db_marked_for_deletion = deleted_database_it != deleted_dbs_.end();
+  // Don't bother deleting the file if we're going to delete its whole
+  // database directory soon.
+  delete_blob_in_backend =
+      blob_in_db_it->second == BlobState::kDeleted && !db_marked_for_deletion;
+  blobs_in_db.erase(blob_in_db_it);
+  if (blobs_in_db.empty()) {
+    use_tracker_.erase(db_pair);
+    if (db_marked_for_deletion) {
+      delete_blob_in_backend = true;
+      blob_key = DatabaseMetaDataKey::kAllBlobsKey;
+      deleted_dbs_.erase(deleted_database_it);
+    }
+  }
+  if (delete_blob_in_backend)
+    report_unused_blob_.Run(database_id, blob_key);
+  if (use_tracker_.empty())
+    report_outstanding_blobs_.Run(false);
 }
 
 void IndexedDBActiveBlobRegistry::ReleaseBlobRefThreadSafe(
@@ -113,29 +143,7 @@ void IndexedDBActiveBlobRegistry::ReleaseBlobRefThreadSafe(
     const base::FilePath& unused) {
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(&IndexedDBActiveBlobRegistry::ReleaseBlobRef,
-                                weak_ptr, database_id, blob_key));
-}
-
-IndexedDBBlobInfo::ReleaseCallback
-IndexedDBActiveBlobRegistry::GetFinalReleaseCallback(int64_t database_id,
-                                                     int64_t blob_key) {
-  return base::Bind(
-      &IndexedDBActiveBlobRegistry::ReleaseBlobRefThreadSafe,
-      scoped_refptr<base::TaskRunner>(backing_store_->task_runner()),
-      weak_factory_.GetWeakPtr(), database_id, blob_key);
-}
-
-base::Closure IndexedDBActiveBlobRegistry::GetAddBlobRefCallback(
-    int64_t database_id,
-    int64_t blob_key) {
-  return base::Bind(&IndexedDBActiveBlobRegistry::AddBlobRef,
-                    weak_factory_.GetWeakPtr(), database_id, blob_key);
-}
-
-void IndexedDBActiveBlobRegistry::ForceShutdown() {
-  weak_factory_.InvalidateWeakPtrs();
-  use_tracker_.clear();
-  backing_store_ = nullptr;
+                                std::move(weak_ptr), database_id, blob_key));
 }
 
 }  // namespace content

@@ -31,7 +31,7 @@ void ExtensionNotificationDisplayHelper::Display(
       std::make_unique<message_center::Notification>(notification));
 
   GetDisplayService()->Display(NotificationHandler::Type::EXTENSION,
-                               notification);
+                               notification, /*metadata=*/nullptr);
 }
 
 message_center::Notification*

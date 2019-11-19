@@ -14,11 +14,12 @@
 #include <memory>
 #include <sstream>
 
+#include "build/branding_buildflags.h"
+#include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/policy_path_parser.h"
 #include "chrome/install_static/user_data_dir.h"
-#include "chrome_elf/nt_registry/nt_registry.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/version_info/channel.h"
 
@@ -664,7 +665,7 @@ void GetExecutableVersionDetails(const std::wstring& exe_path,
 }
 
 version_info::Channel GetChromeChannel() {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::wstring channel_name(GetChromeChannelName());
   if (channel_name.empty()) {
     return version_info::Channel::STABLE;

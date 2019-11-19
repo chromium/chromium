@@ -23,7 +23,7 @@
 #include "content/browser/media/capture/web_contents_tracker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "media/audio/simple_sources.h"
 #include "media/audio/virtual_audio_input_stream.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -77,8 +77,7 @@ class MockAudioMirroringManager : public AudioMirroringManager {
 
 class MockWebContentsTracker : public WebContentsTracker {
  public:
-  MockWebContentsTracker() : WebContentsTracker(false) {}
-
+  MockWebContentsTracker() = default;
   MOCK_METHOD3(Start,
                void(int render_process_id, int render_frame_id,
                     const ChangeCallback& callback));
@@ -182,8 +181,8 @@ class MockAudioInputCallback : public AudioInputStream::AudioInputCallback {
 class WebContentsAudioInputStreamTest : public testing::TestWithParam<bool> {
  public:
   WebContentsAudioInputStreamTest()
-      : thread_bundle_(new TestBrowserThreadBundle(
-            TestBrowserThreadBundle::REAL_IO_THREAD)),
+      : task_environment_(
+            new BrowserTaskEnvironment(BrowserTaskEnvironment::REAL_IO_THREAD)),
         audio_thread_("Audio thread"),
         mock_mirroring_manager_(new MockAudioMirroringManager()),
         mock_tracker_(new MockWebContentsTracker()),
@@ -199,7 +198,7 @@ class WebContentsAudioInputStreamTest : public testing::TestWithParam<bool> {
 
   ~WebContentsAudioInputStreamTest() override {
     audio_thread_.Stop();
-    thread_bundle_.reset();
+    task_environment_.reset();
 
     DCHECK(!mock_vais_);
     DCHECK(!wcais_);
@@ -283,7 +282,7 @@ class WebContentsAudioInputStreamTest : public testing::TestWithParam<bool> {
     // causes our mock to set |destination_|.  Block until that has happened.
     base::WaitableEvent done(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&base::WaitableEvent::Signal, base::Unretained(&done)));
     done.Wait();
@@ -399,7 +398,7 @@ class WebContentsAudioInputStreamTest : public testing::TestWithParam<bool> {
     change_callback_.Run(render_process_id != -1 && render_frame_id != -1);
   }
 
-  std::unique_ptr<TestBrowserThreadBundle> thread_bundle_;
+  std::unique_ptr<BrowserTaskEnvironment> task_environment_;
   base::Thread audio_thread_;
 
   std::unique_ptr<MockAudioMirroringManager> mock_mirroring_manager_;

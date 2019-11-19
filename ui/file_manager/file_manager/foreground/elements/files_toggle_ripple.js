@@ -8,9 +8,7 @@
  * You can change ripple color by the following CSS variable.
  *
  * files-toggle-ripple#my-button {
- *   --files-toggle-ripple: {
- *     background-color: black;
- *   }
+ *   --files-toggle-ripple-color: black;
  * }
  *
  * Ripple size of the activated state is same with the size of this element.

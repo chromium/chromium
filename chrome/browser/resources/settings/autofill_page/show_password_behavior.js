@@ -16,6 +16,11 @@ const ShowPasswordBehavior = {
      * @type {!ShowPasswordBehavior.UiEntryWithPassword}
      */
     item: Object,
+
+    // <if expr="chromeos">
+    /** @type settings.BlockingRequestManager */
+    tokenRequestManager: Object
+    // </if>
   },
 
   /**
@@ -69,13 +74,22 @@ const ShowPasswordBehavior = {
   onShowPasswordButtonTap_: function() {
     if (this.item.password) {
       this.set('item.password', '');
-    } else {
-      PasswordManagerImpl.getInstance()
-          .getPlaintextPassword(this.item.entry.id)
-          .then(password => {
-            this.set('item.password', password);
-          });
+      return;
     }
+    PasswordManagerImpl.getInstance()
+        .getPlaintextPassword(this.item.entry.id)
+        .then(password => {
+          if (password) {
+            this.set('item.password', password);
+          }
+          // <if expr="chromeos">
+          if (!password) {
+            // If no password was found, refresh auth token and retry.
+            this.tokenRequestManager.request(
+                this.onShowPasswordButtonTap_.bind(this));
+          }
+          // </if>
+        });
   },
 };
 

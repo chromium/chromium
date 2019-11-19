@@ -4,7 +4,7 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/services/media_session/public/mojom/media_session.mojom.js"></script>
-<script src="file:///gen/third_party/blink/public/platform/modules/mediasession/media_session.mojom.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/mediasession/media_session.mojom.js"></script>
 <script src="resources/mediasessionservice-mock.js"></script>
 <script src="resources/utils.js"></script>
 <script>
@@ -23,18 +23,21 @@ function getExpectations() {
       [ mediaSession.mojom.MediaSessionAction.kNextTrack, true ],
       [ mediaSession.mojom.MediaSessionAction.kSeekBackward, true ],
       [ mediaSession.mojom.MediaSessionAction.kSeekForward, true ],
+      [ mediaSession.mojom.MediaSessionAction.kSeekTo, true ],
       [ mediaSession.mojom.MediaSessionAction.kPlay, false ],
       [ mediaSession.mojom.MediaSessionAction.kPause, false ],
       [ mediaSession.mojom.MediaSessionAction.kPreviousTrack, false ],
       [ mediaSession.mojom.MediaSessionAction.kNextTrack, false ],
       [ mediaSession.mojom.MediaSessionAction.kSeekBackward, false ],
       [ mediaSession.mojom.MediaSessionAction.kSeekForward, false ],
+      [ mediaSession.mojom.MediaSessionAction.kSeekTo, false ],
       [ mediaSession.mojom.MediaSessionAction.kPlay, true ],
       [ mediaSession.mojom.MediaSessionAction.kPause, true ],
       [ mediaSession.mojom.MediaSessionAction.kPreviousTrack, true ],
       [ mediaSession.mojom.MediaSessionAction.kNextTrack, true ],
       [ mediaSession.mojom.MediaSessionAction.kSeekBackward, true ],
       [ mediaSession.mojom.MediaSessionAction.kSeekForward, true ],
+      [ mediaSession.mojom.MediaSessionAction.kSeekTo, true ],
     ];
   }
   return expectations;
@@ -58,6 +61,7 @@ async_test(function(t) {
   window.navigator.mediaSession.setActionHandler("nexttrack", _ => {});
   window.navigator.mediaSession.setActionHandler("seekbackward", _ => {});
   window.navigator.mediaSession.setActionHandler("seekforward", _ => {});
+  window.navigator.mediaSession.setActionHandler("seekto", _ => {});
 
   // Setting handlers again should not notify the service.
   window.navigator.mediaSession.setActionHandler("play", _ => {});
@@ -66,6 +70,7 @@ async_test(function(t) {
   window.navigator.mediaSession.setActionHandler("nexttrack", _ => {});
   window.navigator.mediaSession.setActionHandler("seekbackward", _ => {});
   window.navigator.mediaSession.setActionHandler("seekforward", _ => {});
+  window.navigator.mediaSession.setActionHandler("seekto", _ => {});
 
   // Unsetting handlers should notify the service.
   window.navigator.mediaSession.setActionHandler("play", null);
@@ -74,6 +79,7 @@ async_test(function(t) {
   window.navigator.mediaSession.setActionHandler("nexttrack", null);
   window.navigator.mediaSession.setActionHandler("seekbackward", null);
   window.navigator.mediaSession.setActionHandler("seekforward", null);
+  window.navigator.mediaSession.setActionHandler("seekto", null);
 
   // Unsetting handlers should not notify the service.
   window.navigator.mediaSession.setActionHandler("play", null);
@@ -82,6 +88,7 @@ async_test(function(t) {
   window.navigator.mediaSession.setActionHandler("nexttrack", null);
   window.navigator.mediaSession.setActionHandler("seekbackward", null);
   window.navigator.mediaSession.setActionHandler("seekforward", null);
+  window.navigator.mediaSession.setActionHandler("seekto", null);
 
   // Setting handlers again should notify the service.
   window.navigator.mediaSession.setActionHandler("play", _ => {});
@@ -90,6 +97,7 @@ async_test(function(t) {
   window.navigator.mediaSession.setActionHandler("nexttrack", _ => {});
   window.navigator.mediaSession.setActionHandler("seekbackward", _ => {});
   window.navigator.mediaSession.setActionHandler("seekforward", _ => {});
+  window.navigator.mediaSession.setActionHandler("seekto", _ => {});
 }, "test that setting event handler notifies the mojo service");
 
 </script>

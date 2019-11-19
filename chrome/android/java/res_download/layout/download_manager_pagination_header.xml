@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/list_item_default_margin"
+    android:paddingEnd="@dimen/list_item_default_margin"
+    android:paddingTop="@dimen/list_item_default_margin"
+    android:paddingBottom="@dimen/list_item_default_margin"
+    android:gravity="center_vertical|start"
+    style="@style/TextButton"
+    android:text="@string/download_manager_ui_pagination">
+</TextView>

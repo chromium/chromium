@@ -19,7 +19,6 @@ DEVICE_BASE_EXPORT extern const base::Feature kNewBLEWinImplementation;
 
 #if defined(OS_CHROMEOS)
 DEVICE_BASE_EXPORT extern const base::Feature kNewblueDaemon;
-DEVICE_BASE_EXPORT extern const base::Feature kUnfilteredBluetoothDevices;
 #endif  // defined(OS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_VR)

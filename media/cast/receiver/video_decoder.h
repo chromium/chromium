@@ -26,8 +26,9 @@ class VideoDecoder {
   // normally true, but will be false if the decoder has detected a frame skip
   // since the last decode operation; and the client might choose to take steps
   // to smooth/interpolate video discontinuities in this case.
-  typedef base::Callback<void(const scoped_refptr<VideoFrame>& frame,
-                              bool is_continuous)> DecodeFrameCallback;
+  typedef base::RepeatingCallback<void(scoped_refptr<VideoFrame> frame,
+                                       bool is_continuous)>
+      DecodeFrameCallback;
 
   VideoDecoder(const scoped_refptr<CastEnvironment>& cast_environment,
                Codec codec);

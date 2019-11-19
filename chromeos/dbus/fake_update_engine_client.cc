@@ -9,13 +9,7 @@
 
 namespace chromeos {
 
-FakeUpdateEngineClient::FakeUpdateEngineClient()
-    : update_check_result_(UpdateEngineClient::UPDATE_RESULT_SUCCESS),
-      can_rollback_stub_result_(false),
-      reboot_after_update_call_count_(0),
-      request_update_check_call_count_(0),
-      rollback_call_count_(0),
-      can_rollback_call_count_(0) {}
+FakeUpdateEngineClient::FakeUpdateEngineClient() {}
 
 FakeUpdateEngineClient::~FakeUpdateEngineClient() = default;
 
@@ -54,17 +48,17 @@ void FakeUpdateEngineClient::RebootAfterUpdate() {
   reboot_after_update_call_count_++;
 }
 
-UpdateEngineClient::Status FakeUpdateEngineClient::GetLastStatus() {
+update_engine::StatusResult FakeUpdateEngineClient::GetLastStatus() {
   if (status_queue_.empty())
     return default_status_;
 
-  UpdateEngineClient::Status last_status = status_queue_.front();
+  update_engine::StatusResult last_status = status_queue_.front();
   status_queue_.pop();
   return last_status;
 }
 
 void FakeUpdateEngineClient::NotifyObserversThatStatusChanged(
-    const UpdateEngineClient::Status& status) {
+    const update_engine::StatusResult& status) {
   for (auto& observer : observers_)
     observer.UpdateStatusChanged(status);
 }
@@ -85,15 +79,17 @@ void FakeUpdateEngineClient::GetChannel(bool get_current_channel,
       FROM_HERE, base::BindOnce(callback, std::string()));
 }
 
-void FakeUpdateEngineClient::GetEolStatus(GetEolStatusCallback callback) {
+void FakeUpdateEngineClient::GetEolInfo(GetEolInfoCallback callback) {
+  UpdateEngineClient::EolInfo eol_info;
+  eol_info.eol_date = eol_date_;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                update_engine::EndOfLifeStatus::kSupported));
+      FROM_HERE, base::BindOnce(std::move(callback), eol_info));
 }
 
 void FakeUpdateEngineClient::SetUpdateOverCellularPermission(
     bool allowed,
     const base::Closure& callback) {
+  update_over_cellular_permission_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, callback);
 }
 
@@ -101,11 +97,12 @@ void FakeUpdateEngineClient::SetUpdateOverCellularOneTimePermission(
     const std::string& target_version,
     int64_t target_size,
     const UpdateOverCellularOneTimePermissionCallback& callback) {
+  update_over_cellular_one_time_permission_count_++;
   callback.Run(true);
 }
 
 void FakeUpdateEngineClient::set_default_status(
-    const UpdateEngineClient::Status& status) {
+    const update_engine::StatusResult& status) {
   default_status_ = status;
 }
 

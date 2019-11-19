@@ -31,10 +31,11 @@
 
 #include "third_party/blink/renderer/core/loader/link_loader.h"
 
-#include "third_party/blink/public/platform/web_prerender.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/prerender/prerender_rel_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/loader/importance_attribute.h"
 #include "third_party/blink/renderer/core/loader/link_load_parameters.h"
 #include "third_party/blink/renderer/core/loader/link_loader_client.h"
@@ -42,16 +43,18 @@
 #include "third_party/blink/renderer/core/loader/private/prerender_handle.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
-#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
+#include "third_party/blink/renderer/core/page/viewport_description.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_finish_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/prerender.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
-class NetworkHintsInterface;
+class WebPrescientNetworking;
 
 namespace {
 
@@ -79,7 +82,7 @@ LinkLoader* LinkLoader::Create(LinkLoaderClient* client) {
 }
 
 class LinkLoader::FinishObserver final
-    : public GarbageCollectedFinalized<ResourceFinishObserver>,
+    : public GarbageCollected<LinkLoader::FinishObserver>,
       public ResourceFinishObserver {
   USING_GARBAGE_COLLECTED_MIXIN(FinishObserver);
   USING_PRE_FINALIZER(FinishObserver, ClearResource);
@@ -132,10 +135,14 @@ LinkLoader::~LinkLoader() = default;
 void LinkLoader::NotifyFinished() {
   DCHECK(finish_observer_);
   Resource* resource = finish_observer_->GetResource();
-  if (resource->ErrorOccurred())
+  if (resource->ErrorOccurred() ||
+      (resource->IsLinkPreload() &&
+       resource->IntegrityDisposition() ==
+           ResourceIntegrityDisposition::kFailed)) {
     client_->LinkLoadingErrored();
-  else
+  } else {
     client_->LinkLoaded();
+  }
 }
 
 // https://html.spec.whatwg.org/C/#link-type-modulepreload
@@ -169,10 +176,8 @@ Resource* LinkLoader::GetResourceForTesting() {
   return finish_observer_ ? finish_observer_->GetResource() : nullptr;
 }
 
-bool LinkLoader::LoadLink(
-    const LinkLoadParameters& params,
-    Document& document,
-    const NetworkHintsInterface& network_hints_interface) {
+bool LinkLoader::LoadLink(const LinkLoadParameters& params,
+                          Document& document) {
   // If any loading process is in progress, abort it.
   Abort();
 
@@ -180,16 +185,14 @@ bool LinkLoader::LoadLink(
     return false;
 
   PreloadHelper::DnsPrefetchIfNeeded(params, &document, document.GetFrame(),
-                                     network_hints_interface,
                                      PreloadHelper::kLinkCalledFromMarkup);
 
   PreloadHelper::PreconnectIfNeeded(params, &document, document.GetFrame(),
-                                    network_hints_interface,
                                     PreloadHelper::kLinkCalledFromMarkup);
 
   Resource* resource = PreloadHelper::PreloadIfNeeded(
       params, document, NullURL(), PreloadHelper::kLinkCalledFromMarkup,
-      nullptr,
+      base::nullopt /* viewport_description */,
       client_->IsLinkCreatedByParser() ? kParserInserted : kNotParserInserted);
   if (!resource) {
     resource = PreloadHelper::PrefetchIfNeeded(params, document);
@@ -197,7 +200,8 @@ bool LinkLoader::LoadLink(
   if (resource)
     finish_observer_ = MakeGarbageCollected<FinishObserver>(this, resource);
 
-  PreloadHelper::ModulePreloadIfNeeded(params, document, nullptr, this);
+  PreloadHelper::ModulePreloadIfNeeded(
+      params, document, base::nullopt /* viewport_description */, this);
 
   if (const unsigned prerender_rel_types =
           PrerenderRelTypesFromRelAttribute(params.rel, document)) {
@@ -223,13 +227,25 @@ void LinkLoader::LoadStylesheet(const LinkLoadParameters& params,
                                 FetchParameters::DeferOption defer_option,
                                 Document& document,
                                 ResourceClient* link_client) {
+  Document* document_for_origin = &document;
+  if (base::FeatureList::IsEnabled(
+          features::kHtmlImportsRequestInitiatorLock)) {
+    // For stylesheets loaded from HTML imported Documents, we use
+    // context document for getting origin and ResourceFetcher to use the main
+    // Document's origin, while using element document for CompleteURL() to use
+    // imported Documents' base URLs.
+    document_for_origin = document.ContextDocument();
+  }
+  if (!document_for_origin)
+    return;
+
   ResourceRequest resource_request(document.CompleteURL(params.href));
   resource_request.SetReferrerPolicy(params.referrer_policy);
 
   mojom::FetchImportanceMode importance_mode =
       GetFetchImportanceAttributeValue(params.importance);
   DCHECK(importance_mode == mojom::FetchImportanceMode::kImportanceAuto ||
-         origin_trials::PriorityHintsEnabled(&document));
+         RuntimeEnabledFeatures::PriorityHintsEnabled(&document));
   resource_request.SetFetchImportanceMode(importance_mode);
 
   ResourceLoaderOptions options;
@@ -243,8 +259,8 @@ void LinkLoader::LoadStylesheet(const LinkLoadParameters& params,
 
   CrossOriginAttributeValue cross_origin = params.cross_origin;
   if (cross_origin != kCrossOriginAttributeNotSet) {
-    link_fetch_params.SetCrossOriginAccessControl(document.GetSecurityOrigin(),
-                                                  cross_origin);
+    link_fetch_params.SetCrossOriginAccessControl(
+        document_for_origin->GetSecurityOrigin(), cross_origin);
   }
 
   String integrity_attr = params.integrity;
@@ -258,8 +274,8 @@ void LinkLoader::LoadStylesheet(const LinkLoadParameters& params,
         integrity_attr);
   }
 
-  CSSStyleSheetResource::Fetch(link_fetch_params, document.Fetcher(),
-                               link_client);
+  CSSStyleSheetResource::Fetch(link_fetch_params,
+                               document_for_origin->Fetcher(), link_client);
 }
 
 void LinkLoader::Abort() {

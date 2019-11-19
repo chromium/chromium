@@ -37,7 +37,7 @@ class SizeAdaptableVideoEncoderBase : public VideoEncoder {
 
   // VideoEncoder implementation.
   bool EncodeVideoFrame(
-      const scoped_refptr<media::VideoFrame>& video_frame,
+      scoped_refptr<media::VideoFrame> video_frame,
       const base::TimeTicks& reference_time,
       const FrameEncodedCallback& frame_encoded_callback) final;
   void SetBitRate(int new_bit_rate) final;
@@ -109,7 +109,7 @@ class SizeAdaptableVideoEncoderBase : public VideoEncoder {
   FrameId next_frame_id_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<SizeAdaptableVideoEncoderBase> weak_factory_;
+  base::WeakPtrFactory<SizeAdaptableVideoEncoderBase> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SizeAdaptableVideoEncoderBase);
 };

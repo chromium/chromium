@@ -4,15 +4,63 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 
+#include <string>
+#include <utility>
+
 #include "base/base64url.h"
+#include "base/hash/sha1.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
-#include "base/sha1.h"
+#include "base/strings/string_piece.h"
 #include "chrome/common/media_router/discovery/media_sink_internal.h"
 #include "chrome/common/media_router/providers/cast/cast_media_source.h"
 #include "components/cast_channel/cast_socket.h"
-#include "components/cast_channel/proto/cast_channel.pb.h"
+#include "components/cast_channel/enum_table.h"
 #include "net/base/escape.h"
+
+namespace cast_util {
+
+using media_router::CastInternalMessage;
+
+template <>
+const EnumTable<CastInternalMessage::Type>
+    EnumTable<CastInternalMessage::Type>::instance(
+        {
+            {CastInternalMessage::Type::kClientConnect, "client_connect"},
+            {CastInternalMessage::Type::kAppMessage, "app_message"},
+            {CastInternalMessage::Type::kV2Message, "v2_message"},
+            {CastInternalMessage::Type::kLeaveSession, "leave_session"},
+            {CastInternalMessage::Type::kReceiverAction, "receiver_action"},
+            {CastInternalMessage::Type::kNewSession, "new_session"},
+            {CastInternalMessage::Type::kUpdateSession, "update_session"},
+            {CastInternalMessage::Type::kError, "error"},
+            {CastInternalMessage::Type::kOther},
+        },
+        CastInternalMessage::Type::kMaxValue);
+
+template <>
+const EnumTable<CastInternalMessage::ErrorCode>
+    EnumTable<CastInternalMessage::ErrorCode>::instance(
+        {
+            {CastInternalMessage::ErrorCode::kInternalError, "internal_error"},
+            {CastInternalMessage::ErrorCode::kCancel, "cancel"},
+            {CastInternalMessage::ErrorCode::kTimeout, "timeout"},
+            {CastInternalMessage::ErrorCode::kApiNotInitialized,
+             "api_not_initialized"},
+            {CastInternalMessage::ErrorCode::kInvalidParameter,
+             "invalid_parameter"},
+            {CastInternalMessage::ErrorCode::kExtensionNotCompatible,
+             "extension_not_compatible"},
+            {CastInternalMessage::ErrorCode::kReceiverUnavailable,
+             "receiver_unavailable"},
+            {CastInternalMessage::ErrorCode::kSessionError, "session_error"},
+            {CastInternalMessage::ErrorCode::kChannelError, "channel_error"},
+            {CastInternalMessage::ErrorCode::kLoadMediaFailed,
+             "load_media_failed"},
+        },
+        CastInternalMessage::ErrorCode::kMaxValue);
+
+}  // namespace cast_util
 
 namespace media_router {
 
@@ -21,13 +69,6 @@ namespace {
 // The ID for the backdrop app. Cast devices running the backdrop app is
 // considered idle, and an active session should not be reported.
 constexpr char kBackdropAppId[] = "E8C28D3C";
-
-constexpr char kClientConnect[] = "client_connect";
-constexpr char kAppMessage[] = "app_message";
-constexpr char kV2Message[] = "v2_message";
-constexpr char kReceiverAction[] = "receiver_action";
-constexpr char kNewSession[] = "new_session";
-constexpr char kUpdateSession[] = "update_session";
 
 bool GetString(const base::Value& value,
                const std::string& key,
@@ -59,42 +100,14 @@ void CopyValue(const base::Value& from,
 
 CastInternalMessage::Type CastInternalMessageTypeFromString(
     const std::string& type) {
-  if (type == kClientConnect)
-    return CastInternalMessage::Type::kClientConnect;
-  if (type == kAppMessage)
-    return CastInternalMessage::Type::kAppMessage;
-  if (type == kV2Message)
-    return CastInternalMessage::Type::kV2Message;
-  if (type == kReceiverAction)
-    return CastInternalMessage::Type::kReceiverAction;
-  if (type == kNewSession)
-    return CastInternalMessage::Type::kNewSession;
-  if (type == kUpdateSession)
-    return CastInternalMessage::Type::kUpdateSession;
-
-  return CastInternalMessage::Type::kOther;
+  return cast_util::StringToEnum<CastInternalMessage::Type>(type).value_or(
+      CastInternalMessage::Type::kOther);
 }
 
 std::string CastInternalMessageTypeToString(CastInternalMessage::Type type) {
-  switch (type) {
-    case CastInternalMessage::Type::kClientConnect:
-      return kClientConnect;
-    case CastInternalMessage::Type::kAppMessage:
-      return kAppMessage;
-    case CastInternalMessage::Type::kV2Message:
-      return kV2Message;
-    case CastInternalMessage::Type::kReceiverAction:
-      return kReceiverAction;
-    case CastInternalMessage::Type::kNewSession:
-      return kNewSession;
-    case CastInternalMessage::Type::kUpdateSession:
-      return kUpdateSession;
-    case CastInternalMessage::Type::kOther:
-      NOTREACHED();
-      return "";
-  }
-  NOTREACHED();
-  return "";
+  auto found = cast_util::EnumToString(type);
+  DCHECK(found);
+  return found.value_or(base::StringPiece()).as_string();
 }
 
 // Possible types in a receiver_action message.
@@ -318,9 +331,9 @@ CastInternalMessage::CastInternalMessage(
     const std::string& session_id,
     const std::string& namespace_or_v2_type,
     base::Value message_body)
-    : type(type),
-      client_id(client_id),
-      sequence_number(sequence_number),
+    : type_(type),
+      client_id_(client_id),
+      sequence_number_(sequence_number),
       session_id_(session_id),
       namespace_or_v2_type_(namespace_or_v2_type),
       message_body_(std::move(message_body)) {}
@@ -488,6 +501,21 @@ blink::mojom::PresentationConnectionMessagePtr CreateV2Message(
     base::Optional<int> sequence_number) {
   return CreateMessageCommon(CastInternalMessage::Type::kV2Message,
                              payload.Clone(), client_id, sequence_number);
+}
+
+blink::mojom::PresentationConnectionMessagePtr CreateLeaveSessionAckMessage(
+    const std::string& client_id,
+    base::Optional<int> sequence_number) {
+  return CreateMessageCommon(CastInternalMessage::Type::kLeaveSession,
+                             base::Value(), client_id, sequence_number);
+}
+
+blink::mojom::PresentationConnectionMessagePtr CreateErrorMessage(
+    const std::string& client_id,
+    base::Value error,
+    base::Optional<int> sequence_number) {
+  return CreateMessageCommon(CastInternalMessage::Type::kError,
+                             std::move(error), client_id, sequence_number);
 }
 
 base::Value SupportedMediaRequestsToListValue(int media_requests) {

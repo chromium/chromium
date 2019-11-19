@@ -7,8 +7,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/queueing_time_estimator.h"
 
-#include <map>
-#include <vector>
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 namespace scheduler {
@@ -18,22 +17,13 @@ class TestQueueingTimeEstimatorClient : public QueueingTimeEstimator::Client {
   // QueueingTimeEstimator::Client implementation:
   void OnQueueingTimeForWindowEstimated(base::TimeDelta queueing_time,
                                         bool is_disjoint_window) override;
-  void OnReportFineGrainedExpectedQueueingTime(
-      const char* split_description,
-      base::TimeDelta queueing_time) override;
 
-  const std::vector<base::TimeDelta>& expected_queueing_times() {
+  const Vector<base::TimeDelta>& expected_queueing_times() {
     return expected_queueing_times_;
   }
-  const std::map<std::string, std::vector<base::TimeDelta>>& split_eqts() {
-    return split_eqts_;
-  }
-  const std::vector<base::TimeDelta>& FrameStatusValues(
-      FrameStatus frame_status);
 
  private:
-  std::vector<base::TimeDelta> expected_queueing_times_;
-  std::map<std::string, std::vector<base::TimeDelta>> split_eqts_;
+  Vector<base::TimeDelta> expected_queueing_times_;
 };
 
 class QueueingTimeEstimatorForTest : public QueueingTimeEstimator {

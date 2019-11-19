@@ -33,8 +33,7 @@ namespace blink {
 
 class PluginInfo;
 
-class CORE_EXPORT MimeClassInfo final
-    : public GarbageCollectedFinalized<MimeClassInfo> {
+class CORE_EXPORT MimeClassInfo final : public GarbageCollected<MimeClassInfo> {
  public:
   void Trace(blink::Visitor*);
 
@@ -47,7 +46,6 @@ class CORE_EXPORT MimeClassInfo final
 
  private:
   friend class PluginData;
-  friend class PluginListBuilder;
 
   String type_;
   String description_;
@@ -55,15 +53,15 @@ class CORE_EXPORT MimeClassInfo final
   Member<PluginInfo> plugin_;
 };
 
-class CORE_EXPORT PluginInfo final
-    : public GarbageCollectedFinalized<PluginInfo> {
+class CORE_EXPORT PluginInfo final : public GarbageCollected<PluginInfo> {
  public:
   void Trace(blink::Visitor*);
 
   PluginInfo(const String& name,
              const String& filename,
              const String& desc,
-             Color background_color);
+             Color background_color,
+             bool may_use_mime_handler_view);
 
   void AddMimeType(MimeClassInfo*);
 
@@ -76,25 +74,23 @@ class CORE_EXPORT PluginInfo final
   const String& Filename() const { return filename_; }
   const String& Description() const { return description_; }
   Color BackgroundColor() const { return background_color_; }
+  bool MayUseExternalHandler() const { return may_use_external_handler_; }
 
  private:
   friend class MimeClassInfo;
   friend class PluginData;
-  friend class PluginListBuilder;
 
   String name_;
   String filename_;
   String description_;
   Color background_color_;
+  bool may_use_external_handler_;
   HeapVector<Member<MimeClassInfo>> mimes_;
 };
 
-class CORE_EXPORT PluginData final
-    : public GarbageCollectedFinalized<PluginData> {
+class CORE_EXPORT PluginData final : public GarbageCollected<PluginData> {
  public:
   void Trace(blink::Visitor*);
-
-  static PluginData* Create() { return MakeGarbageCollected<PluginData>(); }
 
   PluginData() = default;
 
@@ -106,6 +102,7 @@ class CORE_EXPORT PluginData final
 
   bool SupportsMimeType(const String& mime_type) const;
   Color PluginBackgroundColorForMimeType(const String& mime_type) const;
+  bool IsExternalPluginMimeType(const String& mime_type) const;
 
   // refreshBrowserSidePluginCache doesn't update existent instances of
   // PluginData.

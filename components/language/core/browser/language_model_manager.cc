@@ -29,9 +29,4 @@ void LanguageModelManager::SetPrimaryModel(ModelType type) {
 LanguageModel* LanguageModelManager::GetPrimaryModel() const {
   return models_.at(primary_model_type_).get();
 }
-
-LanguageModel* LanguageModelManager::GetModel(ModelType type) const {
-  return models_.at(type).get();
-}
-
 }  // namespace language

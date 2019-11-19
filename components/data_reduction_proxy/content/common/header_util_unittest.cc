@@ -24,15 +24,12 @@ TEST(HeaderUtilTest, MaybeSetAcceptTransformHeader) {
     content::PreviewsState previews_state;
     std::string expected_header;
   } tests[] = {
-      {GURL(kUrl), content::RESOURCE_TYPE_MEDIA, 0,
+      {GURL(kUrl), content::ResourceType::kMedia, 0,
        compressed_video_directive()},
-      {GURL(kHttpsUrl), content::RESOURCE_TYPE_MEDIA, 0, ""},
-      {GURL(kUrl), content::RESOURCE_TYPE_MAIN_FRAME,
+      {GURL(kHttpsUrl), content::ResourceType::kMedia, 0, ""},
+      {GURL(kUrl), content::ResourceType::kMainFrame,
        content::SERVER_LITE_PAGE_ON, lite_page_directive()},
-      {GURL(kUrl), content::RESOURCE_TYPE_SUB_FRAME, content::SERVER_LOFI_ON,
-       empty_image_directive()},
-      {GURL(kUrl), content::RESOURCE_TYPE_SUB_FRAME, 0, ""},
-      {GURL(kUrl), content::RESOURCE_TYPE_SCRIPT, content::SERVER_LOFI_ON, ""},
+      {GURL(kUrl), content::ResourceType::kSubFrame, 0, ""},
   };
 
   for (const auto& test : tests) {

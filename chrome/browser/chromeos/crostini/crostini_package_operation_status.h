@@ -11,7 +11,13 @@ namespace crostini {
 
 // Status of an operation in CrostiniPackageService &
 // CrostiniPackageNotification.
-enum class PackageOperationStatus { QUEUED, SUCCEEDED, FAILED, RUNNING };
+enum class PackageOperationStatus {
+  QUEUED,
+  SUCCEEDED,
+  FAILED,
+  RUNNING,
+  WAITING_FOR_APP_REGISTRY_UPDATE
+};
 
 }  // namespace crostini
 

@@ -17,12 +17,12 @@ ClientCertIdentityMac::ClientCertIdentityMac(
 ClientCertIdentityMac::~ClientCertIdentityMac() = default;
 
 void ClientCertIdentityMac::AcquirePrivateKey(
-    const base::Callback<void(scoped_refptr<SSLPrivateKey>)>&
+    base::OnceCallback<void(scoped_refptr<SSLPrivateKey>)>
         private_key_callback) {
   // This only adds a ref to and returns the private key from identity_ so it
   // doesn't need to run on a worker thread.
-  private_key_callback.Run(
-      CreateSSLPrivateKeyForSecIdentity(certificate(), identity_.get()));
+  std::move(private_key_callback)
+      .Run(CreateSSLPrivateKeyForSecIdentity(certificate(), identity_.get()));
 }
 
 SecIdentityRef ClientCertIdentityMac::sec_identity_ref() const {

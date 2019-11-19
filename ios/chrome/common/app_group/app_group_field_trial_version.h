@@ -17,7 +17,4 @@ extern NSString* const kFieldTrialValueKey;
 // The dictionary key for the trial version.
 extern NSString* const kFieldTrialVersionKey;
 
-// The current version of the copied content behavior feature.
-extern NSNumber* const kCopiedContentBehaviorVersion;
-
 #endif /* IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_FIELD_TRIAL_VERSION_H_ */

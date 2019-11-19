@@ -22,6 +22,7 @@ enum OrientationType {
     "landscape-secondary"
 };
 
+[Exposed=Window]
 interface ScreenOrientation : EventTarget {
     [MeasureAs=ScreenOrientationAngle] readonly attribute unsigned short angle;
     [MeasureAs=ScreenOrientationType] readonly attribute DOMString type;

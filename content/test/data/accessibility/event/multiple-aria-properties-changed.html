@@ -1,0 +1,42 @@
+<!--
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:AriaProperties*
+-->
+<!DOCTYPE html>
+<form>
+  <div aria-label="checkbox1" role="checkbox"></div>
+  <div aria-label="checkbox2" role="checkbox" aria-checked="false" aria-required="false" aria-readonly="false"></div>
+  <div aria-label="checkbox3" role="checkbox" aria-checked="true" aria-required="true" aria-readonly="true"></div>
+  <div aria-label="checkbox4" role="checkbox" aria-checked="true" aria-required="true" aria-readonly="true"></div>
+</form>
+<script>
+  function go() {
+    // Tests below modify multiple aria attributes on a single element at
+    // a time and the expected behavior is to fire UIA_AriaPropertiesPropertyId
+    // event once rather than multiple times.
+
+    // Multiple aria attributes change, default[false]->false;
+    // should not fire any event.
+    document.querySelector('div[aria-label=checkbox1]').setAttribute('aria-checked', false);
+    document.querySelector('div[aria-label=checkbox1]').setAttribute('aria-required', false);
+    document.querySelector('div[aria-label=checkbox1]').setAttribute('aria-readonly', false);
+
+    // Multiple aria attributes change, false->true;
+    // should fire only one event.
+    document.querySelector('div[aria-label=checkbox2]').setAttribute('aria-checked', true);
+    document.querySelector('div[aria-label=checkbox2]').setAttribute('aria-required', true);
+    document.querySelector('div[aria-label=checkbox2]').setAttribute('aria-readonly', true);
+
+    // Multiple aria attributes change, true->false;
+    // should fire only one event.
+    document.querySelector('div[aria-label=checkbox3]').setAttribute('aria-checked', false);
+    document.querySelector('div[aria-label=checkbox3]').setAttribute('aria-required', false);
+    document.querySelector('div[aria-label=checkbox3]').setAttribute('aria-readonly', false);
+
+    // Multiple aria attributes change, true->removed;
+    // should fire only one event.
+    document.querySelector('div[aria-label=checkbox4]').removeAttribute('aria-checked');
+    document.querySelector('div[aria-label=checkbox4]').removeAttribute('aria-required');
+    document.querySelector('div[aria-label=checkbox4]').removeAttribute('aria-readonly');
+  }
+</script>

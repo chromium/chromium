@@ -37,8 +37,7 @@ SyncInvalidationListener::SyncInvalidationListener(
       sync_system_resources_(sync_network_channel_.get(), this),
       delegate_(nullptr),
       ticl_state_(DEFAULT_INVALIDATION_ERROR),
-      push_client_state_(DEFAULT_INVALIDATION_ERROR),
-      weak_ptr_factory_(this) {
+      push_client_state_(DEFAULT_INVALIDATION_ERROR) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_network_channel_->AddObserver(this);
 }
@@ -95,9 +94,10 @@ void SyncInvalidationListener::Start(
 }
 
 void SyncInvalidationListener::UpdateCredentials(
-    const std::string& email, const std::string& token) {
+    const CoreAccountId& account_id,
+    const std::string& token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_network_channel_->UpdateCredentials(email, token);
+  sync_network_channel_->UpdateCredentials(account_id, token);
 }
 
 void SyncInvalidationListener::UpdateRegisteredIds(const ObjectIdSet& ids) {

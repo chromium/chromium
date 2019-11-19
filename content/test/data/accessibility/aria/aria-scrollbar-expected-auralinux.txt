@@ -1,0 +1,3 @@
+[document web]
+++[scroll bar] vertical current=55.000000 minimum=0.000000 maximum=100.000000
+++[scroll bar] horizontal current=55.000000 minimum=0.000000 maximum=100.000000

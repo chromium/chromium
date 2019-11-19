@@ -5,6 +5,7 @@
 package org.chromium.components.language;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.util.LinkedHashSet;
 
@@ -19,7 +20,7 @@ public class GeoLanguageProviderBridge {
      */
     public static LinkedHashSet<String> getCurrentGeoLanguages() {
         LinkedHashSet<String> set = new LinkedHashSet<String>();
-        nativeGetCurrentGeoLanguages(set);
+        GeoLanguageProviderBridgeJni.get().getCurrentGeoLanguages(set);
         return set;
     }
 
@@ -28,5 +29,8 @@ public class GeoLanguageProviderBridge {
         languages.add(languageCode);
     }
 
-    private static native void nativeGetCurrentGeoLanguages(LinkedHashSet<String> set);
+    @NativeMethods
+    interface Natives {
+        void getCurrentGeoLanguages(LinkedHashSet<String> set);
+    }
 }

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <numeric>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
@@ -14,9 +15,10 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "jni/InstanceIDBridge_jni.h"
+#include "components/gcm_driver/instance_id/android/jni_headers/InstanceIDBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
@@ -93,14 +95,14 @@ void InstanceIDAndroid::GetToken(
     const std::string& authorized_entity,
     const std::string& scope,
     const std::map<std::string, std::string>& options,
-    bool is_lazy,
-    const GetTokenCallback& callback) {
+    std::set<Flags> flags,
+    GetTokenCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   UMA_HISTOGRAM_COUNTS_100("InstanceID.GetToken.OptionsCount", options.size());
 
-  int32_t request_id =
-      get_token_callbacks_.Add(std::make_unique<GetTokenCallback>(callback));
+  int32_t request_id = get_token_callbacks_.Add(
+      std::make_unique<GetTokenCallback>(std::move(callback)));
 
   std::vector<std::string> options_strings;
   for (const auto& entry : options) {
@@ -108,12 +110,16 @@ void InstanceIDAndroid::GetToken(
     options_strings.push_back(entry.second);
   }
 
+  int java_flags = std::accumulate(
+      flags.begin(), flags.end(), 0,
+      [](int sum, Flags flag) { return sum + static_cast<int>(flag); });
+
   JNIEnv* env = AttachCurrentThread();
   Java_InstanceIDBridge_getToken(
       env, java_ref_, request_id,
       ConvertUTF8ToJavaString(env, authorized_entity),
       ConvertUTF8ToJavaString(env, scope),
-      base::android::ToJavaArrayOfStrings(env, options_strings), is_lazy);
+      base::android::ToJavaArrayOfStrings(env, options_strings), java_flags);
 }
 
 void InstanceIDAndroid::ValidateToken(const std::string& authorized_entity,
@@ -127,11 +133,11 @@ void InstanceIDAndroid::ValidateToken(const std::string& authorized_entity,
 
 void InstanceIDAndroid::DeleteTokenImpl(const std::string& authorized_entity,
                                         const std::string& scope,
-                                        const DeleteTokenCallback& callback) {
+                                        DeleteTokenCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   int32_t request_id = delete_token_callbacks_.Add(
-      std::make_unique<DeleteTokenCallback>(callback));
+      std::make_unique<DeleteTokenCallback>(std::move(callback)));
 
   JNIEnv* env = AttachCurrentThread();
   Java_InstanceIDBridge_deleteToken(
@@ -140,11 +146,11 @@ void InstanceIDAndroid::DeleteTokenImpl(const std::string& authorized_entity,
       ConvertUTF8ToJavaString(env, scope));
 }
 
-void InstanceIDAndroid::DeleteIDImpl(const DeleteIDCallback& callback) {
+void InstanceIDAndroid::DeleteIDImpl(DeleteIDCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   int32_t request_id = delete_id_callbacks_.Add(
-      std::make_unique<DeleteIDCallback>(DeleteIDCallback(callback)));
+      std::make_unique<DeleteIDCallback>(std::move(callback)));
 
   JNIEnv* env = AttachCurrentThread();
   Java_InstanceIDBridge_deleteInstanceID(env, java_ref_, request_id);
@@ -195,7 +201,7 @@ void InstanceIDAndroid::DidGetToken(
   GetTokenCallback* callback = get_token_callbacks_.Lookup(request_id);
   DCHECK(callback);
   std::string token = ConvertJavaStringToUTF8(jtoken);
-  callback->Run(
+  std::move(*callback).Run(
       token, token.empty() ? InstanceID::UNKNOWN_ERROR : InstanceID::SUCCESS);
   get_token_callbacks_.Remove(request_id);
 }
@@ -209,7 +215,8 @@ void InstanceIDAndroid::DidDeleteToken(
 
   DeleteTokenCallback* callback = delete_token_callbacks_.Lookup(request_id);
   DCHECK(callback);
-  callback->Run(success ? InstanceID::SUCCESS : InstanceID::UNKNOWN_ERROR);
+  std::move(*callback).Run(success ? InstanceID::SUCCESS
+                                   : InstanceID::UNKNOWN_ERROR);
   delete_token_callbacks_.Remove(request_id);
 }
 
@@ -222,7 +229,8 @@ void InstanceIDAndroid::DidDeleteID(
 
   DeleteIDCallback* callback = delete_id_callbacks_.Lookup(request_id);
   DCHECK(callback);
-  callback->Run(success ? InstanceID::SUCCESS : InstanceID::UNKNOWN_ERROR);
+  std::move(*callback).Run(success ? InstanceID::SUCCESS
+                                   : InstanceID::UNKNOWN_ERROR);
   delete_id_callbacks_.Remove(request_id);
 }
 

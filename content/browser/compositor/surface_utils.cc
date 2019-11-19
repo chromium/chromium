@@ -9,7 +9,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 
 #if defined(OS_ANDROID)
-#include "content/browser/renderer_host/compositor_impl_android.h"
+#include "content/browser/renderer_host/compositor_dependencies_android.h"
 #else
 #include "content/browser/compositor/image_transport_factory.h"
 #include "ui/compositor/compositor.h"  // nogncheck
@@ -19,27 +19,16 @@ namespace content {
 
 viz::FrameSinkId AllocateFrameSinkId() {
 #if defined(OS_ANDROID)
-  return CompositorImpl::AllocateFrameSinkId();
+  return CompositorDependenciesAndroid::Get().AllocateFrameSinkId();
 #else
   ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
   return factory->GetContextFactoryPrivate()->AllocateFrameSinkId();
 #endif
 }
 
-viz::FrameSinkManagerImpl* GetFrameSinkManager() {
-#if defined(OS_ANDROID)
-  return CompositorImpl::GetFrameSinkManager();
-#else
-  ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
-  if (!factory)
-    return nullptr;
-  return factory->GetContextFactoryPrivate()->GetFrameSinkManager();
-#endif
-}
-
 viz::HostFrameSinkManager* GetHostFrameSinkManager() {
 #if defined(OS_ANDROID)
-  return CompositorImpl::GetHostFrameSinkManager();
+  return CompositorDependenciesAndroid::Get().host_frame_sink_manager();
 #else
   ImageTransportFactory* factory = ImageTransportFactory::GetInstance();
   if (!factory)

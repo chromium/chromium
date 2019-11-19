@@ -106,11 +106,6 @@ class NET_EXPORT NSSCertDatabase {
                   crypto::ScopedPK11Slot private_slot);
   virtual ~NSSCertDatabase();
 
-  // Get a list of unique certificates in the certificate database (one
-  // instance of all certificates).
-  // DEPRECATED by |ListCerts|. See http://crbug.com/340460.
-  virtual ScopedCERTCertificateList ListCertsSync();
-
   // Asynchronously get a list of unique certificates in the certificate
   // database (one instance of all certificates). Note that the callback may be
   // run even after the database is deleted.
@@ -240,10 +235,9 @@ class NET_EXPORT NSSCertDatabase {
   bool IsHardwareBacked(const CERTCertificate* cert) const;
 
  protected:
-  // Certificate listing implementation used by |ListCerts*| and
-  // |ListCertsSync|. Static so it may safely be used on the worker thread.
-  // If |slot| is NULL, obtains the certs of all slots, otherwise only of
-  // |slot|.
+  // Certificate listing implementation used by |ListCerts*|. Static so it may
+  // safely be used on the worker thread. If |slot| is nullptr, obtains the
+  // certs of all slots, otherwise only of |slot|.
   static ScopedCERTCertificateList ListCertsImpl(crypto::ScopedPK11Slot slot);
 
   // Broadcasts notifications to all registered observers.
@@ -282,7 +276,7 @@ class NET_EXPORT NSSCertDatabase {
 
   const scoped_refptr<base::ObserverListThreadSafe<Observer>> observer_list_;
 
-  base::WeakPtrFactory<NSSCertDatabase> weak_factory_;
+  base::WeakPtrFactory<NSSCertDatabase> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NSSCertDatabase);
 };

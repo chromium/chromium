@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 
 namespace blink {
@@ -19,9 +20,11 @@ LocalFrame* SingleChildLocalFrameClient::CreateFrame(
   DCHECK(!child_) << "This test helper only supports one child frame.";
 
   LocalFrame* parent_frame = owner_element->GetDocument().GetFrame();
-  auto* child_client = LocalFrameClientWithParent::Create(parent_frame);
-  child_ =
-      LocalFrame::Create(child_client, *parent_frame->GetPage(), owner_element);
+  auto* child_client =
+      MakeGarbageCollected<LocalFrameClientWithParent>(parent_frame);
+  child_ = MakeGarbageCollected<LocalFrame>(
+      child_client, *parent_frame->GetPage(), owner_element,
+      &parent_frame->window_agent_factory(), nullptr);
   child_->CreateView(IntSize(500, 500), Color::kTransparent);
   child_->Init();
 
@@ -33,17 +36,17 @@ void LocalFrameClientWithParent::Detached(FrameDetachType) {
       ->DidDetachChild();
 }
 
-ChromeClient& RenderingTest::GetChromeClient() const {
-  DEFINE_STATIC_LOCAL(Persistent<EmptyChromeClient>, client,
-                      (EmptyChromeClient::Create()));
+RenderingTestChromeClient& RenderingTest::GetChromeClient() const {
+  DEFINE_STATIC_LOCAL(Persistent<RenderingTestChromeClient>, client,
+                      (MakeGarbageCollected<RenderingTestChromeClient>()));
   return *client;
 }
 
 RenderingTest::RenderingTest(LocalFrameClient* local_frame_client)
-    : UseMockScrollbarSettings(), local_frame_client_(local_frame_client) {}
+    : local_frame_client_(local_frame_client) {}
 
 const Node* RenderingTest::HitTest(int x, int y) {
-  HitTestLocation location(LayoutPoint(x, y));
+  HitTestLocation location(PhysicalOffset(x, y));
   HitTestResult result(
       HitTestRequest(HitTestRequest::kReadOnly | HitTestRequest::kActive |
                      HitTestRequest::kAllowChildFrameContent),
@@ -52,7 +55,8 @@ const Node* RenderingTest::HitTest(int x, int y) {
   return result.InnerNode();
 }
 
-HitTestResult::NodeSet RenderingTest::RectBasedHitTest(LayoutRect rect) {
+HitTestResult::NodeSet RenderingTest::RectBasedHitTest(
+    const PhysicalRect& rect) {
   HitTestLocation location(rect);
   HitTestResult result(
       HitTestRequest(HitTestRequest::kReadOnly | HitTestRequest::kActive |
@@ -66,6 +70,7 @@ HitTestResult::NodeSet RenderingTest::RectBasedHitTest(LayoutRect rect) {
 void RenderingTest::SetUp() {
   Page::PageClients page_clients;
   FillWithEmptyClients(page_clients);
+  GetChromeClient().SetUp();
   page_clients.chrome_client = &GetChromeClient();
   SetupPageWithClients(&page_clients, local_frame_client_, SettingOverrider());
   EXPECT_TRUE(
@@ -73,6 +78,8 @@ void RenderingTest::SetUp() {
 
   // This ensures that the minimal DOM tree gets attached
   // correctly for tests that don't call setBodyInnerHTML.
+  GetDocument().View()->SetParentVisible(true);
+  GetDocument().View()->SetSelfVisible(true);
   UpdateAllLifecyclePhasesForTest();
 
   // Allow ASSERT_DEATH and EXPECT_DEATH for multiple threads.
@@ -99,7 +106,7 @@ void RenderingTest::SetChildFrameHTML(const String& html) {
   auto* state_machine = ChildDocument().GetFrame()->Loader().StateMachine();
   if (state_machine->IsDisplayingInitialEmptyDocument())
     state_machine->AdvanceTo(FrameLoaderStateMachine::kCommittedFirstRealLoad);
-  // And let the frame view  exit the initial throttled state.
+  // And let the frame view exit the initial throttled state.
   ChildDocument().View()->BeginLifecycleUpdates();
 }
 

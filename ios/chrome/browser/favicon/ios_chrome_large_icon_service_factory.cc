@@ -17,6 +17,12 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
+
+const int kDipForServerRequests = 32;
+const favicon_base::IconType kIconTypeForServerRequests =
+    favicon_base::IconType::kTouchIcon;
+const char kGoogleServerClientParam[] = "chrome";
+
 std::unique_ptr<KeyedService> BuildLargeIconService(
     web::BrowserState* context) {
   ios::ChromeBrowserState* browser_state =
@@ -26,8 +32,11 @@ std::unique_ptr<KeyedService> BuildLargeIconService(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS),
       std::make_unique<image_fetcher::ImageFetcherImpl>(
           image_fetcher::CreateIOSImageDecoder(),
-          browser_state->GetSharedURLLoaderFactory()));
+          browser_state->GetSharedURLLoaderFactory()),
+      kDipForServerRequests, kIconTypeForServerRequests,
+      kGoogleServerClientParam);
 }
+
 }  // namespace
 
 // static

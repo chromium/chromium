@@ -17,9 +17,8 @@ namespace content {
 class CONTENT_EXPORT SoftwareBrowserCompositorOutputSurface
     : public BrowserCompositorOutputSurface {
  public:
-  SoftwareBrowserCompositorOutputSurface(
-      std::unique_ptr<viz::SoftwareOutputDevice> software_device,
-      const UpdateVSyncParametersCallback& update_vsync_parameters_callback);
+  explicit SoftwareBrowserCompositorOutputSurface(
+      std::unique_ptr<viz::SoftwareOutputDevice> software_device);
 
   ~SoftwareBrowserCompositorOutputSurface() override;
 
@@ -40,16 +39,28 @@ class CONTENT_EXPORT SoftwareBrowserCompositorOutputSurface
   gfx::BufferFormat GetOverlayBufferFormat() const override;
   uint32_t GetFramebufferCopyTextureFormat() override;
   unsigned UpdateGpuFence() override;
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+  void SetNeedsSwapSizeNotifications(
+      bool needs_swap_size_notifications) override;
+#endif
 
  private:
-  void SwapBuffersCallback(const std::vector<ui::LatencyInfo>& latency_info);
+  void SwapBuffersCallback(const std::vector<ui::LatencyInfo>& latency_info,
+                           const base::TimeTicks& swap_time,
+                           const gfx::Size& pixel_size);
   void UpdateVSyncCallback(const base::TimeTicks timebase,
                            const base::TimeDelta interval);
 
   viz::OutputSurfaceClient* client_ = nullptr;
   base::TimeDelta refresh_interval_;
   ui::LatencyTracker latency_tracker_;
-  base::WeakPtrFactory<SoftwareBrowserCompositorOutputSurface> weak_factory_;
+
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+  bool needs_swap_size_notifications_ = false;
+#endif
+
+  base::WeakPtrFactory<SoftwareBrowserCompositorOutputSurface> weak_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(SoftwareBrowserCompositorOutputSurface);
 };

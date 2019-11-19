@@ -4,7 +4,6 @@
 
 source_set("favicon") {
   sources = [
-    "favicon_attributes+private.h",
     "favicon_attributes.h",
     "favicon_attributes.mm",
     "favicon_view.h",

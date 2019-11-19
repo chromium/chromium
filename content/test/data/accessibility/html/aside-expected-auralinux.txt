@@ -1,8 +1,8 @@
 [document web]
 ++[paragraph]
-++++[text] name='The aside tag defines some content aside from the content it is placed in.'
+++++[static] name='The aside tag defines some content aside from the content it is placed in.'
 ++[landmark] xml-roles:complementary
 ++++[heading] name='Aside tag' xml-roles:heading
-++++++[text] name='Aside tag'
+++++++[static] name='Aside tag'
 ++++[paragraph]
-++++++[text] name='The aside content should be related to the surrounding content.'
+++++++[static] name='The aside content should be related to the surrounding content.'

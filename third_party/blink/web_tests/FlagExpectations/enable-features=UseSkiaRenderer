@@ -1,0 +1,2 @@
+# One portion of the image is offset.
+crbug.com/1002522 fast/canvas/canvas-toDataURL-webp.html [ Skip ]

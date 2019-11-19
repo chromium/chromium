@@ -20,7 +20,8 @@ namespace {
 // task posted to a named thread (like the FILE thread) would receive.
 base::LazySequencedTaskRunner g_task_runner =
     LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::MayBlock(),
+        base::TaskTraits(base::ThreadPool(),
+                         base::MayBlock(),
                          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
                          base::TaskPriority::USER_VISIBLE));
 

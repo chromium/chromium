@@ -9,13 +9,13 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ui/base/ime/ime_input_context_handler_interface.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ime/ui_base_ime_export.h"
 #include "ui/events/event_dispatcher.h"
 
 namespace gfx {
@@ -31,7 +31,7 @@ class TextInputClient;
 
 // A helper class providing functionalities shared among ui::InputMethod
 // implementations.
-class UI_BASE_IME_EXPORT InputMethodBase
+class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
     : public InputMethod,
       public base::SupportsWeakPtr<InputMethodBase>,
       public IMEInputContextHandlerInterface {
@@ -72,9 +72,6 @@ class UI_BASE_IME_EXPORT InputMethodBase
   InputMethodKeyboardController* GetInputMethodKeyboardController() override;
 
  protected:
-  // See InputMethodDelegate for details on this.
-  using ResultCallback = base::OnceCallback<void(bool, bool)>;
-
   explicit InputMethodBase(internal::InputMethodDelegate* delegate);
   InputMethodBase(internal::InputMethodDelegate* delegate,
                   std::unique_ptr<InputMethodKeyboardController> controller);
@@ -89,10 +86,21 @@ class UI_BASE_IME_EXPORT InputMethodBase
   void UpdateCompositionText(const CompositionText& text,
                              uint32_t cursor_pos,
                              bool visible) override;
+
+#if defined(OS_CHROMEOS)
+  bool SetCompositionRange(
+      uint32_t before,
+      uint32_t after,
+      const std::vector<ui::ImeTextSpan>& text_spans) override;
+  bool SetSelectionRange(uint32_t start, uint32_t end) override;
+#endif
+
   void DeleteSurroundingText(int32_t offset, uint32_t length) override;
   SurroundingTextInfo GetSurroundingTextInfo() override;
   void SendKeyEvent(KeyEvent* event) override;
   InputMethod* GetInputMethod() override;
+  void ConfirmCompositionText(bool reset_engine, bool keep_selection) override;
+  bool HasCompositionText() override;
 
   // Sends a fake key event for IME composing without physical key events.
   // Returns true if the faked key event is stopped propagation.
@@ -111,11 +119,8 @@ class UI_BASE_IME_EXPORT InputMethodBase
   // input type is not TEXT_INPUT_TYPE_NONE.
   void OnInputMethodChanged() const;
 
-  // See InputMethodDelegate::DispatchKeyEventPostIME(() for details on
-  // callback.
   virtual ui::EventDispatchDetails DispatchKeyEventPostIME(
-      ui::KeyEvent* event,
-      ResultCallback result_callback) const WARN_UNUSED_RESULT;
+      ui::KeyEvent* event) const WARN_UNUSED_RESULT;
 
   // Convenience method to notify all observers of TextInputClient changes.
   void NotifyTextInputStateChanged(const TextInputClient* client);
@@ -127,16 +132,11 @@ class UI_BASE_IME_EXPORT InputMethodBase
   // Gets the bounds of the composition text or cursor in |client|.
   std::vector<gfx::Rect> GetCompositionBounds(const TextInputClient* client);
 
-  bool sending_key_event() const { return sending_key_event_; }
   internal::InputMethodDelegate* delegate() const { return delegate_; }
 
   static IMEEngineHandlerInterface* GetEngine();
 
  private:
-  // Indicates whether the IME extension is currently sending a fake key event.
-  // This is used in SendKeyEvent.
-  bool sending_key_event_ = false;
-
   internal::InputMethodDelegate* delegate_;
 
   // InputMethod:

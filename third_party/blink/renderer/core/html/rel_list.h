@@ -11,10 +11,6 @@ namespace blink {
 
 class RelList final : public DOMTokenList {
  public:
-  static RelList* Create(Element* element) {
-    return MakeGarbageCollected<RelList>(element);
-  }
-
   explicit RelList(Element*);
 
  private:

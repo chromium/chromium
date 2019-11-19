@@ -21,19 +21,6 @@ extern const char kTestEventToSignal[];
 // Test the overwrite of the ZoneIdentifier.
 extern const char kTestForceOverwriteZoneIdentifier[];
 
-// Test service properties.
-
-// The name of the service used for tests.
-extern const wchar_t kServiceName[];
-// The description of the service used for tests.
-extern const wchar_t kServiceDescription[];
-
-// The sleep time in ms between each poll attempt to get information about a
-// service.
-extern const unsigned int kServiceQueryWaitTimeMs;
-// The number of attempts to contact a service.
-extern const int kServiceQueryRetry;
-
 // A valid uft8 name for a file.
 extern const wchar_t kValidUtf8Name[];
 

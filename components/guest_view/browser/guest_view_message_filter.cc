@@ -27,8 +27,7 @@ GuestViewMessageFilter::GuestViewMessageFilter(int render_process_id,
                                                BrowserContext* context)
     : BrowserMessageFilter(GuestViewMsgStart),
       render_process_id_(render_process_id),
-      browser_context_(context),
-      weak_ptr_factory_(this) {
+      browser_context_(context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -40,8 +39,7 @@ GuestViewMessageFilter::GuestViewMessageFilter(
     : BrowserMessageFilter(message_classes_to_filter,
                            num_message_classes_to_filter),
       render_process_id_(render_process_id),
-      browser_context_(context),
-      weak_ptr_factory_(this) {
+      browser_context_(context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 

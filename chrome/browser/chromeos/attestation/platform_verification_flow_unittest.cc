@@ -20,9 +20,9 @@
 #include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/cryptohome/mock_async_method_caller.h"
 #include "chromeos/dbus/attestation/attestation.pb.h"
-#include "chromeos/dbus/fake_cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/settings/cros_settings_names.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
@@ -128,8 +128,8 @@ class PlatformVerificationFlowTest : public ::testing::Test {
     // Configure the mock AttestationFlow to call FakeGetCertificate.
     EXPECT_CALL(mock_attestation_flow_,
                 GetCertificate(PROFILE_CONTENT_PROTECTION_CERTIFICATE,
-                               account_id, kTestID, _, _))
-        .WillRepeatedly(WithArgs<4>(
+                               account_id, kTestID, _, _, _))
+        .WillRepeatedly(WithArgs<5>(
             Invoke(this, &PlatformVerificationFlowTest::FakeGetCertificate)));
 
     // Configure the mock AsyncMethodCaller to call FakeSignChallenge.
@@ -180,7 +180,7 @@ class PlatformVerificationFlowTest : public ::testing::Test {
   }
 
  protected:
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   StrictMock<MockAttestationFlow> mock_attestation_flow_;
   cryptohome::MockAsyncMethodCaller mock_async_caller_;
   chromeos::FakeCryptohomeClient fake_cryptohome_client_;

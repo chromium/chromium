@@ -12,20 +12,6 @@
 
 namespace network {
 
-InitiatorLockCompatibility VerifyRequestInitiatorSiteLock(
-    int process_id,
-    base::Optional<url::Origin> lock,
-    base::Optional<url::Origin> initiator) {
-  auto factory_params = mojom::URLLoaderFactoryParams::New();
-  factory_params->process_id = process_id;
-  factory_params->request_initiator_site_lock = lock;
-
-  ResourceRequest request;
-  request.request_initiator = initiator;
-
-  return VerifyRequestInitiatorLock(*factory_params, request);
-}
-
 TEST(InitiatorLockCompatibilityTest, VerifyRequestInitiatorSiteLock) {
   url::Origin opaque_origin = url::Origin();
   url::Origin opaque_origin2 = url::Origin();
@@ -44,51 +30,39 @@ TEST(InitiatorLockCompatibilityTest, VerifyRequestInitiatorSiteLock) {
       url::Origin::Create(GURL("http://bar.foo.example.com"));
 
   url::Origin other_site = url::Origin::Create(GURL("http://other.com"));
-  constexpr int kRendererProcessId = 123;
 
   // Cases without a lock.
-  EXPECT_EQ(InitiatorLockCompatibility::kBrowserProcess,
-            VerifyRequestInitiatorSiteLock(mojom::kBrowserProcessId,
-                                           base::nullopt, base::nullopt));
   EXPECT_EQ(InitiatorLockCompatibility::kNoLock,
-            VerifyRequestInitiatorSiteLock(kRendererProcessId, base::nullopt,
-                                           base::nullopt));
+            VerifyRequestInitiatorLock(base::nullopt, base::nullopt));
 
   // Opaque initiator is always safe (and so results in kCompatibleLock).
   // OTOH, opaque lock is only compatible with an opaque initiator.
   EXPECT_EQ(InitiatorLockCompatibility::kCompatibleLock,
-            VerifyRequestInitiatorSiteLock(kRendererProcessId,
-                                           bar_foo_example_com, opaque_origin));
+            VerifyRequestInitiatorLock(bar_foo_example_com, opaque_origin));
   EXPECT_EQ(InitiatorLockCompatibility::kCompatibleLock,
-            VerifyRequestInitiatorSiteLock(kRendererProcessId, opaque_origin,
-                                           opaque_origin2));
+            VerifyRequestInitiatorLock(opaque_origin, opaque_origin2));
   EXPECT_EQ(InitiatorLockCompatibility::kIncorrectLock,
-            VerifyRequestInitiatorSiteLock(kRendererProcessId, opaque_origin,
-                                           bar_foo_example_com));
+            VerifyRequestInitiatorLock(opaque_origin, bar_foo_example_com));
 
   // Regular origin equality.
-  EXPECT_EQ(InitiatorLockCompatibility::kCompatibleLock,
-            VerifyRequestInitiatorSiteLock(
-                kRendererProcessId, bar_foo_example_com, bar_foo_example_com));
+  EXPECT_EQ(
+      InitiatorLockCompatibility::kCompatibleLock,
+      VerifyRequestInitiatorLock(bar_foo_example_com, bar_foo_example_com));
 
   // Regular origin inequality.
   EXPECT_EQ(InitiatorLockCompatibility::kIncorrectLock,
-            VerifyRequestInitiatorSiteLock(kRendererProcessId,
-                                           bar_foo_example_com, other_site));
+            VerifyRequestInitiatorLock(bar_foo_example_com, other_site));
 
   // IP addresses have to be special-cased in some places (e.g. they shouldn't
   // be subject to DomainIs / eTLD+1 comparisons).
   EXPECT_EQ(InitiatorLockCompatibility::kIncorrectLock,
-            VerifyRequestInitiatorSiteLock(kRendererProcessId, ip_origin1,
-                                           ip_origin2));
+            VerifyRequestInitiatorLock(ip_origin1, ip_origin2));
   EXPECT_EQ(InitiatorLockCompatibility::kCompatibleLock,
-            VerifyRequestInitiatorSiteLock(kRendererProcessId, ip_origin1,
-                                           ip_origin1));
+            VerifyRequestInitiatorLock(ip_origin1, ip_origin1));
 
   // Compatibility check shouldn't strip the lock down to eTLD+1.
   EXPECT_EQ(InitiatorLockCompatibility::kIncorrectLock,
-            VerifyRequestInitiatorSiteLock(kRendererProcessId, foo_example_com,
-                                           bar_example_com));
+            VerifyRequestInitiatorLock(foo_example_com, bar_example_com));
 
   // Site-URL-based comparisons.
   //
@@ -96,20 +70,16 @@ TEST(InitiatorLockCompatibilityTest, VerifyRequestInitiatorSiteLock) {
   // request_initiator_site_lock becomes request_initiator_origin_lock - see
   // https://crbug.com/888079 and https://crbug.com/891872.
   EXPECT_EQ(InitiatorLockCompatibility::kCompatibleLock,
-            VerifyRequestInitiatorSiteLock(kRendererProcessId, example_com,
-                                           bar_foo_example_com));
+            VerifyRequestInitiatorLock(example_com, bar_foo_example_com));
   EXPECT_EQ(InitiatorLockCompatibility::kCompatibleLock,
-            VerifyRequestInitiatorSiteLock(kRendererProcessId, foo_example_com,
-                                           bar_foo_example_com));
+            VerifyRequestInitiatorLock(foo_example_com, bar_foo_example_com));
 
   // The trailing dot is not important (at least for site-URL-based
   // comparisons).
   EXPECT_EQ(InitiatorLockCompatibility::kCompatibleLock,
-            VerifyRequestInitiatorSiteLock(
-                kRendererProcessId, foo_example_com_dot, foo_example_com));
+            VerifyRequestInitiatorLock(foo_example_com_dot, foo_example_com));
   EXPECT_EQ(InitiatorLockCompatibility::kCompatibleLock,
-            VerifyRequestInitiatorSiteLock(kRendererProcessId, foo_example_com,
-                                           foo_example_com_dot));
+            VerifyRequestInitiatorLock(foo_example_com, foo_example_com_dot));
 }
 
 }  // namespace network

@@ -4,7 +4,7 @@ Tests that sourcemap is applied correctly when specified by the respective HTTP 
 element.style { ()
 
 [expanded] 
-#container #inspected { (selector-line-s…-header.scss:4 -> selector-line-sourcemap-header.scss:4:16)
+#container #inspected { (selector-li…ader.scss:4 -> selector-line-sourcemap-header.scss:4:16)
     color: green;
 
 [expanded] 

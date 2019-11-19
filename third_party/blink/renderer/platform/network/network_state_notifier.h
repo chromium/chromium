@@ -34,13 +34,13 @@
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/web_connection_type.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
-#include "third_party/blink/renderer/platform/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -58,8 +58,8 @@ class PLATFORM_EXPORT NetworkStateNotifier {
     double max_bandwidth_mbps = kInvalidMaxBandwidth;
     WebEffectiveConnectionType effective_type =
         WebEffectiveConnectionType::kTypeUnknown;
-    base::Optional<TimeDelta> http_rtt;
-    base::Optional<TimeDelta> transport_rtt;
+    base::Optional<base::TimeDelta> http_rtt;
+    base::Optional<base::TimeDelta> transport_rtt;
     base::Optional<double> downlink_throughput_mbps;
     bool save_data = false;
 
@@ -77,8 +77,8 @@ class PLATFORM_EXPORT NetworkStateNotifier {
         WebConnectionType,
         double max_bandwidth_mbps,
         WebEffectiveConnectionType,
-        const base::Optional<TimeDelta>& http_rtt,
-        const base::Optional<TimeDelta>& transport_rtt,
+        const base::Optional<base::TimeDelta>& http_rtt,
+        const base::Optional<base::TimeDelta>& transport_rtt,
         const base::Optional<double>& downlink_throughput_mbps,
         bool save_data) {}
     virtual void OnLineStateChange(bool on_line) {}
@@ -136,7 +136,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 
   // Returns the current HTTP RTT estimate. If the estimate is unavailable, the
   // returned optional value is null.
-  base::Optional<TimeDelta> HttpRtt() const {
+  base::Optional<base::TimeDelta> HttpRtt() const {
     MutexLocker locker(mutex_);
     const NetworkState& state = has_override_ ? override_ : state_;
     // TODO (tbansal): Add a DCHECK to check that |state.on_line_initialized| is
@@ -146,7 +146,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 
   // Returns the current transport RTT estimate. If the estimate is unavailable,
   // the returned optional value is null.
-  base::Optional<TimeDelta> TransportRtt() const {
+  base::Optional<base::TimeDelta> TransportRtt() const {
     MutexLocker locker(mutex_);
     const NetworkState& state = has_override_ ? override_ : state_;
     DCHECK(state.on_line_initialized);
@@ -214,8 +214,8 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 
   void SetWebConnection(WebConnectionType, double max_bandwidth_mbps);
   void SetNetworkQuality(WebEffectiveConnectionType,
-                         TimeDelta http_rtt,
-                         TimeDelta transport_rtt,
+                         base::TimeDelta http_rtt,
+                         base::TimeDelta transport_rtt,
                          int downlink_throughput_kbps);
   void SetNetworkQualityWebHoldback(WebEffectiveConnectionType);
   void SetSaveDataEnabled(bool enabled);
@@ -255,8 +255,8 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 
   // Returns |rtt| after adding host-specific random noise, and rounding it as
   // per the NetInfo spec to improve privacy.
-  unsigned long RoundRtt(const String& host,
-                         const base::Optional<TimeDelta>& rtt) const;
+  uint32_t RoundRtt(const String& host,
+                    const base::Optional<base::TimeDelta>& rtt) const;
 
   // Returns |downlink_mbps| after adding host-specific random noise, and
   // rounding it as per the NetInfo spec and to improve privacy.
@@ -280,7 +280,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   // the web consumers. If the returned value is null, then the actual network
   // quality value should be returned to the web consumers.
   // Consumers within Blink should not call this API.
-  base::Optional<TimeDelta> GetWebHoldbackHttpRtt() const;
+  base::Optional<base::TimeDelta> GetWebHoldbackHttpRtt() const;
 
   // Returns the overriding HTTP RTT estimate that should be returned to
   // the web consumers. If the returned value is null, then the actual network
@@ -294,7 +294,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   void GetMetricsWithWebHoldback(WebConnectionType* type,
                                  double* downlink_max_mbps,
                                  WebEffectiveConnectionType* effective_type,
-                                 base::Optional<TimeDelta>* http_rtt,
+                                 base::Optional<base::TimeDelta>* http_rtt,
                                  base::Optional<double>* downlink_mbps,
                                  bool* save_data) const;
 
@@ -362,9 +362,9 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   double GetRandomMultiplier(const String& host) const;
 
   mutable Mutex mutex_;
-  NetworkState state_;
-  bool has_override_;
-  NetworkState override_;
+  NetworkState state_ GUARDED_BY(mutex_);
+  bool has_override_ GUARDED_BY(mutex_);
+  NetworkState override_ GUARDED_BY(mutex_);
 
   ObserverListMap connection_observers_;
   ObserverListMap on_line_state_observers_;
@@ -377,5 +377,16 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 PLATFORM_EXPORT NetworkStateNotifier& GetNetworkStateNotifier();
 
 }  // namespace blink
+
+namespace WTF {
+
+template <>
+struct CrossThreadCopier<blink::NetworkStateNotifier::NetworkState>
+    : public CrossThreadCopierPassThrough<
+          blink::NetworkStateNotifier::NetworkState> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_NETWORK_STATE_NOTIFIER_H_

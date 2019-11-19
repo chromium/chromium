@@ -17,7 +17,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
@@ -28,6 +27,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.TestContentProvider;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.io.File;
@@ -49,7 +49,7 @@ public class UrlSchemeTest {
     private EmbeddedTestServer mTestServer;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mActivityTestRule.startMainActivityFromLauncher();
         TestContentProvider.resetResourceRequestCounts(InstrumentationRegistry.getTargetContext());
         TestContentProvider.setDataFilePath(
@@ -58,7 +58,7 @@ public class UrlSchemeTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 
@@ -92,7 +92,7 @@ public class UrlSchemeTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    public void testContentUrlAccess() throws InterruptedException {
+    public void testContentUrlAccess() {
         String resource = SIMPLE_SRC;
         mActivityTestRule.loadUrl(createContentUrl(resource));
         ensureResourceRequestCountInContentProviderNotLessThan(resource, 1);
@@ -189,7 +189,7 @@ public class UrlSchemeTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    public void testContentUrlFromData() throws InterruptedException {
+    public void testContentUrlFromData() {
         final String target = SIMPLE_IMAGE;
         mActivityTestRule.loadUrl(
                 UrlUtils.encodeHtmlDataUri("<img src=\"" + createContentUrl(target) + "\">"));
@@ -202,7 +202,7 @@ public class UrlSchemeTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    public void testContentUrlFromFile() throws InterruptedException, IOException {
+    public void testContentUrlFromFile() throws IOException {
         final String target = SIMPLE_IMAGE;
         final File file = new File(Environment.getExternalStorageDirectory(), target + ".html");
         try {
@@ -216,7 +216,7 @@ public class UrlSchemeTest {
     }
 
     private String getTitleOnUiThread() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mActivityTestRule.getActivity().getActivityTab().getTitle());
     }
 
@@ -226,7 +226,7 @@ public class UrlSchemeTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    public void testFileUrlNavigation() throws InterruptedException, IOException {
+    public void testFileUrlNavigation() throws IOException {
         final File file = new File(Environment.getExternalStorageDirectory(),
                 "url_navigation_test.html");
 

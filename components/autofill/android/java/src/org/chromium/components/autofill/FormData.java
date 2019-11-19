@@ -6,6 +6,7 @@ package org.chromium.components.autofill;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.util.ArrayList;
 
@@ -35,10 +36,11 @@ public class FormData {
     }
 
     private void popupFormFields(int fieldCount) {
-        FormFieldData formFieldData = nativeGetNextFormFieldData(mNativeObj);
+        FormFieldData formFieldData =
+                FormDataJni.get().getNextFormFieldData(mNativeObj, FormData.this);
         while (formFieldData != null) {
             mFields.add(formFieldData);
-            formFieldData = nativeGetNextFormFieldData(mNativeObj);
+            formFieldData = FormDataJni.get().getNextFormFieldData(mNativeObj, FormData.this);
         }
         assert mFields.size() == fieldCount;
     }
@@ -48,5 +50,8 @@ public class FormData {
         mNativeObj = 0;
     }
 
-    private native FormFieldData nativeGetNextFormFieldData(long nativeFormDataAndroid);
+    @NativeMethods
+    interface Natives {
+        FormFieldData getNextFormFieldData(long nativeFormDataAndroid, FormData caller);
+    }
 }

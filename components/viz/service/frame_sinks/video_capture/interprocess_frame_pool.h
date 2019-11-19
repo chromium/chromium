@@ -42,14 +42,20 @@ class VIZ_SERVICE_EXPORT InterprocessFramePool {
       media::VideoPixelFormat format,
       const gfx::Size& size);
 
-  // Finds the last VideoFrame delivered, and if it has been returned back to
-  // this pool already, re-materializes it. Otherwise, null is returned. This is
-  // used when the client knows the content of the video frame has not changed
-  // and is trying to avoid having to re-populate a new VideoFrame with the same
-  // content.
-  scoped_refptr<media::VideoFrame> ResurrectLastVideoFrame(
-      media::VideoPixelFormat expected_format,
-      const gfx::Size& expected_size);
+  // Clients may call this using a frame previously returned by
+  // ReserveVideoFrame() to mark it (or its contents) for later resurrection via
+  // ResurrectOrDuplicateContentFromMarkedFrame(). Note that only one frame can
+  // be marked at a time. MarkFrame() will overwrite any existing mark.
+  void MarkFrame(const media::VideoFrame& frame);
+  void ClearFrameMarking();
+  bool HasMarkedFrameWithSize(const gfx::Size& size) const;
+
+  // If no frame is marked, returns nullptr. Otherwise, if the marked frame is
+  // not currently in use, returns the marked frame. If the marked frame is in
+  // use, reserves a new frame and copies the contents of the marked frame to
+  // the newly reserved one. That last case may still return nullptr if the pool
+  // is fully utilized.
+  scoped_refptr<media::VideoFrame> ResurrectOrDuplicateContentFromMarkedFrame();
 
   // Returns a cloned handle to the shared memory backing |frame| and its size
   // in bytes. Note that the client should not allow the ref-count of the
@@ -99,13 +105,12 @@ class VIZ_SERVICE_EXPORT InterprocessFramePool {
   base::flat_map<const media::VideoFrame*, base::ReadOnlySharedMemoryRegion>
       utilized_buffers_;
 
-  // The pointer to the mapped memory of the buffer that was last delivered,
-  // along with its format and size. ResurrectLastVideoFrame() uses this
-  // information to locate and confirm that a prior frame can be resurrected.
-  const void* resurrectable_buffer_memory_ = nullptr;
-  media::VideoPixelFormat last_delivered_format_ = media::PIXEL_FORMAT_UNKNOWN;
-  gfx::Size last_delivered_size_;
-  gfx::ColorSpace last_delivered_color_space_;
+  // The pointer to the mapped memory of the buffer that was set as "marked"
+  // via a call to SetMarkedBuffer().
+  const void* marked_frame_buffer_ = nullptr;
+  gfx::Size marked_frame_size_;
+  gfx::ColorSpace marked_frame_color_space_;
+  media::VideoPixelFormat marked_frame_pixel_format_;
 
   // The time at which the last shared memory allocation or mapping failed.
   base::TimeTicks last_fail_log_time_;
@@ -117,7 +122,7 @@ class VIZ_SERVICE_EXPORT InterprocessFramePool {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<InterprocessFramePool> weak_factory_;
+  base::WeakPtrFactory<InterprocessFramePool> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InterprocessFramePool);
 };

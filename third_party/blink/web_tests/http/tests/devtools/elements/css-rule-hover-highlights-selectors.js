@@ -12,6 +12,7 @@
       }
       </style>
       <div class="border">1st</div>
+      <div id="initial"></div>
       <div id="inspected" class="border">2nd</div>
       <div class="border">3rd</div>
       <template id="dom-template">
@@ -44,7 +45,17 @@
 
   TestRunner.runTestSuite([
     function setupProxyOverlay(next) {
-      TestRunner.evaluateFunctionInOverlay(drawHighlightProxy, next);
+      ElementsTestRunner.selectNodeAndWaitForStyles('initial', onSelected);
+
+      function onSelected() {
+        var section = ElementsTestRunner.firstMatchedStyleSection();
+        section._highlight();
+        TestRunner.callFunctionInPageAsync('requestAnimationFramePromise').then(onHighlighted);
+      }
+
+      function onHighlighted() {
+        TestRunner.evaluateFunctionInOverlay(drawHighlightProxy, next);
+      }
     },
 
     function testRegularNodeSelection(next) {

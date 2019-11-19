@@ -12,54 +12,53 @@
 
 namespace media {
 
-// Converts a Closure into a bound function accepting a PipelineStatusCB.
-static void RunClosure(
-    const base::Closure& closure,
-    const PipelineStatusCB& status_cb) {
-  closure.Run();
-  status_cb.Run(PIPELINE_OK);
+// Converts a Closure into a bound function accepting a PipelineStatusCallback.
+static void RunClosure(base::OnceClosure closure,
+                       PipelineStatusCallback status_cb) {
+  std::move(closure).Run();
+  std::move(status_cb).Run(PIPELINE_OK);
 }
 
 // Converts a bound function accepting a Closure into a bound function
-// accepting a PipelineStatusCB. Since closures have no way of reporting a
+// accepting a PipelineStatusCallback. Since closures have no way of reporting a
 // status |status_cb| is executed with PIPELINE_OK.
-static void RunBoundClosure(
-    const SerialRunner::BoundClosure& bound_closure,
-    const PipelineStatusCB& status_cb) {
-  bound_closure.Run(base::Bind(status_cb, PIPELINE_OK));
+static void RunBoundClosure(SerialRunner::BoundClosure bound_closure,
+                            PipelineStatusCallback status_cb) {
+  std::move(bound_closure)
+      .Run(base::BindOnce(std::move(status_cb), PIPELINE_OK));
 }
 
 // Runs |status_cb| with |last_status| on |task_runner|.
 static void RunOnTaskRunner(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
-    const PipelineStatusCB& status_cb,
+    PipelineStatusCallback status_cb,
     PipelineStatus last_status) {
   // Force post to permit cancellation of a series in the scenario where all
   // bound functions run on the same thread.
-  task_runner->PostTask(FROM_HERE, base::BindOnce(status_cb, last_status));
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(std::move(status_cb), last_status));
 }
 
 SerialRunner::Queue::Queue() = default;
-SerialRunner::Queue::Queue(const Queue& other) = default;
+SerialRunner::Queue::Queue(Queue&& other) = default;
 SerialRunner::Queue::~Queue() = default;
 
-void SerialRunner::Queue::Push(const base::Closure& closure) {
-  bound_fns_.push(base::Bind(&RunClosure, closure));
+void SerialRunner::Queue::Push(base::OnceClosure closure) {
+  bound_fns_.push_back(base::BindOnce(&RunClosure, std::move(closure)));
 }
 
-void SerialRunner::Queue::Push(
-    const BoundClosure& bound_closure) {
-  bound_fns_.push(base::Bind(&RunBoundClosure, bound_closure));
+void SerialRunner::Queue::Push(BoundClosure bound_closure) {
+  bound_fns_.push_back(
+      base::BindOnce(&RunBoundClosure, std::move(bound_closure)));
 }
 
-void SerialRunner::Queue::Push(
-    const BoundPipelineStatusCB& bound_status_cb) {
-  bound_fns_.push(bound_status_cb);
+void SerialRunner::Queue::Push(BoundPipelineStatusCallback bound_status_cb) {
+  bound_fns_.push_back(std::move(bound_status_cb));
 }
 
-SerialRunner::BoundPipelineStatusCB SerialRunner::Queue::Pop() {
-  BoundPipelineStatusCB bound_fn = bound_fns_.front();
-  bound_fns_.pop();
+SerialRunner::BoundPipelineStatusCallback SerialRunner::Queue::Pop() {
+  BoundPipelineStatusCallback bound_fn = std::move(bound_fns_.front());
+  bound_fns_.pop_front();
   return bound_fn;
 }
 
@@ -67,12 +66,10 @@ bool SerialRunner::Queue::empty() {
   return bound_fns_.empty();
 }
 
-SerialRunner::SerialRunner(const Queue& bound_fns,
-                           const PipelineStatusCB& done_cb)
+SerialRunner::SerialRunner(Queue&& bound_fns, PipelineStatusCallback done_cb)
     : task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      bound_fns_(bound_fns),
-      done_cb_(done_cb),
-      weak_factory_(this) {
+      bound_fns_(std::move(bound_fns)),
+      done_cb_(std::move(done_cb)) {
   // Respect both cancellation and calling stack guarantees for |done_cb|
   // when empty.
   if (bound_fns_.empty()) {
@@ -88,10 +85,10 @@ SerialRunner::SerialRunner(const Queue& bound_fns,
 SerialRunner::~SerialRunner() = default;
 
 std::unique_ptr<SerialRunner> SerialRunner::Run(
-    const Queue& bound_fns,
-    const PipelineStatusCB& done_cb) {
+    Queue&& bound_fns,
+    PipelineStatusCallback done_cb) {
   std::unique_ptr<SerialRunner> callback_series(
-      new SerialRunner(bound_fns, done_cb));
+      new SerialRunner(std::move(bound_fns), std::move(done_cb)));
   return callback_series;
 }
 
@@ -104,11 +101,11 @@ void SerialRunner::RunNextInSeries(PipelineStatus last_status) {
     return;
   }
 
-  BoundPipelineStatusCB bound_fn = bound_fns_.Pop();
-  bound_fn.Run(base::Bind(
-      &RunOnTaskRunner,
-      task_runner_,
-      base::Bind(&SerialRunner::RunNextInSeries, weak_factory_.GetWeakPtr())));
+  BoundPipelineStatusCallback bound_fn = bound_fns_.Pop();
+  std::move(bound_fn).Run(
+      base::BindRepeating(&RunOnTaskRunner, task_runner_,
+                          base::BindRepeating(&SerialRunner::RunNextInSeries,
+                                              weak_factory_.GetWeakPtr())));
 }
 
 }  // namespace media

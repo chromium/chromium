@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/win/registry.h"
-#include "ui/gfx/win/direct_write.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
 
 namespace gfx {
@@ -57,7 +56,7 @@ class CachedFontRenderParams {
     if (params_)
       return *params_;
 
-    params_.reset(new FontRenderParams());
+    params_ = std::make_unique<FontRenderParams>();
     params_->antialiasing = false;
     params_->subpixel_positioning = false;
     params_->autohinter = false;
@@ -76,9 +75,9 @@ class CachedFontRenderParams {
         params_->subpixel_rendering = GetSubpixelRenderingGeometry();
       }
     }
-    singleton_hwnd_observer_.reset(new SingletonHwndObserver(
-        base::Bind(&CachedFontRenderParams::OnWndProc,
-                   base::Unretained(this))));
+    singleton_hwnd_observer_ =
+        std::make_unique<SingletonHwndObserver>(base::BindRepeating(
+            &CachedFontRenderParams::OnWndProc, base::Unretained(this)));
     return *params_;
   }
 
@@ -111,6 +110,10 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
     NOTIMPLEMENTED();
   // Customized font rendering settings are not supported, only defaults.
   return CachedFontRenderParams::GetInstance()->GetParams();
+}
+
+float GetFontRenderParamsDeviceScaleFactor() {
+  return 1.;
 }
 
 }  // namespace gfx

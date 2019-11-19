@@ -18,14 +18,14 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/launch_service/launch_service.h"
 #include "chrome/browser/apps/platform_apps/api/media_galleries/media_galleries_api.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
 #include "chrome/browser/media_galleries/media_galleries_test_util.h"
-#include "chrome/browser/ui/extensions/app_launch_params.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/storage_monitor/storage_info.h"
@@ -47,7 +47,6 @@
 
 #if BUILDFLAG(ENABLE_NACL)
 #include "base/command_line.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
 #include "ppapi/shared_impl/ppapi_switches.h"
 #endif
 
@@ -270,11 +269,12 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppPpapiTest, SendFilesystem) {
   ASSERT_TRUE(extension);
 
   extensions::ResultCatcher catcher;
-  AppLaunchParams params(
-      browser()->profile(), extension, extensions::LAUNCH_CONTAINER_NONE,
-      WindowOpenDisposition::NEW_WINDOW, extensions::SOURCE_TEST);
+  apps::AppLaunchParams params(
+      extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+      WindowOpenDisposition::NEW_WINDOW,
+      apps::mojom::AppLaunchSource::kSourceTest);
   params.command_line = *base::CommandLine::ForCurrentProcess();
-  OpenApplication(params);
+  apps::LaunchService::Get(browser()->profile())->OpenApplication(params);
 
   bool result = true;
   if (!catcher.GetNextResult()) {

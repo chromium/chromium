@@ -4,9 +4,10 @@
 
 package com.android.webview.chromium;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.webkit.TracingConfig;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.android_webview.AwTracingController;
 import org.chromium.android_webview.WebViewChromiumRunQueue;

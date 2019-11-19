@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>
+  Forced colors mode - transitions.
+  Tests that color transitions work in forced colors mode.
+  The only way to get transitions to work in forced colors mode is if
+  forced-color-adjust is none. Otherwise, the color will always be
+  overridden upon transition, and no transition will actually happen.
+</title>
+<link rel="help" href="https://www.w3.org/TR/css-color-adjust-1/#forced-colors-properties">
+<script src="../../../../../animations/resources/animation-test-helpers.js"></script>
+<style>
+  #target {
+    color: black;
+    font-size: 50px;
+    forced-color-adjust: none;
+    transition: all 1s linear;
+  }
+  #target.final {
+    color: red;
+  }
+</style>
+<script>
+  const expectedValues = [
+    // [time, element-id, property, expected-value, tolerance]
+    [0.5, 'target', 'color', [128, 0, 0], 64]
+  ];
+
+  function setupTest()
+  {
+    document.getElementById('target').className = 'final';
+  }
+
+  runTransitionTest(expectedValues, setupTest);
+</script>
+<span id="target">filler text</span>

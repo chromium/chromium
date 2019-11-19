@@ -18,7 +18,10 @@ chrome_apps_api_schema_files_ = [
 ]
 
 if (is_chromeos) {
-  chrome_apps_api_schema_files_ += [ "arc_apps_private.idl" ]
+  chrome_apps_api_schema_files_ += [
+    "arc_apps_private.idl",
+    "first_run_private.json",
+  ]
 }
 
 chrome_apps_uncompiled_schema_files_ = [ "music_manager_private.idl" ]

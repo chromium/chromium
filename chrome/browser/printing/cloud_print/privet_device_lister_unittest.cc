@@ -35,11 +35,12 @@ class ServiceDiscoveryMockDelegate {
 class MockServiceWatcher : public ServiceWatcher {
  public:
   MockServiceWatcher(const std::string& service_type,
-                     const ServiceWatcher::UpdatedCallback& callback,
+                     ServiceWatcher::UpdatedCallback callback,
                      ServiceDiscoveryMockDelegate* mock_delegate)
-      : started_(false), service_type_(service_type),  callback_(callback),
-        mock_delegate_(mock_delegate) {
-  }
+      : started_(false),
+        service_type_(service_type),
+        callback_(std::move(callback)),
+        mock_delegate_(mock_delegate) {}
 
   ~MockServiceWatcher() override {}
 
@@ -116,9 +117,9 @@ class MockServiceDiscoveryClient : public ServiceDiscoveryClient {
   // on service type |service_type|.
   std::unique_ptr<ServiceWatcher> CreateServiceWatcher(
       const std::string& service_type,
-      const ServiceWatcher::UpdatedCallback& callback) override {
-    return std::make_unique<MockServiceWatcher>(service_type, callback,
-                                                mock_delegate_);
+      ServiceWatcher::UpdatedCallback callback) override {
+    return std::make_unique<MockServiceWatcher>(
+        service_type, std::move(callback), mock_delegate_);
   }
 
   // Create a service resolver object for getting detailed service information

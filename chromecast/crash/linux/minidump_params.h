@@ -13,8 +13,7 @@ namespace chromecast {
 
 struct MinidumpParams {
   MinidumpParams();
-  MinidumpParams(const std::string& p_process_name,
-                 const uint64_t p_process_uptime,
+  MinidumpParams(const uint64_t p_process_uptime,
                  const std::string& p_suffix,
                  const std::string& p_previous_app_name,
                  const std::string& p_current_app_name,
@@ -25,7 +24,6 @@ struct MinidumpParams {
   MinidumpParams(const MinidumpParams& params);
   ~MinidumpParams();
 
-  std::string process_name;
   uint64_t process_uptime;
   std::string suffix;
   std::string previous_app_name;

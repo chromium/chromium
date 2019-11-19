@@ -55,12 +55,6 @@ void RegisterVariationIds(const Study_Experiment& experiment,
                                     experiment.name(),
                                     variation_id);
   }
-  if (experiment.has_chrome_sync_experiment_id()) {
-    const VariationID variation_id =
-        static_cast<VariationID>(experiment.chrome_sync_experiment_id());
-    AssociateGoogleVariationIDForce(CHROME_SYNC_EVENT_LOGGER, trial_name,
-                                    experiment.name(), variation_id);
-  }
 }
 
 // Executes |callback| on every override defined by |experiment|.
@@ -259,8 +253,7 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
           study.name(), processed_study.total_probability(),
-          processed_study.GetDefaultExperimentName(),
-          base::FieldTrialList::kNoExpirationYear, 1, 1, randomization_type,
+          processed_study.GetDefaultExperimentName(), randomization_type,
           randomization_seed, nullptr,
           ShouldStudyUseLowEntropy(study) ? low_entropy_provider : nullptr));
 

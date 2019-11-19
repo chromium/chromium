@@ -36,6 +36,10 @@ class _LoadingBaseClusterTelemetry(loading._LoadingBase):
         help='Cache temperature (string). Default to "%%default". Can be: %s' %
          ', '.join(cls._ALL_CACHE_TEMPERATURES))
 
+  @classmethod
+  def ProcessCommandLineArgs(cls, parser, args):
+    ct_benchmarks_util.ValidateCommandLineArgs(parser, args)
+
   def CreateStorySet(self, options):
     def Wait(action_runner):
       action_runner.Wait(options.wait_time)

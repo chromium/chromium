@@ -58,7 +58,7 @@ class MOJO_CPP_SYSTEM_EXPORT SharedBufferHandle : public Handle {
   //
   // Note for those converting legacy shared memory to the
   // base::*SharedMemoryRegion API: if SharedBufferHandle::Create is used for
-  // your shared memory regions, the mojo::Create*SahredMemoryRegion methods in
+  // your shared memory regions, the mojo::Create*SharedMemoryRegion methods in
   // mojo/public/cpp/base/shared_memory_utils.h should be used. These know how
   // to use a broker to create regions in unprivileged contexts in the same way
   // as this SharedBufferHandle::Create method.

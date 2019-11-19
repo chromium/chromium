@@ -11,36 +11,58 @@
 
 namespace blink {
 
-class HTMLPortalElement;
+class PortalContents;
 
-class DocumentPortals : public GarbageCollected<DocumentPortals>,
-                        public Supplement<Document> {
+// Tracks "active" portal contents associated with a document.
+//
+// An active contents is registered when it is created, either through creation
+// of a new contents in the browser, or through adoption of an existing one.
+// It is deregistered when that contents is closed, even though the
+// PortalContents object may not yet have been garbage-collected.
+//
+// At most one such contents may be activating at a given time. If there is such
+// a contents, it is also tracked by this object.
+class DocumentPortals final : public GarbageCollected<DocumentPortals>,
+                              public Supplement<Document> {
   USING_GARBAGE_COLLECTED_MIXIN(DocumentPortals);
 
  public:
   static const char kSupplementName[];
   static DocumentPortals& From(Document&);
 
-  // Used to notify the document that a portal was inserted.
-  void OnPortalInserted(HTMLPortalElement* portal);
-
-  // Notifies that a portal was removed from the Document.
-  void OnPortalRemoved(HTMLPortalElement* portal);
-
-  // Retrieves the portal identified by the token.
-  HTMLPortalElement* GetPortal(const base::UnguessableToken&) const;
+  void RegisterPortalContents(PortalContents*);
+  void DeregisterPortalContents(PortalContents*);
 
   // Retrieves all portals in the document.
-  const HeapVector<Member<HTMLPortalElement>>& GetPortals() const {
+  const HeapVector<Member<PortalContents>>& GetPortals() const {
     return portals_;
   }
+
+  // Returns true if any portal in the document is currently activating.
+  bool IsPortalInDocumentActivating() const { return activating_portal_; }
+
+  PortalContents* GetActivatingPortalContents() const {
+    return activating_portal_;
+  }
+  void SetActivatingPortalContents(PortalContents* portal) {
+    DCHECK(!activating_portal_);
+    activating_portal_ = portal;
+  }
+  void ClearActivatingPortalContents() { activating_portal_ = nullptr; }
 
   explicit DocumentPortals(Document&);
 
   void Trace(Visitor*) override;
 
  private:
-  HeapVector<Member<HTMLPortalElement>> portals_;
+  HeapVector<Member<PortalContents>> portals_;
+
+  // Needed to keep the activating contents alive so that it can receive an IPC
+  // reply from the browser process and respond accordingly (e.g. by resolving
+  // the promise).
+  //
+  // At most one portal contents can be undergoing activation at a time.
+  Member<PortalContents> activating_portal_;
 };
 
 }  // namespace blink

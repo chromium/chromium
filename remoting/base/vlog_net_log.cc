@@ -34,17 +34,16 @@ VlogNetLog::Observer::~Observer() = default;
 
 void VlogNetLog::Observer::OnAddEntry(const net::NetLogEntry& entry) {
   if (VLOG_IS_ON(4)) {
-    std::unique_ptr<base::Value> value(entry.ToValue());
+    base::Value value = entry.ToValue();
     std::string json;
-    base::JSONWriter::Write(*value, &json);
+    base::JSONWriter::Write(value, &json);
     VLOG(4) << json;
   }
 }
 
 VlogNetLog::VlogNetLog()
     : observer_(new Observer()) {
-  AddObserver(observer_.get(),
-              net::NetLogCaptureMode::IncludeCookiesAndCredentials());
+  AddObserver(observer_.get(), net::NetLogCaptureMode::kIncludeSensitive);
 }
 
 VlogNetLog::~VlogNetLog() {

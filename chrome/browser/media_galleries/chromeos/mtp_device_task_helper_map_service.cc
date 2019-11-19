@@ -28,7 +28,7 @@ MTPDeviceTaskHelper* MTPDeviceTaskHelperMapService::CreateDeviceTaskHelper(
   DCHECK(!storage_name.empty());
   const MTPDeviceTaskHelperKey key =
       GetMTPDeviceTaskHelperKey(storage_name, read_only);
-  DCHECK(!base::ContainsKey(task_helper_map_, key));
+  DCHECK(!base::Contains(task_helper_map_, key));
   MTPDeviceTaskHelper* task_helper = new MTPDeviceTaskHelper();
   task_helper_map_[key] = task_helper;
   return task_helper;

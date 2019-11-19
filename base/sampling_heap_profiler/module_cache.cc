@@ -12,28 +12,49 @@ ModuleCache::ModuleCache() = default;
 ModuleCache::~ModuleCache() = default;
 
 const ModuleCache::Module* ModuleCache::GetModuleForAddress(uintptr_t address) {
-  auto it = modules_cache_map_.upper_bound(address);
-  if (it != modules_cache_map_.begin()) {
-    DCHECK(!modules_cache_map_.empty());
-    --it;
-    const Module* module = it->second.get();
-    if (address < module->GetBaseAddress() + module->GetSize())
-      return module;
-  }
+  Module* module = FindModuleForAddress(non_native_modules_, address);
+  if (module)
+    return module;
 
-  std::unique_ptr<Module> module = CreateModuleForAddress(address);
-  if (!module)
+  module = FindModuleForAddress(native_modules_, address);
+  if (module)
+    return module;
+
+  std::unique_ptr<Module> new_module = CreateModuleForAddress(address);
+  if (!new_module)
     return nullptr;
-  return modules_cache_map_.emplace(module->GetBaseAddress(), std::move(module))
-      .first->second.get();
+  native_modules_.push_back(std::move(new_module));
+  return native_modules_.back().get();
 }
 
 std::vector<const ModuleCache::Module*> ModuleCache::GetModules() const {
   std::vector<const Module*> result;
-  result.reserve(modules_cache_map_.size());
-  for (const auto& it : modules_cache_map_)
-    result.push_back(it.second.get());
+  result.reserve(native_modules_.size());
+  for (const std::unique_ptr<Module>& module : native_modules_)
+    result.push_back(module.get());
   return result;
+}
+
+void ModuleCache::AddNonNativeModule(std::unique_ptr<Module> module) {
+  DCHECK(!module->IsNative());
+  non_native_modules_.push_back(std::move(module));
+}
+
+void ModuleCache::InjectModuleForTesting(std::unique_ptr<Module> module) {
+  native_modules_.push_back(std::move(module));
+}
+
+// static
+ModuleCache::Module* ModuleCache::FindModuleForAddress(
+    const std::vector<std::unique_ptr<Module>>& modules,
+    uintptr_t address) {
+  auto it = std::find_if(modules.begin(), modules.end(),
+                         [address](const std::unique_ptr<Module>& module) {
+                           return address >= module->GetBaseAddress() &&
+                                  address < module->GetBaseAddress() +
+                                                module->GetSize();
+                         });
+  return it != modules.end() ? it->get() : nullptr;
 }
 
 }  // namespace base

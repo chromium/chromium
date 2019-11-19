@@ -86,7 +86,7 @@ class UnifiedMouseWarpControllerTest : public AshTestBase {
 
     aura::Window* root = Shell::GetPrimaryRootWindow();
     gfx::Point new_location_in_unified_host =
-        Shell::Get()->aura_env()->last_mouse_location();
+        aura::Env::GetInstance()->last_mouse_location();
     // Convert screen to the host.
     root->GetHost()->ConvertDIPToPixels(&new_location_in_unified_host);
 
@@ -148,7 +148,7 @@ class UnifiedMouseWarpControllerTest : public AshTestBase {
     for (const auto& group : warp_groups) {
       EXPECT_TRUE(TestIfMouseWarpsAt(group.native_point_at_edge));
 
-      gfx::Point new_location = Shell::Get()->aura_env()->last_mouse_location();
+      gfx::Point new_location = aura::Env::GetInstance()->last_mouse_location();
       EXPECT_EQ(group.expected_point_after_warp, new_location);
 
       // Convert screen to the host.
@@ -399,12 +399,12 @@ TEST_F(UnifiedMouseWarpControllerTest, WarpMouse) {
   // Touch the right edge of the first display. Pointer should warp.
   EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(499, 10)));
   EXPECT_EQ("501,10",  // by 2px.
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
 
   // Touch the left edge of the second display. Pointer should warp.
   EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(600, 10)));
   EXPECT_EQ("498,10",  // by 2px.
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
   {
     SCOPED_TRACE("1x1 NO WARP");
     NoWarpTestBody();
@@ -418,12 +418,12 @@ TEST_F(UnifiedMouseWarpControllerTest, WarpMouse) {
   // Touch the right edge of the first display. Pointer should warp.
   EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(499, 10)));
   EXPECT_EQ("250,5",  // moved to 501 by 2px, divided by 2 (dsf).
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
 
   // Touch the left edge of the second display. Pointer should warp.
   EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(600, 10)));
   EXPECT_EQ("249,5",  // moved to 498 by 2px, divided by 2 (dsf).
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
 
   {
     SCOPED_TRACE("2x1 NO WARP");
@@ -438,12 +438,12 @@ TEST_F(UnifiedMouseWarpControllerTest, WarpMouse) {
   // Touch the right edge of the first display. Pointer should warp.
   EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(499, 10)));
   EXPECT_EQ("501,10",  // by 2px.
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
 
   // Touch the left edge of the second display. Pointer should warp.
   EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(600, 10)));
   EXPECT_EQ("498,10",  // by 2px.
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
   {
     SCOPED_TRACE("1x2 NO WARP");
     NoWarpTestBody();
@@ -457,12 +457,12 @@ TEST_F(UnifiedMouseWarpControllerTest, WarpMouse) {
   // Touch the right edge of the first display. Pointer should warp.
   EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(499, 10)));
   EXPECT_EQ("250,5",  // by 2px.
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
 
   // Touch the left edge of the second display. Pointer should warp.
   EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(600, 10)));
   EXPECT_EQ("249,5",  // moved to 498 by 2px, divided by 2 (dsf).
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
   {
     SCOPED_TRACE("1x2 NO WARP");
     NoWarpTestBody();

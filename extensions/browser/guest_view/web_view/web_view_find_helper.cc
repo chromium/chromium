@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/scoped_refptr.h"
 #include "components/guest_view/browser/guest_view_event.h"
 #include "extensions/browser/api/guest_view/web_view/web_view_internal_api.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
@@ -96,9 +97,9 @@ void WebViewFindHelper::Find(
   // function can be called when the find results are available.
   std::pair<FindInfoMap::iterator, bool> insert_result =
       find_info_map_.insert(std::make_pair(
-          current_find_request_id_, base::WrapRefCounted(new FindInfo(
-                                        current_find_request_id_, search_text,
-                                        options.Clone(), find_function))));
+          current_find_request_id_,
+          base::MakeRefCounted<FindInfo>(current_find_request_id_, search_text,
+                                         options.Clone(), find_function)));
   // No duplicate insertions.
   DCHECK(insert_result.second);
 
@@ -255,8 +256,7 @@ WebViewFindHelper::FindInfo::FindInfo(
       search_text_(search_text),
       options_(std::move(options)),
       find_function_(find_function),
-      replied_(false),
-      weak_ptr_factory_(this) {}
+      replied_(false) {}
 
 void WebViewFindHelper::FindInfo::AggregateResults(
     int number_of_matches,

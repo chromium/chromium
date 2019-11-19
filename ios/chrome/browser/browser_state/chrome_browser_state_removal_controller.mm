@@ -143,8 +143,9 @@ void ChromeBrowserStateRemovalController::RemoveBrowserStatesIfNecessary() {
 
   if (is_removing_browser_states) {
     SetHasBrowserStateBeenRemoved(true);
-    base::PostTaskWithTraits(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+    base::PostTask(
+        FROM_HERE,
+        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&NukeBrowserStates, browser_states_to_nuke));
   }
 }

@@ -12,18 +12,20 @@ using std::string;
 namespace fake_server {
 
 EntityBuilderFactory::EntityBuilderFactory()
-    : cache_guid_(base::GenerateGUID()), latest_client_item_id_(0L) {}
+    : cache_guid_(base::GenerateGUID()) {}
 
 EntityBuilderFactory::EntityBuilderFactory(const string& cache_guid)
-    : cache_guid_(cache_guid), latest_client_item_id_(0L) {}
+    : cache_guid_(cache_guid) {}
 
 EntityBuilderFactory::~EntityBuilderFactory() {}
 
-BookmarkEntityBuilder EntityBuilderFactory::NewBookmarkEntityBuilder(
-    const string& title) {
-  --latest_client_item_id_;
-  BookmarkEntityBuilder builder(title, cache_guid_,
-                                base::NumberToString(latest_client_item_id_));
+const BookmarkEntityBuilder EntityBuilderFactory::NewBookmarkEntityBuilder(
+    const string& title,
+    base::Optional<std::string> originator_client_item_id) {
+  if (!originator_client_item_id)
+    originator_client_item_id = base::GenerateGUID();
+
+  BookmarkEntityBuilder builder(title, cache_guid_, *originator_client_item_id);
   return builder;
 }
 

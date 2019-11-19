@@ -8,9 +8,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
-#include "jni/WatcherImpl_jni.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "mojo/public/java/system/system_impl_java_jni_headers/WatcherImpl_jni.h"
 
 namespace mojo {
 namespace android {

@@ -101,9 +101,9 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     base::ScopedFD Start() {
       DCHECK(!pipe_reader_.get());
       DCHECK(!data_.has_value());
-      pipe_reader_ = std::make_unique<chromeos::PipeReader>(
-          base::CreateTaskRunnerWithTraits(
-              {base::MayBlock(),
+      pipe_reader_ =
+          std::make_unique<chromeos::PipeReader>(base::CreateTaskRunner(
+              {base::ThreadPool(), base::MayBlock(),
                base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
 
       return pipe_reader_->StartIO(base::BindOnce(
@@ -231,8 +231,8 @@ LorgnetteManagerClient::LorgnetteManagerClient() = default;
 LorgnetteManagerClient::~LorgnetteManagerClient() = default;
 
 // static
-LorgnetteManagerClient* LorgnetteManagerClient::Create() {
-  return new LorgnetteManagerClientImpl();
+std::unique_ptr<LorgnetteManagerClient> LorgnetteManagerClient::Create() {
+  return std::make_unique<LorgnetteManagerClientImpl>();
 }
 
 }  // namespace chromeos

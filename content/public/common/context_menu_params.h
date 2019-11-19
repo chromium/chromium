@@ -53,7 +53,7 @@ struct CONTENT_EXPORT ContextMenuParams {
   ~ContextMenuParams();
 
   // This is the type of Context Node that the context menu was invoked on.
-  blink::WebContextMenuData::MediaType media_type;
+  blink::ContextMenuDataMediaType media_type;
 
   // These values represent the coordinates of the mouse when the context menu
   // was invoked.  Coords are relative to the associated RenderView's origin.
@@ -96,9 +96,13 @@ struct CONTENT_EXPORT ContextMenuParams {
   // This is the text of the selection that the context menu was invoked on.
   base::string16 selection_text;
 
-  // This is the title or alt (if title not available) text of the selection
-  // that the context menu was invoked on.
+  // This is the title text of the selection that the context menu was
+  // invoked on.
   base::string16 title_text;
+
+  // This is the alt text of the selection that the context menu was
+  // invoked on.
+  base::string16 alt_text;
 
   // This is the suggested filename to be used when saving file through "Save
   // Link As" option of context menu.
@@ -145,7 +149,7 @@ struct CONTENT_EXPORT ContextMenuParams {
   std::map<std::string, std::string> properties;
 
   // If this node is an input field, the type of that field.
-  blink::WebContextMenuData::InputFieldType input_field_type;
+  blink::ContextMenuDataInputFieldType input_field_type;
 
   // Rect representing the coordinates in the document space of the selection.
   gfx::Rect selection_rect;

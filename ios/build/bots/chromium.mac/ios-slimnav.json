@@ -2,7 +2,7 @@
   "comments": [
     "Test the SlimNavigationManager feature."
   ],
-  "xcode build version": "10b61",
+  "xcode build version": "11a1027",
   "gn_args": [
     "goma_dir=\"$(goma_dir)\"",
     "is_component_build=false",
@@ -17,414 +17,429 @@
     {
       "include": "screen_size_dependent_tests.json",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
       "device type": "iPhone 6s Plus",
-      "os": "12.1",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "os": "12.2",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "include": "screen_size_dependent_tests.json",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
       "device type": "iPhone 6s",
-      "os": "12.1",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "include": "common_tests.json",
-            "test args": [
-        "--enable-features=SlimNavigationManager"
-      ],
-      "device type": "iPhone 6s",
-      "os": "12.1",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "include": "screen_size_dependent_tests.json",
-      "test args": [
-        "--enable-features=SlimNavigationManager"
-      ],
-      "device type": "iPad Air 2",
-      "os": "12.1",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "include": "screen_size_dependent_tests.json",
-      "test args": [
-        "--enable-features=SlimNavigationManager"
-      ],
-      "device type": "iPhone 6s Plus",
-      "os": "11.4",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "include": "screen_size_dependent_tests.json",
-      "test args": [
-        "--enable-features=SlimNavigationManager"
-      ],
-      "device type": "iPhone 6s",
-      "os": "11.4",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "os": "12.2",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "include": "common_tests.json",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
       "device type": "iPhone 6s",
-      "os": "11.4",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "os": "12.2",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "include": "screen_size_dependent_tests.json",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
       "device type": "iPad Air 2",
-      "os": "11.4",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "os": "12.2",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "include": "eg_cq_tests.json",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
       "device type": "iPhone 6s",
-      "os": "11.4",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "os": "12.2",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "app": "ios_chrome_bookmarks_egtests",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
+      "shards": 3,
+      "xcode parallelization": true,
       "device type": "iPad Air 2",
-      "os": "11.4",
-      "shard size": 2,
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "app": "ios_chrome_manual_fill_egtests",
-      "test args": [
-        "--enable-features=AutofillManualFallback,AutofillManualFallbackPhaseTwo,WebFrameMessaging,SlimNavigationManager"
-      ],
-      "device type": "iPad Air 2",
-      "os": "11.4",
-      "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "app": "ios_chrome_web_egtests",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
       "device type": "iPad Air 2",
-      "os": "11.4",
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "app": "ios_chrome_settings_egtests",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
       "device type": "iPad Air 2",
-      "os": "11.4",
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "app": "ios_chrome_translate_egtests",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPad Air 2",
+      "os": "12.2",
+      "xctest": true,
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "app": "ios_chrome_reading_list_egtests",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
       "device type": "iPad Air 2",
-      "os": "11.4",
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "app": "ios_showcase_egtests",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
       "device type": "iPad Air 2",
-      "os": "11.4",
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "app": "ios_chrome_bookmarks_egtests",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
-      "shard size": 2,
-      "device type": "iPad Air 2",
-      "os": "12.1",
+      "shards": 3,
+      "xcode parallelization": true,
+      "device type": "iPhone X",
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "app": "ios_chrome_manual_fill_egtests",
-      "test args": [
-        "--enable-features=AutofillManualFallback,AutofillManualFallbackPhaseTwo,WebFrameMessaging,SlimNavigationManager"
-      ],
-      "xctest": true,
-      "device type": "iPad Air 2",
-      "os": "12.1",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "app": "ios_chrome_web_egtests",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
-      "device type": "iPad Air 2",
-      "os": "12.1",
+      "device type": "iPhone X",
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "app": "ios_chrome_settings_egtests",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
-      "device type": "iPad Air 2",
-      "os": "12.1",
+      "device type": "iPhone X",
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "app": "ios_chrome_translate_egtests",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPhone X",
+      "os": "12.2",
+      "xctest": true,
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "app": "ios_chrome_reading_list_egtests",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
-      "device type": "iPad Air 2",
-      "os": "12.1",
+      "device type": "iPhone X",
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "app": "ios_showcase_egtests",
       "test args": [
-        "--enable-features=SlimNavigationManager"
-      ],
-      "device type": "iPad Air 2",
-      "os": "12.1",
-      "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "app": "ios_chrome_bookmarks_egtests",
-      "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
       "device type": "iPhone X",
-      "os": "11.4",
-      "shard size": 2,
+      "os": "12.2",
       "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "app": "ios_chrome_manual_fill_egtests",
-      "test args": [
-        "--enable-features=AutofillManualFallback,AutofillManualFallbackPhaseTwo,WebFrameMessaging,SlimNavigationManager"
-      ],
-      "xctest": true,
-      "device type": "iPhone X",
-      "os": "11.4",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "app": "ios_chrome_web_egtests",
-      "test args": [
-        "--enable-features=SlimNavigationManager"
-      ],
-      "device type": "iPhone X",
-      "os": "11.4",
-      "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "app": "ios_chrome_settings_egtests",
-      "test args": [
-        "--enable-features=SlimNavigationManager"
-      ],
-      "device type": "iPhone X",
-      "os": "11.4",
-      "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "app": "ios_chrome_reading_list_egtests",
-      "test args": [
-        "--enable-features=SlimNavigationManager"
-      ],
-      "device type": "iPhone X",
-      "os": "11.4",
-      "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "app": "ios_showcase_egtests",
-      "test args": [
-        "--enable-features=SlimNavigationManager"
-      ],
-      "device type": "iPhone X",
-      "os": "11.4",
-      "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "app": "ios_chrome_bookmarks_egtests",
-      "test args": [
-        "--enable-features=SlimNavigationManager"
-      ],
-      "shard size": 2,
-      "device type": "iPhone X",
-      "os": "12.1",
-      "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "app": "ios_chrome_manual_fill_egtests",
-      "test args": [
-        "--enable-features=AutofillManualFallback,AutofillManualFallbackPhaseTwo,WebFrameMessaging,SlimNavigationManager"
-      ],
-      "device type": "iPhone X",
-      "os": "12.1",
-      "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "app": "ios_chrome_web_egtests",
-      "test args": [
-        "--enable-features=SlimNavigationManager"
-      ],
-      "device type": "iPhone X",
-      "os": "12.1",
-      "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "app": "ios_chrome_settings_egtests",
-      "test args": [
-        "--enable-features=SlimNavigationManager"
-      ],
-      "device type": "iPhone X",
-      "os": "12.1",
-      "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "app": "ios_chrome_reading_list_egtests",
-      "test args": [
-        "--enable-features=SlimNavigationManager"
-      ],
-      "device type": "iPhone X",
-      "os": "12.1",
-      "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
-      "priority": 30
-    },
-    {
-      "app": "ios_showcase_egtests",
-      "test args": [
-        "--enable-features=SlimNavigationManager"
-      ],
-      "device type": "iPhone X",
-      "os": "12.1",
-      "xctest": true,
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "include": "eg_cq_tests.json",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
       "device type": "iPhone X",
-      "os": "11.4",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "os": "12.2",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "include": "screen_size_dependent_tests.json",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPhone 6s Plus",
+      "os": "13.1",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "include": "screen_size_dependent_tests.json",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPhone 6s",
+      "os": "13.1",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "include": "common_tests.json",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPhone 6s",
+      "os": "13.1",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "include": "screen_size_dependent_tests.json",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPad Air 2",
+      "os": "13.1",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     },
     {
       "include": "eg_cq_tests.json",
       "test args": [
-        "--enable-features=SlimNavigationManager"
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPhone 6s",
+      "os": "13.1",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "app": "ios_chrome_bookmarks_egtests",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "shards": 3,
+      "xcode parallelization": true,
+      "device type": "iPad Air 2",
+      "os": "13.1",
+      "xctest": true,
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "app": "ios_chrome_web_egtests",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPad Air 2",
+      "os": "13.1",
+      "xctest": true,
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "app": "ios_chrome_settings_egtests",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPad Air 2",
+      "os": "13.1",
+      "xctest": true,
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "app": "ios_chrome_translate_egtests",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPad Air 2",
+      "os": "13.1",
+      "xctest": true,
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "app": "ios_chrome_reading_list_egtests",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPad Air 2",
+      "os": "13.1",
+      "xctest": true,
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "app": "ios_showcase_egtests",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPad Air 2",
+      "os": "13.1",
+      "xctest": true,
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "app": "ios_chrome_bookmarks_egtests",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "shards": 3,
+      "xcode parallelization": true,
+      "device type": "iPhone X",
+      "os": "13.1",
+      "xctest": true,
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "app": "ios_chrome_web_egtests",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
       ],
       "device type": "iPhone X",
-      "os": "12.1",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome",
+      "os": "13.1",
+      "xctest": true,
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "app": "ios_chrome_settings_egtests",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPhone X",
+      "os": "13.1",
+      "xctest": true,
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "app": "ios_chrome_translate_egtests",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPhone X",
+      "os": "13.1",
+      "xctest": true,
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "app": "ios_chrome_reading_list_egtests",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPhone X",
+      "os": "13.1",
+      "xctest": true,
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "app": "ios_showcase_egtests",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPhone X",
+      "os": "13.1",
+      "xctest": true,
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "priority": 30
+    },
+    {
+      "include": "eg_cq_tests.json",
+      "test args": [
+        "--disable-features=SlimNavigationManager,OfflineVersionWithoutNativeContent,LogLoadStartedInDidStartNavigation"
+      ],
+      "device type": "iPhone X",
+      "os": "13.1",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
       "priority": 30
     }
   ]

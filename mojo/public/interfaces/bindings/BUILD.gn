@@ -5,6 +5,7 @@
 import("../../tools/bindings/mojom.gni")
 
 mojom_component("bindings") {
+  generate_java = true
   output_prefix = "mojo_mojom_bindings"
   macro_prefix = "MOJO_MOJOM_BINDINGS"
 

@@ -5,6 +5,7 @@
 #ifndef ASH_APP_LIST_VIEWS_TEST_APPS_GRID_VIEW_TEST_API_H_
 #define ASH_APP_LIST_VIEWS_TEST_APPS_GRID_VIEW_TEST_API_H_
 
+#include "ash/app_list/views/apps_grid_view.h"
 #include "base/macros.h"
 
 namespace gfx {
@@ -15,8 +16,9 @@ namespace views {
 class View;
 }
 
-namespace app_list {
+namespace ash {
 
+class AppListItemView;
 class AppsGridView;
 
 namespace test {
@@ -38,9 +40,15 @@ class AppsGridViewTestApi {
 
   int TilesPerPage(int page) const;
 
+  int AppsOnPage(int page) const;
+
+  AppListItemView* GetViewAtIndex(GridIndex index) const;
+
   views::View* GetViewAtVisualIndex(int page, int slot) const;
 
   gfx::Rect GetItemTileRectAtVisualIndex(int page, int slot) const;
+
+  void WaitForItemMoveAnimationDone();
 
  private:
   AppsGridView* view_;
@@ -49,6 +57,6 @@ class AppsGridViewTestApi {
 };
 
 }  // namespace test
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_VIEWS_TEST_APPS_GRID_VIEW_TEST_API_H_

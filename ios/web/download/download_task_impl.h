@@ -16,6 +16,7 @@
 
 namespace net {
 class URLFetcherResponseWriter;
+class URLRequestContextGetter;
 }
 
 namespace web {
@@ -84,16 +85,15 @@ class DownloadTaskImpl : public DownloadTask {
   NSURLSession* CreateSession(NSString* identifier,
                               NSArray<NSHTTPCookie*>* cookies);
 
-  // Asynchronously returns cookies for WebState associated with this task (on
-  // iOS 10 and earlier, the array is always empty as it is not possible to
-  // access the cookies). Must be called on UI thread. The callback will be
-  // invoked on the UI thread.
+  // Asynchronously returns cookies for WebState associated with this task.
+  // Must be called on UI thread. The callback will be invoked on the UI thread.
   void GetCookies(base::Callback<void(NSArray<NSHTTPCookie*>*)> callback);
 
-  // Asynchronously returns cookies for WebState associated with this task. Must
-  // be called on UI thread. The callback will be invoked on the UI thread.
-  void GetWKCookies(base::Callback<void(NSArray<NSHTTPCookie*>*)> callback)
-      API_AVAILABLE(ios(11.0));
+  // Asynchronously returns cookies for |context_getter|. Must
+  // be called on IO thread. The callback will be invoked on the UI thread.
+  static void GetCookiesFromContextGetter(
+      scoped_refptr<net::URLRequestContextGetter> context_getter,
+      base::Callback<void(NSArray<NSHTTPCookie*>*)> callback);
 
   // Starts the download with given cookies.
   void StartWithCookies(NSArray<NSHTTPCookie*>* cookies);

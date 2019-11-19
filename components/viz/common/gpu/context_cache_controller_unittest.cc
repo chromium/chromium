@@ -176,7 +176,7 @@ TEST(ContextCacheControllerTest, CheckSkiaResourcePurgeAPI) {
     std::vector<uint8_t> image_data(image_info.computeMinByteSize());
     SkPixmap pixmap(image_info, image_data.data(), image_info.minRowBytes());
     auto image = SkImage::MakeRasterCopy(pixmap);
-    auto image_gpu = image->makeTextureImage(gr_context, nullptr);
+    auto image_gpu = image->makeTextureImage(gr_context);
     gr_context->flush();
   }
 

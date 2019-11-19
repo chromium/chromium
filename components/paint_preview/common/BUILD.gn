@@ -1,0 +1,79 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+if (!is_ios) {
+  static_library("common") {
+    sources = [
+      "file_stream.cc",
+      "file_stream.h",
+      "glyph_usage.cc",
+      "glyph_usage.h",
+      "paint_preview_tracker.cc",
+      "paint_preview_tracker.h",
+      "serial_utils.cc",
+      "serial_utils.h",
+      "subset_font.cc",
+      "subset_font.h",
+    ]
+
+    deps = [
+      "//base",
+      "//skia",
+      "//third_party:freetype_harfbuzz",
+      "//ui/gfx/geometry",
+      "//url",
+    ]
+
+    public_deps = [
+      "//components/paint_preview/common/mojom",
+    ]
+  }
+
+  source_set("test_utils") {
+    testonly = true
+
+    sources = [
+      "test_utils.h",
+    ]
+
+    deps = [
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+
+    sources = [
+      "file_stream_unittest.cc",
+      "glyph_usage_unittest.cc",
+      "paint_preview_tracker_unittest.cc",
+      "serial_utils_unittest.cc",
+      "subset_font_unittest.cc",
+    ]
+
+    deps = [
+      ":common",
+      "//base",
+      "//base/test:test_support",
+      "//skia",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party:freetype_harfbuzz",
+      "//ui/gfx/geometry",
+    ]
+  }
+
+  test("paint_preview_common_unit_tests") {
+    deps = [
+      ":unit_tests",
+      "//base",
+      "//base/test:test_support",
+      "//components/test:run_all_unittests",
+    ]
+  }
+}

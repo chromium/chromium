@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.SysUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -31,6 +30,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
+import org.chromium.chrome.browser.ui.styles.ChromeColors;
 import org.chromium.chrome.browser.util.ColorUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -39,6 +39,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.InterstitialPageDelegateAndroid;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.Callable;
@@ -105,11 +106,11 @@ public class BrandColorTest {
         }
     }
 
-    protected void startMainActivityWithURL(String url) throws InterruptedException {
+    protected void startMainActivityWithURL(String url) {
         mActivityTestRule.startMainActivityWithURL(url);
         mToolbar = (ToolbarPhone) mActivityTestRule.getActivity().findViewById(R.id.toolbar);
         mToolbarDataProvider = mToolbar.getToolbarDataProvider();
-        mDefaultColor = ColorUtils.getDefaultThemeColor(
+        mDefaultColor = ChromeColors.getDefaultThemeColor(
                 mActivityTestRule.getActivity().getResources(), /* isIncognito = */ false);
         // TODO(https://crbug.com/871805): Use helper class to determine whether dark status icons
         // are supported.
@@ -123,7 +124,7 @@ public class BrandColorTest {
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @Feature({"Omnibox"})
-    public void testNoBrandColor() throws InterruptedException {
+    public void testNoBrandColor() {
         startMainActivityWithURL(getUrlWithBrandColor(""));
         checkForBrandColor(mDefaultColor);
     }
@@ -135,7 +136,7 @@ public class BrandColorTest {
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @Feature({"Omnibox"})
-    public void testBrandColorNoAlpha() throws InterruptedException {
+    public void testBrandColorNoAlpha() {
         startMainActivityWithURL(getUrlWithBrandColor(BRAND_COLOR_1));
         checkForBrandColor(Color.parseColor(BRAND_COLOR_1));
     }
@@ -147,20 +148,17 @@ public class BrandColorTest {
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @Feature({"Omnibox"})
-    public void testImmediateColorChange() throws InterruptedException {
+    public void testImmediateColorChange() {
         startMainActivityWithURL(getUrlWithBrandColor(BRAND_COLOR_1));
         checkForBrandColor(Color.parseColor(BRAND_COLOR_1));
 
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mActivityTestRule.getActivity().getToolbarManager().onThemeColorChanged(
-                        mDefaultColor, false);
-                // Since the color should change instantly, there is no need to use the criteria
-                // helper.
-                Assert.assertEquals(mToolbarDataProvider.getPrimaryColor(),
-                        mToolbar.getBackgroundDrawable().getColor());
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity().getToolbarManager().onThemeColorChanged(
+                    mDefaultColor, false);
+            // Since the color should change instantly, there is no need to use the criteria
+            // helper.
+            Assert.assertEquals(mToolbarDataProvider.getPrimaryColor(),
+                    mToolbar.getBackgroundDrawable().getColor());
         });
     }
 
@@ -171,16 +169,13 @@ public class BrandColorTest {
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @Feature({"Omnibox"})
-    public void testBrandColorWithLoadStarted() throws InterruptedException {
+    public void testBrandColorWithLoadStarted() {
         startMainActivityWithURL(getUrlWithBrandColor(BRAND_COLOR_1));
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                Tab tab = mActivityTestRule.getActivity().getActivityTab();
-                RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(tab);
-                while (observers.hasNext()) {
-                    observers.next().onLoadStarted(tab, true);
-                }
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            Tab tab = mActivityTestRule.getActivity().getActivityTab();
+            RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(tab);
+            while (observers.hasNext()) {
+                observers.next().onLoadStarted(tab, true);
             }
         });
         checkForBrandColor(Color.parseColor(BRAND_COLOR_1));
@@ -193,7 +188,7 @@ public class BrandColorTest {
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @Feature({"Omnibox"})
-    public void testNavigatingToNewBrandColor() throws InterruptedException {
+    public void testNavigatingToNewBrandColor() {
         startMainActivityWithURL(getUrlWithBrandColor(BRAND_COLOR_1));
         checkForBrandColor(Color.parseColor(BRAND_COLOR_1));
         mActivityTestRule.loadUrl(getUrlWithBrandColor(BRAND_COLOR_2));
@@ -208,26 +203,18 @@ public class BrandColorTest {
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @Feature({"Omnibox"})
-    public void testNavigatingToBrandColorAndBack() throws InterruptedException {
+    public void testNavigatingToBrandColorAndBack() {
         startMainActivityWithURL("about:blank");
         checkForBrandColor(mDefaultColor);
         mActivityTestRule.loadUrl(getUrlWithBrandColor(BRAND_COLOR_1));
         checkForBrandColor(Color.parseColor(BRAND_COLOR_1));
         mActivityTestRule.loadUrl("about:blank");
         checkForBrandColor(mDefaultColor);
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mActivityTestRule.getActivity().onBackPressed();
-            }
-        });
+        PostTask.runOrPostTask(
+                UiThreadTaskTraits.DEFAULT, () -> mActivityTestRule.getActivity().onBackPressed());
         checkForBrandColor(Color.parseColor(BRAND_COLOR_1));
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mActivityTestRule.getActivity().onBackPressed();
-            }
-        });
+        PostTask.runOrPostTask(
+                UiThreadTaskTraits.DEFAULT, () -> mActivityTestRule.getActivity().onBackPressed());
         checkForBrandColor(mDefaultColor);
     }
 
@@ -241,25 +228,22 @@ public class BrandColorTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @DisableInTabbedMode
     @Feature({"Omnibox"})
-    public void testBrandColorInterstitial() throws InterruptedException {
+    public void testBrandColorInterstitial() {
         final String brandColorUrl = getUrlWithBrandColor(BRAND_COLOR_1);
         startMainActivityWithURL(brandColorUrl);
         checkForBrandColor(Color.parseColor(BRAND_COLOR_1));
         final InterstitialPageDelegateAndroid delegate =
                 new InterstitialPageDelegateAndroid(INTERSTITIAL_HTML);
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                delegate.showInterstitialPage(brandColorUrl, mActivityTestRule.getWebContents());
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> delegate.showInterstitialPage(
+                                brandColorUrl, mActivityTestRule.getWebContents()));
         CriteriaHelper.pollUiThread(new Criteria() {
             @Override
             public boolean isSatisfied() {
                 return mActivityTestRule.getActivity().getActivityTab().isShowingInterstitialPage();
             }
         });
-        checkForBrandColor(ColorUtils.getDefaultThemeColor(
+        checkForBrandColor(ChromeColors.getDefaultThemeColor(
                 mActivityTestRule.getActivity().getResources(), false));
     }
 }

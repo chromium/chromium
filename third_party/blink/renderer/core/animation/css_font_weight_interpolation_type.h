@@ -13,7 +13,7 @@ class CSSFontWeightInterpolationType : public CSSInterpolationType {
  public:
   CSSFontWeightInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
-    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyFontWeight);
+    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kFontWeight);
   }
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(

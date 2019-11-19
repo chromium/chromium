@@ -55,8 +55,7 @@ ProcessOutputWatcher::ProcessOutputWatcher(
     const ProcessOutputCallback& callback)
     : read_buffer_size_(0),
       process_output_file_(out_fd),
-      on_read_callback_(callback),
-      weak_factory_(this) {
+      on_read_callback_(callback) {
   CHECK_GE(out_fd, 0);
   // We want to be sure we will be able to add 0 at the end of the input, so -1.
   read_buffer_capacity_ = base::size(read_buffer_) - 1;

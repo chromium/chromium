@@ -12,10 +12,10 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -93,7 +93,7 @@ class CloudExternalDataManagerBaseTest : public testing::Test {
                        const std::string& repsonse_data,
                        net::HttpStatusCode response_code);
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ResourceCache> resource_cache_;
   MockCloudPolicyStore cloud_policy_store_;
@@ -114,9 +114,9 @@ CloudExternalDataManagerBaseTest::CloudExternalDataManagerBaseTest() {
 
 void CloudExternalDataManagerBaseTest::SetUp() {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  resource_cache_.reset(new ResourceCache(temp_dir_.GetPath(),
-                                          message_loop_.task_runner(),
-                                          /* max_cache_size */ base::nullopt));
+  resource_cache_.reset(new ResourceCache(
+      temp_dir_.GetPath(), task_environment_.GetMainThreadTaskRunner(),
+      /* max_cache_size */ base::nullopt));
   SetUpExternalDataManager();
 
   // Set |kStringPolicy| to a string value.
@@ -153,10 +153,12 @@ void CloudExternalDataManagerBaseTest::TearDown() {
 
 void CloudExternalDataManagerBaseTest::SetUpExternalDataManager() {
   external_data_manager_ = std::make_unique<CloudExternalDataManagerBase>(
-      policy_details_.GetCallback(), message_loop_.task_runner());
+      policy_details_.GetCallback(),
+      task_environment_.GetMainThreadTaskRunner());
   external_data_manager_->SetExternalDataStore(
       std::make_unique<CloudExternalDataStore>(
-          kCacheKey, message_loop_.task_runner(), resource_cache_.get()));
+          kCacheKey, task_environment_.GetMainThreadTaskRunner(),
+          resource_cache_.get()));
   external_data_manager_->SetPolicyStore(&cloud_policy_store_);
 }
 
@@ -296,7 +298,8 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadAndCache) {
   base::RunLoop().RunUntilIdle();
   std::string data;
   EXPECT_FALSE(
-      CloudExternalDataStore(kCacheKey, message_loop_.task_runner(),
+      CloudExternalDataStore(kCacheKey,
+                             task_environment_.GetMainThreadTaskRunner(),
                              resource_cache_.get())
           .Load(k10BytePolicy, crypto::SHA256HashString(k10ByteData), 10, &data)
           .empty());
@@ -352,7 +355,8 @@ TEST_F(CloudExternalDataManagerBaseTest, DownloadAndCacheAll) {
   // Verify that the downloaded data is present in the cache.
   external_data_manager_.reset();
   base::RunLoop().RunUntilIdle();
-  CloudExternalDataStore cache(kCacheKey, message_loop_.task_runner(),
+  CloudExternalDataStore cache(kCacheKey,
+                               task_environment_.GetMainThreadTaskRunner(),
                                resource_cache_.get());
   std::string data;
   EXPECT_FALSE(
@@ -479,8 +483,9 @@ TEST_F(CloudExternalDataManagerBaseTest, LoadFromCache) {
   // Store valid external data for |k10BytePolicy| in the cache.
   external_data_manager_.reset();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(CloudExternalDataStore(kCacheKey, message_loop_.task_runner(),
-                                      resource_cache_.get())
+  EXPECT_FALSE(CloudExternalDataStore(
+                   kCacheKey, task_environment_.GetMainThreadTaskRunner(),
+                   resource_cache_.get())
                    .Store(k10BytePolicy, crypto::SHA256HashString(k10ByteData),
                           k10ByteData)
                    .empty());
@@ -506,7 +511,8 @@ TEST_F(CloudExternalDataManagerBaseTest, PruneCacheOnStartup) {
   external_data_manager_.reset();
   base::RunLoop().RunUntilIdle();
   std::unique_ptr<CloudExternalDataStore> cache(new CloudExternalDataStore(
-      kCacheKey, message_loop_.task_runner(), resource_cache_.get()));
+      kCacheKey, task_environment_.GetMainThreadTaskRunner(),
+      resource_cache_.get()));
   // Store valid external data for |k10BytePolicy| in the cache.
   EXPECT_FALSE(cache
                    ->Store(k10BytePolicy, crypto::SHA256HashString(k10ByteData),
@@ -531,8 +537,9 @@ TEST_F(CloudExternalDataManagerBaseTest, PruneCacheOnStartup) {
   external_data_manager_.reset();
   base::RunLoop().RunUntilIdle();
 
-  cache.reset(new CloudExternalDataStore(kCacheKey, message_loop_.task_runner(),
-                                         resource_cache_.get()));
+  cache.reset(new CloudExternalDataStore(
+      kCacheKey, task_environment_.GetMainThreadTaskRunner(),
+      resource_cache_.get()));
   std::string data;
   // Verify that the valid external data for |k10BytePolicy| is still in the
   // cache.
@@ -560,7 +567,8 @@ TEST_F(CloudExternalDataManagerBaseTest, PruneCacheOnChange) {
   external_data_manager_.reset();
   base::RunLoop().RunUntilIdle();
   std::unique_ptr<CloudExternalDataStore> cache(new CloudExternalDataStore(
-      kCacheKey, message_loop_.task_runner(), resource_cache_.get()));
+      kCacheKey, task_environment_.GetMainThreadTaskRunner(),
+      resource_cache_.get()));
   EXPECT_FALSE(cache
                    ->Store(k20BytePolicy, crypto::SHA256HashString(k20ByteData),
                            k20ByteData)
@@ -582,8 +590,9 @@ TEST_F(CloudExternalDataManagerBaseTest, PruneCacheOnChange) {
   // the cache.
   external_data_manager_.reset();
   base::RunLoop().RunUntilIdle();
-  cache.reset(new CloudExternalDataStore(kCacheKey, message_loop_.task_runner(),
-                                         resource_cache_.get()));
+  cache.reset(new CloudExternalDataStore(
+      kCacheKey, task_environment_.GetMainThreadTaskRunner(),
+      resource_cache_.get()));
   std::string data;
   EXPECT_TRUE(cache
                   ->Load(k20BytePolicy, crypto::SHA256HashString(k20ByteData),
@@ -596,7 +605,8 @@ TEST_F(CloudExternalDataManagerBaseTest, CacheCorruption) {
   external_data_manager_.reset();
   base::RunLoop().RunUntilIdle();
   std::unique_ptr<CloudExternalDataStore> cache(new CloudExternalDataStore(
-      kCacheKey, message_loop_.task_runner(), resource_cache_.get()));
+      kCacheKey, task_environment_.GetMainThreadTaskRunner(),
+      resource_cache_.get()));
   // Store external data for |k10BytePolicy| that exceeds the maximal external
   // data size allowed for that policy.
   EXPECT_FALSE(cache
@@ -647,8 +657,9 @@ TEST_F(CloudExternalDataManagerBaseTest, CacheCorruption) {
 
   external_data_manager_.reset();
   base::RunLoop().RunUntilIdle();
-  cache.reset(new CloudExternalDataStore(kCacheKey, message_loop_.task_runner(),
-                                         resource_cache_.get()));
+  cache.reset(new CloudExternalDataStore(
+      kCacheKey, task_environment_.GetMainThreadTaskRunner(),
+      resource_cache_.get()));
   std::string data;
   // Verify that the invalid external data for |k10BytePolicy| has been pruned
   // from the cache. Load() will return |false| in two cases:

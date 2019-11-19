@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.feed;
 
+import androidx.annotation.VisibleForTesting;
+
+import com.google.android.libraries.feed.api.host.storage.CommitResult;
+import com.google.android.libraries.feed.api.host.storage.JournalMutation;
+import com.google.android.libraries.feed.api.host.storage.JournalStorage;
 import com.google.android.libraries.feed.common.Result;
 import com.google.android.libraries.feed.common.functional.Consumer;
-import com.google.android.libraries.feed.host.storage.CommitResult;
-import com.google.android.libraries.feed.host.storage.JournalMutation;
-import com.google.android.libraries.feed.host.storage.JournalStorage;
 
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Arrays;

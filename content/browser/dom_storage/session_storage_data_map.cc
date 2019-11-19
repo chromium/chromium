@@ -7,7 +7,7 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/common/dom_storage/dom_storage_types.h"
+#include "content/browser/dom_storage/dom_storage_types.h"
 
 namespace content {
 
@@ -15,7 +15,7 @@ namespace content {
 scoped_refptr<SessionStorageDataMap> SessionStorageDataMap::CreateFromDisk(
     Listener* listener,
     scoped_refptr<SessionStorageMetadata::MapData> map_data,
-    leveldb::mojom::LevelDBDatabase* database) {
+    storage::AsyncDomStorageDatabase* database) {
   return base::WrapRefCounted(new SessionStorageDataMap(
       listener, std::move(map_data), database, false));
 }
@@ -24,7 +24,7 @@ scoped_refptr<SessionStorageDataMap> SessionStorageDataMap::CreateFromDisk(
 scoped_refptr<SessionStorageDataMap> SessionStorageDataMap::CreateEmpty(
     Listener* listener,
     scoped_refptr<SessionStorageMetadata::MapData> map_data,
-    leveldb::mojom::LevelDBDatabase* database) {
+    storage::AsyncDomStorageDatabase* database) {
   return base::WrapRefCounted(
       new SessionStorageDataMap(listener, std::move(map_data), database, true));
 }
@@ -38,19 +38,14 @@ scoped_refptr<SessionStorageDataMap> SessionStorageDataMap::CreateClone(
       listener, std::move(map_data), std::move(clone_from)));
 }
 
-std::vector<leveldb::mojom::BatchedOperationPtr>
-SessionStorageDataMap::PrepareToCommit() {
-  return std::vector<leveldb::mojom::BatchedOperationPtr>();
-}
-
-void SessionStorageDataMap::DidCommit(leveldb::mojom::DatabaseError error) {
-  listener_->OnCommitResult(error);
+void SessionStorageDataMap::DidCommit(leveldb::Status status) {
+  listener_->OnCommitResult(status);
 }
 
 SessionStorageDataMap::SessionStorageDataMap(
     Listener* listener,
     scoped_refptr<SessionStorageMetadata::MapData> map_data,
-    leveldb::mojom::LevelDBDatabase* database,
+    storage::AsyncDomStorageDatabase* database,
     bool is_empty)
     : listener_(listener),
       map_data_(std::move(map_data)),
@@ -99,7 +94,7 @@ void SessionStorageDataMap::RemoveBindingReference() {
   storage_area()->ScheduleImmediateCommit();
 }
 
-void SessionStorageDataMap::OnMapLoaded(leveldb::mojom::DatabaseError) {
+void SessionStorageDataMap::OnMapLoaded(leveldb::Status) {
   clone_from_data_map_.reset();
 }
 

@@ -29,6 +29,8 @@ jumbo_component("display") {
     "display_switches.cc",
     "display_switches.h",
     "ios/screen_ios.mm",
+    "mac/display_link_mac.cc",
+    "mac/display_link_mac.h",
     "mac/screen_mac.mm",
     "screen.cc",
     "screen.h",
@@ -53,8 +55,6 @@ jumbo_component("display") {
     "win/uwp_text_scale_factor.cc",
     "win/uwp_text_scale_factor.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   defines = [ "DISPLAY_IMPLEMENTATION" ]
 
@@ -85,6 +85,7 @@ jumbo_component("display") {
     libs = [
       "AppKit.framework",
       "CoreGraphics.framework",
+      "QuartzCore.framework",
     ]
   }
 }
@@ -163,11 +164,11 @@ test("display_unittests") {
     "display_layout_unittest.cc",
     "display_list_unittest.cc",
     "display_unittest.cc",
+    "fake/fake_display_snapshot_unittest.cc",
     "manager/display_manager_utilities_unittest.cc",
-    "manager/fake_display_snapshot_unittest.cc",
     "manager/json_converter_unittest.cc",
     "manager/managed_display_info_unittest.cc",
-    "mojo/display_struct_traits_unittest.cc",
+    "mojom/display_mojom_traits_unittest.cc",
     "screen_unittest.cc",
     "unified_desktop_utils_unittests.cc",
     "util/display_util_unittest.cc",
@@ -180,6 +181,7 @@ test("display_unittests") {
     sources += [
       "manager/apply_content_protection_task_unittest.cc",
       "manager/configure_displays_task_unittest.cc",
+      "manager/content_protection_manager_unittest.cc",
       "manager/display_change_observer_unittest.cc",
       "manager/display_configurator_unittest.cc",
       "manager/display_utils_unittest.cc",
@@ -200,8 +202,9 @@ test("display_unittests") {
     "//mojo/core/test:run_all_unittests",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/display/fake",
     "//ui/display/manager",
-    "//ui/display/mojo:interfaces",
+    "//ui/display/mojom:mojom",
     "//ui/display/types",
     "//ui/display/util",
     "//ui/events:test_support",
@@ -217,6 +220,6 @@ test("display_unittests") {
   }
 
   if (is_chromeos) {
-    deps += [ "//chromeos" ]
+    deps += [ "//chromeos/constants" ]
   }
 }

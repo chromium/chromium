@@ -442,7 +442,7 @@ TEST(ParseAv1CodecId, VerifyOptionalColorProperties) {
 }
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 
-#if BUILDFLAG(ENABLE_HEVC_DEMUXING)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 TEST(ParseHEVCCodecIdTest, InvalidHEVCCodecIds) {
   VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
   uint8_t level_idc = 0;
@@ -582,7 +582,7 @@ TEST(ParseHEVCCodecIdTest, InvalidHEVCCodecIds) {
 }
 #endif
 
-#if BUILDFLAG(ENABLE_DOLBY_VISION_DEMUXING)
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 TEST(ParseDolbyVisionCodecIdTest, InvalidDolbyVisionCodecIds) {
   VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
   uint8_t level_id = 0;
@@ -601,7 +601,7 @@ TEST(ParseDolbyVisionCodecIdTest, InvalidDolbyVisionCodecIds) {
   EXPECT_FALSE(ParseDolbyVisionCodecId("dvav.07.07", &profile, &level_id));
   EXPECT_FALSE(ParseDolbyVisionCodecId("dva1.07.07", &profile, &level_id));
 
-#if BUILDFLAG(ENABLE_HEVC_DEMUXING)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   // Codec dvhe/dvh1 should only contain profile 4, 5, and 7.
   EXPECT_TRUE(ParseDolbyVisionCodecId("dvhe.04.07", &profile, &level_id));
   EXPECT_EQ(profile, DOLBYVISION_PROFILE4);

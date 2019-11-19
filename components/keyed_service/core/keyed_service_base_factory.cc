@@ -11,8 +11,9 @@
 #include "components/prefs/pref_service.h"
 
 KeyedServiceBaseFactory::KeyedServiceBaseFactory(const char* service_name,
-                                                 DependencyManager* manager)
-    : dependency_manager_(manager), service_name_(service_name) {
+                                                 DependencyManager* manager,
+                                                 Type type)
+    : dependency_manager_(manager), service_name_(service_name), type_(type) {
   dependency_manager_->AddComponent(this);
 }
 
@@ -22,6 +23,13 @@ KeyedServiceBaseFactory::~KeyedServiceBaseFactory() {
 }
 
 void KeyedServiceBaseFactory::DependsOn(KeyedServiceBaseFactory* rhs) {
+  CHECK_NE(rhs, this)
+      << "A KeyedServiceBaseFactory instance must not depend on itself";
+
+  // Each type can only depend on other services that are of the same type.
+  if (rhs->type() != type_)
+    return;
+
   dependency_manager_->AddEdge(rhs, this);
 }
 

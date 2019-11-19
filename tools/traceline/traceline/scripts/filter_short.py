@@ -10,20 +10,22 @@ This helps trim down the JSON data to only the most interesting / time critical
 events.
 """
 
+from __future__ import print_function
+
 import sys
 import re
 
 
 def parseEvents(z):
-  print 'parseEvents(['
+  print('parseEvents([')
   for e in z:
-    if e.has_key('ms') and e.has_key('done'):
+    if 'ms' in e and 'done' in e:
       dur = e['done'] - e['ms']
       if dur < 0.2:
         continue
     # Ugly regex to remove the L suffix on large python numbers.
-    print '%s,' % re.sub('([0-9])L\\b', '\\1', str(e))
-  print '])'
+    print('%s,' % re.sub('([0-9])L\\b', '\\1', str(e)))
+  print('])')
 
 
 def main():

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_BUTTON_H_
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -33,6 +32,8 @@ class ReloadButton : public ToolbarButton,
   static const char kViewClassName[];
 
   explicit ReloadButton(CommandUpdater* command_updater);
+  ReloadButton(const ReloadButton&) = delete;
+  ReloadButton& operator=(const ReloadButton&) = delete;
   ~ReloadButton() override;
 
   // Ask for a specified button state.  If |force| is true this will be applied
@@ -42,12 +43,11 @@ class ReloadButton : public ToolbarButton,
   // Enable reload drop-down menu.
   void set_menu_enabled(bool enable) { menu_enabled_ = enable; }
 
-  void LoadImages();
+  void SetColors(SkColor normal_color, SkColor disabled_color);
 
   // ToolbarButton:
   void OnMouseExited(const ui::MouseEvent& event) override;
-  bool GetTooltipText(const gfx::Point& p,
-                      base::string16* tooltip) const override;
+  base::string16 GetTooltipText(const gfx::Point& p) const override;
   const char* GetClassName() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool ShouldShowMenu() override;
@@ -96,6 +96,9 @@ class ReloadButton : public ToolbarButton,
   base::TimeDelta double_click_timer_delay_;
   base::TimeDelta mode_switch_timer_delay_;
 
+  SkColor normal_color_;
+  SkColor disabled_color_;
+
   // Indicates if reload menu is enabled.
   bool menu_enabled_ = false;
 
@@ -105,8 +108,6 @@ class ReloadButton : public ToolbarButton,
   // Increments when we would tell the browser to "reload", so
   // test code can tell whether we did so (as there may be no |browser_|).
   int testing_reload_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ReloadButton);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_BUTTON_H_

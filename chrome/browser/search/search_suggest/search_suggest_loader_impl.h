@@ -13,12 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/search/search_suggest/search_suggest_loader.h"
-
-class GoogleURLTracker;
-
-namespace base {
-class Value;
-}
+#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -31,7 +26,6 @@ class SearchSuggestLoaderImpl : public SearchSuggestLoader {
  public:
   SearchSuggestLoaderImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      GoogleURLTracker* google_url_tracker,
       const std::string& application_locale);
   ~SearchSuggestLoaderImpl() override;
 
@@ -48,19 +42,17 @@ class SearchSuggestLoaderImpl : public SearchSuggestLoader {
   void LoadDone(const network::SimpleURLLoader* simple_loader,
                 std::unique_ptr<std::string> response_body);
 
-  void JsonParsed(std::unique_ptr<base::Value> value);
-  void JsonParseFailed(const std::string& message);
+  void JsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
   void Respond(Status status, const base::Optional<SearchSuggestData>& data);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  GoogleURLTracker* google_url_tracker_;
   const std::string application_locale_;
 
   std::vector<SearchSuggestionsCallback> callbacks_;
   std::unique_ptr<AuthenticatedURLLoader> pending_request_;
 
-  base::WeakPtrFactory<SearchSuggestLoaderImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<SearchSuggestLoaderImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SearchSuggestLoaderImpl);
 };

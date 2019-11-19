@@ -43,7 +43,7 @@ class MEDIA_EXPORT VideoThumbnailDecoder {
   void OnEosBufferDecoded(DecodeStatus status);
 
   // Called when the output frame is generated.
-  void OnVideoFrameDecoded(const scoped_refptr<VideoFrame>& frame);
+  void OnVideoFrameDecoded(scoped_refptr<VideoFrame> frame);
 
   void NotifyComplete(scoped_refptr<VideoFrame> frame);
 
@@ -55,7 +55,7 @@ class MEDIA_EXPORT VideoThumbnailDecoder {
   std::vector<uint8_t> encoded_data_;
 
   VideoFrameCallback video_frame_callback_;
-  base::WeakPtrFactory<VideoThumbnailDecoder> weak_factory_;
+  base::WeakPtrFactory<VideoThumbnailDecoder> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoThumbnailDecoder);
 };

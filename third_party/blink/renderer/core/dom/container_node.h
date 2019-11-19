@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/css/style_recalc.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/html/collection_type.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -149,16 +149,14 @@ class CORE_EXPORT ContainerNode : public Node {
   void CloneChildNodesFrom(const ContainerNode&);
 
   void AttachLayoutTree(AttachContext&) override;
-  void DetachLayoutTree(const AttachContext& = AttachContext()) override;
-  LayoutRect BoundingBox() const final;
+  void DetachLayoutTree(bool performing_reattach = false) override;
+  PhysicalRect BoundingBox() const final;
   void SetFocused(bool, WebFocusType) override;
   void SetHasFocusWithinUpToAncestor(bool, Node* ancestor);
   void FocusStateChanged();
   void FocusVisibleStateChanged();
   void FocusWithinStateChanged();
-  void SetActive(bool = true) override;
   void SetDragged(bool) override;
-  void SetHovered(bool = true) override;
   void RemovedFrom(ContainerNode& insertion_point) override;
 
   bool ChildrenOrSiblingsAffectedByFocus() const {
@@ -293,7 +291,6 @@ class CORE_EXPORT ContainerNode : public Node {
   void RecalcDescendantStyles(const StyleRecalcChange);
   void RebuildChildrenLayoutTrees(WhitespaceAttacher&);
   void RebuildLayoutTreeForChild(Node* child, WhitespaceAttacher&);
-  void RebuildNonDistributedChildren();
 
   // -----------------------------------------------------------------------------
   // Notification of document structure changes (see core/dom/node.h for more
@@ -456,11 +453,14 @@ class CORE_EXPORT ContainerNode : public Node {
                                                      ExceptionState&) const;
   inline bool IsChildTypeAllowed(const Node& child) const;
 
-  TraceWrapperMember<Node> first_child_;
-  TraceWrapperMember<Node> last_child_;
+  Member<Node> first_child_;
+  Member<Node> last_child_;
 };
 
-DEFINE_NODE_TYPE_CASTS(ContainerNode, IsContainerNode());
+template <>
+struct DowncastTraits<ContainerNode> {
+  static bool AllowFrom(const Node& node) { return node.IsContainerNode(); }
+};
 
 inline bool ContainerNode::HasChildCount(unsigned count) const {
   Node* child = first_child_;
@@ -483,21 +483,24 @@ inline bool ContainerNode::NeedsAdjacentStyleRecalc() const {
 }
 
 inline unsigned Node::CountChildren() const {
-  if (!IsContainerNode())
+  auto* this_node = DynamicTo<ContainerNode>(this);
+  if (!this_node)
     return 0;
-  return ToContainerNode(this)->CountChildren();
+  return this_node->CountChildren();
 }
 
 inline Node* Node::firstChild() const {
-  if (!IsContainerNode())
+  auto* this_node = DynamicTo<ContainerNode>(this);
+  if (!this_node)
     return nullptr;
-  return ToContainerNode(this)->firstChild();
+  return this_node->firstChild();
 }
 
 inline Node* Node::lastChild() const {
-  if (!IsContainerNode())
+  auto* this_node = DynamicTo<ContainerNode>(this);
+  if (!this_node)
     return nullptr;
-  return ToContainerNode(this)->lastChild();
+  return this_node->lastChild();
 }
 
 inline ContainerNode* Node::ParentElementOrShadowRoot() const {

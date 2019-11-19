@@ -5,17 +5,17 @@
 #ifndef CHROME_BROWSER_OFFLINE_ITEMS_COLLECTION_OFFLINE_CONTENT_AGGREGATOR_FACTORY_H_
 #define CHROME_BROWSER_OFFLINE_ITEMS_COLLECTION_OFFLINE_CONTENT_AGGREGATOR_FACTORY_H_
 
+#include <memory>
+
 #include "base/macros.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/keyed_service/core/simple_keyed_service_factory.h"
+
+class SimpleFactoryKey;
 
 namespace base {
 template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
-
-namespace content {
-class BrowserContext;
-}  // namespace content
 
 namespace offline_items_collection {
 class OfflineContentAggregator;
@@ -23,17 +23,16 @@ class OfflineContentAggregator;
 
 // This class is the main access point for an OfflineContentAggregator.  It is
 // responsible for building the OfflineContentAggregator and associating it with
-// a particular content::BrowserContext.
-class OfflineContentAggregatorFactory
-    : public BrowserContextKeyedServiceFactory {
+// a particular SimpleFactoryKey.
+class OfflineContentAggregatorFactory : public SimpleKeyedServiceFactory {
  public:
   // Returns a singleton instance of an OfflineContentAggregatorFactory.
   static OfflineContentAggregatorFactory* GetInstance();
 
-  // Returns the OfflineContentAggregator associated with |context| or creates
-  // and associates one if it doesn't exist.
-  static offline_items_collection::OfflineContentAggregator*
-  GetForBrowserContext(content::BrowserContext* context);
+  // Returns the OfflineContentAggregator associated with |key| or creates and
+  // associates one if it doesn't exist.
+  static offline_items_collection::OfflineContentAggregator* GetForKey(
+      SimpleFactoryKey* key);
 
  private:
   friend struct base::DefaultSingletonTraits<OfflineContentAggregatorFactory>;
@@ -41,11 +40,10 @@ class OfflineContentAggregatorFactory
   OfflineContentAggregatorFactory();
   ~OfflineContentAggregatorFactory() override;
 
-  // BrowserContextKeyedServiceFactory implementation.
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
+  // SimpleKeyedServiceFactory implementation.
+  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      SimpleFactoryKey* key) const override;
+  SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
 
   DISALLOW_COPY_AND_ASSIGN(OfflineContentAggregatorFactory);
 };

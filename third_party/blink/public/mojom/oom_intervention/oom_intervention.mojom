@@ -48,7 +48,7 @@ interface OomIntervention {
   // host->OnHighMemoryUsage(). The renderer also triggers OOM intervention when
   // |renderer_pause_enabled|, |navigate_ads_enabled| or
   // |purge_v8_memory_enabled| is true.
-  StartDetection(OomInterventionHost host,
+  StartDetection(pending_remote<OomInterventionHost> host,
                  DetectionArgs detection_args,
                  bool renderer_pause_enabled,
                  bool navigate_ads_enabled,

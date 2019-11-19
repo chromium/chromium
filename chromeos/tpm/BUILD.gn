@@ -11,9 +11,9 @@ component("tpm") {
   deps = [
     "//base",
     "//chromeos/cryptohome",
-    "//chromeos/dbus",
-    "//chromeos/dbus:cryptohome_proto",
     "//chromeos/dbus/constants",
+    "//chromeos/dbus/cryptohome",
+    "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//chromeos/login/login_state",
     "//components/account_id",
     "//components/policy/core/common:common_constants",
@@ -33,15 +33,29 @@ component("tpm") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  deps = [
+    ":tpm",
+    "//base",
+    "//components/policy/core/common:common_constants",
+  ]
+  sources = [
+    "stub_install_attributes.cc",
+    "stub_install_attributes.h",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   deps = [
     ":tpm",
     "//base/test:test_support",
     "//chromeos/cryptohome:test_support",
-    "//chromeos/dbus:cryptohome_proto",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/constants",
+    "//chromeos/dbus/cryptohome",
+    "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//components/policy/proto",
     "//google_apis",
     "//testing/gtest",

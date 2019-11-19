@@ -1,0 +1,143 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Include test fixture.
+GEN_INCLUDE(['//ui/accessibility/extensions/chromevoxclassic/testing/chromevox_unittest_base.js']);
+
+/**
+ * Test fixture.
+ * @constructor
+ * @extends {ChromeVoxUnitTestBase}
+ */
+function ChromeVoxPageSelectionUnitTest() {}
+
+ChromeVoxPageSelectionUnitTest.prototype = {
+  __proto__: ChromeVoxUnitTestBase.prototype,
+
+  /** @override */
+  closureModuleDeps: [
+    'cvox.CursorSelection',
+    'cvox.PageSelection',
+  ],
+
+  /** @override */
+  setUp: function() {
+    this.loadDoc(function() {/*!
+      <p id='p1'>The quick</p>
+      <a id='a1' href='#'>brown fox</a>
+      <h1 id='h1'>jumped over</h1>
+    */});
+    this.pSel = cvox.CursorSelection.fromNode($('p1'));
+    this.pSel.start.index = 0;
+    this.pSel.end.index = 1;
+    this.aSel = cvox.CursorSelection.fromNode($('a1'));
+    this.aSel.start.index = 0;
+    this.aSel.end.index = 1;
+    this.hSel = cvox.CursorSelection.fromNode($('h1'));
+    this.hSel.start.index = 0;
+    this.hSel.end.index = 1;
+  },
+
+  /**
+   * Asserts a selection.
+   * @param {string} str The expected contents of selection.
+   * @private
+   */
+  assertSelection_: function(str) {
+    assertEquals(str, window.getSelection().toString());
+  }
+};
+
+TEST_F('ChromeVoxPageSelectionUnitTest', 'BasicExtend', function() {
+  var pageSel = new cvox.PageSelection(this.pSel);
+  pageSel.extend(this.hSel);
+  this.assertSelection_('The quick\n\nbrown fox\njumped over');
+  this.hSel.end.node = this.hSel.end.node.firstChild;
+  this.hSel.end.index = 6;
+  pageSel.extend(this.hSel);
+  this.assertSelection_('The quick\n\nbrown fox\njumped');
+});
+
+
+/** Tests a reverse extension. */
+TEST_F('ChromeVoxPageSelectionUnitTest', 'ReverseExtend', function() {
+  var pageSel = new cvox.PageSelection(this.pSel);
+  this.assertSelection_('The quick');
+  pageSel.extend(this.hSel);
+  this.assertSelection_('The quick\n\nbrown fox\njumped over');
+  pageSel.extend(this.aSel.setReversed(true));
+  this.assertSelection_('The quick\n\nbrown fox');
+  this.pSel.setReversed(true);
+  pageSel.extend(this.pSel);
+  this.assertSelection_('The quick');
+  this.pSel.start.node = this.pSel.start.node.firstChild;
+  this.pSel.start.index = 3;
+  pageSel.extend(this.pSel);
+  this.assertSelection_('The');
+});
+
+
+/** Tests all possible configurations of PageSelection's and extending
+ * CursorSelection's.
+ */
+TEST_F('ChromeVoxPageSelectionUnitTest', 'ExtendDirections', function() {
+  // A normal page selection, with a normal extension.
+  var pageSel = new cvox.PageSelection(this.aSel);
+  assertTrue(pageSel.extend(this.hSel));
+
+  // A normal page selection, with a reversed extension.
+  assertTrue(pageSel.extend(this.hSel.setReversed(true)));
+
+  // A reversed page selection, with a normal cursor selection.
+  var rPageSel = new cvox.PageSelection(this.aSel.setReversed(true));
+  assertTrue(rPageSel.extend(this.pSel));
+
+  // A reversed page selection, with a reversed extension.
+  assertTrue(rPageSel.extend(this.pSel.setReversed(true)));
+});
+
+
+/** Tests degenerate extensions. */
+TEST_F('ChromeVoxPageSelectionUnitTest', 'DegenerateExtensions', function() {
+  var pageSel = new cvox.PageSelection(this.aSel);
+
+  // A normal page selection, with a normal extension not in document order.
+  assertFalse(pageSel.extend(this.pSel));
+
+  // And, this causes a reset of page selection.
+  assertTrue(pageSel.sel_.equals(this.pSel));
+
+  // Reinitialize.
+  pageSel = new cvox.PageSelection(this.aSel.setReversed(false));
+
+  // A normal page selection, with a reversed extension not in document order.
+  assertFalse(pageSel.extend(this.pSel.setReversed(true)));
+
+  // And, again, it causes reset of page selection.
+assertTrue(pageSel.sel_.equals(this.pSel));
+
+  // Reverse page selections.
+  var rPageSel = new cvox.PageSelection(this.aSel.setReversed(true));
+
+  // A reversed page selection, with a normal extension not in document order.
+  assertFalse(rPageSel.extend(this.hSel));
+  assertTrue(rPageSel.sel_.equals(this.hSel));
+
+  // A reversed page selection, with a reversed extension not in document order.
+  rPageSel = new cvox.PageSelection(this.aSel.setReversed(true));
+  assertFalse(rPageSel.extend(this.hSel.setReversed(true)));
+  assertTrue(rPageSel.sel_.equals(this.hSel));
+
+  // And, finally, try extending to oneself in either direction.
+  pageSel = new cvox.PageSelection(this.aSel.setReversed(false));
+
+  // A normal page selection, with an extension to itself.
+  assertFalse(pageSel.extend(this.aSel.setReversed(false)));
+  assertFalse(pageSel.extend(this.aSel.setReversed(true)));
+
+  // A reversed page selection, with an extension to itself.
+  var rPageSel = new cvox.PageSelection(this.aSel.setReversed(true));
+  assertFalse(rPageSel.extend(this.aSel.setReversed(true)));
+  assertFalse(rPageSel.extend(this.aSel.setReversed(false)));
+});

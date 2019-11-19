@@ -85,9 +85,9 @@
     <div class='container' id='container'>
       <header class='header'>
         <div id='nav'>
-            <a href='../'>Samples</a>
-            <a href='./' class='selected'>Proposals</a>
-            <a href='../tests/'>Test Pages</a>
+            <a href='../index.html'>Samples</a>
+            <a href='./index.html' class='selected'>Proposals</a>
+            <a href='../tests/index.html'>Test Pages</a>
         </div>
 
         <h1><a href='' class='wordmark'><span>WebXR</span></a></h1>
@@ -109,6 +109,12 @@
             { title: 'AR Hit Test', category: 'Phone AR',
               path: 'phone-ar-hit-test.html',
               description: 'Demonstrates using the Hit Test API to place virtual objects on real-world surfaces.' },
+
+            { title: 'AR Plane Detection & Anchors', category: 'Phone AR',
+              path: 'phone-ar-plane-detection-anchors.html',
+              description: 'Demonstrates using the Plane Detection feature, including implementation of ' +
+                           'synchronous hit test in JavaScript leveraging obtained plane data and ' +
+                           'anchors API to position objects.' },
           ];
 
           let mainElement = document.getElementById("main");

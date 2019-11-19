@@ -7,19 +7,28 @@
 
 #include <memory>
 
+#include "device/vr/test/locked_vr_test_hook.h"
 #include "device/vr/vr_export.h"
 
 namespace device {
 
+class VRTestHook;
+
 class DEVICE_VR_EXPORT MixedRealityDeviceStatics {
  public:
   static std::unique_ptr<MixedRealityDeviceStatics> CreateInstance();
+  static void SetTestHook(VRTestHook* hook);
+  static LockedVRTestHook GetLockedTestHook();
+  static bool ShouldUseMocks();
 
   virtual ~MixedRealityDeviceStatics();
 
   // TODO(billorr): Consider notifications instead of polling.
   virtual bool IsHardwareAvailable() = 0;
   virtual bool IsApiAvailable() = 0;
+
+ private:
+  static VRTestHook* test_hook_;
 };
 
 }  // namespace device

@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/loader/base_fetch_context.h"
 
-#include "services/network/public/mojom/request_context_frame_type.mojom-blink.h"
+#include "services/network/public/cpp/request_mode.h"
+#include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -20,169 +21,10 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loading_log.h"
-#include "third_party/blink/renderer/platform/weborigin/origin_access_entry.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
-
-namespace {
-
-// This function maps from Blink's internal "request context" concept to Fetch's
-// notion of a request's "destination":
-// https://fetch.spec.whatwg.org/#concept-request-destination.
-const char* GetDestinationFromContext(mojom::RequestContextType context) {
-  switch (context) {
-    case mojom::RequestContextType::UNSPECIFIED:
-    case mojom::RequestContextType::BEACON:
-    case mojom::RequestContextType::DOWNLOAD:
-    case mojom::RequestContextType::EVENT_SOURCE:
-    case mojom::RequestContextType::FETCH:
-    case mojom::RequestContextType::PING:
-    case mojom::RequestContextType::XML_HTTP_REQUEST:
-    case mojom::RequestContextType::SUBRESOURCE:
-    case mojom::RequestContextType::PREFETCH:
-      return "";
-    case mojom::RequestContextType::CSP_REPORT:
-      return "report";
-    case mojom::RequestContextType::AUDIO:
-      return "audio";
-    case mojom::RequestContextType::EMBED:
-      return "embed";
-    case mojom::RequestContextType::FONT:
-      return "font";
-    case mojom::RequestContextType::FRAME:
-    case mojom::RequestContextType::HYPERLINK:
-    case mojom::RequestContextType::IFRAME:
-    case mojom::RequestContextType::LOCATION:
-    case mojom::RequestContextType::FORM:
-      return "document";
-    case mojom::RequestContextType::IMAGE:
-    case mojom::RequestContextType::FAVICON:
-    case mojom::RequestContextType::IMAGE_SET:
-      return "image";
-    case mojom::RequestContextType::MANIFEST:
-      return "manifest";
-    case mojom::RequestContextType::OBJECT:
-      return "object";
-    case mojom::RequestContextType::SCRIPT:
-      return "script";
-    case mojom::RequestContextType::SERVICE_WORKER:
-      return "serviceworker";
-    case mojom::RequestContextType::SHARED_WORKER:
-      return "sharedworker";
-    case mojom::RequestContextType::STYLE:
-      return "style";
-    case mojom::RequestContextType::TRACK:
-      return "track";
-    case mojom::RequestContextType::VIDEO:
-      return "video";
-    case mojom::RequestContextType::WORKER:
-      return "worker";
-    case mojom::RequestContextType::XSLT:
-      return "xslt";
-    case mojom::RequestContextType::IMPORT:
-    case mojom::RequestContextType::INTERNAL:
-    case mojom::RequestContextType::PLUGIN:
-      return "unknown";
-  }
-  NOTREACHED();
-  return "";
-}
-
-// This maps the network::mojom::FetchRequestMode to a string that can be used
-// in a `Sec-Fetch-Mode` header.
-const char* FetchRequestModeToString(network::mojom::FetchRequestMode mode) {
-  switch (mode) {
-    case network::mojom::FetchRequestMode::kSameOrigin:
-      return "same-origin";
-    case network::mojom::FetchRequestMode::kNoCors:
-      return "no-cors";
-    case network::mojom::FetchRequestMode::kCors:
-    case network::mojom::FetchRequestMode::kCorsWithForcedPreflight:
-      return "cors";
-    case network::mojom::FetchRequestMode::kNavigate:
-      return "navigate";
-  }
-  NOTREACHED();
-  return "";
-}
-
-}  // namespace
-
-void BaseFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
-  const FetchClientSettingsObject& fetch_client_settings_object =
-      GetResourceFetcherProperties().GetFetchClientSettingsObject();
-  // TODO(domfarolino): we can probably *just set* the HTTP `Referer` here
-  // no matter what now.
-  if (!request.DidSetHTTPReferrer()) {
-    String referrer_to_use = request.ReferrerString();
-    network::mojom::ReferrerPolicy referrer_policy_to_use =
-        request.GetReferrerPolicy();
-
-    if (referrer_to_use == Referrer::ClientReferrerString())
-      referrer_to_use = fetch_client_settings_object.GetOutgoingReferrer();
-
-    if (referrer_policy_to_use == network::mojom::ReferrerPolicy::kDefault) {
-      referrer_policy_to_use = fetch_client_settings_object.GetReferrerPolicy();
-    }
-
-    // TODO(domfarolino): Stop storing ResourceRequest's referrer as a header
-    // and store it elsewhere. See https://crbug.com/850813.
-    request.SetHTTPReferrer(SecurityPolicy::GenerateReferrer(
-        referrer_policy_to_use, request.Url(), referrer_to_use));
-  } else {
-    CHECK_EQ(
-        SecurityPolicy::GenerateReferrer(request.GetReferrerPolicy(),
-                                         request.Url(), request.HttpReferrer())
-            .referrer,
-        request.HttpReferrer());
-  }
-
-  auto address_space = fetch_client_settings_object.GetAddressSpace();
-  if (address_space)
-    request.SetExternalRequestStateFromRequestorAddressSpace(*address_space);
-
-  scoped_refptr<SecurityOrigin> url_origin =
-      SecurityOrigin::Create(request.Url());
-  if (blink::RuntimeEnabledFeatures::SecMetadataEnabled() &&
-      url_origin->IsPotentiallyTrustworthy()) {
-    const char* destination_value =
-        GetDestinationFromContext(request.GetRequestContext());
-
-    // If the request's destination is the empty string (e.g. `fetch()`), then
-    // we'll use the identifier "empty" instead.
-    if (strlen(destination_value) == 0)
-      destination_value = "empty";
-
-    // We'll handle adding the header to navigations outside of Blink.
-    if (strncmp(destination_value, "document", 8) != 0 &&
-        request.GetRequestContext() != mojom::RequestContextType::INTERNAL) {
-      const char* site_value = "cross-site";
-      if (url_origin->IsSameSchemeHostPort(
-              fetch_client_settings_object.GetSecurityOrigin())) {
-        site_value = "same-origin";
-      } else {
-        OriginAccessEntry access_entry(
-            request.Url().Protocol(), request.Url().Host(),
-            network::mojom::CorsOriginAccessMatchMode::
-                kAllowRegisterableDomains);
-        if (access_entry.MatchesOrigin(
-                *fetch_client_settings_object.GetSecurityOrigin()) ==
-            network::cors::OriginAccessEntry::kMatchesOrigin) {
-          site_value = "same-site";
-        }
-      }
-
-      request.AddHTTPHeaderField("Sec-Fetch-Dest", destination_value);
-      request.AddHTTPHeaderField(
-          "Sec-Fetch-Mode",
-          FetchRequestModeToString(request.GetFetchRequestMode()));
-      request.AddHTTPHeaderField("Sec-Fetch-Site", site_value);
-      request.AddHTTPHeaderField("Sec-Fetch-User", "?F");
-    }
-  }
-}
 
 base::Optional<ResourceRequestBlockedReason> BaseFetchContext::CanRequest(
     ResourceType type,
@@ -230,8 +72,9 @@ void BaseFetchContext::PrintAccessDeniedMessage(const KURL& url) const {
               ". Domains, protocols and ports must match.\n";
   }
 
-  AddConsoleMessage(ConsoleMessage::Create(
-      kSecurityMessageSource, mojom::ConsoleMessageLevel::kError, message));
+  AddConsoleMessage(
+      ConsoleMessage::Create(mojom::ConsoleMessageSource::kSecurity,
+                             mojom::ConsoleMessageLevel::kError, message));
 }
 
 base::Optional<ResourceRequestBlockedReason>
@@ -290,16 +133,17 @@ BaseFetchContext::CanRequestInternal(
   scoped_refptr<const SecurityOrigin> origin =
       resource_request.RequestorOrigin();
 
-  const auto request_mode = resource_request.GetFetchRequestMode();
+  const auto request_mode = resource_request.GetMode();
   // On navigation cases, Context().GetSecurityOrigin() may return nullptr, so
   // the request's origin may be nullptr.
   // TODO(yhirano): Figure out if it's actually fine.
-  DCHECK(request_mode == network::mojom::FetchRequestMode::kNavigate || origin);
-  if (request_mode != network::mojom::FetchRequestMode::kNavigate &&
-      !origin->CanDisplay(url)) {
+  DCHECK(network::IsNavigationRequestMode(request_mode) || origin);
+  if (!network::IsNavigationRequestMode(request_mode) &&
+      !resource_request.CanDisplay(url)) {
     if (reporting_policy == SecurityViolationReportingPolicy::kReport) {
       AddConsoleMessage(ConsoleMessage::Create(
-          kJSMessageSource, mojom::ConsoleMessageLevel::kError,
+          mojom::ConsoleMessageSource::kJavaScript,
+          mojom::ConsoleMessageLevel::kError,
           "Not allowed to load local resource: " + url.GetString()));
     }
     RESOURCE_LOADING_DVLOG(1) << "ResourceFetcher::requestResource URL was not "
@@ -307,8 +151,10 @@ BaseFetchContext::CanRequestInternal(
     return ResourceRequestBlockedReason::kOther;
   }
 
-  if (request_mode == network::mojom::FetchRequestMode::kSameOrigin &&
-      cors::CalculateCorsFlag(url, origin.get(), request_mode)) {
+  if (request_mode == network::mojom::RequestMode::kSameOrigin &&
+      cors::CalculateCorsFlag(url, origin.get(),
+                              resource_request.IsolatedWorldOrigin().get(),
+                              request_mode)) {
     PrintAccessDeniedMessage(url);
     return ResourceRequestBlockedReason::kOrigin;
   }
@@ -348,37 +194,29 @@ BaseFetchContext::CanRequestInternal(
   if (IsSVGImageChromeClient() && !url.ProtocolIsData())
     return ResourceRequestBlockedReason::kOrigin;
 
-  network::mojom::RequestContextFrameType frame_type =
-      resource_request.GetFrameType();
-
   // Measure the number of legacy URL schemes ('ftp://') and the number of
   // embedded-credential ('http://user:password@...') resources embedded as
   // subresources.
-  if (frame_type != network::mojom::RequestContextFrameType::kTopLevel) {
-    bool is_subresource =
-        frame_type == network::mojom::RequestContextFrameType::kNone;
-    const FetchClientSettingsObject& fetch_client_settings_object =
-        GetResourceFetcherProperties().GetFetchClientSettingsObject();
-    const SecurityOrigin* embedding_origin =
-        is_subresource ? fetch_client_settings_object.GetSecurityOrigin()
-                       : GetParentSecurityOrigin();
-    DCHECK(embedding_origin);
-    if (SchemeRegistry::ShouldTreatURLSchemeAsLegacy(url.Protocol()) &&
-        !SchemeRegistry::ShouldTreatURLSchemeAsLegacy(
-            embedding_origin->Protocol())) {
-      CountDeprecation(WebFeature::kLegacyProtocolEmbeddedAsSubresource);
+  const FetchClientSettingsObject& fetch_client_settings_object =
+      GetResourceFetcherProperties().GetFetchClientSettingsObject();
+  const SecurityOrigin* embedding_origin =
+      fetch_client_settings_object.GetSecurityOrigin();
+  DCHECK(embedding_origin);
+  if (SchemeRegistry::ShouldTreatURLSchemeAsLegacy(url.Protocol()) &&
+      !SchemeRegistry::ShouldTreatURLSchemeAsLegacy(
+          embedding_origin->Protocol())) {
+    CountDeprecation(WebFeature::kLegacyProtocolEmbeddedAsSubresource);
 
-      return ResourceRequestBlockedReason::kOrigin;
-    }
-
-    if (ShouldBlockFetchAsCredentialedSubresource(resource_request, url))
-      return ResourceRequestBlockedReason::kOrigin;
+    return ResourceRequestBlockedReason::kOrigin;
   }
+
+  if (ShouldBlockFetchAsCredentialedSubresource(resource_request, url))
+    return ResourceRequestBlockedReason::kOrigin;
 
   // Check for mixed content. We do this second-to-last so that when folks block
   // mixed content via CSP, they don't get a mixed content warning, but a CSP
   // warning instead.
-  if (ShouldBlockFetchByMixedContentCheck(request_context, frame_type,
+  if (ShouldBlockFetchByMixedContentCheck(request_context,
                                           resource_request.GetRedirectStatus(),
                                           url, reporting_policy))
     return ResourceRequestBlockedReason::kMixedContent;
@@ -408,6 +246,7 @@ BaseFetchContext::CanRequestInternal(
 }
 
 void BaseFetchContext::Trace(blink::Visitor* visitor) {
+  visitor->Trace(fetcher_properties_);
   FetchContext::Trace(visitor);
 }
 

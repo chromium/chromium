@@ -68,10 +68,6 @@ Polymer({
 
     if (this.isNonDefaultAsk_(site.setting, site.source)) {
       assert(
-          this.$.permission.disabled,
-          'The \'Ask\' entry is for display-only and cannot be set by the ' +
-              'user.');
-      assert(
           this.$.permission.value == settings.ContentSetting.ASK,
           '\'Ask\' should only show up when it\'s currently selected.');
     }
@@ -231,7 +227,11 @@ Polymer({
    * @private
    */
   showAllowedSetting_: function(category) {
-    return category != settings.ContentSettingsTypes.USB_DEVICES;
+    return !(
+        category == settings.ContentSettingsTypes.SERIAL_PORTS ||
+        category == settings.ContentSettingsTypes.USB_DEVICES ||
+        category == settings.ContentSettingsTypes.BLUETOOTH_SCANNING ||
+        category == settings.ContentSettingsTypes.NATIVE_FILE_SYSTEM_WRITE);
   },
 
   /**
@@ -244,7 +244,15 @@ Polymer({
    */
   showAskSetting_: function(category, setting, source) {
     // For chooser-based permissions 'ask' takes the place of 'allow'.
-    if (category == settings.ContentSettingsTypes.USB_DEVICES) {
+    if (category == settings.ContentSettingsTypes.SERIAL_PORTS ||
+        category == settings.ContentSettingsTypes.USB_DEVICES) {
+      return true;
+    }
+
+    // For Bluetooth scanning permission and Native File System write permission
+    // 'ask' takes the place of 'allow'.
+    if (category == settings.ContentSettingsTypes.BLUETOOTH_SCANNING ||
+        category == settings.ContentSettingsTypes.NATIVE_FILE_SYSTEM_WRITE) {
       return true;
     }
 
@@ -266,8 +274,10 @@ Polymer({
 
     assert(
         source == settings.SiteSettingSource.EXTENSION ||
-            source == settings.SiteSettingSource.POLICY,
-        'Only extensions or enterprise policy can change the setting to ASK.');
+            source == settings.SiteSettingSource.POLICY ||
+            source == settings.SiteSettingSource.PREFERENCE,
+        'Only extensions, enterprise policy or preferences can change ' +
+            'the setting to ASK.');
     return true;
   },
 

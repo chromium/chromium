@@ -57,11 +57,10 @@ class InvalidationSet;
 class KURL;
 class LayoutImage;
 class LayoutObject;
-class LayoutRect;
 class LocalFrame;
 class LocalFrameView;
 class Node;
-class PaintLayer;
+struct PhysicalRect;
 class QualifiedName;
 class Resource;
 class ResourceError;
@@ -83,35 +82,36 @@ class CORE_EXPORT InspectorTraceEvents
  public:
   InspectorTraceEvents() = default;
 
-  void WillSendRequest(unsigned long identifier,
+  void WillSendRequest(uint64_t identifier,
                        DocumentLoader*,
                        const KURL& fetch_context_url,
                        const ResourceRequest&,
                        const ResourceResponse& redirect_response,
                        const FetchInitiatorInfo&,
                        ResourceType);
-  void WillSendNavigationRequest(unsigned long identifier,
+  void WillSendNavigationRequest(uint64_t identifier,
                                  DocumentLoader*,
                                  const KURL&,
                                  const AtomicString& http_method,
                                  EncodedFormData*);
-  void DidReceiveResourceResponse(unsigned long identifier,
+  void DidReceiveResourceResponse(uint64_t identifier,
                                   DocumentLoader*,
                                   const ResourceResponse&,
-                                  Resource*);
-  void DidReceiveData(unsigned long identifier,
+                                  const Resource*);
+  void DidReceiveData(uint64_t identifier,
                       DocumentLoader*,
                       const char* data,
                       uint64_t data_length);
-  void DidFinishLoading(unsigned long identifier,
+  void DidFinishLoading(uint64_t identifier,
                         DocumentLoader*,
-                        TimeTicks monotonic_finish_time,
+                        base::TimeTicks monotonic_finish_time,
                         int64_t encoded_data_length,
                         int64_t decoded_body_length,
                         bool should_report_corb_blocking);
-  void DidFailLoading(unsigned long identifier,
+  void DidFailLoading(uint64_t identifier,
                       DocumentLoader*,
                       const ResourceError&);
+  void MarkResourceAsCached(DocumentLoader* loader, uint64_t identifier);
 
   void Will(const probe::ExecuteScript&);
   void Did(const probe::ExecuteScript&);
@@ -228,6 +228,7 @@ extern const char kAnonymousBlockChange[];
 extern const char kFullscreen[];
 extern const char kChildChanged[];
 extern const char kListValueChange[];
+extern const char kListStyleTypeChange[];
 extern const char kImageChanged[];
 extern const char kLineBoxesChanged[];
 extern const char kSliderValueChanged[];
@@ -248,7 +249,7 @@ extern const char kTextControlChanged[];
 // size related invalidations.
 extern const char kSvgChanged[];
 extern const char kScrollbarChanged[];
-extern const char kDisplayLockCommitting[];
+extern const char kDisplayLock[];
 }  // namespace layout_invalidation_reason
 
 // LayoutInvalidationReasonForTracing is strictly for tracing. Blink logic must
@@ -260,26 +261,22 @@ std::unique_ptr<TracedValue> CORE_EXPORT
 Data(const LayoutObject*, LayoutInvalidationReasonForTracing);
 }
 
-namespace inspector_paint_invalidation_tracking_event {
-std::unique_ptr<TracedValue> Data(const LayoutObject&);
-}
-
 namespace inspector_change_resource_priority_event {
 std::unique_ptr<TracedValue> Data(DocumentLoader*,
-                                  unsigned long identifier,
+                                  uint64_t identifier,
                                   const ResourceLoadPriority&);
 }
 
 namespace inspector_send_request_event {
 std::unique_ptr<TracedValue> Data(DocumentLoader*,
-                                  unsigned long identifier,
+                                  uint64_t identifier,
                                   LocalFrame*,
                                   const ResourceRequest&);
 }
 
 namespace inspector_send_navigation_request_event {
 std::unique_ptr<TracedValue> Data(DocumentLoader*,
-                                  unsigned long identifier,
+                                  uint64_t identifier,
                                   LocalFrame*,
                                   const KURL&,
                                   const AtomicString& http_method);
@@ -287,31 +284,35 @@ std::unique_ptr<TracedValue> Data(DocumentLoader*,
 
 namespace inspector_receive_response_event {
 std::unique_ptr<TracedValue> Data(DocumentLoader*,
-                                  unsigned long identifier,
+                                  uint64_t identifier,
                                   LocalFrame*,
                                   const ResourceResponse&);
 }
 
 namespace inspector_receive_data_event {
 std::unique_ptr<TracedValue> Data(DocumentLoader*,
-                                  unsigned long identifier,
+                                  uint64_t identifier,
                                   LocalFrame*,
                                   uint64_t encoded_data_length);
 }
 
 namespace inspector_resource_finish_event {
 std::unique_ptr<TracedValue> Data(DocumentLoader*,
-                                  unsigned long identifier,
-                                  TimeTicks finish_time,
+                                  uint64_t identifier,
+                                  base::TimeTicks finish_time,
                                   bool did_fail,
                                   int64_t encoded_data_length,
                                   int64_t decoded_body_length);
 }
 
+namespace inspector_mark_resource_cached_event {
+std::unique_ptr<TracedValue> Data(DocumentLoader*, uint64_t identifier);
+}
+
 namespace inspector_timer_install_event {
 std::unique_ptr<TracedValue> Data(ExecutionContext*,
                                   int timer_id,
-                                  TimeDelta timeout,
+                                  base::TimeDelta timeout,
                                   bool single_shot);
 }
 
@@ -354,25 +355,9 @@ namespace inspector_xhr_load_event {
 std::unique_ptr<TracedValue> Data(ExecutionContext*, XMLHttpRequest*);
 }
 
-namespace inspector_layer_invalidation_tracking_event {
-extern const char kSquashingLayerGeometryWasUpdated[];
-extern const char kAddedToSquashingLayer[];
-extern const char kRemovedFromSquashingLayer[];
-extern const char kReflectionLayerChanged[];
-extern const char kNewCompositedLayer[];
-
-std::unique_ptr<TracedValue> Data(const PaintLayer*, const char* reason);
-}  // namespace inspector_layer_invalidation_tracking_event
-
-#define TRACE_LAYER_INVALIDATION(LAYER, REASON)                            \
-  TRACE_EVENT_INSTANT1(                                                    \
-      TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"), \
-      "LayerInvalidationTracking", TRACE_EVENT_SCOPE_THREAD, "data",       \
-      inspector_layer_invalidation_tracking_event::Data((LAYER), (REASON)));
-
 namespace inspector_paint_event {
 std::unique_ptr<TracedValue> Data(LayoutObject*,
-                                  const LayoutRect& clip_rect,
+                                  const PhysicalRect& clip_rect,
                                   const GraphicsLayer*);
 }
 
@@ -412,7 +397,7 @@ std::unique_ptr<TracedValue> Data(LocalFrame*,
 }
 
 namespace inspector_parse_script_event {
-std::unique_ptr<TracedValue> Data(unsigned long identifier, const String& url);
+std::unique_ptr<TracedValue> Data(uint64_t identifier, const String& url);
 }
 
 namespace inspector_compile_script_event {

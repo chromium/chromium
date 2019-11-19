@@ -77,6 +77,7 @@ class ProcessMetricsHistory {
 #endif
 #if defined(OS_MACOSX)
   int package_idle_wakeups_ = 0;
+  double energy_impact_ = 0.0;
 #endif
 
   DISALLOW_ASSIGN(ProcessMetricsHistory);

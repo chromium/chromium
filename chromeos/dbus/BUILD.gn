@@ -7,35 +7,36 @@ import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 
+declare_args() {
+  # Instantiate real D-Bus clients instead of fakes.
+  use_real_dbus_clients = false
+}
+
 component("dbus") {
   output_name = "chromeos_dbus"  # Avoid conflict with //dbus
   defines = [ "IS_CHROMEOS_DBUS_IMPL" ]
   public_deps = [
+    ":common",
+    "//chromeos/dbus/constants",
+    "//chromeos/dbus/debug_daemon",
+    "//chromeos/dbus/shill",
     "//dbus",
   ]
   deps = [
-    ":attestation_proto",
-    ":authpolicy_proto",
-    ":biod_proto",
     ":cicerone_proto",
     ":concierge_proto",
-    ":cryptohome_proto",
-    ":cryptohome_signkey_proto",
-    ":login_manager_proto",
-    ":media_perception_proto",
     ":metrics_event_proto",
     ":oobe_config_proto",
     ":plugin_vm_service_proto",
-    ":power_manager_proto",
     ":runtime_probe_proto",
     ":seneschal_proto",
     ":smbprovider_proto",
+    ":update_engine_proto",
     ":vm_applications_apps_proto",
+    ":vm_plugin_dispatcher_proto",
     "//base",
-    "//chromeos/dbus/constants",
     "//components/account_id",
     "//components/device_event_log",
-    "//components/policy:cloud_policy_proto_generated_compile",
     "//components/policy/proto",
     "//net",
     "//url",
@@ -43,196 +44,137 @@ component("dbus") {
   sources = [
     "arc_appfuse_provider_client.cc",
     "arc_appfuse_provider_client.h",
+    "arc_camera_client.cc",
+    "arc_camera_client.h",
+    "arc_keymaster_client.cc",
+    "arc_keymaster_client.h",
     "arc_midis_client.cc",
     "arc_midis_client.h",
     "arc_obb_mounter_client.cc",
     "arc_obb_mounter_client.h",
     "arc_oemcrypto_client.cc",
     "arc_oemcrypto_client.h",
-    "attestation_constants.cc",
-    "attestation_constants.h",
-    "audio_node.cc",
-    "audio_node.h",
-    "auth_policy_client.cc",
-    "auth_policy_client.h",
-    "biod/biod_client.cc",
-    "biod/biod_client.h",
-    "biod/fake_biod_client.cc",
-    "biod/fake_biod_client.h",
-    "blocking_method_caller.cc",
-    "blocking_method_caller.h",
     "cec_service_client.cc",
     "cec_service_client.h",
     "cicerone_client.cc",
     "cicerone_client.h",
     "concierge_client.cc",
     "concierge_client.h",
-    "cras_audio_client.cc",
-    "cras_audio_client.h",
     "cros_disks_client.cc",
     "cros_disks_client.h",
-    "cryptohome_client.cc",
-    "cryptohome_client.h",
-    "dbus_client.h",
     "dbus_client_implementation_type.h",
     "dbus_clients_browser.cc",
     "dbus_clients_browser.h",
-    "dbus_clients_common.cc",
-    "dbus_clients_common.h",
-    "dbus_method_call_status.cc",
-    "dbus_method_call_status.h",
     "dbus_thread_manager.cc",
     "dbus_thread_manager.h",
-    "debug_daemon_client.cc",
-    "debug_daemon_client.h",
-    "diagnosticsd_client.cc",
-    "diagnosticsd_client.h",
     "easy_unlock_client.cc",
     "easy_unlock_client.h",
     "fake_arc_appfuse_provider_client.cc",
     "fake_arc_appfuse_provider_client.h",
+    "fake_arc_camera_client.cc",
+    "fake_arc_camera_client.h",
+    "fake_arc_keymaster_client.cc",
+    "fake_arc_keymaster_client.h",
     "fake_arc_midis_client.cc",
     "fake_arc_midis_client.h",
     "fake_arc_obb_mounter_client.cc",
     "fake_arc_obb_mounter_client.h",
     "fake_arc_oemcrypto_client.cc",
     "fake_arc_oemcrypto_client.h",
-    "fake_auth_policy_client.cc",
-    "fake_auth_policy_client.h",
     "fake_cec_service_client.cc",
     "fake_cec_service_client.h",
     "fake_cicerone_client.cc",
     "fake_cicerone_client.h",
     "fake_concierge_client.cc",
     "fake_concierge_client.h",
-    "fake_cras_audio_client.cc",
-    "fake_cras_audio_client.h",
     "fake_cros_disks_client.cc",
     "fake_cros_disks_client.h",
-    "fake_cryptohome_client.cc",
-    "fake_cryptohome_client.h",
-    "fake_debug_daemon_client.cc",
-    "fake_debug_daemon_client.h",
-    "fake_diagnosticsd_client.cc",
-    "fake_diagnosticsd_client.h",
     "fake_easy_unlock_client.cc",
     "fake_easy_unlock_client.h",
-    "fake_gsm_sms_client.cc",
-    "fake_gsm_sms_client.h",
-    "fake_hammerd_client.cc",
-    "fake_hammerd_client.h",
+    "fake_gnubby_client.cc",
+    "fake_gnubby_client.h",
     "fake_image_burner_client.cc",
     "fake_image_burner_client.h",
     "fake_image_loader_client.cc",
     "fake_image_loader_client.h",
     "fake_lorgnette_manager_client.cc",
     "fake_lorgnette_manager_client.h",
-    "fake_machine_learning_client.cc",
-    "fake_machine_learning_client.h",
-    "fake_media_analytics_client.cc",
-    "fake_media_analytics_client.h",
-    "fake_modem_messaging_client.cc",
-    "fake_modem_messaging_client.h",
     "fake_oobe_configuration_client.cc",
     "fake_oobe_configuration_client.h",
-    "fake_permission_broker_client.cc",
-    "fake_permission_broker_client.h",
-    "fake_power_manager_client.cc",
-    "fake_power_manager_client.h",
     "fake_runtime_probe_client.cc",
     "fake_runtime_probe_client.h",
     "fake_seneschal_client.cc",
     "fake_seneschal_client.h",
-    "fake_session_manager_client.cc",
-    "fake_session_manager_client.h",
-    "fake_shill_device_client.cc",
-    "fake_shill_device_client.h",
-    "fake_shill_ipconfig_client.cc",
-    "fake_shill_ipconfig_client.h",
-    "fake_shill_manager_client.cc",
-    "fake_shill_manager_client.h",
-    "fake_shill_profile_client.cc",
-    "fake_shill_profile_client.h",
-    "fake_shill_service_client.cc",
-    "fake_shill_service_client.h",
-    "fake_shill_third_party_vpn_driver_client.cc",
-    "fake_shill_third_party_vpn_driver_client.h",
     "fake_smb_provider_client.cc",
     "fake_smb_provider_client.h",
-    "fake_sms_client.cc",
-    "fake_sms_client.h",
     "fake_update_engine_client.cc",
     "fake_update_engine_client.h",
-    "fake_upstart_client.cc",
-    "fake_upstart_client.h",
     "fake_virtual_file_provider_client.cc",
     "fake_virtual_file_provider_client.h",
-    "gsm_sms_client.cc",
-    "gsm_sms_client.h",
-    "hammerd_client.cc",
-    "hammerd_client.h",
+    "fake_vm_plugin_dispatcher_client.cc",
+    "fake_vm_plugin_dispatcher_client.h",
+    "gnubby_client.cc",
+    "gnubby_client.h",
     "image_burner_client.cc",
     "image_burner_client.h",
     "image_loader_client.cc",
     "image_loader_client.h",
     "lorgnette_manager_client.cc",
     "lorgnette_manager_client.h",
-    "machine_learning_client.cc",
-    "machine_learning_client.h",
-    "media_analytics_client.cc",
-    "media_analytics_client.h",
-    "modem_messaging_client.cc",
-    "modem_messaging_client.h",
-    "native_timer.cc",
-    "native_timer.h",
     "oobe_configuration_client.cc",
     "oobe_configuration_client.h",
-    "permission_broker_client.cc",
-    "permission_broker_client.h",
-    "pipe_reader.cc",
-    "pipe_reader.h",
-    "power_manager_client.cc",
-    "power_manager_client.h",
-    "power_policy_controller.cc",
-    "power_policy_controller.h",
     "runtime_probe_client.cc",
     "runtime_probe_client.h",
     "seneschal_client.cc",
     "seneschal_client.h",
-    "session_manager_client.cc",
-    "session_manager_client.h",
-    "shill_client_helper.cc",
-    "shill_client_helper.h",
-    "shill_device_client.cc",
-    "shill_device_client.h",
-    "shill_ipconfig_client.cc",
-    "shill_ipconfig_client.h",
-    "shill_manager_client.cc",
-    "shill_manager_client.h",
-    "shill_profile_client.cc",
-    "shill_profile_client.h",
-    "shill_service_client.cc",
-    "shill_service_client.h",
-    "shill_third_party_vpn_driver_client.cc",
-    "shill_third_party_vpn_driver_client.h",
     "smb_provider_client.cc",
     "smb_provider_client.h",
-    "sms_client.cc",
-    "sms_client.h",
     "update_engine_client.cc",
     "update_engine_client.h",
-    "upstart_client.cc",
-    "upstart_client.h",
-    "util/account_identifier_operators.cc",
-    "util/account_identifier_operators.h",
-    "util/tpm_util.cc",
-    "util/tpm_util.h",
+    "usb/fake_usbguard_client.cc",
+    "usb/fake_usbguard_client.h",
+    "usb/usbguard_client.cc",
+    "usb/usbguard_client.h",
+    "usb/usbguard_observer.h",
     "util/version_loader.cc",
     "util/version_loader.h",
     "virtual_file_provider_client.cc",
     "virtual_file_provider_client.h",
-    "volume_state.cc",
-    "volume_state.h",
+    "vm_plugin_dispatcher_client.cc",
+    "vm_plugin_dispatcher_client.h",
+  ]
+}
+
+config("use_real_dbus_clients_config") {
+  if (use_real_dbus_clients) {
+    defines = [ "USE_REAL_DBUS_CLIENTS" ]
+  }
+}
+
+component("common") {
+  output_name = "chromeos_dbus_common"
+  defines = [ "IS_CHROMEOS_DBUS_IMPL" ]
+
+  all_dependent_configs = [ ":use_real_dbus_clients_config" ]
+  public_deps = [
+    "//chromeos/dbus/constants",
+  ]
+
+  deps = [
+    "//base",
+    "//dbus",
+    "//net",
+  ]
+
+  sources = [
+    "blocking_method_caller.cc",
+    "blocking_method_caller.h",
+    "dbus_client.h",
+    "dbus_method_call_status.cc",
+    "dbus_method_call_status.h",
+    "initialize_dbus_client.h",
+    "pipe_reader.cc",
+    "pipe_reader.h",
   ]
 }
 
@@ -246,14 +188,9 @@ source_set("test_support") {
     "//dbus:test_support",
   ]
   deps = [
-    ":biod_proto",
     "//base",
     "//testing/gmock",
     "//testing/gtest",
-  ]
-  sources = [
-    "biod/test_utils.cc",
-    "biod/test_utils.h",
   ]
 }
 
@@ -261,14 +198,22 @@ source_set("unit_tests") {
   configs += [ "//build/config/linux/dbus" ]
   testonly = true
   deps = [
-    ":attestation_proto",
-    ":biod_proto",
     ":dbus",
     ":oobe_config_proto",
-    ":power_manager_proto",
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chromeos/dbus/audio",
+    "//chromeos/dbus/auth_policy",
+    "//chromeos/dbus/biod:test_support",
+    "//chromeos/dbus/cryptohome",
+    "//chromeos/dbus/cryptohome:attestation_proto",
+    "//chromeos/dbus/dlcservice:test_support",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/dbus/power:test_support",
+    "//chromeos/dbus/session_manager",
+    "//chromeos/dbus/shill:test_support",
+    "//chromeos/tpm:test_support",
     "//components/account_id",
     "//dbus",
     "//dbus:test_support",
@@ -277,60 +222,23 @@ source_set("unit_tests") {
     "//third_party/icu",
   ]
   sources = [
+    "audio/cras_audio_client_unittest.cc",
+    "auth_policy/fake_auth_policy_client_unittest.cc",
     "biod/biod_client_unittest.cc",
     "biod/fake_biod_client_unittest.cc",
     "blocking_method_caller_unittest.cc",
     "cec_service_client_unittest.cc",
-    "cras_audio_client_unittest.cc",
     "cros_disks_client_unittest.cc",
+    "cryptohome/fake_cryptohome_client_unittest.cc",
     "dbus_thread_manager_unittest.cc",
-    "fake_auth_policy_client_unittest.cc",
-    "fake_cryptohome_client_unittest.cc",
     "fake_easy_unlock_client_unittest.cc",
-    "fake_power_manager_client_unittest.cc",
-    "gsm_sms_client_unittest.cc",
-    "modem_messaging_client_unittest.cc",
+    "fake_gnubby_client_unittest.cc",
     "native_timer_unittest.cc",
     "oobe_configuration_client_unittest.cc",
     "pipe_reader_unittest.cc",
-    "power_manager_client_unittest.cc",
-    "power_policy_controller_unittest.cc",
-    "shill_client_unittest_base.cc",
-    "shill_client_unittest_base.h",
-    "shill_device_client_unittest.cc",
-    "shill_ipconfig_client_unittest.cc",
-    "shill_manager_client_unittest.cc",
-    "shill_profile_client_unittest.cc",
-    "shill_service_client_unittest.cc",
-    "shill_third_party_vpn_driver_client_unittest.cc",
     "update_engine_client_unittest.cc",
     "util/version_loader_unittest.cc",
   ]
-}
-
-proto_library("attestation_proto") {
-  sources = [
-    "proto/attestation.proto",
-  ]
-
-  proto_out_dir = "chromeos/dbus/attestation"
-}
-
-proto_library("authpolicy_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/authpolicy/active_directory_info.proto",
-  ]
-
-  proto_out_dir = "chromeos/dbus/authpolicy"
-}
-
-proto_library("biod_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/biod/constants.proto",
-    "//third_party/cros_system_api/dbus/biod/messages.proto",
-  ]
-
-  proto_out_dir = "chromeos/dbus/biod"
 }
 
 proto_library("cicerone_proto") {
@@ -347,40 +255,6 @@ proto_library("concierge_proto") {
   ]
 
   proto_out_dir = "chromeos/dbus/concierge"
-}
-
-proto_library("cryptohome_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/cryptohome/key.proto",
-    "//third_party/cros_system_api/dbus/cryptohome/rpc.proto",
-  ]
-
-  proto_out_dir = "chromeos/dbus/cryptohome"
-}
-
-proto_library("cryptohome_signkey_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/cryptohome/signed_secret.proto",
-  ]
-
-  proto_out_dir = "chromeos/dbus/cryptohome"
-}
-
-proto_library("login_manager_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/login_manager/arc.proto",
-    "//third_party/cros_system_api/dbus/login_manager/policy_descriptor.proto",
-  ]
-
-  proto_out_dir = "chromeos/dbus/login_manager"
-}
-
-proto_library("media_perception_proto") {
-  sources = [
-    "proto/media_perception.proto",
-  ]
-
-  proto_out_dir = "chromeos/dbus/media_perception"
 }
 
 proto_library("metrics_event_proto") {
@@ -405,21 +279,6 @@ proto_library("plugin_vm_service_proto") {
   ]
 
   proto_out_dir = "chromeos/dbus/plugin_vm_service"
-}
-
-proto_library("power_manager_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/power_manager/backlight.proto",
-    "//third_party/cros_system_api/dbus/power_manager/idle.proto",
-    "//third_party/cros_system_api/dbus/power_manager/input_event.proto",
-    "//third_party/cros_system_api/dbus/power_manager/peripheral_battery_status.proto",
-    "//third_party/cros_system_api/dbus/power_manager/policy.proto",
-    "//third_party/cros_system_api/dbus/power_manager/power_supply_properties.proto",
-    "//third_party/cros_system_api/dbus/power_manager/suspend.proto",
-    "//third_party/cros_system_api/dbus/power_manager/switch_states.proto",
-  ]
-
-  proto_out_dir = "chromeos/dbus/power_manager"
 }
 
 proto_library("runtime_probe_proto") {
@@ -450,10 +309,26 @@ proto_library("smbprovider_proto") {
   proto_out_dir = "chromeos/dbus/smbprovider"
 }
 
+proto_library("update_engine_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/update_engine/update_engine.proto",
+  ]
+
+  proto_out_dir = "chromeos/dbus/update_engine"
+}
+
 proto_library("vm_applications_apps_proto") {
   sources = [
     "//third_party/cros_system_api/dbus/vm_applications/apps.proto",
   ]
 
   proto_out_dir = "chromeos/dbus/vm_applications"
+}
+
+proto_library("vm_plugin_dispatcher_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher.proto",
+  ]
+
+  proto_out_dir = "chromeos/dbus/vm_plugin_dispatcher"
 }

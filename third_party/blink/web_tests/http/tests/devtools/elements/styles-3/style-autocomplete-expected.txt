@@ -23,6 +23,12 @@ Running: testValuePrefixed
 
 Running: testValueUnprefixed
 
+Running: testValuePresets
+
+Running: testNameValuePresets
+
+Running: testNameValuePresetWithNameMatch
+
 Running: testValueSubstring
 
 Running: testNameVariables

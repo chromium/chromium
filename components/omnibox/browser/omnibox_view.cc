@@ -19,7 +19,7 @@
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -62,23 +62,74 @@ base::string16 OmniboxView::StripJavascriptSchemas(const base::string16& text) {
 
 // static
 base::string16 OmniboxView::SanitizeTextForPaste(const base::string16& text) {
-  // Check for non-newline whitespace; if found, collapse whitespace runs down
-  // to single spaces.
-  // TODO(shess): It may also make sense to ignore leading or
-  // trailing whitespace when making this determination.
-  for (size_t i = 0; i < text.size(); ++i) {
-    if (base::IsUnicodeWhitespace(text[i]) &&
-        text[i] != '\n' && text[i] != '\r') {
-      const base::string16 collapsed = base::CollapseWhitespace(text, false);
-      // If the user is pasting all-whitespace, paste a single space
-      // rather than nothing, since pasting nothing feels broken.
-      return collapsed.empty() ?
-          base::ASCIIToUTF16(" ") : StripJavascriptSchemas(collapsed);
+  if (text.empty())
+    return base::string16();  // Nothing to do.
+
+  size_t end = text.find_first_not_of(base::kWhitespaceUTF16);
+  if (end == base::string16::npos)
+    return base::ASCIIToUTF16(" ");  // Convert all-whitespace to single space.
+  // Because |end| points at the first non-whitespace character, the loop
+  // below will skip leading whitespace.
+
+  // Reserve space for the sanitized output.
+  base::string16 output;
+  output.reserve(text.size());  // Guaranteed to be large enough.
+
+  // Copy all non-whitespace sequences.
+  // Do not copy trailing whitespace.
+  // Copy all other whitespace sequences that do not contain CR/LF.
+  // Convert all other whitespace sequences that do contain CR/LF to either ' '
+  // or nothing, depending on whether there are any other sequences that do not
+  // contain CR/LF.
+  bool output_needs_lf_conversion = false;
+  bool seen_non_lf_whitespace = false;
+  const auto copy_range = [&text, &output](size_t begin, size_t end) {
+    output +=
+        text.substr(begin, (end == base::string16::npos) ? end : (end - begin));
+  };
+  constexpr base::char16 kNewline[] = {'\n', 0};
+  constexpr base::char16 kSpace[] = {' ', 0};
+  while (true) {
+    // Copy this non-whitespace sequence.
+    size_t begin = end;
+    end = text.find_first_of(base::kWhitespaceUTF16, begin + 1);
+    copy_range(begin, end);
+
+    // Now there is either a whitespace sequence, or the end of the string.
+    if (end != base::string16::npos) {
+      // There is a whitespace sequence; see if it contains CR/LF.
+      begin = end;
+      end = text.find_first_not_of(base::kWhitespaceNoCrLfUTF16, begin);
+      if ((end != base::string16::npos) && (text[end] != '\n') &&
+          (text[end] != '\r')) {
+        // Found a non-trailing whitespace sequence without CR/LF.  Copy it.
+        seen_non_lf_whitespace = true;
+        copy_range(begin, end);
+        continue;
+      }
     }
+
+    // |end| either points at the end of the string or a CR/LF.
+    if (end != base::string16::npos)
+      end = text.find_first_not_of(base::kWhitespaceUTF16, end + 1);
+    if (end == base::string16::npos)
+      break;  // Ignore any trailing whitespace.
+
+    // The preceding whitespace sequence contained CR/LF.  Convert to a single
+    // LF that we'll fix up below the loop.
+    output_needs_lf_conversion = true;
+    output += '\n';
   }
 
-  // Otherwise, all whitespace is newlines; remove it entirely.
-  return StripJavascriptSchemas(base::CollapseWhitespace(text, true));
+  // Convert LFs to ' ' or '' depending on whether there were non-LF whitespace
+  // sequences.
+  if (output_needs_lf_conversion) {
+    base::ReplaceChars(output, kNewline,
+                       seen_non_lf_whitespace ? kSpace : base::string16(),
+                       &output);
+  }
+
+  return StripJavascriptSchemas(output);
 }
 
 OmniboxView::~OmniboxView() {
@@ -110,7 +161,6 @@ bool OmniboxView::IsEditingOrEmpty() const {
 // want to consider reusing the same code for both the popup and omnibox icons.
 gfx::ImageSkia OmniboxView::GetIcon(int dip_size,
                                     SkColor color,
-                                    SkColor search_alternate_color,
                                     IconFetchedCallback on_icon_fetched) const {
 #if defined(OS_ANDROID) || defined(OS_IOS)
   // This is used on desktop only.
@@ -167,15 +217,6 @@ gfx::ImageSkia OmniboxView::GetIcon(int dip_size,
       bookmark_model && bookmark_model->IsBookmarked(match.destination_url);
 
   const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmarked);
-
-  // When the blue search loop experiment is enabled, the in-omnibox vector
-  // icon for search type matches should be blue as well. This icon is used if
-  // the default search engine favicon has not yet been fetched, or is disabled.
-  if (base::FeatureList::IsEnabled(
-          omnibox::kUIExperimentBlueSearchLoopAndSearchQuery) &&
-      AutocompleteMatch::IsSearchType(match.type)) {
-    return gfx::CreateVectorIcon(vector_icon, dip_size, search_alternate_color);
-  }
 
   return gfx::CreateVectorIcon(vector_icon, dip_size, color);
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
@@ -281,6 +322,11 @@ bool OmniboxView::UpdateTextStyle(
     const base::string16& display_text,
     const bool text_is_url,
     const AutocompleteSchemeClassifier& classifier) {
+  if (!text_is_url) {
+    SetEmphasis(true, gfx::Range::InvalidRange());
+    return false;  // Path not eligible for fading if it's not even a URL.
+  }
+
   enum DemphasizeComponents {
     EVERYTHING,
     ALL_BUT_SCHEME,
@@ -292,21 +338,19 @@ bool OmniboxView::UpdateTextStyle(
   AutocompleteInput::ParseForEmphasizeComponents(display_text, classifier,
                                                  &scheme, &host);
 
-  if (text_is_url) {
-    const base::string16 url_scheme =
-        display_text.substr(scheme.begin, scheme.len);
-    // Extension IDs are not human-readable, so deemphasize everything to draw
-    // attention to the human-readable name in the location icon text.
-    // Data URLs are rarely human-readable and can be used for spoofing, so draw
-    // attention to the scheme to emphasize "this is just a bunch of data".
-    // For normal URLs, the host is the best proxy for "identity".
-    if (url_scheme == base::UTF8ToUTF16(extensions::kExtensionScheme))
-      deemphasize = EVERYTHING;
-    else if (url_scheme == base::UTF8ToUTF16(url::kDataScheme))
-      deemphasize = ALL_BUT_SCHEME;
-    else if (host.is_nonempty())
-      deemphasize = ALL_BUT_HOST;
-  }
+  const base::string16 url_scheme =
+      display_text.substr(scheme.begin, scheme.len);
+  // Extension IDs are not human-readable, so deemphasize everything to draw
+  // attention to the human-readable name in the location icon text.
+  // Data URLs are rarely human-readable and can be used for spoofing, so draw
+  // attention to the scheme to emphasize "this is just a bunch of data".
+  // For normal URLs, the host is the best proxy for "identity".
+  if (url_scheme == base::UTF8ToUTF16(extensions::kExtensionScheme))
+    deemphasize = EVERYTHING;
+  else if (url_scheme == base::UTF8ToUTF16(url::kDataScheme))
+    deemphasize = ALL_BUT_SCHEME;
+  else if (host.is_nonempty())
+    deemphasize = ALL_BUT_HOST;
 
   gfx::Range scheme_range = scheme.is_nonempty()
                                 ? gfx::Range(scheme.begin, scheme.end())

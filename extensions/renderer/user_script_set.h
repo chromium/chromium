@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "extensions/common/user_script.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -70,7 +70,7 @@ class UserScriptSet {
 
   // Updates scripts given the shared memory region containing user scripts.
   // Returns true if the scripts were successfully updated.
-  bool UpdateUserScripts(base::SharedMemoryHandle shared_memory,
+  bool UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
                          const std::set<HostID>& changed_hosts,
                          bool whitelisted_only);
 
@@ -92,8 +92,8 @@ class UserScriptSet {
       bool is_declarative,
       bool log_activity);
 
-  // Shared memory containing raw script data.
-  std::unique_ptr<base::SharedMemory> shared_memory_;
+  // Shared memory mapping containing raw script data.
+  base::ReadOnlySharedMemoryMapping shared_memory_mapping_;
 
   // The UserScripts this injector manages.
   UserScriptList scripts_;

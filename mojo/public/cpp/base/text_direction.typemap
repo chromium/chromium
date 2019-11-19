@@ -12,4 +12,4 @@ sources = [
 public_deps = [
   "//base:i18n",
 ]
-type_mappings = [ "mojo_base.mojom.TextDirection=base::i18n::TextDirection" ]
+type_mappings = [ "mojo_base.mojom.TextDirection=::base::i18n::TextDirection" ]

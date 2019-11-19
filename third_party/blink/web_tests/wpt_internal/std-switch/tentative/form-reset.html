@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<div id="container"></div>
+<script type=module>
+import 'std:elements/switch';
+
+const $ = document.querySelector.bind(document);
+
+function resetAndAssertOnIs(expected) {
+  $('form').reset();
+  assert_equals($('std-switch').on, expected);
+}
+
+test(() => {
+  $('#container').innerHTML = `
+    <form><std-switch></std-switch></form>`;
+  $('std-switch').on = true;
+  resetAndAssertOnIs(false);
+}, 'no "on" and no "defaulton"');
+
+test(() => {
+  $('#container').innerHTML = `
+    <form><std-switch defaulton></std-switch></form>`;
+  resetAndAssertOnIs(true);
+}, 'no "on" and "defaulton"');
+
+test(() => {
+  $('#container').innerHTML = `
+    <form><std-switch on></std-switch></form>`;
+  resetAndAssertOnIs(false);
+}, '"on" and no "defaulton"');
+
+test(() => {
+  $('#container').innerHTML = `
+    <form><std-switch on defaulton></std-switch></form>`;
+  $('std-switch').on = false;
+  resetAndAssertOnIs(true);
+}, '"on" and "defaulton"');
+</script>
+</body>

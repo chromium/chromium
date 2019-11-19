@@ -34,7 +34,7 @@
 #include "base/auto_reset.h"
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 #if DCHECK_IS_ON()
@@ -289,7 +289,7 @@ inline bool DocumentLifecycle::StateAllowsDetach() const {
          state_ == kInPreLayout || state_ == kLayoutClean ||
          state_ == kCompositingInputsClean || state_ == kCompositingClean ||
          state_ == kPrePaintClean || state_ == kPaintClean ||
-         state_ == kStopping;
+         state_ == kStopping || state_ == kInactive;
 }
 
 inline bool DocumentLifecycle::StateAllowsLayoutInvalidation() const {

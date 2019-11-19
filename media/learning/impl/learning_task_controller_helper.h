@@ -16,12 +16,12 @@
 #include "base/threading/sequence_bound.h"
 #include "media/learning/common/learning_task_controller.h"
 #include "media/learning/impl/feature_provider.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace media {
 namespace learning {
 
 class LearningTaskControllerHelperTest;
-class RunOnDelete;
 
 // Helper class for managing LabelledExamples that are constructed
 // incrementally.  Keeps track of in-flight examples as they're added via
@@ -36,7 +36,8 @@ class COMPONENT_EXPORT(LEARNING_IMPL) LearningTaskControllerHelper
     : public base::SupportsWeakPtr<LearningTaskControllerHelper> {
  public:
   // Callback to add labelled examples as training data.
-  using AddExampleCB = base::RepeatingCallback<void(LabelledExample)>;
+  using AddExampleCB =
+      base::RepeatingCallback<void(LabelledExample, ukm::SourceId)>;
 
   // TODO(liberato): Consider making the FP not optional.
   LearningTaskControllerHelper(const LearningTask& task,
@@ -46,8 +47,10 @@ class COMPONENT_EXPORT(LEARNING_IMPL) LearningTaskControllerHelper
   virtual ~LearningTaskControllerHelper();
 
   // See LearningTaskController::BeginObservation.
-  LearningTaskController::SetTargetValueCB BeginObservation(
-      FeatureVector features);
+  void BeginObservation(base::UnguessableToken id, FeatureVector features);
+  void CompleteObservation(base::UnguessableToken id,
+                           const ObservationCompletion& completion);
+  void CancelObservation(base::UnguessableToken id);
 
  private:
   // Record of an example that has been started by RecordObservedFeatures, but
@@ -60,35 +63,25 @@ class COMPONENT_EXPORT(LEARNING_IMPL) LearningTaskControllerHelper
     // Has the client added a TargetValue?
     // TODO(liberato): Should it provide a weight with the target value?
     bool target_done = false;
+
+    ukm::SourceId source_id = ukm::kInvalidSourceId;
   };
 
   // [non-repeating int] = example
-  using PendingExampleMap = std::map<int64_t, PendingExample>;
-
-  // Called by the SetTargetCB for a particular example.  |example_id| is the
-  // PendingExample id.  |run_on_delete| is an RAII class that will notify us
-  // when it's deleted, so that we can clear the example out of the map.
-  // |target_value| is the observed target for the example.
-  // TODO(liberato): This should take a weight, too.
-  void OnTargetValue(int64_t example_id,
-                     std::unique_ptr<RunOnDelete> run_on_delete,
-                     TargetValue target_value,
-                     WeightType weight);
-
-  // Called when the SetTargetValueCB is destroyed.
-  void OnLabelCallbackDestroyed(int64_t example_id);
+  using PendingExampleMap = std::map<base::UnguessableToken, PendingExample>;
 
   // Called on any sequence when features are ready.  Will call OnFeatureReady
   // if called on |task_runner|, or will post to |task_runner|.
   static void OnFeaturesReadyTrampoline(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       base::WeakPtr<LearningTaskControllerHelper> weak_this,
-      int64_t example_id,
+      base::UnguessableToken id,
       FeatureVector features);
 
   // Called when a new feature vector has been finished by |feature_provider_|,
   // if needed, to actually add the example.
-  void OnFeaturesReady(int64_t example_id, FeatureVector features);
+  void OnFeaturesReady(base::UnguessableToken example_id,
+                       FeatureVector features);
 
   // If |example| is finished, then send it to the LearningSession and remove it
   // from the map.  Otherwise, do nothing.
@@ -99,9 +92,6 @@ class COMPONENT_EXPORT(LEARNING_IMPL) LearningTaskControllerHelper
 
   // Optional feature provider.
   SequenceBoundFeatureProvider feature_provider_;
-
-  // Next arbitrary integer to be used in the map.
-  int64_t next_example_id_ = 1;
 
   // All outstanding PendingExamples.
   PendingExampleMap pending_examples_;

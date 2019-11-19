@@ -27,7 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_COLOR_CHOOSER_UI_CONTROLLER_H_
 
 #include <memory>
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/color_chooser.h"
@@ -40,18 +41,13 @@ class ColorChooserClient;
 class LocalFrame;
 
 class CORE_EXPORT ColorChooserUIController
-    : public GarbageCollectedFinalized<ColorChooserUIController>,
+    : public GarbageCollected<ColorChooserUIController>,
       public mojom::blink::ColorChooserClient,
       public ColorChooser {
   USING_GARBAGE_COLLECTED_MIXIN(ColorChooserUIController);
   USING_PRE_FINALIZER(ColorChooserUIController, Dispose);
 
  public:
-  static ColorChooserUIController* Create(LocalFrame* frame,
-                                          blink::ColorChooserClient* client) {
-    return MakeGarbageCollected<ColorChooserUIController>(frame, client);
-  }
-
   ColorChooserUIController(LocalFrame*, blink::ColorChooserClient*);
   ~ColorChooserUIController() override;
   void Trace(Visitor*) override;
@@ -70,14 +66,14 @@ class CORE_EXPORT ColorChooserUIController
 
  protected:
   void OpenColorChooser();
-  mojom::blink::ColorChooserPtr chooser_;
+  mojo::Remote<mojom::blink::ColorChooser> chooser_;
   Member<blink::ColorChooserClient> client_;
 
   Member<LocalFrame> frame_;
 
  private:
-  mojom::blink::ColorChooserFactoryPtr color_chooser_factory_;
-  mojo::Binding<mojom::blink::ColorChooserClient> binding_;
+  mojo::Remote<mojom::blink::ColorChooserFactory> color_chooser_factory_;
+  mojo::Receiver<mojom::blink::ColorChooserClient> receiver_{this};
 };
 
 }  // namespace blink

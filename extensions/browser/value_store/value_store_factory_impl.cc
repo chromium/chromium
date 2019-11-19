@@ -4,6 +4,7 @@
 
 #include "extensions/browser/value_store/value_store_factory_impl.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "extensions/browser/value_store/legacy_value_store_factory.h"
 
 namespace extensions {
@@ -11,7 +12,8 @@ namespace extensions {
 using SettingsNamespace = settings_namespace::Namespace;
 
 ValueStoreFactoryImpl::ValueStoreFactoryImpl(const base::FilePath& profile_path)
-    : legacy_factory_(new LegacyValueStoreFactory(profile_path)) {}
+    : legacy_factory_(
+          base::MakeRefCounted<LegacyValueStoreFactory>(profile_path)) {}
 
 ValueStoreFactoryImpl::~ValueStoreFactoryImpl() = default;
 

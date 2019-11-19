@@ -30,11 +30,6 @@
 
 namespace {
 
-bool CheckInternalResourcesURL(const GURL& url) {
-  return url.SchemeIs(content::kChromeUIScheme) &&
-         (url.host_piece() == chrome::kChromeUISyncResourcesHost);
-}
-
 bool IsUserSessionBlocked() {
 #if defined(OS_CHROMEOS)
   if (session_manager::SessionManager::Get() &&
@@ -74,17 +69,7 @@ std::unique_ptr<ContextMenuContentType> ContextMenuContentTypeFactory::Create(
   if (IsUserSessionBlocked())
     return std::make_unique<NullContextMenuContentType>(web_contents, params);
 
-  std::unique_ptr<ContextMenuContentType> content_type =
-      CreateInternal(web_contents, params);
-  SetInternalResourcesURLChecker(content_type.get());
-  return content_type;
-}
-
-// static.
-void ContextMenuContentTypeFactory::SetInternalResourcesURLChecker(
-    ContextMenuContentType* content_type) {
-  content_type->set_internal_resources_url_checker(
-      base::Bind(&CheckInternalResourcesURL));
+  return CreateInternal(web_contents, params);
 }
 
 // static

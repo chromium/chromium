@@ -10,6 +10,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.DeviceConditions;
 
 /**
@@ -29,9 +30,9 @@ public class BackgroundSchedulerBridge {
     //     separately determine if not allowed by policy.
     public static boolean startScheduledProcessing(
             DeviceConditions deviceConditions, Callback<Boolean> callback) {
-        return nativeStartScheduledProcessing(deviceConditions.isPowerConnected(),
-                deviceConditions.getBatteryPercentage(), deviceConditions.getNetConnectionType(),
-                callback);
+        return BackgroundSchedulerBridgeJni.get().startScheduledProcessing(
+                deviceConditions.isPowerConnected(), deviceConditions.getBatteryPercentage(),
+                deviceConditions.getNetConnectionType(), callback);
     }
 
     /**
@@ -39,7 +40,7 @@ public class BackgroundSchedulerBridge {
      * @return true, as it always expects to be rescheduled.
      */
     public static boolean stopScheduledProcessing() {
-        nativeStopScheduledProcessing();
+        BackgroundSchedulerBridgeJni.get().stopScheduledProcessing();
         return true;
     }
 
@@ -85,9 +86,13 @@ public class BackgroundSchedulerBridge {
                 requirePowerConnected, minimumBatteryPercentage, requireUnmeteredNetwork);
     }
 
-    /** Instructs the native RequestCoordinator to start processing. */
-    private static native boolean nativeStartScheduledProcessing(boolean powerConnected,
-            int batteryPercentage, int netConnectionType, Callback<Boolean> callback);
-    /** Instructs the native RequestCoordinator to stop processing. */
-    private static native void nativeStopScheduledProcessing();
+    @NativeMethods
+    interface Natives {
+        /** Instructs the native RequestCoordinator to start processing. */
+        boolean startScheduledProcessing(boolean powerConnected, int batteryPercentage,
+                int netConnectionType, Callback<Boolean> callback);
+
+        /** Instructs the native RequestCoordinator to stop processing. */
+        void stopScheduledProcessing();
+    }
 }

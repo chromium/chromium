@@ -21,7 +21,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/dialog_client_view.h"
 
 namespace chromeos {
 
@@ -58,7 +57,7 @@ IdleActionWarningDialogView::IdleActionWarningDialogView(
 
 void IdleActionWarningDialogView::CloseDialog() {
   update_timer_.Stop();
-  GetDialogClientView()->CancelWindow();
+  CancelDialog();
 }
 
 void IdleActionWarningDialogView::Update(base::TimeTicks idle_action_time) {

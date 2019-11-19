@@ -13,8 +13,7 @@ MockCandidateWindowController::MockCandidateWindowController()
       hide_count_(0) {
 }
 
-MockCandidateWindowController::~MockCandidateWindowController() {
-}
+MockCandidateWindowController::~MockCandidateWindowController() = default;
 
 void MockCandidateWindowController::AddObserver(
     CandidateWindowController::Observer* observer) {

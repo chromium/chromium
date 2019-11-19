@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_ENROLLMENT_MANAGER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/optional.h"
@@ -71,7 +72,8 @@ class FakeCryptAuthEnrollmentManager : public CryptAuthEnrollmentManager {
   // CryptAuthEnrollmentManager:
   void Start() override;
   void ForceEnrollmentNow(
-      cryptauth::InvocationReason invocation_reason) override;
+      cryptauth::InvocationReason invocation_reason,
+      const base::Optional<std::string>& session_id = base::nullopt) override;
   bool IsEnrollmentValid() const override;
   base::Time GetLastEnrollmentTime() const override;
   base::TimeDelta GetTimeToNextAttempt() const override;

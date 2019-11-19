@@ -53,12 +53,12 @@ class MockAudioDeviceFactory : public AudioDeviceFactory {
                    base::TimeDelta auth_timeout));
   MOCK_METHOD3(CreateAudioRendererSink,
                scoped_refptr<media::AudioRendererSink>(
-                   SourceType source_type,
+                   blink::WebAudioDeviceSourceType source_type,
                    int render_frame_id,
                    const media::AudioSinkParameters& params));
   MOCK_METHOD3(CreateSwitchableAudioRendererSink,
                scoped_refptr<media::SwitchableAudioRendererSink>(
-                   SourceType source_type,
+                   blink::WebAudioDeviceSourceType source_type,
                    int render_frame_id,
                    const media::AudioSinkParameters& params));
 

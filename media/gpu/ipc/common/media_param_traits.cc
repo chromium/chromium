@@ -24,7 +24,7 @@ void ParamTraits<media::BitstreamBuffer>::Write(base::Pickle* m,
     WriteParam(m, p.iv());
     WriteParam(m, p.subsamples());
   }
-  WriteParam(m, p.handle());
+  WriteParam(m, p.DuplicateRegion());
 }
 
 bool ParamTraits<media::BitstreamBuffer>::Read(const base::Pickle* m,
@@ -58,7 +58,7 @@ bool ParamTraits<media::BitstreamBuffer>::Read(const base::Pickle* m,
       return false;
   }
 
-  return ReadParam(m, iter, &r->handle_);
+  return ReadParam(m, iter, &r->region_);
 }
 
 void ParamTraits<media::BitstreamBuffer>::Log(const param_type& p,

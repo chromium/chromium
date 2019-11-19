@@ -77,11 +77,18 @@ class PLATFORM_EXPORT MatrixTransformOperation final
     transform.Multiply(matrix);
   }
 
+  scoped_refptr<TransformOperation> Accumulate(
+      const TransformOperation&) override;
+
   scoped_refptr<TransformOperation> Blend(
       const TransformOperation* from,
       double progress,
       bool blend_to_identity = false) override;
   scoped_refptr<TransformOperation> Zoom(double factor) final;
+
+  bool PreservesAxisAlignment() const final {
+    return Matrix().Preserves2dAxisAlignment();
+  }
 
   MatrixTransformOperation(double a,
                            double b,

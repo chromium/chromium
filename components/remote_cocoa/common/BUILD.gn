@@ -1,0 +1,30 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo") {
+  assert(is_mac)
+
+  sources = [
+    "alert.mojom",
+    "application.mojom",
+    "color_panel.mojom",
+    "native_widget_ns_window.mojom",
+    "native_widget_ns_window_host.mojom",
+    "select_file_dialog.mojom",
+    "text_input_host.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/base/accelerators/mojom",
+    "//ui/base/mojom",
+    "//ui/display/mojom",
+    "//ui/events/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
+    "//ui/gfx/range/mojom",
+  ]
+}

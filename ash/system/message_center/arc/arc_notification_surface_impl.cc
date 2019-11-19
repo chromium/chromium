@@ -82,10 +82,10 @@ ArcNotificationSurfaceImpl::ArcNotificationSurfaceImpl(
     : surface_(surface) {
   DCHECK(surface);
   native_view_ = std::make_unique<aura::Window>(
-      new CustomWindowDelegate(surface), aura::client::WINDOW_TYPE_CONTROL,
-      surface_->host_window()->env());
+      new CustomWindowDelegate(surface), aura::client::WINDOW_TYPE_CONTROL);
   native_view_->set_owned_by_parent(false);
   native_view_->Init(ui::LAYER_NOT_DRAWN);
+  native_view_->SetName("ArcNotificationSurface");
   native_view_->AddChild(surface_->host_window());
   native_view_->Show();
 }

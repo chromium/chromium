@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/tabs/tab.h"
 #import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -38,7 +37,8 @@
        isPagePrintable:(BOOL)isPagePrintable
       isPageSearchable:(BOOL)isPageSearchable
              userAgent:(web::UserAgentType)userAgent
-    thumbnailGenerator:(ThumbnailGeneratorBlock)thumbnailGenerator {
+    thumbnailGenerator:
+        (ChromeActivityItemThumbnailGenerator*)thumbnailGenerator {
   DCHECK(shareURL.is_valid());
   DCHECK(visibleURL.is_valid());
   DCHECK(title);

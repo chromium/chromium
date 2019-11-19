@@ -5,13 +5,9 @@
 #include "chrome/browser/ui/views/frame/native_browser_frame_factory.h"
 
 #include "chrome/browser/ui/views/frame/browser_frame_ash.h"
-#include "chrome/browser/ui/views/frame/browser_frame_mash.h"
-#include "ui/base/ui_base_features.h"
 
 NativeBrowserFrame* NativeBrowserFrameFactory::Create(
     BrowserFrame* browser_frame,
     BrowserView* browser_view) {
-  if (features::IsUsingWindowService())
-    return new BrowserFrameMash(browser_frame, browser_view);
   return new BrowserFrameAsh(browser_frame, browser_view);
 }

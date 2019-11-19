@@ -137,7 +137,7 @@ class CONTENT_EXPORT ServiceWorkerProcessManager {
 
   // Used to double-check that we don't access *this after it's destroyed.
   base::WeakPtr<ServiceWorkerProcessManager> weak_this_;
-  base::WeakPtrFactory<ServiceWorkerProcessManager> weak_this_factory_;
+  base::WeakPtrFactory<ServiceWorkerProcessManager> weak_this_factory_{this};
 };
 
 }  // namespace content

@@ -14,6 +14,8 @@
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/services/secure_channel/secure_channel_base.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
@@ -25,11 +27,11 @@ class FakeSecureChannel : public SecureChannelBase {
   FakeSecureChannel();
   ~FakeSecureChannel() override;
 
-  mojom::ConnectionDelegatePtr delegate_from_last_listen_call() {
+  mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_listen_call() {
     return std::move(delegate_from_last_listen_call_);
   }
 
-  mojom::ConnectionDelegatePtr delegate_from_last_initiate_call() {
+  mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_initiate_call() {
     return std::move(delegate_from_last_initiate_call_);
   }
 
@@ -40,16 +42,16 @@ class FakeSecureChannel : public SecureChannelBase {
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
       ConnectionPriority connection_priority,
-      mojom::ConnectionDelegatePtr delegate) override;
+      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
   void InitiateConnectionToDevice(
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
       ConnectionPriority connection_priority,
-      mojom::ConnectionDelegatePtr delegate) override;
+      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
 
-  mojom::ConnectionDelegatePtr delegate_from_last_listen_call_;
-  mojom::ConnectionDelegatePtr delegate_from_last_initiate_call_;
+  mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_listen_call_;
+  mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_initiate_call_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeSecureChannel);
 };

@@ -27,6 +27,10 @@ class GenericDeviceOperation {
  public:
   virtual ~GenericDeviceOperation() {}
   virtual void Start() = 0;
+
+  // Cancel will attempt to cancel the current operation. It is safe to call
+  // this function both before |Start| and after the operation has completed.
+  virtual void Cancel() = 0;
 };
 
 template <class Request, class Response>
@@ -46,24 +50,23 @@ class DeviceOperation : public GenericDeviceOperation {
 
   virtual ~DeviceOperation() = default;
 
-  virtual void Start() = 0;
-
  protected:
   // TODO(hongjunchoi): Refactor so that |command| is never base::nullopt.
   void DispatchDeviceRequest(base::Optional<std::vector<uint8_t>> command,
                              FidoDevice::DeviceCallback callback) {
-    if (!command || device_->state() == FidoDevice::State::kDeviceError) {
+    if (!command || device_->is_in_error_state()) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
       return;
     }
 
-    device_->DeviceTransact(std::move(*command), std::move(callback));
+    token_ = device_->DeviceTransact(std::move(*command), std::move(callback));
   }
 
   const Request& request() const { return request_; }
   FidoDevice* device() const { return device_; }
   DeviceResponseCallback callback() { return std::move(callback_); }
+  base::Optional<FidoDevice::CancelToken> token_;
 
  private:
   FidoDevice* const device_ = nullptr;

@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 
 class GURL;
@@ -32,7 +33,8 @@ class CONTENT_EXPORT PepperProxyLookupHelper {
   // testing. Returns false if unable to make the call, for whatever reason.
   using LookUpProxyForURLCallback = base::OnceCallback<bool(
       const GURL& url,
-      network::mojom::ProxyLookupClientPtr proxy_lookup_client)>;
+      mojo::PendingRemote<network::mojom::ProxyLookupClient>
+          proxy_lookup_client)>;
 
   // Callback to invoke when complete. Invoked on thread the
   // PepperProxyLookupHelper was created on.
@@ -60,7 +62,7 @@ class CONTENT_EXPORT PepperProxyLookupHelper {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<PepperProxyLookupHelper> weak_factory_;
+  base::WeakPtrFactory<PepperProxyLookupHelper> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperProxyLookupHelper);
 };

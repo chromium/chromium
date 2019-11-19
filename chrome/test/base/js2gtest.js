@@ -18,47 +18,42 @@
 // python script gypv8sh.py.
 if (arguments.length != 6) {
   print('usage: ' +
-        arguments[0] +
-        ' path-to-testfile.js testfile.js path_to_deps.js output.cc test-type');
+      arguments[0] +
+      ' path-to-testfile.js path-to-src-root/ path-to-deps.js output.cc' +
+      ' test-type');
+  quit(-1);
+}
+
+[
+  _,
+  // Full path to the test input file, relative to the current working
+  // directory.
+  fullTestFilePath,
+  // Path to source-root, relative to the current working directory.
+  srcRootPath,
+  // Path to Closure library style deps.js file.
+  depsFile,
+  // Path to C++ file generation is outputting to.
+  outputFile,
+  // Type of this test. One of 'extension', 'unit', 'webui', 'mojo_lite_webui'.
+  testType
+] = arguments;
+
+
+if (!fullTestFilePath.startsWith(srcRootPath)) {
+  print('Test file must be a descendant of source root directory');
   quit(-1);
 }
 
 /**
- * Full path to the test input file.
+ * Path to test input file, relative to source root directory.
  * @type {string}
  */
-var jsFile = arguments[1];
+var testFile = fullTestFilePath.substr(srcRootPath.length);
 
-/**
- * Relative path to the test input file appropriate for use in the
- * C++ TestFixture's addLibrary method.
- * @type {string}
- */
-var jsFileBase = arguments[2];
+const TEST_TYPES = new Set(['extension', 'unit', 'webui', 'mojo_lite_webui']);
 
-/**
- * Path to Closure library style deps.js file.
- * @type {string?}
- */
-var depsFile = arguments[3];
-
-/**
- * Path to C++ file generation is outputting to.
- * @type {string}
- */
-var outputFile = arguments[4];
-
-/**
- * Type of this test.
- * @type {string} ('extension' | 'unit' | 'webui' | 'mojo_webui' |
- *                 'mojo_lite_webui')
- */
-var testType = arguments[5];
-if (testType != 'extension' &&
-    testType != 'unit' &&
-    testType != 'webui' &&
-    testType != 'mojo_webui' &&
-    testType != 'mojo_lite_webui') {
+if (!TEST_TYPES.has(testType)) {
   print('Invalid test type: ' + testType);
   quit(-1);
 }
@@ -72,21 +67,21 @@ var testF;
 /**
  * Keeps track of whether a typedef has been generated for each test
  * fixture.
- * @type {Object<string>}
+ * @type {!Map<string, string>}
  */
-var typedeffedCppFixtures = {};
+var typedeffedCppFixtures = new Map();
 
 /**
- * Maintains a list of relative file paths to add to each gtest body
- * for inclusion at runtime before running each JavaScript test.
+ * Maintains a list of file paths (relative to source-root directory) to add
+ * to each gtest body for inclusion at runtime before running each JS test.
  * @type {Array<string>}
  */
 var genIncludes = [];
 
 /**
  * When true, add calls to set_preload_test_(fixture|name). This is needed when
- * |testType| === 'webui' || 'mojo_webui' to send an injection message before
- * the page loads, but is not required or supported by any other test type.
+ * |testType| === 'webui' to send an injection message before the page loads,
+ * but is not required or supported by any other test type.
  * @type {boolean}
  */
 var addSetPreloadInfo;
@@ -101,12 +96,12 @@ var needGenHeader = true;
  * Helpful hint pointing back to the source js.
  * @type {string}
  */
-var argHint = '// ' + this['arguments'].join(' ');
+var argHint = '// ' + arguments.join(' ');
 
 /**
  * @type {Array<string>}
  */
-var pendingOutput = '';
+var pendingOutput = [];
 
 /**
  * Adds a string followed by a newline to the pending output.
@@ -117,16 +112,7 @@ function output(opt_string) {
   opt_string = opt_string || '';
   if (opt_string[0] == '\n')
     opt_string = opt_string.substring(1);
-    pendingOutput += opt_string;
-  pendingOutput += '\n';
-}
-
-/**
- * Returns number of lines in pending output.
- * @returns {number}
- */
-function countOutputLines() {
-  return pendingOutput.split('\n').length;
+  pendingOutput.push(opt_string);
 }
 
 /**
@@ -149,8 +135,6 @@ ${argHint}
   // 'extension' - browser_tests harness, js2extension rule,
   //               ExtensionJSBrowserTest superclass.
   // 'unit' - unit_tests harness, js2unit rule, V8UnitTest superclass.
-  // 'mojo_webui' - browser_tests harness, js2webui rule, MojoWebUIBrowserTest
-  //                with mojo bindings.
   // 'mojo_lite_webui' - browser_tests harness, js2webui rule,
   //                     MojoWebUIBrowserTest with mojo_lite bindings.
   // superclass. Uses Mojo to communicate test results.
@@ -166,7 +150,7 @@ ${argHint}
     testing.Test.prototype.typedefCppFixture = 'V8UnitTest';
     testF = 'TEST_F';
     addSetPreloadInfo = false;
-  } else if (testType === 'mojo_webui' || testType === 'mojo_lite_webui') {
+  } else if (testType === 'mojo_lite_webui') {
     output('#include "chrome/test/base/mojo_web_ui_browser_test.h"');
     testing.Test.prototype.typedefCppFixture = 'MojoWebUIBrowserTest';
     testF = 'IN_PROC_BROWSER_TEST_F';
@@ -187,8 +171,9 @@ ${argHint}
     if (this[testFixture].prototype.commandLineSwitches)
       output('#include "base/command_line.h"');
     if (this[testFixture].prototype.featureList ||
-        this[testFixture].prototype.featuresWithParameters)
+        this[testFixture].prototype.featuresWithParameters) {
       output('#include "base/test/scoped_feature_list.h"');
+    }
   }
   output();
 }
@@ -201,29 +186,46 @@ var pathStack = [];
 
 
 /**
- * Convert the |includeFile| to paths appropriate for immediate
- * inclusion (path) and runtime inclusion (base).
+ * Get the path (relative to source root directory) of the given include-file.
+ * The include must either be relative to the file it is included from,
+ * or a source-absolute path starting with '//'.
+ *
  * @param {string} includeFile The file to include.
- * @return {{path: string, base: string}} Object describing the paths
- *     for |includeFile|. |path| is relative to cwd; |base| is relative to
- *     source root.
+ * @return {string} Path of the file, relative to source root directory.
  */
-function includeFileToPaths(includeFile) {
-  paths = pathStack[pathStack.length - 1];
-  return {
-    path: paths.path.replace(/[^\/\\]+$/, includeFile),
-    base: paths.base.replace(/[^\/\\]+$/, includeFile),
-  };
+function includeFileToPath(includeFile) {
+  if (includeFile.startsWith('//')) {
+    return includeFile.substr(2);  // Path is already relative to source-root.
+  } else if (includeFile.startsWith('/')) {
+    print('Error including ' + includeFile);
+    print('Only relative "foo/bar" or source-absolute "//foo/bar" paths are '
+          + 'supported - not file-system absolute: "/foo/bar"');
+    quit(-1);
+  } else {
+    // The include-file path is relative to the file that included it.
+    var currentPath = pathStack[pathStack.length - 1];
+    return currentPath.replace(/[^\/\\]+$/, includeFile)
+  }
 }
 
 /**
  * Returns the content of a javascript file with a sourceURL comment
  * appended to facilitate better stack traces.
- * @param {string} path Relative path name.
+ * @param {string} path Path to JS file, relative to current working dir.
  * return {string}
  */
 function readJsFile(path) {
   return read(path) + '\n//# sourceURL=' + path;
+}
+
+/**
+ * Returns the content of a javascript file with a sourceURL comment
+ * appended to facilitate better stack traces.
+ * @param {string} path Path to JS file, relative to source root.
+ * return {string}
+ */
+function readSourceAbsoluteJsFile(path) {
+  return readJsFile(srcRootPath + path);
 }
 
 
@@ -338,12 +340,12 @@ function GEN(code) {
  */
 function GEN_INCLUDE(includes) {
   for (var i = 0; i < includes.length; i++) {
-    var includePaths = includeFileToPaths(includes[i]);
-    var js = readJsFile(includePaths.path);
-    pathStack.push(includePaths);
+    var includePath = includeFileToPath(includes[i]);
+    var js = readSourceAbsoluteJsFile(includePath);
+    pathStack.push(includePath);
     ('global', eval)(js);
     pathStack.pop();
-    genIncludes.push(includePaths.base);
+    genIncludes.push(includePath);
   }
 }
 
@@ -383,15 +385,14 @@ function TEST_F(testFixture, testFunction, testBody, opt_preamble) {
       this[testFixture].prototype.isAsync + ',\n          ';
   var testShouldFail = this[testFixture].prototype.testShouldFail;
   var testPredicate = testShouldFail ? 'ASSERT_FALSE' : 'ASSERT_TRUE';
+  var webuiHost = this[testFixture].prototype.webuiHost;
   var extraLibraries = genIncludes.concat(
-      this[testFixture].prototype.extraLibraries.map(
-          function(includeFile) {
-            return includeFileToPaths(includeFile).base;
-          }),
-      resolveClosureModuleDeps(this[testFixture].prototype.closureModuleDeps));
+      this[testFixture].prototype.extraLibraries.map(includeFileToPath),
+      resolveClosureModuleDeps(this[testFixture].prototype.closureModuleDeps),
+      [testFile]);
   var testFLine = getTestDeclarationLineNumber();
 
-  if (typedefCppFixture && !(testFixture in typedeffedCppFixtures)) {
+  if (typedefCppFixture && !typedeffedCppFixtures.has(testFixture)) {
     var switches = this[testFixture].prototype.commandLineSwitches;
     var hasSwitches = switches && switches.length;
     var featureList = this[testFixture].prototype.featureList;
@@ -411,21 +412,45 @@ class ${testFixture} : public ${typedefCppFixture} {
         output(`
   ${testFixture}() {`);
         if (featureList) {
+          const disabledFeatures = (featureList.disabled || []).join(', ');
+          const enabledFeatures = (featureList.enabled || []).join(', ');
+          if (enabledFeatures.length + disabledFeatures.length == 0) {
+            print('Invalid featureList; must set "enabled" or "disabled" key');
+            quit(-1);
+          }
           output(`
-    scoped_feature_list_.InitWithFeatures({${featureList[0]}},
-                                          {${featureList[1]}});`);
+    scoped_feature_list_.InitWithFeatures({${enabledFeatures}},
+                                          {${disabledFeatures}});`);
         }
         if (featuresWithParameters) {
           for (var i = 0; i < featuresWithParameters.length; ++i) {
             var feature = featuresWithParameters[i];
-            var featureName = feature[0];
-            var parameters = feature[1];
+            var featureName = feature.featureName;
+            if (!featureName) {
+              print('"featureName" key required for featuresWithParameters');
+              quit(-1);
+            }
+            var parameters = feature.parameters;
+            if (!parameters) {
+              print('"parameters" key required for featuresWithParameters');
+              quit(-1);
+            }
           output(`
     scoped_feature_list${i}_.InitAndEnableFeatureWithParameters(
         ${featureName}, {`);
             for (var parameter of parameters) {
-              var parameterName = parameter[0];
-              var parameterValue = parameter[1];
+              var parameterName = parameter.name;
+              if (!parameterName) {
+                print('"name" key required for parameter in ' +
+                      'featuresWithParameters');
+                quit(-1);
+              }
+              var parameterValue = parameter.value;
+              if (!parameterValue) {
+                print('"value" key required for parameter in ' +
+                      'featuresWithParameters');
+                quit(-1);
+              }
               output(`
             {"${parameterName}", "${parameterValue}"},`);
             }
@@ -472,28 +497,25 @@ class ${testFixture} : public ${typedefCppFixture} {
 };
 `);
     }
-    typedeffedCppFixtures[testFixture] = typedefCppFixture;
+    typedeffedCppFixtures.set(testFixture, typedefCppFixture);
   }
 
   if (opt_preamble) {
     GEN(opt_preamble);
   }
 
-  var outputLine = countOutputLines() + 3;
+  var outputLine = pendingOutput.length + 3;
   output(`
-#line ${testFLine} "${jsFile}"
+#line ${testFLine} "${fullTestFilePath}"
 ${testF}(${testFixture}, ${testFunction}) {
 #line ${outputLine} "${outputFile}"`);
 
-  for (var i = 0; i < extraLibraries.length; i++) {
+for (var i = 0; i < extraLibraries.length; i++) {
     var libraryName = extraLibraries[i].replace(/\\/g, '/');
     output(`
   AddLibrary(base::FilePath(FILE_PATH_LITERAL(
       "${libraryName}")));`);
   }
-  output(`
-  AddLibrary(base::FilePath(FILE_PATH_LITERAL(
-      "${jsFileBase.replace(/\\/g, '/')}")));`);
   if (addSetPreloadInfo) {
     output(`
   set_preload_test_fixture("${testFixture}");
@@ -502,6 +524,10 @@ ${testF}(${testFixture}, ${testFunction}) {
   if(testType == 'mojo_lite_webui') {
     output(`
   set_use_mojo_lite_bindings();`);
+  }
+  if (webuiHost) {
+    output(`
+  set_webui_host("${webuiHost}");`);
   }
   if (testGenPreamble)
     testGenPreamble(testFixture, testFunction);
@@ -534,9 +560,9 @@ function TEST_F_WITH_PREAMBLE(preamble, testFixture, testFunction, testBody) {
   TEST_F(testFixture, testFunction, testBody, preamble);
 }
 
-// Now that generation functions are defined, load in |jsFile|.
-var js = readJsFile(jsFile);
-pathStack.push({path: jsFile, base: jsFileBase});
+// Now that generation functions are defined, load in |testFile|.
+var js = readSourceAbsoluteJsFile(testFile);
+pathStack.push(testFile);
 eval(js);
 pathStack.pop();
-print(pendingOutput);
+print(pendingOutput.join('\n'));

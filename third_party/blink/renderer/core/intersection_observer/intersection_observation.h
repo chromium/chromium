@@ -21,8 +21,8 @@ class IntersectionObserver;
 class IntersectionObservation final
     : public GarbageCollected<IntersectionObservation> {
  public:
-  // Flags that drive the behavior of the Compute() methods. For an explanation
-  // of implicit vs. explicit root, see intersection_observer.h.
+  // Flags that drive the behavior of the ComputeIntersections() method. For an
+  // explanation of implicit vs. explicit root, see intersection_observer.h.
   enum ComputeFlags {
     // If this bit is set, and observer_->RootIsImplicit() is true, then the
     // root bounds (i.e., size of the top document's viewport) should be
@@ -34,6 +34,10 @@ class IntersectionObservation final
     // If this bit is set, and observer_->RootIsImplicit() is true, then
     // Compute() should update the observation.
     kImplicitRootObserversNeedUpdate = 1 << 2,
+    // If this bit is set, then the observer.delay parameter is ignored; i.e.,
+    // the computation will run even if the previous run happened within the
+    // delay parameter.
+    kIgnoreDelay = 1 << 3,
   };
 
   IntersectionObservation(IntersectionObserver&, Element&);
@@ -41,15 +45,21 @@ class IntersectionObservation final
   IntersectionObserver* Observer() const { return observer_.Get(); }
   Element* Target() const { return target_; }
   unsigned LastThresholdIndex() const { return last_threshold_index_; }
-  // If the parameter is true and the observer doesn't have an explicit root,
-  // then any notifications generated will contain root bounds geometry.
-  void Compute(unsigned flags);
+  void ComputeIntersection(unsigned flags);
+  void ComputeIntersection(
+      const IntersectionGeometry::RootGeometry& root_geometry,
+      unsigned flags);
   void TakeRecords(HeapVector<Member<IntersectionObserverEntry>>&);
   void Disconnect();
 
   void Trace(blink::Visitor*);
 
  private:
+  bool ShouldCompute(unsigned flags);
+  unsigned GetIntersectionGeometryFlags(unsigned compute_flags) const;
+  // Inspect the geometry to see if there has been a transition event; if so,
+  // generate a notification and schedule it for delivery.
+  void ProcessIntersectionGeometry(const IntersectionGeometry& geometry);
   void SetLastThresholdIndex(unsigned index) { last_threshold_index_ = index; }
   void SetWasVisible(bool last_is_visible) {
     last_is_visible_ = last_is_visible ? 1 : 0;

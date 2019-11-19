@@ -4,6 +4,8 @@
 
 #include "crazy_linker_relr_relocations.h"
 
+#include <type_traits>
+
 namespace crazy {
 
 // Apply a single RELR relocation at virtual |offset| address, using
@@ -35,6 +37,12 @@ void RelrRelocations::Apply(size_t load_bias) {
       // An odd value corresponds to a bitmap of 31 or 63 words, based
       // on the CPU bitness / word_size.
       ELF::Addr offset = base;
+
+      // Right shift of signed integers has undefined behaviour before C++20.
+      static_assert(
+          std::is_unsigned<decltype(entry)>::value,
+          "The ELF::Relr type should be unsigned to avoid undefined behaviour");
+
       while (entry != 0) {
         entry >>= 1;
         if ((entry & 1) != 0)

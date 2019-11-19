@@ -27,10 +27,6 @@ class DictionaryTest : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DictionaryTest* Create() {
-    return MakeGarbageCollected<DictionaryTest>();
-  }
-
   DictionaryTest();
   ~DictionaryTest() override;
 
@@ -99,7 +95,7 @@ class DictionaryTest : public ScriptWrappable {
   base::Optional<HashMap<String, String>> dictionary_member_properties_;
   InternalEnumOrInternalEnumSequence internal_enum_or_internal_enum_sequence_;
   ScriptValue any_member_;
-  TraceWrapperMember<V8TestCallback> callback_function_member_;
+  Member<V8TestCallback> callback_function_member_;
 };
 
 }  // namespace blink

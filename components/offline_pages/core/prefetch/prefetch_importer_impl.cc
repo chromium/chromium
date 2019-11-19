@@ -66,8 +66,7 @@ PrefetchImporterImpl::PrefetchImporterImpl(
     scoped_refptr<base::TaskRunner> background_task_runner)
     : PrefetchImporter(dispatcher),
       offline_page_model_(offline_page_model),
-      background_task_runner_(background_task_runner),
-      weak_ptr_factory_(this) {}
+      background_task_runner_(background_task_runner) {}
 
 PrefetchImporterImpl::~PrefetchImporterImpl() = default;
 
@@ -77,8 +76,7 @@ void PrefetchImporterImpl::ImportArchive(const PrefetchArchiveInfo& archive) {
   // The target file name will be auto generated based on GUID to prevent any
   // name collision.
   base::FilePath archives_dir =
-      offline_page_model_->GetInternalArchiveDirectory(
-          archive.client_id.name_space);
+      offline_page_model_->GetArchiveDirectory(archive.client_id.name_space);
   base::FilePath dest_path = archives_dir.AppendASCII(base::GenerateGUID())
                                  .AddExtension(FILE_PATH_LITERAL("mhtml"));
 
@@ -102,8 +100,10 @@ void PrefetchImporterImpl::ImportArchive(const PrefetchArchiveInfo& archive) {
   }
   OfflinePageItem offline_page(url, archive.offline_id, archive.client_id,
                                dest_path, archive.file_size, base::Time::Now());
-  offline_page.original_url = original_url;
+  offline_page.original_url_if_different = original_url;
   offline_page.title = archive.title;
+  offline_page.snippet = archive.snippet;
+  offline_page.attribution = archive.attribution;
 
   outstanding_import_offline_ids_.emplace(archive.offline_id);
 

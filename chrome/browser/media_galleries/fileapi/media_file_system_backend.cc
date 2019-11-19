@@ -21,31 +21,30 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_validator_factory.h"
 #include "chrome/browser/media_galleries/fileapi/media_path_filter.h"
 #include "chrome/browser/media_galleries/fileapi/native_media_file_util.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/media_galleries/media_galleries_histograms.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/resource_request_info.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registry.h"
 #include "net/url_request/url_request.h"
-#include "storage/browser/fileapi/copy_or_move_file_validator.h"
-#include "storage/browser/fileapi/file_stream_reader.h"
-#include "storage/browser/fileapi/file_stream_writer.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_operation.h"
-#include "storage/browser/fileapi/file_system_operation_context.h"
-#include "storage/browser/fileapi/file_system_url.h"
-#include "storage/browser/fileapi/native_file_util.h"
-#include "storage/common/fileapi/file_system_types.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/browser/file_system/copy_or_move_file_validator.h"
+#include "storage/browser/file_system/file_stream_reader.h"
+#include "storage/browser/file_system/file_stream_writer.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation.h"
+#include "storage/browser/file_system/file_system_operation_context.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/file_system/native_file_util.h"
+#include "storage/common/file_system/file_system_types.h"
+#include "storage/common/file_system/file_system_util.h"
 
 #if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_CHROMEOS)
 #include "chrome/browser/media_galleries/fileapi/device_media_async_file_util.h"
@@ -60,18 +59,19 @@ const char kMediaGalleryMountPrefix[] = "media_galleries-";
 
 base::LazySequencedTaskRunner g_media_task_runner =
     LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::MayBlock(),
+        base::TaskTraits(base::ThreadPool(),
+                         base::MayBlock(),
                          base::TaskPriority::USER_VISIBLE,
                          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN));
 
 void OnPreferencesInit(
-    const content::ResourceRequestInfo::WebContentsGetter& web_contents_getter,
+    const content::WebContents::Getter& web_contents_getter,
     const extensions::Extension* extension,
     MediaGalleryPrefId pref_id,
     base::OnceCallback<void(base::File::Error result)> callback) {
   content::WebContents* contents = web_contents_getter.Run();
   if (!contents) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(std::move(callback), base::File::FILE_ERROR_FAILED));
     return;
@@ -83,7 +83,7 @@ void OnPreferencesInit(
 }
 
 void AttemptAutoMountOnUIThread(
-    const content::ResourceRequestInfo::WebContentsGetter& web_contents_getter,
+    const content::WebContents::Getter& web_contents_getter,
     const std::string& storage_domain,
     const std::string& mount_point,
     base::OnceCallback<void(base::File::Error result)> callback) {
@@ -93,11 +93,11 @@ void AttemptAutoMountOnUIThread(
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-    extensions::ExtensionService* extension_service =
-        extensions::ExtensionSystem::Get(profile)->extension_service();
+    extensions::ExtensionRegistry* extension_registry =
+        extensions::ExtensionRegistry::Get(profile);
     const extensions::Extension* extension =
-        extension_service->GetExtensionById(storage_domain,
-                                            false /*include disabled*/);
+        extension_registry->GetExtensionById(
+            storage_domain, extensions::ExtensionRegistry::ENABLED);
     std::string expected_mount_prefix =
         MediaFileSystemBackend::ConstructMountName(
             profile->GetPath(), storage_domain, kInvalidMediaGalleryPrefId);
@@ -120,7 +120,7 @@ void AttemptAutoMountOnUIThread(
     }
   }
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(std::move(callback), base::File::FILE_ERROR_NOT_FOUND));
 }
@@ -204,20 +204,10 @@ bool MediaFileSystemBackend::AttemptAutoMountForURLRequest(
                         base::CompareCase::SENSITIVE))
     return false;
 
-  content::ResourceRequestInfo::WebContentsGetter web_contents_getter;
-  if (request_info.content_id) {
-    web_contents_getter = base::BindRepeating(
-        &GetWebContentsFromFrameTreeNodeID, request_info.content_id);
-  } else {
-    content::ResourceRequestInfo* resource_request_info =
-        content::ResourceRequestInfo::ForRequest(request_info.request);
-    if (!resource_request_info)
-      return false;
-    web_contents_getter =
-        resource_request_info->GetWebContentsGetterForRequest();
-  }
+  content::WebContents::Getter web_contents_getter = base::BindRepeating(
+      &GetWebContentsFromFrameTreeNodeID, request_info.content_id);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&AttemptAutoMountOnUIThread, web_contents_getter,
                      request_info.storage_domain, mount_point,

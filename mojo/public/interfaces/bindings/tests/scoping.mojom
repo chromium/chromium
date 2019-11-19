@@ -5,11 +5,11 @@
 module mojo.test;
 
 interface A {
-  GetB(B& b);
+  GetB(pending_receiver<B> b);
 };
 
 interface B {
-  GetC(C& c);
+  GetC(pending_receiver<C> c);
 };
 
 interface C {

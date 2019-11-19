@@ -10,11 +10,15 @@ source_set("component_updater") {
   deps = [
     "//base",
     "//components/component_updater",
+    "//components/services/patch:in_process",
+    "//components/services/patch/public/mojom",
+    "//components/services/unzip:in_process",
+    "//components/services/unzip/public/mojom",
     "//components/update_client",
+    "//components/update_client:common_impl",
     "//ios/chrome/browser",
     "//ios/chrome/browser/google",
     "//ios/chrome/common",
     "//ios/web",
-    "//services/service_manager/public/cpp",
   ]
 }

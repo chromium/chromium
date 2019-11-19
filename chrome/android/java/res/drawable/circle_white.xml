@@ -9,5 +9,5 @@
         android:width="20dp"/>
     <stroke
         android:width="2dp"
-        android:color="@color/white_alpha_50"/>
+        android:color="@android:color/white"/>
 </shape>

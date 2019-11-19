@@ -2,15 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/zip.gni")
+import("//chrome/installer/mac/mac_signing_sources.gni")
 import("//remoting/build/config/remoting_build.gni")
 
-import("//build/config/zip.gni")
-
 action("remoting_me2me_host_archive") {
-  # TODO(GYP) TODO(crbug.com/622415) This needs work and testing.
-
-  # TODO(GYP) At the very least, we need to add in the localized strings.
-
   _installer_mac_files = [
     "do_signing.sh",
     "do_signing.props",
@@ -18,13 +14,18 @@ action("remoting_me2me_host_archive") {
     "ChromotingHostService.pkgproj",
     "ChromotingHostUninstaller.pkgproj",
     "LaunchAgents/org.chromium.chromoting.plist",
-    "PrivilegedHelperTools/org.chromium.chromoting.me2me.sh",
     "Scripts/keystone_install.sh",
     "Scripts/remoting_postflight.sh",
     "Scripts/remoting_preflight.sh",
     "Keystone/GoogleSoftwareUpdate.pkg",
     "//chrome/installer/mac/pkg-dmg",
+    "//chrome/installer/mac/notarize_thing.py",
   ]
+
+  # Chrome's signing/notarization Python module.
+  _mac_signing_files =
+      rebase_path(mac_signing_sources, ".", "//chrome/installer/mac")
+  _installer_mac_files += _mac_signing_files
 
   inputs = _installer_mac_files
 
@@ -37,6 +38,7 @@ action("remoting_me2me_host_archive") {
   script = "//remoting/host/installer/build-installer-archive.py"
 
   sources = [
+    # This is used by build-installer-archive.py for creating the ZIP archive.
     "//build/android/gyp/util/build_utils.py",
   ]
 
@@ -58,9 +60,9 @@ action("remoting_me2me_host_archive") {
            "remoting/com.google.chrome.remote_desktop-firefox.json",
            "remoting/com.google.chrome.remote_assistance-firefox.json",
            "--generated-files-dst",
-           "PrivilegedHelperTools/$host_bundle_name",
-           "PrivilegedHelperTools/$host_bundle_name/Contents/MacOS/$native_messaging_host_bundle_name",
-           "PrivilegedHelperTools/$host_bundle_name/Contents/MacOS/$remote_assistance_host_bundle_name",
+           "PrivilegedHelperTools/$me2me_host_bundle_name",
+           "PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$native_messaging_host_bundle_name",
+           "PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$remote_assistance_host_bundle_name",
            "Applications/$host_uninstaller_name.app",
            "Config/com.google.chrome.remote_desktop.json",
            "Config/com.google.chrome.remote_assistance.json",
@@ -73,6 +75,7 @@ action("remoting_me2me_host_archive") {
            "VERSION_MINOR=$chrome_version_minor",
            "HOST_NAME=$host_name",
            "HOST_BUNDLE_NAME=$me2me_host_bundle_name",
+           "HOST_LEGACY_BUNDLE_NAME=$me2me_host_legacy_bundle_name",
            "HOST_SERVICE_NAME=$host_service_name",
            "HOST_UNINSTALLER_NAME=$host_uninstaller_name",
            "HOST_PKG=$host_name",
@@ -137,7 +140,6 @@ mac_app_bundle("remoting_host_uninstaller") {
 
   deps = [
     ":remoting_host_uninstaller_resources",
-    ":remoting_host_uninstaller_xibs",
     "//base",
     "//remoting/host:remoting_infoplist_strings",
     "//remoting/host/mac:constants",
@@ -146,12 +148,6 @@ mac_app_bundle("remoting_host_uninstaller") {
   foreach(locale, remoting_locales_with_underscores) {
     deps += [ ":remoting_uninstaller_strings_${locale}_bundle_data" ]
   }
-}
-
-mac_xib_bundle_data("remoting_host_uninstaller_xibs") {
-  sources = [
-    "uninstaller/remoting_uninstaller.xib",
-  ]
 }
 
 bundle_data("remoting_host_uninstaller_resources") {

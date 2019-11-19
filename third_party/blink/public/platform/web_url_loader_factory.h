@@ -28,6 +28,14 @@ class WebURLLoaderFactory {
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>) = 0;
 };
 
+// A test version of the above factory interface, which supports cloning the
+// factory.
+class WebURLLoaderFactoryForTest : public WebURLLoaderFactory {
+ public:
+  // Clones this factory.
+  virtual std::unique_ptr<WebURLLoaderFactoryForTest> Clone() = 0;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_FACTORY_H_

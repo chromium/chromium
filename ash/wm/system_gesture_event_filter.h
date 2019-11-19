@@ -11,7 +11,7 @@
 #include "ui/events/event_handler.h"
 
 namespace ash {
-class OverviewGestureHandler;
+class WmGestureHandler;
 
 // An event filter which handles system level gesture events.
 class SystemGestureEventFilter : public ui::EventHandler {
@@ -28,7 +28,7 @@ class SystemGestureEventFilter : public ui::EventHandler {
  private:
   friend class SystemGestureEventFilterTest;
 
-  std::unique_ptr<OverviewGestureHandler> overview_gesture_handler_;
+  std::unique_ptr<WmGestureHandler> wm_gesture_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(SystemGestureEventFilter);
 };

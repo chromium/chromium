@@ -1,5 +1,6 @@
 CONSOLE ERROR: line 18: Unsafe JavaScript attempt to initiate navigation for frame with URL 'about:blank' from frame with URL 'sandboxed-iframe-navigation-targetlink.html'. The frame attempting navigation is sandboxed, and is therefore disallowed from navigating its ancestors.
 
+CONSOLE ERROR: line 18: Blocked opening 'sandboxed-iframe-navigated.html' in a new window because the request was made in a sandboxed frame whose 'allow-popups' permission is not set.
 This test verifies that a sandboxed IFrame cannot open a link in another frame using the target attribute of a link.
 
 This is done by loading ten non-sandboxed IFrames, and a single sandboxed one. In addition each of these frames have a target frame (so, 22 frames in total). Expect ten frames to be able to open a link in their corresponding target frame, but the sandboxed one to not be one of them.

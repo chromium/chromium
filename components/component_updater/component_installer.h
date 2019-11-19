@@ -65,6 +65,7 @@ class ComponentInstallerPolicy {
   // OnCustomUninstall is called during the unregister (uninstall) process.
   // Components that require custom uninstallation operations should implement
   // them here.
+  // Called only from a thread belonging to a blocking thread pool.
   virtual void OnCustomUninstall() = 0;
 
   // ComponentReady is called in two cases:

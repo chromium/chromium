@@ -25,17 +25,23 @@ namespace test {
 // implementations, and can be used to feed U2fRequests with fake/mock FIDO
 // devices.
 //
-// Most often this class is used together with ScopedFakeFidoDiscoveryFactory:
+// Most often this class is used together with FakeFidoDiscoveryFactory:
 //
-//   ScopedFakeFidoDiscoveryFactory factory;
+//   FakeFidoDiscoveryFactory factory;
 //   auto* fake_hid_discovery = factory.ForgeNextHidDiscovery();
 //   auto* fake_ble_discovery = factory.ForgeNextBleDiscovery();
 //
+//   // Pass the factory to the client or replace it globally:
+//   content::AuthenticatorEnvironment::GetInstance()
+//       ->ReplaceDefaultDiscoveryFactoryForTesting(
+//           std::move(factory))
+//
 //   // Run the production code that will eventually call:
-//   // FidoDeviceDiscovery::Create(
+//   // fido_device_discovery_->Create(
 //   //     FidoTransportProtocol::kUsbHumanInterfaceDevice)
 //   // hid_instance->Start();
-//   // FidoDeviceDiscovery::Create(FidoTransportProtocol::kBluetoothLowEnergy)
+//   // fido_device_discovery_->Create(
+//   //     FidoTransportProtocol::kBluetoothLowEnergy)
 //   // ble_instance->Start();
 //
 //   // Wait, i.e. spin the message loop until the fake discoveries are started.
@@ -94,15 +100,13 @@ class FakeFidoDiscovery : public FidoDeviceDiscovery,
   DISALLOW_COPY_AND_ASSIGN(FakeFidoDiscovery);
 };
 
-// Overrides FidoDeviceDiscovery::Create to construct FakeFidoDiscoveries while
-// this instance is in scope.
-class ScopedFakeFidoDiscoveryFactory
-    : public ::device::internal::ScopedFidoDiscoveryFactory {
+// Overrides FidoDeviceDiscovery::Create* to construct FakeFidoDiscoveries.
+class FakeFidoDiscoveryFactory : public device::FidoDiscoveryFactory {
  public:
   using StartMode = FakeFidoDiscovery::StartMode;
 
-  ScopedFakeFidoDiscoveryFactory();
-  ~ScopedFakeFidoDiscoveryFactory() override;
+  FakeFidoDiscoveryFactory();
+  ~FakeFidoDiscoveryFactory() override;
 
   // Constructs a fake discovery to be returned from the next call to
   // FidoDeviceDiscovery::Create. Returns a raw pointer to the fake so that
@@ -115,9 +119,11 @@ class ScopedFakeFidoDiscoveryFactory
   FakeFidoDiscovery* ForgeNextBleDiscovery(StartMode mode = StartMode::kManual);
   FakeFidoDiscovery* ForgeNextCableDiscovery(
       StartMode mode = StartMode::kManual);
+  FakeFidoDiscovery* ForgeNextPlatformDiscovery(
+      StartMode mode = StartMode::kManual);
 
- protected:
-  std::unique_ptr<FidoDiscoveryBase> CreateFidoDiscovery(
+  // device::FidoDiscoveryFactory:
+  std::unique_ptr<FidoDiscoveryBase> Create(
       FidoTransportProtocol transport,
       ::service_manager::Connector* connector) override;
 
@@ -126,8 +132,9 @@ class ScopedFakeFidoDiscoveryFactory
   std::unique_ptr<FakeFidoDiscovery> next_nfc_discovery_;
   std::unique_ptr<FakeFidoDiscovery> next_ble_discovery_;
   std::unique_ptr<FakeFidoDiscovery> next_cable_discovery_;
+  std::unique_ptr<FakeFidoDiscovery> next_platform_discovery_;
 
-  DISALLOW_COPY_AND_ASSIGN(ScopedFakeFidoDiscoveryFactory);
+  DISALLOW_COPY_AND_ASSIGN(FakeFidoDiscoveryFactory);
 };
 
 }  // namespace test

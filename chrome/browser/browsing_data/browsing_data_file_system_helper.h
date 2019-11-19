@@ -15,7 +15,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "storage/common/fileapi/file_system_types.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -24,8 +24,6 @@ class FileSystemContext;
 
 class Profile;
 
-// Defines an interface for classes that deal with aggregating and deleting
-// browsing data stored in an origin's file systems.
 // BrowsingDataFileSystemHelper instances for a specific profile should be
 // created via the static Create method. Each instance will lazily fetch file
 // system data when a client calls StartFetching from the UI thread, and will
@@ -74,18 +72,37 @@ class BrowsingDataFileSystemHelper
   //
   // BrowsingDataFileSystemHelper takes ownership of the Callback1, and is
   // responsible for deleting it once it's no longer needed.
-  virtual void StartFetching(FetchCallback callback) = 0;
+  virtual void StartFetching(FetchCallback callback);
 
   // Deletes any temporary or persistent file systems associated with |origin|
   // from the disk. Deletion will occur asynchronously on the FILE thread, but
   // this function must be called only on the UI thread.
-  virtual void DeleteFileSystemOrigin(const url::Origin& origin) = 0;
+  virtual void DeleteFileSystemOrigin(const url::Origin& origin);
 
  protected:
   friend class base::RefCountedThreadSafe<BrowsingDataFileSystemHelper>;
 
-  BrowsingDataFileSystemHelper() {}
-  virtual ~BrowsingDataFileSystemHelper() {}
+  explicit BrowsingDataFileSystemHelper(
+      storage::FileSystemContext* filesystem_context);
+
+  virtual ~BrowsingDataFileSystemHelper();
+
+ private:
+  // Enumerates all filesystem files, storing the resulting list into
+  // file_system_file_ for later use. This must be called on the file
+  // task runner.
+  void FetchFileSystemInfoInFileThread(FetchCallback callback);
+
+  // Deletes all file systems associated with |origin|. This must be called on
+  // the file task runner.
+  void DeleteFileSystemOriginInFileThread(const url::Origin& origin);
+
+  // Returns the file task runner for the |filesystem_context_|.
+  base::SequencedTaskRunner* file_task_runner();
+
+  // Keep a reference to the FileSystemContext object for the current profile
+  // for use on the file task runner.
+  scoped_refptr<storage::FileSystemContext> filesystem_context_;
 };
 
 // An implementation of the BrowsingDataFileSystemHelper interface that can
@@ -95,9 +112,8 @@ class BrowsingDataFileSystemHelper
 class CannedBrowsingDataFileSystemHelper
     : public BrowsingDataFileSystemHelper {
  public:
-  // |profile| is unused in this canned implementation, but it's the interface
-  // we're writing to, so we'll accept it, but not store it.
-  explicit CannedBrowsingDataFileSystemHelper(Profile* profile);
+  explicit CannedBrowsingDataFileSystemHelper(
+      storage::FileSystemContext* filesystem_context);
 
   // Manually adds a filesystem to the set of canned file systems that this
   // helper returns via StartFetching.
@@ -117,12 +133,7 @@ class CannedBrowsingDataFileSystemHelper
 
   // BrowsingDataFileSystemHelper implementation.
   void StartFetching(FetchCallback callback) override;
-
-  // Note that this doesn't actually have an implementation for this canned
-  // class. It hasn't been necessary for anything that uses the canned
-  // implementation, as the canned class is only used in tests, or in read-only
-  // contexts (like the non-modal cookie dialog).
-  void DeleteFileSystemOrigin(const url::Origin& origin) override {}
+  void DeleteFileSystemOrigin(const url::Origin& origin) override;
 
  private:
   ~CannedBrowsingDataFileSystemHelper() override;

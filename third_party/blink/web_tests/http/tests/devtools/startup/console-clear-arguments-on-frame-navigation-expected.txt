@@ -1,6 +1,6 @@
-Tests that Web Inspector will discard console message arguments and convert first argument into a string when iframe where the message was logged is navigated to a different page.
+Tests that Web Inspector will get the console message's all arguments.
 
-Message: "A message with first argument string", arguments: [string]
-Message: "2011", arguments: [string]
-Message: "[object Window]", arguments: [string]
+Message: "A message with first argument string Second argument which should not be discarded", arguments: [string]
+Message: "2011 A message with first argument integer", arguments: [string]
+Message: "[object Window] A message with first argument window", arguments: [string]
 

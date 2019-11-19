@@ -122,6 +122,18 @@ IN_PROC_BROWSER_TEST_F(NotificationUIManagerBrowserTest, RetrieveBaseParts) {
   EXPECT_TRUE(message_center());
 }
 
+IN_PROC_BROWSER_TEST_F(NotificationUIManagerBrowserTest, BasicNullProfile) {
+  TestMessageCenterObserver observer;
+  message_center()->AddObserver(&observer);
+  manager()->CancelAll();
+  manager()->Add(CreateTestNotification("hey"), nullptr);
+  EXPECT_EQ(1u, message_center()->NotificationCount());
+  EXPECT_NE("", observer.last_displayed_id());
+  manager()->CancelById("hey", NotificationUIManager::GetProfileID(nullptr));
+  EXPECT_EQ(0u, message_center()->NotificationCount());
+  message_center()->RemoveObserver(&observer);
+}
+
 IN_PROC_BROWSER_TEST_F(NotificationUIManagerBrowserTest, BasicAddCancel) {
   // Someone may create system notifications like "you're in multi-profile
   // mode..." or something which may change the expectation.

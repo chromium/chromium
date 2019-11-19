@@ -21,16 +21,16 @@
 'use strict';
 
 test(function() {
-  assert_equals(getComputedStyle(document.body).overscrollBehavior, 'auto auto');
+  assert_equals(getComputedStyle(document.body).overscrollBehavior, 'auto');
   assert_equals(getComputedStyle(container).overscrollBehavior, 'none contain');
   assert_equals(getComputedStyle(child).overscrollBehavior, 'none contain');
 }, "Test that getComputedStyle serializes overscroll-behavior-x and overscroll-behavior-y");
 
 var values = [
   // single keyword
-  {input: 'contain', expected: 'contain contain'},
-  {input: 'none', expected: 'none none'},
-  {input: 'auto', expected: 'auto auto'},
+  {input: 'contain', expected: 'contain'},
+  {input: 'none', expected: 'none'},
+  {input: 'auto', expected: 'auto'},
 
   // two keywords
   {input: 'contain none', expected: 'contain none'},

@@ -17,7 +17,6 @@ namespace net {
 namespace {
 
 const char kBrotli[] = "BROTLI";
-const uint8_t kGzipHeader[] = {0x1f, 0x8b, 0x08};
 
 // BrotliSourceStream applies Brotli content decoding to a data stream.
 // Brotli format specification: http://www.ietf.org/id/draft-alakuijala-brotli.
@@ -29,8 +28,7 @@ class BrotliSourceStream : public FilterSourceStream {
         used_memory_(0),
         used_memory_maximum_(0),
         consumed_bytes_(0),
-        produced_bytes_(0),
-        gzip_header_detected_(true) {
+        produced_bytes_(0) {
     brotli_state_ =
         BrotliDecoderCreateInstance(AllocateMemory, FreeMemory, this);
     CHECK(brotli_state_);
@@ -43,14 +41,10 @@ class BrotliSourceStream : public FilterSourceStream {
     brotli_state_ = nullptr;
     DCHECK_EQ(0u, used_memory_);
 
-    // Don't report that gzip header was detected in case of lack of input.
-    gzip_header_detected_ &= (consumed_bytes_ >= sizeof(kGzipHeader));
 
     UMA_HISTOGRAM_ENUMERATION(
         "BrotliFilter.Status", static_cast<int>(decoding_status_),
         static_cast<int>(DecodingStatus::DECODING_STATUS_COUNT));
-    UMA_HISTOGRAM_BOOLEAN("BrotliFilter.GzipHeaderDetected",
-                          gzip_header_detected_);
     if (decoding_status_ == DecodingStatus::DECODING_DONE) {
       // CompressionPercent is undefined when there is no output produced.
       if (produced_bytes_ != 0) {
@@ -106,14 +100,6 @@ class BrotliSourceStream : public FilterSourceStream {
     size_t available_in = input_buffer_size;
     uint8_t* next_out = bit_cast<uint8_t*>(output_buffer->data());
     size_t available_out = output_buffer_size;
-    // Check if start of the input stream looks like gzip stream.
-    for (size_t i = consumed_bytes_; i < sizeof(kGzipHeader); ++i) {
-      if (!gzip_header_detected_)
-        break;
-      size_t j = i - consumed_bytes_;
-      if (j < available_in && kGzipHeader[i] != next_in[j])
-        gzip_header_detected_ = false;
-    }
 
     BrotliDecoderResult result =
         BrotliDecoderDecompressStream(brotli_state_, &available_in, &next_in,
@@ -186,8 +172,6 @@ class BrotliSourceStream : public FilterSourceStream {
   size_t used_memory_maximum_;
   size_t consumed_bytes_;
   size_t produced_bytes_;
-
-  bool gzip_header_detected_;
 
   DISALLOW_COPY_AND_ASSIGN(BrotliSourceStream);
 };

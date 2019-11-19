@@ -30,7 +30,7 @@ class AnimationTimingInputTest : public testing::Test {
                                 bool is_keyframeeffectoptions = true);
 
  private:
-  void SetUp() override { page_holder_ = DummyPageHolder::Create(); }
+  void SetUp() override { page_holder_ = std::make_unique<DummyPageHolder>(); }
 
   Document* GetDocument() const { return &page_holder_->GetDocument(); }
 
@@ -401,11 +401,6 @@ TEST_F(AnimationTimingInputTest, TimingInputTimingFunction) {
                               success)
            .timing_function);
   EXPECT_TRUE(success);
-  EXPECT_EQ(*FramesTimingFunction::Create(5),
-            *ApplyTimingInputString(scope.GetIsolate(), "easing", "frames(5)",
-                                    success)
-                 .timing_function);
-  EXPECT_TRUE(success);
 
   ApplyTimingInputString(scope.GetIsolate(), "easing", "", success);
   EXPECT_FALSE(success);
@@ -414,11 +409,6 @@ TEST_F(AnimationTimingInputTest, TimingInputTimingFunction) {
   EXPECT_FALSE(success);
   ApplyTimingInputString(scope.GetIsolate(), "easing",
                          "cubic-bezier(2, 2, 0.3, 0.3)", success);
-  EXPECT_FALSE(success);
-  ApplyTimingInputString(scope.GetIsolate(), "easing", "frames(1)", success);
-  EXPECT_FALSE(success);
-  ApplyTimingInputString(scope.GetIsolate(), "easing", "frames(3, start)",
-                         success);
   EXPECT_FALSE(success);
   ApplyTimingInputString(scope.GetIsolate(), "easing", "rubbish", success);
   EXPECT_FALSE(success);

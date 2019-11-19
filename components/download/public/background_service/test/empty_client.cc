@@ -17,12 +17,10 @@ void EmptyClient::OnServiceInitialized(
 
 void EmptyClient::OnServiceUnavailable() {}
 
-Client::ShouldDownload EmptyClient::OnDownloadStarted(
+void EmptyClient::OnDownloadStarted(
     const std::string& guid,
     const std::vector<GURL>& url_chain,
-    const scoped_refptr<const net::HttpResponseHeaders>& headers) {
-  return Client::ShouldDownload::CONTINUE;
-}
+    const scoped_refptr<const net::HttpResponseHeaders>& headers) {}
 
 void EmptyClient::OnDownloadUpdated(const std::string& guid,
                                     uint64_t bytes_uploaded,

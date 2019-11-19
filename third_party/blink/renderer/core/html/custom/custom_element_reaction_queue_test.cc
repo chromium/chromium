@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_queue.h"
 
 #include <initializer_list>
-#include <vector>
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_test_helpers.h"
@@ -16,7 +15,7 @@
 namespace blink {
 
 TEST(CustomElementReactionQueueTest, invokeReactions_one) {
-  std::vector<char> log;
+  Vector<char> log;
   CustomElementReactionQueue* queue =
       MakeGarbageCollected<CustomElementReactionQueue>();
   HeapVector<Member<Command>>* commands =
@@ -25,12 +24,12 @@ TEST(CustomElementReactionQueueTest, invokeReactions_one) {
   queue->Add(*MakeGarbageCollected<TestReaction>(commands));
   Element* test_element = CreateElement(AtomicString("my-element"));
   queue->InvokeReactions(*test_element);
-  EXPECT_EQ(log, std::vector<char>({'a'}))
+  EXPECT_EQ(log, Vector<char>({'a'}))
       << "the reaction should have been invoked";
 }
 
 TEST(CustomElementReactionQueueTest, invokeReactions_many) {
-  std::vector<char> log;
+  Vector<char> log;
   CustomElementReactionQueue* queue =
       MakeGarbageCollected<CustomElementReactionQueue>();
   {
@@ -53,12 +52,12 @@ TEST(CustomElementReactionQueueTest, invokeReactions_many) {
   }
   Element* test_element = CreateElement(AtomicString("my-element"));
   queue->InvokeReactions(*test_element);
-  EXPECT_EQ(log, std::vector<char>({'a', 'b', 'c'}))
+  EXPECT_EQ(log, Vector<char>({'a', 'b', 'c'}))
       << "the reaction should have been invoked";
 }
 
 TEST(CustomElementReactionQueueTest, invokeReactions_recursive) {
-  std::vector<char> log;
+  Vector<char> log;
   CustomElementReactionQueue* queue =
       MakeGarbageCollected<CustomElementReactionQueue>();
 
@@ -87,12 +86,12 @@ TEST(CustomElementReactionQueueTest, invokeReactions_recursive) {
   queue->Add(*first);
   Element* test_element = CreateElement(AtomicString("my-element"));
   queue->InvokeReactions(*test_element);
-  EXPECT_EQ(log, std::vector<char>({'a', 'b', 'c'}))
+  EXPECT_EQ(log, Vector<char>({'a', 'b', 'c'}))
       << "the reactions should have been invoked";
 }
 
 TEST(CustomElementReactionQueueTest, clear_duringInvoke) {
-  std::vector<char> log;
+  Vector<char> log;
   CustomElementReactionQueue* queue =
       MakeGarbageCollected<CustomElementReactionQueue>();
 
@@ -119,7 +118,7 @@ TEST(CustomElementReactionQueueTest, clear_duringInvoke) {
 
   Element* test_element = CreateElement(AtomicString("my-element"));
   queue->InvokeReactions(*test_element);
-  EXPECT_EQ(log, std::vector<char>({'a'}))
+  EXPECT_EQ(log, Vector<char>({'a'}))
       << "only 'a' should be logged; the second log should have been cleared";
 }
 

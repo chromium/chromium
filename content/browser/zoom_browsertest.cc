@@ -12,7 +12,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
-#include "content/public/common/page_zoom.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -21,6 +20,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, ZoomPreservedOnReload) {
     ResizeObserver observer(root->current_frame_host());
 
     const double new_zoom_level =
-        default_zoom_level + ZoomFactorToZoomLevel(new_zoom_factor);
+        default_zoom_level + blink::PageZoomFactorToZoomLevel(new_zoom_factor);
     host_zoom_map->SetZoomLevelForHost(top_level_host, new_zoom_level);
 
     WaitForResize(msg_queue, observer);
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframesZoomProperly) {
                                  scale_one_grandchild_width, kTolerance);
 
     const double new_zoom_level =
-        default_zoom_level + ZoomFactorToZoomLevel(new_zoom_factor);
+        default_zoom_level + blink::PageZoomFactorToZoomLevel(new_zoom_factor);
     host_zoom_map->SetZoomLevelForHost(top_level_host, new_zoom_level);
 
     WaitAndCheckFrameZoom(msg_queue, frame_observers);
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframesDontZoomIndependently) {
 
   const double new_zoom_factor = 2.0;
   const double new_zoom_level =
-      default_zoom_level + ZoomFactorToZoomLevel(new_zoom_factor);
+      default_zoom_level + blink::PageZoomFactorToZoomLevel(new_zoom_factor);
 
   // This should not cause the nested iframe to change its zoom.
   host_zoom_map->SetZoomLevelForHost("b.com", new_zoom_level);
@@ -366,10 +366,6 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframesDontZoomIndependently) {
   EXPECT_EQ(scale_one_child_width, GetSubframeWidth(child));
   EXPECT_EQ(scale_one_grandchild_width, GetSubframeWidth(grandchild));
 
-  // We exclude the remainder of this test on Android since Android does not
-  // set page zoom levels for loading pages.
-  // See RenderFrameImpl::SetHostZoomLevel().
-#if !defined(OS_ANDROID)
   // When we navigate so that b.com is the top-level site, then it has the
   // expected zoom.
   GURL new_url = embedded_test_server()->GetURL("b.com", "/title1.html");
@@ -377,7 +373,6 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframesDontZoomIndependently) {
   EXPECT_DOUBLE_EQ(
       new_zoom_factor,
       GetMainFrameZoomFactor(web_contents(), main_frame_window_border));
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, AllFramesGetDefaultZoom) {
@@ -420,7 +415,8 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, AllFramesGetDefaultZoom) {
                                  scale_one_grandchild_width, kTolerance);
 
     const double new_default_zoom_level =
-        default_zoom_level + ZoomFactorToZoomLevel(new_default_zoom_factor);
+        default_zoom_level +
+        blink::PageZoomFactorToZoomLevel(new_default_zoom_factor);
 
     host_zoom_map->SetZoomLevelForHost("b.com", new_default_zoom_level + 1.0);
     host_zoom_map->SetDefaultZoomLevel(new_default_zoom_level);
@@ -475,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SiblingFramesZoom) {
                                  scale_one_child2_width, kTolerance);
 
     const double new_zoom_level =
-        default_zoom_level + ZoomFactorToZoomLevel(new_zoom_factor);
+        default_zoom_level + blink::PageZoomFactorToZoomLevel(new_zoom_factor);
     host_zoom_map->SetZoomLevelForHost(top_level_host, new_zoom_level);
 
     WaitAndCheckFrameZoom(msg_queue, frame_observers);
@@ -524,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframeRetainsZoomOnNavigation) {
                                  scale_one_child_width, kTolerance);
 
     const double new_zoom_level =
-        default_zoom_level + ZoomFactorToZoomLevel(new_zoom_factor);
+        default_zoom_level + blink::PageZoomFactorToZoomLevel(new_zoom_factor);
     host_zoom_map->SetZoomLevelForHost(top_level_host, new_zoom_level);
 
     WaitAndCheckFrameZoom(msg_queue, frame_observers);
@@ -553,7 +549,6 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframeRetainsZoomOnNavigation) {
 }
 
 // http://crbug.com/609213
-#if !defined(OS_ANDROID)
 IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
                        RedirectToPageWithSubframeZoomsCorrectly) {
   std::string initial_host("a.com");
@@ -568,7 +563,8 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
   const double kZoomFactorForRedirectedHost = 1.5;
   HostZoomMap* host_zoom_map = HostZoomMap::GetForWebContents(web_contents());
   host_zoom_map->SetZoomLevelForHost(
-      redirected_host, ZoomFactorToZoomLevel(kZoomFactorForRedirectedHost));
+      redirected_host,
+      blink::PageZoomFactorToZoomLevel(kZoomFactorForRedirectedHost));
 
   // Navigation to a.com doesn't change the zoom level, but when it redirects
   // to b.com, and then a subframe loads, the zoom should change.
@@ -585,15 +581,10 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
               GetMainFrameZoomFactor(web_contents(), main_frame_window_border),
               0.01);
 }
-#endif
 
 // Tests that on cross-site navigation from a page that has a subframe, the
 // appropriate zoom is applied to the new page.
 // crbug.com/673065
-// Note: We exclude the this test on Android since Android does not set page
-// zoom levels for loading pages.
-// See RenderFrameImpl::SetHostZoomLevel().
-#if !defined(OS_ANDROID)
 IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
                        SubframesDontBreakConnectionToRenderer) {
   std::string top_level_host("a.com");
@@ -618,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
   // Set a zoom for a host that will be navigated to below.
   const double new_zoom_factor = 2.0;
   const double new_zoom_level =
-      default_zoom_level + ZoomFactorToZoomLevel(new_zoom_factor);
+      default_zoom_level + blink::PageZoomFactorToZoomLevel(new_zoom_factor);
   host_zoom_map->SetZoomLevelForHost("foo.com", new_zoom_level);
 
   // Navigate forward in the same RFH to a site with that host via a
@@ -652,6 +643,5 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
       GetMainFrameZoomFactor(web_contents(), main_frame_window_border),
       .1);
 }
-#endif
 
 }  // namespace content

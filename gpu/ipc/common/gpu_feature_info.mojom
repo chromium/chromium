@@ -5,6 +5,8 @@
 // gpu/config/gpu_feature_info.h
 module gpu.mojom;
 
+import "ui/gfx/mojom/buffer_types.mojom";
+
 // gpu::GpuFeatureStatus
 enum GpuFeatureStatus {
   Enabled,
@@ -13,23 +15,6 @@ enum GpuFeatureStatus {
   Software,
   Undefined,
   Max
-};
-
-// gpu::AntialiasingMode
-enum AntialiasingMode {
-  kUnspecified,
-  kNone,
-  kMSAAImplicitResolve,
-  kMSAAExplicitResolve,
-  kScreenSpaceAntialiasing
-};
-
-// gpu::WebglPreferences
-struct WebglPreferences {
-  AntialiasingMode anti_aliasing_mode;
-  uint32 msaa_sample_count;
-  uint32 max_active_webgl_contexts;
-  uint32 max_active_webgl_contexts_on_worker;
 };
 
 // gpu:GpuFeatureInfo
@@ -50,9 +35,6 @@ struct GpuFeatureInfo {
   // WebGL extensions disabled by GpuDriverBugWorkarounds, separated by ' '.
   string disabled_webgl_extensions;
 
-  // Preferences for WebGL.
-  WebglPreferences webgl_preferences;
-
   // The array contains a list of gpu blacklist entry indices that apply in the
   // current platform. The entries are defined in
   // gpu/config/software_rendering_list.json.
@@ -62,4 +44,9 @@ struct GpuFeatureInfo {
   // in the current platform. The entries are defined in
   // gpu/config/gpu_driver_bug_list.json.
   array<uint32> applied_gpu_driver_bug_list_entries;
+
+  // BufferFormats that can be allocated and then bound, if known and provided
+  // by the platform.
+  array<gfx.mojom.BufferFormat>
+      supported_buffer_formats_for_allocation_and_texturing;
 };

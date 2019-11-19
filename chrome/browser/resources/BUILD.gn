@@ -3,47 +3,58 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//chrome/test/base/js2gtest.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/grit/repack.gni")
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 
 if (closure_compile) {
   group("closure_compile") {
     deps = [
-      "cryptotoken:closure_compile",
       "engagement:closure_compile",
+      "interventions_internals:closure_compile",
+      "reset_password:closure_compile",
     ]
     if (is_linux || is_win || is_mac) {
       deps += [
         "bluetooth_internals:closure_compile",
         "bookmarks:closure_compile",
         "discards:closure_compile",
+        "download_internals:closure_compile",
         "downloads:closure_compile",
         "history:closure_compile",
+        "local_ntp:closure_compile",
         "local_state:closure_compile",
         "management:closure_compile",
-        "md_user_manager:closure_compile",
         "media_router:closure_compile",
+        "new_tab_page:closure_compile",
         "ntp4:closure_compile",
         "omnibox:closure_compile",
         "pdf:closure_compile",
         "print_preview:closure_compile",
         "quota_internals:closure_compile",
         "settings:closure_compile",
-        "signin/dice_sync_confirmation:closure_compile",
-        "welcome/dice_welcome:closure_compile",
-        "welcome/onboarding_welcome:closure_compile",
+        "signin:closure_compile",
+        "usb_internals:closure_compile",
+        "user_manager:closure_compile",
+        "welcome:closure_compile",
       ]
+    }
+    if (is_win || is_android || is_linux) {
+      deps += [ "sandbox_internals:closure_compile" ]
     }
     if (is_chromeos) {
       deps += [ "chromeos:closure_compile" ]
     }
     if (enable_extensions) {
-      deps += [ "md_extensions:closure_compile" ]
+      deps += [ "extensions:closure_compile" ]
+    }
+    if (enable_webui_tab_strip) {
+      deps += [ "tab_strip:closure_compile" ]
     }
     if (is_android) {
       deps += [
-        "eoc_internals:closure_compile",
         "explore_sites_internals:closure_compile",
         "feed_internals:closure_compile",
         "offline_pages:closure_compile",
@@ -51,8 +62,8 @@ if (closure_compile) {
         "webapks:closure_compile",
       ]
     }
-    if (!is_android) {
-      deps += [ "app_management:closure_compile" ]
+    if (is_win || is_mac || is_desktop_linux) {
+      deps += [ "browser_switch:closure_compile" ]
     }
   }
 }
@@ -87,16 +98,6 @@ grit("quota_internals_resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-grit("translate_internals_resources") {
-  source = "translate_internals/translate_internals_resources.grd"
-  defines = chrome_grit_defines
-  outputs = [
-    "grit/translate_internals_resources.h",
-    "translate_internals_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
 grit("webapks_ui_resources") {
   source = "webapks/webapks_ui_resources.grd"
   defines = chrome_grit_defines
@@ -108,8 +109,52 @@ grit("webapks_ui_resources") {
 }
 
 if (!is_android) {
+  grit("bookmarks_resources") {
+    # The .grd contains references to generated files.
+    source_is_generated = true
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+
+    if (optimize_webui) {
+      source = "bookmarks/bookmarks_resources_vulcanized.grd"
+
+      deps = [
+        "//chrome/browser/resources/bookmarks:build",
+      ]
+    } else {
+      source = "bookmarks/bookmarks_resources.grd"
+
+      deps = [
+        "//chrome/browser/resources/bookmarks:polymer3_elements",
+      ]
+    }
+
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/bookmarks_resources.h",
+      "grit/bookmarks_resources_map.cc",
+      "grit/bookmarks_resources_map.h",
+      "bookmarks_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome"
+  }
+
   grit("component_extension_resources") {
     source = "component_extension_resources.grd"
+
+    # The .grd contains references to generated files.
+    source_is_generated = true
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+
+    deps = [
+      "//chrome/browser/resources/pdf/elements:polymer3_elements",
+    ]
+
     defines = chrome_grit_defines
     if (enable_hangout_services_extension) {
       defines += [ "enable_hangout_services_extension" ]
@@ -130,6 +175,32 @@ if (!is_android) {
     outputs = [
       "grit/local_ntp_resources.h",
       "local_ntp_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome"
+  }
+
+  grit("new_tab_page_resources") {
+    source = "new_tab_page/new_tab_page_resources.grd"
+
+    deps = [
+      "//chrome/browser/resources/new_tab_page:polymer3_elements",
+      "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js",
+    ]
+
+    # The .grd contains references to generated files.
+    source_is_generated = true
+
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/new_tab_page_resources.h",
+      "grit/new_tab_page_resources_map.cc",
+      "grit/new_tab_page_resources_map.h",
+      "new_tab_page_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }
@@ -161,18 +232,94 @@ if (!is_android) {
     ]
     output_dir = "$root_gen_dir/chrome"
   }
-}
 
-if (!is_android && !is_chromeos) {
-  grit("onboarding_welcome_resources") {
-    source = "welcome/onboarding_welcome/onboarding_welcome_resources.grd"
+  grit("downloads_resources") {
+    if (optimize_webui) {
+      source = "downloads/downloads_resources_vulcanized.grd"
+
+      deps = [
+        "//chrome/browser/resources/downloads:build",
+      ]
+    } else {
+      source = "downloads/downloads_resources.grd"
+
+      deps = [
+        "//chrome/browser/resources/downloads:polymer3_elements",
+        "//chrome/browser/ui/webui/downloads:mojo_bindings_js",
+      ]
+    }
+
+    # The .grd contains references to generated files.
+    source_is_generated = true
+
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
 
     defines = chrome_grit_defines
     outputs = [
-      "grit/onboarding_welcome_resources.h",
-      "grit/onboarding_welcome_resources_map.cc",
-      "grit/onboarding_welcome_resources_map.h",
-      "onboarding_welcome_resources.pak",
+      "grit/downloads_resources.h",
+      "grit/downloads_resources_map.cc",
+      "grit/downloads_resources_map.h",
+      "downloads_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome"
+  }
+}
+
+if (is_chromeos) {
+  grit("os_settings_resources") {
+    if (optimize_webui) {
+      source = "settings/os_settings_resources_vulcanized.grd"
+
+      # The .grd contains references to generated files.
+      source_is_generated = true
+
+      deps = [
+        "//chrome/browser/resources/settings/chromeos:build",
+      ]
+
+      grit_flags = [
+        "-E",
+        "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+      ]
+    } else {
+      source = "settings/os_settings_resources.grd"
+    }
+
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/os_settings_resources.h",
+      "grit/os_settings_resources_map.cc",
+      "grit/os_settings_resources_map.h",
+      "os_settings_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome"
+  }
+}
+
+if (!is_android && !is_chromeos) {
+  grit("welcome_resources") {
+    source = "welcome/welcome_resources.grd"
+
+    # The .grd contains references to generated files.
+    source_is_generated = true
+
+    deps = [
+      "//chrome/browser/resources/welcome:polymer3_elements",
+    ]
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/welcome_resources.h",
+      "grit/welcome_resources_map.cc",
+      "grit/welcome_resources_map.h",
+      "welcome_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }
@@ -180,21 +327,25 @@ if (!is_android && !is_chromeos) {
 
 if (enable_extensions) {
   grit("extensions_resources") {
-    if (optimize_webui) {
-      source = "md_extensions/extensions_resources_vulcanized.grd"
+    # The .grd contains references to generated files.
+    source_is_generated = true
 
-      # The .grd contains references to generated files.
-      source_is_generated = true
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+    if (optimize_webui) {
+      source = "extensions/extensions_resources_vulcanized.grd"
 
       deps = [
-        "//chrome/browser/resources/md_extensions:build",
-      ]
-      grit_flags = [
-        "-E",
-        "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+        "//chrome/browser/resources/extensions:build",
       ]
     } else {
-      source = "md_extensions/extensions_resources.grd"
+      source = "extensions/extensions_resources.grd"
+
+      deps = [
+        "//chrome/browser/resources/extensions:polymer3_elements",
+      ]
     }
 
     defines = chrome_grit_defines
@@ -221,21 +372,25 @@ if (enable_extensions) {
 
 if (enable_print_preview) {
   grit("print_preview_resources") {
+    # The .grd contains references to generated files.
+    source_is_generated = true
+
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+
     if (optimize_webui) {
       source = "print_preview/print_preview_resources_vulcanized.grd"
-
-      # The .grd contains references to generated files.
-      source_is_generated = true
 
       deps = [
         "//chrome/browser/resources/print_preview:build",
       ]
-      grit_flags = [
-        "-E",
-        "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      ]
     } else {
       source = "print_preview/print_preview_resources.grd"
+      deps = [
+        "//chrome/browser/resources/print_preview/ui:polymer3_elements",
+      ]
     }
 
     defines = chrome_grit_defines
@@ -247,4 +402,70 @@ if (enable_print_preview) {
     ]
     output_dir = "$root_gen_dir/chrome"
   }
+}
+
+if (enable_webui_tab_strip) {
+  grit("tab_strip_resources") {
+    source = "tab_strip/tab_strip_resources.grd"
+    defines = chrome_grit_defines
+    deps = [
+      "tab_strip:tab_strip_modules",
+    ]
+    source_is_generated = true
+    outputs = [
+      "grit/tab_strip_resources.h",
+      "grit/tab_strip_resources_map.cc",
+      "grit/tab_strip_resources_map.h",
+      "tab_strip_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome"
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+  }
+}
+
+repack("dev_ui_paks") {
+  output = "$root_gen_dir/chrome/dev_ui_resources.pak"
+
+  sources = [
+    "$root_gen_dir/chrome/bluetooth_internals_resources.pak",
+    "$root_gen_dir/chrome/omnibox_resources.pak",
+    "$root_gen_dir/chrome/usb_internals_resources.pak",
+    "$root_gen_dir/components/sync_driver_resources.pak",
+    "$root_gen_dir/content/browser/webrtc/resources/webrtc_internals_resources.pak",
+  ]
+  deps = [
+    "//chrome/browser/resources/bluetooth_internals:resources",
+    "//chrome/browser/resources/omnibox:resources",
+    "//chrome/browser/resources/usb_internals:resources",
+    "//components/sync/driver:resources",
+    "//content/browser/webrtc/resources",
+  ]
+}
+
+js2gtest("resources_unitjs_tests") {
+  test_type = "webui"
+  sources = [
+    "gaia_auth_host/password_change_authenticator_test.unitjs",
+  ]
+
+  # This has to be a gen_include, so it doesn't collide with other js2gtests
+  gen_include_files = [ "//ui/webui/resources/js/cr.js" ]
+
+  # But these have to be extra_js_files, since it uses a native object
+  # EventTarget, which doesn't work at compile time.
+  extra_js_files = [
+    "//ui/webui/resources/js/cr/event_target.js",
+    "gaia_auth_host/password_change_authenticator.js",
+  ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}
+
+source_set("browser_tests_js") {
+  testonly = true
+  deps = [
+    ":resources_unitjs_tests",
+  ]
 }

@@ -9,15 +9,14 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "remoting/protocol/message_pipe.h"
 
 namespace net {
 class DrainableIOBuffer;
 class GrowableIOBuffer;
-class IOBuffer;
 }  // namespace net
 
 namespace remoting {
@@ -27,7 +26,6 @@ class VideoPacket;
 
 namespace protocol {
 
-class P2PDatagramSocket;
 class P2PStreamSocket;
 
 // This class is used by unit tests to verify that a connection
@@ -41,8 +39,7 @@ class StreamConnectionTester {
                          int message_count);
   ~StreamConnectionTester();
 
-  void Start();
-  bool done() { return done_; }
+  void Start(base::OnceClosure on_done);
   void CheckResults();
 
  protected:
@@ -56,57 +53,17 @@ class StreamConnectionTester {
   void HandleReadResult(int result);
 
  private:
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   P2PStreamSocket* host_socket_;
   P2PStreamSocket* client_socket_;
   int message_size_;
   int test_data_size_;
-  bool done_;
+  base::OnceClosure on_done_;
 
   scoped_refptr<net::DrainableIOBuffer> output_buffer_;
   scoped_refptr<net::GrowableIOBuffer> input_buffer_;
 
   int write_errors_;
   int read_errors_;
-};
-
-class DatagramConnectionTester {
- public:
-  DatagramConnectionTester(P2PDatagramSocket* client_socket,
-                           P2PDatagramSocket* host_socket,
-                           int message_size,
-                           int message_count,
-                           int delay_ms);
-  ~DatagramConnectionTester() ;
-
-  void Start();
-  void CheckResults();
-
- private:
-  void Done();
-  void DoWrite();
-  void OnWritten(int result);
-  void HandleWriteResult(int result);
-  void DoRead();
-  void OnRead(int result);
-  void HandleReadResult(int result);
-
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  P2PDatagramSocket* host_socket_;
-  P2PDatagramSocket* client_socket_;
-  int message_size_;
-  int message_count_;
-  int delay_ms_;
-  bool done_;
-
-  std::vector<scoped_refptr<net::IOBuffer> > sent_packets_;
-  scoped_refptr<net::IOBuffer> read_buffer_;
-
-  int write_errors_;
-  int read_errors_;
-  int packets_sent_;
-  int packets_received_;
-  int bad_packets_received_;
 };
 
 class MessagePipeConnectionTester : public MessagePipe::EventHandler {

@@ -7,7 +7,7 @@
 
 #include <map>
 
-#include "components/security_interstitials/core/common/interfaces/interstitial_commands.mojom.h"
+#include "components/security_interstitials/core/common/mojom/interstitial_commands.mojom.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "content/public/browser/web_contents_binding_set.h"
 #include "content/public/browser/web_contents_observer.h"

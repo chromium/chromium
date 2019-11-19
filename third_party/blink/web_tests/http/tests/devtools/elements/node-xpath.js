@@ -36,7 +36,8 @@
 
   function dumpNodeData(node, prefix) {
     var result = prefix + '\'' + node.nodeName() + '\':\'' + node.nodeValue() + '\' - \'' +
-        Elements.DOMPath.xPath(node, true) + '\'';
+        Elements.DOMPath.xPath(node, true) + '\' - \'' +
+        Elements.DOMPath.xPath(node, false) + '\'';
     TestRunner.addResult(result.replace(/\r?\n/g, '\\n'));
   }
 })();

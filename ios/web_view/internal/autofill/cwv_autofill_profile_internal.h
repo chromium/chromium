@@ -13,11 +13,13 @@ class AutofillProfile;
 
 @interface CWVAutofillProfile ()
 
-// The internal autofill profile that is wrapped by this object.
-@property(nonatomic, readonly) autofill::AutofillProfile* internalProfile;
-
 - (instancetype)initWithProfile:(const autofill::AutofillProfile&)profile
     NS_DESIGNATED_INITIALIZER;
+
+// The internal autofill profile that is wrapped by this object.
+// Intentionally not declared as a property to avoid issues when read by
+// -[NSObject valueForKey:].
+- (autofill::AutofillProfile*)internalProfile;
 
 @end
 

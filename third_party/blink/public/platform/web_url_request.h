@@ -35,16 +35,17 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
+#include "ui/base/page_transition_types.h"
 
+// TODO(crbug.com/922875): Need foo.mojom.shared-forward.h.
 namespace network {
 namespace mojom {
 enum class CorsPreflightPolicy : int32_t;
-enum class FetchCredentialsMode : int32_t;
-enum class FetchRedirectMode : int32_t;
-enum class FetchRequestMode : int32_t;
+enum class CredentialsMode : int32_t;
+enum class RedirectMode : int32_t;
+enum class ReferrerPolicy : int32_t;
+enum class RequestMode : int32_t;
 enum class RequestContextFrameType : int32_t;
 }  // namespace mojom
 }  // namespace network
@@ -53,6 +54,7 @@ namespace blink {
 
 namespace mojom {
 enum class FetchCacheMode : int32_t;
+enum class RequestContextType : int32_t;
 }  // namespace mojom
 
 class ResourceRequest;
@@ -84,10 +86,11 @@ class WebURLRequest {
   enum PreviewsTypes {
     kPreviewsUnspecified = 0,  // Let the browser process decide whether or
                                // not to request Preview types.
-    kServerLoFiOn = 1 << 0,    // Request a Lo-Fi version of the resource
-                               // from the server.
-    kClientLoFiOn = 1 << 1,    // Request a Lo-Fi version of the resource
-                               // from the client.
+    kServerLoFiOn_DEPRECATED =
+        1 << 0,  // Request a Lo-Fi version of the resource
+                 // from the server. Deprecated and should not be used.
+    kClientLoFiOn = 1 << 1,          // Request a Lo-Fi version of the resource
+                                     // from the client.
     kClientLoFiAutoReload = 1 << 2,  // Request the original version of the
                                      // resource after a decoding error occurred
                                      // when attempting to use Client Lo-Fi.
@@ -106,12 +109,62 @@ class WebURLRequest {
                                    // to a Lite Page server.
     kLazyImageLoadDeferred = 1 << 10,  // Request the placeholder version of an
                                        // image that was deferred by lazyload.
-    kPreviewsStateLast = kLazyImageLoadDeferred
+    kLazyImageAutoReload = 1 << 11,    // Request the full version of an image
+                                       // that was previously fetched as a
+                                       // placeholder by lazyload.
+    kDeferAllScriptOn = 1 << 12,  // Request that script execution be deferred
+                                  // until parsing completes.
+    kSubresourceRedirectOn =
+        1 << 13,  // Allow the subresources in the page to be redirected
+                  // to serve better optimized resources.
+    kPreviewsStateLast = kSubresourceRedirectOn
   };
 
   class ExtraData {
    public:
+    void set_render_frame_id(int render_frame_id) {
+      render_frame_id_ = render_frame_id;
+    }
+    void set_is_main_frame(bool is_main_frame) {
+      is_main_frame_ = is_main_frame;
+    }
+    ui::PageTransition transition_type() const { return transition_type_; }
+    void set_transition_type(ui::PageTransition transition_type) {
+      transition_type_ = transition_type;
+    }
+
+    // The request is for a prefetch-only client (i.e. running NoStatePrefetch)
+    // and should use LOAD_PREFETCH network flags.
+    bool is_for_no_state_prefetch() const { return is_for_no_state_prefetch_; }
+    void set_is_for_no_state_prefetch(bool prefetch) {
+      is_for_no_state_prefetch_ = prefetch;
+    }
+
+    // true if the request originated from within a service worker e.g. due to
+    // a fetch() in the service worker script.
+    void set_originated_from_service_worker(
+        bool originated_from_service_worker) {
+      originated_from_service_worker_ = originated_from_service_worker;
+    }
+
+    // Determines whether SameSite cookies will be attached to the request
+    // even when the request looks cross-site.
+    bool attach_same_site_cookies() const { return attach_same_site_cookies_; }
+    void set_attach_same_site_cookies(bool attach) {
+      attach_same_site_cookies_ = attach;
+    }
+
     virtual ~ExtraData() = default;
+
+   protected:
+    BLINK_PLATFORM_EXPORT ExtraData();
+
+    int render_frame_id_;
+    bool is_main_frame_ = false;
+    ui::PageTransition transition_type_ = ui::PAGE_TRANSITION_LINK;
+    bool is_for_no_state_prefetch_ = false;
+    bool originated_from_service_worker_ = false;
+    bool attach_same_site_cookies_ = false;
   };
 
   BLINK_PLATFORM_EXPORT ~WebURLRequest();
@@ -123,7 +176,7 @@ class WebURLRequest {
   BLINK_PLATFORM_EXPORT bool IsNull() const;
 
   BLINK_PLATFORM_EXPORT WebURL Url() const;
-  BLINK_PLATFORM_EXPORT void SetURL(const WebURL&);
+  BLINK_PLATFORM_EXPORT void SetUrl(const WebURL&);
 
   // Used to implement third-party cookie blocking.
   BLINK_PLATFORM_EXPORT WebURL SiteForCookies() const;
@@ -137,6 +190,10 @@ class WebURLRequest {
   BLINK_PLATFORM_EXPORT WebSecurityOrigin RequestorOrigin() const;
   BLINK_PLATFORM_EXPORT void SetRequestorOrigin(const WebSecurityOrigin&);
 
+  // The origin of the isolated world - set if this is a fetch/XHR initiated by
+  // an isolated world.
+  BLINK_PLATFORM_EXPORT WebSecurityOrigin IsolatedWorldOrigin() const;
+
   // Controls whether user name, password, and cookies may be sent with the
   // request.
   BLINK_PLATFORM_EXPORT bool AllowStoredCredentials() const;
@@ -148,22 +205,22 @@ class WebURLRequest {
   BLINK_PLATFORM_EXPORT base::TimeDelta TimeoutInterval() const;
 
   BLINK_PLATFORM_EXPORT WebString HttpMethod() const;
-  BLINK_PLATFORM_EXPORT void SetHTTPMethod(const WebString&);
+  BLINK_PLATFORM_EXPORT void SetHttpMethod(const WebString&);
 
   BLINK_PLATFORM_EXPORT WebString HttpHeaderField(const WebString& name) const;
   // It's not possible to set the referrer header using this method. Use
-  // SetHTTPReferrer instead.
-  BLINK_PLATFORM_EXPORT void SetHTTPHeaderField(const WebString& name,
+  // SetHttpReferrer instead.
+  BLINK_PLATFORM_EXPORT void SetHttpHeaderField(const WebString& name,
                                                 const WebString& value);
-  BLINK_PLATFORM_EXPORT void SetHTTPReferrer(const WebString& referrer,
+  BLINK_PLATFORM_EXPORT void SetHttpReferrer(const WebString& referrer,
                                              network::mojom::ReferrerPolicy);
-  BLINK_PLATFORM_EXPORT void AddHTTPHeaderField(const WebString& name,
+  BLINK_PLATFORM_EXPORT void AddHttpHeaderField(const WebString& name,
                                                 const WebString& value);
-  BLINK_PLATFORM_EXPORT void ClearHTTPHeaderField(const WebString& name);
-  BLINK_PLATFORM_EXPORT void VisitHTTPHeaderFields(WebHTTPHeaderVisitor*) const;
+  BLINK_PLATFORM_EXPORT void ClearHttpHeaderField(const WebString& name);
+  BLINK_PLATFORM_EXPORT void VisitHttpHeaderFields(WebHTTPHeaderVisitor*) const;
 
   BLINK_PLATFORM_EXPORT WebHTTPBody HttpBody() const;
-  BLINK_PLATFORM_EXPORT void SetHTTPBody(const WebHTTPBody&);
+  BLINK_PLATFORM_EXPORT void SetHttpBody(const WebHTTPBody&);
 
   BLINK_PLATFORM_EXPORT WebHTTPBody AttachedCredential() const;
   BLINK_PLATFORM_EXPORT void SetAttachedCredential(const WebHTTPBody&);
@@ -181,17 +238,12 @@ class WebURLRequest {
   BLINK_PLATFORM_EXPORT mojom::RequestContextType GetRequestContext() const;
   BLINK_PLATFORM_EXPORT void SetRequestContext(mojom::RequestContextType);
 
-  BLINK_PLATFORM_EXPORT network::mojom::RequestContextFrameType GetFrameType()
-      const;
-  BLINK_PLATFORM_EXPORT void SetFrameType(
-      network::mojom::RequestContextFrameType);
-
   BLINK_PLATFORM_EXPORT network::mojom::ReferrerPolicy GetReferrerPolicy()
       const;
 
   // Sets an HTTP origin header if it is empty and the HTTP method of the
   // request requires it.
-  BLINK_PLATFORM_EXPORT void SetHTTPOriginIfNeeded(const WebSecurityOrigin&);
+  BLINK_PLATFORM_EXPORT void SetHttpOriginIfNeeded(const WebSecurityOrigin&);
 
   // True if the request was user initiated.
   BLINK_PLATFORM_EXPORT bool HasUserGesture() const;
@@ -201,17 +253,6 @@ class WebURLRequest {
   // requestor.
   BLINK_PLATFORM_EXPORT int RequestorID() const;
   BLINK_PLATFORM_EXPORT void SetRequestorID(int);
-
-  // The unique child id (not PID) of the process from which this request
-  // originated. In the case of out-of-process plugins, this allows to link back
-  // the request to the plugin process (as it is processed through a render view
-  // process).
-  BLINK_PLATFORM_EXPORT int GetPluginChildID() const;
-  BLINK_PLATFORM_EXPORT void SetPluginChildID(int);
-
-  // Allows the request to be matched up with its app cache host.
-  BLINK_PLATFORM_EXPORT int AppCacheHostID() const;
-  BLINK_PLATFORM_EXPORT void SetAppCacheHostID(int);
 
   // If true, the client expects to receive the raw response pipe. Similar to
   // UseStreamOnResponse but the stream will be a mojo DataPipe rather than a
@@ -237,22 +278,18 @@ class WebURLRequest {
   BLINK_PLATFORM_EXPORT void SetShouldResetAppCache(bool);
 
   // The request mode which will be passed to the ServiceWorker.
-  BLINK_PLATFORM_EXPORT network::mojom::FetchRequestMode GetFetchRequestMode()
-      const;
-  BLINK_PLATFORM_EXPORT void SetFetchRequestMode(
-      network::mojom::FetchRequestMode);
+  BLINK_PLATFORM_EXPORT network::mojom::RequestMode GetMode() const;
+  BLINK_PLATFORM_EXPORT void SetMode(network::mojom::RequestMode);
 
   // The credentials mode which will be passed to the ServiceWorker.
-  BLINK_PLATFORM_EXPORT network::mojom::FetchCredentialsMode
-  GetFetchCredentialsMode() const;
-  BLINK_PLATFORM_EXPORT void SetFetchCredentialsMode(
-      network::mojom::FetchCredentialsMode);
+  BLINK_PLATFORM_EXPORT network::mojom::CredentialsMode GetCredentialsMode()
+      const;
+  BLINK_PLATFORM_EXPORT void SetCredentialsMode(
+      network::mojom::CredentialsMode);
 
   // The redirect mode which is used in Fetch API.
-  BLINK_PLATFORM_EXPORT network::mojom::FetchRedirectMode GetFetchRedirectMode()
-      const;
-  BLINK_PLATFORM_EXPORT void SetFetchRedirectMode(
-      network::mojom::FetchRedirectMode);
+  BLINK_PLATFORM_EXPORT network::mojom::RedirectMode GetRedirectMode() const;
+  BLINK_PLATFORM_EXPORT void SetRedirectMode(network::mojom::RedirectMode);
 
   // The integrity which is used in Fetch API.
   BLINK_PLATFORM_EXPORT WebString GetFetchIntegrity() const;
@@ -318,10 +355,26 @@ class WebURLRequest {
   BLINK_PLATFORM_EXPORT const WebString GetRequestedWithHeader() const;
   BLINK_PLATFORM_EXPORT void SetRequestedWithHeader(const WebString&);
 
+  // Remembers 'Purpose' header value. Blink should not set this header value
+  // until CORS checks are done to avoid running checks even against headers
+  // that are internally set.
+  BLINK_PLATFORM_EXPORT const WebString GetPurposeHeader() const;
+
   // https://fetch.spec.whatwg.org/#concept-request-window
   // See network::ResourceRequest::fetch_window_id for details.
   BLINK_PLATFORM_EXPORT const base::UnguessableToken& GetFetchWindowId() const;
   BLINK_PLATFORM_EXPORT void SetFetchWindowId(const base::UnguessableToken&);
+
+  BLINK_PLATFORM_EXPORT base::Optional<WebString> GetDevToolsId() const;
+
+  BLINK_PLATFORM_EXPORT int GetLoadFlagsForWebUrlRequest() const;
+
+  BLINK_PLATFORM_EXPORT bool IsFromOriginDirtyStyleSheet() const;
+
+  BLINK_PLATFORM_EXPORT bool IsSignedExchangePrefetchCacheEnabled() const;
+
+  BLINK_PLATFORM_EXPORT base::Optional<base::UnguessableToken>
+  RecursivePrefetchToken() const;
 
 #if INSIDE_BLINK
   BLINK_PLATFORM_EXPORT ResourceRequest& ToMutableResourceRequest();

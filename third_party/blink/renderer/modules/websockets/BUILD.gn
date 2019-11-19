@@ -19,9 +19,11 @@ blink_modules_sources("websockets") {
     "websocket_channel_client.h",
     "websocket_channel_impl.cc",
     "websocket_channel_impl.h",
-    "websocket_handle.h",
-    "websocket_handle_client.h",
-    "websocket_handle_impl.cc",
-    "websocket_handle_impl.h",
+    "websocket_common.cc",
+    "websocket_common.h",
+    "websocket_message_chunk_accumulator.cc",
+    "websocket_message_chunk_accumulator.h",
+    "websocket_stream.cc",
+    "websocket_stream.h",
   ]
 }

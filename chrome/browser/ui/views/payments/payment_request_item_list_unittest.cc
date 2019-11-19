@@ -61,7 +61,7 @@ TEST(PaymentRequestItemListTest, TestAddItem) {
   PaymentRequestItemList list(nullptr);
 
   std::unique_ptr<views::View> list_view = list.CreateListView();
-  EXPECT_FALSE(list_view->has_children());
+  EXPECT_TRUE(list_view->children().empty());
 
   std::vector<std::unique_ptr<TestListItem>> items;
   items.push_back(std::make_unique<TestListItem>(&list, false));
@@ -85,7 +85,7 @@ TEST(PaymentRequestItemListTest, TestAddItem) {
   EXPECT_TRUE(item_pointers[3]->selected());
 
   list_view = list.CreateListView();
-  EXPECT_EQ(4, list_view->child_count());
+  EXPECT_EQ(4u, list_view->children().size());
 }
 
 TEST(PaymentRequestItemListTest, TestSelectItemResultsInSingleItemSelected) {

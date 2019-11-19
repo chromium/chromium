@@ -4,17 +4,6 @@ Tested locations: 1200,1500
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 585],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [1600, 585],
       "contentsOpaque": true,
@@ -31,26 +20,32 @@ Tested locations: 1200,1500
           "reason": "incremental"
         },
         {
-          "object": "LayoutBlockFlow DIV id='box'",
+          "object": "LayoutNGBlockFlow DIV id='box'",
           "rect": [1500, 0, 100, 100],
           "reason": "paint property change"
         },
         {
-          "object": "LayoutBlockFlow DIV id='box'",
+          "object": "LayoutNGBlockFlow DIV id='box'",
           "rect": [1200, 0, 100, 100],
           "reason": "paint property change"
         },
         {
-          "object": "LayoutBlockFlow DIV id='box'",
+          "object": "LayoutNGBlockFlow DIV id='box'",
           "rect": [1200, 0, 100, 100],
           "reason": "paint property change"
         },
         {
-          "object": "LayoutBlockFlow DIV id='box'",
+          "object": "LayoutNGBlockFlow DIV id='box'",
           "rect": [900, 0, 100, 100],
           "reason": "paint property change"
         }
       ]
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 585],
+      "bounds": [800, 15],
+      "contentsOpaque": true
     }
   ]
 }

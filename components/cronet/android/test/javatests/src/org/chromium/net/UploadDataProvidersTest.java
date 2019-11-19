@@ -14,6 +14,7 @@ import static org.chromium.net.CronetTestRule.getContext;
 import android.os.ConditionVariable;
 import android.os.ParcelFileDescriptor;
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;
@@ -21,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /** Test the default provided implementations of {@link UploadDataProvider} */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class UploadDataProvidersTest {
     private static final String LOREM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
             + "Proin elementum, libero laoreet fringilla faucibus, metus tortor vehicula ante, "

@@ -5,7 +5,7 @@
 
 from core.css import css_properties
 import json5_generator
-from name_utilities import enum_for_css_keyword
+from name_utilities import enum_key_for_css_keyword
 import template_expander
 
 
@@ -29,9 +29,9 @@ class CSSOMTypesWriter(json5_generator.Writer):
                 types.append(single_type)
             property_['typedom_types'] = types
 
-            # Generate Keyword ID values from keywords.
+            # Generate CSSValueID values from keywords.
             property_['keywordIDs'] = map(
-                enum_for_css_keyword, property_['keywords'])
+                enum_key_for_css_keyword, property_['keywords'])
 
         self._outputs = {
             'cssom_types.cc': self.generate_types,

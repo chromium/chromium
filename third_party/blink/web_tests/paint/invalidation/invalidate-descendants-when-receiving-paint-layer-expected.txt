@@ -1,39 +1,22 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow DIV id='child'",
+          "object": "LayoutNGBlockFlow DIV id='child'",
           "rect": [9, 9, 100, 100],
           "reason": "disappeared"
         },
         {
-          "object": "LayoutBlockFlow DIV id='target'",
+          "object": "LayoutNGBlockFlow DIV id='target'",
           "rect": [9, 9, 100, 100],
           "reason": "chunk appeared"
         }
       ]
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV",
-      "position": [8, 8],
-      "contentsOpaque": true,
-      "drawsContent": false
     }
   ]
 }

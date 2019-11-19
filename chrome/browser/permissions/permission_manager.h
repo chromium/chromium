@@ -16,6 +16,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_type.h"
+#include "url/origin.h"
 
 class PermissionContextBase;
 struct PermissionResult;
@@ -41,7 +42,8 @@ class PermissionManager : public KeyedService,
   // GetPermissionStatus, take the actual origin and do the canonicalization
   // internally. You only need to call this directly if you do something else
   // with the origin, such as display it in the UI.
-  GURL GetCanonicalOrigin(const GURL& requesting_origin,
+  GURL GetCanonicalOrigin(ContentSettingsType permission,
+                          const GURL& requesting_origin,
                           const GURL& embedding_origin) const;
 
   // Callers from within chrome/ should use the methods which take the
@@ -53,13 +55,13 @@ class PermissionManager : public KeyedService,
                         content::RenderFrameHost* render_frame_host,
                         const GURL& requesting_origin,
                         bool user_gesture,
-                        const base::Callback<void(ContentSetting)>& callback);
+                        base::OnceCallback<void(ContentSetting)> callback);
   int RequestPermissions(
       const std::vector<ContentSettingsType>& permissions,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool user_gesture,
-      const base::Callback<void(const std::vector<ContentSetting>&)>& callback);
+      base::OnceCallback<void(const std::vector<ContentSetting>&)> callback);
 
   PermissionResult GetPermissionStatus(ContentSettingsType permission,
                                        const GURL& requesting_origin,
@@ -77,20 +79,19 @@ class PermissionManager : public KeyedService,
       const GURL& requesting_origin);
 
   // content::PermissionControllerDelegate implementation.
-  int RequestPermission(
-      content::PermissionType permission,
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
-      const base::Callback<void(blink::mojom::PermissionStatus)>& callback)
-      override;
+  int RequestPermission(content::PermissionType permission,
+                        content::RenderFrameHost* render_frame_host,
+                        const GURL& requesting_origin,
+                        bool user_gesture,
+                        base::OnceCallback<void(blink::mojom::PermissionStatus)>
+                            callback) override;
   int RequestPermissions(
       const std::vector<content::PermissionType>& permissions,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool user_gesture,
-      const base::Callback<
-          void(const std::vector<blink::mojom::PermissionStatus>&)>& callback)
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override;
   void ResetPermission(content::PermissionType permission,
                        const GURL& requesting_origin,
@@ -103,11 +104,13 @@ class PermissionManager : public KeyedService,
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin) override;
+  bool IsPermissionOverridableByDevTools(content::PermissionType permission,
+                                         const url::Origin& origin) override;
   int SubscribePermissionStatusChange(
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
-      const base::Callback<void(blink::mojom::PermissionStatus)>& callback)
+      base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
   void UnsubscribePermissionStatusChange(int subscription_id) override;
 
@@ -116,13 +119,15 @@ class PermissionManager : public KeyedService,
   // denied due to the kill switch.
   bool IsPermissionKillSwitchOn(ContentSettingsType);
 
-  using PermissionOverrides = std::set<content::PermissionType>;
+  // For the given |origin|, overrides permissions that belong to |overrides|.
+  // These permissions are in-sync with the PermissionController.
+  void SetPermissionOverridesForDevTools(
+      const url::Origin& origin,
+      const PermissionOverrides& overrides) override;
+  void ResetPermissionOverridesForDevTools() override;
 
-  // For the given |origin|, grant permissions that belong to |overrides|
-  // and reject all others.
-  void SetPermissionOverridesForDevTools(const GURL& origin,
-                                         const PermissionOverrides& overrides);
-  void ResetPermissionOverridesForDevTools();
+  // KeyedService implementation
+  void Shutdown() override;
 
  private:
   friend class PermissionManagerTest;
@@ -135,9 +140,6 @@ class PermissionManager : public KeyedService,
 
   struct Subscription;
   using SubscriptionsMap = base::IDMap<std::unique_ptr<Subscription>>;
-
-  // KeyedService implementation
-  void Shutdown() override;
 
   PermissionContextBase* GetPermissionContext(ContentSettingsType type);
 
@@ -164,7 +166,7 @@ class PermissionManager : public KeyedService,
       const GURL& embedding_origin);
 
   ContentSetting GetPermissionOverrideForDevTools(
-      const GURL& origin,
+      const url::Origin& origin,
       ContentSettingsType permission);
 
   Profile* profile_;
@@ -175,8 +177,12 @@ class PermissionManager : public KeyedService,
                      std::unique_ptr<PermissionContextBase>,
                      ContentSettingsTypeHash>
       permission_contexts_;
-  using ContentSettingsTypeOverrides = std::set<ContentSettingsType>;
-  std::map<GURL, ContentSettingsTypeOverrides> devtools_permission_overrides_;
+  using ContentSettingsTypeOverrides =
+      base::flat_map<ContentSettingsType, ContentSetting>;
+  std::map<url::Origin, ContentSettingsTypeOverrides>
+      devtools_permission_overrides_;
+
+  bool is_shutting_down_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(PermissionManager);
 };

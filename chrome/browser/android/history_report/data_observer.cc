@@ -51,20 +51,20 @@ void DataObserver::BookmarkModelBeingDeleted(BookmarkModel* model) {
 
 void DataObserver::BookmarkNodeMoved(BookmarkModel* model,
                                      const BookmarkNode* old_parent,
-                                     int old_index,
+                                     size_t old_index,
                                      const BookmarkNode* new_parent,
-                                     int new_index) {}
+                                     size_t new_index) {}
 
 void DataObserver::BookmarkNodeAdded(BookmarkModel* model,
                                      const BookmarkNode* parent,
-                                     int index) {
-  delta_file_service_->PageAdded(parent->GetChild(index)->url());
+                                     size_t index) {
+  delta_file_service_->PageAdded(parent->children()[index]->url());
   data_changed_callback_.Run();
 }
 
 void DataObserver::BookmarkNodeRemoved(BookmarkModel* model,
                                        const BookmarkNode* parent,
-                                       int old_index,
+                                       size_t old_index,
                                        const BookmarkNode* node,
                                        const std::set<GURL>& removed_urls) {
   DeleteBookmarks(removed_urls);

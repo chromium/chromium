@@ -1,0 +1,39 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("power") {
+  output_name = "chromeos_power"
+  defines = [ "IS_CHROMEOS_POWER_IMPL" ]
+  deps = [
+    "//base",
+    "//chromeos/dbus/power",
+    "//services/device/public/mojom",
+    "//services/service_manager/public/cpp",
+  ]
+
+  sources = [
+    "dark_resume_controller.cc",
+    "dark_resume_controller.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "dark_resume_controller_unittest.cc",
+  ]
+
+  deps = [
+    ":power",
+    "//base/test:test_support",
+    "//chromeos/dbus/power",
+    "//services/device/public/cpp:test_support",
+    "//services/device/public/mojom",
+    "//services/service_manager/public/cpp/test:test_support",
+    "//testing/gtest",
+  ]
+}

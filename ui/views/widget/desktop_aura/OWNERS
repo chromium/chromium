@@ -1,2 +1,3 @@
 per-file *x11*=thomasanderson@chromium.org
 per-file window_event_filter*=thomasanderson@chromium.org
+per-file *linux*=thomasanderson@chromium.org

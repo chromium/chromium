@@ -11,21 +11,21 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/screen_pinning_controller.h"
-#include "ash/wm/window_parenting_utils.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_state_util.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/workspace_controller.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/display/display.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
-namespace wm {
 namespace {
 
 // This specifies how much percent (30%) of a window rect
@@ -36,6 +36,9 @@ const float kMinimumPercentOnScreenArea = 0.3f;
 // unmaximized, inset the bounds slightly so that they are not exactly the same.
 // This makes it easier to resize the window.
 const int kMaximizedWindowInset = 10;  // DIPs.
+
+constexpr char kSnapWindowSmoothnessHistogramName[] =
+    "Ash.Window.AnimationSmoothness.Snap";
 
 gfx::Size GetWindowMaximumSize(aura::Window* window) {
   return window->delegate() ? window->delegate()->GetMaximumSize()
@@ -74,7 +77,28 @@ void MoveToDisplayForRestore(WindowState* window_state) {
 
 }  // namespace
 
-DefaultState::DefaultState(mojom::WindowStateType initial_state_type)
+class ScopedMeasureBoundsAnimation {
+ public:
+  ScopedMeasureBoundsAnimation(WindowState* window_state,
+                               const std::string& histogram_name)
+      : window_state_(window_state) {
+    window_state_->set_animation_smoothness_histogram_name(
+        base::make_optional(histogram_name));
+  }
+  ~ScopedMeasureBoundsAnimation() {
+    window_state_->set_animation_smoothness_histogram_name(base::nullopt);
+  }
+
+  ScopedMeasureBoundsAnimation(const ScopedMeasureBoundsAnimation& other) =
+      delete;
+  ScopedMeasureBoundsAnimation& operator=(
+      const ScopedMeasureBoundsAnimation& rhs) = delete;
+
+ private:
+  WindowState* window_state_;
+};
+
+DefaultState::DefaultState(WindowStateType initial_state_type)
     : BaseState(initial_state_type), stored_window_state_(nullptr) {}
 
 DefaultState::~DefaultState() = default;
@@ -101,10 +125,11 @@ void DefaultState::AttachState(WindowState* window_state,
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           window_state->window());
   if (stored_display_state_.bounds() != current_display.bounds()) {
-    const WMEvent event(wm::WM_EVENT_DISPLAY_BOUNDS_CHANGED);
+    const DisplayMetricsChangedWMEvent event(
+        display::DisplayObserver::DISPLAY_METRIC_BOUNDS);
     window_state->OnWMEvent(&event);
   } else if (stored_display_state_.work_area() != current_display.work_area()) {
-    const WMEvent event(wm::WM_EVENT_WORKAREA_BOUNDS_CHANGED);
+    const WMEvent event(WM_EVENT_WORKAREA_BOUNDS_CHANGED);
     window_state->OnWMEvent(&event);
   }
 }
@@ -162,10 +187,10 @@ void DefaultState::HandleWorkspaceEvents(WindowState* window_state,
       // visibility which should be enough to see where the window gets
       // moved.
       gfx::Rect display_area = screen_util::GetDisplayBoundsInParent(window);
-      int min_width = bounds.width() * wm::kMinimumPercentOnScreenArea;
-      int min_height = bounds.height() * wm::kMinimumPercentOnScreenArea;
-      wm::AdjustBoundsToEnsureWindowVisibility(display_area, min_width,
-                                               min_height, &bounds);
+      int min_width = bounds.width() * kMinimumPercentOnScreenArea;
+      int min_height = bounds.height() * kMinimumPercentOnScreenArea;
+      AdjustBoundsToEnsureWindowVisibility(display_area, min_width, min_height,
+                                           &bounds);
       window_state->AdjustSnappedBounds(&bounds);
       if (window->bounds() != bounds)
         window_state->SetBoundsConstrained(bounds);
@@ -191,9 +216,14 @@ void DefaultState::HandleWorkspaceEvents(WindowState* window_state,
     case WM_EVENT_WORKAREA_BOUNDS_CHANGED: {
       // Don't resize the maximized window when the desktop is covered
       // by fullscreen window. crbug.com/504299.
-      bool in_fullscreen =
-          RootWindowController::ForWindow(window_state->window())
-              ->GetWorkspaceWindowState() == WORKSPACE_WINDOW_STATE_FULL_SCREEN;
+      // TODO(afakhry): Decide whether we want the active desk's workspace, or
+      // the workspace of the desk of `window_state->window()`.
+      // For now use the active desk's.
+      auto* workspace_controller =
+          GetActiveWorkspaceController(window_state->window()->GetRootWindow());
+      DCHECK(workspace_controller);
+      bool in_fullscreen = workspace_controller->GetWindowState() ==
+                           WorkspaceWindowState::kFullscreen;
       if (in_fullscreen && window_state->IsMaximized())
         return;
 
@@ -206,8 +236,8 @@ void DefaultState::HandleWorkspaceEvents(WindowState* window_state,
           screen_util::GetDisplayWorkAreaBoundsInParent(window_state->window());
       gfx::Rect bounds = window_state->window()->GetTargetBounds();
       if (!::wm::GetTransientParent(window_state->window())) {
-        wm::AdjustBoundsToEnsureMinimumWindowVisibility(work_area_in_parent,
-                                                        &bounds);
+        AdjustBoundsToEnsureMinimumWindowVisibility(work_area_in_parent,
+                                                    &bounds);
       }
       window_state->AdjustSnappedBounds(&bounds);
       if (window_state->window()->GetTargetBounds() != bounds)
@@ -228,7 +258,7 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
   switch (event->type()) {
     case WM_EVENT_TOGGLE_MAXIMIZE_CAPTION:
       if (window_state->IsFullscreen()) {
-        const wm::WMEvent event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+        const WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
         window_state->OnWMEvent(&event);
       } else if (window_state->IsMaximized()) {
         window_state->Restore();
@@ -239,7 +269,7 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
       return;
     case WM_EVENT_TOGGLE_MAXIMIZE:
       if (window_state->IsFullscreen()) {
-        const wm::WMEvent event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+        const WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
         window_state->OnWMEvent(&event);
       } else if (window_state->IsMaximized()) {
         window_state->Restore();
@@ -291,7 +321,7 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
         gfx::Rect new_bounds(work_area.x(), window->bounds().y(),
                              work_area.width(), window->bounds().height());
 
-        gfx::Rect restore_bounds = window->bounds();
+        gfx::Rect restore_bounds = window->GetTargetBounds();
         if (window_state->IsSnapped()) {
           window_state->SetRestoreBoundsInParent(new_bounds);
           window_state->Restore();
@@ -323,8 +353,8 @@ void DefaultState::HandleBoundsEvents(WindowState* window_state,
                                       const WMEvent* event) {
   switch (event->type()) {
     case WM_EVENT_SET_BOUNDS: {
-      const SetBoundsEvent* set_bounds_event =
-          static_cast<const SetBoundsEvent*>(event);
+      const SetBoundsWMEvent* set_bounds_event =
+          static_cast<const SetBoundsWMEvent*>(event);
       SetBounds(window_state, set_bounds_event);
     } break;
     case WM_EVENT_CENTER:
@@ -338,8 +368,8 @@ void DefaultState::HandleBoundsEvents(WindowState* window_state,
 
 void DefaultState::HandleTransitionEvents(WindowState* window_state,
                                           const WMEvent* event) {
-  mojom::WindowStateType current_state_type = window_state->GetStateType();
-  mojom::WindowStateType next_state_type = GetStateForTransitionEvent(event);
+  WindowStateType current_state_type = window_state->GetStateType();
+  WindowStateType next_state_type = GetStateForTransitionEvent(event);
   if (event->IsPinEvent()) {
     // If there already is a pinned window, it is not allowed to set it
     // to this window.
@@ -355,8 +385,8 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
   if (next_state_type == current_state_type && window_state->IsSnapped()) {
     gfx::Rect snapped_bounds = GetSnappedWindowBoundsInParent(
         window_state->window(), event->type() == WM_EVENT_SNAP_LEFT
-                                    ? mojom::WindowStateType::LEFT_SNAPPED
-                                    : mojom::WindowStateType::RIGHT_SNAPPED);
+                                    ? WindowStateType::kLeftSnapped
+                                    : WindowStateType::kRightSnapped);
     window_state->SetBoundsDirectAnimated(snapped_bounds);
     return;
   }
@@ -388,27 +418,39 @@ bool DefaultState::SetMaximizedOrFullscreenBounds(WindowState* window_state) {
 
 // static
 void DefaultState::SetBounds(WindowState* window_state,
-                             const SetBoundsEvent* event) {
+                             const SetBoundsWMEvent* event) {
   if (window_state->is_dragged() || window_state->allow_set_bounds_direct()) {
-    // TODO(oshima|varkha): Is this still needed? crbug.com/485612.
-    window_state->SetBoundsDirect(event->requested_bounds());
+    if (event->animate()) {
+      window_state->SetBoundsDirectAnimated(event->requested_bounds(),
+                                            event->duration());
+    } else {
+      // TODO(oshima|varkha): Is this still needed? crbug.com/485612.
+      window_state->SetBoundsDirect(event->requested_bounds());
+    }
   } else if (!SetMaximizedOrFullscreenBounds(window_state)) {
     if (event->animate()) {
       window_state->SetBoundsDirectAnimated(event->requested_bounds(),
                                             event->duration());
     } else {
       window_state->SetBoundsConstrained(event->requested_bounds());
+      // Update the restore size if the bounds is updated by PIP itself.
+      if (window_state->IsPip() && window_state->HasRestoreBounds()) {
+        gfx::Rect restore_bounds = window_state->GetRestoreBoundsInScreen();
+        restore_bounds.set_size(
+            window_state->window()->GetTargetBounds().size());
+        window_state->SetRestoreBoundsInScreen(restore_bounds);
+      }
     }
   }
 }
 
 void DefaultState::EnterToNextState(WindowState* window_state,
-                                    mojom::WindowStateType next_state_type) {
+                                    WindowStateType next_state_type) {
   // Do nothing if  we're already in the same state.
   if (state_type_ == next_state_type)
     return;
 
-  mojom::WindowStateType previous_state_type = state_type_;
+  WindowStateType previous_state_type = state_type_;
   state_type_ = next_state_type;
 
   window_state->UpdateWindowPropertiesFromStateType();
@@ -420,8 +462,8 @@ void DefaultState::EnterToNextState(WindowState* window_state,
   // we still need this.
   if (window_state->window()->parent()) {
     if (!window_state->HasRestoreBounds() &&
-        (previous_state_type == mojom::WindowStateType::DEFAULT ||
-         previous_state_type == mojom::WindowStateType::NORMAL) &&
+        (previous_state_type == WindowStateType::kDefault ||
+         previous_state_type == WindowStateType::kNormal) &&
         !window_state->IsMinimized() && !window_state->IsNormalStateType()) {
       window_state->SaveCurrentBoundsForRestore();
     }
@@ -431,7 +473,7 @@ void DefaultState::EnterToNextState(WindowState* window_state,
     // (The restore bounds are set if a user maximized the window in one
     // axis by double clicking the window border for example).
     gfx::Rect restore_bounds_in_screen;
-    if (previous_state_type == mojom::WindowStateType::MINIMIZED &&
+    if (previous_state_type == WindowStateType::kMinimized &&
         window_state->IsNormalStateType() && window_state->HasRestoreBounds() &&
         !window_state->unminimize_to_restore_bounds()) {
       restore_bounds_in_screen = window_state->GetRestoreBoundsInScreen();
@@ -453,10 +495,10 @@ void DefaultState::EnterToNextState(WindowState* window_state,
   }
   window_state->NotifyPostStateTypeChange(previous_state_type);
 
-  if (next_state_type == mojom::WindowStateType::PINNED ||
-      previous_state_type == mojom::WindowStateType::PINNED ||
-      next_state_type == mojom::WindowStateType::TRUSTED_PINNED ||
-      previous_state_type == mojom::WindowStateType::TRUSTED_PINNED) {
+  if (next_state_type == WindowStateType::kPinned ||
+      previous_state_type == WindowStateType::kPinned ||
+      next_state_type == WindowStateType::kTrustedPinned ||
+      previous_state_type == WindowStateType::kTrustedPinned) {
     Shell::Get()->screen_pinning_controller()->SetPinnedWindow(
         window_state->window());
   }
@@ -465,27 +507,26 @@ void DefaultState::EnterToNextState(WindowState* window_state,
 void DefaultState::ReenterToCurrentState(
     WindowState* window_state,
     WindowState::State* state_in_previous_mode) {
-  mojom::WindowStateType previous_state_type =
-      state_in_previous_mode->GetType();
+  WindowStateType previous_state_type = state_in_previous_mode->GetType();
 
   // A state change should not move a window into or out of full screen or
   // pinned since these are "special mode" the user wanted to be in and
   // should be respected as such.
-  if (previous_state_type == mojom::WindowStateType::FULLSCREEN ||
-      previous_state_type == mojom::WindowStateType::PINNED ||
-      previous_state_type == mojom::WindowStateType::TRUSTED_PINNED) {
+  if (previous_state_type == WindowStateType::kFullscreen ||
+      previous_state_type == WindowStateType::kPinned ||
+      previous_state_type == WindowStateType::kTrustedPinned) {
     state_type_ = previous_state_type;
-  } else if (state_type_ == mojom::WindowStateType::FULLSCREEN ||
-             state_type_ == mojom::WindowStateType::PINNED ||
-             state_type_ == mojom::WindowStateType::TRUSTED_PINNED) {
+  } else if (state_type_ == WindowStateType::kFullscreen ||
+             state_type_ == WindowStateType::kPinned ||
+             state_type_ == WindowStateType::kTrustedPinned) {
     state_type_ = previous_state_type;
   }
 
   window_state->UpdateWindowPropertiesFromStateType();
   window_state->NotifyPreStateTypeChange(previous_state_type);
 
-  if ((state_type_ == mojom::WindowStateType::NORMAL ||
-       state_type_ == mojom::WindowStateType::DEFAULT) &&
+  if ((state_type_ == WindowStateType::kNormal ||
+       state_type_ == WindowStateType::kDefault) &&
       !stored_bounds_.IsEmpty()) {
     // Use the restore mechanism to set the bounds for
     // the window in normal state. This also covers unminimize case.
@@ -504,20 +545,19 @@ void DefaultState::ReenterToCurrentState(
   window_state->NotifyPostStateTypeChange(previous_state_type);
 }
 
-void DefaultState::UpdateBoundsFromState(
-    WindowState* window_state,
-    mojom::WindowStateType previous_state_type) {
+void DefaultState::UpdateBoundsFromState(WindowState* window_state,
+                                         WindowStateType previous_state_type) {
   aura::Window* window = window_state->window();
   gfx::Rect bounds_in_parent;
   switch (state_type_) {
-    case mojom::WindowStateType::LEFT_SNAPPED:
-    case mojom::WindowStateType::RIGHT_SNAPPED:
+    case WindowStateType::kLeftSnapped:
+    case WindowStateType::kRightSnapped:
       bounds_in_parent =
           GetSnappedWindowBoundsInParent(window_state->window(), state_type_);
       break;
 
-    case mojom::WindowStateType::DEFAULT:
-    case mojom::WindowStateType::NORMAL: {
+    case WindowStateType::kDefault:
+    case WindowStateType::kNormal: {
       gfx::Rect work_area_in_parent =
           screen_util::GetDisplayWorkAreaBoundsInParent(window);
       if (window_state->HasRestoreBounds()) {
@@ -525,7 +565,7 @@ void DefaultState::UpdateBoundsFromState(
         // Check if the |window|'s restored size is bigger than the working area
         // This may happen if a window was resized to maximized bounds or if the
         // display resolution changed while the window was maximized.
-        if (previous_state_type == mojom::WindowStateType::MAXIMIZED &&
+        if (previous_state_type == WindowStateType::kMaximized &&
             bounds_in_parent.width() >= work_area_in_parent.width() &&
             bounds_in_parent.height() >= work_area_in_parent.height()) {
           bounds_in_parent = work_area_in_parent;
@@ -540,46 +580,57 @@ void DefaultState::UpdateBoundsFromState(
         // Avoid doing this while the window is being dragged as its root
         // window hasn't been updated yet in the case of dragging to another
         // display. crbug.com/666836.
-        wm::AdjustBoundsToEnsureMinimumWindowVisibility(work_area_in_parent,
-                                                        &bounds_in_parent);
+        AdjustBoundsToEnsureMinimumWindowVisibility(work_area_in_parent,
+                                                    &bounds_in_parent);
       }
       break;
     }
-    case mojom::WindowStateType::MAXIMIZED:
+    case WindowStateType::kMaximized:
       bounds_in_parent = screen_util::GetMaximizedWindowBoundsInParent(window);
       break;
 
-    case mojom::WindowStateType::FULLSCREEN:
-    case mojom::WindowStateType::PINNED:
-    case mojom::WindowStateType::TRUSTED_PINNED:
+    case WindowStateType::kFullscreen:
+    case WindowStateType::kPinned:
+    case WindowStateType::kTrustedPinned:
       bounds_in_parent = screen_util::GetFullscreenWindowBoundsInParent(window);
       break;
 
-    case mojom::WindowStateType::MINIMIZED:
+    case WindowStateType::kMinimized:
       break;
-    case mojom::WindowStateType::INACTIVE:
-    case mojom::WindowStateType::AUTO_POSITIONED:
-    case mojom::WindowStateType::PIP:
+    case WindowStateType::kInactive:
+    case WindowStateType::kAutoPositioned:
+    case WindowStateType::kPip:
       return;
   }
 
-  if (!window_state->IsMinimized()) {
-    if (IsMinimizedWindowStateType(previous_state_type) ||
-        window_state->IsFullscreen() || window_state->IsPinned()) {
-      window_state->SetBoundsDirect(bounds_in_parent);
-    } else if (window_state->IsMaximized() ||
-               IsMaximizedOrFullscreenOrPinnedWindowStateType(
-                   previous_state_type)) {
-      window_state->SetBoundsDirectCrossFade(bounds_in_parent);
-    } else if (window_state->is_dragged()) {
-      // SetBoundsDirectAnimated does not work when the window gets reparented.
-      // TODO(oshima): Consider fixing it and reenable the animation.
-      window_state->SetBoundsDirect(bounds_in_parent);
+  if (window_state->IsMinimized())
+    return;
+
+  if (IsMinimizedWindowStateType(previous_state_type) ||
+      window_state->IsFullscreen() || window_state->IsPinned() ||
+      window_state->bounds_animation_type() ==
+          WindowState::BoundsChangeAnimationType::IMMEDIATE) {
+    window_state->SetBoundsDirect(bounds_in_parent);
+  } else if (window_state->IsMaximized() ||
+             IsMaximizedOrFullscreenOrPinnedWindowStateType(
+                 previous_state_type)) {
+    window_state->SetBoundsDirectCrossFade(bounds_in_parent);
+  } else if (window_state->is_dragged()) {
+    // SetBoundsDirectAnimated does not work when the window gets reparented.
+    // TODO(oshima): Consider fixing it and re-enable the animation.
+    window_state->SetBoundsDirect(bounds_in_parent);
+  } else {
+    // Record smoothness of the snapping animation if the size of the window
+    // changes.
+    if (window_state->IsSnapped() &&
+        bounds_in_parent.size() != window->bounds().size()) {
+      ScopedMeasureBoundsAnimation scoped(window_state,
+                                          kSnapWindowSmoothnessHistogramName);
+      window_state->SetBoundsDirectAnimated(bounds_in_parent);
     } else {
       window_state->SetBoundsDirectAnimated(bounds_in_parent);
     }
   }
 }
 
-}  // namespace wm
 }  // namespace ash

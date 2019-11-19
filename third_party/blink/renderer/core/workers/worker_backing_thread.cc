@@ -17,9 +17,8 @@
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/web_thread_supporting_gc.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -56,35 +55,28 @@ void MemoryPressureNotificationToWorkerThreadIsolates(
   WorkerBackingThread::MemoryPressureNotificationToWorkerThreadIsolates(level);
 }
 
-void SetRAILModeOnWorkerThreadIsolates(v8::RAILMode rail_mode) {
-  WorkerBackingThread::SetRAILModeOnWorkerThreadIsolates(rail_mode);
-}
-
 WorkerBackingThread::WorkerBackingThread(const ThreadCreationParams& params)
-    : backing_thread_(WebThreadSupportingGC::Create(params)) {}
+    : backing_thread_(blink::Thread::CreateThread(
+          ThreadCreationParams(params).SetSupportsGC(true))) {}
 
 WorkerBackingThread::~WorkerBackingThread() = default;
 
 void WorkerBackingThread::InitializeOnBackingThread(
     const WorkerBackingThreadStartupData& startup_data) {
   DCHECK(backing_thread_->IsCurrentThread());
-  backing_thread_->InitializeOnThread();
 
   DCHECK(!isolate_);
+  ThreadScheduler* scheduler = BackingThread().Scheduler();
   isolate_ = V8PerIsolateData::Initialize(
-      backing_thread_->PlatformThread().Scheduler()->V8TaskRunner(),
+      scheduler->V8TaskRunner(),
       V8PerIsolateData::V8ContextSnapshotMode::kDontUseSnapshot);
+  scheduler->SetV8Isolate(isolate_);
   AddWorkerIsolate(isolate_);
   V8Initializer::InitializeWorker(isolate_);
 
-  ThreadState::Current()->RegisterTraceDOMWrappers(
-      isolate_, V8GCController::TraceDOMWrappers,
-      ScriptWrappableMarkingVisitor::InvalidateDeadObjectsInMarkingDeque,
-      ScriptWrappableMarkingVisitor::PerformCleanup);
   if (RuntimeEnabledFeatures::V8IdleTasksEnabled()) {
     V8PerIsolateData::EnableIdleTasks(
-        isolate_, std::make_unique<V8IdleTaskRunner>(
-                      BackingThread().PlatformThread().Scheduler()));
+        isolate_, std::make_unique<V8IdleTaskRunner>(scheduler));
   }
   Platform::Current()->DidStartWorkerThread();
 
@@ -105,6 +97,7 @@ void WorkerBackingThread::InitializeOnBackingThread(
 
 void WorkerBackingThread::ShutdownOnBackingThread() {
   DCHECK(backing_thread_->IsCurrentThread());
+  BackingThread().Scheduler()->SetV8Isolate(nullptr);
   Platform::Current()->WillStopWorkerThread();
 
   V8PerIsolateData::WillBeDestroyed(isolate_);
@@ -121,14 +114,6 @@ void WorkerBackingThread::MemoryPressureNotificationToWorkerThreadIsolates(
   MutexLocker lock(IsolatesMutex());
   for (v8::Isolate* isolate : Isolates())
     isolate->MemoryPressureNotification(level);
-}
-
-// static
-void WorkerBackingThread::SetRAILModeOnWorkerThreadIsolates(
-    v8::RAILMode rail_mode) {
-  MutexLocker lock(IsolatesMutex());
-  for (v8::Isolate* isolate : Isolates())
-    isolate->SetRAILMode(rail_mode);
 }
 
 }  // namespace blink

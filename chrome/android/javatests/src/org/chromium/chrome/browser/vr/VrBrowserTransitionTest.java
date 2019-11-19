@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PointF;
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.MediumTest;
@@ -28,17 +29,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.preferences.Preferences;
 import org.chromium.chrome.browser.preferences.PreferencesLauncher;
 import org.chromium.chrome.browser.preferences.website.SingleWebsitePreferences;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.chrome.browser.vr.mock.MockVrDaydreamApi;
 import org.chromium.chrome.browser.vr.rules.ChromeTabbedActivityVrTestRule;
 import org.chromium.chrome.browser.vr.util.NativeUiUtils;
@@ -51,16 +52,19 @@ import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * End-to-end tests for state transitions in VR, e.g. exiting WebVR presentation
+ * End-to-end tests for state transitions in VR, e.g. exiting WebXR presentation
  * into the VR browser.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
+@MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP) // VR is only supported on L+.
 public class VrBrowserTransitionTest {
     // We explicitly instantiate a rule here instead of using parameterization since this class
     // only ever runs in ChromeTabbedActivity.
@@ -68,13 +72,11 @@ public class VrBrowserTransitionTest {
     public ChromeTabbedActivityVrTestRule mTestRule = new ChromeTabbedActivityVrTestRule();
 
     private WebXrVrTestFramework mWebXrVrTestFramework;
-    private WebVrTestFramework mWebVrTestFramework;
     private VrBrowserTestFramework mVrBrowserTestFramework;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mWebXrVrTestFramework = new WebXrVrTestFramework(mTestRule);
-        mWebVrTestFramework = new WebVrTestFramework(mTestRule);
         mVrBrowserTestFramework = new VrBrowserTestFramework(mTestRule);
     }
 
@@ -203,8 +205,7 @@ public class VrBrowserTransitionTest {
     @Test
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
     @MediumTest
-    public void testExitFullscreenAfterExitingVrFromCinemaMode()
-            throws InterruptedException, TimeoutException {
+    public void testExitFullscreenAfterExitingVrFromCinemaMode() throws TimeoutException {
         VrBrowserTransitionUtils.forceEnterVrBrowserOrFail(POLL_TIMEOUT_LONG_MS);
         mVrBrowserTestFramework.loadUrlAndAwaitInitialization(
                 VrBrowserTestFramework.getFileUrlForHtmlTestFile("test_navigation_2d_page"),
@@ -224,7 +225,7 @@ public class VrBrowserTransitionTest {
                     try {
                         return !DOMUtils.isFullscreen(
                                 mVrBrowserTestFramework.getCurrentWebContents());
-                    } catch (InterruptedException | TimeoutException e) {
+                    } catch (TimeoutException e) {
                         return false;
                     }
                 },
@@ -235,36 +236,19 @@ public class VrBrowserTransitionTest {
 
     /**
      * Tests that the reported display dimensions are correct when exiting
-     * from WebVR presentation to the VR browser.
-     */
-    @Test
-    @CommandLineFlags.Add("enable-webvr")
-    @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
-    @MediumTest
-    public void testExitPresentationWebVrToVrShell()
-            throws IllegalArgumentException, InterruptedException, TimeoutException {
-        exitPresentationToVrShellImpl(
-                WebVrTestFramework.getFileUrlForHtmlTestFile("test_navigation_webvr_page"),
-                mWebVrTestFramework);
-    }
-
-    /**
-     * Tests that the reported display dimensions are correct when exiting
-     * from WebVR presentation to the VR browser.
+     * from WebXR presentation to the VR browser.
      */
     @Test
     @CommandLineFlags.Add("enable-features=WebXR")
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
     @MediumTest
-    public void testExitPresentationWebXrToVrShell()
-            throws IllegalArgumentException, InterruptedException, TimeoutException {
+    public void testExitPresentationWebXrToVrShell() throws IllegalArgumentException {
         exitPresentationToVrShellImpl(
                 WebXrVrTestFramework.getFileUrlForHtmlTestFile("test_navigation_webxr_page"),
                 mWebXrVrTestFramework);
     }
 
-    private void exitPresentationToVrShellImpl(String url, WebXrVrTestFramework framework)
-            throws InterruptedException {
+    private void exitPresentationToVrShellImpl(String url, WebXrVrTestFramework framework) {
         VrBrowserTransitionUtils.forceEnterVrBrowserOrFail(POLL_TIMEOUT_LONG_MS);
         framework.loadUrlAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         VrShell vrShell = TestVrShellDelegate.getVrShellForTesting();
@@ -286,44 +270,44 @@ public class VrBrowserTransitionTest {
     }
 
     /**
-     * Tests that entering WebVR presentation from the VR browser, exiting presentation, and
-     * re-entering presentation works. This is a regression test for crbug.com/799999.
-     */
-    @Test
-    @CommandLineFlags.Add("enable-webvr")
-    @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
-    @MediumTest
-    public void testWebVrReEntryFromVrBrowser() throws InterruptedException, TimeoutException {
-        reEntryFromVrBrowserImpl(
-                WebVrTestFramework.getFileUrlForHtmlTestFile("test_webvr_reentry_from_vr_browser"),
-                mWebVrTestFramework);
-    }
-
-    /**
-     * Tests that entering WebVR presentation from the VR browser, exiting presentation, and
+     * Tests that entering WebXR presentation from the VR browser, exiting presentation, and
      * re-entering presentation works. This is a regression test for crbug.com/799999.
      */
     @Test
     @CommandLineFlags.Add("enable-features=WebXR")
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
     @MediumTest
-    public void testWebXrReEntryFromVrBrowser() throws InterruptedException, TimeoutException {
+    public void testWebXrReEntryFromVrBrowser() {
         reEntryFromVrBrowserImpl(WebXrVrTestFramework.getFileUrlForHtmlTestFile(
                                          "test_webxr_reentry_from_vr_browser"),
-                mWebXrVrTestFramework);
+                mWebXrVrTestFramework, false);
     }
 
-    private void reEntryFromVrBrowserImpl(String url, WebXrVrTestFramework framework)
-            throws InterruptedException {
+    @Test
+    @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
+    @MediumTest
+    public void testWebXrReEntryFromVrBrowserViaEndSession() {
+        reEntryFromVrBrowserImpl(WebXrVrTestFramework.getFileUrlForHtmlTestFile(
+                                         "test_webxr_reentry_from_vr_browser"),
+                mWebXrVrTestFramework, true);
+    }
+
+    private void reEntryFromVrBrowserImpl(
+            String url, WebXrVrTestFramework framework, boolean useEndSession) {
         VrBrowserTransitionUtils.forceEnterVrBrowserOrFail(POLL_TIMEOUT_LONG_MS);
 
         framework.loadUrlAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
         framework.enterSessionWithUserGestureOrFail();
 
         framework.executeStepAndWait("stepVerifyFirstPresent()");
-        // The bug did not reproduce with vrDisplay.exitPresent(), so it might not reproduce with
-        // session.end(). Instead, use the controller to exit.
-        NativeUiUtils.clickAppButton(UserFriendlyElementName.NONE, new PointF());
+        if (useEndSession) {
+            // Exit presentation through JavaScript.
+            framework.endSession();
+        } else {
+            // The bug did not reproduce with vrDisplay.exitPresent(), so it might not reproduce
+            // with session.end(). Instead, use the controller to exit.
+            NativeUiUtils.clickAppButton(UserFriendlyElementName.NONE, new PointF());
+        }
         framework.executeStepAndWait("stepVerifyMagicWindow()");
 
         framework.enterSessionWithUserGestureOrFail();
@@ -338,9 +322,9 @@ public class VrBrowserTransitionTest {
     @Test
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
     @MediumTest
-    public void testEnterVrInOverviewMode() throws InterruptedException, TimeoutException {
+    public void testEnterVrInOverviewMode() {
         final ChromeTabbedActivity activity = mTestRule.getActivity();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             ImageView tabSwitcher = (ImageView) activity.findViewById(R.id.tab_switcher_button);
             tabSwitcher.callOnClick();
         });
@@ -361,8 +345,7 @@ public class VrBrowserTransitionTest {
     @Test
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
     @MediumTest
-    public void testStartActivityTriggersDoffChromeActivity()
-            throws InterruptedException, TimeoutException {
+    public void testStartActivityTriggersDoffChromeActivity() {
         testStartActivityTriggersDoffImpl(mTestRule.getActivity());
     }
 
@@ -373,13 +356,11 @@ public class VrBrowserTransitionTest {
     @Test
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
     @MediumTest
-    public void testStartActivityTriggersDoffAppContext()
-            throws InterruptedException, TimeoutException {
+    public void testStartActivityTriggersDoffAppContext() {
         testStartActivityTriggersDoffImpl(mTestRule.getActivity().getApplicationContext());
     }
 
-    private void testStartActivityTriggersDoffImpl(Context context)
-            throws InterruptedException, TimeoutException {
+    private void testStartActivityTriggersDoffImpl(Context context) {
         VrBrowserTransitionUtils.forceEnterVrBrowserOrFail(POLL_TIMEOUT_LONG_MS);
 
         MockVrDaydreamApi mockApi = new MockVrDaydreamApi();
@@ -390,11 +371,11 @@ public class VrBrowserTransitionTest {
         // never allow the scene to reach quiescense.
         NativeUiUtils.enableMockedInput();
         NativeUiUtils.performActionAndWaitForUiQuiescence(() -> {
-            ThreadUtils.runOnUiThreadBlocking(() -> {
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
                 PreferencesLauncher.launchSettingsPage(context, SingleWebsitePreferences.class);
             });
         });
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> { VrShellDelegateUtils.getDelegateInstance().acceptDoffPromptForTesting(); });
 
         CriteriaHelper.pollUiThread(
@@ -407,14 +388,14 @@ public class VrBrowserTransitionTest {
 
         VrShellDelegateUtils.getDelegateInstance().overrideDaydreamApiForTesting(mockApiWithDoff);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             PreferencesLauncher.launchSettingsPage(context, null);
             VrShellDelegateUtils.getDelegateInstance().acceptDoffPromptForTesting();
         });
         CriteriaHelper.pollUiThread(() -> {
             return VrShellDelegateUtils.getDelegateInstance().isShowingDoff();
         }, "DOFF screen was not shown");
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTestRule.getActivity().onActivityResult(
                     VrShellDelegate.EXIT_VR_RESULT, Activity.RESULT_OK, null);
         });
@@ -430,11 +411,11 @@ public class VrBrowserTransitionTest {
     @Test
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
     @MediumTest
-    public void testStartActivityIfNeeded() throws InterruptedException, TimeoutException {
+    public void testStartActivityIfNeeded() {
         Activity context = mTestRule.getActivity();
         VrBrowserTransitionUtils.forceEnterVrBrowserOrFail(POLL_TIMEOUT_LONG_MS);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             Intent preferencesIntent = PreferencesLauncher.createIntentForSettingsPage(
                     context, SingleWebsitePreferences.class.getName());
             Assert.assertFalse("Starting an activity did not trigger DOFF",
@@ -449,7 +430,7 @@ public class VrBrowserTransitionTest {
     @Test
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
     @LargeTest
-    public void testExitVrWithPromptDisplayed() throws InterruptedException, TimeoutException {
+    public void testExitVrWithPromptDisplayed() {
         mVrBrowserTestFramework.loadUrlAndAwaitInitialization(
                 VrBrowserTestFramework.getFileUrlForHtmlTestFile("test_navigation_2d_page"),
                 PAGE_LOAD_TIMEOUT_S);
@@ -479,7 +460,7 @@ public class VrBrowserTransitionTest {
     @Test
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
     @MediumTest
-    public void testIncognitoLearnMoreTriggersDoff() throws InterruptedException, TimeoutException {
+    public void testIncognitoLearnMoreTriggersDoff() {
         mTestRule.newIncognitoTabFromMenu();
         VrBrowserTransitionUtils.forceEnterVrBrowserOrFail(POLL_TIMEOUT_LONG_MS);
         final IncognitoNewTabPage ntp =
@@ -488,19 +469,19 @@ public class VrBrowserTransitionTest {
         // never allow the scene to reach quiescense.
         NativeUiUtils.enableMockedInput();
         NativeUiUtils.performActionAndWaitForUiQuiescence(() -> {
-            ThreadUtils.runOnUiThreadBlocking(
+            TestThreadUtils.runOnUiThreadBlocking(
                     () -> { ntp.getView().findViewById(R.id.learn_more).performClick(); });
         });
         // This is a roundabout way of ensuring that the UI that popped up was actually the DOFF
         // prompt.
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> { VrShellDelegateUtils.getDelegateInstance().acceptDoffPromptForTesting(); });
         CriteriaHelper.pollUiThread(() -> {
             return VrShellDelegateUtils.getDelegateInstance().isShowingDoff();
         }, "Did not enter DOFF flow after accepting DOFF prompt");
         // Not necessary for the test, but helps avoid having to exit VR during the next test's
         // pre-test setup.
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTestRule.getActivity().onActivityResult(
                     VrShellDelegate.EXIT_VR_RESULT, Activity.RESULT_OK, null);
         });
@@ -513,10 +494,10 @@ public class VrBrowserTransitionTest {
     @Test
     @Restriction({RESTRICTION_TYPE_VIEWER_DAYDREAM})
     @MediumTest
-    public void testVrUnsupportedWhenReprojectionFails() throws InterruptedException {
+    public void testVrUnsupportedWhenReprojectionFails() {
         AtomicBoolean failed = new AtomicBoolean(false);
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            try (StrictModeContext smc = StrictModeContext.allowDiskWrites()) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                 VrShell vrShell = new VrShell(
                         mTestRule.getActivity(), VrShellDelegateUtils.getDelegateInstance(), null) {
                     @Override
@@ -539,7 +520,7 @@ public class VrBrowserTransitionTest {
     @Test
     @Restriction({RESTRICTION_TYPE_VIEWER_DAYDREAM})
     @MediumTest
-    public void testPermissionsPersistWhenEnteringVrBrowser() throws InterruptedException {
+    public void testPermissionsPersistWhenEnteringVrBrowser() {
         // Permissions don't work on file:// URLs, so use a local server.
         mVrBrowserTestFramework.loadUrlAndAwaitInitialization(
                 mVrBrowserTestFramework.getEmbeddedServerUrlForHtmlTestFile(
@@ -579,7 +560,7 @@ public class VrBrowserTransitionTest {
     @Test
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
     @MediumTest
-    public void testNfcScanOnNativePage() throws InterruptedException {
+    public void testNfcScanOnNativePage() {
         // We can't loop over all the native URLs since multiple NFC entries in a short timespan
         // isn't possible. So, just pick the native history page as a suitable one.
         mTestRule.loadUrl(UrlConstants.NATIVE_HISTORY_URL, PAGE_LOAD_TIMEOUT_S);

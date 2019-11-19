@@ -21,7 +21,8 @@ CommandBufferTaskExecutor::CommandBufferTaskExecutor(
     scoped_refptr<gl::GLShareGroup> share_group,
     gl::GLSurfaceFormat share_group_surface_format,
     SharedImageManager* shared_image_manager,
-    gles2::ProgramCache* program_cache)
+    gles2::ProgramCache* program_cache,
+    scoped_refptr<SharedContextState> shared_context_state)
     : gpu_preferences_(gpu_preferences),
       gpu_feature_info_(gpu_feature_info),
       sync_point_manager_(sync_point_manager),
@@ -30,7 +31,8 @@ CommandBufferTaskExecutor::CommandBufferTaskExecutor(
       share_group_surface_format_(share_group_surface_format),
       program_cache_(program_cache),
       shader_translator_cache_(gpu_preferences_),
-      shared_image_manager_(shared_image_manager) {
+      shared_image_manager_(shared_image_manager),
+      shared_context_state_(std::move(shared_context_state)) {
   DCHECK(mailbox_manager_);
   DCHECK(shared_image_manager_);
 }

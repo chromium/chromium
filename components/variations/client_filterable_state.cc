@@ -31,7 +31,15 @@ Study::Platform ClientFilterableState::GetCurrentPlatform() {
 #endif
 }
 
-ClientFilterableState::ClientFilterableState() {}
+ClientFilterableState::ClientFilterableState(
+    IsEnterpriseFunction is_enterprise_function)
+    : is_enterprise_function_(std::move(is_enterprise_function)) {}
 ClientFilterableState::~ClientFilterableState() {}
+
+bool ClientFilterableState::IsEnterprise() const {
+  if (!is_enterprise_.has_value())
+    is_enterprise_ = std::move(is_enterprise_function_).Run();
+  return is_enterprise_.value();
+}
 
 }  // namespace variations

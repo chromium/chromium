@@ -4,54 +4,57 @@
 
 #include "components/arc/test/fake_arc_bridge_host.h"
 
-#include "components/arc/common/accessibility_helper.mojom.h"
-#include "components/arc/common/app.mojom.h"
-#include "components/arc/common/app_permissions.mojom.h"
-#include "components/arc/common/appfuse.mojom.h"
-#include "components/arc/common/arc_bridge.mojom.h"
-#include "components/arc/common/audio.mojom.h"
-#include "components/arc/common/auth.mojom.h"
-#include "components/arc/common/backup_settings.mojom.h"
-#include "components/arc/common/bluetooth.mojom.h"
-#include "components/arc/common/boot_phase_monitor.mojom.h"
-#include "components/arc/common/cast_receiver.mojom.h"
-#include "components/arc/common/cert_store.mojom.h"
-#include "components/arc/common/clipboard.mojom.h"
-#include "components/arc/common/crash_collector.mojom.h"
-#include "components/arc/common/disk_quota.mojom.h"
-#include "components/arc/common/enterprise_reporting.mojom.h"
-#include "components/arc/common/file_system.mojom.h"
-#include "components/arc/common/ime.mojom.h"
-#include "components/arc/common/input_method_manager.mojom.h"
-#include "components/arc/common/intent_helper.mojom.h"
-#include "components/arc/common/kiosk.mojom.h"
-#include "components/arc/common/lock_screen.mojom.h"
-#include "components/arc/common/media_session.mojom.h"
-#include "components/arc/common/metrics.mojom.h"
-#include "components/arc/common/midis.mojom.h"
-#include "components/arc/common/net.mojom.h"
-#include "components/arc/common/notifications.mojom.h"
-#include "components/arc/common/obb_mounter.mojom.h"
-#include "components/arc/common/oemcrypto.mojom.h"
-#include "components/arc/common/pip.mojom.h"
-#include "components/arc/common/policy.mojom.h"
-#include "components/arc/common/power.mojom.h"
-#include "components/arc/common/print.mojom.h"
-#include "components/arc/common/process.mojom.h"
-#include "components/arc/common/property.mojom.h"
-#include "components/arc/common/rotation_lock.mojom.h"
-#include "components/arc/common/screen_capture.mojom.h"
-#include "components/arc/common/storage_manager.mojom.h"
-#include "components/arc/common/timer.mojom.h"
-#include "components/arc/common/tracing.mojom.h"
-#include "components/arc/common/tts.mojom.h"
-#include "components/arc/common/usb_host.mojom.h"
-#include "components/arc/common/video.mojom.h"
-#include "components/arc/common/voice_interaction_arc_home.mojom.h"
-#include "components/arc/common/voice_interaction_framework.mojom.h"
-#include "components/arc/common/volume_mounter.mojom.h"
-#include "components/arc/common/wake_lock.mojom.h"
-#include "components/arc/common/wallpaper.mojom.h"
+#include "components/arc/mojom/accessibility_helper.mojom.h"
+#include "components/arc/mojom/app.mojom.h"
+#include "components/arc/mojom/app_permissions.mojom.h"
+#include "components/arc/mojom/appfuse.mojom.h"
+#include "components/arc/mojom/arc_bridge.mojom.h"
+#include "components/arc/mojom/audio.mojom.h"
+#include "components/arc/mojom/auth.mojom.h"
+#include "components/arc/mojom/backup_settings.mojom.h"
+#include "components/arc/mojom/bluetooth.mojom.h"
+#include "components/arc/mojom/boot_phase_monitor.mojom.h"
+#include "components/arc/mojom/camera.mojom.h"
+#include "components/arc/mojom/cast_receiver.mojom.h"
+#include "components/arc/mojom/cert_store.mojom.h"
+#include "components/arc/mojom/clipboard.mojom.h"
+#include "components/arc/mojom/crash_collector.mojom.h"
+#include "components/arc/mojom/disk_quota.mojom.h"
+#include "components/arc/mojom/enterprise_reporting.mojom.h"
+#include "components/arc/mojom/file_system.mojom.h"
+#include "components/arc/mojom/ime.mojom.h"
+#include "components/arc/mojom/input_method_manager.mojom.h"
+#include "components/arc/mojom/intent_helper.mojom.h"
+#include "components/arc/mojom/keymaster.mojom.h"
+#include "components/arc/mojom/kiosk.mojom.h"
+#include "components/arc/mojom/lock_screen.mojom.h"
+#include "components/arc/mojom/media_session.mojom.h"
+#include "components/arc/mojom/metrics.mojom.h"
+#include "components/arc/mojom/midis.mojom.h"
+#include "components/arc/mojom/net.mojom.h"
+#include "components/arc/mojom/notifications.mojom.h"
+#include "components/arc/mojom/obb_mounter.mojom.h"
+#include "components/arc/mojom/oemcrypto.mojom.h"
+#include "components/arc/mojom/pip.mojom.h"
+#include "components/arc/mojom/policy.mojom.h"
+#include "components/arc/mojom/power.mojom.h"
+#include "components/arc/mojom/print.mojom.h"
+#include "components/arc/mojom/print_spooler.mojom.h"
+#include "components/arc/mojom/process.mojom.h"
+#include "components/arc/mojom/property.mojom.h"
+#include "components/arc/mojom/rotation_lock.mojom.h"
+#include "components/arc/mojom/screen_capture.mojom.h"
+#include "components/arc/mojom/storage_manager.mojom.h"
+#include "components/arc/mojom/timer.mojom.h"
+#include "components/arc/mojom/tracing.mojom.h"
+#include "components/arc/mojom/tts.mojom.h"
+#include "components/arc/mojom/usb_host.mojom.h"
+#include "components/arc/mojom/video.mojom.h"
+#include "components/arc/mojom/voice_interaction_arc_home.mojom.h"
+#include "components/arc/mojom/voice_interaction_framework.mojom.h"
+#include "components/arc/mojom/volume_mounter.mojom.h"
+#include "components/arc/mojom/wake_lock.mojom.h"
+#include "components/arc/mojom/wallpaper.mojom.h"
 
 namespace arc {
 
@@ -84,6 +87,9 @@ void FakeArcBridgeHost::OnBluetoothInstanceReady(
 void FakeArcBridgeHost::OnBootPhaseMonitorInstanceReady(
     mojom::BootPhaseMonitorInstancePtr boot_phase_monitor_ptr) {}
 
+void FakeArcBridgeHost::OnCameraInstanceReady(
+    mojom::CameraInstancePtr camera_ptr) {}
+
 void FakeArcBridgeHost::OnCastReceiverInstanceReady(
     mojom::CastReceiverInstancePtr cast_receiver_ptr) {}
 
@@ -112,6 +118,9 @@ void FakeArcBridgeHost::OnInputMethodManagerInstanceReady(
 
 void FakeArcBridgeHost::OnIntentHelperInstanceReady(
     mojom::IntentHelperInstancePtr intent_helper_ptr) {}
+
+void FakeArcBridgeHost::OnKeymasterInstanceReady(
+    mojom::KeymasterInstancePtr keymaster_ptr) {}
 
 void FakeArcBridgeHost::OnKioskInstanceReady(
     mojom::KioskInstancePtr kiosk_ptr) {}
@@ -150,6 +159,9 @@ void FakeArcBridgeHost::OnPowerInstanceReady(
 void FakeArcBridgeHost::OnPrintInstanceReady(
     mojom::PrintInstancePtr print_ptr) {}
 
+void FakeArcBridgeHost::OnPrintSpoolerInstanceReady(
+    mojom::PrintSpoolerInstancePtr print_spooler_ptr) {}
+
 void FakeArcBridgeHost::OnProcessInstanceReady(
     mojom::ProcessInstancePtr process_ptr) {}
 
@@ -161,6 +173,9 @@ void FakeArcBridgeHost::OnRotationLockInstanceReady(
 
 void FakeArcBridgeHost::OnScreenCaptureInstanceReady(
     mojom::ScreenCaptureInstancePtr screen_capture_ptr) {}
+
+void FakeArcBridgeHost::OnSmartCardManagerInstanceReady(
+    mojom::SmartCardManagerInstancePtr smart_cardManager_ptr) {}
 
 void FakeArcBridgeHost::OnStorageManagerInstanceReady(
     mojom::StorageManagerInstancePtr storage_manager_ptr) {}

@@ -17,12 +17,13 @@
 #include "crazy_linker_system_linker.h"
 #include "crazy_linker_util.h"
 
+#ifdef __ANDROID__
+#include "crazy_linker_system_android.h"
+#endif
+
 namespace crazy {
 
 namespace {
-
-// From android.os.Build.VERSION_CODES.LOLLIPOP.
-static const int SDK_VERSION_CODE_LOLLIPOP = 21;
 
 // A helper struct used when looking up symbols in libraries.
 struct SymbolLookupState {
@@ -31,7 +32,7 @@ struct SymbolLookupState {
   int weak_count = 0;
 
   // Check a symbol entry.
-  bool CheckSymbol(const char* symbol, SharedLibrary* lib) {
+  bool CheckSymbol(const char* symbol, const SharedLibrary* lib) {
     const ELF::Sym* entry = lib->LookupSymbolEntry(symbol);
     if (!entry)
       return false;
@@ -52,13 +53,43 @@ struct SymbolLookupState {
   }
 };
 
+// Checks that |params| is compatible with a system library load.
+// On success return true. On failure, set |*error| and return false.
+// |lib_name| is either the library name, or nullptr, in which case
+// |params.library_path| will be used for the error message.
+bool CheckSystemLibraryLoadParams(const char* lib_name,
+                                  const LoadParams& params,
+                                  Error* error) {
+  if (!lib_name)
+    lib_name = params.library_path.c_str();
+
+  if (params.library_fd >= 0) {
+    error->Format("Cannot load system library from fd %d: %s",
+                  params.library_fd, lib_name);
+    return false;
+  }
+  if (params.library_offset != 0) {
+    error->Format("Cannot load system library from offset 0x%08lx: %s",
+                  static_cast<unsigned long>(params.library_offset), lib_name);
+    return false;
+  }
+  if (params.wanted_address != 0) {
+    error->Format("Cannot load system library at address 0x%08lx: %s",
+                  static_cast<unsigned long>(params.wanted_address), lib_name);
+    return false;
+  }
+  if (params.reserved_size != 0) {
+    error->Format("Cannot load system library in reserved memory map: %s",
+                  lib_name);
+  }
+  return true;
+}
+
 }  // namespace
 
 LibraryList::LibraryList() {
-  // NOTE: This constructor is called from the Globals::Globals() constructor,
-  // hence it is important that Globals::sdk_build_version is a static member
-  // that can be set before Globals::Get() is called for the first time.
-  const int sdk_build_version = Globals::sdk_build_version;
+#ifdef __ANDROID__
+  const int sdk_build_version = GetAndroidDeviceApiLevel();
 
   // If SDK version is Lollipop or earlier, we need to load anything
   // listed in LD_PRELOAD explicitly, because dlsym() on the main executable
@@ -77,8 +108,9 @@ LibraryList::LibraryList() {
   //
   // For more, see:
   //   https://code.google.com/p/android/issues/detail?id=74255
-  if (sdk_build_version <= SDK_VERSION_CODE_LOLLIPOP)
+  if (sdk_build_version <= ANDROID_SDK_VERSION_CODE_LOLLIPOP)
     LoadPreloads();
+#endif  // __ANDROID__
 }
 
 LibraryList::~LibraryList() {
@@ -167,8 +199,9 @@ void* LibraryList::FindSymbolFrom(const char* symbol_name,
 
   while (!work_queue.IsEmpty()) {
     const LibraryView* lib = work_queue.PopFirst();
-    if (lib->IsCrazy()) {
-      if (lookup_state.CheckSymbol(symbol_name, lib->GetCrazy()))
+    const SharedLibrary* crazy_lib = lib->GetCrazy();
+    if (crazy_lib) {
+      if (lookup_state.CheckSymbol(symbol_name, crazy_lib))
         return lookup_state.found_addr;
     } else if (lib->IsSystem()) {
       LibraryView::SearchResult sym = lib->LookupSymbol(symbol_name);
@@ -178,8 +211,8 @@ void* LibraryList::FindSymbolFrom(const char* symbol_name,
 
     // If this is a crazy library, add non-visited dependencies
     // to the work queue.
-    if (lib->IsCrazy()) {
-      SharedLibrary::DependencyIterator iter(lib->GetCrazy());
+    if (crazy_lib) {
+      SharedLibrary::DependencyIterator iter(crazy_lib);
       while (iter.GetNext()) {
         LibraryView* dependency = FindKnownLibrary(iter.GetName());
         if (dependency && !visited_set.Has(dependency)) {
@@ -254,9 +287,8 @@ void LibraryList::UnloadLibrary(LibraryView* wrap) {
     return;
 
   // If this is a crazy library, perform manual cleanup first.
-  if (wrap->IsCrazy()) {
-    SharedLibrary* lib = wrap->GetCrazy();
-
+  SharedLibrary* lib = wrap->GetCrazy();
+  if (lib) {
     // Remove from internal list of crazy libraries.
     if (lib->list_next_)
       lib->list_next_->list_prev_ = lib->list_prev_;
@@ -295,11 +327,8 @@ LibraryView* LibraryList::LoadLibraryWithSystemLinker(const char* lib_name,
                                                       Error* error) {
   // First check whether a library with the same base name was
   // already loaded.
-  LibraryView* view = FindKnownLibrary(lib_name);
-  if (view) {
-    view->AddRef();
-    return view;
-  }
+  ASSERT(!FindKnownLibrary(lib_name),
+         "System library already loaded: ", lib_name);
 
   void* system_lib = SystemLinker::Open(lib_name, dlopen_mode);
   if (!system_lib) {
@@ -309,86 +338,120 @@ LibraryView* LibraryList::LoadLibraryWithSystemLinker(const char* lib_name,
   }
 
   // Can't really find the DT_SONAME of this library, assume if is its basename.
-  view = new LibraryView(system_lib, GetBaseNamePtr(lib_name));
+  LibraryView* view = new LibraryView(system_lib, GetBaseNamePtr(lib_name));
   known_libraries_.PushBack(view);
 
   LOG("System library %s loaded at %p", lib_name, view);
   return view;
 }
 
-LibraryView* LibraryList::LoadLibrary(const char* lib_name,
-                                      uintptr_t load_address,
-                                      SearchPathList* search_path_list,
-                                      Error* error) {
-  const char* base_name = GetBaseNamePtr(lib_name);
+Expected<LibraryView*> LibraryList::FindAndCheckLoadedLibrary(
+    const char* lib_name,
+    const LoadParams& params,
+    Error* error) {
+  // First check whether a library with the same base name was already loaded.
+  LibraryView* view = FindKnownLibrary(lib_name);
+  if (!view)
+    return nullptr;
 
-  LOG("lib_name='%s'", lib_name);
-
-  // First check whether a library with the same base name was
-  // already loaded.
-  LibraryView* view = FindKnownLibrary(base_name);
-  if (view) {
-    if (load_address) {
+  if (view->IsSystem()) {
+    if (!CheckSystemLibraryLoadParams(lib_name, params, error))
+      return error;
+  } else {
+    const SharedLibrary* crazy_lib = view->GetCrazy();
+    ASSERT(crazy_lib != nullptr, "Not a crazy library");
+    if (params.wanted_address) {
       // Check that this is a crazy library and that is was loaded at
       // the correct address.
-      if (!view->IsCrazy()) {
-        error->Format("System library can't be loaded at fixed address %08x",
-                      load_address);
-        return nullptr;
-      }
-      uintptr_t actual_address = view->GetCrazy()->load_address();
-      if (actual_address != load_address) {
-        error->Format("Library already loaded at @%08x, can't load it at @%08x",
-                      actual_address,
-                      load_address);
-        return nullptr;
+      uintptr_t actual_address = crazy_lib->load_address();
+      if (actual_address != params.wanted_address) {
+        error->Format(
+            "Library already loaded at address 0x%08lx, can't load it at "
+            "0x%08lx: %s",
+            static_cast<unsigned long>(actual_address),
+            static_cast<unsigned long>(params.wanted_address), lib_name);
+        return error;
       }
     }
-    view->AddRef();
-    return view;
   }
 
-  // Find the full library path.
-  String full_path;
+  view->AddRef();
+  return view;
+}
 
+// static
+bool LibraryList::LocateLibraryFile(const char* lib_name,
+                                    const SearchPathList& search_path_list,
+                                    LoadParams* params,
+                                    Error* error) {
   LOG("Looking through the search path list");
-  SearchPathList::Result probe = search_path_list->FindFile(lib_name);
+  SearchPathList::Result probe = search_path_list.FindFile(lib_name);
   if (!probe.IsValid()) {
     error->Format("Can't find library file %s", lib_name);
-    return nullptr;
+    return false;
   }
   LOG("Found library: path %s @ 0x%x", probe.path.c_str(), probe.offset);
+  params->library_path = std::move(probe.path);
+  params->library_offset = probe.offset;
+  return true;
+}
 
-  if (IsSystemLibraryPath(probe.path.c_str())) {
-    return LoadLibraryWithSystemLinker(probe.path.c_str(), RTLD_NOW, error);
+LibraryView* LibraryList::LoadLibrary(const char* lib_name,
+                                      const LoadParams& params,
+                                      Error* error) {
+  Expected<LibraryView*> found =
+      FindAndCheckLoadedLibrary(lib_name, params, error);
+  if (!found.has_value())
+    return nullptr;
+  if (found.value())
+    return found.value();
+  return LoadLibraryInternal(params, error);
+}
+
+LibraryView* LibraryList::LoadLibraryInternal(const LoadParams& params,
+                                              Error* error) {
+  // Load the library with the system linker if necessary.
+  const char* lib_path = params.library_path.c_str();
+  if (IsSystemLibraryPath(lib_path)) {
+    if (!CheckSystemLibraryLoadParams(lib_path, params, error))
+      return nullptr;
+    return LoadLibraryWithSystemLinker(lib_path, RTLD_NOW, error);
   }
 
   // Load the library with the crazy linker.
   ScopedPtr<SharedLibrary> lib(new SharedLibrary());
-  if (!lib->Load(probe.path.c_str(), load_address, probe.offset, error))
+  if (!lib->Load(params, error))
     return nullptr;
 
   // Load all dependendent libraries.
+  const char* base_name = GetBaseNamePtr(lib_path);
   LOG("Loading dependencies of %s", base_name);
   SharedLibrary::DependencyIterator iter(lib.Get());
   Vector<LibraryView*> dependencies;
   while (iter.GetNext()) {
     Error dep_error;
-    // TODO(digit): Call LoadLibrary recursively instead when properly
-    // detecting system vs Chromium libraries (http://crbug.com/843987).
-    LibraryView* dependency =
-        LoadLibraryWithSystemLinker(iter.GetName(), RTLD_NOW, &dep_error);
+    // TODO(digit): Better library dependency loading that isn't limited
+    // to system libraries. This would allow the linker to load anything
+    // without the caller having to load all dependencies before hand in
+    // reverse topological order.
+    const char* dependency_name = iter.GetName();
+    LibraryView* dependency = FindKnownLibrary(dependency_name);
     if (!dependency) {
-      error->Format("When loading %s: %s", base_name, dep_error.c_str());
-      return nullptr;
+      dependency =
+          LoadLibraryWithSystemLinker(dependency_name, RTLD_NOW, &dep_error);
+      if (!dependency) {
+        error->Format("When loading %s: %s", base_name, dep_error.c_str());
+        // TODO(digit): Unload all dependencies that were loaded so far.
+        return nullptr;
+      }
     }
     dependencies.PushBack(dependency);
   }
   if (CRAZY_DEBUG) {
     LOG("Dependencies loaded for %s", base_name);
     for (const LibraryView* dep : dependencies)
-      LOG("  ... %p %s\n", dep, dep->GetName());
-    LOG("    dependencies @%p\n", &dependencies);
+      LOG("  ... %p %s", dep, dep->GetName());
+    LOG("    dependencies @%p", &dependencies);
   }
 
   // Relocate the library.
@@ -412,7 +475,7 @@ LibraryView* LibraryList::LoadLibrary(const char* lib_name,
   head_ = lib.Get();
 
   // Then create a new LibraryView for it.
-  view = new LibraryView(lib.Release());
+  LibraryView* view = new LibraryView(lib.Release());
   known_libraries_.PushBack(view);
 
   LOG("Running constructors for %s", base_name);

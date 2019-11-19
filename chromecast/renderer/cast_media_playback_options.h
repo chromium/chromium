@@ -14,7 +14,8 @@
 #include "content/public/renderer/render_frame_media_playback_options.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
-#include "mojo/public/cpp/bindings/associated_binding_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
 namespace content {
@@ -50,16 +51,17 @@ class CastMediaPlaybackOptions
   void SetBackgroundVideoPlaybackEnabled(bool enabled) override;
   void SetUseCmaRenderer(bool enable) override;
 
-  void OnMediaPlaybackOptionsAssociatedRequest(
-      chromecast::shell::mojom::MediaPlaybackOptionsAssociatedRequest request);
+  void OnMediaPlaybackOptionsAssociatedReceiver(
+      mojo::PendingAssociatedReceiver<
+          chromecast::shell::mojom::MediaPlaybackOptions> receiver);
 
   bool render_frame_action_blocked_;
   content::RenderFrameMediaPlaybackOptions renderer_media_playback_options_;
 
   std::vector<base::OnceClosure> pending_closures_;
 
-  mojo::AssociatedBindingSet<chromecast::shell::mojom::MediaPlaybackOptions>
-      bindings_;
+  mojo::AssociatedReceiverSet<chromecast::shell::mojom::MediaPlaybackOptions>
+      receivers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -280,7 +280,7 @@ example:
 <p>
 This will expose the messaging API to any page which matches the URL patterns
 you specify. The URL pattern must contain at least a
-<a href="http://en.wikipedia.org/wiki/Second-level_domain">second-level domain</a>
+<a href="https://en.wikipedia.org/wiki/Second-level_domain">second-level domain</a>
 - that is, hostname
 patterns like "*", "*.com", "*.co.uk", and "*.appspot.com" are prohibited.
 From the web page, use the
@@ -334,12 +334,32 @@ To learn more about this feature, see <a href="nativeMessaging">Native messaging
 
 <h2 id="security-considerations">Security considerations</h2>
 
+<h3 id="content-scripts-are-less-trustworthy">
+  Content scripts are less trustworthy
+</h3>
+
+<p>
+<a href="security#content_scripts">Content scripts are less trustworthy</a>
+than the extension background page (e.g., a malicious web page might be able
+to compromise the renderer process where the content scripts run).
+Assume that messages from a content script might have been crafted by an
+attacker and make sure to
+<a href="security#sanitize">validate and sanitize all input</a>.
+Assume any data sent to the content script might leak to the web page.
+Limit the scope of privileged actions that can be triggered by
+messages received from content scripts.
+</p>
+
+<h3 id="cross-site-scripting">Cross-site scripting</h3>
+
 <p>
 When receiving a message from a content script or another extension, your
-background page should be careful not to fall victim to <a
-href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site
-scripting</a>.  Specifically, avoid using dangerous APIs such as the
-below:
+scripts should be careful not to fall victim to <a
+href="https://en.wikipedia.org/wiki/Cross-site_scripting">cross-site
+scripting</a>.  This advice applies to scripts running inside the extension
+background page as well as to content scripts running inside other web origins.
+
+Specifically, avoid using dangerous APIs such as the ones below:
 </p>
 <pre data-filename="background.js">
 chrome.tabs.sendMessage(tab.id, {greeting: "hello"}, function(response) {

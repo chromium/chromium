@@ -1,0 +1,249 @@
+تح
+#ar:
+"Times New Roman" : 2
+
+ՀՁ
+#hy-am:
+"Times New Roman" : 2
+
+সম
+#bn:
+"Nirmala UI" : 2
+
+⡰⡱
+#en-us-brai:
+"Segoe UI Symbol" : 2
+
+ᨀᨁ
+#bug:
+"Leelawadee UI" : 2
+
+ᐐᐑ
+#cans:
+"Gadugi" : 2
+
+𐊠𐊡
+#xcr:
+"Segoe UI Historic" : 2
+
+ᎡᎢ
+#chr:
+"Gadugi" : 2
+
+ⲁⲂ
+#copt:
+"Segoe UI Historic" : 2
+
+𒀀𒀌
+#akk:
+"Segoe UI Historic" : 2
+
+𐠀𐠁
+#ecy:
+"Segoe UI Historic" : 2
+
+АБВ
+#ru:
+"Times New Roman" : 3
+
+𐐀𐐁
+#en:
+"Segoe UI Symbol" : 2
+
+अआ
+#hi:
+"Nirmala UI" : 2
+
+ሁሂ
+#am:
+"Ebrima" : 2
+
+ႠႡ
+#ka:
+"Segoe UI" : 2
+
+ΑΒ
+#el:
+"Times New Roman" : 2
+
+ਡਢ
+#pa:
+"Nirmala UI" : 2
+
+我
+#zh-CN:
+"Microsoft YaHei UI" : 1
+
+我
+#zh-HK:
+"Microsoft JhengHei UI" : 1
+
+我
+#zh-Hans:
+"Microsoft YaHei UI" : 1
+
+我
+#zh-Hant:
+"Microsoft JhengHei UI" : 1
+
+我
+#ja:
+"Yu Gothic UI" : 1
+
+ᄀᄁ
+#ko:
+"Malgun Gothic" : 2
+
+בג
+#he:
+"Times New Roman" : 2
+
+កខ
+#km:
+"Leelawadee UI" : 2
+
+𐡁𐡂
+#arc:
+"Segoe UI Historic" : 2
+
+𐭡𐭢
+#pal:
+"Segoe UI Historic" : 2
+
+𐭁𐭂
+#xpr:
+"Segoe UI Historic" : 2
+
+ꦑꦒ
+#jv:
+"Javanese Text" : 2
+
+ಡಢ
+#kn:
+"Nirmala UI" : 2
+
+𐨐𐨑
+#sa:
+"Segoe UI Historic" : 2
+
+໐໑
+#lo:
+"Leelawadee UI" : 2
+
+ꓐꓑ
+#lis:
+"Segoe UI" : 2
+
+𐊁𐊂
+#xlc:
+"Segoe UI Historic" : 2
+
+𐤡𐤢
+#xld:
+"Segoe UI Historic" : 2
+
+ഡഢ
+#ml:
+"Nirmala UI" : 2
+
+𐦡𐦢
+#script_meroitic:
+"Segoe UI Historic" : 2
+
+ကခ
+#my:
+"Myanmar Text" : 2
+
+ᦁᦂ
+#script_new_tai_lue:
+"Microsoft New Tai Lue" : 2
+
+߁߂
+#nko:
+"Ebrima" : 2
+
+ᚁ
+#script_ogham:
+"Segoe UI Historic" : 2
+
+᱑᱒
+#script_ol_chiki:
+"Nirmala UI" : 2
+
+𐌁𐌂
+#script_old_italic:
+"Segoe UI Historic" : 2
+
+𐎡𐎢
+#peo:
+"Segoe UI Historic" : 2
+
+𐩡𐩢
+#script_old_south_arabian:
+"Segoe UI Historic" : 2
+
+ଡଢ
+#or:
+"Nirmala UI" : 2
+
+ꡁꡂ
+#script_phags_pa:
+"Microsoft PhagsPa" : 2
+
+ᚠᚡ
+#script_runic:
+"Segoe UI Historic" : 2
+
+𐑑𐑒
+#script_shavian:
+"Segoe UI Historic" : 2
+
+එඒ
+#si:
+"Nirmala UI" : 2
+
+𑃑𑃒
+#script_sora_sompeng:
+"Nirmala UI" : 2
+
+ܑܒ
+#syr:
+"Segoe UI Historic" : 2
+
+ᥑᥒ
+#script_tai_le:
+"Microsoft Tai Le" : 2
+
+றல
+#ta:
+"Nirmala UI" : 2
+
+డఢ
+#te:
+"Nirmala UI" : 2
+
+ށނ
+#script_thaana:
+"MV Boli" : 2
+
+กข
+#th:
+"Leelawadee UI" : 2
+
+༁༂
+#bo:
+"Microsoft Himalaya" : 2
+
+ⴱⴲ
+#script_tifinagh:
+"Ebrima" : 2
+
+ꔁꔂ
+#vai:
+"Ebrima" : 2
+
+ꀀꀁ
+#yi:
+"Microsoft Yi Baiti" : 2
+
+

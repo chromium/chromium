@@ -34,12 +34,12 @@ class BeforeUnloadEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  BeforeUnloadEvent();
-  ~BeforeUnloadEvent() override;
-
   static BeforeUnloadEvent* Create() {
     return MakeGarbageCollected<BeforeUnloadEvent>();
   }
+
+  BeforeUnloadEvent();
+  ~BeforeUnloadEvent() override;
 
   bool IsBeforeUnloadEvent() const override;
 

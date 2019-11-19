@@ -19,8 +19,7 @@ EasyUnlockRemoveKeysOperation::EasyUnlockRemoveKeysOperation(
     const RemoveKeysCallback& callback)
     : user_context_(user_context),
       callback_(callback),
-      key_index_(start_index),
-      weak_ptr_factory_(this) {
+      key_index_(start_index) {
   // Must have the secret and callback.
   DCHECK(!user_context_.GetKey()->GetSecret().empty());
   DCHECK(!callback_.is_null());

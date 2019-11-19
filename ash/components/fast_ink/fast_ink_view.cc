@@ -15,12 +15,14 @@
 #include "cc/base/math_util.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -102,17 +104,11 @@ struct FastInkView::Resource {
     // when https://crbug/772562 is fixed
     if (!context_provider)
       return;
-    gpu::gles2::GLES2Interface* gles2 = context_provider->ContextGL();
-    if (sync_token.HasData())
-      gles2->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-    if (texture)
-      gles2->DeleteTextures(1, &texture);
-    if (image)
-      gles2->DestroyImageCHROMIUM(image);
+    gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
+    DCHECK(!mailbox.IsZero());
+    sii->DestroySharedImage(sync_token, mailbox);
   }
   scoped_refptr<viz::ContextProvider> context_provider;
-  uint32_t texture = 0;
-  uint32_t image = 0;
   gpu::Mailbox mailbox;
   gpu::SyncToken sync_token;
   bool damaged = true;
@@ -235,17 +231,16 @@ class FastInkView::LayerTreeFrameSinkHolder
       view_->DidReceiveCompositorFrameAck();
   }
   void DidPresentCompositorFrame(
-      uint32_t presentation_token,
-      const gfx::PresentationFeedback& feedback) override {
+      uint32_t frame_token,
+      const viz::FrameTimingDetails& details) override {
     if (view_)
-      view_->DidPresentCompositorFrame(feedback);
+      view_->DidPresentCompositorFrame(details.presentation_feedback);
   }
   void DidLoseLayerTreeFrameSink() override {
     exported_resources_.clear();
     if (root_window_)
       ScheduleDelete();
   }
-  void DidNotNeedBeginFrame() override {}
   void OnDraw(const gfx::Transform& transform,
               const gfx::Rect& viewport,
               bool resourceless_software_draw,
@@ -289,7 +284,7 @@ class FastInkView::LayerTreeFrameSinkHolder
 
 FastInkView::FastInkView(aura::Window* container,
                          const PresentationCallback& presentation_callback)
-    : presentation_callback_(presentation_callback), weak_ptr_factory_(this) {
+    : presentation_callback_(presentation_callback) {
   widget_.reset(new views::Widget);
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
@@ -302,7 +297,7 @@ FastInkView::FastInkView(aura::Window* container,
   params.layer_type = ui::LAYER_SOLID_COLOR;
 
   gfx::Rect screen_bounds = container->GetRootWindow()->GetBoundsInScreen();
-  widget_->Init(params);
+  widget_->Init(std::move(params));
   widget_->Show();
   widget_->SetContentsView(this);
   widget_->SetBounds(screen_bounds);
@@ -329,8 +324,7 @@ FastInkView::FastInkView(aura::Window* container,
   // but with potential tearing. Note that we have to draw into a temporary
   // surface and copy it into GPU memory buffer to avoid flicker.
   gpu_memory_buffer_ =
-      widget_->GetNativeWindow()
-          ->env()
+      aura::Env::GetInstance()
           ->context_factory()
           ->GetGpuMemoryBufferManager()
           ->CreateGpuMemoryBuffer(buffer_size_,
@@ -412,8 +406,7 @@ void FastInkView::SubmitCompositorFrame() {
     // new instance to be created in lost context situations is acceptable and
     // keeps the code simple.
     if (!resource->context_provider) {
-      resource->context_provider = widget_->GetNativeWindow()
-                                       ->env()
+      resource->context_provider = aura::Env::GetInstance()
                                        ->context_factory()
                                        ->SharedMainThreadContextProvider();
       if (!resource->context_provider) {
@@ -422,41 +415,22 @@ void FastInkView::SubmitCompositorFrame() {
       }
     }
 
-    gpu::gles2::GLES2Interface* gles2 = resource->context_provider->ContextGL();
-
-    if (resource->sync_token.HasData()) {
-      gles2->WaitSyncTokenCHROMIUM(resource->sync_token.GetConstData());
-      resource->sync_token = gpu::SyncToken();
-    }
-
-    if (resource->texture) {
-      gles2->ActiveTexture(GL_TEXTURE0);
-      gles2->BindTexture(GL_TEXTURE_2D, resource->texture);
+    gpu::SharedImageInterface* sii =
+        resource->context_provider->SharedImageInterface();
+    if (resource->mailbox.IsZero()) {
+      DCHECK(!resource->sync_token.HasData());
+      const uint32_t usage =
+          gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      gpu::GpuMemoryBufferManager* gmb_manager =
+          aura::Env::GetInstance()
+              ->context_factory()
+              ->GetGpuMemoryBufferManager();
+      resource->mailbox = sii->CreateSharedImage(
+          gpu_memory_buffer_.get(), gmb_manager, gfx::ColorSpace(), usage);
     } else {
-      gles2->GenTextures(1, &resource->texture);
-      gles2->ActiveTexture(GL_TEXTURE0);
-      gles2->BindTexture(GL_TEXTURE_2D, resource->texture);
-      gles2->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      gles2->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      gles2->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      gles2->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      gles2->ProduceTextureDirectCHROMIUM(resource->texture,
-                                          resource->mailbox.name);
+      sii->UpdateSharedImage(resource->sync_token, resource->mailbox);
     }
-
-    if (resource->image) {
-      gles2->ReleaseTexImage2DCHROMIUM(GL_TEXTURE_2D, resource->image);
-    } else {
-      resource->image = gles2->CreateImageCHROMIUM(
-          gpu_memory_buffer_->AsClientBuffer(), buffer_size_.width(),
-          buffer_size_.height(), SK_B32_SHIFT ? GL_RGBA : GL_BGRA_EXT);
-      if (!resource->image) {
-        LOG(ERROR) << "Failed to create image";
-        return;
-      }
-    }
-    gles2->BindTexImage2DCHROMIUM(GL_TEXTURE_2D, resource->image);
-    gles2->GenSyncTokenCHROMIUM(resource->sync_token.GetData());
+    resource->sync_token = sii->GenVerifiedSyncToken();
 
     resource->damaged = false;
   }
@@ -490,6 +464,7 @@ void FastInkView::SubmitCompositorFrame() {
       buffer_to_target_transform,
       /*quad_layer_rect=*/output_rect,
       /*visible_quad_layer_rect=*/output_rect,
+      /*rounded_corner_bounds=*/gfx::RRectF(),
       /*clip_rect=*/gfx::Rect(),
       /*is_clipped=*/false, /*are_contents_opaque=*/false, /*opacity=*/1.f,
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
@@ -517,7 +492,7 @@ void FastInkView::SubmitCompositorFrame() {
       /*background_color=*/SK_ColorTRANSPARENT, vertex_opacity,
       /*y_flipped=*/false,
       /*nearest_neighbor=*/false,
-      /*secure_output_only=*/false, ui::ProtectedVideoType::kClear);
+      /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
   texture_quad->set_resource_size_in_pixels(transferable_resource.size);
   frame.resource_list.push_back(transferable_resource);
 

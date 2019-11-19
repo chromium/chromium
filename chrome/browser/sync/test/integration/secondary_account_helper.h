@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "build/build_config.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 class Profile;
 
@@ -46,10 +47,16 @@ void InitNetwork();
 #endif  // defined(OS_CHROMEOS)
 
 // Makes a non-primary account available with both a refresh token and cookie.
-void SignInSecondaryAccount(
+AccountInfo SignInSecondaryAccount(
     Profile* profile,
     network::TestURLLoaderFactory* test_url_loader_factory,
     const std::string& email);
+
+// Clears signin cookies and removes the refresh token for the given account.
+void SignOutSecondaryAccount(
+    Profile* profile,
+    network::TestURLLoaderFactory* test_url_loader_factory,
+    const CoreAccountId& account_id);
 
 #if !defined(OS_CHROMEOS)
 // Makes the given account Chrome's primary one. The account must already be

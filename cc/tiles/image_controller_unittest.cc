@@ -161,6 +161,9 @@ class SimpleTask : public TileTask {
   SimpleTask() : TileTask(true /* supports_concurrent_execution */) {
     EXPECT_TRUE(thread_checker_.CalledOnValidThread());
   }
+  SimpleTask(const SimpleTask&) = delete;
+
+  SimpleTask& operator=(const SimpleTask&) = delete;
 
   void RunOnWorkerThread() override {
     EXPECT_FALSE(HasCompleted());
@@ -177,8 +180,6 @@ class SimpleTask : public TileTask {
 
   base::ThreadChecker thread_checker_;
   bool has_run_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleTask);
 };
 
 // A task that blocks until instructed otherwise.
@@ -188,6 +189,9 @@ class BlockingTask : public TileTask {
       : TileTask(true /* supports_concurrent_execution */), run_cv_(&lock_) {
     EXPECT_TRUE(thread_checker_.CalledOnValidThread());
   }
+  BlockingTask(const BlockingTask&) = delete;
+
+  BlockingTask& operator=(const BlockingTask&) = delete;
 
   void RunOnWorkerThread() override {
     EXPECT_FALSE(HasCompleted());
@@ -219,8 +223,6 @@ class BlockingTask : public TileTask {
   base::Lock lock_;
   base::ConditionVariable run_cv_;
   bool can_run_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingTask);
 };
 
 // For tests that exercise image controller's thread, this is the timeout value
@@ -231,7 +233,7 @@ DrawImage CreateDiscardableDrawImage(gfx::Size size) {
   return DrawImage(CreateDiscardablePaintImage(size),
                    SkIRect::MakeWH(size.width(), size.height()),
                    kNone_SkFilterQuality, SkMatrix::I(),
-                   PaintImage::kDefaultFrameIndex);
+                   PaintImage::kDefaultFrameIndex, gfx::ColorSpace());
 }
 
 DrawImage CreateBitmapDrawImage(gfx::Size size) {
@@ -242,9 +244,7 @@ DrawImage CreateBitmapDrawImage(gfx::Size size) {
 
 class ImageControllerTest : public testing::Test {
  public:
-  ImageControllerTest()
-      : task_runner_(base::SequencedTaskRunnerHandle::Get()),
-        weak_ptr_factory_(this) {
+  ImageControllerTest() : task_runner_(base::SequencedTaskRunnerHandle::Get()) {
     image_ = CreateDiscardableDrawImage(gfx::Size(1, 1));
   }
   ~ImageControllerTest() override = default;
@@ -312,30 +312,8 @@ class ImageControllerTest : public testing::Test {
   std::unique_ptr<ImageController> controller_;
   DrawImage image_;
 
-  base::WeakPtrFactory<ImageControllerTest> weak_ptr_factory_;
+  base::WeakPtrFactory<ImageControllerTest> weak_ptr_factory_{this};
 };
-
-// Test that GetTasksForImagesAndRef does not generate task for PaintWorklet
-// images.
-TEST_F(ImageControllerTest, GetTasksForImagesAndRefForPaintWorkletImages) {
-  std::vector<DrawImage> images(1);
-  ImageDecodeCache::TracingInfo tracing_info;
-
-  PaintImage paint_image = CreatePaintImage(100, 100);
-  DrawImage draw_image(
-      paint_image, SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      kNone_SkFilterQuality, CreateMatrix(SkSize::Make(1.f, 1.f), true),
-      PaintImage::kDefaultFrameIndex);
-  images[0] = draw_image;
-
-  ASSERT_EQ(1u, images.size());
-
-  std::vector<scoped_refptr<TileTask>> tasks;
-  bool has_at_raster_images = false;
-  controller()->ConvertDataImagesToTasks(&images, &tasks, &has_at_raster_images,
-                                         tracing_info);
-  EXPECT_EQ(tasks.size(), 0u);
-}
 
 TEST_F(ImageControllerTest, NullControllerUnrefsImages) {
   std::vector<DrawImage> images(10);

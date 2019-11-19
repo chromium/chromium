@@ -7,7 +7,7 @@
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_piece.h"
-#include "components/variations/variations_params_manager.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace resource_coordinator {
@@ -19,19 +19,17 @@ class TabManagerFeaturesTest : public testing::Test {
   // Enables the proactive tab discarding feature, and sets up the associated
   // variations parameter values.
   void EnableProactiveTabFreezeAndDiscard() {
-    std::set<std::string> features;
-    features.insert(features::kProactiveTabFreezeAndDiscard.name);
-    variations_manager_.SetVariationParamsWithFeatureAssociations(
-        "DummyTrial", params_, features);
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kProactiveTabFreezeAndDiscard, params_);
   }
 
   // Enables the site characteristics database feature, and sets up the
   // associated variations parameter values.
   void EnableSiteCharacteristicsDatabase() {
-    std::set<std::string> features;
-    features.insert(features::kSiteCharacteristicsDatabase.name);
-    variations_manager_.SetVariationParamsWithFeatureAssociations(
-        "DummyTrial", params_, features);
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kSiteCharacteristicsDatabase, params_);
   }
 
   void SetParam(base::StringPiece key, base::StringPiece value) {
@@ -87,8 +85,8 @@ class TabManagerFeaturesTest : public testing::Test {
       base::TimeDelta title_update_observation_window,
       base::TimeDelta audio_usage_observation_window,
       base::TimeDelta notifications_usage_observation_window,
-      base::TimeDelta title_or_favicon_change_grace_period,
-      base::TimeDelta audio_usage_grace_period) {
+      base::TimeDelta title_or_favicon_change_post_load_grace_period,
+      base::TimeDelta feature_usage_post_background_grace_period) {
     SiteCharacteristicsDatabaseParams params =
         GetSiteCharacteristicsDatabaseParams();
 
@@ -100,9 +98,10 @@ class TabManagerFeaturesTest : public testing::Test {
               params.audio_usage_observation_window);
     EXPECT_EQ(notifications_usage_observation_window,
               params.notifications_usage_observation_window);
-    EXPECT_EQ(title_or_favicon_change_grace_period,
-              params.title_or_favicon_change_grace_period);
-    EXPECT_EQ(audio_usage_grace_period, params.audio_usage_grace_period);
+    EXPECT_EQ(title_or_favicon_change_post_load_grace_period,
+              params.title_or_favicon_change_post_load_grace_period);
+    EXPECT_EQ(feature_usage_post_background_grace_period,
+              params.feature_usage_post_background_grace_period);
   }
 
   void ExpectDefaultProactiveTabFreezeAndDiscardParams() {
@@ -154,16 +153,16 @@ class TabManagerFeaturesTest : public testing::Test {
             SiteCharacteristicsDatabaseParams::
                 kNotificationsUsageObservationWindow.default_value),
         base::TimeDelta::FromSeconds(
-            SiteCharacteristicsDatabaseParams::kTitleOrFaviconChangeGracePeriod
-                .default_value),
+            SiteCharacteristicsDatabaseParams::
+                kTitleOrFaviconChangePostLoadGracePeriod.default_value),
         base::TimeDelta::FromSeconds(
-            SiteCharacteristicsDatabaseParams::kAudioUsageGracePeriod
-                .default_value));
+            SiteCharacteristicsDatabaseParams::
+                kFeatureUsagePostBackgroundGracePeriod.default_value));
   }
 
  private:
-  std::map<std::string, std::string> params_;
-  variations::testing::VariationParamsManager variations_manager_;
+  base::FieldTrialParams params_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
@@ -288,11 +287,13 @@ TEST_F(TabManagerFeaturesTest,
       SiteCharacteristicsDatabaseParams::kNotificationsUsageObservationWindow
           .name,
       "abc");
+  SetParam(SiteCharacteristicsDatabaseParams::
+               kTitleOrFaviconChangePostLoadGracePeriod.name,
+           "bleh");
   SetParam(
-      SiteCharacteristicsDatabaseParams::kTitleOrFaviconChangeGracePeriod.name,
-      "bleh");
-  SetParam(SiteCharacteristicsDatabaseParams::kAudioUsageGracePeriod.name,
-           "!!!");
+      SiteCharacteristicsDatabaseParams::kFeatureUsagePostBackgroundGracePeriod
+          .name,
+      "!!!");
   EnableSiteCharacteristicsDatabase();
   ExpectDefaultSiteCharacteristicsDatabaseParams();
 }
@@ -310,11 +311,13 @@ TEST_F(TabManagerFeaturesTest, GetSiteCharacteristicsDatabaseParams) {
       SiteCharacteristicsDatabaseParams::kNotificationsUsageObservationWindow
           .name,
       "3600000");
+  SetParam(SiteCharacteristicsDatabaseParams::
+               kTitleOrFaviconChangePostLoadGracePeriod.name,
+           "42");
   SetParam(
-      SiteCharacteristicsDatabaseParams::kTitleOrFaviconChangeGracePeriod.name,
-      "42");
-  SetParam(SiteCharacteristicsDatabaseParams::kAudioUsageGracePeriod.name,
-           "43");
+      SiteCharacteristicsDatabaseParams::kFeatureUsagePostBackgroundGracePeriod
+          .name,
+      "43");
 
   EnableSiteCharacteristicsDatabase();
 

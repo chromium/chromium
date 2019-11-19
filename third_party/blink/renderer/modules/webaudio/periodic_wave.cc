@@ -49,8 +49,6 @@ const unsigned kMaxPeriodicWaveSize = 16384;
 
 const float kCentsPerRange = 1200 / kNumberOfOctaveBands;
 
-using namespace vector_math;
-
 PeriodicWave* PeriodicWave::Create(BaseAudioContext& context,
                                    const Vector<float>& real,
                                    const Vector<float>& imag,
@@ -251,9 +249,9 @@ void PeriodicWave::CreateBandLimitedTables(const float* real_data,
     // arrays.  Need to scale the data by fftSize to remove the scaling that the
     // inverse IFFT would do.
     float scale = fft_size;
-    Vsmul(real_data, 1, &scale, real_p, 1, number_of_components);
+    vector_math::Vsmul(real_data, 1, &scale, real_p, 1, number_of_components);
     scale = -scale;
-    Vsmul(imag_data, 1, &scale, imag_p, 1, number_of_components);
+    vector_math::Vsmul(imag_data, 1, &scale, imag_p, 1, number_of_components);
 
     // Find the starting bin where we should start culling.  We need to clear
     // out the highest frequencies to band-limit the waveform.
@@ -288,7 +286,7 @@ void PeriodicWave::CreateBandLimitedTables(const float* real_data,
     if (!disable_normalization) {
       if (!range_index) {
         float max_value;
-        Vmaxmgv(data, 1, &max_value, fft_size);
+        vector_math::Vmaxmgv(data, 1, &max_value, fft_size);
 
         if (max_value)
           normalization_scale = 1.0f / max_value;
@@ -296,7 +294,7 @@ void PeriodicWave::CreateBandLimitedTables(const float* real_data,
     }
 
     // Apply normalization scale.
-    Vsmul(data, 1, &normalization_scale, data, 1, fft_size);
+    vector_math::Vsmul(data, 1, &normalization_scale, data, 1, fft_size);
   }
 }
 

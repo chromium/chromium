@@ -10,7 +10,7 @@ source_set("public") {
     "//net",
     "//net/dns:dns_client",
     "//net/dns:host_resolver",
-    "//net/dns:host_resolver_impl",
+    "//net/dns:host_resolver_manager",
   ]
 
   sources = [
@@ -27,17 +27,5 @@ source_set("public") {
 
   public_deps = [
     "//net:net_public_deps",
-  ]
-}
-
-source_set("tests") {
-  testonly = true
-  sources = [
-    "util_unittest.cc",
-  ]
-
-  deps = [
-    "//net",
-    "//testing/gtest",
   ]
 }

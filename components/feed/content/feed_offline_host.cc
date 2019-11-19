@@ -7,11 +7,12 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/feed/core/feed_scheduler_host.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
+#include "components/offline_pages/core/page_criteria.h"
 #include "components/offline_pages/core/prefetch/prefetch_service.h"
 #include "url/gurl.h"
 
@@ -25,12 +26,6 @@ using offline_pages::SuggestionsProvider;
 
 namespace {
 
-// |url| is always set. Sometimes |original_url| is set. If |original_url| is
-// set it is returned by this method, otherwise fall back to |url|.
-const GURL& PreferOriginal(const OfflinePageItem& item) {
-  return item.original_url.is_empty() ? item.url : item.original_url;
-}
-
 // Aggregates multiple callbacks from OfflinePageModel, storing the offline url.
 // When all callbacks have been invoked, tracked by ref counting, then
 // |on_completeion_| is finally invoked, sending all results together.
@@ -41,7 +36,8 @@ class CallbackAggregator : public base::RefCounted<CallbackAggregator> {
   using CacheIdCallback =
       base::RepeatingCallback<void(const std::string&, int64_t)>;
 
-  CallbackAggregator(ReportStatusCallback on_completion,
+  CallbackAggregator(OfflinePageModel* model,
+                     ReportStatusCallback on_completion,
                      CacheIdCallback on_each_result)
       : on_completion_(std::move(on_completion)),
         on_each_result_(std::move(on_each_result)),
@@ -87,6 +83,8 @@ class CallbackAggregator : public base::RefCounted<CallbackAggregator> {
     std::move(on_completion_).Run(std::move(urls_));
   }
 
+  OfflinePageModel* offline_page_model_;
+
   // To be called once all callbacks are run or destroyed.
   ReportStatusCallback on_completion_;
 
@@ -123,9 +121,8 @@ std::vector<PrefetchSuggestion> ConvertMetadataToSuggestions(
 
 void RunSuggestionCallbackWithConversion(
     SuggestionsProvider::SuggestionCallback suggestions_callback,
-    std::vector<ContentMetadata> metadataVector) {
-  std::move(suggestions_callback)
-      .Run(ConvertMetadataToSuggestions(std::move(metadataVector)));
+    std::vector<offline_pages::PrefetchSuggestion> metadataVector) {
+  std::move(suggestions_callback).Run(metadataVector);
 }
 
 }  //  namespace
@@ -137,8 +134,8 @@ FeedOfflineHost::FeedOfflineHost(OfflinePageModel* offline_page_model,
     : offline_page_model_(offline_page_model),
       prefetch_service_(prefetch_service),
       on_suggestion_consumed_(on_suggestion_consumed),
-      on_suggestions_shown_(on_suggestions_shown),
-      weak_factory_(this) {
+      on_suggestions_shown_(on_suggestions_shown) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(offline_page_model_);
   DCHECK(prefetch_service_);
   DCHECK(!on_suggestion_consumed_.is_null());
@@ -146,6 +143,7 @@ FeedOfflineHost::FeedOfflineHost(OfflinePageModel* offline_page_model,
 }
 
 FeedOfflineHost::~FeedOfflineHost() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Safe to call RemoveObserver() even if AddObserver() has not been called.
   offline_page_model_->RemoveObserver(this);
 }
@@ -153,6 +151,7 @@ FeedOfflineHost::~FeedOfflineHost() {
 void FeedOfflineHost::Initialize(
     const base::RepeatingClosure& trigger_get_known_content,
     const NotifyStatusChangeCallback& notify_status_change) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(trigger_get_known_content_.is_null());
   DCHECK(!trigger_get_known_content.is_null());
   DCHECK(notify_status_change_.is_null());
@@ -171,11 +170,13 @@ void FeedOfflineHost::Initialize(
 }
 
 void FeedOfflineHost::SetSuggestionProvider() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   prefetch_service_->SetSuggestionProvider(this);
 }
 
 base::Optional<int64_t> FeedOfflineHost::GetOfflineId(const std::string& url) {
-  auto iter = url_hash_to_id_.find(base::Hash(url));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto iter = url_hash_to_id_.find(base::FastHash(url));
   return iter == url_hash_to_id_.end() ? base::Optional<int64_t>()
                                        : base::Optional<int64_t>(iter->second);
 }
@@ -183,56 +184,63 @@ base::Optional<int64_t> FeedOfflineHost::GetOfflineId(const std::string& url) {
 void FeedOfflineHost::GetOfflineStatus(
     std::vector<std::string> urls,
     base::OnceCallback<void(std::vector<std::string>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UMA_HISTOGRAM_EXACT_LINEAR("ContentSuggestions.Feed.Offline.GetStatusCount",
                              urls.size(), 50);
 
   scoped_refptr<CallbackAggregator> aggregator =
       base::MakeRefCounted<CallbackAggregator>(
-          std::move(callback),
+          offline_page_model_, std::move(callback),
           base::BindRepeating(&FeedOfflineHost::CacheOfflinePageUrlAndId,
                               weak_factory_.GetWeakPtr()));
 
   for (std::string url : urls) {
-    GURL gurl(url);
-    offline_page_model_->GetPagesByURL(
-        gurl, base::BindOnce(&CallbackAggregator::OnGetPages, aggregator,
-                             std::move(url)));
+    offline_pages::PageCriteria criteria;
+    criteria.url = GURL(url);
+    criteria.exclude_tab_bound_pages = true;
+    offline_page_model_->GetPagesWithCriteria(
+        criteria, base::BindOnce(&CallbackAggregator::OnGetPages, aggregator,
+                                 std::move(url)));
   }
 }
 
 void FeedOfflineHost::OnContentRemoved(std::vector<std::string> urls) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const std::string& url : urls) {
     prefetch_service_->RemoveSuggestion(GURL(url));
   }
 }
 
 void FeedOfflineHost::OnNewContentReceived() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   prefetch_service_->NewSuggestionsAvailable();
 }
 
 void FeedOfflineHost::OnNoListeners() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   url_hash_to_id_.clear();
 }
 
 void FeedOfflineHost::OnGetKnownContentDone(
     std::vector<ContentMetadata> suggestions) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // While |suggestions| are movable, there might be multiple callbacks in
-  // |pending_known_content_callbacks_|. All but one callback will need to
-  // receive a full copy of |suggestions|, and the last one will received a
-  // moved copy.
-  for (size_t i = 0; i < pending_known_content_callbacks_.size(); i++) {
-    bool can_move = (i + 1 == pending_known_content_callbacks_.size());
-    std::move(pending_known_content_callbacks_[i])
-        .Run(can_move ? std::move(suggestions) : suggestions);
+  // |pending_known_content_callbacks_|. To be safe, copy all the suggestions.
+  std::vector<offline_pages::PrefetchSuggestion> converted_suggestions =
+      ConvertMetadataToSuggestions(std::move(suggestions));
+  for (auto& callback : pending_known_content_callbacks_) {
+    RunSuggestionCallbackWithConversion(std::move(callback),
+                                        converted_suggestions);
   }
   pending_known_content_callbacks_.clear();
 }
 
 void FeedOfflineHost::GetCurrentArticleSuggestions(
     SuggestionsProvider::SuggestionCallback suggestions_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!trigger_get_known_content_.is_null());
-  pending_known_content_callbacks_.push_back(base::BindOnce(
-      &RunSuggestionCallbackWithConversion, std::move(suggestions_callback)));
+  pending_known_content_callbacks_.emplace_back(
+      std::move(suggestions_callback));
   // Trigger after push_back() in case triggering results in a synchronous
   // response via OnGetKnownContentDone().
   if (pending_known_content_callbacks_.size() <= 1) {
@@ -241,40 +249,44 @@ void FeedOfflineHost::GetCurrentArticleSuggestions(
 }
 
 void FeedOfflineHost::ReportArticleListViewed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   on_suggestion_consumed_.Run();
 }
 
 void FeedOfflineHost::ReportArticleViewed(GURL article_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   on_suggestions_shown_.Run();
 }
 
 void FeedOfflineHost::OfflinePageModelLoaded(OfflinePageModel* model) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Ignored.
 }
 
 void FeedOfflineHost::OfflinePageAdded(OfflinePageModel* model,
                                        const OfflinePageItem& added_page) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!notify_status_change_.is_null());
-  const std::string& url = PreferOriginal(added_page).spec();
+  const std::string& url = added_page.GetOriginalUrl().spec();
   CacheOfflinePageUrlAndId(url, added_page.offline_id);
   notify_status_change_.Run(url, true);
 }
 
-void FeedOfflineHost::OfflinePageDeleted(
-    const OfflinePageModel::DeletedPageInfo& page_info) {
+void FeedOfflineHost::OfflinePageDeleted(const OfflinePageItem& deleted_page) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!notify_status_change_.is_null());
-  const std::string& url = page_info.url.spec();
+  const std::string& url = deleted_page.url.spec();
   EvictOfflinePageUrl(url);
   notify_status_change_.Run(url, false);
 }
 
 void FeedOfflineHost::CacheOfflinePageUrlAndId(const std::string& url,
                                                int64_t id) {
-  url_hash_to_id_[base::Hash(url)] = id;
+  url_hash_to_id_[base::FastHash(url)] = id;
 }
 
 void FeedOfflineHost::EvictOfflinePageUrl(const std::string& url) {
-  url_hash_to_id_.erase(base::Hash(url));
+  url_hash_to_id_.erase(base::FastHash(url));
 }
 
 }  // namespace feed

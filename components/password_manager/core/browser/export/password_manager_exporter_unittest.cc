@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
@@ -34,8 +34,6 @@ using ::testing::ReturnArg;
 using ::testing::SaveArg;
 using ::testing::StrEq;
 using ::testing::StrictMock;
-
-using password_manager::metrics_util::ExportPasswordsResult;
 
 // A callback that matches the signature of base::WriteFile
 using WriteCallback =
@@ -97,8 +95,7 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CreatePasswordList() {
 class PasswordManagerExporterTest : public testing::Test {
  public:
   PasswordManagerExporterTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI),
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         exporter_(&fake_credential_provider_, mock_on_progress_.Get()),
         destination_path_(kNullFileName) {
     exporter_.SetWriteForTesting(mock_write_file_.Get());
@@ -112,7 +109,7 @@ class PasswordManagerExporterTest : public testing::Test {
   ~PasswordManagerExporterTest() override = default;
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::vector<std::unique_ptr<autofill::PasswordForm>> password_list_;
   FakeCredentialProvider fake_credential_provider_;
   base::MockCallback<base::RepeatingCallback<
@@ -147,15 +144,7 @@ TEST_F(PasswordManagerExporterTest, PasswordExportSetPasswordListFirst) {
   exporter_.PreparePasswordsForExport();
   exporter_.SetDestination(destination_path_);
 
-  scoped_task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.ExportedPasswordsPerUserInCSV", password_list_.size(),
-      1);
-  histogram_tester_.ExpectTotalCount(
-      "PasswordManager.TimeReadingExportedPasswords", 1);
-  histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.ExportPasswordsToCSVResult",
-      ExportPasswordsResult::SUCCESS, 1);
+  task_environment_.RunUntilIdle();
 }
 
 // When writing fails, we should notify the UI of the failure and try to cleanup
@@ -176,12 +165,7 @@ TEST_F(PasswordManagerExporterTest, WriteFileFailed) {
   exporter_.PreparePasswordsForExport();
   exporter_.SetDestination(destination_path_);
 
-  scoped_task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectTotalCount(
-      "PasswordManager.ExportedPasswordsPerUserInCSV", 0);
-  histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.ExportPasswordsToCSVResult",
-      ExportPasswordsResult::WRITE_FAILED, 1);
+  task_environment_.RunUntilIdle();
 }
 
 // A partial write should be considered a failure and be cleaned up.
@@ -204,7 +188,7 @@ TEST_F(PasswordManagerExporterTest, WriteFileFailedHalfway) {
   exporter_.PreparePasswordsForExport();
   exporter_.SetDestination(destination_path_);
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 // Test that GetProgressStatus() returns the last ExportProgressStatus sent
@@ -227,7 +211,7 @@ TEST_F(PasswordManagerExporterTest, GetProgressReturnsLastCallbackStatus) {
   exporter_.SetDestination(destination_path_);
   ASSERT_EQ(exporter_.GetProgressStatus(), status);
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   ASSERT_EQ(exporter_.GetProgressStatus(), status);
 }
 
@@ -239,13 +223,7 @@ TEST_F(PasswordManagerExporterTest, DontExportWithOnlyDestination) {
 
   exporter_.SetDestination(destination_path_);
 
-  scoped_task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectTotalCount(
-      "PasswordManager.ExportedPasswordsPerUserInCSV", 0);
-  histogram_tester_.ExpectTotalCount(
-      "PasswordManager.TimeReadingExportedPasswords", 0);
-  histogram_tester_.ExpectTotalCount(
-      "PasswordManager.ExportPasswordsToCSVResult", 0);
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(PasswordManagerExporterTest, CancelAfterPasswords) {
@@ -257,12 +235,7 @@ TEST_F(PasswordManagerExporterTest, CancelAfterPasswords) {
   exporter_.PreparePasswordsForExport();
   exporter_.Cancel();
 
-  scoped_task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectTotalCount(
-      "PasswordManager.ExportedPasswordsPerUserInCSV", 0);
-  histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.ExportPasswordsToCSVResult",
-      ExportPasswordsResult::USER_ABORTED, 1);
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(PasswordManagerExporterTest, CancelWhileExporting) {
@@ -279,12 +252,7 @@ TEST_F(PasswordManagerExporterTest, CancelWhileExporting) {
   exporter_.SetDestination(destination_path_);
   exporter_.Cancel();
 
-  scoped_task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectTotalCount(
-      "PasswordManager.ExportedPasswordsPerUserInCSV", 0);
-  histogram_tester_.ExpectUniqueSample(
-      "PasswordManager.ExportPasswordsToCSVResult",
-      ExportPasswordsResult::USER_ABORTED, 1);
+  task_environment_.RunUntilIdle();
 }
 
 // The "Cancel" button may still be visible on the UI after we've completed
@@ -305,10 +273,10 @@ TEST_F(PasswordManagerExporterTest, CancelAfterExporting) {
   exporter_.PreparePasswordsForExport();
   exporter_.SetDestination(destination_path_);
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   exporter_.Cancel();
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 #if defined(OS_POSIX)
@@ -323,7 +291,7 @@ TEST_F(PasswordManagerExporterTest, OutputHasRestrictedPermissions) {
   exporter_.PreparePasswordsForExport();
   exporter_.SetDestination(destination_path_);
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 #endif
 

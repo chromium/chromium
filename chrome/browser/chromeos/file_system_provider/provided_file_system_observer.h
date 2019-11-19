@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/chromeos/file_system_provider/watcher.h"
-#include "storage/browser/fileapi/watcher_manager.h"
+#include "storage/browser/file_system/watcher_manager.h"
 
 namespace chromeos {
 namespace file_system_provider {
@@ -24,7 +24,7 @@ class ProvidedFileSystemObserver {
  public:
   struct Change;
 
-  // Lust of changes.
+  // List of changes.
   typedef std::vector<Change> Changes;
 
   // Describes a change related to a watched entry.

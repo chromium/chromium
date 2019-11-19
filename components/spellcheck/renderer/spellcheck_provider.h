@@ -14,6 +14,8 @@
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
 
 class SpellCheck;
@@ -36,7 +38,7 @@ class SpellCheckProvider
       public blink::WebTextCheckClient {
  public:
   using WebTextCheckCompletions =
-      base::IDMap<blink::WebTextCheckingCompletion*>;
+      base::IDMap<std::unique_ptr<blink::WebTextCheckingCompletion>>;
 
   SpellCheckProvider(
       content::RenderFrame* render_frame,
@@ -48,8 +50,9 @@ class SpellCheckProvider
   // available in the browser process. The function does not have special
   // handling for partial words, as Blink guarantees that no request is made
   // when typing in the middle of a word.
-  void RequestTextChecking(const base::string16& text,
-                           blink::WebTextCheckingCompletion* completion);
+  void RequestTextChecking(
+      const base::string16& text,
+      std::unique_ptr<blink::WebTextCheckingCompletion> completion);
 
   // The number of ongoing spell check host requests.
   size_t pending_text_request_size() const {
@@ -60,15 +63,16 @@ class SpellCheckProvider
   void set_spellcheck(SpellCheck* spellcheck) { spellcheck_ = spellcheck; }
 
   // content::RenderFrameObserver:
-  void FocusedNodeChanged(const blink::WebNode& node) override;
+  void FocusedElementChanged(const blink::WebElement& element) override;
 
  private:
   friend class TestingSpellCheckProvider;
   class DictionaryUpdateObserverImpl;
 
   // Sets the SpellCheckHost (for unit tests).
-  void SetSpellCheckHostForTesting(spellcheck::mojom::SpellCheckHostPtr host) {
-    spell_check_host_ = std::move(host);
+  void SetSpellCheckHostForTesting(
+      mojo::PendingRemote<spellcheck::mojom::SpellCheckHost> host) {
+    spell_check_host_.Bind(std::move(host));
   }
 
   // Reset dictionary_update_observer_ in TestingSpellCheckProvider dtor.
@@ -95,9 +99,9 @@ class SpellCheckProvider
       blink::WebVector<blink::WebString>* optional_suggestions) override;
   void RequestCheckingOfText(
       const blink::WebString& text,
-      blink::WebTextCheckingCompletion* completion) override;
+      std::unique_ptr<blink::WebTextCheckingCompletion> completion) override;
 
-#if !BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
   void OnRespondSpellingService(int identifier,
                                 const base::string16& text,
                                 bool success,
@@ -131,12 +135,12 @@ class SpellCheckProvider
   service_manager::LocalInterfaceProvider* embedder_provider_;
 
   // Interface to the SpellCheckHost.
-  spellcheck::mojom::SpellCheckHostPtr spell_check_host_;
+  mojo::Remote<spellcheck::mojom::SpellCheckHost> spell_check_host_;
 
   // Dictionary updated observer.
   std::unique_ptr<DictionaryUpdateObserverImpl> dictionary_update_observer_;
 
-  base::WeakPtrFactory<SpellCheckProvider> weak_factory_;
+  base::WeakPtrFactory<SpellCheckProvider> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SpellCheckProvider);
 };

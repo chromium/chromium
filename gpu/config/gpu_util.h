@@ -77,6 +77,27 @@ GPU_EXPORT bool EnableSwiftShaderIfNeeded(
 GPU_EXPORT GpuSeriesType GetGpuSeriesType(uint32_t vendor_id,
                                           uint32_t device_id);
 
+GPU_EXPORT std::string GetIntelGpuGeneration(uint32_t vendor_id,
+                                             uint32_t device_id);
+
+#if defined(OS_WIN)
+GPU_EXPORT std::string D3DFeatureLevelToString(uint32_t d3d_feature_level);
+GPU_EXPORT std::string VulkanVersionToString(uint32_t vulkan_version);
+#endif  // OS_WIN
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// This should match enum VulkanVersion in \tools\metrics\histograms\enums.xml
+enum class VulkanVersion {
+  kVulkanVersionUnknown = 0,
+  kVulkanVersion_1_0_0 = 1,
+  kVulkanVersion_1_1_0 = 2,
+  kMaxValue = kVulkanVersion_1_1_0,
+};
+
+GPU_EXPORT VulkanVersion
+ConvertToHistogramVulkanVersion(uint32_t vulkan_version);
+
 }  // namespace gpu
 
 #endif  // GPU_CONFIG_GPU_UTIL_H_

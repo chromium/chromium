@@ -13,6 +13,7 @@ Polymer({
   is: 'settings-personalization-options',
 
   behaviors: [
+    PrefsBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -27,8 +28,6 @@ Polymer({
      * @type {!PrivacyPageVisibility}
      */
     pageVisibility: Object,
-
-    unifiedConsentEnabled: Boolean,
 
     /** @type {settings.SyncStatus} */
     syncStatus: Object,
@@ -107,15 +106,29 @@ Polymer({
   },
   // </if>
 
+  // <if expr="_google_chrome">
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onUseSpellingServiceToggle_: function(event) {
+    // If turning on using the spelling service, automatically turn on
+    // spellcheck so that the spelling service can run.
+    if (event.target.checked) {
+      this.setPrefValue('browser.enable_spellchecking', true);
+    }
+  },
+  // </if>
+
   /**
    * @return {boolean}
    * @private
    */
   showSpellCheckControl_: function() {
-    return !this.unifiedConsentEnabled ||
-        (!!this.prefs.spellcheck &&
-         /** @type {!Array<string>} */
-         (this.prefs.spellcheck.dictionaries.value).length > 0);
+    return (
+        !!this.prefs.spellcheck &&
+        /** @type {!Array<string>} */
+        (this.prefs.spellcheck.dictionaries.value).length > 0);
   },
 
   /**
@@ -124,8 +137,7 @@ Polymer({
    */
   shouldShowDriveSuggest_: function() {
     return loadTimeData.getBoolean('driveSuggestAvailable') &&
-        !!this.unifiedConsentEnabled && !!this.syncStatus &&
-        !!this.syncStatus.signedIn &&
+        !!this.syncStatus && !!this.syncStatus.signedIn &&
         this.syncStatus.statusAction !== settings.StatusAction.REAUTHENTICATE;
   },
 });

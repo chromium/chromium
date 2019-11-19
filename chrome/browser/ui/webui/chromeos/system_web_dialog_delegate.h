@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
+#include "ui/views/widget/widget.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
 
@@ -28,6 +29,9 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   // matches, the first matching instance created is returned.
   static SystemWebDialogDelegate* FindInstance(const std::string& id);
 
+  // Returns true if there is a system dialog with |url| loaded.
+  static bool HasInstance(const GURL& url);
+
   // |gurl| is the HTML file path for the dialog content and must be set.
   // |title| may be empty in which case ShouldShowDialogTitle() returns false.
   SystemWebDialogDelegate(const GURL& gurl, const base::string16& title);
@@ -38,9 +42,15 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   // that only support a single instance.
   virtual const std::string& Id();
 
+  // Adjust the init params for the widget. By default makes no change.
+  virtual void AdjustWidgetInitParams(views::Widget::InitParams* params) {}
+
   // Focuses the dialog window. Note: No-op for modal dialogs, see
   // implementation for details.
   void Focus();
+
+  // Closes the dialog window.
+  void Close();
 
   // ui::WebDialogDelegate
   ui::ModalType GetDialogModalType() const override;
@@ -49,19 +59,23 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   void GetWebUIMessageHandlers(
       std::vector<content::WebUIMessageHandler*>* handlers) const override;
   void GetDialogSize(gfx::Size* size) const override;
+  bool CanResizeDialog() const override;
   std::string GetDialogArgs() const override;
-  void OnDialogShown(content::WebUI* webui,
-                     content::RenderViewHost* render_view_host) override;
+  void OnDialogShown(content::WebUI* webui) override;
   // Note: deletes |this|.
   void OnDialogClosed(const std::string& json_retval) override;
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
 
-  // Shows a system dialog using the current ative profile.
+  // Shows a system dialog using the specified BrowserContext (or Profile).
   // If |parent| is not null, the dialog will be parented to |parent|.
   // Otherwise it will be attached to either the AlwaysOnTop container or the
   // LockSystemModal container, depending on the session state at creation.
+  void ShowSystemDialogForBrowserContext(content::BrowserContext* context,
+                                         gfx::NativeWindow parent = nullptr);
+  // Same as previous but shows a system dialog using the current active
+  // profile.
   void ShowSystemDialog(gfx::NativeWindow parent = nullptr);
 
   content::WebUI* GetWebUIForTest() { return webui_; }
@@ -72,6 +86,9 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(SystemWebDialogLoginTest, NonModalTest);
+
+  // Returns the dialog window (pointer to |aura::Window|). This will be a
+  // |nullptr| if the dialog has not been created yet.
   gfx::NativeWindow dialog_window() const { return dialog_window_; }
 
  private:
@@ -79,7 +96,7 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   base::string16 title_;
   content::WebUI* webui_ = nullptr;
   ui::ModalType modal_type_;
-  gfx::NativeWindow dialog_window_;
+  gfx::NativeWindow dialog_window_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SystemWebDialogDelegate);
 };

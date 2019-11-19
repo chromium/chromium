@@ -7,18 +7,24 @@
 
 #include <stddef.h>
 
+#include "base/optional.h"
 #include "net/log/net_log_event_type.h"
-#include "net/log/test_net_log_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace base {
+class ListValue;
+}
+
 namespace net {
+
+struct NetLogEntry;
 
 // Checks that the element of |entries| at |offset| has the provided values.
 // A negative |offset| indicates a position relative to the end of |entries|.
 // Checks to make sure |offset| is within bounds, and fails gracefully if it
 // isn't.
 ::testing::AssertionResult LogContainsEvent(
-    const TestNetLogEntry::List& entries,
+    const std::vector<NetLogEntry>& entries,
     int offset,
     NetLogEventType expected_event,
     NetLogEventPhase expected_phase);
@@ -26,19 +32,19 @@ namespace net {
 // Just like LogContainsEvent, but always checks for an EventPhase of
 // PHASE_BEGIN.
 ::testing::AssertionResult LogContainsBeginEvent(
-    const TestNetLogEntry::List& entries,
+    const std::vector<NetLogEntry>& entries,
     int offset,
     NetLogEventType expected_event);
 
 // Just like LogContainsEvent, but always checks for an EventPhase of PHASE_END.
 ::testing::AssertionResult LogContainsEndEvent(
-    const TestNetLogEntry::List& entries,
+    const std::vector<NetLogEntry>& entries,
     int offset,
     NetLogEventType expected_event);
 
 // Just like LogContainsEvent, but does not check phase.
 ::testing::AssertionResult LogContainsEntryWithType(
-    const TestNetLogEntry::List& entries,
+    const std::vector<NetLogEntry>& entries,
     int offset,
     NetLogEventType type);
 
@@ -46,14 +52,14 @@ namespace net {
 // after.  It is not a failure if there's an earlier matching entry.  Negative
 // offsets are relative to the end of the array.
 ::testing::AssertionResult LogContainsEntryWithTypeAfter(
-    const TestNetLogEntry::List& entries,
+    const std::vector<NetLogEntry>& entries,
     int start_offset,
     NetLogEventType type);
 
 // Check if the first entry with the specified values is at |start_offset| or
 // after. It is a failure if there's an earlier matching entry.  Negative
 // offsets are relative to the end of the array.
-size_t ExpectLogContainsSomewhere(const TestNetLogEntry::List& entries,
+size_t ExpectLogContainsSomewhere(const std::vector<NetLogEntry>& entries,
                                   size_t min_offset,
                                   NetLogEventType expected_event,
                                   NetLogEventPhase expected_phase);
@@ -61,10 +67,35 @@ size_t ExpectLogContainsSomewhere(const TestNetLogEntry::List& entries,
 // Check if the log contains an entry with  the given values at |start_offset|
 // or after.  It is not a failure if there's an earlier matching entry.
 // Negative offsets are relative to the end of the array.
-size_t ExpectLogContainsSomewhereAfter(const TestNetLogEntry::List& entries,
+size_t ExpectLogContainsSomewhereAfter(const std::vector<NetLogEntry>& entries,
                                        size_t start_offset,
                                        NetLogEventType expected_event,
                                        NetLogEventPhase expected_phase);
+
+// The following methods return a parameter of the given name and type, or
+// nullopt if there is none.
+base::Optional<std::string> GetOptionalStringValueFromParams(
+    const NetLogEntry& entry,
+    base::StringPiece name);
+base::Optional<bool> GetOptionalBooleanValueFromParams(const NetLogEntry& entry,
+                                                       base::StringPiece name);
+base::Optional<int> GetOptionalIntegerValueFromParams(const NetLogEntry& entry,
+                                                      base::StringPiece name);
+base::Optional<int> GetOptionalNetErrorCodeFromParams(const NetLogEntry& entry);
+
+// Same as the *Optional* versions above, except will add a Gtest failure if the
+// value was not present, and then return some default.
+std::string GetStringValueFromParams(const NetLogEntry& entry,
+                                     base::StringPiece name);
+int GetIntegerValueFromParams(const NetLogEntry& entry, base::StringPiece name);
+bool GetBooleanValueFromParams(const NetLogEntry& entry,
+                               base::StringPiece name);
+int GetNetErrorCodeFromParams(const NetLogEntry& entry);
+
+// TODO(eroman): Remove use of base::ListValue.
+bool GetListValueFromParams(const NetLogEntry& entry,
+                            base::StringPiece name,
+                            const base::ListValue** value);
 
 }  // namespace net
 

@@ -54,7 +54,7 @@ void ClipboardAura::InjectClipboardEvent(
     return;
   }
 
-  ui::ScopedClipboardWriter clipboard_writer(ui::CLIPBOARD_TYPE_COPY_PASTE);
+  ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
   clipboard_writer.WriteText(base::UTF8ToUTF16(event.data()));
 
   // Update local change-count to prevent this change from being picked up by
@@ -74,7 +74,7 @@ void ClipboardAura::CheckClipboardForChanges() {
 
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   uint64_t change_count =
-      clipboard->GetSequenceNumber(ui::CLIPBOARD_TYPE_COPY_PASTE);
+      clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
 
   if (change_count == current_change_count_) {
     return;
@@ -85,7 +85,7 @@ void ClipboardAura::CheckClipboardForChanges() {
   protocol::ClipboardEvent event;
   std::string data;
 
-  clipboard->ReadAsciiText(ui::CLIPBOARD_TYPE_COPY_PASTE, &data);
+  clipboard->ReadAsciiText(ui::ClipboardBuffer::kCopyPaste, &data);
   event.set_mime_type(kMimeTypeTextUtf8);
   event.set_data(data);
 

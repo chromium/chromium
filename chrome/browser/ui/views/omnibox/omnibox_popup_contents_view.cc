@@ -5,24 +5,24 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
 
 #include <memory>
+#include <numeric>
 
 #include "base/bind.h"
+#include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/omnibox/browser/omnibox_view.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/compositor/closure_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/image/image.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
-
-#if defined(USE_AURA)
-#include "ui/wm/core/window_util.h"
-#endif  // defined(USE_AURA)
 
 class OmniboxPopupContentsView::AutocompletePopupWidget
     : public ThemeCopyingWidget,
@@ -49,7 +49,7 @@ class OmniboxPopupContentsView::AutocompletePopupWidget
 
     RoundedOmniboxResultsFrame::OnBeforeWidgetInit(&params, this);
 
-    Init(params);
+    Init(std::move(params));
   }
 
   void SetPopupContentsView(OmniboxPopupContentsView* contents) {
@@ -57,15 +57,7 @@ class OmniboxPopupContentsView::AutocompletePopupWidget
         new RoundedOmniboxResultsFrame(contents, contents->location_bar_view_));
   }
 
-  void SetTargetBounds(const gfx::Rect& bounds) {
-    SetBounds(bounds);
-
-#if defined(USE_AURA)
-    // TODO(malaykeshav): Remove this manual snap when we start snapping each
-    // window to its parent window. See https://crbug.com/863268 for more info.
-    wm::SnapWindowToPixelBoundary(GetNativeWindow());
-#endif  // defined(USE_AURA)
-  }
+  void SetTargetBounds(const gfx::Rect& bounds) { SetBounds(bounds); }
 
   void ShowAnimated() {
     // Set the initial opacity to 0 and ease into fully opaque.
@@ -140,24 +132,20 @@ class OmniboxPopupContentsView::AutocompletePopupWidget
   DISALLOW_COPY_AND_ASSIGN(AutocompletePopupWidget);
 };
 
-////////////////////////////////////////////////////////////////////////////////
-// OmniboxPopupContentsView, public:
-
 OmniboxPopupContentsView::OmniboxPopupContentsView(
-    OmniboxView* omnibox_view,
+    OmniboxViewViews* omnibox_view,
     OmniboxEditModel* edit_model,
-    LocationBarView* location_bar_view)
+    LocationBarView* location_bar_view,
+    const ui::ThemeProvider* theme_provider)
     : model_(new OmniboxPopupModel(this, edit_model)),
       omnibox_view_(omnibox_view),
-      location_bar_view_(location_bar_view) {
+      location_bar_view_(location_bar_view),
+      theme_provider_(theme_provider) {
   // The contents is owned by the LocationBarView.
   set_owned_by_client();
 
-  for (size_t i = 0; i < AutocompleteResult::GetMaxMatches(); ++i) {
-    OmniboxResultView* result_view = new OmniboxResultView(this, i);
-    result_view->SetVisible(false);
-    AddChildViewAt(result_view, static_cast<int>(i));
-  }
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
 }
 
 OmniboxPopupContentsView::~OmniboxPopupContentsView() {
@@ -180,10 +168,7 @@ void OmniboxPopupContentsView::OpenMatch(
 void OmniboxPopupContentsView::OpenMatch(
     WindowOpenDisposition disposition,
     base::TimeTicks match_selection_timestamp) {
-  size_t index = model_->selected_line();
-  omnibox_view_->OpenMatch(model_->result().match_at(index), disposition,
-                           GURL(), base::string16(), index,
-                           match_selection_timestamp);
+  OpenMatch(model_->selected_line(), disposition, match_selection_timestamp);
 }
 
 gfx::Image OmniboxPopupContentsView::GetMatchIcon(
@@ -192,14 +177,8 @@ gfx::Image OmniboxPopupContentsView::GetMatchIcon(
   return model_->GetMatchIcon(match, vector_icon_color);
 }
 
-OmniboxTint OmniboxPopupContentsView::GetTint() const {
-  // Use LIGHT in tests.
-  return location_bar_view_ ? location_bar_view_->tint() : OmniboxTint::LIGHT;
-}
-
 void OmniboxPopupContentsView::SetSelectedLine(size_t index) {
   DCHECK(HasMatchAt(index));
-
   model_->SetSelectedLine(index, false, false);
 }
 
@@ -215,8 +194,9 @@ void OmniboxPopupContentsView::UnselectButton() {
   model_->SetSelectedLineState(OmniboxPopupModel::NORMAL);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// OmniboxPopupContentsView, OmniboxPopupView overrides:
+bool OmniboxPopupContentsView::InExplicitExperimentalKeywordMode() {
+  return model_->edit_model()->InExplicitExperimentalKeywordMode();
+}
 
 bool OmniboxPopupContentsView::IsOpen() const {
   return popup_ != nullptr;
@@ -225,11 +205,11 @@ bool OmniboxPopupContentsView::IsOpen() const {
 void OmniboxPopupContentsView::InvalidateLine(size_t line) {
   OmniboxResultView* result = result_view_at(line);
   result->Invalidate();
-  result->SchedulePaint();
 
   if (HasMatchAt(line) && GetMatchAtIndex(line).associated_keyword.get()) {
     result->ShowKeyword(IsSelectedIndex(line) &&
-        model_->selected_line_state() == OmniboxPopupModel::KEYWORD);
+                        model_->selected_line_state() ==
+                            OmniboxPopupModel::KEYWORD);
   }
 }
 
@@ -256,58 +236,67 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
   // we have enough row views.
   const size_t result_size = model_->result().size();
   for (size_t i = 0; i < result_size; ++i) {
+    // Create child views lazily.  Since especially the first result view may be
+    // expensive to create due to loading font data, this saves time and memory
+    // during browser startup.
+    if (children().size() == i) {
+      AddChildView(
+          std::make_unique<OmniboxResultView>(this, i, theme_provider_));
+    }
+
     OmniboxResultView* view = result_view_at(i);
     const AutocompleteMatch& match = GetMatchAtIndex(i);
     view->SetMatch(match);
     view->SetVisible(true);
     const SkBitmap* bitmap = model_->RichSuggestionBitmapAt(i);
-    if (bitmap != nullptr) {
+    if (bitmap)
       view->SetRichSuggestionImage(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
-    }
   }
 
-  for (size_t i = result_size; i < AutocompleteResult::GetMaxMatches(); ++i)
-    child_at(i)->SetVisible(false);
+  for (auto i = children().begin() + result_size; i != children().end(); ++i)
+    (*i)->SetVisible(false);
 
   gfx::Rect new_target_bounds = GetTargetBounds();
 
   if (popup_) {
     popup_->SetTargetBounds(new_target_bounds);
-    Layout();
-    return;
+  } else {
+    views::Widget* popup_parent = location_bar_view_->GetWidget();
+
+    // If the popup is currently closed, we need to create it.
+    popup_ = (new AutocompletePopupWidget(popup_parent))->AsWeakPtr();
+    popup_->InitOmniboxPopup(popup_parent, new_target_bounds);
+    // Third-party software such as DigitalPersona identity verification can
+    // hook the underlying window creation methods and use SendMessage to
+    // synchronously change focus/activation, resulting in the popup being
+    // destroyed by the time control returns here.  Bail out in this case to
+    // avoid a nullptr dereference.
+    if (!popup_)
+      return;
+
+    popup_->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
+    popup_->SetPopupContentsView(this);
+    popup_->StackAbove(omnibox_view_->GetRelativeWindowForPopup());
+    // For some IMEs GetRelativeWindowForPopup triggers the omnibox to lose
+    // focus, thereby closing (and destroying) the popup. TODO(sky): this won't
+    // be needed once we close the omnibox on input window showing.
+    if (!popup_)
+      return;
+
+    popup_->ShowAnimated();
+
+    // Popup is now expanded and first item will be selected.
+    NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+    if (result_view_at(0)) {
+      result_view_at(0)->NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
+                                                  true);
+    }
   }
+  InvalidateLayout();
+}
 
-  views::Widget* popup_parent = location_bar_view_->GetWidget();
-
-  // If the popup is currently closed, we need to create it.
-  popup_ = (new AutocompletePopupWidget(popup_parent))->AsWeakPtr();
-  popup_->InitOmniboxPopup(popup_parent, new_target_bounds);
-  // Third-party software such as DigitalPersona identity verification can hook
-  // the underlying window creation methods and use SendMessage to synchronously
-  // change focus/activation, resulting in the popup being destroyed by the time
-  // control returns here.  Bail out in this case to avoid a nullptr
-  // dereference.
-  if (!popup_)
-    return;
-
-  popup_->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
-  popup_->SetPopupContentsView(this);
-  popup_->StackAbove(omnibox_view_->GetRelativeWindowForPopup());
-  // For some IMEs GetRelativeWindowForPopup triggers the omnibox to lose focus,
-  // thereby closing (and destroying) the popup. TODO(sky): this won't be needed
-  // once we close the omnibox on input window showing.
-  if (!popup_)
-    return;
-
-  popup_->ShowAnimated();
-
-  // Popup is now expanded and first item will be selected.
-  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
-  if (result_view_at(0)) {
-    result_view_at(0)->NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
-                                                true);
-  }
-  Layout();
+void OmniboxPopupContentsView::ProvideButtonFocusHint(size_t line) {
+  result_view_at(line)->ProvideButtonFocusHint();
 }
 
 void OmniboxPopupContentsView::OnMatchIconUpdated(size_t match_index) {
@@ -316,23 +305,6 @@ void OmniboxPopupContentsView::OnMatchIconUpdated(size_t match_index) {
 
 void OmniboxPopupContentsView::OnDragCanceled() {
   SetMouseHandler(nullptr);
-}
-
-void OmniboxPopupContentsView::ProvideButtonFocusHint(size_t line) {
-  OmniboxResultView* result = result_view_at(line);
-  result->ProvideButtonFocusHint();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// OmniboxPopupContentsView, views::View overrides:
-
-void OmniboxPopupContentsView::Layout() {
-  // Size our children to the available content area.
-  LayoutChildren();
-
-  // We need to manually schedule a paint here since we are a layered window and
-  // won't implicitly require painting until we ask for one.
-  SchedulePaint();
 }
 
 bool OmniboxPopupContentsView::OnMouseDragged(const ui::MouseEvent& event) {
@@ -365,14 +337,7 @@ void OmniboxPopupContentsView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::ET_GESTURE_TAP:
     case ui::ET_GESTURE_SCROLL_END:
-      if (!(OmniboxFieldTrial::IsTabSwitchLogicReversed() &&
-            model_->result().match_at(index).ShouldShowTabMatch())) {
-        OpenMatch(index, WindowOpenDisposition::CURRENT_TAB,
-                  event->time_stamp());
-      } else {
-        OpenMatch(index, WindowOpenDisposition::SWITCH_TO_TAB,
-                  event->time_stamp());
-      }
+      OpenMatch(index, WindowOpenDisposition::CURRENT_TAB, event->time_stamp());
       break;
     default:
       return;
@@ -380,26 +345,17 @@ void OmniboxPopupContentsView::OnGestureEvent(ui::GestureEvent* event) {
   event->SetHandled();
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// OmniboxPopupContentsView, private:
-
 gfx::Rect OmniboxPopupContentsView::GetTargetBounds() {
-  DCHECK_GE(static_cast<size_t>(child_count()), model_->result().size());
-  int popup_height = 0;
-  for (size_t i = 0; i < model_->result().size(); ++i)
-    popup_height += child_at(i)->GetPreferredSize().height();
+  DCHECK_GE(children().size(), model_->result().size());
+  int popup_height = std::accumulate(
+      children().cbegin(), children().cbegin() + model_->result().size(), 0,
+      [](int height, const auto* v) {
+        return height + v->GetPreferredSize().height();
+      });
   // Add enough space on the top and bottom so it looks like there is the same
   // amount of space between the text and the popup border as there is in the
   // interior between each row of text.
   popup_height += RoundedOmniboxResultsFrame::GetNonResultSectionHeight();
-
-  if (base::FeatureList::IsEnabled(omnibox::kUIExperimentVerticalMargin)) {
-    // If the vertical margin experiment uses a very small value (like a value
-    // similar to pre-Refresh), we need to pad up the popup height at the
-    // bottom (just like pre-Refresh) to prevent it from looking very bad.
-    if (OmniboxFieldTrial::GetSuggestionVerticalMargin() < 4)
-      popup_height += 4;
-  }
 
   // The rounded popup is always offset the same amount from the omnibox.
   gfx::Rect content_rect = location_bar_view_->GetBoundsInScreen();
@@ -410,19 +366,6 @@ gfx::Rect OmniboxPopupContentsView::GetTargetBounds() {
   // Finally, expand the widget to accomodate the custom-drawn shadows.
   content_rect.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
   return content_rect;
-}
-
-void OmniboxPopupContentsView::LayoutChildren() {
-  gfx::Rect contents_rect = GetContentsBounds();
-  int top = contents_rect.y();
-  for (size_t i = 0; i < AutocompleteResult::GetMaxMatches(); ++i) {
-    View* v = child_at(i);
-    if (v->visible()) {
-      v->SetBounds(contents_rect.x(), top, contents_rect.width(),
-                   v->GetPreferredSize().height());
-      top = v->bounds().bottom();
-    }
-  }
 }
 
 bool OmniboxPopupContentsView::HasMatchAt(size_t index) const {
@@ -438,20 +381,20 @@ size_t OmniboxPopupContentsView::GetIndexForPoint(const gfx::Point& point) {
   if (!HitTestPoint(point))
     return OmniboxPopupModel::kNoMatch;
 
-  int nb_match = model_->result().size();
-  DCHECK(nb_match <= child_count());
-  for (int i = 0; i < nb_match; ++i) {
-    views::View* child = child_at(i);
+  size_t nb_match = model_->result().size();
+  DCHECK_LE(nb_match, children().size());
+  for (size_t i = 0; i < nb_match; ++i) {
+    views::View* child = children()[i];
     gfx::Point point_in_child_coords(point);
     View::ConvertPointToTarget(this, child, &point_in_child_coords);
-    if (child->visible() && child->HitTestPoint(point_in_child_coords))
+    if (child->GetVisible() && child->HitTestPoint(point_in_child_coords))
       return i;
   }
   return OmniboxPopupModel::kNoMatch;
 }
 
 OmniboxResultView* OmniboxPopupContentsView::result_view_at(size_t i) {
-  return static_cast<OmniboxResultView*>(child_at(static_cast<int>(i)));
+  return static_cast<OmniboxResultView*>(children()[i]);
 }
 
 void OmniboxPopupContentsView::GetAccessibleNodeData(
@@ -463,10 +406,14 @@ void OmniboxPopupContentsView::GetAccessibleNodeData(
     node_data->AddState(ax::mojom::State::kCollapsed);
     node_data->AddState(ax::mojom::State::kInvisible);
   }
-}
 
-////////////////////////////////////////////////////////////////////////////////
-// OmniboxPopupContentsView, views::View overrides, private:
+  if (omnibox_view_) {
+    int32_t omnibox_view_id =
+        omnibox_view_->GetViewAccessibility().GetUniqueId().Get();
+    node_data->AddIntAttribute(ax::mojom::IntAttribute::kPopupForId,
+                               omnibox_view_id);
+  }
+}
 
 const char* OmniboxPopupContentsView::GetClassName() const {
   return "OmniboxPopupContentsView";

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/sheet_bg_color"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+
+    <!-- "Payment" label. -->
+    <TextView
+        android:id="@+id/payment_label"
+        android:layout_alignParentStart="true"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/payment_currency"
+        android:layout_width="wrap_content"
+        android:paddingBottom="@dimen/microtransaction_large_text_vertical_spacing"
+        android:paddingEnd="@dimen/microtransaction_spacing"
+        android:paddingStart="@dimen/microtransaction_spacing"
+        android:paddingTop="@dimen/microtransaction_content_top_spacing"
+        android:textAppearance="@style/TextAppearance.BlackBody"
+        android:text="@string/payment_request_payment_method_section_name"/>
+
+    <!-- Currency label, e.g., "USD". -->
+    <TextView
+        android:id="@id/payment_currency"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/payment_amount"
+        android:layout_width="wrap_content"
+        android:paddingTop="@dimen/microtransaction_content_top_spacing"
+        android:textAppearance="@style/TextAppearance.BlackBodyDefault"/>
+
+    <!-- Bold formatted amount, e.g., "$1.00". -->
+    <TextView
+        android:id="@id/payment_amount"
+        android:layout_alignParentEnd="true"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:paddingEnd="@dimen/microtransaction_spacing"
+        android:paddingStart="@dimen/microtransaction_amount_currency_spacing"
+        android:paddingTop="@dimen/microtransaction_content_top_spacing"
+        android:textAppearance="@style/TextAppearance.BlackTitle2"/>
+
+    <!-- Line item separator. -->
+    <View
+        android:background="@color/divider_bg_color"
+        android:id="@+id/line_item_separator"
+        android:layout_below="@id/payment_label"
+        android:layout_height="@dimen/microtransaction_separator_width"
+        android:layout_marginEnd="@dimen/microtransaction_spacing"
+        android:layout_marginStart="@dimen/microtransaction_spacing"
+        android:layout_width="match_parent"/>
+
+    <!-- "Account Balance" label. -->
+    <TextView
+        android:id="@+id/account_balance_label"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/line_item_separator"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/account_balance_currency"
+        android:layout_width="wrap_content"
+        android:paddingBottom="@dimen/microtransaction_large_text_vertical_spacing"
+        android:paddingEnd="@dimen/microtransaction_spacing"
+        android:paddingStart="@dimen/microtransaction_spacing"
+        android:paddingTop="@dimen/microtransaction_large_text_vertical_spacing"
+        android:textAppearance="@style/TextAppearance.BlackBody"
+        android:text="@string/payment_account_balance"/>
+
+    <!-- Currency label, e.g., "USD". -->
+    <TextView
+        android:id="@id/account_balance_currency"
+        android:layout_below="@id/line_item_separator"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/account_balance"
+        android:layout_width="wrap_content"
+        android:paddingTop="@dimen/microtransaction_large_text_vertical_spacing"
+        android:textAppearance="@style/TextAppearance.BlackBodyDefault"/>
+
+    <!-- Bold formatted account balance, e.g., "$18.00". -->
+    <TextView
+        android:id="@id/account_balance"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/line_item_separator"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:paddingEnd="@dimen/microtransaction_spacing"
+        android:paddingStart="@dimen/microtransaction_amount_currency_spacing"
+        android:paddingTop="@dimen/microtransaction_large_text_vertical_spacing"
+        android:textAppearance="@style/TextAppearance.BlackTitle2"/>
+
+    <!-- Status icon, e.g., the fingerprint icon. -->
+    <ImageView
+        android:id="@+id/status_icon"
+        android:importantForAccessibility="no"
+        android:layout_below="@id/account_balance_label"
+        android:layout_centerHorizontal="true"
+        android:layout_height="@dimen/microtransaction_content_icon_size"
+        android:layout_margin="@dimen/microtransaction_content_icon_spacing"
+        android:layout_width="@dimen/microtransaction_content_icon_size"
+        android:scaleType="centerCrop"/>
+
+    <!-- Processing spinner. -->
+    <ProgressBar
+        android:id="@+id/processing_spinner"
+        android:layout_below="@id/account_balance_label"
+        android:layout_centerHorizontal="true"
+        android:layout_height="@dimen/microtransaction_content_icon_size"
+        android:layout_margin="@dimen/microtransaction_content_icon_spacing"
+        android:layout_width="@dimen/microtransaction_content_icon_size"/>
+
+    <!-- Status message, e.g., "Touch sensor to pay". -->
+    <TextView
+        android:id="@+id/status_message"
+        android:layout_below="@id/status_icon"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:paddingBottom="@dimen/microtransaction_content_bottom_spacing"
+        android:textAppearance="@style/TextAppearance.BlackCaption"/>
+
+    <!-- "Pay" button. -->
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/pay_button"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/account_balance"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/microtransaction_spacing"
+        android:layout_width="wrap_content"
+        android:text="@string/payments_pay_button"
+        style="@style/FilledButton.Flat"/>
+
+</RelativeLayout>

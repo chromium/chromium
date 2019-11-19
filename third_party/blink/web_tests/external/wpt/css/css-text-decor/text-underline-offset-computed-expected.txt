@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Property text-underline-offset value 'auto' computes to 'auto' assert_true: text-underline-offset doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-underline-offset value 'from-font' computes to 'from-font' assert_true: text-underline-offset doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-underline-offset value 'calc(10px - 8px)' computes to '2px' assert_true: text-underline-offset doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

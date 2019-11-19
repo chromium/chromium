@@ -5,7 +5,7 @@
 assert(is_fuchsia)
 
 import("//build/config/fuchsia/fidl_library.gni")
-import("//build/config/fuchsia/rules.gni")
+import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//build/config/fuchsia/symbol_archive.gni")
 import("//build/util/process_version.gni")
 import("//testing/test.gni")
@@ -20,9 +20,11 @@ source_set("core") {
   ]
   public_deps = [
     "//base:base",
+    "//fuchsia/base",
     "//net:net",
     "//third_party/fuchsia-sdk/sdk:net_oldhttp",
     "//third_party/fuchsia-sdk/sdk:sys",
+    "//third_party/fuchsia-sdk/sdk:sys_cpp",
   ]
   visibility = [ ":*" ]
 }
@@ -40,7 +42,7 @@ executable("http_exe") {
 fuchsia_package("http_pkg") {
   binary = ":http_exe"
   package_name_override = "http"
-  sandbox_policy = "sandbox_policy"
+  manifest = "http.cmx"
 }
 
 fuchsia_package_runner("http_pkg_runner") {
@@ -63,10 +65,12 @@ test("http_service_tests") {
   ]
 }
 
-symbol_archive("symbol_archive") {
-  deps = [
-    ":http_pkg",
-  ]
-  ids_txt = "$root_gen_dir/fuchsia/http/http/ids.txt"
-  archive_name = "$root_gen_dir/fuchsia/http/http/http.symbols.tar.bz2"
-}
+if (is_official_build) {
+  symbol_archive("symbol_archive") {
+    deps = [
+      ":http_pkg",
+    ]
+    ids_txt = "$root_gen_dir/fuchsia/http/http/ids.txt"
+    archive_name = "$root_gen_dir/fuchsia/http/http/http.symbols.tar.bz2"
+  }
+}  # is_official_build

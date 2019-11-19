@@ -114,6 +114,7 @@ testImage = function ()
 testVideo = function ()
 {
     var video = document.createElement('video');
+    video.preload = "auto";
     video.oncanplay = testResource.bind(null, video, "video", finishUp);
     // No crossOrigin set here either.
     var name = "../../media/resources/test.ogv";

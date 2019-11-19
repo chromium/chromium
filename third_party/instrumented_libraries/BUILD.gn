@@ -11,7 +11,11 @@ declare_args() {
 }
 
 group("deps") {
-  if (use_prebuilt_instrumented_libraries) {
+  if (use_locally_built_instrumented_libraries) {
+    deps = [
+      ":locally_built",
+    ]
+  } else if (use_prebuilt_instrumented_libraries) {
     assert(prebuilt_instrumented_libraries_available,
            "Prebuilt instrumented libraries are only available when " +
                "is_msan = true and msan_track_origins = {0, 2}")
@@ -20,11 +24,6 @@ group("deps") {
     ]
     data_deps = [
       ":prebuilt",
-    ]
-  }
-  if (use_locally_built_instrumented_libraries) {
-    deps = [
-      ":locally_built",
     ]
   }
 }
@@ -105,6 +104,7 @@ if (use_locally_built_instrumented_libraries) {
       ":libasound2",
       ":libatk-bridge2.0-0",
       ":libatspi2.0-0",
+      ":libavahi-client3",
       ":libcairo2",
       ":libcap2",
       ":libcredentialkit_pkcs11",
@@ -123,6 +123,8 @@ if (use_locally_built_instrumented_libraries) {
       ":libgtk-3-0",
       ":libido3-0.1-0",
       ":libindicator3-7",
+      ":libjasper1",
+      ":libjpeg-turbo8",
       ":libnspr4",
       ":libp11-kit0",
       ":libpci3",
@@ -155,8 +157,11 @@ if (use_locally_built_instrumented_libraries) {
     ]
     if (is_msan) {
       deps += [
+        ":libcgmanager0",
         ":libcups2",
         ":libgnutls26",
+        ":libnih-dbus1",
+        ":libnih1",
       ]
     }
     if (!is_tsan) {
@@ -360,6 +365,22 @@ if (use_locally_built_instrumented_libraries) {
     ]
   }
 
+  instrumented_library("libavahi-client3") {
+    extra_configure_flags = [
+      "--disable-static",
+      "--disable-introspection",
+      "--disable-gtk3",
+
+      # From debian/rules.
+      "--enable-compat-libdns_sd",
+      "--disable-mono",
+      "--disable-monodoc",
+      "--disable-qt3",
+      "--with-systemdsystemunitdir=/lib/systemd/system",
+    ]
+    patch = "patches/libavahi-client3.diff"
+  }
+
   instrumented_library("libcairo2") {
     extra_configure_flags = [
       "--disable-gtk-doc",
@@ -370,6 +391,13 @@ if (use_locally_built_instrumented_libraries) {
   instrumented_library("libcap2") {
     extra_configure_flags = [ "--disable-static" ]
     build_method = "custom_libcap"
+  }
+
+  instrumented_library("libcgmanager0") {
+    extra_configure_flags = [ "--disable-static" ]
+
+    # Required on Trusty due to autoconf version mismatch.
+    pre_build = "scripts/pre-build/autoreconf.sh"
   }
 
   instrumented_library("libcredentialkit_pkcs11") {
@@ -592,6 +620,36 @@ if (use_locally_built_instrumented_libraries) {
       "--disable-introspection",
     ]
     pre_build = "scripts/pre-build/autogen.sh"
+  }
+
+  instrumented_library("libjasper1") {
+    extra_configure_flags = [
+      "--disable-static",
+
+      # From debian/rules.
+      "--enable-shared=yes",
+    ]
+  }
+
+  instrumented_library("libjpeg-turbo8") {
+    extra_configure_flags = [
+      "--disable-static",
+
+      # From debian/rules.
+      "--with-jpeg8",
+    ]
+  }
+
+  instrumented_library("libnih1") {
+    extra_configure_flags = [ "--disable-static" ]
+
+    pre_build = "scripts/pre-build/libnih1.sh"
+  }
+
+  instrumented_library("libnih-dbus1") {
+    extra_configure_flags = [ "--disable-static" ]
+
+    pre_build = "scripts/pre-build/libnih1.sh"
   }
 
   instrumented_library("libnspr4") {

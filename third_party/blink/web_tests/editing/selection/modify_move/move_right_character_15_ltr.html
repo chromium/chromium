@@ -3,7 +3,6 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../assert_selection.js"></script>
 <script>
-const usesBidiAffinity = window.internals && internals.runtimeFlags.bidiCaretAffinityEnabled;
 
 selection_test(
   '<div contenteditable dir="ltr">|abc\u05D0\u05D1\u05D2123def</div>',
@@ -26,23 +25,19 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc|\u05D0\u05D1\u05D2123def</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr">abc\u05d0\u05d1\u05d2123d|ef</div>'
-      : '<div contenteditable dir="ltr">abc\u05D0\u05D1\u05D21|23def</div>',
+  '<div contenteditable dir="ltr">abc\u05D0|\u05D1\u05D2123def</div>',
   '15-3 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr">abc\u05D0|\u05D1\u05D2123def</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr">abc|\u05d0\u05d1\u05d2123def</div>'
-      : '<div contenteditable dir="ltr">abc\u05D0\u05D1\u05D2123|def</div>',
+  '<div contenteditable dir="ltr">abc\u05D0\u05D1|\u05D2123def</div>',
   '15-4 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr">abc\u05D0\u05D1|\u05D2123def</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr">abc\u05D0|\u05D1\u05D2123def</div>',
+  '<div contenteditable dir="ltr">abc\u05D0\u05D1\u05D2|123def</div>',
   '15-5 ltr right character');
 
 selection_test(
@@ -60,9 +55,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc\u05D0\u05D1\u05D212|3def</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr">abc\u05d0\u05d1\u05d2123|def</div>'
-      : '<div contenteditable dir="ltr">abc\u05D0\u05D1|\u05D2123def</div>',
+  '<div contenteditable dir="ltr">abc\u05D0\u05D1\u05D2123|def</div>',
   '15-8 ltr right character');
 
 selection_test(

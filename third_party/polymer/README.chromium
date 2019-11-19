@@ -55,3 +55,8 @@ installed by running "bower install -S PolymerElements/<component>#version".
 Be sure to add the .bower.json file to the repository as it includes the
 revision information of the polymer component.
 Also be sure that you listed all the added packages in bower.json.
+
+Polymer 3 notes
+Polymer 3 resides under v3_0/, and uses NPM instead of Bower. To restore the
+contents of the 'components-chromium' directory from scratch, run
+./v3_0/reproduce.sh on a Linux machine.

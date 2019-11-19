@@ -45,8 +45,6 @@ bool GetRTPFragmentationHeaderH264(webrtc::RTPFragmentationHeader* header,
   for (size_t i = 0; i < nalu_vector.size(); ++i) {
     header->fragmentationOffset[i] = nalu_vector[i].data - data;
     header->fragmentationLength[i] = nalu_vector[i].size;
-    header->fragmentationPlType[i] = 0;
-    header->fragmentationTimeDiff[i] = 0;
   }
   return true;
 }
@@ -104,8 +102,7 @@ int32_t WebrtcDummyVideoEncoder::Release() {
 
 int32_t WebrtcDummyVideoEncoder::Encode(
     const webrtc::VideoFrame& frame,
-    const webrtc::CodecSpecificInfo* codec_specific_info,
-    const std::vector<webrtc::FrameType>* frame_types) {
+    const std::vector<webrtc::VideoFrameType>* frame_types) {
   // WebrtcDummyVideoCapturer doesn't generate any video frames, so Encode() can
   // be called only from VCMGenericEncoder::RequestFrame() to request a key
   // frame.
@@ -115,15 +112,15 @@ int32_t WebrtcDummyVideoEncoder::Encode(
   return WEBRTC_VIDEO_CODEC_OK;
 }
 
-int32_t WebrtcDummyVideoEncoder::SetRates(uint32_t bitrate,
-                                          uint32_t framerate) {
+void WebrtcDummyVideoEncoder::SetRates(
+    const RateControlParameters& parameters) {
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoChannelStateObserver::OnTargetBitrateChanged,
-                     video_channel_state_observer_, bitrate));
+                     video_channel_state_observer_,
+                     parameters.bitrate.get_sum_kbps()));
   // framerate is not expected to be valid given we never report captured
   // frames.
-  return WEBRTC_VIDEO_CODEC_OK;
 }
 
 webrtc::EncodedImageCallback::Result WebrtcDummyVideoEncoder::SendEncodedFrame(
@@ -132,8 +129,8 @@ webrtc::EncodedImageCallback::Result WebrtcDummyVideoEncoder::SendEncodedFrame(
     base::TimeTicks encode_started_time,
     base::TimeTicks encode_finished_time) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  uint8_t* buffer = const_cast<uint8_t*>(
-      reinterpret_cast<const uint8_t*>(base::data(frame.data)));
+  const uint8_t* buffer =
+      reinterpret_cast<const uint8_t*>(base::data(frame.data));
   size_t buffer_size = frame.data.size();
   base::AutoLock lock(lock_);
   if (state_ == kUninitialized) {
@@ -142,12 +139,15 @@ webrtc::EncodedImageCallback::Result WebrtcDummyVideoEncoder::SendEncodedFrame(
         webrtc::EncodedImageCallback::Result::ERROR_SEND_FAILED);
   }
 
-  webrtc::EncodedImage encoded_image(buffer, buffer_size, buffer_size);
+  webrtc::EncodedImage encoded_image;
+  encoded_image.SetEncodedData(
+      webrtc::EncodedImageBuffer::Create(buffer, buffer_size));
   encoded_image._encodedWidth = frame.size.width();
   encoded_image._encodedHeight = frame.size.height();
   encoded_image._completeFrame = true;
-  encoded_image._frameType =
-      frame.key_frame ? webrtc::kVideoFrameKey : webrtc::kVideoFrameDelta;
+  encoded_image._frameType = frame.key_frame
+                                 ? webrtc::VideoFrameType::kVideoFrameKey
+                                 : webrtc::VideoFrameType::kVideoFrameDelta;
   int64_t capture_time_ms = (capture_time - base::TimeTicks()).InMilliseconds();
   int64_t encode_started_time_ms =
       (encode_started_time - base::TimeTicks()).InMilliseconds();
@@ -214,8 +214,6 @@ webrtc::EncodedImageCallback::Result WebrtcDummyVideoEncoder::SendEncodedFrame(
     header.VerifyAndAllocateFragmentationHeader(1);
     header.fragmentationOffset[0] = 0;
     header.fragmentationLength[0] = buffer_size;
-    header.fragmentationPlType[0] = 0;
-    header.fragmentationTimeDiff[0] = 0;
   }
 
   DCHECK(encoded_callback_);

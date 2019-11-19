@@ -3,7 +3,6 @@
 <head>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 </head>
 <body>
 
@@ -40,7 +39,7 @@
 
 <div id="console"></div>
 <script>
-async_test_after_layout_and_paint((t) => {
+async_test((t) => {
     window.setTimeout(() => { assert_unreached("Did not receive all notifications within 1000ms"); }, 1000);
 
     function accessibleElementById(id) {
@@ -65,7 +64,7 @@ async_test_after_layout_and_paint((t) => {
     });
 
     assert_true(accessibleElementById('hiddenDivContainer') != null);
-    assert_false(accessibleElementById('hiddenDiv') != null);
+    assert_true(accessibleElementById('hiddenDiv').isIgnored);
 
     accessibleElementById('hiddenDivContainer').addNotificationListener(t.step_func((notification) => {
         console.log('Got ' + notification + ' notification on hiddenDivContainer');
@@ -77,7 +76,7 @@ async_test_after_layout_and_paint((t) => {
     document.getElementById('hiddenDiv').hidden = false;
 
     assert_true(accessibleElementById('invisibleDivContainer') != null);
-    assert_false(accessibleElementById('invisibleDiv') != null);
+    assert_true(accessibleElementById('invisibleDiv').isIgnored);
 
     accessibleElementById('invisibleDivContainer').addNotificationListener(t.step_func((notification) => {
         console.log('Got ' + notification + ' notification on invisibleDivContainer');

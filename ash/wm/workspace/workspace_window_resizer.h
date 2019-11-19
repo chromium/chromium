@@ -21,10 +21,7 @@ namespace ash {
 class PhantomWindowController;
 class TwoStepEdgeCycler;
 class WindowSize;
-
-namespace wm {
 class WindowState;
-}
 
 // WindowResizer implementation for workspaces. This enforces that windows are
 // not allowed to vertically move or resize outside of the work area. As windows
@@ -53,7 +50,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   ~WorkspaceWindowResizer() override;
 
   static WorkspaceWindowResizer* Create(
-      wm::WindowState* window_state,
+      WindowState* window_state,
       const std::vector<aura::Window*>& attached_windows);
 
   // WindowResizer:
@@ -68,7 +65,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   // The edge to which the window should be snapped at the end of the drag.
   enum SnapType { SNAP_LEFT, SNAP_RIGHT, SNAP_NONE };
 
-  WorkspaceWindowResizer(wm::WindowState* window_state,
+  WorkspaceWindowResizer(WindowState* window_state,
                          const std::vector<aura::Window*>& attached_windows);
 
   // Lays out the attached windows. |bounds| is the bounds of the main window.
@@ -102,19 +99,25 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   // Adds a WindowSize to |sizes| for each attached window.
   void CreateBucketsForAttached(std::vector<WindowSize>* sizes) const;
 
-  // If possible snaps the window to a neary window. Updates |bounds| if there
-  // was a close enough window.
-  void MagneticallySnapToOtherWindows(gfx::Rect* bounds);
+  // If possible snaps the window to a neary window in |display|. Updates
+  // |bounds| if there was a close enough window. |display| should be the
+  // display containing the last event location.
+  void MagneticallySnapToOtherWindows(const display::Display& display,
+                                      gfx::Rect* bounds);
 
-  // If possible snaps the resize to a neary window. Updates |bounds| if there
-  // was a close enough window.
-  void MagneticallySnapResizeToOtherWindows(gfx::Rect* bounds);
+  // If possible snaps the resize to a neary window in |display|. Updates
+  // |bounds| if there was a close enough window. |display| should be the
+  // display containing the last event location.
+  void MagneticallySnapResizeToOtherWindows(const display::Display& display,
+                                            gfx::Rect* bounds);
 
-  // Finds the neareset window to magentically snap to. Updates
+  // Finds the neareset window in |display| to magentically snap to. Updates
   // |magnetism_window_| and |magnetism_edge_| appropriately. |edges| is a
   // bitmask of the MagnetismEdges to match again. Returns true if a match is
   // found.
-  bool UpdateMagnetismWindow(const gfx::Rect& bounds, uint32_t edges);
+  bool UpdateMagnetismWindow(const display::Display& display,
+                             const gfx::Rect& bounds,
+                             uint32_t edges);
 
   // Adjusts the bounds of the window: magnetically snapping, ensuring the
   // window has enough on screen... |snap_size| is the distance from an edge of
@@ -152,15 +155,19 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
 
   // Returns true if |bounds_in_parent| are valid bounds for snapped state type
   // |snapped_type|.
-  bool AreBoundsValidSnappedBounds(mojom::WindowStateType snapped_type,
+  bool AreBoundsValidSnappedBounds(WindowStateType snapped_type,
                                    const gfx::Rect& bounds_in_parent) const;
 
   // Sets |window|'s state type to |new_state_type|. Called after the drag has
   // been completed for fling/swipe gestures.
   void SetWindowStateTypeFromGesture(aura::Window* window,
-                                     mojom::WindowStateType new_state_type);
+                                     WindowStateType new_state_type);
 
-  wm::WindowState* window_state() { return window_state_; }
+  // Start/End drag for attached windows if there is any.
+  void StartDragForAttachedWindows();
+  void EndDragForAttachedWindows(bool revert_drag);
+
+  WindowState* window_state() { return window_state_; }
 
   const std::vector<aura::Window*> attached_windows_;
 
@@ -221,7 +228,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
 
   // Used to determine if this has been deleted during a drag such as when a tab
   // gets dragged into another browser window.
-  base::WeakPtrFactory<WorkspaceWindowResizer> weak_ptr_factory_;
+  base::WeakPtrFactory<WorkspaceWindowResizer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WorkspaceWindowResizer);
 };

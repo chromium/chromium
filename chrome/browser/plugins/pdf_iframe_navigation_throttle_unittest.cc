@@ -37,7 +37,7 @@ class PDFIFrameNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
         ->SetAlwaysOpenPdfExternallyForTests(always_open_pdf_externally);
     ChromePluginServiceFilter* filter =
         ChromePluginServiceFilter::GetInstance();
-    filter->RegisterResourceContext(profile(), profile()->GetResourceContext());
+    filter->RegisterProfile(profile());
 #endif
   }
 
@@ -48,8 +48,7 @@ class PDFIFrameNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
         "content-type: " +
         mime_type + "\r\n";
     return base::MakeRefCounted<net::HttpResponseHeaders>(
-        net::HttpUtil::AssembleRawHeaders(raw_response_headers.c_str(),
-                                          raw_response_headers.size()));
+        net::HttpUtil::AssembleRawHeaders(raw_response_headers));
   }
 
   content::RenderFrameHost* subframe() { return subframe_; }

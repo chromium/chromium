@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/label.h"
 
 namespace {
@@ -47,7 +48,10 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
     return base::ASCIIToUTF16("Test OK");
   }
 
-  gfx::ImageSkia* GetStepIllustration() const override { return nullptr; }
+  const gfx::VectorIcon& GetStepIllustration(
+      ImageColorScheme color_scheme) const override {
+    return gfx::kNoneIcon;
+  }
 
   base::string16 GetStepTitle() const override {
     return base::ASCIIToUTF16("Test Title");
@@ -57,6 +61,10 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
     return base::ASCIIToUTF16(
         "Test Description That Is Super Long So That It No Longer Fits On One "
         "Line Because Life Would Be Just Too Simple That Way");
+  }
+
+  base::Optional<base::string16> GetAdditionalDescription() const override {
+    return base::ASCIIToUTF16("More description text.");
   }
 
   ui::MenuModel* GetOtherTransportsMenuModel() override { return nullptr; }
@@ -102,19 +110,16 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
     content::WebContents* const web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
 
-    auto dialog_model = std::make_unique<AuthenticatorRequestDialogModel>();
+    auto dialog_model = std::make_unique<AuthenticatorRequestDialogModel>(
+        /*relying_party_id=*/"example.com");
     dialog_model->SetCurrentStep(
         AuthenticatorRequestDialogModel::Step::kTimedOut);
-    auto dialog = std::make_unique<AuthenticatorRequestDialogView>(
-        web_contents, std::move(dialog_model));
-
-    auto sheet_model = std::make_unique<TestSheetModel>();
-    auto sheet = std::make_unique<TestSheetView>(std::move(sheet_model));
-    test::AuthenticatorRequestDialogViewTestApi::ReplaceCurrentSheet(
-        dialog.get(), std::move(sheet));
-
-    test::AuthenticatorRequestDialogViewTestApi::Show(web_contents,
-                                                      std::move(dialog));
+    AuthenticatorRequestDialogView* dialog =
+        test::AuthenticatorRequestDialogViewTestApi::CreateDialogView(
+            std::move(dialog_model), web_contents);
+    test::AuthenticatorRequestDialogViewTestApi::ShowWithSheet(
+        dialog,
+        std::make_unique<TestSheetView>(std::make_unique<TestSheetModel>()));
   }
 
  private:

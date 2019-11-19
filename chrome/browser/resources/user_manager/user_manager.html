@@ -1,0 +1,425 @@
+<!doctype html>
+<html build="$i18n{buildType}"
+    dir="$i18n{textdirection}"
+    lang="$i18n{language}"
+    screen="$i18n{screenType}">
+<head>
+  <meta charset="utf-8">
+  <meta name="google" value="notranslate">
+  <title>$i18n{title}</title>
+
+  <link rel="stylesheet" href="../../../../ui/login/account_picker/screen_account_picker.css">
+  <link rel="stylesheet" href="../../../../ui/login/account_picker/user_pod_row.css">
+  <link rel="stylesheet" href="../../../../ui/login/bubble.css">
+  <link rel="stylesheet" href="../../../../ui/login/oobe.css">
+  <link rel="stylesheet" href="../../../../ui/login/screen_container.css">
+  <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+
+  <link rel="import" href="chrome://resources/html/polymer.html">
+  <link rel="import" href="/control_bar.html">
+  <link rel="import" href="/error_dialog.html">
+  <link rel="import" href="/shared_styles.html">
+  <link rel="import" href="/strings.html">
+  <link rel="import" href="/user_manager_pages.html">
+  <link rel="import" href="/user_manager_tutorial.html">
+  <!-- Make sure cr-button is imported to use in user_pod_template.html -->
+  <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+  <link rel="import" href="chrome://resources/html/cr/ui.html">
+  <link rel="import" href="chrome://resources/html/util.html">
+  <!-- Make sure iron-icon and cr iconset are imported to use in
+       user_pod_template.html -->
+  <link rel="import" href="chrome://resources/cr_elements/icons.html">
+  <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+  <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+  <custom-style>
+    <style is="custom-style" include="shared-styles">
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: var(--google-grey-900);
+        }
+      }
+
+      user-manager-pages,
+      #login-header-bar {
+        bottom: 0;
+        left: 0;
+        position: absolute;
+        right: 0;
+      }
+
+      user-manager-pages {
+        top: 0;
+      }
+
+      #login-header-bar.shadow {
+        box-shadow: 0 -1px 3px rgba(0, 0, 0, .2);
+      }
+
+      /* Overrides src/ui/login/screen_container.css for the desktop user
+       * manager. */
+
+      #outer-container {
+        -webkit-box-orient: vertical;
+        min-height: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: 40px 0 30px;
+        z-index: initial;
+      }
+
+      .bubble {
+        font: inherit;
+      }
+
+      .bubble.faded {
+        opacity: 0;
+      }
+
+      /* The name-container font-sizes is to counteract the countainer's
+       * scale(0.8), so that the text still stays legible. */
+      podrow[ncolumns='6'] .pod .name-container {
+        font-size: 1.25em;
+        transition: font-size 180ms;
+      }
+
+      podrow[ncolumns='6'] .pod.focused .name-container {
+        font-size: 1em;
+      }
+
+      .pod {
+        @apply --cr-card-elevation;
+        background-color: var(--cr-card-background-color);
+        border-radius: var(--cr-card-border-radius);
+        color: var(--cr-primary-text-color);
+        cursor: default;
+        height: auto;
+        transform: none;
+        width: auto;
+      }
+
+      .pod.faded {
+        opacity: .6;
+      }
+
+      .pod.focused {
+        box-shadow: 0 10px 10px 0 rgba(0, 0, 0, .26),
+                    0 14px 28px 0 rgba(0, 0, 0, .25);
+      }
+
+      .pod .user-image-gradient-area,
+      .pod .user-image-pane {
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
+      }
+
+      .pod .user-image-pane {
+        overflow: hidden;
+        position: static;
+      }
+
+      .pod .user-image {
+        height: 160px;
+        width: 160px;
+      }
+
+      .pod .main-pane {
+        line-height: 20px;
+        padding: 10px;
+        position: static;
+      }
+
+      .pod .main-pane .name-container {
+        display: block;
+        position: static;
+        width: auto;
+      }
+
+      .pod .main-pane .name-container .name,
+      .reauth-hint-container .reauth-name-hint {
+        font-size: inherit;
+        margin: 0;
+        padding: 0;
+        text-align: initial;
+        width: 120px;
+      }
+
+      .pod.locked.child .name-container .name {
+        width: 92px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .pod .main-pane .name-container {
+          background-color: transparent;
+        }
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .name {
+          color: inherit;
+        }
+      }
+
+      .pod .indicator-container {
+        bottom: 10px;
+        display: flex;
+        left: auto;
+        position: absolute;
+        right: 10px;
+        top: auto;
+      }
+
+      html[dir='rtl'] .pod .indicator-container {
+        left: 10px;
+        right: auto;
+      }
+
+      /* Using -webkit-mask on the indicators allows us to tweak the color. */
+      .pod .indicator-container > .indicator {
+        -webkit-mask-position: center;
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-size: 16px;
+        background: var(--paper-grey-600);
+        display: none;
+        height: 20px;
+        width: 20px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .pod .indicator-container > .indicator {
+          background: var(--google-grey-refresh-500);
+        }
+      }
+
+      .pod.locked .locked-indicator {
+        -webkit-mask-image: url(../../../../ui/webui/resources/images/lock.svg);
+        display: block;
+      }
+
+      .pod.locked.child .locked-indicator {
+        margin-inline-start: 8px;
+      }
+
+      .pod.legacy-supervised .legacy-supervised-indicator {
+        -webkit-mask-image:
+            url(../../../../ui/webui/resources/images/supervisor_account.svg);
+        display: block;
+      }
+
+      .pod.child .child-indicator {
+        -webkit-mask-image:
+            url(../../../../ui/webui/resources/images/account_child_invert.svg);
+        display: block;
+      }
+
+      .action-box-area:focus ~ .user-image-gradient-area,
+      .action-box-area.hovered ~ .user-image-gradient-area {
+        background-image: linear-gradient(rgba(0, 0, 0, .2), transparent 100%);
+        display: initial;
+        height: 40px;
+        position: absolute;
+        top: 0;
+        width: 100%;
+      }
+
+      .action-box-area {
+        background-color: transparent;
+      }
+
+      .action-box-area.menu-moved-up {
+        transform: none;
+      }
+
+      .action-box-area .action-box-button {
+        display: none;
+      }
+
+      .action-box-area .action-box-icon {
+        color: white;
+        display: inline-flex;
+        margin-top: 4px;
+      }
+
+      .pod.focused:not(.locked) .auth-container {
+        display: none;
+      }
+
+      .pod.focused:not(.multiprofiles-policy-applied) .auth-container {
+        left: 0;
+      }
+
+      .pod .auth-container input[type='password'] {
+        font: inherit;
+        line-height: inherit;
+        padding: 10px;
+        top: 0;
+        width: 140px;
+      }
+
+      .pod .auth-container input[type='password']:focus {
+        outline: 0;
+      }
+
+      .pod[auth-type='onlineSignIn'] .reauth-hint-container {
+        flex-direction: row-reverse;
+        margin: 0;
+        padding: 10px;
+      }
+
+      .reauth-hint-container .reauth-warning {
+        -webkit-mask-size: 16px;
+        height: 20px;
+        width: 20px;
+      }
+
+      .action-box-area.active .action-box-button {
+        display: none;
+      }
+
+      .action-box-area.active ~ .action-box-menu:not(.menu-moved-up) {
+        top: 8px;
+      }
+
+      .action-box-area.active ~ .action-box-menu {
+        border: none;
+        border-radius: var(--cr-card-border-radius);
+        box-shadow: 0 10px 20px 0 rgba(0, 0, 0, .19);
+        right: 8px;
+        width: 224px;
+      }
+
+      html[dir=rtl] .action-box-area.active ~ .action-box-menu {
+        left: 8px;
+        right: auto;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .action-box-area.active ~ .action-box-menu {
+          background-color: var(--cr-menu-background-color);
+          /* Adds 4% white on top of GG900. To/from are intentionally the same. */
+          background-image: linear-gradient(rgba(255, 255, 255, .04),
+                                            rgba(255, 255, 255, .04));
+          box-shadow: var(--cr-menu-shadow);
+        }
+
+        .action-box-menu-remove:focus,
+        .action-box-menu-remove:hover {
+          background-color: var(--cr-menu-background-focus-color);
+        }
+      }
+
+      .action-box-menu-title {
+        color: inherit;
+        padding: 16px 12px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .action-box-menu-title {
+          border-bottom: var(--cr-separator-line);
+        }
+      }
+
+      .action-box-menu-title-name,
+      .action-box-menu-title-email {
+        height: auto;
+      }
+
+      .action-box-menu-title-name {
+        color: var(--cr-primary-text-color);
+      }
+
+      .action-box-menu-title-email {
+        color: var(--cr-secondary-text-color);
+      }
+
+      .action-box-menu-remove {
+        --side-gap: 12px;
+        --vertical-gap: 8px;
+        border-radius: var(--cr-card-border-radius);
+        border-top: var(--user-manager-separator-line);
+        line-height: 32px;
+        padding: var(--vertical-gap) var(--side-gap);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .action-box-menu-remove {
+          border-radius: 0;
+          border-top: none;
+          margin: var(--vertical-gap) 0;
+          padding: 0 var(--side-gap);
+        }
+      }
+
+      .action-box-remove-user-warning {
+        align-items: center;
+        border-top: var(--user-manager-separator-line);
+        display: flex;
+        flex-direction: column;
+        font-size: inherit;
+        line-height: 20px;
+        padding: 12px;
+      }
+
+      .action-box-remove-user-warning-text {
+        max-width: 100%;
+      }
+
+      .action-box-remove-user-warning > * {
+        word-wrap: break-word;
+      }
+
+      .total-count,
+      .pod:not(.synced) .action-box-remove-user-warning-text {
+        font-weight: 500;
+      }
+
+      #user-manager-prompt-message {
+        align-items: center;
+        color: var(--cr-primary-text-color);
+        display: flex;
+        font-size: 19px;
+        margin-bottom: 45px;
+        text-align: center;
+      }
+
+      #user-manager-prompt-message::before {
+        -webkit-mask-image:
+            url(../../../../ui/webui/resources/images/business.svg);
+        -webkit-mask-size: 19px;
+        background: currentcolor;
+        content: '';
+        display: inline-block;
+        height: 19px;
+        margin-inline-end: 11px;
+        width: 19px;
+      }
+
+      #user-manager-prompt-message:empty {
+        display: none;
+      }
+
+    </style>
+  </custom-style>
+</head>
+<body>
+  <user-manager-pages>
+    <div id="outer-container">
+      <div id="user-manager-prompt-message">$i18n{userManagerPromptMessage}</div>
+      <user-manager-tutorial></user-manager-tutorial>
+      <div id="oobe" class="faded">
+        <div id="inner-container">
+          <div id="step-logo" hidden>
+            <div id="header-sections"></div>
+          </div>
+          <include src="../../../../ui/login/account_picker/screen_account_picker.html">
+        </div>
+      </div>
+    </div>
+    <div id="bubble" class="bubble faded" hidden></div>
+    <control-bar id="login-header-bar"></control-bar>
+    <error-dialog></error-dialog>
+    <include src="../../../../ui/login/account_picker/user_pod_template.html">
+  </user-manager-pages>
+  <script src="user_manager.js"></script>
+</body>
+</html>

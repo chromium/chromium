@@ -2,6 +2,7 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
+<script src="resources/scroll-util.js"></script>
 <style>
 #scrollableDiv {
   width: 200px;
@@ -30,13 +31,6 @@ var scrolling_div = document.getElementById('scrollableDiv');
 var rect = scrolling_div.getBoundingClientRect();
 var x = rect.left + rect.width / 2;
 var y = rect.top + rect.height / 2;
-function scrollRight() {
-  return smoothScroll(1000, x, y, GestureSourceType.TOUCH_INPUT, "right");
-}
-
-function scrollDown() {
-  return smoothScroll(1000, x, y, GestureSourceType.TOUCH_INPUT, "down");
-}
 
 var overscrolled_x_delta = 0;
 var overscrolled_y_delta = 0;
@@ -48,15 +42,15 @@ function onOverscroll(event) {
 }
 scrolling_div.addEventListener("overscroll", onOverscroll);
 
-promise_test (async (t) => {
-  // Make sure that no overscroll event is sent to document.
-  document.addEventListener("overscroll",
-      t.unreached_func("Document got unexpected overscroll event."));
-
+async function test_overscroll_event_fire(source_device,
+    precise_scrolling_delta) {
+  scrolling_div.scrollTo(0, 0);
+  overscrolled_x_delta = 0;
+  overscrolled_y_delta = 0;
   await waitForCompositorCommit();
 
   // Do a horizontal scroll and wait for overscroll event.
-  await scrollRight();
+  await scrollRight(source_device, precise_scrolling_delta);
   await waitFor(() => { return overscrolled_x_delta > 0; },
       'Scroller did not receive overscroll event after horizontal scroll.');
   assert_equals(scrolling_div.scrollWidth - scrolling_div.scrollLeft,
@@ -66,10 +60,35 @@ promise_test (async (t) => {
   overscrolled_y_delta = 0;
 
   // Do a vertical scroll and wait for overscroll event.
-  await scrollDown();
+  await scrollDown(source_device, precise_scrolling_delta);
   await waitFor(() => { return overscrolled_y_delta > 0; },
       'Scroller did not receive overscroll event after vertical scroll.');
   assert_equals(scrolling_div.scrollHeight - scrolling_div.scrollTop,
               scrolling_div.clientHeight);
-}, 'Tests that the scrolled element gets overscroll event after fully scrolling.');
+}
+
+promise_test (async (t) => {
+  // Make sure that no overscroll event is sent to document.
+  document.addEventListener("overscroll",
+      t.unreached_func("Document got unexpected overscroll event."));
+  return test_overscroll_event_fire(GestureSourceType.TOUCH_INPUT);
+}, 'Tests that the scrolled element gets overscroll event after fully scrolling by touch.');
+
+promise_test (async (t) => {
+  // Make sure that no overscroll event is sent to document.
+  document.addEventListener("overscroll",
+      t.unreached_func("Document got unexpected overscroll event."));
+  return test_overscroll_event_fire(GestureSourceType.MOUSE_INPUT,
+      true /* precise_scrolling_delta */);
+}, 'Tests that the scrolled element gets overscroll event after fully' +
+   'scrolling by non-animating wheel scrolling.');
+
+promise_test (async (t) => {
+  // Make sure that no overscroll event is sent to document.
+  document.addEventListener("overscroll",
+      t.unreached_func("Document got unexpected overscroll event."));
+  return test_overscroll_event_fire(GestureSourceType.MOUSE_INPUT,
+      false /* precise_scrolling_delta */);
+}, 'Tests that the scrolled element gets overscroll event after fully' +
+   'scrolling by animated wheel scrolling (smooth-scrolling)');
 </script>

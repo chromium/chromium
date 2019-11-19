@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/single_thread_task_runner.h"
+#include "chrome/test/chromedriver/constants/version.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -22,7 +23,7 @@ net::URLRequestContext* URLRequestContextGetter::GetURLRequestContext() {
   if (!url_request_context_) {
     net::URLRequestContextBuilder builder;
     // net::HttpServer fails to parse headers if user-agent header is blank.
-    builder.set_user_agent("chromedriver");
+    builder.set_user_agent(base::ToLowerASCII(kChromeDriverProductShortName));
     builder.DisableHttpCache();
     builder.set_proxy_config_service(
         std::make_unique<net::ProxyConfigServiceFixed>(

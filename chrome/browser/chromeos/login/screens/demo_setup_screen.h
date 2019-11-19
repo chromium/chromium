@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
@@ -14,15 +15,17 @@
 
 namespace chromeos {
 
-class BaseScreenDelegate;
 class DemoSetupScreenView;
 
 // Controlls demo mode setup. The screen can be shown during OOBE. It allows
 // user to setup retail demo mode on the device.
 class DemoSetupScreen : public BaseScreen {
  public:
-  DemoSetupScreen(BaseScreenDelegate* base_screen_delegate,
-                  DemoSetupScreenView* view);
+  enum class Result { COMPLETED, CANCELED };
+
+  using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
+  DemoSetupScreen(DemoSetupScreenView* view,
+                  const ScreenExitCallback& exit_callback);
   ~DemoSetupScreen() override;
 
   // BaseScreen:
@@ -34,6 +37,9 @@ class DemoSetupScreen : public BaseScreen {
   // then it has to call Bind(nullptr).
   void OnViewDestroyed(DemoSetupScreenView* view);
 
+ protected:
+  ScreenExitCallback* exit_callback() { return &exit_callback_; }
+
  private:
   void StartEnrollment();
 
@@ -44,8 +50,9 @@ class DemoSetupScreen : public BaseScreen {
   void OnSetupSuccess();
 
   DemoSetupScreenView* view_;
+  ScreenExitCallback exit_callback_;
 
-  base::WeakPtrFactory<DemoSetupScreen> weak_ptr_factory_;
+  base::WeakPtrFactory<DemoSetupScreen> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DemoSetupScreen);
 };

@@ -27,8 +27,10 @@
 // should be called before |label| is deallocated.
 - (void)startObserving;
 
-// Stops observing the label. The label stop being observed once the number of
-// call to this function match the number of call to |-startObserving|.
+// Stops observing the label. The label stops being observed once the number of
+// call to this function match the number of call to |-startObserving|. When
+// observation of a label ends, none of its attributes are changed, and none
+// of the registered actions are called.
 - (void)stopObserving;
 
 // Block type that takes a label.  Blocks registered for a label will be called

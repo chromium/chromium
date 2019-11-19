@@ -1,0 +1,21 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="../controls/settings_toggle_button.html">
+
+<dom-module id="settings-plugin-vm-subpage">
+  <template>
+    <style include="settings-shared"></style>
+    <div id="plugin-vm-shared-paths" class="settings-box first"
+        on-click="onSharedPathsClick_" actionable>
+      <div class="start">$i18n{pluginVmSharedPaths}</div>
+      <cr-icon-button class="subpage-arrow"
+          aria-label="$i18n{pluginVmSharedPaths}"></cr-icon-button>
+    </div>
+    <!-- TODO(timloh): Wire this up to a pref. -->
+    <settings-toggle-button label="$i18n{pluginVmPrinterAccess}">
+    </settings-toggle-button>
+  </template>
+  <script src="plugin_vm_subpage.js"></script>
+</dom-module>

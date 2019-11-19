@@ -5,7 +5,7 @@
 #include "chrome/browser/net/nss_context.h"
 
 #include "content/public/browser/browser_thread.h"
-#include "crypto/nss_util_internal.h"
+#include "crypto/nss_util.h"
 #include "net/cert/nss_cert_database.h"
 
 namespace {
@@ -22,11 +22,10 @@ net::NSSCertDatabase* GetNSSCertDatabaseForResourceContext(
     // Linux has only a single persistent slot compared to ChromeOS's separate
     // public and private slot.
     // Redirect any slot usage to this persistent slot on Linux.
+    crypto::EnsureNSSInit();
     g_nss_cert_database = new net::NSSCertDatabase(
-        crypto::ScopedPK11Slot(
-            crypto::GetPersistentNSSKeySlot()) /* public slot */,
-        crypto::ScopedPK11Slot(
-            crypto::GetPersistentNSSKeySlot()) /* private slot */);
+        crypto::ScopedPK11Slot(PK11_GetInternalKeySlot()) /* public slot */,
+        crypto::ScopedPK11Slot(PK11_GetInternalKeySlot()) /* private slot */);
   }
   return g_nss_cert_database;
 }

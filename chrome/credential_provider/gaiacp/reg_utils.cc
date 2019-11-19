@@ -11,16 +11,18 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/win/registry.h"
+#include "base/win/win_util.h"
+#include "build/branding_buildflags.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 
 namespace credential_provider {
 
 // Root registry key for GCP configuration and state.
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #define CREDENTIAL_PROVIDER_REGISTRY_KEY L"Software\\Google\\GCP"
 #else
 #define CREDENTIAL_PROVIDER_REGISTRY_KEY L"Software\\Chromium\\GCP"
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 const wchar_t kGcpRootKeyName[] = CREDENTIAL_PROVIDER_REGISTRY_KEY;
 
@@ -34,6 +36,10 @@ const wchar_t kWinlogonUserListRegKey[] =
 const wchar_t kLogonUiUserTileRegKey[] =
     L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI"
     L"\\UserTile";
+
+const wchar_t kMicrosoftCryptographyRegKey[] =
+    L"SOFTWARE\\Microsoft\\Cryptography";
+const wchar_t kMicrosoftCryptographyMachineGuidRegKey[] = L"MachineGuid";
 
 namespace {
 
@@ -121,14 +127,14 @@ HRESULT GetMachineRegString(const base::string16& key_name,
   // string can always be null terminated.  Note that string registry values
   // are not guaranteed to be null terminated.
   DWORD type;
-  ULONG local_length = *length - 1;
+  ULONG local_length = (*length - 1) * sizeof(decltype(value[0]));
   sts = key.ReadValue(name.c_str(), value, &local_length, &type);
   if (type != REG_SZ)
     return HRESULT_FROM_WIN32(ERROR_CANTREAD);
 
   // When using this overload of the ReadValue() method, the returned length
   // is in bytes.  The caller expects the length in characters.
-  local_length /= sizeof(wchar_t);
+  local_length /= sizeof(decltype(value[0]));
 
   if (sts != ERROR_SUCCESS) {
     if (sts == ERROR_MORE_DATA)
@@ -168,6 +174,24 @@ HRESULT GetGlobalFlag(const base::string16& name,
   return GetMachineRegString(kGcpRootKeyName, name, value, length);
 }
 
+base::string16 GetGlobalFlagOrDefault(const base::string16& reg_key,
+                                      const base::string16& default_value) {
+  wchar_t reg_value_buffer[256];
+  ULONG length = base::size(reg_value_buffer);
+  HRESULT hr = GetGlobalFlag(reg_key, reg_value_buffer, &length);
+  if (FAILED(hr))
+    return default_value;
+
+  return reg_value_buffer;
+}
+
+DWORD GetGlobalFlagOrDefault(const base::string16& reg_key,
+                             const DWORD& default_value) {
+  DWORD value;
+  HRESULT hr = GetGlobalFlag(reg_key, &value);
+  return SUCCEEDED(hr) ? value : default_value;
+}
+
 HRESULT SetGlobalFlagForTesting(const base::string16& name,
                                 const base::string16& value) {
   return SetMachineRegString(kGcpRootKeyName, name, value);
@@ -175,17 +199,6 @@ HRESULT SetGlobalFlagForTesting(const base::string16& name,
 
 HRESULT SetGlobalFlagForTesting(const base::string16& name, DWORD value) {
   return SetMachineRegDWORD(kGcpRootKeyName, name, value);
-}
-
-HRESULT GetUserCount(DWORD* count) {
-  DCHECK(count);
-
-  wchar_t key_name[128];
-  swprintf_s(key_name, base::size(key_name), L"%s\\Users", kGcpRootKeyName);
-
-  base::win::RegistryKeyIterator iter(HKEY_LOCAL_MACHINE, key_name);
-  *count = iter.SubkeyCount();
-  return S_OK;
 }
 
 HRESULT GetUserProperty(const base::string16& sid,
@@ -328,10 +341,35 @@ HRESULT SetUserWinlogonUserListEntry(const base::string16& username,
 }
 
 HRESULT SetLogonUiUserTileEntry(const base::string16& sid, CLSID cp_guid) {
-  wchar_t guid_in_wchar[64];
-  ::StringFromGUID2(cp_guid, guid_in_wchar, base::size(guid_in_wchar));
-  return SetMachineRegString(kLogonUiUserTileRegKey, sid.c_str(),
-                             guid_in_wchar);
+  return SetMachineRegString(kLogonUiUserTileRegKey, sid,
+                             base::win::String16FromGUID(cp_guid));
+}
+
+HRESULT GetMachineGuid(base::string16* machine_guid) {
+  // The machine guid is a unique identifier assigned to a computer on every
+  // install of Windows. This guid can be used to uniquely identify this device
+  // to various management services. The same guid is used to identify the
+  // device to Chrome Browser Cloud Management. It is fetched in this file:
+  // chrome/browser/policy/browser_dm_token_storage_win.cc:InitClientId.
+  DCHECK(machine_guid);
+  wchar_t machine_guid_buffer[64];
+  ULONG guid_length = base::size(machine_guid_buffer);
+  HRESULT hr = GetMachineRegString(kMicrosoftCryptographyRegKey,
+                                   kMicrosoftCryptographyMachineGuidRegKey,
+                                   machine_guid_buffer, &guid_length);
+
+  if (SUCCEEDED(hr))
+    *machine_guid = machine_guid_buffer;
+
+  return hr;
+}
+
+HRESULT SetMachineGuidForTesting(const base::string16& machine_guid) {
+  // Set a debug guid for the machine so that unit tests that override the
+  // registry can run properly.
+  return SetMachineRegString(kMicrosoftCryptographyRegKey,
+                             kMicrosoftCryptographyMachineGuidRegKey,
+                             machine_guid);
 }
 
 }  // namespace credential_provider

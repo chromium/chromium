@@ -33,7 +33,6 @@
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -47,11 +46,6 @@ class SourceBufferList final : public EventTargetWithInlineData,
   USING_GARBAGE_COLLECTED_MIXIN(SourceBufferList);
 
  public:
-  static SourceBufferList* Create(ExecutionContext* context,
-                                  EventQueue* async_event_queue) {
-    return MakeGarbageCollected<SourceBufferList>(context, async_event_queue);
-  }
-
   SourceBufferList(ExecutionContext*, EventQueue*);
   ~SourceBufferList() override;
 
@@ -88,10 +82,10 @@ class SourceBufferList final : public EventTargetWithInlineData,
 
   // If any portion of an attached HTMLMediaElement (HTMLME) and the MediaSource
   // Extensions (MSE) API is alive (having pending activity or traceable from a
-  // GC root), the whole group is not GC'ed. Here, using TraceWrapperMember,
+  // GC root), the whole group is not GC'ed. Here, using Member,
   // instead of Member, because the |list_|'s SourceBuffers' wrappers need to
   // remain alive at least to successfully dispatch any events enqueued by
-  // behavior of the HTMLME+MSE API. TraceWrapperMember usage here keeps the
+  // behavior of the HTMLME+MSE API. Member usage here keeps the
   // SourceBuffers in |list_|, and their wrappers, from being collected if we
   // are alive or traceable from a GC root.
   // For instance, suppose the only reference to the group of HTMLME+MSE API
@@ -102,7 +96,7 @@ class SourceBufferList final : public EventTargetWithInlineData,
   // listeners on objects in HTMLME+MSE are counted as references, but events
   // pending for dispatch to them must keep the HTML+MSE group of objects alive
   // through at least their dispatch.
-  HeapVector<TraceWrapperMember<SourceBuffer>> list_;
+  HeapVector<Member<SourceBuffer>> list_;
 };
 
 }  // namespace blink

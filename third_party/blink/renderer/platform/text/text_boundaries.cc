@@ -55,25 +55,24 @@ int StartOfLastWordBoundaryContext(const UChar* characters, int length) {
 }
 
 int FindNextWordForward(const UChar* chars, int len, int position) {
-  TextBreakIterator* it = WordBreakIterator(chars, len);
+  TextBreakIterator* it = WordBreakIterator({chars, len});
+
+  position = it->following(position);
+  while (position != kTextBreakDone) {
+    // We stop searching when the character preceeding the break
+    // is alphanumeric or underscore.
+    if (position < len && (WTF::unicode::IsAlphanumeric(chars[position - 1]) ||
+                           chars[position - 1] == kLowLineCharacter))
+      return position;
 
     position = it->following(position);
-    while (position != kTextBreakDone) {
-      // We stop searching when the character preceeding the break
-      // is alphanumeric or underscore.
-      if (position < len &&
-          (WTF::unicode::IsAlphanumeric(chars[position - 1]) ||
-           chars[position - 1] == kLowLineCharacter))
-        return position;
-
-      position = it->following(position);
-    }
+  }
 
     return len;
 }
 
 int FindNextWordBackward(const UChar* chars, int len, int position) {
-  TextBreakIterator* it = WordBreakIterator(chars, len);
+  TextBreakIterator* it = WordBreakIterator({chars, len});
 
   position = it->preceding(position);
   while (position != kTextBreakDone) {
@@ -96,7 +95,7 @@ std::pair<int, int> FindWordBackward(const UChar* chars,
   DCHECK_LE(position, len);
   if (len == 0)
     return {0, 0};
-  TextBreakIterator* it = WordBreakIterator(chars, len);
+  TextBreakIterator* it = WordBreakIterator({chars, len});
   const int start = it->preceding(position);
   const int end = it->next();
   if (start < 0) {
@@ -111,7 +110,7 @@ std::pair<int, int> FindWordForward(const UChar* chars, int len, int position) {
   DCHECK_LE(position, len);
   if (len == 0)
     return {0, 0};
-  TextBreakIterator* it = WordBreakIterator(chars, len);
+  TextBreakIterator* it = WordBreakIterator({chars, len});
   const int end = it->following(position);
   const int start = it->previous();
   if (end < 0) {
@@ -122,13 +121,13 @@ std::pair<int, int> FindWordForward(const UChar* chars, int len, int position) {
 }
 
 int FindWordStartBoundary(const UChar* chars, int len, int position) {
-  TextBreakIterator* it = WordBreakIterator(chars, len);
+  TextBreakIterator* it = WordBreakIterator({chars, len});
   it->following(position);
   return it->previous();
 }
 
 int FindWordEndBoundary(const UChar* chars, int len, int position) {
-  TextBreakIterator* it = WordBreakIterator(chars, len);
+  TextBreakIterator* it = WordBreakIterator({chars, len});
   int end = it->following(position);
   return end < 0 ? it->last() : end;
 }

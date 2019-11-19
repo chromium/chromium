@@ -1,15 +1,16 @@
 # This is reserved for people that are comfortably with buildbot recipes
 # and understand the implications of changing these files.
 
+crouleau@chromium.org
 dpranke@chromium.org
 kbr@chromium.org
 martiniss@chromium.org
 
+per-file check_static_initializers.py=thakis@chromium.org
+per-file check_static_initializers.py=thomasanderson@chromium.org
+
+per-file run-wpt_tests.py=lpz@chromium.org
+per-file run_wpt_tests.py=robertma@chromium.org
+
 # TEAM: infra-dev@chromium.org
 # COMPONENT: Infra>Client>Chrome
-
-# Adapters for Telemetry based tests.
-per-file run_gpu*=crouleau@chromium.org
-per-file run_telemetry*=crouleau@chromium.org
-per-file run_performance_tests*=crouleau@chromium.org
-per-file run_gtest*=crouleau@chromium.org

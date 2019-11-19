@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<style>
+  img {
+    width: 200px;
+    height: 150px;
+  }
+</style>
+
+<div role="region" id="region"><img src="resources/cake.png" id="image1" alt="One"><img src="resources/cake.png" id="image2" alt="Two"><img src="resources/cake.png" id="image3" alt="Three"></div>
+
+<script>
+  function verifySelection(anchorNode, anchorOffset, focusNode, focusOffset, selectionString) {
+    const selection = getSelection();
+    assert_equals(selection.anchorNode, anchorNode, 'anchorNode');
+    assert_equals(selection.anchorOffset, anchorOffset, 'anchorOffset');
+    assert_equals(selection.focusNode, focusNode, 'focusNode');
+    assert_equals(selection.focusOffset, focusOffset, 'focusOffset');
+    assert_equals(selection.toString(), selectionString, 'getSelection.toString()');
+  }
+
+  setup(() => {
+    window.axRoot = accessibilityController.rootElement;
+    window.axRegion = accessibilityController.accessibleElementById('region');
+    window.axImage1 = accessibilityController.accessibleElementById('image1');
+    window.axImage2 = accessibilityController.accessibleElementById('image2');
+    window.axImage3 = accessibilityController.accessibleElementById('image3');
+    window.region = document.querySelector('div');
+    window.image1 = document.querySelectorAll('img')[0];
+    window.image2 = document.querySelectorAll('img')[1];
+    window.image3 = document.querySelectorAll('img')[2];
+  });
+
+  test(() => {
+    axRoot.setSelection(axImage1, 0, axImage1, 0);
+    verifySelection(image1, 0, image1, 0, '');
+  }, 'Test creating a collapsed selection before the first image.');
+
+  test(() => {
+    axRoot.setSelection(axImage1, 0, axImage2, 0);
+    verifySelection(image1, 0, image2, 0, '');
+  }, 'Test creating a selection around the first image.');
+
+  test(() => {
+    axRoot.setSelection(axImage1, 0, axImage3, 0);
+    verifySelection(image1, 0, image3, 0, '');
+  }, 'Test creating a selection around the first two images.');
+
+  test(() => {
+    axRoot.setSelection(axImage1, 0, axRegion, 3);
+    verifySelection(image1, 0, region, 3, '');
+  }, 'Test creating a selection around all the images.');
+
+  test(() => {
+    axRoot.setSelection(axRegion, 0, axRegion, 0);
+    verifySelection(region, 0, region, 0, '');
+  }, 'Test creating a collapsed selection before the first image from the parent.');
+
+  test(() => {
+    axRoot.setSelection(axRegion, 0, axRegion, 2);
+    verifySelection(region, 0, region, 2, '');
+  }, 'Test creating a selection around the first two images from the parent.');
+
+  test(() => {
+    axRoot.setSelection(axRegion, 0, axRegion, 3);
+    verifySelection(region, 0, region, 3, '');
+  }, 'Test creating a selection around all the images from the parent.');
+
+  test(() => {
+    axRoot.setSelection(axImage2, 0, axImage2, 0);
+    verifySelection(image2, 0, image2, 0, '');
+  }, 'Test creating a collapsed selection before the second image.');
+
+  test(() => {
+    axRoot.setSelection(axRegion, 1, axRegion, 1);
+    verifySelection(region, 1, region, 1, '');
+  }, 'Test creating a collapsed selection before the second image from the parent.');
+
+  test(() => {
+    axRoot.setSelection(axImage3, 0, axImage3, 0);
+    verifySelection(image3, 0, image3, 0, '');
+  }, 'Test creating a collapsed selection before the third image.');
+
+  test(() => {
+    axRoot.setSelection(axRegion, 2, axRegion, 2);
+    verifySelection(region, 2, region, 2, '');
+  }, 'Test creating a collapsed selection before the third image from the parent.');
+
+  test(() => {
+    axRoot.setSelection(axImage1, 0, axRegion, 3);
+    verifySelection(image1, 0, region, 3, '');
+  }, 'Test creating a selection around the last two images.');
+
+  test(() => {
+    axRoot.setSelection(axRegion, 1, axRegion, 3);
+    verifySelection(region, 1, region, 3, '');
+  }, 'Test creating a selection around the last two images from the parent.');
+
+  test(() => {
+    axRoot.setSelection(axRegion, 3, axRegion, 3);
+    verifySelection(region, 3, region, 3, '');
+  }, 'Test creating a collapsed selection after the last image from the parent.');
+</script>

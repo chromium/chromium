@@ -26,10 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SKIA_SK_SIZE_HASH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SKIA_SK_SIZE_HASH_H_
 
-#include "SkScalar.h"
-#include "SkSize.h"
-
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/skia/include/core/SkScalar.h"
+#include "third_party/skia/include/core/SkSize.h"
 
 namespace WTF {
 

@@ -13,6 +13,8 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/socket/tcp_server_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -28,8 +30,8 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpServer : public P2PSocket {
  public:
   P2PSocketTcpServer(Delegate* delegate,
-                     mojom::P2PSocketClientPtr client,
-                     mojom::P2PSocketRequest socket,
+                     mojo::PendingRemote<mojom::P2PSocketClient> client,
+                     mojo::PendingReceiver<mojom::P2PSocket> socket,
                      P2PSocketType client_type);
   ~P2PSocketTcpServer() override;
 

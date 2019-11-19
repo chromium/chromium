@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "components/safe_browsing/base_ui_manager.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
 #include "components/safe_browsing/base_blocking_page.h"
+#include "components/safe_browsing/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -61,7 +65,7 @@ class WhitelistUrlSet : public base::SupportsUserData::Data {
       *threat_type = found->second.first;
     return true;
   }
-  void InsertPending(const GURL& url, SBThreatType threat_type) {
+  void InsertPending(const GURL url, SBThreatType threat_type) {
     if (pending_.find(url) != pending_.end()) {
       pending_[url].first = threat_type;
       pending_[url].second++;
@@ -200,7 +204,6 @@ void BaseUIManager::DisplayBlockingPage(
         resource.callback_thread->PostTask(
             FROM_HERE, base::BindOnce(resource.callback, true));
       }
-
       return;
     }
   }
@@ -224,6 +227,7 @@ void BaseUIManager::DisplayBlockingPage(
       resource.callback_thread->PostTask(
           FROM_HERE, base::BindOnce(resource.callback, true));
     }
+
     return;
   }
 
@@ -238,6 +242,42 @@ void BaseUIManager::DisplayBlockingPage(
                        resource.web_contents_getter.Run(),
                        true /* A decision is now pending */,
                        resource.threat_type);
+  if (SafeBrowsingInterstitialsAreCommittedNavigations()) {
+    GURL unsafe_url = (resource.IsMainPageLoadBlocked() ||
+                       !resource.GetNavigationEntryForResource())
+                          ? resource.url
+                          : resource.GetNavigationEntryForResource()->GetURL();
+    AddUnsafeResource(unsafe_url, resource);
+    // With committed interstitials we just cancel the load from here, the
+    // actual interstitial will be shown from the
+    // SafeBrowsingNavigationThrottle.
+    resource.callback_thread->PostTask(
+        FROM_HERE, base::BindOnce(resource.callback, false));
+    if (!resource.IsMainPageLoadBlocked() && !IsWhitelisted(resource)) {
+      // For subresource triggered interstitials, we trigger the error page
+      // navigation from here since there will be no navigation to intercept
+      // in the throttle.
+      content::WebContents* contents = resource.web_contents_getter.Run();
+      content::NavigationEntry* entry =
+          resource.GetNavigationEntryForResource();
+      // entry can be null if we are on a brand new tab, and a resource is added
+      // via javascript without a navigation.
+      GURL blocked_url = entry ? entry->GetURL() : resource.url;
+
+      // Blocking pages handle both user interaction, and generation of the
+      // interstitial HTML. In the case of subresources, we need the HTML
+      // content prior to (and in a different process than when) installing the
+      // command handlers. For this reason we create a blocking page here just
+      // to generate the HTML, and immediately delete it.
+      BaseBlockingPage* blocking_page =
+          CreateBlockingPageForSubresource(contents, blocked_url, resource);
+      contents->GetController().LoadPostCommitErrorPage(
+          contents->GetMainFrame(), blocked_url,
+          blocking_page->GetHTMLContents(), net::ERR_BLOCKED_BY_CLIENT);
+      delete blocking_page;
+    }
+    return;
+  }
   ShowBlockingPageForResource(resource);
 }
 
@@ -251,6 +291,22 @@ void BaseUIManager::CreateAndSendHitReport(const UnsafeResource& resource) {}
 void BaseUIManager::ShowBlockingPageForResource(
     const UnsafeResource& resource) {
   BaseBlockingPage::ShowBlockingPage(this, resource);
+}
+
+bool BaseUIManager::SafeBrowsingInterstitialsAreCommittedNavigations() {
+  return base::FeatureList::IsEnabled(kCommittedSBInterstitials);
+}
+
+BaseBlockingPage* BaseUIManager::CreateBlockingPageForSubresource(
+    content::WebContents* contents,
+    const GURL& blocked_url,
+    const UnsafeResource& unsafe_resource) {
+  // TODO(carlosil): This can be removed once all implementations of SB use
+  // committed interstitials. In the meantime, there is no create method for the
+  // non-committed implementations, and this code won't be called if committed
+  // interstitials are disabled.
+  NOTREACHED();
+  return nullptr;
 }
 
 // A SafeBrowsing hit is sent after a blocking page for malware/phishing
@@ -312,6 +368,26 @@ const GURL BaseUIManager::default_safe_page() const {
   return GURL(url::kAboutBlankURL);
 }
 
+void BaseUIManager::AddUnsafeResource(
+    GURL url,
+    security_interstitials::UnsafeResource resource) {
+  unsafe_resources_.push_back(std::make_pair(url, resource));
+}
+
+bool BaseUIManager::PopUnsafeResourceForURL(
+    GURL url,
+    security_interstitials::UnsafeResource* resource) {
+  for (auto it = unsafe_resources_.begin(); it != unsafe_resources_.end();
+       it++) {
+    if (it->first == url) {
+      *resource = it->second;
+      unsafe_resources_.erase(it);
+      return true;
+    }
+  }
+  return false;
+}
+
 void BaseUIManager::RemoveWhitelistUrlSet(const GURL& whitelist_url,
                                           WebContents* web_contents,
                                           bool from_pending_only) {
@@ -342,8 +418,9 @@ void BaseUIManager::RemoveWhitelistUrlSet(const GURL& whitelist_url,
   // remove the main-frame URL from the pending whitelist, so the
   // main-frame URL will have already been removed when the subsequent
   // blocking pages are dismissed.
-  if (site_list && site_list->ContainsPending(whitelist_url, nullptr))
+  if (site_list && site_list->ContainsPending(whitelist_url, nullptr)) {
     site_list->RemovePending(whitelist_url);
+  }
 
   if (!from_pending_only && site_list &&
       site_list->Contains(whitelist_url, nullptr)) {

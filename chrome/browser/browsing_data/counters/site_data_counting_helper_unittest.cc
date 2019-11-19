@@ -14,12 +14,11 @@
 #include "base/test/bind_test_util.h"
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,22 +45,23 @@ class SiteDataCountingHelperTest : public testing::Test {
     base::RunLoop run_loop;
     int tasks = urls.size();
 
-    int i = 0;
     for (const std::string& url_string : urls) {
       GURL url(url_string);
-      // Cookies need a unique creation time.
-      base::Time time = creation_time + base::TimeDelta::FromMilliseconds(i++);
       std::unique_ptr<net::CanonicalCookie> cookie =
           net::CanonicalCookie::CreateSanitizedCookie(
-              url, "name", "A=1", url.host(), url.path(), time, base::Time(),
-              time, url.SchemeIsCryptographic(), false,
-              net::CookieSameSite::DEFAULT_MODE, net::COOKIE_PRIORITY_DEFAULT);
+              url, "name", "A=1", url.host(), url.path(), creation_time,
+              base::Time(), creation_time, url.SchemeIsCryptographic(), false,
+              net::CookieSameSite::NO_RESTRICTION,
+              net::COOKIE_PRIORITY_DEFAULT);
+      net::CookieOptions options;
+      options.set_include_httponly();
       cookie_manager->SetCanonicalCookie(
-          *cookie, url.scheme(), true /*modify_http_only*/,
-          base::BindLambdaForTesting([&](bool result) {
-            if (--tasks == 0)
-              run_loop.Quit();
-          }));
+          *cookie, url.scheme(), options,
+          base::BindLambdaForTesting(
+              [&](net::CanonicalCookie::CookieInclusionStatus status) {
+                if (--tasks == 0)
+                  run_loop.Quit();
+              }));
     }
 
     run_loop.Run();
@@ -103,7 +103,7 @@ class SiteDataCountingHelperTest : public testing::Test {
   Profile* profile() { return profile_.get(); }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 };
 

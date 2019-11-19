@@ -4,8 +4,8 @@
 
 #import "ios/web/public/test/fakes/test_web_state_observer_util.h"
 
-#include "ios/web/public/ssl_status.h"
-#import "ios/web/public/web_state/navigation_context.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#include "ios/web/public/security/ssl_status.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

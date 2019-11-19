@@ -15,12 +15,11 @@ class SessionHierarchyMatchChecker : public SingleClientStatusChangeChecker {
  public:
   SessionHierarchyMatchChecker(
       const fake_server::SessionsHierarchy& sessions_hierarchy,
-      browser_sync::ProfileSyncService* service,
+      syncer::ProfileSyncService* service,
       fake_server::FakeServer* fake_server);
 
   // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
   const fake_server::SessionsHierarchy sessions_hierarchy_;

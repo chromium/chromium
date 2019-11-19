@@ -43,8 +43,4 @@ void ReadTransaction::GetDataTypeContext(
                                                        context);
 }
 
-std::string ReadTransaction::GetStoreBirthday() const {
-  return transaction_->directory()->store_birthday();
-}
-
 }  // namespace syncer

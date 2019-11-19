@@ -7,6 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # General requirements not in the base image
 RUN apt-get -qqy update \
   && apt-get -qqy install \
+    bridge-utils \
     bzip2 \
     ca-certificates \
     dbus-x11 \
@@ -14,10 +15,14 @@ RUN apt-get -qqy update \
     fluxbox \
     gdebi \
     git \
+    libvirt-daemon-system \
+    libvirt-clients \
     locales \
+    openjdk-8-jre-headless \
     pulseaudio \
     python \
     python-pip \
+    qemu-kvm \
     tzdata \
     sudo \
     unzip \
@@ -39,6 +44,8 @@ RUN apt-get -qqy install \
     libindicator3-7 \
     libindicator7
 
+RUN apt-get -y autoremove
+
 RUN pip install --upgrade pip
 RUN pip install virtualenv
 
@@ -46,10 +53,18 @@ ENV TZ "UTC"
 RUN echo "${TZ}" > /etc/timezone \
   && dpkg-reconfigure --frontend noninteractive tzdata
 
+# Set the locale
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
 RUN useradd test \
          --shell /bin/bash  \
          --create-home \
   && usermod -a -G sudo test \
+  && usermod -a -G libvirt test \
+  && usermod -a -G libvirt-qemu test \
   && echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers \
   && echo 'test:secret' | chpasswd
 
@@ -68,7 +83,7 @@ RUN sudo echo ""
 RUN mkdir -p /home/test/artifacts
 RUN mkdir -p /home/test/bin
 
-ENV PATH="/home/test/bin:${PATH}"
+ENV PATH="/home/test/bin:/home/test/.local/bin:${PATH}"
 
 WORKDIR /home/test/
 

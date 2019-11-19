@@ -1,4 +1,0 @@
-CONSOLE MESSAGE: PASS: not executed in iframe context
-CONSOLE MESSAGE: PASS: not executed in iframe context
-CONSOLE MESSAGE: PASS: not executed in iframe context
-Test passes if three "PASS" messages are logged to the console. 

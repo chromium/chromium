@@ -4,10 +4,13 @@
 
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_whitelist_manager.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,7 +32,8 @@ class AwSafeBrowsingWhitelistManagerTest : public testing::Test {
 
   void SetWhitelist(std::vector<std::string>&& whitelist, bool expected);
 
-  base::MessageLoopForIO loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<AwSafeBrowsingWhitelistManager> wm_;
 };
 

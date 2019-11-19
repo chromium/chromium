@@ -187,12 +187,20 @@ class PEImage {
   // Enumerates PE imports.
   // cookie is a generic cookie to pass to the callback.
   // Returns true on success.
-  bool EnumAllImports(EnumImportsFunction callback, PVOID cookie) const;
+  // Use |target_module_name| to ensure the callback is only invoked for the
+  // specified module.
+  bool EnumAllImports(EnumImportsFunction callback,
+                      PVOID cookie,
+                      LPCSTR target_module_name) const;
 
   // Enumerates PE import blocks.
   // cookie is a generic cookie to pass to the callback.
   // Returns true on success.
-  bool EnumImportChunks(EnumImportChunksFunction callback, PVOID cookie) const;
+  // Use |target_module_name| to ensure the callback is only invoked for the
+  // specified module.
+  bool EnumImportChunks(EnumImportChunksFunction callback,
+                        PVOID cookie,
+                        LPCSTR target_module_name) const;
 
   // Enumerates the imports from a single PE import block.
   // cookie is a generic cookie to pass to the callback.
@@ -201,17 +209,25 @@ class PEImage {
                           PIMAGE_THUNK_DATA name_table, PIMAGE_THUNK_DATA iat,
                           PVOID cookie) const;
 
-
   // Enumerates PE delay imports.
   // cookie is a generic cookie to pass to the callback.
   // Returns true on success.
-  bool EnumAllDelayImports(EnumImportsFunction callback, PVOID cookie) const;
+  // Use |target_module_name| to ensure the callback is only invoked for the
+  // specified module. If this parameter is non-null then all delayloaded
+  // imports are resolved when the target module is found.
+  bool EnumAllDelayImports(EnumImportsFunction callback,
+                           PVOID cookie,
+                           LPCSTR target_module_name) const;
 
   // Enumerates PE delay import blocks.
   // cookie is a generic cookie to pass to the callback.
   // Returns true on success.
+  // Use |target_module_name| to ensure the callback is only invoked for the
+  // specified module. If this parameter is non-null then all delayloaded
+  // imports are resolved when the target module is found.
   bool EnumDelayImportChunks(EnumDelayImportChunksFunction callback,
-                             PVOID cookie) const;
+                             PVOID cookie,
+                             LPCSTR target_module_name) const;
 
   // Enumerates imports from a single PE delay import block.
   // cookie is a generic cookie to pass to the callback.

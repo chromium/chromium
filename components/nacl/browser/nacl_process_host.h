@@ -15,8 +15,8 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/shared_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "components/nacl/common/nacl_types.h"
@@ -81,6 +81,7 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
       int render_view_id,
       uint32_t permission_bits,
       bool uses_nonsfi_mode,
+      bool nonsfi_mode_allowed,
       bool off_the_record,
       NaClAppProcessType process_type,
       const base::FilePath& profile_directory);
@@ -144,7 +145,8 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
   void ReplyToRenderer(
       mojo::ScopedMessagePipeHandle ppapi_channel_handle,
       mojo::ScopedMessagePipeHandle trusted_channel_handle,
-      mojo::ScopedMessagePipeHandle manifest_service_channel_handle);
+      mojo::ScopedMessagePipeHandle manifest_service_channel_handle,
+      base::ReadOnlySharedMemoryRegion crash_info_shmem_region);
 
   // Sends the reply with error message to the renderer.
   void SendErrorToRenderer(const std::string& error_message);
@@ -194,7 +196,8 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
       const IPC::ChannelHandle& ppapi_browser_channel_handle,
       const IPC::ChannelHandle& ppapi_renderer_channel_handle,
       const IPC::ChannelHandle& trusted_renderer_channel_handle,
-      const IPC::ChannelHandle& manifest_service_channel_handle);
+      const IPC::ChannelHandle& manifest_service_channel_handle,
+      base::ReadOnlySharedMemoryRegion crash_info_shmem_region);
 
   GURL manifest_url_;
   base::File nexe_file_;
@@ -228,6 +231,7 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
   std::unique_ptr<content::BrowserChildProcessHost> process_;
 
   bool uses_nonsfi_mode_;
+  bool nonsfi_mode_allowed_;
 
   bool enable_debug_stub_;
   bool enable_crash_throttling_;
@@ -246,11 +250,7 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
   // Throttling time in milliseconds for PpapiHostMsg_Keepalive IPCs.
   static unsigned keepalive_throttle_interval_milliseconds_;
 
-  // Shared memory provided to the plugin and renderer for
-  // reporting crash information.
-  base::SharedMemory crash_info_shmem_;
-
-  base::WeakPtrFactory<NaClProcessHost> weak_factory_;
+  base::WeakPtrFactory<NaClProcessHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NaClProcessHost);
 };

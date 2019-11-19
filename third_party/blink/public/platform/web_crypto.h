@@ -109,31 +109,6 @@ class WebCryptoResult {
       cancel_;
 };
 
-class WebCryptoDigestor {
- public:
-  virtual ~WebCryptoDigestor() = default;
-
-  // Consume() will return |true| on the successful addition of data to the
-  // partially generated digest. It will return |false| when that fails. After
-  // a return of |false|, Consume() should not be called again (nor should
-  // Finish() be called).
-  virtual bool Consume(const unsigned char* data, unsigned data_size) {
-    return false;
-  }
-
-  // Finish() will return |true| if the digest has been successfully computed
-  // and put into the result buffer, otherwise it will return |false|. In
-  // either case, neither Finish() nor Consume() should be called again after
-  // a call to Finish(). |result_data| is valid until the WebCrytpoDigestor
-  // object is destroyed.
-  virtual bool Finish(unsigned char*& result_data, unsigned& result_data_size) {
-    return false;
-  }
-
- protected:
-  WebCryptoDigestor() = default;
-};
-
 class WebCrypto {
  public:
   // WebCrypto is the interface for starting one-shot cryptographic
@@ -306,15 +281,6 @@ class WebCrypto {
       WebCryptoResult result,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     result.CompleteWithError(kWebCryptoErrorTypeNotSupported, "");
-  }
-
-  // This is the exception to the "Completing the request" guarantees
-  // outlined above. This is useful for Blink internal crypto and is not part
-  // of the WebCrypto standard. CreateDigestor must provide the result via
-  // the WebCryptoDigestor object synchronously. This will never return null.
-  virtual std::unique_ptr<WebCryptoDigestor> CreateDigestor(
-      WebCryptoAlgorithmId algorithm_id) {
-    return nullptr;
   }
 
   // -----------------------

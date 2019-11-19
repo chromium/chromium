@@ -15,7 +15,7 @@
 #include "content/browser/scheduler/responsiveness/native_event_observer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -53,6 +53,30 @@ class FakeCalculator : public Calculator {
   std::vector<base::TimeTicks> queue_times_io_;
 };
 
+class FakeMetricSource : public MetricSource {
+ public:
+  FakeMetricSource(Delegate* delegate, bool register_message_loop_observer)
+      : MetricSource(delegate),
+        register_message_loop_observer_(register_message_loop_observer) {}
+  ~FakeMetricSource() override {}
+
+  void RegisterMessageLoopObserverUI() override {
+    if (register_message_loop_observer_)
+      MetricSource::RegisterMessageLoopObserverUI();
+  }
+  void RegisterMessageLoopObserverIO() override {
+    if (register_message_loop_observer_)
+      MetricSource::RegisterMessageLoopObserverIO();
+  }
+
+  std::unique_ptr<NativeEventObserver> CreateNativeEventObserver() override {
+    return nullptr;
+  }
+
+ private:
+  bool register_message_loop_observer_;
+};
+
 class FakeWatcher : public Watcher {
  public:
   std::unique_ptr<Calculator> CreateCalculator() override {
@@ -62,17 +86,9 @@ class FakeWatcher : public Watcher {
     return calculator;
   }
 
-  std::unique_ptr<NativeEventObserver> CreateNativeEventObserver() override {
-    return nullptr;
-  }
-
-  void RegisterMessageLoopObserverUI() override {
-    if (register_message_loop_observer_)
-      Watcher::RegisterMessageLoopObserverUI();
-  }
-  void RegisterMessageLoopObserverIO() override {
-    if (register_message_loop_observer_)
-      Watcher::RegisterMessageLoopObserverIO();
+  std::unique_ptr<MetricSource> CreateMetricSource() override {
+    return std::make_unique<FakeMetricSource>(this,
+                                              register_message_loop_observer_);
   }
 
   FakeWatcher(bool register_message_loop_observer)
@@ -104,7 +120,7 @@ class ResponsivenessWatcherTest : public testing::Test {
     watcher_ = scoped_refptr<FakeWatcher>(
         new FakeWatcher(/*register_message_loop_observer=*/false));
     watcher_->SetUp();
-    test_browser_thread_bundle_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   void TearDown() override {
@@ -115,7 +131,7 @@ class ResponsivenessWatcherTest : public testing::Test {
  protected:
   // This member sets up BrowserThread::IO and BrowserThread::UI. It must be the
   // first member, as other members may depend on these abstractions.
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   scoped_refptr<FakeWatcher> watcher_;
 };
@@ -187,8 +203,7 @@ TEST_F(ResponsivenessWatcherTest, NativeEvents) {
 class ResponsivenessWatcherRealIOThreadTest : public testing::Test {
  public:
   ResponsivenessWatcherRealIOThreadTest()
-      : test_browser_thread_bundle_(
-            content::TestBrowserThreadBundle::REAL_IO_THREAD) {}
+      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
 
   void SetUp() override {
     // Watcher's constructor posts a task to IO thread. We need to let those
@@ -196,7 +211,7 @@ class ResponsivenessWatcherRealIOThreadTest : public testing::Test {
     watcher_ = scoped_refptr<FakeWatcher>(
         new FakeWatcher(/*register_message_loop_observer=*/true));
     watcher_->SetUp();
-    test_browser_thread_bundle_.RunIOThreadUntilIdle();
+    task_environment_.RunIOThreadUntilIdle();
   }
 
   void TearDown() override {
@@ -205,38 +220,37 @@ class ResponsivenessWatcherRealIOThreadTest : public testing::Test {
 
     // Destroy a task onto the IO thread, which posts back to the UI thread
     // to complete destruction.
-    test_browser_thread_bundle_.RunIOThreadUntilIdle();
-    test_browser_thread_bundle_.RunUntilIdle();
+    task_environment_.RunIOThreadUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
  protected:
   // This member sets up BrowserThread::IO and BrowserThread::UI. It must be the
   // first member, as other members may depend on these abstractions.
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   scoped_refptr<FakeWatcher> watcher_;
 };
 
 TEST_F(ResponsivenessWatcherRealIOThreadTest, MessageLoopObserver) {
   // Post a do-nothing task onto the UI thread.
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                           base::BindOnce([]() {}));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce([]() {}));
 
   // Post a do-nothing task onto the IO thread.
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
-                           base::BindOnce([]() {}));
+  base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                 base::BindOnce([]() {}));
 
   // Post a task onto the IO thread that hops back to the UI thread. This
   // guarantees that both of the do-nothing tasks have already been processed.
   base::RunLoop run_loop;
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
-                           base::BindOnce(
-                               [](base::OnceClosure quit_closure) {
-                                 base::PostTaskWithTraits(
-                                     FROM_HERE, {content::BrowserThread::UI},
-                                     std::move(quit_closure));
-                               },
-                               run_loop.QuitClosure()));
+  base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                 base::BindOnce(
+                     [](base::OnceClosure quit_closure) {
+                       base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                                      std::move(quit_closure));
+                     },
+                     run_loop.QuitClosure()));
   run_loop.Run();
 
   ASSERT_GE(watcher_->NumTasksOnUIThread(), 1);

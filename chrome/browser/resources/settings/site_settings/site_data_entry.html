@@ -1,10 +1,10 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_row_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../settings_shared_css.html">
 <link rel="import" href="../site_favicon.html">
 <link rel="import" href="cookie_info.html">
@@ -22,16 +22,13 @@
         <span class="url-directionality">[[model.site]]</span>
         <div class="secondary">[[model.localData]]</div>
       </div>
-      <paper-icon-button-light class="subpage-arrow">
-        <button aria-label$="[[model.site]]" focus-row-control
-            focus-type="showDetails"></button>
-      </paper-icon-button-light>
+      <cr-icon-button class="subpage-arrow" aria-label$="[[model.site]]"
+          focus-row-control focus-type="showDetails"></cr-icon-button>
       <div class="separator"></div>
-      <paper-icon-button-light class="icon-delete-gray">
-        <button title$="[[i18n('siteSettingsCookieRemoveSite', model.site)]]"
-            on-click="onRemove_" focus-row-control focus-type="remove">
-        </button>
-      </paper-icon-button-light>
+      <cr-icon-button class="icon-delete-gray"
+          title$="[[i18n('siteSettingsCookieRemoveSite', model.site)]]"
+          on-click="onRemove_" focus-row-control focus-type="remove">
+      </cr-icon-button>
     </div>
   </template>
   <script src="site_data_entry.js"></script>

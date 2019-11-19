@@ -14,3 +14,19 @@ python_library("binary_size_trybot_py") {
     "//build/android/resource_sizes.py",
   ]
 }
+
+python_library("sizes_py") {
+  testonly = true
+  pydeps_file = "sizes.pydeps"
+  data_deps = [
+    "//third_party/catapult/tracing:convert_chart_json",
+  ]
+}
+
+if (is_linux) {
+  group("caspian") {
+    deps = [
+      "//tools/binary_size/libsupersize/caspian:cli($host_toolchain)",
+    ]
+  }
+}

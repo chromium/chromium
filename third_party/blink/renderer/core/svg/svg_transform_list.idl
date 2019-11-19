@@ -27,6 +27,7 @@
 // https://svgwg.org/svg2-draft/coords.html#InterfaceSVGTransformList
 
 [
+    Exposed=Window,
     ImplementedAs=SVGTransformListTearOff
 ] interface SVGTransformList {
     readonly attribute unsigned long length;

@@ -1,3 +1,7 @@
 agrieve@chromium.org
+
+per-file *svgo*=dbeam@chromium.org
+per-file PRESUBMIT.py=dbeam@chromium.org
+
 per-file filter_resource_whitelist.*=estevenson@chromium.org
 per-file generate_resource_whitelist.*=estevenson@chromium.org

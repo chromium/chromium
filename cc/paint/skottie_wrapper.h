@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "cc/paint/paint_export.h"
@@ -32,6 +31,9 @@ class CC_PAINT_EXPORT SkottieWrapper
   explicit SkottieWrapper(
       const scoped_refptr<base::RefCountedMemory>& data_stream);
   explicit SkottieWrapper(std::unique_ptr<SkMemoryStream> stream);
+  SkottieWrapper(const SkottieWrapper&) = delete;
+
+  SkottieWrapper& operator=(const SkottieWrapper&) = delete;
 
   // A thread safe call that will draw an image with bounds |rect| for the
   // frame at normalized time instant |t| onto the |canvas|.
@@ -46,8 +48,6 @@ class CC_PAINT_EXPORT SkottieWrapper
 
   base::Lock lock_;
   sk_sp<skottie::Animation> animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkottieWrapper);
 };
 
 }  // namespace cc

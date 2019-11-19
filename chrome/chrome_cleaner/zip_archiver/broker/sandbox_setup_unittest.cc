@@ -11,12 +11,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/test/multiprocess_test.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"
-#include "chrome/chrome_cleaner/interfaces/zip_archiver.mojom.h"
+#include "chrome/chrome_cleaner/mojom/zip_archiver.mojom.h"
 #include "chrome/chrome_cleaner/zip_archiver/broker/sandbox_setup.h"
 #include "chrome/chrome_cleaner/zip_archiver/target/sandbox_setup.h"
 #include "chrome/chrome_cleaner/zip_archiver/test_zip_archiver_util.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
@@ -36,7 +37,7 @@ class ZipArchiverSandboxSetupTest : public base::MultiProcessTest {
  public:
   ZipArchiverSandboxSetupTest()
       : mojo_task_runner_(MojoTaskRunner::Create()),
-        zip_archiver_ptr_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
+        zip_archiver_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
     ZipArchiverSandboxSetupHooks setup_hooks(
         mojo_task_runner_.get(), base::BindOnce([] {
           FAIL() << "ZipArchiver sandbox connection error";
@@ -45,7 +46,7 @@ class ZipArchiverSandboxSetupTest : public base::MultiProcessTest {
         RESULT_CODE_SUCCESS,
         StartSandboxTarget(MakeCmdLine("ZipArchiverSandboxSetupTargetMain"),
                            &setup_hooks, SandboxType::kTest));
-    zip_archiver_ptr_ = setup_hooks.TakeZipArchiverPtr();
+    zip_archiver_ = setup_hooks.TakeZipArchiverRemote();
   }
 
  protected:
@@ -56,29 +57,29 @@ class ZipArchiverSandboxSetupTest : public base::MultiProcessTest {
                        mojom::ZipArchiver::ArchiveCallback callback) {
     mojo_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(RunArchive, base::Unretained(zip_archiver_ptr_.get()),
+        base::BindOnce(RunArchive, base::Unretained(zip_archiver_.get()),
                        mojo::WrapPlatformFile(src_file_handle.Take()),
                        mojo::WrapPlatformFile(zip_file_handle.Take()),
                        filename_in_zip, password, std::move(callback)));
   }
 
  private:
-  static void RunArchive(mojom::ZipArchiverPtr* zip_archiver_ptr,
+  static void RunArchive(mojo::Remote<mojom::ZipArchiver>* zip_archiver,
                          mojo::ScopedHandle mojo_src_handle,
                          mojo::ScopedHandle mojo_zip_handle,
                          const std::string& filename_in_zip,
                          const std::string& password,
                          mojom::ZipArchiver::ArchiveCallback callback) {
-    DCHECK(zip_archiver_ptr);
+    DCHECK(zip_archiver);
 
-    (*zip_archiver_ptr)
+    (*zip_archiver)
         ->Archive(std::move(mojo_src_handle), std::move(mojo_zip_handle),
                   filename_in_zip, password, std::move(callback));
   }
 
   scoped_refptr<MojoTaskRunner> mojo_task_runner_;
-  UniqueZipArchiverPtr zip_archiver_ptr_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  RemoteZipArchiverPtr zip_archiver_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 void OnArchiveDone(ZipArchiverResultCode* test_result_code,

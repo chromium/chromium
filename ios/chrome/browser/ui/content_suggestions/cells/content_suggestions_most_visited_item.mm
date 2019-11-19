@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 
+#include "base/logging.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestion_identifier.h"
@@ -79,18 +80,21 @@
 
 // Target for custom action.
 - (BOOL)openInNewTab {
+  DCHECK(self.commandHandler);
   [self.commandHandler openNewTabWithMostVisitedItem:self incognito:NO];
   return YES;
 }
 
 // Target for custom action.
 - (BOOL)openInNewIncognitoTab {
+  DCHECK(self.commandHandler);
   [self.commandHandler openNewTabWithMostVisitedItem:self incognito:YES];
   return YES;
 }
 
 // Target for custom action.
 - (BOOL)removeMostVisited {
+  DCHECK(self.commandHandler);
   [self.commandHandler removeMostVisited:self];
   return YES;
 }

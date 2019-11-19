@@ -1,0 +1,12 @@
+endpoint_type: REMOTE
+fuzz_handshake: false
+messages: [
+  {
+    id: 0x4d4f4a4f
+    include_body_if_not_complex: true
+    [mojo_fuzzer.MojoMessage.mojo_message]: {
+      data_length: 0
+      data: ""
+    }
+  }
+]

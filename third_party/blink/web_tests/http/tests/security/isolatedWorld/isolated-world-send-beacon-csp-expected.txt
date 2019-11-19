@@ -1,0 +1,11 @@
+CONSOLE MESSAGE: line 13: Testing main world. Request should be blocked by main world CSP.
+CONSOLE ERROR: line 2: Refused to connect to 'http://localhost:8000/security/isolatedWorld/resources/empty.html' because it violates the following Content Security Policy directive: "connect-src 'none'".
+
+CONSOLE MESSAGE: line 18: Testing isolated world with no csp. Request should be blocked by main world CSP.
+CONSOLE ERROR: Refused to connect to 'http://localhost:8000/security/isolatedWorld/resources/empty.html' because it violates the following Content Security Policy directive: "connect-src 'none'".
+
+CONSOLE MESSAGE: line 26: Testing isolated world with permissive csp.
+PingLoader dispatched to 'http://localhost:8000/security/isolatedWorld/resources/empty.html'.
+CONSOLE MESSAGE: line 34: Testing isolated world with strict csp.
+PingLoader dispatched to 'http://localhost:8000/security/isolatedWorld/resources/empty.html'.
+This tests the interaction of sendBeacon command run in the isolated world with the isolated world CSP.

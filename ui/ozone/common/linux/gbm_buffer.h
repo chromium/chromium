@@ -31,8 +31,8 @@ class GbmBuffer {
   virtual size_t GetNumPlanes() const = 0;
   virtual int GetPlaneFd(size_t plane) const = 0;
   virtual uint32_t GetPlaneHandle(size_t plane) const = 0;
-  virtual int GetPlaneStride(size_t plane) const = 0;
-  virtual int GetPlaneOffset(size_t plane) const = 0;
+  virtual uint32_t GetPlaneStride(size_t plane) const = 0;
+  virtual size_t GetPlaneOffset(size_t plane) const = 0;
   virtual size_t GetPlaneSize(size_t plane) const = 0;
   virtual uint32_t GetHandle() const = 0;
   virtual gfx::NativePixmapHandle ExportHandle() const = 0;

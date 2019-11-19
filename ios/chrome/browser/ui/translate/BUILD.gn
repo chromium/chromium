@@ -2,17 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("translate") {
+source_set("legacy_translate") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "language_selection_coordinator.h",
-    "language_selection_coordinator.mm",
-    "language_selection_mediator.h",
-    "language_selection_mediator.mm",
-    "translate_infobar_coordinator.h",
-    "translate_infobar_coordinator.mm",
-    "translate_infobar_mediator.h",
-    "translate_infobar_mediator.mm",
+    "legacy_translate_infobar_coordinator.h",
+    "legacy_translate_infobar_coordinator.mm",
+    "legacy_translate_infobar_mediator.h",
+    "legacy_translate_infobar_mediator.mm",
   ]
   deps = [
     ":translate_ui",
@@ -37,10 +33,6 @@ source_set("translate") {
 source_set("translate_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "language_selection_consumer.h",
-    "language_selection_provider.h",
-    "language_selection_view_controller.h",
-    "language_selection_view_controller.mm",
     "translate_infobar_language_tab_strip_view.h",
     "translate_infobar_language_tab_strip_view.mm",
     "translate_infobar_language_tab_strip_view_delegate.h",
@@ -61,14 +53,17 @@ source_set("translate_ui") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui/colors",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/fullscreen:ui",
     "//ios/chrome/browser/ui/infobars:infobars_ui",
     "//ios/chrome/browser/ui/toolbar/buttons",
+    "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/translate/resources:translate_dismiss",
     "//ios/chrome/browser/ui/translate/resources:translate_icon",
     "//ios/chrome/browser/ui/translate/resources:translate_options",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common:common_extension",
+    "//ios/chrome/common/colors:colors",
     "//ios/chrome/common/ui_util",
     "//ios/third_party/material_components_ios",
     "//ui/base",
@@ -82,7 +77,8 @@ source_set("unit_tests") {
     "translate_infobar_mediator_unittest.mm",
   ]
   deps = [
-    ":translate",
+    ":legacy_translate",
+    "//components/language/ios/browser",
     "//components/translate/core/browser:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/translate",
@@ -91,8 +87,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/translate/cells",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:test_support",
+    "//ios/web/public/deprecated:test_doubles",
     "//ios/web/public/test",
-    "//ios/web/public/test/fakes",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

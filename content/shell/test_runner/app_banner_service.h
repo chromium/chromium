@@ -11,7 +11,8 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "content/shell/test_runner/test_runner_export.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom.h"
 
 namespace test_runner {
@@ -24,7 +25,9 @@ class TEST_RUNNER_EXPORT AppBannerService
   AppBannerService();
   ~AppBannerService() override;
 
-  blink::mojom::AppBannerControllerPtr& controller() { return controller_; }
+  mojo::Remote<blink::mojom::AppBannerController>& controller() {
+    return controller_;
+  }
   void ResolvePromise(const std::string& platform);
   void SendBannerPromptRequest(const std::vector<std::string>& platforms,
                                base::OnceCallback<void(bool)> callback);
@@ -36,9 +39,9 @@ class TEST_RUNNER_EXPORT AppBannerService
   void OnBannerPromptReply(base::OnceCallback<void(bool)> callback,
                            blink::mojom::AppBannerPromptReply);
 
-  mojo::Binding<blink::mojom::AppBannerService> binding_;
-  blink::mojom::AppBannerEventPtr event_;
-  blink::mojom::AppBannerControllerPtr controller_;
+  mojo::Receiver<blink::mojom::AppBannerService> receiver_{this};
+  mojo::Remote<blink::mojom::AppBannerEvent> event_;
+  mojo::Remote<blink::mojom::AppBannerController> controller_;
 
   DISALLOW_COPY_AND_ASSIGN(AppBannerService);
 };

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#ff0000' list='rainbow'>
+<datalist id='rainbow'>
+    <option>#ff0000</option>
+    <option>#ffa500</option>
+    <option>#ffff00</option>
+    <option>#00ff00</option>
+    <option>#0000ff</option>
+    <option>#4b0082</option>
+    <option>#ee82ee</option>
+</datalist>
+<script>
+'use strict';
+
+// The color suggestion picker JS code queries the values of certain CSS variables and expects them to be expressed in 'px' units.
+// This test validates that those variables are actually declared with 'px' values (or '0').
+let t = async_test('Color suggestion picker: Validate that length units in CSS variables end in \'px\'.');
+t.step(() => {
+  let colorControl = document.getElementById('color');
+  openPicker(colorControl, t.step_func_done(() => {
+    popupWindow.focus();
+    const popupDocument = popupWindow.document;
+    const popupDocumentBody = popupDocument.body;
+    const colorSwatchBorderWidth = popupWindow.getComputedStyle(popupDocumentBody).getPropertyValue('--color-swatch-border-width');
+    const colorSwatchMargin = popupWindow.getComputedStyle(popupDocumentBody).getPropertyValue('--color-swatch-margin');
+    const colorSwatchHeight = popupWindow.getComputedStyle(popupDocumentBody).getPropertyValue('--color-swatch-height');
+    const colorSwatchPadding = popupWindow.getComputedStyle(popupDocumentBody).getPropertyValue('--color-swatch-padding');
+    const colorSwatchWidth = popupWindow.getComputedStyle(popupDocumentBody).getPropertyValue('--color-swatch-width');
+    assert_true(colorSwatchBorderWidth.trim() === '0' ||
+        colorSwatchBorderWidth.endsWith('px'), 'Color swatch border width must be 0 or end in \'px\'');
+    assert_true(colorSwatchMargin.trim() === '0' || colorSwatchMargin.endsWith('px'), 'Color swatch margin must be 0 or end in \'px\'');
+    assert_true(colorSwatchHeight.trim() === '0' || colorSwatchHeight.endsWith('px'), 'Color swatch height must be 0 or end in \'px\'');
+    assert_true(colorSwatchPadding.trim() === '0' || colorSwatchPadding.endsWith('px'), 'Color swatch padding must be 0 or end in \'px\'');
+    assert_true(colorSwatchWidth.trim() === '0' || colorSwatchWidth.endsWith('px'), 'Color swatch width must be 0 or end in \'px\'');
+    if (internals.runtimeFlags.formControlsRefreshEnabled) {
+      const scrollbarWidth = popupWindow.getComputedStyle(popupDocumentBody).getPropertyValue('--scrollbar-width');
+      assert_true(scrollbarWidth.trim() === '0' || scrollbarWidth.endsWith('px'), 'Scrollbar width must be 0 or end in \'px\'');
+    }
+  }));
+});
+</script>
+</body>
+</html>

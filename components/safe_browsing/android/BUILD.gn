@@ -8,8 +8,10 @@ import("//build/config/android/rules.gni")
 android_library("safe_browsing_java") {
   deps = [
     "//base:base_java",
-    "//third_party/android_deps:android_support_annotations_java",
+    "//base:jni_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   java_files = [
     "java/src/org/chromium/components/safe_browsing/SafeBrowsingApiBridge.java",
     "java/src/org/chromium/components/safe_browsing/SafeBrowsingApiHandler.java",
@@ -20,7 +22,6 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/safe_browsing/SafeBrowsingApiBridge.java",
   ]
-  jni_package = "components/safe_browsing/android"
 }
 
 # This target is for the mobile version.
@@ -44,6 +45,7 @@ static_library("remote_database_manager") {
     "//components/safe_browsing/db:database_manager",
     "//components/safe_browsing/db:v4_get_hash_protocol_manager",
     "//components/safe_browsing/db:v4_protocol_manager_util",
+    "//components/safe_browsing/realtime:url_lookup_service",
     "//components/variations",
     "//content/public/browser",
     "//net",

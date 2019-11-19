@@ -10,10 +10,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
-#include "chrome/browser/page_load_metrics/page_load_tracker.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/page_load_metrics/test/page_load_metrics_test_util.h"
-#include "components/live_tab_count_metrics/live_tab_count_metrics.h"
+#include "components/page_load_metrics/browser/page_load_tracker.h"
+#include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
+#include "components/tab_count_metrics/tab_count_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -22,7 +21,7 @@ const char kDefaultTestUrl[] = "https://google.com";
 enum TabState { kForeground, kBackground };
 
 using BucketCountArray =
-    std::array<size_t, live_tab_count_metrics::kNumLiveTabCountBuckets>;
+    std::array<size_t, tab_count_metrics::kNumTabCountBuckets>;
 
 class TestLiveTabCountPageLoadMetricsObserver
     : public LiveTabCountPageLoadMetricsObserver {
@@ -71,7 +70,7 @@ class LiveTabCountPageLoadMetricsObserverTest
       web_contents()->WasShown();
     }
 
-    SimulateTimingUpdate(timing);
+    tester()->SimulateTimingUpdate(timing);
   }
 
  protected:
@@ -87,8 +86,9 @@ class LiveTabCountPageLoadMetricsObserverTest
         std::string(internal::kHistogramPrefixLiveTabCount) +
         std::string(page_load_histogram_suffix);
     for (size_t bucket = 0; bucket < expected_counts.size(); bucket++) {
-      histogram_tester().ExpectTotalCount(
-          live_tab_count_metrics::HistogramName(histogram_prefix, bucket),
+      tester()->histogram_tester().ExpectTotalCount(
+          tab_count_metrics::HistogramName(histogram_prefix,
+                                           /* live_tabs_only = */ true, bucket),
           expected_counts[bucket]);
     }
   }
@@ -106,7 +106,7 @@ TEST_P(LiveTabCountPageLoadMetricsObserverTest, LoadTabs100) {
   // Simulate loading pages with the number of live tabs ranging from 0 to
   // kMaxLiveTabCount.
   for (size_t num_tabs = 0; num_tabs <= kMaxLiveTabCount; num_tabs++) {
-    bucket = live_tab_count_metrics::BucketForLiveTabCount(num_tabs);
+    bucket = tab_count_metrics::BucketForTabCount(num_tabs);
     SimulatePageLoad(num_tabs, tab_state);
     // We only record metrics if the tab was foregrounded the entire time
     // preceding the event that caused the metrics to be recorded.
@@ -117,7 +117,7 @@ TEST_P(LiveTabCountPageLoadMetricsObserverTest, LoadTabs100) {
     ValidateHistograms(internal::kHistogramFirstInputDelaySuffix, counts);
   }
   // Make sure we are testing each bucket.
-  EXPECT_EQ(bucket, live_tab_count_metrics::kNumLiveTabCountBuckets - 1);
+  EXPECT_EQ(bucket, tab_count_metrics::kNumTabCountBuckets - 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(Foreground,

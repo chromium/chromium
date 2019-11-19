@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame_messages.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -140,7 +141,7 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
   void StartTestWithPage(const std::string& url) {
     ASSERT_TRUE(embedded_test_server()->Start());
     GURL test_url(embedded_test_server()->GetURL(url));
-    NavigateToURL(shell(), test_url);
+    EXPECT_TRUE(NavigateToURL(shell(), test_url));
     aura::Window* content = shell()->web_contents()->GetContentNativeView();
     content->GetHost()->SetBoundsInPixels(gfx::Rect(800, 600));
   }
@@ -298,6 +299,7 @@ class TouchSelectionControllerClientAuraSiteIsolationTest
       public testing::WithParamInterface<bool> {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    TouchSelectionControllerClientAuraTest::SetUpCommandLine(command_line);
     IsolateAllSitesForTesting(command_line);
   }
 
@@ -345,7 +347,7 @@ class TouchSelectionControllerClientAuraSiteIsolationTest
   void SendTouch(RenderWidgetHostViewAura* view,
                  ui::EventType type,
                  gfx::Point point) {
-    DCHECK(type >= ui::ET_TOUCH_RELEASED && type << ui::ET_TOUCH_CANCELLED);
+    DCHECK(type >= ui::ET_TOUCH_RELEASED && type <= ui::ET_TOUCH_CANCELLED);
     // If we want the GestureRecognizer to create the gestures for us, we must
     // register the outgoing touch event with it by sending it through the
     // window's event dispatching system.
@@ -437,7 +439,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   // The child will change with the cross-site navigation. It shouldn't change
   // after this.
   child = root->child_at(0);
-  WaitForHitTestDataOrChildSurfaceReady(child->current_frame_host());
+  WaitForHitTestData(child->current_frame_host());
 
   RenderWidgetHostViewChildFrame* child_view =
       static_cast<RenderWidgetHostViewChildFrame*>(
@@ -546,7 +548,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   // The child will change with the cross-site navigation. It shouldn't change
   // after this.
   child = root->child_at(0);
-  WaitForHitTestDataOrChildSurfaceReady(child->current_frame_host());
+  WaitForHitTestData(child->current_frame_host());
 
   RenderWidgetHostViewChildFrame* child_view =
       static_cast<RenderWidgetHostViewChildFrame*>(
@@ -566,8 +568,8 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   ui::TouchSelectionControllerTestApi selection_controller_test_api(
       selection_controller);
 
-  scoped_refptr<SynchronizeVisualPropertiesMessageFilter> filter =
-      new SynchronizeVisualPropertiesMessageFilter();
+  auto filter =
+      base::MakeRefCounted<SynchronizeVisualPropertiesMessageFilter>();
   root->current_frame_host()->GetProcess()->AddFilter(filter.get());
 
   // Find the location of some text to select.
@@ -662,9 +664,9 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   ui::GestureEvent scroll_end(scroll_end_position.x(), scroll_end_position.y(),
                               0, ui::EventTimeForNow(), scroll_end_details);
   parent_view->OnGestureEvent(&scroll_end);
+  EXPECT_FALSE(selection_controller_test_api.temporarily_hidden());
   EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
             parent_view->selection_controller()->active_status());
-  EXPECT_FALSE(selection_controller_test_api.temporarily_hidden());
   EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 
   // 3) Send touch-end.
@@ -918,23 +920,23 @@ IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
   const ui::TouchSelectionController* controller =
       GetRenderWidgetHostViewAura()->selection_controller();
 
-  gfx::PointF start_top = controller->start().edge_top();
+  gfx::PointF start_top = controller->start().edge_start();
 
   // The selection start should be uppper left, and selection end should be
   // upper right.
-  EXPECT_LT(controller->start().edge_top().x(), point.x());
-  EXPECT_LT(controller->start().edge_bottom().x(), point.x());
+  EXPECT_LT(controller->start().edge_start().x(), point.x());
+  EXPECT_LT(controller->start().edge_end().x(), point.x());
 
-  EXPECT_LT(point.x(), controller->end().edge_top().x());
-  EXPECT_LT(point.x(), controller->end().edge_bottom().x());
+  EXPECT_LT(point.x(), controller->end().edge_start().x());
+  EXPECT_LT(point.x(), controller->end().edge_end().x());
 
   // Handles are created below the selection. The top position should roughly
   // be within the handle size from the touch position.
-  float handle_size = controller->start().edge_bottom().y() -
-                      controller->start().edge_top().y();
+  float handle_size =
+      controller->start().edge_end().y() - controller->start().edge_start().y();
   float handle_max_bottom = point.y() + handle_size;
-  EXPECT_GT(handle_max_bottom, controller->start().edge_top().y());
-  EXPECT_GT(handle_max_bottom, controller->end().edge_top().y());
+  EXPECT_GT(handle_max_bottom, controller->start().edge_start().y());
+  EXPECT_GT(handle_max_bottom, controller->end().edge_start().y());
 
   gfx::Point handle_point = gfx::ToRoundedPoint(
       rwhva->selection_controller()->GetStartHandleRect().CenterPoint());
@@ -968,8 +970,8 @@ IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
   selection_controller_client()->Wait();
 
   // The handle should have moved to right.
-  EXPECT_EQ(start_top.y(), controller->start().edge_top().y());
-  EXPECT_LT(start_top.x(), controller->start().edge_top().x());
+  EXPECT_EQ(start_top.y(), controller->start().edge_start().y());
+  EXPECT_LT(start_top.x(), controller->start().edge_start().x());
 
   EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
             rwhva->selection_controller()->active_status());

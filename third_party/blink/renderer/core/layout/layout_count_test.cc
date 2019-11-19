@@ -16,7 +16,7 @@ TEST_F(LayoutCountTest, SimpleBlockLayoutIsOnePass) {
       "<!DOCTYPE html>"
       " <div id='block' style='height:1000px'>Item</div>");
 
-  LayoutBlockFlow* block = ToLayoutBlockFlow(
+  auto* block = To<LayoutBlockFlow>(
       GetDocument().getElementById("block")->GetLayoutObject());
   ASSERT_EQ(block->GetLayoutPassCountForTesting(), 1);
 }

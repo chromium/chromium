@@ -39,7 +39,7 @@ BlinkFuzzerTestSupport::~BlinkFuzzerTestSupport() {
   // LSAN needs unreachable objects to be released to avoid reporting them
   // incorrectly as a memory leak.
   blink::ThreadState* currentThreadState = blink::ThreadState::Current();
-  currentThreadState->CollectAllGarbage();
+  currentThreadState->CollectAllGarbageForTesting();
 #endif
 }
 

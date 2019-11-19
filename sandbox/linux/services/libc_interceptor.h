@@ -70,6 +70,9 @@ SANDBOX_EXPORT void SetUseLocaltimeOverride(bool enable);
 // children. |backchannel_fd| must be the fd to use for proxying calls.
 SANDBOX_EXPORT void SetAmZygoteOrRenderer(bool enable, int backchannel_fd);
 
+// Initializes libc interception. Must be called before sandbox lock down.
+SANDBOX_EXPORT void InitLibcLocaltimeFunctions();
+
 }  // namespace sandbox
 
 #endif  // SANDBOX_LINUX_SERVICES_LIBC_INTERCEPTOR_H_

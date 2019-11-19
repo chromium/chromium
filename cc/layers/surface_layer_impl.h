@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_impl.h"
@@ -38,7 +37,10 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
         new SurfaceLayerImpl(tree_impl, id, base::BindRepeating([](bool) {})));
   }
 
+  SurfaceLayerImpl(const SurfaceLayerImpl&) = delete;
   ~SurfaceLayerImpl() override;
+
+  SurfaceLayerImpl& operator=(const SurfaceLayerImpl&) = delete;
 
   void SetRange(const viz::SurfaceRange& surface_range,
                 base::Optional<uint32_t> deadline_in_frames);
@@ -54,12 +56,13 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   }
 
   void SetSurfaceHitTestable(bool surface_hit_testable);
-  bool ShouldGenerateSurfaceHitTestData() const {
-    return surface_hit_testable_ && !has_pointer_events_none_;
-  }
+  bool surface_hit_testable() const { return surface_hit_testable_; }
 
   void SetHasPointerEventsNone(bool has_pointer_events_none);
   bool has_pointer_events_none() const { return has_pointer_events_none_; }
+
+  void SetIsReflection(bool is_reflection);
+  bool is_reflection() const { return is_reflection_; }
 
   // LayerImpl overrides.
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
@@ -69,15 +72,12 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   void AppendQuads(viz::RenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
   bool is_surface_layer() const override;
+  gfx::Rect GetEnclosingRectInTargetSpace() const override;
 
  protected:
   SurfaceLayerImpl(LayerTreeImpl* tree_impl, int id, UpdateSubmissionStateCB);
 
  private:
-  viz::SurfaceDrawQuad* CreateSurfaceDrawQuad(
-      viz::RenderPass* render_pass,
-      const viz::SurfaceRange& surface_range);
-
   void GetDebugBorderProperties(SkColor* color, float* width) const override;
   void AppendRainbowDebugBorder(viz::RenderPass* render_pass);
   void AsValueInto(base::trace_event::TracedValue* dict) const override;
@@ -90,9 +90,8 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   bool stretch_content_to_fill_bounds_ = false;
   bool surface_hit_testable_ = false;
   bool has_pointer_events_none_ = false;
+  bool is_reflection_ = false;
   bool will_draw_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceLayerImpl);
 };
 
 }  // namespace cc

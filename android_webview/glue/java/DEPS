@@ -2,7 +2,6 @@ include_rules = [
   "+android_webview/java",
   "+base/android/java",
   "+components/autofill/android/java",
-  "+components/embedder_support/android/java",
 
   "-content/public/android/java",
   "+content/public/android/java/src/org/chromium/content_public",

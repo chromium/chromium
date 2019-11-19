@@ -10,13 +10,14 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_package_syncable_service.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "components/arc/connection_holder.h"
+#include "components/arc/session/connection_holder.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_app_instance.h"
 
@@ -30,11 +31,23 @@ std::string GetTestPackageName(size_t id) {
 
 }  // namespace
 
+// static
 SyncArcPackageHelper* SyncArcPackageHelper::GetInstance() {
   SyncArcPackageHelper* instance = base::Singleton<SyncArcPackageHelper>::get();
   DCHECK(sync_datatype_helper::test());
   instance->SetupTest(sync_datatype_helper::test());
   return instance;
+}
+
+// static
+sync_pb::EntitySpecifics SyncArcPackageHelper::GetTestSpecifics(size_t id) {
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::ArcPackageSpecifics* arc_specifics = specifics.mutable_arc_package();
+  arc_specifics->set_package_name(GetTestPackageName(id));
+  arc_specifics->set_package_version(id);
+  arc_specifics->set_last_backup_android_id(id);
+  arc_specifics->set_last_backup_time(id);
+  return specifics;
 }
 
 SyncArcPackageHelper::SyncArcPackageHelper()
@@ -49,8 +62,11 @@ void SyncArcPackageHelper::SetupTest(SyncTest* test) {
   }
   test_ = test;
 
-  for (auto* profile : test_->GetAllProfiles())
-    SetupArcService(profile);
+  for (auto* profile : test_->GetAllProfiles()) {
+    EnableArcService(profile);
+    SendRefreshPackageList(profile);
+  }
+
   setup_completed_ = true;
 }
 
@@ -114,9 +130,14 @@ bool SyncArcPackageHelper::AllProfilesHaveSamePackageDetails() {
   return true;
 }
 
-void SyncArcPackageHelper::SetupArcService(Profile* profile) {
+void SyncArcPackageHelper::EnableArcService(Profile* profile) {
   DCHECK(profile);
+  DCHECK(!instance_map_[profile]);
+
   arc::SetArcPlayStoreEnabledForProfile(profile, true);
+  // Usually ArcPlayStoreEnabledPreferenceHandler would take care of propagating
+  // prefs changes to observers, but that's not the case in integration tests.
+  arc::ArcSessionManager::Get()->NotifyArcPlayStoreEnabledChanged(true);
 
   ArcAppListPrefs* arc_app_list_prefs = ArcAppListPrefs::Get(profile);
   DCHECK(arc_app_list_prefs);
@@ -131,10 +152,32 @@ void SyncArcPackageHelper::SetupArcService(Profile* profile) {
   arc_app_list_prefs->app_connection_holder()->SetInstance(
       instance_map_[profile].get());
   WaitForInstanceReady(arc_app_list_prefs->app_connection_holder());
+}
+
+void SyncArcPackageHelper::SendRefreshPackageList(Profile* profile) {
   // OnPackageListRefreshed will be called when AppInstance is ready.
   // For fakeAppInstance we use SendRefreshPackageList to make sure that
   // OnPackageListRefreshed will be called.
   instance_map_[profile]->SendRefreshPackageList({});
+}
+
+void SyncArcPackageHelper::DisableArcService(Profile* profile) {
+  DCHECK(profile);
+  DCHECK(instance_map_[profile]);
+
+  arc::SetArcPlayStoreEnabledForProfile(profile, false);
+  // Usually ArcPlayStoreEnabledPreferenceHandler would take care of propagating
+  // prefs changes to observers, but that's not the case in integration tests.
+  arc::ArcSessionManager::Get()->NotifyArcPlayStoreEnabledChanged(false);
+
+  ArcAppListPrefs* arc_app_list_prefs = ArcAppListPrefs::Get(profile);
+  DCHECK(arc_app_list_prefs);
+
+  arc_app_list_prefs->app_connection_holder()->CloseInstance(
+      instance_map_[profile].get());
+  instance_map_.erase(profile);
+
+  arc::ArcSessionManager::Get()->Shutdown();
 }
 
 void SyncArcPackageHelper::InstallPackage(

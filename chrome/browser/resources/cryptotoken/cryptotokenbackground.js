@@ -9,18 +9,10 @@
 'use strict';
 
 /** @const */
-var BROWSER_SUPPORTS_TLS_CHANNEL_ID = true;
-
-/** @const */
 var HTTP_ORIGINS_ALLOWED = false;
 
 /** @const */
 var LOG_SAVER_EXTENSION_ID = 'fjajfjhkeibgmiggdfehjplbhmfkialk';
-
-// Singleton tracking available devices.
-var gnubbies = new Gnubbies();
-HidGnubbyDevice.register(gnubbies);
-UsbGnubbyDevice.register(gnubbies);
 
 var FACTORY_REGISTRY = (function() {
   var windowTimer = new WindowTimer();
@@ -28,13 +20,8 @@ var FACTORY_REGISTRY = (function() {
   return new FactoryRegistry(
       new XhrAppIdCheckerFactory(xhrTextFetcher),
       new CryptoTokenApprovedOrigin(), new CountdownTimerFactory(windowTimer),
-      new CryptoTokenOriginChecker(), new UsbHelper(), windowTimer,
-      xhrTextFetcher);
+      new CryptoTokenOriginChecker(), windowTimer);
 })();
-
-var DEVICE_FACTORY_REGISTRY = new DeviceFactoryRegistry(
-    new UsbGnubbyFactory(gnubbies), FACTORY_REGISTRY.getCountdownFactory(),
-    new GoogleCorpIndividualAttestation());
 
 /**
  * @param {*} request The received request

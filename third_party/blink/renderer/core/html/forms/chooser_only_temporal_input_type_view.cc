@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -41,13 +42,6 @@ ChooserOnlyTemporalInputTypeView::ChooserOnlyTemporalInputTypeView(
     HTMLInputElement& element,
     BaseTemporalInputType& input_type)
     : KeyboardClickableInputTypeView(element), input_type_(input_type) {}
-
-ChooserOnlyTemporalInputTypeView* ChooserOnlyTemporalInputTypeView::Create(
-    HTMLInputElement& element,
-    BaseTemporalInputType& input_type) {
-  return MakeGarbageCollected<ChooserOnlyTemporalInputTypeView>(element,
-                                                                input_type);
-}
 
 ChooserOnlyTemporalInputTypeView::~ChooserOnlyTemporalInputTypeView() {
   DCHECK(!date_time_chooser_);
@@ -80,16 +74,16 @@ void ChooserOnlyTemporalInputTypeView::HandleDOMActivateEvent(Event& event) {
           ? WebFeature::kTemporalInputTypeChooserByTrustedClick
           : WebFeature::kTemporalInputTypeChooserByUntrustedClick);
   date_time_chooser_ =
-      document.GetPage()->GetChromeClient().OpenDateTimeChooser(this,
-                                                                parameters);
+      document.GetPage()->GetChromeClient().OpenDateTimeChooser(
+          document.GetFrame(), this, parameters);
 }
 
 void ChooserOnlyTemporalInputTypeView::CreateShadowSubtree() {
   DEFINE_STATIC_LOCAL(AtomicString, value_container_pseudo,
                       ("-webkit-date-and-time-value"));
 
-  HTMLDivElement* value_container =
-      HTMLDivElement::Create(GetElement().GetDocument());
+  auto* value_container =
+      MakeGarbageCollected<HTMLDivElement>(GetElement().GetDocument());
   value_container->SetShadowPseudoId(value_container_pseudo);
   GetElement().UserAgentShadowRoot()->AppendChild(value_container);
   UpdateView();
@@ -97,7 +91,8 @@ void ChooserOnlyTemporalInputTypeView::CreateShadowSubtree() {
 
 void ChooserOnlyTemporalInputTypeView::UpdateView() {
   Node* node = GetElement().UserAgentShadowRoot()->firstChild();
-  if (!node || !node->IsHTMLElement())
+  auto* html_element = DynamicTo<HTMLElement>(node);
+  if (!html_element)
     return;
   String display_value;
   if (!GetElement().SuggestedValue().IsNull())
@@ -108,7 +103,7 @@ void ChooserOnlyTemporalInputTypeView::UpdateView() {
     // Need to put something to keep text baseline.
     display_value = " ";
   }
-  ToHTMLElement(node)->setTextContent(display_value);
+  html_element->setTextContent(display_value);
 }
 
 void ChooserOnlyTemporalInputTypeView::ValueAttributeChanged() {
@@ -154,6 +149,10 @@ void ChooserOnlyTemporalInputTypeView::DidEndChooser() {
 void ChooserOnlyTemporalInputTypeView::CloseDateTimeChooser() {
   if (date_time_chooser_)
     date_time_chooser_->EndChooser();
+}
+
+void ChooserOnlyTemporalInputTypeView::Blur() {
+  ClosePopupView();
 }
 
 }  // namespace blink

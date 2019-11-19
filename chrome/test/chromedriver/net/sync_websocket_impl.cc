@@ -6,9 +6,12 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "chrome/test/chromedriver/net/command_id.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "net/base/net_errors.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -115,10 +118,30 @@ bool SyncWebSocketImpl::Core::HasNextMessage() {
   return !received_queue_.empty();
 }
 
+// TODO(johnchen) : Send messages with negative command ids to client.
+// https://crrev.com/c/1745493 is a pending CL that does this
 void SyncWebSocketImpl::Core::OnMessageReceived(const std::string& message) {
   base::AutoLock lock(lock_);
-  received_queue_.push_back(message);
+  bool send_to_chromedriver;
+  DetermineRecipient(message, &send_to_chromedriver);
+  if (send_to_chromedriver)
+    received_queue_.push_back(message);
   on_update_event_.Signal();
+}
+
+void SyncWebSocketImpl::Core::DetermineRecipient(const std::string& message,
+                                                 bool* send_to_chromedriver) {
+  base::Optional<base::Value> message_value =
+      base::JSONReader::Read(message, base::JSON_REPLACE_INVALID_CHARACTERS);
+  base::DictionaryValue* message_dict;
+  if (!message_value || !message_value->GetAsDictionary(&message_dict)) {
+    *send_to_chromedriver = true;
+    return;
+  }
+  int id;
+  *send_to_chromedriver =
+      !message_dict->HasKey("id") || (message_dict->GetInteger("id", &id) &&
+                                      CommandId::IsChromeDriverCommandId(id));
 }
 
 void SyncWebSocketImpl::Core::OnClose() {
@@ -146,9 +169,8 @@ void SyncWebSocketImpl::Core::ConnectOnIO(
   if (socket_ && is_connected_)
     return;
   socket_.reset(new WebSocket(url, this));
-  socket_->Connect(base::Bind(
-      &SyncWebSocketImpl::Core::OnConnectCompletedOnIO,
-      this, success, event));
+  socket_->Connect(base::BindOnce(
+      &SyncWebSocketImpl::Core::OnConnectCompletedOnIO, this, success, event));
 }
 
 void SyncWebSocketImpl::Core::OnConnectCompletedOnIO(

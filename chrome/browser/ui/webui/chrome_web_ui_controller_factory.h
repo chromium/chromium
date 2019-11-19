@@ -38,22 +38,21 @@ class ChromeWebUIControllerFactory : public content::WebUIControllerFactory {
 
   // content::WebUIControllerFactory:
   content::WebUI::TypeID GetWebUIType(content::BrowserContext* browser_context,
-                                      const GURL& url) const override;
+                                      const GURL& url) override;
   bool UseWebUIForURL(content::BrowserContext* browser_context,
-                      const GURL& url) const override;
+                      const GURL& url) override;
   bool UseWebUIBindingsForURL(content::BrowserContext* browser_context,
-                              const GURL& url) const override;
+                              const GURL& url) override;
   std::unique_ptr<content::WebUIController> CreateWebUIControllerForURL(
       content::WebUI* web_ui,
-      const GURL& url) const override;
+      const GURL& url) override;
 
   // Get the favicon for |page_url| and run |callback| with result when loaded.
   // Note. |callback| is always run asynchronously.
-  void GetFaviconForURL(
-      Profile* profile,
-      const GURL& page_url,
-      const std::vector<int>& desired_sizes_in_pixel,
-      const favicon_base::FaviconResultsCallback& callback) const;
+  void GetFaviconForURL(Profile* profile,
+                        const GURL& page_url,
+                        const std::vector<int>& desired_sizes_in_pixel,
+                        favicon_base::FaviconResultsCallback callback) const;
 
  protected:
   ChromeWebUIControllerFactory();
@@ -68,7 +67,8 @@ class ChromeWebUIControllerFactory : public content::WebUIControllerFactory {
   // |gfx::kFaviconSize| x |gfx::kFaviconSize| DIP. GetFaviconForURL() should
   // be updated if this changes.
   base::RefCountedMemory* GetFaviconResourceBytes(
-      const GURL& page_url, ui::ScaleFactor scale_factor) const;
+      const GURL& page_url,
+      ui::ScaleFactor scale_factor) const;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeWebUIControllerFactory);
 };

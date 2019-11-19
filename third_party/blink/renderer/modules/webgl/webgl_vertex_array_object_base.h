@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_buffer.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_context_object.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -58,8 +57,8 @@ class WebGLVertexArrayObjectBase : public WebGLContextObject {
 
   VaoType type_;
   bool has_ever_been_bound_;
-  TraceWrapperMember<WebGLBuffer> bound_element_array_buffer_;
-  HeapVector<TraceWrapperMember<WebGLBuffer>> array_buffer_list_;
+  Member<WebGLBuffer> bound_element_array_buffer_;
+  HeapVector<Member<WebGLBuffer>> array_buffer_list_;
   Vector<bool> attrib_enabled_;
   bool is_all_enabled_attrib_buffer_bound_;
 };

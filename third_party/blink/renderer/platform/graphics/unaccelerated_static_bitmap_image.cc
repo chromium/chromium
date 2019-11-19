@@ -7,11 +7,11 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/skia/include/core/SkImage.h"
 
 namespace blink {
@@ -50,8 +50,8 @@ UnacceleratedStaticBitmapImage::~UnacceleratedStaticBitmapImage() {
   if (!original_skia_image_task_runner_->BelongsToCurrentThread()) {
     PostCrossThreadTask(
         *original_skia_image_task_runner_, FROM_HERE,
-        CrossThreadBind([](sk_sp<SkImage> image) { image.reset(); },
-                        std::move(original_skia_image_)));
+        CrossThreadBindOnce([](sk_sp<SkImage> image) { image.reset(); },
+                            std::move(original_skia_image_)));
   } else {
     original_skia_image_.reset();
   }
@@ -79,8 +79,7 @@ UnacceleratedStaticBitmapImage::MakeAccelerated(
     return nullptr;  // Can happen if the context is lost.
 
   sk_sp<SkImage> sk_image = paint_image_.GetSkImage();
-  sk_sp<SkImage> gpu_skimage =
-      sk_image->makeTextureImage(grcontext, sk_image->colorSpace());
+  sk_sp<SkImage> gpu_skimage = sk_image->makeTextureImage(grcontext);
   if (!gpu_skimage)
     return nullptr;
 

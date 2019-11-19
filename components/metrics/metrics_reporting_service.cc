@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/persisted_logs_metrics_impl.h"
+#include "components/metrics/unsent_log_store_metrics_impl.h"
 #include "components/metrics/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 

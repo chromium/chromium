@@ -22,13 +22,14 @@ class View;
 
 namespace ash {
 class ShelfBubble;
-class ShelfView;
+class Shelf;
+class ShelfTooltipDelegate;
 
 // ShelfTooltipManager manages the tooltip bubble that appears for shelf items.
 class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
                                        public ShelfObserver {
  public:
-  explicit ShelfTooltipManager(ShelfView* shelf_view);
+  explicit ShelfTooltipManager(Shelf* shelf);
   ~ShelfTooltipManager() override;
 
   // Closes the tooltip; uses an animation if |animate| is true.
@@ -47,10 +48,18 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
   // Set the timer delay in ms for testing.
   void set_timer_delay_for_test(int timer_delay) { timer_delay_ = timer_delay; }
 
+  void set_shelf_tooltip_delegate(
+      ShelfTooltipDelegate* shelf_tooltip_delegate) {
+    DCHECK(!shelf_tooltip_delegate_ || !shelf_tooltip_delegate);
+
+    shelf_tooltip_delegate_ = shelf_tooltip_delegate;
+  }
+
  protected:
   // ui::EventHandler overrides:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
+  void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnKeyEvent(ui::KeyEvent* event) override;
 
   // ShelfObserver overrides:
@@ -69,10 +78,12 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
 
   int timer_delay_;
   base::OneShotTimer timer_;
-  ShelfView* shelf_view_;
+  Shelf* shelf_ = nullptr;
   ShelfBubble* bubble_ = nullptr;
 
-  base::WeakPtrFactory<ShelfTooltipManager> weak_factory_;
+  ShelfTooltipDelegate* shelf_tooltip_delegate_ = nullptr;
+
+  base::WeakPtrFactory<ShelfTooltipManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ShelfTooltipManager);
 };

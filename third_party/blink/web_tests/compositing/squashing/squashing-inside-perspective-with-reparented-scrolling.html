@@ -3,6 +3,14 @@
     This test ensures that the offset from renderer is correctly applied
     to reparented overflow controls, even if they are unclipped.
 -->
+<script>
+// Check that a case with a reparented overflow control and a containing perspective node
+// paints the same with and without layer squashing.
+if (window.internals) {
+    internals.useMockOverlayScrollbars();
+    internals.settings.setPreferCompositingToLCDTextEnabled(true);
+}
+</script>
 <style>
 #scroller {
     overflow: scroll;
@@ -34,11 +42,3 @@
         <div id='scrolled'></div>
     </div>
 </div>
-<script>
-// Check that a case with a reparented overflow control and a containing perspective node
-// paints the same with and without layer squashing.
-if (window.internals) {
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
-    internals.settings.setPreferCompositingToLCDTextEnabled(true);
-}
-</script>

@@ -12,12 +12,13 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_loop_current.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/task_observer.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -150,7 +151,7 @@ TEST_F(TaskPerfTest, TaskPingPong) {
 
 
 // Same as above, but add observers to test their perf impact.
-class MessageLoopObserver : public base::MessageLoop::TaskObserver {
+class MessageLoopObserver : public base::TaskObserver {
  public:
   void WillProcessTask(const base::PendingTask& pending_task) override {}
   void DidProcessTask(const base::PendingTask& pending_task) override {}

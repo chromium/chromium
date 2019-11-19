@@ -6,21 +6,22 @@
 #define CHROME_BROWSER_ANDROID_VR_VR_MODULE_PROVIDER_H_
 
 #include <jni.h>
+#include <memory>
 #include <queue>
 
 #include "base/android/jni_android.h"
 #include "chrome/browser/android/tab_android.h"
-#include "device/vr/android/gvr/vr_module_delegate.h"
 
 namespace vr {
 
 // Installs the VR module.
-class VrModuleProvider : public device::VrModuleDelegate {
+class VrModuleProvider {
  public:
   explicit VrModuleProvider(TabAndroid* tab);
-  ~VrModuleProvider() override;
-  bool ModuleInstalled() override;
-  void InstallModule(base::OnceCallback<void(bool)> on_finished) override;
+  ~VrModuleProvider();
+
+  bool ModuleInstalled();
+  void InstallModule(base::OnceCallback<void(bool)> on_finished);
 
   // Called by Java.
   void OnInstalledModule(JNIEnv* env,
@@ -35,11 +36,11 @@ class VrModuleProvider : public device::VrModuleDelegate {
 };
 
 // Creates a VR module provider.
-class VrModuleProviderFactory : public device::VrModuleDelegateFactory {
+class VrModuleProviderFactory {
  public:
-  std::unique_ptr<device::VrModuleDelegate> CreateDelegate(
+  static std::unique_ptr<VrModuleProvider> CreateModuleProvider(
       int render_process_id,
-      int render_frame_id) override;
+      int render_frame_id);
 };
 
 }  // namespace vr

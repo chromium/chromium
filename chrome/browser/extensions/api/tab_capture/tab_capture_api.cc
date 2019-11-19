@@ -412,8 +412,8 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
   content::WebContents* target_contents = nullptr;
   if (params->options && params->options->target_tab_id) {
     if (!ExtensionTabUtil::GetTabById(*(params->options->target_tab_id),
-                                      browser_context(), true, nullptr, nullptr,
-                                      &target_contents, nullptr)) {
+                                      browser_context(), true,
+                                      &target_contents)) {
       return RespondNow(Error(kInvalidTabIdError));
     }
   } else {
@@ -447,8 +447,8 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
   GURL origin;
   if (params->options && params->options->consumer_tab_id) {
     if (!ExtensionTabUtil::GetTabById(*(params->options->consumer_tab_id),
-                                      browser_context(), true, nullptr, nullptr,
-                                      &consumer_contents, nullptr)) {
+                                      browser_context(), true,
+                                      &consumer_contents)) {
       return RespondNow(Error(kInvalidTabIdError));
     }
 

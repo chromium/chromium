@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
@@ -14,12 +13,12 @@
 #include "base/files/file_util.h"
 #include "net/android/keystore.h"
 #include "net/cert/x509_certificate.h"
+#include "net/net_test_jni_headers/AndroidKeyStoreTestUtil_jni.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/ssl_private_key_test_util.h"
 #include "net/test/cert_test_util.h"
-#include "net/test/jni/AndroidKeyStoreTestUtil_jni.h"
 #include "net/test/test_data_directory.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
@@ -76,7 +75,7 @@ std::string TestKeyToString(const testing::TestParamInfo<TestKey>& params) {
 }  // namespace
 
 class SSLPlatformKeyAndroidTest : public testing::TestWithParam<TestKey>,
-                                  public WithScopedTaskEnvironment {};
+                                  public WithTaskEnvironment {};
 
 TEST_P(SSLPlatformKeyAndroidTest, Matches) {
   const TestKey& test_key = GetParam();
@@ -94,12 +93,9 @@ TEST_P(SSLPlatformKeyAndroidTest, Matches) {
   scoped_refptr<SSLPrivateKey> key = WrapJavaPrivateKey(cert.get(), java_key);
   ASSERT_TRUE(key);
 
-  // All Android keys are expected to have the default preferences.
-  bool supports_pss = base::android::BuildInfo::GetInstance()->sdk_int() >=
-                      base::android::SDK_VERSION_NOUGAT;
-  EXPECT_EQ(
-      SSLPrivateKey::DefaultAlgorithmPreferences(test_key.type, supports_pss),
-      key->GetAlgorithmPreferences());
+  EXPECT_EQ(SSLPrivateKey::DefaultAlgorithmPreferences(test_key.type,
+                                                       true /* supports_pss */),
+            key->GetAlgorithmPreferences());
 
   TestSSLPrivateKeyMatches(key.get(), key_bytes);
 }

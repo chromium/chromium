@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/xml/document_xml_tree_viewer.h"
 
+#include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
@@ -18,8 +19,9 @@ namespace blink {
 
 void TransformDocumentToXMLTreeView(Document& document) {
   String script_string =
-      GetDataResourceAsASCIIString("DocumentXMLTreeViewer.js");
-  String css_string = GetDataResourceAsASCIIString("DocumentXMLTreeViewer.css");
+      UncompressResourceAsASCIIString(IDR_DOCUMENTXMLTREEVIEWER_JS);
+  String css_string =
+      UncompressResourceAsASCIIString(IDR_DOCUMENTXMLTREEVIEWER_CSS);
 
   v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
 

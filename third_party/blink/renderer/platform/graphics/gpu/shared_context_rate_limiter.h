@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
 namespace blink {
@@ -40,14 +40,12 @@ class SharedContextRateLimiter final {
   USING_FAST_MALLOC(SharedContextRateLimiter);
 
  public:
-  static std::unique_ptr<SharedContextRateLimiter> Create(
-      unsigned max_pending_ticks);
+  explicit SharedContextRateLimiter(unsigned max_pending_ticks);
+
   void Tick();
   void Reset();
 
  private:
-  SharedContextRateLimiter(unsigned max_pending_ticks);
-
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider_;
   Deque<GLuint> queries_;
   unsigned max_pending_ticks_;

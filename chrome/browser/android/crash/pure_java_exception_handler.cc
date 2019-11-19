@@ -4,7 +4,7 @@
 
 #include "chrome/browser/android/crash/pure_java_exception_handler.h"
 
-#include "jni/PureJavaExceptionHandler_jni.h"
+#include "chrome/android/chrome_jni_headers/PureJavaExceptionHandler_jni.h"
 
 void UninstallPureJavaExceptionHandler() {
   Java_PureJavaExceptionHandler_uninstallHandler(

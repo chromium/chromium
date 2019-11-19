@@ -60,8 +60,7 @@ WebrtcVideoRendererAdapter::WebrtcVideoRendererAdapter(
     VideoRenderer* video_renderer)
     : label_(label),
       video_renderer_(video_renderer),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      weak_factory_(this) {}
+      task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
 WebrtcVideoRendererAdapter::~WebrtcVideoRendererAdapter() {
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -176,8 +175,9 @@ void WebrtcVideoRendererAdapter::HandleFrameOnMainThread(
       video_renderer_->GetFrameConsumer()->AllocateFrame(
           webrtc::DesktopSize(frame->width(), frame->height()));
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::Bind(&ConvertYuvToRgb, base::Passed(&frame),
                  base::Passed(&rgb_frame),
                  video_renderer_->GetFrameConsumer()->GetPixelFormat()),

@@ -39,17 +39,21 @@ class InstallableAmbientBadgeInfoBarDelegate
                      base::WeakPtr<Client> weak_client,
                      const base::string16& app_name,
                      const SkBitmap& primary_icon,
+                     const bool is_primary_icon_maskable,
+
                      const GURL& start_url);
 
   void AddToHomescreen();
   const base::string16 GetMessageText() const;
   const SkBitmap& GetPrimaryIcon() const;
+  bool GetIsPrimaryIconMaskable() const;
   const GURL& GetUrl() const { return start_url_; }
 
  private:
   InstallableAmbientBadgeInfoBarDelegate(base::WeakPtr<Client> weak_client,
                                          const base::string16& app_name,
                                          const SkBitmap& primary_icon,
+                                         const bool is_primary_icon_maskable,
                                          const GURL& start_url);
 
   // InfoBarDelegate overrides:
@@ -59,6 +63,7 @@ class InstallableAmbientBadgeInfoBarDelegate
   base::WeakPtr<Client> weak_client_;
   const base::string16 app_name_;
   const SkBitmap primary_icon_;
+  const bool is_primary_icon_maskable_;
   const GURL& start_url_;
 
   DISALLOW_COPY_AND_ASSIGN(InstallableAmbientBadgeInfoBarDelegate);

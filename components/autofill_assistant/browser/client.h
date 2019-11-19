@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/autofill_assistant/browser/device_context.h"
 #include "components/autofill_assistant/browser/metrics.h"
 
 namespace autofill {
@@ -14,8 +15,8 @@ class PersonalDataManager;
 }  // namespace autofill
 
 namespace autofill_assistant {
-class UiController;
 class AccessTokenFetcher;
+class WebsiteLoginFetcher;
 
 // A client interface that needs to be supplied to the controller by the
 // embedder.
@@ -23,10 +24,13 @@ class Client {
  public:
   virtual ~Client() = default;
 
-  // Show the UI, creates one if necessary.
-  virtual void ShowUI() = 0;
+  // Attaches the controller to the UI.
+  //
+  // This method does whatever is necessary to guarantee that, at the end of the
+  // call, there is a Controller associated with a UI.
+  virtual void AttachUI() = 0;
 
-  // Destroys the UI, but keep the controller, if any exists.
+  // Destroys the UI immediately.
   virtual void DestroyUI() = 0;
 
   // Returns the API key to be used for requests to the backend.
@@ -42,17 +46,20 @@ class Client {
   // Returns the current active personal data manager.
   virtual autofill::PersonalDataManager* GetPersonalDataManager() = 0;
 
+  // Returns the currently active login fetcher.
+  virtual WebsiteLoginFetcher* GetWebsiteLoginFetcher() = 0;
+
   // Returns the server URL to be used for requests to the backend.
   virtual std::string GetServerUrl() = 0;
-
-  // Returns a UiController.
-  virtual UiController* GetUiController() = 0;
 
   // Returns the locale.
   virtual std::string GetLocale() = 0;
 
   // Returns the country code.
   virtual std::string GetCountryCode() = 0;
+
+  // Returns details about the device.
+  virtual DeviceContext GetDeviceContext() = 0;
 
   // Stops autofill assistant for the current WebContents, both controller and
   // UI.

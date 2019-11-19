@@ -61,6 +61,7 @@ TerminationStatus GetTerminationStatus(ProcessHandle handle, int* exit_code) {
 
   *exit_code = tmp_exit_code;
 
+  // clang-format off
   switch (tmp_exit_code) {
     case win::kNormalTerminationExitCode:
       return TERMINATION_STATUS_NORMAL_TERMINATION;
@@ -74,10 +75,15 @@ TerminationStatus GetTerminationStatus(ProcessHandle handle, int* exit_code) {
                                             // object memory limits.
     case win::kOomExceptionCode:            // Ran out of memory.
       return TERMINATION_STATUS_OOM;
+    // This exit code means the process failed an OS integrity check.
+    // This is tested in ProcessMitigationsTest.* in sandbox.
+    case win::kStatusInvalidImageHashExitCode:
+      return TERMINATION_STATUS_INTEGRITY_FAILURE;
     default:
       // All other exit codes indicate crashes.
       return TERMINATION_STATUS_PROCESS_CRASHED;
   }
+  // clang-format on
 }
 
 bool WaitForProcessesToExit(const FilePath::StringType& executable_name,

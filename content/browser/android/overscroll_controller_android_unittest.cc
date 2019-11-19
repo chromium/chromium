@@ -43,13 +43,11 @@ class MockCompositor : public WindowAndroidCompositor {
   MOCK_METHOD0(GetFrameSinkId, viz::FrameSinkId());
   void AddChildFrameSink(const viz::FrameSinkId& frame_sink_id) override {}
   void RemoveChildFrameSink(const viz::FrameSinkId& frame_sink_id) override {}
-  std::unique_ptr<ui::CompositorLock> GetCompositorLock(
-      ui::CompositorLockClient* client,
-      base::TimeDelta timeout) override {
-    return nullptr;
-  }
   bool IsDrawingFirstVisibleFrame() const override { return false; }
   void SetVSyncPaused(bool paused) override {}
+  void OnUpdateRefreshRate(float refresh_rate) override {}
+  void OnUpdateSupportedRefreshRates(
+      const std::vector<float>& supported_refresh_rates) override {}
 };
 
 class MockGlowClient : public OverscrollGlowClient {

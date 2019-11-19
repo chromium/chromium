@@ -15,8 +15,6 @@ namespace blink {
 class LocalFrameView;
 class Node;
 class Page;
-class GraphicsLayer;
-class PaintLayer;
 class RootFrameViewport;
 class ScrollStateCallback;
 class ScrollableArea;
@@ -31,15 +29,9 @@ class ViewportScrollCallback;
 class CORE_EXPORT TopDocumentRootScrollerController
     : public GarbageCollected<TopDocumentRootScrollerController> {
  public:
-  static TopDocumentRootScrollerController* Create(Page&);
-
-  TopDocumentRootScrollerController(Page&);
+  explicit TopDocumentRootScrollerController(Page&);
 
   void Trace(blink::Visitor*);
-
-  // This class needs to be informed of changes to compositing so that it can
-  // update the compositor when the effective root scroller changes.
-  void DidUpdateCompositing(const LocalFrameView&);
 
   // PaintLayerScrollableAreas need to notify this class when they're being
   // disposed so that we can remove them as the root scroller.
@@ -57,14 +49,6 @@ class CORE_EXPORT TopDocumentRootScrollerController
   // apply scroll. crbug.com/623079.
   bool IsViewportScrollCallback(const ScrollStateCallback*) const;
 
-  // Returns the GraphicsLayer for the global root scroller.
-  GraphicsLayer* RootScrollerLayer() const;
-
-  // Returns the GraphicsLayer for the global root scroll container.
-  GraphicsLayer* RootContainerLayer() const;
-
-  PaintLayer* RootScrollerPaintLayer() const;
-
   // Returns the Node that's the global root scroller.  See README.md for the
   // difference between this and the root scroller types in
   // RootScrollerController.
@@ -75,21 +59,18 @@ class CORE_EXPORT TopDocumentRootScrollerController
 
   void DidResizeViewport();
 
-  // Returns the ScrollableArea associated with the globalRootScroller(). Note,
-  // this isn't necessarily the PLSA belonging to the root scroller Node's
-  // LayoutBox.  If the root scroller is the documentElement then we use the
-  // LocalFrameView (or LayoutView if root-layer-scrolls).
+  // Returns the ScrollableArea associated with the globalRootScroller().
   ScrollableArea* RootScrollerArea() const;
 
-  // Returns the size we should use for the root scroller, accounting for top
-  // controls adjustment and using the root LocalFrameView.
+  // Returns the size we should use for the root scroller, accounting for
+  // browser controls adjustment and using the root LocalFrameView.
   IntSize RootScrollerVisibleArea() const;
 
  private:
-  // Calculates the Node that should be the globalRootScroller. On a simple
-  // page, this will simply the root frame's effectiveRootScroller but if the
-  // root scroller is set to an iframe, this will then descend into the iframe
-  // to find its effective root scroller.
+  // Calculates the Node that should be the global root scroller. On a simple
+  // page, this will be the root frame's effective root scroller. If the
+  // effective root scroller is an iframe, this will then recursively descend
+  // into the iframe to find its effective root scroller.
   Node* FindGlobalRootScroller();
 
   // Should be called to set a new node as the global root scroller and that
@@ -97,19 +78,19 @@ class CORE_EXPORT TopDocumentRootScrollerController
   void UpdateGlobalRootScroller(Node* new_global_root_scroller);
 
   // Updates the is_global_root_scroller bits in all the necessary places when
-  // the global root scsroller changes.
+  // the global root scroller changes.
   void UpdateCachedBits(Node* old_global, Node* new_global);
 
   Document* TopDocument() const;
 
   // The apply-scroll callback that moves browser controls and produces
   // overscroll effects. This class makes sure this callback is set on the
-  // appropriate root scroller element.
+  // global root scroller element.
   Member<ViewportScrollCallback> viewport_apply_scroll_;
 
   // The page level root scroller. i.e. The actual node for which scrolling
   // should move browser controls and produce overscroll glow. Once an
-  // m_viewportApplyScroll has been created, it will always be set on this
+  // |viewport_apply_scroll_| has been created, it will always be set on this
   // Node.
   WeakMember<Node> global_root_scroller_;
 

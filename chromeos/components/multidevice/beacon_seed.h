@@ -5,12 +5,14 @@
 #ifndef CHROMEOS_COMPONENTS_MULTIDEVICE_BEACON_SEED_H_
 #define CHROMEOS_COMPONENTS_MULTIDEVICE_BEACON_SEED_H_
 
+#include <google/protobuf/repeated_field.h>
 #include <ostream>
 #include <string>
 #include <vector>
 
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
+#include "chromeos/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
 
 namespace chromeos {
 
@@ -44,10 +46,18 @@ class BeaconSeed {
 
 BeaconSeed FromCryptAuthSeed(cryptauth::BeaconSeed cryptauth_seed);
 cryptauth::BeaconSeed ToCryptAuthSeed(BeaconSeed multidevice_seed);
+
+BeaconSeed FromCryptAuthV2Seed(cryptauthv2::BeaconSeed cryptauth_seed);
+cryptauthv2::BeaconSeed ToCryptAuthV2Seed(BeaconSeed multidevice_seed);
+
 std::vector<cryptauth::BeaconSeed> ToCryptAuthSeedList(
     const std::vector<BeaconSeed>& cryptauth_seed_list);
 std::vector<BeaconSeed> FromCryptAuthSeedList(
     const std::vector<cryptauth::BeaconSeed>& cryptauth_seed_list);
+
+std::vector<BeaconSeed> FromCryptAuthV2SeedRepeatedPtrField(
+    const google::protobuf::RepeatedPtrField<cryptauthv2::BeaconSeed>&
+        cryptauth_seed_list);
 
 std::ostream& operator<<(std::ostream& stream, const BeaconSeed& beacon_seed);
 

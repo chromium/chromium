@@ -93,33 +93,35 @@ void UserScriptSet::GetInjections(
   }
 }
 
-bool UserScriptSet::UpdateUserScripts(base::SharedMemoryHandle shared_memory,
-                                      const std::set<HostID>& changed_hosts,
-                                      bool whitelisted_only) {
+bool UserScriptSet::UpdateUserScripts(
+    base::ReadOnlySharedMemoryRegion shared_memory,
+    const std::set<HostID>& changed_hosts,
+    bool whitelisted_only) {
   bool only_inject_incognito =
       ExtensionsRendererClient::Get()->IsIncognitoProcess();
 
-  // Create the shared memory object (read only).
-  shared_memory_.reset(new base::SharedMemory(shared_memory, true));
-  if (!shared_memory_.get())
+  // Create the shared memory mapping.
+  shared_memory_mapping_ = shared_memory.Map();
+  if (!shared_memory.IsValid())
     return false;
 
   // First get the size of the memory block.
-  if (!shared_memory_->Map(sizeof(base::Pickle::Header)))
+  const base::Pickle::Header* pickle_header =
+      shared_memory_mapping_.GetMemoryAs<base::Pickle::Header>();
+  if (!pickle_header)
     return false;
-  base::Pickle::Header* pickle_header =
-      static_cast<base::Pickle::Header*>(shared_memory_->memory());
 
-  // Now map in the rest of the block.
-  int pickle_size = sizeof(base::Pickle::Header) + pickle_header->payload_size;
-  shared_memory_->Unmap();
-  if (!shared_memory_->Map(pickle_size))
-    return false;
+  // Now read in the rest of the block.
+  size_t pickle_size =
+      sizeof(base::Pickle::Header) + pickle_header->payload_size;
 
   // Unpickle scripts.
   uint32_t num_scripts = 0;
-  base::Pickle pickle(static_cast<char*>(shared_memory_->memory()),
-                      pickle_size);
+  auto memory = shared_memory_mapping_.GetMemoryAsSpan<char>(pickle_size);
+  if (!memory.size())
+    return false;
+
+  base::Pickle pickle(memory.data(), pickle_size);
   base::PickleIterator iter(pickle);
   base::debug::Alias(&pickle_size);
   CHECK(iter.ReadUInt32(&num_scripts));

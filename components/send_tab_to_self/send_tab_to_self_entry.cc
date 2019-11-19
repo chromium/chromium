@@ -30,21 +30,29 @@ base::Time ProtoTimeToTime(int64_t proto_t) {
 
 }  // namespace
 
-SendTabToSelfEntry::SendTabToSelfEntry(const std::string& guid,
-                                       const GURL& url,
-                                       const std::string& title,
-                                       base::Time shared_time,
-                                       base::Time original_navigation_time,
-                                       const std::string& device_name)
+SendTabToSelfEntry::SendTabToSelfEntry(
+    const std::string& guid,
+    const GURL& url,
+    const std::string& title,
+    base::Time shared_time,
+    base::Time original_navigation_time,
+    const std::string& device_name,
+    const std::string& target_device_sync_cache_guid)
     : guid_(guid),
       url_(url),
       title_(title),
       device_name_(device_name),
+      target_device_sync_cache_guid_(target_device_sync_cache_guid),
       shared_time_(shared_time),
       original_navigation_time_(original_navigation_time),
-      notification_dismissed_(false) {
+      notification_dismissed_(false),
+      opened_(false) {
   DCHECK(!guid_.empty());
   DCHECK(url_.is_valid());
+  DCHECK(base::IsStringUTF8(guid_));
+  DCHECK(base::IsStringUTF8(title_));
+  DCHECK(base::IsStringUTF8(target_device_sync_cache_guid_));
+  DCHECK(base::IsStringUTF8(device_name_));
 }
 
 SendTabToSelfEntry::~SendTabToSelfEntry() {}
@@ -73,6 +81,18 @@ const std::string& SendTabToSelfEntry::GetDeviceName() const {
   return device_name_;
 }
 
+const std::string& SendTabToSelfEntry::GetTargetDeviceSyncCacheGuid() const {
+  return target_device_sync_cache_guid_;
+}
+
+bool SendTabToSelfEntry::IsOpened() const {
+  return opened_;
+}
+
+void SendTabToSelfEntry::MarkOpened() {
+  opened_ = true;
+}
+
 void SendTabToSelfEntry::SetNotificationDismissed(bool notification_dismissed) {
   notification_dismissed_ = notification_dismissed;
 }
@@ -92,8 +112,9 @@ SendTabToSelfLocal SendTabToSelfEntry::AsLocalProto() const {
   pb_entry->set_navigation_time_usec(
       TimeToProtoTime(GetOriginalNavigationTime()));
   pb_entry->set_device_name(GetDeviceName());
-
-  local_entry.set_notification_dismissed(GetNotificationDismissed());
+  pb_entry->set_target_device_sync_cache_guid(GetTargetDeviceSyncCacheGuid());
+  pb_entry->set_opened(IsOpened());
+  pb_entry->set_notification_dismissed(GetNotificationDismissed());
 
   return local_entry;
 }
@@ -102,10 +123,15 @@ std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromProto(
     const sync_pb::SendTabToSelfSpecifics& pb_entry,
     base::Time now) {
   std::string guid(pb_entry.guid());
-  DCHECK(!guid.empty());
+  if (guid.empty()) {
+    return nullptr;
+  }
 
   GURL url(pb_entry.url());
-  DCHECK(url.is_valid());
+
+  if (!url.is_valid()) {
+    return nullptr;
+  }
 
   base::Time shared_time = ProtoTimeToTime(pb_entry.shared_time_usec());
   if (shared_time > now) {
@@ -117,18 +143,44 @@ std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromProto(
     navigation_time = ProtoTimeToTime(pb_entry.navigation_time_usec());
   }
 
-  return std::make_unique<SendTabToSelfEntry>(guid, url, pb_entry.title(),
-                                              shared_time, navigation_time,
-                                              pb_entry.device_name());
+  // Protobuf parsing enforces utf8 encoding for all strings.
+  auto entry = std::make_unique<SendTabToSelfEntry>(
+      guid, url, pb_entry.title(), shared_time, navigation_time,
+      pb_entry.device_name(), pb_entry.target_device_sync_cache_guid());
+
+  if (pb_entry.opened()) {
+    entry->MarkOpened();
+  }
+  if (pb_entry.notification_dismissed()) {
+    entry->SetNotificationDismissed(true);
+  }
+
+  return entry;
 }
 
 std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromLocalProto(
     const SendTabToSelfLocal& local_entry,
     base::Time now) {
-  std::unique_ptr<SendTabToSelfEntry> to_return =
-      FromProto(local_entry.specifics(), now);
-  to_return->SetNotificationDismissed(local_entry.notification_dismissed());
-  return to_return;
+  // No fields are currently read from the local proto.
+  return FromProto(local_entry.specifics(), now);
+}
+
+bool SendTabToSelfEntry::IsExpired(base::Time current_time) const {
+  return (current_time.ToDeltaSinceWindowsEpoch() -
+              GetSharedTime().ToDeltaSinceWindowsEpoch() >=
+          kExpiryTime);
+}
+
+std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromRequiredFields(
+    const std::string& guid,
+    const GURL& url,
+    const std::string& target_device_sync_cache_guid) {
+  if (guid.empty() || !url.is_valid()) {
+    return nullptr;
+  }
+  return std::make_unique<SendTabToSelfEntry>(guid, url, "", base::Time(),
+                                              base::Time(), "",
+                                              target_device_sync_cache_guid);
 }
 
 }  // namespace send_tab_to_self

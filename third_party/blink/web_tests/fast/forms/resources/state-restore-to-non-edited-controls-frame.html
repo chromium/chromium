@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<body>
+<script>
+function makeForm(buttonValue, hiddenValue, imageValue, resetValue, submitValue,
+    textValue0, textValue1, textValue2, textValue3, textAreaValue) {
+  document.write('<form action="about:blank" id=form1>'
+      + '<input name=button id=button type=button value="' + buttonValue + '">'
+      + '<input name=hidden id=hidden type=hidden value="' + hiddenValue + '">'
+      + '<input name=image id=image type=image value="' + imageValue + '">'
+      + '<input name=reset id=reset type=reset value="' + resetValue + '">'
+      + '<input name=submit1 id=submit1 type=submit value="' + submitValue + '">'
+      + '<input name=text0 id=text0 type=text value="' + textValue0 + '">'
+      + '<input name=text1 id=text1 type=text value="' + textValue1 + '">'
+      + '<input name=text2 id=text2 type=text value="' + textValue2 + '">'
+      + '<input name=text3 id=text3 type=text value="' + textValue3 + '">'
+      + '<textarea name=textarea id=textarea>' + textAreaValue + '</textarea>'
+      + '</form>');
+}
+
+if (!parent.isSecondVisit) {
+  makeForm('1', '1', '1', '1', '1', '1', '1', '1', '1', '1');
+} else {
+  makeForm('2', '2', '2', '2', '2', '2', '2', '2', '2', '2');
+  // A user edits #text3.
+  document.querySelector('#text3').focus();
+  document.querySelector('#text3').value = '';
+  eventSender.keyDown('z');
+}
+</script>
+</body>

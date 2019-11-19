@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/ResizeObserver/#resize-observer-callback
+// https://drafts.csswg.org/resize-observer-1/#resize-observer-callback
 
 callback ResizeObserverCallback = void (sequence<ResizeObserverEntry> entries, ResizeObserver observer);
 
-// https://wicg.github.io/ResizeObserver/#resize-observer-interface
+// https://drafts.csswg.org/resize-observer-1/#resize-observer-interface
 
 [
+    Exposed=Window,
     ActiveScriptWrappable,
     Constructor(ResizeObserverCallback callback),
     MeasureAs=ResizeObserver_Constructor,

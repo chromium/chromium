@@ -5,8 +5,9 @@
 package org.chromium.chrome.browser.widget;
 
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /** The class to call back to after thumbnail has been generated */
 public interface ThumbnailGeneratorCallback {

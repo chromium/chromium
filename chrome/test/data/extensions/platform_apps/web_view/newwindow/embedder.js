@@ -570,6 +570,33 @@ function testNewWindowWebRequestRemoveElement() {
   embedder.setUpNewWindowRequest_(webview, 'guest.html', '', testName);
 }
 
+function testNewWindowAndUpdateOpener() {
+  var testName = 'testNewWindowAndUpdateOpener';
+  var webview = embedder.setUpGuest_('foobar');
+
+  // Convert window.open requests into new <webview> tags.
+  var onNewWindow = function(e) {
+    chrome.test.log('Embedder notified on newwindow');
+    embedder.assertCorrectEvent_(e, '');
+
+    var newwebview = document.createElement('webview');
+    document.querySelector('#webview-tag-container').appendChild(newwebview);
+    try {
+      e.window.attach(newwebview);
+    } catch (e) {
+      embedder.test.fail();
+    }
+
+    // Exit after the first opened window is attached.  The rest of the test is
+    // implemented on the C++ side.
+    embedder.test.succeed();
+  };
+  webview.addEventListener('newwindow', onNewWindow);
+
+  // Load a new window with the given name.
+  embedder.setUpNewWindowRequest_(webview, 'guest.html', '', testName);
+}
+
 embedder.test.testList = {
   'testNewWindowAttachAfterOpenerDestroyed':
       testNewWindowAttachAfterOpenerDestroyed,
@@ -589,7 +616,8 @@ embedder.test.testList = {
   'testNewWindowWebRequestCloseWindow': testNewWindowWebRequestCloseWindow,
   'testNewWindowWebRequestRemoveElement': testNewWindowWebRequestRemoveElement,
   'testNewWindowWebViewNameTakesPrecedence':
-      testNewWindowWebViewNameTakesPrecedence
+      testNewWindowWebViewNameTakesPrecedence,
+  'testNewWindowAndUpdateOpener': testNewWindowAndUpdateOpener
 };
 
 onload = function() {

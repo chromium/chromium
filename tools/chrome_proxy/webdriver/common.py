@@ -25,6 +25,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+# Pretty printer for debug output.
+def PrettyPrintJSON(obj):
+  return json.dumps(obj, indent=2)
+
 # These network condition values are used in SetNetworkConnection()
 NETWORKS = {
     '4G': {
@@ -76,6 +80,10 @@ def ParseFlags():
   parser.add_argument('--via_header_value',
     default='1.1 Chrome-Compression-Proxy', help='What the via should match to '
     'be considered valid')
+  parser.add_argument('--aceh_header_value',
+    default='Chrome-Proxy,Chrome-Proxy-Content-Transform,Via', help='Comma '
+    'separated list of values that should be in the '
+    'Access-Control-Expose-Headers header.')
   parser.add_argument('--android', help='If given, attempts to run the test on '
     'Android via adb. Ignores usage of --chrome_exec', action='store_true')
   parser.add_argument('--android_package',
@@ -111,6 +119,9 @@ def ParseFlags():
   parser.add_argument('--chrome_start_time', type=int, default=0, help='The '
     'number of attempts to check if Chrome has fetched a proxy client config '
     'before starting the test. Each check takes about one second.')
+  parser.add_argument('--ignore_logging_prefs_w3c', action='store_true',
+    help='If given, use the loggingPrefs capability instead of the W3C '
+    'standard goog:loggingPrefs capability.')
   return parser.parse_args(sys.argv[1:])
 
 def GetLogger(name='common'):
@@ -197,12 +208,18 @@ class TestDriver:
     _emulation_server: A reference to the emulation server being used
     _emulation_server_port: If this is not set to -1, the emulation server is
       being used for the test and is available on this port
+    _enable_features: A string set of features to enable
+    _disable_features: A string set of features to disable
   """
 
   def __init__(self, control_network_connection=False):
     self._flags = ParseFlags()
     self._driver = None
     self._chrome_args = set()
+    # By default use the default_integration policy. It is the same as the
+    # default policy except that it disables GFE caching to make sure we are
+    # running the tests against the current server version.
+    self._experiment = 'default_integration'
     self._url = ''
     self._logger = GetLogger(name='TestDriver')
     self._has_logs = False
@@ -211,6 +228,12 @@ class TestDriver:
     self._network_connection = None
     self._emulation_server = None
     self._emulation_server_port = -1
+    self._enable_features = set()
+    self._disable_features = set()
+    # By default enable the NetworkService and DRPWithNetworkService. Individual
+    # tests may override this behavior.
+    self.EnableChromeFeature('NetworkService')
+    self.EnableChromeFeature('DataReductionProxyEnabledWithNetworkService')
 
   def __enter__(self):
     return self
@@ -247,6 +270,10 @@ class TestDriver:
     a flag given in the code. In that case, check by the flag whether to
     override the argument.
     """
+    # Set the Data Reduction Proxy experiment.
+    if self._experiment is not None:
+      self._chrome_args.add('--data-reduction-proxy-experiment=' +
+        self._experiment)
     def GetDictKey(argument):
       return argument.split('=', 1)[0]
     if self._flags.browser_args and len(self._flags.browser_args) > 0:
@@ -258,9 +285,9 @@ class TestDriver:
       for override_arg in shlex.split(self._flags.browser_args):
         arg_key = GetDictKey(override_arg)
         if (arg_key in original_args
-            and original_args[arg_key] in self._chrome_args):
-          self._chrome_args.remove(original_args[arg_key])
-          self._logger.info('Removed Chrome flag. %s', original_args[arg_key])
+              and original_args[arg_key] in self._chrome_args):
+            self._chrome_args.remove(original_args[arg_key])
+            self._logger.info('Removed Chrome flag. %s', original_args[arg_key])
         self._chrome_args.add(override_arg)
         self._logger.info('Added Chrome flag. %s', override_arg)
     # Always add the flag that allows histograms to be queried in javascript.
@@ -279,10 +306,15 @@ class TestDriver:
         # Forward the Android port to the host machine.
         address = 'tcp:%d' % self._emulation_server_port
         _RunAdbCmd(['reverse', address, address])
-    capabilities = {
-      'loggingPrefs': {'performance': 'INFO'},
-    }
+
+    capabilities = {}
+    if self._flags.ignore_logging_prefs_w3c:
+      capabilities = {'loggingPrefs': {'performance': 'INFO'}}
+    else:
+      capabilities = {'goog:loggingPrefs': {'performance': 'INFO'}}
+
     chrome_options = Options()
+
     if self._control_network_connection:
       capabilities.update({
         'networkConnectionEnabled': True,
@@ -290,11 +322,19 @@ class TestDriver:
       })
       if not self._flags.android:
         chrome_options.add_experimental_option('mobileEmulation',
-          {'deviceName': 'Google Nexus 5'})
+          {'deviceName': 'Pixel 2'})
+
+    if len(self._enable_features) > 0:
+      self._chrome_args.add(
+        '--enable-features=%s' % ','.join(self._enable_features))
+    if len(self._disable_features) > 0:
+      self._chrome_args.add(
+        '--disable-features=%s' % ','.join(self._disable_features))
     for arg in self._chrome_args:
       chrome_options.add_argument(arg)
     self._logger.info('Starting Chrome with these flags: %s',
       str(self._chrome_args))
+
     if self._flags.android:
       chrome_options.add_experimental_option('androidPackage',
         self._flags.android_package)
@@ -303,8 +343,10 @@ class TestDriver:
       chrome_options.binary_location = self._flags.chrome_exec
       self._logger.info('Using the Chrome binary at this path: %s',
         self._flags.chrome_exec)
+
     self._logger.debug('ChromeOptions will be parsed into these capabilities: '
-      '%s', json.dumps(chrome_options.to_capabilities()))
+      '%s', PrettyPrintJSON(chrome_options.to_capabilities()))
+
     driver = webdriver.Chrome(executable_path=self._flags.chrome_driver,
       desired_capabilities=capabilities, chrome_options=chrome_options)
     driver.command_executor._commands.update({
@@ -313,9 +355,11 @@ class TestDriver:
       'setNetworkConditions':
         ('POST', '/session/$sessionId/chromium/network_conditions')})
     self._driver = driver
+
     if self._control_network_connection:
       # Set network connection if it was called before LoadURL()
       self.SetNetworkConnection(self._network_connection)
+
     self.SleepUntilHistogramHasEntry(
       'DataReductionProxy.ConfigService.FetchResponseCode',
       sleep_intervals=self._flags.chrome_start_time)
@@ -326,6 +370,14 @@ class TestDriver:
     self._logger.debug('Stopping ChromeDriver')
     self._driver.quit()
     self._driver = None
+
+  def SetExperiment(self, exp):
+    """Sets the Data Reduction Proxy experiment to use.
+
+    Args:
+      exp: a string with the experiment name.
+    """
+    self._experiment = exp
 
   def AddChromeArgs(self, args):
     """Adds multiple arguments that will be passed to Chromium at start.
@@ -342,8 +394,35 @@ class TestDriver:
     Args:
       arg: a string argument to pass to Chrome at start
     """
+    if '--enable-features' in arg:
+      raise Exception('AddChromeArg("--enable-features=Foo" is not supported. '
+        'Please use EnableChromeFeature("Foo") instead.')
+    if '--disable-features' in arg:
+      raise Exception('AddChromeArg("--disable-features=Foo" is not supported. '
+        'Please use DisableChromeFeature("Foo") instead.')
+
     self._chrome_args.add(arg)
     self._logger.debug('Adding Chrome arg: %s', arg)
+
+  def EnableChromeFeature(self, feature):
+    """Adds a single feature flag to add to `--enable-features`.
+
+    Args:
+      feature: the Chrome feature to enable
+    """
+    self._enable_features.add(feature)
+    if feature in self._disable_features:
+      self._disable_features.remove(feature)
+
+  def DisableChromeFeature(self, feature):
+    """Adds a single feature flag to add to `--disable-features`.
+
+    Args:
+      feature: the Chrome feature to enable
+    """
+    self._disable_features.add(feature)
+    if feature in self._enable_features:
+      self._enable_features.remove(feature)
 
   def RemoveChromeArgs(self, args):
     """Removes multiple arguments that will no longer be passed to Chromium at
@@ -436,13 +515,26 @@ class TestDriver:
       url: The URL to navigate to.
       timeout: The time in seconds to load the page before timing out.
     """
+    # Reduce some flakiness by checking if we should ensure the proxy has fully
+    # initialized first.
+    if not self._driver:
+      self._StartDriver()
+
+    disabled_config_service = False
+    for arg in self._chrome_args:
+      if 'DataReductionProxyConfigService/Disabled' in arg:
+        disabled_config_service = True
+    if (not disabled_config_service and
+        '--enable-spdy-proxy-auth' in self._chrome_args and
+        'DataReductionProxyEnabledWithNetworkService' in self._enable_features):
+      self._driver.get('data:,')
+      self.SleepUntilHistogramHasEntry(
+        'DataReductionProxy.ConfigService.FetchResponseCode', sleep_intervals=5)
     self._url = url
     if (len(urlparse.urlparse(url).netloc) == 0 and
         len(urlparse.urlparse(url).scheme) == 0):
       self._logger.warn('Invalid URL: "%s". Did you forget to prepend '
         '"http://"? See RFC 1808 for more information', url)
-    if not self._driver:
-      self._StartDriver()
     self._driver.set_page_load_timeout(timeout)
     self._logger.debug('Set page load timeout to %f seconds', timeout)
     self._driver.get(self._url)
@@ -510,6 +602,21 @@ class TestDriver:
     Returns:
       A dictionary object containing information about the histogram.
     """
+    js_query = 'statsCollectionController.getHistogram("%s")' % histogram
+    string_response = self.ExecuteJavascriptStatement(js_query, timeout)
+    self._logger.debug('Got %s histogram=%s', histogram, string_response)
+    return json.loads(string_response)
+
+  def GetBrowserHistogram(self, histogram, timeout=30):
+    """Gets a Chrome histogram as a dictionary object from browser process.
+
+    Args:
+      histogram: the name of the histogram to fetch
+      timeout: timeout for the underlying Javascript query.
+
+    Returns:
+      A dictionary object containing information about the histogram.
+    """
     js_query = 'statsCollectionController.getBrowserHistogram("%s")' % histogram
     string_response = self.ExecuteJavascriptStatement(js_query, timeout)
     self._logger.debug('Got %s histogram=%s', histogram, string_response)
@@ -551,6 +658,7 @@ class TestDriver:
     if self._driver:
       self._StopDriver()
       # Give a moment for Chrome to close and finish writing the netlog.
+      time.sleep(5)
     if not self._net_log:
       raise Exception('GetParsedNetLog() cannot be called before UseNetLog()')
     temp_file = self._net_log
@@ -572,7 +680,8 @@ class TestDriver:
       json_file_content = json_file_content[:end] + ']}'
       return json.loads(json_file_content)
 
-  def GetPerformanceLogs(self, method_filter=r'Network\.responseReceived'):
+  def GetPerformanceLogs(self, method_filter=r'Network\.(requestWillBeSent|' +
+                                                        'responseReceived)'):
     """Returns all logged Performance events from Chrome. Raises an Exception if
     no pages have been loaded since the last time this function was called.
 
@@ -588,7 +697,7 @@ class TestDriver:
     all_messages = []
     for log in self._driver.execute('getLog', {'type': 'performance'})['value']:
       message = json.loads(log['message'])['message']
-      self._logger.debug('Got Performance log: %s', log['message'])
+      self._logger.debug('Got Performance log:\n%s', PrettyPrintJSON(message))
       if re.match(method_filter, message['method']):
         all_messages.append(message)
     self._logger.info('Got %d performance logs with filter method=%s',
@@ -603,19 +712,18 @@ class TestDriver:
 
     Args:
       histogram_name: The name of the histogram to wait for
-      sleep_intervals: The number of polling intervals, each polling cycle takes
-      no more than 6 seconds.
+      sleep_intervals: The number of polling intervals, each polling cycle is 1s
     Returns:
       Whether the histogram exists
     """
-    histogram = {}
-    while(not histogram and sleep_intervals > 0):
-      histogram = self.GetHistogram(histogram_name, 5)
-      if (not histogram):
-        time.sleep(1)
-        sleep_intervals -= 1
+    while (sleep_intervals > 0):
+      if (self.GetHistogram(histogram_name, 3) or
+          self.GetBrowserHistogram(histogram_name, 3)):
+        return True
+      time.sleep(1)
+      sleep_intervals -= 1
 
-    return bool(histogram)
+    return False
 
   def GetHTTPResponses(self, include_favicon=False, skip_domainless_pages=True,
       override_has_logs=False):
@@ -638,9 +746,13 @@ class TestDriver:
     """
     if override_has_logs:
       self._has_logs = True
-    def MakeHTTPResponse(log_dict):
-      params = log_dict['params']
-      response_dict = params['response']
+
+    all_requests = {}  # map from requestId to params
+    all_responses = [] # list of HTTPResponse
+
+    def MakeHTTPResponse(message):
+      params = message['params']
+      response_dict = params['response'] if 'response' in params else {}
       http_response_dict = {
         'response_headers': response_dict['headers'] if 'headers' in
           response_dict else {},
@@ -652,11 +764,22 @@ class TestDriver:
         'port': response_dict['remotePort'] if 'remotePort' in response_dict
           else -1,
         'status': response_dict['status'] if 'status' in response_dict else -1,
-        'request_type': params['type'] if 'type' in params else ''
+        'request_type': params['type'] if 'type' in params else '',
+        'redirect_chain': [],
       }
+      if params['requestId'] in all_requests:
+        for request in all_requests[params['requestId']][:-1]:
+          http_response_dict['redirect_chain'].append(request['request']['url'])
       return HTTPResponse(**http_response_dict)
-    all_responses = []
+
     for message in self.GetPerformanceLogs():
+      if message['method'] == 'Network.requestWillBeSent':
+        requestId = message['params']['requestId']
+        if requestId not in all_requests:
+          all_requests[requestId] = [message['params']]
+        else:
+          all_requests[requestId].append(message['params'])
+        continue
       response = MakeHTTPResponse(message)
       self._logger.debug('New HTTPResponse: %s', str(response))
       is_favicon = response.url.endswith('favicon.ico')
@@ -691,7 +814,7 @@ class HTTPResponse:
   """
 
   def __init__(self, response_headers, request_headers, url, protocol, port,
-      status, request_type):
+      status, request_type, redirect_chain):
     self._response_headers = {}
     self._request_headers = {}
     self._url = url
@@ -699,6 +822,7 @@ class HTTPResponse:
     self._port = port
     self._status = status
     self._request_type = request_type
+    self._redirect_chain = redirect_chain # empty if no redirects
     self._flags = ParseFlags()
     # Make all header names lower case.
     for name in response_headers:
@@ -707,16 +831,16 @@ class HTTPResponse:
       self._request_headers[name.lower()] = request_headers[name]
 
   def __str__(self):
-    self_dict = {
+    return PrettyPrintJSON({
       'response_headers': self._response_headers,
       'request_headers': self._request_headers,
       'url': self._url,
       'protocol': self._protocol,
       'port': self._port,
       'status': self._status,
-      'request_type': self._request_type
-    }
-    return json.dumps(self_dict, indent=2)
+      'request_type': self._request_type,
+      'redirect_chain': self._redirect_chain,
+    })
 
   @property
   def response_headers(self):
@@ -746,9 +870,13 @@ class HTTPResponse:
   def request_type(self):
     return self._request_type
 
+  @property
+  def redirect_chain(self):
+    return self._redirect_chain
+
   def ResponseHasViaHeader(self):
-    return 'via' in self._response_headers and (self._response_headers['via'] ==
-      self._flags.via_header_value)
+    return 'via' in self._response_headers and (self._flags.via_header_value in
+      [piece.strip() for piece in self._response_headers['via'].split(',')])
 
   def WasXHR(self):
     return self.request_type == 'XHR'
@@ -764,19 +892,40 @@ class IntegrationTest(unittest.TestCase):
   unittest.TestCase class.
   """
 
-  def assertHasChromeProxyViaHeader(self, http_response):
-    """Asserts that the Via header in the given HTTPResponse matches the
-    expected value as given on the command line.
+  def assertHasProxyHeaders(self, http_response):
+    """Asserts that Proxy headers are present contain the expected values
+    as provided on the command line.
+
+    The Proxy adds two headers: Via, and Access-Control-Expose-Headers.
+    This checks that both headers contain the values enumerated in both
+    --via_header_value and --aceh_header_value. Both headers are additive,
+    so there may be more values in the headers than expected.
 
     Args:
       http_response: The HTTPResponse object to check.
     """
+    # Via header check
     self.assertIn('via', http_response.response_headers)
-    expected_via_header = ParseFlags().via_header_value
-    actual_via_headers = http_response.response_headers['via'].split(',')
+    expected_via_header = ParseFlags().via_header_value.lower()
+    actual_via_headers = set(
+      [h.lower() for h in http_response.response_headers['via'].split(',')])
     self.assertIn(expected_via_header, actual_via_headers, "Via header not in "
       "response headers! Expected: %s, Actual: %s" %
       (expected_via_header, actual_via_headers))
+
+    # Access-Control-Expose-Headers header check.
+    if ParseFlags().aceh_header_value:
+      aceh = 'access-control-expose-headers'
+      self.assertIn(aceh,  http_response.response_headers)
+      expected_aceh_header = set(
+          [h.lower() for h in ParseFlags().aceh_header_value.split(',')])
+      actual_aceh_header = set(
+          [h.lower() for h in http_response.response_headers[aceh].split(',')])
+      diff = expected_aceh_header - actual_aceh_header
+      self.assertTrue(len(diff) == 0, "Access-Control-Expose-Headers missing "
+        "values (%s)! Expected: [%s], Actual: [%s]" %
+        (",".join(diff), ",".join(expected_aceh_header),
+         ",".join(actual_aceh_header)))
 
   def assertNotHasChromeProxyViaHeader(self, http_response):
     """Asserts that the Via header in the given HTTPResponse does not match the
@@ -791,6 +940,56 @@ class IntegrationTest(unittest.TestCase):
       self.assertNotIn(expected_via_header, actual_via_headers, "Via header "
         "found in response headers! Not expected: %s, Actual: %s" %
         (expected_via_header, actual_via_headers))
+
+  def determinePreviewShownViaHistogram(self, test_driver, preview_type):
+    """Determines if the preview type was shown by histogram check.
+
+    Checks both InfoBar and Android Omnibox histograms for the given type.
+
+    Args:
+      test_driver: The TestDriver instance.
+      preview_type: The preview type to check for.
+
+    Returns:
+      Whether a preview UI was displayed.
+    """
+    infobar_histogram_name = 'Previews.InfoBarAction.%s' % preview_type
+    android_histogram_name = 'Previews.OmniboxAction.%s' % preview_type
+    testing_histogram_name = 'Previews.PreviewShown.%s' % preview_type
+
+    infobar_histogram = test_driver.GetBrowserHistogram(
+      infobar_histogram_name, 5)
+    android_histogram = test_driver.GetBrowserHistogram(
+      android_histogram_name, 5)
+    testing_histogram = test_driver.GetBrowserHistogram(
+      testing_histogram_name, 5)
+
+    count = sum([
+      infobar_histogram.get('count', 0),
+      android_histogram.get('count', 0),
+      testing_histogram.get('count', 0),
+    ])
+    return count > 0
+
+  def assertPreviewShownViaHistogram(self, test_driver, preview_type):
+    """Asserts that |determinePreviewShownViaHistogram| returns true.
+
+    Args:
+      test_driver: The TestDriver instance.
+      preview_type: The preview type to check for.
+    """
+    self.assertTrue(
+      self.determinePreviewShownViaHistogram(test_driver, preview_type))
+
+  def assertPreviewNotShownViaHistogram(self, test_driver, preview_type):
+    """Asserts that |determinePreviewShownViaHistogram| returns false.
+
+    Args:
+      test_driver: The TestDriver instance.
+      preview_type: The preview type to check for.
+    """
+    self.assertFalse(
+      self.determinePreviewShownViaHistogram(test_driver, preview_type))
 
   def checkLoFiResponse(self, http_response, expected_lo_fi):
     """Asserts that if expected the response headers contain the Lo-Fi directive
@@ -809,7 +1008,7 @@ class IntegrationTest(unittest.TestCase):
     """
 
     if (expected_lo_fi) :
-      self.assertHasChromeProxyViaHeader(http_response)
+      self.assertHasProxyHeaders(http_response)
       content_length = http_response.response_headers['content-length']
       cpat_request = http_response.request_headers[
                        'chrome-proxy-accept-transform']
@@ -817,7 +1016,7 @@ class IntegrationTest(unittest.TestCase):
                         'chrome-proxy-content-transform']
       if ('empty-image' in cpct_response):
         self.assertIn('empty-image', cpat_request)
-        self.assertTrue(int(content_length) < 100)
+        self.assertLess(int(content_length), 100)
         return True;
       return False;
     else:
@@ -829,7 +1028,7 @@ class IntegrationTest(unittest.TestCase):
       self.assertNotIn('chrome-proxy-content-transform',
         http_response.response_headers)
       content_length = http_response.response_headers['content-length']
-      self.assertTrue(int(content_length) > 100)
+      self.assertGreater(int(content_length), 100)
       return False;
 
   def checkLitePageResponse(self, http_response):
@@ -843,7 +1042,7 @@ class IntegrationTest(unittest.TestCase):
       Whether the response was a Lite Page.
     """
 
-    self.assertHasChromeProxyViaHeader(http_response)
+    self.assertHasProxyHeaders(http_response)
     if ('chrome-proxy-content-transform' not in http_response.response_headers):
       return False;
     cpct_response = http_response.response_headers[

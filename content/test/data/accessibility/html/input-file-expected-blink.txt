@@ -1,3 +1,6 @@
 rootWebArea
 ++genericContainer
-++++button name='Choose File' value='No file chosen'
+++++button inputType='file' name='Choose File' value='No file chosen'
+++++++button inputType='button' name='Choose File'
+++++++++staticText name='Choose File'
+++++++++++inlineTextBox name='Choose File'

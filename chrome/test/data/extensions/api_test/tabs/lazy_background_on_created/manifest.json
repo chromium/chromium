@@ -1,0 +1,10 @@
+{
+  "name": "tabs/lazy_background_on_created",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Tests chrome.tabs.onCreated from event page.",
+  "background": {
+    "scripts": ["test.js"],
+    "persistent": false
+  }
+}

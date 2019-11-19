@@ -21,14 +21,13 @@ def _RunUmaHistogramChecks(input_api, output_api):  # pylint: disable=C0103
     finally:
         sys.path = original_sys_path
 
-    source_path = ''
     for f in input_api.AffectedFiles():
         if f.LocalPath().endswith('web_feature.mojom'):
-            source_path = f.LocalPath()
             break
     else:
         return []
 
+    source_path = 'third_party/blink/public/mojom/web_feature/web_feature.mojom'
     start_marker = '^enum WebFeature {'
     end_marker = '^kNumberOfFeatures'
     presubmit_error = update_histogram_enum.CheckPresubmitErrors(

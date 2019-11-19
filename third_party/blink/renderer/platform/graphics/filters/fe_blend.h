@@ -30,8 +30,6 @@ namespace blink {
 
 class PLATFORM_EXPORT FEBlend final : public FilterEffect {
  public:
-  static FEBlend* Create(Filter*, BlendMode);
-
   FEBlend(Filter*, BlendMode);
 
   BlendMode GetBlendMode() const { return mode_; }

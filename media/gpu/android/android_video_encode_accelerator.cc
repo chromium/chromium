@@ -229,9 +229,8 @@ void AndroidVideoEncodeAccelerator::MaybeStopIOTimer() {
   }
 }
 
-void AndroidVideoEncodeAccelerator::Encode(
-    const scoped_refptr<VideoFrame>& frame,
-    bool force_keyframe) {
+void AndroidVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
+                                           bool force_keyframe) {
   DVLOG(3) << __PRETTY_FUNCTION__ << ": " << force_keyframe;
   DCHECK(thread_checker_.CalledOnValidThread());
   RETURN_ON_FAILURE(frame->format() == PIXEL_FORMAT_I420, "Unexpected format",
@@ -251,15 +250,15 @@ void AndroidVideoEncodeAccelerator::Encode(
                     kInvalidArgumentError);
 
   pending_frames_.push(
-      std::make_tuple(frame, force_keyframe, base::Time::Now()));
+      std::make_tuple(std::move(frame), force_keyframe, base::Time::Now()));
   DoIOTask();
 }
 
 void AndroidVideoEncodeAccelerator::UseOutputBitstreamBuffer(
-    const BitstreamBuffer& buffer) {
+    BitstreamBuffer buffer) {
   DVLOG(3) << __PRETTY_FUNCTION__ << ": bitstream_buffer_id=" << buffer.id();
   DCHECK(thread_checker_.CalledOnValidThread());
-  available_bitstream_buffers_.push_back(buffer);
+  available_bitstream_buffers_.push_back(std::move(buffer));
   DoIOTask();
 }
 
@@ -422,10 +421,11 @@ void AndroidVideoEncodeAccelerator::DequeueOutput() {
   const base::TimeDelta frame_timestamp = it->second;
   frame_timestamp_map_.erase(it);
 
-  BitstreamBuffer bitstream_buffer = available_bitstream_buffers_.back();
+  BitstreamBuffer bitstream_buffer =
+      std::move(available_bitstream_buffers_.back());
   available_bitstream_buffers_.pop_back();
   auto shm = std::make_unique<UnalignedSharedMemory>(
-      bitstream_buffer.handle(), bitstream_buffer.size(), false);
+      bitstream_buffer.TakeRegion(), bitstream_buffer.size(), false);
   RETURN_ON_FAILURE(
       shm->MapAt(bitstream_buffer.offset(), bitstream_buffer.size()),
       "Failed to map SHM", kPlatformFailureError);

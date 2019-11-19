@@ -44,7 +44,7 @@ Directory* Entry::dir() const {
 }
 
 std::unique_ptr<base::DictionaryValue> Entry::ToValue(
-    Cryptographer* cryptographer) const {
+    const Cryptographer* cryptographer) const {
   auto entry_info = std::make_unique<base::DictionaryValue>();
   entry_info->SetBoolean("good", good());
   if (good()) {

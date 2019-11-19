@@ -6,10 +6,10 @@
 ++++++++++[section]
 ++++++++++++[push button] name='play' xml-roles:button
 ++++++++++++[section] name='elapsed time: 0:00'
-++++++++++++++[text] name='0:00'
+++++++++++++++[static] name='0:00'
 ++++++++++++[section] name='remaining time: / 0:00'
-++++++++++++++[text] name='/ 0:00'
-++++++++++++[slider] description='audio time scrubber' horizontal xml-roles:slider
+++++++++++++++[static] name='/ 0:00'
+++++++++++++[slider] name='audio time scrubber 0:00 / 0:00' horizontal xml-roles:slider
 ++++++++++++[section]
 ++++++++++++++[section]
 ++++++++++++++[slider] name='volume' horizontal xml-roles:slider

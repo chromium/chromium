@@ -2,20 +2,20 @@
 ++[list]
 ++++[list item]
 ++++++[static] name='1. '
-++++++[text] name='Chrome'
+++++++[static] name='Chrome'
 ++++[list item]
 ++++++[static] name='2. '
-++++++[text] name='Safari'
+++++++[static] name='Safari'
 ++++[list item]
 ++++++[static] name='3. '
-++++++[text] name='IE'
+++++++[static] name='IE'
 ++[list]
 ++++[list item]
 ++++++[static] name='10. '
-++++++[text] name='Android'
+++++++[static] name='Android'
 ++++[list item]
 ++++++[static] name='11. '
-++++++[text] name='Mac'
+++++++[static] name='Mac'
 ++++[list item]
 ++++++[static] name='12. '
-++++++[text] name='Windows'
+++++++[static] name='Windows'

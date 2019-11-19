@@ -60,9 +60,6 @@
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
-SelectionController* SelectionController::Create(LocalFrame& frame) {
-  return MakeGarbageCollected<SelectionController>(frame);
-}
 
 SelectionController::SelectionController(LocalFrame& frame)
     : frame_(&frame),
@@ -338,8 +335,8 @@ bool SelectionController::HandleSingleClick(
   // Don't restart the selection when the mouse is pressed on an
   // existing selection so we can allow for text dragging.
   if (LocalFrameView* view = frame_->View()) {
-    const LayoutPoint v_point = view->ConvertFromRootFrame(
-        FlooredIntPoint(event.Event().PositionInRootFrame()));
+    const PhysicalOffset v_point(view->ConvertFromRootFrame(
+        FlooredIntPoint(event.Event().PositionInRootFrame())));
     if (!extend_selection && this->Selection().Contains(v_point)) {
       mouse_down_was_single_click_in_selection_ = true;
       if (!event.Event().FromTouch())
@@ -475,8 +472,8 @@ static bool ShouldRespectSVGTextBoundaries(
 
 void SelectionController::UpdateSelectionForMouseDrag(
     const HitTestResult& hit_test_result,
-    const LayoutPoint& drag_start_pos,
-    const LayoutPoint& last_known_mouse_position) {
+    const PhysicalOffset& drag_start_pos,
+    const PhysicalOffset& last_known_mouse_position) {
   if (!mouse_down_may_start_select_)
     return;
 
@@ -484,9 +481,9 @@ void SelectionController::UpdateSelectionForMouseDrag(
   if (!target)
     return;
 
-  // TODO(editing-dev): Use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): Use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  frame_->GetDocument()->UpdateStyleAndLayoutIgnorePendingStylesheets();
+  frame_->GetDocument()->UpdateStyleAndLayout();
 
   const PositionWithAffinity& raw_target_position =
       Selection().SelectionHasFocus()
@@ -494,8 +491,10 @@ void SelectionController::UpdateSelectionForMouseDrag(
                 Selection().ComputeVisibleSelectionInDOMTree().Start(),
                 hit_test_result.LocalPoint(), target)
           : PositionWithAffinity();
-  VisiblePositionInFlatTree target_position = CreateVisiblePosition(
-      FromPositionInDOMTree<EditingInFlatTreeStrategy>(raw_target_position));
+  const PositionInFlatTreeWithAffinity target_position =
+      CreateVisiblePosition(
+          FromPositionInDOMTree<EditingInFlatTreeStrategy>(raw_target_position))
+          .ToPositionWithAffinity();
   // Don't modify the selection if we're not on a node.
   if (target_position.IsNull())
     return;
@@ -534,9 +533,9 @@ void SelectionController::UpdateSelectionForMouseDrag(
   }
 
   const PositionInFlatTreeWithAffinity adjusted_position =
-      AdjustPositionRespectUserSelectAll(
-          target, visible_selection.Start(), visible_selection.End(),
-          target_position.ToPositionWithAffinity());
+      AdjustPositionRespectUserSelectAll(target, visible_selection.Start(),
+                                         visible_selection.End(),
+                                         target_position);
   const SelectionInFlatTree& adjusted_selection =
       should_extend_selection
           ? ExtendSelectionAsDirectional(adjusted_position,
@@ -544,10 +543,17 @@ void SelectionController::UpdateSelectionForMouseDrag(
                                          Selection().Granularity())
           : SelectionInFlatTree::Builder().Collapse(adjusted_position).Build();
 
+  // When |adjusted_selection| is caret, it's already canonical. No need to re-
+  // canonicalize it.
+  const SelectionInFlatTree new_visible_selection =
+      adjusted_selection.IsRange()
+          ? CreateVisibleSelection(adjusted_selection).AsSelection()
+          : adjusted_selection;
+
   const bool selection_is_directional =
       should_extend_selection ? Selection().IsDirectional() : false;
   SetNonDirectionalSelectionIfNeeded(
-      adjusted_selection,
+      new_visible_selection,
       SetSelectionOptions::Builder()
           .SetGranularity(Selection().Granularity())
           .SetIsDirectional(selection_is_directional)
@@ -573,32 +579,23 @@ bool SelectionController::UpdateSelectionForMouseDownDispatchingSelectStart(
   if (!this->Selection().IsAvailable())
     return false;
 
-  // TODO(editing-dev): Use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): Use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
   const SelectionInFlatTree visible_selection =
       CreateVisibleSelection(selection).AsSelection();
 
   if (visible_selection.IsRange()) {
     selection_state_ = SelectionState::kExtendedSelection;
-    SetNonDirectionalSelectionIfNeeded(selection, set_selection_options,
+    SetNonDirectionalSelectionIfNeeded(visible_selection, set_selection_options,
                                        kDoNotAdjustEndpoints);
     return true;
   }
 
   selection_state_ = SelectionState::kPlacedCaret;
-  SetNonDirectionalSelectionIfNeeded(selection, set_selection_options,
+  SetNonDirectionalSelectionIfNeeded(visible_selection, set_selection_options,
                                      kDoNotAdjustEndpoints);
   return true;
-}
-
-static bool IsEmptyWordRange(const EphemeralRangeInFlatTree range) {
-  const String& str = PlainText(
-      range, TextIteratorBehavior::Builder()
-                 .SetEmitsObjectReplacementCharacter(
-                     HasEditableStyle(*range.StartPosition().AnchorNode()))
-                 .Build());
-  return str.SimplifyWhiteSpace().ContainsOnlyWhitespaceOrEmpty();
 }
 
 bool SelectionController::SelectClosestWordFromHitTestResult(
@@ -617,9 +614,10 @@ bool SelectionController::SelectClosestWordFromHitTestResult(
   // and isn't desirable for touch).
   HitTestResult adjusted_hit_test_result = result;
   if (select_input_event_type == SelectInputEventType::kTouch &&
-      result.GetImage())
+      result.GetImage()) {
     adjusted_hit_test_result.SetNodeAndPosition(result.InnerNode(),
-                                                LayoutPoint(0, 0));
+                                                PhysicalOffset());
+  }
 
   const PositionInFlatTreeWithAffinity pos =
       CreateVisiblePosition(
@@ -644,7 +642,17 @@ bool SelectionController::SelectClosestWordFromHitTestResult(
     // If node doesn't have text except space, tab or line break, do not
     // select that 'empty' area.
     EphemeralRangeInFlatTree range = new_selection.ComputeRange();
-    if (IsEmptyWordRange(range))
+    const String word = PlainText(
+        range, TextIteratorBehavior::Builder()
+                   .SetEmitsObjectReplacementCharacter(
+                       HasEditableStyle(*range.StartPosition().AnchorNode()))
+                   .Build());
+    if (word.length() >= 1 && word[0] == '\n') {
+      // We should not select word from end of line, e.g.
+      // "(1)|\n(2)" => "(1)^\n(|2)". See http://crbug.com/974569
+      return false;
+    }
+    if (word.SimplifyWhiteSpace().ContainsOnlyWhitespaceOrEmpty())
       return false;
 
     Element* const editable =
@@ -792,15 +800,11 @@ void SelectionController::SelectClosestWordOrLinkFromMouseEvent(
 // We should rename this function to appropriate name because
 // set_selection_options has selection directional value in few cases.
 void SelectionController::SetNonDirectionalSelectionIfNeeded(
-    const SelectionInFlatTree& passed_selection,
+    const SelectionInFlatTree& new_selection,
     const SetSelectionOptions& set_selection_options,
     EndPointsAdjustmentMode endpoints_adjustment_mode) {
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
-  // needs to be audited.  See http://crbug.com/590369 for more details.
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  DCHECK(!GetDocument().NeedsLayoutTreeUpdate());
 
-  const SelectionInFlatTree new_selection =
-      CreateVisibleSelection(passed_selection).AsSelection();
   // TODO(editing-dev): We should use |PositionWithAffinity| to pass affinity
   // to |CreateVisiblePosition()| for |original_base|.
   const PositionInFlatTree& base_position =
@@ -1012,14 +1016,15 @@ bool SelectionController::HandleMousePressEvent(
 void SelectionController::HandleMouseDraggedEvent(
     const MouseEventWithHitTestResults& event,
     const IntPoint& mouse_down_pos,
-    const LayoutPoint& drag_start_pos,
-    const LayoutPoint& last_known_mouse_position) {
+    const PhysicalOffset& drag_start_pos,
+    const PhysicalOffset& last_known_mouse_position) {
   TRACE_EVENT0("blink", "SelectionController::handleMouseDraggedEvent");
 
   if (!Selection().IsAvailable())
     return;
   if (selection_state_ != SelectionState::kExtendedSelection) {
-    HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
+    HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
+                           HitTestRequest::kRetargetForInert);
     HitTestLocation location(mouse_down_pos);
     HitTestResult result(request, location);
     frame_->GetDocument()->GetLayoutView()->HitTest(location, result);
@@ -1032,8 +1037,8 @@ void SelectionController::HandleMouseDraggedEvent(
 }
 
 void SelectionController::UpdateSelectionForMouseDrag(
-    const LayoutPoint& drag_start_pos,
-    const LayoutPoint& last_known_mouse_position) {
+    const PhysicalOffset& drag_start_pos,
+    const PhysicalOffset& last_known_mouse_position) {
   LocalFrameView* view = frame_->View();
   if (!view)
     return;
@@ -1042,7 +1047,8 @@ void SelectionController::UpdateSelectionForMouseDrag(
     return;
 
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
-                         HitTestRequest::kMove);
+                         HitTestRequest::kMove |
+                         HitTestRequest::kRetargetForInert);
   HitTestLocation location(view->ViewportToFrame(last_known_mouse_position));
   HitTestResult result(request, location);
   layout_view->HitTest(location, result);
@@ -1052,7 +1058,7 @@ void SelectionController::UpdateSelectionForMouseDrag(
 
 bool SelectionController::HandleMouseReleaseEvent(
     const MouseEventWithHitTestResults& event,
-    const LayoutPoint& drag_start_pos) {
+    const PhysicalOffset& drag_start_pos) {
   TRACE_EVENT0("blink", "SelectionController::handleMouseReleaseEvent");
 
   if (!Selection().IsAvailable())
@@ -1066,12 +1072,13 @@ bool SelectionController::HandleMouseReleaseEvent(
   // editing, place the caret.
   if (mouse_down_was_single_click_in_selection_ &&
       selection_state_ != SelectionState::kExtendedSelection &&
-      drag_start_pos == FlooredIntPoint(event.Event().PositionInRootFrame()) &&
+      drag_start_pos == PhysicalOffset(FlooredIntPoint(
+                            event.Event().PositionInRootFrame())) &&
       Selection().ComputeVisibleSelectionInDOMTreeDeprecated().IsRange() &&
       event.Event().button != WebPointerProperties::Button::kRight) {
-    // TODO(editing-dev): Use of updateStyleAndLayoutIgnorePendingStylesheets
+    // TODO(editing-dev): Use of UpdateStyleAndLayout
     // needs to be audited.  See http://crbug.com/590369 for more details.
-    frame_->GetDocument()->UpdateStyleAndLayoutIgnorePendingStylesheets();
+    frame_->GetDocument()->UpdateStyleAndLayout();
 
     SelectionInFlatTree::Builder builder;
     Node* node = event.InnerNode();
@@ -1201,7 +1208,7 @@ static bool HitTestResultIsMisspelled(const HitTestResult& result) {
 
 void SelectionController::SendContextMenuEvent(
     const MouseEventWithHitTestResults& mev,
-    const LayoutPoint& position) {
+    const PhysicalOffset& position) {
   if (!Selection().IsAvailable())
     return;
   if (Selection().Contains(position) || mev.GetScrollbar() ||
@@ -1232,16 +1239,16 @@ void SelectionController::SendContextMenuEvent(
 
 void SelectionController::PassMousePressEventToSubframe(
     const MouseEventWithHitTestResults& mev) {
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  frame_->GetDocument()->UpdateStyleAndLayoutIgnorePendingStylesheets();
+  frame_->GetDocument()->UpdateStyleAndLayout();
 
   // If we're clicking into a frame that is selected, the frame will appear
   // greyed out even though we're clicking on the selection.  This looks
   // really strange (having the whole frame be greyed out), so we deselect the
   // selection.
-  IntPoint p = frame_->View()->ConvertFromRootFrame(
-      FlooredIntPoint(mev.Event().PositionInRootFrame()));
+  PhysicalOffset p(frame_->View()->ConvertFromRootFrame(
+      FlooredIntPoint(mev.Event().PositionInRootFrame())));
   if (!Selection().Contains(p))
     return;
 

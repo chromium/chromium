@@ -4,15 +4,19 @@
 
 #include "device/fido/mac/touch_id_context.h"
 
-#import <Foundation/Foundation.h>
+#import <CoreFoundation/CoreFoundation.h>
+#import <Security/Security.h>
 
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/device_event_log/device_event_log.h"
+#include "device/fido/mac/authenticator_config.h"
 
 namespace device {
 namespace fido {
@@ -28,6 +32,44 @@ base::ScopedCFTypeRef<SecAccessControlRef> DefaultAccessControl() {
           kCFAllocatorDefault, kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
           kSecAccessControlPrivateKeyUsage | kSecAccessControlUserPresence,
           nullptr));
+}
+
+// Returns whether the current binary is signed with a keychain-access-groups
+// entitlement that contains |keychain_access_group|. This is required for the
+// TouchIdAuthenticator to access key material stored in the Touch ID secure
+// enclave.
+bool BinaryHasKeychainAccessGroupEntitlement(
+    const std::string& keychain_access_group) {
+  base::ScopedCFTypeRef<SecCodeRef> code;
+  if (SecCodeCopySelf(kSecCSDefaultFlags, code.InitializeInto()) !=
+      errSecSuccess) {
+    return false;
+  }
+  base::ScopedCFTypeRef<CFDictionaryRef> signing_info;
+  if (SecCodeCopySigningInformation(code, kSecCSDefaultFlags,
+                                    signing_info.InitializeInto()) !=
+      errSecSuccess) {
+    return false;
+  }
+  CFDictionaryRef entitlements =
+      base::mac::GetValueFromDictionary<CFDictionaryRef>(
+          signing_info, kSecCodeInfoEntitlementsDict);
+  if (!entitlements) {
+    return false;
+  }
+  CFArrayRef keychain_access_groups =
+      base::mac::GetValueFromDictionary<CFArrayRef>(
+          entitlements,
+          base::ScopedCFTypeRef<CFStringRef>(
+              base::SysUTF8ToCFStringRef("keychain-access-groups")));
+  if (!keychain_access_groups) {
+    return false;
+  }
+  return CFArrayContainsValue(
+      keychain_access_groups,
+      CFRangeMake(0, CFArrayGetCount(keychain_access_groups)),
+      base::ScopedCFTypeRef<CFStringRef>(
+          base::SysUTF8ToCFStringRef(keychain_access_group)));
 }
 }  // namespace
 
@@ -47,7 +89,13 @@ std::unique_ptr<TouchIdContext> TouchIdContext::Create() {
 }
 
 // static
-bool TouchIdContext::TouchIdAvailableImpl() {
+bool TouchIdContext::TouchIdAvailableImpl(const AuthenticatorConfig& config) {
+  if (!BinaryHasKeychainAccessGroupEntitlement(config.keychain_access_group)) {
+    FIDO_LOG(ERROR) << "Touch ID unavailable because keychain-access-group "
+                       "entitlement is missing or incorrect";
+    return false;
+  }
+
   base::scoped_nsobject<LAContext> context([[LAContext alloc] init]);
   return
       [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
@@ -59,9 +107,9 @@ TouchIdContext::TouchIdAvailableFuncPtr TouchIdContext::g_touch_id_available_ =
     &TouchIdContext::TouchIdAvailableImpl;
 
 // static
-bool TouchIdContext::TouchIdAvailable() {
+bool TouchIdContext::TouchIdAvailable(const AuthenticatorConfig& config) {
   // Testing seam to allow faking Touch ID in tests.
-  return (*g_touch_id_available_)();
+  return (*g_touch_id_available_)(config);
 }
 
 TouchIdContext::TouchIdContext()

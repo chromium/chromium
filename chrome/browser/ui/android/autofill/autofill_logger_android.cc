@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/android/autofill/autofill_logger_android.h"
 
-#include "jni/AutofillLogger_jni.h"
+#include "chrome/android/chrome_jni_headers/AutofillLogger_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

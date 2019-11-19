@@ -96,7 +96,7 @@ class TranslateScript {
   typedef std::vector<RequestCallback> RequestCallbackList;
   RequestCallbackList callback_list_;
 
-  base::WeakPtrFactory<TranslateScript> weak_method_factory_;
+  base::WeakPtrFactory<TranslateScript> weak_method_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TranslateScript);
 };

@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 
 import java.util.Arrays;
@@ -45,7 +44,7 @@ public class HttpUtilTest {
     private static final String ALLOWED_HEADER_VALUE = "value";
 
     @Before
-    public void setUp() throws ProcessInitException {
+    public void setUp() {
         LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_BROWSER);
     }
 

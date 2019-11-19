@@ -22,6 +22,9 @@ class NotificationCounterView : public TrayItemView, public SessionObserver {
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
+  // views::TrayItemView:
+  const char* GetClassName() const override;
+
  private:
   // The type / number of the icon that is currently set to the image view.
   // 0 indicates no icon is drawn yet.
@@ -42,6 +45,9 @@ class QuietModeView : public TrayItemView, public SessionObserver {
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
+
+  // views::TrayItemView:
+  const char* GetClassName() const override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(QuietModeView);

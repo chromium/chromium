@@ -4,7 +4,12 @@
 
 #include "third_party/blink/renderer/core/html/media/video_wake_lock.h"
 
+#include "cc/layers/layer.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
@@ -12,48 +17,65 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
+// The VideoWakeLockPictureInPictureSession implements a PictureInPicture
+// session in the same process as the test and guarantees that the callbacks are
+// called in order for the events to be fired.
+class VideoWakeLockPictureInPictureSession
+    : public mojom::blink::PictureInPictureSession {
+ public:
+  explicit VideoWakeLockPictureInPictureSession(
+      mojo::PendingReceiver<mojom::blink::PictureInPictureSession> receiver)
+      : receiver_(this, std::move(receiver)) {}
+  ~VideoWakeLockPictureInPictureSession() override = default;
+
+  void Stop(StopCallback callback) final { std::move(callback).Run(); }
+
+  void Update(uint32_t player_id,
+              const base::Optional<viz::SurfaceId>&,
+              const blink::WebSize&,
+              bool show_play_pause_button) final {}
+
+ private:
+  mojo::Receiver<mojom::blink::PictureInPictureSession> receiver_;
+};
+
 // The VideoWakeLockPictureInPictureService implements the PictureInPicture
 // service in the same process as the test and guarantees that the callbacks are
-// called in order for the events to be fired. set_run_loop() MUST be called
-// before each attempt to enter/leave Picture-in-Picture.
+// called in order for the events to be fired.
 class VideoWakeLockPictureInPictureService
     : public mojom::blink::PictureInPictureService {
  public:
-  VideoWakeLockPictureInPictureService() : binding_(this) {}
+  VideoWakeLockPictureInPictureService() : receiver_(this) {}
   ~VideoWakeLockPictureInPictureService() override = default;
 
   void Bind(mojo::ScopedMessagePipeHandle handle) {
-    binding_.Bind(
-        mojom::blink::PictureInPictureServiceRequest(std::move(handle)));
+    receiver_.Bind(mojo::PendingReceiver<mojom::blink::PictureInPictureService>(
+        std::move(handle)));
   }
 
-  void StartSession(uint32_t,
-                    const base::Optional<viz::SurfaceId>&,
-                    const blink::WebSize&,
-                    bool,
-                    bool,
-                    StartSessionCallback callback) final {
-    std::move(callback).Run(WebSize());
-  }
+  void StartSession(
+      uint32_t,
+      const base::Optional<viz::SurfaceId>&,
+      const blink::WebSize&,
+      bool,
+      mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>,
+      StartSessionCallback callback) final {
+    mojo::PendingRemote<mojom::blink::PictureInPictureSession> session_remote;
+    session_.reset(new VideoWakeLockPictureInPictureSession(
+        session_remote.InitWithNewPipeAndPassReceiver()));
 
-  void EndSession(EndSessionCallback callback) final {
-    std::move(callback).Run();
+    std::move(callback).Run(std::move(session_remote), WebSize());
   }
-
-  void UpdateSession(uint32_t,
-                     const base::Optional<viz::SurfaceId>&,
-                     const blink::WebSize&,
-                     bool,
-                     bool) final {}
-  void SetDelegate(mojom::blink::PictureInPictureDelegatePtr) final {}
 
  private:
-  mojo::Binding<mojom::blink::PictureInPictureService> binding_;
+  mojo::Receiver<mojom::blink::PictureInPictureService> receiver_;
+  std::unique_ptr<VideoWakeLockPictureInPictureSession> session_;
 };
 
 class VideoWakeLockMediaPlayer final : public EmptyWebMediaPlayer {
@@ -64,22 +86,10 @@ class VideoWakeLockMediaPlayer final : public EmptyWebMediaPlayer {
 
 class VideoWakeLockFrameClient : public test::MediaStubLocalFrameClient {
  public:
-  static VideoWakeLockFrameClient* Create(
-      std::unique_ptr<WebMediaPlayer> player) {
-    return MakeGarbageCollected<VideoWakeLockFrameClient>(std::move(player));
-  }
-
   explicit VideoWakeLockFrameClient(std::unique_ptr<WebMediaPlayer> player)
-      : test::MediaStubLocalFrameClient(std::move(player)),
-        interface_provider_(new service_manager::InterfaceProvider()) {}
-
-  service_manager::InterfaceProvider* GetInterfaceProvider() override {
-    return interface_provider_.get();
-  }
+      : test::MediaStubLocalFrameClient(std::move(player)) {}
 
  private:
-  std::unique_ptr<service_manager::InterfaceProvider> interface_provider_;
-
   DISALLOW_COPY_AND_ASSIGN(VideoWakeLockFrameClient);
 };
 
@@ -87,21 +97,24 @@ class VideoWakeLockTest : public PageTestBase {
  public:
   void SetUp() override {
     PageTestBase::SetupPageWithClients(
-        nullptr, VideoWakeLockFrameClient::Create(
+        nullptr, MakeGarbageCollected<VideoWakeLockFrameClient>(
                      std::make_unique<VideoWakeLockMediaPlayer>()));
 
-    service_manager::InterfaceProvider::TestApi test_api(
-        GetFrame().Client()->GetInterfaceProvider());
-    test_api.SetBinderForName(
+    GetDocument().GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::PictureInPictureService::Name_,
         WTF::BindRepeating(&VideoWakeLockPictureInPictureService::Bind,
                            WTF::Unretained(&pip_service_)));
 
-    video_ = HTMLVideoElement::Create(GetDocument());
+    video_ = MakeGarbageCollected<HTMLVideoElement>(GetDocument());
     video_->SetReadyState(HTMLMediaElement::ReadyState::kHaveMetadata);
     video_wake_lock_ = MakeGarbageCollected<VideoWakeLock>(*video_.Get());
 
-    GetPage().SetIsHidden(false, true);
+    GetPage().SetVisibilityState(PageVisibilityState::kVisible, true);
+  }
+
+  void TearDown() override {
+    GetDocument().GetBrowserInterfaceBroker().SetBinderForTesting(
+        mojom::blink::PictureInPictureService::Name_, {});
   }
 
   HTMLVideoElement* Video() const { return video_.Get(); }
@@ -121,18 +134,33 @@ class VideoWakeLockTest : public PageTestBase {
 
   void SimulateEnterPictureInPicture() {
     PictureInPictureController::From(GetDocument())
-        .EnterPictureInPicture(Video(), nullptr);
+        .EnterPictureInPicture(Video(), nullptr /* options */,
+                               nullptr /* promise */);
 
-    WaitForEvent::Create(video_.Get(),
-                         event_type_names::kEnterpictureinpicture);
+    MakeGarbageCollected<WaitForEvent>(
+        video_.Get(), event_type_names::kEnterpictureinpicture);
   }
 
   void SimulateLeavePictureInPicture() {
     PictureInPictureController::From(GetDocument())
         .ExitPictureInPicture(Video(), nullptr);
 
-    WaitForEvent::Create(video_.Get(),
-                         event_type_names::kLeavepictureinpicture);
+    MakeGarbageCollected<WaitForEvent>(
+        video_.Get(), event_type_names::kLeavepictureinpicture);
+  }
+
+  void SimulateContextPause() {
+    GetDocument().SetLifecycleState(mojom::FrameLifecycleState::kPaused);
+  }
+
+  void SimulateContextRunning() {
+    GetDocument().SetLifecycleState(mojom::FrameLifecycleState::kRunning);
+  }
+
+  void SimulateContextDestroyed() { GetDocument().NotifyContextDestroyed(); }
+
+  void SimulateNetworkState(HTMLMediaElement::NetworkState network_state) {
+    video_->SetNetworkState(network_state);
   }
 
  private:
@@ -163,32 +191,32 @@ TEST_F(VideoWakeLockTest, HiddingPageCancelsLock) {
   SimulatePlaying();
   EXPECT_TRUE(GetVideoWakeLock()->active_for_tests());
 
-  GetPage().SetIsHidden(true, false);
+  GetPage().SetVisibilityState(PageVisibilityState::kHidden, false);
   EXPECT_FALSE(GetVideoWakeLock()->active_for_tests());
 }
 
 TEST_F(VideoWakeLockTest, PlayingWhileHiddenDoesNotRequestLock) {
-  GetPage().SetIsHidden(true, false);
+  GetPage().SetVisibilityState(PageVisibilityState::kHidden, false);
   SimulatePlaying();
   EXPECT_FALSE(GetVideoWakeLock()->active_for_tests());
 }
 
 TEST_F(VideoWakeLockTest, ShowingPageRequestsLock) {
   SimulatePlaying();
-  GetPage().SetIsHidden(true, false);
+  GetPage().SetVisibilityState(PageVisibilityState::kHidden, false);
   EXPECT_FALSE(GetVideoWakeLock()->active_for_tests());
 
-  GetPage().SetIsHidden(false, false);
+  GetPage().SetVisibilityState(PageVisibilityState::kVisible, false);
   EXPECT_TRUE(GetVideoWakeLock()->active_for_tests());
 }
 
 TEST_F(VideoWakeLockTest, ShowingPageDoNotRequestsLockIfPaused) {
   SimulatePlaying();
-  GetPage().SetIsHidden(true, false);
+  GetPage().SetVisibilityState(PageVisibilityState::kHidden, false);
   EXPECT_FALSE(GetVideoWakeLock()->active_for_tests());
 
   SimulatePause();
-  GetPage().SetIsHidden(false, false);
+  GetPage().SetVisibilityState(PageVisibilityState::kVisible, false);
   EXPECT_FALSE(GetVideoWakeLock()->active_for_tests());
 }
 
@@ -237,7 +265,7 @@ TEST_F(VideoWakeLockTest, PictureInPictureLocksWhenPageNotVisible) {
   test::RunPendingTasks();
 
   SimulatePlaying();
-  GetPage().SetIsHidden(true, false);
+  GetPage().SetVisibilityState(PageVisibilityState::kHidden, false);
   EXPECT_FALSE(GetVideoWakeLock()->active_for_tests());
 
   SimulateEnterPictureInPicture();
@@ -253,7 +281,7 @@ TEST_F(VideoWakeLockTest, PictureInPictureDoesNoLockWhenPaused) {
   test::RunPendingTasks();
 
   SimulatePlaying();
-  GetPage().SetIsHidden(true, false);
+  GetPage().SetVisibilityState(PageVisibilityState::kHidden, false);
   EXPECT_FALSE(GetVideoWakeLock()->active_for_tests());
 
   SimulatePause();
@@ -270,7 +298,7 @@ TEST_F(VideoWakeLockTest, LeavingPictureInPictureCancelsLock) {
   test::RunPendingTasks();
 
   SimulatePlaying();
-  GetPage().SetIsHidden(true, false);
+  GetPage().SetVisibilityState(PageVisibilityState::kHidden, false);
   SimulateEnterPictureInPicture();
   EXPECT_TRUE(GetVideoWakeLock()->active_for_tests());
 
@@ -290,6 +318,45 @@ TEST_F(VideoWakeLockTest, RemotingVideoInPictureInPictureDoesNotRequestLock) {
   SimulateEnterPictureInPicture();
   GetVideoWakeLock()->OnRemotePlaybackStateChanged(
       mojom::blink::PresentationConnectionState::CONNECTED);
+  EXPECT_FALSE(GetVideoWakeLock()->active_for_tests());
+}
+
+TEST_F(VideoWakeLockTest, PausingContextCancelsLock) {
+  SimulatePlaying();
+  EXPECT_TRUE(GetVideoWakeLock()->active_for_tests());
+
+  SimulateContextPause();
+  EXPECT_FALSE(GetVideoWakeLock()->active_for_tests());
+}
+
+TEST_F(VideoWakeLockTest, ResumingContextResumesLock) {
+  SimulatePlaying();
+  EXPECT_TRUE(GetVideoWakeLock()->active_for_tests());
+
+  SimulateContextPause();
+  EXPECT_FALSE(GetVideoWakeLock()->active_for_tests());
+
+  SimulateContextRunning();
+  EXPECT_TRUE(GetVideoWakeLock()->active_for_tests());
+}
+
+TEST_F(VideoWakeLockTest, DestroyingContextCancelsLock) {
+  SimulatePlaying();
+  EXPECT_TRUE(GetVideoWakeLock()->active_for_tests());
+
+  SimulateContextDestroyed();
+  EXPECT_FALSE(GetVideoWakeLock()->active_for_tests());
+}
+
+TEST_F(VideoWakeLockTest, LoadingCancelsLock) {
+  SimulatePlaying();
+  EXPECT_TRUE(GetVideoWakeLock()->active_for_tests());
+
+  // The network state has to be non-empty for the resetting to actually kick.
+  SimulateNetworkState(HTMLMediaElement::kNetworkIdle);
+
+  Video()->SetSrc("");
+  test::RunPendingTasks();
   EXPECT_FALSE(GetVideoWakeLock()->active_for_tests());
 }
 

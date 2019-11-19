@@ -1,0 +1,80 @@
+This is a testharness.js-based test.
+Found 76 tests; 48 PASS, 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS getStats succeeds
+PASS RTCRtpStreamStats's ssrc
+PASS RTCRtpStreamStats's kind
+PASS RTCRtpStreamStats's transportId
+PASS RTCRtpStreamStats's codecId
+PASS RTCReceivedRtpStreamStats's packetsReceived
+PASS RTCReceivedRtpStreamStats's packetsLost
+PASS RTCReceivedRtpStreamStats's jitter
+FAIL RTCReceivedRtpStreamStats's packetsDiscarded assert_true: Is packetsDiscarded present expected true got false
+PASS RTCInboundRtpStreamStats's trackId
+FAIL RTCInboundRtpStreamStats's receiverId assert_true: Is receiverId present expected true got false
+FAIL RTCInboundRtpStreamStats's remoteId assert_true: Is remoteId present expected true got false
+PASS RTCInboundRtpStreamStats's framesDecoded
+PASS RTCRemoteInboundRtpStreamStats's localId
+PASS RTCRemoteInboundRtpStreamStats's roundTripTime
+PASS RTCSentRtpStreamStats's packetsSent
+PASS RTCSentRtpStreamStats's bytesSent
+PASS RTCOutboundRtpStreamStats's trackId
+FAIL RTCOutboundRtpStreamStats's senderId assert_true: Is senderId present expected true got false
+FAIL RTCOutboundRtpStreamStats's remoteId assert_true: Is remoteId present expected true got false
+PASS RTCOutboundRtpStreamStats's framesEncoded
+FAIL RTCRemoteOutboundRtpStreamStats's localId assert_true: Is localId present expected true got false
+FAIL RTCRemoteOutboundRtpStreamStats's remoteTimestamp assert_true: Is remoteTimestamp present expected true got false
+PASS RTCPeerConnectionStats's dataChannelsOpened
+PASS RTCPeerConnectionStats's dataChannelsClosed
+PASS RTCDataChannelStats's protocol
+FAIL RTCDataChannelStats's dataChannelIdentifier assert_true: Is dataChannelIdentifier present expected true got false
+PASS RTCDataChannelStats's state
+PASS RTCDataChannelStats's messagesSent
+PASS RTCDataChannelStats's bytesSent
+PASS RTCDataChannelStats's messagesReceived
+PASS RTCDataChannelStats's bytesReceived
+FAIL RTCMediaStreamStats's streamIdentifer assert_true: Is streamIdentifer present expected true got false
+PASS RTCMediaStreamStats's trackIds
+FAIL RTCMediaHandlerStats's trackIdentifier assert_true: Is trackIdentifier present expected true got false
+FAIL RTCMediaHandlerStats's remoteSource assert_true: Is remoteSource present expected true got false
+FAIL RTCMediaHandlerStats's ended assert_true: Is ended present expected true got false
+FAIL RTCAudioHandlerStats's audioLevel assert_true: Is audioLevel present expected true got false
+FAIL RTCVideoHandlerStats's frameWidth assert_true: Is frameWidth present expected true got false
+FAIL RTCVideoHandlerStats's frameHeight assert_true: Is frameHeight present expected true got false
+FAIL RTCVideoHandlerStats's framesPerSecond assert_true: Is framesPerSecond present expected true got false
+FAIL RTCVideoSenderStats's framesSent assert_true: Is framesSent present expected true got false
+FAIL RTCVideoReceiverStats's framesReceived assert_true: Is framesReceived present expected true got false
+FAIL RTCVideoReceiverStats's framesDecoded assert_true: Is framesDecoded present expected true got false
+FAIL RTCVideoReceiverStats's framesDropped assert_true: Is framesDropped present expected true got false
+FAIL RTCVideoReceiverStats's partialFramesLost assert_true: Is partialFramesLost present expected true got false
+PASS RTCCodecStats's payloadType
+FAIL RTCCodecStats's codecType assert_true: Is codecType present expected true got false
+PASS RTCCodecStats's clockRate
+FAIL RTCCodecStats's channels assert_true: Is channels present expected true got false
+FAIL RTCCodecStats's sdpFmtpLine assert_true: Is sdpFmtpLine present expected true got false
+PASS RTCTransportStats's bytesSent
+PASS RTCTransportStats's bytesReceived
+FAIL RTCTransportStats's rtcpTransportStatsId assert_true: Is rtcpTransportStatsId present expected true got false
+PASS RTCTransportStats's selectedCandidatePairId
+PASS RTCTransportStats's localCertificateId
+PASS RTCTransportStats's remoteCertificateId
+PASS RTCIceCandidatePairStats's transportId
+PASS RTCIceCandidatePairStats's localCandidateId
+PASS RTCIceCandidatePairStats's remoteCandidateId
+PASS RTCIceCandidatePairStats's state
+PASS RTCIceCandidatePairStats's priority
+PASS RTCIceCandidatePairStats's nominated
+PASS RTCIceCandidatePairStats's bytesSent
+PASS RTCIceCandidatePairStats's bytesReceived
+PASS RTCIceCandidatePairStats's totalRoundTripTime
+PASS RTCIceCandidatePairStats's currentRoundTripTime
+FAIL RTCIceCandidateStats's address assert_true: Is address present expected true got false
+PASS RTCIceCandidateStats's port
+PASS RTCIceCandidateStats's protocol
+PASS RTCIceCandidateStats's candidateType
+FAIL RTCIceCandidateStats's url assert_true: Is url present expected true got false
+PASS RTCCertificateStats's fingerprint
+PASS RTCCertificateStats's fingerprintAlgorithm
+PASS RTCCertificateStats's base64Certificate
+FAIL RTCCertificateStats's issuerCertificateId assert_true: Is issuerCertificateId present expected true got false
+Harness: the test ran to completion.
+

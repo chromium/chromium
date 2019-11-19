@@ -18,6 +18,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "google_apis/gcm/base/encryptor.h"
@@ -145,12 +146,12 @@ std::string ParseGServiceSettingKey(const std::string& key) {
   return key.substr(base::size(kGServiceSettingKeyStart) - 1);
 }
 
-std::string MakeAccountKey(const std::string& account_id) {
-  return kAccountKeyStart + account_id;
+std::string MakeAccountKey(const CoreAccountId& account_id) {
+  return kAccountKeyStart + account_id.id;
 }
 
-std::string ParseAccountKey(const std::string& key) {
-  return key.substr(base::size(kAccountKeyStart) - 1);
+CoreAccountId ParseAccountKey(const std::string& key) {
+  return CoreAccountId(key.substr(base::size(kAccountKeyStart) - 1));
 }
 
 std::string MakeHeartbeatKey(const std::string& scope) {
@@ -222,7 +223,7 @@ class GCMStoreImpl::Backend
       const UpdateCallback& callback);
   void AddAccountMapping(const AccountMapping& account_mapping,
                          const UpdateCallback& callback);
-  void RemoveAccountMapping(const std::string& account_id,
+  void RemoveAccountMapping(const CoreAccountId& account_id,
                             const UpdateCallback& callback);
   void SetLastTokenFetchTime(const base::Time& time,
                              const UpdateCallback& callback);
@@ -744,7 +745,7 @@ void GCMStoreImpl::Backend::AddAccountMapping(
 }
 
 void GCMStoreImpl::Backend::RemoveAccountMapping(
-    const std::string& account_id,
+    const CoreAccountId& account_id,
     const UpdateCallback& callback) {
   if (!db_.get()) {
     LOG(ERROR) << "GCMStore db doesn't exist.";
@@ -924,6 +925,11 @@ bool GCMStoreImpl::Backend::LoadDeviceCredentials(uint64_t* android_id,
     s = db_->Get(read_options, MakeSlice(kDeviceTokenKey), &result);
   }
   if (s.ok()) {
+    // Mitigate the issues caused by loading DLLs on a background thread
+    // (http://crbug/973868).
+    base::ScopedThreadMayLoadLibraryOnBackgroundThread priority_boost(
+        FROM_HERE);
+
     std::string decrypted_token;
     encryptor_->DecryptString(result, &decrypted_token);
     if (!base::StringToUint64(decrypted_token, security_token)) {
@@ -1175,8 +1181,7 @@ GCMStoreImpl::GCMStoreImpl(
     : backend_(new Backend(path,
                            base::ThreadTaskRunnerHandle::Get(),
                            std::move(encryptor))),
-      blocking_task_runner_(blocking_task_runner),
-      weak_ptr_factory_(this) {}
+      blocking_task_runner_(blocking_task_runner) {}
 
 GCMStoreImpl::~GCMStoreImpl() {}
 
@@ -1336,7 +1341,7 @@ void GCMStoreImpl::AddAccountMapping(const AccountMapping& account_mapping,
                                 backend_, account_mapping, callback));
 }
 
-void GCMStoreImpl::RemoveAccountMapping(const std::string& account_id,
+void GCMStoreImpl::RemoveAccountMapping(const CoreAccountId& account_id,
                                         const UpdateCallback& callback) {
   blocking_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GCMStoreImpl::Backend::RemoveAccountMapping,

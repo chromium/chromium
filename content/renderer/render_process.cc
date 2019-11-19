@@ -4,15 +4,29 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "content/renderer/render_process.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
+namespace {
+
+base::ThreadPriority GetRenderIOThreadPriority() {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBlinkCompositorUseDisplayThreadPriority))
+    return base::ThreadPriority::DISPLAY;
+  return base::ThreadPriority::NORMAL;
+}
+
+}  // namespace
+
 RenderProcess::RenderProcess(
-    const std::string& task_scheduler_name,
-    std::unique_ptr<base::TaskScheduler::InitParams> task_scheduler_init_params)
-    : ChildProcess(base::ThreadPriority::NORMAL,
-                   task_scheduler_name,
-                   std::move(task_scheduler_init_params)) {}
+    const std::string& thread_pool_name,
+    std::unique_ptr<base::ThreadPoolInstance::InitParams>
+        thread_pool_init_params)
+    : ChildProcess(GetRenderIOThreadPriority(),
+                   thread_pool_name,
+                   std::move(thread_pool_init_params)) {}
 
 }  // namespace content

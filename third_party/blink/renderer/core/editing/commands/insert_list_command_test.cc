@@ -43,8 +43,8 @@ TEST_F(InsertListCommandTest, ShouldCleanlyRemoveSpuriousTextNode) {
           .Build(),
       SetSelectionOptions());
 
-  InsertListCommand* command =
-      InsertListCommand::Create(GetDocument(), InsertListCommand::kOrderedList);
+  auto* command = MakeGarbageCollected<InsertListCommand>(
+      GetDocument(), InsertListCommand::kOrderedList);
   // This should not DCHECK.
   EXPECT_TRUE(command->Apply())
       << "The insert ordered list command should have succeeded";
@@ -60,7 +60,7 @@ TEST_F(InsertListCommandTest, UnlistifyParagraphCrashOnVisuallyEmptyParagraph) {
                              "<textarea style='float:left;'></textarea>"
                              "</dl>|"),
       SetSelectionOptions());
-  InsertListCommand* command = InsertListCommand::Create(
+  auto* command = MakeGarbageCollected<InsertListCommand>(
       GetDocument(), InsertListCommand::kUnorderedList);
   // Crash happens here.
   EXPECT_FALSE(command->Apply());
@@ -81,7 +81,7 @@ TEST_F(InsertListCommandTest, CleanupNodeSameAsDestinationNode) {
   Selection().SetSelection(SetSelectionTextToBody("^<table><col></table>"
                                                   "<button></button>|"),
                            SetSelectionOptions());
-  InsertListCommand* command = InsertListCommand::Create(
+  auto* command = MakeGarbageCollected<InsertListCommand>(
       GetDocument(), InsertListCommand::kUnorderedList);
   // Crash happens here.
   EXPECT_TRUE(command->Apply());
@@ -97,7 +97,7 @@ TEST_F(InsertListCommandTest, InsertListOnEmptyHiddenElements) {
   InsertStyleElement("br { visibility:hidden; }");
   Selection().SetSelection(SetSelectionTextToBody("^<button></button>|"),
                            SetSelectionOptions());
-  InsertListCommand* command = InsertListCommand::Create(
+  auto* command = MakeGarbageCollected<InsertListCommand>(
       GetDocument(), InsertListCommand::kUnorderedList);
 
   // Crash happens here.
@@ -118,8 +118,8 @@ TEST_F(InsertListCommandTest, InsertListWithCollapsedVisibility) {
 
   Selection().SetSelection(SetSelectionTextToBody("^<dl>a</dl>|"),
                            SetSelectionOptions());
-  InsertListCommand* command =
-      InsertListCommand::Create(GetDocument(), InsertListCommand::kOrderedList);
+  auto* command = MakeGarbageCollected<InsertListCommand>(
+      GetDocument(), InsertListCommand::kOrderedList);
 
   // Crash happens here.
   EXPECT_FALSE(command->Apply());

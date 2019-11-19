@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -15,14 +16,16 @@
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_preferences_util.h"
-#include "chrome/browser/safe_browsing/safe_browsing_controller_client.h"
+#include "chrome/browser/safe_browsing/chrome_controller_client.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/browser/threat_details.h"
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/features.h"
 #include "components/safe_browsing/triggers/trigger_manager.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
+#include "components/security_interstitials/core/controller_client.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/interstitial_page.h"
 #include "content/public/browser/navigation_entry.h"
@@ -106,7 +109,8 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
     WebContents* web_contents,
     const GURL& main_frame_url,
     const UnsafeResourceList& unsafe_resources,
-    const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions& display_options)
+    const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions& display_options,
+    network::SharedURLLoaderFactory* url_loader_for_testing)
     : BaseBlockingPage(
           ui_manager,
           web_contents,
@@ -130,8 +134,10 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-        content::BrowserContext::GetDefaultStoragePartition(profile)
-            ->GetURLLoaderFactoryForBrowserProcess();
+        url_loader_for_testing
+            ? url_loader_for_testing
+            : content::BrowserContext::GetDefaultStoragePartition(profile)
+                  ->GetURLLoaderFactoryForBrowserProcess();
     threat_details_in_progress_ =
         g_browser_process->safe_browsing_service()
             ->trigger_manager()
@@ -178,8 +184,26 @@ void SafeBrowsingBlockingPage::HandleSubresourcesAfterProceed() {
 }
 
 content::InterstitialPageDelegate::TypeID
-SafeBrowsingBlockingPage::GetTypeForTesting() const {
+SafeBrowsingBlockingPage::GetTypeForTesting() {
   return SafeBrowsingBlockingPage::kTypeForTesting;
+}
+
+void SafeBrowsingBlockingPage::OnInterstitialClosing() {
+  if (base::FeatureList::IsEnabled(safe_browsing::kCommittedSBInterstitials)) {
+    // With committed interstitials OnProceed and OnDontProceed don't get
+    // called, so call FinishThreatDetails from here.
+    FinishThreatDetails(
+        (proceeded()
+             ? base::TimeDelta::FromMilliseconds(threat_details_proceed_delay())
+             : base::TimeDelta()),
+        proceeded(), controller()->metrics_helper()->NumVisits());
+    if (proceeded()) {
+      HandleSubresourcesAfterProceed();
+    } else {
+      OnDontProceedDone();
+    }
+  }
+  BaseBlockingPage::OnInterstitialClosing();
 }
 
 void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
@@ -268,7 +292,7 @@ SafeBrowsingBlockingPage::CreateControllerClient(
                                             unsafe_resources[0].url,
                                             GetReportingInfo(unsafe_resources));
 
-  return std::make_unique<SafeBrowsingControllerClient>(
+  return std::make_unique<ChromeControllerClient>(
       web_contents, std::move(metrics_helper), profile->GetPrefs(),
       ui_manager->app_locale(), ui_manager->default_safe_page());
 }

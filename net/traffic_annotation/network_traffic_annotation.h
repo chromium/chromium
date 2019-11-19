@@ -34,6 +34,8 @@ constexpr int TRAFFIC_ANNOTATION_UNINITIALIZED = -1;
 
 namespace net {
 
+struct PartialNetworkTrafficAnnotationTag;
+
 // Defined types for network traffic annotation tags.
 struct NetworkTrafficAnnotationTag {
   const int32_t unique_id_hash_code;
@@ -44,9 +46,36 @@ struct NetworkTrafficAnnotationTag {
 
   static NetworkTrafficAnnotationTag NotReached() {
     NOTREACHED();
-    return net::NetworkTrafficAnnotationTag({TRAFFIC_ANNOTATION_UNINITIALIZED});
+    return net::NetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_UNINITIALIZED);
   }
+
+  // These functions are wrappers around the (private) constructor, so we can
+  // easily find the constructor's call-sites with a script.
+  template <size_t N1, size_t N2>
+  friend constexpr NetworkTrafficAnnotationTag DefineNetworkTrafficAnnotation(
+      const char (&unique_id)[N1],
+      const char (&proto)[N2]);
+
+  template <size_t N1, size_t N2>
+  friend NetworkTrafficAnnotationTag CompleteNetworkTrafficAnnotation(
+      const char (&unique_id)[N1],
+      const PartialNetworkTrafficAnnotationTag& partial_annotation,
+      const char (&proto)[N2]);
+
+  template <size_t N1, size_t N2, size_t N3>
+  friend NetworkTrafficAnnotationTag BranchedCompleteNetworkTrafficAnnotation(
+      const char (&unique_id)[N1],
+      const char (&group_id)[N2],
+      const PartialNetworkTrafficAnnotationTag& partial_annotation,
+      const char (&proto)[N3]);
+
+  friend struct MutableNetworkTrafficAnnotationTag;
+
+ private:
+  constexpr NetworkTrafficAnnotationTag(int32_t unique_id_hash_code_)
+      : unique_id_hash_code(unique_id_hash_code_) {}
 };
+
 struct PartialNetworkTrafficAnnotationTag {
   const int32_t unique_id_hash_code;
 
@@ -60,6 +89,27 @@ struct PartialNetworkTrafficAnnotationTag {
   // annotations and their completing parts, and is used in debug mode to check
   // if an intended completing part is added to a partial network annotation.
   const int32_t completing_id_hash_code;
+#endif
+
+  // This function is a wrapper around the (private) constructor, so we can
+  // easily find the constructor's call-sites with a script.
+  template <size_t N1, size_t N2, size_t N3>
+  friend constexpr PartialNetworkTrafficAnnotationTag
+  DefinePartialNetworkTrafficAnnotation(const char (&unique_id)[N1],
+                                        const char (&completing_id)[N2],
+                                        const char (&proto)[N3]);
+
+  friend struct MutablePartialNetworkTrafficAnnotationTag;
+
+ private:
+#if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
+  constexpr PartialNetworkTrafficAnnotationTag(int32_t unique_id_hash_code_,
+                                               int32_t completing_id_hash_code_)
+      : unique_id_hash_code(unique_id_hash_code_),
+        completing_id_hash_code(completing_id_hash_code_) {}
+#else
+  constexpr PartialNetworkTrafficAnnotationTag(int32_t unique_id_hash_code_)
+      : unique_id_hash_code(unique_id_hash_code_) {}
 #endif
 };
 
@@ -87,7 +137,7 @@ constexpr NetworkTrafficAnnotationTag DefineNetworkTrafficAnnotation(
     const char (&unique_id)[N1],
     const char (&proto)[N2]) {
   return NetworkTrafficAnnotationTag(
-      {COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(unique_id)});
+      COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(unique_id));
 }
 
 // There are cases where the network traffic annotation cannot be fully
@@ -113,11 +163,11 @@ DefinePartialNetworkTrafficAnnotation(const char (&unique_id)[N1],
                                       const char (&proto)[N3]) {
 #if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
   return PartialNetworkTrafficAnnotationTag(
-      {COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(unique_id),
-       COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(completing_id)});
+      COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(unique_id),
+      COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(completing_id));
 #else
   return PartialNetworkTrafficAnnotationTag(
-      {COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(unique_id)});
+      COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(unique_id));
 #endif
 }
 
@@ -138,7 +188,7 @@ NetworkTrafficAnnotationTag CompleteNetworkTrafficAnnotation(
          partial_annotation.unique_id_hash_code ==
              COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH("undefined"));
 #endif
-  return NetworkTrafficAnnotationTag({partial_annotation.unique_id_hash_code});
+  return NetworkTrafficAnnotationTag(partial_annotation.unique_id_hash_code);
 }
 
 // This function can be used to define a completing partial annotation that is
@@ -160,7 +210,7 @@ NetworkTrafficAnnotationTag BranchedCompleteNetworkTrafficAnnotation(
              COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH("undefined"));
 #endif
   return NetworkTrafficAnnotationTag(
-      {COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(unique_id)});
+      COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(unique_id));
 }
 
 // Example for joining N x 1 partial annotations:
@@ -229,7 +279,7 @@ struct MutableNetworkTrafficAnnotationTag {
 
   explicit operator NetworkTrafficAnnotationTag() const {
     DCHECK(is_valid());
-    return NetworkTrafficAnnotationTag({unique_id_hash_code});
+    return NetworkTrafficAnnotationTag(unique_id_hash_code);
   }
 
   bool is_valid() const {
@@ -237,7 +287,21 @@ struct MutableNetworkTrafficAnnotationTag {
   }
 
   void reset() { unique_id_hash_code = TRAFFIC_ANNOTATION_UNINITIALIZED; }
+
+  // This function is a wrapper around the private constructor, so we can easily
+  // find the constructor's call-sites with a script.
+  friend MutableNetworkTrafficAnnotationTag
+  CreateMutableNetworkTrafficAnnotationTag(int32_t unique_id_hash_code);
+
+ private:
+  explicit MutableNetworkTrafficAnnotationTag(int32_t unique_id_hash_code_)
+      : unique_id_hash_code(unique_id_hash_code_) {}
 };
+
+inline MutableNetworkTrafficAnnotationTag
+CreateMutableNetworkTrafficAnnotationTag(int32_t unique_id_hash_code) {
+  return MutableNetworkTrafficAnnotationTag(unique_id_hash_code);
+}
 
 struct MutablePartialNetworkTrafficAnnotationTag {
 #if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
@@ -255,8 +319,8 @@ struct MutablePartialNetworkTrafficAnnotationTag {
 
   explicit operator PartialNetworkTrafficAnnotationTag() const {
     DCHECK(is_valid());
-    return PartialNetworkTrafficAnnotationTag(
-        {unique_id_hash_code, completing_id_hash_code});
+    return PartialNetworkTrafficAnnotationTag(unique_id_hash_code,
+                                              completing_id_hash_code);
   }
 
   bool is_valid() const {
@@ -278,7 +342,7 @@ struct MutablePartialNetworkTrafficAnnotationTag {
   int32_t unique_id_hash_code;
 
   explicit operator PartialNetworkTrafficAnnotationTag() const {
-    return PartialNetworkTrafficAnnotationTag({unique_id_hash_code});
+    return PartialNetworkTrafficAnnotationTag(unique_id_hash_code);
   }
 
   bool is_valid() const {
@@ -297,12 +361,20 @@ struct MutablePartialNetworkTrafficAnnotationTag {
   net::DefineNetworkTrafficAnnotation(ANNOTATION_ID, "No proto yet.")
 #endif
 
+// These annotations are unavailable on desktop Linux + Windows. They are
+// available on other platforms, since we only audit network annotations on
+// Linux & Windows.
+//
+// On Linux and Windows, use MISSING_TRAFFIC_ANNOTATION or
+// TRAFFIC_ANNOTATION_FOR_TESTS.
+#if (!defined(OS_WIN) && !defined(OS_LINUX)) || defined(OS_CHROMEOS)
 #define NO_TRAFFIC_ANNOTATION_YET \
   net::DefineNetworkTrafficAnnotation("undefined", "Nothing here yet.")
 
 #define NO_PARTIAL_TRAFFIC_ANNOTATION_YET                              \
   net::DefinePartialNetworkTrafficAnnotation("undefined", "undefined", \
                                              "Nothing here yet.")
+#endif
 
 #define MISSING_TRAFFIC_ANNOTATION     \
   net::DefineNetworkTrafficAnnotation( \

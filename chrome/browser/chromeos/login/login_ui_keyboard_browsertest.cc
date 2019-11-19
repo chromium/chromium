@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_loop_current.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -76,7 +78,7 @@ class FocusPODWaiter {
     runner_->Run();
     GetOobeUI()->signin_screen_handler()->SetFocusPODCallbackForTesting(
         base::Closure());
-    runner_ = NULL;
+    runner_.reset();
   }
 
  private:
@@ -264,8 +266,8 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTestWithUsersAndOwner,
                                         ->GetActiveInputMethodIds());
 
   // Switch to Gaia.
-  test::OobeJS().Evaluate("$('add-user-button').click()");
-  OobeScreenWaiter(OobeScreen::SCREEN_GAIA_SIGNIN).Wait();
+  ASSERT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
   CheckGaiaKeyboard();
 
   // Switch back.

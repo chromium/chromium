@@ -4,8 +4,7 @@
      found in the LICENSE file.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -14,26 +13,19 @@
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="40dp"
-        app:tabMinWidth="150dp"
-        app:tabMaxWidth="2000dp"
-        app:tabMode="fixed"
-        app:tabGravity="center"
-        app:tabTextAppearance="@style/TextAppearance.BlackLink"
-        app:tabIndicatorColor="@color/light_active_color"
-        android:background="@drawable/download_home_tabs_bg">
+        style="@style/TabLayoutStyle" >
 
         <android.support.design.widget.TabItem
             android:id="@+id/files_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/download_manager_files_tab" />
+            android:text="@string/download_manager_files_tab"/>
 
         <android.support.design.widget.TabItem
             android:id="@+id/prefetch_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/ntp_article_suggestions_section_header" />
+            android:text="@string/ntp_article_suggestions_section_header"/>
 
     </android.support.design.widget.TabLayout>
 
@@ -41,5 +33,12 @@
         android:id="@+id/content_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp" />
-</LinearLayout>
+        android:layout_below="@+id/tabs"
+        android:paddingTop="16dp"/>
+
+    <ImageView
+        style="@style/TabBarLineShadow"
+        android:layout_below="@+id/tabs"
+        android:importantForAccessibility="no"/>
+
+</RelativeLayout>

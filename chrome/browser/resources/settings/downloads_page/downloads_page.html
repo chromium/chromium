@@ -1,5 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/html/util.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="../controls/controlled_button.html">
@@ -23,7 +25,7 @@
       focus-config="[[focusConfig_]]">
     <div route-path="default">
       <div class="settings-box first two-line">
-        <div class="start">
+        <div class="start settings-box-text">
           <div>$i18n{downloadLocation}</div>
           <div class="secondary" id="defaultDownloadPath">
 <if expr="not chromeos">
@@ -35,7 +37,7 @@
           </div>
         </div>
         <div class="separator"></div>
-        <controlled-button class="secondary-button" id="changeDownloadsPath"
+        <controlled-button id="changeDownloadsPath"
             label="$i18n{changeDownloadLocation}"
             on-click="selectDownloadLocation_"
             pref="[[prefs.download.default_directory]]"
@@ -52,13 +54,10 @@
           label="$i18n{disconnectGoogleDriveAccount}"
           hidden="[[!pageVisibility.googleDrive]]">
       </settings-toggle-button>
-      <div id="smbShares" class="settings-box"
-          on-click="onTapSmbShares_" actionable>
-        <div class="start"> $i18n{smbSharesTitle} </div>
-        <paper-icon-button-light class="subpage-arrow">
-          <button aria-label="$i18n{smbSharesTitle}"></button>
-        </paper-icon-button-light>
-      </div>
+      <cr-link-row id="smbShares" class="hr" on-click="onTapSmbShares_"
+          hidden="[[!pageVisibility.smbShares]]" label="$i18n{smbSharesTitle}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
 </if>
       <template is="dom-if" if="[[autoOpenDownloads_]]" restamp>
         <div class="settings-box">
@@ -66,10 +65,10 @@
             $i18n{openFileTypesAutomatically}
           </div>
           <div class="separator"></div>
-          <paper-button id="resetAutoOpenFileTypes" class="secondary-button"
+          <cr-button id="resetAutoOpenFileTypes"
               on-click="onClearAutoOpenFileTypesTap_">
             $i18n{clear}
-          </paper-button>
+          </cr-button>
         </div>
       </template>
     </div>
@@ -77,6 +76,7 @@
 <if expr="chromeos">
     <template is="dom-if" route-path="/smbShares">
       <settings-subpage
+          hidden="[[!pageVisibility.smbShares]]"
           associated-control="[[$$('#smbShares')]]"
           page-title="$i18n{smbSharesTitle}">
         <settings-smb-shares-page prefs="[[prefs]]">

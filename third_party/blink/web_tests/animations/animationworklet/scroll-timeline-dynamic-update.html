@@ -21,6 +21,7 @@
 
 .overflow {
   overflow-y: scroll;
+  will-change: transform; /* force compositing */
 }
 
 #contents {
@@ -34,8 +35,8 @@
   <div id="contents"></div>
 </div>
 
-<script id="visual_update"  type="text/worklet">
-registerAnimator("test_animator", class {
+<script id="passthrough_animator"  type="text/worklet">
+registerAnimator("passthrough_animator", class {
   animate(currentTime, effect) {
     effect.localTime = currentTime;
   }
@@ -49,7 +50,7 @@ if (window.testRunner) {
 }
 
 runInAnimationWorklet(
-  document.getElementById('visual_update').textContent
+  document.getElementById('passthrough_animator').textContent
 ).then(()=>{
   const box = document.getElementById('box');
   const effect = new KeyframeEffect(box,
@@ -63,7 +64,7 @@ runInAnimationWorklet(
 
   const scroller = document.getElementById('scroller');
   const timeline = new ScrollTimeline({ scrollSource: scroller, timeRange: 1000, orientation: 'block' });
-  const animation = new WorkletAnimation('test_animator', [effect], timeline, {});
+  const animation = new WorkletAnimation('passthrough_animator', effect, timeline);
   animation.play();
 
   // Ensure that the WorkletAnimation will have been started on the compositor.
@@ -75,7 +76,7 @@ runInAnimationWorklet(
     scroller.scrollTop = 0.5 * maxScroll;
 
     if (window.testRunner) {
-      waitTwoAnimationFrames(_ => {
+      waitForAnimationFrames(3, _ => {
         testRunner.notifyDone();
       });
     }

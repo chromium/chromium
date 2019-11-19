@@ -48,11 +48,11 @@ TEST_F(CredentialManagerTypesTest, CreatePasswordFormFederation) {
   form = CreatePasswordFormFromCredentialInfo(info, origin_);
   ASSERT_NE(nullptr, form.get());
 
-  EXPECT_EQ(autofill::PasswordForm::TYPE_API, form->type);
+  EXPECT_EQ(autofill::PasswordForm::Type::kApi, form->type);
   EXPECT_EQ(info.icon, form->icon_url);
   EXPECT_EQ(info.name, form->display_name);
   EXPECT_EQ(origin_, form->origin);
-  EXPECT_EQ(autofill::PasswordForm::SCHEME_HTML, form->scheme);
+  EXPECT_EQ(autofill::PasswordForm::Scheme::kHtml, form->scheme);
 
   // Federated credentials have empty passwords, non-empty federation_origins,
   // and funky signon realms.
@@ -77,26 +77,12 @@ TEST_F(CredentialManagerTypesTest, CreatePasswordFormLocal) {
   EXPECT_EQ(info.icon, form->icon_url);
   EXPECT_EQ(info.name, form->display_name);
   EXPECT_EQ(origin_, form->origin);
-  EXPECT_EQ(autofill::PasswordForm::SCHEME_HTML, form->scheme);
+  EXPECT_EQ(autofill::PasswordForm::Scheme::kHtml, form->scheme);
 
   // Local credentials have empty federation_origins, non-empty passwords, and
   // a signon realm that matches the origin.
   EXPECT_TRUE(form->federation_origin.opaque());
   EXPECT_EQ(info.password, form->password_value);
-  EXPECT_EQ(origin_.spec(), form->signon_realm);
-}
-
-TEST_F(CredentialManagerTypesTest, CreateObservedPasswordForm) {
-  std::unique_ptr<autofill::PasswordForm> form =
-      CreateObservedPasswordFormFromOrigin(origin_);
-
-  ASSERT_TRUE(form);
-  EXPECT_EQ(GURL(), form->icon_url);
-  EXPECT_EQ(base::string16(), form->display_name);
-  EXPECT_EQ(origin_, form->origin);
-  EXPECT_EQ(autofill::PasswordForm::SCHEME_HTML, form->scheme);
-  EXPECT_TRUE(form->federation_origin.opaque());
-  EXPECT_EQ(base::string16(), form->password_value);
   EXPECT_EQ(origin_.spec(), form->signon_realm);
 }
 

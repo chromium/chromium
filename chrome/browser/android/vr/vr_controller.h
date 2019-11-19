@@ -10,10 +10,10 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "chrome/browser/android/vr/gvr_gamepad_data.h"
 #include "chrome/browser/android/vr/gvr_util.h"
 #include "chrome/browser/vr/gesture_detector.h"
 #include "chrome/browser/vr/platform_controller.h"
-#include "device/vr/android/gvr/gvr_gamepad_data_provider.h"
 #include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr_types.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/quaternion.h"
@@ -47,7 +47,7 @@ class VrController : public PlatformController {
   // Must be called when the Activity gets OnPause().
   void OnPause();
 
-  device::GvrGamepadData GetGamepadData();
+  GvrGamepadData GetGamepadData();
 
   // Called once per frame to update controller state.
   void UpdateState(const gfx::Transform& head_pose);

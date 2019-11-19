@@ -12,7 +12,7 @@ import android.view.View;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.AwActivityTestRule;
 import org.chromium.android_webview.test.AwTestContainerView;
-import org.chromium.base.ThreadUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.display.DisplayAndroid;
 
 /**
@@ -20,7 +20,7 @@ import org.chromium.ui.display.DisplayAndroid;
  */
 public class GraphicsTestUtils {
     public static float dipScaleForContext(Context context) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> { return DisplayAndroid.getNonMultiDisplay(context).getDipScale(); });
     }
 
@@ -37,7 +37,7 @@ public class GraphicsTestUtils {
 
     public static Bitmap drawAwContentsOnUiThread(
             final AwContents awContents, final int width, final int height) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> drawAwContents(awContents, width, height));
     }
 
@@ -72,21 +72,21 @@ public class GraphicsTestUtils {
 
     public static int sampleBackgroundColorOnUiThread(final AwContents awContents)
             throws Exception {
-        return ThreadUtils.runOnUiThreadBlocking(
+        return TestThreadUtils.runOnUiThreadBlocking(
                 () -> drawAwContents(awContents, 10, 10, 0, 0).getPixel(0, 0));
     }
 
     // Gets the pixel color at the center of AwContents.
     public static int getPixelColorAtCenterOfView(
             final AwContents awContents, final AwTestContainerView testContainerView) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> drawAwContents(awContents, 2, 2, -(float) testContainerView.getWidth() / 2,
-                        -(float) testContainerView.getHeight() / 2)
-                        .getPixel(0, 0));
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> drawAwContents(awContents, 2, 2,
+                                -(float) testContainerView.getWidth() / 2,
+                                -(float) testContainerView.getHeight() / 2)
+                                   .getPixel(0, 0));
     }
 
-    public static void pollForBackgroundColor(final AwContents awContents, final int c)
-            throws Throwable {
+    public static void pollForBackgroundColor(final AwContents awContents, final int c) {
         AwActivityTestRule.pollInstrumentationThread(
                 () -> sampleBackgroundColorOnUiThread(awContents) == c);
     }

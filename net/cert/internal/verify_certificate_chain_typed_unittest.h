@@ -80,6 +80,9 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, WrongSignature) {
   this->RunTest("target-wrong-signature/main.test");
   this->RunTest("intermediate-and-target-wrong-signature/main.test");
   this->RunTest("incorrect-trust-anchor/main.test");
+  this->RunTest("target-wrong-signature-no-authority-key-identifier/main.test");
+  this->RunTest(
+      "intermediate-wrong-signature-no-authority-key-identifier/main.test");
 }
 
 TYPED_TEST_P(VerifyCertificateChainSingleRootTest, LastCertificateNotTrusted) {

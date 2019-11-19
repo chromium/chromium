@@ -58,13 +58,6 @@ public class EmptySuggestionsSource implements SuggestionsSource {
             Callback<List<SnippetArticle>> successCallback, Runnable failureRunnable) {}
 
     @Override
-    public void fetchContextualSuggestions(String url, Callback<List<SnippetArticle>> callback) {}
-
-    @Override
-    public void fetchContextualSuggestionImage(
-            SnippetArticle suggestion, Callback<Bitmap> callback) {}
-
-    @Override
     public void dismissSuggestion(SnippetArticle suggestion) {}
 
     @Override

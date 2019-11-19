@@ -1,0 +1,11 @@
+Test case for bug 90097. This tests span sizes with different CSS position attributes.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+FAIL document.getElementById("span-position-fixed").getBoundingClientRect().width should be within 0.016666666666666666 of 9.640625. Was 9.78125.
+FAIL document.getElementById("span-position-absolute").getBoundingClientRect().width should be within 0.016666666666666666 of 9.640625. Was 9.78125.
+FAIL document.getElementById("span-position-relative").getBoundingClientRect().width should be within 0.016666666666666666 of 9.640625. Was 9.78125.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

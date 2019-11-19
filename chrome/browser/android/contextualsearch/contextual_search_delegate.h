@@ -58,6 +58,12 @@ class ContextualSearchDelegate
       base::WeakPtr<ContextualSearchContext> contextual_search_context,
       content::WebContents* web_contents);
 
+  // If the caller chooses not to call |GatherAndSaveSurroundingText| then they
+  // must call this method to set the active context before calling
+  // |StartSearchTermResolutionRequest|.
+  void SetActiveContext(
+      base::WeakPtr<ContextualSearchContext> contextual_search_context);
+
   // Starts an asynchronous search term resolution request.
   // The given context includes some content from a web page and must be able
   // to resolve.
@@ -68,6 +74,8 @@ class ContextualSearchDelegate
       content::WebContents* web_contents);
 
   // Gets the target language for translation purposes for this user.
+  // TODO(donnd): remove these language accessors once the transition to the
+  // Chrome Language Model is complete.
   std::string GetTargetLanguage();
 
   // Returns the accept languages preference string.
@@ -115,9 +123,9 @@ class ContextualSearchDelegate
       const bool may_send_base_page_url);
 
   void OnTextSurroundingSelectionAvailable(
-    const base::string16& surrounding_text,
-    int start_offset,
-    int end_offset);
+      const base::string16& surrounding_text,
+      uint32_t start_offset,
+      uint32_t end_offset);
 
   // Populates and returns the discourse context.
   std::string GetDiscourseContext(const ContextualSearchContext& context);
@@ -150,7 +158,10 @@ class ContextualSearchDelegate
       std::string* caption,
       std::string* quick_action_uri,
       QuickActionCategory* quick_action_category,
-      int64_t* logged_event_id);
+      int64_t* logged_event_id,
+      std::string* search_url_full,
+      std::string* search_url_preload,
+      int* coca_card_tag);
 
   // Extracts the start and end location from a mentions list, and sets the
   // integers referenced by |startResult| and |endResult|.

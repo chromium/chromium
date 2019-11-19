@@ -4,23 +4,19 @@
 
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 
+#include "base/memory/singleton.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/synced_printers_manager_factory.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace chromeos {
-namespace {
-
-static base::LazyInstance<CupsPrintersManagerFactory>::Leaky::DestructorAtExit
-    g_cups_printers_manager_factory = LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
 
 // static
 CupsPrintersManagerFactory* CupsPrintersManagerFactory::GetInstance() {
-  return g_cups_printers_manager_factory.Pointer();
+  return base::Singleton<CupsPrintersManagerFactory>::get();
 }
 
 // static
@@ -30,11 +26,6 @@ CupsPrintersManager* CupsPrintersManagerFactory::GetForBrowserContext(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
-content::BrowserContext* CupsPrintersManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
-}
-
 CupsPrintersManagerFactory::CupsPrintersManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "CupsPrintersManagerFactory",
@@ -42,12 +33,31 @@ CupsPrintersManagerFactory::CupsPrintersManagerFactory()
   DependsOn(chromeos::SyncedPrintersManagerFactory::GetInstance());
 }
 
-CupsPrintersManagerFactory::~CupsPrintersManagerFactory() {}
+CupsPrintersManagerFactory::~CupsPrintersManagerFactory() = default;
 
 KeyedService* CupsPrintersManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  // We do not need an instance of CupsPrintersManager on the lockscreen.
+  if (ProfileHelper::IsLockScreenAppProfile(
+          Profile::FromBrowserContext(context)) ||
+      ProfileHelper::IsSigninProfile(Profile::FromBrowserContext(context))) {
+    return nullptr;
+  }
   return CupsPrintersManager::Create(Profile::FromBrowserContext(context))
       .release();
+}
+
+content::BrowserContext* CupsPrintersManagerFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return chrome::GetBrowserContextRedirectedInIncognito(context);
+}
+
+bool CupsPrintersManagerFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
+bool CupsPrintersManagerFactory::ServiceIsNULLWhileTesting() const {
+  return true;
 }
 
 }  // namespace chromeos

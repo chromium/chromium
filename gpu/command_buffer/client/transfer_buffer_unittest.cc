@@ -20,6 +20,7 @@
 
 using ::testing::_;
 using ::testing::AtMost;
+using ::testing::DoAll;
 using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SetArgPointee;

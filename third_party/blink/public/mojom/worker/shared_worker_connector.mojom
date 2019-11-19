@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
+import "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom";
 import "third_party/blink/public/mojom/worker/shared_worker_client.mojom";
 import "third_party/blink/public/mojom/worker/shared_worker_creation_context_type.mojom";
 import "third_party/blink/public/mojom/worker/shared_worker_info.mojom";
@@ -19,8 +20,10 @@ interface SharedWorkerConnector {
   // blob URL. Without this by the time the worker code starts fetching
   // the URL the blob URL might no longer be valid.
   Connect(SharedWorkerInfo info,
-          SharedWorkerClient client,
+          blink.mojom.FetchClientSettingsObject
+              outside_fetch_client_settings_object,
+          pending_remote<SharedWorkerClient> client,
           SharedWorkerCreationContextType creation_context_type,
           handle<message_pipe> message_port,
-          BlobURLToken? blob_url_token);
+          pending_remote<BlobURLToken>? blob_url_token);
 };

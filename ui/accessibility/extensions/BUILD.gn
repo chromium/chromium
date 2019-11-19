@@ -6,15 +6,21 @@ import("//tools/grit/grit_rule.gni")
 
 group("extensions") {
   deps = [
+    ":caretbrowsing",
     ":colorenhancer",
   ]
+  if (is_chromeos) {
+    deps += [ "chromevoxclassic:chromevox" ]
+  }
 }
 
-group("colorenhancer") {
-  deps = [
-    ":colorenhancer_copy",
-    ":colorenhancer_strings",
-  ]
+group("extension_tests") {
+  testonly = true
+  if (is_chromeos) {
+    deps = [
+      "chromevoxclassic:chromevox_tests",
+    ]
+  }
 }
 
 locale_files = [
@@ -73,6 +79,17 @@ locale_files = [
   "_locales/zh_TW/messages.json",
 ]
 
+#
+# Color Enhancer
+#
+
+group("colorenhancer") {
+  deps = [
+    ":colorenhancer_copy",
+    ":colorenhancer_strings",
+  ]
+}
+
 grit("colorenhancer_strings") {
   source = "strings/accessibility_extensions_strings.grd"
   outputs = locale_files
@@ -101,5 +118,48 @@ copy("colorenhancer_copy") {
   sources = colorenhancer_files
   outputs = [
     "$root_out_dir/{{source_target_relative}}",
+  ]
+}
+
+#
+# Caret Browsing
+#
+
+group("caretbrowsing") {
+  deps = [
+    ":caretbrowsing_copy",
+    ":caretbrowsing_strings",
+  ]
+}
+
+grit("caretbrowsing_strings") {
+  source = "strings/accessibility_extensions_strings.grd"
+  outputs = locale_files
+  output_dir = "$root_out_dir/caretbrowsing"
+  depfile_dir = "$root_out_dir"
+  resource_ids = ""
+}
+
+caretbrowsing_files = [
+  "caretbrowsing/background.js",
+  "caretbrowsing/caret_128.png",
+  "caretbrowsing/caret_16.png",
+  "caretbrowsing/caret_19_on.png",
+  "caretbrowsing/caret_19.png",
+  "caretbrowsing/caret_48.png",
+  "caretbrowsing/caretbrowsing.css",
+  "caretbrowsing/caretbrowsing.js",
+  "caretbrowsing/increase_brightness.png",
+  "caretbrowsing/manifest.json",
+  "caretbrowsing/options.html",
+  "caretbrowsing/options.js",
+  "caretbrowsing/traverse_util.js",
+  "//third_party/accessibility-audit/axs_testing.js",
+]
+
+copy("caretbrowsing_copy") {
+  sources = caretbrowsing_files
+  outputs = [
+    "$root_out_dir/caretbrowsing/{{source_file_part}}",
   ]
 }

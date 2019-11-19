@@ -30,27 +30,19 @@
 
 namespace blink {
 
-using namespace html_names;
-
 HTMLAudioElement::HTMLAudioElement(Document& document)
-    : HTMLMediaElement(kAudioTag, document) {}
-
-HTMLAudioElement* HTMLAudioElement::Create(Document& document) {
-  HTMLAudioElement* audio = MakeGarbageCollected<HTMLAudioElement>(document);
-  audio->EnsureUserAgentShadowRoot();
-  audio->UpdateStateIfNeeded();
-  return audio;
+    : HTMLMediaElement(html_names::kAudioTag, document) {
+  EnsureUserAgentShadowRoot();
+  UpdateStateIfNeeded();
 }
 
 HTMLAudioElement* HTMLAudioElement::CreateForJSConstructor(
     Document& document,
     const AtomicString& src) {
   HTMLAudioElement* audio = MakeGarbageCollected<HTMLAudioElement>(document);
-  audio->EnsureUserAgentShadowRoot();
   audio->setPreload(AtomicString("auto"));
   if (!src.IsNull())
     audio->SetSrc(src);
-  audio->UpdateStateIfNeeded();
   return audio;
 }
 

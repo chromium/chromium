@@ -17,6 +17,7 @@ class LeScannerImpl {
   virtual void SetDelegate(LeScanner::Delegate* delegate) = 0;
   virtual bool StartScan() = 0;
   virtual bool StopScan() = 0;
+  virtual bool SetScanParameters(int scan_interval_ms, int scan_window_ms) = 0;
 };
 
 }  // namespace bluetooth_v2_shlib

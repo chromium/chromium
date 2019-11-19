@@ -4,7 +4,7 @@
 
 #include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
 
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread.h"
 #include "dbus/bus.h"
 
@@ -14,7 +14,7 @@ static BluezDBusThreadManager* g_bluez_dbus_thread_manager = NULL;
 
 BluezDBusThreadManager::BluezDBusThreadManager() {
   base::Thread::Options thread_options;
-  thread_options.message_loop_type = base::MessageLoop::TYPE_IO;
+  thread_options.message_pump_type = base::MessagePumpType::IO;
   dbus_thread_.reset(new base::Thread("Bluez D-Bus thread"));
   dbus_thread_->StartWithOptions(thread_options);
 

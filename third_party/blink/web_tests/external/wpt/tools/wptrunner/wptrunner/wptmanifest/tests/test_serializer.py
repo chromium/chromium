@@ -6,6 +6,8 @@ import pytest
 from .. import parser, serializer
 
 
+@pytest.mark.xfail(sys.version[0] == "3",
+                   reason="wptmanifest.parser doesn't support py3")
 class TokenizerTest(unittest.TestCase):
     def setUp(self):
         self.serializer = serializer.ManifestSerializer()
@@ -144,7 +146,7 @@ class TokenizerTest(unittest.TestCase):
 """)
 
     def test_18(self):
-        self.compare("""key: \]
+        self.compare(r"""key: \]
         """, """key: ]
 """)
 
@@ -227,4 +229,8 @@ class TokenizerTest(unittest.TestCase):
     def test_conditional_1(self):
         self.compare("""foo:
   if a or b: [1, 2]
+""")
+
+    def test_if_string_0(self):
+        self.compare("""foo: "if bar"
 """)

@@ -11,50 +11,43 @@
 #include "chrome/browser/chromeos/login/enrollment/mock_enrollment_screen.h"
 #include "chrome/browser/chromeos/login/login_wizard.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screens/mock_base_screen_delegate.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
+#include "chrome/browser/chromeos/login/test/enrollment_ui_mixin.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/ui/webui_login_view.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/test/chromeos_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::_;
 using testing::InvokeWithoutArgs;
 using testing::Mock;
-using testing::_;
 
 namespace chromeos {
 
-class EnrollmentScreenTest : public InProcessBrowserTest {
+class EnrollmentScreenTest : public MixinBasedInProcessBrowserTest {
  public:
   EnrollmentScreenTest() = default;
   ~EnrollmentScreenTest() override = default;
 
-  // InProcessBrowserTest:
+  // MixinBasedInProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendArg(switches::kLoginManager);
   }
+
+  // MixinBasedInProcessBrowserTest:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    ShowLoginWizard(OobeScreen::SCREEN_OOBE_ENROLLMENT);
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    ShowLoginWizard(EnrollmentScreenView::kScreenId);
     EXPECT_EQ(WizardController::default_controller()->current_screen(),
               enrollment_screen());
-    static_cast<BaseScreen*>(enrollment_screen())->base_screen_delegate_ =
-        &mock_base_screen_delegate_;
-    enrollment_screen()->set_exit_callback_for_testing(base::BindRepeating(
-        &EnrollmentScreenTest::HandleScreenExit, base::Unretained(this)));
-  }
-  void TearDownOnMainThread() override {
-    static_cast<BaseScreen*>(enrollment_screen())->base_screen_delegate_ =
-        WizardController::default_controller();
-    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   EnrollmentScreen* enrollment_screen() {
@@ -65,53 +58,24 @@ class EnrollmentScreenTest : public InProcessBrowserTest {
     return enrollment_screen;
   }
 
-  MockBaseScreenDelegate* mock_base_screen_delegate() {
-    return &mock_base_screen_delegate_;
-  }
-
-  // Runs loop until the enrollment screen reports exit. It will return the
-  // last result returned by the enrollment screen.
-  // NOTE: This will not work if the screen is expected to be shown more than
-  // once - to support that use case, screen_result_ would have to be reset
-  // before showing another EnrollmentScreen.
-  EnrollmentScreen::Result WaitForScreenExit() {
-    if (screen_result_.has_value())
-      return screen_result_.value();
-    if (!screen_exit_waiter_)
-      screen_exit_waiter_ = std::make_unique<base::RunLoop>();
-    screen_exit_waiter_->Run();
-    return screen_result_.value();
-  }
+  test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
 
  private:
-  void HandleScreenExit(EnrollmentScreen::Result result) {
-    EXPECT_FALSE(screen_result_.has_value());
-    screen_result_ = result;
-    if (screen_exit_waiter_)
-      screen_exit_waiter_->Quit();
-  }
-
-  MockBaseScreenDelegate mock_base_screen_delegate_;
-  base::Optional<EnrollmentScreen::Result> screen_result_;
-
-  // Created lazily in WaitForScreenExit().
-  // Note: unique_ptr because RunLoops cannot be created without a thread
-  // context, which does not exist in the test ctor.
-  std::unique_ptr<base::RunLoop> screen_exit_waiter_;
-
   DISALLOW_COPY_AND_ASSIGN(EnrollmentScreenTest);
 };
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TestCancel) {
+  enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
-  EnrollmentScreen::Result screen_result = WaitForScreenExit();
+  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
   EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, screen_result);
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TestSuccess) {
   WizardController::SkipEnrollmentPromptsForTesting();
+  enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnDeviceAttributeUpdatePermission(false /* granted */);
-  EnrollmentScreen::Result screen_result = WaitForScreenExit();
+  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
   EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, screen_result);
 
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
@@ -134,8 +98,9 @@ class AttestationAuthEnrollmentScreenTest : public EnrollmentScreenTest {
 
 IN_PROC_BROWSER_TEST_F(AttestationAuthEnrollmentScreenTest, TestCancel) {
   ASSERT_FALSE(enrollment_screen()->AdvanceToNextAuth());
+  enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
-  EnrollmentScreen::Result screen_result = WaitForScreenExit();
+  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
   EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, screen_result);
 }
 
@@ -143,25 +108,16 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, EnrollmentSpinner) {
   EnrollmentScreenView* view = enrollment_screen()->GetView();
   ASSERT_TRUE(view);
 
-  test::JSChecker checker(
-      LoginDisplayHost::default_host()->GetOobeWebContents());
-
   // Run through the flow
   view->Show();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_ENROLLMENT).Wait();
-  checker.ExpectTrue(
-      "window.getComputedStyle(document.getElementById('oauth-enroll-step-"
-      "signin')).display !== 'none'");
+  OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
 
   view->ShowEnrollmentSpinnerScreen();
-  checker.ExpectTrue(
-      "window.getComputedStyle(document.getElementById('oauth-enroll-step-"
-      "working')).display !== 'none'");
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepWorking);
 
   view->ShowAttestationBasedEnrollmentSuccessScreen("fake domain");
-  checker.ExpectTrue(
-      "window.getComputedStyle(document.getElementById('oauth-enroll-step-"
-      "success')).display !== 'none'");
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
 }
 
 class ForcedAttestationAuthEnrollmentScreenTest : public EnrollmentScreenTest {
@@ -182,8 +138,9 @@ class ForcedAttestationAuthEnrollmentScreenTest : public EnrollmentScreenTest {
 
 IN_PROC_BROWSER_TEST_F(ForcedAttestationAuthEnrollmentScreenTest, TestCancel) {
   ASSERT_FALSE(enrollment_screen()->AdvanceToNextAuth());
+  enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
-  EnrollmentScreen::Result screen_result = WaitForScreenExit();
+  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
   EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
 }
 
@@ -211,8 +168,9 @@ class MultiAuthEnrollmentScreenTest : public EnrollmentScreenTest {
 
 IN_PROC_BROWSER_TEST_F(MultiAuthEnrollmentScreenTest, TestCancel) {
   ASSERT_TRUE(enrollment_screen()->AdvanceToNextAuth());
+  enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
-  EnrollmentScreen::Result screen_result = WaitForScreenExit();
+  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
   EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
 }
 
@@ -237,8 +195,9 @@ class ProvisionedEnrollmentScreenTest : public EnrollmentScreenTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ProvisionedEnrollmentScreenTest, TestBackButton) {
+  enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
-  EnrollmentScreen::Result screen_result = WaitForScreenExit();
+  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
   EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
 }
 

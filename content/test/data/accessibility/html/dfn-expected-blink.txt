@@ -1,7 +1,4 @@
 rootWebArea
 ++genericContainer
 ++++staticText name='Web Browser'
-++++++inlineTextBox name='Web Browser'
 ++++staticText name=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'
-++++++inlineTextBox name=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World '
-++++++inlineTextBox name='Wide Web.'

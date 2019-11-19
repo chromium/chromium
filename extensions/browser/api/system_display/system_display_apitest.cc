@@ -103,7 +103,7 @@ class MockDisplayInfoProvider : public DisplayInfoProvider {
   }
 
   bool OverscanCalibrationStart(const std::string& id) override {
-    if (base::ContainsKey(overscan_started_, id))
+    if (base::Contains(overscan_started_, id))
       return false;
     overscan_started_.insert(id);
     return true;
@@ -112,21 +112,21 @@ class MockDisplayInfoProvider : public DisplayInfoProvider {
   bool OverscanCalibrationAdjust(
       const std::string& id,
       const api::system_display::Insets& delta) override {
-    if (!base::ContainsKey(overscan_started_, id))
+    if (!base::Contains(overscan_started_, id))
       return false;
     overscan_adjusted_.insert(id);
     return true;
   }
 
   bool OverscanCalibrationReset(const std::string& id) override {
-    if (!base::ContainsKey(overscan_started_, id))
+    if (!base::Contains(overscan_started_, id))
       return false;
     overscan_adjusted_.erase(id);
     return true;
   }
 
   bool OverscanCalibrationComplete(const std::string& id) override {
-    if (!base::ContainsKey(overscan_started_, id))
+    if (!base::Contains(overscan_started_, id))
       return false;
     overscan_started_.erase(id);
     return true;
@@ -141,11 +141,11 @@ class MockDisplayInfoProvider : public DisplayInfoProvider {
   bool unified_desktop_enabled() const { return unified_desktop_enabled_; }
 
   bool calibration_started(const std::string& id) const {
-    return base::ContainsKey(overscan_started_, id);
+    return base::Contains(overscan_started_, id);
   }
 
   bool calibration_changed(const std::string& id) const {
-    return base::ContainsKey(overscan_adjusted_, id);
+    return base::Contains(overscan_adjusted_, id);
   }
 
   const api::system_display::MirrorMode& mirror_mode() const {

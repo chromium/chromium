@@ -28,8 +28,11 @@ class POLICY_EXPORT UserCloudPolicyStoreBase : public CloudPolicyStore {
  public:
   UserCloudPolicyStoreBase(
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      PolicyScope policy_scope);
+      PolicyScope policy_scope,
+      PolicySource policy_source);
   ~UserCloudPolicyStoreBase() override;
+
+  PolicySource source() { return policy_source_; }
 
  protected:
   // Creates a validator configured to validate a user policy. The caller owns
@@ -53,6 +56,7 @@ class POLICY_EXPORT UserCloudPolicyStoreBase : public CloudPolicyStore {
   // Task runner for background file operations.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   PolicyScope policy_scope_;
+  PolicySource policy_source_;
 
   DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStoreBase);
 };

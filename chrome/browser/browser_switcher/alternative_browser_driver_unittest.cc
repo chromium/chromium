@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -42,7 +43,7 @@ base::ListValue UTF8VectorToListValue(
   base::ListValue out;
   out.GetList().reserve(src.size());
   for (base::StringPiece str : src)
-    out.GetList().push_back(base::Value(str));
+    out.Append(base::Value(str));
   return out;
 }
 
@@ -98,6 +99,42 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLineExpandsUrl) {
   EXPECT_EQ(2u, argv.size());
   EXPECT_EQ(UTF8ToNative("/usr/bin/true"), argv[0]);
   EXPECT_EQ(UTF8ToNative("--flag=http://example.com/#fragment"), argv[1]);
+}
+
+TEST_F(AlternativeBrowserDriverTest, GetBrowserName) {
+#if defined(OS_WIN)
+  std::string expected = "Internet Explorer";
+#elif defined(OS_MACOSX)
+  std::string expected = "Safari";
+#else
+  std::string expected = "";
+#endif
+  std::string actual = driver()->GetBrowserName();
+  EXPECT_EQ(expected, actual);
+
+  SetBrowserPath("bogus.exe");
+  actual = driver()->GetBrowserName();
+  EXPECT_EQ("", actual);
+
+#if defined(OS_WIN)
+  SetBrowserPath("${ie}");
+  actual = driver()->GetBrowserName();
+  EXPECT_EQ("Internet Explorer", actual);
+#endif
+
+#if defined(OS_WIN) || defined(OS_MACOSX)
+  SetBrowserPath("${safari}");
+  actual = driver()->GetBrowserName();
+  EXPECT_EQ("Safari", actual);
+#endif
+
+  SetBrowserPath("${firefox}");
+  actual = driver()->GetBrowserName();
+  EXPECT_EQ("Mozilla Firefox", actual);
+
+  SetBrowserPath("${opera}");
+  actual = driver()->GetBrowserName();
+  EXPECT_EQ("Opera", actual);
 }
 
 #if defined(OS_WIN)

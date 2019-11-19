@@ -8,10 +8,12 @@
 #include <memory>
 
 #include "base/threading/thread.h"
-#include "services/viz/privileged/interfaces/compositing/frame_sink_manager.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 
 namespace viz {
-class VizCompositorThreadRunner;
+class VizCompositorThreadRunnerImpl;
 }  // namespace viz
 
 namespace demo {
@@ -22,12 +24,12 @@ namespace demo {
 // the host over the mojom.FrameSinkManagerClient API.
 class DemoService {
  public:
-  DemoService(viz::mojom::FrameSinkManagerRequest request,
-              viz::mojom::FrameSinkManagerClientPtr client);
+  DemoService(mojo::PendingReceiver<viz::mojom::FrameSinkManager> receiver,
+              mojo::PendingRemote<viz::mojom::FrameSinkManagerClient> client);
   ~DemoService();
 
  private:
-  std::unique_ptr<viz::VizCompositorThreadRunner> runner_;
+  std::unique_ptr<viz::VizCompositorThreadRunnerImpl> runner_;
 
   DISALLOW_COPY_AND_ASSIGN(DemoService);
 };

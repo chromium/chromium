@@ -23,9 +23,7 @@ proto_library("quic_trace_proto") {
   sources = [
     "$target_gen_dir/quic_trace.proto",
   ]
-  deps = [
-    ":quic_trace_proto_lite_runtime",
-  ]
+  proto_deps = [ ":quic_trace_proto_lite_runtime" ]
   component_build_force_source_set = true
   testonly = true
 

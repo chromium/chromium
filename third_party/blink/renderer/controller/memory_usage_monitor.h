@@ -6,9 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_MEMORY_USAGE_MONITOR_H_
 
 #include "base/observer_list.h"
+#include "base/timer/timer.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
 #include "third_party/blink/renderer/platform/timer.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
+namespace base {
+class TestMockTimeTaskRunner;
+class TickClock;
+}  // namespace base
 
 namespace blink {
 
@@ -20,6 +26,7 @@ struct MemoryUsage {
   double private_footprint_bytes = std::numeric_limits<double>::quiet_NaN();
   double swap_bytes = std::numeric_limits<double>::quiet_NaN();
   double vm_size_bytes = std::numeric_limits<double>::quiet_NaN();
+  double peak_resident_bytes = std::numeric_limits<double>::quiet_NaN();
 };
 
 // Periodically checks the memory usage and notifies its observers. Monitoring
@@ -29,6 +36,7 @@ class CONTROLLER_EXPORT MemoryUsageMonitor {
 
  public:
   static MemoryUsageMonitor& Instance();
+  static void SetInstanceForTesting(MemoryUsageMonitor*);
 
   class Observer : public base::CheckedObserver {
    public:
@@ -47,9 +55,13 @@ class CONTROLLER_EXPORT MemoryUsageMonitor {
   void RemoveObserver(Observer*);
   bool HasObserver(Observer*);
 
-  bool TimerIsActive() const { return timer_.IsActive(); }
+  bool TimerIsActive() const { return timer_.IsRunning(); }
 
  protected:
+  MemoryUsageMonitor(
+      scoped_refptr<base::TestMockTimeTaskRunner> task_runner_for_testing,
+      const base::TickClock* clock_for_testing);
+
   // Adds V8 related memory usage data to the given struct.
   void GetV8MemoryUsage(MemoryUsage&);
   // Adds Blink related memory usage data to the given struct.
@@ -61,9 +73,9 @@ class CONTROLLER_EXPORT MemoryUsageMonitor {
   virtual void StartMonitoringIfNeeded();
   virtual void StopMonitoring();
 
-  void TimerFired(TimerBase*);
+  void TimerFired();
 
-  TaskRunnerTimer<MemoryUsageMonitor> timer_;
+  base::RepeatingTimer timer_;
   base::ObserverList<Observer> observers_;
 };
 

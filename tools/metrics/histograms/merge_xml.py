@@ -8,8 +8,12 @@
 import argparse
 import xml.dom.minidom
 
+import expand_owners
+import extract_histograms
+
+
 def GetElementsByTagName(trees, tag):
-  """Get all elements with the specified tag from a set of DOM trees.
+  """Gets all elements with the specified tag from a set of DOM trees.
 
   Args:
     trees: A list of DOM trees.
@@ -17,11 +21,12 @@ def GetElementsByTagName(trees, tag):
   Returns:
     A list of DOM nodes with the specified tag.
   """
-  return [e for t in trees for e in t.getElementsByTagName(tag)]
+  iterator = extract_histograms.IterElementsWithTag
+  return list(e for t in trees for e in iterator(t, tag, 2))
 
 
 def MakeNodeWithChildren(doc, tag, children):
-  """Create a dom node with specified tag and child nodes.
+  """Creates a DOM node with specified tag and child nodes.
 
   Args:
     doc: The document to create the node in.
@@ -32,12 +37,14 @@ def MakeNodeWithChildren(doc, tag, children):
   """
   node = doc.createElement(tag)
   for child in children:
+    if child.tagName == 'histograms':
+      expand_owners.ExpandHistogramsOWNERS(child)
     node.appendChild(child)
   return node
 
 
 def MergeTrees(trees):
-  """Merge a list of histograms.xml DOM trees.
+  """Merges a list of histograms.xml DOM trees.
 
   Args:
     trees: A list of histograms.xml DOM trees.
@@ -55,7 +62,7 @@ def MergeTrees(trees):
 
 
 def MergeFiles(filenames):
-  """Merge a list of histograms.xml files.
+  """Merges a list of histograms.xml files.
 
   Args:
     filenames: A list of histograms.xml filenames.
@@ -76,4 +83,3 @@ def main():
 
 if __name__ == '__main__':
   main()
-

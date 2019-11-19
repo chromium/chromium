@@ -48,7 +48,7 @@ class TestOmniboxView : public OmniboxView {
   void SelectAll(bool reversed) override;
   void RevertAll() override {}
   void UpdatePopup() override {}
-  void SetFocus() override {}
+  void SetFocus(bool is_user_initiated) override {}
   void ApplyCaretVisibility() override {}
   void OnTemporaryTextMaybeChanged(const base::string16& display_text,
                                    const AutocompleteMatch& match,
@@ -57,7 +57,8 @@ class TestOmniboxView : public OmniboxView {
   bool OnInlineAutocompleteTextMaybeChanged(const base::string16& display_text,
                                             size_t user_text_length) override;
   void OnInlineAutocompleteTextCleared() override;
-  void OnRevertTemporaryText() override {}
+  void OnRevertTemporaryText(const base::string16& display_text,
+                             const AutocompleteMatch& match) override;
   void OnBeforePossibleChange() override {}
   bool OnAfterPossibleChange(bool allow_keyword_ui_change) override;
   gfx::NativeView GetNativeView() const override;
@@ -72,6 +73,7 @@ class TestOmniboxView : public OmniboxView {
   base::string16 text_;
   base::string16 inline_autocomplete_text_;
   gfx::Range selection_;
+  gfx::Range saved_temporary_selection_;
 
   DISALLOW_COPY_AND_ASSIGN(TestOmniboxView);
 };

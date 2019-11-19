@@ -23,7 +23,6 @@
 
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -31,9 +30,9 @@ namespace blink {
 static const char* UILanguage() {
   // Chrome's UI language can be different from the OS UI language on Windows.
   // We want to return Chrome's UI language here.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const CString, locale,
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const std::string, locale,
                                   (DefaultLanguage().Latin1()));
-  return locale.data();
+  return locale.c_str();
 }
 
 const char* CurrentSearchLocaleID() {

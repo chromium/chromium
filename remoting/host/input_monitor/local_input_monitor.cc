@@ -13,7 +13,7 @@
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/input_monitor/local_hotkey_input_monitor.h"
 #include "remoting/host/input_monitor/local_keyboard_input_monitor.h"
-#include "remoting/host/input_monitor/local_mouse_input_monitor.h"
+#include "remoting/host/input_monitor/local_pointer_input_monitor.h"
 
 namespace remoting {
 namespace {
@@ -29,8 +29,8 @@ class LocalInputMonitorImpl : public LocalInputMonitor {
   // LocalInputMonitor implementation.
   void StartMonitoringForClientSession(
       base::WeakPtr<ClientSessionControl> client_session_control) override;
-  void StartMonitoring(MouseMoveCallback on_mouse_input,
-                       base::RepeatingClosure on_keyboard_input,
+  void StartMonitoring(PointerMoveCallback on_pointer_input,
+                       KeyPressedCallback on_keyboard_input,
                        base::RepeatingClosure on_error) override;
 
  private:
@@ -42,7 +42,7 @@ class LocalInputMonitorImpl : public LocalInputMonitor {
 
   std::unique_ptr<LocalHotkeyInputMonitor> hotkey_input_monitor_;
   std::unique_ptr<LocalKeyboardInputMonitor> keyboard_input_monitor_;
-  std::unique_ptr<LocalMouseInputMonitor> mouse_input_monitor_;
+  std::unique_ptr<LocalPointerInputMonitor> pointer_input_monitor_;
 
   // Indicates whether the instance is actively monitoring local input.
   bool monitoring_ = false;
@@ -67,9 +67,9 @@ LocalInputMonitorImpl::~LocalInputMonitorImpl() {
     if (keyboard_input_monitor_)
       caller_task_runner_->DeleteSoon(FROM_HERE,
                                       keyboard_input_monitor_.release());
-    if (mouse_input_monitor_)
+    if (pointer_input_monitor_)
       caller_task_runner_->DeleteSoon(FROM_HERE,
-                                      mouse_input_monitor_.release());
+                                      pointer_input_monitor_.release());
   }
   caller_task_runner_ = nullptr;
 }
@@ -83,9 +83,16 @@ void LocalInputMonitorImpl::StartMonitoringForClientSession(
       base::BindOnce(&ClientSessionControl::DisconnectSession,
                      client_session_control, protocol::OK));
 
-  mouse_input_monitor_ = LocalMouseInputMonitor::Create(
+  pointer_input_monitor_ = LocalPointerInputMonitor::Create(
       caller_task_runner_, input_task_runner_, ui_task_runner_,
-      base::BindRepeating(&ClientSessionControl::OnLocalMouseMoved,
+      base::BindRepeating(&ClientSessionControl::OnLocalPointerMoved,
+                          client_session_control),
+      base::BindOnce(&ClientSessionControl::DisconnectSession,
+                     client_session_control, protocol::OK));
+
+  keyboard_input_monitor_ = LocalKeyboardInputMonitor::Create(
+      caller_task_runner_, input_task_runner_, ui_task_runner_,
+      base::BindRepeating(&ClientSessionControl::OnLocalKeyPressed,
                           client_session_control),
       base::BindOnce(&ClientSessionControl::DisconnectSession,
                      client_session_control, protocol::OK));
@@ -94,17 +101,17 @@ void LocalInputMonitorImpl::StartMonitoringForClientSession(
 }
 
 void LocalInputMonitorImpl::StartMonitoring(
-    MouseMoveCallback on_mouse_input,
-    base::RepeatingClosure on_keyboard_input,
+    PointerMoveCallback on_pointer_input,
+    KeyPressedCallback on_keyboard_input,
     base::RepeatingClosure on_error) {
   DCHECK(!monitoring_);
   DCHECK(on_error);
-  DCHECK(on_mouse_input || on_keyboard_input);
+  DCHECK(on_pointer_input || on_keyboard_input);
 
-  if (on_mouse_input) {
-    mouse_input_monitor_ = LocalMouseInputMonitor::Create(
+  if (on_pointer_input) {
+    pointer_input_monitor_ = LocalPointerInputMonitor::Create(
         caller_task_runner_, input_task_runner_, ui_task_runner_,
-        std::move(on_mouse_input), base::BindOnce(on_error));
+        std::move(on_pointer_input), base::BindOnce(on_error));
   }
   if (on_keyboard_input) {
     keyboard_input_monitor_ = LocalKeyboardInputMonitor::Create(

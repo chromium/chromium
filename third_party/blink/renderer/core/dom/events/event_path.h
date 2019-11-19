@@ -43,8 +43,7 @@ class TouchList;
 class TreeScope;
 class WindowEventContext;
 
-class CORE_EXPORT EventPath final
-    : public GarbageCollectedFinalized<EventPath> {
+class CORE_EXPORT EventPath final : public GarbageCollected<EventPath> {
  public:
   explicit EventPath(Node&, Event* = nullptr);
 

@@ -1,0 +1,13 @@
+<!doctype html>
+<style>
+#target {
+  width: 200px;
+  height: 200px;
+  background-color: green;
+  /* Cross-origin request is OK because the "Access-Control-Allow-Origin: *" is returned. */
+  -webkit-mask-image: url("http://localhost:8080/security/resources/image-access-control.php?file=../../resources/square100.png&allow=true");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+</style>
+<div id="target"></div>

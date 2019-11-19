@@ -15,18 +15,16 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "chromeos/dbus/cryptohome_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_cryptohome_client.h"
-#include "chromeos/dbus/fake_session_manager_client.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,8 +79,6 @@ class DisplayRotationDefaultTest
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    InstallOwnerKey();
-    MarkAsEnterpriseOwned();
     ash::DisplayConfigurationController::DisableAnimatorForTest();
     DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
   }
@@ -260,28 +256,29 @@ INSTANTIATE_TEST_SUITE_P(PolicyDisplayRotationDefault,
 // Thus, DeviceSettingsProvider falls back on the cached values (using
 // device_settings_cache::Retrieve()).
 class DisplayRotationBootTest
-    : public InProcessBrowserTest,
+    : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<display::Display::Rotation> {
  protected:
-  DisplayRotationBootTest()
-      : fake_session_manager_client_(new chromeos::FakeSessionManagerClient) {}
-  ~DisplayRotationBootTest() override {}
+  DisplayRotationBootTest() {
+    device_state_.set_skip_initial_policy_setup(true);
+  }
+  ~DisplayRotationBootTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetSessionManagerClient(
-        std::unique_ptr<chromeos::SessionManagerClient>(
-            fake_session_manager_client_));
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetCryptohomeClient(
-        std::unique_ptr<chromeos::CryptohomeClient>(
-            new chromeos::FakeCryptohomeClient));
-
-    test_helper_.InstallOwnerKey();
-    test_helper_.MarkAsEnterpriseOwned();
+    // Override FakeSessionManagerClient. This will be shut down by the browser.
+    chromeos::SessionManagerClient::InitializeFakeInMemory();
     ash::DisplayConfigurationController::DisableAnimatorForTest();
+    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
-  chromeos::FakeSessionManagerClient* fake_session_manager_client_;
   policy::DevicePolicyCrosTestHelper test_helper_;
+
+  chromeos::DeviceStateMixin device_state_{
+      &mixin_host_,
+      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(DisplayRotationBootTest);
 };
 
 IN_PROC_BROWSER_TEST_P(DisplayRotationBootTest, PRE_Reboot) {
@@ -300,8 +297,9 @@ IN_PROC_BROWSER_TEST_P(DisplayRotationBootTest, PRE_Reboot) {
           chromeos::kDisplayRotationDefault, run_loop.QuitClosure());
   device_policy->SetDefaultSigningKey();
   device_policy->Build();
-  fake_session_manager_client_->set_device_policy(device_policy->GetBlob());
-  fake_session_manager_client_->OnPropertyChangeComplete(true);
+  chromeos::FakeSessionManagerClient::Get()->set_device_policy(
+      device_policy->GetBlob());
+  chromeos::FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
   run_loop.Run();
   // Allow tasks posted by CrosSettings observers to complete:
   base::RunLoop().RunUntilIdle();

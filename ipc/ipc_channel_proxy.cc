@@ -32,7 +32,7 @@ ChannelProxy::Context::Context(
     Listener* listener,
     const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
     const scoped_refptr<base::SingleThreadTaskRunner>& listener_task_runner)
-    : listener_task_runner_(listener_task_runner),
+    : default_listener_task_runner_(listener_task_runner),
       listener_(listener),
       ipc_task_runner_(ipc_task_runner),
       channel_connected_called_(false),
@@ -47,13 +47,14 @@ ChannelProxy::Context::Context(
   // Note, we currently make an exception for a NULL listener. That usage
   // basically works, but is outside the intent of ChannelProxy. This support
   // will disappear, so please don't rely on it. See crbug.com/364241
-  DCHECK(!listener || (ipc_task_runner_.get() != listener_task_runner_.get()));
+  DCHECK(!listener ||
+         (ipc_task_runner_.get() != default_listener_task_runner_.get()));
 }
 
 ChannelProxy::Context::~Context() = default;
 
 void ChannelProxy::Context::ClearIPCTaskRunner() {
-  ipc_task_runner_ = NULL;
+  ipc_task_runner_.reset();
 }
 
 void ChannelProxy::Context::CreateChannel(
@@ -85,9 +86,9 @@ bool ChannelProxy::Context::TryFilters(const Message& message) {
 
   if (message_filter_router_->TryFilters(message)) {
     if (message.dispatch_error()) {
-      listener_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&Context::OnDispatchBadMessage, this, message));
+      GetTaskRunner(message.routing_id())
+          ->PostTask(FROM_HERE, base::BindOnce(&Context::OnDispatchBadMessage,
+                                               this, message));
     }
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
     if (logger->Enabled())
@@ -126,8 +127,9 @@ bool ChannelProxy::Context::OnMessageReceived(const Message& message) {
 
 // Called on the IPC::Channel thread
 bool ChannelProxy::Context::OnMessageReceivedNoFilter(const Message& message) {
-  listener_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&Context::OnDispatchMessage, this, message));
+  GetTaskRunner(message.routing_id())
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&Context::OnDispatchMessage, this, message));
   return true;
 }
 
@@ -145,8 +147,8 @@ void ChannelProxy::Context::OnChannelConnected(int32_t peer_pid) {
   // the filter is run on the IO thread.
   OnAddFilter();
 
-  // See above comment about using listener_task_runner_ here.
-  listener_task_runner_->PostTask(
+  // See above comment about using default_listener_task_runner_ here.
+  default_listener_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Context::OnDispatchConnected, this));
 }
 
@@ -155,8 +157,8 @@ void ChannelProxy::Context::OnChannelError() {
   for (size_t i = 0; i < filters_.size(); ++i)
     filters_[i]->OnChannelError();
 
-  // See above comment about using listener_task_runner_ here.
-  listener_task_runner_->PostTask(
+  // See above comment about using default_listener_task_runner_ here.
+  default_listener_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Context::OnDispatchError, this));
 }
 
@@ -164,7 +166,7 @@ void ChannelProxy::Context::OnChannelError() {
 void ChannelProxy::Context::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
-  listener_task_runner_->PostTask(
+  default_listener_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Context::OnDispatchAssociatedInterfaceRequest,
                                 this, interface_name, std::move(handle)));
 }
@@ -222,6 +224,9 @@ void ChannelProxy::Context::Clear() {
 
 // Called on the IPC::Channel thread
 void ChannelProxy::Context::OnSendMessage(std::unique_ptr<Message> message) {
+  if (quota_checker_)
+    quota_checker_->AfterMessagesDequeued(1);
+
   if (!channel_) {
     OnChannelClosed();
     return;
@@ -328,6 +333,39 @@ void ChannelProxy::Context::OnDispatchMessage(const Message& message) {
 #endif
 }
 
+// Called on the listener's thread.
+void ChannelProxy::Context::AddListenerTaskRunner(
+    int32_t routing_id,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  DCHECK(default_listener_task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner);
+  base::AutoLock lock(listener_thread_task_runners_lock_);
+  if (!base::Contains(listener_thread_task_runners_, routing_id))
+    listener_thread_task_runners_.insert({routing_id, std::move(task_runner)});
+}
+
+// Called on the listener's thread.
+void ChannelProxy::Context::RemoveListenerTaskRunner(int32_t routing_id) {
+  DCHECK(default_listener_task_runner_->BelongsToCurrentThread());
+  base::AutoLock lock(listener_thread_task_runners_lock_);
+  listener_thread_task_runners_.erase(routing_id);
+}
+
+// Called on the IPC::Channel thread.
+scoped_refptr<base::SingleThreadTaskRunner>
+ChannelProxy::Context::GetTaskRunner(int32_t routing_id) {
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+  if (routing_id == MSG_ROUTING_NONE)
+    return default_listener_task_runner_;
+
+  base::AutoLock lock(listener_thread_task_runners_lock_);
+  auto task_runner = listener_thread_task_runners_.find(routing_id);
+  if (task_runner == listener_thread_task_runners_.end())
+    return default_listener_task_runner_;
+  DCHECK(task_runner->second);
+  return task_runner->second;
+}
+
 // Called on the listener's thread
 void ChannelProxy::Context::OnDispatchConnected() {
   if (channel_connected_called_)
@@ -384,6 +422,9 @@ void ChannelProxy::Context::AddGenericAssociatedInterfaceForIOThread(
 }
 
 void ChannelProxy::Context::Send(Message* message) {
+  if (quota_checker_)
+    quota_checker_->BeforeMessagesEnqueued(1);
+
   ipc_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&ChannelProxy::Context::OnSendMessage, this,
                                 base::WrapUnique(message)));
@@ -461,6 +502,9 @@ void ChannelProxy::Init(std::unique_ptr<ChannelFactory> factory,
                         bool create_pipe_now) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!did_init_);
+
+  DCHECK(!context_->quota_checker_);
+  context_->quota_checker_ = factory->GetQuotaChecker();
 
   if (create_pipe_now) {
     // Create the channel immediately.  This effectively sets up the

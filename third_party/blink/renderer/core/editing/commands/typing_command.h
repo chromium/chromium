@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/composite_edit_command.h"
 #include "third_party/blink/renderer/core/editing/text_granularity.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -197,11 +198,12 @@ class CORE_EXPORT TypingCommand final : public CompositeEditCommand {
   InputEvent::InputType input_type_;
 };
 
-DEFINE_TYPE_CASTS(TypingCommand,
-                  CompositeEditCommand,
-                  command,
-                  command->IsTypingCommand(),
-                  command.IsTypingCommand());
+template <>
+struct DowncastTraits<TypingCommand> {
+  static bool AllowFrom(const CompositeEditCommand& command) {
+    return command.IsTypingCommand();
+  }
+};
 
 }  // namespace blink
 

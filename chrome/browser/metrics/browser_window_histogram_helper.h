@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 
 // Class that encapsulates logic of recording
@@ -37,7 +38,7 @@ class BrowserWindowHistogramHelper : public ui::CompositorObserver {
   void OnCompositingEnded(ui::Compositor* compositor) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
-  ScopedObserver<ui::Compositor, ui::CompositorObserver> scoped_observer_;
+  ScopedObserver<ui::Compositor, ui::CompositorObserver> scoped_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BrowserWindowHistogramHelper);
 };

@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -38,15 +40,21 @@ class PresentationReceiverTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    controller_connection_request_ = mojo::MakeRequest(&controller_connection_);
-    receiver_connection_request_ = mojo::MakeRequest(&receiver_connection_);
+    controller_connection_receiver_ =
+        controller_connection_.InitWithNewPipeAndPassReceiver();
+    receiver_connection_receiver_ =
+        receiver_connection_.InitWithNewPipeAndPassReceiver();
   }
 
   mojom::blink::PresentationInfo connection_info_;
-  mojom::blink::PresentationConnectionRequest controller_connection_request_;
-  mojom::blink::PresentationConnectionPtr controller_connection_;
-  mojom::blink::PresentationConnectionRequest receiver_connection_request_;
-  mojom::blink::PresentationConnectionPtr receiver_connection_;
+  mojo::PendingReceiver<mojom::blink::PresentationConnection>
+      controller_connection_receiver_;
+  mojo::PendingRemote<mojom::blink::PresentationConnection>
+      controller_connection_;
+  mojo::PendingReceiver<mojom::blink::PresentationConnection>
+      receiver_connection_receiver_;
+  mojo::PendingRemote<mojom::blink::PresentationConnection>
+      receiver_connection_;
 };
 
 void PresentationReceiverTest::AddConnectionavailableEventListener(
@@ -102,7 +110,7 @@ TEST_F(PresentationReceiverTest, OneConnectionResolvedConnectionListNoEvent) {
   // Receive first connection.
   receiver->OnReceiverConnectionAvailable(
       connection_info_.Clone(), std::move(controller_connection_),
-      std::move(receiver_connection_request_));
+      std::move(receiver_connection_receiver_));
 
   VerifyConnectionListPropertyState(ScriptPromisePropertyBase::kResolved,
                                     receiver);
@@ -125,19 +133,23 @@ TEST_F(PresentationReceiverTest, TwoConnectionsFireOnconnectionavailableEvent) {
   // Receive first connection.
   receiver->OnReceiverConnectionAvailable(
       connection_info_.Clone(), std::move(controller_connection_),
-      std::move(receiver_connection_request_));
+      std::move(receiver_connection_receiver_));
 
-  mojom::blink::PresentationConnectionPtr controller_connection_2;
-  mojom::blink::PresentationConnectionPtr receiver_connection_2;
-  mojom::blink::PresentationConnectionRequest controller_connection_request_2 =
-      mojo::MakeRequest(&controller_connection_2);
-  mojom::blink::PresentationConnectionRequest receiver_connection_request_2 =
-      mojo::MakeRequest(&receiver_connection_2);
+  mojo::PendingRemote<mojom::blink::PresentationConnection>
+      controller_connection_2_;
+  mojo::PendingRemote<mojom::blink::PresentationConnection>
+      receiver_connection_2_;
+  mojo::PendingReceiver<mojom::blink::PresentationConnection>
+      controller_connection_receiver_2 =
+          controller_connection_2_.InitWithNewPipeAndPassReceiver();
+  mojo::PendingReceiver<mojom::blink::PresentationConnection>
+      receiver_connection_receiver_2 =
+          receiver_connection_2_.InitWithNewPipeAndPassReceiver();
 
   // Receive second connection.
   receiver->OnReceiverConnectionAvailable(
-      connection_info_.Clone(), std::move(controller_connection_2),
-      std::move(receiver_connection_request_2));
+      connection_info_.Clone(), std::move(controller_connection_2_),
+      std::move(receiver_connection_receiver_2));
 
   VerifyConnectionListSize(2, receiver);
 }
@@ -156,19 +168,23 @@ TEST_F(PresentationReceiverTest, TwoConnectionsNoEvent) {
   // Receive first connection.
   receiver->OnReceiverConnectionAvailable(
       connection_info_.Clone(), std::move(controller_connection_),
-      std::move(receiver_connection_request_));
+      std::move(receiver_connection_receiver_));
 
-  mojom::blink::PresentationConnectionPtr controller_connection_2;
-  mojom::blink::PresentationConnectionPtr receiver_connection_2;
-  mojom::blink::PresentationConnectionRequest controller_connection_request_2 =
-      mojo::MakeRequest(&controller_connection_2);
-  mojom::blink::PresentationConnectionRequest receiver_connection_request_2 =
-      mojo::MakeRequest(&receiver_connection_2);
+  mojo::PendingRemote<mojom::blink::PresentationConnection>
+      controller_connection_2_;
+  mojo::PendingRemote<mojom::blink::PresentationConnection>
+      receiver_connection_2_;
+  mojo::PendingReceiver<mojom::blink::PresentationConnection>
+      controller_connection_receiver_2 =
+          controller_connection_2_.InitWithNewPipeAndPassReceiver();
+  mojo::PendingReceiver<mojom::blink::PresentationConnection>
+      receiver_connection_receiver_2 =
+          receiver_connection_2_.InitWithNewPipeAndPassReceiver();
 
   // Receive second connection.
   receiver->OnReceiverConnectionAvailable(
-      connection_info_.Clone(), std::move(controller_connection_2),
-      std::move(receiver_connection_request_2));
+      connection_info_.Clone(), std::move(controller_connection_2_),
+      std::move(receiver_connection_receiver_2));
 
   receiver->connectionList(scope.GetScriptState());
   VerifyConnectionListPropertyState(ScriptPromisePropertyBase::kResolved,

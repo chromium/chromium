@@ -25,19 +25,20 @@ const char kPrettyPrintLineEnding[] = "\n";
 #endif
 
 // static
-bool JSONWriter::Write(const Value& node, std::string* json) {
-  return WriteWithOptions(node, 0, json);
+bool JSONWriter::Write(const Value& node, std::string* json, size_t max_depth) {
+  return WriteWithOptions(node, 0, json, max_depth);
 }
 
 // static
 bool JSONWriter::WriteWithOptions(const Value& node,
                                   int options,
-                                  std::string* json) {
+                                  std::string* json,
+                                  size_t max_depth) {
   json->clear();
   // Is there a better way to estimate the size of the output?
   json->reserve(1024);
 
-  JSONWriter writer(options, json);
+  JSONWriter writer(options, json, max_depth);
   bool result = writer.BuildJSONString(node, 0U);
 
   if (options & OPTIONS_PRETTY_PRINT)
@@ -46,16 +47,23 @@ bool JSONWriter::WriteWithOptions(const Value& node,
   return result;
 }
 
-JSONWriter::JSONWriter(int options, std::string* json)
+JSONWriter::JSONWriter(int options, std::string* json, size_t max_depth)
     : omit_binary_values_((options & OPTIONS_OMIT_BINARY_VALUES) != 0),
       omit_double_type_preservation_(
           (options & OPTIONS_OMIT_DOUBLE_TYPE_PRESERVATION) != 0),
       pretty_print_((options & OPTIONS_PRETTY_PRINT) != 0),
-      json_string_(json) {
+      json_string_(json),
+      max_depth_(max_depth),
+      stack_depth_(0) {
   DCHECK(json);
+  CHECK_LE(max_depth, internal::kAbsoluteMaxDepth);
 }
 
 bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
+  internal::StackMarker depth_check(max_depth_, &stack_depth_);
+  if (depth_check.IsTooDeep())
+    return false;
+
   switch (node.type()) {
     case Value::Type::NONE:
       json_string_->append("null");
@@ -69,7 +77,7 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
       return true;
 
     case Value::Type::INTEGER:
-      json_string_->append(IntToString(node.GetInt()));
+      json_string_->append(NumberToString(node.GetInt()));
       return true;
 
     case Value::Type::DOUBLE: {
@@ -78,7 +86,7 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
           value <= std::numeric_limits<int64_t>::max() &&
           value >= std::numeric_limits<int64_t>::min() &&
           std::floor(value) == value) {
-        json_string_->append(Int64ToString(static_cast<int64_t>(value)));
+        json_string_->append(NumberToString(static_cast<int64_t>(value)));
         return true;
       }
       std::string real = NumberToString(value);
@@ -179,6 +187,11 @@ bool JSONWriter::BuildJSONString(const Value& node, size_t depth) {
       // Successful only if we're allowed to omit it.
       DLOG_IF(ERROR, !omit_binary_values_) << "Cannot serialize binary value.";
       return omit_binary_values_;
+
+    // TODO(crbug.com/859477): Remove after root cause is found.
+    case Value::Type::DEAD:
+      CHECK(false);
+      return false;
   }
 
   // TODO(crbug.com/859477): Revert to NOTREACHED() after root cause is found.

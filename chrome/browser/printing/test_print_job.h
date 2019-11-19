@@ -37,7 +37,7 @@ class TestPrintJob : public PrintJob {
                const content::NotificationDetails& details) override {}
 
   // All remaining functions are PrintJob implementation.
-  void Initialize(PrinterQuery* query,
+  void Initialize(std::unique_ptr<PrinterQuery> query,
                   const base::string16& name,
                   int page_count) override;
 
@@ -56,20 +56,18 @@ class TestPrintJob : public PrintJob {
 #if defined(OS_WIN)
   // These functions fill in the corresponding member variables based on the
   // arguments passed in.
-  void StartPdfToEmfConversion(
-      const scoped_refptr<base::RefCountedMemory>& bytes,
-      const gfx::Size& page_size,
-      const gfx::Rect& content_area) override;
+  void StartPdfToEmfConversion(scoped_refptr<base::RefCountedMemory> bytes,
+                               const gfx::Size& page_size,
+                               const gfx::Rect& content_area) override;
 
   void StartPdfToPostScriptConversion(
-      const scoped_refptr<base::RefCountedMemory>& bytes,
+      scoped_refptr<base::RefCountedMemory> bytes,
       const gfx::Rect& content_area,
       const gfx::Point& physical_offsets,
       bool ps_level2) override;
 
-  void StartPdfToTextConversion(
-      const scoped_refptr<base::RefCountedMemory>& bytes,
-      const gfx::Size& page_size) override;
+  void StartPdfToTextConversion(scoped_refptr<base::RefCountedMemory> bytes,
+                                const gfx::Size& page_size) override;
 #endif  // defined(OS_WIN)
 
  private:

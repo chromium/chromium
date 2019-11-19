@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import difflib
 import hashlib
 import itertools
@@ -18,9 +20,14 @@ PRINT_EXPLANATIONS = int(os.environ.get('PRINT_BUILD_EXPLANATIONS', 0))
 _FORCE_REBUILD = int(os.environ.get('FORCE_REBUILD', 0))
 
 
-def CallAndRecordIfStale(
-    function, record_path=None, input_paths=None, input_strings=None,
-    output_paths=None, force=False, pass_changes=False):
+def CallAndRecordIfStale(function,
+                         record_path=None,
+                         input_paths=None,
+                         input_strings=None,
+                         output_paths=None,
+                         force=False,
+                         pass_changes=False,
+                         track_subpaths_whitelist=None):
   """Calls function if outputs are stale.
 
   Outputs are considered stale if:
@@ -41,6 +48,8 @@ def CallAndRecordIfStale(
     force: Whether to treat outputs as missing regardless of whether they
       actually are.
     pass_changes: Whether to pass a Changes instance to |function|.
+    track_subpaths_whitelist: Relevant only when pass_changes=True. List of .zip
+      files from |input_paths| to make subpath information available for.
   """
   assert record_path or output_paths
   input_paths = input_paths or []
@@ -55,12 +64,15 @@ def CallAndRecordIfStale(
   new_metadata = _Metadata(track_entries=pass_changes or PRINT_EXPLANATIONS)
   new_metadata.AddStrings(input_strings)
 
+  zip_whitelist = set(track_subpaths_whitelist or [])
   for path in input_paths:
-    if _IsZipFile(path):
+    # It's faster to md5 an entire zip file than it is to just locate & hash
+    # its central directory (which is what this used to do).
+    if path in zip_whitelist:
       entries = _ExtractZipEntries(path)
       new_metadata.AddZipFile(path, entries)
     else:
-      new_metadata.AddFile(path, _Md5ForPath(path))
+      new_metadata.AddFile(path, _ComputeTagForPath(path))
 
   old_metadata = None
   force = force or _FORCE_REBUILD
@@ -78,10 +90,10 @@ def CallAndRecordIfStale(
     return
 
   if PRINT_EXPLANATIONS:
-    print '=' * 80
-    print 'Target is stale: %s' % record_path
-    print changes.DescribeDifference()
-    print '=' * 80
+    print('=' * 80)
+    print('Target is stale: %s' % record_path)
+    print(changes.DescribeDifference())
+    print('=' * 80)
 
   args = (changes,) if pass_changes else ()
   function(*args)
@@ -104,19 +116,20 @@ class Changes(object):
 
   def HasChanges(self):
     """Returns whether any changes exist."""
-    return (self.force or
-            not self.old_metadata or
-            self.old_metadata.StringsMd5() != self.new_metadata.StringsMd5() or
-            self.old_metadata.FilesMd5() != self.new_metadata.FilesMd5())
+    return (self.HasStringChanges()
+            or self.old_metadata.FilesMd5() != self.new_metadata.FilesMd5())
+
+  def HasStringChanges(self):
+    """Returns whether string metadata changed."""
+    return (self.force or not self.old_metadata
+            or self.old_metadata.StringsMd5() != self.new_metadata.StringsMd5())
 
   def AddedOrModifiedOnly(self):
     """Returns whether the only changes were from added or modified (sub)files.
 
     No missing outputs, no removed paths/subpaths.
     """
-    if (self.force or
-        not self.old_metadata or
-        self.old_metadata.StringsMd5() != self.new_metadata.StringsMd5()):
+    if self.HasStringChanges():
       return False
     if any(self.IterRemovedPaths()):
       return False
@@ -366,27 +379,15 @@ class _Metadata(object):
     return (entry['path'] for entry in subentries)
 
 
-def _UpdateMd5ForFile(md5, path, block_size=2**16):
-  with open(path, 'rb') as infile:
-    while True:
-      data = infile.read(block_size)
-      if not data:
-        break
-      md5.update(data)
-
-
-def _UpdateMd5ForDirectory(md5, dir_path):
-  for root, _, files in os.walk(dir_path):
-    for f in files:
-      _UpdateMd5ForFile(md5, os.path.join(root, f))
-
-
-def _Md5ForPath(path):
+def _ComputeTagForPath(path):
+  stat = os.stat(path)
+  if stat.st_size > 1 * 1024 * 1024:
+    # Fallback to mtime for large files so that md5_check does not take too long
+    # to run.
+    return stat.st_mtime
   md5 = hashlib.md5()
-  if os.path.isdir(path):
-    _UpdateMd5ForDirectory(md5, path)
-  else:
-    _UpdateMd5ForFile(md5, path)
+  with open(path, 'rb') as f:
+    md5.update(f.read())
   return md5.hexdigest()
 
 
@@ -396,14 +397,6 @@ def _ComputeInlineMd5(iterable):
   for item in iterable:
     md5.update(str(item))
   return md5.hexdigest()
-
-
-def _IsZipFile(path):
-  """Returns whether to treat the given file as a zip file."""
-  # ijar doesn't set the CRC32 field.
-  if path.endswith('.interface.jar'):
-    return False
-  return path[-4:] in ('.zip', '.apk', '.jar') or path.endswith('.srcjar')
 
 
 def _ExtractZipEntries(path):

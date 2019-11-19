@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_SYNC_SERVICE_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_SYNC_SERVICE_H_
 
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -15,7 +17,9 @@
 #include "chrome/browser/extensions/sync_bundle.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/syncable_service.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_observer.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 class Profile;
@@ -49,10 +53,17 @@ class ExtensionSyncService : public syncer::SyncableService,
   // it is updated to the given |version|. This happens when we get a Sync
   // update telling us to re-enable a newer version than what is currently
   // installed.
+  // TODO(crbug/1019813): The logic for this function was broken after forced
+  // custodian installations were removed. See
+  // ExtensionServiceTestSupervised.
+  // UpdateWithPermissionIncreaseApprovalNewVersion
+  // for an example of when this function should return true but returns false
+  // instead in the test code.
   bool HasPendingReenable(const std::string& id,
                           const base::Version& version) const;
 
   // syncer::SyncableService implementation.
+  void WaitUntilReadyToSync(base::OnceClosure done) override;
   syncer::SyncMergeResult MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
@@ -74,7 +85,8 @@ class ExtensionSyncService : public syncer::SyncableService,
   void DeleteThemeDoNotUse(const extensions::Extension& theme);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(TwoClientAppsSyncTest, UnexpectedLaunchType);
+  FRIEND_TEST_ALL_PREFIXES(TwoClientExtensionAppsSyncTest,
+                           UnexpectedLaunchType);
   FRIEND_TEST_ALL_PREFIXES(ExtensionDisabledGlobalErrorTest,
                            HigherPermissionsFromSync);
 
@@ -128,9 +140,10 @@ class ExtensionSyncService : public syncer::SyncableService,
   Profile* profile_;
 
   ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver> registry_observer_;
-  ScopedObserver<extensions::ExtensionPrefs,
-                 extensions::ExtensionPrefsObserver> prefs_observer_;
+                 extensions::ExtensionRegistryObserver>
+      registry_observer_{this};
+  ScopedObserver<extensions::ExtensionPrefs, extensions::ExtensionPrefsObserver>
+      prefs_observer_{this};
 
   // When this is set to true, any incoming updates (from the observers as well
   // as from explicit SyncExtensionChangeIfNeeded calls) are ignored. This is

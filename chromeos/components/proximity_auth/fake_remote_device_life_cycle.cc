@@ -18,6 +18,7 @@ FakeRemoteDeviceLifeCycle::~FakeRemoteDeviceLifeCycle() {}
 
 void FakeRemoteDeviceLifeCycle::Start() {
   started_ = true;
+  ChangeState(RemoteDeviceLifeCycle::State::FINDING_CONNECTION);
 }
 
 chromeos::multidevice::RemoteDeviceRef

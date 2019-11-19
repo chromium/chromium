@@ -6,15 +6,16 @@
 // Disabling the presubmit warning with:
 //   no-include-guard-because-multiply-included
 
-#if !defined(FULL_SAFE_BROWSING)
-#error FULL_SAFE_BROWSING should be defined.
-#endif
-
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/common/safe_browsing/ipc_protobuf_message_macros.h"
+#include "components/safe_browsing/buildflags.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_message_protobuf_utils.h"
+
+#if !BUILDFLAG(FULL_SAFE_BROWSING)
+#error BUILDFLAG(FULL_SAFE_BROWSING) should be set.
+#endif
 
 IPC_ENUM_TRAITS_VALIDATE(
     safe_browsing::ClientDownloadRequest_DownloadType,

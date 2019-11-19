@@ -65,23 +65,23 @@ function keyPress(key) {
 
 promise_test (async () => {
   await mouseClickOn(510, 10);
-  scroller.scrollTo(0, 0);
+  scroller.scrollTo(-615, 0);
   await keyPress("ArrowRight");
   await waitForAnimationEnd(scrollLeft, 500, 15);
-  // The left border of #right is at 1000 - width.
-  // The right border of #right is thus 1200 - width.
-  // When right-aligned, the scroll position should be 1200 - 2 * width.
-  assert_equals(scroller.scrollLeft, 1200 - 2 * width);
+  // The left border of #right is at -width.
+  // The right border of #right is thus 200 - width.
+  // When right-aligned, the scroll position should be 200 - width.
+  assert_equals(scroller.scrollLeft, 200 - width);
 }, "Snaps to #right after pressing ArrowRight");
 
 promise_test (async () => {
   await mouseClickOn(510, 10);
-  scroller.scrollTo(400, 0);
+  scroller.scrollTo(-215, 0);
   await keyPress("ArrowLeft");
   await waitForAnimationEnd(scrollLeft, 500, 15);
-  // The left border of #left is at 600 - width.
-  // The right border of #left is thus 800 - width.
-  // When right-aligned, the scroll position should be 800 - 2 * width.
-  assert_equals(scroller.scrollLeft, 800 - 2 * width);
+  // The left border of #left is at -(400 + width).
+  // The right border of #left is thus -(200 + width).
+  // When right-aligned, the scroll position should be -(200 + width).
+  assert_equals(scroller.scrollLeft, -(200 + width));
 }, "Snaps to #left after pressing ArrowLeft");
 </script>

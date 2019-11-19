@@ -363,12 +363,22 @@ TEST_F(RegistryControlledDomainTest, TestSameDomainOrHost) {
                              "http://..b.x.com/file.html"));   // x.com
   EXPECT_TRUE(CompareDomains("http://intranet/file.html",
                              "http://intranet/file.html"));    // intranet
+  EXPECT_FALSE(CompareDomains("http://intranet1/file.html",
+                              "http://intranet2/file.html"));  // intranet
+  EXPECT_TRUE(CompareDomains(
+      "http://intranet1.corp.example.com/file.html",
+      "http://intranet2.corp.example.com/file.html"));  // intranet
   EXPECT_TRUE(CompareDomains("http://127.0.0.1/file.html",
                              "http://127.0.0.1/file.html"));   // 127.0.0.1
   EXPECT_FALSE(CompareDomains("http://192.168.0.1/file.html",  // 192.168.0.1
                               "http://127.0.0.1/file.html"));  // 127.0.0.1
   EXPECT_FALSE(CompareDomains("file:///C:/file.html",
                               "file:///C:/file.html"));        // no host
+
+  // The trailing dot means different sites - see also
+  // https://github.com/mikewest/sec-metadata/issues/15.
+  EXPECT_FALSE(
+      CompareDomains("https://foo.example.com", "https://foo.example.com."));
 }
 
 TEST_F(RegistryControlledDomainTest, TestDefaultData) {

@@ -26,7 +26,7 @@ const char kEngagementDeltaPrefix[] = "Security.SiteEngagementDelta";
 
 // Navigation histogram prefixes.
 const char kPageEndReasonPrefix[] = "Security.PageEndReason";
-const char kTimeOnPagePrefix[] = "Security.TimeOnPage";
+const char kTimeOnPagePrefix[] = "Security.TimeOnPage2";
 
 // Security level histograms.
 const char kSecurityLevelOnCommit[] = "Security.SecurityLevel.OnCommit";
@@ -66,11 +66,19 @@ SecurityStatePageLoadMetricsObserver::GetEngagementFinalHistogramNameForTesting(
 }
 
 // static
-std::string
-SecurityStatePageLoadMetricsObserver::GetPageEndReasonHistogramNameForTesting(
-    security_state::SecurityLevel level) {
+std::string SecurityStatePageLoadMetricsObserver::
+    GetSecurityLevelPageEndReasonHistogramNameForTesting(
+        security_state::SecurityLevel level) {
   return security_state::GetSecurityLevelHistogramName(
       kPageEndReasonPrefix, level);
+}
+
+// static
+std::string SecurityStatePageLoadMetricsObserver::
+    GetSafetyTipPageEndReasonHistogramNameForTesting(
+        security_state::SafetyTipStatus safety_tip_status) {
+  return security_state::GetSafetyTipHistogramName(kPageEndReasonPrefix,
+                                                   safety_tip_status);
 }
 
 SecurityStatePageLoadMetricsObserver::SecurityStatePageLoadMetricsObserver(
@@ -85,8 +93,6 @@ SecurityStatePageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
-  if (started_in_foreground)
-    OnShown();
   if (engagement_service_) {
     initial_engagement_score_ =
         engagement_service_->GetScore(navigation_handle->GetURL());
@@ -111,45 +117,33 @@ SecurityStatePageLoadMetricsObserver::OnCommit(
   // resolved.
   security_state_tab_helper_ =
       SecurityStateTabHelper::FromWebContents(web_contents);
-  security_state::SecurityInfo security_info;
-  security_state_tab_helper_->GetSecurityInfo(&security_info);
-  initial_security_level_ = security_info.security_level;
+  initial_security_level_ = security_state_tab_helper_->GetSecurityLevel();
   current_security_level_ = initial_security_level_;
 
   base::UmaHistogramEnumeration(kSecurityLevelOnCommit, initial_security_level_,
                                 security_state::SECURITY_LEVEL_COUNT);
 
+  base::UmaHistogramBoolean(
+      "Security.LegacyTLS.OnCommit",
+      security_state::GetLegacyTLSWarningStatus(
+          *security_state_tab_helper_->GetVisibleSecurityState()));
+
   source_id_ = source_id;
   return CONTINUE_OBSERVING;
 }
 
-page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-SecurityStatePageLoadMetricsObserver::OnHidden(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& extra_info) {
-  if (currently_in_foreground_) {
-    foreground_time_ += base::TimeTicks::Now() - last_time_shown_;
-    currently_in_foreground_ = false;
-  }
-  return CONTINUE_OBSERVING;
-}
-
-page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-SecurityStatePageLoadMetricsObserver::OnShown() {
-  last_time_shown_ = base::TimeTicks::Now();
-  currently_in_foreground_ = true;
-  return CONTINUE_OBSERVING;
-}
-
 void SecurityStatePageLoadMetricsObserver::OnComplete(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& extra_info) {
-  if (!extra_info.did_commit)
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (!GetDelegate().DidCommit())
     return;
+
+  security_state::SafetyTipStatus safety_tip_status =
+      security_state_tab_helper_->GetVisibleSecurityState()
+          ->safety_tip_info.status;
 
   if (engagement_service_) {
     double final_engagement_score =
-        engagement_service_->GetScore(extra_info.url);
+        engagement_service_->GetScore(GetDelegate().GetUrl());
     // Round the engagement score down to the closest multiple of 10 to decrease
     // the granularity of the UKM collection.
     int64_t coarse_engagement_score =
@@ -159,6 +153,7 @@ void SecurityStatePageLoadMetricsObserver::OnComplete(
     ukm::builders::Security_SiteEngagement(source_id_)
         .SetInitialSecurityLevel(initial_security_level_)
         .SetFinalSecurityLevel(current_security_level_)
+        .SetSafetyTipStatus(static_cast<int64_t>(safety_tip_status))
         .SetScoreDelta(final_engagement_score - initial_engagement_score_)
         .SetScoreFinal(coarse_engagement_score)
         .Record(ukm_recorder);
@@ -175,27 +170,59 @@ void SecurityStatePageLoadMetricsObserver::OnComplete(
         security_state::GetSecurityLevelHistogramName(
             kEngagementFinalPrefix, current_security_level_),
         final_engagement_score, 100);
+    base::UmaHistogramExactLinear(
+        security_state::GetSafetyTipHistogramName(kEngagementDeltaPrefix,
+                                                  safety_tip_status),
+        delta, 100);
+    base::UmaHistogramExactLinear(
+        security_state::GetSafetyTipHistogramName(kEngagementFinalPrefix,
+                                                  safety_tip_status),
+        final_engagement_score, 100);
   }
 
+  // Record security level UMA histograms.
   base::UmaHistogramEnumeration(
-      security_state::GetSecurityLevelHistogramName(
-          kPageEndReasonPrefix, current_security_level_),
-      extra_info.page_end_reason, page_load_metrics::PAGE_END_REASON_COUNT);
+      security_state::GetSecurityLevelHistogramName(kPageEndReasonPrefix,
+                                                    current_security_level_),
+      GetDelegate().GetPageEndReason(),
+      page_load_metrics::PAGE_END_REASON_COUNT);
   base::UmaHistogramCustomTimes(
-      security_state::GetSecurityLevelHistogramName(
-          kTimeOnPagePrefix, current_security_level_),
-      foreground_time_, base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromHours(1), 100);
+      security_state::GetSecurityLevelHistogramName(kTimeOnPagePrefix,
+                                                    current_security_level_),
+      GetDelegate().GetVisibilityTracker().GetForegroundDuration(),
+      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1), 100);
   base::UmaHistogramEnumeration(kSecurityLevelOnComplete,
                                 current_security_level_,
                                 security_state::SECURITY_LEVEL_COUNT);
+
+  // Record Safety Tip UMA histograms.
+  base::UmaHistogramEnumeration(security_state::GetSafetyTipHistogramName(
+                                    kPageEndReasonPrefix, safety_tip_status),
+                                GetDelegate().GetPageEndReason(),
+                                page_load_metrics::PAGE_END_REASON_COUNT);
+  base::UmaHistogramCustomTimes(
+      security_state::GetSafetyTipHistogramName(kTimeOnPagePrefix,
+                                                safety_tip_status),
+      GetDelegate().GetVisibilityTracker().GetForegroundDuration(),
+      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1), 100);
+
+  // Record Legacy TLS UMA histograms.
+  base::UmaHistogramEnumeration(
+      security_state::GetLegacyTLSHistogramName(
+          kPageEndReasonPrefix,
+          *security_state_tab_helper_->GetVisibleSecurityState()),
+      GetDelegate().GetPageEndReason(),
+      page_load_metrics::PAGE_END_REASON_COUNT);
+  base::UmaHistogramCustomTimes(
+      security_state::GetLegacyTLSHistogramName(
+          kTimeOnPagePrefix,
+          *security_state_tab_helper_->GetVisibleSecurityState()),
+      GetDelegate().GetVisibilityTracker().GetForegroundDuration(),
+      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1), 100);
 }
 
 void SecurityStatePageLoadMetricsObserver::DidChangeVisibleSecurityState() {
   if (!security_state_tab_helper_)
     return;
-
-  security_state::SecurityInfo security_info;
-  security_state_tab_helper_->GetSecurityInfo(&security_info);
-  current_security_level_ = security_info.security_level;
+  current_security_level_ = security_state_tab_helper_->GetSecurityLevel();
 }

@@ -4,11 +4,58 @@
 
 module chromeos.assistant.mojom;
 
-import "ui/accessibility/mojom/ax_assistant_structure.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
-import "url/mojom/url.mojom";
+import "ash/public/mojom/assistant_controller.mojom";
+import "ash/public/mojom/assistant_volume_control.mojom";
+import "ash/public/mojom/assistant_state_controller.mojom";
+import "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom";
+import "chromeos/services/assistant/public/mojom/assistant_notification.mojom";
+import "chromeos/services/assistant/public/mojom/settings.mojom";
+import "chromeos/services/network_config/public/mojom/cros_network_config.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/audio/public/mojom/stream_factory.mojom";
+import "services/device/public/mojom/battery_monitor.mojom";
+import "services/device/public/mojom/wake_lock_provider.mojom";
+import "services/identity/public/mojom/identity_accessor.mojom";
+import "services/media_session/public/mojom/audio_focus.mojom";
+import "services/media_session/public/mojom/media_controller.mojom";
+import "services/preferences/public/mojom/preferences.mojom";
+import "ui/accessibility/mojom/ax_assistant_structure.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+
+// Main interface to the Assistant service.
+interface AssistantService {
+  // Initiates assistant and provides interfaces for assistant to call into the
+  // browser.
+  Init(pending_remote<Client> assistant_client_interface,
+       pending_remote<DeviceActions> device_actions_interface,
+       bool is_test);
+
+  // Binds the main assistant backend interface.
+  BindAssistant(pending_receiver<Assistant> receiver);
+
+  // Binds an interface to control assistant settings.
+  BindSettingsManager(pending_receiver<AssistantSettingsManager> receiver);
+};
+
+// Interface whose implementation is owned by Shell in Ash. This is used
+// primarily to provide Ash with an interface to the Assistant service.
+interface AssistantController {
+  // Provides a reference to the underlying |assistant| service.
+  SetAssistant(pending_remote<Assistant> assistant);
+
+  // Show speaker id enrollment flow.
+  StartSpeakerIdEnrollmentFlow();
+
+  // Send Assistant feedback to Assistant server. If |pii_allowed| is
+  // true then the user gives permission to attach Assistant debug info.
+  // |feedback_description| is user's feedback input.
+  SendAssistantFeedback(
+    bool pii_allowed,
+    string feedback_description,
+    string screenshot_png);
+};
 
 // Interface to communicate with assistant backend.
 interface Assistant {
@@ -17,6 +64,12 @@ interface Assistant {
   // interface to registered subscribers. It is illegal to call this method
   // without having first cached screen context (see CacheScreenContext()).
   StartCachedScreenContextInteraction();
+
+  // Starts an interaction to edit the reminder uniquely identified by
+  // |client_id|. In response to the request, LibAssistant will initiate
+  // a user facing interaction with the context pre-populated with details
+  // to edit the specified reminder.
+  StartEditReminderInteraction(string client_id);
 
   // Starts a metalayer interaction for the selected screen |region|. Results
   // related to the selected region will be returned through the
@@ -27,7 +80,8 @@ interface Assistant {
   // result will contain TTS. Otherwise TTS will not be present in the
   // generated server response. Results will be returned through registered
   // |AssistantInteractionSubscriber|.
-  StartTextInteraction(string query, bool allow_tts);
+  StartTextInteraction(
+    string query, AssistantQuerySource source, bool allow_tts);
 
   // Starts a new Assistant voice interaction.
   StartVoiceInteraction();
@@ -46,7 +100,8 @@ interface Assistant {
 
   // Registers assistant interaction event subscriber. Subscribers'
   // implementation is responsible for selecting events of interest.
-  AddAssistantInteractionSubscriber(AssistantInteractionSubscriber subscriber);
+  AddAssistantInteractionSubscriber(
+      pending_remote<AssistantInteractionSubscriber> subscriber);
 
   // Retrieves a notification. A voiceless interaction will be sent to server to
   // retrieve the notification of |action_index|, which can trigger other
@@ -75,6 +130,41 @@ interface Assistant {
 
   // Send Assistant feedback to Assistant server.
   SendAssistantFeedback(AssistantFeedback feedback);
+
+  // ===== Alarm/Timer management methods =====
+  // Stops timer or alarm ringing.
+  StopAlarmTimerRinging();
+
+  // Create timer with |duration|.
+  CreateTimer(mojo_base.mojom.TimeDelta duration);
+};
+
+// Describes an Assistant interaction.
+struct AssistantInteractionMetadata {
+  AssistantInteractionType type;
+  AssistantQuerySource source;
+  string query;
+};
+
+// Enumeration of possible Assistant interaction types.
+enum AssistantInteractionType {
+  kText,
+  kVoice,
+};
+
+// Enumeration of possible Assistant query sources. These values are persisted
+// to logs. Entries should not be renumbered and numeric values should never
+// be reused. Append new values to the end.
+enum AssistantQuerySource {
+  kUnspecified = 0,
+  kDeepLink = 1,
+  kDialogPlateTextField = 2,
+  kStylus = 3,
+  kSuggestionChip = 4,
+  kVoiceInput = 5,
+  kProactiveSuggestions = 6,
+  kLibAssistantInitiated = 7,
+  kWarmerWelcome = 8,
 };
 
 // Subscribes to Assistant's interaction event. These events are server driven
@@ -82,9 +172,8 @@ interface Assistant {
 // from the assistant may contain untrusted third-party content. Subscriber
 // implementations must be sure to handle the response data appropriately.
 interface AssistantInteractionSubscriber {
-  // Assistant interaction has started. In the event of a voice interaction,
-  // |is_voice_interaction| will be true. This implies that the mic is open.
-  OnInteractionStarted(bool is_voice_interaction);
+  // Assistant interaction has started.
+  OnInteractionStarted(AssistantInteractionMetadata metadata);
 
   // Assistant interaction has ended with the specified |resolution|.
   OnInteractionFinished(AssistantInteractionResolution resolution);
@@ -98,8 +187,12 @@ interface AssistantInteractionSubscriber {
   // Assistant got text response from server.
   OnTextResponse(string response);
 
-  // Assistant got open URL response from server.
-  OnOpenUrlResponse(url.mojom.Url url);
+  // Assistant got open URL response from server. |in_background| refers to
+  // being in background of Assistant UI, not in background of browser.
+  OnOpenUrlResponse(url.mojom.Url url, bool in_background);
+
+  // Assistant got open Android app response from server.
+  OnOpenAppResponse(AndroidAppInfo app_info) => (bool app_opened);
 
   // Assistant speech recognition has started.
   OnSpeechRecognitionStarted();
@@ -120,25 +213,85 @@ interface AssistantInteractionSubscriber {
   // Assistant has started speaking. When TTS is started due to an error that
   // occurred during the interaction, |due_to_error| is true.
   OnTtsStarted(bool due_to_error);
-};
 
-// Interface for browser to bind and start assistant.
-interface AssistantPlatform {
-  // Initiates assistant and provides interfaces for assistant to call into the
-  // browser.
-  Init(Client assistant_client_interface,
-       DeviceActions device_actions_interface);
+  // Assistant has started waiting. This occur during execution of a routine to
+  // give the user time to digest a response before continuing execution.
+  OnWaitStarted();
 };
 
 // Interface for assistant to call into client.
 interface Client {
   // Notifies assistant client that assistant running status has changed.
-  OnAssistantStatusChanged(bool running);
+  OnAssistantStatusChanged(ash.mojom.AssistantState new_state);
 
   // Request context of current window from browser.
   RequestAssistantStructure() => (
     ax.mojom.AssistantExtra? extra,
     ax.mojom.AssistantTree? structure);
+
+  // Requests an AssistantController implementation from Ash, via the browser.
+  RequestAssistantController(pending_receiver<AssistantController> receiver);
+
+  // Requests Ash's AssistantAlarmTimerController interface from the browser.
+  RequestAssistantAlarmTimerController(
+      pending_receiver<ash.mojom.AssistantAlarmTimerController> receiver);
+
+  // Requests Ash's AssistantNotificationController interface from the browser.
+  RequestAssistantNotificationController(
+      pending_receiver<ash.mojom.AssistantNotificationController> receiver);
+
+  // Requests Ash's AssistantScreenContextController interface from the browser.
+  RequestAssistantScreenContextController(
+      pending_receiver<ash.mojom.AssistantScreenContextController> receiver);
+
+  // Requests Ash's AssistantVolumeControl interface from the browser.
+  RequestAssistantVolumeControl(
+      pending_receiver<ash.mojom.AssistantVolumeControl> receiver);
+
+  // Requests Ash's AssistantStateController interface from the browser.
+  RequestAssistantStateController(
+      pending_receiver<ash.mojom.AssistantStateController> receiver);
+
+  // Requests a PrefStoreConnector from the browser.
+  RequestPrefStoreConnector(
+      pending_receiver<prefs.mojom.PrefStoreConnector> receiver);
+
+  // Requests a BatteryMonitor from the browser.
+  RequestBatteryMonitor(pending_receiver<device.mojom.BatteryMonitor> receiver);
+
+  // Requests a connection to the Device service's WakeLockProvider interface
+  // from the browser.
+  RequestWakeLockProvider(
+      pending_receiver<device.mojom.WakeLockProvider> receiver);
+
+  // Requests an Audio Service StreamFactory from the browser.
+  RequestAudioStreamFactory(
+      pending_receiver<audio.mojom.StreamFactory> receiver);
+
+  // Requests an audio decoder interface from the Assistant Audio Decoder
+  // service, via the browser.
+  RequestAudioDecoderFactory(
+      pending_receiver<AssistantAudioDecoderFactory> receiver);
+
+  // Requests an IdentityAccessor from the browser for a signed-in user.
+  RequestIdentityAccessor(
+      pending_receiver<identity.mojom.IdentityAccessor> receiver);
+
+  // Requests a connection to the Media Session service's AudioFocusManager from
+  // the browser.
+  RequestAudioFocusManager(
+      pending_receiver<media_session.mojom.AudioFocusManager> receiver);
+
+  // Requests a connection to the Media Session service's MediaControllerManager
+  // interface from the browser.
+  RequestMediaControllerManager(
+      pending_receiver<media_session.mojom.MediaControllerManager> receiver);
+
+  // Requests a connection to the CrosNetworkConfig service interface via the
+  // browser.
+  RequestNetworkConfig(
+      pending_receiver<chromeos.network_config.mojom.CrosNetworkConfig>
+          receiver);
 };
 
 // Interface for assistant to call into browser to perform device actions.
@@ -166,6 +319,19 @@ interface DeviceActions {
   // Verify the status of the Android apps.
   VerifyAndroidApp(array<AndroidAppInfo> apps_info) => (array<AndroidAppInfo>
                                                         apps_info);
+
+  // Launch Android intent. The intent is encoded as a URI string.
+  // See Intent.toUri().
+  LaunchAndroidIntent(string intent);
+
+  // Register App list event subscriber.
+  AddAppListEventSubscriber(pending_remote<AppListEventSubscriber> subscriber);
+};
+
+// Subscribes to App list events.
+interface AppListEventSubscriber {
+  // Called when the android app list changed.
+  OnAndroidAppListRefreshed(array<AndroidAppInfo> apps_info);
 };
 
 // Enumeration of possible completions for an Assistant interaction.
@@ -193,89 +359,28 @@ struct AssistantSuggestion {
   url.mojom.Url action_url;
 };
 
-// Enumeration of notification types.
-enum AssistantNotificationType {
-  // A notification of type |kInAssistant| will only be displayed within
-  // Assistant UI. If Assistant UI is not visible at the time of notification
-  // creation, the notification will be queued up until Assistant UI becomes
-  // visible. When Assistant UI dismisses, notifications of this type are
-  // dismissed.
-  kInAssistant,
-
-  // A notification of type |kPreferInAssistant| may be shown in either
-  // Assistant UI or the Message Center, depending on Assistant visibility
-  // state. If Assistant UI is not visible, notifications of this type will
-  // show immediately in the Message Center unless the user has opted out of
-  // seeing system notifications. Once Assistant UI becomes visible, or if it
-  // is already visible at the time of notification creation, notifications of
-  // this type are converted to notifications of type |kInAssistant| and they
-  // will finish out their lifetimes as in-Assistant notifications.
-  kPreferInAssistant,
-
-  // A notification of type |kSystem| will only be displayed within the Message
-  // Center. It is immediately added to the Message Center regardless of
-  // Assistant UI visibility state, although it may not be added if the user has
-  // opted out of seeing system notifications.
-  kSystem,
-};
-
-// Models a notification button.
-struct AssistantNotificationButton {
-  // Display text of the button.
-  string label;
-
-  // Optional URL to open when the tap action is invoked on the button.
-  url.mojom.Url action_url;
-};
-
-// Models an Assistant notification.
-struct AssistantNotification {
-  // Type of the notification.
-  AssistantNotificationType type = AssistantNotificationType.kSystem;
-
-  // Title of the notification.
-  string title;
-
-  // Body text of the notification.
-  string message;
-
-  // Optional URL to open when the tap action is invoked on the notification
-  // main UI.
-  url.mojom.Url action_url;
-
-  // List of buttons in the notification.
-  array<AssistantNotificationButton> buttons;
-
-  // An id that uniquely identifies a notification on the client.
-  string client_id;
-
-  // An id that uniquely identifies a notification on the server.
-  string server_id;
-
-  // Used to fetch notification contents.
-  string consistency_token;
-  string opaque_token;
-
-  // Key that can be used to group multiple notifications together.
-  string grouping_key;
-
-  // Obfuscated Gaia id of the intended recipient of the user.
-  string obfuscated_gaia_id;
-
-  // Whether this notification can turn on the display if it was off.
-  bool is_high_priority = false;
-};
-
 // Models status of an app.
 enum AppStatus { UNKNOWN, AVAILABLE, UNAVAILABLE, VERSION_MISMATCH, DISABLED };
 
 // Models an Android app.
 struct AndroidAppInfo {
+  // Unique name to identify a specific app.
   string package_name;
+
+  // Version number of the app.
   int32 version;
+
+  // Localized app name.
   string localized_app_name;
+
+  // Intent data to operate on.
   string intent;
+
+  // Status of the app.
   AppStatus status;
+
+  // The general action to be performed, such as ACTION_VIEW, ACTION_MAIN, etc.
+  string action;
 };
 
 //  Details for Assistant feedback.

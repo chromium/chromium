@@ -74,8 +74,7 @@ DeviceToDeviceAuthenticator::DeviceToDeviceAuthenticator(
       account_id_(account_id),
       secure_message_delegate_(std::move(secure_message_delegate)),
       helper_(std::make_unique<DeviceToDeviceInitiatorHelper>()),
-      state_(State::NOT_STARTED),
-      weak_ptr_factory_(this) {
+      state_(State::NOT_STARTED) {
   DCHECK(connection_);
 }
 

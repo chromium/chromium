@@ -9,11 +9,11 @@
 
 namespace device {
 
-FakeSensorProvider::FakeSensorProvider() : binding_(this) {}
+FakeSensorProvider::FakeSensorProvider() = default;
 
-FakeSensorProvider::FakeSensorProvider(mojom::SensorProviderRequest request)
-    : binding_(this) {
-  binding_.Bind(std::move(request));
+FakeSensorProvider::FakeSensorProvider(
+    mojo::PendingReceiver<mojom::SensorProvider> receiver) {
+  receiver_.Bind(std::move(receiver));
 }
 
 FakeSensorProvider::~FakeSensorProvider() {
@@ -24,7 +24,8 @@ FakeSensorProvider::~FakeSensorProvider() {
 }
 
 void FakeSensorProvider::Bind(mojo::ScopedMessagePipeHandle handle) {
-  binding_.Bind(mojom::SensorProviderRequest(std::move(handle)));
+  receiver_.Bind(
+      mojo::PendingReceiver<mojom::SensorProvider>(std::move(handle)));
 }
 
 void FakeSensorProvider::GetSensor(mojom::SensorType type,

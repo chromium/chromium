@@ -28,6 +28,7 @@ class GL_EXPORT GLImageNativePixmap : public gl::GLImageEGL {
 
   // Overridden from GLImage:
   unsigned GetInternalFormat() override;
+  unsigned GetDataType() override;
   bool CopyTexImage(unsigned target) override;
   bool CopyTexSubImage(unsigned target,
                        const gfx::Point& offset,

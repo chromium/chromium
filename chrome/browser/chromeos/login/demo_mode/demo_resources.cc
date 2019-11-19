@@ -45,7 +45,7 @@ base::FilePath DemoResources::GetPreInstalledPath() {
 }
 
 DemoResources::DemoResources(DemoSession::DemoModeConfig config)
-    : config_(config), weak_ptr_factory_(this) {
+    : config_(config) {
   DCHECK_NE(config_, DemoSession::DemoModeConfig::kNone);
 }
 

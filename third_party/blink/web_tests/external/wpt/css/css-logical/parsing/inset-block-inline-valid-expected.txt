@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS e.style['inset-block-start'] = "auto" should set the property value
+PASS e.style['inset-block-end'] = "-10px" should set the property value
+PASS e.style['inset-inline-start'] = "-20%" should set the property value
+FAIL e.style['inset-inline-end'] = "calc(10px - 0.5em)" should set the property value assert_equals: serialization should be canonical expected "calc(-0.5em + 10px)" but got "calc(10px - 0.5em)"
+PASS e.style['inset-block'] = "auto" should set the property value
+PASS e.style['inset-block'] = "-10px" should set the property value
+FAIL e.style['inset-block'] = "calc(10px - 0.5em) -20%" should set the property value assert_equals: serialization should be canonical expected "calc(-0.5em + 10px) -20%" but got "calc(10px - 0.5em) -20%"
+PASS e.style['inset-block'] = "auto auto" should set the property value
+PASS e.style['inset-inline'] = "-20%" should set the property value
+FAIL e.style['inset-inline'] = "calc(10px - 0.5em)" should set the property value assert_equals: serialization should be canonical expected "calc(-0.5em + 10px)" but got "calc(10px - 0.5em)"
+PASS e.style['inset-inline'] = "-10px auto" should set the property value
+FAIL e.style['inset-inline'] = "auto calc(10px + 0.5em)" should set the property value assert_equals: serialization should be canonical expected "auto calc(0.5em + 10px)" but got "auto calc(10px + 0.5em)"
+Harness: the test ran to completion.
+

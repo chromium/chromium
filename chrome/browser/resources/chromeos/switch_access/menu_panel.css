@@ -7,6 +7,8 @@
 body {
   background: none;
   margin: 10px;
+  overflow-x: hidden;
+  overflow-y: hidden;
   padding: 0;
 }
 #switchaccess_menu_actions {
@@ -26,6 +28,11 @@ body {
   padding: 4px;
   width: 80px;
 }
+
+.action.improvedTextInputEnabled {
+  height: 75px;
+}
+
 button.action {
   background: none;
   border: none;
@@ -35,10 +42,7 @@ button.action {
 }
 .focus,
 #back.focus {
-  outline: solid thick #78e428;  /** light green from automation_manager.js */
-}
-div.focus {
-  outline-color: #de742f;  /** dark orange from automation_manager.js */
+  outline: solid 3px rgb(26, 115, 232);  /** Focus color from SAConstants */
 }
 img {
   display: block;
@@ -56,4 +60,7 @@ button#back {
   background: #131313;
   border: solid 1px white;
   border-radius: 4px;
+}
+#back > img {
+  transform: rotate(180deg) translateY(-5px);
 }

@@ -1,7 +1,8 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
+<link rel="import" href="../settings_shared_css.html">
 <link rel="import" href="../settings_vars_css.html">
 <link rel="import" href="search_engine_entry.html">
 
@@ -27,14 +28,14 @@
       }
 
       settings-search-engine-entry {
-        border-top: var(--settings-separator-line);
+        border-top: var(--cr-separator-line);
       }
 
       :host([fixed-height]) #container {
         /* Max items we show before scrolling is 6. Adding a 7th item to the
          * list will add a scroll bar to the container. */
         max-height: calc((var(--settings-row-min-height) +
-                          var(--settings-separator-height)) * 6);
+                          var(--cr-separator-height)) * 6);
       }
 
       .icon-placeholder {
@@ -56,6 +57,7 @@
             scroll-offset="[[scrollOffset]]" preserve-focus risk-selection>
           <template>
             <settings-search-engine-entry engine="[[item]]"
+                focus-row-index="[[index]]"
                 tabindex$="[[tabIndex]]" iron-list-tab-index="[[tabIndex]]"
                 last-focused="{{lastFocused_}}" list-blurred="{{listBlurred_}}">
             </settings-search-engine-entry>

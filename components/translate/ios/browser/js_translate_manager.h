@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_TRANSLATE_IOS_BROWSER_JS_TRANSLATE_MANAGER_H_
 #define COMPONENTS_TRANSLATE_IOS_BROWSER_JS_TRANSLATE_MANAGER_H_
 
-#import "ios/web/public/web_state/js/crw_js_injection_manager.h"
+#import "ios/web/public/deprecated/crw_js_injection_manager.h"
 
 #include <string>
 

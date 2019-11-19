@@ -1,0 +1,48 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package content.proto;
+
+message ContentIconDefinition {
+  optional string src = 1;
+  optional string sizes = 2;
+  optional string type = 3;
+}
+
+// Stores all fields of the developer provided content description.
+message ContentDescription {
+  optional string id = 1;
+  optional string title = 2;
+  optional string description = 3;
+  optional int32 category = 4;
+  repeated ContentIconDefinition icons = 5;
+  optional string launch_url = 6;
+}
+
+// Contains the developer-provided description as well as other metadata that
+// will be useful for ranking content.
+message ContentEntry {
+  optional ContentDescription description = 1;
+
+  // Time from Windows epoch in microseconds.
+  optional int64 timestamp = 2;
+
+  // The complete/resolved URL for the entry. This might differ from
+  // |description.launch_url()| since that field is developer-provided, and
+  // can be an absolute or relative path without the host.
+  optional string launch_url = 3;
+}
+
+// Wrapper to store all the serialized icons.
+message SerializedIcons {
+  // Create a sub-message in case we want to store metadata with the
+  // serialized icon.
+  message SerializedIcon { optional string icon = 1; }
+
+  repeated SerializedIcon icons = 1;
+}

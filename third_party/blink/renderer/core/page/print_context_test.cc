@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/events/before_print_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -23,6 +25,8 @@
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+
+using testing::_;
 
 namespace blink {
 
@@ -60,6 +64,22 @@ class MockPageContextCanvas : public SkCanvas {
     return recorded_operations_;
   }
 
+  MOCK_METHOD2(onDrawRect, void(const SkRect&, const SkPaint&));
+  MOCK_METHOD1(DrawPicture, void(const SkPicture*));
+  MOCK_METHOD1(OnDrawPicture, void(const SkPicture*));
+  MOCK_METHOD3(OnDrawPicture,
+               void(const SkPicture*, const SkMatrix*, const SkPaint*));
+  MOCK_METHOD3(DrawPicture,
+               void(const SkPicture*, const SkMatrix*, const SkPaint*));
+  MOCK_METHOD4(onDrawImage,
+               void(const SkImage*, SkScalar, SkScalar, const SkPaint*));
+  MOCK_METHOD5(onDrawImageRect,
+               void(const SkImage*,
+                    const SkRect*,
+                    const SkRect&,
+                    const SkPaint*,
+                    SrcRectConstraint));
+
  private:
   Vector<Operation> recorded_operations_;
 };
@@ -84,15 +104,19 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     GetDocument().body()->SetInnerHTMLFromString(body_content);
   }
 
-  void PrintSinglePage(MockPageContextCanvas& canvas) {
+  void PrintSinglePage(SkCanvas& canvas) {
     IntRect page_rect(0, 0, kPageWidth, kPageHeight);
+    GetDocument().SetPrinting(Document::kBeforePrinting);
+    Event* event = MakeGarbageCollected<BeforePrintEvent>();
+    GetPrintContext().GetFrame()->DomWindow()->DispatchEvent(*event);
     GetPrintContext().BeginPrintMode(page_rect.Width(), page_rect.Height());
     UpdateAllLifecyclePhasesForTest();
     PaintRecordBuilder builder;
     GraphicsContext& context = builder.Context();
     context.SetPrinting(true);
     GetDocument().View()->PaintContentsOutsideOfLifecycle(
-        context, kGlobalPaintPrinting, CullRect(page_rect));
+        context, kGlobalPaintPrinting | kGlobalPaintAddUrlMetadata,
+        CullRect(page_rect));
     {
       DrawingRecorder recorder(
           context, *GetDocument().GetLayoutView(),
@@ -141,7 +165,7 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
 class PrintContextFrameTest : public PrintContextTest {
  public:
   PrintContextFrameTest()
-      : PrintContextTest(SingleChildLocalFrameClient::Create()) {}
+      : PrintContextTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 };
 
 #define EXPECT_SKRECT_EQ(expectedX, expectedY, expectedWidth, expectedHeight, \
@@ -394,6 +418,46 @@ TEST_P(PrintContextFrameTest, BasicPrintPageLayout) {
   EXPECT_EQ(node->OffsetWidth(), 440);
   GetDocument().GetFrame()->EndPrinting();
   EXPECT_EQ(node->OffsetWidth(), 800);
+}
+
+TEST_P(PrintContextTest, Canvas2DBeforePrint) {
+  MockPageContextCanvas canvas;
+  SetBodyInnerHTML("<canvas id='c' width=100 height=100></canvas>");
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  Element* const script_element =
+      GetDocument().CreateRawElement(html_names::kScriptTag);
+  script_element->setTextContent(
+      "window.addEventListener('beforeprint', (ev) => {"
+      "const ctx = document.getElementById('c').getContext('2d');"
+      "ctx.fillRect(0, 0, 10, 10);"
+      "ctx.fillRect(50, 50, 10, 10);"
+      "});");
+  GetDocument().body()->AppendChild(script_element);
+
+  EXPECT_CALL(canvas, onDrawRect(_, _)).Times(testing::AtLeast(2));
+
+  PrintSinglePage(canvas);
+}
+
+TEST_P(PrintContextTest, Canvas2DPixelated) {
+  MockPageContextCanvas canvas;
+  SetBodyInnerHTML(
+      "<canvas id='c' style='image-rendering: pixelated' "
+      "width=100 height=100></canvas>");
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  Element* const script_element =
+      GetDocument().CreateRawElement(html_names::kScriptTag);
+  script_element->setTextContent(
+      "window.addEventListener('beforeprint', (ev) => {"
+      "const ctx = document.getElementById('c').getContext('2d');"
+      "ctx.fillRect(0, 0, 10, 10);"
+      "ctx.fillRect(50, 50, 10, 10);"
+      "});");
+  GetDocument().body()->AppendChild(script_element);
+
+  EXPECT_CALL(canvas, onDrawImageRect(_, _, _, _, _));
+
+  PrintSinglePage(canvas);
 }
 
 // This tests that we don't resize or re-layout subframes in printed content.

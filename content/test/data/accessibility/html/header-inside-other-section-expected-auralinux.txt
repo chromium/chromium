@@ -2,12 +2,12 @@
 ++[article] xml-roles:article
 ++++[section]
 ++++++[paragraph]
-++++++++[text] name='Header inside article.'
+++++++++[static] name='Header inside article.'
 ++[section] xml-roles:region
 ++++[section]
 ++++++[paragraph]
-++++++++[text] name='Header inside section.'
+++++++++[static] name='Header inside section.'
 ++[landmark] xml-roles:main
 ++++[section]
 ++++++[paragraph]
-++++++++[text] name='Header inside main.'
+++++++++[static] name='Header inside main.'

@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/md5.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_hash.h"

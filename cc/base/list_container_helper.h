@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "cc/base/base_export.h"
 
 namespace cc {
@@ -25,7 +24,10 @@ class CC_BASE_EXPORT ListContainerHelper final {
   explicit ListContainerHelper(size_t alignment,
                                size_t max_size_for_derived_class,
                                size_t num_of_elements_to_reserve_for);
+  ListContainerHelper(const ListContainerHelper&) = delete;
   ~ListContainerHelper();
+
+  ListContainerHelper& operator=(const ListContainerHelper&) = delete;
 
   // This class deals only with char* and void*. It does allocation and passing
   // out raw pointers, as well as memory deallocation when being destroyed.
@@ -170,8 +172,6 @@ class CC_BASE_EXPORT ListContainerHelper final {
   void* Allocate(size_t alignment, size_t size_of_actual_element_in_bytes);
 
   std::unique_ptr<CharAllocator> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ListContainerHelper);
 };
 
 }  // namespace cc

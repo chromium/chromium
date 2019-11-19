@@ -11,7 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "storage/browser/fileapi/async_file_util.h"
+#include "storage/browser/file_system/async_file_util.h"
 
 namespace chromeos {
 namespace file_system_provider {

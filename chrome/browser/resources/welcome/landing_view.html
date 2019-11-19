@@ -1,0 +1,26 @@
+<style include="animations action-link-style splash-pages-shared-css">
+  onboarding-background {
+    --animation-delay: 275ms;
+  }
+
+  h1 {
+    outline: none;
+  }
+
+  .action-button,
+  .action-link {
+    --animation-delay: 150ms;
+  }
+</style>
+<div id="container">
+  <onboarding-background class="fade-in"></onboarding-background>
+  <h2 class="fade-in">$i18n{landingDescription}</h2>
+  <h1 class="fade-in" tabindex="-1">$i18n{landingTitle}</h1>
+  <cr-button class="action-button fade-in" on-click="onNewUserClick_">
+    $i18n{landingNewUser}
+  </cr-button>
+  <button class="action-link fade-in" on-click="onExistingUserClick_">
+    <span hidden$="[[!signinAllowed_]]">$i18n{landingExistingUser}</span>
+    <span hidden$="[[signinAllowed_]]">$i18n{skip}</span>
+  </button>
+</div>

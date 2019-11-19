@@ -1,0 +1,68 @@
+<style>
+  #icon {
+    height: 32px;
+    margin-inline-end: 10px;
+    width: 32px;
+  }
+
+  #icon-and-name-wrapper {
+    align-items: center;
+    display: flex;
+  }
+
+  ExtensionOptions {
+    display: block;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  cr-dialog::part(dialog) {
+    /* CSS variables are set by the JS. */
+    height: var(--dialog-height);
+    opacity: var(--dialog-opacity, 0);
+    /* When loading, it's possible for an size update to follow after the
+       initial size update. The debounce time on size updates is 50ms.
+       A 100ms delay for the opacity transition will allow two updates to
+       occur without showing the dialog resizing to the user. */
+    transition: opacity 100ms ease 100ms;
+    width: var(--dialog-width);
+  }
+
+  cr-dialog::part(wrapper) {
+    height: 100%;
+    max-height: initial;
+    overflow: hidden;
+  }
+
+  cr-dialog #body {
+    height: 100%;
+    padding: 0;
+  }
+
+  cr-dialog {
+    --cr-dialog-body-border-bottom: none;
+    --cr-dialog-body-border-top: none;
+    --scroll-border: none;
+  }
+
+  cr-dialog::part(body-container) {
+    height: 100%;
+    min-height: initial;
+  }
+</style>
+
+<cr-dialog id="dialog" close-text="$i18n{close}"
+    on-close="onClose_" show-close-button>
+  <div slot="title">
+    <div id="icon-and-name-wrapper">
+      <img id="icon" src="[[data_.iconUrl]]"
+          alt$="[[appOrExtension(
+              data.type,
+              '$i18nPolymer{appIcon}',
+              '$i18nPolymer{extensionIcon}')]]">
+      <span>[[data_.name]]</span>
+    </div>
+  </div>
+  <div slot="body" id="body">
+  </div>
+</cr-dialog>

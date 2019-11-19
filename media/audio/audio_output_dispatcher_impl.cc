@@ -31,8 +31,7 @@ AudioOutputDispatcherImpl::AudioOutputDispatcherImpl(
                    close_delay,
                    this,
                    &AudioOutputDispatcherImpl::CloseAllIdleStreams),
-      audio_stream_id_(0),
-      weak_factory_(this) {
+      audio_stream_id_(0) {
   DCHECK(audio_manager->GetTaskRunner()->BelongsToCurrentThread());
 }
 
@@ -88,7 +87,7 @@ bool AudioOutputDispatcherImpl::StartStream(
   double volume = 0;
   stream_proxy->GetVolume(&volume);
   physical_stream->SetVolume(volume);
-  DCHECK(base::ContainsKey(audio_logs_, physical_stream));
+  DCHECK(base::Contains(audio_logs_, physical_stream));
   AudioLog* const audio_log = audio_logs_[physical_stream].get();
   audio_log->OnSetVolume(volume);
   physical_stream->Start(callback);
@@ -115,7 +114,7 @@ void AudioOutputDispatcherImpl::StreamVolumeSet(AudioOutputProxy* stream_proxy,
   if (it != proxy_to_physical_map_.end()) {
     AudioOutputStream* physical_stream = it->second;
     physical_stream->SetVolume(volume);
-    DCHECK(base::ContainsKey(audio_logs_, physical_stream));
+    DCHECK(base::Contains(audio_logs_, physical_stream));
     audio_logs_[physical_stream]->OnSetVolume(volume);
   }
 }
@@ -130,6 +129,10 @@ void AudioOutputDispatcherImpl::CloseStream(AudioOutputProxy* stream_proxy) {
   CloseIdleStreams(std::max(idle_proxies_, static_cast<size_t>(1)));
   close_timer_.Reset();
 }
+
+// There is nothing to flush since the phsyical stream is removed during
+// StopStream().
+void AudioOutputDispatcherImpl::FlushStream(AudioOutputProxy* stream_proxy) {}
 
 bool AudioOutputDispatcherImpl::HasOutputProxies() const {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
@@ -184,7 +187,7 @@ void AudioOutputDispatcherImpl::CloseIdleStreams(size_t keep_alive) {
 void AudioOutputDispatcherImpl::StopPhysicalStream(AudioOutputStream* stream) {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
   stream->Stop();
-  DCHECK(base::ContainsKey(audio_logs_, stream));
+  DCHECK(base::Contains(audio_logs_, stream));
   audio_logs_[stream]->OnStopped();
   idle_streams_.push_back(stream);
   close_timer_.Reset();

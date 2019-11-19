@@ -80,10 +80,7 @@ class GIN_EXPORT IsolateHolder {
 
   // Should be invoked once before creating IsolateHolder instances to
   // initialize V8 and Gin. In case V8_USE_EXTERNAL_STARTUP_DATA is
-  // defined, V8's initial natives should be loaded (by calling
-  // V8Initializer::LoadV8NativesFromFD or
-  // V8Initializer::LoadV8Natives) before calling this method.  If the
-  // snapshot file is available, it should also be loaded (by calling
+  // defined and the snapshot file is available, it should be loaded (by calling
   // V8Initializer::LoadV8SnapshotFromFD or
   // V8Initializer::LoadV8Snapshot) before calling this method.
   // If the snapshot file contains customised contexts which have static

@@ -21,13 +21,12 @@ namespace input_method {
 const char kLanguageDelimiter[] = ",";
 
 InputMethodWhitelist::InputMethodWhitelist() {
-  for (size_t i = 0; i < base::size(kInputMethods); ++i) {
-    supported_input_methods_.insert(kInputMethods[i].input_method_id);
+  for (const auto& input_method : kInputMethods) {
+    supported_input_methods_.insert(input_method.input_method_id);
   }
 }
 
-InputMethodWhitelist::~InputMethodWhitelist() {
-}
+InputMethodWhitelist::~InputMethodWhitelist() = default;
 
 bool InputMethodWhitelist::InputMethodIdIsWhitelisted(
     const std::string& input_method_id) const {
@@ -39,25 +38,22 @@ InputMethodWhitelist::GetSupportedInputMethods() const {
   std::unique_ptr<InputMethodDescriptors> input_methods(
       new InputMethodDescriptors);
   input_methods->reserve(base::size(kInputMethods));
-  for (size_t i = 0; i < base::size(kInputMethods); ++i) {
+  for (const auto& input_method : kInputMethods) {
     std::vector<std::string> layouts;
-    layouts.push_back(kInputMethods[i].xkb_layout_id);
+    layouts.emplace_back(input_method.xkb_layout_id);
 
-    std::vector<std::string> languages = base::SplitString(
-        kInputMethods[i].language_code, kLanguageDelimiter,
-        base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::vector<std::string> languages =
+        base::SplitString(input_method.language_code, kLanguageDelimiter,
+                          base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     DCHECK(!languages.empty());
 
     input_methods->push_back(InputMethodDescriptor(
         extension_ime_util::GetInputMethodIDByEngineID(
-            kInputMethods[i].input_method_id),
-        "",
-        kInputMethods[i].indicator,
-        layouts,
-        languages,
-        kInputMethods[i].is_login_keyboard,
-        GURL(), // options page url.
-        GURL() // input view page url.
+            input_method.input_method_id),
+        "", input_method.indicator, layouts, languages,
+        input_method.is_login_keyboard,
+        GURL(),  // options page url.
+        GURL()   // input view page url.
         ));
   }
   return input_methods;

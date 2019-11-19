@@ -13,6 +13,7 @@
 #include "media/base/media_switches.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
+#include "media/gpu/macros.h"
 #include "media/gpu/media_gpu_export.h"
 
 #if defined(OS_WIN)
@@ -20,19 +21,13 @@
 #include "media/gpu/windows/dxva_video_decode_accelerator_win.h"
 #endif
 #if defined(OS_MACOSX)
-#include "media/gpu/vt_video_decode_accelerator_mac.h"
+#include "media/gpu/mac/vt_video_decode_accelerator_mac.h"
 #endif
 #if BUILDFLAG(USE_V4L2_CODEC)
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_slice_video_decode_accelerator.h"
 #include "media/gpu/v4l2/v4l2_video_decode_accelerator.h"
 #include "ui/gl/gl_surface_egl.h"
-#endif
-#if defined(OS_ANDROID)
-#include "media/gpu/android/android_video_decode_accelerator.h"
-#include "media/gpu/android/android_video_surface_chooser_impl.h"
-#include "media/gpu/android/codec_allocator.h"
-#include "media/gpu/android/device_info.h"
 #endif
 #if BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_video_decode_accelerator.h"
@@ -61,7 +56,7 @@ gpu::VideoDecodeAcceleratorCapabilities GetDecoderCapabilitiesInternal(
   capabilities.supported_profiles =
       DXVAVideoDecodeAccelerator::GetSupportedProfiles(gpu_preferences,
                                                        workarounds);
-#elif BUILDFLAG(USE_V4L2_CODEC) || BUILDFLAG(USE_VAAPI)
+#elif BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   VideoDecodeAccelerator::SupportedProfiles vda_profiles;
 #if BUILDFLAG(USE_V4L2_CODEC)
   vda_profiles = V4L2VideoDecodeAccelerator::GetSupportedProfiles();
@@ -79,9 +74,6 @@ gpu::VideoDecodeAcceleratorCapabilities GetDecoderCapabilitiesInternal(
 #elif defined(OS_MACOSX)
   capabilities.supported_profiles =
       VTVideoDecodeAccelerator::GetSupportedProfiles();
-#elif defined(OS_ANDROID)
-  capabilities =
-      AndroidVideoDecodeAccelerator::GetCapabilities(gpu_preferences);
 #endif
 
   return GpuVideoAcceleratorUtil::ConvertMediaToGpuDecodeCapabilities(
@@ -133,8 +125,21 @@ GpuVideoDecodeAcceleratorFactory::GetDecoderCapabilities(
   // change between calls.
   // TODO(sandersd): Move cache to GpuMojoMediaClient once
   // |video_decode_accelerator_capabilities| is removed from GPUInfo.
-  static const gpu::VideoDecodeAcceleratorCapabilities capabilities =
+  static gpu::VideoDecodeAcceleratorCapabilities capabilities =
       GetDecoderCapabilitiesInternal(gpu_preferences, workarounds);
+
+#if BUILDFLAG(USE_V4L2_CODEC)
+  // V4L2-only: the decoder devices may not be visible at the time the GPU
+  // process is starting. If the capabilities vector is empty, try to query the
+  // devices again in the hope that they will have appeared in the meantime.
+  // TODO(crbug.com/948147): trigger query when an device add/remove event
+  // (e.g. via udev) has happened instead.
+  if (capabilities.supported_profiles.empty()) {
+    VLOGF(1) << "Capabilities empty, querying again...";
+    capabilities = GetDecoderCapabilitiesInternal(gpu_preferences, workarounds);
+  }
+#endif
+
   return capabilities;
 }
 
@@ -171,9 +176,6 @@ GpuVideoDecodeAcceleratorFactory::CreateVDA(
 #endif
 #if defined(OS_MACOSX)
     &GpuVideoDecodeAcceleratorFactory::CreateVTVDA,
-#endif
-#if defined(OS_ANDROID)
-    &GpuVideoDecodeAcceleratorFactory::CreateAndroidVDA,
 #endif
   };
 
@@ -256,23 +258,6 @@ GpuVideoDecodeAcceleratorFactory::CreateVTVDA(
     MediaLog* media_log) const {
   std::unique_ptr<VideoDecodeAccelerator> decoder;
   decoder.reset(new VTVideoDecodeAccelerator(bind_image_cb_, media_log));
-  return decoder;
-}
-#endif
-
-#if defined(OS_ANDROID)
-std::unique_ptr<VideoDecodeAccelerator>
-GpuVideoDecodeAcceleratorFactory::CreateAndroidVDA(
-    const gpu::GpuDriverBugWorkarounds& workarounds,
-    const gpu::GpuPreferences& gpu_preferences,
-    MediaLog* media_log) const {
-  std::unique_ptr<VideoDecodeAccelerator> decoder;
-  decoder.reset(new AndroidVideoDecodeAccelerator(
-      CodecAllocator::GetInstance(base::ThreadTaskRunnerHandle::Get()),
-      std::make_unique<AndroidVideoSurfaceChooserImpl>(
-          DeviceInfo::GetInstance()->IsSetOutputSurfaceSupported()),
-      make_context_current_cb_, get_context_group_cb_, overlay_factory_cb_,
-      create_abstract_texture_cb_, DeviceInfo::GetInstance()));
   return decoder;
 }
 #endif

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_BASE_FETCH_CONTEXT_H_
 
 #include "base/optional.h"
-#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -19,6 +19,7 @@
 namespace blink {
 
 class ConsoleMessage;
+class DetachableResourceFetcherProperties;
 class KURL;
 class PreviewsResourceLoadingHints;
 class SecurityOrigin;
@@ -29,7 +30,6 @@ class WebSocketHandshakeThrottle;
 // Frame. This class provides basic default implementation for some methods.
 class CORE_EXPORT BaseFetchContext : public FetchContext {
  public:
-  void AddAdditionalRequestHeaders(ResourceRequest&) override;
   base::Optional<ResourceRequestBlockedReason> CanRequest(
       ResourceType,
       const ResourceRequest&,
@@ -46,6 +46,13 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
 
   void Trace(blink::Visitor*) override;
 
+  const DetachableResourceFetcherProperties& GetResourceFetcherProperties()
+      const {
+    return *fetcher_properties_;
+  }
+
+  virtual void CountUsage(mojom::WebFeature) const = 0;
+  virtual void CountDeprecation(mojom::WebFeature) const = 0;
   virtual KURL GetSiteForCookies() const = 0;
 
   // Returns the origin of the top frame in the document.
@@ -61,8 +68,12 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   bool CalculateIfAdSubresource(const ResourceRequest& resource_request,
                                 ResourceType type) override;
 
+  virtual const ContentSecurityPolicy* GetContentSecurityPolicy() const = 0;
+
  protected:
-  BaseFetchContext() = default;
+  explicit BaseFetchContext(
+      const DetachableResourceFetcherProperties& properties)
+      : fetcher_properties_(properties) {}
 
   // Used for security checks.
   virtual bool AllowScriptFromSource(const KURL&) const = 0;
@@ -79,7 +90,6 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   virtual bool IsSVGImageChromeClient() const = 0;
   virtual bool ShouldBlockFetchByMixedContentCheck(
       mojom::RequestContextType,
-      network::mojom::RequestContextFrameType,
       ResourceRequest::RedirectStatus,
       const KURL&,
       SecurityViolationReportingPolicy) const = 0;
@@ -87,12 +97,13 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
                                                          const KURL&) const = 0;
   virtual const KURL& Url() const = 0;
   virtual const SecurityOrigin* GetParentSecurityOrigin() const = 0;
-  virtual const ContentSecurityPolicy* GetContentSecurityPolicy() const = 0;
 
   // TODO(yhirano): Remove this.
   virtual void AddConsoleMessage(ConsoleMessage*) const = 0;
 
  private:
+  const Member<const DetachableResourceFetcherProperties> fetcher_properties_;
+
   void PrintAccessDeniedMessage(const KURL&) const;
 
   // Utility methods that are used in default implement for CanRequest,

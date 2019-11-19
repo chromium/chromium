@@ -36,7 +36,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/base/network_interfaces.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -72,8 +72,7 @@ class ProcessSingletonPosixTest : public testing::Test {
 
   ProcessSingletonPosixTest()
       : kill_callbacks_(0),
-        test_browser_thread_bundle_(
-            content::TestBrowserThreadBundle::REAL_IO_THREAD),
+        task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
         wait_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                     base::WaitableEvent::InitialState::NOT_SIGNALED),
         signal_event_(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -102,8 +101,7 @@ class ProcessSingletonPosixTest : public testing::Test {
 
   void TearDown() override {
     scoped_refptr<base::ThreadTestHelper> io_helper(new base::ThreadTestHelper(
-        base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})
-            .get()));
+        base::CreateSingleThreadTaskRunner({BrowserThread::IO}).get()));
     ASSERT_TRUE(io_helper->Run());
 
     // Destruct the ProcessSingleton object before the IO thread so that its
@@ -263,7 +261,7 @@ class ProcessSingletonPosixTest : public testing::Test {
     kill_callbacks_++;
   }
 
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   base::WaitableEvent wait_event_;
   base::WaitableEvent signal_event_;

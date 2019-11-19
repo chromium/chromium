@@ -147,7 +147,7 @@ cr.define('multidevice_setup', () => {
       function setVisiblePage(visiblePageName) {
         multiDeviceSetupElement.visiblePageName = visiblePageName;
         Polymer.dom.flush();
-        return test_util.waitForRender(
+        return test_util.waitBeforeNextRender(
             multiDeviceSetupElement.$$(visiblePageName));
       }
 
@@ -158,7 +158,7 @@ cr.define('multidevice_setup', () => {
       function enterPassword(input) {
         multiDeviceSetupElement.$$(PASSWORD).$$('#passwordInput').value = input;
         Polymer.dom.flush();
-        return test_util.waitForRender(multiDeviceSetupElement);
+        return test_util.waitBeforeNextRender(multiDeviceSetupElement);
       }
 
       function getNumSetHostDeviceCalls() {
@@ -342,7 +342,8 @@ cr.define('multidevice_setup', () => {
                   multiDeviceSetupElement.delegate.shouldSetHostSucceed = true;
                   forwardButton.click();
                   Polymer.dom.flush();
-                  return test_util.waitForRender(multiDeviceSetupElement);
+                  return test_util.waitBeforeNextRender(
+                      multiDeviceSetupElement);
                 })
                 .then(() => {
                   assertEquals(
@@ -364,7 +365,8 @@ cr.define('multidevice_setup', () => {
                 .then(() => {
                   forwardButton.click();
                   Polymer.dom.flush();
-                  return test_util.waitForRender(multiDeviceSetupElement);
+                  return test_util.waitBeforeNextRender(
+                      multiDeviceSetupElement);
                 })
                 .then(() => {
                   assertTrue(multiDeviceSetupElement.forwardButtonDisabled);

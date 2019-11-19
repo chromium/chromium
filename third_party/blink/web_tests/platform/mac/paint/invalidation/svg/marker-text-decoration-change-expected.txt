@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutSVGPath path",
+          "rect": [8, 14, 148, 18],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutSVGPath path",
+          "rect": [8, 14, 148, 18],
+          "reason": "style change"
+        }
+      ]
+    }
+  ]
+}
+

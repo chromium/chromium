@@ -15,8 +15,9 @@
 // The BreakIterator class iterates through the words, word breaks, and
 // line breaks in a UTF-16 string.
 //
-// It provides several modes, BREAK_WORD, BREAK_LINE, and BREAK_NEWLINE,
-// which modify how characters are aggregated into the returned string.
+// It provides several modes, BREAK_WORD, BREAK_LINE, BREAK_NEWLINE, and
+// BREAK_SENTENCE which modify how characters are aggregated into the returned
+// string.
 //
 // Under BREAK_WORD mode, once a word is encountered any non-word
 // characters are not included in the returned string (e.g. in the
@@ -42,6 +43,12 @@
 // string, breaking only when a newline-equivalent character is encountered
 // (eg. in the UTF-16 equivalent of the string "foo\nbar!\n\n", the line
 // breaks are at the periods in ".foo\n.bar\n.\n.").
+//
+// Under BREAK_SENTENCE mode, all characters are included in the returned
+// string, breaking only on sentence boundaries defined in "Unicode Standard
+// Annex #29: Text Segmentation." Whitespace immediately following the sentence
+// is also included. For example, in the UTF-16 equivalent of the string
+// "foo bar! baz qux?" the breaks are at the periods in ".foo bar! .baz quz?."
 //
 // To extract the words from a string, move a BREAK_WORD BreakIterator
 // through the string and test whether IsWord() is true. E.g.,
@@ -71,6 +78,7 @@ class BASE_I18N_EXPORT BreakIterator {
     BREAK_CHARACTER,
     // But don't remove this one!
     RULE_BASED,
+    BREAK_SENTENCE,
   };
 
   enum WordBreakStatus {
@@ -131,10 +139,15 @@ class BASE_I18N_EXPORT BreakIterator {
   BreakIterator::WordBreakStatus GetWordBreakStatus() const;
 
   // Under BREAK_WORD mode, returns true if |position| is at the end of word or
-  // at the start of word. It always returns false under BREAK_LINE and
-  // BREAK_NEWLINE modes.
+  // at the start of word. It always returns false under modes that are not
+  // BREAK_WORD or RULE_BASED.
   bool IsEndOfWord(size_t position) const;
   bool IsStartOfWord(size_t position) const;
+
+  // Under BREAK_SENTENCE mode, returns true if |position| is at a sentence
+  // boundary. It always returns false under modes that are not BREAK_SENTENCE
+  // or RULE_BASED.
+  bool IsSentenceBoundary(size_t position) const;
 
   // Under BREAK_CHARACTER mode, returns whether |position| is a Unicode
   // grapheme boundary.

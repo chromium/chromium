@@ -19,7 +19,7 @@ const AtomicString& DocumentLanguage(const Document& document) {
   Element* html_element = document.documentElement();
   if (!html_element)
     return g_null_atom;
-  return html_element->getAttribute(html_names::kLangAttr);
+  return html_element->FastGetAttribute(html_names::kLangAttr);
 }
 
 bool HasNoTranslate(const Document& document) {
@@ -37,7 +37,7 @@ bool HasNoTranslate(const Document& document) {
     // Check if the tag contains content="notranslate" or value="notranslate"
     AtomicString content = meta_element.Content();
     if (content.IsNull())
-      content = meta_element.getAttribute(html_names::kValueAttr);
+      content = meta_element.FastGetAttribute(html_names::kValueAttr);
     if (EqualIgnoringASCIICase(content, "notranslate"))
       return true;
   }

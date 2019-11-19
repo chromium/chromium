@@ -11,7 +11,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "net/base/filename_util.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 #if defined(OS_CHROMEOS)
 #include "extensions/browser/api/extensions_api_client.h"
@@ -43,15 +43,15 @@ void EntryIsDirectory(content::BrowserContext* context,
   }
 #endif
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
       base::Bind(&GetIsDirectoryFromFileInfo, path), callback);
 }
 
 }  // namespace
 
 IsDirectoryCollector::IsDirectoryCollector(content::BrowserContext* context)
-    : context_(context), left_(0), weak_ptr_factory_(this) {}
+    : context_(context), left_(0) {}
 
 IsDirectoryCollector::~IsDirectoryCollector() {}
 

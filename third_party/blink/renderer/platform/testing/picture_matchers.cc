@@ -31,7 +31,7 @@ class DrawsRectangleCanvas : public SkCanvas {
     getTotalMatrix().mapRectToQuad(quad, rect);
 
     SkRect device_rect;
-    device_rect.set(quad, 4);
+    device_rect.setBounds(quad, 4);
     SkIRect device_clip_bounds;
     FloatRect clipped_rect;
     if (getDeviceClipBounds(&device_clip_bounds) &&
@@ -107,8 +107,7 @@ class DrawsRectanglesMatcher
         if (listener->IsInterested()) {
           *listener << "at index " << index << " which draws "
                     << actual_rect_with_color.rect << " with color "
-                    << actual_rect_with_color.color.Serialized().Ascii().data()
-                    << "\n";
+                    << actual_rect_with_color.color.Serialized() << "\n";
         }
         return false;
       }
@@ -122,8 +121,7 @@ class DrawsRectanglesMatcher
     for (unsigned index = 0; index < rects_with_color_.size(); index++) {
       const auto& rect_with_color = rects_with_color_[index];
       *os << "at index " << index << " rect draws " << rect_with_color.rect
-          << " with color " << rect_with_color.color.Serialized().Ascii().data()
-          << "\n";
+          << " with color " << rect_with_color.color.Serialized() << "\n";
     }
   }
 

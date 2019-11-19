@@ -21,6 +21,10 @@ jumbo_component("webview") {
 
   defines = [ "WEBVIEW_IMPLEMENTATION" ]
 
+  if (is_mac) {
+    libs = [ "CoreFoundation.framework" ]
+  }
+
   deps = [
     "//base:i18n",
     "//base/third_party/dynamic_annotations",

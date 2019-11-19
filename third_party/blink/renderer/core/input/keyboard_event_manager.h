@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -24,8 +24,8 @@ class WebKeyboardEvent;
 
 enum class OverrideCapsLockState { kDefault, kOn, kOff };
 
-class CORE_EXPORT KeyboardEventManager
-    : public GarbageCollectedFinalized<KeyboardEventManager> {
+class CORE_EXPORT KeyboardEventManager final
+    : public GarbageCollected<KeyboardEventManager> {
  public:
   static const int kAccessKeyModifiers =
 // TODO(crbug.com/618397): Add a settings to control this behavior.
@@ -56,7 +56,9 @@ class CORE_EXPORT KeyboardEventManager
   void DefaultTabEventHandler(KeyboardEvent*);
   void DefaultEscapeEventHandler(KeyboardEvent*);
   void DefaultEnterEventHandler(KeyboardEvent*);
+  void DefaultImeSubmitHandler(KeyboardEvent*);
   void DefaultArrowEventHandler(KeyboardEvent*, Node*);
+  bool DefaultSpatNavBackEventHandler(KeyboardEvent*);
 
   const Member<LocalFrame> frame_;
 

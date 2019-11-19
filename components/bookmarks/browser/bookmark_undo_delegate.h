@@ -25,7 +25,7 @@ class BookmarkUndoDelegate {
   // Called when |node| was removed from |parent| at position |index|.
   virtual void OnBookmarkNodeRemoved(BookmarkModel* model,
                                      const BookmarkNode* parent,
-                                     int index,
+                                     size_t index,
                                      std::unique_ptr<BookmarkNode> node) = 0;
 };
 

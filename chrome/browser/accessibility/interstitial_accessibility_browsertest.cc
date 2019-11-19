@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
 #include "chrome/browser/ssl/ssl_blocking_page.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -17,9 +15,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
-
-const base::FilePath::CharType kDocRoot[] =
-    FILE_PATH_LITERAL("chrome/test/data");
+#include "ui/accessibility/ax_enums.mojom.h"
 
 class InterstitialAccessibilityBrowserTest : public InProcessBrowserTest {
  public:
@@ -27,7 +23,7 @@ class InterstitialAccessibilityBrowserTest : public InProcessBrowserTest {
       : https_server_mismatched_(net::EmbeddedTestServer::TYPE_HTTPS) {
     https_server_mismatched_.SetSSLConfig(
         net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
-    https_server_mismatched_.AddDefaultHandlers(base::FilePath(kDocRoot));
+    https_server_mismatched_.AddDefaultHandlers(GetChromeTestDataDir());
   }
 
   std::string GetNameOfFocusedNode(content::WebContents* web_contents) {
@@ -41,38 +37,22 @@ class InterstitialAccessibilityBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer https_server_mismatched_;
 
   bool IsShowingInterstitial(content::WebContents* tab) {
-    if (base::FeatureList::IsEnabled(features::kSSLCommittedInterstitials)) {
-      security_interstitials::SecurityInterstitialTabHelper* helper =
-          security_interstitials::SecurityInterstitialTabHelper::
-              FromWebContents(tab);
-      if (!helper) {
-        return false;
-      }
-      return helper
-                 ->GetBlockingPageForCurrentlyCommittedNavigationForTesting() !=
-             nullptr;
+    security_interstitials::SecurityInterstitialTabHelper* helper =
+        security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+            tab);
+    if (!helper) {
+      return false;
     }
-    return tab->ShowingInterstitialPage();
+    return helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting() !=
+           nullptr;
   }
 
   void ProceedThroughInterstitial(content::WebContents* web_contents) {
-    if (base::FeatureList::IsEnabled(features::kSSLCommittedInterstitials)) {
-      content::TestNavigationObserver nav_observer(web_contents, 1);
-      std::string javascript =
-          "window.certificateErrorPageController.proceed();";
-      ASSERT_TRUE(content::ExecuteScript(web_contents, javascript));
-      nav_observer.Wait();
-      return;
-    }
-    content::InterstitialPage* interstitial_page =
-        web_contents->GetInterstitialPage();
-    ASSERT_TRUE(interstitial_page);
-    ASSERT_EQ(SSLBlockingPage::kTypeForTesting,
-              interstitial_page->GetDelegateForTesting()->GetTypeForTesting());
-    SSLBlockingPage* ssl_interstitial = static_cast<SSLBlockingPage*>(
-        interstitial_page->GetDelegateForTesting());
-    ssl_interstitial->CommandReceived(
-        base::NumberToString(security_interstitials::CMD_PROCEED));
+    content::TestNavigationObserver nav_observer(web_contents, 1);
+    std::string javascript = "window.certificateErrorPageController.proceed();";
+    ASSERT_TRUE(content::ExecuteScript(web_contents, javascript));
+    nav_observer.Wait();
+    return;
   }
 };
 

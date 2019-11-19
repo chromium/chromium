@@ -23,24 +23,27 @@ function highlightIfChanged(node, oldVal, newVal) {
     // Note the addListener function does not end up creating duplicate
     // listeners.  There can be only one listener per event at a time.
     // Reference: https://developer.mozilla.org/en/DOM/element.addEventListener
-    node.addEventListener('webkitAnimationEnd',
-                          function() { this.removeAttribute('highlighted'); },
-                          false);
+    node.addEventListener('webkitAnimationEnd', function() {
+      this.removeAttribute('highlighted');
+    }, false);
     node.setAttribute('highlighted', '');
   }
 }
 
 // Wraps highlightIfChanged for multiple conditions.
 function highlightIfAnyChanged(node, oldToNewValList) {
-  for (var i = 0; i < oldToNewValList.length; i++)
+  for (var i = 0; i < oldToNewValList.length; i++) {
     highlightIfChanged(node, oldToNewValList[i][0], oldToNewValList[i][1]);
+  }
 }
 
 function setClassFromValue(value) {
-  if (value == 0)
+  if (value == 0) {
     return 'zero';
-  if (value == 'Successful')
+  }
+  if (value == 'Successful') {
     return 'ok';
+  }
 
   return '';
 }

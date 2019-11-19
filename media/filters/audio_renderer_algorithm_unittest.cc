@@ -171,8 +171,8 @@ class AudioRendererAlgorithmTest : public testing::Test {
     return true;
   }
 
-  bool AudioDataIsMuted(AudioBus* audio_data, int frames_written) {
-    return VerifyAudioData(audio_data, 0, frames_written, 0);
+  bool AudioDataIsMuted(AudioBus* audio_data, int frames_written, int offset) {
+    return VerifyAudioData(audio_data, offset, frames_written, 0);
   }
 
   int ComputeConsumedFrames(int initial_frames_enqueued,
@@ -189,18 +189,21 @@ class AudioRendererAlgorithmTest : public testing::Test {
     const int kDefaultFramesRequested = kOutputDurationInSec *
         algorithm_.samples_per_second();
 
-    TestPlaybackRate(
-        playback_rate, kDefaultBufferSize, kDefaultFramesRequested);
+    TestPlaybackRate(playback_rate, kDefaultBufferSize, kDefaultFramesRequested,
+                     0);
   }
 
   void TestPlaybackRate(double playback_rate,
                         int buffer_size_in_frames,
-                        int total_frames_requested) {
+                        int total_frames_requested,
+                        int dest_offset) {
     int initial_frames_enqueued = frames_enqueued_;
     int initial_frames_buffered = algorithm_.frames_buffered();
 
     std::unique_ptr<AudioBus> bus =
         AudioBus::Create(channels_, buffer_size_in_frames);
+    bus->ZeroFrames(dest_offset);
+
     if (playback_rate == 0.0) {
       int frames_written = algorithm_.FillBuffer(
           bus.get(), 0, buffer_size_in_frames, playback_rate);
@@ -211,9 +214,10 @@ class AudioRendererAlgorithmTest : public testing::Test {
     int frames_remaining = total_frames_requested;
     bool first_fill_buffer = true;
     while (frames_remaining > 0) {
-      int frames_requested = std::min(buffer_size_in_frames, frames_remaining);
-      int frames_written =
-          algorithm_.FillBuffer(bus.get(), 0, frames_requested, playback_rate);
+      int frames_requested =
+          std::min(buffer_size_in_frames - dest_offset, frames_remaining);
+      int frames_written = algorithm_.FillBuffer(
+          bus.get(), dest_offset, frames_requested, playback_rate);
       ASSERT_GT(frames_written, 0) << "Requested: " << frames_requested
                                    << ", playing at " << playback_rate;
 
@@ -223,7 +227,7 @@ class AudioRendererAlgorithmTest : public testing::Test {
       // if at very first buffer-fill only one frame is written, that is zero
       // which might cause exception in CheckFakeData().
       if (!first_fill_buffer || frames_written > 1)
-        ASSERT_FALSE(AudioDataIsMuted(bus.get(), frames_written));
+        ASSERT_FALSE(AudioDataIsMuted(bus.get(), frames_written, dest_offset));
       first_fill_buffer = false;
       frames_remaining -= frames_written;
 
@@ -254,6 +258,53 @@ class AudioRendererAlgorithmTest : public testing::Test {
     double actual_playback_rate =
         1.0 * frames_consumed / total_frames_requested;
     EXPECT_NEAR(playback_rate, actual_playback_rate, playback_rate / 100.0);
+  }
+
+  void TestPlaybackRateWithUnderflow(double playback_rate, bool end_of_stream) {
+    if (playback_rate > AudioRendererAlgorithm::kUpperResampleThreshold ||
+        playback_rate < AudioRendererAlgorithm::kLowerResampleThreshold) {
+      // This test is only used for the range in which we resample data instead
+      // of using WSOLA.
+      return;
+    }
+
+    if (end_of_stream) {
+      algorithm_.MarkEndOfStream();
+    } else {
+      algorithm_.FlushBuffers();
+    }
+
+    const int buffer_size_in_frames = algorithm_.samples_per_second() / 10;
+    const int initial_frames_enqueued = frames_enqueued_;
+
+    std::unique_ptr<AudioBus> bus =
+        AudioBus::Create(channels_, buffer_size_in_frames);
+
+    FillAlgorithmQueue();
+
+    int frames_written;
+    int total_frames_written = 0;
+    do {
+      frames_written = algorithm_.FillBuffer(
+          bus.get(), 0, buffer_size_in_frames, playback_rate);
+
+      total_frames_written += frames_written;
+    } while (frames_written && algorithm_.frames_buffered() > 0);
+
+    int input_frames_enqueued = frames_enqueued_ - initial_frames_enqueued;
+
+    int ouput_frames_available =
+        static_cast<int>(input_frames_enqueued / playback_rate + 0.5);
+
+    if (end_of_stream) {
+      // If we marked the EOS, all data should we played out, possibly with some
+      // extra silence.
+      EXPECT_GE(total_frames_written, ouput_frames_available);
+    } else {
+      // If we don't mark the EOS, we expect to have lost some frames because
+      // we don't partially handle requests.
+      EXPECT_LE(total_frames_written, ouput_frames_available);
+    }
   }
 
   void WsolaTest(double playback_rate) {
@@ -356,7 +407,7 @@ TEST_F(AudioRendererAlgorithmTest, InitializeWithLargeParameters) {
 TEST_F(AudioRendererAlgorithmTest, FillBuffer_Bitstream) {
   Initialize(CHANNEL_LAYOUT_STEREO, kSampleFormatEac3, kSamplesPerSecond,
              kSamplesPerSecond / 100);
-  TestPlaybackRate(1.0, kFrameSize, 16 * kFrameSize);
+  TestPlaybackRate(1.0, kFrameSize, 16 * kFrameSize, /* dest_offset */ 0);
 }
 
 TEST_F(AudioRendererAlgorithmTest, FillBuffer_NormalRate) {
@@ -372,6 +423,48 @@ TEST_F(AudioRendererAlgorithmTest, FillBuffer_NearlyNormalFasterRate) {
 TEST_F(AudioRendererAlgorithmTest, FillBuffer_NearlyNormalSlowerRate) {
   Initialize();
   TestPlaybackRate(0.9999);
+}
+
+// This test verifies that the resampling based time stretch algorithms works.
+// The range of playback rates in which we use resampling is [0.95, 1.06].
+TEST_F(AudioRendererAlgorithmTest, FillBuffer_ResamplingRates) {
+  Initialize();
+  TestPlaybackRate(0.94);  // WSOLA.
+  TestPlaybackRate(AudioRendererAlgorithm::kLowerResampleThreshold);
+  TestPlaybackRate(0.97);
+  TestPlaybackRate(1.00);
+  TestPlaybackRate(1.04);
+  TestPlaybackRate(AudioRendererAlgorithm::kUpperResampleThreshold);
+  TestPlaybackRate(1.07);  // WSOLA.
+}
+
+TEST_F(AudioRendererAlgorithmTest, FillBuffer_WithOffset) {
+  Initialize();
+  const int kBufferSize = algorithm_.samples_per_second() / 10;
+  const int kOffset = kBufferSize / 10;
+  const int kFramesRequested =
+      kOutputDurationInSec * algorithm_.samples_per_second();
+
+  // No time-strech.
+  TestPlaybackRate(1.00, kBufferSize, kFramesRequested, kOffset);
+
+  // Resampling based time-strech.
+  TestPlaybackRate(1.05, kBufferSize, kFramesRequested, kOffset);
+
+  // WSOLA based time-strech.
+  TestPlaybackRate(1.25, kBufferSize, kFramesRequested, kOffset);
+}
+
+TEST_F(AudioRendererAlgorithmTest, FillBuffer_UnderFlow) {
+  Initialize();
+  TestPlaybackRateWithUnderflow(AudioRendererAlgorithm::kLowerResampleThreshold,
+                                true);
+  TestPlaybackRateWithUnderflow(AudioRendererAlgorithm::kLowerResampleThreshold,
+                                false);
+  TestPlaybackRateWithUnderflow(AudioRendererAlgorithm::kUpperResampleThreshold,
+                                true);
+  TestPlaybackRateWithUnderflow(AudioRendererAlgorithm::kUpperResampleThreshold,
+                                false);
 }
 
 TEST_F(AudioRendererAlgorithmTest, FillBuffer_OneAndAQuarterRate) {
@@ -447,9 +540,9 @@ TEST_F(AudioRendererAlgorithmTest, FillBuffer_SmallBufferSize) {
   Initialize();
   static const int kBufferSizeInFrames = 1;
   static const int kFramesRequested = kOutputDurationInSec * kSamplesPerSecond;
-  TestPlaybackRate(1.0, kBufferSizeInFrames, kFramesRequested);
-  TestPlaybackRate(0.5, kBufferSizeInFrames, kFramesRequested);
-  TestPlaybackRate(1.5, kBufferSizeInFrames, kFramesRequested);
+  TestPlaybackRate(1.0, kBufferSizeInFrames, kFramesRequested, 0);
+  TestPlaybackRate(0.5, kBufferSizeInFrames, kFramesRequested, 0);
+  TestPlaybackRate(1.5, kBufferSizeInFrames, kFramesRequested, 0);
 }
 
 TEST_F(AudioRendererAlgorithmTest, FillBuffer_LargeBufferSize) {

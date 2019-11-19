@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <dimen name="tab_grid_favicon_size">32dp</dimen>
+    <dimen name="tab_list_selected_inset">7dp</dimen>
+    <dimen name="tab_list_card_padding">8dp</dimen>
+    <dimen name="tab_list_card_radius">4dp</dimen>
+    <dimen name="tab_list_mini_card_radius">4dp</dimen>
+    <dimen name="tab_list_mini_card_frame_size">1dp</dimen>
+    <dimen name="tab_grid_close_button_size">18dp</dimen>
+    <dimen name="tab_grid_dialog_side_margin">16dp</dimen>
+    <dimen name="tab_grid_dialog_top_margin">85dp</dimen>
+    <dimen name="tab_grid_iph_card_height">60dp</dimen>
+    <dimen name="tab_grid_iph_card_margin">9dp</dimen>
+    <dimen name="tab_grid_iph_card_text_inset">16dp</dimen>
+    <dimen name="tab_grid_iph_card_close_button_size">18dp</dimen>
+    <dimen name="tab_grid_iph_dialog_height">430dp</dimen>
+    <dimen name="tab_grid_iph_dialog_top_margin">24dp</dimen>
+    <dimen name="tab_grid_iph_dialog_side_margin">12dp</dimen>
+    <dimen name="tab_grid_iph_dialog_text_top_margin_landscape">8dp</dimen>
+    <dimen name="tab_grid_iph_dialog_text_top_margin_portrait">16dp</dimen>
+    <dimen name="tab_grid_iph_dialog_text_side_margin">32dp</dimen>
+    <dimen name="tab_grid_merge_threshold">45dp</dimen>
+    <dimen name="tab_grid_thumbnail_card_default_size">152dp</dimen>
+    <dimen name="tab_grid_thumbnail_favicon_frame_padding">16dp</dimen>
+    <dimen name="tab_grid_thumbnail_favicon_padding">24dp</dimen>
+    <dimen name="tab_grid_thumbnail_favicon_background_radius">3dp</dimen>
+    <dimen name="tab_grid_thumbnail_favicon_background_padding">2dp</dimen>
+    <dimen name="tab_grid_thumbnail_favicon_background_down_shift">2dp</dimen>
+    <dimen name="tab_group_toolbar_height">56dp</dimen>
+    <dimen name="tab_group_toolbar_topic_margin">8dp</dimen>
+    <dimen name="swipe_to_dismiss_threshold">144dp</dimen>
+    <dimen name="selection_tab_grid_toggle_button_inset">14dp</dimen>
+    <dimen name="tab_carousel_height">192dp</dimen>
+    <dimen name="tab_carousel_card_width">168dp</dimen>
+    <dimen name="tab_carousel_start_margin">-3dp</dimen>
+    <dimen name="tasks_view_items_vertical_spacing">8dp</dimen>
+</resources>

@@ -44,8 +44,10 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//net/android:net_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   generate_jni("jni_headers") {
@@ -53,6 +55,5 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/download/NetworkStatusListenerAndroid.java",
     ]
-    jni_package = "components/download/network"
   }
 }

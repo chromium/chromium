@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Reload document with document.open and document.written content assert_array_equals: lengths differ, expected 3 got 4
-Harness: the test ran to completion.
-

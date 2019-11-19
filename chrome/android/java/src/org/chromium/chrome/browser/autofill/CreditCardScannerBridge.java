@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
 /** Native bridge for credit card scanner. */
@@ -36,17 +37,21 @@ public class CreditCardScannerBridge implements CreditCardScanner.Delegate {
 
     @Override
     public void onScanCancelled() {
-        nativeScanCancelled(mNativeScanner);
+        CreditCardScannerBridgeJni.get().scanCancelled(
+                mNativeScanner, CreditCardScannerBridge.this);
     }
 
     @Override
     public void onScanCompleted(
             String cardHolderName, String cardNumber, int expirationMonth, int expirationYear) {
-        nativeScanCompleted(
-                mNativeScanner, cardHolderName, cardNumber, expirationMonth, expirationYear);
+        CreditCardScannerBridgeJni.get().scanCompleted(mNativeScanner, CreditCardScannerBridge.this,
+                cardHolderName, cardNumber, expirationMonth, expirationYear);
     }
 
-    private native void nativeScanCancelled(long nativeCreditCardScannerViewAndroid);
-    private native void nativeScanCompleted(long nativeCreditCardScannerViewAndroid,
-            String cardHolderName, String cardNumber, int expirationMonth, int expirationYear);
+    @NativeMethods
+    interface Natives {
+        void scanCancelled(long nativeCreditCardScannerViewAndroid, CreditCardScannerBridge caller);
+        void scanCompleted(long nativeCreditCardScannerViewAndroid, CreditCardScannerBridge caller,
+                String cardHolderName, String cardNumber, int expirationMonth, int expirationYear);
+    }
 }

@@ -6,6 +6,7 @@
 portions.  We wanted to reuse extern.tclib.api.handlers.html.TCHTMLParser
 but this proved impossible due to the fact that the TotalRecall HTML templates
 are in general quite far from parseable HTML and the TCHTMLParser derives
+
 from HTMLParser.HTMLParser which requires relatively well-formed HTML.  Some
 examples of "HTML" from the TotalRecall HTML templates that wouldn't be
 parseable include things like:
@@ -48,9 +49,11 @@ This implementation borrows some code, constants and ideas from
 extern.tclib.api.handlers.html.TCHTMLParser.
 '''
 
+from __future__ import print_function
 
 import re
-import types
+
+import six
 
 from grit import clique
 from grit import exception
@@ -208,7 +211,7 @@ _MESSAGE_NO_BREAK_COMMENT = re.compile(r'<!--\s*message-no-break\s*-->',
 _DEBUG = 0
 def _DebugPrint(text):
   if _DEBUG:
-    print text.encode('utf-8')
+    print(text.encode('utf-8'))
 
 
 class HtmlChunks(object):
@@ -391,7 +394,7 @@ class HtmlChunks(object):
           sm = _SPECIAL_ELEMENT.match(self.Rest())
           if sm:
             # Get the appropriate group name
-            for group in sm.groupdict().keys():
+            for group in sm.groupdict():
               if sm.groupdict()[group]:
                 break
 
@@ -480,14 +483,11 @@ def HtmlToMessage(html, include_block_tags=False, description=''):
     if type != '':
       name = ('%s_%s' % (type, base)).upper()
 
-    if name in count_names.keys():
-      count_names[name] += 1
-    else:
-      count_names[name] = 1
+    count_names.setdefault(name, 0)
+    count_names[name] += 1
 
     def MakeFinalName(name_ = name, index = count_names[name] - 1):
-      if (type.lower() == 'end' and
-          base in end_names.keys() and len(end_names[base])):
+      if type.lower() == 'end' and end_names.get(base):
         return end_names[base].pop(-1)  # For correct nesting
       if count_names[name_] != 1:
         name_ = '%s_%s' % (name_, _SUFFIXES[index])
@@ -496,7 +496,7 @@ def HtmlToMessage(html, include_block_tags=False, description=''):
         # same type.
         if type == 'begin':
           end_name = ('END_%s_%s' % (base, _SUFFIXES[index])).upper()
-          if base in end_names.keys():
+          if base in end_names:
             end_names[base].append(end_name)
           else:
             end_names[base] = [end_name]
@@ -538,7 +538,7 @@ def HtmlToMessage(html, include_block_tags=False, description=''):
           raise exception.BlockTagInTranslateableChunk(html)
       element_name = 'block'  # for simplification
       # Get the appropriate group name
-      for group in m.groupdict().keys():
+      for group in m.groupdict():
         if m.groupdict()[group]:
           break
       parts.append((MakeNameClosure(element_name, 'begin'),
@@ -571,7 +571,7 @@ def HtmlToMessage(html, include_block_tags=False, description=''):
       current += m.end()
       continue
 
-    if len(parts) and isinstance(parts[-1], types.StringTypes):
+    if len(parts) and isinstance(parts[-1], six.string_types):
       parts[-1] += html[current]
     else:
       parts.append(html[current])
@@ -580,7 +580,7 @@ def HtmlToMessage(html, include_block_tags=False, description=''):
   msg_text = ''
   placeholders = []
   for part in parts:
-    if isinstance(part, types.TupleType):
+    if isinstance(part, tuple):
       final_name = part[0]()
       original = part[1]
       msg_text += final_name
@@ -592,7 +592,7 @@ def HtmlToMessage(html, include_block_tags=False, description=''):
                       description=description)
   content = msg.GetContent()
   for ix in range(len(content)):
-    if isinstance(content[ix], types.StringTypes):
+    if isinstance(content[ix], six.string_types):
       content[ix] = util.UnescapeHtml(content[ix], replace_nbsp=False)
 
   return msg
@@ -656,7 +656,7 @@ class TrHtml(interface.GathererBase):
 
     out = []
     for item in self.skeleton_:
-      if isinstance(item, types.StringTypes):
+      if isinstance(item, six.string_types):
         out.append(item)
       else:
         msg = item.MessageForLanguage(lang,
@@ -716,8 +716,8 @@ class TrHtml(interface.GathererBase):
       if isinstance(self.skeleton_[ix], clique.MessageClique):
         msg = self.skeleton_[ix].GetMessage()
         for item in msg.GetContent():
-          if (isinstance(item, types.StringTypes) and _NON_WHITESPACE.search(item)
-              and item != '&nbsp;'):
+          if (isinstance(item, six.string_types)
+              and _NON_WHITESPACE.search(item) and item != '&nbsp;'):
             got_text = True
             break
         if not got_text:

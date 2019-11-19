@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS Accessing navigator.serviceWorker in normal iframe should not throw.
-PASS Accessing navigator.serviceWorker in sandboxed iframe should throw.
-PASS Accessing navigator.serviceWorker in sandboxed iframe with allow-same-origin flag should not throw.
-FAIL Switching iframe sandbox attribute while loading the iframe assert_equals: expected "navigator.serviceWorker failed: SecurityError" but got "getRegistration() failed: InvalidStateError"
-Harness: the test ran to completion.
-

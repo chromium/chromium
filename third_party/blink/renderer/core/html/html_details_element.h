@@ -30,7 +30,6 @@ class HTMLDetailsElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HTMLDetailsElement* Create(Document&);
   void ToggleOpen();
 
   explicit HTMLDetailsElement(Document&);
@@ -42,9 +41,9 @@ class HTMLDetailsElement final : public HTMLElement {
   static bool IsFirstSummary(const Node&);
 
  private:
-  void DispatchPendingEvent();
+  void DispatchPendingEvent(const AttributeModificationReason);
 
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
   void ParseAttribute(const AttributeModificationParams&) override;
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   bool IsInteractiveContent() const override;

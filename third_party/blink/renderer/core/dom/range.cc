@@ -58,12 +58,9 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#ifndef NDEBUG
-#include <stdio.h>
-#endif
 
 namespace blink {
 
@@ -121,7 +118,7 @@ int RangeUpdateScope::scope_count_ = 0;
 Range* RangeUpdateScope::current_range_;
 #endif
 
-inline Range::Range(Document& owner_document)
+Range::Range(Document& owner_document)
     : owner_document_(&owner_document),
       start_(*owner_document_),
       end_(*owner_document_) {
@@ -132,11 +129,11 @@ Range* Range::Create(Document& owner_document) {
   return MakeGarbageCollected<Range>(owner_document);
 }
 
-inline Range::Range(Document& owner_document,
-                    Node* start_container,
-                    unsigned start_offset,
-                    Node* end_container,
-                    unsigned end_offset)
+Range::Range(Document& owner_document,
+             Node* start_container,
+             unsigned start_offset,
+             Node* end_container,
+             unsigned end_offset)
     : owner_document_(&owner_document),
       start_(*owner_document_),
       end_(*owner_document_) {
@@ -148,23 +145,14 @@ inline Range::Range(Document& owner_document,
   setEnd(end_container, end_offset);
 }
 
-Range* Range::Create(Document& owner_document,
-                     Node* start_container,
-                     unsigned start_offset,
-                     Node* end_container,
-                     unsigned end_offset) {
-  return MakeGarbageCollected<Range>(owner_document, start_container,
-                                     start_offset, end_container, end_offset);
-}
-
-Range* Range::Create(Document& owner_document,
-                     const Position& start,
-                     const Position& end) {
-  return MakeGarbageCollected<Range>(
-      owner_document, start.ComputeContainerNode(),
-      start.ComputeOffsetInContainerNode(), end.ComputeContainerNode(),
-      end.ComputeOffsetInContainerNode());
-}
+Range::Range(Document& owner_document,
+             const Position& start,
+             const Position& end)
+    : Range(owner_document,
+            start.ComputeContainerNode(),
+            start.ComputeOffsetInContainerNode(),
+            end.ComputeContainerNode(),
+            end.ComputeOffsetInContainerNode()) {}
 
 void Range::Dispose() {
   // A prompt detach from the owning Document helps avoid GC overhead.
@@ -511,11 +499,11 @@ static unsigned LengthOfContents(const Node* node) {
     case Node::kCdataSectionNode:
     case Node::kCommentNode:
     case Node::kProcessingInstructionNode:
-      return ToCharacterData(node)->length();
+      return To<CharacterData>(node)->length();
     case Node::kElementNode:
     case Node::kDocumentNode:
     case Node::kDocumentFragmentNode:
-      return ToContainerNode(node)->CountChildren();
+      return To<ContainerNode>(node)->CountChildren();
     case Node::kAttributeNode:
     case Node::kDocumentTypeNode:
       return 0;
@@ -673,7 +661,7 @@ Node* Range::ProcessContentsBetweenOffsets(ActionType action,
     case Node::kCdataSectionNode:
     case Node::kCommentNode:
     case Node::kProcessingInstructionNode:
-      end_offset = std::min(end_offset, ToCharacterData(container)->length());
+      end_offset = std::min(end_offset, To<CharacterData>(container)->length());
       if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
         CharacterData* c =
             static_cast<CharacterData*>(container->cloneNode(true));
@@ -686,7 +674,7 @@ Node* Range::ProcessContentsBetweenOffsets(ActionType action,
         }
       }
       if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS)
-        ToCharacterData(container)->deleteData(
+        To<CharacterData>(container)->deleteData(
             start_offset, end_offset - start_offset, exception_state);
       break;
     case Node::kElementNode:
@@ -897,7 +885,7 @@ void Range::insertNode(Node* new_node, ExceptionState& exception_state) {
   // 5. Let parent be range’s start node if referenceNode is null, and
   // referenceNode’s parent otherwise.
   ContainerNode& parent = reference_node ? *reference_node->parentNode()
-                                         : ToContainerNode(start_node);
+                                         : To<ContainerNode>(start_node);
 
   // 6. Ensure pre-insertion validity of node into parent before referenceNode.
   if (!parent.EnsurePreInsertionValidity(*new_node, reference_node, nullptr,
@@ -909,7 +897,7 @@ void Range::insertNode(Node* new_node, ExceptionState& exception_state) {
   // splitting it with offset range’s start offset.
   if (start_is_text) {
     reference_node =
-        ToText(start_node).splitText(start_.Offset(), exception_state);
+        To<Text>(start_node).splitText(start_.Offset(), exception_state);
     if (exception_state.HadException())
       return;
   }
@@ -952,7 +940,7 @@ String Range::toString() const {
   for (Node* n = FirstNode(); n != past_last; n = NodeTraversal::Next(*n)) {
     Node::NodeType type = n->getNodeType();
     if (type == Node::kTextNode || type == Node::kCdataSectionNode) {
-      String data = ToCharacterData(n)->data();
+      String data = To<CharacterData>(n)->data();
       unsigned length = data.length();
       unsigned start =
           (n == start_.Container()) ? std::min(start_.Offset(), length) : 0;
@@ -1005,25 +993,25 @@ DocumentFragment* Range::createContextualFragmentFromString(
   if (!start_.Offset() &&
       (node->IsDocumentNode() || node->IsDocumentFragment()))
     element = nullptr;
-  else if (node->IsElementNode())
-    element = ToElement(node);
+  else if (auto* node_element = DynamicTo<Element>(node))
+    element = node_element;
   else
     element = node->parentElement();
 
   // Step 2.
-  if (!element || IsHTMLHtmlElement(element)) {
+  if (!element || IsA<HTMLHtmlElement>(element)) {
     Document& document = node->GetDocument();
 
     if (document.IsSVGDocument()) {
       element = document.documentElement();
       if (!element)
-        element = SVGSVGElement::Create(document);
+        element = MakeGarbageCollected<SVGSVGElement>(document);
     } else {
       // Optimization over spec: try to reuse the existing <body> element, if it
       // is available.
       element = document.body();
       if (!element)
-        element = HTMLBodyElement::Create(document);
+        element = MakeGarbageCollected<HTMLBodyElement>(document);
     }
   }
 
@@ -1049,12 +1037,12 @@ Node* Range::CheckNodeWOffset(Node* n,
     case Node::kCdataSectionNode:
     case Node::kCommentNode:
     case Node::kTextNode:
-      if (offset > ToCharacterData(n)->length()) {
+      if (offset > To<CharacterData>(n)->length()) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kIndexSizeError,
             "The offset " + String::Number(offset) +
                 " is larger than the node's length (" +
-                String::Number(ToCharacterData(n)->length()) + ").");
+                String::Number(To<CharacterData>(n)->length()) + ").");
       } else if (offset >
                  static_cast<unsigned>(std::numeric_limits<int>::max())) {
         exception_state.ThrowDOMException(
@@ -1063,12 +1051,12 @@ Node* Range::CheckNodeWOffset(Node* n,
       }
       return nullptr;
     case Node::kProcessingInstructionNode:
-      if (offset > ToProcessingInstruction(n)->data().length()) {
+      if (offset > To<ProcessingInstruction>(n)->data().length()) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kIndexSizeError,
             "The offset " + String::Number(offset) +
                 " is larger than the node's length (" +
-                String::Number(ToProcessingInstruction(n)->data().length()) +
+                String::Number(To<ProcessingInstruction>(n)->data().length()) +
                 ").");
       } else if (offset >
                  static_cast<unsigned>(std::numeric_limits<int>::max())) {
@@ -1161,8 +1149,9 @@ void Range::CheckNodeBA(Node* n, ExceptionState& exception_state) const {
 }
 
 Range* Range::cloneRange() const {
-  return Range::Create(*owner_document_.Get(), &start_.Container(),
-                       start_.Offset(), &end_.Container(), end_.Offset());
+  return MakeGarbageCollected<Range>(*owner_document_.Get(),
+                                     &start_.Container(), start_.Offset(),
+                                     &end_.Container(), end_.Offset());
 }
 
 void Range::setStartAfter(Node* ref_node, ExceptionState& exception_state) {
@@ -1347,7 +1336,7 @@ void Range::surroundContents(Node* new_parent,
 
   // 4. If newParent has children, replace all with null within newParent.
   while (Node* n = new_parent->firstChild()) {
-    ToContainerNode(new_parent)->RemoveChild(n, exception_state);
+    To<ContainerNode>(new_parent)->RemoveChild(n, exception_state);
     if (exception_state.HadException())
       return;
   }
@@ -1610,7 +1599,7 @@ void Range::DidSplitTextNode(const Text& old_node) {
 void Range::expand(const String& unit, ExceptionState& exception_state) {
   if (!StartPosition().IsConnected() || !EndPosition().IsConnected())
     return;
-  owner_document_->UpdateStyleAndLayoutIgnorePendingStylesheets();
+  owner_document_->UpdateStyleAndLayout();
   VisiblePosition start = CreateVisiblePosition(StartPosition());
   VisiblePosition end = CreateVisiblePosition(EndPosition());
   if (unit == "word") {
@@ -1637,7 +1626,7 @@ void Range::expand(const String& unit, ExceptionState& exception_state) {
 }
 
 DOMRectList* Range::getClientRects() const {
-  owner_document_->UpdateStyleAndLayoutIgnorePendingStylesheets();
+  owner_document_->UpdateStyleAndLayout();
 
   Vector<FloatQuad> quads;
   GetBorderAndTextQuads(quads);
@@ -1686,11 +1675,12 @@ void Range::GetBorderAndTextQuads(Vector<FloatQuad>& quads) const {
 
   for (const Node* node = FirstNode(); node != stop_node;
        node = NodeTraversal::Next(*node)) {
-    if (node->IsElementNode()) {
+    auto* element_node = DynamicTo<Element>(node);
+    if (element_node) {
       if (!selected_elements.Contains(node) ||
           selected_elements.Contains(node->parentNode()))
         continue;
-      LayoutObject* const layout_object = ToElement(node)->GetLayoutObject();
+      LayoutObject* const layout_object = element_node->GetLayoutObject();
       if (!layout_object)
         continue;
       Vector<FloatQuad> element_quads;
@@ -1702,72 +1692,62 @@ void Range::GetBorderAndTextQuads(Vector<FloatQuad>& quads) const {
       continue;
     }
 
-    if (!node->IsTextNode())
+    auto* const text_node = DynamicTo<Text>(node);
+    if (!text_node)
       continue;
-    LayoutText* const layout_text = ToText(node)->GetLayoutObject();
+    LayoutText* const layout_text = text_node->GetLayoutObject();
     if (!layout_text)
       continue;
+
+    // TODO(editing-dev): Offset in |LayoutText| doesn't match to DOM offset
+    // when |text-transform| applied. We should map DOM offset to offset in
+    // |LayouText| for |start_offset| and |end_offset|.
+    const unsigned start_offset =
+        (node == start_container) ? start_.Offset() : 0;
+    const unsigned end_offset = (node == end_container)
+                                    ? end_.Offset()
+                                    : std::numeric_limits<unsigned>::max();
     if (!layout_text->IsTextFragment()) {
-      // TODO(editing-dev): Offset in |LayoutText| doesn't match to DOM offset
-      // when |text-transform| applied. We should map DOM offset to offset in
-      // |LayouText| for |start_offset| and |end_offset|.
-      const unsigned start_offset =
-          (node == start_container) ? start_.Offset() : 0;
-      const unsigned end_offset = (node == end_container)
-                                      ? end_.Offset()
-                                      : std::numeric_limits<unsigned>::max();
       quads.AppendVector(ComputeTextQuads(*owner_document_, *layout_text,
                                           start_offset, end_offset));
       continue;
     }
+
+    // Handle ::first-letter
     const LayoutTextFragment& first_letter_part =
         *ToLayoutTextFragment(AssociatedLayoutObjectOf(*node, 0));
+    const bool overlaps_with_first_letter =
+        start_offset < first_letter_part.FragmentLength() ||
+        (start_offset == first_letter_part.FragmentLength() &&
+         end_offset == start_offset);
+    if (overlaps_with_first_letter) {
+      const unsigned start_in_first_letter = start_offset;
+      const unsigned end_in_first_letter =
+          std::min(end_offset, first_letter_part.FragmentLength());
+      quads.AppendVector(ComputeTextQuads(*owner_document_, first_letter_part,
+                                          start_in_first_letter,
+                                          end_in_first_letter));
+    }
     const LayoutTextFragment& remaining_part =
         *ToLayoutTextFragment(layout_text);
-    // Set offsets in |LayoutTextFragment| to cover whole text in
-    // |LayoutTextFragment|.
-    unsigned first_letter_part_start = 0;
-    unsigned first_letter_part_end = first_letter_part.FragmentLength();
-    unsigned remaining_part_start = 0;
-    unsigned remaining_part_end = remaining_part.FragmentLength();
-    if (node == start_container) {
-      if (start_.Offset() < first_letter_part_end) {
-        // |this| range starts in first-letter part.
-        first_letter_part_start = start_.Offset();
-      } else {
-        first_letter_part_start = first_letter_part_end;
-        DCHECK_GE(static_cast<unsigned>(start_.Offset()),
-                  remaining_part.Start());
-        remaining_part_start = start_.Offset() - remaining_part.Start();
-      }
-    }
-    if (node == end_container) {
-      if (end_.Offset() <= first_letter_part_end) {
-        // |this| range ends in first-letter part.
-        first_letter_part_end = end_.Offset();
-        remaining_part_end = remaining_part_start;
-      } else {
-        DCHECK_GE(static_cast<unsigned>(end_.Offset()), remaining_part.Start());
-        remaining_part_end = end_.Offset() - remaining_part.Start();
-      }
-    }
-    DCHECK_LE(first_letter_part_start, first_letter_part_end);
-    DCHECK_LE(remaining_part_start, remaining_part_end);
-    if (first_letter_part_start < first_letter_part_end) {
-      quads.AppendVector(ComputeTextQuads(*owner_document_, first_letter_part,
-                                          first_letter_part_start,
-                                          first_letter_part_end));
-    }
-    if (remaining_part_start < remaining_part_end) {
+    if (end_offset > remaining_part.Start()) {
+      const unsigned start_in_remaining_part =
+          std::max(start_offset, remaining_part.Start()) -
+          remaining_part.Start();
+      // TODO(editing-dev): As we previously set |end_offset == UINT_MAX| as a
+      // hacky support for |text-transform|, we need the same hack here.
+      const unsigned end_in_remaining_part =
+          end_offset == UINT_MAX ? end_offset
+                                 : end_offset - remaining_part.Start();
       quads.AppendVector(ComputeTextQuads(*owner_document_, remaining_part,
-                                          remaining_part_start,
-                                          remaining_part_end));
+                                          start_in_remaining_part,
+                                          end_in_remaining_part));
     }
   }
 }
 
 FloatRect Range::BoundingRect() const {
-  owner_document_->UpdateStyleAndLayoutIgnorePendingStylesheets();
+  owner_document_->UpdateStyleAndLayout();
 
   Vector<FloatQuad> quads;
   GetBorderAndTextQuads(quads);
@@ -1828,7 +1808,7 @@ void Range::Trace(Visitor* visitor) {
 
 }  // namespace blink
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 void showTree(const blink::Range* range) {
   if (range && range->BoundaryPointsValid()) {
@@ -1837,7 +1817,6 @@ void showTree(const blink::Range* range) {
                      ->ToMarkedTreeString(range->startContainer(), "S",
                                           range->endContainer(), "E")
                      .Utf8()
-                     .data()
               << "start offset: " << range->startOffset()
               << ", end offset: " << range->endOffset();
   } else {

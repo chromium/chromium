@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<body>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+selection_test(
+  '<div id="host"><div></div>child text</div>',
+  selection => {
+    console.log(selection.document.documentElement.innerHTML);
+    const host = selection.document.querySelector('#host');
+    const shadowRoot = host.attachShadow({mode: 'closed'});
+    shadowRoot.innerHTML = '<span>shadow text</span>';
+    const shadowSelection = shadowRoot.getSelection();
+    const range = document.createRange();
+    range.selectNode(shadowRoot.firstChild);
+    shadowSelection.addRange(range);
+
+    host.textContent = '';
+  },
+  '<div id="host">^<span>shadow text</span>|</div>',
+  {dumpAs: 'flattree'},
+  'Removing light children of a hos element should not affect selection in ' +
+      'its shadow tree');
+
+selection_test(
+  '<textarea id="host">abc^def\nghi|</textarea>',
+  selection => {
+    console.log(selection.document.documentElement.innerHTML);
+    const host = selection.document.querySelector('#host');
+    // Make the TEXTAREA dirty to avoid textContent affects the value.
+    eventSender.keyDown('j');
+
+    host.textContent = '';
+  },
+  '<textarea id="host">abcj|</textarea>',
+  'Removing light children of a TEXTAREA element should not affect its ' +
+      'selection');
+</script>
+</body>

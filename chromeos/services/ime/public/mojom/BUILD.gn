@@ -6,11 +6,11 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
-    "constants.mojom",
     "input_engine.mojom",
   ]
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
   ]
 }

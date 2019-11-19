@@ -5,6 +5,7 @@
 #include "components/sync/driver/sync_service.h"
 
 #include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 
 namespace syncer {
 
@@ -13,6 +14,12 @@ SyncSetupInProgressHandle::SyncSetupInProgressHandle(base::Closure on_destroy)
 
 SyncSetupInProgressHandle::~SyncSetupInProgressHandle() {
   on_destroy_.Run();
+}
+
+bool SyncService::HasCompletedSyncCycle() const {
+  // Stats on the last Sync cycle are only available in internal "for debugging"
+  // information. Better to access that here than making clients do it.
+  return GetLastCycleSnapshotForDebugging().is_initialized();
 }
 
 bool SyncService::IsSyncFeatureEnabled() const {
@@ -30,7 +37,6 @@ bool SyncService::CanSyncFeatureStart() const {
 bool SyncService::IsEngineInitialized() const {
   switch (GetTransportState()) {
     case TransportState::DISABLED:
-    case TransportState::WAITING_FOR_START_REQUEST:
     case TransportState::START_DEFERRED:
     case TransportState::INITIALIZING:
       return false;
@@ -49,7 +55,6 @@ bool SyncService::IsSyncFeatureActive() const {
   }
   switch (GetTransportState()) {
     case TransportState::DISABLED:
-    case TransportState::WAITING_FOR_START_REQUEST:
     case TransportState::START_DEFERRED:
     case TransportState::INITIALIZING:
     case TransportState::PENDING_DESIRED_CONFIGURATION:
@@ -60,10 +65,6 @@ bool SyncService::IsSyncFeatureActive() const {
   }
   NOTREACHED();
   return false;
-}
-
-bool SyncService::IsFirstSetupInProgress() const {
-  return !GetUserSettings()->IsFirstSetupComplete() && IsSetupInProgress();
 }
 
 bool SyncService::HasUnrecoverableError() const {

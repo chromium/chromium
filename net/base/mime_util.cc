@@ -194,6 +194,7 @@ static const MimeInfo kSecondaryMappings[] = {
     {"application/x-mpegurl", "m3u8"},
     {"application/x-shockwave-flash", "swf,swl"},
     {"application/x-tar", "tar"},
+    {"application/x-x509-ca-cert", "cer,crt"},
     {"application/zip", "zip"},
     {"audio/mpeg", "mp3"},
     // This is the platform mapping on recent versions of Windows 10.
@@ -235,7 +236,7 @@ static const char* FindMimeType(const MimeInfo (&mappings)[num_mappings],
       extensions += 1;  // skip over comma
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 static base::FilePath::StringType StringToFilePathStringType(

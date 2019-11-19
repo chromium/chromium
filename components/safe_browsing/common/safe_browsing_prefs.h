@@ -7,6 +7,9 @@
 #ifndef COMPONENTS_SAFE_BROWSING_COMMON_SAFE_BROWSING_PREFS_H_
 #define COMPONENTS_SAFE_BROWSING_COMMON_SAFE_BROWSING_PREFS_H_
 
+#include <string>
+#include <vector>
+
 #include "base/feature_list.h"
 #include "base/values.h"
 #include "components/prefs/pref_member.h"
@@ -46,11 +49,11 @@ extern const char kSafeBrowsingScoutReportingEnabled[];
 // lists of doubles.
 extern const char kSafeBrowsingTriggerEventTimestamps[];
 
-// Dictionary that records the origin and navigation ID pairs of unhandled sync
+// Dictionary that records the origin and navigation ID pairs of unhandled gaia
 // password reuses. The keys are origin strings and the ID values are 8-byte
-// ints. Only set/update if a Chrome Sync user reuses their Gaia password on
+// ints. Only set/update if a Chrome user reuses their Gaia password on a
 // phishing site.
-extern const char kSafeBrowsingUnhandledSyncPasswordReuses[];
+extern const char kSafeBrowsingUnhandledGaiaPasswordReuses[];
 
 // Integer timestamp of next time the PasswordCaptured event should be logged.
 extern const char kSafeBrowsingNextPasswordCaptureEventLogTime[];
@@ -80,7 +83,45 @@ extern const char kPasswordProtectionWarningTrigger[];
 // Last time Chrome refreshes advanced protection status for sign-in users (in
 // microseconds);
 extern const char kAdvancedProtectionLastRefreshInUs[];
-}
+
+// Whether or not to check URLs in real time. This is configured by enterprise
+// policy. For consumers, this pref is irrelevant.
+extern const char kSafeBrowsingRealTimeLookupEnabled[];
+
+// Whether or not to send downloads to Safe Browsing for deep scanning. This
+// is configured by enterprise policy.
+extern const char kSafeBrowsingSendFilesForMalwareCheck[];
+
+// Boolean that indidicates if Chrome reports unsafe events to Google.
+extern const char kUnsafeEventsReportingEnabled[];
+
+// Integer that specifies if large files are blocked form either uploads or
+// downloads or both.
+extern const char kBlockLargeFileTransfer[];
+
+// Integer that specifies if delivery to the user of potentially unsafe data
+// is delayed until a verdict about the data is known.
+extern const char kDelayDeliveryUntilVerdict[];
+
+// Integer that specifies if password protected files can be either uploaded
+// or downloaded or both.
+extern const char kAllowPasswordProtectedFiles[];
+
+// Integer that indidicates if Chrome checks data for content compliance.
+extern const char kCheckContentCompliance[];
+
+// List of url patterns where Chrome should check compliance of downloaded
+// files.
+extern const char kURLsToCheckComplianceOfDownloadedContent[];
+
+// List of url patterns where Chrome should check for malware of uploaded files.
+extern const char kURLsToCheckForMalwareOfUploadedContent[];
+
+// List of url patterns where Chrome should not check compliance of uploaded
+// files.
+extern const char kURLsToNotCheckComplianceOfUploadedContent[];
+
+}  // namespace prefs
 
 namespace safe_browsing {
 
@@ -125,6 +166,55 @@ enum PasswordProtectionTrigger {
   PHISHING_REUSE = 2,
   // New triggers must be added before PASSWORD_PROTECTION_TRIGGER_MAX.
   PASSWORD_PROTECTION_TRIGGER_MAX,
+};
+
+// Enum representing possible values of the SendFilesForMalwareCheck policy.
+// This must be kept in sync with policy_templates.json.
+enum SendFilesForMalwareCheckValues {
+  DO_NOT_SCAN = 0,
+  SEND_DOWNLOADS = 2,
+  SEND_UPLOADS = 3,
+  SEND_UPLOADS_AND_DOWNLOADS = 4,
+  // New options must be added before SEND_FILES_FOR_MALWARE_CHECK_MAX.
+  SEND_FILES_FOR_MALWARE_CHECK_MAX = SEND_UPLOADS_AND_DOWNLOADS,
+};
+
+// Enum representing possible values of the CheckContentCompliance policy. This
+// must be kept in sync with policy_templates.json.
+enum CheckContentComplianceValues {
+  CHECK_NONE = 0,
+  CHECK_DOWNLOADS = 1,
+  CHECK_UPLOADS = 2,
+  CHECK_UPLOADS_AND_DOWNLOADS = 3,
+  // New options must be added before CHECK_CONTENT_COMPLIANCE_MAX.
+  CHECK_CONTENT_COMPLIANCE_MAX = CHECK_UPLOADS_AND_DOWNLOADS,
+};
+
+// Enum representing possible values of the AllowPasswordProtectedFiles policy.
+// This must be kept in sync with policy_templates.json.
+enum AllowPasswordProtectedFilesValues {
+  ALLOW_NONE = 0,
+  ALLOW_DOWNLOADS = 1,
+  ALLOW_UPLOADS = 2,
+  ALLOW_UPLOADS_AND_DOWNLOADS = 3,
+};
+
+// Enum representing possible values of the BlockLargeFileTransfer policy. This
+// must be kept in sync with policy_templates.json.
+enum BlockLargeFileTransferValues {
+  BLOCK_NONE = 0,
+  BLOCK_LARGE_DOWNLOADS = 1,
+  BLOCK_LARGE_UPLOADS = 2,
+  BLOCK_LARGE_UPLOADS_AND_DOWNLOADS = 3,
+};
+
+// Enum representing possible values of the DelayDeliveryUntilVerdict policy.
+// This must be kept in sync with policy_templates.json.
+enum DelayDeliveryUntilVerdictValues {
+  DELAY_NONE = 0,
+  DELAY_DOWNLOADS = 1,
+  DELAY_UPLOADS = 2,
+  DELAY_UPLOADS_AND_DOWNLOADS = 3,
 };
 
 // Returns whether the currently active Safe Browsing Extended Reporting

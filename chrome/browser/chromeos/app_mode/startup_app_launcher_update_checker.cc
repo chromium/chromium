@@ -4,8 +4,9 @@
 
 #include "chrome/browser/chromeos/app_mode/startup_app_launcher_update_checker.h"
 
+#include <utility>
+
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -70,7 +71,7 @@ void StartupAppLauncherUpdateChecker::OnExtensionUpdaterDone() {
                     content::NotificationService::AllSources());
 
   // It is not safe to use |this| after the callback has been run.
-  base::ResetAndReturn(&callback_).Run(update_found_);
+  std::move(callback_).Run(update_found_);
 }
 
 }  // namespace chromeos

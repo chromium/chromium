@@ -231,19 +231,6 @@ template("desktop_remoting_webapp") {
       "$target_gen_dir/credits.html",
     ]
 
-    # Windows debug builds of remoting_client_plugin_newlib.pexe trigger OOM in
-    # arm-nacl-ld.gold.exe - enable for release builds only on Windows.
-    if (enable_nacl && (!is_win || !is_debug)) {
-      pnacl_tc = "//build/toolchain/nacl:newlib_pnacl"
-      pexe_label = "//remoting/client/plugin:remoting_client_plugin_newlib"
-      pexe_dir = get_label_info("${pexe_label}($pnacl_tc)", "root_out_dir")
-
-      extra_files += [ "$pexe_dir/remoting_client_plugin_newlib.pexe" ]
-      if (is_debug) {
-        extra_files += [ "$pexe_dir/remoting_client_plugin_newlib.pexe.debug" ]
-      }
-    }
-
     inputs = [ rebase_path("crd/manifest.json.jinja2") ] +
              remoting_version_files + rebase_path(remoting_webapp_crd_files) +
              extra_files + dr_generated_html_files
@@ -262,15 +249,6 @@ template("desktop_remoting_webapp") {
       "//remoting/resources",
       "//remoting/webapp:credits",
     ]
-
-    # Windows debug builds of remoting_client_plugin_newlib.pexe trigger OOM in
-    # arm-nacl-ld.gold.exe - enable for release builds only on Windows.
-    if (enable_nacl && (!is_win || !is_debug)) {
-      deps += [ "${pexe_label}($pnacl_tc)" ]
-      if (is_debug) {
-        deps += [ "${pexe_label}_debug($pnacl_tc)" ]
-      }
-    }
 
     # Create a file that contains a list of all the resource files needed
     # to build the webapp. This is needed to avoid problems on platforms that

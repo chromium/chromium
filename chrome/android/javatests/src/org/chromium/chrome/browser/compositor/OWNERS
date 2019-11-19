@@ -1,4 +1,1 @@
-dtrainor@chromium.org
-
-# COMPONENT: UI>Browser>Mobile>CompositedUI
-# OS: Android
+file://chrome/android/java/src/org/chromium/chrome/browser/compositor/OWNERS

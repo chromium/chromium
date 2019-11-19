@@ -12,8 +12,8 @@ function contains_all(obj, keys) {
 
 var contents = [
   'download', 'search', 'pause', 'resume', 'cancel', 'getFileIcon', 'open',
-  'show', 'erase', 'acceptDanger', 'drag',
-  'onCreated', 'onChanged', 'onErased', 'onDeterminingFilename'];
+  'show', 'erase', 'acceptDanger', 'onCreated', 'onChanged', 'onErased',
+  'onDeterminingFilename'];
 
 if (!chrome.downloads ||
     !contains_all(chrome.downloads, contents)) {

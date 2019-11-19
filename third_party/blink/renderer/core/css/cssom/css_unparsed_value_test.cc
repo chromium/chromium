@@ -11,7 +11,8 @@ namespace blink {
 
 TEST(CSSUnparsedValueTest, FromCustomPropertyDeclarationWithCSSWideKeyword) {
   const auto* initial_value =
-      CSSCustomPropertyDeclaration::Create("--var", CSSValueInitial);
+      MakeGarbageCollected<CSSCustomPropertyDeclaration>("--var",
+                                                         CSSValueID::kInitial);
   const auto* unparsed_value = CSSUnparsedValue::FromCSSValue(*initial_value);
   ASSERT_NE(nullptr, unparsed_value);
   ASSERT_EQ(1U, unparsed_value->length());

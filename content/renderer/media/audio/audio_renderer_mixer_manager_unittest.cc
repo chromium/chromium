@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_parameters.h"
@@ -79,8 +79,9 @@ class AudioRendererMixerManagerTest : public testing::Test {
                                       AudioLatency::LatencyType latency,
                                       const std::string& device_id,
                                       SinkUseState sink_state) {
-    auto sink = GetSink(source_render_frame_id,
-                        media::AudioSinkParameters(0, device_id));
+    auto sink = GetSink(
+        source_render_frame_id,
+        media::AudioSinkParameters(base::UnguessableToken(), device_id));
     auto device_info = sink->GetOutputDeviceInfo();
     if (sink_state == SinkUseState::kNewSink)
       EXPECT_CALL(*sink, Start()).Times(1);
@@ -94,7 +95,7 @@ class AudioRendererMixerManagerTest : public testing::Test {
 
   scoped_refptr<media::AudioRendererMixerInput> CreateInputHelper(
       int source_render_frame_id,
-      int session_id,
+      const base::UnguessableToken& session_id,
       const std::string& device_id,
       media::AudioLatency::LatencyType latency,
       const media::AudioParameters params,
@@ -136,7 +137,7 @@ class AudioRendererMixerManagerTest : public testing::Test {
     return nullptr;
   }
 
-  base::test::ScopedTaskEnvironment task_env_;
+  base::test::TaskEnvironment task_env_;
   std::unique_ptr<AudioRendererMixerManager> manager_;
   scoped_refptr<media::MockAudioRendererSink> mock_sink_;
 
@@ -255,9 +256,9 @@ TEST_F(AudioRendererMixerManagerTest, CreateInput) {
   media::FakeAudioRenderCallback callback(0, kSampleRate);
   mock_sink_ = CreateNormalSink();
   EXPECT_CALL(*mock_sink_, Start()).Times(1);
-  auto input =
-      CreateInputHelper(kRenderFrameId, 0, kDefaultDeviceId,
-                        AudioLatency::LATENCY_PLAYBACK, params, &callback);
+  auto input = CreateInputHelper(
+      kRenderFrameId, base::UnguessableToken(), kDefaultDeviceId,
+      AudioLatency::LATENCY_PLAYBACK, params, &callback);
   EXPECT_EQ(0, mixer_count());
   media::FakeAudioRenderCallback another_callback(1, kSampleRate);
 
@@ -265,7 +266,7 @@ TEST_F(AudioRendererMixerManagerTest, CreateInput) {
   mock_sink_ = CreateNormalSink();
   EXPECT_CALL(*mock_sink_, Start()).Times(1);
   auto another_input = CreateInputHelper(
-      kAnotherRenderFrameId, 0, kDefaultDeviceId,
+      kAnotherRenderFrameId, base::UnguessableToken(), kDefaultDeviceId,
       AudioLatency::LATENCY_PLAYBACK, params, &another_callback);
   EXPECT_EQ(0, mixer_count());
 
@@ -299,25 +300,27 @@ TEST_F(AudioRendererMixerManagerTest, DISABLED_CreateInputWithSessionId) {
 
   // Empty device id, zero session id;
   auto input_to_default_device = CreateInputHelper(
-      kRenderFrameId, 0,  // session_id
+      kRenderFrameId, base::UnguessableToken(),  // session_id
       std::string(), AudioLatency::LATENCY_PLAYBACK, params, &callback);
   EXPECT_EQ(0, mixer_count());
 
   // Specific device id, zero session id;
   auto input_to_another_device = CreateInputHelper(
-      kRenderFrameId, 0,  // session_id
+      kRenderFrameId, base::UnguessableToken(),  // session_id
       kMatchedDeviceId, AudioLatency::LATENCY_PLAYBACK, params, &callback);
   EXPECT_EQ(0, mixer_count());
 
   // Specific device id, non-zero session id (to be ignored);
   auto input_to_matched_device = CreateInputHelper(
-      kRenderFrameId, 1,  // session id
+      kRenderFrameId,
+      base::UnguessableToken::Create(),  // session id
       kAnotherDeviceId, AudioLatency::LATENCY_PLAYBACK, params, &callback);
   EXPECT_EQ(0, mixer_count());
 
   // Empty device id, non-zero session id;
   auto input_to_matched_device_with_session_id = CreateInputHelper(
-      kRenderFrameId, 2,  // session id
+      kRenderFrameId,
+      base::UnguessableToken::Create(),  // session id
       std::string(), AudioLatency::LATENCY_PLAYBACK, params, &callback);
   EXPECT_EQ(0, mixer_count());
 
@@ -412,7 +415,8 @@ TEST_F(AudioRendererMixerManagerTest, NonexistentDevice) {
                                 kChannelLayout, kSampleRate, kBufferSize);
 
   auto sink = GetSink(kRenderFrameId,
-                      media::AudioSinkParameters(0, kNonexistentDeviceId));
+                      media::AudioSinkParameters(base::UnguessableToken(),
+                                                 kNonexistentDeviceId));
   auto device_info = sink->GetOutputDeviceInfo();
 
   EXPECT_EQ(media::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND,

@@ -1,7 +1,7 @@
 <link rel="import" href="../../../html/polymer.html">
 
 <link rel="import" href="../../shared_style_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
+<link rel="import" href="../../cr_icon_button/cr_icon_button.html">
 <link rel="import" href="cr_camera.html">
 <link rel="import" href="cr_picture_types.html">
 <link rel="import" href="cr_png_behavior.html">
@@ -56,28 +56,21 @@
         width: 288px;
       }
 
-      #discard button {
-        --iron-icon-fill-color: white;
-        border-radius: 50%;
-        margin-inline-end: 0;
-        margin-inline-start: 0;
-      }
-
-      .icon-picture-delete {
-        margin-inline-end: 0;
-        margin-inline-start: 0;
+      cr-icon-button {
+        --cr-icon-button-color: white;
+        --cr-icon-button-focus-color: var(--google-blue-500);
+        --cr-icon-button-icon-size: 24px;
+        --cr-icon-button-size: 28px;
+        margin: 0;
       }
     </style>
     <div id="preview" hidden="[[!showImagePreview_(cameraActive_, imageSrc)]]">
       <img id="image" alt="[[previewAltText]]" src="[[getImgSrc_(imageUrl)]]"
           data-show-discard$="[[showDiscard_(imageType)]]">
       <div id="discard" hidden="[[!showDiscard_(imageType)]]">
-        <paper-icon-button-light class="icon-picture-delete">
-          <button id="discardImage"
-              title="[[discardImageLabel]]"
-              on-tap="onTapDiscardImage_">
-          </button>
-        </paper-icon-button-light>
+        <cr-icon-button class="icon-picture-delete" id="discardImage"
+            title="[[discardImageLabel]]" on-click="onTapDiscardImage_">
+        </cr-icon-button>
       </div>
     </div>
     <template is="dom-if" if="[[cameraActive_]]">

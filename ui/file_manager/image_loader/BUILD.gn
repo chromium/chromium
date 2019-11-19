@@ -4,6 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 
 js_type_check("closure_compile_module") {
   closure_flags = default_closure_args + [ "jscomp_error=strictCheckTypes" ]
@@ -44,7 +45,7 @@ js_library("image_loader") {
     ":piex_loader",
     ":request",
     ":scheduler",
-    "../externs:file_manager_private",
+    "//ui/file_manager/externs:file_manager_private",
   ]
 }
 
@@ -65,7 +66,7 @@ js_library("image_loader_util") {
 
 js_library("load_image_request") {
   deps = [
-    "../file_manager/foreground/js/metadata:image_orientation",
+    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation",
     "//ui/webui/resources/js:assert",
   ]
 }
@@ -73,7 +74,7 @@ js_library("load_image_request") {
 js_library("image_loader_client") {
   deps = [
     ":load_image_request",
-    "../file_manager/common/js:lru_cache",
+    "//ui/file_manager/file_manager/common/js:lru_cache",
   ]
   externs_list = [
     "$externs_path/chrome.js",
@@ -92,7 +93,11 @@ js_unittest("image_loader_client_unittest") {
 js_library("piex_loader") {
   deps = [
     ":load_image_request",
-    "../file_manager/foreground/js/metadata:image_orientation",
+    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation",
+  ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "//ui/file_manager/externs/platform.js",
   ]
 }
 
@@ -109,9 +114,9 @@ js_library("request") {
     ":image_loader_util",
     ":load_image_request",
     ":piex_loader",
-    "../file_manager/common/js:file_type",
+    "//ui/file_manager/file_manager/common/js:file_type",
   ]
-  externs_list = [ "../externs/platform.js" ]
+  externs_list = [ "//ui/file_manager/externs/platform.js" ]
 }
 
 js_library("scheduler") {
@@ -120,7 +125,7 @@ js_library("scheduler") {
   ]
 }
 
-js_unit_tests("unit_tests") {
+js_test_gen_html("js_test_gen_html") {
   closure_flags = default_closure_args + [ "jscomp_error=strictCheckTypes" ]
   deps = [
     ":cache_unittest",
@@ -134,6 +139,6 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_module",
-    ":unit_tests_type_check",
+    ":js_test_gen_html_type_check_auto",
   ]
 }

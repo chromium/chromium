@@ -6,11 +6,10 @@
 
 namespace download {
 
-DownloadJobImpl::DownloadJobImpl(
-    DownloadItem* download_item,
-    std::unique_ptr<DownloadRequestHandleInterface> request_handle,
-    bool is_parallizable)
-    : DownloadJob(download_item, std::move(request_handle)),
+DownloadJobImpl::DownloadJobImpl(DownloadItem* download_item,
+                                 CancelRequestCallback cancel_request_callback,
+                                 bool is_parallizable)
+    : DownloadJob(download_item, std::move(cancel_request_callback)),
       is_parallizable_(is_parallizable) {}
 
 DownloadJobImpl::~DownloadJobImpl() = default;

@@ -150,7 +150,7 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
   // An abstraction of who creates the about sync info value map.
   AboutSyncDataDelegate about_sync_data_delegate_;
 
-  base::WeakPtrFactory<SyncInternalsMessageHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<SyncInternalsMessageHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyncInternalsMessageHandler);
 };

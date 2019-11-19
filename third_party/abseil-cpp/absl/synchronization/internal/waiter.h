@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +18,7 @@
 
 #include "absl/base/config.h"
 
-#ifdef _WIN32
-#include <windows.h>
-#else
+#ifndef _WIN32
 #include <pthread.h>
 #endif
 
@@ -123,8 +121,20 @@ class Waiter {
   // primivitives.  We are using SRWLOCK and CONDITION_VARIABLE
   // because they don't require a destructor to release system
   // resources.
-  SRWLOCK mu_;
-  CONDITION_VARIABLE cv_;
+  //
+  // However, we can't include Windows.h in our headers, so we use aligned
+  // storage buffers to define the storage.
+  using SRWLockStorage =
+      typename std::aligned_storage<sizeof(void*), alignof(void*)>::type;
+  using ConditionVariableStorage =
+      typename std::aligned_storage<sizeof(void*), alignof(void*)>::type;
+
+  // WinHelper - Used to define utilities for accessing the lock and
+  // condition variable storage once the types are complete.
+  class WinHelper;
+
+  SRWLockStorage mu_storage_;
+  ConditionVariableStorage cv_storage_;
   std::atomic<int> waiter_count_;
   std::atomic<int> wakeup_count_;
 

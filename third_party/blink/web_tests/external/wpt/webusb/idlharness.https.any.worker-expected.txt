@@ -1,11 +1,28 @@
 This is a testharness.js-based test.
-Found 253 tests; 180 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 276 tests; 196 PASS, 80 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
+PASS idl_test validation
 FAIL USB device setup promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'configurations' of undefined"
 PASS Partial interface Navigator: original interface defined
 PASS Partial interface Navigator: valid exposure set
+PASS Partial interface Navigator: member names are unique
 PASS Partial interface WorkerNavigator: original interface defined
 PASS Partial interface WorkerNavigator: valid exposure set
+PASS Partial interface WorkerNavigator: member names are unique
+PASS Partial interface Navigator[2]: member names are unique
+PASS Partial interface WorkerNavigator[2]: member names are unique
+PASS Partial interface mixin NavigatorID: member names are unique
+PASS Navigator includes NavigatorID: member names are unique
+PASS Navigator includes NavigatorLanguage: member names are unique
+PASS Navigator includes NavigatorOnLine: member names are unique
+PASS Navigator includes NavigatorContentUtils: member names are unique
+PASS Navigator includes NavigatorCookies: member names are unique
+PASS Navigator includes NavigatorPlugins: member names are unique
+PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS WorkerNavigator includes NavigatorID: member names are unique
+PASS WorkerNavigator includes NavigatorLanguage: member names are unique
+PASS WorkerNavigator includes NavigatorOnLine: member names are unique
+PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
 PASS USB interface: existence and properties of interface object
 PASS USB interface object length
 PASS USB interface object name
@@ -249,7 +266,13 @@ FAIL USBEndpoint interface: usbEndpoint must inherit property "endpointNumber" w
 FAIL USBEndpoint interface: usbEndpoint must inherit property "direction" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbEndpoint is not defined"
 FAIL USBEndpoint interface: usbEndpoint must inherit property "type" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbEndpoint is not defined"
 FAIL USBEndpoint interface: usbEndpoint must inherit property "packetSize" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbEndpoint is not defined"
-PASS USBPermissionResult interface: existence and properties of interface object
+FAIL USBPermissionResult interface: existence and properties of interface object assert_own_property: self does not have own property "USBPermissionResult" expected property "USBPermissionResult" missing
+FAIL USBPermissionResult interface object length assert_own_property: self does not have own property "USBPermissionResult" expected property "USBPermissionResult" missing
+FAIL USBPermissionResult interface object name assert_own_property: self does not have own property "USBPermissionResult" expected property "USBPermissionResult" missing
+FAIL USBPermissionResult interface: existence and properties of interface prototype object assert_own_property: self does not have own property "USBPermissionResult" expected property "USBPermissionResult" missing
+FAIL USBPermissionResult interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "USBPermissionResult" expected property "USBPermissionResult" missing
+FAIL USBPermissionResult interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "USBPermissionResult" expected property "USBPermissionResult" missing
+FAIL USBPermissionResult interface: attribute devices assert_own_property: self does not have own property "USBPermissionResult" expected property "USBPermissionResult" missing
 PASS Navigator interface: existence and properties of interface object
 PASS WorkerNavigator interface: attribute usb
 PASS WorkerNavigator interface: navigator must inherit property "usb" with the proper type

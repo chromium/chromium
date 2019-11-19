@@ -6,6 +6,8 @@
 
 #include <algorithm>
 #include <iterator>
+#include <map>
+#include <string>
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
@@ -20,10 +22,8 @@
 #include "content/common/accessibility_messages.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_role_properties.h"
-#include "ui/accessibility/ax_text_utils.h"
 #include "ui/base/win/accessibility_ids_win.h"
 #include "ui/base/win/accessibility_misc_utils.h"
 #include "ui/base/win/atl_module.h"
@@ -51,7 +51,7 @@ void AddAccessibilityModeFlags(ui::AXMode mode_flags) {
 //
 
 BrowserAccessibilityComWin::WinAttributes::WinAttributes()
-    : ia_role(0), ia_state(0), ia2_role(0), ia2_state(0) {}
+    : ignored(false), ia_role(0), ia_state(0), ia2_role(0), ia2_state(0) {}
 
 BrowserAccessibilityComWin::WinAttributes::~WinAttributes() {}
 
@@ -184,10 +184,10 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_imagePosition(
     *x = bounds.x();
     *y = bounds.y();
   } else if (coordinate_type == IA2_COORDTYPE_PARENT_RELATIVE) {
-    gfx::Rect bounds = owner()->GetPageBoundsRect();
+    gfx::Rect bounds = owner()->GetClippedRootFrameBoundsRect();
     gfx::Rect parent_bounds =
         owner()->PlatformGetParent()
-            ? owner()->PlatformGetParent()->GetPageBoundsRect()
+            ? owner()->PlatformGetParent()->GetClippedRootFrameBoundsRect()
             : gfx::Rect();
     *x = bounds.x() - parent_bounds.x();
     *y = bounds.y() - parent_bounds.y();
@@ -207,8 +207,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_imageSize(LONG* height,
   if (!height || !width)
     return E_INVALIDARG;
 
-  *height = owner()->GetPageBoundsRect().height();
-  *width = owner()->GetPageBoundsRect().width();
+  *height = owner()->GetClippedRootFrameBoundsRect().height();
+  *width = owner()->GetClippedRootFrameBoundsRect().width();
   return S_OK;
 }
 
@@ -240,19 +240,23 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_characterExtents(
   if (!out_x || !out_y || !out_width || !out_height)
     return E_INVALIDARG;
 
-  const base::string16& text_str = GetText();
+  const base::string16& text_str = GetHypertext();
   HandleSpecialTextOffset(&offset);
   if (offset < 0 || offset > static_cast<LONG>(text_str.size()))
     return E_INVALIDARG;
 
   gfx::Rect character_bounds;
   if (coordinate_type == IA2_COORDTYPE_SCREEN_RELATIVE) {
-    character_bounds = owner()->GetScreenBoundsForRange(offset, 1);
+    character_bounds = owner()->GetScreenHypertextRangeBoundsRect(
+        offset, 1, ui::AXClippingBehavior::kUnclipped);
   } else if (coordinate_type == IA2_COORDTYPE_PARENT_RELATIVE) {
-    character_bounds = owner()->GetPageBoundsForRange(offset, 1);
+    character_bounds = owner()->GetRootFrameHypertextRangeBoundsRect(
+        offset, 1, ui::AXClippingBehavior::kUnclipped);
     if (owner()->PlatformGetParent()) {
-      character_bounds -=
-          owner()->PlatformGetParent()->GetPageBoundsRect().OffsetFromOrigin();
+      character_bounds -= owner()
+                              ->PlatformGetParent()
+                              ->GetUnclippedRootFrameBoundsRect()
+                              .OffsetFromOrigin();
     }
   } else {
     return E_INVALIDARG;
@@ -288,7 +292,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_text(LONG start_offset,
   if (!text)
     return E_INVALIDARG;
 
-  const base::string16& text_str = GetText();
+  const base::string16& text_str = GetHypertext();
   HandleSpecialTextOffset(&start_offset);
   HandleSpecialTextOffset(&end_offset);
 
@@ -335,7 +339,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_textAtOffset(
   if (offset < 0)
     return E_INVALIDARG;
 
-  const base::string16& text_str = GetText();
+  const base::string16& text_str = GetHypertext();
   LONG text_len = text_str.length();
   if (offset > text_len)
     return E_INVALIDARG;
@@ -350,8 +354,10 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_textAtOffset(
   if (offset == text_len && boundary_type != IA2_TEXT_BOUNDARY_LINE)
     return S_FALSE;
 
-  LONG start = FindBoundary(boundary_type, offset, ui::BACKWARDS_DIRECTION);
-  LONG end = FindBoundary(boundary_type, start, ui::FORWARDS_DIRECTION);
+  LONG start = FindIA2Boundary(boundary_type, offset,
+                               ui::AXTextBoundaryDirection::kBackwards);
+  LONG end = FindIA2Boundary(boundary_type, start,
+                             ui::AXTextBoundaryDirection::kForwards);
   if (end < offset)
     return S_FALSE;
 
@@ -379,7 +385,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_textBeforeOffset(
   *end_offset = 0;
   *text = NULL;
 
-  const base::string16& text_str = GetText();
+  const base::string16& text_str = GetHypertext();
   LONG text_len = text_str.length();
   if (offset > text_len)
     return E_INVALIDARG;
@@ -389,7 +395,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_textBeforeOffset(
   if (boundary_type == IA2_TEXT_BOUNDARY_SENTENCE)
     return S_FALSE;
 
-  *start_offset = FindBoundary(boundary_type, offset, ui::BACKWARDS_DIRECTION);
+  *start_offset = FindIA2Boundary(boundary_type, offset,
+                                  ui::AXTextBoundaryDirection::kBackwards);
   *end_offset = offset;
   return get_text(*start_offset, *end_offset, text);
 }
@@ -413,7 +420,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_textAfterOffset(
   *end_offset = 0;
   *text = NULL;
 
-  const base::string16& text_str = GetText();
+  const base::string16& text_str = GetHypertext();
   LONG text_len = text_str.length();
   if (offset > text_len)
     return E_INVALIDARG;
@@ -424,7 +431,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_textAfterOffset(
     return S_FALSE;
 
   *start_offset = offset;
-  *end_offset = FindBoundary(boundary_type, offset, ui::FORWARDS_DIRECTION);
+  *end_offset = FindIA2Boundary(boundary_type, offset,
+                                ui::AXTextBoundaryDirection::kForwards);
   return get_text(*start_offset, *end_offset, text);
 }
 
@@ -446,7 +454,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_newText(
   if (new_len == 0)
     return E_FAIL;
 
-  base::string16 substr = GetText().substr(start, new_len);
+  base::string16 substr = GetHypertext().substr(start, new_len);
   new_text->text = SysAllocString(substr.c_str());
   new_text->start = static_cast<LONG>(start);
   new_text->end = static_cast<LONG>(start + new_len);
@@ -484,20 +492,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_offsetAtPoint(
     LONG y,
     IA2CoordinateType coord_type,
     LONG* offset) {
-  WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_OFFSET_AT_POINT);
-  AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes |
-                            ui::AXMode::kInlineTextBoxes);
-  if (!owner())
-    return E_FAIL;
-
-  if (!offset)
-    return E_INVALIDARG;
-
-  // TODO(dmazzoni): implement this. We're returning S_OK for now so that
-  // screen readers still return partially accurate results rather than
-  // completely failing.
-  *offset = 0;
-  return S_OK;
+  return AXPlatformNodeWin::get_offsetAtPoint(x, y, coord_type, offset);
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::scrollSubstringTo(
@@ -528,8 +523,10 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollSubstringToPoint(
   LONG length = end_index - start_index + 1;
   DCHECK_GE(length, 0);
 
-  gfx::Rect string_bounds = owner()->GetPageBoundsForRange(start_index, length);
-  string_bounds -= owner()->GetPageBoundsRect().OffsetFromOrigin();
+  gfx::Rect string_bounds = owner()->GetRootFrameHypertextRangeBoundsRect(
+      start_index, length, ui::AXClippingBehavior::kUnclipped);
+  string_bounds -=
+      owner()->GetUnclippedRootFrameBoundsRect().OffsetFromOrigin();
   x -= string_bounds.x();
   y -= string_bounds.y();
 
@@ -568,6 +565,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::setSelection(LONG selection_index,
   return S_OK;
 }
 
+// IAccessibleText::get_attributes()
+// Returns text attributes -- not HTML attributes!
 IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(
     LONG offset,
     LONG* start_offset,
@@ -583,25 +582,35 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(
   if (!owner())
     return E_FAIL;
 
-  const base::string16 text = GetText();
+  const base::string16 text = GetHypertext();
   HandleSpecialTextOffset(&offset);
   if (offset < 0 || offset > static_cast<LONG>(text.size()))
     return E_INVALIDARG;
 
   ComputeStylesIfNeeded();
-  *start_offset = FindStartOfStyle(offset, ui::BACKWARDS_DIRECTION);
-  *end_offset = FindStartOfStyle(offset, ui::FORWARDS_DIRECTION);
+  *start_offset =
+      FindStartOfStyle(offset, ui::AXTextBoundaryDirection::kBackwards);
+  *end_offset =
+      FindStartOfStyle(offset, ui::AXTextBoundaryDirection::kForwards);
 
-  base::string16 attributes_str;
-  const std::vector<base::string16>& attributes =
+  const ui::TextAttributeList& attributes =
       offset_to_text_attributes().find(*start_offset)->second;
-  for (const base::string16& attribute : attributes) {
-    attributes_str += attribute + L';';
+
+  std::ostringstream attributes_stream;
+  for (const ui::TextAttribute& attribute : attributes) {
+    // Don't expose the default language value of "en-US".
+    // TODO(nektar): Determine if it's possible to check against the interface
+    // language.
+    if (attribute.first == "language" && attribute.second == "en-US")
+      continue;
+
+    attributes_stream << attribute.first << ":" << attribute.second << ";";
   }
+  base::string16 attributes_str = base::UTF8ToUTF16(attributes_stream.str());
 
-  if (attributes.empty())
-    return S_FALSE;
-
+  // Returning an empty string is valid and indicates no attributes.
+  // This is better than returning S_FALSE which the screen reader
+  // may not recognize as valid attributes.
   *text_attributes = SysAllocString(attributes_str.c_str());
   DCHECK(*text_attributes);
   return S_OK;
@@ -659,7 +668,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlinkIndex(
   if (!hyperlink_index)
     return E_INVALIDARG;
 
-  if (char_index < 0 || char_index >= static_cast<LONG>(GetText().size())) {
+  if (char_index < 0 ||
+      char_index >= static_cast<LONG>(GetHypertext().size())) {
     return E_INVALIDARG;
   }
 
@@ -690,7 +700,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_anchor(LONG index,
   if (index != 0 || !anchor)
     return E_INVALIDARG;
 
-  BSTR ia2_hypertext = SysAllocString(GetText().c_str());
+  BSTR ia2_hypertext = SysAllocString(GetHypertext().c_str());
   DCHECK(ia2_hypertext);
   anchor->vt = VT_BSTR;
   anchor->bstrVal = ia2_hypertext;
@@ -1059,7 +1069,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_docType(BSTR* doc_type) {
 }
 
 IFACEMETHODIMP
-BrowserAccessibilityComWin::get_nameSpaceURIForID(short name_space_id,
+BrowserAccessibilityComWin::get_nameSpaceURIForID(SHORT name_space_id,
                                                   BSTR* name_space_uri) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_NAMESPACE_URI_FOR_ID);
   return E_NOTIMPL;
@@ -1078,11 +1088,11 @@ BrowserAccessibilityComWin::put_alternateViewMediaTypes(
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_nodeInfo(
     BSTR* node_name,
-    short* name_space_id,
+    SHORT* name_space_id,
     BSTR* node_value,
     unsigned int* num_children,
     unsigned int* unique_id,
-    unsigned short* node_type) {
+    USHORT* node_type) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_NODE_INFO);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!owner())
@@ -1115,12 +1125,13 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nodeInfo(
   return S_OK;
 }
 
-IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(
-    unsigned short max_attribs,
-    BSTR* attrib_names,
-    short* name_space_id,
-    BSTR* attrib_values,
-    unsigned short* num_attribs) {
+// ISimpleDOMNode::get_attributes()
+// Returns HTML attributes -- not text attributes!
+IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(USHORT max_attribs,
+                                                          BSTR* attrib_names,
+                                                          SHORT* name_space_id,
+                                                          BSTR* attrib_values,
+                                                          USHORT* num_attribs) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ISIMPLEDOMNODE_GET_ATTRIBUTES);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!owner())
@@ -1133,9 +1144,16 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(
   if (*num_attribs > owner()->GetHtmlAttributes().size())
     *num_attribs = owner()->GetHtmlAttributes().size();
 
-  for (unsigned short i = 0; i < *num_attribs; ++i) {
-    attrib_names[i] = SysAllocString(
-        base::UTF8ToUTF16(owner()->GetHtmlAttributes()[i].first).c_str());
+  for (USHORT i = 0; i < *num_attribs; ++i) {
+    const std::string& attribute = owner()->GetHtmlAttributes()[i].first;
+    // Work around JAWS crash in JAWS <= 17, and unpatched versions of JAWS
+    // 2018/2019.
+    // TODO(accessibility) Remove once JAWS <= 17 is no longer a concern.
+    // Wait until 2021 for this, as JAWS users are slow to update.
+    if (attribute == "srcdoc" || attribute == "data-srcdoc")
+      continue;
+
+    attrib_names[i] = SysAllocString(base::UTF8ToUTF16(attribute).c_str());
     name_space_id[i] = 0;
     attrib_values[i] = SysAllocString(
         base::UTF8ToUTF16(owner()->GetHtmlAttributes()[i].second).c_str());
@@ -1143,10 +1161,12 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(
   return S_OK;
 }
 
+// ISimpleDOMNode::get_attributesForNames()
+// Returns HTML attributes -- not text attributes!
 IFACEMETHODIMP BrowserAccessibilityComWin::get_attributesForNames(
-    unsigned short num_attribs,
+    USHORT num_attribs,
     BSTR* attrib_names,
-    short* name_space_id,
+    SHORT* name_space_id,
     BSTR* attrib_values) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ATTRIBUTES_FOR_NAMES);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
@@ -1156,7 +1176,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributesForNames(
   if (!attrib_names || !name_space_id || !attrib_values)
     return E_INVALIDARG;
 
-  for (unsigned short i = 0; i < num_attribs; ++i) {
+  for (USHORT i = 0; i < num_attribs; ++i) {
     name_space_id[i] = 0;
     bool found = false;
     std::string name = base::UTF16ToUTF8((LPCWSTR)attrib_names[i]);
@@ -1176,11 +1196,11 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributesForNames(
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_computedStyle(
-    unsigned short max_style_properties,
+    USHORT max_style_properties,
     boolean use_alternate_view,
     BSTR* style_properties,
     BSTR* style_values,
-    unsigned short* num_style_properties) {
+    USHORT* num_style_properties) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_COMPUTED_STYLE);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   if (!owner())
@@ -1207,7 +1227,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_computedStyle(
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_computedStyleForProperties(
-    unsigned short num_style_properties,
+    USHORT num_style_properties,
     boolean use_alternate_view,
     BSTR* style_properties,
     BSTR* style_values) {
@@ -1221,7 +1241,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_computedStyleForProperties(
 
   // We only cache a single style property for now: DISPLAY
 
-  for (unsigned short i = 0; i < num_style_properties; ++i) {
+  for (USHORT i = 0; i < num_style_properties; ++i) {
     base::string16 name = base::ToLowerASCII(
         reinterpret_cast<const base::char16*>(style_properties[i]));
     if (name == L"display") {
@@ -1270,7 +1290,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_firstChild(
     return S_FALSE;
   }
 
-  *node = ToBrowserAccessibilityComWin(owner()->PlatformGetChild(0))
+  *node = ToBrowserAccessibilityComWin(owner()->PlatformGetFirstChild())
               ->NewReference();
   return S_OK;
 }
@@ -1289,8 +1309,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_lastChild(
     return S_FALSE;
   }
 
-  *node = ToBrowserAccessibilityComWin(
-              owner()->PlatformGetChild(owner()->PlatformChildCount() - 1))
+  *node = ToBrowserAccessibilityComWin(owner()->PlatformGetLastChild())
               ->NewReference();
   return S_OK;
 }
@@ -1309,9 +1328,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_previousSibling(
     return S_FALSE;
   }
 
-  *node = ToBrowserAccessibilityComWin(
-              owner()->PlatformGetParent()->InternalGetChild(
-                  GetIndexInParent() - 1))
+  *node = ToBrowserAccessibilityComWin(owner()->InternalGetPreviousSibling())
               ->NewReference();
   return S_OK;
 }
@@ -1333,9 +1350,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nextSibling(
     return S_FALSE;
   }
 
-  *node = ToBrowserAccessibilityComWin(
-              owner()->PlatformGetParent()->InternalGetChild(
-                  GetIndexInParent() + 1))
+  *node = ToBrowserAccessibilityComWin(owner()->InternalGetNextSibling())
               ->NewReference();
   return S_OK;
 }
@@ -1395,8 +1410,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_language(BSTR* language) {
   if (!owner())
     return E_FAIL;
 
-  base::string16 lang = owner()->GetInheritedString16Attribute(
-      ax::mojom::StringAttribute::kLanguage);
+  base::string16 lang = base::UTF8ToUTF16(owner()->node()->GetLanguage());
   if (lang.empty())
     lang = L"en-US";
 
@@ -1453,14 +1467,14 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_unclippedSubstringBounds(
   if (!out_x || !out_y || !out_width || !out_height)
     return E_INVALIDARG;
 
-  unsigned int text_length = static_cast<unsigned int>(GetText().size());
+  unsigned int text_length = static_cast<unsigned int>(GetHypertext().size());
   if (start_index > text_length || end_index > text_length ||
       start_index > end_index) {
     return E_INVALIDARG;
   }
 
-  gfx::Rect bounds =
-      owner()->GetScreenBoundsForRange(start_index, end_index - start_index);
+  gfx::Rect bounds = owner()->GetScreenHypertextRangeBoundsRect(
+      start_index, end_index - start_index, ui::AXClippingBehavior::kUnclipped);
   *out_x = bounds.x();
   *out_y = bounds.y();
   *out_width = bounds.width();
@@ -1481,15 +1495,16 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollToSubstring(
   if (!manager)
     return E_FAIL;
 
-  unsigned int text_length = static_cast<unsigned int>(GetText().size());
+  unsigned int text_length = static_cast<unsigned int>(GetHypertext().size());
   if (start_index > text_length || end_index > text_length ||
       start_index > end_index) {
     return E_INVALIDARG;
   }
 
-  manager->ScrollToMakeVisible(
-      *owner(),
-      owner()->GetPageBoundsForRange(start_index, end_index - start_index));
+  manager->ScrollToMakeVisible(*owner(),
+                               owner()->GetRootFrameHypertextRangeBoundsRect(
+                                   start_index, end_index - start_index,
+                                   ui::AXClippingBehavior::kUnclipped));
 
   return S_OK;
 }
@@ -1575,29 +1590,20 @@ STDMETHODIMP BrowserAccessibilityComWin::InternalQueryInterface(
     return E_NOINTERFACE;
   }
 
-  int32_t ia_role = accessibility->MSAARole();
+  ax::mojom::Role role = accessibility->owner()->GetRole();
+
   if (iid == IID_IAccessibleImage) {
-    if (ia_role != ROLE_SYSTEM_GRAPHIC) {
-      *object = nullptr;
-      return E_NOINTERFACE;
-    }
-  } else if (iid == IID_IAccessibleTable || iid == IID_IAccessibleTable2) {
-    if (ia_role != ROLE_SYSTEM_TABLE) {
-      *object = nullptr;
-      return E_NOINTERFACE;
-    }
-  } else if (iid == IID_IAccessibleTableCell) {
-    if (!ui::IsCellOrTableHeader(accessibility->owner()->GetRole())) {
+    if (!ui::IsImage(role)) {
       *object = nullptr;
       return E_NOINTERFACE;
     }
   } else if (iid == IID_IAccessibleValue) {
-    if (!accessibility->IsRangeValueSupported()) {
+    if (!IsRangeValueSupported(accessibility->GetData())) {
       *object = nullptr;
       return E_NOINTERFACE;
     }
   } else if (iid == IID_ISimpleDOMDocument) {
-    if (ia_role != ROLE_SYSTEM_DOCUMENT) {
+    if (!ui::IsDocument(role)) {
       *object = nullptr;
       return E_NOINTERFACE;
     }
@@ -1608,58 +1614,18 @@ STDMETHODIMP BrowserAccessibilityComWin::InternalQueryInterface(
     }
   }
 
-  return CComObjectRootBase::InternalQueryInterface(this_ptr, entries, iid,
-                                                    object);
+  return AXPlatformNodeWin::InternalQueryInterface(this_ptr, entries, iid,
+                                                   object);
 }
 
 void BrowserAccessibilityComWin::ComputeStylesIfNeeded() {
   if (!offset_to_text_attributes().empty())
     return;
 
-  std::map<int, std::vector<base::string16>> attributes_map;
-  if (owner()->PlatformIsLeaf() || owner()->IsPlainTextField()) {
-    attributes_map[0] = ComputeTextAttributes();
-    const std::map<int, std::vector<base::string16>> spelling_attributes =
-        GetSpellingAttributes();
-    MergeSpellingIntoTextAttributes(spelling_attributes, 0 /* start_offset */,
-                                    &attributes_map);
-    win_attributes_->offset_to_text_attributes.swap(attributes_map);
-    return;
-  }
-
-  int start_offset = 0;
-  for (size_t i = 0; i < owner()->PlatformChildCount(); ++i) {
-    auto* child = ToBrowserAccessibilityComWin(owner()->PlatformGetChild(i));
-    DCHECK(child);
-    std::vector<base::string16> attributes(child->ComputeTextAttributes());
-
-    if (attributes_map.empty()) {
-      attributes_map[start_offset] = attributes;
-    } else {
-      // Only add the attributes for this child if we are at the start of a new
-      // style span.
-      std::vector<base::string16> previous_attributes =
-          attributes_map.rbegin()->second;
-      // Must check the size, otherwise if attributes is a subset of
-      // prev_attributes, they would appear to be equal.
-      if (attributes.size() != previous_attributes.size() ||
-          !std::equal(attributes.begin(), attributes.end(),
-                      previous_attributes.begin())) {
-        attributes_map[start_offset] = attributes;
-      }
-    }
-
-    if (child->owner()->IsTextOnlyObject()) {
-      const std::map<int, std::vector<base::string16>> spelling_attributes =
-          child->GetSpellingAttributes();
-      MergeSpellingIntoTextAttributes(spelling_attributes, start_offset,
-                                      &attributes_map);
-      start_offset += child->GetText().length();
-    } else {
-      start_offset += 1;
-    }
-  }
-
+  ui::TextAttributeList default_attributes =
+      AXPlatformNodeWin::ComputeTextAttributes();
+  ui::TextAttributeMap attributes_map =
+      GetDelegate()->ComputeTextAttributeMap(default_attributes);
   win_attributes_->offset_to_text_attributes.swap(attributes_map);
 }
 
@@ -1698,38 +1664,31 @@ void BrowserAccessibilityComWin::UpdateStep1ComputeWinAttributes() {
       owner()->GetString16Attribute(ax::mojom::StringAttribute::kDescription);
 
   win_attributes_->value = GetValue();
+
+  win_attributes_->ignored = owner()->IsIgnored();
 }
 
 void BrowserAccessibilityComWin::UpdateStep2ComputeHypertext() {
-  hypertext_ = ComputeHypertext();
+  UpdateComputedHypertext();
 }
 
 void BrowserAccessibilityComWin::UpdateStep3FireEvents(
     bool is_subtree_creation) {
   int32_t state = MSAAState();
+  const bool ignored = owner()->IsIgnored();
 
-  // Fire an event when a new subtree is created.
-  if (is_subtree_creation)
-    FireNativeEvent(EVENT_OBJECT_SHOW);
+  // Suppress all of these events when the node is ignored, or when the ignored
+  // state has changed.
+  if (ignored || (old_win_attributes_->ignored != ignored))
+    return;
 
   // The rest of the events only fire on changes, not on new objects.
 
-  bool did_fire_namechange = false;
-
   if (old_win_attributes_->ia_role != 0 ||
       !old_win_attributes_->role_name.empty()) {
-    // Fire an event if the name, description, help, or value changes.
-    if (name() != old_win_attributes_->name &&
-        GetData().GetNameFrom() != ax::mojom::NameFrom::kContents) {
-      // Only fire name changes when the name comes from an attribute, otherwise
-      // name changes are redundant with text removed/inserted events.
-      FireNativeEvent(EVENT_OBJECT_NAMECHANGE);
-      did_fire_namechange = true;
-    }
+    // Fire an event if the description, help, or value changes.
     if (description() != old_win_attributes_->description)
       FireNativeEvent(EVENT_OBJECT_DESCRIPTIONCHANGE);
-    if (value() != old_win_attributes_->value)
-      FireNativeEvent(EVENT_OBJECT_VALUECHANGE);
 
     // Do not fire EVENT_OBJECT_STATECHANGE if the change was due to a focus
     // change.
@@ -1737,30 +1696,6 @@ void BrowserAccessibilityComWin::UpdateStep3FireEvents(
             (old_win_attributes_->ia_state & ~STATE_SYSTEM_FOCUSED) ||
         ComputeIA2State() != old_win_attributes_->ia2_state) {
       FireNativeEvent(EVENT_OBJECT_STATECHANGE);
-    }
-
-    // Handle selection being added or removed.
-    bool is_selected_now = (state & STATE_SYSTEM_SELECTED) != 0;
-    bool was_selected_before =
-        (old_win_attributes_->ia_state & STATE_SYSTEM_SELECTED) != 0;
-    if (is_selected_now || was_selected_before) {
-      bool multiselect = false;
-      if (owner()->PlatformGetParent() &&
-          owner()->PlatformGetParent()->HasState(
-              ax::mojom::State::kMultiselectable))
-        multiselect = true;
-
-      if (multiselect) {
-        // In a multi-select box, fire SELECTIONADD and SELECTIONREMOVE events.
-        if (is_selected_now && !was_selected_before) {
-          FireNativeEvent(EVENT_OBJECT_SELECTIONADD);
-        } else if (!is_selected_now && was_selected_before) {
-          FireNativeEvent(EVENT_OBJECT_SELECTIONREMOVE);
-        }
-      } else if (is_selected_now && !was_selected_before) {
-        // In a single-select box, only fire SELECTION events.
-        FireNativeEvent(EVENT_OBJECT_SELECTION);
-      }
     }
 
     // Fire an event if this container object has scrolled.
@@ -1775,10 +1710,11 @@ void BrowserAccessibilityComWin::UpdateStep3FireEvents(
     }
 
     // Fire hypertext-related events.
-    // Do not fire removed/inserted when a name change event was also fired, as
-    // they are providing redundant information and will lead to duplicate
-    // announcements.
-    if (!did_fire_namechange) {
+    // Do not fire removed/inserted when a name change event will be fired by
+    // AXEventGenerator, as they are providing redundant information and will
+    // lead to duplicate announcements.
+    if (name() == old_win_attributes_->name ||
+        GetData().GetNameFrom() == ax::mojom::NameFrom::kContents) {
       size_t start, old_len, new_len;
       ComputeHypertextRemovedAndInserted(&start, &old_len, &new_len);
       if (old_len > 0) {
@@ -1820,229 +1756,9 @@ void BrowserAccessibilityComWin::Init(ui::AXPlatformNodeDelegate* delegate) {
   AXPlatformNodeWin::Init(delegate);
 }
 
-base::string16 BrowserAccessibilityComWin::GetInvalidValue() const {
-  const BrowserAccessibilityWin* target = owner();
-  // The aria-invalid=spelling/grammar need to be exposed as text attributes for
-  // a range matching the visual underline representing the error.
-  if (static_cast<ax::mojom::InvalidState>(
-          target->GetIntAttribute(ax::mojom::IntAttribute::kInvalidState)) ==
-          ax::mojom::InvalidState::kNone &&
-      target->IsTextOnlyObject() && target->PlatformGetParent()) {
-    // Text nodes need to reflect the invalid state of their parent object,
-    // otherwise spelling and grammar errors communicated through aria-invalid
-    // won't be reflected in text attributes.
-    target = static_cast<BrowserAccessibilityWin*>(target->PlatformGetParent());
-  }
-
-  base::string16 invalid_value;
-  // Note: spelling+grammar errors case is disallowed and not supported. It
-  // could possibly arise with aria-invalid on the ancestor of a spelling error,
-  // but this is not currently described in any spec and no real-world use cases
-  // have been found.
-  switch (static_cast<ax::mojom::InvalidState>(
-      target->GetIntAttribute(ax::mojom::IntAttribute::kInvalidState))) {
-    case ax::mojom::InvalidState::kNone:
-    case ax::mojom::InvalidState::kFalse:
-      break;
-    case ax::mojom::InvalidState::kTrue:
-      return invalid_value = L"true";
-    case ax::mojom::InvalidState::kSpelling:
-      return invalid_value = L"spelling";
-    case ax::mojom::InvalidState::kGrammar:
-      return base::ASCIIToUTF16("grammar");
-    case ax::mojom::InvalidState::kOther: {
-      base::string16 aria_invalid_value;
-      if (target->GetString16Attribute(
-              ax::mojom::StringAttribute::kAriaInvalidValue,
-              &aria_invalid_value)) {
-        SanitizeStringAttributeForIA2(aria_invalid_value, &aria_invalid_value);
-        invalid_value = aria_invalid_value;
-      } else {
-        // Set the attribute to L"true", since we cannot be more specific.
-        invalid_value = L"true";
-      }
-    }
-  }
-  return invalid_value;
-}
-
-std::vector<base::string16> BrowserAccessibilityComWin::ComputeTextAttributes()
-    const {
-  std::vector<base::string16> attributes;
-
-  // We include list markers for now, but there might be other objects that are
-  // auto generated.
-  // TODO(nektar): Compute what objects are auto-generated in Blink.
-  if (owner()->GetRole() == ax::mojom::Role::kListMarker)
-    attributes.push_back(L"auto-generated:true");
-
-  int color;
-  if (owner()->GetIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                               &color)) {
-    unsigned int alpha = SkColorGetA(color);
-    unsigned int red = SkColorGetR(color);
-    unsigned int green = SkColorGetG(color);
-    unsigned int blue = SkColorGetB(color);
-    // Don't expose default value of pure white.
-    if (alpha && (red != 255 || green != 255 || blue != 255)) {
-      base::string16 color_value = L"rgb(" + base::NumberToString16(red) +
-                                   L',' + base::NumberToString16(green) + L',' +
-                                   base::NumberToString16(blue) + L')';
-      SanitizeStringAttributeForIA2(color_value, &color_value);
-      attributes.push_back(L"background-color:" + color_value);
-    }
-  }
-
-  if (owner()->GetIntAttribute(ax::mojom::IntAttribute::kColor, &color)) {
-    unsigned int red = SkColorGetR(color);
-    unsigned int green = SkColorGetG(color);
-    unsigned int blue = SkColorGetB(color);
-    // Don't expose default value of black.
-    if (red || green || blue) {
-      base::string16 color_value = L"rgb(" + base::NumberToString16(red) +
-                                   L',' + base::NumberToString16(green) + L',' +
-                                   base::NumberToString16(blue) + L')';
-      SanitizeStringAttributeForIA2(color_value, &color_value);
-      attributes.push_back(L"color:" + color_value);
-    }
-  }
-
-  base::string16 font_family(owner()->GetInheritedString16Attribute(
-      ax::mojom::StringAttribute::kFontFamily));
-  // Attribute has no default value.
-  if (!font_family.empty()) {
-    SanitizeStringAttributeForIA2(font_family, &font_family);
-    attributes.push_back(L"font-family:" + font_family);
-  }
-
-  float font_size;
-  // Attribute has no default value.
-  if (GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize, &font_size)) {
-    // The IA2 Spec requires the value to be in pt, not in pixels.
-    // There are 72 points per inch.
-    // We assume that there are 96 pixels per inch on a standard display.
-    // TODO(nektar): Figure out the current value of pixels per inch.
-    float points = font_size * 72.0 / 96.0;
-    attributes.push_back(L"font-size:" + base::NumberToString16(points) +
-                         L"pt");
-  }
-
-  // TODO(nektar): Add Blink support for the following attributes:
-  // text-line-through-mode, text-line-through-width, text-outline:false,
-  // text-position:baseline, text-shadow:none, text-underline-mode:continuous.
-
-  int32_t text_style =
-      owner()->GetIntAttribute(ax::mojom::IntAttribute::kTextStyle);
-  if (text_style) {
-    if (GetData().HasTextStyle(ax::mojom::TextStyle::kBold))
-      attributes.push_back(L"font-weight:bold");
-    if (GetData().HasTextStyle(ax::mojom::TextStyle::kItalic))
-      attributes.push_back(L"font-style:italic");
-    if (GetData().HasTextStyle(ax::mojom::TextStyle::kLineThrough)) {
-      // TODO(nektar): Figure out a more specific value.
-      attributes.push_back(L"text-line-through-style:solid");
-    }
-    if (GetData().HasTextStyle(ax::mojom::TextStyle::kUnderline)) {
-      // TODO(nektar): Figure out a more specific value.
-      attributes.push_back(L"text-underline-style:solid");
-    }
-  }
-
-  // Screen readers look at the text attributes to determine if something is
-  // misspelled, so we need to propagate any spelling attributes from immediate
-  // parents of text-only objects.
-  base::string16 invalid_value = GetInvalidValue();
-  if (!invalid_value.empty())
-    attributes.push_back(L"invalid:" + invalid_value);
-
-  base::string16 language(owner()->GetInheritedString16Attribute(
-      ax::mojom::StringAttribute::kLanguage));
-  // Don't expose default value should of L"en-US".
-  if (!language.empty() && language != L"en-US") {
-    SanitizeStringAttributeForIA2(language, &language);
-    attributes.push_back(L"language:" + language);
-  }
-
-  auto text_direction = static_cast<ax::mojom::TextDirection>(
-      owner()->GetIntAttribute(ax::mojom::IntAttribute::kTextDirection));
-  switch (text_direction) {
-    case ax::mojom::TextDirection::kNone:
-    case ax::mojom::TextDirection::kLtr:
-      break;
-    case ax::mojom::TextDirection::kRtl:
-      attributes.push_back(L"writing-mode:rl");
-      break;
-    case ax::mojom::TextDirection::kTtb:
-      attributes.push_back(L"writing-mode:tb");
-      break;
-    case ax::mojom::TextDirection::kBtt:
-      // Not listed in the IA2 Spec.
-      attributes.push_back(L"writing-mode:bt");
-      break;
-  }
-
-  auto text_position = static_cast<ax::mojom::TextPosition>(
-      owner()->GetIntAttribute(ax::mojom::IntAttribute::kTextPosition));
-  switch (text_position) {
-    case ax::mojom::TextPosition::kNone:
-      break;
-    case ax::mojom::TextPosition::kSubscript:
-      attributes.push_back(L"text-position:sub");
-      break;
-    case ax::mojom::TextPosition::kSuperscript:
-      attributes.push_back(L"text-position:super");
-      break;
-  }
-
-  return attributes;
-}
-
 BrowserAccessibilityComWin* BrowserAccessibilityComWin::NewReference() {
   AddRef();
   return this;
-}
-
-std::map<int, std::vector<base::string16>>
-BrowserAccessibilityComWin::GetSpellingAttributes() {
-  std::map<int, std::vector<base::string16>> spelling_attributes;
-  if (owner()->IsTextOnlyObject()) {
-    const std::vector<int32_t>& marker_types =
-        owner()->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
-    const std::vector<int>& marker_starts = owner()->GetIntListAttribute(
-        ax::mojom::IntListAttribute::kMarkerStarts);
-    const std::vector<int>& marker_ends =
-        owner()->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
-    for (size_t i = 0; i < marker_types.size(); ++i) {
-      if (!(marker_types[i] &
-            static_cast<int32_t>(ax::mojom::MarkerType::kSpelling)))
-        continue;
-      int start_offset = marker_starts[i];
-      int end_offset = marker_ends[i];
-      std::vector<base::string16> start_attributes;
-      start_attributes.push_back(L"invalid:spelling");
-      spelling_attributes[start_offset] = start_attributes;
-      spelling_attributes[end_offset] = std::vector<base::string16>();
-    }
-  }
-  if (owner()->IsPlainTextField()) {
-    int start_offset = 0;
-    for (BrowserAccessibility* static_text =
-             BrowserAccessibilityManager::NextTextOnlyObject(
-                 owner()->InternalGetChild(0));
-         static_text; static_text = static_text->GetNextSibling()) {
-      auto* text_win = ToBrowserAccessibilityComWin(static_text);
-      if (text_win) {
-        std::map<int, std::vector<base::string16>> text_spelling_attributes =
-            text_win->GetSpellingAttributes();
-        for (auto& attribute : text_spelling_attributes) {
-          spelling_attributes[start_offset + attribute.first] =
-              std::move(attribute.second);
-        }
-        start_offset += static_cast<int>(text_win->GetText().length());
-      }
-    }
-  }
-  return spelling_attributes;
 }
 
 BrowserAccessibilityComWin* BrowserAccessibilityComWin::GetTargetFromChildID(
@@ -2087,78 +1803,28 @@ HRESULT BrowserAccessibilityComWin::GetStringAttributeAsBstr(
 }
 
 // Pass in prefix with ":" included at the end, e.g. "invalid:".
-bool HasAttribute(std::vector<base::string16>& existing_attributes,
+bool HasAttribute(const std::vector<base::string16>& existing_attributes,
                   base::string16 prefix) {
-  for (base::string16& attr : existing_attributes) {
+  for (const base::string16& attr : existing_attributes) {
     if (base::StartsWith(attr, prefix, base::CompareCase::SENSITIVE))
       return true;
   }
   return false;
 }
 
-// static
-void BrowserAccessibilityComWin::MergeSpellingIntoTextAttributes(
-    const std::map<int, std::vector<base::string16>>& spelling_attributes,
-    int start_offset,
-    std::map<int, std::vector<base::string16>>* text_attributes) {
-  if (!text_attributes) {
-    NOTREACHED();
-    return;
-  }
-
-  for (const auto& spelling_attribute : spelling_attributes) {
-    int offset = start_offset + spelling_attribute.first;
-    const auto iterator = text_attributes->find(offset);
-    if (iterator == text_attributes->end()) {
-      text_attributes->emplace(offset, spelling_attribute.second);
-    } else {
-      std::vector<base::string16>& existing_attributes = iterator->second;
-      // There might be a spelling attribute already in the list of text
-      // attributes, originating from "aria-invalid", that is being overwritten
-      // by a spelling marker. If it already exists, prefer it over this
-      // automatically computed attribute.
-      if (!HasAttribute(existing_attributes, L"invalid:")) {
-        // Does not exist -- insert our own.
-        existing_attributes.insert(existing_attributes.end(),
-                                   spelling_attribute.second.begin(),
-                                   spelling_attribute.second.end());
-      }
-    }
-  }
-}
-
-// Static
-void BrowserAccessibilityComWin::SanitizeStringAttributeForIA2(
-    const base::string16& input,
-    base::string16* output) {
-  DCHECK(output);
-  // According to the IA2 Spec, these characters need to be escaped with a
-  // backslash: backslash, colon, comma, equals and semicolon.
-  // Note that backslash must be replaced first.
-  base::ReplaceChars(input, L"\\", L"\\\\", output);
-  base::ReplaceChars(*output, L":", L"\\:", output);
-  base::ReplaceChars(*output, L",", L"\\,", output);
-  base::ReplaceChars(*output, L"=", L"\\=", output);
-  base::ReplaceChars(*output, L";", L"\\;", output);
-}
-
 void BrowserAccessibilityComWin::SetIA2HypertextSelection(LONG start_offset,
                                                           LONG end_offset) {
   HandleSpecialTextOffset(&start_offset);
   HandleSpecialTextOffset(&end_offset);
-  BrowserAccessibilityPositionInstance start_position =
-      owner()->CreatePositionForSelectionAt(static_cast<int>(start_offset));
-  BrowserAccessibilityPositionInstance end_position =
-      owner()->CreatePositionForSelectionAt(static_cast<int>(end_offset));
-  Manager()->SetSelection(
-      AXPlatformRange(std::move(start_position), std::move(end_position)));
+  SetHypertextSelection(start_offset, end_offset);
 }
 
-LONG BrowserAccessibilityComWin::FindBoundary(
+LONG BrowserAccessibilityComWin::FindIA2Boundary(
     IA2TextBoundaryType ia2_boundary,
     LONG start_offset,
-    ui::TextBoundaryDirection direction) {
+    ui::AXTextBoundaryDirection direction) {
   HandleSpecialTextOffset(&start_offset);
+
   // If the |start_offset| is equal to the location of the caret, then use the
   // focus affinity, otherwise default to downstream affinity.
   ax::mojom::TextAffinity affinity = ax::mojom::TextAffinity::kDownstream;
@@ -2167,64 +1833,20 @@ LONG BrowserAccessibilityComWin::FindBoundary(
   if (selection_end >= 0 && start_offset == selection_end)
     affinity = Manager()->GetTreeData().sel_focus_affinity;
 
-  if (ia2_boundary == IA2_TEXT_BOUNDARY_WORD) {
-    switch (direction) {
-      case ui::FORWARDS_DIRECTION: {
-        BrowserAccessibilityPositionInstance position =
-            owner()->CreatePositionAt(static_cast<int>(start_offset), affinity);
-        BrowserAccessibilityPositionInstance next_word =
-            position->CreateNextWordStartPosition(
-                ui::AXBoundaryBehavior::StopAtAnchorBoundary);
-        return next_word->text_offset();
-      }
-      case ui::BACKWARDS_DIRECTION: {
-        BrowserAccessibilityPositionInstance position =
-            owner()->CreatePositionAt(static_cast<int>(start_offset), affinity);
-        BrowserAccessibilityPositionInstance previous_word =
-            position->CreatePreviousWordStartPosition(
-                ui::AXBoundaryBehavior::StopIfAlreadyAtBoundary);
-        return previous_word->text_offset();
-      }
-    }
-  }
-
-  if (ia2_boundary == IA2_TEXT_BOUNDARY_LINE) {
-    switch (direction) {
-      case ui::FORWARDS_DIRECTION: {
-        BrowserAccessibilityPositionInstance position =
-            owner()->CreatePositionAt(static_cast<int>(start_offset), affinity);
-        BrowserAccessibilityPositionInstance next_line =
-            position->CreateNextLineStartPosition(
-                ui::AXBoundaryBehavior::StopAtAnchorBoundary);
-        return next_line->text_offset();
-      }
-      case ui::BACKWARDS_DIRECTION: {
-        BrowserAccessibilityPositionInstance position =
-            owner()->CreatePositionAt(static_cast<int>(start_offset), affinity);
-        BrowserAccessibilityPositionInstance previous_line =
-            position->CreatePreviousLineStartPosition(
-                ui::AXBoundaryBehavior::StopIfAlreadyAtBoundary);
-        return previous_line->text_offset();
-      }
-    }
-  }
-
-  // TODO(nektar): |AXPosition| can handle other types of boundaries as well.
-  ui::TextBoundaryType boundary = IA2TextBoundaryToTextBoundary(ia2_boundary);
-  return ui::FindAccessibleTextBoundary(
-      GetText(), owner()->GetLineStartOffsets(), boundary, start_offset,
-      direction, affinity);
+  ui::AXTextBoundary boundary = ui::FromIA2TextBoundary(ia2_boundary);
+  return static_cast<LONG>(
+      FindTextBoundary(boundary, start_offset, direction, affinity));
 }
 
 LONG BrowserAccessibilityComWin::FindStartOfStyle(
     LONG start_offset,
-    ui::TextBoundaryDirection direction) {
-  LONG text_length = static_cast<LONG>(GetText().length());
+    ui::AXTextBoundaryDirection direction) {
+  LONG text_length = static_cast<LONG>(GetHypertext().length());
   DCHECK_GE(start_offset, 0);
   DCHECK_LE(start_offset, text_length);
 
   switch (direction) {
-    case ui::BACKWARDS_DIRECTION: {
+    case ui::AXTextBoundaryDirection::kBackwards: {
       if (offset_to_text_attributes().empty())
         return 0;
 
@@ -2232,7 +1854,7 @@ LONG BrowserAccessibilityComWin::FindStartOfStyle(
       --iterator;
       return static_cast<LONG>(iterator->first);
     }
-    case ui::FORWARDS_DIRECTION: {
+    case ui::AXTextBoundaryDirection::kForwards: {
       const auto iterator =
           offset_to_text_attributes().upper_bound(start_offset);
       if (iterator == offset_to_text_attributes().end())

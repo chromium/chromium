@@ -2,6 +2,5 @@ android.webkit.WebView focusable focused has_image scrollable
 ++android.view.View has_image
 ++++android.widget.Image role_description='graphic' has_image name='pipe'
 ++++android.view.View name=' '
-++++android.widget.Image role_description='graphic' has_image
 ++++android.view.View name=' '
 ++++android.widget.Image role_description='graphic' has_image name='  '

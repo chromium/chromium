@@ -27,12 +27,12 @@
 // Inserts a bookmark folder at some position in the list.
 // Called by applescript which takes care of bounds checking, make sure of it
 // before calling directly.
-- (void)insertInBookmarkFolders:(id)aBookmarkFolder atIndex:(int)index;
+- (void)insertInBookmarkFolders:(id)aBookmarkFolder atIndex:(size_t)index;
 
 // Remove a bookmark folder from the list.
 // Called by applescript which takes care of bounds checking, make sure of it
 // before calling directly.
-- (void)removeFromBookmarkFoldersAtIndex:(int)index;
+- (void)removeFromBookmarkFoldersAtIndex:(size_t)index;
 
 // Bookmark item manipulation methods.
 // Returns an array of |BookmarkItemAppleScript*| of all the bookmark items
@@ -46,24 +46,24 @@
 // Called by applescript which takes care of bounds checking, make sure of it
 // before calling directly.
 - (void)insertInBookmarkItems:(BookmarkItemAppleScript*)aBookmarkItem
-                      atIndex:(int)index;
+                      atIndex:(size_t)index;
 
 // Removes a bookmarks folder from the list.
 // Called by applescript which takes care of bounds checking, make sure of it
 // before calling directly.
-- (void)removeFromBookmarkItemsAtIndex:(int)index;
+- (void)removeFromBookmarkItemsAtIndex:(size_t)index;
 
 // Returns the position of a bookmark folder within the current bookmark folder
 // which consists of bookmark folders as well as bookmark items.
 // AppleScript makes sure that there is a bookmark folder before calling this
 // method, make sure of that before calling directly.
-- (int)calculatePositionOfBookmarkFolderAt:(int)index;
+- (size_t)calculatePositionOfBookmarkFolderAt:(size_t)index;
 
 // Returns the position of a bookmark item within the current bookmark folder
 // which consists of bookmark folders as well as bookmark items.
 // AppleScript makes sure that there is a bookmark item before calling this
 // method, make sure of that before calling directly.
-- (int)calculatePositionOfBookmarkItemAt:(int)index;
+- (size_t)calculatePositionOfBookmarkItemAt:(size_t)index;
 
 @end
 

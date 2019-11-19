@@ -24,10 +24,12 @@ class AccountManagerWelcomeDialog : public SystemWebDialogDelegate {
   ~AccountManagerWelcomeDialog() override;
 
   // ui::SystemWebDialogDelegate overrides.
+  void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
   void OnDialogClosed(const std::string& json_retval) override;
   void GetDialogSize(gfx::Size* size) const override;
   std::string GetDialogArgs() const override;
   bool ShouldShowDialogTitle() const override;
+  bool ShouldShowCloseButton() const override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AccountManagerWelcomeDialog);

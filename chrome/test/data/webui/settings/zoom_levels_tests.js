@@ -57,7 +57,7 @@ suite('ZoomLevels', function() {
     testElement = document.createElement('zoom-levels');
     document.body.appendChild(testElement);
     return browserProxy.whenCalled('fetchZoomLevels').then(() => {
-      return test_util.waitForRender(testElement);
+      return test_util.waitBeforeNextRender(testElement);
     });
   }
 
@@ -68,7 +68,7 @@ suite('ZoomLevels', function() {
    *     fetch.
    */
   function getRemoveButton(listContainer, index) {
-    return listContainer.children[index].querySelector('button');
+    return listContainer.children[index].querySelector('cr-icon-button');
   }
 
   test('empty zoom state', function() {

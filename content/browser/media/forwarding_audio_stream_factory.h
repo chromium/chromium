@@ -20,7 +20,9 @@
 #include "content/common/content_export.h"
 #include "content/common/media/renderer_audio_input_stream_factory.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "media/mojo/interfaces/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/mojom/audio_processing.mojom.h"
 #include "services/audio/public/mojom/stream_factory.mojom.h"
 
@@ -83,7 +85,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
         uint32_t shared_memory_count,
         bool enable_agc,
         audio::mojom::AudioProcessingConfigPtr processing_config,
-        mojom::RendererAudioInputStreamFactoryClientPtr
+        mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient>
             renderer_factory_client);
 
     void AssociateInputAndOutputForAec(
@@ -96,7 +98,8 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
         const std::string& device_id,
         const media::AudioParameters& params,
         const base::Optional<base::UnguessableToken>& processing_id,
-        media::mojom::AudioOutputStreamProviderClientPtr client);
+        mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
+            client);
 
     void CreateLoopbackStream(
         int render_process_id,
@@ -105,7 +108,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
         const media::AudioParameters& params,
         uint32_t shared_memory_count,
         bool mute_source,
-        mojom::RendererAudioInputStreamFactoryClientPtr
+        mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient>
             renderer_factory_client);
 
     // Sets the muting state for all output streams created through this
@@ -153,7 +156,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     // since we want to clean up the service when not in use. If we have active
     // muting but nothing else, we should stop it and start it again when we
     // need to reacquire the factory for some other reason.
-    audio::mojom::StreamFactoryPtr remote_factory_;
+    mojo::Remote<audio::mojom::StreamFactory> remote_factory_;
 
     // Running id used for tracking audible streams. We keep count here to avoid
     // collisions.
@@ -168,7 +171,8 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     StreamBrokerSet outputs_;
     base::flat_set<AudioStreamBroker::LoopbackSink*> loopback_sinks_;
 
-    base::WeakPtrFactory<ForwardingAudioStreamFactory::Core> weak_ptr_factory_;
+    base::WeakPtrFactory<ForwardingAudioStreamFactory::Core> weak_ptr_factory_{
+        this};
 
     DISALLOW_COPY_AND_ASSIGN(Core);
   };
@@ -220,7 +224,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
   std::unique_ptr<Core> core_;
   bool is_muted_ = false;
 
-  base::WeakPtrFactory<ForwardingAudioStreamFactory> weak_ptr_factory_;
+  base::WeakPtrFactory<ForwardingAudioStreamFactory> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ForwardingAudioStreamFactory);
 };

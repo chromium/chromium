@@ -7,7 +7,7 @@
  *
  * @polymerBehavior
  */
-const SortedTableBehavior = {
+export const SortedTableBehavior = {
   properties: {
     /**
      * The current sort key, used for computing the appropriate sort function.

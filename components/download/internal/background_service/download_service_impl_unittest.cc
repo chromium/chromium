@@ -94,12 +94,6 @@ TEST_F(DownloadServiceImplTest, TestApiPassThrough) {
         static_cast<base::HistogramBase::Sample>(
             stats::ServiceApiAction::START_DOWNLOAD),
         1);
-    histogram_tester.ExpectBucketCount(
-        "Download.Service.Request.BatteryRequirement",
-        static_cast<base::HistogramBase::Sample>(
-            params.scheduling_params.battery_requirements),
-        1);
-
     histogram_tester.ExpectTotalCount("Download.Service.Request.ClientAction",
                                       1);
     histogram_tester.ExpectTotalCount(

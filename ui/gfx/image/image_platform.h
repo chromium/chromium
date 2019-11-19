@@ -11,6 +11,7 @@
 #ifndef UI_GFX_IMAGE_IMAGE_PLATFORM_H_
 #define UI_GFX_IMAGE_IMAGE_PLATFORM_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
@@ -45,7 +46,7 @@ NSImage* NSImageFromPNG(const std::vector<ImagePNGRep>& image_png_reps,
 gfx::Size NSImageSize(NSImage* image);
 #endif  // defined(OS_MACOSX)
 
-ImageSkia* ImageSkiaFromPNG(const std::vector<ImagePNGRep>& image_png_reps);
+ImageSkia ImageSkiaFromPNG(const std::vector<ImagePNGRep>& image_png_reps);
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromImageSkia(
     const ImageSkia* image_skia);
 

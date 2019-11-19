@@ -6,8 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_PUSH_MESSAGING_BRIDGE_H_
 
 #include "base/macros.h"
-#include "third_party/blink/public/platform/modules/permissions/permission.mojom-blink.h"
-#include "third_party/blink/public/platform/modules/permissions/permission_status.mojom-blink.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -23,9 +24,8 @@ class ScriptState;
 // Registration.
 //
 // TODO(peter): Use the PushMessaging Mojo service directly from here.
-class PushMessagingBridge final
-    : public GarbageCollectedFinalized<PushMessagingBridge>,
-      public Supplement<ServiceWorkerRegistration> {
+class PushMessagingBridge final : public GarbageCollected<PushMessagingBridge>,
+                                  public Supplement<ServiceWorkerRegistration> {
   USING_GARBAGE_COLLECTED_MIXIN(PushMessagingBridge);
 
  public:
@@ -46,7 +46,7 @@ class PushMessagingBridge final
   void DidGetPermissionState(ScriptPromiseResolver* resolver,
                              mojom::blink::PermissionStatus status);
 
-  mojom::blink::PermissionServicePtr permission_service_;
+  mojo::Remote<mojom::blink::PermissionService> permission_service_;
 
   DISALLOW_COPY_AND_ASSIGN(PushMessagingBridge);
 };

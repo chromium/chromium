@@ -5,7 +5,7 @@ Initial value
 element.style { ()
 
 [expanded] 
-#container { (<style>…</style>)
+#container { (<style>)
     padding: 15px;
 
 [expanded] 
@@ -22,7 +22,7 @@ After changing property
 element.style { ()
 
 [expanded] 
-#container { (<style>…</style>)
+#container { (<style>)
     padding: 20px;
 
 [expanded] 

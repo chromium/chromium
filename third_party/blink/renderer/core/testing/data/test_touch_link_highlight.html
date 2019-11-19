@@ -29,10 +29,14 @@
     <div style="position: absolute; left: 20px; top: 260px; width: 200px;">
         <input type="text"> <!-- This will have an I-beam cursor. -->
     </div>
-    <div style="position: absolute; left: 20px; top: 300px; width: 400px; height: 50px; columns: 2">
+    <style>
+      #multicol { position: absolute; left: 20px; top: 300px; width: 400px; height: 50px; columns: 2; column-fill: auto; }
+    </style>
+    <div id="multicol">
       <a href="http://www.test.com">
-        <div style="display: inline-block; width: 200px; height: 50px">Link in column 1</div>
-        <div style="display: inline-block; width: 200px; height: 50px">Link in column 2</div>
+        <div style="display: inline-block; width: 200px; height: 25px">Link part 1</div>
+        <div style="display: inline-block; width: 200px; height: 25px">Link part 2</div>
+        <div style="display: inline-block; width: 200px; height: 25px">Link part 3</div>
       </a>
     </div>
   </body>

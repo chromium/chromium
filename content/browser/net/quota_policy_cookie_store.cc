@@ -44,8 +44,7 @@ QuotaPolicyCookieStore::~QuotaPolicyCookieStore() {
 CookieStoreConfig::CookieStoreConfig()
     : restore_old_session_cookies(false),
       persist_session_cookies(false),
-      crypto_delegate(nullptr),
-      channel_id_service(nullptr) {
+      crypto_delegate(nullptr) {
   // Default to an in-memory cookie store.
 }
 
@@ -58,8 +57,7 @@ CookieStoreConfig::CookieStoreConfig(
       restore_old_session_cookies(restore_old_session_cookies),
       persist_session_cookies(persist_session_cookies),
       storage_policy(storage_policy),
-      crypto_delegate(nullptr),
-      channel_id_service(nullptr) {
+      crypto_delegate(nullptr) {
   CHECK(!path.empty() ||
         (!restore_old_session_cookies && !persist_session_cookies));
 }
@@ -74,8 +72,8 @@ std::unique_ptr<net::CookieStore> CreateCookieStore(
 
   if (config.path.empty()) {
     // Empty path means in-memory store.
-    cookie_monster = std::make_unique<net::CookieMonster>(
-        nullptr /* store */, nullptr /* channel_id_service */, net_log);
+    cookie_monster =
+        std::make_unique<net::CookieMonster>(nullptr /* store */, net_log);
   } else {
     scoped_refptr<base::SequencedTaskRunner> client_task_runner =
         config.client_task_runner;
@@ -84,12 +82,13 @@ std::unique_ptr<net::CookieStore> CreateCookieStore(
 
     if (!client_task_runner.get()) {
       client_task_runner =
-          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO});
+          base::CreateSingleThreadTaskRunner({BrowserThread::IO});
     }
 
     if (!background_task_runner.get()) {
-      background_task_runner = base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), net::GetCookieStoreBackgroundSequencePriority(),
+      background_task_runner = base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           net::GetCookieStoreBackgroundSequencePriority(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
     }
 
@@ -103,14 +102,16 @@ std::unique_ptr<net::CookieStore> CreateCookieStore(
             sqlite_store.get(),
             config.storage_policy.get());
 
-    cookie_monster = std::make_unique<net::CookieMonster>(
-        persistent_store, config.channel_id_service, net_log);
+    cookie_monster =
+        std::make_unique<net::CookieMonster>(persistent_store, net_log);
     if (config.persist_session_cookies)
       cookie_monster->SetPersistSessionCookies(true);
   }
 
   if (!config.cookieable_schemes.empty())
-    cookie_monster->SetCookieableSchemes(config.cookieable_schemes);
+    // No need to wait for callback, the work happens synchronously.
+    cookie_monster->SetCookieableSchemes(config.cookieable_schemes,
+                                         base::DoNothing());
 
   return std::move(cookie_monster);
 }

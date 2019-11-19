@@ -33,8 +33,8 @@
 enum RTCSdpType {
     "offer",
     "pranswer",
-    "answer"
-    // TODO(foolip): "rollback" is in the spec and Gecko's IDL.
+    "answer",
+    "rollback"
 };
 
 [

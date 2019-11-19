@@ -5,8 +5,9 @@
 #include "chrome/browser/web_applications/components/web_app_icon_downloader.h"
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -19,15 +20,13 @@ namespace web_app {
 WebAppIconDownloader::WebAppIconDownloader(
     content::WebContents* web_contents,
     const std::vector<GURL>& extra_favicon_urls,
-    const char* https_status_code_class_histogram_name,
+    Histogram histogram,
     WebAppIconDownloaderCallback callback)
     : content::WebContentsObserver(web_contents),
       need_favicon_urls_(true),
       extra_favicon_urls_(extra_favicon_urls),
       callback_(std::move(callback)),
-      https_status_code_class_histogram_name_(
-          https_status_code_class_histogram_name),
-      weak_ptr_factory_(this) {}
+      histogram_(histogram) {}
 
 WebAppIconDownloader::~WebAppIconDownloader() {}
 
@@ -36,6 +35,10 @@ void WebAppIconDownloader::SkipPageFavicons() {
 }
 
 void WebAppIconDownloader::Start() {
+  // Favicons are not supported in extension WebContents.
+  if (IsValidExtensionUrl(web_contents()->GetLastCommittedURL()))
+    SkipPageFavicons();
+
   // If the candidates aren't loaded, icons will be fetched when
   // DidUpdateFaviconURL() is called.
   FetchIcons(extra_favicon_urls_);
@@ -54,6 +57,7 @@ int WebAppIconDownloader::DownloadImage(const GURL& url) {
   return web_contents()->DownloadImage(
       url,
       true,   // is_favicon
+      0,      // no preferred size
       0,      // no max size
       false,  // normal cache policy
       base::BindOnce(&WebAppIconDownloader::DidDownloadFavicon,
@@ -94,7 +98,7 @@ void WebAppIconDownloader::FetchIcons(const std::vector<GURL>& urls) {
   // If no downloads were initiated, we can proceed directly to running the
   // callback.
   if (in_progress_requests_.empty() && !need_favicon_urls_) {
-    base::MessageLoopCurrent::Get()->task_runner()->PostTask(
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_), true, icons_map_));
   }
 }
@@ -109,19 +113,30 @@ void WebAppIconDownloader::DidDownloadFavicon(
   if (in_progress_requests_.erase(id) == 0)
     return;
 
-  if (!https_status_code_class_histogram_name_.empty() &&
-      http_status_code != 0) {
+  if (http_status_code != 0) {
+    const char* histogram_name = nullptr;
+    switch (histogram_) {
+      case Histogram::kForCreate:
+        histogram_name = "WebApp.Icon.HttpStatusCodeClassOnCreate";
+        break;
+      case Histogram::kForSync:
+        histogram_name = "WebApp.Icon.HttpStatusCodeClassOnSync";
+        break;
+      case Histogram::kForUpdate:
+        histogram_name = "WebApp.Icon.HttpStatusCodeClassOnUpdate";
+        break;
+    }
     DCHECK_LE(100, http_status_code);
     DCHECK_GT(600, http_status_code);
-    base::UmaHistogramExactLinear(https_status_code_class_histogram_name_,
-                                  http_status_code / 100, 5);
+    base::UmaHistogramExactLinear(histogram_name, http_status_code / 100, 5);
   }
 
   icons_map_[image_url] = bitmaps;
 
   // Once all requests have been resolved, perform post-download tasks.
-  if (in_progress_requests_.empty() && !need_favicon_urls_)
-    std::move(callback_).Run(true, icons_map_);
+  if (in_progress_requests_.empty() && !need_favicon_urls_) {
+    std::move(callback_).Run(true, std::move(icons_map_));
+  }
 }
 
 // content::WebContentsObserver overrides:

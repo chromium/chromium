@@ -10,7 +10,7 @@
 #include "base/strings/string16.h"
 #include "net/http/http_response_headers.h"
 
-namespace app_list {
+namespace ash {
 
 class AppListViewDelegate;
 
@@ -30,6 +30,7 @@ class APP_LIST_EXPORT SearchResultAnswerCardView
   int DoUpdate() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   SearchResultBaseView* GetFirstResultView() override;
+  SearchResultBaseView* GetResultViewAt(size_t index) override;
 
   views::View* GetAnswerCardResultViewForTest() const;
 
@@ -51,6 +52,6 @@ class APP_LIST_EXPORT SearchResultAnswerCardView
   DISALLOW_COPY_AND_ASSIGN(SearchResultAnswerCardView);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_VIEWS_SEARCH_RESULT_ANSWER_CARD_VIEW_H_

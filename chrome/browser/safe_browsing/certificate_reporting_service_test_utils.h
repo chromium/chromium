@@ -12,17 +12,12 @@
 #include "base/sequence_checker.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "net/base/network_delegate_impl.h"
-#include "net/url_request/url_request_interceptor.h"
-#include "net/url_request/url_request_job.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-
-namespace net {
-class NetworkDelegate;
-}
 
 namespace certificate_reporting_test_utils {
 
@@ -102,45 +97,6 @@ class RequestObserver {
   std::vector<std::string> full_reports_;
 };
 
-// A URLRequestJob that can be delayed until Resume() is called. Returns an
-// empty response. If Resume() is called before a request is made, then the
-// request will not be delayed. If not delayed, it can return a failed or a
-// successful URL request job.
-class DelayableCertReportURLRequestJob : public net::URLRequestJob {
- public:
-  DelayableCertReportURLRequestJob(
-      bool delayed,
-      bool should_fail,
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate,
-      const base::Callback<void()>& destruction_callback);
-  ~DelayableCertReportURLRequestJob() override;
-
-  base::WeakPtr<DelayableCertReportURLRequestJob> GetWeakPtr();
-
-  // net::URLRequestJob methods:
-  void Start() override;
-  int ReadRawData(net::IOBuffer* buf, int buf_size) override;
-  void GetResponseInfo(net::HttpResponseInfo* info) override;
-
-  // Resumes a previously started request that was delayed. If no
-  // request has been started yet, then when Start() is called it will
-  // not delay.
-  void Resume();
-
- private:
-  bool delayed_;
-  bool should_fail_;
-  bool started_;
-  base::Callback<void()> destruction_callback_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<DelayableCertReportURLRequestJob> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayableCertReportURLRequestJob);
-};
-
 // Class to wait for the CertificateReportingService to reset.
 class CertificateReportingServiceObserver {
  public:
@@ -192,23 +148,26 @@ class CertificateReportingServiceTestHelper
   friend class base::RefCounted<CertificateReportingServiceTestHelper>;
   ~CertificateReportingServiceTestHelper() override;
 
-  void SendResponse(network::mojom::URLLoaderClientPtr client, bool fail);
+  void SendResponse(mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+                    bool fail);
 
   // network::SharedURLLoaderFactory
-  void CreateLoaderAndStart(network::mojom::URLLoaderRequest request,
-                            int32_t routing_id,
-                            int32_t request_id,
-                            uint32_t options,
-                            const network::ResourceRequest& url_request,
-                            network::mojom::URLLoaderClientPtr client,
-                            const net::MutableNetworkTrafficAnnotationTag&
-                                traffic_annotation) override;
-  void Clone(network::mojom::URLLoaderFactoryRequest request) override;
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      int32_t routing_id,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& url_request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override;
+  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
+      override;
   std::unique_ptr<network::SharedURLLoaderFactoryInfo> Clone() override;
 
   ReportSendingResult expected_report_result_;
 
-  network::mojom::URLLoaderClientPtr delayed_client_;
+  mojo::PendingRemote<network::mojom::URLLoaderClient> delayed_client_;
   std::string delayed_report_;
   ReportSendingResult delayed_result_;
 

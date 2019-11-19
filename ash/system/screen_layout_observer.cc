@@ -11,9 +11,11 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/metrics/user_metrics_action.h"
 #include "ash/metrics/user_metrics_recorder.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
@@ -56,8 +58,8 @@ base::string16 GetDisplaySize(int64_t display_id) {
   // to empty string if this happens on release build.
   const display::DisplayIdList id_list =
       display_manager->GetMirroringDestinationDisplayIdList();
-  const bool mirroring = display_manager->IsInMirrorMode() &&
-                         base::ContainsValue(id_list, display_id);
+  const bool mirroring =
+      display_manager->IsInMirrorMode() && base::Contains(id_list, display_id);
   DCHECK(!mirroring);
   if (mirroring)
     return base::string16();
@@ -76,8 +78,8 @@ void OnNotificationClicked(base::Optional<int> button_index) {
       UMA_STATUS_AREA_DISPLAY_NOTIFICATION_SELECTED);
   // Settings may be blocked, e.g. at the lock screen.
   if (Shell::Get()->session_controller()->ShouldEnableSettings() &&
-      Shell::Get()->system_tray_model()->client_ptr()) {
-    Shell::Get()->system_tray_model()->client_ptr()->ShowDisplaySettings();
+      Shell::Get()->system_tray_model()->client()) {
+    Shell::Get()->system_tray_model()->client()->ShowDisplaySettings();
     Shell::Get()->metrics()->RecordUserMetricsAction(
         UMA_STATUS_AREA_DISPLAY_NOTIFICATION_SHOW_SETTINGS);
   }
@@ -334,9 +336,7 @@ bool ScreenLayoutObserver::GetDisplayMessageForNotification(
       continue;
     }
     // c) if the device is in tablet mode, and source is not user.
-    if (Shell::Get()
-            ->tablet_mode_controller()
-            ->IsTabletModeWindowManagerEnabled() &&
+    if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
         iter.second.active_rotation_source() !=
             display::Display::RotationSource::USER) {
       continue;
@@ -443,10 +443,19 @@ void ScreenLayoutObserver::OnDisplayConfigurationChanged() {
 
   base::string16 message;
   base::string16 additional_message;
-  if (GetDisplayMessageForNotification(old_info,
-                                       should_notify_has_unassociated_display,
-                                       &message, &additional_message))
-    CreateOrUpdateNotification(message, additional_message);
+  if (!GetDisplayMessageForNotification(old_info,
+                                        should_notify_has_unassociated_display,
+                                        &message, &additional_message))
+    return;
+
+  if (features::IsReduceDisplayNotificationsEnabled() &&
+      !should_notify_has_unassociated_display) {
+    // If display notifications should be suppressed and the notification is not
+    // to alert the user of an unassociated display, do not show a notification.
+    return;
+  }
+
+  CreateOrUpdateNotification(message, additional_message);
 }
 
 bool ScreenLayoutObserver::GetExitMirrorModeMessage(

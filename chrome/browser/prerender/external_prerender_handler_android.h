@@ -29,7 +29,6 @@ class ExternalPrerenderHandlerAndroid {
   // the given profile. This is restricted to a single prerender at a time.
   base::android::ScopedJavaLocalRef<jobject> AddPrerender(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& profile,
       const base::android::JavaParamRef<jobject>& jweb_contents,
       const base::android::JavaParamRef<jstring>& url,
@@ -41,9 +40,7 @@ class ExternalPrerenderHandlerAndroid {
       jboolean forced_prerender);
 
   // Cancel the prerender associated with the prerender_handle_
-  void CancelCurrentPrerender(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& object);
+  void CancelCurrentPrerender(JNIEnv* env);
 
   // Whether the PrerenderManager associated with the given profile has any
   // prerenders for the url.

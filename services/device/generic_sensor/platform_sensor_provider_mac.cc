@@ -4,7 +4,6 @@
 
 #include "services/device/generic_sensor/platform_sensor_provider_mac.h"
 
-#include "base/memory/singleton.h"
 #include "services/device/generic_sensor/orientation_quaternion_fusion_algorithm_using_euler_angles.h"
 #include "services/device/generic_sensor/platform_sensor_accelerometer_mac.h"
 #include "services/device/generic_sensor/platform_sensor_ambient_light_mac.h"
@@ -12,13 +11,6 @@
 #include "services/device/generic_sensor/relative_orientation_euler_angles_fusion_algorithm_using_accelerometer.h"
 
 namespace device {
-
-// static
-PlatformSensorProviderMac* PlatformSensorProviderMac::GetInstance() {
-  return base::Singleton<
-      PlatformSensorProviderMac,
-      base::LeakySingletonTraits<PlatformSensorProviderMac>>::get();
-}
 
 PlatformSensorProviderMac::PlatformSensorProviderMac() = default;
 

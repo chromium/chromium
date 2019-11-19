@@ -13,7 +13,7 @@
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/identity.h"
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
@@ -90,7 +90,8 @@ class CONTENT_EXPORT AudioServiceListener
 
   void MaybeSetLogFactory();
 
-  mojo::Binding<service_manager::mojom::ServiceManagerListener> binding_;
+  mojo::Receiver<service_manager::mojom::ServiceManagerListener> receiver_{
+      this};
   std::unique_ptr<service_manager::Connector> connector_;
   base::Optional<service_manager::Identity> current_instance_identity_;
   base::Optional<service_manager::mojom::InstanceState> current_instance_state_;

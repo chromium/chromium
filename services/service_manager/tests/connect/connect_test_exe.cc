@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/task/single_thread_task_executor.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/service.h"
@@ -26,7 +26,7 @@ class Target : public service_manager::Service,
   explicit Target(service_manager::mojom::ServiceRequest request)
       : service_binding_(this, std::move(request)) {
     registry_.AddInterface<ConnectTestService>(
-        base::Bind(&Target::Create, base::Unretained(this)));
+        base::BindRepeating(&Target::Create, base::Unretained(this)));
   }
 
   ~Target() override = default;
@@ -62,6 +62,6 @@ class Target : public service_manager::Service,
 }  // namespace
 
 void ServiceMain(service_manager::mojom::ServiceRequest request) {
-  base::MessageLoop message_loop;
+  base::SingleThreadTaskExecutor executor;
   Target(std::move(request)).RunUntilTermination();
 }

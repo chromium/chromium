@@ -12,6 +12,7 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer_delegate.h"
 
+class Browser;
 @protocol BrowsingDataCommands;
 @class ChromeIdentity;
 
@@ -57,13 +58,14 @@ class ChromeBrowserState;
 // or |didChooseCancel| to the delegate when complete according to the user
 // action.
 - (void)promptMergeCaseForIdentity:(ChromeIdentity*)identity
-                      browserState:(ios::ChromeBrowserState*)browserState
+                           browser:(Browser*)browser
                     viewController:(UIViewController*)viewController;
 
-// Clears browsing data from |browserState| and sends |didClearData| to the
-// delegate when complete.
-- (void)clearData:(ios::ChromeBrowserState*)browserState
-       dispatcher:(id<BrowsingDataCommands>)dispatcher;
+// Clears browsing data from the bowser state assoiciated with |browser|, using
+// |handler| to perform the removal. When removal is comeplete, the delegate is
+// informed (via -didClearData).
+- (void)clearDataFromBrowser:(Browser*)browser
+              commandHandler:(id<BrowsingDataCommands>)handler;
 
 // Determines whether the user must decide what to do with |identity|'s browsing
 // data before signing into |browserState|.

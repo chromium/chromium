@@ -9,6 +9,7 @@ import android.database.CursorWindow;
 
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.sql.Types;
 
@@ -47,49 +48,51 @@ public class SQLiteCursor extends AbstractCursor {
     @Override
     public int getCount() {
         synchronized (mMoveLock) {
-            if (mCount == -1) mCount = nativeGetCount(mNativeSQLiteCursor);
+            if (mCount == -1)
+                mCount = SQLiteCursorJni.get().getCount(mNativeSQLiteCursor, SQLiteCursor.this);
         }
         return mCount;
     }
 
     @Override
     public String[] getColumnNames() {
-        return nativeGetColumnNames(mNativeSQLiteCursor);
+        return SQLiteCursorJni.get().getColumnNames(mNativeSQLiteCursor, SQLiteCursor.this);
     }
 
     @Override
     public String getString(int column) {
-        return nativeGetString(mNativeSQLiteCursor, column);
+        return SQLiteCursorJni.get().getString(mNativeSQLiteCursor, SQLiteCursor.this, column);
     }
 
     @Override
     public short getShort(int column) {
-        return (short) nativeGetInt(mNativeSQLiteCursor, column);
+        return (short) SQLiteCursorJni.get().getInt(mNativeSQLiteCursor, SQLiteCursor.this, column);
     }
 
     @Override
     public int getInt(int column) {
-        return nativeGetInt(mNativeSQLiteCursor, column);
+        return SQLiteCursorJni.get().getInt(mNativeSQLiteCursor, SQLiteCursor.this, column);
     }
 
     @Override
     public long getLong(int column) {
-        return nativeGetLong(mNativeSQLiteCursor, column);
+        return SQLiteCursorJni.get().getLong(mNativeSQLiteCursor, SQLiteCursor.this, column);
     }
 
     @Override
     public float getFloat(int column) {
-        return (float) nativeGetDouble(mNativeSQLiteCursor, column);
+        return (float) SQLiteCursorJni.get().getDouble(
+                mNativeSQLiteCursor, SQLiteCursor.this, column);
     }
 
     @Override
     public double getDouble(int column) {
-        return nativeGetDouble(mNativeSQLiteCursor, column);
+        return SQLiteCursorJni.get().getDouble(mNativeSQLiteCursor, SQLiteCursor.this, column);
     }
 
     @Override
     public boolean isNull(int column) {
-        return nativeIsNull(mNativeSQLiteCursor, column);
+        return SQLiteCursorJni.get().isNull(mNativeSQLiteCursor, SQLiteCursor.this, column);
     }
 
     @Override
@@ -97,7 +100,7 @@ public class SQLiteCursor extends AbstractCursor {
         super.close();
         synchronized (mDestoryNativeLock) {
             if (mNativeSQLiteCursor != 0) {
-                nativeDestroy(mNativeSQLiteCursor);
+                SQLiteCursorJni.get().destroy(mNativeSQLiteCursor, SQLiteCursor.this);
                 mNativeSQLiteCursor = 0;
                 LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
             }
@@ -107,7 +110,7 @@ public class SQLiteCursor extends AbstractCursor {
     @Override
     public boolean onMove(int oldPosition, int newPosition) {
         synchronized (mMoveLock) {
-            nativeMoveTo(mNativeSQLiteCursor, newPosition);
+            SQLiteCursorJni.get().moveTo(mNativeSQLiteCursor, SQLiteCursor.this, newPosition);
         }
         return super.onMove(oldPosition, newPosition);
     }
@@ -115,7 +118,7 @@ public class SQLiteCursor extends AbstractCursor {
     @Override
     public byte[] getBlob(int column) {
         synchronized (mGetBlobLock) {
-            return nativeGetBlob(mNativeSQLiteCursor, column);
+            return SQLiteCursorJni.get().getBlob(mNativeSQLiteCursor, SQLiteCursor.this, column);
         }
     }
 
@@ -220,22 +223,26 @@ public class SQLiteCursor extends AbstractCursor {
                 int columnCount = getColumnCount();
                 mColumnTypes = new int[columnCount];
                 for (int i = 0; i < columnCount; i++) {
-                    mColumnTypes[i] = nativeGetColumnType(mNativeSQLiteCursor, i);
+                    mColumnTypes[i] = SQLiteCursorJni.get().getColumnType(
+                            mNativeSQLiteCursor, SQLiteCursor.this, i);
                 }
             }
         }
         return mColumnTypes[index];
     }
 
-    private native void nativeDestroy(long nativeSQLiteCursor);
-    private native int nativeGetCount(long nativeSQLiteCursor);
-    private native String[] nativeGetColumnNames(long nativeSQLiteCursor);
-    private native int nativeGetColumnType(long nativeSQLiteCursor, int column);
-    private native String nativeGetString(long nativeSQLiteCursor, int column);
-    private native byte[] nativeGetBlob(long nativeSQLiteCursor, int column);
-    private native boolean nativeIsNull(long nativeSQLiteCursor, int column);
-    private native long nativeGetLong(long nativeSQLiteCursor, int column);
-    private native int nativeGetInt(long nativeSQLiteCursor, int column);
-    private native double nativeGetDouble(long nativeSQLiteCursor, int column);
-    private native int nativeMoveTo(long nativeSQLiteCursor, int newPosition);
+    @NativeMethods
+    interface Natives {
+        void destroy(long nativeSQLiteCursor, SQLiteCursor caller);
+        int getCount(long nativeSQLiteCursor, SQLiteCursor caller);
+        String[] getColumnNames(long nativeSQLiteCursor, SQLiteCursor caller);
+        int getColumnType(long nativeSQLiteCursor, SQLiteCursor caller, int column);
+        String getString(long nativeSQLiteCursor, SQLiteCursor caller, int column);
+        byte[] getBlob(long nativeSQLiteCursor, SQLiteCursor caller, int column);
+        boolean isNull(long nativeSQLiteCursor, SQLiteCursor caller, int column);
+        long getLong(long nativeSQLiteCursor, SQLiteCursor caller, int column);
+        int getInt(long nativeSQLiteCursor, SQLiteCursor caller, int column);
+        double getDouble(long nativeSQLiteCursor, SQLiteCursor caller, int column);
+        int moveTo(long nativeSQLiteCursor, SQLiteCursor caller, int newPosition);
+    }
 }

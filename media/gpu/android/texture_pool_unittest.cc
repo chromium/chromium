@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -15,7 +15,7 @@
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/ipc/common/gpu_messages.h"
 #include "media/gpu/android/mock_abstract_texture.h"
-#include "media/gpu/fake_command_buffer_helper.h"
+#include "media/gpu/test/fake_command_buffer_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,7 +55,7 @@ class TexturePoolTest : public testing::Test {
     return texture_weak;
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

@@ -17,12 +17,10 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
                         SerializationContext* context) {
     if (CallIsNullIfExists<Traits>(input))
       return;
-    void* custom_context = CustomContextHelper<Traits>::SetUp(input, context);
     {{struct_macros.serialize(
           struct, struct.name ~ " struct",
-          "CallWithContext(Traits::%s, input, custom_context)", "(*output)",
+          "Traits::%s(input)", "(*output)",
           "buffer", "context", True)|indent(2)}}
-    CustomContextHelper<Traits>::TearDown(input, custom_context);
   }
 
   static bool Deserialize({{data_type}}* input,

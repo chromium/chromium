@@ -1,12 +1,20 @@
-<script src=resources/common.js></script>
+<script src=../priorities/resources/common.js></script>
 <script src=../resources/testharness.js></script>
 <script src=../resources/testharnessreport.js></script>
 
 <script>
-  let t = async_test('low importance on in-viewport images must be fetched with kLow resource load priority');
+  const t = async_test('low importance on in-viewport images must be fetched with kLow resource load priority');
+  const url = new URL('../resources/slow-image.php?sleep=1000&name=square.png', location);
+  const priorityPromise = internals.getResourcePriority(url, document);
+
   // Synchronous wait to delay layout by .5 seconds
-  let end = Date.now() + 500;
+  const end = Date.now() + 500;
   while (Date.now() < end) {}
+
+  priorityPromise.then(priority => {
+    assert_equals(priority, kLow);
+    t.done();
+  });
 </script>
 
 <!--
@@ -14,4 +22,4 @@
   we delay both the image request (will be fetched by preload scanner) by a second, and finish layout mid-flight. As long as the final
   resource load priority is kLow, we know the image was not re-prioritized.
 -->
-<img importance=low src="../resources/slow-image.php?sleep=1000&name=square.png" alt=img onload="assert_priority_onload(this.src, kLow, t)()">
+<img importance=low src="../resources/slow-image.php?sleep=1000&name=square.png" alt=img>

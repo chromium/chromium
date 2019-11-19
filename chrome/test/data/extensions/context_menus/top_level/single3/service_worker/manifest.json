@@ -1,0 +1,7 @@
+{
+  "name": "Top Level Context Menus Test Extension #3",
+  "version": "1",
+  "manifest_version": 2,
+  "permissions": [ "contextMenus" ],
+  "background": { "service_worker": "background.js" }
+}

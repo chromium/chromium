@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/track/track_event.h"
 #include "third_party/blink/renderer/core/html/track/track_event_init.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 
 namespace blink {
 
@@ -91,7 +90,7 @@ class TrackListBase : public EventTargetWithInlineData {
     media_element_->ScheduleEvent(event);
   }
 
-  HeapVector<TraceWrapperMember<T>> tracks_;
+  HeapVector<Member<T>> tracks_;
   Member<HTMLMediaElement> media_element_;
 };
 

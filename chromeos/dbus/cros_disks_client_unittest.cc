@@ -57,7 +57,6 @@ TEST(CrosDisksClientTest, DiskInfo) {
   const std::string kDriveModel = "DriveModel";
   const std::string kIdLabel = "UNTITLED";
   const std::string kIdUuid = "XXXX-YYYY";
-  const std::string kNativePath = "/sys/devices/.../sdb/sdb1";
   const std::string kProductId = "1234";
   const std::string kProductName = "Product Name";
   const std::string kVendorId = "0000";
@@ -119,7 +118,6 @@ TEST(CrosDisksClientTest, DiskInfo) {
     AppendStringDictEntry(&array_writer, cros_disks::kDriveModel, kDriveModel);
     AppendStringDictEntry(&array_writer, cros_disks::kIdLabel, kIdLabel);
     AppendStringDictEntry(&array_writer, cros_disks::kIdUuid, kIdUuid);
-    AppendStringDictEntry(&array_writer, cros_disks::kNativePath, kNativePath);
     AppendStringDictEntry(&array_writer, cros_disks::kProductId, kProductId);
     AppendStringDictEntry(&array_writer, cros_disks::kProductName,
                           kProductName);
@@ -147,7 +145,6 @@ TEST(CrosDisksClientTest, DiskInfo) {
   EXPECT_EQ(kDeviceIsMediaAvailable, result.has_media());
   EXPECT_EQ(kDeviceIsOnBootDevice, result.on_boot_device());
   EXPECT_EQ(kDeviceIsOnRemovableDevice, result.on_removable_device());
-  EXPECT_EQ(kNativePath, result.system_path());
   EXPECT_EQ(kDeviceFile, result.file_path());
   EXPECT_EQ(kVendorId, result.vendor_id());
   EXPECT_EQ(kVendorName, result.vendor_name());

@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
+#include "storage/browser/quota/quota_settings.h"
 
 namespace content {
 
@@ -27,7 +28,7 @@ class TestContentBrowserClient : public ContentBrowserClient {
       content::BrowserContext* context,
       content::StoragePartition* partition,
       storage::OptionalQuotaSettingsCallback callback) override;
-  std::string GetUserAgent() const override;
+  std::string GetUserAgent() override;
 #if defined(OS_ANDROID)
   void GetAdditionalMappedFilesForChildProcess(
       const base::CommandLine& command_line,

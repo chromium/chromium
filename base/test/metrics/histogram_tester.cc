@@ -30,35 +30,37 @@ HistogramTester::HistogramTester() {
 HistogramTester::~HistogramTester() = default;
 
 void HistogramTester::ExpectUniqueSample(
-    const std::string& name,
+    StringPiece name,
     HistogramBase::Sample sample,
     HistogramBase::Count expected_count) const {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
-  EXPECT_NE(nullptr, histogram)
-      << "Histogram \"" << name << "\" does not exist.";
-
   if (histogram) {
     std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
     CheckBucketCount(name, sample, expected_count, *samples);
     CheckTotalCount(name, expected_count, *samples);
+  } else {
+    // No histogram means there were zero samples.
+    EXPECT_EQ(0, expected_count)
+        << "Histogram \"" << name << "\" does not exist.";
   }
 }
 
 void HistogramTester::ExpectBucketCount(
-    const std::string& name,
+    StringPiece name,
     HistogramBase::Sample sample,
     HistogramBase::Count expected_count) const {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
-  EXPECT_NE(nullptr, histogram)
-      << "Histogram \"" << name << "\" does not exist.";
-
   if (histogram) {
     std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
     CheckBucketCount(name, sample, expected_count, *samples);
+  } else {
+    // No histogram means there were zero samples.
+    EXPECT_EQ(0, expected_count)
+        << "Histogram \"" << name << "\" does not exist.";
   }
 }
 
-void HistogramTester::ExpectTotalCount(const std::string& name,
+void HistogramTester::ExpectTotalCount(StringPiece name,
                                        HistogramBase::Count count) const {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   if (histogram) {
@@ -70,14 +72,13 @@ void HistogramTester::ExpectTotalCount(const std::string& name,
   }
 }
 
-void HistogramTester::ExpectTimeBucketCount(const std::string& name,
+void HistogramTester::ExpectTimeBucketCount(StringPiece name,
                                             TimeDelta sample,
                                             HistogramBase::Count count) const {
   ExpectBucketCount(name, sample.InMilliseconds(), count);
 }
 
-std::vector<Bucket> HistogramTester::GetAllSamples(
-    const std::string& name) const {
+std::vector<Bucket> HistogramTester::GetAllSamples(StringPiece name) const {
   std::vector<Bucket> samples;
   std::unique_ptr<HistogramSamples> snapshot =
       GetHistogramSamplesSinceCreation(name);
@@ -93,11 +94,9 @@ std::vector<Bucket> HistogramTester::GetAllSamples(
 }
 
 HistogramBase::Count HistogramTester::GetBucketCount(
-    const std::string& name,
+    StringPiece name,
     HistogramBase::Sample sample) const {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
-  EXPECT_NE(nullptr, histogram)
-      << "Histogram \"" << name << "\" does not exist.";
   HistogramBase::Count count = 0;
   if (histogram) {
     std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
@@ -107,7 +106,7 @@ HistogramBase::Count HistogramTester::GetBucketCount(
 }
 
 void HistogramTester::GetBucketCountForSamples(
-    const std::string& name,
+    StringPiece name,
     HistogramBase::Sample sample,
     const HistogramSamples& samples,
     HistogramBase::Count* count) const {
@@ -118,8 +117,8 @@ void HistogramTester::GetBucketCountForSamples(
 }
 
 HistogramTester::CountsMap HistogramTester::GetTotalCountsForPrefix(
-    const std::string& prefix) const {
-  EXPECT_TRUE(prefix.find('.') != std::string::npos)
+    StringPiece prefix) const {
+  EXPECT_TRUE(prefix.find('.') != StringPiece::npos)
       << "|prefix| ought to contain at least one period, to avoid matching too"
       << " many histograms.";
 
@@ -143,7 +142,7 @@ HistogramTester::CountsMap HistogramTester::GetTotalCountsForPrefix(
 
 std::unique_ptr<HistogramSamples>
 HistogramTester::GetHistogramSamplesSinceCreation(
-    const std::string& histogram_name) const {
+    StringPiece histogram_name) const {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(histogram_name);
   // Whether the histogram exists or not may not depend on the current test
   // calling this method, but rather on which tests ran before and possibly
@@ -192,7 +191,7 @@ std::string HistogramTester::GetAllHistogramsRecorded() const {
   return output;
 }
 
-void HistogramTester::CheckBucketCount(const std::string& name,
+void HistogramTester::CheckBucketCount(StringPiece name,
                                        HistogramBase::Sample sample,
                                        HistogramBase::Count expected_count,
                                        const HistogramSamples& samples) const {
@@ -206,7 +205,7 @@ void HistogramTester::CheckBucketCount(const std::string& name,
       << ").";
 }
 
-void HistogramTester::CheckTotalCount(const std::string& name,
+void HistogramTester::CheckTotalCount(StringPiece name,
                                       HistogramBase::Count expected_count,
                                       const HistogramSamples& samples) const {
   int actual_count = samples.TotalCount();

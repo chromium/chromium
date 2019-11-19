@@ -16,12 +16,8 @@ Let `<browser>` be one of the results.
 
 ```shell
 ./chrome/test/media_router/telemetry/run_benchmark --browser=<browser> \
-    media_router.dialog.latency.tracing --reset-results
-
-./chrome/test/media_router/telemetry/run_benchmark --browser=<browser> \
-    media_router.dialog.latency.histogram
+    media_router.cpu_memory
 ```
 
 The results will be in
 `<chromium src folder>/chrome/test/media_router/telemetry/results.html`
-

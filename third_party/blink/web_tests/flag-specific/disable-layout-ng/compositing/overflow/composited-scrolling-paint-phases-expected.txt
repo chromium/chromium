@@ -1,0 +1,102 @@
+{
+  "layers": [
+    {
+      "name": "LayoutBlockFlow HTML",
+      "bounds": [800, 242],
+      "paintingPhases": [
+        "GraphicsLayerPaintBackground",
+        "GraphicsLayerPaintMask",
+        "GraphicsLayerPaintDecoration"
+      ]
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='composited'",
+      "bounds": [80, 10],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "paintingPhases": [
+        "GraphicsLayerPaintBackground",
+        "GraphicsLayerPaintForeground",
+        "GraphicsLayerPaintMask",
+        "GraphicsLayerPaintDecoration"
+      ],
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow HTML (foreground) Layer",
+      "bounds": [800, 242],
+      "paintingPhases": [
+        "GraphicsLayerPaintForeground"
+      ]
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='container'",
+      "bounds": [202, 202],
+      "paintingPhases": [
+        "GraphicsLayerPaintBackground",
+        "GraphicsLayerPaintMask",
+        "GraphicsLayerPaintCompositedScroll",
+        "GraphicsLayerPaintDecoration"
+      ],
+      "transform": 1
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [1, 1],
+      "bounds": [185, 715],
+      "paintingPhases": [
+        "GraphicsLayerPaintForeground",
+        "GraphicsLayerPaintOverflowContents",
+        "GraphicsLayerPaintCompositedScroll"
+      ],
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [1, 186],
+      "bounds": [185, 15],
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [186, 1],
+      "bounds": [15, 185],
+      "transform": 1
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [186, 186],
+      "bounds": [15, 15],
+      "paintingPhases": [
+        "GraphicsLayerPaintBackground",
+        "GraphicsLayerPaintForeground",
+        "GraphicsLayerPaintMask",
+        "GraphicsLayerPaintDecoration"
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [28, 20, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [1, 11, 0, 1]
+      ]
+    }
+  ]
+}
+
+

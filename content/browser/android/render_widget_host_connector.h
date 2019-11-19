@@ -16,7 +16,7 @@ namespace content {
 // override |UpdateRenderProcessConnection| to set itself to the RWHVA
 // brought up foreground, and null out its reference in the RWHVA going
 // away so it won't access the object any more.
-// This class owns itself and gets deleted when WebContents is deleted.
+// This class owns itself and gets deleted when the Java WebContents is deleted.
 class RenderWidgetHostConnector {
  public:
   explicit RenderWidgetHostConnector(WebContents* web_contents);

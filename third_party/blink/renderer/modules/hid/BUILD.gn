@@ -1,0 +1,46 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("hid") {
+  sources = [
+    "hid.cc",
+    "hid.h",
+    "hid_collection_info.cc",
+    "hid_collection_info.h",
+    "hid_connection_event.cc",
+    "hid_connection_event.h",
+    "hid_device.cc",
+    "hid_device.h",
+    "hid_input_report_event.cc",
+    "hid_input_report_event.h",
+    "hid_report_info.cc",
+    "hid_report_info.h",
+    "hid_report_item.cc",
+    "hid_report_item.h",
+    "navigator_hid.cc",
+    "navigator_hid.h",
+  ]
+}
+
+jumbo_source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "hid_report_item_test.cc",
+  ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+    "//third_party/blink/renderer/core:blink_core_pch",
+  ]
+
+  deps = [
+    "//testing/gtest",
+    "//third_party/blink/renderer/modules",
+    "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform/wtf",
+  ]
+}

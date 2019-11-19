@@ -175,6 +175,7 @@ TEST_F(OncParsedCertificatesTest, AuthorityCerts) {
   EXPECT_EQ(
       OncParsedCertificates::ServerOrAuthorityCertificate::Type::kAuthority,
       trusted_authority_cert.type());
+  EXPECT_EQ(CertificateScope::Default(), trusted_authority_cert.scope());
   EXPECT_EQ("{trusted-cert}", trusted_authority_cert.guid());
   EXPECT_TRUE(trusted_authority_cert.web_trust_requested());
   EXPECT_EQ("Test Root CA",
@@ -186,10 +187,63 @@ TEST_F(OncParsedCertificatesTest, AuthorityCerts) {
   EXPECT_EQ(
       OncParsedCertificates::ServerOrAuthorityCertificate::Type::kAuthority,
       trusted_authority_cert.type());
+  EXPECT_EQ(CertificateScope::Default(), trusted_authority_cert.scope());
   EXPECT_EQ("{untrusted-cert}", untrusted_authority_cert.guid());
   EXPECT_FALSE(untrusted_authority_cert.web_trust_requested());
   EXPECT_EQ("127.0.0.1",
             untrusted_authority_cert.certificate()->subject().common_name);
+}
+
+TEST_F(OncParsedCertificatesTest, AuthorityCertsScope) {
+  const char onc_certificates_json[] = R"(
+      [
+        { "GUID": "{extension-scoped-cert}",
+          "Type": "Authority",
+          "TrustBits": [
+             "Web"
+          ],
+          "Scope": {
+            "Type": "Extension",
+            "Id": "fake-extension-id"
+          },
+          "X509": "-----BEGIN CERTIFICATE-----\n
+      MIIC8zCCAdugAwIBAgIJALF9qhLor0+aMA0GCSqGSIb3DQEBBQUAMBcxFTATBgNV\n
+      BAMMDFRlc3QgUm9vdCBDQTAeFw0xNDA4MTQwMzA1MjlaFw0yNDA4MTEwMzA1Mjla\n
+      MBcxFTATBgNVBAMMDFRlc3QgUm9vdCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEP\n
+      ADCCAQoCggEBALZJQeNCAVGofzx6cdP7zZE1F4QajvY2x9FwHfqG8267dm/oMi43\n
+      /TiSPWjkin1CMxRGG9wE9pFuVEDECgn97C1i4l7huiycwbFgTNrH+CJcgiBlQh5W\n
+      d3VP65AsSupXDiKNbJWsEerM1+72cA0J3aY1YV3Jdm2w8h6/MIbYd1I2lZcO0UbF\n
+      7YE9G7DyYZU8wUA4719dumGf7yucn4WJdHBj1XboNX7OAeHzERGQHA31/Y3OEGyt\n
+      fFUaIW/XLfR4FeovOL2RnjwdB0b1Q8GCi68SU2UZimlpZgay2gv6KgChKhWESfEB\n
+      v5swBtAVoB+dUZFH4VNf717swmF5whSfxOMCAwEAAaNCMEAwDwYDVR0TAQH/BAUw\n
+      AwEB/zAdBgNVHQ4EFgQUvPcw0TzA8nn675/JbFyT84poq4MwDgYDVR0PAQH/BAQD\n
+      AgEGMA0GCSqGSIb3DQEBBQUAA4IBAQBXByn7f+j/sObYWGrDkKE4HLTzaLHs6Ikj\n
+      JNeo8iHDYOSkSVwAv9/HgniAKxj3rd3QYl6nsMzwqrTOcBJZZWd2BQAYmv/EKhfj\n
+      8VXYvlxe68rLU4cQ1QkyNqdeQfRT2n5WYNJ+TpqlCF9ddennMMsi6e8ZSYOlI6H4\n
+      YEzlNtU5eBjxXr/OqgtTgSx4qQpr2xMQIRR/G3A9iRpAigYsXVAZYvnHRYnyPWYF\n
+      PX11W1UegEJyoZp8bQp09u6mIWw6mPt3gl/ya1bm3ZuOUPDGrv3qpgUHqSYGVrOy\n
+      2bI3oCE+eQYfuVG+9LFJTZC1M+UOx15bQMVqBNFDepRqpE9h/ILg\n
+      -----END CERTIFICATE-----" }
+      ])";
+
+  std::unique_ptr<OncParsedCertificates> onc_parsed_certificates;
+  ASSERT_TRUE(ReadFromJSON(onc_certificates_json, &onc_parsed_certificates));
+
+  EXPECT_FALSE(onc_parsed_certificates->has_error());
+  ASSERT_EQ(1u,
+            onc_parsed_certificates->server_or_authority_certificates().size());
+
+  const OncParsedCertificates::ServerOrAuthorityCertificate& authority_cert =
+      onc_parsed_certificates->server_or_authority_certificates()[0];
+  EXPECT_EQ(
+      OncParsedCertificates::ServerOrAuthorityCertificate::Type::kAuthority,
+      authority_cert.type());
+  EXPECT_EQ(CertificateScope::ForExtension("fake-extension-id"),
+            authority_cert.scope());
+  EXPECT_EQ("{extension-scoped-cert}", authority_cert.guid());
+  EXPECT_TRUE(authority_cert.web_trust_requested());
+  EXPECT_EQ("Test Root CA",
+            authority_cert.certificate()->subject().common_name);
 }
 
 TEST_F(OncParsedCertificatesTest, UnknownTrustBitsIgnored) {

@@ -12,7 +12,7 @@ cr.define('devices_page', function() {
    * Enum of scan status for the devices page.
    * @enum {number}
    */
-  var ScanStatus = {
+  const ScanStatus = {
     OFF: 0,
     STARTING: 1,
     ON: 2,

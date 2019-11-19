@@ -157,15 +157,15 @@ TEST_F(IntervalTest, CoveringOps) {
 
   Interval<int64_t> i;
   EXPECT_TRUE(d.Intersects(d, &i) && d.Equals(i));
-  EXPECT_TRUE(!empty.Intersects(d, NULL) && !d.Intersects(empty, NULL));
-  EXPECT_TRUE(!d.Intersects(d1, NULL) && !d1.Intersects(d, NULL));
+  EXPECT_TRUE(!empty.Intersects(d, nullptr) && !d.Intersects(empty, nullptr));
+  EXPECT_TRUE(!d.Intersects(d1, nullptr) && !d1.Intersects(d, nullptr));
   EXPECT_TRUE(d.Intersects(d2, &i) && i.Equals(Interval<int64_t>(100, 110)));
   EXPECT_TRUE(d2.Intersects(d, &i) && i.Equals(Interval<int64_t>(100, 110)));
   EXPECT_TRUE(d.Intersects(d3, &i) && i.Equals(d3));
   EXPECT_TRUE(d3.Intersects(d, &i) && i.Equals(d3));
   EXPECT_TRUE(d.Intersects(d4, &i) && i.Equals(Interval<int64_t>(180, 200)));
   EXPECT_TRUE(d4.Intersects(d, &i) && i.Equals(Interval<int64_t>(180, 200)));
-  EXPECT_TRUE(!d.Intersects(d5, NULL) && !d5.Intersects(d, NULL));
+  EXPECT_TRUE(!d.Intersects(d5, nullptr) && !d5.Intersects(d, nullptr));
   EXPECT_TRUE(d.Intersects(d6, &i) && i.Equals(d6));
   EXPECT_TRUE(d6.Intersects(d, &i) && i.Equals(d6));
   EXPECT_TRUE(d.Intersects(d7, &i) && i.Equals(d7));

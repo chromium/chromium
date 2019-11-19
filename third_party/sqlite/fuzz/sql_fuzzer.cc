@@ -15,12 +15,15 @@
 
 using namespace sql_query_grammar;
 
-// TODO(mpdenton) Fuzzing tasks
-// 5. Definitely fix a lot of the syntax errors that SQlite spits out
-// 12. CORPUS Indexes on expressions (https://www.sqlite.org/expridx.html) and
+// Environment variable LPM_DUMP_NATIVE_INPUT can be used to print the
+// SQL queries used in the Clusterfuzz test case.
+
+// TODO(mpdenton): Fuzzing tasks
+// 1. Definitely fix a lot of the syntax errors that SQlite spits out
+// 2. CORPUS Indexes on expressions (https://www.sqlite.org/expridx.html) and
 // other places using functions on columns???
-// 17. Generate a nice big random, well-formed corpus.
-// 18. Possibly very difficult for fuzzer to find certain areas of code, because
+// 3. Generate a nice big random, well-formed corpus.
+// 4. Possibly very difficult for fuzzer to find certain areas of code, because
 // some protobufs need to be mutated together. For example, an index on an
 // expression is useless to change, if you don't change the SELECTs that use
 // that expression. May need to create a mechanism for the protobufs to
@@ -28,12 +31,10 @@ using namespace sql_query_grammar;
 // and then protobufs can simple reference those expressions later (similarly to
 // columns or tables, with just an index). This should be added if coverage
 // shows it is the case.
-
-// FIXME in the future
-// 1. Rest of the pragmas
-// 2. Make sure defensive config is off
-// 3. Fuzz the recover extension from the third patch
-// 5. Temp-file database, for better fuzzing of VACUUM and journalling.
+// 5. Add coverage for the rest of the pragmas
+// 6. Make sure defensive config is off
+// 7. Fuzz the recover extension from the third patch
+// 8. Temp-file database, for better fuzzing of VACUUM and journalling.
 
 DEFINE_BINARY_PROTO_FUZZER(const SQLQueries& sql_queries) {
   char* skip_queries = ::getenv("SQL_SKIP_QUERIES");

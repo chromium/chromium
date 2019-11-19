@@ -6,7 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_CONNECTION_H_
 
 #include <memory>
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
@@ -100,13 +103,14 @@ class PresentationConnection : public EventTargetWithInlineData,
   KURL url_;
   mojom::blink::PresentationConnectionState state_;
 
-  mojo::Binding<mojom::blink::PresentationConnection> connection_binding_;
+  mojo::Receiver<mojom::blink::PresentationConnection> connection_receiver_{
+      this};
 
   // The other end of a PresentationConnection. For controller connections, this
   // can point to the browser (2-UA) or another renderer (1-UA). For receiver
-  // connections, this currently only points to another renderer. This ptr can
-  // be used to send messages directly to the other end.
-  mojom::blink::PresentationConnectionPtr target_connection_;
+  // connections, this currently only points to another renderer. This remote
+  // can be used to send messages directly to the other end.
+  mojo::Remote<mojom::blink::PresentationConnection> target_connection_;
 
  private:
   class BlobLoader;
@@ -180,8 +184,10 @@ class ControllerPresentationConnection final : public PresentationConnection {
   void Trace(blink::Visitor*) override;
 
   // Initializes Mojo message pipes and registers with the PresentationService.
-  void Init(mojom::blink::PresentationConnectionPtr connection_ptr,
-            mojom::blink::PresentationConnectionRequest connection_request);
+  void Init(mojo::PendingRemote<mojom::blink::PresentationConnection>
+                connection_remote,
+            mojo::PendingReceiver<mojom::blink::PresentationConnection>
+                connection_receiver);
 
  private:
   // PresentationConnection implementation.
@@ -200,8 +206,10 @@ class ReceiverPresentationConnection final : public PresentationConnection {
   static ReceiverPresentationConnection* Take(
       PresentationReceiver*,
       const mojom::blink::PresentationInfo&,
-      mojom::blink::PresentationConnectionPtr controller_connection,
-      mojom::blink::PresentationConnectionRequest receiver_connection_request);
+      mojo::PendingRemote<mojom::blink::PresentationConnection>
+          controller_connection,
+      mojo::PendingReceiver<mojom::blink::PresentationConnection>
+          receiver_connection_receiver);
 
   ReceiverPresentationConnection(LocalFrame&,
                                  PresentationReceiver*,
@@ -211,9 +219,10 @@ class ReceiverPresentationConnection final : public PresentationConnection {
 
   void Trace(blink::Visitor*) override;
 
-  void Init(
-      mojom::blink::PresentationConnectionPtr controller_connection_ptr,
-      mojom::blink::PresentationConnectionRequest receiver_connection_request);
+  void Init(mojo::PendingRemote<mojom::blink::PresentationConnection>
+                controller_connection_remote,
+            mojo::PendingReceiver<mojom::blink::PresentationConnection>
+                receiver_connection_receiver);
 
   // PresentationConnection override
   void DidChangeState(mojom::blink::PresentationConnectionState) override;

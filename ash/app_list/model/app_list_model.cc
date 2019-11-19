@@ -11,7 +11,7 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model_observer.h"
 
-namespace app_list {
+namespace ash {
 
 AppListModel::AppListModel()
     : top_level_item_list_(std::make_unique<AppListItemList>()) {
@@ -49,7 +49,7 @@ void AppListModel::SetState(ash::AppListState state) {
     observer.OnAppListStateChanged(state_, old_state);
 }
 
-void AppListModel::SetStateFullscreen(AppListViewState state) {
+void AppListModel::SetStateFullscreen(ash::AppListViewState state) {
   state_fullscreen_ = state;
 }
 
@@ -63,7 +63,7 @@ AppListItem* AppListModel::FindItem(const std::string& id) {
     if (child_item)
       return child_item;
   }
-  return NULL;
+  return nullptr;
 }
 
 AppListFolderItem* AppListModel::FindFolderItem(const std::string& id) {
@@ -71,7 +71,7 @@ AppListFolderItem* AppListModel::FindFolderItem(const std::string& id) {
   if (item && item->GetItemType() == AppListFolderItem::kItemType)
     return static_cast<AppListFolderItem*>(item);
   DCHECK(!item);
-  return NULL;
+  return nullptr;
 }
 
 AppListItem* AppListModel::AddItem(std::unique_ptr<AppListItem> item) {
@@ -96,7 +96,7 @@ AppListItem* AppListModel::AddItemToFolder(std::unique_ptr<AppListItem> item,
   DCHECK_NE(AppListFolderItem::kItemType, item->GetItemType());
   AppListFolderItem* dest_folder = FindOrCreateFolderItem(folder_id);
   if (!dest_folder)
-    return NULL;
+    return nullptr;
   DCHECK(!dest_folder->item_list()->FindItem(item->id()))
       << "Already in folder: " << dest_folder->id();
   return AddItemToFolderItemAndNotify(dest_folder, std::move(item));
@@ -155,7 +155,7 @@ const std::string AppListModel::MergeItems(const std::string& target_item_id,
   std::string new_folder_id = AppListFolderItem::GenerateId();
   DVLOG(2) << "Creating folder for merge: " << new_folder_id;
   std::unique_ptr<AppListItem> new_folder_ptr =
-      std::make_unique<app_list::AppListFolderItem>(new_folder_id);
+      std::make_unique<AppListFolderItem>(new_folder_id);
   new_folder_ptr->set_position(target_item_ptr->position());
   AppListFolderItem* new_folder = static_cast<AppListFolderItem*>(
       AddItemToItemListAndNotify(std::move(new_folder_ptr)));
@@ -315,7 +315,7 @@ void AppListModel::OnListItemMoved(size_t from_index,
 AppListFolderItem* AppListModel::FindOrCreateFolderItem(
     const std::string& folder_id) {
   if (folder_id.empty())
-    return NULL;
+    return nullptr;
 
   AppListFolderItem* dest_folder = FindFolderItem(folder_id);
   if (dest_folder)
@@ -323,7 +323,7 @@ AppListFolderItem* AppListModel::FindOrCreateFolderItem(
 
   DVLOG(2) << "Creating new folder: " << folder_id;
   std::unique_ptr<AppListFolderItem> new_folder =
-      std::make_unique<app_list::AppListFolderItem>(folder_id);
+      std::make_unique<AppListFolderItem>(folder_id);
   new_folder->set_position(
       top_level_item_list_->CreatePositionBefore(syncer::StringOrdinal()));
   AppListItem* new_folder_item =
@@ -383,4 +383,4 @@ std::unique_ptr<AppListItem> AppListModel::RemoveItemFromFolder(
   return result;
 }
 
-}  // namespace app_list
+}  // namespace ash

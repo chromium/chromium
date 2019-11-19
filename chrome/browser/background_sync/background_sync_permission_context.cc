@@ -10,7 +10,7 @@
 BackgroundSyncPermissionContext::BackgroundSyncPermissionContext(
     Profile* profile)
     : PermissionContextBase(profile,
-                            CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC,
+                            ContentSettingsType::BACKGROUND_SYNC,
                             blink::mojom::FeaturePolicyFeature::kNotFound) {}
 
 void BackgroundSyncPermissionContext::DecidePermission(
@@ -19,7 +19,7 @@ void BackgroundSyncPermissionContext::DecidePermission(
     const GURL& requesting_origin,
     const GURL& embedding_origin,
     bool user_gesture,
-    const BrowserPermissionCallback& callback) {
+    BrowserPermissionCallback callback) {
   // The user should never be prompted to authorize background sync.
   NOTREACHED();
 }

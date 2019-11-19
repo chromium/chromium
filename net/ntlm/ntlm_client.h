@@ -65,7 +65,7 @@ class NET_EXPORT_PRIVATE NtlmClient {
   // optionally omit the '@domain.com' part.
   // |hostname| can be a short NetBIOS name or an FQDN, however the server will
   // only inspect this field if the default domain policy is to restrict NTLM.
-  // In this case the hostname will be compared to a whitelist stored in this
+  // In this case the hostname will be compared to an allowlist stored in this
   // group policy [1].
   // |channel_bindings| is a string supplied out of band (usually from a web
   // browser) and is a (21+sizeof(hash)) byte ASCII string, where 'hash' is
@@ -148,7 +148,7 @@ class NET_EXPORT_PRIVATE NtlmClient {
   // |negotiate_message_|.
   void GenerateNegotiateMessage();
 
-  NtlmFeatures features_;
+  const NtlmFeatures features_;
   NegotiateFlags negotiate_flags_;
   std::vector<uint8_t> negotiate_message_;
 

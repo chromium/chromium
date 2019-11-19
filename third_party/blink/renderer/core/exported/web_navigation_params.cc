@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
@@ -39,6 +39,10 @@ std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateFromInfo(
   result->frame_load_type = info.frame_load_type;
   result->is_client_redirect = info.is_client_redirect;
   result->navigation_timings.input_start = info.input_start;
+  result->initiator_origin_trial_features =
+      info.initiator_origin_trial_features;
+  result->ip_address_space = info.initiator_address_space;
+  result->frame_policy = info.frame_policy;
   return result;
 }
 
@@ -57,9 +61,12 @@ std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateForErrorPage(
     WebDocumentLoader* failed_document_loader,
     base::span<const char> html,
     const WebURL& base_url,
-    const WebURL& unreachable_url) {
+    const WebURL& unreachable_url,
+    int error_code) {
   auto result = WebNavigationParams::CreateWithHTMLString(html, base_url);
+  DCHECK(!unreachable_url.IsEmpty() || error_code != 0);
   result->unreachable_url = unreachable_url;
+  result->error_code = error_code;
   static_cast<WebDocumentLoaderImpl*>(failed_document_loader)
       ->FillNavigationParamsForErrorPage(result.get());
   return result;
@@ -108,9 +115,25 @@ void WebNavigationParams::FillStaticResponse(WebNavigationParams* params,
                                              WebString text_encoding,
                                              base::span<const char> data) {
   params->response = WebURLResponse(params->url);
-  params->response.SetMIMEType(mime_type);
+  params->response.SetMimeType(mime_type);
   params->response.SetTextEncodingName(text_encoding);
   FillBodyLoader(params, data);
 }
+
+WebNavigationParams::PrefetchedSignedExchange::PrefetchedSignedExchange() =
+    default;
+WebNavigationParams::PrefetchedSignedExchange::~PrefetchedSignedExchange() =
+    default;
+WebNavigationParams::PrefetchedSignedExchange::PrefetchedSignedExchange(
+    const WebURL& outer_url,
+    const WebString& header_integrity,
+    const WebURL& inner_url,
+    const WebURLResponse& inner_response,
+    mojo::ScopedMessagePipeHandle loader_factory_handle)
+    : outer_url(outer_url),
+      header_integrity(header_integrity),
+      inner_url(inner_url),
+      inner_response(inner_response),
+      loader_factory_handle(std::move(loader_factory_handle)) {}
 
 }  // namespace blink

@@ -81,7 +81,7 @@ void DistillerViewer::OnArticleReady(
 
     std::string html_and_script(html);
     html_and_script +=
-        "<script> distiller_on_ios = true; " + js_buffer_ + "</script>";
+        "<script> distillerOnIos = true; " + js_buffer_ + "</script>";
     callback_.Run(url_, html_and_script, images, article_proto->title());
   } else {
     callback_.Run(url_, std::string(), {}, std::string());

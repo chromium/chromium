@@ -14,9 +14,8 @@ BrowserStateDependencyManager* BrowserStateDependencyManager::GetInstance() {
 }
 
 void BrowserStateDependencyManager::RegisterBrowserStatePrefsForServices(
-    web::BrowserState* context,
     user_prefs::PrefRegistrySyncable* pref_registry) {
-  RegisterPrefsForServices(context, pref_registry);
+  RegisterPrefsForServices(pref_registry);
 }
 
 void BrowserStateDependencyManager::CreateBrowserStateServices(

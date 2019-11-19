@@ -42,7 +42,7 @@ TEST_F(FeedJournalMutationTest, AddAppendOperation) {
       std::string(bytes_vector.begin(), bytes_vector.end()));
   EXPECT_FALSE(mutation.Empty());
 
-  JournalOperation operation = mutation.TakeFristOperation();
+  JournalOperation operation = mutation.TakeFirstOperation();
   EXPECT_TRUE(mutation.Empty());
   EXPECT_EQ(operation.type(), JournalOperation::JOURNAL_APPEND);
   EXPECT_EQ(operation.value(),
@@ -57,7 +57,7 @@ TEST_F(FeedJournalMutationTest, AddCopyOperation) {
   mutation.AddCopyOperation(kJournalName2);
   EXPECT_FALSE(mutation.Empty());
 
-  JournalOperation operation = mutation.TakeFristOperation();
+  JournalOperation operation = mutation.TakeFirstOperation();
   EXPECT_TRUE(mutation.Empty());
   EXPECT_EQ(operation.type(), JournalOperation::JOURNAL_COPY);
   EXPECT_EQ(operation.to_journal_name(), kJournalName2);
@@ -71,7 +71,7 @@ TEST_F(FeedJournalMutationTest, AddDeleteOperation) {
   mutation.AddDeleteOperation();
   EXPECT_FALSE(mutation.Empty());
 
-  JournalOperation operation = mutation.TakeFristOperation();
+  JournalOperation operation = mutation.TakeFirstOperation();
   EXPECT_TRUE(mutation.Empty());
   EXPECT_EQ(operation.type(), JournalOperation::JOURNAL_DELETE);
 }

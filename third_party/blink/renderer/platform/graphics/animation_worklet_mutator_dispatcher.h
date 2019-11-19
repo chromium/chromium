@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutators_state.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -15,7 +16,8 @@ class PLATFORM_EXPORT AnimationWorkletMutatorDispatcher {
  public:
   virtual ~AnimationWorkletMutatorDispatcher() = default;
 
-  using AsyncMutationCompleteCallback = base::OnceCallback<void(MutateStatus)>;
+  using AsyncMutationCompleteCallback =
+      WTF::CrossThreadOnceFunction<void(MutateStatus)>;
 
   // Run the animation frame callbacks from all connected AnimationWorklets.
   virtual void MutateSynchronously(

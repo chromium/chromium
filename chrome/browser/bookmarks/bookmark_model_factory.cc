@@ -70,11 +70,11 @@ KeyedService* BookmarkModelFactory::BuildServiceInstanceFor(
       new BookmarkModel(std::make_unique<ChromeBookmarkClient>(
           profile, ManagedBookmarkServiceFactory::GetForProfile(profile),
           BookmarkSyncServiceFactory::GetForProfile(profile)));
-  bookmark_model->Load(profile->GetPrefs(), profile->GetPath(),
-                       StartupTaskRunnerServiceFactory::GetForProfile(profile)
-                           ->GetBookmarkTaskRunner(),
-                       base::CreateSingleThreadTaskRunnerWithTraits(
-                           {content::BrowserThread::UI}));
+  bookmark_model->Load(
+      profile->GetPrefs(), profile->GetPath(),
+      StartupTaskRunnerServiceFactory::GetForProfile(profile)
+          ->GetBookmarkTaskRunner(),
+      base::CreateSingleThreadTaskRunner({content::BrowserThread::UI}));
   BookmarkUndoServiceFactory::GetForProfile(profile)->Start(bookmark_model);
 
   return bookmark_model;

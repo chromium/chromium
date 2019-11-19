@@ -1,0 +1,91 @@
+{{header}}
+%@BLINK-ALLOW:textDirection=*
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /MediaBox [0 0 200 200]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Contents 8 0 R
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Font
+  /Subtype /Type0
+  /BaseFont /Arial
+  /Encoding /Identity-H
+  /DescendantFonts [6 0 R]
+  /ToUnicode 7 0 R
+>>
+endobj
+{{object 5 0}} <<
+  /Type /FontDescriptor
+  /FontName /Arial
+>>
+endobj
+{{object 6 0}} <<
+  /Type /Font
+  /FontDescriptor 5 0 R
+  /BaseFont /Arial
+  /Subtype /CIDFontType2
+  /W [0 [778] 68 [444 500 444 500 444 333] 910 [229] 951 952 531 996 [394]]
+>>
+endobj
+{{object 7 0}} <<
+  {{streamlen}}
+>>
+stream
+/CIDInit /ProcSet findresource begin
+12 dict begin
+begincmap
+1 begincodespacerange
+<0000> <FFFF>
+endcodespacerange
+2 beginbfchar
+<038E> <FE8E>
+<03E4> <FEE4>
+endbfchar
+2 beginbfrange
+<0044> <0049> <0061>
+<03B7> <03B8> <FEB7>
+endbfrange
+endcmap
+CMapName currentdict /CMap defineresource pop
+end
+end
+endstream
+endobj
+{{object 8 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+/F1 16 Tf
+30 100 Td
+<004400450046004700480049> Tj
+ET
+BT
+/F1 16 Tf
+30 50 Td
+<038E03B803E403E403B7> Tj
+ET
+endstream
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

@@ -316,7 +316,7 @@ TEST(TimeFormattingTest, TimeDurationFormat) {
             TimeDurationFormatString(delta, DURATION_WIDTH_WIDE));
   EXPECT_EQ(ASCIIToUTF16("15 t og 42 min."),
             TimeDurationFormatString(delta, DURATION_WIDTH_SHORT));
-  EXPECT_EQ(ASCIIToUTF16("15 t og 42 min"),
+  EXPECT_EQ(ASCIIToUTF16("15 t og 42 m"),
             TimeDurationFormatString(delta, DURATION_WIDTH_NARROW));
   EXPECT_EQ(ASCIIToUTF16("15.42"),
             TimeDurationFormatString(delta, DURATION_WIDTH_NUMERIC));
@@ -420,7 +420,7 @@ TEST(TimeFormattingTest, TimeIntervalFormat) {
 
   i18n::SetICUDefaultLocale("en_GB");
   EXPECT_EQ(
-      UTF8ToUTF16(u8"Monday 16 – Saturday 28 May"),
+      UTF8ToUTF16(u8"Monday 16 May – Saturday 28 May"),
       DateIntervalFormat(begin_time, end_time, DATE_FORMAT_MONTH_WEEKDAY_DAY));
 
   i18n::SetICUDefaultLocale("ja");

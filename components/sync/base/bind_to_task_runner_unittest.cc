@@ -11,7 +11,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -47,7 +47,7 @@ void BoundIntegersSet(int* a_var, int* b_var, int a_val, int b_val) {
 // on the message loop, not during the original Run.
 class BindToTaskRunnerTest : public ::testing::Test {
  protected:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(BindToTaskRunnerTest, Closure) {

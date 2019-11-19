@@ -19,16 +19,16 @@ public class FiltersTest {
     @Test
     public void testFilterConversions() {
         Assert.assertEquals(Integer.valueOf(Filters.FilterType.SITES),
-                Filters.fromOfflineItem(OfflineItemFilter.FILTER_PAGE));
+                Filters.fromOfflineItem(OfflineItemFilter.PAGE));
         Assert.assertEquals(Integer.valueOf(Filters.FilterType.VIDEOS),
-                Filters.fromOfflineItem(OfflineItemFilter.FILTER_VIDEO));
+                Filters.fromOfflineItem(OfflineItemFilter.VIDEO));
         Assert.assertEquals(Integer.valueOf(Filters.FilterType.MUSIC),
-                Filters.fromOfflineItem(OfflineItemFilter.FILTER_AUDIO));
+                Filters.fromOfflineItem(OfflineItemFilter.AUDIO));
         Assert.assertEquals(Integer.valueOf(Filters.FilterType.IMAGES),
-                Filters.fromOfflineItem(OfflineItemFilter.FILTER_IMAGE));
+                Filters.fromOfflineItem(OfflineItemFilter.IMAGE));
         Assert.assertEquals(Integer.valueOf(Filters.FilterType.OTHER),
-                Filters.fromOfflineItem(OfflineItemFilter.FILTER_OTHER));
+                Filters.fromOfflineItem(OfflineItemFilter.OTHER));
         Assert.assertEquals(Integer.valueOf(Filters.FilterType.OTHER),
-                Filters.fromOfflineItem(OfflineItemFilter.FILTER_DOCUMENT));
+                Filters.fromOfflineItem(OfflineItemFilter.DOCUMENT));
     }
 }

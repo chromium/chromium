@@ -18,7 +18,7 @@ body {
   max-height: 300px;
   overflow: auto;
   padding: 8px 64px 0;
-  width: 640px;
+  width: 100%;
 }
 
 .shadow {
@@ -41,7 +41,7 @@ body {
 }
 
 #recommend-apps-container .item:not(:nth-child(3n)) {
-  margin-right: 32px;
+  margin-inline-end: 32px;
 }
 
 #recommend-apps-container .item:nth-child(3n+1) {

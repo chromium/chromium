@@ -1,6 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  <g fill="none" fill-rule="evenodd">
-    <polygon fill="#000" fill-rule="nonzero" points="3 12 3 14 13 14 13 12"/>
-    <polygon fill="#000" points="13 6.154 10.01 6.154 10.01 2 6.014 2 6.014 6.154 3 6.154 8 11" transform="rotate(-180 8 6.5)"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><g fill="#000" fill-rule="evenodd"><path fill-rule="nonzero" d="M3 12v2h10v-2z"/><path d="M3 6.846h2.99V11h3.996V6.846H13L8 2z"/></g></svg>

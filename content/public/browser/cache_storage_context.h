@@ -24,7 +24,7 @@ class CacheStorageContext
       base::OnceCallback<void(const std::vector<StorageUsageInfo>& usage_info)>;
 
   // Methods used in response to browsing data and quota manager requests.
-  // Must be called on the IO thread.
+  // May be called on any sequence.
   virtual void GetAllOriginsInfo(GetUsageInfoCallback callback) = 0;
   virtual void DeleteForOrigin(const GURL& origin_url) = 0;
 

@@ -1,0 +1,8 @@
+[
+  {
+    "test_suite": "startup.mobile",
+    "measurement": "first_contentful_paint_time",
+    "bot": "ChromiumPerf:android-go-perf",
+    "test_case": "intent_coldish_bbc"
+  }
+]

@@ -38,7 +38,8 @@ function SuggestionPicker(element, config) {
   this._fixWindowSize();
   this._handleBodyKeyDownBound = this._handleBodyKeyDown.bind(this);
   document.body.addEventListener('keydown', this._handleBodyKeyDownBound);
-  this._element.addEventListener('mouseout', this._handleMouseOut.bind(this), false);
+  this._element.addEventListener(
+      'mouseout', this._handleMouseOut.bind(this), false);
 }
 SuggestionPicker.prototype = Object.create(Picker.prototype);
 
@@ -58,9 +59,11 @@ SuggestionPicker.validateConfig = function(config) {
     return 'No otherDateLabel.';
   if (config.suggestionHighlightColor && !config.suggestionHighlightColor)
     return 'No suggestionHighlightColor.';
-  if (config.suggestionHighlightTextColor && !config.suggestionHighlightTextColor)
+  if (config.suggestionHighlightTextColor &&
+      !config.suggestionHighlightTextColor)
     return 'No suggestionHighlightTextColor.';
-  if (config.suggestionValues.length !== config.localizedSuggestionValues.length)
+  if (config.suggestionValues.length !==
+      config.localizedSuggestionValues.length)
     return 'localizedSuggestionValues.length must equal suggestionValues.length.';
   if (config.suggestionValues.length !== config.suggestionLabels.length)
     return 'suggestionLabels.length must equal suggestionValues.length.';
@@ -69,6 +72,15 @@ SuggestionPicker.validateConfig = function(config) {
   return null;
 };
 
+Object.defineProperty(SuggestionPicker, 'Padding', {
+  get: function() {
+    return Number(
+        window.getComputedStyle(document.querySelector('.suggestion-list'))
+            .getPropertyValue('padding')
+            .replace('px', ''));
+  }
+});
+
 SuggestionPicker.prototype._setColors = function() {
   var text = '.' + SuggestionPicker.ListEntryClass + ':focus {\
         background-color: ' +
@@ -76,12 +88,14 @@ SuggestionPicker.prototype._setColors = function() {
         color: ' +
       this._config.suggestionHighlightTextColor + '; }';
   text += '.' + SuggestionPicker.ListEntryClass +
-      ':focus .label { color: ' + this._config.suggestionHighlightTextColor + '; }';
+      ':focus .label { color: ' + this._config.suggestionHighlightTextColor +
+      '; }';
   document.head.appendChild(createElement('style', null, text));
 };
 
 SuggestionPicker.prototype.cleanup = function() {
-  document.body.removeEventListener('keydown', this._handleBodyKeyDownBound, false);
+  document.body.removeEventListener(
+      'keydown', this._handleBodyKeyDownBound, false);
 };
 
 /**
@@ -90,7 +104,8 @@ SuggestionPicker.prototype.cleanup = function() {
  * @param {!string} value
  * @return {!Element}
  */
-SuggestionPicker.prototype._createSuggestionEntryElement = function(title, label, value) {
+SuggestionPicker.prototype._createSuggestionEntryElement = function(
+    title, label, value) {
   var entryElement = createElement('li', SuggestionPicker.ListEntryClass);
   entryElement.tabIndex = 0;
   entryElement.dataset.value = value;
@@ -102,7 +117,8 @@ SuggestionPicker.prototype._createSuggestionEntryElement = function(title, label
     var labelElement = createElement('span', 'label', label);
     content.appendChild(labelElement);
   }
-  entryElement.addEventListener('mouseover', this._handleEntryMouseOver.bind(this), false);
+  entryElement.addEventListener(
+      'mouseover', this._handleEntryMouseOver.bind(this), false);
   return entryElement;
 };
 
@@ -111,7 +127,8 @@ SuggestionPicker.prototype._createSuggestionEntryElement = function(title, label
  * @param {!string} actionName
  * @return {!Element}
  */
-SuggestionPicker.prototype._createActionEntryElement = function(title, actionName) {
+SuggestionPicker.prototype._createActionEntryElement = function(
+    title, actionName) {
   var entryElement = createElement('li', SuggestionPicker.ListEntryClass);
   entryElement.tabIndex = 0;
   entryElement.dataset.action = actionName;
@@ -119,7 +136,8 @@ SuggestionPicker.prototype._createActionEntryElement = function(title, actionNam
   entryElement.appendChild(content);
   var titleElement = createElement('span', 'title', title);
   content.appendChild(titleElement);
-  entryElement.addEventListener('mouseover', this._handleEntryMouseOver.bind(this), false);
+  entryElement.addEventListener(
+      'mouseover', this._handleEntryMouseOver.bind(this), false);
   return entryElement;
 };
 
@@ -131,9 +149,11 @@ SuggestionPicker.prototype._measureMaxContentWidth = function() {
   // left aligns all the content including label.
   this._containerElement.classList.add('measuring-width');
   var maxContentWidth = 0;
-  var contentElements = this._containerElement.getElementsByClassName('content');
+  var contentElements =
+      this._containerElement.getElementsByClassName('content');
   for (var i = 0; i < contentElements.length; ++i) {
-    maxContentWidth = Math.max(maxContentWidth, contentElements[i].getBoundingClientRect().width);
+    maxContentWidth = Math.max(
+        maxContentWidth, contentElements[i].getBoundingClientRect().width);
   }
   this._containerElement.classList.remove('measuring-width');
   return maxContentWidth;
@@ -141,11 +161,13 @@ SuggestionPicker.prototype._measureMaxContentWidth = function() {
 
 SuggestionPicker.prototype._fixWindowSize = function() {
   var ListBorder = 2;
+  const ListPadding = 2 * SuggestionPicker.Padding;
   var zoom = this._config.zoomFactor;
-  var desiredWindowWidth = (this._measureMaxContentWidth() + ListBorder) * zoom;
+  var desiredWindowWidth =
+      (this._measureMaxContentWidth() + ListBorder + ListPadding) * zoom;
   if (typeof this._config.inputWidth === 'number')
     desiredWindowWidth = Math.max(this._config.inputWidth, desiredWindowWidth);
-  var totalHeight = ListBorder;
+  var totalHeight = ListBorder + ListPadding;
   var maxHeight = 0;
   var entryCount = 0;
   for (var i = 0; i < this._containerElement.childNodes.length; ++i) {
@@ -153,18 +175,22 @@ SuggestionPicker.prototype._fixWindowSize = function() {
     if (node.classList.contains(SuggestionPicker.ListEntryClass))
       entryCount++;
     totalHeight += node.offsetHeight;
-    if (maxHeight === 0 && entryCount == SuggestionPicker.NumberOfVisibleEntries)
+    if (maxHeight === 0 &&
+        entryCount == SuggestionPicker.NumberOfVisibleEntries)
       maxHeight = totalHeight;
   }
   var desiredWindowHeight = totalHeight * zoom;
   if (maxHeight !== 0 && totalHeight > maxHeight * zoom) {
-    this._containerElement.style.maxHeight = (maxHeight - ListBorder) + 'px';
+    this._containerElement.style.maxHeight =
+        (maxHeight - ListBorder - ListPadding) + 'px';
     desiredWindowWidth += getScrollbarWidth() * zoom;
     desiredWindowHeight = maxHeight * zoom;
     this._containerElement.style.overflowY = 'scroll';
   }
-  var windowRect = adjustWindowRect(desiredWindowWidth, desiredWindowHeight, desiredWindowWidth, 0);
-  this._containerElement.style.height = (windowRect.height / zoom - ListBorder) + 'px';
+  var windowRect = adjustWindowRect(
+      desiredWindowWidth, desiredWindowHeight, desiredWindowWidth, 0);
+  this._containerElement.style.height =
+      (windowRect.height / zoom - ListBorder - ListPadding) + 'px';
   setWindowRect(windowRect);
 };
 
@@ -174,19 +200,24 @@ SuggestionPicker.prototype._layout = function() {
   if (this._config.isLocaleRTL)
     this._element.classList.add('locale-rtl');
   this._containerElement = createElement('ul', 'suggestion-list');
-  this._containerElement.addEventListener('click', this._handleEntryClick.bind(this), false);
+  this._containerElement.addEventListener(
+      'click', this._handleEntryClick.bind(this), false);
   for (var i = 0; i < this._config.suggestionValues.length; ++i) {
     this._containerElement.appendChild(this._createSuggestionEntryElement(
-        this._config.localizedSuggestionValues[i], this._config.suggestionLabels[i], this._config.suggestionValues[i]));
+        this._config.localizedSuggestionValues[i],
+        this._config.suggestionLabels[i], this._config.suggestionValues[i]));
   }
   if (this._config.showOtherDateEntry) {
     // Add separator
-    var separator = createElement('div', 'separator');
-    this._containerElement.appendChild(separator);
+    if (!global.params.isFormControlsRefreshEnabled) {
+      var separator = createElement('div', 'separator');
+      this._containerElement.appendChild(separator);
+    }
 
     // Add "Other..." entry
-    var otherEntry =
-        this._createActionEntryElement(this._config.otherDateLabel, SuggestionPicker.ActionNames.OpenCalendarPicker);
+    var otherEntry = this._createActionEntryElement(
+        this._config.otherDateLabel,
+        SuggestionPicker.ActionNames.OpenCalendarPicker);
     this._containerElement.appendChild(otherEntry);
   }
   this._element.appendChild(this._containerElement);
@@ -198,8 +229,11 @@ SuggestionPicker.prototype._layout = function() {
 SuggestionPicker.prototype.selectEntry = function(entry) {
   if (typeof entry.dataset.value !== 'undefined') {
     this.submitValue(entry.dataset.value);
-  } else if (entry.dataset.action === SuggestionPicker.ActionNames.OpenCalendarPicker) {
-    window.addEventListener('didHide', SuggestionPicker._handleWindowDidHide, false);
+  } else if (
+      entry.dataset.action ===
+      SuggestionPicker.ActionNames.OpenCalendarPicker) {
+    window.addEventListener(
+        'didHide', SuggestionPicker._handleWindowDidHide, false);
     hideWindow();
   }
 };
@@ -213,7 +247,8 @@ SuggestionPicker._handleWindowDidHide = function() {
  * @param {!Event} event
  */
 SuggestionPicker.prototype._handleEntryClick = function(event) {
-  var entry = enclosingNodeOrSelfWithClass(event.target, SuggestionPicker.ListEntryClass);
+  var entry = enclosingNodeOrSelfWithClass(
+      event.target, SuggestionPicker.ListEntryClass);
   if (!entry)
     return;
   this.selectEntry(entry);
@@ -228,9 +263,11 @@ SuggestionPicker.prototype._findFirstVisibleEntry = function() {
   var childNodes = this._containerElement.childNodes;
   for (var i = 0; i < childNodes.length; ++i) {
     var node = childNodes[i];
-    if (node.nodeType !== Node.ELEMENT_NODE || !node.classList.contains(SuggestionPicker.ListEntryClass))
+    if (node.nodeType !== Node.ELEMENT_NODE ||
+        !node.classList.contains(SuggestionPicker.ListEntryClass))
       continue;
-    if (node.offsetTop + node.offsetHeight - scrollTop > SuggestionPicker.VisibleEntryThresholdHeight)
+    if (node.offsetTop + node.offsetHeight - scrollTop >
+        SuggestionPicker.VisibleEntryThresholdHeight)
       return node;
   }
   return null;
@@ -240,13 +277,16 @@ SuggestionPicker.prototype._findFirstVisibleEntry = function() {
  * @return {?Element}
  */
 SuggestionPicker.prototype._findLastVisibleEntry = function() {
-  var scrollBottom = this._containerElement.scrollTop + this._containerElement.offsetHeight;
+  var scrollBottom =
+      this._containerElement.scrollTop + this._containerElement.offsetHeight;
   var childNodes = this._containerElement.childNodes;
   for (var i = childNodes.length - 1; i >= 0; --i) {
     var node = childNodes[i];
-    if (node.nodeType !== Node.ELEMENT_NODE || !node.classList.contains(SuggestionPicker.ListEntryClass))
+    if (node.nodeType !== Node.ELEMENT_NODE ||
+        !node.classList.contains(SuggestionPicker.ListEntryClass))
       continue;
-    if (scrollBottom - node.offsetTop > SuggestionPicker.VisibleEntryThresholdHeight)
+    if (scrollBottom - node.offsetTop >
+        SuggestionPicker.VisibleEntryThresholdHeight)
       return node;
   }
   return null;
@@ -262,8 +302,11 @@ SuggestionPicker.prototype._handleBodyKeyDown = function(event) {
     this.handleCancel();
     eventHandled = true;
   } else if (key == 'ArrowUp') {
-    if (document.activeElement && document.activeElement.classList.contains(SuggestionPicker.ListEntryClass)) {
-      for (var node = document.activeElement.previousElementSibling; node; node = node.previousElementSibling) {
+    if (document.activeElement &&
+        document.activeElement.classList.contains(
+            SuggestionPicker.ListEntryClass)) {
+      for (var node = document.activeElement.previousElementSibling; node;
+           node = node.previousElementSibling) {
         if (node.classList.contains(SuggestionPicker.ListEntryClass)) {
           this._isFocusByMouse = false;
           node.focus();
@@ -271,12 +314,17 @@ SuggestionPicker.prototype._handleBodyKeyDown = function(event) {
         }
       }
     } else {
-      this._element.querySelector('.' + SuggestionPicker.ListEntryClass + ':last-child').focus();
+      this._element
+          .querySelector('.' + SuggestionPicker.ListEntryClass + ':last-child')
+          .focus();
     }
     eventHandled = true;
   } else if (key == 'ArrowDown') {
-    if (document.activeElement && document.activeElement.classList.contains(SuggestionPicker.ListEntryClass)) {
-      for (var node = document.activeElement.nextElementSibling; node; node = node.nextElementSibling) {
+    if (document.activeElement &&
+        document.activeElement.classList.contains(
+            SuggestionPicker.ListEntryClass)) {
+      for (var node = document.activeElement.nextElementSibling; node;
+           node = node.nextElementSibling) {
         if (node.classList.contains(SuggestionPicker.ListEntryClass)) {
           this._isFocusByMouse = false;
           node.focus();
@@ -284,7 +332,9 @@ SuggestionPicker.prototype._handleBodyKeyDown = function(event) {
         }
       }
     } else {
-      this._element.querySelector('.' + SuggestionPicker.ListEntryClass + ':first-child').focus();
+      this._element
+          .querySelector('.' + SuggestionPicker.ListEntryClass + ':first-child')
+          .focus();
     }
     eventHandled = true;
   } else if (key === 'Enter') {
@@ -311,7 +361,8 @@ SuggestionPicker.prototype._handleBodyKeyDown = function(event) {
  * @param {!Event} event
  */
 SuggestionPicker.prototype._handleEntryMouseOver = function(event) {
-  var entry = enclosingNodeOrSelfWithClass(event.target, SuggestionPicker.ListEntryClass);
+  var entry = enclosingNodeOrSelfWithClass(
+      event.target, SuggestionPicker.ListEntryClass);
   if (!entry)
     return;
   this._isFocusByMouse = true;
@@ -323,7 +374,8 @@ SuggestionPicker.prototype._handleEntryMouseOver = function(event) {
  * @param {!Event} event
  */
 SuggestionPicker.prototype._handleMouseOut = function(event) {
-  if (!document.activeElement.classList.contains(SuggestionPicker.ListEntryClass))
+  if (!document.activeElement.classList.contains(
+          SuggestionPicker.ListEntryClass))
     return;
   this._isFocusByMouse = false;
   document.activeElement.blur();

@@ -59,9 +59,9 @@ class CrostiniBrowserTestChromeBrowserMainExtraParts
     browser_process_platform_part_test_api_->InitializeCrosComponentManager(
         std::move(cros_component_manager));
   }
-  // Ideally we'd call SetConnectionType in ServiceManagerConnectionStarted,
-  // but currently we have to wait for PreProfileInit to complete, since that
-  // creates the ash::Shell that AshService needs in order to start.
+  // Ideally we'd call SetConnectionType in PostCreateThreads, but currently we
+  // have to wait for PreProfileInit to complete, since that creatse the
+  // ash::Shell that AshService needs in order to start.
   void PostProfileInit() override {
     connection_change_simulator_.SetConnectionType(
         network::mojom::ConnectionType::CONNECTION_WIFI);

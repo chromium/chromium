@@ -14,8 +14,8 @@
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
@@ -85,8 +85,7 @@ ArcFileSystemOperationRunner::ArcFileSystemOperationRunner(
     bool set_should_defer_by_events)
     : context_(context),
       arc_bridge_service_(bridge_service),
-      set_should_defer_by_events_(set_should_defer_by_events),
-      weak_ptr_factory_(this) {
+      set_should_defer_by_events_(set_should_defer_by_events) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   arc_bridge_service_->file_system()->AddObserver(this);
@@ -174,6 +173,26 @@ void ArcFileSystemOperationRunner::OpenFileToRead(
   file_system_instance->OpenFileToRead(url.spec(), std::move(callback));
 }
 
+void ArcFileSystemOperationRunner::OpenFileToWrite(
+    const GURL& url,
+    OpenFileToWriteCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (should_defer_) {
+    deferred_operations_.emplace_back(base::BindOnce(
+        &ArcFileSystemOperationRunner::OpenFileToWrite,
+        weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+    return;
+  }
+  auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->file_system(), OpenFileToWrite);
+  if (!file_system_instance) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
+    return;
+  }
+  file_system_instance->OpenFileToWrite(url.spec(), std::move(callback));
+}
+
 void ArcFileSystemOperationRunner::GetDocument(const std::string& authority,
                                                const std::string& document_id,
                                                GetDocumentCallback callback) {
@@ -258,6 +277,125 @@ void ArcFileSystemOperationRunner::GetRoots(GetRootsCallback callback) {
     return;
   }
   file_system_instance->GetRoots(std::move(callback));
+}
+
+void ArcFileSystemOperationRunner::DeleteDocument(
+    const std::string& authority,
+    const std::string& document_id,
+    DeleteDocumentCallback callback) {
+  if (should_defer_) {
+    deferred_operations_.emplace_back(
+        base::BindOnce(&ArcFileSystemOperationRunner::DeleteDocument,
+                       weak_ptr_factory_.GetWeakPtr(), authority, document_id,
+                       std::move(callback)));
+    return;
+  }
+  auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->file_system(), DeleteDocument);
+  if (!file_system_instance) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+  file_system_instance->DeleteDocument(authority, document_id,
+                                       std::move(callback));
+}
+
+void ArcFileSystemOperationRunner::RenameDocument(
+    const std::string& authority,
+    const std::string& document_id,
+    const std::string& display_name,
+    RenameDocumentCallback callback) {
+  if (should_defer_) {
+    deferred_operations_.emplace_back(
+        base::BindOnce(&ArcFileSystemOperationRunner::RenameDocument,
+                       weak_ptr_factory_.GetWeakPtr(), authority, document_id,
+                       display_name, std::move(callback)));
+    return;
+  }
+  auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->file_system(), RenameDocument);
+  if (!file_system_instance) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojom::DocumentPtr()));
+    return;
+  }
+  file_system_instance->RenameDocument(authority, document_id, display_name,
+                                       std::move(callback));
+}
+
+void ArcFileSystemOperationRunner::CreateDocument(
+    const std::string& authority,
+    const std::string& parent_document_id,
+    const std::string& mime_type,
+    const std::string& display_name,
+    CreateDocumentCallback callback) {
+  if (should_defer_) {
+    deferred_operations_.emplace_back(base::BindOnce(
+        &ArcFileSystemOperationRunner::CreateDocument,
+        weak_ptr_factory_.GetWeakPtr(), authority, parent_document_id,
+        mime_type, display_name, std::move(callback)));
+    return;
+  }
+  auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->file_system(), CreateDocument);
+  if (!file_system_instance) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojom::DocumentPtr()));
+    return;
+  }
+  file_system_instance->CreateDocument(authority, parent_document_id, mime_type,
+                                       display_name, std::move(callback));
+}
+
+void ArcFileSystemOperationRunner::CopyDocument(
+    const std::string& authority,
+    const std::string& source_document_id,
+    const std::string& target_parent_document_id,
+    CopyDocumentCallback callback) {
+  if (should_defer_) {
+    deferred_operations_.emplace_back(base::BindOnce(
+        &ArcFileSystemOperationRunner::CopyDocument,
+        weak_ptr_factory_.GetWeakPtr(), authority, source_document_id,
+        target_parent_document_id, std::move(callback)));
+    return;
+  }
+  auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->file_system(), CopyDocument);
+  if (!file_system_instance) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojom::DocumentPtr()));
+    return;
+  }
+  file_system_instance->CopyDocument(authority, source_document_id,
+                                     target_parent_document_id,
+                                     std::move(callback));
+}
+
+void ArcFileSystemOperationRunner::MoveDocument(
+    const std::string& authority,
+    const std::string& source_document_id,
+    const std::string& source_parent_document_id,
+    const std::string& target_parent_document_id,
+    MoveDocumentCallback callback) {
+  if (should_defer_) {
+    deferred_operations_.emplace_back(
+        base::BindOnce(&ArcFileSystemOperationRunner::MoveDocument,
+                       weak_ptr_factory_.GetWeakPtr(), authority,
+                       source_document_id, source_parent_document_id,
+                       target_parent_document_id, std::move(callback)));
+    return;
+  }
+  auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->file_system(), MoveDocument);
+  if (!file_system_instance) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), mojom::DocumentPtr()));
+    return;
+  }
+  file_system_instance->MoveDocument(
+      authority, source_document_id, source_parent_document_id,
+      target_parent_document_id, std::move(callback));
 }
 
 void ArcFileSystemOperationRunner::AddWatcher(

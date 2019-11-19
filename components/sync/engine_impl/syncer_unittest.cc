@@ -22,13 +22,11 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/sync/base/cancelation_signal.h"
-#include "components/sync/base/cryptographer.h"
 #include "components/sync/base/extensions_activity.h"
-#include "components/sync/base/fake_encryptor.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/cycle/commit_counters.h"
 #include "components/sync/engine/cycle/status_counters.h"
@@ -44,9 +42,9 @@
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
+#include "components/sync/syncable/directory_cryptographer.h"
 #include "components/sync/syncable/mutable_entry.h"
 #include "components/sync/syncable/nigori_util.h"
-#include "components/sync/syncable/syncable_delete_journal.h"
 #include "components/sync/syncable/syncable_read_transaction.h"
 #include "components/sync/syncable/syncable_util.h"
 #include "components/sync/syncable/syncable_write_transaction.h"
@@ -191,13 +189,9 @@ class SyncerTest : public testing::Test,
     scheduler_->OnTypesBackedOff(types);
   }
   bool IsAnyThrottleOrBackoff() override { return false; }
-  void OnReceivedLongPollIntervalUpdate(
+  void OnReceivedPollIntervalUpdate(
       const base::TimeDelta& new_interval) override {
-    last_long_poll_interval_received_ = new_interval;
-  }
-  void OnReceivedShortPollIntervalUpdate(
-      const base::TimeDelta& new_interval) override {
-    last_short_poll_interval_received_ = new_interval;
+    last_poll_interval_received_ = new_interval;
   }
   void OnReceivedCustomNudgeDelays(
       const std::map<ModelType, base::TimeDelta>& delay_map) override {
@@ -261,8 +255,7 @@ class SyncerTest : public testing::Test,
 
   void SetUp() override {
     test_user_share_.SetUp();
-    mock_server_ = std::make_unique<MockConnectionManager>(
-        directory(), &cancelation_signal_);
+    mock_server_ = std::make_unique<MockConnectionManager>(directory());
     debug_info_getter_ = std::make_unique<MockDebugInfoGetter>();
     workers_.push_back(
         scoped_refptr<ModelSafeWorker>(new FakeModelWorker(GROUP_PASSIVE)));
@@ -271,7 +264,8 @@ class SyncerTest : public testing::Test,
 
     model_type_registry_ = std::make_unique<ModelTypeRegistry>(
         workers_, test_user_share_.user_share(), &mock_nudge_handler_,
-        UssMigrator(), &cancelation_signal_);
+        UssMigrator(), &cancelation_signal_,
+        test_user_share_.keystore_keys_handler());
     model_type_registry_->RegisterDirectoryTypeDebugInfoObserver(
         &debug_info_cache_);
 
@@ -283,11 +277,9 @@ class SyncerTest : public testing::Test,
     context_ = std::make_unique<SyncCycleContext>(
         mock_server_.get(), directory(), extensions_activity_.get(), listeners,
         debug_info_getter_.get(), model_type_registry_.get(),
-        true,   // enable keystore encryption
-        false,  // force enable pre-commit GU avoidance experiment
-        "fake_invalidator_client_id",
-        /*short_poll_interval=*/base::TimeDelta::FromMinutes(30),
-        /*long_poll_interval=*/base::TimeDelta::FromMinutes(180));
+        "fake_invalidator_client_id", mock_server_->store_birthday(),
+        "fake_bag_of_chips",
+        /*poll_interval=*/base::TimeDelta::FromMinutes(30));
     syncer_ = new Syncer(&cancelation_signal_);
     scheduler_ = std::make_unique<SyncSchedulerImpl>(
         "TestSyncScheduler", BackoffDelayProvider::FromDefaults(),
@@ -302,7 +294,6 @@ class SyncerTest : public testing::Test,
     root_id_ = TestIdFactory::root();
     parent_id_ = ids_.MakeServer("parent id");
     child_id_ = ids_.MakeServer("child id");
-    directory()->set_store_birthday(mock_server_->store_birthday());
     mock_server_->SetKeystoreKey("encryption_key");
   }
 
@@ -511,23 +502,21 @@ class SyncerTest : public testing::Test,
     mock_server_->ExpectGetUpdatesRequestTypes(enabled_datatypes_);
   }
 
-  Cryptographer* GetCryptographer(syncable::BaseTransaction* trans) {
-    return directory()->GetCryptographer(trans);
+  DirectoryCryptographer* GetCryptographer(syncable::BaseTransaction* trans) {
+    return test_user_share_.GetCryptographer(trans);
   }
 
   // Configures SyncCycleContext and NudgeTracker so Syncer won't call
   // GetUpdates prior to Commit. This method can be used to ensure a Commit is
   // not preceeded by GetUpdates.
   void ConfigureNoGetUpdatesRequired() {
-    context_->set_server_enabled_pre_commit_update_avoidance(true);
     nudge_tracker_.OnInvalidationsEnabled();
     nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
 
-    ASSERT_FALSE(context_->ShouldFetchUpdatesBeforeCommit());
     ASSERT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
   }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   // Some ids to aid tests. Only the root one's value is specific. The rest
   // are named for test clarity.
@@ -540,7 +529,6 @@ class SyncerTest : public testing::Test,
   TestIdFactory ids_;
 
   TestUserShare test_user_share_;
-  FakeEncryptor encryptor_;
   scoped_refptr<ExtensionsActivity> extensions_activity_;
   std::unique_ptr<MockConnectionManager> mock_server_;
   CancelationSignal cancelation_signal_;
@@ -553,8 +541,7 @@ class SyncerTest : public testing::Test,
   std::unique_ptr<ModelTypeRegistry> model_type_registry_;
   std::unique_ptr<SyncSchedulerImpl> scheduler_;
   std::unique_ptr<SyncCycleContext> context_;
-  base::TimeDelta last_short_poll_interval_received_;
-  base::TimeDelta last_long_poll_interval_received_;
+  base::TimeDelta last_poll_interval_received_;
   base::TimeDelta last_sessions_commit_delay_;
   base::TimeDelta last_bookmarks_commit_delay_;
   int last_client_invalidation_hint_buffer_size_;
@@ -669,7 +656,7 @@ TEST_F(SyncerTest, GetCommitIdsFiltersUnreadyEntries) {
     // Mark bookmarks as encrypted and set the cryptographer to have pending
     // keys.
     syncable::WriteTransaction wtrans(FROM_HERE, UNITTEST, directory());
-    Cryptographer other_cryptographer(&encryptor_);
+    DirectoryCryptographer other_cryptographer;
     other_cryptographer.AddKey(other_params);
     sync_pb::EntitySpecifics specifics;
     sync_pb::NigoriSpecifics* nigori = specifics.mutable_nigori();
@@ -1024,7 +1011,7 @@ TEST_F(SyncerTest, GetCommitIds_VerifyDeletionCommitOrderMaxEntries) {
 
 TEST_F(SyncerTest, EncryptionAwareConflicts) {
   KeyParams key_params = {KeyDerivationParams::CreateForPbkdf2(), "foobar"};
-  Cryptographer other_cryptographer(&encryptor_);
+  DirectoryCryptographer other_cryptographer;
   other_cryptographer.AddKey(key_params);
   sync_pb::EntitySpecifics bookmark, encrypted_bookmark, modified_bookmark;
   bookmark.mutable_bookmark()->set_title("title");
@@ -1330,50 +1317,6 @@ TEST_F(SyncerTest, TestPurgeWhileUnapplied) {
     syncable::ReadTransaction rt(FROM_HERE, directory());
     Entry entry(&rt, GET_BY_ID, parent_id_);
     ASSERT_FALSE(entry.good());
-  }
-}
-
-TEST_F(SyncerTest, TestPurgeWithJournal) {
-  {
-    directory()->SetDownloadProgress(BOOKMARKS,
-                                     syncable::BuildProgress(BOOKMARKS));
-    syncable::WriteTransaction wtrans(FROM_HERE, UNITTEST, directory());
-    MutableEntry parent(&wtrans, syncable::CREATE, BOOKMARKS, wtrans.root_id(),
-                        "Pete");
-    ASSERT_TRUE(parent.good());
-    parent.PutIsDir(true);
-    parent.PutSpecifics(DefaultBookmarkSpecifics());
-    parent.PutBaseVersion(1);
-    parent.PutId(parent_id_);
-    MutableEntry child(&wtrans, syncable::CREATE, BOOKMARKS, parent_id_,
-                       "Pete");
-    ASSERT_TRUE(child.good());
-    child.PutId(child_id_);
-    child.PutBaseVersion(1);
-    WriteTestDataToEntry(&wtrans, &child);
-
-    MutableEntry parent2(&wtrans, syncable::CREATE, PREFERENCES,
-                         wtrans.root_id(), "Tim");
-    ASSERT_TRUE(parent2.good());
-    parent2.PutIsDir(true);
-    parent2.PutSpecifics(DefaultPreferencesSpecifics());
-    parent2.PutBaseVersion(1);
-    parent2.PutId(TestIdFactory::MakeServer("Tim"));
-  }
-
-  directory()->PurgeEntriesWithTypeIn(ModelTypeSet(PREFERENCES, BOOKMARKS),
-                                      ModelTypeSet(BOOKMARKS), ModelTypeSet());
-  {
-    // Verify bookmark nodes are saved in delete journal but not preference
-    // node.
-    syncable::ReadTransaction rt(FROM_HERE, directory());
-    syncable::DeleteJournal* delete_journal = directory()->delete_journal();
-    EXPECT_EQ(2u, delete_journal->GetDeleteJournalSize(&rt));
-    syncable::EntryKernelSet journal_entries;
-    directory()->delete_journal()->GetDeleteJournals(&rt, BOOKMARKS,
-                                                     &journal_entries);
-    EXPECT_EQ(parent_id_, (*journal_entries.begin())->ref(syncable::ID));
-    EXPECT_EQ(child_id_, (*journal_entries.rbegin())->ref(syncable::ID));
   }
 }
 
@@ -3979,8 +3922,7 @@ TEST_F(SyncerTest, TestClientCommandDuringUpdate) {
   mock_server_->SetGUClientCommand(std::move(command));
   EXPECT_TRUE(SyncShareNudge());
 
-  EXPECT_EQ(TimeDelta::FromSeconds(8), last_short_poll_interval_received_);
-  EXPECT_EQ(TimeDelta::FromSeconds(800), last_long_poll_interval_received_);
+  EXPECT_EQ(TimeDelta::FromSeconds(8), last_poll_interval_received_);
   EXPECT_EQ(TimeDelta::FromSeconds(3141), last_sessions_commit_delay_);
   EXPECT_EQ(TimeDelta::FromMilliseconds(950), last_bookmarks_commit_delay_);
   EXPECT_EQ(11, last_client_invalidation_hint_buffer_size_);
@@ -3999,8 +3941,7 @@ TEST_F(SyncerTest, TestClientCommandDuringUpdate) {
   mock_server_->SetGUClientCommand(std::move(command));
   EXPECT_TRUE(SyncShareNudge());
 
-  EXPECT_EQ(TimeDelta::FromSeconds(180), last_short_poll_interval_received_);
-  EXPECT_EQ(TimeDelta::FromSeconds(190), last_long_poll_interval_received_);
+  EXPECT_EQ(TimeDelta::FromSeconds(180), last_poll_interval_received_);
   EXPECT_EQ(TimeDelta::FromSeconds(2718), last_sessions_commit_delay_);
   EXPECT_EQ(TimeDelta::FromMilliseconds(1050), last_bookmarks_commit_delay_);
   EXPECT_EQ(9, last_client_invalidation_hint_buffer_size_);
@@ -4023,8 +3964,7 @@ TEST_F(SyncerTest, TestClientCommandDuringCommit) {
   mock_server_->SetCommitClientCommand(std::move(command));
   EXPECT_TRUE(SyncShareNudge());
 
-  EXPECT_EQ(TimeDelta::FromSeconds(8), last_short_poll_interval_received_);
-  EXPECT_EQ(TimeDelta::FromSeconds(800), last_long_poll_interval_received_);
+  EXPECT_EQ(TimeDelta::FromSeconds(8), last_poll_interval_received_);
   EXPECT_EQ(TimeDelta::FromSeconds(3141), last_sessions_commit_delay_);
   EXPECT_EQ(TimeDelta::FromMilliseconds(950), last_bookmarks_commit_delay_);
   EXPECT_EQ(11, last_client_invalidation_hint_buffer_size_);
@@ -4042,8 +3982,7 @@ TEST_F(SyncerTest, TestClientCommandDuringCommit) {
   mock_server_->SetCommitClientCommand(std::move(command));
   EXPECT_TRUE(SyncShareNudge());
 
-  EXPECT_EQ(TimeDelta::FromSeconds(180), last_short_poll_interval_received_);
-  EXPECT_EQ(TimeDelta::FromSeconds(190), last_long_poll_interval_received_);
+  EXPECT_EQ(TimeDelta::FromSeconds(180), last_poll_interval_received_);
   EXPECT_EQ(TimeDelta::FromSeconds(2718), last_sessions_commit_delay_);
   EXPECT_EQ(TimeDelta::FromMilliseconds(1050), last_bookmarks_commit_delay_);
   EXPECT_EQ(9, last_client_invalidation_hint_buffer_size_);
@@ -4859,36 +4798,28 @@ TEST_F(SyncerTest, ConfigureFailedUnregisteredType) {
 }
 
 TEST_F(SyncerTest, GetKeySuccess) {
-  {
-    syncable::ReadTransaction rtrans(FROM_HERE, directory());
-    EXPECT_TRUE(directory()->GetNigoriHandler()->NeedKeystoreKey(&rtrans));
-  }
+  KeystoreKeysHandler* keystore_keys_handler =
+      model_type_registry_->keystore_keys_handler();
+  EXPECT_TRUE(keystore_keys_handler->NeedKeystoreKey());
 
   SyncShareConfigure();
 
   EXPECT_EQ(SyncerError::SYNCER_OK,
             cycle_->status_controller().last_get_key_result().value());
-  {
-    syncable::ReadTransaction rtrans(FROM_HERE, directory());
-    EXPECT_FALSE(directory()->GetNigoriHandler()->NeedKeystoreKey(&rtrans));
-  }
+  EXPECT_FALSE(keystore_keys_handler->NeedKeystoreKey());
 }
 
 TEST_F(SyncerTest, GetKeyEmpty) {
-  {
-    syncable::ReadTransaction rtrans(FROM_HERE, directory());
-    EXPECT_TRUE(directory()->GetNigoriHandler()->NeedKeystoreKey(&rtrans));
-  }
+  KeystoreKeysHandler* keystore_keys_handler =
+      model_type_registry_->keystore_keys_handler();
+  EXPECT_TRUE(keystore_keys_handler->NeedKeystoreKey());
 
   mock_server_->SetKeystoreKey(std::string());
   SyncShareConfigure();
 
   EXPECT_NE(SyncerError::SYNCER_OK,
             cycle_->status_controller().last_get_key_result().value());
-  {
-    syncable::ReadTransaction rtrans(FROM_HERE, directory());
-    EXPECT_TRUE(directory()->GetNigoriHandler()->NeedKeystoreKey(&rtrans));
-  }
+  EXPECT_TRUE(keystore_keys_handler->NeedKeystoreKey());
 }
 
 // Trigger an update that contains a progress marker only and verify that

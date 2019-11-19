@@ -4,28 +4,13 @@
 
 #include "chrome/browser/media/router/data_decoder_util.h"
 
-#include "services/service_manager/public/cpp/connector.h"
+#include "base/no_destructor.h"
 
 namespace media_router {
 
-DataDecoder::DataDecoder(service_manager::Connector* connector)
-    : connector_(connector->Clone()) {}
-
-DataDecoder::~DataDecoder() = default;
-
-void DataDecoder::ParseXml(const std::string& unsafe_xml,
-                           data_decoder::XmlParserCallback callback) {
-  data_decoder::ParseXml(connector_.get(), unsafe_xml, std::move(callback),
-                         kDataDecoderServiceBatchId);
-}
-
-void DataDecoder::ParseJson(
-    const std::string& unsafe_json,
-    const data_decoder::SafeJsonParser::SuccessCallback& success_callback,
-    const data_decoder::SafeJsonParser::ErrorCallback& error_callback) {
-  data_decoder::SafeJsonParser::ParseBatch(connector_.get(), unsafe_json,
-                                           success_callback, error_callback,
-                                           kDataDecoderServiceBatchId);
+data_decoder::DataDecoder& GetDataDecoder() {
+  static base::NoDestructor<data_decoder::DataDecoder> decoder;
+  return *decoder;
 }
 
 }  // namespace media_router

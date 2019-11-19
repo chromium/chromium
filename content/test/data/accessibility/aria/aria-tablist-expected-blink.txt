@@ -1,4 +1,5 @@
 rootWebArea
-++tabList horizontal
-++++tab name='Tab 1' selected=false
-++++tab name='Tab 2' selected=false
+++genericContainer ignored
+++++tabList horizontal
+++++++tab name='Tab 1' selected=false
+++++++tab name='Tab 2' selected=false

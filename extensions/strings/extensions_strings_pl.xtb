@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Nie można odkodować obrazu: „<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">Lokalizacja została użyta, ale nie określono języka default_locale w pliku manifestu.</translation>
 <translation id="2576842806987913196">Plik CRX o tej nazwie już istnieje.</translation>
-<translation id="2753617847762399167">Nieprawidłowa ścieżka (pełna lub względna z przedrostkiem „..”): „<ph name="IMAGE_PATH" />”</translation>
 <translation id="2785530881066938471">Nie można wczytać pliku „<ph name="RELATIVE_PATH" />” dla skryptu dotyczącego treści. Plik nie ma kodowania UTF-8.</translation>
 <translation id="2903070246402204397">Rozszerzenie <ph name="EXTENSION_NAME" /> (identyfikator rozszerzenia „<ph name="EXTENSION_ID" />”) jest zablokowane przez administratora. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Nie można zainstalować pakietu: „<ph name="ERROR_CODE" />”</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Niestandardowe kształty okien nie są obsługiwane.</translation>
 <translation id="5456409301717116725">To rozszerzenie zawiera plik klucza „<ph name="KEY_PATH" />”. Prawdopodobnie nie powinno tak być.</translation>
 <translation id="5486326529110362464">Wartość wejściowa klucza prywatnego musi istnieć.</translation>
-<translation id="5627523580512561598">rozszerzenie <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">Tag ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Administrator tego urządzenia wymaga, by było na nim zainstalowane rozszerzenie <ph name="EXTENSION_NAME" />. Nie można go odinstalować.</translation>
 <translation id="6027032947578871493">Nieznany produkt <ph name="PRODUCT_ID" /> firmy <ph name="VENDOR_NAME" /> (numer seryjny <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> wyprodukowany przez <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354"><ph name="APP_NAME" /> żąda dostępu do co najmniej jednego Twojego urządzenia:</translation>
 <translation id="657064425229075395">Nie udało się wczytać skryptu działającego w tle „<ph name="BACKGROUND_SCRIPT" />”.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> firmy <ph name="VENDOR_NAME" /> (numer seryjny <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Nie można utworzyć katalogu do rozpakowania: „<ph name="DIRECTORY_PATH" />”</translation>
 <translation id="677806580227005219">Moduł obsługi MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">To rozszerzenie zbyt często ładowało się ponownie.</translation>
 <translation id="7003844668372540529">Nieznany produkt <ph name="PRODUCT_ID" /> firmy <ph name="VENDOR_NAME" /></translation>

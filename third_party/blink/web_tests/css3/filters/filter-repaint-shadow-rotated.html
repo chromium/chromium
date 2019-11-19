@@ -39,17 +39,11 @@
 
     <script src="../../resources/run-after-layout-and-paint.js"></script>
     <script>
-        if (window.testRunner) {
-            testRunner.dumpAsTextWithPixelResults();
-            testRunner.waitUntilDone();
-        }
         function repaintTest()
         {
             runAfterLayoutAndPaint(function() {
                 document.querySelector(".before").classList.remove("before");
-                if (window.testRunner)
-                    testRunner.notifyDone();
-            });
+            }, true);
         }
     </script>
 </head>

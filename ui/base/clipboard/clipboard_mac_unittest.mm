@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "testing/platform_test.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/clipboard/clipboard_types.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
 
 @interface RedView : NSView
@@ -79,7 +79,7 @@ TEST_F(ClipboardMacTest, ReadImageRetina) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   ui::ClipboardMac* clipboard_mac = static_cast<ui::ClipboardMac*>(clipboard);
 
-  SkBitmap bitmap = clipboard_mac->ReadImage(ui::CLIPBOARD_TYPE_COPY_PASTE,
+  SkBitmap bitmap = clipboard_mac->ReadImage(ui::ClipboardBuffer::kCopyPaste,
                                              pasteboard->get());
   EXPECT_EQ(2 * width, bitmap.width());
   EXPECT_EQ(2 * height, bitmap.height());
@@ -95,7 +95,7 @@ TEST_F(ClipboardMacTest, ReadImageNonRetina) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   ui::ClipboardMac* clipboard_mac = static_cast<ui::ClipboardMac*>(clipboard);
 
-  SkBitmap bitmap = clipboard_mac->ReadImage(ui::CLIPBOARD_TYPE_COPY_PASTE,
+  SkBitmap bitmap = clipboard_mac->ReadImage(ui::ClipboardBuffer::kCopyPaste,
                                              pasteboard->get());
   EXPECT_EQ(width, bitmap.width());
   EXPECT_EQ(height, bitmap.height());
@@ -109,7 +109,7 @@ TEST_F(ClipboardMacTest, EmptyImage) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   ui::ClipboardMac* clipboard_mac = static_cast<ui::ClipboardMac*>(clipboard);
 
-  SkBitmap bitmap = clipboard_mac->ReadImage(ui::CLIPBOARD_TYPE_COPY_PASTE,
+  SkBitmap bitmap = clipboard_mac->ReadImage(ui::ClipboardBuffer::kCopyPaste,
                                              pasteboard->get());
   EXPECT_EQ(0, bitmap.width());
   EXPECT_EQ(0, bitmap.height());
@@ -132,7 +132,7 @@ TEST_F(ClipboardMacTest, PDFImage) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   ui::ClipboardMac* clipboard_mac = static_cast<ui::ClipboardMac*>(clipboard);
 
-  SkBitmap bitmap = clipboard_mac->ReadImage(ui::CLIPBOARD_TYPE_COPY_PASTE,
+  SkBitmap bitmap = clipboard_mac->ReadImage(ui::ClipboardBuffer::kCopyPaste,
                                              pasteboard->get());
   EXPECT_EQ(width, bitmap.width());
   EXPECT_EQ(height, bitmap.height());

@@ -1,0 +1,27 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":os_printing_page",
+    "../../printing_page:cups_add_printer_dialog",
+    "../../printing_page:cups_add_printer_dialog_elements",
+    "../../printing_page:cups_edit_printer_dialog",
+    "../../printing_page:cups_printer_dialog_util",
+    "../../printing_page:cups_printers",
+    "../../printing_page:cups_printers_browser_proxy",
+    "../../printing_page:cups_printers_list",
+  ]
+}
+
+js_library("os_printing_page") {
+  deps = [
+    "../..:route",
+    "../../settings_page:settings_animated_pages",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:load_time_data",
+  ]
+}

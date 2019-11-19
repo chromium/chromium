@@ -4,8 +4,6 @@
 
 static_library("cache") {
   sources = [
-    "cached_image_fetcher_metrics_reporter.cc",
-    "cached_image_fetcher_metrics_reporter.h",
     "image_cache.cc",
     "image_cache.h",
     "image_data_store.h",
@@ -19,6 +17,7 @@ static_library("cache") {
   deps = [
     "proto",
     "//components/base32",
+    "//components/image_fetcher/core:metrics",
     "//components/leveldb_proto",
     "//components/prefs",
     "//net",
@@ -31,7 +30,6 @@ static_library("cache") {
 source_set("cache_unit_tests") {
   testonly = true
   sources = [
-    "cached_image_fetcher_metrics_reporter_unittest.cc",
     "image_cache_unittest.cc",
     "image_data_store_disk_unittest.cc",
     "image_metadata_store_leveldb_unittest.cc",
@@ -41,6 +39,7 @@ source_set("cache_unit_tests") {
     "proto",
     "//base",
     "//base/test:test_support",
+    "//components/image_fetcher/core:metrics",
     "//components/leveldb_proto:test_support",
     "//components/prefs:test_support",
     "//testing/gmock",

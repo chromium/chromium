@@ -3,7 +3,6 @@ rootWebArea
 ++++image name='pipe'
 ++++staticText name=' '
 ++++++inlineTextBox name=' '
-++++image name=''
 ++++staticText name=' '
 ++++++inlineTextBox name=' '
 ++++image name='  '

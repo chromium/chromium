@@ -48,6 +48,8 @@ jumbo_component("shared_impl") {
     "media_stream_buffer_manager.h",
     "media_stream_video_track_shared.cc",
     "media_stream_video_track_shared.h",
+    "pdf_accessibility_shared.cc",
+    "pdf_accessibility_shared.h",
     "platform_file.cc",
     "platform_file.h",
     "ppapi_constants.h",

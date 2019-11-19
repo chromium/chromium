@@ -1,0 +1,13 @@
+Name: AndroidX Test Library
+Short Name: rules
+URL: https://developer.android.com/testing
+Version: 1.1.0
+License: Apache Version 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+The AndroidX Test Library provides an extensive framework for testing Android apps
+
+Local Modifications:
+No modifications.

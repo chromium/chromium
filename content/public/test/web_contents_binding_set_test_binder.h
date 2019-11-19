@@ -7,7 +7,7 @@
 
 #include "content/public/browser/web_contents_binding_set.h"
 
-#include "mojo/public/cpp/bindings/associated_interface_request.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
 namespace content {
 
@@ -19,18 +19,20 @@ class WebContentsBindingSetTestBinder : public WebContentsBindingSet::Binder {
  public:
   ~WebContentsBindingSetTestBinder() override {}
 
-  // Call for every new incoming interface request for a frame.
-  virtual void BindRequest(
+  // Call for every new incoming receiver for a frame.
+  virtual void BindReceiver(
       RenderFrameHost* render_frame_host,
-      mojo::AssociatedInterfaceRequest<Interface> request) = 0;
+      mojo::PendingAssociatedReceiver<Interface> receiver) = 0;
 
  private:
   // Binder:
   void OnRequestForFrame(RenderFrameHost* render_frame_host,
                          mojo::ScopedInterfaceEndpointHandle handle) override {
-    BindRequest(render_frame_host,
-                mojo::AssociatedInterfaceRequest<Interface>(std::move(handle)));
+    BindReceiver(render_frame_host,
+                 mojo::PendingAssociatedReceiver<Interface>(std::move(handle)));
   }
+
+  void CloseAllBindings() override {}
 };
 
 }  // namespace content

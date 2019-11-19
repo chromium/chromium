@@ -15,9 +15,9 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/path_x11.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/x11_path.h"
 #include "ui/views/test/views_interactive_ui_test_base.h"
 #include "ui/views/test/x11_property_change_waiter.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
@@ -34,15 +34,14 @@ class MinimizeWaiter : public X11PropertyChangeWaiter {
   explicit MinimizeWaiter(XID window)
       : X11PropertyChangeWaiter(window, "_NET_WM_STATE") {}
 
-  ~MinimizeWaiter() override {}
+  ~MinimizeWaiter() override = default;
 
  private:
   // X11PropertyChangeWaiter:
   bool ShouldKeepOnWaiting(const ui::PlatformEvent& event) override {
     std::vector<Atom> wm_states;
     if (ui::GetAtomArrayProperty(xwindow(), "_NET_WM_STATE", &wm_states)) {
-      return !base::ContainsValue(wm_states,
-                                  gfx::GetAtom("_NET_WM_STATE_HIDDEN"));
+      return !base::Contains(wm_states, gfx::GetAtom("_NET_WM_STATE_HIDDEN"));
     }
     return true;
   }
@@ -60,7 +59,7 @@ class StackingClientListWaiter : public X11PropertyChangeWaiter {
         expected_windows_(expected_windows, expected_windows + count) {
   }
 
-  ~StackingClientListWaiter() override {}
+  ~StackingClientListWaiter() override = default;
 
   // X11PropertyChangeWaiter:
   void Wait() override {
@@ -77,11 +76,9 @@ class StackingClientListWaiter : public X11PropertyChangeWaiter {
   bool ShouldKeepOnWaiting(const ui::PlatformEvent& event) override {
     std::vector<XID> stack;
     ui::GetXWindowStack(ui::GetX11RootWindow(), &stack);
-    for (size_t i = 0; i < expected_windows_.size(); ++i) {
-      if (!base::ContainsValue(stack, expected_windows_[i]))
-        return true;
-    }
-    return false;
+    return !std::all_of(
+        expected_windows_.cbegin(), expected_windows_.cend(),
+        [&stack](XID window) { return base::Contains(stack, window); });
   }
 
   std::vector<XID> expected_windows_;
@@ -93,10 +90,9 @@ class StackingClientListWaiter : public X11PropertyChangeWaiter {
 
 class X11TopmostWindowFinderTest : public ViewsInteractiveUITestBase {
  public:
-  X11TopmostWindowFinderTest() {
-  }
+  X11TopmostWindowFinderTest() = default;
 
-  ~X11TopmostWindowFinderTest() override {}
+  ~X11TopmostWindowFinderTest() override = default;
 
   // Creates and shows a Widget with |bounds|. The caller takes ownership of
   // the returned widget.
@@ -107,7 +103,7 @@ class X11TopmostWindowFinderTest : public ViewsInteractiveUITestBase {
     params.native_widget = new DesktopNativeWidgetAura(toplevel.get());
     params.bounds = bounds;
     params.remove_standard_frame = true;
-    toplevel->Init(params);
+    toplevel->Init(std::move(params));
     toplevel->Show();
     return toplevel;
   }

@@ -12,6 +12,7 @@ import android.os.Build;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.device.mojom.ReportingMode;
 
 import java.util.List;
@@ -218,7 +219,8 @@ public class PlatformSensor implements SensorEventListener {
      * Notifies native device::PlatformSensorAndroid when there is an error.
      */
     protected void sensorError() {
-        nativeNotifyPlatformSensorError(mNativePlatformSensorAndroid);
+        PlatformSensorJni.get().notifyPlatformSensorError(
+                mNativePlatformSensorAndroid, PlatformSensor.this);
     }
 
     /**
@@ -226,8 +228,8 @@ public class PlatformSensor implements SensorEventListener {
      */
     protected void updateSensorReading(
             double timestamp, double value1, double value2, double value3, double value4) {
-        nativeUpdatePlatformSensorReading(
-                mNativePlatformSensorAndroid, timestamp, value1, value2, value3, value4);
+        PlatformSensorJni.get().updatePlatformSensorReading(mNativePlatformSensorAndroid,
+                PlatformSensor.this, timestamp, value1, value2, value3, value4);
     }
 
     @Override
@@ -264,7 +266,10 @@ public class PlatformSensor implements SensorEventListener {
         }
     }
 
-    private native void nativeNotifyPlatformSensorError(long nativePlatformSensorAndroid);
-    private native void nativeUpdatePlatformSensorReading(long nativePlatformSensorAndroid,
-            double timestamp, double value1, double value2, double value3, double value4);
+    @NativeMethods
+    interface Natives {
+        void notifyPlatformSensorError(long nativePlatformSensorAndroid, PlatformSensor caller);
+        void updatePlatformSensorReading(long nativePlatformSensorAndroid, PlatformSensor caller,
+                double timestamp, double value1, double value2, double value3, double value4);
+    }
 }

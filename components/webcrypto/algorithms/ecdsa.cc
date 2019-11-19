@@ -5,8 +5,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "components/webcrypto/algorithm_implementation.h"
 #include "components/webcrypto/algorithms/ec.h"
 #include "components/webcrypto/algorithms/util.h"
@@ -256,7 +257,7 @@ class EcdsaImplementation : public EcAlgorithm {
 }  // namespace
 
 std::unique_ptr<AlgorithmImplementation> CreateEcdsaImplementation() {
-  return base::WrapUnique(new EcdsaImplementation);
+  return std::make_unique<EcdsaImplementation>();
 }
 
 }  // namespace webcrypto

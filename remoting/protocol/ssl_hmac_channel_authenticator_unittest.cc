@@ -11,8 +11,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/timer/timer.h"
 #include "crypto/rsa_private_key.h"
@@ -136,7 +136,7 @@ class SslHmacChannelAuthenticatorTest : public testing::Test {
     client_socket_ = std::move(socket);
   }
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   scoped_refptr<RsaKeyPair> key_pair_;
   std::string host_cert_;
@@ -167,8 +167,9 @@ TEST_F(SslHmacChannelAuthenticatorTest, SuccessfulAuth) {
   StreamConnectionTester tester(host_socket_.get(), client_socket_.get(),
                                 100, 2);
 
-  tester.Start();
-  base::RunLoop().Run();
+  base::RunLoop run_loop;
+  tester.Start(run_loop.QuitClosure());
+  run_loop.Run();
   tester.CheckResults();
 }
 

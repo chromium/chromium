@@ -4,7 +4,7 @@
 
 // https://wicg.github.io/media-capabilities/#mediacapabilities
 
-[Exposed=Window]
+[Exposed=(Window,Worker)]
 interface MediaCapabilities {
     [CallWith=ScriptState, Measure] Promise<MediaCapabilitiesDecodingInfo> decodingInfo(MediaDecodingConfiguration configuration);
     [CallWith=ScriptState, Measure, RuntimeEnabled=MediaCapabilitiesEncodingInfo] Promise<MediaCapabilitiesInfo> encodingInfo(

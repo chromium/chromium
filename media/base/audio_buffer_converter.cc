@@ -19,10 +19,10 @@ namespace media {
 
 // Is the config presented by |buffer| a config change from |params|?
 static bool IsConfigChange(const AudioParameters& params,
-                           const scoped_refptr<AudioBuffer>& buffer) {
-  return buffer->sample_rate() != params.sample_rate() ||
-         buffer->channel_count() != params.channels() ||
-         buffer->channel_layout() != params.channel_layout();
+                           const AudioBuffer& buffer) {
+  return buffer.sample_rate() != params.sample_rate() ||
+         buffer.channel_count() != params.channels() ||
+         buffer.channel_layout() != params.channel_layout();
 }
 
 AudioBufferConverter::AudioBufferConverter(const AudioParameters& output_params)
@@ -38,29 +38,29 @@ AudioBufferConverter::AudioBufferConverter(const AudioParameters& output_params)
 
 AudioBufferConverter::~AudioBufferConverter() = default;
 
-void AudioBufferConverter::AddInput(const scoped_refptr<AudioBuffer>& buffer) {
+void AudioBufferConverter::AddInput(scoped_refptr<AudioBuffer> buffer) {
   // On EOS flush any remaining buffered data.
   if (buffer->end_of_stream()) {
     Flush();
-    queued_outputs_.push_back(buffer);
+    queued_outputs_.push_back(std::move(buffer));
     return;
   }
 
   // We'll need a new |audio_converter_| if there was a config change.
-  if (IsConfigChange(input_params_, buffer))
-    ResetConverter(buffer);
+  if (IsConfigChange(input_params_, *buffer))
+    ResetConverter(*buffer);
 
   // Pass straight through if there's no work to be done.
   if (!audio_converter_) {
-    queued_outputs_.push_back(buffer);
+    queued_outputs_.push_back(std::move(buffer));
     return;
   }
 
   if (timestamp_helper_.base_timestamp() == kNoTimestamp)
     timestamp_helper_.SetBaseTimestamp(buffer->timestamp());
 
-  queued_inputs_.push_back(buffer);
   input_frames_ += buffer->frame_count();
+  queued_inputs_.push_back(std::move(buffer));
 
   ConvertIfPossible();
 }
@@ -69,7 +69,7 @@ bool AudioBufferConverter::HasNextBuffer() { return !queued_outputs_.empty(); }
 
 scoped_refptr<AudioBuffer> AudioBufferConverter::GetNextBuffer() {
   DCHECK(!queued_outputs_.empty());
-  scoped_refptr<AudioBuffer> out = queued_outputs_.front();
+  auto out = std::move(queued_outputs_.front());
   queued_outputs_.pop_front();
   return out;
 }
@@ -98,13 +98,13 @@ double AudioBufferConverter::ProvideInput(AudioBus* audio_bus,
   int dest_index = 0;
 
   while (requested_frames_left > 0 && !queued_inputs_.empty()) {
-    scoped_refptr<AudioBuffer> input_buffer = queued_inputs_.front();
+    const auto& input_buffer = queued_inputs_.front();
 
     int frames_to_read =
         std::min(requested_frames_left,
                  input_buffer->frame_count() - last_input_buffer_offset_);
-    input_buffer->ReadFrames(
-        frames_to_read, last_input_buffer_offset_, dest_index, audio_bus);
+    input_buffer->ReadFrames(frames_to_read, last_input_buffer_offset_,
+                             dest_index, audio_bus);
     last_input_buffer_offset_ += frames_to_read;
 
     if (last_input_buffer_offset_ == input_buffer->frame_count()) {
@@ -135,21 +135,18 @@ double AudioBufferConverter::ProvideInput(AudioBus* audio_bus,
   return 1.0;
 }
 
-void AudioBufferConverter::ResetConverter(
-    const scoped_refptr<AudioBuffer>& buffer) {
+void AudioBufferConverter::ResetConverter(const AudioBuffer& buffer) {
   Flush();
   audio_converter_.reset();
   input_params_.Reset(
-      input_params_.format(),
-      buffer->channel_layout(),
-      buffer->sample_rate(),
+      input_params_.format(), buffer.channel_layout(), buffer.sample_rate(),
       // If resampling is needed and the FIFO disabled, the AudioConverter will
       // always request SincResampler::kDefaultRequestSize frames.  Otherwise it
       // will use the output frame size.
-      buffer->sample_rate() == output_params_.sample_rate()
+      buffer.sample_rate() == output_params_.sample_rate()
           ? output_params_.frames_per_buffer()
           : SincResampler::kDefaultRequestSize);
-  input_params_.set_channels_for_discrete(buffer->channel_count());
+  input_params_.set_channels_for_discrete(buffer.channel_count());
 
   io_sample_rate_ratio_ = static_cast<double>(input_params_.sample_rate()) /
                           output_params_.sample_rate();
@@ -186,7 +183,7 @@ void AudioBufferConverter::ConvertIfPossible() {
   if (!request_frames)
     return;
 
-  scoped_refptr<AudioBuffer> output_buffer = AudioBuffer::CreateBuffer(
+  auto output_buffer = AudioBuffer::CreateBuffer(
       kSampleFormatPlanarF32, output_params_.channel_layout(),
       output_params_.channels(), output_params_.sample_rate(), request_frames,
       pool_);
@@ -226,7 +223,7 @@ void AudioBufferConverter::ConvertIfPossible() {
   output_buffer->set_timestamp(timestamp_helper_.GetTimestamp());
   timestamp_helper_.AddFrames(request_frames);
 
-  queued_outputs_.push_back(output_buffer);
+  queued_outputs_.push_back(std::move(output_buffer));
 }
 
 void AudioBufferConverter::Flush() {

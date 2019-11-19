@@ -35,10 +35,6 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   static void Create(content::WebContents* web_contents,
                      PermissionPromptAndroid* permission_prompt);
 
-  // Returns true if we should show the user a modal permission prompt rather
-  // than an infobar.
-  static bool ShouldShowDialog();
-
   // JNI methods.
   void Accept(JNIEnv* env, const JavaParamRef<jobject>& obj);
   void Cancel(JNIEnv* env, const JavaParamRef<jobject>& obj);

@@ -49,20 +49,20 @@ class TestInkDropHost : public InkDropHostView {
   std::unique_ptr<InkDropHighlight> CreateInkDropHighlight() const override;
 
  private:
-  int num_ink_drop_layers_added_;
-  int num_ink_drop_layers_removed_;
+  int num_ink_drop_layers_added_ = 0;
+  int num_ink_drop_layers_removed_ = 0;
 
   // CreateInkDrop{Ripple,Highlight} are const, so these members must be
   // mutable.
-  mutable int num_ink_drop_ripples_created_;
-  mutable int num_ink_drop_highlights_created_;
+  mutable int num_ink_drop_ripples_created_ = 0;
+  mutable int num_ink_drop_highlights_created_ = 0;
 
-  mutable const InkDropRipple* last_ink_drop_ripple_;
-  mutable const InkDropHighlight* last_ink_drop_highlight_;
+  mutable const InkDropRipple* last_ink_drop_ripple_ = nullptr;
+  mutable const InkDropHighlight* last_ink_drop_highlight_ = nullptr;
 
   // When true, the InkDropRipple/InkDropHighlight instances will have their
   // timers disabled after creation.
-  bool disable_timers_for_test_;
+  bool disable_timers_for_test_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(TestInkDropHost);
 };

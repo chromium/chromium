@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_input_event.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -31,19 +30,18 @@ class ProgrammaticScrollTest : public testing::Test {
   ProgrammaticScrollTest() : base_url_("http://www.test.com/") {}
 
   void TearDown() override {
-    Platform::Current()
-        ->GetURLLoaderMockFactory()
-        ->UnregisterAllURLsAndClearMemoryCache();
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
  protected:
-  void RegisterMockedHttpURLLoad(const std::string& file_name) {
+  void RegisterMockedHttpURLLoad(const String& file_name) {
+    // TODO(crbug.com/751425): We should use the mock functionality
+    // via the WebViewHelper instance in each test case.
     url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8(base_url_), test::CoreTestDataPath(),
-        WebString::FromUTF8(file_name));
+        WebString(base_url_), test::CoreTestDataPath(), WebString(file_name));
   }
 
-  std::string base_url_;
+  String base_url_;
 };
 
 TEST_F(ProgrammaticScrollTest, RestoreScrollPositionAndViewStateWithScale) {
@@ -51,7 +49,7 @@ TEST_F(ProgrammaticScrollTest, RestoreScrollPositionAndViewStateWithScale) {
 
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view =
-      web_view_helper.InitializeAndLoad(base_url_ + "long_scroll.html");
+      web_view_helper.InitializeAndLoad(base_url_.Utf8() + "long_scroll.html");
   web_view->MainFrameWidget()->Resize(WebSize(1000, 1000));
   web_view->MainFrameWidget()->UpdateAllLifecyclePhases(
       WebWidget::LifecycleUpdateReason::kTest);
@@ -84,7 +82,7 @@ TEST_F(ProgrammaticScrollTest, RestoreScrollPositionAndViewStateWithoutScale) {
 
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view =
-      web_view_helper.InitializeAndLoad(base_url_ + "long_scroll.html");
+      web_view_helper.InitializeAndLoad(base_url_.Utf8() + "long_scroll.html");
   web_view->MainFrameWidget()->Resize(WebSize(1000, 1000));
   web_view->MainFrameWidget()->UpdateAllLifecyclePhases(
       WebWidget::LifecycleUpdateReason::kTest);
@@ -114,7 +112,7 @@ TEST_F(ProgrammaticScrollTest, SaveScrollStateClearsAnchor) {
 
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view =
-      web_view_helper.InitializeAndLoad(base_url_ + "long_scroll.html");
+      web_view_helper.InitializeAndLoad(base_url_.Utf8() + "long_scroll.html");
   web_view->MainFrameWidget()->Resize(WebSize(1000, 1000));
   web_view->MainFrameWidget()->UpdateAllLifecyclePhases(
       WebWidget::LifecycleUpdateReason::kTest);
@@ -159,12 +157,12 @@ TEST_F(ProgrammaticScrollSimTest, NavigateToHash) {
       body {
         height: 4000px;
       }
-      h2 {
+      div {
         position: absolute;
         top: 3000px;
       }
     </style>
-    <h2 id="target">Target</h2>
+    <div id="target">Target</h2>
   )HTML");
   main_resource.Finish();
   css_resource.Complete();
@@ -175,7 +173,7 @@ TEST_F(ProgrammaticScrollSimTest, NavigateToHash) {
   test::RunPendingTasks();
 
   ScrollableArea* layout_viewport = GetDocument().View()->LayoutViewport();
-  EXPECT_EQ(3001, layout_viewport->GetScrollOffset().Height());
+  EXPECT_EQ(3000, layout_viewport->GetScrollOffset().Height());
 }
 
 }  // namespace blink

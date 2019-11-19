@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "services/audio/loopback_coordinator.h"
 #include "services/audio/loopback_group_member.h"
@@ -84,7 +84,7 @@ TEST(LocalMuterTest, MutesJoiningMembers) {
 }
 
 TEST(LocalMuter, UnmutesWhenLastBindingIsLost) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   LoopbackCoordinator coordinator;
   const UnguessableToken group_id = UnguessableToken::Create();
 
@@ -100,12 +100,10 @@ TEST(LocalMuter, UnmutesWhenLastBindingIsLost) {
   muter->SetAllBindingsLostCallback(callback.Get());
 
   // Create two bindings to the muter.
-  mojom::LocalMuterAssociatedPtr muter_ptr1;
-  muter->AddBinding(mojo::MakeRequest(&muter_ptr1));
-  ASSERT_TRUE(!!muter_ptr1);
-  mojom::LocalMuterAssociatedPtr muter_ptr2;
-  muter->AddBinding(mojo::MakeRequest(&muter_ptr2));
-  ASSERT_TRUE(!!muter_ptr2);
+  mojo::AssociatedRemote<mojom::LocalMuter> remote_muter1;
+  muter->AddReceiver(remote_muter1.BindNewEndpointAndPassReceiver());
+  mojo::AssociatedRemote<mojom::LocalMuter> remote_muter2;
+  muter->AddReceiver(remote_muter2.BindNewEndpointAndPassReceiver());
 
   // A member joins the group and should be muted.
   StrictMock<MockGroupMember> member;
@@ -115,13 +113,13 @@ TEST(LocalMuter, UnmutesWhenLastBindingIsLost) {
 
   // Nothing happens to the member when one of the bindings is closed.
   EXPECT_CALL(member, StopMuting()).Times(0);
-  muter_ptr1 = nullptr;
+  remote_muter1.reset();
   task_environment.RunUntilIdle();  // Propagate mojo tasks.
   Mock::VerifyAndClearExpectations(&member);
 
   // The member is unmuted once the second binding is closed.
   EXPECT_CALL(member, StopMuting());
-  muter_ptr2 = nullptr;
+  remote_muter2.reset();
   task_environment.RunUntilIdle();  // Propagate mojo tasks.
   Mock::VerifyAndClearExpectations(&member);
 

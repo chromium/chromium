@@ -61,7 +61,7 @@ class FakeInputInjector : public InputInjector {
   std::vector<protocol::TouchEvent>* touch_events_ = nullptr;
   std::vector<protocol::ClipboardEvent>* clipboard_events_ = nullptr;
 
-  base::WeakPtrFactory<FakeInputInjector> weak_factory_;
+  base::WeakPtrFactory<FakeInputInjector> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeInputInjector);
 };
@@ -118,7 +118,7 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
 
   const DesktopEnvironmentOptions options_;
 
-  base::WeakPtrFactory<FakeDesktopEnvironment> weak_factory_;
+  base::WeakPtrFactory<FakeDesktopEnvironment> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeDesktopEnvironment);
 };

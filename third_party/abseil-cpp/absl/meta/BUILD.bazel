@@ -1,6 +1,7 @@
 load(
     "//absl:copts/configure_copts.bzl",
     "ABSL_DEFAULT_COPTS",
+    "ABSL_DEFAULT_LINKOPTS",
     "ABSL_TEST_COPTS",
 )
 
@@ -12,6 +13,7 @@ cc_library(
     name = "type_traits",
     hdrs = ["type_traits.h"],
     copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         "//absl/base:config",
     ],
@@ -21,9 +23,9 @@ cc_test(
     name = "type_traits_test",
     srcs = ["type_traits_test.cc"],
     copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":type_traits",
-        "//absl/base:core_headers",
         "@com_google_googletest//:gtest_main",
     ],
 )

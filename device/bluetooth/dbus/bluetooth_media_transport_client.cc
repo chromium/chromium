@@ -60,8 +60,7 @@ class BluetoothMediaTransportClientImpl
     : public BluetoothMediaTransportClient,
       public dbus::ObjectManager::Interface {
  public:
-  BluetoothMediaTransportClientImpl()
-      : object_manager_(nullptr), weak_ptr_factory_(this) {}
+  BluetoothMediaTransportClientImpl() : object_manager_(nullptr) {}
 
   ~BluetoothMediaTransportClientImpl() override {
     object_manager_->UnregisterInterface(
@@ -272,7 +271,8 @@ class BluetoothMediaTransportClientImpl
   base::ObserverList<BluetoothMediaTransportClient::Observer>::Unchecked
       observers_;
 
-  base::WeakPtrFactory<BluetoothMediaTransportClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothMediaTransportClientImpl> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothMediaTransportClientImpl);
 };

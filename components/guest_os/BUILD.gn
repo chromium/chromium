@@ -1,0 +1,55 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+static_library("guest_os") {
+  deps = [
+    ":prefs",
+    "//ash/public/cpp",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/dbus/session_manager",
+    "//components/exo",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//ui/wm/public:public",
+  ]
+  sources = [
+    "guest_os_engagement_metrics.cc",
+    "guest_os_engagement_metrics.h",
+  ]
+}
+
+static_library("prefs") {
+  sources = [
+    "guest_os_prefs.cc",
+    "guest_os_prefs.h",
+  ]
+
+  deps = [
+    "//components/prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":guest_os",
+    ":prefs",
+    "//ash:ash",
+    "//base/test:test_support",
+    "//chromeos/dbus/power:power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/dbus/session_manager",
+    "//components/prefs:test_support",
+    "//components/session_manager/core",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/aura:test_support",
+  ]
+  sources = [
+    "guest_os_engagement_metrics_unittest.cc",
+  ]
+}

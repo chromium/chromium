@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 
 namespace blink {
 
@@ -61,19 +61,18 @@ class WebTextCheckingCompletionImpl : public WebTextCheckingCompletion {
       const WebVector<WebTextCheckingResult>& results) override {
     if (request_)
       request_->DidSucceed(ToCoreResults(results));
-    delete this;
+    request_ = nullptr;
   }
 
   void DidCancelCheckingText() override {
     if (request_)
       request_->DidCancel();
-    // TODO(dgozman): use std::unique_ptr.
-    delete this;
+    request_ = nullptr;
   }
 
- private:
-  virtual ~WebTextCheckingCompletionImpl() = default;
+  ~WebTextCheckingCompletionImpl() override = default;
 
+ private:
   // As |WebTextCheckingCompletionImpl| is mananaged outside Blink, it should
   // only keep weak references to Blink objects to prevent memory leaks.
   WeakPersistent<SpellCheckRequest> request_;
@@ -199,8 +198,8 @@ bool SpellCheckRequester::RequestCheckingFor(const EphemeralRange& range,
   if (!request)
     return false;
 
-  const TimeTicks current_request_time = CurrentTimeTicks();
-  if (request_num == 0 && last_request_time_ > TimeTicks()) {
+  const base::TimeTicks current_request_time = base::TimeTicks::Now();
+  if (request_num == 0 && last_request_time_ > base::TimeTicks()) {
     UMA_HISTOGRAM_TIMES("WebCore.SpellChecker.RequestInterval",
                         current_request_time - last_request_time_);
   }
@@ -243,7 +242,7 @@ void SpellCheckRequester::InvokeRequest(SpellCheckRequest* request) {
   if (WebTextCheckClient* text_checker_client = GetTextCheckerClient()) {
     text_checker_client->RequestCheckingOfText(
         processing_request_->GetText(),
-        new WebTextCheckingCompletionImpl(request));
+        std::make_unique<WebTextCheckingCompletionImpl>(request));
   }
 }
 
@@ -298,7 +297,7 @@ void SpellCheckRequester::DidCheck(int sequence) {
 
   ClearProcessingRequest();
   if (!request_queue_.IsEmpty())
-    timer_to_process_queued_request_.StartOneShot(TimeDelta(), FROM_HERE);
+    timer_to_process_queued_request_.StartOneShot(base::TimeDelta(), FROM_HERE);
 }
 
 void SpellCheckRequester::DidCheckSucceed(

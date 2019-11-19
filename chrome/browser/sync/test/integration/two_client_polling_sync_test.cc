@@ -11,8 +11,8 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/browser_sync/profile_sync_service.h"
 #include "components/sync/base/sync_prefs.h"
+#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/protocol/client_commands.pb.h"
 #include "components/sync/test/fake_server/sessions_hierarchy.h"
@@ -39,20 +39,17 @@ class TwoClientPollingSyncTest : public SyncTest {
 class SessionCountMatchChecker : public SingleClientStatusChangeChecker {
  public:
   SessionCountMatchChecker(int expected_count,
-                           browser_sync::ProfileSyncService* service,
+                           syncer::ProfileSyncService* service,
                            fake_server::FakeServer* fake_server)
       : SingleClientStatusChangeChecker(service),
         expected_count_(expected_count),
         verifier_(fake_server) {}
 
   // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied() override {
-    return verifier_.VerifyEntityCountByType(expected_count_, syncer::SESSIONS);
-  }
-
-  std::string GetDebugMessage() const override {
-    return "Waiting for a matching number of sessions to be refleted on the "
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for a matching number of sessions to be refleted on the "
            "fake server.";
+    return verifier_.VerifyEntityCountByType(expected_count_, syncer::SESSIONS);
   }
 
  private:
@@ -65,16 +62,16 @@ class SessionCountMatchChecker : public SingleClientStatusChangeChecker {
 // Because the initial run of sync is doing a number of extra sync cycles,
 // this test is structured in 2 phases. In the first phase, we simply bring
 // up two clients and have them sync some data.
-// In the seconed phase, we take down client 1 and while it's down upload more
+// In the second phase, we take down client 1 and while it's down upload more
 // data from client 0. That second phase will rely on polling on client 1 to
 // receive the update.
-IN_PROC_BROWSER_TEST_F(TwoClientPollingSyncTest, ShouldPollOnStartup) {
+// Flaky: crbug.com/988161
+IN_PROC_BROWSER_TEST_F(TwoClientPollingSyncTest, DISABLED_ShouldPollOnStartup) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
-  // Choose larger intervals to verify the poll-on-start logic.
+  // Choose larger interval to verify the poll-on-start logic.
   SyncPrefs remote_prefs(GetProfile(1)->GetPrefs());
-  remote_prefs.SetShortPollInterval(base::TimeDelta::FromMinutes(2));
-  remote_prefs.SetLongPollInterval(base::TimeDelta::FromMinutes(2));
+  remote_prefs.SetPollInterval(base::TimeDelta::FromMinutes(2));
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
@@ -82,8 +79,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPollingSyncTest, ShouldPollOnStartup) {
   // clear its data even with KEEP_DATA, which means we'd always send a regular
   // GetUpdates request on starting Sync again, and so we'd have no need for a
   // poll.
-  GetClient(0)->DisableSyncForDatatype(syncer::AUTOFILL);
-  GetClient(1)->DisableSyncForDatatype(syncer::AUTOFILL);
+  GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kAutofill);
+  GetClient(1)->DisableSyncForType(syncer::UserSelectableType::kAutofill);
   // TODO(crbug.com/890737): Once AUTOFILL_WALLET_DATA gets properly disabled
   // based on the pref, we can just disable that instead of all of AUTOFILL:
   // autofill::prefs::SetPaymentsIntegrationEnabled(GetProfile(0)->GetPrefs(),
@@ -104,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPollingSyncTest, ShouldPollOnStartup) {
 
   // Phase 2.
   // Disconnect client 1 from sync and write another change from client 0.
-  // Disconnnect the remote client from the invalidation service.
+  // Disconnect the remote client from the invalidation service.
   DisableNotificationsForClient(1);
   // Make sure no extra sync cycles get triggered by test infrastructure.
   StopConfigurationRefresher();

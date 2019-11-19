@@ -13,6 +13,8 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -23,7 +25,6 @@ struct RedirectInfo;
 namespace network {
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
-struct ResourceResponseHead;
 }  // namespace network
 
 namespace payments {
@@ -49,7 +50,9 @@ class ErrorLogger;
 // In the case of a web app manifest download, can also also fail when:
 //  - There's a redirect.
 using PaymentManifestDownloadCallback =
-    base::OnceCallback<void(const GURL& url, const std::string& contents)>;
+    base::OnceCallback<void(const GURL& url,
+                            const std::string& contents,
+                            const std::string& error_message)>;
 
 // Downloader of the payment method manifest and web-app manifest based on the
 // payment method name that is a URL with HTTPS scheme, e.g.,
@@ -58,6 +61,11 @@ using PaymentManifestDownloadCallback =
 // The downloader follows up to three redirects for the HEAD request only (used
 // for payment method manifests). Three is enough for known legitimate use cases
 // and seems like a good upper bound.
+//
+// The command line must be initialized to use this class in tests, because it
+// checks for --unsafely-treat-insecure-origin-as-secure=<origin> flag. For
+// example:
+//  base::CommandLine::Init(0, nullptr);
 class PaymentManifestDownloader {
  public:
   PaymentManifestDownloader(
@@ -96,6 +104,10 @@ class PaymentManifestDownloader {
   void DownloadWebAppManifest(const GURL& url,
                               PaymentManifestDownloadCallback callback);
 
+  // Overridden in TestDownloader to convert |url| to a test server URL. The
+  // default implementation here simply returns |url|.
+  virtual GURL FindTestServerURL(const GURL& url) const;
+
  private:
   friend class PaymentMethodManifestDownloaderTest;
   friend class TestDownloader;
@@ -116,7 +128,7 @@ class PaymentManifestDownloader {
   // Called by SimpleURLLoader on a redirect.
   void OnURLLoaderRedirect(network::SimpleURLLoader* url_loader,
                            const net::RedirectInfo& redirect_info,
-                           const network::ResourceResponseHead& response_head,
+                           const network::mojom::URLResponseHead& response_head,
                            std::vector<std::string>* to_be_removed_headers);
 
   // Called by SimpleURLLoader on completion.
@@ -152,6 +164,8 @@ class PaymentManifestDownloader {
   // collision between HEAD and GET requests.
   std::map<const network::SimpleURLLoader*, std::unique_ptr<Download>>
       downloads_;
+
+  base::WeakPtrFactory<PaymentManifestDownloader> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PaymentManifestDownloader);
 };

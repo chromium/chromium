@@ -14,7 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_store_observer_mock.h"
@@ -83,8 +83,9 @@ class SegregatedPrefStoreTest
     selected_pref_names.insert(kSelectedPref);
     selected_pref_names.insert(kSharedPref);
 
-    segregated_store_ = new SegregatedPrefStore(default_store_, selected_store_,
-                                                selected_pref_names, nullptr);
+    segregated_store_ = new SegregatedPrefStore(
+        default_store_, selected_store_, selected_pref_names,
+        mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>());
 
     segregated_store_->AddObserver(&observer_);
   }
@@ -98,7 +99,7 @@ class SegregatedPrefStoreTest
     return std::move(read_error_delegate_);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   PrefStoreObserverMock observer_;
 

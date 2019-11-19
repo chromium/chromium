@@ -8,13 +8,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.support.annotation.IntDef;
 import android.text.format.DateUtils;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.ChromeVersionInfo;
 
 import java.io.BufferedOutputStream;
@@ -381,7 +383,7 @@ public class OmahaBase {
         ExponentialBackoffScheduler scheduler = getBackoffScheduler();
         long currentTime = scheduler.getCurrentTime();
 
-        SharedPreferences preferences = OmahaBase.getSharedPreferences(context);
+        SharedPreferences preferences = OmahaBase.getSharedPreferences();
         mTimestampForNewRequest =
                 preferences.getLong(OmahaBase.PREF_TIMESTAMP_FOR_NEW_REQUEST, currentTime);
         mTimestampForNextPostAttempt =
@@ -430,7 +432,7 @@ public class OmahaBase {
      * Writes out the current state to a file.
      */
     private void saveState(Context context) {
-        SharedPreferences prefs = OmahaBase.getSharedPreferences(context);
+        SharedPreferences prefs = OmahaBase.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(OmahaBase.PREF_SEND_INSTALL_EVENT, mSendInstallEvent);
         editor.putLong(OmahaBase.PREF_TIMESTAMP_OF_INSTALL, mTimestampOfInstall);
@@ -477,7 +479,7 @@ public class OmahaBase {
 
     /** Checks whether Chrome has ever tried contacting Omaha before. */
     public static boolean isProbablyFreshInstall(Context context) {
-        SharedPreferences prefs = getSharedPreferences(context);
+        SharedPreferences prefs = getSharedPreferences();
         return prefs.getLong(PREF_TIMESTAMP_OF_INSTALL, -1) == -1;
     }
 
@@ -526,8 +528,9 @@ public class OmahaBase {
     }
 
     /** Returns the Omaha SharedPreferences. */
-    static SharedPreferences getSharedPreferences(Context context) {
-        return context.getSharedPreferences(PREF_PACKAGE, Context.MODE_PRIVATE);
+    public static SharedPreferences getSharedPreferences() {
+        return ContextUtils.getApplicationContext().getSharedPreferences(
+                PREF_PACKAGE, Context.MODE_PRIVATE);
     }
 
     static void setVersionConfig(SharedPreferences.Editor editor, VersionConfig versionConfig) {

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ios/web/public/favicon_url.h"
+#include "ios/web/public/favicon/favicon_url.h"
 #include "url/gurl.h"
 
 namespace web {

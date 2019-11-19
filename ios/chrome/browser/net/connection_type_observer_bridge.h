@@ -27,7 +27,7 @@ class ConnectionTypeObserverBridge
   void OnConnectionTypeChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
 
-  id<CRConnectionTypeObserverBridge> delegate_;  // Weak, owns this.
+  __weak id<CRConnectionTypeObserverBridge> delegate_;
   DISALLOW_COPY_AND_ASSIGN(ConnectionTypeObserverBridge);
 };
 

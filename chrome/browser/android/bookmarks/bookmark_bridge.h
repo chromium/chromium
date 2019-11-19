@@ -8,7 +8,10 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/compiler_specific.h"
+#include "base/guid.h"
 #include "base/macros.h"
+#include "base/strings/string16.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/common/android/bookmark_id.h"
@@ -36,11 +39,15 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
   bool IsDoingExtensiveChanges(JNIEnv* env,
                                const base::android::JavaParamRef<jobject>& obj);
 
-  jboolean IsEditBookmarksEnabled(
+  jboolean IsEditBookmarksEnabled(JNIEnv* env);
+
+  void LoadEmptyPartnerBookmarkShimForTesting(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
-  void LoadEmptyPartnerBookmarkShimForTesting(
+  // Loads a fake partner bookmarks shim for testing.
+  // This is used in BookmarkBridgeTest.java.
+  void LoadFakePartnerBookmarkShimForTesting(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
@@ -89,6 +96,10 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
+  base::android::ScopedJavaLocalRef<jobject> GetPartnerFolderId(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+
   void GetChildIDs(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& obj,
                    jlong id,
@@ -108,6 +119,12 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
       jlong id,
       jint type,
       jint index);
+
+  void ReorderChildren(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& j_bookmark_id_obj,
+      jlongArray arr);
 
   // Get the number of bookmarks in the sub tree of the specified bookmark node.
   // The specified node must be of folder type.
@@ -233,15 +250,15 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
   void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
   void BookmarkNodeMoved(bookmarks::BookmarkModel* model,
                          const bookmarks::BookmarkNode* old_parent,
-                         int old_index,
+                         size_t old_index,
                          const bookmarks::BookmarkNode* new_parent,
-                         int new_index) override;
+                         size_t new_index) override;
   void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
                          const bookmarks::BookmarkNode* parent,
-                         int index) override;
+                         size_t index) override;
   void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
                            const bookmarks::BookmarkNode* parent,
-                           int old_index,
+                           size_t old_index,
                            const bookmarks::BookmarkNode* node,
                            const std::set<GURL>& removed_urls) override;
   void BookmarkAllUserNodesRemoved(bookmarks::BookmarkModel* model,

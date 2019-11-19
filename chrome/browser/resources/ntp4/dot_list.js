@@ -11,7 +11,7 @@ cr.define('ntp', function() {
 
   /**
    * Live list of the navigation dots.
-   * @type {!NodeList|undefined}
+   * @type {!HTMLCollection<!Element>}
    */
   let navDots;
 

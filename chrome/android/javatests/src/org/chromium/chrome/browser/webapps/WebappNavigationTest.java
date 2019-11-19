@@ -24,12 +24,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.blink_public.platform.WebDisplayMode;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ShortcutHelper;
@@ -38,18 +37,22 @@ import org.chromium.chrome.browser.externalnav.ExternalNavigationHandler.Overrid
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.tab.InterceptNavigationDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.util.ColorUtils;
+import org.chromium.chrome.browser.ui.styles.ChromeColors;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.chrome.test.util.browser.WebappTestPage;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
+import org.chromium.chrome.test.util.browser.contextmenu.RevampedContextMenuUtils;
+import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.NativeLibraryTestRule;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
@@ -253,6 +256,7 @@ public class WebappNavigationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
+    @DisableFeatures({ChromeFeatureList.REVAMPED_CONTEXT_MENU})
     @RetryOnFailure
     public void testOpenInChromeFromContextMenuTabbedChrome() throws Exception {
         // Needed to get full context menu.
@@ -274,8 +278,29 @@ public class WebappNavigationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
+    @EnableFeatures({ChromeFeatureList.REVAMPED_CONTEXT_MENU})
+    public void testOpenInChromeFromRevampedContextMenuTabbedChrome() throws Exception {
+        // Needed to get full context menu.
+        FirstRunStatus.setFirstRunFlowComplete(true);
+        runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent());
+
+        addAnchor("myTestAnchorId", offOriginUrl(), "_self");
+
+        RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
+                null /* activity to check for focus after click */,
+                mActivityTestRule.getActivity().getActivityTab(), "myTestAnchorId",
+                R.id.contextmenu_open_in_chrome);
+
+        ChromeTabbedActivity tabbedChrome =
+                ChromeActivityTestRule.waitFor(ChromeTabbedActivity.class);
+        ChromeTabUtils.waitForTabPageLoaded(tabbedChrome.getActivityTab(), offOriginUrl());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Webapps"})
     @RetryOnFailure
-    public void testOpenInChromeFromCustomMenuTabbedChrome() throws Exception {
+    public void testOpenInChromeFromCustomMenuTabbedChrome() {
         WebappActivity activity =
                 runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent().putExtra(
                         ShortcutHelper.EXTRA_DISPLAY_MODE, WebDisplayMode.MINIMAL_UI));
@@ -296,8 +321,10 @@ public class WebappNavigationTest {
     public void testRegularLinkToExternalApp() throws Exception {
         runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent());
 
-        InterceptNavigationDelegateImpl navigationDelegate =
-                mActivityTestRule.getActivity().getActivityTab().getInterceptNavigationDelegate();
+        InterceptNavigationDelegateImpl navigationDelegate = TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> InterceptNavigationDelegateImpl.get(
+                                mActivityTestRule.getActivity().getActivityTab()));
 
         addAnchorAndClick(YOUTUBE_URL, "_self");
 
@@ -334,7 +361,7 @@ public class WebappNavigationTest {
 
         ChromeTabbedActivity tabbedChrome =
                 ChromeActivityTestRule.waitFor(ChromeTabbedActivity.class);
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> tabbedChrome.getActivityTab().loadUrl(new LoadUrlParams(offOriginUrl())));
         ChromeTabUtils.waitForTabPageLoaded(tabbedChrome.getActivityTab(), offOriginUrl());
     }
@@ -361,11 +388,11 @@ public class WebappNavigationTest {
         WebappActivityTestRule.assertToolbarShowState(activity, true);
 
         // Navigate back to in-scope through a close button.
-        ThreadUtils.runOnUiThreadBlocking(()
-                                                  -> activity.getToolbarManager()
-                                                             .getToolbarLayoutForTesting()
-                                                             .findViewById(R.id.close_button)
-                                                             .callOnClick());
+        TestThreadUtils.runOnUiThreadBlocking(()
+                                                      -> activity.getToolbarManager()
+                                                                 .getToolbarLayoutForTesting()
+                                                                 .findViewById(R.id.close_button)
+                                                                 .callOnClick());
 
         // We should end up on most recent in-scope URL.
         ChromeTabUtils.waitForTabPageLoaded(tab, otherInScopeUrl);
@@ -401,23 +428,22 @@ public class WebappNavigationTest {
 
         // Close the Minimal UI.
         WebappActivityTestRule.assertToolbarShowState(activity, true);
-        ThreadUtils.runOnUiThreadBlocking(()
-                                                  -> activity.getToolbarManager()
-                                                             .getToolbarLayoutForTesting()
-                                                             .findViewById(R.id.close_button)
-                                                             .callOnClick());
+        TestThreadUtils.runOnUiThreadBlocking(()
+                                                      -> activity.getToolbarManager()
+                                                                 .getToolbarLayoutForTesting()
+                                                                 .findViewById(R.id.close_button)
+                                                                 .callOnClick());
 
         // The WebappActivity should be navigated to the page prior to the redirect.
         ChromeTabUtils.waitForTabPageLoaded(activity.getActivityTab(), initialInScopeUrl);
     }
 
-    private WebappActivity runWebappActivityAndWaitForIdle(Intent intent) throws Exception {
+    private WebappActivity runWebappActivityAndWaitForIdle(Intent intent) {
         return runWebappActivityAndWaitForIdleWithUrl(
                 intent, WebappTestPage.getServiceWorkerUrl(mActivityTestRule.getTestServer()));
     }
 
-    private WebappActivity runWebappActivityAndWaitForIdleWithUrl(Intent intent, String url)
-            throws Exception {
+    private WebappActivity runWebappActivityAndWaitForIdleWithUrl(Intent intent, String url) {
         mActivityTestRule.startWebappActivity(intent.putExtra(ShortcutHelper.EXTRA_URL, url));
         mActivityTestRule.waitUntilSplashscreenHides();
         mActivityTestRule.waitUntilIdle();
@@ -425,7 +451,7 @@ public class WebappNavigationTest {
     }
 
     private long getDefaultPrimaryColor() {
-        return ColorUtils.getDefaultThemeColor(
+        return ChromeColors.getDefaultThemeColor(
                 mActivityTestRule.getActivity().getResources(), false);
     }
 

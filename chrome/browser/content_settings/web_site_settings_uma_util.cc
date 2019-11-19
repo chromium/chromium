@@ -28,12 +28,12 @@ void WebSiteSettingsUmaUtil::LogPermissionChange(ContentSettingsType type,
     UMA_HISTOGRAM_EXACT_LINEAR("WebsiteSettings.Menu.PermissionChanged.Reset",
                                histogram_value, num_values);
   } else if (setting == ContentSetting::CONTENT_SETTING_SESSION_ONLY) {
-    DCHECK_EQ(CONTENT_SETTINGS_TYPE_COOKIES, type);
+    DCHECK_EQ(ContentSettingsType::COOKIES, type);
     UMA_HISTOGRAM_EXACT_LINEAR(
         "WebsiteSettings.Menu.PermissionChanged.SessionOnly", histogram_value,
         num_values);
   } else {
-    NOTREACHED() << "Requested to log permission change " << type << " to "
-                 << setting;
+    NOTREACHED() << "Requested to log permission change "
+                 << static_cast<int32_t>(type) << " to " << setting;
   }
 }

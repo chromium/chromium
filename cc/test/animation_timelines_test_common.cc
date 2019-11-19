@@ -32,6 +32,7 @@ void TestLayer::ClearMutatedProperties() {
   transform_ = gfx::Transform();
   opacity_ = 0;
   filters_ = FilterOperations();
+  backdrop_filters_ = FilterOperations();
   scroll_offset_ = gfx::ScrollOffset();
 
   has_potential_animation_.reset();
@@ -60,6 +61,17 @@ float TestLayer::brightness() const {
   return 0;
 }
 
+float TestLayer::invert() const {
+  for (unsigned i = 0; i < backdrop_filters_.size(); ++i) {
+    const FilterOperation& filter = backdrop_filters_.at(i);
+    if (filter.type() == FilterOperation::INVERT)
+      return filter.amount();
+  }
+
+  NOTREACHED();
+  return 0;
+}
+
 TestHostClient::TestHostClient(ThreadInstance thread_instance)
     : host_(AnimationHost::CreateForTesting(thread_instance)),
       mutators_need_commit_(false) {
@@ -78,8 +90,8 @@ void TestHostClient::ClearMutatedProperties() {
     kv.second->ClearMutatedProperties();
 }
 
-bool TestHostClient::IsElementInList(ElementId element_id,
-                                     ElementListType list_type) const {
+bool TestHostClient::IsElementInPropertyTrees(ElementId element_id,
+                                              ElementListType list_type) const {
   return list_type == ElementListType::ACTIVE
              ? layers_in_active_tree_.count(element_id)
              : layers_in_pending_tree_.count(element_id);
@@ -97,6 +109,15 @@ void TestHostClient::SetElementFilterMutated(ElementId element_id,
   TestLayer* layer = FindTestLayer(element_id, list_type);
   if (layer)
     layer->set_filters(filters);
+}
+
+void TestHostClient::SetElementBackdropFilterMutated(
+    ElementId element_id,
+    ElementListType list_type,
+    const FilterOperations& backdrop_filters) {
+  TestLayer* layer = FindTestLayer(element_id, list_type);
+  if (layer)
+    layer->set_backdrop_filters(backdrop_filters);
 }
 
 void TestHostClient::SetElementOpacityMutated(ElementId element_id,
@@ -146,6 +167,11 @@ void TestHostClient::ElementIsAnimatingChanged(
   }
 }
 
+void TestHostClient::AnimationScalesChanged(ElementId element_id,
+                                            ElementListType list_type,
+                                            float maximum_scale,
+                                            float starting_scale) {}
+
 void TestHostClient::SetScrollOffsetForAnimation(
     const gfx::ScrollOffset& scroll_offset) {
   scroll_offset_ = scroll_offset;
@@ -156,8 +182,8 @@ gfx::ScrollOffset TestHostClient::GetScrollOffsetForAnimation(
   return scroll_offset_;
 }
 
-void TestHostClient::RegisterElement(ElementId element_id,
-                                     ElementListType list_type) {
+void TestHostClient::RegisterElementId(ElementId element_id,
+                                       ElementListType list_type) {
   ElementIdToTestLayer& layers_in_tree = list_type == ElementListType::ACTIVE
                                              ? layers_in_active_tree_
                                              : layers_in_pending_tree_;
@@ -165,13 +191,13 @@ void TestHostClient::RegisterElement(ElementId element_id,
   layers_in_tree[element_id] = TestLayer::Create();
 
   DCHECK(host_);
-  host_->RegisterElement(element_id, list_type);
+  host_->RegisterElementId(element_id, list_type);
 }
 
-void TestHostClient::UnregisterElement(ElementId element_id,
-                                       ElementListType list_type) {
+void TestHostClient::UnregisterElementId(ElementId element_id,
+                                         ElementListType list_type) {
   DCHECK(host_);
-  host_->UnregisterElement(element_id, list_type);
+  host_->UnregisterElementId(element_id, list_type);
 
   ElementIdToTestLayer& layers_in_tree = list_type == ElementListType::ACTIVE
                                              ? layers_in_active_tree_
@@ -194,6 +220,14 @@ FilterOperations TestHostClient::GetFilters(ElementId element_id,
   TestLayer* layer = FindTestLayer(element_id, list_type);
   EXPECT_TRUE(layer);
   return layer->filters();
+}
+
+FilterOperations TestHostClient::GetBackdropFilters(
+    ElementId element_id,
+    ElementListType list_type) const {
+  TestLayer* layer = FindTestLayer(element_id, list_type);
+  EXPECT_TRUE(layer);
+  return layer->backdrop_filters();
 }
 
 float TestHostClient::GetOpacity(ElementId element_id,
@@ -266,6 +300,22 @@ bool TestHostClient::GetHasPotentialFilterAnimation(
   return layer->has_potential_animation(TargetProperty::FILTER);
 }
 
+bool TestHostClient::GetBackdropFilterIsCurrentlyAnimating(
+    ElementId element_id,
+    ElementListType list_type) const {
+  TestLayer* layer = FindTestLayer(element_id, list_type);
+  EXPECT_TRUE(layer);
+  return layer->is_currently_animating(TargetProperty::BACKDROP_FILTER);
+}
+
+bool TestHostClient::GetHasPotentialBackdropFilterAnimation(
+    ElementId element_id,
+    ElementListType list_type) const {
+  TestLayer* layer = FindTestLayer(element_id, list_type);
+  EXPECT_TRUE(layer);
+  return layer->has_potential_animation(TargetProperty::BACKDROP_FILTER);
+}
+
 void TestHostClient::ExpectFilterPropertyMutated(ElementId element_id,
                                                  ElementListType list_type,
                                                  float brightness) const {
@@ -273,6 +323,16 @@ void TestHostClient::ExpectFilterPropertyMutated(ElementId element_id,
   EXPECT_TRUE(layer);
   EXPECT_TRUE(layer->is_property_mutated(TargetProperty::FILTER));
   EXPECT_EQ(brightness, layer->brightness());
+}
+
+void TestHostClient::ExpectBackdropFilterPropertyMutated(
+    ElementId element_id,
+    ElementListType list_type,
+    float invert) const {
+  TestLayer* layer = FindTestLayer(element_id, list_type);
+  EXPECT_TRUE(layer);
+  EXPECT_TRUE(layer->is_property_mutated(TargetProperty::BACKDROP_FILTER));
+  EXPECT_EQ(invert, layer->invert());
 }
 
 void TestHostClient::ExpectOpacityPropertyMutated(ElementId element_id,
@@ -345,6 +405,9 @@ void TestAnimationDelegate::NotifyAnimationTakeover(
   takeover_ = true;
 }
 
+void TestAnimationDelegate::NotifyLocalTimeUpdated(
+    base::Optional<base::TimeDelta> local_time) {}
+
 AnimationTimelinesTest::AnimationTimelinesTest()
     : client_(ThreadInstance::MAIN),
       client_impl_(ThreadInstance::IMPL),
@@ -382,16 +445,16 @@ void AnimationTimelinesTest::CreateTestLayer(
 }
 
 void AnimationTimelinesTest::CreateTestMainLayer() {
-  client_.RegisterElement(element_id_, ElementListType::ACTIVE);
+  client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
 }
 
 void AnimationTimelinesTest::DestroyTestMainLayer() {
-  client_.UnregisterElement(element_id_, ElementListType::ACTIVE);
+  client_.UnregisterElementId(element_id_, ElementListType::ACTIVE);
 }
 
 void AnimationTimelinesTest::CreateTestImplLayer(
     ElementListType element_list_type) {
-  client_impl_.RegisterElement(element_id_, element_list_type);
+  client_impl_.RegisterElementId(element_id_, element_list_type);
 }
 
 void AnimationTimelinesTest::AttachTimelineAnimationLayer() {

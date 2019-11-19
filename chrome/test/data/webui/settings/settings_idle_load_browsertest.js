@@ -4,8 +4,6 @@
 
 /** @fileoverview Tests for settings-idle-load. */
 
-/** @const {string} Path to root from chrome/test/data/webui/settings/. */
-const ROOT_PATH = '../../../../../';
 
 /**
  * @constructor
@@ -21,7 +19,7 @@ SettingsIdleLoadBrowserTest.prototype = {
 
   /** @override */
   extraLibraries: [
-    ROOT_PATH + 'third_party/mocha/mocha.js',
+    '//third_party/mocha/mocha.js',
     '../mocha_adapter.js',
   ],
 

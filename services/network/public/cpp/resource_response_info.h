@@ -21,6 +21,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/nqe/effective_connection_type.h"
+#include "services/network/public/cpp/content_security_policy.h"
 #include "services/network/public/cpp/http_raw_request_response_info.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
@@ -29,7 +30,7 @@ namespace network {
 
 // NOTE: when modifying this structure, also update ResourceResponse::DeepCopy
 // in resource_response.cc.
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceResponseInfo {
+struct COMPONENT_EXPORT(NETWORK_CPP) ResourceResponseInfo {
   ResourceResponseInfo();
   ResourceResponseInfo(const ResourceResponseInfo& other);
   ~ResourceResponseInfo();
@@ -111,7 +112,12 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceResponseInfo {
   // The proxy server used for this request, if any.
   net::ProxyServer proxy_server;
 
-  // True if the response was fetched by a ServiceWorker.
+  // True if a service worker responded to the request. If the service worker
+  // received a fetch event and did not call respondWith(), or was bypassed due
+  // to absence of a fetch event handler, this function typically returns false
+  // but returns true if "fallback to renderer" was required (however in this
+  // case the response is not an actual resource and the request will be
+  // reissued by the renderer).
   bool was_fetched_via_service_worker;
 
   // True when a request whose mode is |CORS| or |CORS-with-forced-preflight|
@@ -120,8 +126,14 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceResponseInfo {
   // considering the CORS preflight logic.
   bool was_fallback_required_by_service_worker;
 
-  // The URL list of the response which was served by the ServiceWorker. See
-  // ServiceWorkerResponseInfo::url_list_via_service_worker().
+  // The URL list of the Response object the service worker passed to
+  // respondWith() to create this response. For example, if the service worker
+  // calls respondWith(fetch('http://example.com/a')) and http://example.com/a
+  // redirects to http://example.net/b which redirects to http://example.org/c,
+  // the URL list is the vector <"http://example.com/a", "http://example.net/b",
+  // "http://example.org/c">. This is empty if the response was programmatically
+  // generated as in respondWith(new Response()). It is also empty if a service
+  // worker did not respond to the request or did not call respondWith().
   std::vector<GURL> url_list_via_service_worker;
 
   // https://fetch.spec.whatwg.org/#concept-response-type
@@ -145,15 +157,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceResponseInfo {
   // the ServiceWorker. Empty if the response isn't from the CacheStorage.
   std::string cache_storage_cache_name;
 
-  // Effective connection type when the resource was fetched. This is populated
-  // only for responses that correspond to main frame requests.
-  net::EffectiveConnectionType effective_connection_type;
-
   // Bitmask of status info of the SSL certificate. See cert_status_flags.h for
   // values.
   net::CertStatus cert_status;
 
-  // Only provided if kURLLoadOptionsSendSSLInfoWithResponse was specified to
+  // Only provided if kURLLoadOptionSendSSLInfoWithResponse was specified to
   // the URLLoaderFactory::CreateLoaderAndStart option or
   // if ResourceRequest::report_raw_headers is set. When set via
   // |report_raw_headers|, the SSLInfo is not guaranteed to be fully populated
@@ -185,12 +193,25 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceResponseInfo {
   // True if the response is an inner response of a signed exchange.
   bool is_signed_exchange_inner_response = false;
 
+  // True if this resource is served from the prefetch cache.
+  bool was_in_prefetch_cache = false;
+
   // True if the response was intercepted by a plugin.
   bool intercepted_by_plugin = false;
 
   // True if the response was sent over TLS 1.0 or 1.1, which are deprecated and
   // will be removed in the future.
   bool is_legacy_tls_version = false;
+
+  // If the request received an authentication challenge, the challenge info is
+  // recorded here.
+  base::Optional<net::AuthChallengeInfo> auth_challenge_info;
+
+  // See URLResponseHead mojo documentation.
+  base::Optional<base::UnguessableToken> recursive_prefetch_token;
+
+  // The parsed content security policy from the response headers.
+  ContentSecurityPolicy content_security_policy;
 
   // NOTE: When adding or changing fields here, also update
   // ResourceResponse::DeepCopy in resource_response.cc.

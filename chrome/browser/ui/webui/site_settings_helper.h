@@ -25,6 +25,7 @@ class Profile;
 namespace base {
 class DictionaryValue;
 class ListValue;
+class Value;
 }  // namespace base
 
 namespace extensions {
@@ -149,6 +150,7 @@ void GetPolicyAllowedUrls(
 // by functions below.
 struct ChooserTypeNameEntry {
   ChooserContextBase* (*get_context)(Profile*);
+  std::string (*get_object_name)(const base::Value&);
   const char* name;
 };
 
@@ -167,14 +169,14 @@ const ChooserTypeNameEntry* ChooserTypeFromGroupName(const std::string& name);
 // * sites: Array<SiteException>
 // The structure of the SiteException objects is the same as the objects
 // returned by GetExceptionForPage().
-std::unique_ptr<base::DictionaryValue> CreateChooserExceptionObject(
+base::Value CreateChooserExceptionObject(
     const std::string& display_name,
     const base::Value& object,
     const std::string& chooser_type,
     const ChooserExceptionDetails& chooser_exception_details);
 
 // Returns an array of chooser exception objects.
-std::unique_ptr<base::ListValue> GetChooserExceptionListFromProfile(
+base::Value GetChooserExceptionListFromProfile(
     Profile* profile,
     const ChooserTypeNameEntry& chooser_type);
 

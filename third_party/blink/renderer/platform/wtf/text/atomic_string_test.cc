@@ -35,23 +35,23 @@
 namespace WTF {
 
 TEST(AtomicStringTest, Number) {
-  int int_value = 1234;
+  int16_t int_value = 1234;
   EXPECT_EQ("1234", AtomicString::Number(int_value));
   int_value = -1234;
   EXPECT_EQ("-1234", AtomicString::Number(int_value));
-  unsigned unsigned_value = 1234u;
+  uint16_t unsigned_value = 1234u;
   EXPECT_EQ("1234", AtomicString::Number(unsigned_value));
-  long long_value = 6553500;
+  int32_t long_value = 6553500;
   EXPECT_EQ("6553500", AtomicString::Number(long_value));
   long_value = -6553500;
   EXPECT_EQ("-6553500", AtomicString::Number(long_value));
-  unsigned long unsigned_long_value = 4294967295u;
+  uint32_t unsigned_long_value = 4294967295u;
   EXPECT_EQ("4294967295", AtomicString::Number(unsigned_long_value));
-  long long longlong_value = 9223372036854775807;
+  int64_t longlong_value = 9223372036854775807;
   EXPECT_EQ("9223372036854775807", AtomicString::Number(longlong_value));
   longlong_value = -9223372036854775807;
   EXPECT_EQ("-9223372036854775807", AtomicString::Number(longlong_value));
-  unsigned long long unsigned_long_long_value = 18446744073709551615u;
+  uint64_t unsigned_long_long_value = 18446744073709551615u;
   EXPECT_EQ("18446744073709551615",
             AtomicString::Number(unsigned_long_long_value));
   double double_value = 1234.56;

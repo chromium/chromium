@@ -7,8 +7,9 @@
 #include <memory>
 
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
-#include "chrome/browser/page_load_metrics/page_load_tracker.h"
-#include "chrome/common/page_load_metrics/test/page_load_metrics_test_util.h"
+#include "components/page_load_metrics/browser/page_load_tracker.h"
+#include "components/page_load_metrics/browser/protocol_util.h"
+#include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 
 class ProtocolPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
@@ -43,11 +44,12 @@ class ProtocolPageLoadMetricsObserverTest
 
     // Force the ConnectionInfo that the observer received from the
     // NavigationHandle.
-    observer_->connection_info_ = connection_info;
+    observer_->protocol_ =
+        page_load_metrics::GetNetworkProtocol(connection_info);
 
     page_load_metrics::mojom::PageLoadTiming timing;
     InitializeTestPageLoadTiming(&timing);
-    SimulateTimingUpdate(timing);
+    tester()->SimulateTimingUpdate(timing);
 
     // Navigate again to force OnComplete, which happens when a new navigation
     // occurs.
@@ -58,7 +60,7 @@ class ProtocolPageLoadMetricsObserverTest
     int count = 0;
 
     base::HistogramTester::CountsMap counts_map =
-        histogram_tester().GetTotalCountsForPrefix(
+        tester()->histogram_tester().GetTotalCountsForPrefix(
             "PageLoad.Clients.Protocol.");
     for (const auto& entry : counts_map)
       count += entry.second;
@@ -73,21 +75,21 @@ class ProtocolPageLoadMetricsObserverTest
     std::string prefix = "PageLoad.Clients.Protocol.";
     prefix += protocol;
 
-    histogram_tester().ExpectTotalCount(
+    tester()->histogram_tester().ExpectTotalCount(
         prefix + ".ParseTiming.NavigationToParseStart", 1);
-    histogram_tester().ExpectTotalCount(
+    tester()->histogram_tester().ExpectTotalCount(
         prefix + ".PaintTiming.ParseStartToFirstContentfulPaint", 1);
-    histogram_tester().ExpectTotalCount(
+    tester()->histogram_tester().ExpectTotalCount(
         prefix + ".PaintTiming.NavigationToFirstContentfulPaint", 1);
-    histogram_tester().ExpectTotalCount(
+    tester()->histogram_tester().ExpectTotalCount(
         prefix + ".Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint",
         1);
-    histogram_tester().ExpectTotalCount(
+    tester()->histogram_tester().ExpectTotalCount(
         prefix + ".Experimental.PaintTiming.NavigationToFirstMeaningfulPaint",
         1);
-    histogram_tester().ExpectTotalCount(
+    tester()->histogram_tester().ExpectTotalCount(
         prefix + ".DocumentTiming.NavigationToDOMContentLoadedEventFired", 1);
-    histogram_tester().ExpectTotalCount(
+    tester()->histogram_tester().ExpectTotalCount(
         prefix + ".DocumentTiming.NavigationToLoadEventFired", 1);
   }
 

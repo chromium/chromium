@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/allocator/allocator_shim.h"
+#include "base/compiler_specific.h"
 
+#include <dlfcn.h>
 #include <malloc.h>
 
 // This translation unit defines a default dispatch for the allocator shim which
@@ -51,12 +53,20 @@ void GlibcFree(const AllocatorDispatch*, void* address, void* context) {
   __libc_free(address);
 }
 
+NO_SANITIZE("cfi-icall")
 size_t GlibcGetSizeEstimate(const AllocatorDispatch*,
                             void* address,
                             void* context) {
-  // TODO(siggi, primiano): malloc_usable_size may need redirection in the
-  //     presence of interposing shims that divert allocations.
-  return malloc_usable_size(address);
+  // glibc does not expose an alias to resolve malloc_usable_size. Dynamically
+  // resolve it instead. This should be safe because glibc (and hence dlfcn)
+  // does not use malloc_size internally and so there should not be a risk of
+  // recursion.
+  using MallocUsableSizeFunction = decltype(malloc_usable_size)*;
+  static MallocUsableSizeFunction fn_ptr =
+      reinterpret_cast<MallocUsableSizeFunction>(
+          dlsym(RTLD_NEXT, "malloc_usable_size"));
+
+  return fn_ptr(address);
 }
 
 }  // namespace

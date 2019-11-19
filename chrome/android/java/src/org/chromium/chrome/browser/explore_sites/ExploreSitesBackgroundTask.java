@@ -7,8 +7,9 @@ package org.chromium.chrome.browser.explore_sites;
 import android.content.Context;
 import android.text.format.DateUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.metrics.RecordHistogram;
@@ -71,8 +72,8 @@ public class ExploreSitesBackgroundTask extends NativeBackgroundTask {
         ExploreSitesBridge.updateCatalogFromNetwork(getProfile(), false /*isImmediateFetch*/,
                 (ignored) -> mTaskFinishedCallback.taskFinished(false));
         RecordHistogram.recordEnumeratedHistogram("ExploreSites.CatalogUpdateRequestSource",
-                ExploreSitesEnums.CatalogUpdateRequestSource.BACKGROUND,
-                ExploreSitesEnums.CatalogUpdateRequestSource.NUM_ENTRIES);
+                ExploreSitesCatalogUpdateRequestSource.BACKGROUND,
+                ExploreSitesCatalogUpdateRequestSource.NUM_ENTRIES);
     }
 
     @Override

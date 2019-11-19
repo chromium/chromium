@@ -18,8 +18,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "media/base/timestamp_constants.h"
+#include "media/capture/video/mac/video_capture_device_factory_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
 #include "media/capture/video_capture_types.h"
+#include "services/video_capture/public/uma/video_capture_service_event.h"
 #include "ui/gfx/geometry/size.h"
 
 // Prefer MJPEG if frame width or height is larger than this.
@@ -86,24 +88,70 @@ MacBookVersions GetMacBookModel(const std::string& model) {
 // investigating crbug/582931.
 void MaybeWriteUma(int number_of_devices, int number_of_suspended_devices) {
   std::string model = base::mac::GetModelIdentifier();
-  if (base::StartsWith(model, "MacBook",
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    UMA_HISTOGRAM_COUNTS_1M("Media.VideoCapture.MacBook.NumberOfDevices",
-                            number_of_devices + number_of_suspended_devices);
-    if (number_of_devices + number_of_suspended_devices == 0) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.MacBook.HardwareVersionWhenNoCamera",
-          GetMacBookModel(model), MAX_MACBOOK_VERSION + 1);
+  if (!base::StartsWith(model, "MacBook",
+                        base::CompareCase::INSENSITIVE_ASCII)) {
+    return;
+  }
+  static int attempt_since_process_start_counter = 0;
+  static int device_count_at_last_attempt = 0;
+  static bool has_seen_zero_device_count = false;
+  const int attempt_count_since_process_start =
+      ++attempt_since_process_start_counter;
+  const int retry_count =
+      media::VideoCaptureDeviceFactoryMac::GetGetDeviceDescriptorsRetryCount();
+  const int device_count = number_of_devices + number_of_suspended_devices;
+  UMA_HISTOGRAM_COUNTS_1M("Media.VideoCapture.MacBook.NumberOfDevices",
+                          device_count);
+  if (device_count == 0) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Media.VideoCapture.MacBook.HardwareVersionWhenNoCamera",
+        GetMacBookModel(model), MAX_MACBOOK_VERSION + 1);
+    if (!has_seen_zero_device_count) {
+      UMA_HISTOGRAM_COUNTS_1M(
+          "Media.VideoCapture.MacBook.AttemptCountWhenNoCamera",
+          attempt_count_since_process_start);
+      has_seen_zero_device_count = true;
     }
   }
+
+  if (attempt_count_since_process_start == 1) {
+    if (retry_count == 0) {
+      video_capture::uma::LogMacbookRetryGetDeviceInfosEvent(
+          device_count == 0
+              ? video_capture::uma::
+                    AVF_RECEIVED_ZERO_INFOS_FIRST_TRY_FIRST_ATTEMPT
+              : video_capture::uma::
+                    AVF_RECEIVED_NONZERO_INFOS_FIRST_TRY_FIRST_ATTEMPT);
+    } else {
+      video_capture::uma::LogMacbookRetryGetDeviceInfosEvent(
+          device_count == 0
+              ? video_capture::uma::AVF_RECEIVED_ZERO_INFOS_RETRY
+              : video_capture::uma::AVF_RECEIVED_NONZERO_INFOS_RETRY);
+    }
+    // attempt count > 1
+  } else if (retry_count == 0) {
+    video_capture::uma::LogMacbookRetryGetDeviceInfosEvent(
+        device_count == 0
+            ? video_capture::uma::
+                  AVF_RECEIVED_ZERO_INFOS_FIRST_TRY_NONFIRST_ATTEMPT
+            : video_capture::uma::
+                  AVF_RECEIVED_NONZERO_INFOS_FIRST_TRY_NONFIRST_ATTEMPT);
+  }
+  if (attempt_count_since_process_start > 1 &&
+      device_count != device_count_at_last_attempt) {
+    video_capture::uma::LogMacbookRetryGetDeviceInfosEvent(
+        device_count == 0
+            ? video_capture::uma::AVF_DEVICE_COUNT_CHANGED_FROM_POSITIVE_TO_ZERO
+            : video_capture::uma::
+                  AVF_DEVICE_COUNT_CHANGED_FROM_ZERO_TO_POSITIVE);
+  }
+  device_count_at_last_attempt = device_count;
 }
 
 // This function translates Mac Core Video pixel formats to Chromium pixel
 // formats.
 media::VideoPixelFormat FourCCToChromiumPixelFormat(FourCharCode code) {
   switch (code) {
-    case kCVPixelFormatType_422YpCbCr8:
-      return media::PIXEL_FORMAT_UYVY;
     case kCMPixelFormat_422YpCbCr8_yuvs:
       return media::PIXEL_FORMAT_YUY2;
     case kCMVideoCodecType_JPEG_OpenDML:
@@ -232,15 +280,18 @@ void ExtractBaseAddressAndLength(char** base_address,
     if (stillImageOutput_)
       [captureSession_ removeOutput:stillImageOutput_];
     if (captureDeviceInput_) {
+      DCHECK(captureDevice_);
+      [captureSession_ stopRunning];
       [captureSession_ removeInput:captureDeviceInput_];
-      // No need to release |captureDeviceInput_|, is owned by the session.
-      captureDeviceInput_ = nil;
+      captureDeviceInput_.reset();
+      captureDevice_.reset();
     }
     return YES;
   }
 
   // Look for input device with requested name.
-  captureDevice_ = [AVCaptureDevice deviceWithUniqueID:deviceId];
+  captureDevice_.reset([AVCaptureDevice deviceWithUniqueID:deviceId],
+                       base::scoped_policy::RETAIN);
   if (!captureDevice_) {
     *outMessage =
         [NSString stringWithUTF8String:"Could not open video capture device."];
@@ -249,10 +300,11 @@ void ExtractBaseAddressAndLength(char** base_address,
 
   // Create the capture input associated with the device. Easy peasy.
   NSError* error = nil;
-  captureDeviceInput_ =
-      [AVCaptureDeviceInput deviceInputWithDevice:captureDevice_ error:&error];
+  captureDeviceInput_.reset(
+      [AVCaptureDeviceInput deviceInputWithDevice:captureDevice_ error:&error],
+      base::scoped_policy::RETAIN);
   if (!captureDeviceInput_) {
-    captureDevice_ = nil;
+    captureDevice_.reset();
     *outMessage = [NSString
         stringWithFormat:@"Could not create video capture input (%@): %@",
                          [error localizedDescription],
@@ -296,10 +348,10 @@ void ExtractBaseAddressAndLength(char** base_address,
   frameHeight_ = height;
   frameRate_ = frameRate;
 
-  FourCharCode best_fourcc = kCVPixelFormatType_422YpCbCr8;
+  FourCharCode best_fourcc = kCMPixelFormat_422YpCbCr8_yuvs;
   const bool prefer_mjpeg =
       width > kMjpegWidthThreshold || height > kMjpegHeightThreshold;
-  for (AVCaptureDeviceFormat* format in captureDevice_.formats) {
+  for (AVCaptureDeviceFormat* format in [captureDevice_ formats]) {
     const FourCharCode fourcc =
         CMFormatDescriptionGetMediaSubType([format formatDescription]);
     if (prefer_mjpeg && fourcc == kCMVideoCodecType_JPEG_OpenDML) {
@@ -440,6 +492,7 @@ void ExtractBaseAddressAndLength(char** base_address,
   const media::VideoCaptureFormat captureFormat(
       gfx::Size(dimensions.width, dimensions.height), frameRate_,
       FourCCToChromiumPixelFormat(fourcc));
+  gfx::ColorSpace colorSpace;
 
   // We have certain format expectation for capture output:
   // For MJPEG, |sampleBuffer| is expected to always be a CVBlockBuffer.
@@ -460,6 +513,11 @@ void ExtractBaseAddressAndLength(char** base_address,
       baseAddress = static_cast<char*>(CVPixelBufferGetBaseAddress(videoFrame));
       frameSize = CVPixelBufferGetHeight(videoFrame) *
                   CVPixelBufferGetBytesPerRow(videoFrame);
+
+      // TODO(julien.isorce): move GetImageBufferColorSpace(CVImageBufferRef)
+      // from media::VTVideoDecodeAccelerator to media/base/mac and call it
+      // here to get the color space. See https://crbug.com/959962.
+      // colorSpace = media::GetImageBufferColorSpace(videoFrame);
     } else {
       videoFrame = nil;
     }
@@ -481,7 +539,8 @@ void ExtractBaseAddressAndLength(char** base_address,
 
     if (frameReceiver_ && baseAddress) {
       frameReceiver_->ReceiveFrame(reinterpret_cast<uint8_t*>(baseAddress),
-                                   frameSize, captureFormat, 0, 0, timestamp);
+                                   frameSize, captureFormat, colorSpace, 0, 0,
+                                   timestamp);
     }
   }
 

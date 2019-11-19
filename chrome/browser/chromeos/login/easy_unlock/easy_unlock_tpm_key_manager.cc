@@ -209,9 +209,7 @@ EasyUnlockTpmKeyManager::EasyUnlockTpmKeyManager(
     : account_id_(account_id),
       username_hash_(username_hash),
       local_state_(local_state),
-      create_tpm_key_state_(CREATE_TPM_KEY_NOT_STARTED),
-      get_tpm_slot_weak_ptr_factory_(this),
-      weak_ptr_factory_(this) {}
+      create_tpm_key_state_(CREATE_TPM_KEY_NOT_STARTED) {}
 
 EasyUnlockTpmKeyManager::~EasyUnlockTpmKeyManager() {}
 
@@ -238,7 +236,7 @@ bool EasyUnlockTpmKeyManager::PrepareTpmKey(bool check_private_key,
         base::Bind(&EasyUnlockTpmKeyManager::OnUserTPMInitialized,
                    get_tpm_slot_weak_ptr_factory_.GetWeakPtr(), key);
 
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&EnsureUserTPMInitializedOnIOThread, username_hash_,
                        base::ThreadTaskRunnerHandle::Get(), on_user_tpm_ready));
@@ -288,10 +286,10 @@ void EasyUnlockTpmKeyManager::SignUsingTpmKey(
       base::Bind(&EasyUnlockTpmKeyManager::SignDataWithSystemSlot,
                  weak_ptr_factory_.GetWeakPtr(), key, data, callback);
 
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
-                           base::BindOnce(&GetSystemSlotOnIOThread,
-                                          base::ThreadTaskRunnerHandle::Get(),
-                                          sign_with_system_slot));
+  base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                 base::BindOnce(&GetSystemSlotOnIOThread,
+                                base::ThreadTaskRunnerHandle::Get(),
+                                sign_with_system_slot));
 }
 
 bool EasyUnlockTpmKeyManager::StartedCreatingTpmKeys() const {
@@ -319,10 +317,10 @@ void EasyUnlockTpmKeyManager::OnUserTPMInitialized(
       base::Bind(&EasyUnlockTpmKeyManager::CreateKeyInSystemSlot,
                  get_tpm_slot_weak_ptr_factory_.GetWeakPtr(), public_key);
 
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::IO},
-                           base::BindOnce(&GetSystemSlotOnIOThread,
-                                          base::ThreadTaskRunnerHandle::Get(),
-                                          create_key_with_system_slot));
+  base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                 base::BindOnce(&GetSystemSlotOnIOThread,
+                                base::ThreadTaskRunnerHandle::Get(),
+                                create_key_with_system_slot));
 }
 
 void EasyUnlockTpmKeyManager::CreateKeyInSystemSlot(
@@ -338,9 +336,10 @@ void EasyUnlockTpmKeyManager::CreateKeyInSystemSlot(
   get_tpm_slot_weak_ptr_factory_.InvalidateWeakPtrs();
 
   // This task interacts with the TPM, hence MayBlock().
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&CreateTpmKeyPairOnWorkerThread,
                      base::Passed(&system_slot), public_key,
                      base::ThreadTaskRunnerHandle::Get(),
@@ -356,9 +355,10 @@ void EasyUnlockTpmKeyManager::SignDataWithSystemSlot(
   CHECK(system_slot);
 
   // This task interacts with the TPM, hence MayBlock().
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&SignDataOnWorkerThread, base::Passed(&system_slot),
                      public_key, data, base::ThreadTaskRunnerHandle::Get(),
                      base::Bind(&EasyUnlockTpmKeyManager::OnDataSigned,

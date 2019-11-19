@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_database.h"
 #include "content/common/content_export.h"
-#include "net/base/completion_callback.h"
+#include "net/base/completion_once_callback.h"
 #include "net/url_request/url_request_status.h"
 
 class GURL;
@@ -50,10 +50,10 @@ class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
 
   // Writes the metadata of the existing script.
   void WriteMetadata(const GURL& url,
-                     const std::vector<uint8_t>& data,
-                     const net::CompletionCallback& callback);
+                     base::span<const uint8_t> data,
+                     net::CompletionOnceCallback callback);
   // Clears the metadata of the existing script.
-  void ClearMetadata(const GURL& url, const net::CompletionCallback& callback);
+  void ClearMetadata(const GURL& url, net::CompletionOnceCallback callback);
 
   size_t size() const { return resource_map_.size(); }
 
@@ -70,8 +70,7 @@ class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
 
   // The version objects owns its script cache and provides a rawptr to it.
   friend class ServiceWorkerVersion;
-  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerVersionBrowserTest,
-                           ReadResourceFailure_WaitingWorker);
+  friend class ServiceWorkerVersionBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerReadFromCacheJobTest, ResourceNotFound);
 
   ServiceWorkerScriptCacheMap(
@@ -81,7 +80,7 @@ class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
 
   void OnMetadataWritten(
       std::unique_ptr<ServiceWorkerResponseMetadataWriter> writer,
-      const net::CompletionCallback& callback,
+      net::CompletionOnceCallback callback,
       int result);
 
   ServiceWorkerVersion* owner_;
@@ -90,7 +89,7 @@ class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
   net::URLRequestStatus main_script_status_;
   std::string main_script_status_message_;
 
-  base::WeakPtrFactory<ServiceWorkerScriptCacheMap> weak_factory_;
+  base::WeakPtrFactory<ServiceWorkerScriptCacheMap> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerScriptCacheMap);
 };

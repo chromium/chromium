@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 source_set("test") {
+  defines = [ "CHROME_EARL_GREY_1" ]
   testonly = true
   sources = [
     "showcase_eg_utils.h",
@@ -11,6 +12,7 @@ source_set("test") {
     "showcase_test_case.mm",
   ]
   deps = [
+    ":test_support",
     "//base",
     "//ios/showcase/core",
     "//ios/testing/earl_grey:earl_grey_support",
@@ -19,6 +21,78 @@ source_set("test") {
   ]
   public_deps = [
     "//build/config/ios:xctest",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("eg2_test") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "showcase_eg_utils.h",
+    "showcase_eg_utils.mm",
+    "showcase_test_case.h",
+    "showcase_test_case.mm",
+  ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "showcase_test_case_app_interface.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ui/base",
+  ]
+}
+source_set("eg_app_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  defines = [ "CHROME_EARL_GREY_2" ]
+
+  sources = [
+    "showcase_test_case_app_interface.h",
+    "showcase_test_case_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/showcase/core",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  defines = [ "CHROME_EARL_GREY_1" ]
+  sources = [
+    "showcase_test_case_app_interface.h",
+    "showcase_test_case_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/showcase/core",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

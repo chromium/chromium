@@ -16,9 +16,6 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
-if (is_android) {
-  import("//build/config/android/config.gni")
-}
 
 declare_args() {
   # Enables proprietary codecs and demuxers; e.g. H264, AAC, MP3, and MP4.
@@ -27,18 +24,6 @@ declare_args() {
   # Note: this flag is used by WebRTC which is DEPSed into Chrome. Moving it
   # out of //build will require using the build_overrides directory.
   proprietary_codecs = is_chrome_branded || is_chromecast
-
-  # Variable safe_browsing is used to control the build time configuration for
-  # safe browsing feature. Safe browsing can be compiled in 3 different levels:
-  # 0 disables it, 1 enables it fully, and 2 enables mobile protection via an
-  # external API.
-  if (is_ios || is_chromecast) {
-    safe_browsing_mode = 0
-  } else if (is_android) {
-    safe_browsing_mode = 2
-  } else {
-    safe_browsing_mode = 1
-  }
 
   # libudev usage. This currently only affects the content layer.
   use_udev = is_linux && !is_chromecast

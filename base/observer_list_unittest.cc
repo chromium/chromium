@@ -799,11 +799,11 @@ TYPED_TEST(ObserverListTest, NestedLoop) {
   observer_list.AddObserver(&c);
   observer_list.AddObserver(&d);
 
-  for (auto& o : observer_list) {
-    o.Observe(10);
+  for (auto& observer : observer_list) {
+    observer.Observe(10);
 
-    for (auto& o : observer_list)
-      o.Observe(1);
+    for (auto& nested_observer : observer_list)
+      nested_observer.Observe(1);
   }
 
   EXPECT_EQ(15, a.total);
@@ -828,13 +828,13 @@ TYPED_TEST(ObserverListTest, NonCompactList) {
   observer_list.AddObserver(&a);
   observer_list.AddObserver(&b);
 
-  for (auto& o : observer_list) {
+  for (auto& observer : observer_list) {
     // Get the { nullptr, nullptr, &a, &b } non-compact list
     // on the first inner pass.
-    o.Observe(10);
+    observer.Observe(10);
 
-    for (auto& o : observer_list)
-      o.Observe(1);
+    for (auto& nested_observer : observer_list)
+      nested_observer.Observe(1);
   }
 
   EXPECT_EQ(13, a.total);
@@ -856,12 +856,12 @@ TYPED_TEST(ObserverListTest, BecomesEmptyThanNonEmpty) {
   observer_list.AddObserver(&disrupter2);
 
   bool add_observers = true;
-  for (auto& o : observer_list) {
+  for (auto& observer : observer_list) {
     // Get the { nullptr, nullptr } empty list on the first inner pass.
-    o.Observe(10);
+    observer.Observe(10);
 
-    for (auto& o : observer_list)
-      o.Observe(1);
+    for (auto& nested_observer : observer_list)
+      nested_observer.Observe(1);
 
     if (add_observers) {
       observer_list.AddObserver(&a);
@@ -918,10 +918,10 @@ TYPED_TEST(ObserverListTest, NonReentrantObserverList) {
   non_reentrant_observer_list.AddObserver(&a);
 
   EXPECT_DCHECK_DEATH({
-    for (const Foo& a : non_reentrant_observer_list) {
-      for (const Foo& b : non_reentrant_observer_list) {
-        std::ignore = a;
-        std::ignore = b;
+    for (const Foo& observer : non_reentrant_observer_list) {
+      for (const Foo& nested_observer : non_reentrant_observer_list) {
+        std::ignore = observer;
+        std::ignore = nested_observer;
       }
     }
   });
@@ -936,10 +936,10 @@ TYPED_TEST(ObserverListTest, ReentrantObserverList) {
   Adder a(1);
   reentrant_observer_list.AddObserver(&a);
   bool passed = false;
-  for (const Foo& a : reentrant_observer_list) {
-    for (const Foo& b : reentrant_observer_list) {
-      std::ignore = a;
-      std::ignore = b;
+  for (const Foo& observer : reentrant_observer_list) {
+    for (const Foo& nested_observer : reentrant_observer_list) {
+      std::ignore = observer;
+      std::ignore = nested_observer;
       passed = true;
     }
   }
@@ -1035,10 +1035,10 @@ TEST_F(CheckedObserverListTest, MultiObserver) {
 
   int counts[2] = {};
 
-  auto observer = std::make_unique<MultiObserver>(&counts[0], &counts[1]);
-  two_list.AddObserver(observer.get());
-  checked_list.AddObserver(observer.get());
-  unsafe_list.AddObserver(observer.get());
+  auto multi_observer = std::make_unique<MultiObserver>(&counts[0], &counts[1]);
+  two_list.AddObserver(multi_observer.get());
+  checked_list.AddObserver(multi_observer.get());
+  unsafe_list.AddObserver(multi_observer.get());
 
   auto iterate_over = [](auto* list) {
     for (auto& observer : *list)
@@ -1049,13 +1049,13 @@ TEST_F(CheckedObserverListTest, MultiObserver) {
   for (auto& observer : unsafe_list)
     observer.Observe(10);
 
-  EXPECT_EQ(10, observer->GetValue());
+  EXPECT_EQ(10, multi_observer->GetValue());
   for (const auto& count : counts)
     EXPECT_EQ(1, count);
 
-  unsafe_list.RemoveObserver(observer.get());  // Avoid a use-after-free.
+  unsafe_list.RemoveObserver(multi_observer.get());  // Avoid a use-after-free.
 
-  observer.reset();
+  multi_observer.reset();
   EXPECT_CHECK_DEATH(iterate_over(&checked_list));
 
   for (const auto& count : counts)

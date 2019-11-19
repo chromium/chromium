@@ -9,12 +9,11 @@
 
 #include "base/logging.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/chromeos/login/users/affiliation.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/auth_policy_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
 #include "chromeos/network/onc/variable_expander.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
@@ -40,17 +39,6 @@ constexpr base::TimeDelta kFetchInterval = base::TimeDelta::FromMinutes(90);
 void RunRefreshCallback(base::OnceCallback<void(bool success)> callback,
                         authpolicy::ErrorType error) {
   std::move(callback).Run(error == authpolicy::ERROR_NONE);
-}
-
-// Gets the AuthPolicy D-Bus interface.
-chromeos::AuthPolicyClient* GetAuthPolicyClient() {
-  chromeos::DBusThreadManager* thread_manager =
-      chromeos::DBusThreadManager::Get();
-  DCHECK(thread_manager);
-  chromeos::AuthPolicyClient* auth_policy_client =
-      thread_manager->GetAuthPolicyClient();
-  DCHECK(auth_policy_client);
-  return auth_policy_client;
 }
 
 bool IsComponentPolicyDisabled() {
@@ -91,6 +79,8 @@ void ActiveDirectoryPolicyManager::Init(SchemaRegistry* registry) {
                   ->GetSharedURLLoaderFactory()
             : nullptr);
   }
+
+  authpolicy_helper_ = std::make_unique<chromeos::AuthPolicyHelper>();
 }
 
 void ActiveDirectoryPolicyManager::Shutdown() {
@@ -303,7 +293,7 @@ void UserActiveDirectoryPolicyManager::ForceTimeoutForTesting() {
 
 void UserActiveDirectoryPolicyManager::DoPolicyFetch(
     PolicyScheduler::TaskCallback callback) {
-  GetAuthPolicyClient()->RefreshUserPolicy(
+  authpolicy_helper()->RefreshUserPolicy(
       account_id_, base::BindOnce(&RunRefreshCallback, std::move(callback)));
 }
 
@@ -388,7 +378,7 @@ DeviceActiveDirectoryPolicyManager::~DeviceActiveDirectoryPolicyManager() =
 
 void DeviceActiveDirectoryPolicyManager::DoPolicyFetch(
     base::OnceCallback<void(bool success)> callback) {
-  GetAuthPolicyClient()->RefreshDevicePolicy(
+  authpolicy_helper()->RefreshDevicePolicy(
       base::BindOnce(&RunRefreshCallback, std::move(callback)));
 }
 

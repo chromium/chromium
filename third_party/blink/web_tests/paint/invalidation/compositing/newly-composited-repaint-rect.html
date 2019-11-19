@@ -16,7 +16,7 @@
 
   <style type="text/css">
       .composited {
-          transform: translatez(0);
+          will-change: transform;
           border: 2px solid black;
       }
 
@@ -49,10 +49,8 @@
 <script src="../../../resources/run-after-layout-and-paint.js"></script>
 
 <script>
-    if (window.testRunner) {
-        testRunner.dumpAsTextWithPixelResults();
+    if (window.testRunner)
         testRunner.waitUntilDone();
-    }
 
     function changeDivPosition() {
         document.getElementById("scrolldiv").style.left="50px";

@@ -16,7 +16,7 @@ GLSurfaceGLXOzone::~GLSurfaceGLXOzone() {
 }
 
 void GLSurfaceGLXOzone::RegisterEvents() {
-  auto* event_source = X11EventSourceLibevent::GetInstance();
+  auto* event_source = X11EventSource::GetInstance();
   // Can be null in tests, when we don't care about Exposes.
   if (event_source) {
     XSelectInput(gfx::GetXDisplay(), window(), ExposureMask);
@@ -25,17 +25,9 @@ void GLSurfaceGLXOzone::RegisterEvents() {
 }
 
 void GLSurfaceGLXOzone::UnregisterEvents() {
-  auto* event_source = X11EventSourceLibevent::GetInstance();
+  auto* event_source = X11EventSource::GetInstance();
   if (event_source)
     event_source->RemoveXEventDispatcher(this);
-}
-
-void GLSurfaceGLXOzone::CheckCanDispatchNextPlatformEvent(XEvent* xev) {}
-
-void GLSurfaceGLXOzone::PlatformEventDispatchFinished() {}
-
-PlatformEventDispatcher* GLSurfaceGLXOzone::GetPlatformEventDispatcher() {
-  return nullptr;
 }
 
 bool GLSurfaceGLXOzone::DispatchXEvent(XEvent* event) {

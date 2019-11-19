@@ -12,6 +12,10 @@
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 
@@ -56,15 +60,17 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
   };
 
   // This class should only be created if a controller exists for the client.
-  // |controller_ptr| may be nullptr if the caller does not yet have a Mojo
+  // |remote_controller| may be nullptr if the caller does not yet have a Mojo
   // connection to the controller. |state_| is set to kDisconnected in that
   // case.
-  // Creates and holds the ownership of |container_host_ptr_| (as |this|
+  // Creates and holds the ownership of |container_host_| (as |this|
   // will be created on a different thread from the thread that has the
-  // original |container_host|).
+  // original |remote_container_host|).
   ControllerServiceWorkerConnector(
-      blink::mojom::ServiceWorkerContainerHostPtrInfo container_host_info,
-      blink::mojom::ControllerServiceWorkerPtr controller_ptr,
+      mojo::PendingRemote<blink::mojom::ServiceWorkerContainerHost>
+          remote_container_host,
+      mojo::PendingRemote<blink::mojom::ControllerServiceWorker>
+          remote_controller,
       const std::string& client_id);
 
   // This may return nullptr if the connection to the ContainerHost (in the
@@ -79,33 +85,36 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
   void OnControllerConnectionClosed();
 
   void AddBinding(
-      blink::mojom::ControllerServiceWorkerConnectorRequest request);
+      mojo::PendingReceiver<blink::mojom::ControllerServiceWorkerConnector>
+          receiver);
 
   // blink::mojom::ControllerServiceWorkerConnector:
   void UpdateController(
-      blink::mojom::ControllerServiceWorkerPtr controller_ptr) override;
+      mojo::PendingRemote<blink::mojom::ControllerServiceWorker> controller)
+      override;
 
   State state() const { return state_; }
 
   const std::string& client_id() const { return client_id_; }
 
  private:
-  void SetControllerServiceWorkerPtr(
-      blink::mojom::ControllerServiceWorkerPtr controller_ptr);
+  void SetControllerServiceWorker(
+      mojo::PendingRemote<blink::mojom::ControllerServiceWorker> controller);
 
   State state_ = State::kDisconnected;
 
   friend class base::RefCounted<ControllerServiceWorkerConnector>;
   ~ControllerServiceWorkerConnector() override;
 
-  mojo::BindingSet<blink::mojom::ControllerServiceWorkerConnector> bindings_;
+  mojo::ReceiverSet<blink::mojom::ControllerServiceWorkerConnector> receivers_;
 
   // Connection to the container host in the browser process.
-  blink::mojom::ServiceWorkerContainerHostPtr container_host_ptr_;
+  mojo::Remote<blink::mojom::ServiceWorkerContainerHost> container_host_;
 
   // Connection to the controller service worker, which lives in a renderer
   // process that's not necessarily the same as this connector.
-  blink::mojom::ControllerServiceWorkerPtr controller_service_worker_;
+  mojo::Remote<blink::mojom::ControllerServiceWorker>
+      controller_service_worker_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

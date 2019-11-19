@@ -7,9 +7,6 @@
 
 #include "base/time/time.h"
 
-class PrefRegistrySimple;
-class PrefService;
-
 // Utility functions to support metric collection for browser startup. Timings
 // should use TimeTicks whenever possible. OS-provided timings are still
 // received as Time out of cross-platform support necessity but are converted to
@@ -26,9 +23,6 @@ enum class WebContentsWorkload {
   // Loading multiple tabs (of which the profiled WebContents is foreground).
   MULTI_TABS,
 };
-
-// Registers startup related prefs in |registry|.
-void RegisterPrefs(PrefRegistrySimple* registry);
 
 // Returns true when browser UI was not launched normally: some other UI was
 // shown first or browser was launched in background mode.
@@ -60,11 +54,9 @@ void RecordMainEntryPointTime(base::TimeTicks ticks);
 void RecordExeMainEntryPointTicks(base::TimeTicks ticks);
 
 // Call this with the time recorded just before the message loop is started.
-// |is_first_run| - is the current launch part of a first run. |pref_service| is
-// used to store state for stats that span multiple startups.
+// |is_first_run| - is the current launch part of a first run.
 void RecordBrowserMainMessageLoopStart(base::TimeTicks ticks,
-                                       bool is_first_run,
-                                       PrefService* pref_service);
+                                       bool is_first_run);
 
 // Call this with the time when the first browser window became visible.
 void RecordBrowserWindowDisplay(base::TimeTicks ticks);
@@ -77,10 +69,6 @@ void RecordBrowserOpenTabsDelta(base::TimeDelta delta);
 // Startup.LoadTime.BrowserMainToRendererMain. Further calls to this
 // function are ignored.
 void RecordRendererMainEntryTime(base::TimeTicks ticks);
-
-// Call this with the time when the first web contents loaded its main frame,
-// only if the first web contents was unimpended in its attempt to do so.
-void RecordFirstWebContentsMainFrameLoad(base::TimeTicks ticks);
 
 // Call this with the time when the first web contents had a non-empty paint,
 // only if the first web contents was unimpeded in its attempt to do so.
@@ -109,6 +97,10 @@ void RecordBrowserWindowFirstPaintCompositingEnded(base::TimeTicks ticks);
 // |RecordMainEntryPointTime|. Returns a null TimeTicks if a value has not been
 // recorded yet. This method is expected to be called from the UI thread.
 base::TimeTicks MainEntryPointTicks();
+
+// Record metrics for the web-footer experiment. See https://crbug.com/993502.
+void RecordWebFooterDidFirstVisuallyNonEmptyPaint(base::TimeTicks ticks);
+void RecordWebFooterCreation(base::TimeTicks ticks);
 
 }  // namespace startup_metric_utils
 

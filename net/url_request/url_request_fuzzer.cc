@@ -7,10 +7,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include <memory>
 
 #include "base/run_loop.h"
-#include "base/test/fuzzed_data_provider.h"
 #include "net/base/request_priority.h"
 #include "net/socket/fuzzed_socket_factory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -35,7 +36,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (size > kMaxInputSize)
     return 0;
 
-  base::FuzzedDataProvider data_provider(data, size);
+  FuzzedDataProvider data_provider(data, size);
   net::TestURLRequestContext url_request_context(true);
   net::FuzzedSocketFactory fuzzed_socket_factory(&data_provider);
   url_request_context.set_client_socket_factory(&fuzzed_socket_factory);

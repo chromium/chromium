@@ -4,19 +4,173 @@
 
 #include "chrome/common/service_process_util_posix.h"
 
+#include <fcntl.h>
+
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/message_loop/message_loop_current.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/waitable_event.h"
+#include "build/branding_buildflags.h"
 #include "chrome/common/multi_process_lock.h"
+
+#if defined(OS_ANDROID)
+#error "Should not be built on android"
+#endif
 
 namespace {
 int g_signal_socket = -1;
+
+#if !defined(OS_MACOSX)
+
+bool FilePathForMemoryName(const std::string& mem_name, base::FilePath* path) {
+  // mem_name will be used for a filename; make sure it doesn't
+  // contain anything which will confuse us.
+  DCHECK_EQ(std::string::npos, mem_name.find('/'));
+  DCHECK_EQ(std::string::npos, mem_name.find('\0'));
+
+  base::FilePath temp_dir;
+  if (!GetShmemTempDir(false, &temp_dir))
+    return false;
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  static const char kShmem[] = "com.google.Chrome.shmem.";
+#else
+  static const char kShmem[] = "org.chromium.Chromium.shmem.";
+#endif
+  *path = temp_dir.AppendASCII(kShmem + mem_name);
+  return true;
 }
+
+#endif  // !defined(OS_MACOSX)
+
+}  // namespace
+
+#if !defined(OS_MACOSX)
+
+// static
+base::WritableSharedMemoryRegion
+ServiceProcessState::CreateServiceProcessDataRegion(size_t size) {
+  base::FilePath path;
+
+  if (!FilePathForMemoryName(GetServiceProcessSharedMemName(), &path))
+    return {};
+
+  // Make sure that the file is opened without any permission
+  // to other users on the system.
+  const mode_t kOwnerOnly = S_IRUSR | S_IWUSR;
+
+  bool fix_size = true;
+
+  // First, try to create the file.
+  base::ScopedFD fd(HANDLE_EINTR(
+      open(path.value().c_str(), O_RDWR | O_CREAT | O_EXCL, kOwnerOnly)));
+  if (!fd.is_valid()) {
+    // If this doesn't work, try and open an existing file in append mode.
+    // Opening an existing file in a world writable directory has two main
+    // security implications:
+    // - Attackers could plant a file under their control, so ownership of
+    //   the file is checked below.
+    // - Attackers could plant a symbolic link so that an unexpected file
+    //   is opened, so O_NOFOLLOW is passed to open().
+#if !defined(OS_AIX)
+    fd.reset(HANDLE_EINTR(
+        open(path.value().c_str(), O_RDWR | O_APPEND | O_NOFOLLOW)));
+#else
+    // AIX has no 64-bit support for open flags such as -
+    //  O_CLOEXEC, O_NOFOLLOW and O_TTY_INIT.
+    fd.reset(HANDLE_EINTR(open(path.value().c_str(), O_RDWR | O_APPEND)));
+#endif
+    // Check that the current user owns the file.
+    // If uid != euid, then a more complex permission model is used and this
+    // API is not appropriate.
+    const uid_t real_uid = getuid();
+    const uid_t effective_uid = geteuid();
+    struct stat sb;
+    if (fd.is_valid() && (fstat(fd.get(), &sb) != 0 || sb.st_uid != real_uid ||
+                          sb.st_uid != effective_uid)) {
+      DLOG(ERROR) << "Invalid owner when opening existing shared memory file.";
+      return {};
+    }
+
+    // An existing file was opened, so its size should not be fixed.
+    fix_size = false;
+  }
+
+  if (fd.is_valid() && fix_size) {
+    // Get current size.
+    struct stat stat;
+    if (fstat(fd.get(), &stat) != 0)
+      return {};
+    const size_t current_size = stat.st_size;
+    if (current_size != size) {
+      if (HANDLE_EINTR(ftruncate(fd.get(), size)) != 0)
+        return {};
+    }
+  }
+
+  // Everything has worked out so far, so open a read-only handle to the region
+  // in order to be able to create a writable region (which needs a read-only
+  // handle in order to convert to a read-only region.
+  base::ScopedFD read_only_fd(
+      HANDLE_EINTR(open(path.value().c_str(), O_RDONLY, kOwnerOnly)));
+  if (!read_only_fd.is_valid()) {
+    DPLOG(ERROR) << "Could not reopen shared memory region as read-only";
+    return {};
+  }
+
+  base::WritableSharedMemoryRegion writable_region =
+      base::WritableSharedMemoryRegion::Deserialize(
+          base::subtle::PlatformSharedMemoryRegion::Take(
+              base::subtle::ScopedFDPair(std::move(fd),
+                                         std::move(read_only_fd)),
+              base::subtle::PlatformSharedMemoryRegion::Mode::kWritable, size,
+              base::UnguessableToken::Create()));
+  if (!writable_region.IsValid()) {
+    DLOG(ERROR) << "Could not deserialize named region";
+    return {};
+  }
+  return writable_region;
+}
+
+// static
+base::ReadOnlySharedMemoryMapping
+ServiceProcessState::OpenServiceProcessDataMapping(size_t size) {
+  base::FilePath path;
+  if (!FilePathForMemoryName(GetServiceProcessSharedMemName(), &path))
+    return {};
+
+  base::ScopedFD fd(HANDLE_EINTR(open(path.value().c_str(), O_RDONLY)));
+  if (!fd.is_valid()) {
+    DPLOG(ERROR) << "open(\"" << path.value() << "\", O_RDONLY) failed";
+    return {};
+  }
+  return base::ReadOnlySharedMemoryRegion::Deserialize(
+             base::subtle::PlatformSharedMemoryRegion::Take(
+                 base::subtle::ScopedFDPair(std::move(fd), base::ScopedFD()),
+                 base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly,
+                 size, base::UnguessableToken::Create()))
+      .Map();
+}
+
+// static
+bool ServiceProcessState::DeleteServiceProcessDataRegion() {
+  base::FilePath path;
+  if (!FilePathForMemoryName(GetServiceProcessSharedMemName(), &path))
+    return false;
+
+  if (PathExists(path))
+    return DeleteFile(path, false);
+
+  // Doesn't exist, so success.
+  return true;
+}
+
+#endif  // !defined(OS_MACOSX)
 
 // Attempts to take a lock named |name|. If |waiting| is true then this will
 // make multiple attempts to acquire the lock.

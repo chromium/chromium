@@ -38,8 +38,6 @@ class CORE_EXPORT FileList final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static FileList* Create() { return MakeGarbageCollected<FileList>(); }
-
   FileList();
 
   unsigned length() const { return files_.size(); }

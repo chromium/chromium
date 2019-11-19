@@ -36,7 +36,6 @@ class TestEventProcessor : public EventProcessor {
 
   // EventProcessor:
   bool CanDispatchToTarget(EventTarget* target) override;
-  EventTarget* GetInitialEventTarget(Event* event) override;
   EventTarget* GetRootForEvent(Event* event) override;
   EventTargeter* GetDefaultEventTargeter() override;
   EventDispatchDetails OnEventFromSource(Event* event) override;

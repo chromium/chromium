@@ -18,15 +18,6 @@
 // Exposes view and methods to drive the doodle.
 - (void)setLogoVendor:(id<LogoVendor>)logoVendor;
 
-// The number of tabs to show in the NTP fake toolbar.
-- (void)setTabCount:(int)tabCount;
-
-// |YES| if the NTP toolbar can show the forward arrow.
-- (void)setCanGoForward:(BOOL)canGoForward;
-
-// |YES| if the NTP toolbar can show the back arrow.
-- (void)setCanGoBack:(BOOL)canGoBack;
-
 // The location bar has lost focus.
 - (void)locationBarResignsFirstResponder;
 

@@ -32,7 +32,7 @@ class DragSourceWin
   // are an error - it is only public because a WRL helper function creates the
   // objects.
   DragSourceWin();
-  ~DragSourceWin() override {}
+  ~DragSourceWin() override = default;
 
   // Stop the drag operation at the next chance we get.  This doesn't
   // synchronously stop the drag (since Windows is controlling that),

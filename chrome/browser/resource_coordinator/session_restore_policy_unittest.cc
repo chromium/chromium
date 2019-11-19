@@ -352,12 +352,8 @@ TEST_F(SessionRestorePolicyTest, ShouldLoadFeatureDisabled) {
   policy_->NotifyTabLoadStarted();
 }
 
-TEST_F(SessionRestorePolicyTest, ShouldLoadBackgroundDataExperimentEnabled) {
+TEST_F(SessionRestorePolicyTest, ShouldLoadBackgroundData) {
   using TabData = TestSessionRestorePolicy::TabData;
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kSessionRestorePrioritizesBackgroundUseCases);
 
   CreatePolicy(true);
   EXPECT_TRUE(policy_->policy_enabled());
@@ -462,41 +458,8 @@ TEST_F(SessionRestorePolicyTest, CalculateAgeScore) {
     ASSERT_GE(tab_data[i - 1].score, tab_data[i].score);
 }
 
-TEST_F(SessionRestorePolicyTest, ScoreTabDefaultBehaviour) {
+TEST_F(SessionRestorePolicyTest, ScoreTab) {
   using TabData = TestSessionRestorePolicy::TabData;
-
-  TabData td_app;
-  td_app.is_app = true;
-  EXPECT_TRUE(TestSessionRestorePolicy::ScoreTab(&td_app));
-
-  TabData td_pinned;
-  td_pinned.is_pinned = true;
-  EXPECT_TRUE(TestSessionRestorePolicy::ScoreTab(&td_pinned));
-
-  TabData td_normal_young;
-  TabData td_normal_old;
-  td_normal_young.last_active = base::TimeDelta::FromSeconds(1);
-  td_normal_old.last_active = base::TimeDelta::FromDays(7);
-  EXPECT_TRUE(TestSessionRestorePolicy::ScoreTab(&td_normal_young));
-  EXPECT_TRUE(TestSessionRestorePolicy::ScoreTab(&td_normal_old));
-
-  TabData td_internal;
-  td_internal.is_internal = true;
-  EXPECT_TRUE(TestSessionRestorePolicy::ScoreTab(&td_internal));
-
-  // Check the score produces the expected ordering of tabs.
-  EXPECT_LT(td_internal.score, td_normal_old.score);
-  EXPECT_LT(td_normal_old.score, td_normal_young.score);
-  EXPECT_LT(td_normal_young.score, td_pinned.score);
-  EXPECT_LT(td_pinned.score, td_app.score);
-}
-
-TEST_F(SessionRestorePolicyTest, ScoreTabExperimentEnabled) {
-  using TabData = TestSessionRestorePolicy::TabData;
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kSessionRestorePrioritizesBackgroundUseCases);
 
   TabData td_bg;
   td_bg.used_in_bg = true;

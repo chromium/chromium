@@ -5,6 +5,7 @@
 '''Support for gathering resources from RC files.
 '''
 
+from __future__ import print_function
 
 import re
 
@@ -118,7 +119,7 @@ class Dialog(Section):
   # group in alphabetical order. We also assume that there cannot be
   # more than one description per regular expression match.
   # If that's not the case some descriptions will be clobbered.
-  dialog_re_ = lazy_re.compile('''
+  dialog_re_ = lazy_re.compile(r'''
     # The dialog's ID in the first line
     (?P<id1>[A-Z0-9_]+)\s+DIALOG(EX)?
     |
@@ -184,7 +185,7 @@ class Menu(Section):
 
   # A dandy regexp to suck all the IDs and translateables out of a menu
   # resource
-  menu_re_ = lazy_re.compile('''
+  menu_re_ = lazy_re.compile(r'''
     # Match the MENU ID on the first line
     ^(?P<id1>[A-Z0-9_]+)\s+MENU
     |
@@ -248,7 +249,7 @@ class Version(Section):
   # In addition to the above fields, VALUE fields named "Comments" and
   # "LegalTrademarks" may also be translateable.
 
-  version_re_ = lazy_re.compile('''
+  version_re_ = lazy_re.compile(r'''
     # Match the ID on the first line
     ^(?P<id1>[A-Z0-9_]+)\s+VERSIONINFO
     |
@@ -276,7 +277,7 @@ class RCData(Section):
   #
   # IDR_BLAH        RCDATA      { 1, 2, 3, 4 }
 
-  dialog_re_ = lazy_re.compile('''
+  dialog_re_ = lazy_re.compile(r'''
     ^(?P<id1>[A-Z0-9_]+)\s+RCDATA\s+(DISCARDABLE)?\s+\{.*?\}
     ''', re.MULTILINE | re.VERBOSE | re.DOTALL)
 
@@ -325,7 +326,7 @@ class Accelerators(Section):
   #   VK_INSERT,      ID_ACCELERATOR32772,    VIRTKEY, CONTROL, NOINVERT
   # END
 
-  accelerators_re_ = lazy_re.compile('''
+  accelerators_re_ = lazy_re.compile(r'''
     # Match the ID on the first line
     ^(?P<id1>[A-Z0-9_]+)\s+ACCELERATORS\s+
     |

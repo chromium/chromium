@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/strings/sys_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -19,7 +20,7 @@
 #include "chrome/install_static/install_util.h"
 #endif
 
-#if defined(OS_WIN) && defined(GOOGLE_CHROME_BUILD)
+#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/elevation_service/elevation_service_idl.h"
 #endif
 
@@ -34,7 +35,7 @@ constexpr uint8_t kRecoveryImprovedPublicKeySHA256[32] = {
     0x97, 0xd7, 0x32, 0x75, 0xcc, 0xd5, 0x7f, 0xec, 0x09, 0x60, 0x6d,
     0x20, 0xc3, 0x81, 0xd7, 0xce, 0x7b, 0x10, 0x15, 0x44, 0xd1};
 
-#if defined(GOOGLE_CHROME_BUILD) && defined(OS_WIN)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OS_WIN)
 // Instantiates the elevator service, calls its elevator interface, then
 // blocks waiting for the recovery processes to exit. Returns the result
 // of the recovery as a tuple.
@@ -138,7 +139,7 @@ std::vector<std::string> RecoveryImprovedInstallerPolicy::GetMimeTypes() const {
 
 void RegisterRecoveryImprovedComponent(ComponentUpdateService* cus,
                                        PrefService* prefs) {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if defined(OS_WIN) || defined(OS_MACOSX)
   DVLOG(1) << "Registering RecoveryImproved component.";
 

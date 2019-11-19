@@ -44,11 +44,8 @@ struct HitTestCacheEntry {
   void CacheValues(const HitTestCacheEntry&);
 };
 
-class CORE_EXPORT HitTestCache final
-    : public GarbageCollectedFinalized<HitTestCache> {
+class CORE_EXPORT HitTestCache final : public GarbageCollected<HitTestCache> {
  public:
-  static HitTestCache* Create() { return MakeGarbageCollected<HitTestCache>(); }
-
   HitTestCache() : update_index_(0), dom_tree_version_(0) {}
 
   // Check the cache for a possible hit and update |result| if

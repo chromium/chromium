@@ -1,4 +1,5 @@
 rootWebArea
-++banner
-++++staticText name='Chromium Browser'
-++++++inlineTextBox name='Chromium Browser'
+++genericContainer ignored
+++++banner
+++++++staticText name='Chromium Browser'
+++++++++inlineTextBox name='Chromium Browser'

@@ -18,6 +18,7 @@
   overflow: auto;
   height: 100px;
   width: 100px;
+  will-change: transform; /* force compositing */
 }
 
 #contents {
@@ -71,7 +72,9 @@ runInAnimationWorklet(
   scroller.scrollTop = 0.25 * maxScroll;
 
   if (window.testRunner) {
-    waitTwoAnimationFrames(_ => {
+    waitForAnimationFrameWithCondition(_ => {
+      return getComputedStyle(box).transform != 'matrix(1, 0, 0, 1, 0, 0)';
+    }).then(_ => {
       testRunner.notifyDone();
     });
   }

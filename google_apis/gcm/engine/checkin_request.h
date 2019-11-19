@@ -70,6 +70,7 @@ class GCM_EXPORT CheckinRequest {
       const net::BackoffEntry::Policy& backoff_policy,
       const CheckinRequestCallback& callback,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       GCMStatsRecorder* recorder);
   ~CheckinRequest();
 
@@ -92,10 +93,12 @@ class GCM_EXPORT CheckinRequest {
   const RequestInfo request_info_;
   base::TimeTicks request_start_time_;
 
+  const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+
   // Recorder that records GCM activities for debugging purpose. Not owned.
   GCMStatsRecorder* recorder_;
 
-  base::WeakPtrFactory<CheckinRequest> weak_ptr_factory_;
+  base::WeakPtrFactory<CheckinRequest> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CheckinRequest);
 };

@@ -1,0 +1,21 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: pseudo elements</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<style>
+  #container::before {
+    content: "a";
+    color: blue;
+  }
+  #container::after {
+    content: "b";
+    color: green;
+  }
+</style>
+<div id="log">PASS</div>
+<div id="container"></div>
+</script>
+</html>

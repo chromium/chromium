@@ -1,0 +1,94 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/demuxer_stream.mojom";
+import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
+
+// See media/base/media_url_params.h for descriptions.
+struct MediaUrlParams {
+  url.mojom.Url media_url;
+  url.mojom.Url site_for_cookies;
+  url.mojom.Origin top_frame_origin;
+  bool allow_credentials;
+  bool is_hls;
+};
+
+interface Renderer {
+  // Initializes the Renderer with one or more audio / video |streams|, or a URL
+  // via |media_url_params|. Exactly one of |streams| and |media_urls_params|
+  // should be set.
+  // TODO(sandersd): These should be separate methods or a union type.
+  Initialize(pending_associated_remote<RendererClient> client,
+             array<pending_remote<DemuxerStream>>? streams,
+             MediaUrlParams? media_url_params) => (bool success);
+
+  // Discards any buffered data, executing callback when completed.
+  // NOTE: If an error occurs, RendererClient::OnError() can be called
+  // before the callback is executed.
+  Flush() => ();
+
+  // Starts rendering from |time|.
+  StartPlayingFrom(mojo_base.mojom.TimeDelta time);
+
+  // Updates the current playback rate. The default playback rate should be 1.
+  SetPlaybackRate(double playback_rate);
+
+  // Sets the output volume. The default volume should be 1.
+  SetVolume(float volume);
+
+  // Attaches the CDM associated with |cdm_id| to the renderer service,
+  // executing the callback with whether the CDM was successfully attached.
+  SetCdm(int32 cdm_id) => (bool success);
+};
+
+interface RendererClient {
+  // Called to report media time advancement by |time|.
+  // |time| and |max_time| can be used to interpolate time between
+  // calls to OnTimeUpdate().
+  // |max_time| is typically the media timestamp of the last audio frame
+  //     buffered by the audio hardware.
+  // |capture_time| is monotonic clock time at which the times were captured.
+  // |max_time| must be greater or equal to |time|.
+  OnTimeUpdate(mojo_base.mojom.TimeDelta time,
+               mojo_base.mojom.TimeDelta max_time,
+               mojo_base.mojom.TimeTicks capture_time);
+
+  // Called to report buffering state changes, see media_types.mojom.
+  OnBufferingStateChange(BufferingState state,
+                         BufferingStateChangeReason reason);
+
+  // Executed when rendering has reached the end of stream.
+  OnEnded();
+
+  // Executed if any error was encountered during decode or rendering. If
+  // this error happens during an operation that has a completion callback,
+  // OnError() will be called before firing the completion callback.
+  OnError();
+
+  // Executed whenever DemuxerStream status returns kConfigChange. Initial
+  // configs provided by OnMetadata.
+  OnAudioConfigChange(AudioDecoderConfig config);
+  OnVideoConfigChange(VideoDecoderConfig config);
+
+  // Executed for the first video frame and whenever natural size changes.
+  OnVideoNaturalSizeChange(gfx.mojom.Size size);
+
+  // Executed for the first video frame and whenever opacity changes.
+  OnVideoOpacityChange(bool opaque);
+
+  // Called periodically to pass statistics to the web player. See
+  // media_types.mojom.
+  OnStatisticsUpdate(PipelineStatistics stats);
+
+  // Called when the remote renderering service is waiting for |reason|,
+  // e.g. waiting for decryption key.
+  OnWaiting(WaitingReason reason);
+};

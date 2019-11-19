@@ -1,0 +1,40 @@
+# This yaml file is used to package binaries from Xcode.app.
+# To use this:
+#   1) Move Xcode.app to the same directory as this file.
+#   2) Rename Xcode.app to xcode_binaries
+#   3) Call `cipd create --pkg-def xcode_binaries.yaml`
+# To deploy the newly created cipd package across the fleet, modify
+# mac_toolchain.py to point to the new cipd hash.
+#
+# The ACLs for this package are determined by the directory structure. The
+# nomenclature mirrors that of the hermetic toolchain to avoid ACL duplication.
+package: infra_internal/ios/xcode/xcode_binaries/mac-amd64
+description: A hermetic deployment of all Xcode binaries used to build Chromium.
+root: "xcode_binaries"
+data:
+  - dir: Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
+  - dir: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/share/bison
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bison
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/gm4
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/gperf
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-nm
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-objdump
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-otool
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/llvm-size
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/libtool
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/mig
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/nm
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/otool
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/size
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libtapi.dylib
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libLTO.dylib
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libswiftDemangle.dylib
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/libexec/migcom
+  - file: Contents/Resources/English.lproj/License.rtf
+  - file: Contents/Resources/LicenseInfo.plist
+  - file: Contents/version.plist
+# llvm-size and size are run on swarming, those are symlinked to out of
+# isolated tree and produce invdalid symlink if we don't use copy mode here.
+install_mode: copy

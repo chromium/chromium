@@ -14,11 +14,11 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/appcache/appcache_response.h"
 #include "content/browser/appcache/appcache_service_impl.h"
 #include "content/browser/appcache/mock_appcache_storage.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/http/http_response_headers.h"
@@ -41,12 +41,12 @@ const int kMockBodySize = 5;
 class MockResponseReader : public AppCacheResponseReader {
  public:
   MockResponseReader(int64_t response_id,
-                     net::HttpResponseInfo* info,
+                     std::unique_ptr<net::HttpResponseInfo> info,
                      int info_size,
                      const char* data,
                      int data_size)
       : AppCacheResponseReader(response_id, /*disk_cache=*/nullptr),
-        info_(info),
+        info_(std::move(info)),
         info_size_(info_size),
         data_(data),
         data_size_(data_size) {}
@@ -100,11 +100,11 @@ class AppCacheServiceImplTest : public testing::Test {
       : kOriginURL("http://hello/"),
         kOrigin(url::Origin::Create(kOriginURL)),
         kManifestUrl(kOriginURL.Resolve("manifest")),
-        service_(new AppCacheServiceImpl(nullptr)),
+        service_(std::make_unique<AppCacheServiceImpl>(nullptr, nullptr)),
         delete_result_(net::OK),
         delete_completion_count_(0) {
     // Setup to use mock storage.
-    service_->storage_.reset(new MockAppCacheStorage(service_.get()));
+    service_->storage_ = std::make_unique<MockAppCacheStorage>(service_.get());
   }
 
   void OnDeleteAppCachesComplete(int result) {
@@ -117,7 +117,7 @@ class AppCacheServiceImplTest : public testing::Test {
   }
 
   void ResetStorage() {
-    service_->storage_.reset(new MockAppCacheStorage(service_.get()));
+    service_->storage_ = std::make_unique<MockAppCacheStorage>(service_.get());
   }
 
   bool IsGroupStored(const GURL& manifest_url) {
@@ -133,14 +133,14 @@ class AppCacheServiceImplTest : public testing::Test {
     const int kMockInfoSize = GetResponseInfoSize(info.get());
 
     // Create a mock group, cache, and entry and stuff them into mock storage.
-    scoped_refptr<AppCacheGroup> group(
-        new AppCacheGroup(service_->storage(), kManifestUrl, kMockGroupId));
-    scoped_refptr<AppCache> cache(
-        new AppCache(service_->storage(), kMockCacheId));
+    auto group = base::MakeRefCounted<AppCacheGroup>(
+        service_->storage(), kManifestUrl, kMockGroupId);
+    auto cache =
+        base::MakeRefCounted<AppCache>(service_->storage(), kMockCacheId);
     cache->AddEntry(
         kManifestUrl,
         AppCacheEntry(AppCacheEntry::MANIFEST, kMockResponseId,
-                      kMockInfoSize + kMockBodySize));
+                      kMockInfoSize + kMockBodySize, /*padding_size=*/0));
     cache->set_complete(true);
     group->AddCache(cache.get());
     mock_storage()->AddStoredGroup(group.get());
@@ -149,21 +149,21 @@ class AppCacheServiceImplTest : public testing::Test {
 
   void SetupMockReader(
       bool valid_info, bool valid_data, bool valid_size) {
-    net::HttpResponseInfo* info = valid_info ? MakeMockResponseInfo() : nullptr;
-    int info_size = info ? GetResponseInfoSize(info) : 0;
+    std::unique_ptr<net::HttpResponseInfo> info =
+        valid_info ? MakeMockResponseInfo() : nullptr;
+    int info_size = info ? GetResponseInfoSize(info.get()) : 0;
     const char* data = valid_data ? kMockBody : nullptr;
     int data_size = valid_size ? kMockBodySize : 3;
-    mock_storage()->SimulateResponseReader(
-        new MockResponseReader(kMockResponseId, info, info_size,
-                               data, data_size));
+    mock_storage()->SimulateResponseReader(std::make_unique<MockResponseReader>(
+        kMockResponseId, std::move(info), info_size, data, data_size));
   }
 
-  net::HttpResponseInfo* MakeMockResponseInfo() {
-    net::HttpResponseInfo* info = new net::HttpResponseInfo;
+  std::unique_ptr<net::HttpResponseInfo> MakeMockResponseInfo() {
+    auto info = std::make_unique<net::HttpResponseInfo>();
     info->request_time = base::Time::Now();
     info->response_time = base::Time::Now();
     info->was_cached = false;
-    info->headers = new net::HttpResponseHeaders(
+    info->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         std::string(kMockHeaders, base::size(kMockHeaders)));
     return info;
   }
@@ -190,7 +190,7 @@ class AppCacheServiceImplTest : public testing::Test {
   const url::Origin kOrigin;
   const GURL kManifestUrl;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  BrowserTaskEnvironment task_environment_;
   std::unique_ptr<AppCacheServiceImpl> service_;
   int delete_result_;
   int delete_completion_count_;
@@ -206,7 +206,8 @@ TEST_F(AppCacheServiceImplTest, DeleteAppCachesForOrigin) {
   delete_completion_count_ = 0;
 
   // Should succeed given an empty info collection.
-  mock_storage()->SimulateGetAllInfo(new content::AppCacheInfoCollection);
+  mock_storage()->SimulateGetAllInfo(
+      base::MakeRefCounted<content::AppCacheInfoCollection>());
   service_->DeleteAppCachesForOrigin(kOrigin, deletion_callback());
   EXPECT_EQ(0, delete_completion_count_);
   base::RunLoop().RunUntilIdle();
@@ -214,7 +215,7 @@ TEST_F(AppCacheServiceImplTest, DeleteAppCachesForOrigin) {
   EXPECT_EQ(net::OK, delete_result_);
   delete_completion_count_ = 0;
 
-  scoped_refptr<AppCacheInfoCollection> info(new AppCacheInfoCollection);
+  auto info = base::MakeRefCounted<AppCacheInfoCollection>();
 
   // Should succeed given a non-empty info collection.
   blink::mojom::AppCacheInfo mock_manifest_1;
@@ -341,8 +342,7 @@ TEST_F(AppCacheServiceImplTest, ScheduleReinitialize) {
   const base::TimeDelta kOneHour(base::TimeDelta::FromHours(1));
 
   // Do things get initialized as expected?
-  std::unique_ptr<AppCacheServiceImpl> service(
-      new AppCacheServiceImpl(nullptr));
+  auto service = std::make_unique<AppCacheServiceImpl>(nullptr, nullptr);
   EXPECT_TRUE(service->last_reinit_time_.is_null());
   EXPECT_FALSE(service->reinit_timer_.IsRunning());
   EXPECT_EQ(kNoDelay, service->next_reinit_delay_);

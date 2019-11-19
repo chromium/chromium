@@ -7,7 +7,6 @@
 
 #include "rar.hpp"
 
-namespace third_party_unrar {
 
 void ErrorHandler::Clean()
 {
@@ -413,5 +412,3 @@ void ErrorHandler::SetSystemErrorCode(int Code)
   errno=Code;
 #endif
 }
-
-}  // namespace third_party_unrar

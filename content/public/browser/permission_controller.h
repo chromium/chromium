@@ -8,7 +8,7 @@
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_type.h"
-#include "third_party/blink/public/platform/modules/permissions/permission_status.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 class GURL;
 

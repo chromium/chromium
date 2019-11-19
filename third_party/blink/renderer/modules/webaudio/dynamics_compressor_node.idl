@@ -25,6 +25,7 @@
 
 // See https://webaudio.github.io/web-audio-api/#dynamicscompressornode
 [
+    Exposed=Window,
     Constructor(BaseAudioContext context, optional DynamicsCompressorOptions options),
     RaisesException=Constructor,
     Measure

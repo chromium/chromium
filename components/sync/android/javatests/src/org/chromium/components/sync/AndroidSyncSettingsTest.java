@@ -174,7 +174,7 @@ public class AndroidSyncSettingsTest {
         });
     }
 
-    private void updateAccountSync(Account account) throws InterruptedException, TimeoutException {
+    private void updateAccountSync(Account account) throws TimeoutException {
         updateAccount(account);
         mCallbackHelper.waitForCallback(0, mNumberOfCallsToWait);
     }
@@ -193,7 +193,7 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testAccountInitialization() throws InterruptedException, TimeoutException {
+    public void testAccountInitialization() throws TimeoutException {
         // mAccount was set to be syncable and not have periodic syncs.
         Assert.assertEquals(1, mSyncContentResolverDelegate.mSetIsSyncableCalls.get());
         Assert.assertEquals(1, mSyncContentResolverDelegate.mRemovePeriodicSyncCalls.get());
@@ -365,7 +365,7 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testGetContractAuthority() throws Exception {
+    public void testGetContractAuthority() {
         Assert.assertEquals("The contract authority should be the package name.",
                 InstrumentationRegistry.getTargetContext().getPackageName(),
                 AndroidSyncSettings.get().getContractAuthority());
@@ -413,8 +413,7 @@ public class AndroidSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testIsSyncableOnSigninAndNotOnSignout()
-            throws InterruptedException, TimeoutException {
+    public void testIsSyncableOnSigninAndNotOnSignout() throws TimeoutException {
         Assert.assertEquals(1, mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority));
 
         updateAccountWithCallback(null, (Boolean result) -> {

@@ -81,10 +81,10 @@ TEST_F(MediaGalleriesDialogTest, InitializeCheckboxes) {
   EXPECT_EQ(2U, dialog.checkbox_map_.size());
 
   MediaGalleryCheckboxView* checkbox_view1 = dialog.checkbox_map_[1];
-  EXPECT_TRUE(checkbox_view1->checkbox()->checked());
+  EXPECT_TRUE(checkbox_view1->checkbox()->GetChecked());
 
   MediaGalleryCheckboxView* checkbox_view2 = dialog.checkbox_map_[2];
-  EXPECT_FALSE(checkbox_view2->checkbox()->checked());
+  EXPECT_FALSE(checkbox_view2->checkbox()->GetChecked());
 }
 
 // Tests that toggling checkboxes updates the controller.
@@ -98,7 +98,7 @@ TEST_F(MediaGalleriesDialogTest, ToggleCheckboxes) {
   MediaGalleriesDialogViews dialog(controller());
   EXPECT_EQ(1U, dialog.checkbox_map_.size());
   views::Checkbox* checkbox = dialog.checkbox_map_[1]->checkbox();
-  EXPECT_TRUE(checkbox->checked());
+  EXPECT_TRUE(checkbox->GetChecked());
 
   ui::KeyEvent dummy_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
   EXPECT_CALL(*controller(), DidToggleEntry(1, false));

@@ -1,0 +1,30 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>WebSQL: ICU support</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+async_test(testCase => {
+  const database = openDatabase(
+      'IcuFunctionLower', '1.0', 'Database for ICU lower() test',
+      1024 * 1024);
+  assert_not_equals(database, null, 'openDatabase should not fail');
+
+  database.transaction(testCase.step_func(transaction => {
+    transaction.executeSql(
+        'SELECT lower("I", "en_us") AS lower_result', [],
+        testCase.step_func((_, result) => {
+          assert_equals(result.rows.item(0).lower_result, 'i');
+        }), testCase.unreached_func('lower should not fail'));
+    transaction.executeSql(
+        'SELECT lower("I", "tr_tr") AS lower_result', [],
+        testCase.step_func((_, result) => {
+          assert_equals(result.rows.item(0).lower_result, '\u0131');
+          testCase.done();
+        }), testCase.unreached_func('lower should not fail'));
+  }));
+}, `SELECT lower() should use the ICU extension`);
+
+</script>

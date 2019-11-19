@@ -4,10 +4,10 @@
 
 module media.mojom;
 
-import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
 
 struct MediaEngagementScoreDetails {
-  url.mojom.Url origin;
+  url.mojom.Origin origin;
   double total_score;
 
   // Details of the components which make up |score|.
@@ -19,17 +19,6 @@ struct MediaEngagementScoreDetails {
 
   // Whether the score is considered to be high.
   bool is_high;
-
-  // Data used for experiments.
-  int32 audible_playbacks;
-  int32 significant_playbacks;
-
-  // How many time the score changed `is_high` status.
-  int32 high_score_changes;
-
-  // Details of the components which make up |media_playbacks|.
-  int32 audio_context_playbacks;
-  int32 media_element_playbacks;
 };
 
 struct MediaEngagementConfig {
@@ -46,6 +35,7 @@ struct MediaEngagementConfig {
   bool feature_record_data;
   bool feature_bypass_autoplay;
   bool feature_preload_data;
+  bool feature_https_only;
   bool feature_autoplay_disable_settings;
   bool feature_autoplay_whitelist_settings;
   bool pref_disable_unified_autoplay;

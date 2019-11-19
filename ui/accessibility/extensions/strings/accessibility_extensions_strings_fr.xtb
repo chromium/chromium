@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Les images ont été remplacées par leur texte de substitution.</translation>
 <translation id="4896660567607030658">Aucun retour, n'afficher que le curseur</translation>
 <translation id="4937901943818762779">Autoriser les images animées, mais une seule fois</translation>
+<translation id="4949131196216960195">Pour activer la navigation au clavier, appuyez sur la &lt;span class='key'&gt;touche de recherche&lt;/span&gt; et sur &lt;img src='increase_brightness.png'&gt; (touche d'augmentation de la luminosité ou F7). Pour la désactiver, appuyez de nouveau sur ces touches.</translation>
 <translation id="4954450790315188152">Lorsque la navigation au clavier est activée :</translation>
 <translation id="5041932793799765940">Réglage de la couleur</translation>
 <translation id="5094574508723441140">Contraste accru</translation>
@@ -59,7 +60,6 @@
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="786423340267544509">Ajouter une bordure à des éléments avec des attributs aria-describedat ou longdesc</translation>
 <translation id="7942349550061667556">Rouge</translation>
-<translation id="8254860724243898966">Appuyez sur &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (la touche Augmenter la luminosité ou F7) pour activer la navigation au clavier. Pour la désactiver, appuyez à nouveau sur la touche.</translation>
 <translation id="8260673944985561857">Options de navigation au clavier</translation>
 <translation id="8321034316479930120">Gestion des animations</translation>
 <translation id="8480209185614411573">Contraste élevé</translation>

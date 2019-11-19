@@ -46,7 +46,7 @@
 
   targetEnterCount_ = enterCount;
   targetExitCount_ = exitCount;
-  runLoop_.reset(new base::RunLoop);
+  runLoop_ = std::make_unique<base::RunLoop>();
   runLoop_->Run();
   runLoop_.reset();
 }

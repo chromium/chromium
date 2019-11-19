@@ -15,6 +15,8 @@
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "net/base/test_completion_callback.h"
+#include "net/disk_cache/disk_cache.h"
 
 // Re-creates a given test file inside the cache test folder.
 bool CreateCacheTestFile(const base::FilePath& name);
@@ -34,6 +36,31 @@ bool CheckCacheIntegrity(const base::FilePath& path,
                          bool new_eviction,
                          int max_size,
                          uint32_t mask);
+
+// -----------------------------------------------------------------------
+
+// Like net::TestCompletionCallback, but for EntryResultCallback.
+
+struct EntryResultIsPendingHelper {
+  bool operator()(const disk_cache::EntryResult& result) const {
+    return result.net_error() == net::ERR_IO_PENDING;
+  }
+};
+using TestEntryResultCompletionCallbackBase =
+    net::internal::TestCompletionCallbackTemplate<disk_cache::EntryResult,
+                                                  EntryResultIsPendingHelper>;
+
+class TestEntryResultCompletionCallback
+    : public TestEntryResultCompletionCallbackBase {
+ public:
+  TestEntryResultCompletionCallback();
+  ~TestEntryResultCompletionCallback() override;
+
+  disk_cache::Backend::EntryResultCallback callback();
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(TestEntryResultCompletionCallback);
+};
 
 // -----------------------------------------------------------------------
 
@@ -98,13 +125,18 @@ class CallbackTest {
   ~CallbackTest();
 
   void Run(int result);
+  void RunWithEntry(disk_cache::EntryResult result);
 
   int last_result() const { return last_result_; }
+  disk_cache::EntryResult ReleaseLastEntryResult() {
+    return std::move(last_entry_result_);
+  }
 
  private:
   MessageLoopHelper* helper_;
   int reuse_;
   int last_result_;
+  disk_cache::EntryResult last_entry_result_;
   DISALLOW_COPY_AND_ASSIGN(CallbackTest);
 };
 

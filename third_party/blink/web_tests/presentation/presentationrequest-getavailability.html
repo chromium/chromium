@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+
+const httpsUrl = "https://example.com";
+
+test(() => {
+  const request = new PresentationRequest(httpsUrl);
+  const promise = request.getAvailability();
+  assert_true(promise instanceof Promise);
+}, "Test that PresentationRequest.getAvailability() returns a Promise.");
+
+test(() => {
+  const request = new PresentationRequest(httpsUrl);
+  const promise = request.getAvailability();
+  assert_true(promise instanceof Promise);
+  const samePromise = request.getAvailability();
+  assert_true(samePromise instanceof Promise, "PresentationRequest.getAvailabilty() returns a Promise if called again on the same request.");
+  assert_equals(promise, samePromise, "If the PresentationRequest object has an unsettled Promise, getAvailability returns that Promise.");
+}, "Tests that PresentationRequest.getAvailability() returns the same unsettled Promise when called twice.");
+
+</script>
+</body>
+</html>

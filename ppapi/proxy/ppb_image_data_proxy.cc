@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -105,7 +106,7 @@ struct ImageDataCacheEntry {
 
   base::TimeTicks added_time;
 
-  // Set to true when the renderer tells us that it's OK to re-use this iamge.
+  // Set to true when the renderer tells us that it's OK to re-use this image.
   bool usable;
 
   scoped_refptr<ImageData> image;
@@ -221,7 +222,7 @@ void ImageDataInstanceCache::IncrementInsertionPoint() {
 
 class ImageDataCache {
  public:
-  ImageDataCache() : weak_factory_(this) {}
+  ImageDataCache() {}
   ~ImageDataCache() {}
 
   static ImageDataCache* GetInstance();
@@ -255,7 +256,7 @@ class ImageDataCache {
   // scope of the object. Technically, since this class is a leaked static,
   // this will never happen and this factory is unnecessary. However, it's
   // probably better not to make assumptions about the lifetime of this class.
-  base::WeakPtrFactory<ImageDataCache> weak_factory_;
+  base::WeakPtrFactory<ImageDataCache> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ImageDataCache);
 };
@@ -346,8 +347,8 @@ PP_Bool ImageData::Describe(PP_ImageDataDesc* desc) {
   return PP_TRUE;
 }
 
-int32_t ImageData::GetSharedMemory(base::SharedMemory** /* shm */,
-                                   uint32_t* /* byte_count */) {
+int32_t ImageData::GetSharedMemoryRegion(
+    base::UnsafeSharedMemoryRegion** /* region */) {
   // Not supported in the proxy (this method is for actually implementing the
   // proxy in the host).
   return PP_ERROR_NOACCESS;
@@ -369,30 +370,30 @@ void ImageData::RecycleToPlugin(bool zero_contents) {
 // PlatformImageData -----------------------------------------------------------
 
 #if !defined(OS_NACL)
-PlatformImageData::PlatformImageData(const HostResource& resource,
-                                     const PP_ImageDataDesc& desc,
-                                     ImageHandle handle)
+PlatformImageData::PlatformImageData(
+    const HostResource& resource,
+    const PP_ImageDataDesc& desc,
+    base::UnsafeSharedMemoryRegion image_region)
     : ImageData(resource, PPB_ImageData_Shared::PLATFORM, desc) {
 #if defined(OS_WIN)
-  transport_dib_.reset(TransportDIB::CreateWithHandle(handle));
+  transport_dib_ = TransportDIB::CreateWithHandle(std::move(image_region));
 #else
-  transport_dib_.reset(TransportDIB::Map(handle));
+  transport_dib_ = TransportDIB::Map(std::move(image_region));
 #endif  // defined(OS_WIN)
 }
 
-PlatformImageData::~PlatformImageData() {
-}
+PlatformImageData::~PlatformImageData() = default;
 
 void* PlatformImageData::Map() {
   if (!mapped_canvas_.get()) {
     if (!transport_dib_.get())
-      return NULL;
+      return nullptr;
 
     const bool is_opaque = false;
     mapped_canvas_ = transport_dib_->GetPlatformCanvas(
         desc_.size.width, desc_.size.height, is_opaque);
     if (!mapped_canvas_.get())
-      return NULL;
+      return nullptr;
   }
   SkPixmap pixmap;
   skia::GetWritablePixels(mapped_canvas_.get(), &pixmap);
@@ -408,40 +409,33 @@ void PlatformImageData::Unmap() {
 SkCanvas* PlatformImageData::GetCanvas() {
   return mapped_canvas_.get();
 }
-
-// static
-ImageHandle PlatformImageData::NullHandle() {
-  return ImageHandle();
-}
 #endif  // !defined(OS_NACL)
 
 // SimpleImageData -------------------------------------------------------------
 
 SimpleImageData::SimpleImageData(const HostResource& resource,
                                  const PP_ImageDataDesc& desc,
-                                 const base::SharedMemoryHandle& handle)
+                                 base::UnsafeSharedMemoryRegion region)
     : ImageData(resource, PPB_ImageData_Shared::SIMPLE, desc),
-      shm_(handle, false /* read_only */),
+      shm_region_(std::move(region)),
       size_(desc.size.width * desc.size.height * 4),
-      map_count_(0) {
-}
+      map_count_(0) {}
 
-SimpleImageData::~SimpleImageData() {
-}
+SimpleImageData::~SimpleImageData() = default;
 
 void* SimpleImageData::Map() {
   if (map_count_++ == 0)
-    shm_.Map(size_);
-  return shm_.memory();
+    shm_mapping_ = shm_region_.MapAt(0, size_);
+  return shm_mapping_.IsValid() ? shm_mapping_.memory() : nullptr;
 }
 
 void SimpleImageData::Unmap() {
   if (--map_count_ == 0)
-    shm_.Unmap();
+    shm_mapping_ = base::WritableSharedMemoryMapping();
 }
 
 SkCanvas* SimpleImageData::GetCanvas() {
-  return NULL;  // No canvas available.
+  return nullptr;  // No canvas available.
 }
 
 // PPB_ImageData_Proxy ---------------------------------------------------------
@@ -478,28 +472,35 @@ PP_Resource PPB_ImageData_Proxy::CreateProxyResource(
   PP_ImageDataDesc desc;
   switch (type) {
     case PPB_ImageData_Shared::SIMPLE: {
-      ppapi::proxy::SerializedHandle image_handle_wrapper;
+      ppapi::proxy::SerializedHandle image_handle;
       dispatcher->Send(new PpapiHostMsg_PPBImageData_CreateSimple(
-          kApiID, instance, format, size, init_to_zero,
-          &result, &desc, &image_handle_wrapper));
-      if (image_handle_wrapper.is_shmem()) {
-        base::SharedMemoryHandle image_handle = image_handle_wrapper.shmem();
+          kApiID, instance, format, size, init_to_zero, &result, &desc,
+          &image_handle));
+      if (image_handle.is_shmem_region()) {
+        base::UnsafeSharedMemoryRegion image_region =
+            base::UnsafeSharedMemoryRegion::Deserialize(
+                image_handle.TakeSharedMemoryRegion());
         if (!result.is_null()) {
-          return
-              (new SimpleImageData(result, desc, image_handle))->GetReference();
+          return (new SimpleImageData(result, desc, std::move(image_region)))
+              ->GetReference();
         }
       }
       break;
     }
     case PPB_ImageData_Shared::PLATFORM: {
 #if !defined(OS_NACL)
-      ImageHandle image_handle = PlatformImageData::NullHandle();
+      ppapi::proxy::SerializedHandle image_handle;
       dispatcher->Send(new PpapiHostMsg_PPBImageData_CreatePlatform(
-          kApiID, instance, format, size, init_to_zero,
-          &result, &desc, &image_handle));
-      if (!result.is_null()) {
-        return
-            (new PlatformImageData(result, desc, image_handle))->GetReference();
+          kApiID, instance, format, size, init_to_zero, &result, &desc,
+          &image_handle));
+      if (image_handle.is_shmem_region()) {
+        base::UnsafeSharedMemoryRegion image_region =
+            base::UnsafeSharedMemoryRegion::Deserialize(
+                image_handle.TakeSharedMemoryRegion());
+        if (!result.is_null()) {
+          return (new PlatformImageData(result, desc, std::move(image_region)))
+              ->GetReference();
+        }
       }
 #else
       // PlatformImageData shouldn't be created in untrusted code.
@@ -538,8 +539,7 @@ PP_Resource PPB_ImageData_Proxy::CreateImageData(
     const PP_Size& size,
     bool init_to_zero,
     PP_ImageDataDesc* desc,
-    base::SharedMemoryHandle* image_handle,
-    uint32_t* byte_count) {
+    base::UnsafeSharedMemoryRegion* image_region) {
   HostDispatcher* dispatcher = HostDispatcher::GetForInstance(instance);
   if (!dispatcher)
     return 0;
@@ -576,15 +576,14 @@ PP_Resource PPB_ImageData_Proxy::CreateImageData(
     return 0;
   }
 
-  base::SharedMemory* local_shm;
-  if (enter_resource.object()->GetSharedMemory(&local_shm, byte_count) !=
-      PP_OK) {
+  base::UnsafeSharedMemoryRegion* local_shm;
+  if (enter_resource.object()->GetSharedMemoryRegion(&local_shm) != PP_OK) {
     DVLOG(1) << "CreateImageData failed: could not GetSharedMemory";
     return 0;
   }
 
-  *image_handle =
-      dispatcher->ShareSharedMemoryHandleWithRemote(local_shm->handle());
+  *image_region =
+      dispatcher->ShareUnsafeSharedMemoryRegionWithRemote(*local_shm);
   return resource.Release();
 }
 
@@ -595,22 +594,23 @@ void PPB_ImageData_Proxy::OnHostMsgCreatePlatform(
     PP_Bool init_to_zero,
     HostResource* result,
     PP_ImageDataDesc* desc,
-    ImageHandle* result_image_handle) {
+    ppapi::proxy::SerializedHandle* result_image_handle) {
   // Clear |desc| so we don't send uninitialized memory to the plugin.
   // https://crbug.com/391023.
   *desc = PP_ImageDataDesc();
-  base::SharedMemoryHandle image_handle;
-  uint32_t byte_count;
+  base::UnsafeSharedMemoryRegion image_region;
   PP_Resource resource =
-      CreateImageData(instance,
-                      PPB_ImageData_Shared::PLATFORM,
-                      static_cast<PP_ImageDataFormat>(format),
-                      size,
-                      true /* init_to_zero */,
-                      desc, &image_handle, &byte_count);
+      CreateImageData(instance, PPB_ImageData_Shared::PLATFORM,
+                      static_cast<PP_ImageDataFormat>(format), size,
+                      true /* init_to_zero */, desc, &image_region);
   result->SetHostResource(instance, resource);
-  *result_image_handle =
-      resource ? image_handle : PlatformImageData::NullHandle();
+  if (resource) {
+    result_image_handle->set_shmem_region(
+        base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+            std::move(image_region)));
+  } else {
+    result_image_handle->set_null_shmem_region();
+  }
 }
 
 void PPB_ImageData_Proxy::OnHostMsgCreateSimple(
@@ -624,21 +624,18 @@ void PPB_ImageData_Proxy::OnHostMsgCreateSimple(
   // Clear |desc| so we don't send uninitialized memory to the plugin.
   // https://crbug.com/391023.
   *desc = PP_ImageDataDesc();
-  base::SharedMemoryHandle image_handle;
-  uint32_t byte_count;
+  base::UnsafeSharedMemoryRegion image_region;
   PP_Resource resource =
-      CreateImageData(instance,
-                      PPB_ImageData_Shared::SIMPLE,
-                      static_cast<PP_ImageDataFormat>(format),
-                      size,
-                      true /* init_to_zero */,
-                      desc, &image_handle, &byte_count);
-
+      CreateImageData(instance, PPB_ImageData_Shared::SIMPLE,
+                      static_cast<PP_ImageDataFormat>(format), size,
+                      true /* init_to_zero */, desc, &image_region);
   result->SetHostResource(instance, resource);
   if (resource) {
-    result_image_handle->set_shmem(image_handle, byte_count);
+    result_image_handle->set_shmem_region(
+        base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+            std::move(image_region)));
   } else {
-    result_image_handle->set_null_shmem();
+    result_image_handle->set_null_shmem_region();
   }
 }
 #endif  // !defined(OS_NACL)

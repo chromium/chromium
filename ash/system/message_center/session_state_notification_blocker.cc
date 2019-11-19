@@ -4,7 +4,7 @@
 
 #include "ash/system/message_center/session_state_notification_blocker.h"
 
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
 #include "ui/message_center/message_center.h"
@@ -16,14 +16,14 @@ namespace ash {
 namespace {
 
 bool CalculateShouldShowNotification() {
-  SessionController* const session_controller =
+  SessionControllerImpl* const session_controller =
       Shell::Get()->session_controller();
 
   return !session_controller->IsRunningInAppMode();
 }
 
 bool CalculateShouldShowPopup() {
-  SessionController* const session_controller =
+  SessionControllerImpl* const session_controller =
       Shell::Get()->session_controller();
 
   if (session_controller->IsRunningInAppMode() ||
@@ -31,10 +31,10 @@ bool CalculateShouldShowPopup() {
     return false;
   }
 
-  const mojom::UserSession* active_user_session =
+  const UserSession* active_user_session =
       session_controller->GetUserSession(0);
   return active_user_session && session_controller->GetUserPrefServiceForUser(
-                                    active_user_session->user_info->account_id);
+                                    active_user_session->user_info.account_id);
 }
 
 }  // namespace
@@ -58,7 +58,7 @@ bool SessionStateNotificationBlocker::ShouldShowNotification(
 
 bool SessionStateNotificationBlocker::ShouldShowNotificationAsPopup(
     const message_center::Notification& notification) const {
-  SessionController* const session_controller =
+  SessionControllerImpl* const session_controller =
       Shell::Get()->session_controller();
 
   // Never show notifications in kiosk mode.

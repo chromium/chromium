@@ -10,9 +10,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/media/router/data_decoder_util.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace media_router {
 
@@ -29,7 +27,7 @@ static constexpr const char* kDiscoveryOnlyModelNames[3] = {
 // |model_name|: device model name.
 bool IsDiscoveryOnly(const std::string& model_name) {
   std::string lower_model_name = base::ToLowerASCII(model_name);
-  return base::ContainsValue(kDiscoveryOnlyModelNames, lower_model_name);
+  return base::Contains(kDiscoveryOnlyModelNames, lower_model_name);
 }
 
 SinkAppStatus GetSinkAppStatusFromResponse(const DialAppInfoResult& result) {
@@ -51,11 +49,9 @@ SinkAppStatus GetSinkAppStatusFromResponse(const DialAppInfoResult& result) {
 }  // namespace
 
 DialMediaSinkServiceImpl::DialMediaSinkServiceImpl(
-    service_manager::Connector* connector,
     const OnSinksDiscoveredCallback& on_sinks_discovered_cb,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : MediaSinkServiceBase(on_sinks_discovered_cb),
-      data_decoder_(std::make_unique<DataDecoder>(connector)),
       task_runner_(task_runner) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -75,15 +71,13 @@ void DialMediaSinkServiceImpl::Start() {
     return;
 
   description_service_ = std::make_unique<DeviceDescriptionService>(
-      data_decoder_.get(),
       base::BindRepeating(
           &DialMediaSinkServiceImpl::OnDeviceDescriptionAvailable,
           base::Unretained(this)),
       base::BindRepeating(&DialMediaSinkServiceImpl::OnDeviceDescriptionError,
                           base::Unretained(this)));
 
-  app_discovery_service_ =
-      std::make_unique<DialAppDiscoveryService>(data_decoder_.get());
+  app_discovery_service_ = std::make_unique<DialAppDiscoveryService>();
 
   StartTimer();
 
@@ -145,7 +139,7 @@ void DialMediaSinkServiceImpl::OnDiscoveryComplete() {
   std::vector<MediaSinkInternal> sinks_to_update;
   std::vector<MediaSinkInternal> sinks_to_remove;
   for (const auto& sink : GetSinks()) {
-    if (!base::ContainsKey(latest_sinks_, sink.first))
+    if (!base::Contains(latest_sinks_, sink.first))
       sinks_to_remove.push_back(sink.second);
   }
 
@@ -195,7 +189,7 @@ void DialMediaSinkServiceImpl::OnDeviceDescriptionAvailable(
     const DialDeviceData& device_data,
     const ParsedDialDeviceDescription& description_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::ContainsValue(current_devices_, device_data)) {
+  if (!base::Contains(current_devices_, device_data)) {
     DVLOG(2) << "Device data not found in current device data list...";
     return;
   }

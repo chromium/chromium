@@ -9,6 +9,9 @@
 
 syntax = "proto2";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
 option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
@@ -21,7 +24,8 @@ message CustomNudgeDelay {
 message ClientCommand {
   // Time to wait before sending any requests to the server.
   optional int32 set_sync_poll_interval = 1;       // in seconds
-  optional int32 set_sync_long_poll_interval = 2;  // in seconds
+  // This has been deprecated since M75.
+  optional int32 set_sync_long_poll_interval = 2 [deprecated = true];
 
   optional int32 max_commit_batch_size = 3;
 

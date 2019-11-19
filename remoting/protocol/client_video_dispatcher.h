@@ -43,7 +43,7 @@ class ClientVideoDispatcher : public ChannelDispatcherBase {
   webrtc::DesktopVector screen_dpi_ =
       webrtc::DesktopVector(kDefaultDpi, kDefaultDpi);
 
-  base::WeakPtrFactory<ClientVideoDispatcher> weak_factory_;
+  base::WeakPtrFactory<ClientVideoDispatcher> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ClientVideoDispatcher);
 };

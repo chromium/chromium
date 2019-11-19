@@ -9,15 +9,20 @@
 #include "media/capture/video/mock_device.h"
 #include "media/capture/video/mock_device_factory.h"
 #include "media/capture/video/video_capture_device.h"
-#include "services/service_manager/public/cpp/service_keepalive.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/device_factory_media_to_mojo_adapter.h"
-#include "services/video_capture/public/cpp/mock_receiver.h"
+#include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 #include "services/video_capture/public/mojom/device.mojom.h"
-#include "services/video_capture/public/mojom/device_factory_provider.mojom.h"
+#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
+#include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-class MessageLoop;
+namespace test {
+class SingleThreadTaskEnvironment;
+}
 }
 
 namespace video_capture {
@@ -34,20 +39,19 @@ class MockDeviceTest : public ::testing::Test {
   media::MockDeviceFactory* mock_device_factory_;
   std::unique_ptr<DeviceFactoryMediaToMojoAdapter> mock_device_factory_adapter_;
 
-  mojom::DeviceFactoryPtr factory_;
-  std::unique_ptr<mojo::Binding<mojom::DeviceFactory>> mock_factory_binding_;
+  mojo::Remote<mojom::DeviceFactory> factory_;
+  std::unique_ptr<mojo::Receiver<mojom::DeviceFactory>> mock_factory_receiver_;
   base::MockCallback<mojom::DeviceFactory::GetDeviceInfosCallback>
       device_infos_receiver_;
 
   media::MockDevice mock_device_;
-  std::unique_ptr<MockReceiver> mock_receiver_;
-  mojom::DevicePtr device_proxy_;
-  mojom::ReceiverPtr mock_receiver_proxy_;
+  std::unique_ptr<MockVideoFrameHandler> mock_video_frame_handler_;
+  mojo::Remote<mojom::Device> device_remote_;
+  mojo::PendingRemote<mojom::VideoFrameHandler> mock_subscriber_;
   media::VideoCaptureParams requested_settings_;
 
  private:
-  std::unique_ptr<base::MessageLoop> message_loop_;
-  service_manager::ServiceKeepalive service_keepalive_;
+  std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
 };
 
 }  // namespace video_capture

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 
 #include "third_party/blink/public/platform/web_screen_info.h"
-#include "third_party/skia/third_party/skcms/skcms.h"
+#include "third_party/skia/include/third_party/skcms/skcms.h"
 
 namespace blink {
 
@@ -15,11 +15,17 @@ ColorSpaceGamut GetColorSpaceGamut(const WebScreenInfo& screen_info) {
   const gfx::ColorSpace& color_space = screen_info.color_space;
   if (!color_space.IsValid())
     return ColorSpaceGamut::kUnknown;
+
   // Return the gamut of the color space used for raster (this will return a
   // wide gamut for HDR profiles).
+  sk_sp<SkColorSpace> sk_color_space =
+      color_space.GetRasterColorSpace().ToSkColorSpace();
+  if (!sk_color_space)
+    return ColorSpaceGamut::kUnknown;
+
   skcms_ICCProfile color_profile;
-  color_space.GetRasterColorSpace().ToSkColorSpace()->toProfile(&color_profile);
-  return color_space_utilities::GetColorSpaceGamut(&color_profile);
+  sk_color_space->toProfile(&color_profile);
+  return GetColorSpaceGamut(&color_profile);
 }
 
 ColorSpaceGamut GetColorSpaceGamut(const skcms_ICCProfile* color_profile) {

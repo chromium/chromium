@@ -25,8 +25,9 @@ void WebRtcLogUtil::DeleteOldWebRtcLogFilesForAllProfiles() {
       g_browser_process->profile_manager()->GetProfileAttributesStorage().
           GetAllProfilesAttributes();
   for (ProfileAttributesEntry* entry : entries) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+    base::PostTask(
+        FROM_HERE,
+        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
             &webrtc_logging::DeleteOldWebRtcLogFiles,
             webrtc_logging::TextLogList::

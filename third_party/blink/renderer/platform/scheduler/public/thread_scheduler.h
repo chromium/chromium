@@ -7,7 +7,6 @@
 
 #include <memory>
 #include "base/location.h"
-#include "base/message_loop/message_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
@@ -16,10 +15,20 @@
 #include "third_party/blink/renderer/platform/scheduler/public/pending_user_input_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
+namespace v8 {
+class Isolate;
+}
+
+namespace base {
+class TaskObserver;
+}
+
 namespace blink {
 namespace scheduler {
 class NonMainThreadSchedulerImpl;
 }
+
+class RAILModeObserver;
 
 // This class is used to submit tasks and pass other information from Blink to
 // the platform's scheduler.
@@ -59,6 +68,12 @@ class PLATFORM_EXPORT ThreadScheduler {
   // Takes ownership of |IdleTask|. Can be called from any thread.
   virtual void PostIdleTask(const base::Location&, Thread::IdleTask) = 0;
 
+  // As above, except that the task is guaranteed to not run before |delay|.
+  // Takes ownership of |IdleTask|. Can be called from any thread.
+  virtual void PostDelayedIdleTask(const base::Location&,
+                                   base::TimeDelta delay,
+                                   Thread::IdleTask) = 0;
+
   // Like postIdleTask but guarantees that the posted task will not run
   // nested within an already-running task. Posting an idle task as
   // non-nestable may not affect when the task gets run, or it could
@@ -67,8 +82,9 @@ class PLATFORM_EXPORT ThreadScheduler {
   virtual void PostNonNestableIdleTask(const base::Location&,
                                        Thread::IdleTask) = 0;
 
-  virtual void AddRAILModeObserver(
-      scheduler::WebRAILModeObserver* observer) = 0;
+  virtual void AddRAILModeObserver(RAILModeObserver* observer) = 0;
+
+  virtual void RemoveRAILModeObserver(RAILModeObserver const* observer) = 0;
 
   // Returns a task runner for kV8 tasks. Can be called from any thread.
   virtual scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() = 0;
@@ -108,14 +124,23 @@ class PLATFORM_EXPORT ThreadScheduler {
   // Adds or removes a task observer from the scheduler. The observer will be
   // notified before and after every executed task. These functions can only be
   // called on the thread this scheduler was created on.
-  virtual void AddTaskObserver(
-      base::MessageLoop::TaskObserver* task_observer) = 0;
-  virtual void RemoveTaskObserver(
-      base::MessageLoop::TaskObserver* task_observer) = 0;
+  virtual void AddTaskObserver(base::TaskObserver* task_observer) = 0;
+  virtual void RemoveTaskObserver(base::TaskObserver* task_observer) = 0;
 
   virtual scheduler::PendingUserInputInfo GetPendingUserInputInfo() const {
     return scheduler::PendingUserInputInfo();
   }
+
+  // Indicates that a BeginMainFrame task has been scheduled to run on the main
+  // thread. Note that this is inherently racy, as it will be affected by code
+  // running on the compositor thread.
+  virtual bool IsBeginMainFrameScheduled() const { return false; }
+
+  // Associates |isolate| to the scheduler.
+  virtual void SetV8Isolate(v8::Isolate* isolate) = 0;
+
+  virtual void OnSafepointEntered() {}
+  virtual void OnSafepointExited() {}
 
   // Test helpers.
 

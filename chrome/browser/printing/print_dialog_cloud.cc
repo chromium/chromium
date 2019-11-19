@@ -14,9 +14,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "components/cloud_devices/common/cloud_devices_urls.h"
 #include "components/google/core/common/google_util.h"
-#include "components/signin/core/browser/account_consistency_method.h"
-#include "components/signin/core/browser/signin_header_helper.h"
-#include "components/signin/core/browser/signin_metrics.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -28,12 +26,8 @@ namespace {
 
 class SignInObserver : public content::WebContentsObserver {
  public:
-  SignInObserver(content::WebContents* web_contents,
-                 const base::Closure& callback)
-      : WebContentsObserver(web_contents),
-        callback_(callback),
-        weak_ptr_factory_(this) {
-  }
+  SignInObserver(content::WebContents* web_contents, base::OnceClosure callback)
+      : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
 
  private:
   // Overridden from content::WebContentsObserver:
@@ -54,14 +48,13 @@ class SignInObserver : public content::WebContentsObserver {
   void WebContentsDestroyed() override { delete this; }
 
   void OnSignIn() {
-    callback_.Run();
+    std::move(callback_).Run();
     if (web_contents())
       web_contents()->Close();
   }
 
-  GURL cloud_print_url_;
-  base::Closure callback_;
-  base::WeakPtrFactory<SignInObserver> weak_ptr_factory_;
+  base::OnceClosure callback_;
+  base::WeakPtrFactory<SignInObserver> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SignInObserver);
 };
@@ -70,14 +63,14 @@ class SignInObserver : public content::WebContentsObserver {
 
 void CreateCloudPrintSigninTab(Browser* browser,
                                bool add_account,
-                               const base::Closure& callback) {
+                               base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(
           browser->profile())) {
     browser->window()->ShowAvatarBubbleFromAvatarButton(
         add_account ? BrowserWindow::AVATAR_BUBBLE_MODE_ADD_ACCOUNT
                     : BrowserWindow::AVATAR_BUBBLE_MODE_SIGNIN,
-        signin::ManageAccountsParams(),
+
         signin_metrics::AccessPoint::ACCESS_POINT_CLOUD_PRINT, false);
   } else {
     GURL url = add_account ? cloud_devices::GetCloudPrintAddAccountURL()
@@ -88,7 +81,8 @@ void CreateCloudPrintSigninTab(Browser* browser,
                 url, g_browser_process->GetApplicationLocale()),
             content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
             ui::PAGE_TRANSITION_AUTO_BOOKMARK, false));
-    new SignInObserver(web_contents, callback);
+    // This observer will delete itself after destroying the WebContents.
+    new SignInObserver(web_contents, std::move(callback));
   }
 }
 

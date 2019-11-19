@@ -28,10 +28,7 @@ DeviceCloudExternalDataPolicyObserver::DeviceCloudExternalDataPolicyObserver(
     PolicyService* policy_service,
     const std::string& policy,
     Delegate* delegate)
-    : policy_service_(policy_service),
-      policy_(policy),
-      delegate_(delegate),
-      weak_factory_(this) {
+    : policy_service_(policy_service), policy_(policy), delegate_(delegate) {
   policy_service_->AddObserver(POLICY_DOMAIN_CHROME, this);
 }
 

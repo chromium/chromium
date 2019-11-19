@@ -72,7 +72,7 @@ class ChromeLoginPerformer : public LoginPerformer {
 
   // Used to verify logins that matched wildcard on the login whitelist.
   std::unique_ptr<policy::WildcardLoginChecker> wildcard_login_checker_;
-  base::WeakPtrFactory<ChromeLoginPerformer> weak_factory_;
+  base::WeakPtrFactory<ChromeLoginPerformer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeLoginPerformer);
 };

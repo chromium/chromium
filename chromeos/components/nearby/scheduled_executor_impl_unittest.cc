@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/synchronization/lock.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/nearby/library/cancelable.h"
 #include "chromeos/components/nearby/library/runnable.h"
@@ -47,10 +47,9 @@ class SimpleRunnable : public location::nearby::Runnable {
 class ScheduledExecutorImplTest : public testing::Test {
  protected:
   ScheduledExecutorImplTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME),
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         scheduled_executor_(std::make_unique<ScheduledExecutorImpl>(
-            scoped_task_environment_.GetMainThreadTaskRunner())) {}
+            task_environment_.GetMainThreadTaskRunner())) {}
 
   ~ScheduledExecutorImplTest() override = default;
 
@@ -67,7 +66,7 @@ class ScheduledExecutorImplTest : public testing::Test {
     // ensures that the base::OneShotTimer associated with the Runnable has been
     // Start()ed, but offers no guarantee on whether the Runnable has been run()
     // or not.
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     return cancelable;
   }
@@ -79,7 +78,7 @@ class ScheduledExecutorImplTest : public testing::Test {
 
     // Ensures that the base::OneShotTimer associated with the given Cancelable
     // has been Stop()ped before this method returns.
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   void VerifySetContainsId(const base::UnguessableToken& id) {
@@ -92,7 +91,7 @@ class ScheduledExecutorImplTest : public testing::Test {
     return id_set_.size();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<location::nearby::ScheduledExecutor> scheduled_executor_;
 
  private:
@@ -117,7 +116,7 @@ TEST_F(ScheduledExecutorImplTest, SingleTaskExecutes) {
   base::UnguessableToken id = base::UnguessableToken::Create();
   PostRunnableWithIdAndDelay(id, kDefaultDelayTimeDelta);
 
-  scoped_task_environment_.FastForwardBy(kDefaultDelayTimeDelta);
+  task_environment_.FastForwardBy(kDefaultDelayTimeDelta);
   EXPECT_EQ(1u, GetSetSize());
   VerifySetContainsId(id);
 }
@@ -129,11 +128,11 @@ TEST_F(ScheduledExecutorImplTest, StaggeredTasksExecute) {
   PostRunnableWithIdAndDelay(id1, kDefaultDelayTimeDelta * 2);
 
   // Only the first scheduled task should run at first.
-  scoped_task_environment_.FastForwardBy(kDefaultDelayTimeDelta);
+  task_environment_.FastForwardBy(kDefaultDelayTimeDelta);
   EXPECT_EQ(1u, GetSetSize());
   VerifySetContainsId(id0);
 
-  scoped_task_environment_.FastForwardBy(kDefaultDelayTimeDelta);
+  task_environment_.FastForwardBy(kDefaultDelayTimeDelta);
   EXPECT_EQ(2u, GetSetSize());
   VerifySetContainsId(id1);
 }
@@ -143,7 +142,7 @@ TEST_F(ScheduledExecutorImplTest, SingleTaskCancels) {
   auto cancelable = PostRunnableWithIdAndDelay(id, kDefaultDelayTimeDelta);
 
   CancelTaskAndVerifyState(cancelable, true /* should_expect_success */);
-  scoped_task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
+  task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
   EXPECT_EQ(0u, GetSetSize());
 }
 
@@ -154,10 +153,10 @@ TEST_F(ScheduledExecutorImplTest, FirstTaskCancelsAndSecondTaskExecutes) {
   PostRunnableWithIdAndDelay(id1, kDefaultDelayTimeDelta * 3);
 
   CancelTaskAndVerifyState(cancelable0, true /* should_expect_success */);
-  scoped_task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
+  task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
   EXPECT_EQ(0u, GetSetSize());
 
-  scoped_task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
+  task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
   EXPECT_EQ(1u, GetSetSize());
   VerifySetContainsId(id1);
 }
@@ -166,7 +165,7 @@ TEST_F(ScheduledExecutorImplTest, FailToCancelAfterRun) {
   base::UnguessableToken id = base::UnguessableToken::Create();
   auto cancelable = PostRunnableWithIdAndDelay(id, kDefaultDelayTimeDelta);
 
-  scoped_task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
+  task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
   CancelTaskAndVerifyState(cancelable, false /* should_expect_success */);
 }
 
@@ -175,7 +174,7 @@ TEST_F(ScheduledExecutorImplTest, FailToRunAfterCancel) {
   auto cancelable = PostRunnableWithIdAndDelay(id, kDefaultDelayTimeDelta);
 
   CancelTaskAndVerifyState(cancelable, true /* should_expect_success */);
-  scoped_task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
+  task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
   EXPECT_EQ(0u, GetSetSize());
 }
 
@@ -196,7 +195,7 @@ TEST_F(ScheduledExecutorImplTest, FailToCancelAfterExecutorIsDestroyed) {
   auto cancelable = PostRunnableWithIdAndDelay(id, kDefaultDelayTimeDelta);
   scheduled_executor_.reset();
 
-  scoped_task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
+  task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
   CancelTaskAndVerifyState(cancelable, false /* should_expect_success */);
 }
 
@@ -205,7 +204,7 @@ TEST_F(ScheduledExecutorImplTest, FailToScheduleAfterShutdown) {
   base::UnguessableToken id = base::UnguessableToken::Create();
   auto cancelable = PostRunnableWithIdAndDelay(id, kDefaultDelayTimeDelta);
 
-  scoped_task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
+  task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
   EXPECT_EQ(0u, GetSetSize());
 }
 
@@ -214,7 +213,7 @@ TEST_F(ScheduledExecutorImplTest, FailToCancelAfterShutdown) {
   base::UnguessableToken id = base::UnguessableToken::Create();
   auto cancelable = PostRunnableWithIdAndDelay(id, kDefaultDelayTimeDelta);
 
-  scoped_task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
+  task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
   CancelTaskAndVerifyState(cancelable, false /* should_expect_success */);
 }
 
@@ -223,7 +222,7 @@ TEST_F(ScheduledExecutorImplTest, ShutdownAllowsExistingTaskToComplete) {
   auto cancelable = PostRunnableWithIdAndDelay(id, kDefaultDelayTimeDelta);
   scheduled_executor_->shutdown();
 
-  scoped_task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
+  task_environment_.FastForwardBy(kDefaultDelayTimeDelta * 2);
   EXPECT_EQ(1u, GetSetSize());
   VerifySetContainsId(id);
 }

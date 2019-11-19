@@ -7,6 +7,7 @@
 
 #include "chrome/browser/media/media_access_handler.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
 namespace content {
 class WebContents;
@@ -39,7 +40,7 @@ class ScreenCaptureInfoBarDelegateAndroid : public ConfirmInfoBarDelegate {
 
   // Runs |callback_|, passing it the |result|, and (if permission was granted)
   // the appropriate stream device and UI object for video capture.
-  void RunCallback(blink::MediaStreamRequestResult result);
+  void RunCallback(blink::mojom::MediaStreamRequestResult result);
 
   content::WebContents* web_contents_;
   const content::MediaStreamRequest request_;

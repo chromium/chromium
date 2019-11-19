@@ -1,0 +1,35 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("properties") {
+  sources = [
+    "dbus_properties.cc",
+    "dbus_properties.h",
+    "success_barrier_callback.cc",
+    "success_barrier_callback.h",
+    "types.cc",
+    "types.h",
+  ]
+  defines = [ "IS_DBUS_IMPL" ]
+  deps = [
+    "//base",
+    "//base:i18n",
+  ]
+  public_deps = [
+    "//dbus",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "success_barrier_callback_unittest.cc",
+    "types_unittest.cc",
+  ]
+  deps = [
+    ":properties",
+    "//base",
+    "//testing/gtest",
+  ]
+}

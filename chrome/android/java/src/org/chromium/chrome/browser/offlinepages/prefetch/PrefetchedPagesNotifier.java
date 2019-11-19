@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.offlinepages.prefetch;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,10 +15,16 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
+import org.chromium.chrome.browser.notifications.ChromeNotification;
 import org.chromium.chrome.browser.notifications.ChromeNotificationBuilder;
 import org.chromium.chrome.browser.notifications.NotificationBuilderFactory;
+import org.chromium.chrome.browser.notifications.NotificationManagerProxy;
+import org.chromium.chrome.browser.notifications.NotificationManagerProxyImpl;
+import org.chromium.chrome.browser.notifications.NotificationMetadata;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
+import org.chromium.chrome.browser.notifications.PendingIntentProvider;
 import org.chromium.chrome.browser.notifications.channels.ChannelDefinitions;
 import org.chromium.chrome.browser.preferences.NotificationsPreferences;
 import org.chromium.chrome.browser.preferences.PreferencesLauncher;
@@ -66,7 +69,9 @@ public class PrefetchedPagesNotifier {
             // TODO(dewittj): Handle the case where we somehow get this broadcast but the Chrome
             // download manager is unavailable.  Today, if this happens then the Android download
             // manager will be launched, and that will not contain any prefetched content.
-            DownloadUtils.showDownloadManager(null, null, true /*showPrefetchedContent*/);
+            DownloadUtils.showDownloadManager(null, null,
+                    DownloadOpenSource.OFFLINE_CONTENT_NOTIFICATION,
+                    true /*showPrefetchedContent*/);
         }
     }
 
@@ -103,18 +108,23 @@ public class PrefetchedPagesNotifier {
 
         // TODO(dewittj): Use unique notification IDs, allowing multiple to appear in the
         // notification center.
+        // TODO(xingliu): Unify the notification logic in here and AutoFetchNotifier.
         int notificationId = 1;
-        PendingIntent clickIntent = getPendingBroadcastFor(context, ClickReceiver.class);
+        PendingIntentProvider clickIntent = getPendingBroadcastFor(context, ClickReceiver.class);
         String title =
                 String.format(context.getString(R.string.offline_pages_prefetch_notification_title),
                         context.getString(R.string.app_name));
         String text = String.format(
                 context.getString(R.string.offline_pages_prefetch_notification_text), origin);
 
+        NotificationMetadata metadata = new NotificationMetadata(
+                NotificationUmaTracker.SystemNotificationType.OFFLINE_CONTENT_SUGGESTION,
+                NOTIFICATION_TAG, notificationId);
         ChromeNotificationBuilder builder =
                 NotificationBuilderFactory
                         .createChromeNotificationBuilder(true /* preferCompat */,
-                                ChannelDefinitions.ChannelId.CONTENT_SUGGESTIONS)
+                                ChannelDefinitions.ChannelId.CONTENT_SUGGESTIONS,
+                                null /* remoteAppPackageName */, metadata)
                         .setAutoCancel(true)
                         .setContentIntent(clickIntent)
                         .setContentTitle(title)
@@ -123,16 +133,17 @@ public class PrefetchedPagesNotifier {
                         .setPriorityBeforeO(NotificationCompat.PRIORITY_LOW)
                         .setSmallIcon(R.drawable.ic_chrome);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            PendingIntent settingsIntent = getPendingBroadcastFor(context, SettingsReceiver.class);
+            PendingIntentProvider settingsIntent =
+                    getPendingBroadcastFor(context, SettingsReceiver.class);
             builder.addAction(R.drawable.settings_cog, context.getString(R.string.preferences),
-                    settingsIntent);
+                    settingsIntent,
+                    NotificationUmaTracker.ActionType.OFFLINE_CONTENT_SUGGESTION_SETTINGS);
         }
 
-        Notification notification = builder.build();
+        ChromeNotification notification = builder.buildChromeNotification();
 
-        NotificationManager manager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(NOTIFICATION_TAG, notificationId, notification);
+        NotificationManagerProxy manager = new NotificationManagerProxyImpl(context);
+        manager.notify(notification);
 
         // Increment ignored notification counter.  This will be reset on click.
         PrefetchPrefs.setIgnoredNotificationCounter(
@@ -142,11 +153,11 @@ public class PrefetchedPagesNotifier {
         recordNotificationAction(NOTIFICATION_ACTION_SHOWN);
         NotificationUmaTracker.getInstance().onNotificationShown(
                 NotificationUmaTracker.SystemNotificationType.OFFLINE_CONTENT_SUGGESTION,
-                notification);
+                notification.getNotification());
     }
 
-    private static PendingIntent getPendingBroadcastFor(Context context, Class clazz) {
-        return PendingIntent.getBroadcast(
+    private static PendingIntentProvider getPendingBroadcastFor(Context context, Class clazz) {
+        return PendingIntentProvider.getBroadcast(
                 context, 0 /* requestCode */, new Intent(context, clazz), 0 /* flags */);
     }
 
@@ -174,7 +185,7 @@ public class PrefetchedPagesNotifier {
     private static void runWhenChromeLoadsNative(final Runnable r) {
         BrowserStartupController browserStartup =
                 BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER);
-        if (!browserStartup.isStartupSuccessfullyCompleted()) {
+        if (!browserStartup.isFullBrowserStarted()) {
             browserStartup.addStartupCompletedObserver(new StartupCallback() {
                 @Override
                 public void onSuccess() {

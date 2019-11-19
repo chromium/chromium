@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_TESTING_MOCK_STORAGE_AREA_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_TESTING_MOCK_STORAGE_AREA_H_
 
-#include "mojo/public/cpp/bindings/associated_binding_set.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom-blink.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
@@ -21,12 +23,14 @@ class MockStorageArea : public mojom::blink::StorageArea {
   MockStorageArea();
   ~MockStorageArea() override;
 
-  mojom::blink::StorageAreaPtr GetInterfacePtr();
-  mojom::blink::StorageAreaAssociatedPtr GetAssociatedInterfacePtr();
+  mojo::PendingRemote<mojom::blink::StorageArea> GetInterfaceRemote();
+  mojo::PendingAssociatedRemote<mojom::blink::StorageArea>
+  GetAssociatedInterfaceRemote();
 
   // StorageArea implementation:
   void AddObserver(
-      mojom::blink::StorageAreaObserverAssociatedPtrInfo observer) override;
+      mojo::PendingAssociatedRemote<mojom::blink::StorageAreaObserver> observer)
+      override;
 
   void Put(const Vector<uint8_t>& key,
            const Vector<uint8_t>& value,
@@ -43,13 +47,13 @@ class MockStorageArea : public mojom::blink::StorageArea {
 
   void Get(const Vector<uint8_t>& key, GetCallback callback) override;
 
-  void GetAll(mojom::blink::StorageAreaGetAllCallbackAssociatedPtrInfo
-                  complete_callback,
+  void GetAll(mojo::PendingAssociatedRemote<
+                  mojom::blink::StorageAreaGetAllCallback> complete_callback,
               GetAllCallback callback) override;
 
   // Methods and members for use by test fixtures.
   bool HasBindings() {
-    return !bindings_.empty() || !associated_bindings_.empty();
+    return !receivers_.empty() || !associated_receivers_.empty();
   }
 
   void ResetObservations() {
@@ -74,13 +78,13 @@ class MockStorageArea : public mojom::blink::StorageArea {
   }
 
   void Flush() {
-    bindings_.FlushForTesting();
-    associated_bindings_.FlushForTesting();
+    receivers_.FlushForTesting();
+    associated_receivers_.FlushForTesting();
   }
 
   void CloseAllBindings() {
-    bindings_.CloseAllBindings();
-    associated_bindings_.CloseAllBindings();
+    receivers_.Clear();
+    associated_receivers_.Clear();
   }
 
   size_t pending_callbacks_count() const { return pending_callbacks_.size(); }
@@ -111,8 +115,8 @@ class MockStorageArea : public mojom::blink::StorageArea {
 
   Vector<mojom::blink::KeyValuePtr> get_all_return_values_;
 
-  mojo::BindingSet<mojom::blink::StorageArea> bindings_;
-  mojo::AssociatedBindingSet<mojom::blink::StorageArea> associated_bindings_;
+  mojo::ReceiverSet<mojom::blink::StorageArea> receivers_;
+  mojo::AssociatedReceiverSet<mojom::blink::StorageArea> associated_receivers_;
 };
 
 }  // namespace blink

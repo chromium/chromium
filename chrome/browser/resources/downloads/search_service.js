@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('downloads', function() {
-  class SearchService {
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {BrowserProxy} from './browser_proxy.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
+  export class SearchService {
     constructor() {
       /** @private {!Array<string>} */
       this.searchTerms_ = [];
 
       /** @private {downloads.mojom.PageHandlerInterface} */
-      this.mojoHandler_ = downloads.BrowserProxy.getInstance().handler;
+      this.mojoHandler_ = BrowserProxy.getInstance().handler;
     }
 
     /**
@@ -66,7 +69,4 @@ cr.define('downloads', function() {
     }
   }
 
-  cr.addSingletonGetter(SearchService);
-
-  return {SearchService: SearchService};
-});
+  addSingletonGetter(SearchService);

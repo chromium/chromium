@@ -5,14 +5,27 @@
 // gpu/config/gpu_preferences.h
 module gpu.mojom;
 
-import "ui/gfx/mojo/buffer_types.mojom";
+[EnableIf=use_ozone]
+import "mojo/public/mojom/base/message_pump_type.mojom";
 
-// gpu::GpuPreferences::VpxDecodeVendors
-enum VpxDecodeVendors {
-  VPX_VENDOR_NONE = 0,
-  VPX_VENDOR_MICROSOFT = 1,
-  VPX_VENDOR_AMD = 2,
-  VPX_VENDOR_ALL = 3,
+import "ui/gfx/mojom/buffer_types.mojom";
+
+// Corresponds to gpu::VulkanImplementationName.
+enum VulkanImplementationName {
+  kNone = 0,
+  kNative = 1,
+  kForcedNative = 2,
+  kSwiftshader = 3,
+  kLast = kSwiftshader,
+};
+
+// Corresponds to gpu::GrContextType.
+enum GrContextType {
+  kGL = 0,
+  kVulkan = 1,
+  kMetal = 2,
+  kDawn = 3,
+  kLast = kDawn,
 };
 
 // gpu::GpuPreferences
@@ -25,7 +38,6 @@ struct GpuPreferences {
 
   // TODO(http://crbug.com/676224) Support preprocessing of mojoms. Following
   // variables should be used on Windows only.
-  VpxDecodeVendors enable_accelerated_vpx_decode;
   bool enable_low_latency_dxva;
   bool enable_zero_copy_dxgi_video;
   bool enable_nv12_dxgi_video;
@@ -49,7 +61,6 @@ struct GpuPreferences {
   bool enable_threaded_texture_mailboxes;
   bool gl_shader_interm_output;
   bool emulate_shader_precision;
-  uint32 max_active_webgl_contexts;
   bool enable_android_surface_control;
   bool enable_gpu_service_logging;
   bool enable_gpu_service_tracing;
@@ -62,10 +73,16 @@ struct GpuPreferences {
   bool enable_oop_rasterization;
   bool disable_oop_rasterization;
   bool enable_oop_rasterization_ddl;
-  bool enable_raster_to_sk_image;
-  bool enable_passthrough_raster_decoder;
   bool watchdog_starts_backgrounded;
-  bool enable_vulkan;
+  GrContextType gr_context_type;
+  VulkanImplementationName use_vulkan;
+  bool enforce_vulkan_protected_memory;
+  bool disable_vulkan_surface;
+  bool disable_vulkan_fallback_to_gl_for_testing;
+  bool enable_metal;
   bool enable_gpu_benchmarking_extension;
   bool enable_webgpu;
+
+  [EnableIf=use_ozone]
+  mojo_base.mojom.MessagePumpType message_pump_type;
 };

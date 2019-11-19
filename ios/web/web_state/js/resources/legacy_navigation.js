@@ -16,16 +16,16 @@ goog.provide('__crWeb.legacynavigation');
  * Intercept window.history methods to call back/forward natively.
  */
 window.history.back = function() {
-  __gCrWeb.message.invokeOnHost({'command': 'window.history.back'});
+ __gCrWeb.message.invokeOnHost({'command': 'navigation.goDelta', 'value' : -1});
 };
 
 window.history.forward = function() {
-  __gCrWeb.message.invokeOnHost({'command': 'window.history.forward'});
+ __gCrWeb.message.invokeOnHost({'command': 'navigation.goDelta', 'value' : 1});
 };
 
 window.history.go = function(delta) {
   __gCrWeb.message.invokeOnHost(
-      {'command': 'window.history.go', 'value': delta | 0});
+      {'command': 'navigation.goDelta', 'value': delta | 0});
 };
 
 /** Flush the message queue. */

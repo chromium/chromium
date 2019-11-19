@@ -18,8 +18,7 @@ FakeExternalBeginFrameSource::FakeExternalBeginFrameSource(
     bool tick_automatically)
     : BeginFrameSource(kNotRestartableId),
       tick_automatically_(tick_automatically),
-      milliseconds_per_frame_(1000.0 / refresh_rate),
-      weak_ptr_factory_(this) {
+      milliseconds_per_frame_(1000.0 / refresh_rate) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

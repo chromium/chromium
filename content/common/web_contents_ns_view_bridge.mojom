@@ -1,0 +1,138 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remote_cocoa.mojom;
+
+import "content/public/common/drop_data.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/image/mojom/image.mojom";
+import "url/mojom/url.mojom";
+
+// Interface through which a WebContentsViewMac communicates with its NSView in
+// another process.
+interface WebContentsNSView {
+  // Set this to be a child NSView of the NSView mapped to by
+  // |parent_ns_view_id|.
+  SetParentNSView(uint64 parent_ns_view_id);
+
+  // Clear the parent NSView and related state.
+  ResetParentNSView();
+
+  // Set the NSView's frame in its NSWindow to |bounds_in_window|.
+  SetBounds(gfx.mojom.Rect bounds_in_window);
+
+  // Short or hide the NSView.
+  SetVisible(bool visible);
+
+  // Make the NSView be the first responder for its window.
+  MakeFirstResponder();
+
+  // Called when a subview asks this to take focus back (e.g, because it has
+  // iterated past the last or first focusable element on the page). The
+  // iteration direction is in |reverse|.
+  TakeFocus(bool reverse);
+
+  // Initiate a drag from the web contents area.
+  StartDrag(content.mojom.DropData drop_data,
+            uint32 operation_mask,
+            gfx.mojom.ImageSkia? image,
+            gfx.mojom.Vector2d image_offset);
+};
+
+// The method through which a window was focused (directly focused, or by
+// iterating through NSViews).
+enum SelectionDirection {
+  // The selection was not made through iteration.
+  kDirect,
+  // The selection is made by iterating to the next valid selection.
+  kForward,
+  // The selection is made by iterating to the previous valid selection.
+  kReverse,
+};
+
+// The visibility of the window embedding a web contents NSView.
+enum Visibility {
+  // The view is part of a window that may be visible.
+  kVisible,
+  // The view is part of a window that is fully occluded.
+  kOccluded,
+  // The view is not part of any window or is part of a hidden window.
+  kHidden,
+};
+
+// The data extracted from an NSDraggingInfo at draggingEntered,
+// draggingUpdated, and performDragOperation.
+struct DraggingInfo {
+  // The dragging location in the NSView, with the origin in the upper-left.
+  gfx.mojom.PointF location_in_view;
+
+  // The dragging location in the NSScreen, with the origin in the upper-left.
+  gfx.mojom.PointF location_in_screen;
+
+  // The URL data from the drag, if any. Note that this is redundant in that it
+  // is already present in DropData. It is here because it is used by methods
+  // that don't use DropData.
+  url.mojom.Url? url;
+
+  // The operation mask.
+  uint32 operation_mask;
+};
+
+// Interface through which the NSView in another process communicates with its
+// owning WebContentsViewMac. This interface has no methods yet, but is included
+// for symmetry and future use.
+interface WebContentsNSViewHost {
+  // Notification that there was a mouse event, along with the type of event.
+  // If |motion| is true, this is a normal motion event. If |exited| is true,
+  // the pointer left the contents area.
+  OnMouseEvent(bool motion, bool exited);
+
+  // Called when the NSView becomes first responder, with |direction| set to
+  // indicate iteration direction (if any).
+  OnBecameFirstResponder(SelectionDirection direction);
+
+  // Called when the window displaying the web contents becomes visible, hidden,
+  // or occluded.
+  OnWindowVisibilityChanged(Visibility visibility);
+
+  // Transmit the data that is being dropped on the NSView. This is called prior
+  // to DraggingEntered.
+  SetDropData(content.mojom.DropData drop_data);
+
+  // Called in response to the -[NSDraggingDestination draggingEntered] method
+  // being called on the NSView. Returns the resulting operation in |result|.
+  [Sync]
+  DraggingEntered(DraggingInfo dragging_info) => (uint32 result);
+
+  // Called in response to the -[NSDraggingDestination draggingExited] method.
+  DraggingExited();
+
+  // Called in response to the -[NSDraggingDestination draggingUpdated] method
+  // being called on the NSView. Returns the resulting operation in |result|.
+  [Sync]
+  DraggingUpdated(DraggingInfo dragging_info) => (uint32 result);
+
+  // Called in response to the -[NSDraggingDestination performDragOperation:]
+  // method being called on the NSView. Returns the result of the operation in
+  // |result|.
+  [Sync]
+  PerformDragOperation(DraggingInfo dragging_info) => (bool result);
+
+  // Called in response to the -namesOfPromisedFilesDroppedAtDestination method
+  // being called on the NSView. The |file_path| input argument is the
+  // requested destination file, and the output |file_path| is the actual
+  // destination file.
+  [Sync]
+  DragPromisedFileTo(mojo_base.mojom.FilePath file_path,
+                     content.mojom.DropData drop_data,
+                     url.mojom.Url download_url) =>
+                         (mojo_base.mojom.FilePath file_path);
+
+  // Called in to the -draggedImage: method being called on the NSView.
+  EndDrag(uint32 drag_operation,
+          gfx.mojom.PointF local_point,
+          gfx.mojom.PointF screen_point);
+};
+

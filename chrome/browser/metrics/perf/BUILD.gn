@@ -1,0 +1,20 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//testing/test.gni")
+
+test("profile_provider_unittest") {
+  sources = [
+    "profile_provider_unittest_main.cc",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chromeos/dbus",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -1,0 +1,113 @@
+digraph IndexedDBOwnershipGraph {
+  graph [pad=".5", nodesep="1", ranksep="1"];
+  node [shape="box"];
+
+  // Solid edge means unique ownership reference
+  // Dashed edge means a weakptr reference
+  // Dotted edge means a raw pointer referencej
+
+  subgraph cluster_1 {
+    style=filled;
+    color=lightgrey;
+    node [style=filled,color=white];
+    label = "PROFILE-OWNED";
+    IndexedDBContextImpl;
+    IndexedDBFactoryImpl;
+    PerOriginFactory;
+    IndexedDBDatabase;
+    IndexedDBBackingStore;
+    UpgradeConnectionRequest;
+    DeleteConnectionRequest;
+  }
+
+  subgraph cluster_2 {
+    node [style=filled];
+    label = "MOJO-OWNED";
+    color=blue;
+    IndexedDBDispatcherHost;
+    DatabaseImpl;
+    CursorImpl;
+    TransactionImpl;
+    IndexedDBConnection;
+    IndexedDBTransaction;
+    IndexedDBCursor;
+    "IndexedDBBackingStore::Transaction";
+    "IndexedDBBackingStore::Cursor";
+  }
+
+  subgraph cluster_3 {
+    style=filled;
+    color=lightgrey;
+    node [style=filled,color=white];
+    label = "LEGEND";
+    ExampleA [shape=oval, label="ExampleA\n(Refcounted)"];
+    ExampleB [label="ExampleA\n(Not Refcounted)"];
+    ExampleA -> ExampleB [style="dotted", label="Raw\nReference"];
+    ExampleA -> ExampleB [style="dashed" label="Weak\nReference"];
+    ExampleA -> ExampleB [label="Strong\nReference"];
+  }
+  edge [style=bold];
+
+  "Other parts of the browser" -> IndexedDBContextImpl;
+  StoragePartitionImpl [shape="Mdiamond"];
+  RenderProcessHostImpl [shape="Mdiamond"];
+  StoragePartitionImpl -> IndexedDBContextImpl;
+
+  RenderProcessHostImpl -> IndexedDBDispatcherHost;
+  IndexedDBContextImpl -> IndexedDBFactoryImpl;
+
+  IndexedDBFactoryImpl -> PerOriginFactory;
+  IndexedDBFactoryImpl -> IndexedDBContextImpl [style="dotted"];
+
+  PerOriginFactory -> IndexedDBFactoryImpl [style="dotted"];
+  PerOriginFactory -> IndexedDBBackingStore;
+  PerOriginFactory -> IndexedDBDatabase;
+
+  IndexedDBFactoryHandle -> PerOriginFactory [style="dashed"];
+
+  IndexedDBDatabase -> IndexedDBBackingStore [style="dotted"];
+  IndexedDBDatabase -> IndexedDBFactoryImpl [style="dotted"];
+  IndexedDBDatabase -> IndexedDBConnection [style="dotted", label="All connections to\nthis database."];
+
+  IndexedDBDatabase -> UpgradeConnectionRequest [label="During or\npending upgrade."];
+  IndexedDBDatabase -> DeleteConnectionRequest [label="During or pending\ndatabase deletion."];
+
+  UpgradeConnectionRequest -> IndexedDBFactoryHandle;
+  UpgradeConnectionRequest -> IndexedDBDatabase [style="dotted"];
+  UpgradeConnectionRequest -> IndexedDBConnection [label="Temporarily during\nupgrade."];
+  DeleteConnectionRequest -> IndexedDBFactoryHandle;
+  DeleteConnectionRequest -> IndexedDBDatabase [style="dotted"];
+
+  IndexedDBDispatcherHost -> DatabaseImpl;
+  IndexedDBDispatcherHost -> CursorImpl;
+  IndexedDBDispatcherHost -> TransactionImpl;
+
+  DatabaseImpl -> IndexedDBDispatcherHost [style="dotted"];
+  DatabaseImpl -> IndexedDBContextImpl;
+  DatabaseImpl -> IndexedDBConnection;
+
+  IndexedDBConnection -> IndexedDBFactoryHandle;
+  IndexedDBConnection -> IndexedDBDatabase [style="dashed"];
+  IndexedDBConnection -> IndexedDBTransaction;
+
+  IndexedDBTransaction -> IndexedDBDatabase [style="dashed"];
+  IndexedDBTransaction -> IndexedDBConnection [style="dashed"];
+  IndexedDBTransaction -> IndexedDBCursor [style="dotted",label="All open cursors in\nthis transaction."];
+  IndexedDBTransaction -> "IndexedDBBackingStore::Transaction";
+
+  CursorImpl -> IndexedDBDispatcherHost [style="dotted"];
+  CursorImpl -> IndexedDBCursor;
+
+  IndexedDBCursor -> IndexedDBTransaction [style="dotted"];
+  IndexedDBCursor -> "IndexedDBBackingStore::Cursor";
+
+  "IndexedDBBackingStore::Transaction" -> IndexedDBBackingStore [style="dotted"];
+  "IndexedDBBackingStore::Cursor" -> "IndexedDBBackingStore::Transaction" [style="dotted"];
+  "IndexedDBBackingStore::Cursor" -> IndexedDBBackingStore [style="dotted"];
+
+  TransactionImpl -> IndexedDBDispatcherHost [style="dotted"];
+  TransactionImpl -> IndexedDBContextImpl;
+  TransactionImpl -> IndexedDBTransaction [style="dashed"];
+
+  IndexedDBContextImpl [shape=oval];
+}

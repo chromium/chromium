@@ -15,7 +15,7 @@
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,7 +72,7 @@ class ServiceProcessLauncherDelegateImpl
 #define MAYBE_StartJoin StartJoin
 #endif  // defined(OS_ANDROID)
 TEST(ServiceProcessLauncherTest, MAYBE_StartJoin) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
 
   base::FilePath test_service_path;
 #if defined(OS_FUCHSIA)
@@ -95,7 +95,7 @@ TEST(ServiceProcessLauncherTest, MAYBE_StartJoin) {
   run_loop.Run();
 
   launcher.reset();
-  scoped_task_environment.RunUntilIdle();
+  task_environment.RunUntilIdle();
 
   EXPECT_EQ(1u, service_process_launcher_delegate.get_and_clear_adjust_count());
 }
@@ -108,7 +108,7 @@ TEST(ServiceProcessLauncherTest, MAYBE_StartJoin) {
 // launch child processes, since we won't fail until exec(), therefore the test
 // will see a valid child process-Id. We use posix_spawn() on Mac OS X.
 TEST(ServiceProcessLauncherTest, FailToLaunchProcess) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
 
   // Pick a service path that could not possibly ever exist.
   base::FilePath test_service_path(FILE_PATH_LITERAL("rockot@_rules.service"));
@@ -124,7 +124,7 @@ TEST(ServiceProcessLauncherTest, FailToLaunchProcess) {
   run_loop.Run();
 
   launcher.reset();
-  scoped_task_environment.RunUntilIdle();
+  task_environment.RunUntilIdle();
 }
 #endif  //  !defined(OS_POSIX) || defined(OS_MACOSX)
 

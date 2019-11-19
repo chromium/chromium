@@ -8,7 +8,6 @@
 
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
-#include "third_party/blink/renderer/platform/wtf/wtf_thread_data.h"
 
 #if defined(OS_WIN)
 #include <stddef.h>
@@ -90,7 +89,7 @@ size_t GetUnderestimatedStackSize() {
   }
   return pthread_get_stacksize_np(pthread_self());
 #elif defined(OS_WIN) && defined(COMPILER_MSVC)
-  return WTFThreadData::ThreadStackSize();
+return Threading::ThreadStackSize();
 #else
 #error "Stack frame size estimation not supported on this platform."
   return 0;

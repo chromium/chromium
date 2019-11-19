@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<script src=../../resources/testharness.js></script>
+<script src=../../resources/testharnessreport.js></script>
+<script>
+// Check that trying to start a recording from a stream without tracks fails.
+test(function() {
+  const recorder = new MediaRecorder(new MediaStream());
+  assert_throws({name: "UnknownError"}, () => recorder.start(), "DOMException");
+  // Try again to verify that it fails the same way.
+  assert_throws({name: "UnknownError"}, () => recorder.start(), "DOMException");
+}, 'Trying to record a stream without tracks fails');
+
+</script>

@@ -7,28 +7,22 @@
  * This element provides a layer between the settings-multidevice-subpage
  * element and the internet_page folder's network-summary-item. It is
  * responsible for loading initial tethering network data from the
- * chrome.networkingPrivate API as well as updating the data in real time. It
+ * networkConfig mojo API as well as updating the data in real time. It
  * serves a role comparable to the internet_page's network-summary element.
  */
 
 Polymer({
   is: 'settings-multidevice-tether-item',
 
-  behaviors: [MultiDeviceFeatureBehavior],
+  behaviors: [
+    NetworkListenerBehavior,
+    MultiDeviceFeatureBehavior,
+  ],
 
   properties: {
     /**
-     * Interface for networkingPrivate calls.
-     * @private {!NetworkingPrivate}
-     */
-    networkingPrivate_: {
-      type: Object,
-      value: chrome.networkingPrivate,
-    },
-
-    /**
      * The device state for tethering.
-     * @private {?CrOnc.DeviceStateProperties|undefined}
+     * @private {?OncMojo.DeviceStateProperties|undefined}
      */
     deviceState_: Object,
 
@@ -36,7 +30,7 @@ Polymer({
      * The network state for a potential tethering host phone. Note that there
      * is at most one because only one MultiDevice host phone is allowed on an
      * account at a given time.
-     * @private {?CrOnc.NetworkStateProperties|undefined}
+     * @private {?OncMojo.NetworkStateProperties|undefined}
      */
     activeNetworkState_: Object,
 
@@ -62,114 +56,108 @@ Polymer({
     },
   },
 
-  listeners: {
-    'network-list-changed': 'updateTetherNetworkState_',
-    // network-changed is fired by the settings-multidevice-subpage element's
-    // CrNetworkListenerBehavior.
-    // TODO (jordynass): Refactor to allow this element to listen to network
-    // changes without requiring the settings-multidevice-subpage to communicate
-    // with the networkingPrivate API.
-    'networks-changed': 'onNetworksChanged_',
-  },
+  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
+  networkConfig_: null,
 
-  /**
-   * Listener function for chrome.networkingPrivate.onDeviceStateListChanged
-   * event.
-   * @private {?function(!Array<string>)}
-   */
-  deviceStateListChangedListener_: null,
+  /** @override */
+  created: function() {
+    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
+                              .getMojoServiceRemote();
+  },
 
   /** @override */
   attached: function() {
     this.updateTetherDeviceState_();
     this.updateTetherNetworkState_();
-
-    this.deviceStateListChangedListener_ =
-        this.deviceStateListChangedListener_ ||
-        this.updateTetherDeviceState_.bind(this);
-    this.networkingPrivate_.onDeviceStateListChanged.addListener(
-        this.deviceStateListChangedListener_);
-  },
-
-  /** @override */
-  detached: function() {
-    this.networkingPrivate_.onDeviceStateListChanged.removeListener(
-        assert(this.deviceStateListChangedListener_));
   },
 
   /**
-   * Callback for the a network changing state. Note that any change to leading
-   * to a new active network would fire the 'network-list-changed' event,
-   * triggering updateTetherNetworkState_ and rendering this callback
-   * redundant. As a result, we return early if the active network is not
-   * changed.
-   * @param {!CustomEvent<!Array<string>>} event stores an array of the GUIDs of
-   *     all networks that changed in its detail property.
+   * CrosNetworkConfigObserver impl
+   * Note that any change to leading to a new active network will also trigger
+   * onNetworkStateListChanged, triggering updateTetherNetworkState_ and
+   * rendering this callback redundant. As a result, we return early if the
+   * active network is not changed.
+   * @param {!Array<chromeos.networkConfig.mojom.NetworkStateProperties>}
+   *     networks
    * @private
    */
-  onNetworksChanged_: function(event) {
-    const id = this.activeNetworkState_.GUID;
-    if (!event.detail.includes(id)) {
+  onActiveNetworksChanged: function(networks) {
+    const guid = this.activeNetworkState_.guid;
+    if (!networks.find(network => network.guid == guid)) {
       return;
     }
-    this.networkingPrivate_.getState(id, newNetworkState => {
-      if (chrome.runtime.lastError) {
-        const message = chrome.runtime.lastError.message;
-        if (message != 'Error.NetworkUnavailable' &&
-            message != 'Error.InvalidNetworkGuid') {
-          console.error(
-              'Unexpected networkingPrivate.getState error: ' + message +
-              ' For: ' + id);
-          return;
-        }
+    this.networkConfig_.getNetworkState(guid).then(response => {
+      if (response.result) {
+        this.activeNetworkState_ = response.result;
       }
-      this.activeNetworkState_ = newNetworkState;
     });
   },
 
+  /** CrosNetworkConfigObserver impl */
+  onNetworkStateListChanged: function() {
+    this.updateTetherNetworkState_();
+  },
+
+  /** CrosNetworkConfigObserver impl */
+  onDeviceStateListChanged: function() {
+    this.updateTetherDeviceState_();
+  },
+
   /**
-   * Retrieves device states (CrOnc.DeviceStateProperties) and sets
-   * this.deviceState_ to the retrieved Instant Tethering state (or undefined if
-   * there is none) in its callback. Note that the function
-   * chrome.networkingPrivate.getDevicePolicy() retrieves at most one object per
-   * network type (CrOnc.Type) so, in particular there will be at most one state
-   * for Instant Tethering.
+   * Retrieves device states (OncMojo.DeviceStateProperties) and sets
+   * this.deviceState_ to the retrieved Tether device state (or undefined if
+   * there is none). Note that crosNetworkConfig.getDeviceStateList retrieves at
+   * most one device per NetworkType so there will be at most one Tether device
+   * state.
    * @private
    */
   updateTetherDeviceState_: function() {
-    this.networkingPrivate_.getDeviceStates(deviceStates => {
-      this.deviceState_ =
-          deviceStates.find(
-              deviceState => deviceState.Type == CrOnc.Type.TETHER) ||
-          {Type: CrOnc.Type.TETHER, State: CrOnc.DeviceState.DISABLED};
+    this.networkConfig_.getDeviceStateList().then(response => {
+      const kTether = chromeos.networkConfig.mojom.NetworkType.kTether;
+      const deviceStates = response.result;
+      const deviceState =
+          deviceStates.find(deviceState => deviceState.type == kTether);
+      this.deviceState_ = deviceState || {
+        deviceState: chromeos.networkConfig.mojom.DeviceStateType.kDisabled,
+        managedNetworkAvailable: false,
+        scanning: false,
+        simAbsent: false,
+        type: kTether,
+      };
     });
   },
 
   /**
    * Retrieves all Instant Tethering network states
-   * (CrOnc.NetworkStateProperties). Note that there is at most one because
+   * (OncMojo.NetworkStateProperties). Note that there is at most one because
    * only one host is allowed on an account at a given time. Then it sets
    * this.activeNetworkState_ to that network if there is one or a dummy object
    * with an empty string for a GUID otherwise.
    * @private
    */
   updateTetherNetworkState_: function() {
-    this.networkingPrivate_.getNetworks(
-        {networkType: CrOnc.Type.TETHER}, networkStates => {
-          this.activeNetworkState_ =
-              networkStates[0] || {GUID: '', Type: CrOnc.Type.TETHER};
-        });
+    const kTether = chromeos.networkConfig.mojom.NetworkType.kTether;
+    const filter = {
+      filter: chromeos.networkConfig.mojom.FilterType.kVisible,
+      limit: 1,
+      networkType: kTether,
+    };
+    this.networkConfig_.getNetworkStateList(filter).then(response => {
+      const networks = response.result;
+      this.activeNetworkState_ =
+          networks[0] || OncMojo.getDefaultNetworkState(kTether);
+    });
   },
 
   /**
    * Returns an array containing the active network state if there is one
    * (note that if there is not GUID will be falsy).  Returns an empty array
    * otherwise.
-   * @return {!Array<CrOnc.NetworkStateProperties>}
+   * @return {!Array<chromeos.networkConfig.mojom.NetworkStateProperties>}
    * @private
    */
   getNetworkStateList_: function() {
-    return this.activeNetworkState_.GUID ? [this.activeNetworkState_] : [];
+    return this.activeNetworkState_.guid ? [this.activeNetworkState_] : [];
   },
 
   /**
@@ -177,6 +165,6 @@ Polymer({
    * @private
    */
   getTetherNetworkUrlSearchParams_: function() {
-    return new URLSearchParams('type=' + CrOnc.Type.TETHER);
+    return new URLSearchParams('type=Tether');
   },
 });

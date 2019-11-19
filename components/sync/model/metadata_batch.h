@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_MODEL_METADATA_BATCH_H_
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -14,7 +15,8 @@
 namespace syncer {
 
 // Map of storage keys to EntityMetadata proto.
-using EntityMetadataMap = std::map<std::string, sync_pb::EntityMetadata>;
+using EntityMetadataMap =
+    std::map<std::string, std::unique_ptr<sync_pb::EntityMetadata>>;
 
 // Container used to pass sync metadata from services to their processor.
 class MetadataBatch {
@@ -35,7 +37,7 @@ class MetadataBatch {
 
   // Add |metadata| for |storage_key| to the batch.
   void AddMetadata(const std::string& storage_key,
-                   const sync_pb::EntityMetadata& metadata);
+                   std::unique_ptr<sync_pb::EntityMetadata> metadata);
 
   // Get the ModelTypeState for this batch.
   const sync_pb::ModelTypeState& GetModelTypeState() const;

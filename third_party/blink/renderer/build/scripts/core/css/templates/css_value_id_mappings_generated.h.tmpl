@@ -28,9 +28,9 @@ T cssValueIDToPlatformEnumGenerated(CSSValueID);
 template <>
 inline {{enum_name}} cssValueIDToPlatformEnumGenerated(CSSValueID v) {
   switch (v) {
-  {% for cs_value, css_value in mapping['mapping']: %}
-    case {{css_value}}:
-      return {{enum_name}}::{{cs_value}};
+  {% for value in mapping['mapping']: %}
+    case CSSValueID::{{value}}:
+      return {{enum_name}}::{{value}};
   {% endfor %}
     default:
       NOTREACHED();
@@ -40,13 +40,13 @@ inline {{enum_name}} cssValueIDToPlatformEnumGenerated(CSSValueID v) {
 
 inline CSSValueID platformEnumToCSSValueIDGenerated({{enum_name}} v) {
   switch (v) {
-  {% for cs_value, css_value in mapping['mapping']: %}
-    case {{enum_name}}::{{cs_value}}:
-      return {{css_value}};
+  {% for value in mapping['mapping']: %}
+    case {{enum_name}}::{{value}}:
+      return CSSValueID::{{value}};
   {% endfor %}
     default:
       NOTREACHED();
-      return CSSValueNone;
+      return CSSValueID::kNone;
   }
 }
 {% else %}
@@ -55,42 +55,42 @@ template <>
 inline {{enum_name}} cssValueIDToPlatformEnumGenerated(CSSValueID v) {
   {% if mapping['mapping'] | length > mapping.longest_segment_length %}
   switch (v) {
-  {% for cs_value, cs_num, css_value, css_num in mapping['mapping']: %}
-  {% if css_num < mapping.start_segment[3] or css_num > mapping.end_segment[3] %}
-    case {{css_value}}:
-      return {{enum_name}}::{{cs_value}};
+  {% for value, cs_num, css_num in mapping['mapping']: %}
+  {% if css_num < mapping.start_segment[2] or css_num > mapping.end_segment[2] %}
+    case CSSValueID::{{value}}:
+      return {{enum_name}}::{{value}};
   {% endif %}
   {% endfor %}
     default:
-      DCHECK_GE(v, {{mapping.start_segment[2]}});
-      DCHECK_LE(v, {{mapping.end_segment[2]}});
-      return static_cast<{{enum_name}}>(v - {{mapping.start_segment[2]}} + static_cast<int>({{enum_name}}::{{mapping.start_segment[0]}}));
+      DCHECK_GE(v, CSSValueID::{{mapping.start_segment[0]}});
+      DCHECK_LE(v, CSSValueID::{{mapping.end_segment[0]}});
+      return static_cast<{{enum_name}}>(static_cast<int>(v) - static_cast<int>(CSSValueID::{{mapping.start_segment[0]}}) + static_cast<int>({{enum_name}}::{{mapping.start_segment[0]}}));
   }
   {% else %}
-  DCHECK_GE(v, {{mapping.start_segment[2]}});
-  DCHECK_LE(v, {{mapping.end_segment[2]}});
-  return static_cast<{{enum_name}}>(v - {{mapping.start_segment[2]}} + static_cast<int>({{enum_name}}::{{mapping.start_segment[0]}}));
+  DCHECK_GE(v, CSSValueID::{{mapping.start_segment[0]}});
+  DCHECK_LE(v, CSSValueID::{{mapping.end_segment[0]}});
+  return static_cast<{{enum_name}}>(static_cast<int>(v) - static_cast<int>(CSSValueID::{{mapping.start_segment[0]}}) + static_cast<int>({{enum_name}}::{{mapping.start_segment[0]}}));
   {% endif %}
 }
 
 inline CSSValueID platformEnumToCSSValueIDGenerated({{enum_name}} v) {
   {% if mapping['mapping'] | length > mapping.longest_segment_length %}
   switch (v) {
-  {% for cs_value, cs_num, css_value, css_num in mapping['mapping']: %}
+  {% for value, cs_num, css_num in mapping['mapping']: %}
   {% if cs_num < mapping.start_segment[1] or cs_num > mapping.end_segment[1] %}
-    case {{enum_name}}::{{cs_value}}:
-      return {{css_value}};
+    case {{enum_name}}::{{value}}:
+      return CSSValueID::{{value}};
   {% endif %}
   {% endfor %}
     default:
       DCHECK_GE(v, {{enum_name}}::{{mapping.start_segment[0]}});
       DCHECK_LE(v, {{enum_name}}::{{mapping.end_segment[0]}});
-      return static_cast<CSSValueID>(static_cast<int>(v) - static_cast<int>({{enum_name}}::{{mapping.start_segment[0]}}) + static_cast<int>({{mapping.start_segment[2]}}));
+      return static_cast<CSSValueID>(static_cast<int>(v) - static_cast<int>({{enum_name}}::{{mapping.start_segment[0]}}) + static_cast<int>(CSSValueID::{{mapping.start_segment[0]}}));
   }
   {% else %}
   DCHECK_GE(v, {{enum_name}}::{{mapping.start_segment[0]}});
   DCHECK_LE(v, {{enum_name}}::{{mapping.end_segment[0]}});
-  return static_cast<CSSValueID>(static_cast<int>(v) - static_cast<int>({{enum_name}}::{{mapping.start_segment[0]}}) + static_cast<int>({{mapping.start_segment[2]}}));
+  return static_cast<CSSValueID>(static_cast<int>(v) - static_cast<int>({{enum_name}}::{{mapping.start_segment[0]}}) + static_cast<int>(CSSValueID::{{mapping.start_segment[0]}}));
   {% endif %}
 }
 

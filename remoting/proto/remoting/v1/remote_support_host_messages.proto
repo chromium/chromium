@@ -1,0 +1,49 @@
+syntax = "proto2";
+
+package remoting.apis.v1;
+
+import "host_info.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// Request host info for a specific support host instance.
+message GetSupportHostRequest {
+  // The unique identifier for the host being requested.
+  optional string support_id = 1;
+}
+
+// The response to a GetSupportHostRequest.
+message GetSupportHostResponse {
+  // The connection info for the host associated with the given support_id.
+  optional HostInfo support_host = 1;
+}
+
+// Registers a support host instance.
+message RegisterSupportHostRequest {
+  // Public key for the host. Must be a 2048-bit RSA key encoded with BASE64.
+  optional string public_key = 1;
+
+  // The ID associated with the host on the Talk network.
+  optional string jabber_id = 2;
+
+  // The ID associated with the host on the Tachyon network.
+  optional string tachyon_id = 3;
+
+  // Version of the It2Me host software installed on the host.
+  optional string host_version = 4;
+
+  // Operating system type of the host.
+  optional string host_os_name = 5;
+
+  // Operating system version of the host.
+  optional string host_os_version = 6;
+}
+
+// The response to a RegisterSupportHostRequest.
+message RegisterSupportHostResponse {
+  // A unique identifier for the registered host.
+  optional string support_id = 1;
+
+  // The length of time |support_id| will remain valid.
+  optional int32 support_id_lifetime_seconds = 2;
+}

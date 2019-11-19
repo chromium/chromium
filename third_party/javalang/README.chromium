@@ -1,0 +1,15 @@
+Name: Pure Python Java parser and tools
+Short Name: javalang
+URL: https://github.com/c2nes/javalang
+Version: 0.12.0
+License: MIT
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+javalang is a pure Python library for working with Java source code. javalang
+provides a lexer and parser targeting Java 8. The implementation is based on the
+Java language spec available at
+http://docs.oracle.com/javase/specs/jls/se8/html/.
+
+Chrome uses javalang for Android builds to modify Java files.

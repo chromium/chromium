@@ -65,12 +65,7 @@ Polymer({
     },
 
     /** @private */
-    showingSubpage_: {
-      type: Boolean,
-      // TODO(dpapad): Initial value only needed for Polymer 1, remove once
-      // Polymer 2 migration is done.
-      value: false,
-    },
+    showingSubpage_: Boolean,
 
     toolbarSpinnerActive: {
       type: Boolean,
@@ -80,11 +75,13 @@ Polymer({
 
     /**
      * Dictionary defining page visibility.
-     * @type {!GuestModePageVisibility}
+     * @type {!PageVisibility}
      */
     pageVisibility: Object,
 
     showAndroidApps: Boolean,
+
+    showParentalControls: Boolean,
 
     havePlayStoreApp: Boolean,
   },
@@ -171,6 +168,7 @@ Polymer({
     const overscroll = Math.max(0, this.offsetParent.clientHeight - distance);
     this.setOverscroll_(overscroll);
     section.scrollIntoView();
+    section.focus();
   },
 
   /**
@@ -237,6 +235,7 @@ Polymer({
    * @private
    */
   showManagedHeader_: function() {
-    return !this.inSearchMode_ && !this.showingSubpage_;
+    return !this.inSearchMode_ && !this.showingSubpage_ &&
+        !this.showPages_.about;
   },
 });

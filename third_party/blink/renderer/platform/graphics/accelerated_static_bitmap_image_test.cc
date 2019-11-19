@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -57,7 +57,7 @@ class AcceleratedStaticBitmapImageTest : public Test {
   void TearDown() override { SharedGpuContext::ResetForTesting(); }
 
  protected:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   MockGLES2InterfaceWithSyncTokenSupport gl_;
 };
 
@@ -77,21 +77,18 @@ TEST_F(AcceleratedStaticBitmapImageTest, NoTextureHolderThrashing) {
   scoped_refptr<AcceleratedStaticBitmapImage> bitmap =
       AcceleratedStaticBitmapImage::CreateFromSkImage(image,
                                                       context_provider_wrapper);
-  EXPECT_TRUE(bitmap->TextureHolderForTesting()->IsSkiaTextureHolder());
 
   sk_sp<SkImage> stored_image =
       bitmap->PaintImageForCurrentFrame().GetSkImage();
   EXPECT_EQ(stored_image.get(), image.get());
 
   bitmap->EnsureMailbox(kUnverifiedSyncToken, GL_LINEAR);
-  EXPECT_TRUE(bitmap->TextureHolderForTesting()->IsMailboxTextureHolder());
 
   // Verify that calling PaintImageForCurrentFrame does not swap out of mailbox
   // mode. It should use the cached original image instead.
   stored_image = bitmap->PaintImageForCurrentFrame().GetSkImage();
 
   EXPECT_EQ(stored_image.get(), image.get());
-  EXPECT_TRUE(bitmap->TextureHolderForTesting()->IsMailboxTextureHolder());
 }
 
 TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
@@ -106,7 +103,6 @@ TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
   scoped_refptr<AcceleratedStaticBitmapImage> bitmap =
       AcceleratedStaticBitmapImage::CreateFromSkImage(image,
                                                       context_provider_wrapper);
-  EXPECT_TRUE(bitmap->TextureHolderForTesting()->IsSkiaTextureHolder());
 
   MockGLES2InterfaceWithSyncTokenSupport destination_gl;
 
@@ -133,10 +129,10 @@ TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
 
   IntPoint dest_point(0, 0);
   IntRect source_sub_rectangle(0, 0, 10, 10);
-  bitmap->CopyToTexture(&destination_gl, GL_TEXTURE_2D, 1 /*dest_texture_id*/,
-                        false /*unpack_premultiply_alpha*/,
-                        false /*unpack_flip_y*/, dest_point,
-                        source_sub_rectangle);
+  bitmap->CopyToTexture(
+      &destination_gl, GL_TEXTURE_2D, 1 /*dest_texture_id*/,
+      0 /*dest_texture_level*/, false /*unpack_premultiply_alpha*/,
+      false /*unpack_flip_y*/, dest_point, source_sub_rectangle);
 
   testing::Mock::VerifyAndClearExpectations(&gl_);
   testing::Mock::VerifyAndClearExpectations(&destination_gl);

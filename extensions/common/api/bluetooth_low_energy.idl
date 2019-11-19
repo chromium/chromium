@@ -445,8 +445,8 @@ namespace bluetoothLowEnergy {
     // Create an advertisement and register it for advertising. To call this
     // function, the app must have the bluetooth:low_energy and
     // bluetooth:peripheral permissions set to true. Additionally this API
-    // is only available to auto launched apps in Kiosk Mode of by setting
-    // the 'enable-ble-advertising-in-apps' flag.
+    // is only available to auto launched apps in Kiosk Mode or by setting
+    // the '--enable-ble-advertising-in-apps' command-line switch.
     // See https://developer.chrome.com/apps/manifest/bluetooth
     // Note: On some hardware, central and peripheral modes at the same time is
     // supported but on hardware that doesn't support this, making this call

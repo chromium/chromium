@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS Property alignment-baseline value 'baseline' computes to 'baseline'
+FAIL Property alignment-baseline value 'text-bottom' computes to 'text-bottom' assert_true: 'text-bottom' is a supported value for alignment-baseline. expected true got false
+PASS Property alignment-baseline value 'alphabetic' computes to 'alphabetic'
+PASS Property alignment-baseline value 'ideographic' computes to 'ideographic'
+PASS Property alignment-baseline value 'middle' computes to 'middle'
+PASS Property alignment-baseline value 'central' computes to 'central'
+PASS Property alignment-baseline value 'mathematical' computes to 'mathematical'
+FAIL Property alignment-baseline value 'text-top' computes to 'text-top' assert_true: 'text-top' is a supported value for alignment-baseline. expected true got false
+FAIL Property alignment-baseline value 'bottom' computes to 'bottom' assert_true: 'bottom' is a supported value for alignment-baseline. expected true got false
+FAIL Property alignment-baseline value 'center' computes to 'center' assert_true: 'center' is a supported value for alignment-baseline. expected true got false
+FAIL Property alignment-baseline value 'top' computes to 'top' assert_true: 'top' is a supported value for alignment-baseline. expected true got false
+Harness: the test ran to completion.
+

@@ -18,6 +18,14 @@ interface WorkerContentSettingsProxy {
   [Sync]
   AllowIndexedDB() => (bool result);
 
+  // Returns whether the worker is allowed access to CacheStorage.
+  [Sync]
+  AllowCacheStorage() => (bool result);
+
+  // Returns whether the worker is allowed access to Web Locks.
+  [Sync]
+  AllowWebLocks() => (bool result);
+
   // Returns whether the worker is allowed access to the file system.
   [Sync]
   RequestFileSystemAccessSync() => (bool result);

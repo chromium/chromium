@@ -22,41 +22,48 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
-inline SVGRectElement::SVGRectElement(Document& document)
+SVGRectElement::SVGRectElement(Document& document)
     : SVGGeometryElement(svg_names::kRectTag, document),
-      x_(SVGAnimatedLength::Create(this,
-                                   svg_names::kXAttr,
-                                   SVGLengthMode::kWidth,
-                                   SVGLength::Initial::kUnitlessZero,
-                                   CSSPropertyX)),
-      y_(SVGAnimatedLength::Create(this,
-                                   svg_names::kYAttr,
-                                   SVGLengthMode::kHeight,
-                                   SVGLength::Initial::kUnitlessZero,
-                                   CSSPropertyY)),
-      width_(SVGAnimatedLength::Create(this,
-                                       svg_names::kWidthAttr,
-                                       SVGLengthMode::kWidth,
-                                       SVGLength::Initial::kUnitlessZero,
-                                       CSSPropertyWidth)),
-      height_(SVGAnimatedLength::Create(this,
-                                        svg_names::kHeightAttr,
-                                        SVGLengthMode::kHeight,
-                                        SVGLength::Initial::kUnitlessZero,
-                                        CSSPropertyHeight)),
-      rx_(SVGAnimatedLength::Create(this,
-                                    svg_names::kRxAttr,
-                                    SVGLengthMode::kWidth,
-                                    SVGLength::Initial::kUnitlessZero,
-                                    CSSPropertyRx)),
-      ry_(SVGAnimatedLength::Create(this,
-                                    svg_names::kRyAttr,
-                                    SVGLengthMode::kHeight,
-                                    SVGLength::Initial::kUnitlessZero,
-                                    CSSPropertyRy)) {
+      x_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kXAttr,
+          SVGLengthMode::kWidth,
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kX)),
+      y_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kYAttr,
+          SVGLengthMode::kHeight,
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kY)),
+      width_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kWidthAttr,
+          SVGLengthMode::kWidth,
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kWidth)),
+      height_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kHeightAttr,
+          SVGLengthMode::kHeight,
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kHeight)),
+      rx_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kRxAttr,
+          SVGLengthMode::kWidth,
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kRx)),
+      ry_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kRyAttr,
+          SVGLengthMode::kHeight,
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kRy)) {
   AddToPropertyMap(x_);
   AddToPropertyMap(y_);
   AddToPropertyMap(width_);
@@ -74,8 +81,6 @@ void SVGRectElement::Trace(blink::Visitor* visitor) {
   visitor->Trace(ry_);
   SVGGeometryElement::Trace(visitor);
 }
-
-DEFINE_NODE_FACTORY(SVGRectElement)
 
 Path SVGRectElement::AsPath() const {
   Path path;
@@ -158,7 +163,8 @@ bool SVGRectElement::SelfHasRelativeLengths() const {
          rx_->CurrentValue()->IsRelative() || ry_->CurrentValue()->IsRelative();
 }
 
-LayoutObject* SVGRectElement::CreateLayoutObject(const ComputedStyle&) {
+LayoutObject* SVGRectElement::CreateLayoutObject(const ComputedStyle&,
+                                                 LegacyLayout) {
   return new LayoutSVGRect(this);
 }
 

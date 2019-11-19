@@ -15,6 +15,10 @@
     "dependencies": ["permission:browser"],
     "contexts": ["blessed_extension"]
   },
+  "firstRunPrivate": {
+    "dependencies": ["permission:firstRunPrivate"],
+    "contexts": ["blessed_extension"]
+  },
   "mediaGalleries": {
     "dependencies": ["permission:mediaGalleries"],
     "contexts": ["blessed_extension"]

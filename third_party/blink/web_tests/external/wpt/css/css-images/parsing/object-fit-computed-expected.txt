@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Property object-fit value 'contain' computes to 'contain'
+PASS Property object-fit value 'cover' computes to 'cover'
+FAIL Property object-fit value 'cover scale-down' computes to 'cover scale-down' assert_true: 'cover scale-down' is a supported value for object-fit. expected true got false
+PASS Property object-fit value 'fill' computes to 'fill'
+PASS Property object-fit value 'none' computes to 'none'
+PASS Property object-fit value 'scale-down' computes to 'scale-down'
+Harness: the test ran to completion.
+

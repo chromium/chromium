@@ -15,11 +15,20 @@
 - (void)setHighlighted:(BOOL)highlighted {
   [super setHighlighted:highlighted];
 
+  NSArray<UIView*>* highlightViews;
+  if (self.highlightableViews) {
+    highlightViews = self.highlightableViews;
+  } else {
+    highlightViews = @[ self ];
+  }
+
   [UIView transitionWithView:self
                     duration:ios::material::kDuration8
                      options:UIViewAnimationOptionCurveEaseInOut
                   animations:^{
-                    self.alpha = highlighted ? 0.5 : 1.0;
+                    for (UIView* view in highlightViews) {
+                      view.alpha = highlighted ? 0.5 : 1.0;
+                    }
                   }
                   completion:nil];
 }

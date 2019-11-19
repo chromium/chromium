@@ -1,0 +1,31 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// Represents the result of retrieving an origin policy.
+[Native]
+struct OriginPolicy;
+
+// An interface for handling all origin policy related operations.
+// https://wicg.github.io/origin-policy/
+interface OriginPolicyManager {
+  // Attempts to retrieve the origin policy for an origin and
+  // `Sec-Origin-Policy` HTTP header value. Calls back with the result.
+  // The header_value needs to contain a proper policy version or be empty. If
+  // the header is not present, callers should call with an empty header_value.
+  // An invalid header_value will result in a returned empty policy with the
+  // state of `kCannotLoadPolicy` (unless a valid policy version has been
+  // previously cached).
+  // https://wicg.github.io/origin-policy/#origin-policy-header
+  RetrieveOriginPolicy(url.mojom.Origin origin, string header_value)
+      => (OriginPolicy origin_policy);
+
+  // Adds an exception for the specified origin. This means that no policy will
+  // apply for the specified origin from this point forward.
+  AddExceptionFor(url.mojom.Origin origin);
+};

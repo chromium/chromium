@@ -46,9 +46,7 @@ void SampleNewTabPageURL(Profile* profile) {
 }  // namespace
 
 PrefMetricsService::PrefMetricsService(Profile* profile)
-    : profile_(profile),
-      prefs_(profile_->GetPrefs()),
-      weak_factory_(this) {
+    : profile_(profile), prefs_(profile_->GetPrefs()) {
   RecordLaunchPrefs();
 }
 
@@ -112,8 +110,6 @@ void PrefMetricsService::RecordLaunchPrefs() {
   if (restore_on_startup == SessionStartupPref::kPrefValueURLs) {
     const base::ListValue* url_list =
         prefs_->GetList(prefs::kURLsToRestoreOnStartup);
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Settings.StartupPageLoadURLs",
-                                url_list->GetSize(), 1, 50, 20);
     // Similarly, check startup pages for known search engine TLD+1s.
     std::string url_text;
     for (size_t i = 0; i < url_list->GetSize(); ++i) {

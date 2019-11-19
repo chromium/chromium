@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/callback.h"
@@ -49,6 +50,18 @@ class InstanceID {
     LAST_RESULT = UNKNOWN_ERROR
   };
 
+  // Flags to be used to create a token. These might be platform specific.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.gcm_driver
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: InstanceIDFlags
+  enum class Flags {
+    // Whether delivery of received messages should be deferred until there is a
+    // visible activity. Only applicable for Android.
+    kIsLazy = 1 << 0,
+    // Whether delivery of received messages should bypass the background task
+    // scheduler. Only applicable for high priority messages on Android.
+    kBypassScheduler = 1 << 1,
+  };
+
   // Asynchronous callbacks. Must not synchronously delete |this| (using
   // InstanceIDDriver::RemoveInstanceID).
   using TokenRefreshCallback =
@@ -57,12 +70,12 @@ class InstanceID {
   using GetCreationTimeCallback =
       base::Callback<void(const base::Time& creation_time)>;
   using GetTokenCallback =
-      base::Callback<void(const std::string& token, Result result)>;
+      base::OnceCallback<void(const std::string& token, Result result)>;
   using ValidateTokenCallback = base::Callback<void(bool is_valid)>;
   using GetEncryptionInfoCallback =
-      base::Callback<void(const std::string&, const std::string&)>;
-  using DeleteTokenCallback = base::Callback<void(Result result)>;
-  using DeleteIDCallback = base::Callback<void(Result result)>;
+      base::OnceCallback<void(std::string p256dh, std::string auth_secret)>;
+  using DeleteTokenCallback = base::OnceCallback<void(Result result)>;
+  using DeleteIDCallback = base::OnceCallback<void(Result result)>;
 
   static const int kInstanceIDByteLength = 8;
 
@@ -95,14 +108,13 @@ class InstanceID {
   // |options|: allows including a small number of string key/value pairs that
   //            will be associated with the token and may be used in processing
   //            the request.
-  // |is_lazy|: Whether delivery of received messages should be deferred until
-  //            there is a visible activity. Only applicable for Android.
+  // |flags|: Flags used to create this token.
   // |callback|: to be called once the asynchronous operation is done.
   virtual void GetToken(const std::string& authorized_entity,
                         const std::string& scope,
                         const std::map<std::string, std::string>& options,
-                        bool is_lazy,
-                        const GetTokenCallback& callback) = 0;
+                        std::set<Flags> flags,
+                        GetTokenCallback callback) = 0;
 
   // Checks that the provided |token| matches the stored token for (|app_id()|,
   // |authorized_entity|, |scope|).
@@ -116,21 +128,21 @@ class InstanceID {
   // created.
   // |authorized_entity|: the authorized entity passed when obtaining the token.
   // |callback|: to be called once the asynchronous operation is done.
-  void GetEncryptionInfo(const std::string& authorized_entity,
-                         const GetEncryptionInfoCallback& callback);
+  virtual void GetEncryptionInfo(const std::string& authorized_entity,
+                                 GetEncryptionInfoCallback callback);
 
   // Revokes a granted token.
   // |authorized_entity|: the authorized entity passed when obtaining the token.
   // |scope|: the scope that was passed when obtaining the token.
   // |callback|: to be called once the asynchronous operation is done.
-  void DeleteToken(const std::string& authorized_entity,
-                   const std::string& scope,
-                   const DeleteTokenCallback& callback);
+  virtual void DeleteToken(const std::string& authorized_entity,
+                           const std::string& scope,
+                           DeleteTokenCallback callback);
 
   // Resets the app instance identifier and revokes all tokens associated with
   // it.
   // |callback|: to be called once the asynchronous operation is done.
-  void DeleteID(const DeleteIDCallback& callback);
+  void DeleteID(DeleteIDCallback callback);
 
   std::string app_id() const { return app_id_; }
 
@@ -140,8 +152,8 @@ class InstanceID {
   // Platform-specific implementations.
   virtual void DeleteTokenImpl(const std::string& authorized_entity,
                                const std::string& scope,
-                               const DeleteTokenCallback& callback) = 0;
-  virtual void DeleteIDImpl(const DeleteIDCallback& callback) = 0;
+                               DeleteTokenCallback callback) = 0;
+  virtual void DeleteIDImpl(DeleteIDCallback callback) = 0;
 
   void NotifyTokenRefresh(bool update_id);
 
@@ -149,7 +161,7 @@ class InstanceID {
 
  private:
   void DidDelete(const std::string& authorized_entity,
-                 const base::Callback<void(Result result)>& callback,
+                 base::OnceCallback<void(Result result)> callback,
                  Result result);
 
   // Owned by GCMProfileServiceFactory, which is a dependency of
@@ -159,7 +171,7 @@ class InstanceID {
   std::string app_id_;
   TokenRefreshCallback token_refresh_callback_;
 
-  base::WeakPtrFactory<InstanceID> weak_ptr_factory_;
+  base::WeakPtrFactory<InstanceID> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InstanceID);
 };

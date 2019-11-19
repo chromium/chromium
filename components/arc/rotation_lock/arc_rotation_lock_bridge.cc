@@ -7,8 +7,8 @@
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/singleton.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -72,11 +72,7 @@ void ArcRotationLockBridge::OnUserRotationLockChanged() {
   SendRotationLockState();
 }
 
-void ArcRotationLockBridge::OnTabletModeStarted() {
-  SendRotationLockState();
-}
-
-void ArcRotationLockBridge::OnTabletModeEnded() {
+void ArcRotationLockBridge::OnTabletPhysicalStateChanged() {
   SendRotationLockState();
 }
 
@@ -98,14 +94,10 @@ void ArcRotationLockBridge::SendRotationLockState() {
     DCHECK(found);
   }
 
-  bool in_tablet_mode = ash::Shell::Get()
-                            ->tablet_mode_controller()
-                            ->IsTabletModeWindowManagerEnabled();
-  bool accelerometer_active = in_tablet_mode
-                                  ? !ash::Shell::Get()
-                                         ->screen_orientation_controller()
-                                         ->rotation_locked()
-                                  : false;
+  auto* shell = ash::Shell::Get();
+  const bool accelerometer_active =
+      shell->tablet_mode_controller()->is_in_tablet_physical_state() &&
+      !shell->screen_orientation_controller()->rotation_locked();
 
   rotation_lock_instance->OnRotationLockStateChanged(
       accelerometer_active,

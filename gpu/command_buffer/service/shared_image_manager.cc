@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/logging.h"
@@ -14,6 +15,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "ui/gl/trace_util.h"
 
@@ -46,14 +48,14 @@ bool operator<(const std::unique_ptr<SharedImageBacking>& lhs,
 
 class SharedImageManager::AutoLock {
  public:
-  explicit AutoLock(SharedImageManager* manager) {
-    if (manager->is_thread_safe())
-      auto_lock_.emplace(manager->lock_.value());
-  }
+  explicit AutoLock(SharedImageManager* manager)
+      : auto_lock_(manager->is_thread_safe() ? &manager->lock_.value()
+                                             : nullptr) {}
+
   ~AutoLock() = default;
 
  private:
-  base::Optional<base::AutoLock> auto_lock_;
+  base::AutoLockMaybe auto_lock_;
 
   DISALLOW_COPY_AND_ASSIGN(AutoLock);
 };
@@ -116,7 +118,8 @@ SharedImageManager::ProduceGLTexture(const Mailbox& mailbox,
   auto found = images_.find(mailbox);
   if (found == images_.end()) {
     LOG(ERROR) << "SharedImageManager::ProduceGLTexture: Trying to produce a "
-                  "representation from a non-existent mailbox.";
+                  "representation from a non-existent mailbox. "
+               << mailbox.ToDebugString();
     return nullptr;
   }
 
@@ -133,6 +136,9 @@ SharedImageManager::ProduceGLTexture(const Mailbox& mailbox,
 std::unique_ptr<SharedImageRepresentationGLTexture>
 SharedImageManager::ProduceRGBEmulationGLTexture(const Mailbox& mailbox,
                                                  MemoryTypeTracker* tracker) {
+  CALLED_ON_VALID_THREAD();
+
+  AutoLock autolock(this);
   auto found = images_.find(mailbox);
   if (found == images_.end()) {
     LOG(ERROR) << "SharedImageManager::ProduceRGBEmulationGLTexture: Trying to "
@@ -175,7 +181,8 @@ SharedImageManager::ProduceGLTexturePassthrough(const Mailbox& mailbox,
 
 std::unique_ptr<SharedImageRepresentationSkia> SharedImageManager::ProduceSkia(
     const Mailbox& mailbox,
-    MemoryTypeTracker* tracker) {
+    MemoryTypeTracker* tracker,
+    scoped_refptr<SharedContextState> context_state) {
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
@@ -186,10 +193,57 @@ std::unique_ptr<SharedImageRepresentationSkia> SharedImageManager::ProduceSkia(
     return nullptr;
   }
 
-  auto representation = (*found)->ProduceSkia(this, tracker);
+  auto representation = (*found)->ProduceSkia(this, tracker, context_state);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceSkia: Trying to produce a "
                   "Skia representation from an incompatible mailbox.";
+    return nullptr;
+  }
+
+  return representation;
+}
+
+std::unique_ptr<SharedImageRepresentationDawn> SharedImageManager::ProduceDawn(
+    const Mailbox& mailbox,
+    MemoryTypeTracker* tracker,
+    WGPUDevice device) {
+  CALLED_ON_VALID_THREAD();
+
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end()) {
+    LOG(ERROR) << "SharedImageManager::ProduceDawn: Trying to Produce a "
+                  "Dawn representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  auto representation = (*found)->ProduceDawn(this, tracker, device);
+  if (!representation) {
+    LOG(ERROR) << "SharedImageManager::ProduceDawn: Trying to produce a "
+                  "Dawn representation from an incompatible mailbox.";
+    return nullptr;
+  }
+
+  return representation;
+}
+
+std::unique_ptr<SharedImageRepresentationOverlay>
+SharedImageManager::ProduceOverlay(const gpu::Mailbox& mailbox,
+                                   gpu::MemoryTypeTracker* tracker) {
+  CALLED_ON_VALID_THREAD();
+
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end()) {
+    LOG(ERROR) << "SharedImageManager::ProduceOverlay: Trying to Produce a "
+                  "Overlay representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  auto representation = (*found)->ProduceOverlay(this, tracker);
+  if (!representation) {
+    LOG(ERROR) << "SharedImageManager::ProduceOverlay: Trying to produce a "
+                  "Overlay representation from an incompatible mailbox.";
     return nullptr;
   }
 
@@ -234,13 +288,13 @@ void SharedImageManager::OnMemoryDump(const Mailbox& mailbox,
   }
 
   auto* backing = found->get();
-  size_t estimated_size = backing->estimated_size();
+  size_t estimated_size = backing->EstimatedSizeForMemTracking();
   if (estimated_size == 0)
     return;
 
   // Unique name in the process.
   std::string dump_name =
-      base::StringPrintf("gpu/shared-images/client_0x%" PRIX32 "/mailbox_%s",
+      base::StringPrintf("gpu/shared_images/client_0x%" PRIX32 "/mailbox_%s",
                          client_id, mailbox.ToDebugString().c_str());
 
   base::trace_event::MemoryAllocatorDump* dump =

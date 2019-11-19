@@ -55,14 +55,14 @@ FcmConnectionEstablisher::InFlightMessage::InFlightMessage(
 
 FcmConnectionEstablisher::FcmConnectionEstablisher(
     std::unique_ptr<base::OneShotTimer> retry_timer)
-    : retry_timer_(std::move(retry_timer)), weak_ptr_factory_(this) {}
+    : retry_timer_(std::move(retry_timer)) {}
 FcmConnectionEstablisher::~FcmConnectionEstablisher() = default;
 
 void FcmConnectionEstablisher::EstablishConnection(
     const GURL& url,
     ConnectionMode connection_mode,
     content::ServiceWorkerContext* service_worker_context) {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(
           &FcmConnectionEstablisher::SendMessageToServiceWorkerWithRetries,
@@ -74,7 +74,7 @@ void FcmConnectionEstablisher::EstablishConnection(
 void FcmConnectionEstablisher::TearDownConnection(
     const GURL& url,
     content::ServiceWorkerContext* service_worker_context) {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(
           &FcmConnectionEstablisher::SendMessageToServiceWorkerWithRetries,

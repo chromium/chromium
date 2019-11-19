@@ -10,7 +10,7 @@
  * Launches the PaymentRequest UI that requests an email address and a phone
  * number and offers free shipping worldwide.
  */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   try {
     var details = {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},

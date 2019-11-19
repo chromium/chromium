@@ -11,12 +11,8 @@
 #include "base/values.h"
 #include "chrome/renderer/media/cast_session.h"
 
-CastUdpTransport::CastUdpTransport(
-    const scoped_refptr<CastSession>& session)
-    : cast_session_(session),
-      options_(new base::DictionaryValue),
-      weak_factory_(this) {
-}
+CastUdpTransport::CastUdpTransport(const scoped_refptr<CastSession>& session)
+    : cast_session_(session), options_(new base::DictionaryValue) {}
 
 CastUdpTransport::~CastUdpTransport() {
 }

@@ -10,6 +10,7 @@ h2 {
 }
 
 table {
+  table-layout: fixed;
   width: 100%;
 }
 
@@ -18,10 +19,17 @@ table > tbody > tr:nth-child(odd) {
 }
 
 table td {
+  vertical-align: top;
   width: 50%;
+  word-wrap: break-word;
 }
 
 button {
   display: block;
-  min-height: 30px;
+  margin: 10px 0;
+  padding: 5px;
+}
+
+#current-content table td:first-child {
+  width: 15%;
 }

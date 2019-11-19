@@ -115,45 +115,24 @@ void RenderNodeVisitor::EndVisitCCNode(CCNode* v) {
   this->EndVisitRenderNode(v);
 }
 
-std::unique_ptr<RenderNode> InterpretNode(const base::DictionaryValue& node);
-
-std::string ValueTypeAsString(Value::Type type) {
-  switch (type) {
-    case Value::Type::NONE:
-      return "NULL";
-    case Value::Type::BOOLEAN:
-      return "BOOLEAN";
-    case Value::Type::INTEGER:
-      return "INTEGER";
-    case Value::Type::DOUBLE:
-      return "DOUBLE";
-    case Value::Type::STRING:
-      return "STRING";
-    case Value::Type::BINARY:
-      return "BINARY";
-    case Value::Type::DICTIONARY:
-      return "DICTIONARY";
-    case Value::Type::LIST:
-      return "LIST";
-    default:
-      return "(UNKNOWN TYPE)";
-  }
-}
+std::unique_ptr<RenderNode> InterpretNode(const base::Value& node);
 
 // Makes sure that the key exists and has the type we expect.
-bool VerifyDictionaryEntry(const base::DictionaryValue& node,
+bool VerifyDictionaryEntry(const base::Value& node,
                            const std::string& key,
                            Value::Type type) {
-  if (!node.HasKey(key)) {
+  const Value* value = node.FindKey(key);
+
+  if (!value) {
     LOG(ERROR) << "Missing value for key: " << key;
     return false;
   }
 
-  const Value* child;
-  node.Get(key, &child);
-  if (child->type() != type) {
-    LOG(ERROR) << key << " did not have the expected type "
-      "(expected " << ValueTypeAsString(type) << ")";
+  if (value->type() != type) {
+    LOG(ERROR) << key
+               << " did not have the expected type "
+                  "(expected "
+               << base::Value::GetTypeName(type) << ")";
     return false;
   }
 
@@ -161,25 +140,23 @@ bool VerifyDictionaryEntry(const base::DictionaryValue& node,
 }
 
 // Makes sure that the list entry has the type we expect.
-bool VerifyListEntry(const base::ListValue& l,
-                     int idx,
+bool VerifyListEntry(const base::Value& list,
+                     int index,
                      Value::Type type,
                      const char* listName = nullptr) {
-  // Assume the idx is valid (since we'll be able to generate a better
+  // Assume the index is valid (since we'll be able to generate a better
   // error message for this elsewhere.)
-  const Value* el;
-  l.Get(idx, &el);
-  if (el->type() != type) {
-    LOG(ERROR) << (listName ? listName : "List") << "element " << idx
+  if (list.GetList()[index].type() != type) {
+    LOG(ERROR) << (listName ? listName : "List") << "element " << index
                << " did not have the expected type (expected "
-               << ValueTypeAsString(type) << ")\n";
+               << base::Value::GetTypeName(type) << ")\n";
     return false;
   }
 
   return true;
 }
 
-bool InterpretCommonContents(const base::DictionaryValue& node, RenderNode* c) {
+bool InterpretCommonContents(const base::Value& node, RenderNode* c) {
   if (!VerifyDictionaryEntry(node, "layerID", Value::Type::INTEGER) ||
       !VerifyDictionaryEntry(node, "width", Value::Type::INTEGER) ||
       !VerifyDictionaryEntry(node, "height", Value::Type::INTEGER) ||
@@ -189,25 +166,14 @@ bool InterpretCommonContents(const base::DictionaryValue& node, RenderNode* c) {
     return false;
   }
 
-  int layerID;
-  node.GetInteger("layerID", &layerID);
-  c->set_layerID(layerID);
-  int width;
-  node.GetInteger("width", &width);
-  c->set_width(width);
-  int height;
-  node.GetInteger("height", &height);
-  c->set_height(height);
-  bool drawsContent;
-  node.GetBoolean("drawsContent", &drawsContent);
-  c->set_drawsContent(drawsContent);
-  int targetSurface;
-  node.GetInteger("targetSurfaceID", &targetSurface);
-  c->set_targetSurface(targetSurface);
+  c->set_layerID(node.FindIntKey("layerID").value());
+  c->set_width(node.FindIntKey("width").value());
+  c->set_height(node.FindIntKey("height").value());
+  c->set_drawsContent(node.FindBoolKey("drawsContent").value());
+  c->set_targetSurface(node.FindIntKey("targetSurfaceID").value());
 
-  const base::ListValue* transform;
-  node.GetList("transform", &transform);
-  if (transform->GetSize() != 16) {
+  const Value* transform = node.FindKey("transform");
+  if (transform->GetList().size() != 16) {
     LOG(ERROR) << "4x4 transform matrix did not have 16 elements";
     return false;
   }
@@ -215,55 +181,46 @@ bool InterpretCommonContents(const base::DictionaryValue& node, RenderNode* c) {
   for (int i = 0; i < 16; ++i) {
     if (!VerifyListEntry(*transform, i, Value::Type::DOUBLE, "Transform"))
       return false;
-    double el;
-    transform->GetDouble(i, &el);
-    transform_mat[i] = el;
+    transform_mat[i] = transform->GetList()[i].GetDouble();
   }
   c->set_transform(transform_mat);
 
-  if (!node.HasKey("tiles"))
+  const Value* tiles_dict = node.FindKey("tiles");
+  if (!tiles_dict)
     return true;
 
   if (!VerifyDictionaryEntry(node, "tiles", Value::Type::DICTIONARY))
     return false;
-  const base::DictionaryValue* tiles_dict;
-  node.GetDictionary("tiles", &tiles_dict);
   if (!VerifyDictionaryEntry(*tiles_dict, "dim", Value::Type::LIST))
     return false;
-  const base::ListValue* dim;
-  tiles_dict->GetList("dim", &dim);
+  const Value* dim = tiles_dict->FindKey("dim");
   if (!VerifyListEntry(*dim, 0, Value::Type::INTEGER, "Tile dimension") ||
       !VerifyListEntry(*dim, 1, Value::Type::INTEGER, "Tile dimension")) {
     return false;
   }
-  int tile_width;
-  dim->GetInteger(0, &tile_width);
-  c->set_tile_width(tile_width);
-  int tile_height;
-  dim->GetInteger(1, &tile_height);
-  c->set_tile_height(tile_height);
+  c->set_tile_width(dim->GetList()[0].GetInt());
+  c->set_tile_height(dim->GetList()[1].GetInt());
 
   if (!VerifyDictionaryEntry(*tiles_dict, "info", Value::Type::LIST))
     return false;
-  const base::ListValue* tiles;
-  tiles_dict->GetList("info", &tiles);
-  for (unsigned int i = 0; i < tiles->GetSize(); ++i) {
+  const Value* tiles = tiles_dict->FindKey("info");
+  for (unsigned int i = 0; i < tiles->GetList().size(); ++i) {
     if (!VerifyListEntry(*tiles, i, Value::Type::DICTIONARY, "Tile info"))
       return false;
-    const base::DictionaryValue* tdict;
-    tiles->GetDictionary(i, &tdict);
+    const Value& tdict = tiles->GetList()[i];
 
-    if (!VerifyDictionaryEntry(*tdict, "x", Value::Type::INTEGER) ||
-        !VerifyDictionaryEntry(*tdict, "y", Value::Type::INTEGER)) {
+    if (!VerifyDictionaryEntry(tdict, "x", Value::Type::INTEGER) ||
+        !VerifyDictionaryEntry(tdict, "y", Value::Type::INTEGER)) {
       return false;
     }
     Tile t;
-    tdict->GetInteger("x", &t.x);
-    tdict->GetInteger("y", &t.y);
-    if (tdict->HasKey("texID")) {
-      if (!VerifyDictionaryEntry(*tdict, "texID", Value::Type::INTEGER))
+    t.x = tdict.FindIntKey("x").value();
+    t.y = tdict.FindIntKey("y").value();
+    const Value* texID = tdict.FindKey("texID");
+    if (texID) {
+      if (!VerifyDictionaryEntry(tdict, "texID", Value::Type::INTEGER))
         return false;
-      tdict->GetInteger("texID", &t.texID);
+      t.texID = texID->GetInt();
     } else {
       t.texID = -1;
     }
@@ -272,45 +229,43 @@ bool InterpretCommonContents(const base::DictionaryValue& node, RenderNode* c) {
   return true;
 }
 
-bool InterpretCCData(const base::DictionaryValue& node, CCNode* c) {
+bool InterpretCCData(const base::Value& node, CCNode* c) {
   if (!VerifyDictionaryEntry(node, "vertex_shader", Value::Type::STRING) ||
       !VerifyDictionaryEntry(node, "fragment_shader", Value::Type::STRING) ||
       !VerifyDictionaryEntry(node, "textures", Value::Type::LIST)) {
     return false;
   }
-  std::string vertex_shader_name, fragment_shader_name;
-  node.GetString("vertex_shader", &vertex_shader_name);
-  node.GetString("fragment_shader", &fragment_shader_name);
 
+  std::string vertex_shader_name = *node.FindStringKey("vertex_shader");
+  std::string fragment_shader_name = *node.FindStringKey("fragment_shader");
   c->set_vertex_shader(ShaderIDFromString(vertex_shader_name));
   c->set_fragment_shader(ShaderIDFromString(fragment_shader_name));
-  const base::ListValue* textures;
-  node.GetList("textures", &textures);
-  for (unsigned int i = 0; i < textures->GetSize(); ++i) {
+
+  const Value* textures = node.FindKey("textures");
+  for (unsigned int i = 0; i < textures->GetList().size(); ++i) {
     if (!VerifyListEntry(*textures, i, Value::Type::DICTIONARY, "Tex list"))
       return false;
-    const base::DictionaryValue* tex;
-    textures->GetDictionary(i, &tex);
+    const Value& tex = textures->GetList()[i];
 
-    if (!VerifyDictionaryEntry(*tex, "texID", Value::Type::INTEGER) ||
-        !VerifyDictionaryEntry(*tex, "height", Value::Type::INTEGER) ||
-        !VerifyDictionaryEntry(*tex, "width", Value::Type::INTEGER) ||
-        !VerifyDictionaryEntry(*tex, "format", Value::Type::STRING)) {
+    if (!VerifyDictionaryEntry(tex, "texID", Value::Type::INTEGER) ||
+        !VerifyDictionaryEntry(tex, "height", Value::Type::INTEGER) ||
+        !VerifyDictionaryEntry(tex, "width", Value::Type::INTEGER) ||
+        !VerifyDictionaryEntry(tex, "format", Value::Type::STRING)) {
       return false;
     }
     Texture t;
-    tex->GetInteger("texID", &t.texID);
-    tex->GetInteger("height", &t.height);
-    tex->GetInteger("width", &t.width);
+    t.texID = tex.FindIntKey("texID").value();
+    t.height = tex.FindIntKey("height").value();
+    t.width = tex.FindIntKey("width").value();
 
-    std::string formatName;
-    tex->GetString("format", &formatName);
-    t.format = TextureFormatFromString(formatName);
+    const std::string* format_name = tex.FindStringKey("format");
+    t.format = TextureFormatFromString(*format_name);
     if (t.format == GL_INVALID_ENUM) {
       LOG(ERROR) << "Unrecognized texture format in layer " << c->layerID()
-                 << " (format: " << formatName << ")\n"
-                                                  "The layer had "
-                 << textures->GetSize() << " children.";
+                 << " (format: " << *format_name
+                 << ")\n"
+                    "The layer had "
+                 << textures->GetList().size() << " children.";
       return false;
     }
 
@@ -332,8 +287,7 @@ bool InterpretCCData(const base::DictionaryValue& node, CCNode* c) {
   return true;
 }
 
-std::unique_ptr<RenderNode> InterpretContentLayer(
-    const base::DictionaryValue& node) {
+std::unique_ptr<RenderNode> InterpretContentLayer(const base::Value& node) {
   auto n = std::make_unique<ContentLayerNode>();
   if (!InterpretCommonContents(node, n.get()))
     return nullptr;
@@ -344,20 +298,16 @@ std::unique_ptr<RenderNode> InterpretContentLayer(
     return nullptr;
   }
 
-  std::string type;
-  node.GetString("type", &type);
-  DCHECK_EQ(type, "ContentLayer");
-  bool skipsDraw;
-  node.GetBoolean("skipsDraw", &skipsDraw);
-  n->set_skipsDraw(skipsDraw);
+  DCHECK_EQ(*node.FindStringKey("type"), "ContentLayer");
 
-  const base::ListValue* children;
-  node.GetList("children", &children);
-  for (unsigned int i = 0; i < children->GetSize(); ++i) {
-    const base::DictionaryValue* childNode;
-    if (!children->GetDictionary(i, &childNode))
+  n->set_skipsDraw(node.FindBoolKey("skipsDraw").value());
+
+  const Value* children = node.FindKey("children");
+  for (unsigned int i = 0; i < children->GetList().size(); ++i) {
+    const Value& child_node = children->GetList()[i];
+    if (!child_node.is_dict())
       continue;
-    std::unique_ptr<RenderNode> child = InterpretNode(*childNode);
+    std::unique_ptr<RenderNode> child = InterpretNode(child_node);
     if (child)
       n->add_child(child.release());
   }
@@ -365,8 +315,7 @@ std::unique_ptr<RenderNode> InterpretContentLayer(
   return std::move(n);
 }
 
-std::unique_ptr<RenderNode> InterpretCanvasLayer(
-    const base::DictionaryValue& node) {
+std::unique_ptr<RenderNode> InterpretCanvasLayer(const base::Value& node) {
   auto n = std::make_unique<CCNode>();
   if (!InterpretCommonContents(node, n.get()))
     return nullptr;
@@ -374,9 +323,7 @@ std::unique_ptr<RenderNode> InterpretCanvasLayer(
   if (!VerifyDictionaryEntry(node, "type", Value::Type::STRING))
     return nullptr;
 
-  std::string type;
-  node.GetString("type", &type);
-  assert(type == "CanvasLayer");
+  DCHECK_EQ(*node.FindStringKey("type"), "CanvasLayer");
 
   if (!InterpretCCData(node, n.get()))
     return nullptr;
@@ -384,8 +331,7 @@ std::unique_ptr<RenderNode> InterpretCanvasLayer(
   return std::move(n);
 }
 
-std::unique_ptr<RenderNode> InterpretVideoLayer(
-    const base::DictionaryValue& node) {
+std::unique_ptr<RenderNode> InterpretVideoLayer(const base::Value& node) {
   auto n = std::make_unique<CCNode>();
   if (!InterpretCommonContents(node, n.get()))
     return nullptr;
@@ -393,9 +339,7 @@ std::unique_ptr<RenderNode> InterpretVideoLayer(
   if (!VerifyDictionaryEntry(node, "type", Value::Type::STRING))
     return nullptr;
 
-  std::string type;
-  node.GetString("type", &type);
-  assert(type == "VideoLayer");
+  DCHECK_EQ(*node.FindStringKey("type"), "VideoLayer");
 
   if (!InterpretCCData(node, n.get()))
     return nullptr;
@@ -403,8 +347,7 @@ std::unique_ptr<RenderNode> InterpretVideoLayer(
   return std::move(n);
 }
 
-std::unique_ptr<RenderNode> InterpretImageLayer(
-    const base::DictionaryValue& node) {
+std::unique_ptr<RenderNode> InterpretImageLayer(const base::Value& node) {
   auto n = std::make_unique<CCNode>();
   if (!InterpretCommonContents(node, n.get()))
     return nullptr;
@@ -412,9 +355,7 @@ std::unique_ptr<RenderNode> InterpretImageLayer(
   if (!VerifyDictionaryEntry(node, "type", Value::Type::STRING))
     return nullptr;
 
-  std::string type;
-  node.GetString("type", &type);
-  assert(type == "ImageLayer");
+  DCHECK_EQ(*node.FindStringKey("type"), "ImageLayer");
 
   if (!InterpretCCData(node, n.get()))
     return nullptr;
@@ -422,19 +363,18 @@ std::unique_ptr<RenderNode> InterpretImageLayer(
   return std::move(n);
 }
 
-std::unique_ptr<RenderNode> InterpretNode(const base::DictionaryValue& node) {
+std::unique_ptr<RenderNode> InterpretNode(const base::Value& node) {
   if (!VerifyDictionaryEntry(node, "type", Value::Type::STRING))
     return nullptr;
 
-  std::string type;
-  node.GetString("type", &type);
-  if (type == "ContentLayer")
+  const std::string* type = node.FindStringKey("type");
+  if (*type == "ContentLayer")
     return InterpretContentLayer(node);
-  if (type == "CanvasLayer")
+  if (*type == "CanvasLayer")
     return InterpretCanvasLayer(node);
-  if (type == "VideoLayer")
+  if (*type == "VideoLayer")
     return InterpretVideoLayer(node);
-  if (type == "ImageLayer")
+  if (*type == "ImageLayer")
     return InterpretImageLayer(node);
 
   std::string outjson;
@@ -454,22 +394,13 @@ std::unique_ptr<RenderNode> BuildRenderTreeFromFile(
   if (!ReadFileToString(path, &contents))
     return nullptr;
 
-  int error_code = 0;
-  std::string error_message;
-  std::unique_ptr<base::DictionaryValue> root =
-      base::DictionaryValue::From(JSONReader::ReadAndReturnErrorDeprecated(
-          contents, base::JSON_ALLOW_TRAILING_COMMAS, &error_code,
-          &error_message));
-  if (!root) {
-    if (error_code) {
-      LOG(ERROR) << "Failed to parse JSON file " << path.LossyDisplayName()
-                 << "\n(" << error_message << ")";
-    } else {
-      LOG(ERROR) << path.LossyDisplayName()
-                 << " doesn not encode a JSON dictionary.";
-    }
+  JSONReader::ValueWithError result = JSONReader::ReadAndReturnValueWithError(
+      contents, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!result.value.has_value() || !result.value->is_dict()) {
+    LOG(ERROR) << "Failed to parse JSON file " << path.LossyDisplayName()
+               << "\n(" << result.error_message << ")";
     return nullptr;
   }
 
-  return InterpretContentLayer(*root);
+  return InterpretContentLayer(result.value.value());
 }

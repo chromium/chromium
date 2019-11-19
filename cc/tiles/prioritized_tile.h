@@ -6,6 +6,7 @@
 #define CC_TILES_PRIORITIZED_TILE_H_
 
 #include "cc/cc_export.h"
+#include "cc/paint/paint_worklet_input.h"
 #include "cc/raster/raster_source.h"
 #include "cc/tiles/picture_layer_tiling.h"
 #include "cc/tiles/tile.h"
@@ -31,6 +32,9 @@ class CC_EXPORT PrioritizedTile {
   Tile* tile() const { return tile_; }
   const scoped_refptr<RasterSource>& raster_source() const {
     return source_tiling_->raster_source();
+  }
+  const PaintWorkletRecordMap& GetPaintWorkletRecords() const {
+    return source_tiling_->GetPaintWorkletRecords();
   }
   const TilePriority& priority() const { return priority_; }
   bool is_occluded() const { return is_occluded_; }

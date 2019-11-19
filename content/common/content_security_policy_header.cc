@@ -3,17 +3,18 @@
 // found in the LICENSE file.
 
 #include "content/common/content_security_policy_header.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace content {
 
 ContentSecurityPolicyHeader::ContentSecurityPolicyHeader()
     : header_value(std::string()),
-      type(blink::mojom::ContentSecurityPolicyType::kEnforce),
+      type(network::mojom::ContentSecurityPolicyType::kEnforce),
       source(blink::kWebContentSecurityPolicySourceHTTP) {}
 
 ContentSecurityPolicyHeader::ContentSecurityPolicyHeader(
     const std::string& header_value,
-    blink::mojom::ContentSecurityPolicyType type,
+    network::mojom::ContentSecurityPolicyType type,
     blink::WebContentSecurityPolicySource source)
     : header_value(header_value), type(type), source(source) {}
 

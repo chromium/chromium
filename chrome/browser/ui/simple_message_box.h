@@ -26,8 +26,8 @@ enum MessageBoxResult {
 };
 
 enum MessageBoxType {
-  MESSAGE_BOX_TYPE_WARNING,      // Shows an OK button.
-  MESSAGE_BOX_TYPE_QUESTION,     // Shows YES and NO buttons.
+  MESSAGE_BOX_TYPE_WARNING,   // Shows an OK button.
+  MESSAGE_BOX_TYPE_QUESTION,  // Shows YES and NO buttons.
 };
 
 // Shows a dialog box with the given |title| and |message|. If |parent| is

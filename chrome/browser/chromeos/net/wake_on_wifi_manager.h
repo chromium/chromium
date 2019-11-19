@@ -7,13 +7,11 @@
 
 #include <map>
 
-#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/power/extension_event_observer.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chromeos/network/network_state_handler_observer.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 class Profile;
 
@@ -31,7 +29,7 @@ class WakeOnWifiConnectionObserver;
 // servers and sending that connection information down to shill.  This class is
 // owned by ChromeBrowserMainPartsChromeos.  This class is also NOT thread-safe
 // and should only be called on the UI thread.
-class WakeOnWifiManager : public content::NotificationObserver,
+class WakeOnWifiManager : public ProfileManagerObserver,
                           public NetworkStateHandlerObserver {
  public:
   enum WakeOnWifiFeature {
@@ -57,21 +55,14 @@ class WakeOnWifiManager : public content::NotificationObserver,
   // have not yet determined whether wake-on-wifi features are supported.
   bool WakeOnWifiSupported();
 
-  // content::NotificationObserver override.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
 
-  // NetworkStateHandlerObserver overrides.
+  // NetworkStateHandlerObserver:
   void DeviceListChanged() override;
   void DevicePropertiesUpdated(const DeviceState* device) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(WakeOnWifiObserverTest, TestWakeOnWifiPacketAdd);
-  FRIEND_TEST_ALL_PREFIXES(WakeOnWifiObserverTest, TestWakeOnWifiPacketRemove);
-  FRIEND_TEST_ALL_PREFIXES(WakeOnWifiObserverTest, TestWakeOnWifiNoneAdd);
-  FRIEND_TEST_ALL_PREFIXES(WakeOnWifiObserverTest, TestWakeOnWifiNoneRemove);
-
   // Sends the user's preference to shill, updates the timer used by the GCM
   // client to send heartbeats, and tells |extension_event_observer_| to block
   // (or not block) suspends based on the value of |current_feature_|.
@@ -84,10 +75,6 @@ class WakeOnWifiManager : public content::NotificationObserver,
   void GetDevicePropertiesCallback(const std::string& device_path,
                                    const base::DictionaryValue& properties);
 
-  // Called when a Profile is added or destroyed.
-  void OnProfileAdded(Profile* profile);
-  void OnProfileDestroyed(Profile* profile);
-
   WakeOnWifiFeature current_feature_;
 
   // Set to true once we have received the properties for the wifi device from
@@ -99,9 +86,7 @@ class WakeOnWifiManager : public content::NotificationObserver,
 
   std::unique_ptr<ExtensionEventObserver> extension_event_observer_;
 
-  content::NotificationRegistrar registrar_;
-
-  base::WeakPtrFactory<WakeOnWifiManager> weak_ptr_factory_;
+  base::WeakPtrFactory<WakeOnWifiManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WakeOnWifiManager);
 };

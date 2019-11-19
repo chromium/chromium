@@ -103,7 +103,6 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   // views::DialogDelegate:
   bool Cancel() override;
   bool ShouldShowCloseButton() const override;
-  int GetDialogButtons() const override;
 
   // payments::PaymentRequestDialog:
   void ShowDialog() override;
@@ -180,16 +179,17 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   Profile* GetProfile();
 
   ViewStack* view_stack_for_testing() { return view_stack_.get(); }
-  views::View* throbber_overlay_for_testing() { return &throbber_overlay_; }
+  views::View* throbber_overlay_for_testing() { return throbber_overlay_; }
 
  private:
+  void OnDialogOpened();
   void ShowInitialPaymentSheet();
   void SetupSpinnerOverlay();
 
   // views::View
   gfx::Size CalculatePreferredSize() const override;
   void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
+      const views::ViewHierarchyChangedDetails& details) override;
 
   // Non-owned reference to the PaymentRequest that initiated this dialog. Since
   // the PaymentRequest object always outlives this one, the pointer should
@@ -201,15 +201,15 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
 
   // A full dialog overlay that shows a spinner and the "processing" label. It's
   // hidden until ShowProcessingSpinner is called.
-  views::View throbber_overlay_;
-  views::Throbber throbber_;
+  views::View* throbber_overlay_;
+  views::Throbber* throbber_;
 
   // May be null.
   ObserverForTest* observer_for_testing_;
 
   // Used when the dialog is being closed to avoid re-entrancy into the
   // controller_map_.
-  bool being_closed_;
+  bool being_closed_ = false;
 
   // The number of initialization tasks that are not yet initialized.
   size_t number_of_initialization_tasks_ = 0;

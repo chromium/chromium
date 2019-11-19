@@ -18,7 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chromeos/attestation/enrollment_policy_observer.h"
 #include "chrome/browser/chromeos/settings/device_settings_test_helper.h"
-#include "chromeos/dbus/fake_cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -85,13 +85,16 @@ class EnrollmentPolicyObserverTest : public DeviceSettingsTestBase {
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
+
     policy_client_.SetDMToken("fake_dm_token");
 
-    std::vector<uint8_t> eid;
-    EXPECT_TRUE(base::HexStringToBytes(kEnrollmentId, &eid));
-    enrollment_id_.assign(reinterpret_cast<const char*>(eid.data()),
-                          eid.size());
-    cryptohome_client_.set_tpm_attestation_enrollment_id(
+    EXPECT_TRUE(base::HexStringToString(kEnrollmentId, &enrollment_id_));
+
+    // Destroy the DeviceSettingsTestBase fake client and replace it.
+    CryptohomeClient::Shutdown();
+    // This will be destroyed in DeviceSettingsTestBase::TearDown().
+    cryptohome_client_ = new CallsHoldingFakeCryptohomeClient();
+    cryptohome_client_->set_tpm_attestation_enrollment_id(
         true /* ignore_cache */, enrollment_id_);
   }
 
@@ -106,7 +109,7 @@ class EnrollmentPolicyObserverTest : public DeviceSettingsTestBase {
 
   void SetUpObserver() {
     observer_ = std::make_unique<EnrollmentPolicyObserver>(
-        &policy_client_, device_settings_service_.get(), &cryptohome_client_);
+        &policy_client_, device_settings_service_.get(), cryptohome_client_);
     observer_->set_retry_limit(3);
     observer_->set_retry_delay(0);
   }
@@ -131,7 +134,9 @@ class EnrollmentPolicyObserverTest : public DeviceSettingsTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  CallsHoldingFakeCryptohomeClient cryptohome_client_;
+  // Owned by the global instance, shut down in DeviceSettingsTestBase.
+  CallsHoldingFakeCryptohomeClient* cryptohome_client_ = nullptr;
+
   StrictMock<policy::MockCloudPolicyClient> policy_client_;
   std::unique_ptr<EnrollmentPolicyObserver> observer_;
   std::string enrollment_id_;
@@ -167,12 +172,12 @@ TEST_F(EnrollmentPolicyObserverTest,
   // We hold calls to cryptohome so that one is still pending by the time the
   // observer gets notified. We expect only one upload despite the concurrent
   // calls.
-  cryptohome_client_.set_hold_calls(true);
+  cryptohome_client_->set_hold_calls(true);
   SetUpDevicePolicy(true);
   ExpectUploadEnterpriseEnrollmentId(1);
   PropagateDevicePolicy();
   SetUpObserver();
-  cryptohome_client_.FlushCalls();
+  cryptohome_client_->FlushCalls();
   Run();
 }
 
@@ -193,7 +198,7 @@ TEST_F(EnrollmentPolicyObserverTest, UnregisteredPolicyClient) {
 
 TEST_F(EnrollmentPolicyObserverTest, DBusFailureRetry) {
   // Simulate a DBus failure.
-  cryptohome_client_.SetServiceIsAvailable(false);
+  cryptohome_client_->SetServiceIsAvailable(false);
 
   ExpectUploadEnterpriseEnrollmentId(1);
 
@@ -210,7 +215,7 @@ TEST_F(EnrollmentPolicyObserverTest, DBusFailureRetry) {
                      [](FakeCryptohomeClient* cryptohome_client) {
                        cryptohome_client->SetServiceIsAvailable(true);
                      },
-                     base::Unretained(&cryptohome_client_)));
+                     base::Unretained(cryptohome_client_)));
 
   Run();
 }

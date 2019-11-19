@@ -9,9 +9,13 @@
 #include <memory>
 #include <vector>
 
+#include "base/files/file.h"
+#include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "sandbox/win/src/policy_broker.h"
+#include "sandbox/win/src/win_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sandbox {
@@ -235,6 +239,28 @@ TEST(SandboxNtUtil, ValidParameter) {
 
   // One final check that the buffer hasn't been modified.
   EXPECT_TRUE(verify_buffer());
+}
+
+TEST(SandboxNtUtil, NtGetPathFromHandle) {
+  InitGlobalNt();
+
+  base::FilePath exe;
+  ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &exe));
+  base::File exe_file(exe, base::File::FLAG_OPEN);
+  ASSERT_TRUE(exe_file.IsValid());
+  std::unique_ptr<wchar_t, NtAllocDeleter> path;
+  EXPECT_TRUE(NtGetPathFromHandle(exe_file.GetPlatformFile(), &path));
+
+  // Basic sanity test, the functionality of NtGetPathFromHandle to return
+  // the correct value is already tested from win_utils_unittest.cc.
+  EXPECT_TRUE(base::EndsWith(base::AsStringPiece16(path.get()),
+                             base::AsStringPiece16(exe.BaseName().value()),
+                             base::CompareCase::INSENSITIVE_ASCII));
+
+  // Compare to GetNtPathFromWin32Path for extra check.
+  std::wstring nt_path;
+  EXPECT_TRUE(GetNtPathFromWin32Path(exe.value(), &nt_path));
+  EXPECT_STREQ(path.get(), nt_path.c_str());
 }
 
 }  // namespace

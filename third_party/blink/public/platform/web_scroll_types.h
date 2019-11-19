@@ -21,16 +21,6 @@ enum WebScrollDirection {
   kLastScrollDirection = kScrollInlineDirectionForward
 };
 
-enum WebScrollGranularity {
-  kScrollByLine,
-  kFirstScrollGranularity = kScrollByLine,
-  kScrollByPage,
-  kScrollByDocument,
-  kScrollByPixel,
-  kScrollByPrecisePixel,
-  kLastScrollGranularity = kScrollByPrecisePixel
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_SCROLL_TYPES_H_

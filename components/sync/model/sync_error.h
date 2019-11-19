@@ -120,9 +120,6 @@ class SyncError {
   ErrorType error_type_;
 };
 
-// gmock printer helper.
-void PrintTo(const SyncError& sync_error, std::ostream* os);
-
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_MODEL_SYNC_ERROR_H_

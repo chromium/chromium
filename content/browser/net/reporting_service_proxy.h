@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_NET_REPORTING_SERVICE_PROXY_H_
 #define CONTENT_BROWSER_NET_REPORTING_SERVICE_PROXY_H_
 
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom.h"
 
 namespace content {
@@ -13,7 +14,7 @@ namespace content {
 // |render_process_id|'s NetworkContext. This must be called on the UI thread.
 void CreateReportingServiceProxy(
     int render_process_id,
-    blink::mojom::ReportingServiceProxyRequest request);
+    mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver);
 
 }  // namespace content
 

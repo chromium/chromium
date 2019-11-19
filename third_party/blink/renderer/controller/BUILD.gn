@@ -18,7 +18,6 @@ jumbo_component("controller") {
   deps = [
     "//skia",
     "//third_party/blink/renderer/core",
-    "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/platform",
     "//v8",
@@ -39,8 +38,6 @@ jumbo_component("controller") {
     "blink_initializer.h",
     "blink_leak_detector.cc",
     "blink_leak_detector.h",
-    "bloated_renderer_detector.cc",
-    "bloated_renderer_detector.h",
     "controller_export.h",
     "dev_tools_frontend_impl.cc",
     "dev_tools_frontend_impl.h",
@@ -52,10 +49,14 @@ jumbo_component("controller") {
     sources += [
       "crash_memory_metrics_reporter_impl.cc",
       "crash_memory_metrics_reporter_impl.h",
+      "highest_pmf_reporter.cc",
+      "highest_pmf_reporter.h",
       "memory_usage_monitor_android.cc",
       "memory_usage_monitor_android.h",
       "oom_intervention_impl.cc",
       "oom_intervention_impl.h",
+      "user_level_memory_pressure_signal_generator.cc",
+      "user_level_memory_pressure_signal_generator.h",
     ]
   }
   if (is_mac) {
@@ -74,7 +75,6 @@ group("blink_unittests_data") {
     "../core/testing/data/",
     "../core/paint/test_data/",
     "../core/animation/test_data/",
-    "../core/css/test_data/",
   ]
 }
 
@@ -100,13 +100,16 @@ test("blink_unittests") {
   ]
 
   if (is_android) {
-    enable_multidex = true
     deps += [
       "//base:base_java",
       "//content/public/android:content_java",
       "//content/shell/android:content_shell_assets",
       "//net/android:net_java",
     ]
+
+    if (enable_chrome_android_internal) {
+      data_deps += [ "//clank/build/bot/filters:blink_unittests_filters" ]
+    }
   }
 }
 
@@ -145,15 +148,16 @@ jumbo_source_set("blink_unittests_sources") {
   testonly = true
 
   sources = [
-    "bloated_renderer_detector_test.cc",
     "tests/run_all_tests.cc",
   ]
   sources += bindings_unittest_files
   if (is_android) {
     sources += [
+      "highest_pmf_reporter_test.cc",
       "memory_usage_monitor_android_test.cc",
       "memory_usage_monitor_test.cc",
       "oom_intervention_impl_test.cc",
+      "user_level_memory_pressure_signal_generator_test.cc",
     ]
   }
 

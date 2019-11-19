@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<body>
+<style>
+std-switch {
+  /* TODO(tkent): Should have margin in UA style? */
+  margin: 0.5em;
+}
+
+.container {
+  float: left;
+  font-family: monospace;
+}
+</style>
+<script type="module">
+import 'std:elements/switch';
+
+
+</script>
+
+<div><std-switch><div style="display:inline-block; text-align:right; width:100%;">off</div></std-switch></div>
+<div><std-switch on>on</std-switch></div>
+<div>Hidden attribute: <std-switch hidden></std-switch> <std-switch on hidden></std-switch></div>
+<script src="resources/state-combo.js"></script>
+<script type="module">
+generateSwitchElements((indicator, element) => {
+  let container = document.createElement('div');
+  container.className = 'container';
+  container.appendChild(document.createTextNode(indicator));
+  container.appendChild(element);
+  document.body.appendChild(container);
+});
+</script>
+</body>

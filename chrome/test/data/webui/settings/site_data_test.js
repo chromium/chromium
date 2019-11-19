@@ -21,15 +21,15 @@ suite('SiteDataTest', function() {
   });
 
   test('remove button (trash) calls remove on origin', function() {
-    let promise =
+    const promise =
         test_util.eventToPromise('site-data-list-complete', siteData)
             .then(() => {
               Polymer.dom.flush();
               const button =
                   siteData.$$('site-data-entry').$$('.icon-delete-gray');
               assertTrue(!!button);
-              assertEquals('PAPER-ICON-BUTTON-LIGHT', button.tagName);
-              button.querySelector('button').click();
+              assertEquals('CR-ICON-BUTTON', button.tagName);
+              button.click();
               return testBrowserProxy.whenCalled('removeItem');
             })
             .then(function(path) {
@@ -45,17 +45,18 @@ suite('SiteDataTest', function() {
   });
 
   test('remove button hidden when no search results', function() {
-    let promise = test_util.eventToPromise('site-data-list-complete', siteData)
-                      .then(() => {
-                        assertEquals(2, siteData.$.list.items.length);
-                        let promise2 = test_util.eventToPromise(
-                            'site-data-list-complete', siteData);
-                        siteData.filter = 'Hello';
-                        return promise2;
-                      })
-                      .then(() => {
-                        assertEquals(1, siteData.$.list.items.length);
-                      });
+    const promise =
+        test_util.eventToPromise('site-data-list-complete', siteData)
+            .then(() => {
+              assertEquals(2, siteData.$.list.items.length);
+              const promise2 =
+                  test_util.eventToPromise('site-data-list-complete', siteData);
+              siteData.filter = 'Hello';
+              return promise2;
+            })
+            .then(() => {
+              assertEquals(1, siteData.$.list.items.length);
+            });
     const sites = [
       {site: 'Hello', id: '1', localData: 'Cookiez!'},
       {site: 'World', id: '2', localData: 'Cookiez!'},

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.native_page;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
@@ -12,12 +12,14 @@ import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.DownloadUiActionFlags;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
+import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheet.SheetState;
+import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
+import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.ui.widget.Toast;
@@ -88,8 +90,8 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
         // If animations are disabled in the DeviceClassManager, a toast is already displayed for
         // all tabs opened in the background.
         // TODO(twellington): Replace this with an animation.
-        if (mActivity.getBottomSheet() != null
-                && mActivity.getBottomSheet().getSheetState() == SheetState.FULL
+        BottomSheetController controller = mActivity.getBottomSheetController();
+        if (controller != null && controller.getSheetState() == SheetState.FULL
                 && DeviceClassManager.enableAnimations()) {
             Toast.makeText(mActivity, R.string.open_in_new_tab_toast, Toast.LENGTH_SHORT).show();
         }
@@ -98,12 +100,12 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
     }
 
     private void saveUrlForOffline(String url) {
-        OfflinePageBridge offlinePageBridge = OfflinePageBridge.getForProfile(mProfile);
         if (mHost.getActiveTab() != null) {
-            offlinePageBridge.scheduleDownload(mHost.getActiveTab().getWebContents(),
+            OfflinePageBridge.getForProfile(mProfile).scheduleDownload(
+                    mHost.getActiveTab().getWebContents(),
                     OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE, url, DownloadUiActionFlags.ALL);
         } else {
-            offlinePageBridge.savePageLater(
+            RequestCoordinatorBridge.getForProfile(mProfile).savePageLater(
                     url, OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE, true /* userRequested */);
         }
     }

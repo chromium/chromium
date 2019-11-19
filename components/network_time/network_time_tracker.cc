@@ -22,7 +22,6 @@
 #include "base/time/tick_clock.h"
 #include "build/build_config.h"
 #include "components/client_update_protocol/ecdsa.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/network_time/network_time_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -473,7 +472,7 @@ void NetworkTimeTracker::CheckTime() {
   // Not expecting any cookies, but just in case.
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
-  resource_request->allow_credentials = false;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   // This cancels any outstanding fetch.
   time_fetcher_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                    traffic_annotation);

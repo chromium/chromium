@@ -39,7 +39,7 @@ namespace blink {
 class Element;
 
 class V0CustomElementObserver
-    : public GarbageCollectedFinalized<V0CustomElementObserver> {
+    : public GarbageCollected<V0CustomElementObserver> {
  public:
   virtual ~V0CustomElementObserver() = default;
 

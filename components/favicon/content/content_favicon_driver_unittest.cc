@@ -15,6 +15,7 @@
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/favicon_url.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,7 +26,6 @@
 namespace favicon {
 namespace {
 
-using testing::ElementsAre;
 using testing::Return;
 using testing::SizeIs;
 using testing::_;
@@ -34,15 +34,30 @@ class ContentFaviconDriverTest : public content::RenderViewHostTestHarness {
  protected:
   const std::vector<gfx::Size> kEmptyIconSizes;
   const std::vector<SkBitmap> kEmptyIcons;
-  const std::vector<favicon_base::FaviconRawBitmapResult> kEmptyRawBitmapResult;
   const GURL kPageURL = GURL("http://www.google.com/");
   const GURL kIconURL = GURL("http://www.google.com/favicon.ico");
 
   ContentFaviconDriverTest() {
     ON_CALL(favicon_service_, UpdateFaviconMappingsAndFetch(_, _, _, _, _, _))
-        .WillByDefault(PostReply<6>(kEmptyRawBitmapResult));
+        .WillByDefault([](auto, auto, auto, auto,
+                          favicon_base::FaviconResultsCallback callback,
+                          base::CancelableTaskTracker* tracker) {
+          return tracker->PostTask(
+              base::ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
+              base::BindOnce(
+                  std::move(callback),
+                  std::vector<favicon_base::FaviconRawBitmapResult>()));
+        });
     ON_CALL(favicon_service_, GetFaviconForPageURL(_, _, _, _, _))
-        .WillByDefault(PostReply<5>(kEmptyRawBitmapResult));
+        .WillByDefault([](auto, auto, auto,
+                          favicon_base::FaviconResultsCallback callback,
+                          base::CancelableTaskTracker* tracker) {
+          return tracker->PostTask(
+              base::ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
+              base::BindOnce(
+                  std::move(callback),
+                  std::vector<favicon_base::FaviconRawBitmapResult>()));
+        });
   }
 
   ~ContentFaviconDriverTest() override {}
@@ -65,8 +80,6 @@ class ContentFaviconDriverTest : public content::RenderViewHostTestHarness {
     ContentFaviconDriver* favicon_driver =
         ContentFaviconDriver::FromWebContents(web_contents());
     web_contents_tester()->NavigateAndCommit(page_url);
-    static_cast<content::WebContentsObserver*>(favicon_driver)
-        ->DocumentOnLoadCompletedInMainFrame();
     static_cast<content::WebContentsObserver*>(favicon_driver)
         ->DidUpdateFaviconURL(candidates);
     base::RunLoop().RunUntilIdle();
@@ -92,7 +105,10 @@ TEST_F(ContentFaviconDriverTest, ShouldCauseImageDownload) {
 TEST_F(ContentFaviconDriverTest, ShouldNotCauseImageDownload) {
   ContentFaviconDriver* favicon_driver =
       ContentFaviconDriver::FromWebContents(web_contents());
-  web_contents_tester()->NavigateAndCommit(kPageURL);
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      kPageURL, web_contents());
+  navigation->SetKeepLoading(true);
+  navigation->Commit();
   static_cast<content::WebContentsObserver*>(favicon_driver)
       ->DidUpdateFaviconURL({content::FaviconURL(
           kIconURL, content::FaviconURL::IconType::kFavicon, kEmptyIconSizes)});

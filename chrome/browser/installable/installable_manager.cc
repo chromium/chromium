@@ -4,10 +4,15 @@
 
 #include "chrome/browser/installable/installable_manager.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/callback.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
+#include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -21,8 +26,9 @@
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
-#include "third_party/blink/public/common/manifest/web_display_mode.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/origin.h"
 
 #if defined(OS_ANDROID)
@@ -37,6 +43,21 @@ const char kPngExtension[] = ".png";
 // factor of a Nexus 5 device (3x). It is the currently advertised minimum icon
 // size for triggering banners.
 const int kMinimumPrimaryIconSizeInPx = 144;
+
+// This constant is the smallest possible adaptive launcher icon size for any
+// device density.
+// The ideal icon size is 83dp (see documentation for
+// R.dimen.webapk_adaptive_icon_size for discussion of maskable icon size). For
+// a manifest to be valid, we do NOT need an maskable icon to be 83dp for the
+// device's screen density. Instead, we only need the maskable icon be larger
+// than (or equal to) 83dp in the smallest screen density (that is the mdpi
+// screen density). For mdpi devices, 1dp is 1px. Therefore, we have 83px here.
+// Requiring the minimum icon size (in pixel) independent of the device's screen
+// density is because we use mipmap-anydpi-v26 to specify adaptive launcher
+// icon, and it will make the icon adaptive as long as there is one usable
+// maskable icon (if that icon is of wrong size, it'll be automatically
+// resized).
+const int kMinimumPrimaryAdaptiveLauncherIconSizeInPx = 83;
 
 #if !defined(OS_ANDROID)
 const int kMinimumBadgeIconSizeInPx = 72;
@@ -66,36 +87,24 @@ int GetIdealBadgeIconSizeInPx() {
 #endif
 }
 
-using IconPurpose = blink::Manifest::ImageResource::Purpose;
-
-// Returns true if the overall security state of |web_contents| is sufficient to
-// be considered installable.
-bool IsContentSecure(content::WebContents* web_contents) {
-  if (!web_contents)
-    return false;
-
-  // chrome:// URLs are considered secure.
-  const GURL& url = web_contents->GetVisibleURL();
-  if (url.scheme() == content::kChromeUIScheme)
-    return true;
-
-  // SecurityStateTabHelper ignores origins that are manually listed as secure.
-  // Check those explicitly, using the VisibleURL to match what
-  // SecurityStateTabHelper looks at.
-  if (net::IsLocalhost(url) ||
-      content::IsWhitelistedAsSecureOrigin(url::Origin::Create(url))) {
-    return true;
-  }
-
-  security_state::SecurityInfo security_info;
-  SecurityStateTabHelper::FromWebContents(web_contents)
-      ->GetSecurityInfo(&security_info);
-  return security_state::IsSslCertificateValid(security_info.security_level);
+int GetIdealPrimaryAdaptiveLauncherIconSizeInPx() {
+#if defined(OS_ANDROID)
+  return ShortcutHelper::GetIdealAdaptiveLauncherIconSizeInPx();
+#else
+  return kMinimumPrimaryAdaptiveLauncherIconSizeInPx;
+#endif
 }
 
-// Returns true if |manifest| specifies a PNG icon with IconPurpose::ANY and of
-// height and width >= kMinimumPrimaryIconSizeInPx (or size "any").
-bool DoesManifestContainRequiredIcon(const blink::Manifest& manifest) {
+using IconPurpose = blink::Manifest::ImageResource::Purpose;
+
+// Returns true if |manifest| specifies a PNG icon that either
+// 1. has IconPurpose::ANY, with height and width >= kMinimumPrimaryIconSizeInPx
+// (or size "any")
+// 2. if maskable icon is preferred, has IconPurpose::MASKABLE with height and
+// width >= kMinimumPrimaryAdaptiveLauncherIconSizeInPx (or size "any")
+
+bool DoesManifestContainRequiredIcon(const blink::Manifest& manifest,
+                                     bool prefer_maskable_icon) {
   for (const auto& icon : manifest.icons) {
     // The type field is optional. If it isn't present, fall back on checking
     // the src extension, and allow the icon if the extension ends with png.
@@ -105,16 +114,29 @@ bool DoesManifestContainRequiredIcon(const blink::Manifest& manifest) {
             base::CompareCase::INSENSITIVE_ASCII)))
       continue;
 
-    if (!base::ContainsValue(icon.purpose,
-                             blink::Manifest::ImageResource::Purpose::ANY)) {
+    if (!(base::Contains(icon.purpose,
+                         blink::Manifest::ImageResource::Purpose::ANY) ||
+          (prefer_maskable_icon &&
+           base::Contains(
+               icon.purpose,
+               blink::Manifest::ImageResource::Purpose::MASKABLE)))) {
       continue;
     }
 
     for (const auto& size : icon.sizes) {
       if (size.IsEmpty())  // "any"
         return true;
-      if (size.width() >= kMinimumPrimaryIconSizeInPx &&
+      if (base::Contains(icon.purpose,
+                         blink::Manifest::ImageResource::Purpose::ANY) &&
+          size.width() >= kMinimumPrimaryIconSizeInPx &&
           size.height() >= kMinimumPrimaryIconSizeInPx) {
+        return true;
+      }
+      if (prefer_maskable_icon &&
+          base::Contains(icon.purpose,
+                         blink::Manifest::ImageResource::Purpose::MASKABLE) &&
+          size.height() >= kMinimumPrimaryAdaptiveLauncherIconSizeInPx &
+              size.width() >= kMinimumPrimaryAdaptiveLauncherIconSizeInPx) {
         return true;
       }
     }
@@ -129,7 +151,28 @@ bool IsParamsForPwaCheck(const InstallableParams& params) {
          params.valid_primary_icon;
 }
 
+void OnDidCompleteGetAllErrors(
+    base::OnceCallback<void(std::vector<std::string> errors)> callback,
+    const InstallableData& data) {
+  std::vector<std::string> error_messages;
+  for (auto error : data.errors) {
+    std::string message = GetErrorMessage(error);
+    if (!message.empty())
+      error_messages.push_back(std::move(message));
+  }
+
+  std::move(callback).Run(std::move(error_messages));
+}
+
 }  // namespace
+
+InstallableManager::EligiblityProperty::EligiblityProperty() = default;
+
+InstallableManager::EligiblityProperty::~EligiblityProperty() = default;
+
+InstallableManager::ValidManifestProperty::ValidManifestProperty() = default;
+
+InstallableManager::ValidManifestProperty::~ValidManifestProperty() = default;
 
 InstallableManager::IconProperty::IconProperty()
     : error(NO_ERROR_DETECTED), url(), icon(), fetched(false) {}
@@ -143,14 +186,12 @@ InstallableManager::IconProperty& InstallableManager::IconProperty::operator=(
 
 InstallableManager::InstallableManager(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      metrics_(std::make_unique<InstallableMetrics>()),
       eligibility_(std::make_unique<EligiblityProperty>()),
       manifest_(std::make_unique<ManifestProperty>()),
       valid_manifest_(std::make_unique<ValidManifestProperty>()),
       worker_(std::make_unique<ServiceWorkerProperty>()),
       service_worker_context_(nullptr),
-      has_pwa_check_(false),
-      weak_factory_(this) {
+      has_pwa_check_(false) {
   // This is null in unit tests.
   if (web_contents) {
     content::StoragePartition* storage_partition =
@@ -165,7 +206,6 @@ InstallableManager::InstallableManager(content::WebContents* web_contents)
 }
 
 InstallableManager::~InstallableManager() {
-  // Null in unit tests.
   if (service_worker_context_)
     service_worker_context_->RemoveObserver(this);
 }
@@ -175,8 +215,33 @@ int InstallableManager::GetMinimumIconSizeInPx() {
   return kMinimumPrimaryIconSizeInPx;
 }
 
+// static
+bool InstallableManager::IsContentSecure(content::WebContents* web_contents) {
+  if (!web_contents)
+    return false;
+
+  // chrome:// URLs are considered secure.
+  const GURL& url = web_contents->GetLastCommittedURL();
+  if (url.scheme() == content::kChromeUIScheme)
+    return true;
+
+  if (IsOriginConsideredSecure(url))
+    return true;
+
+  return security_state::IsSslCertificateValid(
+      SecurityStateTabHelper::FromWebContents(web_contents)
+          ->GetSecurityLevel());
+}
+
+// static
+bool InstallableManager::IsOriginConsideredSecure(const GURL& url) {
+  return net::IsLocalhost(url) ||
+         network::SecureOriginAllowlist::GetInstance().IsOriginAllowlisted(
+             url::Origin::Create(url));
+}
+
 void InstallableManager::GetData(const InstallableParams& params,
-                                 const InstallableCallback& callback) {
+                                 InstallableCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (IsParamsForPwaCheck(params))
@@ -185,48 +250,25 @@ void InstallableManager::GetData(const InstallableParams& params,
   // Return immediately if we're already working on a task. The new task will be
   // looked at once the current task is finished.
   bool was_active = task_queue_.HasCurrent();
-  task_queue_.Add({params, callback});
+  task_queue_.Add({params, std::move(callback)});
   if (was_active)
     return;
 
-  metrics_->Start();
   WorkOnTask();
 }
 
-void InstallableManager::RecordMenuOpenHistogram() {
-  metrics_->RecordMenuOpen();
-}
-
-void InstallableManager::RecordMenuItemAddToHomescreenHistogram() {
-  metrics_->RecordMenuItemAddToHomescreen();
-}
-
-void InstallableManager::RecordAddToHomescreenNoTimeout() {
-  metrics_->RecordAddToHomescreenNoTimeout();
-}
-
-void InstallableManager::RecordAddToHomescreenManifestAndIconTimeout() {
-  metrics_->RecordAddToHomescreenManifestAndIconTimeout();
-
-  // If needed, explicitly trigger GetData() with a no-op callback to complete
-  // the installability check. This is so we can accurately record whether or
-  // not a site is a PWA, assuming that the check finishes prior to resetting.
-  if (!has_pwa_check_) {
-    InstallableParams params;
-    params.valid_manifest = true;
-    params.has_worker = true;
-    params.valid_primary_icon = true;
-    params.wait_for_worker = true;
-    GetData(params, base::DoNothing());
-  }
-}
-
-void InstallableManager::RecordAddToHomescreenInstallabilityTimeout() {
-  metrics_->RecordAddToHomescreenInstallabilityTimeout();
-}
-
-bool InstallableManager::IsContentSecureForTesting() {
-  return IsContentSecure(web_contents());
+void InstallableManager::GetAllErrors(
+    base::OnceCallback<void(std::vector<std::string> errors)> callback) {
+  InstallableParams params;
+  params.check_eligibility = true;
+  params.valid_manifest = true;
+  params.check_webapp_manifest_display = true;
+  params.has_worker = true;
+  params.valid_primary_icon = true;
+  params.wait_for_worker = false;
+  params.is_debug_mode = true;
+  GetData(params,
+          base::BindOnce(OnDidCompleteGetAllErrors, std::move(callback)));
 }
 
 bool InstallableManager::IsIconFetched(const IconPurpose purpose) const {
@@ -261,24 +303,30 @@ IconPurpose InstallableManager::GetPrimaryIconPurpose(
   return IconPurpose::ANY;
 }
 
-InstallableStatusCode InstallableManager::GetErrorCode(
+std::vector<InstallableStatusCode> InstallableManager::GetErrors(
     const InstallableParams& params) {
-  if (params.check_eligibility && eligibility_->error != NO_ERROR_DETECTED)
-    return eligibility_->error;
+  std::vector<InstallableStatusCode> errors;
+
+  if (params.check_eligibility && !eligibility_->errors.empty()) {
+    errors.insert(errors.end(), eligibility_->errors.begin(),
+                  eligibility_->errors.end());
+  }
 
   if (manifest_->error != NO_ERROR_DETECTED)
-    return manifest_->error;
+    errors.push_back(manifest_->error);
 
-  if (params.valid_manifest && valid_manifest_->error != NO_ERROR_DETECTED)
-    return valid_manifest_->error;
+  if (params.valid_manifest && !valid_manifest_->errors.empty()) {
+    errors.insert(errors.end(), valid_manifest_->errors.begin(),
+                  valid_manifest_->errors.end());
+  }
 
   if (params.has_worker && worker_->error != NO_ERROR_DETECTED)
-    return worker_->error;
+    errors.push_back(worker_->error);
 
   if (params.valid_primary_icon) {
     IconProperty& icon = icons_[GetPrimaryIconPurpose(params)];
     if (icon.error != NO_ERROR_DETECTED)
-      return icon.error;
+      errors.push_back(icon.error);
   }
 
   if (params.valid_badge_icon) {
@@ -288,14 +336,15 @@ InstallableStatusCode InstallableManager::GetErrorCode(
     // in the manifest. Ignore this case since we only want to fail the check if
     // there was a suitable badge icon specified and we couldn't fetch it.
     if (icon.error != NO_ERROR_DETECTED && icon.error != NO_ACCEPTABLE_ICON)
-      return icon.error;
+      errors.push_back(icon.error);
   }
 
-  return NO_ERROR_DETECTED;
+  return errors;
 }
 
 InstallableStatusCode InstallableManager::eligibility_error() const {
-  return eligibility_->error;
+  return eligibility_->errors.empty() ? NO_ERROR_DETECTED
+                                      : eligibility_->errors[0];
 }
 
 InstallableStatusCode InstallableManager::manifest_error() const {
@@ -303,12 +352,15 @@ InstallableStatusCode InstallableManager::manifest_error() const {
 }
 
 InstallableStatusCode InstallableManager::valid_manifest_error() const {
-  return valid_manifest_->error;
+  return valid_manifest_->errors.empty() ? NO_ERROR_DETECTED
+                                         : valid_manifest_->errors[0];
 }
 
 void InstallableManager::set_valid_manifest_error(
     InstallableStatusCode error_code) {
-  valid_manifest_->error = error_code;
+  valid_manifest_->errors.clear();
+  if (error_code != NO_ERROR_DETECTED)
+    valid_manifest_->errors.push_back(error_code);
 }
 
 InstallableStatusCode InstallableManager::worker_error() const {
@@ -347,29 +399,15 @@ bool InstallableManager::IsComplete(const InstallableParams& params) const {
          (!params.valid_badge_icon || IsIconFetched(IconPurpose::BADGE));
 }
 
-void InstallableManager::ResolveMetrics(const InstallableParams& params,
-                                        bool check_passed) {
-  // Don't do anything if we passed the check AND it was not for the full PWA
-  // params. We don't yet know if the site is installable. However, if the check
-  // didn't pass, we know for sure the site isn't installable, regardless of how
-  // much we checked.
-  if (check_passed && !IsParamsForPwaCheck(params))
-    return;
-
-  metrics_->Resolve(check_passed);
-}
-
 void InstallableManager::Reset() {
   // Prevent any outstanding callbacks to or from this object from being called.
   weak_factory_.InvalidateWeakPtrs();
   icons_.clear();
 
   // If we have paused tasks, we are waiting for a service worker.
-  metrics_->Flush(task_queue_.HasPaused());
   task_queue_.Reset();
   has_pwa_check_ = false;
 
-  metrics_ = std::make_unique<InstallableMetrics>();
   eligibility_ = std::make_unique<EligiblityProperty>();
   manifest_ = std::make_unique<ManifestProperty>();
   valid_manifest_ = std::make_unique<ValidManifestProperty>();
@@ -386,8 +424,20 @@ void InstallableManager::SetManifestDependentTasksComplete() {
   SetIconFetched(IconPurpose::MASKABLE);
 }
 
-void InstallableManager::RunCallback(const InstallableTask& task,
-                                     InstallableStatusCode code) {
+void InstallableManager::CleanupAndStartNextTask() {
+  // Sites can always register a service worker after we finish checking, so
+  // don't cache a missing service worker error to ensure we always check
+  // again.
+  if (worker_error() == NO_MATCHING_SERVICE_WORKER)
+    worker_ = std::make_unique<ServiceWorkerProperty>();
+
+  task_queue_.Next();
+  WorkOnTask();
+}
+
+void InstallableManager::RunCallback(
+    InstallableTask task,
+    std::vector<InstallableStatusCode> errors) {
   const InstallableParams& params = task.params;
   IconProperty null_icon;
   IconProperty* primary_icon = &null_icon;
@@ -403,42 +453,32 @@ void InstallableManager::RunCallback(const InstallableTask& task,
     badge_icon = &icons_[IconPurpose::BADGE];
 
   InstallableData data = {
-      code,
-      manifest_url(),
-      &manifest(),
-      primary_icon->url,
-      primary_icon->icon.get(),
-      has_maskable_primary_icon,
-      badge_icon->url,
-      badge_icon->icon.get(),
-      valid_manifest_->is_valid,
+      std::move(errors),   manifest_url(),           &manifest(),
+      primary_icon->url,   primary_icon->icon.get(), has_maskable_primary_icon,
+      badge_icon->url,     badge_icon->icon.get(),   valid_manifest_->is_valid,
       worker_->has_worker,
   };
 
-  task.callback.Run(data);
+  std::move(task.callback).Run(data);
 }
 
 void InstallableManager::WorkOnTask() {
-  const InstallableTask& task = task_queue_.Current();
-  const InstallableParams& params = task.params;
+  if (!task_queue_.HasCurrent())
+    return;
 
-  InstallableStatusCode code = GetErrorCode(params);
-  bool check_passed = (code == NO_ERROR_DETECTED);
-  if (!check_passed || IsComplete(params)) {
-    ResolveMetrics(params, check_passed);
-    RunCallback(task, code);
+  const InstallableParams& params = task_queue_.Current().params;
 
-    // Sites can always register a service worker after we finish checking, so
-    // don't cache a missing service worker error to ensure we always check
-    // again.
-    if (worker_error() == NO_MATCHING_SERVICE_WORKER)
-      worker_ = std::make_unique<ServiceWorkerProperty>();
+  auto errors = GetErrors(params);
+  bool check_passed = errors.empty();
+  if ((!check_passed && !params.is_debug_mode) || IsComplete(params)) {
+    // Yield the UI thread before processing the next task. If this object is
+    // deleted in the meantime, the next task naturally won't run.
+    base::PostTask(FROM_HERE, {base::CurrentThread()},
+                   base::BindOnce(&InstallableManager::CleanupAndStartNextTask,
+                                  weak_factory_.GetWeakPtr()));
 
-    task_queue_.Next();
-
-    if (task_queue_.HasCurrent())
-      WorkOnTask();
-
+    auto task = std::move(task_queue_.Current());
+    RunCallback(std::move(task), std::move(errors));
     return;
   }
 
@@ -448,14 +488,15 @@ void InstallableManager::WorkOnTask() {
     FetchManifest();
   } else if (params.valid_primary_icon && params.prefer_maskable_icon &&
              !IsIconFetched(IconPurpose::MASKABLE)) {
-    CheckAndFetchBestIcon(GetIdealPrimaryIconSizeInPx(),
-                          GetMinimumPrimaryIconSizeInPx(),
+    CheckAndFetchBestIcon(GetIdealPrimaryAdaptiveLauncherIconSizeInPx(),
+                          kMinimumPrimaryAdaptiveLauncherIconSizeInPx,
                           IconPurpose::MASKABLE);
   } else if (params.valid_primary_icon && !IsIconFetched(IconPurpose::ANY)) {
     CheckAndFetchBestIcon(GetIdealPrimaryIconSizeInPx(),
                           GetMinimumPrimaryIconSizeInPx(), IconPurpose::ANY);
   } else if (params.valid_manifest && !valid_manifest_->fetched) {
-    CheckManifestValid(params.check_webapp_manifest_display);
+    CheckManifestValid(params.check_webapp_manifest_display,
+                       params.prefer_maskable_icon);
   } else if (params.has_worker && !worker_->fetched) {
     CheckServiceWorker();
   } else if (params.valid_badge_icon && !IsIconFetched(IconPurpose::BADGE)) {
@@ -471,11 +512,13 @@ void InstallableManager::CheckEligiblity() {
   content::WebContents* web_contents = GetWebContents();
   if (Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->IsOffTheRecord()) {
-    eligibility_->error = IN_INCOGNITO;
-  } else if (web_contents->GetMainFrame()->GetParent()) {
-    eligibility_->error = NOT_IN_MAIN_FRAME;
-  } else if (!IsContentSecure(web_contents)) {
-    eligibility_->error = NOT_FROM_SECURE_ORIGIN;
+    eligibility_->errors.push_back(IN_INCOGNITO);
+  }
+  if (web_contents->GetMainFrame()->GetParent()) {
+    eligibility_->errors.push_back(NOT_IN_MAIN_FRAME);
+  }
+  if (!IsContentSecure(web_contents)) {
+    eligibility_->errors.push_back(NOT_FROM_SECURE_ORIGIN);
   }
 
   eligibility_->fetched = true;
@@ -488,8 +531,8 @@ void InstallableManager::FetchManifest() {
   content::WebContents* web_contents = GetWebContents();
   DCHECK(web_contents);
 
-  web_contents->GetManifest(base::Bind(&InstallableManager::OnDidGetManifest,
-                                       weak_factory_.GetWeakPtr()));
+  web_contents->GetManifest(base::BindOnce(
+      &InstallableManager::OnDidGetManifest, weak_factory_.GetWeakPtr()));
 }
 
 void InstallableManager::OnDidGetManifest(const GURL& manifest_url,
@@ -511,62 +554,66 @@ void InstallableManager::OnDidGetManifest(const GURL& manifest_url,
   WorkOnTask();
 }
 
-void InstallableManager::CheckManifestValid(
-    bool check_webapp_manifest_display) {
+void InstallableManager::CheckManifestValid(bool check_webapp_manifest_display,
+                                            bool prefer_maskable_icon) {
   DCHECK(!valid_manifest_->fetched);
   DCHECK(!manifest().IsEmpty());
 
-  valid_manifest_->is_valid =
-      IsManifestValidForWebApp(manifest(), check_webapp_manifest_display);
+  valid_manifest_->is_valid = IsManifestValidForWebApp(
+      manifest(), check_webapp_manifest_display, prefer_maskable_icon);
   valid_manifest_->fetched = true;
   WorkOnTask();
 }
 
 bool InstallableManager::IsManifestValidForWebApp(
     const blink::Manifest& manifest,
-    bool check_webapp_manifest_display) {
+    bool check_webapp_manifest_display,
+    bool prefer_maskable_icon) {
+  bool is_valid = true;
   if (manifest.IsEmpty()) {
-    valid_manifest_->error = MANIFEST_EMPTY;
+    valid_manifest_->errors.push_back(MANIFEST_EMPTY);
     return false;
   }
 
   if (!manifest.start_url.is_valid()) {
-    valid_manifest_->error = START_URL_NOT_VALID;
-    return false;
+    valid_manifest_->errors.push_back(START_URL_NOT_VALID);
+    is_valid = false;
   }
 
   if ((manifest.name.is_null() || manifest.name.string().empty()) &&
       (manifest.short_name.is_null() || manifest.short_name.string().empty())) {
-    valid_manifest_->error = MANIFEST_MISSING_NAME_OR_SHORT_NAME;
-    return false;
+    valid_manifest_->errors.push_back(MANIFEST_MISSING_NAME_OR_SHORT_NAME);
+    is_valid = false;
   }
 
   if (check_webapp_manifest_display &&
-      manifest.display != blink::kWebDisplayModeStandalone &&
-      manifest.display != blink::kWebDisplayModeFullscreen &&
-      manifest.display != blink::kWebDisplayModeMinimalUi) {
-    valid_manifest_->error = MANIFEST_DISPLAY_NOT_SUPPORTED;
-    return false;
+      manifest.display != blink::mojom::DisplayMode::kStandalone &&
+      manifest.display != blink::mojom::DisplayMode::kFullscreen &&
+      manifest.display != blink::mojom::DisplayMode::kMinimalUi) {
+    valid_manifest_->errors.push_back(MANIFEST_DISPLAY_NOT_SUPPORTED);
+    is_valid = false;
   }
 
-  if (!DoesManifestContainRequiredIcon(manifest)) {
-    valid_manifest_->error = MANIFEST_MISSING_SUITABLE_ICON;
-    return false;
+  if (!DoesManifestContainRequiredIcon(manifest, prefer_maskable_icon)) {
+    valid_manifest_->errors.push_back(MANIFEST_MISSING_SUITABLE_ICON);
+    is_valid = false;
   }
 
-  return true;
+  return is_valid;
 }
 
 void InstallableManager::CheckServiceWorker() {
   DCHECK(!worker_->fetched);
   DCHECK(!manifest().IsEmpty());
-  DCHECK(manifest().start_url.is_valid());
 
-  // Check to see if there is a service worker for the manifest's start url.
+  if (!service_worker_context_)
+    return;
+
+  // Check to see if there is a service worker for the manifest's scope.
   service_worker_context_->CheckHasServiceWorker(
-      manifest().start_url,
-      base::Bind(&InstallableManager::OnDidCheckHasServiceWorker,
-                 weak_factory_.GetWeakPtr()));
+      manifest().scope,
+      base::BindOnce(&InstallableManager::OnDidCheckHasServiceWorker,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void InstallableManager::OnDidCheckHasServiceWorker(
@@ -590,9 +637,7 @@ void InstallableManager::OnDidCheckHasServiceWorker(
         task.params.wait_for_worker = false;
         OnWaitingForServiceWorker();
         task_queue_.PauseCurrent();
-        if (task_queue_.HasCurrent())
-          WorkOnTask();
-
+        WorkOnTask();
         return;
       }
       worker_->has_worker = false;
@@ -612,7 +657,7 @@ void InstallableManager::CheckAndFetchBestIcon(int ideal_icon_size_in_px,
   IconProperty& icon = icons_[purpose];
   icon.fetched = true;
 
-  GURL icon_url = blink::ManifestIconSelector::FindBestMatchingIcon(
+  GURL icon_url = blink::ManifestIconSelector::FindBestMatchingSquareIcon(
       manifest().icons, ideal_icon_size_in_px, minimum_icon_size_in_px,
       purpose);
 
@@ -622,8 +667,8 @@ void InstallableManager::CheckAndFetchBestIcon(int ideal_icon_size_in_px,
     bool can_download_icon = content::ManifestIconDownloader::Download(
         GetWebContents(), icon_url, ideal_icon_size_in_px,
         minimum_icon_size_in_px,
-        base::Bind(&InstallableManager::OnIconFetched,
-                   weak_factory_.GetWeakPtr(), icon_url, purpose));
+        base::BindOnce(&InstallableManager::OnIconFetched,
+                       weak_factory_.GetWeakPtr(), icon_url, purpose));
     if (can_download_icon)
       return;
     icon.error = CANNOT_DOWNLOAD_ICON;
@@ -635,11 +680,10 @@ void InstallableManager::CheckAndFetchBestIcon(int ideal_icon_size_in_px,
 void InstallableManager::OnIconFetched(const GURL icon_url,
                                        const IconPurpose purpose,
                                        const SkBitmap& bitmap) {
-  IconProperty& icon = icons_[purpose];
-
   if (!GetWebContents())
     return;
 
+  IconProperty& icon = icons_[purpose];
   if (bitmap.drawsNothing()) {
     icon.error = NO_ICON_AVAILABLE;
   } else {
@@ -652,10 +696,8 @@ void InstallableManager::OnIconFetched(const GURL icon_url,
 
 void InstallableManager::OnRegistrationCompleted(const GURL& pattern) {
   // If the scope doesn't match we keep waiting.
-  if (!content::ServiceWorkerContext::ScopeMatches(pattern,
-                                                   manifest().start_url)) {
+  if (!content::ServiceWorkerContext::ScopeMatches(pattern, manifest().scope))
     return;
-  }
 
   bool was_active = task_queue_.HasCurrent();
 
@@ -670,8 +712,12 @@ void InstallableManager::OnRegistrationCompleted(const GURL& pattern) {
   if (was_active)
     return;  // If the pipeline was already running, we don't restart it.
 
-  if (task_queue_.HasCurrent())
-    WorkOnTask();
+  WorkOnTask();
+}
+
+void InstallableManager::OnDestruct(content::ServiceWorkerContext* context) {
+  service_worker_context_->RemoveObserver(this);
+  service_worker_context_ = nullptr;
 }
 
 void InstallableManager::DidFinishNavigation(

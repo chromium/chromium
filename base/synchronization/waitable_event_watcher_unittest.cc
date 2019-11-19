@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -22,11 +22,11 @@ namespace base {
 namespace {
 
 // The main thread types on which each waitable event should be tested.
-const test::ScopedTaskEnvironment::MainThreadType testing_main_threads[] = {
-    test::ScopedTaskEnvironment::MainThreadType::DEFAULT,
-    test::ScopedTaskEnvironment::MainThreadType::IO,
+const test::TaskEnvironment::MainThreadType testing_main_threads[] = {
+    test::TaskEnvironment::MainThreadType::DEFAULT,
+    test::TaskEnvironment::MainThreadType::IO,
 #if !defined(OS_IOS)  // iOS does not allow direct running of the UI loop.
-    test::ScopedTaskEnvironment::MainThreadType::UI,
+    test::TaskEnvironment::MainThreadType::UI,
 #endif
 };
 
@@ -49,11 +49,10 @@ class DecrementCountContainer {
 }  // namespace
 
 class WaitableEventWatcherTest
-    : public testing::TestWithParam<
-          test::ScopedTaskEnvironment::MainThreadType> {};
+    : public testing::TestWithParam<test::TaskEnvironment::MainThreadType> {};
 
 TEST_P(WaitableEventWatcherTest, BasicSignalManual) {
-  test::ScopedTaskEnvironment scoped_task_environment(GetParam());
+  test::TaskEnvironment task_environment(GetParam());
 
   // A manual-reset event that is not yet signaled.
   WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
@@ -71,7 +70,7 @@ TEST_P(WaitableEventWatcherTest, BasicSignalManual) {
 }
 
 TEST_P(WaitableEventWatcherTest, BasicSignalAutomatic) {
-  test::ScopedTaskEnvironment scoped_task_environment(GetParam());
+  test::TaskEnvironment task_environment(GetParam());
 
   WaitableEvent event(WaitableEvent::ResetPolicy::AUTOMATIC,
                       WaitableEvent::InitialState::NOT_SIGNALED);
@@ -89,7 +88,7 @@ TEST_P(WaitableEventWatcherTest, BasicSignalAutomatic) {
 }
 
 TEST_P(WaitableEventWatcherTest, BasicCancel) {
-  test::ScopedTaskEnvironment scoped_task_environment(GetParam());
+  test::TaskEnvironment task_environment(GetParam());
 
   // A manual-reset event that is not yet signaled.
   WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
@@ -104,7 +103,7 @@ TEST_P(WaitableEventWatcherTest, BasicCancel) {
 }
 
 TEST_P(WaitableEventWatcherTest, CancelAfterSet) {
-  test::ScopedTaskEnvironment scoped_task_environment(GetParam());
+  test::TaskEnvironment task_environment(GetParam());
 
   // A manual-reset event that is not yet signaled.
   WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
@@ -141,7 +140,7 @@ TEST_P(WaitableEventWatcherTest, OutlivesTaskEnvironment) {
   {
     std::unique_ptr<WaitableEventWatcher> watcher;
     {
-      test::ScopedTaskEnvironment scoped_task_environment(GetParam());
+      test::TaskEnvironment task_environment(GetParam());
       watcher = std::make_unique<WaitableEventWatcher>();
 
       watcher->StartWatching(&event, BindOnce(&QuitWhenSignaled),
@@ -151,7 +150,7 @@ TEST_P(WaitableEventWatcherTest, OutlivesTaskEnvironment) {
 }
 
 TEST_P(WaitableEventWatcherTest, SignaledAtStartManual) {
-  test::ScopedTaskEnvironment scoped_task_environment(GetParam());
+  test::TaskEnvironment task_environment(GetParam());
 
   WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
                       WaitableEvent::InitialState::SIGNALED);
@@ -166,7 +165,7 @@ TEST_P(WaitableEventWatcherTest, SignaledAtStartManual) {
 }
 
 TEST_P(WaitableEventWatcherTest, SignaledAtStartAutomatic) {
-  test::ScopedTaskEnvironment scoped_task_environment(GetParam());
+  test::TaskEnvironment task_environment(GetParam());
 
   WaitableEvent event(WaitableEvent::ResetPolicy::AUTOMATIC,
                       WaitableEvent::InitialState::SIGNALED);
@@ -182,7 +181,7 @@ TEST_P(WaitableEventWatcherTest, SignaledAtStartAutomatic) {
 }
 
 TEST_P(WaitableEventWatcherTest, StartWatchingInCallback) {
-  test::ScopedTaskEnvironment scoped_task_environment(GetParam());
+  test::TaskEnvironment task_environment(GetParam());
 
   WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
                       WaitableEvent::InitialState::NOT_SIGNALED);
@@ -206,7 +205,7 @@ TEST_P(WaitableEventWatcherTest, StartWatchingInCallback) {
 }
 
 TEST_P(WaitableEventWatcherTest, MultipleWatchersManual) {
-  test::ScopedTaskEnvironment scoped_task_environment(GetParam());
+  test::TaskEnvironment task_environment(GetParam());
 
   WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
                       WaitableEvent::InitialState::NOT_SIGNALED);
@@ -241,7 +240,7 @@ TEST_P(WaitableEventWatcherTest, MultipleWatchersManual) {
 
 // Tests that only one async waiter gets called back for an auto-reset event.
 TEST_P(WaitableEventWatcherTest, MultipleWatchersAutomatic) {
-  test::ScopedTaskEnvironment scoped_task_environment(GetParam());
+  test::TaskEnvironment task_environment(GetParam());
 
   WaitableEvent event(WaitableEvent::ResetPolicy::AUTOMATIC,
                       WaitableEvent::InitialState::NOT_SIGNALED);
@@ -302,17 +301,17 @@ TEST_P(WaitableEventWatcherTest, MultipleWatchersAutomatic) {
 // bool parameter is used to test sleeping between watching and deletion.
 class WaitableEventWatcherDeletionTest
     : public testing::TestWithParam<
-          std::tuple<test::ScopedTaskEnvironment::MainThreadType, bool>> {};
+          std::tuple<test::TaskEnvironment::MainThreadType, bool>> {};
 
 TEST_P(WaitableEventWatcherDeletionTest, DeleteUnder) {
-  test::ScopedTaskEnvironment::MainThreadType main_thread_type;
+  test::TaskEnvironment::MainThreadType main_thread_type;
   bool delay_after_delete;
   std::tie(main_thread_type, delay_after_delete) = GetParam();
 
   // Delete the WaitableEvent out from under the Watcher. This is explictly
   // allowed by the interface.
 
-  test::ScopedTaskEnvironment scoped_task_environment(main_thread_type);
+  test::TaskEnvironment task_environment(main_thread_type);
 
   {
     WaitableEventWatcher watcher;
@@ -337,13 +336,13 @@ TEST_P(WaitableEventWatcherDeletionTest, DeleteUnder) {
 }
 
 TEST_P(WaitableEventWatcherDeletionTest, SignalAndDelete) {
-  test::ScopedTaskEnvironment::MainThreadType main_thread_type;
+  test::TaskEnvironment::MainThreadType main_thread_type;
   bool delay_after_delete;
   std::tie(main_thread_type, delay_after_delete) = GetParam();
 
   // Signal and immediately delete the WaitableEvent out from under the Watcher.
 
-  test::ScopedTaskEnvironment scoped_task_environment(main_thread_type);
+  test::TaskEnvironment task_environment(main_thread_type);
 
   {
     WaitableEventWatcher watcher;
@@ -374,11 +373,11 @@ TEST_P(WaitableEventWatcherDeletionTest, SignalAndDelete) {
 // Tests deleting the WaitableEventWatcher between signaling the event and
 // when the callback should be run.
 TEST_P(WaitableEventWatcherDeletionTest, DeleteWatcherBeforeCallback) {
-  test::ScopedTaskEnvironment::MainThreadType main_thread_type;
+  test::TaskEnvironment::MainThreadType main_thread_type;
   bool delay_after_delete;
   std::tie(main_thread_type, delay_after_delete) = GetParam();
 
-  test::ScopedTaskEnvironment scoped_task_environment(main_thread_type);
+  test::TaskEnvironment task_environment(main_thread_type);
   scoped_refptr<SingleThreadTaskRunner> task_runner =
       ThreadTaskRunnerHandle::Get();
 

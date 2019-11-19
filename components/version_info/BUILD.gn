@@ -18,12 +18,14 @@ static_library("version_info") {
   ]
 
   deps = [
-    ":generate_version_info",
     "//base",
+    "//base:sanitizer_buildflags",
+    "//build:branding_buildflags",
   ]
 
   public_deps = [
     ":channel",
+    ":generate_version_info",
   ]
 }
 

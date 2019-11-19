@@ -7,8 +7,17 @@
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
+
+namespace {
+
+void RecordMultiloginResponseStatus(OAuthMultiloginResponseStatus status) {
+  UMA_HISTOGRAM_ENUMERATION("Signin.OAuthMultiloginResponseStatus", status);
+}
+
+}  // namespace
 
 OAuthMultiloginResponseStatus ParseOAuthMultiloginResponseStatus(
     const std::string& status) {
@@ -28,53 +37,22 @@ OAuthMultiloginResponseStatus ParseOAuthMultiloginResponseStatus(
 
 OAuthMultiloginResult::OAuthMultiloginResult(
     const OAuthMultiloginResult& other) {
-  error_ = other.error();
+  status_ = other.status();
   cookies_ = other.cookies();
-  failed_accounts_ = other.failed_accounts();
+  failed_gaia_ids_ = other.failed_gaia_ids();
 }
 
 OAuthMultiloginResult& OAuthMultiloginResult::operator=(
     const OAuthMultiloginResult& other) {
-  error_ = other.error();
+  status_ = other.status();
   cookies_ = other.cookies();
-  failed_accounts_ = other.failed_accounts();
+  failed_gaia_ids_ = other.failed_gaia_ids();
   return *this;
 }
 
 OAuthMultiloginResult::OAuthMultiloginResult(
-    const GoogleServiceAuthError& error)
-    : error_(error) {}
-
-void OAuthMultiloginResult::TryParseStatusFromValue(
-    base::DictionaryValue* dictionary_value) {
-  std::string status_string;
-  dictionary_value->GetString("status", &status_string);
-  OAuthMultiloginResponseStatus status =
-      ParseOAuthMultiloginResponseStatus(status_string);
-  UMA_HISTOGRAM_ENUMERATION("Signin.OAuthMultiloginResponseStatus", status);
-  switch (status) {
-    case OAuthMultiloginResponseStatus::kUnknownStatus:
-      error_ = GoogleServiceAuthError(
-          GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE);
-      break;
-    case OAuthMultiloginResponseStatus::kOk:
-      error_ = GoogleServiceAuthError::AuthErrorNone();
-      break;
-    case OAuthMultiloginResponseStatus::kRetry:
-      // This is a transient error.
-      error_ =
-          GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
-      break;
-    case OAuthMultiloginResponseStatus::kInvalidTokens:
-      error_ = GoogleServiceAuthError(
-          GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
-      break;
-    case OAuthMultiloginResponseStatus::kError:
-    case OAuthMultiloginResponseStatus::kInvalidInput:
-      error_ = GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_ERROR);
-      break;
-  }
-}
+    OAuthMultiloginResponseStatus status)
+    : status_(status) {}
 
 // static
 base::StringPiece OAuthMultiloginResult::StripXSSICharacters(
@@ -84,73 +62,67 @@ base::StringPiece OAuthMultiloginResult::StripXSSICharacters(
 }
 
 void OAuthMultiloginResult::TryParseFailedAccountsFromValue(
-    base::DictionaryValue* dictionary_value) {
-  base::ListValue* failed_accounts = nullptr;
-  dictionary_value->GetList("failed_accounts", &failed_accounts);
+    base::Value* json_value) {
+  base::Value* failed_accounts = json_value->FindListKey("failed_accounts");
   if (failed_accounts == nullptr) {
     VLOG(1) << "No invalid accounts found in the response but error is set to "
                "INVALID_TOKENS";
-    error_ = GoogleServiceAuthError(
-        GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE);
+    status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
     return;
   }
-  for (size_t i = 0; i < failed_accounts->GetSize(); ++i) {
-    base::DictionaryValue* account_value = nullptr;
-    failed_accounts->GetDictionary(i, &account_value);
-    std::string gaia_id;
-    std::string status;
-    account_value->GetString("obfuscated_id", &gaia_id);
-    account_value->GetString("status", &status);
-    if (status != "OK")
-      failed_accounts_.push_back(gaia_id);
+  for (auto& account : failed_accounts->GetList()) {
+    const std::string* gaia_id = account.FindStringKey("obfuscated_id");
+    const std::string* status = account.FindStringKey("status");
+    if (status && gaia_id && *status != "OK")
+      failed_gaia_ids_.push_back(*gaia_id);
   }
+  if (failed_gaia_ids_.empty())
+    status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
 }
 
-void OAuthMultiloginResult::TryParseCookiesFromValue(
-    base::DictionaryValue* dictionary_value) {
-  base::ListValue* cookie_list = nullptr;
-  dictionary_value->GetList("cookies", &cookie_list);
+void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
+  base::Value* cookie_list = json_value->FindListKey("cookies");
   if (cookie_list == nullptr) {
     VLOG(1) << "No cookies found in the response.";
-    error_ = GoogleServiceAuthError(
-        GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE);
+    status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
     return;
   }
-  for (size_t i = 0; i < cookie_list->GetSize(); ++i) {
-    base::DictionaryValue* cookie_value = nullptr;
-    cookie_list->GetDictionary(i, &cookie_value);
-    std::string name;
-    std::string value;
-    std::string domain;
-    std::string host;
-    std::string path;
-    bool is_secure;
-    bool is_http_only;
-    std::string priority;
-    std::string max_age;
-    double expiration_delta;
-    cookie_value->GetString("name", &name);
-    cookie_value->GetString("value", &value);
-    cookie_value->GetString("domain", &domain);
-    cookie_value->GetString("host", &host);
-    cookie_value->GetString("path", &path);
-    cookie_value->GetBoolean("isSecure", &is_secure);
-    cookie_value->GetBoolean("isHttpOnly", &is_http_only);
-    cookie_value->GetString("priority", &priority);
-    cookie_value->GetDouble("maxAge", &expiration_delta);
+  for (const auto& cookie : cookie_list->GetList()) {
+    const std::string* name = cookie.FindStringKey("name");
+    const std::string* value = cookie.FindStringKey("value");
+    const std::string* domain = cookie.FindStringKey("domain");
+    const std::string* host = cookie.FindStringKey("host");
+    const std::string* path = cookie.FindStringKey("path");
+    base::Optional<bool> is_secure = cookie.FindBoolKey("isSecure");
+    base::Optional<bool> is_http_only = cookie.FindBoolKey("isHttpOnly");
+    const std::string* priority = cookie.FindStringKey("priority");
+    base::Optional<double> expiration_delta = cookie.FindDoubleKey("maxAge");
+    const std::string* same_site = cookie.FindStringKey("sameSite");
 
     base::TimeDelta before_expiration =
-        base::TimeDelta::FromSecondsD(expiration_delta);
-    if (domain.empty() && !host.empty() && host[0] != '.') {
+        base::TimeDelta::FromSecondsD(expiration_delta.value_or(0.0));
+    std::string cookie_domain = domain ? *domain : "";
+    std::string cookie_host = host ? *host : "";
+    if (cookie_domain.empty() && !cookie_host.empty() &&
+        cookie_host[0] != '.') {
       // Host cookie case. If domain is empty but other conditions are not met,
       // there must be something wrong with the received cookie.
-      domain = host;
+      cookie_domain = cookie_host;
     }
+    net::CookieSameSite samesite_mode = net::CookieSameSite::UNSPECIFIED;
+    net::CookieSameSiteString samesite_string =
+        net::CookieSameSiteString::kUnspecified;
+    if (same_site) {
+      samesite_mode = net::StringToCookieSameSite(*same_site, &samesite_string);
+    }
+    net::RecordCookieSameSiteAttributeValueHistogram(samesite_string);
     net::CanonicalCookie new_cookie(
-        name, value, domain, path, base::Time::Now(),
-        base::Time::Now() + before_expiration, base::Time::Now(), is_secure,
-        is_http_only, net::CookieSameSite::NO_RESTRICTION,
-        net::StringToCookiePriority(priority));
+        name ? *name : "", value ? *value : "", cookie_domain,
+        path ? *path : "", /*creation=*/base::Time::Now(),
+        base::Time::Now() + before_expiration,
+        /*last_access=*/base::Time::Now(), is_secure.value_or(true),
+        is_http_only.value_or(true), samesite_mode,
+        net::StringToCookiePriority(priority ? *priority : "medium"));
     if (new_cookie.IsCanonical()) {
       cookies_.push_back(std::move(new_cookie));
     } else {
@@ -161,20 +133,29 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
 
 OAuthMultiloginResult::OAuthMultiloginResult(const std::string& raw_data) {
   base::StringPiece data = StripXSSICharacters(raw_data);
-  std::unique_ptr<base::DictionaryValue> dictionary_value =
-      base::DictionaryValue::From(base::JSONReader::ReadDeprecated(data));
-  if (!dictionary_value) {
-    error_ = GoogleServiceAuthError(
-        GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE);
+  status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
+  base::Optional<base::Value> json_data = base::JSONReader::Read(data);
+  if (!json_data) {
+    RecordMultiloginResponseStatus(status_);
     return;
   }
-  TryParseStatusFromValue(dictionary_value.get());
-  if (error_.state() == GoogleServiceAuthError::State::NONE) {
-    TryParseCookiesFromValue(dictionary_value.get());
-  } else if (error_.state() ==
-             GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS) {
-    TryParseFailedAccountsFromValue(dictionary_value.get());
+
+  const std::string* status_string = json_data->FindStringKey("status");
+  if (!status_string) {
+    RecordMultiloginResponseStatus(status_);
+    return;
   }
+
+  status_ = ParseOAuthMultiloginResponseStatus(*status_string);
+  if (status_ == OAuthMultiloginResponseStatus::kOk) {
+    // Sets status_ to kUnknownStatus if cookies cannot be parsed.
+    TryParseCookiesFromValue(&json_data.value());
+  } else if (status_ == OAuthMultiloginResponseStatus::kInvalidTokens) {
+    // Sets status_ to kUnknownStatus if failed accounts cannot be parsed.
+    TryParseFailedAccountsFromValue(&json_data.value());
+  }
+
+  RecordMultiloginResponseStatus(status_);
 }
 
 OAuthMultiloginResult::~OAuthMultiloginResult() = default;

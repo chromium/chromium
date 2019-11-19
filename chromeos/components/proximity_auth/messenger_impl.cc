@@ -61,7 +61,7 @@ std::string GetMessageType(const base::DictionaryValue& message) {
 
 MessengerImpl::MessengerImpl(
     std::unique_ptr<chromeos::secure_channel::ClientChannel> channel)
-    : channel_(std::move(channel)), weak_ptr_factory_(this) {
+    : channel_(std::move(channel)) {
   DCHECK(!channel_->is_disconnected());
   channel_->AddObserver(this);
 }

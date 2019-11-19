@@ -64,13 +64,6 @@ base::FilePath::StringType ExpandPathVariables(
 // account.
 void CheckUserDataDirPolicy(base::FilePath* user_data_dir);
 
-// A helper function used to read the DiskCacheDir path policy without relying
-// on any policy infrastructure. This is required because this policy may be
-// needed much earlier before the PrefService is initialized on Windows.
-// The function will fill |disk_cache_dir| if the policy "DiskCacheDir" is set
-// and leave it intact if the policy is missing.
-void CheckDiskCacheDirPolicy(base::FilePath* disk_cache_dir);
-
 }  // namespace path_parser
 
 }  // namespace policy

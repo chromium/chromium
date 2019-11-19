@@ -56,10 +56,10 @@ bool WriteCompiledInTestsToFile(const FilePath& path) {
   ListValue root;
   for (const auto& i : tests) {
     std::unique_ptr<DictionaryValue> test_info(new DictionaryValue);
-    test_info->SetString("test_case_name", i.test_case_name);
-    test_info->SetString("test_name", i.test_name);
-    test_info->SetString("file", i.file);
-    test_info->SetInteger("line", i.line);
+    test_info->SetStringKey("test_case_name", i.test_case_name);
+    test_info->SetStringKey("test_name", i.test_name);
+    test_info->SetStringKey("file", i.file);
+    test_info->SetIntKey("line", i.line);
     root.Append(std::move(test_info));
   }
 

@@ -35,10 +35,6 @@
 #include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-#if defined(OS_CHROMEOS)
-#include "chromeos/dbus/dbus_thread_manager.h"
-#endif
-
 namespace bluez {
 
 static BluezDBusManager* g_bluez_dbus_manager = nullptr;
@@ -50,8 +46,7 @@ BluezDBusManager::BluezDBusManager(dbus::Bus* bus,
     : bus_(bus),
       alternate_bus_(alternate_bus),
       object_manager_support_known_(false),
-      object_manager_supported_(false),
-      weak_ptr_factory_(this) {
+      object_manager_supported_(false) {
   // On Chrome OS, Bluez might not be ready by the time we initialize the
   // BluezDBusManager so we initialize the clients anyway.
   bool should_check_object_manager = true;
@@ -251,7 +246,7 @@ std::string BluezDBusManager::GetBluetoothServiceName() {
 }
 
 // static
-void BluezDBusManager::Initialize() {
+void BluezDBusManager::Initialize(dbus::Bus* system_bus) {
   // If we initialize BluezDBusManager twice we may also be shutting it down
   // early; do not allow that.
   if (g_using_bluez_dbus_manager_for_testing)
@@ -259,22 +254,33 @@ void BluezDBusManager::Initialize() {
 
   CHECK(!g_bluez_dbus_manager);
 
+  BluezDBusThreadManager::Initialize();
+
 #if defined(OS_CHROMEOS)
+  DCHECK(system_bus);
   // On ChromeOS, BluetoothSystem needs a separate connection to Bluez, so we
   // use BluezDBusThreadManager to get two different connections to the same
   // services. This allows us to have two separate sets of clients in the same
   // process.
-  BluezDBusThreadManager::Initialize();
-
-  CreateGlobalInstance(chromeos::DBusThreadManager::Get()->GetSystemBus(),
+  CreateGlobalInstance(system_bus,
                        BluezDBusThreadManager::Get()->GetSystemBus(),
-                       chromeos::DBusThreadManager::Get()->IsUsingFakes());
+                       false /* use_dbus_stubs */);
 #elif defined(OS_LINUX)
   // BluetoothSystem, the client that needs the extra connection, is not
   // implemented on Linux, so no need for an extra Bus.
   CreateGlobalInstance(BluezDBusThreadManager::Get()->GetSystemBus(), nullptr,
                        false /* use_dbus_stubs */);
+#else
+  NOTREACHED();
 #endif
+}
+
+void BluezDBusManager::InitializeFake() {
+  if (g_using_bluez_dbus_manager_for_testing)
+    return;
+  CHECK(!g_bluez_dbus_manager);
+  BluezDBusThreadManager::Initialize();
+  CreateGlobalInstance(nullptr, nullptr, true /* use_dbus_stubs */);
 }
 
 // static

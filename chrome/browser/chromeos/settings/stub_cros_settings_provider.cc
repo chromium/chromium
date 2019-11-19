@@ -60,6 +60,18 @@ void StubCrosSettingsProvider::SetCurrentUserIsOwner(bool owner) {
   current_user_is_owner_ = owner;
 }
 
+void StubCrosSettingsProvider::Set(const std::string& path,
+                                   const base::Value& value) {
+  bool is_value_changed = false;
+  if (current_user_is_owner_)
+    is_value_changed = values_.SetValue(path, value.Clone());
+  else
+    LOG(WARNING) << "Blocked changing setting from non-owner, setting=" << path;
+
+  if (is_value_changed || !current_user_is_owner_)
+    NotifyObservers(path);
+}
+
 void StubCrosSettingsProvider::SetBoolean(const std::string& path,
                                           bool in_value) {
   Set(path, base::Value(in_value));
@@ -80,18 +92,6 @@ void StubCrosSettingsProvider::SetString(const std::string& path,
   Set(path, base::Value(in_value));
 }
 
-void StubCrosSettingsProvider::DoSet(const std::string& path,
-                                     const base::Value& value) {
-  bool is_value_changed = false;
-  if (current_user_is_owner_)
-    is_value_changed = values_.SetValue(path, value.Clone());
-  else
-    LOG(WARNING) << "Changing settings from non-owner, setting=" << path;
-
-  if (is_value_changed || !current_user_is_owner_)
-    NotifyObservers(path);
-}
-
 void StubCrosSettingsProvider::SetDefaults() {
   values_.SetBoolean(kAccountsPrefAllowGuest, true);
   values_.SetBoolean(kAccountsPrefAllowNewUser, true);
@@ -99,6 +99,7 @@ void StubCrosSettingsProvider::SetDefaults() {
   values_.SetBoolean(kAccountsPrefShowUserNamesOnSignIn, true);
   values_.SetValue(kAccountsPrefUsers, base::Value(base::Value::Type::LIST));
   values_.SetBoolean(kAllowBluetooth, true);
+  values_.SetBoolean(kDeviceWiFiAllowed, true);
   values_.SetBoolean(kAttestationForContentProtectionEnabled, true);
   values_.SetBoolean(kStatsReportingPref, true);
   values_.SetValue(kAccountsPrefDeviceLocalAccounts,

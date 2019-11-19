@@ -11,20 +11,12 @@
   var event = await dp.Target.onceTargetInfoChanged(event => event.params.targetInfo.url.endsWith('inspector-protocol-page.html'));
   var targetId = event.params.targetInfo.targetId;
 
-  var sessionId = (await dp.Target.attachToTarget({targetId: targetId})).result.sessionId;
+  var sessionId = (await dp.Target.attachToTarget({targetId: targetId, flatten: true})).result.sessionId;
+  const childSession = session.createChild(sessionId);
   testRunner.log('Attached to a second window');
-  await dp.Target.sendMessageToTarget({
-    sessionId: sessionId,
-    message: JSON.stringify({id: 1, method: 'Debugger.enable'})
-  });
-  dp.Target.sendMessageToTarget({
-    sessionId: sessionId,
-    message: JSON.stringify({id: 2, method: 'Runtime.evaluate', params: {expression: 'debugger;'}})
-  });
-  await dp.Target.onceReceivedMessageFromTarget(event => {
-    var message = JSON.parse(event.params.message);
-    return message.method === 'Debugger.paused';
-  });
+  await childSession.protocol.Debugger.enable();
+  childSession.evaluate('debugger;');
+  await childSession.protocol.Debugger.oncePaused();
   testRunner.log('Paused in a second window');
 
   session.evaluate(`

@@ -91,11 +91,6 @@ base::string16 SettingsResetPromptController::GetWindowTitle() const {
   return base::string16();
 }
 
-base::string16 SettingsResetPromptController::GetButtonLabel() const {
-  return l10n_util::GetStringUTF16(
-      IDS_SETTINGS_RESET_PROMPT_ACCEPT_BUTTON_LABEL);
-}
-
 base::string16 SettingsResetPromptController::GetMainText() const {
   DCHECK(!main_text_.empty());
   return main_text_;

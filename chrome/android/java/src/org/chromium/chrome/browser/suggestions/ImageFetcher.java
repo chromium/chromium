@@ -6,13 +6,11 @@ package org.chromium.chrome.browser.suggestions;
 
 import android.graphics.Bitmap;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
-import org.chromium.base.Promise;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.favicon.LargeIconBridge;
 import org.chromium.chrome.browser.ntp.snippets.SnippetArticle;
 import org.chromium.chrome.browser.ntp.snippets.SuggestionsSource;
@@ -29,7 +27,6 @@ import org.chromium.chrome.browser.widget.ThumbnailProvider;
  * To fetch an image, the caller should create a request which is done in the following way:
  *   - for favicons: {@link #makeFaviconRequest(SnippetArticle, int, Callback)}
  *   - for article thumbnails: {@link #makeArticleThumbnailRequest(SnippetArticle, Callback)}
- *   - for article downloads: {@link #makeDownloadThumbnailRequest(SnippetArticle, int)}
  *   - for large icons: {@link #makeLargeIconRequest(String, int,
  * LargeIconBridge.LargeIconCallback)}
  *
@@ -59,22 +56,6 @@ public class ImageFetcher {
     }
 
     /**
-     * Creates a request for a thumbnail from a downloaded image.
-     *
-     * If there is an error while fetching the thumbnail, the callback will not be called.
-     *
-     * @param suggestion The suggestion for which we need a thumbnail.
-     * @param thumbnailSizePx The required size for the thumbnail.
-     * @return The request which will be used to fetch the thumbnail.
-     */
-    public DownloadThumbnailRequest makeDownloadThumbnailRequest(
-            SnippetArticle suggestion, int thumbnailSizePx) {
-        assert !mIsDestroyed;
-
-        return new DownloadThumbnailRequest(suggestion, thumbnailSizePx);
-    }
-
-    /**
      * Creates a request for an article thumbnail.
      *
      * If there is an error while fetching the thumbnail, the callback will not be called.
@@ -85,11 +66,7 @@ public class ImageFetcher {
     public void makeArticleThumbnailRequest(SnippetArticle suggestion, Callback<Bitmap> callback) {
         assert !mIsDestroyed;
 
-        if (suggestion.isContextual()) {
-            mSuggestionsSource.fetchContextualSuggestionImage(suggestion, callback);
-        } else {
-            mSuggestionsSource.fetchSuggestionImage(suggestion, callback);
-        }
+        mSuggestionsSource.fetchSuggestionImage(suggestion, callback);
     }
 
     /**
@@ -103,7 +80,7 @@ public class ImageFetcher {
     public void makeFaviconRequest(
             SnippetArticle suggestion, final Callback<Bitmap> faviconCallback) {
         assert !mIsDestroyed;
-        if (!suggestion.isContextual() && !suggestion.isArticle()) return;
+        if (!suggestion.isArticle()) return;
 
         fetchFaviconFromLocalCacheOrGoogleServer(
                 suggestion, SystemClock.elapsedRealtime(), faviconCallback);
@@ -178,66 +155,5 @@ public class ImageFetcher {
                     SuggestionsDependencyFactory.getInstance().createLargeIconBridge(mProfile);
         }
         return mLargeIconBridge;
-    }
-
-    /**
-     * Request for a download thumbnail.
-     *
-     * The request uses a {@link Promise<Bitmap>}, which will be fulfilled once the thumbnail is
-     * received.
-     *
-     * Cancellation of the request is available through {@link #cancel(), which will remove the
-     * request from the ThumbnailProvider queue}.
-     */
-    public class DownloadThumbnailRequest implements ThumbnailProvider.ThumbnailRequest {
-        private final Promise<Bitmap> mThumbnailReceivedPromise;
-        private final SnippetArticle mSuggestion;
-        private final int mSize;
-
-        /**
-         * @param suggestion The suggestion whose thumbnail will be fetched.
-         * @param size The required size for the thumbnail.
-         */
-        DownloadThumbnailRequest(SnippetArticle suggestion, int size) {
-            mThumbnailReceivedPromise = new Promise<>();
-            mSuggestion = suggestion;
-            mSize = size;
-
-            getThumbnailProvider().getThumbnail(this);
-        }
-
-        @Override
-        public @Nullable String getFilePath() {
-            return mSuggestion.getAssetDownloadFile().getAbsolutePath();
-        }
-
-        @Override
-        public @Nullable String getContentId() {
-            return mSuggestion.getAssetDownloadGuid();
-        }
-
-        @Override
-        public void onThumbnailRetrieved(@NonNull String contentId, @Nullable Bitmap thumbnail) {
-            mThumbnailReceivedPromise.fulfill(thumbnail);
-        }
-
-        @Override
-        public int getIconSize() {
-            return mSize;
-        }
-
-        public void cancel() {
-            if (mIsDestroyed) return;
-            getThumbnailProvider().cancelRetrieval(this);
-        }
-
-        public Promise<Bitmap> getPromise() {
-            return mThumbnailReceivedPromise;
-        }
-
-        @Override
-        public String getMimeType() {
-            return null;
-        }
     }
 }

@@ -16,7 +16,6 @@
 #include "chrome/browser/extensions/api/enterprise_reporting_private/prefs.h"
 #include "chrome/browser/policy/browser_dm_token_storage.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/policy/machine_level_user_cloud_policy_controller.h"
 #include "chrome/browser/policy/policy_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
@@ -113,8 +112,10 @@ void AppendAdditionalBrowserInformation(em::ChromeDesktopReportRequest* request,
     // the future.
     request->mutable_browser_report()
         ->mutable_chrome_user_profile_reports(0)
-        ->set_policy_data(
-            policy::GetAllPolicyValuesAsJSON(profile, true, false, false));
+        ->set_policy_data(policy::DictionaryPolicyConversions()
+                              .WithBrowserContext(profile)
+                              .EnablePrettyPrint(false)
+                              .ToJSON());
 
     int64_t timestamp = GetMachineLevelUserCloudPolicyFetchTimestamp();
     if (timestamp > 0) {

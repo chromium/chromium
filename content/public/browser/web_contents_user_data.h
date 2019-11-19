@@ -10,10 +10,6 @@
 #include "base/supports_user_data.h"
 #include "content/public/browser/web_contents.h"
 
-#define WEB_CONTENTS_USER_DATA_KEY_DECL() static constexpr int kUserDataKey = 0
-
-#define WEB_CONTENTS_USER_DATA_KEY_IMPL(Type) const int Type::kUserDataKey;
-
 namespace content {
 
 // A base class for classes attached to, and scoped to, the lifetime of a
@@ -58,6 +54,23 @@ class WebContentsUserData : public base::SupportsUserData::Data {
 
   static const void* UserDataKey() { return &T::kUserDataKey; }
 };
+
+// This macro declares a static variable inside the class that inherits from
+// WebContentsUserData The address of this static variable is used as the key to
+// store/retrieve an instance of the class on/from a WebState.
+#define WEB_CONTENTS_USER_DATA_KEY_DECL() static constexpr int kUserDataKey = 0
+
+// This macro instantiates the static variable declared by the previous macro.
+// It must live in a .cc file to ensure that there is only one instantiation
+// of the static variable.
+#define WEB_CONTENTS_USER_DATA_KEY_IMPL(Type) const int Type::kUserDataKey;
+
+// We tried using the address of a static local variable in UserDataKey() as a
+// key instead of the address of a member variable. That solution allowed us to
+// get rid of the macros above. Unfortately, each dynamic library that accessed
+// UserDataKey() had its own instantiation of the method, resulting in different
+// keys for the same WebContentsUserData type. Because of that, the solution was
+// reverted. https://crbug.com/589840#c16
 
 }  // namespace content
 

@@ -14,6 +14,8 @@
       <include name="IDR_IOS_OMAHA_JS" file="omaha/omaha.js" type="BINDATA" compress="gzip" />
       <include name="IDR_IOS_UKM_INTERNALS_HTML" file="../../../../components/ukm/debug/ukm_internals.html" flattenhtml="true" allowexternalscript="true" compress="gzip" type="BINDATA" />
       <include name="IDR_IOS_UKM_INTERNALS_JS" file="../../../../components/ukm/debug/ukm_internals.js" flattenhtml="true" compress="gzip" type="BINDATA" />
+      <include name="IDR_IOS_TRANSLATE_INTERNALS_HTML" file="../../../../components/translate/translate_internals/translate_internals.html" flattenhtml="true" allowexternalscript="true" compress="gzip" type="BINDATA" />
+      <include name="IDR_IOS_TRANSLATE_INTERNALS_JS" file="../../../../components/translate/translate_internals/translate_internals.js" flattenhtml="true" compress="gzip" type="BINDATA" />
     </includes>
   </release>
 </grit>

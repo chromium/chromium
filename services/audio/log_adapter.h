@@ -8,7 +8,8 @@
 #include <string>
 
 #include "media/audio/audio_logging.h"
-#include "media/mojo/interfaces/audio_logging.mojom.h"
+#include "media/mojo/mojom/audio_logging.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 class AudioParameters;
@@ -16,10 +17,10 @@ class AudioParameters;
 
 namespace audio {
 
-// This class wraps a media::mojom::AudioLogPtr into a media::AudioLog.
+// This class wraps a Remote<media::mojom::AudioLog> into a media::AudioLog.
 class LogAdapter : public media::AudioLog {
  public:
-  explicit LogAdapter(media::mojom::AudioLogPtr audio_log);
+  explicit LogAdapter(mojo::PendingRemote<media::mojom::AudioLog> audio_log);
   ~LogAdapter() override;
 
   // media::AudioLog implementation.
@@ -34,7 +35,7 @@ class LogAdapter : public media::AudioLog {
   void OnLogMessage(const std::string& message) override;
 
  private:
-  media::mojom::AudioLogPtr audio_log_;
+  mojo::Remote<media::mojom::AudioLog> audio_log_;
 
   DISALLOW_COPY_AND_ASSIGN(LogAdapter);
 };

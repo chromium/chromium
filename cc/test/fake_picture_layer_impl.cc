@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "cc/test/fake_raster_source.h"
 #include "cc/tiles/tile.h"
 #include "cc/trees/layer_tree_impl.h"
 
@@ -17,33 +18,20 @@ namespace cc {
 FakePictureLayerImpl::FakePictureLayerImpl(
     LayerTreeImpl* tree_impl,
     int id,
-    scoped_refptr<RasterSource> raster_source,
-    Layer::LayerMaskType mask_type)
-    : PictureLayerImpl(tree_impl, id, mask_type) {
-  SetBounds(raster_source->GetSize());
-  SetRasterSourceOnPending(raster_source, Region());
+    scoped_refptr<RasterSource> raster_source)
+    : PictureLayerImpl(tree_impl, id) {
+  if (raster_source) {
+    SetBounds(raster_source->GetSize());
+    SetRasterSource(raster_source, Region());
+  } else {
+    // Just to avoid crash on null RasterSource when updating tilings.
+    SetRasterSource(FakeRasterSource::CreateEmpty(gfx::Size()), Region());
+  }
 }
-
-FakePictureLayerImpl::FakePictureLayerImpl(
-    LayerTreeImpl* tree_impl,
-    int id,
-    scoped_refptr<RasterSource> raster_source,
-    Layer::LayerMaskType mask_type,
-    const gfx::Size& layer_bounds)
-    : PictureLayerImpl(tree_impl, id, mask_type) {
-  SetBounds(layer_bounds);
-  SetRasterSourceOnPending(raster_source, Region());
-}
-
-FakePictureLayerImpl::FakePictureLayerImpl(LayerTreeImpl* tree_impl,
-                                           int id,
-                                           Layer::LayerMaskType mask_type)
-    : PictureLayerImpl(tree_impl, id, mask_type) {}
 
 std::unique_ptr<LayerImpl> FakePictureLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) {
-  return base::WrapUnique(
-      new FakePictureLayerImpl(tree_impl, id(), mask_type_));
+  return base::WrapUnique(new FakePictureLayerImpl(tree_impl, id()));
 }
 
 void FakePictureLayerImpl::PushPropertiesTo(LayerImpl* layer_impl) {
@@ -60,7 +48,7 @@ void FakePictureLayerImpl::AppendQuads(viz::RenderPass* render_pass,
 }
 
 gfx::Size FakePictureLayerImpl::CalculateTileSize(
-    const gfx::Size& content_bounds) const {
+    const gfx::Size& content_bounds) {
   if (fixed_tile_size_.IsEmpty()) {
     return PictureLayerImpl::CalculateTileSize(content_bounds);
   }
@@ -94,15 +82,16 @@ PictureLayerTiling* FakePictureLayerImpl::LowResTiling() const {
   return result;
 }
 
-void FakePictureLayerImpl::SetRasterSourceOnPending(
+void FakePictureLayerImpl::SetRasterSource(
     scoped_refptr<RasterSource> raster_source,
     const Region& invalidation) {
-  DCHECK(layer_tree_impl()->IsPendingTree());
   Region invalidation_temp = invalidation;
   const PictureLayerTilingSet* pending_set = nullptr;
+  const PaintWorkletRecordMap* pending_paint_worklet_records = nullptr;
   set_gpu_raster_max_texture_size(
       layer_tree_impl()->GetDeviceViewport().size());
-  UpdateRasterSource(raster_source, &invalidation_temp, pending_set);
+  UpdateRasterSource(raster_source, &invalidation_temp, pending_set,
+                     pending_paint_worklet_records);
 }
 
 void FakePictureLayerImpl::CreateAllTiles() {

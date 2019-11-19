@@ -108,62 +108,42 @@ class BluetoothTestAndroid : public BluetoothTestBase {
   void ForceIllegalStateException();
 
   // Records that Java FakeBluetoothDevice connectGatt was called.
-  void OnFakeBluetoothDeviceConnectGattCalled(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller);
+  void OnFakeBluetoothDeviceConnectGattCalled(JNIEnv* env);
 
   // Records that Java FakeBluetoothGatt disconnect was called.
-  void OnFakeBluetoothGattDisconnect(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller);
+  void OnFakeBluetoothGattDisconnect(JNIEnv* env);
 
   // Records that Java FakeBluetoothGatt close was called.
-  void OnFakeBluetoothGattClose(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller);
+  void OnFakeBluetoothGattClose(JNIEnv* env);
 
   // Records that Java FakeBluetoothGatt discoverServices was called.
-  void OnFakeBluetoothGattDiscoverServices(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller);
+  void OnFakeBluetoothGattDiscoverServices(JNIEnv* env);
 
   // Records that Java FakeBluetoothGatt setCharacteristicNotification was
   // called.
-  void OnFakeBluetoothGattSetCharacteristicNotification(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller);
+  void OnFakeBluetoothGattSetCharacteristicNotification(JNIEnv* env);
 
   // Records that Java FakeBluetoothGatt readCharacteristic was called.
-  void OnFakeBluetoothGattReadCharacteristic(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller);
+  void OnFakeBluetoothGattReadCharacteristic(JNIEnv* env);
 
   // Records that Java FakeBluetoothGatt writeCharacteristic was called.
   void OnFakeBluetoothGattWriteCharacteristic(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller,
       const base::android::JavaParamRef<jbyteArray>& value);
 
   // Records that Java FakeBluetoothGatt readDescriptor was called.
-  void OnFakeBluetoothGattReadDescriptor(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller);
+  void OnFakeBluetoothGattReadDescriptor(JNIEnv* env);
 
   // Records that Java FakeBluetoothGatt writeDescriptor was called.
   void OnFakeBluetoothGattWriteDescriptor(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller,
       const base::android::JavaParamRef<jbyteArray>& value);
 
   // Records that Java FakeBluetoothAdapter onAdapterStateChanged was called.
-  void OnFakeAdapterStateChanged(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller,
-      const bool powered);
+  void OnFakeAdapterStateChanged(JNIEnv* env, const bool powered);
 
   // Posts a task to be run on the current message loop.
   void PostTaskFromJava(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& caller,
                         const base::android::JavaParamRef<jobject>& runnable);
 
   base::android::ScopedJavaGlobalRef<jobject> j_fake_bluetooth_adapter_;

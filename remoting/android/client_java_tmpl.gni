@@ -26,7 +26,6 @@ template("remoting_android_client_java_tmpl") {
       "FlingAnimationJob.java",
       "HostInfo.java",
       "HostListAdapter.java",
-      "HostListManager.java",
       "InputEventSender.java",
       "InputFeedbackRadiusMapper.java",
       "InputModeChangedEventParameter.java",
@@ -37,6 +36,7 @@ template("remoting_android_client_java_tmpl") {
       "NavigationMenuAdapter.java",
       "OAuthTokenConsumer.java",
       "Preconditions.java",
+      "PrivacyPolicyActivity.java",
       "RenderData.java",
       "RenderStub.java",
       "ScaleEventParameter.java",
@@ -47,6 +47,7 @@ template("remoting_android_client_java_tmpl") {
       "SwipePinchDetector.java",
       "SystemUiVisibilityChangedEventParameter.java",
       "TapGestureDetector.java",
+      "TermsOfServiceActivity.java",
       "ThirdPartyTokenFetcher.java",
       "TouchEventParameter.java",
       "TouchInputHandler.java",
@@ -54,6 +55,7 @@ template("remoting_android_client_java_tmpl") {
       "TrackpadInputStrategy.java",
       "TapEventParameter.java",
       "TwoPointsEventParameter.java",
+      "WebViewActivity.java",
       "accountswitcher/AccountManagerCompat.java",
       "accountswitcher/AccountSwitcher.java",
       "accountswitcher/AccountSwitcherBase.java",
@@ -70,8 +72,10 @@ template("remoting_android_client_java_tmpl") {
       "jni/Client.java",
       "jni/ConnectionListener.java",
       "jni/GlDisplay.java",
+      "jni/DirectoryService.java",
       "jni/JniInterface.java",
       "jni/JniOAuthTokenGetter.java",
+      "jni/NotificationPresenter.java",
       "jni/TouchEventData.java",
     ]
 
@@ -79,14 +83,20 @@ template("remoting_android_client_java_tmpl") {
 
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//remoting/android:remoting_android_client_java_resources",
       "//remoting/android:remoting_apk_manifest",
+      "//remoting/proto/remoting/v1:directory_proto_java",
       "//third_party/android_deps:android_arch_lifecycle_common_java",
-      "//third_party/android_deps:android_support_annotations_java",
       "//third_party/android_deps:android_support_v7_appcompat_java",
-      "//third_party/android_deps:android_support_v7_mediarouter_java",
+      "//third_party/android_deps:com_android_support_drawerlayout_java",
+      "//third_party/android_deps:com_android_support_mediarouter_v7_java",
+      "//third_party/android_deps:com_android_support_support_annotations_java",
+      "//third_party/android_deps:com_google_protobuf_protobuf_lite_java",
       "//ui/android:ui_utils_java",
     ]
+
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
     srcjar_deps = [ "//remoting/client/jni:jni_enums" ]
 

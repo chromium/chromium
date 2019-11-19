@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -37,7 +37,7 @@ HTMLParserOptions::HTMLParserOptions(Document* document) {
   if (document->GetFrame()) {
     script_enabled = document->CanExecuteScripts(kNotAboutToExecuteScript);
     priority_hints_origin_trial_enabled =
-        origin_trials::PriorityHintsEnabled(document);
+        RuntimeEnabledFeatures::PriorityHintsEnabled(document);
   }
 }
 

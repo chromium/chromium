@@ -1,0 +1,18 @@
+<!--
+  @WAIT-FOR:done
+
+This is a regression test for a bug that crashes when determining if an area is
+a descendant of an anchor.
+
+-->
+<html>
+<script>
+  window.onload = () => {
+    document.getElementById('area').textContent = "foo";
+    document.body.appendChild(document.createTextNode("done"));
+  };
+</script>
+
+<body>
+  <area id='area'/>
+</body>

@@ -38,7 +38,7 @@ public class AwZoomTest {
     private static final float EPSILON = 0.00001f;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContentsClient = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -77,7 +77,7 @@ public class AwZoomTest {
         return ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getZoomControlsForTest());
     }
 
-    private void invokeZoomPickerOnUiThread() throws Throwable {
+    private void invokeZoomPickerOnUiThread() {
         ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.invokeZoomPicker());
     }
 
@@ -102,20 +102,19 @@ public class AwZoomTest {
         waitForScaleChange(previousScale);
     }
 
-    private void waitForScaleChange(final float previousScale) throws Throwable {
+    private void waitForScaleChange(final float previousScale) {
         AwActivityTestRule.pollInstrumentationThread(
                 () -> previousScale != mActivityTestRule.getPixelScaleOnUiThread(mAwContents));
     }
 
-    private void waitForScaleToBecome(final float expectedScale) throws Throwable {
+    private void waitForScaleToBecome(final float expectedScale) {
         AwActivityTestRule.pollInstrumentationThread(
-                ()
-                        -> Math.abs(expectedScale
+                () -> Math.abs(expectedScale
                                    - mActivityTestRule.getScaleOnUiThread(mAwContents))
                         < EPSILON);
     }
 
-    private void waitUntilCanNotZoom() throws Throwable {
+    private void waitUntilCanNotZoom() {
         AwActivityTestRule.pollInstrumentationThread(
                 () -> !mActivityTestRule.canZoomInOnUiThread(mAwContents)
                         && !mActivityTestRule.canZoomOutOnUiThread(mAwContents));

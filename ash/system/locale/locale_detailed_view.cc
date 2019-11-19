@@ -4,9 +4,12 @@
 
 #include "ash/system/locale/locale_detailed_view.h"
 
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/default_color_constants.h"
 #include "ash/system/model/locale_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/actionable_view.h"
@@ -15,10 +18,10 @@
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -49,7 +52,10 @@ class LocaleItem : public ActionableView {
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     views::Label* iso_code_label = TrayPopupUtils::CreateDefaultLabel();
-    iso_code_label->SetEnabledColor(kUnifiedMenuTextColor);
+    iso_code_label->SetEnabledColor(
+        AshColorProvider::Get()->DeprecatedGetContentLayerColor(
+            AshColorProvider::ContentLayerType::kTextPrimary,
+            kUnifiedMenuTextColor));
     iso_code_label->SetAutoColorReadabilityEnabled(false);
     iso_code_label->SetText(base::i18n::ToUpper(
         base::UTF8ToUTF16(l10n_util::GetLanguage(iso_code))));
@@ -71,10 +77,13 @@ class LocaleItem : public ActionableView {
     if (checked_) {
       views::ImageView* checked_image = TrayPopupUtils::CreateMainImageView();
       checked_image->SetImage(gfx::CreateVectorIcon(
-          kCheckCircleIcon, kMenuIconSize, gfx::kGoogleGreen700));
+          kCheckCircleIcon, kMenuIconSize,
+          AshColorProvider::Get()->DeprecatedGetContentLayerColor(
+              AshColorProvider::ContentLayerType::kProminentIconButton,
+              kProminentIconButtonColor)));
       tri_view->AddView(TriView::Container::END, checked_image);
     }
-    SetAccessibleName(display_name_view->text());
+    SetAccessibleName(display_name_view->GetText());
   }
 
   ~LocaleItem() override = default;
@@ -90,6 +99,8 @@ class LocaleItem : public ActionableView {
     ActionableView::OnFocus();
     ScrollViewToVisible();
   }
+
+  const char* GetClassName() const override { return "LocaleItem"; }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     ActionableView::GetAccessibleNodeData(node_data);
@@ -120,32 +131,36 @@ void LocaleDetailedView::CreateItems() {
   CreateTitleRow(IDS_ASH_STATUS_TRAY_LOCALE_TITLE);
   CreateScrollableList();
 
-  const std::vector<mojom::LocaleInfoPtr>& locales =
+  const std::vector<LocaleInfo>& locales =
       Shell::Get()->system_tray_model()->locale()->locale_list();
   int id = 0;
   for (auto& entry : locales) {
     const bool checked =
-        entry->iso_code ==
+        entry.iso_code ==
         Shell::Get()->system_tray_model()->locale()->current_locale_iso_code();
     LocaleItem* item =
-        new LocaleItem(this, entry->iso_code, entry->display_name, checked);
+        new LocaleItem(this, entry.iso_code, entry.display_name, checked);
     scroll_content()->AddChildView(item);
-    item->set_id(id);
-    id_to_locale_[id] = entry->iso_code;
+    item->SetID(id);
+    id_to_locale_[id] = entry.iso_code;
     ++id;
   }
   Layout();
 }
 
 void LocaleDetailedView::HandleViewClicked(views::View* view) {
-  auto it = id_to_locale_.find(view->id());
+  auto it = id_to_locale_.find(view->GetID());
   DCHECK(it != id_to_locale_.end());
   const std::string locale_iso_code = it->second;
   if (locale_iso_code !=
       Shell::Get()->system_tray_model()->locale()->current_locale_iso_code()) {
-    Shell::Get()->system_tray_model()->client_ptr()->SetLocaleAndExit(
+    Shell::Get()->system_tray_model()->client()->SetLocaleAndExit(
         locale_iso_code);
   }
+}
+
+const char* LocaleDetailedView::GetClassName() const {
+  return "LocaleDetailedView";
 }
 
 }  // namespace tray

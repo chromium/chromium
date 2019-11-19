@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "net/base/ip_endpoint.h"
@@ -46,10 +47,12 @@ bool AddressListOnlyContainsIPv6(const AddressList& list) {
 
 TransportSocketParams::TransportSocketParams(
     const HostPortPair& host_port_pair,
-    bool disable_resolver_cache,
+    const NetworkIsolationKey& network_isolation_key,
+    bool disable_secure_dns,
     const OnHostResolutionCallback& host_resolution_callback)
     : destination_(host_port_pair),
-      disable_resolver_cache_(disable_resolver_cache),
+      network_isolation_key_(network_isolation_key),
+      disable_secure_dns_(disable_secure_dns),
       host_resolution_callback_(host_resolution_callback) {}
 
 TransportSocketParams::~TransportSocketParams() = default;
@@ -70,27 +73,30 @@ const int TransportConnectJob::kIPv6FallbackTimerInMs = 300;
 std::unique_ptr<ConnectJob> TransportConnectJob::CreateTransportConnectJob(
     scoped_refptr<TransportSocketParams> transport_client_params,
     RequestPriority priority,
-    const CommonConnectJobParams& common_connect_job_params,
+    const SocketTag& socket_tag,
+    const CommonConnectJobParams* common_connect_job_params,
     ConnectJob::Delegate* delegate,
     const NetLogWithSource* net_log) {
-  if (!common_connect_job_params.websocket_endpoint_lock_manager) {
+  if (!common_connect_job_params->websocket_endpoint_lock_manager) {
     return std::make_unique<TransportConnectJob>(
-        priority, common_connect_job_params, transport_client_params, delegate,
-        net_log);
+        priority, socket_tag, common_connect_job_params,
+        transport_client_params, delegate, net_log);
   }
 
   return std::make_unique<WebSocketTransportConnectJob>(
-      priority, common_connect_job_params, transport_client_params, delegate,
-      net_log);
+      priority, socket_tag, common_connect_job_params, transport_client_params,
+      delegate, net_log);
 }
 
 TransportConnectJob::TransportConnectJob(
     RequestPriority priority,
-    const CommonConnectJobParams& common_connect_job_params,
+    const SocketTag& socket_tag,
+    const CommonConnectJobParams* common_connect_job_params,
     const scoped_refptr<TransportSocketParams>& params,
     Delegate* delegate,
     const NetLogWithSource* net_log)
     : ConnectJob(priority,
+                 socket_tag,
                  ConnectionTimeout(),
                  common_connect_job_params,
                  delegate,
@@ -101,7 +107,7 @@ TransportConnectJob::TransportConnectJob(
       next_state_(STATE_NONE),
       resolve_result_(OK) {
   // This is only set for WebSockets.
-  DCHECK(!common_connect_job_params.websocket_endpoint_lock_manager);
+  DCHECK(!common_connect_job_params->websocket_endpoint_lock_manager);
 }
 
 TransportConnectJob::~TransportConnectJob() {
@@ -130,7 +136,7 @@ bool TransportConnectJob::HasEstablishedConnection() const {
   return false;
 }
 
-void TransportConnectJob::GetAdditionalErrorState(ClientSocketHandle* handle) {
+ConnectionAttempts TransportConnectJob::GetConnectionAttempts() const {
   // If hostname resolution failed, record an empty endpoint and the result.
   // Also record any attempts made on either of the sockets.
   ConnectionAttempts attempts;
@@ -142,7 +148,7 @@ void TransportConnectJob::GetAdditionalErrorState(ClientSocketHandle* handle) {
                   connection_attempts_.end());
   attempts.insert(attempts.begin(), fallback_connection_attempts_.begin(),
                   fallback_connection_attempts_.end());
-  handle->set_connection_attempts(attempts);
+  return attempts;
 }
 
 // static
@@ -257,12 +263,11 @@ int TransportConnectJob::DoResolveHost() {
 
   HostResolver::ResolveHostParameters parameters;
   parameters.initial_priority = priority();
-  parameters.cache_usage =
-      params_->disable_resolver_cache()
-          ? HostResolver::ResolveHostParameters::CacheUsage::DISALLOWED
-          : HostResolver::ResolveHostParameters::CacheUsage::ALLOWED;
-  request_ = host_resolver()->CreateRequest(params_->destination(), net_log(),
-                                            parameters);
+  if (params_->disable_secure_dns())
+    parameters.secure_dns_mode_override = DnsConfig::SecureDnsMode::OFF;
+  request_ = host_resolver()->CreateRequest(params_->destination(),
+                                            params_->network_isolation_key(),
+                                            net_log(), parameters);
 
   return request_->Start(base::BindOnce(&TransportConnectJob::OnIOComplete,
                                         base::Unretained(this)));
@@ -281,15 +286,22 @@ int TransportConnectJob::DoResolveHostComplete(int result) {
     return result;
   DCHECK(request_->GetAddressResults());
 
-  // Invoke callback, and abort if it fails.
+  next_state_ = STATE_TRANSPORT_CONNECT;
+
+  // Invoke callback.  If it indicates |this| may be slated for deletion, then
+  // only continue after a PostTask.
   if (!params_->host_resolution_callback().is_null()) {
-    result = params_->host_resolution_callback().Run(
-        request_->GetAddressResults().value(), net_log());
-    if (result != OK)
-      return result;
+    OnHostResolutionCallbackResult callback_result =
+        params_->host_resolution_callback().Run(
+            params_->destination(), request_->GetAddressResults().value());
+    if (callback_result == OnHostResolutionCallbackResult::kMayBeDeletedAsync) {
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(&TransportConnectJob::OnIOComplete,
+                                    weak_ptr_factory_.GetWeakPtr(), OK));
+      return ERR_IO_PENDING;
+    }
   }
 
-  next_state_ = STATE_TRANSPORT_CONNECT;
   return result;
 }
 

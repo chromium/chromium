@@ -42,7 +42,7 @@ class RemoveRequestsTask : public Task {
   // Callback to complete the task.
   RequestQueueStore::UpdateCallback callback_;
 
-  base::WeakPtrFactory<RemoveRequestsTask> weak_ptr_factory_;
+  base::WeakPtrFactory<RemoveRequestsTask> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RemoveRequestsTask);
 };

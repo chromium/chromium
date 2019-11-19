@@ -1,14 +1,13 @@
 Name: mesa_headers
 Version: 9.0.3
 URL: http://www.mesa3d.org/
-License: MIT and LGPL v2
+License: MIT and SGI Free Software B License Version 2.0
 Security Critical: Yes
 
 Description:
 This directory contains a copy of the Mesa headers.
 
-The license file in this directory is derived from src/docs/license.html
-and src/docs/COPYING.
+The LICENSE file in this directory is derived from those header files.
 
 Modifications made:
 - Added the file README.chromium (this file)

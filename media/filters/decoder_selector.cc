@@ -34,8 +34,7 @@ DecoderSelector<StreamType>::DecoderSelector(
     MediaLog* media_log)
     : task_runner_(std::move(task_runner)),
       create_decoders_cb_(std::move(create_decoders_cb)),
-      media_log_(media_log),
-      weak_this_factory_(this) {}
+      media_log_(media_log) {}
 
 template <DemuxerStream::Type StreamType>
 DecoderSelector<StreamType>::~DecoderSelector() {
@@ -207,8 +206,7 @@ void DecoderSelector<StreamType>::InitializeDecryptingDemuxerStream() {
 template <DemuxerStream::Type StreamType>
 void DecoderSelector<StreamType>::OnDecryptingDemuxerStreamInitializeDone(
     PipelineStatus status) {
-  DVLOG(2) << __func__
-           << ": status=" << MediaLog::PipelineStatusToString(status);
+  DVLOG(2) << __func__ << ": status=" << status;
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   if (status != PIPELINE_OK) {

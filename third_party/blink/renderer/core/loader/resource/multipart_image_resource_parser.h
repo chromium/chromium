@@ -51,7 +51,7 @@ namespace blink {
 
 // A parser parsing mlutipart/x-mixed-replace resource.
 class CORE_EXPORT MultipartImageResourceParser final
-    : public GarbageCollectedFinalized<MultipartImageResourceParser> {
+    : public GarbageCollected<MultipartImageResourceParser> {
  public:
   class CORE_EXPORT Client : public GarbageCollectedMixin {
    public:

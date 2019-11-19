@@ -1,8 +1,6 @@
 #include "rar.hpp"
 #include "log.cpp"
 
-namespace third_party_unrar {
-
 static MESSAGE_TYPE MsgStream=MSG_STDOUT;
 static RAR_CHARSET RedirectCharset=RCH_DEFAULT;
 
@@ -53,13 +51,13 @@ void InitConsole()
 
 void SetConsoleMsgStream(MESSAGE_TYPE MsgStream)
 {
-  ::third_party_unrar::MsgStream=MsgStream;
+  ::MsgStream=MsgStream;
 }
 
 
 void SetConsoleRedirectCharset(RAR_CHARSET RedirectCharset)
 {
-  ::third_party_unrar::RedirectCharset=RedirectCharset;
+  ::RedirectCharset=RedirectCharset;
 }
 
 
@@ -72,7 +70,7 @@ static void cvt_wprintf(FILE *dest,const wchar *fmt,va_list arglist)
   PrintfPrepareFmt(fmt,fmtw,ASIZE(fmtw));
 #ifdef _WIN_ALL
   safebuf wchar Msg[MaxMsgSize];
-  if ((dest==stdout && StdoutRedirected) || (dest==stderr && StderrRedirected))
+  if (dest==stdout && StdoutRedirected || dest==stderr && StderrRedirected)
   {
     HANDLE hOut=GetStdHandle(dest==stdout ? STD_OUTPUT_HANDLE:STD_ERROR_HANDLE);
     vswprintf(Msg,ASIZE(Msg),fmtw,arglist);
@@ -193,16 +191,10 @@ bool GetConsolePassword(UIPASSWORD_TYPE Type,const wchar *FileName,SecPassword *
   while (true)
   {
     if (!StdinRedirected)
-    {
       if (Type==UIPASSWORD_GLOBAL)
-      {
         eprintf(L"\n%s: ",St(MAskPsw));
-      }
       else
-      {
         eprintf(St(MAskPswFor),FileName);
-      }
-    }
 
     wchar PlainPsw[MAXPASSWORD];
     GetPasswordText(PlainPsw,ASIZE(PlainPsw));
@@ -363,5 +355,3 @@ void OutComment(const wchar *Comment,size_t Size)
   }
   mprintf(L"\n");
 }
-
-}  // namespace third_party_unrar

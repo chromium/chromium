@@ -50,20 +50,41 @@ TEST(HttpAuthPreferencesTest, AuthAndroidhNegotiateAccountType) {
 }
 #endif
 
-TEST(HttpAuthPreferencesTest, AuthServerWhitelist) {
+#if defined(OS_CHROMEOS)
+TEST(HttpAuthPreferencesTest, AllowGssapiLibraryLoad) {
+  HttpAuthPreferences http_auth_preferences;
+  EXPECT_TRUE(http_auth_preferences.AllowGssapiLibraryLoad());
+  http_auth_preferences.set_allow_gssapi_library_load(false);
+  EXPECT_FALSE(http_auth_preferences.AllowGssapiLibraryLoad());
+}
+#endif
+
+TEST(HttpAuthPreferencesTest, AuthServerAllowlist) {
   HttpAuthPreferences http_auth_preferences;
   // Check initial value
   EXPECT_FALSE(http_auth_preferences.CanUseDefaultCredentials(GURL("abc")));
-  http_auth_preferences.SetServerWhitelist("*");
+  http_auth_preferences.SetServerAllowlist("*");
   EXPECT_TRUE(http_auth_preferences.CanUseDefaultCredentials(GURL("abc")));
 }
 
-TEST(HttpAuthPreferencesTest, AuthDelegateWhitelist) {
+TEST(HttpAuthPreferencesTest, DelegationType) {
+  using DelegationType = HttpAuth::DelegationType;
   HttpAuthPreferences http_auth_preferences;
   // Check initial value
-  EXPECT_FALSE(http_auth_preferences.CanDelegate(GURL("abc")));
-  http_auth_preferences.SetDelegateWhitelist("*");
-  EXPECT_TRUE(http_auth_preferences.CanDelegate(GURL("abc")));
+  EXPECT_EQ(DelegationType::kNone,
+            http_auth_preferences.GetDelegationType(GURL("abc")));
+
+  http_auth_preferences.SetDelegateAllowlist("*");
+  EXPECT_EQ(DelegationType::kUnconstrained,
+            http_auth_preferences.GetDelegationType(GURL("abc")));
+
+  http_auth_preferences.set_delegate_by_kdc_policy(true);
+  EXPECT_EQ(DelegationType::kByKdcPolicy,
+            http_auth_preferences.GetDelegationType(GURL("abc")));
+
+  http_auth_preferences.SetDelegateAllowlist("");
+  EXPECT_EQ(DelegationType::kNone,
+            http_auth_preferences.GetDelegationType(GURL("abc")));
 }
 
 }  // namespace net

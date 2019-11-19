@@ -1,0 +1,29 @@
+\bgrabrodrestraede\b	grabrodrestr
+\barnold\s+nielsens\b	arn nielsens
+\bhaveforeningen\b	f
+\bhaveforening\b	f
+\bmunicipality\b	
+\bbispebjergs\b	bispebjerg
+\btengslemark\b	tengslemrk
+\bboulevard\b	boul
+\blillerod\b	allerod
+\bdanmark\b	dk
+\bdenmark\b	dk
+\bkommune\b	
+\bkvarter\b	kvater
+\bpladsen\b	plads
+\bboulev\b	boul
+\bgammel\b	gl
+\blokken\b	lokke
+\bnummer\b	nr
+\bsondre\b	s
+\bgamle\b	gl
+\bnorre\b	n
+\bsankt\b	sct
+\bnord\b	n
+\bvest\b	v
+\bndr\b	n
+\bost\b	o
+\bsdr\b	s
+\bskt\b	sct
+\bsyd\b	s

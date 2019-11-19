@@ -1,0 +1,4 @@
+rootWebArea
+++genericContainer
+++++staticText name='Done'
+++++++inlineTextBox name='Done'

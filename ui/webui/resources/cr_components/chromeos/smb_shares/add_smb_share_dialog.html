@@ -1,37 +1,32 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toast/cr_toast.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/md_select_css.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="smb_browser_proxy.html">
 
 <dom-module id="add-smb-share-dialog">
   <template>
-    <style include="md-select paper-button-style">
+    <style include="cr-shared-style md-select">
       #dialog [slot=body] {
-        height: 350px;
+        height: 440px;
       }
 
       .md-select {
         width: 100%;
       }
 
-      .label {
-        @apply --cr-form-field-label;
-      }
-
       cr-searchable-drop-down {
         display: block;
-        --cr-searchable-drop-down-width: 472px;
       }
 
       .md-select,
@@ -40,21 +35,11 @@
         margin-bottom: var(--cr-form-field-bottom-spacing);
       }
 
-      cr-toast {
-        left: 0;
-        max-height: 78px;
-        max-width: 300px;
-        position: absolute;
-        right: 0;
-      }
-
-      paper-button {
+      cr-button {
         position: relative;
-        top: 38px;
       }
 
       [slot='button-container'] {
-        height: 78px;
         justify-content: space-between;
       }
 
@@ -78,7 +63,7 @@
       }
     </style>
 
-    <cr-dialog id="dialog">
+    <cr-dialog id="dialog" exportparts="dialog">
       <div slot="title">[[i18n('addSmbShare')]]</div>
       <div slot="body" spellcheck="false">
         <div id="general-error-container">
@@ -89,17 +74,19 @@
         </div>
         <cr-searchable-drop-down id="address" label="[[i18n('smbShareUrl')]]"
             value="{{mountUrl_}}" items="[[discoveredShares_]]"
-            placeholder="\\server\share" on-change="onURLChanged_"
+            placeholder="\\server\share"
             error-message-allowed
-            update-value-on-input autofocus>
+            update-value-on-input autofocus
+            show-loading="[[discoveryActive_]]"
+            loading-message="[[i18n('smbShareDiscoveryMessage')]]">
         </cr-searchable-drop-down>
         <cr-input id="name" label="[[i18n('smbShareName')]]"
             value="{{mountName_}}" maxlength="64">
         </cr-input>
         <div id="authentication-method" hidden="[[!isActiveDirectory_]]">
-          <div id="authentication-label" class="label">
+          <label id="authentication-label" class="cr-form-field-label">
             [[i18n('smbShareAuthenticationMethod')]]
-          </div>
+          </label>
           <select class="md-select" aria-labelledby="authentication-label"
               value="{{authenticationMethod_::change}}">
             <option value="kerberos">
@@ -120,16 +107,20 @@
               label="[[i18n('smbSharePassword')]]" value="{{password_}}"
               invalid="[[shouldShowCredentialError_(currentMountError_)]]">
           </cr-input>
+          <cr-checkbox id="saveCredentialsCheckbox" checked>
+            [[i18n('smbShareSaveCredentials')]]
+          </cr-checkbox>
         </div>
       </div>
       <div slot="button-container">
-        <paper-button class="cancel-button" on-click="cancel_" id="cancel">
+        <cr-button class="cancel-button" on-click="cancel_" id="cancel">
           [[i18n('cancel')]]
-        </paper-button>
-        <paper-button class="action-button" on-click="onAddButtonTap_"
-            disabled="[[!canAddShare_(mountUrl_, inProgress_)]]">
+        </cr-button>
+        <cr-button class="action-button" on-click="onAddButtonTap_"
+            disabled="[[!canAddShare_(mountUrl_, inProgress_,
+                currentMountError_)]]">
           [[i18n('add')]]
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
   </template>

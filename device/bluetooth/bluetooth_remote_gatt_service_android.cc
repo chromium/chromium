@@ -12,7 +12,7 @@
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_device_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic_android.h"
-#include "jni/ChromeBluetoothRemoteGattService_jni.h"
+#include "device/bluetooth/jni_headers/ChromeBluetoothRemoteGattService_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -176,7 +176,7 @@ void BluetoothRemoteGattServiceAndroid::CreateGattRemoteCharacteristic(
   std::string instance_id_string =
       base::android::ConvertJavaStringToUTF8(env, instance_id);
 
-  DCHECK(!base::ContainsKey(characteristics_, instance_id_string));
+  DCHECK(!base::Contains(characteristics_, instance_id_string));
   AddCharacteristic(BluetoothRemoteGattCharacteristicAndroid::Create(
       adapter_, this, instance_id_string, bluetooth_gatt_characteristic_wrapper,
       chrome_bluetooth_device));

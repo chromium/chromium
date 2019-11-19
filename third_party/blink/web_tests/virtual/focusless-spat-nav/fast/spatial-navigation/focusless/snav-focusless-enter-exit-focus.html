@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+</style>
+
+<div id="first" tabindex="0">First</div>
+<div id="second" tabindex="0">Second</div>
+<div id="third" tabindex="0">Third</div>
+
+<script>
+  if (accessibilityController) {
+    accessibilityController.reset();
+  }
+
+  // This test checks that focusless mode allows entering focus into an element
+  // with the enter key and exiting it with the escape key.
+  let first = document.getElementById("first");
+  let second = document.getElementById("second");
+  let third = document.getElementById("third");
+
+  test(() => {
+    snav.triggerMove('Down');
+    snav.triggerMove('Down'); // Move interest to 'second'
+
+    assert_not_equals(document.activeElement,
+                      second,
+                      "'second' starts off unfocused");
+
+    eventSender.keyDown('Enter');
+
+    assert_equals(document.activeElement,
+                  second,
+                  "Enter key moves focus into 'second'");
+
+    eventSender.keyDown('Escape');
+
+    assert_not_equals(document.activeElement,
+                      second,
+                      "Escape key blurs 'second'");
+  }, "Enter key moves focus into interested element");
+</script>

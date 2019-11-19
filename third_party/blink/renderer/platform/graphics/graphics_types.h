@@ -124,30 +124,16 @@ enum AccelerationHint {
   kPreferNoAcceleration,
 };
 
-// Note: enum used directly for histogram, values must not change
-enum DisableDeferralReason {
-  kDisableDeferralReasonUnknown =
-      0,  // Should not appear in production histograms
-  kDisableDeferralReasonExpensiveOverdrawHeuristic = 1,
-  kDisableDeferralReasonUsingTextureBackedPattern = 2,
-  kDisableDeferralReasonDrawImageOfVideo = 3,
-  kDisableDeferralReasonDrawImageOfAnimated2dCanvas = 4,
-  kDisableDeferralReasonSubPixelTextAntiAliasingSupport = 5,
-  kDisableDeferralDrawImageWithTextureBackedSourceImage = 6,
-  kDisableDeferralReasonLowEndDevice = 7,
-  kDisableDeferralReasonCount,
-};
-
 enum MailboxSyncMode {
   kVerifiedSyncToken,
   kUnverifiedSyncToken,
   kOrderingBarrier,
 };
 
-enum HighContrastClassification {
+enum class DarkModeClassification {
   kNotClassified,
-  kApplyHighContrastFilter,
-  kDoNotApplyHighContrastFilter,
+  kApplyFilter,
+  kDoNotApplyFilter,
 };
 
 // TODO(junov): crbug.com/453113 Relocate ShadowMode to

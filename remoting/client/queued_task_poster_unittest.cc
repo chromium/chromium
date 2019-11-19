@@ -9,9 +9,9 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,7 +42,7 @@ class QueuedTaskPosterTest : public testing::Test {
   void AssertSequenceNotStarted();
 
   base::Thread target_thread_;
-  base::MessageLoop main_message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   bool sequence_started_ = false;
 };
 

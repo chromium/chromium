@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_backend_impl.h"
 
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 
@@ -16,10 +16,10 @@ TextSuggestionBackendImpl::TextSuggestionBackendImpl(LocalFrame& frame)
 // static
 void TextSuggestionBackendImpl::Create(
     LocalFrame* frame,
-    mojom::blink::TextSuggestionBackendRequest request) {
-  mojo::MakeStrongBinding(std::unique_ptr<TextSuggestionBackendImpl>(
-                              new TextSuggestionBackendImpl(*frame)),
-                          std::move(request));
+    mojo::PendingReceiver<mojom::blink::TextSuggestionBackend> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::unique_ptr<TextSuggestionBackendImpl>(
+                                  new TextSuggestionBackendImpl(*frame)),
+                              std::move(receiver));
 }
 
 void TextSuggestionBackendImpl::ApplySpellCheckSuggestion(

@@ -4,15 +4,10 @@
 
 #include "media/webrtc/webrtc_switches.h"
 
-namespace switches {
+#include "base/command_line.h"
+#include "build/build_config.h"
 
-// Enables a new tuning of the WebRTC Acoustic Echo Canceler (AEC). The new
-// tuning aims at resolving two issues with the AEC:
-// https://bugs.chromium.org/p/webrtc/issues/detail?id=5777
-// https://bugs.chromium.org/p/webrtc/issues/detail?id=5778
-// TODO(hlundin): Remove this switch when experimentation is over;
-// crbug.com/603821.
-const char kAecRefinedAdaptiveFilter[] = "aec-refined-adaptive-filter";
+namespace switches {
 
 // Override the default minimum starting volume of the Automatic Gain Control
 // algorithm in WebRTC used with audio tracks from getUserMedia.
@@ -31,9 +26,36 @@ namespace features {
 const base::Feature kWebRtcApmInAudioService{"WebRtcApmInAudioService",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables multi channel playout and capture audio to be processed without
+// downmixing in the WebRTC audio processing module.
+const base::Feature kWebRtcEnableMultiChannelApm{
+    "WebRtcEnableMultiChannelApm", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the WebRTC Agc2 digital adaptation with WebRTC Agc1 analog
 // adaptation. Feature for http://crbug.com/873650. Is sent to WebRTC.
 const base::Feature kWebRtcHybridAgc{"WebRtcHybridAgc",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
+
+namespace switches {
+
+const char kForceDisableWebRtcApmInAudioService[] =
+    "disable-webrtc-apm-in-audio-service";
+
+}  // namespace switches
+
+namespace media {
+
+bool IsWebRtcApmInAudioServiceEnabled() {
+#if defined(OS_WIN) || defined(OS_MACOSX) || \
+    (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+  return base::FeatureList::IsEnabled(features::kWebRtcApmInAudioService) &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kForceDisableWebRtcApmInAudioService);
+#else
+  return false;
+#endif
+}
+
+}  // namespace media

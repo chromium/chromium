@@ -11,7 +11,7 @@ namespace trace_event {
 
 void EnableTracing(const String& category_filter) {
   base::trace_event::TraceLog::GetInstance()->SetEnabled(
-      base::trace_event::TraceConfig(category_filter.Utf8().data(), ""),
+      base::trace_event::TraceConfig(category_filter.Utf8(), ""),
       base::trace_event::TraceLog::RECORDING_MODE);
 }
 

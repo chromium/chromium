@@ -1,9 +1,15 @@
-rootWebArea
-++genericContainer
-++++staticText name='blockDisplay'
-++++++inlineTextBox name='blockDisplay'
-++genericContainer
-++++staticText name='blockDisplay Hiddenfalse'
-++++++inlineTextBox name='blockDisplay Hiddenfalse'
-++genericContainer
-++genericContainer invisible name='blockDisplay Hiddentruefocusable'
+rootWebArea isLineBreakingObject=true
+++genericContainer ignored isLineBreakingObject=true
+++++genericContainer isLineBreakingObject=true
+++++++staticText name='blockDisplay'
+++++++++inlineTextBox name='blockDisplay'
+++++genericContainer ignored invisible name='noneDisplay'
+++++genericContainer ignored invisible isLineBreakingObject=true
+++++++staticText ignored invisible name='blockDisplay Hiddentrue'
+++++genericContainer ignored invisible name='noneDisplay Hiddentrue'
+++++genericContainer isLineBreakingObject=true
+++++++staticText name='blockDisplay Hiddenfalse'
+++++++++inlineTextBox name='blockDisplay Hiddenfalse'
+++++genericContainer
+++++genericContainer invisible name='blockDisplay Hiddentruefocusable' isLineBreakingObject=true
+++++++staticText ignored invisible name='blockDisplay Hiddentruefocusable'

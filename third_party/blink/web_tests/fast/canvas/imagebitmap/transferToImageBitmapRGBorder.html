@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<style>
+    body {
+        background-color: lightblue;
+    }
+    canvas {
+        width: 100px;
+        height: 50px;
+    }
+</style>
+<script id="worker" type="text/worker">
+    function createImage()
+    {
+        var canvas = new OffscreenCanvas(100, 50);
+        var ctx = canvas.getContext("2d");
+        for (var y = 0; y < 50; y += 10) {
+            for (var x = ((y / 10) % 2) ? 0 : 10; x < 100; x += 20) {
+                switch (Math.round(x / 20) % 3) {
+                case 0:
+                    ctx.fillStyle = "#f00";
+                    break;
+                case 1:
+                    ctx.fillStyle = "#0f0";
+                    break;
+                case 2:
+                    ctx.fillStyle = "#00f";
+                    break;
+                }
+                ctx.fillRect(x, y, 10, 10);
+            }
+        }
+        image = canvas.transferToImageBitmap();
+        return image;
+    }
+
+    self.onmessage = function(e) {
+        switch (e.data) {
+        case 'test':
+            var image = createImage();
+            self.postMessage(image);
+            break;
+        }
+    }
+</script>
+
+<body>
+    <canvas id="canvas1"></canvas>
+</body>
+
+<script>
+    function requestAnimationFrameNtimesThen(times, fn) {
+      if(times>0) {
+        requestAnimationFrame(() => {
+          requestAnimationFrameNtimesThen(times-1, fn);
+        });
+      } else
+        fn();
+    };
+
+    if (window.testRunner) {
+      testRunner.waitUntilDone();
+    }
+    var blob = new Blob([document.getElementById("worker").textContent]);
+    var worker = new Worker(URL.createObjectURL(blob));
+    worker.addEventListener('message', function(message) {
+        var canvas = document.getElementById("canvas1");
+        canvas.width = 100; canvas.height = 50;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(message.data, 0, 0);
+        if (window.testRunner) {
+          requestAnimationFrameNtimesThen(1, () => {
+            testRunner.notifyDone();
+          });
+        }
+    });
+    worker.postMessage("test");
+
+</script>
+</html>

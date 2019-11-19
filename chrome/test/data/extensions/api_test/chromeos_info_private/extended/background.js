@@ -57,9 +57,6 @@ chrome.app.runtime.onLaunched.addListener(function() {
             case 'stylus seen':
               chrome.test.assertEq('seen', values['stylusStatus']);
               break;
-            case 'assistant unsupported':
-              chrome.test.assertEq('unsupported', values['assistantStatus']);
-              break;
             case 'assistant supported':
               chrome.test.assertEq('supported', values['assistantStatus']);
               break;

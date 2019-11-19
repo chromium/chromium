@@ -1,7 +1,5 @@
 #include "rar.hpp"
 
-namespace third_party_unrar {
-
 FindFile::FindFile()
 {
   *FindMask=0;
@@ -28,7 +26,7 @@ FindFile::~FindFile()
 
 void FindFile::SetMask(const wchar *Mask)
 {
-  wcscpy(FindMask,Mask);
+  wcsncpyz(FindMask,Mask,ASIZE(FindMask));
   FirstCall=true;
 }
 
@@ -54,7 +52,7 @@ bool FindFile::Next(FindData *fd,bool GetSymLink)
     wcsncpyz(DirName,FindMask,ASIZE(DirName));
     RemoveNameFromPath(DirName);
     if (*DirName==0)
-      wcscpy(DirName,L".");
+      wcsncpyz(DirName,L".",ASIZE(DirName));
     char DirNameA[NM];
     WideToChar(DirName,DirNameA,ASIZE(DirNameA));
     if ((dirp=opendir(DirNameA))==NULL)
@@ -77,20 +75,20 @@ bool FindFile::Next(FindData *fd,bool GetSymLink)
     if (CmpName(FindMask,Name,MATCH_NAMES))
     {
       wchar FullName[NM];
-      wcscpy(FullName,FindMask);
+      wcsncpyz(FullName,FindMask,ASIZE(FullName));
       *PointToName(FullName)=0;
       if (wcslen(FullName)+wcslen(Name)>=ASIZE(FullName)-1)
       {
         uiMsg(UIERROR_PATHTOOLONG,FullName,L"",Name);
         return false;
       }
-      wcscat(FullName,Name);
+      wcsncatz(FullName,Name,ASIZE(FullName));
       if (!FastFind(FullName,fd,GetSymLink))
       {
         ErrHandler.OpenErrorMsg(FullName);
         continue;
       }
-      wcscpy(fd->Name,FullName);
+      wcsncpyz(fd->Name,FullName,ASIZE(fd->Name));
       break;
     }
   }
@@ -218,4 +216,3 @@ HANDLE FindFile::Win32Find(HANDLE hFind,const wchar *Mask,FindData *fd)
 }
 #endif
 
-}  // namespace third_party_unrar

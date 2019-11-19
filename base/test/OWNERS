@@ -13,6 +13,3 @@ per-file BUILD.gn=file://base/test/android/OWNERS
 
 # Linux fontconfig changes
 per-file *fontconfig*=file://base/nix/OWNERS
-
-# FuzzedDataProvider helper class.
-per-file *fuzzed_data_provider*=file://testing/libfuzzer/OWNERS

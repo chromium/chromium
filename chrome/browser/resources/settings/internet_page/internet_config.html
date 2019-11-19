@@ -1,20 +1,17 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_config.html">
-<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_types.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="internet_shared_css.html">
 
 <dom-module id="internet-config">
   <template>
     <style include="internet-shared iron-flex">
-      cr-dialog {
-        --cr-dialog-native: {
-          width: 460px;
-        };
+      cr-dialog::part(dialog) {
+        width: 460px;
       }
 
       .error {
@@ -24,17 +21,18 @@
     </style>
 
     <cr-dialog id="dialog" close-text="$i18n{close}">
-      <div slot="title">[[getDialogTitle_(managedProperties_)]]</div>
+      <div slot="title">
+        [[getDialogTitle_(name, type, showConnect)]]
+      </div>
       <div slot="body">
         <network-config id="networkConfig" class="flex"
-            networking-private="[[networkingPrivate]]"
-            global-policy="[[globalPolicy]]"
-            managed-properties="{{managedProperties_}}"
+            guid="[[guid]]" name="{{name}}" type="{{type}}"
             enable-connect="{{enableConnect_}}" enable-save="{{enableSave_}}"
             share-allow-enable="[[shareAllowEnable_]]"
             share-default="[[shareDefault_]]"
             error="{{error_}}"
-            on-close="onClose_">
+            on-close="onClose_"
+            connect-on-enter="[[showConnect]]">
         </network-config>
       </div>
 
@@ -42,20 +40,20 @@
         <template is="dom-if" if="[[error_]]" restamp>
           <div class="flex error">[[getError_(error_)]]</div>
         </template>
-        <paper-button class="cancel-button" on-click="onCancelTap_">
+        <cr-button class="cancel-button" on-click="onCancelTap_">
           $i18n{cancel}
-        </paper-button>
+        </cr-button>
         <template is="dom-if" if="[[!showConnect]]">
-          <paper-button class="action-button" on-click="onSaveTap_"
+          <cr-button class="action-button" on-click="onSaveTap_"
               disabled="[[!enableSave_]]">
             $i18n{save}
-          </paper-button>
+          </cr-button>
         </template>
         <template is="dom-if" if="[[showConnect]]">
-          <paper-button class="action-button" on-click="onConnectTap_"
+          <cr-button class="action-button" on-click="onConnectTap_"
               disabled="[[!enableConnect_]]">
             $i18n{networkButtonConnect}
-          </paper-button>
+          </cr-button>
         </template>
       </div>
 

@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<script src="../resources/run-after-layout-and-paint.js"></script>
+<script src="resources/color-checker-munsell-chart.js"></script>
+
+<style>
+  div { position: relative; top: -556px; left: 470px }
+  a:hover { background-color: #ccc }
+  a:link { text-decoration: none }
+</style>
+
+<!-- Color accuracy test case: you should not rebaseline this test. -->
+
+<body style="overflow: hidden">
+ <img><p><canvas></canvas></p>
+ <div>
+  <pre id="log" style="font-size: 9pt"></pre>
+  <a href="http://www.brucelindbloom.com/index.html?ColorCheckerRGB.html">
+   <pre>* Munsell Cyan is outside 255 sRGB gamut<pre></a>
+ <div>
+</body>
+
+<script id="vs" type="vertex-shader">
+  attribute vec2 aVertex;
+  attribute vec2 aTex;
+  varying vec2 vTex;
+  void main() {
+    gl_Position = vec4(aVertex, 0.0, 1.0);
+    vTex = aTex;
+  }
+</script>
+
+<script id="fs" type="fragment-shader">
+  precision mediump float;
+  uniform sampler2D uTexture;
+  varying vec2 vTex;
+  void main() {
+    gl_FragColor = texture2D(uTexture, vTex);
+  }
+</script>
+
+<script>
+/*
+ * Overrides the color-checker-munsell-chart.js drawImageToCanvas() function
+ * to render the test image on a webgl <canvas>, instead of a 2d <canvas>.
+ *
+ * Calls chartColorTransform(canvas) to GPU readback the rendered test image
+ * colors and tabulate them in the Munsell chart test result.
+ */
+function drawImageToCanvas() {
+  var image = document.querySelector('img');
+  if (!image.src || !image.src.length)
+    throw new Error('FAIL: test image source is not defined');
+
+  var canvas = document.querySelector('canvas');
+  canvas.width = image.width;
+  canvas.height = image.height;
+
+  var enablePixelReadback = { preserveDrawingBuffer: true };
+  var gl = canvas.getContext('webgl', enablePixelReadback);
+  if (!gl)
+    throw new Error('FAIL: could not create webgl canvas context');
+
+  var colorConvert = gl.BROWSER_DEFAULT_WEBGL;
+  gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, colorConvert);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  gl.clearColor(0, 0, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  if (gl.getError() != gl.NONE)
+    throw new Error('FAIL: webgl canvas context setup failed');
+
+  function createShader(id, type) {
+    var shader = gl.createShader(type);
+    gl.shaderSource(shader, document.getElementById(id).text);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+      throw new Error('FAIL: webgl shader ' + id + ' compilation failed');
+    return shader;
+  }
+
+  var program = gl.createProgram();
+  gl.attachShader(program, createShader('vs', gl.VERTEX_SHADER));
+  gl.attachShader(program, createShader('fs', gl.FRAGMENT_SHADER));
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+    throw new Error('FAIL: webgl shader program linking failed');
+  gl.useProgram(program);
+
+  var texture = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+  if (gl.getError() != gl.NONE)
+    throw new Error('FAIL: creating webgl image texture failed');
+
+  function createBuffer(data) {
+    var buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+    return buffer;
+  }
+
+  var vertexCoords = new Float32Array([-1, 1, -1, -1, 1, -1, 1, 1]);
+  var vertexBuffer = createBuffer(vertexCoords);
+  var location = gl.getAttribLocation(program, 'aVertex');
+  gl.enableVertexAttribArray(location);
+  gl.vertexAttribPointer(location, 2, gl.FLOAT, false, 0, 0);
+  if (gl.getError() != gl.NONE)
+    throw new Error('FAIL: webgl vertex-coord setup failed');
+
+  var texCoords = new Float32Array([0, 1, 0, 0, 1, 0, 1, 1]);
+  var texBuffer = createBuffer(texCoords);
+  var location = gl.getAttribLocation(program, 'aTex');
+  gl.enableVertexAttribArray(location);
+  gl.vertexAttribPointer(location, 2, gl.FLOAT, false, 0, 0);
+  if (gl.getError() != gl.NONE)
+    throw new Error('FAIL: webgl tex-coord setup failed');
+
+  gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);  // Render the image.
+
+  // Tabulate the rendered image colors in the Munsell chart test result.
+  runAfterLayoutAndPaint(function() {
+    chartColorTransform(canvas);
+  });
+};
+
+if (window.testRunner) {
+  testRunner.dumpAsTextWithPixelResults();
+  testRunner.waitUntilDone();
+}
+
+window.onload = function() {
+  testImageColors('resources/color-checker-adobe-color-profile.png');
+};
+</script>
+</html>

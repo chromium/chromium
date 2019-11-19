@@ -32,7 +32,7 @@
 
         .composited_from_software {
             /* force a composited layer */
-            transform: translate3d(0, 0, 0);
+            will-change: transform;
             filter: drop-shadow(0px 0px 10px blue);
         }
 
@@ -48,7 +48,7 @@
 
         .software_from_composited.before {
             /* force a composited layer */
-            transform: translate3d(0, 0, 0);
+            will-change: transform;
             filter: drop-shadow(0px 0px 10px red);
         }
 
@@ -63,20 +63,13 @@
 
     <script src="../../resources/run-after-layout-and-paint.js"></script>
     <script>
-        if (window.testRunner) {
-            testRunner.dumpAsTextWithPixelResults();
-            testRunner.waitUntilDone();
-        }
-
         function repaintTest()
         {
             runAfterLayoutAndPaint(function() {
                 var items = document.getElementsByClassName('before');
                 while (items.length)
                     items[0].classList.remove("before");
-                if (window.testRunner)
-                    testRunner.notifyDone();
-            });
+            }, true);
         }
     </script>
 </head>

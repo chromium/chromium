@@ -7,8 +7,8 @@
 <script>
 spellcheck_test(
     '<div contenteditable>|</div>',
-    'insertText This sentence ends with a misspelled word asd.',
-    '<div contenteditable>This sentence ends with a misspelled word #asd#.</div>',
+    'insertText This sentence ends with a misspelled word asd. ',
+    '<div contenteditable>This sentence ends with a misspelled word #asd#.\u00A0</div>',
     {
       title: 'Mark misspelled word "asd" after typing.',
       callback: sample => spellcheck_test(
@@ -21,7 +21,7 @@ spellcheck_test(
             selection.modify('move', 'backward', 'character');
             selection.modify('move', 'backward', 'character');
           },
-          '<div contenteditable>This sentence ends with a misspelled word #asd#.</div>',
+          '<div contenteditable>This sentence ends with a misspelled word #asd#.\u00A0</div>',
           'Misspelled word should still be marked when caret is no longer adjacent with it.')
     });
 </script>

@@ -14,11 +14,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 
 import java.util.List;
+
 /**
  * An implementation of {@link BackgroundTaskSchedulerDelegate} that uses the system
  * {@link JobScheduler} to schedule jobs.
@@ -27,19 +29,63 @@ import java.util.List;
 class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelegate {
     private static final String TAG = "BkgrdTaskSchedulerJS";
 
-    private static final String BACKGROUND_TASK_CLASS_KEY = "_background_task_class";
-    @VisibleForTesting
-    static final String BACKGROUND_TASK_EXTRAS_KEY = "_background_task_extras";
+    /** Delta time for expiration checks. Used to make checks after the end time. */
+    static final long DEADLINE_DELTA_MS = 1000;
 
-    static BackgroundTask getBackgroundTaskFromJobParameters(JobParameters jobParameters) {
-        String backgroundTaskClassName = getBackgroundTaskClassFromJobParameters(jobParameters);
-        return BackgroundTaskReflection.getBackgroundTaskFromClassName(backgroundTaskClassName);
+    /** Clock to use so we can mock time in tests. */
+    public interface Clock { long currentTimeMillis(); }
+
+    private static Clock sClock = System::currentTimeMillis;
+
+    @VisibleForTesting
+    static void setClockForTesting(Clock clock) {
+        sClock = clock;
     }
 
-    private static String getBackgroundTaskClassFromJobParameters(JobParameters jobParameters) {
+    /**
+     * Checks if a task expired, based on the current time of the service.
+     *
+     * @param jobParameters parameters sent to the service, which contain the scheduling information
+     * regarding expiration.
+     * @param currentTimeMs the current time of the service.
+     * @return true if the task expired and false otherwise.
+     */
+    static boolean didTaskExpire(JobParameters jobParameters, long currentTimeMs) {
         PersistableBundle extras = jobParameters.getExtras();
-        if (extras == null) return null;
-        return extras.getString(BACKGROUND_TASK_CLASS_KEY);
+        if (extras == null || !extras.containsKey(BACKGROUND_TASK_SCHEDULE_TIME_KEY)) {
+            return false;
+        }
+
+        long scheduleTimeMs = extras.getLong(BACKGROUND_TASK_SCHEDULE_TIME_KEY);
+        if (extras.containsKey(BACKGROUND_TASK_END_TIME_KEY)) {
+            long endTimeMs = extras.getLong(BACKGROUND_TASK_END_TIME_KEY);
+            return TaskInfo.OneOffInfo.getExpirationStatus(
+                    scheduleTimeMs, endTimeMs, currentTimeMs);
+        } else {
+            long intervalTimeMs = extras.getLong(BACKGROUND_TASK_INTERVAL_TIME_KEY);
+            // Based on the JobInfo documentation, attempting to declare a smaller period than
+            // this when scheduling a job will result in a job that is still periodic, but will
+            // run with this effective period.
+            if (intervalTimeMs < JobInfo.getMinPeriodMillis()) {
+                intervalTimeMs = JobInfo.getMinPeriodMillis();
+            }
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                // Before Android N, there was no control over when the job will execute within
+                // the given interval. This makes it impossible to check for an expiration time.
+                return false;
+            }
+
+            // Since Android N, there was a minimum of 5 min set for the flex value. This
+            // value is considerably lower from the previous one, since the minimum value
+            // allowed for the interval time is of 15 min:
+            // https://android.googlesource.com/platform/frameworks/base/+/refs/heads/oreo-release/core/java/android/app/job/JobInfo.java.
+            long flexTimeMs = extras.getLong(BACKGROUND_TASK_FLEX_TIME_KEY, /*defaultValue=*/
+                    JobInfo.getMinFlexMillis());
+
+            return TaskInfo.PeriodicInfo.getExpirationStatus(
+                    scheduleTimeMs, intervalTimeMs, flexTimeMs, currentTimeMs);
+        }
     }
 
     /**
@@ -67,7 +113,6 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
     @VisibleForTesting
     static JobInfo createJobInfoFromTaskInfo(Context context, TaskInfo taskInfo) {
         PersistableBundle jobExtras = new PersistableBundle();
-        jobExtras.putString(BACKGROUND_TASK_CLASS_KEY, taskInfo.getBackgroundTaskClass().getName());
 
         PersistableBundle persistableBundle = getTaskExtrasAsPersistableBundle(taskInfo);
         jobExtras.putPersistableBundle(BACKGROUND_TASK_EXTRAS_KEY, persistableBundle);
@@ -76,38 +121,76 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
                 new JobInfo
                         .Builder(taskInfo.getTaskId(),
                                 new ComponentName(context, BackgroundTaskJobService.class))
-                        .setExtras(jobExtras)
                         .setPersisted(taskInfo.isPersisted())
                         .setRequiresCharging(taskInfo.requiresCharging())
                         .setRequiredNetworkType(getJobInfoNetworkTypeFromTaskNetworkType(
                                 taskInfo.getRequiredNetworkType()));
 
-        if (taskInfo.isPeriodic()) {
-            builder = getPeriodicJobInfo(builder, taskInfo);
-        } else {
-            builder = getOneOffJobInfo(builder, taskInfo);
-        }
+        JobInfoBuilderVisitor jobInfoBuilderVisitor = new JobInfoBuilderVisitor(builder, jobExtras);
+        taskInfo.getTimingInfo().accept(jobInfoBuilderVisitor);
+        builder = jobInfoBuilderVisitor.getBuilder();
 
         return builder.build();
     }
 
-    private static JobInfo.Builder getOneOffJobInfo(JobInfo.Builder builder, TaskInfo taskInfo) {
-        TaskInfo.OneOffInfo oneOffInfo = taskInfo.getOneOffInfo();
-        if (oneOffInfo.hasWindowStartTimeConstraint()) {
-            builder = builder.setMinimumLatency(oneOffInfo.getWindowStartTimeMs());
-        }
-        return builder.setOverrideDeadline(oneOffInfo.getWindowEndTimeMs());
-    }
+    private static class JobInfoBuilderVisitor implements TaskInfo.TimingInfoVisitor {
+        private final JobInfo.Builder mBuilder;
+        private final PersistableBundle mJobExtras;
 
-    private static JobInfo.Builder getPeriodicJobInfo(JobInfo.Builder builder, TaskInfo taskInfo) {
-        TaskInfo.PeriodicInfo periodicInfo = taskInfo.getPeriodicInfo();
-        if (periodicInfo.hasFlex()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                return builder.setPeriodic(periodicInfo.getIntervalMs(), periodicInfo.getFlexMs());
-            }
-            return builder.setPeriodic(periodicInfo.getIntervalMs());
+        JobInfoBuilderVisitor(JobInfo.Builder builder, PersistableBundle jobExtras) {
+            mBuilder = builder;
+            mJobExtras = jobExtras;
         }
-        return builder.setPeriodic(periodicInfo.getIntervalMs());
+
+        // Only valid after a TimingInfo object was visited.
+        JobInfo.Builder getBuilder() {
+            return mBuilder;
+        }
+
+        @Override
+        public void visit(TaskInfo.OneOffInfo oneOffInfo) {
+            if (oneOffInfo.expiresAfterWindowEndTime()) {
+                mJobExtras.putLong(
+                        BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_SCHEDULE_TIME_KEY,
+                        sClock.currentTimeMillis());
+                mJobExtras.putLong(BackgroundTaskSchedulerDelegate.BACKGROUND_TASK_END_TIME_KEY,
+                        oneOffInfo.getWindowEndTimeMs());
+            }
+            mBuilder.setExtras(mJobExtras);
+
+            if (oneOffInfo.hasWindowStartTimeConstraint()) {
+                mBuilder.setMinimumLatency(oneOffInfo.getWindowStartTimeMs());
+            }
+            long windowEndTimeMs = oneOffInfo.getWindowEndTimeMs();
+            if (oneOffInfo.expiresAfterWindowEndTime()) {
+                windowEndTimeMs += DEADLINE_DELTA_MS;
+            }
+            mBuilder.setOverrideDeadline(windowEndTimeMs);
+        }
+
+        @Override
+        public void visit(TaskInfo.PeriodicInfo periodicInfo) {
+            if (periodicInfo.expiresAfterWindowEndTime()) {
+                mJobExtras.putLong(BACKGROUND_TASK_SCHEDULE_TIME_KEY, sClock.currentTimeMillis());
+                mJobExtras.putLong(BACKGROUND_TASK_INTERVAL_TIME_KEY, periodicInfo.getIntervalMs());
+                if (periodicInfo.hasFlex()) {
+                    mJobExtras.putLong(BACKGROUND_TASK_FLEX_TIME_KEY, periodicInfo.getFlexMs());
+                }
+            }
+            mBuilder.setExtras(mJobExtras);
+
+            if (periodicInfo.hasFlex() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                mBuilder.setPeriodic(periodicInfo.getIntervalMs(), periodicInfo.getFlexMs());
+                return;
+            }
+            mBuilder.setPeriodic(periodicInfo.getIntervalMs());
+        }
+
+        @Override
+        public void visit(TaskInfo.ExactInfo exactInfo) {
+            throw new RuntimeException("Exact tasks should not be scheduled with "
+                    + "JobScheduler.");
+        }
     }
 
     private static int getJobInfoNetworkTypeFromTaskNetworkType(
@@ -130,12 +213,6 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
     @Override
     public boolean schedule(Context context, TaskInfo taskInfo) {
         ThreadUtils.assertOnUiThread();
-        if (!BackgroundTaskReflection.hasParameterlessPublicConstructor(
-                    taskInfo.getBackgroundTaskClass())) {
-            Log.e(TAG, "BackgroundTask " + taskInfo.getBackgroundTaskClass()
-                            + " has no parameterless public constructor.");
-            return false;
-        }
 
         JobInfo jobInfo = createJobInfoFromTaskInfo(context, taskInfo);
 

@@ -20,17 +20,16 @@
 #include "base/trace_event/trace_event.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
-#include "net/disk_cache/disk_cache.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_data_snapshot.h"
-#include "storage/browser/fileapi/file_stream_reader.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_stream_reader.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/storage_histograms.h"
+#include "third_party/blink/public/common/blob/blob_utils.h"
 
 namespace storage {
 namespace {
-const char kCacheStorageRecordBytesLabel[] = "DiskCache.CacheStorage";
 
 bool IsFileType(BlobDataItem::Type type) {
   switch (type) {
@@ -73,10 +72,10 @@ int ConvertBlobErrorToNetError(BlobStatus reason) {
 BlobReader::FileStreamReaderProvider::~FileStreamReaderProvider() = default;
 
 BlobReader::BlobReader(const BlobDataHandle* blob_handle)
-    : file_task_runner_(base::CreateTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
-      net_error_(net::OK),
-      weak_factory_(this) {
+    : file_task_runner_(
+          base::CreateTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                  base::TaskPriority::USER_VISIBLE})),
+      net_error_(net::OK) {
   if (blob_handle) {
     if (blob_handle->IsBroken()) {
       net_error_ = ConvertBlobErrorToNetError(blob_handle->GetBlobStatus());
@@ -119,53 +118,43 @@ bool BlobReader::has_side_data() const {
   if (items.size() != 1)
     return false;
   const BlobDataItem& item = *items.at(0);
-  if (item.type() != BlobDataItem::Type::kDiskCacheEntry)
+  if (item.type() != BlobDataItem::Type::kReadableDataHandle)
     return false;
-  const int disk_cache_side_stream_index = item.disk_cache_side_stream_index();
-  if (disk_cache_side_stream_index < 0)
-    return false;
-  if (!item.disk_cache_entry())
-    return false;
-  return item.disk_cache_entry()->GetDataSize(disk_cache_side_stream_index) > 0;
+  return item.data_handle()->GetSideDataSize() > 0;
 }
 
-BlobReader::Status BlobReader::ReadSideData(StatusCallback done) {
+void BlobReader::ReadSideData(StatusCallback done) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!has_side_data())
-    return ReportError(net::ERR_FILE_NOT_FOUND);
-  const BlobDataItem* item = blob_data_->items()[0].get();
-  const int disk_cache_side_stream_index = item->disk_cache_side_stream_index();
-  const int side_data_size =
-      item->disk_cache_entry()->GetDataSize(disk_cache_side_stream_index);
-  side_data_ = base::MakeRefCounted<net::IOBufferWithSize>(side_data_size);
-  net_error_ = net::OK;
-  const int result = item->disk_cache_entry()->ReadData(
-      disk_cache_side_stream_index, 0, side_data_.get(), side_data_size,
-      base::BindOnce(&BlobReader::DidReadDiskCacheEntrySideData,
-                     weak_factory_.GetWeakPtr(), std::move(done),
-                     side_data_size));
-  if (result >= 0) {
-    DCHECK_EQ(side_data_size, result);
-    return Status::DONE;
+  side_data_.reset();
+  if (!has_side_data()) {
+    std::move(done).Run(ReportError(net::ERR_FILE_NOT_FOUND));
+    return;
   }
-  if (result == net::ERR_IO_PENDING)
-    return Status::IO_PENDING;
-  return ReportError(result);
+  BlobDataItem* item = blob_data_->items()[0].get();
+  const int side_data_size = item->data_handle()->GetSideDataSize();
+  item->data_handle()->ReadSideData(
+      base::BindOnce(&BlobReader::DidReadSideData, weak_factory_.GetWeakPtr(),
+                     std::move(done), side_data_size));
 }
 
-void BlobReader::DidReadDiskCacheEntrySideData(StatusCallback done,
-                                               int expected_size,
-                                               int result) {
+base::Optional<mojo_base::BigBuffer> BlobReader::TakeSideData() {
+  return std::move(side_data_);
+}
+
+void BlobReader::DidReadSideData(StatusCallback done,
+                                 int expected_size,
+                                 int result,
+                                 mojo_base::BigBuffer data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (result >= 0) {
     DCHECK_EQ(expected_size, result);
-    if (result > 0)
-      storage::RecordBytesRead(kCacheStorageRecordBytesLabel, result);
+    DCHECK_EQ(static_cast<size_t>(expected_size), data.size());
+    RecordBytesReadFromDataHandle(/* item_index= */ 0, result);
+    side_data_ = std::move(data);
     std::move(done).Run(Status::DONE);
     return;
   }
-  side_data_ = nullptr;
   std::move(done).Run(ReportError(result));
 }
 
@@ -198,11 +187,14 @@ BlobReader::Status BlobReader::SetReadRange(uint64_t offset, uint64_t length) {
   if (current_item_offset_ == 0)
     return Status::DONE;
 
-  // Adjust the offset of the first stream if it is of file type.
+  // Adjust the offset of the first stream if it is a file or data handle.
   const BlobDataItem& item = *items.at(current_item_index_);
   if (IsFileType(item.type())) {
     SetFileReaderAtIndex(current_item_index_,
                          CreateFileStreamReader(item, offset));
+  }
+  if (item.type() == BlobDataItem::Type::kReadableDataHandle) {
+    SetDataPipeAtIndex(current_item_index_, CreateDataPipe(item, offset));
   }
   return Status::DONE;
 }
@@ -247,10 +239,34 @@ BlobReader::Status BlobReader::Read(net::IOBuffer* buffer,
   return status;
 }
 
+bool BlobReader::IsSingleMojoDataItem() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(total_size_calculated_);
+  if (!blob_data_.get())
+    return false;
+  if (blob_data_->items().size() != 1)
+    return false;
+  if (blob_data_->items()[0]->type() != BlobDataItem::Type::kReadableDataHandle)
+    return false;
+  return true;
+}
+
+void BlobReader::ReadSingleMojoDataItem(
+    mojo::ScopedDataPipeProducerHandle producer,
+    net::CompletionOnceCallback done) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(IsSingleMojoDataItem());
+
+  // Read the entire data item.
+  auto item = blob_data_->items()[0];
+  item->data_handle()->Read(std::move(producer), item->offset(), item->length(),
+                            std::move(done));
+}
+
 void BlobReader::Kill() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DeleteCurrentFileReader();
+  DeleteItemReaders();
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -481,13 +497,13 @@ BlobReader::Status BlobReader::ReadItem() {
   }
 
   // Do the reading.
-  const BlobDataItem& item = *items.at(current_item_index_);
+  BlobDataItem& item = *items.at(current_item_index_);
   if (item.type() == BlobDataItem::Type::kBytes) {
     ReadBytesItem(item, bytes_to_read);
     return Status::DONE;
   }
-  if (item.type() == BlobDataItem::Type::kDiskCacheEntry)
-    return ReadDiskCacheEntryItem(item, bytes_to_read);
+  if (item.type() == BlobDataItem::Type::kReadableDataHandle)
+    return ReadReadableDataHandle(item, bytes_to_read);
   if (!IsFileType(item.type())) {
     NOTREACHED();
     return ReportError(net::ERR_UNEXPECTED);
@@ -503,8 +519,8 @@ BlobReader::Status BlobReader::ReadItem() {
 void BlobReader::AdvanceItem() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Close the file if the current item is a file.
-  DeleteCurrentFileReader();
+  // Close any files or data pipes.
+  DeleteItemReaders();
 
   // Advance to the next item.
   current_item_index_++;
@@ -556,7 +572,7 @@ BlobReader::Status BlobReader::ReadFileItem(FileStreamReader* reader,
     return Status::DONE;
   }
   if (result == net::ERR_IO_PENDING) {
-    TRACE_EVENT_ASYNC_BEGIN1("Blob", "BlobRequest::ReadFileItem", this, "uuid",
+    TRACE_EVENT_ASYNC_BEGIN1("Blob", "BlobReader::ReadFileItem", this, "uuid",
                              blob_data_->uuid());
     io_pending_ = true;
     return Status::IO_PENDING;
@@ -566,7 +582,7 @@ BlobReader::Status BlobReader::ReadFileItem(FileStreamReader* reader,
 
 void BlobReader::DidReadFile(int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_ASYNC_END1("Blob", "BlobRequest::ReadFileItem", this, "uuid",
+  TRACE_EVENT_ASYNC_END1("Blob", "BlobReader::ReadFileItem", this, "uuid",
                          blob_data_->uuid());
   DidReadItem(result);
 }
@@ -588,31 +604,35 @@ void BlobReader::ContinueAsyncReadLoop() {
   }
 }
 
-void BlobReader::DeleteCurrentFileReader() {
+void BlobReader::DeleteItemReaders() {
   SetFileReaderAtIndex(current_item_index_,
                        std::unique_ptr<FileStreamReader>());
+  SetDataPipeAtIndex(current_item_index_,
+                     std::unique_ptr<network::DataPipeToSourceStream>());
 }
 
-BlobReader::Status BlobReader::ReadDiskCacheEntryItem(const BlobDataItem& item,
+BlobReader::Status BlobReader::ReadReadableDataHandle(const BlobDataItem& item,
                                                       int bytes_to_read) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!io_pending_)
       << "Can't begin IO while another IO operation is pending.";
   DCHECK_GE(read_buf_->BytesRemaining(), bytes_to_read);
+  DCHECK_EQ(item.type(), BlobDataItem::Type::kReadableDataHandle);
 
-  if (!item.disk_cache_entry())
-    return ReportError(net::ERR_CACHE_READ_FAILURE);
-  const int result = item.disk_cache_entry()->ReadData(
-      item.disk_cache_stream_index(), item.offset() + current_item_offset_,
-      read_buf_.get(), bytes_to_read,
-      base::BindOnce(&BlobReader::DidReadDiskCacheEntry,
-                     weak_factory_.GetWeakPtr()));
+  network::DataPipeToSourceStream* const pipe =
+      GetOrCreateDataPipeAtIndex(current_item_index_);
+  if (!pipe)
+    return ReportError(net::ERR_UNEXPECTED);
+
+  int result = pipe->Read(read_buf_.get(), bytes_to_read,
+                          base::BindOnce(&BlobReader::DidReadReadableDataHandle,
+                                         weak_factory_.GetWeakPtr()));
   if (result >= 0) {
     AdvanceBytesRead(result);
     return Status::DONE;
   }
   if (result == net::ERR_IO_PENDING) {
-    TRACE_EVENT_ASYNC_BEGIN1("Blob", "BlobRequest::ReadDiskCacheItem", this,
+    TRACE_EVENT_ASYNC_BEGIN1("Blob", "BlobReader::ReadReadableDataHandle", this,
                              "uuid", blob_data_->uuid());
     io_pending_ = true;
     return Status::IO_PENDING;
@@ -620,12 +640,11 @@ BlobReader::Status BlobReader::ReadDiskCacheEntryItem(const BlobDataItem& item,
   return ReportError(result);
 }
 
-void BlobReader::DidReadDiskCacheEntry(int result) {
+void BlobReader::DidReadReadableDataHandle(int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_ASYNC_END1("Blob", "BlobRequest::ReadDiskCacheItem", this, "uuid",
-                         blob_data_->uuid());
-  if (result > 0)
-    storage::RecordBytesRead(kCacheStorageRecordBytesLabel, result);
+  TRACE_EVENT_ASYNC_END1("Blob", "BlobReader::ReadReadableDataHandle", this,
+                         "uuid", blob_data_->uuid());
+  RecordBytesReadFromDataHandle(current_item_index_, result);
   DidReadItem(result);
 }
 
@@ -657,8 +676,7 @@ int BlobReader::ComputeBytesToRead() const {
   uint64_t max_int_value = std::numeric_limits<int>::max();
   // Here we make sure we don't overflow 'max int'.
   uint64_t min = std::min(
-      std::min(std::min(item_remaining, buf_remaining), remaining_bytes_),
-      max_int_value);
+      {item_remaining, buf_remaining, remaining_bytes_, max_int_value});
 
   return static_cast<int>(min);
 }
@@ -719,7 +737,7 @@ std::unique_ptr<FileStreamReader> BlobReader::CreateFileStreamReader(
     }
     case BlobDataItem::Type::kBytes:
     case BlobDataItem::Type::kBytesDescription:
-    case BlobDataItem::Type::kDiskCacheEntry:
+    case BlobDataItem::Type::kReadableDataHandle:
       break;
   }
 
@@ -735,6 +753,82 @@ void BlobReader::SetFileReaderAtIndex(
     index_to_reader_[index] = std::move(reader);
   else
     index_to_reader_.erase(index);
+}
+
+network::DataPipeToSourceStream* BlobReader::GetOrCreateDataPipeAtIndex(
+    size_t index) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const auto& items = blob_data_->items();
+  DCHECK_LT(index, items.size());
+  const BlobDataItem& item = *items.at(index);
+  if (item.type() != BlobDataItem::Type::kReadableDataHandle)
+    return nullptr;
+  auto it = index_to_pipe_.find(index);
+  if (it != index_to_pipe_.end()) {
+    DCHECK(it->second);
+    return it->second.get();
+  }
+  auto pipe = CreateDataPipe(item, 0);
+  auto* ret_value = pipe.get();
+  index_to_pipe_[index] = std::move(pipe);
+  return ret_value;
+}
+
+void BlobReader::SetDataPipeAtIndex(
+    size_t index,
+    std::unique_ptr<network::DataPipeToSourceStream> pipe) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pipe)
+    index_to_pipe_[index] = std::move(pipe);
+  else
+    index_to_pipe_.erase(index);
+}
+
+std::unique_ptr<network::DataPipeToSourceStream> BlobReader::CreateDataPipe(
+    const BlobDataItem& item,
+    uint64_t additional_offset) {
+  DCHECK_EQ(item.type(), BlobDataItem::Type::kReadableDataHandle);
+
+  uint64_t blob_size = item.length();
+  uint64_t max_bytes_to_read = blob_size - additional_offset;
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  MojoCreateDataPipeOptions options;
+  options.struct_size = sizeof(MojoCreateDataPipeOptions);
+  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+  options.element_num_bytes = 1;
+  options.capacity_num_bytes =
+      blink::BlobUtils::GetDataPipeCapacity(max_bytes_to_read);
+
+  MojoResult result = mojo::CreateDataPipe(&options, &producer, &consumer);
+
+  if (result != MOJO_RESULT_OK)
+    return nullptr;
+
+  auto adapter =
+      std::make_unique<network::DataPipeToSourceStream>(std::move(consumer));
+  item.data_handle()->Read(
+      std::move(producer), additional_offset + item.offset(), max_bytes_to_read,
+      base::BindOnce(
+          [](base::WeakPtr<BlobReader> reader, int result) {
+            if (!reader || result >= 0)
+              return;
+            reader->InvalidateCallbacksAndDone(
+                result, std::move(reader->read_callback_));
+          },
+          weak_factory_.GetWeakPtr()));
+  return adapter;
+}
+
+void BlobReader::RecordBytesReadFromDataHandle(int item_index, int result) {
+  const auto& items = blob_data_->items();
+  BlobDataItem& item = *items.at(item_index);
+  DCHECK_EQ(item.type(), BlobDataItem::Type::kReadableDataHandle);
+  if (item.data_handle()->BytesReadHistogramLabel()) {
+    storage::RecordBytesRead(item.data_handle()->BytesReadHistogramLabel(),
+                             result);
+  }
 }
 
 }  // namespace storage

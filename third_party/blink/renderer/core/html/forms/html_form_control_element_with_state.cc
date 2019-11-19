@@ -284,4 +284,8 @@ bool HTMLFormControlElementWithState::IsFormControlElementWithState() const {
   return true;
 }
 
+int HTMLFormControlElementWithState::DefaultTabIndex() const {
+  return 0;
+}
+
 }  // namespace blink

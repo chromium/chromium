@@ -10,7 +10,7 @@ public_deps = [
   "//mojo/public/cpp/base:shared_typemap_traits",
 ]
 type_mappings = [
-  "mojo_base.mojom.Value=base::Value[move_only]",
-  "mojo_base.mojom.DictionaryValue=base::Value[move_only]",
-  "mojo_base.mojom.ListValue=base::Value[move_only]",
+  "mojo_base.mojom.Value=::base::Value[move_only]",
+  "mojo_base.mojom.DictionaryValue=::base::Value[move_only]",
+  "mojo_base.mojom.ListValue=::base::Value[move_only]",
 ]

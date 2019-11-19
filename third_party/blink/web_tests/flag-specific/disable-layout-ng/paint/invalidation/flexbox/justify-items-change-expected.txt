@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV class='item'",
+          "rect": [150, 52, 50, 300],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='item'",
+          "rect": [0, 52, 50, 300],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

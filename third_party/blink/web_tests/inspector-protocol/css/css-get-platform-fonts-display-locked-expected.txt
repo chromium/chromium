@@ -1,0 +1,6 @@
+Test css.getPlatformFontsForNode method with display locking.
+
+Running test: testParent
+
+Running test: testChild
+

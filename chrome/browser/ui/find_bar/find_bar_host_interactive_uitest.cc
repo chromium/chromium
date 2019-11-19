@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/find_bar/find_tab_helper.h"
+#include "chrome/browser/ui/find_bar/find_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -89,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageInteractiveTest, FindInPageEndState) {
   EXPECT_EQ(1, ordinal);
 
   // End the find session, which should set focus to the link.
-  find_tab_helper->StopFinding(FindBarController::kKeepSelectionOnPage);
+  find_tab_helper->StopFinding(FindOnPageSelectionAction::kKeep);
 
   // Verify that the link is focused.
   ASSERT_TRUE(FocusedOnPage(web_contents, &result));
@@ -107,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageInteractiveTest, FindInPageEndState) {
       &result));
 
   // End the find session.
-  find_tab_helper->StopFinding(FindBarController::kKeepSelectionOnPage);
+  find_tab_helper->StopFinding(FindOnPageSelectionAction::kKeep);
 
   // Verify that link2 is not focused.
   ASSERT_TRUE(FocusedOnPage(web_contents, &result));

@@ -69,7 +69,7 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
     const GPUCreateCommandBufferConfig& init_params,
     base::UnsafeSharedMemoryRegion shared_state_shm) {
   TRACE_EVENT0("gpu", "RasterBufferStub::Initialize");
-  FastSetActiveURL(active_url_, active_url_hash_, channel_);
+  UpdateActiveUrl();
 
   GpuChannelManager* manager = channel_->gpu_channel_manager();
   DCHECK(manager);
@@ -85,7 +85,7 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
     return ContextResult::kFatalFailure;
   }
 
-  if (init_params.attribs.gpu_preference != gl::PreferIntegratedGpu ||
+  if (init_params.attribs.gpu_preference != gl::GpuPreference::kLowPower ||
       init_params.attribs.context_type != CONTEXT_TYPE_OPENGLES2 ||
       init_params.attribs.bind_generates_resource) {
     LOG(ERROR) << "ContextResult::kFatalFailure: Incompatible creation attribs "
@@ -138,7 +138,10 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
                                                                         : "0");
 
   scoped_refptr<gl::GLContext> context = shared_context_state->context();
-  if (!shared_context_state->MakeCurrent(nullptr)) {
+  // Raster decoder needs gl context for GPUTracing.
+  // TODO(penghuang): get rid of the gl dependeny when GL is not used for
+  // raster. https://crbug.com/c/1018725
+  if (!shared_context_state->MakeCurrent(nullptr, true /* needs_gl */)) {
     LOG(ERROR) << "ContextResult::kTransientFailure: "
                   "Failed to make context current.";
     return gpu::ContextResult::kTransientFailure;
@@ -170,7 +173,7 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
       std::move(shared_state_shm), std::move(shared_state_mapping)));
 
   if (!active_url_.is_empty())
-    manager->delegate()->DidCreateOffscreenContext(active_url_);
+    manager->delegate()->DidCreateOffscreenContext(active_url_.url());
 
   manager->delegate()->DidCreateContextSuccessfully();
   initialized_ = true;
@@ -188,9 +191,8 @@ bool RasterCommandBufferStub::HandleMessage(const IPC::Message& message) {
 void RasterCommandBufferStub::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {}
 
 void RasterCommandBufferStub::SetActiveURL(GURL url) {
-  active_url_ = std::move(url);
-  active_url_hash_ = base::Hash(active_url_.possibly_invalid_spec());
-  FastSetActiveURL(active_url_, active_url_hash_, channel_);
+  active_url_ = ContextUrl(std::move(url));
+  UpdateActiveUrl();
 }
 
 }  // namespace gpu

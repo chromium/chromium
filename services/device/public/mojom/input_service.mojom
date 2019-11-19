@@ -50,8 +50,9 @@ interface InputDeviceManager {
   // to InputDeviceManager. The implementation of InputDeviceManager guarantees
   // the returned callback is always posted earlier than InputDeviceAdded()
   // and InputDeviceRemoved().
-  GetDevicesAndSetClient(associated InputDeviceManagerClient client) =>
-                        (array<InputDeviceInfo> devices);
+  GetDevicesAndSetClient(
+      pending_associated_remote<InputDeviceManagerClient> client) =>
+          (array<InputDeviceInfo> devices);
 
   // Returns list of all currently connected input/hid devices only.
   GetDevices() => (array<InputDeviceInfo> devices);

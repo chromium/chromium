@@ -30,13 +30,11 @@ class DestructableAudioDecoder : public CmaBackend::AudioDecoder {
 class ActiveAudioDecoderWrapper : public DestructableAudioDecoder {
  public:
   ActiveAudioDecoderWrapper(
-      MediaPipelineBackendManager* backend_manager,
       MediaPipelineBackend::AudioDecoder* backend_decoder,
       AudioContentType type,
       MediaPipelineBackendManager::BufferDelegate* buffer_delegate);
   ~ActiveAudioDecoderWrapper() override;
 
-  void SetGlobalVolumeMultiplier(float multiplier);
   AudioContentType content_type() const { return content_type_; }
 
  private:
@@ -50,7 +48,6 @@ class ActiveAudioDecoderWrapper : public DestructableAudioDecoder {
   void GetStatistics(Statistics* statistics) override;
   bool RequiresDecryption() override;
 
-  MediaPipelineBackendManager* const backend_manager_;
   AudioDecoderSoftwareWrapper decoder_;
   const AudioContentType content_type_;
 
@@ -58,8 +55,9 @@ class ActiveAudioDecoderWrapper : public DestructableAudioDecoder {
   bool initialized_;
   bool delegate_active_;
 
-  float global_volume_multiplier_;
   float stream_volume_multiplier_;
+
+  scoped_refptr<DecoderBufferBase> pushed_buffer_;
 
   DISALLOW_COPY_AND_ASSIGN(ActiveAudioDecoderWrapper);
 };
@@ -68,7 +66,6 @@ class AudioDecoderWrapper : public CmaBackend::AudioDecoder {
  public:
   // Create a functional "real" AudioDecoder.
   AudioDecoderWrapper(
-      MediaPipelineBackendManager* backend_manager,
       MediaPipelineBackend::AudioDecoder* backend_decoder,
       AudioContentType type,
       MediaPipelineBackendManager::BufferDelegate* buffer_delegate);

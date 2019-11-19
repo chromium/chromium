@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/media/router/media_router_base.h"
+
 #include "base/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/media/router/test/mock_media_router.h"
 #include "chrome/browser/media/router/test/test_helper.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,7 +18,7 @@ using testing::SaveArg;
 
 namespace media_router {
 
-// MockMediaRouter inherits from MediaRouterBase but overrides some of its
+// MockMediaRouterBase inherits from MediaRouter but overrides some of its
 // methods with mock methods, so we must override them again.
 class MockMediaRouterBase : public MockMediaRouter {
  public:
@@ -52,7 +54,7 @@ class MediaRouterBaseTest : public testing::Test {
   void TearDown() override { router_.Shutdown(); }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   MockMediaRouterBase router_;
   MediaRoutesObserver* routes_observer_;
 };

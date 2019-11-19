@@ -23,9 +23,12 @@
           directory:(NSString*)directory
         immediately:(BOOL)immediately {
   NSString* sessionPath = [[self class] sessionPathForDirectory:directory];
-  NSData* data = [NSKeyedArchiver archivedDataWithRootObject:factory()];
-  if (self.performIO)
+  NSData* data = [NSKeyedArchiver archivedDataWithRootObject:factory()
+                                       requiringSecureCoding:NO
+                                                       error:nil];
+  if (self.performIO) {
     [self performSaveSessionData:data sessionPath:sessionPath];
+  }
 }
 
 @end

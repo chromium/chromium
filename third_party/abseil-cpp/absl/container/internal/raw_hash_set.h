@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -350,7 +350,7 @@ struct GroupSse2Impl {
     return BitMask<uint32_t, kWidth>(
         _mm_movemask_epi8(_mm_sign_epi8(ctrl, ctrl)));
 #else
-    return Match(kEmpty);
+    return Match(static_cast<h2_t>(kEmpty));
 #endif
   }
 
@@ -446,9 +446,7 @@ using Group = GroupPortableImpl;
 template <class Policy, class Hash, class Eq, class Alloc>
 class raw_hash_set;
 
-inline bool IsValidCapacity(size_t n) {
-  return ((n + 1) & n) == 0 && n >= Group::kWidth - 1;
-}
+inline bool IsValidCapacity(size_t n) { return ((n + 1) & n) == 0 && n > 0; }
 
 // PRECONDITION:
 //   IsValidCapacity(capacity)
@@ -470,13 +468,9 @@ inline void ConvertDeletedToEmptyAndFullToDeleted(
   ctrl[capacity] = kSentinel;
 }
 
-// Rounds up the capacity to the next power of 2 minus 1 and ensures it is
-// greater or equal to Group::kWidth - 1.
+// Rounds up the capacity to the next power of 2 minus 1, with a minimum of 1.
 inline size_t NormalizeCapacity(size_t n) {
-  constexpr size_t kMinCapacity = Group::kWidth - 1;
-  return n <= kMinCapacity
-             ? kMinCapacity
-             : (std::numeric_limits<size_t>::max)() >> LeadingZeros(n);
+  return n ? ~size_t{} >> LeadingZeros(n) : 1;
 }
 
 // We use 7/8th as maximum load factor.
@@ -515,7 +509,7 @@ inline size_t GrowthToLowerboundCapacity(size_t growth) {
 // if they are equal, false if they are not. If two keys compare equal, then
 // their hash values as defined by Hash MUST be equal.
 //
-// Allocator: an Allocator [http://devdocs.io/cpp/concept/allocator] with which
+// Allocator: an Allocator [https://devdocs.io/cpp/concept/allocator] with which
 // the storage of the hashtable will be allocated and the elements will be
 // constructed and destroyed.
 template <class Policy, class Hash, class Eq, class Alloc>
@@ -763,8 +757,8 @@ class raw_hash_set {
   // that accept std::initializer_list<T> and std::initializer_list<init_type>.
   // This is advantageous for performance.
   //
-  //   // Turns {"abc", "def"} into std::initializer_list<std::string>, then copies
-  //   // the strings into the set.
+  //   // Turns {"abc", "def"} into std::initializer_list<std::string>, then
+  //   // copies the strings into the set.
   //   std::unordered_set<std::string> s = {"abc", "def"};
   //
   //   // Turns {"abc", "def"} into std::initializer_list<const char*>, then
@@ -975,7 +969,7 @@ class raw_hash_set {
   // This overload kicks in when the argument is an rvalue of init_type. Its
   // purpose is to handle brace-init-list arguments.
   //
-  //   flat_hash_set<std::string, int> s;
+  //   flat_hash_map<std::string, int> s;
   //   s.insert({"abc", 42});
   std::pair<iterator, bool> insert(init_type&& value) {
     return emplace(std::move(value));
@@ -1188,7 +1182,7 @@ class raw_hash_set {
 
   node_type extract(const_iterator position) {
     auto node =
-        CommonAccess::Make<node_type>(alloc_ref(), position.inner_.slot_);
+        CommonAccess::Transfer<node_type>(alloc_ref(), position.inner_.slot_);
     erase_meta_only(position);
     return node;
   }
@@ -1443,7 +1437,18 @@ class raw_hash_set {
 
   void initialize_slots() {
     assert(capacity_);
-    if (slots_ == nullptr) {
+    // Folks with custom allocators often make unwarranted assumptions about the
+    // behavior of their classes vis-a-vis trivial destructability and what
+    // calls they will or wont make.  Avoid sampling for people with custom
+    // allocators to get us out of this mess.  This is not a hard guarantee but
+    // a workaround while we plan the exact guarantee we want to provide.
+    //
+    // People are often sloppy with the exact type of their allocator (sometimes
+    // it has an extra const or is missing the pair, but rebinds made it work
+    // anyway).  To avoid the ambiguity, we work off SlotAlloc which we have
+    // bound more carefully.
+    if (std::is_same<SlotAlloc, std::allocator<slot_type>>::value &&
+        slots_ == nullptr) {
       infoz_ = Sample();
     }
 
@@ -1507,6 +1512,7 @@ class raw_hash_set {
 
   void drop_deletes_without_resize() ABSL_ATTRIBUTE_NOINLINE {
     assert(IsValidCapacity(capacity_));
+    assert(!is_small());
     // Algorithm:
     // - mark all DELETED slots as EMPTY
     // - mark all FULL slots as DELETED
@@ -1572,7 +1578,7 @@ class raw_hash_set {
 
   void rehash_and_grow_if_necessary() {
     if (capacity_ == 0) {
-      resize(Group::kWidth - 1);
+      resize(1);
     } else if (size() <= CapacityToGrowth(capacity()) / 2) {
       // Squash DELETED without growing if there is enough capacity.
       drop_deletes_without_resize();
@@ -1619,17 +1625,15 @@ class raw_hash_set {
       auto mask = g.MatchEmptyOrDeleted();
       if (mask) {
 #if !defined(NDEBUG)
-        // We want to force small tables to have random entries too, so
-        // in debug build we will randomly insert in either the front or back of
+        // We want to add entropy even when ASLR is not enabled.
+        // In debug build we will randomly insert in either the front or back of
         // the group.
         // TODO(kfm,sbenza): revisit after we do unconditional mixing
-        if (ShouldInsertBackwards(hash, ctrl_))
+        if (!is_small() && ShouldInsertBackwards(hash, ctrl_)) {
           return {seq.offset(mask.HighestBitSet()), seq.index()};
-        else
-          return {seq.offset(mask.LowestBitSet()), seq.index()};
-#else
-        return {seq.offset(mask.LowestBitSet()), seq.index()};
+        }
 #endif
+        return {seq.offset(mask.LowestBitSet()), seq.index()};
       }
       assert(seq.index() < capacity_ && "full table!");
       seq.next();
@@ -1732,10 +1736,27 @@ class raw_hash_set {
     }
 
     ctrl_[i] = h;
-    ctrl_[((i - Group::kWidth) & capacity_) + Group::kWidth] = h;
+    ctrl_[((i - Group::kWidth) & capacity_) + 1 +
+          ((Group::kWidth - 1) & capacity_)] = h;
   }
 
   size_t& growth_left() { return settings_.template get<0>(); }
+
+  // The representation of the object has two modes:
+  //  - small: For capacities < kWidth-1
+  //  - large: For the rest.
+  //
+  // Differences:
+  //  - In small mode we are able to use the whole capacity. The extra control
+  //  bytes give us at least one "empty" control byte to stop the iteration.
+  //  This is important to make 1 a valid capacity.
+  //
+  //  - In small mode only the first `capacity()` control bytes after the
+  //  sentinel are valid. The rest contain dummy kEmpty values that do not
+  //  represent a real slot. This is important to take into account on
+  //  find_first_non_full(), where we never try ShouldInsertBackwards() for
+  //  small tables.
+  bool is_small() const { return capacity_ < Group::kWidth - 1; }
 
   hasher& hash_ref() { return settings_.template get<1>(); }
   const hasher& hash_ref() const { return settings_.template get<1>(); }

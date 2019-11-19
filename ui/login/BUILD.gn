@@ -1,16 +1,8 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/grit_rule.gni")
+import("//third_party/closure_compiler/compile_js.gni")
 
-grit("resources") {
-  source = "login_resources.grd"
-  outputs = [
-    "grit/login_resources.h",
-    "grit/login_resources_map.cc",
-    "grit/login_resources_map.h",
-    "login_resources.pak",
-    "login_resources.rc",
-  ]
+js_library("display_manager_types") {
 }

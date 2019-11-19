@@ -85,7 +85,7 @@ class InterceptNavigationThrottle : public content::NavigationThrottle {
   // Whether the navigation is currently deferred.
   bool deferring_ = false;
 
-  base::WeakPtrFactory<InterceptNavigationThrottle> weak_factory_;
+  base::WeakPtrFactory<InterceptNavigationThrottle> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InterceptNavigationThrottle);
 };

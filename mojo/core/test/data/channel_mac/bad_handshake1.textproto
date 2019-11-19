@@ -1,0 +1,9 @@
+endpoint_type: LOCAL
+fuzz_handshake: true
+messages: [
+  {
+    local_port: SEND
+    id: 0x6d6a6873
+    include_body_if_not_complex: true
+  }
+]

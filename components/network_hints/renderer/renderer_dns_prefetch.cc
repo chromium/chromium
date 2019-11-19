@@ -11,24 +11,23 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "components/network_hints/common/network_hints_common.h"
-#include "components/network_hints/common/network_hints_messages.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/network_hints/renderer/dns_prefetch_queue.h"
-#include "content/public/renderer/render_thread.h"
-
-using content::RenderThread;
 
 namespace network_hints {
+namespace {
 
-RendererDnsPrefetch::RendererDnsPrefetch()
-    : c_string_queue_(1000),
-      weak_factory_(this) {
+constexpr size_t kMaxDnsHostnamesPerRequest = 30;
+constexpr size_t kMaxDnsHostnameLength = 255;
+
+}  // namespace
+
+RendererDnsPrefetch::RendererDnsPrefetch(BatchHandler batch_handler)
+    : batch_handler_(std::move(batch_handler)), c_string_queue_(1000) {
   Reset();
 }
 
-RendererDnsPrefetch::~RendererDnsPrefetch() {
-}
+RendererDnsPrefetch::~RendererDnsPrefetch() = default;
 
 void RendererDnsPrefetch::Reset() {
   domain_map_.clear();
@@ -40,7 +39,8 @@ void RendererDnsPrefetch::Reset() {
 
 // Push names into queue quickly!
 void RendererDnsPrefetch::Resolve(const char* name, size_t length) {
-  DCHECK(content::RenderThread::Get());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!length)
     return;  // Don't store empty strings in buffer.
   if (is_numeric_ip(name, length))
@@ -54,7 +54,7 @@ void RendererDnsPrefetch::Resolve(const char* name, size_t length) {
       if (0 != old_size)
         return;  // Overkill safety net: Don't send too many InvokeLater's.
       weak_factory_.InvalidateWeakPtrs();
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&RendererDnsPrefetch::SubmitHostnames,
                          weak_factory_.GetWeakPtr()),
@@ -72,7 +72,8 @@ void RendererDnsPrefetch::Resolve(const char* name, size_t length) {
 // Extract data from the Queue, and then send it off the the Browser process
 // to be resolved.
 void RendererDnsPrefetch::SubmitHostnames() {
-  DCHECK(content::RenderThread::Get());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Get all names out of the C_string_queue (into our map)
   ExtractBufferedNames();
   // TBD: IT could be that we should only extract about as many names as we are
@@ -88,10 +89,11 @@ void RendererDnsPrefetch::SubmitHostnames() {
   // Don't overload the browser DNS lookup facility, or take too long here,
   // by only sending off kMaxDnsHostnamesPerRequest names to the Browser.
   // This will help to avoid overloads when a page has a TON of links.
-  DnsPrefetchNames(kMaxDnsHostnamesPerRequest);
+  std::vector<std::string> names;
+  GetNamesToPrefetch(kMaxDnsHostnamesPerRequest, &names);
   if (new_name_count_ > 0 || 0 < c_string_queue_.Size()) {
     weak_factory_.InvalidateWeakPtrs();
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&RendererDnsPrefetch::SubmitHostnames,
                        weak_factory_.GetWeakPtr()),
@@ -100,6 +102,8 @@ void RendererDnsPrefetch::SubmitHostnames() {
     // TODO(JAR): Should we only clear the map when we navigate, or reload?
     domain_map_.clear();
   }
+
+  batch_handler_.Run(names);
 }
 
 // Pull some hostnames from the queue, and add them to our map.
@@ -131,16 +135,16 @@ void RendererDnsPrefetch::ExtractBufferedNames(size_t size_goal) {
   }
 }
 
-void RendererDnsPrefetch::DnsPrefetchNames(size_t max_count) {
+void RendererDnsPrefetch::GetNamesToPrefetch(size_t max_count,
+                                             std::vector<std::string>* names) {
   // We are on the renderer thread, and just need to send things to the browser.
-  NameList names;
   size_t domains_handled = 0;
   for (auto it = domain_map_.begin(); it != domain_map_.end(); ++it) {
     if (0 == (it->second & kLookupRequested)) {
       it->second |= kLookupRequested;
       domains_handled++;
       if (it->first.length() <= network_hints::kMaxDnsHostnameLength)
-        names.push_back(it->first);
+        names->push_back(it->first);
       if (0 == max_count) continue;  // Get all, independent of count.
       if (1 == max_count) break;
       --max_count;
@@ -149,10 +153,6 @@ void RendererDnsPrefetch::DnsPrefetchNames(size_t max_count) {
   }
   DCHECK_GE(new_name_count_, domains_handled);
   new_name_count_ -= domains_handled;
-
-  network_hints::LookupRequest request;
-  request.hostname_list = names;
-  RenderThread::Get()->Send(new NetworkHintsMsg_DNSPrefetch(request));
 }
 
 // is_numeric_ip() checks to see if all characters in name are either numeric,

@@ -12,6 +12,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/child_accounts/time_limit_override.h"
 
 namespace chromeos {
 namespace time_limit_test_utils {
@@ -24,10 +25,6 @@ extern const char kThursday[];
 extern const char kFriday[];
 extern const char kSaturday[];
 extern const char kSunday[];
-
-// Override actions that should be used to create the Time Limit policy.
-extern const char kLock[];
-extern const char kUnlock[];
 
 // Parses a string time to a base::Time object, see
 // |base::Time::FromUTCString| for compatible input formats.
@@ -56,38 +53,41 @@ base::Value CreateTimeWindow(const std::string& day,
 base::Value CreateTimeUsage(base::TimeDelta usage_quota,
                             base::Time last_updated);
 
-// Creates a minimalist Time Limit policy, containing only the time usage
-// limit reset time.
-std::unique_ptr<base::DictionaryValue> CreateTimeLimitPolicy(
-    base::TimeDelta reset_time);
+// Creates dictionary with a minimalist Time Limit policy, containing only the
+// time usage limit reset time.
+base::Value CreateTimeLimitPolicy(base::TimeDelta reset_time);
 
 // Adds a time usage limit dictionary to the provided Time Limit policy.
-void AddTimeUsageLimit(base::DictionaryValue* policy,
+// |policy| needs to be a dictionary.
+void AddTimeUsageLimit(base::Value* policy,
                        std::string day,
                        base::TimeDelta quota,
                        base::Time last_updated);
 
 // Adds a time window limit dictionary to the provided Time Limit policy.
-void AddTimeWindowLimit(base::DictionaryValue* policy,
+// |policy| needs to be a dictionary.
+void AddTimeWindowLimit(base::Value* policy,
                         const std::string& day,
                         base::TimeDelta start_time,
                         base::TimeDelta end_time,
                         base::Time last_updated);
 
 // Adds a time limit override dictionary to the provided Time Limit policy.
-void AddOverride(base::DictionaryValue* policy,
-                 std::string action,
+// |policy| needs to be a dictionary.
+void AddOverride(base::Value* policy,
+                 usage_time_limit::TimeLimitOverride::Action action,
                  base::Time created_at);
 
 // Adds a time limit override with duration dictionary to the provided
-// Time Limit policy.
-void AddOverrideWithDuration(base::DictionaryValue* policy,
-                             std::string action,
+// Time Limit policy. |policy| needs to be a dictionary.
+void AddOverrideWithDuration(base::Value* policy,
+                             usage_time_limit::TimeLimitOverride::Action action,
                              base::Time created_at,
                              base::TimeDelta duration);
 
-// Converts the Time Limit policy to a string.
-std::string PolicyToString(const base::DictionaryValue* policy);
+// Converts the Time Limit policy to a string. |policy| needs to be a
+// dictionary.
+std::string PolicyToString(const base::Value& policy);
 
 }  // namespace time_limit_test_utils
 }  // namespace chromeos

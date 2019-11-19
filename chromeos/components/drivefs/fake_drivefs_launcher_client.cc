@@ -11,9 +11,10 @@
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
-#include "chromeos/components/drivefs/pending_connection_manager.h"
+#include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_cros_disks_client.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
@@ -24,7 +25,7 @@
 namespace drivefs {
 namespace {
 
-void ConnectAsync(mojom::FakeDriveFsLauncherRequest request,
+void ConnectAsync(mojo::PendingReceiver<mojom::FakeDriveFsLauncher> receiver,
                   mojo::NamedPlatformChannel::ServerName server_name) {
   mojo::PlatformChannelEndpoint endpoint =
       mojo::NamedPlatformChannel::ConnectToServer(server_name);
@@ -33,7 +34,7 @@ void ConnectAsync(mojom::FakeDriveFsLauncherRequest request,
 
   mojo::OutgoingInvitation invitation;
   mojo::FuseMessagePipes(invitation.AttachMessagePipe("drivefs-launcher"),
-                         request.PassMessagePipe());
+                         receiver.PassPipe());
   mojo::OutgoingInvitation::Send(std::move(invitation),
                                  base::kNullProcessHandle, std::move(endpoint));
 }
@@ -56,9 +57,10 @@ FakeDriveFsLauncherClient::FakeDriveFsLauncherClient(
     const base::FilePath& socket_path)
     : chroot_path_(chroot_path),
       socket_path_(chroot_path_.Append(socket_path)) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&ConnectAsync, mojo::MakeRequest(&launcher_),
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&ConnectAsync, launcher_.BindNewPipeAndPassReceiver(),
                      socket_path_.value()));
 
   chromeos::DBusThreadManager* dbus_thread_manager =
@@ -94,7 +96,7 @@ base::FilePath FakeDriveFsLauncherClient::MaybeMountDriveFs(
   }
   const std::string datadir = base::StrCat({"drivefs-", datadir_suffix});
   mojo::PlatformChannel channel;
-  PendingConnectionManager::Get().OpenIpcChannel(
+  mojo_bootstrap::PendingConnectionManager::Get().OpenIpcChannel(
       identity, channel.TakeLocalEndpoint().TakePlatformHandle().TakeFD());
   launcher_->LaunchDriveFs(
       base::FilePath("/tmp").Append(datadir),

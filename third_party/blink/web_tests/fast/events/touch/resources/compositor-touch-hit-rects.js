@@ -61,7 +61,8 @@ function logRects(testName, opt_noOverlay) {
     sortedRects.sort(sortRects);
     for ( var i = 0; i < sortedRects.length; ++i) {
         var rect = sortedRects[i].layerRect;
-        var rect_string = `${rect.x},${rect.y} ${rect.width}x${rect.height}`;
+        // Logging width/height for layer identification assistance.
+        var rect_string = `${rect.width}x${rect.height}`;
         var hit = sortedRects[i].hitTestRect;
         var hit_string = `${hit.x},${hit.y} ${hit.width}x${hit.height}`;
         log(`${testName}: layer(${rect_string}) has hit test rect (${hit_string})`);
@@ -73,10 +74,6 @@ function logRects(testName, opt_noOverlay) {
 if (window.testRunner) {
     testRunner.dumpAsText();
     document.documentElement.setAttribute('dumpRenderTree', 'true');
-}
-
-if (window.internals) {
-    internals.settings.setMockScrollbarsEnabled(true);
 }
 
 window.onload = function() {

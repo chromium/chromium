@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_VIDEO_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_VIDEO_PAINTER_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-struct PaintInfo;
-class LayoutPoint;
 class LayoutVideo;
+struct PaintInfo;
+struct PhysicalOffset;
 
 class VideoPainter {
   STACK_ALLOCATED();
@@ -19,7 +19,7 @@ class VideoPainter {
  public:
   VideoPainter(const LayoutVideo& layout_video) : layout_video_(layout_video) {}
 
-  void PaintReplaced(const PaintInfo&, const LayoutPoint& paint_offset);
+  void PaintReplaced(const PaintInfo&, const PhysicalOffset& paint_offset);
 
  private:
   const LayoutVideo& layout_video_;

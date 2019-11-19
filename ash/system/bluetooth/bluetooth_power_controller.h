@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/session/session_observer.h"
-#include "ash/shell_observer.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -29,10 +28,9 @@ namespace ash {
 // setting instead.
 class ASH_EXPORT BluetoothPowerController
     : public SessionObserver,
-      public ShellObserver,
       public device::BluetoothAdapter::Observer {
  public:
-  BluetoothPowerController();
+  explicit BluetoothPowerController(PrefService* local_state);
   ~BluetoothPowerController() override;
 
   // Changes the bluetooth power setting to |enabled|.
@@ -54,9 +52,6 @@ class ASH_EXPORT BluetoothPowerController
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
-
-  // ShellObserver:
-  void OnLocalStatePrefServiceInitialized(PrefService* pref_service) override;
 
   // BluetoothAdapter::Observer:
   void AdapterPresentChanged(device::BluetoothAdapter* adapter,
@@ -128,7 +123,7 @@ class ASH_EXPORT BluetoothPowerController
   bool is_primary_user_bluetooth_applied_ = false;
 
   PrefService* active_user_pref_service_ = nullptr;
-  PrefService* local_state_pref_service_ = nullptr;
+  PrefService* local_state_ = nullptr;
 
   // Contains pending tasks which depend on the availability of bluetooth
   // adapter.
@@ -152,7 +147,7 @@ class ASH_EXPORT BluetoothPowerController
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 
-  base::WeakPtrFactory<BluetoothPowerController> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothPowerController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothPowerController);
 };

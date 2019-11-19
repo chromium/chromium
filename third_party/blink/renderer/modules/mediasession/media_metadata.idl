@@ -5,6 +5,7 @@
 // https://wicg.github.io/mediasession/#the-mediametadata-interface
 
 [
+    Exposed=Window,
     ConstructorCallWith=ScriptState,
     Constructor(optional MediaMetadataInit metadata),
     RaisesException=Constructor,

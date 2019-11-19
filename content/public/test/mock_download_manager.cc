@@ -5,7 +5,6 @@
 #include "content/public/test/mock_download_manager.h"
 
 #include "components/download/public/common/download_create_info.h"
-#include "components/download/public/common/download_url_loader_factory_getter.h"
 #include "content/browser/byte_stream.h"
 
 namespace content {
@@ -20,6 +19,7 @@ MockDownloadManager::CreateDownloadItemAdapter::CreateDownloadItemAdapter(
     const GURL& site_url,
     const GURL& tab_url,
     const GURL& tab_referrer_url,
+    const base::Optional<url::Origin>& request_initiator,
     const std::string& mime_type,
     const std::string& original_mime_type,
     base::Time start_time,
@@ -45,6 +45,7 @@ MockDownloadManager::CreateDownloadItemAdapter::CreateDownloadItemAdapter(
       site_url(site_url),
       tab_url(tab_url),
       tab_referrer_url(tab_referrer_url),
+      request_initiator(request_initiator),
       mime_type(mime_type),
       original_mime_type(original_mime_type),
       start_time(start_time),
@@ -71,6 +72,7 @@ MockDownloadManager::CreateDownloadItemAdapter::CreateDownloadItemAdapter(
       site_url(rhs.site_url),
       tab_url(rhs.tab_url),
       tab_referrer_url(rhs.tab_referrer_url),
+      request_initiator(rhs.request_initiator),
       start_time(rhs.start_time),
       end_time(rhs.end_time),
       etag(rhs.etag),
@@ -94,6 +96,7 @@ bool MockDownloadManager::CreateDownloadItemAdapter::operator==(
       target_path == rhs.target_path && url_chain == rhs.url_chain &&
       referrer_url == rhs.referrer_url && site_url == rhs.site_url &&
       tab_url == rhs.tab_url && tab_referrer_url == rhs.tab_referrer_url &&
+      request_initiator == rhs.request_initiator &&
       mime_type == rhs.mime_type &&
       original_mime_type == rhs.original_mime_type &&
       start_time == rhs.start_time && end_time == rhs.end_time &&
@@ -109,15 +112,6 @@ MockDownloadManager::MockDownloadManager() {}
 
 MockDownloadManager::~MockDownloadManager() {}
 
-void MockDownloadManager::StartDownload(
-    std::unique_ptr<download::DownloadCreateInfo> info,
-    std::unique_ptr<download::InputStream> stream,
-    scoped_refptr<download::DownloadURLLoaderFactoryGetter>
-        url_loader_factory_getter,
-    const download::DownloadUrlParameters::OnStartedCallback& callback) {
-  MockStartDownload(info.get(), stream.get());
-}
-
 download::DownloadItem* MockDownloadManager::CreateDownloadItem(
     const std::string& guid,
     uint32_t id,
@@ -128,6 +122,7 @@ download::DownloadItem* MockDownloadManager::CreateDownloadItem(
     const GURL& site_url,
     const GURL& tab_url,
     const GURL& tab_referrer_url,
+    const base::Optional<url::Origin>& request_initiator,
     const std::string& mime_type,
     const std::string& original_mime_type,
     base::Time start_time,
@@ -146,10 +141,10 @@ download::DownloadItem* MockDownloadManager::CreateDownloadItem(
     const std::vector<download::DownloadItem::ReceivedSlice>& received_slices) {
   CreateDownloadItemAdapter adapter(
       guid, id, current_path, target_path, url_chain, referrer_url, site_url,
-      tab_url, tab_referrer_url, mime_type, original_mime_type, start_time,
-      end_time, etag, last_modified, received_bytes, total_bytes, hash, state,
-      danger_type, interrupt_reason, opened, last_access_time, transient,
-      received_slices);
+      tab_url, tab_referrer_url, request_initiator, mime_type,
+      original_mime_type, start_time, end_time, etag, last_modified,
+      received_bytes, total_bytes, hash, state, danger_type, interrupt_reason,
+      opened, last_access_time, transient, received_slices);
   return MockCreateDownloadItem(adapter);
 }
 

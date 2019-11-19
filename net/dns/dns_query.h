@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -32,19 +33,31 @@ class IOBufferWithSize;
 // Represents on-the-wire DNS query message as an object.
 class NET_EXPORT_PRIVATE DnsQuery {
  public:
+  enum class PaddingStrategy {
+    // Query will not be padded. Recommended strategy when query will not be
+    // encrypted.
+    NONE,
+
+    // Query will be padded to the next multiple of 128 octets. Recommended
+    // strategy (per RFC 8467) when query will be encrypted, e.g. through
+    // DNS-over-HTTPS.
+    BLOCK_LENGTH_128,
+  };
+
   // Constructs a query message from |qname| which *MUST* be in a valid
   // DNS name format, and |qtype|. The qclass is set to IN.
-  // If opt_rdata is not null, an OPT record will be added to the "Additional"
+  // If |opt_rdata| is not null, an OPT record will be added to the "Additional"
   // section of the query.
   DnsQuery(uint16_t id,
            const base::StringPiece& qname,
            uint16_t qtype,
-           const OptRecordRdata* opt_rdata = nullptr);
+           const OptRecordRdata* opt_rdata = nullptr,
+           PaddingStrategy padding_strategy = PaddingStrategy::NONE);
 
   // Constructs an empty query from a raw packet in |buffer|. If the raw packet
   // represents a valid DNS query in the wire format (RFC 1035), Parse() will
   // populate the empty query.
-  DnsQuery(scoped_refptr<IOBufferWithSize> buffer);
+  explicit DnsQuery(scoped_refptr<IOBufferWithSize> buffer);
 
   ~DnsQuery();
 
@@ -72,10 +85,7 @@ class NET_EXPORT_PRIVATE DnsQuery {
   base::StringPiece question() const;
 
   // Returns the size of the question section.
-  size_t question_size() const {
-    // QNAME + QTYPE + QCLASS
-    return qname_size_ + sizeof(uint16_t) + sizeof(uint16_t);
-  }
+  size_t question_size() const;
 
   // IOBuffer accessor to be used for writing out the query. The buffer has
   // the same byte layout as the DNS query wire format.

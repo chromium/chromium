@@ -12,5 +12,5 @@ interface WakeLockContext {
   GetWakeLock(WakeLockType type,
               WakeLockReason reason,
               string description,
-              WakeLock& wake_lock);
+              pending_receiver<WakeLock> wake_lock);
 };

@@ -8,6 +8,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/pending_task.h"
+#include "base/strings/string_piece.h"
 #include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/heap_profiler_allocation_context.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"
@@ -334,7 +335,7 @@ TEST_F(AllocationContextTrackerTest, TrackCategoryName) {
   AllocationContext ctx;
   ASSERT_TRUE(AllocationContextTracker::GetInstanceForCurrentThread()
                   ->GetContextSnapshot(&ctx));
-  ASSERT_FALSE(ctx.type_name);
+  ASSERT_EQ("UntrackedTask", base::StringPiece(ctx.type_name));
 }
 
 TEST_F(AllocationContextTrackerTest, IgnoreAllocationTest) {

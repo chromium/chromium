@@ -134,8 +134,6 @@ static_library("secure_channel") {
     "secure_channel_impl.h",
     "secure_channel_initializer.cc",
     "secure_channel_initializer.h",
-    "secure_channel_service.cc",
-    "secure_channel_service.h",
     "secure_context.h",
     "session_keys.cc",
     "session_keys.h",
@@ -161,13 +159,12 @@ static_library("secure_channel") {
     "//chromeos/services/secure_channel/public/mojom",
     "//crypto",
     "//device/bluetooth",
-    "//services/service_manager/public/cpp",
-    "//services/service_manager/public/mojom",
+    "//device/bluetooth/public/cpp",
   ]
 
   visibility = [
     ":*",
-    "//chrome/browser",
+    "//chrome/browser/chromeos",
     "//chromeos/services/secure_channel/public/cpp/client:unit_tests",
   ]
 }
@@ -310,7 +307,6 @@ source_set("unit_tests") {
     "//chromeos/services/secure_channel/public/mojom",
     "//chromeos/services/secure_channel/public/mojom:unit_tests",
     "//device/bluetooth:mocks",
-    "//services/service_manager/public/cpp/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

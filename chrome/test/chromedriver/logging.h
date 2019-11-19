@@ -80,7 +80,7 @@ class WebDriverLog : public Log {
 };
 
 // Initializes logging system for ChromeDriver. Returns true on success.
-bool InitLogging();
+bool InitLogging(uint16_t port);
 
 // Creates |Log|s, |DevToolsEventListener|s, and |CommandListener|s based on
 // logging preferences.
@@ -91,8 +91,6 @@ Status CreateLogs(
     std::vector<std::unique_ptr<DevToolsEventListener>>* out_devtools_listeners,
     std::vector<std::unique_ptr<CommandListener>>* out_command_listeners);
 
-const char* const kPortProtectionMessage =
-    "Please protect ports used by ChromeDriver and related test frameworks to "
-    "prevent access by malicious code.";
+const char* GetPortProtectionMessage();
 
 #endif  // CHROME_TEST_CHROMEDRIVER_LOGGING_H_

@@ -42,7 +42,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GLInProcessContext {
   // not thread safe. If |surface| is null, then the other parameters are used
   // to correctly create a surface.
   ContextResult Initialize(
-      scoped_refptr<CommandBufferTaskExecutor> task_executor,
+      CommandBufferTaskExecutor* task_executor,
       scoped_refptr<gl::GLSurface> surface,
       bool is_offscreen,
       SurfaceHandle window,

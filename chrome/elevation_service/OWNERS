@@ -4,3 +4,4 @@ sorin@chromium.org
 
 per-file *.idl=set noparent
 per-file *.idl=file://ipc/SECURITY_OWNERS
+# COMPONENT: Internals>Installer>Components

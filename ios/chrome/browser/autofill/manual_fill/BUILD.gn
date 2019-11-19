@@ -11,11 +11,12 @@ source_set("manual_fill") {
   ]
   deps = [
     "//base",
-    "//components/autofill/core/common:common",
-    "//components/keyed_service/core:core",
-    "//components/password_manager/core/browser:browser",
+    "//components/autofill/core/common",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:affiliation",
     "//ios/chrome/browser/browser_state:browser_state",
-    "//ios/chrome/browser/passwords:passwords",
+    "//ios/chrome/browser/passwords",
   ]
   libs = [ "UIKit.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -30,11 +31,11 @@ source_set("unit_tests") {
   deps = [
     ":manual_fill",
     "//base/test:test_support",
-    "//components/autofill/core/common:common",
-    "//components/keyed_service/core:core",
+    "//components/autofill/core/common",
+    "//components/keyed_service/core",
     "//components/password_manager/core/browser:test_support",
     "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/passwords:passwords",
-    "//testing/gtest:gtest",
+    "//ios/chrome/browser/passwords",
+    "//testing/gtest",
   ]
 }

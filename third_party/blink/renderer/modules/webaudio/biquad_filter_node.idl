@@ -36,6 +36,7 @@ enum BiquadFilterType {
 };
 
 [
+    Exposed=Window,
     Constructor(BaseAudioContext context, optional BiquadFilterOptions options),
     RaisesException=Constructor,
     Measure

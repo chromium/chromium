@@ -1,0 +1,14 @@
+Tests that slow completions do not interfere with editing styles.
+
+Active element: SPAN, webkit-css-property text-prompt
+element.style {
+   white-space: n
+   : 
+}
+div {
+   display: block
+}
+html {
+   color: -internal-root-color
+}
+

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/download_utils.h"
@@ -53,11 +54,12 @@ DownloadResponseHandler::DownloadResponseHandler(
     bool is_parallel_request,
     bool is_transient,
     bool fetch_error_body,
-    bool follow_cross_origin_redirects,
+    network::mojom::RedirectMode cross_origin_redirects,
     const DownloadUrlParameters::RequestHeadersType& request_headers,
     const std::string& request_origin,
     DownloadSource download_source,
-    std::vector<GURL> url_chain)
+    std::vector<GURL> url_chain,
+    bool is_background_mode)
     : delegate_(delegate),
       started_(false),
       save_info_(std::move(save_info)),
@@ -67,7 +69,7 @@ DownloadResponseHandler::DownloadResponseHandler(
       referrer_policy_(resource_request->referrer_policy),
       is_transient_(is_transient),
       fetch_error_body_(fetch_error_body),
-      follow_cross_origin_redirects_(follow_cross_origin_redirects),
+      cross_origin_redirects_(cross_origin_redirects),
       first_origin_(url::Origin::Create(resource_request->url)),
       request_headers_(request_headers),
       request_origin_(request_origin),
@@ -75,27 +77,29 @@ DownloadResponseHandler::DownloadResponseHandler(
       has_strong_validators_(false),
       is_partial_request_(save_info_->offset > 0),
       completed_(false),
-      abort_reason_(DOWNLOAD_INTERRUPT_REASON_NONE) {
+      abort_reason_(DOWNLOAD_INTERRUPT_REASON_NONE),
+      is_background_mode_(is_background_mode) {
   if (!is_parallel_request) {
     RecordDownloadCountWithSource(UNTHROTTLED_COUNT, download_source);
   }
   if (resource_request->request_initiator.has_value())
-    origin_ = resource_request->request_initiator.value().GetURL();
+    request_initiator_ = resource_request->request_initiator;
 }
 
 DownloadResponseHandler::~DownloadResponseHandler() = default;
 
 void DownloadResponseHandler::OnReceiveResponse(
-    const network::ResourceResponseHead& head) {
+    network::mojom::URLResponseHeadPtr head) {
   create_info_ = CreateDownloadCreateInfo(head);
-  cert_status_ = head.cert_status;
+  cert_status_ = head->cert_status;
 
   // TODO(xingliu): Do not use http cache.
   // Sets page transition type correctly and call
   // |RecordDownloadSourcePageTransitionType| here.
-  if (head.headers) {
-    has_strong_validators_ = head.headers->HasStrongValidators();
-    RecordDownloadHttpResponseCode(head.headers->response_code());
+  if (head->headers) {
+    has_strong_validators_ = head->headers->HasStrongValidators();
+    RecordDownloadHttpResponseCode(head->headers->response_code(),
+                                   is_background_mode_);
     RecordDownloadContentDisposition(create_info_->content_disposition);
   }
 
@@ -103,10 +107,12 @@ void DownloadResponseHandler::OnReceiveResponse(
   // suggested name for the security origin of the downlaod URL. However, this
   // assumption doesn't hold if there were cross origin redirects. Therefore,
   // clear the suggested_name for such requests.
-  if (origin_.is_valid() && !create_info_->url_chain.back().SchemeIsBlob() &&
+  if (request_initiator_.has_value() &&
+      !create_info_->url_chain.back().SchemeIsBlob() &&
       !create_info_->url_chain.back().SchemeIs(url::kAboutScheme) &&
       !create_info_->url_chain.back().SchemeIs(url::kDataScheme) &&
-      origin_ != create_info_->url_chain.back().GetOrigin()) {
+      request_initiator_.value() !=
+          url::Origin::Create(create_info_->url_chain.back())) {
     create_info_->save_info->suggested_name.clear();
   }
 
@@ -143,6 +149,7 @@ DownloadResponseHandler::CreateDownloadCreateInfo(
   create_info->request_headers = request_headers_;
   create_info->request_origin = request_origin_;
   create_info->download_source = download_source_;
+  create_info->request_initiator = request_initiator_;
 
   HandleResponseHeaders(head.headers.get(), create_info.get());
   return create_info;
@@ -150,30 +157,41 @@ DownloadResponseHandler::CreateDownloadCreateInfo(
 
 void DownloadResponseHandler::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
-    const network::ResourceResponseHead& head) {
-  if (!follow_cross_origin_redirects_ &&
-      !first_origin_.IsSameOriginWith(
-          url::Origin::Create(redirect_info.new_url))) {
-    abort_reason_ = DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT;
-    url_chain_.push_back(redirect_info.new_url);
-    method_ = redirect_info.new_method;
-    referrer_ = GURL(redirect_info.new_referrer);
-    referrer_policy_ = redirect_info.new_referrer_policy;
+    network::mojom::URLResponseHeadPtr head) {
+  // Check if redirect URL is web safe.
+  if (delegate_ && !delegate_->CanRequestURL(redirect_info.new_url)) {
+    abort_reason_ = DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST;
     OnComplete(network::URLLoaderCompletionStatus(net::OK));
     return;
   }
+
+  if (!first_origin_.IsSameOriginWith(
+          url::Origin::Create(redirect_info.new_url))) {
+    // Cross-origin redirect.
+    switch (cross_origin_redirects_) {
+      case network::mojom::RedirectMode::kFollow:
+        // Pretend we didn't notice, and keep going.
+        break;
+      case network::mojom::RedirectMode::kManual:
+        abort_reason_ = DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT;
+        url_chain_.push_back(redirect_info.new_url);
+        method_ = redirect_info.new_method;
+        referrer_ = GURL(redirect_info.new_referrer);
+        referrer_policy_ = redirect_info.new_referrer_policy;
+        OnComplete(network::URLLoaderCompletionStatus(net::OK));
+        return;
+      case network::mojom::RedirectMode::kError:
+        abort_reason_ = DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST;
+        OnComplete(network::URLLoaderCompletionStatus(net::OK));
+        return;
+    }
+  }
+
   if (is_partial_request_) {
     // A redirect while attempting a partial resumption indicates a potential
     // middle box. Trigger another interruption so that the
     // DownloadItem can retry.
     abort_reason_ = DOWNLOAD_INTERRUPT_REASON_SERVER_UNREACHABLE;
-    OnComplete(network::URLLoaderCompletionStatus(net::OK));
-    return;
-  }
-
-  // Check if redirect URL is web safe.
-  if (delegate_ && !delegate_->CanRequestURL(redirect_info.new_url)) {
-    abort_reason_ = DOWNLOAD_INTERRUPT_REASON_NETWORK_INVALID_REQUEST;
     OnComplete(network::URLLoaderCompletionStatus(net::OK));
     return;
   }
@@ -194,7 +212,7 @@ void DownloadResponseHandler::OnUploadProgress(
 }
 
 void DownloadResponseHandler::OnReceiveCachedMetadata(
-    const std::vector<uint8_t>& data) {}
+    mojo_base::BigBuffer data) {}
 
 void DownloadResponseHandler::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {}
@@ -207,7 +225,7 @@ void DownloadResponseHandler::OnStartLoadingResponseBody(
   mojom::DownloadStreamHandlePtr stream_handle =
       mojom::DownloadStreamHandle::New();
   stream_handle->stream = std::move(body);
-  stream_handle->client_request = mojo::MakeRequest(&client_ptr_);
+  stream_handle->client_receiver = client_remote_.BindNewPipeAndPassReceiver();
   OnResponseStarted(std::move(stream_handle));
 }
 
@@ -219,11 +237,21 @@ void DownloadResponseHandler::OnComplete(
   completed_ = true;
   DownloadInterruptReason reason = HandleRequestCompletionStatus(
       static_cast<net::Error>(status.error_code), has_strong_validators_,
-      cert_status_, abort_reason_);
+      cert_status_, is_partial_request_, abort_reason_);
 
-  if (client_ptr_) {
-    client_ptr_->OnStreamCompleted(
+  if (client_remote_) {
+    client_remote_->OnStreamCompleted(
         ConvertInterruptReasonToMojoNetworkRequestStatus(reason));
+  }
+
+  if (reason == DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED) {
+    base::UmaHistogramSparse("Download.MapErrorNetworkFailed.NetworkService",
+                             std::abs(status.error_code));
+    if (is_background_mode_) {
+      base::UmaHistogramSparse(
+          "Download.MapErrorNetworkFailed.NetworkService.BackgroundDownload",
+          std::abs(status.error_code));
+    }
   }
 
   if (started_) {

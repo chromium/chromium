@@ -9,9 +9,11 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/threading/thread.h"
 #include "base/time/default_tick_clock.h"
 #include "media/audio/audio_features.h"
@@ -19,9 +21,36 @@
 #include "media/audio/audio_thread.h"
 #include "media/audio/audio_thread_hang_monitor.h"
 
+using HangAction = media::AudioThreadHangMonitor::HangAction;
+
 namespace audio {
 
 namespace {
+
+base::Optional<base::TimeDelta> GetAudioThreadHangDeadline() {
+  if (!base::FeatureList::IsEnabled(
+          features::kAudioServiceOutOfProcessKillAtHang)) {
+    return base::nullopt;
+  }
+  const std::string timeout_string = base::GetFieldTrialParamValueByFeature(
+      features::kAudioServiceOutOfProcessKillAtHang, "timeout_seconds");
+  int timeout_int = 0;
+  if (!base::StringToInt(timeout_string, &timeout_int) || timeout_int == 0)
+    return base::nullopt;
+  return base::TimeDelta::FromSeconds(timeout_int);
+}
+
+HangAction GetAudioThreadHangAction() {
+  const bool dump =
+      base::FeatureList::IsEnabled(features::kDumpOnAudioServiceHang);
+  const bool kill = base::FeatureList::IsEnabled(
+      features::kAudioServiceOutOfProcessKillAtHang);
+  if (dump) {
+    return kill ? HangAction::kDumpAndTerminateCurrentProcess
+                : HangAction::kDump;
+  }
+  return kill ? HangAction::kTerminateCurrentProcess : HangAction::kDoNothing;
+}
 
 // Thread class for hosting owned AudioManager on the main thread of the
 // service, with a separate worker thread (started on-demand) for running things
@@ -53,7 +82,8 @@ MainThread::MainThread()
     : task_runner_(base::ThreadTaskRunnerHandle::Get()),
       worker_thread_("AudioWorkerThread"),
       hang_monitor_(media::AudioThreadHangMonitor::Create(
-          base::FeatureList::IsEnabled(features::kDumpOnAudioServiceHang),
+          GetAudioThreadHangAction(),
+          GetAudioThreadHangDeadline(),
           base::DefaultTickClock::GetInstance(),
           task_runner_)) {}
 

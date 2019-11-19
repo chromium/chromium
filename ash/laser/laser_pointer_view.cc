@@ -168,8 +168,7 @@ LaserPointerView::LaserPointerView(base::TimeDelta life_duration,
       stationary_timer_(FROM_HERE,
                         stationary_point_delay,
                         base::BindRepeating(&LaserPointerView::UpdateTime,
-                                            base::Unretained(this))),
-      weak_ptr_factory_(this) {}
+                                            base::Unretained(this))) {}
 
 LaserPointerView::~LaserPointerView() = default;
 

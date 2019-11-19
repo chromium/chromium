@@ -29,17 +29,13 @@ enum class ShutdownReason;
 // Displays onscreen animations and locks or suspends the system in response to
 // the power button being pressed or released.
 // Lock workflow:
-// Entry points:
+// Entry point:
 //  * StartLockAnimation (bool shutdown after lock) - starts lock that can be
 //    cancelled.
-//  * StartLockAnimationAndLockImmediately (bool shutdown after lock) - starts
-//    uninterruptible lock animation.
-// This leads to call of either StartImmediatePreLockAnimation or
-// StartCancellablePreLockAnimation. Once they complete
-// PreLockAnimationFinished is called, and system lock is requested.
-// Once system locks and lock UI is created, OnLockStateChanged is called, and
-// StartPostLockAnimation is called. In PostLockAnimationFinished two
-// things happen : EVENT_LOCK_ANIMATION_FINISHED notification is sent (it
+// Once it completes, PreLockAnimationFinished is called, and system lock is
+// requested. Once system locks and lock UI is created, OnLockStateChanged is
+// called, and StartPostLockAnimation is called. In PostLockAnimationFinished
+// two things happen : EVENT_LOCK_ANIMATION_FINISHED notification is sent (it
 // triggers third part of animation within lock UI), and check for continuing to
 // shutdown is made.
 //
@@ -62,20 +58,11 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   void AddObserver(LockStateObserver* observer);
   void RemoveObserver(LockStateObserver* observer);
 
-  // Starts locking (with slow animation) that can be cancelled.
+  // Starts locking (with slow pre-lock animation) that can be cancelled.
   void StartLockAnimation();
-
-  // Starts locking (with slow animation) that can be cancelled.
-  // After locking and |kLockToShutdownTimeoutMs| StartShutdownAnimation()
-  // will be called unless CancelShutdownAnimation() is called.
-  // |shutdown_reason| gives the reason for shutdown.
-  void StartLockThenShutdownAnimation(ShutdownReason shutdown_reason);
 
   // Starts shutting down (with slow animation) that can be cancelled.
   void StartShutdownAnimation(ShutdownReason reason);
-
-  // Starts usual lock animation, but locks immediately.
-  void StartLockAnimationAndLockImmediately();
 
   // Starts locking without slow animation.
   void LockWithoutAnimation();
@@ -87,9 +74,6 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // Returns true if we are shutting down.
   bool ShutdownRequested();
 
-  // Returns true if we are within cancellable lock timeframe.
-  bool CanCancelLockAnimation();
-
   // Cancels locking and reverts lock animation.
   void CancelLockAnimation();
 
@@ -98,9 +82,6 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
 
   // Cancels shutting down and reverts shutdown animation.
   void CancelShutdownAnimation();
-
-  // Called when Chrome gets a request to display the lock screen.
-  void OnStartingLock();
 
   // Displays the shutdown animation and requests a system shutdown or system
   // restart depending on the the state of the |RebootOnShutdown| device policy.
@@ -136,12 +117,6 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // Reverts the pre-lock animation, reports the error.
   void OnLockFailTimeout();
 
-  // Starts timer for gap between lock and shutdown.
-  void StartLockToShutdownTimer();
-
-  // Calls StartShutdownAnimation().
-  void OnLockToShutdownTimeout();
-
   // Starts timer for undoable shutdown animation.
   void StartPreShutdownAnimationTimer();
 
@@ -156,19 +131,8 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // Request that the machine be shut down.
   void OnRealPowerTimeout();
 
-  // Starts shutdown animation that can be cancelled and starts pre-shutdown
-  // timer.
-  void StartCancellableShutdownAnimation();
-
-  // If |request_lock_on_completion| is true, a lock request will be sent
-  // after the pre-lock animation completes.  (The pre-lock animation is
-  // also displayed in response to already-in-progress lock requests; in
-  // these cases an additional lock request is undesirable.)
-  void StartImmediatePreLockAnimation(bool request_lock_on_completion);
-  void StartCancellablePreLockAnimation();
   void PreLockAnimation(SessionStateAnimator::AnimationSpeed speed,
                         bool request_lock_on_completion);
-  void CancelPreLockAnimation();
   void StartPostLockAnimation();
   // This method calls |callback| when animation completes.
   void StartUnlockAnimationBeforeUIDestroyed(base::OnceClosure callback);
@@ -215,9 +179,6 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // Indicates that controller displays lock animation.
   bool animating_lock_ = false;
 
-  // Indicates that lock animation can be undone.
-  bool can_cancel_lock_animation_ = false;
-
   // Indicates whether post lock animation should be immediate.
   bool post_lock_immediate_animation_ = false;
 
@@ -232,11 +193,6 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // Started when we request that the screen be locked.  When it fires, we
   // assume that our request got dropped.
   base::OneShotTimer lock_fail_timer_;
-
-  // Started when the screen is locked while the power button is held.  Adds a
-  // delay between the appearance of the lock screen and the beginning of the
-  // pre-shutdown animation.
-  base::OneShotTimer lock_to_shutdown_timer_;
 
   // Started when we begin displaying the pre-shutdown animation.  When it
   // fires, we start the shutdown animation and get ready to request shutdown.
@@ -253,7 +209,7 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
 
   base::ObserverList<LockStateObserver>::Unchecked observers_;
 
-  base::WeakPtrFactory<LockStateController> weak_ptr_factory_;
+  base::WeakPtrFactory<LockStateController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LockStateController);
 };

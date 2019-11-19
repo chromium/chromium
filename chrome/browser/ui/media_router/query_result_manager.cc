@@ -165,7 +165,7 @@ void QueryResultManager::RemoveOldSourcesForCastMode(
     return;
 
   for (const MediaSource& source : cast_mode_it->second) {
-    if (!base::ContainsValue(new_sources, source)) {
+    if (!base::Contains(new_sources, source)) {
       sinks_observers_.erase(source);
       SetSinksCompatibleWithSource(cast_mode, source, std::vector<MediaSink>());
     }
@@ -177,7 +177,7 @@ void QueryResultManager::AddObserversForCastMode(
     const std::vector<MediaSource>& sources,
     const url::Origin& origin) {
   for (const MediaSource& source : sources) {
-    if (!base::ContainsKey(sinks_observers_, source)) {
+    if (!base::Contains(sinks_observers_, source)) {
       auto observer = std::make_unique<MediaSourceMediaSinksObserver>(
           cast_mode, source, origin, router_, this);
       observer->Init();
@@ -200,7 +200,7 @@ void QueryResultManager::SetSinksCompatibleWithSource(
        /* no-op */) {
     const MediaSink::Id& sink_id = it->first;
     CastModesWithMediaSources& sources_for_sink = it->second;
-    if (!base::ContainsKey(new_sink_ids, sink_id))
+    if (!base::Contains(new_sink_ids, sink_id))
       sources_for_sink.RemoveSource(cast_mode, source);
     if (sources_for_sink.IsEmpty()) {
       sinks_with_sources_.erase(it++);
@@ -249,12 +249,12 @@ bool QueryResultManager::AreSourcesValidForCastMode(
   bool has_cast_mode = cast_mode_it != cast_mode_sources_.end();
   // If a source has already been registered, then it must be associated with
   // |cast_mode|.
-  return std::find_if(
-             sources.begin(), sources.end(), [=](const MediaSource& source) {
-               return base::ContainsKey(sinks_observers_, source) &&
-                      (!has_cast_mode ||
-                       !base::ContainsValue(cast_mode_it->second, source));
-             }) == sources.end();
+  return std::find_if(sources.begin(), sources.end(),
+                      [=](const MediaSource& source) {
+                        return base::Contains(sinks_observers_, source) &&
+                               (!has_cast_mode ||
+                                !base::Contains(cast_mode_it->second, source));
+                      }) == sources.end();
 }
 
 void QueryResultManager::NotifyOnResultsUpdated() {
@@ -265,7 +265,7 @@ void QueryResultManager::NotifyOnResultsUpdated() {
     sinks.push_back(sink_with_cast_modes);
   }
   for (const auto& sink : all_sinks_) {
-    if (!base::ContainsKey(sinks_with_sources_, sink.id()))
+    if (!base::Contains(sinks_with_sources_, sink.id()))
       sinks.push_back(MediaSinkWithCastModes(sink));
   }
   for (QueryResultManager::Observer& observer : observers_)

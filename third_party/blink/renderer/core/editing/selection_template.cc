@@ -120,7 +120,7 @@ bool SelectionTemplate<Strategy>::AssertValid() const {
 }
 #endif
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 template <typename Strategy>
 void SelectionTemplate<Strategy>::ShowTreeForThis() const {
   if (base_.IsNull()) {
@@ -133,11 +133,8 @@ void SelectionTemplate<Strategy>::ShowTreeForThis() const {
                    ->ToMarkedTreeString(base_.AnchorNode(), "B",
                                         extent_.AnchorNode(), "E")
                    .Utf8()
-                   .data()
-            << "base: " << base_.ToAnchorTypeAndOffsetString().Utf8().data()
-            << "\n"
-            << "extent: "
-            << extent_.ToAnchorTypeAndOffsetString().Utf8().data();
+            << "base: " << base_.ToAnchorTypeAndOffsetString().Utf8() << "\n"
+            << "extent: " << extent_.ToAnchorTypeAndOffsetString().Utf8();
 }
 #endif
 

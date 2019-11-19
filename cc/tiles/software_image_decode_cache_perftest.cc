@@ -4,13 +4,13 @@
 
 #include <vector>
 
-#include "cc/base/lap_timer.h"
+#include "base/timer/lap_timer.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/raster/tile_task.h"
 #include "cc/tiles/software_image_decode_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 
 namespace cc {
 namespace {
@@ -63,7 +63,8 @@ class SoftwareImageDecodeCachePerfTest : public testing::Test {
                              PaintImage::GetNextContentId())
                   .TakePaintImage(),
               subrect, quality,
-              CreateMatrix(SkSize::Make(scale.first, scale.second)), 0u);
+              CreateMatrix(SkSize::Make(scale.first, scale.second)), 0u,
+              gfx::ColorSpace());
         }
       }
     }
@@ -77,12 +78,14 @@ class SoftwareImageDecodeCachePerfTest : public testing::Test {
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
-    perf_test::PrintResult("software_image_decode_cache_fromdrawimage", "",
-                           "result", timer_.LapsPerSecond(), "runs/s", true);
+    perf_test::PerfResultReporter reporter("software_image_decode_cache",
+                                           "fromdrawimage");
+    reporter.RegisterImportantMetric("", "runs/s");
+    reporter.AddResult("", timer_.LapsPerSecond());
   }
 
  private:
-  LapTimer timer_;
+  base::LapTimer timer_;
 };
 
 TEST_F(SoftwareImageDecodeCachePerfTest, FromDrawImage) {

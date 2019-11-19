@@ -70,11 +70,11 @@ int MockPermissionPromptFactory::TotalRequestCount() {
 }
 
 bool MockPermissionPromptFactory::RequestTypeSeen(PermissionRequestType type) {
-  return base::ContainsValue(request_types_seen_, type);
+  return base::Contains(request_types_seen_, type);
 }
 
 bool MockPermissionPromptFactory::RequestOriginSeen(const GURL& origin) {
-  return base::ContainsValue(request_origins_seen_, origin);
+  return base::Contains(request_origins_seen_, origin);
 }
 
 void MockPermissionPromptFactory::WaitForPermissionBubble() {

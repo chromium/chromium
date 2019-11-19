@@ -1,0 +1,23 @@
+main frame - DidStartNavigation
+main frame - ReadyToCommitNavigation
+main frame - didCommitLoadForFrame
+main frame - didReceiveTitle: Deferred iframes and images with loading='lazy' use the original base URL specified at the parse time
+main frame - didCommitLoadForFrame
+frame "<!--framePath //<!--frame0-->-->" - didReceiveTitle: 
+main frame - didFinishDocumentLoadForFrame
+main frame - didCommitLoadForFrame
+main frame - didHandleOnloadEventsForFrame
+main frame - didFinishLoadForFrame
+frame "<!--framePath //<!--frame0-->-->" - BeginNavigation request to 'http://web-platform.test:8001/loading/lazyload/resources/subframe.html', http method GET
+frame "<!--framePath //<!--frame0-->-->" - DidStartNavigation
+frame "<!--framePath //<!--frame0-->-->" - ReadyToCommitNavigation
+frame "<!--framePath //<!--frame0-->-->" - didCommitLoadForFrame
+frame "<!--framePath //<!--frame0-->-->" - didReceiveTitle: 
+frame "<!--framePath //<!--frame0-->-->" - didFinishDocumentLoadForFrame
+frame "<!--framePath //<!--frame0-->-->" - didHandleOnloadEventsForFrame
+frame "<!--framePath //<!--frame0-->-->" - didFinishLoadForFrame
+This is a testharness.js-based test.
+PASS Test that when deferred iframe is loaded, it uses the base URL computed at parse time.
+FAIL Test that when deferred img is loaded, it uses the base URL computed at parse time. assert_unreached: The image load should not fail, trying to load with invalid base URL. Reached unreachable code
+Harness: the test ran to completion.
+

@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -30,13 +31,12 @@ class CONTENT_EXPORT RenderFrameHostFactory {
   // or a regular RenderFrameHostImpl if no factory is registered.
   static std::unique_ptr<RenderFrameHostImpl> Create(
       SiteInstance* site_instance,
-      RenderViewHostImpl* render_view_host,
+      scoped_refptr<RenderViewHostImpl> render_view_host,
       RenderFrameHostDelegate* delegate,
       FrameTree* frame_tree,
       FrameTreeNode* frame_tree_node,
       int32_t routing_id,
       int32_t widget_routing_id,
-      bool hidden,
       bool renderer_initiated_creation);
 
   // Returns true if there is currently a globally-registered factory.
@@ -50,13 +50,12 @@ class CONTENT_EXPORT RenderFrameHostFactory {
   // function to create an alternate kind of RenderFrameHostImpl for testing.
   virtual std::unique_ptr<RenderFrameHostImpl> CreateRenderFrameHost(
       SiteInstance* site_instance,
-      RenderViewHostImpl* render_view_host,
+      scoped_refptr<RenderViewHostImpl> render_view_host,
       RenderFrameHostDelegate* delegate,
       FrameTree* frame_tree,
       FrameTreeNode* frame_tree_node,
       int32_t routing_id,
       int32_t widget_routing_id,
-      bool hidden,
       bool renderer_initiated_creation) = 0;
 
   // Registers a factory to be called when new RenderFrameHostImpls are created.

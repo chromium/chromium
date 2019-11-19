@@ -3,10 +3,24 @@
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <script src="../resources/run-after-layout-and-paint.js"></script>
+</head>
+<body>
+
+<select multiple id="menulist">
+  <option selected>One</option>
+  <option>Two</option>
+  <option>Three</option>
+  <option>Four</option>
+</select>
+
+<p id="description"></p>
+
 <script>
+// Wait until layout has settled to avoid notification spam.
 async_test_after_layout_and_paint((testCase) => {
     const expectedNotifications = [
         'ActiveDescendantChanged',
+        'Focus',
         'SelectedChildrenChanged',
         'SelectedChildrenChanged',
         'ActiveDescendantChanged',
@@ -70,17 +84,5 @@ async_test_after_layout_and_paint((testCase) => {
 }, 'Navigating in a multiselect list updates selection and the active selected option and sends a notification');
 
 </script>
-</head>
-<body>
-
-<select multiple id="menulist">
-  <option selected>One</option>
-  <option>Two</option>
-  <option>Three</option>
-  <option>Four</option>
-</select>
-
-<p id="description"></p>
-
 </body>
 </html>

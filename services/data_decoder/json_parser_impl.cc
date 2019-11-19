@@ -12,9 +12,7 @@
 
 namespace data_decoder {
 
-JsonParserImpl::JsonParserImpl(
-    std::unique_ptr<service_manager::ServiceContextRef> service_ref)
-    : service_ref_(std::move(service_ref)) {}
+JsonParserImpl::JsonParserImpl() = default;
 
 JsonParserImpl::~JsonParserImpl() = default;
 

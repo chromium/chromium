@@ -8,16 +8,66 @@
 
 #include "base/guid.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/download/public/common/download_item.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/public/browser/background_fetch_response.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/service_worker_context.h"
 #include "net/http/http_response_headers.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_storage_context.h"
 
 namespace content {
+
+// Holds state on the IO thread. Needed because blobs are bound to the IO
+// thread.
+class BackgroundFetchRequestInfo::BlobDataOnIO {
+ public:
+  BlobDataOnIO() = default;
+  ~BlobDataOnIO() = default;
+
+  BlobDataOnIO(const BlobDataOnIO&) = delete;
+  BlobDataOnIO& operator=(const BlobDataOnIO&) = delete;
+
+  void CreateBlobDataHandle(
+      scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
+      std::unique_ptr<storage::BlobDataHandle> blob_handle,
+      const base::FilePath& file_path,
+      uint64_t file_size,
+      uint64_t expected_response_size) {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    DCHECK(!blob_data_handle_);
+
+    // In Incognito mode, |blob_handle| will be populated.
+    if (blob_handle) {
+      blob_data_handle_ = std::move(blob_handle);
+      return;
+    }
+
+    // In a normal profile, |file_path| and |file_size| will
+    // be populated.
+    auto blob_builder =
+        std::make_unique<storage::BlobDataBuilder>(base::GenerateGUID());
+    blob_builder->AppendFile(file_path, /* offset= */ 0, file_size,
+                             /* expected_modification_time= */ base::Time());
+
+    blob_data_handle_ = GetBlobStorageContext(blob_storage_context.get())
+                            ->AddFinishedBlob(std::move(blob_builder));
+    DCHECK_EQ(expected_response_size,
+              blob_data_handle_ ? blob_data_handle_->size() : 0);
+  }
+
+  std::unique_ptr<storage::BlobDataHandle> TakeBlobDataHandle() {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    return std::move(blob_data_handle_);
+  }
+
+ private:
+  std::unique_ptr<storage::BlobDataHandle> blob_data_handle_;
+};
 
 BackgroundFetchRequestInfo::BackgroundFetchRequestInfo(
     int request_index,
@@ -70,7 +120,7 @@ void BackgroundFetchRequestInfo::SetResult(
 
 void BackgroundFetchRequestInfo::SetEmptyResultWithFailureReason(
     BackgroundFetchResult::FailureReason failure_reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   result_ = std::make_unique<BackgroundFetchResult>(
       /* response= */ nullptr, base::Time::Now(), failure_reason);
@@ -78,7 +128,7 @@ void BackgroundFetchRequestInfo::SetEmptyResultWithFailureReason(
 
 void BackgroundFetchRequestInfo::PopulateWithResponse(
     std::unique_ptr<BackgroundFetchResponse> response) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(response);
 
   url_chain_ = response->url_chain;
@@ -120,47 +170,45 @@ const std::vector<GURL>& BackgroundFetchRequestInfo::GetURLChain() const {
 }
 
 void BackgroundFetchRequestInfo::CreateResponseBlobDataHandle(
-    ChromeBlobStorageContext* blob_storage_context) {
+    scoped_refptr<ChromeBlobStorageContext> blob_storage_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(result_);
-  DCHECK(!blob_data_handle_);
+  DCHECK(!io_blob_data_);
 
   if (!result_->blob_handle && result_->file_path.empty())
     return;
 
-  // In Incognito mode the |result_->blob_handle| will be populated.
-  if (result_->blob_handle) {
-    blob_data_handle_ =
-        std::make_unique<storage::BlobDataHandle>(*result_->blob_handle);
-    result_->blob_handle.reset();
-    return;
+  io_blob_data_.reset(new BlobDataOnIO());
+  std::unique_ptr<storage::BlobDataHandle> handle =
+      result_->blob_handle ? std::make_unique<storage::BlobDataHandle>(
+                                 result_->blob_handle.value())
+                           : nullptr;
+  result_->blob_handle.reset();
+
+  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
+    // base::Unretained is safe because |io_blob_data_| is deleted on the IO
+    // thread in a task that must run after this task.
+    base::PostTask(
+        FROM_HERE, {BrowserThread::IO},
+        base::BindOnce(&BlobDataOnIO::CreateBlobDataHandle,
+                       base::Unretained(io_blob_data_.get()),
+                       std::move(blob_storage_context), std::move(handle),
+                       result_->file_path, result_->file_size, response_size_));
+  } else {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    io_blob_data_->CreateBlobDataHandle(std::move(blob_storage_context),
+                                        std::move(handle), result_->file_path,
+                                        result_->file_size, response_size_);
   }
-
-  // In a normal profile, |result_->file_path| and |result_->file_size| will be
-  // populated.
-  auto blob_builder =
-      std::make_unique<storage::BlobDataBuilder>(base::GenerateGUID());
-  blob_builder->AppendFile(result_->file_path, /* offset= */ 0,
-                           result_->file_size,
-                           /* expected_modification_time= */ base::Time());
-
-  blob_data_handle_ = GetBlobStorageContext(blob_storage_context)
-                          ->AddFinishedBlob(std::move(blob_builder));
-  DCHECK_EQ(response_size_, blob_data_handle_ ? blob_data_handle_->size() : 0);
-}
-
-storage::BlobDataHandle*
-BackgroundFetchRequestInfo::GetResponseBlobDataHandle() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return blob_data_handle_.get();
 }
 
 std::unique_ptr<storage::BlobDataHandle>
-BackgroundFetchRequestInfo::TakeResponseBlobDataHandle() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+BackgroundFetchRequestInfo::TakeResponseBlobDataHandleOnIO() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  return std::move(blob_data_handle_);
+  if (!io_blob_data_)
+    return nullptr;
+  return io_blob_data_->TakeBlobDataHandle();
 }
 
 uint64_t BackgroundFetchRequestInfo::GetResponseSize() const {

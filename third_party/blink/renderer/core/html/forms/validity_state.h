@@ -34,10 +34,6 @@ class ValidityState final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ValidityState* Create(ListedElement* control) {
-    return MakeGarbageCollected<ValidityState>(control);
-  }
-
   explicit ValidityState(ListedElement* control) : control_(control) {}
 
   void Trace(Visitor* visitor) override {

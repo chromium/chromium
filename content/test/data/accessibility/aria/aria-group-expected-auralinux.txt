@@ -1,0 +1,6 @@
+[document web]
+++[panel] xml-roles:group
+++++[link] name='Group Link1' xml-roles:link
+++++++[static] name='Group Link1'
+++++[link] name='Group Link2' xml-roles:link
+++++++[static] name='Group Link2'

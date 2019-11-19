@@ -20,7 +20,10 @@
 #include "third_party/blink/renderer/core/animation/optional_effect_timing.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -35,7 +38,33 @@ class KeyframeEffectTest : public PageTestBase {
   }
 
   KeyframeEffectModelBase* CreateEmptyEffectModel() {
-    return StringKeyframeEffectModel::Create(StringKeyframeVector());
+    return MakeGarbageCollected<StringKeyframeEffectModel>(
+        StringKeyframeVector());
+  }
+
+  // Returns a two-frame effect updated styles.
+  KeyframeEffect* GetTwoFrameEffect(const CSSPropertyID& property,
+                                    const String& value_a,
+                                    const String& value_b) {
+    StringKeyframeVector keyframes(2);
+    keyframes[0] = MakeGarbageCollected<StringKeyframe>();
+    keyframes[0]->SetOffset(0.0);
+    keyframes[0]->SetCSSPropertyValue(
+        property, value_a, SecureContextMode::kInsecureContext, nullptr);
+    keyframes[1] = MakeGarbageCollected<StringKeyframe>();
+    keyframes[1]->SetOffset(1.0);
+    keyframes[1]->SetCSSPropertyValue(
+        property, value_b, SecureContextMode::kInsecureContext, nullptr);
+    auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+    Timing timing;
+    auto* effect = MakeGarbageCollected<KeyframeEffect>(element, model, timing);
+    // Ensure GetCompositorKeyframeValue is updated which would normally happen
+    // when applying the animation styles.
+    UpdateAllLifecyclePhasesForTest();
+    model->SnapshotAllCompositorKeyframesIfNecessary(
+        *element, *element->GetComputedStyle(), nullptr);
+
+    return effect;
   }
 
   Persistent<Element> element;
@@ -81,7 +110,7 @@ TEST_F(AnimationKeyframeEffectV8Test, CanCreateAnAnimation) {
   ScriptState* script_state = scope.GetScriptState();
   NonThrowableExceptionState exception_state;
 
-  Vector<ScriptValue> blink_keyframes = {
+  HeapVector<ScriptValue> blink_keyframes = {
       V8ObjectBuilder(script_state)
           .AddString("width", "100px")
           .AddString("offset", "0")
@@ -94,7 +123,7 @@ TEST_F(AnimationKeyframeEffectV8Test, CanCreateAnAnimation) {
           .GetScriptValue()};
 
   ScriptValue js_keyframes(
-      script_state,
+      scope.GetIsolate(),
       ToV8(blink_keyframes, scope.GetContext()->Global(), scope.GetIsolate()));
 
   KeyframeEffect* animation =
@@ -139,7 +168,7 @@ TEST_F(AnimationKeyframeEffectV8Test, SetAndRetrieveEffectComposite) {
                                   effect_options_dictionary, exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
-  ScriptValue js_keyframes = ScriptValue::CreateNull(script_state);
+  ScriptValue js_keyframes = ScriptValue::CreateNull(scope.GetIsolate());
   KeyframeEffect* effect = CreateAnimationFromOption(
       script_state, element.Get(), js_keyframes, effect_options_dictionary);
   EXPECT_EQ("add", effect->composite());
@@ -147,10 +176,8 @@ TEST_F(AnimationKeyframeEffectV8Test, SetAndRetrieveEffectComposite) {
   effect->setComposite("replace");
   EXPECT_EQ("replace", effect->composite());
 
-  // TODO(crbug.com/788440): Once accumulate is supported as a composite
-  // property, setting it here should work.
   effect->setComposite("accumulate");
-  EXPECT_EQ("replace", effect->composite());
+  EXPECT_EQ("accumulate", effect->composite());
 }
 
 TEST_F(AnimationKeyframeEffectV8Test, KeyframeCompositeOverridesEffect) {
@@ -167,7 +194,7 @@ TEST_F(AnimationKeyframeEffectV8Test, KeyframeCompositeOverridesEffect) {
                                   effect_options_dictionary, exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
-  Vector<ScriptValue> blink_keyframes = {
+  HeapVector<ScriptValue> blink_keyframes = {
       V8ObjectBuilder(script_state)
           .AddString("width", "100px")
           .AddString("composite", "replace")
@@ -175,7 +202,7 @@ TEST_F(AnimationKeyframeEffectV8Test, KeyframeCompositeOverridesEffect) {
       V8ObjectBuilder(script_state).AddString("width", "0px").GetScriptValue()};
 
   ScriptValue js_keyframes(
-      script_state,
+      scope.GetIsolate(),
       ToV8(blink_keyframes, scope.GetContext()->Global(), scope.GetIsolate()));
 
   KeyframeEffect* effect = CreateAnimationFromOption(
@@ -184,7 +211,7 @@ TEST_F(AnimationKeyframeEffectV8Test, KeyframeCompositeOverridesEffect) {
 
   PropertyHandle property(GetCSSPropertyWidth());
   const PropertySpecificKeyframeVector& keyframes =
-      effect->Model()->GetPropertySpecificKeyframes(property);
+      *effect->Model()->GetPropertySpecificKeyframes(property);
 
   EXPECT_EQ(EffectModel::kCompositeReplace, keyframes[0]->Composite());
   EXPECT_EQ(EffectModel::kCompositeAdd, keyframes[1]->Composite());
@@ -193,7 +220,7 @@ TEST_F(AnimationKeyframeEffectV8Test, KeyframeCompositeOverridesEffect) {
 TEST_F(AnimationKeyframeEffectV8Test, CanSetDuration) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
-  ScriptValue js_keyframes = ScriptValue::CreateNull(script_state);
+  ScriptValue js_keyframes = ScriptValue::CreateNull(scope.GetIsolate());
   double duration = 2000;
 
   KeyframeEffect* animation = CreateAnimationFromTiming(
@@ -206,7 +233,7 @@ TEST_F(AnimationKeyframeEffectV8Test, CanSetDuration) {
 TEST_F(AnimationKeyframeEffectV8Test, CanOmitSpecifiedDuration) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
-  ScriptValue js_keyframes = ScriptValue::CreateNull(script_state);
+  ScriptValue js_keyframes = ScriptValue::CreateNull(scope.GetIsolate());
   KeyframeEffect* animation =
       CreateAnimation(script_state, element.Get(), js_keyframes);
   EXPECT_FALSE(animation->SpecifiedTiming().iteration_duration);
@@ -215,7 +242,7 @@ TEST_F(AnimationKeyframeEffectV8Test, CanOmitSpecifiedDuration) {
 TEST_F(AnimationKeyframeEffectV8Test, SpecifiedGetters) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
-  ScriptValue js_keyframes = ScriptValue::CreateNull(script_state);
+  ScriptValue js_keyframes = ScriptValue::CreateNull(scope.GetIsolate());
 
   v8::Local<v8::Object> timing_input = v8::Object::New(scope.GetIsolate());
   SetV8ObjectPropertyAsNumber(scope.GetIsolate(), timing_input, "delay", 2);
@@ -254,7 +281,7 @@ TEST_F(AnimationKeyframeEffectV8Test, SpecifiedGetters) {
 TEST_F(AnimationKeyframeEffectV8Test, SpecifiedDurationGetter) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
-  ScriptValue js_keyframes = ScriptValue::CreateNull(script_state);
+  ScriptValue js_keyframes = ScriptValue::CreateNull(scope.GetIsolate());
 
   v8::Local<v8::Object> timing_input_with_duration =
       v8::Object::New(scope.GetIsolate());
@@ -302,7 +329,7 @@ TEST_F(AnimationKeyframeEffectV8Test, SetKeyframesAdditiveCompositeOperation) {
   ScopedCSSAdditiveAnimationsForTest css_additive_animation(false);
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
-  ScriptValue js_keyframes = ScriptValue::CreateNull(script_state);
+  ScriptValue js_keyframes = ScriptValue::CreateNull(scope.GetIsolate());
   v8::Local<v8::Object> timing_input = v8::Object::New(scope.GetIsolate());
   KeyframeEffectOptions* timing_input_dictionary =
       KeyframeEffectOptions::Create();
@@ -320,11 +347,11 @@ TEST_F(AnimationKeyframeEffectV8Test, SetKeyframesAdditiveCompositeOperation) {
 
   // But if we then setKeyframes with CSS-targeting keyframes, the composite
   // should fallback to 'replace'.
-  Vector<ScriptValue> blink_keyframes = {
+  HeapVector<ScriptValue> blink_keyframes = {
       V8ObjectBuilder(script_state).AddString("width", "10px").GetScriptValue(),
       V8ObjectBuilder(script_state).AddString("width", "0px").GetScriptValue()};
   ScriptValue new_js_keyframes(
-      script_state,
+      scope.GetIsolate(),
       ToV8(blink_keyframes, scope.GetContext()->Global(), scope.GetIsolate()));
   effect->setKeyframes(script_state, new_js_keyframes, exception_state);
   ASSERT_FALSE(exception_state.HadException());
@@ -337,30 +364,163 @@ TEST_F(KeyframeEffectTest, TimeToEffectChange) {
   timing.start_delay = 100;
   timing.end_delay = 100;
   timing.fill_mode = Timing::FillMode::NONE;
-  KeyframeEffect* keyframe_effect =
-      KeyframeEffect::Create(nullptr, CreateEmptyEffectModel(), timing);
+  auto* keyframe_effect = MakeGarbageCollected<KeyframeEffect>(
+      nullptr, CreateEmptyEffectModel(), timing);
   Animation* animation = GetDocument().Timeline().Play(keyframe_effect);
-  double inf = std::numeric_limits<double>::infinity();
 
-  EXPECT_EQ(100, keyframe_effect->TimeToForwardsEffectChange());
-  EXPECT_EQ(inf, keyframe_effect->TimeToReverseEffectChange());
+  // Beginning of the animation.
+  EXPECT_EQ(AnimationTimeDelta::FromSecondsD(100),
+            keyframe_effect->TimeToForwardsEffectChange());
+  EXPECT_EQ(AnimationTimeDelta::Max(),
+            keyframe_effect->TimeToReverseEffectChange());
 
-  animation->SetCurrentTimeInternal(100);
-  EXPECT_EQ(100, keyframe_effect->TimeToForwardsEffectChange());
-  EXPECT_EQ(0, keyframe_effect->TimeToReverseEffectChange());
+  // End of the before phase.
+  animation->setCurrentTime(100000, false);
+  EXPECT_EQ(AnimationTimeDelta::FromSecondsD(100),
+            keyframe_effect->TimeToForwardsEffectChange());
+  EXPECT_EQ(AnimationTimeDelta(), keyframe_effect->TimeToReverseEffectChange());
 
-  animation->SetCurrentTimeInternal(199);
-  EXPECT_EQ(1, keyframe_effect->TimeToForwardsEffectChange());
-  EXPECT_EQ(0, keyframe_effect->TimeToReverseEffectChange());
+  // Nearing the end of the active phase.
+  animation->setCurrentTime(199000, false);
+  EXPECT_EQ(AnimationTimeDelta::FromSecondsD(1),
+            keyframe_effect->TimeToForwardsEffectChange());
+  EXPECT_EQ(AnimationTimeDelta(), keyframe_effect->TimeToReverseEffectChange());
 
-  animation->SetCurrentTimeInternal(200);
-  // End-exclusive.
-  EXPECT_EQ(inf, keyframe_effect->TimeToForwardsEffectChange());
-  EXPECT_EQ(0, keyframe_effect->TimeToReverseEffectChange());
+  // End of the active phase.
+  animation->setCurrentTime(200000, false);
+  EXPECT_EQ(AnimationTimeDelta::FromSecondsD(100),
+            keyframe_effect->TimeToForwardsEffectChange());
+  EXPECT_EQ(AnimationTimeDelta(), keyframe_effect->TimeToReverseEffectChange());
 
-  animation->SetCurrentTimeInternal(300);
-  EXPECT_EQ(inf, keyframe_effect->TimeToForwardsEffectChange());
-  EXPECT_EQ(100, keyframe_effect->TimeToReverseEffectChange());
+  // End of the animation.
+  animation->setCurrentTime(300000, false);
+  EXPECT_EQ(AnimationTimeDelta::Max(),
+            keyframe_effect->TimeToForwardsEffectChange());
+  EXPECT_EQ(AnimationTimeDelta::FromSecondsD(100),
+            keyframe_effect->TimeToReverseEffectChange());
+}
+
+TEST_F(KeyframeEffectTest, CheckCanStartAnimationOnCompositorNoKeyframes) {
+  ASSERT_TRUE(element);
+
+  const double animation_playback_rate = 1;
+  Timing timing;
+
+  // No keyframes results in an invalid animation.
+  {
+    auto* keyframe_effect = MakeGarbageCollected<KeyframeEffect>(
+        element, CreateEmptyEffectModel(), timing);
+    EXPECT_TRUE(keyframe_effect->CheckCanStartAnimationOnCompositor(
+                    nullptr, animation_playback_rate) &
+                CompositorAnimations::kInvalidAnimationOrEffect);
+  }
+
+  // Keyframes but no properties results in an invalid animation.
+  {
+    StringKeyframeVector keyframes(2);
+    keyframes[0] = MakeGarbageCollected<StringKeyframe>();
+    keyframes[0]->SetOffset(0.0);
+    keyframes[1] = MakeGarbageCollected<StringKeyframe>();
+    keyframes[1]->SetOffset(1.0);
+    auto* effect_model =
+        MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+
+    auto* keyframe_effect =
+        MakeGarbageCollected<KeyframeEffect>(element, effect_model, timing);
+    EXPECT_TRUE(keyframe_effect->CheckCanStartAnimationOnCompositor(
+                    nullptr, animation_playback_rate) &
+                CompositorAnimations::kInvalidAnimationOrEffect);
+  }
+}
+
+TEST_F(KeyframeEffectTest, CheckCanStartAnimationOnCompositorNoTarget) {
+  const double animation_playback_rate = 1;
+  Timing timing;
+
+  // No target results in an invalid animation.
+  StringKeyframeVector keyframes(2);
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[0]->SetOffset(0.0);
+  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kLeft, "0px",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
+  keyframes[1] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[1]->SetOffset(1.0);
+  keyframes[1]->SetCSSPropertyValue(CSSPropertyID::kLeft, "10px",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
+  auto* effect_model =
+      MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+
+  auto* keyframe_effect =
+      MakeGarbageCollected<KeyframeEffect>(nullptr, effect_model, timing);
+  EXPECT_TRUE(keyframe_effect->CheckCanStartAnimationOnCompositor(
+                  nullptr, animation_playback_rate) &
+              CompositorAnimations::kInvalidAnimationOrEffect);
+}
+
+TEST_F(KeyframeEffectTest, CheckCanStartAnimationOnCompositorBadTarget) {
+  const double animation_playback_rate = 1;
+  Timing timing;
+
+  StringKeyframeVector keyframes(2);
+  keyframes[0] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[0]->SetOffset(0.0);
+  keyframes[0]->SetCSSPropertyValue(CSSPropertyID::kLeft, "0px",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
+  keyframes[1] = MakeGarbageCollected<StringKeyframe>();
+  keyframes[1]->SetOffset(1.0);
+  keyframes[1]->SetCSSPropertyValue(CSSPropertyID::kLeft, "10px",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
+  auto* effect_model =
+      MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+  auto* keyframe_effect =
+      MakeGarbageCollected<KeyframeEffect>(element, effect_model, timing);
+
+  // If the target has a CSS offset we can't composite it.
+  element->SetInlineStyleProperty(CSSPropertyID::kOffsetPosition, "50px 50px");
+  UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_TRUE(element->GetComputedStyle()->HasOffset());
+  EXPECT_TRUE(keyframe_effect->CheckCanStartAnimationOnCompositor(
+                  nullptr, animation_playback_rate) &
+              CompositorAnimations::kTargetHasCSSOffset);
+
+  // If the target has multiple transform properties we can't composite it.
+  element->SetInlineStyleProperty(CSSPropertyID::kRotate, "90deg");
+  element->SetInlineStyleProperty(CSSPropertyID::kScale, "2 1");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(keyframe_effect->CheckCanStartAnimationOnCompositor(
+                  nullptr, animation_playback_rate) &
+              CompositorAnimations::kTargetHasMultipleTransformProperties);
+}
+
+TEST_F(KeyframeEffectTest, TranslationTransformsPreserveAxisAlignment) {
+  auto* effect =
+      GetTwoFrameEffect(CSSPropertyID::kTransform, "translate(10px, 10px)",
+                        "translate(20px, 20px)");
+  EXPECT_TRUE(effect->AnimationsPreserveAxisAlignment());
+}
+
+TEST_F(KeyframeEffectTest, ScaleTransformsPreserveAxisAlignment) {
+  auto* effect =
+      GetTwoFrameEffect(CSSPropertyID::kTransform, "scale(2)", "scale(3)");
+  EXPECT_TRUE(effect->AnimationsPreserveAxisAlignment());
+}
+
+TEST_F(KeyframeEffectTest, RotationTransformsDoNotPreserveAxisAlignment) {
+  auto* effect = GetTwoFrameEffect(CSSPropertyID::kTransform, "rotate(10deg)",
+                                   "rotate(20deg)");
+
+  EXPECT_FALSE(effect->AnimationsPreserveAxisAlignment());
+}
+
+TEST_F(KeyframeEffectTest, RotationsDoNotPreserveAxisAlignment) {
+  auto* effect = GetTwoFrameEffect(CSSPropertyID::kRotate, "10deg", "20deg");
+  EXPECT_FALSE(effect->AnimationsPreserveAxisAlignment());
 }
 
 }  // namespace blink

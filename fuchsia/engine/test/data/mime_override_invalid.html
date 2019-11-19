@@ -1,0 +1,16 @@
+<html>
+  <head></head>
+  <body>
+    <script>
+      // Emit the "content-type" header for this file.
+      var req = new XMLHttpRequest();
+      req.open('GET', 'mime_override_invalid.html', false);
+      req.send(null);
+      var headers = req.getAllResponseHeaders();
+      for (var header of headers.split('\n')) {
+        if (header.includes('content-type:'))
+          document.title = header;
+      }
+    </script>
+  </body>
+</html>

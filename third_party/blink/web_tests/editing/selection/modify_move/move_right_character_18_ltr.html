@@ -3,34 +3,29 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../assert_selection.js"></script>
 <script>
-const usesBidiAffinity = window.internals && internals.runtimeFlags.bidiCaretAffinityEnabled;
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">|\u05DC\u05E4\u05E0\u05D9    after encyclopedia</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 120px;">\u05DC\u05E4\u05E0\u05D9 |   after encyclopedia</div>'
-      : '<div contenteditable dir="ltr" style="width: 120px;">\u05DC\u05E4\u05E0|\u05D9    after encyclopedia</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">\u05DC|\u05E4\u05E0\u05D9    after encyclopedia</div>',
   '18-0 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">\u05DC|\u05E4\u05E0\u05D9    after encyclopedia</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 120px;">|\u05DC\u05E4\u05E0\u05D9    after encyclopedia</div>'
-      : '<div contenteditable dir="ltr" style="width: 120px;">\u05DC\u05E4\u05E0\u05D9|    after encyclopedia</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">\u05DC\u05E4|\u05E0\u05D9    after encyclopedia</div>',
   '18-1 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">\u05DC\u05E4|\u05E0\u05D9    after encyclopedia</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 120px;">\u05DC|\u05E4\u05E0\u05D9    after encyclopedia</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">\u05DC\u05E4\u05E0|\u05D9    after encyclopedia</div>',
   '18-2 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">\u05DC\u05E4\u05E0|\u05D9    after encyclopedia</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 120px;">\u05DC\u05E4|\u05E0\u05D9    after encyclopedia</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">\u05DC\u05E4\u05E0\u05D9|    after encyclopedia</div>',
   '18-3 ltr right character');
 
 selection_test(

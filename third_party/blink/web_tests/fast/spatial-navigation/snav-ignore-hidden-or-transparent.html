@@ -1,0 +1,31 @@
+<!doctype html>
+<style>
+  .a {opacity: 0;}
+  .b {visibility: hidden;}
+  .c {display: none;}
+</style>
+
+
+<a class="a" href="www">a</a><a class="b" href="www">b</a><a class="c" href="www">c</a><br>
+<a class="a" href="www">a</a><a class="b" href="www">b</a><a class="c" href="www">c</a><a id="start" href="www">start</a><a class="a" href="www">a</a><a class="b" href="www">b</a><a class="c" href="www">c</a><br>
+<a class="a" href="www">a</a><a class="b" href="www">b</a><a class="c" href="www">c</a><br>
+
+<a id="a" class="a" href="www">a</a> <a id="b" class="b" href="www">b</a>
+
+<p>This page contains hidden elements in all directions.</p>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Down", "start"],
+    ["Down", "start"],
+    ["Up", "start"],
+    ["Left", "start"],
+    ["Right", "start"]
+  ];
+  snav.assertFocusMoves(resultMap);
+</script>
+
+<p><em>Manual test instruction: Ensure that focus does not disappear (goes to a hidden element).</em></p>

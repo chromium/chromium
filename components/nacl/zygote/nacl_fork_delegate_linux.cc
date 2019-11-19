@@ -277,8 +277,17 @@ void NaClForkDelegate::Init(const int sandboxdesc,
 
     // To avoid information leaks in Non-SFI mode, clear the environment for
     // the NaCl Helper process.
-    options.clear_environ = true;
+    options.clear_environment = true;
     AddPassthroughEnvToOptions(&options);
+
+#ifdef COMPONENT_BUILD
+    // In component build, nacl_helper loads libgnutls.so.
+    // Newer versions of libgnutls do implicit initialization when loaded that
+    // leaves an additional /dev/urandom file descriptor open.  Passing the
+    // following env var asks libgnutls not to do that implicit initialization.
+    // (crbug.com/973024)
+    options.environment["GNUTLS_NO_EXPLICIT_INIT"] = "1";
+#endif
 
     base::Process process =
         using_namespace_sandbox
@@ -458,7 +467,7 @@ void NaClForkDelegate::AddPassthroughEnvToOptions(
   for (size_t i = 0; i < pass_through_vars.size(); ++i) {
     std::string temp;
     if (env->GetVar(pass_through_vars[i], &temp))
-      options->environ[pass_through_vars[i]] = temp;
+      options->environment[pass_through_vars[i]] = temp;
   }
 }
 

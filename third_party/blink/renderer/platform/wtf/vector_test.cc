@@ -27,6 +27,7 @@
 
 #include <memory>
 #include "base/optional.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -117,6 +118,21 @@ TEST(VectorTest, Erase) {
   auto* end = int_vector.erase(last);
   EXPECT_EQ(2u, int_vector.size());
   EXPECT_EQ(int_vector.end(), end);
+}
+
+TEST(VectorTest, Resize) {
+  Vector<int> int_vector;
+  int_vector.resize(2);
+  EXPECT_EQ(2u, int_vector.size());
+  EXPECT_EQ(0, int_vector[0]);
+  EXPECT_EQ(0, int_vector[1]);
+
+  Vector<bool> bool_vector;
+  bool_vector.resize(3);
+  EXPECT_EQ(3u, bool_vector.size());
+  EXPECT_EQ(false, bool_vector[0]);
+  EXPECT_EQ(false, bool_vector[1]);
+  EXPECT_EQ(false, bool_vector[2]);
 }
 
 TEST(VectorTest, Iterator) {
@@ -660,6 +676,28 @@ TEST(VectorTest, UninitializedFill) {
   EXPECT_EQ(42, v[0]);
   EXPECT_EQ(42, v[1]);
   EXPECT_EQ(42, v[2]);
+}
+
+TEST(VectorTest, IteratorSingleInsertion) {
+  Vector<int> v;
+
+  v.InsertAt(v.begin(), 1);
+  EXPECT_EQ(1, v[0]);
+
+  for (int i : {9, 5, 2, 3, 3, 7, 7, 8, 2, 4, 6})
+    v.InsertAt(std::lower_bound(v.begin(), v.end(), i), i);
+
+  EXPECT_TRUE(std::is_sorted(v.begin(), v.end()));
+}
+
+TEST(VectorTest, IteratorMultipleInsertion) {
+  Vector<int> v = {0, 0, 0, 3, 3, 3};
+
+  Vector<int> q = {1, 1, 1, 1};
+  v.InsertAt(std::lower_bound(v.begin(), v.end(), q[0]), &q[0], q.size());
+
+  EXPECT_THAT(v, testing::ElementsAre(0, 0, 0, 1, 1, 1, 1, 3, 3, 3));
+  EXPECT_TRUE(std::is_sorted(v.begin(), v.end()));
 }
 
 static_assert(VectorTraits<int>::kCanCopyWithMemcpy,

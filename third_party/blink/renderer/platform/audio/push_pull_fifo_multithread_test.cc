@@ -9,12 +9,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -24,12 +25,15 @@ namespace {
 // Base FIFOClient with an extra thread for looping and jitter control. The
 // child class must define a specific task to run on the thread.
 class FIFOClient {
+  USING_FAST_MALLOC(FIFOClient);
+
  public:
   FIFOClient(PushPullFIFO* fifo, size_t bus_length, size_t jitter_range_ms)
       : fifo_(fifo),
-        bus_(AudioBus::Create(fifo->NumberOfChannels(), bus_length)),
+        bus_(AudioBus::Create(fifo->GetStateForTest().number_of_channels,
+                              bus_length)),
         client_thread_(Platform::Current()->CreateThread(
-            ThreadCreationParams(WebThreadType::kTestThread)
+            ThreadCreationParams(ThreadType::kTestThread)
                 .SetThreadNameForTest("FIFOClientThread"))),
         done_event_(std::make_unique<base::WaitableEvent>(
             base::WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -40,8 +44,8 @@ class FIFOClient {
     duration_ms_ = duration_ms;
     interval_ms_ = interval_ms;
     PostCrossThreadTask(*client_thread_->GetTaskRunner(), FROM_HERE,
-                        CrossThreadBind(&FIFOClient::RunTaskOnOwnThread,
-                                        CrossThreadUnretained(this)));
+                        CrossThreadBindOnce(&FIFOClient::RunTaskOnOwnThread,
+                                            CrossThreadUnretained(this)));
     return done_event_.get();
   }
 
@@ -62,9 +66,9 @@ class FIFOClient {
     if (elapsed_ms_ < duration_ms_) {
       PostDelayedCrossThreadTask(
           *client_thread_->GetTaskRunner(), FROM_HERE,
-          CrossThreadBind(&FIFOClient::RunTaskOnOwnThread,
-                          CrossThreadUnretained(this)),
-          TimeDelta::FromMillisecondsD(interval_with_jitter));
+          CrossThreadBindOnce(&FIFOClient::RunTaskOnOwnThread,
+                              CrossThreadUnretained(this)),
+          base::TimeDelta::FromMillisecondsD(interval_with_jitter));
     } else {
       Stop(counter_);
       done_event_->Signal();
@@ -169,7 +173,7 @@ TEST_P(PushPullFIFOSmokeTest, SmokeTests) {
   std::unique_ptr<PushClient> push_client = std::make_unique<PushClient>(
       test_fifo.get(), param.push_buffer_size, param.push_jitter_range_ms);
 
-  std::vector<base::WaitableEvent*> done_events;
+  Vector<base::WaitableEvent*> done_events;
   done_events.push_back(
       pull_client->Start(param.test_duration_ms, pull_interval_ms));
   done_events.push_back(

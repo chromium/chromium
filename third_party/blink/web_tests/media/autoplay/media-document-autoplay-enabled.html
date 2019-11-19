@@ -6,19 +6,21 @@
 <body>
 <script>
 async_test(function(t) {
+  t.add_cleanup(() => {
+    internals.settings.setAutoplayPolicy('no-user-gesture-required');
+  });
+  internals.settings.setAutoplayPolicy('document-user-activation-required');
+
   const iframe = document.createElement('iframe');
 
   iframe.onload = t.step_func(() => {
     const video = iframe.contentDocument.querySelector('video');
     assert_not_equals(undefined, video);
 
-    if (video.paused) {
-      video.play().then(() => { t.done(); }, (error) => {
-        assert_not_equals('NotAllowedError', error.code);
-      });
-    } else {
-      t.done();
-    }
+    video.play().then(
+      () => { assert_unreached("playback should fail"); },
+      error => { assert_equals(error.name, "NotAllowedError"); t.done(); }
+    );
   });
 
   iframe.src = '../content/test.ogv';

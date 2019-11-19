@@ -4,12 +4,15 @@
 
 #include "chrome/browser/media/widevine_hardware_caps_win.h"
 
+// Need format off to keep the include order which is important.
+// clang-format off
 #include <comdef.h>
-#include <d3d11_1.h>
 #include <initguid.h>
+#include <d3d11_1.h>
 #include <stdint.h>
 #include <wrl/client.h>
 #include <bitset>
+// clang-format on
 
 #include "base/macros.h"
 #include "base/stl_util.h"
@@ -107,7 +110,7 @@ bool IsD3D11DecoderProfileSupportedWithCenc(ID3D11VideoDevice* video_device,
 void GetWidevineHardwareCaps(
     const base::flat_set<media::CdmProxy::Protocol>& cdm_proxy_protocols,
     base::flat_set<media::VideoCodec>* video_codecs,
-    base::flat_set<media::EncryptionMode>* encryption_schemes) {
+    base::flat_set<media::EncryptionScheme>* encryption_schemes) {
   DCHECK(!cdm_proxy_protocols.empty());
   DCHECK(video_codecs->empty());
   DCHECK(encryption_schemes->empty());
@@ -152,5 +155,5 @@ void GetWidevineHardwareCaps(
   }
 
   if (!video_codecs->empty())
-    encryption_schemes->insert(media::EncryptionMode::kCenc);
+    encryption_schemes->insert(media::EncryptionScheme::kCenc);
 }

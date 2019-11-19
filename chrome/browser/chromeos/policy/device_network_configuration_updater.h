@@ -79,7 +79,7 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
   // Returns the device's administrator-set asset id.
   DeviceAssetIDFetcher device_asset_id_fetcher_;
 
-  base::WeakPtrFactory<DeviceNetworkConfigurationUpdater> weak_factory_;
+  base::WeakPtrFactory<DeviceNetworkConfigurationUpdater> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceNetworkConfigurationUpdater);
 };

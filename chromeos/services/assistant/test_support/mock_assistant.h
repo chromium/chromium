@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace gfx {
@@ -23,9 +24,12 @@ class MockAssistant : public mojom::Assistant {
 
   MOCK_METHOD0(StartCachedScreenContextInteraction, void());
 
+  MOCK_METHOD1(StartEditReminderInteraction, void(const std::string&));
+
   MOCK_METHOD1(StartMetalayerInteraction, void(const gfx::Rect&));
 
-  MOCK_METHOD2(StartTextInteraction, void(const std::string&, bool));
+  MOCK_METHOD3(StartTextInteraction,
+               void(const std::string&, mojom::AssistantQuerySource, bool));
 
   MOCK_METHOD0(StartVoiceInteraction, void());
 
@@ -35,7 +39,8 @@ class MockAssistant : public mojom::Assistant {
 
   MOCK_METHOD1(
       AddAssistantInteractionSubscriber,
-      void(chromeos::assistant::mojom::AssistantInteractionSubscriberPtr));
+      void(mojo::PendingRemote<
+           chromeos::assistant::mojom::AssistantInteractionSubscriber>));
 
   MOCK_METHOD2(RetrieveNotification,
                void(chromeos::assistant::mojom::AssistantNotificationPtr, int));
@@ -59,6 +64,9 @@ class MockAssistant : public mojom::Assistant {
 
   MOCK_METHOD1(SendAssistantFeedback,
                void(chromeos::assistant::mojom::AssistantFeedbackPtr));
+
+  MOCK_METHOD0(StopAlarmTimerRinging, void());
+  MOCK_METHOD1(CreateTimer, void(base::TimeDelta));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockAssistant);

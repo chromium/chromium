@@ -15,6 +15,7 @@
 #ifndef CRASHPAD_HANDLER_HANDLER_MAIN_H_
 #define CRASHPAD_HANDLER_HANDLER_MAIN_H_
 
+#include "build/build_config.h"
 #include "handler/user_stream_data_source.h"
 
 namespace crashpad {
@@ -33,6 +34,16 @@ namespace crashpad {
 int HandlerMain(int argc,
                 char* argv[],
                 const UserStreamDataSources* user_stream_sources);
+
+#if defined(OS_ANDROID)
+//! \brief The `main()` entry point for Android libraries.
+//!
+//! This symbol is the entry point for crashpad when it is dynamically loaded
+//! using /system/bin/linker.
+//!
+//! \sa CrashpadClient::StartHandlerWithLinkerAtCrash()
+extern "C" int CrashpadHandlerMain(int argc, char* argv[]);
+#endif
 
 }  // namespace crashpad
 

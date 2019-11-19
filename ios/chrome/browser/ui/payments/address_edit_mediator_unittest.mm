@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/payments/address_edit_mediator.h"
 
 #include "base/mac/foundation_util.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/country_names.h"
-#include "components/autofill/core/browser/test_region_data_loader.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/geo/country_names.h"
+#include "components/autofill/core/browser/geo/test_region_data_loader.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/payments/payment_request_unittest_base.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
@@ -30,6 +30,7 @@ class PaymentRequestAddressEditMediatorTest : public PaymentRequestUnitTestBase,
  protected:
   // PlatformTest:
   void SetUp() override {
+    PlatformTest::SetUp();
     DoSetUp();
 
     autofill::CountryNames::SetLocaleString("en-US");
@@ -41,7 +42,10 @@ class PaymentRequestAddressEditMediatorTest : public PaymentRequestUnitTestBase,
   }
 
   // PlatformTest:
-  void TearDown() override { DoTearDown(); }
+  void TearDown() override {
+    DoTearDown();
+    PlatformTest::TearDown();
+  }
 
   autofill::TestRegionDataLoader test_region_data_loader_;
 };
@@ -278,7 +282,7 @@ TEST_F(PaymentRequestAddressEditMediatorTest, ValidateFieldInvalidValue) {
       initWithAutofillUIType:AutofillUITypeProfileHomePhoneWholeNumber
                    fieldType:EditorFieldTypeTextField
                        label:@""
-                       value:@"1506853121"  // Missing one last digit.
+                       value:@"15068531"  // It is too short.
                     required:YES];
   NSString* validationError =
       [mediator paymentRequestEditViewController:nil

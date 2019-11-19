@@ -1,7 +1,7 @@
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-from telemetry import story
+from telemetry.util import wpr_modes
 
 from page_sets.rendering import rendering_shared_state
 from page_sets.rendering import rendering_story
@@ -13,7 +13,6 @@ from page_sets.login_helpers import google_login
 
 class ToughPinchZoomPage(rendering_story.RenderingStory):
   ABSTRACT_STORY = True
-  # TODO(crbug.com/851499): expand supported_platforms to both desktop & mobile
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   TAGS = [story_tags.GPU_RASTERIZATION, story_tags.TOUGH_PINCH_ZOOM]
 
@@ -74,7 +73,8 @@ class GmailPinchZoom2018Page(ToughPinchZoomPage):
   URL = 'https://mail.google.com/mail/'
 
   def RunNavigateSteps(self, action_runner):
-    google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+    if self.wpr_mode != wpr_modes.WPR_REPLAY:
+      google_login.NewLoginGoogleAccount(action_runner, 'googletest')
     super(GmailPinchZoom2018Page, self).RunNavigateSteps(action_runner)
     action_runner.WaitForJavaScriptCondition(
         'window.gmonkey !== undefined &&'
@@ -90,7 +90,8 @@ class GoogleCalendarPinchZoom2018Page(ToughPinchZoomPage):
   URL = 'https://www.google.com/calendar/'
 
   def RunNavigateSteps(self, action_runner):
-    google_login.NewLoginGoogleAccount(action_runner, 'googletest')
+    if self.wpr_mode != wpr_modes.WPR_REPLAY:
+      google_login.NewLoginGoogleAccount(action_runner, 'googletest')
     super(GoogleCalendarPinchZoom2018Page, self).RunNavigateSteps(
       action_runner)
     action_runner.WaitForElement('span[class~="sm8sCf"]')
@@ -112,7 +113,6 @@ class YoutubePinchZoom2018Page(ToughPinchZoomPage):
   BASE_NAME = 'youtube_pinch'
   YEAR = '2018'
   URL = 'http://www.youtube.com'
-  TAGS = ToughPinchZoomPage.TAGS + [story_tags.REPRESENTATIVE_MAC_DESKTOP]
 
   def RunNavigateSteps(self, action_runner):
     super(YoutubePinchZoom2018Page, self).RunNavigateSteps(action_runner)
@@ -157,7 +157,8 @@ class LinkedinPinchZoom2018Page(ToughPinchZoomPage):
   URL = 'http://www.linkedin.com/in/linustorvalds'
 
   def RunNavigateSteps(self, action_runner):
-    linkedin_login.LoginDesktopAccount(action_runner, 'linkedin')
+    if self.wpr_mode != wpr_modes.WPR_REPLAY:
+      linkedin_login.LoginDesktopAccount(action_runner, 'linkedin')
     super(LinkedinPinchZoom2018Page, self).RunNavigateSteps(action_runner)
 
 
@@ -168,7 +169,6 @@ class TwitterPinchZoom2018Page(ToughPinchZoomPage):
   BASE_NAME = 'twitter_pinch'
   YEAR = '2018'
   URL = 'https://twitter.com/katyperry'
-  TAGS = ToughPinchZoomPage.TAGS + [story_tags.REPRESENTATIVE_MAC_DESKTOP]
 
 
   def RunNavigateSteps(self, action_runner):
@@ -227,7 +227,6 @@ class AmazonPinchZoom2018Page(ToughPinchZoomPage):
   BASE_NAME = 'amazon_pinch'
   YEAR = '2018'
   URL = 'http://www.amazon.com'
-  TAGS = ToughPinchZoomPage.TAGS + [story_tags.REPRESENTATIVE_MAC_DESKTOP]
 
 
 class EBayPinchZoom2018Page(ToughPinchZoomPage):
@@ -254,77 +253,3 @@ class YahooSportsPinchZoom2018Page(ToughPinchZoomPage):
   BASE_NAME = 'yahoo_sports_pinch'
   YEAR = '2018'
   URL = 'http://sports.yahoo.com/'
-
-
-# TODO(crbug.com/760553):remove this class after
-# smoothness.tough_pinch_zoom_cases benchmark is completely
-# replaced by rendering benchmarks
-class ToughPinchZoomCasesPageSet(story.StorySet):
-
-  """ Set of pages that are tricky to pinch-zoom """
-
-  def __init__(self, target_scale_factor):
-    super(ToughPinchZoomCasesPageSet, self).__init__(
-      archive_data_file='../data/tough_pinch_zoom_cases.json',
-      cloud_storage_bucket=story.PARTNER_BUCKET)
-
-    self.target_scale_factor = target_scale_factor
-
-    self.AddStory(GoogleSearchPinchZoom2018Page(
-        page_set=self))
-    self.AddStory(GmailPinchZoom2018Page(
-        page_set=self))
-    self.AddStory(GoogleCalendarPinchZoom2018Page(
-        page_set=self))
-    self.AddStory(GoogleImagePinchZoom2018Page(
-        page_set=self))
-    self.AddStory(YoutubePinchZoom2018Page(
-        page_set=self))
-    self.AddStory(BlogSpotPinchZoom2018Page(
-        page_set=self))
-    self.AddStory(FacebookPinchZoom2018Page(
-        page_set=self))
-    self.AddStory(LinkedinPinchZoom2018Page(
-        page_set=self))
-    self.AddStory(TwitterPinchZoom2018Page(
-        page_set=self))
-    self.AddStory(ESPNPinchZoom2018Page(
-        page_set=self))
-    self.AddStory(TwitchPinchZoom2018Page(
-        page_set=self))
-    self.AddStory(YahooNewsPinchZoom2018Page(
-        page_set=self))
-    self.AddStory(CnnPinchZoom2018Page(
-        page_set=self))
-    self.AddStory(AmazonPinchZoom2018Page(
-        page_set=self))
-    self.AddStory(EBayPinchZoom2018Page(
-        page_set=self))
-    self.AddStory(AccuWeatherPinchZoom2018Page(
-        page_set=self))
-    self.AddStory(YahooSportsPinchZoom2018Page(
-        page_set=self))
-    self.AddStory(BookingPinchZoom2018Page(
-        page_set=self))
-
-
-class AndroidToughPinchZoomCasesPageSet(ToughPinchZoomCasesPageSet):
-
-  """
-  ToughPinchZoomCasesPageSet using the maximum Android zoom level. This is
-  chosen as 7x, which may seem to exceed the 5x value specified in
-  WebPreferences::default_maximum_page_scale_factor. However, as desktop sites
-  on Android start at less than 1x scale (up to 0.25x), a value of 7x does not
-  exceed the 5x limit.
-  """
-
-  def __init__(self):
-    super(AndroidToughPinchZoomCasesPageSet, self).__init__(7.0)
-
-
-class DesktopToughPinchZoomCasesPageSet(ToughPinchZoomCasesPageSet):
-
-  """ ToughPinchZoomCasesPageSet using the maximum desktop zoom level """
-
-  def __init__(self):
-    super(DesktopToughPinchZoomCasesPageSet, self).__init__(4.0)

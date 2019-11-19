@@ -20,7 +20,6 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 class AutocompleteProviderListener;
-class HistoryURLProvider;
 
 namespace base {
 class Value;
@@ -45,9 +44,16 @@ class PrefRegistrySyncable;
 // omnibox text and suggestions.
 class ZeroSuggestProvider : public BaseSearchProvider {
  public:
+  // ZeroSuggestVariant field trial param values corresponding to each
+  // ZeroSuggestProvider::ResultType.
+  // Public for testing.
+  static const char kNoneVariant[];
+  static const char kRemoteNoUrlVariant[];
+  static const char kRemoteSendUrlVariant[];
+  static const char kMostVisitedVariant[];
+
   // Creates and returns an instance of this provider.
   static ZeroSuggestProvider* Create(AutocompleteProviderClient* client,
-                                     HistoryURLProvider* history_url_provider,
                                      AutocompleteProviderListener* listener);
 
   // Registers a preference used to cache zero suggest results.
@@ -63,11 +69,18 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Sets |field_trial_triggered_| to false.
   void ResetSession() override;
 
+  // Calling |Start()| will reset the page classification. This is mainly
+  // intended for unit testing TypeOfResultToRun().
+  void SetPageClassificationForTesting(
+      metrics::OmniboxEventProto::PageClassification classification) {
+    current_page_classification_ = classification;
+  }
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(ZeroSuggestProviderTest, TypeOfResultToRun);
   FRIEND_TEST_ALL_PREFIXES(ZeroSuggestProviderTest,
                            TestStartWillStopForSomeInput);
   ZeroSuggestProvider(AutocompleteProviderClient* client,
-                      HistoryURLProvider* history_url_provider,
                       AutocompleteProviderListener* listener);
 
   ~ZeroSuggestProvider() override;
@@ -76,12 +89,19 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // at any time.
   enum ResultType {
     NONE,
-    DEFAULT_SERP,          // The default search provider is queried for
-                           // zero-suggest suggestions.
-    DEFAULT_SERP_FOR_URL,  // The default search provider is queried for
-                           // zero-suggest suggestions that are specific
-                           // to the visited URL.
-    MOST_VISITED
+
+    // A remote endpoint (usually the default search provider) is queried for
+    // suggestions. The endpoint is sent the user's authentication state, but
+    // not sent the current URL.
+    REMOTE_NO_URL,
+
+    // A remote endpoint (usually the default search provider) is queried for
+    // suggestions. The endpoint is sent the user's authentication state and
+    // the current URL.
+    REMOTE_SEND_URL,
+
+    // Gets the most visited sites from local history.
+    MOST_VISITED,
   };
 
   // BaseSearchProvider:
@@ -91,7 +111,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
       const SearchSuggestionParser::SuggestResult& result) const override;
   void RecordDeletionResult(bool success) override;
 
-  // Called when loading is complete.
+  // Called when the network request for suggestions has completed.
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
                          std::unique_ptr<std::string> response_body);
 
@@ -123,10 +143,10 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // received.
   void ConvertResultsToAutocompleteMatches();
 
-  // Returns an AutocompleteMatch for the current URL. The match should be in
+  // Returns an AutocompleteMatch for the current text. The match should be in
   // the top position so that pressing enter has the effect of reloading the
   // page.
-  AutocompleteMatch MatchForCurrentURL();
+  AutocompleteMatch MatchForCurrentText();
 
   // When the user is in the Most Visited field trial, we ask the TopSites
   // service for the most visited URLs. It then calls back to this function to
@@ -134,15 +154,17 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   void OnMostVisitedUrlsAvailable(size_t request_num,
                                   const history::MostVisitedURLList& urls);
 
-  // When the user is in the contextual omnibox suggestions field trial, we ask
-  // the ContextualSuggestionsService for a loader to retrieve recommendations.
-  // When the loader has started, the contextual suggestion service then calls
+  // When the user is in the remote omnibox suggestions field trial, we ask
+  // the RemoteSuggestionsService for a loader to retrieve recommendations.
+  // When the loader has started, the remote suggestion service then calls
   // back to this function with the |loader| to pass its ownership to |this|.
-  void OnContextualSuggestionsLoaderAvailable(
+  void OnRemoteSuggestionsLoaderAvailable(
       std::unique_ptr<network::SimpleURLLoader> loader);
 
   // Whether zero suggest suggestions are allowed in the given context.
-  bool AllowZeroSuggestSuggestions(const GURL& current_page_url) const;
+  // Invoked early, confirms all the external conditions for ZeroSuggest are
+  // met.
+  bool AllowZeroSuggestSuggestions(const AutocompleteInput& input) const;
 
   // Checks whether we have a set of zero suggest results cached, and if so
   // populates |matches_| with cached results.
@@ -154,9 +176,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // meaning of the data logged would change.
   ResultType TypeOfResultToRun(const GURL& current_url,
                                const GURL& suggest_url);
-
-  // Used for efficiency when creating the verbatim match.  Can be null.
-  HistoryURLProvider* history_url_provider_;
 
   AutocompleteProviderListener* listener_;
 
@@ -175,7 +194,8 @@ class ZeroSuggestProvider : public BaseSearchProvider {
 
   // The type of page the user is viewing (a search results page doing search
   // term replacement, an arbitrary URL, etc.).
-  metrics::OmniboxEventProto::PageClassification current_page_classification_;
+  metrics::OmniboxEventProto::PageClassification current_page_classification_ =
+      metrics::OmniboxEventProto::INVALID_SPEC;
 
   // Copy of OmniboxEditModel::permanent_text_.
   base::string16 permanent_text_;
@@ -183,8 +203,9 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Loader used to retrieve results.
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
-  // Suggestion for the current URL.
-  AutocompleteMatch current_url_match_;
+  // The verbatim match for the current text, whether it's a URL or search query
+  // (which can occur for Query in Omnibox / Query Refinements).
+  AutocompleteMatch current_text_match_;
 
   // Contains suggest and navigation results as well as relevance parsed from
   // the response for the most recent zero suggest input URL.
@@ -193,7 +214,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   history::MostVisitedURLList most_visited_urls_;
 
   // For callbacks that may be run after destruction.
-  base::WeakPtrFactory<ZeroSuggestProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<ZeroSuggestProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ZeroSuggestProvider);
 };

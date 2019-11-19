@@ -15,8 +15,8 @@ const DspHotwordState = {
 /**
  * Indicates user's activity control consent status.
  *
- * Note: This should be kept in sync with ash::mojom::ConsentStatus in
- * ash/public/interfaces/voice_interaction_controller.mojom
+ * Note: This should be kept in sync with ConsentStatus in
+ * chromeos/services/assistant/public/cpp/assistant_prefs.h
  * @enum {number}
  */
 const ConsentStatus = {
@@ -41,14 +41,14 @@ const ConsentStatus = {
 Polymer({
   is: 'settings-google-assistant-page',
 
-  behaviors: [I18nBehavior, PrefsBehavior],
+  behaviors: [I18nBehavior, PrefsBehavior, WebUIListenerBehavior],
 
   properties: {
     /** @private */
-    assistantFeatureEnabled_: {
+    isAssistantAllowed_: {
       type: Boolean,
       value: function() {
-        return loadTimeData.getBoolean('enableAssistant');
+        return loadTimeData.getBoolean('isAssistantAllowed');
       },
     },
 
@@ -91,7 +91,7 @@ Polymer({
     },
 
     /** @private */
-    hotwordDefaultOn_: {
+    hotwordEnforced_: {
       type: Boolean,
       value: false,
     },
@@ -107,6 +107,7 @@ Polymer({
     'onPrefsChanged_(prefs.settings.voice_interaction.hotword.always_on.value)',
     `onPrefsChanged_(
       prefs.settings.voice_interaction.activity_control.consent_status.value)`,
+    'onPrefsChanged_(prefs.settings.assistant.disabled_by_policy.value)',
   ],
 
   /** @private {?settings.GoogleAssistantBrowserProxy} */
@@ -115,6 +116,15 @@ Polymer({
   /** @override */
   created: function() {
     this.browserProxy_ = settings.GoogleAssistantBrowserProxyImpl.getInstance();
+  },
+
+  /** @override */
+  ready: function() {
+    this.addWebUIListener('hotwordDeviceUpdated', (hasHotword) => {
+      this.hotwordDspAvailable_ = hasHotword;
+    });
+
+    chrome.send('initializeGoogleAssistantPage');
   },
 
   /**
@@ -137,24 +147,30 @@ Polymer({
   },
 
   /** @private */
+  onEnableHotwordChange_: function(event) {
+    if (event.target.checked) {
+      this.browserProxy_.syncVoiceModelStatus();
+    }
+  },
+
+  /** @private */
   onDspHotwordStateChange_: function() {
-    switch (Number(this.$$('#dspHotwordState').value)) {
+    switch (Number(this.$$('#dsp-hotword-state').value)) {
       case DspHotwordState.DEFAULT_ON:
         this.setPrefValue('settings.voice_interaction.hotword.enabled', true);
         this.setPrefValue(
             'settings.voice_interaction.hotword.always_on', false);
-        this.hotwordDefaultOn_ = true;
+        this.browserProxy_.syncVoiceModelStatus();
         break;
       case DspHotwordState.ALWAYS_ON:
         this.setPrefValue('settings.voice_interaction.hotword.enabled', true);
         this.setPrefValue('settings.voice_interaction.hotword.always_on', true);
-        this.hotwordDefaultOn_ = false;
+        this.browserProxy_.syncVoiceModelStatus();
         break;
       case DspHotwordState.OFF:
         this.setPrefValue('settings.voice_interaction.hotword.enabled', false);
         this.setPrefValue(
             'settings.voice_interaction.hotword.always_on', false);
-        this.hotwordDefaultOn_ = false;
         break;
       default:
         console.error('Invalid Dsp hotword settings state');
@@ -172,41 +188,40 @@ Polymer({
 
   /** @private */
   onPrefsChanged_: function() {
+    if (this.getPref('settings.assistant.disabled_by_policy.value')) {
+      this.setPrefValue('settings.voice_interaction.enabled', false);
+      return;
+    }
+
     this.refreshDspHotwordState_();
 
     this.shouldShowVoiceMatchSettings_ =
-        loadTimeData.getBoolean('voiceMatchEnabled') &&
+        !loadTimeData.getBoolean('voiceMatchDisabled') &&
         this.getPref('settings.voice_interaction.hotword.enabled.value') &&
         (this.getPref(
           'settings.voice_interaction.activity_control.consent_status.value') ==
             ConsentStatus.kActivityControlAccepted);
+
+    const hotwordEnabled =
+        this.getPref('settings.voice_interaction.hotword.enabled');
+
+    this.hotwordEnforced_ = hotwordEnabled.enforcement ==
+        chrome.settingsPrivate.Enforcement.ENFORCED;
   },
 
   /** @private */
   refreshDspHotwordState_: function() {
     if (!this.getPref('settings.voice_interaction.hotword.enabled.value')) {
-      this.hotwordDefaultOn_ = false;
       this.dspHotwordState_ = DspHotwordState.OFF;
     } else if (this.getPref(
                    'settings.voice_interaction.hotword.always_on.value')) {
-      this.hotwordDefaultOn_ = false;
       this.dspHotwordState_ = DspHotwordState.ALWAYS_ON;
     } else {
-      this.hotwordDefaultOn_ = true;
       this.dspHotwordState_ = DspHotwordState.DEFAULT_ON;
     }
 
-    if (this.$$('#dspHotwordState')) {
-      this.$$('#dspHotwordState').value = this.dspHotwordState_;
+    if (this.$$('#dsp-hotword-state')) {
+      this.$$('#dsp-hotword-state').value = this.dspHotwordState_;
     }
-  },
-
-  /** @private */
-  hotwordDisabled_: function() {
-    const hotwordPref =
-        this.getPref('prefs.settings.voice_interaction.hotword.enabled');
-
-    return !!hotwordPref &&
-        hotwordPref.enforcement == chrome.settingsPrivate.Enforcement.ENFORCED;
   },
 });

@@ -65,7 +65,10 @@ const FieldTranslationEntry l2tp_fields[] = {
     // doesn't support separate settings for ipsec and l2tp.
     // { ::onc::l2tp::kSaveCredentials, &kBoolSignature },
     {::onc::l2tp::kUsername, shill::kL2tpIpsecUserProperty},
-    {::onc::l2tp::kLcpEchoDisabled, shill::kL2tpIpsecLcpEchoDisabledProperty},
+    // Setting kLcpEchoDisabled results in a Shill error: "Property
+    // L2TPIPsec.LCPEchoDisabled is not a bool" TODO(1005405): fix this.
+    // {::onc::l2tp::kLcpEchoDisabled,
+    // shill::kL2tpIpsecLcpEchoDisabledProperty},
     {nullptr}};
 
 const FieldTranslationEntry openvpn_fields[] = {
@@ -149,13 +152,6 @@ const FieldTranslationEntry wifi_fields[] = {
     // { ::onc::wifi::kSecurity, shill::kSecurityClassProperty },
     {::onc::wifi::kSignalStrength, shill::kSignalStrengthProperty},
     {::onc::wifi::kTetheringState, shill::kTetheringProperty},
-    {nullptr}};
-
-const FieldTranslationEntry wimax_fields[] = {
-    {::onc::wimax::kAutoConnect, shill::kAutoConnectProperty},
-    // This dictionary is converted during translation, see onc_translator_*.
-    // { ::onc::wimax::kEAP, shill::kEap*},
-    {::onc::wimax::kSignalStrength, shill::kSignalStrengthProperty},
     {nullptr}};
 
 const FieldTranslationEntry cellular_apn_fields[] = {
@@ -274,8 +270,6 @@ const OncValueTranslationEntry onc_value_translation_table[] = {
     {&kTetherWithStateSignature, tether_fields},
     {&kWiFiSignature, wifi_fields},
     {&kWiFiWithStateSignature, wifi_fields},
-    {&kWiMAXSignature, wimax_fields},
-    {&kWiMAXWithStateSignature, wimax_fields},
     {&kCellularApnSignature, cellular_apn_fields},
     {&kCellularFoundNetworkSignature, cellular_found_network_fields},
     {&kCellularPaymentPortalSignature, cellular_payment_portal_fields},
@@ -314,7 +308,8 @@ const StringTranslationEntry kNetworkTypeTable[] = {
     // kTypeEthernetEap is set in onc_translator_onc_to_shill.cc.
     //  { ::onc::network_type::kEthernet, shill::kTypeEthernetEap },
     {::onc::network_type::kWiFi, shill::kTypeWifi},
-    {::onc::network_type::kWimax, shill::kTypeWimax},
+    // wimax entries are ignored in onc_translator_onc_to_shill.cc.
+    // {::onc::network_type::kWimax, shill::kTypeWimax},
     {::onc::network_type::kCellular, shill::kTypeCellular},
     {::onc::network_type::kVPN, shill::kTypeVPN},
     {::onc::network_type::kTether, kTypeTether},
@@ -400,7 +395,6 @@ const FieldTranslationEntry kCellularDeviceTable[] = {
     // This field is converted during translation, see onc_translator_*.
     // { ::onc::cellular::kAPNList, shill::kCellularApnListProperty},
     {::onc::cellular::kAllowRoaming, shill::kCellularAllowRoamingProperty},
-    {::onc::cellular::kCarrier, shill::kCarrierProperty},
     {::onc::cellular::kESN, shill::kEsnProperty},
     {::onc::cellular::kFamily, shill::kTechnologyFamilyProperty},
     {::onc::cellular::kFirmwareRevision, shill::kFirmwareRevisionProperty},
@@ -417,12 +411,10 @@ const FieldTranslationEntry kCellularDeviceTable[] = {
     {::onc::cellular::kMEID, shill::kMeidProperty},
     {::onc::cellular::kMIN, shill::kMinProperty},
     {::onc::cellular::kModelID, shill::kModelIdProperty},
-    {::onc::cellular::kPRLVersion, shill::kPRLVersionProperty},
     {::onc::cellular::kScanning, shill::kScanningProperty},
     // This field is converted during translation, see onc_translator_*.
     // { ::onc::cellular::kSIMLockStatus, shill::kSIMLockStatusProperty},
     {::onc::cellular::kSIMPresent, shill::kSIMPresentProperty},
-    {::onc::cellular::kSupportedCarriers, shill::kSupportedCarriersProperty},
     {::onc::cellular::kSupportNetworkScan, shill::kSupportNetworkScanProperty},
     {nullptr}};
 

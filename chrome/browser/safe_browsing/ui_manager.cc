@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/safe_browsing_subresource_tab_helper.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -24,6 +25,7 @@
 #include "components/safe_browsing/browser/threat_details.h"
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/ping_manager.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
@@ -45,7 +47,7 @@ namespace safe_browsing {
 
 SafeBrowsingUIManager::SafeBrowsingUIManager(
     const scoped_refptr<SafeBrowsingService>& service)
-    : sb_service_(service) {}
+    : BaseUIManager(), sb_service_(service) {}
 
 SafeBrowsingUIManager::~SafeBrowsingUIManager() {}
 
@@ -152,26 +154,6 @@ void SafeBrowsingUIManager::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void SafeBrowsingUIManager::AddUnsafeResource(
-    GURL url,
-    security_interstitials::UnsafeResource resource) {
-  unsafe_resources_.push_back(std::make_pair(url, resource));
-}
-
-bool SafeBrowsingUIManager::PopUnsafeResourceForURL(
-    GURL url,
-    security_interstitials::UnsafeResource* resource) {
-  for (auto it = unsafe_resources_.begin(); it != unsafe_resources_.end();
-       it++) {
-    if (it->first == url) {
-      *resource = it->second;
-      unsafe_resources_.erase(it);
-      return true;
-    }
-  }
-  return false;
-}
-
 const std::string SafeBrowsingUIManager::app_locale() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return g_browser_process->GetApplicationLocale();
@@ -225,6 +207,17 @@ void SafeBrowsingUIManager::OnBlockingPageDone(
 GURL SafeBrowsingUIManager::GetMainFrameWhitelistUrlForResourceForTesting(
     const security_interstitials::UnsafeResource& resource) {
   return GetMainFrameWhitelistUrlForResource(resource);
+}
+
+BaseBlockingPage* SafeBrowsingUIManager::CreateBlockingPageForSubresource(
+    content::WebContents* contents,
+    const GURL& blocked_url,
+    const UnsafeResource& unsafe_resource) {
+  SafeBrowsingSubresourceTabHelper::CreateForWebContents(contents);
+  SafeBrowsingBlockingPage* blocking_page =
+      SafeBrowsingBlockingPage::CreateBlockingPage(this, contents, blocked_url,
+                                                   unsafe_resource);
+  return blocking_page;
 }
 
 }  // namespace safe_browsing

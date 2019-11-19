@@ -16,7 +16,9 @@ base::SingleThreadTaskRunner* g_task_runner_for_testing = nullptr;
 
 base::LazySingleThreadTaskRunner g_task_runner =
     LAZY_SINGLE_THREAD_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits({base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+        base::TaskTraits(base::ThreadPool(),
+                         base::MayBlock(),
+                         base::TaskPriority::BEST_EFFORT),
         base::SingleThreadTaskRunnerThreadMode::SHARED);
 
 }  // namespace

@@ -1,0 +1,64 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/jumbo.gni")
+
+assert(is_chromeos)
+
+jumbo_component("chromeos") {
+  output_name = "ui_base_ime_chromeos"
+
+  sources = [
+    "component_extension_ime_manager.cc",
+    "component_extension_ime_manager.h",
+    "extension_ime_util.cc",
+    "extension_ime_util.h",
+    "fake_ime_keyboard.cc",
+    "fake_ime_keyboard.h",
+    "fake_input_method_delegate.cc",
+    "fake_input_method_delegate.h",
+    "ime_keyboard.cc",
+    "ime_keyboard_impl.cc",
+    "ime_keyboard_impl.h",
+    "ime_keymap.cc",
+    "ime_keymap.h",
+    "input_method_chromeos.cc",
+    "input_method_chromeos.h",
+    "input_method_delegate.h",
+    "input_method_descriptor.cc",
+    "input_method_descriptor.h",
+    "input_method_manager.cc",
+    "input_method_manager.h",
+    "input_method_util.cc",
+    "input_method_util.h",
+    "mock_component_extension_ime_manager.cc",
+    "mock_component_extension_ime_manager.h",
+    "mock_component_extension_ime_manager_delegate.cc",
+    "mock_component_extension_ime_manager_delegate.h",
+    "mock_ime_candidate_window_handler.cc",
+    "mock_ime_candidate_window_handler.h",
+    "mock_ime_engine_handler.cc",
+    "mock_ime_engine_handler.h",
+  ]
+
+  defines = [ "IS_UI_BASE_IME_CHROMEOS_IMPL" ]
+
+  public_deps = [
+    "//ui/base/ime",
+    "//ui/base/ime/chromeos/public/mojom",
+    "//url",
+  ]
+
+  deps = [
+    "//build:branding_buildflags",
+    "//chromeos/constants",
+    "//chromeos/ime:gencode",
+    "//chromeos/services/ime/public/mojom",
+    "//chromeos/system",
+    "//third_party/icu",
+    "//ui/base",
+    "//ui/chromeos/strings",
+    "//ui/ozone:ozone_base",
+  ]
+}

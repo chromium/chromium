@@ -48,16 +48,6 @@ bool operator==(const InteractionsStats& lhs, const InteractionsStats& rhs) {
          lhs.update_time == rhs.update_time;
 }
 
-const InteractionsStats* FindStatsByUsername(
-    const std::vector<InteractionsStats>& stats,
-    const base::string16& username) {
-  auto it = std::find_if(stats.begin(), stats.end(),
-                         [&username](const InteractionsStats& element) {
-                           return username == element.username_value;
-                         });
-  return it == stats.end() ? nullptr : &*it;
-}
-
 StatisticsTable::StatisticsTable() : db_(nullptr) {
 }
 
@@ -185,6 +175,30 @@ bool StatisticsTable::RemoveStatsByOriginAndTime(
   }
 
   return success;
+}
+
+int StatisticsTable::GetNumDomainsWithAtLeastNDismissals(int64_t n) {
+  sql::Statement select_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE,
+                              "SELECT COUNT(DISTINCT origin_domain) FROM stats "
+                              "WHERE dismissal_count >= ?"));
+  select_statement.BindInt64(0, n);
+  return select_statement.Step() ? select_statement.ColumnInt(0) : 0u;
+}
+
+int StatisticsTable::GetNumAccountsWithAtLeastNDismissals(int64_t n) {
+  sql::Statement select_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE,
+                              "SELECT COUNT(1) FROM stats "
+                              "WHERE dismissal_count >= ?"));
+  select_statement.BindInt64(0, n);
+  return select_statement.Step() ? select_statement.ColumnInt(0) : 0u;
+}
+
+int StatisticsTable::GetNumAccounts() {
+  sql::Statement select_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, "SELECT COUNT(1) FROM stats"));
+  return select_statement.Step() ? select_statement.ColumnInt(0) : 0u;
 }
 
 }  // namespace password_manager

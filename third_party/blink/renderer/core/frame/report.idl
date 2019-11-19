@@ -10,4 +10,5 @@
     readonly attribute DOMString type;
     readonly attribute DOMString url;
     readonly attribute ReportBody? body;
+    [CallWith=ScriptState] object toJSON();
 };

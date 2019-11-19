@@ -33,6 +33,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -40,16 +41,18 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/test_background_page_first_load_observer.h"
 #include "net/url_request/test_url_request_interceptor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using content::BrowserThread;
 using extensions::Extension;
 using extensions::ExtensionRegistry;
+using extensions::ExtensionService;
 using extensions::Manifest;
 using policy::PolicyMap;
-using testing::Return;
 using testing::_;
+using testing::Return;
 
 namespace {
 
@@ -57,6 +60,50 @@ std::string BuildForceInstallPolicyValue(const char* extension_id,
                                          const char* update_url) {
   return base::StringPrintf("%s;%s", extension_id, update_url);
 }
+
+// Observes destruction of an extension's ExtensionHost if it is currently
+// there.
+class ExtensionHostDestructionObserver
+    : public extensions::ExtensionHostObserver {
+ public:
+  ExtensionHostDestructionObserver(Profile* profile,
+                                   const extensions::ExtensionId& extension_id)
+      : profile_(profile),
+        extension_id_(extension_id),
+        host_(extensions::ProcessManager::Get(profile)
+                  ->GetBackgroundHostForExtension(extension_id_)),
+        extension_host_observer_(this) {
+    DCHECK(host_);
+    extension_host_observer_.Add(host_);
+  }
+
+  void WaitForDestructionThenWaitForFirstLoad() {
+    run_loop_.Run();
+
+    extensions::TestBackgroundPageFirstLoadObserver first_load_observer(
+        profile_, extension_id_);
+    first_load_observer.Wait();
+  }
+
+  // ExtensionHostObserver:
+  void OnExtensionHostDestroyed(
+      const extensions::ExtensionHost* host) override {
+    if (host == host_) {
+      extension_host_observer_.Remove(host_);
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  Profile* const profile_ = nullptr;
+  const extensions::ExtensionId extension_id_;
+  extensions::ExtensionHost* const host_ = nullptr;
+  base::RunLoop run_loop_;
+  ScopedObserver<extensions::ExtensionHost, extensions::ExtensionHostObserver>
+      extension_host_observer_;
+
+  DISALLOW_COPY_AND_ASSIGN(ExtensionHostDestructionObserver);
+};
 
 }  // namespace
 
@@ -114,15 +161,8 @@ class ExtensionManagementTest : public extensions::ExtensionBrowserTest {
   extensions::ScopedInstallVerifierBypassForTest install_verifier_bypass_;
 };
 
-#if defined(OS_LINUX) || defined(OS_WIN)
-// Times out sometimes on Linux and Win XP. http://crbug.com/89727
-#define MAYBE_InstallSameVersion DISABLED_InstallSameVersion
-#else
-#define MAYBE_InstallSameVersion InstallSameVersion
-#endif
-
 // Tests that installing the same version overwrites.
-IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_InstallSameVersion) {
+IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, InstallSameVersion) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -142,10 +182,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_InstallSameVersion) {
   ASSERT_TRUE(extension);
   base::FilePath old_path = extension->path();
 
-  // Install an extension with the same version. The previous install should be
-  // overwritten.
-  extension = InstallExtension(second_path, 0);
-  ASSERT_TRUE(extension);
+  const extensions::ExtensionId extension_id = extension->id();
+  {
+    ExtensionHostDestructionObserver host_destruction_observer(profile(),
+                                                               extension_id);
+
+    // Install an extension with the same version. The previous install should
+    // be overwritten.
+    extension = InstallExtension(second_path, 0);
+    ASSERT_TRUE(extension);
+
+    // Wait for the old ExtensionHost destruction first before waiting for the
+    // new one to load.
+    // Note that this is needed to ensure that |IsExtensionAtVersion| below can
+    // successfully execute JS, otherwise this test becomes flaky.
+    host_destruction_observer.WaitForDestructionThenWaitForFirstLoad();
+  }
   base::FilePath new_path = extension->path();
 
   EXPECT_FALSE(IsExtensionAtVersion(extension, "1.0"));
@@ -207,12 +259,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, InstallThenCancel) {
 IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_InstallRequiresConfirm) {
   // Installing the extension without an auto confirming UI should result in
   // it being disabled, since good.crx has permissions that require approval.
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service();
   std::string id = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
   ASSERT_FALSE(InstallExtension(test_data_dir_.AppendASCII("good.crx"), 0));
-  ASSERT_TRUE(service->GetExtensionById(id, true));
+  ASSERT_TRUE(extension_registry()->disabled_extensions().GetByID(id));
   UninstallExtension(id);
 
   // And the install should succeed when the permissions are accepted.
@@ -373,10 +422,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
 
   // Install version 1 of the extension.
   ExtensionTestMessageListener listener1("v1 installed", false);
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service();
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
+  ExtensionService* service = extension_service();
+  ExtensionRegistry* registry = extension_registry();
   const size_t size_before = registry->enabled_extensions().size();
   ASSERT_TRUE(registry->disabled_extensions().is_empty());
   const Extension* extension = InstallExtension(v1_path, 1);
@@ -397,14 +444,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
   install_observer.WaitForExtensionWillBeInstalled();
   EXPECT_TRUE(listener2.WaitUntilSatisfied());
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
-  extension = service->GetExtensionById(
-      "ogjcoiohnmldgjemafoockdghcjciccf", false);
+  extension = registry->enabled_extensions().GetByID(
+      "ogjcoiohnmldgjemafoockdghcjciccf");
   ASSERT_TRUE(extension);
   ASSERT_EQ("2.0", extension->VersionString());
   ASSERT_TRUE(notification_listener.started());
   ASSERT_TRUE(notification_listener.finished());
-  ASSERT_TRUE(base::ContainsKey(notification_listener.updates(),
-                                "ogjcoiohnmldgjemafoockdghcjciccf"));
+  ASSERT_TRUE(base::Contains(notification_listener.updates(),
+                             "ogjcoiohnmldgjemafoockdghcjciccf"));
   notification_listener.Reset();
 
   // Now try doing an update to version 3, which has been incorrectly
@@ -417,13 +464,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
   ASSERT_TRUE(WaitForExtensionInstallError());
   ASSERT_TRUE(notification_listener.started());
   ASSERT_TRUE(notification_listener.finished());
-  ASSERT_TRUE(base::ContainsKey(notification_listener.updates(),
-                                "ogjcoiohnmldgjemafoockdghcjciccf"));
+  ASSERT_TRUE(base::Contains(notification_listener.updates(),
+                             "ogjcoiohnmldgjemafoockdghcjciccf"));
 
   // Make sure the extension state is the same as before.
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
-  extension = service->GetExtensionById(
-      "ogjcoiohnmldgjemafoockdghcjciccf", false);
+  extension = registry->enabled_extensions().GetByID(
+      "ogjcoiohnmldgjemafoockdghcjciccf");
   ASSERT_TRUE(extension);
   ASSERT_EQ("2.0", extension->VersionString());
 }
@@ -474,10 +521,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
 
   // Install version 1 of the extension.
   ExtensionTestMessageListener listener1("v1 installed", false);
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service();
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
+  ExtensionService* service = extension_service();
+  ExtensionRegistry* registry = extension_registry();
   const size_t enabled_size_before = registry->enabled_extensions().size();
   const size_t disabled_size_before = registry->disabled_extensions().size();
   const Extension* extension = InstallExtension(v1_path, 1);
@@ -500,11 +545,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   install_observer.WaitForExtensionWillBeInstalled();
   ASSERT_EQ(disabled_size_before + 1, registry->disabled_extensions().size());
   ASSERT_EQ(enabled_size_before, registry->enabled_extensions().size());
-  extension = service->GetExtensionById(
-      "ogjcoiohnmldgjemafoockdghcjciccf", true);
+  extension = registry->disabled_extensions().GetByID(
+      "ogjcoiohnmldgjemafoockdghcjciccf");
   ASSERT_TRUE(extension);
-  ASSERT_FALSE(service->GetExtensionById(
-      "ogjcoiohnmldgjemafoockdghcjciccf", false));
+  ASSERT_FALSE(registry->enabled_extensions().GetByID(
+      "ogjcoiohnmldgjemafoockdghcjciccf"));
   ASSERT_EQ("2.0", extension->VersionString());
 
   // The extension should have not made the callback because it is disabled.
@@ -514,15 +559,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   EXPECT_TRUE(listener2.WaitUntilSatisfied());
   ASSERT_TRUE(notification_listener.started());
   ASSERT_TRUE(notification_listener.finished());
-  ASSERT_TRUE(base::ContainsKey(notification_listener.updates(),
-                                "ogjcoiohnmldgjemafoockdghcjciccf"));
+  ASSERT_TRUE(base::Contains(notification_listener.updates(),
+                             "ogjcoiohnmldgjemafoockdghcjciccf"));
   notification_listener.Reset();
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalUrlUpdate) {
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service();
+  ExtensionService* service = extension_service();
   const char kExtensionId[] = "ogjcoiohnmldgjemafoockdghcjciccf";
 
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -550,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalUrlUpdate) {
         return false;
       }));
 
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
+  ExtensionRegistry* registry = extension_registry();
   const size_t size_before = registry->enabled_extensions().size();
   ASSERT_TRUE(registry->disabled_extensions().is_empty());
 
@@ -576,7 +619,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalUrlUpdate) {
   service->updater()->CheckNow(extensions::ExtensionUpdater::CheckParams());
   install_observer.WaitForExtensionWillBeInstalled();
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
-  const Extension* extension = service->GetExtensionById(kExtensionId, false);
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
   ASSERT_EQ("2.0", extension->VersionString());
 
@@ -629,9 +673,6 @@ const char kForceInstallNotEmptyHelp[] =
 
 // See http://crbug.com/57378 for flakiness details.
 IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalPolicyRefresh) {
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service();
   const char kExtensionId[] = "ogjcoiohnmldgjemafoockdghcjciccf";
 
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -683,7 +724,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalPolicyRefresh) {
 
   // Check if the extension got installed.
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
-  const Extension* extension = service->GetExtensionById(kExtensionId, false);
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
   ASSERT_EQ("2.0", extension->VersionString());
   EXPECT_EQ(Manifest::EXTERNAL_POLICY_DOWNLOAD, extension->location());
@@ -708,7 +750,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalPolicyRefresh) {
   policies.Erase(policy::key::kExtensionInstallForcelist);
   UpdateProviderPolicy(policies);
   EXPECT_EQ(size_before + 1, registry->enabled_extensions().size());
-  EXPECT_FALSE(service->GetExtensionById(kExtensionId, true));
+  EXPECT_FALSE(
+      registry->GetExtensionById(kExtensionId, ExtensionRegistry::EVERYTHING));
 }
 
 // See http://crbug.com/103371 and http://crbug.com/120640.
@@ -763,7 +806,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   // User install of the extension.
   ASSERT_TRUE(InstallExtension(v2_path, 1));
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
-  const Extension* extension = service->GetExtensionById(kExtensionId, false);
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
   EXPECT_EQ(Manifest::INTERNAL, extension->location());
   EXPECT_TRUE(service->IsExtensionEnabled(kExtensionId));
@@ -782,7 +826,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   install_observer.WaitForExtensionWillBeInstalled();
 
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
-  extension = service->GetExtensionById(kExtensionId, false);
+  extension = registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
   EXPECT_EQ(Manifest::EXTERNAL_POLICY_DOWNLOAD, extension->location());
   EXPECT_TRUE(service->IsExtensionEnabled(kExtensionId));
@@ -794,13 +838,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   policies.Erase(policy::key::kExtensionInstallForcelist);
   UpdateProviderPolicy(policies);
   ASSERT_EQ(size_before, registry->enabled_extensions().size());
-  extension = service->GetExtensionById(kExtensionId, true);
+  extension =
+      registry->GetExtensionById(kExtensionId, ExtensionRegistry::EVERYTHING);
   EXPECT_FALSE(extension);
 
   // User install again, but have it disabled too before setting the policy.
   ASSERT_TRUE(InstallExtension(v2_path, 1));
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
-  extension = service->GetExtensionById(kExtensionId, false);
+  extension = registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
   EXPECT_EQ(Manifest::INTERNAL, extension->location());
   EXPECT_TRUE(service->IsExtensionEnabled(kExtensionId));
@@ -808,7 +853,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
 
   DisableExtension(kExtensionId);
   EXPECT_EQ(1u, registry->disabled_extensions().size());
-  extension = service->GetExtensionById(kExtensionId, true);
+  extension = registry->disabled_extensions().GetByID(kExtensionId);
   EXPECT_TRUE(extension);
   EXPECT_FALSE(service->IsExtensionEnabled(kExtensionId));
 
@@ -824,7 +869,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   extension_observer.WaitForExtensionWillBeInstalled();
 
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
-  extension = service->GetExtensionById(kExtensionId, false);
+  extension = registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
   EXPECT_EQ(Manifest::EXTERNAL_POLICY_DOWNLOAD, extension->location());
   EXPECT_TRUE(service->IsExtensionEnabled(kExtensionId));

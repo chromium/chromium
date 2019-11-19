@@ -15,6 +15,7 @@ enum {
 #if defined(OS_ANDROID)
   kAndroidPropertyDescriptor = service_manager::kFirstEmbedderDescriptor,
   kAndroidICUDataDescriptor,
+  kAndroidICUExtraDataDescriptor,
 #endif
 
   // Reserves 100 to 199 for dynamically generated IDs.

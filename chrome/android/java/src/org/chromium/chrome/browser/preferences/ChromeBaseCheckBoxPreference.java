@@ -1,20 +1,19 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.preferences;
 
 import android.content.Context;
-import android.preference.CheckBoxPreference;
+import android.support.v7.preference.CheckBoxPreference;
+import android.support.v7.preference.PreferenceViewHolder;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.TextView;
 
 /**
  * Contains the basic functionality that should be shared by all CheckBoxPreference in Chrome.
  */
 public class ChromeBaseCheckBoxPreference extends CheckBoxPreference {
-
     private ManagedPreferenceDelegate mManagedPrefDelegate;
 
     /**
@@ -33,10 +32,10 @@ public class ChromeBaseCheckBoxPreference extends CheckBoxPreference {
     }
 
     @Override
-    protected void onBindView(View view) {
-        super.onBindView(view);
-        ((TextView) view.findViewById(android.R.id.title)).setSingleLine(false);
-        ManagedPreferencesUtils.onBindViewToPreference(mManagedPrefDelegate, this, view);
+    public void onBindViewHolder(PreferenceViewHolder holder) {
+        super.onBindViewHolder(holder);
+        ((TextView) holder.findViewById(android.R.id.title)).setSingleLine(false);
+        ManagedPreferencesUtils.onBindViewToPreference(mManagedPrefDelegate, this, holder.itemView);
     }
 
     @Override

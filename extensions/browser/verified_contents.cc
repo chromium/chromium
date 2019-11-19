@@ -11,18 +11,15 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/crx_file/id_util.h"
 #include "crypto/signature_verifier.h"
+#include "extensions/browser/content_verifier/content_verifier_utils.h"
+#include "extensions/browser/content_verifier/scoped_uma_recorder.h"
 #include "extensions/common/extension.h"
-
-using base::DictionaryValue;
-using base::ListValue;
-using base::Value;
 
 namespace {
 
@@ -47,70 +44,26 @@ const char kTreeHash[] = "treehash";
 const char kWebstoreKId[] = "webstore";
 
 // Helper function to iterate over a list of dictionaries, returning the
-// dictionary that has |key| -> |value| in it, if any, or NULL.
-const DictionaryValue* FindDictionaryWithValue(const ListValue* list,
-                                               const std::string& key,
-                                               const std::string& value) {
-  for (const auto& i : *list) {
-    const DictionaryValue* dictionary;
-    if (!i.GetAsDictionary(&dictionary))
+// dictionary that has |key| -> |value| in it, if any, or null.
+const base::Value* FindDictionaryWithValue(const base::Value& list,
+                                           const std::string& key,
+                                           const std::string& value) {
+  DCHECK(list.is_list());
+  for (const base::Value& item : list.GetList()) {
+    if (!item.is_dict())
       continue;
-    std::string found_value;
-    if (dictionary->GetString(key, &found_value) && found_value == value)
-      return dictionary;
+    // Finds a path because the |key| may include '.'.
+    const std::string* found_value = item.FindStringPath(key);
+    if (found_value && *found_value == value)
+      return &item;
   }
-  return NULL;
+  return nullptr;
 }
 
-// Helper to record UMA for results of initializing verified_contents.json file.
-// TODO(lazyboy): Merge this with ScopedUMARecorder in computed_hashes.cc.
-class ScopedUMARecorder {
- public:
-  ScopedUMARecorder() = default;
-
-  ~ScopedUMARecorder() {
-    if (recorded_)
-      return;
-    RecordImpl(false);
-  }
-
-  void RecordSuccess() {
-    recorded_ = true;
-    RecordImpl(true);
-  }
-
- private:
-  void RecordImpl(bool success) {
-    if (success) {
-      UMA_HISTOGRAM_TIMES(
-          "Extensions.ContentVerification.VerifiedContentsInitTime",
-          timer_.Elapsed());
-    }
-    UMA_HISTOGRAM_BOOLEAN(
-        "Extensions.ContentVerification.VerifiedContentsInitResult", success);
-  }
-
- private:
-  base::ElapsedTimer timer_;
-  bool recorded_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUMARecorder);
-};
-
-#if defined(OS_WIN)
-// Returns true if |path| ends with (.| )+.
-// |out_path| will contain "." and/or " " suffix removed from |path|.
-bool TrimDotSpaceSuffix(const base::FilePath::StringType& path,
-                        base::FilePath::StringType* out_path) {
-  base::FilePath::StringType::size_type trim_pos =
-      path.find_last_not_of(FILE_PATH_LITERAL(". "));
-  if (trim_pos == base::FilePath::StringType::npos)
-    return false;
-
-  *out_path = path.substr(0, trim_pos + 1);
-  return true;
-}
-#endif  // defined(OS_WIN)
+const char kUMAVerifiedContentsInitResult[] =
+    "Extensions.ContentVerification.VerifiedContentsInitResult";
+const char kUMAVerifiedContentsInitTime[] =
+    "Extensions.ContentVerification.VerifiedContentsInitTime";
 
 }  // namespace
 
@@ -147,78 +100,78 @@ VerifiedContents::~VerifiedContents() {
 std::unique_ptr<VerifiedContents> VerifiedContents::Create(
     base::span<const uint8_t> public_key,
     const base::FilePath& path) {
-  ScopedUMARecorder uma_recorder;
+  ScopedUMARecorder<kUMAVerifiedContentsInitTime,
+                    kUMAVerifiedContentsInitResult>
+      uma_recorder;
   // Note: VerifiedContents constructor is private.
   auto verified_contents = base::WrapUnique(new VerifiedContents(public_key));
   std::string payload;
   if (!verified_contents->GetPayload(path, &payload))
     return nullptr;
 
-  std::unique_ptr<base::Value> value(base::JSONReader::ReadDeprecated(payload));
-  if (!value.get() || !value->is_dict())
+  base::Optional<base::Value> dictionary = base::JSONReader::Read(payload);
+  if (!dictionary || !dictionary->is_dict())
     return nullptr;
-  DictionaryValue* dictionary = static_cast<DictionaryValue*>(value.get());
 
-  std::string item_id;
-  if (!dictionary->GetString(kItemIdKey, &item_id) ||
-      !crx_file::id_util::IdIsValid(item_id)) {
+  const std::string* item_id = dictionary->FindStringKey(kItemIdKey);
+  if (!item_id || !crx_file::id_util::IdIsValid(*item_id))
     return nullptr;
-  }
-  verified_contents->extension_id_ = item_id;
 
-  std::string version_string;
-  if (!dictionary->GetString(kItemVersionKey, &version_string))
+  verified_contents->extension_id_ = *item_id;
+
+  const std::string* version_string =
+      dictionary->FindStringKey(kItemVersionKey);
+  if (!version_string)
     return nullptr;
-  verified_contents->version_ = base::Version(version_string);
+
+  verified_contents->version_ = base::Version(*version_string);
   if (!verified_contents->version_.IsValid())
     return nullptr;
 
-  ListValue* hashes_list = nullptr;
-  if (!dictionary->GetList(kContentHashesKey, &hashes_list))
+  const base::Value* hashes_list = dictionary->FindListKey(kContentHashesKey);
+  if (!hashes_list)
     return nullptr;
 
-  for (size_t i = 0; i < hashes_list->GetSize(); i++) {
-    DictionaryValue* hashes = nullptr;
-    if (!hashes_list->GetDictionary(i, &hashes))
+  for (const base::Value& hashes : hashes_list->GetList()) {
+    if (!hashes.is_dict())
       return nullptr;
-    std::string format;
-    if (!hashes->GetString(kFormatKey, &format) || format != kTreeHash)
+
+    const std::string* format = hashes.FindStringKey(kFormatKey);
+    if (!format || *format != kTreeHash)
       continue;
 
-    int block_size = 0;
-    int hash_block_size = 0;
-    if (!hashes->GetInteger(kBlockSizeKey, &block_size) ||
-        !hashes->GetInteger(kHashBlockSizeKey, &hash_block_size)) {
+    base::Optional<int> block_size = hashes.FindIntKey(kBlockSizeKey);
+    base::Optional<int> hash_block_size = hashes.FindIntKey(kHashBlockSizeKey);
+    if (!block_size || !hash_block_size)
       return nullptr;
-    }
-    verified_contents->block_size_ = block_size;
+
+    verified_contents->block_size_ = *block_size;
 
     // We don't support using a different block_size and hash_block_size at
     // the moment.
-    if (verified_contents->block_size_ != hash_block_size)
+    if (verified_contents->block_size_ != *hash_block_size)
       return nullptr;
 
-    ListValue* files = nullptr;
-    if (!hashes->GetList(kFilesKey, &files))
+    const base::Value* files = hashes.FindListKey(kFilesKey);
+    if (!files)
       return nullptr;
 
-    for (size_t j = 0; j < files->GetSize(); ++j) {
-      DictionaryValue* data = nullptr;
-      if (!files->GetDictionary(j, &data))
+    for (const base::Value& data : files->GetList()) {
+      if (!data.is_dict())
         return nullptr;
-      std::string file_path_string;
-      std::string encoded_root_hash;
+
+      const std::string* file_path_string = data.FindStringKey(kPathKey);
+      const std::string* encoded_root_hash = data.FindStringKey(kRootHashKey);
       std::string root_hash;
-      if (!data->GetString(kPathKey, &file_path_string) ||
-          !base::IsStringUTF8(file_path_string) ||
-          !data->GetString(kRootHashKey, &encoded_root_hash) ||
-          !base::Base64UrlDecode(encoded_root_hash,
+      if (!file_path_string || !encoded_root_hash ||
+          !base::IsStringUTF8(*file_path_string) ||
+          !base::Base64UrlDecode(*encoded_root_hash,
                                  base::Base64UrlDecodePolicy::IGNORE_PADDING,
                                  &root_hash)) {
         return nullptr;
       }
       base::FilePath file_path =
-          base::FilePath::FromUTF8Unsafe(file_path_string);
+          base::FilePath::FromUTF8Unsafe(*file_path_string);
       base::FilePath::StringType lowercase_file_path =
           base::ToLowerASCII(file_path.value());
       auto i = verified_contents->root_hashes_.insert(
@@ -230,9 +183,11 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
       // that any filename with (.| )+ suffix can be matched later, see
       // HasTreeHashRoot() and TreeHashRootEquals().
       base::FilePath::StringType trimmed_path;
-      if (TrimDotSpaceSuffix(lowercase_file_path, &trimmed_path))
+      if (content_verifier_utils::TrimDotSpaceSuffix(lowercase_file_path,
+                                                     &trimmed_path)) {
         verified_contents->root_hashes_.insert(
             std::make_pair(trimmed_path, i->second));
+      }
 #endif  // defined(OS_WIN)
     }
 
@@ -244,15 +199,14 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
 
 bool VerifiedContents::HasTreeHashRoot(
     const base::FilePath& relative_path) const {
-  base::FilePath::StringType path = base::ToLowerASCII(
-      relative_path.NormalizePathSeparatorsTo('/').value());
-  if (base::ContainsKey(root_hashes_, path))
+  base::FilePath::StringType path = NormalizeResourcePath(relative_path);
+  if (base::Contains(root_hashes_, path))
     return true;
 
 #if defined(OS_WIN)
   base::FilePath::StringType trimmed_path;
-  if (TrimDotSpaceSuffix(path, &trimmed_path))
-    return base::ContainsKey(root_hashes_, trimmed_path);
+  if (content_verifier_utils::TrimDotSpaceSuffix(path, &trimmed_path))
+    return base::Contains(root_hashes_, trimmed_path);
 #endif  // defined(OS_WIN)
   return false;
 }
@@ -260,16 +214,25 @@ bool VerifiedContents::HasTreeHashRoot(
 bool VerifiedContents::TreeHashRootEquals(const base::FilePath& relative_path,
                                           const std::string& expected) const {
   base::FilePath::StringType normalized_relative_path =
-      base::ToLowerASCII(relative_path.NormalizePathSeparatorsTo('/').value());
+      NormalizeResourcePath(relative_path);
   if (TreeHashRootEqualsImpl(normalized_relative_path, expected))
     return true;
 
 #if defined(OS_WIN)
   base::FilePath::StringType trimmed_relative_path;
-  if (TrimDotSpaceSuffix(normalized_relative_path, &trimmed_relative_path))
+  if (content_verifier_utils::TrimDotSpaceSuffix(normalized_relative_path,
+                                                 &trimmed_relative_path)) {
     return TreeHashRootEqualsImpl(trimmed_relative_path, expected);
+  }
 #endif  // defined(OS_WIN)
   return false;
+}
+
+// static
+base::FilePath::StringType VerifiedContents::NormalizeResourcePath(
+    const base::FilePath& relative_path) {
+  return base::ToLowerASCII(
+      relative_path.NormalizePathSeparatorsTo('/').value());
 }
 
 // We're loosely following the "JSON Web Signature" draft spec for signing
@@ -318,11 +281,9 @@ bool VerifiedContents::GetPayload(const base::FilePath& path,
   std::string contents;
   if (!base::ReadFileToString(path, &contents))
     return false;
-  std::unique_ptr<base::Value> value(
-      base::JSONReader::ReadDeprecated(contents));
-  if (!value.get() || !value->is_list())
+  base::Optional<base::Value> top_list = base::JSONReader::Read(contents);
+  if (!top_list || !top_list->is_list())
     return false;
-  ListValue* top_list = static_cast<ListValue*>(value.get());
 
   // Find the "treehash per file" signed content, e.g.
   // [
@@ -334,44 +295,47 @@ bool VerifiedContents::GetPayload(const base::FilePath& path,
   //     }
   //   }
   // ]
-  const DictionaryValue* dictionary =
-      FindDictionaryWithValue(top_list, kDescriptionKey, kTreeHashPerFile);
-  const DictionaryValue* signed_content = NULL;
-  if (!dictionary ||
-      !dictionary->GetDictionaryWithoutPathExpansion(kSignedContentKey,
-                                                     &signed_content)) {
-    return false;
-  }
-
-  const ListValue* signatures = NULL;
-  if (!signed_content->GetList(kSignaturesKey, &signatures))
+  const base::Value* dictionary =
+      FindDictionaryWithValue(*top_list, kDescriptionKey, kTreeHashPerFile);
+  if (!dictionary)
     return false;
 
-  const DictionaryValue* signature_dict =
-      FindDictionaryWithValue(signatures, kHeaderKidKey, kWebstoreKId);
+  const base::Value* signed_content =
+      dictionary->FindDictKey(kSignedContentKey);
+  if (!signed_content)
+    return false;
+
+  const base::Value* signatures = signed_content->FindListKey(kSignaturesKey);
+  if (!signatures)
+    return false;
+
+  const base::Value* signature_dict =
+      FindDictionaryWithValue(*signatures, kHeaderKidKey, kWebstoreKId);
   if (!signature_dict)
     return false;
 
-  std::string protected_value;
-  std::string encoded_signature;
+  const std::string* protected_value =
+      signature_dict->FindStringKey(kProtectedKey);
+  const std::string* encoded_signature =
+      signature_dict->FindStringKey(kSignatureKey);
   std::string decoded_signature;
-  if (!signature_dict->GetString(kProtectedKey, &protected_value) ||
-      !signature_dict->GetString(kSignatureKey, &encoded_signature) ||
-      !base::Base64UrlDecode(encoded_signature,
+  if (!protected_value || !encoded_signature ||
+      !base::Base64UrlDecode(*encoded_signature,
                              base::Base64UrlDecodePolicy::IGNORE_PADDING,
                              &decoded_signature))
     return false;
 
-  std::string encoded_payload;
-  if (!signed_content->GetString(kPayloadKey, &encoded_payload))
+  const std::string* encoded_payload =
+      signed_content->FindStringKey(kPayloadKey);
+  if (!encoded_payload)
     return false;
 
   valid_signature_ =
-      VerifySignature(protected_value, encoded_payload, decoded_signature);
+      VerifySignature(*protected_value, *encoded_payload, decoded_signature);
   if (!valid_signature_)
     return false;
 
-  if (!base::Base64UrlDecode(encoded_payload,
+  if (!base::Base64UrlDecode(*encoded_payload,
                              base::Base64UrlDecodePolicy::IGNORE_PADDING,
                              payload))
     return false;

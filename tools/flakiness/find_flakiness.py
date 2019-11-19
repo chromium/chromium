@@ -7,6 +7,7 @@
 case in parallel repeatedly to identify flaky tests.
 """
 
+from __future__ import print_function
 
 import os
 import re
@@ -63,7 +64,7 @@ def FindShardingFlakiness(test_path, data_path, supervisor_args):
       if proc.poll() is not None:
         break
       continue
-    print line.rstrip()
+    print(line.rstrip())
     if log_lines:
       line = line.rstrip()
       if line in failed_tests:
@@ -78,12 +79,12 @@ def FindShardingFlakiness(test_path, data_path, supervisor_args):
 
   # Write the data file and print results.
   data_file = open(data_path, 'w')
-  print '%i runs' % num_runs
+  print('%i runs' % num_runs)
   data_file.write('%i runs\n' % num_runs)
-  print '%i passes' % num_passes
+  print('%i passes' % num_passes)
   data_file.write('%i passes\n' % num_passes)
   for (test, count) in failed_tests.iteritems():
-    print '%s -> %i' % (test, count)
+    print('%s -> %i' % (test, count))
     data_file.write('%s -> %i\n' % (test, count))
   data_file.close()
 
@@ -107,7 +108,7 @@ def FindUnaryFlakiness(test_path, output_path, num_procs, num_repeats, timeout):
       if proc.poll() is not None:
         break
       continue
-    print line.rstrip()
+    print(line.rstrip())
     results = test_start.search(line)
     if results:
       test_list.append(results.group(1))
@@ -145,12 +146,12 @@ def FindUnaryFlakiness(test_path, output_path, num_procs, num_repeats, timeout):
       if num_terminated:
         line += ' (%i terminated)' % num_terminated
       failures.append(line)
-    print '%s (%i / %i): %i failed' % (test_name, index, total, num_fails)
+    print('%s (%i / %i): %i failed' % (test_name, index, total, num_fails))
     index += 1
     time.sleep(1.0)
 
   # Print the results and write the data file.
-  print failures
+  print(failures)
   data_file = open(output_path, 'w')
   for line in failures:
     data_file.write(line + '\n')
@@ -168,7 +169,7 @@ def main():
 
   for i in range(FF_NUM_ITERATIONS):
     FindShardingFlakiness(args[0], data_path, FF_SUPERVISOR_ARGS)
-    print 'That was just iteration %i of %i.' % (i + 1, FF_NUM_ITERATIONS)
+    print('That was just iteration %i of %i.' % (i + 1, FF_NUM_ITERATIONS))
     time.sleep(FF_SLEEP_INTERVAL)
 
   FindUnaryFlakiness(

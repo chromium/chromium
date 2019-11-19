@@ -11,17 +11,40 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/login/screens/supervision_transition_screen_view.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace chromeos {
 
+class SupervisionTransitionScreen;
+
+// Interface for dependency injection between SupervisionTransitionScreen
+// and its WebUI representation.
+class SupervisionTransitionScreenView {
+ public:
+  constexpr static StaticOobeScreenId kScreenId{"supervision-transition"};
+
+  virtual ~SupervisionTransitionScreenView() {}
+
+  virtual void Bind(SupervisionTransitionScreen* screen) = 0;
+  virtual void Unbind() = 0;
+  virtual void Show() = 0;
+  virtual void Hide() = 0;
+
+ protected:
+  SupervisionTransitionScreenView() = default;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(SupervisionTransitionScreenView);
+};
+
 class SupervisionTransitionScreenHandler
     : public BaseScreenHandler,
       public SupervisionTransitionScreenView {
  public:
+  using TView = SupervisionTransitionScreenView;
+
   explicit SupervisionTransitionScreenHandler(
       JSCallsContainer* js_calls_container);
   ~SupervisionTransitionScreenHandler() override;
@@ -36,6 +59,8 @@ class SupervisionTransitionScreenHandler
   void Unbind() override;
   void Show() override;
   void Hide() override;
+
+  base::OneShotTimer* GetTimerForTesting();
 
  private:
   // BaseScreenHandler:

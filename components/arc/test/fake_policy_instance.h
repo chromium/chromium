@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/arc/common/policy.mojom.h"
+#include "components/arc/mojom/policy.mojom.h"
 
 namespace arc {
 

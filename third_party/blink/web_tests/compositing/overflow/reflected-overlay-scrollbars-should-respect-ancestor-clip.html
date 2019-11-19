@@ -3,6 +3,12 @@
     This test ensures that reflected overlay scrollbars still render correctly
     when reflected.
 -->
+<script>
+if (window.internals) {
+    internals.useMockOverlayScrollbars();
+    internals.settings.setPreferCompositingToLCDTextEnabled(true);
+}
+</script>
 <style>
 #container {
     -webkit-box-reflect: below;
@@ -30,21 +36,15 @@
     left: 200px;
     background: blue;
     /* Without this, when _not_ composited, the reflected scrollbar disappears. See crbug.com/396775 */
-    transform: translateZ(0);
+    will-change: transform;
 }
 
 #scrolled {
     width: 100px;
-    height: 300px;
+    height: 400px;
     background: green;
 }
 </style>
-<script>
-if (window.internals) {
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
-    internals.settings.setPreferCompositingToLCDTextEnabled(true);
-}
-</script>
 <div id="container">
     <div id="clipper">
         <div id="scroller">

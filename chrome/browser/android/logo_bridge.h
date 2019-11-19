@@ -43,7 +43,7 @@ class LogoBridge {
 
   search_provider_logos::LogoService* logo_service_;
 
-  base::WeakPtrFactory<LogoBridge> weak_ptr_factory_;
+  base::WeakPtrFactory<LogoBridge> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LogoBridge);
 };

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // https://w3c.github.io/longtasks/#sec-PerformanceLongTaskTiming
+[Exposed=Window]
 interface PerformanceLongTaskTiming : PerformanceEntry {
     [SameObject, SaveSameObject] readonly attribute FrozenArray<TaskAttributionTiming> attribution;
 
-    // TODO(peria): toJSON is not in spec. https://crbug.com/736332
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

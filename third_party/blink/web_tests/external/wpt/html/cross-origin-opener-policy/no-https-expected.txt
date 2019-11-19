@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Cross-Origin-Opener-Policy only works over secure contexts
+FAIL Bonus: window.crossOriginIsolated assert_false: expected false got undefined
+Harness: the test ran to completion.
+

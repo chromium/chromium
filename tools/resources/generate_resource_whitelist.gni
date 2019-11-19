@@ -38,5 +38,11 @@ template("generate_resource_whitelist") {
     foreach(input, invoker.inputs) {
       args += [ rebase_path(input, root_build_dir) ]
     }
+
+    # This target's dependencies are needed at build time only. Make sure shared
+    # library dependencies don't get packaged into the final build.
+    metadata = {
+      shared_libraries_barrier = []
+    }
   }
 }

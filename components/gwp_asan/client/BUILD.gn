@@ -2,23 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//base/allocator/allocator.gni")
+import("//build/config/allocator.gni")
+
 component("client") {
   output_name = "gwp_asan_client"
   sources = [
-    "crash_key.cc",
-    "crash_key.h",
     "export.h",
     "guarded_page_allocator.cc",
     "guarded_page_allocator.h",
     "guarded_page_allocator_win.cc",
     "gwp_asan.cc",
     "gwp_asan.h",
-    "sampling_allocator_shims.cc",
-    "sampling_allocator_shims.h",
+    "sampling_helpers.cc",
+    "sampling_helpers.h",
+    "sampling_state.h",
   ]
 
   if (is_posix) {
     sources += [ "guarded_page_allocator_posix.cc" ]
+  }
+
+  if (use_allocator_shim) {
+    sources += [
+      "sampling_malloc_shims.cc",
+      "sampling_malloc_shims.h",
+    ]
+  }
+
+  if (use_partition_alloc) {
+    sources += [
+      "sampling_partitionalloc_shims.cc",
+      "sampling_partitionalloc_shims.h",
+    ]
   }
 
   defines = [ "GWP_ASAN_IMPLEMENTATION" ]
@@ -29,20 +45,35 @@ component("client") {
     "//components/crash/core/common:crash_key",
     "//components/gwp_asan/common",
   ]
+
+  if (is_android) {
+    deps += [ "//components/crash/content/app" ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
     "guarded_page_allocator_unittest.cc",
-    "sampling_allocator_shims_unittest.cc",
+    "gwp_asan_unittest.cc",
+    "sampling_helpers_unittest.cc",
   ]
+
+  if (use_allocator_shim) {
+    sources += [ "sampling_malloc_shims_unittest.cc" ]
+  }
+
+  if (use_partition_alloc) {
+    sources += [ "sampling_partitionalloc_shims_unittest.cc" ]
+  }
+
   deps = [
     ":client",
     "//base/allocator:buildflags",
     "//base/test:test_support",
     "//components/crash/core/common:crash_key",
     "//components/gwp_asan/common",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

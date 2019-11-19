@@ -1,0 +1,4 @@
+{
+  "welcomeNext": false,
+  "desc" : "Skip welcomeNext as this will trigger an action on the hidden welcome screen"
+}

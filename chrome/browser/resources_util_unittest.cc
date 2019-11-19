@@ -24,7 +24,7 @@ TEST(ResourcesUtil, SpotCheckIds) {
     // IDRs from chrome/app/theme/theme_resources.grd should be valid.
     {"IDR_ERROR_NETWORK_GENERIC", IDR_ERROR_NETWORK_GENERIC},
     // IDRs from ui/resources/ui_resources.grd should be valid.
-    {"IDR_FOLDER_CLOSED", IDR_FOLDER_CLOSED},
+    {"IDR_DEFAULT_FAVICON", IDR_DEFAULT_FAVICON},
 #if defined(OS_CHROMEOS)
     // Check IDRs from ui/chromeos/resources/ui_chromeos_resources.grd.
     {"IDR_LOGIN_DEFAULT_USER", IDR_LOGIN_DEFAULT_USER},

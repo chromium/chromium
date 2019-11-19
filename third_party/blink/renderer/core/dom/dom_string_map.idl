@@ -26,7 +26,8 @@
 // https://html.spec.whatwg.org/C/#the-domstringmap-interface
 
 [
-    OverrideBuiltins
+    OverrideBuiltins,
+    Exposed=Window
 ] interface DOMStringMap {
     [ImplementedAs=item] getter DOMString (DOMString name);
     [CEReactions, RaisesException] setter void (DOMString name, DOMString value);

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 static_library("browser") {
   public = [
@@ -74,7 +75,9 @@ static_library("browser") {
   ]
 
   if (toolkit_views) {
-    deps += [ "//ui/views" ]
+    # This code has TOOLKIT_VIEWS ifdefs, but doesn't actually rely on anything
+    # else in views.
+    all_dependent_configs = [ "//ui/views:flags" ]
   }
 
   if (toolkit_views && !is_mac) {
@@ -139,4 +142,18 @@ source_set("unit_tests") {
     "//ui/base/clipboard",
     "//url",
   ]
+}
+
+# The fuzzer depends on code that is not built on Mac.
+if (!is_mac) {
+  fuzzer_test("bookmark_node_data_read_fuzzer") {
+    sources = [
+      "bookmark_node_data_read_fuzzer.cc",
+    ]
+    deps = [
+      ":browser",
+      "//base",
+      "//base:i18n",
+    ]
+  }
 }

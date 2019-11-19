@@ -3,35 +3,24 @@ Showing drop down
 Item highlighted: fifth
 ArrowDown
 Item highlighted: sixth
-Item selected: sixth
 ArrowDown
 Item highlighted: seventh
-Item selected: seventh
 ArrowDown
 Item highlighted: eighth
-Item selected: eighth
 ArrowUp
 Item highlighted: seventh
-Item selected: seventh
 ArrowUp
 Item highlighted: sixth
-Item selected: sixth
 ArrowUp
 Item highlighted: fifth
-Item selected: fifth
 ArrowDown
 Item highlighted: sixth
-Item selected: sixth
 ArrowDown
 Item highlighted: seventh
-Item selected: seventh
 f
 Item highlighted: first
-Item selected: first
 f
 Item highlighted: fourth
-Item selected: fourth
 t
 Item highlighted: third
-Item selected: third
 

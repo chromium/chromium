@@ -17,7 +17,7 @@
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/version_info/version_info.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/declarative/rules_cache_delegate.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
@@ -255,7 +255,7 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
   // 2. Test writing behavior.
   {
     base::Value value(base::Value::Type::LIST);
-    value.GetList().push_back(base::Value(true));
+    value.Append(base::Value(true));
     cache_delegate->UpdateRules(extension1_->id(), std::move(value));
   }
   EXPECT_TRUE(cache_delegate->GetDeclarativeRulesStored(extension1_->id()));
@@ -302,7 +302,7 @@ TEST_F(RulesRegistryWithCacheTest, EphemeralCacheIsEphemeral) {
   auto cache_delegate = std::make_unique<RulesCacheDelegate>(
       RulesCacheDelegate::Type::kEphemeral, false);
   base::Value value(base::Value::Type::LIST);
-  value.GetList().push_back(base::Value(true));
+  value.Append(base::Value(true));
   cache_delegate->UpdateRules(extension1_->id(), std::move(value));
   content::RunAllTasksUntilIdle();
   TestingValueStore* store = env_.GetExtensionSystem()->value_store();

@@ -4,8 +4,6 @@ Setup worker session
 Set breakpoint before postMessage
 Run worker
 Run stepInto with breakOnAsyncCall flag
-Get scheduledAsyncStackId
-Request pause on async task and resume
 worker.onmessage at test.js:3:34
 --postMessage--
 (anonymous) at worker.js:0:0

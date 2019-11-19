@@ -6,14 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATION_UPDATE_H_
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/core/animation/css/css_animatable_value_factory.h"
 #include "third_party/blink/renderer/core/animation/effect_stack.h"
 #include "third_party/blink/renderer/core/animation/inert_effect.h"
 #include "third_party/blink/renderer/core/animation/interpolation.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -98,7 +97,7 @@ namespace blink {
 // This class stores the CSS Animations/Transitions information we use during a
 // style recalc. This includes updates to animations/transitions as well as the
 // Interpolations to be applied.
-class CSSAnimationUpdate final {
+class CORE_EXPORT CSSAnimationUpdate final {
   DISALLOW_NEW();
 
  public:

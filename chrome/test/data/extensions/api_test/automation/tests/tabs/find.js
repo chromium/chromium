@@ -9,6 +9,7 @@ var link;
 var main;
 var p2;
 var p3;
+var img;
 var okButton;
 var cancelButton;
 
@@ -35,12 +36,15 @@ function initializeNodes(rootNode) {
   p3 = main.lastChild;
   assertEq(RoleType.PARAGRAPH, p3.role);
 
-  okButton = rootNode.children[2];
+  img = rootNode.children[2];
+  assertEq(RoleType.IMAGE, img.role);
+
+  okButton = rootNode.children[3];
   assertEq(RoleType.BUTTON, okButton.role);
   assertEq('Ok', okButton.name);
   assertEq('disabled', okButton.restriction);
 
-  cancelButton = rootNode.children[3];
+  cancelButton = rootNode.children[4];
   assertEq(RoleType.BUTTON, cancelButton.role);
   assertEq('Cancel', cancelButton.name);
   assertEq(undefined, cancelButton.restriction);
@@ -53,6 +57,10 @@ var allTests = [
     // Should find the only instance of this role.
     assertEq(h1, rootNode.find({role: RoleType.HEADING}));
     assertEq([h1], rootNode.findAll({role: RoleType.HEADING}));
+
+    // Should find the only instance of this role.
+    assertEq(img, rootNode.find({role: RoleType.IMAGE}));
+    assertEq([img], rootNode.findAll({role: RoleType.IMAGE}));
 
     // find should find first instance only.
     assertEq(okButton, rootNode.find({role: RoleType.BUTTON}));

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
-import("//components/ui_devtools/devtools.gni")
 import("//testing/test.gni")
 
 source_set("main") {
@@ -12,8 +11,9 @@ source_set("main") {
   defines = []
 
   sources = [
-    "viz_compositor_thread_runner.cc",
     "viz_compositor_thread_runner.h",
+    "viz_compositor_thread_runner_impl.cc",
+    "viz_compositor_thread_runner_impl.h",
     "viz_main_impl.cc",
     "viz_main_impl.h",
   ]
@@ -21,7 +21,7 @@ source_set("main") {
   deps = [
     "//cc",
     "//components/discardable_memory/client",
-    "//components/discardable_memory/public/interfaces",
+    "//components/discardable_memory/public/mojom",
     "//components/ui_devtools",
     "//components/ui_devtools/viz",
     "//components/viz/service",
@@ -33,7 +33,7 @@ source_set("main") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/mojom",
     "//services/service_manager/public/cpp",
-    "//services/viz/privileged/interfaces",
+    "//services/viz/privileged/mojom",
     "//ui/gfx:memory_buffer",
     "//ui/gl/init",
   ]
@@ -50,7 +50,8 @@ source_set("main") {
     deps += [ "//media/gpu" ]
   }
 
-  if (use_viz_devtools) {
-    defines += [ "USE_VIZ_DEVTOOLS" ]
+  if (is_chromecast) {
+    defines += [ "IS_CHROMECAST" ]
+    deps += [ "//chromecast/media/service/mojom" ]
   }
 }

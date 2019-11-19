@@ -22,6 +22,9 @@ constexpr char kKeyLaunchError[] = "launch_error";
 // Key under "kiosk" dictionary to store the last cryptohome error.
 constexpr char kKeyCryptohomeFailure[] = "cryptohome_failure";
 
+// Error from the last kiosk launch.
+KioskAppLaunchError::Error s_last_error = KioskAppLaunchError::ERROR_COUNT;
+
 }  // namespace
 
 // static
@@ -70,6 +73,7 @@ void KioskAppLaunchError::Save(KioskAppLaunchError::Error error) {
   DictionaryPrefUpdate dict_update(local_state,
                                    KioskAppManager::kKioskDictionaryName);
   dict_update->SetInteger(kKeyLaunchError, error);
+  s_last_error = error;
 }
 
 // static
@@ -83,13 +87,18 @@ void KioskAppLaunchError::SaveCryptohomeFailure(
 
 // static
 KioskAppLaunchError::Error KioskAppLaunchError::Get() {
+  if (s_last_error != KioskAppLaunchError::ERROR_COUNT)
+    return s_last_error;
+  s_last_error = KioskAppLaunchError::NONE;
   PrefService* local_state = g_browser_process->local_state();
   const base::DictionaryValue* dict =
       local_state->GetDictionary(KioskAppManager::kKioskDictionaryName);
 
   int error;
-  if (dict->GetInteger(kKeyLaunchError, &error))
-    return static_cast<KioskAppLaunchError::Error>(error);
+  if (dict->GetInteger(kKeyLaunchError, &error)) {
+    s_last_error = static_cast<KioskAppLaunchError::Error>(error);
+    return s_last_error;
+  }
 
   return KioskAppLaunchError::NONE;
 }

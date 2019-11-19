@@ -24,15 +24,16 @@ class KURL;
 // can implement, allowing fragments to specify different kinds of anchors.
 // Callers should use the TryCreate static method to create and return the
 // appropriate type of base class.
-class CORE_EXPORT FragmentAnchor
-    : public GarbageCollectedFinalized<FragmentAnchor> {
+class CORE_EXPORT FragmentAnchor : public GarbageCollected<FragmentAnchor> {
  public:
   // Parses the fragment string and tries to create a FragmentAnchor object of
   // the appropriate derived type. If no anchor could be created from the given
   // url, this returns nullptr. In either case, side-effects on the document
   // will be performed, for example, setting/clearing :target and svgView().
   static FragmentAnchor* TryCreate(const KURL& url,
-                                   LocalFrame& frame);
+                                   LocalFrame& frame,
+                                   bool same_document_navigation,
+                                   bool should_scroll);
 
   FragmentAnchor() = default;
   virtual ~FragmentAnchor() = default;
@@ -51,6 +52,11 @@ class CORE_EXPORT FragmentAnchor
   virtual void DidScroll(ScrollType type) = 0;
   virtual void PerformPreRafActions() = 0;
   virtual void DidCompleteLoad() = 0;
+
+  // Dismissing the fragment anchor removes indicators of the anchor, such as
+  // text highlighting on a text fragment anchor. If true, the anchor has been
+  // dismissed and can be disposed.
+  virtual bool Dismiss() = 0;
 
   virtual void Trace(blink::Visitor*) {}
 };

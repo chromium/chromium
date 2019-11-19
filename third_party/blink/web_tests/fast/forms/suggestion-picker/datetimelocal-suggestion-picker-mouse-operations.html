@@ -115,10 +115,12 @@ function test3() {
     eventSender.mouseDown();
     eventSender.mouseMoveTo(scrollbarCenterX, suggestionListOffset[1] + suggestionList.offsetHeight);
     eventSender.mouseUp();
-    scrollTopAfterWheelEvent = suggestionList.scrollTop;
-    shouldBeTrue('scrollTopBeforeWheelEvent < scrollTopAfterWheelEvent');
+    requestAnimationFrame(function() {
+      scrollTopAfterWheelEvent = suggestionList.scrollTop;
+      shouldBeTrue('scrollTopBeforeWheelEvent < scrollTopAfterWheelEvent');
 
-    finishJSTest();
+      finishJSTest();
+    });
 }
 
 </script>

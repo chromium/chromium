@@ -48,6 +48,11 @@
 // Hides or shows the tab strip.
 - (void)hideTabStrip:(BOOL)hidden;
 
+// Preprare the receiver for destruction, disconnecting from all services.
+// It is an error for the receiver to dealloc without this having been called
+// first.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TABS_TAB_STRIP_CONTROLLER_H_

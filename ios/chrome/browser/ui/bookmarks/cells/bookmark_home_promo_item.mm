@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_promo_item.h"
 
 #include "base/mac/foundation_util.h"
-#include "components/unified_consent/feature.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_signin_promo_cell.h"
@@ -35,13 +34,8 @@
       base::mac::ObjCCastStrict<BookmarkTableSigninPromoCell>(cell);
 
   // Basic UI configuration
-  if (unified_consent::IsUnifiedConsentFeatureEnabled()) {
-    signinPromoCell.signinPromoView.textLabel.text =
-        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS_WITH_UNITY);
-  } else {
-    signinPromoCell.signinPromoView.textLabel.text =
-        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS);
-  }
+  signinPromoCell.signinPromoView.textLabel.text =
+      l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS_WITH_UNITY);
   signinPromoCell.signinPromoView.backgroundColor =
       styler.tableViewBackgroundColor;
   // Use the mediator to configure the rest of the Cell based on the current
@@ -51,7 +45,7 @@
   [[mediator createConfigurator]
       configureSigninPromoView:signinPromoCell.signinPromoView];
   signinPromoCell.selectionStyle = UITableViewCellSelectionStyleNone;
-  [mediator signinPromoViewVisible];
+  [mediator signinPromoViewIsVisible];
 }
 
 @end

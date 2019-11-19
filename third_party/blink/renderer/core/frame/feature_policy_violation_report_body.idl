@@ -13,4 +13,5 @@
   readonly attribute unsigned long? columnNumber;
   readonly attribute DOMString disposition;
   readonly attribute DOMString? message;
+  [CallWith=ScriptState] object toJSON();
 };

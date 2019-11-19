@@ -1,0 +1,77 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+// An interface that helps proxy part of ContentDecryptionModule (CDM)
+// functionalities to a different entity, e.g. hardware CDM modules.
+// In general, the interpretation of the method and callback parameters are
+// protocol dependent.
+// CdmProxy implementation is hosted in the GPU process.
+interface CdmProxy {
+  // See media/cdm/cdm_proxy.h for the following native enums.
+  [Native]
+  enum Status;
+
+  [Native]
+  enum Protocol;
+
+  [Native]
+  enum Function;
+
+  [Native]
+  enum KeyType;
+
+  // Initializes the proxy.
+  // If the proxy created a crypto session, then the ID for the crypto session
+  // is |crypto_session_id|.
+  // |cdm_id| can be used to connect the remote media pipeline and CdmProxy.
+  Initialize(pending_associated_remote<CdmProxyClient> client)
+    => (Status status,
+        Protocol protocol,
+        uint32 crypto_session_id,
+        int32 cdm_id);
+
+  // Processes and updates the state of the proxy.
+  // |func| specifies what type of function to use.
+  // |crypto_session_id| is a value returned from Initialize() or
+  // CreateMediaCryptoSessions().
+  // |input_data| is the input data to be processed.
+  // |output_data_size| is the expected size of |output_data|. Some protocols
+  // require this field in order to determine the size of the output, but some
+  // may completely ignore it.
+  // The output data is passed back in |output_data|.
+  Process(Function func,
+          uint32 crypto_session_id,
+          array<uint8> input_data,
+          uint32 output_data_size) => (Status status,
+                                       array<uint8> output_data);
+
+  // Creates a crypto session for handling media.
+  // If extra data has to be passed to further setup the media crypto session,
+  // pass the data as |input_data|.
+  // |crypto_session_id| is the ID for the crypto session.
+  // |output_data| is extra value, if any.
+  CreateMediaCryptoSession(array<uint8> input_data) => (
+      Status status, uint32 crypto_session_id, uint64 output_data);
+
+  // Sets a key in the proxy.
+  // |crypto_session_id| is the crypto session for decryption.
+  // |key_id| is the ID of the key.
+  // |key_blob| is the opaque key blob for decrypting or decoding.
+  SetKey(uint32 crypto_session_id, array<uint8> key_id, KeyType key_type,
+         array<uint8> key_blob) => (Status status);
+
+  // Removes a key from the proxy.
+  // |crypto_session_id| is the crypto session for decryption.
+  // |key_id| is the ID of the key.
+  RemoveKey(uint32 crypto_session_id, array<uint8> key_id) => (Status status);
+};
+
+// Client of CdmProxy.
+// CdmProxyClient is running in the fully sandboxed CDM (e.g. utility) process.
+interface CdmProxyClient {
+  // Notifies the client that there has been a hardware reset.
+  NotifyHardwareReset();
+};

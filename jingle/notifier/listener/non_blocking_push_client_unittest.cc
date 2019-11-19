@@ -9,8 +9,8 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "jingle/notifier/base/fake_base_task.h"
 #include "jingle/notifier/listener/fake_push_client.h"
@@ -60,7 +60,7 @@ class NonBlockingPushClientTest : public testing::Test {
     return std::unique_ptr<PushClient>(fake_push_client_);
   }
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   FakePushClientObserver fake_observer_;
   std::unique_ptr<NonBlockingPushClient> push_client_;
   // Owned by |push_client_|.

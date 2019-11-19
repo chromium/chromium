@@ -6,6 +6,8 @@
 """Find incompatible symbols in glibc and output a list of replacements.
 """
 
+from __future__ import print_function
+
 import re
 import sys
 
@@ -55,4 +57,4 @@ if __name__ == '__main__':
     print('// Chromium-specific hack.')
     print('// See explanation in sysroot-creator.sh.')
     for replacement in replacements:
-      print replacement
+      print(replacement)

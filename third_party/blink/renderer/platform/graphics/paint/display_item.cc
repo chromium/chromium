@@ -11,8 +11,8 @@ namespace blink {
 struct SameSizeAsDisplayItem {
   virtual ~SameSizeAsDisplayItem() = default;  // Allocate vtable pointer.
   void* pointer;
-  LayoutRect rect;
-  LayoutUnit outset;
+  IntRect rect;
+  float outset;
   int i;
 };
 static_assert(sizeof(DisplayItem) == sizeof(SameSizeAsDisplayItem),
@@ -30,18 +30,22 @@ static WTF::String PaintPhaseAsDebugString(int paint_phase) {
     case 2:
       return "PaintPhaseDescendantBlockBackgroundsOnly";
     case 3:
-      return "PaintPhaseFloat";
+      return "PaintPhaseForcedColorsModeBackplate";
     case 4:
-      return "PaintPhaseForeground";
+      return "PaintPhaseFloat";
     case 5:
-      return "PaintPhaseOutline";
+      return "PaintPhaseForeground";
     case 6:
-      return "PaintPhaseSelfOutlineOnly";
+      return "PaintPhaseOutline";
     case 7:
-      return "PaintPhaseDescendantOutlinesOnly";
+      return "PaintPhaseSelfOutlineOnly";
     case 8:
-      return "PaintPhaseSelection";
+      return "PaintPhaseDescendantOutlinesOnly";
     case 9:
+      return "PaintPhaseOverlayScrollbars";
+    case 10:
+      return "PaintPhaseSelection";
+    case 11:
       return "PaintPhaseTextClip";
     case DisplayItem::kPaintPhaseMax:
       return "PaintPhaseMask";
@@ -78,6 +82,7 @@ static WTF::String SpecialDrawingTypeAsDebugString(DisplayItem::Type type) {
     DEBUG_STRING_CASE(DragImage);
     DEBUG_STRING_CASE(DragCaret);
     DEBUG_STRING_CASE(EmptyContentForFilters);
+    DEBUG_STRING_CASE(ForcedColorsModeBackplate);
     DEBUG_STRING_CASE(SVGImage);
     DEBUG_STRING_CASE(LinkHighlight);
     DEBUG_STRING_CASE(ImageAreaFocusRing);
@@ -93,18 +98,10 @@ static WTF::String SpecialDrawingTypeAsDebugString(DisplayItem::Type type) {
     DEBUG_STRING_CASE(SVGClip);
     DEBUG_STRING_CASE(SVGFilter);
     DEBUG_STRING_CASE(SVGMask);
-    DEBUG_STRING_CASE(ScrollbarBackButtonEnd);
-    DEBUG_STRING_CASE(ScrollbarBackButtonStart);
-    DEBUG_STRING_CASE(ScrollbarBackground);
-    DEBUG_STRING_CASE(ScrollbarBackTrack);
-    DEBUG_STRING_CASE(ScrollbarCorner);
-    DEBUG_STRING_CASE(ScrollbarForwardButtonEnd);
-    DEBUG_STRING_CASE(ScrollbarForwardButtonStart);
-    DEBUG_STRING_CASE(ScrollbarForwardTrack);
     DEBUG_STRING_CASE(ScrollbarThumb);
     DEBUG_STRING_CASE(ScrollbarTickmarks);
-    DEBUG_STRING_CASE(ScrollbarTrackBackground);
-    DEBUG_STRING_CASE(ScrollbarCompositedScrollbar);
+    DEBUG_STRING_CASE(ScrollbarTrackAndButtons);
+    DEBUG_STRING_CASE(ScrollCorner);
     DEBUG_STRING_CASE(SelectionTint);
     DEBUG_STRING_CASE(TableCollapsedBorders);
     DEBUG_STRING_CASE(VideoBitmap);
@@ -129,6 +126,8 @@ static String ForeignLayerTypeAsDebugString(DisplayItem::Type type) {
     DEBUG_STRING_CASE(ForeignLayerWrapper);
     DEBUG_STRING_CASE(ForeignLayerContentsWrapper);
     DEBUG_STRING_CASE(ForeignLayerLinkHighlight);
+    DEBUG_STRING_CASE(ForeignLayerViewportScroll);
+    DEBUG_STRING_CASE(ForeignLayerViewportScrollbar);
     DEFAULT_CASE;
   }
 }
@@ -148,19 +147,23 @@ WTF::String DisplayItem::TypeAsDebugString(Type type) {
   switch (type) {
     DEBUG_STRING_CASE(HitTest);
     DEBUG_STRING_CASE(ScrollHitTest);
+    DEBUG_STRING_CASE(ResizerScrollHitTest);
+    DEBUG_STRING_CASE(PluginScrollHitTest);
     DEBUG_STRING_CASE(LayerChunkBackground);
     DEBUG_STRING_CASE(LayerChunkNegativeZOrderChildren);
     DEBUG_STRING_CASE(LayerChunkDescendantBackgrounds);
     DEBUG_STRING_CASE(LayerChunkFloat);
     DEBUG_STRING_CASE(LayerChunkForeground);
     DEBUG_STRING_CASE(LayerChunkNormalFlowAndPositiveZOrderChildren);
+    DEBUG_STRING_CASE(ScrollbarHorizontal);
+    DEBUG_STRING_CASE(ScrollbarVertical);
     DEBUG_STRING_CASE(UninitializedType);
     DEFAULT_CASE;
   }
 }
 
 WTF::String DisplayItem::AsDebugString() const {
-  auto json = JSONObject::Create();
+  auto json = std::make_unique<JSONObject>();
   PropertiesAsJSON(*json);
   return json->ToPrettyJSONString();
 }
@@ -179,8 +182,8 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json) const {
 
 String DisplayItem::Id::ToString() const {
 #if DCHECK_IS_ON()
-  return String::Format("%s:%s:%d", client.ToString().Utf8().data(),
-                        DisplayItem::TypeAsDebugString(type).Utf8().data(),
+  return String::Format("%s:%s:%d", client.ToString().Utf8().c_str(),
+                        DisplayItem::TypeAsDebugString(type).Utf8().c_str(),
                         fragment);
 #else
   return String::Format("%p:%d:%d", &client, static_cast<int>(type), fragment);
@@ -189,19 +192,19 @@ String DisplayItem::Id::ToString() const {
 
 std::ostream& operator<<(std::ostream& os, DisplayItem::Type type) {
 #if DCHECK_IS_ON()
-  return os << DisplayItem::TypeAsDebugString(type).Utf8().data();
+  return os << DisplayItem::TypeAsDebugString(type).Utf8();
 #else
   return os << static_cast<int>(type);
 #endif
 }
 
 std::ostream& operator<<(std::ostream& os, const DisplayItem::Id& id) {
-  return os << id.ToString().Utf8().data();
+  return os << id.ToString().Utf8();
 }
 
 std::ostream& operator<<(std::ostream& os, const DisplayItem& item) {
 #if DCHECK_IS_ON()
-  return os << item.AsDebugString().Utf8().data();
+  return os << item.AsDebugString().Utf8();
 #else
   return os << "{\"id\": " << item.GetId() << "}";
 #endif

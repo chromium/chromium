@@ -7,8 +7,9 @@
 files.
 """
 
+from __future__ import print_function
+
 import collections
-import exceptions
 import os
 import struct
 import sys
@@ -23,6 +24,10 @@ from grit.node import structure
 
 PACK_FILE_VERSION = 5
 BINARY, UTF8, UTF16 = range(3)
+
+
+GrdInfoItem = collections.namedtuple('GrdInfoItem',
+                                     ['textual_id', 'id', 'path'])
 
 
 class WrongFileVersion(Exception):
@@ -42,7 +47,7 @@ class DataPackSizes(object):
 
   @property
   def total(self):
-    return sum(v for v in self.__dict__.itervalues())
+    return sum(v for v in self.__dict__.values())
 
   def __iter__(self):
     yield ('header', self.header)
@@ -114,7 +119,7 @@ def ReadDataPackFromString(data):
     return struct.unpack('<HI', data[offset:offset + kIndexEntrySize])
 
   prev_resource_id, prev_offset = entry_at_index(0)
-  for i in xrange(1, resource_count + 1):
+  for i in range(1, resource_count + 1):
     resource_id, offset = entry_at_index(i)
     resources[prev_resource_id] = data[prev_offset:offset]
     prev_resource_id, prev_offset = resource_id, offset
@@ -127,7 +132,7 @@ def ReadDataPackFromString(data):
     return struct.unpack('<HH', data[offset:offset + kAliasEntrySize])
 
   aliases = {}
-  for i in xrange(alias_count):
+  for i in range(alias_count):
     resource_id, index = alias_at_index(i)
     aliased_id = entry_at_index(index)[0]
     aliases[resource_id] = aliased_id
@@ -151,7 +156,7 @@ def WriteDataPackToString(resources, encoding):
   # Use reversed() so that for duplicates lower IDs clobber higher ones.
   id_by_data = {resources[k]: k for k in reversed(resource_ids)}
   # Map of resource_id -> resource_id, where value < key.
-  alias_map = {k: id_by_data[v] for k, v in resources.iteritems()
+  alias_map = {k: id_by_data[v] for k, v in resources.items()
                if id_by_data[v] != k}
 
   # Write file header.
@@ -200,8 +205,18 @@ def WriteDataPack(resources, output_file, encoding):
     file.write(content)
 
 
+def ReadGrdInfo(grd_file):
+  info_dict = {}
+  with open(grd_file + '.info', 'rt') as f:
+    for line in f:
+      item = GrdInfoItem._make(line.strip().split(','))
+      info_dict[int(item.id)] = item
+  return info_dict
+
+
 def RePack(output_file, input_files, whitelist_file=None,
-           suppress_removed_key_output=False):
+           suppress_removed_key_output=False,
+           output_info_filepath=None):
   """Write a new data pack file by combining input pack files.
 
   Args:
@@ -212,6 +227,7 @@ def RePack(output_file, input_files, whitelist_file=None,
                       all resources.
       suppress_removed_key_output: allows the caller to suppress the output from
                                    RePackFromDataPackStrings.
+      output_info_file: If not None, specify the output .info filepath.
 
   Raises:
       KeyError: if there are duplicate keys or resource encoding is
@@ -229,7 +245,9 @@ def RePack(output_file, input_files, whitelist_file=None,
   resources, encoding = RePackFromDataPackStrings(
       inputs, whitelist, suppress_removed_key_output)
   WriteDataPack(resources, output_file, encoding)
-  with open(output_file + '.info', 'w') as output_info_file:
+  if output_info_filepath is None:
+    output_info_filepath = output_file + '.info'
+  with open(output_info_filepath, 'w') as output_info_file:
     for filename in input_info_files:
       with open(filename, 'r') as info_file:
         output_info_file.writelines(info_file.readlines())
@@ -258,14 +276,14 @@ def RePackFromDataPackStrings(inputs, whitelist,
     # Make sure we have no dups.
     duplicate_keys = set(input_resources.keys()) & set(resources.keys())
     if duplicate_keys:
-      raise exceptions.KeyError('Duplicate keys: ' + str(list(duplicate_keys)))
+      raise KeyError('Duplicate keys: ' + str(list(duplicate_keys)))
 
     # Make sure encoding is consistent.
     if encoding in (None, BINARY):
       encoding = input_encoding
     elif input_encoding not in (BINARY, encoding):
-      raise exceptions.KeyError('Inconsistent encodings: ' + str(encoding) +
-                                ' vs ' + str(input_encoding))
+      raise KeyError('Inconsistent encodings: ' + str(encoding) +
+                     ' vs ' + str(input_encoding))
 
     if whitelist:
       whitelisted_resources = dict([(key, input_resources[key])
@@ -276,7 +294,7 @@ def RePackFromDataPackStrings(inputs, whitelist,
                       if key not in whitelist]
       if not suppress_removed_key_output:
         for key in removed_keys:
-          print 'RePackFromDataPackStrings Removed Key:', key
+          print('RePackFromDataPackStrings Removed Key:', key)
     else:
       resources.update(input_resources)
 
@@ -292,7 +310,7 @@ def main():
   WriteDataPack(data, 'datapack1.pak', UTF8)
   data2 = {1000: 'test', 5: 'five'}
   WriteDataPack(data2, 'datapack2.pak', UTF8)
-  print 'wrote datapack1 and datapack2 to current directory.'
+  print('wrote datapack1 and datapack2 to current directory.')
 
 
 if __name__ == '__main__':

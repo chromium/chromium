@@ -16,7 +16,7 @@
 #import "ios/chrome/test/fakes/fake_ar_quick_look_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/url_request/url_fetcher_response_writer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +36,7 @@ const char kHistogramName[] = "Download.IOSDownloadARModelState.USDZ";
 const char kUrl[] = "https://test.test/";
 
 NSString* const kTestSuggestedFileName = @"important_file.zip";
+NSString* const kTestUsdzFileName = @"important_file.usdz";
 
 }  // namespace
 
@@ -58,14 +59,52 @@ class ARQuickLookTabHelperTest : public PlatformTest,
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   web::TestWebState web_state_;
   FakeARQuickLookTabHelperDelegate* delegate_;
   base::HistogramTester histogram_tester_;
 };
 
-// Tests successfully downloading a USDZ file.
-TEST_P(ARQuickLookTabHelperTest, Success) {
+// Tests successfully downloading a USDZ file with the appropriate extension.
+TEST_F(ARQuickLookTabHelperTest, SuccessFileExtention) {
+  auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "other");
+  task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestUsdzFileName));
+  web::FakeDownloadTask* task_ptr = task.get();
+  tab_helper()->Download(std::move(task));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
+    base::RunLoop().RunUntilIdle();
+    return task_ptr->GetState() == web::DownloadTask::State::kInProgress;
+  }));
+  task_ptr->SetDone(true);
+  EXPECT_EQ(1U, delegate().fileURLs.count);
+  EXPECT_TRUE([delegate().fileURLs.firstObject isKindOfClass:[NSURL class]]);
+
+  // Downloaded file should be located in download directory.
+  base::FilePath file =
+      task_ptr->GetResponseWriter()->AsFileWriter()->file_path();
+  base::FilePath download_dir;
+  ASSERT_TRUE(GetDownloadsDirectory(&download_dir));
+  EXPECT_TRUE(download_dir.IsParent(file));
+
+  histogram_tester()->ExpectBucketCount(
+      kHistogramName,
+      static_cast<base::HistogramBase::Sample>(
+          IOSDownloadARModelState::kCreated),
+      1);
+  histogram_tester()->ExpectBucketCount(
+      kHistogramName,
+      static_cast<base::HistogramBase::Sample>(
+          IOSDownloadARModelState::kStarted),
+      1);
+  histogram_tester()->ExpectBucketCount(
+      kHistogramName,
+      static_cast<base::HistogramBase::Sample>(
+          IOSDownloadARModelState::kSuccessful),
+      1);
+}
+
+// Tests successfully downloading a USDZ file with the appropriate content-type.
+TEST_P(ARQuickLookTabHelperTest, SuccessContentType) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), GetParam());
   task->SetSuggestedFilename(base::SysNSStringToUTF16(kTestSuggestedFileName));
   web::FakeDownloadTask* task_ptr = task.get();

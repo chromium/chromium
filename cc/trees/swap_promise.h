@@ -52,13 +52,20 @@ class CC_EXPORT SwapPromise {
     ACTIVATION_FAILS,
   };
 
+  enum class DidNotSwapAction {
+    BREAK_PROMISE,
+    KEEP_ACTIVE,
+  };
+
   SwapPromise() {}
   virtual ~SwapPromise() {}
 
   virtual void DidActivate() = 0;
   virtual void WillSwap(viz::CompositorFrameMetadata* metadata) = 0;
   virtual void DidSwap() = 0;
-  virtual void DidNotSwap(DidNotSwapReason reason) = 0;
+  // Return |KEEP_ACTIVE| if this promise should remain active (should not be
+  // broken by the owner).
+  virtual DidNotSwapAction DidNotSwap(DidNotSwapReason reason) = 0;
   // This is called when the main thread starts a (blocking) commit
   virtual void OnCommit() {}
 

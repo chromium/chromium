@@ -51,26 +51,7 @@ TEST(MathExtrasTest, Lrint) {
   }
 }
 
-TEST(MathExtrasTest, clampToIntLong) {
-  if (sizeof(long) == sizeof(int))
-    return;
-
-  long max_int = std::numeric_limits<int>::max();
-  long min_int = std::numeric_limits<int>::min();
-  long overflow_int = max_int + 1;
-  long underflow_int = min_int - 1;
-
-  EXPECT_GT(overflow_int, max_int);
-  EXPECT_LT(underflow_int, min_int);
-
-  EXPECT_EQ(max_int, clampTo<int>(max_int));
-  EXPECT_EQ(min_int, clampTo<int>(min_int));
-
-  EXPECT_EQ(max_int, clampTo<int>(overflow_int));
-  EXPECT_EQ(min_int, clampTo<int>(underflow_int));
-}
-
-TEST(MathExtrasTest, clampToIntLongLong) {
+TEST(MathExtrasTest, clampToIntInt64) {
   int64_t max_int = std::numeric_limits<int>::max();
   int64_t min_int = std::numeric_limits<int>::min();
   int64_t overflow_int = max_int + 1;
@@ -162,7 +143,7 @@ TEST(MathExtrasTest, clampToDouble) {
             clampTo<double>(std::numeric_limits<uint64_t>::max(), 0.0, 3.5));
 }
 
-TEST(MathExtrasText, clampToLongLongDouble) {
+TEST(MathExtrasText, clampToInt64Double) {
   double overflow_ll =
       static_cast<double>(std::numeric_limits<int64_t>::max()) * 2;
   EXPECT_EQ(std::numeric_limits<int64_t>::max(), clampTo<int64_t>(overflow_ll));
@@ -170,7 +151,7 @@ TEST(MathExtrasText, clampToLongLongDouble) {
             clampTo<int64_t>(-overflow_ll));
 }
 
-TEST(MathExtrasText, clampToUnsignedLongLongDouble) {
+TEST(MathExtrasText, clampToUint64Double) {
   double overflow_ull =
       static_cast<double>(std::numeric_limits<uint64_t>::max()) * 2;
   EXPECT_EQ(std::numeric_limits<uint64_t>::max(),
@@ -179,12 +160,12 @@ TEST(MathExtrasText, clampToUnsignedLongLongDouble) {
             clampTo<uint64_t>(-overflow_ull));
 }
 
-TEST(MathExtrasTest, clampToUnsignedUnsignedLong) {
-  if (sizeof(unsigned long) == sizeof(unsigned))
+TEST(MathExtrasTest, clampToUnsignedUint32) {
+  if (sizeof(uint32_t) == sizeof(unsigned))
     return;
 
-  unsigned long max_unsigned = std::numeric_limits<unsigned>::max();
-  unsigned long overflow_unsigned = max_unsigned + 1;
+  uint32_t max_unsigned = std::numeric_limits<unsigned>::max();
+  uint32_t overflow_unsigned = max_unsigned + 1;
 
   EXPECT_GT(overflow_unsigned, max_unsigned);
 
@@ -194,7 +175,7 @@ TEST(MathExtrasTest, clampToUnsignedUnsignedLong) {
   EXPECT_EQ(0u, clampTo<unsigned>(-1));
 }
 
-TEST(MathExtrasTest, clampToUnsignedUnsignedLongLong) {
+TEST(MathExtrasTest, clampToUnsignedUint64) {
   uint64_t max_unsigned = std::numeric_limits<unsigned>::max();
   uint64_t overflow_unsigned = max_unsigned + 1;
 
@@ -206,27 +187,27 @@ TEST(MathExtrasTest, clampToUnsignedUnsignedLongLong) {
   EXPECT_EQ(0u, clampTo<unsigned>(-1));
 }
 
-TEST(MathExtrasTest, clampToLongLongUnsignedLongLong) {
-  int64_t max_long_long_ll = std::numeric_limits<int64_t>::max();
-  uint64_t max_long_long_ull = max_long_long_ll;
-  uint64_t overflow_long_long = max_long_long_ull + 1;
+TEST(MathExtrasTest, clampToInt64Uint64) {
+  int64_t max_int64 = std::numeric_limits<int64_t>::max();
+  uint64_t max_uint64 = max_int64;
+  uint64_t overflow_int64 = max_uint64 + 1;
 
-  EXPECT_GT(overflow_long_long, max_long_long_ull);
+  EXPECT_GT(overflow_int64, max_uint64);
 
-  EXPECT_EQ(max_long_long_ll, clampTo<int64_t>(max_long_long_ull));
-  EXPECT_EQ(max_long_long_ll - 1, clampTo<int64_t>(max_long_long_ull - 1));
-  EXPECT_EQ(max_long_long_ll, clampTo<int64_t>(overflow_long_long));
+  EXPECT_EQ(max_int64, clampTo<int64_t>(max_uint64));
+  EXPECT_EQ(max_int64 - 1, clampTo<int64_t>(max_uint64 - 1));
+  EXPECT_EQ(max_int64, clampTo<int64_t>(overflow_int64));
 
   EXPECT_EQ(-3LL, clampTo<int64_t>(2ULL, -5LL, -3LL));
 }
 
-TEST(MathExtrasTest, clampToUnsignedLongLongInt) {
+TEST(MathExtrasTest, clampToUint64Int) {
   EXPECT_EQ(0ULL, clampTo<uint64_t>(-1));
   EXPECT_EQ(0ULL, clampTo<uint64_t>(0));
   EXPECT_EQ(1ULL, clampTo<uint64_t>(1));
 }
 
-TEST(MathExtrasTest, clampToUnsignedLongLongUnsignedLongLong) {
+TEST(MathExtrasTest, clampToUint64Uint64) {
   EXPECT_EQ(0ULL, clampTo<uint64_t>(0ULL));
   EXPECT_EQ(1ULL, clampTo<uint64_t>(0ULL, 1ULL, 2ULL));
   EXPECT_EQ(2ULL, clampTo<uint64_t>(3ULL, 1ULL, 2ULL));

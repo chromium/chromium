@@ -35,17 +35,24 @@ class AppInfoFooterPanel
   AppInfoFooterPanel(Profile* profile, const extensions::Extension* app);
   ~AppInfoFooterPanel() override;
 
+  // This can return null if the footer panel contains no shortcuts, cannot be
+  // pinned to the shelf and the app cannot be uninstalled.
+  static std::unique_ptr<AppInfoFooterPanel> CreateFooterPanel(
+      Profile* profile,
+      const extensions::Extension* app);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AppInfoDialogViewsTest,
                            PinButtonsAreFocusedAfterPinUnpin);
 
   void CreateButtons();
-  void LayoutButtons();
 
+#if defined(OS_CHROMEOS)
   // Updates the visibility of the pin/unpin buttons so that only one is visible
   // at a time. If |focus_button| is true, sets the focus to whichever button is
   // now visible.
   void UpdatePinButtons(bool focus_visible_button);
+#endif  // OS_CHROMEOS
 
   // Overridden from views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
@@ -54,32 +61,35 @@ class AppInfoFooterPanel
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
                                         const base::string16& error) override;
 
-  // Create Shortcuts for the app. Must only be called if CanCreateShortcuts()
-  // returns true.
+  // Create Shortcuts for the app.
   void CreateShortcuts();
-  bool CanCreateShortcuts() const;
+  static bool CanCreateShortcuts(const extensions::Extension* app);
 
 #if defined(OS_CHROMEOS)
   // Pins and unpins the app from the shelf. Must only be called if
   // CanSetPinnedToShelf() returns true.
   void SetPinnedToShelf(bool value);
-  bool CanSetPinnedToShelf() const;
-#endif
+  static bool CanSetPinnedToShelf(Profile* profile,
+                                  const extensions::Extension* app);
+#endif  // OS_CHROMEOS
 
   // Uninstall the app. Must only be called if CanUninstallApp() returns true.
   void UninstallApp();
-  bool CanUninstallApp() const;
+  static bool CanUninstallApp(Profile* profile,
+                              const extensions::Extension* app);
 
-  // UI elements on the dialog. Elements are NULL if they are not displayed.
-  views::View* create_shortcuts_button_;
-  views::View* pin_to_shelf_button_;
-  views::View* unpin_from_shelf_button_;
-  views::View* remove_button_;
+  // UI elements on the dialog. Elements are null if they are not displayed.
+  views::View* create_shortcuts_button_ = nullptr;
+#if defined(OS_CHROMEOS)
+  views::View* pin_to_shelf_button_ = nullptr;
+  views::View* unpin_from_shelf_button_ = nullptr;
+#endif  // OS_CHROMEOS
+  views::View* remove_button_ = nullptr;
 
   std::unique_ptr<extensions::ExtensionUninstallDialog>
       extension_uninstall_dialog_;
 
-  base::WeakPtrFactory<AppInfoFooterPanel> weak_ptr_factory_;
+  base::WeakPtrFactory<AppInfoFooterPanel> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppInfoFooterPanel);
 };

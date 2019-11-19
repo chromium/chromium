@@ -1,0 +1,5 @@
+document
+++group
+++++document Name='pipe'
+++++++link Name='pipe1'
+++++++link Name='pipe2'

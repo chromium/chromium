@@ -8,6 +8,7 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "base/macros.h"
+#include "chrome/browser/ui/app_list/extension_uninstaller.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -25,7 +26,7 @@ class LauncherContextMenu : public ui::SimpleMenuModel::Delegate {
       int64_t display_id);
 
   using GetMenuModelCallback =
-      base::OnceCallback<void(std::unique_ptr<ui::MenuModel>)>;
+      base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
   virtual void GetMenuModel(GetMenuModelCallback callback) = 0;
 
   // ui::SimpleMenuModel::Delegate overrides:

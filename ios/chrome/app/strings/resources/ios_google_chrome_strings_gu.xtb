@@ -1,39 +1,36 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
-<translation id="1326317727527857210">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ્સ મેળવવા માટે, Chrome માં સાઇન ઇન કરો.</translation>
+<translation id="1282031177488366470">Chromeની સુવિધાઓ અને કાર્યપ્રદર્શનને સુધારવામાં સહાય કરો</translation>
+<translation id="1682483655351012182">તમારા Chrome ડેટાને સિંક કરો</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1816764564654397850">Google Chrome ગોપનીયતા સૂચના</translation>
 <translation id="1863312987075920112">આ ઍપ્લિકેશનનો ઉપયોગ કરીને, તમે Chromeની <ph name="BEGIN_LINK_TOS" />સેવાની શરતો<ph name="END_LINK_TOS" /> અને <ph name="BEGIN_LINK_PRIVACY" />ગોપનીયતા સૂચના<ph name="END_LINK_PRIVACY" /> સાથે સંમત થાઓ છો.</translation>
-<translation id="1984705450038014246">તમારા Chromeના ડેટાને સિંક કરો</translation>
 <translation id="2147651015520127414">Chrome એ ચકાસણી કરી છે કે <ph name="ISSUER" /> એ આ વેબસાઇટનું પ્રમાણપત્ર ઇસ્યુ કર્યું છે.</translation>
 <translation id="2199719347983604670">Chrome સિંકમાંનો ડેટા</translation>
-<translation id="2334084861041072223">કોપિરાઇટ <ph name="YEAR" /> Google Inc. સર્વાધિકાર સુરક્ષિત.</translation>
-<translation id="2342981853652716282">તમારા બધા ઉપકરણો પર તમારા બુકમાર્ક, પાસવર્ડ અને બીજુ ઘણું મેળવવા માટે Chromeમાં સાઇન ઇન કરો.</translation>
 <translation id="2347208864470321755">જ્યારે આ સુવિધા ચાલુ કરી હોય, ત્યારે Chrome, Google અનુવાદનો ઉપયોગ કરીને અન્ય ભાષાઓમાં લખેલા પૃષ્ઠોના અનુવાદની ઓફર કરશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="2441696206556358796">ફોટા સાચવવા માટે, Chrome ને તમારા ફોટાનો ઉપયોગ કરવા દેવા માટે સેટિંગ પર ટૅપ કરો</translation>
 <translation id="2576431527583832481">Chrome હમણાં જ વધુ સારું થયું છે! એક નવું વર્ઝન ઉપલબ્ધ છે.</translation>
 <translation id="257708665678654955">શું તમે Google Chrome ને આ સાઇટથી આગલી વખતે <ph name="LANGUAGE_NAME" /> પેજને અનુવાદ કરવાની ઓફર કરવા માગો છો?</translation>
 <translation id="3030414234702425231">કારણ કે તમે <ph name="SIGNOUT_MANAGED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવેલ એકાઉન્ટમાંથી સાઇન આઉટ કરી રહ્યાં છો, આ ડિવાઇસમાંથી તમારા Chrome ડેટા ડિલીટ થઈ જશે. તમારો ડેટા તમારા Google એકાઉન્ટમાં જળવાઈ રહેશે.</translation>
-<translation id="3148434565183091099">તમારા સમગ્ર ઉપકરણો પર તમારા બુકમાર્ક્સ મેળવવા માટે, Chrome માં સાઇન ઇન કરો.</translation>
 <translation id="3148688391461398285">તમારા સ્થાનના આધારે Chrome માં બહેતર અનુભવ મેળવો.</translation>
 <translation id="3167189358072330585">તમારું એકાઉન્ટ, Google Chrome પર કાર્ય કરતું નથી. કૃપા કરીને તમારા ડોમેન એડમિનનો સંપર્ક કરો અથવા સાઇન ઇન કરવા માટે નિયમિત Google એકાઉન્ટનો ઉપયોગ કરો.</translation>
 <translation id="3196546062792660320">વેબ પર તમારા એકાઉન્ટ્સ લાવીને Chrome તમારો સમય બચાવે છે. તમે સેટિંગ્સમાં એકાઉન્ટ્સ ઉમેરી અથવા દૂર કરી શકો છો.</translation>
 <translation id="3282568296779691940">Chrome માં સાઇન ઇન કરો</translation>
 <translation id="3345341804167540816">સર્વત્ર Chrome નો ઉપયોગ કરો</translation>
 <translation id="384394811301901750">Google Chrome, અત્યારે તમારા કૅમેરાનો ઉપયોગ કરી શકતું નથી</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">તમે સિંક એકાઉન્ટ <ph name="USER_EMAIL1" />થી <ph name="USER_EMAIL2" /> પર સ્વિચ કરી રહ્યાં છો. તમારો અસ્તિત્વમાંનો Chrome ડેટા <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે. આ ડિવાઇસ પરથી આ તમારા ડેટાને ડિલીટ કરશે, પરંતુ તમારો ડેટા <ph name="USER_EMAIL1" /> માં રહેશે.</translation>
 <translation id="3988789688219830639">Google Chromeને તમારા ફોટા અથવા વીડિયોનો ઍક્સેસ નથી. iOS સેટિંગ &gt; ગોપનીયતા &gt; ફોટામાં ઍક્સેસને ચાલુ કરો.</translation>
 <translation id="4099578267706723511">ઉપયોગનાં આંકડા અને ક્રૅશ રિપોર્ટ Googleને મોકલીને Chromeને વધુ સારું બનાવવામાં મદદ કરો.</translation>
 <translation id="415767770115540173">Chrome માં તમારા સ્થાન પર આધારિત બહેતર Google અનુભવ મેળવો.</translation>
 <translation id="424864128008805179">Chromeમાંથી સાઇન આઉટ કરીએ?</translation>
-<translation id="447252321002412580">Chromeની સુવિધાઓ અને પ્રદર્શનને સુધારવામાં સહાય કરો</translation>
+<translation id="4249068189593983585">Chrome ટિપ. ટૅબના વધુ વિકલ્પો માટે, તમારી સ્ક્રીનના તળિયે અથવા ટોચે આવેલા ટૂલબારમાંના 'ટૅબ બતાવો' બટનને ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="4523886039239821078">કેટલાંક એડ-ઓનને કારણે Chrome ક્રૅશ થાય છે. કૃપા કરી આને અનઇન્સ્ટૉલ કરો:</translation>
-<translation id="4615174829807303908">તમે <ph name="SIGNOUT_MANAGED_DOMAIN" /> દ્વારા મેનેજ એકાઉન્ટમાંથી સાઇન આઉટ કરી રહ્યાં છો. આ તમારા Chrome ડેટાને આ ડિવાઇસમાંથી ડિલીટ કરશે, પરંતુ તમારો ડેટા તમારા Google એકાઉન્ટમાં રહેશે.</translation>
 <translation id="5389212809648216794">Google Chrome, તમારા કૅમેરાનો ઉપયોગ કરી શકતું નથી કારણ કે તે બીજી ઍપ્લિકેશન દ્વારા ઉપયોગમાં છે</translation>
+<translation id="5621912349729388018"><ph name="BEGIN_LINK" />Chromeની અપડેટ કરેલી સેવાની શરતોનો રિવ્યૂ કરો.<ph name="END_LINK" /></translation>
 <translation id="5639704535586432836">સેટિંગ્સ &gt; ગોપનીયતા &gt; કૅમેરો &gt; Google Chrome ખોલો અને કૅમેરો ચાલુ કરો.</translation>
 <translation id="5642200033778930880">Google Chrome, વિભાજિત દૃશ્ય મોડમાં તમારા કૅમેરાનો ઉપયોગ કરી શકતુંં નથી</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5854621639439811139">Chrome ટિપ. પાછળ, ફૉર્વર્ડ અને શોધ જેવાં કેટલાક બટનો હવે તમારી સ્ક્રીનના તળિયે છે.</translation>
 <translation id="6036420186814142909">Google Chrome માં એવી સુવિધાઓ છે જે તમારી તમારા ઇન્ટરનેટ ડેટા અને તમે કેવી રીતે ઝડપથી વેબપૃષ્ઠોને લોડ કરવામાં સમર્થ છો તેનું સંચાલન કરવામાં સહાય કરે છે.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -46,14 +43,12 @@
 <translation id="7172660552945675509">ટિપ: <ph name="BEGIN_LINK" />Chrome ને તમારા ડૉક પર ખસેડો<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">તમારા પાસવર્ડની અધિકૃત ઍક્સેસની ખાતરી કરવા માટે, Chrome ચહેરાના IDનો ઉપયોગ કરે છે.</translation>
 <translation id="7265369419224458312">તમે તમારા કમ્પ્યુટર પર ખોલેલા ટેબ્સને અહીંથી જ ઍક્સેસ કરો. બસ તમારા કમ્પ્યુટર પર Chrome ખોલો, મેનૂ પર જાઓ અને "Chrome પર સાઇન ઇન કરો..." ને પસંદ કરો</translation>
-<translation id="728488472449859922">Google Chrome QR સ્કેનર ચાલુ કરો</translation>
 <translation id="7400722733683201933">Google Chrome વિશે</translation>
-<translation id="7437998757836447326">Chromeમાંથી સાઇન આઉટ કરો</translation>
 <translation id="756809126120519699">Chrome ડેટા સાફ કર્યો</translation>
 <translation id="7626032353295482388">Chrome પર આપનું સ્વાગત છે</translation>
+<translation id="7698568245838009292">Chromeને કૅમેરાનો ઍક્સેસ જોઈશે</translation>
+<translation id="8370517070665726704">કૉપિરાઇટ <ph name="YEAR" /> Google LLC. સર્વાધિકાર સુરક્ષિત.</translation>
 <translation id="840168496893712993">કેટલાંક એડ-ઓનને કારણે Chrome ક્રૅશ થાય છે. કૃપા કરીને તેમને અનઇન્સ્ટૉલ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="8459495907675268833">પસંદ કરેલ ડેટા Chrome અને સિંક ડિવાઇસમાંથી દૂર કરવામાં આવ્યો છે. તમારા Google એકાઉન્ટમાં બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો જેમ કે શોધ અને history.google.com પરની બીજા Google સેવાઓમાંથી પ્રવૃત્તિ હોય શકે છે.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8606668294522778825">તમારા બ્રાઉઝ કરવાના અનુભવને વધુ સારો બનાવવા માટે Google Chrome વેબ સેવાઓનો ઉપયોગ કરી શકે. તમે વૈકલ્પિક રીતે આ સેવાઓને બંધ કરી શકો છો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
-<translation id="96145293669295453">Chrome ટિપ. વધુ ટૅબ વિકલ્પો માટે, તમારી સ્ક્રીનના તળિયે અથવા ટોચે આવેલા ટૂલબારમાંના 'ટૅબ બતાવો' બટનને દબાવી રાખો.</translation>
 </translationbundle>

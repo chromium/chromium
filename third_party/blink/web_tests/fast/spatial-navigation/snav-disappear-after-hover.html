@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<style>
+  #btn1:hover {
+    visibility: hidden;
+  }
+
+  #btn2:hover {
+    display: none;
+  }
+</style>
+
+<button id="btn0">Button 0</button>
+<button id="btn1">Button 1</button>
+<button id="btn2">Button 2</button>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Right", "btn0"],
+    ["Right", "btn1"],
+    ["Right", "btn2"]
+  ];
+
+  snav.assertFocusMoves(resultMap);
+</script>

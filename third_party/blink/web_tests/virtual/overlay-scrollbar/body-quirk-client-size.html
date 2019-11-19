@@ -1,0 +1,35 @@
+<!-- quirks mode -->
+<script src="../../resources/js-test.js"></script>
+<style>
+    :root, body { width: 100%; height: 100%; margin: 0 }
+    #container.wide { width: 5000px; height: 10px; }
+    #container.tall { height: 5000px; width: 10px; }
+</style>
+<div id="container"></div>
+<script>
+    description("Style recalc when reading clientWidth/clientHeight of body in quirks mode.");
+
+    shouldBeDefined(window.internals);
+    shouldBeTrue("internals.overlayScrollbarsEnabled");
+
+    function runClientSizeTest(testClass) {
+
+        var origWidth = document.body.clientWidth;
+        var origHeight = document.body.clientHeight;
+        internals.updateStyleAndReturnAffectedElementCount();
+
+        container.classList.add(testClass)
+
+        var afterWidth = document.body.clientWidth;
+        var afterHeight = document.body.clientHeight;
+
+        shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "1");
+        shouldBe(""+origWidth, ""+afterWidth);
+        shouldBe(""+origHeight, ""+afterHeight);
+
+        container.classList.remove(testClass)
+    }
+
+    runClientSizeTest("wide");
+    runClientSizeTest("tall");
+</script>

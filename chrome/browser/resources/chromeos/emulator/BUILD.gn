@@ -1,0 +1,110 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [
+    ":audio_settings",
+    ":battery_settings",
+    ":bluetooth_settings",
+    ":device_emulator_pages",
+    ":input_device_settings",
+  ]
+}
+
+js_library("audio_settings") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("bluetooth_settings") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("battery_settings") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("input_device_settings") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("device_emulator_pages") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+polymer_modulizer("audio_settings") {
+  js_file = "audio_settings.js"
+  html_file = "audio_settings.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("battery_settings") {
+  js_file = "battery_settings.js"
+  html_file = "battery_settings.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("bluetooth_settings") {
+  js_file = "bluetooth_settings.js"
+  html_file = "bluetooth_settings.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("input_device_settings") {
+  js_file = "input_device_settings.js"
+  html_file = "input_device_settings.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("device_emulator_pages") {
+  js_file = "device_emulator_pages.js"
+  html_file = "device_emulator_pages.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("icons") {
+  js_file = "icons.js"
+  html_file = "icons.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("shared_styles") {
+  js_file = "shared_styles.js"
+  html_file = "shared_styles.html"
+  html_type = "v3-ready"
+}
+
+group("polymer3_elements") {
+  deps = [
+    ":audio_settings_module",
+    ":battery_settings_module",
+    ":bluetooth_settings_module",
+    ":device_emulator_pages_module",
+    ":icons_module",
+    ":input_device_settings_module",
+    ":shared_styles_module",
+  ]
+}

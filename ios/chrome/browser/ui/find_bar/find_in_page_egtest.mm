@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <EarlGrey/EarlGrey.h>
 #import <XCTest/XCTest.h>
 
 #include "base/strings/string_number_conversions.h"
@@ -11,8 +12,6 @@
 #import "ios/chrome/browser/ui/find_bar/find_bar_constants.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#import "ios/chrome/test/app/tab_test_util.h"
-#import "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -156,7 +155,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
   // Wait for UI to finish loading screen, before programatically verifying
   // accessibility.
   [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
 #pragma mark - Steps.
@@ -224,7 +223,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
   [ChromeEarlGrey loadURL:self.testURL];
 
   // Verify web page finished loading.
-  [ChromeEarlGrey waitForWebViewContainingText:kFindInPageResponse];
+  [ChromeEarlGrey waitForWebStateContainingText:kFindInPageResponse];
 }
 
 @end

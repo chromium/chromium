@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.device;
 import org.chromium.base.CommandLine;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.preferences.ChromePreferenceManager;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.util.AccessibilityUtil;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -95,8 +96,8 @@ public class DeviceClassManager {
     public static boolean enableAccessibilityLayout() {
         if (getInstance().mEnableAccessibilityLayout) return true;
         if (!AccessibilityUtil.isAccessibilityEnabled()) return false;
-        return ChromePreferenceManager.getInstance().readBoolean(
-                ChromePreferenceManager.ACCESSIBILITY_TAB_SWITCHER, true);
+        return SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.ACCESSIBILITY_TAB_SWITCHER, true);
     }
 
     /**
@@ -112,8 +113,8 @@ public class DeviceClassManager {
     public static boolean enableAnimations() {
         if (!getInstance().mEnableAnimations) return false;
         if (!AccessibilityUtil.isAccessibilityEnabled()) return true;
-        return !ChromePreferenceManager.getInstance().readBoolean(
-                ChromePreferenceManager.ACCESSIBILITY_TAB_SWITCHER, true);
+        return !SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.ACCESSIBILITY_TAB_SWITCHER, true);
     }
 
     /**

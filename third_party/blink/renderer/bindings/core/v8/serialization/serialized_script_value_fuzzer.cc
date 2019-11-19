@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
-#include "third_party/blink/renderer/platform/wtf/string_hasher.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -42,7 +42,7 @@ int LLVMFuzzerInitialize(int* argc, char*** argv) {
   v8::V8::SetFlagsFromString(kExposeGC, sizeof(kExposeGC));
   static BlinkFuzzerTestSupport fuzzer_support =
       BlinkFuzzerTestSupport(*argc, *argv);
-  g_page_holder = DummyPageHolder::Create().release();
+  g_page_holder = std::make_unique<DummyPageHolder>().release();
   g_page_holder->GetFrame().GetSettings()->SetScriptEnabled(true);
   g_blob_info_array = new WebBlobInfoArray();
   g_blob_info_array->emplace_back(WebBlobInfo::BlobForTesting(
@@ -71,7 +71,8 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t data_size) {
   if (hash & kFuzzMessagePorts) {
     MessagePortArray* message_ports = MakeGarbageCollected<MessagePortArray>(3);
     std::generate(message_ports->begin(), message_ports->end(), []() {
-      MessagePort* port = MessagePort::Create(g_page_holder->GetDocument());
+      auto* port =
+          MakeGarbageCollected<MessagePort>(g_page_holder->GetDocument());
       port->Entangle(mojo::MessagePipe().handle0);
       return port;
     });

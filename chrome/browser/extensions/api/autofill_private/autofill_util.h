@@ -34,16 +34,6 @@ CountryEntryList GenerateCountryList(
 CreditCardEntryList GenerateCreditCardList(
     const autofill::PersonalDataManager& personal_data);
 
-// Uses |personal_data| to generate a list of up-to-date local CreditCardEntry
-// objects.
-CreditCardEntryList GenerateLocalCreditCardList(
-    const autofill::PersonalDataManager& personal_data);
-
-// Uses |personal_data| to generate a list of up-to-date server CreditCardEntry
-// objects.
-CreditCardEntryList GenerateServerCreditCardList(
-    const autofill::PersonalDataManager& personal_data);
-
 }  // namespace autofill_util
 
 }  // namespace extensions

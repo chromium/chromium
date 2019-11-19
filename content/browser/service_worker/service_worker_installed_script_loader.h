@@ -8,7 +8,8 @@
 #include "content/browser/service_worker/service_worker_disk_cache.h"
 #include "content/browser/service_worker/service_worker_installed_script_reader.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -18,9 +19,8 @@ namespace content {
 
 class ServiceWorkerVersion;
 
-// S13nServiceWorker: A URLLoader that loads an installed service worker script
-// for a service worker that doesn't have a
-// ServiceWorkerInstalledScriptsManager.
+// A URLLoader that loads an installed service worker script for a service
+// worker that doesn't have a ServiceWorkerInstalledScriptsManager.
 //
 // Some cases where this happens:
 // - a new (non-installed) service worker requests a script that it already
@@ -35,7 +35,7 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptLoader
  public:
   ServiceWorkerInstalledScriptLoader(
       uint32_t options,
-      network::mojom::URLLoaderClientPtr client,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       std::unique_ptr<ServiceWorkerResponseReader> response_reader,
       scoped_refptr<ServiceWorkerVersion>
           version_for_main_script_http_response_info,
@@ -58,7 +58,6 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptLoader
   void FollowRedirect(const std::vector<std::string>& removed_headers,
                       const net::HttpRequestHeaders& modified_headers,
                       const base::Optional<GURL>& new_url) override;
-  void ProceedWithResponse() override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -71,7 +70,7 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptLoader
   void OnDataComplete() override {}
 
   uint32_t options_ = network::mojom::kURLLoadOptionNone;
-  network::mojom::URLLoaderClientPtr client_;
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
   scoped_refptr<ServiceWorkerVersion>
       version_for_main_script_http_response_info_;
   base::TimeTicks request_start_;

@@ -10,16 +10,18 @@
 #include "base/memory/ref_counted.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/full_card_request_result_delegate_bridge.h"
 
+@protocol BrowserCoordinatorCommands;
 namespace autofill {
 class CreditCard;
 }  // namespace autofill
 
-@protocol ManualFillContentDelegate;
+@protocol ManualFillContentInjector;
 @protocol ManualFillCardConsumer;
 @protocol CardListDelegate;
 
 namespace manual_fill {
 extern NSString* const ManageCardsAccessibilityIdentifier;
+extern NSString* const kAddCreditCardsAccessibilityIdentifier;
 }  // namespace manual_fill
 
 // Object in charge of getting the cards relevant for the manual fill
@@ -32,13 +34,14 @@ extern NSString* const ManageCardsAccessibilityIdentifier;
 @property(nonatomic, weak) id<ManualFillCardConsumer> consumer;
 
 // The delegate in charge of using the content selected by the user.
-@property(nonatomic, weak) id<ManualFillContentDelegate> contentDelegate;
+@property(nonatomic, weak) id<ManualFillContentInjector> contentInjector;
 
 // The delegate in charge of navigation.
 @property(nonatomic, weak) id<CardListDelegate> navigationDelegate;
 
 // The designated initializer. |cards| must not be nil.
 - (instancetype)initWithCards:(std::vector<autofill::CreditCard*>)cards
+                   dispatcher:(id<BrowserCoordinatorCommands>)dispatcher
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Use |initWithCards:|.

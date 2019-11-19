@@ -15,6 +15,14 @@ using testing::Return;
 
 namespace {
 
+base::Value CreateSink(const std::string& name, const std::string& id) {
+  base::Value sink(base::Value::Type::DICTIONARY);
+  sink.SetKey("name", base::Value(name));
+  sink.SetKey("id", base::Value(id));
+  sink.SetKey("session", base::Value("Example session"));
+  return sink;
+}
+
 class MockDevToolsClient : public StubDevToolsClient {
  public:
   MOCK_METHOD2(SendCommand,
@@ -46,13 +54,13 @@ TEST_F(CastTrackerTest, OnSinksUpdated) {
   EXPECT_EQ(0u, cast_tracker_->sinks().GetList().size());
 
   base::Value sinks(base::Value::Type::LIST);
-  sinks.GetList().emplace_back(base::Value("sink1"));
-  sinks.GetList().emplace_back(base::Value("sink2"));
-  params.SetKey("sinkNames", std::move(sinks));
+  sinks.Append(CreateSink("sink1", "1"));
+  sinks.Append(CreateSink("sink2", "2"));
+  params.SetKey("sinks", std::move(sinks));
   cast_tracker_->OnEvent(&devtools_client_, "Cast.sinksUpdated", params);
   EXPECT_EQ(2u, cast_tracker_->sinks().GetList().size());
 
-  params.SetKey("sinkNames", base::Value(base::Value::Type::LIST));
+  params.SetKey("sinks", base::Value(base::Value::Type::LIST));
   cast_tracker_->OnEvent(&devtools_client_, "Cast.sinksUpdated", params);
   EXPECT_EQ(0u, cast_tracker_->sinks().GetList().size());
 }

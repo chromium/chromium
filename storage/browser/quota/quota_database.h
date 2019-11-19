@@ -35,7 +35,11 @@ namespace storage {
 
 class SpecialStoragePolicy;
 
-// All the methods of this class, except the constructor, must run on the DB
+// Stores all origin scoped quota managed data and metadata.
+//
+// Instances are owned by QuotaManager. There is one instance per QuotaManager
+// instance.
+// All the methods of this class, except the constructor, must called on the DB
 // thread.
 class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
  public:

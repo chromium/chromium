@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/selection_type.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -124,7 +124,7 @@ class SelectionTemplate final {
   void Trace(Visitor*);
 
   void PrintTo(std::ostream*, const char* type) const;
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
   void ShowTreeForThis() const;
 #endif
 

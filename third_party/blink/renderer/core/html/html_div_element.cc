@@ -28,31 +28,28 @@
 
 namespace blink {
 
-using namespace html_names;
-
 HTMLDivElement::HTMLDivElement(Document& document)
-    : HTMLElement(kDivTag, document) {}
-
-DEFINE_NODE_FACTORY(HTMLDivElement)
+    : HTMLElement(html_names::kDivTag, document) {}
 
 void HTMLDivElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (name == kAlignAttr) {
+  if (name == html_names::kAlignAttr) {
     if (DeprecatedEqualIgnoringCase(value, "middle") ||
-        DeprecatedEqualIgnoringCase(value, "center"))
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyTextAlign,
-                                              CSSValueWebkitCenter);
-    else if (DeprecatedEqualIgnoringCase(value, "left"))
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyTextAlign,
-                                              CSSValueWebkitLeft);
-    else if (DeprecatedEqualIgnoringCase(value, "right"))
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyTextAlign,
-                                              CSSValueWebkitRight);
-    else
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyTextAlign,
+        DeprecatedEqualIgnoringCase(value, "center")) {
+      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
+                                              CSSValueID::kWebkitCenter);
+    } else if (DeprecatedEqualIgnoringCase(value, "left")) {
+      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
+                                              CSSValueID::kWebkitLeft);
+    } else if (DeprecatedEqualIgnoringCase(value, "right")) {
+      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
+                                              CSSValueID::kWebkitRight);
+    } else {
+      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               value);
+    }
   } else {
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);
   }

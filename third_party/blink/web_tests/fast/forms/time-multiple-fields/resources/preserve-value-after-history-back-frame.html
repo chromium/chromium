@@ -25,7 +25,7 @@ var testInput1 = document.getElementById('test1');
 var testInput2 = document.getElementById('test2');
 var pageName = location.search || '?page1';
 
-window.onload = function() {
+window.onload = function() { setTimeout(function() {
     switch (pageName) {
     case '?page1':
         switch (parent.state) {
@@ -94,7 +94,7 @@ window.onload = function() {
         parent.failed('Unsupported page(' + pageName + ')');
         break;
     }
-};
+}, 1); };
 </script>
 <body>
 

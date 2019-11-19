@@ -1,6 +1,6 @@
 Tests specifying a security summary for the Security panel overview.
 
-<DIV class=security-summary-text >
+<DIV class=security-summary-text role=heading aria-level=2 >
 Test: Summary Override Text
 </DIV>
 

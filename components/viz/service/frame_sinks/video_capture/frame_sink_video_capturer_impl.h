@@ -29,8 +29,11 @@
 #include "components/viz/service/viz_service_export.h"
 #include "media/base/video_frame.h"
 #include "media/capture/content/video_capture_oracle.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/viz/privileged/interfaces/compositing/frame_sink_video_capture.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -71,11 +74,12 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
       public mojom::FrameSinkVideoCapturer {
  public:
   // |frame_sink_manager| must outlive this instance. Binds this instance to the
-  // Mojo message pipe endpoint in |request|, but |request| may be empty for
+  // Mojo message pipe endpoint in |receiver|, but |receiver| may be empty for
   // unit testing.
-  FrameSinkVideoCapturerImpl(FrameSinkVideoCapturerManager* frame_sink_manager,
-                             mojom::FrameSinkVideoCapturerRequest request,
-                             std::unique_ptr<media::VideoCaptureOracle> oracle);
+  FrameSinkVideoCapturerImpl(
+      FrameSinkVideoCapturerManager* frame_sink_manager,
+      mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver,
+      std::unique_ptr<media::VideoCaptureOracle> oracle);
 
   ~FrameSinkVideoCapturerImpl() final;
 
@@ -106,11 +110,12 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                                 bool use_fixed_aspect_ratio) final;
   void SetAutoThrottlingEnabled(bool enabled) final;
   void ChangeTarget(const base::Optional<FrameSinkId>& frame_sink_id) final;
-  void Start(mojom::FrameSinkVideoConsumerPtr consumer) final;
+  void Start(mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer) final;
   void Stop() final;
   void RequestRefreshFrame() final;
   void CreateOverlay(int32_t stacking_index,
-                     mojom::FrameSinkVideoCaptureOverlayRequest request) final;
+                     mojo::PendingReceiver<mojom::FrameSinkVideoCaptureOverlay>
+                         receiver) final;
 
   // Default configuration.
   static constexpr media::VideoPixelFormat kDefaultPixelFormat =
@@ -174,6 +179,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   void InvalidateRect(const gfx::Rect& rect) final;
   void OnOverlayConnectionLost(VideoCaptureOverlay* overlay) final;
 
+  void InvalidateEntireSource();
+
   // Returns a list of the overlays in rendering order.
   std::vector<VideoCaptureOverlay*> GetOverlaysInOrder() const;
 
@@ -189,18 +196,20 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // |content_rect| region of a [possibly letterboxed] video |frame|.
   void DidCopyFrame(int64_t capture_frame_number,
                     OracleFrameNumber oracle_frame_number,
+                    int64_t content_version,
                     const gfx::Rect& content_rect,
                     VideoCaptureOverlay::OnceRenderer overlay_renderer,
                     scoped_refptr<media::VideoFrame> frame,
+                    base::TimeTicks request_time,
                     std::unique_ptr<CopyOutputResult> result);
 
   // Places the frame in the |delivery_queue_| and calls MaybeDeliverFrame(),
   // one frame at a time, in-order. |frame| may be null to indicate a
   // completed, but unsuccessful capture.
-  void DidCaptureFrame(int64_t capture_frame_number,
-                       OracleFrameNumber oracle_frame_number,
-                       const gfx::Rect& content_rect,
-                       scoped_refptr<media::VideoFrame> frame);
+  void OnFrameReadyForDelivery(int64_t capture_frame_number,
+                               OracleFrameNumber oracle_frame_number,
+                               const gfx::Rect& content_rect,
+                               scoped_refptr<media::VideoFrame> frame);
 
   // Delivers a |frame| to the consumer, if the VideoCaptureOracle allows
   // it. |frame| can be null to indicate a completed, but unsuccessful capture.
@@ -214,11 +223,15 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // I420 format, ensures that every dimension is even and at least 2.
   gfx::Size AdjustSizeForPixelFormat(const gfx::Size& size);
 
+  // Expands |rect| such that its x, y, right, and bottom values are even
+  // numbers.
+  static gfx::Rect ExpandRectToI420SubsampleBoundaries(const gfx::Rect& rect);
+
   // Owner/Manager of this instance.
   FrameSinkVideoCapturerManager* const frame_sink_manager_;
 
-  // Mojo binding for this instance.
-  mojo::Binding<mojom::FrameSinkVideoCapturer> binding_;
+  // Mojo receiver for this instance.
+  mojo::Receiver<mojom::FrameSinkVideoCapturer> receiver_{this};
 
   // Represents this instance as an issuer of CopyOutputRequests. The Surface
   // uses this to auto-cancel stale requests (i.e., prior requests that did not
@@ -248,7 +261,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // The current video frame consumer. This is set when Start() is called and
   // cleared when Stop() is called.
-  mojom::FrameSinkVideoConsumerPtr consumer_;
+  mojo::Remote<mojom::FrameSinkVideoConsumer> consumer_;
 
   // The portion of the source content that has changed, but has not yet been
   // captured.
@@ -276,6 +289,12 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // processes. The size of this pool is used to limit the maximum number of
   // frames in-flight at any one time.
   InterprocessFramePool frame_pool_;
+
+  // Increased every time the source content changes or a forced refresh is
+  // requested.
+  int64_t content_version_ = 0;
+
+  int64_t content_version_in_marked_frame_ = -1;
 
   // A queue of captured frames pending delivery. This queue is used to re-order
   // frames, if they should happen to be captured out-of-order.
@@ -314,7 +333,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // A weak pointer factory used for cancelling the results from any in-flight
   // copy output requests.
-  base::WeakPtrFactory<FrameSinkVideoCapturerImpl> capture_weak_factory_;
+  base::WeakPtrFactory<FrameSinkVideoCapturerImpl> capture_weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FrameSinkVideoCapturerImpl);
 };

@@ -173,7 +173,7 @@ def _SplitFieldTrials(trials, trial_params):
   params_second = []
   for trial in trials_second:
     if trial.trial_name in params:
-      params_first.append(params[trial.trial_name])
+      params_second.append(params[trial.trial_name])
 
   return [
     {_FORCE_FIELD_TRIALS_SWITCH_NAME: trials_first,
@@ -266,7 +266,7 @@ def ParseCommandLineSwitchesString(data):
   return switch_data
 
 
-def ParseVariationsCmd(data):
+def ParseVariationsCmdFromString(input_string):
   """Parses commandline switches string into internal representation.
 
   Commandline switches string comes from chrome://version/?show-variations-cmd.
@@ -276,7 +276,7 @@ def ParseVariationsCmd(data):
     --enable-features
     --disable-features
   """
-  switch_data = ParseCommandLineSwitchesString(data)
+  switch_data = ParseCommandLineSwitchesString(input_string)
   results = {}
   for switch_name, switch_value in switch_data.items():
     built_switch_value = None
@@ -310,12 +310,12 @@ def ParseVariationsCmd(data):
 def ParseVariationsCmdFromFile(filename):
   """Parses commandline switches string into internal representation.
 
-  Same as ParseVariationsCmd(), except the commandline switches string
-  comes from a file.
+  Same as ParseVariationsCmdFromString(), except the commandline switches
+  string comes from a file.
   """
   with open(filename, 'r') as f:
     data = f.read().replace('\n', ' ')
-  return ParseVariationsCmd(data)
+  return ParseVariationsCmdFromString(data)
 
 
 def VariationsCmdToStrings(data):
@@ -360,32 +360,18 @@ def VariationsCmdToStrings(data):
   return cmd_list
 
 
-def SaveVariationsCmdToFile(data, output_file):
-  """Saves internal representation into four commandline switches in a file.
-
-  This is the opposite of ParseVariationsCmdFromFile().
-
-  Args:
-      data: Input data dictionary. Keys are four commandline switches:
-        --force-fieldtrials
-        --force-fieldtrial-params
-        --enable-features
-        --disable-features
-      output_file: Output file object.
-  """
-  cmd_list = VariationsCmdToStrings(data)
-  output_file.write(' '.join(cmd_list))
-
-
 def SplitVariationsCmd(results):
   """Splits internal representation of commandline switches into two.
 
+  This function can be called recursively when bisecting a set of experiments
+  until one is identified to be responsble for a certain browser behavior.
+
   The commandline switches come from chrome://version/?show-variations-cmd.
   """
-  enable_features = results[_ENABLE_FEATURES_SWITCH_NAME]
-  disable_features = results[_DISABLE_FEATURES_SWITCH_NAME]
-  field_trials = results[_FORCE_FIELD_TRIALS_SWITCH_NAME]
-  field_trial_params = results[_FORCE_FIELD_TRIAL_PARAMS_SWITCH_NAME]
+  enable_features = results.get(_ENABLE_FEATURES_SWITCH_NAME, [])
+  disable_features = results.get(_DISABLE_FEATURES_SWITCH_NAME, [])
+  field_trials = results.get(_FORCE_FIELD_TRIALS_SWITCH_NAME, [])
+  field_trial_params = results.get(_FORCE_FIELD_TRIAL_PARAMS_SWITCH_NAME, [])
   enable_features_splits = _SplitFeatures(enable_features)
   disable_features_splits = _SplitFeatures(disable_features)
   field_trials_splits = _SplitFieldTrials(field_trials, field_trial_params)
@@ -399,31 +385,68 @@ def SplitVariationsCmd(results):
   return splits
 
 
+def SplitVariationsCmdFromString(input_string):
+  """Splits commandline switches.
+
+  This function can be called recursively when bisecting a set of experiments
+  until one is identified to be responsble for a certain browser behavior.
+
+  Same as SplitVariationsCmd(), except data comes from a string rather than
+  an internal representation.
+
+  Args:
+      input_string: Variations string to be split.
+
+  Returns:
+      If input can be split, returns a list of two strings, each is half of
+      the input variations cmd; otherwise, returns a list of one string.
+  """
+  data = ParseVariationsCmdFromString(input_string)
+  splits = SplitVariationsCmd(data)
+  results = []
+  for split in splits:
+    cmd_list = VariationsCmdToStrings(split)
+    if cmd_list:
+      results.append(' '.join(cmd_list))
+  return results
+
+
 def SplitVariationsCmdFromFile(input_filename, output_dir=None):
-  """Splits internal representation of commandline switches into two.
+  """Splits commandline switches.
+
+  This function can be called recursively when bisecting a set of experiments
+  until one is identified to be responsble for a certain browser behavior.
 
   Same as SplitVariationsCmd(), except data comes from a file rather than
   an internal representation.
 
-  If |output_dir| is None, output results to the same dir as |input_filename|.
+  Args:
+      input_filename: Variations file to be split.
+      output_dir: Folder to output the split variations file(s). If None,
+          output to the same folder as the input_filename. If the folder
+          doesn't exist, it will be created.
 
-  It will be created if |output_dir| doesn't exist.
+  Returns:
+      If input can be split, returns a list of two output filenames;
+      otherwise, returns a list of one output filename.
   """
-  results = ParseVariationsCmdFromFile(input_filename)
-  if not results:
-    return
-  runs = SplitVariationsCmd(results)
+  with open(input_filename, 'r') as f:
+    input_string = f.read().replace('\n', ' ')
+  splits = SplitVariationsCmdFromString(input_string)
   dirname, filename = os.path.split(input_filename)
   basename, ext = os.path.splitext(filename)
   if output_dir is None:
     output_dir = dirname
   if not os.path.exists(output_dir):
     os.makedirs(output_dir)
-  for index in range(len(runs)):
+  split_filenames = []
+  for index in range(len(splits)):
     output_filename = "%s_%d%s" % (basename, index + 1, ext)
     output_filename = os.path.join(output_dir, output_filename)
     with open(output_filename, 'w') as output_file:
-      SaveVariationsCmdToFile(runs[index], output_file)
+      output_file.write(splits[index])
+    split_filenames.append(output_filename)
+  return split_filenames
 
 
 def main():

@@ -8,9 +8,4 @@ namespace extensions {
 
 ShellDisplayInfoProvider::ShellDisplayInfoProvider() = default;
 
-// static
-DisplayInfoProvider* DisplayInfoProvider::Create() {
-  return new ShellDisplayInfoProvider();
-}
-
 }  // namespace extensions

@@ -15,7 +15,7 @@
 
 namespace metrics {
 
-ChromeVisibilityObserver::ChromeVisibilityObserver() : weak_factory_(this) {
+ChromeVisibilityObserver::ChromeVisibilityObserver() {
   BrowserList::AddObserver(this);
   InitVisibilityGapTimeout();
 }

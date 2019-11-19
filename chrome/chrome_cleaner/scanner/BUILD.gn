@@ -2,13 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
 source_set("signature_matcher_api") {
   sources = [
     "signature_matcher_api.h",
   ]
 
   deps = [
-    "//base:base",
+    "//base",
   ]
 }
 
@@ -19,16 +22,12 @@ source_set("matcher_util") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//chrome/chrome_cleaner/constants:common_strings",
     "//chrome/chrome_cleaner/os:common_os",
     "//chrome/chrome_cleaner/scanner:signature_matcher_api",
-    "//chrome/chrome_cleaner/settings:settings",
+    "//chrome/chrome_cleaner/settings",
     "//chrome/chrome_cleaner/strings",
-  ]
-
-  public_deps = [
-    "//chrome/chrome_cleaner/pup_data:pup_data_base",
   ]
 }
 
@@ -54,33 +53,8 @@ source_set("scanner_api") {
   deps = [
     "//base",
     "//chrome/chrome_cleaner/constants:uws_id",
+    "//chrome/chrome_cleaner/logging/proto:shared_data_proto",
     "//components/chrome_cleaner/public/constants",
-  ]
-}
-
-source_set("scanner") {
-  sources = [
-    "urza_scanner_impl.cc",
-    "urza_scanner_impl.h",
-  ]
-
-  deps = [
-    ":matcher_util",
-    ":scanner_api",
-    ":signature_matcher_api",
-    "//base:base",
-    "//chrome/chrome_cleaner/chrome_utils:chrome_util_lib",
-    "//chrome/chrome_cleaner/constants:common_strings",
-    "//chrome/chrome_cleaner/logging:common",
-    "//chrome/chrome_cleaner/logging:logging_definitions",
-    "//chrome/chrome_cleaner/logging:scoped_timed_task_logger",
-    "//chrome/chrome_cleaner/os:common_os",
-    "//chrome/chrome_cleaner/proto:shared_pup_enums_proto",
-    "//chrome/chrome_cleaner/pup_data:pup_data_base",
-    "//chrome/chrome_cleaner/settings",
-    "//chrome/chrome_cleaner/settings:settings_definitions",
-    "//chrome/chrome_cleaner/strings",
-    "//components/chrome_cleaner/public/interfaces",
   ]
 }
 
@@ -88,12 +62,9 @@ source_set("reporter_scanner") {
   sources = [
     "scanner_controller.cc",
     "scanner_controller.h",
-    "urza_scanner_controller.cc",
-    "urza_scanner_controller.h",
   ]
 
   deps = [
-    ":scanner",
     ":signature_matcher",
     "//base",
     "//chrome/chrome_cleaner/chrome_utils:chrome_util_lib",
@@ -104,7 +75,7 @@ source_set("reporter_scanner") {
     "//chrome/chrome_cleaner/parsers/shortcut_parser/broker:shortcut_parser_api",
     "//chrome/chrome_cleaner/pup_data:pup_data_base",
     "//chrome/chrome_cleaner/scanner:signature_matcher_api",
-    "//chrome/chrome_cleaner/settings:settings",
+    "//chrome/chrome_cleaner/settings",
     "//components/chrome_cleaner/public/constants:constants",
     "//third_party/crashpad/crashpad/client",
     "//third_party/crashpad/crashpad/util",
@@ -117,30 +88,24 @@ source_set("unittest_sources") {
   sources = [
     "force_installed_extension_scanner_unittest.cc",
     "matcher_util_unittest.cc",
-    "scanner_controller_unittest.cc",
     "signature_matcher_unittest.cc",
-    "urza_scanner_impl_unittest.cc",
   ]
 
   deps = [
     ":force_installed_extension_scanner",
     ":force_installed_extension_scanner_api",
     ":matcher_util",
-    ":reporter_scanner",
-    ":scanner",
     ":signature_matcher",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//chrome/chrome_cleaner/chrome_utils:chrome_util_lib",
     "//chrome/chrome_cleaner/chrome_utils:extension_id",
     "//chrome/chrome_cleaner/constants:common_strings",
-    "//chrome/chrome_cleaner/constants:uws_id",
     "//chrome/chrome_cleaner/logging:common",
     "//chrome/chrome_cleaner/logging:mock_logging_service",
     "//chrome/chrome_cleaner/logging/proto:shared_data_proto",
     "//chrome/chrome_cleaner/os:common_os",
-    "//chrome/chrome_cleaner/parsers/json_parser:json_parser",
-    "//chrome/chrome_cleaner/parsers/shortcut_parser/broker:fake_shortcut_parser",
+    "//chrome/chrome_cleaner/parsers/json_parser",
     "//chrome/chrome_cleaner/proto:shared_pup_enums_proto",
     "//chrome/chrome_cleaner/pup_data:test_uws",
     "//chrome/chrome_cleaner/strings",
@@ -149,7 +114,6 @@ source_set("unittest_sources") {
     "//chrome/chrome_cleaner/test:test_strings",
     "//chrome/chrome_cleaner/test:test_util",
     "//chrome/chrome_cleaner/test/resources:test_resources",
-    "//components/chrome_cleaner/public/constants",
     "//components/chrome_cleaner/test:test_name_helper",
     "//sandbox/win:sandbox",
     "//testing/gmock",
@@ -164,7 +128,7 @@ source_set("force_installed_extension_scanner_api") {
 
   deps = [
     "//chrome/chrome_cleaner/chrome_utils:force_installed_extension",
-    "//chrome/chrome_cleaner/parsers/json_parser:json_parser",
+    "//chrome/chrome_cleaner/parsers/json_parser",
     "//chrome/chrome_cleaner/proto:uwe_matcher_proto",
   ]
 }
@@ -181,7 +145,7 @@ source_set("force_installed_extension_scanner") {
     "//chrome/chrome_cleaner/chrome_utils:extensions_util_lib",
     "//chrome/chrome_cleaner/chrome_utils:force_installed_extension",
     "//chrome/chrome_cleaner/os:common_os",
-    "//chrome/chrome_cleaner/parsers/json_parser:json_parser",
+    "//chrome/chrome_cleaner/parsers/json_parser",
     "//chrome/chrome_cleaner/proto:uwe_matcher_proto",
   ]
 }
@@ -200,7 +164,7 @@ source_set("mock_force_installed_extension_scanner") {
     "//chrome/chrome_cleaner/chrome_utils:extensions_util_lib",
     "//chrome/chrome_cleaner/chrome_utils:force_installed_extension",
     "//chrome/chrome_cleaner/os:common_os",
-    "//chrome/chrome_cleaner/parsers/json_parser:json_parser",
+    "//chrome/chrome_cleaner/parsers/json_parser",
     "//chrome/chrome_cleaner/proto:uwe_matcher_proto",
     "//testing/gmock",
   ]

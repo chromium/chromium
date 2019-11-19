@@ -53,12 +53,6 @@ class DOMStorageContext {
 
   virtual void PerformSessionStorageCleanup(base::OnceClosure callback) = 0;
 
-  // If this is called, sessionStorage data will be stored on disk, and can be
-  // restored after a browser restart (with RecreateSessionStorage). This
-  // function must be called right after DOMStorageContextWrapper is created,
-  // and before it's used.
-  virtual void SetSaveSessionStorageOnDisk() = 0;
-
   // Creates a SessionStorageNamespace with the given |namespace_id|. Used
   // after tabs are restored by session restore. When created, the
   // SessionStorageNamespace with the correct |namespace_id| will be

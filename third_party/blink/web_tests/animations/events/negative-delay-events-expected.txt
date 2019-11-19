@@ -1,8 +1,0 @@
-Tests animation events with a negative delay.
-
-PASS: animation1: Start event: elapsedTime=0
-PASS: animation1: End event: elapsedTime=0.1
-PASS: animation2: Start event: elapsedTime=0.05
-PASS: animation2: End event: elapsedTime=0.1
-PASS: animation3: Start event: elapsedTime=0.15
-PASS: animation3: End event: elapsedTime=0.1

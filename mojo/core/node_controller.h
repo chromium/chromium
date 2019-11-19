@@ -19,6 +19,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/optional.h"
 #include "base/task_runner.h"
 #include "build/build_config.h"
 #include "mojo/core/atomic_flag.h"
@@ -31,16 +32,11 @@
 #include "mojo/core/system_impl_export.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
-namespace base {
-class PortProvider;
-}
-
 namespace mojo {
 namespace core {
 
 class Broker;
 class Core;
-class MachPortRelay;
 
 // The owner of ports::Node which facilitates core EDK implementation. All
 // public interface methods are safe to call from any thread.
@@ -65,11 +61,6 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   scoped_refptr<base::TaskRunner> io_task_runner() const {
     return io_task_runner_;
   }
-
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-  // Create the relay used to transfer mach ports between processes.
-  void CreateMachPortRelay(base::PortProvider* port_provider);
-#endif
 
   // Called exactly once, shortly after construction, and before any other
   // methods are called on this object.
@@ -123,12 +114,17 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   // interface after requesting shutdown, you do so at your own risk and there
   // is NO guarantee that new messages will be sent or ports will complete
   // transfer.
-  void RequestShutdown(const base::Closure& callback);
+  void RequestShutdown(base::OnceClosure callback);
 
   // Notifies the NodeController that we received a bad message from the given
   // node.
   void NotifyBadMessageFrom(const ports::NodeName& source_node,
                             const std::string& error);
+
+  // Force-closes the connection to another process to simulate connection
+  // failures for testing. |process_id| must correspond to a process to which
+  // this node has an active NodeChannel.
+  void ForceDisconnectProcessForTesting(base::ProcessId process_id);
 
   static void DeserializeRawBytesAsEventForFuzzer(
       base::span<const unsigned char> data);
@@ -166,7 +162,8 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
       ports::NodeName token,
       const ProcessErrorCallback& process_error_callback);
   void AcceptBrokerClientInvitationOnIOThread(
-      ConnectionParams connection_params);
+      ConnectionParams connection_params,
+      base::Optional<PlatformHandle> broker_host_handle);
 
   void ConnectIsolatedOnIOThread(ConnectionParams connection_params,
                                  ports::PortRef port,
@@ -217,7 +214,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
                    PlatformHandle channel_handle) override;
   void OnBroadcast(const ports::NodeName& from_node,
                    Channel::MessagePtr message) override;
-#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
+#if defined(OS_WIN)
   void OnRelayEventMessage(const ports::NodeName& from_node,
                            base::ProcessHandle from_process,
                            const ports::NodeName& destination,
@@ -233,10 +230,6 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   void OnChannelError(const ports::NodeName& from_node,
                       NodeChannel* channel) override;
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-  MachPortRelay* GetMachPortRelay();
-#endif
-
   // Cancels all pending port merges. These are merges which are supposed to
   // be requested from the inviter ASAP, and they may be cancelled if the
   // connection to the inviter is broken or never established.
@@ -251,6 +244,9 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   // requested, this checks the Node's status to see if clean shutdown is
   // possible. If so, shutdown is performed and the shutdown callback is run.
   void AttemptShutdownIfRequested();
+
+  // See |ForceDisconnectProcessForTesting()|.
+  void ForceDisconnectProcessForTestingOnIOThread(base::ProcessId process_id);
 
   // These are safe to access from any thread as long as the Node is alive.
   Core* const core_;
@@ -313,7 +309,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   // Set by RequestShutdown(). If this is non-null, the controller will
   // begin polling the Node to see if clean shutdown is possible any time the
   // Node's state is modified by the controller.
-  base::Closure shutdown_callback_;
+  base::OnceClosure shutdown_callback_;
   // Flag to fast-path checking |shutdown_callback_|.
   AtomicFlag shutdown_callback_flag_;
 
@@ -333,12 +329,6 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
 #if !defined(OS_MACOSX) && !defined(OS_NACL_SFI) && !defined(OS_FUCHSIA)
   // Broker for sync shared buffer creation on behalf of broker clients.
   std::unique_ptr<Broker> broker_;
-#endif
-
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-  base::Lock mach_port_relay_lock_;
-  // Relay for transferring mach ports to/from broker clients.
-  std::unique_ptr<MachPortRelay> mach_port_relay_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(NodeController);

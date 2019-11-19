@@ -37,8 +37,7 @@ FakeLayerTreeFrameSink::FakeLayerTreeFrameSink(
     : LayerTreeFrameSink(std::move(context_provider),
                          std::move(worker_context_provider),
                          base::ThreadTaskRunnerHandle::Get(),
-                         nullptr),
-      weak_ptr_factory_(this) {
+                         nullptr) {
   gpu_memory_buffer_manager_ =
       context_provider_ ? &test_gpu_memory_buffer_manager_ : nullptr;
 }
@@ -85,15 +84,15 @@ void FakeLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack) {
 }
 
 void FakeLayerTreeFrameSink::DidAllocateSharedBitmap(
-    mojo::ScopedSharedBufferHandle buffer,
+    base::ReadOnlySharedMemoryRegion region,
     const viz::SharedBitmapId& id) {
-  DCHECK(!base::ContainsValue(shared_bitmaps_, id));
+  DCHECK(!base::Contains(shared_bitmaps_, id));
   shared_bitmaps_.push_back(id);
 }
 
 void FakeLayerTreeFrameSink::DidDeleteSharedBitmap(
     const viz::SharedBitmapId& id) {
-  DCHECK(base::ContainsValue(shared_bitmaps_, id));
+  DCHECK(base::Contains(shared_bitmaps_, id));
   base::Erase(shared_bitmaps_, id);
 }
 

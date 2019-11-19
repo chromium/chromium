@@ -52,7 +52,7 @@ public class GamepadMappingsTest {
     private float[] mRawAxes = new float[GamepadDevice.MAX_RAW_AXIS_VALUES];
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // By default, we expect every button and axis to be mapped.
         mUnmappedButtons.clear();
         mUnmappedAxes.clear();
@@ -72,7 +72,7 @@ public class GamepadMappingsTest {
 
     @Test
     @Feature({"Gamepad"})
-    public void testShieldGamepadMappings() throws Exception {
+    public void testShieldGamepadMappings() {
         GamepadMappings mappings =
                 GamepadMappings.getMappings(GamepadMappings.NVIDIA_SHIELD_DEVICE_NAME_PREFIX);
         mappings.mapToStandardGamepad(mMappedAxes, mMappedButtons, mRawAxes, mRawButtons);
@@ -82,7 +82,7 @@ public class GamepadMappingsTest {
 
     @Test
     @Feature({"Gamepad"})
-    public void testXBox360GamepadMappings() throws Exception {
+    public void testXBox360GamepadMappings() {
         GamepadMappings mappings =
                 GamepadMappings.getMappings(GamepadMappings.MICROSOFT_XBOX_PAD_DEVICE_NAME);
         mappings.mapToStandardGamepad(mMappedAxes, mMappedButtons, mRawAxes, mRawButtons);
@@ -92,7 +92,7 @@ public class GamepadMappingsTest {
 
     @Test
     @Feature({"Gamepad"})
-    public void testPS3SixAxisGamepadMappings() throws Exception {
+    public void testPS3SixAxisGamepadMappings() {
         GamepadMappings mappings =
                 GamepadMappings.getMappings(GamepadMappings.PS3_SIXAXIS_DEVICE_NAME);
         mappings.mapToStandardGamepad(mMappedAxes, mMappedButtons, mRawAxes, mRawButtons);
@@ -119,7 +119,7 @@ public class GamepadMappingsTest {
 
     @Test
     @Feature({"Gamepad"})
-    public void testSamsungEIGP20GamepadMappings() throws Exception {
+    public void testSamsungEIGP20GamepadMappings() {
         GamepadMappings mappings =
                 GamepadMappings.getMappings(GamepadMappings.SAMSUNG_EI_GP20_DEVICE_NAME);
         mappings.mapToStandardGamepad(mMappedAxes, mMappedButtons, mRawAxes, mRawButtons);
@@ -138,7 +138,7 @@ public class GamepadMappingsTest {
 
     @Test
     @Feature({"Gamepad"})
-    public void testAmazonFireGamepadMappings() throws Exception {
+    public void testAmazonFireGamepadMappings() {
         GamepadMappings mappings =
                 GamepadMappings.getMappings(GamepadMappings.AMAZON_FIRE_DEVICE_NAME);
         mappings.mapToStandardGamepad(mMappedAxes, mMappedButtons, mRawAxes, mRawButtons);
@@ -157,7 +157,7 @@ public class GamepadMappingsTest {
 
     @Test
     @Feature({"Gamepad"})
-    public void testUnknownXBox360GamepadMappings() throws Exception {
+    public void testUnknownXBox360GamepadMappings() {
         int[] axes = new int[] {
             MotionEvent.AXIS_X,
             MotionEvent.AXIS_Y,
@@ -186,7 +186,7 @@ public class GamepadMappingsTest {
 
     @Test
     @Feature({"Gamepad"})
-    public void testUnknownMogaProGamepadMappings() throws Exception {
+    public void testUnknownMogaProGamepadMappings() {
         int[] axes = new int[] {
             MotionEvent.AXIS_X,
             MotionEvent.AXIS_Y,
@@ -215,7 +215,7 @@ public class GamepadMappingsTest {
 
     @Test
     @Feature({"Gamepad"})
-    public void testUnknownXiaomiGamepadMappings() throws Exception {
+    public void testUnknownXiaomiGamepadMappings() {
         int[] axes = new int[] {
             MotionEvent.AXIS_X,
             MotionEvent.AXIS_Y,
@@ -244,7 +244,7 @@ public class GamepadMappingsTest {
 
     @Test
     @Feature({"Gamepad"})
-    public void testUnknownGpdXdGamepadMappings() throws Exception {
+    public void testUnknownGpdXdGamepadMappings() {
         int[] axes = new int[] {
             MotionEvent.AXIS_X,
             MotionEvent.AXIS_Y,
@@ -270,7 +270,7 @@ public class GamepadMappingsTest {
     @Test
     @Ignore("https://crbug.com/719765")
     @Feature({"Gamepad"})
-    public void testPS4GamepadMappings() throws Exception {
+    public void testPS4GamepadMappings() {
         GamepadMappings mappings =
                 GamepadMappings.getMappings(GamepadMappings.PS_DUALSHOCK_4_PRODUCT_ID,
                         GamepadMappings.PS_DUALSHOCK_4_VENDOR_ID);
@@ -306,7 +306,7 @@ public class GamepadMappingsTest {
 
     @Test
     @Feature({"Gamepad"})
-    public void testXboxOneSBluetooth2016FirmwareMappings() throws Exception {
+    public void testXboxOneSBluetooth2016FirmwareMappings() {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             GamepadMappings mappings =
                     GamepadMappings.getMappings(GamepadMappings.XBOX_ONE_S_2016_FIRMWARE_PRODUCT_ID,
@@ -356,7 +356,7 @@ public class GamepadMappingsTest {
 
     @Test
     @Feature({"Gamepad"})
-    public void testXboxOneSBluetoothUsesDefaultMappings() throws Exception {
+    public void testXboxOneSBluetoothUsesDefaultMappings() {
         // Test that Xbox One S gamepads with updated firmware connected over Bluetooth use the
         // default mapping.
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

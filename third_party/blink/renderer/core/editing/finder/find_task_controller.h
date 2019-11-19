@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FINDER_FIND_TASK_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FINDER_FIND_TASK_CONTROLLER_H_
 
-#include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -20,13 +20,8 @@ class WebString;
 class WebLocalFrameImpl;
 
 class CORE_EXPORT FindTaskController final
-    : public GarbageCollectedFinalized<FindTaskController> {
+    : public GarbageCollected<FindTaskController> {
  public:
-  static FindTaskController* Create(WebLocalFrameImpl& owner_frame,
-                                    TextFinder& text_finder) {
-    return MakeGarbageCollected<FindTaskController>(owner_frame, text_finder);
-  }
-
   FindTaskController(WebLocalFrameImpl& owner_frame, TextFinder& text_finder);
 
   // Starts an effort of finding |search_text| in |owner_frame|,

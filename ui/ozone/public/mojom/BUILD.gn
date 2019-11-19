@@ -1,0 +1,63 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [
+    "device_cursor.mojom",
+    "drm_device.mojom",
+    "overlay_surface_candidate.mojom",
+    "scenic_gpu_host.mojom",
+    "scenic_gpu_service.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//skia/public/mojom",
+    "//ui/display/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
+  ]
+}
+
+mojom("gesture_properties_service") {
+  sources = [
+    "gesture_properties_service.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+  ]
+}
+
+source_set("mojom_traits") {
+  sources = [
+    "overlay_surface_candidate_mojom_traits.h",
+  ]
+  deps = [
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
+  ]
+  public_deps = [
+    ":mojom",
+    ":mojom_shared_cpp_sources",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("mojom_trait_unit_test") {
+  testonly = true
+
+  sources = [
+    "overlay_surface_candidate_mojom_traits_unittest.cc",
+  ]
+
+  deps = [
+    ":mojom",
+    ":mojom_traits",
+    "//testing/gtest",
+    "//ui/gfx/geometry",
+  ]
+}

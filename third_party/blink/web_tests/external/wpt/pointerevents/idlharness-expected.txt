@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL pointerevents interfaces promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'textContent' of null"
-Harness: the test ran to completion.
-

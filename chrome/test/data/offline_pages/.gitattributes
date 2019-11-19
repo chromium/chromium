@@ -3,7 +3,3 @@
 # (i.e. LF in case of the file below).  We tell git to treat these files
 # as "binary" to preserve this weird mixture of CRLF and LF line endings.
 *.mhtml binary
-
-# Test.mhtml is quoted-printable so all the line endings can be crlf.
-test.mhtml text eol=crlf
-

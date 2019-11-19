@@ -29,7 +29,7 @@ class MEDIA_EXPORT AudioBufferQueue {
   void Clear();
 
   // Appends |buffer_in| to this queue.
-  void Append(const scoped_refptr<AudioBuffer>& buffer_in);
+  void Append(scoped_refptr<AudioBuffer> buffer_in);
 
   // Reads a maximum of |frames| frames into |dest| from the current position.
   // Returns the number of frames read. The current position will advance by the

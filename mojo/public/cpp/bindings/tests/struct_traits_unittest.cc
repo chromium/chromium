@@ -6,10 +6,11 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/rect_blink.h"
 #include "mojo/public/cpp/bindings/tests/rect_chromium.h"
 #include "mojo/public/cpp/bindings/tests/struct_with_traits_impl.h"
@@ -27,19 +28,19 @@ namespace {
 
 template <typename T>
 void DoExpectResult(const T& expected,
-                    const base::Closure& callback,
+                    base::OnceClosure callback,
                     const T& actual) {
   EXPECT_EQ(expected.x(), actual.x());
   EXPECT_EQ(expected.y(), actual.y());
   EXPECT_EQ(expected.width(), actual.width());
   EXPECT_EQ(expected.height(), actual.height());
-  callback.Run();
+  std::move(callback).Run();
 }
 
 template <typename T>
-base::Callback<void(const T&)> ExpectResult(const T& r,
-                                            const base::Closure& callback) {
-  return base::Bind(&DoExpectResult<T>, r, callback);
+base::OnceCallback<void(const T&)> ExpectResult(const T& r,
+                                                base::OnceClosure callback) {
+  return base::BindOnce(&DoExpectResult<T>, r, std::move(callback));
 }
 
 template <typename T>
@@ -48,13 +49,13 @@ void DoFail(const std::string& reason, const T&) {
 }
 
 template <typename T>
-base::Callback<void(const T&)> Fail(const std::string& reason) {
-  return base::Bind(&DoFail<T>, reason);
+base::OnceCallback<void(const T&)> Fail(const std::string& reason) {
+  return base::BindOnce(&DoFail<T>, reason);
 }
 
 template <typename T>
-void ExpectError(InterfacePtr<T> *proxy, const base::Closure& callback) {
-  proxy->set_connection_error_handler(callback);
+void ExpectError(Remote<T>* proxy, base::OnceClosure callback) {
+  proxy->set_disconnect_handler(std::move(callback));
 }
 
 // This implements the generated Chromium variant of RectService.
@@ -113,30 +114,30 @@ class BlinkRectServiceImpl : public blink::RectService {
 class StructTraitsTest : public testing::Test,
                          public TraitsTestService {
  public:
-  StructTraitsTest() {}
+  StructTraitsTest() = default;
 
  protected:
-  void BindToChromiumService(RectServiceRequest request) {
-    chromium_bindings_.AddBinding(&chromium_service_, std::move(request));
+  void BindToChromiumService(PendingReceiver<RectService> receiver) {
+    chromium_receivers_.Add(&chromium_service_, std::move(receiver));
   }
-  void BindToChromiumService(blink::RectServiceRequest request) {
-    chromium_bindings_.AddBinding(
+  void BindToChromiumService(PendingReceiver<blink::RectService> receiver) {
+    chromium_receivers_.Add(
         &chromium_service_,
-        ConvertInterfaceRequest<RectService>(std::move(request)));
+        ConvertPendingReceiver<RectService>(std::move(receiver)));
   }
 
-  void BindToBlinkService(blink::RectServiceRequest request) {
-    blink_bindings_.AddBinding(&blink_service_, std::move(request));
+  void BindToBlinkService(PendingReceiver<blink::RectService> receiver) {
+    blink_receivers_.Add(&blink_service_, std::move(receiver));
   }
-  void BindToBlinkService(RectServiceRequest request) {
-    blink_bindings_.AddBinding(
+  void BindToBlinkService(PendingReceiver<RectService> receiver) {
+    blink_receivers_.Add(
         &blink_service_,
-        ConvertInterfaceRequest<blink::RectService>(std::move(request)));
+        ConvertPendingReceiver<blink::RectService>(std::move(receiver)));
   }
 
-  TraitsTestServicePtr GetTraitsTestProxy() {
-    TraitsTestServicePtr proxy;
-    traits_test_bindings_.AddBinding(this, mojo::MakeRequest(&proxy));
+  Remote<TraitsTestService> GetTraitsTestProxy() {
+    Remote<TraitsTestService> proxy;
+    traits_test_receivers_.Add(this, proxy.BindNewPipeAndPassReceiver());
     return proxy;
   }
 
@@ -187,22 +188,22 @@ class StructTraitsTest : public testing::Test,
     std::move(callback).Run(std::move(u));
   }
 
-  base::MessageLoop loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   ChromiumRectServiceImpl chromium_service_;
-  BindingSet<RectService> chromium_bindings_;
+  ReceiverSet<RectService> chromium_receivers_;
 
   BlinkRectServiceImpl blink_service_;
-  BindingSet<blink::RectService> blink_bindings_;
+  ReceiverSet<blink::RectService> blink_receivers_;
 
-  BindingSet<TraitsTestService> traits_test_bindings_;
+  ReceiverSet<TraitsTestService> traits_test_receivers_;
 };
 
 }  // namespace
 
 TEST_F(StructTraitsTest, ChromiumProxyToChromiumService) {
-  RectServicePtr chromium_proxy;
-  BindToChromiumService(MakeRequest(&chromium_proxy));
+  Remote<RectService> chromium_proxy;
+  BindToChromiumService(chromium_proxy.BindNewPipeAndPassReceiver());
   {
     base::RunLoop loop;
     chromium_proxy->AddRect(RectChromium(1, 1, 4, 5));
@@ -221,8 +222,8 @@ TEST_F(StructTraitsTest, ChromiumProxyToChromiumService) {
 }
 
 TEST_F(StructTraitsTest, ChromiumToBlinkService) {
-  RectServicePtr chromium_proxy;
-  BindToBlinkService(MakeRequest(&chromium_proxy));
+  Remote<RectService> chromium_proxy;
+  BindToBlinkService(chromium_proxy.BindNewPipeAndPassReceiver());
   {
     base::RunLoop loop;
     chromium_proxy->AddRect(RectChromium(1, 1, 4, 5));
@@ -251,8 +252,8 @@ TEST_F(StructTraitsTest, ChromiumToBlinkService) {
 }
 
 TEST_F(StructTraitsTest, BlinkProxyToBlinkService) {
-  blink::RectServicePtr blink_proxy;
-  BindToBlinkService(MakeRequest(&blink_proxy));
+  Remote<blink::RectService> blink_proxy;
+  BindToBlinkService(blink_proxy.BindNewPipeAndPassReceiver());
   {
     base::RunLoop loop;
     blink_proxy->AddRect(RectBlink(1, 1, 4, 5));
@@ -271,8 +272,8 @@ TEST_F(StructTraitsTest, BlinkProxyToBlinkService) {
 }
 
 TEST_F(StructTraitsTest, BlinkProxyToChromiumService) {
-  blink::RectServicePtr blink_proxy;
-  BindToChromiumService(MakeRequest(&blink_proxy));
+  Remote<blink::RectService> blink_proxy;
+  BindToChromiumService(blink_proxy.BindNewPipeAndPassReceiver());
   {
     base::RunLoop loop;
     blink_proxy->AddRect(RectBlink(1, 1, 4, 5));
@@ -291,7 +292,7 @@ TEST_F(StructTraitsTest, BlinkProxyToChromiumService) {
 }
 
 void ExpectStructWithTraits(const StructWithTraitsImpl& expected,
-                            const base::Closure& closure,
+                            base::OnceClosure closure,
                             const StructWithTraitsImpl& passed) {
   EXPECT_EQ(expected.get_enum(), passed.get_enum());
   EXPECT_EQ(expected.get_bool(), passed.get_bool());
@@ -302,7 +303,7 @@ void ExpectStructWithTraits(const StructWithTraitsImpl& expected,
   EXPECT_EQ(expected.get_struct(), passed.get_struct());
   EXPECT_EQ(expected.get_struct_array(), passed.get_struct_array());
   EXPECT_EQ(expected.get_struct_map(), passed.get_struct_map());
-  closure.Run();
+  std::move(closure).Run();
 }
 
 TEST_F(StructTraitsTest, EchoStructWithTraits) {
@@ -323,11 +324,10 @@ TEST_F(StructTraitsTest, EchoStructWithTraits) {
   input.get_mutable_struct_map()["world"] = NestedStructWithTraitsImpl(2048);
 
   base::RunLoop loop;
-  TraitsTestServicePtr proxy = GetTraitsTestProxy();
+  Remote<TraitsTestService> proxy = GetTraitsTestProxy();
 
-  proxy->EchoStructWithTraits(
-      input,
-      base::Bind(&ExpectStructWithTraits, input, loop.QuitClosure()));
+  proxy->EchoStructWithTraits(input, base::BindOnce(&ExpectStructWithTraits,
+                                                    input, loop.QuitClosure()));
   loop.Run();
 }
 
@@ -341,10 +341,10 @@ TEST_F(StructTraitsTest, CloneStructWithTraitsContainer) {
 }
 
 void ExpectTrivialStructWithTraits(TrivialStructWithTraitsImpl expected,
-                                   const base::Closure& closure,
+                                   base::OnceClosure closure,
                                    TrivialStructWithTraitsImpl passed) {
   EXPECT_EQ(expected.value, passed.value);
-  closure.Run();
+  std::move(closure).Run();
 }
 
 TEST_F(StructTraitsTest, EchoTrivialStructWithTraits) {
@@ -352,20 +352,20 @@ TEST_F(StructTraitsTest, EchoTrivialStructWithTraits) {
   input.value = 42;
 
   base::RunLoop loop;
-  TraitsTestServicePtr proxy = GetTraitsTestProxy();
+  Remote<TraitsTestService> proxy = GetTraitsTestProxy();
 
   proxy->EchoTrivialStructWithTraits(
-      input,
-      base::Bind(&ExpectTrivialStructWithTraits, input, loop.QuitClosure()));
+      input, base::BindOnce(&ExpectTrivialStructWithTraits, input,
+                            loop.QuitClosure()));
   loop.Run();
 }
 
 void CaptureMessagePipe(ScopedMessagePipeHandle* storage,
-                        const base::Closure& closure,
+                        base::OnceClosure closure,
                         MoveOnlyStructWithTraitsImpl passed) {
   storage->reset(MessagePipeHandle(
       passed.get_mutable_handle().release().value()));
-  closure.Run();
+  std::move(closure).Run();
 }
 
 TEST_F(StructTraitsTest, EchoMoveOnlyStructWithTraits) {
@@ -374,12 +374,12 @@ TEST_F(StructTraitsTest, EchoMoveOnlyStructWithTraits) {
   input.get_mutable_handle().reset(mp.handle0.release());
 
   base::RunLoop loop;
-  TraitsTestServicePtr proxy = GetTraitsTestProxy();
+  Remote<TraitsTestService> proxy = GetTraitsTestProxy();
 
   ScopedMessagePipeHandle received;
   proxy->EchoMoveOnlyStructWithTraits(
       std::move(input),
-      base::Bind(&CaptureMessagePipe, &received, loop.QuitClosure()));
+      base::BindOnce(&CaptureMessagePipe, &received, loop.QuitClosure()));
   loop.Run();
 
   ASSERT_TRUE(received.is_valid());
@@ -403,40 +403,41 @@ TEST_F(StructTraitsTest, EchoMoveOnlyStructWithTraits) {
 
 void CaptureNullableMoveOnlyStructWithTraitsImpl(
     base::Optional<MoveOnlyStructWithTraitsImpl>* storage,
-    const base::Closure& closure,
+    base::OnceClosure closure,
     base::Optional<MoveOnlyStructWithTraitsImpl> passed) {
   *storage = std::move(passed);
-  closure.Run();
+  std::move(closure).Run();
 }
 
 TEST_F(StructTraitsTest, EchoNullableMoveOnlyStructWithTraits) {
   base::RunLoop loop;
-  TraitsTestServicePtr proxy = GetTraitsTestProxy();
+  Remote<TraitsTestService> proxy = GetTraitsTestProxy();
 
   base::Optional<MoveOnlyStructWithTraitsImpl> received;
   proxy->EchoNullableMoveOnlyStructWithTraits(
-      base::nullopt, base::Bind(&CaptureNullableMoveOnlyStructWithTraitsImpl,
-                                &received, loop.QuitClosure()));
+      base::nullopt,
+      base::BindOnce(&CaptureNullableMoveOnlyStructWithTraitsImpl, &received,
+                     loop.QuitClosure()));
   loop.Run();
 
   EXPECT_FALSE(received);
 }
 
 void ExpectEnumWithTraits(EnumWithTraitsImpl expected_value,
-                          const base::Closure& closure,
+                          base::OnceClosure closure,
                           EnumWithTraitsImpl value) {
   EXPECT_EQ(expected_value, value);
-  closure.Run();
+  std::move(closure).Run();
 }
 
 TEST_F(StructTraitsTest, EchoEnumWithTraits) {
   base::RunLoop loop;
-  TraitsTestServicePtr proxy = GetTraitsTestProxy();
+  Remote<TraitsTestService> proxy = GetTraitsTestProxy();
 
   proxy->EchoEnumWithTraits(
       EnumWithTraitsImpl::CUSTOM_VALUE_1,
-      base::Bind(&ExpectEnumWithTraits, EnumWithTraitsImpl::CUSTOM_VALUE_1,
-                 loop.QuitClosure()));
+      base::BindOnce(&ExpectEnumWithTraits, EnumWithTraitsImpl::CUSTOM_VALUE_1,
+                     loop.QuitClosure()));
   loop.Run();
 }
 
@@ -474,35 +475,35 @@ TEST_F(StructTraitsTest, SerializeStructWithTraits) {
 }
 
 void ExpectUniquePtr(std::unique_ptr<int> expected,
-                     const base::Closure& closure,
+                     base::OnceClosure closure,
                      std::unique_ptr<int> value) {
   ASSERT_EQ(!expected, !value);
   if (expected)
     EXPECT_EQ(*expected, *value);
-  closure.Run();
+  std::move(closure).Run();
 }
 
 TEST_F(StructTraitsTest, TypemapUniquePtr) {
-  TraitsTestServicePtr proxy = GetTraitsTestProxy();
+  Remote<TraitsTestService> proxy = GetTraitsTestProxy();
 
   {
     base::RunLoop loop;
     proxy->EchoStructWithTraitsForUniquePtr(
         std::make_unique<int>(12345),
-        base::Bind(&ExpectUniquePtr, base::Passed(std::make_unique<int>(12345)),
-                   loop.QuitClosure()));
+        base::BindOnce(&ExpectUniquePtr, std::make_unique<int>(12345),
+                       loop.QuitClosure()));
     loop.Run();
   }
   {
     base::RunLoop loop;
     proxy->EchoNullableStructWithTraitsForUniquePtr(
-        nullptr, base::Bind(&ExpectUniquePtr, nullptr, loop.QuitClosure()));
+        nullptr, base::BindOnce(&ExpectUniquePtr, nullptr, loop.QuitClosure()));
     loop.Run();
   }
 }
 
 TEST_F(StructTraitsTest, EchoUnionWithTraits) {
-  TraitsTestServicePtr proxy = GetTraitsTestProxy();
+  Remote<TraitsTestService> proxy = GetTraitsTestProxy();
 
   {
     std::unique_ptr<test::UnionWithTraitsBase> input(
@@ -510,15 +511,14 @@ TEST_F(StructTraitsTest, EchoUnionWithTraits) {
     base::RunLoop loop;
     proxy->EchoUnionWithTraits(
         std::move(input),
-        base::Bind(
-            [](const base::Closure& quit_closure,
+        base::BindOnce(
+            [](base::OnceClosure quit_closure,
                std::unique_ptr<test::UnionWithTraitsBase> passed) {
               ASSERT_EQ(test::UnionWithTraitsBase::Type::INT32, passed->type());
               EXPECT_EQ(1234,
                         static_cast<test::UnionWithTraitsInt32*>(passed.get())
                             ->value());
-              quit_closure.Run();
-
+              std::move(quit_closure).Run();
             },
             loop.QuitClosure()));
     loop.Run();
@@ -530,8 +530,8 @@ TEST_F(StructTraitsTest, EchoUnionWithTraits) {
     base::RunLoop loop;
     proxy->EchoUnionWithTraits(
         std::move(input),
-        base::Bind(
-            [](const base::Closure& quit_closure,
+        base::BindOnce(
+            [](base::OnceClosure quit_closure,
                std::unique_ptr<test::UnionWithTraitsBase> passed) {
               ASSERT_EQ(test::UnionWithTraitsBase::Type::STRUCT,
                         passed->type());
@@ -539,8 +539,7 @@ TEST_F(StructTraitsTest, EchoUnionWithTraits) {
                         static_cast<test::UnionWithTraitsStruct*>(passed.get())
                             ->get_struct()
                             .value);
-              quit_closure.Run();
-
+              std::move(quit_closure).Run();
             },
             loop.QuitClosure()));
     loop.Run();

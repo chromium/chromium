@@ -18,7 +18,7 @@ class TestNavigationUIData : public content::NavigationUIData {
   TestNavigationUIData() {}
   ~TestNavigationUIData() override {}
 
-  std::unique_ptr<NavigationUIData> Clone() const override;
+  std::unique_ptr<NavigationUIData> Clone() override;
 };
 
 }  // namespace content

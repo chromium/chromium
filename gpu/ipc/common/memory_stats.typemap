@@ -4,8 +4,8 @@
 
 mojom = "//gpu/ipc/common/memory_stats.mojom"
 public_headers = [ "//gpu/ipc/common/memory_stats.h" ]
-traits_headers = [ "//gpu/ipc/common/memory_stats_struct_traits.h" ]
+traits_headers = [ "//gpu/ipc/common/memory_stats_mojom_traits.h" ]
 type_mappings = [
-  "gpu.mojom.VideoMemoryProcessStats=gpu::VideoMemoryUsageStats::ProcessStats",
-  "gpu.mojom.VideoMemoryUsageStats=gpu::VideoMemoryUsageStats",
+  "gpu.mojom.VideoMemoryProcessStats=::gpu::VideoMemoryUsageStats::ProcessStats",
+  "gpu.mojom.VideoMemoryUsageStats=::gpu::VideoMemoryUsageStats",
 ]

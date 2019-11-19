@@ -1,0 +1,12 @@
+endpoint_type: LOCAL
+fuzz_handshake: false
+messages: [
+  {
+    id: 0x4d4f4a4f
+    include_body_if_not_complex: true
+    [mojo_fuzzer.MojoMessage.mojo_message]: {
+      data_length: 2
+      data: "The data length is very small. But data can go on for a long time making other parts of the message appear far from where the Channel may expect them to be. Here's some more bytes. And just a few more for good measure."
+    }
+  }
+]

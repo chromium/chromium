@@ -38,7 +38,7 @@ const uint16_t* GetPortFieldFromSockaddr(const struct sockaddr* address,
     return &sockaddr->sin6_port;
   } else {
     NOTREACHED();
-    return NULL;
+    return nullptr;
   }
 }
 

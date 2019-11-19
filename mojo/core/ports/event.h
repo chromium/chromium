@@ -56,6 +56,13 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Event {
     // Used to request the merging of two routes via two sacrificial receiving
     // ports, one from each route.
     kMergePort,
+
+    // Used to request that the conjugate port acknowledges read messages by
+    // sending back a UserMessageReadAck.
+    kUserMessageReadAckRequest,
+
+    // Used to acknowledge read messages to the conjugate.
+    kUserMessageReadAck,
   };
 
 #pragma pack(push, 1)
@@ -275,6 +282,49 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) MergePortEvent : public Event {
   const PortDescriptor new_port_descriptor_;
 
   DISALLOW_COPY_AND_ASSIGN(MergePortEvent);
+};
+
+class COMPONENT_EXPORT(MOJO_CORE_PORTS) UserMessageReadAckRequestEvent
+    : public Event {
+ public:
+  UserMessageReadAckRequestEvent(const PortName& port_name,
+                                 uint64_t sequence_num_to_acknowledge);
+  ~UserMessageReadAckRequestEvent() override;
+
+  uint64_t sequence_num_to_acknowledge() const {
+    return sequence_num_to_acknowledge_;
+  }
+
+  static ScopedEvent Deserialize(const PortName& port_name,
+                                 const void* buffer,
+                                 size_t num_bytes);
+
+ private:
+  size_t GetSerializedDataSize() const override;
+  void SerializeData(void* buffer) const override;
+
+  uint64_t sequence_num_to_acknowledge_;
+};
+
+class COMPONENT_EXPORT(MOJO_CORE_PORTS) UserMessageReadAckEvent : public Event {
+ public:
+  UserMessageReadAckEvent(const PortName& port_name,
+                          uint64_t sequence_num_acknowledged);
+  ~UserMessageReadAckEvent() override;
+
+  uint64_t sequence_num_acknowledged() const {
+    return sequence_num_acknowledged_;
+  }
+
+  static ScopedEvent Deserialize(const PortName& port_name,
+                                 const void* buffer,
+                                 size_t num_bytes);
+
+ private:
+  size_t GetSerializedDataSize() const override;
+  void SerializeData(void* buffer) const override;
+
+  uint64_t sequence_num_acknowledged_;
 };
 
 }  // namespace ports

@@ -10,7 +10,8 @@
 #include "base/macros.h"
 #include "chrome/services/removable_storage_writer/public/mojom/removable_storage_writer.mojom.h"
 #include "chrome/utility/image_writer/image_writer_handler.h"
-#include "services/service_manager/public/cpp/service_context_ref.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace base {
 class FilePath;
@@ -19,20 +20,22 @@ class FilePath;
 class RemovableStorageWriter : public chrome::mojom::RemovableStorageWriter {
  public:
   explicit RemovableStorageWriter(
-      std::unique_ptr<service_manager::ServiceContextRef> service_ref);
+      mojo::PendingReceiver<chrome::mojom::RemovableStorageWriter> receiver);
   ~RemovableStorageWriter() override;
 
  private:
   // mojom::RemovableStorageWriter implementation:
   void Write(const base::FilePath& source,
              const base::FilePath& target,
-             chrome::mojom::RemovableStorageWriterClientPtr client) override;
+             mojo::PendingRemote<chrome::mojom::RemovableStorageWriterClient>
+                 client) override;
 
   void Verify(const base::FilePath& source,
               const base::FilePath& target,
-              chrome::mojom::RemovableStorageWriterClientPtr client) override;
+              mojo::PendingRemote<chrome::mojom::RemovableStorageWriterClient>
+                  client) override;
 
-  const std::unique_ptr<service_manager::ServiceContextRef> service_ref_;
+  mojo::Receiver<chrome::mojom::RemovableStorageWriter> receiver_;
   image_writer::ImageWriterHandler writer_;
 
   DISALLOW_COPY_AND_ASSIGN(RemovableStorageWriter);

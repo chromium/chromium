@@ -200,7 +200,7 @@ goog.DEBUG = true;
  * this rule: the Hebrew language. For legacy reasons the old code (iw) should
  * be used instead of the new code (he), see http://wiki/Main/IIISynonyms.
  */
-goog.define('goog.LOCALE', 'en');  // default to en
+goog.LOCALE = goog.define('goog.LOCALE', 'en');  // default to en
 
 
 /**
@@ -214,7 +214,7 @@ goog.define('goog.LOCALE', 'en');  // default to en
  * relying on non-standard implementations, specify
  * "--define goog.TRUSTED_SITE=false" to the JSCompiler.
  */
-goog.define('goog.TRUSTED_SITE', true);
+goog.TRUSTED_SITE = goog.define('goog.TRUSTED_SITE', true);
 
 
 /**
@@ -224,7 +224,7 @@ goog.define('goog.TRUSTED_SITE', true);
  * running in EcmaScript Strict mode or warn about unavailable functionality.
  * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions_and_function_scope/Strict_mode
  */
-goog.define('goog.STRICT_MODE_COMPATIBLE', false);
+goog.STRICT_MODE_COMPATIBLE = goog.define('goog.STRICT_MODE_COMPATIBLE', false);
 
 
 /**
@@ -428,7 +428,7 @@ goog.addDependency = function(relPath, provides, requires) {
  * provided (and depend on the fact that some outside tool correctly ordered
  * the script).
  */
-goog.define('goog.ENABLE_DEBUG_LOADER', true);
+goog.ENABLE_DEBUG_LOADER = goog.define('goog.ENABLE_DEBUG_LOADER', true);
 
 
 /**

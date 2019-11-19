@@ -58,14 +58,14 @@ typedef base::Callback<Status(Session* session,
 
 // Executes a given session command, after acquiring access to the appropriate
 // session.
-void ExecuteSessionCommand(
-    SessionThreadMap* session_thread_map,
-    const char* command_name,
-    const SessionCommand& command,
-    bool return_ok_without_session,
-    const base::DictionaryValue& params,
-    const std::string& session_id,
-    const CommandCallback& callback);
+void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
+                           const char* command_name,
+                           const SessionCommand& command,
+                           bool w3c_standard_command,
+                           bool return_ok_without_session,
+                           const base::DictionaryValue& params,
+                           const std::string& session_id,
+                           const CommandCallback& callback);
 
 namespace internal {
 void CreateSessionOnSessionThreadForTesting(const std::string& id);

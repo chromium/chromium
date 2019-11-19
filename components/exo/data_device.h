@@ -12,8 +12,8 @@
 #include "components/exo/seat_observer.h"
 #include "components/exo/surface.h"
 #include "components/exo/surface_observer.h"
-#include "components/exo/wm_helper.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 
 namespace ui {
 class DropTargetEvent;
@@ -23,14 +23,13 @@ namespace exo {
 
 class DataDeviceDelegate;
 class DataOffer;
+class ScopedDataOffer;
 class DataSource;
 class FileHelper;
 class Seat;
+class ScopedSurface;
 
 enum class DndAction { kNone, kCopy, kMove, kAsk };
-
-class ScopedDataOffer;
-class ScopedSurface;
 
 // DataDevice to start drag and drop and copy and paste oprations.
 class DataDevice : public WMHelper::DragDropObserver,
@@ -51,10 +50,10 @@ class DataDevice : public WMHelper::DragDropObserver,
   // nullable image which is rendered at the next to cursor while drag
   // operation. |serial| is the unique number comes from input events which
   // triggers the drag and drop operation.
-  void StartDrag(const DataSource* source,
+  void StartDrag(DataSource* source,
                  Surface* origin,
                  Surface* icon,
-                 uint32_t serial);
+                 ui::DragDropTypes::DragEventSource event_source);
 
   // Sets selection data to the clipboard.
   // |source| represents data comes from the client. |serial| is the unique
@@ -79,6 +78,8 @@ class DataDevice : public WMHelper::DragDropObserver,
 
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
+
+  DataDeviceDelegate* get_delegate() { return delegate_; }
 
  private:
   Surface* GetEffectiveTargetForEvent(const ui::DropTargetEvent& event) const;

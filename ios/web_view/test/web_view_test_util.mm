@@ -85,13 +85,14 @@ bool WaitForWebViewLoadCompletionOrTimeout(CWVWebView* web_view) {
 
 void CopyWebViewState(CWVWebView* source_web_view,
                       CWVWebView* destination_web_view) {
-  NSMutableData* data = [[NSMutableData alloc] init];
   NSKeyedArchiver* archiver =
-      [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+      [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];
   [source_web_view encodeRestorableStateWithCoder:archiver];
-  [archiver finishEncoding];
+
   NSKeyedUnarchiver* unarchiver =
-      [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+      [[NSKeyedUnarchiver alloc] initForReadingFromData:[archiver encodedData]
+                                                  error:nil];
+  unarchiver.requiresSecureCoding = NO;
   [destination_web_view decodeRestorableStateWithCoder:unarchiver];
 }
 

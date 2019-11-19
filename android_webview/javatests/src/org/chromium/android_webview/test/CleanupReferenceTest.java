@@ -46,7 +46,7 @@ public class CleanupReferenceTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         sObjectCount.set(0);
     }
 
@@ -60,7 +60,7 @@ public class CleanupReferenceTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testCreateSingle() throws Throwable {
+    public void testCreateSingle() {
         Assert.assertEquals(0, sObjectCount.get());
 
         ReferredObject instance = new ReferredObject();
@@ -76,7 +76,7 @@ public class CleanupReferenceTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testCreateMany() throws Throwable {
+    public void testCreateMany() {
         Assert.assertEquals(0, sObjectCount.get());
 
         final int instanceCount = 20;
@@ -96,5 +96,4 @@ public class CleanupReferenceTest {
         collectGarbage();
         CriteriaHelper.pollInstrumentationThread(Criteria.equals(0, () -> sObjectCount.get()));
     }
-
 }

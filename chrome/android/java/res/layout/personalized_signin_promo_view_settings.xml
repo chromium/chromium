@@ -44,10 +44,5 @@
         android:id="@android:id/widget_frame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-
-    <View
-        android:id="@+id/divider"
-        style="@style/HorizontalDivider"
-        android:importantForAccessibility="no"/>
 </LinearLayout>
 

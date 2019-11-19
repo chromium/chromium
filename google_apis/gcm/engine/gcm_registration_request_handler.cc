@@ -28,19 +28,10 @@ void GCMRegistrationRequestHandler::BuildRequestBody(std::string* body){
 }
 
 void GCMRegistrationRequestHandler::ReportUMAs(
-    RegistrationRequest::Status status,
-    int retry_count,
-    base::TimeDelta complete_time) {
+    RegistrationRequest::Status status) {
   UMA_HISTOGRAM_ENUMERATION("GCM.RegistrationRequestStatus",
                             status,
                             RegistrationRequest::STATUS_COUNT);
-
-  // Other UMAs are only reported when the request succeeds.
-  if (status != RegistrationRequest::SUCCESS)
-    return;
-
-  UMA_HISTOGRAM_COUNTS_1M("GCM.RegistrationRetryCount", retry_count);
-  UMA_HISTOGRAM_TIMES("GCM.RegistrationCompleteTime", complete_time);
 }
 
 }  // namespace gcm

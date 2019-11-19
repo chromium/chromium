@@ -12,12 +12,13 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/post_task.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/feed/core/content_metadata.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/offline_page_types.h"
+#include "components/offline_pages/core/page_criteria.h"
 #include "components/offline_pages/core/prefetch/stub_prefetch_service.h"
 #include "components/offline_pages/core/stub_offline_page_model.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,11 +29,12 @@ namespace feed {
 
 namespace {
 
+using offline_pages::MultipleOfflinePageItemCallback;
 using offline_pages::OfflinePageItem;
 using offline_pages::OfflinePageModel;
-using offline_pages::StubOfflinePageModel;
-using offline_pages::MultipleOfflinePageItemCallback;
+using offline_pages::PageCriteria;
 using offline_pages::PrefetchSuggestion;
+using offline_pages::StubOfflinePageModel;
 using offline_pages::StubPrefetchService;
 using offline_pages::SuggestionsProvider;
 
@@ -57,7 +59,7 @@ class TestOfflinePageModel : public StubOfflinePageModel {
                        std::string name_space) {
     OfflinePageItem item;
     item.url = GURL(url);
-    item.original_url = GURL(original_url);
+    item.original_url_if_different = GURL(original_url);
     item.offline_id = offline_id;
     item.creation_time = creation_time;
     item.client_id = offline_pages::ClientId(name_space, "");
@@ -75,9 +77,12 @@ class TestOfflinePageModel : public StubOfflinePageModel {
   MOCK_METHOD1(RemoveObserver, void(Observer*));
 
  private:
-  void GetPagesByURL(const GURL& url,
-                     MultipleOfflinePageItemCallback callback) override {
-    auto iter = url_to_offline_page_item_.equal_range(url.spec());
+  void GetPagesWithCriteria(const PageCriteria& criteria,
+                            MultipleOfflinePageItemCallback callback) override {
+    // Feed should ignore tab-bound pages.
+    EXPECT_TRUE(criteria.exclude_tab_bound_pages);
+
+    auto iter = url_to_offline_page_item_.equal_range(criteria.url.spec());
     std::vector<OfflinePageItem> ret;
     ret.resize(std::distance(iter.first, iter.second));
     std::transform(iter.first, iter.second, ret.begin(),
@@ -125,7 +130,7 @@ class FeedOfflineHostTest : public ::testing::Test {
     return status_notifications_;
   }
 
-  void RunUntilIdle() { scoped_task_environment_.RunUntilIdle(); }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   void SetupHost() {
     EXPECT_CALL(*offline_page_model(), AddObserver(testing::_))
@@ -167,7 +172,7 @@ class FeedOfflineHostTest : public ::testing::Test {
     status_notifications_.emplace_back(url, available_offline);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   TestOfflinePageModel offline_page_model_;
   TestPrefetchService prefetch_service_;
   std::unique_ptr<FeedOfflineHost> host_;
@@ -373,7 +378,7 @@ TEST_F(FeedOfflineHostTest, GetCurrentArticleSuggestionsMultiple) {
 TEST_F(FeedOfflineHostTest, OfflinePageAdded) {
   OfflinePageItem added_page;
   added_page.url = GURL(kUrl1);
-  added_page.original_url = GURL(kUrl2);
+  added_page.original_url_if_different = GURL(kUrl2);
   added_page.offline_id = 4;
 
   host()->OfflinePageAdded(nullptr, added_page);
@@ -389,10 +394,10 @@ TEST_F(FeedOfflineHostTest, OfflinePageDeleted) {
   host()->GetOfflineStatus({kUrl1}, base::BindOnce(&IgnoreStatus));
   RunUntilIdle();
   EXPECT_EQ(host()->GetOfflineId(kUrl1).value(), 4);
-  OfflinePageModel::DeletedPageInfo page_info;
-  page_info.url = GURL(kUrl1);
+  OfflinePageItem page_item;
+  page_item.url = GURL(kUrl1);
 
-  host()->OfflinePageDeleted(page_info);
+  host()->OfflinePageDeleted(page_item);
 
   EXPECT_EQ(1U, get_status_notifications().size());
   EXPECT_EQ(kUrl1, get_status_notifications()[0].first);

@@ -8,10 +8,12 @@
 #include <lmerr.h>
 #include <objbase.h>
 #include <unknwn.h>
+#include <wrl/client.h>
 
 #include <memory>
 
 #include "base/base_paths.h"
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/file_version_info.h"
@@ -26,6 +28,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
+#include "base/win/win_util.h"
 #include "build/build_config.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider.h"
@@ -127,13 +130,11 @@ void GcpSetupTest::ExpectAllFilesToExist(
 void GcpSetupTest::ExpectCredentialProviderToBeRegistered(
     bool registered,
     const base::string16& product_version) {
-  wchar_t guid_in_wchar[64];
-  StringFromGUID2(CLSID_GaiaCredentialProvider, guid_in_wchar,
-                  base::size(guid_in_wchar));
+  auto guid_string = base::win::String16FromGUID(CLSID_GaiaCredentialProvider);
 
   // Make sure COM object is registered.
   base::string16 register_key_path =
-      base::StringPrintf(L"CLSID\\%ls\\InprocServer32", guid_in_wchar);
+      base::StringPrintf(L"CLSID\\%ls\\InprocServer32", guid_string.c_str());
   base::win::RegKey clsid_key(HKEY_CLASSES_ROOT, register_key_path.c_str(),
                               KEY_READ);
   EXPECT_EQ(registered, clsid_key.Valid());
@@ -148,7 +149,8 @@ void GcpSetupTest::ExpectCredentialProviderToBeRegistered(
 
   base::string16 cp_key_path = base::StringPrintf(
       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\"
-      L"Authentication\\Credential Providers\\%ls", guid_in_wchar);
+      L"Authentication\\Credential Providers\\%ls",
+      guid_string.c_str());
 
   // Make sure credential provider is registered.
   base::win::RegKey cp_key(HKEY_LOCAL_MACHINE, cp_key_path.c_str(), KEY_READ);
@@ -157,7 +159,7 @@ void GcpSetupTest::ExpectCredentialProviderToBeRegistered(
   // Make sure eventlog source is registered.
   base::win::RegKey el_key(
       HKEY_LOCAL_MACHINE,
-      L"SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\GCP",
+      L"SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\GCPW",
       KEY_READ);
   EXPECT_EQ(registered, el_key.Valid());
 
@@ -347,10 +349,10 @@ TEST_F(GcpSetupTest, LaunchGcpAfterInstall) {
 
   locked_file.Close();
 
-  CComPtr<IGaiaCredentialProvider> provider;
+  Microsoft::WRL::ComPtr<IGaiaCredentialProvider> provider;
   ASSERT_EQ(S_OK,
             CComCreator<CComObject<CGaiaCredentialProvider>>::CreateInstance(
-                nullptr, IID_IGaiaCredentialProvider, (void**)&provider));
+                nullptr, IID_PPV_ARGS(&provider)));
 
   // Make sure newer version exists and old version is gone.
   ExpectAllFilesToExist(true, product_version());
@@ -410,6 +412,73 @@ TEST_F(GcpSetupTest, ValidLsaWithNoExistingUser) {
   EXPECT_EQ(
       expected_gaia_username,
       fake_scoped_lsa_policy_factory()->private_data()[kLsaKeyGaiaUsername]);
+}
+
+TEST_F(GcpSetupTest, EnableStats) {
+  // Make sure usagestats does not exist.
+  base::win::RegKey key;
+  EXPECT_EQ(ERROR_SUCCESS,
+            key.Create(HKEY_LOCAL_MACHINE,
+                       credential_provider::kRegUpdaterClientStateAppPath,
+                       KEY_ALL_ACCESS | KEY_WOW64_32KEY));
+  DWORD value;
+  EXPECT_NE(ERROR_SUCCESS,
+            key.ReadValueDW(credential_provider::kRegUsageStatsName, &value));
+
+  // Enable stats.
+  base::CommandLine cmdline(base::CommandLine::NO_PROGRAM);
+  cmdline.AppendSwitch(credential_provider::switches::kEnableStats);
+  EXPECT_EQ(0, EnableStatsCollection(cmdline));
+
+  // Stats should be enabled.
+  EXPECT_EQ(ERROR_SUCCESS,
+            key.ReadValueDW(credential_provider::kRegUsageStatsName, &value));
+  EXPECT_EQ(1u, value);
+}
+
+TEST_F(GcpSetupTest, DisableStats) {
+  // Make sure usagestats does not exist.
+  base::win::RegKey key;
+  EXPECT_EQ(ERROR_SUCCESS,
+            key.Create(HKEY_LOCAL_MACHINE,
+                       credential_provider::kRegUpdaterClientStateAppPath,
+                       KEY_ALL_ACCESS | KEY_WOW64_32KEY));
+  DWORD value;
+  EXPECT_NE(ERROR_SUCCESS,
+            key.ReadValueDW(credential_provider::kRegUsageStatsName, &value));
+
+  // Disable stats.
+  base::CommandLine cmdline(base::CommandLine::NO_PROGRAM);
+  cmdline.AppendSwitch(credential_provider::switches::kDisableStats);
+  EXPECT_EQ(0, EnableStatsCollection(cmdline));
+
+  // Stats should be disabled.
+  EXPECT_EQ(ERROR_SUCCESS,
+            key.ReadValueDW(credential_provider::kRegUsageStatsName, &value));
+  EXPECT_EQ(0u, value);
+}
+
+TEST_F(GcpSetupTest, EnableDisableStats) {
+  // Make sure usagestats does not exist.
+  base::win::RegKey key;
+  EXPECT_EQ(ERROR_SUCCESS,
+            key.Create(HKEY_LOCAL_MACHINE,
+                       credential_provider::kRegUpdaterClientStateAppPath,
+                       KEY_ALL_ACCESS | KEY_WOW64_32KEY));
+  DWORD value;
+  EXPECT_NE(ERROR_SUCCESS,
+            key.ReadValueDW(credential_provider::kRegUsageStatsName, &value));
+
+  // Enable and disable stats.
+  base::CommandLine cmdline(base::CommandLine::NO_PROGRAM);
+  cmdline.AppendSwitch(credential_provider::switches::kEnableStats);
+  cmdline.AppendSwitch(credential_provider::switches::kDisableStats);
+  EXPECT_EQ(0, EnableStatsCollection(cmdline));
+
+  // Stats should be disabled.
+  EXPECT_EQ(ERROR_SUCCESS,
+            key.ReadValueDW(credential_provider::kRegUsageStatsName, &value));
+  EXPECT_EQ(0u, value);
 }
 
 // This test checks the expect success / failure of DLL registration when

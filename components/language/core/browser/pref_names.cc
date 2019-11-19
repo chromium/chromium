@@ -11,11 +11,13 @@ namespace prefs {
 // request.
 const char kAcceptLanguages[] = "intl.accept_languages";
 
+#if defined(OS_CHROMEOS)
 // A string pref (comma-separated list) set to the preferred language IDs
 // (ex. "en-US,fr,ko").
 const char kPreferredLanguages[] = "settings.language.preferred_languages";
 const char kPreferredLanguagesSyncable[] =
     "settings.language.preferred_languages_syncable";
+#endif  // defined(OS_CHROMEOS)
 
 // The JSON representation of the user's language profile. Used as an input to
 // the user language model (i.e. for determining which languages a user
@@ -24,6 +26,9 @@ const char kUserLanguageProfile[] = "language_profile";
 
 // Important: Refer to header file for how to use this.
 const char kApplicationLocale[] = "intl.app_locale";
+
+// Originally translate blocked languages from TranslatePrefs.
+const char kFluentLanguages[] = "translate_blocked_languages";
 
 }  // namespace prefs
 }  // namespace language

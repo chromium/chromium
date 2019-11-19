@@ -133,14 +133,14 @@ class NetworkingConfigService : public ExtensionRegistryObserver,
   base::Closure authentication_callback_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_;
+      registry_observer_{this};
 
   std::unique_ptr<EventDelegate> event_delegate_;
 
   // This map associates a given hex encoded SSID to an extension entry.
   std::map<std::string, std::string> hex_ssid_to_extension_id_;
 
-  base::WeakPtrFactory<NetworkingConfigService> weak_factory_;
+  base::WeakPtrFactory<NetworkingConfigService> weak_factory_{this};
 };
 
 }  // namespace extensions

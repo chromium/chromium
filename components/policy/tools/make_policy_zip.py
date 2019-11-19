@@ -6,26 +6,13 @@
 """
 
 import optparse
+import os
 import sys
-import zipfile
 
-
-def add_files_to_zip(zip_file, base_dir, file_list):
-  """Pack a list of files into a zip archive, that is already opened for
-  writing.
-
-  Args:
-    zip_file: An object representing the zip archive.
-    base_dir: Base path of all the files in the real file system.
-    file_list: List of absolute file paths to add. Must start with base_dir.
-        The base_dir is stripped in the zip file entries.
-  """
-  if (base_dir[-1] != '/'):
-    base_dir += '/'
-  for file_path in file_list:
-    assert file_path.startswith(base_dir)
-    zip_file.write(file_path, file_path[len(base_dir):])
-  return 0
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                             os.pardir, os.pardir, os.pardir,
+                             'build', 'android', 'gyp'))
+from util import build_utils
 
 
 def main(argv):
@@ -56,11 +43,8 @@ def main(argv):
     else:
       file_list.append(file_to_add)
 
-  zip_file = zipfile.ZipFile(options.output, 'w', zipfile.ZIP_DEFLATED)
-  try:
-    return add_files_to_zip(zip_file, options.base_dir, file_list)
-  finally:
-    zip_file.close()
+  with build_utils.AtomicOutput(options.output) as f:
+    build_utils.DoZip(file_list, f, options.base_dir)
 
 
 if '__main__' == __name__:

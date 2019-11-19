@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_ARC_PRINT_ARC_PRINT_SERVICE_H_
 #define CHROME_BROWSER_CHROMEOS_ARC_PRINT_ARC_PRINT_SERVICE_H_
 
-#include "components/arc/common/print.mojom.h"
+#include "components/arc/mojom/print.mojom.h"
 
 namespace content {
 class BrowserContext;

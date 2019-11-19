@@ -30,7 +30,7 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfSyncNotAllowed) {
   // disabled anymore (though not necessarily active yet).
   service.SetDisableReasons(syncer::SyncService::DISABLE_REASON_NONE);
   service.SetTransportState(
-      syncer::SyncService::TransportState::WAITING_FOR_START_REQUEST);
+      syncer::SyncService::TransportState::START_DEFERRED);
 
   EXPECT_NE(UploadState::NOT_ACTIVE,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
@@ -41,7 +41,7 @@ TEST(SyncServiceUtilsTest,
   TestSyncService service;
   service.SetDisableReasons(syncer::SyncService::DISABLE_REASON_NONE);
   service.SetTransportState(
-      syncer::SyncService::TransportState::WAITING_FOR_START_REQUEST);
+      syncer::SyncService::TransportState::START_DEFERRED);
   service.SetPreferredDataTypes(ProtocolTypes());
   service.SetActiveDataTypes(ProtocolTypes());
   service.SetEmptyLastCycleSnapshot();

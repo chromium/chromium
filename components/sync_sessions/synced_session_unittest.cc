@@ -253,9 +253,11 @@ TEST(SyncedSessionTest, SessionTabToSyncData) {
   tab.user_agent_override = "fake";
   tab.timestamp = base::Time::FromInternalValue(100);
   for (int i = 0; i < 5; ++i) {
-    tab.navigations.push_back(
-        SerializedNavigationEntryTestHelper::CreateNavigation(
-            "http://foo/" + base::NumberToString(i), "title"));
+    sessions::SerializedNavigationEntry entry =
+        SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+    entry.set_virtual_url(GURL("http://foo/" + base::NumberToString(i)));
+    entry.set_title(base::UTF8ToUTF16("title" + base::NumberToString(i)));
+    tab.navigations.push_back(entry);
   }
   tab.session_storage_persistent_id = "fake";
 

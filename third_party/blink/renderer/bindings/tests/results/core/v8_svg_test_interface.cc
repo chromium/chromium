@@ -10,6 +10,8 @@
 // clang-format off
 #include "third_party/blink/renderer/bindings/tests/results/core/v8_svg_test_interface.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -21,6 +23,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
+#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 
 namespace blink {
@@ -110,10 +113,6 @@ void V8SVGTestInterface::TypeAttributeSetterCallback(
   svg_test_interface_v8_internal::TypeAttributeSetter(v8_value, info);
 }
 
-static constexpr V8DOMConfiguration::AccessorConfiguration kV8SVGTestInterfaceAccessors[] = {
-    { "type", V8SVGTestInterface::TypeAttributeGetterCallback, V8SVGTestInterface::TypeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-};
-
 static void InstallV8SVGTestInterfaceTemplate(
     v8::Isolate* isolate,
     const DOMWrapperWorld& world,
@@ -129,9 +128,14 @@ static void InstallV8SVGTestInterfaceTemplate(
   ALLOW_UNUSED_LOCAL(prototype_template);
 
   // Register IDL constants, attributes and operations.
+  static constexpr V8DOMConfiguration::AccessorConfiguration
+  kAccessorConfigurations[] = {
+      { "type", V8SVGTestInterface::TypeAttributeGetterCallback, V8SVGTestInterface::TypeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+  };
   V8DOMConfiguration::InstallAccessors(
       isolate, world, instance_template, prototype_template, interface_template,
-      signature, kV8SVGTestInterfaceAccessors, base::size(kV8SVGTestInterfaceAccessors));
+      signature, kAccessorConfigurations,
+      base::size(kAccessorConfigurations));
 
   // Custom signature
 

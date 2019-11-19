@@ -32,7 +32,7 @@ class NotificationButton : public views::Button {
   int GetHeightForWidth(int width) const override;
   void OnFocus() override;
   void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
+      const views::ViewHierarchyChangedDetails& details) override;
 
   // Overridden from views::Button:
   void StateChanged(ButtonState old_state) override;

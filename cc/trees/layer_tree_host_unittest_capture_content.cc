@@ -12,44 +12,42 @@
 namespace cc {
 namespace {
 
-class FakeTextHolder : public TextHolder {
+class FakeTextHolder {
  public:
-  FakeTextHolder(const std::string& text, const gfx::Rect& rect)
-      : text_(text), rect_(rect) {}
+  FakeTextHolder(const std::string& text, const gfx::Rect& rect, NodeId node_id)
+      : text_(text), rect_(rect), node_id_(node_id) {}
   std::string text() const { return text_; }
   gfx::Rect rect() const { return rect_; }
-
- protected:
-  ~FakeTextHolder() override = default;
+  NodeId node_id() const { return node_id_; }
 
  private:
   std::string text_;
   gfx::Rect rect_;
+  NodeId node_id_;
 };
 
 class FakeCaptureContentLayerClient : public FakeContentLayerClient {
  public:
-  void addTextHolder(scoped_refptr<FakeTextHolder> holder) {
+  void addTextHolder(const FakeTextHolder& holder) {
     holders_.push_back(holder);
   }
 
   scoped_refptr<DisplayItemList> PaintContentsToDisplayList(
       PaintingControlSetting painting_control) override {
     auto display_list = base::MakeRefCounted<DisplayItemList>();
-    for (auto holder : holders_) {
+    for (auto& holder : holders_) {
       display_list->StartPaint();
       display_list->push<DrawTextBlobOp>(
-          SkTextBlob::MakeFromString(holder->text().data(), SkFont()),
-          holder->rect().x(), holder->rect().y(), PaintFlags(),
-          NodeHolder(holder));
-      display_list->EndPaintOfUnpaired(holder->rect());
+          SkTextBlob::MakeFromString(holder.text().data(), SkFont()),
+          holder.rect().x(), holder.rect().y(), holder.node_id(), PaintFlags());
+      display_list->EndPaintOfUnpaired(holder.rect());
     }
     display_list->Finalize();
     return display_list;
   }
 
  private:
-  std::vector<scoped_refptr<FakeTextHolder>> holders_;
+  std::vector<const FakeTextHolder> holders_;
 };
 
 // These tests are for LayerTreeHost::CaptureContent().
@@ -58,8 +56,7 @@ class LayerTreeHostCaptureContentTest : public LayerTreeTest {
   ~LayerTreeHostCaptureContentTest() override = default;
 
  protected:
-  LayerTreeHostCaptureContentTest()
-      : device_bounds_(10, 10), weak_factory_(this) {}
+  LayerTreeHostCaptureContentTest() : device_bounds_(10, 10) {}
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
@@ -78,17 +75,13 @@ class LayerTreeHostCaptureContentTest : public LayerTreeTest {
     layer_tree_host()->SetViewportVisibleRect(gfx::Rect(device_bounds_));
   }
 
-  void VerifyCapturedContent(
-      std::vector<scoped_refptr<FakeTextHolder>>* expected_result) {
+  void VerifyCapturedContent(std::vector<FakeTextHolder>* expected_result) {
     EXPECT_EQ(expected_result->size(), captured_content_.size());
     size_t expected_left_result = expected_result->size();
-    for (auto c : captured_content_) {
-      EXPECT_EQ(c.type, NodeHolder::Type::kTextHolder);
+    for (auto& c : captured_content_) {
       for (auto it = expected_result->begin(); it != expected_result->end();
            ++it) {
-        if (it->get() == c.text_holder.get()) {
-          EXPECT_EQ(static_cast<FakeTextHolder*>(c.text_holder.get())->text(),
-                    it->get()->text());
+        if (it->node_id() == c) {
           expected_result->erase(it);
           break;
         }
@@ -114,23 +107,23 @@ class LayerTreeHostCaptureContentTest : public LayerTreeTest {
   }
 
   scoped_refptr<FakePictureLayer> root_picture_layer_;
-  std::vector<NodeHolder> captured_content_;
+  std::vector<NodeId> captured_content_;
   const gfx::Size device_bounds_;
-  base::WeakPtrFactory<LayerTreeHostCaptureContentTest> weak_factory_;
+  base::WeakPtrFactory<LayerTreeHostCaptureContentTest> weak_factory_{this};
 };
 
 class LayerTreeHostCaptureContentTestBasic
     : public LayerTreeHostCaptureContentTest {
  protected:
   void SetupTextHolders(const gfx::Rect& rect1, const gfx::Rect& rect2) {
-    text_holder_1_ = base::MakeRefCounted<FakeTextHolder>("Text1", rect1);
-    client_.addTextHolder(text_holder_1_);
-    text_holder_2_ = base::MakeRefCounted<FakeTextHolder>("Text2", rect2);
-    client_.addTextHolder(text_holder_2_);
+    text_holder_1_ = std::make_unique<FakeTextHolder>("Text1", rect1, 1);
+    client_.addTextHolder(*text_holder_1_);
+    text_holder_2_ = std::make_unique<FakeTextHolder>("Text2", rect2, 2);
+    client_.addTextHolder(*text_holder_2_);
   }
 
-  scoped_refptr<FakeTextHolder> text_holder_1_;
-  scoped_refptr<FakeTextHolder> text_holder_2_;
+  std::unique_ptr<FakeTextHolder> text_holder_1_;
+  std::unique_ptr<FakeTextHolder> text_holder_2_;
 };
 
 // Test that one DrawTextBlobOp is on-screen, another isn't.
@@ -144,8 +137,8 @@ class LayerTreeHostCaptureContentTestOneVisible
   }
 
   void AfterTest() override {
-    std::vector<scoped_refptr<FakeTextHolder>> expected_result;
-    expected_result.push_back(text_holder_1_);
+    std::vector<FakeTextHolder> expected_result;
+    expected_result.push_back(*text_holder_1_);
     VerifyCapturedContent(&expected_result);
   }
 };
@@ -163,9 +156,9 @@ class LayerTreeHostCaptureContentTestTwoVisible
   }
 
   void AfterTest() override {
-    std::vector<scoped_refptr<FakeTextHolder>> expected_result;
-    expected_result.push_back(text_holder_1_);
-    expected_result.push_back(text_holder_2_);
+    std::vector<FakeTextHolder> expected_result;
+    expected_result.push_back(*text_holder_1_);
+    expected_result.push_back(*text_holder_2_);
     VerifyCapturedContent(&expected_result);
   }
 };
@@ -195,7 +188,6 @@ class LayerTreeHostCaptureContentTestTwoLayers
   // OnSetupSecondaryLayTransform().
   void SetupTransform(const gfx::Vector2dF& translate) {
     TransformNode transform_node;
-    transform_node.source_node_id = 0;
     transform_node.local.Translate(translate);
     transform_node.id =
         layer_tree_host()->property_trees()->transform_tree.Insert(
@@ -208,11 +200,11 @@ class LayerTreeHostCaptureContentTestTwoLayers
   void SetupSecondaryPictureLayer(const gfx::Size& size) {
     // Add text to layer.
     text_holder_21_ =
-        base::MakeRefCounted<FakeTextHolder>("Text21", gfx::Rect(0, 0, 10, 5));
-    client2_.addTextHolder(text_holder_21_);
+        std::make_unique<FakeTextHolder>("Text21", gfx::Rect(0, 0, 10, 5), 21);
+    client2_.addTextHolder(*text_holder_21_);
     text_holder_22_ =
-        base::MakeRefCounted<FakeTextHolder>("Text22", gfx::Rect(0, 5, 10, 5));
-    client2_.addTextHolder(text_holder_22_);
+        std::make_unique<FakeTextHolder>("Text22", gfx::Rect(0, 5, 10, 5), 22);
+    client2_.addTextHolder(*text_holder_22_);
     client2_.set_bounds(size);
 
     // Create layer.
@@ -223,8 +215,8 @@ class LayerTreeHostCaptureContentTestTwoLayers
   }
 
   scoped_refptr<FakePictureLayer> picture_layer;
-  scoped_refptr<FakeTextHolder> text_holder_21_;
-  scoped_refptr<FakeTextHolder> text_holder_22_;
+  std::unique_ptr<FakeTextHolder> text_holder_21_;
+  std::unique_ptr<FakeTextHolder> text_holder_22_;
   FakeCaptureContentLayerClient client2_;
 };
 
@@ -237,9 +229,9 @@ class LayerTreeHostCaptureContentTestOneLayerVisible
   }
 
   void AfterTest() override {
-    std::vector<scoped_refptr<FakeTextHolder>> expected_result;
-    expected_result.push_back(text_holder_1_);
-    expected_result.push_back(text_holder_2_);
+    std::vector<FakeTextHolder> expected_result;
+    expected_result.push_back(*text_holder_1_);
+    expected_result.push_back(*text_holder_2_);
     VerifyCapturedContent(&expected_result);
   }
 };
@@ -256,10 +248,10 @@ class LayerTreeHostCaptureContentTestTwoLayersVisible
   }
 
   void AfterTest() override {
-    std::vector<scoped_refptr<FakeTextHolder>> expected_result;
-    expected_result.push_back(text_holder_1_);
-    expected_result.push_back(text_holder_2_);
-    expected_result.push_back(text_holder_21_);
+    std::vector<FakeTextHolder> expected_result;
+    expected_result.push_back(*text_holder_1_);
+    expected_result.push_back(*text_holder_2_);
+    expected_result.push_back(*text_holder_21_);
     VerifyCapturedContent(&expected_result);
   }
 };
@@ -274,10 +266,10 @@ class LayerTreeHostCaptureContentTestTwoLayersVisibleAndTransparent
 
   void AfterTest() override {
     // All 3  TextHolders are returned.
-    std::vector<scoped_refptr<FakeTextHolder>> expected_result;
-    expected_result.push_back(text_holder_1_);
-    expected_result.push_back(text_holder_2_);
-    expected_result.push_back(text_holder_21_);
+    std::vector<FakeTextHolder> expected_result;
+    expected_result.push_back(*text_holder_1_);
+    expected_result.push_back(*text_holder_2_);
+    expected_result.push_back(*text_holder_21_);
     VerifyCapturedContent(&expected_result);
   }
 };
@@ -295,11 +287,11 @@ class LayerTreeHostCaptureContentTestUpperLayerPartialOverlay
   }
 
   void AfterTest() override {
-    std::vector<scoped_refptr<FakeTextHolder>> expected_result;
-    expected_result.push_back(text_holder_1_);
-    expected_result.push_back(text_holder_2_);
-    expected_result.push_back(text_holder_21_);
-    expected_result.push_back(text_holder_22_);
+    std::vector<FakeTextHolder> expected_result;
+    expected_result.push_back(*text_holder_1_);
+    expected_result.push_back(*text_holder_2_);
+    expected_result.push_back(*text_holder_21_);
+    expected_result.push_back(*text_holder_22_);
     VerifyCapturedContent(&expected_result);
   }
 };

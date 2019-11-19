@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+    <!-- We need 2 FrameLayouts here because the outer one is the scrim that covers the whole screen
+         while the inner one is a frame for the ListView. We use this frame as a background for the
+         list because the background is a 9-patch and has extra padding automatically. The extra
+         padding conflicts with the padding and clipToPadding attributes of the list, so they are
+         separated. -->
+    <FrameLayout
+        android:id="@+id/context_menu_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/popup_bg_tinted"
+        android:layout_marginStart="@dimen/revamped_context_menu_lateral_margin"
+        android:layout_marginEnd="@dimen/revamped_context_menu_lateral_margin"
+        android:layout_marginTop="@dimen/revamped_context_menu_vertical_margin"
+        android:layout_marginBottom="@dimen/revamped_context_menu_vertical_margin"
+        android:layout_gravity="center">
+
+        <!-- Setting listSelector to transparent prevents the list items that have
+             selectableItemBackground from having a double highlight effect. -->
+        <org.chromium.chrome.browser.contextmenu.RevampedContextMenuListView
+            android:id="@+id/context_menu_list_view"
+            android:layout_width="@dimen/context_menu_max_width"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/revamped_context_menu_bottom_padding"
+            android:divider="@null"
+            android:listSelector="@android:color/transparent"
+            android:clipToPadding="false" />
+    </FrameLayout>
+</FrameLayout>

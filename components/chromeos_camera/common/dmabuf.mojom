@@ -1,0 +1,27 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos_camera.mojom;
+
+import "media/mojo/mojom/media_types.mojom";
+
+// This structure defines a DMA-buf buffer plane. |fd_handle| holds the DMA-buf
+// file descriptor. The layout is specified by |stride|, |offset| and |size|.
+struct DmaBufPlane {
+  handle fd_handle;
+  int32 stride;
+  uint32 offset;
+  uint32 size;
+};
+
+// This structure defines a simplified version of media::VideoFrame backed by
+// DMA-bufs (see media/base/video_frame.h) for Chrome OS usage. The video frame
+// has pixel format |format| and coded size |coded_width|x|coded_height|.
+// Per-plane DMA-buf FDs and layouts are defined in |planes|.
+struct DmaBufVideoFrame {
+  media.mojom.VideoPixelFormat format;
+  uint32 coded_width;
+  uint32 coded_height;
+  array<DmaBufPlane> planes;
+};

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/host/win/rdp_client.h"
+
 #include <cstdint>
 #include <string>
 
@@ -9,17 +11,15 @@
 #include "base/bind_helpers.h"
 #include "base/guid.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_com_initializer.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/screen_resolution.h"
-#include "remoting/host/win/rdp_client.h"
 #include "remoting/host/win/wts_terminal_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gmock_mutant.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
@@ -52,11 +52,10 @@ class MockRdpClientEventHandler : public RdpClient::EventHandler {
 
 // a14498c6-7f3b-4e42-9605-6c4a20d53c87
 static GUID RdpClientModuleLibid = {
-  0xa14498c6,
-  0x7f3b,
-  0x4e42,
-  { 0x96, 0x05, 0x6c, 0x4a, 0x20, 0xd5, 0x3c, 0x87 }
-};
+    0xa14498c6,
+    0x7f3b,
+    0x4e42,
+    {0x96, 0x05, 0x6c, 0x4a, 0x20, 0xd5, 0x3c, 0x87}};
 
 class RdpClientModule : public ATL::CAtlModuleT<RdpClientModule> {
  public:
@@ -98,9 +97,10 @@ class RdpClientTest : public testing::Test {
   // The ATL module instance required by the ATL code.
   std::unique_ptr<RdpClientModule> module_;
 
-  // The UI message loop used by RdpClient. The loop is stopped once there is no
-  // more references to |task_runner_|.
-  base::MessageLoopForUI message_loop_;
+  // Used by RdpClient. The loop is stopped once there are no more references to
+  // |task_runner_|.
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   base::RunLoop run_loop_;
   scoped_refptr<AutoThreadTaskRunner> task_runner_;
 
@@ -114,16 +114,14 @@ class RdpClientTest : public testing::Test {
   std::string terminal_id_;
 };
 
-RdpClientTest::RdpClientTest() {
-}
+RdpClientTest::RdpClientTest() {}
 
-RdpClientTest::~RdpClientTest() {
-}
+RdpClientTest::~RdpClientTest() {}
 
 void RdpClientTest::SetUp() {
-  // Arrange to run |message_loop_| until no components depend on it.
+  // Arrange to run |run_loop_| until no components depend on it.
   task_runner_ = new AutoThreadTaskRunner(
-      message_loop_.task_runner(), run_loop_.QuitClosure());
+      task_environment_.GetMainThreadTaskRunner(), run_loop_.QuitClosure());
 
   module_.reset(new RdpClientModule());
 }
@@ -141,7 +139,7 @@ void RdpClientTest::OnRdpConnected() {
   EXPECT_TRUE(WtsTerminalMonitor::LookupTerminalId(session_id, &id));
   EXPECT_EQ(id, terminal_id_);
 
-  message_loop_.task_runner()->PostTask(
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&RdpClientTest::CloseRdpClient, base::Unretained(this)));
 }

@@ -1,0 +1,7 @@
+file://third_party/blink/renderer/core/style/OWNERS
+
+andruud@chromium.org
+futhark@chromium.org
+
+# TEAM: layout-dev@chromium.org
+# COMPONENT: Blink>CSS

@@ -5,7 +5,8 @@
 package org.chromium.components.signin;
 
 import android.graphics.Bitmap;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import java.util.Map;
 

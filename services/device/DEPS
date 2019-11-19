@@ -1,6 +1,6 @@
 include_rules = [
   "+device",
-  "+jni",
+  "+services/device/usb/jni_headers",
   "+services/network/public/cpp",
   "+services/network/test",
   "+ui/gfx/native_widget_types.h",

@@ -17,7 +17,7 @@ static_library("webdata_services") {
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
     "//components/search_engines",
-    "//components/signin/core/browser",
+    "//components/signin/public/webdata",
     "//components/sync",
     "//components/webdata/common",
     "//sql",
@@ -28,17 +28,18 @@ static_library("webdata_services") {
   }
 }
 
-static_library("test_support") {
+source_set("unit_tests") {
   testonly = true
+
   sources = [
-    "web_data_service_test_util.cc",
-    "web_data_service_test_util.h",
+    "web_data_service_wrapper_unittest.cc",
   ]
 
   deps = [
     ":webdata_services",
     "//base",
-    "//components/autofill/core/browser",
-    "//components/signin/core/browser",
+    "//base/test:test_support",
+    "//components/search_engines",
+    "//testing/gtest",
   ]
 }

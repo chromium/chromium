@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>
+  Forced colors mode - backplate.
+  Tests backplate is drawn behind SVG text.
+</title>
+<link rel="help" href="https://www.w3.org/TR/css-color-adjust-1/#forced">
+<style>
+  body {
+    background-image: url("../resources/test-image.jpg");
+    font-size: 10px;
+  }
+</style>
+<body>
+  <div>
+    <svg>
+      <text x="50" y="50" width="226" height="11" font-family="Ahem">
+        This text should have a backplate in <tspan>forced colors mode.</tspan>
+      </text>
+    </svg>
+  </div>
+</body>

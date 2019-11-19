@@ -14,31 +14,29 @@
 #include "third_party/blink/renderer/core/css/property_registration.h"
 #include "third_party/blink/renderer/core/css/resolver/css_variable_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
+#include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
 
 class CycleChecker : public InterpolationType::ConversionChecker {
  public:
-  static std::unique_ptr<CycleChecker> Create(
-      const CSSCustomPropertyDeclaration& declaration,
-      bool cycle_detected) {
-    return base::WrapUnique(new CycleChecker(declaration, cycle_detected));
-  }
-
- private:
   CycleChecker(const CSSCustomPropertyDeclaration& declaration,
                bool cycle_detected)
       : declaration_(declaration), cycle_detected_(cycle_detected) {}
 
+ private:
   bool IsValid(const InterpolationEnvironment& environment,
                const InterpolationValue&) const final {
-    DCHECK(ToCSSInterpolationEnvironment(environment).HasVariableResolver());
-    CSSVariableResolver& variable_resolver =
-        ToCSSInterpolationEnvironment(environment).VariableResolver();
+    const auto& css_environment = ToCSSInterpolationEnvironment(environment);
     bool cycle_detected = false;
-    variable_resolver.ResolveCustomPropertyAnimationKeyframe(*declaration_,
-                                                             cycle_detected);
+    if (RuntimeEnabledFeatures::CSSCascadeEnabled()) {
+      cycle_detected = !css_environment.Resolve(
+          PropertyHandle(declaration_->GetName()), declaration_);
+    } else {
+      css_environment.VariableResolver().ResolveCustomPropertyAnimationKeyframe(
+          *declaration_, cycle_detected);
+    }
     return cycle_detected == cycle_detected_;
   }
 
@@ -54,7 +52,7 @@ CSSVarCycleInterpolationType::CSSVarCycleInterpolationType(
 }
 
 static InterpolationValue CreateCycleDetectedValue() {
-  return InterpolationValue(InterpolableList::Create(0));
+  return InterpolationValue(std::make_unique<InterpolableList>(0));
 }
 
 InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(
@@ -62,22 +60,25 @@ InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(
     const InterpolationEnvironment& environment,
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
-  const CSSCustomPropertyDeclaration& declaration =
-      *ToCSSCustomPropertyDeclaration(
-          ToCSSPropertySpecificKeyframe(keyframe).Value());
+  const auto& declaration = *To<CSSCustomPropertyDeclaration>(
+      ToCSSPropertySpecificKeyframe(keyframe).Value());
   DCHECK_EQ(GetProperty().CustomPropertyName(), declaration.GetName());
   if (!declaration.Value() || !declaration.Value()->NeedsVariableResolution()) {
     return nullptr;
   }
 
-  DCHECK(ToCSSInterpolationEnvironment(environment).HasVariableResolver());
-  CSSVariableResolver& variable_resolver =
-      ToCSSInterpolationEnvironment(environment).VariableResolver();
+  const auto& css_environment = ToCSSInterpolationEnvironment(environment);
+
   bool cycle_detected = false;
-  variable_resolver.ResolveCustomPropertyAnimationKeyframe(declaration,
-                                                           cycle_detected);
+  if (RuntimeEnabledFeatures::CSSCascadeEnabled()) {
+    cycle_detected = !css_environment.Resolve(GetProperty(), &declaration);
+  } else {
+    css_environment.VariableResolver().ResolveCustomPropertyAnimationKeyframe(
+        declaration, cycle_detected);
+  }
+
   conversion_checkers.push_back(
-      CycleChecker::Create(declaration, cycle_detected));
+      std::make_unique<CycleChecker>(declaration, cycle_detected));
   return cycle_detected ? CreateCycleDetectedValue() : nullptr;
 }
 
@@ -114,8 +115,8 @@ InterpolationValue CSSVarCycleInterpolationType::MaybeConvertUnderlyingValue(
     const InterpolationEnvironment& environment) const {
   const ComputedStyle& style =
       ToCSSInterpolationEnvironment(environment).Style();
-  DCHECK(!style.GetVariable(GetProperty().CustomPropertyName()) ||
-         !style.GetVariable(GetProperty().CustomPropertyName())
+  DCHECK(!style.GetVariableData(GetProperty().CustomPropertyName()) ||
+         !style.GetVariableData(GetProperty().CustomPropertyName())
               ->NeedsVariableResolution());
   return nullptr;
 }
@@ -127,8 +128,8 @@ void CSSVarCycleInterpolationType::Apply(
   StyleBuilder::ApplyProperty(
       GetProperty().GetCSSPropertyName(),
       ToCSSInterpolationEnvironment(environment).GetState(),
-      *CSSCustomPropertyDeclaration::Create(GetProperty().CustomPropertyName(),
-                                            CSSValueUnset));
+      *MakeGarbageCollected<CSSCustomPropertyDeclaration>(
+          GetProperty().CustomPropertyName(), CSSValueID::kUnset));
 }
 
 }  // namespace blink

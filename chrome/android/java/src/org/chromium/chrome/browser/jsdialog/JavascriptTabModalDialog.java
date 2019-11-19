@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.jsdialog;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -48,7 +49,8 @@ public class JavascriptTabModalDialog extends JavascriptModalDialog {
         ChromeActivity activity = (ChromeActivity) window.getActivity().get();
         // If the activity has gone away, then just clean up the native pointer.
         if (activity == null) {
-            nativeCancel(nativeDialogPointer, false);
+            JavascriptTabModalDialogJni.get().cancel(
+                    nativeDialogPointer, JavascriptTabModalDialog.this, false);
             return;
         }
 
@@ -75,7 +77,8 @@ public class JavascriptTabModalDialog extends JavascriptModalDialog {
     @Override
     protected void accept(String promptResult, boolean suppressDialogs) {
         if (mNativeDialogPointer == 0) return;
-        nativeAccept(mNativeDialogPointer, promptResult);
+        JavascriptTabModalDialogJni.get().accept(
+                mNativeDialogPointer, JavascriptTabModalDialog.this, promptResult);
     }
 
     /**
@@ -84,9 +87,15 @@ public class JavascriptTabModalDialog extends JavascriptModalDialog {
     @Override
     protected void cancel(boolean buttonClicked, boolean suppressDialogs) {
         if (mNativeDialogPointer == 0) return;
-        nativeCancel(mNativeDialogPointer, buttonClicked);
+        JavascriptTabModalDialogJni.get().cancel(
+                mNativeDialogPointer, JavascriptTabModalDialog.this, buttonClicked);
     }
 
-    private native void nativeAccept(long nativeJavaScriptDialogAndroid, String prompt);
-    private native void nativeCancel(long nativeJavaScriptDialogAndroid, boolean buttonClicked);
+    @NativeMethods
+    interface Natives {
+        void accept(
+                long nativeJavaScriptDialogAndroid, JavascriptTabModalDialog caller, String prompt);
+        void cancel(long nativeJavaScriptDialogAndroid, JavascriptTabModalDialog caller,
+                boolean buttonClicked);
+    }
 }

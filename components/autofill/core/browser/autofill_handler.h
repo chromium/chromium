@@ -14,8 +14,8 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures_util.h"
-#include "components/autofill/core/common/submission_source.h"
 
 namespace gfx {
 class RectF;
@@ -27,6 +27,7 @@ class AutofillField;
 struct FormData;
 struct FormFieldData;
 class FormStructure;
+class LogManager;
 
 // This class defines the interface should be implemented by autofill
 // implementation in browser side to interact with AutofillDriver.
@@ -35,6 +36,13 @@ class AutofillHandler {
   enum AutofillDownloadManagerState {
     ENABLE_AUTOFILL_DOWNLOAD_MANAGER,
     DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
+  };
+
+  // An observer class used by browsertests that gets notified whenever
+  // particular actions occur.
+  class ObserverForTest {
+   public:
+    virtual void OnFormParsed() = 0;
   };
 
   using FormStructureMap =
@@ -76,7 +84,7 @@ class AutofillHandler {
   // personal profile.
   void OnFormSubmitted(const FormData& form,
                        bool known_success,
-                       SubmissionSource source);
+                       mojom::SubmissionSource source);
 
   // Invoked when |forms| has been detected.
   void OnFormsSeen(const std::vector<FormData>& forms,
@@ -126,15 +134,19 @@ class AutofillHandler {
   // Returns the number of forms this Autofill handler is aware of.
   size_t NumFormsDetected() const { return form_structures_.size(); }
 
+  void SetEventObserverForTesting(ObserverForTest* observer) {
+    observer_for_testing_ = observer;
+  }
+
   // Returns the present form structures seen by Autofill handler.
   const FormStructureMap& form_structures() const { return form_structures_; }
 
  protected:
-  AutofillHandler(AutofillDriver* driver);
+  AutofillHandler(AutofillDriver* driver, LogManager* log_manager);
 
   virtual void OnFormSubmittedImpl(const FormData& form,
                                    bool known_success,
-                                   SubmissionSource source) = 0;
+                                   mojom::SubmissionSource source) = 0;
 
   virtual void OnTextFieldDidChangeImpl(const FormData& form,
                                         const FormFieldData& field,
@@ -190,6 +202,8 @@ class AutofillHandler {
                  const FormStructure* cached_form,
                  FormStructure** parsed_form_structure);
 
+  bool value_from_dynamic_change_form_ = false;
+
   AutofillDriver* driver() { return driver_; }
 
   FormStructureMap* mutable_form_structures() { return &form_structures_; }
@@ -199,8 +213,13 @@ class AutofillHandler {
   // outlive this object.
   AutofillDriver* const driver_;
 
+  LogManager* const log_manager_;
+
   // Our copy of the form data.
   FormStructureMap form_structures_;
+
+  // Will be not null only for |SaveCardBubbleViewsFullFormBrowserTest|.
+  ObserverForTest* observer_for_testing_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillHandler);
 };

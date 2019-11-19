@@ -26,7 +26,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
-import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 
 /**
  * Unit test suite for DataReductionStatsPreference.
@@ -82,7 +82,7 @@ public class DataReductionStatsPreferenceTest {
     }
 
     @Before
-    public void setUp() throws Exception, Throwable {
+    public void setUp() {
         // Using an AdvancedMockContext allows us to use a fresh in-memory SharedPreference.
         mContext = new AdvancedMockContext(InstrumentationRegistry.getInstrumentation()
                                                    .getTargetContext()
@@ -99,7 +99,7 @@ public class DataReductionStatsPreferenceTest {
     @SmallTest
     @UiThreadTest
     @Feature({"DataReduction"})
-    public void testInitializeSiteBreakdownPrefNow() throws Throwable {
+    public void testInitializeSiteBreakdownPrefNow() {
         long beforeTime = System.currentTimeMillis();
         DataReductionStatsPreference.initializeDataReductionSiteBreakdownPref();
         long afterTime = System.currentTimeMillis();
@@ -132,7 +132,7 @@ public class DataReductionStatsPreferenceTest {
     @SmallTest
     @UiThreadTest
     @Feature({"DataReduction"})
-    public void testInitializeSiteBreakdownPrefHistoricalStats() throws Throwable {
+    public void testInitializeSiteBreakdownPrefHistoricalStats() {
         // Make the last update one day ago.
         long lastUpdateInDays = 1;
         mSettings.setDataReductionLastUpdateTime(
@@ -153,7 +153,7 @@ public class DataReductionStatsPreferenceTest {
     @SmallTest
     @UiThreadTest
     @Feature({"DataReduction"})
-    public void testInitializeSiteBreakdownPrefOldHistoricalStats() throws Throwable {
+    public void testInitializeSiteBreakdownPrefOldHistoricalStats() {
         mSettings.setDataReductionLastUpdateTime(
                 System.currentTimeMillis() - DAYS_IN_CHART * DateUtils.DAY_IN_MILLIS);
         long beforeTime = System.currentTimeMillis();
@@ -175,7 +175,7 @@ public class DataReductionStatsPreferenceTest {
     @SmallTest
     @UiThreadTest
     @Feature({"DataReduction"})
-    public void testUpdateReductionStatisticsEnabledToday() throws Throwable {
+    public void testUpdateReductionStatisticsEnabledToday() {
         DataReductionStatsPreference pref = new DataReductionStatsPreference(mContext, null);
         long now = System.currentTimeMillis();
         long lastUpdateTime = now - DateUtils.DAY_IN_MILLIS;
@@ -198,7 +198,7 @@ public class DataReductionStatsPreferenceTest {
     @SmallTest
     @UiThreadTest
     @Feature({"DataReduction"})
-    public void testUpdateReductionStatisticsEnabledYesterday() throws Throwable {
+    public void testUpdateReductionStatisticsEnabledYesterday() {
         DataReductionStatsPreference pref = new DataReductionStatsPreference(mContext, null);
         long now = System.currentTimeMillis();
         long lastUpdateTime = now - DateUtils.DAY_IN_MILLIS;
@@ -221,7 +221,7 @@ public class DataReductionStatsPreferenceTest {
     @SmallTest
     @UiThreadTest
     @Feature({"DataReduction"})
-    public void testUpdateReductionStatisticsEnabled31DaysAgo() throws Throwable {
+    public void testUpdateReductionStatisticsEnabled31DaysAgo() {
         DataReductionStatsPreference pref = new DataReductionStatsPreference(mContext, null);
         long now = System.currentTimeMillis();
         long lastUpdateTime = now - DateUtils.DAY_IN_MILLIS;
@@ -245,7 +245,7 @@ public class DataReductionStatsPreferenceTest {
     @SmallTest
     @UiThreadTest
     @Feature({"DataReduction"})
-    public void testUpdateReductionStatisticsStatsNotUpdatedRecently() throws Throwable {
+    public void testUpdateReductionStatisticsStatsNotUpdatedRecently() {
         DataReductionStatsPreference pref = new DataReductionStatsPreference(mContext, null);
         long now = System.currentTimeMillis();
         long lastUpdateTime = now - 7 * DateUtils.DAY_IN_MILLIS;
@@ -266,7 +266,7 @@ public class DataReductionStatsPreferenceTest {
     @SmallTest
     @UiThreadTest
     @Feature({"DataReduction"})
-    public void testShouldShowRealDataWhenEnoughDataIsUsed() throws Throwable {
+    public void testShouldShowRealDataWhenEnoughDataIsUsed() {
         DataReductionStatsPreference pref = new DataReductionStatsPreference(mContext, null);
         long now = System.currentTimeMillis();
         long lastUpdateTime = now - DateUtils.DAY_IN_MILLIS;

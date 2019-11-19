@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "ash/public/interfaces/constants.mojom.h"
-#include "ash/public/interfaces/shell_test_api.test-mojom-test-utils.h"
-#include "ash/public/interfaces/shell_test_api.test-mojom.h"
+#include "ash/public/cpp/keyboard/keyboard_switches.h"
+#include "ash/public/cpp/test/shell_test_api.h"
+#include "base/bind_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
@@ -24,7 +24,6 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/browser/ui/ash/tablet_mode_client_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -46,7 +45,6 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/service_manager/public/cpp/connector.h"
-#include "ui/keyboard/public/keyboard_switches.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -143,9 +141,8 @@ class SelectFileDialogExtensionBrowserTest
   };
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(chromeos::features::kMyFilesVolume);
     // Create the dialog wrapper and listener objects.
-    listener_.reset(new MockSelectFileDialogListener());
+    listener_ = std::make_unique<MockSelectFileDialogListener>();
     dialog_ = new SelectFileDialogExtension(listener_.get(), NULL);
 
     // One mount point will be needed. Files app looks for the "Downloads"
@@ -159,17 +156,6 @@ class SelectFileDialogExtensionBrowserTest
 
     // Must run after our setup because it actually runs the test.
     extensions::ExtensionBrowserTest::SetUp();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Ash tablet mode does not automatically enable the virtual keyboard, so
-    // force the virtual keyboard via the command line for tablet mode tests.
-    const char* test_name =
-        ::testing::UnitTest::GetInstance()->current_test_info()->name();
-    if (base::StringPiece(test_name).find("_TabletMode") != std::string::npos)
-      command_line->AppendSwitch(keyboard::switches::kEnableVirtualKeyboard);
-
-    extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
@@ -204,19 +190,18 @@ class SelectFileDialogExtensionBrowserTest
     extensions::ExtensionBrowserTest::TearDown();
 
     // Delete the dialogs first since they hold a pointer to their listener.
-    dialog_ = NULL;
+    dialog_.reset();
     listener_.reset();
-    second_dialog_ = NULL;
+    second_dialog_.reset();
     second_listener_.reset();
   }
 
   void CheckJavascriptErrors() {
     content::RenderFrameHost* host =
         dialog_->GetRenderViewHost()->GetMainFrame();
-    std::unique_ptr<base::Value> value =
+    base::Value value =
         content::ExecuteScriptAndGetValue(host, "window.JSErrorCount");
-    int js_error_count = 0;
-    ASSERT_TRUE(value->GetAsInteger(&js_error_count));
+    int js_error_count = value.GetInt();
     ASSERT_EQ(0, js_error_count);
   }
 
@@ -300,7 +285,7 @@ class SelectFileDialogExtensionBrowserTest
   }
 
   void TryOpeningSecondDialog(const gfx::NativeWindow& owning_window) {
-    second_listener_.reset(new MockSelectFileDialogListener());
+    second_listener_ = std::make_unique<MockSelectFileDialogListener>();
     second_dialog_ = new SelectFileDialogExtension(second_listener_.get(),
                                                    NULL);
 
@@ -328,7 +313,8 @@ class SelectFileDialogExtensionBrowserTest
         "document.querySelector(\'" + button_class + "\').click();");
     // The file selection handler code closes the dialog but does not return
     // control to JavaScript, so do not wait for the script return value.
-    host->GetMainFrame()->ExecuteJavaScriptForTests(script);
+    host->GetMainFrame()->ExecuteJavaScriptForTests(script,
+                                                    base::NullCallback());
 
     // Instead, wait for Listener notification that the window has closed.
     LOG(INFO) << "Waiting for window close notification.";
@@ -339,7 +325,6 @@ class SelectFileDialogExtensionBrowserTest
       ASSERT_FALSE(dialog_->IsRunning(owning_window));
   }
 
-  base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir tmp_dir_;
   base::FilePath downloads_dir_;
 
@@ -384,7 +369,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
   ASSERT_NE(nullptr, owning_window);
 
   // Setup tablet mode.
-  test::SetAndWaitForTabletMode(true);
+  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
 
   // Open the file dialog on the default path.
   ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
@@ -471,15 +456,10 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
   ASSERT_NE(nullptr, owning_window);
 
   // Setup tablet mode.
-  test::SetAndWaitForTabletMode(true);
+  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
 
   // Enable the virtual keyboard.
-  ash::mojom::ShellTestApiPtr shell_test_api;
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(ash::mojom::kServiceName, &shell_test_api);
-  ash::mojom::ShellTestApiAsyncWaiter waiter(shell_test_api.get());
-  waiter.EnableVirtualKeyboard();
+  ash::ShellTestApi().EnableVirtualKeyboard();
 
   auto* client = ChromeKeyboardControllerClient::Get();
   EXPECT_FALSE(client->is_keyboard_visible());

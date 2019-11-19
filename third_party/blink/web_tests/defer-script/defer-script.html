@@ -1,0 +1,47 @@
+<!doctype html>
+<title>Defer Script Execution Order</title>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="../resources/testharness.js"></script>
+    <script src="../resources/testharnessreport.js"></script>
+</head>
+<body>
+  <pre id="scriptlog"></pre>
+  <script>
+  function log(msg) {
+    document.getElementById("scriptlog").textContent += msg + ";";
+  }
+  function checkIfReachedBodyEnd() {
+    const endelement = document.getElementById("bodyend");
+    if (endelement && endelement.textContent === "End") {
+      log("EndOfBody");
+      endelement.textContent = "Detected";
+    }
+  }
+  function logScript(msg) {
+    checkIfReachedBodyEnd();
+    log(msg);
+  }
+  function finish() {
+    const actual = document.getElementById("scriptlog").textContent;
+    const normal = "Inline1;Sync1;Inline2;Sync2;EndOfBody;Defer1;Defer2;DOMContentLoaded;";
+    <!-- Force defer order would be: "EndOfBody;Inline1;Sync1;Inline2;Sync2;Defer1;Defer2;DOMContentLoaded;" -->
+    assert_equals(actual, normal, "Normal defer script execution order comparison");
+    done();
+  }
+  logScript("Inline1");
+  window.addEventListener("load", finish);
+  document.addEventListener("DOMContentLoaded", function() { logScript("DOMContentLoaded"); });
+  </script>
+
+  <script src="resources/sync-script-1.js"></script>
+  <script src="resources/defer-script-1.js" defer></script>
+  <script>
+  logScript("Inline2");
+  </script>
+  <script src="resources/defer-script-2.js" defer></script>
+  <script src="resources/sync-script-2.js"></script>
+  <pre id="bodyend">End</pre>
+</body>
+</html>

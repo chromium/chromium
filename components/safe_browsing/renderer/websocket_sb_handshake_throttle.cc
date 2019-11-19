@@ -14,7 +14,6 @@
 #include "content/public/common/resource_type.h"
 #include "content/public/renderer/render_frame.h"
 #include "ipc/ipc_message.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -25,10 +24,8 @@ WebSocketSBHandshakeThrottle::WebSocketSBHandshakeThrottle(
     mojom::SafeBrowsing* safe_browsing,
     int render_frame_id)
     : render_frame_id_(render_frame_id),
-      callbacks_(nullptr),
       safe_browsing_(safe_browsing),
-      result_(Result::UNKNOWN),
-      weak_factory_(this) {}
+      result_(Result::UNKNOWN) {}
 
 WebSocketSBHandshakeThrottle::~WebSocketSBHandshakeThrottle() {
   // ThrottleHandshake() should always be called, but since that is done all the
@@ -41,32 +38,29 @@ WebSocketSBHandshakeThrottle::~WebSocketSBHandshakeThrottle() {
     UMA_HISTOGRAM_TIMES("SafeBrowsing.WebSocket.Elapsed.Abandoned",
                         base::TimeTicks::Now() - start_time_);
   }
-  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.WebSocket.Result", result_,
-                            Result::RESULT_COUNT);
 }
 
 void WebSocketSBHandshakeThrottle::ThrottleHandshake(
     const blink::WebURL& url,
-    blink::WebCallbacks<void, const blink::WebString&>* callbacks) {
-  DCHECK(!callbacks_);
+    blink::WebSocketHandshakeThrottle::OnCompletion completion_callback) {
   DCHECK(!url_checker_);
-  callbacks_ = callbacks;
+  DCHECK(!completion_callback_);
+  completion_callback_ = std::move(completion_callback);
   url_ = url;
   int load_flags = 0;
   start_time_ = base::TimeTicks::Now();
   safe_browsing_->CreateCheckerAndCheck(
-      render_frame_id_, mojo::MakeRequest(&url_checker_), url, "GET",
+      render_frame_id_, url_checker_.BindNewPipeAndPassReceiver(), url, "GET",
       net::HttpRequestHeaders(), load_flags,
-      content::RESOURCE_TYPE_SUB_RESOURCE, false /* has_user_gesture */,
+      content::ResourceType::kSubResource, false /* has_user_gesture */,
       false /* originated_from_service_worker */,
       base::BindOnce(&WebSocketSBHandshakeThrottle::OnCheckResult,
                      weak_factory_.GetWeakPtr()));
 
   // This use of base::Unretained() is safe because the handler will not be
   // called after |url_checker_| is destroyed, and it is owned by this object.
-  url_checker_.set_connection_error_handler(
-      base::BindOnce(&WebSocketSBHandshakeThrottle::OnConnectionError,
-                     base::Unretained(this)));
+  url_checker_.set_disconnect_handler(base::BindOnce(
+      &WebSocketSBHandshakeThrottle::OnMojoDisconnect, base::Unretained(this)));
 }
 
 void WebSocketSBHandshakeThrottle::OnCompleteCheck(bool proceed,
@@ -76,46 +70,47 @@ void WebSocketSBHandshakeThrottle::OnCompleteCheck(bool proceed,
   if (proceed) {
     result_ = Result::SAFE;
     UMA_HISTOGRAM_TIMES("SafeBrowsing.WebSocket.Elapsed.Safe", elapsed);
-    callbacks_->OnSuccess();
+    std::move(completion_callback_).Run(base::nullopt);
   } else {
     // When the insterstitial is dismissed the page is navigated and this object
     // is destroyed before reaching here.
     result_ = Result::BLOCKED;
     UMA_HISTOGRAM_TIMES("SafeBrowsing.WebSocket.Elapsed.Blocked", elapsed);
-    callbacks_->OnError(blink::WebString::FromUTF8(base::StringPrintf(
-        "WebSocket connection to %s failed safe browsing check",
-        url_.spec().c_str())));
+    std::move(completion_callback_)
+        .Run(blink::WebString::FromUTF8(base::StringPrintf(
+            "WebSocket connection to %s failed safe browsing check",
+            url_.spec().c_str())));
   }
   // |this| is destroyed here.
 }
 
 void WebSocketSBHandshakeThrottle::OnCheckResult(
-    mojom::UrlCheckNotifierRequest slow_check_notifier,
+    mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
     bool proceed,
     bool showed_interstitial) {
-  if (!slow_check_notifier.is_pending()) {
+  if (!slow_check_notifier.is_valid()) {
     OnCompleteCheck(proceed, showed_interstitial);
     return;
   }
 
   // TODO(yzshen): Notify the network service to pause processing response body.
-  if (!notifier_binding_) {
-    notifier_binding_ =
-        std::make_unique<mojo::Binding<mojom::UrlCheckNotifier>>(this);
+  if (!notifier_receiver_) {
+    notifier_receiver_ =
+        std::make_unique<mojo::Receiver<mojom::UrlCheckNotifier>>(this);
   }
-  notifier_binding_->Bind(std::move(slow_check_notifier));
+  notifier_receiver_->Bind(std::move(slow_check_notifier));
 }
 
-void WebSocketSBHandshakeThrottle::OnConnectionError() {
+void WebSocketSBHandshakeThrottle::OnMojoDisconnect() {
   DCHECK_EQ(result_, Result::UNKNOWN);
 
   url_checker_.reset();
-  notifier_binding_.reset();
+  notifier_receiver_.reset();
 
   // Make the destructor record NOT_SUPPORTED in the result histogram.
   result_ = Result::NOT_SUPPORTED;
   // Don't record the time elapsed because it's unlikely to be meaningful.
-  callbacks_->OnSuccess();
+  std::move(completion_callback_).Run(base::nullopt);
   // |this| is destroyed here.
 }
 

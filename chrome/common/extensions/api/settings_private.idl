@@ -13,10 +13,26 @@ namespace settingsPrivate {
     USER_POLICY,
     OWNER,
     PRIMARY_USER,
-    EXTENSION
+    EXTENSION,
+
+    // Preferences are controlled by the parent of the child user.
+    PARENT,
+
+    // Preferences are controlled neither by parent nor the child user.
+    // Preference values are hard-coded values and can not be changed.
+    CHILD_RESTRICTION
   };
 
-  enum Enforcement { ENFORCED, RECOMMENDED };
+  enum Enforcement {
+    // Value cannot be changed by user.
+    ENFORCED,
+    // Value can be changed, but the administrator recommends a default.
+    RECOMMENDED,
+    // Value is protected by a code that only parents can access. The logic to
+    // require the code is NOT automatically added to a preference using this
+    // enforcement. This is only used to display the correct pref indicator.
+    PARENT_SUPERVISED
+  };
 
   dictionary PrefObject {
     // The key for the pref.

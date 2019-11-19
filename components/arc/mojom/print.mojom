@@ -1,0 +1,86 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 2
+
+module arc.mojom;
+
+import "components/arc/mojom/print_common.mojom";
+
+// android.printservice.PrinterDiscoverySession implementation.
+// This is called by container when printing is requested and printer discovery
+// has to start. Implemented in embedder.
+// The normal order this is called is:
+// StartPrinterDiscovery
+// StartPrinterStateTracking
+// StopPrinterStateTracking
+// StopPrinterDiscovery
+// DestroyDiscoverySession
+// (ValidatePrinters is not used in practice)
+//
+// Next method ID: 6
+interface PrinterDiscoverySessionHost {
+  StartPrinterDiscovery@0(array<string> printer_ids);
+  StopPrinterDiscovery@1();
+  ValidatePrinters@2(array<string> printer_ids);
+  StartPrinterStateTracking@3(string printer_id);
+  StopPrinterStateTracking@4(string printer_id);
+  DestroyDiscoverySession@5();
+};
+
+// android.printservice.PrinterDiscoverySession final methods proxy.
+// This is called by embedder when printer discovery is active.
+// Implemented in container.
+// Next method ID: 2
+interface PrinterDiscoverySessionInstance {
+  AddPrinters@0(array<PrinterInfo> printers);
+  RemovePrinters@1(array<string> printers);
+};
+
+// android.printservice.PrintService.onRequestCancelPrintJob implementation.
+// This is called by container when job cancellation was requested.
+// Implemented in embedder.
+// Next method ID: 1
+interface PrintJobHost {
+  Cancel@0();
+};
+
+// android.printservice.PrintJob proxy.
+// This is called by embedder when print job status changes.
+// Implemented in container.
+// See https://developer.android.com/reference/android/printservice/PrintJob.html
+// Next method ID: 7
+interface PrintJobInstance {
+  Start@0();
+  Block@1(string? reason);
+  Complete@2();
+  Fail@3(string? reason);
+  Cancel@4();
+  SetProgress@5(float progress);
+  SetStatus@6(string? status);
+};
+
+// android.printservice.PrintService implementation.
+// This is called by container to create new discovery sessions and print jobs.
+// Implemented in embedder.
+// Next method ID: 2
+// Deprecated method ID: 0
+interface PrintHost {
+  PrintDeprecated@0(handle file);
+  [MinVersion=1] Print@1(PrintJobInstance instance, PrintJobRequest request) => (PrintJobHost host);
+  [MinVersion=1] CreateDiscoverySession@2(PrinterDiscoverySessionInstance instance) =>
+      (PrinterDiscoverySessionHost host);
+};
+
+// This is called by embedder to indicate that it's ready to accept print jobs.
+// Implemented in container.
+// Next method ID: 2
+// Deprecated method ID: 0
+interface PrintInstance {
+  // DEPRECATED: Please use Init@1 instead.
+  InitDeprecated@0(PrintHost host_ptr);
+
+  // Establishes full-duplex communication with the host.
+  [MinVersion=1] Init@1(PrintHost host_ptr) => ();
+};

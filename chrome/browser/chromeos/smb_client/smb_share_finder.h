@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_SMB_CLIENT_SMB_SHARE_FINDER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"
@@ -18,16 +19,6 @@
 namespace chromeos {
 namespace smb_client {
 
-// The callback that will be passed to GatherSharesInNetwork. The shares found
-// will have a format of "smb://host/share". This will be called once per host.
-using GatherSharesResponse =
-    base::RepeatingCallback<void(const std::vector<SmbUrl>& shares_gathered)>;
-
-// The callback that will be passed to GatherSharesInNetwork. Used to implicitly
-// convert GatherSharesResponse to a OnceCallback.
-using GatherSharesInNetworkResponse =
-    base::OnceCallback<void(const std::vector<SmbUrl>& shares_gathered)>;
-
 // The callback run to indicate the scan for hosts on the network is complete.
 using HostDiscoveryResponse = base::OnceClosure;
 
@@ -35,6 +26,10 @@ using HostDiscoveryResponse = base::OnceClosure;
 // available shares for each host found.
 class SmbShareFinder : public base::SupportsWeakPtr<SmbShareFinder> {
  public:
+  // The callback that will be passed to GatherSharesInNetwork.
+  using GatherSharesInNetworkResponse =
+      base::OnceCallback<void(const std::vector<SmbUrl>& shares_gathered)>;
+
   explicit SmbShareFinder(SmbProviderClient* client);
   ~SmbShareFinder();
 

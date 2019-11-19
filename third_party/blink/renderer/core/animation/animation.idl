@@ -28,28 +28,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://drafts.csswg.org/web-animations/#animation
+// https://drafts.csswg.org/web-animations/#the-animation-interface
 
 enum AnimationPlayState { "idle", "pending", "running", "paused", "finished" };
 
 [
+    Exposed=Window,
     Constructor(optional AnimationEffect? effect = null, optional AnimationTimeline? timeline),
-    Exposed(Window WebAnimationsAPI),
     ConstructorCallWith=ExecutionContext,
     RaisesException=Constructor,
     ActiveScriptWrappable
 ] interface Animation : EventTarget {
+    [Measure] attribute AnimationEffect? effect;
     // TODO(suzyh): Make timeline mutable.
-    [RuntimeEnabled=WebAnimationsAPI] attribute AnimationEffect? effect;
     [RuntimeEnabled=WebAnimationsAPI] readonly attribute AnimationTimeline? timeline;
-    [Measure] attribute double?    startTime;
+    [Measure, RaisesException=Setter] attribute double?    startTime;
     [Measure, RaisesException=Setter] attribute double?    currentTime;
-    [Measure] attribute double     playbackRate;
+    [Measure, RaisesException=Setter] attribute double     playbackRate;
     [Measure] readonly attribute AnimationPlayState playState;
+    [Measure] readonly attribute boolean pending;
     [Measure, RaisesException] void finish();
     [Measure, RaisesException] void play();
     [Measure, RaisesException] void pause();
     [Measure, RaisesException] void reverse();
+    [Measure, RaisesException] void updatePlaybackRate(double playback_rate);
     [Measure] attribute DOMString id;
     [Measure] void cancel();
     [Measure] attribute EventHandler onfinish;

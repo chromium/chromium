@@ -22,12 +22,14 @@ Polymer({
 
   /** @return {!CrInputElement} */
   getSearchInput: function() {
-    return this.$.searchInput;
+    return /** @type {!CrInputElement} */ (this.$.searchInput);
   },
 
   /** @private */
   onTapClear_: function() {
     this.setValue('');
-    this.$.searchInput.focus();
+    setTimeout(() => {
+      this.$.searchInput.focus();
+    });
   },
 });

@@ -12,13 +12,11 @@
   </outputs>
   <release seq="1">
     <includes>
-      <include name="IDR_MD_SETTINGS_VULCANIZED_HTML" file="${root_gen_dir}\chrome\browser\resources\settings\vulcanized.html" use_base_dir="false" flattenhtml="true" allowexternalscript="true" type="BINDATA" compress="gzip" />
-      <include name="IDR_MD_SETTINGS_VULCANIZED_P2_HTML" file="${root_gen_dir}\chrome\browser\resources\settings\vulcanized.p2.html" use_base_dir="false" flattenhtml="true" allowexternalscript="true" type="BINDATA" compress="gzip" />
-      <include name="IDR_MD_SETTINGS_CRISPER_JS" file="${root_gen_dir}\chrome\browser\resources\settings\crisper.js" use_base_dir="false" flattenhtml="true" type="BINDATA" compress="gzip" />
-      <include name="IDR_MD_SETTINGS_LAZY_LOAD_VULCANIZED_HTML" file="${root_gen_dir}\chrome\browser\resources\settings\lazy_load.vulcanized.html" use_base_dir="false" flattenhtml="true" allowexternalscript="true" type="BINDATA" compress="gzip" />
-      <include name="IDR_MD_SETTINGS_LAZY_LOAD_VULCANIZED_P2_HTML" file="${root_gen_dir}\chrome\browser\resources\settings\lazy_load.vulcanized.p2.html" use_base_dir="false" flattenhtml="true" allowexternalscript="true" type="BINDATA" compress="gzip" />
-      <include name="IDR_MD_SETTINGS_LAZY_LOAD_CRISPER_JS" file="${root_gen_dir}\chrome\browser\resources\settings\lazy_load.crisper.js" use_base_dir="false" flattenhtml="true" type="BINDATA" compress="gzip" />
-      <include name="IDR_MD_SETTINGS_MANIFEST" file="manifest.json" type="BINDATA" compress="gzip" />
+      <include name="IDR_SETTINGS_VULCANIZED_HTML" file="${root_gen_dir}\chrome\browser\resources\settings\vulcanized.html" use_base_dir="false" flattenhtml="true" allowexternalscript="true" type="BINDATA" compress="gzip" />
+      <include name="IDR_SETTINGS_CRISPER_JS" file="${root_gen_dir}\chrome\browser\resources\settings\crisper.js" use_base_dir="false" flattenhtml="true" type="BINDATA" compress="gzip" />
+      <include name="IDR_SETTINGS_LAZY_LOAD_VULCANIZED_HTML" file="${root_gen_dir}\chrome\browser\resources\settings\lazy_load.vulcanized.html" use_base_dir="false" flattenhtml="true" allowexternalscript="true" type="BINDATA" compress="gzip" />
+      <include name="IDR_SETTINGS_LAZY_LOAD_CRISPER_JS" file="${root_gen_dir}\chrome\browser\resources\settings\lazy_load.crisper.js" use_base_dir="false" flattenhtml="true" type="BINDATA" compress="gzip" />
+      <include name="IDR_SETTINGS_MANIFEST" file="manifest.json" type="BINDATA" compress="gzip" />
     </includes>
   </release>
 </grit>

@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html style="background: linear-gradient(red, blue); overflow:hidden">
+<script src="text-based-repaint.js"></script>
+<script>
+function repaintTest() {
+  document.scrollingElement.scrollTop = 20;
+}
+</script>
+<body onload="runRepaintTest()">
+<div style="height: 500px"></div>

@@ -65,9 +65,7 @@ class RequestSender {
   // Decodes and returns the public key used by CUP.
   static std::string GetKey(const char* key_bytes_base64);
 
-  void OnResponseStarted(const GURL& final_url,
-                         int response_code,
-                         int64_t content_length);
+  void OnResponseStarted(int response_code, int64_t content_length);
 
   void OnNetworkFetcherComplete(const GURL& original_url,
                                 std::unique_ptr<std::string> response_body,

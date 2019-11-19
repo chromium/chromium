@@ -1,0 +1,182 @@
+<style include="print-preview-shared action-link md-select cr-hidden-style
+    throbber">
+  #dialog::part(dialog) {
+    height: calc(100vh - 2 * var(--print-preview-dialog-margin));
+    max-width: 640px;
+    width:  calc(100vw - 2 * var(--print-preview-dialog-margin));
+  }
+
+  #dialog::part(wrapper) {
+    height: calc(100vh - 2 * var(--print-preview-dialog-margin));
+  }
+
+  #dialog::part(body-container) {
+    flex: 1;
+  }
+
+  print-preview-search-box {
+    margin-bottom: 16px;
+    margin-top: 14px;
+  }
+
+  .user-info {
+    font-size: calc(13 / 15 * 1em);
+    line-height: calc(20 / 15 * 1em);
+    margin-bottom: 14px;
+    margin-top: 8px;
+  }
+
+  .user-info .account-select-label {
+    padding-inline-end: 18px;
+  }
+
+  .user-info .account-select {
+    width: auto
+  }
+
+  cr-dialog [slot=body] {
+    height: 100%;
+  }
+
+  div[slot='button-container'] {
+    justify-content: space-between;
+  }
+
+  cr-button {
+    font-size: calc(12 / 13 * 1em);
+  }
+
+  .cancel-button {
+    margin-inline-end: 0;
+  }
+
+  #dialog #promos {
+    background: rgb(248, 249, 250);
+    padding: 0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #dialog #promos {
+      background: rgb(50, 54, 57);
+    }
+  }
+
+  #dialog .promo {
+    align-items: center;
+    color: var(--cr-primary-text-color);
+    display: flex;
+    padding: 16px 20px;
+  }
+
+  #cloudprintPromo .promo-text {
+    flex: 1;
+  }
+
+  #cloudprintPromo iron-icon {
+    margin-inline-end: 16px;
+    width: 20px;
+  }
+
+  #cloudPrintClose {
+    --cr-icon-button-size: 20px;
+    --cr-icon-button-icon-size: 16px;
+    margin-inline-start: 16px;
+    min-height: 14px;
+    min-width: 14px;
+    padding: 0;
+  }
+
+  #invitationPromo {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  #invitationPromo .invitation-buttons {
+    display: flex;
+    padding: 12px 0;
+  }
+
+  #invitationPromo cr-button {
+    margin: 0 4px;
+  }
+
+  @media (prefers-color-scheme: light) {
+    #invitationPromo cr-button {
+      background-color: white;
+    }
+  }
+
+  #invitationPromo invitation-details {
+    color: var(--cr-secondary-text-color);
+    font-size: calc(10 / 13 * 1em);
+    font-weight: 500;
+  }
+</style>
+<cr-dialog id="dialog" on-close="onCloseOrCancel_">
+  <div slot="title" id="header">
+    <div>$i18n{destinationSearchTitle}</div>
+    <div class="user-info" hidden$="[[!activeUser]]" hidden>
+      <label class="account-select-label" id="accountSelectLabel">
+        $i18n{accountSelectTitle}
+      </label>
+      <select class="md-select account-select"
+          aria-labelledby="accountSelectLabel" on-change="onUserChange_">
+        <template is="dom-repeat" items="[[users]]">
+          <option value="[[item]]">
+            [[item]]
+          </option>
+        </template>
+        <option value="">$i18n{addAccountTitle}</option>
+      </select>
+    </div>
+    <print-preview-search-box id="searchBox"
+        label="$i18n{searchBoxPlaceholder}" search-query="{{searchQuery_}}"
+        autofocus>
+    </print-preview-search-box>
+  </div>
+  <div slot="body">
+    <print-preview-destination-list id="printList"
+        destinations="[[destinations_]]"
+        loading-destinations="[[loadingDestinations_]]"
+        search-query="[[searchQuery_]]"
+        list-name="$i18n{printDestinationsTitle}"
+        on-destination-selected="onDestinationSelected_">
+    </print-preview-destination-list>
+    <print-preview-provisional-destination-resolver id="provisionalResolver"
+        destination-store="[[destinationStore]]">
+    </print-preview-provisional-destination-resolver>
+  </div>
+  <div slot="button-container">
+    <cr-button on-click="onOpenSettingsPrintPage_">
+      $i18n{manage}
+    </cr-button>
+    <cr-button class="cancel-button" on-click="onCancelButtonClick_">
+      $i18n{cancel}
+    </cr-button>
+  </div>
+  <div id="promos" slot="footer" hidden="[[!shouldShowFooter_(
+      shouldShowCloudPrintPromo_, invitation_)]]">
+    <div class="promo" id="cloudprintPromo"
+        hidden$="[[!shouldShowCloudPrintPromo_]]">
+      <iron-icon icon="print-preview:cloud-queue" alt=""></iron-icon>
+      <div class="promo-text"></div>
+      <cr-icon-button id="cloudPrintClose" class="icon-clear"
+          on-click="onCloudPrintPromoDismissed_"></cr-icon-button>
+    </div>
+    <div class="promo" id="invitationPromo" hidden="[[!invitation_]]">
+      <div inner-h-t-m-l="[[getInvitationText_(invitation_)]]"></div>
+      <div class="invitation-buttons">
+        <cr-button on-click="onInvitationAcceptClick_">
+          [[getAcceptButtonText_(invitation_)]]
+        </cr-button>
+        <cr-button on-click="onInvitationRejectClick_">
+          $i18n{reject}
+        </cr-button>
+        <div id="invitation-process-throbber" class="throbber" hidden></div>
+      </div>
+      <div class="invitation-details">
+        $i18nRaw{registerPrinterInformationMessage}
+      </div>
+    </div>
+  </div>
+</cr-dialog>

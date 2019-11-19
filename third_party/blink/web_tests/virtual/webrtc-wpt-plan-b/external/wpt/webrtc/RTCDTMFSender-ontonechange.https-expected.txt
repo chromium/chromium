@@ -5,11 +5,11 @@ PASS insertDTMF('') should not fire any tonechange event, including for '' tone
 PASS insertDTMF() with duration less than 40 should be clamped to 40
 PASS insertDTMF() with interToneGap less than 30 should be clamped to 30
 PASS insertDTMF with comma should delay next tonechange event for a constant 2000ms
-FAIL insertDTMF() with transceiver stopped in the middle should stop future tonechange events from firing assert_unreached: Unexpected promise rejection: Error: assert_equals: Expect there to be only one tranceiver in pc expected 1 but got 0 Reached unreachable code
+FAIL insertDTMF() with transceiver stopped in the middle should stop future tonechange events from firing assert_equals: Expect there to be only one tranceiver in pc expected 1 but got 0
 PASS Calling insertDTMF() in the middle of tonechange events should cause future tonechanges to be updated to new tones
 PASS Calling insertDTMF() multiple times in the middle of tonechange events should cause future tonechanges to be updated the last provided tones
 PASS Calling insertDTMF('') in the middle of tonechange events should stop future tonechange events from firing
-FAIL Setting transceiver.currentDirection to recvonly in the middle of tonechange events should stop future tonechange events from firing Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'. 'unified-plan' will become the default behavior in the future, but it is currently experimental. To try it out, construct the RTCPeerConnection with sdpSemantics:'unified-plan' present in the RTCConfiguration argument.
+FAIL Setting transceiver.currentDirection to recvonly in the middle of tonechange events should stop future tonechange events from firing promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'sender' of undefined"
 PASS Tone change event constructor works
 PASS Tone change event with unexpected name should not crash
 Harness: the test ran to completion.

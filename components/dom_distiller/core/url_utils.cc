@@ -8,11 +8,14 @@
 
 #include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/grit/components_resources.h"
+#include "crypto/sha2.h"
 #include "net/base/url_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
+#include "url/url_util.h"
 
 namespace dom_distiller {
 
@@ -21,6 +24,12 @@ namespace url_utils {
 namespace {
 
 const char kDummyInternalUrlPrefix[] = "chrome-distiller-internal://dummy/";
+const char kSeparator[] = "_";
+
+std::string SHA256InHex(base::StringPiece str) {
+  std::string sha256 = crypto::SHA256HashString(str);
+  return base::ToLowerASCII(base::HexEncode(sha256.c_str(), sha256.size()));
+}
 
 }  // namespace
 
@@ -31,28 +40,44 @@ const GURL GetDistillerViewUrlFromEntryId(const std::string& scheme,
 }
 
 const GURL GetDistillerViewUrlFromUrl(const std::string& scheme,
-                                      const GURL& view_url,
+                                      const GURL& url,
                                       int64_t start_time_ms) {
-  GURL url(scheme + "://" + base::GenerateGUID());
+  GURL view_url(scheme + "://" + base::GenerateGUID() + kSeparator +
+                SHA256InHex(url.spec()));
   if (start_time_ms > 0) {
-    url = net::AppendOrReplaceQueryParameter(
-        url, kTimeKey, base::NumberToString(start_time_ms));
+    view_url = net::AppendOrReplaceQueryParameter(
+        view_url, kTimeKey, base::NumberToString(start_time_ms));
   }
-  return net::AppendOrReplaceQueryParameter(url, kUrlKey, view_url.spec());
+  return net::AppendOrReplaceQueryParameter(view_url, kUrlKey, url.spec());
 }
 
 const GURL GetOriginalUrlFromDistillerUrl(const GURL& url) {
-  if (!dom_distiller::url_utils::IsDistilledPage(url))
+  if (!IsDistilledPage(url))
     return url;
 
   std::string original_url_str;
   net::GetValueForKeyInQuery(url, kUrlKey, &original_url_str);
 
-  return GURL(original_url_str);
+  // Make sure kDomDistillerScheme is considered standard scheme for
+  // |GURL::host_piece()| to work correctly.
+  DCHECK(url::IsStandard(kDomDistillerScheme,
+                         url::Component(0, strlen(kDomDistillerScheme))));
+  std::vector<base::StringPiece> pieces =
+      base::SplitStringPiece(url.host_piece(), kSeparator,
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (pieces.size() != 2)
+    return GURL();
+  if (SHA256InHex(original_url_str) != pieces[1])
+    return GURL();
+  const GURL original_url(original_url_str);
+  if (!IsUrlDistillable(original_url))
+    return GURL();
+
+  return original_url;
 }
 
 int64_t GetTimeFromDistillerUrl(const GURL& url) {
-  if (!dom_distiller::url_utils::IsDistilledPage(url))
+  if (!IsDistilledPage(url))
     return 0;
 
   std::string time_str;

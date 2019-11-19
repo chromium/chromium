@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
 
 #include "third_party/blink/renderer/core/inspector/thread_debugger.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -50,8 +50,8 @@ void InspectorTaskRunner::AppendTask(Task task) {
   condition_.Signal();
   PostCrossThreadTask(
       *isolate_task_runner_, FROM_HERE,
-      CrossThreadBind(&InspectorTaskRunner::PerformSingleTaskDontWait,
-                      WrapRefCounted(this)));
+      CrossThreadBindOnce(&InspectorTaskRunner::PerformSingleTaskDontWait,
+                          WrapRefCounted(this)));
   if (isolate_)
     isolate_->RequestInterrupt(&V8InterruptCallback, this);
 }

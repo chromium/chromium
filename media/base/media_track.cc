@@ -8,9 +8,9 @@ namespace media {
 
 MediaTrack::MediaTrack(Type type,
                        StreamParser::TrackId bytestream_track_id,
-                       const std::string& kind,
-                       const std::string& label,
-                       const std::string& lang)
+                       const Kind& kind,
+                       const Label& label,
+                       const Language& lang)
     : type_(type),
       bytestream_track_id_(bytestream_track_id),
       kind_(kind),

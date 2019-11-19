@@ -4,9 +4,11 @@
 
 package org.chromium.components.download;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.net.NetworkChangeNotifierAutoDetect;
 import org.chromium.net.NetworkChangeNotifierAutoDetect.Observer;
 import org.chromium.net.RegistrationPolicyAlwaysRegister;
@@ -59,7 +61,8 @@ public final class NetworkStatusListenerAndroid implements Observer {
     @Override
     public void onConnectionTypeChanged(int newConnectionType) {
         if (mNativePtr != 0) {
-            nativeNotifyNetworkChange(mNativePtr, newConnectionType);
+            NetworkStatusListenerAndroidJni.get().notifyNetworkChange(
+                    mNativePtr, NetworkStatusListenerAndroid.this, newConnectionType);
         }
     }
 
@@ -87,6 +90,9 @@ public final class NetworkStatusListenerAndroid implements Observer {
     @Override
     public void purgeActiveNetworkList(long[] activeNetIds) {}
 
-    private native void nativeNotifyNetworkChange(
-            long nativeNetworkStatusListenerAndroid, int connectionType);
+    @NativeMethods
+    interface Natives {
+        void notifyNetworkChange(long nativeNetworkStatusListenerAndroid,
+                NetworkStatusListenerAndroid caller, int connectionType);
+    }
 }

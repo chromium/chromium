@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.preferences;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -17,43 +16,44 @@ import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceFragment.OnPreferenceStartFragmentCallback;
 import android.support.graphics.drawable.VectorDrawableCompat;
-import android.util.Log;
+import android.support.v4.app.Fragment;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ListView;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.VisibleForTesting;
-import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
+import org.chromium.chrome.browser.util.ColorUtils;
+import org.chromium.ui.UiUtils;
 
 /**
  * The Chrome settings activity.
  *
- * This activity displays a single Fragment, typically a PreferenceFragment. As the user navigates
- * through settings, a separate Preferences activity is created for each screen. Thus each fragment
- * may freely modify its activity's action bar or title. This mimics the behavior of
- * android.preference.PreferenceActivity.
+ * This activity displays a single {@link Fragment}, typically a {@link PreferenceFragmentCompat}.
+ * As the user navigates through settings, a separate Preferences activity is created for each
+ * screen. Thus each fragment may freely modify its activity's action bar or title. This mimics the
+ * behavior of {@link android.preference.PreferenceActivity}.
  *
- * If the preference overrides the root layout (e.g. {@link HomepageEditor}), add the following:
+ * If the main fragment is not an instance of {@link PreferenceFragmentCompat} (e.g. {@link
+ * HomepageEditor}) or overrides {@link PreferenceFragmentCompat}'s layout, add the following:
  * 1) preferences_action_bar_shadow.xml to the custom XML hierarchy and
  * 2) an OnScrollChangedListener to the main content's view's view tree observer via
  *    PreferenceUtils.getShowShadowOnScrollListener(...).
  */
-public class Preferences
-        extends ChromeBaseAppCompatActivity implements OnPreferenceStartFragmentCallback {
+public class Preferences extends ChromeBaseAppCompatActivity
+        implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     /**
      * Preference fragments may implement this interface to intercept "Back" button taps in this
      * activity.
@@ -89,17 +89,7 @@ public class Preferences
         // from Android notifications, when Android is restoring Preferences after Chrome was
         // killed, or for tests. This should happen before super.onCreate() because it might
         // recreate a fragment, and a fragment might depend on the native library.
-        try {
-            ChromeBrowserInitializer.getInstance(this).handleSynchronousStartup();
-        } catch (ProcessInitException e) {
-            Log.e(TAG, "Failed to start browser process.", e);
-            // This can only ever happen, if at all, when the activity is started from an Android
-            // notification (or in tests). As such we don't want to show an error messsage to the
-            // user. The application is completely broken at this point, so close it down
-            // completely (not just the activity).
-            System.exit(-1);
-            return;
-        }
+        ChromeBrowserInitializer.getInstance(this).handleSynchronousStartup();
 
         super.onCreate(savedInstanceState);
 
@@ -115,8 +105,10 @@ public class Preferences
         // recreated and super.onCreate() has already recreated the fragment.
         if (savedInstanceState == null) {
             if (initialFragment == null) initialFragment = MainPreferences.class.getName();
+
             Fragment fragment = Fragment.instantiate(this, initialFragment, initialArguments);
-            getFragmentManager().beginTransaction()
+            getSupportFragmentManager()
+                    .beginTransaction()
                     .replace(android.R.id.content, fragment)
                     .commit();
         }
@@ -130,18 +122,19 @@ public class Preferences
             if (nfcAdapter != null) nfcAdapter.setNdefPushMessage(null, this);
         }
 
-
         Resources res = getResources();
         ApiCompatibilityUtils.setTaskDescription(this, res.getString(R.string.app_name),
                 BitmapFactory.decodeResource(res, R.mipmap.app_icon),
                 ApiCompatibilityUtils.getColor(res, R.color.default_primary_color));
+
+        setStatusBarColor();
     }
 
     // OnPreferenceStartFragmentCallback:
 
     @Override
-    public boolean onPreferenceStartFragment(PreferenceFragment preferenceFragment,
-            Preference preference) {
+    public boolean onPreferenceStartFragment(
+            PreferenceFragmentCompat caller, Preference preference) {
         startFragment(preference.getFragment(), preference.getExtras());
         return true;
     }
@@ -163,28 +156,25 @@ public class Preferences
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
+
         Fragment fragment = getMainFragment();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (fragment instanceof PreferenceFragment && fragment.getView() != null) {
-                // Set list view padding to 0 so dividers are the full width of the screen.
-                fragment.getView().findViewById(android.R.id.list).setPadding(0, 0, 0, 0);
-            }
-        }
-        if (fragment == null || fragment.getView() == null
-                || fragment.getView().findViewById(android.R.id.list) == null) {
-            return;
-        }
-        View contentView = fragment.getActivity().findViewById(android.R.id.content);
-        if (contentView == null || !(contentView instanceof FrameLayout)) {
+        if (!(fragment instanceof PreferenceFragmentCompat)) {
             return;
         }
 
-        View inflatedView = View.inflate(getApplicationContext(),
-                R.layout.preferences_action_bar_shadow, (ViewGroup) contentView);
-        ListView listView = fragment.getView().findViewById(android.R.id.list);
-        listView.getViewTreeObserver().addOnScrollChangedListener(
+        RecyclerView recyclerView = ((PreferenceFragmentCompat) fragment).getListView();
+        if (recyclerView == null) {
+            return;
+        }
+
+        // Append action bar shadow to layout.
+        View inflatedView = getLayoutInflater().inflate(
+                R.layout.preferences_action_bar_shadow, findViewById(android.R.id.content));
+
+        // Display shadow on scroll.
+        recyclerView.getViewTreeObserver().addOnScrollChangedListener(
                 PreferenceUtils.getShowShadowOnScrollListener(
-                        listView, inflatedView.findViewById(R.id.shadow)));
+                        recyclerView, inflatedView.findViewById(R.id.shadow)));
     }
 
     @Override
@@ -221,19 +211,14 @@ public class Preferences
         if (sResumedInstance == this) sResumedInstance = null;
     }
 
-    /** See {@link #getMainFragment}. */
-    @VisibleForTesting
-    public Fragment getFragmentForTest() {
-        // TODO(bsazonov): Remove this method and use getMainFragment in tests.
-        return getMainFragment();
-    }
-
     /**
-     * Returns the fragment showing as this activity's main content, typically a PreferenceFragment.
-     * This does not include DialogFragments or other Fragments shown on top of the main content.
+     * Returns the fragment showing as this activity's main content, typically a {@link
+     * PreferenceFragmentCompat}. This does not include dialogs or other {@link Fragment}s shown on
+     * top of the main content.
      */
-    private Fragment getMainFragment() {
-        return getFragmentManager().findFragmentById(android.R.id.content);
+    @VisibleForTesting
+    public Fragment getMainFragment() {
+        return getSupportFragmentManager().findFragmentById(android.R.id.content);
     }
 
     @Override
@@ -258,13 +243,16 @@ public class Preferences
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Fragment activeFragment = getMainFragment();
-        if (activeFragment != null && activeFragment.onOptionsItemSelected(item)) return true;
+        Fragment mainFragment = getMainFragment();
+        if (mainFragment != null && mainFragment.onOptionsItemSelected(item)) {
+            return true;
+        }
+
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
         } else if (item.getItemId() == R.id.menu_id_general_help) {
-            HelpAndFeedback.getInstance(this).show(this, getString(R.string.help_context_settings),
+            HelpAndFeedback.getInstance().show(this, getString(R.string.help_context_settings),
                     Profile.getLastUsedProfile(), null);
             return true;
         }
@@ -299,5 +287,33 @@ public class Preferences
             // Something terribly wrong has happened.
             throw new RuntimeException(ex);
         }
+    }
+
+    /**
+     * Set device status bar to match the activity background color, if supported.
+     */
+    private void setStatusBarColor() {
+        // On P+, the status bar color is set via the XML theme.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) return;
+
+        // Kill switch included due to past crashes when programmatically setting status bar color:
+        // https://crbug.com/880694.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SETTINGS_MODERN_STATUS_BAR)) return;
+
+        if (UiUtils.isSystemUiThemingDisabled()) return;
+
+        // Dark status icons only supported on M+.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
+
+        // Use background color as status bar color.
+        int statusBarColor =
+                ApiCompatibilityUtils.getColor(getResources(), R.color.modern_primary_color);
+        ApiCompatibilityUtils.setStatusBarColor(getWindow(), statusBarColor);
+
+        // Set status bar icon color according to background color.
+        boolean needsDarkStatusBarIcons =
+                !ColorUtils.shouldUseLightForegroundOnBackground(statusBarColor);
+        ApiCompatibilityUtils.setStatusBarIconColor(
+                getWindow().getDecorView().getRootView(), needsDarkStatusBarIcons);
     }
 }

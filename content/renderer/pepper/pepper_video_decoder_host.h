@@ -22,10 +22,6 @@
 #include "ppapi/host/resource_host.h"
 #include "ppapi/proxy/resource_message_params.h"
 
-namespace base {
-class SharedMemory;
-}
-
 namespace content {
 
 class RendererPpapiHost;
@@ -60,6 +56,19 @@ class CONTENT_EXPORT PepperVideoDecoderHost
     const ppapi::host::ReplyMessageContext reply_context;
   };
   typedef std::list<PendingDecode> PendingDecodeList;
+
+  struct MappedBuffer {
+    MappedBuffer(base::UnsafeSharedMemoryRegion region,
+                 base::WritableSharedMemoryMapping mapping);
+    ~MappedBuffer();
+
+    MappedBuffer(MappedBuffer&&);
+    MappedBuffer& operator=(MappedBuffer&&);
+
+    base::UnsafeSharedMemoryRegion region;
+    base::WritableSharedMemoryMapping mapping;
+    bool busy = false;
+  };
 
   friend class VideoDecoderShim;
 
@@ -137,10 +146,13 @@ class CONTENT_EXPORT PepperVideoDecoderHost
   // resource. We use a buffer's index in these vectors as its id on both sides
   // of the proxy. Only add buffers or update them in place so as not to
   // invalidate these ids.
-  std::vector<std::unique_ptr<base::SharedMemory>> shm_buffers_;
-  // A vector of true/false indicating if a shm buffer is in use by the decoder.
-  // This is parallel to |shm_buffers_|.
-  std::vector<uint8_t> shm_buffer_busy_;
+  //
+  // These regions are created here, in the host, and shared with the other side
+  // of the proxy who will write into them. While they are only used in a
+  // read-only way in the host, using a ReadOnlySharedMemoryRegion would involve
+  // an extra round-trip to allow the other side of the proxy to map the region
+  // writable before sending a read-only region back to the host.
+  std::vector<MappedBuffer> shm_buffers_;
 
   uint32_t min_picture_count_;
   typedef std::map<uint32_t, PictureBufferState> PictureBufferMap;

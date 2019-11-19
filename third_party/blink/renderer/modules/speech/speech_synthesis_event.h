@@ -42,11 +42,13 @@ class SpeechSynthesisEvent : public Event {
   SpeechSynthesisEvent(const AtomicString& type,
                        SpeechSynthesisUtterance*,
                        unsigned char_index,
+                       unsigned char_length,
                        float elapsed_time,
                        const String& name);
 
   SpeechSynthesisUtterance* utterance() const { return utterance_; }
   unsigned charIndex() const { return char_index_; }
+  unsigned charLength() const { return char_length_; }
   float elapsedTime() const { return elapsed_time_; }
   const String& name() const { return name_; }
 
@@ -59,6 +61,7 @@ class SpeechSynthesisEvent : public Event {
  private:
   Member<SpeechSynthesisUtterance> utterance_;
   unsigned char_index_;
+  unsigned char_length_;
   float elapsed_time_;
   String name_;
 };

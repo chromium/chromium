@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/guid.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
@@ -59,7 +59,7 @@ TestService::~TestService() {
 
 bool TestService::StartService() {
   base::Thread::Options thread_options;
-  thread_options.message_loop_type = base::MessageLoop::TYPE_IO;
+  thread_options.message_pump_type = base::MessagePumpType::IO;
   return StartWithOptions(thread_options);
 }
 

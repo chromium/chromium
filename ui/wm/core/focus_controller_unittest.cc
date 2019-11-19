@@ -464,7 +464,7 @@ class FocusControllerTestBase : public aura::test::AuraTestBase {
     // window initializations, including the root_window()'s, so we create it
     // before allowing the base setup.
     test_focus_rules_ = new TestFocusRules;
-    focus_controller_.reset(new FocusController(test_focus_rules_));
+    focus_controller_ = std::make_unique<FocusController>(test_focus_rules_);
     aura::test::AuraTestBase::SetUp();
     root_window()->AddPreTargetHandler(focus_controller_.get());
     aura::client::SetFocusClient(root_window(), focus_controller_.get());

@@ -5,16 +5,23 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_CLIENT_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_CLIENT_H_
 
+#include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/hsts_query.h"
+#include "components/password_manager/core/browser/http_auth_manager.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/safe_browsing/buildflags.h"
 #include "net/cert/cert_status_flags.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -22,15 +29,24 @@ class PrefService;
 
 namespace autofill {
 class AutofillDownloadManager;
-}
+class LogManager;
+}  // namespace autofill
 
 namespace favicon {
 class FaviconService;
 }
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 class GURL;
 
-#if defined(SAFE_BROWSING_DB_LOCAL)
+#if defined(ON_FOCUS_PING_ENABLED)
 namespace safe_browsing {
 class PasswordProtectionService;
 }
@@ -38,17 +54,21 @@ class PasswordProtectionService;
 
 namespace password_manager {
 
-class LogManager;
+class FieldInfoManager;
+class PasswordFeatureManager;
 class PasswordFormManagerForUI;
 class PasswordManager;
+class PasswordManagerDriver;
 class PasswordManagerMetricsRecorder;
+class HttpAuthManager;
 class PasswordRequirementsService;
 class PasswordStore;
 
 enum SyncState {
   NOT_SYNCING,
   SYNCING_NORMAL_ENCRYPTION,
-  SYNCING_WITH_CUSTOM_PASSPHRASE
+  SYNCING_WITH_CUSTOM_PASSPHRASE,
+  ACCOUNT_PASSWORDS_ACTIVE_NORMAL_ENCRYPTION
 };
 
 // An abstraction of operations that depend on the embedders (e.g. Chrome)
@@ -112,6 +132,12 @@ class PasswordManagerClient {
       std::unique_ptr<PasswordFormManagerForUI> form_to_save,
       bool is_update) = 0;
 
+  // Informs the embedder that the onboarding experience should be shown.
+  // This will also offer the ability to actually save the password.
+  // Returns true if both the onboarding and the saving prompt were displayed.
+  virtual bool ShowOnboarding(
+      std::unique_ptr<PasswordFormManagerForUI> form_to_save) = 0;
+
   // Informs the embedder that the user started typing a password and a password
   // prompt should be available on click on the omnibox icon.
   virtual void ShowManualFallbackForSaving(
@@ -123,6 +149,12 @@ class PasswordManagerClient {
   // fallback for password saving should be not available.
   virtual void HideManualFallbackForSaving() = 0;
 
+  // Informs the embedder that the focus changed to a different input in the
+  // same frame (e.g. tabbed from email to password field).
+  virtual void FocusedInputChanged(
+      PasswordManagerDriver* driver,
+      autofill::mojom::FocusedFieldType focused_field_type) = 0;
+
   // Informs the embedder of a password forms that the user should choose from.
   // Returns true if the prompt is indeed displayed. If the prompt is not
   // displayed, returns false and does not call |callback|.
@@ -131,6 +163,9 @@ class PasswordManagerClient {
       std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
       const GURL& origin,
       const CredentialsCallback& callback) = 0;
+
+  // Instructs the client to show the Touch To Fill UI.
+  virtual void ShowTouchToFill(PasswordManagerDriver* driver);
 
   // Informs the embedder that the user has manually requested to generate a
   // password in the focused password field.
@@ -171,17 +206,27 @@ class PasswordManagerClient {
   // They are never filled, but might be needed in the UI, for example. Default
   // implementation is a noop.
   virtual void PasswordWasAutofilled(
-      const std::map<base::string16, const autofill::PasswordForm*>&
-          best_matches,
+      const std::vector<const autofill::PasswordForm*>& best_matches,
       const GURL& origin,
-      const std::vector<const autofill::PasswordForm*>* federated_matches)
-      const;
+      const std::vector<const autofill::PasswordForm*>* federated_matches);
+
+  // Sends username/password from |preferred_match| for filling in the http auth
+  // prompt.
+  virtual void AutofillHttpAuth(const autofill::PasswordForm& preferred_match,
+                                const PasswordFormManagerForUI* form_manager);
+
+  // Informs the embedder that user credentials were leaked.
+  virtual void NotifyUserCredentialsWereLeaked(CredentialLeakType leak_type,
+                                               const GURL& origin);
 
   // Gets prefs associated with this embedder.
   virtual PrefService* GetPrefs() const = 0;
 
-  // Returns the PasswordStore associated with this instance.
-  virtual PasswordStore* GetPasswordStore() const = 0;
+  // Returns the profile PasswordStore associated with this instance.
+  virtual PasswordStore* GetProfilePasswordStore() const = 0;
+
+  // Returns the account PasswordStore associated with this instance.
+  virtual PasswordStore* GetAccountPasswordStore() const = 0;
 
   // Reports whether and how passwords are synced in the embedder. The default
   // implementation always returns NOT_SYNCING.
@@ -193,6 +238,10 @@ class PasswordManagerClient {
   // Obtains the cert status for the main frame.
   virtual net::CertStatus GetMainFrameCertStatus() const;
 
+  // Shows the dialog where the user can accept or decline the global autosignin
+  // setting as a first run experience.
+  virtual void PromptUserToEnableAutosignin();
+
   // If this browsing session should not be persisted.
   virtual bool IsIncognito() const;
 
@@ -200,6 +249,11 @@ class PasswordManagerClient {
   // version calls the const one.
   PasswordManager* GetPasswordManager();
   virtual const PasswordManager* GetPasswordManager() const;
+
+  virtual const PasswordFeatureManager* GetPasswordFeatureManager() const = 0;
+
+  // Returns the HttpAuthManager associated with this client.
+  virtual HttpAuthManager* GetHttpAuthManager();
 
   // Returns the AutofillDownloadManager for votes uploading.
   virtual autofill::AutofillDownloadManager* GetAutofillDownloadManager();
@@ -216,7 +270,7 @@ class PasswordManagerClient {
   virtual const CredentialsFilter* GetStoreResultFilter() const = 0;
 
   // Returns a LogManager instance.
-  virtual const LogManager* GetLogManager() const;
+  virtual const autofill::LogManager* GetLogManager() const;
 
   // Record that we saw a password field on this page.
   virtual void AnnotateNavigationEntry(bool has_password_field);
@@ -224,7 +278,7 @@ class PasswordManagerClient {
   // Returns the current best guess as to the page's display language.
   virtual std::string GetPageLanguage() const;
 
-#if defined(SAFE_BROWSING_DB_LOCAL)
+#if defined(ON_FOCUS_PING_ENABLED)
   // Return the PasswordProtectionService associated with this instance.
   virtual safe_browsing::PasswordProtectionService*
   GetPasswordProtectionService() const = 0;
@@ -234,17 +288,25 @@ class PasswordManagerClient {
   // only, and won't trigger a warning.
   virtual void CheckSafeBrowsingReputation(const GURL& form_action,
                                            const GURL& frame_url) = 0;
+#endif
 
+#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
   // Checks the safe browsing reputation of the webpage where password reuse
   // happens. This is called by the PasswordReuseDetectionManager when a
   // protected password is typed on the wrong domain. This may trigger a
   // warning dialog if it looks like the page is phishy.
+  // The |username| is the user name of the reused password. The user name
+  // can be an email or a username for a non-GAIA or saved-password reuse. No
+  // validation has been done on it.
   virtual void CheckProtectedPasswordEntry(
       metrics_util::PasswordType reused_password_type,
+      const std::string& username,
       const std::vector<std::string>& matching_domains,
       bool password_field_exists) = 0;
+#endif
 
-  // Records a Chrome Sync event that sync password reuse was detected.
+#if defined(SYNC_PASSWORD_REUSE_WARNING_ENABLED)
+  // Records a Chrome Sync event that GAIA password reuse was detected.
   virtual void LogPasswordReuseDetectedEvent() = 0;
 #endif
 
@@ -268,6 +330,14 @@ class PasswordManagerClient {
   // Returns the favicon service used to retrieve icons for an origin.
   virtual favicon::FaviconService* GetFaviconService();
 
+  // Returns the identity manager for profile.
+  virtual signin::IdentityManager* GetIdentityManager() = 0;
+
+  // Returns a pointer to the URLLoaderFactory owned by the storage partition of
+  // the current profile.
+  virtual scoped_refptr<network::SharedURLLoaderFactory>
+  GetURLLoaderFactory() = 0;
+
   // Whether the primary account of the current profile is under Advanced
   // Protection - a type of Google Account that helps protect our most at-risk
   // users.
@@ -280,6 +350,14 @@ class PasswordManagerClient {
   // Causes a navigation to the manage passwords page.
   virtual void NavigateToManagePasswordsPage(ManagePasswordsReferrer referrer) {
   }
+
+  virtual bool IsIsolationForPasswordSitesEnabled() const = 0;
+
+  // Returns true if the current page is to the new tab page.
+  virtual bool IsNewTabPage() const = 0;
+
+  // Returns a FieldInfoManager associated with the current profile.
+  virtual FieldInfoManager* GetFieldInfoManager() const = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PasswordManagerClient);

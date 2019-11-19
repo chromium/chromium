@@ -65,10 +65,10 @@ PepperExternalFileRefBackend::PepperExternalFileRefBackend(
     : host_(host),
       path_(path),
       render_process_id_(render_process_id),
-      task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
-      weak_factory_(this) {}
+      task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {}
 
 PepperExternalFileRefBackend::~PepperExternalFileRefBackend() {}
 

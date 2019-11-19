@@ -89,10 +89,6 @@ std::unique_ptr<KeyedService> ConsentAuditorFactory::BuildServiceInstanceFor(
       base::DefaultClock::GetInstance());
 }
 
-bool ConsentAuditorFactory::ServiceIsNULLWhileTesting() const {
-  return true;
-}
-
 void ConsentAuditorFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   consent_auditor::ConsentAuditorImpl::RegisterProfilePrefs(registry);

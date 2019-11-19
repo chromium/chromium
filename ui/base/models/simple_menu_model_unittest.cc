@@ -8,6 +8,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace ui {
 
@@ -19,6 +22,9 @@ class DelegateBase : public SimpleMenuModel::Delegate {
 
   ~DelegateBase() override = default;
 
+  void set_icon_on_item(int command_id) { item_with_icon_ = command_id; }
+
+  // SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override { return true; }
 
   bool IsCommandIdEnabled(int command_id) const override {
@@ -33,7 +39,17 @@ class DelegateBase : public SimpleMenuModel::Delegate {
 
   void ExecuteCommand(int command_id, int event_flags) override {}
 
+  bool IsItemForCommandIdDynamic(int command_id) const override {
+    return item_with_icon_ == command_id;
+  }
+
+  bool GetIconForCommandId(int command_id, gfx::Image* icon) const override {
+    return item_with_icon_ == command_id;
+  }
+
  private:
+  base::Optional<int> item_with_icon_;
+
   DISALLOW_COPY_AND_ASSIGN(DelegateBase);
 };
 
@@ -127,6 +143,44 @@ TEST(SimpleMenuModelTest, IsVisibleAtWithDelegateAndCommandNotVisible) {
 
   // Should return false since the command_id 108 is not visible.
   ASSERT_FALSE(simple_menu_model.IsEnabledAt(0));
+}
+
+TEST(SimpleMenuModelTest, HasIconsViaDelegate) {
+  DelegateBase delegate;
+  SimpleMenuModel simple_menu_model(&delegate);
+  simple_menu_model.AddItem(/*command_id*/ 10, base::ASCIIToUTF16("menu item"));
+  EXPECT_FALSE(simple_menu_model.HasIcons());
+
+  simple_menu_model.AddItem(/*command_id*/ 11, base::ASCIIToUTF16("menu item"));
+  delegate.set_icon_on_item(11);
+  EXPECT_TRUE(simple_menu_model.HasIcons());
+}
+
+TEST(SimpleMenuModelTest, HasIconsViaAddItem) {
+  DelegateBase delegate;
+  SimpleMenuModel simple_menu_model(&delegate);
+  simple_menu_model.AddItem(/*command_id*/ 10, base::ASCIIToUTF16("menu item"));
+  EXPECT_FALSE(simple_menu_model.HasIcons());
+
+  simple_menu_model.AddItemWithIcon(
+      /*command_id*/ 11, base::ASCIIToUTF16("menu item"),
+      gfx::test::CreateImage(16, 16).AsImageSkia());
+  EXPECT_TRUE(simple_menu_model.HasIcons());
+}
+
+TEST(SimpleMenuModelTest, HasIconsViaVectorIcon) {
+  DelegateBase delegate;
+  SimpleMenuModel simple_menu_model(&delegate);
+  simple_menu_model.AddItem(/*command_id*/ 10, base::ASCIIToUTF16("menu item"));
+  EXPECT_FALSE(simple_menu_model.HasIcons());
+
+  gfx::PathElement path[] = {gfx::CommandType::CIRCLE, 24, 18, 5};
+  gfx::VectorIconRep rep[] = {{path, 4}};
+  gfx::VectorIcon circle_icon = {rep, 1, "circle"};
+
+  simple_menu_model.AddItemWithIcon(
+      /*command_id*/ 11, base::ASCIIToUTF16("menu item"), circle_icon);
+  EXPECT_TRUE(simple_menu_model.HasIcons());
 }
 
 }  // namespace

@@ -1,0 +1,353 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+
+// This proto description is adapted from the one used in clang-proto-fuzzer.
+
+syntax = "proto2";
+package fuzzing;
+
+// TODO(nedwill): fuzz the following features
+// function prototypes
+// (in)variance
+// structs
+// interface blocks
+// swizzles
+// all ternary operators
+// switch/case statements
+// loops
+// branches (case, break, continue, return, kill)
+// preprocessor directives
+
+enum Var {
+  VAR_0 = 0;
+  VAR_1 = 1;
+  VAR_2 = 2;
+  VAR_3 = 3;
+}
+
+message Lvalue {
+  optional Var var = 1;
+}
+
+message Vec2 {
+  optional float first = 1;
+  optional float second = 2;
+}
+
+message Vec3 {
+  optional float first = 1;
+  optional float second = 2;
+  optional float third = 3;
+}
+
+message Vec4 {
+  optional float first = 1;
+  optional float second = 2;
+  optional float third = 3;
+  optional float fourth = 4;
+}
+
+// Keep this in sync with `message Const`
+enum Type {
+  // Use suffix to avoid clashing with VOID define on Windows
+  VOID_TYPE = 0;
+  INT = 1;
+  BOOL = 2;
+  UINT = 3;
+  FLOAT = 4;
+  DOUBLE = 5;
+  VEC2 = 6;
+  VEC3 = 7;
+  VEC4 = 8;
+  BVEC2 = 9;
+  BVEC3 = 10;
+  BVEC4 = 11;
+  IVEC2 = 12;
+  IVEC3 = 13;
+  IVEC4 = 14;
+  UVEC2 = 15;
+  UVEC3 = 16;
+  UVEC4 = 17;
+  MAT2 = 18;
+  MAT3 = 19;
+  MAT4 = 20;
+  MAT2X2 = 21;
+  MAT2X3 = 22;
+  MAT2X4 = 23;
+  MAT3X2 = 24;
+  MAT3X3 = 25;
+  MAT3X4 = 26;
+  MAT4X2 = 27;
+  MAT4X3 = 28;
+  MAT4X4 = 29;
+  // TODO(nedwill): support DVEC*, DMAT*
+}
+
+message Const {
+  // Keep this in sync with `enum Type`
+  oneof value {
+    // Empty case is void
+    int32 int32 = 1;
+    bool boolean = 2;
+    uint32 uint = 3;
+    float float_const = 4;
+    double double_const = 5;
+    Vec2 vec2 = 6;
+    Vec3 vec3 = 7;
+    Vec4 vec4 = 8;
+    Bvec2 bvec2 = 9;
+    Bvec3 bvec3 = 10;
+    Bvec4 bvec4 = 11;
+    Ivec2 ivec2 = 12;
+    Ivec3 ivec3 = 13;
+    Ivec4 ivec4 = 14;
+    Uvec2 uvec2 = 15;
+    Uvec3 uvec3 = 16;
+    Uvec4 uvec4 = 17;
+    Mat2 mat2 = 18;
+    Mat3 mat3 = 19;
+    Mat4 mat4 = 20;
+    Mat2 mat2x2 = 21;
+    Mat2x3 mat2x3 = 22;
+    Mat2x4 mat2x4 = 23;
+    Mat3x2 mat3x2 = 24;
+    Mat3 mat3x3 = 25;
+    Mat3x4 mat3x4 = 26;
+    Mat4x2 mat4x2 = 27;
+    Mat4x3 mat4x3 = 28;
+    Mat4 mat4x4 = 29;
+    // TODO(nedwill): support DVEC*, DMAT*
+  }
+}
+
+message Mat2x3 {
+  optional Vec3 first = 1;
+  optional Vec3 second = 2;
+}
+
+message Mat2x4 {
+  optional Vec4 first = 1;
+  optional Vec4 second = 2;
+}
+
+message Mat3x2 {
+  optional Vec2 first = 1;
+  optional Vec2 second = 2;
+  optional Vec3 third = 3;
+}
+
+message Mat3x4 {
+  optional Vec4 first = 1;
+  optional Vec4 second = 2;
+  optional Vec4 third = 3;
+}
+
+message Mat4x2 {
+  optional Vec2 first = 1;
+  optional Vec2 second = 2;
+  optional Vec2 third = 3;
+  optional Vec2 fourth = 4;
+}
+
+message Mat4x3 {
+  optional Vec3 first = 1;
+  optional Vec3 second = 2;
+  optional Vec3 third = 3;
+  optional Vec3 fourth = 4;
+}
+
+message Bvec2 {
+  optional bool first = 1;
+  optional bool second = 2;
+}
+
+message Bvec3 {
+  optional bool first = 1;
+  optional bool second = 2;
+  optional bool third = 3;
+}
+
+message Bvec4 {
+  optional bool first = 1;
+  optional bool second = 2;
+  optional bool third = 3;
+  optional bool fourth = 4;
+}
+
+message Ivec2 {
+  optional int32 first = 1;
+  optional int32 second = 2;
+}
+
+message Ivec3 {
+  optional int32 first = 1;
+  optional int32 second = 2;
+  optional int32 third = 3;
+}
+
+message Ivec4 {
+  optional int32 first = 1;
+  optional int32 second = 2;
+  optional int32 third = 3;
+  optional int32 fourth = 4;
+}
+
+message Uvec2 {
+  optional uint32 first = 1;
+  optional uint32 second = 2;
+}
+
+message Uvec3 {
+  optional uint32 first = 1;
+  optional uint32 second = 2;
+  optional uint32 third = 3;
+}
+
+message Uvec4 {
+  optional uint32 first = 1;
+  optional uint32 second = 2;
+  optional uint32 third = 3;
+  optional uint32 fourth = 4;
+}
+
+message Mat2 {
+  optional Vec2 first = 1;
+  optional Vec2 second = 2;
+}
+
+message Mat3 {
+  optional Vec3 first = 1;
+  optional Vec3 second = 2;
+  optional Vec3 third = 3;
+}
+
+message Mat4 {
+  optional Vec4 first = 1;
+  optional Vec4 second = 2;
+  optional Vec4 third = 3;
+  optional Vec4 fourth = 4;
+}
+
+message BinaryOp {
+  enum Op {
+    PLUS = 0;
+    MINUS = 1;
+    MUL = 2;
+    DIV = 3;
+    MOD = 4;
+    XOR = 5;
+    AND = 6;
+    OR = 7;
+    EQ = 8;
+    NE = 9;
+    LE = 10;
+    GE = 11;
+    LT = 12;
+    GT = 13;
+    SHL = 14;
+    SHR = 15;
+    LOGICAL_AND = 16;
+    LOGICAL_OR = 17;
+  };
+  optional Op op = 1;
+  optional Rvalue left = 2;
+  optional Rvalue right = 3;
+}
+
+message UnaryOp {
+  enum Op {
+    PLUS = 0;
+    MINUS = 1;
+    TILDE = 2;
+    NOT = 3;
+  }
+  optional Op op = 1;
+  optional Rvalue rvalue = 2;
+}
+
+message Declare {
+  optional Type type = 1;
+  optional Var var = 2;
+  optional Qualifier qualifier = 3;
+  enum Qualifier {
+    NO_QUALIFIER = 0;
+    CONST_QUALIFIER = 1;
+    IN_QUALIFIER = 2;
+    OUT_QUALIFIER = 3;
+    UNIFORM_QUALIFIER = 4;
+    // TODO(nedwill): ES2 only
+    // ATTRIBUTE_QUALIFIER = 5;
+    // VARYING_QUALIFIER = 6;
+    // TODO(nedwill): ES3.1 only
+    // BUFFER_QUALIFIER = 7;
+    // TODO(nedwill): compute shaders only
+    // SHARED_QUALIFIER = 8;
+  }
+  optional Rvalue rvalue = 9;
+}
+
+// TODO: finish implementing operators
+// https://www.khronos.org/registry/OpenGL/specs/gl/GLSLangSpec.4.60.html#operators
+message Rvalue {
+  oneof rvalue {
+    Var var = 1;
+    Const cons = 2;
+    BinaryOp binary_op = 3;
+    UnaryOp unary_op = 4;
+  }
+}
+
+message Assignment {
+  optional Lvalue lvalue = 1;
+  optional Rvalue rvalue = 2;
+}
+
+message IfElse {
+  optional Rvalue cond = 1;
+  optional Block if_body = 2;
+  optional Block else_body = 3;
+}
+
+message While {
+  optional Rvalue cond = 1;
+  optional Block body = 2;
+}
+
+message Statement {
+  oneof statement {
+    Assignment assignment = 1;
+    IfElse ifelse = 2;
+    While while_stmt = 3;
+    Rvalue return_stmt = 4;
+    Declare declare = 5;
+  }
+}
+
+enum FunctionName {
+  MAIN = 0;
+  NAME_1 = 1;
+  NAME_2 = 2;
+  NAME_3 = 3;
+}
+
+message Block {
+  repeated Statement statements = 1;
+}
+
+message Function {
+  optional FunctionName function_name = 1;
+  optional Block block = 2;
+  optional Rvalue return_stmt = 3;
+  optional Type type = 4;
+  // TODO(nedwill): add arguments
+}
+
+message Shader {
+  repeated Function functions = 1;
+  // Global declarations
+  repeated Declare declarations = 2;
+}
+
+message Session {
+  optional Shader vertex_shader = 1;
+  optional Shader fragment_shader = 2;
+}

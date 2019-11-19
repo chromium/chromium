@@ -8,7 +8,8 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/battery/battery_status_service.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 
@@ -16,7 +17,7 @@ namespace device {
 
 class BatteryMonitorImpl : public mojom::BatteryMonitor {
  public:
-  static void Create(mojom::BatteryMonitorRequest request);
+  static void Create(mojo::PendingReceiver<mojom::BatteryMonitor> receiver);
 
   BatteryMonitorImpl();
   ~BatteryMonitorImpl() override;
@@ -29,7 +30,7 @@ class BatteryMonitorImpl : public mojom::BatteryMonitor {
   void DidChange(const mojom::BatteryStatus& battery_status);
   void ReportStatus();
 
-  mojo::StrongBindingPtr<mojom::BatteryMonitor> binding_;
+  mojo::SelfOwnedReceiverRef<mojom::BatteryMonitor> receiver_;
   std::unique_ptr<BatteryStatusService::BatteryUpdateSubscription>
       subscription_;
   QueryNextStatusCallback callback_;

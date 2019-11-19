@@ -10,7 +10,7 @@
 
 #include "components/exo/pointer.h"
 #include "components/exo/wayland/server_util.h"
-#include "ui/base/cursor/cursor_type.h"
+#include "ui/base/cursor/types/cursor_types.h"
 
 namespace exo {
 namespace wayland {

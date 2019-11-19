@@ -10,16 +10,17 @@
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
-#include "chrome/chrome_cleaner/interfaces/zip_archiver.mojom.h"
 #include "chrome/chrome_cleaner/ipc/mojo_sandbox_hooks.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
+#include "chrome/chrome_cleaner/mojom/zip_archiver.mojom.h"
 #include "components/chrome_cleaner/public/constants/result_codes.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "sandbox/win/src/sandbox_policy.h"
 
 namespace chrome_cleaner {
 
-using UniqueZipArchiverPtr =
-    std::unique_ptr<mojom::ZipArchiverPtr, base::OnTaskRunnerDeleter>;
+using RemoteZipArchiverPtr = std::unique_ptr<mojo::Remote<mojom::ZipArchiver>,
+                                             base::OnTaskRunnerDeleter>;
 
 class ZipArchiverSandboxSetupHooks : public MojoSandboxSetupHooks {
  public:
@@ -32,12 +33,12 @@ class ZipArchiverSandboxSetupHooks : public MojoSandboxSetupHooks {
   ResultCode UpdateSandboxPolicy(sandbox::TargetPolicy* policy,
                                  base::CommandLine* command_line) override;
 
-  UniqueZipArchiverPtr TakeZipArchiverPtr();
+  RemoteZipArchiverPtr TakeZipArchiverRemote();
 
  private:
   scoped_refptr<MojoTaskRunner> mojo_task_runner_;
   base::OnceClosure connection_error_handler_;
-  UniqueZipArchiverPtr zip_archiver_ptr_;
+  RemoteZipArchiverPtr zip_archiver_;
 
   DISALLOW_COPY_AND_ASSIGN(ZipArchiverSandboxSetupHooks);
 };

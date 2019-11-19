@@ -50,6 +50,7 @@ void NotificationRegistrar::Add(NotificationObserver* observer,
                                 const NotificationSource& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsRegistered(observer, type, source)) << "Duplicate registration.";
+  DCHECK(NotificationServiceImpl::current());
 
   Record record = { observer, type, source };
   registered_.push_back(record);
@@ -110,7 +111,7 @@ bool NotificationRegistrar::IsRegistered(NotificationObserver* observer,
                                          const NotificationSource& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Record record = { observer, type, source };
-  return base::ContainsValue(registered_, record);
+  return base::Contains(registered_, record);
 }
 
 }  // namespace content

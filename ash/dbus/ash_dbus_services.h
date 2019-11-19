@@ -11,23 +11,23 @@
 
 namespace chromeos {
 class CrosDBusService;
-}  // namespace chromeos
+}
+
+namespace dbus {
+class Bus;
+}
 
 namespace ash {
 
-// Handles starting/stopping the D-Bus thread for ash services and also
-// manages the liftime of the ash D-Bus services.
+// Owns and manages the lifetime of the ash D-Bus services.
 class AshDBusServices {
  public:
-  AshDBusServices();
+  explicit AshDBusServices(dbus::Bus* system_bus);
   ~AshDBusServices();
-
-  // Emit ash-initialized upstart signal to start Chrome OS tasks that expect
-  // that ash is listening to D-Bus signals they emit.
-  void EmitAshInitialized();
 
  private:
   std::unique_ptr<chromeos::CrosDBusService> display_service_;
+  std::unique_ptr<chromeos::CrosDBusService> gesture_properties_service_;
   std::unique_ptr<chromeos::CrosDBusService> liveness_service_;
   std::unique_ptr<chromeos::CrosDBusService> url_handler_service_;
 

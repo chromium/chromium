@@ -16,10 +16,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/memory/ref_counted.h"
 #include "extensions/common/url_pattern.h"
-
-namespace extensions {
-class InfoMap;
-}
 #endif
 
 class ProfileManager;
@@ -39,10 +35,8 @@ class NaClBrowserDelegateImpl : public NaClBrowserDelegate {
   std::string GetVersionString() const override;
   ppapi::host::HostFactory* CreatePpapiHostFactory(
       content::BrowserPpapiHost* ppapi_host) override;
-  bool MapUrlToLocalFilePath(const GURL& url,
-                             bool is_blocking,
-                             const base::FilePath& profile_directory,
-                             base::FilePath* file_path) override;
+  MapUrlToLocalFilePathCallback GetMapUrlToLocalFilePathCallback(
+      const base::FilePath& profile_directory) override;
   void SetDebugPatterns(const std::string& debug_patterns) override;
   bool URLMatchesDebugPatterns(const GURL& manifest_url) override;
   bool IsNonSfiModeAllowed(const base::FilePath& profile_directory,
@@ -55,8 +49,6 @@ class NaClBrowserDelegateImpl : public NaClBrowserDelegate {
                                       int render_view_id);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  scoped_refptr<extensions::InfoMap> GetExtensionInfoMap(
-      const base::FilePath& profile_directory);
   std::vector<URLPattern> debug_patterns_;
 #endif
 

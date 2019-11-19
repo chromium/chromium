@@ -12,8 +12,6 @@ TEST(GLSurfaceFormatTest, BasicTest) {
     // Check default format properties.
     GLSurfaceFormat format = GLSurfaceFormat();
     EXPECT_EQ(32, format.GetBufferSize());
-    EXPECT_EQ(GLSurfaceFormat::PIXEL_LAYOUT_DONT_CARE,
-              format.GetPixelLayout());
   }
 
   {
@@ -22,21 +20,6 @@ TEST(GLSurfaceFormatTest, BasicTest) {
     format.SetRGB565();
     EXPECT_EQ(16, format.GetBufferSize());
   }
-
-  {
-    // Check custom pixel layout.
-    GLSurfaceFormat format = GLSurfaceFormat(
-        GLSurfaceFormat::PIXEL_LAYOUT_RGBA);
-    EXPECT_EQ(GLSurfaceFormat::PIXEL_LAYOUT_RGBA,
-              format.GetPixelLayout());
-
-    // The custom pixel layout should remain after other modifications.
-    format.SetDepthBits(24);
-    EXPECT_EQ(GLSurfaceFormat::PIXEL_LAYOUT_RGBA,
-              format.GetPixelLayout());
-    EXPECT_EQ(24, format.GetDepthBits());
-  }
-
   {
     // Check IsCompatible
     GLSurfaceFormat format = GLSurfaceFormat();

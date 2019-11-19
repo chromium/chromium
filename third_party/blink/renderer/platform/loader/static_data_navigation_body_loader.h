@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
@@ -40,7 +40,7 @@ class PLATFORM_EXPORT StaticDataNavigationBodyLoader
   bool received_all_data_ = false;
   bool is_in_continue_ = false;
   int64_t total_encoded_data_length_ = 0;
-  base::WeakPtrFactory<StaticDataNavigationBodyLoader> weak_factory_;
+  base::WeakPtrFactory<StaticDataNavigationBodyLoader> weak_factory_{this};
 };
 
 }  // namespace blink

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<style>
+  img {
+    width: 200px;
+    height: 150px;
+  }
+</style>
+
+<img src="resources/cake.png" id="image1" alt="One"><img src="resources/cake.png" id="image2" alt="Two"><img src="resources/cake.png" id="image3" alt="Three">
+
+<script>
+  function setDOMSelection(anchorNode, anchorOffset, focusNode, focusOffset) {
+    getSelection().removeAllRanges();
+    let selectionRange = document.createRange();
+    selectionRange.setStart(anchorNode, anchorOffset);
+    selectionRange.setEnd(focusNode, focusOffset);
+    getSelection().addRange(selectionRange);
+  }
+
+  function verifyAXSelection(anchorObject, anchorOffset, focusObject, focusOffset) {
+    assert_equals(axRoot.selectionAnchorObject, anchorObject, 'anchorObject');
+    assert_equals(axRoot.selectionAnchorOffset, anchorOffset, 'anchorOffset');
+    assert_equals(axRoot.selectionFocusObject, focusObject, 'focusObject');
+    assert_equals(axRoot.selectionFocusOffset, focusOffset, 'focusOffset');
+  }
+
+  setup(() => {
+    window.axRoot = accessibilityController.rootElement;
+    window.axBody = axRoot.childAtIndex(0);
+    window.axImage1 = accessibilityController.accessibleElementById('image1');
+    window.axImage2 = accessibilityController.accessibleElementById('image2');
+    window.axImage3 = accessibilityController.accessibleElementById('image3');
+    window.image1 = document.querySelectorAll('img')[0];
+    window.image2 = document.querySelectorAll('img')[1];
+    window.image3 = document.querySelectorAll('img')[2];
+  });
+
+  test(() => {
+    setDOMSelection(image1, 0, image1, 0);
+    verifyAXSelection(axImage1, 0, axImage1, 0);
+  }, 'Test creating a collapsed selection before the first image.');
+
+  test(() => {
+    setDOMSelection(image1, 0, image2, 0);
+    verifyAXSelection(axImage1, 0, axImage2, 0);
+  }, 'Test creating a selection around the first image.');
+
+  test(() => {
+    setDOMSelection(image1, 0, image3, 0);
+    verifyAXSelection(axImage1, 0, axImage3, 0);
+  }, 'Test creating a selection around the first two images.');
+
+  test(() => {
+    setDOMSelection(image1, 0, document.body, 3);
+    verifyAXSelection(axImage1, 0, axBody, 3);
+  }, 'Test creating a selection around all the images.');
+
+  test(() => {
+    setDOMSelection(document.body, 0, document.body, 0);
+    verifyAXSelection(axBody, 0, axBody, 0);
+  }, 'Test creating a collapsed selection before the first image from the body.');
+
+  test(() => {
+    setDOMSelection(document.body, 0, document.body, 1);
+    verifyAXSelection(axBody, 0, axBody, 1);
+  }, 'Test creating a selection around the first image from the body.');
+
+  test(() => {
+    setDOMSelection(document.body, 0, document.body, 2);
+    verifyAXSelection(axBody, 0, axBody, 2);
+  }, 'Test creating a selection before the first two images from the body.');
+
+  test(() => {
+    setDOMSelection(document.body, 0, document.body, 3);
+    verifyAXSelection(axBody, 0, axBody, 3);
+  }, 'Test creating a selection around all the images from the body.');
+
+  test(() => {
+    setDOMSelection(image2, 0, image2, 0);
+    verifyAXSelection(axImage2, 0, axImage2, 0);
+  }, 'Test creating a collapsed selection before the second image.');
+
+  test(() => {
+    setDOMSelection(document.body, 1, document.body, 1);
+    verifyAXSelection(axBody, 1, axBody, 1);
+  }, 'Test creating a collapsed selection before the second image from the body.');
+
+  test(() => {
+    setDOMSelection(image2, 0, document.body, 3);
+    verifyAXSelection(axImage2, 0, axBody, 3);
+  }, 'Test creating a selection around the last two images.');
+
+  test(() => {
+    setDOMSelection(document.body, 1, document.body, 3);
+    verifyAXSelection(axBody, 1, axBody, 3);
+  }, 'Test creating a selection around the last two images from the body.');
+
+  test(() => {
+    setDOMSelection(image3, 0, image3, 0);
+    verifyAXSelection(axImage3, 0, axImage3, 0);
+  }, 'Test creating a collapsed selection before the third image.');
+
+  test(() => {
+    setDOMSelection(document.body, 2, document.body, 2);
+    verifyAXSelection(axBody, 2, axBody, 2);
+  }, 'Test creating a collapsed selection before the third image from the body.');
+
+  test(() => {
+    setDOMSelection(document.body, 3, document.body, 3);
+    verifyAXSelection(axBody, 3, axBody, 3);
+  }, 'Test creating a collapsed selection after the last image from the body.');
+</script>

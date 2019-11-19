@@ -16,7 +16,7 @@ class ExceptionState;
 class KURL;
 class ArrayBufferViewOrBlobOrStringOrFormData;
 
-class NavigatorBeacon final : public GarbageCollectedFinalized<NavigatorBeacon>,
+class NavigatorBeacon final : public GarbageCollected<NavigatorBeacon>,
                               public Supplement<Navigator> {
   USING_GARBAGE_COLLECTED_MIXIN(NavigatorBeacon);
 

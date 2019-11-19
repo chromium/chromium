@@ -46,9 +46,15 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
                                  public WebStateListObserver {
  public:
   // Starts tracking this download task.
-  void Add(web::DownloadTask* task) { task->AddObserver(this); }
+  void Add(web::DownloadTask* task) {
+    task->AddObserver(this);
+    observed_tasks_.insert(task);
+  }
   // Stops tracking this download task.
-  void Remove(web::DownloadTask* task) { task->RemoveObserver(this); }
+  void Remove(web::DownloadTask* task) {
+    task->RemoveObserver(this);
+    observed_tasks_.erase(task);
+  }
   // DownloadTaskObserver overrides:
   void OnDownloadUpdated(web::DownloadTask* task) override {
     if (task->IsDone()) {
@@ -82,7 +88,13 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
   void OnDownloadDestroyed(web::DownloadTask* task) override {
     // This download task was never open by the user.
     task->RemoveObserver(this);
+    observed_tasks_.erase(task);
 
+    DownloadAborted(task);
+  }
+
+  // Logs histograms. Called when DownloadTask or this object was destroyed.
+  void DownloadAborted(web::DownloadTask* task) {
     if (task->GetState() == web::DownloadTask::State::kInProgress) {
       UMA_HISTOGRAM_ENUMERATION("Download.IOSDownloadFileResult",
                                 DownloadFileResult::Other,
@@ -115,9 +127,19 @@ class UnopenedDownloadsTracker : public web::DownloadTaskObserver,
     }
   }
 
+  ~UnopenedDownloadsTracker() override {
+    for (web::DownloadTask* task : observed_tasks_) {
+      task->RemoveObserver(this);
+      DownloadAborted(task);
+    }
+  }
+
  private:
   // True if a web state was closed without user action.
   bool did_close_web_state_without_user_action = false;
+  // Keeps track of observed tasks to remove observer when
+  // UnopenedDownloadsTracker is destructed.
+  std::set<web::DownloadTask*> observed_tasks_;
 };
 }  // namespace
 

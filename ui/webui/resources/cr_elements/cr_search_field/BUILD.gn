@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("../../tools/js_modulizer.gni")
 
 js_type_check("closure_compile") {
   deps = [
@@ -12,16 +14,56 @@ js_type_check("closure_compile") {
 }
 
 js_library("cr_search_field_behavior") {
-  deps = [
-    "//ui/webui/resources/js:assert",
-  ]
+  deps = []
 }
 
 js_library("cr_search_field") {
   deps = [
     ":cr_search_field_behavior",
-    "//third_party/polymer/v1_0/components-chromium/paper-icon-button:paper-icon-button-extracted",
     "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:assert",
   ]
+}
+
+# Targets for auto-generating and typechecking Polymer 3 JS modules
+
+js_modulizer("modulize") {
+  input_files = [ "cr_search_field_behavior.js" ]
+  deps = []
+}
+
+polymer_modulizer("cr_search_field") {
+  js_file = "cr_search_field.js"
+  html_file = "cr_search_field.html"
+  html_type = "dom-module"
+  auto_imports = [ "ui/webui/resources/cr_elements/cr_search_field/cr_search_field_behavior.html|CrSearchFieldBehavior" ]
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":cr_search_field.m",
+    ":cr_search_field_behavior.m",
+  ]
+}
+
+js_library("cr_search_field.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/cr_search_field/cr_search_field.m.js",
+  ]
+  deps = [
+    ":cr_search_field_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  extra_deps = [ ":cr_search_field_module" ]
+}
+
+js_library("cr_search_field_behavior.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/cr_search_field/cr_search_field_behavior.m.js",
+  ]
+  deps = []
+  extra_deps = [ ":modulize" ]
 }

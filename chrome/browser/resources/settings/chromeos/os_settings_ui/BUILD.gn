@@ -1,0 +1,27 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":os_settings_ui",
+  ]
+}
+
+js_library("os_settings_ui") {
+  deps = [
+    "../..:global_scroll_target_behavior",
+    "../..:page_visibility",
+    "../../prefs",
+    "../os_settings_main:os_settings_main",
+    "../os_toolbar",
+    "//ui/webui/resources/cr_elements:cr_container_shadow_behavior",
+    "//ui/webui/resources/cr_elements/chromeos/network:cr_onc_strings",
+    "//ui/webui/resources/cr_elements/cr_drawer:cr_drawer",
+    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior",
+    "//ui/webui/resources/js:find_shortcut_behavior",
+  ]
+}

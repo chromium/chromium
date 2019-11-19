@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
-Found 55 tests; 10 PASS, 45 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 56 tests; 11 PASS, 45 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
+PASS idl_test validation
 FAIL ReportBody interface: existence and properties of interface object assert_own_property: self does not have own property "ReportBody" expected property "ReportBody" missing
 FAIL ReportBody interface object length assert_own_property: self does not have own property "ReportBody" expected property "ReportBody" missing
 FAIL ReportBody interface object name assert_own_property: self does not have own property "ReportBody" expected property "ReportBody" missing

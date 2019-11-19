@@ -6,13 +6,15 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/network_context.mojom";
 import "services/network/public/mojom/url_loader.mojom";
+import "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom";
 import "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_object.mojom";
+import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
 
-// S13nServiceWorker:
 // Represents a service worker that is a 'controller'.
 // (https://w3c.github.io/ServiceWorker/#navigator-service-worker-controller)
 // One of its Mojo end points (i.e. the caller end) is passed to the
@@ -36,15 +38,18 @@ interface ControllerServiceWorker {
   // handler ran and all outstanding respondWith() and waitUntil() promises have
   // settled. |response_callback| is called once the promise to respondWith()
   // settles, or when the event handler ran without calling respondWith().
-  DispatchFetchEvent(
+  DispatchFetchEventForSubresource(
       blink.mojom.DispatchFetchEventParams params,
-      blink.mojom.ServiceWorkerFetchResponseCallback response_callback)
+      pending_remote<blink.mojom.ServiceWorkerFetchResponseCallback> response_callback)
       => (blink.mojom.ServiceWorkerEventStatus status);
 
   // TODO(kinuko): Add DispatchExtendableMessageEvent() as well.
 
   // Connects a new pipe to this controller instance.
-  Clone(ControllerServiceWorker& controller);
+  // |cross_origin_embedder_policy| is the policy for the client which uses the
+  // counterpart of |receiver|.
+  Clone(pending_receiver<ControllerServiceWorker> receiver,
+        network.mojom.CrossOriginEmbedderPolicy cross_origin_embedder_policy);
 };
 
 // A convenient struct that packs necessary information for a service worker
@@ -56,11 +61,9 @@ struct ControllerServiceWorkerInfo {
   blink.mojom.ControllerServiceWorkerMode mode =
       blink.mojom.ControllerServiceWorkerMode.kNoController;
 
-  // S13nServiceWorker only:
   // Non-null iff there is a controller and it has a fetch event handler.
-  ControllerServiceWorker? endpoint;
+  pending_remote<ControllerServiceWorker>? remote_controller;
 
-  // S13nServiceWorker:
   // The client being controlled, used for FetchEvent#clientId. The ID is
   // issued by the browser process for this receiving client, and would
   // never change thoughout the lifetime of the client.
@@ -76,6 +79,9 @@ struct ControllerServiceWorkerInfo {
   // Represents ServiceWorkerContainer#controller.
   // Null if there is no controller.
   blink.mojom.ServiceWorkerObjectInfo? object_info;
+
+  // The set of features the controller has used, for UseCounter purposes.
+  array<WebFeature> used_features;
 };
 
 // A renderer-side interface for talking across threads. The main thread
@@ -87,5 +93,5 @@ interface ControllerServiceWorkerConnector {
   // Resets the controller connection with the given |controller|, this
   // can be called when a new controller is given, e.g. due to claim().
   // |controller| can be null if it gets no controller.
-  UpdateController(ControllerServiceWorker? controller);
+  UpdateController(pending_remote<ControllerServiceWorker>? controller);
 };

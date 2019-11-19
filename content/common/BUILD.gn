@@ -13,6 +13,7 @@ import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 import("features.gni")
 if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
+  import("//content/public/app/mac_helpers.gni")
 }
 
 # For feature flags internal to content. See content/public/common:features
@@ -23,6 +24,7 @@ buildflag_header("buildflags") {
   flags = [
     "USE_EXTERNAL_POPUP_MENU=$use_external_popup_menu",
     "ALLOW_CRITICAL_MEMORY_PRESSURE_HANDLING_IN_FOREGROUND=$allow_critical_memory_pressure_handling_in_foreground",
+    "ENABLE_SCREEN_CAPTURE=$enable_screen_capture",
   ]
 }
 
@@ -42,6 +44,8 @@ source_set("common") {
     "android/gin_java_bridge_value.h",
     "android/hash_set.cc",
     "android/hash_set.h",
+    "android/surface_wrapper.cc",
+    "android/surface_wrapper.h",
     "android/sync_compositor_statics.cc",
     "android/sync_compositor_statics.h",
     "android/use_zoom_for_dsf_policy_android.cc",
@@ -51,13 +55,14 @@ source_set("common") {
     "ax_content_node_data.h",
     "background_fetch/background_fetch_types.cc",
     "background_fetch/background_fetch_types.h",
-    "bluetooth/web_bluetooth_device_id.cc",
-    "bluetooth/web_bluetooth_device_id.h",
     "browser_plugin/browser_plugin_constants.cc",
     "browser_plugin/browser_plugin_constants.h",
     "browser_plugin/browser_plugin_messages.h",
     "child_process_host_impl.cc",
     "child_process_host_impl.h",
+    "common_param_traits.cc",
+    "common_param_traits.h",
+    "common_param_traits_macros.h",
     "common_sandbox_support_linux.cc",
     "content_constants_internal.cc",
     "content_constants_internal.h",
@@ -92,20 +97,14 @@ source_set("common") {
     "cursors/webcursor_aurax11.cc",
     "cursors/webcursor_mac.mm",
     "cursors/webcursor_ozone.cc",
-    "date_time_suggestion.h",
-    "dom_storage/dom_storage_map.cc",
-    "dom_storage/dom_storage_map.h",
-    "dom_storage/dom_storage_messages.h",
-    "dom_storage/dom_storage_types.h",
-    "download/mhtml_save_status.cc",
-    "download/mhtml_save_status.h",
     "drag_event_source_info.h",
     "drag_messages.h",
     "drag_traits.h",
     "edit_command.h",
+    "fetch/fetch_api_request_proto.cc",
+    "fetch/fetch_api_request_proto.h",
     "fetch/fetch_request_type_converters.cc",
     "fetch/fetch_request_type_converters.h",
-    "fileapi/webblob_messages.h",
     "font_cache_dispatcher_win.cc",
     "font_list.cc",
     "font_list.h",
@@ -113,7 +112,7 @@ source_set("common") {
     "font_list_fontconfig.cc",
     "font_list_mac.mm",
     "font_list_win.cc",
-    "frame_message_enums.h",
+    "frame_delete_intention.h",
     "frame_message_structs.cc",
     "frame_message_structs.h",
     "frame_messages.h",
@@ -140,10 +139,10 @@ source_set("common") {
     "input/input_event_ack.h",
     "input/input_event_ack_state.cc",
     "input/input_event_dispatch_type.h",
+    "input/input_event_mojom_traits.cc",
+    "input/input_event_mojom_traits.h",
     "input/input_event_stream_validator.cc",
     "input/input_event_stream_validator.h",
-    "input/input_event_struct_traits.cc",
-    "input/input_event_struct_traits.h",
     "input/input_param_traits.cc",
     "input/input_param_traits.h",
     "input/sync_compositor_messages.cc",
@@ -164,8 +163,8 @@ source_set("common") {
     "input/synthetic_tap_gesture_params.h",
     "input/synthetic_web_input_event_builders.cc",
     "input/synthetic_web_input_event_builders.h",
-    "input/touch_action_optional_struct_traits.cc",
-    "input/touch_action_optional_struct_traits.h",
+    "input/touch_action_optional_mojom_traits.cc",
+    "input/touch_action_optional_mojom_traits.h",
     "input/touch_event_stream_validator.cc",
     "input/touch_event_stream_validator.h",
     "input/web_mouse_wheel_event_traits.cc",
@@ -179,39 +178,25 @@ source_set("common") {
     "mac/attributed_string_coder.mm",
     "mac/font_loader.h",
     "mac/font_loader.mm",
-    "media/aec_dump_messages.h",
     "media/cdm_info.cc",
     "media/media_player_delegate_messages.h",
-    "media/peer_connection_tracker_messages.h",
-    "mime_sniffing_throttle.cc",
-    "mime_sniffing_throttle.h",
-    "mime_sniffing_url_loader.cc",
-    "mime_sniffing_url_loader.h",
     "navigation_gesture.h",
     "navigation_params.cc",
     "navigation_params.h",
-    "navigation_subresource_loader_params.cc",
-    "navigation_subresource_loader_params.h",
+    "navigation_params_mojom_traits.h",
+    "navigation_params_utils.h",
     "net/record_load_histograms.cc",
     "net/record_load_histograms.h",
-    "net/url_request_service_worker_data.cc",
-    "net/url_request_service_worker_data.h",
-    "net/url_request_user_data.cc",
-    "net/url_request_user_data.h",
     "origin_util.cc",
     "page_messages.h",
     "page_state_serialization.cc",
     "page_state_serialization.h",
-    "page_zoom.cc",
     "pepper_file_util.cc",
     "pepper_file_util.h",
     "pepper_plugin_list.cc",
     "pepper_plugin_list.h",
     "pepper_renderer_instance_data.cc",
     "pepper_renderer_instance_data.h",
-    "possibly_associated_interface_ptr.h",
-    "possibly_associated_interface_ptr_info.h",
-    "possibly_associated_wrapper_shared_url_loader_factory.h",
     "process_type.cc",
     "render_widget_surface_properties.cc",
     "render_widget_surface_properties.h",
@@ -226,25 +211,20 @@ source_set("common") {
     "service_manager/service_manager_connection_impl.h",
     "service_worker/service_worker_loader_helpers.cc",
     "service_worker/service_worker_loader_helpers.h",
-    "service_worker/service_worker_types.cc",
-    "service_worker/service_worker_types.h",
     "service_worker/service_worker_utils.cc",
     "service_worker/service_worker_utils.h",
-    "single_request_url_loader_factory.cc",
-    "single_request_url_loader_factory.h",
     "skia_utils.cc",
     "skia_utils.h",
     "swapped_out_messages.cc",
     "swapped_out_messages.h",
-    "tab_switching_time_callback.cc",
-    "tab_switching_time_callback.h",
-    "task_scheduler.cc",
-    "task_scheduler.h",
+    "tab_switch_time_recorder.cc",
+    "tab_switch_time_recorder.h",
     "text_input_client_messages.h",
     "text_input_state.cc",
     "text_input_state.h",
-    "throttling_url_loader.cc",
-    "throttling_url_loader.h",
+    "thread_pool_util.cc",
+    "thread_pool_util.h",
+    "unfreezable_frame_messages.h",
     "unique_name_helper.cc",
     "unique_name_helper.h",
     "url_schemes.cc",
@@ -253,6 +233,8 @@ source_set("common") {
     "view_messages.h",
     "visual_properties.cc",
     "visual_properties.h",
+    "web_package/signed_exchange_utils.cc",
+    "web_package/signed_exchange_utils.h",
     "widget_messages.h",
   ]
 
@@ -265,6 +247,7 @@ source_set("common") {
   public_deps = [
     ":mojo_bindings",
     "//cc",
+    "//cc/ipc",
     "//gpu/command_buffer/common",
     "//ipc",
     "//services/network:network_service",
@@ -278,15 +261,16 @@ source_set("common") {
     ":buildflags",
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:branding_buildflags",
     "//build/util:webkit_version",
     "//components/discardable_memory/common",
-    "//components/services/filesystem/public/interfaces",
+    "//components/services/filesystem/public/mojom",
     "//components/tracing",
     "//components/tracing:startup_tracing",
     "//components/viz/service",
     "//content:resources",
     "//content/app/resources",
-    "//content/common/service_worker:service_worker_types_proto",
+    "//content/common/fetch:fetch_api_request_proto",
     "//content/public/common:interfaces",
     "//content/public/common:service_names",
     "//device/base/synchronization",
@@ -319,8 +303,7 @@ source_set("common") {
     "//services/service_manager/public/mojom",
     "//services/service_manager/zygote:zygote_buildflags",
     "//services/video_capture/public/mojom",
-    "//services/viz/public/interfaces",
-    "//services/ws/public/mojom",
+    "//services/viz/public/mojom",
     "//skia",
     "//storage/common",
     "//third_party/angle:angle_gpu_info_util",
@@ -332,7 +315,7 @@ source_set("common") {
     "//ui/events/blink",
     "//ui/gfx",
     "//ui/gfx/geometry",
-    "//ui/gfx/geometry/mojo:struct_traits",
+    "//ui/gfx/geometry/mojom:mojom_traits",
     "//ui/gfx/ipc",
     "//ui/gfx/ipc/color",
     "//ui/gfx/ipc/geometry",
@@ -340,6 +323,7 @@ source_set("common") {
     "//ui/gl",
     "//ui/gl/init",
     "//ui/latency/ipc",
+    "//ui/native_theme",
     "//ui/shell_dialogs",
     "//url",
     "//url/ipc:url_ipc",
@@ -365,7 +349,10 @@ source_set("common") {
   }
 
   if (is_mac) {
-    deps += [ "//sandbox/mac:seatbelt" ]
+    deps += [
+      ":mac_helpers",
+      "//sandbox/mac:seatbelt",
+    ]
   }
 
   if (is_android) {
@@ -442,6 +429,13 @@ source_set("common") {
     sources += [ "font_list_fuchsia.cc" ]
     deps += [ "//third_party/fuchsia-sdk/sdk:fdio" ]
   }
+
+  if (use_clang_coverage) {
+    sources += [
+      "coverage_utils.cc",
+      "coverage_utils.h",
+    ]
+  }
 }
 
 # See comment at the top of //content/BUILD.gn for how this works.
@@ -467,43 +461,31 @@ mojom("mojo_bindings") {
 
   sources = [
     "associated_interfaces.mojom",
-    "child.mojom",
-    "child_control.mojom",
+    "child_process.mojom",
     "document_scoped_interface_bundle.mojom",
+    "download/mhtml_file_writer.mojom",
     "field_trial_recorder.mojom",
     "frame.mojom",
     "frame_messages.mojom",
+    "frame_proxy.mojom",
     "frame_sink_provider.mojom",
     "histogram_fetcher.mojom",
-    "host_zoom.mojom",
-    "image_downloader/image_downloader.mojom",
     "input/input_handler.mojom",
     "input/input_injector.mojom",
     "input/synchronous_compositor.mojom",
-    "manifest_observer.mojom",
-    "media/peer_connection_tracker.mojom",
     "media/renderer_audio_input_stream_factory.mojom",
     "media/renderer_audio_output_stream_factory.mojom",
     "native_types.mojom",
     "navigation_client.mojom",
     "navigation_params.mojom",
     "page_state.mojom",
-    "push_messaging.mojom",
-    "render_frame_message_filter.mojom",
+    "prefetched_signed_exchange_info.mojom",
     "render_frame_metadata.mojom",
     "render_message_filter.mojom",
-    "render_widget_window_tree_client_factory.mojom",
     "renderer.mojom",
     "renderer_host.mojom",
     "widget.mojom",
   ]
-
-  if (is_mac) {
-    sources += [
-      "render_widget_host_ns_view.mojom",
-      "sandbox_support_mac.mojom",
-    ]
-  }
 
   enabled_features = []
   if (enable_ipc_logging) {
@@ -512,37 +494,49 @@ mojom("mojo_bindings") {
   if (is_linux || is_chromeos) {
     enabled_features += [ "supports_thread_priorities" ]
   }
+  if (use_clang_coverage) {
+    enabled_features += [ "clang_coverage" ]
+  }
 
   import_dirs = [ "//mojo/services" ]
 
   public_deps = [
-    "//components/services/leveldb/public/interfaces",
+    "//cc/mojom",
+    "//components/tracing/common:interfaces",
     "//content/public/common:interfaces",
     "//content/public/common:resource_type_bindings",
     "//ipc:mojom_constants",
     "//media/capture/mojom:video_capture",
-    "//media/mojo/interfaces",
+    "//media/mojo/mojom",
     "//mojo/public/mojom/base",
     "//services/audio/public/mojom",
     "//services/network/public/mojom",
     "//services/service_manager/public/mojom",
     "//services/video_capture/public/mojom",
-    "//services/viz/public/interfaces",
-    "//services/ws/public/mojom",
-    "//services/ws/public/mojom/ime",
-    "//skia/public/interfaces",
-    "//third_party/blink/public:mojo_bindings",
+    "//services/viz/public/mojom",
+    "//skia/public/mojom",
     "//third_party/blink/public/mojom:mojom_core",
     "//third_party/blink/public/mojom:web_feature_mojo_bindings",
-    "//ui/base/mojo",
-    "//ui/events/mojo:interfaces",
-    "//ui/gfx/geometry/mojo",
-    "//ui/gfx/mojo",
-    "//ui/gfx/range/mojo",
-    "//ui/latency/mojo:interfaces",
+    "//ui/base/ime/mojom",
+    "//ui/base/mojom",
+    "//ui/events/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/image/mojom",
+    "//ui/gfx/mojom",
+    "//ui/gfx/range/mojom",
+    "//ui/latency/mojom",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
   ]
+
+  if (is_mac) {
+    sources += [
+      "render_widget_host_ns_view.mojom",
+      "sandbox_support_mac.mojom",
+      "web_contents_ns_view_bridge.mojom",
+    ]
+    public_deps += [ "//ui/display/mojom" ]
+  }
 
   overridden_deps = [ "//third_party/blink/public/mojom:mojom_core" ]
   component_deps = [ "//third_party/blink/public/common" ]
@@ -551,4 +545,36 @@ mojom("mojo_bindings") {
   export_class_attribute = "CONTENT_EXPORT"
   export_define = "CONTENT_IMPLEMENTATION=1"
   export_header = "content/common/content_export.h"
+}
+
+if (is_mac) {
+  source_set("mac_helpers") {
+    _lines = [
+      "// This file is generated by " +
+          get_label_info(target_name, "label_no_toolchain"),
+      "",
+      "#ifndef GEN_CONTENT_COMMON_MAC_HELPERS_H_",
+      "#define GEN_CONTENT_COMMON_MAC_HELPERS_H_",
+      "",
+      "namespace content {",
+      "",
+    ]
+    foreach(helper_params, content_mac_helpers) {
+      _lines += [ "const char kMacHelperSuffix_${helper_params[0]}[] = \"${helper_params[2]}\";" ]
+    }
+    _lines += [
+      "",
+      "}  // namespace content",
+      "",
+      "#endif  // GEN_CONTENT_COMMON_MAC_HELPERS_H_",
+    ]
+
+    _file = "$target_gen_dir/mac_helpers.h"
+
+    write_file(_file, _lines)
+
+    sources = [
+      _file,
+    ]
+  }
 }

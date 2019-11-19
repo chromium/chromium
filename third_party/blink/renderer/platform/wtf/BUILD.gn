@@ -34,24 +34,21 @@ config("wtf_config") {
 
 jumbo_component("wtf") {
   sources = [
-    "allocator.cc",
-    "allocator.h",
+    "allocator/allocator.cc",
+    "allocator/allocator.h",
     "allocator/partition_allocator.cc",
     "allocator/partition_allocator.h",
     "allocator/partitions.cc",
     "allocator/partitions.h",
-    "ascii_ctype.cc",
-    "ascii_ctype.h",
     "assertions.cc",
     "assertions.h",
-    "bit_vector.cc",
-    "bit_vector.h",
     "bloom_filter.h",
     "casting.h",
-    "compiler.h",
     "conditional_destructor.h",
     "container_annotations.h",
-    "cpu.h",
+    "cross_thread_copier.cc",
+    "cross_thread_copier.h",
+    "cross_thread_functional.h",
     "date_math.cc",
     "date_math.h",
     "decimal.cc",
@@ -60,27 +57,8 @@ jumbo_component("wtf") {
     "doubly_linked_list.h",
     "dtoa.cc",
     "dtoa.h",
-    "dtoa/bignum-dtoa.cc",
-    "dtoa/bignum-dtoa.h",
-    "dtoa/bignum.cc",
-    "dtoa/bignum.h",
-    "dtoa/cached-powers.cc",
-    "dtoa/cached-powers.h",
-    "dtoa/diy-fp.cc",
-    "dtoa/diy-fp.h",
-    "dtoa/double-conversion.cc",
-    "dtoa/double-conversion.h",
-    "dtoa/double.h",
-    "dtoa/fast-dtoa.cc",
-    "dtoa/fast-dtoa.h",
-    "dtoa/fixed-dtoa.cc",
-    "dtoa/fixed-dtoa.h",
-    "dtoa/strtod.cc",
-    "dtoa/strtod.h",
-    "dtoa/utils.h",
     "dynamic_annotations.cc",
     "dynamic_annotations.h",
-    "experimental/container_type_operations.h",
     "forward.h",
     "functional.h",
     "get_ptr.h",
@@ -93,34 +71,29 @@ jumbo_component("wtf") {
     "hash_table.h",
     "hash_table_deleted_value_type.h",
     "hash_traits.h",
-    "hex_number.h",
     "leak_annotations.h",
     "linked_hash_set.h",
     "list_hash_set.h",
-    "locker.h",
     "math_extras.h",
-    "not_found.h",
     "pod_arena.h",
     "pod_free_list_arena.h",
     "pod_interval.h",
     "pod_interval_tree.h",
     "pod_red_black_tree.h",
     "ref_counted.h",
-    "ref_vector.h",
-    "retain_ptr.h",
     "sanitizers.h",
-    "saturated_arithmetic.h",
-    "saturated_arithmetic_arm.h",
     "scoped_logger.cc",
     "scoped_logger.h",
+    "shared_buffer.cc",
+    "shared_buffer.h",
+    "size_assertions.cc",
     "size_assertions.h",
-    "size_limits.cc",
     "stack_util.cc",
     "stack_util.h",
     "static_constructors.h",
     "std_lib_extras.h",
-    "string_extras.h",
-    "string_hasher.h",
+    "text/ascii_ctype.cc",
+    "text/ascii_ctype.h",
     "text/ascii_fast_path.h",
     "text/atomic_string.cc",
     "text/atomic_string.h",
@@ -130,11 +103,9 @@ jumbo_component("wtf") {
     "text/atomic_string_table.h",
     "text/base64.cc",
     "text/base64.h",
+    "text/case_map.cc",
+    "text/case_map.h",
     "text/character_names.h",
-    "text/collator.cc",
-    "text/collator.h",
-    "text/cstring.cc",
-    "text/cstring.h",
     "text/integer_to_string_conversion.h",
     "text/line_ending.cc",
     "text/line_ending.h",
@@ -146,9 +117,9 @@ jumbo_component("wtf") {
     "text/string_concatenate.cc",
     "text/string_concatenate.h",
     "text/string_hash.h",
+    "text/string_hasher.h",
     "text/string_impl.cc",
     "text/string_impl.h",
-    "text/string_impl_cf.cc",
     "text/string_impl_mac.mm",
     "text/string_mac.mm",
     "text/string_operators.h",
@@ -156,6 +127,7 @@ jumbo_component("wtf") {
     "text/string_statics.h",
     "text/string_to_number.cc",
     "text/string_to_number.h",
+    "text/string_utf8_adaptor.cc",
     "text/string_utf8_adaptor.h",
     "text/string_view.cc",
     "text/string_view.h",
@@ -178,6 +150,8 @@ jumbo_component("wtf") {
     "text/text_encoding.h",
     "text/text_encoding_registry.cc",
     "text/text_encoding_registry.h",
+    "text/text_offset_map.cc",
+    "text/text_offset_map.h",
     "text/text_position.cc",
     "text/text_position.h",
     "text/text_stream.cc",
@@ -195,40 +169,16 @@ jumbo_component("wtf") {
     "threading_primitives.h",
     "threading_pthreads.cc",
     "threading_win.cc",
-    "time.cc",
-    "time.h",
     "tree_node.h",
     "type_traits.h",
-    "typed_arrays/array_buffer.cc",
-    "typed_arrays/array_buffer.h",
-    "typed_arrays/array_buffer_builder.cc",
-    "typed_arrays/array_buffer_builder.h",
-    "typed_arrays/array_buffer_contents.cc",
-    "typed_arrays/array_buffer_contents.h",
-    "typed_arrays/array_buffer_view.cc",
-    "typed_arrays/array_buffer_view.h",
-    "typed_arrays/array_piece.cc",
-    "typed_arrays/array_piece.h",
-    "typed_arrays/bigint64_array.h",
-    "typed_arrays/biguint64_array.h",
-    "typed_arrays/float32_array.h",
-    "typed_arrays/float64_array.h",
-    "typed_arrays/int16_array.h",
-    "typed_arrays/int32_array.h",
-    "typed_arrays/int8_array.h",
-    "typed_arrays/integral_typed_array_base.h",
-    "typed_arrays/typed_array_base.h",
-    "typed_arrays/uint16_array.h",
-    "typed_arrays/uint32_array.h",
-    "typed_arrays/uint8_array.h",
-    "typed_arrays/uint8_clamped_array.h",
+    "uuid.cc",
+    "uuid.h",
     "vector.h",
     "vector_traits.h",
     "wtf.cc",
     "wtf.h",
     "wtf_export.h",
-    "wtf_thread_data.cc",
-    "wtf_thread_data.h",
+    "wtf_size_t.h",
   ]
 
   configs += [
@@ -249,6 +199,7 @@ jumbo_component("wtf") {
 
   public_deps = [
     "//base",
+    "//base/third_party/double_conversion",
     "//third_party/icu",
   ]
 
@@ -263,13 +214,16 @@ jumbo_component("wtf") {
     # Inject Visual Studio debug visualizers for our types into all targets
     # that reference this.
     all_dependent_configs = [ "//tools/win/DebugVisualizers:webkit" ]
+    inputs = [
+      # webkit.natvis listed as an input here instead of in
+      # //tools/win/DebugVisualizers:webkit to prevent unnecessary size increase
+      # in generated build files.
+      "//tools/win/DebugVisualizers/webkit.natvis",
+    ]
   }
 
   if (is_android) {
     libs = [ "log" ]
-  }
-  if (is_linux) {
-    libs = [ "dl" ]
   }
 
   if (is_mac) {
@@ -278,10 +232,7 @@ jumbo_component("wtf") {
       "Foundation.framework",
     ]
   } else {
-    sources -= [
-      "text/atomic_string_cf.cc",
-      "text/string_impl_cf.cc",
-    ]
+    sources -= [ "text/atomic_string_cf.cc" ]
   }
 
   configs -= [ "//build/config/compiler:default_symbols" ]
@@ -300,13 +251,14 @@ jumbo_source_set("wtf_unittests_sources") {
   testonly = true
 
   sources = [
+    "allocator/partitions_test.cc",
     "ascii_ctype_test.cc",
     "assertions_test.cc",
+    "cross_thread_functional_test.cc",
     "decimal_test.cc",
     "deque_test.cc",
     "doubly_linked_list_test.cc",
     "dtoa_test.cc",
-    "experimental/container_type_operations_test.cc",
     "functional_test.cc",
     "hash_map_test.cc",
     "hash_set_test.cc",
@@ -319,16 +271,16 @@ jumbo_source_set("wtf_unittests_sources") {
     "pod_red_black_tree_test.cc",
     "pod_tree_test_helpers.cc",
     "pod_tree_test_helpers.h",
-    "saturated_arithmetic_test.cc",
     "scoped_logger_test.cc",
-    "string_hasher_test.cc",
+    "shared_buffer_test.cc",
     "testing/run_all_tests.cc",
     "text/atomic_string_test.cc",
-    "text/cstring_test.cc",
+    "text/case_map_test.cc",
     "text/integer_to_string_conversion_test.cc",
     "text/line_ending_test.cc",
     "text/string_buffer_test.cc",
     "text/string_builder_test.cc",
+    "text/string_hasher_test.cc",
     "text/string_impl_test.cc",
     "text/string_to_number_test.cc",
     "text/string_view_test.cc",
@@ -341,7 +293,7 @@ jumbo_source_set("wtf_unittests_sources") {
     "threading_primitives_test.cc",
     "tree_node_test.cc",
     "type_traits_test.cc",
-    "typed_arrays/array_buffer_builder_test.cc",
+    "uuid_test.cc",
     "vector_test.cc",
   ]
 

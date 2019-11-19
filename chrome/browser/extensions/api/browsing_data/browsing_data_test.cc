@@ -19,8 +19,9 @@
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/signin/core/browser/account_reconcilor.h"
-#include "components/signin/core/browser/signin_buildflags.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "content/public/browser/storage_partition.h"
@@ -28,8 +29,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/cookies/canonical_cookie.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/identity_test_utils.h"
 #include "url/gurl.h"
 
 using extension_function_test_utils::RunFunctionAndReturnSingleResult;
@@ -50,28 +49,34 @@ const char kRemoveEverythingArguments[] =
     "webSQL": true
     }])";
 
-// Sets the APISID Gaia cookie, which is monitored by the AccountReconcilor.
+// Sets the SAPISID Gaia cookie, which is monitored by the AccountReconcilor.
 bool SetGaiaCookieForProfile(Profile* profile) {
-  GURL google_url = GaiaUrls::GetInstance()->google_url();
-  net::CanonicalCookie cookie("APISID", std::string(), "." + google_url.host(),
+  GURL google_url = GaiaUrls::GetInstance()->secure_google_url();
+  net::CanonicalCookie cookie("SAPISID", std::string(), "." + google_url.host(),
                               "/", base::Time(), base::Time(), base::Time(),
-                              false, false, net::CookieSameSite::DEFAULT_MODE,
+                              /*secure=*/true, false,
+                              net::CookieSameSite::NO_RESTRICTION,
                               net::COOKIE_PRIORITY_DEFAULT);
 
   bool success = false;
   base::RunLoop loop;
   base::OnceClosure loop_quit = loop.QuitClosure();
-  base::OnceCallback<void(bool)> callback =
-      base::BindLambdaForTesting([&success, &loop_quit](bool s) {
-        success = s;
-        std::move(loop_quit).Run();
-      });
+  base::OnceCallback<void(net::CanonicalCookie::CookieInclusionStatus)>
+      callback = base::BindLambdaForTesting(
+          [&success,
+           &loop_quit](net::CanonicalCookie::CookieInclusionStatus s) {
+            success = s.IsInclude();
+            std::move(loop_quit).Run();
+          });
   network::mojom::CookieManager* cookie_manager =
       content::BrowserContext::GetDefaultStoragePartition(profile)
           ->GetCookieManagerForBrowserProcess();
   cookie_manager->SetCanonicalCookie(
-      cookie, google_url.scheme(), true,
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false));
+      cookie, google_url.scheme(), net::CookieOptions::MakeAllInclusive(),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(callback), net::CanonicalCookie::CookieInclusionStatus(
+                                   net::CanonicalCookie::CookieInclusionStatus::
+                                       EXCLUDE_UNKNOWN_ERROR)));
   loop.Run();
   return success;
 }
@@ -89,17 +94,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, Syncing) {
   const char kPrimaryAccountEmail[] = "primary@email.com";
   const char kSecondaryAccountEmail[] = "secondary@email.com";
 
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  AccountInfo primary_account_info = identity::MakePrimaryAccountAvailable(
+  AccountInfo primary_account_info = signin::MakePrimaryAccountAvailable(
       identity_manager, kPrimaryAccountEmail);
   AccountInfo secondary_account_info =
-      identity::MakeAccountAvailable(identity_manager, kSecondaryAccountEmail);
+      signin::MakeAccountAvailable(identity_manager, kSecondaryAccountEmail);
 
   // Sync is running.
   syncer::SyncService* sync_service =
       ProfileSyncServiceFactory::GetForProfile(profile);
-  sync_service->GetUserSettings()->SetFirstSetupComplete();
+  sync_service->GetUserSettings()->SetSyncRequested(true);
+  sync_service->GetUserSettings()->SetFirstSetupComplete(
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
   ASSERT_EQ(sync_ui_util::SYNCED, sync_ui_util::GetStatus(profile));
   // Clear browsing data.
@@ -125,11 +132,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, SyncError) {
   ASSERT_TRUE(SetGaiaCookieForProfile(profile));
   // Set a Sync account with authentication error.
   const char kAccountEmail[] = "account@email.com";
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   AccountInfo account_info =
-      identity::MakePrimaryAccountAvailable(identity_manager, kAccountEmail);
-  identity::UpdatePersistentErrorOfRefreshTokenForAccount(
+      signin::MakePrimaryAccountAvailable(identity_manager, kAccountEmail);
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_manager, account_info.account_id,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
@@ -161,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, NotSyncing) {
   const char kAccountEmail[] = "account@email.com";
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   AccountInfo account_info =
-      identity::MakeAccountAvailable(identity_manager, kAccountEmail);
+      signin::MakeAccountAvailable(identity_manager, kAccountEmail);
   // Clear browsing data.
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
   EXPECT_EQ(NULL, RunFunctionAndReturnSingleResult(

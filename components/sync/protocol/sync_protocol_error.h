@@ -32,9 +32,6 @@ enum SyncProtocolErrorType {
   // them to get the latest progress markers.
   MIGRATION_DONE,
 
-  // Invalid Credential.
-  INVALID_CREDENTIAL,
-
   // An administrator disabled sync for this domain.
   DISABLED_BY_ADMIN,
 
@@ -49,21 +46,9 @@ enum SyncProtocolErrorType {
   UNKNOWN_ERROR
 };
 
-// A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
-// GENERATED_JAVA_CLASS_NAME_OVERRIDE: ProtocolErrorClientAction
 enum ClientAction {
   // Upgrade the client to latest version.
   UPGRADE_CLIENT,
-
-  // Clear user data and setup sync again.
-  CLEAR_USER_DATA_AND_RESYNC,
-
-  // Set the bit on the account to enable sync.
-  ENABLE_SYNC_ON_ACCOUNT,
-
-  // Stop sync and restart sync.
-  STOP_AND_RESTART_SYNC,
 
   // Wipe this client of any sync data.
   DISABLE_SYNC_ON_CLIENT,
@@ -94,5 +79,7 @@ struct SyncProtocolError {
 
 const char* GetSyncErrorTypeString(SyncProtocolErrorType type);
 const char* GetClientActionString(ClientAction action);
+
 }  // namespace syncer
+
 #endif  // COMPONENTS_SYNC_PROTOCOL_SYNC_PROTOCOL_ERROR_H_

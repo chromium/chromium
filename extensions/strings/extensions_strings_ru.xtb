@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Не удалось декодировать изображение: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">Локализация используется, однако в манифесте не указан атрибут default_locale.</translation>
 <translation id="2576842806987913196">Файл CRX с таким именем уже существует.</translation>
-<translation id="2753617847762399167">Недопустимый путь (абсолютный или относительный с элементом ".."): <ph name="IMAGE_PATH" /></translation>
 <translation id="2785530881066938471">Не удается загрузить файл <ph name="RELATIVE_PATH" /> для скрипта содержания. Кодировка отличается от UTF-8.</translation>
 <translation id="2903070246402204397">Расширение <ph name="EXTENSION_NAME" /> (идентификатор: <ph name="EXTENSION_ID" />) заблокировано администратором. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Не удается установить пакет: "<ph name="ERROR_CODE" />"</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Система не поддерживает окна нестандартной формы</translation>
 <translation id="5456409301717116725">Это расширение содержит файл ключа <ph name="KEY_PATH" />. Вероятно, это неприемлемо.</translation>
 <translation id="5486326529110362464">Должно существовать входное значение для закрытого ключа.</translation>
-<translation id="5627523580512561598">расширение <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Удаление расширения "<ph name="EXTENSION_NAME" />" на этом компьютере запрещено администратором</translation>
 <translation id="6027032947578871493">Неизвестный продукт <ph name="PRODUCT_ID" /> от <ph name="VENDOR_NAME" /> (серийный номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> от поставщика <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">Приложение "<ph name="APP_NAME" />" запрашивает доступ к нескольким устройствам.</translation>
 <translation id="657064425229075395">Не удалось загрузить фоновый скрипт <ph name="BACKGROUND_SCRIPT" />.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" />, поставщик: <ph name="VENDOR_NAME" /> (серийный номер: <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Не удалось создать каталог для распаковки: <ph name="DIRECTORY_PATH" /></translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Это расширение слишком часто перезагружалось.</translation>
 <translation id="7003844668372540529">Неизвестный продукт <ph name="PRODUCT_ID" /> от <ph name="VENDOR_NAME" /></translation>

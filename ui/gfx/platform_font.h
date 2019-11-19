@@ -8,16 +8,16 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
+#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/font.h"
+#include "ui/gfx/font_render_params.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace gfx {
-
-class Font;
-struct FontRenderParams;
 
 class GFX_EXPORT PlatformFont : public base::RefCounted<PlatformFont> {
  public:
@@ -33,13 +33,25 @@ class GFX_EXPORT PlatformFont : public base::RefCounted<PlatformFont> {
 
   // Creates an appropriate PlatformFont implementation.
   static PlatformFont* CreateDefault();
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_IOS)
+#if defined(OS_MACOSX) || defined(OS_IOS)
   static PlatformFont* CreateFromNativeFont(NativeFont native_font);
 #endif
   // Creates a PlatformFont implementation with the specified |font_name|
   // (encoded in UTF-8) and |font_size| in pixels.
   static PlatformFont* CreateFromNameAndSize(const std::string& font_name,
                                              int font_size);
+
+  // Creates a PlatformFont instance from the provided SkTypeface, ideally by
+  // just wrapping it without triggering a new font match. Implemented for
+  // PlatformFontWin and PlatformFontSkia, where only the latter provides true
+  // wrapping of the provided SkTypeface, while PlatformFontWin creates a
+  // PlatformFont object by extracting the family name and falls back to
+  // CreateFromNameAndSize(). The FontRenderParams can be provided or they
+  // will be determined by using gfx::GetFontRenderParams(...) otherwise.
+  static PlatformFont* CreateFromSkTypeface(
+      sk_sp<SkTypeface> typeface,
+      int font_size,
+      const base::Optional<FontRenderParams>& params);
 
   // Returns a new Font derived from the existing font.
   // |size_delta| is the size in pixels to add to the current font.
@@ -78,7 +90,7 @@ class GFX_EXPORT PlatformFont : public base::RefCounted<PlatformFont> {
   virtual const std::string& GetFontName() const = 0;
 
   // Returns the actually used font name in UTF-8.
-  virtual std::string GetActualFontNameForTesting() const = 0;
+  virtual std::string GetActualFontName() const = 0;
 
   // Returns the font size in pixels.
   virtual int GetFontSize() const = 0;
@@ -86,10 +98,17 @@ class GFX_EXPORT PlatformFont : public base::RefCounted<PlatformFont> {
   // Returns an object describing how the font should be rendered.
   virtual const FontRenderParams& GetFontRenderParams() = 0;
 
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_IOS)
+#if defined(OS_MACOSX) || defined(OS_IOS)
   // Returns the native font handle.
   virtual NativeFont GetNativeFont() const = 0;
 #endif
+
+  // Returns the underlying Skia typeface if this PlatformFont instance is
+  // backed by PlatformFontSkia, returns nullptr otherwise. Used in
+  // RenderTextHarfBuzz for having access to the exact Skia typeface returned by
+  // font fallback, as we would otherwise lose the handle to the correct
+  // platform font instance.
+  virtual sk_sp<SkTypeface> GetNativeSkTypefaceIfAvailable() const = 0;
 
  protected:
   virtual ~PlatformFont() {}

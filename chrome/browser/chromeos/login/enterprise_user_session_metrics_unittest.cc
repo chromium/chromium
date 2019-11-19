@@ -9,12 +9,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/settings/stub_install_attributes.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/login/auth/user_context.h"
+#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -40,7 +40,7 @@ class EnterpriseUserSessionMetricsTest : public testing::Test {
   ~EnterpriseUserSessionMetricsTest() override = default;
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<ScopedStubInstallAttributes> install_attributes_;
 

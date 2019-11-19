@@ -35,7 +35,7 @@ class CookieSettingsFactory
   CookieSettingsFactory();
   ~CookieSettingsFactory() override;
 
-  // |BrowserContextKeyedBaseFactory| methods:
+  // |RefcountedBrowserContextKeyedServiceFactory| methods:
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   content::BrowserContext* GetBrowserContextToUse(

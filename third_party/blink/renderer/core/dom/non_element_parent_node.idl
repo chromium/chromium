@@ -5,8 +5,7 @@
 // https://dom.spec.whatwg.org/#interface-nonelementparentnode
 
 [
-    LegacyTreatAsPartialInterface,
-    NoInterfaceObject // Always used on target of 'implements'
-] interface NonElementParentNode {
+    LegacyTreatAsPartialInterface
+] interface mixin NonElementParentNode {
     [PerWorldBindings] Element? getElementById(DOMString elementId);
 };

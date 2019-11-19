@@ -6,6 +6,8 @@
 ''' Verifies that builds of the embedded content_shell do not included
 unnecessary dependencies.'''
 
+from __future__ import print_function
+
 import os
 import re
 import string
@@ -83,14 +85,15 @@ binary_target = 'content_shell'
 def stdmsg(_final, errors):
   if errors:
     for message in errors:
-      print message
+      print(message)
+
 
 def bbmsg(final, errors):
   if errors:
     for message in errors:
-      print '@@@STEP_TEXT@%s@@@' % message
+      print('@@@STEP_TEXT@%s@@@' % message)
   if final:
-    print '\n@@@STEP_%s@@@' % final
+    print('\n@@@STEP_%s@@@' % final)
 
 
 def _main():

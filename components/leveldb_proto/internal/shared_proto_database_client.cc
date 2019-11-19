@@ -42,35 +42,43 @@ class ObsoleteClientsDbHolder
 
 }  // namespace
 
-std::string StripPrefix(const std::string& key, const std::string& prefix) {
+// static
+std::string SharedProtoDatabaseClient::StripPrefix(const std::string& key,
+                                                   const std::string& prefix) {
   return base::StartsWith(key, prefix, base::CompareCase::SENSITIVE)
              ? key.substr(prefix.length())
              : key;
 }
 
-std::unique_ptr<KeyVector> PrefixStrings(std::unique_ptr<KeyVector> strings,
-                                         const std::string& prefix) {
+// static
+std::unique_ptr<KeyVector> SharedProtoDatabaseClient::PrefixStrings(
+    std::unique_ptr<KeyVector> strings,
+    const std::string& prefix) {
   for (auto& str : *strings)
     str.assign(base::StrCat({prefix, str}));
   return strings;
 }
 
-bool KeyFilterStripPrefix(const KeyFilter& key_filter,
-                          const std::string& prefix,
-                          const std::string& key) {
+// static
+bool SharedProtoDatabaseClient::KeyFilterStripPrefix(
+    const KeyFilter& key_filter,
+    const std::string& prefix,
+    const std::string& key) {
   if (key_filter.is_null())
     return true;
   return key_filter.Run(StripPrefix(key, prefix));
 }
 
-void GetSharedDatabaseInitStatusAsync(
+// static
+void SharedProtoDatabaseClient::GetSharedDatabaseInitStatusAsync(
     const std::string& client_db_id,
     const scoped_refptr<SharedProtoDatabase>& shared_db,
     Callbacks::InitStatusCallback callback) {
   shared_db->GetDatabaseInitStatusAsync(client_db_id, std::move(callback));
 }
 
-void UpdateClientMetadataAsync(
+// static
+void SharedProtoDatabaseClient::UpdateClientMetadataAsync(
     const scoped_refptr<SharedProtoDatabase>& shared_db,
     const std::string& client_db_id,
     SharedDBMetadataProto::MigrationStatus migration_status,
@@ -79,7 +87,8 @@ void UpdateClientMetadataAsync(
                                        std::move(callback));
 }
 
-void DestroyObsoleteSharedProtoDatabaseClients(
+// static
+void SharedProtoDatabaseClient::DestroyObsoleteSharedProtoDatabaseClients(
     std::unique_ptr<ProtoLevelDBWrapper> db_wrapper,
     Callbacks::UpdateCallback callback) {
   ProtoLevelDBWrapper* db_wrapper_ptr = db_wrapper.get();
@@ -107,7 +116,9 @@ void DestroyObsoleteSharedProtoDatabaseClients(
   }
 }
 
-void SetObsoleteClientListForTesting(const ProtoDbType* list) {
+// static
+void SharedProtoDatabaseClient::SetObsoleteClientListForTesting(
+    const ProtoDbType* list) {
   g_obsolete_client_list_for_testing = list;
 }
 
@@ -122,8 +133,7 @@ SharedProtoDatabaseClient::SharedProtoDatabaseClient(
     const scoped_refptr<SharedProtoDatabase>& parent_db)
     : UniqueProtoDatabase(std::move(db_wrapper)),
       prefix_(PrefixForDatabase(db_type)),
-      parent_db_(parent_db),
-      weak_ptr_factory_(this) {
+      parent_db_(parent_db) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

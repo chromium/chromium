@@ -38,7 +38,6 @@ class UninstallView : public views::ButtonListener,
   // Overridden from views::DialogDelegateView:
   bool Accept() override;
   bool Cancel() override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
 
   // Overridden from views::WidgetDelegate:
   base::string16 GetWindowTitle() const override;

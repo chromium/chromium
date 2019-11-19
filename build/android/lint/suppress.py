@@ -8,6 +8,7 @@
 
 # pylint: disable=no-member
 
+from __future__ import print_function
 
 import argparse
 import collections
@@ -49,7 +50,7 @@ _Issue = collections.namedtuple('Issue', ['severity', 'paths', 'regexps'])
 
 
 def _ParseConfigFile(config_path):
-  print 'Parsing %s' % config_path
+  print('Parsing %s' % config_path)
   issues_dict = {}
   dom = minidom.parse(config_path)
   for issue in dom.getElementsByTagName('issue'):
@@ -71,7 +72,7 @@ def _ParseConfigFile(config_path):
 
 
 def _ParseAndMergeResultFile(result_path, issues_dict):
-  print 'Parsing and merging %s' % result_path
+  print('Parsing and merging %s' % result_path)
   dom = minidom.parse(result_path)
   for issue in dom.getElementsByTagName('issue'):
     issue_id = issue.attributes['id'].value
@@ -98,7 +99,7 @@ def _WriteConfigFile(config_path, issues_dict):
     if issue.severity:
       issue_element.attributes['severity'] = issue.severity
     if issue.severity == 'ignore':
-      print 'Warning: [%s] is suppressed globally.' % issue_id
+      print('Warning: [%s] is suppressed globally.' % issue_id)
     else:
       for path in sorted(issue.paths):
         ignore_element = new_dom.createElement('ignore')
@@ -112,7 +113,7 @@ def _WriteConfigFile(config_path, issues_dict):
 
   with open(config_path, 'w') as f:
     f.write(new_dom.toprettyxml(indent='  ', encoding='utf-8'))
-  print 'Updated %s' % config_path
+  print('Updated %s' % config_path)
 
 
 def _Suppress(config_path, result_path):

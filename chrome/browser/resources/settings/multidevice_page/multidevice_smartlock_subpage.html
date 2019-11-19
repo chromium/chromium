@@ -30,16 +30,16 @@
           page-content-data="[[pageContentData]]">
       </settings-multidevice-feature-toggle>
     </div>
-    <div class="settings-box first line-only">
-      <h2 class="start first">
-        $i18n{multideviceSmartLockOptions}
-      </h2>
-    </div>
     <iron-collapse opened="[[smartLockEnabled_]]">
+      <div class="settings-box first line-only">
+          <h2 class="start first">
+            $i18n{multideviceSmartLockOptions}
+          </h2>
+      </div>
       <div class="list-frame">
         <cr-radio-group
             selected="[[smartLockSignInEnabled_]]"
-            selectable="multidevice-radio-button"
+            selectable-elements="multidevice-radio-button"
             disabled="[[!smartLockSignInAllowed_]]"
             on-selected-changed="onSmartLockSignInEnabledChanged_">
           <multidevice-radio-button

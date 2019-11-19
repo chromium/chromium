@@ -4,6 +4,8 @@
 
 """A module for the shell command."""
 
+from __future__ import print_function
+
 import os
 import tempfile
 
@@ -42,7 +44,7 @@ class ShellCommand(cr.Command):
     # If we get here, we are trying to launch an interactive shell
     shell = os.environ.get('SHELL', None)
     if shell is None:
-      print 'Don\'t know how to run a shell on this system'
+      print('Don\'t know how to run a shell on this system')
     elif shell.endswith('bash'):
       ps1 = '[CR] ' + os.environ.get('PS1', '')
       with tempfile.NamedTemporaryFile() as rcfile:

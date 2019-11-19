@@ -19,12 +19,4 @@ std::unique_ptr<Border> PlatformStyle::CreateThemedLabelButtonBorder(
   return button->CreateDefaultBorder();
 }
 
-void PlatformStyle::ApplyLabelButtonTextStyle(Label* label,
-                                              ButtonColorByState* colors) {
-  // TODO(erg): This is disabled on desktop linux because of the binary asset
-  // confusion. These details should either be pushed into ui::NativeThemeWin
-  // or should be obsoleted by rendering buttons with paint calls instead of
-  // with static assets. http://crbug.com/350498
-}
-
 }  // namespace views

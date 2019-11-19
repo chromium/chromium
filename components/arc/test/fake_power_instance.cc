@@ -46,4 +46,8 @@ void FakePowerInstance::UpdateScreenBrightnessSettings(double percent) {
   screen_brightness_ = percent;
 }
 
+void FakePowerInstance::PowerSupplyInfoChanged() {
+  num_power_supply_info_++;
+}
+
 }  // namespace arc

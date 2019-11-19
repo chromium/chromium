@@ -1,0 +1,38 @@
+<style>
+  :host {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding-bottom: 16px;
+    padding-inline-end: 16px;
+    padding-top: 16px;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :host {
+      background-color: white;
+    }
+  }
+
+  :host cr-button:not(:last-child) {
+    margin-inline-end: 8px;
+  }
+
+  :host cr-button:last-child {
+    margin-inline-end: 0;
+  }
+</style>
+<if expr="not is_win">
+<cr-button class="cancel-button" on-click="onCancelClick_">
+  $i18n{cancel}
+</cr-button>
+</if>
+<cr-button class="action-button" on-click="onPrintClick_"
+    disabled$="[[!printButtonEnabled_]]">
+  [[printButtonLabel_]]
+</cr-button>
+<if expr="is_win">
+<cr-button class="cancel-button" on-click="onCancelClick_">
+  $i18n{cancel}
+</cr-button>
+</if>

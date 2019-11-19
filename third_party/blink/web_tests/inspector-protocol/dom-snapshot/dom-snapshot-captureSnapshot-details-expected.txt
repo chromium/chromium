@@ -1,0 +1,337 @@
+Tests that DOMSnapshot.captureSnapshot fills document details: title, size, etc.
+{
+    documents : [
+        [0] : {
+            baseURL : 1
+            contentHeight : 2000
+            contentLanguage : 3
+            contentWidth : 2000
+            documentURL : <number>
+            encodingName : 4
+            frameId : <number>
+            layout : {
+                bounds : [
+                    [0] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 800
+                        [3] : 600
+                    ]
+                    [1] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 785
+                        [3] : 2000
+                    ]
+                    [2] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 785
+                        [3] : 2000
+                    ]
+                    [3] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 2000
+                        [3] : 2000
+                    ]
+                    [4] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 190
+                        [3] : 10
+                    ]
+                ]
+                nodeIndex : [
+                    [0] : 0
+                    [1] : 2
+                    [2] : 15
+                    [3] : 17
+                    [4] : 18
+                ]
+                stackingContexts : {
+                    index : [
+                        [0] : 0
+                        [1] : 1
+                    ]
+                }
+                styles : [
+                    [0] : [
+                    ]
+                    [1] : [
+                    ]
+                    [2] : [
+                    ]
+                    [3] : [
+                    ]
+                    [4] : [
+                    ]
+                ]
+                text : [
+                    [0] : -1
+                    [1] : -1
+                    [2] : -1
+                    [3] : -1
+                    [4] : 31
+                ]
+            }
+            nodes : {
+                attributes : [
+                    [0] : [
+                    ]
+                    [1] : [
+                    ]
+                    [2] : [
+                    ]
+                    [3] : [
+                    ]
+                    [4] : [
+                    ]
+                    [5] : [
+                    ]
+                    [6] : [
+                    ]
+                    [7] : [
+                    ]
+                    [8] : [
+                        [0] : 16
+                        [1] : 17
+                        [2] : 18
+                        [3] : 19
+                    ]
+                    [9] : [
+                    ]
+                    [10] : [
+                        [0] : 16
+                        [1] : 20
+                        [2] : 18
+                        [3] : 3
+                    ]
+                    [11] : [
+                    ]
+                    [12] : [
+                        [0] : 22
+                        [1] : 1
+                    ]
+                    [13] : [
+                    ]
+                    [14] : [
+                    ]
+                    [15] : [
+                        [0] : 25
+                        [1] : 26
+                        [2] : 27
+                        [3] : 28
+                    ]
+                    [16] : [
+                    ]
+                    [17] : [
+                        [0] : 25
+                        [1] : 30
+                    ]
+                    [18] : [
+                    ]
+                    [19] : [
+                    ]
+                ]
+                backendNodeId : <object>
+                contentDocumentIndex : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
+                currentSourceURL : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
+                inputChecked : {
+                    index : [
+                    ]
+                }
+                inputValue : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
+                isClickable : {
+                    index : [
+                    ]
+                }
+                nodeName : [
+                    [0] : 8
+                    [1] : 9
+                    [2] : 10
+                    [3] : 11
+                    [4] : 12
+                    [5] : 14
+                    [6] : 12
+                    [7] : 12
+                    [8] : 15
+                    [9] : 12
+                    [10] : 15
+                    [11] : 12
+                    [12] : 21
+                    [13] : 12
+                    [14] : 12
+                    [15] : 24
+                    [16] : 12
+                    [17] : 29
+                    [18] : 12
+                    [19] : 12
+                ]
+                nodeType : [
+                    [0] : 9
+                    [1] : 10
+                    [2] : 1
+                    [3] : 1
+                    [4] : 3
+                    [5] : 1
+                    [6] : 3
+                    [7] : 3
+                    [8] : 1
+                    [9] : 3
+                    [10] : 1
+                    [11] : 3
+                    [12] : 1
+                    [13] : 3
+                    [14] : 3
+                    [15] : 1
+                    [16] : 3
+                    [17] : 1
+                    [18] : 3
+                    [19] : 3
+                ]
+                nodeValue : [
+                    [0] : -1
+                    [1] : -1
+                    [2] : -1
+                    [3] : -1
+                    [4] : 13
+                    [5] : -1
+                    [6] : 2
+                    [7] : 13
+                    [8] : -1
+                    [9] : 13
+                    [10] : -1
+                    [11] : 13
+                    [12] : -1
+                    [13] : 23
+                    [14] : 23
+                    [15] : -1
+                    [16] : 13
+                    [17] : -1
+                    [18] : 31
+                    [19] : 32
+                ]
+                optionSelected : {
+                    index : [
+                    ]
+                }
+                originURL : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
+                parentIndex : [
+                    [0] : -1
+                    [1] : 0
+                    [2] : 0
+                    [3] : 2
+                    [4] : 3
+                    [5] : 3
+                    [6] : 5
+                    [7] : 3
+                    [8] : 3
+                    [9] : 3
+                    [10] : 3
+                    [11] : 3
+                    [12] : 3
+                    [13] : 3
+                    [14] : 2
+                    [15] : 2
+                    [16] : 15
+                    [17] : 15
+                    [18] : 17
+                    [19] : 15
+                ]
+                pseudoType : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
+                textValue : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
+            }
+            publicId : 6
+            scrollOffsetX : 300
+            scrollOffsetY : 400
+            systemId : 7
+            textBoxes : {
+                bounds : [
+                    [0] : [
+                        [0] : 0
+                        [1] : 0
+                        [2] : 190
+                        [3] : 10
+                    ]
+                ]
+                layoutIndex : [
+                    [0] : 4
+                ]
+                length : [
+                    [0] : 19
+                ]
+                start : [
+                    [0] : 7
+                ]
+            }
+            title : 2
+        }
+    ]
+    strings : [
+        [0] : 
+        [1] : http://example.com/
+        [2] : Document Title
+        [3] : nl-NL
+        [4] : UTF-8
+        [5] : 
+        [6] : -//W3C//DTD HTML 4.01//EN
+        [7] : http://www.w3.org/TR/html4/strict.dtd
+        [8] : #document
+        [9] : html
+        [10] : HTML
+        [11] : HEAD
+        [12] : #text
+        [13] :      
+        [14] : TITLE
+        [15] : META
+        [16] : http-equiv
+        [17] : Content-Type
+        [18] : content
+        [19] : text/html; charset=utf-8
+        [20] : Content-Language
+        [21] : BASE
+        [22] : href
+        [23] :    
+        [24] : BODY
+        [25] : style
+        [26] : margin: 0px
+        [27] : onload
+        [28] : window.scrollTo(300, 400)
+        [29] : DIV
+        [30] : width: 2000px; height: 2000px; font: 10px Ahem;
+        [31] :        Een heel grote div.     
+        [32] :      
+    ]
+}
+

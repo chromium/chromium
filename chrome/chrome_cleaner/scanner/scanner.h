@@ -31,11 +31,10 @@ class Scanner {
   virtual ~Scanner() {}
 
   // Start scanning for UwS. When an UwS is detected and if |Stop| has not been
-  // called, |found_uws_callback| is called. If scan is done in number of tasks,
-  // |progress_callback| may be called to report ratio of completed tasks. If
-  // the scan completes before |Stop| is called, then |done_callback| is called.
-  // Returns true if startup succeeded. If the startup fails, |done_callback|
-  // will be called with the failure code.
+  // called, |found_uws_callback| is called. If the scan completes before
+  // |Stop| is called, then |done_callback| is called. Returns true if startup
+  // succeeded. If the startup fails, |done_callback| will be called with the
+  // failure code.
   virtual bool Start(const FoundUwSCallback& found_uws_callback,
                      const DoneCallback done_callback) = 0;
 

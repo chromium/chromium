@@ -1,0 +1,13 @@
+Name: Android Support Library Async Layout Inflater
+Short Name: asynclayoutinflater
+URL: http://developer.android.com/tools/extras/support-library.html
+Version: 1.0.0
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+The Support Library is a static library that you can add to your Android application in order to use APIs that are either not available for older platform versions or utility APIs that aren't a part of the framework APIs. Compatible on devices running API 14 or later.
+
+Local Modifications:
+No modifications.

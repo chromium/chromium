@@ -67,7 +67,7 @@ MockBackgroundFetchDelegate::~MockBackgroundFetchDelegate() {}
 
 void MockBackgroundFetchDelegate::GetPermissionForOrigin(
     const url::Origin& origin,
-    const ResourceRequestInfo::WebContentsGetter& wc_getter,
+    const WebContents::Getter& wc_getter,
     GetPermissionForOriginCallback callback) {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -91,9 +91,7 @@ void MockBackgroundFetchDelegate::DownloadUrl(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const net::HttpRequestHeaders& headers,
     bool has_request_body) {
-  // TODO(delphick): Currently we just disallow re-using GUIDs but later when we
-  // use the DownloadService, we should signal StartResult::UNEXPECTED_GUID.
-  DCHECK(seen_guids_.find(guid) == seen_guids_.end());
+  DCHECK(!seen_guids_.count(guid));
 
   download_guid_to_job_id_map_[guid] = job_unique_id;
 

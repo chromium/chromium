@@ -9,17 +9,16 @@ namespace cc {
 EffectTreeLayerListIterator::EffectTreeLayerListIterator(
     LayerTreeImpl* layer_tree_impl)
     : state_(EffectTreeLayerListIterator::State::END),
+      layer_list_iterator_(layer_tree_impl->rbegin()),
       current_effect_tree_index_(EffectTree::kInvalidNodeId),
       next_effect_tree_index_(EffectTree::kInvalidNodeId),
       lowest_common_effect_tree_ancestor_index_(EffectTree::kInvalidNodeId),
       layer_tree_impl_(layer_tree_impl),
       effect_tree_(&layer_tree_impl->property_trees()->effect_tree) {
-  layer_list_iterator_ = layer_tree_impl->rbegin();
-
   // Find the front-most drawn layer.
   while (layer_list_iterator_ != layer_tree_impl->rend() &&
          !(*layer_list_iterator_)->contributes_to_drawn_render_surface()) {
-    layer_list_iterator_++;
+    ++layer_list_iterator_;
   }
 
   // If there are no drawn layers, start at the root render surface, if it
@@ -46,10 +45,10 @@ void EffectTreeLayerListIterator::operator++() {
   switch (state_) {
     case State::LAYER:
       // Find the next drawn layer.
-      layer_list_iterator_++;
+      ++layer_list_iterator_;
       while (layer_list_iterator_ != layer_tree_impl_->rend() &&
              !(*layer_list_iterator_)->contributes_to_drawn_render_surface()) {
-        layer_list_iterator_++;
+        ++layer_list_iterator_;
       }
       if (layer_list_iterator_ == layer_tree_impl_->rend()) {
         next_effect_tree_index_ = EffectTree::kInvalidNodeId;

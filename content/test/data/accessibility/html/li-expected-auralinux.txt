@@ -2,10 +2,10 @@
 ++[list] display:block setsize:3
 ++++[list item] display:list-item posinset:1 setsize:3
 ++++++[static] name='• '
-++++++[text] name='Item 1' display:list-item
+++++++[static] name='Item 1' display:list-item
 ++++[list item] display:list-item posinset:2 setsize:3
 ++++++[static] name='• '
-++++++[text] name='Item 2' display:list-item
+++++++[static] name='Item 2' display:list-item
 ++++[list item] display:list-item posinset:3 setsize:3
 ++++++[static] name='• '
-++++++[text] name='Item 3' display:list-item
+++++++[static] name='Item 3' display:list-item

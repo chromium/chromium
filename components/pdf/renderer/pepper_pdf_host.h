@@ -16,11 +16,13 @@
 #include "base/strings/string16.h"
 #include "components/pdf/common/pdf.mojom.h"
 #include "ipc/ipc_platform_file.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ppapi/c/ppb_image_data.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/host/resource_host.h"
 #include "ppapi/proxy/serialized_structs.h"
+#include "ppapi/shared_impl/pdf_accessibility_shared.h"
 
 namespace blink {
 class WebLocalFrame;
@@ -116,8 +118,9 @@ class PepperPDFHost : public ppapi::host::ResourceHost,
   int32_t OnHostMsgSetAccessibilityPageInfo(
       ppapi::host::HostMessageContext* context,
       const PP_PrivateAccessibilityPageInfo& page_info,
-      const std::vector<PP_PrivateAccessibilityTextRunInfo>& text_runs,
-      const std::vector<PP_PrivateAccessibilityCharInfo>& chars);
+      const std::vector<ppapi::PdfAccessibilityTextRunInfo>& text_runs,
+      const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
+      const ppapi::PdfAccessibilityPageObjects& page_objects);
   int32_t OnHostMsgSelectionChanged(ppapi::host::HostMessageContext* context,
                                     const PP_FloatPoint& left,
                                     int32_t left_height,
@@ -134,8 +137,8 @@ class PepperPDFHost : public ppapi::host::ResourceHost,
 
   std::unique_ptr<PdfAccessibilityTree> pdf_accessibility_tree_;
   content::RendererPpapiHost* const host_;
-  mojom::PdfServiceAssociatedPtr remote_pdf_service_;
-  mojo::Binding<mojom::PdfListener> binding_;
+  mojo::AssociatedRemote<mojom::PdfService> remote_pdf_service_;
+  mojo::Receiver<mojom::PdfListener> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperPDFHost);
 };

@@ -17,6 +17,7 @@
   opacity: 0;
   position: absolute;
   will-change: opacity, transform;
+  word-break: break-word;
 }
 
 #container.shown-initially {

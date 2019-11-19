@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_layout_model.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #import "chrome/browser/ui/cocoa/touchbar/credit_card_autofill_touch_bar_controller.h"
-#include "components/autofill/core/browser/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/cocoa/touch_bar_util.h"
@@ -30,7 +30,8 @@ class MockAutofillPopupController : public autofill::AutofillPopupController {
  public:
   MockAutofillPopupController() {
     gfx::FontList::SetDefaultFontDescription("Arial, Times New Roman, 15px");
-    layout_model_.reset(new autofill::AutofillPopupLayoutModel(this, false));
+    layout_model_ =
+        std::make_unique<autofill::AutofillPopupLayoutModel>(this, false);
     suggestions_.push_back(
         autofill::Suggestion("bufflehead", "canvasback", "goldeneye", 1));
     suggestions_.push_back(
@@ -55,7 +56,6 @@ class MockAutofillPopupController : public autofill::AutofillPopupController {
   const std::vector<autofill::Suggestion> GetSuggestions() override {
     return suggestions_;
   }
-  MOCK_METHOD1(SetTypesetter, void(gfx::Typesetter typesetter));
   MOCK_METHOD1(GetElidedValueWidthForRow, int(int row));
   MOCK_METHOD1(GetElidedLabelWidthForRow, int(int row));
 
@@ -80,8 +80,6 @@ class MockAutofillPopupController : public autofill::AutofillPopupController {
   MOCK_METHOD3(GetRemovalConfirmationText,
                bool(int index, base::string16* title, base::string16* body));
   MOCK_METHOD1(RemoveSuggestion, bool(int index));
-  MOCK_CONST_METHOD1(GetBackgroundColorIDForRow,
-                     ui::NativeTheme::ColorId(int index));
   MOCK_METHOD1(SetSelectedLine, void(base::Optional<int> selected_line));
   MOCK_CONST_METHOD0(selected_line, base::Optional<int>());
   const autofill::AutofillPopupLayoutModel& layout_model() const override {

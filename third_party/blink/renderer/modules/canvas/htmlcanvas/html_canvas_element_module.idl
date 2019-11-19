@@ -4,11 +4,14 @@
 
 // https://html.spec.whatwg.org/C/#the-canvas-element
 
+// This file is currently forked between html_canvas_element_module.idl and
+// html_canvas_element_module_support_webgl2_compute.idl. Update both files.
+
 typedef (CanvasRenderingContext2D or
          WebGLRenderingContext or
          WebGL2RenderingContext or
          ImageBitmapRenderingContext or
-         XRPresentationContext) RenderingContext;
+         GPUCanvasContext) RenderingContext;
 
 [
     ImplementedAs=HTMLCanvasElementModule
@@ -20,5 +23,7 @@ typedef (CanvasRenderingContext2D or
     // (and is not undefined or null). The binding must ignore this.
     // Related spec issue: https://github.com/whatwg/html/issues/595
     [RaisesException] RenderingContext? getContext(DOMString contextId, [PermissiveDictionaryConversion] optional CanvasContextCreationAttributesModule attributes);
-    [RuntimeEnabled=OffscreenCanvas, RaisesException, MeasureAs=OffscreenCanvas] OffscreenCanvas transferControlToOffscreen();
+
+    [CallWith=ExecutionContext, RuntimeEnabled=SurfaceEmbeddingFeatures,
+     RaisesException, MeasureAs=OffscreenCanvas] OffscreenCanvas transferControlToOffscreen();
 };

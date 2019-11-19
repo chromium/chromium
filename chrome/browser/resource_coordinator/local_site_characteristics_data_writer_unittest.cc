@@ -7,9 +7,9 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
+#include "chrome/browser/performance_manager/persistence/site_data/feature_usage.h"
 #include "chrome/browser/resource_coordinator/local_site_characteristics_data_impl.h"
 #include "chrome/browser/resource_coordinator/local_site_characteristics_data_unittest_utils.h"
-#include "chrome/browser/resource_coordinator/local_site_characteristics_feature_usage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -28,8 +28,8 @@ class LocalSiteCharacteristicsDataWriterTest : public ::testing::Test {
                 &delegate_,
                 &database_))) {
     LocalSiteCharacteristicsDataWriter* writer =
-        new LocalSiteCharacteristicsDataWriter(test_impl_.get(),
-                                               TabVisibility::kBackground);
+        new LocalSiteCharacteristicsDataWriter(
+            test_impl_.get(), performance_manager::TabVisibility::kBackground);
     writer_ = base::WrapUnique(writer);
   }
 
@@ -63,13 +63,13 @@ class LocalSiteCharacteristicsDataWriterTest : public ::testing::Test {
 TEST_F(LocalSiteCharacteristicsDataWriterTest, TestModifiers) {
   // Make sure that we initially have no information about any of the features
   // and that the site is in an unloaded state.
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureUsageUnknown,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
             test_impl_->UpdatesFaviconInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureUsageUnknown,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
             test_impl_->UpdatesTitleInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureUsageUnknown,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
             test_impl_->UsesAudioInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureUsageUnknown,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
             test_impl_->UsesNotificationsInBackground());
 
   // Test the OnTabLoaded function.
@@ -80,43 +80,43 @@ TEST_F(LocalSiteCharacteristicsDataWriterTest, TestModifiers) {
   // Test all the modifiers.
 
   writer_->NotifyUpdatesFaviconInBackground();
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureInUse,
             test_impl_->UpdatesFaviconInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureUsageUnknown,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
             test_impl_->UpdatesTitleInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureUsageUnknown,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
             test_impl_->UsesAudioInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureUsageUnknown,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
             test_impl_->UsesNotificationsInBackground());
 
   writer_->NotifyUpdatesTitleInBackground();
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureInUse,
             test_impl_->UpdatesFaviconInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureInUse,
             test_impl_->UpdatesTitleInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureUsageUnknown,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
             test_impl_->UsesAudioInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureUsageUnknown,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
             test_impl_->UsesNotificationsInBackground());
 
   writer_->NotifyUsesAudioInBackground();
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureInUse,
             test_impl_->UpdatesFaviconInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureInUse,
             test_impl_->UpdatesTitleInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureInUse,
             test_impl_->UsesAudioInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureUsageUnknown,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
             test_impl_->UsesNotificationsInBackground());
 
   writer_->NotifyUsesNotificationsInBackground();
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureInUse,
             test_impl_->UpdatesFaviconInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureInUse,
             test_impl_->UpdatesTitleInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureInUse,
             test_impl_->UsesAudioInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureInUse,
             test_impl_->UsesNotificationsInBackground());
 
   writer_->NotifyLoadTimePerformanceMeasurement(
@@ -181,7 +181,8 @@ TEST_F(LocalSiteCharacteristicsDataWriterTest,
   EXPECT_TRUE(TabIsLoadedAndInBackground());
 
   // Transition #8: Loaded + Bg -> Loaded + Fg.
-  writer_->NotifySiteVisibilityChanged(TabVisibility::kForeground);
+  writer_->NotifySiteVisibilityChanged(
+      performance_manager::TabVisibility::kForeground);
   EXPECT_TRUE(TabIsLoaded());
   EXPECT_FALSE(TabIsLoadedAndInBackground());
 
@@ -190,11 +191,13 @@ TEST_F(LocalSiteCharacteristicsDataWriterTest,
   EXPECT_FALSE(TabIsLoaded());
 
   // Transition #1: Unloaded + Fg -> Unloaded + Bg.
-  writer_->NotifySiteVisibilityChanged(TabVisibility::kBackground);
+  writer_->NotifySiteVisibilityChanged(
+      performance_manager::TabVisibility::kBackground);
   EXPECT_FALSE(TabIsLoaded());
 
   // Transition #2: Unloaded + Bg -> Unloaded + Fg.
-  writer_->NotifySiteVisibilityChanged(TabVisibility::kForeground);
+  writer_->NotifySiteVisibilityChanged(
+      performance_manager::TabVisibility::kForeground);
   EXPECT_FALSE(TabIsLoaded());
 
   // Transition #6: Unloaded + Fg -> Loaded + Fg.
@@ -203,7 +206,8 @@ TEST_F(LocalSiteCharacteristicsDataWriterTest,
   EXPECT_FALSE(TabIsLoadedAndInBackground());
 
   // Transition #7: Loaded + Fg -> Loaded + Bg.
-  writer_->NotifySiteVisibilityChanged(TabVisibility::kBackground);
+  writer_->NotifySiteVisibilityChanged(
+      performance_manager::TabVisibility::kBackground);
   EXPECT_TRUE(TabIsLoaded());
   EXPECT_TRUE(TabIsLoadedAndInBackground());
 

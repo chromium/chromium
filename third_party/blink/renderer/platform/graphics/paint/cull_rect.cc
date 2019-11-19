@@ -22,6 +22,12 @@ bool CullRect::Intersects(const LayoutRect& rect) const {
   return IsInfinite() || rect_.Intersects(EnclosingIntRect(rect));
 }
 
+bool CullRect::Intersects(const LayoutRect& rect,
+                          const LayoutPoint& offset) const {
+  return IsInfinite() || rect_.Intersects(EnclosingIntRect(LayoutRect(
+                             rect.Location() + offset, rect.Size())));
+}
+
 bool CullRect::IntersectsTransformed(const AffineTransform& transform,
                                      const FloatRect& rect) const {
   return IsInfinite() || transform.MapRect(rect).Intersects(rect_);
@@ -45,23 +51,41 @@ void CullRect::Move(const IntSize& offset) {
     rect_.Move(offset);
 }
 
+static void MapRect(const TransformPaintPropertyNode& transform,
+                    IntRect& rect) {
+  if (transform.IsIdentityOr2DTranslation()) {
+    FloatRect float_rect(rect);
+    float_rect.Move(-transform.Translation2D());
+    rect = EnclosingIntRect(float_rect);
+  } else {
+    rect = transform.MatrixWithOriginApplied().Inverse().MapRect(rect);
+  }
+}
+
 CullRect::ApplyTransformResult CullRect::ApplyTransformInternal(
-    const TransformPaintPropertyNode& transform) {
+    const TransformPaintPropertyNode& transform,
+    bool clip_to_scroll_container) {
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     if (const auto* scroll = transform.ScrollNode()) {
-      rect_.Intersect(scroll->ContainerRect());
-      if (rect_.IsEmpty())
-        return kNotExpanded;
-      rect_ = transform.Matrix().Inverse().MapRect(rect_);
+      if (clip_to_scroll_container) {
+        rect_.Intersect(scroll->ContainerRect());
+        if (rect_.IsEmpty())
+          return kNotExpanded;
+      }
 
-      // Expand the cull rect for scrolling contents in case of composited
-      // scrolling.
-      // TODO(wangxianzhu): options for non-composited-scrolling contents:
-      // 1. to use non-composted-scrolling heuristics to avoid expansion;
-      // 2. to reduce the 4000px distance, no matter if the contents with be
-      //    composited scrolling.
-      // 3. mixed method of 1 and 2, e.g. the distance could be a function of
-      //    confidence that the contents will be composited scrolling.
+      MapRect(transform, rect_);
+
+      // Don't expand for non-composited scrolling.
+      if (!transform.HasDirectCompositingReasons())
+        return kNotExpanded;
+
+      // We create scroll node for the root scroller even it's not scrollable.
+      // Don't expand in the case.
+      if (scroll->ContainerRect().Width() >= scroll->ContentsSize().Width() &&
+          scroll->ContainerRect().Height() >= scroll->ContentsSize().Height())
+        return kNotExpanded;
+
+      // Expand the cull rect for scrolling contents for composited scrolling.
       static const int kPixelDistanceToExpand = 4000;
       rect_.Inflate(kPixelDistanceToExpand);
       // Don't clip the cull rect by contents size to let ChangedEnough() work
@@ -73,20 +97,22 @@ CullRect::ApplyTransformResult CullRect::ApplyTransformInternal(
   }
 
   if (!IsInfinite())
-    rect_ = transform.Matrix().Inverse().MapRect(rect_);
+    MapRect(transform, rect_);
   return kNotExpanded;
 }
 
 void CullRect::ApplyTransforms(const TransformPaintPropertyNode& source,
                                const TransformPaintPropertyNode& destination,
-                               const base::Optional<CullRect>& old_cull_rect) {
+                               const base::Optional<CullRect>& old_cull_rect,
+                               bool clip_to_scroll_container) {
   DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
 
   Vector<const TransformPaintPropertyNode*> scroll_translations;
   for (const auto* t = &destination; t != &source; t = t->Parent()) {
     if (!t) {
       // |source| is not an ancestor of |destination|. Simply map.
-      GeometryMapper::SourceToDestinationRect(source, destination, rect_);
+      if (!IsInfinite())
+        GeometryMapper::SourceToDestinationRect(source, destination, rect_);
       return;
     }
     if (t->ScrollNode())
@@ -104,7 +130,7 @@ void CullRect::ApplyTransforms(const TransformPaintPropertyNode& source,
           *last_transform, *scroll_translation->Parent(), rect_);
     }
     last_scroll_translation_result =
-        ApplyTransformInternal(*scroll_translation);
+        ApplyTransformInternal(*scroll_translation, clip_to_scroll_container);
     last_transform = scroll_translation;
   }
 

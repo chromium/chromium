@@ -11,7 +11,8 @@
 #include "base/macros.h"
 #include "content/common/content_export.h"
 #include "content/public/common/cdm_info.h"
-#include "media/mojo/interfaces/key_system_support.mojom.h"
+#include "media/mojo/mojom/key_system_support.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
@@ -21,8 +22,9 @@ class CONTENT_EXPORT KeySystemSupportImpl final
   KeySystemSupportImpl();
   ~KeySystemSupportImpl() final;
 
-  // Create a KeySystemSupportImpl object and bind it to |request|.
-  static void Create(media::mojom::KeySystemSupportRequest request);
+  // Create a KeySystemSupportImpl object and bind it to |receiver|.
+  static void Create(
+      mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver);
 
   // Returns CdmInfo registered for |key_system|. Returns null if no CdmInfo is
   // registered for |key_system|, or if the CdmInfo registered is invalid.

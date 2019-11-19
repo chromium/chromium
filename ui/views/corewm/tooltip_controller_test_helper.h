@@ -56,8 +56,7 @@ class TooltipTestView : public views::View {
   }
 
   // Overridden from views::View
-  bool GetTooltipText(const gfx::Point& p,
-                      base::string16* tooltip) const override;
+  base::string16 GetTooltipText(const gfx::Point& p) const override;
 
  private:
   base::string16 tooltip_text_;

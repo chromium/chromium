@@ -28,6 +28,7 @@
 #include <cmath>
 #include <limits>
 
+#include "media/base/eme_constants.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_exception.h"
@@ -50,11 +51,12 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/content_decryption_module_result.h"
-#include "third_party/blink/renderer/platform/instance_counters.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/timer.h"
-#include "third_party/blink/renderer/platform/wtf/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 
 #define MEDIA_KEY_SESSION_LOG_LEVEL 3
 
@@ -76,9 +78,11 @@ static bool IsValidSessionId(const String& session_id) {
   if (!session_id.ContainsOnlyASCIIOrEmpty())
     return false;
 
-  // Check that the sessionId only contains alphanumeric characters.
+  // Check that |session_id| only contains non-space printable characters for
+  // easier logging. Note that checking alphanumeric is too strict because there
+  // are key systems using Base64 session IDs. See https://crbug.com/902828.
   for (unsigned i = 0; i < session_id.length(); ++i) {
-    if (!IsASCIIAlphanumeric(session_id[i]))
+    if (!IsASCIIPrintable(session_id[i]) || session_id[i] == ' ')
       return false;
   }
 
@@ -106,28 +110,30 @@ static bool IsPersistentSessionType(WebEncryptedMediaSessionType session_type) {
 static ScriptPromise CreateRejectedPromiseNotCallable(
     ScriptState* script_state) {
   return ScriptPromise::RejectWithDOMException(
-      script_state, DOMException::Create(DOMExceptionCode::kInvalidStateError,
+      script_state,
+      MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
                                          "The session is not callable."));
 }
 
 static ScriptPromise CreateRejectedPromiseAlreadyClosed(
     ScriptState* script_state) {
   return ScriptPromise::RejectWithDOMException(
-      script_state, DOMException::Create(DOMExceptionCode::kInvalidStateError,
+      script_state,
+      MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
                                          "The session is already closed."));
 }
 
 static ScriptPromise CreateRejectedPromiseAlreadyInitialized(
     ScriptState* script_state) {
   return ScriptPromise::RejectWithDOMException(
-      script_state,
-      DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                           "The session is already initialized."));
+      script_state, MakeGarbageCollected<DOMException>(
+                        DOMExceptionCode::kInvalidStateError,
+                        "The session is already initialized."));
 }
 
 // A class holding a pending action.
 class MediaKeySession::PendingAction final
-    : public GarbageCollectedFinalized<MediaKeySession::PendingAction> {
+    : public GarbageCollected<MediaKeySession::PendingAction> {
  public:
   enum Type { kGenerateRequest, kLoad, kUpdate, kClose, kRemove };
 
@@ -140,7 +146,7 @@ class MediaKeySession::PendingAction final
     return data_;
   }
 
-  WebEncryptedMediaInitDataType InitDataType() const {
+  media::EmeInitDataType InitDataType() const {
     DCHECK_EQ(kGenerateRequest, type_);
     return init_data_type_;
   }
@@ -152,7 +158,7 @@ class MediaKeySession::PendingAction final
 
   static PendingAction* CreatePendingGenerateRequest(
       ContentDecryptionModuleResult* result,
-      WebEncryptedMediaInitDataType init_data_type,
+      media::EmeInitDataType init_data_type,
       DOMArrayBuffer* init_data) {
     DCHECK(result);
     DCHECK(init_data);
@@ -165,8 +171,7 @@ class MediaKeySession::PendingAction final
       const String& session_id) {
     DCHECK(result);
     return MakeGarbageCollected<PendingAction>(
-        kLoad, result, WebEncryptedMediaInitDataType::kUnknown, nullptr,
-        session_id);
+        kLoad, result, media::EmeInitDataType::UNKNOWN, nullptr, session_id);
   }
 
   static PendingAction* CreatePendingUpdate(
@@ -175,29 +180,26 @@ class MediaKeySession::PendingAction final
     DCHECK(result);
     DCHECK(data);
     return MakeGarbageCollected<PendingAction>(
-        kUpdate, result, WebEncryptedMediaInitDataType::kUnknown, data,
-        String());
+        kUpdate, result, media::EmeInitDataType::UNKNOWN, data, String());
   }
 
   static PendingAction* CreatePendingClose(
       ContentDecryptionModuleResult* result) {
     DCHECK(result);
     return MakeGarbageCollected<PendingAction>(
-        kClose, result, WebEncryptedMediaInitDataType::kUnknown, nullptr,
-        String());
+        kClose, result, media::EmeInitDataType::UNKNOWN, nullptr, String());
   }
 
   static PendingAction* CreatePendingRemove(
       ContentDecryptionModuleResult* result) {
     DCHECK(result);
     return MakeGarbageCollected<PendingAction>(
-        kRemove, result, WebEncryptedMediaInitDataType::kUnknown, nullptr,
-        String());
+        kRemove, result, media::EmeInitDataType::UNKNOWN, nullptr, String());
   }
 
   PendingAction(Type type,
                 ContentDecryptionModuleResult* result,
-                WebEncryptedMediaInitDataType init_data_type,
+                media::EmeInitDataType init_data_type,
                 DOMArrayBuffer* data,
                 const String& string_data)
       : type_(type),
@@ -215,7 +217,7 @@ class MediaKeySession::PendingAction final
  private:
   const Type type_;
   const Member<ContentDecryptionModuleResult> result_;
-  const WebEncryptedMediaInitDataType init_data_type_;
+  const media::EmeInitDataType init_data_type_;
   const Member<DOMArrayBuffer> data_;
   const String string_data_;
 };
@@ -337,20 +339,13 @@ class SimpleResultPromise : public ContentDecryptionModuleResultPromise {
   Member<MediaKeySession> session_;
 };
 
-MediaKeySession* MediaKeySession::Create(
-    ScriptState* script_state,
-    MediaKeys* media_keys,
-    WebEncryptedMediaSessionType session_type) {
-  return MakeGarbageCollected<MediaKeySession>(script_state, media_keys,
-                                               session_type);
-}
-
 MediaKeySession::MediaKeySession(ScriptState* script_state,
                                  MediaKeys* media_keys,
                                  WebEncryptedMediaSessionType session_type)
     : ContextLifecycleObserver(ExecutionContext::From(script_state)),
-      async_event_queue_(EventQueue::Create(GetExecutionContext(),
-                                            TaskType::kMediaElementEvent)),
+      async_event_queue_(
+          MakeGarbageCollected<EventQueue>(GetExecutionContext(),
+                                           TaskType::kMediaElementEvent)),
       media_keys_(media_keys),
       session_type_(session_type),
       expiration_(std::numeric_limits<double>::quiet_NaN()),
@@ -480,14 +475,14 @@ ScriptPromise MediaKeySession::generateRequest(
   //    (blink side doesn't know what the CDM supports, so the proper check
   //     will be done on the Chromium side. However, we can verify that
   //     |initDataType| is one of the registered values.)
-  WebEncryptedMediaInitDataType init_data_type =
+  media::EmeInitDataType init_data_type =
       EncryptedMediaUtils::ConvertToInitDataType(init_data_type_string);
-  if (init_data_type == WebEncryptedMediaInitDataType::kUnknown) {
+  if (init_data_type == media::EmeInitDataType::UNKNOWN) {
     return ScriptPromise::RejectWithDOMException(
-        script_state, DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                           "The initialization data type '" +
-                                               init_data_type_string +
-                                               "' is not supported."));
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kNotSupportedError,
+                          "The initialization data type '" +
+                              init_data_type_string + "' is not supported."));
   }
 
   // 7. Let init data be a copy of the contents of the initData parameter.
@@ -507,23 +502,22 @@ ScriptPromise MediaKeySession::generateRequest(
   pending_actions_.push_back(PendingAction::CreatePendingGenerateRequest(
       result, init_data_type, init_data_buffer));
   DCHECK(!action_timer_.IsActive());
-  action_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+  action_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 
   // 11. Return promise.
   return promise;
 }
 
-void MediaKeySession::GenerateRequestTask(
-    ContentDecryptionModuleResult* result,
-    WebEncryptedMediaInitDataType init_data_type,
-    DOMArrayBuffer* init_data_buffer) {
+void MediaKeySession::GenerateRequestTask(ContentDecryptionModuleResult* result,
+                                          media::EmeInitDataType init_data_type,
+                                          DOMArrayBuffer* init_data_buffer) {
   // NOTE: Continue step 10 of MediaKeySession::generateRequest().
   DVLOG(MEDIA_KEY_SESSION_LOG_LEVEL) << __func__ << "(" << this << ")";
 
   // initializeNewSession() in Chromium will execute steps 10.1 to 10.9.
   session_->InitializeNewSession(
       init_data_type, static_cast<unsigned char*>(init_data_buffer->Data()),
-      init_data_buffer->ByteLength(), session_type_, result->Result());
+      init_data_buffer->ByteLengthAsSizeT(), session_type_, result->Result());
 
   // Remaining steps (10.10) executed in finishGenerateRequest(),
   // called when |result| is resolved.
@@ -604,7 +598,7 @@ ScriptPromise MediaKeySession::load(ScriptState* script_state,
   pending_actions_.push_back(
       PendingAction::CreatePendingLoadRequest(result, session_id));
   DCHECK(!action_timer_.IsActive());
-  action_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+  action_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 
   // 9. Return promise.
   return promise;
@@ -725,7 +719,7 @@ ScriptPromise MediaKeySession::update(ScriptState* script_state,
   pending_actions_.push_back(
       PendingAction::CreatePendingUpdate(result, response_copy));
   if (!action_timer_.IsActive())
-    action_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+    action_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 
   // 7. Return promise.
   return promise;
@@ -738,7 +732,7 @@ void MediaKeySession::UpdateTask(ContentDecryptionModuleResult* result,
 
   // update() in Chromium will execute steps 6.1 through 6.8.
   session_->Update(static_cast<unsigned char*>(sanitized_response->Data()),
-                   sanitized_response->ByteLength(), result->Result());
+                   sanitized_response->ByteLengthAsSizeT(), result->Result());
 
   // Last step (6.8.2 Resolve promise) will be done when |result| is resolved.
 }
@@ -773,7 +767,7 @@ ScriptPromise MediaKeySession::close(ScriptState* script_state) {
   // 5. Run the following steps in parallel (done in closeTask()).
   pending_actions_.push_back(PendingAction::CreatePendingClose(result));
   if (!action_timer_.IsActive())
-    action_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+    action_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 
   // 6. Return promise.
   return promise;
@@ -814,7 +808,7 @@ ScriptPromise MediaKeySession::remove(ScriptState* script_state) {
   // 4. Run the following steps asynchronously (done in removeTask()).
   pending_actions_.push_back(PendingAction::CreatePendingRemove(result));
   if (!action_timer_.IsActive())
-    action_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+    action_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 
   // 5. Return promise.
   return promise;

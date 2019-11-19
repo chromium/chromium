@@ -6,8 +6,8 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
 <dom-module id="assistant-value-prop">
   <template>
+    <link rel="stylesheet" href="../login/oobe_dialog_host.css">
     <link rel="stylesheet" href="../login/oobe_flex_layout.css">
-    <link rel="stylesheet" href="../login/oobe_popup_overlay.css">
     <link rel="stylesheet" href="assistant_shared_styles.css">
     <link rel="stylesheet" href="assistant_value_prop.css">
     <oobe-dialog id="value-prop-dialog" class="value-prop-loading"
@@ -21,10 +21,11 @@
           <div class="flex layout horizontal center">
             <div id="value-prop-container">
               <div class="flex layout horizontal center">
-                <img id="user-image">
+                <img id="user-image"
+                    i18n-values="aria-label:assistantUserImage">
                 <div class="content" id="user-name"></div>
               </div>
-              <webview id="value-prop-view"></webview>
+              <webview id="value-prop-view" tabindex="-1"></webview>
             </div>
             <div id="consents-container"></div>
           </div>
@@ -44,19 +45,19 @@
       </div>
     </oobe-dialog>
 
-    <div id="learn-more-overlay" class="popup-overlay" hidden>
-      <div id="overlay-container" class="oobe-popup not-resizable">
+    <cr-dialog id="learn-more-overlay">
+      <div slot="body">
         <div id="overlay-text">
           <div id="overlay-title-text"></div>
           <div id="overlay-additional-info-text"></div>
         </div>
-        <div class="button-strip">
-          <oobe-text-button inverse id="overlay-close-button">
-            <div i18n-content="assistantOptinOKButton" id="close-button-text">
-            </div>
-          </oobe-text-button>
-        </div>
       </div>
-    </div>
+      <div slot="button-container">
+        <oobe-text-button inverse id="overlay-close-button">
+          <div i18n-content="assistantOptinOKButton" id="close-button-text">
+          </div>
+        </oobe-text-button>
+      </div>
+    </cr-dialog>
   </template>
 </dom-module>

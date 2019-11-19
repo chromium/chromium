@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/js-test-resources/testharness-helpers.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/mojo/public/interfaces/bindings/tests/test_structs.mojom.js"></script>
+<script>
+
+test(() => {
+  var r = new mojo.test.Rect();
+  assert_weak_equals(r, new mojo.test.Rect({x:0, y:0, width:0, height:0}));
+  assert_weak_equals(r, new mojo.test.Rect({foo:100, bar:200}));
+
+  r.x = 10;
+  r.y = 20;
+  r.width = 30;
+  r.height = 40;
+  var rp = new mojo.test.RectPair({first: r, second: r});
+  assert_weak_equals(rp.first, r);
+  assert_weak_equals(rp.second, r);
+
+  assert_equals(new mojo.test.RectPair({second: r}).first, null);
+
+  var nr = new mojo.test.NamedRegion();
+  assert_equals(nr.name, null);
+  assert_equals(nr.rects, null);
+  assert_weak_equals(nr, new mojo.test.NamedRegion({}));
+
+  nr.name = "foo";
+  nr.rects = [r, r, r];
+  assert_weak_equals(nr, new mojo.test.NamedRegion({
+    name: "foo",
+    rects: [r, r, r],
+  }));
+
+  var e = new mojo.test.EmptyStruct();
+  assert_weak_equals(e, new mojo.test.EmptyStruct({foo:123}));
+}, 'constructors');
+
+test(() => {
+  var s = new mojo.test.NoDefaultFieldValues();
+  assert_false(s.f0);
+
+  // f1 - f10, number type fields
+  for (var i = 1; i <= 10; i++)
+    assert_equals(s["f" + i], 0);
+
+  // f11,12 strings, f13-22 handles, f23-f26 arrays, f27,28 structs
+  for (var i = 11; i <= 28; i++)
+    assert_equals(s["f" + i], null);
+
+}, 'no default field values');
+
+test(() => {
+  var s = new mojo.test.DefaultFieldValues();
+  assert_true(s.f0);
+
+  // f1 - f12, number type fields
+  for (var i = 1; i <= 12; i++)
+    assert_equals(s["f" + i], 100);
+
+  // f13,14 "foo"
+  for (var i = 13; i <= 14; i++)
+    assert_equals(s["f" + i], "foo");
+
+  // f15,16 a default instance of Rect
+  var r = new mojo.test.Rect();
+  assert_weak_equals(s.f15, r);
+  assert_weak_equals(s.f16, r);
+}, 'default field values');
+
+test(() => {
+  assert_equals(mojo.test.ScopedConstants.TEN, 10);
+  assert_equals(mojo.test.ScopedConstants.ALSO_TEN, 10);
+
+  assert_equals(mojo.test.ScopedConstants.EType.E0, 0);
+  assert_equals(mojo.test.ScopedConstants.EType.E1, 1);
+  assert_equals(mojo.test.ScopedConstants.EType.E2, 10);
+  assert_equals(mojo.test.ScopedConstants.EType.E3, 10);
+  assert_equals(mojo.test.ScopedConstants.EType.E4, 11);
+
+  var s = new mojo.test.ScopedConstants();
+  assert_equals(s.f0, 0);
+  assert_equals(s.f1, 1);
+  assert_equals(s.f2, 10);
+  assert_equals(s.f3, 10);
+  assert_equals(s.f4, 11);
+  assert_equals(s.f5, 10);
+  assert_equals(s.f6, 10);
+}, 'scoped constants');
+
+function structEncodeDecode(struct) {
+  var structClass = struct.constructor;
+  var builder = new mojo.internal.MessageV0Builder(1234,
+      structClass.encodedSize);
+  builder.encodeStruct(structClass, struct);
+  var message = builder.finish();
+
+  var messageValidator = new mojo.internal.Validator(message);
+  var err = structClass.validate(messageValidator,
+                                 mojo.internal.kMessageV0HeaderSize);
+  assert_equals(err, mojo.internal.validationError.NONE);
+
+  var reader = new mojo.internal.MessageReader(message);
+  return reader.decodeStruct(structClass);
+}
+
+test(() => {
+  var mapFieldsStruct = new mojo.test.MapKeyTypes({
+    f0: new Map([[true, false], [false, true]]),  // map<bool, bool>
+    f1: new Map([[0, 0], [1, 127], [-1, -128]]),  // map<int8, int8>
+    f2: new Map([[0, 0], [1, 127], [2, 255]]),  // map<uint8, uint8>
+    f3: new Map([[0, 0], [1, 32767], [2, -32768]]),  // map<int16, int16>
+    f4: new Map([[0, 0], [1, 32768], [2, 0xFFFF]]),  // map<uint16, uint16>
+    f5: new Map([[0, 0], [1, 32767], [2, -32768]]),  // map<int32, int32>
+    f6: new Map([[0, 0], [1, 32768], [2, 0xFFFF]]),  // map<uint32, uint32>
+    f7: new Map([[0, 0], [1, 32767], [2, -32768]]),  // map<int64, int64>
+    f8: new Map([[0, 0], [1, 32768], [2, 0xFFFF]]),  // map<uint64, uint64>
+    f9: new Map([[1000.5, -50000], [100.5, 5000]]),  // map<float, float>
+    f10: new Map([[-100.5, -50000], [0, 50000000]]),  // map<double, double>
+    f11: new Map([["one", "two"], ["free", "four"]]),  // map<string, string>
+  });
+  var decodedStruct = structEncodeDecode(mapFieldsStruct);
+  assert_weak_equals(decodedStruct, mapFieldsStruct);
+}, 'map key types');
+
+test(() => {
+  var mapFieldsStruct = new mojo.test.MapValueTypes({
+    // map<string, array<string>>
+    f0: new Map([["a", ["b", "c"]], ["d", ["e"]]]),
+    // map<string, array<string>?>
+    f1: new Map([["a", null], ["b", ["c", "d"]]]),
+    // map<string, array<string?>>
+    f2: new Map([["a", [null]], ["b", [null, "d"]]]),
+    // map<string, array<string,2>>
+    f3: new Map([["a", ["1", "2"]], ["b", ["1", "2"]]]),
+    // map<string, array<array<string, 2>?>>
+    f4: new Map([["a", [["1", "2"]]], ["b", [null]]]),
+    // map<string, array<array<string, 2>, 1>>
+    f5: new Map([["a", [["1", "2"]]]]),
+    // map<string, Rect?>
+    f6: new Map([["a", null]]),
+    // map<string, map<string, string>>
+    f7: new Map([["a", new Map([["b", "c"]])]]),
+    // map<string, array<map<string, string>>>
+    f8: new Map([["a", [new Map([["b", "c"]])]]]),
+    // map<string, handle>
+    f9: new Map([["a", 1234]]),
+    // map<string, array<handle>>
+    f10: new Map([["a", [1234, 5678]]]),
+    // map<string, map<string, handle>>
+    f11: new Map([["a", new Map([["b", 1234]])]]),
+  });
+  var decodedStruct = structEncodeDecode(mapFieldsStruct);
+  assert_weak_equals(decodedStruct, mapFieldsStruct);
+}, 'map value types');
+
+test(() => {
+  var decodedStruct = structEncodeDecode(new mojo.test.FloatNumberValues);
+  assert_equals(decodedStruct.f0, mojo.test.FloatNumberValues.V0);
+  assert_equals(decodedStruct.f1, mojo.test.FloatNumberValues.V1);
+  assert_equals(decodedStruct.f2, mojo.test.FloatNumberValues.V2);
+  assert_equals(decodedStruct.f3, mojo.test.FloatNumberValues.V3);
+  assert_equals(decodedStruct.f4, mojo.test.FloatNumberValues.V4);
+  assert_equals(decodedStruct.f5, mojo.test.FloatNumberValues.V5);
+  assert_equals(decodedStruct.f6, mojo.test.FloatNumberValues.V6);
+  assert_equals(decodedStruct.f7, mojo.test.FloatNumberValues.V7);
+  assert_equals(decodedStruct.f8, mojo.test.FloatNumberValues.V8);
+  assert_equals(decodedStruct.f9, mojo.test.FloatNumberValues.V9);
+}, 'float number values');
+
+test(() => {
+  var decodedStruct = structEncodeDecode(new mojo.test.IntegerNumberValues);
+  assert_equals(decodedStruct.f0, mojo.test.IntegerNumberValues.V0);
+  assert_equals(decodedStruct.f1, mojo.test.IntegerNumberValues.V1);
+  assert_equals(decodedStruct.f2, mojo.test.IntegerNumberValues.V2);
+  assert_equals(decodedStruct.f3, mojo.test.IntegerNumberValues.V3);
+  assert_equals(decodedStruct.f4, mojo.test.IntegerNumberValues.V4);
+  assert_equals(decodedStruct.f5, mojo.test.IntegerNumberValues.V5);
+  assert_equals(decodedStruct.f6, mojo.test.IntegerNumberValues.V6);
+  assert_equals(decodedStruct.f7, mojo.test.IntegerNumberValues.V7);
+  assert_equals(decodedStruct.f8, mojo.test.IntegerNumberValues.V8);
+  assert_equals(decodedStruct.f9, mojo.test.IntegerNumberValues.V9);
+  assert_equals(decodedStruct.f10, mojo.test.IntegerNumberValues.V10);
+  assert_equals(decodedStruct.f11, mojo.test.IntegerNumberValues.V11);
+  assert_equals(decodedStruct.f12, mojo.test.IntegerNumberValues.V12);
+  assert_equals(decodedStruct.f13, mojo.test.IntegerNumberValues.V13);
+  assert_equals(decodedStruct.f14, mojo.test.IntegerNumberValues.V14);
+  assert_equals(decodedStruct.f15, mojo.test.IntegerNumberValues.V15);
+  assert_equals(decodedStruct.f16, mojo.test.IntegerNumberValues.V16);
+  assert_equals(decodedStruct.f17, mojo.test.IntegerNumberValues.V17);
+  assert_equals(decodedStruct.f18, mojo.test.IntegerNumberValues.V18);
+  assert_equals(decodedStruct.f19, mojo.test.IntegerNumberValues.V19);
+}, 'integer number values');
+
+test(() => {
+  var decodedStruct =
+      structEncodeDecode(new mojo.test.UnsignedNumberValues);
+  assert_equals(decodedStruct.f0, mojo.test.UnsignedNumberValues.V0);
+  assert_equals(decodedStruct.f1, mojo.test.UnsignedNumberValues.V1);
+  assert_equals(decodedStruct.f2, mojo.test.UnsignedNumberValues.V2);
+  assert_equals(decodedStruct.f3, mojo.test.UnsignedNumberValues.V3);
+  assert_equals(decodedStruct.f4, mojo.test.UnsignedNumberValues.V4);
+  assert_equals(decodedStruct.f5, mojo.test.UnsignedNumberValues.V5);
+  assert_equals(decodedStruct.f6, mojo.test.UnsignedNumberValues.V6);
+  assert_equals(decodedStruct.f7, mojo.test.UnsignedNumberValues.V7);
+  assert_equals(decodedStruct.f8, mojo.test.UnsignedNumberValues.V8);
+  assert_equals(decodedStruct.f9, mojo.test.UnsignedNumberValues.V9);
+  assert_equals(decodedStruct.f10, mojo.test.UnsignedNumberValues.V10);
+  assert_equals(decodedStruct.f11, mojo.test.UnsignedNumberValues.V11);
+}, 'unsigned number values');
+
+test(() => {
+  var bitArraysStruct = new mojo.test.BitArrayValues({
+    // array<bool, 1> f0;
+    f0: [true],
+    // array<bool, 7> f1;
+    f1: [true, false, true, false, true, false, true],
+    // array<bool, 9> f2;
+    f2: [true, false, true, false, true, false, true, false, true],
+    // array<bool> f3;
+    f3: [true, false, true, false, true, false, true, false],
+    // array<array<bool>> f4;
+    f4: [[true], [false], [true, false], [true, false, true, false]],
+    // array<array<bool>?> f5;
+    f5: [[true], null, null, [true, false, true, false]],
+    // array<array<bool, 2>?> f6;
+    f6: [[true, false], [true, false], [true, false]],
+  });
+  var decodedStruct = structEncodeDecode(bitArraysStruct);
+  assert_weak_equals(decodedStruct, bitArraysStruct);
+}, 'bit array values');
+
+</script>

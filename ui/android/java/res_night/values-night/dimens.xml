@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Chips default measures -->
+    <item name="chip_background_selected_focused_alpha" format="float" type="dimen">1</item>
+    <item name="chip_background_selected_alpha" format="float" type="dimen">1</item>
+</resources>

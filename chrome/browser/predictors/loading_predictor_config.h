@@ -30,7 +30,25 @@ bool IsLoadingPredictorEnabled(Profile* profile);
 bool IsPreconnectAllowed(Profile* profile);
 
 // Indicates what caused the page load hint.
-enum class HintOrigin { NAVIGATION, EXTERNAL, OMNIBOX, NAVIGATION_PREDICTOR };
+enum class HintOrigin {
+  // Triggered at the start of each navigation.
+  NAVIGATION,
+
+  // Used when a preconnect is triggered by an external Android app.
+  EXTERNAL,
+
+  // Triggered by omnibox.
+  OMNIBOX,
+
+  // Triggered by navigation predictor service.
+  NAVIGATION_PREDICTOR,
+
+  // Used when a prerender initiated by Omnibox is unsuccessful, and instead a
+  // preconnect is initiated. Preconnect triggered by
+  // OMNIBOX_PRERENDER_FALLBACK may be handled differently than preconnects
+  // triggered by OMNIBOX since the former are triggered at higher confidence.
+  OMNIBOX_PRERENDER_FALLBACK
+};
 
 // Represents the config for the Loading predictor.
 struct LoadingPredictorConfig {

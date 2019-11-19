@@ -35,7 +35,7 @@
         TestRunner.cssModel.addEventListener(SDK.CSSModel.Events.StyleSheetAdded, styleSheetAdded);
     }
 
-    function callback(content) {
+    function callback({ content, error, isEncoded }) {
       foundStyleSheetText = content;
       TestRunner.runTestSuite([testSetText, testNewElementStyles]);
     }

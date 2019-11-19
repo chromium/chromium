@@ -18,6 +18,12 @@
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_scheduler.h"
 
+namespace chromeos {
+
+class AuthPolicyHelper;
+
+}  // namespace chromeos
+
 namespace policy {
 
 class CloudExternalDataManager;
@@ -95,6 +101,10 @@ class ActiveDirectoryPolicyManager
   // during lifetime of the object (after Chrome was started).
   bool fetch_ever_completed_ = false;
 
+  chromeos::AuthPolicyHelper* authpolicy_helper() const {
+    return authpolicy_helper_.get();
+  }
+
  private:
   // Called by scheduler with result of policy fetch. This covers policy
   // download, parsing and storing into session manager. (To access and publish
@@ -120,6 +130,8 @@ class ActiveDirectoryPolicyManager
   const PolicyDomain extension_policy_domain_;
 
   std::unique_ptr<PolicyScheduler> scheduler_;
+
+  std::unique_ptr<chromeos::AuthPolicyHelper> authpolicy_helper_;
 
   // Must be last member.
   base::WeakPtrFactory<ActiveDirectoryPolicyManager> weak_ptr_factory_{this};

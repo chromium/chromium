@@ -140,7 +140,7 @@ class MockQuotaManager : public QuotaManager {
   std::vector<OriginInfo> origins_;
   std::map<std::pair<url::Origin, StorageType>, StorageInfo>
       usage_and_quota_map_;
-  base::WeakPtrFactory<MockQuotaManager> weak_factory_;
+  base::WeakPtrFactory<MockQuotaManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MockQuotaManager);
 };

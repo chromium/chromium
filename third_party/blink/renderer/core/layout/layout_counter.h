@@ -93,8 +93,8 @@ DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutCounter, IsCounter());
 
 }  // namespace blink
 
-#ifndef NDEBUG
-// Outside the WebCore namespace for ease of invocation from gdb.
+#if DCHECK_IS_ON()
+// Outside the blink namespace for ease of invocation from gdb.
 void showCounterLayoutTree(const blink::LayoutObject*,
                            const char* counterName = nullptr);
 #endif

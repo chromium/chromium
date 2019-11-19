@@ -80,6 +80,10 @@ bool KeepAliveRegistry::WouldRestartWithout(
   return registered_count == restart_allowed_count;
 }
 
+bool KeepAliveRegistry::IsShuttingDown() const {
+  return is_shutting_down_;
+}
+
 void KeepAliveRegistry::SetIsShuttingDown(bool value) {
   is_shutting_down_ = value;
 }

@@ -7,8 +7,9 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/scroll/scroll_animator_compositor_coordinator.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -27,16 +28,15 @@ class ProgrammaticScrollAnimator : public ScrollAnimatorCompositorCoordinator {
   DISALLOW_COPY_AND_ASSIGN(ProgrammaticScrollAnimator);
 
  public:
-  static ProgrammaticScrollAnimator* Create(ScrollableArea* scrollable_area) {
-    return MakeGarbageCollected<ProgrammaticScrollAnimator>(scrollable_area);
-  }
-
   explicit ProgrammaticScrollAnimator(ScrollableArea*);
   ~ProgrammaticScrollAnimator() override;
 
   void ScrollToOffsetWithoutAnimation(const ScrollOffset&,
                                       bool is_sequenced_scroll);
-  void AnimateToOffset(const ScrollOffset&, bool is_sequenced_scroll = false);
+  void AnimateToOffset(const ScrollOffset&,
+                       bool is_sequenced_scroll = false,
+                       ScrollableArea::ScrollCallback on_finish =
+                           ScrollableArea::ScrollCallback());
 
   // ScrollAnimatorCompositorCoordinator implementation.
   void ResetAnimationState() override;
@@ -67,6 +67,9 @@ class ProgrammaticScrollAnimator : public ScrollAnimatorCompositorCoordinator {
   // It resets to false at the end of the scroll. It controls whether we should
   // abort the smooth scroll sequence after an instant SetScrollOffset.
   bool is_sequenced_scroll_;
+  // on_finish_ is a callback to call on animation finished, cancelled, or
+  // otherwise interrupted in any way.
+  ScrollableArea::ScrollCallback on_finish_;
 };
 
 }  // namespace blink

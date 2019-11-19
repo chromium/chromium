@@ -5,10 +5,11 @@
 #include "chrome/browser/android/dom_distiller/distiller_ui_handle_android.h"
 
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/DomDistillerUIUtils_jni.h"
 #include "chrome/browser/ui/android/view_android_helper.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/DomDistillerUIUtils_jni.h"
 #include "ui/android/window_android.h"
 #include "url/gurl.h"
 
@@ -18,10 +19,12 @@ namespace dom_distiller {
 
 namespace android {
 
-// static
-void DistillerUIHandleAndroid::OpenSettings(
-    content::WebContents* web_contents) {
+void DistillerUIHandleAndroid::OpenSettings() {
   JNIEnv* env = base::android::AttachCurrentThread();
+
+  DCHECK(render_frame_host_);
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host_);
   Java_DomDistillerUIUtils_openSettings(env,
                                         web_contents->GetJavaWebContents());
 }

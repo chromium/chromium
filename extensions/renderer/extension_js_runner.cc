@@ -13,7 +13,7 @@
 namespace extensions {
 
 ExtensionJSRunner::ExtensionJSRunner(ScriptContext* script_context)
-    : script_context_(script_context), weak_factory_(this) {}
+    : script_context_(script_context) {}
 ExtensionJSRunner::~ExtensionJSRunner() {}
 
 void ExtensionJSRunner::RunJSFunction(v8::Local<v8::Function> function,

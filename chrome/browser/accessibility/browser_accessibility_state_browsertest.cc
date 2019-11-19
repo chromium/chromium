@@ -19,7 +19,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityStateImplTest, TestHistograms) {
   base::HistogramTester histograms;
 
   BrowserAccessibilityState::GetInstance()->UpdateHistogramsForTesting();
-  histograms.ExpectTotalCount("Accessibility.State", 1);
 #if defined(OS_WIN)
   histograms.ExpectTotalCount("Accessibility.WinScreenReader", 1);
 #elif defined(OS_CHROMEOS)

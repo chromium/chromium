@@ -24,7 +24,7 @@ bool StructTraits<ax::mojom::AXRelativeBoundsDataView, ui::AXRelativeBounds>::
   if (!data.ReadTransform(&transform))
     return false;
   if (!transform.IsIdentity())
-    out->transform.reset(new gfx::Transform(transform));
+    out->transform = std::make_unique<gfx::Transform>(transform);
 
   if (!data.ReadBounds(&out->bounds))
     return false;

@@ -40,11 +40,13 @@
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/audio/sinc_resampler.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "ui/base/resource/scale_factor.h"
 
 namespace blink {
 
-using namespace vector_math;
+using vector_math::Vadd;
+using vector_math::Vsma;
 
 const unsigned kMaxBusChannels = 32;
 
@@ -526,8 +528,8 @@ void AudioBus::CopyWithGainFrom(const AudioBus& source_bus, float gain) {
   } else {
     for (unsigned channel_index = 0; channel_index < number_of_channels;
          ++channel_index) {
-      Vsmul(sources[channel_index], 1, &gain, destinations[channel_index], 1,
-            frames_to_process);
+      vector_math::Vsmul(sources[channel_index], 1, &gain,
+                         destinations[channel_index], 1, frames_to_process);
     }
   }
 }
@@ -561,7 +563,8 @@ void AudioBus::CopyWithSampleAccurateGainValuesFrom(
     if (source_bus.NumberOfChannels() == NumberOfChannels())
       source = source_bus.Channel(channel_index)->Data();
     float* destination = Channel(channel_index)->MutableData();
-    Vmul(source, 1, gain_values, 1, destination, 1, number_of_gain_values);
+    vector_math::Vmul(source, 1, gain_values, 1, destination, 1,
+                      number_of_gain_values);
   }
 }
 
@@ -686,9 +689,9 @@ scoped_refptr<AudioBus> DecodeAudioFileData(const char* data, size_t size) {
   return nullptr;
 }
 
-scoped_refptr<AudioBus> AudioBus::GetDataResource(const char* name,
+scoped_refptr<AudioBus> AudioBus::GetDataResource(int resource_id,
                                                   float sample_rate) {
-  const WebData& resource = Platform::Current()->GetDataResource(name);
+  const WebData& resource = Platform::Current()->GetDataResource(resource_id);
   if (resource.IsEmpty())
     return nullptr;
 

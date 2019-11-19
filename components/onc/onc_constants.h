@@ -86,7 +86,7 @@ ONC_EXPORT extern const char kTether[];
 ONC_EXPORT extern const char kType[];
 ONC_EXPORT extern const char kVPN[];
 ONC_EXPORT extern const char kWiFi[];
-ONC_EXPORT extern const char kWimax[];
+ONC_EXPORT extern const char kWimaxDeprecated[];
 
 ONC_EXPORT extern std::string CellularProperty(const std::string& property);
 ONC_EXPORT extern std::string TetherProperty(const std::string& property);
@@ -101,7 +101,7 @@ ONC_EXPORT extern const char kEthernet[];
 ONC_EXPORT extern const char kTether[];
 ONC_EXPORT extern const char kVPN[];
 ONC_EXPORT extern const char kWiFi[];
-ONC_EXPORT extern const char kWimax[];
+ONC_EXPORT extern const char kWimaxDeprecated[];
 // Patterns matching multiple types, not part of the ONC spec.
 ONC_EXPORT extern const char kAllTypes[];
 ONC_EXPORT extern const char kWireless[];
@@ -136,7 +136,6 @@ ONC_EXPORT extern const char kMIN[];
 ONC_EXPORT extern const char kModelID[];
 ONC_EXPORT extern const char kNetworkTechnology[];
 ONC_EXPORT extern const char kPaymentPortal[];
-ONC_EXPORT extern const char kPRLVersion[];
 ONC_EXPORT extern const char kRoamingHome[];
 ONC_EXPORT extern const char kRoamingRequired[];
 ONC_EXPORT extern const char kRoamingRoaming[];
@@ -146,7 +145,6 @@ ONC_EXPORT extern const char kServingOperator[];
 ONC_EXPORT extern const char kSignalStrength[];
 ONC_EXPORT extern const char kSIMLockStatus[];
 ONC_EXPORT extern const char kSIMPresent[];
-ONC_EXPORT extern const char kSupportedCarriers[];
 ONC_EXPORT extern const char kSupportNetworkScan[];
 ONC_EXPORT extern const char kTechnologyCdma1Xrtt[];
 ONC_EXPORT extern const char kTechnologyEdge[];
@@ -254,11 +252,10 @@ ONC_EXPORT extern const char kWPA2_PSK[];
 ONC_EXPORT extern const char kWPA_EAP[];
 }  // namespace wifi
 
-namespace wimax {
+namespace wimax_deprecated {
 ONC_EXPORT extern const char kAutoConnect[];
 ONC_EXPORT extern const char kEAP[];
-ONC_EXPORT extern const char kSignalStrength[];
-}  // namespace wimax
+}  // namespace wimax_deprecated
 
 namespace client_cert {
 ONC_EXPORT extern const char kClientCertPattern[];
@@ -286,12 +283,20 @@ ONC_EXPORT extern const char kAuthority[];
 ONC_EXPORT extern const char kClient[];
 ONC_EXPORT extern const char kGUID[];
 ONC_EXPORT extern const char kPKCS12[];
+ONC_EXPORT extern const char kScope[];
 ONC_EXPORT extern const char kServer[];
 ONC_EXPORT extern const char kTrustBits[];
 ONC_EXPORT extern const char kType[];
 ONC_EXPORT extern const char kWeb[];
 ONC_EXPORT extern const char kX509[];
 }  // namespace certificate
+
+namespace scope {
+ONC_EXPORT extern const char kDefault[];
+ONC_EXPORT extern const char kExtension[];
+ONC_EXPORT extern const char kId[];
+ONC_EXPORT extern const char kType[];
+}  // namespace scope
 
 namespace encrypted {
 ONC_EXPORT extern const char kAES256[];

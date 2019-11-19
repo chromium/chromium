@@ -41,7 +41,7 @@ class MEDIA_GPU_EXPORT PromotionHintAggregatorImpl
   // Number of frames which were promotable in a row.
   int consecutive_promotable_frames_ = 0;
 
-  base::WeakPtrFactory<PromotionHintAggregatorImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<PromotionHintAggregatorImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PromotionHintAggregatorImpl);
 };

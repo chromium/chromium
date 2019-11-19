@@ -55,8 +55,6 @@ class TestChromeBrowserState : public ios::ChromeBrowserState {
                                    const base::Closure& completion) override;
   net::URLRequestContextGetter* CreateRequestContext(
       ProtocolHandlerMap* protocol_handlers) override;
-  net::URLRequestContextGetter* CreateIsolatedRequestContext(
-      const base::FilePath& partition_path) override;
 
   // This method is defined as empty following the paradigm of
   // TestingProfile::DestroyOffTheRecordProfile().

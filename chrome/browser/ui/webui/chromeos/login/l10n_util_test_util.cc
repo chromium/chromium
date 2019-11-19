@@ -18,12 +18,6 @@ MockInputMethodManagerWithInputMethods::
     ~MockInputMethodManagerWithInputMethods() {
 }
 
-std::unique_ptr<input_method::InputMethodDescriptors>
-MockInputMethodManagerWithInputMethods::GetSupportedInputMethods() const {
-  return std::unique_ptr<input_method::InputMethodDescriptors>(
-      new input_method::InputMethodDescriptors(descriptors_));
-}
-
 void MockInputMethodManagerWithInputMethods::AddInputMethod(
     const std::string& id,
     const std::string& raw_layout,

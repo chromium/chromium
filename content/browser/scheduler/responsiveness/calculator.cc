@@ -89,21 +89,6 @@ void Calculator::TaskOrEventFinishedOnIOThread(base::TimeTicks schedule_time,
 void Calculator::EmitResponsiveness(size_t janky_slices) {
   UMA_HISTOGRAM_COUNTS_1000(
       "Browser.Responsiveness.JankyIntervalsPerThirtySeconds", janky_slices);
-
-  ++emission_count_;
-  if (emission_count_ == 1) {
-    // We log this metric every 30 seconds [unless there is no activity on the
-    // UI and IO threads]. The first time we log this will always cover startup,
-    // since we're guaranteed to have events on the UI thread during startup.
-    UMA_HISTOGRAM_COUNTS_1000(
-        "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Startup",
-        janky_slices);
-  } else {
-    // Future emissions definitely do not apply to startup.
-    UMA_HISTOGRAM_COUNTS_1000(
-        "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.NonStartup",
-        janky_slices);
-  }
 }
 
 base::TimeTicks Calculator::GetLastCalculationTime() {

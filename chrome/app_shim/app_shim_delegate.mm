@@ -65,25 +65,6 @@
   }
 }
 
-- (NSApplicationTerminateReply)applicationShouldTerminate:
-    (NSApplication*)sender {
-  // Send a last message to the host indicating that the host should close all
-  // associated browser windows.
-  if (appShimController_)
-    appShimController_->host()->QuitApp();
-  return NSTerminateNow;
-}
-
-- (void)applicationWillHide:(NSNotification*)notification {
-  if (appShimController_)
-    appShimController_->host()->SetAppHidden(true);
-}
-
-- (void)applicationWillUnhide:(NSNotification*)notification {
-  if (appShimController_)
-    appShimController_->host()->SetAppHidden(false);
-}
-
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item {
   return NO;
 }

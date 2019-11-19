@@ -72,7 +72,7 @@ class MEDIA_EXPORT AndroidOverlay {
   std::list<AndroidOverlayConfig::DestroyedCB> destruction_cbs_;
   std::list<AndroidOverlayConfig::DeletedCB> deletion_cbs_;
 
-  base::WeakPtrFactory<AndroidOverlay> weak_factory_;
+  base::WeakPtrFactory<AndroidOverlay> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AndroidOverlay);
 };

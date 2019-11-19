@@ -31,7 +31,7 @@ public class JavaBridgeBareboneTest {
     private TestCallbackHelperContainer mTestCallbackHelperContainer;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mActivityTestRule.launchContentShellWithUrl(
                 UrlUtils.encodeHtmlDataUri("<html><head></head><body>test</body></html>"));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();

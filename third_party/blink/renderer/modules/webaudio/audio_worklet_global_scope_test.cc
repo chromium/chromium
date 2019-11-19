@@ -10,7 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_module.h"
+#include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -57,9 +57,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase {
   void SetUp() override {
     AudioWorkletThread::EnsureSharedBackingThread();
     PageTestBase::SetUp(IntSize());
-    Document* document = &GetDocument();
-    document->SetURL(KURL("https://example.com/"));
-    document->UpdateSecurityOrigin(SecurityOrigin::Create(document->Url()));
+    NavigateTo(KURL("https://example.com/"));
     reporting_proxy_ = std::make_unique<WorkerReportingProxy>();
   }
 
@@ -75,13 +73,12 @@ class AudioWorkletGlobalScopeTest : public PageTestBase {
             Vector<CSPHeaderAndType>(), document->GetReferrerPolicy(),
             document->GetSecurityOrigin(), document->IsSecureContext(),
             document->GetHttpsState(), nullptr /* worker_clients */,
-            document->AddressSpace(),
+            nullptr /* content_settings_client */, document->AddressSpace(),
             OriginTrialContext::GetTokens(document).get(),
             base::UnguessableToken::Create(), nullptr /* worker_settings */,
             kV8CacheOptionsDefault,
             MakeGarbageCollected<WorkletModuleResponsesMap>()),
-        base::nullopt, std::make_unique<WorkerDevToolsParams>(),
-        ParentExecutionContextTaskRunners::Create());
+        base::nullopt, std::make_unique<WorkerDevToolsParams>());
     return thread;
   }
 
@@ -89,7 +86,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase {
     base::WaitableEvent waitable_event;
     PostCrossThreadTask(
         *thread->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-        CrossThreadBind(
+        CrossThreadBindOnce(
             &AudioWorkletGlobalScopeTest::RunBasicTestOnWorkletThread,
             CrossThreadUnretained(this), CrossThreadUnretained(thread),
             CrossThreadUnretained(&waitable_event)));
@@ -100,7 +97,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase {
     base::WaitableEvent waitable_event;
     PostCrossThreadTask(
         *thread->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-        CrossThreadBind(
+        CrossThreadBindOnce(
             &AudioWorkletGlobalScopeTest::RunSimpleProcessTestOnWorkletThread,
             CrossThreadUnretained(this), CrossThreadUnretained(thread),
             CrossThreadUnretained(&waitable_event)));
@@ -111,7 +108,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase {
     base::WaitableEvent waitable_event;
     PostCrossThreadTask(
         *thread->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-        CrossThreadBind(
+        CrossThreadBindOnce(
             &AudioWorkletGlobalScopeTest::RunParsingTestOnWorkletThread,
             CrossThreadUnretained(this), CrossThreadUnretained(thread),
             CrossThreadUnretained(&waitable_event)));
@@ -122,11 +119,11 @@ class AudioWorkletGlobalScopeTest : public PageTestBase {
     base::WaitableEvent waitable_event;
     PostCrossThreadTask(
         *thread->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-        CrossThreadBind(&AudioWorkletGlobalScopeTest::
-                            RunParsingParameterDescriptorTestOnWorkletThread,
-                        CrossThreadUnretained(this),
-                        CrossThreadUnretained(thread),
-                        CrossThreadUnretained(&waitable_event)));
+        CrossThreadBindOnce(
+            &AudioWorkletGlobalScopeTest::
+                RunParsingParameterDescriptorTestOnWorkletThread,
+            CrossThreadUnretained(this), CrossThreadUnretained(thread),
+            CrossThreadUnretained(&waitable_event)));
     waitable_event.Wait();
   }
 
@@ -138,14 +135,16 @@ class AudioWorkletGlobalScopeTest : public PageTestBase {
         global_scope->ScriptController()->GetScriptState();
     EXPECT_TRUE(script_state);
     KURL js_url("https://example.com/worklet.js");
-    ScriptModule module = ScriptModule::Compile(
+    v8::Local<v8::Module> module = ModuleRecord::Compile(
         script_state->GetIsolate(), source_code, js_url, js_url,
         ScriptFetchOptions(), TextPosition::MinimumPosition(),
         ASSERT_NO_EXCEPTION);
-    EXPECT_FALSE(module.IsNull());
-    ScriptValue exception = module.Instantiate(script_state);
+    EXPECT_FALSE(module.IsEmpty());
+    ScriptValue exception =
+        ModuleRecord::Instantiate(script_state, module, js_url);
     EXPECT_TRUE(exception.IsEmpty());
-    ScriptValue value = module.Evaluate(script_state);
+
+    ScriptValue value = ModuleRecord::Evaluate(script_state, module, js_url);
     return value.IsEmpty();
   }
 
@@ -182,9 +181,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase {
         global_scope->FindDefinition("testProcessor");
     EXPECT_TRUE(definition);
     EXPECT_EQ(definition->GetName(), "testProcessor");
-    EXPECT_TRUE(definition->ConstructorLocal(isolate)->IsFunction());
-    EXPECT_TRUE(definition->ProcessLocal(isolate)->IsFunction());
-    MessageChannel* channel = MessageChannel::Create(thread->GlobalScope());
+    auto* channel = MakeGarbageCollected<MessageChannel>(thread->GlobalScope());
     MessagePortChannel dummy_port_channel = channel->port2()->Disentangle();
 
     AudioWorkletProcessor* processor =
@@ -285,7 +282,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase {
         )JS";
     ASSERT_TRUE(EvaluateScriptModule(global_scope, source_code));
 
-    MessageChannel* channel = MessageChannel::Create(thread->GlobalScope());
+    auto* channel = MakeGarbageCollected<MessageChannel>(thread->GlobalScope());
     MessagePortChannel dummy_port_channel = channel->port2()->Disentangle();
     AudioWorkletProcessor* processor =
         global_scope->CreateProcessor("testProcessor",

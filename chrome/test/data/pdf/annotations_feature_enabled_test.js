@@ -2,11 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {$} from 'chrome://resources/js/util.m.js';
+
 window.onerror = e => chrome.test.fail(e.stack);
 window.onunhandledrejection = e => chrome.test.fail(e.reason);
 
 function animationFrame() {
   return new Promise(resolve => requestAnimationFrame(resolve));
+}
+
+// Async spin until predicate() returns true.
+function waitFor(predicate) {
+  if (predicate()) {
+    return;
+  }
+  return new Promise(resolve => setTimeout(() => {
+                       resolve(waitFor(predicate));
+                     }, 0));
 }
 
 function contentElement() {
@@ -41,8 +53,7 @@ chrome.test.runTests([
       // Enter annotation mode.
       $('toolbar').toggleAnnotation();
       await viewer.loaded;
-      chrome.test.assertEq(
-          'VIEWER-INK-HOST', contentElement().tagName);
+      chrome.test.assertEq('VIEWER-INK-HOST', contentElement().tagName);
     });
   },
   function testViewportToCameraConversion() {
@@ -62,9 +73,9 @@ chrome.test.runTests([
       chrome.test.assertEq(3, cameras.length);
 
       const expectations = [
-        {top: 44.25, left: -106.5, right: 718.5, bottom: -442.5},
-        {top: 23.25, left: -3.75, right: 408.75, bottom: -220.125},
-        {top: -14.25, left: 33.75, right: 446.25, bottom: -257.625},
+        {top: 44.25, left: -106.5, right: 718.5, bottom: -448.5},
+        {top: 23.25, left: -3.75, right: 408.75, bottom: -223.125},
+        {top: -14.25, left: 33.75, right: 446.25, bottom: -260.625},
       ];
 
       for (const expectation of expectations) {
@@ -136,6 +147,43 @@ chrome.test.runTests([
       chrome.test.assertEq('highlighter', tool.tool);
       chrome.test.assertEq(1, tool.size);
       chrome.test.assertEq('#d1c4e9', tool.color);
+    });
+  },
+  function testStrokeUndoRedo() {
+    testAsync(async () => {
+      const inkHost = contentElement();
+      const viewerPdfToolbar = document.querySelector('viewer-pdf-toolbar');
+      const undo = viewerPdfToolbar.$$('#undo');
+      const redo = viewerPdfToolbar.$$('#redo');
+
+      const pen = {
+        pointerId: 2,
+        pointerType: 'pen',
+        pressure: 0.5,
+        clientX: inkHost.offsetWidth / 2,
+        clientY: inkHost.offsetHeight / 2,
+        buttons: 0,
+      };
+
+      // Initial state.
+      chrome.test.assertEq(undo.disabled, true);
+      chrome.test.assertEq(redo.disabled, true);
+
+      // Draw a stroke.
+      inkHost.dispatchEvent(new PointerEvent('pointerdown', pen));
+      inkHost.dispatchEvent(new PointerEvent('pointermove', pen));
+      inkHost.dispatchEvent(new PointerEvent('pointerup', pen));
+
+      await waitFor(() => undo.disabled == false);
+      chrome.test.assertEq(redo.disabled, true);
+
+      undo.click();
+      await waitFor(() => undo.disabled == true);
+      chrome.test.assertEq(redo.disabled, false);
+
+      redo.click();
+      await waitFor(() => undo.disabled == false);
+      chrome.test.assertEq(redo.disabled, true);
     });
   },
   function testPointerEvents() {

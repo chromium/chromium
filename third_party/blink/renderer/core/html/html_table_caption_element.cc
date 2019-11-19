@@ -29,21 +29,18 @@
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLTableCaptionElement::HTMLTableCaptionElement(Document& document)
-    : HTMLElement(kCaptionTag, document) {}
-
-DEFINE_NODE_FACTORY(HTMLTableCaptionElement)
+HTMLTableCaptionElement::HTMLTableCaptionElement(Document& document)
+    : HTMLElement(html_names::kCaptionTag, document) {}
 
 void HTMLTableCaptionElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (name == kAlignAttr) {
-    if (!value.IsEmpty())
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyCaptionSide,
-                                              value);
+  if (name == html_names::kAlignAttr) {
+    if (!value.IsEmpty()) {
+      AddPropertyToPresentationAttributeStyle(
+          style, CSSPropertyID::kCaptionSide, value);
+    }
   } else {
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);
   }

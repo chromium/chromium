@@ -36,11 +36,13 @@ async_test(t => {
   }
 
   function progressBarShouldMeetThumb() {
-    const delta = 1.0;
-    let progress = segmentBefore.getBoundingClientRect().right;
-    let thumbPosition = elementCoordinates(thumb)[0];
-    assert_less_than(progress, thumbPosition + delta, 'progress bar should meet thumb');
-    assert_greater_than(progress, thumbPosition - delta, 'progress bar should meet thumb');
+    const progress = segmentBefore.getBoundingClientRect().right;
+    const thumbRect = thumb.getBoundingClientRect();
+    const thumbLeft = thumbRect.left;
+    const thumbRight = thumbRect.right;
+
+    assert_greater_than_equal(progress, thumbLeft, 'progress bar should reach the thumb');
+    assert_less_than_equal(progress, thumbRight, 'progress bar should not go beyond the thumb');
   }
 
   video.onloadedmetadata = t.step_func(() => {

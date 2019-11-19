@@ -1,0 +1,106 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    #TODO(crbug.com/986001): Fix compilation errors and enable all targets.
+
+    #":about",
+    ":chrome_sync",
+
+    #":data",
+    ":events",
+    ":search",
+    ":sync_index",
+    ":sync_log",
+
+    #":sync_node_browser",
+    #":sync_search",
+    ":traffic_log",
+
+    #":types",
+    ":user_events",
+  ]
+}
+
+js_library("about") {
+  deps = [
+    "//third_party/jstemplate:jstemplate",
+    "//ui/webui/resources/js:util",
+  ]
+}
+
+js_library("chrome_sync") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:util",
+  ]
+}
+
+js_library("data") {
+}
+
+js_library("events") {
+  deps = [
+    "//third_party/jstemplate:jstemplate",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("search") {
+  deps = [
+    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js/cr/ui:splitter",
+  ]
+}
+
+js_library("sync_index") {
+  deps = [
+    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js/cr/ui:tabs",
+  ]
+}
+
+js_library("sync_log") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js/cr:event_target",
+  ]
+}
+
+js_library("sync_node_browser") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js/cr/ui:tree",
+  ]
+}
+
+js_library("sync_search") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js/cr/ui:array_data_model",
+    "//ui/webui/resources/js/cr/ui:list",
+  ]
+}
+
+js_library("traffic_log") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("types") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("user_events") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:util",
+  ]
+}

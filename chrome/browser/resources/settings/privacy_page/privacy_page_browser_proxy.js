@@ -25,6 +25,12 @@ cr.define('settings', function() {
 
     // </if>
 
+    /**
+     * Helper function that calls recordHistogram for the
+     * SettingsPage.SettingsPageInteractions histogram
+     */
+    recordSettingsPageHistogram(value) {}
+
     /** @param {boolean} enabled */
     setBlockAutoplayEnabled(enabled) {}
   }
@@ -45,6 +51,14 @@ cr.define('settings', function() {
     }
 
     // </if>
+
+    /** @override*/
+    recordSettingsPageHistogram(value) {
+      chrome.send('metricsHandler:recordInHistogram', [
+        'SettingsPage.SettingsPageInteractions', value,
+        settings.SettingsPageInteractions.SETTINGS_MAX_VALUE
+      ]);
+    }
 
     /** @override */
     setBlockAutoplayEnabled(enabled) {

@@ -1,0 +1,46 @@
+# Copyright (c) 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/jumbo.gni")
+import("//build/nocompile.gni")
+
+# Change this target's type to jumbo_component if it starts to contain more than
+# just headers. Header-only targets cannot be compiled to libraries, so it must
+# remain a source_set for now.
+source_set("type_safety") {
+  sources = [
+    "id_type.h",
+    "pass_key.h",
+    "strong_alias.h",
+  ]
+}
+
+source_set("tests") {
+  testonly = true
+  sources = [
+    "id_type_unittest.cc",
+    "pass_key_unittest.cc",
+    "strong_alias_unittest.cc",
+  ]
+
+  deps = [
+    ":type_safety",
+    "//testing/gtest",
+  ]
+}
+
+if (enable_nocompile_tests) {
+  nocompile_test("type_safety_nocompile_tests") {
+    sources = [
+      "pass_key_unittest.nc",
+    ]
+
+    deps = [
+      ":type_safety",
+      "//base:base_unittests_tasktraits",
+      "//base/test:run_all_unittests",
+      "//testing/gtest",
+    ]
+  }
+}

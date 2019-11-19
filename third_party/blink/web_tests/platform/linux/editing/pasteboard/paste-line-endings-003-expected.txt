@@ -22,10 +22,10 @@ layer at (0,0) size 800x600
           LayoutBR {BR} at (0,0) size 0x0
           LayoutText {#text} at (0,27) size 162x27
             text run at (0,27) width 162: "Fix for this bug: "
-          LayoutInline {A} at (0,0) size 259x27 [color=#0000EE]
+          LayoutInline {A} at (162,27) size 259x27 [color=#0000EE]
             LayoutText {#text} at (162,27) size 259x27
               text run at (162,27) width 259: "<rdar://problem/4045511>"
-          LayoutText {#text} at (421,27) size 704x55
+          LayoutText {#text} at (0,27) size 704x55
             text run at (421,27) width 283: " Copying and pasting end-of-"
             text run at (0,55) width 533: "paragraph selection puts insertion point in wrong place"
         LayoutBlockFlow {DIV} at (14,113) size 756x83

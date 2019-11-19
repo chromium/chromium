@@ -8,6 +8,14 @@ Security Critical: No
 Description:
 This directory contains the pylint module.
 
+This code is not included in the final build.  It is only used to run linting
+checks on code (usually at presubmit time).
+
+This is only used by code inside the src tree that needs to import the pylint
+module directly.  If you're using `pylint` to check your code (e.g. via the
+PRESUBMIT.cfg file), then this copy is *not* used.  That pylint comes from the
+depot_tools repo instead.
+
 Local Modifications:
 - applied upstream fix https://bitbucket.org/logilab/pylint/commits/5df347467ee0
 - applied fix to work around bad interaction between sys.path manipulation in

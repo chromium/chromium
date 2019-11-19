@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS Calling OffscreenCanvas.commit() on main without transferControlToOffscreen rejects promise with an exception.
-PASS Calling WebGL's commit() on main without transferControlToOffscreen rejects promise with an exception.
-PASS Calling WebGL's commit() on main without an OffscreenCanvas rejects promise with an exception.
-PASS Calling OffscreenCanvas.commit() on worker without transferControlToOffscreen rejects promise with an exception.
-Harness: the test ran to completion.
-

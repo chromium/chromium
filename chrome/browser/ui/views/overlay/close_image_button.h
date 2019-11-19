@@ -10,27 +10,17 @@
 
 namespace views {
 
-// An image button representing a white close button. When the user interacts
-// with the button, a grey circular background appears as an indicator.
+// An image button representing a close button.
 class CloseImageButton : public views::ImageButton {
  public:
   explicit CloseImageButton(ButtonListener*);
   ~CloseImageButton() override = default;
-
-  // views::Button:
-  void StateChanged(ButtonState old_state) override;
-
-  // views::View:
-  void OnFocus() override;
-  void OnBlur() override;
 
   // Sets the position of itself with an offset from the given window size.
   void SetPosition(const gfx::Size& size,
                    OverlayWindowViews::WindowQuadrant quadrant);
 
  private:
-  const gfx::ImageSkia close_background_;
-
   DISALLOW_COPY_AND_ASSIGN(CloseImageButton);
 };
 

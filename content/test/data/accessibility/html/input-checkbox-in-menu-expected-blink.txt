@@ -1,7 +1,8 @@
 rootWebArea
-++genericContainer
-++++checkBox name='Checkbox1' checkedState=false
-++++checkBox name='Checkbox2' checkedState=true
-++menu
-++++checkBox name='Checkbox3' checkedState=true
-++++checkBox name='Checkbox4' checkedState=mixed
+++genericContainer ignored
+++++genericContainer
+++++++checkBox inputType='checkbox' name='Checkbox1' checkedState=false
+++++++checkBox inputType='checkbox' name='Checkbox2' checkedState=true
+++++menu
+++++++checkBox inputType='checkbox' name='Checkbox3' checkedState=true
+++++++checkBox inputType='checkbox' name='Checkbox4' checkedState=mixed

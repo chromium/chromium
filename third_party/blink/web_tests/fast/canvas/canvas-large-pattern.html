@@ -1,24 +1,17 @@
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
+<html><body>
+</body>
 <script>
-
-test(function(t) {
     var canvas = document.createElement('canvas');
     canvas.width = 40000;
     var context = canvas.getContext('2d');
     context.fillStyle = '#0f0';
-    context.fillRect(0, 0, 1, 1);
+    context.fillRect(0, 0, 10, 10);
 
     var dstCanvas = document.createElement('canvas');
     var dstContext = dstCanvas.getContext('2d');
     var pattern = dstContext.createPattern(canvas, 'repeat');
     dstContext.fillStyle = pattern;
     dstContext.fillRect(0, 0, dstCanvas.width, dstCanvas.height);
-
-    assert_array_equals(dstContext.getImageData(0, 0, 1, 1).data, [0, 255, 0, 255]);
-
-    assert_array_equals(dstContext.getImageData(1, 0, 1, 1).data, [0, 0, 0, 0]);
-    assert_array_equals(dstContext.getImageData(0, 1, 1, 1).data, [0, 0, 0, 0]);
-
-}, 'Tests createPattern using a source image that is a canvas 40k pixels wide.');
+    document.body.appendChild(dstCanvas);
 </script>
+</html>

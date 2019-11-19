@@ -1,0 +1,58 @@
+This is a testharness.js-based test.
+Found 54 tests; 46 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS We should be in standards mode
+PASS Subframe should be in quirks mode
+PASS <table hspace> should not be mapped to style marginLeft in CSS1Compat mode
+PASS <table hspace> should not be mapped to style marginLeft in BackCompat mode
+PASS <table hspace> should not be mapped to style marginRight in CSS1Compat mode
+PASS <table hspace> should not be mapped to style marginRight in BackCompat mode
+PASS <table vspace> should not be mapped to style marginTop in CSS1Compat mode
+PASS <table vspace> should not be mapped to style marginTop in BackCompat mode
+PASS <table vspace> should not be mapped to style marginBottom in CSS1Compat mode
+PASS <table vspace> should not be mapped to style marginBottom in BackCompat mode
+PASS <embed border> should not be mapped to style borderTopWidth in CSS1Compat mode
+PASS <embed border> should not be mapped to style borderTopWidth in BackCompat mode
+PASS <embed border> should not be mapped to style borderRightWidth in CSS1Compat mode
+PASS <embed border> should not be mapped to style borderRightWidth in BackCompat mode
+PASS <embed border> should not be mapped to style borderBottomWidth in CSS1Compat mode
+PASS <embed border> should not be mapped to style borderBottomWidth in BackCompat mode
+PASS <embed border> should not be mapped to style borderLeftWidth in CSS1Compat mode
+PASS <embed border> should not be mapped to style borderLeftWidth in BackCompat mode
+PASS <iframe border> should not be mapped to style borderTopWidth in CSS1Compat mode
+PASS <iframe border> should not be mapped to style borderTopWidth in BackCompat mode
+PASS <iframe border> should not be mapped to style borderRightWidth in CSS1Compat mode
+PASS <iframe border> should not be mapped to style borderRightWidth in BackCompat mode
+PASS <iframe border> should not be mapped to style borderBottomWidth in CSS1Compat mode
+PASS <iframe border> should not be mapped to style borderBottomWidth in BackCompat mode
+PASS <iframe border> should not be mapped to style borderLeftWidth in CSS1Compat mode
+PASS <iframe border> should not be mapped to style borderLeftWidth in BackCompat mode
+PASS <marquee border> should not be mapped to style borderTopWidth in CSS1Compat mode
+PASS <marquee border> should not be mapped to style borderTopWidth in BackCompat mode
+PASS <marquee border> should not be mapped to style borderRightWidth in CSS1Compat mode
+PASS <marquee border> should not be mapped to style borderRightWidth in BackCompat mode
+PASS <marquee border> should not be mapped to style borderBottomWidth in CSS1Compat mode
+PASS <marquee border> should not be mapped to style borderBottomWidth in BackCompat mode
+PASS <marquee border> should not be mapped to style borderLeftWidth in CSS1Compat mode
+PASS <marquee border> should not be mapped to style borderLeftWidth in BackCompat mode
+PASS <input border> should not be mapped to style borderTopWidth in CSS1Compat mode
+PASS <input border> should not be mapped to style borderTopWidth in BackCompat mode
+PASS <input border> should not be mapped to style borderRightWidth in CSS1Compat mode
+PASS <input border> should not be mapped to style borderRightWidth in BackCompat mode
+PASS <input border> should not be mapped to style borderBottomWidth in CSS1Compat mode
+PASS <input border> should not be mapped to style borderBottomWidth in BackCompat mode
+PASS <input border> should not be mapped to style borderLeftWidth in CSS1Compat mode
+PASS <input border> should not be mapped to style borderLeftWidth in BackCompat mode
+PASS <input width> should not be mapped to style width in CSS1Compat mode
+PASS <input width> should not be mapped to style width in BackCompat mode
+PASS <input height> should not be mapped to style height in CSS1Compat mode
+PASS <input height> should not be mapped to style height in BackCompat mode
+FAIL <input hspace> should not be mapped to style marginLeft in CSS1Compat mode assert_equals: expected "0px" but got "200px"
+FAIL <input hspace> should not be mapped to style marginLeft in BackCompat mode assert_equals: expected "0px" but got "200px"
+FAIL <input hspace> should not be mapped to style marginRight in CSS1Compat mode assert_equals: expected "0px" but got "200px"
+FAIL <input hspace> should not be mapped to style marginRight in BackCompat mode assert_equals: expected "0px" but got "200px"
+FAIL <input vspace> should not be mapped to style marginTop in CSS1Compat mode assert_equals: expected "0px" but got "200px"
+FAIL <input vspace> should not be mapped to style marginTop in BackCompat mode assert_equals: expected "0px" but got "200px"
+FAIL <input vspace> should not be mapped to style marginBottom in CSS1Compat mode assert_equals: expected "0px" but got "200px"
+FAIL <input vspace> should not be mapped to style marginBottom in BackCompat mode assert_equals: expected "0px" but got "200px"
+Harness: the test ran to completion.
+

@@ -6,32 +6,32 @@ console-dir.js:12 Array(2)
     length: 2
     __proto__: Array(0)
 console-dir.js:13 NodeList(1)
-    0: html
     length: 1
+    0: html
     __proto__: NodeList
 console-dir.js:14 XPathResult
-    booleanValue: (...)
-    invalidIteratorState: false
-    numberValue: (...)
     resultType: 4
-    singleNodeValue: (...)
-    snapshotLength: (...)
+    numberValue: (...)
     stringValue: (...)
+    booleanValue: (...)
+    singleNodeValue: (...)
+    invalidIteratorState: false
+    snapshotLength: (...)
     __proto__: XPathResult
 console-dir.js:24 Object
+    $foo5_: 0
+    " a b ": " a b "
+    c d: "c d"
     "": ""
     "  ": "  "
-    " a b ": " a b "
-    $foo5_: 0
     "a↵↵b↵c": "a↵↵b↵c"
-    c d: "c d"
     negZero: -0
     __proto__: Object
 console-dir.js:27 ƒ anonymous()
-    arguments: null
-    caller: null
     length: 0
     name: ""
+    arguments: null
+    caller: null
     prototype: {constructor: ƒ}
     __proto__: ƒ ()
     [[FunctionLocation]]: console-dir.js:27
@@ -58,19 +58,19 @@ console-dir.js:42 Uint8Array(400000000)
     [300000000 … 399999999]
     __proto__: TypedArray
 console-dir.js:47 Event
-    bubbles: false
-    cancelBubble: false
-    cancelable: false
-    composed: false
-    currentTarget: null
-    defaultPrevented: false
-    eventPhase: 0
     isTrusted: false
-    path: []
-    returnValue: true
-    srcElement: null
-    target: null
     type: ""
+    target: null
+    currentTarget: null
+    eventPhase: 0
+    bubbles: false
+    cancelable: false
+    defaultPrevented: false
+    composed: false
+    srcElement: null
+    returnValue: true
+    cancelBubble: false
+    path: []
     timeStamp: 0
     __proto__: Event
 

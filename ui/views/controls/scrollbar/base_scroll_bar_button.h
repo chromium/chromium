@@ -24,6 +24,8 @@ namespace views {
 ///////////////////////////////////////////////////////////////////////////////
 class VIEWS_EXPORT BaseScrollBarButton : public Button {
  public:
+  METADATA_HEADER(BaseScrollBarButton);
+
   explicit BaseScrollBarButton(ButtonListener* listener);
   ~BaseScrollBarButton() override;
 

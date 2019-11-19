@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/supports_user_data.h"
-#include "content/public/common/previews_state.h"
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "url/gurl.h"
@@ -36,11 +35,6 @@ class InternalDocumentStateData : public base::SupportsUserData::Data {
 
   void CopyFrom(InternalDocumentStateData* other);
 
-  int http_status_code() const { return http_status_code_; }
-  void set_http_status_code(int http_status_code) {
-    http_status_code_ = http_status_code;
-  }
-
   // True if the user agent was overridden for this page.
   bool is_overriding_user_agent() const { return is_overriding_user_agent_; }
   void set_is_overriding_user_agent(bool state) {
@@ -56,35 +50,12 @@ class InternalDocumentStateData : public base::SupportsUserData::Data {
     must_reset_scroll_and_scale_state_ = state;
   }
 
-  // Sets the cache policy. The cache policy is only used if explicitly set and
-  // by default is not set. You can mark a NavigationState as not having a cache
-  // state by way of clear_cache_policy_override.
-  void set_cache_policy_override(blink::mojom::FetchCacheMode cache_policy) {
-    cache_policy_override_ = cache_policy;
-    cache_policy_override_set_ = true;
-  }
-  blink::mojom::FetchCacheMode cache_policy_override() const {
-    return cache_policy_override_;
-  }
-  void clear_cache_policy_override() {
-    cache_policy_override_set_ = false;
-    cache_policy_override_ = blink::mojom::FetchCacheMode::kDefault;
-  }
-  bool is_cache_policy_override_set() const {
-    return cache_policy_override_set_;
-  }
-
   net::EffectiveConnectionType effective_connection_type() const {
     return effective_connection_type_;
   }
   void set_effective_connection_type(
       net::EffectiveConnectionType effective_connection_type) {
     effective_connection_type_ = effective_connection_type;
-  }
-
-  PreviewsState previews_state() const { return previews_state_; }
-  void set_previews_state(PreviewsState previews_state) {
-    previews_state_ = previews_state;
   }
 
   // This is a fake navigation request id, which we send to the browser process
@@ -98,14 +69,10 @@ class InternalDocumentStateData : public base::SupportsUserData::Data {
   void set_navigation_state(std::unique_ptr<NavigationState> navigation_state);
 
  private:
-  int http_status_code_;
   bool is_overriding_user_agent_;
   bool must_reset_scroll_and_scale_state_;
-  bool cache_policy_override_set_;
-  blink::mojom::FetchCacheMode cache_policy_override_;
   net::EffectiveConnectionType effective_connection_type_ =
       net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
-  PreviewsState previews_state_ = PREVIEWS_UNSPECIFIED;
   int request_id_ = -1;
   std::unique_ptr<NavigationState> navigation_state_;
 

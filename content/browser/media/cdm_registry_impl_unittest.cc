@@ -25,7 +25,7 @@ namespace content {
 namespace {
 
 using VideoCodec = media::VideoCodec;
-using EncryptionMode = media::EncryptionMode;
+using EncryptionScheme = media::EncryptionScheme;
 using CdmSessionType = media::CdmSessionType;
 using CdmProxy = media::CdmProxy;
 
@@ -76,7 +76,7 @@ class CdmRegistryImplTest : public testing::Test {
         kTestCdmName, kTestCdmGuid, base::Version(kVersion1),
         base::FilePath::FromUTF8Unsafe(kTestPath), kTestFileSystemId,
         CdmCapability(
-            {media::kCodecVP8, media::kCodecVP9}, {EncryptionMode::kCenc},
+            {media::kCodecVP8, media::kCodecVP9}, {EncryptionScheme::kCenc},
             {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense},
             {CdmProxy::Protocol::kIntel}),
         kTestKeySystem, /*supports_sub_key_systems=*/true);
@@ -118,7 +118,7 @@ TEST_F(CdmRegistryImplTest, Register) {
   EXPECT_EQ(kTestPath, cdm.path.MaybeAsASCII());
   EXPECT_EQ(kTestFileSystemId, cdm.file_system_id);
   EXPECT_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
-  EXPECT_ENCRYPTION_SCHEMES(EncryptionMode::kCenc);
+  EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc);
   EXPECT_SESSION_TYPES(CdmSessionType::kTemporary,
                        CdmSessionType::kPersistentLicense);
   EXPECT_CDM_PROXY_PROTOCOLS(CdmProxy::Protocol::kIntel);
@@ -172,14 +172,14 @@ TEST_F(CdmRegistryImplTest, DifferentNames) {
 
 TEST_F(CdmRegistryImplTest, SupportedEncryptionSchemes) {
   auto cdm_info = GetTestCdmInfo();
-  cdm_info.capability.encryption_schemes = {EncryptionMode::kCenc,
-                                            EncryptionMode::kCbcs};
+  cdm_info.capability.encryption_schemes = {EncryptionScheme::kCenc,
+                                            EncryptionScheme::kCbcs};
   Register(cdm_info);
 
   std::vector<CdmInfo> cdms = cdm_registry_.GetAllRegisteredCdms();
   ASSERT_EQ(1u, cdms.size());
   const CdmInfo& cdm = cdms[0];
-  EXPECT_ENCRYPTION_SCHEMES(EncryptionMode::kCenc, EncryptionMode::kCbcs);
+  EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc, EncryptionScheme::kCbcs);
 }
 
 }  // namespace content

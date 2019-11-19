@@ -80,6 +80,50 @@ constexpr SkColor kGoogleGrey700 = SkColorSetRGB(0x5F, 0x63, 0x68);
 constexpr SkColor kGoogleGrey800 = SkColorSetRGB(0x3C, 0x40, 0x43);
 constexpr SkColor kGoogleGrey900 = SkColorSetRGB(0x20, 0x21, 0x24);
 
+constexpr SkColor kGoogleOrange050 = SkColorSetRGB(0xFE, 0xEF, 0xE3);
+constexpr SkColor kGoogleOrange100 = SkColorSetRGB(0xFE, 0xDF, 0xC8);
+constexpr SkColor kGoogleOrange200 = SkColorSetRGB(0xFD, 0xC6, 0x9C);
+constexpr SkColor kGoogleOrange300 = SkColorSetRGB(0xFC, 0xAD, 0x70);
+constexpr SkColor kGoogleOrange400 = SkColorSetRGB(0xFA, 0x90, 0x3E);
+constexpr SkColor kGoogleOrange500 = SkColorSetRGB(0xFA, 0x7B, 0x17);
+constexpr SkColor kGoogleOrange600 = SkColorSetRGB(0xE8, 0x71, 0x0A);
+constexpr SkColor kGoogleOrange700 = SkColorSetRGB(0xD5, 0x6E, 0x0C);
+constexpr SkColor kGoogleOrange800 = SkColorSetRGB(0xC2, 0x64, 0x01);
+constexpr SkColor kGoogleOrange900 = SkColorSetRGB(0xB0, 0x60, 0x00);
+
+constexpr SkColor kGooglePink050 = SkColorSetRGB(0xFD, 0xE7, 0xF3);
+constexpr SkColor kGooglePink100 = SkColorSetRGB(0xFD, 0xCF, 0xE8);
+constexpr SkColor kGooglePink200 = SkColorSetRGB(0xFB, 0xA9, 0xD6);
+constexpr SkColor kGooglePink300 = SkColorSetRGB(0xFF, 0x8B, 0xCB);
+constexpr SkColor kGooglePink400 = SkColorSetRGB(0xFF, 0x63, 0xB8);
+constexpr SkColor kGooglePink500 = SkColorSetRGB(0xF4, 0x39, 0xA0);
+constexpr SkColor kGooglePink600 = SkColorSetRGB(0xE5, 0x25, 0x92);
+constexpr SkColor kGooglePink700 = SkColorSetRGB(0xD0, 0x18, 0x84);
+constexpr SkColor kGooglePink800 = SkColorSetRGB(0xB8, 0x06, 0x72);
+constexpr SkColor kGooglePink900 = SkColorSetRGB(0x9C, 0x16, 0x6B);
+
+constexpr SkColor kGooglePurple050 = SkColorSetRGB(0xF3, 0xE8, 0xFD);
+constexpr SkColor kGooglePurple100 = SkColorSetRGB(0xE9, 0xD2, 0xFD);
+constexpr SkColor kGooglePurple200 = SkColorSetRGB(0xD7, 0xAE, 0xFB);
+constexpr SkColor kGooglePurple300 = SkColorSetRGB(0xC5, 0x8A, 0xF9);
+constexpr SkColor kGooglePurple400 = SkColorSetRGB(0xAF, 0x5C, 0xF7);
+constexpr SkColor kGooglePurple500 = SkColorSetRGB(0xA1, 0x42, 0xF4);
+constexpr SkColor kGooglePurple600 = SkColorSetRGB(0x93, 0x34, 0xE6);
+constexpr SkColor kGooglePurple700 = SkColorSetRGB(0x84, 0x30, 0xCE);
+constexpr SkColor kGooglePurple800 = SkColorSetRGB(0x76, 0x27, 0xBB);
+constexpr SkColor kGooglePurple900 = SkColorSetRGB(0x68, 0x1D, 0xA8);
+
+constexpr SkColor kGoogleCyan050 = SkColorSetRGB(0xE4, 0xF7, 0xFB);
+constexpr SkColor kGoogleCyan100 = SkColorSetRGB(0xCB, 0xF0, 0xF8);
+constexpr SkColor kGoogleCyan200 = SkColorSetRGB(0xA1, 0xE4, 0xF2);
+constexpr SkColor kGoogleCyan300 = SkColorSetRGB(0x78, 0xD9, 0xEC);
+constexpr SkColor kGoogleCyan400 = SkColorSetRGB(0x4E, 0xCD, 0xE6);
+constexpr SkColor kGoogleCyan500 = SkColorSetRGB(0x24, 0xC1, 0xE0);
+constexpr SkColor kGoogleCyan600 = SkColorSetRGB(0x12, 0xB5, 0xCB);
+constexpr SkColor kGoogleCyan700 = SkColorSetRGB(0x12, 0x9E, 0xAF);
+constexpr SkColor kGoogleCyan800 = SkColorSetRGB(0x09, 0x85, 0x91);
+constexpr SkColor kGoogleCyan900 = SkColorSetRGB(0x00, 0x7B, 0x83);
+
 // The following are the values that correspond to the above kGoogleGreyXXX
 // values, which are the opaque colors created from the following alpha values
 // applied to kGoogleGrey900 on a white background.

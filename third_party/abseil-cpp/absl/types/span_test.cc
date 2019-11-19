@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -139,8 +139,10 @@ TEST(CharSpan, StringCtor) {
   EXPECT_THAT(s_const_abc, SpanIs(abc));
 
   EXPECT_FALSE((std::is_constructible<absl::Span<int>, std::string>::value));
-  EXPECT_FALSE((std::is_constructible<absl::Span<const int>, std::string>::value));
-  EXPECT_TRUE((std::is_convertible<std::string, absl::Span<const char>>::value));
+  EXPECT_FALSE(
+      (std::is_constructible<absl::Span<const int>, std::string>::value));
+  EXPECT_TRUE(
+      (std::is_convertible<std::string, absl::Span<const char>>::value));
 }
 
 TEST(IntSpan, FromConstPointer) {
@@ -290,6 +292,38 @@ TEST(IntSpan, Subspan) {
   EXPECT_THROW(absl::MakeSpan(ramp).subspan(11, 5), std::out_of_range);
 #else
   EXPECT_DEATH_IF_SUPPORTED(absl::MakeSpan(ramp).subspan(11, 5), "");
+#endif
+}
+
+TEST(IntSpan, First) {
+  std::vector<int> empty;
+  EXPECT_THAT(absl::MakeSpan(empty).first(0), SpanIs(empty));
+
+  auto ramp = MakeRamp(10);
+  EXPECT_THAT(absl::MakeSpan(ramp).first(0), SpanIs(ramp.data(), 0));
+  EXPECT_THAT(absl::MakeSpan(ramp).first(10), SpanIs(ramp));
+  EXPECT_THAT(absl::MakeSpan(ramp).first(3), SpanIs(ramp.data(), 3));
+
+#ifdef ABSL_HAVE_EXCEPTIONS
+  EXPECT_THROW(absl::MakeSpan(ramp).first(11), std::out_of_range);
+#else
+  EXPECT_DEATH_IF_SUPPORTED(absl::MakeSpan(ramp).first(11), "");
+#endif
+}
+
+TEST(IntSpan, Last) {
+  std::vector<int> empty;
+  EXPECT_THAT(absl::MakeSpan(empty).last(0), SpanIs(empty));
+
+  auto ramp = MakeRamp(10);
+  EXPECT_THAT(absl::MakeSpan(ramp).last(0), SpanIs(ramp.data() + 10, 0));
+  EXPECT_THAT(absl::MakeSpan(ramp).last(10), SpanIs(ramp));
+  EXPECT_THAT(absl::MakeSpan(ramp).last(3), SpanIs(ramp.data() + 7, 3));
+
+#ifdef ABSL_HAVE_EXCEPTIONS
+  EXPECT_THROW(absl::MakeSpan(ramp).last(11), std::out_of_range);
+#else
+  EXPECT_DEATH_IF_SUPPORTED(absl::MakeSpan(ramp).last(11), "");
 #endif
 }
 
@@ -767,6 +801,8 @@ TEST(ConstIntSpan, ConstexprTest) {
   ABSL_TEST_CONSTEXPR(span.begin());
   ABSL_TEST_CONSTEXPR(span.cbegin());
   ABSL_TEST_CONSTEXPR(span.subspan(0, 0));
+  ABSL_TEST_CONSTEXPR(span.first(1));
+  ABSL_TEST_CONSTEXPR(span.last(1));
   ABSL_TEST_CONSTEXPR(span[0]);
 }
 

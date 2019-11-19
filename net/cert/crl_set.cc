@@ -254,9 +254,9 @@ bool CRLSet::Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set) {
     return false;
   }
 
-  // Defines kBlacklistedSPKIs.
-#include "net/cert/cert_verify_proc_blacklist.inc"
-  for (const auto& hash : kBlacklistedSPKIs) {
+  // Defines kSPKIBlockList.
+#include "net/cert/cert_verify_proc_blocklist.inc"
+  for (const auto& hash : kSPKIBlockList) {
     crl_set->blocked_spkis_.push_back(std::string(
         reinterpret_cast<const char*>(hash), crypto::kSHA256Length));
   }

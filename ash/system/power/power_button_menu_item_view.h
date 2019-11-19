@@ -38,6 +38,9 @@ class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
                           const base::string16& title_text);
   ~PowerButtonMenuItemView() override;
 
+  // views::View:
+  const char* GetClassName() const override;
+
  private:
   // views::View:
   void Layout() override;

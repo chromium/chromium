@@ -172,11 +172,11 @@ int32_t ToTimeDeltaSample(double delta_seconds) {
                                      HistogramType, ##__VA_ARGS__)             \
     else {                                                                     \
       /* Skip logging if timeline is narrower than minimum suffix bucket. */   \
-      /* If this happens a lot, it'll show up in Media.Timeline.Width. */      \
     }                                                                          \
   } while (false)
 
-void RecordDragGestureDurationByWidth(int timeline_width, TimeDelta duration) {
+void RecordDragGestureDurationByWidth(int timeline_width,
+                                      base::TimeDelta duration) {
   int32_t sample = base::saturated_cast<int32_t>(duration.InMilliseconds());
   RECORD_TIMELINE_UMA_BY_WIDTH(timeline_width, DragGestureDuration, sample,
                                CustomCountHistogram, 1 /* 1 ms */,
@@ -213,7 +213,7 @@ void RecordSeekTypeByWidth(int timeline_width, SeekType type) {
 void MediaControlTimelineMetrics::StartGesture(bool from_thumb) {
   // Initialize gesture tracking.
   state_ = from_thumb ? State::kGestureFromThumb : State::kGestureFromElsewhere;
-  drag_start_time_ticks_ = CurrentTimeTicks();
+  drag_start_time_ticks_ = base::TimeTicks::Now();
   drag_delta_media_seconds_ = 0;
   drag_sum_abs_delta_media_seconds_ = 0;
 }
@@ -249,8 +249,8 @@ void MediaControlTimelineMetrics::RecordEndGesture(
   if (seek_type == SeekType::kClick)
     return;  // Metrics below are only for drags.
 
-  RecordDragGestureDurationByWidth(timeline_width,
-                                   CurrentTimeTicks() - drag_start_time_ticks_);
+  RecordDragGestureDurationByWidth(
+      timeline_width, base::TimeTicks::Now() - drag_start_time_ticks_);
   if (std::isfinite(media_duration_seconds)) {
     RecordDragPercentByWidth(timeline_width, 100.0 * drag_delta_media_seconds_ /
                                                  media_duration_seconds);
@@ -331,64 +331,6 @@ void MediaControlTimelineMetrics::OnInput(double from_seconds,
   float delta_media_seconds = static_cast<float>(to_seconds - from_seconds);
   drag_delta_media_seconds_ += delta_media_seconds;
   drag_sum_abs_delta_media_seconds_ += std::abs(delta_media_seconds);
-}
-
-void MediaControlTimelineMetrics::RecordPlaying(
-    WebScreenOrientationType orientation,
-    bool is_fullscreen,
-    int timeline_width) {
-  bool is_portrait = false;  // Arbitrary initial value to appease MSVC.
-  switch (orientation) {
-    case kWebScreenOrientationPortraitPrimary:
-    case kWebScreenOrientationPortraitSecondary:
-      is_portrait = true;
-      break;
-    case kWebScreenOrientationLandscapePrimary:
-    case kWebScreenOrientationLandscapeSecondary:
-      is_portrait = false;
-      break;
-    case kWebScreenOrientationUndefined:
-      return;  // Skip UMA in the unlikely event we fail to detect orientation.
-  }
-
-  // Only record the first time each media element enters the playing state.
-  if (!has_never_been_playing_)
-    return;
-  has_never_been_playing_ = false;
-
-  constexpr int32_t kMin = 1;
-  constexpr int32_t kMax = 7680;  // Equivalent to an 80inch wide 8K monitor.
-  constexpr int32_t kBucketCount = 50;
-  // Record merged histogram for all configurations.
-  DEFINE_STATIC_LOCAL(CustomCountHistogram, all_configurations_width_histogram,
-                      ("Media.Timeline.Width", kMin, kMax, kBucketCount));
-  all_configurations_width_histogram.Count(timeline_width);
-  // Record configuration-specific histogram.
-  if (!is_fullscreen) {
-    if (is_portrait) {
-      DEFINE_STATIC_LOCAL(
-          CustomCountHistogram, width_histogram,
-          ("Media.Timeline.Width.InlinePortrait", kMin, kMax, kBucketCount));
-      width_histogram.Count(timeline_width);
-    } else {
-      DEFINE_STATIC_LOCAL(
-          CustomCountHistogram, width_histogram,
-          ("Media.Timeline.Width.InlineLandscape", kMin, kMax, kBucketCount));
-      width_histogram.Count(timeline_width);
-    }
-  } else {
-    if (is_portrait) {
-      DEFINE_STATIC_LOCAL(CustomCountHistogram, width_histogram,
-                          ("Media.Timeline.Width.FullscreenPortrait", kMin,
-                           kMax, kBucketCount));
-      width_histogram.Count(timeline_width);
-    } else {
-      DEFINE_STATIC_LOCAL(CustomCountHistogram, width_histogram,
-                          ("Media.Timeline.Width.FullscreenLandscape", kMin,
-                           kMax, kBucketCount));
-      width_histogram.Count(timeline_width);
-    }
-  }
 }
 
 }  // namespace blink

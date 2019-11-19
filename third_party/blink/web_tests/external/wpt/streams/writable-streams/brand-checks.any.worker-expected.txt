@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS WritableStream.prototype.locked enforces a brand check
+PASS WritableStream.prototype.abort enforces a brand check
+FAIL WritableStream.prototype.close enforces a brand check Cannot read property 'apply' of undefined
+PASS WritableStream.prototype.getWriter enforces a brand check
+PASS WritableStreamDefaultWriter constructor enforces a brand check
+PASS WritableStreamDefaultWriter.prototype.desiredSize enforces a brand check
+PASS WritableStreamDefaultWriter.prototype.closed enforces a brand check
+PASS WritableStreamDefaultWriter.prototype.ready enforces a brand check
+PASS WritableStreamDefaultWriter.prototype.abort enforces a brand check
+PASS WritableStreamDefaultWriter.prototype.write enforces a brand check
+PASS WritableStreamDefaultWriter.prototype.close enforces a brand check
+PASS WritableStreamDefaultWriter.prototype.releaseLock enforces a brand check
+PASS WritableStreamDefaultController.prototype.error enforces a brand check
+Harness: the test ran to completion.
+

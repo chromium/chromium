@@ -135,7 +135,7 @@ class ExternalInstallError : public WebstoreDataFetcherDelegate {
   // information of the extension.
   std::unique_ptr<WebstoreDataFetcher> webstore_data_fetcher_;
 
-  base::WeakPtrFactory<ExternalInstallError> weak_factory_;
+  base::WeakPtrFactory<ExternalInstallError> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExternalInstallError);
 };

@@ -15,6 +15,9 @@
 #include "base/observer_list.h"
 #include "chrome/browser/media/android/router/media_router_android_bridge.h"
 #include "chrome/browser/media/router/media_router_base.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class BrowserContext;
@@ -128,10 +131,10 @@ class MediaRouterAndroid : public MediaRouterBase {
     void Terminate();
 
    private:
-    blink::mojom::PresentationConnectionPtrInfo Bind();
+    mojo::PendingRemote<blink::mojom::PresentationConnection> Bind();
 
-    blink::mojom::PresentationConnectionPtr peer_;
-    mojo::Binding<blink::mojom::PresentationConnection> binding_;
+    mojo::Remote<blink::mojom::PresentationConnection> peer_;
+    mojo::Receiver<blink::mojom::PresentationConnection> receiver_{this};
     // |media_router_android_| owns |this|, so it will outlive |this|.
     MediaRouterAndroid* media_router_android_;
     MediaRoute::Id route_id_;

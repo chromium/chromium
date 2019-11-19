@@ -11,7 +11,7 @@
 #include <tuple>
 
 #include "base/component_export.h"
-#include "base/hash.h"
+#include "base/hash/hash.h"
 
 namespace mojo {
 namespace core {

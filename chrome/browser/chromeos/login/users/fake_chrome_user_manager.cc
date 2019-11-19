@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/chromeos/login/users/fake_supervised_user_manager.h"
@@ -25,6 +26,7 @@
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
@@ -67,25 +69,25 @@ FakeChromeUserManager::~FakeChromeUserManager() {
   ProfileHelper::SetProfileToUserForTestingEnabled(false);
 }
 
-const user_manager::User* FakeChromeUserManager::AddUser(
+user_manager::User* FakeChromeUserManager::AddUser(
     const AccountId& account_id) {
   return AddUserWithAffiliation(account_id, false);
 }
 
-const user_manager::User* FakeChromeUserManager::AddChildUser(
+user_manager::User* FakeChromeUserManager::AddChildUser(
     const AccountId& account_id) {
   return AddUserWithAffiliationAndTypeAndProfile(
       account_id, false, user_manager::USER_TYPE_CHILD, nullptr);
 }
 
-const user_manager::User* FakeChromeUserManager::AddUserWithAffiliation(
+user_manager::User* FakeChromeUserManager::AddUserWithAffiliation(
     const AccountId& account_id,
     bool is_affiliated) {
   return AddUserWithAffiliationAndTypeAndProfile(
       account_id, is_affiliated, user_manager::USER_TYPE_REGULAR, nullptr);
 }
 
-const user_manager::User*
+user_manager::User*
 FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
     const AccountId& account_id,
     bool is_affiliated,
@@ -129,6 +131,16 @@ user_manager::User* FakeChromeUserManager::AddArcKioskAppUser(
   return user;
 }
 
+user_manager::User* FakeChromeUserManager::AddWebKioskAppUser(
+    const AccountId& account_id) {
+  user_manager::User* user =
+      user_manager::User::CreateWebKioskAppUser(account_id);
+  user->set_username_hash(ProfileHelper::GetUserIdHashByUserIdForTesting(
+      account_id.GetUserEmail()));
+  users_.push_back(user);
+  return user;
+}
+
 user_manager::User* FakeChromeUserManager::AddSupervisedUser(
     const AccountId& account_id) {
   user_manager::User* user =
@@ -148,7 +160,7 @@ user_manager::User* FakeChromeUserManager::AddGuestUser() {
   return user;
 }
 
-const user_manager::User* FakeChromeUserManager::AddPublicAccountUser(
+user_manager::User* FakeChromeUserManager::AddPublicAccountUser(
     const AccountId& account_id) {
   user_manager::User* user =
       user_manager::User::CreatePublicAccountUser(account_id);
@@ -270,20 +282,6 @@ void FakeChromeUserManager::RemoveUserFromList(const AccountId& account_id) {
       delete *it;
     users_.erase(it);
   }
-}
-
-user_manager::UserList
-FakeChromeUserManager::GetUsersAllowedForSupervisedUsersCreation() const {
-  CrosSettings* cros_settings = CrosSettings::Get();
-  bool allow_new_user = true;
-  cros_settings->GetBoolean(kAccountsPrefAllowNewUser, &allow_new_user);
-  bool supervised_users_allowed = AreSupervisedUsersAllowed();
-
-  // Restricted either by policy or by owner.
-  if (!allow_new_user || !supervised_users_allowed)
-    return user_manager::UserList();
-
-  return GetUsersAllowedAsSupervisedUserManagers(GetUsers());
 }
 
 user_manager::UserList FakeChromeUserManager::GetUsersAllowedForMultiProfile()
@@ -499,11 +497,6 @@ void FakeChromeUserManager::SaveUserDisplayEmail(
   NOTREACHED();
 }
 
-std::string FakeChromeUserManager::GetUserDisplayEmail(
-    const AccountId& account_id) const {
-  return account_id.GetUserEmail();
-}
-
 void FakeChromeUserManager::SaveUserType(const user_manager::User* user) {
   NOTREACHED();
 }
@@ -573,6 +566,18 @@ bool FakeChromeUserManager::IsLoggedInAsArcKioskApp() const {
   return active_user
              ? active_user->GetType() == user_manager::USER_TYPE_ARC_KIOSK_APP
              : false;
+}
+
+bool FakeChromeUserManager::IsLoggedInAsWebKioskApp() const {
+  const user_manager::User* active_user = GetActiveUser();
+  return active_user
+             ? active_user->GetType() == user_manager::USER_TYPE_WEB_KIOSK_APP
+             : false;
+}
+
+bool FakeChromeUserManager::IsLoggedInAsAnyKioskApp() const {
+  const user_manager::User* active_user = GetActiveUser();
+  return active_user && active_user->IsKioskType();
 }
 
 bool FakeChromeUserManager::IsLoggedInAsStub() const {
@@ -681,6 +686,8 @@ void FakeChromeUserManager::DemoAccountLoggedIn() {
 void FakeChromeUserManager::KioskAppLoggedIn(user_manager::User* user) {}
 
 void FakeChromeUserManager::ArcKioskAppLoggedIn(user_manager::User* user) {}
+
+void FakeChromeUserManager::WebKioskAppLoggedIn(user_manager::User* user) {}
 
 void FakeChromeUserManager::PublicAccountUserLoggedIn(
     user_manager::User* user) {

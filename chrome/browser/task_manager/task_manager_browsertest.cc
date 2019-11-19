@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/path_service.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
@@ -45,11 +45,13 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/strings/grit/services_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -256,9 +258,12 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, KillTab) {
   int tab = FindResourceIndex(MatchTab("title1.html"));
   ASSERT_NE(-1, tab);
   ASSERT_TRUE(model()->GetTabId(tab).is_valid());
-  model()->Kill(tab);
-  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchTab("title1.html")));
-  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+    model()->Kill(tab);
+    ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchTab("title1.html")));
+    ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
+  }
 
   // Tab should reappear in task manager upon reload.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -393,11 +398,9 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeAppTabChanges) {
   ShowTaskManager();
 
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("packaged_app")));
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service();
   const extensions::Extension* extension =
-      service->GetExtensionById(last_loaded_extension_id(), false);
+      extension_registry()->GetExtensionById(
+          last_loaded_extension_id(), extensions::ExtensionRegistry::ENABLED);
 
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAboutBlankTab()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
@@ -436,11 +439,9 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeAppTabChanges) {
 IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeAppTab) {
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("packaged_app")));
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service();
   const extensions::Extension* extension =
-      service->GetExtensionById(last_loaded_extension_id(), false);
+      extension_registry()->GetExtensionById(
+          last_loaded_extension_id(), extensions::ExtensionRegistry::ENABLED);
 
   // Open a new tab to the app's launch URL and make sure we notice that.
   GURL url(extension->GetResourceURL("main.html"));
@@ -664,8 +665,9 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, JSHeapMemory) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("title1.html")));
 }
 
-#if defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER) || defined(OS_LINUX)
 // This tests times out when MSan is enabled. See https://crbug.com/890313.
+// Failing on Linux CFI. See https://crbug.com/995132.
 #define MAYBE_SentDataObserved DISABLED_SentDataObserved
 #else
 #define MAYBE_SentDataObserved SentDataObserved
@@ -692,7 +694,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_SentDataObserved) {
       ->tab_strip_model()
       ->GetActiveWebContents()
       ->GetMainFrame()
-      ->ExecuteJavaScriptForTests(base::UTF8ToUTF16(test_js));
+      ->ExecuteJavaScriptForTests(base::UTF8ToUTF16(test_js),
+                                  base::NullCallback());
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerStatToExceed(
       MatchTab("network use"), ColumnSpecifier::TOTAL_NETWORK_USE, 16000000));
   // There shouldn't be too much usage on the browser process. Note that it
@@ -702,8 +705,9 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_SentDataObserved) {
             model()->GetColumnValue(ColumnSpecifier::TOTAL_NETWORK_USE, 0));
 }
 
-#if defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER) || defined(OS_LINUX)
 // This tests times out when MSan is enabled. See https://crbug.com/890313.
+// Failing on Linux CFI. See https://crbug.com/995132.
 #define MAYBE_TotalSentDataObserved DISABLED_TotalSentDataObserved
 #else
 #define MAYBE_TotalSentDataObserved TotalSentDataObserved
@@ -730,7 +734,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_TotalSentDataObserved) {
       ->tab_strip_model()
       ->GetActiveWebContents()
       ->GetMainFrame()
-      ->ExecuteJavaScriptForTests(base::UTF8ToUTF16(test_js));
+      ->ExecuteJavaScriptForTests(base::UTF8ToUTF16(test_js),
+                                  base::NullCallback());
 
   // This test uses |setTimeout| to exceed the Nyquist ratio to ensure that at
   // least 1 refresh has happened of no traffic.
@@ -745,7 +750,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_TotalSentDataObserved) {
       ->tab_strip_model()
       ->GetActiveWebContents()
       ->GetMainFrame()
-      ->ExecuteJavaScriptForTests(base::UTF8ToUTF16(test_js));
+      ->ExecuteJavaScriptForTests(base::UTF8ToUTF16(test_js),
+                                  base::NullCallback());
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerStatToExceed(
       MatchTab("network use"), ColumnSpecifier::TOTAL_NETWORK_USE,
       16000000 * 2));
@@ -790,14 +796,15 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, IdleWakeups) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("title1.html")));
 }
 
+// Crashes on multiple builders.  http://crbug.com/1025346
 // Checks that task manager counts utility process JS heap size.
 IN_PROC_BROWSER_TEST_F(TaskManagerUtilityProcessBrowserTest,
-                       UtilityJSHeapMemory) {
+                       DISABLED_UtilityJSHeapMemory) {
   ShowTaskManager();
   model()->ToggleColumnVisibility(ColumnSpecifier::V8_MEMORY);
 
   auto proxy_resolver_name =
-      l10n_util::GetStringUTF16(IDS_UTILITY_PROCESS_PROXY_RESOLVER_NAME);
+      l10n_util::GetStringUTF16(IDS_PROXY_RESOLVER_DISPLAY_NAME);
   ui_test_utils::NavigateToURL(browser(), GetTestURL());
   // The PAC script is trivial, so don't expect a large heap.
   size_t minimal_heap_size = 1024;
@@ -899,10 +906,20 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, SubframeHistoryNavigation) {
       WaitForTaskManagerRows(1, MatchSubframe("http://c.com/")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnySubframe()));
 
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Simulate a user gesture on the frame about to be navigated so that the
+  // corresponding navigation entry is not marked as skippable.
+  content::RenderFrameHost* child_frame = ChildFrameAt(tab->GetMainFrame(), 0);
+  content::RenderFrameHost* grandchild_frame = ChildFrameAt(child_frame, 0);
+  grandchild_frame->ExecuteJavaScriptWithUserGestureForTests(
+      base::UTF8ToUTF16("a=5"));
+
   GURL d_url = embedded_test_server()->GetURL(
       "d.com", "/cross_site_iframe_factory.html?d(e)");
   ASSERT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      tab->GetMainFrame(),
       "frames[0][0].location.href = '" + d_url.spec() + "';"));
 
   ASSERT_NO_FATAL_FAILURE(
@@ -915,6 +932,7 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, SubframeHistoryNavigation) {
       WaitForTaskManagerRows(1, MatchSubframe("http://b.com/")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(3, MatchAnySubframe()));
 
+  ASSERT_TRUE(chrome::CanGoBack(browser()));
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
 
   ASSERT_NO_FATAL_FAILURE(
@@ -927,6 +945,7 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, SubframeHistoryNavigation) {
       WaitForTaskManagerRows(1, MatchSubframe("http://b.com/")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnySubframe()));
 
+  ASSERT_TRUE(chrome::CanGoForward(browser()));
   chrome::GoForward(browser(), WindowOpenDisposition::CURRENT_TAB);
 
   // When the subframe appears in the cloned process, it must have a valid
@@ -992,18 +1011,21 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, KillSubframe) {
                 ->GetLastCommittedURL();
     ASSERT_EQ(b_url.host(), "b.com");  // Sanity check of test code / setup.
 
-    int subframe_b = FindResourceIndex(MatchSubframe("http://b.com/"));
-    ASSERT_NE(-1, subframe_b);
-    ASSERT_TRUE(model()->GetTabId(subframe_b).is_valid());
-    model()->Kill(subframe_b);
+    {
+      content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+      int subframe_b = FindResourceIndex(MatchSubframe("http://b.com/"));
+      ASSERT_NE(-1, subframe_b);
+      ASSERT_TRUE(model()->GetTabId(subframe_b).is_valid());
+      model()->Kill(subframe_b);
 
-    ASSERT_NO_FATAL_FAILURE(
-        WaitForTaskManagerRows(0, MatchSubframe("http://b.com/")));
-    ASSERT_NO_FATAL_FAILURE(
-        WaitForTaskManagerRows(1, MatchSubframe("http://c.com/")));
-    ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnySubframe()));
-    ASSERT_NO_FATAL_FAILURE(
-        WaitForTaskManagerRows(1, MatchTab("cross-site iframe test")));
+      ASSERT_NO_FATAL_FAILURE(
+          WaitForTaskManagerRows(0, MatchSubframe("http://b.com/")));
+      ASSERT_NO_FATAL_FAILURE(
+          WaitForTaskManagerRows(1, MatchSubframe("http://c.com/")));
+      ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnySubframe()));
+      ASSERT_NO_FATAL_FAILURE(
+          WaitForTaskManagerRows(1, MatchTab("cross-site iframe test")));
+    }
   }
 
   HideTaskManager();

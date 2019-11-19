@@ -1,14 +1,13 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div class="container">
     <div id="div">Div Contents</div>
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axDiv = accessibilityController.accessibleElementById("div");
     assert_equals(axDiv.name, "");
 }, "A simple div with inner text should not have an accessible name.");
@@ -19,7 +18,7 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axSelf = accessibilityController.accessibleElementById("self");
     assert_equals(axSelf.name, "Contents of button");
     assert_equals(axSelf.nameFrom, "contents");
@@ -32,7 +31,7 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axLabelledby = accessibilityController.accessibleElementById("labelledby");
     assert_equals(axLabelledby.name, "Label 1");
     assert_equals(axLabelledby.nameFrom, "relatedElement");
@@ -46,7 +45,7 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axLabelledby2 = accessibilityController.accessibleElementById("labelledby2");
     assert_equals(axLabelledby2.name, "Contents");
     assert_equals(axLabelledby2.nameFrom, "relatedElement");
@@ -61,7 +60,7 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axLabelledby3 = accessibilityController.accessibleElementById("labelledby3");
     assert_equals(axLabelledby3.name, "Contents Label 3");
     assert_equals(axLabelledby3.nameFrom, "relatedElement");
@@ -78,7 +77,7 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axLabelledby4 = accessibilityController.accessibleElementById("labelledby4");
     assert_equals(axLabelledby4.name, "Contents 4");
     assert_equals(axLabelledby4.nameFrom, "relatedElement");
@@ -92,7 +91,7 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axLabelledby5 = accessibilityController.accessibleElementById("labelledby5");
     assert_equals(axLabelledby5.name, "Contents");
     assert_equals(axLabelledby5.nameFrom, "contents");
@@ -106,7 +105,7 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axLabelledby6 = accessibilityController.accessibleElementById("labelledby6");
     assert_equals(axLabelledby6.name, "");
     assert_equals(axLabelledby6.nameFrom, "relatedElement");
@@ -121,8 +120,8 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
-    assert_equals(accessibilityController.accessibleElementById("label7"), undefined);
+test(function(t){
+    assert_true(accessibilityController.accessibleElementById("label7").isIgnored);
     var axLabelledby7 = accessibilityController.accessibleElementById("labelledby7");
     assert_equals(axLabelledby7.name, "Invisible label");
     assert_equals(axLabelledby7.nameFrom, "relatedElement");
@@ -137,8 +136,8 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
-    assert_equals(accessibilityController.accessibleElementById("label8"), undefined);
+test(function(t){
+    assert_true(accessibilityController.accessibleElementById("label8").isIgnored);
     var axLabelledby8 = accessibilityController.accessibleElementById("labelledby8");
     assert_equals(axLabelledby8.name, "Display-none label");
     assert_equals(axLabelledby8.nameFrom, "relatedElement");

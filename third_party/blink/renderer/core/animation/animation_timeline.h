@@ -10,6 +10,9 @@
 
 namespace blink {
 
+class Animation;
+class Document;
+
 class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -18,8 +21,34 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
 
   virtual double currentTime(bool&) = 0;
 
+  base::Optional<double> CurrentTime() {
+    bool is_null;
+    double current_time_ms = currentTime(is_null);
+    return is_null ? base::nullopt : base::make_optional(current_time_ms);
+  }
+
+  base::Optional<double> CurrentTimeSeconds() {
+    base::Optional<double> current_time_ms = CurrentTime();
+    if (current_time_ms)
+      return current_time_ms.value() / 1000;
+    return current_time_ms;
+  }
+
   virtual bool IsDocumentTimeline() const { return false; }
   virtual bool IsScrollTimeline() const { return false; }
+  virtual bool IsActive() const = 0;
+  // Returns the initial start time for animations that are linked to this
+  // timeline. This method gets invoked when initializing the start time of an
+  // animation on this timeline for the first time. It exists because the
+  // initial start time for scroll-linked and time-linked animations are
+  // different.
+  //
+  // Changing scroll-linked animation start_time initialization is under
+  // consideration here: https://github.com/w3c/csswg-drafts/issues/2075.
+  virtual base::Optional<base::TimeDelta> InitialStartTimeForAnimations() = 0;
+  virtual Document* GetDocument() = 0;
+  virtual void AnimationAttached(Animation*) = 0;
+  virtual void AnimationDetached(Animation*) = 0;
 };
 
 }  // namespace blink

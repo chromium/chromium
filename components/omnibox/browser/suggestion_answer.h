@@ -20,7 +20,7 @@
 #endif
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 // Structured representation of the JSON payload of a suggestion with an answer.
@@ -46,20 +46,26 @@ class SuggestionAnswer {
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.omnibox
   enum AnswerType {
     ANSWER_TYPE_INVALID = 0,
-    ANSWER_TYPE_DICTIONARY,
-    ANSWER_TYPE_FINANCE,
-    ANSWER_TYPE_KNOWLEDGE_GRAPH,
-    ANSWER_TYPE_LOCAL,
-    ANSWER_TYPE_SPORTS,
-    ANSWER_TYPE_SUNRISE,
-    ANSWER_TYPE_TRANSLATION,
-    ANSWER_TYPE_WEATHER,
-    ANSWER_TYPE_WHEN_IS,
-    ANSWER_TYPE_CURRENCY,
-    ANSWER_TYPE_LOCAL_TIME,
-    ANSWER_TYPE_PLAY_INSTALL,
+    ANSWER_TYPE_DICTIONARY = 1,
+    ANSWER_TYPE_FINANCE = 2,
+    ANSWER_TYPE_KNOWLEDGE_GRAPH = 3,
+    ANSWER_TYPE_LOCAL = 4,
+    ANSWER_TYPE_SPORTS = 5,
+    ANSWER_TYPE_SUNRISE = 6,
+    ANSWER_TYPE_TRANSLATION = 7,
+    ANSWER_TYPE_WEATHER = 8,
+    ANSWER_TYPE_WHEN_IS = 9,
+    ANSWER_TYPE_CURRENCY = 10,
+    ANSWER_TYPE_LOCAL_TIME = 11,
+    ANSWER_TYPE_PLAY_INSTALL = 12,
+
+    // Last value - tracks total number of different answer types.
+    // Deliberately not assigning a value to this enum to prevent errors where a
+    // new enum values are added above and compiler accepts the overlapping
+    // enums.
+    ANSWER_TYPE_TOTAL_COUNT
   };
-  static_assert(ANSWER_TYPE_PLAY_INSTALL == 12,
+  static_assert(ANSWER_TYPE_TOTAL_COUNT == 13,
                 "Do not remove enums from AnswerType");
 
   // These values are named and numbered to match a specification at go/ais_api.
@@ -119,11 +125,15 @@ class SuggestionAnswer {
    public:
     TextField();
     ~TextField();
+    TextField(const TextField&);
+    TextField(TextField&&) noexcept;
+    TextField& operator=(const TextField&);
+    TextField& operator=(TextField&&) noexcept;
 
-    // Parses |field_json| and populates |text_field| with the contents.  If any
-    // of the required elements is missing, returns false and leaves text_field
-    // in a partially populated state.
-    static bool ParseTextField(const base::DictionaryValue* field_json,
+    // Parses |field_json| dictionary and populates |text_field| with the
+    // contents.  If any of the required elements is missing, returns false and
+    // leaves text_field in a partially populated state.
+    static bool ParseTextField(const base::Value& field_json,
                                TextField* text_field);
 
     const base::string16& text() const { return text_; }
@@ -156,13 +166,15 @@ class SuggestionAnswer {
    public:
     ImageLine();
     explicit ImageLine(const ImageLine& line);
+    ImageLine(ImageLine&&) noexcept;
     ImageLine& operator=(const ImageLine& line);
+    ImageLine& operator=(ImageLine&&) noexcept;
     ~ImageLine();
 
-    // Parses |line_json| and populates |image_line| with the contents.  If any
-    // of the required elements is missing, returns false and leaves text_field
-    // in a partially populated state.
-    static bool ParseImageLine(const base::DictionaryValue* line_json,
+    // Parses dictionary |line_json| and populates |image_line| with the
+    // contents.  If any of the required elements is missing, returns false and
+    // leaves text_field in a partially populated state.
+    static bool ParseImageLine(const base::Value& line_json,
                                ImageLine* image_line);
 
     const TextFields& text_fields() const { return text_fields_; }
@@ -207,13 +219,15 @@ class SuggestionAnswer {
 
   SuggestionAnswer();
   SuggestionAnswer(const SuggestionAnswer& answer);
+  SuggestionAnswer(SuggestionAnswer&&) noexcept;
   SuggestionAnswer& operator=(const SuggestionAnswer& answer);
+  SuggestionAnswer& operator=(SuggestionAnswer&&) noexcept;
   ~SuggestionAnswer();
 
-  // Parses |answer_json| and fills a SuggestionAnswer containing the
-  // contents. Returns true on success. If the supplied data is not well
-  // formed or is missing required elements, returns false instead.
-  static bool ParseAnswer(const base::DictionaryValue* answer_json,
+  // Parses dictionary |answer_json| and fills a SuggestionAnswer containing the
+  // contents. Returns true on success. If the supplied data is not well formed
+  // or is missing required elements, returns false instead.
+  static bool ParseAnswer(const base::Value& answer_json,
                           const base::string16& answer_type_str,
                           SuggestionAnswer* answer);
 
@@ -238,17 +252,28 @@ class SuggestionAnswer {
   // For new answers, replace old answer text types with appropriate new types.
   void InterpretTextTypes();
 
+  // Some types of matches (answers for dictionary definitions, e.g.) do not
+  // follow the common rules for reversing lines.
+  bool IsExceptedFromLineReversal() const;
+
+  // Logs which answer type was used (if any) at the time a user used the
+  // omnibox to go somewhere.
+  static void LogAnswerUsed(const base::Optional<SuggestionAnswer>& answer);
+
 #ifdef OS_ANDROID
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;
 #endif
 
  private:
+  static const char kAnswerUsedUmaHistogramName[];
+
   GURL image_url_;
   ImageLine first_line_;
   ImageLine second_line_;
   int type_ = -1;
 
   FRIEND_TEST_ALL_PREFIXES(SuggestionAnswerTest, DifferentValuesAreUnequal);
+  FRIEND_TEST_ALL_PREFIXES(SuggestionAnswerTest, LogAnswerUsed);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_SUGGESTION_ANSWER_H_

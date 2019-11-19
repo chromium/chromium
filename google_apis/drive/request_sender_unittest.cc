@@ -62,8 +62,8 @@ class RequestSenderTest : public testing::Test {
   RequestSenderTest()
       : auth_service_(new TestAuthService),
         request_sender_(base::WrapUnique(auth_service_),
-                        NULL,
-                        NULL,
+                        nullptr,
+                        nullptr,
                         "dummy-user-agent",
                         TRAFFIC_ANNOTATION_FOR_TESTS) {
     auth_service_->set_refresh_token(kTestRefreshToken);
@@ -83,9 +83,7 @@ class TestRequest : public AuthenticatedRequestInterface {
               FinishReason* finish_reason)
       : sender_(sender),
         start_called_(start_called),
-        finish_reason_(finish_reason),
-        weak_ptr_factory_(this) {
-  }
+        finish_reason_(finish_reason) {}
 
   // Test the situation that the request has finished.
   void FinishRequestWithSuccess() {
@@ -133,7 +131,7 @@ class TestRequest : public AuthenticatedRequestInterface {
   FinishReason* finish_reason_;
   std::string passed_access_token_;
   ReAuthenticateCallback passed_reauth_callback_;
-  base::WeakPtrFactory<TestRequest> weak_ptr_factory_;
+  base::WeakPtrFactory<TestRequest> weak_ptr_factory_{this};
 };
 
 }  // namespace

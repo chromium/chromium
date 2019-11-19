@@ -63,9 +63,6 @@ Globals* Globals::Get() {
   return &s_storage.globals;
 }
 
-// static
-int Globals::sdk_build_version = 0;
-
 // TECHNICAL NOTE: The mutex below does not have to be recursive, unlike the
 // other one, because it should be only operated on during the following
 // operations:

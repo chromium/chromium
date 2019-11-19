@@ -10,6 +10,7 @@
 #import "ios/web/public/test/web_test_with_web_state.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -33,7 +34,7 @@ class ImageFetchTabHelperTest : public web::WebTestWithWebState {
  protected:
   ImageFetchTabHelperTest()
       : web::WebTestWithWebState(
-            web::TestWebThreadBundle::Options::IO_MAINLOOP) {}
+            web::WebTaskEnvironment::Options::IO_MAINLOOP) {}
 
   void SetUp() override {
     WebTestWithWebState::SetUp();
@@ -48,18 +49,18 @@ class ImageFetchTabHelperTest : public web::WebTestWithWebState {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
 
-    network::ResourceResponseHead head;
+    network::mojom::URLResponseHeadPtr head =
+        network::mojom::URLResponseHead::New();
     std::string raw_header =
         "HTTP/1.1 200 OK\n"
         "Content-type: image/png\n\n";
-    head.headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-        net::HttpUtil::AssembleRawHeaders(raw_header.c_str(),
-                                          raw_header.size()));
-    head.mime_type = "image/png";
+    head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders(raw_header));
+    head->mime_type = "image/png";
     network::URLLoaderCompletionStatus status;
     status.decoded_body_length = strlen(kImageData);
-    test_url_loader_factory_.AddResponse(GURL(kImageUrl), head, kImageData,
-                                         status);
+    test_url_loader_factory_.AddResponse(GURL(kImageUrl), std::move(head),
+                                         kImageData, status);
   }
 
   ImageFetchTabHelper* image_fetch_tab_helper() {

@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest, ModifyExisting) {
   views::View* list_view = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::CONTACT_INFO_SHEET_LIST_VIEW));
   DCHECK(list_view);
-  ClickOnDialogViewAndWait(list_view->child_at(0));
+  ClickOnDialogViewAndWait(list_view->children().front());
 
   // Do not set name: This should have been populated when opening the screen.
   EXPECT_EQ(base::ASCIIToUTF16(kNameFull),
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactInfoEditorTest,
   views::View* list_view = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::CONTACT_INFO_SHEET_LIST_VIEW));
   DCHECK(list_view);
-  ClickOnDialogViewAndWait(list_view->child_at(1));
+  ClickOnDialogViewAndWait(list_view->children()[1]);
 
   SetEditorTextfieldValue(base::ASCIIToUTF16(kPhoneNumber),
                           autofill::PHONE_HOME_WHOLE_NUMBER);

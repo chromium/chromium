@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "services/ws/public/mojom/window_tree_constants.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/window.h"
@@ -39,7 +38,7 @@ bool EasyResizeWindowTargeter::ShouldUseExtendedBounds(
 
   // Only resizable windows benefit from the extended hit-test region.
   if ((w->GetProperty(aura::client::kResizeBehaviorKey) &
-       ws::mojom::kResizeBehaviorCanResize) == 0) {
+       aura::client::kResizeBehaviorCanResize) == 0) {
     return false;
   }
 

@@ -11,11 +11,10 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/task/post_task.h"
+#include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "chrome/services/file_util/public/mojom/zip_file_creator.mojom.h"
-
-namespace service_manager {
-class Connector;
-}
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 // ZipFileCreator creates a ZIP file from a specified list of files and
 // directories under a common parent directory. This is done in a sandboxed
@@ -25,25 +24,28 @@ class Connector;
 // specified in the constructor (and should be heap allocated).
 class ZipFileCreator {
  public:
-  typedef base::Callback<void(bool)> ResultCallback;
+  using ResultCallback = base::OnceCallback<void(bool)>;
 
   // Creates a zip file from the specified list of files and directories.
-  ZipFileCreator(const ResultCallback& callback,
+  ZipFileCreator(ResultCallback callback,
                  const base::FilePath& src_dir,
                  const std::vector<base::FilePath>& src_relative_paths,
                  const base::FilePath& dest_file);
 
-  // Starts creating the zip file. Must be called from the UI thread.
+  // Starts creating the zip file.
+  //
   // The result will be passed to |callback|. After the task is finished
   // and |callback| is run, ZipFileCreator instance is deleted.
-  void Start(service_manager::Connector* connector);
+  void Start(mojo::PendingRemote<chrome::mojom::FileUtilService> service);
 
  private:
   ~ZipFileCreator();
 
   // Called after the dest_file |file| is opened on the blocking pool to
   // create the zip file in it using a sandboxed utility process.
-  void CreateZipFile(service_manager::Connector* connector, base::File file);
+  void CreateZipFile(
+      mojo::PendingRemote<chrome::mojom::FileUtilService> service,
+      base::File file);
 
   // Notifies by calling |callback| specified in the constructor the end of the
   // ZIP operation. Deletes this.
@@ -64,7 +66,9 @@ class ZipFileCreator {
   // The output zip file.
   base::FilePath dest_file_;
 
-  chrome::mojom::ZipFileCreatorPtr zip_file_creator_ptr_;
+  // Remote interfaces to the file util service. Only used from the UI thread.
+  mojo::Remote<chrome::mojom::FileUtilService> service_;
+  mojo::Remote<chrome::mojom::ZipFileCreator> remote_zip_file_creator_;
 
   DISALLOW_COPY_AND_ASSIGN(ZipFileCreator);
 };

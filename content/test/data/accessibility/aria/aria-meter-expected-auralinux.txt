@@ -1,0 +1,3 @@
+[document web]
+++[level bar] name='funding' current=50.000000 minimum=0.000000 maximum=100.000000
+++[level bar] name='funding' current=10.000000 minimum=0.000000 maximum=100.000000

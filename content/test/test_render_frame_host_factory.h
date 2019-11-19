@@ -29,13 +29,12 @@ class TestRenderFrameHostFactory : public RenderFrameHostFactory {
   // RenderFrameHostFactory implementation.
   std::unique_ptr<RenderFrameHostImpl> CreateRenderFrameHost(
       SiteInstance* site_instance,
-      RenderViewHostImpl* render_view_host,
+      scoped_refptr<RenderViewHostImpl> render_view_host,
       RenderFrameHostDelegate* delegate,
       FrameTree* frame_tree,
       FrameTreeNode* frame_tree_node,
       int32_t routing_id,
       int32_t widget_routing_id,
-      bool hidden,
       bool renderer_initiated_creation) override;
 
  private:

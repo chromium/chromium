@@ -33,26 +33,26 @@
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLBodyElement::HTMLBodyElement(Document& document)
-    : HTMLElement(kBodyTag, document) {}
-
-DEFINE_NODE_FACTORY(HTMLBodyElement)
+HTMLBodyElement::HTMLBodyElement(Document& document)
+    : HTMLElement(html_names::kBodyTag, document) {}
 
 HTMLBodyElement::~HTMLBodyElement() = default;
 
 bool HTMLBodyElement::IsPresentationAttribute(const QualifiedName& name) const {
-  if (name == kBackgroundAttr || name == kMarginwidthAttr ||
-      name == kLeftmarginAttr || name == kMarginheightAttr ||
-      name == kTopmarginAttr || name == kBgcolorAttr || name == kTextAttr)
+  if (name == html_names::kBackgroundAttr ||
+      name == html_names::kMarginwidthAttr ||
+      name == html_names::kLeftmarginAttr ||
+      name == html_names::kMarginheightAttr ||
+      name == html_names::kTopmarginAttr || name == html_names::kBgcolorAttr ||
+      name == html_names::kTextAttr)
     return true;
   return HTMLElement::IsPresentationAttribute(name);
 }
@@ -61,27 +61,30 @@ void HTMLBodyElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (name == kBackgroundAttr) {
+  if (name == html_names::kBackgroundAttr) {
     String url = StripLeadingAndTrailingHTMLSpaces(value);
     if (!url.IsEmpty()) {
       CSSImageValue* image_value =
           CSSImageValue::Create(url, GetDocument().CompleteURL(url),
                                 Referrer(GetDocument().OutgoingReferrer(),
-                                         GetDocument().GetReferrerPolicy()));
+                                         GetDocument().GetReferrerPolicy()),
+                                OriginClean::kTrue);
       image_value->SetInitiator(localName());
       style->SetProperty(
           CSSPropertyValue(GetCSSPropertyBackgroundImage(), *image_value));
     }
-  } else if (name == kMarginwidthAttr || name == kLeftmarginAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyMarginRight, value);
-    AddHTMLLengthToStyle(style, CSSPropertyMarginLeft, value);
-  } else if (name == kMarginheightAttr || name == kTopmarginAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyMarginBottom, value);
-    AddHTMLLengthToStyle(style, CSSPropertyMarginTop, value);
-  } else if (name == kBgcolorAttr) {
-    AddHTMLColorToStyle(style, CSSPropertyBackgroundColor, value);
-  } else if (name == kTextAttr) {
-    AddHTMLColorToStyle(style, CSSPropertyColor, value);
+  } else if (name == html_names::kMarginwidthAttr ||
+             name == html_names::kLeftmarginAttr) {
+    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginRight, value);
+    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginLeft, value);
+  } else if (name == html_names::kMarginheightAttr ||
+             name == html_names::kTopmarginAttr) {
+    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginBottom, value);
+    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginTop, value);
+  } else if (name == html_names::kBgcolorAttr) {
+    AddHTMLColorToStyle(style, CSSPropertyID::kBackgroundColor, value);
+  } else if (name == html_names::kTextAttr) {
+    AddHTMLColorToStyle(style, CSSPropertyID::kColor, value);
   } else {
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);
   }
@@ -91,11 +94,12 @@ void HTMLBodyElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
   const AtomicString& value = params.new_value;
-  if (name == kVlinkAttr || name == kAlinkAttr || name == kLinkAttr) {
+  if (name == html_names::kVlinkAttr || name == html_names::kAlinkAttr ||
+      name == html_names::kLinkAttr) {
     if (value.IsNull()) {
-      if (name == kLinkAttr)
+      if (name == html_names::kLinkAttr)
         GetDocument().GetTextLinkColors().ResetLinkColor();
-      else if (name == kVlinkAttr)
+      else if (name == html_names::kVlinkAttr)
         GetDocument().GetTextLinkColors().ResetVisitedLinkColor();
       else
         GetDocument().GetTextLinkColors().ResetActiveLinkColor();
@@ -105,9 +109,9 @@ void HTMLBodyElement::ParseAttribute(
       if (!HTMLElement::ParseColorWithLegacyRules(string_value, color))
         return;
 
-      if (name == kLinkAttr)
+      if (name == html_names::kLinkAttr)
         GetDocument().GetTextLinkColors().SetLinkColor(color);
-      else if (name == kVlinkAttr)
+      else if (name == html_names::kVlinkAttr)
         GetDocument().GetTextLinkColors().SetVisitedLinkColor(color);
       else
         GetDocument().GetTextLinkColors().SetActiveLinkColor(color);
@@ -116,103 +120,103 @@ void HTMLBodyElement::ParseAttribute(
     SetNeedsStyleRecalc(kSubtreeStyleChange,
                         StyleChangeReasonForTracing::Create(
                             style_change_reason::kLinkColorChange));
-  } else if (name == kOnafterprintAttr) {
+  } else if (name == html_names::kOnafterprintAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kAfterprint,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnbeforeprintAttr) {
+  } else if (name == html_names::kOnbeforeprintAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kBeforeprint,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnloadAttr) {
+  } else if (name == html_names::kOnloadAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kLoad,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnbeforeunloadAttr) {
+  } else if (name == html_names::kOnbeforeunloadAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kBeforeunload,
         CreateAttributeEventListener(
             GetDocument().GetFrame(), name, value,
             JSEventHandler::HandlerType::kOnBeforeUnloadEventHandler));
-  } else if (name == kOnunloadAttr) {
+  } else if (name == html_names::kOnunloadAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kUnload,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnpagehideAttr) {
+  } else if (name == html_names::kOnpagehideAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kPagehide,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnpageshowAttr) {
+  } else if (name == html_names::kOnpageshowAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kPageshow,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnpopstateAttr) {
+  } else if (name == html_names::kOnpopstateAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kPopstate,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnblurAttr) {
+  } else if (name == html_names::kOnblurAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kBlur,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnerrorAttr) {
+  } else if (name == html_names::kOnerrorAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kError,
         CreateAttributeEventListener(
             GetDocument().GetFrame(), name, value,
             JSEventHandler::HandlerType::kOnErrorEventHandler));
-  } else if (name == kOnfocusAttr) {
+  } else if (name == html_names::kOnfocusAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kFocus,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
   } else if (RuntimeEnabledFeatures::OrientationEventEnabled() &&
-             name == kOnorientationchangeAttr) {
+             name == html_names::kOnorientationchangeAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kOrientationchange,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnhashchangeAttr) {
+  } else if (name == html_names::kOnhashchangeAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kHashchange,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnmessageAttr) {
+  } else if (name == html_names::kOnmessageAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kMessage,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnmessageerrorAttr) {
+  } else if (name == html_names::kOnmessageerrorAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kMessageerror,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnresizeAttr) {
+  } else if (name == html_names::kOnresizeAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kResize,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnscrollAttr) {
+  } else if (name == html_names::kOnscrollAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kScroll,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnselectionchangeAttr) {
+  } else if (name == html_names::kOnselectionchangeAttr) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kHTMLBodyElementOnSelectionChangeAttribute);
     GetDocument().SetAttributeEventListener(
         event_type_names::kSelectionchange,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnstorageAttr) {
+  } else if (name == html_names::kOnstorageAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kStorage,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnonlineAttr) {
+  } else if (name == html_names::kOnonlineAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kOnline,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnofflineAttr) {
+  } else if (name == html_names::kOnofflineAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kOffline,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
-  } else if (name == kOnlanguagechangeAttr) {
+  } else if (name == html_names::kOnlanguagechangeAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kLanguagechange,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
   } else if (RuntimeEnabledFeatures::PortalsEnabled() &&
-             name == kOnportalactivateAttr) {
+             name == html_names::kOnportalactivateAttr) {
     GetDocument().SetWindowAttributeEventListener(
         event_type_names::kPortalactivate,
         CreateAttributeEventListener(GetDocument().GetFrame(), name, value));
@@ -235,23 +239,24 @@ void HTMLBodyElement::DidNotifySubtreeInsertionsToDocument() {
     int margin_width = GetDocument().GetFrame()->Owner()->MarginWidth();
     int margin_height = GetDocument().GetFrame()->Owner()->MarginHeight();
     if (margin_width != -1)
-      SetIntegralAttribute(kMarginwidthAttr, margin_width);
+      SetIntegralAttribute(html_names::kMarginwidthAttr, margin_width);
     if (margin_height != -1)
-      SetIntegralAttribute(kMarginheightAttr, margin_height);
+      SetIntegralAttribute(html_names::kMarginheightAttr, margin_height);
   }
 }
 
 bool HTMLBodyElement::IsURLAttribute(const Attribute& attribute) const {
-  return attribute.GetName() == kBackgroundAttr ||
+  return attribute.GetName() == html_names::kBackgroundAttr ||
          HTMLElement::IsURLAttribute(attribute);
 }
 
 bool HTMLBodyElement::HasLegalLinkAttribute(const QualifiedName& name) const {
-  return name == kBackgroundAttr || HTMLElement::HasLegalLinkAttribute(name);
+  return name == html_names::kBackgroundAttr ||
+         HTMLElement::HasLegalLinkAttribute(name);
 }
 
 const QualifiedName& HTMLBodyElement::SubResourceAttributeName() const {
-  return kBackgroundAttr;
+  return html_names::kBackgroundAttr;
 }
 
 bool HTMLBodyElement::SupportsFocus() const {

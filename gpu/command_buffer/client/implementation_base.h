@@ -84,10 +84,17 @@ class GLES2_IMPL_EXPORT ImplementationBase
   bool HasGrContextSupport() const override;
   void WillCallGLFromSkia() override;
   void DidCallGLFromSkia() override;
+  void SetDisplayTransform(gfx::OverlayTransform transform) override;
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
+
+  // Used by child classes to implement gpu::InterfaceBase
+  void GenSyncToken(GLbyte* sync_token);
+  void GenUnverifiedSyncToken(GLbyte* sync_token);
+  void VerifySyncTokens(GLbyte** sync_tokens, GLsizei count);
+  void WaitSyncToken(const GLbyte* sync_token);
 
  protected:
   gpu::ContextResult Initialize(const SharedMemoryLimits& limits);
@@ -143,10 +150,13 @@ class GLES2_IMPL_EXPORT ImplementationBase
 
  private:
   virtual void IssueShallowFlush() = 0;
+  virtual void SetGLError(GLenum error,
+                          const char* function_name,
+                          const char* msg) = 0;
 
   CommandBufferHelper* helper_;
 
-  base::WeakPtrFactory<ImplementationBase> weak_ptr_factory_;
+  base::WeakPtrFactory<ImplementationBase> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ImplementationBase);
 };

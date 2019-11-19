@@ -30,18 +30,14 @@
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLLegendElement::HTMLLegendElement(Document& document)
-    : HTMLElement(kLegendTag, document) {}
-
-DEFINE_NODE_FACTORY(HTMLLegendElement)
+HTMLLegendElement::HTMLLegendElement(Document& document)
+    : HTMLElement(html_names::kLegendTag, document) {}
 
 HTMLFormElement* HTMLLegendElement::form() const {
   // According to the specification, If the legend has a fieldset element as
   // its parent, then the form attribute must return the same value as the
   // form attribute on that fieldset element. Otherwise, it must return null.
-  if (auto* fieldset = ToHTMLFieldSetElementOrNull(parentNode()))
+  if (auto* fieldset = DynamicTo<HTMLFieldSetElement>(parentNode()))
     return fieldset->formOwner();
   return nullptr;
 }

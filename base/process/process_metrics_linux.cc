@@ -307,66 +307,6 @@ ProcessMetrics::ProcessMetrics(ProcessHandle process)
 ProcessMetrics::ProcessMetrics(ProcessHandle process) : process_(process) {}
 #endif
 
-#if defined(OS_CHROMEOS)
-// Private, Shared and Proportional working set sizes are obtained from
-// /proc/<pid>/totmaps
-ProcessMetrics::TotalsSummary ProcessMetrics::GetTotalsSummary() const {
-  // The format of /proc/<pid>/totmaps is:
-  //
-  // Rss:                6120 kB
-  // Pss:                3335 kB
-  // Shared_Clean:       1008 kB
-  // Shared_Dirty:       4012 kB
-  // Private_Clean:         4 kB
-  // Private_Dirty:      1096 kB
-  // Referenced:          XXX kB
-  // Anonymous:           XXX kB
-  // AnonHugePages:       XXX kB
-  // Swap:                XXX kB
-  // Locked:              XXX kB
-  ProcessMetrics::TotalsSummary summary = {};
-
-  const size_t kPrivate_CleanIndex = (4 * 3) + 1;
-  const size_t kPrivate_DirtyIndex = (5 * 3) + 1;
-  const size_t kSwapIndex = (9 * 3) + 1;
-
-  std::string totmaps_data;
-  {
-    FilePath totmaps_file = internal::GetProcPidDir(process_).Append("totmaps");
-    ThreadRestrictions::ScopedAllowIO allow_io;
-    bool ret = ReadFileToString(totmaps_file, &totmaps_data);
-    if (!ret || totmaps_data.length() == 0)
-      return summary;
-  }
-
-  std::vector<std::string> totmaps_fields = SplitString(
-      totmaps_data, kWhitespaceASCII, KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY);
-
-  DCHECK_EQ("Private_Clean:", totmaps_fields[kPrivate_CleanIndex - 1]);
-  DCHECK_EQ("Private_Dirty:", totmaps_fields[kPrivate_DirtyIndex - 1]);
-  DCHECK_EQ("Swap:", totmaps_fields[kSwapIndex-1]);
-
-  int private_clean_kb = 0;
-  int private_dirty_kb = 0;
-  int swap_kb = 0;
-  bool success = true;
-  success &=
-      StringToInt(totmaps_fields[kPrivate_CleanIndex], &private_clean_kb);
-  success &=
-      StringToInt(totmaps_fields[kPrivate_DirtyIndex], &private_dirty_kb);
-  success &= StringToInt(totmaps_fields[kSwapIndex], &swap_kb);
-
-  if (!success)
-    return summary;
-
-  summary.private_clean_kb = private_clean_kb;
-  summary.private_dirty_kb = private_dirty_kb;
-  summary.swap_kb = swap_kb;
-
-  return summary;
-}
-#endif
-
 size_t GetSystemCommitCharge() {
   SystemMemoryInfoKB meminfo;
   if (!GetSystemMemoryInfo(&meminfo))
@@ -470,25 +410,25 @@ const size_t kDiskWeightedIOTime = 13;
 
 std::unique_ptr<DictionaryValue> SystemMemoryInfoKB::ToValue() const {
   auto res = std::make_unique<DictionaryValue>();
-  res->SetInteger("total", total);
-  res->SetInteger("free", free);
-  res->SetInteger("available", available);
-  res->SetInteger("buffers", buffers);
-  res->SetInteger("cached", cached);
-  res->SetInteger("active_anon", active_anon);
-  res->SetInteger("inactive_anon", inactive_anon);
-  res->SetInteger("active_file", active_file);
-  res->SetInteger("inactive_file", inactive_file);
-  res->SetInteger("swap_total", swap_total);
-  res->SetInteger("swap_free", swap_free);
-  res->SetInteger("swap_used", swap_total - swap_free);
-  res->SetInteger("dirty", dirty);
-  res->SetInteger("reclaimable", reclaimable);
+  res->SetIntKey("total", total);
+  res->SetIntKey("free", free);
+  res->SetIntKey("available", available);
+  res->SetIntKey("buffers", buffers);
+  res->SetIntKey("cached", cached);
+  res->SetIntKey("active_anon", active_anon);
+  res->SetIntKey("inactive_anon", inactive_anon);
+  res->SetIntKey("active_file", active_file);
+  res->SetIntKey("inactive_file", inactive_file);
+  res->SetIntKey("swap_total", swap_total);
+  res->SetIntKey("swap_free", swap_free);
+  res->SetIntKey("swap_used", swap_total - swap_free);
+  res->SetIntKey("dirty", dirty);
+  res->SetIntKey("reclaimable", reclaimable);
 #ifdef OS_CHROMEOS
-  res->SetInteger("shmem", shmem);
-  res->SetInteger("slab", slab);
-  res->SetInteger("gem_objects", gem_objects);
-  res->SetInteger("gem_size", gem_size);
+  res->SetIntKey("shmem", shmem);
+  res->SetIntKey("slab", slab);
+  res->SetIntKey("gem_objects", gem_objects);
+  res->SetIntKey("gem_size", gem_size);
 #endif
 
   return res;
@@ -635,9 +575,9 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
 
 std::unique_ptr<DictionaryValue> VmStatInfo::ToValue() const {
   auto res = std::make_unique<DictionaryValue>();
-  res->SetInteger("pswpin", pswpin);
-  res->SetInteger("pswpout", pswpout);
-  res->SetInteger("pgmajfault", pgmajfault);
+  res->SetIntKey("pswpin", pswpin);
+  res->SetIntKey("pswpout", pswpout);
+  res->SetIntKey("pgmajfault", pgmajfault);
   return res;
 }
 

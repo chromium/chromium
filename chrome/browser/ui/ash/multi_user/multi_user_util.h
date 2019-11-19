@@ -17,7 +17,7 @@ class Window;
 namespace multi_user_util {
 
 // Get the user id from a given profile.
-AccountId GetAccountIdFromProfile(Profile* profile);
+AccountId GetAccountIdFromProfile(const Profile* profile);
 
 // Get the user id from an email address.
 AccountId GetAccountIdFromEmail(const std::string& email);

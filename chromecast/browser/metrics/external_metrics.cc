@@ -57,8 +57,8 @@ bool CheckLinearValues(const std::string& name, int maximum) {
 scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
   // Note that CollectEvents accesses a global singleton, and thus
   // scheduling with CONTINUE_ON_SHUTDOWN might not be safe.
-  return base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+  return base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
@@ -103,7 +103,7 @@ void ExternalMetrics::ProcessExternalEvents(const base::Closure& cb) {
 }
 
 void ExternalMetrics::RecordCrash(const std::string& crash_kind) {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&CastStabilityMetricsProvider::LogExternalCrash,
                      base::Unretained(stability_provider_), crash_kind));

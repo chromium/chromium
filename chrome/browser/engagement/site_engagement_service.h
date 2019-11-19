@@ -26,8 +26,7 @@ class Clock;
 }
 
 namespace banners {
-FORWARD_DECLARE_TEST(AppBannerManagerBrowserTest,
-                     ExperimentalFlowWebAppBannerNeedsEngagement);
+FORWARD_DECLARE_TEST(AppBannerManagerBrowserTest, WebAppBannerNeedsEngagement);
 }
 
 namespace content {
@@ -36,6 +35,10 @@ class WebContents;
 
 namespace history {
 class HistoryService;
+}
+
+namespace web_app {
+class WebAppEngagementBrowserTest;
 }
 
 class GURL;
@@ -186,9 +189,9 @@ class SiteEngagementService : public KeyedService,
   void AddPointsForTesting(const GURL& url, double points);
 
  private:
-  friend class BookmarkAppTest;
   friend class SiteEngagementObserver;
   friend class SiteEngagementServiceTest;
+  friend class web_app::WebAppEngagementBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, CheckHistograms);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, CleanupEngagementScores);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest,
@@ -215,7 +218,7 @@ class SiteEngagementService : public KeyedService,
                            IncognitoEngagementService);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, GetScoreFromSettings);
   FRIEND_TEST_ALL_PREFIXES(banners::AppBannerManagerBrowserTest,
-                           ExperimentalFlowWebAppBannerNeedsEngagement);
+                           WebAppBannerNeedsEngagement);
   FRIEND_TEST_ALL_PREFIXES(AppBannerSettingsHelperTest, SiteEngagementTrigger);
   FRIEND_TEST_ALL_PREFIXES(HostedAppPWAOnlyTest, EngagementHistogram);
 
@@ -342,7 +345,7 @@ class SiteEngagementService : public KeyedService,
   // event, each observer's OnEngagementEvent method will be called.
   base::ObserverList<SiteEngagementObserver>::Unchecked observer_list_;
 
-  base::WeakPtrFactory<SiteEngagementService> weak_factory_;
+  base::WeakPtrFactory<SiteEngagementService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SiteEngagementService);
 };

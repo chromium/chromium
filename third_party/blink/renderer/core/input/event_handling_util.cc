@@ -7,11 +7,13 @@
 #include "third_party/blink/public/platform/web_mouse_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 namespace event_handling_util {
@@ -26,7 +28,7 @@ HitTestResult HitTestResultInFrame(
   if (!frame || !frame->ContentLayoutObject())
     return result;
   if (LocalFrameView* frame_view = frame->View()) {
-    LayoutRect rect(LayoutPoint(), LayoutSize(frame_view->Size()));
+    PhysicalRect rect(PhysicalOffset(), PhysicalSize(frame_view->Size()));
     if (!location.Intersects(rect))
       return result;
   }
@@ -99,17 +101,29 @@ ScrollableArea* AssociatedScrollableArea(const PaintLayer* layer) {
   return nullptr;
 }
 
+ContainerNode* ParentForClickEventInteractiveElementSensitive(
+    const Node& node) {
+  // IE doesn't dispatch click events for mousedown/mouseup events across form
+  // controls.
+  if (node.IsHTMLElement() && ToHTMLElement(node).IsInteractiveContent())
+    return nullptr;
+
+  return FlatTreeTraversal::Parent(node);
+}
+
 ContainerNode* ParentForClickEvent(const Node& node) {
   return FlatTreeTraversal::Parent(node);
 }
 
-LayoutPoint ContentPointFromRootFrame(LocalFrame* frame,
-                                      const FloatPoint& point_in_root_frame) {
+PhysicalOffset ContentPointFromRootFrame(
+    LocalFrame* frame,
+    const FloatPoint& point_in_root_frame) {
   LocalFrameView* view = frame->View();
   // FIXME: Is it really OK to use the wrong coordinates here when view is 0?
   // Historically the code would just crash; this is clearly no worse than that.
-  return LayoutPoint(view ? view->ConvertFromRootFrame(point_in_root_frame)
-                          : point_in_root_frame);
+  return PhysicalOffset::FromFloatPointRound(
+      view ? view->ConvertFromRootFrame(point_in_root_frame)
+           : point_in_root_frame);
 }
 
 MouseEventWithHitTestResults PerformMouseEventHitTest(
@@ -122,6 +136,30 @@ MouseEventWithHitTestResults PerformMouseEventHitTest(
   return frame->GetDocument()->PerformMouseEventHitTest(
       request, ContentPointFromRootFrame(frame, mev.PositionInRootFrame()),
       mev);
+}
+
+bool ShouldDiscardEventTargetingFrame(const WebInputEvent& event,
+                                      const LocalFrame& frame) {
+  if (!RuntimeEnabledFeatures::DiscardInputToMovingIframesEnabled())
+    return false;
+
+  // There are two different mechanisms for tracking whether an iframe has moved
+  // recently, for OOPIF and in-process iframes. For OOPIF's, frame movement is
+  // tracked in the browser process using hit test data, and it's propagated
+  // in event.GetModifiers(). For in-process iframes, frame movement is tracked
+  // during lifecycle updates, in FrameView::UpdateViewportIntersection, and
+  // propagated via FrameView::RectInParentIsStable.
+  bool should_discard = false;
+  if (frame.NeedsOcclusionTracking() && frame.IsCrossOriginSubframe()) {
+    should_discard =
+        (event.GetModifiers() & WebInputEvent::kTargetFrameMovedRecently) ||
+        !frame.View()->RectInParentIsStable(event.TimeStamp());
+  }
+  if (should_discard) {
+    UseCounter::Count(frame.GetDocument(),
+                      WebFeature::kDiscardInputEventToMovingIframe);
+  }
+  return should_discard;
 }
 
 LocalFrame* SubframeForTargetNode(Node* node, bool* is_remote_frame) {
@@ -150,7 +188,8 @@ LocalFrame* GetTargetSubframe(
     const MouseEventWithHitTestResults& hit_test_result,
     Node* capturing_node,
     bool* is_remote_frame) {
-  if (capturing_node) {
+  if (!RuntimeEnabledFeatures::UnifiedPointerCaptureInBlinkEnabled() &&
+      capturing_node) {
     return event_handling_util::SubframeForTargetNode(capturing_node,
                                                       is_remote_frame);
   }

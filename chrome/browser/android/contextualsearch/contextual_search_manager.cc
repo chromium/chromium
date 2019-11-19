@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
+#include "chrome/android/chrome_jni_headers/ContextualSearchManager_jni.h"
 #include "chrome/browser/android/contextualsearch/contextual_search_delegate.h"
 #include "chrome/browser/android/contextualsearch/resolved_search_term.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -24,7 +25,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "jni/ContextualSearchManager_jni.h"
 #include "net/url_request/url_fetcher_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
@@ -180,6 +180,12 @@ void ContextualSearchManager::OnSearchTermResolutionResponse(
   base::android::ScopedJavaLocalRef<jstring> j_quick_action_uri =
       base::android::ConvertUTF8ToJavaString(
           env, resolved_search_term.quick_action_uri);
+  base::android::ScopedJavaLocalRef<jstring> j_search_url_full =
+      base::android::ConvertUTF8ToJavaString(
+          env, resolved_search_term.search_url_full);
+  base::android::ScopedJavaLocalRef<jstring> j_search_url_preload =
+      base::android::ConvertUTF8ToJavaString(
+          env, resolved_search_term.search_url_preload);
   Java_ContextualSearchManager_onSearchTermResolutionResponse(
       env, java_manager_, resolved_search_term.is_invalid,
       resolved_search_term.response_code, j_search_term, j_display_text,
@@ -188,7 +194,8 @@ void ContextualSearchManager::OnSearchTermResolutionResponse(
       resolved_search_term.selection_end_adjust, j_context_language,
       j_thumbnail_url, j_caption, j_quick_action_uri,
       resolved_search_term.quick_action_category,
-      resolved_search_term.logged_event_id);
+      resolved_search_term.logged_event_id, j_search_url_full,
+      j_search_url_preload, resolved_search_term.coca_card_tag);
 }
 
 void ContextualSearchManager::OnTextSurroundingSelectionAvailable(

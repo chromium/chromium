@@ -38,9 +38,7 @@ class TaskRunnerDeferringThrottle : public NavigationThrottle {
  public:
   TaskRunnerDeferringThrottle(scoped_refptr<base::TaskRunner> task_runner,
                               NavigationHandle* handle)
-      : NavigationThrottle(handle),
-        task_runner_(std::move(task_runner)),
-        weak_factory_(this) {}
+      : NavigationThrottle(handle), task_runner_(std::move(task_runner)) {}
   ~TaskRunnerDeferringThrottle() override {}
 
   static std::unique_ptr<NavigationThrottle> Create(
@@ -72,7 +70,7 @@ class TaskRunnerDeferringThrottle : public NavigationThrottle {
     return NavigationThrottle::DEFER;
   }
   scoped_refptr<base::TaskRunner> task_runner_;
-  base::WeakPtrFactory<TaskRunnerDeferringThrottle> weak_factory_;
+  base::WeakPtrFactory<TaskRunnerDeferringThrottle> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(TaskRunnerDeferringThrottle);
 };
 
@@ -85,7 +83,7 @@ class CancellingNavigationSimulatorTest
           std::tuple<base::Optional<TestNavigationThrottle::ThrottleMethod>,
                      TestNavigationThrottle::ResultSynchrony>> {
  public:
-  CancellingNavigationSimulatorTest() : weak_ptr_factory_(this) {}
+  CancellingNavigationSimulatorTest() {}
   ~CancellingNavigationSimulatorTest() override {}
 
   void SetUp() override {
@@ -132,7 +130,8 @@ class CancellingNavigationSimulatorTest
   bool did_finish_navigation_ = false;
   bool will_fail_request_called_ = false;
   std::string response_headers_;
-  base::WeakPtrFactory<CancellingNavigationSimulatorTest> weak_ptr_factory_;
+  base::WeakPtrFactory<CancellingNavigationSimulatorTest> weak_ptr_factory_{
+      this};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CancellingNavigationSimulatorTest);
@@ -294,7 +293,7 @@ TEST_P(NavigationSimulatorTestCancelFail, Fail) {
 TEST_P(NavigationSimulatorTestCancelFail, FailWithResponseHeaders) {
   simulator_->Start();
 
-  using namespace std::string_literals;
+  using std::string_literals::operator""s;
   std::string header =
       "HTTP/1.1 404 Not Found\0"
       "content-encoding: gzip\0\0"s;

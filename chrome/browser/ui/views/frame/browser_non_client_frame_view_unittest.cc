@@ -51,7 +51,14 @@ class BrowserNonClientFrameViewPopupTest
       : BrowserNonClientFrameViewTest(Browser::TYPE_POPUP) {}
 };
 
-TEST_F(BrowserNonClientFrameViewPopupTest, HitTestPopupTopChrome) {
+// TODO(crbug.com/998369): Flaky on Linux TSAN and ASAN.
+#if defined(OS_LINUX) && \
+    (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER))
+#define MAYBE_HitTestPopupTopChrome DISABLED_HitTestPopupTopChrome
+#else
+#define MAYBE_HitTestPopupTopChrome HitTestPopupTopChrome
+#endif
+TEST_F(BrowserNonClientFrameViewPopupTest, MAYBE_HitTestPopupTopChrome) {
   EXPECT_FALSE(frame_view_->HitTestRect(gfx::Rect(-1, 4, 1, 1)));
   EXPECT_FALSE(frame_view_->HitTestRect(gfx::Rect(4, -1, 1, 1)));
   const int top_inset = frame_view_->GetTopInset(false);
@@ -64,10 +71,17 @@ class BrowserNonClientFrameViewTabbedTest
     : public BrowserNonClientFrameViewTest {
  public:
   BrowserNonClientFrameViewTabbedTest()
-      : BrowserNonClientFrameViewTest(Browser::TYPE_TABBED) {}
+      : BrowserNonClientFrameViewTest(Browser::TYPE_NORMAL) {}
 };
 
-TEST_F(BrowserNonClientFrameViewTabbedTest, HitTestTabstrip) {
+// TODO(crbug.com/1015949): Flaky on ChromeOS and Linux TSAN.
+#if defined(OS_CHROMEOS) || (defined(OS_LINUX) && defined(THREAD_SANITIZER))
+#define MAYBE_HitTestTabstrip DISABLED_HitTestTabstrip
+#else
+#define MAYBE_HitTestTabstrip HitTestTabstrip
+#endif
+
+TEST_F(BrowserNonClientFrameViewTabbedTest, MAYBE_HitTestTabstrip) {
   gfx::Rect tabstrip_bounds =
       frame_view_->browser_view()->tabstrip()->GetLocalBounds();
   EXPECT_FALSE(tabstrip_bounds.IsEmpty());

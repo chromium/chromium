@@ -5,12 +5,12 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SEQUENCE_ID_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SEQUENCE_ID_H_
 
-#include "gpu/command_buffer/common/id_type.h"
+#include "base/util/type_safety/id_type.h"
 
 namespace gpu {
 
 class SyncPointOrderData;
-using SequenceId = gpu::IdTypeU32<SyncPointOrderData>;
+using SequenceId = util::IdTypeU32<SyncPointOrderData>;
 
 }  // namespace gpu
 

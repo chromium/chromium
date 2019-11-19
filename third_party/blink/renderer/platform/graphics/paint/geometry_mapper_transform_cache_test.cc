@@ -232,8 +232,7 @@ TEST_F(GeometryMapperTransformCacheTest, TransformUpdate) {
 
   // Change t2 back to a 2d translation.
   GeometryMapperTransformCache::ClearCache();
-  t2->Update(*t1, TransformPaintPropertyNode::State{
-                      TransformationMatrix().Translate(11, 12)});
+  t2->Update(*t1, TransformPaintPropertyNode::State{FloatSize(11, 12)});
   Check2dTranslationToRoot(t0(), 0, 0);
   Check2dTranslationToRoot(*t1, 1, 2);
   Check2dTranslationToRoot(*t2, 12, 14);

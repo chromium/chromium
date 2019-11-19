@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,114 +60,17 @@
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
-#include <string>
 #include <type_traits>
 #include <utility>
 
-#include "absl/algorithm/algorithm.h"
 #include "absl/base/internal/throw_delegate.h"
 #include "absl/base/macros.h"
 #include "absl/base/optimization.h"
-#include "absl/base/port.h"
+#include "absl/base/port.h"    // TODO(strel): remove this include
 #include "absl/meta/type_traits.h"
+#include "absl/types/internal/span.h"
 
 namespace absl {
-
-template <typename T>
-class Span;
-
-namespace span_internal {
-// A constexpr min function
-constexpr size_t Min(size_t a, size_t b) noexcept { return a < b ? a : b; }
-
-// Wrappers for access to container data pointers.
-template <typename C>
-constexpr auto GetDataImpl(C& c, char) noexcept  // NOLINT(runtime/references)
-    -> decltype(c.data()) {
-  return c.data();
-}
-
-// Before C++17, string::data returns a const char* in all cases.
-inline char* GetDataImpl(std::string& s,  // NOLINT(runtime/references)
-                         int) noexcept {
-  return &s[0];
-}
-
-template <typename C>
-constexpr auto GetData(C& c) noexcept  // NOLINT(runtime/references)
-    -> decltype(GetDataImpl(c, 0)) {
-  return GetDataImpl(c, 0);
-}
-
-// Detection idioms for size() and data().
-template <typename C>
-using HasSize =
-    std::is_integral<absl::decay_t<decltype(std::declval<C&>().size())>>;
-
-// We want to enable conversion from vector<T*> to Span<const T* const> but
-// disable conversion from vector<Derived> to Span<Base>. Here we use
-// the fact that U** is convertible to Q* const* if and only if Q is the same
-// type or a more cv-qualified version of U.  We also decay the result type of
-// data() to avoid problems with classes which have a member function data()
-// which returns a reference.
-template <typename T, typename C>
-using HasData =
-    std::is_convertible<absl::decay_t<decltype(GetData(std::declval<C&>()))>*,
-                        T* const*>;
-
-// Extracts value type from a Container
-template <typename C>
-struct ElementType {
-  using type = typename absl::remove_reference_t<C>::value_type;
-};
-
-template <typename T, size_t N>
-struct ElementType<T (&)[N]> {
-  using type = T;
-};
-
-template <typename C>
-using ElementT = typename ElementType<C>::type;
-
-template <typename T>
-using EnableIfMutable =
-    typename std::enable_if<!std::is_const<T>::value, int>::type;
-
-template <typename T>
-bool EqualImpl(Span<T> a, Span<T> b) {
-  static_assert(std::is_const<T>::value, "");
-  return absl::equal(a.begin(), a.end(), b.begin(), b.end());
-}
-
-template <typename T>
-bool LessThanImpl(Span<T> a, Span<T> b) {
-  static_assert(std::is_const<T>::value, "");
-  return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
-}
-
-// The `IsConvertible` classes here are needed because of the
-// `std::is_convertible` bug in libcxx when compiled with GCC. This build
-// configuration is used by Android NDK toolchain. Reference link:
-// https://bugs.llvm.org/show_bug.cgi?id=27538.
-template <typename From, typename To>
-struct IsConvertibleHelper {
- private:
-  static std::true_type testval(To);
-  static std::false_type testval(...);
-
- public:
-  using type = decltype(testval(std::declval<From>()));
-};
-
-template <typename From, typename To>
-struct IsConvertible : IsConvertibleHelper<From, To>::type {};
-
-// TODO(zhangxy): replace `IsConvertible` with `std::is_convertible` once the
-// older version of libcxx is not supported.
-template <typename From, typename To>
-using EnableIfConvertibleToSpanConst =
-    typename std::enable_if<IsConvertible<From, Span<const To>>::value>::type;
-}  // namespace span_internal
 
 //------------------------------------------------------------------------------
 // Span
@@ -485,6 +388,40 @@ class Span {
                : (base_internal::ThrowStdOutOfRange("pos > size()"), Span());
   }
 
+  // Span::first()
+  //
+  // Returns a `Span` containing first `len` elements. Parameter `len` is of
+  // type `size_type` and thus non-negative. `len` value must be <= size().
+  //
+  // Examples:
+  //
+  //   std::vector<int> vec = {10, 11, 12, 13};
+  //   absl::MakeSpan(vec).first(1);  // {10}
+  //   absl::MakeSpan(vec).first(3);  // {10, 11, 12}
+  //   absl::MakeSpan(vec).first(5);  // throws std::out_of_range
+  constexpr Span first(size_type len) const {
+    return (len <= size())
+               ? Span(data(), len)
+               : (base_internal::ThrowStdOutOfRange("len > size()"), Span());
+  }
+
+  // Span::last()
+  //
+  // Returns a `Span` containing last `len` elements. Parameter `len` is of
+  // type `size_type` and thus non-negative. `len` value must be <= size().
+  //
+  // Examples:
+  //
+  //   std::vector<int> vec = {10, 11, 12, 13};
+  //   absl::MakeSpan(vec).last(1);  // {13}
+  //   absl::MakeSpan(vec).last(3);  // {11, 12, 13}
+  //   absl::MakeSpan(vec).last(5);  // throws std::out_of_range
+  constexpr Span last(size_type len) const {
+    return (len <= size())
+               ? Span(size() - len + data(), len)
+               : (base_internal::ThrowStdOutOfRange("len > size()"), Span());
+  }
+
   // Support for absl::Hash.
   template <typename H>
   friend H AbslHashValue(H h, Span v) {
@@ -517,25 +454,27 @@ const typename Span<T>::size_type Span<T>::npos;
 // operator==
 template <typename T>
 bool operator==(Span<T> a, Span<T> b) {
-  return span_internal::EqualImpl<const T>(a, b);
+  return span_internal::EqualImpl<Span, const T>(a, b);
 }
 template <typename T>
 bool operator==(Span<const T> a, Span<T> b) {
-  return span_internal::EqualImpl<const T>(a, b);
+  return span_internal::EqualImpl<Span, const T>(a, b);
 }
 template <typename T>
 bool operator==(Span<T> a, Span<const T> b) {
-  return span_internal::EqualImpl<const T>(a, b);
+  return span_internal::EqualImpl<Span, const T>(a, b);
 }
-template <typename T, typename U,
-          typename = span_internal::EnableIfConvertibleToSpanConst<U, T>>
+template <
+    typename T, typename U,
+    typename = span_internal::EnableIfConvertibleTo<U, absl::Span<const T>>>
 bool operator==(const U& a, Span<T> b) {
-  return span_internal::EqualImpl<const T>(a, b);
+  return span_internal::EqualImpl<Span, const T>(a, b);
 }
-template <typename T, typename U,
-          typename = span_internal::EnableIfConvertibleToSpanConst<U, T>>
+template <
+    typename T, typename U,
+    typename = span_internal::EnableIfConvertibleTo<U, absl::Span<const T>>>
 bool operator==(Span<T> a, const U& b) {
-  return span_internal::EqualImpl<const T>(a, b);
+  return span_internal::EqualImpl<Span, const T>(a, b);
 }
 
 // operator!=
@@ -551,13 +490,15 @@ template <typename T>
 bool operator!=(Span<T> a, Span<const T> b) {
   return !(a == b);
 }
-template <typename T, typename U,
-          typename = span_internal::EnableIfConvertibleToSpanConst<U, T>>
+template <
+    typename T, typename U,
+    typename = span_internal::EnableIfConvertibleTo<U, absl::Span<const T>>>
 bool operator!=(const U& a, Span<T> b) {
   return !(a == b);
 }
-template <typename T, typename U,
-          typename = span_internal::EnableIfConvertibleToSpanConst<U, T>>
+template <
+    typename T, typename U,
+    typename = span_internal::EnableIfConvertibleTo<U, absl::Span<const T>>>
 bool operator!=(Span<T> a, const U& b) {
   return !(a == b);
 }
@@ -565,25 +506,27 @@ bool operator!=(Span<T> a, const U& b) {
 // operator<
 template <typename T>
 bool operator<(Span<T> a, Span<T> b) {
-  return span_internal::LessThanImpl<const T>(a, b);
+  return span_internal::LessThanImpl<Span, const T>(a, b);
 }
 template <typename T>
 bool operator<(Span<const T> a, Span<T> b) {
-  return span_internal::LessThanImpl<const T>(a, b);
+  return span_internal::LessThanImpl<Span, const T>(a, b);
 }
 template <typename T>
 bool operator<(Span<T> a, Span<const T> b) {
-  return span_internal::LessThanImpl<const T>(a, b);
+  return span_internal::LessThanImpl<Span, const T>(a, b);
 }
-template <typename T, typename U,
-          typename = span_internal::EnableIfConvertibleToSpanConst<U, T>>
+template <
+    typename T, typename U,
+    typename = span_internal::EnableIfConvertibleTo<U, absl::Span<const T>>>
 bool operator<(const U& a, Span<T> b) {
-  return span_internal::LessThanImpl<const T>(a, b);
+  return span_internal::LessThanImpl<Span, const T>(a, b);
 }
-template <typename T, typename U,
-          typename = span_internal::EnableIfConvertibleToSpanConst<U, T>>
+template <
+    typename T, typename U,
+    typename = span_internal::EnableIfConvertibleTo<U, absl::Span<const T>>>
 bool operator<(Span<T> a, const U& b) {
-  return span_internal::LessThanImpl<const T>(a, b);
+  return span_internal::LessThanImpl<Span, const T>(a, b);
 }
 
 // operator>
@@ -599,13 +542,15 @@ template <typename T>
 bool operator>(Span<T> a, Span<const T> b) {
   return b < a;
 }
-template <typename T, typename U,
-          typename = span_internal::EnableIfConvertibleToSpanConst<U, T>>
+template <
+    typename T, typename U,
+    typename = span_internal::EnableIfConvertibleTo<U, absl::Span<const T>>>
 bool operator>(const U& a, Span<T> b) {
   return b < a;
 }
-template <typename T, typename U,
-          typename = span_internal::EnableIfConvertibleToSpanConst<U, T>>
+template <
+    typename T, typename U,
+    typename = span_internal::EnableIfConvertibleTo<U, absl::Span<const T>>>
 bool operator>(Span<T> a, const U& b) {
   return b < a;
 }
@@ -623,13 +568,15 @@ template <typename T>
 bool operator<=(Span<T> a, Span<const T> b) {
   return !(b < a);
 }
-template <typename T, typename U,
-          typename = span_internal::EnableIfConvertibleToSpanConst<U, T>>
+template <
+    typename T, typename U,
+    typename = span_internal::EnableIfConvertibleTo<U, absl::Span<const T>>>
 bool operator<=(const U& a, Span<T> b) {
   return !(b < a);
 }
-template <typename T, typename U,
-          typename = span_internal::EnableIfConvertibleToSpanConst<U, T>>
+template <
+    typename T, typename U,
+    typename = span_internal::EnableIfConvertibleTo<U, absl::Span<const T>>>
 bool operator<=(Span<T> a, const U& b) {
   return !(b < a);
 }
@@ -647,13 +594,15 @@ template <typename T>
 bool operator>=(Span<T> a, Span<const T> b) {
   return !(a < b);
 }
-template <typename T, typename U,
-          typename = span_internal::EnableIfConvertibleToSpanConst<U, T>>
+template <
+    typename T, typename U,
+    typename = span_internal::EnableIfConvertibleTo<U, absl::Span<const T>>>
 bool operator>=(const U& a, Span<T> b) {
   return !(a < b);
 }
-template <typename T, typename U,
-          typename = span_internal::EnableIfConvertibleToSpanConst<U, T>>
+template <
+    typename T, typename U,
+    typename = span_internal::EnableIfConvertibleTo<U, absl::Span<const T>>>
 bool operator>=(Span<T> a, const U& b) {
   return !(a < b);
 }

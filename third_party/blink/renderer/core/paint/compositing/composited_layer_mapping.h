@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer_client.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -48,13 +48,13 @@ struct GraphicsLayerPaintInfo {
   DISALLOW_NEW();
   PaintLayer* paint_layer;
 
-  LayoutRect composited_bounds;
+  PhysicalRect composited_bounds;
 
   // The clip rect to apply, in the local coordinate space of the squashed
   // layer, when painting it.
   ClipRect local_clip_rect_for_squashed_layer;
   PaintLayer* local_clip_rect_root;
-  LayoutPoint offset_from_clip_rect_root;
+  PhysicalOffset offset_from_clip_rect_root;
 
   // Offset describing where this squashed Layer paints into the shared
   // GraphicsLayer backing.
@@ -99,7 +99,8 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   void UpdateGraphicsLayerGeometry(
       const PaintLayer* compositing_container,
       const PaintLayer* compositing_stacking_context,
-      Vector<PaintLayer*>& layers_needing_paint_invalidation);
+      Vector<PaintLayer*>& layers_needing_paint_invalidation,
+      GraphicsLayerUpdater::UpdateContext& update_context);
 
   // Update whether background paints onto scrolling contents layer.
   // Returns (through the reference params) what invalidations are needed.
@@ -113,24 +114,6 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   void UpdateRasterizationPolicy();
 
   GraphicsLayer* MainGraphicsLayer() const { return graphics_layer_.get(); }
-
-  // Layer to clip children
-  bool HasClippingLayer() const { return child_containment_layer_.get(); }
-  GraphicsLayer* ClippingLayer() const {
-    return child_containment_layer_.get();
-  }
-
-  // Layer to get clipped by ancestor
-  bool HasAncestorClippingLayer() const {
-    return ancestor_clipping_layer_.get();
-  }
-  GraphicsLayer* AncestorClippingLayer() const {
-    return ancestor_clipping_layer_.get();
-  }
-
-  GraphicsLayer* AncestorClippingMaskLayer() const {
-    return ancestor_clipping_mask_layer_.get();
-  }
 
   GraphicsLayer* ForegroundLayer() const { return foreground_layer_.get(); }
 
@@ -147,21 +130,9 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   bool HasMaskLayer() const { return mask_layer_.get(); }
   GraphicsLayer* MaskLayer() const { return mask_layer_.get(); }
 
-  bool HasChildClippingMaskLayer() const {
-    return child_clipping_mask_layer_.get();
-  }
-  GraphicsLayer* ChildClippingMaskLayer() const {
-    return child_clipping_mask_layer_.get();
-  }
-
   GraphicsLayer* ParentForSublayers() const;
   GraphicsLayer* ChildForSuperlayers() const;
   void SetSublayers(const GraphicsLayerVector&);
-
-  bool HasChildTransformLayer() const { return child_transform_layer_.get(); }
-  GraphicsLayer* ChildTransformLayer() const {
-    return child_transform_layer_.get();
-  }
 
   GraphicsLayer* SquashingContainmentLayer() const {
     return squashing_containment_layer_.get();
@@ -181,7 +152,7 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   // Notification from the layoutObject that its content changed.
   void ContentChanged(ContentChangeType);
 
-  LayoutRect CompositedBounds() const { return composited_bounds_; }
+  PhysicalRect CompositedBounds() const { return composited_bounds_; }
 
   void PositionOverflowControlsLayers();
 
@@ -197,8 +168,6 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   void FinishAccumulatingSquashingLayers(
       wtf_size_t next_squashed_layer_index,
       Vector<PaintLayer*>& layers_needing_paint_invalidation);
-  void UpdateRenderingContext();
-  void UpdateShouldFlattenTransform();
   void UpdateElementId();
 
   // GraphicsLayerClient interface
@@ -213,15 +182,18 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
                      GraphicsLayerPaintingPhase,
                      const IntRect& interest_rect) const override;
   bool ShouldThrottleRendering() const override;
+  bool IsUnderSVGHiddenContainer() const override;
   bool IsTrackingRasterInvalidations() const override;
-  void SetOverlayScrollbarsHidden(bool) override;
-  void SetPaintArtifactCompositorNeedsUpdate() const override;
+  void GraphicsLayersDidChange() override;
+  bool PaintBlockedByDisplayLockIncludingAncestors(
+      DisplayLockContextLifecycleTarget) const override;
+  void NotifyDisplayLockNeedsGraphicsLayerCollection() override;
 
 #if DCHECK_IS_ON()
   void VerifyNotPainting() override;
 #endif
 
-  LayoutRect ContentsBox() const;
+  PhysicalRect ContentsBox() const;
 
   GraphicsLayer* LayerForHorizontalScrollbar() const {
     return layer_for_horizontal_scrollbar_.get();
@@ -245,8 +217,8 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   // position.
   GraphicsLayer* DetachLayerForOverflowControls();
 
-  void UpdateFilters();
-  void UpdateBackdropFilters();
+  // We may similarly need to reattach the layer for outlines and decorations.
+  GraphicsLayer* DetachLayerForDecorationOutline();
 
   void SetBlendMode(BlendMode);
 
@@ -276,15 +248,13 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   const ScrollableArea* GetScrollableAreaForTesting(
       const GraphicsLayer*) const override;
 
-  LayoutSize ContentOffsetInCompositingLayer() const;
+  PhysicalOffset ContentOffsetInCompositingLayer() const;
 
   // If there is a squashed layer painting into this CLM that is an ancestor of
   // the given LayoutObject, return it. Otherwise return nullptr.
   const GraphicsLayerPaintInfo* ContainingSquashedLayer(
       const LayoutObject*,
       unsigned max_squashed_layer_index);
-
-  void UpdateScrollingBlockSelection();
 
   // Returns whether an adjustment happend.
   bool AdjustForCompositedScrolling(const GraphicsLayer*,
@@ -308,15 +278,6 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
 
   bool DrawsBackgroundOntoContentLayer() const {
     return draws_background_onto_content_layer_;
-  }
-
-  // Returns the PaintLayer which establishes the clip state that
-  // MainGraphicsLayer will inherit from the composited layer hierarchy, after
-  // taking scroll parent and clip parent into consideration. The clip state can
-  // be different from the inherited clip state as defined by CSS spec.
-  // Those differences then need to be applied by AncestorClippingLayer.
-  const PaintLayer* ClipInheritanceAncestor() const {
-    return clip_inheritance_ancestor_;
   }
 
  private:
@@ -353,27 +314,18 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   void UpdateMainGraphicsLayerGeometry(
       const IntRect& relative_compositing_bounds,
       const IntRect& local_compositing_bounds,
-      const IntPoint& graphics_layer_parent_location);
-  void UpdateAncestorClippingLayerGeometry(
-      const PaintLayer* compositing_container,
-      const IntPoint& snapped_offset_from_composited_ancestor,
-      IntPoint& graphics_layer_parent_location);
+      const IntPoint& graphics_layer_parent_location,
+      GraphicsLayerUpdater::UpdateContext& update_context);
   void UpdateOverflowControlsHostLayerGeometry(
       const PaintLayer* compositing_stacking_context,
       const PaintLayer* compositing_container,
       IntPoint graphics_layer_parent_location);
-  void UpdateChildContainmentLayerGeometry();
   void UpdateChildTransformLayerGeometry();
   void UpdateMaskLayerGeometry();
-  void UpdateTransformGeometry(
-      const IntPoint& snapped_offset_from_composited_ancestor,
-      const IntRect& relative_compositing_bounds);
   void UpdateForegroundLayerGeometry();
   void UpdateDecorationOutlineLayerGeometry(
       const IntSize& relative_compositing_bounds_size);
   void UpdateScrollingLayerGeometry(const IntRect& local_compositing_bounds);
-  void UpdateChildClippingMaskLayerGeometry();
-  void UpdateStickyConstraints(const ComputedStyle&);
 
   void CreatePrimaryGraphicsLayer();
   void DestroyGraphicsLayers();
@@ -394,40 +346,26 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
 
   void UpdateInternalHierarchy();
   void UpdatePaintingPhases();
-  bool UpdateClippingLayers(bool needs_ancestor_clip,
-                            bool needs_descendant_clip);
-  bool UpdateClippingLayers(bool needs_ancestor_clip,
-                            bool needs_ancestor_clipping_mask,
-                            bool needs_descendant_clip);
-  bool UpdateChildTransformLayer(bool needs_child_transform_layer);
   bool UpdateOverflowControlsLayers(bool needs_horizontal_scrollbar_layer,
                                     bool needs_vertical_scrollbar_layer,
-                                    bool needs_scroll_corner_layer,
-                                    bool needs_ancestor_clip);
+                                    bool needs_scroll_corner_layer);
   bool UpdateForegroundLayer(bool needs_foreground_layer);
   bool UpdateDecorationOutlineLayer(bool needs_decoration_outline_layer);
   bool UpdateMaskLayer(bool needs_mask_layer);
-  bool UpdateChildClippingMaskLayer(bool needs_child_clipping_mask_layer);
   bool RequiresHorizontalScrollbarLayer() const;
   bool RequiresVerticalScrollbarLayer() const;
   bool RequiresScrollCornerLayer() const;
   bool UpdateScrollingLayers(bool scrolling_layers);
-  void UpdateScrollParent(const PaintLayer*);
-  void UpdateClipParent(const PaintLayer* scroll_parent);
   bool UpdateSquashingLayers(bool needs_squashing_layers);
   void UpdateDrawsContentAndPaintsHitTest();
-  void UpdateChildrenTransform();
   void UpdateCompositedBounds();
-  void UpdateOverscrollBehavior();
-  void UpdateSnapContainerData();
-  void RegisterScrollingLayers();
 
   // Also sets subpixelAccumulation on the layer.
   void ComputeBoundsOfOwningLayer(
       const PaintLayer* composited_ancestor,
       IntRect& local_compositing_bounds,
       IntRect& compositing_bounds_relative_to_composited_ancestor,
-      LayoutPoint& offset_from_composited_ancestor,
+      PhysicalOffset& offset_from_composited_ancestor,
       IntPoint& snapped_offset_from_composited_ancestor);
 
   GraphicsLayerPaintingPhase PaintingPhaseForPrimaryLayer() const;
@@ -435,13 +373,7 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   // Result is transform origin in pixels.
   FloatPoint3D ComputeTransformOrigin(const IntRect& border_box) const;
 
-  void UpdateHitTestableWithoutDrawsContent(const bool&);
-  void UpdateOpacity(const ComputedStyle&);
   void UpdateTransform(const ComputedStyle&);
-  void UpdateLayerBlendMode(const ComputedStyle&);
-  void UpdateIsRootForIsolatedGroup();
-  // Return the opacity value that this layer should use for compositing.
-  float CompositingOpacity(float layout_object_opacity) const;
 
   bool PaintsChildren() const;
 
@@ -472,41 +404,10 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   // contains this squashed layer's clipping ancestor.  The clip rect is
   // returned in the coordinate space of the given squashed layer.  If there is
   // no such containing layer, returns the infinite rect.
-  // FIXME: unify this code with the code that sets up ancestor_clipping_layer_.
-  // They are doing very similar things.
   static void LocalClipRectForSquashedLayer(
       const PaintLayer& reference_layer,
       const Vector<GraphicsLayerPaintInfo>& layers,
       GraphicsLayerPaintInfo&);
-
-  // Conservatively check whether there exists any border-radius clip that
-  // must be applied by an ancestor clipping mask layer. There are two inputs
-  // to this function: the bounds of contents that are going to be clipped
-  // by ancestor clipping layer, and the compositing ancestor which we are
-  // going to inherit clip state from.
-  // The function works by collecting all border-radius clips between the
-  // current layer and the inherited clip, i.e. those are the clips that are
-  // going to be applied by the ancestor clipping mask layer. A fast
-  // approximation test is used to determine whether the contents exceed
-  // the bounds of any of the clips. The function may return false positive
-  // (apply mask layer when not strictly needed), but never false negative,
-  // as its purpose is only for optimization.
-  bool AncestorRoundedCornersWillClip(
-      const FloatRect& bounds_in_ancestor_space) const;
-
-  // Return true in |owningLayerIsClipped| iff there is any clip in between
-  // the current layer and the inherited clip state. The inherited clip state
-  // is determined by the interoperation between compositing container, clip
-  // parent, and scroll parent.
-  // Return true in |owningLayerIsMasked| iff |owningLayerIsClipped| is true
-  // and any of the clip needs to be applied as a painted mask.
-  void OwningLayerClippedOrMaskedByLayerNotAboveCompositedAncestor(
-      bool& owning_layer_is_clipped,
-      bool& owning_layer_is_masked) const;
-
-  const PaintLayer* ScrollParent() const;
-  const PaintLayer* CompositedClipParent() const;
-  void UpdateClipInheritanceAncestor(const PaintLayer* compositing_container);
 
   // Clear the groupedMapping entry on the layer at the given index, only if
   // that layer does not appear earlier in the set of layers for this object.
@@ -520,13 +421,8 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   // The hierarchy of layers that is maintained by the CompositedLayerMapping
   // looks like this:
   //
-  //  + ancestor_clipping_layer_ [OPTIONAL]
   //    + graphics_layer_
-  //      + child_transform_layer_ [OPTIONAL]
-  //      | + child_containment_layer_ [OPTIONAL]
-  //      |   <-OR->
-  //      |   (scrolling_layer_ + scrolling_contents_layer_) [OPTIONAL]
-  //      + overflow_controls_ancestor_clipping_layer_ [OPTIONAL]
+  //      + (scrolling_layer_ + scrolling_contents_layer_) [OPTIONAL]
   //      | + overflow_controls_host_layer_ [OPTIONAL]
   //      |   + layer_for_vertical_scrollbar_ [OPTIONAL]
   //      |   + layer_for_horizontal_scrollbar_ [OPTIONAL]
@@ -534,50 +430,8 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   //      + decoration_outline_layer_ [OPTIONAL]
   // The overflow controls may need to be repositioned in the graphics layer
   // tree by the RLC to ensure that they stack above scrolling content.
-  //
-  // We need an ancestor clipping layer if our clipping ancestor is not our
-  // ancestor in the clipping tree. Here's what that might look like.
-  //
-  // Let A = the clipping ancestor,
-  //     B = the clip descendant, and
-  //     SC = the stacking context that is the ancestor of A and B in the
-  //          stacking tree.
-  //
-  // SC
-  //  + A = graphics_layer_
-  //  |  + child_containment_layer_
-  //  |     + ...
-  //  ...
-  //  |
-  //  + B = ancestor_clipping_layer_ [+]
-  //     + graphics_layer_
-  //        + ...
-  //
-  // In this case B is clipped by another layer that doesn't happen to be its
-  // ancestor: A.  So we create an ancestor clipping layer for B, [+], which
-  // ensures that B is clipped as if it had been A's descendant.
-  // In addition, the ancestor_clipping_layer_ will have an associated
-  // mask layer if the ancestor, A, has a border radius that requires a
-  // rounded corner clip rect. The mask is not part of the layer tree; rather
-  // it is attached to the ancestor_clipping_layer_ itself.
-  //
-  // Layers that require a CSS mask also have a mask layer attached to them.
-
-  // Only used if we are clipped by an ancestor which is not a stacking context.
-  std::unique_ptr<GraphicsLayer> ancestor_clipping_layer_;
-
-  // Only used is there is an ancestor_clipping_layer_ that also needs to apply
-  // a clipping mask (for CSS clips or border radius).
-  std::unique_ptr<GraphicsLayer> ancestor_clipping_mask_layer_;
 
   std::unique_ptr<GraphicsLayer> graphics_layer_;
-
-  // Only used if we have clipping on a stacking context with compositing
-  // children.
-  std::unique_ptr<GraphicsLayer> child_containment_layer_;
-
-  // Only used if we have perspective.
-  std::unique_ptr<GraphicsLayer> child_transform_layer_;
 
   // Only used if the layer is using composited scrolling.
   std::unique_ptr<GraphicsLayer> scrolling_layer_;
@@ -591,10 +445,6 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   // has no children).
   // Only used if we have a mask.
   std::unique_ptr<GraphicsLayer> mask_layer_;
-
-  // Only used if we have to clip child layers or accelerated contents with
-  // border radius or clip-path.
-  std::unique_ptr<GraphicsLayer> child_clipping_mask_layer_;
 
   // There is one other (optional) layer whose painting is managed by the
   // CompositedLayerMapping, but whose position in the hierarchy is maintained
@@ -618,41 +468,21 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   // ensure that scrollbars appear above scrolling content.
   std::unique_ptr<GraphicsLayer> overflow_controls_host_layer_;
 
-  // The reparented overflow controls sometimes need to be clipped by a
-  // non-ancestor. In just the same way we need an ancestor clipping layer to
-  // clip this CLM's internal hierarchy, we add another layer to clip the
-  // overflow controls. We could combine this with
-  // overflow_controls_host_layer_, but that would require manually intersecting
-  // their clips, and shifting the overflow controls to compensate for this
-  // clip's offset. By using a separate layer, the overflow controls can remain
-  // ignorant of ancestor clipping.
-  std::unique_ptr<GraphicsLayer> overflow_controls_ancestor_clipping_layer_;
-
   // DecorationLayer which paints outline.
   std::unique_ptr<GraphicsLayer> decoration_outline_layer_;
 
-  // A squashing CLM has two possible squashing-related structures.
-  //
-  // If ancestor_clipping_layer_ is present:
-  //
-  // ancestor_clipping_layer_
-  //   + graphics_layer_
-  //   + squashing_layer_
-  //
-  // If not:
-  //
+  // A squashing CLM has the following structure:
   // squashing_containment_layer_
   //   + graphics_layer_
   //   + squashing_layer_
   //
   // Stacking children of a squashed layer receive graphics layers that are
-  // parented to the compositd ancestor of the squashed layer (i.e. nearest
+  // parented to the composited ancestor of the squashed layer (i.e. nearest
   // enclosing composited layer that is not
   // squashed).
 
-  // Only used if any squashed layers exist and ancestor_clipping_layer_ is
-  // not present, to contain the squashed layers as siblings to the rest of the
-  // GraphicsLayer tree chunk.
+  // Only used if any squashed layers exist, this contains the squashed layers
+  // as siblings to the rest of the GraphicsLayer tree chunk.
   std::unique_ptr<GraphicsLayer> squashing_containment_layer_;
 
   // Only used if any squashed layers exist, this is the backing that squashed
@@ -661,14 +491,7 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   Vector<GraphicsLayerPaintInfo> squashed_layers_;
   IntSize squashing_layer_offset_from_layout_object_;
 
-  LayoutRect composited_bounds_;
-
-  // We keep track of the scrolling contents offset, so that when it changes we
-  // can notify the ScrollingCoordinator, which passes on main-thread scrolling
-  // updates to the compositor.
-  DoubleSize scrolling_contents_offset_;
-
-  const PaintLayer* clip_inheritance_ancestor_;
+  PhysicalRect composited_bounds_;
 
   unsigned pending_update_scope_ : 2;
   unsigned is_main_frame_layout_view_layer_ : 1;

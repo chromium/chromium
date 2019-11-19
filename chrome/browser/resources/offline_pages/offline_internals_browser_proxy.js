@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+
 /**
  * @typedef {{
  *   onlineUrl: string,
@@ -16,7 +18,7 @@
  *   requestOrigin: string
  * }}
  */
-let OfflinePage;
+export let OfflinePage;
 
 /**
  * @typedef {{
@@ -29,7 +31,7 @@ let OfflinePage;
  *   requestOrigin: string
  * }}
  */
-let SavePageRequest;
+export let SavePageRequest;
 
 /**
  * @typedef {{
@@ -38,275 +40,262 @@ let SavePageRequest;
  *   prefetchIsLogging: boolean
  * }}
  */
-let IsLogging;
+export let IsLogging;
 
-cr.define('offlineInternals', function() {
-  /** @interface */
-  function OfflineInternalsBrowserProxy() {}
-
-  OfflineInternalsBrowserProxy.prototype = {
-    /**
-     * Gets current list of stored pages.
-     * @return {!Promise<!Array<OfflinePage>>} A promise firing when the
-     *     list is fetched.
-     */
-    getStoredPages: function() {},
-
-    /**
-     * Gets current offline queue requests.
-     * @return {!Promise<!Array<SavePageRequest>>} A promise firing when the
-     *     request queue is fetched.
-     */
-    getRequestQueue: function() {},
-
-    /**
-     * Deletes a set of pages from stored pages
-     * @param {!Array<string>} ids A list of page IDs to delete.
-     * @return {!Promise<!string>} A promise firing when the selected
-     *     pages are deleted.
-     */
-    deleteSelectedPages: function(ids) {},
-
-    /**
-     * Deletes a set of requests from the request queue
-     * @param {!Array<string>} ids A list of request IDs to delete.
-     * @return {!Promise<!string>} A promise firing when the selected
-     *     pages are deleted.
-     */
-    deleteSelectedRequests: function(ids) {},
-
-    /**
-     * Sets whether to record logs for stored pages.
-     * @param {boolean} shouldLog True if logging should be enabled.
-     */
-    setRecordPageModel: function(shouldLog) {},
-
-    /**
-     * Sets whether to record logs for scheduled requests.
-     * @param {boolean} shouldLog True if logging should be enabled.
-     */
-    setRecordRequestQueue: function(shouldLog) {},
-
-    /**
-     * Sets whether to record logs for prefetching.
-     * @param {boolean} shouldLog True if logging should be enabled.
-     */
-    setRecordPrefetchService: function(shouldLog) {},
-
-    /**
-     * Sets whether limitless prefetching is enabled.
-     * @param {boolean} enabled Whether to enable limitless prefetching.
-     */
-    setLimitlessPrefetchingEnabled: function(enabled) {},
-
-    /**
-     * Gets whether limitless prefetching is enabled.
-     * @return {!Promise<boolean>} Whether limitless prefetching is enabled
-     */
-    getLimitlessPrefetchingEnabled: function() {},
-
-    /**
-     * Sets the value to be sent with the prefetch testing header for
-     * GeneratePageBundle requests.
-     * @param {string} value Value to send with X-Offline-Prefetch-Testing.
-     */
-    setPrefetchTestingHeaderValue: function(value) {},
-
-    /**
-     * Gets the value of the prefetch testing header to be sent with
-     * GeneratePageBundle requests.
-     * @return {!Promise<string>} Header value.
-     */
-    getPrefetchTestingHeaderValue: function() {},
-
-    /**
-     * Gets the currently recorded logs.
-     * @return {!Promise<!Array<string>>} A promise firing when the
-     *     logs are retrieved.
-     */
-    getEventLogs: function() {},
-
-    /**
-     * Gets the state of logging (on/off).
-     * @return {!Promise<!IsLogging>} A promise firing when the state
-     *     is retrieved.
-     */
-    getLoggingState: function() {},
-
-    /**
-     * Adds the given url to the background loader queue.
-     * @param {string} url Url of the page to load later.
-     * @return {!Promise<boolean>} A promise firing after added to queue.
-     *     Promise will return true if url has been successfully added.
-     */
-    addToRequestQueue: function(url) {},
-
-    /**
-     * Gets the current network status in string form.
-     * @return {!Promise<string>} A promise firing when the network status
-     *     is retrieved.
-     */
-    getNetworkStatus: function() {},
-
-    /**
-     * Schedules the default NWake task.  The returned Promise will reject if
-     *     there is an error while scheduling.
-     * @return {!Promise<string>} A promise firing when the task has been
-     *     scheduled.
-     */
-    scheduleNwake: function() {},
-
-    /**
-     * Cancels NWake task.
-     * @return {!Promise} A promise firing when the task has been cancelled. The
-     *     returned Promise will reject if there is an error.
-     */
-    cancelNwake: function() {},
-
-    /**
-     * Shows the prefetching notification with an example origin.
-     * @return {!Promise<string>} A promise firing when the notification has
-     *   been shown.
-     */
-    showPrefetchNotification: function() {},
-
-    /**
-     * Sends and processes a request to generate page bundle.
-     * @param {string} urls A list of comma-separated URLs.
-     * @return {!Promise<string>} A string describing the result.
-     */
-    generatePageBundle: function(urls) {},
-
-    /**
-     * Sends and processes a request to get operation.
-     * @param {string} name Name of operation.
-     * @return {!Promise<string>} A string describing the result.
-     */
-    getOperation: function(name) {},
-
-    /**
-     * Downloads an archive.
-     * @param {string} name Name of archive to download.
-     */
-    downloadArchive: function(name) {},
-  };
+/** @interface */
+export class OfflineInternalsBrowserProxy {
+  /**
+   * Gets current list of stored pages.
+   * @return {!Promise<!Array<OfflinePage>>} A promise firing when the
+   *     list is fetched.
+   */
+  getStoredPages() {}
 
   /**
-   * @constructor
-   * @implements {offlineInternals.OfflineInternalsBrowserProxy}
+   * Gets current offline queue requests.
+   * @return {!Promise<!Array<SavePageRequest>>} A promise firing when the
+   *     request queue is fetched.
    */
-  function OfflineInternalsBrowserProxyImpl() {}
-  cr.addSingletonGetter(OfflineInternalsBrowserProxyImpl);
+  getRequestQueue() {}
 
-  OfflineInternalsBrowserProxyImpl.prototype = {
-    /** @override */
-    getStoredPages: function() {
-      return cr.sendWithPromise('getStoredPages');
-    },
+  /**
+   * Deletes a set of pages from stored pages
+   * @param {!Array<string>} ids A list of page IDs to delete.
+   * @return {!Promise<!string>} A promise firing when the selected
+   *     pages are deleted.
+   */
+  deleteSelectedPages(ids) {}
 
-    /** @override */
-    getRequestQueue: function() {
-      return cr.sendWithPromise('getRequestQueue');
-    },
+  /**
+   * Deletes a set of requests from the request queue
+   * @param {!Array<string>} ids A list of request IDs to delete.
+   * @return {!Promise<!string>} A promise firing when the selected
+   *     pages are deleted.
+   */
+  deleteSelectedRequests(ids) {}
 
-    /** @override */
-    deleteSelectedPages: function(ids) {
-      return cr.sendWithPromise('deleteSelectedPages', ids);
-    },
+  /**
+   * Sets whether to record logs for stored pages.
+   * @param {boolean} shouldLog True if logging should be enabled.
+   */
+  setRecordPageModel(shouldLog) {}
 
-    /** @override */
-    deleteSelectedRequests: function(ids) {
-      return cr.sendWithPromise('deleteSelectedRequests', ids);
-    },
+  /**
+   * Sets whether to record logs for scheduled requests.
+   * @param {boolean} shouldLog True if logging should be enabled.
+   */
+  setRecordRequestQueue(shouldLog) {}
 
-    /** @override */
-    setRecordPageModel: function(shouldLog) {
-      chrome.send('setRecordPageModel', [shouldLog]);
-    },
+  /**
+   * Sets whether to record logs for prefetching.
+   * @param {boolean} shouldLog True if logging should be enabled.
+   */
+  setRecordPrefetchService(shouldLog) {}
 
-    /** @override */
-    setRecordRequestQueue: function(shouldLog) {
-      chrome.send('setRecordRequestQueue', [shouldLog]);
-    },
+  /**
+   * Sets whether limitless prefetching is enabled.
+   * @param {boolean} enabled Whether to enable limitless prefetching.
+   */
+  setLimitlessPrefetchingEnabled(enabled) {}
 
-    /** @override */
-    setRecordPrefetchService: function(shouldLog) {
-      chrome.send('setRecordPrefetchService', [shouldLog]);
-    },
+  /**
+   * Gets whether limitless prefetching is enabled.
+   * @return {!Promise<boolean>} Whether limitless prefetching is enabled
+   */
+  getLimitlessPrefetchingEnabled() {}
 
-    /** @override */
-    setLimitlessPrefetchingEnabled: function(enabled) {
-      chrome.send('setLimitlessPrefetchingEnabled', [enabled]);
-    },
+  /**
+   * Sets the value to be sent with the prefetch testing header for
+   * GeneratePageBundle requests.
+   * @param {string} value Value to send with X-Offline-Prefetch-Testing.
+   */
+  setPrefetchTestingHeaderValue(value) {}
 
-    /** @override */
-    getLimitlessPrefetchingEnabled: function() {
-      return cr.sendWithPromise('getLimitlessPrefetchingEnabled');
-    },
+  /**
+   * Gets the value of the prefetch testing header to be sent with
+   * GeneratePageBundle requests.
+   * @return {!Promise<string>} Header value.
+   */
+  getPrefetchTestingHeaderValue() {}
 
-    /** @override */
-    setPrefetchTestingHeaderValue: function(value) {
-      chrome.send('setPrefetchTestingHeader', [value]);
-    },
+  /**
+   * Gets the currently recorded logs.
+   * @return {!Promise<!Array<string>>} A promise firing when the
+   *     logs are retrieved.
+   */
+  getEventLogs() {}
 
-    /** @override */
-    getPrefetchTestingHeaderValue: function() {
-      return cr.sendWithPromise('getPrefetchTestingHeader');
-    },
+  /**
+   * Gets the state of logging (on/off).
+   * @return {!Promise<!IsLogging>} A promise firing when the state
+   *     is retrieved.
+   */
+  getLoggingState() {}
 
-    /** @override */
-    getEventLogs: function() {
-      return cr.sendWithPromise('getEventLogs');
-    },
+  /**
+   * Adds the given url to the background loader queue.
+   * @param {string} url Url of the page to load later.
+   * @return {!Promise<boolean>} A promise firing after added to queue.
+   *     Promise will return true if url has been successfully added.
+   */
+  addToRequestQueue(url) {}
 
-    /** @override */
-    getLoggingState: function() {
-      return cr.sendWithPromise('getLoggingState');
-    },
+  /**
+   * Gets the current network status in string form.
+   * @return {!Promise<string>} A promise firing when the network status
+   *     is retrieved.
+   */
+  getNetworkStatus() {}
 
-    /** @override */
-    addToRequestQueue: function(url) {
-      return cr.sendWithPromise('addToRequestQueue', url);
-    },
+  /**
+   * Schedules the default NWake task.  The returned Promise will reject if
+   *     there is an error while scheduling.
+   * @return {!Promise<string>} A promise firing when the task has been
+   *     scheduled.
+   */
+  scheduleNwake() {}
 
-    /** @override */
-    getNetworkStatus: function() {
-      return cr.sendWithPromise('getNetworkStatus');
-    },
+  /**
+   * Cancels NWake task.
+   * @return {!Promise} A promise firing when the task has been cancelled. The
+   *     returned Promise will reject if there is an error.
+   */
+  cancelNwake() {}
 
-    /** @override */
-    scheduleNwake: function() {
-      return cr.sendWithPromise('scheduleNwake');
-    },
+  /**
+   * Shows the prefetching notification with an example origin.
+   * @return {!Promise<string>} A promise firing when the notification has
+   *   been shown.
+   */
+  showPrefetchNotification() {}
 
-    /** @override */
-    cancelNwake: function() {
-      return cr.sendWithPromise('cancelNwake');
-    },
+  /**
+   * Sends and processes a request to generate page bundle.
+   * @param {string} urls A list of comma-separated URLs.
+   * @return {!Promise<string>} A string describing the result.
+   */
+  generatePageBundle(urls) {}
 
-    /** @override */
-    showPrefetchNotification: function() {
-      return cr.sendWithPromise('showPrefetchNotification');
-    },
+  /**
+   * Sends and processes a request to get operation.
+   * @param {string} name Name of operation.
+   * @return {!Promise<string>} A string describing the result.
+   */
+  getOperation(name) {}
 
-    /** @override */
-    generatePageBundle: function(urls) {
-      return cr.sendWithPromise('generatePageBundle', urls);
-    },
+  /**
+   * Downloads an archive.
+   * @param {string} name Name of archive to download.
+   */
+  downloadArchive(name) {}
+}
 
-    /** @override */
-    getOperation: function(name) {
-      return cr.sendWithPromise('getOperation', name);
-    },
+/** @implements {OfflineInternalsBrowserProxy} */
+export class OfflineInternalsBrowserProxyImpl {
+  /** @override */
+  getStoredPages() {
+    return sendWithPromise('getStoredPages');
+  }
 
-    /** @override */
-    downloadArchive: function(name) {
-      chrome.send('downloadArchive', [name]);
-    },
-  };
+  /** @override */
+  getRequestQueue() {
+    return sendWithPromise('getRequestQueue');
+  }
 
-  return {
-    OfflineInternalsBrowserProxy: OfflineInternalsBrowserProxy,
-    OfflineInternalsBrowserProxyImpl: OfflineInternalsBrowserProxyImpl
-  };
-});
+  /** @override */
+  deleteSelectedPages(ids) {
+    return sendWithPromise('deleteSelectedPages', ids);
+  }
+
+  /** @override */
+  deleteSelectedRequests(ids) {
+    return sendWithPromise('deleteSelectedRequests', ids);
+  }
+
+  /** @override */
+  setRecordPageModel(shouldLog) {
+    chrome.send('setRecordPageModel', [shouldLog]);
+  }
+
+  /** @override */
+  setRecordRequestQueue(shouldLog) {
+    chrome.send('setRecordRequestQueue', [shouldLog]);
+  }
+
+  /** @override */
+  setRecordPrefetchService(shouldLog) {
+    chrome.send('setRecordPrefetchService', [shouldLog]);
+  }
+
+  /** @override */
+  setLimitlessPrefetchingEnabled(enabled) {
+    chrome.send('setLimitlessPrefetchingEnabled', [enabled]);
+  }
+
+  /** @override */
+  getLimitlessPrefetchingEnabled() {
+    return sendWithPromise('getLimitlessPrefetchingEnabled');
+  }
+
+  /** @override */
+  setPrefetchTestingHeaderValue(value) {
+    chrome.send('setPrefetchTestingHeader', [value]);
+  }
+
+  /** @override */
+  getPrefetchTestingHeaderValue() {
+    return sendWithPromise('getPrefetchTestingHeader');
+  }
+
+  /** @override */
+  getEventLogs() {
+    return sendWithPromise('getEventLogs');
+  }
+
+  /** @override */
+  getLoggingState() {
+    return sendWithPromise('getLoggingState');
+  }
+
+  /** @override */
+  addToRequestQueue(url) {
+    return sendWithPromise('addToRequestQueue', url);
+  }
+
+  /** @override */
+  getNetworkStatus() {
+    return sendWithPromise('getNetworkStatus');
+  }
+
+  /** @override */
+  scheduleNwake() {
+    return sendWithPromise('scheduleNwake');
+  }
+
+  /** @override */
+  cancelNwake() {
+    return sendWithPromise('cancelNwake');
+  }
+
+  /** @override */
+  showPrefetchNotification() {
+    return sendWithPromise('showPrefetchNotification');
+  }
+
+  /** @override */
+  generatePageBundle(urls) {
+    return sendWithPromise('generatePageBundle', urls);
+  }
+
+  /** @override */
+  getOperation(name) {
+    return sendWithPromise('getOperation', name);
+  }
+
+  /** @override */
+  downloadArchive(name) {
+    chrome.send('downloadArchive', [name]);
+  }
+}
+
+addSingletonGetter(OfflineInternalsBrowserProxyImpl);

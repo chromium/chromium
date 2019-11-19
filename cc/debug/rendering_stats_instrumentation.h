@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "cc/debug/rendering_stats.h"
 
@@ -20,7 +19,11 @@ namespace cc {
 class CC_DEBUG_EXPORT RenderingStatsInstrumentation {
  public:
   static std::unique_ptr<RenderingStatsInstrumentation> Create();
+  RenderingStatsInstrumentation(const RenderingStatsInstrumentation&) = delete;
   virtual ~RenderingStatsInstrumentation();
+
+  RenderingStatsInstrumentation& operator=(
+      const RenderingStatsInstrumentation&) = delete;
 
   // Return copy of current impl thread rendering stats, and resets the current
   // stats.
@@ -58,8 +61,6 @@ class CC_DEBUG_EXPORT RenderingStatsInstrumentation {
   bool record_rendering_stats_;
 
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderingStatsInstrumentation);
 };
 
 }  // namespace cc

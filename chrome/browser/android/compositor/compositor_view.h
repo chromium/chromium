@@ -15,6 +15,7 @@
 #include "cc/resources/ui_resource_client.h"
 #include "content/public/browser/android/compositor_client.h"
 #include "content/public/browser/browser_child_process_observer.h"
+#include "content/public/browser/gpu_feature_checker.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace cc {
@@ -67,6 +68,7 @@ class CompositorView : public content::CompositorClient,
                       jint format,
                       jint width,
                       jint height,
+                      bool can_be_used_with_surface_control,
                       const base::android::JavaParamRef<jobject>& surface);
   void OnPhysicalBackingSizeChanged(
       JNIEnv* env,
@@ -78,6 +80,10 @@ class CompositorView : public content::CompositorClient,
   void SetOverlayVideoMode(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& object,
                            bool enabled);
+  void SetOverlayImmersiveArMode(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& object,
+      bool enabled);
   void SetSceneLayer(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& object,
                      const base::android::JavaParamRef<jobject>& jscene_layer);
@@ -85,6 +91,12 @@ class CompositorView : public content::CompositorClient,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& object,
       const base::android::JavaParamRef<jobject>& window_android);
+  void CacheBackBufferForCurrentSurface(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& object);
+  void EvictCachedBackBuffer(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& object);
 
   // CompositorClient implementation:
   void RecreateSurface() override;
@@ -102,6 +114,7 @@ class CompositorView : public content::CompositorClient,
       const content::ChildProcessTerminationInfo& info) override;
 
   void SetBackground(bool visible, SkColor color);
+  void OnSurfaceControlFeatureStatusUpdate(bool available);
 
   base::android::ScopedJavaGlobalRef<jobject> obj_;
   std::unique_ptr<content::Compositor> compositor_;
@@ -115,8 +128,9 @@ class CompositorView : public content::CompositorClient,
   int content_width_;
   int content_height_;
   bool overlay_video_mode_;
+  bool overlay_immersive_ar_mode_;
 
-  base::WeakPtrFactory<CompositorView> weak_factory_;
+  base::WeakPtrFactory<CompositorView> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CompositorView);
 };

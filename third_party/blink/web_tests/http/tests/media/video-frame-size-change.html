@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<style>
+/* Keep videos side-by-side and top-aligned for a nice pixel diff */
+#wrapper {
+  white-space: nowrap;
+}
+#wrapper > video {
+  vertical-align: top;
+}
+</style>
+<div id='wrapper'>
+  <video id='single_size'></video><video id='mixed_size' ></video></div>
+<script>
+
+  if (window.testRunner) {
+      testRunner.waitUntilDone();
+  }
+
+  async function setupMse(video, contentType) {
+    let promise = new Promise((resolve, reject) => {
+      let mediaSource = new MediaSource();
+      video.src = window.URL.createObjectURL(mediaSource);
+
+      mediaSource.addEventListener('sourceopen', function(e) {
+        let sourceBuffer = mediaSource.addSourceBuffer(contentType);
+        resolve(sourceBuffer);
+      });
+    });
+    return promise;
+  }
+
+  async function appendBuffer(sourceBuffer, data) {
+    let promise = new Promise((resolve, reject) => {
+      sourceBuffer.addEventListener('updateend', resolve);
+      sourceBuffer.appendBuffer(data);
+    });
+    return promise;
+  }
+
+  (async _ => {
+    let response = await fetch('/media/resources/media-source/webm/test-v-256k-320x240-30fps-10kfr.webm');
+    let videoData240p = await response.arrayBuffer();
+
+    response = await fetch('/media/resources/media-source/webm/test-v-128k-640x480-30fps-10kfr.webm');
+    let videoData480p = await response.arrayBuffer();
+
+    // Set up the first video with content of a single size.
+    let singleSizeVideo = document.getElementById('single_size');
+    let ss_sourceBuffer = await setupMse(singleSizeVideo, 'video/webm; codecs="vp8"');
+    await appendBuffer(ss_sourceBuffer, videoData240p);
+
+    // Setup the second video with a single size for 1 second, followed by a larger size for 2 additional seconds.
+    let mixedSizeVideo = document.getElementById('mixed_size');
+    let ms_sourceBuffer = await setupMse(mixedSizeVideo, 'video/webm; codecs="vp8"');
+    await appendBuffer(ms_sourceBuffer, videoData240p);
+    ms_sourceBuffer.timestampOffset = 1;
+    await appendBuffer(ms_sourceBuffer, videoData480p);
+
+    // Seek the second video beyond the first size.
+    mixedSizeVideo.addEventListener('seeked', () => {
+      if (window.testRunner) {
+        // Make sure we render the seeked frame.
+        requestAnimationFrame(() => {
+          testRunner.notifyDone();
+        });
+      }
+    });
+    mixedSizeVideo.currentTime = 2;
+  })();
+</script>

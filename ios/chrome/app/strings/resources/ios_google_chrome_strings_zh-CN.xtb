@@ -1,39 +1,36 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
-<translation id="1326317727527857210">要在您的其他设备上访问您的标签页，请登录 Chrome。</translation>
+<translation id="1282031177488366470">帮助我们改进 Chrome 的功能和性能</translation>
+<translation id="1682483655351012182">同步 Chrome 数据</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1816764564654397850">Google Chrome 隐私权声明</translation>
 <translation id="1863312987075920112">使用此应用即表示您同意遵守 Chrome 的<ph name="BEGIN_LINK_TOS" />服务条款<ph name="END_LINK_TOS" />和<ph name="BEGIN_LINK_PRIVACY" />隐私权声明<ph name="END_LINK_PRIVACY" />。</translation>
-<translation id="1984705450038014246">同步 Chrome 数据</translation>
 <translation id="2147651015520127414">Chrome 已证实此网站的证书是由 <ph name="ISSUER" /> 签发的。</translation>
 <translation id="2199719347983604670">Chrome 同步的数据</translation>
-<translation id="2334084861041072223">版权所有<ph name="YEAR" /> Google Inc. 保留所有权利。</translation>
-<translation id="2342981853652716282">登录 Chrome 即可将您的书签、密码等同步到您的所有设备上。</translation>
 <translation id="2347208864470321755">启用此功能后，Chrome 将使用 Google 翻译对其他语言的网页进行翻译。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2441696206556358796">要保存图片，请点按“设置”，并允许 Chrome 使用您的照片</translation>
 <translation id="2576431527583832481">Chrome 浏览器刚刚经过了改进！新版本已推出。</translation>
 <translation id="257708665678654955">下次访问这个网站时，您希望 Google Chrome 翻译其中的<ph name="LANGUAGE_NAME" />网页吗？</translation>
 <translation id="3030414234702425231">由于您正要退出的帐号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chrome 数据，但这些数据仍会保留在您的 Google 帐号中。</translation>
-<translation id="3148434565183091099">要将您的书签同步到您所有的设备上，请登录 Chrome。</translation>
 <translation id="3148688391461398285">要在Chrome中获得更好的使用体验，需要用到您的位置信息。</translation>
 <translation id="3167189358072330585">无法在 Google Chrome 上登录您的帐号。请与您的网域管理员联系，或使用普通的 Google 帐号登录。</translation>
 <translation id="3196546062792660320">为节省您的时间，Chrome 已将您的 Google 帐号同步到网络上。您可在“设置”中添加或移除帐号。</translation>
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3345341804167540816">随时随地使用 Chrome</translation>
 <translation id="384394811301901750">Google Chrome 目前无法使用您的相机</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">您正要将同步帐号从 <ph name="USER_EMAIL1" /> 切换到 <ph name="USER_EMAIL2" />。您现有的 Chrome 数据由 <ph name="DOMAIN" /> 管理。切换同步帐号后，您的数据将从这台设备上删除，但仍会保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="3988789688219830639">Google Chrome 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>
 <translation id="4099578267706723511">将使用情况统计信息和崩溃报告发送给 Google，帮助我们完善 Chrome。</translation>
 <translation id="415767770115540173">要在 Chrome 中获得更好的 Google 使用体验，需要用到您的位置信息。</translation>
 <translation id="424864128008805179">退出 Chrome？</translation>
-<translation id="447252321002412580">帮助我们改进 Chrome 的功能和性能</translation>
+<translation id="4249068189593983585">Chrome 提示。要查看更多的标签页选项，请轻触并按住工具栏（位于屏幕底部或顶部）中的“显示标签页”按钮。</translation>
 <translation id="4523886039239821078">部分插件导致 Chrome 崩溃，请卸载这些插件：</translation>
-<translation id="4615174829807303908">您正要退出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理的帐号。退出后，您的 Chrome 数据将从这台设备上删除，但仍会保留在您的 Google 帐号中。</translation>
 <translation id="5389212809648216794">由于另一个应用正在使用您的相机，因此 Google Chrome 无法使用</translation>
+<translation id="5621912349729388018"><ph name="BEGIN_LINK" />查看新版 Chrome 服务条款。<ph name="END_LINK" /></translation>
 <translation id="5639704535586432836">打开“设置”&gt;“隐私”&gt;“相机”&gt;“Google Chrome”，然后开启相机。</translation>
 <translation id="5642200033778930880">Google Chrome 无法在分割视图模式下使用您的相机</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5854621639439811139">Chrome 提示。现在屏幕底部会显示“后退”、“前进”和“搜索”等按钮。</translation>
 <translation id="6036420186814142909">Google Chrome 的某些功能可帮助您管理互联网数据和网页加载速度。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -46,14 +43,12 @@
 <translation id="7172660552945675509">提示：<ph name="BEGIN_LINK" />将 Chrome 移到 Dock 中<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome 会使用 Face ID 来确保对您密码的访问均已获授权。</translation>
 <translation id="7265369419224458312">您可直接在此处使用您在计算机上打开的标签页。只需在计算机上打开 Chrome，转到菜单，然后选择“登录 Chrome…”即可</translation>
-<translation id="728488472449859922">开启 Google Chrome QR 码扫描器</translation>
 <translation id="7400722733683201933">关于Google Chrome</translation>
-<translation id="7437998757836447326">退出 Chrome</translation>
 <translation id="756809126120519699">已清除 Chrome 数据</translation>
 <translation id="7626032353295482388">欢迎使用 Chrome</translation>
+<translation id="7698568245838009292">Chrome 想要访问相机</translation>
+<translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="840168496893712993">部分插件导致 Chrome 崩溃，请尝试卸载这些插件。</translation>
 <translation id="8459495907675268833">所选数据已从 Chrome 和同步的设备中移除。不过，您的 Google 帐号在 history.google.com 上可能有其他形式的浏览记录（例如，在其他 Google 服务中的搜索记录和活动记录）。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8606668294522778825">Google Chrome 可能会使用网络服务来改善您的浏览体验。不过，您可以选择停用这些服务。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="96145293669295453">Chrome 提示。要查看更多标签页选项，请按住工具栏（位于屏幕底部或顶部）中的“显示标签页”按钮。</translation>
 </translationbundle>

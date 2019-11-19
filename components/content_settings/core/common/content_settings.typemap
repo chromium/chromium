@@ -13,14 +13,19 @@ public_deps = [
 public_headers = [
   "//components/content_settings/core/common/content_settings.h",
   "//components/content_settings/core/common/content_settings_pattern.h",
+  "//components/content_settings/core/common/content_settings_types.h",
 ]
 sources = [
-  "//components/content_settings/core/common/content_settings_struct_traits.cc",
+  "//components/content_settings/core/common/content_settings_mojom_traits.cc",
 ]
-traits_headers = [ "//components/content_settings/core/common/content_settings_struct_traits.h" ]
+traits_headers = [
+  "//components/content_settings/core/common/content_settings_mojom_traits.h",
+  "//components/content_settings/core/common/content_settings_param_traits.h",
+]
 type_mappings = [
   "content_settings.mojom.PatternParts=::ContentSettingsPattern::PatternParts",
   "content_settings.mojom.ContentSettingsPattern=::ContentSettingsPattern",
+  "content_settings.mojom.ContentSettingsType=::ContentSettingsType",
   "content_settings.mojom.ContentSetting=::ContentSetting",
   "content_settings.mojom.ContentSettingPatternSource=::ContentSettingPatternSource",
   "content_settings.mojom.RendererContentSettingRules=::RendererContentSettingRules",

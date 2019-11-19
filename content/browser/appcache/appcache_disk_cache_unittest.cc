@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "content/browser/appcache/appcache_disk_cache.h"
+
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/io_buffer.h"
@@ -29,18 +30,18 @@ class AppCacheDiskCacheTest : public testing::Test {
         &AppCacheDiskCacheTest::OnComplete, base::Unretained(this));
   }
 
-  void TearDown() override { scoped_task_environment_.RunUntilIdle(); }
+  void TearDown() override { task_environment_.RunUntilIdle(); }
 
   void FlushCacheTasks() {
     disk_cache::FlushCacheThreadForTesting();
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   void OnComplete(int err) {
     completion_results_.push_back(err);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir directory_;
   net::CompletionRepeatingCallback completion_callback_;
   std::vector<int> completion_results_;
@@ -53,9 +54,9 @@ TEST_F(AppCacheDiskCacheTest, DisablePriorToInitCompletion) {
 
   // Create an instance and start it initializing, queue up
   // one of each kind of "entry" function.
-  std::unique_ptr<AppCacheDiskCache> disk_cache(new AppCacheDiskCache);
+  auto disk_cache = std::make_unique<AppCacheDiskCache>();
   EXPECT_FALSE(disk_cache->is_disabled());
-  disk_cache->InitWithDiskBackend(directory_.GetPath(), k10MBytes, false,
+  disk_cache->InitWithDiskBackend(directory_.GetPath(), false,
                                   base::OnceClosure(), completion_callback_);
   disk_cache->CreateEntry(1, &entry, completion_callback_);
   disk_cache->OpenEntry(2, &entry, completion_callback_);
@@ -83,9 +84,9 @@ TEST_F(AppCacheDiskCacheTest, DisablePriorToInitCompletion) {
 
 TEST_F(AppCacheDiskCacheTest, DisableAfterInitted) {
   // Create an instance and let it fully init.
-  std::unique_ptr<AppCacheDiskCache> disk_cache(new AppCacheDiskCache);
+  auto disk_cache = std::make_unique<AppCacheDiskCache>();
   EXPECT_FALSE(disk_cache->is_disabled());
-  disk_cache->InitWithDiskBackend(directory_.GetPath(), k10MBytes, false,
+  disk_cache->InitWithDiskBackend(directory_.GetPath(), false,
                                   base::OnceClosure(), completion_callback_);
   FlushCacheTasks();
   EXPECT_EQ(1u, completion_results_.size());
@@ -118,9 +119,9 @@ TEST_F(AppCacheDiskCacheTest, DisableAfterInitted) {
 // Flaky on Android: http://crbug.com/339534
 TEST_F(AppCacheDiskCacheTest, DISABLED_DisableWithEntriesOpen) {
   // Create an instance and let it fully init.
-  std::unique_ptr<AppCacheDiskCache> disk_cache(new AppCacheDiskCache);
+  auto disk_cache = std::make_unique<AppCacheDiskCache>();
   EXPECT_FALSE(disk_cache->is_disabled());
-  disk_cache->InitWithDiskBackend(directory_.GetPath(), k10MBytes, false,
+  disk_cache->InitWithDiskBackend(directory_.GetPath(), false,
                                   base::OnceClosure(), completion_callback_);
   FlushCacheTasks();
   EXPECT_EQ(1u, completion_results_.size());
@@ -185,9 +186,9 @@ TEST_F(AppCacheDiskCacheTest, CleanupCallback) {
 
   net::TestClosure cleanup_done;
   net::TestCompletionCallback init_done;
-  std::unique_ptr<AppCacheDiskCache> disk_cache(new AppCacheDiskCache);
+  auto disk_cache = std::make_unique<AppCacheDiskCache>();
   EXPECT_FALSE(disk_cache->is_disabled());
-  disk_cache->InitWithDiskBackend(directory_.GetPath(), k10MBytes, false,
+  disk_cache->InitWithDiskBackend(directory_.GetPath(), false,
                                   cleanup_done.closure(), init_done.callback());
   EXPECT_EQ(net::OK, init_done.WaitForResult());
 

@@ -5,24 +5,24 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/test/fuzzed_data_provider.h"
 #include "net/ntlm/ntlm_client.h"
 #include "net/ntlm/ntlm_test_data.h"
 
-base::string16 ConsumeRandomLengthString16(
-    base::FuzzedDataProvider& data_provider,
-    size_t max_chars) {
+base::string16 ConsumeRandomLengthString16(FuzzedDataProvider& data_provider,
+                                           size_t max_chars) {
   std::string bytes = data_provider.ConsumeRandomLengthString(max_chars * 2);
   return base::string16(reinterpret_cast<const base::char16*>(bytes.data()),
                         bytes.size() / 2);
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::FuzzedDataProvider fdp(data, size);
+  FuzzedDataProvider fdp(data, size);
   bool is_v2 = fdp.ConsumeBool();
   uint64_t client_time = fdp.ConsumeIntegral<uint64_t>();
   net::ntlm::NtlmClient client((net::ntlm::NtlmFeatures(is_v2)));
@@ -41,7 +41,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string channel_bindings = fdp.ConsumeRandomLengthString(150);
   std::string spn =
       fdp.ConsumeRandomLengthString(net::ntlm::kMaxFqdnLen + 5 + 1);
-  std::vector<uint8_t> challenge_msg_bytes = fdp.ConsumeRemainingBytes();
+  std::vector<uint8_t> challenge_msg_bytes =
+      fdp.ConsumeRemainingBytes<uint8_t>();
 
   client.GenerateAuthenticateMessage(
       domain, username, password, hostname, channel_bindings, spn, client_time,

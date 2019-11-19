@@ -18,21 +18,22 @@ An archive of all packages built so far is at https://is.gd/chromeclang
     bucket to the production one. For example:
 
     ```shell
-    $ export rev=123456-1
+    $ export rev=123456-abcd1234-1
     $ for x in Linux_x64 Mac Win ; do \
         gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/$x/clang-$rev.tgz \
             gs://chromium-browser-clang/$x/clang-$rev.tgz ; \
+        gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/$x/clang-$rev-buildlog.txt \
+            gs://chromium-browser-clang/$x/clang-$rev-buildlog.txt ; \
         gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/$x/llvmobjdump-$rev.tgz \
             gs://chromium-browser-clang/$x/llvmobjdump-$rev.tgz ; \
-        gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/$x/llvmcfiverify-$rev.tgz \
-            gs://chromium-browser-clang/$x/llvmcfiverify-$rev.tgz ; \
         gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/$x/translation_unit-$rev.tgz \
             gs://chromium-browser-clang/$x/translation_unit-$rev.tgz ; \
         gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/$x/llvm-code-coverage-$rev.tgz \
             gs://chromium-browser-clang/$x/llvm-code-coverage-$rev.tgz ; \
-        done
-    $ gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/Mac/lld-$rev.tgz \
-          gs://chromium-browser-clang/Mac/lld-$rev.tgz
+        gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/$x/libclang-$rev.tgz \
+            gs://chromium-browser-clang/$x/libclang-$rev.tgz ; \
+        done && gsutil.py cp -n -a public-read gs://chromium-browser-clang-staging/Mac/lld-$rev.tgz \
+            gs://chromium-browser-clang/Mac/lld-$rev.tgz
     ```
 
 1.  Run the goma package update script to push these packages to goma. If you do
@@ -42,11 +43,14 @@ An archive of all packages built so far is at https://is.gd/chromeclang
 
     ```shell
     git cl try &&
-    git cl try -B luci.chromium.try -b ios-device -b mac_chromium_asan_rel_ng \
+    git cl try -B chromium/try -b mac_chromium_asan_rel_ng \
       -b linux_chromium_cfi_rel_ng \
       -b linux_chromium_chromeos_asan_rel_ng -b linux_chromium_msan_rel_ng \
       -b linux_chromium_chromeos_msan_rel_ng -b linux-chromeos-dbg \
-      -b win-asan -b chromeos-amd64-generic-cfi-thin-lto-rel
+      -b win-asan -b chromeos-amd64-generic-cfi-thin-lto-rel \
+      -b linux_chromium_compile_dbg_32_ng -b win7-rel \
+      -b win-angle-deqp-rel-64 &&
+    git cl try -B chrome/try -b iphone-device -b ipad-device
     ```
 
 1.  Optional: Start Pinpoint perf tryjobs. These are generally too noisy to
@@ -92,14 +96,7 @@ criteria:
 
 If you want to add something to the clang package that doesn't (yet?) meet
 these criteria, you can make package.py upload it to a separate zip file
-and then download it on an opt-in basis by requiring users to run a script
-to download the additional zip file. You can structure your script in a way that
-it downloads your additional zip automatically if the script detects an
-old version on disk, that way users have to run the download script just
-once. `tools/clang/scripts/download_lld_mac.py` is an example for this
-(It doesn't do the "only download if old version is on disk or if requested"
-bit, and hence doesn't run as a default DEPS hook. TODO(thakis): Make
-coverage stuff a better example and link to that.)
+and then download it on an opt-in basis by using update.py's --package option.
 
 If you're adding a new feature that you expect will meet the inclusion criteria
 eventually but doesn't yet, start by having your things in a separate zip

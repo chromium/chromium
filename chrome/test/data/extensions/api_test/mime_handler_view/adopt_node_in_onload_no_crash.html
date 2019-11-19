@@ -1,0 +1,12 @@
+<div id="container">
+<object id="object" type="application/ecmascript" onload="load_handler()"><iframe id="iframe"></iframe></object>
+<script>
+  function load_handler() {
+    iframe.contentDocument.adoptNode(container);
+  }
+  function content_load_handler() {
+    object.width = 50;
+  }
+  document.addEventListener("DOMContentLoaded", content_load_handler);
+</script>
+</div>

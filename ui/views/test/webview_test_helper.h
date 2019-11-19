@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_TEST_WEB_VIEW_TEST_HELPER_H_
-#define UI_VIEWS_TEST_WEB_VIEW_TEST_HELPER_H_
+#ifndef UI_VIEWS_TEST_WEBVIEW_TEST_HELPER_H_
+#define UI_VIEWS_TEST_WEBVIEW_TEST_HELPER_H_
 
 #include <memory>
 
@@ -29,4 +29,4 @@ class WebViewTestHelper {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_TEST_WEB_VIEW_TEST_HELPER_H_
+#endif  // UI_VIEWS_TEST_WEBVIEW_TEST_HELPER_H_

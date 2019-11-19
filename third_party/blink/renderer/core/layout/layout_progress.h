@@ -28,9 +28,9 @@ namespace blink {
 
 class HTMLProgressElement;
 
-class CORE_EXPORT LayoutProgress final : public LayoutBlockFlow {
+class CORE_EXPORT LayoutProgress : public LayoutBlockFlow {
  public:
-  explicit LayoutProgress(HTMLProgressElement*);
+  explicit LayoutProgress(Element* element);
   ~LayoutProgress() override;
 
   double GetPosition() const { return position_; }
@@ -45,22 +45,21 @@ class CORE_EXPORT LayoutProgress final : public LayoutBlockFlow {
 
  protected:
   void WillBeDestroyed() override;
+  bool IsOfType(LayoutObjectType type) const override {
+    return type == kLayoutObjectProgress || LayoutBlockFlow::IsOfType(type);
+  }
 
   bool IsAnimating() const;
   bool IsAnimationTimerActive() const;
 
  private:
-  bool IsOfType(LayoutObjectType type) const override {
-    return type == kLayoutObjectProgress || LayoutBlockFlow::IsOfType(type);
-  }
-
   void AnimationTimerFired(TimerBase*);
   void UpdateAnimationState();
 
   double position_;
-  TimeTicks animation_start_time_;
-  TimeDelta animation_repeat_interval_;
-  TimeDelta animation_duration_;
+  base::TimeTicks animation_start_time_;
+  base::TimeDelta animation_repeat_interval_;
+  base::TimeDelta animation_duration_;
   bool animating_;
   TaskRunnerTimer<LayoutProgress> animation_timer_;
 

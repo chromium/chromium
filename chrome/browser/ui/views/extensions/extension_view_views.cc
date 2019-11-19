@@ -76,7 +76,7 @@ void ExtensionViewViews::ResizeDueToAutoResize(
     const gfx::Size& new_size) {
   // Don't actually do anything with this information until we have been shown.
   // Size changes will not be honored by lower layers while we are hidden.
-  if (!visible()) {
+  if (!GetVisible()) {
     pending_preferred_size_ = new_size;
     return;
   }
@@ -101,7 +101,7 @@ void ExtensionViewViews::OnLoaded() {
 
   // ExtensionPopup delegates showing the view to OnLoaded(). ExtensionDialog
   // handles visibility directly.
-  if (visible())
+  if (GetVisible())
     return;
 
   SetVisible(true);

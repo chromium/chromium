@@ -9,6 +9,8 @@ Either use the command-line interface (see --help) or directly call make_case
 from Python shell (see make_case documentation).
 """
 
+from __future__ import print_function
+
 import argparse
 import codecs
 import doctest

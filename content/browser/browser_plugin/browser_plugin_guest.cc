@@ -25,7 +25,6 @@
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/frame_host/render_frame_proxy_host.h"
 #include "content/browser/frame_host/render_widget_host_view_guest.h"
-#include "content/browser/loader/resource_dispatcher_host_impl.h"
 #include "content/browser/renderer_host/cursor_manager.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -126,67 +125,22 @@ BrowserPluginGuest::BrowserPluginGuest(bool has_render_view,
       has_render_view_(has_render_view),
       is_in_destruction_(false),
       initialized_(false),
-      guest_proxy_routing_id_(MSG_ROUTING_NONE),
+      guest_render_view_routing_id_(MSG_ROUTING_NONE),
       last_drag_status_(blink::kWebDragStatusUnknown),
       seen_embedder_system_drag_ended_(false),
       seen_embedder_drag_source_ended_at_(false),
       ignore_dragged_url_(true),
       delegate_(delegate),
-      can_use_cross_process_frames_(delegate->CanUseCrossProcessFrames()),
-      weak_ptr_factory_(this) {
+      can_use_cross_process_frames_(delegate->CanUseCrossProcessFrames()) {
   DCHECK(web_contents);
   DCHECK(delegate);
   RecordAction(base::UserMetricsAction("BrowserPlugin.Guest.Create"));
 }
 
-int BrowserPluginGuest::GetGuestProxyRoutingID() {
-  if (GuestMode::IsCrossProcessFrameGuest(GetWebContents())) {
-    // We don't use the proxy to send postMessage in --site-per-process, since
-    // we use the contentWindow directly from the frame element instead.
-    return MSG_ROUTING_NONE;
-  }
-
-  if (guest_proxy_routing_id_ != MSG_ROUTING_NONE)
-    return guest_proxy_routing_id_;
-
-  // In order to enable the embedder to post messages to the
-  // guest, we need to create a RenderFrameProxyHost in root node of guest
-  // WebContents' frame tree (i.e., create a RenderFrameProxy in the embedder
-  // process which can be used by the embedder to post messages to the guest).
-  // The creation of RFPH for the reverse path, which enables the guest to post
-  // messages to the embedder, will be postponed to when the embedder posts its
-  // first message to the guest.
-  //
-  // TODO(fsamuel): Make sure this works for transferring guests across
-  // owners in different processes. We probably need to clear the
-  // |guest_proxy_routing_id_| and perform any necessary cleanup on Detach
-  // to enable this.
-  //
-  // TODO(ekaramad): If the guest is embedded inside a cross-process <iframe>
-  // (e.g., <embed>-ed PDF), the reverse proxy will not be created and the
-  // posted message's source attribute will be null which in turn breaks the
-  // two-way messaging between the guest and the embedder. We should either
-  // create a RenderFrameProxyHost for the reverse path, or implement
-  // MimeHandlerViewGuest using OOPIF (https://crbug.com/659750).
-  SiteInstance* owner_site_instance = delegate_->GetOwnerSiteInstance();
-  if (!owner_site_instance)
-    return MSG_ROUTING_NONE;
-  int proxy_routing_id = GetWebContents()
-                             ->GetFrameTree()
-                             ->root()
-                             ->render_manager()
-                             ->CreateRenderFrameProxy(owner_site_instance);
-  guest_proxy_routing_id_ = RenderFrameProxyHost::FromID(
-      owner_site_instance->GetProcess()->GetID(), proxy_routing_id)
-          ->GetRenderViewHost()->GetRoutingID();
-
-  return guest_proxy_routing_id_;
-}
-
 int BrowserPluginGuest::LoadURLWithParams(
     const NavigationController::LoadURLParams& load_params) {
   GetWebContents()->GetController().LoadURLWithParams(load_params);
-  return GetGuestProxyRoutingID();
+  return GetGuestRenderViewRoutingID();
 }
 
 void BrowserPluginGuest::EnableAutoResize(const gfx::Size& min_size,
@@ -224,6 +178,10 @@ void BrowserPluginGuest::WillDestroy() {
 RenderWidgetHostImpl* BrowserPluginGuest::GetOwnerRenderWidgetHost() const {
   return static_cast<RenderWidgetHostImpl*>(
       delegate_->GetOwnerRenderWidgetHost());
+}
+
+RenderFrameHostImpl* BrowserPluginGuest::GetEmbedderFrame() const {
+  return static_cast<RenderFrameHostImpl*>(delegate_->GetEmbedderFrame());
 }
 
 void BrowserPluginGuest::Init() {
@@ -699,7 +657,7 @@ void BrowserPluginGuest::RenderViewReady() {
   // In case we've created a new guest render process after a crash, let the
   // associated BrowserPlugin know. We only need to send this if we're attached,
   // as guest_crashed_ is cleared automatically on attach anyways.
-  if (attached() && !features::IsMultiProcessMash()) {
+  if (attached()) {
     RenderWidgetHostViewGuest* rwhv = static_cast<RenderWidgetHostViewGuest*>(
         web_contents()->GetRenderWidgetHostView());
     if (rwhv) {
@@ -871,7 +829,7 @@ void BrowserPluginGuest::OnWillAttachComplete(
   attached_ = true;
   SendQueuedMessages();
 
-  delegate_->DidAttach(GetGuestProxyRoutingID());
+  delegate_->DidAttach(GetGuestRenderViewRoutingID());
   RenderWidgetHostViewGuest* rwhv = static_cast<RenderWidgetHostViewGuest*>(
       web_contents()->GetRenderWidgetHostView());
   if (rwhv)
@@ -957,7 +915,7 @@ void BrowserPluginGuest::OnExecuteEditCommand(int browser_plugin_instance_id,
                                               const std::string& name) {
   RenderFrameHostImpl* focused_frame =
       static_cast<RenderFrameHostImpl*>(web_contents()->GetFocusedFrame());
-  if (!focused_frame)
+  if (!focused_frame || !focused_frame->GetFrameInputHandler())
     return;
 
   focused_frame->GetFrameInputHandler()->ExecuteEditCommand(name,
@@ -1011,7 +969,7 @@ void BrowserPluginGuest::OnExtendSelectionAndDelete(
     int after) {
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
       web_contents()->GetFocusedFrame());
-  if (rfh)
+  if (rfh && rfh->GetFrameInputHandler())
     rfh->GetFrameInputHandler()->ExtendSelectionAndDelete(before, after);
 }
 
@@ -1160,6 +1118,50 @@ void BrowserPluginGuest::OnShowWidget(int widget_route_id,
 void BrowserPluginGuest::OnTakeFocus(bool reverse) {
   SendMessageToEmbedder(std::make_unique<BrowserPluginMsg_AdvanceFocus>(
       browser_plugin_instance_id(), reverse));
+}
+
+int BrowserPluginGuest::GetGuestRenderViewRoutingID() {
+  if (GuestMode::IsCrossProcessFrameGuest(GetWebContents())) {
+    // We don't use the proxy to send postMessage in --site-per-process, since
+    // we use the contentWindow directly from the frame element instead.
+    return MSG_ROUTING_NONE;
+  }
+
+  if (guest_render_view_routing_id_ != MSG_ROUTING_NONE)
+    return guest_render_view_routing_id_;
+
+  // In order to enable the embedder to post messages to the
+  // guest, we need to create a RenderFrameProxyHost in root node of guest
+  // WebContents' frame tree (i.e., create a RenderFrameProxy in the embedder
+  // process which can be used by the embedder to post messages to the guest).
+  // The creation of RFPH for the reverse path, which enables the guest to post
+  // messages to the embedder, will be postponed to when the embedder posts its
+  // first message to the guest.
+  //
+  // TODO(fsamuel): Make sure this works for transferring guests across
+  // owners in different processes. We probably need to clear the
+  // |guest_render_view_routing_id_| and perform any necessary cleanup on Detach
+  // to enable this.
+  //
+  // TODO(ekaramad): If the guest is embedded inside a cross-process <iframe>
+  // (e.g., <embed>-ed PDF), the reverse proxy will not be created and the
+  // posted message's source attribute will be null which in turn breaks the
+  // two-way messaging between the guest and the embedder. We should either
+  // create a RenderFrameProxyHost for the reverse path, or implement
+  // MimeHandlerViewGuest using OOPIF (https://crbug.com/659750).
+  SiteInstance* owner_site_instance = delegate_->GetOwnerSiteInstance();
+  if (!owner_site_instance)
+    return MSG_ROUTING_NONE;
+
+  RenderFrameHostManager* rfh_manager =
+      GetWebContents()->GetFrameTree()->root()->render_manager();
+  rfh_manager->CreateRenderFrameProxy(owner_site_instance);
+  guest_render_view_routing_id_ =
+      rfh_manager->GetRenderFrameProxyHost(owner_site_instance)
+          ->GetRenderViewHost()
+          ->GetRoutingID();
+
+  return guest_render_view_routing_id_;
 }
 
 }  // namespace content

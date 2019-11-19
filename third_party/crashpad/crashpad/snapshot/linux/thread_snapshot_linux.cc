@@ -190,8 +190,9 @@ bool ThreadSnapshotLinux::Initialize(ProcessReaderLinux* process_reader,
 #error Port.
 #endif
 
-  stack_.Initialize(
-      process_reader, thread.stack_region_address, thread.stack_region_size);
+  stack_.Initialize(process_reader->Memory(),
+                    thread.stack_region_address,
+                    thread.stack_region_size);
 
   thread_specific_data_address_ =
       thread.thread_info.thread_specific_data_address;

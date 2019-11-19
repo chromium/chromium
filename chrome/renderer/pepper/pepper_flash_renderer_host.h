@@ -64,7 +64,7 @@ class PepperFlashRendererHost : public ppapi::host::ResourceHost {
   std::vector<ppapi::host::ReplyMessageContext> navigate_replies_;
 
   content::RendererPpapiHost* host_;
-  base::WeakPtrFactory<PepperFlashRendererHost> weak_factory_;
+  base::WeakPtrFactory<PepperFlashRendererHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperFlashRendererHost);
 };

@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.UrlConstants;
+import org.chromium.chrome.browser.util.UrlConstants;
 
 import java.net.URI;
 import java.net.URISyntaxException;

@@ -9,30 +9,26 @@
  * @interface
  * @extends {EventTarget}
  */
-function DriveSyncHandler() {}
+class DriveSyncHandler extends EventTarget {
+  /**
+   * Returns the completed event name.
+   * @return {string}
+   */
+  getCompletedEventName() {}
 
-DriveSyncHandler.prototype = /** @struct */ {
-  __proto__: EventTarget.prototype,
+  /**
+   * Returns whether the Drive sync is currently suppressed or not.
+   * @return {boolean}
+   */
+  isSyncSuppressed() {}
+
+  /**
+   * Shows a notification that Drive sync is disabled on cellular networks.
+   */
+  showDisabledMobileSyncNotification() {}
 
   /**
    * @return {boolean} Whether the handler is syncing items or not.
    */
   get syncing() {}
-};
-
-/**
- * Returns the completed event name.
- * @return {string}
- */
-DriveSyncHandler.prototype.getCompletedEventName = function() {};
-
-/**
- * Returns whether the Drive sync is currently suppressed or not.
- * @return {boolean}
- */
-DriveSyncHandler.prototype.isSyncSuppressed = function() {};
-
-/**
- * Shows a notification that Drive sync is disabled on cellular networks.
- */
-DriveSyncHandler.prototype.showDisabledMobileSyncNotification = function() {};
+}

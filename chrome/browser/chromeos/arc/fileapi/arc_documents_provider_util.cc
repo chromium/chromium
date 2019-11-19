@@ -13,7 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "net/base/escape.h"
 #include "net/base/mime_util.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
 
 namespace arc {
@@ -235,7 +235,7 @@ std::string FindArcMimeTypeFromExtension(const std::string& ext) {
   for (const auto& mapping : kAndroidMimeTypeMappings) {
     std::vector<base::StringPiece> extensions = base::SplitStringPiece(
         mapping.extensions, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (base::ContainsValue(extensions, ext))
+    if (base::Contains(extensions, ext))
       return mapping.mime_type;
   }
   return std::string();
@@ -269,7 +269,7 @@ base::FilePath::StringType GetFileNameForDocument(
       GetExtensionsForArcMimeType(document->mime_type);
 
   if (!possible_extensions.empty() &&
-      !base::ContainsValue(possible_extensions, extension)) {
+      !base::Contains(possible_extensions, extension)) {
     // Lookup the extension in the hardcoded map before appending an extension,
     // as some extensions (eg. 3gp) are typed differently by Android. Only
     // append the suggested extension if the lookup fails (i.e. no valid mime

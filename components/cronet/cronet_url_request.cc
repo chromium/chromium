@@ -23,7 +23,8 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/ssl/ssl_info.h"
-#include "net/third_party/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quic/core/quic_packets.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request_context.h"
 
@@ -156,6 +157,15 @@ void CronetURLRequest::Destroy(bool send_on_canceled) {
                                 base::Unretained(this), send_on_canceled));
 }
 
+void CronetURLRequest::MaybeReportMetricsAndRunCallback(
+    base::OnceClosure callback) {
+  context_->PostTaskToNetworkThread(
+      FROM_HERE,
+      base::BindOnce(
+          &CronetURLRequest::NetworkTasks::MaybeReportMetricsAndRunCallback,
+          base::Unretained(&network_tasks_), std::move(callback)));
+}
+
 CronetURLRequest::NetworkTasks::NetworkTasks(std::unique_ptr<Callback> callback,
                                              const GURL& url,
                                              net::RequestPriority priority,
@@ -209,10 +219,10 @@ void CronetURLRequest::NetworkTasks::OnCertificateRequested(
 
 void CronetURLRequest::NetworkTasks::OnSSLCertificateError(
     net::URLRequest* request,
+    int net_error,
     const net::SSLInfo& ssl_info,
     bool fatal) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
-  int net_error = net::MapCertStatusToNetError(ssl_info.cert_status);
   ReportError(request, net_error);
   request->Cancel();
 }
@@ -268,7 +278,7 @@ void CronetURLRequest::NetworkTasks::Start(
           << initial_url_.possibly_invalid_spec().c_str()
           << " priority: " << RequestPriorityToString(initial_priority_);
   url_request_ = context->GetURLRequestContext()->CreateRequest(
-      initial_url_, net::DEFAULT_PRIORITY, this);
+      initial_url_, net::DEFAULT_PRIORITY, this, MISSING_TRAFFIC_ANNOTATION);
   url_request_->SetLoadFlags(initial_load_flags_);
   url_request_->set_method(method);
   url_request_->SetExtraRequestHeaders(*request_headers);
@@ -338,6 +348,7 @@ void CronetURLRequest::NetworkTasks::Destroy(CronetURLRequest* request,
 
 void CronetURLRequest::NetworkTasks::ReportError(net::URLRequest* request,
                                                  int net_error) {
+  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
   DCHECK_NE(net::ERR_IO_PENDING, net_error);
   DCHECK_LT(net_error, 0);
   DCHECK_EQ(request, url_request_.get());
@@ -349,6 +360,7 @@ void CronetURLRequest::NetworkTasks::ReportError(net::URLRequest* request,
   url_request_->PopulateNetErrorDetails(&net_error_details);
   VLOG(1) << "Error " << net::ErrorToString(net_error)
           << " on chromium request: " << initial_url_.possibly_invalid_spec();
+  MaybeReportMetrics();
   callback_->OnError(
       net_error, net_error_details.quic_connection_error,
       net::ErrorToString(net_error),
@@ -356,6 +368,7 @@ void CronetURLRequest::NetworkTasks::ReportError(net::URLRequest* request,
 }
 
 void CronetURLRequest::NetworkTasks::MaybeReportMetrics() {
+  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
   // If there was an exception while starting the CronetUrlRequest, there won't
   // be a native URLRequest. In this case, the caller gets the exception
   // immediately, and the onFailed callback isn't called, so don't report
@@ -376,6 +389,13 @@ void CronetURLRequest::NetworkTasks::MaybeReportMetrics() {
       metrics.socket_reused, url_request_->GetTotalSentBytes(),
       received_byte_count_from_redirects_ +
           url_request_->GetTotalReceivedBytes());
+}
+
+void CronetURLRequest::NetworkTasks::MaybeReportMetricsAndRunCallback(
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
+  MaybeReportMetrics();
+  std::move(callback).Run();
 }
 
 }  // namespace cronet

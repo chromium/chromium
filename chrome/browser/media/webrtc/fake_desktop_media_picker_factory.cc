@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -14,7 +16,7 @@ class FakeDesktopMediaPicker : public DesktopMediaPicker {
  public:
   explicit FakeDesktopMediaPicker(
       FakeDesktopMediaPickerFactory::TestFlags* expectation)
-      : expectation_(expectation), weak_factory_(this) {
+      : expectation_(expectation) {
     expectation_->picker_created = true;
   }
   ~FakeDesktopMediaPicker() override { expectation_->picker_deleted = true; }
@@ -22,7 +24,7 @@ class FakeDesktopMediaPicker : public DesktopMediaPicker {
   // DesktopMediaPicker interface.
   void Show(const DesktopMediaPicker::Params& params,
             std::vector<std::unique_ptr<DesktopMediaList>> source_lists,
-            const DoneCallback& done_callback) override {
+            DoneCallback done_callback) override {
     bool show_screens = false;
     bool show_windows = false;
     bool show_tabs = false;
@@ -51,24 +53,25 @@ class FakeDesktopMediaPicker : public DesktopMediaPicker {
     if (!expectation_->cancelled) {
       // Post a task to call the callback asynchronously.
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(&FakeDesktopMediaPicker::CallCallback,
-                                    weak_factory_.GetWeakPtr(), done_callback));
+          FROM_HERE,
+          base::BindOnce(&FakeDesktopMediaPicker::CallCallback,
+                         weak_factory_.GetWeakPtr(), std::move(done_callback)));
     } else {
       // If we expect the dialog to be cancelled then store the callback to
       // retain reference to the callback handler.
-      done_callback_ = done_callback;
+      done_callback_ = std::move(done_callback);
     }
   }
 
  private:
   void CallCallback(DoneCallback done_callback) {
-    done_callback.Run(expectation_->selected_source);
+    std::move(done_callback).Run(expectation_->selected_source);
   }
 
   FakeDesktopMediaPickerFactory::TestFlags* expectation_;
   DoneCallback done_callback_;
 
-  base::WeakPtrFactory<FakeDesktopMediaPicker> weak_factory_;
+  base::WeakPtrFactory<FakeDesktopMediaPicker> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeDesktopMediaPicker);
 };

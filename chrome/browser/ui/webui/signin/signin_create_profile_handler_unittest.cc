@@ -101,8 +101,8 @@ class SigninCreateProfileHandlerTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     profile_manager()->DeleteAllTestingProfiles();
 
-    handler_.reset(new TestSigninCreateProfileHandler(web_ui(),
-                                                      profile_manager()));
+    handler_ = std::make_unique<TestSigninCreateProfileHandler>(
+        web_ui(), profile_manager());
   }
 
   void TearDown() override {
@@ -123,14 +123,13 @@ class SigninCreateProfileHandlerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<TestSigninCreateProfileHandler> handler_;
 };
 
-TEST_F(SigninCreateProfileHandlerTest, ReturnDefaultProfileNameAndIcons) {
+TEST_F(SigninCreateProfileHandlerTest, ReturnDefaultProfileIcons) {
   // Request default profile information.
   base::ListValue list_args;
   handler()->RequestDefaultProfileIcons(&list_args);
 
-  // Expect two JS callbacks. One with profile avatar icons and the other with
-  // the default profile name.
-  EXPECT_EQ(2U, web_ui()->call_data().size());
+  // Expect one JS callbacks for the profile avatar icons.
+  EXPECT_EQ(1U, web_ui()->call_data().size());
 
   EXPECT_EQ(kTestWebUIResponse, web_ui()->call_data()[0]->function_name());
 
@@ -141,17 +140,6 @@ TEST_F(SigninCreateProfileHandlerTest, ReturnDefaultProfileNameAndIcons) {
   const base::ListValue* profile_icons;
   ASSERT_TRUE(web_ui()->call_data()[0]->arg2()->GetAsList(&profile_icons));
   EXPECT_NE(0U, profile_icons->GetSize());
-
-  EXPECT_EQ(kTestWebUIResponse, web_ui()->call_data()[1]->function_name());
-
-  ASSERT_TRUE(web_ui()->call_data()[1]->arg1()->GetAsString(&callback_name));
-  EXPECT_EQ("profile-defaults-received", callback_name);
-
-  const base::DictionaryValue* profile_info;
-  ASSERT_TRUE(web_ui()->call_data()[1]->arg2()->GetAsDictionary(&profile_info));
-  std::string profile_name;
-  ASSERT_TRUE(profile_info->GetString("name", &profile_name));
-  EXPECT_NE("", profile_name);
 }
 
 TEST_F(SigninCreateProfileHandlerTest, CreateProfile) {

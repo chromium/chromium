@@ -68,8 +68,7 @@ HostDispatcher::HostDispatcher(PP_Module module,
     : Dispatcher(local_get_interface, permissions),
       pp_module_(module),
       ppb_proxy_(NULL),
-      allow_plugin_reentrancy_(false),
-      weak_ptr_factory_(this) {
+      allow_plugin_reentrancy_(false) {
   if (!g_module_to_dispatcher)
     g_module_to_dispatcher = new ModuleToDispatcherMap;
   (*g_module_to_dispatcher)[pp_module_] = this;
@@ -240,12 +239,11 @@ const void* HostDispatcher::GetProxiedInterface(const std::string& iface_name) {
   return NULL;
 }
 
-base::Closure HostDispatcher::AddSyncMessageStatusObserver(
+base::OnceClosure HostDispatcher::AddSyncMessageStatusObserver(
     SyncMessageStatusObserver* obs) {
   sync_status_observer_list_.AddObserver(obs);
-  return base::Bind(&HostDispatcher::RemoveSyncMessageStatusObserver,
-                    weak_ptr_factory_.GetWeakPtr(),
-                    obs);
+  return base::BindOnce(&HostDispatcher::RemoveSyncMessageStatusObserver,
+                        weak_ptr_factory_.GetWeakPtr(), obs);
 }
 
 void HostDispatcher::RemoveSyncMessageStatusObserver(

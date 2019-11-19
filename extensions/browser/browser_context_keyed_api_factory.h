@@ -19,13 +19,13 @@ class BrowserContextKeyedAPIFactory;
 
 // Instantiations of BrowserContextKeyedAPIFactory should use this base class
 // and also define a static const char* service_name() function (used in the
-// BrowserContextKeyedBaseFactory constructor). These fields should
+// BrowserContextKeyedServiceFactory constructor). These fields should
 // be accessible to the BrowserContextKeyedAPIFactory for the service.
 class BrowserContextKeyedAPI : public KeyedService {
  protected:
   // Defaults for flags that control BrowserContextKeyedAPIFactory behavior.
   // These can be overridden by subclasses to change that behavior.
-  // See BrowserContextKeyedBaseFactory for usage.
+  // See BrowserContextKeyedServiceFactory for usage.
 
   // These flags affect what instance is returned when Get() is called
   // on an incognito profile. By default, it returns NULL. If
@@ -36,7 +36,7 @@ class BrowserContextKeyedAPI : public KeyedService {
   static const bool kServiceHasOwnInstanceInIncognito = false;
 
   // If set to false, don't start the service at BrowserContext creation time.
-  // (The default differs from the BrowserContextKeyedBaseFactory default,
+  // (The default differs from the BrowserContextKeyedServiceFactory default,
   // because historically, BrowserContextKeyedAPIs often do tasks at startup.)
   static const bool kServiceIsCreatedWithBrowserContext = true;
 
@@ -137,7 +137,7 @@ class BrowserContextKeyedAPIFactory : public BrowserContextKeyedServiceFactory {
     return new T(context);
   }
 
-  // BrowserContextKeyedBaseFactory implementation.
+  // BrowserContextKeyedServiceFactory implementation.
   // These can be effectively overridden with template specializations.
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override {

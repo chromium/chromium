@@ -10,7 +10,7 @@
 namespace skia {
 
 SK_API sk_sp<SkFontMgr> CreateDefaultSkFontMgr() {
-  return SkFontMgr_New_GDI();
+  return SkFontMgr_New_DirectWrite();
 }
 
 }  // namespace skia

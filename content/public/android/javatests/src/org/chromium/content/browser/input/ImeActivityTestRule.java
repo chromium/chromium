@@ -20,7 +20,6 @@ import android.view.inputmethod.InputConnection;
 
 import org.junit.Assert;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.content.browser.ViewEventSinkImpl;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
@@ -32,6 +31,7 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper.InputConnectionProvider;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.ui.base.ime.TextInputType;
 
@@ -53,6 +53,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     static final String INPUT_FORM_HTML = "content/test/data/android/input/input_forms.html";
     static final String PASSWORD_FORM_HTML = "content/test/data/android/input/password_form.html";
     static final String INPUT_MODE_HTML = "content/test/data/android/input/input_mode.html";
+    static final String INPUT_ACTION_HTML = "content/test/data/android/input/input_action.html";
 
     private SelectionPopupControllerImpl mSelectionPopupController;
     private TestCallbackHelperContainer mCallbackContainer;
@@ -142,13 +143,9 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
         return mConnectionFactory;
     }
 
-    void fullyLoadUrl(final String url) throws Throwable {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                getActivity().getActiveShell().loadUrl(url);
-            }
-        });
+    void fullyLoadUrl(final String url) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { getActivity().getActiveShell().loadUrl(url); });
         waitForActiveShellToBeDoneLoading();
     }
 
@@ -164,6 +161,28 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(getWebContents(), code));
     }
 
+    void waitForEventLogState(String expectedLogs) {
+        final String code = "getEventLogs()";
+        final String sanitizedExpectedLogs = "\"" + expectedLogs + "\"";
+        CriteriaHelper.pollInstrumentationThread(
+                Criteria.equals(sanitizedExpectedLogs, new Callable<String>() {
+                    @Override
+                    public String call() throws Exception {
+                        return JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                getWebContents(), code);
+                    }
+                }));
+    }
+
+    void waitForFocusedElement(String id) {
+        CriteriaHelper.pollInstrumentationThread(Criteria.equals(id, new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                return DOMUtils.getFocusedNode(getWebContents());
+            }
+        }));
+    }
+
     void assertTextsAroundCursor(CharSequence before, CharSequence selected, CharSequence after)
             throws Exception {
         Assert.assertEquals(before, getTextBeforeCursor(100, 0));
@@ -173,11 +192,11 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
 
     void waitForKeyboardStates(int show, int hide, int restart, Integer[] textInputTypeHistory) {
         final String expected =
-                stringifyKeyboardStates(show, hide, restart, textInputTypeHistory, null);
+                stringifyKeyboardStates(show, hide, restart, textInputTypeHistory, null, null);
         CriteriaHelper.pollUiThread(Criteria.equals(expected, new Callable<String>() {
             @Override
             public String call() {
-                return getKeyboardStates(false);
+                return getKeyboardStates(false, false);
             }
         }));
     }
@@ -185,11 +204,23 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     void waitForKeyboardStates(int show, int hide, int restart, Integer[] textInputTypeHistory,
             Integer[] textInputModeHistory) {
         final String expected = stringifyKeyboardStates(
-                show, hide, restart, textInputTypeHistory, textInputModeHistory);
+                show, hide, restart, textInputTypeHistory, textInputModeHistory, null);
         CriteriaHelper.pollUiThread(Criteria.equals(expected, new Callable<String>() {
             @Override
             public String call() {
-                return getKeyboardStates(true);
+                return getKeyboardStates(true, false);
+            }
+        }));
+    }
+
+    void waitForKeyboardInputActionStates(int show, int hide, int restart,
+            Integer[] textInputTypeHistory, Integer[] textInputActionHistory) {
+        final String expected = stringifyKeyboardStates(
+                show, hide, restart, textInputTypeHistory, null, textInputActionHistory);
+        CriteriaHelper.pollUiThread(Criteria.equals(expected, new Callable<String>() {
+            @Override
+            public String call() {
+                return getKeyboardStates(false, true);
             }
         }));
     }
@@ -199,22 +230,39 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
         mConnectionFactory.resetAllStates();
     }
 
-    String getKeyboardStates(boolean includeInputMode) {
+    String getKeyboardStates(boolean includeInputMode, boolean includeInputAction) {
         int showCount = mInputMethodManagerWrapper.getShowSoftInputCounter();
         int hideCount = mInputMethodManagerWrapper.getHideSoftInputCounter();
         int restartCount = mInputMethodManagerWrapper.getRestartInputCounter();
         Integer[] textInputTypeHistory = mConnectionFactory.getTextInputTypeHistory();
         Integer[] textInputModeHistory = null;
+        Integer[] textInputActionHistory = null;
         if (includeInputMode) textInputModeHistory = mConnectionFactory.getTextInputModeHistory();
-        return stringifyKeyboardStates(
-                showCount, hideCount, restartCount, textInputTypeHistory, textInputModeHistory);
+        if (includeInputAction) {
+            textInputActionHistory = mConnectionFactory.getTextInputActionHistory();
+        }
+        return stringifyKeyboardStates(showCount, hideCount, restartCount, textInputTypeHistory,
+                textInputModeHistory, textInputActionHistory);
     }
 
     String stringifyKeyboardStates(int show, int hide, int restart, Integer[] inputTypeHistory,
-            Integer[] inputModeHistory) {
+            Integer[] inputModeHistory, Integer[] inputActionHistory) {
         return "show count: " + show + ", hide count: " + hide + ", restart count: " + restart
                 + ", input type history: " + Arrays.deepToString(inputTypeHistory)
-                + ", input mode history: " + Arrays.deepToString(inputModeHistory);
+                + ", input mode history: " + Arrays.deepToString(inputModeHistory)
+                + ", input action history: " + Arrays.deepToString(inputActionHistory);
+    }
+
+    void waitForEditorAction(final int expectedAction) {
+        CriteriaHelper.pollUiThread(Criteria.equals(expectedAction, new Callable<Integer>() {
+            @Override
+            public Integer call() {
+                EditorInfo editorInfo = mConnectionFactory.getOutAttrs();
+                return editorInfo.actionId != 0
+                        ? editorInfo.actionId
+                        : editorInfo.imeOptions & EditorInfo.IME_MASK_ACTION;
+            }
+        }));
     }
 
     void performEditorAction(final int action) {
@@ -225,7 +273,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
         final InputConnection inputConnection = mConnection;
         final Callable<Void> callable = new Callable<Void>() {
             @Override
-            public Void call() throws Exception {
+            public Void call() {
                 inputConnection.performEditorAction(EditorInfo.IME_ACTION_GO);
                 return null;
             }
@@ -306,13 +354,14 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
 
     ChromiumBaseInputConnection getInputConnection() {
         try {
-            return ThreadUtils.runOnUiThreadBlocking(new Callable<ChromiumBaseInputConnection>() {
-                @Override
-                public ChromiumBaseInputConnection call() {
-                    return (ChromiumBaseInputConnection) getImeAdapter()
-                            .getInputConnectionForTest();
-                }
-            });
+            return TestThreadUtils.runOnUiThreadBlocking(
+                    new Callable<ChromiumBaseInputConnection>() {
+                        @Override
+                        public ChromiumBaseInputConnection call() {
+                            return (ChromiumBaseInputConnection) getImeAdapter()
+                                    .getInputConnectionForTest();
+                        }
+                    });
         } catch (ExecutionException e) {
             e.printStackTrace();
             Assert.fail();
@@ -321,76 +370,42 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     void restartInput() {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mImeAdapter.restartInput();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mImeAdapter.restartInput(); });
     }
 
     // After calling this method, we should call assertClipboardContents() to wait for the clipboard
     // to get updated. See cubug.com/621046
     void copy() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                webContents.copy();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { webContents.copy(); });
     }
 
     void cut() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                webContents.cut();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { webContents.cut(); });
     }
 
     void setClip(final CharSequence text) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                final ClipboardManager clipboardManager =
-                        (ClipboardManager) getActivity().getSystemService(
-                                Context.CLIPBOARD_SERVICE);
-                clipboardManager.setPrimaryClip(ClipData.newPlainText(null, text));
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            final ClipboardManager clipboardManager =
+                    (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboardManager.setPrimaryClip(ClipData.newPlainText(null, text));
         });
     }
 
     void paste() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                webContents.paste();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { webContents.paste(); });
     }
 
     void selectAll() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                webContents.selectAll();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { webContents.selectAll(); });
     }
 
     void collapseSelection() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                webContents.collapseSelection();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { webContents.collapseSelection(); });
     }
 
     /**
@@ -538,12 +553,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     void dispatchKeyEvent(final KeyEvent event) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mImeAdapter.dispatchKeyEvent(event);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mImeAdapter.dispatchKeyEvent(event); });
     }
 
     void attachPhysicalKeyboard() {
@@ -565,40 +575,29 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     private void onConfigurationChanged(final Configuration config) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                ViewEventSinkImpl.from(getWebContents()).onConfigurationChanged(config);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ViewEventSinkImpl.from(getWebContents()).onConfigurationChanged(config); });
     }
 
     /**
      * Focus element, wait for a single state update, reset state update list.
      * @param id ID of the element to focus.
      */
-    void focusElementAndWaitForStateUpdate(String id)
-            throws InterruptedException, TimeoutException {
+    void focusElementAndWaitForStateUpdate(String id) throws TimeoutException {
         resetAllStates();
         focusElement(id);
         waitAndVerifyUpdateSelection(0, 0, 0, -1, -1);
         resetAllStates();
     }
 
-    void focusElement(final String id) throws InterruptedException, TimeoutException {
+    void focusElement(final String id) throws TimeoutException {
         focusElement(id, true);
     }
 
-    void focusElement(final String id, boolean shouldShowKeyboard)
-            throws InterruptedException, TimeoutException {
+    void focusElement(final String id, boolean shouldShowKeyboard) throws TimeoutException {
         DOMUtils.focusNode(getWebContents(), id);
         assertWaitForKeyboardStatus(shouldShowKeyboard);
-        CriteriaHelper.pollInstrumentationThread(Criteria.equals(id, new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                return DOMUtils.getFocusedNode(getWebContents());
-            }
-        }));
+        waitForFocusedElement(id);
         // When we focus another element, the connection may be recreated.
         mConnection = getInputConnection();
     }
@@ -608,6 +607,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
 
         private final List<Integer> mTextInputTypeList = new ArrayList<>();
         private final List<Integer> mTextInputModeList = new ArrayList<>();
+        private final List<Integer> mTextInputActionList = new ArrayList<>();
         private EditorInfo mOutAttrs;
 
         public TestInputConnectionFactory(ChromiumBaseInputConnection.Factory factory) {
@@ -616,13 +616,14 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
 
         @Override
         public ChromiumBaseInputConnection initializeAndGet(View view, ImeAdapterImpl imeAdapter,
-                int inputType, int inputFlags, int inputMode, int selectionStart, int selectionEnd,
-                EditorInfo outAttrs) {
+                int inputType, int inputFlags, int inputMode, int inputAction, int selectionStart,
+                int selectionEnd, EditorInfo outAttrs) {
             mTextInputTypeList.add(inputType);
             mTextInputModeList.add(inputMode);
+            mTextInputActionList.add(inputAction);
             mOutAttrs = outAttrs;
             return mFactory.initializeAndGet(view, imeAdapter, inputType, inputFlags, inputMode,
-                    selectionStart, selectionEnd, outAttrs);
+                    inputAction, selectionStart, selectionEnd, outAttrs);
         }
 
         @Override
@@ -639,11 +640,18 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
         public void resetAllStates() {
             mTextInputTypeList.clear();
             mTextInputModeList.clear();
+            mTextInputActionList.clear();
         }
 
         public Integer[] getTextInputModeHistory() {
             Integer[] result = new Integer[mTextInputModeList.size()];
             mTextInputModeList.toArray(result);
+            return result;
+        }
+
+        public Integer[] getTextInputActionHistory() {
+            Integer[] result = new Integer[mTextInputActionList.size()];
+            mTextInputActionList.toArray(result);
             return result;
         }
 

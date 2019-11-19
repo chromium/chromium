@@ -208,7 +208,7 @@ struct CrashpadInfo {
   //! Note that streams will appear in the minidump in the reverse order to
   //! which they are added.
   //!
-  //! TODO(scottmg) This is currently only supported on Windows.
+  //! TODO(scottmg) This is currently not supported on Mac.
   //!
   //! \param[in] stream_type The stream type identifier to use. This should be
   //!     normally be larger than `MINIDUMP_STREAM_TYPE::LastReservedStream`

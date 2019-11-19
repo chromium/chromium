@@ -6,13 +6,18 @@
 
 #include <string>
 
+#include "ash/assistant/model/assistant_interaction_model_observer.h"
 #include "ash/assistant/model/assistant_response.h"
 #include "ash/assistant/model/assistant_ui_element.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
+#include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/assistant/ui/main_stage/animated_container_view.h"
 #include "ash/assistant/ui/main_stage/assistant_card_element_view.h"
 #include "ash/assistant/ui/main_stage/assistant_text_element_view.h"
+#include "ash/assistant/ui/main_stage/element_animator.h"
 #include "ash/assistant/util/animation_util.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
@@ -26,43 +31,215 @@ namespace ash {
 
 namespace {
 
+using assistant::util::CreateLayerAnimationSequence;
+using assistant::util::CreateOpacityElement;
+using assistant::util::CreateTransformElement;
+using assistant::util::StartLayerAnimationSequence;
+
 // Appearance.
-constexpr int kFirstCardMarginTopDip = 40;
-constexpr int kPaddingBottomDip = 24;
+constexpr int kEmbeddedUiFirstCardMarginTopDip = 8;
+constexpr int kEmbeddedUiPaddingBottomDip = 8;
+constexpr int kMainUiFirstCardMarginTopDip = 40;
+constexpr int kMainUiPaddingBottomDip = 24;
 
-// Card element animation.
-constexpr float kCardElementAnimationFadeOutOpacity = 0.26f;
-
-// Text element animation.
-constexpr float kTextElementAnimationFadeOutOpacity = 0.f;
-
-// UI element animation.
-constexpr base::TimeDelta kUiElementAnimationFadeInDelay =
+// Main UI element animation.
+constexpr base::TimeDelta kMainUiElementAnimationFadeInDelay =
     base::TimeDelta::FromMilliseconds(83);
-constexpr base::TimeDelta kUiElementAnimationFadeInDuration =
+constexpr base::TimeDelta kMainUiElementAnimationFadeInDuration =
     base::TimeDelta::FromMilliseconds(250);
-constexpr base::TimeDelta kUiElementAnimationFadeOutDuration =
+constexpr base::TimeDelta kMainUiElementAnimationFadeOutDuration =
     base::TimeDelta::FromMilliseconds(167);
+// Text elements must fade out to 0 as the thinking dots will appear in the
+// location of the first text element.
+constexpr float kMainUiTextElementAnimationFadeOutOpacity = 0.f;
+
+// Embedded UI element animation.
+constexpr base::TimeDelta kEmbeddedUiElementAnimationFadeInDuration =
+    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kEmbeddedUiElementAnimationMoveUpDuration =
+    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kEmbeddedUiElementAnimationFadeOutDuration =
+    base::TimeDelta::FromMilliseconds(200);
+constexpr int kEmbeddedUiElementAnimationMoveUpDistanceDip = 32;
+
+// Helpers ---------------------------------------------------------------------
+
+int GetFirstCardMarginTopDip() {
+  return app_list_features::IsAssistantLauncherUIEnabled()
+             ? kEmbeddedUiFirstCardMarginTopDip
+             : kMainUiFirstCardMarginTopDip;
+}
+
+int GetPaddingBottomDip() {
+  return app_list_features::IsAssistantLauncherUIEnabled()
+             ? kEmbeddedUiPaddingBottomDip
+             : kMainUiPaddingBottomDip;
+}
+
+// Animator for elements in the main (non-embedded) UI.
+class MainUiAnimator : public ElementAnimator {
+ public:
+  using ElementAnimator::ElementAnimator;
+  ~MainUiAnimator() override = default;
+
+  // ElementAnimator:
+  void AnimateOut(ui::CallbackLayerAnimationObserver* observer) override {
+    StartLayerAnimationSequence(
+        layer()->GetAnimator(),
+        CreateLayerAnimationSequence(CreateOpacityElement(
+            kMinimumAnimateOutOpacity, kMainUiElementAnimationFadeOutDuration,
+            gfx::Tween::Type::FAST_OUT_SLOW_IN)),
+        observer);
+  }
+
+  void AnimateIn(ui::CallbackLayerAnimationObserver* observer) override {
+    // We fade in the views to full opacity after a slight delay.
+    assistant::util::StartLayerAnimationSequence(
+        layer()->GetAnimator(),
+        CreateLayerAnimationSequence(
+            ui::LayerAnimationElement::CreatePauseElement(
+                ui::LayerAnimationElement::AnimatableProperty::OPACITY,
+                kMainUiElementAnimationFadeInDelay),
+            CreateOpacityElement(1.f, kMainUiElementAnimationFadeInDuration)),
+        observer);
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(MainUiAnimator);
+};
+
+// Animator used for card elements in the main (non-embedded) UI.
+class MainUiCardAnimator : public MainUiAnimator {
+ public:
+  // Constructor used for card elements.
+  explicit MainUiCardAnimator(AssistantCardElementView* element)
+      : MainUiAnimator(element), element_(element) {}
+
+  ui::Layer* layer() const override { return element_->native_view()->layer(); }
+
+ private:
+  AssistantCardElementView* const element_;
+
+  DISALLOW_COPY_AND_ASSIGN(MainUiCardAnimator);
+};
+
+// Animator used for text elements in the main (non-embedded) UI.
+class MainUiTextAnimator : public MainUiAnimator {
+ public:
+  // Constructor used for text elements.
+  explicit MainUiTextAnimator(AssistantTextElementView* element)
+      : MainUiAnimator(element) {}
+
+  void FadeOut(ui::CallbackLayerAnimationObserver* observer) override {
+    assistant::util::StartLayerAnimationSequence(
+        layer()->GetAnimator(),
+        assistant::util::CreateLayerAnimationSequence(
+            assistant::util::CreateOpacityElement(
+                kMainUiTextElementAnimationFadeOutOpacity, kFadeOutDuration)),
+        observer);
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(MainUiTextAnimator);
+};
+
+// Animator for elements in the embedded UI.
+class EmbeddedUiAnimator : public ElementAnimator {
+ public:
+  using ElementAnimator::ElementAnimator;
+  ~EmbeddedUiAnimator() override = default;
+
+  // ElementAnimator:
+  void AnimateOut(ui::CallbackLayerAnimationObserver* observer) override {
+    StartLayerAnimationSequence(
+        layer()->GetAnimator(),
+        CreateLayerAnimationSequence(
+            CreateOpacityElement(kMinimumAnimateOutOpacity,
+                                 kEmbeddedUiElementAnimationFadeOutDuration)),
+        observer);
+  }
+
+  void AnimateIn(ui::CallbackLayerAnimationObserver* observer) override {
+    // As part of the animation we will move up the element from the bottom
+    // so we need to start by moving it down.
+    MoveElementDown();
+
+    assistant::util::StartLayerAnimationSequencesTogether(
+        layer()->GetAnimator(),
+        {
+            CreateFadeInAnimation(),
+            CreateMoveUpAnimation(),
+        },
+        observer);
+  }
+
+ private:
+  void MoveElementDown() const {
+    gfx::Transform transform;
+    transform.Translate(0, kEmbeddedUiElementAnimationMoveUpDistanceDip);
+    layer()->SetTransform(transform);
+  }
+
+  ui::LayerAnimationSequence* CreateFadeInAnimation() const {
+    return CreateLayerAnimationSequence(
+        CreateOpacityElement(1.f, kEmbeddedUiElementAnimationFadeInDuration,
+                             gfx::Tween::Type::FAST_OUT_SLOW_IN));
+  }
+
+  ui::LayerAnimationSequence* CreateMoveUpAnimation() const {
+    return CreateLayerAnimationSequence(CreateTransformElement(
+        gfx::Transform(), kEmbeddedUiElementAnimationMoveUpDuration,
+        gfx::Tween::Type::FAST_OUT_SLOW_IN));
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(EmbeddedUiAnimator);
+};
+
+// Animator for card elements in the embedded UI.
+class EmbeddedUiCardAnimator : public EmbeddedUiAnimator {
+ public:
+  // Constructor used for card elements.
+  explicit EmbeddedUiCardAnimator(AssistantCardElementView* element)
+      : EmbeddedUiAnimator(element), element_(element) {}
+
+  ui::Layer* layer() const override { return element_->native_view()->layer(); }
+
+ private:
+  AssistantCardElementView* const element_;
+
+  DISALLOW_COPY_AND_ASSIGN(EmbeddedUiCardAnimator);
+};
+
+// Animator for text elements in the embedded UI.
+using EmbeddedUiTextAnimator = EmbeddedUiAnimator;
+
+std::unique_ptr<ElementAnimator> CreateCardAnimator(
+    AssistantCardElementView* card_element) {
+  if (app_list_features::IsAssistantLauncherUIEnabled())
+    return std::make_unique<EmbeddedUiCardAnimator>(card_element);
+  else
+    return std::make_unique<MainUiCardAnimator>(card_element);
+}
+
+std::unique_ptr<ElementAnimator> CreateTextAnimator(
+    AssistantTextElementView* text_element) {
+  if (app_list_features::IsAssistantLauncherUIEnabled())
+    return std::make_unique<EmbeddedUiTextAnimator>(text_element);
+  else
+    return std::make_unique<MainUiTextAnimator>(text_element);
+}
+
 }  // namespace
 
 // UiElementContainerView ------------------------------------------------------
 
 UiElementContainerView::UiElementContainerView(AssistantViewDelegate* delegate)
-    : delegate_(delegate),
-      ui_elements_exit_animation_observer_(
-          std::make_unique<ui::CallbackLayerAnimationObserver>(
-              /*animation_ended_callback=*/base::BindRepeating(
-                  &UiElementContainerView::OnAllUiElementsExitAnimationEnded,
-                  base::Unretained(this)))) {
+    : AnimatedContainerView(delegate) {
+  SetID(AssistantViewID::kUiElementContainer);
   InitLayout();
-
-  // The AssistantViewDelegate should outlive UiElementContainerView.
-  delegate_->AddInteractionModelObserver(this);
 }
 
-UiElementContainerView::~UiElementContainerView() {
-  delegate_->RemoveInteractionModelObserver(this);
-}
+UiElementContainerView::~UiElementContainerView() = default;
 
 const char* UiElementContainerView::GetClassName() const {
   return "UiElementContainerView";
@@ -95,114 +272,24 @@ void UiElementContainerView::OnContentsPreferredSizeChanged(
   content_view->SetSize(gfx::Size(width(), preferred_height));
 }
 
-void UiElementContainerView::PreferredSizeChanged() {
-  // Because views are added/removed in batches, we attempt to prevent over-
-  // propagation of the PreferredSizeChanged event during batched view hierarchy
-  // add/remove operations. This helps to reduce layout passes.
-  if (propagate_preferred_size_changed_)
-    AssistantScrollView::PreferredSizeChanged();
-}
-
 void UiElementContainerView::InitLayout() {
   content_view()->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(0, kUiElementHorizontalMarginDip, kPaddingBottomDip,
+      gfx::Insets(0, kUiElementHorizontalMarginDip, GetPaddingBottomDip(),
                   kUiElementHorizontalMarginDip),
       kSpacingDip));
 }
 
 void UiElementContainerView::OnCommittedQueryChanged(
     const AssistantQuery& query) {
-  using assistant::util::CreateLayerAnimationSequence;
-  using assistant::util::CreateOpacityElement;
-
-  // We don't allow processing of events while waiting for the next query
-  // response. The contents will be faded out, so it should not be interactive.
-  // We also scroll to the top to play nice with the transition animation.
-  set_can_process_events_within_subtree(false);
+  // Scroll to the top to play nice with the transition animation.
   ScrollToPosition(vertical_scroll_bar(), 0);
 
-  // When a query is committed, we fade out the views for the previous response
-  // until the next Assistant response has been received.
-  for (const std::pair<ui::LayerOwner*, float>& pair : ui_element_views_) {
-    pair.first->layer()->GetAnimator()->StartAnimation(
-        CreateLayerAnimationSequence(CreateOpacityElement(
-            /*opacity=*/pair.second, kUiElementAnimationFadeOutDuration)));
-  }
+  AnimatedContainerView::OnCommittedQueryChanged(query);
 }
 
-void UiElementContainerView::OnResponseChanged(
-    const std::shared_ptr<AssistantResponse>& response) {
-  // We may have to pend the response while we animate the previous response off
-  // stage. We use a shared pointer to ensure that any views we add to the view
-  // hierarchy can be removed before the underlying UI elements are destroyed.
-  pending_response_ = std::shared_ptr<const AssistantResponse>(response);
-
-  // If we don't have any pre-existing content, there is nothing to animate off
-  // stage so we we can proceed to add the new response.
-  if (!content_view()->has_children()) {
-    OnResponseAdded(std::move(pending_response_));
-    return;
-  }
-
-  using assistant::util::CreateLayerAnimationSequence;
-  using assistant::util::CreateOpacityElement;
-  using assistant::util::StartLayerAnimationSequence;
-
-  // There is a previous response on stage, so we'll animate it off before
-  // adding the new response. The new response will be added upon invocation of
-  // the exit animation ended callback.
-  for (const std::pair<ui::LayerOwner*, float>& pair : ui_element_views_) {
-    StartLayerAnimationSequence(
-        pair.first->layer()->GetAnimator(),
-        // Fade out the opacity to 0%. Note that we approximate 0% by actually
-        // using 0.01%. We do this to workaround a DCHECK that requires
-        // aura::Windows to have a target opacity > 0% when shown. Because our
-        // window will be removed after it reaches this value, it should be safe
-        // to circumnavigate this DCHECK.
-        CreateLayerAnimationSequence(
-            CreateOpacityElement(0.0001f, kUiElementAnimationFadeOutDuration)),
-        // Observe the animation.
-        ui_elements_exit_animation_observer_.get());
-  }
-
-  // Set the observer to active so that we receive callback events.
-  ui_elements_exit_animation_observer_->SetActive();
-}
-
-void UiElementContainerView::OnResponseCleared() {
-  // We can prevent over-propagation of the PreferredSizeChanged event by
-  // stopping propagation during batched view hierarchy add/remove operations.
-  SetPropagatePreferredSizeChanged(false);
-  content_view()->RemoveAllChildViews(/*delete_children=*/true);
-  ui_element_views_.clear();
-  SetPropagatePreferredSizeChanged(true);
-
-  // Once the response has been cleared from the stage, we can are free to
-  // release our shared pointer. This allows resources associated with the
-  // underlying UI elements to be freed, provided there are no other usages.
-  response_.reset();
-
-  // Reset state for the next response.
-  is_first_card_ = true;
-}
-
-void UiElementContainerView::OnResponseAdded(
-    std::shared_ptr<const AssistantResponse> response) {
-  // The response should be fully processed before it is presented.
-  DCHECK_EQ(AssistantResponse::ProcessingState::kProcessed,
-            response->processing_state());
-
-  // We cache a reference to the |response| to ensure that the instance is not
-  // destroyed before we have removed associated views from the view hierarchy.
-  response_ = std::move(response);
-
-  // Because the views for the response are animated in together, we can stop
-  // propagation of PreferredSizeChanged events until all views have been added
-  // to the view hierarchy to reduce layout passes.
-  SetPropagatePreferredSizeChanged(false);
-
-  for (const auto& ui_element : response_->GetUiElements()) {
+void UiElementContainerView::HandleResponse(const AssistantResponse& response) {
+  for (const auto& ui_element : response.GetUiElements()) {
     switch (ui_element->GetType()) {
       case AssistantUiElementType::kCard:
         OnCardElementAdded(
@@ -214,8 +301,6 @@ void UiElementContainerView::OnResponseAdded(
         break;
     }
   }
-
-  OnAllUiElementsAdded();
 }
 
 void UiElementContainerView::OnCardElementAdded(
@@ -225,16 +310,15 @@ void UiElementContainerView::OnCardElementAdded(
     return;
 
   auto* card_element_view =
-      new AssistantCardElementView(delegate_, card_element);
+      new AssistantCardElementView(delegate(), card_element);
   if (is_first_card_) {
     is_first_card_ = false;
 
-    // The first card requires a top margin of |kFirstCardMarginTopDip|, but
+    // The first card requires a top margin of |GetFirstCardMarginTopDip()|, but
     // we need to account for child spacing because the first card is not
     // necessarily the first UI element.
-    const int top_margin_dip = child_count() == 0
-                                   ? kFirstCardMarginTopDip
-                                   : kFirstCardMarginTopDip - kSpacingDip;
+    const int top_margin_dip =
+        GetFirstCardMarginTopDip() - (children().empty() ? 0 : kSpacingDip);
 
     // We effectively create a top margin by applying an empty border.
     card_element_view->SetBorder(
@@ -244,23 +328,17 @@ void UiElementContainerView::OnCardElementAdded(
   content_view()->AddChildView(card_element_view);
 
   // The view will be animated on its own layer, so we need to do some initial
-  // layer setup. We're going to fade the view in, so hide it. Note that we
-  // approximate 0% opacity by actually using 0.01%. We do this to workaround
-  // a DCHECK that requires aura::Windows to have a target opacity > 0% when
-  // shown. Because our window will be animated to full opacity from this
-  // value, it should be safe to circumnavigate this DCHECK.
+  // layer setup. We're going to fade the view in, so hide it.
   card_element_view->native_view()->layer()->SetFillsBoundsOpaquely(false);
-  card_element_view->native_view()->layer()->SetOpacity(0.0001f);
+  card_element_view->native_view()->layer()->SetOpacity(0.f);
 
-  // We cache the native view for use during animations and its desired
-  // opacity that we'll animate to while processing the next query response.
-  ui_element_views_.push_back(std::pair<ui::LayerOwner*, float>(
-      card_element_view->native_view(), kCardElementAnimationFadeOutOpacity));
+  // We set the animator to handle all animations for this view.
+  AddElementAnimator(CreateCardAnimator(card_element_view));
 }
 
 void UiElementContainerView::OnTextElementAdded(
     const AssistantTextElement* text_element) {
-  views::View* text_element_view = new AssistantTextElementView(text_element);
+  auto* text_element_view = new AssistantTextElementView(text_element);
 
   // The view will be animated on its own layer, so we need to do some initial
   // layer setup. We're going to fade the view in, so hide it.
@@ -268,70 +346,25 @@ void UiElementContainerView::OnTextElementAdded(
   text_element_view->layer()->SetFillsBoundsOpaquely(false);
   text_element_view->layer()->SetOpacity(0.f);
 
-  // We cache the view for use during animations and its desired opacity that
-  // we'll animate to while processing the next query response.
-  ui_element_views_.push_back(std::pair<ui::LayerOwner*, float>(
-      text_element_view, kTextElementAnimationFadeOutOpacity));
-
   content_view()->AddChildView(text_element_view);
+
+  // We set the animator to handle all animations for this view.
+  AddElementAnimator(CreateTextAnimator(text_element_view));
 }
 
-void UiElementContainerView::OnAllUiElementsAdded() {
-  using assistant::util::CreateLayerAnimationSequence;
-  using assistant::util::CreateOpacityElement;
+void UiElementContainerView::OnAllViewsRemoved() {
+  // Reset state for the next response.
+  is_first_card_ = true;
+}
 
-  // Now that the response for the current query has been added to the view
-  // hierarchy, we can re-enable processing of events. We can also restart
-  // propagation of PreferredSizeChanged events since all views have been added
-  // to the view hierarchy.
-  set_can_process_events_within_subtree(true);
-  SetPropagatePreferredSizeChanged(true);
-
-  // Now that we've received and added all UI elements for the current query
-  // response, we can animate them in.
-  for (const std::pair<ui::LayerOwner*, float>& pair : ui_element_views_) {
-    // We fade in the views to full opacity after a slight delay.
-    pair.first->layer()->GetAnimator()->StartAnimation(
-        CreateLayerAnimationSequence(
-            ui::LayerAnimationElement::CreatePauseElement(
-                ui::LayerAnimationElement::AnimatableProperty::OPACITY,
-                kUiElementAnimationFadeInDelay),
-            CreateOpacityElement(1.f, kUiElementAnimationFadeInDuration)));
-  }
-
+void UiElementContainerView::OnAllViewsAnimatedIn() {
   // Let screen reader read the query result. This includes the text response
   // and the card fallback text, but webview result is not included.
   // We don't read when there is TTS to avoid speaking over the server response.
   const AssistantResponse* response =
-      delegate_->GetInteractionModel()->response();
+      delegate()->GetInteractionModel()->response();
   if (!response->has_tts())
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-}
-
-bool UiElementContainerView::OnAllUiElementsExitAnimationEnded(
-    const ui::CallbackLayerAnimationObserver& observer) {
-  // All UI elements have finished their exit animations so its safe to perform
-  // clearing of their views and managed resources.
-  OnResponseCleared();
-
-  // It is safe to add our pending response to the view hierarchy now that we've
-  // cleared the previous response from the stage.
-  OnResponseAdded(std::move(pending_response_));
-
-  // Return false to prevent the observer from destroying itself.
-  return false;
-}
-
-void UiElementContainerView::SetPropagatePreferredSizeChanged(bool propagate) {
-  if (propagate == propagate_preferred_size_changed_)
-    return;
-
-  propagate_preferred_size_changed_ = propagate;
-
-  // When we are no longer stopping propagation of PreferredSizeChanged events,
-  // we fire an event off to ensure the view hierarchy is properly laid out.
-  if (propagate_preferred_size_changed_)
-    PreferredSizeChanged();
 }
 
 }  // namespace ash

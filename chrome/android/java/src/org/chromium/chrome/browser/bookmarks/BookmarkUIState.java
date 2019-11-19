@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import org.chromium.chrome.browser.UrlConstants;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.components.bookmarks.BookmarkId;
 
 /**

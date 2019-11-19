@@ -20,7 +20,7 @@ namespace views {
 // between 0 and 255 based on the current value of the animation.
 class VIEWS_EXPORT NativeThemeDelegate {
  public:
-  virtual ~NativeThemeDelegate() {}
+  virtual ~NativeThemeDelegate() = default;
 
   // Get the native theme part that should be drawn.
   virtual ui::NativeTheme::Part GetThemePart() const = 0;

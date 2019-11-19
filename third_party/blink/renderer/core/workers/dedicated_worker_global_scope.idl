@@ -41,6 +41,11 @@
 
     void close();
 
+    // AnimationFrameProvider mixin
+    // https://html.spec.whatwg.org/C/#animation-frames
+    [RaisesException] long requestAnimationFrame(FrameRequestCallback callback);
+    void cancelAnimationFrame(long handle);
+
     attribute EventHandler onmessage;
     attribute EventHandler onmessageerror;
 };

@@ -1,6 +1,7 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 
 #include <algorithm>
@@ -11,12 +12,22 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/sequenced_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/chromeos/printing/printer_configurer.h"
+#include "chrome/browser/chromeos/printing/printer_event_tracker.h"
+#include "chrome/browser/chromeos/printing/printers_map.h"
+#include "chrome/browser/chromeos/printing/server_printers_provider.h"
 #include "chrome/browser/chromeos/printing/synced_printers_manager.h"
 #include "chrome/browser/chromeos/printing/usb_printer_detector.h"
+#include "chrome/browser/chromeos/printing/usb_printer_notification_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,20 +35,22 @@ namespace chromeos {
 namespace {
 
 // Fake backend for SyncedPrintersManager.  This allows us to poke arbitrary
-// changes in the configured and enterprise printer lists.
+// changes in the saved and enterprise printer lists.
 class FakeSyncedPrintersManager : public SyncedPrintersManager {
  public:
   FakeSyncedPrintersManager() = default;
   ~FakeSyncedPrintersManager() override = default;
 
   // Returns the printers that are saved in preferences.
-  std::vector<Printer> GetConfiguredPrinters() const override {
-    return configured_printers_;
+  std::vector<Printer> GetSavedPrinters() const override {
+    return saved_printers_;
   }
 
   // Returns printers from enterprise policy.
-  std::vector<Printer> GetEnterprisePrinters() const override {
-    return enterprise_printers_;
+  bool GetEnterprisePrinters(std::vector<Printer>* printers) const override {
+    if (printers != nullptr)
+      *printers = enterprise_printers_;
+    return true;
   }
 
   // Attach |observer| for notification of events.  |observer| is expected to
@@ -54,31 +67,27 @@ class FakeSyncedPrintersManager : public SyncedPrintersManager {
     observers_.RemoveObserver(observer);
   }
 
-  void UpdateConfiguredPrinter(const Printer& printer) override {
-    size_t i;
-    for (i = 0; i < configured_printers_.size(); ++i) {
-      if (configured_printers_[i].id() == printer.id()) {
-        configured_printers_[i] = printer;
+  void UpdateSavedPrinter(const Printer& printer) override {
+    if (!IsPrinterAlreadySaved(printer)) {
+      SavePrinter(printer);
+      return;
+    }
+
+    for (size_t i = 0; i < saved_printers_.size(); ++i) {
+      if (saved_printers_[i].id() == printer.id()) {
+        saved_printers_[i] = printer;
         break;
       }
     }
-    if (i == configured_printers_.size()) {
-      // Didn't find it, add it.
-      configured_printers_.push_back(printer);
-    }
-    for (Observer& observer : observers_) {
-      observer.OnConfiguredPrintersChanged(configured_printers_);
-    }
+
+    NotifyOnSavedPrintersObservers();
   }
 
-  bool RemoveConfiguredPrinter(const std::string& printer_id) override {
-    for (auto it = configured_printers_.begin();
-         it != configured_printers_.end(); ++it) {
+  bool RemoveSavedPrinter(const std::string& printer_id) override {
+    for (auto it = saved_printers_.begin(); it != saved_printers_.end(); ++it) {
       if (it->id() == printer_id) {
-        configured_printers_.erase(it);
-        for (Observer& observer : observers_) {
-          observer.OnConfiguredPrintersChanged(configured_printers_);
-        }
+        saved_printers_.erase(it);
+        NotifyOnSavedPrintersObservers();
         return true;
       }
     }
@@ -89,13 +98,9 @@ class FakeSyncedPrintersManager : public SyncedPrintersManager {
   // CupsPrintersManager, or just use in a simple pass-through manner that's not
   // worth additional layers of testing on top of the testing in
   // SyncedPrintersManager.
-  void PrinterInstalled(const Printer& printer) override {}
-  bool IsConfigurationCurrent(const Printer& printer) const override {
-    return true;
-  }
   PrintersSyncBridge* GetSyncBridge() override { return nullptr; }
   // Returns the printer with id |printer_id|, or nullptr if no such printer
-  // exists.  Searches both Configured and Enterprise printers.
+  // exists.  Searches both Saved and Enterprise printers.
   std::unique_ptr<Printer> GetPrinter(
       const std::string& printer_id) const override {
     return nullptr;
@@ -103,23 +108,19 @@ class FakeSyncedPrintersManager : public SyncedPrintersManager {
 
   // Fake manipulation functions.
 
-  // Add the given printers to the list of configured printers and
+  // Add the given printers to the list of saved printers and
   // notify observers.
-  void AddConfiguredPrinters(const std::vector<Printer>& printers) {
-    configured_printers_.insert(configured_printers_.end(), printers.begin(),
-                                printers.end());
-    for (Observer& observer : observers_) {
-      observer.OnConfiguredPrintersChanged(configured_printers_);
-    }
+  void AddSavedPrinters(const std::vector<Printer>& printers) {
+    saved_printers_.insert(saved_printers_.end(), printers.begin(),
+                           printers.end());
+    NotifyOnSavedPrintersObservers();
   }
 
-  // Remove the printers with the given ids from the set of configured printers,
+  // Remove the printers with the given ids from the set of saved printers,
   // notify observers.
-  void RemoveConfiguredPrinters(const std::unordered_set<std::string>& ids) {
-    RemovePrinters(ids, &configured_printers_);
-    for (Observer& observer : observers_) {
-      observer.OnConfiguredPrintersChanged(configured_printers_);
-    }
+  void RemoveSavedPrinters(const std::unordered_set<std::string>& ids) {
+    RemovePrinters(ids, &saved_printers_);
+    NotifyOnSavedPrintersObservers();
   }
 
   // Add the given printers to the list of enterprise printers and
@@ -128,7 +129,7 @@ class FakeSyncedPrintersManager : public SyncedPrintersManager {
     enterprise_printers_.insert(enterprise_printers_.end(), printers.begin(),
                                 printers.end());
     for (Observer& observer : observers_) {
-      observer.OnEnterprisePrintersChanged(enterprise_printers_);
+      observer.OnEnterprisePrintersChanged();
     }
   }
 
@@ -137,7 +138,7 @@ class FakeSyncedPrintersManager : public SyncedPrintersManager {
   void RemoveEnterprisePrinters(const std::unordered_set<std::string>& ids) {
     RemovePrinters(ids, &enterprise_printers_);
     for (Observer& observer : observers_) {
-      observer.OnEnterprisePrintersChanged(enterprise_printers_);
+      observer.OnEnterprisePrintersChanged();
     }
   }
 
@@ -146,14 +147,37 @@ class FakeSyncedPrintersManager : public SyncedPrintersManager {
                       std::vector<Printer>* target) {
     auto new_end = std::remove_if(target->begin(), target->end(),
                                   [&ids](const Printer& printer) -> bool {
-                                    return base::ContainsKey(ids, printer.id());
+                                    return base::Contains(ids, printer.id());
                                   });
 
     target->resize(new_end - target->begin());
   }
 
+  bool IsPrinterAlreadySaved(const Printer& printer) const {
+    for (const Printer& saved_printer : saved_printers_) {
+      if (printer.id() == saved_printer.id()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void SavePrinter(const Printer& printer) {
+    DCHECK(!IsPrinterAlreadySaved(printer));
+
+    saved_printers_.push_back(printer);
+
+    NotifyOnSavedPrintersObservers();
+  }
+
+  void NotifyOnSavedPrintersObservers() const {
+    for (Observer& observer : observers_) {
+      observer.OnSavedPrintersChanged();
+    }
+  }
+
   base::ObserverList<SyncedPrintersManager::Observer>::Unchecked observers_;
-  std::vector<Printer> configured_printers_;
+  std::vector<Printer> saved_printers_;
   std::vector<Printer> enterprise_printers_;
 };
 
@@ -162,11 +186,8 @@ class FakePrinterDetector : public PrinterDetector {
   FakePrinterDetector() {}
   ~FakePrinterDetector() override = default;
 
-  void AddObserver(Observer* observer) override {
-    observers_.AddObserver(observer);
-  }
-  void RemoveObserver(Observer* observer) override {
-    observers_.RemoveObserver(observer);
+  void RegisterPrintersFoundCallback(OnPrintersFoundCallback cb) override {
+    on_printers_found_callback_ = std::move(cb);
   }
 
   std::vector<DetectedPrinter> GetPrinters() override { return detections_; }
@@ -175,9 +196,7 @@ class FakePrinterDetector : public PrinterDetector {
       const std::vector<PrinterDetector::DetectedPrinter>& new_detections) {
     detections_.insert(detections_.end(), new_detections.begin(),
                        new_detections.end());
-    for (Observer& observer : observers_) {
-      observer.OnPrintersFound(detections_);
-    }
+    on_printers_found_callback_.Run(detections_);
   }
 
   // Remove printers that have ids in ids.
@@ -185,15 +204,16 @@ class FakePrinterDetector : public PrinterDetector {
     auto new_end =
         std::remove_if(detections_.begin(), detections_.end(),
                        [&ids](const DetectedPrinter& detection) -> bool {
-                         return base::ContainsKey(ids, detection.printer.id());
+                         return base::Contains(ids, detection.printer.id());
                        });
 
     detections_.resize(new_end - detections_.begin());
+    on_printers_found_callback_.Run(detections_);
   }
 
  private:
   std::vector<DetectedPrinter> detections_;
-  base::ObserverList<PrinterDetector::Observer>::Unchecked observers_;
+  OnPrintersFoundCallback on_printers_found_callback_;
 };
 
 // Fake PpdProvider backend.  This fake generates PpdReferences based on
@@ -210,14 +230,20 @@ class FakePpdProvider : public PpdProvider {
                            ResolvePpdReferenceCallback cb) override {
     if (search_data.make_and_model.empty()) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(cb), PpdProvider::NOT_FOUND,
-                                    Printer::PpdReference()));
+          FROM_HERE,
+          base::BindOnce(std::move(cb), PpdProvider::NOT_FOUND,
+                         Printer::PpdReference(), usb_manufacturer_));
     } else {
       Printer::PpdReference ret;
       ret.effective_make_and_model = search_data.make_and_model[0];
       base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(cb), PpdProvider::SUCCESS, ret));
+          FROM_HERE, base::BindOnce(std::move(cb), PpdProvider::SUCCESS, ret,
+                                    "" /* usb_manufacturer */));
     }
+  }
+
+  void SetUsbManufacturer(const std::string& manufacturer) {
+    usb_manufacturer_ = manufacturer;
   }
 
   // These three functions are not used by CupsPrintersManager.
@@ -231,6 +257,7 @@ class FakePpdProvider : public PpdProvider {
 
  private:
   ~FakePpdProvider() override {}
+  std::string usb_manufacturer_;
 };
 
 // Expect that the printers in printers have the given ids, without
@@ -247,44 +274,127 @@ void ExpectPrinterIdsAre(const std::vector<Printer>& printers,
   EXPECT_EQ(sorted_ids, found_ids);
 }
 
+class FakePrinterConfigurer : public PrinterConfigurer {
+ public:
+  FakePrinterConfigurer() = default;
+
+  // PrinterConfigurer overrides
+  void SetUpPrinter(const Printer& printer,
+                    PrinterSetupCallback callback) override {
+    MarkConfigured(printer.id());
+    std::move(callback).Run(PrinterSetupResult::kSuccess);
+  }
+
+  // Manipulation functions
+  bool IsConfigured(const std::string& printer_id) const {
+    return configured_.contains(printer_id);
+  }
+
+  void MarkConfigured(const std::string& printer_id) {
+    configured_.insert(printer_id);
+  }
+
+ private:
+  base::flat_set<std::string> configured_;
+};
+
+class FakeUsbPrinterNotificationController
+    : public UsbPrinterNotificationController {
+ public:
+  FakeUsbPrinterNotificationController() = default;
+  ~FakeUsbPrinterNotificationController() override = default;
+
+  void ShowEphemeralNotification(const Printer& printer) override {
+    NOTIMPLEMENTED();
+  }
+  void ShowConfigurationNotification(const Printer& printer) override {
+    configuration_notifications_.insert(printer.id());
+  }
+  void ShowSavedNotification(const Printer& printer) override {
+    saved_notifications_.insert(printer.id());
+  }
+  void RemoveNotification(const std::string& printer_id) override {
+    saved_notifications_.erase(printer_id);
+    configuration_notifications_.erase(printer_id);
+  }
+  bool IsNotificationDisplayed(const std::string& printer_id) const override {
+    return configuration_notifications_.contains(printer_id) ||
+           saved_notifications_.contains(printer_id);
+  }
+
+  bool IsSavedNotification(const std::string& printer_id) const {
+    return saved_notifications_.contains(printer_id);
+  }
+
+  bool IsConfigurationNotification(const std::string& printer_id) const {
+    return configuration_notifications_.contains(printer_id);
+  }
+
+ private:
+  base::flat_set<std::string> saved_notifications_;
+  base::flat_set<std::string> configuration_notifications_;
+};
+
+class FakeServerPrintersProvider : public ServerPrintersProvider {
+ public:
+  FakeServerPrintersProvider() = default;
+  ~FakeServerPrintersProvider() override = default;
+
+  void RegisterPrintersFoundCallback(OnPrintersUpdateCallback cb) override {}
+
+  std::vector<PrinterDetector::DetectedPrinter> GetPrinters() override {
+    std::vector<PrinterDetector::DetectedPrinter> printers;
+    return printers;
+  }
+};
+
 class CupsPrintersManagerTest : public testing::Test,
                                 public CupsPrintersManager::Observer {
  public:
-  CupsPrintersManagerTest()
-      : observed_printers_(CupsPrintersManager::kNumPrinterClasses),
-        ppd_provider_(new FakePpdProvider) {
+  CupsPrintersManagerTest() : ppd_provider_(new FakePpdProvider) {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kStreamlinedUsbPrinterSetup);
     // Zeroconf and usb detector ownerships are taken by the manager, so we have
     // to keep raw pointers to them.
     auto zeroconf_detector = std::make_unique<FakePrinterDetector>();
     zeroconf_detector_ = zeroconf_detector.get();
     auto usb_detector = std::make_unique<FakePrinterDetector>();
     usb_detector_ = usb_detector.get();
+    auto printer_configurer = std::make_unique<FakePrinterConfigurer>();
+    printer_configurer_ = printer_configurer.get();
+    auto usb_notif_controller =
+        std::make_unique<FakeUsbPrinterNotificationController>();
+    usb_notif_controller_ = usb_notif_controller.get();
+    auto server_printers_provider =
+        std::make_unique<FakeServerPrintersProvider>();
+    server_printers_provider_ = server_printers_provider.get();
 
     // Register the pref |UserNativePrintersAllowed|
     CupsPrintersManager::RegisterProfilePrefs(pref_service_.registry());
 
     manager_ = CupsPrintersManager::CreateForTesting(
         &synced_printers_manager_, std::move(usb_detector),
-        std::move(zeroconf_detector), ppd_provider_, &event_tracker_,
-        &pref_service_);
+        std::move(zeroconf_detector), ppd_provider_,
+        std::move(printer_configurer), std::move(usb_notif_controller),
+        std::move(server_printers_provider), &event_tracker_, &pref_service_);
     manager_->AddObserver(this);
   }
 
   ~CupsPrintersManagerTest() override {}
 
   // CupsPrintersManager::Observer implementation
-  void OnPrintersChanged(CupsPrintersManager::PrinterClass printer_class,
+  void OnPrintersChanged(PrinterClass printer_class,
                          const std::vector<Printer>& printers) override {
-    observed_printers_.at(printer_class) = printers;
+    observed_printers_[printer_class] = printers;
   }
 
   // Check that, for the given printer class, the printers we have from the
   // observation callback and the printers we have when we query the manager are
   // both the same and have the passed ids.
-  void ExpectPrintersInClassAre(CupsPrintersManager::PrinterClass printer_class,
+  void ExpectPrintersInClassAre(PrinterClass printer_class,
                                 const std::vector<std::string>& ids) {
     ExpectPrinterIdsAre(manager_->GetPrinters(printer_class), ids);
-    ExpectPrinterIdsAre(observed_printers_.at(printer_class), ids);
+    ExpectPrinterIdsAre(observed_printers_[printer_class], ids);
   }
 
   void UpdatePolicyValue(const char* name, bool value) {
@@ -294,15 +404,19 @@ class CupsPrintersManagerTest : public testing::Test,
   }
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   // Captured printer lists from observer callbacks.
-  std::vector<std::vector<Printer>> observed_printers_;
+  base::flat_map<PrinterClass, std::vector<Printer>> observed_printers_;
 
   // Backend fakes driving the CupsPrintersManager.
   FakeSyncedPrintersManager synced_printers_manager_;
-  FakePrinterDetector* usb_detector_;
-  FakePrinterDetector* zeroconf_detector_;
+  FakePrinterDetector* usb_detector_;          // Not owned.
+  FakePrinterDetector* zeroconf_detector_;     // Not owned.
+  FakePrinterConfigurer* printer_configurer_;  // Not owned.
+  FakeUsbPrinterNotificationController* usb_notif_controller_;  // Not owned.
+  FakeServerPrintersProvider* server_printers_provider_;        // Not owned.
   scoped_refptr<FakePpdProvider> ppd_provider_;
 
   // This is unused, it's just here for memory ownership.
@@ -321,10 +435,23 @@ class CupsPrintersManagerTest : public testing::Test,
 // this test) be handled as a Discovered printer (because it has no make and
 // model information, and that's now the FakePpdProvider is set up to determine
 // whether or not something has a Ppd available).
-PrinterDetector::DetectedPrinter MakeDiscoveredPrinter(const std::string& id) {
+PrinterDetector::DetectedPrinter MakeDiscoveredPrinter(const std::string& id,
+                                                       const std::string& uri) {
   PrinterDetector::DetectedPrinter ret;
   ret.printer.set_id(id);
+  ret.printer.set_uri(uri);
   return ret;
+}
+
+// Calls MakeDiscoveredPrinter with empty uri.
+PrinterDetector::DetectedPrinter MakeDiscoveredPrinter(const std::string& id) {
+  return MakeDiscoveredPrinter(id, "" /* uri */);
+}
+
+// Calls MakeDiscoveredPrinter with the USB protocol as the uri.
+PrinterDetector::DetectedPrinter MakeUsbDiscoveredPrinter(
+    const std::string& id) {
+  return MakeDiscoveredPrinter(id, "usb:");
 }
 
 // Pseudo-constructor for inline creation of a DetectedPrinter that should (in
@@ -342,17 +469,16 @@ PrinterDetector::DetectedPrinter MakeAutomaticPrinter(const std::string& id) {
 TEST_F(CupsPrintersManagerTest, GetEnterprisePrinters) {
   synced_printers_manager_.AddEnterprisePrinters(
       {Printer("Foo"), Printer("Bar")});
-  scoped_task_environment_.RunUntilIdle();
-  ExpectPrintersInClassAre(CupsPrintersManager::kEnterprise, {"Foo", "Bar"});
+  task_environment_.RunUntilIdle();
+  ExpectPrintersInClassAre(PrinterClass::kEnterprise, {"Foo", "Bar"});
 }
 
-// Test that Configured printers from SyncedPrinterManager are
+// Test that Saved printers from SyncedPrinterManager are
 // surfaced appropriately.
-TEST_F(CupsPrintersManagerTest, GetConfiguredPrinters) {
-  synced_printers_manager_.AddConfiguredPrinters(
-      {Printer("Foo"), Printer("Bar")});
-  scoped_task_environment_.RunUntilIdle();
-  ExpectPrintersInClassAre(CupsPrintersManager::kConfigured, {"Foo", "Bar"});
+TEST_F(CupsPrintersManagerTest, GetSavedPrinters) {
+  synced_printers_manager_.AddSavedPrinters({Printer("Foo"), Printer("Bar")});
+  task_environment_.RunUntilIdle();
+  ExpectPrintersInClassAre(PrinterClass::kSaved, {"Foo", "Bar"});
 }
 
 // Test that USB printers from the usb detector are converted to 'Printer's and
@@ -361,28 +487,23 @@ TEST_F(CupsPrintersManagerTest, GetConfiguredPrinters) {
 TEST_F(CupsPrintersManagerTest, GetUsbPrinters) {
   usb_detector_->AddDetections({MakeDiscoveredPrinter("DiscoveredPrinter"),
                                 MakeAutomaticPrinter("AutomaticPrinter")});
-  scoped_task_environment_.RunUntilIdle();
-  ExpectPrintersInClassAre(CupsPrintersManager::kDiscovered,
-                           {"DiscoveredPrinter"});
-  ExpectPrintersInClassAre(CupsPrintersManager::kAutomatic,
-                           {"AutomaticPrinter"});
+  task_environment_.RunUntilIdle();
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"DiscoveredPrinter"});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"AutomaticPrinter"});
 }
 
 // Same as GetUsbPrinters, only for Zeroconf printers.
 TEST_F(CupsPrintersManagerTest, GetZeroconfPrinters) {
   zeroconf_detector_->AddDetections({MakeDiscoveredPrinter("DiscoveredPrinter"),
                                      MakeAutomaticPrinter("AutomaticPrinter")});
-  synced_printers_manager_.AddConfiguredPrinters(
-      {Printer("Foo"), Printer("Bar")});
+  synced_printers_manager_.AddSavedPrinters({Printer("Foo"), Printer("Bar")});
 
-  scoped_task_environment_.RunUntilIdle();
-  ExpectPrintersInClassAre(CupsPrintersManager::kDiscovered,
-                           {"DiscoveredPrinter"});
-  ExpectPrintersInClassAre(CupsPrintersManager::kAutomatic,
-                           {"AutomaticPrinter"});
+  task_environment_.RunUntilIdle();
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"DiscoveredPrinter"});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"AutomaticPrinter"});
 }
 
-// Test that printers that appear in either a Configured or Enterprise set do
+// Test that printers that appear in either a Saved or Enterprise set do
 // *not* appear in Discovered or Automatic, even if they are detected as such.
 TEST_F(CupsPrintersManagerTest, SyncedPrintersTrumpDetections) {
   zeroconf_detector_->AddDetections(
@@ -390,208 +511,390 @@ TEST_F(CupsPrintersManagerTest, SyncedPrintersTrumpDetections) {
        MakeDiscoveredPrinter("DiscoveredPrinter1"),
        MakeAutomaticPrinter("AutomaticPrinter0"),
        MakeAutomaticPrinter("AutomaticPrinter1")});
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   // Before we muck with anything else, check that automatic and discovered
   // classes are what we intended to set up.
-  ExpectPrintersInClassAre(CupsPrintersManager::kDiscovered,
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered,
                            {"DiscoveredPrinter0", "DiscoveredPrinter1"});
-  ExpectPrintersInClassAre(CupsPrintersManager::kAutomatic,
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic,
                            {"AutomaticPrinter0", "AutomaticPrinter1"});
 
-  // Configure both the Discovered and Automatic printers.  This should put them
-  // into the Configured class and thus *remove* them from their previous
+  // Save both the Discovered and Automatic printers.  This should put them
+  // into the Saved class and thus *remove* them from their previous
   // classes.
-  manager_->UpdateConfiguredPrinter(Printer("DiscoveredPrinter0"));
-  manager_->UpdateConfiguredPrinter(Printer("AutomaticPrinter0"));
-  scoped_task_environment_.RunUntilIdle();
-  ExpectPrintersInClassAre(CupsPrintersManager::kDiscovered,
-                           {"DiscoveredPrinter1"});
-  ExpectPrintersInClassAre(CupsPrintersManager::kAutomatic,
-                           {"AutomaticPrinter1"});
-  ExpectPrintersInClassAre(CupsPrintersManager::kConfigured,
+  manager_->PrinterInstalled(Printer("DiscoveredPrinter0"),
+                             /*is_automatic=*/true,
+                             PrinterSetupSource::kSettings);
+  manager_->SavePrinter(Printer("DiscoveredPrinter0"));
+  manager_->PrinterInstalled(Printer("AutomaticPrinter0"),
+                             /*is_automatic=*/true,
+                             PrinterSetupSource::kPrintPreview);
+  manager_->SavePrinter(Printer("AutomaticPrinter0"));
+  task_environment_.RunUntilIdle();
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"DiscoveredPrinter1"});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"AutomaticPrinter1"});
+  ExpectPrintersInClassAre(PrinterClass::kSaved,
                            {"DiscoveredPrinter0", "AutomaticPrinter0"});
 }
 
-// Test updates of configured printers.  Updates of existing configured printers
+// Test updates of saved printers.  Updates of existing saved printers
 // should propagate.  Updates of printers in other classes should result in
-// those printers becoming configured.  Updates of unknown printers should
-// result in a new configured printer.
-TEST_F(CupsPrintersManagerTest, UpdateConfiguredPrinter) {
+// those printers becoming saved.  Updates of unknown printers should
+// result in a new saved printer.
+TEST_F(CupsPrintersManagerTest, SavePrinter) {
   // Start with a printer in each class named after the class it's in, except
   // Enterprise which is not relevant to this test.
-  Printer existing_configured("Configured");
-  synced_printers_manager_.AddConfiguredPrinters({existing_configured});
+  Printer existing_saved("Saved");
+  synced_printers_manager_.AddSavedPrinters({existing_saved});
   usb_detector_->AddDetections({MakeDiscoveredPrinter("Discovered")});
   zeroconf_detector_->AddDetections({MakeAutomaticPrinter("Automatic")});
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Sanity check that we do, indeed, have one printer in each class.
-  ExpectPrintersInClassAre(CupsPrintersManager::kConfigured, {"Configured"});
-  ExpectPrintersInClassAre(CupsPrintersManager::kAutomatic, {"Automatic"});
-  ExpectPrintersInClassAre(CupsPrintersManager::kDiscovered, {"Discovered"});
+  ExpectPrintersInClassAre(PrinterClass::kSaved, {"Saved"});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"Automatic"});
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"Discovered"});
 
-  // Update the existing configured printer.  Check that the new display name
+  // Update the existing saved printer.  Check that the new display name
   // propagated.
-  existing_configured.set_display_name("New Display Name");
-  manager_->UpdateConfiguredPrinter(existing_configured);
-  scoped_task_environment_.RunUntilIdle();
-  ExpectPrintersInClassAre(CupsPrintersManager::kConfigured, {"Configured"});
-  EXPECT_EQ(
-      manager_->GetPrinters(CupsPrintersManager::kConfigured)[0].display_name(),
-      "New Display Name");
+  existing_saved.set_display_name("New Display Name");
+  manager_->SavePrinter(existing_saved);
+  task_environment_.RunUntilIdle();
+  ExpectPrintersInClassAre(PrinterClass::kSaved, {"Saved"});
+  EXPECT_EQ(manager_->GetPrinters(PrinterClass::kSaved)[0].display_name(),
+            "New Display Name");
 
   // Do the same thing for the Automatic and Discovered printers.
   // Create a configuration for the zeroconf printer, which should shift it
-  // into the configured category.
-  manager_->UpdateConfiguredPrinter(Printer("Automatic"));
-  scoped_task_environment_.RunUntilIdle();
-  ExpectPrintersInClassAre(CupsPrintersManager::kAutomatic, {});
-  ExpectPrintersInClassAre(CupsPrintersManager::kConfigured,
-                           {"Automatic", "Configured"});
+  // into the saved category.
+  manager_->SavePrinter(Printer("Automatic"));
+  task_environment_.RunUntilIdle();
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {});
+  ExpectPrintersInClassAre(PrinterClass::kSaved, {"Automatic", "Saved"});
 
-  manager_->UpdateConfiguredPrinter(Printer("Discovered"));
-  scoped_task_environment_.RunUntilIdle();
-  ExpectPrintersInClassAre(CupsPrintersManager::kDiscovered, {});
-  ExpectPrintersInClassAre(CupsPrintersManager::kConfigured,
-                           {"Automatic", "Configured", "Discovered"});
+  manager_->SavePrinter(Printer("Discovered"));
+  task_environment_.RunUntilIdle();
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {});
+  ExpectPrintersInClassAre(PrinterClass::kSaved,
+                           {"Automatic", "Saved", "Discovered"});
 
-  // Update a printer we haven't seen before, which should just add it.
-  manager_->UpdateConfiguredPrinter(Printer("NewFangled"));
-  scoped_task_environment_.RunUntilIdle();
-  ExpectPrintersInClassAre(
-      CupsPrintersManager::kConfigured,
-      {"Automatic", "Configured", "Discovered", "NewFangled"});
+  // Save a printer we haven't seen before, which should just add it to kSaved.
+  manager_->SavePrinter(Printer("NewFangled"));
+  task_environment_.RunUntilIdle();
+  ExpectPrintersInClassAre(PrinterClass::kSaved,
+                           {"Automatic", "Saved", "Discovered", "NewFangled"});
 
   // Remove the automatic printer, make sure it ends up back in the automatic
   // class after removal.
-  manager_->RemoveConfiguredPrinter("Automatic");
-  scoped_task_environment_.RunUntilIdle();
-  ExpectPrintersInClassAre(CupsPrintersManager::kConfigured,
-                           {"Configured", "Discovered", "NewFangled"});
-  ExpectPrintersInClassAre(CupsPrintersManager::kAutomatic, {"Automatic"});
+  manager_->RemoveSavedPrinter("Automatic");
+  task_environment_.RunUntilIdle();
+  ExpectPrintersInClassAre(PrinterClass::kSaved,
+                           {"Saved", "Discovered", "NewFangled"});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"Automatic"});
 }
 
 // Test that GetPrinter() finds printers in any class, and returns null if
 // a printer is not found.
 TEST_F(CupsPrintersManagerTest, GetPrinter) {
-  synced_printers_manager_.AddConfiguredPrinters({Printer("Configured")});
+  synced_printers_manager_.AddSavedPrinters({Printer("Saved")});
   synced_printers_manager_.AddEnterprisePrinters({Printer("Enterprise")});
   usb_detector_->AddDetections({MakeDiscoveredPrinter("Discovered")});
   zeroconf_detector_->AddDetections({MakeAutomaticPrinter("Automatic")});
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   for (const std::string& id :
-       {"Configured", "Enterprise", "Discovered", "Automatic"}) {
-    std::unique_ptr<Printer> printer = manager_->GetPrinter(id);
-    ASSERT_NE(printer, nullptr);
+       {"Saved", "Enterprise", "Discovered", "Automatic"}) {
+    base::Optional<Printer> printer = manager_->GetPrinter(id);
+    ASSERT_TRUE(printer);
     EXPECT_EQ(printer->id(), id);
   }
 
-  std::unique_ptr<Printer> printer = manager_->GetPrinter("Nope");
-  EXPECT_EQ(printer, nullptr);
+  base::Optional<Printer> printer = manager_->GetPrinter("Nope");
+  EXPECT_FALSE(printer);
 }
 
 // Test that if |UserNativePrintersAllowed| pref is set to false, then
 // GetPrinters() will only return printers from
-// |CupsPrintersManager::kEnterprise|.
+// |PrinterClass::kEnterprise|.
 TEST_F(CupsPrintersManagerTest, GetPrintersUserNativePrintersDisabled) {
-  synced_printers_manager_.AddConfiguredPrinters({Printer("Configured")});
+  synced_printers_manager_.AddSavedPrinters({Printer("Saved")});
   synced_printers_manager_.AddEnterprisePrinters({Printer("Enterprise")});
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Disable the use of non-enterprise printers.
   UpdatePolicyValue(prefs::kUserNativePrintersAllowed, false);
 
   // Verify that non-enterprise printers are not returned by GetPrinters()
-  std::vector<Printer> configured_printers =
-      manager_->GetPrinters(CupsPrintersManager::kConfigured);
-  ExpectPrinterIdsAre(configured_printers, {});
+  std::vector<Printer> saved_printers =
+      manager_->GetPrinters(PrinterClass::kSaved);
+  ExpectPrinterIdsAre(saved_printers, {});
 
   // Verify that enterprise printers are returned by GetPrinters()
   std::vector<Printer> enterprise_printers =
-      manager_->GetPrinters(CupsPrintersManager::kEnterprise);
+      manager_->GetPrinters(PrinterClass::kEnterprise);
   ExpectPrinterIdsAre(enterprise_printers, {"Enterprise"});
 }
 
 // Test that if |UserNativePrintersAllowed| pref is set to false, then
-// UpdateConfiguredPrinter() will simply do nothing.
-TEST_F(CupsPrintersManagerTest,
-       UpdateConfiguredPrinterUserNativePrintersDisabled) {
-  // Start by installing a configured printer to be used to test than any
+// SavePrinter() will simply do nothing.
+TEST_F(CupsPrintersManagerTest, SavePrinterUserNativePrintersDisabled) {
+  // Start by installing a saved printer to be used to test than any
   // changes made to the printer will not be propogated.
-  Printer existing_configured("Configured");
-  synced_printers_manager_.AddConfiguredPrinters({existing_configured});
+  Printer existing_saved("Saved");
+  synced_printers_manager_.AddSavedPrinters({existing_saved});
   usb_detector_->AddDetections({MakeDiscoveredPrinter("Discovered")});
   zeroconf_detector_->AddDetections({MakeAutomaticPrinter("Automatic")});
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Sanity check that we do, indeed, have one printer in each class.
-  ExpectPrintersInClassAre(CupsPrintersManager::kConfigured, {"Configured"});
-  ExpectPrintersInClassAre(CupsPrintersManager::kAutomatic, {"Automatic"});
-  ExpectPrintersInClassAre(CupsPrintersManager::kDiscovered, {"Discovered"});
+  ExpectPrintersInClassAre(PrinterClass::kSaved, {"Saved"});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"Automatic"});
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"Discovered"});
 
   // Disable the use of non-enterprise printers.
   UpdatePolicyValue(prefs::kUserNativePrintersAllowed, false);
 
-  // Update the existing configured printer. Verify that the changes did not
+  // Update the existing saved printer. Verify that the changes did not
   // progogate.
-  existing_configured.set_display_name("New Display Name");
-  manager_->UpdateConfiguredPrinter(existing_configured);
-  scoped_task_environment_.RunUntilIdle();
+  existing_saved.set_display_name("New Display Name");
+  manager_->SavePrinter(existing_saved);
+  task_environment_.RunUntilIdle();
 
   // Reenable user printers in order to do checking.
   UpdatePolicyValue(prefs::kUserNativePrintersAllowed, true);
-  ExpectPrintersInClassAre(CupsPrintersManager::kConfigured, {"Configured"});
-  EXPECT_EQ(
-      manager_->GetPrinters(CupsPrintersManager::kConfigured)[0].display_name(),
-      "");
+  ExpectPrintersInClassAre(PrinterClass::kSaved, {"Saved"});
+  EXPECT_EQ(manager_->GetPrinters(PrinterClass::kSaved)[0].display_name(), "");
   UpdatePolicyValue(prefs::kUserNativePrintersAllowed, false);
 
   // Attempt to update the Automatic and Discovered printers. In both cases
-  // check that the printers do not move into the configured category.
-  manager_->UpdateConfiguredPrinter(Printer("Automatic"));
-  scoped_task_environment_.RunUntilIdle();
+  // check that the printers do not move into the saved category.
+  manager_->SavePrinter(Printer("Automatic"));
+  task_environment_.RunUntilIdle();
   UpdatePolicyValue(prefs::kUserNativePrintersAllowed, true);
-  ExpectPrintersInClassAre(CupsPrintersManager::kAutomatic, {"Automatic"});
-  ExpectPrintersInClassAre(CupsPrintersManager::kConfigured, {"Configured"});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"Automatic"});
+  ExpectPrintersInClassAre(PrinterClass::kSaved, {"Saved"});
   UpdatePolicyValue(prefs::kUserNativePrintersAllowed, false);
 
-  manager_->UpdateConfiguredPrinter(Printer("Discovered"));
-  scoped_task_environment_.RunUntilIdle();
+  manager_->SavePrinter(Printer("Discovered"));
+  task_environment_.RunUntilIdle();
   UpdatePolicyValue(prefs::kUserNativePrintersAllowed, true);
-  ExpectPrintersInClassAre(CupsPrintersManager::kDiscovered, {"Discovered"});
-  ExpectPrintersInClassAre(CupsPrintersManager::kConfigured, {"Configured"});
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"Discovered"});
+  ExpectPrintersInClassAre(PrinterClass::kSaved, {"Saved"});
   UpdatePolicyValue(prefs::kUserNativePrintersAllowed, false);
 
   // Attempt to update a printer that we haven't seen before, check that nothing
   // changed.
-  manager_->UpdateConfiguredPrinter(Printer("NewFangled"));
-  scoped_task_environment_.RunUntilIdle();
+  manager_->SavePrinter(Printer("NewFangled"));
+  task_environment_.RunUntilIdle();
   UpdatePolicyValue(prefs::kUserNativePrintersAllowed, true);
-  ExpectPrintersInClassAre(CupsPrintersManager::kConfigured, {"Configured"});
+  ExpectPrintersInClassAre(PrinterClass::kSaved, {"Saved"});
 }
 
 // Test that if |UserNativePrintersAllowed| pref is set to false GetPrinter only
 // returns a printer when the given printer id corresponds to an enterprise
 // printer. Otherwise, it returns nothing.
 TEST_F(CupsPrintersManagerTest, GetPrinterUserNativePrintersDisabled) {
-  synced_printers_manager_.AddConfiguredPrinters({Printer("Configured")});
+  synced_printers_manager_.AddSavedPrinters({Printer("Saved")});
   synced_printers_manager_.AddEnterprisePrinters({Printer("Enterprise")});
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Sanity check that the printers were added.
-  ExpectPrintersInClassAre(CupsPrintersManager::kConfigured, {"Configured"});
-  ExpectPrintersInClassAre(CupsPrintersManager::kEnterprise, {"Enterprise"});
+  ExpectPrintersInClassAre(PrinterClass::kSaved, {"Saved"});
+  ExpectPrintersInClassAre(PrinterClass::kEnterprise, {"Enterprise"});
 
   // Diable the use of non-enterprise printers.
   UpdatePolicyValue(prefs::kUserNativePrintersAllowed, false);
 
-  std::unique_ptr<Printer> configured_ptr = manager_->GetPrinter("Configured");
-  EXPECT_EQ(configured_ptr, nullptr);
+  base::Optional<Printer> saved_printer = manager_->GetPrinter("Saved");
+  EXPECT_FALSE(saved_printer);
 
-  std::unique_ptr<Printer> enterprise_ptr = manager_->GetPrinter("Enterprise");
-  ASSERT_NE(enterprise_ptr, nullptr);
-  EXPECT_EQ(enterprise_ptr->id(), "Enterprise");
+  base::Optional<Printer> enterprise_printer =
+      manager_->GetPrinter("Enterprise");
+  ASSERT_TRUE(enterprise_printer);
+  EXPECT_EQ(enterprise_printer->id(), "Enterprise");
+}
+
+TEST_F(CupsPrintersManagerTest, SetUsbManufacturer) {
+  const std::string& expected_manufacturer = "HP";
+  ppd_provider_->SetUsbManufacturer(expected_manufacturer);
+  usb_detector_->AddDetections({MakeUsbDiscoveredPrinter("DiscoveredPrinter")});
+  task_environment_.RunUntilIdle();
+
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"DiscoveredPrinter"});
+
+  EXPECT_EQ(expected_manufacturer,
+            manager_->GetPrinter("DiscoveredPrinter")->manufacturer());
+}
+
+TEST_F(CupsPrintersManagerTest, EmptyUsbManufacturer) {
+  usb_detector_->AddDetections({MakeUsbDiscoveredPrinter("DiscoveredPrinter")});
+  task_environment_.RunUntilIdle();
+
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"DiscoveredPrinter"});
+
+  EXPECT_TRUE(
+      manager_->GetPrinter("DiscoveredPrinter")->manufacturer().empty());
+}
+
+TEST_F(CupsPrintersManagerTest, PrinterNotInstalled) {
+  Printer printer(kPrinterId);
+  EXPECT_FALSE(manager_->IsPrinterInstalled(printer));
+}
+
+TEST_F(CupsPrintersManagerTest, PrinterIsInstalled) {
+  Printer printer(kPrinterId);
+  manager_->PrinterInstalled(printer, /*is_automatic=*/false,
+                             PrinterSetupSource::kSettings);
+  EXPECT_TRUE(manager_->IsPrinterInstalled(printer));
+}
+
+// Test that we detect that the configuration is stale when any of the
+// relevant fields change.
+TEST_F(CupsPrintersManagerTest, UpdatedPrinterConfiguration) {
+  Printer printer(kPrinterId);
+  manager_->PrinterInstalled(printer, /*is_automatic=*/false,
+                             PrinterSetupSource::kSettings);
+
+  Printer updated(printer);
+  updated.set_uri("different value");
+  EXPECT_FALSE(manager_->IsPrinterInstalled(updated));
+
+  updated = printer;
+  updated.mutable_ppd_reference()->autoconf = true;
+  EXPECT_FALSE(manager_->IsPrinterInstalled(updated));
+
+  updated = printer;
+  updated.mutable_ppd_reference()->user_supplied_ppd_url = "different value";
+  EXPECT_FALSE(manager_->IsPrinterInstalled(updated));
+
+  updated = printer;
+  updated.mutable_ppd_reference()->effective_make_and_model = "different value";
+  EXPECT_FALSE(manager_->IsPrinterInstalled(updated));
+
+  updated = printer;
+  updated.mutable_ppd_reference()->autoconf = true;
+  EXPECT_FALSE(manager_->IsPrinterInstalled(updated));
+
+  // Sanity check, configuration for the original printers should still be
+  // current.
+  EXPECT_TRUE(manager_->IsPrinterInstalled(printer));
+}
+
+// Test that we can save non-discovered printers.
+TEST_F(CupsPrintersManagerTest, SavePrinterSucceedsOnManualPrinter) {
+  Printer printer(kPrinterId);
+  printer.set_uri("manual uri");
+  manager_->SavePrinter(printer);
+
+  auto saved_printers = manager_->GetPrinters(PrinterClass::kSaved);
+  ASSERT_EQ(1u, saved_printers.size());
+  EXPECT_EQ(printer.uri(), saved_printers[0].uri());
+}
+
+// Test that installing a printer does not put it in the saved class.
+TEST_F(CupsPrintersManagerTest, PrinterInstalledDoesNotSavePrinter) {
+  Printer printer(kPrinterId);
+  manager_->PrinterInstalled(printer, /*is_automatic=*/false,
+                             PrinterSetupSource::kSettings);
+
+  auto saved_printers = manager_->GetPrinters(PrinterClass::kSaved);
+  EXPECT_EQ(0u, saved_printers.size());
+}
+
+// Test that calling SavePrinter() when printer configuration change updates
+// the saved printer but does not install the updated printer.
+TEST_F(CupsPrintersManagerTest, SavePrinterUpdatesPreviouslyInstalledPrinter) {
+  Printer printer(kPrinterId);
+  manager_->PrinterInstalled(printer, /*is_automatic=*/false,
+                             PrinterSetupSource::kSettings);
+  manager_->SavePrinter(printer);
+  EXPECT_TRUE(manager_->IsPrinterInstalled(printer));
+
+  Printer updated(printer);
+  updated.set_uri("different value");
+  EXPECT_FALSE(manager_->IsPrinterInstalled(updated));
+
+  manager_->SavePrinter(updated);
+  auto saved_printers = manager_->GetPrinters(PrinterClass::kSaved);
+  ASSERT_EQ(1u, saved_printers.size());
+  EXPECT_EQ(updated.uri(), saved_printers[0].uri());
+
+  // Even though the updated printer was saved, it still needs to be marked as
+  // installed again.
+  EXPECT_FALSE(manager_->IsPrinterInstalled(updated));
+}
+
+// Automatic USB Printer is configured automatically.
+TEST_F(CupsPrintersManagerTest, AutomaticUsbPrinterIsInstalledAutomatically) {
+  auto automatic_printer = MakeAutomaticPrinter(kPrinterId);
+  automatic_printer.printer.set_uri("usb:");
+
+  usb_detector_->AddDetections({automatic_printer});
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(printer_configurer_->IsConfigured(kPrinterId));
+}
+
+// Automatic USB Printer is *not* configured if |UserNativePrintersAllowed|
+// pref is set to false.
+TEST_F(CupsPrintersManagerTest, AutomaticUsbPrinterNotInstalledAutomatically) {
+  // Disable the use of non-enterprise printers.
+  UpdatePolicyValue(prefs::kUserNativePrintersAllowed, false);
+
+  auto automatic_printer = MakeAutomaticPrinter(kPrinterId);
+  automatic_printer.printer.set_uri("usb:");
+
+  zeroconf_detector_->AddDetections({automatic_printer});
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(manager_->IsPrinterInstalled(automatic_printer.printer));
+}
+
+// Nearby printers that are not automatic & USB are not automatically
+// installed.
+TEST_F(CupsPrintersManagerTest, OtherNearbyPrintersNotInstalledAutomatically) {
+  auto discovered_printer = MakeDiscoveredPrinter("Discovered");
+  discovered_printer.printer.set_uri("usb:");
+  auto automatic_printer = MakeAutomaticPrinter("Automatic");
+
+  usb_detector_->AddDetections({discovered_printer});
+  zeroconf_detector_->AddDetections({automatic_printer});
+
+  task_environment_.RunUntilIdle();
+
+  ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"Discovered"});
+  ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"Automatic"});
+  EXPECT_FALSE(printer_configurer_->IsConfigured("Discovered"));
+  EXPECT_FALSE(printer_configurer_->IsConfigured("Automatic"));
+}
+
+TEST_F(CupsPrintersManagerTest, DetectedUsbPrinterConfigurationNotification) {
+  auto discovered_printer = MakeDiscoveredPrinter("Discovered");
+  discovered_printer.printer.set_uri("usb:");
+
+  usb_detector_->AddDetections({discovered_printer});
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(usb_notif_controller_->IsConfigurationNotification("Discovered"));
+
+  usb_detector_->RemoveDetections({"Discovered"});
+
+  EXPECT_FALSE(
+      usb_notif_controller_->IsConfigurationNotification("Discovered"));
+}
+
+TEST_F(CupsPrintersManagerTest,
+       DetectedZeroconfDiscoveredPrinterNoNotification) {
+  auto discovered_printer = MakeDiscoveredPrinter("Discovered");
+  discovered_printer.printer.set_uri("ipp:");
+
+  zeroconf_detector_->AddDetections({discovered_printer});
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(
+      usb_notif_controller_->IsConfigurationNotification("Discovered"));
 }
 
 }  // namespace

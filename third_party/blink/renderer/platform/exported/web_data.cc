@@ -30,7 +30,7 @@
 
 #include "third_party/blink/public/platform/web_data.h"
 
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 #include <vector>
 
@@ -72,10 +72,10 @@ size_t WebData::GetSomeData(const char*& data, size_t position) const {
   return it->size();
 }
 
-WebVector<char> WebData::Copy() const {
+WebVector<uint8_t> WebData::Copy() const {
   return private_.IsNull()
-             ? WebVector<char>()
-             : WebVector<char>(private_->CopyAs<std::vector<char>>());
+             ? WebVector<uint8_t>()
+             : WebVector<uint8_t>(private_->CopyAs<std::vector<uint8_t>>());
 }
 
 WebData::WebData(scoped_refptr<SharedBuffer> buffer)

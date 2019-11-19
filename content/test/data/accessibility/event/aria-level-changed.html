@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="d1" role="heading">Item1</div>
+  <div id="d2" role="heading">Item2</div>
+  <div id="d3" role="heading" aria-level="3">Item3</div>
+  <div id="d4" role="heading" aria-level="3">Item4</div>
+  <script>
+    function go() {
+      // Set aria-level from default '2'->'2'; should not fire an event.
+      document.getElementById('d1').setAttribute('aria-level', '2');
+
+      // Set aria-level from default '2'->'3'; should fire an event.
+      document.getElementById('d2').setAttribute('aria-level', '3');
+
+      // Set aria-level from '3'->'2'; should fire an event.
+      document.getElementById('d3').setAttribute('aria-level', '2');
+
+      // Set aria-level from '3'->[removed]; should fire an event.
+      document.getElementById('d4').removeAttribute('aria-level');
+    }
+  </script>
+</body>
+</html>

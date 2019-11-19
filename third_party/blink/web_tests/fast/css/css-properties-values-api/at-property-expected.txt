@@ -1,0 +1,63 @@
+This is a testharness.js-based test.
+FAIL Accepts valid value for 'syntax' descriptor ["<color>"] Cannot read property 'style' of undefined
+FAIL Accepts valid value for 'syntax' descriptor ["<color> | none"] Cannot read property 'style' of undefined
+FAIL Accepts valid value for 'syntax' descriptor ["<color># | <image> | none"] Cannot read property 'style' of undefined
+FAIL Accepts valid value for 'syntax' descriptor ["foo | bar | baz"] Cannot read property 'style' of undefined
+FAIL Accepts valid value for 'syntax' descriptor ["*"] Cannot read property 'style' of undefined
+FAIL Accepts valid value for 'syntax' descriptor ["notasyntax"] Cannot read property 'style' of undefined
+FAIL Rejects invalid value for 'syntax' descriptor [red] Cannot read property 'style' of undefined
+FAIL Rejects invalid value for 'syntax' descriptor [rgb(255, 0, 0)] Cannot read property 'style' of undefined
+FAIL Rejects invalid value for 'syntax' descriptor [<color>] Cannot read property 'style' of undefined
+FAIL Rejects invalid value for 'syntax' descriptor [foo | bar] Cannot read property 'style' of undefined
+FAIL Accepts valid value for 'initial-value' descriptor [10px] Cannot read property 'style' of undefined
+FAIL Accepts valid value for 'initial-value' descriptor [rgb(1, 2, 3)] Cannot read property 'style' of undefined
+FAIL Accepts valid value for 'initial-value' descriptor [red] Cannot read property 'style' of undefined
+FAIL Accepts valid value for 'initial-value' descriptor [foo] Cannot read property 'style' of undefined
+FAIL Accepts valid value for 'initial-value' descriptor [if(){}] Cannot read property 'style' of undefined
+FAIL Accepts valid value for 'initial-value' descriptor [var(--x)] Cannot read property 'style' of undefined
+FAIL Accepts valid value for 'inherits' descriptor [true] Cannot read property 'style' of undefined
+FAIL Accepts valid value for 'inherits' descriptor [false] Cannot read property 'style' of undefined
+FAIL Rejects invalid value for 'inherits' descriptor [none] Cannot read property 'style' of undefined
+FAIL Rejects invalid value for 'inherits' descriptor [0] Cannot read property 'style' of undefined
+FAIL Rejects invalid value for 'inherits' descriptor [1] Cannot read property 'style' of undefined
+FAIL Rejects invalid value for 'inherits' descriptor ["true"] Cannot read property 'style' of undefined
+FAIL Rejects invalid value for 'inherits' descriptor ["false"] Cannot read property 'style' of undefined
+FAIL Rejects invalid value for 'inherits' descriptor [calc(0)] Cannot read property 'style' of undefined
+PASS Invalid property name does not parse [foo]
+PASS Invalid property name does not parse [-foo]
+FAIL Rule applied [*, if(){}, false] assert_equals: expected "if(){}" but got ""
+FAIL Rule applied [<angle>, 42deg, false] assert_equals: expected "42deg" but got ""
+FAIL Rule applied [<angle>, 1turn, false] assert_equals: expected "360deg" but got ""
+FAIL Rule applied [<color>, green, false] assert_equals: expected "rgb(0, 128, 0)" but got ""
+FAIL Rule applied [<color>, rgb(1, 2, 3), false] assert_equals: expected "rgb(1, 2, 3)" but got ""
+FAIL Rule applied [<image>, url("http://a/"), false] assert_equals: expected "url(\"http://a/\")" but got ""
+FAIL Rule applied [<integer>, 5, false] assert_equals: expected "5" but got ""
+FAIL Rule applied [<length-percentage>, 10px, false] assert_equals: expected "10px" but got ""
+FAIL Rule applied [<length-percentage>, 10%, false] assert_equals: expected "10%" but got ""
+FAIL Rule applied [<length-percentage>, calc(10% + 10px), false] assert_equals: expected "calc(10% + 10px)" but got ""
+FAIL Rule applied [<length>, 10px, false] assert_equals: expected "10px" but got ""
+FAIL Rule applied [<number>, 2.5, false] assert_equals: expected "2.5" but got ""
+FAIL Rule applied [<percentage>, 10%, false] assert_equals: expected "10%" but got ""
+FAIL Rule applied [<resolution>, 50dppx, false] assert_equals: expected "50dppx" but got ""
+FAIL Rule applied [<resolution>, 96dpi, false] assert_equals: expected "1dppx" but got ""
+FAIL Rule applied [<time>, 10s, false] assert_equals: expected "10s" but got ""
+FAIL Rule applied [<time>, 1000ms, false] assert_equals: expected "1s" but got ""
+FAIL Rule applied [<transform-function>, rotateX(0deg), false] assert_equals: expected "rotateX(0deg)" but got ""
+FAIL Rule applied [<transform-list>, rotateX(0deg), false] assert_equals: expected "rotateX(0deg)" but got ""
+FAIL Rule applied [<transform-list>, rotateX(0deg) translateX(10px), false] assert_equals: expected "rotateX(0deg) translateX(10px)" but got ""
+FAIL Rule applied [<url>, url("http://a/"), false] assert_equals: expected "url(\"http://a/\")" but got ""
+FAIL Rule applied [<color>, tomato, false] assert_equals: expected "rgb(255, 99, 71)" but got ""
+FAIL Rule applied [<color>, tomato, true] assert_equals: expected "rgb(255, 99, 71)" but got ""
+PASS Rule applied for "*", even with no initial value
+PASS Rule not applied [undefined, green, false]
+PASS Rule not applied [<color>, undefined, false]
+PASS Rule not applied [<color>, green, undefined]
+PASS Rule not applied [<gandalf>, grey, false]
+PASS Rule not applied [gandalf, grey, false]
+PASS Rule not applied [<color>, notacolor, false]
+PASS Rule not applied [<length>, 10em, false]
+FAIL Non-inherited properties do not inherit assert_equals: expected "40px" but got " 40px"
+FAIL Inherited properties inherit assert_equals: expected "40px" but got " 40px"
+FAIL Initial values substituted as computed value assert_equals: expected "rgb(0, 128, 0)" but got ""
+Harness: the test ran to completion.
+

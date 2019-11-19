@@ -1,11 +1,11 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_row_behavior.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../controls/extension_controlled_indicator.html">
 <link rel="import" href="search_engine_entry_css.html">
 <link rel="import" href="search_engines_browser_proxy.html">
@@ -41,17 +41,18 @@
 
     <div class="list-item" focus-row-container>
       <div id="name-column">
-        <site-favicon url="[[engine.iconURL]]"></site-favicon>
+        <site-favicon
+            favicon-url="[[engine.iconURL]]"
+            url="[[engine.url]]">
+        </site-favicon>
         <div>[[engine.displayName]]</div>
       </div>
       <div id="keyword-column"><div>[[engine.keyword]]</div></div>
       <div id="url-column" class="text-elide">[[engine.url]]</div>
-      <paper-icon-button-light class="icon-more-vert">
-        <button on-click="onDotsTap_" title="$i18n{moreActions}"
-            focus-row-control focus-type="cr-menu-button">
-        </button>
-      </paper-icon-button-light>
-      <cr-action-menu>
+      <cr-icon-button class="icon-more-vert" on-click="onDotsTap_"
+          title="$i18n{moreActions}" focus-row-control
+          focus-type="cr-menu-button"></cr-icon-button>
+      <cr-action-menu role-description="$i18n{menu}">
         <button class="dropdown-item" on-click="onMakeDefaultTap_"
             hidden$="[[!engine.canBeDefault]]" id="makeDefault">
           $i18n{searchEnginesMakeDefault}

@@ -10,9 +10,9 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/threading/simple_thread.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
@@ -20,7 +20,6 @@
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/cpp/service_binding.h"
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
-#include "services/service_manager/public/mojom/service_factory.mojom.h"
 #include "services/service_manager/tests/connect/connect.test-mojom.h"
 
 // Tests that multiple services can be packaged in a single service by
@@ -65,17 +64,16 @@ class ProvidedService : public Service,
  private:
   // service_manager::Service:
   void OnStart() override {
-    bindings_.set_connection_error_handler(
-        base::Bind(&ProvidedService::OnConnectionError,
-                   base::Unretained(this)));
+    bindings_.set_connection_error_handler(base::BindRepeating(
+        &ProvidedService::OnConnectionError, base::Unretained(this)));
     registry_.AddInterface<test::mojom::ConnectTestService>(
-        base::Bind(&ProvidedService::BindConnectTestServiceRequest,
-                   base::Unretained(this)));
-    registry_.AddInterface<test::mojom::BlockedInterface>(base::Bind(
+        base::BindRepeating(&ProvidedService::BindConnectTestServiceRequest,
+                            base::Unretained(this)));
+    registry_.AddInterface<test::mojom::BlockedInterface>(base::BindRepeating(
         &ProvidedService::BindBlockedInterfaceRequest, base::Unretained(this)));
     registry_.AddInterface<test::mojom::AlwaysAllowedInterface>(
-        base::Bind(&ProvidedService::BindAlwaysAllowedInterfaceRequest,
-                   base::Unretained(this)));
+        base::BindRepeating(&ProvidedService::BindAlwaysAllowedInterfaceRequest,
+                            base::Unretained(this)));
     registry_.AddInterface(base::BindRepeating(
         &ProvidedService::BindIdentityTestRequest, base::Unretained(this)));
   }
@@ -159,7 +157,7 @@ class ProvidedService : public Service,
 
   // base::SimpleThread:
   void Run() override {
-    base::MessageLoop message_loop;
+    base::SingleThreadTaskExecutor main_task_executor;
     base::RunLoop run_loop;
     run_loop_ = &run_loop;
     service_binding_.Bind(std::move(request_));
@@ -197,7 +195,6 @@ class ProvidedService : public Service,
 };
 
 class ConnectTestService : public Service,
-                           public mojom::ServiceFactory,
                            public test::mojom::ConnectTestService {
  public:
   explicit ConnectTestService(service_manager::mojom::ServiceRequest request)
@@ -207,17 +204,12 @@ class ConnectTestService : public Service,
  private:
   // service_manager::Service:
   void OnStart() override {
-    base::Closure error_handler =
-        base::Bind(&ConnectTestService::OnConnectionError,
-                   base::Unretained(this));
+    base::RepeatingClosure error_handler = base::BindRepeating(
+        &ConnectTestService::OnConnectionError, base::Unretained(this));
     bindings_.set_connection_error_handler(error_handler);
-    service_factory_bindings_.set_connection_error_handler(error_handler);
-    registry_.AddInterface<ServiceFactory>(
-        base::Bind(&ConnectTestService::BindServiceFactoryRequest,
-                   base::Unretained(this)));
     registry_.AddInterface<test::mojom::ConnectTestService>(
-        base::Bind(&ConnectTestService::BindConnectTestServiceRequest,
-                   base::Unretained(this)));
+        base::BindRepeating(&ConnectTestService::BindConnectTestServiceRequest,
+                            base::Unretained(this)));
   }
 
   void OnBindInterface(const BindSourceInfo& source_info,
@@ -226,31 +218,29 @@ class ConnectTestService : public Service,
     registry_.BindInterface(interface_name, std::move(interface_pipe));
   }
 
+  void CreatePackagedServiceInstance(
+      const std::string& service_name,
+      mojo::PendingReceiver<mojom::Service> receiver,
+      CreatePackagedServiceInstanceCallback callback) override {
+    service_manager::mojom::ServiceRequest request(std::move(receiver));
+    if (service_name == "connect_test_a") {
+      provided_services_.emplace_back(
+          std::make_unique<ProvidedService>("A", std::move(request)));
+    } else if (service_name == "connect_test_b") {
+      provided_services_.emplace_back(
+          std::make_unique<ProvidedService>("B", std::move(request)));
+    }
+    std::move(callback).Run(base::GetCurrentProcId());
+  }
+
   void OnDisconnected() override {
     provided_services_.clear();
     Terminate();
   }
 
-  void BindServiceFactoryRequest(mojom::ServiceFactoryRequest request) {
-    service_factory_bindings_.AddBinding(this, std::move(request));
-  }
-
   void BindConnectTestServiceRequest(
       test::mojom::ConnectTestServiceRequest request) {
     bindings_.AddBinding(this, std::move(request));
-  }
-
-  // mojom::ServiceFactory:
-  void CreateService(mojom::ServiceRequest request,
-                     const std::string& name,
-                     mojom::PIDReceiverPtr pid_receiver) override {
-    if (name == "connect_test_a") {
-      provided_services_.emplace_back(
-          std::make_unique<ProvidedService>("A", std::move(request)));
-    } else if (name == "connect_test_b") {
-      provided_services_.emplace_back(
-          std::make_unique<ProvidedService>("B", std::move(request)));
-    }
   }
 
   // test::mojom::ConnectTestService:
@@ -263,13 +253,12 @@ class ConnectTestService : public Service,
   }
 
   void OnConnectionError() {
-    if (bindings_.empty() && service_factory_bindings_.empty())
+    if (bindings_.empty())
       service_binding_.RequestClose();
   }
 
   service_manager::ServiceBinding service_binding_;
   std::vector<std::unique_ptr<Service>> delegates_;
-  mojo::BindingSet<mojom::ServiceFactory> service_factory_bindings_;
   BinderRegistry registry_;
   mojo::BindingSet<test::mojom::ConnectTestService> bindings_;
   std::list<std::unique_ptr<ProvidedService>> provided_services_;
@@ -280,6 +269,6 @@ class ConnectTestService : public Service,
 }  // namespace service_manager
 
 void ServiceMain(service_manager::mojom::ServiceRequest request) {
-  base::MessageLoop message_loop;
+  base::SingleThreadTaskExecutor main_task_executor;
   service_manager::ConnectTestService(std::move(request)).RunUntilTermination();
 }

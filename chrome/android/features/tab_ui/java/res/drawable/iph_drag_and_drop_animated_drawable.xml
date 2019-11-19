@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:drawable="@drawable/iph_drag_and_drop_drawable"
+    tools:targetApi="21">
+    <target
+        android:name="hovered_card"
+        android:animation="@anim/iph_hovered_card_animation"/>
+    <target
+        android:name="selected_card"
+        android:animation="@anim/iph_selected_card_animation"/>
+    <target
+        android:name="selected_card_rectangle"
+        android:animation="@anim/iph_selected_card_color_change_animation"/>
+    <target
+        android:name="touch_point_background"
+        android:animation="@anim/iph_touch_point_background_animation"/>
+    <target
+        android:name="touch_point"
+        android:animation="@anim/iph_touch_point_animation"/>
+    <target
+        android:name="touch_point_circle"
+        android:animation="@anim/iph_touch_point_alpha_animation"/>
+    <target
+        android:name="touch_point_background_circle"
+        android:animation="@anim/iph_touch_point_background_alpha_animation"/>
+</animated-vector>

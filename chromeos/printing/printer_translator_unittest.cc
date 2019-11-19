@@ -129,6 +129,20 @@ TEST(PrinterTranslatorTest, MissingEffectiveMakeModelFails) {
   EXPECT_FALSE(printer);
 }
 
+// The test verifies that setting both true autoconf flag and non-empty
+// effective_model properties is not considered as the valid policy.
+TEST(PrinterTranslatorTest, AutoconfAndMakeModelSet) {
+  base::DictionaryValue preference;
+  preference.SetString("id", kHash);
+  preference.SetString("display_name", kName);
+  preference.SetString("uri", kUri);
+  preference.SetString("ppd_resource.effective_model", kEffectiveMakeAndModel);
+  preference.SetBoolean("ppd_resource.autoconf", true);
+
+  std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
+  EXPECT_FALSE(printer);
+}
+
 TEST(PrinterTranslatorTest, InvalidUriFails) {
   base::DictionaryValue preference;
   preference.SetString("id", kHash);
@@ -150,7 +164,11 @@ TEST(PrinterTranslatorTest, RecommendedPrinterMinimalSetup) {
   preference.SetString("ppd_resource.effective_model", kEffectiveMakeAndModel);
 
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
-  EXPECT_TRUE(printer);
+  ASSERT_TRUE(printer);
+
+  EXPECT_EQ(kEffectiveMakeAndModel,
+            printer->ppd_reference().effective_make_and_model);
+  EXPECT_EQ(false, printer->ppd_reference().autoconf);
 }
 
 TEST(PrinterTranslatorTest, RecommendedPrinterToPrinter) {
@@ -163,6 +181,7 @@ TEST(PrinterTranslatorTest, RecommendedPrinterToPrinter) {
   preference.SetString("uri", kUri);
   preference.SetString("uuid", kUUID);
 
+  preference.SetBoolean("ppd_resource.autoconf", false);
   preference.SetString("ppd_resource.effective_model", kEffectiveMakeAndModel);
 
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
@@ -179,6 +198,25 @@ TEST(PrinterTranslatorTest, RecommendedPrinterToPrinter) {
 
   EXPECT_EQ(kEffectiveMakeAndModel,
             printer->ppd_reference().effective_make_and_model);
+  EXPECT_EQ(false, printer->ppd_reference().autoconf);
+}
+
+TEST(PrinterTranslatorTest, RecommendedPrinterToPrinterAutoconf) {
+  base::DictionaryValue preference;
+  preference.SetString("id", kHash);
+  preference.SetString("display_name", kName);
+  preference.SetString("uri", kUri);
+
+  preference.SetBoolean("ppd_resource.autoconf", true);
+
+  std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
+  EXPECT_TRUE(printer);
+
+  EXPECT_EQ(kHash, printer->id());
+  EXPECT_EQ(kName, printer->display_name());
+  EXPECT_EQ(kUri, printer->uri());
+
+  EXPECT_EQ(true, printer->ppd_reference().autoconf);
 }
 
 TEST(PrinterTranslatorTest, RecommendedPrinterToPrinterBlankManufacturer) {
@@ -234,7 +272,7 @@ TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinter) {
   // generic printer does not have the URI field set.
   CheckPrinterInfoUri(*printer_info, "ipp", "", "");
 
-  ExpectDictBooleanValue(false, *printer_info, "printerAutoconf");
+  ExpectDictBooleanValue(false, *printer_info, "printerPpdReference.autoconf");
 }
 
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinterWithUri) {
@@ -248,7 +286,7 @@ TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinterWithUri) {
   CheckPrinterInfoUri(*printer_info, "ipp", "printy.domain.co:555",
                       "ipp/print");
 
-  ExpectDictBooleanValue(false, *printer_info, "printerAutoconf");
+  ExpectDictBooleanValue(false, *printer_info, "printerPpdReference.autoconf");
 }
 
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinterWithUsbUri) {
@@ -261,7 +299,7 @@ TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinterWithUsbUri) {
 
   CheckPrinterInfoUri(*printer_info, "usb", "1234/af9d?serial=ink1", "");
 
-  ExpectDictBooleanValue(false, *printer_info, "printerAutoconf");
+  ExpectDictBooleanValue(false, *printer_info, "printerPpdReference.autoconf");
 }
 
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoAutoconfPrinter) {
@@ -274,8 +312,9 @@ TEST(PrinterTranslatorTest, GetCupsPrinterInfoAutoconfPrinter) {
   // generic printer does not have the URI field set.
   CheckPrinterInfoUri(*printer_info, "ipp", "", "");
 
-  // Since this is an autoconf printer we expect "printerAutoconf" to be true.
-  ExpectDictBooleanValue(true, *printer_info, "printerAutoconf");
+  // Since this is an autoconf printer we expect "printerPpdReference.autoconf"
+  // to be true.
+  ExpectDictBooleanValue(true, *printer_info, "printerPpdReference.autoconf");
 }
 
 }  // namespace chromeos

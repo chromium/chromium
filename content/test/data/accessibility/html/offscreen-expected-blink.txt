@@ -1,4 +1,9 @@
 rootWebArea
-++button name='Onscreen'
-++button offscreen name='Offscreen'
-<-- End-of-file -->
+++genericContainer ignored
+++++button name='Onscreen'
+++++++staticText name='Onscreen'
+++++++++inlineTextBox name='Onscreen'
+++++genericContainer ignored
+++++button offscreen name='Offscreen'
+++++++staticText offscreen name='Offscreen'
+++++++++inlineTextBox offscreen name='Offscreen'

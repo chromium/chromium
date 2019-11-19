@@ -1,13 +1,12 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/paper_tabs_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_tabs/cr_tabs.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-tabs/paper-tabs.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="clear_browsing_data_browser_proxy.html">
 <link rel="import" href="history_deletion_dialog.html">
@@ -16,11 +15,10 @@
 <link rel="import" href="../icons.html">
 <link rel="import" href="../route.html">
 <link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../settings_vars_css.html">
 
 <dom-module id="settings-clear-browsing-data-dialog">
   <template>
-    <style include="settings-shared paper-tabs-style">
+    <style include="settings-shared">
       :host {
         /* Fixed height to allow multiple tabs with different height.
          * The last entry in the advanced tab should show half an entry.
@@ -31,21 +29,25 @@
       #clearBrowsingDataDialog {
         --border-top-color: var(--paper-grey-300);
         --cr-dialog-top-container-min-height: 42px;
-        --cr-dialog-title: {
-          padding-bottom: 8px;
-        };
-        --cr-dialog-body-container: {
-          border-top: 1px solid var(--border-top-color);
-          height: var(--body-container-height);
-        };
+        --cr-dialog-body-border-top: 1px solid var(--border-top-color);
       }
 
-      :host-context([dark]) #clearBrowsingDataDialog {
-        --border-top-color: var(--cr-separator-color);
+      @media (prefers-color-scheme: dark) {
+        #clearBrowsingDataDialog {
+          --border-top-color: var(--cr-separator-color);
+        }
       }
 
       #clearBrowsingDataDialog:not(.fully-rendered) {
         visibility: hidden;
+      }
+
+      #clearBrowsingDataDialog [slot=title] {
+        padding-bottom: 8px;
+      }
+
+      #clearBrowsingDataDialog::part(body-container) {
+        height: var(--body-container-height);
       }
 
       #clearBrowsingDataDialog [slot=body] {
@@ -58,8 +60,10 @@
         padding: 0;
       }
 
-      :host-context([dark]) #clearBrowsingDataDialog [slot=footer] {
-        background: rgb(50, 54, 57);  /* Custom color from Namrata. */
+      @media (prefers-color-scheme: dark) {
+        #clearBrowsingDataDialog [slot=footer] {
+          background: rgb(50, 54, 57);  /* Custom color from Namrata. */
+        }
       }
 
       .row {
@@ -76,20 +80,15 @@
 
       settings-checkbox {
         --settings-row-two-line-min-height: 48px;
-        --settings-checkbox-label: {
-          line-height: 1.25rem;
-        }
       }
 
       #basic-tab settings-checkbox + settings-checkbox {
         --settings-checkbox-margin-top: 12px;
       }
 
-      paper-tabs {
-        --paper-tabs: {
-          font-size: 100%;
-          height: 40px;
-        }
+      cr-tabs {
+        --cr-tabs-font-size: 100%;
+        --cr-tabs-height: 40px;
       }
 
       .time-range-row {
@@ -106,7 +105,7 @@
       }
 
       .divider {
-        border-top: var(--settings-separator-line);
+        border-top: var(--cr-separator-line);
         margin: 0 16px;
       }
 
@@ -122,11 +121,9 @@
         <div>$i18n{clearBrowsingData}</div>
       </div>
       <div slot="header">
-        <paper-tabs noink on-selected-changed="recordTabChange_" autoselect
-            selected="{{prefs.browser.last_clear_browsing_data_tab.value}}">
-          <paper-tab id="basicTabTitle">$i18n{basicPageTitle}</paper-tab>
-          <paper-tab id="advancedTabTitle">$i18n{advancedPageTitle}</paper-tab>
-        </paper-tabs>
+        <cr-tabs tab-names="[[tabsNames_]]"
+            selected="{{prefs.browser.last_clear_browsing_data_tab.value}}"
+            on-selected-changed="recordTabChange_"></cr-tabs>
       </div>
       <div slot="body">
         <iron-pages id="tabs"
@@ -232,9 +229,7 @@
             </settings-checkbox>
             <settings-checkbox
                 pref="{{prefs.browser.clear_data.site_settings}}"
-                label="[[siteSettingsLabel_(
-                  '$i18nPolymer{siteSettings}',
-                  '$i18nPolymer{contentSettings}')]]"
+                label="$i18nPolymer{siteSettings}"
                 sub-label="[[counters_.site_settings]]"
                 disabled="[[clearingInProgress_]]">
             </settings-checkbox>
@@ -250,14 +245,14 @@
       <div slot="button-container">
         <paper-spinner-lite active="[[clearingInProgress_]]">
         </paper-spinner-lite>
-        <paper-button class="cancel-button" disabled="[[clearingInProgress_]]"
-            on-click="onCancelTap_">$i18n{cancel}</paper-button>
-        <paper-button id="clearBrowsingDataConfirm"
+        <cr-button class="cancel-button" disabled="[[clearingInProgress_]]"
+            on-click="onCancelTap_">$i18n{cancel}</cr-button>
+        <cr-button id="clearBrowsingDataConfirm"
             class="action-button" on-click="clearBrowsingData_"
             disabled="[[isClearButtonDisabled_(clearingInProgress_,
                                                clearButtonDisabled_)]]">
             $i18n{clearData}
-        </paper-button>
+        </cr-button>
       </div>
       <div slot="footer"
           hidden="[[!shouldShowFooter_(syncStatus.signedIn, diceEnabled_)]]">

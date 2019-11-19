@@ -157,8 +157,8 @@ discourage tight coupling of application logic to such details.
 Message pipes which don't cross a process boundary are efficient: sent messages
 are never copied, and a write on one end will synchronously modify the message
 queue on the other end. When working with generated C++ bindings, for example,
-the net result is that an `InterfacePtr` on one thread sending a message to a
-`Binding` on another thread (or even the same thread) is effectively a
+the net result is that a `Remote` on one thread sending a message to a
+`Receiver` on another thread (or even the same thread) is effectively a
 `PostTask` to the `Binding`'s `TaskRunner` with the added -- but often small --
 costs of serialization, deserialization, validation, and some internal routing
 logic.

@@ -90,7 +90,7 @@ class UwpTextScaleFactorImpl : public UwpTextScaleFactor {
       : text_scale_factor_changed_token_(kInvalidEventRegistrationToken) {
     // There's no point in doing this initialization if we're earlier than
     // Windows 10, since UWP is a Win10 feature.
-    if (base::win::GetVersion() < base::win::VERSION_WIN10)
+    if (base::win::GetVersion() < base::win::Version::WIN10)
       return;
 
     // We want to bracket all use of our COM object with COM initialization

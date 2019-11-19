@@ -13,20 +13,19 @@
 #include "third_party/blink/public/web/web_device_emulation_params.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
 class IntRect;
-class TransformationMatrix;
 class WebViewImpl;
 
 class CORE_EXPORT DevToolsEmulator final
-    : public GarbageCollectedFinalized<DevToolsEmulator> {
+    : public GarbageCollected<DevToolsEmulator> {
  public:
   explicit DevToolsEmulator(WebViewImpl*);
   ~DevToolsEmulator();
-  static DevToolsEmulator* Create(WebViewImpl*);
   void Trace(blink::Visitor*);
 
   // Settings overrides.
@@ -46,21 +45,24 @@ class CORE_EXPORT DevToolsEmulator final
   void SetPrimaryHoverType(HoverType);
   void SetMainFrameResizesAreOrientationChanges(bool);
 
-  // Emulation.
-  void EnableDeviceEmulation(const WebDeviceEmulationParams&);
+  // Enables and/or sets the parameters for emulation. Returns the emulation
+  // transform to be used as a result.
+  TransformationMatrix EnableDeviceEmulation(const WebDeviceEmulationParams&);
+  // Disables emulation.
   void DisableDeviceEmulation();
-  // Position is given in CSS pixels, scale relative to a page scale of 1.0.
-  void ForceViewport(const WebFloatPoint& position, float scale);
-  void ResetViewport();
+
   bool ResizeIsDeviceSizeChange();
   void SetTouchEventEmulationEnabled(bool, int max_touch_points);
   void SetScriptExecutionDisabled(bool);
   void SetScrollbarsHidden(bool);
   void SetDocumentCookieDisabled(bool);
 
+  bool HasViewportOverride() const { return !!viewport_override_; }
+
   // Notify the DevToolsEmulator about a scroll or scale change of the main
-  // frame. Updates the transform for a viewport override.
-  void MainFrameScrollOrScaleChanged();
+  // frame. Returns an updated emulation transform for a viewport override, and
+  // should only be called when HasViewportOverride() is true.
+  TransformationMatrix MainFrameScrollOrScaleChanged();
 
   // Rewrites the |visible_rect| to the area of the devtools custom viewport if
   // it is enabled. Otherwise, leaves |visible_rect| unchanged. Takes as input
@@ -74,16 +76,30 @@ class CORE_EXPORT DevToolsEmulator final
   // device metics.
   float InputEventsScaleForEmulation();
 
+  TransformationMatrix ForceViewportForTesting(const WebFloatPoint& position,
+                                               float scale) {
+    return ForceViewport(position, scale);
+  }
+  TransformationMatrix ResetViewportForTesting() { return ResetViewport(); }
+
  private:
   void EnableMobileEmulation();
   void DisableMobileEmulation();
+
+  // Enables viewport override and returns the emulation transform to be used.
+  // The |position| is in CSS pixels, and |scale| is relative to a page scale of
+  // 1.0.
+  TransformationMatrix ForceViewport(const WebFloatPoint& position,
+                                     float scale);
+  // Disables viewport override and returns the emulation transform to be used.
+  TransformationMatrix ResetViewport();
 
   // Returns the original device scale factor when overridden by DevTools, or
   // deviceScaleFactor() otherwise.
   float CompositorDeviceScaleFactor() const;
 
   void ApplyViewportOverride(TransformationMatrix*);
-  void UpdateRootLayerTransform();
+  TransformationMatrix ComputeRootLayerTransform();
 
   WebViewImpl* web_view_;
 
@@ -94,7 +110,6 @@ class CORE_EXPORT DevToolsEmulator final
   struct ViewportOverride {
     FloatPoint position;
     double scale;
-    bool original_visual_viewport_masking;
   };
   base::Optional<ViewportOverride> viewport_override_;
 
@@ -103,7 +118,6 @@ class CORE_EXPORT DevToolsEmulator final
   bool is_mobile_layout_theme_enabled_;
   float original_default_minimum_page_scale_factor_;
   float original_default_maximum_page_scale_factor_;
-  bool use_solid_color_scrollbar_;
   bool embedder_text_autosizing_enabled_;
   float embedder_device_scale_adjustment_;
   bool embedder_prefer_compositing_to_lcd_text_enabled_;

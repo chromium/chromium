@@ -85,15 +85,12 @@ namespace media {
 //
 class VASurface : public base::RefCountedThreadSafe<VASurface> {
  public:
-  // Provided by user, will be called when all references to the surface
-  // are released.
-  // TODO(mcasas): make this a OnceCallback, https://crbug.com/822346.
-  using ReleaseCB = base::Callback<void(VASurfaceID)>;
+  using ReleaseCB = base::OnceCallback<void(VASurfaceID)>;
 
   VASurface(VASurfaceID va_surface_id,
             const gfx::Size& size,
             unsigned int format,
-            const ReleaseCB& release_cb);
+            ReleaseCB release_cb);
 
   VASurfaceID id() const { return va_surface_id_; }
   const gfx::Size& size() const { return size_; }
@@ -106,7 +103,7 @@ class VASurface : public base::RefCountedThreadSafe<VASurface> {
   const VASurfaceID va_surface_id_;
   const gfx::Size size_;
   const unsigned int format_;
-  const ReleaseCB release_cb_;
+  ReleaseCB release_cb_;
 
   DISALLOW_COPY_AND_ASSIGN(VASurface);
 };

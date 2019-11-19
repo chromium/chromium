@@ -5,8 +5,6 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("dom") {
-  split_count = 5
-
   sources = [
     "abort_controller.cc",
     "abort_controller.h",
@@ -16,6 +14,8 @@ blink_core_sources("dom") {
     "attr.h",
     "attribute.h",
     "attribute_collection.h",
+    "beforeunload_event_listener.cc",
+    "beforeunload_event_listener.h",
     "cdata_section.cc",
     "cdata_section.h",
     "character_data.cc",
@@ -222,10 +222,6 @@ blink_core_sources("dom") {
     "scripted_animation_controller.h",
     "scripted_idle_task_controller.cc",
     "scripted_idle_task_controller.h",
-    "scripted_task_queue.cc",
-    "scripted_task_queue.h",
-    "scripted_task_queue_controller.cc",
-    "scripted_task_queue_controller.h",
     "shadow_root.cc",
     "shadow_root.h",
     "shadow_root_v0.cc",

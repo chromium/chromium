@@ -216,7 +216,7 @@ namespace browsing_data {
 
 void RemoveNavigationEntries(Profile* profile,
                              const history::DeletionInfo& deletion_info) {
-  DCHECK(profile->GetProfileType() == Profile::ProfileType::REGULAR_PROFILE);
+  DCHECK(profile->IsRegularProfile());
   DCHECK(!deletion_info.is_from_expiration());
 
   base::flat_set<GURL> url_set;

@@ -14,6 +14,6 @@ self.addEventListener('message', async (event) => {
 });
 
 self.addEventListener('notificationclick', event => {
-  clients.openWindow('empty.html');
+  clients.openWindow(event.notification.body);
 });
 

@@ -32,10 +32,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_LIST_PROPERTY_HELPER_H_
 
 #include "third_party/blink/renderer/core/svg/properties/svg_property_helper.h"
-#include "third_party/blink/renderer/core/svg/svg_animation_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -106,7 +106,7 @@ class SVGListPropertyHelper : public SVGPropertyHelper<Derived> {
   bool IsEmpty() const { return !length(); }
 
   virtual Derived* Clone() {
-    Derived* svg_list = Derived::Create();
+    auto* svg_list = MakeGarbageCollected<Derived>();
     svg_list->DeepCopy(static_cast<Derived*>(this));
     return svg_list;
   }
@@ -135,12 +135,12 @@ class SVGListPropertyHelper : public SVGPropertyHelper<Derived> {
   bool AdjustFromToListValues(Derived* from_list,
                               Derived* to_list,
                               float percentage,
-                              AnimationMode);
+                              bool is_to_animation);
 
   String SerializeList() const;
 
   virtual ItemPropertyType* CreatePaddingItem() const {
-    return ItemPropertyType::Create();
+    return MakeGarbageCollected<ItemPropertyType>();
   }
 
  private:
@@ -261,7 +261,7 @@ bool SVGListPropertyHelper<Derived, ItemProperty>::AdjustFromToListValues(
     Derived* from_list,
     Derived* to_list,
     float percentage,
-    AnimationMode mode) {
+    bool is_to_animation) {
   // If no 'to' value is given, nothing to animate.
   uint32_t to_list_size = to_list->length();
   if (!to_list_size)
@@ -272,7 +272,7 @@ bool SVGListPropertyHelper<Derived, ItemProperty>::AdjustFromToListValues(
   uint32_t from_list_size = from_list->length();
   if (from_list_size != to_list_size && from_list_size) {
     if (percentage < 0.5) {
-      if (mode != kToAnimation)
+      if (!is_to_animation)
         DeepCopy(from_list);
     } else {
       DeepCopy(to_list);

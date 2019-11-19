@@ -6,10 +6,10 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/OmniboxUrlEmphasizer_jni.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/omnibox/browser/autocomplete_input.h"
-#include "jni/OmniboxUrlEmphasizer_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

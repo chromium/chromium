@@ -7,12 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/web/public/web_state/ui/crw_content_view.h"
+#import "ios/web/common/crw_content_view.h"
 
+@protocol CRWNativeContent;
+@protocol CRWNativeContentHolder;
 @class CRWWebControllerContainerView;
 @class CRWWebViewContentView;
 @class CRWWebViewProxyImpl;
-@protocol CRWNativeContent;
 
 @protocol CRWWebControllerContainerViewDelegate<NSObject>
 
@@ -26,6 +27,23 @@
 - (UIEdgeInsets)nativeContentInsetsForContainerView:
     (CRWWebControllerContainerView*)containerView;
 
+// Returns |YES| if the delegate wants to keep the render process alive.
+- (BOOL)shouldKeepRenderProcessAliveForContainerView:
+    (CRWWebControllerContainerView*)containerView;
+
+// Instructs the delegate to add the |viewToStash| to the view hierarchy to
+// keep the render process alive.
+- (void)containerView:(CRWWebControllerContainerView*)containerView
+    storeWebViewInWindow:(UIView*)viewToStash;
+
+// Resets the native controller.
+- (void)containerViewResetNativeController:
+    (CRWWebControllerContainerView*)containerView;
+
+// Returns the native content holder.
+- (id<CRWNativeContentHolder>)containerViewNativeContentHolder:
+    (CRWWebControllerContainerView*)containerView;
+
 @end
 
 // Container view class that manages the display of content within
@@ -36,8 +54,6 @@
 // The web view content view being displayed.
 @property(nonatomic, strong, readonly)
     CRWWebViewContentView* webViewContentView;
-// The native controller whose content is being displayed.
-@property(nonatomic, strong, readonly) id<CRWNativeContent> nativeController;
 // The currently displayed transient content view.
 @property(nonatomic, strong, readonly) CRWContentView* transientContentView;
 @property(nonatomic, weak) id<CRWWebControllerContainerViewDelegate>
@@ -63,14 +79,20 @@
 // Replaces the currently displayed content with |webViewContentView|.
 - (void)displayWebViewContentView:(CRWWebViewContentView*)webViewContentView;
 
-// Replaces the currently displayed content with |nativeController|'s view.
-- (void)displayNativeContent:(id<CRWNativeContent>)nativeController;
+// Notifies the container that the native content changed
+- (void)nativeContentDidChange:(id<CRWNativeContent>)previousNativeController;
 
 // Adds |transientContentView| as a subview above previously displayed content.
 - (void)displayTransientContent:(CRWContentView*)transientContentView;
 
 // Removes the transient content view, if one is displayed.
 - (void)clearTransientContentView;
+
+// Updates the |webViewContentView|'s view hierarchy status based on the the
+// container view window status. If the current webView is active but the window
+// is nil, store the webView in the view hierarchy keyWindow so WKWebView
+// doesn't suspend it's counterpart process.
+- (void)updateWebViewContentViewForContainerWindow:(UIWindow*)window;
 
 @end
 

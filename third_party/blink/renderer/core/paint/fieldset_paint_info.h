@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FIELDSET_PAINT_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FIELDSET_PAINT_INFO_H_
 
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 
 namespace blink {
@@ -16,9 +16,9 @@ struct FieldsetPaintInfo {
   // Calculate the fieldset block-start border offset and the cut-out rectangle
   // caused by the rendered legend.
   FieldsetPaintInfo(const ComputedStyle& fieldset_style,
-                    LayoutSize fieldset_size,
-                    LayoutRectOutsets fieldset_borders,
-                    LayoutRect legend_border_box);
+                    const PhysicalSize& fieldset_size,
+                    const LayoutRectOutsets& fieldset_borders,
+                    const PhysicalRect& legend_border_box);
 
   // Block-start border outset caused by the rendered legend.
   LayoutRectOutsets border_outsets;
@@ -27,7 +27,7 @@ struct FieldsetPaintInfo {
   // the legend. Note that this may intersect with other border sides than the
   // block-start one, if the legend happens to overlap with any of the other
   // borders.
-  LayoutRect legend_cutout_rect;
+  PhysicalRect legend_cutout_rect;
 };
 
 }  // namespace blink

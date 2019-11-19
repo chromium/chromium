@@ -14,7 +14,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "components/autofill/core/browser/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "third_party/libaddressinput/chromium/chrome_address_validator.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/storage.h"
@@ -75,7 +75,7 @@ class AutofillProfileValidator : public autofill::LoadRulesListener {
 
     bool has_responded_ = false;
     base::CancelableOnceCallback<void()> on_timeout_;
-    base::WeakPtrFactory<ValidationRequest> weak_factory_;
+    base::WeakPtrFactory<ValidationRequest> weak_factory_{this};
     DISALLOW_COPY_AND_ASSIGN(ValidationRequest);
   };
 

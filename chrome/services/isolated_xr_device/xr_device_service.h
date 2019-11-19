@@ -7,34 +7,26 @@
 
 #include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
-#include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_binding.h"
-#include "services/service_manager/public/cpp/service_keepalive.h"
-#include "services/service_manager/public/mojom/service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace device {
 
-class XrDeviceService : public service_manager::Service {
+class XrDeviceService : public mojom::XRDeviceService {
  public:
-  explicit XrDeviceService(service_manager::mojom::ServiceRequest request);
+  explicit XrDeviceService(
+      mojo::PendingReceiver<mojom::XRDeviceService> receiver);
   ~XrDeviceService() override;
 
-  void OnDeviceProviderRequest(
-      device::mojom::IsolatedXRRuntimeProviderRequest request);
-  void OnTestHookRequest(
-      device_test::mojom::XRTestHookRegistrationRequest request);
-
  private:
-  // service_manager::Service:
-  void OnBindInterface(const service_manager::BindSourceInfo& source_info,
-                       const std::string& interface_name,
-                       mojo::ScopedMessagePipeHandle interface_pipe) override;
+  // mojom::XRDeviceService implementation:
+  void BindRuntimeProvider(
+      mojo::PendingReceiver<mojom::IsolatedXRRuntimeProvider> receiver)
+      override;
+  void BindTestHook(mojo::PendingReceiver<device_test::mojom::XRServiceTestHook>
+                        receiver) override;
 
-  service_manager::ServiceBinding service_binding_;
-  service_manager::ServiceKeepalive service_keepalive_;
-  service_manager::BinderRegistry registry_;
+  mojo::Receiver<mojom::XRDeviceService> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(XrDeviceService);
 };

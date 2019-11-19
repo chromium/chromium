@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
@@ -29,7 +29,8 @@
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -37,11 +38,10 @@ namespace {
 
 void CollectUpgradeCandidateInNode(Node& root,
                                    HeapVector<Member<Element>>& candidates) {
-  if (root.IsElementNode()) {
-    Element& root_element = ToElement(root);
-    if (root_element.GetCustomElementState() == CustomElementState::kUndefined)
+  if (auto* root_element = DynamicTo<Element>(root)) {
+    if (root_element->GetCustomElementState() == CustomElementState::kUndefined)
       candidates.push_back(root_element);
-    if (auto* shadow_root = root_element.GetShadowRoot()) {
+    if (auto* shadow_root = root_element->GetShadowRoot()) {
       if (shadow_root->GetType() != ShadowRootType::kUserAgent)
         CollectUpgradeCandidateInNode(*shadow_root, candidates);
     }
@@ -75,23 +75,17 @@ bool ThrowIfValidName(const AtomicString& name,
 
 }  // namespace
 
-CustomElementRegistry* CustomElementRegistry::Create(
-    const LocalDOMWindow* owner) {
-  CustomElementRegistry* registry =
-      MakeGarbageCollected<CustomElementRegistry>(owner);
-  Document* document = owner->document();
-  if (V0CustomElementRegistrationContext* v0 =
-          document ? document->RegistrationContext() : nullptr)
-    registry->Entangle(v0);
-  return registry;
-}
-
 CustomElementRegistry::CustomElementRegistry(const LocalDOMWindow* owner)
     : element_definition_is_running_(false),
       owner_(owner),
       v0_(MakeGarbageCollected<V0RegistrySet>()),
       upgrade_candidates_(MakeGarbageCollected<UpgradeCandidateMap>()),
-      reaction_stack_(&CustomElementReactionStack::Current()) {}
+      reaction_stack_(&CustomElementReactionStack::Current()) {
+  Document* document = owner->document();
+  if (V0CustomElementRegistrationContext* v0 =
+          document ? document->RegistrationContext() : nullptr)
+    Entangle(v0);
+}
 
 void CustomElementRegistry::Trace(Visitor* visitor) {
   visitor->Trace(definitions_);
@@ -133,7 +127,7 @@ CustomElementDefinition* CustomElementRegistry::DefineInternal(
   if (NameIsDefined(name) || V0NameIsDefined(name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "this name has already been used with this registry");
+        "the name \"" + name + "\" has already been used with this registry");
     return nullptr;
   }
 
@@ -323,8 +317,8 @@ ScriptPromise CustomElementRegistry::whenDefined(
   ScriptPromiseResolver* resolver = when_defined_promise_map_.at(name);
   if (resolver)
     return resolver->Promise();
-  ScriptPromiseResolver* new_resolver =
-      ScriptPromiseResolver::Create(script_state);
+  auto* new_resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   when_defined_promise_map_.insert(name, new_resolver);
   return new_resolver->Promise();
 }

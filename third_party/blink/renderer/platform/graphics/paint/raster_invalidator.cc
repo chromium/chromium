@@ -106,20 +106,34 @@ PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
   // different, or the effect node's value changed between the layer state and
   // the chunk state.
   if (&new_chunk_state.Effect() != &old_chunk_state.Effect() ||
-      new_chunk_state.Effect().Changed(layer_state,
-                                       &new_chunk_state.Transform()))
+      new_chunk_state.Effect().Changed(
+          PaintPropertyChangeType::kChangedOnlySimpleValues, layer_state,
+          &new_chunk_state.Transform()))
     return PaintInvalidationReason::kPaintProperty;
 
   // Check for accumulated clip rect change, if the clip rects are tight.
   if (new_chunk_info.chunk_to_layer_clip.IsTight() &&
       old_chunk_info.chunk_to_layer_clip.IsTight()) {
-    if (new_chunk_info.chunk_to_layer_clip ==
-        old_chunk_info.chunk_to_layer_clip)
+    const auto& new_clip_rect = new_chunk_info.chunk_to_layer_clip.Rect();
+    const auto& old_clip_rect = old_chunk_info.chunk_to_layer_clip.Rect();
+    if (new_clip_rect == old_clip_rect)
       return PaintInvalidationReason::kNone;
     // Ignore differences out of the current layer bounds.
-    if (ClipByLayerBounds(new_chunk_info.chunk_to_layer_clip.Rect()) ==
-        ClipByLayerBounds(old_chunk_info.chunk_to_layer_clip.Rect()))
+    auto new_clip_in_layer_bounds = ClipByLayerBounds(new_clip_rect);
+    auto old_clip_in_layer_bounds = ClipByLayerBounds(old_clip_rect);
+    if (new_clip_in_layer_bounds == old_clip_in_layer_bounds)
       return PaintInvalidationReason::kNone;
+
+    // Clip changed and may have visual effect, so we need raster invalidation.
+    if (!new_clip_in_layer_bounds.Contains(new_chunk_info.bounds_in_layer) ||
+        !old_clip_in_layer_bounds.Contains(old_chunk_info.bounds_in_layer)) {
+      // If the chunk is not fully covered by the clip rect, we have to do full
+      // invalidation instead of incremental because the delta parts of the
+      // layer bounds may not cover all changes caused by the clip change.
+      // This can happen because of pixel snapping, raster effect outset, etc.
+      return PaintInvalidationReason::kPaintProperty;
+    }
+    // Otherwise we just invalidate the delta parts of the layer bounds.
     return PaintInvalidationReason::kIncremental;
   }
 
@@ -127,7 +141,9 @@ PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
   // different, or the clip node's value changed between the layer state and the
   // chunk state.
   if (&new_chunk_state.Clip() != &old_chunk_state.Clip() ||
-      new_chunk_state.Clip().Changed(layer_state, &new_chunk_state.Transform()))
+      new_chunk_state.Clip().Changed(
+          PaintPropertyChangeType::kChangedOnlySimpleValues, layer_state,
+          &new_chunk_state.Transform()))
     return PaintInvalidationReason::kPaintProperty;
 
   return PaintInvalidationReason::kNone;
@@ -256,8 +272,7 @@ void RasterInvalidator::IncrementallyInvalidateChunk(
   SkRegion diff(old_chunk_info.bounds_in_layer);
   diff.op(new_chunk_info.bounds_in_layer, SkRegion::kXOR_Op);
   for (SkRegion::Iterator it(diff); !it.done(); it.next()) {
-    const SkIRect& r = it.rect();
-    AddRasterInvalidation(IntRect(r.x(), r.y(), r.width(), r.height()), client,
+    AddRasterInvalidation(IntRect(it.rect()), client,
                           PaintInvalidationReason::kIncremental, kClientIsNew);
   }
 }

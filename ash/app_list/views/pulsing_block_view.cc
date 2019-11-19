@@ -70,7 +70,7 @@ void SchedulePulsingAnimation(ui::Layer* layer) {
 
 }  // namespace
 
-namespace app_list {
+namespace ash {
 
 PulsingBlockView::PulsingBlockView(const gfx::Size& size, bool start_delay) {
   SetPaintToLayer();
@@ -84,6 +84,10 @@ PulsingBlockView::PulsingBlockView(const gfx::Size& size, bool start_delay) {
 
 PulsingBlockView::~PulsingBlockView() {}
 
+const char* PulsingBlockView::GetClassName() const {
+  return "PulsingBlockView";
+}
+
 void PulsingBlockView::OnStartDelayTimer() {
   SchedulePulsingAnimation(layer());
 }
@@ -94,4 +98,4 @@ void PulsingBlockView::OnPaint(gfx::Canvas* canvas) {
   canvas->FillRect(rect, kBlockColor);
 }
 
-}  // namespace app_list
+}  // namespace ash

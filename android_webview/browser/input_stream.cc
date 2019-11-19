@@ -10,7 +10,7 @@
 // even if they're unused.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-function"
-#include "jni/InputStreamUtil_jni.h"
+#include "android_webview/browser_jni_headers/InputStreamUtil_jni.h"
 #pragma GCC diagnostic pop
 #include "net/base/io_buffer.h"
 

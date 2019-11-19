@@ -40,8 +40,8 @@ void MediaRouterDialogControllerViewsTest::OpenMediaRouterDialog() {
   // Create a reference to initiator contents.
   initiator_ = browser()->tab_strip_model()->GetActiveWebContents();
 
-  dialog_controller_ =
-      MediaRouterDialogControllerViews::GetOrCreateForWebContents(initiator_);
+  dialog_controller_ = static_cast<MediaRouterDialogControllerViews*>(
+      MediaRouterDialogController::GetOrCreateForWebContents(initiator_));
   ASSERT_TRUE(dialog_controller_);
 
   // Show the media router dialog for the initiator.

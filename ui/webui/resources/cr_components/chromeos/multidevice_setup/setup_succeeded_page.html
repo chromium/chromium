@@ -23,8 +23,9 @@
         width: 416px;
       }
     </style>
-    <ui-page header-text="[[headerText]]" icon-name="google-g">
-      <span slot="message" inner-h-t-m-l="[[messageHtml]]"></span>
+    <ui-page header-text="[[i18nDynamic(locale, 'setupSucceededPageHeader')]]"
+        icon-name="google-g">
+      <span slot="message" inner-h-t-m-l="[[getMessageHtml_()]]"></span>
       <div id="page-icon-container" slot="additional-content">
         <div id="page-icon"></div>
       </div>

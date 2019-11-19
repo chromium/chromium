@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.browserservices;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -31,10 +34,14 @@ public class ClientAppDataRegister {
 
     /** Creates a ClientAppDataRegister. */
     public ClientAppDataRegister() {
-        try (StrictModeContext unused = StrictModeContext.allowDiskReads()) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             mPreferences = ContextUtils.getApplicationContext()
                     .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
         }
+
+        // Trigger a Preferences read in a background thread to try to load the Preferences file
+        // before we need it.
+        PostTask.postTask(TaskTraits.BEST_EFFORT, this::getUids);
     }
 
     /**
@@ -69,7 +76,11 @@ public class ClientAppDataRegister {
     }
 
     private Set<String> getUids() {
-        return new HashSet<>(mPreferences.getStringSet(UIDS_KEY, Collections.emptySet()));
+        // We try to ensure that this is loaded on a background thread before it is needed (see
+        // constructor), but if the load hasn't completed, disable StrictMode so we don't crash.
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+            return new HashSet<>(mPreferences.getStringSet(UIDS_KEY, Collections.emptySet()));
+        }
     }
 
     public void removePackage(int uid) {

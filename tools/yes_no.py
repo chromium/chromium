@@ -2,12 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import sys
 
 
 def YesNo(prompt):
   """Prompts with a yes/no question, returns True if yes."""
-  print prompt,
+  print(prompt, end=' ')
   sys.stdout.flush()
   # http://code.activestate.com/recipes/134892/
   if sys.platform == 'win32':
@@ -24,5 +26,5 @@ def YesNo(prompt):
       ch = sys.stdin.read(1)
     finally:
       termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-  print ch
+  print(ch)
   return ch in ('Y', 'y')

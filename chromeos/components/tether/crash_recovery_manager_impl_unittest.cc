@@ -8,7 +8,7 @@
 #include <sstream>
 
 #include "base/bind.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/tether/device_id_tether_network_guid_map.h"
 #include "chromeos/components/tether/fake_active_host.h"
@@ -113,7 +113,7 @@ class CrashRecoveryManagerImplTest : public testing::Test {
               fake_active_host_->GetActiveHostStatus());
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
   const multidevice::RemoteDeviceRef test_device_;
 

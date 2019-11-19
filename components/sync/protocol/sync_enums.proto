@@ -9,6 +9,9 @@
 
 syntax = "proto2";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
 option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
@@ -16,32 +19,39 @@ package sync_pb;
 message SyncEnums {
   // These events are sent by the DebugInfo class for singleton events.
   enum SingletonDebugEventType {
-    CONNECTION_STATUS_CHANGE = 1;  // Connection status change. Note this
-                                   // gets generated even during a successful
-                                   // connection.
-    UPDATED_TOKEN = 2;             // Client received an updated token.
-    PASSPHRASE_REQUIRED = 3;       // Cryptographer needs passphrase.
-    PASSPHRASE_ACCEPTED = 4;       // Passphrase was accepted by cryptographer.
-    INITIALIZATION_COMPLETE = 5;   // Sync Initialization is complete.
-
-    // |STOP_SYNCING_PERMANENTLY| event should never be seen by the server in
-    // the absence of bugs.
-    STOP_SYNCING_PERMANENTLY = 6;  // Server sent stop syncing permanently.
-
-    ENCRYPTION_COMPLETE = 7;      // Client has finished encrypting all data.
-    ACTIONABLE_ERROR = 8;         // Client received an actionable error.
-    ENCRYPTED_TYPES_CHANGED = 9;  // Set of encrypted types has changed.
-    // NOTE: until m25 bootstrap token updated also
-    // shared this field (erroneously).
-    PASSPHRASE_TYPE_CHANGED = 10;  // The encryption passphrase state changed.
-    KEYSTORE_TOKEN_UPDATED = 11;   // A new keystore encryption token was
-                                   // persisted.
-    CONFIGURE_COMPLETE = 12;       // The datatype manager has finished an
-                                   // at least partially successful
-                                   // configuration and is once again syncing
-                                   // with the server.
-    BOOTSTRAP_TOKEN_UPDATED = 13;  // A new cryptographer bootstrap token was
-                                   // generated.
+    // Connection status change. Note this gets generated even during a
+    // successful connection.
+    CONNECTION_STATUS_CHANGE = 1;
+    // Client received an updated token.
+    UPDATED_TOKEN = 2;
+    // Cryptographer needs passphrase.
+    PASSPHRASE_REQUIRED = 3;
+    // Passphrase was accepted by cryptographer.
+    PASSPHRASE_ACCEPTED = 4;
+    // Sync Initialization is complete.
+    INITIALIZATION_COMPLETE = 5;
+    // Server sent stop syncing permanently. This event should never be seen by
+    // the server in the absence of bugs.
+    STOP_SYNCING_PERMANENTLY = 6;
+    // Client has finished encrypting all data.
+    ENCRYPTION_COMPLETE = 7;
+    // Client received an actionable error.
+    ACTIONABLE_ERROR = 8;
+    // Set of encrypted types has changed.
+    ENCRYPTED_TYPES_CHANGED = 9;
+    // The encryption passphrase state changed.
+    PASSPHRASE_TYPE_CHANGED = 10;
+    // A new keystore encryption token was persisted.
+    KEYSTORE_TOKEN_UPDATED = 11;
+    // The datatype manager has finished an at least partially successful
+    // configuration and is once again syncing with the server.
+    CONFIGURE_COMPLETE = 12;
+    // A new cryptographer bootstrap token was generated.
+    BOOTSTRAP_TOKEN_UPDATED = 13;
+    // Cryptographer needs trusted vault decryption keys.
+    TRUSTED_VAULT_KEY_REQUIRED = 14;
+    // Cryptographer no longer needs trusted vault decryption keys.
+    TRUSTED_VAULT_KEY_ACCEPTED = 15;
   }
 
   // See ui/base/page_transition_types.h for detailed information on the
@@ -110,13 +120,10 @@ message SyncEnums {
 
   enum Action {
     UPGRADE_CLIENT = 0;              // Upgrade the client to latest version.
-    CLEAR_USER_DATA_AND_RESYNC = 1;  // Clear user data from dashboard and
-                                     // setup sync again.
-    ENABLE_SYNC_ON_ACCOUNT = 2;      // The administrator needs to enable sync
-                                     // on the account.
-    STOP_AND_RESTART_SYNC = 3;       // Stop sync and set up sync again.
-    DISABLE_SYNC_ON_CLIENT = 4;      // Wipe the client of all sync data and
-                                     // stop syncing.
+    DEPRECATED_CLEAR_USER_DATA_AND_RESYNC = 1;
+    DEPRECATED_ENABLE_SYNC_ON_ACCOUNT = 2;
+    DEPRECATED_STOP_AND_RESTART_SYNC = 3;
+    DEPRECATED_DISABLE_SYNC_ON_CLIENT = 4;
     UNKNOWN_ACTION = 5;              // This is the default.
   }
 

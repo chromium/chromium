@@ -6,16 +6,9 @@
 <translation id="1050693411695664090">Schlecht</translation>
 <translation id="1152528166145813711">Auswählen...</translation>
 <translation id="1199593201721843963">Remote-Verbindungen deaktivieren</translation>
+<translation id="1201402288615127009">Weiter</translation>
 <translation id="1291443878853470558">Aktivieren Sie die Remote-Verbindungen, wenn Sie mit Chromoting auf diesen Computer zugreifen möchten.</translation>
 <translation id="1297009705180977556">Fehler beim Herstellen der Verbindung mit <ph name="HOSTNAME" /></translation>
-<translation id="1300633907480909701">So greifen Sie sicher von Ihrem Android-Gerät auf Ihre Computer zu:
-
-• Richten Sie mithilfe der Chrome Remote Desktop App aus dem Chrome Web Store auf jedem Ihrer Computer den Remotezugriff ein: https://chrome.google.com/remotedesktop.
-• Öffnen Sie die App auf Ihrem Android-Gerät und tippen Sie auf einen der online befindlichen Computer, um eine Verbindung herzustellen.
-
-Auf Remote-Computern mit einem anderen Tastaturlayout als "Englisch (USA)" kann die Texteingabe Fehler enthalten. Wir fügen in Kürze Unterstützung für andere Tastaturlayouts hinzu!
-
-Informationen zum Datenschutz finden Sie in der Google-Datenschutzerklärung (http://goo.gl/SyrVzj) und der Chrome-Datenschutzerklärung (http://goo.gl/0uXE5d).</translation>
 <translation id="1324095856329524885">Diese Funktion ist noch nicht für Ihren Computer verfügbar.</translation>
 <translation id="1342297293546459414">Freigegebenen Computer sehen und steuern</translation>
 <translation id="1389790901665088353">Chrome Remote Desktop Host-Installationsprogramm herunterladen</translation>
@@ -27,8 +20,8 @@ Informationen zum Datenschutz finden Sie in der Google-Datenschutzerklärung (ht
 <translation id="1624185583382384493">Chrome Remote Desktop ist jetzt im Web verfügbar. Testen Sie unsere <ph name="LINK_BEGIN" />Web-App<ph name="LINK_END" />: Sie ist schnell, kostenlos und bietet noch mehr Funktionen. So wurde zum Beispiel die Unterstützung für mehrere Bildschirme verbessert.</translation>
 <translation id="1643640058022401035">Wenn Sie diese Seite verlassen, wird Ihre Chromoting-Sitzung beendet.</translation>
 <translation id="1654128982815600832">Remote-Verbindungen für diesen Computer werden aktiviert…</translation>
+<translation id="1697532407822776718">Fertig!</translation>
 <translation id="170207782578677537">Fehler beim Registrieren dieses Computers</translation>
-<translation id="1727412735341161734">Chrome Remote Desktop</translation>
 <translation id="174018511426417793">Sie haben noch keine Computer registriert. Um Remote-Verbindungen zu einem Computer zu ermöglichen, installieren Sie Chrome Remote Desktop auf dem betreffenden Computer und klicken Sie auf "<ph name="BUTTON_NAME" />".</translation>
 <translation id="1742469581923031760">Verbindung wird hergestellt…</translation>
 <translation id="1770394049404108959">Ich kann die Anwendung nicht öffnen.</translation>
@@ -46,13 +39,11 @@ Informationen zum Datenschutz finden Sie in der Google-Datenschutzerklärung (ht
 <translation id="2078880767960296260">Host-Prozess</translation>
 <translation id="20876857123010370">Touchpadmodus</translation>
 <translation id="2089514346391228378">Die Remote-Verbindungen für diesen Computer wurden aktiviert.</translation>
-<translation id="2118549242412205620">So greifen Sie sicher von Ihrem Android-Gerät auf Ihre Computer zu:
+<translation id="2198363917176605566">Sie müssen eine Berechtigung für die Bildschirmaufzeichnung erteilen, um <ph name="PRODUCT_NAME" /> zu verwenden. Erst dann können die Bildschirminhalte dieses Mac an den Remote-Computer gesendet werden.
 
-• Richten Sie mithilfe der Chrome Remote Desktop App aus dem Chrome Web Store auf jedem Ihrer Computer den Remotezugriff ein: https://chrome.google.com/remotedesktop.
-• Öffnen Sie die App auf Ihrem Android-Gerät und tippen Sie auf einen der online befindlichen Computer, um eine Verbindung herzustellen.
+Klicken Sie zum Erteilen dieser Berechtigung unten auf "<ph name="BUTTON_NAME" />", um die Einstellungen für Bildschirmaufzeichnungen zu öffnen. Klicken Sie dann das Kästchen neben "<ph name="SERVICE_SCRIPT_NAME" />" an.
 
-Informationen zum Datenschutz finden Sie in der Google-Datenschutzerklärung (http://goo.gl/SyrVzj) und der Chrome-Datenschutzerklärung (http://goo.gl/0uXE5d).</translation>
-<translation id="2124408767156847088">Für den sicheren Zugriff von Ihrem Android-Gerät auf Ihre Computer</translation>
+Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, entfernen Sie diesen und klicken Sie noch einmal auf das Kästchen.</translation>
 <translation id="2208514473086078157">Gemäß den Richtlinieneinstellungen können Sie diesen Computer nicht als Chrome Remote Desktop-Host verwenden. Wenden Sie sich für weitere Hilfe an Ihren Systemadministrator.</translation>
 <translation id="2220529011494928058">Problem melden</translation>
 <translation id="2221097377466213233">Rechte Strg-Taste für Windows-Taste (⌘ auf einem Mac) verwenden</translation>
@@ -64,13 +55,13 @@ Informationen zum Datenschutz finden Sie in der Google-Datenschutzerklärung (ht
 <translation id="2314101195544969792">Ihre Sitzung bei <ph name="APPLICATION_NAME" /> war längere Zeit inaktiv und wird in Kürze beendet.</translation>
 <translation id="2317666076142640974">Werfen Sie vorab einen Blick auf die Web-App <ph name="LINK_BEGIN" />Chrome Remote Desktop<ph name="LINK_END" />. Wir freuen uns über Feedback.</translation>
 <translation id="2320166752086256636">Tastatur ausblenden</translation>
-<translation id="2332192922827071008">Einstellungen öffnen</translation>
 <translation id="2353140552984634198">Mit Chromoting erhalten Sie sicheren Zugriff auf diesen Computer.</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2366718077645204424">Die Verbindung zum Host kann nicht hergestellt werden. Das von Ihnen verwendete Netzwerk ist möglicherweise nicht korrekt konfiguriert.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Zuletzt online: <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2405928220797050937">Diese App wird nicht mehr unterstützt. Damit Ihnen immer die aktuellen Funktionen und Sicherheitsupdates zur Verfügung stehen, verwenden Sie bitte die Web-App <ph name="LINK_BEGIN" />Chrome Remote Desktop<ph name="LINK_END" />.</translation>
 <translation id="2499160551253595098">Helfen Sie uns bei der Verbesserung von Chrome Remote Desktop, indem Sie zulassen, dass wir Nutzungsstatistiken und Absturzberichte erfassen.</translation>
+<translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> Berechtigung für die Bedienungshilfen erteilen</translation>
 <translation id="2509394361235492552">Verbunden mit <ph name="HOSTNAME" /></translation>
 <translation id="2512228156274966424">HINWEIS: Sie können in Chrome Remote Desktop die Option zum Öffnen als Fenster einstellen, damit alle Tastenkombinationen verfügbar sind.</translation>
 <translation id="2540992418118313681">Möchten Sie diesen Computer für einen anderen Nutzer zur Ansicht und Steuerung freigeben?</translation>
@@ -86,11 +77,6 @@ Informationen zum Datenschutz finden Sie in der Google-Datenschutzerklärung (ht
 <translation id="2851754573186462851">Chromium App Streaming</translation>
 <translation id="2888969873284818612">Ein Netzwerkfehler ist aufgetreten. Die App wird neu gestartet, wenn Ihr Gerät wieder online ist.</translation>
 <translation id="2891243864890517178">Für Mac OS X Yosemite 10.10 und höher</translation>
-<translation id="289405675947420287">Sicherer Zugriff auf Ihren Computer über Ihr iOS-Gerät. Schnell, einfach und kostenlos.
-
-• Laden Sie die Chrome Remote Desktop App aus dem Chrome Web Store auf den Computer herunter, für den Sie den Remotezugriff einrichten möchten.
-• Installieren Sie die Chrome Remote Desktop-Software und folgen Sie der Anleitung, um die Einrichtung abzuschließen.
-• Öffnen Sie die App auf Ihrem iOS-Gerät und tippen Sie auf einen Ihrer Computer mit Onlinestatus, um eine Verbindung herzustellen.</translation>
 <translation id="2894654864775534701">Dieser Computer ist derzeit über ein anderes Konto freigegeben.</translation>
 <translation id="2919669478609886916">Dieser Computer ist zurzeit für einen anderen Nutzer freigegeben. Möchten Sie die Freigabe fortsetzen?</translation>
 <translation id="2921543551052660690">Sie haben sich zuvor als <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) angemeldet. Damit Sie auf Ihre Computer in diesem Konto zugreifen können, <ph name="LINK_BEGIN" />melden Sie sich mit diesem Konto in Chromium an<ph name="LINK_END" /> und installieren Sie Chromoting erneut.</translation>
@@ -104,7 +90,6 @@ Informationen zum Datenschutz finden Sie in der Google-Datenschutzerklärung (ht
 <translation id="310979712355504754">Alle löschen</translation>
 <translation id="3150823315463303127">Die Richtlinie konnte vom Host nicht gelesen werden.</translation>
 <translation id="3171922709365450819">Dieses Gerät wird von diesem Client nicht unterstützt, da es eine Authentifizierung durch Dritte erfordert.</translation>
-<translation id="3194245623920924351">Chrome Remote Desktop</translation>
 <translation id="3197730452537982411">Remote Desktop</translation>
 <translation id="324272851072175193">Anleitung per E-Mail senden</translation>
 <translation id="3258789396564295715">Mit Chrome Remote Desktop erhalten Sie sicheren Zugriff auf diesen Computer.</translation>
@@ -126,8 +111,6 @@ Informationen zum Datenschutz finden Sie in der Google-Datenschutzerklärung (ht
 <translation id="3695446226812920698">Weitere Informationen</translation>
 <translation id="3718805989288361841">Die Richtlinieneinstellungen für Chrome Remote Desktop sind fehlerhaft. Wenden Sie sich an Ihren Systemadministrator.</translation>
 <translation id="3776024066357219166">Ihre Chrome Remote Desktop-Sitzung wurde beendet.</translation>
-<translation id="3846148461359626420">• Verbessertes Schwenken und Zoomen auf iPhone X.
-• Stabilitätsverbesserungen und Fehlerkorrekturen.</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3884839335308961732">Bestätigen Sie unten Ihr Konto und Ihre PIN, um Zugriff über Chrome Remote Desktop zu gewähren.</translation>
 <translation id="3897092660631435901">Menü</translation>
@@ -153,11 +136,14 @@ Informationen zum Datenschutz finden Sie in der Google-Datenschutzerklärung (ht
 <translation id="4240294130679914010">Chromoting Host-Deinstallationsprogramm</translation>
 <translation id="4277463233460010382">Dieser Computer wird konfiguriert, um einem oder mehreren Clients das Herstellen einer Verbindung ohne Eingabe einer PIN zu ermöglichen.</translation>
 <translation id="4277736576214464567">Der Zugriffscode ist ungültig. Bitte versuchen Sie es erneut.</translation>
+<translation id="4281844954008187215">Nutzungsbedingungen</translation>
 <translation id="4361728918881830843">Um Remote-Verbindungen zu einem anderen Computer zu ermöglichen, installieren Sie Chrome Remote Desktop auf dem betreffenden Computer und klicken Sie auf "<ph name="BUTTON_NAME" />".</translation>
 <translation id="4394049700291259645">Deaktivieren</translation>
 <translation id="4405930547258349619">Zentrale Bibliothek</translation>
 <translation id="4430435636878359009">Remote-Verbindungen zu diesem Computer deaktivieren</translation>
 <translation id="4430915108080446161">Zugriffscode wird generiert...</translation>
+<translation id="443560535555262820">Einstellungen für Bedienungshilfen öffnen</translation>
+<translation id="4450893287417543264">Nicht mehr anzeigen</translation>
 <translation id="4472575034687746823">Jetzt starten</translation>
 <translation id="4481276415609939789">Sie haben noch keine Computer registriert. Um Remote-Verbindungen zu einem Computer zu ermöglichen, installieren Sie Chromoting auf dem betreffenden Computer und klicken Sie auf "<ph name="BUTTON_NAME" />".</translation>
 <translation id="4513946894732546136">Google Feedback</translation>
@@ -170,13 +156,6 @@ Informationen zum Datenschutz finden Sie in der Google-Datenschutzerklärung (ht
 <translation id="4660011489602794167">Tastatur anzeigen</translation>
 <translation id="4703302905453407178">Eine erforderliche Komponente funktioniert nicht mehr. Bitte melden Sie dieses Problem an die Entwickler.</translation>
 <translation id="4703799847237267011">Ihre Chromoting-Sitzung wurde beendet.</translation>
-<translation id="4706355010316049867">chrome
-remote
-desktop
-zugriff
-hilfe
-computer
-pc</translation>
 <translation id="4736223761657662401">Verlauf "Verbindungen"</translation>
 <translation id="4741792197137897469">Fehler bei der Authentifizierung. Melden Sie sich erneut in Chrome an.</translation>
 <translation id="477305884757156764">Die Anwendung ist zu langsam.</translation>
@@ -193,9 +172,6 @@ pc</translation>
 <translation id="4973800994433240357">Indem Sie das Chromoting Host-Installationsprogramm herunterladen, erklären Sie sich mit den <ph name="LINK_BEGIN" />Nutzungsbedingungen von Google<ph name="LINK_END" /> einverstanden.</translation>
 <translation id="4974476491460646149">Verbindung zwischen Client und <ph name="HOSTNAME" /> getrennt</translation>
 <translation id="4985296110227979402">Richten Sie zuerst Ihren Computer für den Remotezugriff ein</translation>
-<translation id="5059773780693835145">Bevor Sie auf dieses Gerät mithilfe von <ph name="PRODUCT_NAME" /> remote zugreifen können, ist ein zusätzlicher Konfigurationsschritt erforderlich.
-
-Wenn Sie diese Funktion aktivieren möchten, wählen Sie "<ph name="BUTTON_NAME" />" aus. Daraufhin öffnet sich das Sicherheits- und Datenschutzfenster. Klicken Sie dort das Kästchen neben "<ph name="SERVICE_SCRIPT_NAME" />" an.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="5070121137485264635">Der Remote-Host verlangt, dass Sie sich über eine Drittanbieter-Website authentifizieren. Um fortfahren zu können, geben Sie Chrome Remote Desktop zusätzliche Berechtigungen für den Zugriff auf die folgende Adresse:</translation>
 <translation id="507204348399810022">Möchten Sie die Remote-Verbindungen zu <ph name="HOSTNAME" /> wirklich deaktivieren?</translation>
@@ -205,8 +181,10 @@ Wenn Sie diese Funktion aktivieren möchten, wählen Sie "<ph name="BUTTON_NAME"
 <translation id="518094545883702183">Diese Informationen werden nur zur Diagnose des gemeldeten Problems verwendet. Dabei kann nur die Person auf sie zugreifen, die Ihren Bericht untersucht. Die Informationen werden nach spätestens 30 Tagen gelöscht.</translation>
 <translation id="5204575267916639804">Häufig gestellte Fragen</translation>
 <translation id="5222676887888702881">Abmelden</translation>
+<translation id="5234764350956374838">Schließen</translation>
 <translation id="5254120496627797685">Wenn Sie diese Seite verlassen, wird Ihre Chrome Remote Desktop-Sitzung beendet.</translation>
 <translation id="5308380583665731573">Verbinden</translation>
+<translation id="5327248766486351172">Name</translation>
 <translation id="533625276787323658">Es gibt keine Verbindungsziele</translation>
 <translation id="5363265567587775042">Bitten Sie den Nutzer, auf dessen Computer Sie zugreifen möchten, auf "<ph name="SHARE" />" zu klicken und Ihnen den Zugriffscode zu geben.</translation>
 <translation id="5379087427956679853">Chrome Remote Desktop ermöglicht die sichere Freigabe Ihres Computers über das Internet. Beide Nutzer müssen dazu die Chrome Remote Desktop App ausführen. Diese App finden Sie unter <ph name="URL" />.</translation>
@@ -244,14 +222,19 @@ Wenn Sie diese Funktion aktivieren möchten, wählen Sie "<ph name="BUTTON_NAME"
 <translation id="6198252989419008588">PIN ändern</translation>
 <translation id="6204583485351780592"><ph name="HOSTNAME" /> (veraltet)</translation>
 <translation id="6221358653751391898">Sie sind nicht in Chrome angemeldet. Melden Sie sich an und versuchen Sie es erneut.</translation>
+<translation id="6223301979382383752">Einstellungen für Bildschirmaufzeichnung öffnen</translation>
 <translation id="6227369581881558336">Chrome Remote Desktop ist jetzt im Web verfügbar und bietet neue Funktionen wie die Dateiübertragung. <ph name="LINK_BEGIN" />Hier gehts zur Web App.<ph name="LINK_END" /></translation>
 <translation id="6284412385303060032">Der Host, der auf dem Anmeldebildschirm für die Konsole ausgeführt wird, wurde heruntergefahren, um den Vorhangmodus zu unterstützen, indem zu einem Host in einer nutzerspezfischen Sitzung gewechselt wurde.</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6304318647555713317">Client</translation>
 <translation id="6381670701864002291">Sonstige</translation>
 <translation id="6398765197997659313">Vollbildmodus beenden</translation>
+<translation id="6411861157501911556">Sie müssen eine Berechtigung für die Bedienungshilfen erteilen, um <ph name="PRODUCT_NAME" /> zu verwenden. Erst dann kann dieser Mac über Eingaben vom Remote-Computer gesteuert werden.
+
+Klicken Sie zum Erteilen dieser Berechtigung auf "<ph name="BUTTON_NAME" />" unten, um die Einstellungen für die "Bedienungshilfen" zu öffnen. Klicken Sie dann das Kästchen neben "<ph name="SERVICE_SCRIPT_NAME" />" an.
+
+Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, entfernen Sie diesen und klicken Sie noch einmal auf das Kästchen.</translation>
 <translation id="6441316101718669559">Die Desktop-Integration wird auf dieser Plattform nicht unterstützt. Sie können die App weiterhin verwenden, allerdings ist die Nutzerfreundlichkeit beeinträchtigt.</translation>
-<translation id="6502629188777329097">Zugriff auf Ihren Computer</translation>
 <translation id="652218476070540101">Die PIN für diesen Computer wird aktualisiert…</translation>
 <translation id="6527303717912515753">Teilen</translation>
 <translation id="6541219117979389420">Anwendungsprotokolle können private Informationen enthalten. Dabei kann es sich zum Beispiel um Ihre Identität, d. h. Ihre E-Mail-Adresse, und den Namen und die Eigenschaften von Dateien und Ordnern in Google Drive handeln.</translation>
@@ -260,7 +243,7 @@ Wenn Sie diese Funktion aktivieren möchten, wählen Sie "<ph name="BUTTON_NAME"
 <translation id="6570205395680337606">App zurücksetzen. Alle nicht gespeicherten Daten gehen verloren.</translation>
 <translation id="6583902294974160967">Hilfe</translation>
 <translation id="6612717000975622067">Strg-Alt-Entf senden</translation>
-<translation id="6654753848497929428">Teilen</translation>
+<translation id="6654753848497929428">Freigeben</translation>
 <translation id="6668065415969892472">Ihre PIN wurde aktualisiert.</translation>
 <translation id="6681800064886881394">Copyright 2013 Google Inc. Alle Rechte vorbehalten</translation>
 <translation id="6705482892455291412">Sobald der Code eingegeben wurde, werden Sie aufgefordert, der Verbindung zuzustimmen und die Freigabesitzung zu starten.</translation>
@@ -274,7 +257,7 @@ Wenn Sie diese Funktion aktivieren möchten, wählen Sie "<ph name="BUTTON_NAME"
 <translation id="6944854424004126054">Fenster wiederherstellen</translation>
 <translation id="6948905685698011662">Chrome Remote Desktop ist jetzt im Web verfügbar. Probieren Sie unsere <ph name="LINK_BEGIN" />kostenlose Web-App<ph name="LINK_END" /> aus.</translation>
 <translation id="6963936880795878952">Verbindungen zum Remote-Computer sind vorübergehend blockiert, da jemand versucht hat, eine Verbindung mit einer ungültigen PIN herzustellen. Bitte versuchen Sie es später noch einmal.</translation>
-<translation id="6965382102122355670">OK</translation>
+<translation id="6965382102122355670">Ok</translation>
 <translation id="6985691951107243942">Möchten Sie die Remote-Verbindung zu <ph name="HOSTNAME" /> wirklich deaktivieren? Wenn Sie die Verbindung später erneut aktivieren möchten, müssen Sie dies von dem betreffenden Computer aus tun.</translation>
 <translation id="6998989275928107238">An</translation>
 <translation id="7019153418965365059">Nicht erkannter Hostfehler: <ph name="HOST_OFFLINE_REASON" /></translation>
@@ -311,6 +294,7 @@ Wenn Sie diese Funktion aktivieren möchten, wählen Sie "<ph name="BUTTON_NAME"
 <translation id="7948001860594368197">Optionen</translation>
 <translation id="7970576581263377361">Fehler bei der Authentifizierung. Melden Sie sich erneut in Chromium an.</translation>
 <translation id="7981525049612125370">Die Remote-Sitzung ist abgelaufen.</translation>
+<translation id="8038111231936746805">(Standard)</translation>
 <translation id="8041089156583427627">Feedback geben</translation>
 <translation id="8041721485428375115">Indem Sie das Chrome Remote Desktop Host-Installationsprogramm herunterladen, erklären Sie sich mit den <ph name="LINK_BEGIN" />Nutzungsbedingungen von Google<ph name="LINK_END" /> einverstanden.</translation>
 <translation id="8060029310790625334">Hilfe</translation>
@@ -320,7 +304,6 @@ Wenn Sie diese Funktion aktivieren möchten, wählen Sie "<ph name="BUTTON_NAME"
 <translation id="809687642899217504">Meine Computer</translation>
 <translation id="811307782653349804">Greifen Sie von überall aus auf Ihren Computer zu.</translation>
 <translation id="8116630183974937060">Ein Netzwerkfehler ist aufgetreten. Bitte überprüfen Sie, ob das Gerät online ist, und versuchen Sie es erneut.</translation>
-<translation id="8123581458650016326">Zulassen, dass Remote-Nutzer auf dieses Gerät zugreifen können</translation>
 <translation id="8178433417677596899">Die Bildschirmfreigabe für Nutzer eignet sich besonders für technischen Support per Remotezugriff.</translation>
 <translation id="8187079423890319756">Copyright 2013 Die Chromium-Autoren. Alle Rechte vorbehalten</translation>
 <translation id="8196755618196986400">Damit wir für weitere Informationen mit Ihnen Kontakt aufnehmen können, wird bei jedem von Ihnen gesendeten Feedback Ihre E-Mail-Adresse mitgesendet.</translation>
@@ -331,20 +314,22 @@ Wenn Sie diese Funktion aktivieren möchten, wählen Sie "<ph name="BUTTON_NAME"
 <translation id="837021510621780684">Von diesem Computer</translation>
 <translation id="8383794970363966105">Wenn Sie Chromoting verwenden möchten, fügen Sie ein Google-Konto zu Ihrem Gerät hinzu.</translation>
 <translation id="8386846956409881180">Der Host wurde mit ungültigen OAuth-Anmeldedaten konfiguriert.</translation>
+<translation id="8397385476380433240">Berechtigung für <ph name="PRODUCT_NAME" /> gewähren</translation>
+<translation id="8406498562923498210">Wählen Sie die Sitzung aus, die auf Ihrem Chrome Remote Desktop gestartet werden soll. Beachten Sie jedoch, dass einige Sitzungstypen nicht gleichzeitig auf dem Chrome Remote Desktop und in der lokalen Konsole ausgeführt werden können.</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8445362773033888690">Im Google Play Store ansehen</translation>
 <translation id="8509907436388546015">Desktop-Integrationsprozess</translation>
 <translation id="8513093439376855948">Nativer Nachrichtenhost zur Verwaltung von Remoting-Host</translation>
 <translation id="8525306231823319788">Vollbildmodus</translation>
 <translation id="8548209692293300397">Sie haben sich zuvor als <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) angemeldet. Damit Sie auf Ihre Computer in diesem Konto zugreifen können, <ph name="LINK_BEGIN" />melden Sie sich mit diesem Konto in Google Chrome an<ph name="LINK_END" /> und installieren Sie Chrome Remote Desktop erneut.</translation>
+<translation id="858006550102277544">Kommentar</translation>
 <translation id="8642984861538780905">Ausreichend</translation>
-<translation id="8705151241155781642">• Jetzt auch Unterstützung für Android 9.0 Pie.
-• Die Remote Desktop-Auflösung kann jetzt an Ihr Android-Gerät angepasst werden.</translation>
 <translation id="8712909229180978490">Meine online gespeicherten Dateien werden nicht im Google Drive angezeigt.</translation>
 <translation id="8743328882720071828">Möchten Sie zulassen, dass <ph name="CLIENT_USERNAME" /> auf Ihren Computer zugreifen und diesen steuern kann?</translation>
 <translation id="8747048596626351634">Die Sitzung ist abgestürzt oder konnte nicht gestartet werden. Wenn die Datei "~/.chrome-remote-desktop-session" auf dem Remote-Computer vorhanden ist, vergewissern Sie sich, dass ein längerer Vordergrundprozess wie eine Desktopumgebung oder ein Fenstermanager auf dem Computer gestartet wird.</translation>
 <translation id="8759753423332885148">Weitere Informationen</translation>
 <translation id="8791202241915690908">Chromoting Host-Installationsprogramm herunterladen</translation>
+<translation id="8804164990146287819">Datenschutzerklärung</translation>
 <translation id="894763922177556086">Gut</translation>
 <translation id="895780780740011433">Für Windows 7 und höher</translation>
 <translation id="897805526397249209">Um Remote-Verbindungen zu einem anderen Computer zu ermöglichen, installieren Sie Chromoting auf dem betreffenden Computer und klicken Sie auf "<ph name="BUTTON_NAME" />".</translation>
@@ -355,6 +340,8 @@ Wenn Sie diese Funktion aktivieren möchten, wählen Sie "<ph name="BUTTON_NAME"
 <translation id="9126115402994542723">Beim Verbinden des Geräts mit diesem Host nicht mehr nach der PIN fragen</translation>
 <translation id="9149580767411232853">Der gesamte Remote-Desktop soll sichtbar bleiben</translation>
 <translation id="9149992051684092333">Teilen Sie zur Freigabe Ihres Desktops zunächst der Person, die Sie unterstützen wird, den unten stehenden Zugriffscode mit.</translation>
+<translation id="916856682307586697">Standard-XSession starten</translation>
+<translation id="9187628920394877737"><ph name="PRODUCT_NAME" /> die Berechtigung zur Bildschirmaufzeichnung erteilen</translation>
 <translation id="9188433529406846933">Autorisieren</translation>
 <translation id="9213184081240281106">Ungültige Hostkonfiguration</translation>
 <translation id="951991426597076286">Ablehnen</translation>

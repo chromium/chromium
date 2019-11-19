@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_CAST_DIALOG_SINK_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_CAST_DIALOG_SINK_BUTTON_H_
 
+#include "base/bind.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/views/hover_button.h"
 
@@ -29,7 +30,6 @@ class CastDialogSinkButton : public HoverButton {
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
-  void OnEnabledChanged() override;
   void RequestFocus() override;
   void OnFocus() override;
   void OnBlur() override;
@@ -46,8 +46,14 @@ class CastDialogSinkButton : public HoverButton {
   FRIEND_TEST_ALL_PREFIXES(CastDialogSinkButtonTest,
                            SetStatusLabelForSinkWithIssue);
 
+  void OnEnabledChanged();
+
   const UIMediaSink sink_;
   base::Optional<base::string16> saved_status_text_;
+  views::PropertyChangedSubscription enabled_changed_subscription_ =
+      AddEnabledChangedCallback(
+          base::BindRepeating(&CastDialogSinkButton::OnEnabledChanged,
+                              base::Unretained(this)));
 
   DISALLOW_COPY_AND_ASSIGN(CastDialogSinkButton);
 };

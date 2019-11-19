@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_global_scope.h"
 
 #include "base/synchronization/waitable_event.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
@@ -13,27 +14,14 @@
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/modules/csspaint/css_paint_definition.h"
+#include "third_party/blink/renderer/modules/csspaint/document_paint_definition.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_proxy_client.h"
 #include "third_party/blink/renderer/modules/worklet/animation_and_paint_worklet_thread.h"
+#include "third_party/blink/renderer/modules/worklet/worklet_thread_test_common.h"
+#include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
-namespace {
-
-class MockPaintWorkletProxyClient : public PaintWorkletProxyClient {
- public:
-  MockPaintWorkletProxyClient()
-      : PaintWorkletProxyClient(), did_set_global_scope_(false) {}
-  void SetGlobalScope(WorkletGlobalScope*) override {
-    did_set_global_scope_ = true;
-  }
-  bool did_set_global_scope() { return did_set_global_scope_; }
-
- private:
-  bool did_set_global_scope_;
-};
-
-}  // namespace
 
 // TODO(smcgruer): Extract a common base class between this and
 // AnimationWorkletGlobalScope.
@@ -43,79 +31,47 @@ class PaintWorkletGlobalScopeTest : public PageTestBase {
 
   void SetUp() override {
     PageTestBase::SetUp(IntSize());
-    Document* document = &GetDocument();
-    document->SetURL(KURL("https://example.com/"));
-    document->UpdateSecurityOrigin(SecurityOrigin::Create(document->Url()));
+    NavigateTo(KURL("https://example.com/"));
+    // This test only needs the proxy client set to avoid calling
+    // PaintWorkletProxyClient::Create, but it doesn't need the dispatcher/etc.
+    proxy_client_ = MakeGarbageCollected<PaintWorkletProxyClient>(
+        1, nullptr, nullptr, nullptr);
     reporting_proxy_ = std::make_unique<WorkerReportingProxy>();
   }
 
-  std::unique_ptr<AnimationAndPaintWorkletThread>
-  CreateAnimationAndPaintWorkletThread(PaintWorkletProxyClient* proxy_client) {
-    std::unique_ptr<AnimationAndPaintWorkletThread> thread =
-        AnimationAndPaintWorkletThread::CreateForPaintWorklet(
-            *reporting_proxy_);
-
-    WorkerClients* clients = WorkerClients::Create();
-    if (proxy_client)
-      ProvidePaintWorkletProxyClientTo(clients, proxy_client);
-
-    Document* document = &GetDocument();
-    thread->Start(
-        std::make_unique<GlobalScopeCreationParams>(
-            document->Url(), mojom::ScriptType::kModule,
-            OffMainThreadWorkerScriptFetchOption::kEnabled, "PaintWorklet",
-            document->UserAgent(), nullptr /* web_worker_fetch_context */,
-            Vector<CSPHeaderAndType>(), document->GetReferrerPolicy(),
-            document->GetSecurityOrigin(), document->IsSecureContext(),
-            document->GetHttpsState(), clients, document->AddressSpace(),
-            OriginTrialContext::GetTokens(document).get(),
-            base::UnguessableToken::Create(), nullptr /* worker_settings */,
-            kV8CacheOptionsDefault,
-            MakeGarbageCollected<WorkletModuleResponsesMap>()),
-        base::nullopt, std::make_unique<WorkerDevToolsParams>(),
-        ParentExecutionContextTaskRunners::Create());
-    return thread;
-  }
-
-  using TestCalback = void (
-      PaintWorkletGlobalScopeTest::*)(WorkerThread*, base::WaitableEvent*);
+  using TestCallback =
+      void (PaintWorkletGlobalScopeTest::*)(WorkerThread*,
+                                            PaintWorkletProxyClient*,
+                                            base::WaitableEvent*);
 
   // Create a new paint worklet and run the callback task on it. Terminate the
   // worklet once the task completion is signaled.
-  void RunTestOnWorkletThread(TestCalback callback) {
+  void RunTestOnWorkletThread(TestCallback callback) {
     std::unique_ptr<WorkerThread> worklet =
-        CreateAnimationAndPaintWorkletThread(nullptr);
+        CreateThreadAndProvidePaintWorkletProxyClient(
+            &GetDocument(), reporting_proxy_.get(), proxy_client_);
     base::WaitableEvent waitable_event;
     PostCrossThreadTask(
         *worklet->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-        CrossThreadBind(callback, CrossThreadUnretained(this),
-                        CrossThreadUnretained(worklet.get()),
-                        CrossThreadUnretained(&waitable_event)));
+        CrossThreadBindOnce(
+            callback, CrossThreadUnretained(this),
+            CrossThreadUnretained(worklet.get()),
+            CrossThreadPersistent<PaintWorkletProxyClient>(proxy_client_),
+            CrossThreadUnretained(&waitable_event)));
     waitable_event.Wait();
+    waitable_event.Reset();
 
     worklet->Terminate();
     worklet->WaitForShutdownForTesting();
   }
 
-  void RunScriptOnWorklet(String source_code,
-                          WorkerThread* thread,
-                          base::WaitableEvent* waitable_event) {
-    ASSERT_TRUE(thread->IsCurrentThread());
-    auto* global_scope = To<PaintWorkletGlobalScope>(thread->GlobalScope());
-    ScriptState* script_state =
-        global_scope->ScriptController()->GetScriptState();
-    ASSERT_TRUE(script_state);
-    v8::Isolate* isolate = script_state->GetIsolate();
-    ASSERT_TRUE(isolate);
-    ScriptState::Scope scope(script_state);
-    ASSERT_TRUE(EvaluateScriptModule(global_scope, source_code));
-    waitable_event->Signal();
-  }
-
   void RunBasicParsingTestOnWorklet(WorkerThread* thread,
+                                    PaintWorkletProxyClient* proxy_client,
                                     base::WaitableEvent* waitable_event) {
     ASSERT_TRUE(thread->IsCurrentThread());
-    auto* global_scope = To<PaintWorkletGlobalScope>(thread->GlobalScope());
+    CrossThreadPersistent<PaintWorkletGlobalScope> global_scope =
+        WrapCrossThreadPersistent(
+            To<PaintWorkletGlobalScope>(thread->GlobalScope()));
     ScriptState* script_state =
         global_scope->ScriptController()->GetScriptState();
     ASSERT_TRUE(script_state);
@@ -125,8 +81,7 @@ class PaintWorkletGlobalScopeTest : public PageTestBase {
     ScriptState::Scope scope(script_state);
 
     {
-      // registerPaint() with a valid class definition should define an
-      // animator.
+      // registerPaint() with a valid class definition should define a painter.
       String source_code =
           R"JS(
             registerPaint('test', class {
@@ -134,17 +89,19 @@ class PaintWorkletGlobalScopeTest : public PageTestBase {
               paint (ctx, size) {}
             });
           )JS";
-      ASSERT_TRUE(EvaluateScriptModule(global_scope, source_code));
+      ASSERT_TRUE(global_scope->ScriptController()->Evaluate(
+          ScriptSourceCode(source_code), SanitizeScriptErrors::kDoNotSanitize));
 
       CSSPaintDefinition* definition = global_scope->FindDefinition("test");
       ASSERT_TRUE(definition);
     }
 
     {
-      // registerPaint() with a null class definition should fail to define
-      // an painter.
+      // registerPaint() with a null class definition should fail to define a
+      // painter.
       String source_code = "registerPaint('null', null);";
-      ASSERT_FALSE(EvaluateScriptModule(global_scope, source_code));
+      ASSERT_FALSE(global_scope->ScriptController()->Evaluate(
+          ScriptSourceCode(source_code), SanitizeScriptErrors::kDoNotSanitize));
       EXPECT_FALSE(global_scope->FindDefinition("null"));
     }
 
@@ -154,23 +111,7 @@ class PaintWorkletGlobalScopeTest : public PageTestBase {
   }
 
  private:
-  bool EvaluateScriptModule(PaintWorkletGlobalScope* global_scope,
-                            const String& source_code) {
-    ScriptState* script_state =
-        global_scope->ScriptController()->GetScriptState();
-    EXPECT_TRUE(script_state);
-    const KURL js_url("https://example.com/worklet.js");
-    ScriptModule module = ScriptModule::Compile(
-        script_state->GetIsolate(), source_code, js_url, js_url,
-        ScriptFetchOptions(), TextPosition::MinimumPosition(),
-        ASSERT_NO_EXCEPTION);
-    EXPECT_FALSE(module.IsNull());
-    ScriptValue exception = module.Instantiate(script_state);
-    EXPECT_TRUE(exception.IsEmpty());
-    ScriptValue value = module.Evaluate(script_state);
-    return value.IsEmpty();
-  }
-
+  Persistent<PaintWorkletProxyClient> proxy_client_;
   std::unique_ptr<WorkerReportingProxy> reporting_proxy_;
 };
 

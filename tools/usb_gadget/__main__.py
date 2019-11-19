@@ -4,6 +4,8 @@
 
 """Package entry-point."""
 
+from __future__ import print_function
+
 import argparse
 
 import netifaces
@@ -60,7 +62,7 @@ def main():
   server.http_server.listen(server.port)
 
   ioloop.IOLoop.instance().start()
-  print 'Exiting...'
+  print('Exiting...')
 
 
 if __name__ == '__main__':

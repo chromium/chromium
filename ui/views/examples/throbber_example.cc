@@ -16,7 +16,7 @@ namespace {
 
 class ThrobberView : public View {
  public:
-  ThrobberView() : throbber_(new Throbber()), is_checked_(false) {
+  ThrobberView() : throbber_(new Throbber()) {
     AddChildView(throbber_);
     throbber_->Start();
   }
@@ -49,7 +49,7 @@ class ThrobberView : public View {
 
  private:
   Throbber* throbber_;
-  bool is_checked_;
+  bool is_checked_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ThrobberView);
 };
@@ -59,8 +59,7 @@ class ThrobberView : public View {
 ThrobberExample::ThrobberExample() : ExampleBase("Throbber") {
 }
 
-ThrobberExample::~ThrobberExample() {
-}
+ThrobberExample::~ThrobberExample() = default;
 
 void ThrobberExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<FillLayout>());

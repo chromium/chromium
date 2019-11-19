@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/update_client/protocol_serializer_json.h"
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -10,12 +12,12 @@
 #include "base/optional.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/activity_data_service.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/protocol_serializer.h"
-#include "components/update_client/protocol_serializer_json.h"
 #include "components/update_client/updater_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -68,7 +70,7 @@ TEST(SerializeRequestJSON, Serialize) {
       R"("version":"2.0"}],"arch":"\w+","dedup":"cr","dlpref":"cacheable",)"
       R"("extra":"params","hw":{"physmemory":\d+},"lang":"lang",)"
       R"("nacl_arch":"[-\w]+","os":{"arch":"[_,-.\w]+","platform":"OS",)"
-      R"(("sp":"[\s\w]+",)?"version":"[-.\w]+"},"prodchannel":"channel",)"
+      R"(("sp":"[\s\w]+",)?"version":"[+-.\w]+"},"prodchannel":"channel",)"
       R"("prodversion":"1.0","protocol":"3.1","requestid":"{[-\w]{36}}",)"
       R"("sessionid":"{[-\w]{36}}","updaterchannel":"channel",)"
       R"("updaterversion":"1.0"(,"wow64":true)?}})";
@@ -112,13 +114,13 @@ TEST(SerializeRequestJSON, UpdaterStateAttributes) {
       R"("dlpref":"cacheable","domainjoined":true,"extra":"params",)"
       R"("hw":{"physmemory":\d+},"lang":"lang","nacl_arch":"[-\w]+",)"
       R"("os":{"arch":"[,-.\w]+","platform":"OS",("sp":"[\s\w]+",)?)"
-      R"("version":"[-.\w]+"},"prodchannel":"channel","prodversion":"1.0",)"
+      R"("version":"[+-.\w]+"},"prodchannel":"channel","prodversion":"1.0",)"
       R"("protocol":"3.1","requestid":"{[-\w]{36}}","sessionid":"{[-\w]{36}}",)"
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       R"("updater":{"autoupdatecheckenabled":false,"ismachine":true,)"
       R"("lastchecked":2,"laststarted":1,"name":"Omaha","updatepolicy":-1,)"
       R"("version":"1\.2\.3\.4"},)"
-#endif  // GOOGLE_CHROME_BUILD
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       R"("updaterchannel":"channel","updaterversion":"1.0"(,"wow64":true)?}})";
   EXPECT_TRUE(RE2::FullMatch(request, regex)) << request;
 }

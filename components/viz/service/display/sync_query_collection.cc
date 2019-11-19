@@ -20,7 +20,7 @@ const size_t kMaxPendingSyncQueries = 16;
 class SyncQuery {
  public:
   explicit SyncQuery(gpu::gles2::GLES2Interface* gl)
-      : gl_(gl), query_id_(0u), is_pending_(false), weak_ptr_factory_(this) {
+      : gl_(gl), query_id_(0u), is_pending_(false) {
     gl_->GenQueriesEXT(1, &query_id_);
   }
   virtual ~SyncQuery() { gl_->DeleteQueriesEXT(1, &query_id_); }
@@ -86,10 +86,6 @@ class SyncQuery {
       query_->Set();
     }
     bool HasPassed() override { return !query_ || !query_->IsPending(); }
-    void Wait() override {
-      if (query_)
-        query_->Wait();
-    }
 
    private:
     ~Fence() override {}
@@ -102,7 +98,7 @@ class SyncQuery {
   gpu::gles2::GLES2Interface* gl_;
   unsigned query_id_;
   bool is_pending_;
-  base::WeakPtrFactory<SyncQuery> weak_ptr_factory_;
+  base::WeakPtrFactory<SyncQuery> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyncQuery);
 };

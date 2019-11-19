@@ -130,11 +130,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardApiTest, HostedAppNoPermission) {
   EXPECT_TRUE(ExecuteCopyInSelectedTab()) << message_;
   EXPECT_FALSE(ExecutePasteInSelectedTab()) << message_;
 
-  if (!base::FeatureList::IsEnabled(features::kUserActivationV2)) {
-    EXPECT_TRUE(ExecuteCommandInIframeInSelectedTab("copy")) << message_;
-  } else {
-    // In UserActivationV2, acitvation doesn't propagate to a child frame.
-    EXPECT_FALSE(ExecuteCommandInIframeInSelectedTab("copy")) << message_;
-  }
+  // User acitvation doesn't propagate to a child frame.
+  EXPECT_FALSE(ExecuteCommandInIframeInSelectedTab("copy")) << message_;
   EXPECT_FALSE(ExecuteCommandInIframeInSelectedTab("paste")) << message_;
 }

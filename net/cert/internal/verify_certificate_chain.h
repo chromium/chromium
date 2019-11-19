@@ -78,6 +78,7 @@ class NET_EXPORT VerifyCertificateChainDelegate {
 //
 //   * If Extended Key Usage appears on intermediates, it is treated as
 //     a restriction on subordinate certificates.
+//   * No revocation checking is performed.
 //
 // -----------------------------------------
 // Additional responsibilities of the caller

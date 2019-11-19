@@ -1,0 +1,2 @@
+\bประเทศไทย\b	th
+\bthailand\b	th

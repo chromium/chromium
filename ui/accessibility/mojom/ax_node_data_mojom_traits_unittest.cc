@@ -67,8 +67,11 @@ TEST(AXNodeDataMojomTraitsTest, IntAttributes) {
 TEST(AXNodeDataMojomTraitsTest, FloatAttributes) {
   ui::AXNodeData input, output;
   input.AddFloatAttribute(ax::mojom::FloatAttribute::kFontSize, 42);
+  input.AddFloatAttribute(ax::mojom::FloatAttribute::kFontWeight, 100);
   EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXNodeData>(&input, &output));
   EXPECT_EQ(42, output.GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize));
+  EXPECT_EQ(100,
+            output.GetFloatAttribute(ax::mojom::FloatAttribute::kFontWeight));
 }
 
 TEST(AXNodeDataMojomTraitsTest, BoolAttributes) {

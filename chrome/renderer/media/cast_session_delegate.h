@@ -67,7 +67,7 @@ class CastSessionDelegateBase {
 
   // Proxy to the IO message loop.
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  base::WeakPtrFactory<CastSessionDelegateBase> weak_factory_;
+  base::WeakPtrFactory<CastSessionDelegateBase> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CastSessionDelegateBase);
 };
@@ -147,7 +147,7 @@ class CastSessionDelegate : public CastSessionDelegateBase {
 
   std::unique_ptr<media::cast::RawEventSubscriberBundle> event_subscribers_;
 
-  base::WeakPtrFactory<CastSessionDelegate> weak_factory_;
+  base::WeakPtrFactory<CastSessionDelegate> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CastSessionDelegate);
 };

@@ -17,8 +17,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.locale.DefaultSearchEngineDialogHelper;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManager.SearchEnginePromoType;
-import org.chromium.chrome.browser.search_engines.TemplateUrlService;
-import org.chromium.chrome.browser.widget.RadioButtonLayout;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.ui.widget.RadioButtonLayout;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /** A {@link Fragment} that presents a set of search engines for the user to choose from. */
@@ -51,7 +51,7 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
         mButton = (Button) rootView.findViewById(R.id.button_primary);
         mButton.setEnabled(false);
 
-        assert TemplateUrlService.getInstance().isLoaded();
+        assert TemplateUrlServiceFactory.get().isLoaded();
         mSearchEnginePromoDialoType = LocaleManager.getInstance().getSearchEnginePromoShowType();
         if (mSearchEnginePromoDialoType != LocaleManager.SearchEnginePromoType.DONT_SHOW) {
             Runnable dismissRunnable = new Runnable() {

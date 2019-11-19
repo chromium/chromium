@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_frame.h"
@@ -54,6 +55,7 @@ class NET_EXPORT WebSocketChannel {
       const std::vector<std::string>&,
       const url::Origin&,
       const GURL&,
+      const net::NetworkIsolationKey&,
       const HttpRequestHeaders&,
       URLRequestContext*,
       const NetLogWithSource&,
@@ -78,6 +80,7 @@ class NET_EXPORT WebSocketChannel {
       const std::vector<std::string>& requested_protocols,
       const url::Origin& origin,
       const GURL& site_for_cookies,
+      const net::NetworkIsolationKey& network_isolation_key,
       const HttpRequestHeaders& additional_headers);
 
   // Sends a data frame to the remote side. It is the responsibility of the
@@ -96,14 +99,10 @@ class NET_EXPORT WebSocketChannel {
                          scoped_refptr<IOBuffer> buffer,
                          size_t buffer_size);
 
-  // Sends |quota| units of flow control to the remote side. If the underlying
-  // transport has a concept of |quota|, then it permits the remote server to
-  // send up to |quota| units of data.
-  //
-  // Calling this function may result in synchronous calls to |event_interface_|
-  // which may result in this object being deleted. In that case, the return
-  // value will be CHANNEL_DELETED.
-  ChannelState SendFlowControl(int64_t quota) WARN_UNUSED_RESULT;
+  // Calls WebSocketStream::ReadFrames() with the appropriate arguments. Stops
+  // calling ReadFrames if no writable buffer in dataframe or WebSocketStream
+  // starts async read.
+  ChannelState ReadFrames() WARN_UNUSED_RESULT;
 
   // Starts the closing handshake for a client-initiated shutdown of the
   // connection. There is no API to close the connection without a closing
@@ -130,6 +129,7 @@ class NET_EXPORT WebSocketChannel {
       const std::vector<std::string>& requested_protocols,
       const url::Origin& origin,
       const GURL& site_for_cookies,
+      const net::NetworkIsolationKey& network_isolation_key,
       const HttpRequestHeaders& additional_headers,
       const WebSocketStreamRequestCreationCallback& callback);
 
@@ -153,9 +153,17 @@ class NET_EXPORT WebSocketChannel {
   void OnFinishOpeningHandshake(
       std::unique_ptr<WebSocketHandshakeResponseInfo> response);
 
- private:
-  class PendingReceivedFrame;
+  // The renderer calls AddReceiveFlowControlQuota() to the browser per
+  // recerving this amount of data so that the browser can continue sending
+  // remaining data to the renderer.
+#if defined(OS_ANDROID)
+  static const uint64_t kReceiveQuotaThreshold = 1 << 15;
+#else
+  // |2^n - delta| is better than 2^n on Linux. See crrev.com/c/1792208.
+  static const uint64_t kReceiveQuotaThreshold = 65500;
+#endif
 
+ private:
   // The object passes through a linear progression of states from
   // FRESHLY_CONSTRUCTED to CLOSED, except that the SEND_CLOSED and RECV_CLOSED
   // states may be skipped in case of error.
@@ -188,6 +196,7 @@ class NET_EXPORT WebSocketChannel {
       const std::vector<std::string>& requested_protocols,
       const url::Origin& origin,
       const GURL& site_for_cookies,
+      const net::NetworkIsolationKey& network_isolation_key,
       const HttpRequestHeaders& additional_headers,
       const WebSocketStreamRequestCreationCallback& callback);
 
@@ -208,12 +217,13 @@ class NET_EXPORT WebSocketChannel {
   void OnSSLCertificateError(
       std::unique_ptr<WebSocketEventInterface::SSLErrorCallbacks>
           ssl_error_callbacks,
+      int net_error,
       const SSLInfo& ssl_info,
       bool fatal);
 
   // Authentication request from WebSocketStream::CreateAndConnectStream().
   // Forwards the request to the event interface.
-  int OnAuthRequired(scoped_refptr<AuthChallengeInfo> auth_info,
+  int OnAuthRequired(const AuthChallengeInfo& auth_info,
                      scoped_refptr<HttpResponseHeaders> response_headers,
                      const IPEndPoint& remote_endpoint,
                      base::OnceCallback<void(const AuthCredentials*)> callback,
@@ -235,10 +245,6 @@ class NET_EXPORT WebSocketChannel {
   // WriteFrames() itself.
   ChannelState OnWriteDone(bool synchronous, int result) WARN_UNUSED_RESULT;
 
-  // Calls WebSocketStream::ReadFrames() with the appropriate arguments. Stops
-  // calling ReadFrames if current_receive_quota_ is 0.
-  ChannelState ReadFrames() WARN_UNUSED_RESULT;
-
   // Callback from WebSocketStream::ReadFrames. Handles any errors and processes
   // the returned chunks appropriately to their type. |result| is a net error
   // code. If |synchronous| is true, then OnReadDone() is being called from
@@ -259,16 +265,16 @@ class NET_EXPORT WebSocketChannel {
   // HandleFrame() method.
   ChannelState HandleFrameByState(const WebSocketFrameHeader::OpCode opcode,
                                   bool final,
-                                  scoped_refptr<IOBuffer> data_buffer,
-                                  uint64_t size) WARN_UNUSED_RESULT;
+                                  base::span<const char> payload)
+      WARN_UNUSED_RESULT;
 
   // Forwards a received data frame to the renderer, if connected. If
   // |expecting_continuation| is not equal to |expecting_to_read_continuation_|,
   // will fail the channel. Also checks the UTF-8 validity of text frames.
   ChannelState HandleDataFrame(WebSocketFrameHeader::OpCode opcode,
                                bool final,
-                               scoped_refptr<IOBuffer> data_buffer,
-                               uint64_t size) WARN_UNUSED_RESULT;
+                               base::span<const char> payload)
+      WARN_UNUSED_RESULT;
 
   // Handles an incoming close frame with |code| and |reason|.
   ChannelState HandleCloseFrame(uint16_t code,
@@ -312,8 +318,7 @@ class NET_EXPORT WebSocketChannel {
   // is 1, or the supplied code is not permitted to be sent over the network,
   // then false is returned and |message| is set to an appropriate console
   // message.
-  bool ParseClose(scoped_refptr<IOBuffer> buffer,
-                  uint64_t size,
+  bool ParseClose(base::span<const char> payload,
                   uint16_t* code,
                   std::string* reason,
                   std::string* message);
@@ -351,10 +356,6 @@ class NET_EXPORT WebSocketChannel {
   // Destination for the current call to WebSocketStream::ReadFrames
   std::vector<std::unique_ptr<WebSocketFrame>> read_frames_;
 
-  // Frames that have been read but not yet forwarded to the renderer due to
-  // lack of quota.
-  base::queue<PendingReceivedFrame> pending_received_frames_;
-
   // Handle to an in-progress WebSocketStream creation request. Only non-NULL
   // during the connection process.
   std::unique_ptr<WebSocketStreamRequest> stream_request_;
@@ -369,9 +370,6 @@ class NET_EXPORT WebSocketChannel {
   // The current amount of quota that the renderer has available for sending
   // on this logical channel (quota units).
   int current_send_quota_;
-  // The remaining amount of quota that the renderer will allow us to send on
-  // this logical channel (quota units).
-  uint64_t current_receive_quota_;
 
   // Timer for the closing handshake.
   base::OneShotTimer close_timer_;
@@ -409,12 +407,13 @@ class NET_EXPORT WebSocketChannel {
   // message to the renderer. This can be false if the message is empty so far.
   bool initial_frame_forwarded_;
 
-  // For UMA. The time when OnConnectSuccess() method was called and |stream_|
-  // was set.
-  base::TimeTicks established_on_;
+  // True if we're waiting for OnReadDone() callback.
+  bool is_reading_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WebSocketChannel);
 };
+
+NET_EXPORT extern const char kWebSocketReceiveQuotaThreshold[];
 
 }  // namespace net
 

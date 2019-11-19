@@ -110,10 +110,11 @@ void DoPostImportPlatformSpecificTasks(Profile* /* profile */) {
   // Trigger the Active Setup command for system-level Chromes to finish
   // configuring this user's install (e.g. per-user shortcuts).
   if (!InstallUtil::IsPerUserInstall()) {
-    content::BrowserThread::PostAfterStartupTask(
+    content::BrowserThread::PostBestEffortTask(
         FROM_HERE,
-        base::CreateTaskRunnerWithTraits(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+        base::CreateTaskRunner(
+            {base::ThreadPool(), base::MayBlock(),
+             base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
         base::BindOnce(&InstallUtil::TriggerActiveSetupCommand));
   }

@@ -195,10 +195,11 @@ ZipArchiverResultCode AddToArchive(zipFile zip_object,
 
 }  // namespace
 
-ZipArchiverImpl::ZipArchiverImpl(mojom::ZipArchiverRequest request,
-                                 base::OnceClosure connection_error_handler)
-    : binding_(this, std::move(request)) {
-  binding_.set_connection_error_handler(std::move(connection_error_handler));
+ZipArchiverImpl::ZipArchiverImpl(
+    mojo::PendingReceiver<mojom::ZipArchiver> receiver,
+    base::OnceClosure connection_error_handler)
+    : receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(std::move(connection_error_handler));
 }
 
 ZipArchiverImpl::~ZipArchiverImpl() = default;

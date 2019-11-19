@@ -48,4 +48,16 @@ void SoftwareOutputDeviceOzone::EndPaint() {
   surface_ozone_->PresentCanvas(damage_rect_);
 }
 
+void SoftwareOutputDeviceOzone::OnSwapBuffers(
+    SwapBuffersCallback swap_ack_callback) {
+  if (surface_ozone_->SupportsAsyncBufferSwap())
+    surface_ozone_->OnSwapBuffers(std::move(swap_ack_callback));
+  else
+    SoftwareOutputDevice::OnSwapBuffers(std::move(swap_ack_callback));
+}
+
+int SoftwareOutputDeviceOzone::MaxFramesPending() const {
+  return surface_ozone_->MaxFramesPending();
+}
+
 }  // namespace viz

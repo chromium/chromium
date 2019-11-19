@@ -17,11 +17,12 @@
 
 #pragma mark CWVSyncControllerDataSource
 
-- (void)syncController:(CWVSyncController*)syncController
-    getAccessTokenForScopes:(NSArray<NSString*>*)scopes
-          completionHandler:(void (^)(NSString* accessToken,
-                                      NSDate* expirationDate,
-                                      NSError* error))completionHandler {
+- (void)fetchAccessTokenForIdentity:(CWVIdentity*)identity
+                             scopes:(NSArray<NSString*>*)scopes
+                  completionHandler:
+                      (void (^)(NSString* _Nullable accessToken,
+                                NSDate* _Nullable expirationDate,
+                                NSError* _Nullable error))completionHandler {
   // Always returns an error.
   if (completionHandler) {
     completionHandler(
@@ -30,6 +31,10 @@
                             code:0
                         userInfo:nil]);
   }
+}
+
+- (NSArray<CWVIdentity*>*)allKnownIdentities {
+  return [self identities];
 }
 
 @end

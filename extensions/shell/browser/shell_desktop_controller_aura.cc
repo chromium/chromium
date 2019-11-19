@@ -18,8 +18,8 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/image_cursors.h"
+#include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ime/input_method_factory.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -33,7 +33,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "base/command_line.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "extensions/shell/browser/shell_screen.h"
 #include "extensions/shell/common/switches.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -229,13 +229,12 @@ void ShellDesktopControllerAura::OnDisplayModeChanged(
 #endif
 
 ui::EventDispatchDetails ShellDesktopControllerAura::DispatchKeyEventPostIME(
-    ui::KeyEvent* key_event,
-    DispatchKeyEventPostIMECallback callback) {
+    ui::KeyEvent* key_event) {
   if (key_event->target()) {
     aura::WindowTreeHost* host = static_cast<aura::Window*>(key_event->target())
                                      ->GetRootWindow()
                                      ->GetHost();
-    return host->DispatchKeyEventPostIME(key_event, std::move(callback));
+    return host->DispatchKeyEventPostIME(key_event);
   }
 
   // Send the key event to the focused window.
@@ -243,11 +242,10 @@ ui::EventDispatchDetails ShellDesktopControllerAura::DispatchKeyEventPostIME(
       const_cast<aura::Window*>(focus_controller_->GetActiveWindow());
   if (active_window) {
     return active_window->GetRootWindow()->GetHost()->DispatchKeyEventPostIME(
-        key_event, std::move(callback));
+        key_event);
   }
 
-  return GetPrimaryHost()->DispatchKeyEventPostIME(key_event,
-                                                   std::move(callback));
+  return GetPrimaryHost()->DispatchKeyEventPostIME(key_event);
 }
 
 void ShellDesktopControllerAura::OnKeepAliveStateChanged(

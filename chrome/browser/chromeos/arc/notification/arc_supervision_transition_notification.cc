@@ -5,11 +5,11 @@
 #include "chrome/browser/chromeos/arc/notification/arc_supervision_transition_notification.h"
 
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -105,10 +105,11 @@ void ShowSupervisionTransitionNotification(Profile* profile) {
           l10n_util::GetStringUTF16(IDS_ARC_CHILD_TRANSITION_MESSAGE),
           l10n_util::GetStringUTF16(IDS_ARC_NOTIFICATION_DISPLAY_SOURCE),
           GURL(), notifier_id, message_center::RichNotificationData(),
-          new NotificationDelegate(profile), ash::kNotificationFamilyLinkIcon,
+          new NotificationDelegate(profile), kNotificationFamilyLinkIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   NotificationDisplayService::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification);
+      NotificationHandler::Type::TRANSIENT, *notification,
+      /*metadata=*/nullptr);
 }
 
 }  // namespace arc

@@ -5,6 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CONTROLLER_OOM_INTERVENTION_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_OOM_INTERVENTION_IMPL_H_
 
+#include <memory>
+
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
 #include "third_party/blink/public/mojom/oom_intervention/oom_intervention.mojom-blink.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
@@ -22,17 +27,19 @@ class CONTROLLER_EXPORT OomInterventionImpl
     : public mojom::blink::OomIntervention,
       public MemoryUsageMonitor::Observer {
  public:
-  static void Create(mojom::blink::OomInterventionRequest);
+  static void Create(
+      mojo::PendingReceiver<mojom::blink::OomIntervention> receiver);
 
   OomInterventionImpl();
   ~OomInterventionImpl() override;
 
   // mojom::blink::OomIntervention:
-  void StartDetection(mojom::blink::OomInterventionHostPtr,
-                      mojom::blink::DetectionArgsPtr detection_args,
-                      bool renderer_pause_enabled,
-                      bool navigate_ads_enabled,
-                      bool purge_v8_memory_enabled) override;
+  void StartDetection(
+      mojo::PendingRemote<mojom::blink::OomInterventionHost> host,
+      mojom::blink::DetectionArgsPtr detection_args,
+      bool renderer_pause_enabled,
+      bool navigate_ads_enabled,
+      bool purge_v8_memory_enabled) override;
 
   // MemoryUsageMonitor::Observer:
   void OnMemoryPing(MemoryUsage) override;
@@ -47,7 +54,7 @@ class CONTROLLER_EXPORT OomInterventionImpl
   // Overridden by test.
   virtual MemoryUsageMonitor& MemoryUsageMonitorInstance();
 
-  void Check(OomInterventionMetrics);
+  void Check(MemoryUsage);
 
   void ReportMemoryStats(OomInterventionMetrics& current_memory);
 
@@ -57,7 +64,7 @@ class CONTROLLER_EXPORT OomInterventionImpl
 
   mojom::blink::DetectionArgsPtr detection_args_;
 
-  mojom::blink::OomInterventionHostPtr host_;
+  mojo::Remote<mojom::blink::OomInterventionHost> host_;
   bool renderer_pause_enabled_ = false;
   bool navigate_ads_enabled_ = false;
   bool purge_v8_memory_enabled_ = false;

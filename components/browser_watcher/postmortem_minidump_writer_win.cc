@@ -19,7 +19,7 @@
 
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_piece.h"
 #include "components/browser_watcher/minidump_user_streams.h"
@@ -162,10 +162,10 @@ class PostmortemMinidumpWriter {
   DISALLOW_COPY_AND_ASSIGN(PostmortemMinidumpWriter);
 };
 
-// This function's purpose is to limit code / data size caused by uma macros.
 void RecordWriteDumpStatus(PostmortemMinidumpWriter::WriteStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("ActivityTracker.Collect.WriteDumpStatus", status,
-                            PostmortemMinidumpWriter::WRITE_STATUS_MAX);
+  base::UmaHistogramEnumeration("ActivityTracker.Collect.WriteDumpStatus",
+                                status,
+                                PostmortemMinidumpWriter::WRITE_STATUS_MAX);
 }
 
 PostmortemMinidumpWriter::PostmortemMinidumpWriter(

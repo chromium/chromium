@@ -21,6 +21,7 @@
 #include "base/strings/string_split.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
+#include "base/win/win_util.h"
 #include "chrome/chrome_cleaner/ipc/sandbox.h"
 #include "chrome/chrome_cleaner/logging/scoped_logging.h"
 #include "sandbox/win/src/sandbox_factory.h"
@@ -43,7 +44,8 @@ class MojoSandboxSetupHooks : public SandboxSetupHooks {
 
   ResultCode UpdateSandboxPolicy(sandbox::TargetPolicy* policy,
                                  base::CommandLine* command_line) override {
-    base::HandlesToInheritVector handles_to_inherit;
+    base::HandlesToInheritVector handles_to_inherit =
+        parent_process_->extra_handles_to_inherit();
     parent_process_->CreateMojoPipe(command_line, &handles_to_inherit);
     for (HANDLE handle : handles_to_inherit)
       policy->AddHandleToShare(handle);
@@ -60,6 +62,14 @@ class MojoSandboxSetupHooks : public SandboxSetupHooks {
  private:
   SandboxedParentProcess* parent_process_;
 };
+
+}  // namespace
+
+namespace internal {
+
+base::FilePath::StringPieceType GetLogPathSuffix() {
+  return kIPCTestUtilLogSuffix;
+}
 
 base::FilePath GetLogPath() {
   return ScopedLogging::GetLogFilePath(kIPCTestUtilLogSuffix);
@@ -105,7 +115,7 @@ void PrintChildProcessLogs() {
   }
 }
 
-}  // namespace
+}  // namespace internal
 
 ParentProcess::ParentProcess(scoped_refptr<MojoTaskRunner> mojo_task_runner)
     : command_line_(base::GetMultiProcessTestChildBaseCommandLine()),
@@ -146,6 +156,13 @@ void ParentProcess::AppendSwitchPath(const std::string& switch_string,
   command_line_.AppendSwitchPath(switch_string, value);
 }
 
+void ParentProcess::AppendSwitchHandleToShare(const std::string& switch_string,
+                                              HANDLE handle) {
+  extra_handles_to_inherit_.push_back(handle);
+  command_line_.AppendSwitchNative(
+      switch_string, base::NumberToString16(base::win::HandleToUint32(handle)));
+}
+
 bool ParentProcess::LaunchConnectedChildProcess(
     const std::string& child_main_function,
     int32_t* exit_code) {
@@ -157,7 +174,7 @@ bool ParentProcess::LaunchConnectedChildProcess(
     const std::string& child_main_function,
     base::TimeDelta timeout,
     int32_t* exit_code) {
-  if (!DeleteChildProcessLogs())
+  if (!internal::DeleteChildProcessLogs())
     return false;
 
   if (!PrepareAndLaunchTestChildProcess(child_main_function))
@@ -173,7 +190,7 @@ bool ParentProcess::LaunchConnectedChildProcess(
   DestroyImplOnIPCThread();
 
   if (!success || *exit_code != 0)
-    PrintChildProcessLogs();
+    internal::PrintChildProcessLogs();
 
   return success;
 }
@@ -181,6 +198,7 @@ bool ParentProcess::LaunchConnectedChildProcess(
 bool ParentProcess::PrepareAndLaunchTestChildProcess(
     const std::string& child_main_function) {
   base::LaunchOptions launch_options;
+  launch_options.handles_to_inherit = extra_handles_to_inherit_;
   CreateMojoPipe(&command_line_, &launch_options.handles_to_inherit);
 
   base::Process child_process = base::SpawnMultiProcessTestChild(
@@ -277,6 +295,22 @@ mojo::ScopedMessagePipeHandle ChildProcess::CreateMessagePipeFromCommandLine() {
 
 std::string ChildProcess::mojo_pipe_token() const {
   return command_line_->GetSwitchValueASCII(kMojoPipeTokenSwitch);
+}
+
+ChromePromptIPCTestErrorHandler::ChromePromptIPCTestErrorHandler(
+    base::OnceClosure on_closed,
+    base::OnceClosure on_closed_after_done)
+    : on_closed_(std::move(on_closed)),
+      on_closed_after_done_(std::move(on_closed_after_done)) {}
+
+ChromePromptIPCTestErrorHandler::~ChromePromptIPCTestErrorHandler() = default;
+
+void ChromePromptIPCTestErrorHandler::OnConnectionClosed() {
+  std::move(on_closed_).Run();
+}
+
+void ChromePromptIPCTestErrorHandler::OnConnectionClosedAfterDone() {
+  std::move(on_closed_after_done_).Run();
 }
 
 }  // namespace chrome_cleaner

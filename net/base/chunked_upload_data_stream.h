@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "net/base/completion_callback.h"
 #include "net/base/net_export.h"
 #include "net/base/upload_data_stream.h"
 
@@ -99,7 +98,7 @@ class NET_EXPORT ChunkedUploadDataStream : public UploadDataStream {
   scoped_refptr<IOBuffer> read_buffer_;
   int read_buffer_len_;
 
-  base::WeakPtrFactory<ChunkedUploadDataStream> weak_factory_;
+  base::WeakPtrFactory<ChunkedUploadDataStream> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChunkedUploadDataStream);
 };

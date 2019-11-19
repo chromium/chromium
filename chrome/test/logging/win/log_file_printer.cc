@@ -20,6 +20,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/win/win_util.h"
 #include "chrome/test/logging/win/log_file_reader.h"
 
 namespace {
@@ -143,10 +144,9 @@ void EventPrinter::PrintEventContext(const EVENT_TRACE* event,
 // Prints a useful message for events that can't be otherwise printed.
 void EventPrinter::PrintBadEvent(const EVENT_TRACE* event,
                                  const base::StringPiece& error) {
-  wchar_t guid[64];
-  StringFromGUID2(event->Header.Guid, &guid[0], base::size(guid));
-  *out_ << error << " (class=" << guid << ", type="
-       << static_cast<int>(event->Header.Class.Type) << ")";
+  *out_ << error
+        << " (class=" << base::win::String16FromGUID(event->Header.Guid)
+        << ", type=" << static_cast<int>(event->Header.Class.Type) << ")";
 }
 
 void EventPrinter::OnUnknownEvent(const EVENT_TRACE* event) {

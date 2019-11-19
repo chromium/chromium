@@ -25,7 +25,7 @@ constexpr base::TimeDelta kSystemThrottleLimit =
     base::TimeDelta::FromSeconds(3);
 }  // namespace
 
-ArcSharedSampler::ArcSharedSampler() : weak_ptr_factory_(this) {}
+ArcSharedSampler::ArcSharedSampler() {}
 
 ArcSharedSampler::~ArcSharedSampler() = default;
 
@@ -71,7 +71,7 @@ void ArcSharedSampler::Refresh() {
 
 void ArcSharedSampler::OnReceiveMemoryDump(
     int type,
-    std::unique_ptr<memory_instrumentation::GlobalMemoryDump> dump) {
+    std::vector<arc::mojom::ArcMemoryDumpPtr> process_dump) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   pending_memory_dump_types_ &= ~type;
 
@@ -80,14 +80,11 @@ void ArcSharedSampler::OnReceiveMemoryDump(
   else
     last_system_refresh = base::Time::Now();
 
-  if (!dump)
-    return;
-  for (const auto& pmd : dump->process_dumps()) {
-    auto it = callbacks_.find(pmd.pid());
+  for (const auto& proc : process_dump) {
+    auto it = callbacks_.find(proc->pid);
     if (it == callbacks_.end())
       continue;
-    const MemoryFootprintBytes result =
-        pmd.os_dump().private_footprint_kb * 1024;
+    const MemoryFootprintBytes result = proc->private_footprint_kb * 1024;
     it->second.Run(base::make_optional<MemoryFootprintBytes>(result));
   }
 }

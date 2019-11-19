@@ -241,7 +241,7 @@ int WebSocketTransportConnectSubJob::DoTransportConnect() {
       one_address, nullptr, net_log().net_log(), net_log().source());
   // This use of base::Unretained() is safe because transport_socket_ is
   // destroyed in the destructor.
-  return transport_socket_->Connect(base::Bind(
+  return transport_socket_->Connect(base::BindOnce(
       &WebSocketTransportConnectSubJob::OnIOComplete, base::Unretained(this)));
 }
 

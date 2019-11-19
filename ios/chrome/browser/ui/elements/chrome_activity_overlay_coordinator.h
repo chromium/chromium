@@ -14,6 +14,10 @@
 // Text that will be shown above the UIActivityIndicatorView.
 @property(nonatomic, copy) NSString* messageText;
 
+// YES if the Coordinator is started. Meaning that the UIActivityIndicatorView
+// is currently being displayed.
+@property(nonatomic, assign) BOOL started;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_ELEMENTS_CHROME_ACTIVITY_OVERLAY_COORDINATOR_H_

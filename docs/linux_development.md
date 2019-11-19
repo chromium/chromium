@@ -33,7 +33,7 @@ issues. If you can't find a related bug, please create a
 
 ## Contributing code
 
-See [Contributing code](https://dev.chromium.org/developers/contributing-code).
+See [Contributing code](contributing.md).
 
 ## Debugging
 

@@ -103,7 +103,7 @@ function testEntryListAddEntry() {
 
 /**
  * Tests EntryList's methods addEntry, findIndexByVolumeInfo,
- * removeByVolumeType, removeByRootType.
+ * removeByVolumeType, removeByRootType, removeChildEntry.
  */
 function testEntryFindIndex() {
   const entryList =
@@ -140,11 +140,17 @@ function testEntryFindIndex() {
   entryList.addEntry(fakeEntry);
   assertTrue(entryList.removeByRootType(VolumeManagerCommon.RootType.CROSTINI));
   assertEquals(1, entryList.getUIChildren().length);
+
+  // Test removeChildEntry.
+  assertTrue(entryList.removeChildEntry(entryList.getUIChildren()[0]));
+  assertEquals(0, entryList.getUIChildren().length);
+  // Nothing left to remove.
+  assertFalse(entryList.removeChildEntry(/** @type {Entry} */ ({})));
 }
 
 /**
  * Tests VolumeEntry's methods findIndexByVolumeInfo, removeByVolumeType,
- * removeByRootType.
+ * removeByRootType, removeChildEntry.
  * @suppress {accessControls} to be able to access private properties.
  */
 function testVolumeEntryFindIndex() {
@@ -187,6 +193,12 @@ function testVolumeEntryFindIndex() {
   assertTrue(
       volumeEntry.removeByRootType(VolumeManagerCommon.RootType.CROSTINI));
   assertEquals(1, volumeEntry.children_.length);
+
+  // Test removeChildEntry.
+  assertTrue(volumeEntry.removeChildEntry(volumeEntry.getUIChildren()[0]));
+  assertEquals(0, volumeEntry.getUIChildren().length);
+  // Nothing left to remove.
+  assertFalse(volumeEntry.removeChildEntry(/** @type {Entry} */ ({})));
 }
 
 /** Tests method EntryList.getMetadata. */
@@ -404,6 +416,12 @@ function testVolumeEntryCreateReaderUnresolved(testReportCallback) {
   const volumeEntry = new VolumeEntry(fakeVolumeInfo);
   const crostini = fakeVolumeEntry(VolumeManagerCommon.VolumeType.CROSTINI);
   const android = fakeVolumeEntry(VolumeManagerCommon.VolumeType.ANDROID_FILES);
+
+  assertEquals(null, volumeEntry.filesystem);
+  assertEquals('', volumeEntry.fullPath);
+  assertEquals('', volumeEntry.toURL());
+  assertTrue(volumeEntry.isDirectory);
+  assertFalse(volumeEntry.isFile);
 
   volumeEntry.addEntry(crostini);
   volumeEntry.addEntry(android);

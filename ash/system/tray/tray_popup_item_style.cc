@@ -4,7 +4,8 @@
 
 #include "ash/system/tray/tray_popup_item_style.h"
 
-#include "ash/system/tray/tray_constants.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/default_color_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
@@ -24,7 +25,10 @@ constexpr int kDisabledAlpha = 0x61;
 SkColor TrayPopupItemStyle::GetIconColor(ColorStyle color_style,
                                          bool use_unified_theme) {
   const SkColor kBaseIconColor =
-      use_unified_theme ? kUnifiedMenuIconColor : gfx::kChromeIconGrey;
+      use_unified_theme ? AshColorProvider::Get()->GetContentLayerColor(
+                              AshColorProvider::ContentLayerType::kIconPrimary,
+                              AshColorProvider::AshColorMode::kDark)
+                        : gfx::kChromeIconGrey;
   switch (color_style) {
     case ColorStyle::ACTIVE:
       return kBaseIconColor;
@@ -54,9 +58,12 @@ TrayPopupItemStyle::TrayPopupItemStyle(FontStyle font_style,
 TrayPopupItemStyle::~TrayPopupItemStyle() = default;
 
 SkColor TrayPopupItemStyle::GetTextColor() const {
-  const SkColor kBaseTextColor = use_unified_theme_
-                                     ? kUnifiedMenuTextColor
-                                     : SkColorSetA(SK_ColorBLACK, 0xDE);
+  const SkColor kBaseTextColor =
+      use_unified_theme_
+          ? AshColorProvider::Get()->DeprecatedGetContentLayerColor(
+                AshColorProvider::ContentLayerType::kTextPrimary,
+                kUnifiedMenuTextColor)
+          : SkColorSetA(SK_ColorBLACK, 0xDE);
 
   switch (color_style_) {
     case ColorStyle::ACTIVE:
@@ -66,8 +73,7 @@ SkColor TrayPopupItemStyle::GetTextColor() const {
     case ColorStyle::DISABLED:
       return SkColorSetA(kBaseTextColor, kDisabledAlpha);
     case ColorStyle::CONNECTED:
-      return use_unified_theme_ ? gfx::kGoogleGreenDark600
-                                : gfx::kGoogleGreen700;
+      return gfx::kGoogleGreenDark600;
   }
   NOTREACHED();
   return gfx::kPlaceholderColor;
@@ -88,20 +94,9 @@ void TrayPopupItemStyle::SetupLabel(views::Label* label) const {
                                                gfx::Font::NORMAL,
                                                gfx::Font::Weight::MEDIUM));
       break;
-    case FontStyle::DEFAULT_VIEW_LABEL:
-      label->SetFontList(base_font_list.Derive(1, gfx::Font::NORMAL,
-                                               gfx::Font::Weight::NORMAL));
-      break;
     case FontStyle::SUB_HEADER:
-      label->SetFontList(base_font_list.Derive(use_unified_theme_ ? 4 : 1,
-                                               gfx::Font::NORMAL,
+      label->SetFontList(base_font_list.Derive(4, gfx::Font::NORMAL,
                                                gfx::Font::Weight::MEDIUM));
-      label->SetEnabledColor(
-          use_unified_theme_
-              ? kUnifiedMenuTextColor
-              : label->GetNativeTheme()->GetSystemColor(
-                    ui::NativeTheme::kColorId_ProminentButtonColor));
-      label->SetAutoColorReadabilityEnabled(false);
       break;
     case FontStyle::DETAILED_VIEW_LABEL:
     case FontStyle::SYSTEM_INFO:

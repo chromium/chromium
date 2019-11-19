@@ -11,8 +11,8 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
@@ -48,7 +48,7 @@ mojom::ClipRepresentationPtr CreateHTML(const ui::Clipboard* clipboard) {
   std::string url;
   uint32_t fragment_start, fragment_end;
 
-  clipboard->ReadHTML(ui::CLIPBOARD_TYPE_COPY_PASTE, &markup16, &url,
+  clipboard->ReadHTML(ui::ClipboardBuffer::kCopyPaste, &markup16, &url,
                       &fragment_start, &fragment_end);
 
   std::string text(base::UTF16ToUTF8(
@@ -73,7 +73,7 @@ mojom::ClipRepresentationPtr CreatePlainText(const ui::Clipboard* clipboard) {
   // present, only use Bookmark.
   clipboard->ReadBookmark(&title, &text);
   if (text.size() == 0)
-    clipboard->ReadAsciiText(ui::CLIPBOARD_TYPE_COPY_PASTE, &text);
+    clipboard->ReadAsciiText(ui::ClipboardBuffer::kCopyPaste, &text);
 
   return mojom::ClipRepresentation::New(mime_type,
                                         mojom::ClipValue::NewText(text));
@@ -84,7 +84,7 @@ mojom::ClipDataPtr GetClipData(const ui::Clipboard* clipboard) {
 
   std::vector<base::string16> mime_types;
   bool contains_files;
-  clipboard->ReadAvailableTypes(ui::CLIPBOARD_TYPE_COPY_PASTE, &mime_types,
+  clipboard->ReadAvailableTypes(ui::ClipboardBuffer::kCopyPaste, &mime_types,
                                 &contains_files);
 
   mojom::ClipDataPtr clip_data(mojom::ClipData::New());
@@ -172,7 +172,7 @@ void ArcClipboardBridge::SetClipContent(mojom::ClipDataPtr clip_data) {
 
   // Order is important. AutoReset should outlive ScopedClipboardWriter.
   base::AutoReset<bool> auto_reset(&event_originated_at_instance_, true);
-  ui::ScopedClipboardWriter writer(ui::CLIPBOARD_TYPE_COPY_PASTE);
+  ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
 
   for (const auto& repr : clip_data->representations) {
     const std::string& mime_type(repr->mime_type);

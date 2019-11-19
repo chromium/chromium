@@ -9,14 +9,13 @@
 
 #include "ash/detachable_base/detachable_base_observer.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
-#include "ash/public/interfaces/user_info.mojom.h"
+#include "ash/public/cpp/session/user_info.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_hammerd_client.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
+#include "chromeos/dbus/hammerd/fake_hammerd_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,12 +29,12 @@ enum class UserType {
   kEphemeral,
 };
 
-mojom::UserInfoPtr CreateUser(const std::string& email,
-                              const std::string& gaia_id,
-                              UserType user_type) {
-  mojom::UserInfoPtr user = mojom::UserInfo::New();
-  user->account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
-  user->is_ephemeral = user_type == UserType::kEphemeral;
+UserInfo CreateUser(const std::string& email,
+                    const std::string& gaia_id,
+                    UserType user_type) {
+  UserInfo user;
+  user.account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
+  user.is_ephemeral = user_type == UserType::kEphemeral;
   return user;
 }
 
@@ -86,22 +85,17 @@ class DetachableBaseHandlerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    std::unique_ptr<chromeos::DBusThreadManagerSetter> dbus_setter =
-        chromeos::DBusThreadManager::GetSetterForTesting();
+    chromeos::HammerdClient::InitializeFake();
+    hammerd_client_ = chromeos::FakeHammerdClient::Get();
 
-    auto hammerd_client = std::make_unique<chromeos::FakeHammerdClient>();
-    hammerd_client_ = hammerd_client.get();
-    dbus_setter->SetHammerdClient(std::move(hammerd_client));
-
-    chromeos::PowerManagerClient::Initialize();
+    chromeos::PowerManagerClient::InitializeFake();
     chromeos::FakePowerManagerClient::Get()->SetTabletMode(
         chromeos::PowerManagerClient::TabletMode::OFF, base::TimeTicks());
 
     default_user_ = CreateUser("user_1@foo.bar", "111111", UserType::kNormal);
 
     DetachableBaseHandler::RegisterPrefs(local_state_.registry());
-    handler_ = std::make_unique<DetachableBaseHandler>(nullptr);
-    handler_->OnLocalStatePrefServiceInitialized(&local_state_);
+    handler_ = std::make_unique<DetachableBaseHandler>(&local_state_);
     handler_->AddObserver(&detachable_base_observer_);
   }
 
@@ -110,7 +104,7 @@ class DetachableBaseHandlerTest : public testing::Test {
     handler_.reset();
     hammerd_client_ = nullptr;
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
+    chromeos::HammerdClient::Shutdown();
   }
 
  protected:
@@ -127,32 +121,20 @@ class DetachableBaseHandlerTest : public testing::Test {
 
   void RestartHandler() {
     handler_->RemoveObserver(&detachable_base_observer_);
-    handler_ = std::make_unique<DetachableBaseHandler>(nullptr);
-    handler_->OnLocalStatePrefServiceInitialized(&local_state_);
+    handler_ = std::make_unique<DetachableBaseHandler>(&local_state_);
     handler_->AddObserver(&detachable_base_observer_);
   }
 
-  void ResetHandlerWithNoLocalState() {
-    handler_->RemoveObserver(&detachable_base_observer_);
-    handler_ = std::make_unique<DetachableBaseHandler>(nullptr);
-    handler_->AddObserver(&detachable_base_observer_);
-  }
-
-  void SimulateLocalStateInitialized() {
-    handler_->OnLocalStatePrefServiceInitialized(&local_state_);
-  }
-
-  // Owned by DBusThreadManager:
   chromeos::FakeHammerdClient* hammerd_client_ = nullptr;
 
   TestBaseObserver detachable_base_observer_;
 
   std::unique_ptr<DetachableBaseHandler> handler_;
 
-  mojom::UserInfoPtr default_user_;
+  UserInfo default_user_;
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   TestingPrefServiceSimple local_state_;
 
@@ -165,7 +147,7 @@ TEST_F(DetachableBaseHandlerTest, NoDetachableBase) {
 
   EXPECT_EQ(DetachableBasePairingStatus::kNone, handler_->GetPairingStatus());
   EXPECT_EQ(0, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
 }
 
 TEST_F(DetachableBaseHandlerTest, TabletModeOnOnStartup) {
@@ -183,7 +165,7 @@ TEST_F(DetachableBaseHandlerTest, TabletModeOnOnStartup) {
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
 }
 
 TEST_F(DetachableBaseHandlerTest, SuccessfullPairing) {
@@ -199,7 +181,7 @@ TEST_F(DetachableBaseHandlerTest, SuccessfullPairing) {
   // The user should not be notified when they attach a base for the first time,
   // so the first paired base should be reported as kAuthenticated rather than
   // kAuthenticatedNotMatchingLastUsed.
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   // Assume the base has been detached when the device switches to tablet mode.
@@ -207,7 +189,7 @@ TEST_F(DetachableBaseHandlerTest, SuccessfullPairing) {
       chromeos::PowerManagerClient::TabletMode::ON, base::TimeTicks());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
   EXPECT_EQ(DetachableBasePairingStatus::kNone, handler_->GetPairingStatus());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   // When the device exits tablet mode again, the base should not be reported
@@ -215,13 +197,13 @@ TEST_F(DetachableBaseHandlerTest, SuccessfullPairing) {
   chromeos::FakePowerManagerClient::Get()->SetTabletMode(
       chromeos::PowerManagerClient::TabletMode::OFF, base::TimeTicks());
   EXPECT_EQ(DetachableBasePairingStatus::kNone, handler_->GetPairingStatus());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
 
   hammerd_client_->FirePairChallengeSucceededSignal({0x01, 0x02, 0x03, 0x04});
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
   detachable_base_observer_.reset_pairing_status_changed_count();
 }
 
@@ -235,7 +217,7 @@ TEST_F(DetachableBaseHandlerTest, DetachableBasePairingFailure) {
   EXPECT_EQ(DetachableBasePairingStatus::kNotAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   // Assume the base has been detached when the device switches to tablet mode.
@@ -243,7 +225,7 @@ TEST_F(DetachableBaseHandlerTest, DetachableBasePairingFailure) {
       chromeos::PowerManagerClient::TabletMode::ON, base::TimeTicks());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
   EXPECT_EQ(DetachableBasePairingStatus::kNone, handler_->GetPairingStatus());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
   detachable_base_observer_.reset_pairing_status_changed_count();
 }
 
@@ -257,7 +239,7 @@ TEST_F(DetachableBaseHandlerTest, InvalidDetachableBase) {
   EXPECT_EQ(DetachableBasePairingStatus::kInvalidDevice,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   // Assume the base has been detached when the device switches to tablet mode.
@@ -265,7 +247,7 @@ TEST_F(DetachableBaseHandlerTest, InvalidDetachableBase) {
       chromeos::PowerManagerClient::TabletMode::ON, base::TimeTicks());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
   EXPECT_EQ(DetachableBasePairingStatus::kNone, handler_->GetPairingStatus());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
   detachable_base_observer_.reset_pairing_status_changed_count();
 }
 
@@ -276,7 +258,7 @@ TEST_F(DetachableBaseHandlerTest, PairingSuccessDuringInit) {
   // device is not in tablet mode.
   EXPECT_EQ(0, detachable_base_observer_.pairing_status_changed_count());
   EXPECT_EQ(DetachableBasePairingStatus::kNone, handler_->GetPairingStatus());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
 
   // Run loop so the callback for getting the initial power manager state gets
   // run.
@@ -285,7 +267,7 @@ TEST_F(DetachableBaseHandlerTest, PairingSuccessDuringInit) {
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
             handler_->GetPairingStatus());
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
   detachable_base_observer_.reset_pairing_status_changed_count();
 }
 
@@ -296,7 +278,7 @@ TEST_F(DetachableBaseHandlerTest, PairingFailDuringInit) {
   // device is not in tablet mode.
   EXPECT_EQ(0, detachable_base_observer_.pairing_status_changed_count());
   EXPECT_EQ(DetachableBasePairingStatus::kNone, handler_->GetPairingStatus());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
 
   // Run loop so the callback for getting the initial power manager state gets
   // run.
@@ -305,7 +287,7 @@ TEST_F(DetachableBaseHandlerTest, PairingFailDuringInit) {
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
   EXPECT_EQ(DetachableBasePairingStatus::kNotAuthenticated,
             handler_->GetPairingStatus());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
   detachable_base_observer_.reset_pairing_status_changed_count();
 }
 
@@ -316,7 +298,7 @@ TEST_F(DetachableBaseHandlerTest, InvalidDeviceDuringInit) {
   // device is not in tablet mode.
   EXPECT_EQ(0, detachable_base_observer_.pairing_status_changed_count());
   EXPECT_EQ(DetachableBasePairingStatus::kNone, handler_->GetPairingStatus());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
 
   // Run loop so the callback for getting the initial power manager state gets
   // run.
@@ -325,7 +307,7 @@ TEST_F(DetachableBaseHandlerTest, InvalidDeviceDuringInit) {
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
   EXPECT_EQ(DetachableBasePairingStatus::kInvalidDevice,
             handler_->GetPairingStatus());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
   detachable_base_observer_.reset_pairing_status_changed_count();
 }
 
@@ -340,7 +322,7 @@ TEST_F(DetachableBaseHandlerTest, TabletModeTurnedOnDuringHandlerInit) {
 
   EXPECT_EQ(0, detachable_base_observer_.pairing_status_changed_count());
   EXPECT_EQ(DetachableBasePairingStatus::kNone, handler_->GetPairingStatus());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
 }
 
 TEST_F(DetachableBaseHandlerTest, DetachableBaseChangeDetection) {
@@ -354,11 +336,11 @@ TEST_F(DetachableBaseHandlerTest, DetachableBaseChangeDetection) {
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   // Set the current base as last used by the user.
-  handler_->SetPairedBaseAsLastUsedByUser(*default_user_);
+  handler_->SetPairedBaseAsLastUsedByUser(default_user_);
 
   // Simulate the paired base change.
   ChangePairedBase({0x04, 0x05, 0x06, 0x07});
@@ -366,7 +348,7 @@ TEST_F(DetachableBaseHandlerTest, DetachableBaseChangeDetection) {
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   // Switch back to last used base.
@@ -375,7 +357,7 @@ TEST_F(DetachableBaseHandlerTest, DetachableBaseChangeDetection) {
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   // The last used base should be preserved if the detachable base handler is
@@ -388,7 +370,7 @@ TEST_F(DetachableBaseHandlerTest, DetachableBaseChangeDetection) {
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
   detachable_base_observer_.reset_pairing_status_changed_count();
 }
 
@@ -396,7 +378,7 @@ TEST_F(DetachableBaseHandlerTest, MultiUser) {
   // Assume the user_1 has a last used base.
   base::RunLoop().RunUntilIdle();
   hammerd_client_->FirePairChallengeSucceededSignal({0x01, 0x02, 0x03, 0x04});
-  handler_->SetPairedBaseAsLastUsedByUser(*default_user_);
+  handler_->SetPairedBaseAsLastUsedByUser(default_user_);
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   // Restart the handler, so it's initialized with the previously set up prefs
@@ -404,13 +386,13 @@ TEST_F(DetachableBaseHandlerTest, MultiUser) {
   RestartHandler();
   base::RunLoop().RunUntilIdle();
 
-  const mojom::UserInfoPtr second_user =
+  const UserInfo second_user =
       CreateUser("user_2@foo.bar", "222222", UserType::kNormal);
 
   EXPECT_EQ(DetachableBasePairingStatus::kNone, handler_->GetPairingStatus());
   EXPECT_EQ(0, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*second_user));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(second_user));
 
   // Pair a detachable base different than the one used by user_1.
   hammerd_client_->FirePairChallengeSucceededSignal({0x04, 0x05, 0x06, 0x07});
@@ -419,14 +401,14 @@ TEST_F(DetachableBaseHandlerTest, MultiUser) {
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
   // The base for user_1 has changed.
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
   // User 2 has not used a detachable base yet - the base should be reported as
   // matching last used base.
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*second_user));
+  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(second_user));
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   // Set the last used detachable base for user 2, and pair the initial base.
-  handler_->SetPairedBaseAsLastUsedByUser(*second_user);
+  handler_->SetPairedBaseAsLastUsedByUser(second_user);
 
   ChangePairedBase({0x01, 0x02, 0x03, 0x04});
 
@@ -434,14 +416,14 @@ TEST_F(DetachableBaseHandlerTest, MultiUser) {
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*second_user));
+  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(second_user));
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   // Set the base for user 2 to the current one.
-  handler_->SetPairedBaseAsLastUsedByUser(*second_user);
+  handler_->SetPairedBaseAsLastUsedByUser(second_user);
 
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*second_user));
+  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(second_user));
 
   // When the base is paired next time, it should be considered authenticated
   // for both users.
@@ -450,8 +432,8 @@ TEST_F(DetachableBaseHandlerTest, MultiUser) {
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*second_user));
+  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
+  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(second_user));
   detachable_base_observer_.reset_pairing_status_changed_count();
 }
 
@@ -460,7 +442,7 @@ TEST_F(DetachableBaseHandlerTest, SwitchToNonAuthenticatedBase) {
   base::RunLoop().RunUntilIdle();
 
   hammerd_client_->FirePairChallengeSucceededSignal({0x01, 0x02, 0x03, 0x04});
-  handler_->SetPairedBaseAsLastUsedByUser(*default_user_);
+  handler_->SetPairedBaseAsLastUsedByUser(default_user_);
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   // Switch to non-trusted base, and verify it's reported as such regardless
@@ -473,14 +455,14 @@ TEST_F(DetachableBaseHandlerTest, SwitchToNonAuthenticatedBase) {
 
   hammerd_client_->FirePairChallengeFailedSignal();
 
-  const mojom::UserInfoPtr second_user =
+  const UserInfo second_user =
       CreateUser("user_2@foo.bar", "222222", UserType::kNormal);
 
   EXPECT_EQ(DetachableBasePairingStatus::kNotAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*second_user));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(second_user));
   detachable_base_observer_.reset_pairing_status_changed_count();
 }
 
@@ -489,7 +471,7 @@ TEST_F(DetachableBaseHandlerTest, SwitchToInvalidBase) {
   base::RunLoop().RunUntilIdle();
 
   hammerd_client_->FirePairChallengeSucceededSignal({0x01, 0x02, 0x03, 0x04});
-  handler_->SetPairedBaseAsLastUsedByUser(*default_user_);
+  handler_->SetPairedBaseAsLastUsedByUser(default_user_);
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   // Switch to an invalid base, and verify it's reported as such regardless
@@ -502,26 +484,26 @@ TEST_F(DetachableBaseHandlerTest, SwitchToInvalidBase) {
 
   hammerd_client_->FireInvalidBaseConnectedSignal();
 
-  const mojom::UserInfoPtr second_user =
+  const UserInfo second_user =
       CreateUser("user_2@foo.bar", "222222", UserType::kNormal);
 
   EXPECT_EQ(DetachableBasePairingStatus::kInvalidDevice,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*second_user));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(second_user));
   detachable_base_observer_.reset_pairing_status_changed_count();
 }
 
 TEST_F(DetachableBaseHandlerTest, RemoveUserData) {
-  const mojom::UserInfoPtr second_user =
+  const UserInfo second_user =
       CreateUser("user_2@foo.bar", "222222", UserType::kNormal);
 
   // Assume the user_1 has a last used base.
   base::RunLoop().RunUntilIdle();
   hammerd_client_->FirePairChallengeSucceededSignal({0x01, 0x02, 0x03, 0x04});
-  handler_->SetPairedBaseAsLastUsedByUser(*default_user_);
-  handler_->SetPairedBaseAsLastUsedByUser(*second_user);
+  handler_->SetPairedBaseAsLastUsedByUser(default_user_);
+  handler_->SetPairedBaseAsLastUsedByUser(second_user);
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   ChangePairedBase({0x04, 0x05, 0x06});
@@ -529,78 +511,42 @@ TEST_F(DetachableBaseHandlerTest, RemoveUserData) {
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*second_user));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(second_user));
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   // Remove the data for user_2, and verify that the paired base is reported
   // as authenticated when the paired base changes again.
-  handler_->RemoveUserData(*second_user);
+  handler_->RemoveUserData(second_user);
   ChangePairedBase({0x07, 0x08, 0x09});
 
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*second_user));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
+  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(second_user));
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   // Verify that paired base will be properly set again for the previously
   // removed user.
-  handler_->SetPairedBaseAsLastUsedByUser(*second_user);
+  handler_->SetPairedBaseAsLastUsedByUser(second_user);
   ChangePairedBase({0x01, 0x02, 0x03, 0x04});
 
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*second_user));
-  detachable_base_observer_.reset_pairing_status_changed_count();
-}
-
-TEST_F(DetachableBaseHandlerTest, NoLocalState) {
-  base::RunLoop().RunUntilIdle();
-
-  hammerd_client_->FirePairChallengeSucceededSignal({0x01, 0x02, 0x03, 0x04});
-  handler_->SetPairedBaseAsLastUsedByUser(*default_user_);
-  detachable_base_observer_.reset_pairing_status_changed_count();
-
-  ResetHandlerWithNoLocalState();
-  base::RunLoop().RunUntilIdle();
-
-  ChangePairedBase({0x04, 0x05, 0x06});
-
-  EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
-            handler_->GetPairingStatus());
-  EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  detachable_base_observer_.reset_pairing_status_changed_count();
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
-
-  SimulateLocalStateInitialized();
-
-  EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  detachable_base_observer_.reset_pairing_status_changed_count();
-  EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
-            handler_->GetPairingStatus());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
-
-  ChangePairedBase({0x01, 0x02, 0x03, 0x04});
-
-  EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
-            handler_->GetPairingStatus());
-  EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  detachable_base_observer_.reset_pairing_status_changed_count();
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*default_user_));
+  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(default_user_));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(second_user));
   detachable_base_observer_.reset_pairing_status_changed_count();
 }
 
 TEST_F(DetachableBaseHandlerTest, EphemeralUser) {
   base::RunLoop().RunUntilIdle();
 
-  const mojom::UserInfoPtr ephemeral_user =
+  const UserInfo ephemeral_user =
       CreateUser("user_3@foo.bar", "333333", UserType::kEphemeral);
   hammerd_client_->FirePairChallengeSucceededSignal({0x01, 0x02, 0x03, 0x04});
-  handler_->SetPairedBaseAsLastUsedByUser(*ephemeral_user);
+  handler_->SetPairedBaseAsLastUsedByUser(ephemeral_user);
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   ChangePairedBase({0x04, 0x05, 0x06});
@@ -608,7 +554,7 @@ TEST_F(DetachableBaseHandlerTest, EphemeralUser) {
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(*ephemeral_user));
+  EXPECT_FALSE(handler_->PairedBaseMatchesLastUsedByUser(ephemeral_user));
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   ChangePairedBase({0x01, 0x02, 0x03, 0x04});
@@ -616,7 +562,7 @@ TEST_F(DetachableBaseHandlerTest, EphemeralUser) {
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*ephemeral_user));
+  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(ephemeral_user));
   detachable_base_observer_.reset_pairing_status_changed_count();
 
   // Verify that the information about the last used base gets lost if the
@@ -629,7 +575,7 @@ TEST_F(DetachableBaseHandlerTest, EphemeralUser) {
   EXPECT_EQ(DetachableBasePairingStatus::kAuthenticated,
             handler_->GetPairingStatus());
   EXPECT_EQ(1, detachable_base_observer_.pairing_status_changed_count());
-  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(*ephemeral_user));
+  EXPECT_TRUE(handler_->PairedBaseMatchesLastUsedByUser(ephemeral_user));
   detachable_base_observer_.reset_pairing_status_changed_count();
 }
 

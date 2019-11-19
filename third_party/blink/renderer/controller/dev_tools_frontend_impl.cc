@@ -44,11 +44,11 @@ namespace blink {
 // static
 void DevToolsFrontendImpl::BindMojoRequest(
     LocalFrame* local_frame,
-    mojom::blink::DevToolsFrontendAssociatedRequest request) {
+    mojo::PendingAssociatedReceiver<mojom::blink::DevToolsFrontend> receiver) {
   if (!local_frame)
     return;
   local_frame->ProvideSupplement(MakeGarbageCollected<DevToolsFrontendImpl>(
-      *local_frame, std::move(request)));
+      *local_frame, std::move(receiver)));
 }
 
 // static
@@ -63,8 +63,8 @@ const char DevToolsFrontendImpl::kSupplementName[] = "DevToolsFrontendImpl";
 
 DevToolsFrontendImpl::DevToolsFrontendImpl(
     LocalFrame& frame,
-    mojom::blink::DevToolsFrontendAssociatedRequest request)
-    : Supplement<LocalFrame>(frame), binding_(this, std::move(request)) {}
+    mojo::PendingAssociatedReceiver<mojom::blink::DevToolsFrontend> receiver)
+    : Supplement<LocalFrame>(frame), receiver_(this, std::move(receiver)) {}
 
 DevToolsFrontendImpl::~DevToolsFrontendImpl() = default;
 
@@ -79,7 +79,8 @@ void DevToolsFrontendImpl::DidClearWindowObject() {
     ScriptState::Scope scope(script_state);
     if (devtools_host_)
       devtools_host_->DisconnectClient();
-    devtools_host_ = DevToolsHost::Create(this, GetSupplementable());
+    devtools_host_ =
+        MakeGarbageCollected<DevToolsHost>(this, GetSupplementable());
     v8::Local<v8::Object> global = script_state->GetContext()->Global();
     v8::Local<v8::Value> devtools_host_obj =
         ToV8(devtools_host_.Get(), global, script_state->GetIsolate());
@@ -98,11 +99,11 @@ void DevToolsFrontendImpl::DidClearWindowObject() {
 
 void DevToolsFrontendImpl::SetupDevToolsFrontend(
     const String& api_script,
-    mojom::blink::DevToolsFrontendHostAssociatedPtrInfo host) {
+    mojo::PendingAssociatedRemote<mojom::blink::DevToolsFrontendHost> host) {
   DCHECK(GetSupplementable()->IsMainFrame());
   api_script_ = api_script;
   host_.Bind(std::move(host));
-  host_.set_connection_error_handler(WTF::Bind(
+  host_.set_disconnect_handler(WTF::Bind(
       &DevToolsFrontendImpl::DestroyOnHostGone, WrapWeakPersistent(this)));
   GetSupplementable()->GetPage()->SetDefaultPageScaleLimits(1.f, 1.f);
 }

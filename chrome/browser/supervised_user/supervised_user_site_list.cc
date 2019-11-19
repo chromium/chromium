@@ -90,9 +90,9 @@ void SupervisedUserSiteList::Load(const std::string& id,
                                   const base::FilePath& large_icon_path,
                                   const base::FilePath& path,
                                   const LoadedCallback& callback) {
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ReadFileOnBlockingThread, path),
       base::BindOnce(&SupervisedUserSiteList::OnJsonLoaded, id, title,

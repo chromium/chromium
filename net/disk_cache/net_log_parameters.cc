@@ -6,130 +6,117 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
-#include "net/log/net_log.h"
-#include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_source.h"
+#include "net/log/net_log_values.h"
 
 namespace {
 
-std::unique_ptr<base::Value> NetLogParametersEntryCreationCallback(
-    const disk_cache::Entry* entry,
-    bool created,
-    net::NetLogCaptureMode /* capture_mode */) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("key", entry->GetKey());
-  dict->SetBoolean("created", created);
-  return std::move(dict);
-}
-
-std::unique_ptr<base::Value> NetLogReadWriteDataCallback(
-    int index,
-    int offset,
-    int buf_len,
-    bool truncate,
-    net::NetLogCaptureMode /* capture_mode */) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetInteger("index", index);
-  dict->SetInteger("offset", offset);
-  dict->SetInteger("buf_len", buf_len);
+base::Value NetLogReadWriteDataParams(int index,
+                                      int offset,
+                                      int buf_len,
+                                      bool truncate) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetIntKey("index", index);
+  dict.SetIntKey("offset", offset);
+  dict.SetIntKey("buf_len", buf_len);
   if (truncate)
-    dict->SetBoolean("truncate", truncate);
-  return std::move(dict);
+    dict.SetBoolKey("truncate", truncate);
+  return dict;
 }
 
-std::unique_ptr<base::Value> NetLogReadWriteCompleteCallback(
-    int bytes_copied,
-    net::NetLogCaptureMode /* capture_mode */) {
+base::Value NetLogReadWriteCompleteParams(int bytes_copied) {
   DCHECK_NE(bytes_copied, net::ERR_IO_PENDING);
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
+  base::Value dict(base::Value::Type::DICTIONARY);
   if (bytes_copied < 0) {
-    dict->SetInteger("net_error", bytes_copied);
+    dict.SetIntKey("net_error", bytes_copied);
   } else {
-    dict->SetInteger("bytes_copied", bytes_copied);
+    dict.SetIntKey("bytes_copied", bytes_copied);
   }
-  return std::move(dict);
+  return dict;
 }
 
-std::unique_ptr<base::Value> NetLogSparseOperationCallback(
-    int64_t offset,
-    int buf_len,
-    net::NetLogCaptureMode /* capture_mode */) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetKey("offset", net::NetLogNumberValue(offset));
-  dict->SetInteger("buf_len", buf_len);
-  return std::move(dict);
+base::Value NetLogSparseOperationParams(int64_t offset, int buf_len) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey("offset", net::NetLogNumberValue(offset));
+  dict.SetIntKey("buf_len", buf_len);
+  return dict;
 }
 
-std::unique_ptr<base::Value> NetLogSparseReadWriteCallback(
-    const net::NetLogSource& source,
-    int child_len,
-    net::NetLogCaptureMode /* capture_mode */) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  source.AddToEventParameters(dict.get());
-  dict->SetInteger("child_len", child_len);
-  return std::move(dict);
-}
-
-std::unique_ptr<base::Value> NetLogGetAvailableRangeResultCallback(
-    int64_t start,
-    int result,
-    net::NetLogCaptureMode /* capture_mode */) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  if (result > 0) {
-    dict->SetInteger("length", result);
-    dict->SetKey("start", net::NetLogNumberValue(start));
-  } else {
-    dict->SetInteger("net_error", result);
-  }
-  return std::move(dict);
+base::Value NetLogSparseReadWriteParams(const net::NetLogSource& source,
+                                        int child_len) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  source.AddToEventParameters(&dict);
+  dict.SetIntKey("child_len", child_len);
+  return dict;
 }
 
 }  // namespace
 
 namespace disk_cache {
 
-net::NetLogParametersCallback CreateNetLogParametersEntryCreationCallback(
-    const Entry* entry,
-    bool created) {
+base::Value CreateNetLogParametersEntryCreationParams(const Entry* entry,
+                                                      bool created) {
   DCHECK(entry);
-  return base::Bind(&NetLogParametersEntryCreationCallback, entry, created);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("key", entry->GetKey());
+  dict.SetBoolKey("created", created);
+  return dict;
 }
 
-net::NetLogParametersCallback CreateNetLogReadWriteDataCallback(int index,
-                                                                int offset,
-                                                                int buf_len,
-                                                                bool truncate) {
-  return base::Bind(&NetLogReadWriteDataCallback,
-                    index, offset, buf_len, truncate);
+void NetLogReadWriteData(const net::NetLogWithSource& net_log,
+                         net::NetLogEventType type,
+                         net::NetLogEventPhase phase,
+                         int index,
+                         int offset,
+                         int buf_len,
+                         bool truncate) {
+  net_log.AddEntry(type, phase, [&] {
+    return NetLogReadWriteDataParams(index, offset, buf_len, truncate);
+  });
 }
 
-net::NetLogParametersCallback CreateNetLogReadWriteCompleteCallback(
-    int bytes_copied) {
-  return base::Bind(&NetLogReadWriteCompleteCallback, bytes_copied);
+void NetLogReadWriteComplete(const net::NetLogWithSource& net_log,
+                             net::NetLogEventType type,
+                             net::NetLogEventPhase phase,
+                             int bytes_copied) {
+  net_log.AddEntry(type, phase,
+                   [&] { return NetLogReadWriteCompleteParams(bytes_copied); });
 }
 
-net::NetLogParametersCallback CreateNetLogSparseOperationCallback(
-    int64_t offset,
-    int buf_len) {
-  return base::Bind(&NetLogSparseOperationCallback, offset, buf_len);
+void NetLogSparseOperation(const net::NetLogWithSource& net_log,
+                           net::NetLogEventType type,
+                           net::NetLogEventPhase phase,
+                           int64_t offset,
+                           int buf_len) {
+  net_log.AddEntry(type, phase, [&] {
+    return NetLogSparseOperationParams(offset, buf_len);
+  });
 }
 
-net::NetLogParametersCallback CreateNetLogSparseReadWriteCallback(
-    const net::NetLogSource& source,
-    int child_len) {
-  return base::Bind(&NetLogSparseReadWriteCallback, source, child_len);
+void NetLogSparseReadWrite(const net::NetLogWithSource& net_log,
+                           net::NetLogEventType type,
+                           net::NetLogEventPhase phase,
+                           const net::NetLogSource& source,
+                           int child_len) {
+  net_log.AddEntry(type, phase, [&] {
+    return NetLogSparseReadWriteParams(source, child_len);
+  });
 }
 
-net::NetLogParametersCallback CreateNetLogGetAvailableRangeResultCallback(
-    int64_t start,
-    int result) {
-  return base::Bind(&NetLogGetAvailableRangeResultCallback, start, result);
+base::Value CreateNetLogGetAvailableRangeResultParams(int64_t start,
+                                                      int result) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  if (result > 0) {
+    dict.SetIntKey("length", result);
+    dict.SetKey("start", net::NetLogNumberValue(start));
+  } else {
+    dict.SetIntKey("net_error", result);
+  }
+  return dict;
 }
 
 }  // namespace disk_cache

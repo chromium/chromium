@@ -5,6 +5,7 @@
 #include "cc/tiles/tile_task_manager.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 
 namespace cc {
@@ -50,7 +51,10 @@ void TileTaskManagerImpl::Shutdown() {
   // Cancel non-scheduled tasks and wait for running tasks to finish.
   TaskGraph empty;
   task_graph_runner_->ScheduleTasks(namespace_token_, &empty);
-  task_graph_runner_->WaitForTasksToFinishRunning(namespace_token_);
+  {
+    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+    task_graph_runner_->WaitForTasksToFinishRunning(namespace_token_);
+  }
 }
 
 }  // namespace cc

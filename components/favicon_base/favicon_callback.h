@@ -19,33 +19,34 @@ enum class GoogleFaviconServerRequestStatus;
 
 // Callback for functions that can be used to return a |gfx::Image| and the
 // |GURL| it is loaded from. They are returned as a |FaviconImageResult| object.
-typedef base::Callback<void(const FaviconImageResult&)> FaviconImageCallback;
+typedef base::OnceCallback<void(const FaviconImageResult&)>
+    FaviconImageCallback;
 
 // Callback for functions returning raw data for a favicon. In
 // |FaviconRawBitmapResult|, the data is not yet converted as a |gfx::Image|.
-typedef base::Callback<void(const FaviconRawBitmapResult&)>
+typedef base::OnceCallback<void(const FaviconRawBitmapResult&)>
     FaviconRawBitmapCallback;
 
 // Callback for functions returning raw data for a favicon in multiple
 // resolution. In |FaviconRawBitmapResult|, the data is not yet converted as a
 // |gfx::Image|.
-typedef base::Callback<void(const std::vector<FaviconRawBitmapResult>&)>
+typedef base::OnceCallback<void(const std::vector<FaviconRawBitmapResult>&)>
     FaviconResultsCallback;
 
 // Callback for functions returning data for a large icon. |LargeIconResult|
 // will contain either the raw bitmap for a large icon or the style of the
 // fallback to use if a sufficiently large icon could not be found.
 // TODO(jkrcal): Rename LargeIcon* to LargeIconRawBitmap*.
-typedef base::Callback<void(const LargeIconResult&)> LargeIconCallback;
+typedef base::OnceCallback<void(const LargeIconResult&)> LargeIconCallback;
 
 // Callback for functions returning decoded data for a large icon.
 // |LargeIconImageResult| will contain either the decoded image of a large
 // icon or the style of the fallback to use if a sufficiently large icon could
 // not be found.
-typedef base::Callback<void(const LargeIconImageResult&)>
+typedef base::OnceCallback<void(const LargeIconImageResult&)>
     LargeIconImageCallback;
 
-typedef base::Callback<void(GoogleFaviconServerRequestStatus)>
+typedef base::OnceCallback<void(GoogleFaviconServerRequestStatus)>
     GoogleFaviconServerCallback;
 
 }  // namespace favicon_base

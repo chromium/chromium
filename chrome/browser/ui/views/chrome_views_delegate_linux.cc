@@ -6,6 +6,7 @@
 
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -23,7 +24,7 @@ bool IsDesktopEnvironmentUnity() {
 }
 
 int GetWindowIconResourceId() {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   switch (chrome::GetChannel()) {
     case version_info::Channel::DEV:
       return IDR_PRODUCT_LOGO_128_DEV;

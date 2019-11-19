@@ -108,7 +108,8 @@ class IOSPaymentInstrumentFinder {
   // this manifest.
   void OnPaymentManifestDownloaded(const GURL& method,
                                    const GURL& method_url_after_redirects,
-                                   const std::string& content);
+                                   const std::string& content,
+                                   const std::string& error_message);
 
   // Parses a payment method manifest for its default applications and gets all
   // the valid ones. |input| is the json encoded payment method manifest to
@@ -127,7 +128,8 @@ class IOSPaymentInstrumentFinder {
       const GURL& method,
       const GURL& web_app_manifest_url,
       const GURL& web_app_manifest_url_after_redirects,
-      const std::string& content);
+      const std::string& content,
+      const std::string& error_message);
 
   // Parses a web app manifest for its name, icon, and universal link. |input|
   // is the json encoded web app manifest to parse. |web_app_manifest_url|

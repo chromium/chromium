@@ -10,7 +10,6 @@
 #include "chrome/browser/prerender/prerender_contents.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/stream_info.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
@@ -26,7 +25,6 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
     int frame_tree_node_id,
     int render_process_id,
     int render_frame_id,
-    std::unique_ptr<content::StreamInfo> stream,
     content::mojom::TransferrableURLLoaderPtr transferrable_loader,
     const GURL& original_url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -69,9 +67,9 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
   GURL handler_url(Extension::GetBaseURLFromExtensionId(extension_id).spec() +
                    handler->handler_url());
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
-  std::unique_ptr<StreamContainer> stream_container(new StreamContainer(
-      std::move(stream), tab_id, embedded, handler_url, extension_id,
-      std::move(transferrable_loader), original_url));
+  std::unique_ptr<StreamContainer> stream_container(
+      new StreamContainer(tab_id, embedded, handler_url, extension_id,
+                          std::move(transferrable_loader), original_url));
   MimeHandlerStreamManager::Get(browser_context)
       ->AddStream(view_id, std::move(stream_container), frame_tree_node_id,
                   render_process_id, render_frame_id);

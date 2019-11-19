@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchHeuristics;
@@ -12,14 +13,13 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchInteractionR
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.contextualsearch.EngagementSuppression;
 import org.chromium.chrome.browser.contextualsearch.QuickActionCategory;
+import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
  * This class is responsible for all the logging related to Contextual Search.
  */
 public class ContextualSearchPanelMetrics {
-    private static final int MILLISECONDS_TO_NANOSECONDS = 1000000;
-
     // Flags for logging.
     private boolean mDidSearchInvolvePromo;
     private boolean mWasSearchContentViewSeen;
@@ -33,6 +33,8 @@ public class ContextualSearchPanelMetrics {
     private boolean mWasActivatedByTap;
     private boolean mWasPanelOpenedBeyondPeek;
     private boolean mWasContextualCardsDataShown;
+    @ResolvedSearchTerm.CardTag
+    private int mCardTag;
     private boolean mWasQuickActionShown;
     private int mQuickActionCategory;
     private boolean mWasQuickActionClicked;
@@ -88,8 +90,8 @@ public class ContextualSearchPanelMetrics {
 
         if (toState == PanelState.CLOSED && mPanelTriggerTimeFromTapNs != 0
                 && reason == StateChangeReason.BASE_PAGE_SCROLL) {
-            long durationMs =
-                    (System.nanoTime() - mPanelTriggerTimeFromTapNs) / MILLISECONDS_TO_NANOSECONDS;
+            long durationMs = (System.nanoTime() - mPanelTriggerTimeFromTapNs)
+                    / TimeUtils.NANOSECONDS_PER_MILLISECOND;
             ContextualSearchUma.logDurationBetweenTriggerAndScroll(
                     durationMs, mWasSearchContentViewSeen);
         }
@@ -97,7 +99,7 @@ public class ContextualSearchPanelMetrics {
         if (isExitingPanelOpenedBeyondPeeked) {
             assert mPanelOpenedBeyondPeekTimeNs != 0;
             mPanelOpenedBeyondPeekDurationMs = (System.nanoTime() - mPanelOpenedBeyondPeekTimeNs)
-                    / MILLISECONDS_TO_NANOSECONDS;
+                    / TimeUtils.NANOSECONDS_PER_MILLISECOND;
             ContextualSearchUma.logPanelOpenDuration(mPanelOpenedBeyondPeekDurationMs);
             mPanelOpenedBeyondPeekTimeNs = 0;
             mWasPanelOpenedBeyondPeek = false;
@@ -105,7 +107,7 @@ public class ContextualSearchPanelMetrics {
 
         if (isEndingSearch) {
             long panelViewDurationMs =
-                    (System.nanoTime() - mFirstPeekTimeNs) / MILLISECONDS_TO_NANOSECONDS;
+                    (System.nanoTime() - mFirstPeekTimeNs) / TimeUtils.NANOSECONDS_PER_MILLISECOND;
             ContextualSearchUma.logPanelViewDurationAction(panelViewDurationMs);
             if (!mDidSearchInvolvePromo) {
                 // Measure duration only when the promo is not involved.
@@ -123,6 +125,7 @@ public class ContextualSearchPanelMetrics {
                 ContextualSearchUma.logContextualCardsResultsSeen(mWasSearchContentViewSeen);
                 EngagementSuppression.registerContextualCardsImpression(mWasSearchContentViewSeen);
             }
+            ContextualSearchUma.logCardTagSeen(mWasSearchContentViewSeen, mCardTag);
             if (mWasQuickActionShown) {
                 ContextualSearchUma.logQuickActionResultsSeen(mWasSearchContentViewSeen,
                         mQuickActionCategory);
@@ -222,6 +225,7 @@ public class ContextualSearchPanelMetrics {
             mWasContextualCardsDataShown = false;
             mWasQuickActionShown = false;
             mQuickActionCategory = QuickActionCategory.NONE;
+            mCardTag = ResolvedSearchTerm.CardTag.CT_NONE;
             mWasQuickActionClicked = false;
             mWasAnyHeuristicSatisfiedOnPanelShow = false;
             mPanelTriggerTimeFromTapNs = 0;
@@ -256,8 +260,10 @@ public class ContextualSearchPanelMetrics {
      * @param wasContextualCardsDataShown Whether Contextual Cards data was shown in the Contextual
      *                                    Search Bar.
      */
-    public void setWasContextualCardsDataShown(boolean wasContextualCardsDataShown) {
+    public void setWasContextualCardsDataShown(
+            boolean wasContextualCardsDataShown, @ResolvedSearchTerm.CardTag int cardTag) {
         mWasContextualCardsDataShown = wasContextualCardsDataShown;
+        mCardTag = cardTag;
     }
 
     /**
@@ -301,8 +307,8 @@ public class ContextualSearchPanelMetrics {
      * Called when a Search Term has been resolved.
      */
     public void onSearchTermResolved() {
-        long durationMs =
-                (System.nanoTime() - mSearchRequestStartTimeNs) / MILLISECONDS_TO_NANOSECONDS;
+        long durationMs = (System.nanoTime() - mSearchRequestStartTimeNs)
+                / TimeUtils.NANOSECONDS_PER_MILLISECOND;
         ContextualSearchUma.logSearchTermResolutionDuration(durationMs);
     }
 
@@ -311,8 +317,8 @@ public class ContextualSearchPanelMetrics {
      * This is the point where the search result starts to render in the panel.
      */
     public void onPanelNavigatedToPrefetchedSearch(boolean didResolve) {
-        long durationMs =
-                (System.nanoTime() - mSearchRequestStartTimeNs) / MILLISECONDS_TO_NANOSECONDS;
+        long durationMs = (System.nanoTime() - mSearchRequestStartTimeNs)
+                / TimeUtils.NANOSECONDS_PER_MILLISECOND;
         ContextualSearchUma.logPrefetchedSearchNavigatedDuration(durationMs, didResolve);
     }
 

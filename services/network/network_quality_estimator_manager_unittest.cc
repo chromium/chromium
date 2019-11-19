@@ -9,8 +9,9 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/log/test_net_log.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality_estimator.h"
@@ -32,18 +33,12 @@ class TestNetworkQualityEstimatorManagerClient
         effective_connection_type_(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
         http_rtt_(base::TimeDelta()),
         transport_rtt_(base::TimeDelta()),
-        downlink_bandwidth_kbps_(INT32_MAX),
-        binding_(this) {
-    mojom::NetworkQualityEstimatorManagerPtr manager_ptr;
-    mojom::NetworkQualityEstimatorManagerRequest request(
-        mojo::MakeRequest(&manager_ptr));
-    network_quality_estimator_manager_->AddRequest(std::move(request));
+        downlink_bandwidth_kbps_(INT32_MAX) {
+    mojo::Remote<mojom::NetworkQualityEstimatorManager> manager;
+    network_quality_estimator_manager_->AddReceiver(
+        manager.BindNewPipeAndPassReceiver());
 
-    mojom::NetworkQualityEstimatorManagerClientPtr client_ptr;
-    mojom::NetworkQualityEstimatorManagerClientRequest client_request(
-        mojo::MakeRequest(&client_ptr));
-    binding_.Bind(std::move(client_request));
-    manager_ptr->RequestNotifications(std::move(client_ptr));
+    manager->RequestNotifications(receiver_.BindNewPipeAndPassRemote());
   }
 
   ~TestNetworkQualityEstimatorManagerClient() override {}
@@ -92,7 +87,7 @@ class TestNetworkQualityEstimatorManagerClient
   base::TimeDelta http_rtt_;
   base::TimeDelta transport_rtt_;
   int32_t downlink_bandwidth_kbps_;
-  mojo::Binding<mojom::NetworkQualityEstimatorManagerClient> binding_;
+  mojo::Receiver<mojom::NetworkQualityEstimatorManagerClient> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestNetworkQualityEstimatorManagerClient);
 };
@@ -131,7 +126,7 @@ class NetworkQualityEstimatorManagerTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<net::BoundTestNetLog> net_log_;
   std::unique_ptr<NetworkQualityEstimatorManager>
       network_quality_estimator_manager_;

@@ -5,6 +5,9 @@
 #ifndef UI_COMPOSITOR_LAYER_TYPE_H_
 #define UI_COMPOSITOR_LAYER_TYPE_H_
 
+#include "base/strings/string_piece.h"
+#include "ui/compositor/compositor_export.h"
+
 namespace ui {
 
 enum LayerType {
@@ -21,6 +24,8 @@ enum LayerType {
   // A layer based on the NinePatchLayer class.
   LAYER_NINE_PATCH = 3,
 };
+
+COMPOSITOR_EXPORT base::StringPiece LayerTypeToString(LayerType type);
 
 }  // namespace ui
 

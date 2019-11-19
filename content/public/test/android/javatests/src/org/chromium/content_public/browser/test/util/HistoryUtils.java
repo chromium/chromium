@@ -4,8 +4,6 @@
 
 package org.chromium.content_public.browser.test.util;
 
-import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
-
 import android.app.Instrumentation;
 
 import org.chromium.base.test.util.CallbackHelper;
@@ -20,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * through and working with browser forward and back history.
  */
 public class HistoryUtils {
-    protected static final long WAIT_TIMEOUT_SECONDS = scaleTimeout(15);
+    protected static final long WAIT_TIMEOUT_SECONDS = 15L;
 
     /**
      * Calls {@link NavigationController#canGoBack()} on UI thread.
@@ -56,7 +54,7 @@ public class HistoryUtils {
         return InstrumentationUtils.runOnMainSyncAndGetResult(
                 instrumentation, new Callable<Boolean>() {
                     @Override
-                    public Boolean call() throws Exception {
+                    public Boolean call() {
                         return webContents.getNavigationController().canGoToOffset(offset);
                     }
                 });
@@ -86,10 +84,9 @@ public class HistoryUtils {
      *
      * @param instrumentation an Instrumentation instance.
      * @param webContents a WebContents instance.
-     * @throws Throwable
      */
     public static void clearHistoryOnUiThread(
-            Instrumentation instrumentation, final WebContents webContents) throws Throwable {
+            Instrumentation instrumentation, final WebContents webContents) {
         instrumentation.runOnMainSync(new Runnable() {
             @Override
             public void run() {
@@ -111,7 +108,7 @@ public class HistoryUtils {
         return InstrumentationUtils.runOnMainSyncAndGetResult(
                 instrumentation, new Callable<String>() {
                     @Override
-                    public String call() throws Exception {
+                    public String call() {
                         return webContents.getLastCommittedUrl();
                     }
                 });

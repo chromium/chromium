@@ -8,13 +8,10 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "base/supports_user_data.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 class Profile;
-
-namespace extensions {
-class ExtensionRegistry;
-}
 
 // This class manages the removal of shortcuts associated with an extension when
 // that extension is unloaded.
@@ -34,7 +31,7 @@ class ShortcutsExtensionsManager
  private:
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
-      registry_observer_;
+      registry_observer_{this};
   Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(ShortcutsExtensionsManager);

@@ -76,9 +76,10 @@ function testLoadAsDataUrlFromImageClient(callback) {
   const thumbnailLoader = new ThumbnailLoader(entry);
   reportPromise(
       thumbnailLoader.loadAsDataUrl(ThumbnailLoader.FillMode.OVER_FILL)
-      .then(result => {
-        assertEquals('imageDataUrl', result.data);
-      }), callback);
+          .then(result => {
+            assertEquals('imageDataUrl', result.data);
+          }),
+      callback);
 }
 
 function testLoadAsDataUrlFromExifThumbnail(callback) {
@@ -90,8 +91,8 @@ function testLoadAsDataUrlFromExifThumbnail(callback) {
 
   const metadata = {
     thumbnail: {
-      url: generateSampleImageDataUrl(32, 32)
-    }
+      url: generateSampleImageDataUrl(32, 32),
+    },
   };
 
   const fileSystem = new MockFileSystem('volume-id');
@@ -99,9 +100,10 @@ function testLoadAsDataUrlFromExifThumbnail(callback) {
   const thumbnailLoader = new ThumbnailLoader(entry, undefined, metadata);
   reportPromise(
       thumbnailLoader.loadAsDataUrl(ThumbnailLoader.FillMode.OVER_FILL)
-      .then(result => {
-        assertEquals(metadata.thumbnail.url, result.data);
-      }), callback);
+          .then(result => {
+            assertEquals(metadata.thumbnail.url, result.data);
+          }),
+      callback);
 }
 
 function testLoadAsDataUrlFromExifThumbnailPropagatesTransform(callback) {
@@ -133,11 +135,12 @@ function testLoadAsDataUrlFromExifThumbnailPropagatesTransform(callback) {
   const thumbnailLoader = new ThumbnailLoader(entry, undefined, metadata);
   reportPromise(
       thumbnailLoader.loadAsDataUrl(ThumbnailLoader.FillMode.OVER_FILL)
-      .then(result => {
-        assertEquals(32, result.width);
-        assertEquals(64, result.height);
-        assertEquals(generateSampleImageDataUrl(32, 64), result.data);
-      }), callback);
+          .then(result => {
+            assertEquals(32, result.width);
+            assertEquals(64, result.height);
+            assertEquals(generateSampleImageDataUrl(32, 64), result.data);
+          }),
+      callback);
 }
 
 function testLoadAsDataUrlFromExternal(callback) {
@@ -167,9 +170,10 @@ function testLoadAsDataUrlFromExternal(callback) {
   const thumbnailLoader = new ThumbnailLoader(entry, undefined, metadata);
   reportPromise(
       thumbnailLoader.loadAsDataUrl(ThumbnailLoader.FillMode.OVER_FILL)
-      .then(result => {
-        assertEquals(externalThumbnailDataUrl, result.data);
-      }), callback);
+          .then(result => {
+            assertEquals(externalThumbnailDataUrl, result.data);
+          }),
+      callback);
 }
 
 function testLoadDetachedFromExifInCavnasModeThumbnailDoesNotRotate(callback) {
@@ -204,12 +208,13 @@ function testLoadDetachedFromExifInCavnasModeThumbnailDoesNotRotate(callback) {
       new ThumbnailLoader(entry, ThumbnailLoader.LoaderType.CANVAS, metadata);
 
   reportPromise(
-    new Promise((resolve, reject) => {
-      thumbnailLoader.loadDetachedImage(resolve);
-    }).then(() => {
-      const image = thumbnailLoader.getImage();
-      // No need to rotate by loadDetachedImage() as it's already done.
-      assertEquals(32, image.width);
-      assertEquals(64, image.height);
-    }), callback);
+      new Promise((resolve, reject) => {
+        thumbnailLoader.loadDetachedImage(resolve);
+      }).then(() => {
+        const image = thumbnailLoader.getImage();
+        // No need to rotate by loadDetachedImage() as it's already done.
+        assertEquals(32, image.width);
+        assertEquals(64, image.height);
+      }),
+      callback);
 }

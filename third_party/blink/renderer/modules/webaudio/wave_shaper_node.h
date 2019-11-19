@@ -65,6 +65,10 @@ class WaveShaperNode final : public AudioNode {
   void setOversample(const String&);
   String oversample() const;
 
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
+
  private:
   void SetCurveImpl(const float* curve_data,
                     unsigned curve_length,

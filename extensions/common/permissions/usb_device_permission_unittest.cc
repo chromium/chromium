@@ -6,14 +6,14 @@
 #include <utility>
 
 #include "base/memory/ref_counted.h"
-#include "device/usb/public/cpp/fake_usb_device_info.h"
-#include "device/usb/public/mojom/device.mojom.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/permissions/usb_device_permission.h"
 #include "extensions/common/permissions/usb_device_permission_data.h"
 #include "extensions/common/value_builder.h"
+#include "services/device/public/cpp/test/fake_usb_device_info.h"
+#include "services/device/public/mojom/usb_device.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -43,15 +43,15 @@ scoped_refptr<device::FakeUsbDeviceInfo> CreateTestUsbDevice(
   configs.push_back(std::move(config_2));
 
   for (size_t i = 0; i < interface_classes.size(); ++i) {
+    auto alternate = device::mojom::UsbAlternateInterfaceInfo::New();
+    alternate->alternate_setting = 0;
+    alternate->class_code = interface_classes[i];
+    alternate->subclass_code = 255;
+    alternate->protocol_code = 255;
+
     auto interface = device::mojom::UsbInterfaceInfo::New();
     interface->interface_number = i;
-    interface->alternates.push_back(
-        device::mojom::UsbAlternateInterfaceInfo::New(
-            /*alternate_setting=*/0, interface_classes[i],
-            /*subclass_code=*/255,
-            /*protocol_code=*/255,
-            /*interface_name=*/base::nullopt,
-            std::vector<device::mojom::UsbEndpointInfoPtr>()));
+    interface->alternates.push_back(std::move(std::move(alternate)));
 
     configs[0]->interfaces.push_back(std::move(interface));
   }

@@ -74,7 +74,8 @@ PaintRecorder::~PaintRecorder() {
   if (cache_) {
     local_list_->EndPaintOfUnpaired(gfx::Rect());
     local_list_->Finalize();
-    cache_->SetPaintOpBuffer(local_list_->ReleaseAsRecord());
+    cache_->SetPaintOpBuffer(local_list_->ReleaseAsRecord(),
+                             context_.device_scale_factor());
     cache_->UseCache(context_, recording_size_);
   } else {
     gfx::Rect bounds_in_layer = context_.ToLayerSpaceBounds(recording_size_);

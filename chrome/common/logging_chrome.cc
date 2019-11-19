@@ -146,7 +146,7 @@ LoggingDestination DetermineLoggingDestination(
     // Let --enable-logging=stderr force only stderr, particularly useful for
     // non-debug builds where otherwise you can't get logs to stderr at all.
     if (command_line.GetSwitchValueASCII(switches::kEnableLogging) == "stderr")
-      log_mode = LOG_TO_SYSTEM_DEBUG_LOG;
+      log_mode = LOG_TO_SYSTEM_DEBUG_LOG | LOG_TO_STDERR;
     else
       log_mode = kDefaultLoggingMode;
   } else {
@@ -212,9 +212,10 @@ base::FilePath SetUpSymlinkIfNeeded(const base::FilePath& symlink_path,
     }
   }
   // If all went well, the symlink no longer exists.  Recreate it.
-  if (!base::CreateSymbolicLink(target_path, symlink_path)) {
+  base::FilePath relative_target_path = target_path.BaseName();
+  if (!base::CreateSymbolicLink(relative_target_path, symlink_path)) {
     DPLOG(ERROR) << "Unable to create symlink " << symlink_path.value()
-                 << " pointing at " << target_path.value();
+                 << " pointing at " << relative_target_path.value();
   }
   return target_path;
 }
@@ -300,7 +301,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
 
   LoggingSettings settings;
   settings.logging_dest = logging_dest;
-  settings.log_file = log_path.value().c_str();
+  settings.log_file_path = log_path.value().c_str();
   settings.lock_log = log_locking_state;
   settings.delete_old = delete_old_log_file;
   bool success = InitLogging(settings);

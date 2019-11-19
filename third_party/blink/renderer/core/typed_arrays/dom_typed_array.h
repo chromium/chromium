@@ -6,72 +6,77 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_TYPED_ARRAY_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/bigint64_array.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/biguint64_array.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/float32_array.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/float64_array.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/int16_array.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/int32_array.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/int8_array.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/uint16_array.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/uint32_array.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/uint8_array.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/uint8_clamped_array.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_shared_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/bigint64_array.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/biguint64_array.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/float32_array.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/float64_array.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/int16_array.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/int32_array.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/int8_array.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/uint16_array.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/uint32_array.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/uint8_array.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/uint8_clamped_array.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
-template <typename WTFTypedArray, typename V8TypedArray>
+template <typename TypedArray, typename V8TypedArray>
 class DOMTypedArray final : public DOMArrayBufferView {
-  typedef DOMTypedArray<WTFTypedArray, V8TypedArray> ThisType;
+  typedef DOMTypedArray<TypedArray, V8TypedArray> ThisType;
   DECLARE_WRAPPERTYPEINFO();
 
  public:
-  typedef typename WTFTypedArray::ValueType ValueType;
+  typedef typename TypedArray::ValueType ValueType;
 
-  static ThisType* Create(scoped_refptr<WTFTypedArray> buffer_view) {
+  static ThisType* Create(scoped_refptr<TypedArray> buffer_view) {
     return MakeGarbageCollected<ThisType>(std::move(buffer_view));
   }
   static ThisType* Create(unsigned length) {
-    return Create(WTFTypedArray::Create(length));
+    return Create(TypedArray::Create(length));
   }
   static ThisType* Create(const ValueType* array, unsigned length) {
-    return Create(WTFTypedArray::Create(array, length));
+    return Create(TypedArray::Create(array, length));
   }
-  static ThisType* Create(scoped_refptr<WTF::ArrayBuffer> buffer,
+  static ThisType* Create(scoped_refptr<ArrayBuffer> buffer,
                           unsigned byte_offset,
                           unsigned length) {
-    return Create(
-        WTFTypedArray::Create(std::move(buffer), byte_offset, length));
+    return Create(TypedArray::Create(std::move(buffer), byte_offset, length));
   }
   static ThisType* Create(DOMArrayBufferBase* buffer,
                           unsigned byte_offset,
                           unsigned length) {
-    scoped_refptr<WTFTypedArray> buffer_view =
-        WTFTypedArray::Create(buffer->Buffer(), byte_offset, length);
+    scoped_refptr<TypedArray> buffer_view =
+        TypedArray::Create(buffer->Buffer(), byte_offset, length);
     return MakeGarbageCollected<ThisType>(std::move(buffer_view), buffer);
   }
 
   static ThisType* CreateOrNull(unsigned length) {
-    scoped_refptr<WTF::ArrayBuffer> buffer =
-        WTF::ArrayBuffer::CreateOrNull(length, sizeof(ValueType));
+    scoped_refptr<ArrayBuffer> buffer =
+        ArrayBuffer::CreateOrNull(length, sizeof(ValueType));
     return buffer ? Create(std::move(buffer), 0, length) : nullptr;
   }
 
-  explicit DOMTypedArray(scoped_refptr<WTFTypedArray> buffer_view)
+  static ThisType* CreateUninitializedOrNull(unsigned length) {
+    scoped_refptr<ArrayBuffer> buffer =
+        ArrayBuffer::CreateOrNull(length, sizeof(ValueType));
+    return buffer ? Create(std::move(buffer), 0, length) : nullptr;
+  }
+
+  explicit DOMTypedArray(scoped_refptr<TypedArray> buffer_view)
       : DOMArrayBufferView(std::move(buffer_view)) {}
-  DOMTypedArray(scoped_refptr<WTFTypedArray> buffer_view,
+  DOMTypedArray(scoped_refptr<TypedArray> buffer_view,
                 DOMArrayBufferBase* dom_array_buffer)
       : DOMArrayBufferView(std::move(buffer_view), dom_array_buffer) {}
 
-  const WTFTypedArray* View() const {
-    return static_cast<const WTFTypedArray*>(DOMArrayBufferView::View());
+  const TypedArray* View() const {
+    return static_cast<const TypedArray*>(DOMArrayBufferView::View());
   }
-  WTFTypedArray* View() {
-    return static_cast<WTFTypedArray*>(DOMArrayBufferView::View());
+  TypedArray* View() {
+    return static_cast<TypedArray*>(DOMArrayBufferView::View());
   }
 
   ValueType* Data() const { return View()->Data(); }
@@ -86,41 +91,40 @@ class DOMTypedArray final : public DOMArrayBufferView {
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<WTF::Int8Array, v8::Int8Array>;
+    DOMTypedArray<Int8Array, v8::Int8Array>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<WTF::Int16Array, v8::Int16Array>;
+    DOMTypedArray<Int16Array, v8::Int16Array>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<WTF::Int32Array, v8::Int32Array>;
+    DOMTypedArray<Int32Array, v8::Int32Array>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<WTF::Uint8Array, v8::Uint8Array>;
+    DOMTypedArray<Uint8Array, v8::Uint8Array>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<WTF::Uint8ClampedArray, v8::Uint8ClampedArray>;
+    DOMTypedArray<Uint8ClampedArray, v8::Uint8ClampedArray>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<WTF::Uint16Array, v8::Uint16Array>;
+    DOMTypedArray<Uint16Array, v8::Uint16Array>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<WTF::Uint32Array, v8::Uint32Array>;
+    DOMTypedArray<Uint32Array, v8::Uint32Array>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<WTF::BigInt64Array, v8::BigInt64Array>;
+    DOMTypedArray<BigInt64Array, v8::BigInt64Array>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<WTF::BigUint64Array, v8::BigUint64Array>;
+    DOMTypedArray<BigUint64Array, v8::BigUint64Array>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<WTF::Float32Array, v8::Float32Array>;
+    DOMTypedArray<Float32Array, v8::Float32Array>;
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<WTF::Float64Array, v8::Float64Array>;
+    DOMTypedArray<Float64Array, v8::Float64Array>;
 
-typedef DOMTypedArray<WTF::Int8Array, v8::Int8Array> DOMInt8Array;
-typedef DOMTypedArray<WTF::Int16Array, v8::Int16Array> DOMInt16Array;
-typedef DOMTypedArray<WTF::Int32Array, v8::Int32Array> DOMInt32Array;
-typedef DOMTypedArray<WTF::Uint8Array, v8::Uint8Array> DOMUint8Array;
-typedef DOMTypedArray<WTF::Uint8ClampedArray, v8::Uint8ClampedArray>
+typedef DOMTypedArray<Int8Array, v8::Int8Array> DOMInt8Array;
+typedef DOMTypedArray<Int16Array, v8::Int16Array> DOMInt16Array;
+typedef DOMTypedArray<Int32Array, v8::Int32Array> DOMInt32Array;
+typedef DOMTypedArray<Uint8Array, v8::Uint8Array> DOMUint8Array;
+typedef DOMTypedArray<Uint8ClampedArray, v8::Uint8ClampedArray>
     DOMUint8ClampedArray;
-typedef DOMTypedArray<WTF::Uint16Array, v8::Uint16Array> DOMUint16Array;
-typedef DOMTypedArray<WTF::Uint32Array, v8::Uint32Array> DOMUint32Array;
-typedef DOMTypedArray<WTF::BigInt64Array, v8::BigInt64Array> DOMBigInt64Array;
-typedef DOMTypedArray<WTF::BigUint64Array, v8::BigUint64Array>
-    DOMBigUint64Array;
-typedef DOMTypedArray<WTF::Float32Array, v8::Float32Array> DOMFloat32Array;
-typedef DOMTypedArray<WTF::Float64Array, v8::Float64Array> DOMFloat64Array;
+typedef DOMTypedArray<Uint16Array, v8::Uint16Array> DOMUint16Array;
+typedef DOMTypedArray<Uint32Array, v8::Uint32Array> DOMUint32Array;
+typedef DOMTypedArray<BigInt64Array, v8::BigInt64Array> DOMBigInt64Array;
+typedef DOMTypedArray<BigUint64Array, v8::BigUint64Array> DOMBigUint64Array;
+typedef DOMTypedArray<Float32Array, v8::Float32Array> DOMFloat32Array;
+typedef DOMTypedArray<Float64Array, v8::Float64Array> DOMFloat64Array;
 
 }  // namespace blink
 

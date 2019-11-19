@@ -10,8 +10,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import org.chromium.base.ThreadUtils;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -171,8 +169,23 @@ public class TouchCommon {
         longPressView(v, v.getWidth() / 2, v.getHeight() / 2);
     }
 
-    private static void longPressInternal(View view, float windowX, float windowY) {
-        long downTime = SystemClock.uptimeMillis();
+    /**
+     * Sends (synchronously) a long press to the View at the specified coordinates, without release.
+     *
+     * @param v The view to receive the long press.
+     * @param x X coordinate, relative to v.
+     * @param y Y coordinate, relative to v.
+     * @param downTime When the drag was started, in millis since the epoch.
+     */
+    public static void longPressViewWithoutUp(View v, int x, int y, long downTime) {
+        int windowXY[] = viewToWindowCoordinates(v, x, y);
+        int windowX = windowXY[0];
+        int windowY = windowXY[1];
+        longPressWithoutUpInternal(v.getRootView(), windowX, windowY, downTime);
+    }
+
+    private static void longPressWithoutUpInternal(
+            View view, float windowX, float windowY, long downTime) {
         long eventTime = SystemClock.uptimeMillis();
 
         MotionEvent event = MotionEvent.obtain(
@@ -183,17 +196,23 @@ public class TouchCommon {
 
         // Long press is flaky with just longPressTimeout. Doubling the time to be safe.
         SystemClock.sleep(longPressTimeout * 2);
+    }
 
-        eventTime = SystemClock.uptimeMillis();
-        event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, windowX, windowY, 0);
+    private static void longPressInternal(View view, float windowX, float windowY) {
+        long downTime = SystemClock.uptimeMillis();
+        longPressWithoutUpInternal(view, windowX, windowY, downTime);
+
+        long eventTime = SystemClock.uptimeMillis();
+        MotionEvent event =
+                MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, windowX, windowY, 0);
         dispatchTouchEvent(view, event);
     }
 
     private static View getRootViewForActivity(final Activity activity) {
         try {
-            View view = ThreadUtils.runOnUiThreadBlocking(new Callable<View>() {
+            View view = TestThreadUtils.runOnUiThreadBlocking(new Callable<View>() {
                 @Override
-                public View call() throws Exception {
+                public View call() {
                     return activity.findViewById(android.R.id.content).getRootView();
                 }
             });
@@ -211,7 +230,7 @@ public class TouchCommon {
      */
     private static boolean dispatchTouchEvent(final View view, final MotionEvent event) {
         try {
-            return ThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
+            return TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
                 @Override
                 public Boolean call() {
                     return view.dispatchTouchEvent(event);

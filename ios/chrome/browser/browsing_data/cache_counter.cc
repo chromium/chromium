@@ -8,9 +8,9 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/web/public/browser_state.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
-#include "net/base/completion_callback.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
+#include "net/base/completion_repeating_callback.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
@@ -24,7 +24,7 @@ class IOThreadCacheCounter {
  public:
   IOThreadCacheCounter(
       const scoped_refptr<net::URLRequestContextGetter>& context_getter,
-      const net::Int64CompletionCallback& result_callback)
+      const net::Int64CompletionRepeatingCallback& result_callback)
       : next_step_(STEP_GET_BACKEND),
         context_getter_(context_getter),
         result_callback_(result_callback),
@@ -32,10 +32,9 @@ class IOThreadCacheCounter {
         backend_(nullptr) {}
 
   void Count() {
-    base::PostTaskWithTraits(
-        FROM_HERE, {web::WebThread::IO},
-        base::BindRepeating(&IOThreadCacheCounter::CountInternal,
-                            base::Unretained(this), net::OK));
+    base::PostTask(FROM_HERE, {web::WebThread::IO},
+                   base::BindRepeating(&IOThreadCacheCounter::CountInternal,
+                                       base::Unretained(this), net::OK));
   }
 
  private:
@@ -43,13 +42,12 @@ class IOThreadCacheCounter {
     STEP_GET_BACKEND,  // Get the disk_cache::Backend instance.
     STEP_COUNT,        // Run CalculateSizeOfAllEntries() on it.
     STEP_CALLBACK,     // Respond on the UI thread.
-    STEP_DONE          // Calculation completed.
   };
 
   void CountInternal(int64_t rv) {
     DCHECK_CURRENTLY_ON(web::WebThread::IO);
 
-    while (rv != net::ERR_IO_PENDING && next_step_ != STEP_DONE) {
+    while (rv != net::ERR_IO_PENDING) {
       // In case of an error, skip to the last step.
       if (rv < 0)
         next_step_ = STEP_CALLBACK;
@@ -83,19 +81,17 @@ class IOThreadCacheCounter {
         }
 
         case STEP_CALLBACK: {
-          next_step_ = STEP_DONE;
           result_ = rv;
 
-          base::PostTaskWithTraits(
+          base::PostTask(
               FROM_HERE, {web::WebThread::UI},
               base::BindOnce(&IOThreadCacheCounter::OnCountingFinished,
                              base::Unretained(this)));
 
-          break;
-        }
-
-        case STEP_DONE: {
-          NOTREACHED();
+          // Return instead of break.
+          // The task above deletes this object; app would crash if this object
+          // is deleted before reentrance of the loop.
+          return;
         }
       }
     }
@@ -109,7 +105,7 @@ class IOThreadCacheCounter {
 
   Step next_step_;
   scoped_refptr<net::URLRequestContextGetter> context_getter_;
-  net::Int64CompletionCallback result_callback_;
+  net::Int64CompletionRepeatingCallback result_callback_;
   int64_t result_;
   disk_cache::Backend* backend_;
 };

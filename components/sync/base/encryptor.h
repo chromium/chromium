@@ -13,10 +13,10 @@ class Encryptor {
  public:
   // All methods below should be thread-safe.
   virtual bool EncryptString(const std::string& plaintext,
-                             std::string* ciphertext) = 0;
+                             std::string* ciphertext) const = 0;
 
   virtual bool DecryptString(const std::string& ciphertext,
-                             std::string* plaintext) = 0;
+                             std::string* plaintext) const = 0;
 
  protected:
   virtual ~Encryptor() {}

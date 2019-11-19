@@ -1362,95 +1362,6 @@ def check_ctype_functions(clean_lines, line_number, file_state, error):
           % (ctype_function))
 
 
-def check_exit_statement_simplifications(clean_lines, line_number, error):
-    """Looks for else or else-if statements that should be written as an
-    if statement when the prior if concludes with a return, break, continue or
-    goto statement.
-
-    Args:
-      clean_lines: A CleansedLines instance containing the file.
-      line_number: The number of the line to check.
-      error: The function to call with any errors found.
-    """
-
-    line = clean_lines.elided[line_number]  # Get rid of comments and strings.
-
-    else_match = match(r'(?P<else_indentation>\s*)(\}\s*)?else(\s+if\s*\(|(?P<else>\s*(\{\s*)?\Z))', line)
-    if not else_match:
-        return
-
-    else_indentation = else_match.group('else_indentation')
-    inner_indentation = else_indentation + ' ' * 2
-
-    previous_lines = clean_lines.elided[:line_number]
-    previous_lines.reverse()
-    line_offset = 0
-    encountered_exit_statement = False
-
-    for current_line in previous_lines:
-        line_offset -= 1
-
-        # Skip not only empty lines but also those with preprocessor directives
-        # and goto labels.
-        if current_line.strip() == '' or current_line.startswith('#') or match(r'\w+\s*:\s*$', current_line):
-            continue
-
-        # Skip lines with closing braces on the original indentation level.
-        # Even though the styleguide says they should be on the same line as
-        # the "else if" statement, we also want to check for instances where
-        # the current code does not comply with the coding style. Thus, ignore
-        # these lines and proceed to the line before that.
-        if current_line == else_indentation + '}':
-            continue
-
-        current_indentation_match = match(r'(?P<indentation>\s*)(?P<remaining_line>.*)$', current_line)
-        current_indentation = current_indentation_match.group('indentation')
-        remaining_line = current_indentation_match.group('remaining_line')
-
-        # As we're going up the lines, the first real statement to encounter
-        # has to be an exit statement (return, break, continue or goto) -
-        # otherwise, this check doesn't apply.
-        if not encountered_exit_statement:
-            # We only want to find exit statements if they are on exactly
-            # the same level of indentation as expected from the code inside
-            # the block. If the indentation doesn't strictly match then we
-            # might have a nested if or something, which must be ignored.
-            if current_indentation != inner_indentation:
-                break
-            if match(r'(return(\W+.*)|(break|continue)\s*;|goto\s*\w+;)$', remaining_line):
-                encountered_exit_statement = True
-                continue
-            break
-
-        # When code execution reaches this point, we've found an exit statement
-        # as last statement of the previous block. Now we only need to make
-        # sure that the block belongs to an "if", then we can throw an error.
-
-        # Skip lines with opening braces on the original indentation level,
-        # similar to the closing braces check above. ("if (condition)\n{")
-        if current_line == else_indentation + '{':
-            continue
-
-        # Skip everything that's further indented than our "else" or "else if".
-        if current_indentation.startswith(else_indentation) and current_indentation != else_indentation:
-            continue
-
-        # So we've got a line with same (or less) indentation. Is it an "if"?
-        # If yes: throw an error. If no: don't throw an error.
-        # Whatever the outcome, this is the end of our loop.
-        if match(r'if\s*\(', remaining_line):
-            if else_match.start('else') != -1:
-                error(line_number + line_offset, 'readability/control_flow', 4,
-                      'An else statement can be removed when the prior "if" '
-                      'concludes with a return, break, continue or goto statement.')
-            else:
-                error(line_number + line_offset, 'readability/control_flow', 4,
-                      'An else if statement should be written as an if statement '
-                      'when the prior "if" concludes with a return, break, '
-                      'continue or goto statement.')
-        break
-
-
 def replaceable_check(operator, macro, line):
     """Determine whether a basic CHECK can be replaced with a more specific one.
 
@@ -1786,7 +1697,6 @@ def check_style(clean_lines, line_number, file_state, error):
 
     # Some more style checks
     check_ctype_functions(clean_lines, line_number, file_state, error)
-    check_exit_statement_simplifications(clean_lines, line_number, error)
     check_check(clean_lines, line_number, error)
     check_for_comparisons_to_boolean(clean_lines, line_number, error)
 
@@ -1866,11 +1776,11 @@ def check_language(filename, clean_lines, line_number, file_extension, include_s
     # FIXME: figure out if they're using default arguments in fn proto.
 
     # Check if they're using a precise-width integer type.
-    matched = search(r'\bunsigned short\b', line)
+    matched = search(r'\b((un)?signed\s+)?(short|(long\s+)?long)\b', line)
     if matched:
         error(line_number, 'runtime/int', 1,
               'Use a precise-width integer type from <stdint.h> or <cstdint>'
-              ' such as uint16_t instead of unsigned short')
+              ' such as uint16_t instead of %s' % matched.group(0))
 
     # Check to see if they're using an conversion function cast.
     # I just try to capture the most common basic types, though there are more.

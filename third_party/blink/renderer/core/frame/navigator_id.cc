@@ -31,7 +31,9 @@
 
 #include "third_party/blink/renderer/core/frame/navigator_id.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 
 #if !defined(OS_MACOSX) && !defined(OS_WIN)
 #include <sys/utsname.h>
@@ -56,6 +58,19 @@ String NavigatorID::appVersion() {
 }
 
 String NavigatorID::platform() const {
+  // If the User-Agent string is frozen, platform should be a value
+  // matching the frozen string per https://github.com/WICG/ua-client-hints. See
+  // content::frozen_user_agent_strings.
+  if (base::FeatureList::IsEnabled(features::kFreezeUserAgent)) {
+#if defined(OS_ANDROID)
+    // Matches the frozen mobile User-Agent string (arbitrary Android device).
+    return "Linux armv8l";
+#else
+    // Matches the frozen desktop User-Agent string (Windows).
+    return "Win32";
+#endif
+  }
+
 #if defined(OS_MACOSX)
   // Match Safari and Mozilla on Mac x86.
   return "MacIntel";

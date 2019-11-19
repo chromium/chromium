@@ -35,7 +35,7 @@ const defaultDetails = Object.freeze({
 /**
  * Do not query CanMakePayment before showing the Payment Request.
  */
-function noQueryShow() {  // eslint-disable-line no-unused-vars
+function noQueryShow() { // eslint-disable-line no-unused-vars
   try {
     request = new PaymentRequest([bobPayMethod, visaMethod], defaultDetails);
     request.show()
@@ -59,7 +59,7 @@ function noQueryShow() {  // eslint-disable-line no-unused-vars
 /**
  * Queries CanMakePayment and the shows the PaymentRequest after.
  */
-async function queryShow() {  // eslint-disable-line no-unused-vars
+async function queryShow() { // eslint-disable-line no-unused-vars
   try {
     request = new PaymentRequest([bobPayMethod, visaMethod], defaultDetails);
     print(await request.canMakePayment());
@@ -85,7 +85,7 @@ async function queryShow() {  // eslint-disable-line no-unused-vars
 /**
  * Queries CanMakePayment but does not show the PaymentRequest after.
  */
-async function queryNoShow() {  // eslint-disable-line no-unused-vars
+async function queryNoShow() { // eslint-disable-line no-unused-vars
   try {
     request = new PaymentRequest([bobPayMethod, visaMethod], defaultDetails);
     print(await request.canMakePayment());
@@ -98,7 +98,7 @@ async function queryNoShow() {  // eslint-disable-line no-unused-vars
 /**
  * Aborts the PaymentRequest UI.
  */
-function abort() {  // eslint-disable-line no-unused-vars
+function abort() { // eslint-disable-line no-unused-vars
   try {
     request.abort()
         .then(function() {

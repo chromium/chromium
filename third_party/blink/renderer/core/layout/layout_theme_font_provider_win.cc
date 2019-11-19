@@ -51,21 +51,21 @@ void LayoutThemeFontProvider::SystemFont(CSSValueID system_font_id,
   font_weight = NormalWeightValue();
 
   switch (system_font_id) {
-    case CSSValueSmallCaption:
+    case CSSValueID::kSmallCaption:
       font_size = FontCache::SmallCaptionFontHeight();
       font_family = FontCache::SmallCaptionFontFamily();
       break;
-    case CSSValueMenu:
+    case CSSValueID::kMenu:
       font_size = FontCache::MenuFontHeight();
       font_family = FontCache::MenuFontFamily();
       break;
-    case CSSValueStatusBar:
+    case CSSValueID::kStatusBar:
       font_size = FontCache::StatusFontHeight();
       font_family = FontCache::StatusFontFamily();
       break;
-    case CSSValueWebkitMiniControl:
-    case CSSValueWebkitSmallControl:
-    case CSSValueWebkitControl:
+    case CSSValueID::kWebkitMiniControl:
+    case CSSValueID::kWebkitSmallControl:
+    case CSSValueID::kWebkitControl:
       // Why 2 points smaller? Because that's what Gecko does.
       font_size = kDefaultFontSize - PointsToPixels(2);
       font_family = DefaultGUIFont();

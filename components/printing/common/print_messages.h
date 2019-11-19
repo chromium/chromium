@@ -89,7 +89,9 @@ struct PrintMsg_PrintFrame_Params {
 struct PrintHostMsg_RequestPrintPreview_Params {
   PrintHostMsg_RequestPrintPreview_Params();
   ~PrintHostMsg_RequestPrintPreview_Params();
+  bool is_from_arc;
   bool is_modifiable;
+  bool is_pdf;
   bool webnode_only;
   bool has_selection;
   bool selection_only;
@@ -213,7 +215,9 @@ IPC_STRUCT_TRAITS_END()
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 IPC_STRUCT_TRAITS_BEGIN(PrintHostMsg_RequestPrintPreview_Params)
+  IPC_STRUCT_TRAITS_MEMBER(is_from_arc)
   IPC_STRUCT_TRAITS_MEMBER(is_modifiable)
+  IPC_STRUCT_TRAITS_MEMBER(is_pdf)
   IPC_STRUCT_TRAITS_MEMBER(webnode_only)
   IPC_STRUCT_TRAITS_MEMBER(has_selection)
   IPC_STRUCT_TRAITS_MEMBER(selection_only)
@@ -356,33 +360,12 @@ IPC_STRUCT_END()
 
 // Messages sent from the browser to the renderer.
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-// Tells the RenderFrame to initiate print preview for the entire document.
-IPC_MESSAGE_ROUTED1(PrintMsg_InitiatePrintPreview, bool /* has_selection */)
-#endif
-
 // Tells the RenderFrame to initiate printing or print preview for a particular
 // node, depending on which mode the RenderFrame is in.
 IPC_MESSAGE_ROUTED0(PrintMsg_PrintNodeUnderContextMenu)
 
-#if BUILDFLAG(ENABLE_PRINTING)
-// Tells the RenderFrame to switch the CSS to print media type, renders every
-// requested pages and switch back the CSS to display media type.
-IPC_MESSAGE_ROUTED0(PrintMsg_PrintPages)
-
-// Like PrintMsg_PrintPages, but using the print preview document's frame/node.
-IPC_MESSAGE_ROUTED0(PrintMsg_PrintForSystemDialog)
-#endif
-
 // Print content of an out-of-process subframe.
 IPC_MESSAGE_ROUTED1(PrintMsg_PrintFrameContent, PrintMsg_PrintFrame_Params)
-
-// Tells the RenderFrame that printing is done so it can clean up.
-IPC_MESSAGE_ROUTED1(PrintMsg_PrintingDone,
-                    bool /* success */)
-
-// Tells the RenderFrame whether printing is enabled or not.
-IPC_MESSAGE_ROUTED1(PrintMsg_SetPrintingEnabled, bool /* enabled */)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 // Tells the RenderFrame to switch the CSS to print media type, renders every
@@ -390,9 +373,6 @@ IPC_MESSAGE_ROUTED1(PrintMsg_SetPrintingEnabled, bool /* enabled */)
 // called multiple times as the user updates settings.
 IPC_MESSAGE_ROUTED1(PrintMsg_PrintPreview,
                     base::DictionaryValue /* settings */)
-
-// Tells the RenderFrame that print preview dialog was closed.
-IPC_MESSAGE_ROUTED0(PrintMsg_ClosePrintPreviewDialog)
 #endif
 
 // Messages sent from the renderer to the browser.
@@ -412,9 +392,12 @@ IPC_MESSAGE_ROUTED0(PrintHostMsg_DidShowPrintDialog)
 
 // Sends back to the browser the rendered document that was requested by a
 // PrintMsg_PrintPages message or from scripted printing. The memory handle in
-// this message is already valid in the browser process.
-IPC_MESSAGE_ROUTED1(PrintHostMsg_DidPrintDocument,
-                    PrintHostMsg_DidPrintDocument_Params /* page content */)
+// this message is already valid in the browser process. Waits until the
+// document is complete ready before replying.
+IPC_SYNC_MESSAGE_ROUTED1_1(PrintHostMsg_DidPrintDocument,
+                           PrintHostMsg_DidPrintDocument_Params
+                           /* page content */,
+                           bool /* completed */)
 
 // Sends back to the browser the rendered subframe content that was
 // requested by a PrintMsg_PrintFrameContent message.
@@ -451,6 +434,13 @@ IPC_MESSAGE_ROUTED1(PrintHostMsg_RequestPrintPreview,
 // Notify the browser the about the to-be-rendered print preview document.
 IPC_MESSAGE_ROUTED2(PrintHostMsg_DidStartPreview,
                     PrintHostMsg_DidStartPreview_Params /* params */,
+                    PrintHostMsg_PreviewIds /* ids */)
+
+// Notify the browser of preparing to print the document, for cases where
+// the document will be collected from the individual pages instead of being
+// provided by an extra metafile at end containing all pages.
+IPC_MESSAGE_ROUTED2(PrintHostMsg_DidPrepareDocumentForPreview,
+                    int /* document_cookie */,
                     PrintHostMsg_PreviewIds /* ids */)
 
 // Notify the browser of the default page layout according to the currently

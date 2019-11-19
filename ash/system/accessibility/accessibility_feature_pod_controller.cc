@@ -7,7 +7,7 @@
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/feature_pod_button.h"
@@ -24,8 +24,8 @@ AccessibilityFeaturePodController::~AccessibilityFeaturePodController() =
     default;
 
 FeaturePodButton* AccessibilityFeaturePodController::CreateButton() {
-  auto* button = new FeaturePodButton(this);
-  button->set_id(ash::VIEW_ID_ACCESSIBILITY_TRAY_ITEM);
+  auto* button = new FeaturePodButton(this, /*is_togglable=*/false);
+  button->SetID(ash::VIEW_ID_ACCESSIBILITY_TRAY_ITEM);
   button->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY));
   button->SetVectorIcon(kUnifiedMenuAccessibilityIcon);

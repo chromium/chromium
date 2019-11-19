@@ -7,59 +7,13 @@
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_mojo_param_traits.h"
 #include "ipc/ipc_platform_file.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_util.h"
-#include "services/network/public/cpp/http_raw_request_response_info.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
 
 namespace IPC {
-
-void ParamTraits<scoped_refptr<network::HttpRawRequestResponseInfo>>::Write(
-    base::Pickle* m,
-    const param_type& p) {
-  WriteParam(m, p.get() != nullptr);
-  if (!p.get())
-    return;
-
-  WriteParam(m, p->http_status_code);
-  WriteParam(m, p->http_status_text);
-  WriteParam(m, p->request_headers);
-  WriteParam(m, p->response_headers);
-  WriteParam(m, p->request_headers_text);
-  WriteParam(m, p->response_headers_text);
-}
-
-bool ParamTraits<scoped_refptr<network::HttpRawRequestResponseInfo>>::Read(
-    const base::Pickle* m,
-    base::PickleIterator* iter,
-    param_type* r) {
-  bool has_object;
-  if (!ReadParam(m, iter, &has_object))
-    return false;
-  if (!has_object)
-    return true;
-  *r = new network::HttpRawRequestResponseInfo();
-  return ReadParam(m, iter, &(*r)->http_status_code) &&
-         ReadParam(m, iter, &(*r)->http_status_text) &&
-         ReadParam(m, iter, &(*r)->request_headers) &&
-         ReadParam(m, iter, &(*r)->response_headers) &&
-         ReadParam(m, iter, &(*r)->request_headers_text) &&
-         ReadParam(m, iter, &(*r)->response_headers_text);
-}
-
-void ParamTraits<scoped_refptr<network::HttpRawRequestResponseInfo>>::Log(
-    const param_type& p,
-    std::string* l) {
-  l->append("(");
-  if (p.get()) {
-    LogParam(p->request_headers, l);
-    l->append(", ");
-    LogParam(p->response_headers, l);
-  }
-  l->append(")");
-}
-
 
 void ParamTraits<network::DataElement>::Write(base::Pickle* m,
                                               const param_type& p) {
@@ -93,14 +47,13 @@ void ParamTraits<network::DataElement>::Write(base::Pickle* m,
       break;
     }
     case network::mojom::DataElementType::kDataPipe: {
-      WriteParam(
-          m, p.CloneDataPipeGetter().PassInterface().PassHandle().release());
+      WriteParam(m, p.CloneDataPipeGetter().PassPipe().release());
       break;
     }
     case network::mojom::DataElementType::kChunkedDataPipe: {
       WriteParam(m, const_cast<network::DataElement&>(p)
                         .ReleaseChunkedDataPipeGetter()
-                        .PassHandle()
+                        .PassPipe()
                         .release());
       break;
     }
@@ -176,23 +129,22 @@ bool ParamTraits<network::DataElement>::Read(const base::Pickle* m,
       return true;
     }
     case network::mojom::DataElementType::kDataPipe: {
-      network::mojom::DataPipeGetterPtr data_pipe_getter;
       mojo::MessagePipeHandle message_pipe;
       if (!ReadParam(m, iter, &message_pipe))
         return false;
-      data_pipe_getter.Bind(network::mojom::DataPipeGetterPtrInfo(
-          mojo::ScopedMessagePipeHandle(message_pipe), 0u));
+      mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter(
+          mojo::ScopedMessagePipeHandle(message_pipe), 0u);
       r->SetToDataPipe(std::move(data_pipe_getter));
       return true;
     }
     case network::mojom::DataElementType::kChunkedDataPipe: {
-      network::mojom::ChunkedDataPipeGetterPtr chunked_data_pipe_getter;
       mojo::MessagePipeHandle message_pipe;
       if (!ReadParam(m, iter, &message_pipe))
         return false;
-      chunked_data_pipe_getter.Bind(
-          network::mojom::ChunkedDataPipeGetterPtrInfo(
-              mojo::ScopedMessagePipeHandle(message_pipe), 0u));
+      mojo::PendingRemote<network::mojom::ChunkedDataPipeGetter>
+          chunked_data_pipe_getter(mojo::ScopedMessagePipeHandle(message_pipe),
+                                   0u);
+
       r->SetToChunkedDataPipe(std::move(chunked_data_pipe_getter));
       return true;
     }

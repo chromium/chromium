@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/disks/disk_mount_manager.h"
 
@@ -24,7 +25,7 @@ scoped_refptr<StorageDeviceList>
 RemovableStorageProvider::PopulateDeviceList() {
   DiskMountManager* disk_mount_manager = DiskMountManager::GetInstance();
   const DiskMountManager::DiskMap& disks = disk_mount_manager->disks();
-  scoped_refptr<StorageDeviceList> device_list(new StorageDeviceList());
+  auto device_list = base::MakeRefCounted<StorageDeviceList>();
 
   for (DiskMountManager::DiskMap::const_iterator iter = disks.begin();
        iter != disks.end();

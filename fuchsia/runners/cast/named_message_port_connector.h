@@ -5,59 +5,46 @@
 #ifndef FUCHSIA_RUNNERS_CAST_NAMED_MESSAGE_PORT_CONNECTOR_H_
 #define FUCHSIA_RUNNERS_CAST_NAMED_MESSAGE_PORT_CONNECTOR_H_
 
-#include <deque>
+#include <fuchsia/web/cpp/fidl.h>
+#include <lib/fidl/cpp/interface_handle.h>
 #include <map>
 #include <string>
 
 #include "base/callback.h"
-#include "base/files/file_path.h"
 #include "base/macros.h"
-#include "fuchsia/fidl/chromium/web/cpp/fidl.h"
 
-// The implementation actively creates a MessagePort for each registered Id,
-// passing them all to the web container every time a page-load occurs. It then
-// waits for the page to acknowledge each MessagePort, before invoking its
-// registered |handler| to notify the called that it is ready for use.
+// Injects an API into |frame| through which it can connect MessagePorts to one
+// or more services registered by the caller.
 class NamedMessagePortConnector {
  public:
-  using PortConnectedCallback =
-      base::RepeatingCallback<void(chromium::web::MessagePortPtr)>;
+  using DefaultPortConnectedCallback = base::RepeatingCallback<void(
+      base::StringPiece,
+      fidl::InterfaceHandle<fuchsia::web::MessagePort>)>;
 
-  NamedMessagePortConnector();
+  explicit NamedMessagePortConnector(fuchsia::web::Frame* frame);
   ~NamedMessagePortConnector();
 
-  // Registers a |handler| which will be passed a new MessagePort after every
-  // page load.
-  //
-  // The first call to Register() will ensure that the supporting JavaScript
-  // bundle for the NamedMessagePortConnector is injected into |frame|.
-  // Therefore, any JavaScript bundles which depend on the Connector must be
-  // injected after Register is called.
-  void Register(const std::string& id,
-                PortConnectedCallback handler,
-                chromium::web::Frame* frame);
+  // Sets the handler that is called for connected ports which aren't
+  // registered in advance.
+  void Register(DefaultPortConnectedCallback handler);
 
-  // Unregisters a handler for |frame|. Should be called before |frame| is
-  // deleted.
-  void Unregister(chromium::web::Frame* frame, const std::string& id);
-
-  // Client should call this every time a page is loaded.
-  void NotifyPageLoad(chromium::web::Frame* frame);
+  // Invoked by the caller after every |frame_| page load.
+  // Half-connected ports from prior page generations will be discarded.
+  void OnPageLoad();
 
  private:
-  struct RegistrationEntry {
-    RegistrationEntry();
-    ~RegistrationEntry();
-    RegistrationEntry(const RegistrationEntry& other);
+  // Gets the next port from |control_port_|.
+  void ReceiveNextConnectRequest();
 
-    std::string id;
-    PortConnectedCallback handler;
-  };
+  // Handles a port received from |control_port_|.
+  void OnConnectRequest(fuchsia::web::WebMessage message);
 
-  void InjectBindings(chromium::web::Frame* frame);
+  fuchsia::web::Frame* const frame_;
 
-  std::multimap<chromium::web::Frame*, RegistrationEntry> registrations_;
-  fuchsia::mem::Buffer bindings_script_;
+  // Invoked for ports which weren't previously Register()'ed.
+  DefaultPortConnectedCallback default_handler_;
+
+  fuchsia::web::MessagePortPtr control_port_;
 
   DISALLOW_COPY_AND_ASSIGN(NamedMessagePortConnector);
 };

@@ -18,7 +18,7 @@ class XRViewerPose final : public XRPose {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  XRViewerPose(XRSession*, std::unique_ptr<TransformationMatrix>);
+  XRViewerPose(XRSession*, const TransformationMatrix&);
   ~XRViewerPose() override = default;
 
   const HeapVector<Member<XRView>>& views() const { return views_; }

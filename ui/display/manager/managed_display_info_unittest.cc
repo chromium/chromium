@@ -44,6 +44,13 @@ TEST_F(DisplayInfoTest, CreateFromSpec) {
   // TODO(oshima): This should be rotated too. Fix this.
   EXPECT_EQ("5,3,5,3", info.overscan_insets_in_dip().ToString());
 
+  info = ManagedDisplayInfo::CreateFromSpecWithID("10+20-300x400*2/or@1.5", 10);
+  EXPECT_EQ("10,20 300x400", info.bounds_in_native().ToString());
+  EXPECT_EQ("380x288", info.size_in_pixel().ToString());
+  EXPECT_EQ(Display::ROTATE_90, info.GetActiveRotation());
+  EXPECT_EQ("5,3,5,3", info.overscan_insets_in_dip().ToString());
+  EXPECT_EQ("10,6,10,6", info.GetOverscanInsetsInPixel().ToString());
+
   info = ManagedDisplayInfo::CreateFromSpecWithID("10+20-300x400*2/l@1.5", 10);
   EXPECT_EQ("10,20 300x400", info.bounds_in_native().ToString());
   EXPECT_EQ(Display::ROTATE_270, info.GetActiveRotation());

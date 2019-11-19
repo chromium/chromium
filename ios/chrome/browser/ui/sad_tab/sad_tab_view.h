@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/ios/block_types.h"
-#include "ios/web/public/navigation_manager.h"
+#include "ios/web/public/navigation/navigation_manager.h"
 
 @protocol ApplicationCommands;
 @class SadTabView;

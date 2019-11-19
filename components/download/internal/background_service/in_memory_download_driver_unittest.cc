@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "components/download/internal/background_service/test/mock_download_driver_client.h"
+#include "components/download/public/background_service/blob_context_getter_factory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -22,6 +23,17 @@ MATCHER_P(DriverEntryEqual, entry, "") {
   return entry.guid == arg.guid && entry.state == arg.state &&
          entry.bytes_downloaded == arg.bytes_downloaded;
 }
+
+// BlobContextGetterFactory implementation that does nothing.
+class NoopBlobContextGetterFactory : public BlobContextGetterFactory {
+ public:
+  NoopBlobContextGetterFactory() = default;
+  ~NoopBlobContextGetterFactory() override = default;
+
+ private:
+  void RetrieveBlobContextGetter(BlobContextGetterCallback callback) override {}
+  DISALLOW_COPY_AND_ASSIGN(NoopBlobContextGetterFactory);
+};
 
 // Test in memory download that doesn't do complex IO.
 class TestInMemoryDownload : public InMemoryDownload {
@@ -106,7 +118,10 @@ class InMemoryDownloadDriverTest : public testing::Test {
   void SetUp() override {
     auto factory = std::make_unique<TestInMemoryDownloadFactory>();
     factory_ = factory.get();
-    driver_ = std::make_unique<InMemoryDownloadDriver>(std::move(factory));
+    auto blob_context_getter_factory =
+        std::make_unique<NoopBlobContextGetterFactory>();
+    driver_ = std::make_unique<InMemoryDownloadDriver>(
+        std::move(factory), std::move(blob_context_getter_factory));
     driver()->Initialize(&driver_client_);
   }
 

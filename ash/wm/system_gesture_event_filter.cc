@@ -5,7 +5,7 @@
 #include "ash/wm/system_gesture_event_filter.h"
 
 #include "ash/public/cpp/touch_uma.h"
-#include "ash/wm/gestures/overview_gesture_handler.h"
+#include "ash/wm/gestures/wm_gesture_handler.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/aura/window.h"
 #include "ui/base/pointer/pointer_device.h"
@@ -15,7 +15,7 @@
 namespace ash {
 
 SystemGestureEventFilter::SystemGestureEventFilter()
-    : overview_gesture_handler_(new OverviewGestureHandler) {}
+    : wm_gesture_handler_(std::make_unique<WmGestureHandler>()) {}
 
 SystemGestureEventFilter::~SystemGestureEventFilter() = default;
 
@@ -28,10 +28,8 @@ void SystemGestureEventFilter::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void SystemGestureEventFilter::OnScrollEvent(ui::ScrollEvent* event) {
-  if (overview_gesture_handler_ &&
-      overview_gesture_handler_->ProcessScrollEvent(*event)) {
+  if (wm_gesture_handler_ && wm_gesture_handler_->ProcessScrollEvent(*event))
     event->StopPropagation();
-  }
 }
 
 void SystemGestureEventFilter::OnTouchEvent(ui::TouchEvent* event) {

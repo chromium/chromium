@@ -1,0 +1,155 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [939, 235],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "Scrolling Contents Layer",
+          "rect": [0, 0, 939, 235],
+          "reason": "full layer"
+        }
+      ],
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 235],
+      "bounds": [600, 15],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [-339, 0, 0, 1]
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [939, 235],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "Scrolling Contents Layer",
+          "rect": [0, 0, 939, 235],
+          "reason": "full layer"
+        }
+      ],
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 235],
+      "bounds": [400, 15],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [-539, 0, 0, 1]
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [400, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "Scrolling Contents Layer",
+          "rect": [0, 0, 400, 600],
+          "reason": "full layer"
+        }
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "Scrolling background of LayoutView #document",
+          "rect": [400, 0, 400, 600],
+          "reason": "incremental"
+        },
+        {
+          "object": "InlineTextBox 'AAAA BBBB CCCC'",
+          "rect": [439, 8, 352, 562],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'DDDD EEEE FFFF'",
+          "rect": [439, 8, 352, 562],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'GGGG HHHH IIII JJJJ'",
+          "rect": [439, 8, 352, 562],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'KKKK LLLL MMMM'",
+          "rect": [439, 8, 352, 562],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'NNNN'",
+          "rect": [439, 8, 352, 562],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'AAAA BBBB CCCC'",
+          "rect": [39, 8, 352, 562],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'DDDD EEEE FFFF'",
+          "rect": [39, 8, 352, 562],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'GGGG HHHH IIII JJJJ'",
+          "rect": [39, 8, 352, 562],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'KKKK LLLL MMMM'",
+          "rect": [39, 8, 352, 562],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'NNNN'",
+          "rect": [39, 8, 352, 562],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

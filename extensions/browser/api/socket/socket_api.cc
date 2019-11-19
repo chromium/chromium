@@ -125,7 +125,7 @@ void SocketAsyncApiFunction::OpenFirewallHole(const std::string& address,
                                          ? AppFirewallHole::PortType::TCP
                                          : AppFirewallHole::PortType::UDP;
 
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&SocketAsyncApiFunction::OpenFirewallHoleOnUIThread,
                        this, type, local_address.port(), socket_id));
@@ -146,10 +146,9 @@ void SocketAsyncApiFunction::OpenFirewallHoleOnUIThread(
       AppFirewallHoleManager::Get(browser_context());
   std::unique_ptr<AppFirewallHole, BrowserThread::DeleteOnUIThread> hole(
       manager->Open(type, port, extension_id()).release());
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&SocketAsyncApiFunction::OnFirewallHoleOpened, this,
-                     socket_id, std::move(hole)));
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(&SocketAsyncApiFunction::OnFirewallHoleOpened,
+                                this, socket_id, std::move(hole)));
 }
 
 void SocketAsyncApiFunction::OnFirewallHoleOpened(
@@ -177,8 +176,8 @@ void SocketAsyncApiFunction::OnFirewallHoleOpened(
 
 #endif  // OS_CHROMEOS
 
-SocketExtensionWithDnsLookupFunction::SocketExtensionWithDnsLookupFunction()
-    : binding_(this) {}
+SocketExtensionWithDnsLookupFunction::SocketExtensionWithDnsLookupFunction() =
+    default;
 
 SocketExtensionWithDnsLookupFunction::~SocketExtensionWithDnsLookupFunction() {
 }
@@ -188,23 +187,22 @@ bool SocketExtensionWithDnsLookupFunction::PrePrepare() {
     return false;
   content::BrowserContext::GetDefaultStoragePartition(browser_context())
       ->GetNetworkContext()
-      ->CreateHostResolver(base::nullopt,
-                           mojo::MakeRequest(&host_resolver_info_));
+      ->CreateHostResolver(
+          base::nullopt,
+          pending_host_resolver_.InitWithNewPipeAndPassReceiver());
   return true;
 }
 
 void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
     const net::HostPortPair& host_port_pair) {
-  DCHECK(host_resolver_info_);
-  DCHECK(!binding_);
-  network::mojom::ResolveHostClientPtr client_ptr;
-  binding_.Bind(mojo::MakeRequest(&client_ptr));
-  binding_.set_connection_error_handler(
+  DCHECK(pending_host_resolver_);
+  DCHECK(!receiver_.is_bound());
+  host_resolver_.Bind(std::move(pending_host_resolver_));
+  host_resolver_->ResolveHost(host_port_pair, nullptr,
+                              receiver_.BindNewPipeAndPassRemote());
+  receiver_.set_disconnect_handler(
       base::BindOnce(&SocketExtensionWithDnsLookupFunction::OnComplete,
                      base::Unretained(this), net::ERR_FAILED, base::nullopt));
-  host_resolver_ =
-      network::mojom::HostResolverPtr(std::move(host_resolver_info_));
-  host_resolver_->ResolveHost(host_port_pair, nullptr, std::move(client_ptr));
 
   // Balanced in OnComplete().
   AddRef();
@@ -214,7 +212,7 @@ void SocketExtensionWithDnsLookupFunction::OnComplete(
     int result,
     const base::Optional<net::AddressList>& resolved_addresses) {
   host_resolver_.reset();
-  binding_.Close();
+  receiver_.reset();
   if (result == net::OK) {
     DCHECK(resolved_addresses && !resolved_addresses->empty());
     addresses_ = resolved_addresses.value();
@@ -242,12 +240,13 @@ bool SocketCreateFunction::Prepare() {
     case extensions::api::socket::SOCKET_TYPE_UDP: {
       socket_type_ = kSocketTypeUDP;
 
-      network::mojom::UDPSocketReceiverPtr receiver_ptr;
-      socket_receiver_request_ = mojo::MakeRequest(&receiver_ptr);
+      mojo::PendingRemote<network::mojom::UDPSocketListener> listener_remote;
+      socket_listener_receiver_ =
+          listener_remote.InitWithNewPipeAndPassReceiver();
       content::BrowserContext::GetDefaultStoragePartition(browser_context())
           ->GetNetworkContext()
-          ->CreateUDPSocket(mojo::MakeRequest(&socket_),
-                            std::move(receiver_ptr));
+          ->CreateUDPSocket(socket_.InitWithNewPipeAndPassReceiver(),
+                            std::move(listener_remote));
       break;
     }
     case extensions::api::socket::SOCKET_TYPE_NONE:
@@ -259,12 +258,12 @@ bool SocketCreateFunction::Prepare() {
 }
 
 void SocketCreateFunction::Work() {
-  Socket* socket = NULL;
+  Socket* socket = nullptr;
   if (socket_type_ == kSocketTypeTCP) {
     socket = new TCPSocket(browser_context(), extension_->id());
   } else if (socket_type_ == kSocketTypeUDP) {
     socket =
-        new UDPSocket(std::move(socket_), std::move(socket_receiver_request_),
+        new UDPSocket(std::move(socket_), std::move(socket_listener_receiver_),
                       extension_->id());
   }
   DCHECK(socket);
@@ -358,7 +357,7 @@ void SocketConnectFunction::StartConnect() {
   }
 
   socket->Connect(addresses_,
-                  base::BindRepeating(&SocketConnectFunction::OnConnect, this));
+                  base::BindOnce(&SocketConnectFunction::OnConnect, this));
 }
 
 void SocketConnectFunction::OnConnect(int result) {
@@ -510,7 +509,7 @@ void SocketAcceptFunction::AsyncWorkStart() {
     socket->Accept(base::BindOnce(&SocketAcceptFunction::OnAccept, this));
   } else {
     error_ = kSocketNotFoundError;
-    OnAccept(net::ERR_FAILED, nullptr, base::nullopt,
+    OnAccept(net::ERR_FAILED, mojo::NullRemote(), base::nullopt,
              mojo::ScopedDataPipeConsumerHandle(),
              mojo::ScopedDataPipeProducerHandle());
   }
@@ -518,7 +517,7 @@ void SocketAcceptFunction::AsyncWorkStart() {
 
 void SocketAcceptFunction::OnAccept(
     int result_code,
-    network::mojom::TCPConnectedSocketPtr socket,
+    mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
     const base::Optional<net::IPEndPoint>& remote_addr,
     mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
     mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
@@ -575,7 +574,7 @@ void SocketReadFunction::OnCompleted(int bytes_read,
 }
 
 SocketWriteFunction::SocketWriteFunction()
-    : socket_id_(0), io_buffer_(NULL), io_buffer_size_(0) {}
+    : socket_id_(0), io_buffer_(nullptr), io_buffer_size_(0) {}
 
 SocketWriteFunction::~SocketWriteFunction() {}
 
@@ -604,7 +603,7 @@ void SocketWriteFunction::AsyncWorkStart() {
   }
 
   socket->Write(io_buffer_, io_buffer_size_,
-                base::BindRepeating(&SocketWriteFunction::OnCompleted, this));
+                base::BindOnce(&SocketWriteFunction::OnCompleted, this));
 }
 
 void SocketWriteFunction::OnCompleted(int bytes_written) {
@@ -633,9 +632,8 @@ void SocketRecvFromFunction::AsyncWorkStart() {
     return;
   }
 
-  socket->RecvFrom(
-      params_->buffer_size.get() ? *params_->buffer_size : 4096,
-      base::BindRepeating(&SocketRecvFromFunction::OnCompleted, this));
+  socket->RecvFrom(params_->buffer_size.get() ? *params_->buffer_size : 4096,
+                   base::BindOnce(&SocketRecvFromFunction::OnCompleted, this));
 }
 
 void SocketRecvFromFunction::OnCompleted(int bytes_read,
@@ -660,8 +658,7 @@ void SocketRecvFromFunction::OnCompleted(int bytes_read,
 }
 
 SocketSendToFunction::SocketSendToFunction()
-    : socket_id_(0), io_buffer_(NULL), io_buffer_size_(0), port_(0) {
-}
+    : socket_id_(0), io_buffer_(nullptr), io_buffer_size_(0), port_(0) {}
 
 SocketSendToFunction::~SocketSendToFunction() {}
 
@@ -735,7 +732,7 @@ void SocketSendToFunction::StartSendTo() {
   }
 
   socket->SendTo(io_buffer_, io_buffer_size_, addresses_.front(),
-                 base::BindRepeating(&SocketSendToFunction::OnCompleted, this));
+                 base::BindOnce(&SocketSendToFunction::OnCompleted, this));
 }
 
 void SocketSendToFunction::OnCompleted(int bytes_written) {
@@ -923,7 +920,7 @@ void SocketJoinGroupFunction::AsyncWorkStart() {
 
   static_cast<UDPSocket*>(socket)->JoinGroup(
       params_->address,
-      base::BindRepeating(&SocketJoinGroupFunction::OnCompleted, this));
+      base::BindOnce(&SocketJoinGroupFunction::OnCompleted, this));
 }
 
 void SocketJoinGroupFunction::OnCompleted(int result) {
@@ -976,7 +973,7 @@ void SocketLeaveGroupFunction::AsyncWorkStart() {
 
   static_cast<UDPSocket*>(socket)->LeaveGroup(
       params_->address,
-      base::BindRepeating(&SocketLeaveGroupFunction::OnCompleted, this));
+      base::BindOnce(&SocketLeaveGroupFunction::OnCompleted, this));
 }
 
 void SocketLeaveGroupFunction::OnCompleted(int result) {
@@ -1142,7 +1139,7 @@ void SocketSecureFunction::AsyncWorkStart() {
 
 void SocketSecureFunction::TlsConnectDone(
     int result,
-    network::mojom::TLSClientSocketPtr tls_socket,
+    mojo::PendingRemote<network::mojom::TLSClientSocket> tls_socket,
     const net::IPEndPoint& local_addr,
     const net::IPEndPoint& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,

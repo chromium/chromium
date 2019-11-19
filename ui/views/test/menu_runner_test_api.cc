@@ -16,13 +16,12 @@ MenuRunnerTestAPI::MenuRunnerTestAPI(MenuRunner* menu_runner)
     : menu_runner_(menu_runner) {
 }
 
-MenuRunnerTestAPI::~MenuRunnerTestAPI() {
-}
+MenuRunnerTestAPI::~MenuRunnerTestAPI() = default;
 
 void MenuRunnerTestAPI::SetMenuRunnerHandler(
     std::unique_ptr<MenuRunnerHandler> menu_runner_handler) {
   menu_runner_->SetRunnerHandler(std::move(menu_runner_handler));
 }
 
-}  // test
-}  // views
+}  // namespace test
+}  // namespace views

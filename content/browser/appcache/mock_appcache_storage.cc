@@ -40,8 +40,7 @@ MockAppCacheStorage::MockAppCacheStorage(AppCacheServiceImpl* service)
       simulate_find_sub_resource_(false),
       simulated_found_cache_id_(blink::mojom::kAppCacheNoCacheId),
       simulated_found_group_id_(0),
-      simulated_found_network_namespace_(false),
-      weak_factory_(this) {
+      simulated_found_network_namespace_(false) {
   last_cache_id_ = 0;
   last_group_id_ = 0;
   last_response_id_ = 0;
@@ -165,24 +164,20 @@ MockAppCacheStorage::CreateResponseReader(const GURL& manifest_url,
                                           int64_t response_id) {
   if (simulated_reader_)
     return std::move(simulated_reader_);
-
-  // base::WrapUnique needed due to non-public constructor.
-  return base::WrapUnique(
-      new AppCacheResponseReader(response_id, disk_cache()->GetWeakPtr()));
+  return std::make_unique<AppCacheResponseReader>(response_id,
+                                                  disk_cache()->GetWeakPtr());
 }
 
 std::unique_ptr<AppCacheResponseWriter>
 MockAppCacheStorage::CreateResponseWriter(const GURL& manifest_url) {
-  // base::WrapUnique needed due to non-public constructor.
-  return base::WrapUnique(
-      new AppCacheResponseWriter(NewResponseId(), disk_cache()->GetWeakPtr()));
+  return std::make_unique<AppCacheResponseWriter>(NewResponseId(),
+                                                  disk_cache()->GetWeakPtr());
 }
 
 std::unique_ptr<AppCacheResponseMetadataWriter>
 MockAppCacheStorage::CreateResponseMetadataWriter(int64_t response_id) {
-  // base::WrapUnique needed due to non-public constructor.
-  return base::WrapUnique(new AppCacheResponseMetadataWriter(
-      response_id, disk_cache()->GetWeakPtr()));
+  return std::make_unique<AppCacheResponseMetadataWriter>(
+      response_id, disk_cache()->GetWeakPtr());
 }
 
 void MockAppCacheStorage::DoomResponses(
@@ -224,8 +219,10 @@ void MockAppCacheStorage::ProcessLoadOrCreateGroup(
 
   // Newly created groups are not put in the stored_groups collection
   // until StoreGroupAndNewestCache is called.
-  if (!group.get())
-    group = new AppCacheGroup(service_->storage(), manifest_url, NewGroupId());
+  if (!group.get()) {
+    group = base::MakeRefCounted<AppCacheGroup>(service_->storage(),
+                                                manifest_url, NewGroupId());
+  }
 
   if (delegate_ref->delegate)
     delegate_ref->delegate->OnGroupLoaded(group.get(), manifest_url);
@@ -251,7 +248,7 @@ void MockAppCacheStorage::ProcessStoreGroupAndNewestCache(
 
     // Copy the collection prior to removal, on final release
     // of a cache the group's collection will change.
-    AppCacheGroup::Caches copy = group->old_caches();
+    std::vector<AppCache*> copy = group->old_caches();
     RemoveStoredCaches(copy);
   }
 
@@ -459,7 +456,7 @@ void MockAppCacheStorage::ProcessMakeGroupObsolete(
 
   // Copy the collection prior to removal, on final release
   // of a cache the group's collection will change.
-  AppCacheGroup::Caches copy = group->old_caches();
+  std::vector<AppCache*> copy = group->old_caches();
   RemoveStoredCaches(copy);
 
   group->set_obsolete(true);
@@ -503,7 +500,7 @@ void MockAppCacheStorage::RemoveStoredCache(AppCache* cache) {
 }
 
 void MockAppCacheStorage::RemoveStoredCaches(
-    const AppCacheGroup::Caches& caches) {
+    const std::vector<AppCache*>& caches) {
   for (AppCache* cache : caches)
     RemoveStoredCache(cache);
 }

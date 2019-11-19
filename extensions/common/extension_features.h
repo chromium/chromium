@@ -9,11 +9,10 @@
 
 namespace extensions_features {
 
-extern const base::Feature kBypassCorbOnlyForExtensionsAllowlist;
-extern const char kBypassCorbAllowlistParamName[];
-extern const base::Feature kNativeCrxBindings;
-extern const base::Feature kNewExtensionUpdaterService;
-extern const base::Feature kRuntimeHostPermissions;
+extern const base::Feature kExtensionsCheckupTool;
+extern const char kExtensionsCheckupToolEntryPointParameter[];
+extern const char kExtensionsCheckupToolBannerMessageParameter[];
+
 extern const base::Feature kForceWebRequestProxyForTest;
 
 }  // namespace extensions_features

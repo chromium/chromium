@@ -1,0 +1,3 @@
+document
+++navigation
+++++link Name='Don't click on me'

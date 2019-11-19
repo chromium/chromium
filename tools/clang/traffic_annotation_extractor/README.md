@@ -4,14 +4,14 @@ This is a clang tool to extract network traffic annotations. The tool is run by
 help on how to use.
 
 ## Build on Linux
-`tools/clang/scripts/update.py --bootstrap --force-local-build
+`tools/clang/scripts/build.py --bootstrap
    --without-android --extra-tools traffic_annotation_extractor`
 
 ## Build on Window
 1. Either open a `VS2015 x64 Native Tools Command Prompt`, or open a normal
    command prompt and run `depot_tools\win_toolchain\vs_files\
    $long_autocompleted_hash\win_sdk\bin\setenv.cmd /x64`
-2. Run `python tools/clang/scripts/update.py --bootstrap --force-local-build
+2. Run `python tools/clang/scripts/build.py --bootstrap
    --without-android --extra-tools traffic_annotation_extractor`
 
 ## Usage

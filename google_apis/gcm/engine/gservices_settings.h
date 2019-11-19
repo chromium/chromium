@@ -70,7 +70,7 @@ class GCM_EXPORT GServicesSettings {
   SettingsMap settings_;
 
   // Factory for creating references in callbacks.
-  base::WeakPtrFactory<GServicesSettings> weak_ptr_factory_;
+  base::WeakPtrFactory<GServicesSettings> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GServicesSettings);
 };

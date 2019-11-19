@@ -1,0 +1,122 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//build/config/locales.gni")
+import("//chrome/android/modules/chrome_feature_modules.gni")
+import("//components/module_installer/android/module_desc_java.gni")
+
+# Instantiates a Chrome-specific app bundle module.
+#
+# Supports most variables of the android_app_bundle_module, plus:
+#   module_desc: Descriptor of this module. See
+#     //chrome/android/modules/chrome_feature_modules.gni for the format.
+#   is_monochrome_or_trichrome: (Optional) Whether this module is packaged into
+#     Monochrome or Trichrome.
+#   is_64_bit_browser: (Optional) Whether Chrome (as opposed to WebView) runs in
+#     64 bit.
+template("chrome_feature_module") {
+  assert(defined(invoker.module_desc))
+  _module_desc = invoker.module_desc
+  _is_monochrome_or_trichrome = defined(invoker.is_monochrome_or_trichrome) &&
+                                invoker.is_monochrome_or_trichrome
+  _is_64_bit_browser =
+      defined(invoker.is_64_bit_browser) && invoker.is_64_bit_browser
+
+  _loadable_modules_32_bit = []
+  if (defined(_module_desc.loadable_modules_32_bit)) {
+    _loadable_modules_32_bit += _module_desc.loadable_modules_32_bit
+  }
+
+  _loadable_modules_64_bit = []
+  if (defined(_module_desc.loadable_modules_64_bit)) {
+    _loadable_modules_64_bit += _module_desc.loadable_modules_64_bit
+  }
+
+  _shared_libraries = []
+  if (defined(_module_desc.native_deps) && _module_desc.native_deps != []) {
+    _arch = ""
+    _toolchain = ""
+    if (android_64bit_target_cpu && _is_monochrome_or_trichrome) {
+      if (_is_64_bit_browser) {
+        _arch = "_64"
+      } else {
+        _toolchain = "($android_secondary_abi_toolchain)"
+      }
+    }
+    if (_is_monochrome_or_trichrome) {
+      _base_target_name = "libmonochrome${_arch}"
+    } else {
+      _base_target_name = "libchrome${_arch}"
+    }
+    _shared_libraries += [
+      "//chrome/android:${_base_target_name}_${_module_desc.name}${_toolchain}",
+    ]
+  } else {
+    not_needed([ "_is_monochrome_or_trichrome" ])
+  }
+
+  if (defined(_module_desc.pak_deps)) {
+    android_assets("${target_name}__pak_assets") {
+      sources = _module_desc.paks
+      deps = _module_desc.pak_deps
+      disable_compression = true
+    }
+  }
+
+  module_desc_java("${target_name}__module_desc_java") {
+    module_name = _module_desc.name
+    shared_libraries = _shared_libraries
+    if (defined(_module_desc.pak_deps)) {
+      paks = _module_desc.paks
+    }
+  }
+
+  android_app_bundle_module(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "base_module_target",
+                             "manifest_package",
+                             "min_sdk_version",
+                             "package_id",
+                             "uncompress_shared_libraries",
+                             "version_code",
+                             "version_name",
+                           ])
+    android_manifest = _module_desc.android_manifest
+    target_sdk_version = android_sdk_version
+    deps = [
+      ":${target_name}__module_desc_java",
+    ]
+    if (defined(_module_desc.pak_deps)) {
+      deps += [ ":${target_name}__pak_assets" ]
+    }
+    if (defined(_module_desc.java_deps)) {
+      deps += _module_desc.java_deps
+    }
+
+    # Don't embed more translations than required (http://crbug.com/932017).
+    aapt_locale_whitelist = locales
+    proguard_enabled = !is_java_debug
+    package_name = _module_desc.name
+
+    # Determine whether to assign native libraries to the primary or secondary
+    # ABI.
+    if (_is_64_bit_browser) {
+      not_needed([ "_loadable_modules_32_bit" ])
+      assert(android_64bit_target_cpu)
+      loadable_modules = _loadable_modules_64_bit
+      shared_libraries = _shared_libraries
+    } else {
+      not_needed([ "_loadable_modules_64_bit" ])
+      if (android_64bit_target_cpu) {
+        secondary_abi_loadable_modules = _loadable_modules_32_bit
+        secondary_abi_shared_libraries = _shared_libraries
+      } else {
+        loadable_modules = _loadable_modules_32_bit
+        shared_libraries = _shared_libraries
+      }
+    }
+  }
+}

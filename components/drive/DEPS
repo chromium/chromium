@@ -1,10 +1,9 @@
 include_rules = [
   "+components/invalidation",
   "+components/keyed_service",
-  "+components/prefs",
   "+google_apis",
   "+google/cacheinvalidation/types.pb.h",
-  "+mojo/public/cpp/bindings/interface_request.h",
+  "+mojo/public",
   "+net",
   "+services/device/public/mojom",
   "+services/network",
@@ -16,67 +15,8 @@ include_rules = [
 specific_include_rules = {
   # The following test dependencies should be removed to fully componentize this
   # directory. crbug.com/498951
-  r"(copy_operation_unittest\.cc"
-  r"|create_directory_operation_unittest\.cc"
-  r"|create_file_operation_unittest\.cc"
-  r"|download_operation_unittest\.cc"
-  r"|drive_test_util\.h"
-  r"|entry_revert_performer_unittest\.cc"
-  r"|entry_update_performer_unittest\.cc"
-  r"|get_file_for_saving_operation_unittest\.cc"
-  r"|move_operation_unittest\.cc"
-  r"|open_file_operation_unittest\.cc"
-  r"|operation_test_base\.cc"
-  r"|remove_operation_unittest\.cc"
-  r"|remove_performer_unittest\.cc"
-  r"|search_operation_unittest\.cc"
-  r"|set_property_operation_unittest\.cc"
-  r"|truncate_operation_unittest\.cc"
-  r")": [
+  "resource_metadata_storage_unittest\.cc": [
+    "+content/public/test/browser_task_environment.h",
     "+content/public/test/test_utils.h",
-  ],
-
-  # The following test dependencies should be removed to fully componentize this
-  # directory. crbug.com/498951
-  r"(about_resource_loader_unittest\.cc"
-  r"|change_list_loader_unittest\.cc"
-  r"|change_list_processor_unittest\.cc"
-  r"|directory_loader_unittest\.cc"
-  r"|drive_file_util_unittest\.cc"
-  r"|fake_file_system_unittest\.cc"
-  r"|file_cache_unittest\.cc"
-  r"|file_system_core_util_unittest\.cc"
-  r"|file_system_unittest\.cc"
-  r"|file_write_watcher_unittest\.cc"
-  r"|job_scheduler_unittest\.cc"
-  r"|operation_test_base\.h"
-  r"|remove_stale_cache_files_unittest\.cc"
-  r"|resource_metadata_storage_unittest\.cc"
-  r"|resource_metadata_unittest\.cc"
-  r"|search_metadata_unittest\.cc"
-  r"|start_page_token_loader_unittest\.cc"
-  r"|sync_client_unittest\.cc"
-  r"|team_drive_change_list_loader_unittest\.cc"
-  r"|team_drive_list_loader_unittest\.cc"
-  r")": [
-    "+content/public/test/test_browser_thread_bundle.h",
-  ],
-
-  # The following test dependencies should be removed to fully componentize this
-  # directory. crbug.com/498951
-  r"(drive_uploader\.cc"
-  r"|fake_file_system\.cc"
-  r"|file_system_unittest\.cc"
-  r"|file_write_watcher_unittest\.cc"
-  r"|get_file_for_saving_operation_unittest\.cc"
-  r"|operation_test_base\.cc"
-  r")": [
-    "+content/public/browser/browser_thread.h",
-  ],
-
-  # The dependency below is ok and can stay here for the long-term, because it
-  # is guarded by #if defined(OS_CHROMEOS) in the source code.
-  "file_cache\.h": [
-    "+third_party/cros_system_api/constants/cryptohome.h",
   ],
 }

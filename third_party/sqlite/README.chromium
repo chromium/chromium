@@ -1,6 +1,6 @@
 Name: sqlite
 URL: https://sqlite.org/
-Version: 3.27.1
+Version: 3.30.1
 Included In Release: Yes
 Security Critical: Yes
 License: Public domain
@@ -37,7 +37,7 @@ The directory structure is as follows. Files common to all third_party projects
 * patches/ - Our patches to the currently used release, formatted by git using
              the UNIX mailbox format. The patches can be applied with git am,
              and created with git format-patch.
-* src/ - The currently used source code, with our patches applied.
+* patched/ - The currently used source code, with our patches applied.
 * amalgamation/ - The supported method of using SQLite is via an amalgamation
                   build, which merges all the code in one .c file and one .h
                   file. See https://www.sqlite.org/amalgamation.html
@@ -51,49 +51,48 @@ The directory structure is as follows. Files common to all third_party projects
 
 2) Making changes to Chromium SQLite.
 
-third_party/sqlite/src is the patched source from SQLite.  This is used to
+third_party/sqlite/patched is the patched source from SQLite.  This is used to
 generate the amalgamation, a concatenation of all of the files into a giant
-sqlite3.c.  To prototype, edit in src/, then call
+sqlite3.c.  To prototype, edit in patched/, then call
   ./scripts/generate_amalgamation.sh
-to regenerate sqlite3.c.  The code in src/ is much easier to edit, and the
+to regenerate sqlite3.c.  The code in patched/ is much easier to edit, and the
 SQLite test framework can easily be run.  During development it may be
-convenient to modify BUILD.gn based on src/main.mk to just pull in the src/
-files rather than sqlite3.c.
+convenient to modify BUILD.gn based on patched/main.mk to just pull in the
+patched/ files rather than sqlite3.c.
 
 Once your patch is complete, squash it down into a reasonable CL, then
 re-generate the patches.  This is a truncated version of the import flow.  The
 following is written like a shell script to allow copy/paste to a shell, ignore
 comments and change the obvious lines.  These instructions should work on Linux
-or OSX.  They may assume a modern version of git (I'm using 2.2.1).
+or OSX.  They may assume a modern version of git.
 
 # The steps below are easier if done in the SQLite directory.
 cd third_party/sqlite
 
 # Must match the version in //third_party/sqlite/sqlite-src-xxxxxxx.
 # This is SQLite's version number, and uses upstream's convention.
-export BASE=3250300
+export BASE=3300100
 export GNU_SED=sed  # OSX: "brew install gnu-sed", then use "gsed" here.
 
 #### Create a reference branch.
 git new-branch sqlite-base
-git rm -rf src
-cp -r sqlite-src-${BASE}/ src
+git rm -rf patched
+cp -r sqlite-src-${BASE}/ patched
 # Clean up trailing whitespace and CRLF so any patches look clean.
-find src/ -type f -not -iname "*.db" -not -iname "*.eps" -not -iname "*.ico" \
-    -not -iname "*.jpg" -not -iname "*.pfx" -not -iname "*.png" \
-    -not -iname "*.tiff" -not -iname "*.vsix" \
+find patched/ -type f -not -iname "*.db" -not -iname "*.eps" \
+    -not -iname "*.ico" -not -iname "*.jpg" -not -iname "*.pfx" \
+    -not -iname "*.png" -not -iname "*.tiff" -not -iname "*.vsix" \
     -exec ${GNU_SED} --in-place 's/[[:space:]]\+$//' {} \+
-git add src/
-git clean -i -d -x src  # Make sure no file is git-ignored.
-git commit -m "Squash: Reset SQLite src/ to sqlite-src-${BASE}."
+git add patched/
+git clean -i -d -x patched  # Make sure no file is git-ignored.
+git commit -m "Squash: Reset SQLite patched/ to sqlite-src-${BASE}."
 # This branch will not build. It will be used for rebasing, then deleted.
 
 #### Create a reference branch with patches applied.
 git new-branch --upstream-current sqlite-dev
 git am --keep-non-patch --ignore-space-change patches/*.patch
-git diff origin/master src/
+git diff origin/master patched/
 # This branch should be identical to master.
-
 
 #### Develop and validate the change, or cherry-pick it from a dev branch.
 # The goal is to have a set of reasonably-independent CLs which can be
@@ -116,6 +115,18 @@ cd third_party/sqlite
 git rm patches/*
 git format-patch --output-directory=patches --zero-commit \
     sqlite-base..sqlite-dev
+
+### Document and link any backported patches to the upstream repository URL
+### and crbug.
+# Under the *.patch's added by this change, the below information should be
+# added between the "Subject: *" line and the first "---" line. For an example,
+# please reference https://crrev.com/c/1480822/2/third_party/sqlite/patches/0008-Adjustments-to-the-page-cache-to-try-to-avoid-harmle.patch.
+#
+# This backports https://www.sqlite.org/src/info/XXX
+#
+# Bug: XXX
+
+### Commit and create CL
 git add amalgamation/
 git add patches/
 git commit -m "Squash: regenerate amalgamation and patches."
@@ -148,8 +159,8 @@ cd third_party/sqlite
 
 # The numbers below are SQLite version numbers, and use upstream's convention
 # for tagging release binaries and source zipballs.
-export OLD=3270100
-export NEW=3280000
+export OLD=3300100
+export NEW=3310000
 export GNU_SED=sed  # OSX: "brew install gnu-sed", then use "gsed" here.
 
 #### Download and unpack the new SQLite release.
@@ -169,42 +180,42 @@ xdg-open sqlite-src-${NEW}  # Make sure everything looks right.
 git add sqlite-src-${NEW}  # Committing the code as downloaded, on purpose.
 git clean -i -d -x sqlite-src-${NEW}  # Make sure no file is git-ignored.
 git commit -m "sqlite: Add code for release ${NEW}"
-git cl upload  # Have the new code in a separate (impossible to review) CL.
+git cl upload # Have the new code in a separate CL.
 
 #### Create a branch for the old SQLite release's upstream version.
 git new-branch sqlite-old-base
-git rm -rf src
-cp -r sqlite-src-${OLD}/ src
+git rm -rf patched
+cp -r sqlite-src-${OLD}/ patched
 # Clean up trailing whitespace and CRLF so any patches look clean.
-find src/ -type f -not -iname "*.db" -not -iname "*.eps" -not -iname "*.ico" \
-    -not -iname "*.jpg" -not -iname "*.pfx" -not -iname "*.png" \
-    -not -iname "*.tiff" -not -iname "*.vsix" \
+find patched/ -type f -not -iname "*.db" -not -iname "*.eps" \
+    -not -iname "*.ico" -not -iname "*.jpg" -not -iname "*.pfx" \
+    -not -iname "*.png" -not -iname "*.tiff" -not -iname "*.vsix" \
     -exec ${GNU_SED} --in-place 's/[[:space:]]\+$//' {} \+
-git add src/
-git clean -i -d -x src  # Make sure no file is git-ignored.
-git commit -m "Squash: Reset SQLite src/ to sqlite-src-${OLD}."
+git add patched/
+git clean -i -d -x patched  # Make sure no file is git-ignored.
+git commit -m "Squash: Reset SQLite patched/ to sqlite-src-${OLD}."
 # This branch will not build. It will be used for rebasing, then deleted.
 
 #### Create a branch for our old SQLite code, with patches mapped to commits.
 git new-branch --upstream-current sqlite-old
 git am --keep-non-patch --ignore-space-change patches/*.patch
-git diff origin/master src/
+git diff origin/master patched/
 # This branch should be identical to master.
 
 #### Create a branch for the new SQLite release's upstream version.
 git checkout sqlite-old-base
 git new-branch --upstream-current sqlite-new-base
-git rm -rf src
+git rm -rf patched
 git checkout sqlite-new-upstream -- sqlite-src-${NEW}/
-git mv sqlite-src-${NEW}/ src
+git mv sqlite-src-${NEW}/ patched
 # Clean up trailing whitespace and CRLF so any patches look clean.
-find src/ -type f -not -iname "*.db" -not -iname "*.eps" -not -iname "*.ico" \
-    -not -iname "*.jpg" -not -iname "*.pfx" -not -iname "*.png" \
-    -not -iname "*.tiff" -not -iname "*.vsix" \
+find patched/ -type f -not -iname "*.db" -not -iname "*.eps" \
+    -not -iname "*.ico" -not -iname "*.jpg" -not -iname "*.pfx" \
+    -not -iname "*.png" -not -iname "*.tiff" -not -iname "*.vsix" \
     -exec ${GNU_SED} --in-place 's/[[:space:]]\+$//' {} \+
-git add src/
-git clean -i -d -x src  # Make sure no file is git-ignored.
-git commit -m "Squash: Reset SQLite src/ to sqlite-src-${NEW}."
+git add patched/
+git clean -i -d -x patched  # Make sure no file is git-ignored.
+git commit -m "Squash: Reset SQLite patched/ to sqlite-src-${NEW}."
 # This branch will not build. It will be used for rebasing, then deleted.
 
 #### Create a branch for updating our patches.
@@ -223,9 +234,9 @@ git cl format amalgamation/rename_exports.h
 #### Copy any new entries to the seed-corpus for dbfuzz2.
 # We use a set of seed databases for fuzzing SQLite's resilience to database
 # corruption. Sometimes, new seed databases are added upstream.
-# Find any files of the pattern src/test/dbfuzz2-seed*.db, and copy them to
+# Find any files of the pattern patched/test/dbfuzz2-seed*.db, and copy them to
 # the fuzz/db_corpus directory.
-cp --no-clobber src/test/dbfuzz2-seed*.db fuzz/db_corpus
+cp --no-clobber patched/test/dbfuzz2-seed*.db fuzz/db_corpus
 
 #### Validate the upgrade.
 # The goal is to have a set of reasonably-independent CLs which can be
@@ -251,13 +262,13 @@ git add patches/
 git commit -m "Squash: regenerate amalgamation and patches."
 git branch --set-upstream-to=origin/master
 git cl upload --squash
-# Edit the commit message appropriately to reflect anything from
-# <https://www.sqlite.org/changes.html> which might be deemed important. Don't
-# enumerate all of the patch messages, those are assumed, but do reference any
-# material changes made.
-# TODO(pwnall) Describe an appropriate comment style.  Seems like it should at
-# least include the SQLite version number.  Meanwhile, look in the logs for past
-# commits to model things on.
+# Example commit message (https://crrev.com/c/1699400):
+# sqlite: Upgrade from 3.28.0 to 3.29.0
+#
+# sqlite 3.29.0 update changes:
+# https://www.sqlite.org/releaselog/3_29_0.html
+#
+# Bug: 983713
 
 #### Drop the old version of SQLite.
 git new-branch sqlite-rm-old

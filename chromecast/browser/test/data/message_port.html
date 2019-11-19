@@ -1,0 +1,36 @@
+<html>
+    <head><title>messageport</title></head>
+    <body>
+        <script>
+         // Use onMessage handler with a null |sourcePort|.
+         window.addEventListener('message', onMessage.bind(null, null));
+
+         // Function for exercising bidirectional communication between JS content and
+         // For messages received on the window:
+         //   * acknowledge receipt of MessagePort by sending "got_port <msg>" and
+         //     including a MessagePort created in JS.
+         // For messages received on a MessagePort provided by the client:
+         //   * acknowledge the message sent by the client by sending "ack <msg>" on
+         //     the port used to received the message.
+         //   * if a message port is provided, acknowledge receipt of MessagePort by
+         //     sending "got_port <msg>" on that port, and include a MessagePort
+         //     created in JS.
+         function onMessage(sourcePort, event) {
+             // Ack all messages received on message ports.
+             if (sourcePort)
+                 sourcePort.postMessage('ack ' + event.data);
+
+             // If the peer provided a MessagePort, acknowledge that we got it by
+             // sending "got_port" on it, along with a MessagePort that we create on the
+             // JS side.
+             if (event.ports && event.ports.length > 0) {
+                 var channel = new MessageChannel();
+                 channel.port1.onmessage = onMessage.bind(null, channel.port1);
+
+                 event.ports[0].onmessage = onMessage.bind(null, event.ports[0]);
+                 event.ports[0].postMessage('got_port', [channel.port2]);
+             }
+         }
+        </script>
+    </body>
+</html>

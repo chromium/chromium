@@ -2,6 +2,7 @@
 include_rules = [
   "+components/viz/client",
   "+components/viz/common",
+  "+fuchsia/engine/switches.h",
   "+third_party/khronos/GLES2",
   "+ul/gl/gl_enums.h",
 ]

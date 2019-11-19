@@ -49,7 +49,7 @@ NET_EXPORT_PRIVATE bool Expand(
     const string& template_uri,
     const std::unordered_map<string, string>& parameters,
     string* target,
-    std::set<string>* vars_found = NULL);
+    std::set<string>* vars_found = nullptr);
 
 }  // namespace uri_template
 

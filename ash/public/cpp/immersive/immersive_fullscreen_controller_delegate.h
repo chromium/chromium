@@ -41,6 +41,10 @@ class ASH_PUBLIC_EXPORT ImmersiveFullscreenControllerDelegate {
   // not in immersive fullscreen for the sake of SetupForTest().
   virtual std::vector<gfx::Rect> GetVisibleBoundsInScreen() const = 0;
 
+  // Re-layout the frame. Called when |EnableForWidget| is called
+  // but full state did not change.
+  virtual void Relayout() {}
+
  protected:
   virtual ~ImmersiveFullscreenControllerDelegate() {}
 };

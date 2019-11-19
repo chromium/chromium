@@ -20,7 +20,7 @@ ViewsContentClientMainPartsAura::~ViewsContentClientMainPartsAura() {
 void ViewsContentClientMainPartsAura::ToolkitInitialized() {
   ViewsContentClientMainParts::ToolkitInitialized();
 
-  wm_state_.reset(new ::wm::WMState);
+  wm_state_ = std::make_unique<::wm::WMState>();
 }
 
 void ViewsContentClientMainPartsAura::PostMainMessageLoopRun() {

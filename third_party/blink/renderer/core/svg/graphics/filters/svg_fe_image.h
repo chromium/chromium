@@ -35,14 +35,6 @@ class LayoutObject;
 
 class FEImage final : public FilterEffect {
  public:
-  static FEImage* CreateWithImage(Filter*,
-                                  scoped_refptr<Image>,
-                                  SVGPreserveAspectRatio*);
-  static FEImage* CreateWithIRIReference(Filter*,
-                                         TreeScope&,
-                                         const String&,
-                                         SVGPreserveAspectRatio*);
-
   FEImage(Filter*, scoped_refptr<Image>, SVGPreserveAspectRatio*);
   FEImage(Filter*, TreeScope&, const String&, SVGPreserveAspectRatio*);
 

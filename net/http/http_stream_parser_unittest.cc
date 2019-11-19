@@ -19,11 +19,12 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/io_buffer.h"
+#include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/upload_bytes_element_reader.h"
@@ -71,7 +72,7 @@ class ReadErrorUploadDataStream : public UploadDataStream {
   enum class FailureMode { SYNC, ASYNC };
 
   explicit ReadErrorUploadDataStream(FailureMode mode)
-      : UploadDataStream(true, 0), async_(mode), weak_factory_(this) {}
+      : UploadDataStream(true, 0), async_(mode) {}
 
  private:
   void CompleteRead() { UploadDataStream::OnReadCompleted(ERR_FAILED); }
@@ -93,7 +94,7 @@ class ReadErrorUploadDataStream : public UploadDataStream {
 
   const FailureMode async_;
 
-  base::WeakPtrFactory<ReadErrorUploadDataStream> weak_factory_;
+  base::WeakPtrFactory<ReadErrorUploadDataStream> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ReadErrorUploadDataStream);
 };
@@ -152,7 +153,7 @@ TEST(HttpStreamParser, DataReadErrorSynchronous) {
 }
 
 TEST(HttpStreamParser, DataReadErrorAsynchronous) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
 
   MockWrite writes[] = {
       MockWrite(ASYNC, 0, "POST / HTTP/1.1\r\n"),
@@ -200,7 +201,7 @@ TEST(HttpStreamParser, DataReadErrorAsynchronous) {
 class InitAsyncUploadDataStream : public ChunkedUploadDataStream {
  public:
   explicit InitAsyncUploadDataStream(int64_t identifier)
-      : ChunkedUploadDataStream(identifier), weak_factory_(this) {}
+      : ChunkedUploadDataStream(identifier) {}
 
  private:
   void CompleteInit() { UploadDataStream::OnInitCompleted(OK); }
@@ -212,13 +213,13 @@ class InitAsyncUploadDataStream : public ChunkedUploadDataStream {
     return ERR_IO_PENDING;
   }
 
-  base::WeakPtrFactory<InitAsyncUploadDataStream> weak_factory_;
+  base::WeakPtrFactory<InitAsyncUploadDataStream> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InitAsyncUploadDataStream);
 };
 
 TEST(HttpStreamParser, InitAsynchronousUploadDataStream) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
 
   InitAsyncUploadDataStream upload_data_stream(0);
 
@@ -341,8 +342,8 @@ TEST(HttpStreamParser, EncodeChunk_TooLargePayload) {
 
 TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_NoBody) {
   // Shouldn't be merged if upload data is non-existent.
-  ASSERT_FALSE(HttpStreamParser::ShouldMergeRequestHeadersAndBody(
-      "some header", NULL));
+  ASSERT_FALSE(HttpStreamParser::ShouldMergeRequestHeadersAndBody("some header",
+                                                                  nullptr));
 }
 
 TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_EmptyBody) {
@@ -369,8 +370,8 @@ TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_ChunkedBody) {
 }
 
 TEST(HttpStreamParser, ShouldMergeRequestHeadersAndBody_FileBody) {
-  base::test::ScopedTaskEnvironment scoped_task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::IO);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
 
   // Create an empty temporary file.
   base::ScopedTempDir temp_dir;
@@ -599,7 +600,7 @@ TEST(HttpStreamParser, SentBytesPost) {
 }
 
 TEST(HttpStreamParser, SentBytesChunkedPostError) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
 
   static const char kChunk[] = "Chunk 1";
 
@@ -656,7 +657,7 @@ TEST(HttpStreamParser, SentBytesChunkedPostError) {
 // when sending a request with a chunked body with only one chunk that becomes
 // available asynchronously.
 TEST(HttpStreamParser, AsyncSingleChunkAndAsyncSocket) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
 
   static const char kChunk[] = "Chunk";
 
@@ -738,7 +739,7 @@ TEST(HttpStreamParser, AsyncSingleChunkAndAsyncSocket) {
 // when sending a request with a chunked body with only one chunk that is
 // available synchronously.
 TEST(HttpStreamParser, SyncSingleChunkAndAsyncSocket) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
 
   static const char kChunk[] = "Chunk";
 
@@ -817,7 +818,7 @@ TEST(HttpStreamParser, SyncSingleChunkAndAsyncSocket) {
 // asynchronously.
 // This is a regression test for http://crbug.com/132243
 TEST(HttpStreamParser, AsyncChunkAndAsyncSocketWithMultipleChunks) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
 
   // The chunks that will be written in the request, as reflected in the
   // MockWrites below.
@@ -915,7 +916,7 @@ TEST(HttpStreamParser, AsyncChunkAndAsyncSocketWithMultipleChunks) {
 // when there's only one "chunk" with 0 bytes, and is received from the
 // UploadStream only after sending the request headers successfully.
 TEST(HttpStreamParser, AsyncEmptyChunkedUpload) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
 
   MockWrite writes[] = {
       MockWrite(ASYNC, 0,
@@ -992,7 +993,7 @@ TEST(HttpStreamParser, AsyncEmptyChunkedUpload) {
 // when there's only one "chunk" with 0 bytes, which was already appended before
 // the request was started.
 TEST(HttpStreamParser, SyncEmptyChunkedUpload) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
 
   MockWrite writes[] = {
       MockWrite(ASYNC, 0,
@@ -1222,7 +1223,6 @@ class SimpleGetRunner {
  public:
   SimpleGetRunner()
       : url_("http://localhost"),
-        http_09_on_non_default_ports_enabled_(false),
         read_buffer_(base::MakeRefCounted<GrowableIOBuffer>()),
         sequence_number_(0) {
     writes_.push_back(MockWrite(
@@ -1230,11 +1230,6 @@ class SimpleGetRunner {
   }
 
   void set_url(const GURL& url) { url_ = url; }
-  void set_http_09_on_non_default_ports_enabled(
-      bool http_09_on_non_default_ports_enabled) {
-    http_09_on_non_default_ports_enabled_ =
-        http_09_on_non_default_ports_enabled;
-  }
 
   HttpStreamParser* parser() { return parser_.get(); }
   GrowableIOBuffer* read_buffer() { return read_buffer_.get(); }
@@ -1268,9 +1263,6 @@ class SimpleGetRunner {
     parser_.reset(new HttpStreamParser(stream_socket_.get(),
                                        false /* is_reused */, &request_info_,
                                        read_buffer(), NetLogWithSource()));
-
-    parser_->set_http_09_on_non_default_ports_enabled(
-        http_09_on_non_default_ports_enabled_);
 
     TestCompletionCallback callback;
     ASSERT_EQ(OK, parser_->SendRequest("GET / HTTP/1.1\r\n", request_headers_,
@@ -1307,7 +1299,6 @@ class SimpleGetRunner {
 
  private:
   GURL url_;
-  bool http_09_on_non_default_ports_enabled_;
 
   HttpRequestHeaders request_headers_;
   HttpResponseInfo response_info_;
@@ -1326,7 +1317,6 @@ class SimpleGetRunner {
 TEST(HttpStreamParser, Http09PortTests) {
   struct TestCase {
     const char* url;
-    bool http_09_on_non_default_ports_enabled;
 
     // Expected result when trying to read headers and response is an HTTP/0.9
     // non-Shoutcast response.
@@ -1339,30 +1329,18 @@ TEST(HttpStreamParser, Http09PortTests) {
   const TestCase kTestCases[] = {
       // Default ports should work for HTTP/0.9, regardless of whether the port
       // is explicitly specified or not.
-      {"http://foo.com/", false, OK, OK},
-      {"http://foo.com:80/", false, OK, OK},
-      {"https://foo.com/", false, OK, OK},
-      {"https://foo.com:443/", false, OK, OK},
+      {"http://foo.com/", OK, OK},
+      {"http://foo.com:80/", OK, OK},
+      {"https://foo.com/", OK, OK},
+      {"https://foo.com:443/", OK, OK},
 
       // Non-standard ports should not support HTTP/0.9, by default.
-      {"http://foo.com:8080/", false, ERR_INVALID_HTTP_RESPONSE, OK},
-      {"https://foo.com:8080/", false, ERR_INVALID_HTTP_RESPONSE,
+      {"http://foo.com:8080/", ERR_INVALID_HTTP_RESPONSE, OK},
+      {"https://foo.com:8080/", ERR_INVALID_HTTP_RESPONSE,
        ERR_INVALID_HTTP_RESPONSE},
-      {"http://foo.com:443/", false, ERR_INVALID_HTTP_RESPONSE, OK},
-      {"https://foo.com:80/", false, ERR_INVALID_HTTP_RESPONSE,
+      {"http://foo.com:443/", ERR_INVALID_HTTP_RESPONSE, OK},
+      {"https://foo.com:80/", ERR_INVALID_HTTP_RESPONSE,
        ERR_INVALID_HTTP_RESPONSE},
-
-      // Allowing non-default ports should not break the default ones.
-      {"http://foo.com/", true, OK, OK},
-      {"http://foo.com:80/", true, OK, OK},
-      {"https://foo.com/", true, OK, OK},
-      {"https://foo.com:443/", true, OK, OK},
-
-      // Check that non-default ports works.
-      {"http://foo.com:8080/", true, OK, OK},
-      {"https://foo.com:8080/", true, OK, OK},
-      {"http://foo.com:443/", true, OK, OK},
-      {"https://foo.com:80/", true, OK, OK},
   };
 
   const std::string kResponse = "hello\r\nworld\r\n";
@@ -1370,8 +1348,6 @@ TEST(HttpStreamParser, Http09PortTests) {
   for (const auto& test_case : kTestCases) {
     SimpleGetRunner get_runner;
     get_runner.set_url(GURL(test_case.url));
-    get_runner.set_http_09_on_non_default_ports_enabled(
-        test_case.http_09_on_non_default_ports_enabled);
     get_runner.AddRead(kResponse);
     get_runner.SetupParserAndSendRequest();
 
@@ -1396,8 +1372,6 @@ TEST(HttpStreamParser, Http09PortTests) {
   for (const auto& test_case : kTestCases) {
     SimpleGetRunner get_runner;
     get_runner.set_url(GURL(test_case.url));
-    get_runner.set_http_09_on_non_default_ports_enabled(
-        test_case.http_09_on_non_default_ports_enabled);
     get_runner.AddRead(kShoutcastResponse);
     get_runner.SetupParserAndSendRequest();
 
@@ -1449,7 +1423,6 @@ TEST(HttpStreamParser, NullFails) {
 TEST(HttpStreamParser, ShoutcastSingleByteReads) {
   SimpleGetRunner get_runner;
   get_runner.set_url(GURL("http://foo.com:8080/"));
-  get_runner.set_http_09_on_non_default_ports_enabled(false);
   get_runner.AddRead("i");
   get_runner.AddRead("c");
   get_runner.AddRead("Y");
@@ -1470,7 +1443,6 @@ TEST(HttpStreamParser, ShoutcastSingleByteReads) {
 TEST(HttpStreamParser, ShoutcastWeirdHeader) {
   SimpleGetRunner get_runner;
   get_runner.set_url(GURL("http://foo.com:8080/"));
-  get_runner.set_http_09_on_non_default_ports_enabled(false);
   get_runner.AddRead("iCyCreamSundae");
   get_runner.SetupParserAndSendRequest();
 

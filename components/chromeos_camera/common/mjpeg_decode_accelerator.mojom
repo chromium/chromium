@@ -1,0 +1,84 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos_camera.mojom;
+
+import "components/chromeos_camera/common/dmabuf.mojom";
+import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Decode errors (see media/video/jpeg_decode_accelerator.h).
+enum DecodeError {
+  NO_ERRORS,
+  INVALID_ARGUMENT,
+  UNREADABLE_INPUT,
+  PARSE_JPEG_FAILED,
+  UNSUPPORTED_JPEG,
+  PLATFORM_FAILURE,
+};
+
+// This defines a mojo transport format for media::BitstreamBuffer (see
+// media/base/bitstream_buffer.h).
+struct BitstreamBuffer {
+  int32 id;
+  handle<shared_buffer> memory_handle;
+  uint32 size;
+  int64 offset;
+  mojo_base.mojom.TimeDelta timestamp;
+  string key_id;
+  string iv;
+  array<media.mojom.SubsampleEntry> subsamples;
+};
+
+// GPU process interface exposed to the browser for decoding MJPEG streams.
+interface MjpegDecodeAccelerator {
+  // Initializes the MJPEG decoder. Should be called once per decoder
+  // construction and before using Decode(). This call returns true if
+  // initialization is successful.
+  Initialize() => (bool success);
+
+  // Decodes the given bitstream buffer that contains one JPEG image.
+  // The image is decoded from shared memory |input_buffer.memory_handle|
+  // with size |input_buffer.size|. The input buffer is associated with
+  // |input_buffer.id|and the size of JPEG image is |coded_size|. Decoded I420
+  // frame data will be put onto shared memory associated with |output_handle|
+  // with allocated size |output_buffer_size|.
+  // Returns |bitstream_buffer_id| and |error| in a callback to notify the
+  // decode status. |bitstream_buffer_id| is the id of BitstreamBuffer
+  // |input_buffer| and |error| is the error code.
+  Decode(BitstreamBuffer input_buffer, gfx.mojom.Size coded_size,
+         handle<shared_buffer> output_handle, uint32 output_buffer_size)
+      => (int32 bitstream_buffer_id, DecodeError error);
+
+  // Decodes the given buffer that contains one JPEG image.
+  // |input_fd| and |output_fd| are file descriptors of shared memory.
+  // The image is decoded from memory of |input_fd|
+  // with size |input_buffer_size|. The input buffer is associated with
+  // |buffer_id| and the size of JPEG image is |coded_size|. Decoded I420
+  // frame data will be put onto memory associated with |output_fd|
+  // with allocated size |output_buffer_size|.
+  // Returns |buffer_id| and |error| in a callback to notify the
+  // decode status. |buffer_id| is the id of |input_buffer| and |error| is the
+  // error code.
+  // TODO(kamesan): deprecate this function when all clients have switched to
+  // DecodeWithDmaBuf().
+  DecodeWithFD(int32 buffer_id, handle input_fd, uint32 input_buffer_size,
+               int32 coded_size_width, int32 coded_size_height,
+               handle output_fd, uint32 output_buffer_size)
+      => (int32 buffer_id, DecodeError error);
+
+  // Decodes one MJPEG image with the given input and output buffers.
+  // |task_id| is used to distinguish different tasks. The input image is stored
+  // in the DMA buffer described by |src_dmabuf_fd|, |src_size|, and
+  // |src_offset|. The decoded result will be put into |dst_frame| backed by DMA
+  // buffer. Returns the decode status |error| in the Mojo callback.
+  DecodeWithDmaBuf(int32 task_id, handle src_dmabuf_fd, uint32 src_size,
+                   uint32 src_offset, DmaBufVideoFrame dst_frame)
+      => (DecodeError error);
+
+  // TODO(c.padhi): This method might not be required, see
+  // http://crbug.com/699255.
+  Uninitialize();
+};

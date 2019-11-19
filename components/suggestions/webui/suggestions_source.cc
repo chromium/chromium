@@ -95,9 +95,7 @@ std::string RenderOutputHtmlNoSuggestions(const std::string& base_url,
 
 SuggestionsSource::SuggestionsSource(SuggestionsService* suggestions_service,
                                      const std::string& base_url)
-    : suggestions_service_(suggestions_service),
-      base_url_(base_url),
-      weak_ptr_factory_(this) {}
+    : suggestions_service_(suggestions_service), base_url_(base_url) {}
 
 SuggestionsSource::~SuggestionsSource() {}
 

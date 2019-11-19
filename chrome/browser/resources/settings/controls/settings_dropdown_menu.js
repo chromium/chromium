@@ -34,15 +34,9 @@ Polymer({
   properties: {
     /**
      * List of options for the drop-down menu.
-     * @type {?DropdownMenuOptionList}
+     * @type {!DropdownMenuOptionList}
      */
-    menuOptions: {
-      type: Array,
-      // TODO(dpapad): This seems unnecessary in Polymer 2, since any
-      // bindings/observers will execute anyway, even if this is undefined.
-      // Consider removing once migration is done.
-      value: null,
-    },
+    menuOptions: Array,
 
     /** Whether the dropdown menu should be disabled. */
     disabled: {
@@ -115,7 +109,7 @@ Polymer({
       return;
     }
 
-    if (this.menuOptions === null || !this.menuOptions.length) {
+    if (!this.menuOptions.length) {
       return;
     }
 
@@ -174,6 +168,6 @@ Polymer({
    */
   shouldDisableMenu_: function() {
     return this.disabled || this.isPrefEnforced() ||
-        this.menuOptions === null || this.menuOptions.length == 0;
+        this.menuOptions === undefined || this.menuOptions.length == 0;
   },
 });

@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.cards.NewTabPageViewHolder;
 import org.chromium.chrome.browser.suggestions.SuggestionsRecyclerView;
-import org.chromium.chrome.browser.widget.displaystyle.UiConfig;
+import org.chromium.chrome.browser.ui.widget.displaystyle.UiConfig;
 
 /**
  * View holder for the header of a section of cards.

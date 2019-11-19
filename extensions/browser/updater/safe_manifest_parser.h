@@ -14,10 +14,6 @@
 #include "base/optional.h"
 #include "url/gurl.h"
 
-namespace service_manager {
-class Connector;
-}
-
 namespace extensions {
 
 struct UpdateManifestResult {
@@ -28,6 +24,11 @@ struct UpdateManifestResult {
   std::string extension_id;
   std::string version;
   std::string browser_min_version;
+
+  // Attribute for no update: server may provide additional info about why there
+  // is no updates, eg. “bandwidth limit” if client is downloading extensions
+  // too aggressive.
+  base::Optional<std::string> info;
 
   // Attributes for the full update.
   GURL crx_url;
@@ -91,8 +92,7 @@ struct UpdateManifestResults {
 using ParseUpdateManifestCallback =
     base::OnceCallback<void(std::unique_ptr<UpdateManifestResults> results,
                             const base::Optional<std::string>& error)>;
-void ParseUpdateManifest(service_manager::Connector* connector,
-                         const std::string& xml,
+void ParseUpdateManifest(const std::string& xml,
                          ParseUpdateManifestCallback callback);
 
 }  // namespace extensions

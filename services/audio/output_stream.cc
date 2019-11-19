@@ -22,9 +22,10 @@ const int kPowerMeasurementsPerSecond = 15;
 OutputStream::OutputStream(
     CreatedCallback created_callback,
     DeleteCallback delete_callback,
-    media::mojom::AudioOutputStreamRequest stream_request,
-    media::mojom::AudioOutputStreamObserverAssociatedPtr observer,
-    media::mojom::AudioLogPtr log,
+    mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver,
+    mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
+        observer,
+    mojo::PendingRemote<media::mojom::AudioLog> log,
     media::AudioManager* audio_manager,
     const std::string& output_device_id,
     const media::AudioParameters& params,
@@ -34,14 +35,13 @@ OutputStream::OutputStream(
     const base::UnguessableToken& processing_id)
     : foreign_socket_(),
       delete_callback_(std::move(delete_callback)),
-      binding_(this, std::move(stream_request)),
+      receiver_(this, std::move(stream_receiver)),
       observer_(std::move(observer)),
-      log_(log ? media::mojom::ThreadSafeAudioLogPtr::Create(std::move(log))
-               : nullptr),
+      log_(std::move(log)),
       coordinator_(coordinator),
       // Unretained is safe since we own |reader_|
       reader_(log_ ? base::BindRepeating(&media::mojom::AudioLog::OnLogMessage,
-                                         base::Unretained(log_->get()))
+                                         base::Unretained(log_.get()))
                    : base::DoNothing(),
               params,
               &foreign_socket_),
@@ -52,9 +52,8 @@ OutputStream::OutputStream(
                   &reader_,
                   stream_monitor_coordinator,
                   processing_id),
-      loopback_group_id_(loopback_group_id),
-      weak_factory_(this) {
-  DCHECK(binding_.is_bound());
+      loopback_group_id_(loopback_group_id) {
+  DCHECK(receiver_.is_bound());
   DCHECK(created_callback);
   DCHECK(delete_callback_);
   DCHECK(coordinator_);
@@ -66,14 +65,14 @@ OutputStream::OutputStream(
   // |this| owns these objects, so unretained is safe.
   base::RepeatingClosure error_handler =
       base::BindRepeating(&OutputStream::OnError, base::Unretained(this));
-  binding_.set_connection_error_handler(error_handler);
+  receiver_.set_disconnect_handler(error_handler);
 
   // We allow the observer to terminate the stream by closing the message pipe.
   if (observer_)
-    observer_.set_connection_error_handler(std::move(error_handler));
+    observer_.set_disconnect_handler(std::move(error_handler));
 
   if (log_)
-    log_->get()->OnCreated(params, output_device_id);
+    log_->OnCreated(params, output_device_id);
 
   coordinator_->RegisterMember(loopback_group_id_, &controller_);
   if (!reader_.IsValid() || !controller_.CreateStream()) {
@@ -91,13 +90,14 @@ OutputStream::~OutputStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
 
   if (log_)
-    log_->get()->OnClosed();
+    log_->OnClosed();
 
-  if (observer_)
+  if (observer_) {
     observer_.ResetWithReason(
         static_cast<uint32_t>(media::mojom::AudioOutputStreamObserver::
                                   DisconnectReason::kTerminatedByClient),
         std::string());
+  }
 
   controller_.Close();
   coordinator_->UnregisterMember(loopback_group_id_, &controller_);
@@ -117,7 +117,7 @@ void OutputStream::Play() {
 
   controller_.Play();
   if (log_)
-    log_->get()->OnStarted();
+    log_->OnStarted();
 }
 
 void OutputStream::Pause() {
@@ -125,7 +125,13 @@ void OutputStream::Pause() {
 
   controller_.Pause();
   if (log_)
-    log_->get()->OnStopped();
+    log_->OnStopped();
+}
+
+void OutputStream::Flush() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+
+  controller_.Flush();
 }
 
 void OutputStream::SetVolume(double volume) {
@@ -141,7 +147,7 @@ void OutputStream::SetVolume(double volume) {
 
   controller_.SetVolume(volume);
   if (log_)
-    log_->get()->OnSetVolume(volume);
+    log_->OnSetVolume(volume);
 }
 
 void OutputStream::CreateAudioPipe(CreatedCallback created_callback) {
@@ -216,7 +222,7 @@ void OutputStream::OnControllerError() {
   poll_timer_.Stop();
 
   if (log_)
-    log_->get()->OnError();
+    log_->OnError();
 
   if (observer_) {
     observer_.ResetWithReason(
@@ -231,7 +237,7 @@ void OutputStream::OnControllerError() {
 void OutputStream::OnLog(base::StringPiece message) {
   // No sequence check: |log_| is thread-safe.
   if (log_)
-    log_->get()->OnLogMessage(message.as_string());
+    log_->OnLogMessage(message.as_string());
 }
 
 void OutputStream::OnError() {
@@ -244,7 +250,7 @@ void OutputStream::OnError() {
       base::BindOnce(&OutputStream::CallDeleter, weak_factory_.GetWeakPtr()));
 
   // Ignore any incoming calls.
-  binding_.Close();
+  receiver_.reset();
 }
 
 void OutputStream::CallDeleter() {

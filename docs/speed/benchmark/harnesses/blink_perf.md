@@ -5,7 +5,7 @@
 ## Overview
 
 Blink perf tests are used for micro benchmarking the surface of Blink that
-is exposed to the Web. They are the counterpart of [web_tests/](../../../docs/testing/layout_tests.md)
+is exposed to the Web. They are the counterpart of [web_tests/](../../../testing/web_tests.md)
 but for performance coverage.
 
 ## Writing Tests

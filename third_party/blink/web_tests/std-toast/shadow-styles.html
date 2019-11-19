@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Toast: shadow dom styles tests (with internals)</title>
+
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/testdriver.js"></script>
+<script src="../resources/testdriver-vendor.js"></script>
+<script src="../editing/assert_selection.js"></script>
+
+
+<main></main>
+
+<script type="module">
+import "std:elements/toast";
+
+
+test(() => {
+    const toast = document.createElement('std-toast');
+    toast.setAttribute('closebutton', '');
+    document.querySelector('main').appendChild(toast);
+    toast.open = true;
+
+    const toastCloseButton = internals.shadowRoot(toast).querySelector('[part=closebutton]');
+
+    const styles = window.getComputedStyle(toastCloseButton);
+    assert_equals(styles.userSelect, 'none');
+}, 'the text on toast default closebutton is not selectable');
+
+test(() => {
+    const toast = document.createElement('std-toast');
+    toast.setAttribute('closebutton', 'dismiss');
+    document.querySelector('main').appendChild(toast);
+    toast.open = true;
+
+    const toastCloseButton = internals.shadowRoot(toast).querySelector('[part=closebutton]');
+
+    const styles = window.getComputedStyle(toastCloseButton);
+    assert_equals(styles.userSelect, 'auto');
+}, 'the text on toast custom closebutton is selectable');
+
+test(() => {
+    const toast = document.createElement('std-toast');
+    toast.setAttribute('closebutton', 'dismiss');
+    document.querySelector('main').appendChild(toast);
+    toast.open = true;
+
+    const toastCloseButton = internals.shadowRoot(toast).querySelector('[part=closebutton]');
+
+    let styles = window.getComputedStyle(toastCloseButton);
+    assert_equals(styles.userSelect, 'auto');
+
+    toast.setAttribute('closebutton', '');
+    styles = window.getComputedStyle(toastCloseButton);
+    assert_equals(styles.userSelect, 'none');
+}, 'changing closebutton text back to default removes selectability');
+</script>

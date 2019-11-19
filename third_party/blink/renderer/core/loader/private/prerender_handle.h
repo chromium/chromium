@@ -43,9 +43,10 @@ class Document;
 class Prerender;
 class PrerenderClient;
 
-class PrerenderHandle final : public GarbageCollectedFinalized<PrerenderHandle>,
+class PrerenderHandle final : public GarbageCollected<PrerenderHandle>,
                               public ContextLifecycleObserver {
   USING_GARBAGE_COLLECTED_MIXIN(PrerenderHandle);
+  USING_PRE_FINALIZER(PrerenderHandle, Dispose);
 
  public:
   static PrerenderHandle* Create(Document&,
@@ -55,6 +56,7 @@ class PrerenderHandle final : public GarbageCollectedFinalized<PrerenderHandle>,
 
   PrerenderHandle(Document&, Prerender*);
   virtual ~PrerenderHandle();
+  void Dispose();
 
   void Cancel();
   const KURL& Url() const;
@@ -63,7 +65,6 @@ class PrerenderHandle final : public GarbageCollectedFinalized<PrerenderHandle>,
   void ContextDestroyed(ExecutionContext*) override;
 
   void Trace(blink::Visitor*) override;
-  EAGERLY_FINALIZE();
 
  private:
   void Detach();

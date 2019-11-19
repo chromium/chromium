@@ -46,12 +46,13 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
     : public AuthStatusConsumer {
  public:
-  typedef enum AuthorizationMode {
+  enum class AuthorizationMode {
     // Authorization performed internally by Chrome.
-    AUTH_MODE_INTERNAL,
-    // Authorization performed by an extension.
-    AUTH_MODE_EXTENSION
-  } AuthorizationMode;
+    kInternal,
+    // Authorization performed by an external service (e.g., Gaia, or Active
+    // Directory).
+    kExternal
+  };
 
   // Delegate class to get notifications from the LoginPerformer.
   class Delegate : public AuthStatusConsumer {
@@ -67,8 +68,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
   ~LoginPerformer() override;
 
   // Performs a login for |user_context|.
-  // If auth_mode is AUTH_MODE_EXTENSION, there are no further auth checks,
-  // AUTH_MODE_INTERNAL will perform auth checks.
+  // If auth_mode is |kExternal|, there are no further auth checks, |kInternal|
+  // will perform auth checks.
   void PerformLogin(const UserContext& user_context,
                     AuthorizationMode auth_mode);
 
@@ -87,6 +88,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
 
   // Performs a login into the ARC kiosk mode account with |arc_app_account_id|.
   void LoginAsArcKioskAccount(const AccountId& arc_app_account_id);
+
+  // Performs a login into the Web kiosk mode account with |web_app_account_id|.
+  void LoginAsWebKioskAccount(const AccountId& web_app_account_id);
 
   // AuthStatusConsumer implementation:
   void OnAuthFailure(const AuthFailure& error) override;
@@ -125,7 +129,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
 
   // Check if user is allowed to sign in on device. |wildcard_match| will
   // contain additional information whether this user is explicitly listed or
-  // not (may be relevant for extension-based sign-in).
+  // not (may be relevant for external-based sign-in).
   virtual bool IsUserWhitelisted(const AccountId& account_id,
                                  bool* wildcard_match) = 0;
 
@@ -222,13 +226,13 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
 
   // True if password change has been detected.
   // Once correct password is entered homedir migration is executed.
-  bool password_changed_;
-  int password_changed_callback_count_;
+  bool password_changed_ = false;
+  int password_changed_callback_count_ = 0;
 
   // Authorization mode type.
-  AuthorizationMode auth_mode_;
+  AuthorizationMode auth_mode_ = AuthorizationMode::kInternal;
 
-  base::WeakPtrFactory<LoginPerformer> weak_factory_;
+  base::WeakPtrFactory<LoginPerformer> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(LoginPerformer);
 };
 

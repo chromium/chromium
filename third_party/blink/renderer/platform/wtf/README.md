@@ -43,7 +43,7 @@ The below is a list of major libraries. For a complete list, look at
 
 * **Strings**
 
-  [String], [AtomicString], [StringBuilder], [CString]
+  [String], [AtomicString], [StringBuilder]
 
 * **Reference counting**
 
@@ -60,11 +60,6 @@ The below is a list of major libraries. For a complete list, look at
 * **Threading**
 
   [threading.h], [threading_primitives.h]
-
-* **Compile-time switch macros**
-
-  [compiler.h] (e.g. `OBJC_CLASS`),
-  [cpu.h] (e.g. `WTF_CPU_ARM_NEON`),
 
 * **Miscellaneous**
 
@@ -98,17 +93,13 @@ current location][4] platform/wtf.
 [String]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/text/wtf_string.h
 [AtomicString]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/text/atomic_string.h
 [StringBuilder]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/text/string_builder.h
-[CString]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/text/cstring.h
 [RefCounted]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/ref_counted.h
 [allocator.h]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/allocator.h
 [functional.h]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/functional.h
 [threading.h]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/threading.h
 [threading_primitives.h]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/threading_primitives.h
-[compiler.h]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/compiler.h
-[cpu.h]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/cpu.h
 [build_config.h]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/build_config.h
 [std_lib_extras.h]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/std_lib_extras.h
-[time.h]: https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/wtf/time.h
 [1]: https://chromium.googlesource.com/chromium/src/+/e372c152fc6e57743ebc508fe17f6eb131b4ff8d
 [2]: https://chromium.googlesource.com/chromium/src/+/547a6ca360a56fbee3d5ea4a71ba18f91622455c
 [3]: https://chromium.googlesource.com/chromium/src/+/478890427ee03fd88e6f0f58ee8220512044bed9/third_party/WebKit/WebCore/kwq/KWQAssertions.h

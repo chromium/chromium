@@ -17,6 +17,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/crash/content/app/crashpad.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -37,8 +38,22 @@
 namespace {
 
 void InitCrashReporterIfEnabled(bool enabled) {
+#if defined(OS_WIN)
   if (enabled)
     breakpad::InitCrashReporter(std::string());
+#elif defined(OS_LINUX)
+  if (!crash_reporter::IsCrashpadEnabled() && enabled) {
+    breakpad::InitCrashReporter(std::string());
+  }
+#endif
+}
+
+std::unique_ptr<views::View> CreateLearnMoreLink(
+    views::LinkListener* listener) {
+  auto link =
+      std::make_unique<views::Link>(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+  link->set_listener(listener);
+  return link;
 }
 
 }  // namespace
@@ -61,14 +76,14 @@ void FirstRunDialog::Show(Profile* profile) {
   run_loop.Run();
 }
 
-FirstRunDialog::FirstRunDialog(Profile* profile)
-    : profile_(profile),
-      make_default_(NULL),
-      report_crashes_(NULL) {
+FirstRunDialog::FirstRunDialog(Profile* profile) : profile_(profile) {
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_OK);
+  DialogDelegate::SetExtraView(CreateLearnMoreLink(this));
+
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::TEXT));
   views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>(this));
+      SetLayoutManager(std::make_unique<views::GridLayout>());
 
   views::ColumnSet* column_set = layout->AddColumnSet(0);
   column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
@@ -76,20 +91,20 @@ FirstRunDialog::FirstRunDialog(Profile* profile)
                         views::GridLayout::USE_PREF, 0, 0);
 
   layout->StartRow(views::GridLayout::kFixedSize, 0);
-  make_default_ = new views::Checkbox(l10n_util::GetStringUTF16(
-      IDS_FR_CUSTOMIZE_DEFAULT_BROWSER));
-  make_default_->SetChecked(true);
-  layout->AddView(make_default_);
+  auto make_default = std::make_unique<views::Checkbox>(
+      l10n_util::GetStringUTF16(IDS_FR_CUSTOMIZE_DEFAULT_BROWSER));
+  make_default->SetChecked(true);
+  make_default_ = layout->AddView(std::move(make_default));
 
   layout->StartRowWithPadding(views::GridLayout::kFixedSize, 0,
                               views::GridLayout::kFixedSize,
                               ChromeLayoutProvider::Get()->GetDistanceMetric(
                                   views::DISTANCE_RELATED_CONTROL_VERTICAL));
-  report_crashes_ = new views::Checkbox(
-      l10n_util::GetStringUTF16(IDS_SETTINGS_ENABLE_LOGGING));
+  auto report_crashes = std::make_unique<views::Checkbox>(
+      l10n_util::GetStringUTF16(IDS_FR_ENABLE_LOGGING));
   // Having this box checked means the user has to opt-out of metrics recording.
-  report_crashes_->SetChecked(!first_run::IsMetricsReportingOptIn());
-  layout->AddView(report_crashes_);
+  report_crashes->SetChecked(!first_run::IsMetricsReportingOptIn());
+  report_crashes_ = layout->AddView(std::move(report_crashes));
   chrome::RecordDialogCreation(chrome::DialogIdentifier::FIRST_RUN_DIALOG);
 }
 
@@ -101,28 +116,17 @@ void FirstRunDialog::Done() {
   quit_runloop_.Run();
 }
 
-views::View* FirstRunDialog::CreateExtraView() {
-  views::Link* link = new views::Link(l10n_util::GetStringUTF16(
-      IDS_LEARN_MORE));
-  link->set_listener(this);
-  return link;
-}
-
 bool FirstRunDialog::Accept() {
   GetWidget()->Hide();
 
-  ChangeMetricsReportingStateWithReply(report_crashes_->checked(),
+  ChangeMetricsReportingStateWithReply(report_crashes_->GetChecked(),
                                        base::Bind(&InitCrashReporterIfEnabled));
 
-  if (make_default_->checked())
+  if (make_default_->GetChecked())
     shell_integration::SetAsDefaultBrowser();
 
   Done();
   return true;
-}
-
-int FirstRunDialog::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_OK;
 }
 
 void FirstRunDialog::WindowClosing() {

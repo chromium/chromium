@@ -77,7 +77,10 @@ enum {
 
   // Bounds for the number of threads used for software video decoding.
   kMinVideoDecodeThreads = 2,
-  kMaxVideoDecodeThreads = 32,
+  kMaxVideoDecodeThreads =
+      16,  // Matches ffmpeg's MAX_AUTO_THREADS. Higher values can result in
+           // immediate out of memory errors for high resolution content. See
+           // https://crbug.com/893984
 };
 
 }  // namespace limits

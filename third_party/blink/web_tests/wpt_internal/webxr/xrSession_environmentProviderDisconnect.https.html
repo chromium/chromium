@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>let additionalChromiumResources = ["resources/xr-internal-device-mocking.js"];</script>
+<script src="/webxr/resources/webxr_util.js"></script>
+<script src="/webxr/resources/webxr_test_constants.js"></script>
+<canvas />
+
+<script>
+// This test manipulates mojo directly to simulate some behavior, and as such is
+// chromium specific.
+let testName = "Outstanding promises get rejected if environmentProvider disconencts";
+
+let fakeDeviceInitParams = { supportsImmersive: true,
+                             views: VALID_VIEWS,
+                             supportsEnvironmentIntegration: true,
+                             supportedFeatures: ALL_FEATURES };
+
+let refSpace = undefined;
+
+let ray = new XRRay({x : 0.0, y : 0.0, z : 0.0}, {x : 1.0, y : 0.0, z: 0.0});
+
+let testFunction = function(session, fakeDeviceController, t) {
+  // Override the xr-internal-device-mock for requestHitTest so that we can
+  // also return a promise that never resolves or rejects.
+  // This is so that we can simulate a disconnect while the mojo call is still
+  // outstanding.
+  let immediatelyResolveHitTest = true;
+  MockRuntime.prototype.requestHitTest = function(Ray) {
+    if (immediatelyResolveHitTest) {
+      var hit = new device.mojom.XRHitResult();
+      hit.hitMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+      hit_results = {results: [hit]};
+      return Promise.resolve(hit_results);
+    }
+
+    return new Promise((resolve,reject) => { });
+  }
+
+  return session.requestReferenceSpace('local')
+    .then((referenceSpace) => {
+      refSpace = referenceSpace;
+
+      // Request a first hit test to ensure that all of the mojo connections are
+      // up and running.
+      return session.requestHitTest(ray, refSpace);
+    })
+    .then(() => {
+      immediatelyResolveHitTest = false;
+      let hitTestPromise = session.requestHitTest(ray, refSpace);
+      fakeDeviceController.closeEnvironmentIntegrationProvider();
+      return hitTestPromise;
+    })
+    .then(() => {
+        assert_unreached("HitTestPromise should not resolve");
+      },
+      (err) => {
+        assert_equals(err.name, "InvalidStateError");
+      });
+};
+
+xr_session_promise_test(
+  testName, testFunction, fakeDeviceInitParams, 'immersive-ar');
+
+</script>

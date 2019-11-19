@@ -7,10 +7,11 @@
 #include <stddef.h>
 #include <windows.h>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/win_util.h"
+#include "chrome/browser/extensions/system_display/display_info_provider.h"
 #include "extensions/common/api/system_display.h"
 #include "ui/display/display.h"
 #include "ui/display/win/dpi.h"
@@ -72,9 +73,8 @@ void DisplayInfoProviderWin::UpdateDisplayUnitInfoForPlatform(
   }
 }
 
-// static
-DisplayInfoProvider* DisplayInfoProvider::Create() {
-  return new DisplayInfoProviderWin();
+std::unique_ptr<DisplayInfoProvider> CreateChromeDisplayInfoProvider() {
+  return std::make_unique<DisplayInfoProviderWin>();
 }
 
 }  // namespace extensions

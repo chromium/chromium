@@ -35,23 +35,8 @@
 
 @implementation ContentSuggestionsItem
 
-@synthesize title = _title;
-@synthesize image = _image;
-@synthesize URL = _URL;
-@synthesize publisher = _publisher;
-@synthesize publishDate = _publishDate;
-@synthesize suggestionIdentifier = _suggestionIdentifier;
-@synthesize delegate = _delegate;
-@synthesize imageFetched = _imageFetched;
-@synthesize attributes = _attributes;
-@synthesize faviconURL = _faviconURL;
-@synthesize hasImage = _hasImage;
-@synthesize firstTimeWithImage = _firstTimeWithImage;
-@synthesize readLaterAction = _readLaterAction;
-@synthesize commandHandler = _commandHandler;
-@synthesize score = _score;
-@synthesize fetchDate = _fetchDate;
 @synthesize metricsRecorded = _metricsRecorded;
+@synthesize suggestionIdentifier = _suggestionIdentifier;
 
 - (instancetype)initWithType:(NSInteger)type
                        title:(NSString*)title

@@ -38,10 +38,6 @@ DragCaret::DragCaret() : display_item_client_(new CaretDisplayItemClient()) {}
 
 DragCaret::~DragCaret() = default;
 
-DragCaret* DragCaret::Create() {
-  return MakeGarbageCollected<DragCaret>();
-}
-
 void DragCaret::ClearPreviousVisualRect(const LayoutBlock& block) {
   display_item_client_->ClearPreviousVisualRect(block);
 }
@@ -80,7 +76,7 @@ void DragCaret::NodeChildrenWillBeRemoved(ContainerNode& container) {
   Node* const anchor_node = position_.GetPosition().AnchorNode();
   if (!anchor_node || anchor_node == container)
     return;
-  if (!container.IsShadowIncludingInclusiveAncestorOf(anchor_node))
+  if (!container.IsShadowIncludingInclusiveAncestorOf(*anchor_node))
     return;
   Clear();
 }
@@ -91,7 +87,7 @@ void DragCaret::NodeWillBeRemoved(Node& node) {
   Node* const anchor_node = position_.GetPosition().AnchorNode();
   if (!anchor_node)
     return;
-  if (!node.IsShadowIncludingInclusiveAncestorOf(anchor_node))
+  if (!node.IsShadowIncludingInclusiveAncestorOf(*anchor_node))
     return;
   Clear();
 }
@@ -107,7 +103,7 @@ bool DragCaret::ShouldPaintCaret(const LayoutBlock& block) const {
 
 void DragCaret::PaintDragCaret(const LocalFrame* frame,
                                GraphicsContext& context,
-                               const LayoutPoint& paint_offset) const {
+                               const PhysicalOffset& paint_offset) const {
   if (position_.AnchorNode()->GetDocument().GetFrame() != frame)
     return;
   display_item_client_->PaintCaret(context, paint_offset,

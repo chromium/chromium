@@ -1,35 +1,35 @@
 Name: Expat XML Parser
 Short Name: expat
 URL: https://github.com/libexpat/libexpat
-Version: 2.2.6
-License: MIT
-License File: files/COPYING
+Version: R_2_2_9-38-g25d3c19
+Date: 20191016
+Revision: 25d3c190c69ea7f98e2826f901fd9e28b6f7f3fd
 Security Critical: yes
+License: MIT
+License File: src/expat/COPYING
 
 Description:
   This is Expat XML parser - very lightweight C library for parsing XML.
-  Expat is distributed under an MIT license detailed in files/COPYING.
+  Expat is distributed under an MIT license detailed in src/expat/COPYING.
 
   We include it here because libjingle depends on it.
 
-Import process:
-  git clone https://github.com/libexpat/libexpat.git
-  cd libexpat/expat
+Roll process:
+  cd $CHROMIUM_SRC
+  roll-dep --roll-to origin/upstream/master src/third_party/expat/src/
+  cd $CHROMIUM_SRC/third_party/expat/src/expat
   ./buildconf.sh
   ./configure
-  cp expat_config.h $CHROMIUM_SRC/third_party/expat/files/lib
-  cd lib
-  cp *.c *.def *.h $CHROMIUM_SRC/third_party/expat/files/lib
+  cp expat_config.h $CHROMIUM_SRC/third_party/expat/include/expat_config/
   cd $CHROMIUM_SRC/third_party/expat
-  patch -p3 < 0001-Do-not-redefine-lean-and-mean.patch
-  patch -p3 < 0002-Add-missing-include-for-malloc-free.patch
+  patch -p3 < 0001-Do-not-claim-getrandom.patch
+
+  Then update the README.chromium and BUILD.gn as needed.
+  This can usually by handled by running roll-expat.sh from $CHROMIUM_SRC.
 
 Patches:
-    0001-Do-not-redefine-lean-and-mean.patch:
-      * Do not redefine WIN32_LEAN_AND_MEAN which breaks the Windows
-        build because it uses -Werror,-Wmacro-redefined .
-    0002-Add-missing-include-for-malloc-free.patch:
-      * Include stdlib.h for declaration of malloc, free.
+    0001-Do-not-claim-getrandom.patch:
+      * Not all platforms have getrandom.
 
 Added files:
-  lib/expat_config.h (a generated config file)
+  include/expat_config/expat_config.h (a generated config file)

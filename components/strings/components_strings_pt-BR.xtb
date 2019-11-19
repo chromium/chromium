@@ -7,7 +7,9 @@
 <translation id="1021110881106174305">Cartões aceitos</translation>
 <translation id="1032854598605920125">Girar no sentido horário</translation>
 <translation id="1035334672863811645">fazer login no Chrome</translation>
+<translation id="1036348656032585052">Desativar</translation>
 <translation id="1038842779957582377">nome desconhecido</translation>
+<translation id="1039626062703039346">No Chrome, você pode receber ajuda para proteger sua Conta do Google e alterar sua senha. Essa ação notificará o Google sobre este site.</translation>
 <translation id="1050038467049342496">Fechar outros apps</translation>
 <translation id="1055184225775184556">&amp;Desfazer adicionar</translation>
 <translation id="1056898198331236512">Aviso</translation>
@@ -20,11 +22,11 @@
 <translation id="1086953900555227778">Ficha</translation>
 <translation id="1088860948719068836">Adicionar Nome como consta no Cartão</translation>
 <translation id="1089439967362294234">Alterar senha</translation>
+<translation id="1096545575934602868">Esse campo não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as outras entradas serão descartadas.</translation>
 <translation id="109743633954054152">Gerencie senhas nas configurações do Chrome</translation>
 <translation id="1103523840287552314">Sempre traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="1107591249535594099">Se esta opção for selecionada, o Chrome armazenará uma cópia do seu cartão neste dispositivo para preenchimento de formulários mais rapidamente.</translation>
 <translation id="1110994991967754504">Selecione uma permissão para <ph name="PERMISSION_NAME" /></translation>
-<translation id="1111153019813902504">Favoritos recentes</translation>
 <translation id="1113869188872983271">&amp;Desfazer reordenar</translation>
 <translation id="1125573121925420732">Avisos podem ser comuns enquanto os sites atualizam a segurança. Isso deve melhorar em breve.</translation>
 <translation id="1126551341858583091">O tamanho no armazenamento local é de <ph name="CRASH_SIZE" />.</translation>
@@ -35,10 +37,14 @@
 <translation id="1152921474424827756">Acessar uma <ph name="BEGIN_LINK" />cópia em cache<ph name="END_LINK" /> de <ph name="URL" /></translation>
 <translation id="1156303062776767266">Você está vendo um arquivo local ou compartilhado</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> encerrou a conexão inesperadamente.</translation>
-<translation id="1161325031994447685">Conectar-se à rede Wi-Fi novamente</translation>
+<translation id="115926840831309955">Verifique o CVC e tente novamente ou atualize a data de validade</translation>
+<translation id="1161325031994447685">Conectar à rede Wi-Fi novamente</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1175364870820465910">&amp;Imprimir...</translation>
+<translation id="1175875016430184367">Três grampos no lado direito</translation>
+<translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Remover</translation>
+<translation id="1186201132766001848">Verificar senhas</translation>
 <translation id="1197088940767939838">Laranja</translation>
 <translation id="1201402288615127009">Próxima</translation>
 <translation id="1201895884277373915">Mais deste site</translation>
@@ -50,8 +56,6 @@
 <translation id="1228893227497259893">Identificador de entidade incorreto</translation>
 <translation id="1232569758102978740">Sem título</translation>
 <translation id="1240347957665416060">O nome do seu dispositivo</translation>
-<translation id="124116460088058876">Mais idiomas</translation>
-<translation id="1246987714874202335">Atualizar data de validade</translation>
 <translation id="1250759482327835220">Para agilizar o pagamento na próxima vez, salve o cartão, seu nome e o endereço de faturamento na sua Conta do Google.</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizados)</translation>
 <translation id="1256368399071562588">&lt;p&gt;Se você tentar visitar um site e ele não abrir, primeiro tente corrigir o erro com estas etapas de solução de problemas:&lt;/p&gt;
@@ -68,11 +72,15 @@
 <translation id="1292701964462482250">"Algum software no seu computador está impedindo o Google Chrome de se conectar com segurança à Web" (somente computadores Windows)</translation>
 <translation id="1294154142200295408">Variações de linha de comando</translation>
 <translation id="129553762522093515">Recentemente fechadas</translation>
+<translation id="1298536327547837046">Verificação de malware</translation>
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Tente limpar os cookies<ph name="END_LINK" /></translation>
+<translation id="1307966114820526988">Recursos obsoletos</translation>
+<translation id="1314509827145471431">Encadernação do lado direito</translation>
 <translation id="1320233736580025032">Prc1 (Envelope)</translation>
 <translation id="132301787627749051">Pesquisar uma imagem na área de transferência</translation>
 <translation id="1323433172918577554">Mostrar mais</translation>
 <translation id="132390688737681464">Salvar e preencher endereços</translation>
+<translation id="1330449323196174374">Dobra janela à esquerda</translation>
 <translation id="1333989956347591814">É possível que sua atividade <ph name="BEGIN_EMPHASIS" />ainda esteja visível<ph name="END_EMPHASIS" /> para:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />os websites que você visita
@@ -84,37 +92,43 @@
 <translation id="1348198688976932919">O site a seguir contém apps perigosos</translation>
 <translation id="1348779747280417563">Confirmar nome</translation>
 <translation id="1357195169723583938">Quem usou o dispositivo recentemente e quando</translation>
+<translation id="1364822246244961190">Esta política está bloqueada. O valor dela será ignorado.</translation>
 <translation id="1374468813861204354">sugestões</translation>
 <translation id="1374692235857187091">10 mm x 15 mm (Postal)</translation>
 <translation id="1375198122581997741">Sobre a versão</translation>
 <translation id="1376836354785490390">Mostrar menos</translation>
 <translation id="1377321085342047638">Número do cartão</translation>
+<translation id="1380591466760231819">Dobra carteira</translation>
 <translation id="138218114945450791">Azul-claro</translation>
 <translation id="1382194467192730611">Dispositivo USB permitido pelo administrador</translation>
 <translation id="139305205187523129">Nenhum dado foi enviado por <ph name="HOST_NAME" /></translation>
-<translation id="140316286225361634">O site <ph name="ORIGIN" /> solicitou que uma política de segurança
-    seja aplicada a todas as solicitações, e essa política atualmente considera o site
-    inseguro.</translation>
 <translation id="1405567553485452995">Verde-claro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
+<translation id="1408787208417187241">Três grampos na parte superior</translation>
 <translation id="1413809658975081374">Erro de privacidade</translation>
-<translation id="14171126816530869">A identidade de <ph name="ORGANIZATION" /> em <ph name="LOCALITY" /> foi confirmada por <ph name="ISSUER" />.</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1442386063175183758">Dobra janela à direita</translation>
+<translation id="1442987760062738829">Perfurar</translation>
 <translation id="1455413310270022028">Borracha</translation>
+<translation id="1462245070427461050">JIS B9</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1472675084647422956">Mostrar mais</translation>
+<translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1484290072879560759">Escolher endereço de entrega</translation>
+<translation id="1492194039220927094">Push de políticas:</translation>
 <translation id="1501859676467574491">Mostre os cartões salvos na Conta do Google</translation>
 <translation id="1507202001669085618">&lt;p&gt;Você verá esse erro se estiver usando um portal Wi-Fi em que precise fazer login para poder se conectar.&lt;/p&gt;
     &lt;p&gt;Para corrigir o erro, clique em &lt;strong&gt;Conectar&lt;/strong&gt; na página que você está tentando abrir.&lt;/p&gt;</translation>
+<translation id="1513706915089223971">Lista de entradas no histórico</translation>
 <translation id="1517433312004943670">Número de telefone necessário</translation>
 <translation id="1517500485252541695">Cartões de crédito e débito aceitos</translation>
 <translation id="1519264250979466059">Data da versão</translation>
 <translation id="1521655867290435174">Planilhas Google</translation>
 <translation id="1527263332363067270">Aguardando conexão...</translation>
 <translation id="1529521330346880926">10x15 (Envelope)</translation>
+<translation id="1530707389502320859">O site que você tentou acessar parece falso. Os invasores às vezes imitam sites fazendo pequenas alterações quase imperceptíveis no URL.</translation>
 <translation id="1531205177818805254">Executivo</translation>
 <translation id="1532118530259321453">Essa página diz</translation>
 <translation id="153384715582417236">Isso é tudo por enquanto</translation>
@@ -126,24 +140,26 @@
 <translation id="1559572115229829303">&lt;p&gt;Não é possível estabelecer uma conexão particular com <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque a data e hora do seu dispositivo (<ph name="DATE_AND_TIME" />) estão incorretas.&lt;/p&gt;
 
       &lt;p&gt;Ajuste a data e hora na seção &lt;strong&gt;Geral&lt;/strong&gt; do aplicativo &lt;strong&gt;Config.&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="1569487616857761740">Informar data de validade</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Algo deu errado ao exibir esta página da Web.</translation>
+<translation id="1588438908519853928">Normal</translation>
 <translation id="1592005682883173041">Acesso a dados locais</translation>
 <translation id="1594030484168838125">Escolher</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1623104350909869708">Impedir que esta página crie caixas de diálogo adicionais</translation>
 <translation id="16338877384480380">Arch B</translation>
-<translation id="1634051627998691300">Finalizar sessão</translation>
+<translation id="1638780421120290329">Não é possível salvar o cartão</translation>
 <translation id="1639239467298939599">Carregando</translation>
 <translation id="1640180200866533862">Políticas de usuário</translation>
 <translation id="1640244768702815859">Tente <ph name="BEGIN_LINK" />visitar a página inicial do site<ph name="END_LINK" />.</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1645368109819982629">Protocolo não compatível</translation>
-<translation id="1655462015569774233">{1,plural, =1{Este servidor não conseguiu provar que é <ph name="DOMAIN" />; o certificado de segurança dele expirou ontem. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor. O relógio do seu computador está definido para <ph name="CURRENT_DATE" />. Essa data está correta? Se não estiver, corrija o relógio do sistema e depois atualize esta página.}one{Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele expirou há # dias. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor. O relógio do seu computador está definido para <ph name="CURRENT_DATE" />. Essa data está correta? Se não estiver, corrija o relógio do sistema e depois atualize esta página.}other{Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele expirou há # dias. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor. O relógio do seu computador está definido para <ph name="CURRENT_DATE" />. Essa data está correta? Se não estiver, corrija o relógio do sistema e depois atualize esta página.}}</translation>
+<translation id="1652415888492971589">JIS B8</translation>
 <translation id="1656489000284462475">Retirada</translation>
 <translation id="1662550410081243962">Salvar e preencher as formas de pagamento</translation>
-<translation id="1663943134801823270">Os cartões e os endereços vieram do Chrome. É possível gerenciar essas opções em <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
+<translation id="1663943134801823270">As informações dos cartões e os endereços foram acessadas pelo Chrome. É possível gerenciar essas opções em <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Páginas em <ph name="SOURCE_LANGUAGE" /> serão traduzidas para <ph name="TARGET_LANGUAGE" /> de agora em diante.</translation>
 <translation id="1676269943528358898">O site <ph name="SITE" /> geralmente usa criptografia para proteger suas informações. Quando o Google Chrome tentou se conectar a <ph name="SITE" /> dessa vez, o website retornou credenciais incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser <ph name="SITE" /> ou quando uma tela de login por Wi-Fi interrompeu a conexão. Suas informações ainda estão protegidas, porque o Google Chrome interrompeu a conexão antes que os dados fossem trocados.</translation>
 <translation id="168841957122794586">O certificado do servidor contém uma chave de criptografia fraca.</translation>
@@ -153,20 +169,23 @@
 <translation id="1710259589646384581">SO</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1718029547804390981">O documento é grande demais para receber anotações</translation>
-<translation id="1721312023322545264">É necessário pedir a permissão de <ph name="NAME" /> para visitar este site</translation>
 <translation id="1721424275792716183">* Campo obrigatório</translation>
 <translation id="1727741090716970331">Adicione um Número de Cartão Válido</translation>
 <translation id="1728677426644403582">Você está vendo o código-fonte de uma página da Web.</translation>
 <translation id="173080396488393970">Esse tipo de cartão não é aceito</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Tente entrar em contato com o administrador do sistema.</translation>
+<translation id="1739107442478692187">Houve uma violação de dados em um site ou app usado por você. Por recomendação do Chrome, verifique as senhas salvas e mude sua senha em <ph name="ORIGIN" /> imediatamente.</translation>
 <translation id="1740951997222943430">Informe um mês de validade válido</translation>
+<translation id="1741613555002899862">Precisa ser especificada e ser uma string válida quando DnsOverHttpsMode for <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743520634839655729">Para agilizar o pagamento na próxima vez, salve o cartão, seu nome e o endereço de faturamento na sua Conta do Google e neste dispositivo.</translation>
+<translation id="1743570585616704562">Não reconhecida</translation>
 <translation id="1745880797583122200">Seu navegador é gerenciado</translation>
 <translation id="17513872634828108">Guias abertas</translation>
 <translation id="1753706481035618306">Numero da página</translation>
 <translation id="1763864636252898013">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança não é confiável para o sistema operacional do seu dispositivo. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Tente executar o Diagnóstico de Rede do Windows<ph name="END_LINK" />.</translation>
+<translation id="1778646502362731194">JIS B0</translation>
 <translation id="1783075131180517613">Favor atualizar sua senha de sincronização.</translation>
 <translation id="1787142507584202372">Suas guias abertas são exibidas aqui</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -176,6 +195,7 @@
 <translation id="1822540298136254167">Os sites que você visita e o tempo gasto neles</translation>
 <translation id="1826516787628120939">Em verificação</translation>
 <translation id="1834321415901700177">Este site contém programas perigosos</translation>
+<translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="1839551713262164453">Falha com erros na validação dos valores da política</translation>
 <translation id="1842969606798536927">Pagar</translation>
 <translation id="1871208020102129563">O proxy foi configurado para utilizar servidores de proxy fixo e não um URL de script .pac.</translation>
@@ -185,6 +205,9 @@
 <translation id="187918866476621466">Abrir páginas de inicialização</translation>
 <translation id="1883255238294161206">Recolher lista</translation>
 <translation id="1898423065542865115">Filtragem</translation>
+<translation id="1901443836186977402">{1,plural, =1{Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele expirou no último dia. Isso pode ser causado por uma configuração incorreta ou por um invasor que tenha interceptado sua conexão. O relógio do seu computador está definido para <ph name="CURRENT_DATE" />. Essa data está correta? Caso não esteja, corrija o relógio do sistema e atualize esta página.}one{Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele expirou # dia atrás. Isso pode ser causado por uma configuração incorreta ou por um invasor que tenha interceptado sua conexão. O relógio do seu computador está definido para <ph name="CURRENT_DATE" />. Essa data está correta? Caso não esteja, corrija o relógio do sistema e atualize esta página.}other{Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele expirou # dias atrás. Isso pode ser causado por uma configuração incorreta ou por um invasor que tenha interceptado sua conexão. O relógio do seu computador está definido para <ph name="CURRENT_DATE" />. Essa data está correta? Caso não esteja, corrija o relógio do sistema e atualize esta página.}}</translation>
+<translation id="1914326953223720820">Serviço Descompactar</translation>
+<translation id="1915697529809968049">Usar o Touch ID em vez do CVC?</translation>
 <translation id="1916770123977586577">Para aplicar as configurações atualizadas a este site, recarregue a página</translation>
 <translation id="1919345977826869612">Anúncios</translation>
 <translation id="1919367280705858090">Receber ajuda com uma mensagem de erro específica</translation>
@@ -192,25 +215,24 @@
 <translation id="1927235823738766038">Cartões de crédito e débito aceitos</translation>
 <translation id="194030505837763158">Ir para <ph name="LINK" /></translation>
 <translation id="1945968466830820669">Você pode perder o acesso à conta da sua organização ou sofrer roubo de identidade. O Chromium recomenda que você altere sua senha agora.</translation>
+<translation id="1947454675006758438">Grampo na parte superior direita</translation>
 <translation id="1948773908305951926">Cartões pré-pagos aceitos</translation>
 <translation id="1962204205936693436">Favoritos de <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Erro de serialização</translation>
 <translation id="1974060860693918893">Avançado</translation>
+<translation id="1974883374937189061">Ajude a melhorar a segurança do Chrome, enviando para o Google <ph name="BEGIN_WHITEPAPER_LINK" />URLs de algumas das páginas que você visitou, informações limitadas do sistema e parte do conteúdo da página<ph name="END_WHITEPAPER_LINK" />. <ph name="PRIVACY_PAGE_LINK" /></translation>
 <translation id="1978555033938440688">Versão do firmware</translation>
 <translation id="1981206234434200693">Limpe os dados do histórico de navegação do Chrome</translation>
+<translation id="1992331125980284532">JIS B3</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{e mais um}one{e mais #}other{e mais #}}</translation>
 <translation id="2003709556000175978">Redefinir sua senha agora</translation>
-<translation id="20053308747750172">O servidor que você acessará, <ph name="ORIGIN" />, solicitou que
-    uma política de segurança seja aplicada a todas as solicitações. Porém, agora ele
-    apresentou uma política inválida, que impede o navegador de
-    executar sua solicitação para <ph name="SITE" />.</translation>
+<translation id="2003775180883135320">Perfuração quádrupla na parte superior</translation>
 <translation id="2025186561304664664">O proxy está configurado em configuração automática.</translation>
 <translation id="2030481566774242610">Você quis dizer <ph name="LINK" />?</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Verificar o proxy e o firewall<ph name="END_LINK" /></translation>
 <translation id="2053111141626950936">Páginas em <ph name="LANGUAGE" /> não serão traduzidas.</translation>
 <translation id="2053553514270667976">CEP</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugestão}one{# sugestão}other{# sugestões}}</translation>
-<translation id="2068124040035837596">Sua conta é gerenciada por <ph name="ENROLLMENT_DOMAIN" />. Isso significa que seu administrador pode configurá-la remotamente.</translation>
 <translation id="2068663545051464999">Upload do relatório de erros <ph name="CRASH_ID" /> concluído (Contexto local: <ph name="CRASH_LOCAL_ID" />)</translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="20817612488360358">As configurações de proxy do sistema são definidas para serem utilizadas, mas uma configuração explícita de proxy também foi especificada.</translation>
@@ -218,12 +240,19 @@
 <translation id="2091887806945687916">Som</translation>
 <translation id="2094505752054353250">Incompatibilidade de domínio</translation>
 <translation id="2096368010154057602">Departamento</translation>
+<translation id="2099652385553570808">Três grampos no lado esquerdo</translation>
+<translation id="2100280972184758440">Sua senha foi comprometida</translation>
 <translation id="2102134110707549001">Sugerir senha forte…</translation>
 <translation id="2108755909498034140">Reiniciar seu computador</translation>
 <translation id="2111256659903765347">Super A</translation>
 <translation id="2113977810652731515">Cartão</translation>
 <translation id="2114841414352855701">Ignorado porque foi substituído por <ph name="POLICY_NAME" />.</translation>
-<translation id="213826338245044447">Favoritos de dispositivos móveis</translation>
+<translation id="2119505898009119320">Emitido para: <ph name="ORGANIZATION" /> (<ph name="JURISDICTION" />)</translation>
+<translation id="2119867082804433120">Perfuração na parte inferior direita</translation>
+<translation id="2124528555835617522">Houve uma violação de dados em um site ou app usado por você. Por recomendação do Chrome, verifique as senhas salvas imediatamente.</translation>
+<translation id="2129079103035905234">Sensores de movimento</translation>
+<translation id="2130448033692577677">Os modelos que você especificou podem não ser aplicados, porque a política DnsOverHttpsMode não foi definida.</translation>
+<translation id="213826338245044447">Favoritos nos dispositivos móveis</translation>
 <translation id="214556005048008348">Cancelar pagamento</translation>
 <translation id="2147827593068025794">Sincronização em segundo plano</translation>
 <translation id="2148613324460538318">Adicionar Cartão</translation>
@@ -236,29 +265,37 @@
 <translation id="2183608646556468874">Número de telefone</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 endereço}one{# endereço}other{# endereços}}</translation>
 <translation id="2187317261103489799">Detectar (padrão)</translation>
+<translation id="2188375229972301266">Perfuração múltipla na parte inferior</translation>
 <translation id="2202020181578195191">Informe um ano de validade válido</translation>
 <translation id="2212735316055980242">Política não encontrada</translation>
 <translation id="2213606439339815911">Buscando entradas...</translation>
+<translation id="2215727959747642672">Edição de arquivo</translation>
 <translation id="2218879909401188352">Os invasores que estão em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> no momento podem instalar apps perigosos que danificam seu dispositivo, acrescentam cobranças ocultas junto à operadora ou roubam suas informações pessoais. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2224337661447660594">Sem Internet</translation>
 <translation id="2230458221926704099">Corrija sua conexão usando o <ph name="BEGIN_LINK" />app de diagnóstico<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Enviar agora</translation>
+<translation id="2248949050832152960">Usar WebAuthn</translation>
+<translation id="2250931979407627383">Costura no lado esquerdo</translation>
 <translation id="225207911366869382">Este valor está obsoleto para esta política.</translation>
+<translation id="2257315177824333709">Não é possível salvar este cartão no momento</translation>
+<translation id="2258928405015593961">Insira uma data de validade no futuro e tente novamente</translation>
 <translation id="2262243747453050782">Erro HTTP</translation>
 <translation id="2263079731045660823">Atualize as informações de preenchimento automático de cartão de crédito nas configurações do Chrome</translation>
+<translation id="2267047181501709434">Verificando sua identidade…</translation>
 <translation id="2270484714375784793">Número do telefone</translation>
+<translation id="2277103315734023688">Avançar</translation>
 <translation id="2283340219607151381">Salvar e preencher endereços</translation>
+<translation id="2289385804009217824">Cortar</translation>
 <translation id="2292556288342944218">O seu acesso à Internet está bloqueado</translation>
-<translation id="2294558542833290837">O link que você abriu originalmente é incomum</translation>
 <translation id="2297722699537546652">B5 (Envelope)</translation>
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
+<translation id="2315864634253056100">O nome desse site é parecido com o de <ph name="LOOKALIKE_DOMAIN" />. Às vezes, os invasores imitam sites, fazendo modificações quase imperceptíveis no endereço da Web.</translation>
 <translation id="2316887270356262533">Libera menos de 1 MB. O carregamento de alguns sites pode ficar mais lento no seu próximo acesso.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> exige um nome de usuário e uma senha.</translation>
 <translation id="2317583587496011522">Cartões de débito são aceitos.</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expira em <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Configuração controlada pelo administrador</translation>
 <translation id="2346319942568447007">Imagem que você copiou</translation>
-<translation id="2349790679044093737">A sessão de RV está ativa</translation>
 <translation id="2354001756790975382">Outros favoritos</translation>
 <translation id="2354430244986887761">Recentemente, o recurso "Navegação segura" do Google <ph name="BEGIN_LINK" />encontrou apps prejudiciais<ph name="END_LINK" /> em <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">É possível que invasores consigam ver as imagens que você está olhando nesse site e as modifiquem para enganar você.</translation>
@@ -268,60 +305,63 @@
 <translation id="2360873523816792727">Para usar seus cartões em todos os dispositivos, ative a sincronização.</translation>
 <translation id="2365563543831475020">O relatório de erros registrado em <ph name="CRASH_TIME" /> não foi enviado</translation>
 <translation id="2367567093518048410">Nível</translation>
-<translation id="2378238891085281592">Você está em modo privado</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2384307209577226199">Padrão da empresa</translation>
 <translation id="2386255080630008482">O certificado do servidor foi revogado.</translation>
 <translation id="2392959068659972793">Mostrar políticas sem valor definido</translation>
 <translation id="239429038616798445">Esse método de envio não está disponível. Tente um método diferente.</translation>
 <translation id="2396249848217231973">&amp;Desfazer exclusão</translation>
+<translation id="2409589295040002961">O administrador pode alterar as configurações do navegador remotamente. A atividade deste dispositivo também pode ser gerenciada fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2410754574180102685">Ofício 2</translation>
 <translation id="2413528052993050574">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança pode ter sido revogado. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
-<translation id="2418081434543109369">O servidor que você acessará, <ph name="ORIGIN" />, solicitou que
-    uma política de segurança seja aplicada a todas as solicitações. Porém, agora ele
-    deixou de carregar uma política, o que impede que o navegador execute
-    sua solicitação para <ph name="SITE" />.</translation>
-<translation id="2442483081384580286">Avisos do Navegação segura</translation>
-<translation id="244665789865330679">Seu dispositivo e sua conta são gerenciados por <ph name="ENROLLMENT_DOMAIN" />. Isso significa que seu administrador pode configurá-los remotamente.</translation>
+<translation id="2438874542388153331">Perfuração quádrupla no lado direito</translation>
+<translation id="245044156129055925">Você acabou de digitar sua senha em um site suspeito. O Chromium recomenda que você a mude agora.</translation>
 <translation id="2463193859425327265">Alterar a página inicial</translation>
 <translation id="2463739503403862330">Preencher</translation>
 <translation id="2465402087343596252">Arch E</translation>
 <translation id="2465655957518002998">Escolher método de entrega</translation>
+<translation id="2465688316154986572">Grampear</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Executar o Diagnóstico de Rede<ph name="END_LINK" /></translation>
 <translation id="2473195200299095979">Traduzir esta página</translation>
 <translation id="2479410451996844060">URL de pesquisa inválido.</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="248348093745724435">Políticas do computador</translation>
-<translation id="2485387744899240041">Nomes de usuário para seu dispositivo e navegador</translation>
 <translation id="2491120439723279231">O certificado do servidor contém erros.</translation>
 <translation id="2493640343870896922">Letter Plus</translation>
 <translation id="2495083838625180221">Analisador JSON</translation>
 <translation id="2495093607237746763">Se esta opção for selecionada, o Chromium armazenará uma cópia do seu cartão neste dispositivo para preencher de formulários mais rapidamente.</translation>
 <translation id="2498091847651709837">Digitalizar novo cartão</translation>
+<translation id="249825481377667906">No Chromium, você pode receber ajuda para proteger sua Conta do Google e alterar sua senha. Essa ação notificará o Google sobre este site.</translation>
 <translation id="2501278716633472235">Voltar</translation>
 <translation id="2503184589641749290">Cartões de débito e pré-pagos aceitos</translation>
+<translation id="2505268675989099013">Proteger conta</translation>
 <translation id="2515629240566999685">Verificar o sinal na sua área</translation>
-<translation id="2516852381693169964">Procurar imagem no <ph name="SEARCH_ENGINE" /></translation>
+<translation id="2521385132275182522">Grampo na parte inferior direita</translation>
 <translation id="2523886232349826891">Salvo apenas neste dispositivo</translation>
 <translation id="2524461107774643265">Adicione Mais Informações</translation>
+<translation id="2535659140340599600">{COUNT,plural, =1{e mais 1}one{e mais #}other{e mais #}}</translation>
 <translation id="2536110899380797252">Adicionar Endereço</translation>
 <translation id="2539524384386349900">Detectar</translation>
+<translation id="254947805923345898">O valor da política não é válido.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> enviou uma resposta inválida.</translation>
 <translation id="2556876185419854533">&amp;Desfazer editar</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2587730715158995865">De <ph name="ARTICLE_PUBLISHER" />. Leia essa matéria e <ph name="OTHER_ARTICLE_COUNT" /> outras.</translation>
 <translation id="2587841377698384444">Código da API do diretório:</translation>
+<translation id="2595719060046994702">Este dispositivo e conta não são gerenciados por uma empresa ou outra organização.</translation>
 <translation id="2597378329261239068">Este documento está protegido por senha.  Digite a senha.</translation>
 <translation id="2609632851001447353">Variações</translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
 <translation id="2625385379895617796">Seu relógio está adiantado</translation>
 <translation id="2634124572758952069">Não foi possível encontrar o endereço IP do servidor de <ph name="HOST_NAME" />.</translation>
+<translation id="2638745661847473633">O servidor que você acessará, <ph name="ORIGIN" />, solicitou que uma política de origem seja aplicada a todas as solicitações. No entanto, ele carregou uma política inválida, o que significa que o navegador não pode completar sua solicitação para <ph name="SITE" />. Políticas de origem podem ser usadas por operadores para configurar a segurança e outras propriedades de um site.</translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2650446666397867134">O acesso ao arquivo foi negado</translation>
 <translation id="2653659639078652383">Enviar</translation>
+<translation id="2660650542324841986">O servidor que você acessará, <ph name="ORIGIN" />, solicitou que uma política de origem seja aplicada a todas as solicitações. No entanto, agora ele deixou de carregar uma política, o que impede que o navegador execute sua solicitação para <ph name="SITE" />. Políticas de origem podem ser usadas por operadores para configurar a segurança e outras propriedades de um site.</translation>
+<translation id="2664887757054927933">{COUNT,plural, =0{Nenhuma}=1{1 senha (para <ph name="DOMAIN_LIST" />)}=2{2 senhas (para <ph name="DOMAIN_LIST" />)}one{# senha (para <ph name="DOMAIN_LIST" />)}other{# senhas (para <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666117266261740852">Fechar outras guias ou apps</translation>
-<translation id="267371737713284912">pressione <ph name="MODIFIER_KEY_DESCRIPTION" /> para desfazer</translation>
 <translation id="2674170444375937751">Tem certeza que quer excluir essas páginas do seu histórico?</translation>
 <translation id="2676271551327853224">8K 273 mm x 394 mm</translation>
 <translation id="2677748264148917807">Sair</translation>
@@ -331,12 +371,14 @@
 <translation id="2704283930420550640">O valor não corresponde ao formato.</translation>
 <translation id="2705137772291741111">Não foi possível ler a cópia armazenada em cache deste site.</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
-<translation id="2712173769900027643">Pedir permissão</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2720342946869265578">Por perto</translation>
 <translation id="2721148159707890343">Solicitação bem-sucedida</translation>
+<translation id="272451190272506600">Toque no sensor para pagar</translation>
 <translation id="2728127805433021124">O certificado do servidor é assinado com um algoritmo de assinatura fraco.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Executar o Diagnóstico de Conectividade<ph name="END_LINK" /></translation>
+<translation id="2734544361860335147">Ativando esses recursos, você pode perder dados do navegador ou comprometer sua segurança ou privacidade. Os recursos ativados se aplicam a todos os usuários desse navegador.</translation>
+<translation id="2735043616039983645">Há mais de uma fonte com valores conflitantes para esta política.</translation>
 <translation id="2738330467931008676">Escolher endereço de retirada</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742870351467570537">Remover itens selecionados</translation>
@@ -345,7 +387,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">A conexão foi redefinida.</translation>
 <translation id="2788784517760473862">Cartões de crédito aceitos</translation>
-<translation id="2794233252405721443">Site bloqueado</translation>
+<translation id="2792012897584536778">Os administradores deste dispositivo configuraram certificados de segurança que podem permitir que eles vejam o conteúdo dos sites que você visita.</translation>
 <translation id="2799020568854403057">O site a seguir contém apps prejudiciais</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2803306138276472711">A Navegação segura do Google recentemente <ph name="BEGIN_LINK" />detectou malware<ph name="END_LINK" /> em <ph name="SITE" />. Websites que geralmente são seguros, algumas vezes, são infetados com malware.</translation>
@@ -354,21 +396,25 @@
 <translation id="2835170189407361413">Limpar formulário</translation>
 <translation id="2847118875340931228">Abrir janela anônima</translation>
 <translation id="2850739647070081192">Convite (Envelope)</translation>
-<translation id="2851634818064021665">Você precisa de permissão para visitar este site</translation>
 <translation id="2856444702002559011">Invasores podem estar tentando roubar suas informações de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (por exemplo, senhas, mensagens ou cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="2878197950673342043">Dobra em cruz sanfona</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2881276955470682203">Salvar cartão?</translation>
+<translation id="2882949212241984732">Dobra janela dupla</translation>
 <translation id="2903493209154104877">Endereços</translation>
 <translation id="290376772003165898">A página não está em <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">Foi detectada uma alteração na rede.</translation>
+<translation id="2910133103376701357">Seu dispositivo e sua conta são gerenciados por <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="2916038427272391327">Fechar outros programas</translation>
 <translation id="2922350208395188000">O certificado do servidor não pode ser verificado.</translation>
 <translation id="2925673989565098301">Método de envio</translation>
 <translation id="2928905813689894207">Endereço de cobrança</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="2930577230479659665">Cortar depois de cada cópia</translation>
 <translation id="2934466151127459956">Government Letter</translation>
 <translation id="2941952326391522266">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança é de <ph name="DOMAIN2" />. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="2948083400971632585">Na página "Configurações", você pode desativar quaisquer proxies configurados para uma conexão.</translation>
+<translation id="295526156371527179">Aviso: esta política não foi mesclada como um dicionário conforme especificado porque ela não é um dicionário.</translation>
 <translation id="2955913368246107853">Fechar barra de localização</translation>
 <translation id="2969319727213777354">Para estabelecer uma conexão segura, o relógio precisa estar configurado corretamente. Isso ocorre porque os certificados que os websites usam para se identificar são válidos apenas por períodos específicos. Como o relógio do seu dispositivo está incorreto, o Google Chrome não consegue verificar esses certificados.</translation>
 <translation id="2972581237482394796">&amp;Refazer</translation>
@@ -377,6 +423,8 @@
 <translation id="2985306909656435243">Se esta opção for ativada, o Chromium armazenará uma cópia do seu cartão neste dispositivo para preencher formulários mais rapidamente.</translation>
 <translation id="2985398929374701810">Informe um endereço válido</translation>
 <translation id="2986368408720340940">Esse método de retirada não está disponível. Tente um método diferente.</translation>
+<translation id="2987034854559945715">Nenhum recurso correspondente</translation>
+<translation id="2989742184762224133">Dois grampos na parte superior</translation>
 <translation id="2991174974383378012">Compartilhar com websites</translation>
 <translation id="2991571918955627853">Você não pode visitar <ph name="SITE" /> agora, porque o site usa HSTS. Erros de rede e ataques são geralmente temporários. Esta página provavelmente funcionará mais tarde.</translation>
 <translation id="3005723025932146533">Mostrar cópia salva</translation>
@@ -387,15 +435,18 @@
 <translation id="3024663005179499861">Tipo de política incorreto</translation>
 <translation id="3037605927509011580">Ah, não!</translation>
 <translation id="3041612393474885105">Informações do certificado</translation>
+<translation id="3057676462092457419">O modo DnsOverHttps <ph name="SECURE_DNS_MODE_SECURE" /> ainda não é compatível, o modo foi definido como <ph name="SECURE_DNS_MODE_OFF" />.</translation>
 <translation id="3060227939791841287">C9 (Envelope)</translation>
+<translation id="3061707000357573562">Aplicar patch ao serviço</translation>
 <translation id="3064966200440839136">Saindo do modo de navegação anônima para pagar usando um aplicativo externo. Continuar?</translation>
-<translation id="3083099961703215236">{COUNT,plural, =0{Nenhuma}=1{1 senha}one{# senha}other{# senhas}}</translation>
 <translation id="3095940652251934233">Meia carta</translation>
 <translation id="3096100844101284527">Adicionar endereço de retirada</translation>
 <translation id="3105172416063519923">Código do recurso:</translation>
 <translation id="3109728660330352905">Você não tem autorização para ver esta página.</translation>
+<translation id="3116158981186517402">Laminar</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Tente executar o Diagnóstico de Conectividade<ph name="END_LINK" />.</translation>
+<translation id="3121994479408824897">Ir para <ph name="DOMAIN" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Nenhum}=1{dados de login para 1 conta}one{dados de login para # conta}other{dados de login para # contas}}</translation>
 <translation id="3145945101586104090">Falha ao decodificar resposta</translation>
 <translation id="3150653042067488994">Erro temporário do servidor</translation>
@@ -409,10 +460,13 @@
       verificar se o servidor proxy está funcionando. Se você acredita que não deve
       usar um servidor proxy:
       <ph name="PLATFORM_TEXT" /></translation>
+<translation id="3188393374551744535">Saldo da conta</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> em <ph name="SERVER_NAME" /></translation>
 <translation id="320323717674993345">Cancelar pagamento</translation>
-<translation id="3207960819495026254">Adicionada aos favoritos</translation>
-<translation id="321912867715453276">Aviso: há mais de uma fonte para esta política, mas os valores são os mesmos.</translation>
+<translation id="3207960819495026254">Adicionado aos favoritos</translation>
+<translation id="3209034400446768650">Esta página pode emitir cobranças em dinheiro</translation>
+<translation id="3209080785413271048">Use o Windows Hello para confirmar suas formas de pagamento salvas.</translation>
+<translation id="3215092763954878852">Não foi possível usar WebAuthn</translation>
 <translation id="3225919329040284222">O servidor apresentou um certificado que não coincide com as expectativas incorporadas. Estas expectativas são incluídas para determinados websites de alta segurança com a finalidade de oferecer proteção a você.</translation>
 <translation id="3226128629678568754">Pressione o botão "Atualizar" para reenviar os dados necessários para carregar a página.</translation>
 <translation id="3227137524299004712">Microfone</translation>
@@ -420,24 +474,21 @@
 <translation id="3229041911291329567">Informações sobre a versão do seu dispositivo e navegador</translation>
 <translation id="323107829343500871">Digite o CVC do <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Sempre detectar conteúdo importante neste site</translation>
-<translation id="3254409185687681395">Adicionar esta página aos favoritos</translation>
+<translation id="3262069459091978471"><ph name="LOOKALIKE_DOMAIN" /> é semelhante a <ph name="SUGGESTED_DOMAIN" />. Às vezes, os invasores imitam sites, usando URLs parecidos.</translation>
 <translation id="3270847123878663523">&amp;Desfazer reordenar</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
+<translation id="3281668902344226640">Use o Touch ID para confirmar suas formas de pagamento salvas.</translation>
 <translation id="3282497668470633863">Adicionar nome (como consta no cartão)</translation>
-<translation id="3287510313208355388">Fazer o download quando estiver on-line</translation>
+<translation id="3287510313208355388">Download quando estiver on-line</translation>
 <translation id="3293642807462928945">Saiba mais sobre a política <ph name="POLICY_NAME" /></translation>
+<translation id="3295439534709115864">Houve uma violação de dados em um site ou app usado por você. Por recomendação do Chrome, mude sua senha em <ph name="ORIGIN" /> imediatamente.</translation>
 <translation id="3303855915957856445">Nenhum resultado de pesquisa encontrado</translation>
 <translation id="3320021301628644560">Adicionar endereço de faturamento</translation>
 <translation id="3324983252691184275">Carmim</translation>
 <translation id="3338095232262050444">Seguro</translation>
-<translation id="3345135638360864351">Não foi possível enviar sua solicitação a <ph name="NAME" /> para acessar este site. Tente novamente.</translation>
 <translation id="3355823806454867987">Alterar configurações de proxy...</translation>
-<translation id="3361596688432910856">O Chrome <ph name="BEGIN_EMPHASIS" />não salvará<ph name="END_EMPHASIS" /> as seguintes informações:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />seu histórico de navegação
-          <ph name="LIST_ITEM" />cookies e dados de sites
-          <ph name="LIST_ITEM" />informações fornecidas em formulários
-        <ph name="END_LIST" /></translation>
+<translation id="3360103848165129075">Página do gerenciador de pagamento</translation>
+<translation id="3362968246557010467">Esta política foi copiada automaticamente da política <ph name="OLD_POLICY" /> obsoleta. Use esta política.</translation>
 <translation id="3366477098757335611">Ver cartões</translation>
 <translation id="3369192424181595722">Erro do relógio</translation>
 <translation id="337363190475750230">Desprovisionado</translation>
@@ -453,6 +504,7 @@
 <translation id="3427092606871434483">Permitir (padrão)</translation>
 <translation id="3427342743765426898">&amp;Refazer editar</translation>
 <translation id="342781501876943858">O Chromium recomenda redefinir sua senha se você a reutilizou em outros sites.</translation>
+<translation id="3428151540071562330">Um ou mais dos URIs de modelo de servidor da DnsOverHttpsTemplates é inválido e não será usado.</translation>
 <translation id="3431636764301398940">Salvar este cartão neste dispositivo</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">O proprietário deste dispositivo desativou o jogo do dinossauro.</translation>
@@ -463,17 +515,15 @@
 <translation id="3462200631372590220">Ocultar detalhes</translation>
 <translation id="3467763166455606212">O nome do titular do cartão é obrigatório</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> está aberta. Pressione Tab e depois Enter para alternar para a guia aberta</translation>
-<translation id="3479539252931486093">Isso foi inesperado? <ph name="BEGIN_LINK" />Informe-nos<ph name="END_LINK" /></translation>
 <translation id="3479552764303398839">Não agora</translation>
 <translation id="3484560055331845446">Você pode perder o acesso à sua Conta do Google. O Chrome recomenda que sua senha seja alterada agora. Solicitaremos que você faça login.</translation>
 <translation id="3495081129428749620">Encontrar na página
     <ph name="PAGE_TITLE" /></translation>
-<translation id="3498215018399854026">Não foi possível contatar seu pai/mãe no momento. Tente novamente.</translation>
+<translation id="3512163584740124171">Esta política é ignorada porque outra política do mesmo grupo tem uma prioridade mais alta.</translation>
 <translation id="3528171143076753409">O certificado do servidor não é confiável.</translation>
 <translation id="3528485271872257980">Marrom-escuro</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Pelo menos 1 item em dispositivos sincronizados}=1{1 item (e mais em dispositivos sincronizados)}one{# item (e mais em dispositivos sincronizados)}other{# itens (e mais em dispositivos sincronizados)}}</translation>
 <translation id="3539171420378717834">Manter uma cópia deste cartão neste dispositivo</translation>
-<translation id="3556433843310711081">Seu administrador pode desbloqueá-lo para você</translation>
 <translation id="3566021033012934673">Sua conexão não é particular</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3576616784287504635">Uma página incorporada em <ph name="SITE" /> diz</translation>
@@ -481,33 +531,38 @@
 <translation id="358285529439630156">Cartões de crédito e pré-pagos são aceitos.</translation>
 <translation id="3582930987043644930">Adicionar nome</translation>
 <translation id="3583757800736429874">&amp;Refazer mover</translation>
-<translation id="35866233670761917">O conteúdo dos sites que você visita não é visto pelos administradores</translation>
+<translation id="3584299510153766161">Perfuração dupla na parte inferior</translation>
 <translation id="3586931643579894722">Ocultar detalhes</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3614103345592970299">Tamanho 2</translation>
+<translation id="361438452008624280">Entrada "<ph name="LANGUAGE_ID" />": idioma desconhecido ou não compatível.</translation>
 <translation id="3615877443314183785">Informe uma data de validade válida</translation>
 <translation id="36224234498066874">Limpar dados de navegação...</translation>
 <translation id="362276910939193118">Mostrar histórico completo</translation>
 <translation id="3630155396527302611">Se ele já estiver listado como um programa que tem permissão para acessar a rede, tente
       removê-lo da lista e adicioná-lo novamente.</translation>
+<translation id="3631244953324577188">Biometria</translation>
 <translation id="3640766068866876100">102 mm × 152 mm</translation>
 <translation id="3650584904733503804">Validação bem-sucedida</translation>
 <translation id="3655670868607891010">Caso veja esta página com frequência, tente <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Revisão</translation>
 <translation id="366077651725703012">Atualizar cartão de crédito</translation>
 <translation id="3676592649209844519">Código do dispositivo:</translation>
+<translation id="3677008721441257057">Você quis dizer &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Não foi possível assinar a solicitação</translation>
 <translation id="3678529606614285348">Abrir página em uma nova janela anônima (Ctrl-Shift-N)</translation>
 <translation id="3679803492151881375">Relatório de erros registrado em <ph name="CRASH_TIME" />, enviado em <ph name="UPLOAD_TIME" /></translation>
 <translation id="3681007416295224113">Informações do certificado</translation>
+<translation id="3688109723158850780">O servidor que você acessará, <ph name="ORIGIN" />, solicitou que uma política de origem seja aplicada a todas as solicitações. No entanto, em vez de carregar uma política, ele redirecionou o navegador para outro lugar, o que impede a execução da sua solicitação para <ph name="SITE" />. Políticas de origem podem ser usadas por operadores para configurar a segurança e outras propriedades de um site.</translation>
+<translation id="3701427423622901115">Redefinição confirmada.</translation>
 <translation id="3704162925118123524">A rede que você está usando pode exigir que você visite a página de login.</translation>
 <translation id="3704609568417268905"><ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="370665806235115550">Carregando...</translation>
 <translation id="3709599264800900598">Texto que você copiou</translation>
 <translation id="3712624925041724820">Licenças esgotadas</translation>
 <translation id="3714780639079136834">Ativar os dados da rede celular ou o Wi-Fi</translation>
-<translation id="3715597595485130451">Conectar-se ao Wi-Fi</translation>
+<translation id="3715597595485130451">Conectar ao Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Verificar a configuração de DNS, proxy e firewall<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">Entre os apps que podem causar esse erro estão antivírus, firewall e softwares de filtros ou proxy da Web.</translation>
 <translation id="373042150751172459">B4 (Envelope)</translation>
@@ -517,6 +572,7 @@
 <translation id="3748148204939282805">Invasores em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> podem levar você a fazer algo perigoso, como instalar software ou revelar suas informações pessoais (por exemplo, senhas, números de telefone ou cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="375403751935624634">A tradução falhou devido a um erro no servidor.</translation>
 <translation id="3759461132968374835">Você não relatou falhas recentemente. As falhas que ocorreram quando o relatório de erros estava desativado não aparecerão aqui.</translation>
+<translation id="3760561303380396507">Usar o Windows Hello em vez do CVC?</translation>
 <translation id="3761718714832595332">Ocultar status</translation>
 <translation id="3765032636089507299">A página de navegação segura está em construção.</translation>
 <translation id="3778403066972421603">Quer salvar este cartão na sua Conta do Google e neste dispositivo?</translation>
@@ -526,30 +582,39 @@
 <translation id="3789155188480882154">Tamanho 16</translation>
 <translation id="3797522431967816232">Prc3 (Envelope)</translation>
 <translation id="3807873520724684969">Conteúdo nocivo bloqueado.</translation>
+<translation id="3808375843007691220">Aviso: recursos experimentais à vista!</translation>
 <translation id="3810973564298564668">Gerenciar</translation>
 <translation id="382518646247711829">Se você usa um servidor proxy...</translation>
 <translation id="3828924085048779000">Uma senha vazia não é permitida.</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> instalou extensões para funções adicionais. As extensões têm acesso a alguns dos seus dados.</translation>
+<translation id="3832522519263485449">Perfuração múltipla no lado esquerdo</translation>
 <translation id="385051799172605136">Voltar</translation>
 <translation id="3858027520442213535">Atualizar data e hora</translation>
 <translation id="3884278016824448484">Identificador de dispositivo em conflito</translation>
 <translation id="3885155851504623709">Município</translation>
-<translation id="3886446263141354045">Sua solicitação para acessar este site foi enviada para <ph name="NAME" /></translation>
 <translation id="3890664840433101773">Adicionar e-mail</translation>
+<translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">O cartão expirou</translation>
 <translation id="3906600011954732550">B5 Extra</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3939773374150895049">Usar WebAuthn em vez de CVC?</translation>
 <translation id="3946209740501886391">Sempre perguntar neste site</translation>
 <translation id="3949571496842715403">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele não especifica a extensão Nomes alternativos do requerente. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="3949601375789751990">Seu histórico de navegação aparece aqui</translation>
+<translation id="3949870428812919180">Nenhuma forma de pagamento salva</translation>
 <translation id="3950820424414687140">Fazer login</translation>
-<translation id="3963721102035795474">Modo leitor</translation>
+<translation id="3961148744525529027">A página do gerenciador de pagamento está parcialmente aberta</translation>
+<translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3963837677003247395">Continuar manualmente?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Nenhum}=1{1 site }one{# site }other{# sites }}</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
+<translation id="3981540111851280311">O domínio <ph name="ENROLLMENT_DOMAIN" /> ativou o serviço de proteção contra ameaças do Chrome Enterprise no seu navegador. Esse serviço tem acesso a parte dos seus dados.</translation>
+<translation id="3987405730340719549">O Chrome determinou que este site pode ser falso ou fraudulento.
+
+    Se você acha que essa mensagem foi mostrada por engano, acesse https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals (em inglês).</translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
-<translation id="4008849406247176967">Aviso: há mais de uma fonte com valores conflitantes para esta política.</translation>
+<translation id="3990250421422698716">Ajustar desvio</translation>
 <translation id="40103911065039147">{URL_count,plural, =1{1 página da Web por perto}one{# página da Web por perto}other{# páginas da Web por perto}}</translation>
 <translation id="4030383055268325496">&amp;Desfazer adicionar</translation>
 <translation id="4032320456957708163">Seu navegador é gerenciado por <ph name="ENROLLMENT_DOMAIN" /></translation>
@@ -558,14 +623,20 @@
 <translation id="4067947977115446013">Adicione um Endereço Válido</translation>
 <translation id="4072486802667267160">Ocorreu um erro ao processar seu pedido. Tente novamente.</translation>
 <translation id="4075732493274867456">O cliente e o servidor não são compatíveis com uma versão do protocolo SSL comum ou com o pacote de criptografia.</translation>
+<translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">A configuração do proxy definida utiliza um URL de script .pac, e não servidores proxy fixos.</translation>
-<translation id="4098354747657067197">Site enganoso à frente</translation>
+<translation id="4082393374666368382">Configurações: gerenciamento</translation>
+<translation id="4098354747657067197">Site enganoso</translation>
 <translation id="4103249731201008433">O número de série do dispositivo é inválido</translation>
 <translation id="410351446219883937">Reprodução automática</translation>
 <translation id="4103763322291513355">Visite &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver a lista de URLs adicionados à lista de proibições e outras políticas aplicadas pelo administrador do seu sistema.</translation>
+<translation id="4108231218301530806">Usar impressão digital para verificar o cartão na próxima vez.</translation>
 <translation id="4110652170750985508">Analisar seu pagamento</translation>
+<translation id="4112140312785995938">Retroceder</translation>
 <translation id="4116663294526079822">Sempre permitir neste site</translation>
+<translation id="4116701314593212016">JIS B7</translation>
 <translation id="4117700440116928470">O escopo da política não é suportado.</translation>
+<translation id="4123572138124678573">Perfuração tripla na parte inferior</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{mais 1}one{mais #}other{mais #}}</translation>
 <translation id="4130226655945681476">Verificar os cabos de rede, modem e roteador</translation>
 <translation id="413544239732274901">Saiba mais</translation>
@@ -576,6 +647,7 @@
 <translation id="4171400957073367226">Assinatura de verificação inválida</translation>
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Mais <ph name="ITEM_COUNT" /> item}one{Mais <ph name="ITEM_COUNT" /> item}other{Mais <ph name="ITEM_COUNT" /> itens}}</translation>
+<translation id="4176463684765177261">Desativado</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4196861286325780578">&amp;Refazer mover</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Verificar as configurações do antivírus e firewall<ph name="END_LINK" /></translation>
@@ -600,7 +672,9 @@
     &lt;h4&gt;Etapa 5: conseguir ajuda extra&lt;/h4&gt;
     &lt;p&gt;Se o erro persistir, entre em contato com o proprietário do site.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Tente executar o Diagnóstico de Rede<ph name="END_LINK" />.</translation>
+<translation id="4234495348042597185"><ph name="BEGIN_LINK" />Ir para <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Válido</translation>
+<translation id="4248776159690739358">Compartilhe os dados sobre ocorrências de segurança sinalizadas pelo Serviço de proteção contra ameaças do Chrome Enterprise com seu administrador. Isso pode incluir URLs das páginas visitadas, nomes de arquivos ou metadados e o nome de usuário usado para fazer login no dispositivo e no Chrome.</translation>
 <translation id="4250431568374086873">Sua conexão com esse site não é completamente segura</translation>
 <translation id="4250680216510889253">Não</translation>
 <translation id="425582637250725228">É possível que as alterações feitas não sejam salvas.</translation>
@@ -609,8 +683,11 @@
 <translation id="4265872034478892965">Permitido pelo administrador</translation>
 <translation id="4275830172053184480">Reiniciar seu dispositivo</translation>
 <translation id="4277028893293644418">Redefinir senha</translation>
-<translation id="4280429058323657511">, validade <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="4279811152705618813">Seu <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Esse cartão foi adicionado à sua Conta do Google}one{Esse cartão foi adicionado à sua Conta do Google}other{Esses cartões foram adicionados à sua Conta do Google}}</translation>
+<translation id="428847186335018806">Verifica os arquivos dos quais você faz o download ou upload no Chrome.</translation>
+<translation id="42981349822642051">Expandir</translation>
+<translation id="4300675098767811073">Perfuração múltipla do lado direito</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305817255990598646">Alternar</translation>
 <translation id="4312613361423056926">B2</translation>
@@ -623,12 +700,15 @@
 <translation id="4346197816712207223">Cartões de crédito aceitos</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4356973930735388585">Invasores nesse site podem tentar instalar programas perigosos no seu computador para roubar ou excluir informações (por exemplo, fotos, senhas, mensagens e cartões de crédito).</translation>
+<translation id="4358059973562876591">Os modelos que você especificou podem não ser aplicados devido a um erro na política DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Gerenciar formas de pagamento…</translation>
 <translation id="4367563149485757821">Nº 12 (Envelope)</translation>
+<translation id="437058704415269440">Saldo da conta</translation>
 <translation id="4372516964750095882">216 mm x 304 mm</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
 <translation id="4377125064752653719">Você tentou acessar <ph name="DOMAIN" />, mas o certificado que o servidor apresentou foi revogado pelo seu emissor. Isso significa que as credenciais de segurança que o servidor apresentou não são nem um pouco seguras. Talvez você esteja se comunicando com um invasor.</translation>
 <translation id="4378154925671717803">Telefone</translation>
+<translation id="4398334096870680409">Esse recurso não está disponível no seu dispositivo.</translation>
 <translation id="4406896451731180161">resultados da pesquisa</translation>
 <translation id="4408413947728134509">Cookies: <ph name="NUM_COOKIES" /></translation>
 <translation id="4415426530740016218">Endereço de Retirada</translation>
@@ -640,16 +720,20 @@
 <translation id="443673843213245140">O uso de um proxy está desativado, mas uma configuração explícita de proxy é especificada.</translation>
 <translation id="445100540951337728">Cartões de débito aceitos</translation>
 <translation id="4466881336512663640">As alterações no formulário serão perdidas. Tem certeza de que quer continuar?</translation>
+<translation id="4477350412780666475">Próxima faixa</translation>
 <translation id="4482953324121162758">Este site não será traduzido.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="4492519888999857993">Esses recursos são desativados por padrão e não estarão disponíveis em versões futuras do Chrome.</translation>
+<translation id="4493480324863638523">URL inválido. É necessário um URL com um esquema padrão, como http://example.com ou https://example.com.</translation>
 <translation id="4503882053543859973">Arch D</translation>
 <translation id="4506176782989081258">Erro de validação: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Entrar em contato com o administrador do sistema</translation>
 <translation id="450710068430902550">Compartilhar com o administrador</translation>
+<translation id="4508814173490746936">Não foi possível usar o Touch ID</translation>
 <translation id="4510487217173779431">Chou4 (Envelope)</translation>
 <translation id="4515275063822566619">Os cartões e os endereços vieram do Chrome e da sua Conta do Google (<ph name="ACCOUNT_EMAIL" />). É possível gerenciar essas opções em <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">Comm 10 (Envelope)</translation>
-<translation id="4522570452068850558">Detalhes</translation>
+<translation id="4522570452068850558">Saiba mais</translation>
 <translation id="4524805452350978254">Gerenciar cartões</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4552089082226364758">Flash</translation>
@@ -663,7 +747,10 @@
 <translation id="4594403342090139922">&amp;Desfazer exclusão</translation>
 <translation id="4597348597567598915">Tamanho 8</translation>
 <translation id="4600854749408232102">C6/C5 (Envelope)</translation>
+<translation id="4635654612248442824">O site <ph name="ORIGIN" /> solicitou que uma política de origem seja aplicada a todas as solicitações, mas ela não pode ser aplicada no momento.</translation>
+<translation id="464342062220857295">Recursos de pesquisa</translation>
 <translation id="4646534391647090355">Acessar agora</translation>
+<translation id="4658638640878098064">Grampo na parte superior direita</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="467662567472608290">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança contém erros. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="467809019005607715">Apresentações Google</translation>
@@ -671,7 +758,7 @@
 <translation id="4691835149146451662">Arch A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4708268264240856090">A conexão foi interrompida</translation>
-<translation id="471880041731876836">Você não tem permissão para visitar este site</translation>
+<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Executar o Diagnóstico de Rede do Windows<ph name="END_LINK" /></translation>
 <translation id="4726672564094551039">Atualizar políticas</translation>
 <translation id="4728558894243024398">Plataforma</translation>
@@ -681,14 +768,15 @@
 <translation id="4738601419177586157">Sugestão de pesquisa: <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Gerenciar senhas…</translation>
 <translation id="4744603770635761495">Caminho do executável</translation>
-<translation id="4746351372139058112">Mensagens</translation>
-<translation id="4750917950439032686">Suas informações (por exemplo, senhas ou números de cartão de crédito) permanecem particulares quando são enviadas para esse site.</translation>
+<translation id="4750917950439032686">Suas informações (por exemplo, senhas ou números de cartão de crédito) permanecem privadas quando são enviadas para esse site.</translation>
 <translation id="4756388243121344051">&amp;Histórico</translation>
 <translation id="4758311279753947758">Adicionar dados de contato</translation>
-<translation id="4759118997339041434">Preenchimento automático de pagamento desativado</translation>
-<translation id="4764776831041365478">A página da web em <ph name="URL" /> pode estar temporariamente indisponível ou pode ter sido movida permanentemente para um novo endereço da Web.</translation>
+<translation id="4764776831041365478">A página <ph name="URL" /> pode estar temporariamente indisponível ou pode ter sido movida permanentemente para um novo endereço da Web.</translation>
+<translation id="4766713847338118463">Dois grampos na parte inferior</translation>
 <translation id="4771973620359291008">Ocorreu um erro desconhecido.</translation>
+<translation id="4780900888022378816">Seu dispositivo é gerenciado por <ph name="ENROLLMENT_DOMAIN" />, e sua conta é gerenciada por <ph name="ACCOUNT_DOMAIN" />.</translation>
 <translation id="4785689107224900852">Alternar para esta guia</translation>
+<translation id="4791134497475588553">Apps Linux instalados e quando eles foram usados pela última vez</translation>
 <translation id="4798078619018708837">Informe a data de validade e o CVC do <ph name="CREDIT_CARD" /> para atualizar os detalhes do cartão. Depois da confirmação, os detalhes do cartão da sua Conta do Google serão compartilhados com este site.</translation>
 <translation id="4800132727771399293">Verifique sua data de validade e seu CVC e tente novamente</translation>
 <translation id="480334179571489655">Erro de política de origem</translation>
@@ -698,13 +786,16 @@
 <translation id="4816492930507672669">Ajustar à página</translation>
 <translation id="4850886885716139402">Visualizar</translation>
 <translation id="4854362297993841467">Esse método de entrega não está disponível. Tente um método diferente.</translation>
-<translation id="4858792381671956233">Você perguntou aos seus responsáveis se pode visitar este site</translation>
+<translation id="4876188919622883022">Visualização simplificada</translation>
 <translation id="4876305945144899064">Sem nome de usuário</translation>
+<translation id="4877083676943085827">{COUNT,plural, =0{Nenhuma}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Pesquisa sobre <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Automático (padrão)</translation>
 <translation id="4880827082731008257">Histórico de pesquisa</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
+<translation id="4901778704868714008">Salvar…</translation>
+<translation id="4913987521957242411">Perfuração na parte superior esquerda</translation>
 <translation id="4914479371620770914">{URL_count,plural, =1{e mais 1 página da Web}one{e mais # página da Web}other{e mais # páginas da Web}}</translation>
 <translation id="4923417429809017348">Esta página foi traduzida de um idioma desconhecido para o <ph name="LANGUAGE_LANGUAGE" /></translation>
 <translation id="4923459931733593730">Pagamento</translation>
@@ -716,12 +807,14 @@
 <translation id="495170559598752135">Ações</translation>
 <translation id="4955242332710481440">A5 Extra</translation>
 <translation id="4958444002117714549">Expandir lista</translation>
+<translation id="4973922308112707173">Perfuração dupla na parte superior</translation>
 <translation id="4974590756084640048">Reativar avisos</translation>
 <translation id="4984339528288761049">Prc5 (Envelope)</translation>
 <translation id="4989163558385430922">Ver tudo</translation>
+<translation id="4989542687859782284">Indisponível</translation>
 <translation id="4989809363548539747">Este plug-in não é compatível</translation>
+<translation id="4995216769782533993">Confirme o código de segurança para compartilhar os detalhes do seu cartão com este site</translation>
 <translation id="5002932099480077015">Se ativado, o Chrome armazenará uma cópia do seu cartão neste dispositivo para preencher formulários mais rapidamente.</translation>
-<translation id="5014174725590676422">Exibição da tela de primeiro acesso do Google Assistente no Chrome</translation>
 <translation id="5015510746216210676">Nome do computador:</translation>
 <translation id="5017554619425969104">Texto que você copiou</translation>
 <translation id="5018422839182700155">Não é possível abrir essa página</translation>
@@ -736,25 +829,29 @@
 <translation id="5043480802608081735">Link que você copiou</translation>
 <translation id="5045550434625856497">Senha incorreta</translation>
 <translation id="5056549851600133418">Artigos para você</translation>
+<translation id="5061227663725596739">Você quis dizer "<ph name="LOOKALIKE_DOMAIN" />"?</translation>
 <translation id="5068524481479508725">A10</translation>
+<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 em uso)}one{(# em uso)}other{(# em uso)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Verificar o endereço do proxy<ph name="END_LINK" /></translation>
 <translation id="5087286274860437796">O certificado do servidor não é válido no momento.</translation>
 <translation id="5087580092889165836">Adicionar cartão</translation>
 <translation id="5089810972385038852">Estado</translation>
+<translation id="5093232627742069661">Dobra sanfona</translation>
 <translation id="5094747076828555589">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança não é confiável para o Chromium. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="5095208057601539847">Província</translation>
 <translation id="5097099694988056070">Estatísticas do dispositivo, como uso de CPU/RAM</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5098222253617183465">Seu dispositivo é gerenciado por <ph name="ENROLLMENT_DOMAIN" />, e sua conta é gerenciada por <ph name="ACCOUNT_DOMAIN" />. Isso significa que seus administradores podem configurá-los remotamente.</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115563688576182185">64 bits</translation>
 <translation id="5125394840236832993">B Plus</translation>
+<translation id="5126510351761255129">Verificar seu cartão</translation>
 <translation id="5135404736266831032">Gerenciar endereços…</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="5141240743006678641">Criptografar senhas sincronizadas com suas credenciais do Google</translation>
 <translation id="5145883236150621069">Código de erro presente na resposta da política</translation>
 <translation id="515292512908731282">C4 (Envelope)</translation>
+<translation id="5158275234811857234">Capa</translation>
 <translation id="5159010409087891077">Abrir página em uma nova janela anônima (⇧⌘N)</translation>
 <translation id="516920405563544094">Informe o CVC do <ph name="CREDIT_CARD" />. Depois da confirmação, os detalhes do cartão da sua Conta do Google serão compartilhados com este site.</translation>
 <translation id="5169827969064885044">Você pode perder o acesso à conta da sua organização ou sofrer roubo de identidade. O Chrome recomenda que você altere sua senha agora.</translation>
@@ -772,19 +869,27 @@
 <translation id="5230733896359313003">Endereço de entrega</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
-<translation id="5250209940322997802">"Conectar-se à rede"</translation>
+<translation id="5250209940322997802">"Conectar à rede"</translation>
 <translation id="5251803541071282808">Nuvem</translation>
 <translation id="5252000469029418751">C7 (Envelope)</translation>
 <translation id="5254958791078852567">E1</translation>
+<translation id="5261548214279761072">Pagamento concluído</translation>
+<translation id="5266128565379329178">Encadernação na parte superior</translation>
+<translation id="5269225904387178860">Perfuração quádrupla na parte inferior</translation>
+<translation id="5269999699920406580">Recursos aplicáveis a todo o sistema só podem ser definidos pelo proprietário: <ph name="OWNER_EMAIL" />.</translation>
+<translation id="5273658854610202413">Aviso: esta política não foi mesclada conforme especificado na PolicyDictionaryMultipleSourceMergeList porque ela não faz parte das políticas de dicionário que podem ser mescladas.</translation>
 <translation id="5283044957620376778">B1</translation>
+<translation id="528468243742722775">Fim</translation>
 <translation id="5284909709419567258">Endereços de rede</translation>
 <translation id="5285570108065881030">Mostrar todas as senhas salvas</translation>
 <translation id="5287240709317226393">Mostrar cookies</translation>
+<translation id="5287456746628258573">Este site usa uma configuração de segurança desatualizada que pode expor suas informações, como senhas ou números de cartão de crédito, quando elas forem enviadas para o site.</translation>
 <translation id="5288108484102287882">A validação dos valores da política gerou alguns avisos</translation>
 <translation id="5299298092464848405">Política de análise de erros</translation>
 <translation id="5300589172476337783">Mostrar</translation>
-<translation id="5308380583665731573">Conectar-se</translation>
+<translation id="5308380583665731573">Conectar</translation>
 <translation id="5308689395849655368">O relatório de erros está desativado.</translation>
+<translation id="5314967030527622926">Criador de folhetos</translation>
 <translation id="5317780077021120954">Salvar</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> de <ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">Escolher informações de contato</translation>
@@ -792,6 +897,7 @@
 <translation id="5329858041417644019">Seu navegador não é gerenciado</translation>
 <translation id="5332219387342487447">Forma de envio</translation>
 <translation id="5334013548165032829">Registros detalhados do sistema</translation>
+<translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5344579389779391559">Esta página pode tentar cobrar pagamento em dinheiro</translation>
 <translation id="5355557959165512791">Não é possível acessar <ph name="SITE" /> neste momento, porque o certificado dele foi revogado. Como os ataques e erros de rede são geralmente temporários, esta página provavelmente funcionará mais tarde.</translation>
 <translation id="536296301121032821">Falha ao armazenar as configurações da política</translation>
@@ -800,6 +906,7 @@
 <translation id="5384855140246857529">Para usar seus cartões em todos os dispositivos, faça login e ative a sincronização.</translation>
 <translation id="5386426401304769735">A cadeia de certificados desse site contém um certificado assinado usando SHA-1.</translation>
 <translation id="538659543871111977">A4 Tab</translation>
+<translation id="5396631636586785122">Costura no lado direito</translation>
 <translation id="540969355065856584">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele não é válido no momento. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="5421136146218899937">Limpar dados de navegação...</translation>
 <translation id="5430298929874300616">Remover favorito</translation>
@@ -809,7 +916,6 @@
 <translation id="5455374756549232013">Carimbo de data/hora da política inválido</translation>
 <translation id="5457113250005438886">Inválidos</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
-<translation id="5461666840533392417">Parece que você já pegou o jeito, então vou deixar por sua conta. Tenha um bom dia :)</translation>
 <translation id="5470861586879999274">&amp;Refazer editar</translation>
 <translation id="5478437291406423475">Envelope 125 mm x 324 mm</translation>
 <translation id="5481076368049295676">Este conteúdo pode tentar instalar softwares perigosos no seu dispositivo que roubam ou excluem suas informações. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
@@ -824,6 +930,7 @@
 <translation id="5510766032865166053">Talvez tenha sido movido ou excluído.</translation>
 <translation id="5523118979700054094">Nome da política</translation>
 <translation id="552553974213252141">O texto foi extraído corretamente?</translation>
+<translation id="55293785478302737">Costurar borda</translation>
 <translation id="553484882784876924">Prc6 (Envelope)</translation>
 <translation id="5540224163453853">Não foi possível encontrar o artigo solicitado.</translation>
 <translation id="5541546772353173584">Adicione um E-mail</translation>
@@ -831,9 +938,8 @@
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5560088892362098740">Data de validade</translation>
 <translation id="5565735124758917034">Ativo</translation>
+<translation id="5570825185877910964">Proteger conta</translation>
 <translation id="5571083550517324815">Não é possível fazer a retirada nesse endereço. Tente um endereço diferente.</translation>
-<translation id="5571347317547569613">({NUM_COOKIES,plural, =1{1 em uso}one{# em uso}other{# em uso}})</translation>
-<translation id="5572851009514199876">Inicie e faça login no Chrome para que ele possa verificar se você tem permissão para acessar este site.</translation>
 <translation id="5580958916614886209">Verifique o mês de validade e tente novamente</translation>
 <translation id="5586446728396275693">Nenhum endereço salvo</translation>
 <translation id="5595485650161345191">Editar endereço</translation>
@@ -841,6 +947,7 @@
 <translation id="560412284261940334">Gerenciamento não suportado</translation>
 <translation id="5605670050355397069">Tabloide</translation>
 <translation id="5607240918979444548">Arch C</translation>
+<translation id="5608165884683734521">Este site pode ser falso ou conter fraude. O Chrome recomenda sair imediatamente.</translation>
 <translation id="5610142619324316209">Verificar a conexão</translation>
 <translation id="5610807607761827392">É possível gerenciar cartões e endereços em <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
 <translation id="5617949217645503996">Redirecionamento em excesso por <ph name="HOST_NAME" /></translation>
@@ -857,6 +964,7 @@
 <translation id="5685654322157854305">Adicionar endereço de entrega</translation>
 <translation id="5689199277474810259">Exportar para JSON</translation>
 <translation id="5689516760719285838">Local</translation>
+<translation id="569000877158168851">O valor da DnsOverHttpsTemplates não é relevante e não será usado, a menos que a política DnsOverHttpsMode esteja configurada como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> ou <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="570530837424789914">Gerenciar…</translation>
 <translation id="57094364128775171">Sugerir senha forte…</translation>
 <translation id="5710435578057952990">A identidade deste site não foi confirmada.</translation>
@@ -864,11 +972,11 @@
 <translation id="5720705177508910913">Usuário atual</translation>
 <translation id="5728056243719941842">C5 (Envelope)</translation>
 <translation id="5730040223043577876">O Chrome recomenda redefinir sua senha se você a reutilizou em outros sites.</translation>
-<translation id="5732392974455271431">Seus responsáveis podem desbloqueá-lo para você</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Salvar cartão na Conta do Google}one{Salvar cartão na Conta do Google}other{Salvar cartões na Conta do Google}}</translation>
 <translation id="5763042198335101085">Informe um endereço de e-mail válido.</translation>
 <translation id="5765072501007116331">Para ver métodos e requisitos de entrega, selecione um endereço</translation>
 <translation id="5778550464785688721">Controle total de dispositivos MIDI</translation>
+<translation id="5781136890105823427">Experimento ativado</translation>
 <translation id="578305955206182703">Âmbar</translation>
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784606427469807560">Ocorreu um problema ao confirmar seu cartão. Verifique a conexão com a Internet e tente novamente.</translation>
@@ -880,30 +988,43 @@
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5810442152076338065">Sua conexão com <ph name="DOMAIN" /> está criptografada com um pacote de criptografia obsoleto.</translation>
 <translation id="5813119285467412249">&amp;Refazer adicionar</translation>
-<translation id="5838278095973806738">Você não deve fornecer nenhuma informação confidencial nesse site (por exemplo, senhas ou cartões de crédito), porque elas podem ser roubadas por invasores.</translation>
-<translation id="5863847714970149516">A página adiante pode tentar cobrar pagamento em dinheiro</translation>
+<translation id="583281660410589416">Desconhecido</translation>
+<translation id="5838278095973806738">É recomendado não fornecer informações confidencial a esse site (por exemplo, senhas ou cartões de crédito), porque elas podem ser roubadas por invasores.</translation>
+<translation id="5851548754964597211">Lista de guias</translation>
+<translation id="5855253129151731373">O nome do host deste site é parecido com o de <ph name="LOOKALIKE_DOMAIN" />. Às vezes, os invasores imitam sites, fazendo modificações quase imperceptíveis no nome de domínio.
+
+    Se você acha que essa mensagem foi mostrada por engano, acesse https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals (em inglês).</translation>
+<translation id="5860033963881614850">Desativado</translation>
+<translation id="5863847714970149516">A página que você está prestes a acessar pode tentar cobrar pagamentos</translation>
 <translation id="5866257070973731571">Adicione um Número de Telefone</translation>
+<translation id="5866898949289125849">Você está vendo uma página de ferramentas para desenvolvedores</translation>
 <translation id="5869405914158311789">Não é possível acessar esse site</translation>
 <translation id="5869522115854928033">Senhas salvas</translation>
 <translation id="5887400589839399685">Cartão salvo</translation>
 <translation id="5893752035575986141">Cartões de crédito são aceitos.</translation>
+<translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5901630391730855834">Amarelo</translation>
+<translation id="5905445707201418379">Bloqueado de acordo com a política de origem de <ph name="ORIGIN" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizado)</translation>
+<translation id="5916664084637901428">Ativado</translation>
+<translation id="59174027418879706">Ativado</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921639886840618607">Salvar cartão na Conta do Google?</translation>
 <translation id="5922853866070715753">Quase pronto</translation>
 <translation id="5932224571077948991">No site, há exibição de anúncios invasivos ou enganosos</translation>
+<translation id="5939847200023027600">Serviço de criação de PDF</translation>
 <translation id="5946937721014915347">Abrindo <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Não é possível fazer a inscrição com a conta pessoal (pacote de licença disponível).</translation>
 <translation id="5967592137238574583">Edite as Informações de Contato</translation>
 <translation id="5967867314010545767">Remover do histórico</translation>
 <translation id="5975083100439434680">Diminuir zoom</translation>
-<translation id="5977489021191000276">Seu dispositivo não é gerenciado por um administrador.</translation>
-<translation id="5977976211062815271">Neste dispositivo</translation>
+<translation id="5979084224081478209">Verificar senhas</translation>
 <translation id="5980920751713728343">76 mm x 127 mm</translation>
 <translation id="598637245381783098">Não foi possível abrir app de pagamento</translation>
 <translation id="5989320800837274978">Nem os servidores proxy fixos nem o URL de script .pac foram especificados.</translation>
 <translation id="5990559369517809815">Solicitações ao servidor foram bloqueadas por uma extensão.</translation>
+<translation id="5992691462791905444">Dobra sanfona</translation>
+<translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6015796118275082299">Ano</translation>
 <translation id="6016158022840135739">{COUNT,plural, =1{Página 1}one{Página #}other{Página #}}</translation>
@@ -911,32 +1032,40 @@
 <translation id="6017850046339264347">Invasores em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> podem instalar apps enganosos que fingem ser outra pessoa ou coletam dados que podem ser usados para rastrear você. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sincronizados)</translation>
 <translation id="6027201098523975773">Insira um nome</translation>
+<translation id="603068602130820122">Dois grampos no lado direito</translation>
+<translation id="6032955021262906325">Encadernação no lado esquerdo</translation>
 <translation id="6034000775414344507">Cinza-claro</translation>
 <translation id="6034283069659657473">10x14 (Envelope)</translation>
+<translation id="6034514109191629503">Dobra sanfona</translation>
 <translation id="6039846035001940113">Se o problema continuar, entre em contato com o proprietário do site.</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6044573915096792553">Tamanho 12</translation>
 <translation id="6047233362582046994">Se você conhece os riscos para sua segurança, pode <ph name="BEGIN_LINK" />visitar este site<ph name="END_LINK" /> antes de os apps prejudiciais serem removidos.</translation>
 <translation id="6047927260846328439">Este conteúdo pode tentar enganar você para que instale um software ou revele informações pessoais. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="6051221802930200923">Não é possível acessar <ph name="SITE" /> no momento, porque o site usa bloqueio de certificados. Como os ataques e erros de rede são geralmente temporários, esta pagina provavelmente funcionará mais tarde.</translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6058977677006700226">Usar seus cartões em todos os dispositivos?</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
+<translation id="6060009363608157444">Modo DnsOverHttps inválido.</translation>
+<translation id="6064217302520318294">Bloqueio de tela</translation>
 <translation id="6080696365213338172">Você acessou conteúdo usando um certificado fornecido pelo administrador. Os dados fornecidos a <ph name="DOMAIN" /> podem ser interceptados por seu administrador.</translation>
 <translation id="6094273045989040137">Anotar</translation>
+<translation id="6104072995492677441">JIS B6</translation>
 <translation id="610911394827799129">Sua Conta do Google pode ter outras formas de histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6132597952260690497">Informações sobre extensões e plug-ins instalados</translation>
-<translation id="6144381551823904650">{COUNT,plural, =0{Nenhuma}=1{1 senha (sincronizada)}one{# senha (sincronizada)}other{# senhas (sincronizadas)}}</translation>
 <translation id="6146055958333702838">Verifique todos os cabos e reinicie todos os roteadores, modens ou outros
     dispositivos de rede que você estiver usando.</translation>
 <translation id="614940544461990577">Tente:</translation>
+<translation id="6150036310511284407">Perfuração tripla no lado esquerdo</translation>
 <translation id="6151417162996330722">O certificado do servidor tem um período de validade excessivamente longo.</translation>
 <translation id="6157877588268064908">Para ver métodos e requisitos de envio, selecione um endereço</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
-<translation id="6169916984152623906">Agora você pode navegar com privacidade. Outras pessoas que usarem este dispositivo não verão sua atividade, mas os downloads e favoritos serão salvos.</translation>
 <translation id="6177128806592000436">Sua conexão com esse site não é segura</translation>
 <translation id="6203231073485539293">Verifique sua conexão com a Internet</translation>
 <translation id="6218753634732582820">Remover endereço do Chromium?</translation>
+<translation id="622039917539443112">Dobra paralela</translation>
 <translation id="6221345481584921695">A Navegação segura do Google recentemente <ph name="BEGIN_LINK" />detectou malware<ph name="END_LINK" /> em <ph name="SITE" />. Websites que geralmente são seguros estão, algumas vezes, infectados com malware. O conteúdo malicioso vem de <ph name="SUBRESOURCE_HOST" />, um distribuidor de malware conhecido.</translation>
+<translation id="6234122620015464377">Cortar a cada página impressa</translation>
 <translation id="6240447795304464094">Logotipo do Google Pay</translation>
 <translation id="6251924700383757765">Política de Privacidade</translation>
 <translation id="6254436959401408446">Não há memória suficiente para abrir essa página</translation>
@@ -947,47 +1076,71 @@
 <translation id="6266934640124581640">Verde-água</translation>
 <translation id="6276112860590028508">As páginas da sua lista de leitura são exibidas aqui</translation>
 <translation id="627746635834430766">Para agilizar o pagamento na próxima vez, salve o cartão e o endereço de faturamento na sua Conta do Google.</translation>
+<translation id="6279516281132775660">O Chrome <ph name="BEGIN_EMPHASIS" />não salvará<ph name="END_EMPHASIS" /> as seguintes informações:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Seu histórico de navegação
+          <ph name="LIST_ITEM" />Cookies e dados de sites
+          <ph name="LIST_ITEM" />Informações fornecidas em formulários
+        <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Não é possível entregar nesse endereço. Selecione um endereço diferente.</translation>
 <translation id="6282194474023008486">CEP</translation>
 <translation id="6290238015253830360">Os artigos sugeridos aparecerão aqui</translation>
+<translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Parando o Google Assistente no Chrome</translation>
 <translation id="6305205051461490394">Não é possível acessar <ph name="URL" />.</translation>
 <translation id="6321917430147971392">Verifique suas configurações do DNS</translation>
+<translation id="6322182122604171028">Não foi possível usar o Windows Hello</translation>
 <translation id="6328639280570009161">Tente desativar a previsão de rede</translation>
 <translation id="6328784461820205019">"Sua conexão não é particular" ou "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ou "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ou "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ou "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" ou "Erro de certificado SSL"</translation>
 <translation id="6328786501058569169">Este site é enganoso</translation>
 <translation id="6337133576188860026">Libera menos de <ph name="SIZE" />. O carregamento de alguns sites pode ficar mais lento no seu próximo acesso.</translation>
 <translation id="6337534724793800597">Filtrar políticas por nome</translation>
+<translation id="6353505687280762741">{COUNT,plural, =0{Nenhuma}=1{1 senha (para <ph name="DOMAIN_LIST" />, sincronizada)}=2{2 senhas (para <ph name="DOMAIN_LIST" />, sincronizadas)}one{# senha (para <ph name="DOMAIN_LIST" />, sincronizada)}other{# senhas (para <ph name="DOMAIN_LIST" />, sincronizadas)}}</translation>
 <translation id="6358450015545214790">O que são essas informações?</translation>
 <translation id="6361757823711327522">B7</translation>
+<translation id="6366710531182496394">Dois grampos no lado esquerdo</translation>
+<translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Acesso sujeito a cobranças.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 outra sugestão}one{# outra sugestão}other{# outras sugestões}}</translation>
 <translation id="6387754724289022810">Para agilizar o pagamento na próxima vez, salve o cartão e o endereço de faturamento na sua Conta do Google e neste dispositivo.</translation>
+<translation id="6389470377220713856">Nome no cartão</translation>
+<translation id="6390200185239044127">Dobra sanfona simples</translation>
 <translation id="6390662030813198813">Engineering E</translation>
+<translation id="6401136357288658127">Essa política está obsoleta. Use a política <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Editar favorito</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
+<translation id="6409754798200046165">Você acabou de digitar sua senha em um site suspeito. O Chrome recomenda que você a mude agora.</translation>
 <translation id="6410264514553301377">Digite a data de validade e o CVC do <ph name="CREDIT_CARD" /></translation>
-<translation id="6414888972213066896">Você perguntou ao seu responsável se pode visitar este site</translation>
-<translation id="6417515091412812850">Não foi possível verificar se o certificado foi revogado</translation>
+<translation id="6415778972515849510">No Chromium, você pode receber ajuda para proteger sua Conta do Google e alterar sua senha.</translation>
+<translation id="6427730057873428458">Dobra janela</translation>
 <translation id="6433490469411711332">Editar informações de contato</translation>
 <translation id="6433595998831338502">A conexão com <ph name="HOST_NAME" /> foi recusada.</translation>
 <translation id="6434309073475700221">Descartar</translation>
+<translation id="6440503408713884761">Ignorada</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>
 <translation id="6446608382365791566">Adicionar mais informações</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6451458296329894277">Confirmar reenvio do formulário</translation>
+<translation id="6457206614190510200">Grampo canoa</translation>
 <translation id="6465306955648956876">Gerenciar senhas…</translation>
 <translation id="647261751007945333">Políticas de dispositivos</translation>
-<translation id="6477321094435799029">O Chrome detectou um código incomum nesta página e a bloqueou para proteger suas informações pessoais (por exemplo, senhas, números de telefone e cartões de crédito).</translation>
+<translation id="6476284679642588870">Gerenciar formas de pagamento</translation>
 <translation id="6489534406876378309">Iniciar upload de falhas</translation>
 <translation id="6499038740797743453">Redefinir senha?</translation>
 <translation id="6507833130742554667">Cartões de crédito e débito são aceitos.</translation>
 <translation id="6508722015517270189">Reiniciar o Chrome</translation>
+<translation id="6517596291481585650">Aviso: esta política não foi mesclada como uma lista conforme especificado porque ela não é uma lista.</translation>
+<translation id="6518133107902771759">Confirmar</translation>
+<translation id="6521745193039995384">não ativa</translation>
 <translation id="6529602333819889595">&amp;Refazer excluir</translation>
 <translation id="6534179046333460208">Sugestões da Web física</translation>
-<translation id="6563469144985748109">Seu administrador ainda não o aprovou</translation>
+<translation id="6545864417968258051">Verificação de Bluetooth</translation>
+<translation id="6547208576736763147">Perfuração dupla no lado esquerdo</translation>
+<translation id="6554795675067793129">Sua conta é gerenciada por <ph name="ENROLLMENT_DOMAIN" />.</translation>
+<translation id="6556866813142980365">Refazer</translation>
 <translation id="6569060085658103619">Você está vendo uma página de extensões</translation>
+<translation id="6573200754375280815">Perfuração dupla no lado direito</translation>
 <translation id="6578796323535178455">C2 (Envelope)</translation>
 <translation id="6579990219486187401">Rosa-claro</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
@@ -996,36 +1149,44 @@
 <translation id="6596325263575161958">Opções de criptografia</translation>
 <translation id="6604181099783169992">Sensores de luz ou movimento</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
+<translation id="6612358246767739896">Conteúdo protegido</translation>
 <translation id="6624427990725312378">Informações de Contato</translation>
 <translation id="6626291197371920147">Adicionar número de cartão de crédito válido</translation>
 <translation id="6628463337424475685">Pesquisa do <ph name="ENGINE" /></translation>
 <translation id="6630809736994426279">Invasores presentes no momento em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> podem tentar instalar programas perigosos no seu Mac e roubar ou excluir suas informações (por exemplo, fotos, senhas, mensagens e cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="6631202559048444592">Há mais de uma fonte para esta política, mas os valores são os mesmos.</translation>
+<translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6644283850729428850">Esta política foi encerrada.</translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{Nenhum}=1{Em 1 site (você não será desconectado da sua Conta do Google)}one{Em # site (você não será desconectado da sua Conta do Google)}other{Em # sites (você não será desconectado da sua Conta do Google)}}</translation>
+<translation id="6646269444027925224">{COUNT,plural, =0{Nenhum}=1{De 1 site (você não será desconectado da sua Conta do Google)}one{De # site (você não será desconectado da sua Conta do Google)}other{De # sites (você não será desconectado da sua Conta do Google)}}</translation>
+<translation id="6652101503459149953">Usar Windows Hello</translation>
 <translation id="6657585470893396449">Senha</translation>
+<translation id="6665553082534466207">Perfuração tripla no lado direito</translation>
 <translation id="6670613747977017428">Voltar à segurança.</translation>
 <translation id="6671697161687535275">Remover sugestão de formulário do Chromium?</translation>
 <translation id="6685834062052613830">Saia e conclua a configuração</translation>
+<translation id="6689271823431384964">A opção de salvar seus cartões na Conta do Google está disponível no Chrome porque você fez login. É possível alterar esse comportamento nas configurações. O nome do titular do cartão vem da sua conta.</translation>
+<translation id="6704582573942289642">Este é o site correto?</translation>
+<translation id="6707256370811247129">Verifique o conteúdo de cache e arquivos dos quais você faz o download ou upload no Chrome.</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710594484020273272">&lt;Digitar termo de pesquisa&gt;</translation>
 <translation id="671076103358959139">Token de inscrição:</translation>
 <translation id="6711464428925977395">Há algo errado com o servidor proxy, ou o endereço está incorreto.</translation>
-<translation id="6723740634201835758">Na Conta do Google</translation>
 <translation id="6738516213925468394">Seus dados foram criptografados com sua <ph name="BEGIN_LINK" />senha longa de sincronização<ph name="END_LINK" /> em <ph name="TIME" />. Digite-a para iniciar a sincronização.</translation>
 <translation id="674375294223700098">Erro, certificado de servidor desconhecido.</translation>
 <translation id="6744009308914054259">Enquanto espera por uma conexão, acesse "Downloads" para ler artigos off-line.</translation>
 <translation id="6753269504797312559">Valor da política</translation>
 <translation id="6757797048963528358">O dispositivo entrou em modo de suspensão.</translation>
 <translation id="6768213884286397650">Hagaki (Postal)</translation>
-<translation id="6778737459546443941">Seu responsável ainda não o aprovou</translation>
+<translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensões</translation>
+<translation id="6790428901817661496">Reproduzir</translation>
 <translation id="679355240208270552">Ignorado porque a pesquisa padrão não foi ativada pela política.</translation>
 <translation id="681021252041861472">Campo obrigatório</translation>
 <translation id="6810899417690483278">Código de personalização</translation>
-<translation id="6824266427216888781">Falha ao carregar dados de regiões</translation>
 <translation id="6825578344716086703">Você tentou acessar <ph name="DOMAIN" />, mas o servidor apresentou um certificado assinado com um algoritmo de assinatura fraco (como SHA-1). Isso significa que as credenciais de segurança apresentadas pelo servidor podem ter sido forjadas, e talvez o servidor não seja o esperado (talvez você esteja se comunicando com um invasor).</translation>
+<translation id="6826370046007623921">Prevenção contra perda de dados</translation>
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6839929833149231406">Área</translation>
 <translation id="6852204201400771460">Recarregar app?</translation>
@@ -1037,25 +1198,22 @@
 <translation id="6891596781022320156">O nível da política não é suportado.</translation>
 <translation id="6895330447102777224">Seu cartão foi confirmado</translation>
 <translation id="6897140037006041989">Agente do usuário</translation>
-<translation id="6903319715792422884">Ajudar a melhorar o recurso "Navegação segura" enviando algumas <ph name="BEGIN_WHITEPAPER_LINK" />informações do sistema e conteúdo da página<ph name="END_WHITEPAPER_LINK" /> para o Google. <ph name="PRIVACY_PAGE_LINK" /></translation>
 <translation id="6915804003454593391">Usuário:</translation>
 <translation id="6934672428414710184">Este nome é da sua Conta do Google</translation>
-<translation id="6939583532829045966">Seu dispositivo é gerenciado por <ph name="ENROLLMENT_DOMAIN" />. Isso significa que seu administrador pode configurá-lo remotamente.</translation>
 <translation id="6944692733090228304">Você inseriu sua senha em um site que não é gerenciado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para proteger sua conta, não reutilize sua senha em outros apps e sites.</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6948701128805548767">Para ver métodos e requisitos de retirada, selecione um endereço</translation>
 <translation id="6949872517221025916">Redefinir senha</translation>
 <translation id="6950684638814147129">Erro ao analisar o valor JSON: <ph name="ERROR" /></translation>
-<translation id="6957624206566198865">Abrir página em uma nova guia privada</translation>
 <translation id="6957887021205513506">O certificado do servidor parece ser falsificado.</translation>
 <translation id="6964255747740675745">Falha ao analisar a configuração de rede (JSON inválido).</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="6970216967273061347">Distrito</translation>
 <translation id="6973656660372572881">Ambos os servidores proxy fixo e um URL de script .pac foram especificados.</translation>
+<translation id="6973932557599545801">Não posso ajudar. Você está por conta própria.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Desativar som (padrão)</translation>
-<translation id="6984479912851154518">Saindo do modo privado para fazer um pagamento com um aplicativo externo. Continuar?</translation>
 <translation id="6989763994942163495">Mostrar configurações avançadas...</translation>
 <translation id="6993898126790112050">6x9 (Envelope)</translation>
 <translation id="6996312675313362352">Sempre traduzir <ph name="ORIGINAL_LANGUAGE" /></translation>
@@ -1067,6 +1225,7 @@
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7062635574500127092">Azul-petróleo</translation>
 <translation id="7064851114919012435">Dados de contato</translation>
+<translation id="7075452647191940183">A solicitação é muito grande</translation>
 <translation id="7079718277001814089">Este site contém malware</translation>
 <translation id="7087282848513945231">Condado</translation>
 <translation id="7090678807593890770">Pesquise <ph name="LINK" /> no Google</translation>
@@ -1082,13 +1241,9 @@
 <translation id="7152423860607593928">Nº 14 (Envelope)</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
-<translation id="7158980942472052083">URL inválido. É necessário um URL com um esquema padrão.</translation>
 <translation id="717330890047184534">Código Gaia:</translation>
+<translation id="7174545416324379297">Mescla</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="7177397715882417099">O servidor que você acessará, <ph name="ORIGIN" />, solicitou que
-    uma política de segurança seja aplicada a todas as solicitações. Porém, em vez de
-    exibir uma política, ele redirecionou o navegador para outro lugar, o que impede
-    a execução da sua solicitação de <ph name="SITE" />.</translation>
 <translation id="7179323680825933600">Salvar e preencher as formas de pagamento</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7182878459783632708">Não há políticas definidas</translation>
@@ -1114,19 +1269,24 @@ Mais detalhes:
 <translation id="7298195798382681320">Recomendada</translation>
 <translation id="7300012071106347854">Azul-cobalto</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
+<translation id="7304030187361489308">Alto</translation>
 <translation id="7309308571273880165">Relatório de erros capturado em <ph name="CRASH_TIME" /> (upload solicitado pelo usuário, upload ainda não realizado)</translation>
+<translation id="7313965965371928911">Avisos do <ph name="BEGIN_LINK" />Navegação segura<ph name="END_LINK" /></translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Ajuda de conexão</translation>
+<translation id="733354035281974745">Substituição de conta local do dispositivo</translation>
 <translation id="7334320624316649418">&amp;Refazer reordenar</translation>
+<translation id="7337706099755338005">Não está disponível na sua plataforma.</translation>
 <translation id="733923710415886693">O certificado do servidor não foi divulgado por meio da Transparência dos certificados.</translation>
 <translation id="734600844861828519">11x15</translation>
+<translation id="7346048084945669753">O usuário é afiliado:</translation>
 <translation id="7349430561505560861">A4 Extra</translation>
 <translation id="7353601530677266744">Linha de comando</translation>
 <translation id="7372973238305370288">resultado da pesquisa</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
+<translation id="7378594059915113390">Controles de mídia</translation>
 <translation id="7378627244592794276">Não</translation>
 <translation id="7378810950367401542">/</translation>
-<translation id="7381288752349550461">Modificação de sessão gerenciada</translation>
 <translation id="7390545607259442187">Confirmar cartão</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403591733719184120">Seu <ph name="DEVICE_NAME" /> é gerenciado</translation>
@@ -1147,13 +1307,13 @@ Mais detalhes:
 <translation id="7440140511386898319">Ver conteúdo enquanto estiver off-line</translation>
 <translation id="7441627299479586546">Assunto da política incorreto</translation>
 <translation id="7442725080345379071">Laranja-claro</translation>
-<translation id="7444046173054089907">Este site está bloqueado</translation>
 <translation id="7445762425076701745">A identidade do servidor ao qual você está conectado não pode ser validada completamente. Você está conectado ao servidor com um nome válido somente na sua rede e que, portanto, uma autoridade de certificação externa não consegue validar a propriedade. Como algumas autoridades de certificação emitem certificados para esses nomes mesmo assim, não é possível garantir que você esteja conectado ao site que gostaria e não a um invasor.</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Saber mais<ph name="END_LINK" /> sobre esse problema.</translation>
 <translation id="7455133967321480974">Usar padrão global (Bloquear)</translation>
 <translation id="7460618730930299168">A exibição na tela está diferente da que você selecionou. Continuar?</translation>
 <translation id="7473891865547856676">Não, obrigado</translation>
 <translation id="7481312909269577407">Avançar</translation>
+<translation id="748406663033922918">Use o bloqueio de tela para confirmar suas formas de pagamento salvas.</translation>
 <translation id="7485870689360869515">Nenhum dado encontrado</translation>
 <translation id="7498234416455752244">Continuar editando</translation>
 <translation id="7508255263130623398">O código do dispositivo da política retornado está em branco ou não corresponde ao código do dispositivo atual</translation>
@@ -1169,14 +1329,13 @@ Mais detalhes:
 <translation id="7538364083937897561">A2 (Envelope)</translation>
 <translation id="7542403920425041731">Depois da confirmação, os detalhes do cartão serão compartilhados com esse site.</translation>
 <translation id="7542995811387359312">O preenchimento automático do cartão de crédito está desativado porque este formulário não usa uma conexão segura.</translation>
-<translation id="7543525346216957623">Peça para seu responsável</translation>
 <translation id="7548892272833184391">Corrigir erros de conexão</translation>
 <translation id="7549584377607005141">Esta página da Web requer os dados inseridos anteriormente para ser exibida de modo correto. É possível enviá-los novamente mas, ao fazer isso, você repete qualquer ação realizada anteriormente na página.</translation>
+<translation id="7550637293666041147">O nome de usuário no dispositivo e seu nome de usuário do Chrome</translation>
 <translation id="7552846755917812628">Tente seguir estas dicas:</translation>
 <translation id="7554791636758816595">Nova guia</translation>
 <translation id="7564049878696755256">Você pode perder o acesso à sua conta de <ph name="ORG_NAME" /> ou ter sua identidade roubada. O Chrome recomenda que sua senha seja alterada agora.</translation>
 <translation id="7567204685887185387">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança pode ter sido emitido de forma fraudulenta. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
-<translation id="7568105740864181217">Este navegador é gerenciado por uma empresa, escola ou outra organização. O administrador pode alterar as configurações do navegador remotamente. A atividade deste dispositivo também pode ser gerenciada fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7569952961197462199">Remover cartão de crédito do Chrome?</translation>
 <translation id="7569983096843329377">Preto</translation>
 <translation id="7578104083680115302">Pague rapidamente em sites e aplicativos em vários dispositivos usando os cards que você salvou com o Google.</translation>
@@ -1187,9 +1346,12 @@ Mais detalhes:
 <translation id="7610193165460212391">O valor não corresponde ao período <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Data de expiração: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7615602087246926389">Você já possui dados criptografados utilizando uma versão diferente de sua senha para a Conta do Google. Digite-a abaixo.</translation>
+<translation id="7625784245512586808">Serviço de proteção contra ameaças do Chrome Enterprise</translation>
 <translation id="7633909222644580952">Dados de desempenho e relatórios de erros</translation>
 <translation id="7637571805876720304">Remover cartão de crédito do Chromium?</translation>
+<translation id="7638605456503525968">Portas seriais</translation>
 <translation id="7639968568612851608">Cinza-escuro</translation>
+<translation id="7653957176542370971">A página do gerenciador de pagamento está fechada</translation>
 <translation id="765676359832457558">Ocultar configurações avançadas...</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7662298039739062396">Configuração controlada por uma extensão</translation>
@@ -1212,7 +1374,6 @@ Mais detalhes:
 <translation id="7723047071702270851">Edite o Cartão</translation>
 <translation id="774634243536837715">Conteúdo perigoso bloqueado.</translation>
 <translation id="7752995774971033316">Não gerenciado</translation>
-<translation id="7755287808199759310">Seu responsável pode desbloqueá-lo para você</translation>
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">É possível que o software antivírus ou o firewall tenha bloqueado a conexão.</translation>
 <translation id="7759163816903619567">Domínio de exibição:</translation>
@@ -1221,8 +1382,8 @@ Mais detalhes:
 <translation id="7764225426217299476">Adicionar endereço</translation>
 <translation id="7770259615151589601">Envelope DL</translation>
 <translation id="777702478322588152">Município</translation>
+<translation id="7791196057686275387">Agrupar</translation>
 <translation id="7791543448312431591">Adicionar</translation>
-<translation id="7793809570500803535">A página da web em <ph name="SITE" /> pode estar temporariamente indisponível ou pode ter sido movida permanentemente para um novo endereço da Web.</translation>
 <translation id="7800304661137206267">A conexão foi criptografada utilizando <ph name="CIPHER" />, com <ph name="MAC" /> para mensagem de autenticação e <ph name="KX" /> como o mecanismo de troca de chaves.</translation>
 <translation id="7802523362929240268">O site é legítimo</translation>
 <translation id="780301667611848630">Não</translation>
@@ -1242,23 +1403,28 @@ Mais detalhes:
 <translation id="7882421473871500483">Marrom</translation>
 <translation id="7887683347370398519">Verifique seu CVC e tente novamente</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
+<translation id="7932579305932748336">Revestir</translation>
 <translation id="79338296614623784">Informe um número de telefone válido</translation>
+<translation id="7934052535022478634">Pagamento concluído</translation>
+<translation id="7935031712718413217">Possível URL de spoofing</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937554595067888181">Expira em <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">O certificado do servidor ainda não é válido.</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7947285636476623132">Verifique o ano de validade e tente novamente</translation>
 <translation id="7951415247503192394">32 bits</translation>
+<translation id="7953569069500808819">Costura na parte superior</translation>
 <translation id="7956713633345437162">Favoritos de dispositivos móveis</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="799149739215780103">Encadernar</translation>
 <translation id="7995512525968007366">Não especificado</translation>
 <translation id="800218591365569300">Tente fechar outras guias ou programas para liberar memória.</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8009225694047762179">Gerenciar senha</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Este cartão e o endereço de faturamento dele serão salvos. Você poderá usá-lo quando a conta <ph name="USER_EMAIL" /> estiver conectada.}one{Este cartão e o endereço de faturamento dele serão salvos. Você poderá usá-lo quando a conta <ph name="USER_EMAIL" /> estiver conectada.}other{Estes cartões e os endereços de faturamento deles serão salvos. Você poderá usá-los quando a conta <ph name="USER_EMAIL" /> estiver conectada.}}</translation>
-<translation id="8012647001091218357">Não foi possível contatar seus pais. Tente novamente.</translation>
 <translation id="8025119109950072390">Invasores nesse site podem induzir você a fazer algo perigoso, como instalar um software ou revelar suas informações pessoais (por exemplo, senhas, números de telefone ou cartões de crédito).</translation>
+<translation id="8028960012888758725">Cortar ao término da impressão</translation>
 <translation id="8034522405403831421">Esta página está escrita em <ph name="SOURCE_LANGUAGE" />. Traduzi-la para <ph name="TARGET_LANGUAGE" />?</translation>
 <translation id="8035152190676905274">Caneta</translation>
 <translation id="8037117624646282037">Quem usou o dispositivo recentemente</translation>
@@ -1268,10 +1434,12 @@ Mais detalhes:
 <translation id="8041940743680923270">Usar padrão global (Perguntar)</translation>
 <translation id="8042918947222776840">Escolher método de retirada</translation>
 <translation id="8057711352706143257">O software "<ph name="SOFTWARE_NAME" />" não foi configurado corretamente. A desinstalação do "<ph name="SOFTWARE_NAME" />" costuma resolver o problema. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="8062224330780487419">Não será necessário inserir o código de segurança do cartão a partir de agora</translation>
 <translation id="8066955247577885446">Algo deu errado.</translation>
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8078141288243656252">Não é possível fazer anotações em documentos girados</translation>
 <translation id="8079031581361219619">Atualizar o site?</translation>
+<translation id="8086971161893892807">Rascunho</translation>
 <translation id="8088680233425245692">Falha ao exibir artigo.</translation>
 <translation id="808894953321890993">Alterar senha</translation>
 <translation id="8090403583893450254">Tamanho 20</translation>
@@ -1281,12 +1449,14 @@ Mais detalhes:
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Os cartões inválidos foram removidos</translation>
 <translation id="8103161714697287722">Forma de Pagamento</translation>
+<translation id="8105368624971345109">Desativar</translation>
 <translation id="8118489163946903409">Método de pagamento</translation>
-<translation id="8123836779274890062"><ph name="DEVICE_TYPE" /> gerenciado por <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="8127301229239896662">O software "<ph name="SOFTWARE_NAME" />" não foi instalado corretamente no computador ou na rede. Peça ao administrador de TI para resolver o problema.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8149426793427495338">Seu computador entrou em modo de suspensão.</translation>
 <translation id="8150722005171944719">O arquivo em <ph name="URL" /> não está legível. Ele pode ter sido removido ou movido, ou as permissões do arquivo podem estar impedindo o acesso.</translation>
+<translation id="8157295877370077682">Sair do site</translation>
+<translation id="8163866351304776260">Perfuração quádrupla no lado esquerdo</translation>
 <translation id="8175796834047840627">A opção de salvar seus cartões na Conta do Google está disponível no Chrome porque você fez login. É possível alterar esse comportamento nas configurações.</translation>
 <translation id="8184538546369750125">Usar padrão global (Permitir)</translation>
 <translation id="8194797478851900357">&amp;Desfazer mover</translation>
@@ -1298,6 +1468,7 @@ Mais detalhes:
 <translation id="8211406090763984747">A conexão é segura</translation>
 <translation id="8218327578424803826">Local designado:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
+<translation id="8220639454292072926">Relatório para empresas</translation>
 <translation id="8225771182978767009">A pessoa que configurou este computador optou por bloquear esse site.</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8238581221633243064">Abrir página em uma nova guia anônima</translation>
@@ -1308,8 +1479,10 @@ Mais detalhes:
 <translation id="8253091569723639551">Endereço de faturamento necessário</translation>
 <translation id="825929999321470778">Mostrar todas as senhas salvas</translation>
 <translation id="8261506727792406068">Excluir</translation>
+<translation id="8262952874573525464">Costura na parte inferior</translation>
 <translation id="8267698848189296333">Fazendo login como <ph name="USERNAME" /></translation>
-<translation id="8278457561961988242">Este navegador é gerenciado por <ph name="ENROLLMENT_DOMAIN" />. Seu administrador pode alterar a configuração do navegador remotamente. A atividade deste dispositivo também pode ser gerenciada fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="8269981117540303696">Agora você pode navegar com privacidade. Outras pessoas que usarem este dispositivo não verão sua atividade, mas os downloads e favoritos serão salvos.</translation>
+<translation id="8277900682056760511">A página do gerenciador de pagamento está aberta</translation>
 <translation id="8281084378435768645">Large photo</translation>
 <translation id="8286036467436129157">Fazer login</translation>
 <translation id="8288807391153049143">Mostrar certificado</translation>
@@ -1317,19 +1490,20 @@ Mais detalhes:
 <translation id="8293206222192510085">Adicionar favorito</translation>
 <translation id="8294431847097064396">Origem</translation>
 <translation id="8298115750975731693">O Wi-Fi que você está usando (<ph name="WIFI_NAME" />) pode exigir a visita a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="830498451218851433">Dobra simples</translation>
 <translation id="8307358339886459768">Small photo</translation>
 <translation id="8308427013383895095">A tradução falhou devido a um problema com a conexão de rede.</translation>
+<translation id="831207732689920588">Esta página é suspeita e foi sinalizada pelo Chrome.</translation>
 <translation id="8332188693563227489">O acesso a <ph name="HOST_NAME" /> foi negado</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Se você entende os riscos para sua segurança, pode <ph name="BEGIN_LINK" />visitar este site<ph name="END_LINK" /> antes de os programas nocivos serem removidos.</translation>
 <translation id="8349305172487531364">Barra de favoritos</translation>
-<translation id="8363502534493474904">Desativar modo avião</translation>
+<translation id="8363502534493474904">Desativar o modo avião</translation>
 <translation id="8364627913115013041">Não definida.</translation>
 <translation id="8368476060205742148">Serviços do Google Play</translation>
 <translation id="8371889962595521444">Personalizar certificados raiz</translation>
 <translation id="8380941800586852976">Perigoso</translation>
 <translation id="8381674639488873545">Essas cobranças podem ser únicas ou recorrentes e talvez não sejam óbvias. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
-<translation id="8382348898565613901">Os favoritos visitados recentemente aparecerão aqui</translation>
 <translation id="8398259832188219207">Relatório de erros enviado em <ph name="UPLOAD_TIME" /></translation>
 <translation id="8412145213513410671">Falhas (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Você deve inserir a mesma senha duas vezes.</translation>
@@ -1341,17 +1515,20 @@ Mais detalhes:
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="8433057134996913067">Essa opção desconecta você da maioria dos websites.</translation>
 <translation id="8437238597147034694">&amp;Desfazer mover</translation>
-<translation id="8461694314515752532">Criptografar dados sincronizados com sua senha longa de sincronização</translation>
+<translation id="8461694314515752532">Criptografar dados sincronizados com sua senha de sincronização</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 cartão de crédito}one{# cartão de crédito}other{# cartões de crédito}}</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
+<translation id="8479754468255770962">Grampo na parte inferior esquerda</translation>
+<translation id="8481133456511676116">Você quis dizer <ph name="DOMAIN" />?</translation>
 <translation id="8483780878231876732">Para usar os cards da sua Conta do Google, faça login no Google Chrome</translation>
 <translation id="8488350697529856933">Aplicável a</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> demorou muito para responder.</translation>
 <translation id="8503559462189395349">Senhas do Chrome</translation>
 <translation id="8503813439785031346">Nome de usuário</translation>
 <translation id="8508648098325802031">Ícone de pesquisa</translation>
+<translation id="8522552481199248698">No Chrome, você pode receber ajuda para proteger sua Conta do Google e alterar sua senha.</translation>
+<translation id="8542014550340843547">Três grampos na parte inferior</translation>
 <translation id="8543181531796978784">Você pode <ph name="BEGIN_ERROR_LINK" />denunciar um problema de detecção<ph name="END_ERROR_LINK" /> ou, se entende os riscos à sua segurança, <ph name="BEGIN_LINK" />acessar este site não seguro<ph name="END_LINK" />.</translation>
-<translation id="8543556556237226809">Dúvidas? Entre em contato com a pessoa que supervisiona seu perfil.</translation>
 <translation id="8553075262323480129">A tradução falhou porque não foi possível determinar o idioma da página.</translation>
 <translation id="8557066899867184262">O CVC está localizado atrás do seu cartão.</translation>
 <translation id="8559762987265718583">Não é possível estabelecer uma conexão privada com <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, porque a data e a hora do seu dispositivo (<ph name="DATE_AND_TIME" />) estão incorretas.</translation>
@@ -1359,24 +1536,29 @@ Mais detalhes:
 <translation id="8571890674111243710">Traduzindo página para <ph name="LANGUAGE" />...</translation>
 <translation id="858637041960032120">Ad. nº. telefone
 </translation>
-<translation id="859285277496340001">O certificado não especifica um mecanismo para verificar se ele foi revogado.</translation>
 <translation id="860043288473659153">Nome do titular do cartão</translation>
+<translation id="8616822740383114808">Esta configuração é aplicada por "<ph name="ENFORCING_SETTING" />" em "<ph name="SETTINGS_PAGE" />"</translation>
 <translation id="861775596732816396">Tamanho 4</translation>
-<translation id="8620436878122366504">Seus responsáveis ainda não o aprovaram</translation>
 <translation id="8622948367223941507">Legal extra</translation>
 <translation id="8625384913736129811">Salvar este cartão neste dispositivo</translation>
+<translation id="8647750283161643317">Redefinir tudo para o padrão</translation>
 <translation id="8663226718884576429">Resumo do pedido, <ph name="TOTAL_LABEL" />, Mais detalhes</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, resposta, <ph name="ANSWER" /></translation>
 <translation id="8685155993131031756">Prc-16K</translation>
+<translation id="8688672835843460752">Disponível</translation>
+<translation id="869891660844655955">Validade</translation>
 <translation id="8703575177326907206">Sua conexão com <ph name="DOMAIN" /> não está criptografada.</translation>
 <translation id="8718314106902482036">Pagamento não concluído</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, sugestão de pesquisa</translation>
+<translation id="8719528812645237045">Perfuração múltipla na parte superior</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8728672262656704056">Você está navegando sem deixar rastros</translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8738058698779197622">Para estabelecer uma conexão segura, o relógio precisa ser ajustado corretamente. Isso ocorre porque os certificados que os websites usam para se identificar são válidos apenas por períodos específicos. Como o relógio do seu dispositivo está incorreto, o Chromium não pode verificar esses certificados.</translation>
 <translation id="8740359287975076522">Não foi possível encontrar o &lt;abbr id="dnsDefinition"&gt;endereço DNS&lt;/abbr&gt; de <ph name="HOST_NAME" />. Diagnosticando o problema.</translation>
 <translation id="874846938927089722">Cartões de crédito e pré-pagos aceitos</translation>
+<translation id="874918643257405732">Adicionar esta guia aos favoritos</translation>
+<translation id="8751426954251315517">Tente novamente mais tarde</translation>
 <translation id="8759274551635299824">Este cartão expirou</translation>
 <translation id="8761567432415473239">Recentemente, a Navegação Segura do Google <ph name="BEGIN_LINK" />encontrou programas nocivos<ph name="END_LINK" /> no site <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
@@ -1385,6 +1567,8 @@ Mais detalhes:
 <translation id="8790007591277257123">&amp;Refazer excluir</translation>
 <translation id="8792621596287649091">Você pode perder o acesso à sua conta de <ph name="ORG_NAME" /> ou ter sua identidade roubada. O Chromium recomenda que sua senha seja alterada agora.</translation>
 <translation id="8800988563907321413">As sugestões de itens nas proximidades são exibidas aqui</translation>
+<translation id="8805819170075074995">Entrada "<ph name="LANGUAGE_ID" />": entrada ignorada porque também foi incluída na política SpellcheckLanguage.</translation>
+<translation id="8807160976559152894">Cortar depois de cada página</translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="883848425547221593">Outros favoritos</translation>
 <translation id="884264119367021077">Endereço de entrega</translation>
@@ -1392,23 +1576,28 @@ Mais detalhes:
 <translation id="885730110891505394">Compartilhar com o Google</translation>
 <translation id="8858065207712248076">O Chrome recomenda redefinir sua senha de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se você a reutilizou em outros sites.</translation>
 <translation id="8866481888320382733">Configurações da política de análise de erros</translation>
+<translation id="8866928039507595380">Dobrar</translation>
 <translation id="886872106311861689">B3</translation>
 <translation id="8870413625673593573">Recentemente fechadas</translation>
 <translation id="8874824191258364635">Informe um número de cartão válido</translation>
 <translation id="8891727572606052622">Modo de proxy inválido.</translation>
 <translation id="8903921497873541725">Aumentar zoom</translation>
 <translation id="890485472659500557">Engineering C</translation>
+<translation id="8910670906166981838">Você entrou no modo de navegação anônima</translation>
+<translation id="8912362522468806198">Conta do Google</translation>
+<translation id="8918231688545606538">Esta página é suspeita</translation>
+<translation id="892588693504540538">Perfuração na parte superior direita</translation>
 <translation id="8931333241327730545">Quer salvar este cartão na sua Conta do Google?</translation>
 <translation id="8932102934695377596">Seu relógio está atrasado</translation>
 <translation id="893332455753468063">Adicione um Nome</translation>
 <translation id="8938939909778640821">Cartões de crédito e pré-pagos aceitos</translation>
-<translation id="894185898663964645">Seu administrador configurou certificados raiz personalizados, o que pode permitir que ele veja o conteúdo dos sites que você visita.</translation>
 <translation id="8943282376843390568">Verde-limão</translation>
 <translation id="8957210676456822347">Autorização de portal cativo</translation>
-<translation id="8966619695390250636">Você quis dizer?</translation>
+<translation id="8962950042226115166">Site suspeito</translation>
 <translation id="8968766641738584599">Salvar cartão</translation>
 <translation id="8971063699422889582">O certificado do servidor expirou.</translation>
 <translation id="8975012916872825179">Inclui informações como números de telefone, endereços de e-mail e endereços de entrega</translation>
+<translation id="8975263830901772334">Nomes de arquivos impressos</translation>
 <translation id="8978053250194585037">Recentemente, o recurso "Navegação segura" do Google <ph name="BEGIN_LINK" />detectou phishing<ph name="END_LINK" /> em <ph name="SITE" />. Os sites de phishing fingem ser outros sites para enganar você.</translation>
 <translation id="8983003182662520383">Formas de pagamento e endereços que usam o Google Pay</translation>
 <translation id="8987927404178983737">Mês</translation>
@@ -1416,6 +1605,7 @@ Mais detalhes:
 <translation id="8996941253935762404">O site a seguir contém programas prejudiciais</translation>
 <translation id="8997023839087525404">O servidor apresentou um certificado que não foi divulgado publicamente usando a política de Transparência dos certificados. Esse é um requisito para alguns certificados, a fim de garantir que eles sejam confiáveis e protejam você contra invasores.</translation>
 <translation id="9001074447101275817">O proxy <ph name="DOMAIN" /> exige um nome de usuário e uma senha.</translation>
+<translation id="9004367719664099443">Sessão de RV em andamento</translation>
 <translation id="9005998258318286617">Falha ao carregar documento PDF.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9011424611726486705">Abra as configurações do site</translation>
@@ -1426,24 +1616,26 @@ Mais detalhes:
 <translation id="9035022520814077154">Erro de segurança</translation>
 <translation id="9038649477754266430">Usar um serviço de previsão para carregar páginas mais rapidamente</translation>
 <translation id="9039213469156557790">Além disso, esta página inclui outros recursos que não são seguros. Esses recursos podem ser visualizados por outros usuários enquanto eles navegam e podem ser modificados por um invasor para alterar o comportamento da página.</translation>
+<translation id="9044359186343685026">Usar o Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />: <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Você tentou acessar <ph name="DOMAIN" />, mas o servidor apresentou um certificado inválido.</translation>
 <translation id="9050666287014529139">Senha</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9065745800631924235">Pesquisa sobre <ph name="TEXT" /> no histórico</translation>
 <translation id="9069693763241529744">Bloqueada por uma extensão</translation>
-<translation id="9076283476770535406">Pode apresentar conteúdo adulto</translation>
 <translation id="9076630408993835509">Este navegador não é gerenciado por uma empresa ou outra organização. A atividade deste dispositivo pode ser gerenciada fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9078964945751709336">São necessárias mais informações</translation>
 <translation id="9080712759204168376">Resumo do pedido</translation>
+<translation id="9089260154716455634">Política de horas de inatividade:</translation>
+<translation id="9095388113577226029">Mais idiomas…</translation>
+<translation id="9098981495403789647">Seu administrador ativou o serviço de proteção contra ameaças do Chrome Enterprise no seu navegador. Esse serviço tem acesso a parte dos seus dados.</translation>
 <translation id="9103872766612412690">O site <ph name="SITE" /> geralmente usa criptografia para proteger suas informações. Quando o Chromium tentou se conectar a <ph name="SITE" /> dessa vez, o website retornou credenciais
 incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser <ph name="SITE" /> ou quando uma tela de login por Wi-Fi interrompeu a conexão. Suas informações ainda estão protegidas, porque o Chromium interrompeu a conexão antes que os dados fossem trocados.</translation>
 <translation id="9106062320799175032">Adicione um Endereço de Faturamento</translation>
-<translation id="9110718169272311511">O Google Assistente no Chrome está disponível perto da parte inferior da tela</translation>
 <translation id="9114524666733003316">Confirmando cartão…</translation>
-<translation id="9128870381267983090">Conectar-se à rede</translation>
+<translation id="9128870381267983090">Conectar à rede</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
-<translation id="9137248913990643158">Inicie e faça login no Chrome antes de usar este app.</translation>
+<translation id="9141013498910525015">Gerenciar endereços</translation>
 <translation id="9148088599418889305">Escolher método de envio</translation>
 <translation id="9148507642005240123">&amp;Desfazer editar</translation>
 <translation id="9154194610265714752">Atualizado</translation>
@@ -1457,6 +1649,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9174917557437862841">Botão de alternância de guia. Pressione Enter para alternar para esta guia</translation>
 <translation id="9183302530794969518">Documentos Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> usa um protocolo incompatível.</translation>
+<translation id="9191834167571392248">Perfuração na parte inferior esquerda</translation>
 <translation id="9205078245616868884">Seus dados são criptografados com sua senha longa de sincronização. Informe-a para começar a sincronização.</translation>
 <translation id="9207861905230894330">Falha ao adicionar artigo.</translation>
 <translation id="9215416866750762878">Um aplicativo está impedindo que o Chrome se conecte com segurança a este site</translation>
@@ -1467,8 +1660,9 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="936602727769022409">Você pode perder o acesso à sua Conta do Google. O Chromium recomenda que sua senha seja alterada agora. Solicitaremos que você faça login.</translation>
 <translation id="939736085109172342">Nova pasta</translation>
 <translation id="945855313015696284">Verifique as informações abaixo e exclua todos os cartões inválidos</translation>
+<translation id="950736567201356821">Perfuração tripla na parte superior</translation>
 <translation id="951104842009476243">Cartões de débito e pré-pagos aceitos</translation>
-<translation id="958202389743790697">Bloqueado de acordo com política de segurança de <ph name="ORIGIN" />.</translation>
+<translation id="961663415146723894">Encadernação na parte inferior</translation>
 <translation id="962484866189421427">Este conteúdo pode tentar instalar apps enganosos que fingem ser outra coisa ou coletam dados que podem ser usados para rastrear você. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="969892804517981540">Versão oficial</translation>
 <translation id="973773823069644502">Adicionar endereço de entrega</translation>
@@ -1486,6 +1680,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
     &lt;li&gt;Tente desinstalar ou desativar o "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Tente conectar-se a outra rede&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Do Google Pay</translation>
 <translation id="998893882640184078">Abra uma nova janela anônima do Chrome</translation>
 </translationbundle>

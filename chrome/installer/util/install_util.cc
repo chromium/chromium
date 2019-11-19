@@ -27,6 +27,7 @@
 #include "base/win/registry.h"
 #include "base/win/shlwapi.h"
 #include "base/win/shortcut.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -46,6 +47,10 @@ using installer::ProductState;
 
 namespace {
 
+// DowngradeVersion holds the version from which Chrome was downgraded. In case
+// of multiple downgrades (e.g., 75->74->73), it retains the highest version
+// installed prior to any downgrades. DowngradeVersion is deleted on upgrade
+// once Chrome reaches the version from which it was downgraded.
 const wchar_t kRegDowngradeVersion[] = L"DowngradeVersion";
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -245,7 +250,7 @@ bool InstallUtil::IsOSSupported() {
   // We do not support anything prior to Windows 7.
   VLOG(1) << base::SysInfo::OperatingSystemName() << ' '
           << base::SysInfo::OperatingSystemVersion();
-  return base::win::GetVersion() >= base::win::VERSION_WIN7;
+  return base::win::GetVersion() >= base::win::Version::WIN7;
 }
 
 void InstallUtil::AddInstallerResultItems(
@@ -348,23 +353,9 @@ bool InstallUtil::IsStartMenuShortcutWithActivatorGuidInstalled() {
 }
 
 // static
-base::string16 InstallUtil::String16FromGUID(const GUID& guid) {
-  // A GUID has a string format of "{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}",
-  // which contains 38 characters. The length is 39 inclusive of the string
-  // terminator.
-  constexpr int kGuidLength = 39;
-  base::string16 guid_string;
-
-  const int length_with_terminator = ::StringFromGUID2(
-      guid, base::WriteInto(&guid_string, kGuidLength), kGuidLength);
-  DCHECK_EQ(length_with_terminator, kGuidLength);
-  return guid_string;
-}
-
-// static
 base::string16 InstallUtil::GetToastActivatorRegistryPath() {
-  return L"Software\\Classes\\CLSID\\" +
-         String16FromGUID(install_static::GetToastActivatorClsid());
+  return STRING16_LITERAL("Software\\Classes\\CLSID\\") +
+         base::win::String16FromGUID(install_static::GetToastActivatorClsid());
 }
 
 // static
@@ -544,7 +535,7 @@ bool InstallUtil::ProgramCompare::GetInfo(const base::File& file,
 }
 
 // static
-base::Version InstallUtil::GetDowngradeVersion() {
+base::Optional<base::Version> InstallUtil::GetDowngradeVersion() {
   RegKey key;
   base::string16 downgrade_version;
   if (key.Open(install_static::IsSystemInstall() ? HKEY_LOCAL_MACHINE
@@ -554,9 +545,12 @@ base::Version InstallUtil::GetDowngradeVersion() {
       key.ReadValue(kRegDowngradeVersion, &downgrade_version) !=
           ERROR_SUCCESS ||
       downgrade_version.empty()) {
-    return base::Version();
+    return base::nullopt;
   }
-  return base::Version(base::UTF16ToASCII(downgrade_version));
+  base::Version version(base::UTF16ToASCII(downgrade_version));
+  if (!version.IsValid())
+    return base::nullopt;
+  return version;
 }
 
 // static
@@ -566,18 +560,21 @@ void InstallUtil::AddUpdateDowngradeVersionItem(
     const base::Version& new_version,
     WorkItemList* list) {
   DCHECK(list);
-  const base::Version downgrade_version = GetDowngradeVersion();
-  if (!current_version ||
-      (*current_version <= new_version &&
-       ((!downgrade_version.IsValid() || downgrade_version <= new_version)))) {
+  const auto downgrade_version = GetDowngradeVersion();
+  if (current_version && new_version < *current_version) {
+    // This is a downgrade. Write the value if this is the first one (i.e., no
+    // previous value exists). Otherwise, leave any existing value in place.
+    if (!downgrade_version) {
+      list->AddSetRegValueWorkItem(
+          root, install_static::GetClientStateKeyPath(), KEY_WOW64_32KEY,
+          kRegDowngradeVersion,
+          base::ASCIIToUTF16(current_version->GetString()), true);
+    }
+  } else if (!current_version || new_version >= downgrade_version) {
+    // This is a new install or an upgrade to/past a previous DowngradeVersion.
     list->AddDeleteRegValueWorkItem(root,
                                     install_static::GetClientStateKeyPath(),
                                     KEY_WOW64_32KEY, kRegDowngradeVersion);
-  } else if (*current_version > new_version && !downgrade_version.IsValid()) {
-    list->AddSetRegValueWorkItem(
-        root, install_static::GetClientStateKeyPath(), KEY_WOW64_32KEY,
-        kRegDowngradeVersion, base::ASCIIToUTF16(current_version->GetString()),
-        true);
   }
 }
 

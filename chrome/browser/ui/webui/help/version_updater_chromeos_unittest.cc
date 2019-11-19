@@ -15,10 +15,10 @@
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_update_engine_client.h"
-#include "chromeos/dbus/shill_service_client.h"
+#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -90,7 +90,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
     NetworkHandler::Shutdown();
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<VersionUpdater> version_updater_;
   FakeUpdateEngineClient* fake_update_engine_client_;  // Not owned.
 
@@ -116,8 +116,8 @@ TEST_F(VersionUpdaterCrosTest, TwoOverlappingSetChannelRequests) {
   version_updater_->SetChannel("beta-channel", true);
 
   {
-    UpdateEngineClient::Status status;
-    status.status = UpdateEngineClient::UPDATE_STATUS_IDLE;
+    update_engine::StatusResult status;
+    status.set_current_operation(update_engine::Operation::IDLE);
     fake_update_engine_client_->set_default_status(status);
     fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
   }
@@ -130,9 +130,9 @@ TEST_F(VersionUpdaterCrosTest, TwoOverlappingSetChannelRequests) {
   EXPECT_EQ(1, fake_update_engine_client_->request_update_check_call_count());
 
   {
-    UpdateEngineClient::Status status;
-    status.status = UpdateEngineClient::UPDATE_STATUS_DOWNLOADING;
-    status.download_progress = 0.1;
+    update_engine::StatusResult status;
+    status.set_current_operation(update_engine::Operation::DOWNLOADING);
+    status.set_progress(0.1);
     fake_update_engine_client_->set_default_status(status);
     fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
   }
@@ -142,8 +142,9 @@ TEST_F(VersionUpdaterCrosTest, TwoOverlappingSetChannelRequests) {
   // DOWNLOADING -> REPORTING_ERROR_EVENT transition since target channel is not
   // equal to downloading channel now.
   {
-    UpdateEngineClient::Status status;
-    status.status = UpdateEngineClient::UPDATE_STATUS_REPORTING_ERROR_EVENT;
+    update_engine::StatusResult status;
+    status.set_current_operation(
+        update_engine::Operation::REPORTING_ERROR_EVENT);
     fake_update_engine_client_->set_default_status(status);
     fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
   }
@@ -155,8 +156,8 @@ TEST_F(VersionUpdaterCrosTest, TwoOverlappingSetChannelRequests) {
   // REPORTING_ERROR_EVENT -> IDLE transition, update check should be
   // automatically scheduled.
   {
-    UpdateEngineClient::Status status;
-    status.status = UpdateEngineClient::UPDATE_STATUS_IDLE;
+    update_engine::StatusResult status;
+    status.set_current_operation(update_engine::Operation::IDLE);
     fake_update_engine_client_->set_default_status(status);
     fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
   }

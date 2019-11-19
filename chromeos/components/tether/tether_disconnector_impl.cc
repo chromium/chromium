@@ -33,8 +33,7 @@ TetherDisconnectorImpl::TetherDisconnectorImpl(
       disconnect_tethering_request_sender_(disconnect_tethering_request_sender),
       tether_connector_(tether_connector),
       device_id_tether_network_guid_map_(device_id_tether_network_guid_map),
-      tether_session_completion_logger_(tether_session_completion_logger),
-      weak_ptr_factory_(this) {}
+      tether_session_completion_logger_(tether_session_completion_logger) {}
 
 TetherDisconnectorImpl::~TetherDisconnectorImpl() = default;
 

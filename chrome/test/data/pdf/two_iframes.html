@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <script>
+      function onload() {
+        document.getElementById('iframe1').srcdoc =
+         '<body onload="document.getElementById(\'text_area\').focus();">' +
+         '<textarea id=text_area>Some text.</textarea></body>';
+      }
+    </script>
+  </head>
+  <body onload='onload();'>
+    <iframe id=iframe1></iframe>
+    <iframe id=iframe2></iframe>
+  </body>
+</html>

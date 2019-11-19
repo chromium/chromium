@@ -84,7 +84,7 @@ class CONTENT_EXPORT SwapMetricsDriver {
   // This method must be called from the same sequence that Start() is called
   // on. If Start() has not yet been called, the subsequent call to Start() must
   // be from the same sequence.
-  virtual bool IsRunning() const = 0;
+  virtual bool IsRunning() = 0;
 
   // Starts computing swap metrics every at the interval specified in the
   // constructor, which must be > 0. If an error occurs while initializing the

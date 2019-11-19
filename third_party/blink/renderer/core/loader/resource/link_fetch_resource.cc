@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/resource/link_fetch_resource.h"
 
-#include "services/network/public/mojom/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
@@ -14,8 +14,6 @@ Resource* LinkFetchResource::Fetch(ResourceType type,
                                    FetchParameters& params,
                                    ResourceFetcher* fetcher) {
   DCHECK_EQ(type, ResourceType::kLinkPrefetch);
-  DCHECK_EQ(params.GetResourceRequest().GetFrameType(),
-            network::mojom::RequestContextFrameType::kNone);
   return fetcher->RequestResource(params, LinkResourceFactory(type), nullptr);
 }
 

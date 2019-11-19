@@ -295,7 +295,7 @@ class DataReductionProxyCompressionStats {
   base::OneShotTimer pref_writer_timer_;
   base::ThreadChecker thread_checker_;
 
-  base::WeakPtrFactory<DataReductionProxyCompressionStats> weak_factory_;
+  base::WeakPtrFactory<DataReductionProxyCompressionStats> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DataReductionProxyCompressionStats);
 };

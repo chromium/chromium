@@ -42,7 +42,7 @@ void DownloaderTestDelegate::StartUpdateCheck(
   requests_.push_back(std::move(fetch_data));
   const ManifestFetchData* data = requests_.back().get();
   for (const auto& id : data->extension_ids()) {
-    if (ContainsKey(responses_, id)) {
+    if (base::Contains(responses_, id)) {
       // We use PostTask here instead of calling OnExtensionDownloadFinished
       // immeditately, because the calling code isn't expecting a synchronous
       // response (in non-test situations there are at least 2 network

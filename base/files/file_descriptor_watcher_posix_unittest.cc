@@ -12,9 +12,10 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
@@ -48,11 +49,11 @@ class FileDescriptorWatcherTest
     : public testing::TestWithParam<FileDescriptorWatcherTestType> {
  public:
   FileDescriptorWatcherTest()
-      : scoped_task_environment_(std::make_unique<test::ScopedTaskEnvironment>(
+      : task_environment_(std::make_unique<test::TaskEnvironment>(
             GetParam() == FileDescriptorWatcherTestType::
                               MESSAGE_PUMP_FOR_IO_ON_MAIN_THREAD
-                ? test::ScopedTaskEnvironment::MainThreadType::IO
-                : test::ScopedTaskEnvironment::MainThreadType::DEFAULT)),
+                ? test::TaskEnvironment::MainThreadType::IO
+                : test::TaskEnvironment::MainThreadType::DEFAULT)),
         other_thread_("FileDescriptorWatcherTest_OtherThread") {}
   ~FileDescriptorWatcherTest() override = default;
 
@@ -63,7 +64,7 @@ class FileDescriptorWatcherTest
     if (GetParam() ==
         FileDescriptorWatcherTestType::MESSAGE_PUMP_FOR_IO_ON_OTHER_THREAD) {
       Thread::Options options;
-      options.message_loop_type = MessageLoop::TYPE_IO;
+      options.message_pump_type = MessagePumpType::IO;
       ASSERT_TRUE(other_thread_.StartWithOptions(options));
       file_descriptor_watcher_ =
           std::make_unique<FileDescriptorWatcher>(other_thread_.task_runner());
@@ -73,7 +74,7 @@ class FileDescriptorWatcherTest
   void TearDown() override {
     if (GetParam() ==
             FileDescriptorWatcherTestType::MESSAGE_PUMP_FOR_IO_ON_MAIN_THREAD &&
-        scoped_task_environment_) {
+        task_environment_) {
       // Allow the delete task posted by the Controller's destructor to run.
       base::RunLoop().RunUntilIdle();
     }
@@ -101,7 +102,7 @@ class FileDescriptorWatcherTest
     std::unique_ptr<FileDescriptorWatcher::Controller> controller =
         FileDescriptorWatcher::WatchReadable(
             read_file_descriptor(),
-            Bind(&Mock::ReadableCallback, Unretained(&mock_)));
+            BindRepeating(&Mock::ReadableCallback, Unretained(&mock_)));
     EXPECT_TRUE(controller);
 
     // Unless read_file_descriptor() was readable before the callback was
@@ -117,7 +118,7 @@ class FileDescriptorWatcherTest
     std::unique_ptr<FileDescriptorWatcher::Controller> controller =
         FileDescriptorWatcher::WatchWritable(
             write_file_descriptor(),
-            Bind(&Mock::WritableCallback, Unretained(&mock_)));
+            BindRepeating(&Mock::WritableCallback, Unretained(&mock_)));
     EXPECT_TRUE(controller);
     return controller;
   }
@@ -141,7 +142,7 @@ class FileDescriptorWatcherTest
   testing::StrictMock<Mock> mock_;
 
   // Task environment bound to the main thread.
-  std::unique_ptr<test::ScopedTaskEnvironment> scoped_task_environment_;
+  std::unique_ptr<test::TaskEnvironment> task_environment_;
 
   // Thread running an IO message pump. Used when the test type is
   // MESSAGE_PUMP_FOR_IO_ON_OTHER_THREAD.
@@ -291,7 +292,7 @@ TEST_P(FileDescriptorWatcherTest, DeleteControllerAfterDeleteMessagePumpForIO) {
   // Delete the task environment.
   if (GetParam() ==
       FileDescriptorWatcherTestType::MESSAGE_PUMP_FOR_IO_ON_MAIN_THREAD) {
-    scoped_task_environment_.reset();
+    task_environment_.reset();
   } else {
     other_thread_.Stop();
   }

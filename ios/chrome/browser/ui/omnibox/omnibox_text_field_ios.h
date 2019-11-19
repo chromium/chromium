@@ -66,6 +66,11 @@ typedef enum {
 // language match for |self.text|.
 - (NSTextAlignment)bestTextAlignment;
 
+// Returns the most likely semantic content attribute -- right to left, left to
+// right or unspecified -- based on the first character of |self.text| and the
+// device's current locale.
+- (UISemanticContentAttribute)bestSemanticContentAttribute;
+
 // Checks if direction of the omnibox text changed, and updates the UITextField.
 // alignment if necessary.
 - (void)updateTextDirection;

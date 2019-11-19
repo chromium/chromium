@@ -66,6 +66,11 @@ const user_manager::User* MockUserManager::GetPrimaryUser() const {
   return GetActiveUser();
 }
 
+bool MockUserManager::IsLoggedInAsAnyKioskApp() const {
+  return IsLoggedInAsKioskApp() || IsLoggedInAsArcKioskApp() ||
+         IsLoggedInAsWebKioskApp();
+}
+
 MultiProfileUserController* MockUserManager::GetMultiProfileUserController() {
   return nullptr;
 }

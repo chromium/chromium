@@ -1,0 +1,162 @@
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/crypto/context.cc third_party/private-join-and-compute/crypto/context.cc
+--- /tmp/private-join-and-compute.original/crypto/context.cc    2019-08-06 16:15:39.918264597 +0200
++++ third_party/private-join-and-compute/crypto/context.cc      2019-08-07 12:42:02.483051443 +0200
+@@ -41,10 +37,6 @@
+       one_bn_(CreateBigNum(1)),
+       two_bn_(CreateBigNum(2)),
+       three_bn_(CreateBigNum(3)) {
+-#if defined(OS_NACL)
+-  nacl::SeedOpenSSLRand();
+-#endif
+-  OpenSSLInit();
+   CHECK(RAND_status()) << "OpenSSL PRNG is not properly seeded.";
+   HMAC_CTX_init(&hmac_ctx_);
+ }
+@@ -127,7 +119,7 @@
+
+ BigNum Context::PRF(const std::string& key, const std::string& data,
+                     const BigNum& max_value) {
+-  CHECK_GE(key.size() * 8, 80);
++  CHECK_GE(key.size() * 8, 80u);
+   CHECK_LE(max_value.BitLength(), 512)
+       << "The requested output length is not supported. The maximum "
+          "supported output length is 512. The requested output length is "
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/crypto/ec_commutative_cipher.cc third_party/private-join-and-compute/crypto/ec_commutative_cipher.cc
+--- /tmp/private-join-and-compute.original/crypto/ec_commutative_cipher.cc	2019-08-07 14:21:57.192714845 +0200
++++ third_party/private-join-and-compute/crypto/ec_commutative_cipher.cc	2019-08-07 12:42:02.483051443 +0200
+@@ -93,25 +93,6 @@
+   return point.Mul(private_key_);
+ }
+ 
+-StatusOr<std::pair<std::string, std::string>>
+-ECCommutativeCipher::ReEncryptElGamalCiphertext(
+-    const std::pair<std::string, std::string>& elgamal_ciphertext) const {
+-  ASSIGN_OR_RETURN(ECPoint u, group_.CreateECPoint(elgamal_ciphertext.first));
+-  ASSIGN_OR_RETURN(ECPoint e, group_.CreateECPoint(elgamal_ciphertext.second));
+-
+-  elgamal::Ciphertext decoded_ciphertext = {std::move(u), std::move(e)};
+-
+-  ASSIGN_OR_RETURN(elgamal::Ciphertext reencrypted_ciphertext,
+-                   elgamal::Exp(decoded_ciphertext, private_key_));
+-
+-  ASSIGN_OR_RETURN(std::string serialized_u,
+-                   reencrypted_ciphertext.u.ToBytesCompressed());
+-  ASSIGN_OR_RETURN(std::string serialized_e,
+-                   reencrypted_ciphertext.e.ToBytesCompressed());
+-
+-  return std::make_pair(std::move(serialized_u), std::move(serialized_e));
+-}
+-
+ StatusOr<std::string> ECCommutativeCipher::Decrypt(
+     const std::string& ciphertext) const {
+   ASSIGN_OR_RETURN(ECPoint point, group_.CreateECPoint(ciphertext));
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/crypto/ec_commutative_cipher.h third_party/private-join-and-compute/crypto/ec_commutative_cipher.h
+--- /tmp/private-join-and-compute.original/crypto/ec_commutative_cipher.h	2019-08-07 14:21:57.192714845 +0200
++++ third_party/private-join-and-compute/crypto/ec_commutative_cipher.h	2019-08-07 12:42:02.483051443 +0200
+@@ -139,16 +139,6 @@
+   ::private_join_and_compute::StatusOr<std::string> ReEncrypt(
+       const std::string& ciphertext) const;
+ 
+-  // Encrypts an ElGamal ciphertext with the private key.
+-  //
+-  // Returns an INVALID_ARGUMENT error code if the input is not a valid encoding
+-  // of an ElGamal ciphertext on this curve as defined in ANSI X9.62 ECDSA.
+-  //
+-  // The result is another ElGamal ciphertext, encoded in compressed form.
+-  ::private_join_and_compute::StatusOr<std::pair<std::string, std::string>>
+-  ReEncryptElGamalCiphertext(
+-      const std::pair<std::string, std::string>& elgamal_ciphertext) const;
+-
+   // Decrypts an encoded point with the private key.
+   //
+   // Returns an INVALID_ARGUMENT error code if the input is not a valid encoding
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/util/status.cc third_party/private-join-and-compute/util/status.cc
+--- /tmp/private-join-and-compute.original/util/status.cc	2019-08-06 16:15:39.922264595 +0200
++++ third_party/private-join-and-compute/util/status.cc	2019-08-07 12:42:02.483051443 +0200
+@@ -20,26 +20,6 @@
+ 
+ namespace private_join_and_compute {
+ 
+-namespace {
+-
+-const Status& GetOk() {
+-  static const Status* status = new Status();
+-  return *status;
+-}
+-
+-const Status& GetCancelled() {
+-  static const Status* status =
+-      new Status(private_join_and_compute::StatusCode::kCancelled, "");
+-  return *status;
+-}
+-
+-const Status& GetUnknown() {
+-  static const Status* status = new Status(private_join_and_compute::StatusCode::kUnknown, "");
+-  return *status;
+-}
+-
+-}  // namespace
+-
+ Status::Status() : code_(private_join_and_compute::StatusCode::kOk), message_("") {}
+ 
+ Status::Status(private_join_and_compute::StatusCode error, std::string error_message)
+@@ -58,10 +38,6 @@
+   return *this;
+ }
+ 
+-const Status& Status::OK = GetOk();
+-const Status& Status::CANCELLED = GetCancelled();
+-const Status& Status::UNKNOWN = GetUnknown();
+-
+ std::string Status::ToString() const {
+   if (code_ == private_join_and_compute::StatusCode::kOk) {
+     return "OK";
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/util/status.h third_party/private-join-and-compute/util/status.h
+--- /tmp/private-join-and-compute.original/util/status.h	2019-08-06 16:15:39.922264595 +0200
++++ third_party/private-join-and-compute/util/status.h	2019-08-07 12:42:02.483051443 +0200
+@@ -54,9 +54,12 @@
+   Status& operator=(const Status& other);
+ 
+   // Some pre-defined Status objects
+-  static const Status& OK;  // NOLINT // Identical to 0-arg constructor
+-  static const Status& CANCELLED;  // NOLINT
+-  static const Status& UNKNOWN;  // NOLINT
++  static Status OK() {
++    return Status();
++  }
++  static Status UNKNOWN() {
++    return Status(private_join_and_compute::StatusCode::kUnknown, "");
++  }
+ 
+   // Accessors
+   bool ok() const { return code_ == private_join_and_compute::StatusCode::kOk; }
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/util/statusor.h third_party/private-join-and-compute/util/statusor.h
+--- /tmp/private-join-and-compute.original/util/statusor.h	2019-08-06 16:15:39.922264595 +0200
++++ third_party/private-join-and-compute/util/statusor.h	2019-08-07 12:42:02.939051124 +0200
+@@ -177,7 +177,7 @@
+ }  // namespace internal
+ 
+ template <typename T>
+-inline StatusOr<T>::StatusOr() : status_(Status::UNKNOWN), value_(nullptr) {}
++inline StatusOr<T>::StatusOr() : status_(Status::UNKNOWN()), value_(nullptr) {}
+ 
+ template <typename T>
+ inline StatusOr<T>::StatusOr(const Status& status)
+@@ -189,7 +189,7 @@
+ 
+ template <typename T>
+ inline StatusOr<T>::StatusOr(const T& value)
+-    : status_(Status::OK), value_(new T(value)) {
++    : status_(Status::OK()), value_(new T(value)) {
+   if (internal::StatusOrHelper::Specialize<T>::IsValueNull(*value_)) {
+     status_ = internal::StatusOrHelper::HandleNullObjectCtorArg();
+   }
+@@ -209,7 +209,7 @@
+ 
+ template <typename T>
+ inline StatusOr<T>::StatusOr(T&& value)
+-    : status_(Status::OK), value_(new T(std::forward<T>(value))) {
++    : status_(Status::OK()), value_(new T(std::forward<T>(value))) {
+   if (internal::StatusOrHelper::Specialize<T>::IsValueNull(*value_)) {
+     status_ = internal::StatusOrHelper::HandleNullObjectCtorArg();
+   }

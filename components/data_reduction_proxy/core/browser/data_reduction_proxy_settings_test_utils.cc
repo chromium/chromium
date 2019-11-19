@@ -72,10 +72,15 @@ template <class C>
 void DataReductionProxySettingsTestBase::ResetSettings(base::Clock* clock) {
   MockDataReductionProxySettings<C>* settings =
       new MockDataReductionProxySettings<C>();
+  if (settings_) {
+    settings->data_reduction_proxy_service_ =
+        std::move(settings_->data_reduction_proxy_service_);
+  } else {
+    settings->data_reduction_proxy_service_ = test_context_->TakeService();
+  }
+  settings->data_reduction_proxy_service_->SetSettingsForTesting(settings);
   settings->config_ = test_context_->config();
   settings->prefs_ = test_context_->pref_service();
-  settings->data_reduction_proxy_service_ =
-      test_context_->CreateDataReductionProxyService(settings);
   if (clock)
     settings->clock_ = clock;
   EXPECT_CALL(*settings, GetOriginalProfilePrefs())
@@ -108,8 +113,7 @@ void DataReductionProxySettingsTestBase::CheckOnPrefChange(
   ExpectSetProxyPrefs(expected_enabled, false);
   if (managed) {
     test_context_->pref_service()->SetManagedPref(
-        test_context_->GetDataReductionProxyEnabledPrefName(),
-        std::make_unique<base::Value>(enabled));
+        prefs::kDataSaverEnabled, std::make_unique<base::Value>(enabled));
   } else {
     test_context_->SetDataReductionProxyEnabled(enabled);
   }
@@ -120,11 +124,8 @@ void DataReductionProxySettingsTestBase::CheckOnPrefChange(
 void DataReductionProxySettingsTestBase::InitDataReductionProxy(
     bool enabled_at_startup) {
   settings_->InitDataReductionProxySettings(
-      test_context_->GetDataReductionProxyEnabledPrefName(),
-      test_context_->pref_service(), test_context_->io_data(),
-      test_context_->CreateDataReductionProxyService(settings_.get()));
-  settings_->data_reduction_proxy_service()->SetIOData(
-      test_context_->io_data()->GetWeakPtr());
+      test_context_->pref_service(),
+      std::move(settings_->data_reduction_proxy_service_));
   settings_->SetCallbackToRegisterSyntheticFieldTrial(base::Bind(
       &DataReductionProxySettingsTestBase::OnSyntheticFieldTrialRegistration,
       base::Unretained(this)));

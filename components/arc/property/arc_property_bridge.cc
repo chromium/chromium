@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/memory/singleton.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "components/arc/session/arc_bridge_service.h"
 
 namespace arc {
 namespace {

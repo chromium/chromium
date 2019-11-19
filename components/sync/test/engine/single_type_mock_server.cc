@@ -34,7 +34,7 @@ sync_pb::SyncEntity SingleTypeMockServer::TypeRootUpdate() {
 
 sync_pb::SyncEntity SingleTypeMockServer::UpdateFromServer(
     int64_t version_offset,
-    const std::string& tag_hash,
+    const ClientTagHash& tag_hash,
     const sync_pb::EntitySpecifics& specifics) {
   int64_t old_version = GetServerVersion(tag_hash);
   int64_t version = old_version + version_offset;
@@ -47,7 +47,7 @@ sync_pb::SyncEntity SingleTypeMockServer::UpdateFromServer(
   entity.set_id_string(GenerateId(tag_hash));
   entity.set_parent_id_string(type_root_id_);
   entity.set_version(version);
-  entity.set_client_defined_unique_tag(tag_hash);
+  entity.set_client_defined_unique_tag(tag_hash.value());
   entity.set_deleted(false);
   entity.mutable_specifics()->CopyFrom(specifics);
 
@@ -56,14 +56,14 @@ sync_pb::SyncEntity SingleTypeMockServer::UpdateFromServer(
   base::Time mtime = ctime + base::TimeDelta::FromSeconds(version);
   entity.set_ctime(TimeToProtoTime(ctime));
   entity.set_mtime(TimeToProtoTime(mtime));
-  entity.set_name("Name: " + tag_hash);
+  entity.set_name("Name: " + tag_hash.value());
 
   return entity;
 }
 
 sync_pb::SyncEntity SingleTypeMockServer::TombstoneFromServer(
     int64_t version_offset,
-    const std::string& tag_hash) {
+    const ClientTagHash& tag_hash) {
   int64_t old_version = GetServerVersion(tag_hash);
   int64_t version = old_version + version_offset;
   if (version > old_version) {
@@ -75,7 +75,7 @@ sync_pb::SyncEntity SingleTypeMockServer::TombstoneFromServer(
   entity.set_id_string(GenerateId(tag_hash));
   entity.set_parent_id_string(type_root_id_);
   entity.set_version(version);
-  entity.set_client_defined_unique_tag(tag_hash);
+  entity.set_client_defined_unique_tag(tag_hash.value());
   entity.set_deleted(false);
   AddDefaultFieldValue(type_, entity.mutable_specifics());
 
@@ -99,7 +99,8 @@ sync_pb::ClientToServerResponse SingleTypeMockServer::DoSuccessfulCommit(
   const RepeatedPtrField<sync_pb::SyncEntity>& entries =
       message.commit().entries();
   for (const auto& entry : entries) {
-    const std::string tag_hash = entry.client_defined_unique_tag();
+    const ClientTagHash tag_hash =
+        ClientTagHash::FromHashed(entry.client_defined_unique_tag());
 
     committed_items_[tag_hash] = entry;
 
@@ -131,12 +132,13 @@ sync_pb::ClientToServerMessage SingleTypeMockServer::GetNthCommitMessage(
   return commit_messages_[n];
 }
 
-bool SingleTypeMockServer::HasCommitEntity(const std::string& tag_hash) const {
+bool SingleTypeMockServer::HasCommitEntity(
+    const ClientTagHash& tag_hash) const {
   return committed_items_.find(tag_hash) != committed_items_.end();
 }
 
 sync_pb::SyncEntity SingleTypeMockServer::GetLastCommittedEntity(
-    const std::string& tag_hash) const {
+    const ClientTagHash& tag_hash) const {
   DCHECK(HasCommitEntity(tag_hash));
   return committed_items_.find(tag_hash)->second;
 }
@@ -156,14 +158,13 @@ void SingleTypeMockServer::SetProgressMarkerToken(const std::string& token) {
   progress_marker_token_ = token;
 }
 
-std::string SingleTypeMockServer::GenerateId(const std::string& tag_hash) {
-  return "FakeId:" + tag_hash;
+std::string SingleTypeMockServer::GenerateId(const ClientTagHash& tag_hash) {
+  return "FakeId:" + tag_hash.value();
 }
 
 int64_t SingleTypeMockServer::GetServerVersion(
-    const std::string& tag_hash) const {
-  std::map<const std::string, int64_t>::const_iterator it;
-  it = server_versions_.find(tag_hash);
+    const ClientTagHash& tag_hash) const {
+  auto it = server_versions_.find(tag_hash);
   // Server versions do not necessarily start at 1 or 0.
   if (it == server_versions_.end()) {
     return 2048;
@@ -172,7 +173,7 @@ int64_t SingleTypeMockServer::GetServerVersion(
   }
 }
 
-void SingleTypeMockServer::SetServerVersion(const std::string& tag_hash,
+void SingleTypeMockServer::SetServerVersion(const ClientTagHash& tag_hash,
                                             int64_t version) {
   server_versions_[tag_hash] = version;
 }

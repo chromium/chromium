@@ -1,0 +1,23 @@
+[
+  {
+    "name": "disable-layout-ng",
+    "args": ["--disable-blink-features=LayoutNG"]
+  },
+  {
+    "name": "layout-ng-fragment-item",
+    "args": ["--enable-blink-features=LayoutNGFragmentItem"]
+  },
+  {
+    "name": "back-forward-cache",
+    "args": ["--enable-features=BackForwardCache"]
+  },
+  {
+    "name": "composite-after-paint",
+    "args": ["--enable-blink-features=CompositeAfterPaint"]
+  },
+  {
+    "name": "new-system-colors",
+    "args": ["--enable-blink-features=NewSystemColors"]
+  }
+]
+

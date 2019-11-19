@@ -1,0 +1,3 @@
+specific_include_rules = {
+  "display_lock_fuzzer.cc" : [ "+content/test/fuzzer/fuzzer_support.h" ],
+}

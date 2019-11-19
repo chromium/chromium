@@ -13,7 +13,7 @@
 
 namespace leveldb_proto {
 
-MigrationDelegate::MigrationDelegate() : weak_ptr_factory_(this) {}
+MigrationDelegate::MigrationDelegate() {}
 MigrationDelegate::~MigrationDelegate() = default;
 
 void MigrationDelegate::DoMigration(UniqueProtoDatabase* from,

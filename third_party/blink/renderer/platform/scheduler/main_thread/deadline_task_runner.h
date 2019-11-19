@@ -11,12 +11,15 @@
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/cancelable_closure_holder.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 namespace scheduler {
 
 // Runs a posted task at latest by a given deadline, but possibly sooner.
 class PLATFORM_EXPORT DeadlineTaskRunner {
+  USING_FAST_MALLOC(DeadlineTaskRunner);
+
  public:
   DeadlineTaskRunner(const base::RepeatingClosure& callback,
                      scoped_refptr<base::SingleThreadTaskRunner> task_runner);

@@ -23,9 +23,9 @@ namespace test {
 
 // Supplied by the client for each request to GAIA and returns valid tokens on
 // success or empty tokens on failure.
-typedef base::Callback<void(const std::string& access_token,
-                            const std::string& refresh_token)>
-    AccessTokenCallback;
+using AccessTokenCallback =
+    base::OnceCallback<void(const std::string& access_token,
+                            const std::string& refresh_token)>;
 
 // Retrieves an access token from either an authorization code or a refresh
 // token.  Destroying the AccessTokenFetcher while a request is outstanding will
@@ -39,12 +39,11 @@ class AccessTokenFetcher : public gaia::GaiaOAuthClient::Delegate {
 
   // Retrieve an access token from a one time use authorization code.
   virtual void GetAccessTokenFromAuthCode(const std::string& auth_code,
-                                          const AccessTokenCallback& callback);
+                                          AccessTokenCallback callback);
 
   // Retrieve an access token from a refresh token.
-  virtual void GetAccessTokenFromRefreshToken(
-      const std::string& refresh_token,
-      const AccessTokenCallback& callback);
+  virtual void GetAccessTokenFromRefreshToken(const std::string& refresh_token,
+                                              AccessTokenCallback callback);
 
   void SetURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory>

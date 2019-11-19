@@ -66,10 +66,19 @@ class FCMNetworkHandler : public gcm::GCMAppHandler,
 
   ~FCMNetworkHandler() override;
 
-  void StartListening();
-  void StopListening();
+  // Just calls std::make_unique. For ease of base::Bind'ing.
+  static std::unique_ptr<syncer::FCMNetworkHandler> Create(
+      gcm::GCMDriver* gcm_driver,
+      instance_id::InstanceIDDriver* instance_id_driver,
+      const std::string& sender_id,
+      const std::string& app_id);
+
   bool IsListening() const;
   void UpdateChannelState(FcmChannelState state);
+
+  // FCMSyncNetworkChannel overrides.
+  void StartListening() override;
+  void StopListening() override;
 
   // GCMAppHandler overrides.
   void ShutdownHandler() override;
@@ -110,7 +119,7 @@ class FCMNetworkHandler : public gcm::GCMAppHandler,
   const std::string app_id_;
 
   FCMNetworkHandlerDiagnostic diagnostic_info_;
-  base::WeakPtrFactory<FCMNetworkHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<FCMNetworkHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FCMNetworkHandler);
 };

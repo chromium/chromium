@@ -25,8 +25,8 @@ TEST_F(TextSelectionRepaintTest, RepaintSelectionOnFocus) {
       "Text to select.");
 
   // Focus the window.
-  EXPECT_FALSE(Page().IsFocused());
-  Page().SetFocused(true);
+  EXPECT_FALSE(GetPage().IsFocused());
+  GetPage().SetFocused(true);
 
   // First frame with nothing selected.
   Compositor().BeginFrame();
@@ -36,14 +36,14 @@ TEST_F(TextSelectionRepaintTest, RepaintSelectionOnFocus) {
   Window().getSelection()->setBaseAndExtent(body, 0, body, 1);
 
   // Unfocus the page and check for a pending frame.
-  Page().SetFocused(false);
+  GetPage().SetFocused(false);
   EXPECT_TRUE(Compositor().NeedsBeginFrame());
 
   // Frame with the unfocused selection appearance.
   Compositor().BeginFrame();
 
   // Focus the page and check for a pending frame.
-  Page().SetFocused(true);
+  GetPage().SetFocused(true);
   EXPECT_TRUE(Compositor().NeedsBeginFrame());
 }
 

@@ -1,0 +1,38 @@
+Tests DOM mutation events
+
+Running test: expectChildNodeUpdatedFiresForVisitedButNotTraversedNode
+{
+    attributes : [
+        [0] : id
+        [1] : childrenAddRemoveTarget
+    ]
+    backendNodeId : <number>
+    childNodeCount : 0
+    localName : div
+    nodeId : <number>
+    nodeName : DIV
+    nodeType : 1
+    nodeValue : 
+    parentId : <number>
+}
+{
+    childNodeCount : 1
+    nodeId : <number>
+}
+Child updated node ID = childrenAddRemoveTarget ID? true
+
+Running test: expectChildNodeInsertedAndRemovedFiresOnTraversedNode
+Inserted node parent correct? true
+Removed node parent correct? true
+
+Running test: expectCharacterDataModifiedFiredWhenDataModified
+Modified node ID expected? true
+
+Running test: expectAttrModifiedAndRemovedFire
+Modified node ID expected? true
+Removed attribute node ID expected? true
+
+Running test: expectChildNodeRemovedAndInsertedFireForIframeNavigation
+iframe child removed correct node? true
+Inserted child node matches expected ID? true
+

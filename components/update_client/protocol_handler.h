@@ -27,13 +27,6 @@ class ProtocolHandlerFactory {
   DISALLOW_COPY_AND_ASSIGN(ProtocolHandlerFactory);
 };
 
-class ProtocolHandlerFactoryXml final : public ProtocolHandlerFactory {
- public:
-  // Overrides for ProtocolHandlerFactory.
-  std::unique_ptr<ProtocolParser> CreateParser() const override;
-  std::unique_ptr<ProtocolSerializer> CreateSerializer() const override;
-};
-
 class ProtocolHandlerFactoryJSON final : public ProtocolHandlerFactory {
  public:
   // Overrides for ProtocolHandlerFactory.

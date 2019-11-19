@@ -30,6 +30,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/mime_util.h"
 #include "net/http/http_util.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 
@@ -83,7 +84,7 @@ void ParseJsonOnBlockingPool(
 // Returns response headers as a string. Returns a warning message if
 // |response_head| does not contain a valid response. Used only for debugging.
 std::string GetResponseHeadersAsString(
-    const network::ResourceResponseHead& response_head) {
+    const network::mojom::URLResponseHead& response_head) {
   // Check that response code indicates response headers are valid (i.e. not
   // malformed) before we retrieve the headers.
   if (response_head.headers->response_code() == -1)
@@ -135,8 +136,8 @@ google_apis::DriveApiErrorCode MapJsonError(
   const char kErrorReasonResponseTooLarge[] = "responseTooLarge";
 
   std::unique_ptr<const base::Value> value(google_apis::ParseJson(error_body));
-  const base::DictionaryValue* dictionary = NULL;
-  const base::DictionaryValue* error = NULL;
+  const base::DictionaryValue* dictionary = nullptr;
+  const base::DictionaryValue* error = nullptr;
   if (value &&
       value->GetAsDictionary(&dictionary) &&
       dictionary->GetDictionaryWithoutPathExpansion(kErrorKey, &error)) {
@@ -146,8 +147,8 @@ google_apis::DriveApiErrorCode MapJsonError(
     DLOG(ERROR) << "code: " << code << ", message: " << message;
 
     // Override the error code based on the reason of the first error.
-    const base::ListValue* errors = NULL;
-    const base::DictionaryValue* first_error = NULL;
+    const base::ListValue* errors = nullptr;
+    const base::DictionaryValue* first_error = nullptr;
     if (error->GetListWithoutPathExpansion(kErrorErrorsKey, &errors) &&
         errors->GetDictionary(0, &first_error)) {
       std::string reason;
@@ -255,8 +256,7 @@ UrlFetchRequestBase::UrlFetchRequestBase(
       sender_(sender),
       upload_progress_callback_(upload_progress_callback),
       download_progress_callback_(download_progress_callback),
-      response_content_length_(-1),
-      weak_ptr_factory_(this) {}
+      response_content_length_(-1) {}
 
 UrlFetchRequestBase::~UrlFetchRequestBase() {}
 
@@ -316,8 +316,8 @@ void UrlFetchRequestBase::StartAfterPrepare(
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
   request->method = GetRequestType();
-  request->load_flags = net::LOAD_DO_NOT_SEND_COOKIES |
-                        net::LOAD_DO_NOT_SAVE_COOKIES | net::LOAD_DISABLE_CACHE;
+  request->load_flags = net::LOAD_DISABLE_CACHE;
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   // Add request headers.
   // Note that SetHeader clears the current headers and sets it to the passed-in
@@ -395,7 +395,7 @@ void UrlFetchRequestBase::OnUploadProgress(
 
 void UrlFetchRequestBase::OnResponseStarted(
     const GURL& final_url,
-    const network::ResourceResponseHead& response_head) {
+    const network::mojom::URLResponseHead& response_head) {
   DVLOG(1) << "Response headers:\n"
            << GetResponseHeadersAsString(response_head);
   response_content_length_ = response_head.content_length;
@@ -481,7 +481,7 @@ void UrlFetchRequestBase::OnComplete(bool success) {
 
 void UrlFetchRequestBase::OnOutputFileClosed(bool success) {
   DCHECK(download_data_);
-  const network::ResourceResponseHead* response_info;
+  const network::mojom::URLResponseHead* response_info;
   if (url_loader_) {
     response_info = url_loader_->ResponseInfo();
     if (response_info) {
@@ -601,7 +601,7 @@ EntryActionRequest::EntryActionRequest(RequestSender* sender,
 EntryActionRequest::~EntryActionRequest() {}
 
 void EntryActionRequest::ProcessURLFetchResults(
-    const network::ResourceResponseHead* response_head,
+    const network::mojom::URLResponseHead* response_head,
     base::FilePath response_file,
     std::string response_body) {
   callback_.Run(GetErrorCode());
@@ -631,7 +631,7 @@ InitiateUploadRequestBase::InitiateUploadRequestBase(
 InitiateUploadRequestBase::~InitiateUploadRequestBase() {}
 
 void InitiateUploadRequestBase::ProcessURLFetchResults(
-    const network::ResourceResponseHead* response_head,
+    const network::mojom::URLResponseHead* response_head,
     base::FilePath response_file,
     std::string response_body) {
   std::string upload_location;
@@ -684,8 +684,7 @@ UploadRangeRequestBase::UploadRangeRequestBase(
     const GURL& upload_url,
     const ProgressCallback& progress_callback)
     : UrlFetchRequestBase(sender, progress_callback, ProgressCallback()),
-      upload_url_(upload_url),
-      weak_ptr_factory_(this) {}
+      upload_url_(upload_url) {}
 
 UploadRangeRequestBase::~UploadRangeRequestBase() {}
 
@@ -700,7 +699,7 @@ std::string UploadRangeRequestBase::GetRequestType() const {
 }
 
 void UploadRangeRequestBase::ProcessURLFetchResults(
-    const network::ResourceResponseHead* response_head,
+    const network::mojom::URLResponseHead* response_head,
     base::FilePath response_file,
     std::string response_body) {
   DriveApiErrorCode code = GetErrorCode();
@@ -880,8 +879,7 @@ MultipartUploadRequestBase::MultipartUploadRequestBase(
       content_type_(content_type),
       local_path_(local_file_path),
       callback_(callback),
-      progress_callback_(progress_callback),
-      weak_ptr_factory_(this) {
+      progress_callback_(progress_callback) {
   DCHECK(!content_type.empty());
   DCHECK_GE(content_length, 0);
   DCHECK(!local_file_path.empty());
@@ -1015,7 +1013,7 @@ void DownloadFileRequestBase::GetOutputFilePath(
 }
 
 void DownloadFileRequestBase::ProcessURLFetchResults(
-    const network::ResourceResponseHead* response_head,
+    const network::mojom::URLResponseHead* response_head,
     base::FilePath response_file,
     std::string response_body) {
   download_action_callback_.Run(GetErrorCode(), response_file);

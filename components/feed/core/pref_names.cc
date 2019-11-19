@@ -4,6 +4,9 @@
 
 #include "components/feed/core/pref_names.h"
 
+#include "components/feed/core/user_classifier.h"
+#include "components/prefs/pref_registry_simple.h"
+
 namespace feed {
 
 namespace prefs {
@@ -29,6 +32,20 @@ const char kUserClassifierLastTimeToViewSuggestions[] =
 const char kUserClassifierLastTimeToUseSuggestions[] =
     "feed.user_classifier.last_time_to_use_suggestions";
 
+const char kHostOverrideHost[] = "feed.host_override.host";
+const char kHostOverrideBlessNonce[] = "feed.host_override.bless_nonce";
+
 }  // namespace prefs
+
+void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(feed::prefs::kHostOverrideHost, "");
+  registry->RegisterStringPref(feed::prefs::kHostOverrideBlessNonce, "");
+  registry->RegisterIntegerPref(feed::prefs::kThrottlerRequestCount, 0);
+  registry->RegisterIntegerPref(feed::prefs::kThrottlerRequestsDay, 0);
+  registry->RegisterTimePref(prefs::kLastFetchAttemptTime, base::Time());
+  registry->RegisterTimeDeltaPref(prefs::kBackgroundRefreshPeriod,
+                                  base::TimeDelta());
+  UserClassifier::RegisterProfilePrefs(registry);
+}
 
 }  // namespace feed

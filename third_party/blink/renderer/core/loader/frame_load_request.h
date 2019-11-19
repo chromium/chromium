@@ -26,54 +26,65 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_LOAD_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_LOAD_REQUEST_H_
 
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/navigation/triggering_event_info.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
-#include "third_party/blink/public/web/web_triggering_event_info.h"
+#include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
+#include "third_party/blink/renderer/core/loader/navigation_policy.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 
 namespace blink {
 
 class HTMLFormElement;
+class KURL;
 
 struct CORE_EXPORT FrameLoadRequest {
   STACK_ALLOCATED();
 
  public:
-  explicit FrameLoadRequest(Document* origin_document);
   FrameLoadRequest(Document* origin_document, const ResourceRequest&);
-  FrameLoadRequest(Document* origin_document,
-                   const ResourceRequest&,
-                   const AtomicString& frame_name);
-  FrameLoadRequest(Document* origin_document,
-                   const ResourceRequest&,
-                   const AtomicString& frame_name,
-                   ContentSecurityPolicyDisposition);
 
   Document* OriginDocument() const { return origin_document_.Get(); }
+
+  network::mojom::RequestContextFrameType GetFrameType() const {
+    return frame_type_;
+  }
+  void SetFrameType(network::mojom::RequestContextFrameType frame_type) {
+    frame_type_ = frame_type;
+  }
 
   ResourceRequest& GetResourceRequest() { return resource_request_; }
   const ResourceRequest& GetResourceRequest() const {
     return resource_request_;
   }
 
-  const AtomicString& FrameName() const { return frame_name_; }
-  void SetFrameName(const AtomicString& frame_name) {
-    frame_name_ = frame_name;
+  // TODO(japhet): This is only used from frame_loader.cc, and can probably be
+  // an implementation detail there.
+  ClientRedirectPolicy ClientRedirect() const;
+
+  void SetClientRedirectReason(ClientNavigationReason reason) {
+    client_navigation_reason_ = reason;
   }
 
-  ClientRedirectPolicy ClientRedirect() const { return client_redirect_; }
-  void SetClientRedirect(ClientRedirectPolicy client_redirect) {
-    client_redirect_ = client_redirect;
+  ClientNavigationReason ClientRedirectReason() const {
+    return client_navigation_reason_;
   }
 
-  WebTriggeringEventInfo TriggeringEventInfo() const {
+  NavigationPolicy GetNavigationPolicy() const { return navigation_policy_; }
+  void SetNavigationPolicy(NavigationPolicy navigation_policy) {
+    navigation_policy_ = navigation_policy;
+  }
+
+  TriggeringEventInfo GetTriggeringEventInfo() const {
     return triggering_event_info_;
   }
-  void SetTriggeringEventInfo(WebTriggeringEventInfo info) {
-    DCHECK(info != WebTriggeringEventInfo::kUnknown);
+  void SetTriggeringEventInfo(TriggeringEventInfo info) {
+    DCHECK(info != TriggeringEventInfo::kUnknown);
     triggering_event_info_ = info;
   }
 
@@ -82,14 +93,6 @@ struct CORE_EXPORT FrameLoadRequest {
 
   ShouldSendReferrer GetShouldSendReferrer() const {
     return should_send_referrer_;
-  }
-  void SetShouldSendReferrer(ShouldSendReferrer should_send_referrer) {
-    should_send_referrer_ = should_send_referrer;
-  }
-
-  ShouldSetOpener GetShouldSetOpener() const { return should_set_opener_; }
-  void SetShouldSetOpener(ShouldSetOpener should_set_opener) {
-    should_set_opener_ = should_set_opener;
   }
 
   const AtomicString& HrefTranslate() const { return href_translate_; }
@@ -102,27 +105,16 @@ struct CORE_EXPORT FrameLoadRequest {
     return should_check_main_world_content_security_policy_;
   }
 
-  // Sets the BlobURLToken that should be used when fetching the resource. This
+  // The BlobURLToken that should be used when fetching the resource. This
   // is needed for blob URLs, because the blob URL might be revoked before the
   // actual fetch happens, which would result in incorrect failures to fetch.
   // The token lets the browser process securely resolves the blob URL even
   // after the url has been revoked.
-  // FrameFetchRequest initializes this in its constructor, but in some cases
-  // FrameFetchRequest is created asynchronously rather than when a navigation
-  // is scheduled, so in those cases NavigationScheduler needs to override the
-  // blob FrameLoadRequest might have found.
-  void SetBlobURLToken(mojom::blink::BlobURLTokenPtr blob_url_token) {
-    DCHECK(blob_url_token);
-    blob_url_token_ = base::MakeRefCounted<
-        base::RefCountedData<mojom::blink::BlobURLTokenPtr>>(
-        std::move(blob_url_token));
-  }
-
-  mojom::blink::BlobURLTokenPtr GetBlobURLToken() const {
+  mojo::PendingRemote<mojom::blink::BlobURLToken> GetBlobURLToken() const {
     if (!blob_url_token_)
-      return nullptr;
-    mojom::blink::BlobURLTokenPtr result;
-    blob_url_token_->data->Clone(MakeRequest(&result));
+      return mojo::NullRemote();
+    mojo::PendingRemote<mojom::blink::BlobURLToken> result;
+    blob_url_token_->data->Clone(result.InitWithNewPipeAndPassReceiver());
     return result;
   }
 
@@ -132,22 +124,46 @@ struct CORE_EXPORT FrameLoadRequest {
 
   base::TimeTicks GetInputStartTime() const { return input_start_time_; }
 
+  const WebWindowFeatures& GetWindowFeatures() const {
+    return window_features_;
+  }
+  void SetFeaturesForWindowOpen(const WebWindowFeatures& features) {
+    window_features_ = features;
+    is_window_open_ = true;
+  }
+  bool IsWindowOpen() const { return is_window_open_; }
+
+  void SetNoOpener() { window_features_.noopener = true; }
+  void SetNoReferrer() {
+    should_send_referrer_ = kNeverSendReferrer;
+    resource_request_.ClearHTTPReferrer();
+    resource_request_.ClearHTTPOrigin();
+  }
+
+  // Whether either OriginDocument, RequestorOrigin or IsolatedWorldOrigin can
+  // display the |url|,
+  bool CanDisplay(const KURL&) const;
+
  private:
   Member<Document> origin_document_;
   ResourceRequest resource_request_;
-  AtomicString frame_name_;
   AtomicString href_translate_;
-  ClientRedirectPolicy client_redirect_;
-  WebTriggeringEventInfo triggering_event_info_ =
-      WebTriggeringEventInfo::kNotFromEvent;
+  ClientNavigationReason client_navigation_reason_ =
+      ClientNavigationReason::kNone;
+  NavigationPolicy navigation_policy_ = kNavigationPolicyCurrentTab;
+  TriggeringEventInfo triggering_event_info_ =
+      TriggeringEventInfo::kNotFromEvent;
   Member<HTMLFormElement> form_;
   ShouldSendReferrer should_send_referrer_;
-  ShouldSetOpener should_set_opener_;
   ContentSecurityPolicyDisposition
       should_check_main_world_content_security_policy_;
-  scoped_refptr<base::RefCountedData<mojom::blink::BlobURLTokenPtr>>
+  scoped_refptr<base::RefCountedData<mojo::Remote<mojom::blink::BlobURLToken>>>
       blob_url_token_;
   base::TimeTicks input_start_time_;
+  network::mojom::RequestContextFrameType frame_type_ =
+      network::mojom::RequestContextFrameType::kNone;
+  WebWindowFeatures window_features_;
+  bool is_window_open_ = false;
 };
 
 }  // namespace blink

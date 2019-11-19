@@ -98,6 +98,10 @@ cr.define('cr.ui.overlay', function() {
   /**
    * Adds behavioral hooks for the given overlay.
    * @param {HTMLElement} overlay The .overlay.
+   *
+   * TODO(crbug.com/425829): This function makes use of deprecated getter or
+   * setter functions.
+   * @suppress {deprecated}
    */
   function setupOverlay(overlay) {
     // Close the overlay on clicking any of the pages' close buttons.
@@ -111,7 +115,10 @@ cr.define('cr.ui.overlay', function() {
       });
     }
 
+    // TODO(crbug.com/425829): Remove above suppression once we no longer use
+    // deprecated functions defineSetter, and defineGetter.
     // Remove the 'pulse' animation any time the overlay is hidden or shown.
+    // eslint-disable-next-line no-restricted-properties
     overlay.__defineSetter__('hidden', function(value) {
       this.classList.remove('pulse');
       if (value) {
@@ -120,6 +127,7 @@ cr.define('cr.ui.overlay', function() {
         this.removeAttribute('hidden');
       }
     });
+    // eslint-disable-next-line no-restricted-properties
     overlay.__defineGetter__('hidden', function() {
       return this.hasAttribute('hidden');
     });

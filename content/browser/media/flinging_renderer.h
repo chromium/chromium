@@ -12,6 +12,9 @@
 #include "media/base/media_status_observer.h"
 #include "media/base/renderer.h"
 #include "media/base/renderer_client.h"
+#include "media/mojo/mojom/renderer_extensions.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -27,23 +30,26 @@ class RenderFrameHost;
 class CONTENT_EXPORT FlingingRenderer : public media::Renderer,
                                         media::MediaStatusObserver {
  public:
+  using ClientExtension = media::mojom::FlingingRendererClientExtension;
+
   // Helper method to create a FlingingRenderer from an already existing
   // presentation ID.
   // Returns nullptr if there was an error getting the MediaControllor for the
   // given presentation ID.
   static std::unique_ptr<FlingingRenderer> Create(
       RenderFrameHost* render_frame_host,
-      const std::string& presentation_id);
+      const std::string& presentation_id,
+      mojo::PendingRemote<ClientExtension> client_extension);
 
   ~FlingingRenderer() override;
 
   // media::Renderer implementation
   void Initialize(media::MediaResource* media_resource,
                   media::RendererClient* client,
-                  const media::PipelineStatusCB& init_cb) override;
+                  media::PipelineStatusCallback init_cb) override;
   void SetCdm(media::CdmContext* cdm_context,
-              const media::CdmAttachedCB& cdm_attached_cb) override;
-  void Flush(const base::Closure& flush_cb) override;
+              media::CdmAttachedCB cdm_attached_cb) override;
+  void Flush(base::OnceClosure flush_cb) override;
   void StartPlayingFrom(base::TimeDelta time) override;
   void SetPlaybackRate(double playback_rate) override;
   void SetVolume(float volume) override;
@@ -57,17 +63,26 @@ class CONTENT_EXPORT FlingingRenderer : public media::Renderer,
   using PlayState = media::MediaStatus::State;
 
   explicit FlingingRenderer(
-      std::unique_ptr<media::FlingingController> controller);
+      std::unique_ptr<media::FlingingController> controller,
+      mojo::PendingRemote<ClientExtension> client_extension);
 
-  void SetTargetPlayState(PlayState state);
+  void SetExpectedPlayState(PlayState state);
 
-  // The state that we expect the remotely playing video to transition into.
-  // This is used to differentiate between state changes that originated from
-  // this device versus external devices.
-  PlayState target_play_state_ = PlayState::UNKNOWN;
-  bool reached_target_play_state_ = false;
+  // The play state that we expect the remote device to reach.
+  // Updated whenever WMPI sends play/pause commands.
+  PlayState expected_play_state_ = PlayState::UNKNOWN;
+
+  // True when the remote device has reached the expected play state.
+  // False when it is transitioning.
+  bool play_state_is_stable_ = false;
+
+  // The last "stable" play state received from the cast device.
+  // Only updated when |play_state_is_stable_| is true.
+  PlayState last_play_state_received_ = PlayState::UNKNOWN;
 
   media::RendererClient* client_;
+
+  mojo::Remote<ClientExtension> client_extension_;
 
   std::unique_ptr<media::FlingingController> controller_;
 

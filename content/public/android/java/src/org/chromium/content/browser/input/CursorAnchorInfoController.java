@@ -7,11 +7,12 @@ package org.chromium.content.browser.input;
 import android.annotation.TargetApi;
 import android.graphics.Matrix;
 import android.os.Build;
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.inputmethod.CursorAnchorInfo;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 
 import java.util.Arrays;

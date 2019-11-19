@@ -22,7 +22,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
-#include "net/base/completion_callback.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "storage/common/database/database_identifier.h"
 
@@ -70,7 +70,7 @@ void BrowsingDataDatabaseHelper::DeleteDatabase(const url::Origin& origin) {
       FROM_HERE,
       base::BindOnce(
           base::IgnoreResult(&storage::DatabaseTracker::DeleteDataForOrigin),
-          tracker_, origin, net::CompletionCallback()));
+          tracker_, origin, net::CompletionOnceCallback()));
 }
 
 CannedBrowsingDataDatabaseHelper::CannedBrowsingDataDatabaseHelper(
@@ -113,8 +113,8 @@ void CannedBrowsingDataDatabaseHelper::StartFetching(FetchCallback callback) {
     result.emplace_back(origin, 0, base::Time());
   }
 
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(std::move(callback), result));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(std::move(callback), result));
 }
 
 void CannedBrowsingDataDatabaseHelper::DeleteDatabase(

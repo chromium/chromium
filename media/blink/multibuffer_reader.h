@@ -184,7 +184,7 @@ class MEDIA_BLINK_EXPORT MultiBufferReader : public MultiBuffer::Reader {
   // Progress callback.
   base::Callback<void(int64_t, int64_t)> progress_callback_;
 
-  base::WeakPtrFactory<MultiBufferReader> weak_factory_;
+  base::WeakPtrFactory<MultiBufferReader> weak_factory_{this};
 };
 
 }  // namespace media

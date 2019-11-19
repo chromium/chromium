@@ -37,6 +37,7 @@ bool WebGLMultiDrawCommon::ValidateArray(WebGLExtensionScopedContext* scoped,
   return true;
 }
 
+// static
 base::span<const int32_t> WebGLMultiDrawCommon::MakeSpan(
     const Int32ArrayOrLongSequence& array) {
   if (array.IsInt32Array()) {

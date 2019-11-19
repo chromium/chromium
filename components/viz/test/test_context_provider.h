@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/test_context_support.h"
@@ -57,19 +58,46 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
 
   void UpdateSharedImage(const gpu::SyncToken& sync_token,
                          const gpu::Mailbox& mailbox) override;
+  void UpdateSharedImage(const gpu::SyncToken& sync_token,
+                         std::unique_ptr<gfx::GpuFence> acquire_fence,
+                         const gpu::Mailbox& mailbox) override;
 
   void DestroySharedImage(const gpu::SyncToken& sync_token,
                           const gpu::Mailbox& mailbox) override;
 
+  SwapChainMailboxes CreateSwapChain(ResourceFormat format,
+                                     const gfx::Size& size,
+                                     const gfx::ColorSpace& color_space,
+                                     uint32_t usage) override;
+  void PresentSwapChain(const gpu::SyncToken& sync_token,
+                        const gpu::Mailbox& mailbox) override;
+
+#if defined(OS_FUCHSIA)
+  void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
+                                      zx::channel token) override;
+  void ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id) override;
+#endif  // defined(OS_FUCHSIA)
+
+  gpu::SyncToken GenVerifiedSyncToken() override;
   gpu::SyncToken GenUnverifiedSyncToken() override;
+
+  void Flush() override;
 
   size_t shared_image_count() const { return shared_images_.size(); }
   const gfx::Size& MostRecentSize() const { return most_recent_size_; }
+  const gpu::SyncToken& MostRecentGeneratedToken() const {
+    return most_recent_generated_token_;
+  }
+  const gpu::SyncToken& MostRecentDestroyToken() const {
+    return most_recent_destroy_token_;
+  }
   bool CheckSharedImageExists(const gpu::Mailbox& mailbox) const;
 
  private:
   uint64_t release_id_ = 0;
   gfx::Size most_recent_size_;
+  gpu::SyncToken most_recent_generated_token_;
+  gpu::SyncToken most_recent_destroy_token_;
   base::flat_set<gpu::Mailbox> shared_images_;
 };
 
@@ -93,6 +121,11 @@ class TestContextProvider
   explicit TestContextProvider(
       std::unique_ptr<TestContextSupport> support,
       std::unique_ptr<TestGLES2Interface> gl,
+      bool support_locking);
+  explicit TestContextProvider(
+      std::unique_ptr<TestContextSupport> support,
+      std::unique_ptr<TestGLES2Interface> gl,
+      std::unique_ptr<gpu::raster::RasterInterface> raster,
       bool support_locking);
 
   // ContextProvider / RasterContextProvider implementation.
@@ -153,7 +186,7 @@ class TestContextProvider
 
   base::ObserverList<ContextLostObserver>::Unchecked observers_;
 
-  base::WeakPtrFactory<TestContextProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<TestContextProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestContextProvider);
 };

@@ -5,7 +5,7 @@ for the [Web Bluetooth specification]. It uses the Web Bluetooth Service
 [mojom] to communicate with the [Web Bluetooth Service].
 
 [Web Bluetooth specification]: https://webbluetoothcg.github.io/web-bluetooth/
-[mojom]: ../../../public/platform/modules/bluetooth/web_bluetooth.mojom
+[mojom]: ../../../public/mojom/bluetooth/web_bluetooth.mojom
 [Web Bluetooth Service]: /content/browser/bluetooth/
 
 

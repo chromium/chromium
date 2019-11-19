@@ -28,8 +28,8 @@ per-file *.typemap=file://ipc/SECURITY_OWNERS
 per-file *_param_traits*.*=set noparent
 per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS
 
-per-file *_struct_traits*.*=set noparent
-per-file *_struct_traits*.*=file://ipc/SECURITY_OWNERS
+per-file *_mojom_traits*.*=set noparent
+per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
 
 per-file *font_config_ipc_linux*=set noparent
 per-file *font_config_ipc_linux*=file://ipc/SECURITY_OWNERS

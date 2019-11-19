@@ -7,17 +7,17 @@ package org.chromium.chrome.browser.infobar;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.StrictMode;
+
+import androidx.annotation.DrawableRes;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.UrlConstants;
+import org.chromium.chrome.browser.datareduction.DataReductionPromoUtils;
 import org.chromium.chrome.browser.omaha.VersionNumberGetter;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
-import org.chromium.chrome.browser.preferences.datareduction.DataReductionPromoUtils;
+import org.chromium.chrome.browser.preferences.about.AboutSettingsBridge;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.GURLUtils;
 
@@ -34,30 +34,20 @@ import java.util.TimeZone;
  */
 public class DataReductionPromoInfoBar extends ConfirmInfoBar {
     private static final String M48_STABLE_RELEASE_DATE = "2016-01-26";
-    private static final String ENABLE_INFOBAR_SWITCH = "enable-data-reduction-promo-infobar";
+    private static final String FORCE_INFOBAR_SWITCH = "force-data-reduction-promo-infobar";
     private static final int NO_INSTALL_TIME = 0;
 
-    private static Bitmap sIcon;
+    private static @DrawableRes int sIconId;
     private static String sTitle;
     private static String sText;
     private static String sPrimaryButtonText;
     private static String sSecondaryButtonText;
 
-    /**
-     * Launch the data reduction infobar promo, if it needs to be displayed.
-     *
-     * @param context An Android context.
-     * @param webContents The WebContents of the tab on which the infobar should show.
-     * @param url The URL of the page on which the infobar should show.
-     * @param isFragmentNavigation Whether the main frame navigation did not cause changes to the
-     *            document (for example scrolling to a named anchor PopState).
-     * @param statusCode The HTTP status code of the navigation.
-     * @return boolean Whether the promo was launched.
-     */
-    public static boolean maybeLaunchPromoInfoBar(Context context,
-            WebContents webContents, String url, boolean isErrorPage, boolean isFragmentNavigation,
-            int statusCode) {
-        ThreadUtils.assertOnUiThread();
+    private static boolean shouldLaunchPromoInfoBar(Context context, WebContents webContents,
+            String url, boolean isErrorPage, boolean isFragmentNavigation, int statusCode) {
+        // This switch is only used for testing so let it override every other check.
+        if (CommandLine.getInstance().hasSwitch(FORCE_INFOBAR_SWITCH)) return true;
+
         if (webContents.isIncognito()) return false;
         if (isErrorPage) return false;
         if (isFragmentNavigation) return false;
@@ -78,7 +68,7 @@ public class DataReductionPromoInfoBar extends ConfirmInfoBar {
         if (!GURLUtils.getScheme(url).equals(UrlConstants.HTTP_SCHEME)) return false;
 
         int currentMilestone = VersionNumberGetter.getMilestoneFromVersionNumber(
-                PrefServiceBridge.getInstance().getAboutVersionStrings().getApplicationVersion());
+                AboutSettingsBridge.getApplicationVersion());
         String freOrSecondRunVersion =
                 DataReductionPromoUtils.getDisplayedFreOrSecondRunPromoVersion();
 
@@ -103,24 +93,46 @@ public class DataReductionPromoInfoBar extends ConfirmInfoBar {
             // promo was displayed or the command line switch is on. If the last promo was shown
             // before M51 then |freOrSecondRunVersion| will be empty and it is safe to show the
             // infobar promo.
-            if (!CommandLine.getInstance().hasSwitch(ENABLE_INFOBAR_SWITCH)
-                    && !freOrSecondRunVersion.isEmpty()
-                    && currentMilestone < VersionNumberGetter
-                            .getMilestoneFromVersionNumber(freOrSecondRunVersion) + 2) {
+            if (!freOrSecondRunVersion.isEmpty()
+                    && currentMilestone < VersionNumberGetter.getMilestoneFromVersionNumber(
+                                                  freOrSecondRunVersion)
+                                    + 2) {
                 return false;
             }
-
-            DataReductionPromoInfoBar.launch(webContents,
-                    BitmapFactory.decodeResource(context.getResources(), R.drawable.infobar_chrome),
-                    context.getString(R.string.data_reduction_promo_infobar_title),
-                    context.getString(R.string.data_reduction_promo_infobar_text),
-                    context.getString(R.string.data_reduction_promo_infobar_button),
-                    context.getString(R.string.no_thanks));
 
             return true;
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
         }
+    }
+
+    /**
+     * Launch the data reduction infobar promo, if it needs to be displayed.
+     *
+     * @param context An Android context.
+     * @param webContents The WebContents of the tab on which the infobar should show.
+     * @param url The URL of the page on which the infobar should show.
+     * @param isFragmentNavigation Whether the main frame navigation did not cause changes to the
+     *            document (for example scrolling to a named anchor PopState).
+     * @param statusCode The HTTP status code of the navigation.
+     * @return boolean Whether the promo was launched.
+     */
+    public static boolean maybeLaunchPromoInfoBar(Context context, WebContents webContents,
+            String url, boolean isErrorPage, boolean isFragmentNavigation, int statusCode) {
+        ThreadUtils.assertOnUiThread();
+
+        if (!shouldLaunchPromoInfoBar(
+                    context, webContents, url, isErrorPage, isFragmentNavigation, statusCode)) {
+            return false;
+        }
+
+        DataReductionPromoInfoBar.launch(webContents, R.drawable.infobar_chrome,
+                context.getString(R.string.data_reduction_promo_infobar_title),
+                context.getString(R.string.data_reduction_promo_infobar_text),
+                context.getString(R.string.data_reduction_enable_button_lite_mode),
+                context.getString(R.string.no_thanks));
+
+        return true;
     }
 
     /**
@@ -146,29 +158,26 @@ public class DataReductionPromoInfoBar extends ConfirmInfoBar {
      * text. Clicking the link will open the specified settings page.
      *
      * @param webContents The {@link WebContents} in which to open the {@link InfoBar}.
-     * @param icon Bitmap to use for the {@link InfoBar} icon.
+     * @param iconId {@link DrawableRes} to use for the {@link InfoBar} icon.
      * @param title The title to display in the {@link InfoBar}.
      * @param text The text to display in the {@link InfoBar}.
      * @param primaryButtonText The text to display on the primary button.
      * @param secondaryButtonText The text to display on the secondary button.
      */
-    private static void launch(WebContents webContents,
-            Bitmap icon,
-            String title,
-            String text,
-            String primaryButtonText,
-            String secondaryButtonText) {
+    private static void launch(WebContents webContents, @DrawableRes int iconId, String title,
+            String text, String primaryButtonText, String secondaryButtonText) {
         sTitle = title;
         sText = text;
         sPrimaryButtonText = primaryButtonText;
         sSecondaryButtonText = secondaryButtonText;
-        sIcon = icon;
+        sIconId = iconId;
         DataReductionPromoInfoBarDelegate.launch(webContents);
         DataReductionPromoUtils.saveInfoBarPromoDisplayed();
     }
 
     DataReductionPromoInfoBar() {
-        super(0, sIcon, sTitle, null, sPrimaryButtonText, sSecondaryButtonText);
+        super(sIconId, R.color.infobar_icon_drawable_color, null, sTitle, null, sPrimaryButtonText,
+                sSecondaryButtonText);
     }
 
     @Override

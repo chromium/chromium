@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div class="container">
   <details id="details1">
@@ -10,7 +9,7 @@
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axDetails1 = accessibilityController.accessibleElementById("details1");
     var axSummary1 = axDetails1.childAtIndex(0);
     assert_equals(axSummary1.role, "AXRole: AXDisclosureTriangle");
@@ -27,7 +26,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axSummary2 = accessibilityController.accessibleElementById("summary2");
     assert_equals(axSummary2.name, "summary2-title");
     assert_equals(axSummary2.nameFrom, "title");
@@ -42,7 +41,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axSummary3 = accessibilityController.accessibleElementById("summary3");
     assert_equals(axSummary3.name, "summary3-contents");
     assert_equals(axSummary3.nameFrom, "contents");
@@ -57,7 +56,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axSummary4 = accessibilityController.accessibleElementById("summary4");
     assert_equals(axSummary4.name, "summary4-aria-label");
     assert_equals(axSummary4.nameFrom, "attribute");
@@ -73,7 +72,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axSummary5 = accessibilityController.accessibleElementById("summary5");
     assert_equals(axSummary5.name, "summary5-aria-labelledby");
     assert_equals(axSummary5.nameFrom, "relatedElement");

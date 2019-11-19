@@ -208,12 +208,6 @@ class GFX_EXPORT RenderText {
   // which is the only supported native typesetter.
   static std::unique_ptr<RenderText> CreateFor(Typesetter typesetter);
 
-  // Returns CreateFor(Typesetter::BROWSER), but indicates a caller that does
-  // not know whether the text will eventually be drawn by the native typesetter
-  // or by a RenderText instance.
-  // TODO(tapted): Delete this.
-  static std::unique_ptr<RenderText> CreateInstanceDeprecated();
-
   // Creates another instance of the same concrete class.
   virtual std::unique_ptr<RenderText> CreateInstanceOfSameType() const = 0;
 
@@ -229,6 +223,9 @@ class GFX_EXPORT RenderText {
     return horizontal_alignment_;
   }
   void SetHorizontalAlignment(HorizontalAlignment alignment);
+
+  VerticalAlignment vertical_alignment() const { return vertical_alignment_; }
+  void SetVerticalAlignment(VerticalAlignment alignment);
 
   const FontList& font_list() const { return font_list_; }
   virtual void SetFontList(const FontList& font_list);
@@ -289,9 +286,6 @@ class GFX_EXPORT RenderText {
   WordWrapBehavior word_wrap_behavior() const { return word_wrap_behavior_; }
   void SetWordWrapBehavior(WordWrapBehavior behavior);
 
-  // Set whether newline characters should be replaced with newline symbols.
-  void SetReplaceNewlineCharsWithSymbols(bool replace);
-
   // Returns true if this instance supports multiline rendering.
   virtual bool MultilineSupported() const = 0;
 
@@ -308,6 +302,14 @@ class GFX_EXPORT RenderText {
   // The display text will be elided to fit |display_rect| using this behavior.
   void SetElideBehavior(ElideBehavior elide_behavior);
   ElideBehavior elide_behavior() const { return elide_behavior_; }
+
+  // When display text is elided, determines how whitespace is handled.
+  // If base::nullopt is specified, the default elision for the current elide
+  // behavior will be applied.
+  void SetWhitespaceElision(base::Optional<bool> elide_whitespace);
+  base::Optional<bool> whitespace_elision() const {
+    return whitespace_elision_;
+  }
 
   const Rect& display_rect() const { return display_rect_; }
   void SetDisplayRect(const Rect& r);
@@ -438,6 +440,12 @@ class GFX_EXPORT RenderText {
   // See comment in Canvas::GetStringWidthF for its usage.
   virtual SizeF GetStringSizeF();
 
+  // Returns the size of the line containing |caret|.
+  virtual Size GetLineSize(const SelectionModel& caret);
+
+  // Returns the sum of all the line widths.
+  virtual float TotalLineWidth();
+
   // Returns the width of the content (which is the wrapped width in multiline
   // mode). Reserves room for the cursor if |cursor_enabled_| is true.
   float GetContentWidthF();
@@ -526,7 +534,7 @@ class GFX_EXPORT RenderText {
   // jump when breaking by characters. If the glyphs are RTL then the returned
   // Range will have is_reversed() true.  (This does not return a Rect because a
   // Rect can't have a negative width.)
-  virtual Range GetCursorSpan(const Range& text_range) = 0;
+  virtual RangeF GetCursorSpan(const Range& text_range) = 0;
 
   const Vector2d& GetUpdatedDisplayOffset();
   void SetDisplayOffset(int horizontal_offset);
@@ -559,8 +567,25 @@ class GFX_EXPORT RenderText {
 
   void set_strike_thickness_factor(SkScalar f) { strike_thickness_factor_ = f; }
 
+  // Return the line index that contains the argument; or the index of the last
+  // line if the |caret| exceeds the text length.
+  virtual size_t GetLineContainingCaret(const SelectionModel& caret) = 0;
+
  protected:
   RenderText();
+
+  // Whether |segment| corresponds to the newline character. This uses |text_|
+  // to look up the corresponding character.
+  bool IsNewlineSegment(const internal::LineSegment& segment) const;
+
+  // Whether |segment| corresponds to the newline character inside |text|.
+  bool IsNewlineSegment(const base::string16& text,
+                        const internal::LineSegment& segment) const;
+
+  // Returns the character range of segments in |line| excluding the trailing
+  // newline segment.
+  Range GetLineRange(const base::string16& text,
+                     const internal::Line& line) const;
 
   // NOTE: The value of these accessors may be stale. Please make sure
   // that these fields are up to date before accessing them.
@@ -629,6 +654,12 @@ class GFX_EXPORT RenderText {
       const SelectionModel& selection,
       VisualCursorDirection direction) = 0;
 
+  // Get the selection model visually above/below |selection| by one line.
+  // The returned value represents a cursor/caret position without a selection.
+  virtual SelectionModel AdjacentLineSelectionModel(
+      const SelectionModel& selection,
+      VisualCursorDirection direction) = 0;
+
   // Get the selection model corresponding to visual text ends.
   // The returned value represents a cursor/caret position without a selection.
   SelectionModel EdgeSelectionModel(VisualCursorDirection direction);
@@ -645,8 +676,8 @@ class GFX_EXPORT RenderText {
   // GetDisplayText(), which differ when the text is obscured,
   // truncated or elided. Regardless of whether or not the text is
   // obscured, the character (code point) offsets always match.
-  virtual size_t TextIndexToDisplayIndex(size_t index) = 0;
-  virtual size_t DisplayIndexToTextIndex(size_t index) = 0;
+  size_t TextIndexToDisplayIndex(size_t index);
+  size_t DisplayIndexToTextIndex(size_t index);
 
   // Notifies that layout text, or attributes that affect the layout text
   // shape have changed. |text_changed| is true if the content of the
@@ -677,7 +708,7 @@ class GFX_EXPORT RenderText {
 
   // Convert points from the text space to the view space. Handles the display
   // area, display offset, application LTR/RTL mode and multiline.
-  Point ToViewPoint(const Point& point);
+  Point ToViewPoint(const PointF& point, LogicalCursorDirection caret_affinity);
 
   // Get the alignment, resolving ALIGN_TO_HEAD with the current text direction.
   HorizontalAlignment GetCurrentHorizontalAlignment();
@@ -699,6 +730,12 @@ class GFX_EXPORT RenderText {
   // |given_text| should be either |display_text_| or |layout_text_|
   // depending on the elide state.
   size_t TextIndexToGivenTextIndex(const base::string16& given_text,
+                                   size_t index) const;
+
+  // Convert an index in |given_text_| to the index in |text|. The
+  // |given_text| should be either |display_text_| or |layout_text_|
+  // depending on the elide state.
+  size_t GivenTextIndexToTextIndex(const base::string16& given_text,
                                    size_t index) const;
 
   // Adjust ranged styles to accommodate a new text length.
@@ -723,6 +760,17 @@ class GFX_EXPORT RenderText {
   // respect to the center of |display_rect|.
   static gfx::Rect ExpandToBeVerticallySymmetric(const gfx::Rect& rect,
                                                  const gfx::Rect& display_rect);
+
+  // Resets |cached_cursor_x_| to null. When non-null, CURSOR_UP, CURSOR_DOWN
+  // movements use this value instead of the current cursor x position to
+  // determine the next cursor x position.
+  void reset_cached_cursor_x() { cached_cursor_x_.reset(); }
+
+  void set_cached_cursor_x(int x) { cached_cursor_x_ = x; }
+  base::Optional<int> cached_cursor_x() const { return cached_cursor_x_; }
+
+  // Fixed width of glyphs. This should only be set in test environments.
+  float glyph_width_for_test_ = 0;
 
  private:
   friend class test::RenderTextTestApi;
@@ -757,6 +805,10 @@ class GFX_EXPORT RenderText {
   // range. Maintains directionality of |range|.
   Range ExpandRangeToWordBoundary(const Range& range) const;
 
+  // Expands |range| to its nearest grapheme boundaries and returns the
+  // resulting range.
+  Range ExpandRangeToGraphemeBoundary(const Range& range);
+
   // Returns an implementation-specific run list, if implemented.
   virtual internal::TextRunList* GetRunList();
   virtual const internal::TextRunList* GetRunList() const;
@@ -769,7 +821,7 @@ class GFX_EXPORT RenderText {
   // Specify the width of a glyph for test. The width of glyphs is very
   // platform-dependent and environment-dependent. Otherwise multiline text
   // will become really flaky.
-  virtual void SetGlyphWidthForTest(float test_width);
+  void set_glyph_width_for_test(float width) { glyph_width_for_test_ = width; }
 
   // Logical UTF-16 string data to be drawn.
   base::string16 text_;
@@ -777,6 +829,10 @@ class GFX_EXPORT RenderText {
   // Horizontal alignment of the text with respect to |display_rect_|.  The
   // default is to align left if the application UI is LTR and right if RTL.
   HorizontalAlignment horizontal_alignment_;
+
+  // Vertical alignment of the text with respect to |display_rect_|. Only
+  // applicable when |multiline_| is true. The default is to align center.
+  VerticalAlignment vertical_alignment_;
 
   // The text directionality mode, defaults to DIRECTIONALITY_FROM_TEXT.
   DirectionalityMode directionality_mode_;
@@ -856,6 +912,9 @@ class GFX_EXPORT RenderText {
   // The behavior for eliding, fading, or truncating.
   ElideBehavior elide_behavior_;
 
+  // The behavior for eliding whitespace when eliding or truncating.
+  base::Optional<bool> whitespace_elision_ = base::nullopt;
+
   // True if the text is elided given the current behavior and display area.
   bool text_elided_;
 
@@ -872,9 +931,6 @@ class GFX_EXPORT RenderText {
   // The wrap behavior when the text is broken into lines. Do nothing unless
   // |multiline_| is set. The default value is IGNORE_LONG_WORDS.
   WordWrapBehavior word_wrap_behavior_;
-
-  // Whether newline characters should be replaced with newline symbols.
-  bool replace_newline_chars_with_symbols_;
 
   // Set to true to suppress subpixel rendering due to non-font reasons (eg.
   // if the background is transparent). The default value is false.
@@ -917,6 +973,9 @@ class GFX_EXPORT RenderText {
 
   // Extra spacing placed between glyphs; used for obscured text styling.
   int glyph_spacing_ = 0;
+
+  // The cursor position in view space, used to traverse lines of varied widths.
+  base::Optional<int> cached_cursor_x_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderText);
 };

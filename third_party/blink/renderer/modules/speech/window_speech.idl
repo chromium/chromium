@@ -9,6 +9,7 @@
     [Measure] attribute SpeechGrammarConstructor webkitSpeechGrammar;
     [Measure] attribute SpeechGrammarListConstructor webkitSpeechGrammarList;
     [Measure] attribute SpeechRecognitionConstructor webkitSpeechRecognition;
-    [Measure] attribute SpeechRecognitionErrorConstructor webkitSpeechRecognitionError;
+    // Note that the prefixed variant does not end with "Event".
+    [Measure] attribute SpeechRecognitionErrorEventConstructor webkitSpeechRecognitionError;
     [Measure] attribute SpeechRecognitionEventConstructor webkitSpeechRecognitionEvent;
 };

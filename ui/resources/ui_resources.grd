@@ -78,41 +78,59 @@
         <structure type="chrome_scaled_image" name="IDR_AURA_CURSOR_ZOOM_IN" file="common/pointers/zoom_in.png" />
         <structure type="chrome_scaled_image" name="IDR_AURA_CURSOR_ZOOM_OUT" file="common/pointers/zoom_out.png" />
       </if>
-      <structure type="chrome_scaled_image" name="IDR_CLOSE_2" file="close_2.png" />
-      <structure type="chrome_scaled_image" name="IDR_CLOSE_2_H" file="close_2_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_CLOSE_2_MASK" file="close_2_mask.png" />
-      <structure type="chrome_scaled_image" name="IDR_CLOSE_2_P" file="close_2_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_CLOSE_3_MASK" file="common/close_3_mask.png" />
-      <structure type="chrome_scaled_image" name="IDR_CLOSE_DIALOG" file="close_dialog.png" />
-      <structure type="chrome_scaled_image" name="IDR_CLOSE_DIALOG_H" file="close_dialog_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_CLOSE_DIALOG_P" file="close_dialog_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_DISABLE" file="disable.png" />
-      <structure type="chrome_scaled_image" name="IDR_DISABLE_H" file="disable_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_DISABLE_P" file="disable_pressed.png" />
+      <if expr="not is_android">
+        <structure type="chrome_scaled_image" name="IDR_CLOSE_2" file="close_2.png" />
+        <structure type="chrome_scaled_image" name="IDR_CLOSE_2_H" file="close_2_hover.png" />
+        <structure type="chrome_scaled_image" name="IDR_CLOSE_2_MASK" file="close_2_mask.png" />
+        <structure type="chrome_scaled_image" name="IDR_CLOSE_2_P" file="close_2_pressed.png" />
+        <structure type="chrome_scaled_image" name="IDR_CLOSE_DIALOG" file="close_dialog.png" />
+        <structure type="chrome_scaled_image" name="IDR_CLOSE_DIALOG_H" file="close_dialog_hover.png" />
+        <structure type="chrome_scaled_image" name="IDR_CLOSE_DIALOG_P" file="close_dialog_pressed.png" />
+        <structure type="chrome_scaled_image" name="IDR_DISABLE" file="disable.png" />
+        <structure type="chrome_scaled_image" name="IDR_DISABLE_H" file="disable_hover.png" />
+        <structure type="chrome_scaled_image" name="IDR_DISABLE_P" file="disable_pressed.png" />
+      </if>
       <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON" file="common/default_favicon.png" />
       <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_DARK" file="common/default_favicon_dark.png" />
-      <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_32" file="common/default_favicon_32.png" />
-      <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_DARK_32" file="common/default_favicon_dark_32.png" />
-      <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_64" file="common/default_favicon_64.png" />
-      <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_DARK_64" file="common/default_favicon_dark_64.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_HARDLOCKED" file="common/easy_unlock_hardlocked.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_HARDLOCKED_HOVER" file="common/easy_unlock_hardlocked_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_HARDLOCKED_PRESSED" file="common/easy_unlock_hardlocked_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED" file="common/easy_unlock_locked.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_HOVER" file="common/easy_unlock_locked_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_PRESSED" file="common/easy_unlock_locked_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED" file="common/easy_unlock_locked_to_be_activated.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_HOVER" file="common/easy_unlock_locked_to_be_activated_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_PRESSED" file="common/easy_unlock_locked_to_be_activated_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT" file="common/easy_unlock_locked_with_proximity_hint.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_HOVER" file="common/easy_unlock_locked_with_proximity_hint_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_PRESSED" file="common/easy_unlock_locked_with_proximity_hint_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_SPINNER" file="common/easy_unlock_spinner.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_UNLOCKED" file="common/easy_unlock_unlocked.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_UNLOCKED_HOVER" file="common/easy_unlock_unlocked_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_UNLOCKED_PRESSED" file="common/easy_unlock_unlocked_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_FOLDER_CLOSED" file="common/folder_closed.png" />
-      <structure type="chrome_scaled_image" name="IDR_FOLDER_CLOSED_RTL" file="common/folder_closed_rtl.png" />
+      <if expr="not is_android">
+        <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_32" file="common/default_favicon_32.png" />
+        <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_DARK_32" file="common/default_favicon_dark_32.png" />
+        <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_64" file="common/default_favicon_64.png" />
+        <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_DARK_64" file="common/default_favicon_dark_64.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_HARDLOCKED" file="common/easy_unlock_hardlocked.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_HARDLOCKED_HOVER" file="common/easy_unlock_hardlocked_hover.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_HARDLOCKED_PRESSED" file="common/easy_unlock_hardlocked_pressed.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED" file="common/easy_unlock_locked.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_HOVER" file="common/easy_unlock_locked_hover.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_PRESSED" file="common/easy_unlock_locked_pressed.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED" file="common/easy_unlock_locked_to_be_activated.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_HOVER" file="common/easy_unlock_locked_to_be_activated_hover.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_TO_BE_ACTIVATED_PRESSED" file="common/easy_unlock_locked_to_be_activated_pressed.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT" file="common/easy_unlock_locked_with_proximity_hint.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_HOVER" file="common/easy_unlock_locked_with_proximity_hint_hover.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_LOCKED_WITH_PROXIMITY_HINT_PRESSED" file="common/easy_unlock_locked_with_proximity_hint_pressed.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_SPINNER" file="common/easy_unlock_spinner.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_UNLOCKED" file="common/easy_unlock_unlocked.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_UNLOCKED_HOVER" file="common/easy_unlock_unlocked_hover.png" />
+        <structure type="chrome_scaled_image" name="IDR_EASY_UNLOCK_UNLOCKED_PRESSED" file="common/easy_unlock_unlocked_pressed.png" />
+        <if expr="not is_android">
+          <structure type="chrome_scaled_image" name="IDR_FINGERPRINT_COMPLETE_TICK" file="common/tick.png" />
+          <structure type="chrome_scaled_image" name="IDR_FINGERPRINT_ICON_ANIMATION" file="common/fingerprint.png" />
+        </if>
+        <if expr="is_macosx or is_ios">
+          <structure type="chrome_scaled_image" name="IDR_FOLDER_CLOSED" file="mac/folder.png" />
+          <structure type="chrome_scaled_image" name="IDR_FOLDER_CLOSED_WHITE" file="mac/folder_white.png" />
+          <structure type="chrome_scaled_image" name="IDR_FOLDER_OPEN" file="mac/folder.png" />
+        </if>
+        <if expr="is_win">
+          <structure type="chrome_scaled_image" name="IDR_FOLDER_CLOSED" file="win/folder_closed.png" />
+          <structure type="chrome_scaled_image" name="IDR_FOLDER_OPEN" file="win/folder_open.png" />
+        </if>
+        <if expr="not is_macosx and not is_ios and not is_win">
+          <structure type="chrome_scaled_image" name="IDR_FOLDER_CLOSED" file="common/folder_closed.png" />
+          <structure type="chrome_scaled_image" name="IDR_FOLDER_OPEN" file="common/folder_open.png" />
+        </if>
+      </if>
       <if expr="toolkit_views and not is_macosx">
         <structure type="chrome_scaled_image" name="IDR_NOTIFICATION_SETTINGS" file="common/notification_settings.png"/>
       </if>

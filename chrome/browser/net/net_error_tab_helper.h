@@ -158,7 +158,7 @@ class NetErrorTabHelper
   // Preference storing the user's current easter egg game high score.
   IntegerPrefMember easter_egg_high_score_;
 
-  base::WeakPtrFactory<NetErrorTabHelper> weak_factory_;
+  base::WeakPtrFactory<NetErrorTabHelper> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

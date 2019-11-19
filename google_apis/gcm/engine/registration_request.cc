@@ -12,7 +12,6 @@
 #include "base/metrics/histogram.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "google_apis/gcm/base/gcm_util.h"
 #include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
@@ -124,6 +123,7 @@ RegistrationRequest::RegistrationRequest(
     const RegistrationCallback& callback,
     int max_retry_count,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     GCMStatsRecorder* recorder,
     const std::string& source_to_record)
     : callback_(callback),
@@ -133,9 +133,10 @@ RegistrationRequest::RegistrationRequest(
       backoff_entry_(&backoff_policy),
       url_loader_factory_(std::move(url_loader_factory)),
       retries_left_(max_retry_count),
+      io_task_runner_(io_task_runner),
       recorder_(recorder),
-      source_to_record_(source_to_record),
-      weak_ptr_factory_(this) {
+      source_to_record_(source_to_record) {
+  DCHECK(io_task_runner_);
   DCHECK_GE(max_retry_count, 0);
 }
 
@@ -176,8 +177,7 @@ void RegistrationRequest::Start() {
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = registration_url_;
   request->method = "POST";
-  request->load_flags =
-      net::LOAD_DO_NOT_SEND_COOKIES | net::LOAD_DO_NOT_SAVE_COOKIES;
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   BuildRequestHeaders(&request->headers);
 
   std::string body;
@@ -189,7 +189,6 @@ void RegistrationRequest::Start() {
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   url_loader_->AttachStringForUpload(body, kRegistrationRequestContentType);
   recorder_->RecordRegistrationSent(request_info_.app_id(), source_to_record_);
-  request_start_time_ = base::TimeTicks::Now();
   url_loader_->SetAllowHttpErrorResults(true);
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
@@ -218,6 +217,7 @@ void RegistrationRequest::BuildRequestBody(std::string* body) {
 }
 
 void RegistrationRequest::RetryWithBackoff() {
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   DCHECK_GT(retries_left_, 0);
   --retries_left_;
   url_loader_.reset();
@@ -230,7 +230,7 @@ void RegistrationRequest::RetryWithBackoff() {
       request_info_.app_id(), source_to_record_,
       backoff_entry_.GetTimeUntilRelease().InMilliseconds(), retries_left_ + 1);
   DCHECK(!weak_ptr_factory_.HasWeakPtrs());
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  io_task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&RegistrationRequest::Start,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -295,10 +295,7 @@ void RegistrationRequest::OnURLLoadComplete(
                                         source_to_record_, status);
 
   DCHECK(custom_request_handler_.get());
-  custom_request_handler_->ReportUMAs(
-      status,
-      backoff_entry_.failure_count(),
-      base::TimeTicks::Now() - request_start_time_);
+  custom_request_handler_->ReportUMAs(status);
 
   if (ShouldRetryWithStatus(status)) {
     if (retries_left_ > 0) {
@@ -310,10 +307,8 @@ void RegistrationRequest::OnURLLoadComplete(
     recorder_->RecordRegistrationResponse(request_info_.app_id(),
                                           source_to_record_, status);
 
-    // Only REACHED_MAX_RETRIES is reported because the function will skip
-    // reporting count and time when status is not SUCCESS.
     DCHECK(custom_request_handler_.get());
-    custom_request_handler_->ReportUMAs(status, 0, base::TimeDelta());
+    custom_request_handler_->ReportUMAs(status);
   }
 
   callback_.Run(status, token);

@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/numerics/clamped_math.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
@@ -40,8 +41,8 @@ scoped_refptr<base::SequencedTaskRunner> CreateFileTaskRunner() {
   //
   // These intentionally block shutdown to ensure the log file has finished
   // being written.
-  return base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+  return base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 }
 
@@ -385,9 +386,9 @@ void FileNetLogObserver::StopObserving(std::unique_ptr<base::Value> polled_data,
   net_log()->RemoveObserver(this);
 
   base::OnceClosure bound_flush_then_stop =
-      base::Bind(&FileNetLogObserver::FileWriter::FlushThenStop,
-                 base::Unretained(file_writer_.get()), write_queue_,
-                 base::Passed(&polled_data));
+      base::BindOnce(&FileNetLogObserver::FileWriter::FlushThenStop,
+                     base::Unretained(file_writer_.get()), write_queue_,
+                     std::move(polled_data));
 
   // Note that PostTaskAndReply() requires a non-null closure.
   if (!optional_callback.is_null()) {
@@ -402,7 +403,7 @@ void FileNetLogObserver::StopObserving(std::unique_ptr<base::Value> polled_data,
 void FileNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
   std::unique_ptr<std::string> json(new std::string);
 
-  *json = SerializeNetLogValueToJson(*entry.ToValue());
+  *json = SerializeNetLogValueToJson(entry.ToValue());
 
   size_t queue_size = write_queue_->AddEntryToQueue(std::move(json));
 
@@ -460,11 +461,13 @@ std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateInternal(
       log_path, inprogress_dir_path, std::move(pre_existing_log_file),
       max_event_file_size, total_num_event_files, file_task_runner));
 
-  scoped_refptr<WriteQueue> write_queue(new WriteQueue(max_total_size * 2));
+  uint64_t write_queue_memory_max =
+      base::MakeClampedNum<uint64_t>(max_total_size) * 2;
 
-  return std::unique_ptr<FileNetLogObserver>(
-      new FileNetLogObserver(file_task_runner, std::move(file_writer),
-                             std::move(write_queue), std::move(constants)));
+  return base::WrapUnique(new FileNetLogObserver(
+      file_task_runner, std::move(file_writer),
+      base::WrapRefCounted(new WriteQueue(write_queue_memory_max)),
+      std::move(constants)));
 }
 
 FileNetLogObserver::FileNetLogObserver(

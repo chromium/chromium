@@ -12,12 +12,13 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/login/screens/base_screen_delegate.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -30,10 +31,11 @@
 namespace chromeos {
 
 TermsOfServiceScreen::TermsOfServiceScreen(
-    BaseScreenDelegate* base_screen_delegate,
-    TermsOfServiceScreenView* view)
-    : BaseScreen(base_screen_delegate, OobeScreen::SCREEN_TERMS_OF_SERVICE),
-      view_(view) {
+    TermsOfServiceScreenView* view,
+    const ScreenExitCallback& exit_callback)
+    : BaseScreen(TermsOfServiceScreenView::kScreenId),
+      view_(view),
+      exit_callback_(exit_callback) {
   DCHECK(view_);
   if (view_)
     view_->SetDelegate(this);
@@ -42,6 +44,19 @@ TermsOfServiceScreen::TermsOfServiceScreen(
 TermsOfServiceScreen::~TermsOfServiceScreen() {
   if (view_)
     view_->SetDelegate(NULL);
+}
+
+void TermsOfServiceScreen::OnDecline() {
+  exit_callback_.Run(Result::DECLINED);
+}
+
+void TermsOfServiceScreen::OnAccept() {
+  exit_callback_.Run(Result::ACCEPTED);
+}
+
+void TermsOfServiceScreen::OnViewDestroyed(TermsOfServiceScreenView* view) {
+  if (view_ == view)
+    view_ = NULL;
 }
 
 void TermsOfServiceScreen::Show() {
@@ -63,19 +78,6 @@ void TermsOfServiceScreen::Show() {
 void TermsOfServiceScreen::Hide() {
   if (view_)
     view_->Hide();
-}
-
-void TermsOfServiceScreen::OnDecline() {
-  Finish(ScreenExitCode::TERMS_OF_SERVICE_DECLINED);
-}
-
-void TermsOfServiceScreen::OnAccept() {
-  Finish(ScreenExitCode::TERMS_OF_SERVICE_ACCEPTED);
-}
-
-void TermsOfServiceScreen::OnViewDestroyed(TermsOfServiceScreenView* view) {
-  if (view_ == view)
-    view_ = NULL;
 }
 
 void TermsOfServiceScreen::StartDownload() {

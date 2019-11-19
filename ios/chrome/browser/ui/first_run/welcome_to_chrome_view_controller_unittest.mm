@@ -10,13 +10,13 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/tabs/tab_model.h"
+#include "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -40,12 +40,13 @@ class WelcomeToChromeViewControllerTest : public PlatformTest {
     PlatformTest::SetUp();
     TestChromeBrowserState::Builder test_cbs_builder;
     chrome_browser_state_ = test_cbs_builder.Build();
-    id tabModel = [OCMockObject mockForClass:[TabModel class]];
-    controller_ = [[WelcomeToChromeViewController alloc]
-        initWithBrowserState:chrome_browser_state_.get()
-                    tabModel:tabModel
-                   presenter:nil
-                  dispatcher:nil];
+    WebStateList* web_state_list = nullptr;
+    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
+                                             web_state_list);
+    controller_ =
+        [[WelcomeToChromeViewController alloc] initWithBrowser:browser_.get()
+                                                     presenter:nil
+                                                    dispatcher:nil];
     [controller_ loadView];
   }
 
@@ -54,9 +55,10 @@ class WelcomeToChromeViewControllerTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<Browser> browser_;
   WelcomeToChromeViewController* controller_;
 };
 

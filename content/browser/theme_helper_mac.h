@@ -30,10 +30,6 @@ class ThemeHelperMac : public NotificationObserver {
   // if none.
   static ThemeHelperMac* GetInstance();
 
-  // Returns the value of +[NSScroller preferredScrollStyle] as expressed
-  // as the blink enum value.
-  static blink::ScrollerStyle GetPreferredScrollerStyle();
-
   // Duplicates a handle to the read-only copy of the system color table,
   // which can be shared to sandboxed child processes.
   base::ReadOnlySharedMemoryRegion DuplicateReadOnlyColorMapRegion();

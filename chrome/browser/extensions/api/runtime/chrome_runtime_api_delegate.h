@@ -15,6 +15,7 @@
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/api/runtime/runtime_api_delegate.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 namespace base {
@@ -29,7 +30,6 @@ class NotificationSource;
 }
 
 namespace extensions {
-class ExtensionRegistry;
 class RuntimeAPI;
 class UpdateObserver;
 }
@@ -92,7 +92,7 @@ class ChromeRuntimeAPIDelegate : public extensions::RuntimeAPIDelegate,
 
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeRuntimeAPIDelegate);
 };

@@ -1,0 +1,21 @@
+This directory contains process-independent code for recording metrics bucketed
+by the number of tabs or the number of live tabs.
+
+We consider a tab to be alive (i.e. a live tab) if it is a UI tab (e.g. in a
+tabstrip, as opposed to a prerenderer), and it has not been discarded and has
+not crashed. Tabs can be discarded on desktop by TabManager to conserve
+resources, and tabs crash when the corresponding renderer process is killed,
+e.g. due to limited resources (OOM).
+
+Clients of this component must be able to count live tabs. The interface this
+component exposes provides a way to help create metrics bucketed by live/ or all
+tab count in a consistent manner, but this is dependent on the client knowing
+the count. The code in this directory is meant to be shared between processes,
+and so we do not count tabs here. The tab count is a browser concept, and it can
+be computed there. To record metrics bucketed by tab counts in processes other
+than the browser, the tab count would need to be plumbed out of the browser. In
+some cases this may be more efficient than plumbing metrics data out of the
+process to the browser, which is an alternative.
+
+This component should not have any dependencies other than //base as it
+should be able to be used from any other place.

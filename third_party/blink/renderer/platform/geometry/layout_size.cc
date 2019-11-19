@@ -14,8 +14,8 @@ std::ostream& operator<<(std::ostream& ostream, const LayoutSize& size) {
 }
 
 String LayoutSize::ToString() const {
-  return String::Format("%sx%s", Width().ToString().Ascii().data(),
-                        Height().ToString().Ascii().data());
+  return String::Format("%sx%s", Width().ToString().Ascii().c_str(),
+                        Height().ToString().Ascii().c_str());
 }
 
 WTF::TextStream& operator<<(WTF::TextStream& ts, const LayoutSize& size) {

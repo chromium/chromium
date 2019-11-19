@@ -40,8 +40,6 @@ class FakeLayerTreeHostImpl : public LayerTreeHostImpl {
   void NotifyTileStateChanged(const Tile* tile) override;
   viz::BeginFrameArgs CurrentBeginFrameArgs() const override;
   void AdvanceToNextFrame(base::TimeDelta advance_by);
-  void UpdateNumChildrenAndDrawPropertiesForActiveTree();
-  static void UpdateNumChildrenAndDrawProperties(LayerTreeImpl* layerTree);
 
   using LayerTreeHostImpl::ActivateSyncTree;
   using LayerTreeHostImpl::prepare_tiles_needed;

@@ -17,7 +17,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -58,7 +58,7 @@ class OnStartupHandlerTest : public testing::Test {
     profile_ = profile_manager_.CreateTestingProfile("Profile 1");
 #endif
 
-    handler_.reset(new TestOnStartupHandler(profile_));
+    handler_ = std::make_unique<TestOnStartupHandler>(profile_);
     handler_->set_web_ui(&web_ui_);
   }
 
@@ -67,7 +67,7 @@ class OnStartupHandlerTest : public testing::Test {
   content::TestWebUI* web_ui() { return &web_ui_; }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<TestOnStartupHandler> handler_;
   Profile* profile_;

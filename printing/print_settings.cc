@@ -23,8 +23,9 @@ const std::string& GetAgent() {
 }
 
 #if defined(USE_CUPS)
-void GetColorModelForMode(
-    int color_mode, std::string* color_setting_name, std::string* color_value) {
+void GetColorModelForMode(int color_mode,
+                          std::string* color_setting_name,
+                          std::string* color_value) {
 #if defined(OS_MACOSX)
   constexpr char kCUPSColorMode[] = "ColorMode";
   constexpr char kCUPSColorModel[] = "ColorModel";
@@ -152,8 +153,6 @@ PrintSettings::PrintSettings() {
   Clear();
 }
 
-PrintSettings::PrintSettings(const PrintSettings& other) = default;
-
 PrintSettings::~PrintSettings() = default;
 
 void PrintSettings::Clear() {
@@ -182,6 +181,12 @@ void PrintSettings::Clear() {
 #endif
   is_modifiable_ = true;
   pages_per_sheet_ = 1;
+#if defined(OS_CHROMEOS)
+  send_user_info_ = false;
+  username_.clear();
+  pin_value_.clear();
+  advanced_settings_.clear();
+#endif  // defined(OS_CHROMEOS)
 }
 
 void PrintSettings::SetPrinterPrintableArea(
@@ -240,22 +245,16 @@ void PrintSettings::SetPrinterPrintableArea(
     case CUSTOM_MARGINS: {
       margins.header = 0;
       margins.footer = 0;
-      margins.top = ConvertUnitDouble(
-          requested_custom_margins_in_points_.top,
-          kPointsPerInch,
-          units_per_inch);
-      margins.bottom = ConvertUnitDouble(
-          requested_custom_margins_in_points_.bottom,
-          kPointsPerInch,
-          units_per_inch);
-      margins.left = ConvertUnitDouble(
-          requested_custom_margins_in_points_.left,
-          kPointsPerInch,
-          units_per_inch);
-      margins.right = ConvertUnitDouble(
-          requested_custom_margins_in_points_.right,
-          kPointsPerInch,
-          units_per_inch);
+      margins.top = ConvertUnitDouble(requested_custom_margins_in_points_.top,
+                                      kPointsPerInch, units_per_inch);
+      margins.bottom =
+          ConvertUnitDouble(requested_custom_margins_in_points_.bottom,
+                            kPointsPerInch, units_per_inch);
+      margins.left = ConvertUnitDouble(requested_custom_margins_in_points_.left,
+                                       kPointsPerInch, units_per_inch);
+      margins.right =
+          ConvertUnitDouble(requested_custom_margins_in_points_.right,
+                            kPointsPerInch, units_per_inch);
       break;
     }
     default: {

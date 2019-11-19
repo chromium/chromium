@@ -4,15 +4,16 @@
 
 #include "chrome/browser/android/vr/vr_input_connection.h"
 
+#include <utility>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/android/features/vr/jni_headers/TextEditAction_jni.h"
+#include "chrome/android/features/vr/jni_headers/VrInputConnection_jni.h"
 #include "chrome/browser/vr/model/text_input_info.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/TextEditAction_jni.h"
-#include "jni/VrInputConnection_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -63,8 +64,7 @@ void VrInputConnection::UpdateTextState(
   auto text_state_update_callback =
       std::move(text_state_update_callbacks_.front());
   text_state_update_callbacks_.pop();
-  base::ResetAndReturn(&text_state_update_callback)
-      .Run(base::UTF8ToUTF16(text));
+  std::move(text_state_update_callback).Run(base::UTF8ToUTF16(text));
 }
 
 base::android::ScopedJavaLocalRef<jobject> VrInputConnection::GetJavaObject() {

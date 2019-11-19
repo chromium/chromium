@@ -6,11 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_BEHAVIOR_H_
 
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "ui/gfx/color_space.h"
 
 namespace blink {
 
 class PLATFORM_EXPORT ColorBehavior {
+  DISALLOW_NEW();
+
  public:
   // This specifies to ignore color profiles embedded in images entirely. No
   // transformations will be applied to any pixel data, and no SkImages will be
@@ -45,5 +49,16 @@ class PLATFORM_EXPORT ColorBehavior {
 };
 
 }  // namespace blink
+
+namespace WTF {
+
+template <>
+struct CrossThreadCopier<blink::ColorBehavior> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = blink::ColorBehavior;
+  static Type Copy(Type pointer) { return pointer; }
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_BEHAVIOR_H_

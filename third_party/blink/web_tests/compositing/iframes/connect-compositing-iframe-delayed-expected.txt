@@ -3,17 +3,6 @@ When the parent document becomes composited, the layer trees should get connecte
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
@@ -21,53 +10,35 @@ When the parent document becomes composited, the layer trees should get connecte
     },
     {
       "name": "LayoutIFrame IFRAME id='iframe'",
-      "position": [-2, 98],
-      "bounds": [390, 240]
-    },
-    {
-      "name": "LayoutView #document",
-      "position": [43, 143],
-      "bounds": [300, 150],
-      "drawsContent": false,
-      "backgroundColor": "#C0C0C0"
-    },
-    {
-      "name": "Scrolling Layer",
-      "position": [43, 143],
-      "bounds": [285, 150],
-      "drawsContent": false
-    },
-    {
-      "name": "Scrolling Contents Layer",
-      "position": [43, 143],
-      "bounds": [285, 230],
-      "backgroundColor": "#C0C0C0"
-    },
-    {
-      "name": "LayoutBlockFlow DIV id='iframe-content' class='box'",
-      "bounds": [210, 210],
-      "contentsOpaque": true,
-      "backgroundColor": "#0000FF",
+      "position": [-30, -30],
+      "bounds": [390, 240],
       "transform": 1
     },
     {
-      "name": "Overflow Controls Host Layer",
-      "position": [43, 143],
-      "bounds": [300, 150],
-      "drawsContent": false
+      "name": "Scrolling Contents Layer",
+      "bounds": [285, 230],
+      "backgroundColor": "#C0C0C0",
+      "transform": 2
     },
     {
-      "name": "Vertical Scrollbar Layer",
-      "position": [328, 143],
+      "name": "LayoutNGBlockFlow DIV id='iframe-content' class='box'",
+      "bounds": [210, 210],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [285, 0],
       "bounds": [15, 150],
-      "drawsContent": false
+      "transform": 2
     },
     {
-      "name": "LayoutBlockFlow DIV id='box' class='composited'",
+      "name": "LayoutNGBlockFlow DIV id='box' class='composited'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
-      "transform": 2
+      "transform": 4
     }
   ],
   "transforms": [
@@ -77,11 +48,31 @@ When the parent document becomes composited, the layer trees should get connecte
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [61, 153, 0, 1]
+        [28, 128, 0, 1]
       ]
     },
     {
       "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [15, 15, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 10, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],

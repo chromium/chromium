@@ -1,18 +1,18 @@
 [document web]
 ++[section]
-++++[label]
-++++++[text] name='l1'
-++++[entry] name='l1' single-line
-++++[label]
-++++++[text] name='l2'
+++++[label] label-for
+++++++[static] name='l1'
+++++[entry] name='l1' single-line labelled-by
+++++[label] label-for
+++++++[static] name='l2'
+++++[entry] name='l2' single-line labelled-by
 ++++[entry] name='l2' single-line
 ++++[entry] name='l2' single-line
-++++[entry] name='l2' single-line
-++++[label]
-++++++[text] name='Email'
-++++[section]
-++++[entry] name='Email' single-line
-++++[entry] name='Email' single-line
+++++[label] label-for
+++++++[static] name='Email'
+++++[section] label-for
+++++[entry] name='Email' single-line labelled-by
+++++[entry] name='Email' single-line labelled-by
 ++++[entry] name='l5' multi-line
 ++++[entry] name='l6' multi-line
 ++++[entry] name='Name' description='Description' single-line

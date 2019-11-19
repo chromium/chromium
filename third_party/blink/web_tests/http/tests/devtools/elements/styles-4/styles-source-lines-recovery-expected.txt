@@ -4,15 +4,15 @@ Tests that invalid rule inside @-rule doesn't break source code matching (http:/
 element.style { ()
 
 [expanded] 
-#main { (styles-source-l…helper.html:25 -> styles-source-lines-recovery-helper.html:25:8)
+#main { (styles-sour…per.html:25 -> styles-source-lines-recovery-helper.html:25:8)
     color: white;
 
 [expanded] 
-#main { (styles-source-l…helper.html:16 -> styles-source-lines-recovery-helper.html:16:8)
+#main { (styles-sour…per.html:16 -> styles-source-lines-recovery-helper.html:16:8)
 /-- overloaded --/     color: blue;
 
 [expanded] 
-#main { (styles-source-l…-helper.html:7 -> styles-source-lines-recovery-helper.html:7:8)
+#main { (styles-sour…lper.html:7 -> styles-source-lines-recovery-helper.html:7:8)
 /-- overloaded --/     color: red;
 
 [expanded] 

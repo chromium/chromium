@@ -5,7 +5,7 @@
 #include "components/sync/driver/sync_session_durations_metrics_recorder.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 
 namespace syncer {
@@ -26,11 +26,8 @@ base::TimeDelta SubtractInactiveTime(base::TimeDelta total_length,
 
 SyncSessionDurationsMetricsRecorder::SyncSessionDurationsMetricsRecorder(
     SyncService* sync_service,
-    identity::IdentityManager* identity_manager)
-    : sync_service_(sync_service),
-      identity_manager_(identity_manager),
-      sync_observer_(this),
-      identity_manager_observer_(this) {
+    signin::IdentityManager* identity_manager)
+    : sync_service_(sync_service), identity_manager_(identity_manager) {
   // |sync_service| can be null if sync is disabled by a command line flag.
   if (sync_service_) {
     sync_observer_.Add(sync_service_);
@@ -43,7 +40,7 @@ SyncSessionDurationsMetricsRecorder::SyncSessionDurationsMetricsRecorder(
 
   // Check if we already know the signed in cookies. This will trigger a fetch
   // if we don't have them yet.
-  identity::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
       identity_manager_->GetAccountsInCookieJar();
   if (accounts_in_cookie_jar_info.accounts_are_fresh) {
     OnAccountsInCookieUpdated(accounts_in_cookie_jar_info,
@@ -92,7 +89,7 @@ void SyncSessionDurationsMetricsRecorder::OnSessionEnded(
 }
 
 void SyncSessionDurationsMetricsRecorder::OnAccountsInCookieUpdated(
-    const identity::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
   DVLOG(1) << "Cookie state change. accounts: "
            << accounts_in_cookie_jar_info.signed_in_accounts.size()
@@ -136,7 +133,7 @@ void SyncSessionDurationsMetricsRecorder::OnRefreshTokenUpdatedForAccount(
 }
 
 void SyncSessionDurationsMetricsRecorder::OnRefreshTokenRemovedForAccount(
-    const std::string& account_id) {
+    const CoreAccountId& account_id) {
   DVLOG(1) << __func__;
   HandleSyncAndAccountChange();
 }
@@ -188,7 +185,7 @@ void SyncSessionDurationsMetricsRecorder::HandleSyncAndAccountChange() {
     // Sync is enabled, but we have an account issue.
     UpdateSyncAndAccountStatus(FeatureState::ON, FeatureState::OFF);
   } else if (sync_service_->IsSyncFeatureActive() &&
-             sync_service_->GetLastCycleSnapshot().is_initialized()) {
+             sync_service_->HasCompletedSyncCycle()) {
     // Sync is on and running, we must have an account too.
     UpdateSyncAndAccountStatus(FeatureState::ON, FeatureState::ON);
   } else {

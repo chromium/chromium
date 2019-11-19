@@ -16,7 +16,7 @@ layer at (0,0) size 800x600
         LayoutBlockFlow {DIV} at (0,0) size 784x18
           LayoutText {#text} at (0,0) size 379x18
             text run at (0,0) width 379: "The test should add a single blank line after this paragraph."
-          LayoutInline {SPAN} at (0,0) size 1x18
+          LayoutInline {SPAN} at (378,0) size 1x18
           LayoutBR {BR} at (378,14) size 1x0
         LayoutBlockFlow (anonymous) at (0,18) size 784x18
           LayoutBR {BR} at (0,0) size 0x18

@@ -116,9 +116,8 @@ public class WebViewFindApisTestRule extends AwActivityTestRule {
     /**
      * Invokes clearMatches on the UI thread.
      *
-     * @throws Throwable
      */
-    public void clearMatchesOnUiThread() throws Throwable {
+    public void clearMatchesOnUiThread() {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> mContents.clearMatches());
     }
 

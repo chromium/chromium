@@ -6,14 +6,14 @@
 #define UI_BASE_IME_WIN_TSF_EVENT_ROUTER_H_
 
 #include <msctf.h>
+#include <wrl/client.h>
 
 #include <set>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/win/atl.h"
+#include "base/component_export.h"
 #include "ui/base/ime/text_input_type.h"
-#include "ui/base/ime/ui_base_ime_export.h"
 #include "ui/gfx/range/range.h"
 
 namespace ui {
@@ -44,7 +44,7 @@ class TSFEventRouterObserver {
 
 // This class monitors TSF related events and forwards them to given
 // |observer|.
-class UI_BASE_IME_EXPORT TSFEventRouter {
+class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFEventRouter {
  public:
   // Do not pass NULL to |observer|.
   explicit TSFEventRouter(TSFEventRouterObserver* observer);
@@ -65,7 +65,7 @@ class UI_BASE_IME_EXPORT TSFEventRouter {
  private:
   class Delegate;
 
-  CComPtr<Delegate> delegate_;
+  Microsoft::WRL::ComPtr<Delegate> delegate_;
 
   TSFEventRouterObserver* observer_;
 

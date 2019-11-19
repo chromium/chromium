@@ -97,7 +97,7 @@ class ExtensionInfoGenerator {
   // The callback to run once all infos have been created.
   ExtensionInfosCallback callback_;
 
-  base::WeakPtrFactory<ExtensionInfoGenerator> weak_factory_;
+  base::WeakPtrFactory<ExtensionInfoGenerator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionInfoGenerator);
 };

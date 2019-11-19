@@ -28,7 +28,7 @@ PenEventProcessor::PenEventProcessor(ui::SequentialIDGenerator* id_generator,
     : id_generator_(id_generator),
       direct_manipulation_enabled_(direct_manipulation_enabled) {}
 
-PenEventProcessor::~PenEventProcessor() {}
+PenEventProcessor::~PenEventProcessor() = default;
 
 std::unique_ptr<ui::Event> PenEventProcessor::GenerateEvent(
     UINT message,
@@ -120,7 +120,7 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateMouseEvent(
       else
         changed_flag = ui::EF_RIGHT_MOUSE_BUTTON;
       click_count = 1;
-      sent_mouse_down_ = true;
+      sent_mouse_down_[pointer_id] = true;
       break;
     case WM_POINTERUP:
     case WM_NCPOINTERUP:
@@ -134,9 +134,10 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateMouseEvent(
       }
       id_generator_->ReleaseNumber(pointer_id);
       click_count = 1;
-      if (!sent_mouse_down_)
+      if (sent_mouse_down_.count(pointer_id) == 0 ||
+          !sent_mouse_down_[pointer_id])
         return nullptr;
-      sent_mouse_down_ = false;
+      sent_mouse_down_[pointer_id] = false;
       break;
     case WM_POINTERUPDATE:
     case WM_NCPOINTERUPDATE:
@@ -174,15 +175,16 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateTouchEvent(
     case WM_POINTERDOWN:
     case WM_NCPOINTERDOWN:
       event_type = ui::ET_TOUCH_PRESSED;
-      sent_touch_start_ = true;
+      sent_touch_start_[pointer_id] = true;
       break;
     case WM_POINTERUP:
     case WM_NCPOINTERUP:
       event_type = ui::ET_TOUCH_RELEASED;
       id_generator_->ReleaseNumber(pointer_id);
-      if (!sent_touch_start_)
+      if (sent_touch_start_.count(pointer_id) == 0 ||
+          !sent_touch_start_[pointer_id])
         return nullptr;
-      sent_touch_start_ = false;
+      sent_touch_start_[pointer_id] = false;
       break;
     case WM_POINTERUPDATE:
     case WM_NCPOINTERUPDATE:
@@ -199,7 +201,7 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateTouchEvent(
       flags | ui::GetModifiersFromKeyState());
   event->set_hovering(event_type == ui::ET_TOUCH_RELEASED);
   event->latency()->AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, event_time, 1);
+      ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, event_time);
   return event;
 }
 

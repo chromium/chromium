@@ -8,7 +8,7 @@
 #include <iosfwd>
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -102,10 +102,6 @@ inline IntSize RoundedIntSize(const DoubleSize& p) {
 
 inline IntSize ExpandedIntSize(const DoubleSize& p) {
   return IntSize(clampTo<int>(ceil(p.Width())), clampTo<int>(ceil(p.Height())));
-}
-
-constexpr FloatSize ToFloatSize(const DoubleSize& p) {
-  return FloatSize(p.Width(), p.Height());
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DoubleSize&);

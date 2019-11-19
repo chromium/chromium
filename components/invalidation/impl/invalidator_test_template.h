@@ -106,7 +106,7 @@ class InvalidatorTest : public testing::Test {
     Invalidator* const invalidator = this->delegate_.GetInvalidator();
 
     this->delegate_.WaitForInvalidator();
-    invalidator->UpdateCredentials("foo@bar.com", "fake_token");
+    invalidator->UpdateCredentials(CoreAccountId("foo@bar.com"), "fake_token");
     this->delegate_.WaitForInvalidator();
 
     return invalidator;

@@ -79,9 +79,9 @@ void PopulateSheetHeaderView(bool show_back_arrow,
 // Returns an instrument image view for the given |img| or |icon_resource_id|
 // and wanted |opacity|. Includes a rounded rect border. Callers need to set the
 // size of the resulting ImageView. Callers should set a |tooltip_text|.
-std::unique_ptr<views::ImageView> CreateInstrumentIconView(
+std::unique_ptr<views::ImageView> CreateAppIconView(
     int icon_resource_id,
-    const gfx::ImageSkia* img,
+    gfx::ImageSkia img,
     const base::string16& tooltip_text,
     float opacity = 1.0f);
 
@@ -147,6 +147,15 @@ std::unique_ptr<views::View> CreateShippingOptionLabel(
     const base::string16& formatted_amount,
     bool emphasize_label,
     base::string16* accessible_content);
+
+// Creates a warning message when address is not valid or an informational
+// message when the user has not selected their shipping address yet. The
+// warning icon is displayed only for warning messages.
+// ---------------------------------------------
+// | Warning icon | Warning message            |
+// ---------------------------------------------
+std::unique_ptr<views::View> CreateWarningView(const base::string16& message,
+                                               bool show_icon);
 
 }  // namespace payments
 

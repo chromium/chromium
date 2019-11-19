@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
+#include "chrome/common/pdf_util.h"
 #include "components/renderer_context_menu/context_menu_delegate.h"
 
 namespace extensions {
@@ -28,6 +30,18 @@ bool ChromeMimeHandlerViewGuestDelegate::HandleContextMenu(
       menu_delegate->BuildMenu(web_contents, params);
   menu_delegate->ShowMenu(std::move(menu));
   return true;
+}
+
+void ChromeMimeHandlerViewGuestDelegate::RecordLoadMetric(
+    bool in_main_frame,
+    const std::string& mime_type) {
+  if (mime_type != kPDFMimeType)
+    return;
+  base::UmaHistogramEnumeration(
+      "PDF.LoadStatus",
+      in_main_frame ? PDFLoadStatus::kLoadedFullPagePdfWithPdfium
+                    : PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium,
+      PDFLoadStatus::kPdfLoadStatusCount);
 }
 
 }  // namespace extensions

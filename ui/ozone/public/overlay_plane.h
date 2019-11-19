@@ -5,6 +5,9 @@
 #ifndef UI_OZONE_PUBLIC_OVERLAY_PLANE_H_
 #define UI_OZONE_PUBLIC_OVERLAY_PLANE_H_
 
+#include <memory>
+
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/geometry/rect.h"
@@ -12,7 +15,6 @@
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/overlay_transform.h"
-#include "ui/ozone/ozone_base_export.h"
 
 namespace ui {
 
@@ -21,7 +23,7 @@ namespace ui {
 // Modern display hardware is capable of transforming and composing multiple
 // images into a final fullscreen image. An OverlayPlane represents one such
 // image as well as any transformations that must be applied.
-struct OZONE_BASE_EXPORT OverlayPlane {
+struct COMPONENT_EXPORT(OZONE_BASE) OverlayPlane {
   OverlayPlane();
   OverlayPlane(scoped_refptr<gfx::NativePixmap> pixmap,
                std::unique_ptr<gfx::GpuFence> gpu_fence,

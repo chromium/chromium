@@ -8,12 +8,18 @@
 
 #include "base/bind.h"
 #include "base/memory/singleton.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "components/user_manager/user.h"
+#endif
 
 namespace send_tab_to_self {
 // static
@@ -33,8 +39,7 @@ SendTabToSelfClientServiceFactory::SendTabToSelfClientServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "SendTabToSelfClientService",
           BrowserContextDependencyManager::GetInstance()) {
-  // TODO(tgupta): Add that this depends on the DisplayNotificationService as
-  // well
+  DependsOn(NotificationDisplayServiceFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
 }
 
@@ -46,6 +51,24 @@ KeyedService* SendTabToSelfClientServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   SendTabToSelfSyncService* sync_service =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile);
+
+#if defined(OS_CHROMEOS)
+  // Create SendTabToSelfClientService only for profiles of Gaia users.
+  // ChromeOS has system level profiles, such as the sign-in profile, or
+  // users that are not Gaia users, such as public account users. Do not
+  // create the service for them.
+  user_manager::User* user =
+      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  // Ensure that the profile is a user profile.
+  if (!user)
+    return nullptr;
+  // Ensure that the user is a Gaia user, since other types of user should not
+  // have access to the service.
+  if (!user->HasGaiaAccount())
+    return nullptr;
+#endif
+
+  // TODO(crbug.com/976741) refactor profile out of STTSClient constructor.
   return new SendTabToSelfClientService(profile,
                                         sync_service->GetSendTabToSelfModel());
 }

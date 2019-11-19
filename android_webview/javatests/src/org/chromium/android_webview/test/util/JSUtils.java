@@ -4,8 +4,6 @@
 
 package org.chromium.android_webview.test.util;
 
-import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
-
 import android.app.Instrumentation;
 
 import org.junit.Assert;
@@ -21,7 +19,7 @@ import org.chromium.content_public.browser.test.util.WebContentsUtils;
  * Collection of functions for JavaScript-based interactions with a page.
  */
 public class JSUtils {
-    private static final long WAIT_TIMEOUT_MS = scaleTimeout(2000);
+    private static final long WAIT_TIMEOUT_MS = 2000L;
     private static final int CHECK_INTERVAL = 100;
 
     private static String createScriptToClickNode(String nodeId) {
@@ -34,7 +32,7 @@ public class JSUtils {
     public static void clickOnLinkUsingJs(final Instrumentation instrumentation,
             final AwContents awContents,
             final OnEvaluateJavaScriptResultHelper onEvaluateJavaScriptResultHelper,
-            final String linkId) throws Exception {
+            final String linkId) {
         CriteriaHelper.pollInstrumentationThread(new Criteria() {
             @Override
             public boolean isSatisfied() {

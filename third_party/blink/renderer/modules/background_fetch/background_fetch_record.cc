@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/fetch/response.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -32,7 +33,7 @@ void BackgroundFetchRecord::ResolveResponseReadyProperty(Response* response) {
     case State::kPending:
       return;
     case State::kAborted:
-      response_ready_property_->Reject(DOMException::Create(
+      response_ready_property_->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kAbortError,
           "The fetch was aborted before the record was processed."));
       return;
@@ -51,7 +52,7 @@ void BackgroundFetchRecord::ResolveResponseReadyProperty(Response* response) {
       // Rejecting this with a TypeError here doesn't work because the
       // RejectedType is a DOMException. Update this with the correct error
       // once confirmed, or change the RejectedType.
-      response_ready_property_->Reject(DOMException::Create(
+      response_ready_property_->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kUnknownError, "The response is not available."));
   }
 }

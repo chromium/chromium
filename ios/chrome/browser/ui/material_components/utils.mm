@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/mac/foundation_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 #import "ios/third_party/material_components_ios/src/components/AppBar/src/MDCAppBarContainerViewController.h"
 #import "ios/third_party/material_components_ios/src/components/AppBar/src/MaterialAppBar.h"
 #import "ios/third_party/material_components_ios/src/components/FlexibleHeader/src/MaterialFlexibleHeader.h"
@@ -42,8 +43,8 @@ void ConfigureAppBarViewControllerWithCardStyle(
   viewController.headerView.shiftBehavior =
       MDCFlexibleHeaderShiftBehaviorDisabled;
   viewController.headerView.backgroundColor =
-      [[MDCPalette greyPalette] tint200];
-  viewController.navigationBar.tintColor = [[MDCPalette greyPalette] tint900];
+      UIColor.cr_secondarySystemBackgroundColor;
+  viewController.navigationBar.tintColor = UIColor.cr_labelColor;
   viewController.navigationBar.titleAlignment =
       MDCNavigationBarTitleAlignmentLeading;
 

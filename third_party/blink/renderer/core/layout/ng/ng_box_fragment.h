@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NGBoxFragment_h
-#define NGBoxFragment_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BOX_FRAGMENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BOX_FRAGMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -37,26 +38,29 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
                                       const NGConstraintSpace&) const;
 
   NGBoxStrut Borders() const {
-    const auto& physical_fragment = ToNGPhysicalBoxFragment(physical_fragment_);
-    return physical_fragment.Borders().ConvertToLogical(GetWritingMode(),
-                                                        direction_);
+    const NGPhysicalBoxFragment& physical_box_fragment =
+        To<NGPhysicalBoxFragment>(physical_fragment_);
+    return physical_box_fragment.Borders().ConvertToLogical(GetWritingMode(),
+                                                            direction_);
   }
   NGBoxStrut Padding() const {
-    const auto& physical_fragment = ToNGPhysicalBoxFragment(physical_fragment_);
-    return physical_fragment.Padding().ConvertToLogical(GetWritingMode(),
-                                                        direction_);
+    const NGPhysicalBoxFragment& physical_box_fragment =
+        To<NGPhysicalBoxFragment>(physical_fragment_);
+    return physical_box_fragment.Padding().ConvertToLogical(GetWritingMode(),
+                                                            direction_);
+  }
+
+  NGBorderEdges BorderEdges() const {
+    const NGPhysicalBoxFragment& physical_box_fragment =
+        To<NGPhysicalBoxFragment>(physical_fragment_);
+    return NGBorderEdges::FromPhysical(physical_box_fragment.BorderEdges(),
+                                       GetWritingMode());
   }
 
  protected:
   TextDirection direction_;
 };
 
-DEFINE_TYPE_CASTS(NGBoxFragment,
-                  NGFragment,
-                  fragment,
-                  fragment->Type() == NGPhysicalFragment::kFragmentBox,
-                  fragment.Type() == NGPhysicalFragment::kFragmentBox);
-
 }  // namespace blink
 
-#endif  // NGBoxFragment_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BOX_FRAGMENT_H_

@@ -9,11 +9,14 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/numerics/math_constants.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_gesture_recognizer.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_util.h"
-#import "ios/chrome/browser/ui/side_swipe_gesture_recognizer.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/material_timing.h"
+#import "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -64,6 +67,11 @@ const CGFloat kSelectionAnimationScale = 26;
 
 // The duration of the animations played when the threshold is met.
 const CGFloat kSelectionAnimationDuration = 0.5;
+
+UIColor* const kPageBackgroundColor = [UIColor colorNamed:kBackgroundColor];
+UIColor* const kSelectionCircleColor =
+    [UIColor colorNamed:kTextfieldBackgroundColor];
+UIColor* const kArrowColor = [UIColor colorNamed:kToolbarButtonColor];
 }
 
 @interface SideSwipeNavigationView () {
@@ -99,32 +107,29 @@ const CGFloat kSelectionAnimationDuration = 0.5;
                         image:(UIImage*)image {
   self = [super initWithFrame:frame];
   if (self) {
-    self.backgroundColor = [UIColor colorWithWhite:90.0 / 256 alpha:1.0];
+    self.backgroundColor = kPageBackgroundColor;
 
     canNavigate_ = canNavigate;
     if (canNavigate) {
       image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       const CGRect imageSize = CGRectMake(0, 0, 24, 24);
       arrowView_ = [[UIImageView alloc] initWithImage:image];
-      [arrowView_ setTintColor:[UIColor whiteColor]];
+      arrowView_.tintColor = kArrowColor;
       selectionCircleLayer_ = [self newSelectionCircleLayer];
       [arrowView_ setFrame:imageSize];
     }
 
-    UIImage* shadowImage =
-        [UIImage imageNamed:@"side_swipe_navigation_content_shadow"];
-    CGRect borderFrame =
-        CGRectMake(0, 0, shadowImage.size.width, self.frame.size.height);
-    UIImageView* border = [[UIImageView alloc] initWithFrame:borderFrame];
-    [border setImage:shadowImage];
+    CGFloat borderWidth = ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
+
+    CGRect borderFrame = CGRectMake(0, 0, borderWidth, self.frame.size.height);
+    UIView* border = [[UIView alloc] initWithFrame:borderFrame];
+    border.backgroundColor = [UIColor colorNamed:kToolbarShadowColor];
     [self addSubview:border];
     if (direction == UISwipeGestureRecognizerDirectionRight) {
-      borderFrame.origin.x = frame.size.width - shadowImage.size.width;
+      borderFrame.origin.x = frame.size.width - borderWidth;
       [border setFrame:borderFrame];
       [border setAutoresizingMask:UIViewAutoresizingFlexibleLeftMargin];
     } else {
-      [border
-          setTransform:CGAffineTransformMakeRotation(CGFloat(base::kPiDouble))];
       [border setAutoresizingMask:UIViewAutoresizingFlexibleRightMargin];
     }
 
@@ -153,6 +158,18 @@ const CGFloat kSelectionAnimationDuration = 0.5;
     currentPoint.x = width;
 
   return currentPoint;
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 13, *)) {
+    if ([self.traitCollection
+            hasDifferentColorAppearanceComparedToTraitCollection:
+                previousTraitCollection]) {
+      selectionCircleLayer_.fillColor = kSelectionCircleColor.CGColor;
+    }
+  }
 }
 
 - (void)updateFrameAndAnimateContents:(CGFloat)distance
@@ -199,13 +216,11 @@ const CGFloat kSelectionAnimationDuration = 0.5;
         CATransform3DMakeScale(kSelectionDownScale, kSelectionDownScale, 1);
     selectionCircleLayer_.opacity = 0;
     [arrowView_ setAlpha:MapValueToRange({0, 64}, {0, 1}, distance)];
-    [arrowView_ setTintColor:[UIColor whiteColor]];
     thresholdTriggered_ = NO;
   } else {
     selectionCircleLayer_.transform = CATransform3DMakeScale(1, 1, 1);
-    selectionCircleLayer_.opacity = 0.75;
+    selectionCircleLayer_.opacity = 1;
     [arrowView_ setAlpha:1];
-    [arrowView_ setTintColor:self.backgroundColor];
     // Trigger a small haptic blip when exceeding the threshold and mark
     // such that only one blip gets triggered.
     if (!thresholdTriggered_) {
@@ -228,7 +243,7 @@ const CGFloat kSelectionAnimationDuration = 0.5;
     [selectionCircleLayer_ removeAnimationForKey:@"transform"];
     [selectionCircleLayer_ setOpacity:0];
     [arrowView_ setAlpha:0];
-    self.backgroundColor = [UIColor whiteColor];
+    self.backgroundColor = kSelectionCircleColor;
     block();
 
   }];
@@ -275,7 +290,6 @@ const CGFloat kSelectionAnimationDuration = 0.5;
   [CATransaction commit];
 
   [arrowView_ setAlpha:1];
-  [arrowView_ setTintColor:self.backgroundColor];
   [UIView animateWithDuration:kSelectionAnimationDuration
                    animations:^{
                      [arrowView_ setAlpha:0];
@@ -410,8 +424,14 @@ const CGFloat kSelectionAnimationDuration = 0.5;
   const CGRect bounds = CGRectMake(0, 0, kSelectionSize, kSelectionSize);
   CAShapeLayer* selectionCircleLayer = [[CAShapeLayer alloc] init];
   selectionCircleLayer.bounds = bounds;
-  selectionCircleLayer.backgroundColor = [[UIColor clearColor] CGColor];
-  selectionCircleLayer.fillColor = [[UIColor whiteColor] CGColor];
+  selectionCircleLayer.backgroundColor = UIColor.clearColor.CGColor;
+  if (@available(iOS 13, *)) {
+    UIColor* resolvedColor = [kSelectionCircleColor
+        resolvedColorWithTraitCollection:self.traitCollection];
+    selectionCircleLayer.fillColor = resolvedColor.CGColor;
+  } else {
+    selectionCircleLayer.fillColor = kSelectionCircleColor.CGColor;
+  }
   selectionCircleLayer.opacity = 0;
   selectionCircleLayer.transform =
       CATransform3DMakeScale(kSelectionDownScale, kSelectionDownScale, 1);

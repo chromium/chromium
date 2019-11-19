@@ -8,12 +8,12 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "media/audio/audio_sync_reader.h"
 #include "media/base/audio_renderer_sink.h"
-#include "media/mojo/interfaces/audio_data_pipe.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "media/mojo/mojom/audio_data_pipe.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
 #include "services/audio/public/mojom/constants.mojom.h"
@@ -60,6 +60,7 @@ class MockStream : public media::mojom::AudioOutputStream {
   MOCK_METHOD0(Play, void());
   MOCK_METHOD0(Pause, void());
   MOCK_METHOD1(SetVolume, void(double));
+  MOCK_METHOD0(Flush, void());
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockStream);
@@ -67,36 +68,38 @@ class MockStream : public media::mojom::AudioOutputStream {
 
 class FakeOutputStreamFactory : public audio::FakeStreamFactory {
  public:
-  FakeOutputStreamFactory() : stream_(), stream_binding_(&stream_) {}
+  FakeOutputStreamFactory() : stream_(), stream_receiver_(&stream_) {}
   ~FakeOutputStreamFactory() final {}
 
   void CreateOutputStream(
-      media::mojom::AudioOutputStreamRequest stream_request,
-      media::mojom::AudioOutputStreamObserverAssociatedPtrInfo observer_info,
-      media::mojom::AudioLogPtr log,
+      mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver,
+      mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
+          observer,
+      mojo::PendingRemote<media::mojom::AudioLog> log,
       const std::string& output_device_id,
       const media::AudioParameters& params,
       const base::UnguessableToken& group_id,
       const base::Optional<base::UnguessableToken>& processing_id,
       CreateOutputStreamCallback created_callback) final {
-    EXPECT_FALSE(observer_info);
+    EXPECT_FALSE(observer);
     EXPECT_FALSE(log);
     created_callback_ = std::move(created_callback);
 
-    if (stream_binding_.is_bound())
-      stream_binding_.Unbind();
-    stream_binding_.Bind(std::move(stream_request));
+    if (stream_receiver_.is_bound())
+      stream_receiver_.reset();
+    stream_receiver_.Bind(std::move(stream_receiver));
   }
 
   void Bind(mojo::ScopedMessagePipeHandle handle) {
-    binding_.Bind(audio::mojom::StreamFactoryRequest(std::move(handle)));
+    receiver_.Bind(
+        mojo::PendingReceiver<audio::mojom::StreamFactory>(std::move(handle)));
   }
 
   StrictMock<MockStream> stream_;
   CreateOutputStreamCallback created_callback_;
 
  private:
-  mojo::Binding<media::mojom::AudioOutputStream> stream_binding_;
+  mojo::Receiver<media::mojom::AudioOutputStream> stream_receiver_;
   DISALLOW_COPY_AND_ASSIGN(FakeOutputStreamFactory);
 };
 
@@ -137,16 +140,10 @@ struct DataFlowTestEnvironment {
 class AudioServiceOutputDeviceTest : public testing::Test {
  public:
   AudioServiceOutputDeviceTest()
-      : task_env_(base::test::ScopedTaskEnvironment::MainThreadType::DEFAULT,
-                  base::test::ScopedTaskEnvironment::ExecutionMode::QUEUED) {
-    service_manager::mojom::ConnectorRequest connector_request;
-    connector_ = service_manager::Connector::Create(&connector_request);
+      : task_env_(
+            base::test::TaskEnvironment::MainThreadType::DEFAULT,
+            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {
     stream_factory_ = std::make_unique<FakeOutputStreamFactory>();
-    connector_->OverrideBinderForTesting(
-        service_manager::ServiceFilter::ByName(audio::mojom::kServiceName),
-        audio::mojom::StreamFactory::Name_,
-        base::BindRepeating(&AudioServiceOutputDeviceTest::BindStreamFactory,
-                            base::Unretained(this)));
   }
 
   ~AudioServiceOutputDeviceTest() override {
@@ -156,21 +153,20 @@ class AudioServiceOutputDeviceTest : public testing::Test {
     task_env_.RunUntilIdle();
   }
 
-  base::test::ScopedTaskEnvironment task_env_;
-  std::unique_ptr<service_manager::Connector> connector_;
+  mojo::PendingRemote<audio::mojom::StreamFactory> MakeFactoryRemote() {
+    return stream_factory_->receiver_.BindNewPipeAndPassRemote();
+  }
+
+  base::test::TaskEnvironment task_env_;
   std::unique_ptr<FakeOutputStreamFactory> stream_factory_;
 
  private:
-  void BindStreamFactory(mojo::ScopedMessagePipeHandle factory_request) {
-    stream_factory_->binding_.Bind(
-        audio::mojom::StreamFactoryRequest(std::move(factory_request)));
-  }
   DISALLOW_COPY_AND_ASSIGN(AudioServiceOutputDeviceTest);
 };
 
 TEST_F(AudioServiceOutputDeviceTest, CreatePlayPause) {
   auto params(media::AudioParameters::UnavailableDeviceParams());
-  OutputDevice output_device(std::move(connector_), params, nullptr, kDeviceId);
+  OutputDevice output_device(MakeFactoryRemote(), params, nullptr, kDeviceId);
 
   constexpr double volume = 0.42;
   EXPECT_CALL(stream_factory_->stream_, SetVolume(volume));
@@ -194,8 +190,8 @@ TEST_F(AudioServiceOutputDeviceTest, MAYBE_VerifyDataFlow) {
   params.set_frames_per_buffer(kFrames);
   ASSERT_EQ(2, params.channels());
   DataFlowTestEnvironment env(params);
-  OutputDevice output_device(std::move(connector_), params,
-                             &env.render_callback, kDeviceId);
+  OutputDevice output_device(MakeFactoryRemote(), params, &env.render_callback,
+                             kDeviceId);
   EXPECT_CALL(stream_factory_->stream_, Play());
   output_device.Play();
   task_env_.RunUntilIdle();

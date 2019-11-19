@@ -14,6 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
+#include "build/build_config.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -109,6 +110,10 @@ class NET_EXPORT URLFetcher {
 
   virtual ~URLFetcher();
 
+  // The unannotated Create() methods are not available on desktop Linux +
+  // Windows. They are available on other platforms, since we only audit network
+  // annotations on Linux & Windows.
+#if (!defined(OS_WIN) && !defined(OS_LINUX)) || defined(OS_CHROMEOS)
   // |url| is the URL to send the request to. It must be valid.
   // |request_type| is the type of request to make.
   // |d| the object that will receive the callback on fetch completion.
@@ -129,6 +134,7 @@ class NET_EXPORT URLFetcher {
       const GURL& url,
       URLFetcher::RequestType request_type,
       URLFetcherDelegate* d);
+#endif
 
   // |url| is the URL to send the request to. It must be valid.
   // |request_type| is the type of request to make.
@@ -327,11 +333,6 @@ class NET_EXPORT URLFetcher {
   // after the OnURLFetchComplete callback has run and the request has not
   // failed.
   virtual const ProxyServer& ProxyServerUsed() const = 0;
-
-  // Returns true if the request was delivered through a proxy.  Must only
-  // be called after the OnURLFetchComplete callback has run and the request
-  // has not failed.
-  virtual bool WasFetchedViaProxy() const = 0;
 
   // Returns true if the response body was served from the cache. This includes
   // responses for which revalidation was required.

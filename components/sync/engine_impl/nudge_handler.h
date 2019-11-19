@@ -17,7 +17,6 @@ class NudgeHandler {
 
   virtual void NudgeForInitialDownload(ModelType type) = 0;
   virtual void NudgeForCommit(ModelType type) = 0;
-  virtual void NudgeForRefresh(ModelType type) = 0;
 };
 
 }  // namespace syncer

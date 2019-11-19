@@ -5,7 +5,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -30,6 +29,7 @@
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace extensions {
 
@@ -161,8 +161,9 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_ApiTests) {
   ASSERT_TRUE(RunExtensionSubtest("tab_capture", "api_tests.html")) << message_;
 }
 
-#if defined(OS_MACOSX) && defined(ADDRESS_SANITIZER)
-// Flaky on ASAN on Mac. See https://crbug.com/674497.
+#if (defined(OS_MACOSX) && defined(ADDRESS_SANITIZER)) || defined(OS_LINUX) || \
+    defined(OS_WIN)
+// Flaky on ASAN on Mac, and on Linux and Windows. See https://crbug.com/674497.
 #define MAYBE_MaxOffscreenTabs DISABLED_MaxOffscreenTabs
 #else
 #define MAYBE_MaxOffscreenTabs MaxOffscreenTabs
@@ -416,37 +417,23 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_Constraints) {
 #endif
 // Tests that the tab indicator (in the tab strip) is shown during tab capture.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_TabIndicator) {
-  ASSERT_EQ(TabAlertState::NONE,
-            chrome::GetTabAlertStateForContents(
-                browser()->tab_strip_model()->GetActiveWebContents()));
+  content::WebContents* const contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_THAT(chrome::GetTabAlertStatesForContents(contents),
+              ::testing::IsEmpty());
 
-  // A TabStripModelObserver that quits the MessageLoop whenever the UI's model
-  // is sent an event that changes the indicator status.
+  // A TabStripModelObserver that quits the MessageLoop whenever the
+  // UI's model is sent an event that might change the indicator status.
   class IndicatorChangeObserver : public TabStripModelObserver {
    public:
-    explicit IndicatorChangeObserver(Browser* browser)
-        : browser_(browser),
-          last_alert_state_(chrome::GetTabAlertStateForContents(
-              browser->tab_strip_model()->GetActiveWebContents())) {
+    explicit IndicatorChangeObserver(Browser* browser) : browser_(browser) {
       browser_->tab_strip_model()->AddObserver(this);
     }
-
-    ~IndicatorChangeObserver() override {
-      browser_->tab_strip_model()->RemoveObserver(this);
-    }
-
-    TabAlertState last_alert_state() const { return last_alert_state_; }
 
     void TabChangedAt(content::WebContents* contents,
                       int index,
                       TabChangeType change_type) override {
-      const TabAlertState alert_state =
-          chrome::GetTabAlertStateForContents(contents);
-      if (alert_state != last_alert_state_) {
-        last_alert_state_ = alert_state;
-        if (on_tab_changed_)
-          std::move(on_tab_changed_).Run();
-      }
+      std::move(on_tab_changed_).Run();
     }
 
     void WaitForTabChange() {
@@ -457,12 +444,11 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_TabIndicator) {
 
    private:
     Browser* const browser_;
-    TabAlertState last_alert_state_;
     base::OnceClosure on_tab_changed_;
   };
 
-  IndicatorChangeObserver observer(browser());
-  ASSERT_EQ(TabAlertState::NONE, observer.last_alert_state());
+  ASSERT_THAT(chrome::GetTabAlertStatesForContents(contents),
+              ::testing::IsEmpty());
 
   // Run an extension test that just turns on tab capture, which should cause
   // the indicator to turn on.
@@ -472,10 +458,13 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_TabIndicator) {
 
   // Run the browser until the indicator turns on.
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  while (observer.last_alert_state() != TabAlertState::TAB_CAPTURING) {
+  IndicatorChangeObserver observer(browser());
+  while (!base::Contains(chrome::GetTabAlertStatesForContents(contents),
+                         TabAlertState::TAB_CAPTURING)) {
     if (base::TimeTicks::Now() - start_time >
             TestTimeouts::action_max_timeout()) {
-      EXPECT_EQ(TabAlertState::TAB_CAPTURING, observer.last_alert_state());
+      EXPECT_THAT(chrome::GetTabAlertStatesForContents(contents),
+                  ::testing::Contains(TabAlertState::TAB_CAPTURING));
       return;
     }
     observer.WaitForTabChange();

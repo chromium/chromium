@@ -10,7 +10,10 @@
 #include "base/macros.h"
 #include "ui/aura/aura_export.h"
 #include "ui/display/screen.h"
-#include "ui/ozone/public/platform_screen.h"
+
+namespace ui {
+class PlatformScreen;
+}
 
 namespace aura {
 
@@ -18,7 +21,7 @@ namespace aura {
 // Ozone.
 class AURA_EXPORT ScreenOzone : public display::Screen {
  public:
-  explicit ScreenOzone(std::unique_ptr<ui::PlatformScreen> platform_screen);
+  ScreenOzone();
   ~ScreenOzone() override;
 
   // display::Screen interface.

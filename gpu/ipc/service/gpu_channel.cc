@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -32,6 +33,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/service/abstract_texture_impl_shared_context_state.h"
 #include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
@@ -53,6 +55,10 @@
 #include "ui/gl/gl_image_shared_memory.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
+
+#if defined(OS_ANDROID)
+#include "gpu/ipc/service/stream_texture_android.h"
+#endif  // defined(OS_ANDROID)
 
 namespace gpu {
 
@@ -102,6 +108,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
 
   void AddChannelFilter(scoped_refptr<IPC::MessageFilter> filter);
   void RemoveChannelFilter(scoped_refptr<IPC::MessageFilter> filter);
+
+  ImageDecodeAcceleratorStub* image_decode_accelerator_stub() const {
+    return image_decode_accelerator_stub_.get();
+  }
 
  private:
   ~GpuChannelMessageFilter() override;
@@ -242,6 +252,7 @@ bool GpuChannelMessageFilter::OnMessageReceived(const IPC::Message& message) {
     case GpuCommandBufferMsg_AsyncFlush::ID:
     case GpuCommandBufferMsg_DestroyTransferBuffer::ID:
     case GpuCommandBufferMsg_ReturnFrontBuffer::ID:
+    case GpuCommandBufferMsg_TakeFrontBuffer::ID:
     case GpuChannelMsg_CreateSharedImage::ID:
     case GpuChannelMsg_DestroySharedImage::ID:
       return MessageErrorHandler(message, "Invalid message");
@@ -382,31 +393,54 @@ GpuChannel::GpuChannel(
       io_task_runner_(io_task_runner),
       share_group_(share_group),
       image_manager_(new gles2::ImageManager()),
-      is_gpu_host_(is_gpu_host),
-      weak_factory_(this) {
+      is_gpu_host_(is_gpu_host) {
   DCHECK(gpu_channel_manager_);
   DCHECK(client_id_);
   filter_ = new GpuChannelMessageFilter(
       this, scheduler, image_decode_accelerator_worker, task_runner);
-  // SharedImageInterfaceProxy/Stub is a singleton per channel, using a reserved
-  // route.
-  const int32_t shared_image_route_id =
-      static_cast<int32_t>(GpuChannelReservedRoutes::kSharedImageInterface);
-  shared_image_stub_ =
-      std::make_unique<SharedImageStub>(this, shared_image_route_id);
-  filter_->AddRoute(shared_image_route_id, shared_image_stub_->sequence());
-  router_.AddRoute(shared_image_route_id, shared_image_stub_.get());
 }
 
 GpuChannel::~GpuChannel() {
   // Clear stubs first because of dependencies.
   stubs_.clear();
 
+#if defined(OS_ANDROID)
+  // Release any references to this channel held by StreamTexture.
+  for (auto& stream_texture : stream_textures_) {
+    stream_texture.second->ReleaseChannel();
+  }
+  stream_textures_.clear();
+#endif  // OS_ANDROID
+
   // Destroy filter first to stop posting tasks to scheduler.
   filter_->Destroy();
 
   for (const auto& kv : stream_sequences_)
     scheduler_->DestroySequence(kv.second);
+}
+
+std::unique_ptr<GpuChannel> GpuChannel::Create(
+    GpuChannelManager* gpu_channel_manager,
+    Scheduler* scheduler,
+    SyncPointManager* sync_point_manager,
+    scoped_refptr<gl::GLShareGroup> share_group,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    int32_t client_id,
+    uint64_t client_tracing_id,
+    bool is_gpu_host,
+    ImageDecodeAcceleratorWorker* image_decode_accelerator_worker) {
+  auto gpu_channel = base::WrapUnique(
+      new GpuChannel(gpu_channel_manager, scheduler, sync_point_manager,
+                     std::move(share_group), std::move(task_runner),
+                     std::move(io_task_runner), client_id, client_tracing_id,
+                     is_gpu_host, image_decode_accelerator_worker));
+
+  if (!gpu_channel->CreateSharedImageStub()) {
+    LOG(ERROR) << "GpuChannel: Failed to create SharedImageStub";
+    return nullptr;
+  }
+  return gpu_channel;
 }
 
 void GpuChannel::Init(IPC::ChannelHandle channel_handle,
@@ -526,6 +560,8 @@ bool GpuChannel::OnControlMessageReceived(const IPC::Message& msg) {
                         OnCreateCommandBuffer)
     IPC_MESSAGE_HANDLER(GpuChannelMsg_DestroyCommandBuffer,
                         OnDestroyCommandBuffer)
+    IPC_MESSAGE_HANDLER(GpuChannelMsg_CreateStreamTexture,
+                        OnCreateStreamTexture)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -554,6 +590,25 @@ void GpuChannel::HandleMessage(const IPC::Message& msg) {
 void GpuChannel::HandleMessageForTesting(const IPC::Message& msg) {
   // Message filter gets message first on IO thread.
   filter_->OnMessageReceived(msg);
+}
+
+ImageDecodeAcceleratorStub* GpuChannel::GetImageDecodeAcceleratorStub() const {
+  DCHECK(filter_);
+  return filter_->image_decode_accelerator_stub();
+}
+
+bool GpuChannel::CreateSharedImageStub() {
+  // SharedImageInterfaceProxy/Stub is a singleton per channel, using a reserved
+  // route.
+  const int32_t shared_image_route_id =
+      static_cast<int32_t>(GpuChannelReservedRoutes::kSharedImageInterface);
+  shared_image_stub_ = SharedImageStub::Create(this, shared_image_route_id);
+  if (!shared_image_stub_)
+    return false;
+
+  filter_->AddRoute(shared_image_route_id, shared_image_stub_->sequence());
+  router_.AddRoute(shared_image_route_id, shared_image_stub_.get());
+  return true;
 }
 
 void GpuChannel::HandleMessageHelper(const IPC::Message& msg) {
@@ -589,6 +644,16 @@ const CommandBufferStub* GpuChannel::GetOneStub() const {
       return stub;
   }
   return nullptr;
+}
+
+void GpuChannel::DestroyStreamTexture(int32_t stream_id) {
+  auto found = stream_textures_.find(stream_id);
+  if (found == stream_textures_.end()) {
+    LOG(ERROR) << "Trying to destroy a non-existent stream texture.";
+    return;
+  }
+  found->second->ReleaseChannel();
+  stream_textures_.erase(stream_id);
 }
 #endif
 
@@ -660,13 +725,6 @@ void GpuChannel::OnCreateCommandBuffer(
   }
 
   std::unique_ptr<CommandBufferStub> stub;
-  bool use_passthrough_cmd_decoder =
-      gpu_channel_manager_->gpu_preferences().use_passthrough_cmd_decoder &&
-      gles2::PassthroughCommandDecoderSupported();
-  bool allow_raster_decoder =
-      !use_passthrough_cmd_decoder ||
-      gpu_channel_manager_->gpu_preferences().enable_passthrough_raster_decoder;
-
   if (init_params.attribs.context_type == CONTEXT_TYPE_WEBGPU) {
     if (!gpu_channel_manager_->gpu_preferences().enable_webgpu) {
       DLOG(ERROR) << "ContextResult::kFatalFailure: WebGPU not enabled";
@@ -675,8 +733,7 @@ void GpuChannel::OnCreateCommandBuffer(
 
     stub = std::make_unique<WebGPUCommandBufferStub>(
         this, init_params, command_buffer_id, sequence_id, stream_id, route_id);
-  } else if (allow_raster_decoder &&
-             init_params.attribs.enable_raster_interface &&
+  } else if (init_params.attribs.enable_raster_interface &&
              !init_params.attribs.enable_gles2_interface) {
     stub = std::make_unique<RasterCommandBufferStub>(
         this, init_params, command_buffer_id, sequence_id, stream_id, route_id);
@@ -722,6 +779,28 @@ void GpuChannel::OnDestroyCommandBuffer(int32_t route_id) {
   }
 
   RemoveRoute(route_id);
+}
+
+void GpuChannel::OnCreateStreamTexture(int32_t stream_id, bool* succeeded) {
+#if defined(OS_ANDROID)
+  auto found = stream_textures_.find(stream_id);
+  if (found != stream_textures_.end()) {
+    LOG(ERROR)
+        << "Trying to create a StreamTexture with an existing stream_id.";
+    *succeeded = false;
+    return;
+  }
+  scoped_refptr<StreamTexture> stream_texture =
+      StreamTexture::Create(this, stream_id);
+  if (!stream_texture) {
+    *succeeded = false;
+    return;
+  }
+  stream_textures_.emplace(stream_id, std::move(stream_texture));
+  *succeeded = true;
+#else
+  *succeeded = false;
+#endif
 }
 
 void GpuChannel::CacheShader(const std::string& key,

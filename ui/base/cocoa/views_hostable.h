@@ -9,6 +9,13 @@
 
 #include "ui/base/ui_base_export.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_widget_types.h"
+
+namespace remote_cocoa {
+namespace mojom {
+class Application;
+}  // namespace mojom
+}  // namespace remote_cocoa
 
 namespace ui {
 
@@ -16,6 +23,7 @@ class Layer;
 
 // Interface that it used to stitch a content::WebContentsView into a
 // views::View.
+// TODO(ccameron): Move this to components/remote_cocoa.
 class ViewsHostableView {
  public:
   // Host interface through which the WebContentsView may indicate that its C++
@@ -25,17 +33,15 @@ class ViewsHostableView {
     // Query the ui::Layer of the host.
     virtual ui::Layer* GetUiLayer() const = 0;
 
-    // Return the id for the process in which the host NSView exists. Used to
-    // migrate the content::WebContentsView and content::RenderWidgetHostview
-    // to that process.
-    virtual uint64_t GetViewsFactoryHostId() const = 0;
+    // Return the mojo interface to the application in a remote process in which
+    // the host NSView exists. Used to migrate the content::WebContentsView and
+    // content::RenderWidgetHostView to that process.
+    virtual remote_cocoa::mojom::Application* GetRemoteCocoaApplication()
+        const = 0;
 
     // The id for the views::View's NSView. Used to add the
     // content::WebContentsView's NSView as a child view.
     virtual uint64_t GetNSViewId() const = 0;
-
-    // Query the parent accessibility element of the host.
-    virtual id GetAccessibilityElement() const = 0;
 
     // Called when the hostable view will be destroyed.
     virtual void OnHostableViewDestroying() = 0;
@@ -63,6 +69,13 @@ class ViewsHostableView {
 
   // Make the WebContentsView's NSView be a first responder.
   virtual void ViewsHostableMakeFirstResponder() = 0;
+
+  // Set the WebContentsView's parent accessibility element.
+  virtual void ViewsHostableSetParentAccessible(
+      gfx::NativeViewAccessible parent_accessibility_element) = 0;
+
+  // Retrieve the WebContentsView's accessibility element.
+  virtual gfx::NativeViewAccessible ViewsHostableGetAccessibilityElement() = 0;
 };
 
 }  // namespace ui

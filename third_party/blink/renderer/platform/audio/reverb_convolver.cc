@@ -35,13 +35,11 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
-
-using namespace vector_math;
 
 const int kInputBufferSize = 8 * 16384;
 
@@ -64,7 +62,8 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulse_response,
                                  size_t render_slice_size,
                                  size_t max_fft_size,
                                  size_t convolver_render_phase,
-                                 bool use_background_threads)
+                                 bool use_background_threads,
+                                 float scale)
     : impulse_response_length_(impulse_response->length()),
       accumulation_buffer_(impulse_response->length() + render_slice_size),
       input_buffer_(kInputBufferSize),
@@ -109,7 +108,7 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulse_response,
         std::make_unique<ReverbConvolverStage>(
             response, total_response_length, reverb_total_latency, stage_offset,
             stage_size, fft_size, render_phase, render_slice_size,
-            &accumulation_buffer_, use_direct_convolver);
+            &accumulation_buffer_, scale, use_direct_convolver);
 
     bool is_background_stage = false;
 
@@ -139,8 +138,8 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulse_response,
   // FIXME: would be better to up the thread priority here.  It doesn't need to
   // be real-time, but higher than the default...
   if (use_background_threads && background_stages_.size() > 0) {
-    background_thread_ = Platform::Current()->CreateThread(ThreadCreationParams(
-        WebThreadType::kReverbConvolutionBackgroundThread));
+    background_thread_ = Platform::Current()->CreateThread(
+        ThreadCreationParams(ThreadType::kReverbConvolutionBackgroundThread));
   }
 }
 
@@ -174,19 +173,15 @@ void ReverbConvolver::ProcessInBackground() {
 void ReverbConvolver::Process(const AudioChannel* source_channel,
                               AudioChannel* destination_channel,
                               uint32_t frames_to_process) {
-  bool is_safe = source_channel && destination_channel &&
-                 source_channel->length() >= frames_to_process &&
-                 destination_channel->length() >= frames_to_process;
-  DCHECK(is_safe);
-  if (!is_safe)
-    return;
+  DCHECK(source_channel);
+  DCHECK(destination_channel);
+  DCHECK_GE(source_channel->length(), frames_to_process);
+  DCHECK_GE(destination_channel->length(), frames_to_process);
 
   const float* source = source_channel->Data();
   float* destination = destination_channel->MutableData();
-  bool is_data_safe = source && destination;
-  DCHECK(is_data_safe);
-  if (!is_data_safe)
-    return;
+  DCHECK(source);
+  DCHECK(destination);
 
   // Feed input buffer (read by all threads)
   input_buffer_.Write(source, frames_to_process);
@@ -201,9 +196,10 @@ void ReverbConvolver::Process(const AudioChannel* source_channel,
   // Now that we've buffered more input, post another task to the background
   // thread.
   if (background_thread_) {
-    PostCrossThreadTask(*background_thread_->GetTaskRunner(), FROM_HERE,
-                        CrossThreadBind(&ReverbConvolver::ProcessInBackground,
-                                        CrossThreadUnretained(this)));
+    PostCrossThreadTask(
+        *background_thread_->GetTaskRunner(), FROM_HERE,
+        CrossThreadBindOnce(&ReverbConvolver::ProcessInBackground,
+                            CrossThreadUnretained(this)));
   }
 }
 

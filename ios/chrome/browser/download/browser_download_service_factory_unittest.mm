@@ -7,7 +7,7 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/download/browser_download_service.h"
 #import "ios/web/public/download/download_controller.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -19,7 +19,8 @@ class BrowserDownloadServiceFactoryTest : public PlatformTest {
  protected:
   BrowserDownloadServiceFactoryTest()
       : browser_state_(browser_state_builder_.Build()) {}
-  web::TestWebThreadBundle thread_bundle_;  // ChromeBrowserState needs thread.
+  // ChromeBrowserState needs thread.
+  web::WebTaskEnvironment task_environment_;
   TestChromeBrowserState::Builder browser_state_builder_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 };

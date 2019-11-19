@@ -18,7 +18,7 @@
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/shared_impl/resource_var.h"
 #include "ppapi/shared_impl/scoped_pp_var.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/platform/web_file_system_type.h"
 #include "third_party/blink/public/platform/web_media_stream_source.h"
 #include "third_party/blink/public/platform/web_media_stream_track.h"
@@ -32,14 +32,14 @@ namespace content {
 namespace {
 
 void FlushComplete(
-    const base::Callback<void(bool)>& callback,
-    const std::vector<scoped_refptr<content::HostResourceVar> >& browser_vars,
+    base::OnceCallback<void(bool)> callback,
+    const std::vector<scoped_refptr<content::HostResourceVar>>& browser_vars,
     const std::vector<int>& pending_host_ids) {
   CHECK(browser_vars.size() == pending_host_ids.size());
   for (size_t i = 0; i < browser_vars.size(); ++i) {
     browser_vars[i]->set_pending_browser_host_id(pending_host_ids[i]);
   }
-  callback.Run(true);
+  std::move(callback).Run(true);
 }
 
 PP_FileSystemType WebFileSystemTypeToPPAPI(blink::WebFileSystemType type) {
@@ -272,11 +272,10 @@ bool ResourceConverterImpl::NeedsFlush() {
   return !browser_host_create_messages_.empty();
 }
 
-void ResourceConverterImpl::Flush(const base::Callback<void(bool)>& callback) {
+void ResourceConverterImpl::Flush(base::OnceCallback<void(bool)> callback) {
   RendererPpapiHost::GetForPPInstance(instance_)->CreateBrowserResourceHosts(
-      instance_,
-      browser_host_create_messages_,
-      base::Bind(&FlushComplete, callback, browser_vars_));
+      instance_, browser_host_create_messages_,
+      base::BindOnce(&FlushComplete, std::move(callback), browser_vars_));
   browser_host_create_messages_.clear();
   browser_vars_.clear();
 }

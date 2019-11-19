@@ -56,7 +56,7 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
 template <>
 struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
     StructTraits<mojo_base::mojom::ListValueDataView, base::Value> {
-  static const base::Value::ListStorage& storage(const base::Value& value) {
+  static base::span<const base::Value> storage(const base::Value& value) {
     DCHECK(value.is_list());
     return value.GetList();
   }
@@ -86,8 +86,13 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
         return mojo_base::mojom::ValueDataView::Tag::DICTIONARY_VALUE;
       case base::Value::Type::LIST:
         return mojo_base::mojom::ValueDataView::Tag::LIST_VALUE;
+      // TODO(crbug.com/859477): Remove after root cause is found.
+      case base::Value::Type::DEAD:
+        CHECK(false);
+        return mojo_base::mojom::ValueDataView::Tag::NULL_VALUE;
     }
-    NOTREACHED();
+    // TODO(crbug.com/859477): Revert to NOTREACHED() after root cause is found.
+    CHECK(false);
     return mojo_base::mojom::ValueDataView::Tag::NULL_VALUE;
   }
 

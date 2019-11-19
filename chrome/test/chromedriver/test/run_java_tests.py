@@ -3,20 +3,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Runs the WebDriver Java acceptance tests.
-
-This script is called from chrome/test/chromedriver/run_all_tests.py and reports
-results using the buildbot annotation scheme.
-
-For ChromeDriver documentation, refer to http://code.google.com/p/chromedriver.
-"""
+"""Runs the WebDriver Java acceptance tests."""
 
 import optparse
 import os
-import shutil
+import re
 import stat
 import sys
-import xml.dom.minidom as minidom
 
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 sys.path.insert(1, os.path.join(_THIS_DIR, os.pardir))
@@ -25,48 +18,15 @@ import chrome_paths
 import test_environment
 import util
 import glob
-import time
 
 if util.IsLinux():
   sys.path.insert(0, os.path.join(chrome_paths.GetSrc(), 'build', 'android'))
   from pylib import constants
 
 
-class TestResult(object):
-  """A result for an attempted single test case."""
-
-  def __init__(self, name, time, failure):
-    """Initializes a test result.
-
-    Args:
-      name: the full name of the test.
-      time: the amount of time the test ran, in seconds.
-      failure: the test error or failure message, or None if the test passed.
-    """
-    self._name = name
-    self._time = time
-    self._failure = failure
-
-  def GetName(self):
-    """Returns the test name."""
-    return self._name
-
-  def GetTime(self):
-    """Returns the time it took to run the test."""
-    return self._time
-
-  def IsPass(self):
-    """Returns whether the test passed."""
-    return self._failure is None
-
-  def GetFailureMessage(self):
-    """Returns the test failure message, or None if the test passed."""
-    return self._failure
-
-
 def _Run(java_tests_src_dir, test_filter, ready_to_run_tests,
          chromedriver_path, chrome_path, log_path, android_package_key,
-         verbose, debug):
+         debug, tests_report_file):
   """Run the WebDriver Java tests and return the test results.
 
   Args:
@@ -79,11 +39,7 @@ def _Run(java_tests_src_dir, test_filter, ready_to_run_tests,
     chrome_path: path to Chrome exe.
     log_path: path to server log.
     android_package_key: name of Chrome's Android package.
-    verbose: whether the output should be verbose.
     debug: whether the tests should wait until attached by a debugger.
-
-  Returns:
-    A list of |TestResult|s.
   """
 
   sys_props = ['selenium.browser=chrome',
@@ -138,119 +94,78 @@ def _Run(java_tests_src_dir, test_filter, ready_to_run_tests,
     jvm_args += ['-agentlib:jdwp=transport=%s,server=y,suspend=y,'
                  'address=33081' % transport]
 
-  return _RunAntTest(java_tests_src_dir, jvm_args, verbose, sys_props)
+  _RunTest(java_tests_src_dir, jvm_args, sys_props, tests_report_file)
 
-def _RunAntTest(java_tests_src_dir, jvm_args, verbose, sys_props):
-  """Runs a single Ant JUnit test suite and returns the |TestResult|s.
+def _RunTest(java_tests_src_dir, jvm_args, sys_props, tests_report_file):
+  """Runs a single JUnit test suite.
 
   Args:
     java_tests_src_dir: the directory to run the tests in.
     sys_props: Java system properties to set when running the tests.
     jvm_args: Java VM command line args to use.
-    verbose: whether the output should be verbose.
-
-  Returns:
-    A list of |TestResult|s.
   """
-  def _CreateBuildConfig(java_tests_src_dir, jvm_args, sys_props):
-    path_element = []
 
-    for name in glob.glob(java_tests_src_dir + "/jar/*.jar"):
-      path_element.append('\t<pathelement location=\"%s\" />' % name)
-
-    build_xml = '\n'.join([
-    '<project>',
-    ' <property name="test.class.name" value="org.openqa.selenium.chrome.ChromeDriverTests" />',
-    ' <path id="test.classpath">',
-    '\n'.join(path_element),
-    '</path>'])
-
-    def _SystemPropToXml(prop):
-      key, value = prop.split('=')
-      return '<sysproperty key="%s" value="%s"/>' % (key, value)
-    def _JvmArgToXml(arg):
-      return '<jvmarg value="%s"/>' % arg
-    build_xml += '\n'.join([
-      '  <target name="test">',
-      '    <junit %s>' % ' '.join(junit_props),
-      '      <formatter type="xml"/>',
-      '      ' + '\n      '.join(map(_SystemPropToXml, sys_props)),
-      '      ' + '\n      '.join(map(_JvmArgToXml, jvm_args)),
-      '      <test name="%s" outfile="%s"/>' % ("org.openqa.selenium.chrome.ChromeDriverTests", "results"),
-      '      <classpath refid="test.classpath" />',
-      '    </junit>',
-      '  </target>',
-      '</project>'])
-
-    return build_xml
-
-  def _ProcessResults(results_path):
-    doc = minidom.parse(results_path)
-    tests = []
-    for test in doc.getElementsByTagName('testcase'):
-      name = test.getAttribute('classname') + '.' + test.getAttribute('name')
-      time = test.getAttribute('time')
-      failure = None
-      error_nodes = test.getElementsByTagName('error')
-      failure_nodes = test.getElementsByTagName('failure')
-      if error_nodes:
-        failure = error_nodes[0].childNodes[0].nodeValue
-      elif failure_nodes:
-        failure = failure_nodes[0].childNodes[0].nodeValue
-      tests += [TestResult(name, time, failure)]
-    return tests
-
-  junit_props = ['printsummary="yes"',
-                 'fork="yes"',
-                 'haltonfailure="no"',
-                 'haltonerror="no"']
-  if verbose:
-    junit_props += ['showoutput="yes"']
-
-  ant_file = open(os.path.join(java_tests_src_dir, 'build.xml'), 'w')
-  file_contents = _CreateBuildConfig(java_tests_src_dir, jvm_args, sys_props)
-  ant_file.write(file_contents)
-  ant_file.close()
+  classpath = []
+  for name in glob.glob(java_tests_src_dir + "/jar/*.jar"):
+    classpath.append(name)
 
   if util.IsWindows():
-    ant_name = 'ant.bat'
+    separator = ';'
   else:
-    ant_name = 'ant'
-  code = util.RunCommand([ant_name, 'test'], java_tests_src_dir)
+    separator = ':'
+
+  code = util.RunCommand(
+                         ['java'] +
+                         ['-D%s' % sys_prop for sys_prop in sys_props] +
+                         ['-D%s' % jvm_arg for jvm_arg in jvm_args] +
+                         ['-cp', separator.join(classpath),
+                          'org.junit.runner.JUnitCore',
+                          'org.openqa.selenium.chrome.ChromeDriverTests'],
+                         java_tests_src_dir,
+                         tests_report_file)
+
   if code != 0:
-    print 'FAILED to run java tests of ChromeDriverTests through ant'
-    return
-  return _ProcessResults(os.path.join(java_tests_src_dir, 'results.xml'))
+    print 'FAILED to run java tests of ChromeDriverTests'
 
-
-def PrintTestResults(results):
+def _PrintTestResults(results_path):
   """Prints the given results in a format recognized by the buildbot."""
+  with open(results_path, "r") as myfile:
+    contents = myfile.read()
 
-  # If no results that means something went wrong and
-  # we should return non zero value
-  if len(results) == 0:
-    print 'No tests were run'
-    return 1
+  successJunitTestsCount = re.search(r'OK \((\d* tests)', contents)
 
-  failures = []
-  failure_names = []
-  for result in results:
-    if not result.IsPass():
-      failures += [result]
-      failure_names += ['.'.join(result.GetName().split('.')[-2:])]
+  if successJunitTestsCount:
+    testsCount = re.findall(r'INFO: <<< Finished (.*)\)', contents)
+    print("Ran %s tests " % len(testsCount))
+    myfile.close()
+    return 0
 
-  print 'Ran %s tests' % len(results)
-  print 'Failed %s:' % len(failures)
-  util.AddBuildStepText('failed %s/%s' % (len(failures), len(results)))
-  for result in failures:
-    print '=' * 80
-    print '=' * 10, result.GetName(), '(%ss)' % result.GetTime()
-    print result.GetFailureMessage()
-    if len(failures) < 10:
-      util.AddBuildStepText('.'.join(result.GetName().split('.')[-2:]))
-  print 'Rerun failing tests with filter:', ':'.join(failure_names)
-  return len(failures)
+  print("============================")
+  print("FAILURES DETAILS")
+  print("============================")
+  start = 'There w'
+  end = 'FAILURES!!!'
+  print contents[contents.find(start):contents.rfind(end)]
 
+  print("============================")
+  print("SUMMARY")
+  print("============================")
+  testsCount = re.findall(r'INFO: <<< Finished (.*)\)', contents)
+  print("Ran %s tests " % len(testsCount))
+
+  failuresCount = re.search(r'There w.* (.*) failure', contents)
+  if failuresCount:
+    print("Failed %s tests" % failuresCount.group(1))
+  failedTests = re.findall(r'\s\d*\) (.*org.openqa.*)', contents)
+  testsToReRun = []
+  for test in failedTests:
+    testName = test.split('(')[0]
+    testClass = test.split('(')[1].split('.')[-1]
+    testsToReRun.append(testClass[0:-1] + '.' + testName)
+  print 'Rerun failing tests with filter: ' + ':'.join(testsToReRun)
+
+  myfile.close()
+  return failuresCount.group(1)
 
 def main():
   parser = optparse.OptionParser()
@@ -318,6 +233,8 @@ def main():
     java_tests_src_dir = os.path.join(chrome_paths.GetSrc(), 'chrome', 'test',
                                       'chromedriver', 'third_party',
                                       'java_tests')
+    tests_report_file = os.path.join(java_tests_src_dir, 'results.txt')
+
     if (not os.path.exists(java_tests_src_dir) or
         not os.listdir(java_tests_src_dir)):
       java_tests_url = ('https://chromium.googlesource.com/chromium/deps'
@@ -330,25 +247,21 @@ def main():
              '  $ git clone %s java_tests' % java_tests_url)
       return 1
 
-    results = []
-    for filter in test_filters:
-      results += _Run(
-          java_tests_src_dir=java_tests_src_dir,
-          test_filter=filter,
-          ready_to_run_tests=ready_to_run_tests,
-          chromedriver_path=options.chromedriver,
-          chrome_path=util.GetAbsolutePathOfUserPath(options.chrome),
-          log_path=options.log_path,
-          android_package_key=options.android_package,
-          verbose=options.verbose,
-          debug=options.debug)
-    return PrintTestResults(results)
+    _Run(
+      java_tests_src_dir=java_tests_src_dir,
+      test_filter=test_filter,
+      ready_to_run_tests=ready_to_run_tests,
+      chromedriver_path=options.chromedriver,
+      chrome_path=util.GetAbsolutePathOfUserPath(options.chrome),
+      log_path=options.log_path,
+      android_package_key=options.android_package,
+      debug=options.debug,
+      tests_report_file=tests_report_file)
+    return _PrintTestResults(tests_report_file)
   finally:
     environment.GlobalTearDown()
-    if(os.path.exists(os.path.join(java_tests_src_dir, "build.xml"))):
-      os.remove(os.path.join(java_tests_src_dir, "build.xml"))
-    if(os.path.exists(os.path.join(java_tests_src_dir, "results.xml"))):
-      os.remove(os.path.join(java_tests_src_dir, "results.xml"))
+    if(os.path.exists(tests_report_file)):
+     os.remove(tests_report_file)
     if(os.path.exists(os.path.join(java_tests_src_dir,
                                    "chrome-wrapper-no-sandbox"))):
       os.remove(os.path.join(java_tests_src_dir, "chrome-wrapper-no-sandbox"))

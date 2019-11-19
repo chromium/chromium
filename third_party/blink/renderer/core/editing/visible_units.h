@@ -35,7 +35,6 @@
 
 namespace blink {
 
-class LayoutUnit;
 class LayoutObject;
 class Node;
 class IntPoint;
@@ -165,14 +164,6 @@ StartOfLine(const VisiblePositionInFlatTree&);
 CORE_EXPORT VisiblePosition EndOfLine(const VisiblePosition&);
 CORE_EXPORT VisiblePositionInFlatTree
 EndOfLine(const VisiblePositionInFlatTree&);
-enum EditableType { kContentIsEditable, kHasEditableAXRole };
-CORE_EXPORT VisiblePosition
-PreviousLinePosition(const VisiblePosition&,
-                     LayoutUnit line_direction_point,
-                     EditableType = kContentIsEditable);
-CORE_EXPORT VisiblePosition NextLinePosition(const VisiblePosition&,
-                                             LayoutUnit line_direction_point,
-                                             EditableType = kContentIsEditable);
 CORE_EXPORT bool InSameLine(const VisiblePosition&, const VisiblePosition&);
 CORE_EXPORT bool InSameLine(const VisiblePositionInFlatTree&,
                             const VisiblePositionInFlatTree&);
@@ -302,15 +293,6 @@ VisiblePositionInFlatTree
 AdjustBackwardPositionToAvoidCrossingEditingBoundaries(
     const VisiblePositionInFlatTree&,
     const PositionInFlatTree&);
-
-Position NextRootInlineBoxCandidatePosition(Node*,
-                                            const VisiblePosition&,
-                                            EditableType);
-
-CORE_EXPORT Position
-PreviousRootInlineBoxCandidatePosition(Node*,
-                                       const VisiblePosition&,
-                                       EditableType);
 
 }  // namespace blink
 

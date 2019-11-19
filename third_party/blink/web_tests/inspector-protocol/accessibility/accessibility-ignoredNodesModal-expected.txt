@@ -61,8 +61,8 @@ Tests accessibility values of ignored nodes in model dialog.
   "nodeId": "<string>",
   "ignored": false,
   "role": {
-    "type": "internalRole",
-    "value": "GenericContainer"
+    "type": "role",
+    "value": "generic"
   },
   "name": {
     "type": "computedString",

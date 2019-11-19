@@ -31,8 +31,6 @@ class CORE_EXPORT SVGSetElement final : public SVGAnimateElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(SVGSetElement);
-
   explicit SVGSetElement(Document&);
 
  private:

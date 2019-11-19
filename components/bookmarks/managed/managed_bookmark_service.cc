@@ -49,7 +49,7 @@ class BookmarkPermanentNodeLoader {
     node_->set_id(*next_node_id);
     *next_node_id = ManagedBookmarksTracker::LoadInitial(
         node_.get(), initial_bookmarks_.get(), node_->id() + 1);
-    node_->set_visible(!node_->empty());
+    node_->set_visible(!node_->children().empty());
     node_->SetTitle(l10n_util::GetStringUTF16(title_id_));
     return std::move(node_);
   }
@@ -62,15 +62,13 @@ class BookmarkPermanentNodeLoader {
   DISALLOW_COPY_AND_ASSIGN(BookmarkPermanentNodeLoader);
 };
 
-// Returns a list of initialized BookmarkPermanentNodes using |next_node_id| to
-// start assigning id. |next_node_id| is updated as a side effect of calling
-// this method.
-BookmarkPermanentNodeList LoadExtraNodes(
+// Returns a std::unique_ptr<BookmarkPermanentNode> using |next_node_id| for
+// assigning an id. |next_node_id| is updated as a side effect of calling this
+// method.
+std::unique_ptr<BookmarkPermanentNode> LoadManagedNode(
     std::unique_ptr<BookmarkPermanentNodeLoader> loader,
     int64_t* next_node_id) {
-  BookmarkPermanentNodeList extra_nodes;
-  extra_nodes.push_back(loader->Load(next_node_id));
-  return extra_nodes;
+  return loader->Load(next_node_id);
 }
 
 }  // namespace
@@ -98,11 +96,12 @@ void ManagedBookmarkService::BookmarkModelCreated(
       bookmark_model_, prefs_, managed_domain_callback_));
 }
 
-LoadExtraCallback ManagedBookmarkService::GetLoadExtraNodesCallback() {
+LoadManagedNodeCallback ManagedBookmarkService::GetLoadManagedNodeCallback() {
   // Create a BookmarkPermanentNode with a temporary id of 0. It will be
-  // populated and assigned a proper id in the LoadExtraNodes callback. Until
+  // populated and assigned a proper id in the LoadManagedNode callback. Until
   // then, it is owned by the returned closure.
-  std::unique_ptr<BookmarkPermanentNode> managed(new BookmarkPermanentNode(0));
+  std::unique_ptr<BookmarkPermanentNode> managed(
+      new BookmarkPermanentNode(0, BookmarkNode::FOLDER));
 
   managed_node_ = managed.get();
 
@@ -111,7 +110,7 @@ LoadExtraCallback ManagedBookmarkService::GetLoadExtraNodesCallback() {
       managed_bookmarks_tracker_->GetInitialManagedBookmarks(),
       IDS_BOOKMARK_BAR_MANAGED_FOLDER_DEFAULT_NAME);
 
-  return base::BindOnce(&LoadExtraNodes, std::move(loader));
+  return base::BindOnce(&LoadManagedNode, std::move(loader));
 }
 
 bool ManagedBookmarkService::CanSetPermanentNodeTitle(

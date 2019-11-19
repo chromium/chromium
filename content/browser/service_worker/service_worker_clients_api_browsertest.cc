@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
@@ -29,6 +30,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/service_worker_test_helpers.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -38,81 +41,6 @@
 #include "url/gurl.h"
 
 namespace content {
-
-namespace {
-// Waits for a service worker to be activated.
-class ActivatedServiceWorkerObserver : public ServiceWorkerContextObserver {
- public:
-  ActivatedServiceWorkerObserver() : ServiceWorkerContextObserver() {}
-  ~ActivatedServiceWorkerObserver() override {}
-
-  void OnVersionActivated(int64_t version_id, const GURL& scope) override {
-    version_id_ = version_id;
-    if (activated_callback_)
-      std::move(activated_callback_).Run();
-  }
-
-  void WaitForActivated() {
-    if (version_id_ != -1)
-      return;
-    base::RunLoop loop;
-    activated_callback_ = loop.QuitClosure();
-    loop.Run();
-  }
-
-  int64_t version_id() const { return version_id_; }
-
- private:
-  base::OnceClosure activated_callback_;
-  int64_t version_id_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(ActivatedServiceWorkerObserver);
-};
-
-// Mainly for testing that ShouldAllowOpenURL() is properly consulted.
-class ServiceWorkerClientsContentBrowserClient
-    : public TestContentBrowserClient {
- public:
-  ServiceWorkerClientsContentBrowserClient() : TestContentBrowserClient() {}
-  ~ServiceWorkerClientsContentBrowserClient() override {}
-
-  const GURL& opened_url() const { return opened_url_; }
-
-  void SetToAllowOpenURL(bool allow) { allow_open_url_ = allow; }
-
-  void WaitForOpenURL() {
-    if (!opened_url_.is_empty())
-      return;
-    base::RunLoop run_loop;
-    opened_url_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
-  // ContentBrowserClient overrides:
-  bool ShouldAllowOpenURL(SiteInstance* site_instance,
-                          const GURL& url) override {
-    return allow_open_url_;
-  }
-
-  void OpenURL(
-      SiteInstance* site_instance,
-      const OpenURLParams& params,
-      const base::RepeatingCallback<void(WebContents*)>& callback) override {
-    opened_url_ = params.url;
-    callback.Run(nullptr);
-    if (opened_url_callback_)
-      std::move(opened_url_callback_).Run();
-  }
-
- private:
-  bool allow_open_url_ = true;
-  GURL opened_url_;
-  base::OnceClosure opened_url_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerClientsContentBrowserClient);
-};
-
-}  // namespace
 
 // Tests for the service worker Clients API.
 class ServiceWorkerClientsApiBrowserTest : public ContentBrowserTest {
@@ -125,9 +53,6 @@ class ServiceWorkerClientsApiBrowserTest : public ContentBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    old_content_browser_client_ =
-        SetBrowserClientForTesting(&content_browser_client_);
-
     embedded_test_server()->StartAcceptingConnections();
 
     StoragePartition* partition = BrowserContext::GetDefaultStoragePartition(
@@ -136,62 +61,12 @@ class ServiceWorkerClientsApiBrowserTest : public ContentBrowserTest {
         partition->GetServiceWorkerContext());
   }
 
-  void TearDownOnMainThread() override {
-    SetBrowserClientForTesting(old_content_browser_client_);
-  }
-
-  void DispatchNotificationClickEvent(int64_t version_id) {
-    base::RunLoop run_loop;
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&ServiceWorkerClientsApiBrowserTest::
-                           DispatchNotificationClickEventOnIOThread,
-                       base::Unretained(this), version_id,
-                       run_loop.QuitClosure()));
-    run_loop.Run();
-  }
-
-  void DispatchNotificationClickEventOnIOThread(int64_t version_id,
-                                                base::OnceClosure done) {
-    ServiceWorkerVersion* version =
-        wrapper_->context()->GetLiveVersion(version_id);
-    ASSERT_TRUE(version);
-    version->RunAfterStartWorker(
-        ServiceWorkerMetrics::EventType::NOTIFICATION_CLICK,
-        base::BindOnce(&ServiceWorkerClientsApiBrowserTest::
-                           DispatchNotificationClickAfterStartWorker,
-                       base::Unretained(this), base::WrapRefCounted(version),
-                       std::move(done)));
-  }
-
-  void DispatchNotificationClickAfterStartWorker(
-      scoped_refptr<ServiceWorkerVersion> version,
-      base::OnceClosure done,
-      blink::ServiceWorkerStatusCode status) {
-    EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
-    version->StartRequest(ServiceWorkerMetrics::EventType::NOTIFICATION_CLICK,
-                          base::DoNothing());
-    version->endpoint()->DispatchNotificationClickEvent(
-        "notification_id", {} /* notification_data */, -1 /* action_index */,
-        base::nullopt /* reply */,
-        base::BindOnce(
-            [](base::OnceClosure done,
-               blink::mojom::ServiceWorkerEventStatus event_status) {
-              EXPECT_EQ(blink::mojom::ServiceWorkerEventStatus::COMPLETED,
-                        event_status);
-              std::move(done).Run();
-            },
-            std::move(done)));
-  }
-
   ServiceWorkerContextWrapper* wrapper() { return wrapper_.get(); }
-
- protected:
-  ServiceWorkerClientsContentBrowserClient content_browser_client_;
 
  private:
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
-  ContentBrowserClient* old_content_browser_client_;
+
+  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerClientsApiBrowserTest);
 };
 
 // Tests a successful WindowClient.navigate() call.
@@ -221,39 +96,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerClientsApiBrowserTest, Navigate) {
   // The page should be navigated to empty.html.
   const base::string16 title =
       base::ASCIIToUTF16("ServiceWorker test - empty page");
-  TitleWatcher title_watcher(shell()->web_contents(), title);
-  EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
-}
-
-// Tests a WindowClient.navigate() call to a disallowed URL.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerClientsApiBrowserTest,
-                       NavigateDisallowedUrl) {
-  content_browser_client_.SetToAllowOpenURL(false);
-
-  // Load a page that registers a service worker.
-  EXPECT_TRUE(NavigateToURL(shell(),
-                            embedded_test_server()->GetURL(
-                                "/service_worker/create_service_worker.html")));
-  EXPECT_EQ("DONE", EvalJs(shell(), "register('client_api_worker.js');"));
-
-  // Load the page again so we are controlled.
-  EXPECT_TRUE(NavigateToURL(shell(),
-                            embedded_test_server()->GetURL(
-                                "/service_worker/create_service_worker.html")));
-  EXPECT_EQ(true, EvalJs(shell(), "!!navigator.serviceWorker.controller"));
-
-  // Have the service worker call client.navigate() on the page.
-  const std::string navigate_script = R"(
-    (async () => {
-      const registration = await navigator.serviceWorker.ready;
-      registration.active.postMessage({command: 'navigate', url: 'empty.html'});
-      return true;
-    })();
-  )";
-  EXPECT_EQ(true, EvalJs(shell(), navigate_script));
-
-  // The page should be navigated to about:blank instead of the requested URL.
-  const base::string16 title = base::ASCIIToUTF16("about:blank");
   TitleWatcher title_watcher(shell()->web_contents(), title);
   EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
 }
@@ -290,58 +132,34 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerClientsApiBrowserTest,
 
 // Tests a successful Clients.openWindow() call.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerClientsApiBrowserTest, OpenWindow) {
-  ActivatedServiceWorkerObserver observer;
-  wrapper()->AddObserver(&observer);
-
   // Load a page that registers a service worker.
-  EXPECT_TRUE(NavigateToURL(shell(),
-                            embedded_test_server()->GetURL(
-                                "/service_worker/create_service_worker.html")));
+  GURL page_url = embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html");
+  EXPECT_TRUE(NavigateToURL(shell(), page_url));
   EXPECT_EQ("DONE", EvalJs(shell(), "register('client_api_worker.js');"));
-  observer.WaitForActivated();
 
-  // Tell the service worker to call clients.openWindow(). Do it from a
-  // notification click event so it has a user interaction token that allows
+  // Tell the service worker to call clients.openWindow(target_url). Do it from
+  // a notification click event so it has a user interaction token that allows
   // popups.
-  int64_t id = observer.version_id();
-  EXPECT_NE(-1, id);
-  DispatchNotificationClickEvent(id);
+  content::WebContents* new_window = nullptr;
+  GURL target_url =
+      embedded_test_server()->GetURL("/service_worker/empty.html");
+  {
+    GURL scope_url = embedded_test_server()->GetURL("/service_worker/");
+    blink::PlatformNotificationData notification_data;
+    notification_data.body = base::UTF8ToUTF16(target_url.spec());
 
-  // OpenURL() should be called.
-  content_browser_client_.WaitForOpenURL();
-  EXPECT_EQ(embedded_test_server()->GetURL("/service_worker/empty.html"),
-            content_browser_client_.opened_url());
+    content::WebContentsAddedObserver new_window_observer;
+    content::DispatchServiceWorkerNotificationClick(wrapper(), scope_url,
+                                                    notification_data);
+    new_window = new_window_observer.GetWebContents();
+  }
 
-  wrapper()->RemoveObserver(&observer);
-}
-
-// Tests a Clients.openWindow() call to a disallowed URL.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerClientsApiBrowserTest,
-                       OpenWindowDisallowedUrl) {
-  content_browser_client_.SetToAllowOpenURL(false);
-
-  ActivatedServiceWorkerObserver observer;
-  wrapper()->AddObserver(&observer);
-
-  // Load a page that registers a service worker.
-  EXPECT_TRUE(NavigateToURL(shell(),
-                            embedded_test_server()->GetURL(
-                                "/service_worker/create_service_worker.html")));
-  EXPECT_EQ("DONE", EvalJs(shell(), "register('client_api_worker.js');"));
-  observer.WaitForActivated();
-
-  // Tell the service worker to call clients.openWindow(). Do it from a
-  // notification click event so it has a user interaction token that allows
-  // popups.
-  int64_t id = observer.version_id();
-  EXPECT_NE(-1, id);
-  DispatchNotificationClickEvent(id);
-
-  // OpenURL() should be called with about:blank instead of the requested URL.
-  content_browser_client_.WaitForOpenURL();
-  EXPECT_EQ(GURL("about:blank"), content_browser_client_.opened_url());
-
-  wrapper()->RemoveObserver(&observer);
+  // Verify that the new window has navigated successfully.
+  content::TestNavigationObserver nav_observer(new_window, 1);
+  nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(target_url, nav_observer.last_navigation_url());
 }
 
 }  // namespace content

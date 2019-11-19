@@ -176,6 +176,7 @@ All changes to this list should go through Blink's feature review process: http:
     font-family
     font-feature-settings
     font-kerning
+    font-optical-sizing
     font-size
     font-size-adjust
     font-stretch
@@ -205,6 +206,10 @@ All changes to this list should go through Blink's feature review process: http:
     inset-block-start
     inset-inline-end
     inset-inline-start
+    intrinsic-block-size
+    intrinsic-height
+    intrinsic-inline-size
+    intrinsic-width
     isolation
     justify-content
     justify-items
@@ -256,9 +261,13 @@ All changes to this list should go through Blink's feature review process: http:
     outline-style
     outline-width
     overflow-anchor
+    overflow-block
+    overflow-inline
     overflow-wrap
     overflow-x
     overflow-y
+    overscroll-behavior-block
+    overscroll-behavior-inline
     overscroll-behavior-x
     overscroll-behavior-y
     padding-block-end
@@ -277,6 +286,7 @@ All changes to this list should go through Blink's feature review process: http:
     position
     quotes
     r
+    render-subtree
     resize
     right
     rotate
@@ -614,6 +624,9 @@ All changes to this list should go through Blink's feature review process: http:
     inset-inline
         inset-inline-end
         inset-inline-start
+    intrinsic-size
+        intrinsic-height
+        intrinsic-width
     list-style
         list-style-image
         list-style-position

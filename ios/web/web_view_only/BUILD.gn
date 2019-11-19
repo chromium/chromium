@@ -1,0 +1,51 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+
+source_set("web_view_only") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [
+    "wk_web_view_configuration_util.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/web/public/web_view_only:web_view_only_api_header",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider",
+  ]
+
+  visibility = [
+    ":*",
+    "//ios/web/public/web_view_only:*",
+  ]
+}
+
+source_set("unittests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+
+  sources = [
+    "wk_web_view_configuration_util_unittests.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/web/public/web_view_only",
+    "//ios/web/test:test_support",
+
+    # Even if this target doesn't depend on WebRTC, this dependency
+    # is needed in order to workaround a dependency issue among
+    # mojom components.
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+
+  visibility = [
+    ":*",
+    "//ios/web/public/web_view_only:*",
+  ]
+}

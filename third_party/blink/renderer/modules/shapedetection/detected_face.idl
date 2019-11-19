@@ -5,14 +5,12 @@
 // https://wicg.github.io/shape-detection-api/#face-detection-api
 
 [
-    Constructor,
     Serializable,
+    Exposed=(Window,Worker),
+    SecureContext,
     RuntimeEnabled=ShapeDetection
 ] interface DetectedFace {
     // TODO(xianglu): Implement any other fields. https://crbug.com/646083
     [SameObject] readonly attribute DOMRectReadOnly boundingBox;
     [SameObject, SaveSameObject] readonly attribute FrozenArray<Landmark> landmarks;
-
-    // TODO(peria): toJSON is not in spec. https://crbug.com/736332
-    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

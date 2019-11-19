@@ -4,17 +4,18 @@
 
 // https://docs.google.com/document/d/1JO8puctCSpW-ZYGU8lF-h4FWRIDQNDVexzHoOQ2iQmY/edit?pli=1#heading=h.pjt9nhs3gu3k
 
+typedef (File or USVString or FormData) ControlValue;
+
 [
-  Exposed=Window,
-  RuntimeEnabled=ElementInternals
+  Exposed=Window
 ]
 interface ElementInternals {
   // Attributes and operations for form-associated custom elements.
-  [RaisesException] void setFormValue(FormDataEntryValue? value, optional FormData entrySource);
+  [RaisesException] void setFormValue(ControlValue? value, optional ControlValue? state);
 
   [RaisesException] readonly attribute HTMLFormElement? form;
 
-  [RaisesException] void setValidity(ValidityStateFlags flags, optional DOMString message);
+  [RaisesException] void setValidity(ValidityStateFlags flags, optional DOMString message, optional Element anchor);
   [RaisesException] readonly attribute boolean willValidate;
   [RaisesException] readonly attribute ValidityState validity;
   [RaisesException, ImplementedAs=ValidationMessageForBinding] readonly attribute DOMString validationMessage;
@@ -22,5 +23,9 @@ interface ElementInternals {
   [RaisesException] boolean reportValidity();
 
   [RaisesException] readonly attribute NodeList labels;
+
+  // Custom state
+  // https://github.com/w3c/webcomponents/blob/gh-pages/proposals/custom-states-and-state-pseudo-class.md
+  [RuntimeEnabled=CustomStatePseudoClass] readonly attribute DOMTokenList states;
 };
 

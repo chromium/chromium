@@ -1,0 +1,29 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
+source_set("unittest_sources") {
+  testonly = true
+
+  sources = [
+    "pup_typemap_unittest.cc",
+    "string16_embedded_nulls_typemap_unittest.cc",
+  ]
+
+  deps = [
+    "//chrome/chrome_cleaner/ipc:ipc_test_util",
+    "//chrome/chrome_cleaner/ipc:mojo_task_runner",
+    "//chrome/chrome_cleaner/mojom:engine_sandbox_interface",
+    "//chrome/chrome_cleaner/mojom:engine_sandbox_test_interface",
+    "//chrome/chrome_cleaner/strings",
+    "//chrome/chrome_cleaner/strings:string_test_helpers",
+    "//chrome/chrome_cleaner/test:test_extensions",
+    "//chrome/chrome_cleaner/test:test_util",
+    "//components/chrome_cleaner/test:test_name_helper",
+    "//mojo/core/embedder:embedder",
+    "//testing/gtest",
+  ]
+}

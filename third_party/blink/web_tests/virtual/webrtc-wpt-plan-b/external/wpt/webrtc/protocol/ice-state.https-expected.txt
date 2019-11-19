@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS PC should enter connected (or completed) state when candidates are sent
+PASS PC should generate offer with a=ice-options:trickle
+FAIL PC should enter disconnected state when a failing candidate is sent promise_test: Unhandled rejection with value: "Unexpected state encountered: failed"
+Harness: the test ran to completion.
+

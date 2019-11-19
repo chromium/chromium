@@ -15,8 +15,7 @@ UniqueNotifier::UniqueNotifier(base::SequencedTaskRunner* task_runner,
                                base::RepeatingClosure closure)
     : task_runner_(task_runner),
       closure_(std::move(closure)),
-      notification_pending_(false),
-      weak_ptr_factory_(this) {}
+      notification_pending_(false) {}
 
 UniqueNotifier::~UniqueNotifier() = default;
 

@@ -7,6 +7,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_observer.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_controller.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -20,7 +21,7 @@ PresentationAvailabilityState::~PresentationAvailabilityState() = default;
 
 void PresentationAvailabilityState::RequestAvailability(
     const Vector<KURL>& urls,
-    std::unique_ptr<PresentationAvailabilityCallbacks> callback) {
+    PresentationAvailabilityCallbacks* callback) {
   auto screen_availability = GetScreenAvailability(urls);
   // Reject Promise if screen availability is unsupported for all URLs.
   if (screen_availability == mojom::blink::ScreenAvailability::DISABLED) {
@@ -28,25 +29,25 @@ void PresentationAvailabilityState::RequestAvailability(
         FROM_HERE,
         WTF::Bind(
             &PresentationAvailabilityCallbacks::RejectAvailabilityNotSupported,
-            std::move(callback)));
+            WrapPersistent(callback)));
     // Do not listen to urls if we reject the promise.
     return;
   }
 
   auto* listener = GetAvailabilityListener(urls);
   if (!listener) {
-    listener = new AvailabilityListener(urls);
+    listener = MakeGarbageCollected<AvailabilityListener>(urls);
     availability_listeners_.emplace_back(listener);
   }
 
   if (screen_availability != mojom::blink::ScreenAvailability::UNKNOWN) {
     Thread::Current()->GetTaskRunner()->PostTask(
         FROM_HERE, WTF::Bind(&PresentationAvailabilityCallbacks::Resolve,
-                             std::move(callback),
+                             WrapPersistent(callback),
                              screen_availability ==
                                  mojom::blink::ScreenAvailability::AVAILABLE));
   } else {
-    listener->availability_callbacks.push_back(std::move(callback));
+    listener->availability_callbacks.push_back(callback);
   }
 
   for (const auto& availability_url : urls)
@@ -58,11 +59,13 @@ void PresentationAvailabilityState::AddObserver(
   const auto& urls = observer->Urls();
   auto* listener = GetAvailabilityListener(urls);
   if (!listener) {
-    listener = new AvailabilityListener(urls);
+    listener = MakeGarbageCollected<AvailabilityListener>(urls);
     availability_listeners_.emplace_back(listener);
   }
 
-  listener->availability_observers.insert(observer);
+  if (listener->availability_observers.Contains(observer))
+    return;
+  listener->availability_observers.push_back(observer);
   for (const auto& availability_url : urls)
     StartListeningToURL(availability_url);
 }
@@ -76,7 +79,10 @@ void PresentationAvailabilityState::RemoveObserver(
     return;
   }
 
-  listener->availability_observers.erase(observer);
+  wtf_size_t slot = listener->availability_observers.Find(observer);
+  if (slot != kNotFound) {
+    listener->availability_observers.EraseAt(slot);
+  }
   for (const auto& availability_url : urls)
     MaybeStopListeningToURL(availability_url);
 
@@ -98,15 +104,18 @@ void PresentationAvailabilityState::UpdateAvailability(
 
   listening_status->last_known_availability = availability;
 
-  std::vector<AvailabilityListener*> modified_listeners;
-  for (auto& listener : availability_listeners_) {
+  HeapVector<Member<AvailabilityListener>> listeners = availability_listeners_;
+  for (auto& listener : listeners) {
     if (!listener->urls.Contains<KURL>(url))
       continue;
 
     auto screen_availability = GetScreenAvailability(listener->urls);
     DCHECK(screen_availability != mojom::blink::ScreenAvailability::UNKNOWN);
-    for (auto* observer : listener->availability_observers)
+    HeapVector<Member<PresentationAvailabilityObserver>> observers =
+        listener->availability_observers;
+    for (auto& observer : observers) {
       observer->AvailabilityChanged(screen_availability);
+    }
 
     if (screen_availability == mojom::blink::ScreenAvailability::DISABLED) {
       for (auto& callback_ptr : listener->availability_callbacks) {
@@ -123,11 +132,12 @@ void PresentationAvailabilityState::UpdateAvailability(
     for (const auto& availability_url : listener->urls)
       MaybeStopListeningToURL(availability_url);
 
-    modified_listeners.push_back(listener.get());
-  }
-
-  for (auto* listener : modified_listeners)
     TryRemoveAvailabilityListener(listener);
+  }
+}
+
+void PresentationAvailabilityState::Trace(blink::Visitor* visitor) {
+  visitor->Trace(availability_listeners_);
 }
 
 void PresentationAvailabilityState::StartListeningToURL(const KURL& url) {
@@ -151,8 +161,8 @@ void PresentationAvailabilityState::MaybeStopListeningToURL(const KURL& url) {
       continue;
 
     // URL is still observed by some availability object.
-    if (!listener->availability_callbacks.empty() ||
-        !listener->availability_observers.empty()) {
+    if (!listener->availability_callbacks.IsEmpty() ||
+        !listener->availability_observers.IsEmpty()) {
       return;
     }
   }
@@ -210,37 +220,30 @@ PresentationAvailabilityState::GetScreenAvailability(
 
 PresentationAvailabilityState::AvailabilityListener*
 PresentationAvailabilityState::GetAvailabilityListener(
-    const Vector<KURL>& urls) const {
-  auto listener_it = std::find_if(
+    const Vector<KURL>& urls) {
+  auto* listener_it = std::find_if(
       availability_listeners_.begin(), availability_listeners_.end(),
-      [&urls](const std::unique_ptr<AvailabilityListener>& x) {
-        return x->urls == urls;
-      });
-  return listener_it == availability_listeners_.end() ? nullptr
-                                                      : listener_it->get();
+      [&urls](const auto& listener) { return listener->urls == urls; });
+  return listener_it == availability_listeners_.end() ? nullptr : *listener_it;
 }
 
 void PresentationAvailabilityState::TryRemoveAvailabilityListener(
     AvailabilityListener* listener) {
   // URL is still observed by some availability object.
-  if (!listener->availability_callbacks.empty() ||
-      !listener->availability_observers.empty()) {
+  if (!listener->availability_callbacks.IsEmpty() ||
+      !listener->availability_observers.IsEmpty()) {
     return;
   }
 
-  auto listener_it = availability_listeners_.begin();
-  while (listener_it != availability_listeners_.end()) {
-    if (listener_it->get() == listener) {
-      availability_listeners_.erase(listener_it);
-      return;
-    }
-    ++listener_it;
+  wtf_size_t slot = availability_listeners_.Find(listener);
+  if (slot != kNotFound) {
+    availability_listeners_.EraseAt(slot);
   }
 }
 
 PresentationAvailabilityState::ListeningStatus*
 PresentationAvailabilityState::GetListeningStatus(const KURL& url) const {
-  auto status_it =
+  auto* status_it =
       std::find_if(availability_listening_status_.begin(),
                    availability_listening_status_.end(),
                    [&url](const std::unique_ptr<ListeningStatus>& status) {
@@ -256,6 +259,12 @@ PresentationAvailabilityState::AvailabilityListener::AvailabilityListener(
 
 PresentationAvailabilityState::AvailabilityListener::~AvailabilityListener() =
     default;
+
+void PresentationAvailabilityState::AvailabilityListener::Trace(
+    blink::Visitor* visitor) {
+  visitor->Trace(availability_callbacks);
+  visitor->Trace(availability_observers);
+}
 
 PresentationAvailabilityState::ListeningStatus::ListeningStatus(
     const KURL& availability_url)

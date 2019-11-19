@@ -19,16 +19,11 @@ namespace sync_preferences {
 class PrefServiceSyncable;
 }
 
-namespace leveldb {
-class LevelDBMojoProxy;
-}
-
 namespace prefs {
 class PersistentPrefStoreClient;
 }
 
 namespace ui {
-class ClipboardClient;
 class HostContextFactoryPrivate;
 }  // namespace ui
 
@@ -76,15 +71,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   // BEGIN ALLOWED USAGE.
   // SynchronousCompositorHost is used for Android webview.
   friend class content::SynchronousCompositorHost;
-  // LevelDBMojoProxy makes same-process sync calls from the DB thread.
-  friend class leveldb::LevelDBMojoProxy;
   // Pref service connection is sync at startup.
   friend class prefs::PersistentPrefStoreClient;
   // Incognito pref service instances are created synchronously.
   friend class sync_preferences::PrefServiceSyncable;
   friend class mojo::ScopedAllowSyncCallForTesting;
-  // For synchronous system clipboard access.
-  friend class ui::ClipboardClient;
   // For destroying the GL context/surface that draw to a platform window before
   // the platform window is destroyed.
   friend class viz::HostFrameSinkManager;

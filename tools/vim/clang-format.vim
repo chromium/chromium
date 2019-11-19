@@ -13,4 +13,4 @@ let s:shortcut = has('mac') ? "<D-I>" : "<C-I>"
 let s:pyf = has("python3") ? ":py3f" : ":pyf"
 
 execute "map" s:shortcut s:pyf s:script . "<CR>"
-execute "imap" s:shortcut s:pyf s:script . "<CR>i"
+execute "imap" s:shortcut "<ESC>" s:pyf s:script . "<CR>i"

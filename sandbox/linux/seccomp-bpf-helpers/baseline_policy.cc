@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "base/clang_coverage_buildflags.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
@@ -127,6 +128,16 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
 #endif  // defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) ||
         // defined(MEMORY_SANITIZER)
 
+#if BUILDFLAG(CLANG_COVERAGE)
+  if (SyscallSets::IsPrctl(sysno)) {
+    return Allow();
+  }
+
+  if (sysno == __NR_ftruncate) {
+    return Allow();
+  }
+#endif
+
   if (IsBaselinePolicyAllowed(sysno)) {
     return Allow();
   }
@@ -158,6 +169,15 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
   // fork() is never used as a system call (clone() is used instead), but we
   // have seen it in fallback code on Android.
   if (sysno == __NR_fork) {
+    return Error(EPERM);
+  }
+#endif
+
+#if defined(__NR_vfork)
+  // vfork() is almost never used as a system call, but some libc versions (e.g.
+  // older versions of bionic) might use it in a posix_spawn() implementation,
+  // which is used by system();
+  if (sysno == __NR_vfork) {
     return Error(EPERM);
   }
 #endif

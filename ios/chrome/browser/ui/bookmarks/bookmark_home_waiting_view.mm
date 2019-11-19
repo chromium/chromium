@@ -25,11 +25,6 @@
 @synthesize activityIndicator = _activityIndicator;
 @synthesize animateOutCompletionBlock = _animateOutCompletionBlock;
 
-- (instancetype)initWithFrame:(CGRect)frame {
-  return [self initWithFrame:frame
-             backgroundColor:bookmark_utils_ios::mainBackgroundColor()];
-}
-
 - (instancetype)initWithFrame:(CGRect)frame backgroundColor:(UIColor*)color {
   self = [super initWithFrame:frame];
   if (self) {

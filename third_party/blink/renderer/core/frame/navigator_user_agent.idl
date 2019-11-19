@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 // https://github.com/WICG/ua-client-hints
+
 [
-    NoInterfaceObject, // Always used on target of 'implements'
     RuntimeEnabled=UserAgentClientHint,
     Exposed=Window
-] interface NavigatorUserAgent {
+] interface mixin NavigatorUserAgent {
   [SecureContext, CallWith=ScriptState] Promise<UserAgent> getUserAgent();
 };

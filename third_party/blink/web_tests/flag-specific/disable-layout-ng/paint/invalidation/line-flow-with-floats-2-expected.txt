@@ -1,0 +1,488 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow P",
+          "rect": [8, 74, 418, 526],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'Alice began to feel very uneasy: to be sure, she had not as\n'",
+          "rect": [14, 520, 407, 80],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'become of\n'",
+          "rect": [14, 520, 407, 80],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'had any dispute with the Queen, but she knew that it might'",
+          "rect": [14, 520, 407, 80],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'happen any minute, \u2018and then,\u2019 thought she, \u2018what would'",
+          "rect": [14, 520, 407, 80],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'me? They\u2019re dreadfully fond of beheading people'",
+          "rect": [14, 520, 407, 80],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'yet'",
+          "rect": [14, 520, 407, 80],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'Alice began to feel very uneasy: to be sure, she had not as\n'",
+          "rect": [14, 521, 407, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'become of\n'",
+          "rect": [14, 521, 407, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'had any dispute with the Queen, but she knew that it might'",
+          "rect": [14, 521, 407, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'happen any minute, \u2018and then,\u2019 thought she, \u2018what would'",
+          "rect": [14, 521, 407, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'me? They\u2019re dreadfully fond of beheading people'",
+          "rect": [14, 521, 407, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'yet'",
+          "rect": [14, 521, 407, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'a ridge or furrow in the way wherever\n'",
+          "rect": [14, 241, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'begin again, it was very'",
+          "rect": [14, 241, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'getting up and walking off to other parts of\n'",
+          "rect": [14, 241, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'hedgehog to, and, as the doubled-up\n'",
+          "rect": [14, 241, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'in the act of crawling away: besides all\n'",
+          "rect": [14, 241, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'provoking to find that the hedgehog had\n'",
+          "rect": [14, 241, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'she wanted to send the'",
+          "rect": [14, 241, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'soldiers were always'",
+          "rect": [14, 241, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'soon came to the conclusion that it was a very\n'",
+          "rect": [14, 241, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'the ground, Alice'",
+          "rect": [14, 241, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'this, there was generally'",
+          "rect": [14, 241, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'unrolled itself, and was'",
+          "rect": [14, 241, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'a ridge or furrow in the way wherever\n'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'begin again, it was very'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'getting up and walking off to other parts of\n'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'hedgehog to, and, as the doubled-up\n'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'in the act of crawling away: besides all\n'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'provoking to find that the hedgehog had\n'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'she wanted to send the'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'soldiers were always'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'soon came to the conclusion that it was a very\n'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'the ground, Alice'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'this, there was generally'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'unrolled itself, and was'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox ' twist itself round and'",
+          "rect": [14, 181, 406, 79],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'could not help bursting out\n'",
+          "rect": [14, 181, 406, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'head down, and was going to\n'",
+          "rect": [14, 181, 406, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'laughing: and when she had got its'",
+          "rect": [14, 181, 406, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'look up in her face, with\n'",
+          "rect": [14, 181, 406, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'such a puzzled expression that she'",
+          "rect": [14, 181, 406, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox ' twist itself round and'",
+          "rect": [14, 180, 406, 79],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'could not help bursting out\n'",
+          "rect": [14, 180, 406, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'head down, and was going to\n'",
+          "rect": [14, 180, 406, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'laughing: and when she had got its'",
+          "rect": [14, 180, 406, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'look up in her face, with\n'",
+          "rect": [14, 180, 406, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'such a puzzled expression that she'",
+          "rect": [14, 180, 406, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'difficult'",
+          "rect": [65, 361, 356, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'game indeed.\n'",
+          "rect": [65, 361, 356, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'difficult'",
+          "rect": [65, 360, 356, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'game indeed.\n'",
+          "rect": [65, 360, 356, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'a very short time '",
+          "rect": [14, 421, 355, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'for the hedgehogs; and in\n'",
+          "rect": [14, 421, 355, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'for turns,\n'",
+          "rect": [14, 421, 355, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'quarrelling all the while, and fighting'",
+          "rect": [14, 421, 355, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'a very short time '",
+          "rect": [14, 420, 355, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'for the hedgehogs; and in\n'",
+          "rect": [14, 420, 355, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'for turns,\n'",
+          "rect": [14, 420, 355, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'quarrelling all the while, and fighting'",
+          "rect": [14, 420, 355, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'The chief difficulty Alice found at first was in managing'",
+          "rect": [14, 80, 354, 120],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'away,\n'",
+          "rect": [14, 80, 354, 120],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'but generally, just as she had got its'",
+          "rect": [14, 80, 354, 120],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'comfortably enough, under her arm, with its legs'",
+          "rect": [14, 80, 354, 120],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'flamingo: she succeeded in getting its body tucked'",
+          "rect": [14, 80, 354, 120],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'hanging down,\n'",
+          "rect": [14, 80, 354, 120],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'hedgehog a blow with its head, it\n'",
+          "rect": [14, 80, 354, 120],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'her\n'",
+          "rect": [14, 80, 354, 120],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'neck nicely straightened\n'",
+          "rect": [14, 80, 354, 120],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'out, and was going to give the'",
+          "rect": [14, 80, 354, 120],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'hedgehog a blow with its head, it\n'",
+          "rect": [14, 80, 354, 119],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'neck nicely straightened\n'",
+          "rect": [14, 80, 354, 119],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'out, and was going to give the'",
+          "rect": [14, 80, 354, 119],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'about once in a minute.\n'",
+          "rect": [14, 461, 354, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'her head!\u2019'",
+          "rect": [14, 461, 354, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'shouting \u2018Off with his head!\u2019 or \u2018Off with\n'",
+          "rect": [14, 461, 354, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'stamping about, and'",
+          "rect": [14, 461, 354, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'was in a furious passion, and went\n'",
+          "rect": [14, 461, 354, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'about once in a minute.\n'",
+          "rect": [14, 460, 354, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'her head!\u2019'",
+          "rect": [14, 460, 354, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'shouting \u2018Off with his head!\u2019 or \u2018Off with\n'",
+          "rect": [14, 460, 354, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'stamping about, and'",
+          "rect": [14, 460, 354, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'was in a furious passion, and went\n'",
+          "rect": [14, 460, 354, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'The players all played at once without waiting'",
+          "rect": [65, 401, 304, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'The players all played at once without waiting'",
+          "rect": [65, 400, 304, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'the Queen'",
+          "rect": [302, 441, 66, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'the Queen'",
+          "rect": [302, 440, 66, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (floating) SPAN id='greenFloat'",
+          "rect": [372, 404, 48, 81],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (floating) SPAN id='greenFloat'",
+          "rect": [372, 403, 48, 81],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (floating) SPAN id='blueFloat'",
+          "rect": [14, 364, 48, 65],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (floating) SPAN id='blueFloat'",
+          "rect": [14, 363, 48, 65],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'would'",
+          "rect": [235, 180, 45, 20],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'would'",
+          "rect": [238, 180, 40, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "VerticalScrollbar",
+          "rect": [485, 0, 15, 600],
+          "reason": "scroll control"
+        }
+      ]
+    }
+  ]
+}
+

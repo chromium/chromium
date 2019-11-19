@@ -37,8 +37,11 @@ interface AssistantSettingsManager {
   // |skip_cloud_enrollment| whether to skip Cloud Enrollment (e.g. for when
   // user explicictly requests voice match re-training).
   StartSpeakerIdEnrollment(bool skip_cloud_enrollment,
-                           SpeakerIdEnrollmentClient client);
+                           pending_remote<SpeakerIdEnrollmentClient> client);
 
   // Stops speaker id enrollment.
   StopSpeakerIdEnrollment() => ();
+
+  // Sync speaker id enrollment status.
+  SyncSpeakerIdEnrollmentStatus();
 };

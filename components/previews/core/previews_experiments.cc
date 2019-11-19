@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "components/previews/core/previews_features.h"
 #include "components/previews/core/previews_switches.h"
+#include "net/base/url_util.h"
 
 namespace previews {
 
@@ -27,6 +28,10 @@ const char kClientSidePreviewsFieldTrial[] = "ClientSidePreviews";
 // Name for the version parameter of a field trial. Version changes will
 // result in older blacklist entries being removed.
 const char kVersion[] = "version";
+
+// Parameter to clarify that the preview for a UserConsistent study should
+// be enabled or not.
+const char kUserConsistentPreviewEnabled[] = "user_consistent_preview_enabled";
 
 // The threshold of EffectiveConnectionType above which previews will not be
 // served.
@@ -92,6 +97,54 @@ net::EffectiveConnectionType GetParamValueAsECTByFeature(
       .value_or(default_value);
 }
 
+// Returns the effective Feature for DeferAllScript (which may be the
+// UserConsistent variant).
+const base::Feature& GetDeferAllScriptPreviewsFeature() {
+  if (base::FeatureList::IsEnabled(features::kEligibleForUserConsistentStudy) &&
+      base::FeatureList::IsEnabled(
+          features::kDeferAllScriptPreviewsUserConsistentStudy)) {
+    return features::kDeferAllScriptPreviewsUserConsistentStudy;
+  }
+
+  return features::kDeferAllScriptPreviews;
+}
+
+// Returns the effective Feature for LitePageServerPreviews (which may be the
+// UserConsistent variant).
+const base::Feature& GetLitePageServerPreviewsFeature() {
+  if (base::FeatureList::IsEnabled(features::kEligibleForUserConsistentStudy) &&
+      base::FeatureList::IsEnabled(
+          features::kLitePageServerPreviewsUserConsistentStudy)) {
+    return features::kLitePageServerPreviewsUserConsistentStudy;
+  }
+
+  return features::kLitePageServerPreviews;
+}
+
+// Returns the effective Feature for ResourceLoadingHints (which may be the
+// UserConsistent variant).
+const base::Feature& GetResourceLoadingHintsFeature() {
+  if (base::FeatureList::IsEnabled(features::kEligibleForUserConsistentStudy) &&
+      base::FeatureList::IsEnabled(
+          features::kResourceLoadingHintsUserConsistentStudy)) {
+    return features::kResourceLoadingHintsUserConsistentStudy;
+  }
+
+  return features::kResourceLoadingHints;
+}
+
+// Returns the effective Feature for NoScriptPreviews (which may be the
+// UserConsistent variant).
+const base::Feature& GetNoScriptPreviewsFeature() {
+  if (base::FeatureList::IsEnabled(features::kEligibleForUserConsistentStudy) &&
+      base::FeatureList::IsEnabled(
+          features::kNoScriptPreviewsUserConsistentStudy)) {
+    return features::kNoScriptPreviewsUserConsistentStudy;
+  }
+
+  return features::kNoScriptPreviews;
+}
+
 }  // namespace
 
 namespace params {
@@ -147,51 +200,35 @@ base::TimeDelta OfflinePreviewFreshnessDuration() {
 
 base::TimeDelta LitePagePreviewsSingleBypassDuration() {
   return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
-      features::kLitePageServerPreviews, "single_bypass_duration_in_seconds",
+      GetLitePageServerPreviewsFeature(), "single_bypass_duration_in_seconds",
       60 * 5));
 }
 
 base::TimeDelta LitePagePreviewsNavigationTimeoutDuration() {
   return base::TimeDelta::FromMilliseconds(
-      base::GetFieldTrialParamByFeatureAsInt(features::kLitePageServerPreviews,
+      base::GetFieldTrialParamByFeatureAsInt(GetLitePageServerPreviewsFeature(),
                                              "navigation_timeout_milliseconds",
                                              30 * 1000));
 }
 
-std::vector<std::string> LitePagePreviewsBlacklistedPathSuffixes() {
-  const std::string csv = base::GetFieldTrialParamValueByFeature(
-      features::kLitePageServerPreviews, "blacklisted_path_suffixes");
-  if (csv == "")
-    return {};
-  return base::SplitString(csv, ",", base::TRIM_WHITESPACE,
-                           base::SPLIT_WANT_NONEMPTY);
-}
-
-int LitePageRedirectPreviewMaxServerBlacklistByteSize() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      features::kLitePageServerPreviews, "max_blacklist_byte_size",
-      250 * 1024 /* 250KB */);
-}
-
-size_t LitePageRedirectPreviewMaxNavigationRestarts() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      features::kLitePageServerPreviews, "max_navigation_restart", 5);
-}
-
 int PreviewServerLoadshedMaxSeconds() {
   return base::GetFieldTrialParamByFeatureAsInt(
-      features::kLitePageServerPreviews, "loadshed_max_seconds",
+      GetLitePageServerPreviewsFeature(), "loadshed_max_seconds",
       5 * 60 /* 5 minutes */);
 }
 
 bool LitePagePreviewsTriggerOnLocalhost() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      features::kLitePageServerPreviews, "trigger_on_localhost", false);
+      GetLitePageServerPreviewsFeature(), "trigger_on_localhost", false);
 }
 
 bool LitePagePreviewsOverridePageHints() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLitePageRedirectOverridesPageHints)) {
+    return true;
+  }
   return base::GetFieldTrialParamByFeatureAsBool(
-      features::kLitePageServerPreviews, "override_pagehints", false);
+      GetLitePageServerPreviewsFeature(), "override_pagehints", false);
 }
 
 GURL GetLitePagePreviewsDomainURL() {
@@ -209,7 +246,7 @@ GURL GetLitePagePreviewsDomainURL() {
   }
 
   std::string variable_host_str = GetFieldTrialParamValueByFeature(
-      features::kLitePageServerPreviews, "previews_host");
+      GetLitePageServerPreviewsFeature(), "previews_host");
   if (!variable_host_str.empty()) {
     GURL variable_host(variable_host_str);
     DCHECK(variable_host.is_valid());
@@ -219,39 +256,141 @@ GURL GetLitePagePreviewsDomainURL() {
   return GURL("https://litepages.googlezip.net/");
 }
 
-std::string LitePageRedirectPreviewExperiment() {
-  return GetFieldTrialParamValueByFeature(features::kLitePageServerPreviews,
-                                          "lite_page_preview_experiment");
-}
-
 bool IsInLitePageRedirectControl() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      features::kLitePageServerPreviews, "control_group", false);
+      GetLitePageServerPreviewsFeature(), "control_group", false);
+}
+
+bool LitePageRedirectPreviewShouldPreconnect() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      GetLitePageServerPreviewsFeature(), "preconnect_on_slow_connections",
+      false);
+}
+
+bool LitePageRedirectPreviewShouldPresolve() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      GetLitePageServerPreviewsFeature(), "preresolve_on_slow_connections",
+      true);
+}
+
+bool LitePageRedirectPreviewIgnoresOptimizationGuideFilter() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+             GetLitePageServerPreviewsFeature(),
+             "ignore_optimization_guide_filtering", false) ||
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kIgnoreLitePageRedirectOptimizationBlacklist);
+}
+
+bool LitePageRedirectOnlyTriggerOnSuccessfulProbe() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      GetLitePageServerPreviewsFeature(), "only_trigger_after_probe_success",
+      true);
+}
+
+GURL LitePageRedirectProbeURL() {
+  GURL url(GetFieldTrialParamValueByFeature(GetLitePageServerPreviewsFeature(),
+                                            "full_probe_url"));
+  if (url.is_valid())
+    return url;
+  return GURL("https://litepages.googlezip.net/e2e_probe");
+}
+
+base::TimeDelta LitePageRedirectPreviewPreresolvePreconnectInterval() {
+  return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+      GetLitePageServerPreviewsFeature(),
+      "preresolveconnect_interval_in_seconds", 60));
+}
+
+net::EffectiveConnectionType
+LitePageRedirectPreviewPreresolvePreconnectECTThreshold() {
+  return GetParamValueAsECTByFeature(GetLitePageServerPreviewsFeature(),
+                                     "preresolveconnect_ect_threshold",
+                                     net::EFFECTIVE_CONNECTION_TYPE_2G);
+}
+
+base::TimeDelta LitePageRedirectPreviewProbeInterval() {
+  return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+      GetLitePageServerPreviewsFeature(), "probe_interval_in_seconds", 30));
+}
+
+bool LitePageRedirectShouldProbeOrigin() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      GetLitePageServerPreviewsFeature(), "should_probe_origin", false);
+}
+
+bool LitePageRedirectTriggerOnAPITransition() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kLitePageServerPreviews, "should_trigger_on_api_transitions",
+      false);
+}
+
+bool LitePageRedirectValidateForwardBackTransition() {
+  // When enabled, validate every forward/back transition to ensure we reuse
+  // the same previews state. For example, if we navigate to A then B, then
+  // click back, we will show a preview for A iff the first navigation to A
+  // showed a preview.
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kLitePageServerPreviews,
+      "should_validate_forward_back_transitions", true);
+}
+
+base::TimeDelta LitePageRedirectPreviewOriginProbeTimeout() {
+  return base::TimeDelta::FromMilliseconds(
+      base::GetFieldTrialParamByFeatureAsInt(GetLitePageServerPreviewsFeature(),
+                                             "origin_probe_timeout_ms",
+                                             30 * 1000));
 }
 
 net::EffectiveConnectionType GetECTThresholdForPreview(
     previews::PreviewsType type) {
   switch (type) {
     case PreviewsType::OFFLINE:
-    case PreviewsType::NOSCRIPT:
-    case PreviewsType::LITE_PAGE_REDIRECT:
-      return GetParamValueAsECT(kClientSidePreviewsFieldTrial,
-                                kEffectiveConnectionTypeThreshold,
-                                net::EFFECTIVE_CONNECTION_TYPE_2G);
-    case PreviewsType::LOFI:
-      return GetParamValueAsECTByFeature(features::kClientLoFi,
+      return GetParamValueAsECTByFeature(features::kOfflinePreviews,
                                          kEffectiveConnectionTypeThreshold,
                                          net::EFFECTIVE_CONNECTION_TYPE_2G);
+    case PreviewsType::NOSCRIPT:
+      return GetParamValueAsECTByFeature(features::kNoScriptPreviews,
+                                         kEffectiveConnectionTypeThreshold,
+                                         net::EFFECTIVE_CONNECTION_TYPE_2G);
+    case PreviewsType::LITE_PAGE_REDIRECT: {
+      // First check ECT threshold in kLitePageServerPreviews and return that
+      // (if it's available).
+      net::EffectiveConnectionType lite_page_ect = GetParamValueAsECTByFeature(
+          features::kLitePageServerPreviews, kEffectiveConnectionTypeThreshold,
+          net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
+      if (lite_page_ect != net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN)
+        return lite_page_ect;
+
+      // Next check ECT threshold in kClientSidePreviewsFieldTrial and return
+      // that (if it's available). In M-78, the ECT threshold for
+      // LITE_PAGE_REDIRECT is determined from kClientSidePreviewsFieldTrial.
+      // So, checking kClientSidePreviewsFieldTrial makes the code backwards
+      // compatible.
+      net::EffectiveConnectionType client_side_ect = GetParamValueAsECT(
+          kClientSidePreviewsFieldTrial, kEffectiveConnectionTypeThreshold,
+          net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
+      if (client_side_ect != net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN)
+        return client_side_ect;
+
+      // Return the default value.
+      return net::EFFECTIVE_CONNECTION_TYPE_2G;
+    }
+
     case PreviewsType::LITE_PAGE:
       NOTREACHED();
       break;
     case PreviewsType::NONE:
     case PreviewsType::UNSPECIFIED:
     case PreviewsType::RESOURCE_LOADING_HINTS:
-      return GetParamValueAsECTByFeature(features::kResourceLoadingHints,
+      return GetParamValueAsECTByFeature(GetResourceLoadingHintsFeature(),
+                                         kEffectiveConnectionTypeThreshold,
+                                         net::EFFECTIVE_CONNECTION_TYPE_2G);
+    case PreviewsType::DEFER_ALL_SCRIPT:
+      return GetParamValueAsECTByFeature(GetDeferAllScriptPreviewsFeature(),
                                          kEffectiveConnectionTypeThreshold,
                                          net::EFFECTIVE_CONNECTION_TYPE_2G);
     case PreviewsType::DEPRECATED_AMP_REDIRECTION:
+    case PreviewsType::DEPRECATED_LOFI:
     case PreviewsType::LAST:
       break;
   }
@@ -262,93 +401,156 @@ net::EffectiveConnectionType GetECTThresholdForPreview(
 net::EffectiveConnectionType GetSessionMaxECTThreshold() {
   return GetParamValueAsECTByFeature(features::kSlowPageTriggering,
                                      kSessionMaxECTTrigger,
-                                     net::EFFECTIVE_CONNECTION_TYPE_2G);
+                                     net::EFFECTIVE_CONNECTION_TYPE_3G);
 }
 
 bool ArePreviewsAllowed() {
   return base::FeatureList::IsEnabled(features::kPreviews);
 }
 
-bool IsPreviewsOmniboxUiEnabled() {
-  return base::FeatureList::IsEnabled(features::kAndroidOmniboxPreviewsBadge);
-}
-
 bool IsOfflinePreviewsEnabled() {
   return base::FeatureList::IsEnabled(features::kOfflinePreviews);
 }
 
-bool IsClientLoFiEnabled() {
-  return base::FeatureList::IsEnabled(features::kClientLoFi);
-}
-
 bool IsNoScriptPreviewsEnabled() {
+  if (base::FeatureList::IsEnabled(features::kEligibleForUserConsistentStudy) &&
+      base::FeatureList::IsEnabled(
+          features::kNoScriptPreviewsUserConsistentStudy)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        features::kNoScriptPreviewsUserConsistentStudy,
+        kUserConsistentPreviewEnabled, false);
+  }
   return base::FeatureList::IsEnabled(features::kNoScriptPreviews);
 }
 
 bool IsResourceLoadingHintsEnabled() {
+  if (base::FeatureList::IsEnabled(features::kEligibleForUserConsistentStudy) &&
+      base::FeatureList::IsEnabled(
+          features::kResourceLoadingHintsUserConsistentStudy)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        features::kResourceLoadingHintsUserConsistentStudy,
+        kUserConsistentPreviewEnabled, false);
+  }
   return base::FeatureList::IsEnabled(features::kResourceLoadingHints);
 }
 
 bool IsLitePageServerPreviewsEnabled() {
+  if (base::FeatureList::IsEnabled(features::kEligibleForUserConsistentStudy) &&
+      base::FeatureList::IsEnabled(
+          features::kLitePageServerPreviewsUserConsistentStudy)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        features::kLitePageServerPreviewsUserConsistentStudy,
+        kUserConsistentPreviewEnabled, false);
+  }
   return base::FeatureList::IsEnabled(features::kLitePageServerPreviews);
+}
+
+bool IsDeferAllScriptPreviewsEnabled() {
+  if (base::FeatureList::IsEnabled(features::kEligibleForUserConsistentStudy) &&
+      base::FeatureList::IsEnabled(
+          features::kDeferAllScriptPreviewsUserConsistentStudy)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        features::kDeferAllScriptPreviewsUserConsistentStudy,
+        kUserConsistentPreviewEnabled, false);
+  }
+  return base::FeatureList::IsEnabled(features::kDeferAllScriptPreviews);
 }
 
 int OfflinePreviewsVersion() {
   return GetParamValueAsInt(kClientSidePreviewsFieldTrial, kVersion, 0);
 }
 
-int ClientLoFiVersion() {
-  return base::GetFieldTrialParamByFeatureAsInt(features::kClientLoFi, kVersion,
-                                                0);
-}
-
 int LitePageServerPreviewsVersion() {
   return base::GetFieldTrialParamByFeatureAsInt(
-      features::kLitePageServerPreviews, kVersion, 0);
+      GetLitePageServerPreviewsFeature(), kVersion, 0);
 }
 
 int NoScriptPreviewsVersion() {
-  return GetFieldTrialParamByFeatureAsInt(features::kNoScriptPreviews, kVersion,
-                                          0);
-}
-
-int ResourceLoadingHintsVersion() {
-  return GetFieldTrialParamByFeatureAsInt(features::kResourceLoadingHints,
+  return GetFieldTrialParamByFeatureAsInt(GetNoScriptPreviewsFeature(),
                                           kVersion, 0);
 }
 
-size_t GetMaxPageHintsInMemoryThreshhold() {
-  return GetFieldTrialParamByFeatureAsInt(features::kResourceLoadingHints,
-                                          "max_page_hints_in_memory_threshold",
-                                          500);
+int ResourceLoadingHintsVersion() {
+  return GetFieldTrialParamByFeatureAsInt(GetResourceLoadingHintsFeature(),
+                                          kVersion, 0);
 }
 
-bool IsOptimizationHintsEnabled() {
-  return base::FeatureList::IsEnabled(features::kOptimizationHints);
+int DeferAllScriptPreviewsVersion() {
+  return GetFieldTrialParamByFeatureAsInt(GetDeferAllScriptPreviewsFeature(),
+                                          kVersion, 0);
 }
 
 int NoScriptPreviewsInflationPercent() {
   // The default value was determined from lab experiment data of whitelisted
   // URLs. It may be improved once there is enough UKM live experiment data
   // via the field trial param.
-  return GetFieldTrialParamByFeatureAsInt(features::kNoScriptPreviews,
+  return GetFieldTrialParamByFeatureAsInt(GetNoScriptPreviewsFeature(),
                                           kNoScriptInflationPercent, 80);
 }
 
 int NoScriptPreviewsInflationBytes() {
-  return GetFieldTrialParamByFeatureAsInt(features::kNoScriptPreviews,
+  return GetFieldTrialParamByFeatureAsInt(GetNoScriptPreviewsFeature(),
                                           kNoScriptInflationBytes, 0);
 }
 
 int ResourceLoadingHintsPreviewsInflationPercent() {
-  return GetFieldTrialParamByFeatureAsInt(features::kResourceLoadingHints,
+  return GetFieldTrialParamByFeatureAsInt(GetResourceLoadingHintsFeature(),
                                           kResourceLoadingHintsInflationPercent,
                                           20);
 }
 
 int ResourceLoadingHintsPreviewsInflationBytes() {
   return GetFieldTrialParamByFeatureAsInt(
-      features::kResourceLoadingHints, kResourceLoadingHintsInflationBytes, 0);
+      GetResourceLoadingHintsFeature(), kResourceLoadingHintsInflationBytes, 0);
+}
+
+size_t OfflinePreviewsHelperMaxPrefSize() {
+  return GetFieldTrialParamByFeatureAsInt(
+      features::kOfflinePreviewsFalsePositivePrevention, "max_pref_entries",
+      100);
+}
+
+bool ShouldOverrideNavigationCoinFlipToHoldback() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kCoinFlipHoldback, "force_coin_flip_always_holdback", false);
+}
+
+bool ShouldOverrideNavigationCoinFlipToAllowed() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kCoinFlipHoldback, "force_coin_flip_always_allow", false);
+}
+
+bool ShouldExcludeMediaSuffix(const GURL& url) {
+  if (!base::FeatureList::IsEnabled(features::kExcludedMediaSuffixes))
+    return false;
+
+  std::vector<std::string> suffixes = {
+      ".apk", ".avi",  ".gif", ".gifv", ".jpeg", ".jpg", ".mp3",
+      ".mp4", ".mpeg", ".pdf", ".png",  ".webm", ".webp"};
+
+  std::string csv = base::GetFieldTrialParamValueByFeature(
+      features::kExcludedMediaSuffixes, "excluded_path_suffixes");
+  if (csv != "") {
+    suffixes = base::SplitString(csv, ",", base::TRIM_WHITESPACE,
+                                 base::SPLIT_WANT_NONEMPTY);
+  }
+
+  for (const std::string& suffix : suffixes) {
+    if (base::EndsWith(url.path(), suffix,
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool DetectDeferRedirectLoopsUsingCache() {
+  if (!IsDeferAllScriptPreviewsEnabled())
+    return false;
+
+  return GetFieldTrialParamByFeatureAsBool(GetDeferAllScriptPreviewsFeature(),
+                                           "detect_redirect_loop_using_cache",
+                                           true);
 }
 
 }  // namespace params
@@ -361,8 +563,6 @@ std::string GetStringNameForType(PreviewsType type) {
       return "None";
     case PreviewsType::OFFLINE:
       return "Offline";
-    case PreviewsType::LOFI:
-      return "LoFi";
     case PreviewsType::LITE_PAGE:
       return "LitePage";
     case PreviewsType::LITE_PAGE_REDIRECT:
@@ -373,7 +573,10 @@ std::string GetStringNameForType(PreviewsType type) {
       return "Unspecified";
     case PreviewsType::RESOURCE_LOADING_HINTS:
       return "ResourceLoadingHints";
+    case PreviewsType::DEFER_ALL_SCRIPT:
+      return "DeferAllScript";
     case PreviewsType::DEPRECATED_AMP_REDIRECTION:
+    case PreviewsType::DEPRECATED_LOFI:
     case PreviewsType::LAST:
       break;
   }

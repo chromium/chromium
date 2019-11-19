@@ -1,23 +1,33 @@
 include_rules = [
   "+cc/base/switches.h",
+  "+chromecast/activity",
   "+chromecast/common",
+  "+chromecast/common/mojom",
   "+chromecast/graphics",
   "+chromecast/app/grit/chromecast_settings.h",
   "+chromecast/app/resources/grit/shell_resources.h",
   "+chromecast/external_mojo",
   "+chromecast/internal/shell/browser",
   "+chromecast/media",
+  "+chromecast/metrics",
   "+chromecast/net",
   "+chromecast/service",
+  "+chromecast/ui",
   "+components/cdm/browser",
   "+components/crash",
   "+components/download/public/common",
+  "+components/heap_profiling",
   "+components/keyed_service",
   "+components/network_hints/browser",
   "+components/network_session_configurator/common",
+  "+components/policy/core/browser",
   "+components/prefs",
   "+components/pref_registry",
   "+components/proxy_config",
+  "+components/safe_search_api",
+  "+components/services/heap_profiling/heap_profiling_service.h",
+  "+components/services/heap_profiling/public/mojom",
+  "+components/services/heap_profiling/public/cpp/settings.h",
   "+components/storage_monitor",
   "+components/user_prefs",
   "+components/variations/net",
@@ -44,7 +54,12 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/service_manager/public",
   "+services/service_manager/embedder",
+  "+storage/browser/quota/quota_settings.h",
   "+third_party/blink/public/common",
+  "+third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h",
+  "+third_party/blink/public/mojom/messaging",
+  "+third_party/blink/public/mojom/speech/speech_synthesis.mojom-forward.h",
+  "+third_party/skia/include/core/SkColor.h",
   "+ui/accessibility",
   "+ui/aura",
   "+ui/base",
@@ -67,6 +82,11 @@ include_rules = [
   # TODO(halliwell): Need to re-work this dependency otherwise Cast can't run
   # with Viz out of process.
   "+components/viz/service/display/overlay_strategy_underlay_cast.h",
+  # TODO(guohuideng): 1. When Display Compositor is fully moved to GPU process,
+  # remove the above dependency on "overlay_strategy_underlay_cast.h".
+  # 2. Separate SetGeometry from VideoPlaneController, and get rid of the
+  # dependency on.
+  "+chromecast/media/service/cast_renderer.h",
 
   # No inclusion of WebKit from the browser, other than the ones in
   # WebKit/public/{mojom,common}, or the ones that are strictly enum/POD,

@@ -15,33 +15,20 @@
         android:layout_height="wrap_content"
         style="@style/AlertDialogContent">
 
-        <TextView
-            android:id="@+id/subtitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <org.chromium.ui.widget.ChromeImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_drive_file_24dp"
-                app:tint="@color/default_icon_color"
-                style="@style/ListItemStartIcon" />
-
-            <org.chromium.chrome.browser.widget.AlertDialogEditText
+            <org.chromium.chrome.browser.ui.widget.text.AlertDialogEditText
                 android:id="@+id/file_name"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
+                android:cursorVisible="true"
+                android:layout_marginStart="-4dp"
+                android:layout_marginEnd="-4dp"
                 android:singleLine="true" />
 
-        </LinearLayout>
-
+            <TextView
+                android:id="@+id/error_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
     </LinearLayout>
 
 </org.chromium.chrome.browser.download.home.rename.RenameDialogCustomView>

@@ -2,32 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
-#import <UIKit/UIKit.h>
-#import <XCTest/XCTest.h>
-
 #include "base/bind.h"
 #include "base/ios/ios_util.h"
+#include "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
-#import "ios/chrome/browser/ui/dialogs/dialog_presenter.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/dialogs/dialog_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #include "ios/testing/earl_grey/disabled_test_macros.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
-#import "ios/web/public/test/earl_grey/web_view_matchers.h"
 #include "ios/web/public/test/element_selector.h"
-#include "ios/web/public/test/url_test_util.h"
-#import "ios/web/public/web_state/web_state.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -42,126 +36,101 @@
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::OKButton;
 using chrome_test_util::SettingsDoneButton;
+using chrome_test_util::WebViewMatcher;
+
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
-using web::test::ElementSelector;
 
 namespace {
 
-// Enum specifying different types of JavaScript alerts:
-//   - JavaScriptAlertType::ALERT - Dialog with only one OK button.
-//   - JavaScriptAlertType::CONFIRMATION - Dialog with OK and Cancel button.
-//   - JavaScriptAlertType::PROMPT - Dialog with OK button, cancel button, and
-//     a text field.
-enum class JavaScriptAlertType : NSUInteger { ALERT, CONFIRMATION, PROMPT };
-
-// Script to inject that will show an alert.  The document's body will be reset
-// to |kAlertResultBody| after the dialog is dismissed.
+// Body script for test page that shows an alert with kAlertMessage and returns
+// kAlertResult.
+const char kAlertURLPath[] = "/alert";
 const char kAlertMessage[] = "This is a JavaScript alert.";
-const char kAlertResultBody[] = "JAVASCRIPT ALERT WAS DISMISSED";
-const char kJavaScriptAlertTestScriptFormat[] =
-    "(function(){ "
-    "  alert(\"%@\");"
-    "  document.body.innerHTML = \"%@\";"
-    "})();";
-NSString* GetJavaScriptAlertTestScript() {
-  return [NSString stringWithFormat:@(kJavaScriptAlertTestScriptFormat),
-                                    @(kAlertMessage), @(kAlertResultBody)];
+const char kAlertResult[] = "JAVASCRIPT ALERT WAS DISMISSED";
+const char kAlertScriptBodyFormat[] = "alert(\"%s\");"
+                                      "return \"%s\";";
+std::string GetAlertScriptBody() {
+  return base::StringPrintf(kAlertScriptBodyFormat, kAlertMessage,
+                            kAlertResult);
 }
 
-// Script to inject that will show a confirmation dialog.  The document's body
-// will be reset to |kConfirmationResultBodyOK| or
-// |kConfirmationResultBodyCancelled| depending on whether the OK or Cancel
-// button was tapped.
+// Body script for test page that shows a confirmation with kConfirmationMessage
+// and returns kConfirmationResultOK or kConfirmationResultCancelled, depending
+// on whether the OK or Cancel button was tapped.
+const char kConfirmationURLPath[] = "/confirm";
 const char kConfirmationMessage[] = "This is a JavaScript confirmation.";
-const char kConfirmationResultBodyOK[] = "Okay";
-const char kConfirmationResultBodyCancelled[] = "Cancelled";
-const char kJavaScriptConfirmationScriptFormat[] =
-    "(function(){ "
-    "  if (confirm(\"%@\") == true) {"
-    "    document.body.innerHTML = \"%@\";"
-    "  } else {"
-    "    document.body.innerHTML = \"%@\";"
-    "  }"
-    "})();";
-NSString* GetJavaScriptConfirmationTestScript() {
-  return [NSString stringWithFormat:@(kJavaScriptConfirmationScriptFormat),
-                                    @(kConfirmationMessage),
-                                    @(kConfirmationResultBodyOK),
-                                    @(kConfirmationResultBodyCancelled)];
+const char kConfirmationResultOK[] = "Okay";
+const char kConfirmationResultCancelled[] = "Cancelled";
+const char kConfirmationScriptBodyFormat[] = "if (confirm(\"%s\") == true) {"
+                                             "  return \"%s\";"
+                                             "} else {"
+                                             "  return \"%s\";"
+                                             "}";
+std::string GetConfirmationScriptBody() {
+  return base::StringPrintf(kConfirmationScriptBodyFormat, kConfirmationMessage,
+                            kConfirmationResultOK,
+                            kConfirmationResultCancelled);
 }
 
-// Script to inject that will show a prompt dialog.  The document's body will be
-// reset to |kPromptResultBodyCancelled| or |kPromptTestUserInput| depending on
+// Body script for test page that shows a prompt with kPromptMessage
+// and returns kPromptTestUserInput or kPromptResultCancelled, depending on
 // whether the OK or Cancel button was tapped.
+const char kPromptURLPath[] = "/prompt";
 const char kPromptMessage[] = "This is a JavaScript prompt.";
-const char kPromptResultBodyCancelled[] = "Cancelled";
 const char kPromptTestUserInput[] = "test";
-const char kJavaScriptPromptTestScriptFormat[] =
-    "(function(){ "
-    "  var input = prompt(\"%@\");"
-    "  if (input != null) {"
-    "    document.body.innerHTML = input;"
-    "  } else {"
-    "    document.body.innerHTML = \"%@\";"
-    "  }"
-    "})();";
-NSString* GetJavaScriptPromptTestScript() {
-  return [NSString stringWithFormat:@(kJavaScriptPromptTestScriptFormat),
-                                    @(kPromptMessage),
-                                    @(kPromptResultBodyCancelled)];
+const char kPromptResultCancelled[] = "Cancelled";
+const char kPromptTestScriptBodyFormat[] = "var input = prompt(\"%s\");"
+                                           "if (input != null) {"
+                                           "  return input;"
+                                           "} else {"
+                                           "  return \"%s\";"
+                                           "}";
+std::string GetPromptScriptBody() {
+  return base::StringPrintf(kPromptTestScriptBodyFormat, kPromptMessage,
+                            kPromptResultCancelled);
 }
 
 // Script to inject that will show a JavaScript alert in a loop 20 times, then
-// reset the document's HTML to |kAlertLoopFinishedText|.
+// returns kAlertLoopFinishedText.
+const char kAlertLoopURLPath[] = "/loop";
 const char kAlertLoopFinishedText[] = "Loop Finished";
-const char kJavaScriptAlertLoopScriptFormat[] =
-    "(function(){ "
-    "  for (i = 0; i < 20; ++i) {"
-    "    alert(\"ALERT TEXT\");"
-    "  }"
-    "  document.body.innerHTML = \"%@\";"
-    "})();";
-NSString* GetJavaScriptAlertLoopScript() {
-  return [NSString stringWithFormat:@(kJavaScriptAlertLoopScriptFormat),
-                                    @(kAlertLoopFinishedText)];
-}
-
-// Returns the message for a JavaScript alert with |type|.
-NSString* GetMessageForAlertWithType(JavaScriptAlertType type) {
-  switch (type) {
-    case JavaScriptAlertType::ALERT:
-      return @(kAlertMessage);
-    case JavaScriptAlertType::CONFIRMATION:
-      return @(kConfirmationMessage);
-    case JavaScriptAlertType::PROMPT:
-      return @(kPromptMessage);
-  }
-  GREYFail(@"JavascriptAlertType not recognized.");
-  return nil;
-}
-
-// Returns the script to show a JavaScript alert with |type|.
-NSString* GetScriptForAlertWithType(JavaScriptAlertType type) {
-  switch (type) {
-    case JavaScriptAlertType::ALERT:
-      return GetJavaScriptAlertTestScript();
-    case JavaScriptAlertType::CONFIRMATION:
-      return GetJavaScriptConfirmationTestScript();
-    case JavaScriptAlertType::PROMPT:
-      return GetJavaScriptPromptTestScript();
-  }
-  GREYFail(@"JavascriptAlertType not recognized.");
-  return nil;
+const char kAlertLoopScriptBodyFormat[] = "for (i = 0; i < 20; ++i) {"
+                                          "  alert(\"ALERT TEXT\");"
+                                          "}"
+                                          "return \"%s\";";
+std::string GetAlertLoopScriptBody() {
+  return base::StringPrintf(kAlertLoopScriptBodyFormat, kAlertLoopFinishedText);
 }
 
 // HTTP server constants.
 
-// The URL path for an empty page in which to execute JavaScript that shows
-// alerts, confirmations, and prompts.
-const char kEmptyPageURLPath[] = "/empty";
-const char kEmptyPageContents[] = "<!DOCTYPE html><html><body></body></html>";
+// The URL path for a test page which has a link to show JavaScript dialogs. The
+// page calls the provided script with a timeout so that the JavaScript used to
+// simulate the link tap can return while the dialogs are displayed.
+const char kTestPageLinkID[] = "show-dialog";
+const char kTestPageContentsFormat[] =
+    "<!DOCTYPE html><html>"
+    "  <body>"
+    "    <script> function dialogScript() { %s } </script>"
+    "    <script>"
+    "      function runDialogScript() {"
+    "        var result = dialogScript();"
+    "        document.getElementById(\"dialog-result\").innerHTML = result;"
+    "      }"
+    "    </script>"
+    "    <a onclick=\"setTimeout(runDialogScript, 0)\" id=\"%s\" "
+    "       href=\"javascript:void(0);\">"
+    "      Show Dialog."
+    "    </a>"
+    "    <p id=\"dialog-result\"></p>"
+    "  </body>"
+    "</html>";
+std::string GetTestPageContents(std::string script_body) {
+  return base::StringPrintf(kTestPageContentsFormat, script_body.c_str(),
+                            kTestPageLinkID);
+}
 // The URL path for a page that shows an alert onload.
 const char kOnLoadURLPath[] = "/onload";
 const char kOnLoadContents[] =
@@ -173,9 +142,8 @@ const char kLinkPageContentsFormat[] =
 const char kLinkPageLinkText[] = "LINK TO ONLOAD ALERT PAGE";
 const char kLinkID[] = "link-id";
 std::string GetLinkPageContents(const GURL& on_load_url) {
-  return base::SysNSStringToUTF8([NSString
-      stringWithFormat:@(kLinkPageContentsFormat), kLinkID,
-                       on_load_url.spec().c_str(), kLinkPageLinkText]);
+  return base::StringPrintf(kLinkPageContentsFormat, kLinkID,
+                            on_load_url.spec().c_str(), kLinkPageLinkText);
 }
 
 // Helper function that returns a text/html HttpResponse using |content|.
@@ -188,10 +156,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetHttpResponseWithContent(
   return std::move(http_response);
 }
 
-// net::EmbeddedTestServer handler for kEmptyPageURLPath.
-std::unique_ptr<net::test_server::HttpResponse> LoadEmptyPage(
+// net::EmbeddedTestServer handler for the test page.
+std::unique_ptr<net::test_server::HttpResponse> LoadTestPage(
+    std::string script_body,
     const net::test_server::HttpRequest& request) {
-  return GetHttpResponseWithContent(kEmptyPageContents);
+  return GetHttpResponseWithContent(GetTestPageContents(script_body));
 }
 // net::EmbeddedTestServer handler for kOnLoadURLPath.
 std::unique_ptr<net::test_server::HttpResponse> LoadPageWithOnLoadAlert(
@@ -206,86 +175,40 @@ std::unique_ptr<net::test_server::HttpResponse> LoadPageWithLinkToOnLoadPage(
   return GetHttpResponseWithContent(GetLinkPageContents(on_load_page_url));
 }
 
-// Display the javascript alert.
-void DisplayJavaScriptAlert(JavaScriptAlertType type) {
-  // Get the WebController.
-  web::WebState* webState = chrome_test_util::GetCurrentWebState();
-
-  // Evaluate JavaScript.
-  NSString* script = GetScriptForAlertWithType(type);
-  webState->ExecuteJavaScript(base::SysNSStringToUTF16(script));
-}
-
-// Assert that the javascript alert has been presented.
-void WaitForAlertToBeShown(NSString* alert_label) {
-  // Wait for the alert to be shown by trying to get the alert title.
+// Assert that an alert with |alert_text| has been shown or hidden.
+void WaitForAlertWithText(NSString* alert_text, bool visible) {
   ConditionBlock condition = ^{
     NSError* error = nil;
-    id<GREYMatcher> titleLabel =
-        chrome_test_util::StaticTextWithAccessibilityLabel(alert_label);
-    [[EarlGrey selectElementWithMatcher:titleLabel]
-        assertWithMatcher:grey_notNil()
+    id<GREYMatcher> text_matcher =
+        chrome_test_util::StaticTextWithAccessibilityLabel(alert_text);
+    [[EarlGrey selectElementWithMatcher:text_matcher]
+        assertWithMatcher:visible ? grey_notNil() : grey_nil()
                     error:&error];
     return !error;
   };
+  NSString* error_text_format = visible
+                                    ? @"Dialog with text was not shown: %@"
+                                    : @"Dialog with text was not hidden: %@";
   GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
-             @"Alert with title was not present: %@", alert_label);
+             error_text_format, alert_text);
 }
 
-// Waits for a JavaScript dialog to be shown from the page at |url|.
-void WaitForJavaScriptDialogToBeShown(const GURL& url) {
+// Waits for a JavaScript dialog from |url| to be shown or hidden.
+void WaitForJavaScriptDialog(const GURL& url, bool visible) {
   base::string16 URLString = url_formatter::FormatUrlForSecurityDisplay(
       url, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
   NSString* expectedTitle =
       l10n_util::GetNSStringF(IDS_JAVASCRIPT_MESSAGEBOX_TITLE, URLString);
-  WaitForAlertToBeShown(expectedTitle);
-}
-
-// Injects JavaScript to show a dialog with |type| from the page at |url|,
-// verifying that it was properly displayed.
-void ShowJavaScriptDialog(JavaScriptAlertType type, const GURL& url) {
-  DisplayJavaScriptAlert(type);
-
-  WaitForJavaScriptDialogToBeShown(url);
-
-  // Check the message of the alert.
-  id<GREYMatcher> messageLabel =
-      chrome_test_util::StaticTextWithAccessibilityLabel(
-          GetMessageForAlertWithType(type));
-  [[EarlGrey selectElementWithMatcher:messageLabel]
-      assertWithMatcher:grey_notNil()];
-}
-
-// Assert no javascript alert is visible over the page at |url|.
-void AssertJavaScriptAlertNotPresent(const GURL& url) {
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    base::string16 URLString = url_formatter::FormatUrlForSecurityDisplay(
-        url, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-    NSString* expectedTitle =
-        l10n_util::GetNSStringF(IDS_JAVASCRIPT_MESSAGEBOX_TITLE, URLString);
-
-    id<GREYMatcher> titleLabel =
-        chrome_test_util::StaticTextWithAccessibilityLabel(expectedTitle);
-    [[EarlGrey selectElementWithMatcher:titleLabel] assertWithMatcher:grey_nil()
-                                                                error:&error];
-    return !error;
-  };
-
-  GREYAssert(
-      WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, condition),
-      @"Javascript alert title was still present");
+  WaitForAlertWithText(expectedTitle, visible);
 }
 
 // Types |input| in the prompt.
 void TypeInPrompt(NSString* input) {
-  [[[EarlGrey selectElementWithMatcher:
-                  grey_accessibilityID(
-                      kJavaScriptDialogTextFieldAccessibiltyIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()] performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kJavaScriptDialogTextFieldAccessibiltyIdentifier)]
+  id<GREYMatcher> text_field_matcher = grey_allOf(
+      grey_kindOfClass([UITextField class]),
+      grey_accessibilityID(kJavaScriptDialogTextFieldAccessibiltyIdentifier),
+      nil);
+  [[EarlGrey selectElementWithMatcher:text_field_matcher]
       performAction:grey_typeText(input)];
 }
 
@@ -305,44 +228,9 @@ void TapSuppressDialogsButton() {
 }  // namespace
 
 @interface JavaScriptDialogTestCase : ChromeTestCase
-
-// Getters for test page URLs.
-@property(nonatomic, readonly) GURL emptyPageURL;
-@property(nonatomic, readonly) GURL onLoadPageURL;
-@property(nonatomic, readonly) GURL linkPageURL;
-
-// Loads the blank test page at kJavaScriptTestURL.
-- (void)loadBlankTestPage;
-
-// Loads a page with a link to kOnLoadAlertURL.
-- (void)loadPageWithLink;
-
 @end
 
 @implementation JavaScriptDialogTestCase
-@synthesize emptyPageURL = _emptyPageURL;
-@synthesize onLoadPageURL = _onLoadPageURL;
-@synthesize linkPageURL = _linkPageURL;
-
-#pragma mark - Accessors
-
-- (GURL)emptyPageURL {
-  if (_emptyPageURL.is_empty())
-    _emptyPageURL = self.testServer->GetURL(kEmptyPageURLPath);
-  return _emptyPageURL;
-}
-
-- (GURL)onLoadPageURL {
-  if (_onLoadPageURL.is_empty())
-    _onLoadPageURL = self.testServer->GetURL(kOnLoadURLPath);
-  return _onLoadPageURL;
-}
-
-- (GURL)linkPageURL {
-  if (_linkPageURL.is_empty())
-    _linkPageURL = self.testServer->GetURL(kLinkPageURLPath);
-  return _linkPageURL;
-}
 
 #pragma mark - ChromeTestCase
 
@@ -350,8 +238,17 @@ void TapSuppressDialogsButton() {
   [super setUp];
 
   self.testServer->RegisterDefaultHandler(base::BindRepeating(
-      net::test_server::HandlePrefixedRequest, kEmptyPageURLPath,
-      base::BindRepeating(&LoadEmptyPage)));
+      net::test_server::HandlePrefixedRequest, kAlertURLPath,
+      base::BindRepeating(&LoadTestPage, GetAlertScriptBody())));
+  self.testServer->RegisterDefaultHandler(base::BindRepeating(
+      net::test_server::HandlePrefixedRequest, kConfirmationURLPath,
+      base::BindRepeating(&LoadTestPage, GetConfirmationScriptBody())));
+  self.testServer->RegisterDefaultHandler(base::BindRepeating(
+      net::test_server::HandlePrefixedRequest, kPromptURLPath,
+      base::BindRepeating(&LoadTestPage, GetPromptScriptBody())));
+  self.testServer->RegisterDefaultHandler(base::BindRepeating(
+      net::test_server::HandlePrefixedRequest, kAlertLoopURLPath,
+      base::BindRepeating(&LoadTestPage, GetAlertLoopScriptBody())));
   self.testServer->RegisterDefaultHandler(base::BindRepeating(
       net::test_server::HandlePrefixedRequest, kOnLoadURLPath,
       base::BindRepeating(&LoadPageWithOnLoadAlert)));
@@ -374,11 +271,6 @@ void TapSuppressDialogsButton() {
       chrome_test_util::ButtonWithAccessibilityLabelId(IDS_OK);
   [[EarlGrey selectElementWithMatcher:OKButton] performAction:grey_tap()
                                                         error:&errorOK];
-  // Reenable synchronization in case it was disabled by a test.  See comments
-  // in testShowJavaScriptAfterNewTabAnimation for details.
-  [[GREYConfiguration sharedInstance]
-          setValue:@(YES)
-      forConfigKey:kGREYConfigKeySynchronizationEnabled];
 
   if (!errorOK || !errorCancel) {
     GREYFail(@"There are still alerts");
@@ -386,58 +278,82 @@ void TapSuppressDialogsButton() {
   [super tearDown];
 }
 
-#pragma mark - Utility
-
-- (void)loadBlankTestPage {
-  [ChromeEarlGrey loadURL:self.emptyPageURL];
-  [ChromeEarlGrey waitForWebViewContainingText:std::string()];
-}
-
-- (void)loadPageWithLink {
-  [ChromeEarlGrey loadURL:self.linkPageURL];
-  [ChromeEarlGrey waitForWebViewContainingText:kLinkPageLinkText];
-}
-
 #pragma mark - Tests
 
 // Tests that an alert is shown, and that the completion block is called.
 - (void)testShowJavaScriptAlert {
-  // Load the blank test page and show an alert.
-  [self loadBlankTestPage];
-  ShowJavaScriptDialog(JavaScriptAlertType::ALERT, self.emptyPageURL);
+  // Load the alert test page and tap on the link.
+  const GURL kURL = self.testServer->GetURL(kAlertURLPath);
+  [ChromeEarlGrey loadURL:kURL];
+  [ChromeEarlGrey waitForWebStateContainingElement:
+                      [ElementSelector selectorWithElementID:kTestPageLinkID]];
+  [ChromeEarlGrey tapWebStateElementWithID:@(kTestPageLinkID)];
+  WaitForJavaScriptDialog(kURL, /*visible=*/true);
 
+  // Check the message of the alert.
+  id<GREYMatcher> messageLabel =
+      chrome_test_util::StaticTextWithAccessibilityLabel(@(kAlertMessage));
+  [[EarlGrey selectElementWithMatcher:messageLabel]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap the OK button to close the alert.
   [[EarlGrey selectElementWithMatcher:OKButton()] performAction:grey_tap()];
+  WaitForJavaScriptDialog(kURL, /*visible=*/false);
 
-  // Wait for the html body to be reset to the correct value.
-  [ChromeEarlGrey waitForWebViewContainingText:kAlertResultBody];
+  // Wait for the expected text to be added to the test page.
+  [ChromeEarlGrey waitForWebStateContainingText:kAlertResult];
 }
 
 // Tests that a confirmation dialog is shown, and that the completion block is
 // called with the correct value when the OK buton is tapped.
 - (void)testShowJavaScriptConfirmationOK {
-  // Load the blank test page and show a confirmation dialog.
-  [self loadBlankTestPage];
-  ShowJavaScriptDialog(JavaScriptAlertType::CONFIRMATION, self.emptyPageURL);
+  // Load the confirmation test page and tap on the link.
+  const GURL kURL = self.testServer->GetURL(kConfirmationURLPath);
+  [ChromeEarlGrey loadURL:kURL];
+  [ChromeEarlGrey waitForWebStateContainingElement:
+                      [ElementSelector selectorWithElementID:kTestPageLinkID]];
+  [ChromeEarlGrey tapWebStateElementWithID:@(kTestPageLinkID)];
+  WaitForJavaScriptDialog(kURL, /*visible=*/true);
 
+  // Check the message of the dialog.
+  id<GREYMatcher> messageLabel =
+      chrome_test_util::StaticTextWithAccessibilityLabel(
+          @(kConfirmationMessage));
+  [[EarlGrey selectElementWithMatcher:messageLabel]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap the OK button to close the confirmation.
   [[EarlGrey selectElementWithMatcher:OKButton()] performAction:grey_tap()];
+  WaitForJavaScriptDialog(kURL, /*visible=*/false);
 
-  // Wait for the html body to be reset to the correct value.
-  [ChromeEarlGrey waitForWebViewContainingText:kConfirmationResultBodyOK];
+  // Wait for the expected text to be added to the test page.
+  [ChromeEarlGrey waitForWebStateContainingText:kConfirmationResultOK];
 }
 
 // Tests that a confirmation dialog is shown, and that the completion block is
 // called with the correct value when the Cancel buton is tapped.
 - (void)testShowJavaScriptConfirmationCancelled {
-  // Load the blank test page and show a confirmation dialog.
-  [self loadBlankTestPage];
-  ShowJavaScriptDialog(JavaScriptAlertType::CONFIRMATION, self.emptyPageURL);
+  // Load the confirmation test page and tap on the link.
+  const GURL kURL = self.testServer->GetURL(kConfirmationURLPath);
+  [ChromeEarlGrey loadURL:kURL];
+  [ChromeEarlGrey waitForWebStateContainingElement:
+                      [ElementSelector selectorWithElementID:kTestPageLinkID]];
+  [ChromeEarlGrey tapWebStateElementWithID:@(kTestPageLinkID)];
+  WaitForJavaScriptDialog(kURL, /*visible=*/true);
 
-  // Tap the Cancel button.
-  TapCancel();
+  // Check the message of the dialog.
+  id<GREYMatcher> messageLabel =
+      chrome_test_util::StaticTextWithAccessibilityLabel(
+          @(kConfirmationMessage));
+  [[EarlGrey selectElementWithMatcher:messageLabel]
+      assertWithMatcher:grey_notNil()];
 
-  // Wait for the html body to be reset to the correct value.
-  [ChromeEarlGrey
-      waitForWebViewContainingText:kConfirmationResultBodyCancelled];
+  // Tap the OK button to close the confirmation.
+  [[EarlGrey selectElementWithMatcher:OKButton()] performAction:grey_tap()];
+  WaitForJavaScriptDialog(kURL, /*visible=*/false);
+
+  // Wait for the expected text to be added to the test page.
+  [ChromeEarlGrey waitForWebStateContainingText:kConfirmationResultCancelled];
 }
 
 // Tests that a prompt dialog is shown, and that the completion block is called
@@ -445,21 +361,33 @@ void TapSuppressDialogsButton() {
 - (void)testShowJavaScriptPromptOK {
   // TODO(crbug.com/753098): Re-enable this test on iPad once grey_typeText
   // works.
-  if (IsIPadIdiom()) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
   }
 
-  // Load the blank test page and show a prompt dialog.
-  [self loadBlankTestPage];
-  ShowJavaScriptDialog(JavaScriptAlertType::PROMPT, self.emptyPageURL);
+  // Load the prompt test page and tap on the link.
+  const GURL kURL = self.testServer->GetURL(kPromptURLPath);
+  [ChromeEarlGrey loadURL:kURL];
+  [ChromeEarlGrey waitForWebStateContainingElement:
+                      [ElementSelector selectorWithElementID:kTestPageLinkID]];
+  [ChromeEarlGrey tapWebStateElementWithID:@(kTestPageLinkID)];
+  WaitForJavaScriptDialog(kURL, /*visible=*/true);
+
+  // Check the message of the dialog.
+  id<GREYMatcher> messageLabel =
+      chrome_test_util::StaticTextWithAccessibilityLabel(@(kPromptMessage));
+  [[EarlGrey selectElementWithMatcher:messageLabel]
+      assertWithMatcher:grey_notNil()];
 
   // Enter text into text field.
   TypeInPrompt(@(kPromptTestUserInput));
 
+  // Tap the OK button to close the confirmation.
   [[EarlGrey selectElementWithMatcher:OKButton()] performAction:grey_tap()];
+  WaitForJavaScriptDialog(kURL, /*visible=*/false);
 
-  // Wait for the html body to be reset to the input text.
-  [ChromeEarlGrey waitForWebViewContainingText:kPromptTestUserInput];
+  // Wait for the html  to be reset to the input text.
+  [ChromeEarlGrey waitForWebStateContainingText:kPromptTestUserInput];
 }
 
 // Tests that a prompt dialog is shown, and that the completion block is called
@@ -467,57 +395,76 @@ void TapSuppressDialogsButton() {
 - (void)testShowJavaScriptPromptCancelled {
   // TODO(crbug.com/753098): Re-enable this test on iPad once grey_typeText
   // works.
-  if (IsIPadIdiom()) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
   }
 
-  // Load the blank test page and show a prompt dialog.
-  [self loadBlankTestPage];
-  ShowJavaScriptDialog(JavaScriptAlertType::PROMPT, self.emptyPageURL);
+  // Load the prompt test page and tap on the link.
+  const GURL kURL = self.testServer->GetURL(kPromptURLPath);
+  [ChromeEarlGrey loadURL:kURL];
+  [ChromeEarlGrey waitForWebStateContainingElement:
+                      [ElementSelector selectorWithElementID:kTestPageLinkID]];
+  [ChromeEarlGrey tapWebStateElementWithID:@(kTestPageLinkID)];
+  WaitForJavaScriptDialog(kURL, /*visible=*/true);
+
+  // Check the message of the dialog.
+  id<GREYMatcher> messageLabel =
+      chrome_test_util::StaticTextWithAccessibilityLabel(@(kPromptMessage));
+  [[EarlGrey selectElementWithMatcher:messageLabel]
+      assertWithMatcher:grey_notNil()];
 
   // Enter text into text field.
   TypeInPrompt(@(kPromptTestUserInput));
 
   // Tap the Cancel button.
   TapCancel();
+  WaitForJavaScriptDialog(kURL, /*visible=*/false);
 
-  // Wait for the html body to be reset to the cancel text.
-  [ChromeEarlGrey waitForWebViewContainingText:kPromptResultBodyCancelled];
+  // Wait for the html  to be reset to the cancel text.
+  [ChromeEarlGrey waitForWebStateContainingText:kPromptResultCancelled];
 }
 
 // Tests that JavaScript alerts that are shown in a loop can be suppressed.
 - (void)testShowJavaScriptAlertLoop {
-  // Load the blank test page and show alerts in a loop.
-  [self loadBlankTestPage];
-  web::WebState* webState = chrome_test_util::GetCurrentWebState();
-  NSString* script = GetJavaScriptAlertLoopScript();
-  webState->ExecuteJavaScript(base::SysNSStringToUTF16(script));
-  WaitForJavaScriptDialogToBeShown(self.emptyPageURL);
+  // Load the alert test page and tap on the link.
+  const GURL kURL = self.testServer->GetURL(kAlertLoopURLPath);
+  [ChromeEarlGrey loadURL:kURL];
+  [ChromeEarlGrey waitForWebStateContainingElement:
+                      [ElementSelector selectorWithElementID:kTestPageLinkID]];
+  [ChromeEarlGrey tapWebStateElementWithID:@(kTestPageLinkID)];
+  WaitForJavaScriptDialog(kURL, /*visible=*/true);
 
+  // Tap the OK button to close the alert, then verify that the next alert in
+  // the loop is shown.
   [[EarlGrey selectElementWithMatcher:OKButton()] performAction:grey_tap()];
-  WaitForJavaScriptDialogToBeShown(self.emptyPageURL);
+  WaitForJavaScriptDialog(kURL, /*visible=*/true);
 
   // Tap the suppress dialogs button.
   TapSuppressDialogsButton();
+  WaitForJavaScriptDialog(kURL, /*visible=*/false);
 
   // Wait for confirmation action sheet to be shown.
   NSString* alertLabel =
       l10n_util::GetNSString(IDS_JAVASCRIPT_MESSAGEBOX_SUPPRESS_OPTION);
-  WaitForAlertToBeShown(alertLabel);
+  WaitForAlertWithText(alertLabel, /*visible=*/true);
 
   // Tap the suppress dialogs confirmation button.
   TapSuppressDialogsButton();
+  WaitForAlertWithText(alertLabel, /*visible=*/false);
 
-  // Wait for the html body to be reset to the loop finished text.
-  [ChromeEarlGrey waitForWebViewContainingText:kAlertLoopFinishedText];
+  // Wait for the html  to be reset to the loop finished text.
+  [ChromeEarlGrey waitForWebStateContainingText:kAlertLoopFinishedText];
 }
 
 // Tests to ensure crbug.com/658260 does not regress.
 // Tests that if an alert should be called when settings are displays, the alert
 // waits for the dismiss of the settings.
 - (void)testShowJavaScriptBehindSettings {
-  // Load the blank test page.
-  [self loadBlankTestPage];
+  // Load the alert test page.
+  const GURL kURL = self.testServer->GetURL(kAlertURLPath);
+  [ChromeEarlGrey loadURL:kURL];
+  [ChromeEarlGrey waitForWebStateContainingElement:
+                      [ElementSelector selectorWithElementID:kTestPageLinkID]];
 
   // Show settings.
   [ChromeEarlGreyUI openSettingsMenu];
@@ -530,23 +477,24 @@ void TapSuppressDialogsButton() {
                                           nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Show an alert.
-  DisplayJavaScriptAlert(JavaScriptAlertType::ALERT);
+  // Tap the link to trigger the dialog.
+  [ChromeEarlGrey tapWebStateElementWithID:@(kTestPageLinkID)];
 
   // Make sure the alert is not present.
-  AssertJavaScriptAlertNotPresent(self.emptyPageURL);
+  WaitForJavaScriptDialog(kURL, /*visible=*/false);
 
   // Close the settings.
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 
   // Make sure the alert is present.
-  WaitForJavaScriptDialogToBeShown(self.emptyPageURL);
+  WaitForJavaScriptDialog(kURL, /*visible=*/true);
 
   [[EarlGrey selectElementWithMatcher:OKButton()] performAction:grey_tap()];
+  WaitForJavaScriptDialog(kURL, /*visible=*/false);
 
-  // Wait for the html body to be reset to the correct value.
-  [ChromeEarlGrey waitForWebViewContainingText:kAlertResultBody];
+  // Wait for the expected text to be added to the test page.
+  [ChromeEarlGrey waitForWebStateContainingText:kAlertResult];
 }
 
 // Tests that an alert is presented after displaying the share menu.
@@ -556,7 +504,10 @@ void TapSuppressDialogsButton() {
   EARL_GREY_TEST_DISABLED(@"Disabled until EG can use share menu.");
 
   // Load the blank test page.
-  [self loadBlankTestPage];
+  const GURL kURL = self.testServer->GetURL(kAlertURLPath);
+  [ChromeEarlGrey loadURL:kURL];
+  [ChromeEarlGrey waitForWebStateContainingElement:
+                      [ElementSelector selectorWithElementID:kTestPageLinkID]];
 
   [ChromeEarlGreyUI openShareMenu];
 
@@ -567,27 +518,32 @@ void TapSuppressDialogsButton() {
   [[EarlGrey selectElementWithMatcher:printButton] performAction:grey_tap()];
 
   // Show an alert and assert it is present.
-  ShowJavaScriptDialog(JavaScriptAlertType::ALERT, self.emptyPageURL);
+  [ChromeEarlGrey tapWebStateElementWithID:@(kTestPageLinkID)];
+  WaitForJavaScriptDialog(kURL, /*visible=*/true);
 
   [[EarlGrey selectElementWithMatcher:OKButton()] performAction:grey_tap()];
+  WaitForJavaScriptDialog(kURL, /*visible=*/false);
 
-  // Wait for the html body to be reset to the correct value.
-  [ChromeEarlGrey waitForWebViewContainingText:kAlertResultBody];
+  // Wait for the expected text to be added to the test page.
+  [ChromeEarlGrey waitForWebStateContainingText:kAlertResult];
 }
 
 // Tests that an alert is presented after a new tab animation is finished.
 - (void)testShowJavaScriptAfterNewTabAnimation {
+  // TODO(crbug.com/1007986) Test flaky on iOS13.
+  if (@available(iOS 13, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS13.");
+  }
+
   // Load the test page with a link to kOnLoadAlertURL and long tap on the link.
-  [self loadPageWithLink];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLinkPageURLPath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLinkPageLinkText];
 
   // TODO(crbug.com/712358): Use method LongPressElementAndTapOnButton once
   // it is moved out of context_menu_egtests.mm and into a shared location.
-  id<GREYMatcher> webViewMatcher =
-      web::WebViewInWebState(chrome_test_util::GetCurrentWebState());
-
-  [[EarlGrey selectElementWithMatcher:webViewMatcher]
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::LongPressElementForContextMenu(
-                        ElementSelector::ElementSelectorId(kLinkID),
+                        [ElementSelector selectorWithElementID:kLinkID],
                         true /* menu should appear */)];
 
   // Tap on the "Open In New Tab" button.
@@ -603,28 +559,24 @@ void TapSuppressDialogsButton() {
   // continues to animate until the dialog is closed.  Disabling EarlGrey
   // synchronization code for iPad allows the test to detect and dismiss the
   // dialog while this animation is occurring.
-  if (IsIPadIdiom()) {
-    [[GREYConfiguration sharedInstance]
-            setValue:@(NO)
-        forConfigKey:kGREYConfigKeySynchronizationEnabled];
-  }
+  {
+    std::unique_ptr<ScopedSynchronizationDisabler> disabler =
+        std::make_unique<ScopedSynchronizationDisabler>();
+    if (![ChromeEarlGrey isIPadIdiom]) {
+      disabler.reset();
+    }
 
-  // Wait for the alert to be shown.
-  WaitForJavaScriptDialogToBeShown(self.onLoadPageURL);
+    // Wait for the alert to be shown.
+    GURL kOnLoadURL = self.testServer->GetURL(kOnLoadURLPath);
+    WaitForJavaScriptDialog(kOnLoadURL, /*visible=*/true);
 
-  // Verify that the omnibox shows the correct URL when the dialog is visible.
-  std::string title =
-      base::UTF16ToUTF8(web::GetDisplayTitleForUrl(self.onLoadPageURL));
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(title)]
-      assertWithMatcher:grey_notNil()];
+    // Verify that the omnibox shows the correct URL when the dialog is visible.
+    std::string title =
+        base::SysNSStringToUTF8([ChromeEarlGrey displayTitleForURL:kOnLoadURL]);
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(title)]
+        assertWithMatcher:grey_notNil()];
 
-  [[EarlGrey selectElementWithMatcher:OKButton()] performAction:grey_tap()];
-
-  // Reenable synchronization on iPads now that the dialog has been dismissed.
-  if (IsIPadIdiom()) {
-    [[GREYConfiguration sharedInstance]
-            setValue:@(YES)
-        forConfigKey:kGREYConfigKeySynchronizationEnabled];
+    [[EarlGrey selectElementWithMatcher:OKButton()] performAction:grey_tap()];
   }
 }
 

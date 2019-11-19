@@ -47,8 +47,7 @@ MediaCodecLoop::MediaCodecLoop(
       media_codec_(std::move(media_codec)),
       pending_input_buf_index_(kInvalidBufferIndex),
       sdk_int_(sdk_int),
-      disable_timer_(disable_timer),
-      weak_factory_(this) {
+      disable_timer_(disable_timer) {
   if (timer_task_runner)
     io_timer_.SetTaskRunner(timer_task_runner);
   // TODO(liberato): should this DCHECK?
@@ -79,9 +78,6 @@ bool MediaCodecLoop::TryFlush() {
   // STATE_DRAINED seems like it allows flush, but it causes test failures.
   // crbug.com/624878
   if (state_ == STATE_ERROR || state_ == STATE_DRAINED)
-    return false;
-
-  if (CodecNeedsFlushWorkaround())
     return false;
 
   // Actually try to flush!
@@ -201,14 +197,15 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
 
   media::MediaCodecStatus status = MEDIA_CODEC_OK;
 
-  if (input_data.encryption_scheme.is_encrypted()) {
+  if (input_data.encryption_scheme != EncryptionScheme::kUnencrypted) {
     // Note that input_data might not have a valid memory ptr if this is a
     // re-send of a buffer that was sent before decryption keys arrived.
 
     status = media_codec_->QueueSecureInputBuffer(
         input_buffer.index, input_data.memory, input_data.length,
         input_data.key_id, input_data.iv, input_data.subsamples,
-        input_data.encryption_scheme, input_data.presentation_time);
+        input_data.encryption_scheme, input_data.encryption_pattern,
+        input_data.presentation_time);
 
   } else {
     status = media_codec_->QueueInputBuffer(
@@ -352,15 +349,6 @@ void MediaCodecLoop::SetState(State new_state) {
 
 MediaCodecBridge* MediaCodecLoop::GetCodec() const {
   return media_codec_.get();
-}
-
-bool MediaCodecLoop::CodecNeedsFlushWorkaround() const {
-  // Return true if and only if Flush() isn't supported / doesn't work.
-  // Prior to JellyBean-MR2, flush() had several bugs (b/8125974, b/8347958) so
-  // we have to completely destroy and recreate the codec there.
-  // TODO(liberato): MediaCodecUtil implements the same function.  We should
-  // call that one, except that it doesn't compile outside of android right now.
-  return sdk_int_ < base::android::SDK_VERSION_JELLY_BEAN_MR2;
 }
 
 // static

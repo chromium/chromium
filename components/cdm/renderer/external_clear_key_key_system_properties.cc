@@ -35,12 +35,12 @@ bool ExternalClearKeyProperties::IsSupportedInitDataType(
 }
 
 media::EmeConfigRule ExternalClearKeyProperties::GetEncryptionSchemeConfigRule(
-    media::EncryptionMode encryption_scheme) const {
+    media::EncryptionScheme encryption_scheme) const {
   switch (encryption_scheme) {
-    case media::EncryptionMode::kCenc:
-    case media::EncryptionMode::kCbcs:
+    case media::EncryptionScheme::kCenc:
+    case media::EncryptionScheme::kCbcs:
       return media::EmeConfigRule::SUPPORTED;
-    case media::EncryptionMode::kUnencrypted:
+    case media::EncryptionScheme::kUnencrypted:
       break;
   }
   NOTREACHED();

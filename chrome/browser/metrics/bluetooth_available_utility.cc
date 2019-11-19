@@ -21,7 +21,7 @@
 namespace bluetooth_utility {
 
 void ReportAvailability(BluetoothAvailability availability) {
-  UMA_HISTOGRAM_ENUMERATION("Bluetooth.Availability", availability,
+  UMA_HISTOGRAM_ENUMERATION("Bluetooth.Availability.v2", availability,
                             BLUETOOTH_AVAILABILITY_COUNT);
 }
 
@@ -40,22 +40,24 @@ void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter) {
 }
 
 void ReportBluetoothAvailability() {
+#if !defined(OS_MACOSX) && !defined(OS_WIN) && !defined(OS_LINUX)
+  // This is only relevant for desktop platforms.
+  return;
+#endif
+
 #if defined(OS_MACOSX)
   // TODO(kenrb): This is separate from other platforms because we get a
   // little bit of extra information from the Mac-specific code. It might not
   // be worth having the extra code path, and we should consider whether to
   // combine them (https://crbug.com/907279).
-  bluetooth_utility::BluetoothAvailability availability =
-      bluetooth_utility::GetBluetoothAvailability();
-  UMA_HISTOGRAM_ENUMERATION("Bluetooth.Availability", availability,
-                            bluetooth_utility::BLUETOOTH_AVAILABILITY_COUNT);
+  ReportAvailability(bluetooth_utility::GetBluetoothAvailability());
   return;
 #endif  // defined(OS_MACOSX)
 
   // GetAdapter must be called on the UI thread, because it creates a
   // WeakPtr, which is checked from that thread on future calls.
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE,
         {content::BrowserThread::UI, base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&ReportBluetoothAvailability));
@@ -69,8 +71,10 @@ void ReportBluetoothAvailability() {
     return;
 #endif  // defined(OS_LINUX)
 
-  if (!device::BluetoothAdapterFactory::Get().IsBluetoothSupported())
+  if (!device::BluetoothAdapterFactory::Get().IsBluetoothSupported()) {
     ReportAvailability(BLUETOOTH_NOT_SUPPORTED);
+    return;
+  }
 
   device::BluetoothAdapterFactory::Get().GetAdapter(
       base::BindOnce(&OnGetAdapter));

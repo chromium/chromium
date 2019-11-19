@@ -1,0 +1,9 @@
+include_rules = [
+    "+media/base/bind_to_current_loop.h",
+]
+
+specific_include_rules = {
+    "web_video_capture_impl_manager_test.cc": [
+        "+media/capture/mojom/video_capture.mojom-blink.h",
+    ],
+}

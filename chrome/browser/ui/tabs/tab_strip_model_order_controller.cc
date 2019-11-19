@@ -16,9 +16,7 @@ TabStripModelOrderController::TabStripModelOrderController(
   tabstrip_->AddObserver(this);
 }
 
-TabStripModelOrderController::~TabStripModelOrderController() {
-  tabstrip_->RemoveObserver(this);
-}
+TabStripModelOrderController::~TabStripModelOrderController() {}
 
 int TabStripModelOrderController::DetermineInsertionIndex(
     ui::PageTransition transition,
@@ -50,10 +48,20 @@ int TabStripModelOrderController::DetermineInsertionIndex(
   return tabstrip_->count();
 }
 
-int TabStripModelOrderController::DetermineNewSelectedIndex(
+base::Optional<int> TabStripModelOrderController::DetermineNewSelectedIndex(
     int removing_index) const {
-  int tab_count = tabstrip_->count();
-  DCHECK(removing_index >= 0 && removing_index < tab_count);
+  DCHECK(tabstrip_->ContainsIndex(removing_index));
+
+  // The case where the closed tab is inactive is handled directly in
+  // TabStripModel.
+  if (removing_index != tabstrip_->active_index())
+    return base::nullopt;
+
+  // The case where multiple tabs are selected is handled directly in
+  // TabStripModel.
+  if (tabstrip_->selection_model().size() > 1)
+    return base::nullopt;
+
   content::WebContents* parent_opener =
       tabstrip_->GetOpenerOfWebContentsAt(removing_index);
   // First see if the index being removed has any "child" tabs. If it does, we
@@ -83,12 +91,27 @@ int TabStripModelOrderController::DetermineNewSelectedIndex(
       return GetValidIndex(index, removing_index);
   }
 
-  // No opener set, fall through to the default handler...
-  int selected_index = tabstrip_->active_index();
-  if (selected_index >= (tab_count - 1))
-    return selected_index - 1;
+  // If closing a grouped tab, return a tab that is still in the group, if any.
+  const base::Optional<TabGroupId> current_group =
+      tabstrip_->GetTabGroupForTab(removing_index);
+  if (current_group.has_value()) {
+    // Match the default behavior below: prefer the tab to the right.
+    const base::Optional<TabGroupId> right_group =
+        tabstrip_->GetTabGroupForTab(removing_index + 1);
+    if (current_group == right_group)
+      return removing_index;
 
-  return selected_index;
+    const base::Optional<TabGroupId> left_group =
+        tabstrip_->GetTabGroupForTab(removing_index - 1);
+    if (current_group == left_group)
+      return removing_index - 1;
+  }
+
+  // By default, return the tab on the right, unless this is the last tab.
+  if (removing_index >= (tabstrip_->count() - 1))
+    return removing_index - 1;
+
+  return removing_index;
 }
 
 void TabStripModelOrderController::OnTabStripModelChanged(
@@ -130,8 +153,8 @@ void TabStripModelOrderController::OnTabStripModelChanged(
 ///////////////////////////////////////////////////////////////////////////////
 // TabStripModelOrderController, private:
 
-int TabStripModelOrderController::GetValidIndex(
-    int index, int removing_index) const {
+int TabStripModelOrderController::GetValidIndex(int index,
+                                                int removing_index) const {
   if (removing_index < index)
     index = std::max(0, index - 1);
   return index;

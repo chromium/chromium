@@ -1,6 +1,5 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="cloud_printers.html">
 <link rel="import" href="../route.html">
 <link rel="import" href="../settings_page/settings_animated_pages.html">
@@ -20,15 +19,18 @@
         focus-config="[[focusConfig_]]">
       <div route-path="default">
 <if expr="chromeos">
-        <cr-link-row id="cupsPrinters" label="$i18n{cupsPrintersTitle}"
-            on-click="onTapCupsPrinters_"></cr-link-row>
+        <cr-link-row hidden$="[[!showCupsPrinters_]]"
+            id="cupsPrinters" label="$i18n{cupsPrintersTitle}"
+            on-click="onTapCupsPrinters_"
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 </if>
 <if expr="not chromeos">
         <cr-link-row label="$i18n{localPrintersTitle}"
-            on-click="onTapLocalPrinters_"></cr-link-row>
+            on-click="onTapLocalPrinters_" external></cr-link-row>
 </if>
         <cr-link-row class="hr" id="cloudPrinters"
-            label="$i18n{cloudPrintersTitle}" on-click="onTapCloudPrinters_">
+            label="$i18n{cloudPrintersTitle}" on-click="onTapCloudPrinters_"
+            role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
       </div>
 <if expr="chromeos">

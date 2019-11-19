@@ -1,4 +1,0 @@
-This tests that in a standalone media document with audio content, the media element has non-zero size.
-
-PASS
-

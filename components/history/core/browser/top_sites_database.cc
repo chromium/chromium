@@ -32,7 +32,8 @@ namespace history {
 //                    will be the next one evicted.
 //   title            The title to display under that site.
 //   redirects        A space separated list of URLs that are known to redirect
-//                    to this url.
+//                    to this url. As of 9/2019 this column is not used. It will
+//                    be removed shortly.
 
 namespace {
 
@@ -65,25 +66,6 @@ bool InitTables(sql::Database* db) {
       "title LONGVARCHAR,"
       "redirects LONGVARCHAR)";
   return db->Execute(kTopSitesSql);
-}
-
-// Encodes redirects into a string.
-std::string GetRedirects(const MostVisitedURL& url) {
-  std::vector<base::StringPiece> redirects;
-  for (const auto& redirect : url.redirects)
-    redirects.push_back(redirect.spec());
-  return base::JoinString(redirects, " ");
-}
-
-// Decodes redirects from a string and sets them for the url.
-void SetRedirects(const std::string& redirects, MostVisitedURL* url) {
-  for (const std::string& redirect : base::SplitString(
-           redirects, base::kWhitespaceASCII,
-           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    GURL redirect_url(redirect);
-    if (redirect_url.is_valid())
-      url->redirects.push_back(redirect_url);
-  }
 }
 
 // Track various failure (and success) cases in recovery code.
@@ -430,7 +412,7 @@ bool TopSitesDatabase::UpgradeToVersion4() {
 void TopSitesDatabase::GetSites(MostVisitedURLList* urls) {
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE,
-                              "SELECT url, url_rank, title, redirects "
+                              "SELECT url, url_rank, title "
                               "FROM top_sites ORDER BY url_rank"));
 
   if (!statement.is_valid()) {
@@ -446,8 +428,6 @@ void TopSitesDatabase::GetSites(MostVisitedURLList* urls) {
     GURL gurl(statement.ColumnString(0));
     url.url = gurl;
     url.title = statement.ColumnString16(2);
-    std::string redirects = statement.ColumnString(3);
-    SetRedirects(redirects, &url);
     urls->push_back(url);
   }
 }
@@ -467,12 +447,11 @@ void TopSitesDatabase::AddSite(const MostVisitedURL& url, int new_rank) {
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE,
                               "INSERT OR REPLACE INTO top_sites "
-                              "(url, url_rank, title, redirects) "
-                              "VALUES (?, ?, ?, ?)"));
+                              "(url, url_rank, title) "
+                              "VALUES (?, ?, ?)"));
   statement.BindString(0, url.url.spec());
   statement.BindInt(1, kRankOfNewURL);
   statement.BindString16(2, url.title);
-  statement.BindString(3, GetRedirects(url));
   if (!statement.Run())
     return;
 
@@ -483,10 +462,9 @@ void TopSitesDatabase::AddSite(const MostVisitedURL& url, int new_rank) {
 bool TopSitesDatabase::UpdateSite(const MostVisitedURL& url) {
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE,
                                                    "UPDATE top_sites SET "
-                                                   "title = ?, redirects = ?"
+                                                   "title = ? "
                                                    "WHERE url = ?"));
   statement.BindString16(0, url.title);
-  statement.BindString(1, GetRedirects(url));
 
   return statement.Run();
 }

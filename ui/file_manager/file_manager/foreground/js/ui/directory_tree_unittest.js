@@ -74,11 +74,11 @@ function setUp() {
 
   driveFileSystem = assert(volumeManager.volumeInfoList.item(0).fileSystem);
   fakeFileSystemURLEntries['filesystem:drive/root'] =
-      new MockDirectoryEntry(driveFileSystem, '/root');
+      MockDirectoryEntry.create(driveFileSystem, '/root');
   fakeFileSystemURLEntries['filesystem:drive/Computers'] =
-      new MockDirectoryEntry(driveFileSystem, '/Computers');
+      MockDirectoryEntry.create(driveFileSystem, '/Computers');
   fakeFileSystemURLEntries['filesystem:drive/team_drives'] =
-      new MockDirectoryEntry(driveFileSystem, '/team_drives');
+      MockDirectoryEntry.create(driveFileSystem, '/team_drives');
 }
 
 /**
@@ -190,7 +190,7 @@ function testCreateDirectoryTreeWithTeamDrive(callback) {
   // Setup entries returned by fakeFileSystemURLResults.
   const driveFileSystem = volumeManager.volumeInfoList.item(0).fileSystem;
   fakeFileSystemURLEntries['filesystem:drive/team_drives/a'] =
-      new MockDirectoryEntry(driveFileSystem, '/team_drives/a');
+      MockDirectoryEntry.create(driveFileSystem, '/team_drives/a');
 
   // Populate the directory tree with the mock filesystem.
   let directoryTree = createElements();
@@ -218,7 +218,8 @@ function testCreateDirectoryTreeWithTeamDrive(callback) {
       }).then(() => {
         // There exist 1 my drive entry and 3 fake entries under the drive item.
         assertEquals(str('DRIVE_MY_DRIVE_LABEL'), driveItem.items[0].label);
-        assertEquals(str('DRIVE_TEAM_DRIVES_LABEL'), driveItem.items[1].label);
+        assertEquals(
+            str('DRIVE_SHARED_DRIVES_LABEL'), driveItem.items[1].label);
         assertEquals(
             str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL'),
             driveItem.items[2].label);
@@ -261,7 +262,7 @@ function testCreateDirectoryTreeWithEmptyTeamDrive(callback) {
       }).then(() => {
         let teamDrivesItemFound = false;
         for (let i = 0; i < driveItem.items.length; i++) {
-          if (driveItem.items[i].label == str('DRIVE_TEAM_DRIVES_LABEL')) {
+          if (driveItem.items[i].label == str('DRIVE_SHARED_DRIVES_LABEL')) {
             teamDrivesItemFound = true;
             break;
           }
@@ -288,7 +289,7 @@ function testCreateDirectoryTreeWithEmptyTeamDrive(callback) {
 function testCreateDirectoryTreeWithComputers(callback) {
   // Setup entries returned by fakeFileSystemURLResults.
   fakeFileSystemURLEntries['filesystem:drive/Comuters/My Laptop'] =
-      new MockDirectoryEntry(driveFileSystem, '/Computers/My Laptop');
+      MockDirectoryEntry.create(driveFileSystem, '/Computers/My Laptop');
 
   // Populate the directory tree with the mock filesystem.
   let directoryTree = createElements();
@@ -388,10 +389,10 @@ function testCreateDirectoryTreeWithEmptyComputers(callback) {
  */
 function testCreateDirectoryTreeWithTeamDrivesAndComputers(callback) {
   // Setup entries returned by fakeFileSystemURLResults.
-  fakeFileSystemURLEntries ['filesystem:drive/team_drives/a'] =
-      new MockDirectoryEntry(driveFileSystem, '/team_drives/a');
+  fakeFileSystemURLEntries['filesystem:drive/team_drives/a'] =
+      MockDirectoryEntry.create(driveFileSystem, '/team_drives/a');
   fakeFileSystemURLEntries['filesystem:drive/Comuters/My Laptop'] =
-      new MockDirectoryEntry(driveFileSystem, '/Computers/My Laptop');
+      MockDirectoryEntry.create(driveFileSystem, '/Computers/My Laptop');
 
   // Populate the directory tree with the mock filesystem.
   let directoryTree = createElements();
@@ -419,7 +420,8 @@ function testCreateDirectoryTreeWithTeamDrivesAndComputers(callback) {
       }).then(() => {
         // There exist 1 my drive entry and 3 fake entries under the drive item.
         assertEquals(str('DRIVE_MY_DRIVE_LABEL'), driveItem.items[0].label);
-        assertEquals(str('DRIVE_TEAM_DRIVES_LABEL'), driveItem.items[1].label);
+        assertEquals(
+            str('DRIVE_SHARED_DRIVES_LABEL'), driveItem.items[1].label);
         assertEquals(str('DRIVE_COMPUTERS_LABEL'), driveItem.items[2].label);
         assertEquals(
             str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL'),
@@ -439,13 +441,17 @@ function testCreateDirectoryTreeWithTeamDrivesAndComputers(callback) {
 function testUpdateSubElementsFromListSections() {
   const recentItem = null;
   const shortcutListModel = new MockFolderShortcutDataModel([]);
+  const androidAppListModel = createFakeAndroidAppListModel(['android:app1']);
   const treeModel = new NavigationListModel(
-      volumeManager, shortcutListModel, recentItem, directoryModel);
+      volumeManager, shortcutListModel, recentItem, directoryModel,
+      androidAppListModel);
   const myFilesItem = treeModel.item(0);
   const driveItem = treeModel.item(1);
+  const androidAppItem = treeModel.item(2);
 
   assertEquals(NavigationSection.MY_FILES, myFilesItem.section);
   assertEquals(NavigationSection.CLOUD, driveItem.section);
+  assertEquals(NavigationSection.ANDROID_APPS, androidAppItem.section);
 
   // Populate the directory tree with the mock filesystem.
   let directoryTree = createElements();
@@ -497,10 +503,12 @@ function testUpdateSubElementsFromList() {
   directoryTree.updateSubElementsFromList(true);
 
   // There are 2 volumes, Drive and Downloads, at first.
-  assertArrayEquals([
-    str('DRIVE_DIRECTORY_LABEL'),
-    str('DOWNLOADS_DIRECTORY_LABEL')
-  ], getDirectoryTreeItemLabels(directoryTree));
+  assertArrayEquals(
+      [
+        str('DRIVE_DIRECTORY_LABEL'),
+        str('DOWNLOADS_DIRECTORY_LABEL'),
+      ],
+      getDirectoryTreeItemLabels(directoryTree));
 
   // Mounts a removable volume.
   const removableVolume = MockVolumeManager.createMockVolumeInfo(
@@ -509,18 +517,22 @@ function testUpdateSubElementsFromList() {
   volumeManager.volumeInfoList.add(removableVolume);
 
   // Asserts that the directoryTree is not updated before the update.
-  assertArrayEquals([
-    str('DRIVE_DIRECTORY_LABEL'),
-    str('DOWNLOADS_DIRECTORY_LABEL')
-  ], getDirectoryTreeItemLabels(directoryTree));
+  assertArrayEquals(
+      [
+        str('DRIVE_DIRECTORY_LABEL'),
+        str('DOWNLOADS_DIRECTORY_LABEL'),
+      ],
+      getDirectoryTreeItemLabels(directoryTree));
 
   // Asserts that a removable directory is added after the update.
   directoryTree.updateSubElementsFromList(false);
-  assertArrayEquals([
-    str('DRIVE_DIRECTORY_LABEL'),
-    str('DOWNLOADS_DIRECTORY_LABEL'),
-    str('REMOVABLE_DIRECTORY_LABEL')
-  ], getDirectoryTreeItemLabels(directoryTree));
+  assertArrayEquals(
+      [
+        str('DRIVE_DIRECTORY_LABEL'),
+        str('DOWNLOADS_DIRECTORY_LABEL'),
+        str('REMOVABLE_DIRECTORY_LABEL'),
+      ],
+      getDirectoryTreeItemLabels(directoryTree));
 
   // Mounts an archive volume.
   const archiveVolume = MockVolumeManager.createMockVolumeInfo(
@@ -529,11 +541,13 @@ function testUpdateSubElementsFromList() {
   volumeManager.volumeInfoList.add(archiveVolume);
 
   // Asserts that the directoryTree is not updated before the update.
-  assertArrayEquals([
-    str('DRIVE_DIRECTORY_LABEL'),
-    str('DOWNLOADS_DIRECTORY_LABEL'),
-    str('REMOVABLE_DIRECTORY_LABEL')
-  ], getDirectoryTreeItemLabels(directoryTree));
+  assertArrayEquals(
+      [
+        str('DRIVE_DIRECTORY_LABEL'),
+        str('DOWNLOADS_DIRECTORY_LABEL'),
+        str('REMOVABLE_DIRECTORY_LABEL'),
+      ],
+      getDirectoryTreeItemLabels(directoryTree));
 
   // Asserts that an archive directory is added before the removable directory.
   directoryTree.updateSubElementsFromList(false);
@@ -561,11 +575,13 @@ function testUpdateSubElementsFromList() {
 
   // Asserts that an archive directory is deleted.
   directoryTree.updateSubElementsFromList(false);
-  assertArrayEquals([
-    str('DRIVE_DIRECTORY_LABEL'),
-    str('DOWNLOADS_DIRECTORY_LABEL'),
-    str('REMOVABLE_DIRECTORY_LABEL')
-  ], getDirectoryTreeItemLabels(directoryTree));
+  assertArrayEquals(
+      [
+        str('DRIVE_DIRECTORY_LABEL'),
+        str('DOWNLOADS_DIRECTORY_LABEL'),
+        str('REMOVABLE_DIRECTORY_LABEL'),
+      ],
+      getDirectoryTreeItemLabels(directoryTree));
 }
 
 /**
@@ -599,7 +615,7 @@ function testAddFirstTeamDrive(callback) {
       })
           .then(() => {
             fakeFileSystemURLEntries['filesystem:drive/team_drives/a'] =
-                new MockDirectoryEntry(driveFileSystem, '/team_drives/a');
+                MockDirectoryEntry.create(driveFileSystem, '/team_drives/a');
             let event = {
               entry: fakeFileSystemURLEntries['filesystem:drive/team_drives'],
               eventType: 'changed',
@@ -612,7 +628,7 @@ function testAddFirstTeamDrive(callback) {
             return waitUntil(() => {
               for (let i = 0; i < driveItem.items.length; i++) {
                 if (driveItem.items[i].label ==
-                    str('DRIVE_TEAM_DRIVES_LABEL')) {
+                    str('DRIVE_SHARED_DRIVES_LABEL')) {
                   return !driveItem.items[i].hidden;
                 }
               }
@@ -634,7 +650,7 @@ function testRemoveLastTeamDrive(callback) {
   // Setup entries returned by fakeFileSystemURLResults.
   const driveFileSystem = volumeManager.volumeInfoList.item(0).fileSystem;
   fakeFileSystemURLEntries['filesystem:drive/team_drives/a'] =
-      new MockDirectoryEntry(driveFileSystem, '/team_drives/a');
+      MockDirectoryEntry.create(driveFileSystem, '/team_drives/a');
 
   // Populate the directory tree with the mock filesystem.
   let directoryTree = createElements();
@@ -656,8 +672,8 @@ function testRemoveLastTeamDrive(callback) {
       })
           .then(() => {
             return new Promise(resolve => {
-              fakeFileSystemURLEntries['filesystem:drive/team_drives/a']
-                  .remove(resolve);
+              fakeFileSystemURLEntries['filesystem:drive/team_drives/a'].remove(
+                  resolve);
             });
           })
           .then(() => {
@@ -674,7 +690,7 @@ function testRemoveLastTeamDrive(callback) {
             return waitUntil(() => {
               for (let i = 0; i < driveItem.items.length; i++) {
                 if (driveItem.items[i].label ==
-                    str('DRIVE_TEAM_DRIVES_LABEL')) {
+                    str('DRIVE_SHARED_DRIVES_LABEL')) {
                   return false;
                 }
               }
@@ -719,7 +735,7 @@ function testAddFirstComputer(callback) {
       })
           .then(() => {
             fakeFileSystemURLEntries['filesystem:drive/Computers/a'] =
-                new MockDirectoryEntry(driveFileSystem, '/Computers/a');
+                MockDirectoryEntry.create(driveFileSystem, '/Computers/a');
             let event = {
               entry: fakeFileSystemURLEntries['filesystem:drive/Computers'],
               eventType: 'changed',
@@ -753,7 +769,7 @@ function testRemoveLastComputer(callback) {
   // Setup entries returned by fakeFileSystemURLResults.
   const driveFileSystem = volumeManager.volumeInfoList.item(0).fileSystem;
   fakeFileSystemURLEntries['filesystem:drive/Computers/a'] =
-      new MockDirectoryEntry(driveFileSystem, '/Computers/a');
+      MockDirectoryEntry.create(driveFileSystem, '/Computers/a');
 
   // Populate the directory tree with the mock filesystem.
   let directoryTree = createElements();
@@ -777,8 +793,8 @@ function testRemoveLastComputer(callback) {
       })
           .then(() => {
             return new Promise(resolve => {
-              fakeFileSystemURLEntries['filesystem:drive/Computers/a']
-                  .remove(resolve);
+              fakeFileSystemURLEntries['filesystem:drive/Computers/a'].remove(
+                  resolve);
             });
           })
           .then(() => {
@@ -815,10 +831,10 @@ function testRemoveLastComputer(callback) {
 function testInsideMyDriveAndInsideDrive(callback) {
   // Setup My Drive and Downloads and one folder inside each of them.
   fakeFileSystemURLEntries['filesystem:drive/root/folder1'] =
-      new MockDirectoryEntry(driveFileSystem, '/root/folder1');
+      MockDirectoryEntry.create(driveFileSystem, '/root/folder1');
   const downloadsFileSystem = volumeManager.volumeInfoList.item(1).fileSystem;
   fakeFileSystemURLEntries['filesystem:downloads/folder1'] =
-      new MockDirectoryEntry(downloadsFileSystem, '/folder1');
+      MockDirectoryEntry.create(downloadsFileSystem, '/folder1');
 
   // Populate the directory tree with the mock filesystem.
   let directoryTree = createElements();
@@ -875,7 +891,7 @@ function testAddProviders(callback) {
   // Add a sub directory to the non-Smb provider.
   const provider = assert(volumeManager.volumeInfoList.item(2).fileSystem);
   fakeFileSystemURLEntries['filesystem:not_smb/child'] =
-      new MockDirectoryEntry(provider, '/child');
+      MockDirectoryEntry.create(provider, '/child');
 
   // Add a volume representing an Smb provider to the mock filesystem.
   volumeManager.createVolumeInfo(
@@ -884,7 +900,7 @@ function testAddProviders(callback) {
   // Add a sub directory to the Smb provider.
   const smbProvider = assert(volumeManager.volumeInfoList.item(3).fileSystem);
   fakeFileSystemURLEntries['filesystem:smb/child'] =
-      new MockDirectoryEntry(smbProvider, '/smb_child');
+      MockDirectoryEntry.create(smbProvider, '/smb_child');
 
   // Populate the directory tree with the mock filesystem.
   let directoryTree = createElements();
@@ -945,10 +961,10 @@ function testEntryListItemSortEntriesEmpty() {
 function testAriaExpanded(callback) {
   // Setup My Drive and Downloads and one folder inside each of them.
   fakeFileSystemURLEntries['filesystem:drive/root/folder1'] =
-      new MockDirectoryEntry(driveFileSystem, '/root/folder1');
+      MockDirectoryEntry.create(driveFileSystem, '/root/folder1');
   const downloadsFileSystem = volumeManager.volumeInfoList.item(1).fileSystem;
   fakeFileSystemURLEntries['filesystem:downloads/folder1'] =
-      new MockDirectoryEntry(downloadsFileSystem, '/folder1');
+      MockDirectoryEntry.create(downloadsFileSystem, '/folder1');
 
   // Populate the directory tree with the mock filesystem.
   let directoryTree = createElements();

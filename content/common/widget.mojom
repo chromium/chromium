@@ -8,5 +8,11 @@ import "content/common/input/input_handler.mojom";
 
 // Interface exposed by the renderer for Widgets.
 interface Widget {
-  SetupWidgetInputHandler(WidgetInputHandler& request, WidgetInputHandlerHost host);
+  // Setup the input channel for this widget. If the widget is a frame,
+  // then it will have a FrameInputHandler and the WidgetInputHandler should
+  // be obtained using that interface instead. The frame's FrameInputHandler
+  // uses associated receivers to ensure serial ordering with the frame
+  // input messages.
+  SetupWidgetInputHandler(pending_receiver<WidgetInputHandler> request,
+                          pending_remote<WidgetInputHandlerHost> host);
 };

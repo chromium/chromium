@@ -17,14 +17,8 @@ static_library("ascriber") {
   sources = [
     "data_use.cc",
     "data_use.h",
-    "data_use_ascriber.cc",
-    "data_use_ascriber.h",
     "data_use_measurement.cc",
     "data_use_measurement.h",
-    "data_use_network_delegate.cc",
-    "data_use_network_delegate.h",
-    "data_use_recorder.cc",
-    "data_use_recorder.h",
   ]
   deps = [
     ":core",
@@ -38,7 +32,6 @@ static_library("ascriber") {
 source_set("unit_tests") {
   sources = [
     "data_use_measurement_unittest.cc",
-    "data_use_network_delegate_unittest.cc",
   ]
   testonly = true
   deps = [
@@ -47,6 +40,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/metrics:metrics",
     "//net:test_support",
+    "//services/network:test_support",
     "//testing/gtest",
   ]
 }

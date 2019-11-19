@@ -10,7 +10,7 @@
     `);
   await TestRunner.addStylesheetTag('resources/highlight-in-source.css');
 
-  CoverageTestRunner.startCoverage();
+  await CoverageTestRunner.startCoverage();
   await TestRunner.evaluateInPagePromise('performActions()');
   await CoverageTestRunner.stopCoverage();
   await CoverageTestRunner.dumpDecorations('highlight-in-source.css');

@@ -45,7 +45,7 @@ class WebAppMetrics : public KeyedService, public SiteEngagementObserver {
   static constexpr int kNumUserInstalledAppsNotCounted = -1;
   int num_user_installed_apps_ = kNumUserInstalledAppsNotCounted;
 
-  Profile* profile_;
+  Profile* const profile_;
 
   base::WeakPtrFactory<WebAppMetrics> weak_ptr_factory_{this};
 

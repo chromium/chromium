@@ -81,7 +81,7 @@ class URLRequestFailedJob : public URLRequestJob {
   const int net_error_;
   int64_t total_received_bytes_;
 
-  base::WeakPtrFactory<URLRequestFailedJob> weak_factory_;
+  base::WeakPtrFactory<URLRequestFailedJob> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(URLRequestFailedJob);
 };

@@ -135,7 +135,7 @@ void ClientHintsPreferences::UpdateFromAcceptClientHintsLifetimeHeader(
   if (!conversion_ok || persist_duration_seconds <= 0)
     return;
 
-  persist_duration_ = TimeDelta::FromSeconds(persist_duration_seconds);
+  persist_duration_ = base::TimeDelta::FromSeconds(persist_duration_seconds);
   if (context)
     context->CountPersistentClientHintHeaders();
 }

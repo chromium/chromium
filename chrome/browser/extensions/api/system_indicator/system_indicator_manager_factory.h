@@ -8,7 +8,9 @@
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
-class Profile;
+namespace content {
+class BrowserContext;
+}
 
 namespace extensions {
 class SystemIndicatorManager;
@@ -16,7 +18,8 @@ class SystemIndicatorManager;
 // BrowserContextKeyedServiceFactory for each SystemIndicatorManager.
 class SystemIndicatorManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
-  static SystemIndicatorManager* GetForProfile(Profile* profile);
+  static SystemIndicatorManager* GetForContext(
+      content::BrowserContext* context);
 
   static SystemIndicatorManagerFactory* GetInstance();
 
@@ -26,9 +29,10 @@ class SystemIndicatorManagerFactory : public BrowserContextKeyedServiceFactory {
   SystemIndicatorManagerFactory();
   ~SystemIndicatorManagerFactory() override;
 
-  // BrowserContextKeyedBaseFactory implementation.
+  // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* profile) const override;
+      content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
 }  // namespace extensions

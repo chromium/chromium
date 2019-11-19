@@ -1,0 +1,53 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+
+// Provides a way to organize persistent per-origin/per-cdm-type data
+// in the browser's file system.
+interface CdmStorage {
+  enum Status {
+    kSuccess,  // File was successfully opened.
+    kInUse,    // File is already open by another client.
+    kFailure   // Unable to open file.
+  };
+
+  // Opens the file specified by |file_name|. Can be called multiple times for
+  // different files, or for the same file if the first one has been closed.
+  // If successful, kSuccess will be returned, and |cdm_file| should be used to
+  // access the file. |cdm_file| should be closed when access to the file is no
+  // longer needed. On failure, |status| <> kSuccess and |cdm_file| is null.
+  // - If the file is already opened, kInUse will be returned in |status|.
+  // - |file_name| must not contain forward slash ('/') or backslash ('\'),
+  //   and must not start with an underscore ('_'). If this happens,
+  //   |status| == kFailure is returned.
+  Open(string file_name)
+    => (Status status, pending_associated_remote<CdmFile>? cdm_file);
+};
+
+// Provides a way to access the contents of the file opened. When the connection
+// to this object is broken, it is assumed that the file has been closed and
+// that no more operations will be performed on it. Only 1 Read() or Write()
+// operation should be in flight at any time.
+interface CdmFile {
+  enum Status {
+    kSuccess,  // Operation succeeded.
+    kFailure   // Operation failed.
+  };
+
+  // Reads the contents of the file and return them in |data|. Returns
+  // kSuccess and the file contents if successful. Errors reading the file will
+  // return kFailure. If the opened file does not exist, Read() will return
+  // kSuccess and |data| will be the empty array.
+  Read() => (Status status, array<uint8> data);
+
+  // Updates the contents of the existing file with |data|. If the
+  // write operation is successful, then kSuccess is returned, otherwise
+  // kFailure is returned. If |data| is empty, then the file is deleted to
+  // save space. The contents of the file are unknown if Write()
+  // fails.
+  Write(array<uint8> data) => (Status status);
+};

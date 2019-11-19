@@ -1,0 +1,10 @@
+{
+  "traceEvents": [
+    {"pid":12345,"tid":12345,"ts":826,"ph":"X","cat":"cc,benchmark",
+        "name":"Scheduler::BeginFrame","dur":32,"tdur":32,"tts":816688,
+        "args":{}}
+  ],
+  "metadata":{
+    "trace-config":"{\"included_categories\":[\"benchmark\"]}"
+  }
+}

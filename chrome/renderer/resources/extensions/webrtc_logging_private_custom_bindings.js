@@ -4,17 +4,11 @@
 
 // Custom binding for the webrtcLoggingPrivate API.
 
-var binding = apiBridge ||
-              require('binding').Binding.create('webrtcLoggingPrivate');
-
 var getBindDirectoryEntryCallback =
     require('fileEntryBindingUtil').getBindDirectoryEntryCallback;
 
-binding.registerCustomHook(function(binding, id, contextType) {
+apiBridge.registerCustomHook(function(binding, id, contextType) {
   var apiFunctions = binding.apiFunctions;
   apiFunctions.setCustomCallback('getLogsDirectory',
                                  getBindDirectoryEntryCallback());
 });
-
-if (!apiBridge)
-  exports.$set('binding', binding.generate());

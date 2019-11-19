@@ -100,26 +100,16 @@ void UpSampler::Process(const float* source_p,
       direct_convolver_ ? direct_convolver_->ConvolutionKernelSize()
                         : simple_fft_convolver_->ConvolutionKernelSize();
 
-  bool is_input_block_size_good = source_frames_to_process == input_block_size_;
-  DCHECK(is_input_block_size_good);
-  if (!is_input_block_size_good)
-    return;
+  DCHECK_EQ(source_frames_to_process, input_block_size_);
 
-  bool is_temp_buffer_good = source_frames_to_process == temp_buffer_.size();
-  DCHECK(is_temp_buffer_good);
-  if (!is_temp_buffer_good)
-    return;
+  DCHECK_EQ(source_frames_to_process, temp_buffer_.size());
 
   size_t half_size = convolution_kernel_size / 2;
 
-  // Copy source samples to 2nd half of input buffer.
-  bool is_input_buffer_good =
-      input_buffer_.size() == source_frames_to_process * 2 &&
-      half_size <= source_frames_to_process;
-  DCHECK(is_input_buffer_good);
-  if (!is_input_buffer_good)
-    return;
+  DCHECK_EQ(input_buffer_.size(), source_frames_to_process * 2);
+  DCHECK_LE(half_size, source_frames_to_process);
 
+  // Copy source samples to 2nd half of input buffer.
   float* input_p = input_buffer_.Data() + source_frames_to_process;
   memcpy(input_p, source_p, sizeof(float) * source_frames_to_process);
 

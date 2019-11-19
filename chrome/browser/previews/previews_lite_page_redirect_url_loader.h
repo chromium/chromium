@@ -10,28 +10,39 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/previews/previews_lite_page_serving_url_loader.h"
+#include "chrome/browser/availability/availability_prober.h"
+#include "chrome/browser/previews/previews_lite_page_redirect_serving_url_loader.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_response.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
+class PrefService;
+
 namespace previews {
 
 using HandleRequest = base::OnceCallback<void(
-    std::unique_ptr<PreviewsLitePageServingURLLoader> serving_url_loader,
+    std::unique_ptr<PreviewsLitePageRedirectServingURLLoader>
+        serving_url_loader,
     content::URLLoaderRequestInterceptor::RequestHandler handler)>;
 
 // A URL loader that attempts to fetch an HTTPS server lite page, and if
 // successful, redirects to the lite page URL, and hands the underlying
 // network URLLoader to a success callback. Currently, it supports serving the
-// Preview and falling back to default behavior.
-class PreviewsLitePageRedirectURLLoader : public network::mojom::URLLoader {
+// Preview and falling back to default behavior. If enabled, the origin server
+// will be probed in parallel with the request to the lite page server and the
+// probe must complete successfully before the success callback is run.
+class PreviewsLitePageRedirectURLLoader : public network::mojom::URLLoader,
+                                          public AvailabilityProber::Delegate {
  public:
   PreviewsLitePageRedirectURLLoader(
+      content::BrowserContext* browser_context,
       const network::ResourceRequest& tentative_resource_request,
       HandleRequest callback);
   ~PreviewsLitePageRedirectURLLoader() override;
@@ -48,12 +59,17 @@ class PreviewsLitePageRedirectURLLoader : public network::mojom::URLLoader {
   // Creates a redirect to |original_url|.
   void StartRedirectToOriginalURL(const GURL& original_url);
 
+  // AvailabilityProber::Delegate:
+  bool ShouldSendNextProbe() override;
+  bool IsResponseSuccess(net::Error net_error,
+                         const network::mojom::URLResponseHead* head,
+                         std::unique_ptr<std::string> body) override;
+
  private:
   // network::mojom::URLLoader:
   void FollowRedirect(const std::vector<std::string>& removed_headers,
                       const net::HttpRequestHeaders& modified_headers,
                       const base::Optional<GURL>& new_url) override;
-  void ProceedWithResponse() override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -81,14 +97,14 @@ class PreviewsLitePageRedirectURLLoader : public network::mojom::URLLoader {
   // redirect to the lite page server URL.
   void StartHandlingRedirectToModifiedRequest(
       const network::ResourceRequest& resource_request,
-      network::mojom::URLLoaderRequest request,
-      network::mojom::URLLoaderClientPtr client);
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
   // Helper method for setting up and serving |redirect_info| to |client|.
   void StartHandlingRedirect(
       const network::ResourceRequest& /* resource_request */,
-      network::mojom::URLLoaderRequest request,
-      network::mojom::URLLoaderClientPtr client);
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
   // Helper method to create redirect information to |redirect_url| and modify
   // |redirect_info_| and |modified_resource_request_|.
@@ -97,8 +113,21 @@ class PreviewsLitePageRedirectURLLoader : public network::mojom::URLLoader {
   // Mojo error handling. Deletes |this|.
   void OnConnectionClosed();
 
+  // Checks that both the origin probe and the previews request have completed
+  // before calling |OnLitePageSuccess|.
+  void MaybeCallOnLitePageSuccess();
+
+  // A callback passed to |origin_connectivity_prober_| to notify the completion
+  // of a probe.
+  void OnOriginProbeComplete(bool success);
+
+  // Starts the origin probe given the original page url.
+  void StartOriginProbe(const GURL& original_url,
+                        const scoped_refptr<network::SharedURLLoaderFactory>&
+                            network_loader_factory);
+
   // The underlying URLLoader that speculatively tries to fetch the lite page.
-  std::unique_ptr<PreviewsLitePageServingURLLoader> serving_url_loader_;
+  std::unique_ptr<PreviewsLitePageRedirectServingURLLoader> serving_url_loader_;
 
   // A copy of the initial resource request that has been modified to fetch
   // the lite page.
@@ -120,11 +149,28 @@ class PreviewsLitePageRedirectURLLoader : public network::mojom::URLLoader {
   mojo::Binding<network::mojom::URLLoader> binding_;
 
   // The owning client. Used for serving redirects.
-  network::mojom::URLLoaderClientPtr client_;
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
+
+  // A reference to the profile's prefs. May be null.
+  PrefService* pref_service_;
+
+  // Before a preview can be triggered, we must check that the origin site is
+  // accessible on the network. This prober manages that check and is only set
+  // while determining if a preview can be served.
+  std::unique_ptr<AvailabilityProber> origin_connectivity_prober_;
+
+  // Used to remember if the origin probe completes successfully before the
+  // litepage request.
+  bool origin_probe_finished_successfully_;
+
+  // Used to remember if the lite page request completes successfully before the
+  // origin probe.
+  bool litepage_request_finished_successfully_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<PreviewsLitePageRedirectURLLoader> weak_ptr_factory_;
+  base::WeakPtrFactory<PreviewsLitePageRedirectURLLoader> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(PreviewsLitePageRedirectURLLoader);
 };

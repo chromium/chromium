@@ -276,8 +276,8 @@ bool FilePathWatcherKQueue::Watch(const FilePath& path,
   // callback cannot be invoked after |kqueue_watch_controller_| (which is a
   // member of |this|) has been deleted.
   kqueue_watch_controller_ = FileDescriptorWatcher::WatchReadable(
-      kqueue_,
-      Bind(&FilePathWatcherKQueue::OnKQueueReadable, Unretained(this)));
+      kqueue_, BindRepeating(&FilePathWatcherKQueue::OnKQueueReadable,
+                             Unretained(this)));
 
   return true;
 }

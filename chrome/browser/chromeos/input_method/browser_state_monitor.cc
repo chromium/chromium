@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/notification_service.h"
 #include "ui/base/ime/chromeos/input_method_delegate.h"
 #include "ui/base/ime/chromeos/input_method_util.h"
@@ -16,93 +17,63 @@ namespace input_method {
 BrowserStateMonitor::BrowserStateMonitor(
     const base::Callback<void(InputMethodManager::UISessionState)>& observer)
     : observer_(observer), ui_session_(InputMethodManager::STATE_LOGIN_SCREEN) {
-  notification_registrar_.Add(this,
-                              chrome::NOTIFICATION_LOGIN_USER_CHANGED,
-                              content::NotificationService::AllSources());
-  notification_registrar_.Add(this,
-                              chrome::NOTIFICATION_SESSION_STARTED,
-                              content::NotificationService::AllSources());
-  notification_registrar_.Add(this,
-                              chrome::NOTIFICATION_SCREEN_LOCK_STATE_CHANGED,
-                              content::NotificationService::AllSources());
+  session_manager::SessionManager::Get()->AddObserver(this);
   // We should not use ALL_BROWSERS_CLOSING here since logout might be cancelled
   // by JavaScript after ALL_BROWSERS_CLOSING is sent (crosbug.com/11055).
   notification_registrar_.Add(this,
                               chrome::NOTIFICATION_APP_TERMINATING,
                               content::NotificationService::AllSources());
 
-  if (!observer_.is_null())
+  if (observer_)
     observer_.Run(ui_session_);
 }
 
 BrowserStateMonitor::~BrowserStateMonitor() {
+  session_manager::SessionManager::Get()->RemoveObserver(this);
 }
 
-void BrowserStateMonitor::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  const InputMethodManager::UISessionState old_ui_session = ui_session_;
-  switch (type) {
-    case chrome::NOTIFICATION_APP_TERMINATING: {
-      ui_session_ = InputMethodManager::STATE_TERMINATING;
-      break;
-    }
-    case chrome::NOTIFICATION_LOGIN_USER_CHANGED: {
-      // The user logged in, but the browser window for user session is not yet
-      // ready. An initial input method hasn't been set to the manager.
-      // Note that the notification is also sent when Chrome crashes/restarts
-      // as of writing, but it might be changed in the future (therefore we need
-      // to listen to NOTIFICATION_SESSION_STARTED as well.)
-      DVLOG(1) << "Received chrome::NOTIFICATION_LOGIN_USER_CHANGED";
-      ui_session_ = InputMethodManager::STATE_BROWSER_SCREEN;
-      break;
-    }
-    case chrome::NOTIFICATION_SESSION_STARTED: {
-      // The user logged in, and the browser window for user session is ready.
-      // An initial input method has already been set.
-      // We should NOT call InitializePrefMembers() here since the notification
-      // is sent in the PreProfileInit phase in case when Chrome crashes and
-      // restarts.
-      DVLOG(1) << "Received chrome::NOTIFICATION_SESSION_STARTED";
-      ui_session_ = InputMethodManager::STATE_BROWSER_SCREEN;
-      break;
-    }
-    case chrome::NOTIFICATION_SCREEN_LOCK_STATE_CHANGED: {
-      const bool is_screen_locked = *content::Details<bool>(details).ptr();
-      ui_session_ = is_screen_locked ? InputMethodManager::STATE_LOCK_SCREEN
-                                     : InputMethodManager::STATE_BROWSER_SCREEN;
-      break;
-    }
-    default: {
-      NOTREACHED();
-      break;
-    }
-  }
-
-  if (old_ui_session != ui_session_ && !observer_.is_null())
-    observer_.Run(ui_session_);
-
-  // Note: browser notifications are sent in the following order.
+void BrowserStateMonitor::OnSessionStateChanged() {
+  // Note: session state changes in the following order.
   //
   // Normal login:
-  // 1. chrome::NOTIFICATION_LOGIN_USER_CHANGED is sent.
+  // 1. State changes to LOGGED_IN_NOT_ACTIVE
   // 2. Preferences::NotifyPrefChanged() is called. preload_engines (which
   //    might change the current input method) and current/previous input method
   //    are sent to the manager.
-  // 3. chrome::NOTIFICATION_SESSION_STARTED is sent.
+  // 3. State changes to ACTIVE
   //
   // Chrome crash/restart (after logging in):
-  // 1. chrome::NOTIFICATION_LOGIN_USER_CHANGED might be sent.
-  // 2. chrome::NOTIFICATION_SESSION_STARTED is sent.
+  // 1. State *might* change to LOGGED_IN_NOT_ACTIVE
+  // 2. State changes to ACTIVE
   // 3. Preferences::NotifyPrefChanged() is called. The same things as above
   //    happen.
   //
   // We have to be careful not to overwrite both local and user prefs when
-  // preloaded engine is set. Note that it does not work to do nothing in
-  // InputMethodChanged() between chrome::NOTIFICATION_LOGIN_USER_CHANGED and
-  // chrome::NOTIFICATION_SESSION_STARTED because SESSION_STARTED is sent very
-  // early on Chrome crash/restart.
+  // NotifyPrefChanged is called. Note that it does not work to do nothing in
+  // InputMethodChanged() between LOGGED_IN_NOT_ACTIVE and ACTIVE because
+  // SESSION_STARTED is sent very early on Chrome crash/restart.
+  auto session_state = session_manager::SessionManager::Get()->session_state();
+  if (session_state == session_manager::SessionState::ACTIVE ||
+      session_state == session_manager::SessionState::LOGGED_IN_NOT_ACTIVE) {
+    SetUiSessionState(InputMethodManager::STATE_BROWSER_SCREEN);
+  } else if (session_state == session_manager::SessionState::LOCKED) {
+    SetUiSessionState(InputMethodManager::STATE_LOCK_SCREEN);
+  }
+}
+
+void BrowserStateMonitor::Observe(int type,
+                                  const content::NotificationSource& source,
+                                  const content::NotificationDetails& details) {
+  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+  SetUiSessionState(InputMethodManager::STATE_TERMINATING);
+}
+
+void BrowserStateMonitor::SetUiSessionState(
+    InputMethodManager::UISessionState ui_session) {
+  const InputMethodManager::UISessionState old_ui_session = ui_session_;
+  ui_session_ = ui_session;
+  if (old_ui_session != ui_session_ && !observer_.is_null())
+    observer_.Run(ui_session_);
 }
 
 }  // namespace input_method

@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
@@ -43,13 +42,9 @@ class EventTarget;
 class MediaQueryListListener;
 
 class CORE_EXPORT ScriptedAnimationController
-    : public GarbageCollectedFinalized<ScriptedAnimationController>,
+    : public GarbageCollected<ScriptedAnimationController>,
       public NameClient {
  public:
-  static ScriptedAnimationController* Create(Document* document) {
-    return MakeGarbageCollected<ScriptedAnimationController>(document);
-  }
-
   explicit ScriptedAnimationController(Document*);
   virtual ~ScriptedAnimationController() = default;
 
@@ -61,10 +56,15 @@ class CORE_EXPORT ScriptedAnimationController
 
   // Animation frame callbacks are used for requestAnimationFrame().
   typedef int CallbackId;
-  CallbackId RegisterCallback(FrameRequestCallbackCollection::FrameCallback*);
-  void CancelCallback(CallbackId);
+  CallbackId RegisterFrameCallback(
+      FrameRequestCallbackCollection::FrameCallback*);
+  void CancelFrameCallback(CallbackId);
   // Returns true if any callback is currently registered.
-  bool HasCallback() const;
+  bool HasFrameCallback() const;
+
+  CallbackId RegisterPostFrameCallback(
+      FrameRequestCallbackCollection::FrameCallback*);
+  void CancelPostFrameCallback(CallbackId);
 
   // Animation frame events are used for resize events, scroll events, etc.
   void EnqueueEvent(Event*);
@@ -80,6 +80,7 @@ class CORE_EXPORT ScriptedAnimationController
   // Invokes callbacks, dispatches events, etc. The order is defined by HTML:
   // https://html.spec.whatwg.org/C/#event-loop-processing-model
   void ServiceScriptedAnimations(base::TimeTicks monotonic_time_now);
+  void RunPostFrameCallbacks();
 
   void Pause();
   void Unpause();
@@ -95,10 +96,10 @@ class CORE_EXPORT ScriptedAnimationController
   void RunTasks();
   void DispatchEvents(
       const AtomicString& event_interface_filter = AtomicString());
-  void ExecuteCallbacks(base::TimeTicks monotonic_time_now);
+  void ExecuteFrameCallbacks();
   void CallMediaQueryListListeners();
 
-  bool HasScheduledItems() const;
+  bool HasScheduledFrameTasks() const;
 
   Member<Document> document_;
   FrameRequestCallbackCollection callback_collection_;
@@ -110,6 +111,8 @@ class CORE_EXPORT ScriptedAnimationController
   using MediaQueryListListeners =
       HeapListHashSet<Member<MediaQueryListListener>>;
   MediaQueryListListeners media_query_list_listeners_;
+  double current_frame_time_ms_ = 0.0;
+  double current_frame_legacy_time_ms_ = 0.0;
 
   // Used for animation metrics; see cc::CompositorTimingHistory::DidDraw.
   bool current_frame_had_raf_;

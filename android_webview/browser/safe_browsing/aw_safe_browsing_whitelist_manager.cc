@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -81,7 +82,7 @@ void InsertRuleToTrie(const std::vector<base::StringPiece>& components,
         return;
     }
   }
-  DCHECK(node != root);
+  DCHECK_NE(node, root);
   // Optimization. If match_prefix is true, remove all nodes originating
   // from that node.
   if (match_prefix) {
@@ -100,7 +101,7 @@ std::vector<base::StringPiece> SplitHost(const GURL& url) {
         base::SplitStringPiece(url.host_piece(), ".", base::KEEP_WHITESPACE,
                                base::SPLIT_WANT_NONEMPTY);
   }
-  DCHECK(components.size() > 0);
+  DCHECK_GT(components.size(), 0u);
   return components;
 }
 

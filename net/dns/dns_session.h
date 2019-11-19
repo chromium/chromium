@@ -32,12 +32,19 @@ class NetLog;
 struct NetLogSource;
 class StreamSocket;
 
+// Number of failures allowed before a DoH server is designated 'unavailable'.
+// In AUTOMATIC mode, non-probe DoH queries should not be sent to DoH servers
+// that have reached this limit.
+// This limit is different from the failure limit that governs insecure async
+// resolver bypass in several ways: the failures need not be consecutive,
+// NXDOMAIN responses are never counted as failures, and the outcome of
+// fallback queries is not taken into account.
+const int kAutomaticModeFailureLimit = 10;
+
 // Session parameters and state shared between DNS transactions.
 // Ref-counted so that DnsClient::Request can keep working in absence of
 // DnsClient. A DnsSession must be recreated when DnsConfig changes.
-class NET_EXPORT_PRIVATE DnsSession
-    : public base::RefCounted<DnsSession>,
-      public NetworkChangeNotifier::ConnectionTypeObserver {
+class NET_EXPORT_PRIVATE DnsSession : public base::RefCounted<DnsSession> {
  public:
   typedef base::Callback<int()> RandCallback;
 
@@ -68,6 +75,9 @@ class NET_EXPORT_PRIVATE DnsSession
   const DnsConfig& config() const { return config_; }
   NetLog* net_log() const { return net_log_; }
 
+  void UpdateTimeouts(NetworkChangeNotifier::ConnectionType type);
+  void InitializeServerStats();
+
   // Return the next random query ID.
   uint16_t NextQueryId() const;
 
@@ -76,27 +86,44 @@ class NET_EXPORT_PRIVATE DnsSession
 
   // Start with |server_index| and find the index of the next known
   // good non-dns-over-https server to use on this attempt. Returns
-  // |server_index| if this server has no recorded failures, or if
-  // there are no other servers that have not failed or have failed
-  // longer time ago.
+  // |server_index| if this server is below the failure limit, or if there are
+  // no other servers below the failure limit or with an older last failure.
   unsigned NextGoodServerIndex(unsigned server_index);
 
-  // Same as above, but for DNS over HTTPS servers and ignoring
-  // non-dns-over-https servers
-  unsigned NextGoodDnsOverHttpsServerIndex(unsigned server_index);
+  // Similar to |NextGoodServerIndex| except for DoH servers. If no DoH server
+  // is under the failure limit in AUTOMATIC mode, returns -1.
+  int NextGoodDohServerIndex(unsigned doh_server_index,
+                             DnsConfig::SecureDnsMode secure_dns_mode);
 
-  // Record that server failed to respond (due to SRV_FAIL or timeout).
-  void RecordServerFailure(unsigned server_index);
+  // Returns whether there is a DoH server that has a successful probe state.
+  bool HasAvailableDohServer();
+
+  // Returns the number of DoH servers with successful probe states.
+  unsigned NumAvailableDohServers();
+
+  // Record that server failed to respond (due to SRV_FAIL or timeout). If
+  // |is_doh_server| and the number of failures has surpassed a threshold,
+  // sets the DoH probe state to unavailable.
+  void RecordServerFailure(unsigned server_index, bool is_doh_server);
 
   // Record that server responded successfully.
-  void RecordServerSuccess(unsigned server_index);
+  void RecordServerSuccess(unsigned server_index, bool is_doh_server);
+
+  // Record the latest DoH probe state.
+  void SetProbeSuccess(unsigned doh_server_index, bool success);
 
   // Record how long it took to receive a response from the server.
-  void RecordRTT(unsigned server_index, base::TimeDelta rtt);
+  void RecordRTT(unsigned server_index,
+                 bool is_doh_server,
+                 base::TimeDelta rtt,
+                 int rv);
 
   // Return the timeout for the next query. |attempt| counts from 0 and is used
   // for exponential backoff.
   base::TimeDelta NextTimeout(unsigned server_index, int attempt);
+
+  // Return the timeout for the next DoH query.
+  base::TimeDelta NextDohTimeout(unsigned doh_server_index);
 
   // Allocate a socket, already connected to the server address.
   // When the SocketLease is destroyed, the socket will be freed.
@@ -110,18 +137,25 @@ class NET_EXPORT_PRIVATE DnsSession
 
  private:
   friend class base::RefCounted<DnsSession>;
-  ~DnsSession() override;
-
-  void UpdateTimeouts(NetworkChangeNotifier::ConnectionType type);
-  void InitializeServerStats();
+  struct ServerStats;
+  ~DnsSession();
 
   // Release a socket.
   void FreeSocket(unsigned server_index,
                   std::unique_ptr<DatagramClientSocket> socket);
 
-  // NetworkChangeNotifier::ConnectionTypeObserver:
-  void OnConnectionTypeChanged(
-      NetworkChangeNotifier::ConnectionType type) override;
+  // Returns the ServerStats for the designated server. Returns nullptr if no
+  // ServerStats found.
+  ServerStats* GetServerStats(unsigned server_index, bool is_doh_server);
+
+  // Return the timeout for the next query.
+  base::TimeDelta NextTimeoutHelper(ServerStats* server_stats, int attempt);
+
+  // Record the time to perform a query.
+  void RecordRTTForHistogram(unsigned server_index,
+                             bool is_doh_server,
+                             base::TimeDelta rtt,
+                             int rv);
 
   const DnsConfig config_;
   std::unique_ptr<DnsSocketPool> socket_pool_;
@@ -134,13 +168,11 @@ class NET_EXPORT_PRIVATE DnsSession
   base::TimeDelta initial_timeout_;
   base::TimeDelta max_timeout_;
 
-  struct ServerStats;
-
-  // Track runtime statistics of each DNS server. This combines both
-  // dns-over-https servers and non-dns-over-https servers.
-  // non-dns-over-https servers come first and dns-over-https servers
-  // started at the index of nameservers.size().
+  // Track runtime statistics of each insecure DNS server.
   std::vector<std::unique_ptr<ServerStats>> server_stats_;
+
+  // Track runtime statistics and availability of each DoH server.
+  std::vector<std::pair<std::unique_ptr<ServerStats>, bool>> doh_server_stats_;
 
   // Buckets shared for all |ServerStats::rtt_histogram|.
   struct RttBuckets : public base::BucketRanges {

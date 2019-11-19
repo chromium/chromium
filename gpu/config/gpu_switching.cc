@@ -80,11 +80,11 @@ bool SwitchableGPUsSupported(const GPUInfo& gpu_info,
 void InitializeSwitchableGPUs(
     const std::vector<int32_t>& driver_bug_workarounds) {
   gl::GLContext::SetSwitchableGPUsSupported();
-  if (ContainsWorkaround(driver_bug_workarounds, FORCE_DISCRETE_GPU)) {
-    gl::GLContext::SetForcedGpuPreference(gl::PreferDiscreteGpu);
+  if (ContainsWorkaround(driver_bug_workarounds, FORCE_HIGH_PERFORMANCE_GPU)) {
+    gl::GLContext::SetForcedGpuPreference(gl::GpuPreference::kHighPerformance);
     ForceDiscreteGPU();
-  } else if (ContainsWorkaround(driver_bug_workarounds, FORCE_INTEGRATED_GPU)) {
-    gl::GLContext::SetForcedGpuPreference(gl::PreferIntegratedGpu);
+  } else if (ContainsWorkaround(driver_bug_workarounds, FORCE_LOW_POWER_GPU)) {
+    gl::GLContext::SetForcedGpuPreference(gl::GpuPreference::kLowPower);
   }
 }
 

@@ -170,12 +170,14 @@ TEST_F(AutoclickDragEventRewriterTest, RewritesMouseMovesToDrags) {
   // The type should be a drag.
   ASSERT_EQ(ui::ET_MOUSE_DRAGGED, rewritten_event->type());
 
+  // Flags should include left mouse button.
+  EXPECT_EQ(flags | ui::EF_LEFT_MOUSE_BUTTON, rewritten_event->flags());
+
   // Everything else should be the same as the original.
   ui::MouseEvent* rewritten_mouse_event = rewritten_event->AsMouseEvent();
   EXPECT_EQ(location, rewritten_mouse_event->location());
   EXPECT_EQ(root_location, rewritten_mouse_event->root_location());
   EXPECT_EQ(time_stamp, rewritten_mouse_event->time_stamp());
-  EXPECT_EQ(flags, rewritten_mouse_event->flags());
   EXPECT_EQ(changed_button_flags,
             rewritten_mouse_event->changed_button_flags());
 }

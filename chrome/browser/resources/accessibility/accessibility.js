@@ -39,7 +39,7 @@ cr.define('accessibility', function() {
 
   function getIdFromData(data) {
     if (data.type == 'page') {
-      return data.processId + '.' + data.routeId;
+      return data.processId + '.' + data.routingId;
     } else if (data.type == 'browser') {
       return 'browser.' + data.sessionId;
     } else {
@@ -57,15 +57,24 @@ cr.define('accessibility', function() {
     const tree = $(id + ':tree');
     // If the tree is visible, request a new tree with the updated mode.
     const shouldRequestTree = !!tree && tree.style.display != 'none';
-    chrome.send('toggleAccessibility', [
-      String(data.processId), String(data.routeId), mode,
-      String(shouldRequestTree)
-    ]);
+    chrome.send('toggleAccessibility', [{
+                  'processId': data.processId,
+                  'routingId': data.routingId,
+                  'modeId': mode,
+                  'shouldRequestTree': shouldRequestTree
+                }]);
   }
 
   function requestTree(data, element) {
+    const allow = $('filter-allow').value;
+    const allowEmpty = $('filter-allow-empty').value;
+    const deny = $('filter-deny').value;
+    window.localStorage['chrome-accessibility-filter-allow'] = allow;
+    window.localStorage['chrome-accessibility-filter-allow-empty'] = allowEmpty;
+    window.localStorage['chrome-accessibility-filter-deny'] = deny;
+
     // The calling |element| is a button with an id of the format
-    // <treeId>:<requestType>, where requestType is one of 'showTree',
+    // <treeId>:<requestType>, where requestType is one of 'showOrRefreshTree',
     // 'copyTree'. Send the request type to C++ so is calls the corresponding
     // function with the result.
     const requestType = element.id.split(':')[1];
@@ -73,13 +82,41 @@ cr.define('accessibility', function() {
       const delay = $('native_ui_delay').value;
       setTimeout(() => {
         chrome.send(
-            'requestNativeUITree', [String(data.sessionId), requestType]);
+            'requestNativeUITree', [{
+              'sessionId': data.sessionId,
+              'requestType': requestType,
+              'filters':
+                  {'allow': allow, 'allowEmpty': allowEmpty, 'deny': deny}
+            }]);
       }, delay);
     } else {
       chrome.send(
-          'requestWebContentsTree',
-          [String(data.processId), String(data.routeId), requestType]);
+          'requestWebContentsTree', [{
+            'processId': data.processId,
+            'routingId': data.routingId,
+            'requestType': requestType,
+            'filters': {'allow': allow, 'allowEmpty': allowEmpty, 'deny': deny}
+          }]);
     }
+  }
+
+  function requestEvents(data, element) {
+    const start = element.textContent == 'Start recording';
+    if (start) {
+      element.textContent = 'Stop recording';
+      element.setAttribute('aria-expanded', 'true');
+
+      // TODO Hide all other start recording elements. UI should reflect the
+      // fact that there can only be one accessibility recorder at once.
+    } else {
+      element.textContent = 'Start recording';
+      element.setAttribute('aria-expanded', 'false');
+
+      // TODO Show all start recording elements.
+    }
+    chrome.send('requestAccessibilityEvents', [
+      {'processId': data.processId, 'routingId': data.routingId, 'start': start}
+    ]);
   }
 
   function initialize() {
@@ -91,7 +128,7 @@ cr.define('accessibility', function() {
     bindCheckbox('text', data['text']);
     bindCheckbox('screenreader', data['screenreader']);
     bindCheckbox('html', data['html']);
-    bindCheckbox('label_images', data['label_images']);
+    bindCheckbox('label_images', data['labelImages']);
     bindCheckbox('internal', data['internal']);
 
     $('pages').textContent = '';
@@ -105,6 +142,15 @@ cr.define('accessibility', function() {
     for (let i = 0; i < browsers.length; i++) {
       addToBrowsersList(browsers[i]);
     }
+
+    // Cache filters so they're easily accessible on page refresh.
+    const allow = window.localStorage['chrome-accessibility-filter-allow'];
+    const allowEmpty =
+        window.localStorage['chrome-accessibility-filter-allow-empty'];
+    const deny = window.localStorage['chrome-accessibility-filter-deny'];
+    $('filter-allow').value = allow ? allow : '*';
+    $('filter-allow-empty').value = allowEmpty ? allowEmpty : '';
+    $('filter-deny').value = deny ? deny : '';
   }
 
   function bindCheckbox(name, value) {
@@ -116,7 +162,8 @@ cr.define('accessibility', function() {
       $(name).labels[0].classList.add('disabled');
     }
     $(name).addEventListener('change', function() {
-      chrome.send('setGlobalFlag', [name, $(name).checked]);
+      chrome.send(
+          'setGlobalFlag', [{'flagName': name, 'enabled': $(name).checked}]);
       document.location.reload();
     });
   }
@@ -130,7 +177,7 @@ cr.define('accessibility', function() {
     formatRow(row, data);
 
     row.processId = data.processId;
-    row.routeId = data.routeId;
+    row.routingId = data.routingId;
 
     const pages = $('pages');
     pages.appendChild(row);
@@ -150,14 +197,14 @@ cr.define('accessibility', function() {
   function formatRow(row, data) {
     if (!('url' in data)) {
       if ('error' in data) {
-        row.appendChild(createErrorMessageElement(data, row));
+        row.appendChild(createErrorMessageElement(data));
         return;
       }
     }
 
     if (data.type == 'page') {
       const siteInfo = document.createElement('div');
-      const properties = ['favicon_url', 'name', 'url'];
+      const properties = ['faviconUrl', 'name', 'url'];
       for (let j = 0; j < properties.length; j++) {
         siteInfo.appendChild(formatValue(data, properties[j]));
       }
@@ -169,7 +216,7 @@ cr.define('accessibility', function() {
       row.appendChild(createModeElement(AXMode.kScreenReader, data, 'web'));
       row.appendChild(createModeElement(AXMode.kHTML, data, 'web'));
       row.appendChild(
-          createModeElement(AXMode.kLabelImages, data, 'label_images'));
+          createModeElement(AXMode.kLabelImages, data, 'labelImages'));
     } else {
       const siteInfo = document.createElement('span');
       siteInfo.appendChild(formatValue(data, 'name'));
@@ -178,14 +225,24 @@ cr.define('accessibility', function() {
 
     row.appendChild(document.createTextNode(' | '));
 
-    if ('tree' in data) {
-      row.appendChild(createTreeButtons(data, row.id));
-    } else {
-      row.appendChild(createShowAccessibilityTreeElement(data, row.id, false));
+    const hasTree = 'tree' in data;
+    row.appendChild(createShowAccessibilityTreeElement(data, row.id, hasTree));
+    if (navigator.clipboard) {
       row.appendChild(createCopyAccessibilityTreeElement(data, row.id));
-      if ('error' in data) {
-        row.appendChild(createErrorMessageElement(data, row));
-      }
+    }
+    if (hasTree) {
+      row.appendChild(createHideAccessibilityTreeElement(row.id));
+    }
+    row.appendChild(
+        createStartStopAccessibilityEventRecordingElement(data, row.id));
+
+    if (hasTree) {
+      row.appendChild(createAccessibilityOutputElement(data, row.id, 'tree'));
+    } else if ('eventLogs' in data) {
+      row.appendChild(
+          createAccessibilityOutputElement(data, row.id, 'eventLogs'));
+    } else if ('error' in data) {
+      row.appendChild(createErrorMessageElement(data));
     }
   }
 
@@ -200,7 +257,7 @@ cr.define('accessibility', function() {
   function formatValue(data, property) {
     const value = data[property];
 
-    if (property == 'favicon_url') {
+    if (property == 'faviconUrl') {
       const faviconElement = document.createElement('img');
       if (value) {
         faviconElement.src = value;
@@ -245,7 +302,7 @@ cr.define('accessibility', function() {
   }
 
   function createModeElement(mode, data, globalStateName) {
-    const currentMode = data['a11y_mode'];
+    const currentMode = data['a11yMode'];
     const link = document.createElement('a', 'action-link');
     link.setAttribute('role', 'button');
 
@@ -264,17 +321,6 @@ cr.define('accessibility', function() {
     return link;
   }
 
-  function createTreeButtons(data, id) {
-    const row = document.createElement('span');
-    row.appendChild(createShowAccessibilityTreeElement(data, id, true));
-    if (navigator.clipboard) {
-      row.appendChild(createCopyAccessibilityTreeElement(data, id));
-    }
-    row.appendChild(createHideAccessibilityTreeElement(id));
-    row.appendChild(createAccessibilityTreeElement(data, id));
-    return row;
-  }
-
   function createShowAccessibilityTreeElement(data, id, opt_refresh) {
     const show = document.createElement('button');
     if (opt_refresh) {
@@ -282,7 +328,7 @@ cr.define('accessibility', function() {
     } else {
       show.textContent = 'Show accessibility tree';
     }
-    show.id = id + ':showTree';
+    show.id = id + ':showOrRefreshTree';
     show.setAttribute('aria-expanded', String(opt_refresh));
     show.addEventListener('click', requestTree.bind(this, data, show));
     return show;
@@ -293,7 +339,7 @@ cr.define('accessibility', function() {
     hide.textContent = 'Hide accessibility tree';
     hide.id = id + ':hideTree';
     hide.addEventListener('click', function() {
-      const show = $(id + ':showTree');
+      const show = $(id + ':showOrRefreshTree');
       show.textContent = 'Show accessibility tree';
       show.setAttribute('aria-expanded', 'false');
       show.focus();
@@ -316,6 +362,15 @@ cr.define('accessibility', function() {
     return copy;
   }
 
+  function createStartStopAccessibilityEventRecordingElement(data, id) {
+    const show = document.createElement('button');
+    show.textContent = 'Start recording';
+    show.id = id + ':startOrStopEvents';
+    show.setAttribute('aria-expanded', 'false');
+    show.addEventListener('click', requestEvents.bind(this, data, show));
+    return show;
+  }
+
   function createErrorMessageElement(data) {
     const errorMessageElement = document.createElement('div');
     const errorMessage = data.error;
@@ -335,7 +390,7 @@ cr.define('accessibility', function() {
   }
 
   // Called from C++
-  function showTree(data) {
+  function showOrRefreshTree(data) {
     const id = getIdFromData(data);
     const row = $(id);
     if (!row) {
@@ -344,7 +399,20 @@ cr.define('accessibility', function() {
 
     row.textContent = '';
     formatRow(row, data);
-    $(id + ':hideTree').focus();
+    $(id + ':showOrRefreshTree').focus();
+  }
+
+  // Called from C++
+  function startOrStopEvents(data) {
+    const id = getIdFromData(data);
+    const row = $(id);
+    if (!row) {
+      return;
+    }
+
+    row.textContent = '';
+    formatRow(row, data);
+    $(id + ':startOrStopEvents').focus();
   }
 
   // Called from C++
@@ -371,11 +439,11 @@ cr.define('accessibility', function() {
       console.error('Unable to copy accessibility tree.', data.error);
     }
 
-
     const tree = $(id + ':tree');
     // If the tree is currently shown, update it since it may have changed.
     if (tree && tree.style.display != 'none') {
-      showTree(data);
+      showOrRefreshTree(data);
+      $(id + ':copyTree').focus();
     }
   }
 
@@ -388,20 +456,24 @@ cr.define('accessibility', function() {
     return row;
   }
 
-  function createAccessibilityTreeElement(data, id) {
-    let treeElement = $(id + ':tree');
-    if (treeElement) {
-      treeElement.style.display = '';
-    } else {
+  // type is either 'tree' or 'eventLogs'
+  function createAccessibilityOutputElement(data, id, type) {
+    let treeElement = $(id + ':' + type);
+    if (!treeElement) {
       treeElement = document.createElement('pre');
-      treeElement.id = id + ':tree';
+      treeElement.id = id + ':' + type;
     }
-    treeElement.textContent = data.tree;
+    treeElement.textContent = data[type];
     return treeElement;
   }
 
   // These are the functions we export so they can be called from C++.
-  return {copyTree: copyTree, initialize: initialize, showTree: showTree};
+  return {
+    copyTree: copyTree,
+    initialize: initialize,
+    showOrRefreshTree: showOrRefreshTree,
+    startOrStopEvents: startOrStopEvents
+  };
 });
 
 document.addEventListener('DOMContentLoaded', accessibility.initialize);

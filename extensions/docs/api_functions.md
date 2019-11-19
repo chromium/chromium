@@ -90,7 +90,7 @@ namespace gizmo {
 Next, we define the function in C++, starting with the header file.
 
 ```
-GizmoFrobulateFunction : public UIThreadExtensionFunction {
+GizmoFrobulateFunction : public ExtensionFunction {
  public:
   // This declares the extension function and initiates the mapping between the
   // string name to the C++ class as well as the histogram value.

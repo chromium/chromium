@@ -25,6 +25,7 @@
 
 // https://html.spec.whatwg.org/C/#texttracklist
 
+[Exposed=Window]
 interface TextTrackList : EventTarget {
     readonly attribute unsigned long length;
     getter TextTrack (unsigned long index);

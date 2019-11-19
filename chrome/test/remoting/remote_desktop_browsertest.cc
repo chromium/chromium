@@ -12,10 +12,10 @@
 #include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/path_service.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/launch_service/launch_service.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
-#include "chrome/browser/ui/extensions/app_launch_params.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -222,12 +222,12 @@ content::WebContents* RemoteDesktopBrowserTest::LaunchChromotingApp(
     window_open_disposition = WindowOpenDisposition::NEW_WINDOW;
   }
 
-  OpenApplication(AppLaunchParams(browser()->profile(), extension_,
-                                  is_platform_app()
-                                      ? extensions::LAUNCH_CONTAINER_NONE
-                                      : extensions::LAUNCH_CONTAINER_TAB,
-                                  window_open_disposition,
-                                  extensions::SOURCE_TEST));
+  apps::LaunchService::Get(browser()->profile())
+      ->OpenApplication(apps::AppLaunchParams(
+          extension_->id(),
+          is_platform_app() ? apps::mojom::LaunchContainer::kLaunchContainerNone
+                            : apps::mojom::LaunchContainer::kLaunchContainerTab,
+          window_open_disposition, apps::mojom::AppLaunchSource::kSourceTest));
 
   observer.Wait();
 

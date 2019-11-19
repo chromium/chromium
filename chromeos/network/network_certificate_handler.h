@@ -69,6 +69,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertificateHandler
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+  bool HasObserver(Observer* observer);
 
   const std::vector<Certificate>& server_ca_certificates() const {
     return server_ca_certificates_;

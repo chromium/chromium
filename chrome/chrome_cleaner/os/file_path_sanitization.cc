@@ -245,8 +245,14 @@ base::string16 SanitizePath(const base::FilePath& path) {
 base::string16 SanitizeCommandLine(const base::CommandLine& command_line) {
   base::FilePath sanitized_program =
       SanitizePathImpl(command_line.GetProgram());
-  base::CommandLine sanitized_command_line(command_line);
-  sanitized_command_line.SetProgram(sanitized_program);
+  base::CommandLine sanitized_command_line(sanitized_program);
+  for (const auto& s : command_line.GetSwitches()) {
+    sanitized_command_line.AppendSwitchNative(
+        s.first, SanitizePath(base::FilePath(s.second)));
+  }
+  for (const auto& arg : command_line.GetArgs()) {
+    sanitized_command_line.AppendArgNative(SanitizePath(base::FilePath(arg)));
+  }
   return sanitized_command_line.GetCommandLineString();
 }
 
@@ -267,6 +273,58 @@ base::FilePath ExpandSpecialFolderPath(int csidl,
   }
 
   return base::FilePath();
+}
+
+bool ValidateSandboxFilePath(const base::FilePath& file_path) {
+  const base::FilePath::StringType& path_string = file_path.value();
+  if (path_string.empty()) {
+    LOG(ERROR) << "File path cannot be empty";
+    return false;
+  }
+  // Disallow UNC paths (\\ServerName\...) and paths with the universal \\?\
+  // prefix described at
+  // https://docs.microsoft.com/en-us/windows/desktop/fileio/naming-a-file#namespaces
+  if (path_string.length() >= 2 &&
+      base::FilePath::IsSeparator(path_string[0]) &&
+      base::FilePath::IsSeparator(path_string[1])) {
+    // Don't print the path because SanitizePath is not safe to run on UNC
+    // paths.
+    LOG(ERROR) << "File path must not start with \\\\";
+    return false;
+  }
+  // Disallow paths with the native prefix (\??\) described at
+  // https://googleprojectzero.blogspot.com/2016/02/the-definitive-guide-on-win32-to-nt.html.
+  if (path_string.length() >= 4 &&
+      base::FilePath::IsSeparator(path_string[0]) && path_string[1] == '?' &&
+      path_string[2] == '?' && base::FilePath::IsSeparator(path_string[3])) {
+    // Don't print the path because SanitizePath is not safe to run on native
+    // paths.
+    LOG(ERROR) << "File path must not start with \\??\\";
+    return false;
+  }
+  if (!file_path.IsAbsolute()) {
+    LOG(ERROR) << "File path must be absolute, received "
+               << SanitizePath(file_path);
+    return false;
+  }
+  return true;
+}
+
+bool IsLocalFileAttributes(DWORD file_attributes) {
+  return !(file_attributes == INVALID_FILE_ATTRIBUTES ||
+           file_attributes & FILE_ATTRIBUTE_OFFLINE ||
+           file_attributes & FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS ||
+           file_attributes & FILE_ATTRIBUTE_RECALL_ON_OPEN);
+}
+
+bool IsFilePresentLocally(const base::FilePath& file_name) {
+  DWORD file_attributes = ::GetFileAttributes(file_name.value().c_str());
+  if (file_attributes == INVALID_FILE_ATTRIBUTES) {
+    PLOG(ERROR) << "IsFilePresentLocally failed to get attributes: "
+                << SanitizePath(file_name);
+    return false;
+  }
+  return IsLocalFileAttributes(file_attributes);
 }
 
 }  // namespace chrome_cleaner

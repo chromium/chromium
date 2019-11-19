@@ -4,16 +4,15 @@
 
 #include "third_party/blink/renderer/core/svg/svg_animated_href.h"
 
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
-
-SVGAnimatedHref* SVGAnimatedHref::Create(SVGElement* context_element) {
-  return MakeGarbageCollected<SVGAnimatedHref>(context_element);
-}
 
 void SVGAnimatedHref::Trace(blink::Visitor* visitor) {
   visitor->Trace(xlink_href_);
@@ -23,7 +22,8 @@ void SVGAnimatedHref::Trace(blink::Visitor* visitor) {
 SVGAnimatedHref::SVGAnimatedHref(SVGElement* context_element)
     : SVGAnimatedString(context_element, svg_names::kHrefAttr),
       xlink_href_(
-          SVGAnimatedString::Create(context_element, xlink_names::kHrefAttr)) {}
+          MakeGarbageCollected<SVGAnimatedString>(context_element,
+                                                  xlink_names::kHrefAttr)) {}
 
 void SVGAnimatedHref::AddToPropertyMap(SVGElement* element) {
   element->AddToPropertyMap(this);

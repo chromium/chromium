@@ -31,6 +31,16 @@ GeneratedPrefsFactory::GeneratedPrefsFactory()
 
 GeneratedPrefsFactory::~GeneratedPrefsFactory() {}
 
+content::BrowserContext* GeneratedPrefsFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  // Use |context| even if it is off-the-record/incognito.
+  return context;
+}
+
+bool GeneratedPrefsFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}
+
 KeyedService* GeneratedPrefsFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
   return new GeneratedPrefs(static_cast<Profile*>(profile));

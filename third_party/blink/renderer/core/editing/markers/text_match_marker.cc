@@ -9,7 +9,7 @@ namespace blink {
 TextMatchMarker::TextMatchMarker(unsigned start_offset,
                                  unsigned end_offset,
                                  MatchStatus status)
-    : DocumentMarker(start_offset, end_offset), match_status_(status) {}
+    : TextMarkerBase(start_offset, end_offset), match_status_(status) {}
 
 DocumentMarker::MarkerType TextMatchMarker::GetType() const {
   return DocumentMarker::kTextMatch;
@@ -27,21 +27,21 @@ bool TextMatchMarker::IsRendered() const {
   return layout_status_ == LayoutStatus::kValidNotNull;
 }
 
-bool TextMatchMarker::Contains(const LayoutPoint& point) const {
+bool TextMatchMarker::Contains(const PhysicalOffset& point) const {
   DCHECK_EQ(layout_status_, LayoutStatus::kValidNotNull);
-  return layout_rect_.Contains(point);
+  return rect_.Contains(point);
 }
 
-void TextMatchMarker::SetLayoutRect(const LayoutRect& rect) {
-  if (layout_status_ == LayoutStatus::kValidNotNull && rect == layout_rect_)
+void TextMatchMarker::SetRect(const PhysicalRect& rect) {
+  if (layout_status_ == LayoutStatus::kValidNotNull && rect == rect_)
     return;
   layout_status_ = LayoutStatus::kValidNotNull;
-  layout_rect_ = rect;
+  rect_ = rect;
 }
 
-const LayoutRect& TextMatchMarker::GetLayoutRect() const {
+const PhysicalRect& TextMatchMarker::GetRect() const {
   DCHECK_EQ(layout_status_, LayoutStatus::kValidNotNull);
-  return layout_rect_;
+  return rect_;
 }
 
 void TextMatchMarker::NullifyLayoutRect() {

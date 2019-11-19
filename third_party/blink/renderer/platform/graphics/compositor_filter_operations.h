@@ -30,7 +30,9 @@ class PLATFORM_EXPORT CompositorFilterOperations {
   void AppendBrightnessFilter(float amount);
   void AppendContrastFilter(float amount);
   void AppendOpacityFilter(float amount);
-  void AppendBlurFilter(float amount);
+  void AppendBlurFilter(float amount,
+                        SkBlurImageFilter::TileMode tile_mode =
+                            SkBlurImageFilter::kClampToBlack_TileMode);
   void AppendDropShadowFilter(IntPoint offset, float std_deviation, Color);
   void AppendColorMatrixFilter(const cc::FilterOperation::Matrix&);
   void AppendZoomFilter(float amount, int inset);
@@ -40,6 +42,7 @@ class PLATFORM_EXPORT CompositorFilterOperations {
 
   void Clear();
   bool IsEmpty() const;
+  size_t size() const { return filter_operations_.size(); }
 
   // Returns a rect covering the destination pixels that can be affected by
   // source pixels in |inputRect|.

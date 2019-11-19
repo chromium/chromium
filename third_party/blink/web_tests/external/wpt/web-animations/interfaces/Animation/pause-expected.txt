@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS pause() a running animation
-FAIL pause() from idle assert_equals: in paused play state expected "paused" but got "pending"
-PASS pause() from idle with a negative playbackRate
-PASS pause() from idle with a negative playbackRate and endless effect
-PASS pause() on a finished animation
-Harness: the test ran to completion.
-

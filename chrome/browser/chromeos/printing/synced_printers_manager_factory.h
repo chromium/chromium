@@ -16,6 +16,8 @@ class BrowserContext;
 
 namespace chromeos {
 
+class SyncedPrintersManager;
+
 class SyncedPrintersManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
   static SyncedPrintersManager* GetForBrowserContext(

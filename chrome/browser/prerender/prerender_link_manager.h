@@ -17,6 +17,7 @@
 #include "chrome/browser/prerender/prerender_handle.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 struct Referrer;
@@ -51,6 +52,7 @@ class PrerenderLinkManager : public KeyedService,
                       const GURL& url,
                       uint32_t rel_types,
                       const content::Referrer& referrer,
+                      const url::Origin& initiator_origin,
                       const gfx::Size& size,
                       int render_view_route_id);
 
@@ -80,6 +82,7 @@ class PrerenderLinkManager : public KeyedService,
                   const GURL& url,
                   uint32_t rel_types,
                   const content::Referrer& referrer,
+                  const url::Origin& initiator_origin,
                   const gfx::Size& size,
                   int render_view_route_id,
                   base::TimeTicks creation_time,
@@ -93,6 +96,7 @@ class PrerenderLinkManager : public KeyedService,
     GURL url;
     uint32_t rel_types;
     content::Referrer referrer;
+    url::Origin initiator_origin;
     gfx::Size size;
     int render_view_route_id;
 

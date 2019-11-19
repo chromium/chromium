@@ -23,9 +23,9 @@ import org.chromium.webapk.lib.common.WebApkMetaDataKeys;
 
 /** Tests for WebApkUtils. */
 @RunWith(LocalRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, packageName = WebApkUtilsTest.WEBAPK_PACKAGE_NAME)
+@Config(manifest = Config.NONE)
 public class WebApkUtilsTest {
-    protected static final String WEBAPK_PACKAGE_NAME = "org.chromium.webapk.test_package";
+    protected static final String WEBAPK_PACKAGE_NAME = "org.chromium.test";
 
     private Context mContext;
     private ShadowPackageManager mPackageManager;

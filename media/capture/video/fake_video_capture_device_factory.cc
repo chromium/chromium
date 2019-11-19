@@ -12,11 +12,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/media_switches.h"
 
 namespace {
-
-static const size_t kDepthDeviceIndex = 1;
 
 // Cap the frame rate command line input to reasonable values.
 static const float kFakeCaptureMinFrameRate = 5.0f;
@@ -35,6 +34,8 @@ static constexpr std::array<gfx::Size, 5> kDefaultResolutions{
      gfx::Size(1280, 720), gfx::Size(1920, 1080)}};
 static constexpr std::array<float, 1> kDefaultFrameRates{{20.0f}};
 
+static const double kInitialPan = 100.0;
+static const double kInitialTilt = 100.0;
 static const double kInitialZoom = 100.0;
 static const double kInitialExposureTime = 50.0;
 static const double kInitialFocusDistance = 50.0;
@@ -114,7 +115,8 @@ FakeVideoCaptureDeviceFactory::~FakeVideoCaptureDeviceFactory() = default;
 // static
 std::unique_ptr<VideoCaptureDevice>
 FakeVideoCaptureDeviceFactory::CreateDeviceWithSettings(
-    const FakeVideoCaptureDeviceSettings& settings) {
+    const FakeVideoCaptureDeviceSettings& settings,
+    std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support) {
   if (settings.supported_formats.empty())
     return CreateErrorDevice();
 
@@ -135,8 +137,9 @@ FakeVideoCaptureDeviceFactory::CreateDeviceWithSettings(
 
   const VideoCaptureFormat& initial_format = settings.supported_formats.front();
   auto device_state = std::make_unique<FakeDeviceState>(
-      kInitialZoom, kInitialExposureTime, kInitialFocusDistance,
-      initial_format.frame_rate, initial_format.pixel_format);
+      kInitialPan, kInitialTilt, kInitialZoom, kInitialExposureTime,
+      kInitialFocusDistance, initial_format.frame_rate,
+      initial_format.pixel_format);
 
   auto photo_frame_painter = std::make_unique<PacmanFramePainter>(
       PacmanFramePainter::Format::SK_N32, device_state.get());
@@ -146,8 +149,8 @@ FakeVideoCaptureDeviceFactory::CreateDeviceWithSettings(
 
   return std::make_unique<FakeVideoCaptureDevice>(
       settings.supported_formats,
-      std::make_unique<FrameDelivererFactory>(settings.delivery_mode,
-                                              device_state.get()),
+      std::make_unique<FrameDelivererFactory>(
+          settings.delivery_mode, device_state.get(), std::move(gmb_support)),
       std::move(photo_device), std::move(device_state));
 }
 
@@ -156,13 +159,14 @@ std::unique_ptr<VideoCaptureDevice>
 FakeVideoCaptureDeviceFactory::CreateDeviceWithDefaultResolutions(
     VideoPixelFormat pixel_format,
     FakeVideoCaptureDevice::DeliveryMode delivery_mode,
-    float frame_rate) {
+    float frame_rate,
+    std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support) {
   FakeVideoCaptureDeviceSettings settings;
   settings.delivery_mode = delivery_mode;
   for (const gfx::Size& resolution : kDefaultResolutions)
     settings.supported_formats.emplace_back(resolution, frame_rate,
                                             pixel_format);
-  return CreateDeviceWithSettings(settings);
+  return CreateDeviceWithSettings(settings, std::move(gmb_support));
 }
 
 // static
@@ -218,18 +222,6 @@ void FakeVideoCaptureDeviceFactory::GetDeviceDescriptors(
         );
     entry_index++;
   }
-
-  // Video device on index |kDepthDeviceIndex| is depth video capture device.
-  // Fill the camera calibration information only for it.
-  if (device_descriptors->size() <= kDepthDeviceIndex)
-    return;
-  VideoCaptureDeviceDescriptor& depth_device(
-      (*device_descriptors)[kDepthDeviceIndex]);
-  depth_device.camera_calibration.emplace();
-  depth_device.camera_calibration->focal_length_x = 135.0;
-  depth_device.camera_calibration->focal_length_y = 135.6;
-  depth_device.camera_calibration->depth_near = 0.0;
-  depth_device.camera_calibration->depth_far = 65.535;
 }
 
 void FakeVideoCaptureDeviceFactory::GetSupportedFormats(

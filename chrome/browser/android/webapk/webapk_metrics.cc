@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "chrome/browser/android/webapk/chrome_webapk_host.h"
 
 namespace webapk {
 

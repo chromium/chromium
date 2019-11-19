@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/services/paint_preview_compositor/public/mojom",
+  "+ui/gfx/android",
+  "+ui/gfx/geometry",
+]

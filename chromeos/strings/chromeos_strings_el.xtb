@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
+<translation id="1482734542997480527">Ο τομέας <ph name="ENROLLMENT_DOMAIN" /> διαχειρίζεται αυτήν τη συσκευή και μπορεί να έχει τη δυνατότητα να παρακολουθεί τη δραστηριότητά σας.</translation>
 <translation id="1510238584712386396">Λειτουργία εκκίνησης</translation>
 <translation id="1734367976349034509">Αυτή η συσκευή βρίσκεται υπό τη διαχείριση επιχείρησης</translation>
+<translation id="1930797645656624981">Υπηρεσία μεθόδου εισαγωγής Chrome OS</translation>
+<translation id="1979103255016296513">Εκπρόθεσμη αλλαγή κωδικού πρόσβασης</translation>
 <translation id="2049639323467105390">Η διαχείριση της συσκευής γίνεται από τον τομέα <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">Δεν βρέθηκε τίποτα στην οθόνη</translation>
 <translation id="2338501278241028356">Ενεργοποιήστε το Bluetooth, για να εντοπίσετε κοντινές συσκευές</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="2872961005593481000">Τερματισμός λειτουργίας</translation>
-<translation id="3147142846278915599">Εφαρμογή εκκίνησης (συγχρονισμός εφαρμογών…)</translation>
+<translation id="3008341117444806826">ΑΝΑΝΕΩΣΗ</translation>
+<translation id="3838338534323494292">Νέος κωδικός πρόσβασης</translation>
+<translation id="4003259559679196451">Ο τομέας <ph name="ENROLLMENT_DOMAIN" /> διαχειρίζεται αυτήν τη συσκευή και έχει πρόσβαση σε όλη τη δραστηριότητα των χρηστών, συμπεριλαμβανομένων των ιστοσελίδων που επισκέπτεστε, των κωδικών πρόσβασης και του ηλεκτρονικού ταχυδρομείου.</translation>
+<translation id="4227825898293920515">Ο κωδικός πρόσβασης λήγει σε <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Το εισιτήριο Kerberos θα λήξει σύντομα</translation>
+<translation id="445059817448385655">Παλιός κωδικός πρόσβασης</translation>
+<translation id="467510802200863975">Δεν ταιριάζουν οι κωδικοί πρόσβασης</translation>
 <translation id="4731797938093519117">Γονική πρόσβαση</translation>
+<translation id="4890353053343094602">Επιλέξτε άμεσα έναν νέο</translation>
 <translation id="5212543919916444558">Δεν βρέθηκε κάτι με το οποίο να μπορώ να σας βοηθήσω στην οθόνη σας.
 Πατήστε στο μικρόφωνο για να ρωτήσετε οτιδήποτε θέλετε.</translation>
 <translation id="5222676887888702881">Έξοδος</translation>
+<translation id="5317780077021120954">Αποθήκευση</translation>
+<translation id="5332948983412042822">Επιλέξτε έναν νέο τώρα</translation>
 <translation id="5457599981699367932">Περιήγηση ως επισκέπτης</translation>
 <translation id="54609108002486618">Διαχειριζόμενη</translation>
 <translation id="5832805196449965646">Προσθήκη ατόμου</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
+<translation id="6058625436358447366">Για να τελειώσετε, εισαγάγετε τον παλιό και τον νέο κωδικό πρόσβασης</translation>
+<translation id="6106186594183574873">Για να τελειώσετε, εισαγάγετε τον παλιό κωδικό πρόσβασης</translation>
+<translation id="6146993107019042706">Για να ολοκληρώσετε, εισαγάγετε τον νέο κωδικό πρόσβασης</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
+<translation id="7690294790491645610">Επιβεβαίωση νέου κωδικού πρόσβασης</translation>
+<translation id="808894953321890993">Αλλαγή κωδικού πρόσβασης</translation>
+<translation id="8747900814994928677">Επιβεβαίωση αλλαγής</translation>
+<translation id="910415269708673980">Ανανέωση εισιτηρίου για το <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Ξεκλείδωμα</translation>
 </translationbundle>

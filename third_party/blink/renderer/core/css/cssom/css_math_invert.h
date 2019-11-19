@@ -53,7 +53,7 @@ class CORE_EXPORT CSSMathInvert : public CSSMathValue {
     return value_->Equals(*other_invert.value_);
   }
 
-  CSSCalcExpressionNode* ToCalcExpressionNode() const final {
+  CSSMathExpressionNode* ToCalcExpressionNode() const final {
     // TODO(crbug.com/782103): Implement.
     return nullptr;
   }

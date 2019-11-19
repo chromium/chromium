@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL throw a 'NotAllowedError' when invoking navigator.getBattery() within cross-origin iframe promise_test: Unhandled rejection with value: object "SecurityError: Blocked a frame with origin "https://web-platform.test:8444" from accessing a cross-origin frame."
+Harness: the test ran to completion.
+

@@ -1,0 +1,3 @@
+include_rules = [
+  "+chrome/android/modules/dev_ui/provider/jni_headers",
+]

@@ -12,7 +12,7 @@
     android:layout_height="wrap_content"
     android:gravity="end"
     android:orientation="vertical"
-    android:padding="@dimen/snippets_padding" >
+    android:padding="@dimen/card_padding" >
 
     <org.chromium.ui.widget.TextViewWithLeading
         style="@style/SuggestionCardTitleModern"
@@ -29,7 +29,7 @@
         tools:text="Status card body can be over multiple lines and quite wide" />
 
     <org.chromium.ui.widget.ButtonCompat
-        style="@style/SuggestionCardAction"
+        style="@style/ListActionButton"
         android:id="@+id/status_action_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

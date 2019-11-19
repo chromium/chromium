@@ -7,7 +7,7 @@
 
 [
     ImplementedAs=NavigatorInstalledApp,
-    OriginTrialEnabled=InstalledApp
+    RuntimeEnabled=InstalledApp
 ] partial interface Navigator {
-    [CallWith=ScriptState, Measure, SecureContext] Promise<RelatedApplication> getInstalledRelatedApps();
+    [CallWith=ScriptState, Measure, SecureContext] Promise<sequence<RelatedApplication>> getInstalledRelatedApps();
 };

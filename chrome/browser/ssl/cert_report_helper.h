@@ -78,6 +78,13 @@ class CertReportHelper {
   // Sends a report about an invalid certificate to the server.
   void FinishCertCollection();
 
+  using ClientDetailsCallback =
+      base::RepeatingCallback<void(CertificateErrorReport* report)>;
+
+  void set_client_details_callback(ClientDetailsCallback callback) {
+    client_details_callback_ = callback;
+  }
+
  private:
   // Checks whether a checkbox should be shown on the page that allows
   // the user to opt in to Safe Browsing extended reporting.
@@ -104,6 +111,8 @@ class CertReportHelper {
   const base::Time interstitial_time_;
   // Helpful for recording metrics about cert reports.
   security_interstitials::MetricsHelper* metrics_helper_;
+  // Appends additional details to a report.
+  ClientDetailsCallback client_details_callback_;
   // Default to DID_NOT_PROCEED. If no user action is processed via
   // HandleReportingCommands() before FinishCertCollection(), then act as if the
   // user did not proceed for reporting purposes -- e.g. closing the tab without

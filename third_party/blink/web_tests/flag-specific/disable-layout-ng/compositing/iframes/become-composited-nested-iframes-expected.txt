@@ -1,0 +1,179 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [785, 1500],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutIFrame IFRAME",
+      "bounds": [284, 204],
+      "transform": 1
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [280, 200],
+      "transform": 2
+    },
+    {
+      "name": "LayoutIFrame IFRAME",
+      "bounds": [252, 172],
+      "transform": 3
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [250, 170],
+      "backgroundColor": "#C0C0C0",
+      "transform": 4
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='iframe-content' class='box'",
+      "bounds": [210, 210],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 5
+    },
+    {
+      "name": "LayoutIFrame IFRAME",
+      "bounds": [284, 204],
+      "transform": 6
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [280, 200],
+      "transform": 7
+    },
+    {
+      "name": "LayoutIFrame IFRAME",
+      "bounds": [252, 172],
+      "transform": 8
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [250, 170],
+      "backgroundColor": "#C0C0C0",
+      "transform": 9
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='iframe-content' class='box'",
+      "bounds": [210, 210],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 10
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='box' class='composited'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF"
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, 120, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [2, 2, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [1, 1, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 10, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, 344, 0, 1]
+      ]
+    },
+    {
+      "id": 7,
+      "parent": 6,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [2, 2, 0, 1]
+      ]
+    },
+    {
+      "id": 8,
+      "parent": 7,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 9,
+      "parent": 8,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [1, 1, 0, 1]
+      ]
+    },
+    {
+      "id": 10,
+      "parent": 9,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 10, 0, 1]
+      ]
+    }
+  ]
+}
+

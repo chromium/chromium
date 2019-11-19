@@ -422,7 +422,7 @@ std::vector<AvProduct> GetAntiVirusProducts(bool report_full_names) {
     // The WSC interface is preferred here as it's fully documented, but only
     // available on Windows 8 and above, so instead use the undocumented WMI
     // interface on Windows 7 and below.
-    if (os_info->version() >= base::win::VERSION_WIN8)
+    if (os_info->version() >= base::win::Version::WIN8)
       result = FillAntiVirusProductsFromWSC(report_full_names, &av_products);
     else
       result = FillAntiVirusProductsFromWMI(report_full_names, &av_products);

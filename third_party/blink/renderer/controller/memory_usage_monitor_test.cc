@@ -18,7 +18,25 @@ class CountingObserver : public MemoryUsageMonitor::Observer {
   int count_ = 0;
 };
 
-TEST(MemoryUsageMonitorTest, StartStopMonitor) {
+class MemoryUsageMonitorTest : public testing::Test {
+ public:
+  MemoryUsageMonitorTest() = default;
+
+  void SetUp() override {
+    monitor_.reset(new MemoryUsageMonitor);
+    MemoryUsageMonitor::SetInstanceForTesting(monitor_.get());
+  }
+
+  void TearDown() override {
+    MemoryUsageMonitor::SetInstanceForTesting(nullptr);
+    monitor_.reset();
+  }
+
+ private:
+  std::unique_ptr<MemoryUsageMonitor> monitor_;
+};
+
+TEST_F(MemoryUsageMonitorTest, StartStopMonitor) {
   std::unique_ptr<CountingObserver> observer =
       std::make_unique<CountingObserver>();
   EXPECT_FALSE(MemoryUsageMonitor::Instance().TimerIsActive());
@@ -27,14 +45,14 @@ TEST(MemoryUsageMonitorTest, StartStopMonitor) {
   EXPECT_TRUE(MemoryUsageMonitor::Instance().TimerIsActive());
   EXPECT_EQ(0, observer->count());
 
-  test::RunDelayedTasks(TimeDelta::FromSeconds(1));
+  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
   EXPECT_EQ(1, observer->count());
 
-  test::RunDelayedTasks(TimeDelta::FromSeconds(1));
+  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
   EXPECT_EQ(2, observer->count());
   MemoryUsageMonitor::Instance().RemoveObserver(observer.get());
 
-  test::RunDelayedTasks(TimeDelta::FromSeconds(1));
+  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
   EXPECT_EQ(2, observer->count());
   EXPECT_FALSE(MemoryUsageMonitor::Instance().TimerIsActive());
 }
@@ -47,7 +65,7 @@ class OneShotObserver : public CountingObserver {
   }
 };
 
-TEST(MemoryUsageMonitorTest, RemoveObserverFromNotification) {
+TEST_F(MemoryUsageMonitorTest, RemoveObserverFromNotification) {
   std::unique_ptr<OneShotObserver> observer1 =
       std::make_unique<OneShotObserver>();
   std::unique_ptr<CountingObserver> observer2 =
@@ -56,10 +74,10 @@ TEST(MemoryUsageMonitorTest, RemoveObserverFromNotification) {
   MemoryUsageMonitor::Instance().AddObserver(observer2.get());
   EXPECT_EQ(0, observer1->count());
   EXPECT_EQ(0, observer2->count());
-  test::RunDelayedTasks(TimeDelta::FromSeconds(1));
+  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
   EXPECT_EQ(1, observer1->count());
   EXPECT_EQ(1, observer2->count());
-  test::RunDelayedTasks(TimeDelta::FromSeconds(1));
+  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
   EXPECT_EQ(1, observer1->count());
   EXPECT_EQ(2, observer2->count());
 }

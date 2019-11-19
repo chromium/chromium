@@ -21,6 +21,8 @@ test script, then filing bugs for any potential failures. If the environment
 is set up correctly, the actual tests should run automatically and unattended.
 """
 
+from __future__ import print_function
+
 import os
 import pywinauto
 import re
@@ -229,4 +231,3 @@ class NvdaChromeTest(unittest.TestCase):
 
 if __name__ == '__main__':
   unittest.main()
-

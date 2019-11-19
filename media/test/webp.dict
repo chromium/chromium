@@ -1,0 +1,22 @@
+# This file is copied as is from:
+# https://github.com/mirrorer/afl/blob/master/dictionaries/webp.dict
+#
+# AFL dictionary for WebP images
+# ------------------------------
+#
+# Created by Michal Zalewski <lcamtuf@google.com>
+#
+
+header_RIFF="RIFF"
+header_WEBP="WEBP"
+
+section_ALPH="ALPH"
+section_ANIM="ANIM"
+section_ANMF="ANMF"
+section_EXIF="EXIF"
+section_FRGM="FRGM"
+section_ICCP="ICCP"
+section_VP8="VP8 "
+section_VP8L="VP8L"
+section_VP8X="VP8X"
+section_XMP="XMP "

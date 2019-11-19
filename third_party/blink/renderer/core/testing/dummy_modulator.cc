@@ -5,38 +5,39 @@
 #include "third_party/blink/renderer/core/testing/dummy_modulator.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/core/script/script_module_resolver.h"
+#include "third_party/blink/renderer/core/script/module_record_resolver.h"
 
 namespace blink {
 
 namespace {
 
-class EmptyScriptModuleResolver final : public ScriptModuleResolver {
+class EmptyModuleRecordResolver final : public ModuleRecordResolver {
  public:
-  EmptyScriptModuleResolver() = default;
+  EmptyModuleRecordResolver() = default;
 
   // We ignore {Unr,R}egisterModuleScript() calls caused by
   // ModuleScript::CreateForTest().
   void RegisterModuleScript(const ModuleScript*) override {}
   void UnregisterModuleScript(const ModuleScript*) override {}
 
-  const ModuleScript* GetHostDefined(const ScriptModule&) const override {
+  const ModuleScript* GetModuleScriptFromModuleRecord(
+      v8::Local<v8::Module>) const override {
     NOTREACHED();
     return nullptr;
   }
 
-  ScriptModule Resolve(const String& specifier,
-                       const ScriptModule& referrer,
-                       ExceptionState&) override {
+  v8::Local<v8::Module> Resolve(const String& specifier,
+                                v8::Local<v8::Module> referrer,
+                                ExceptionState&) override {
     NOTREACHED();
-    return ScriptModule();
+    return v8::Local<v8::Module>();
   }
 };
 
 }  // namespace
 
 DummyModulator::DummyModulator()
-    : resolver_(MakeGarbageCollected<EmptyScriptModuleResolver>()) {}
+    : resolver_(MakeGarbageCollected<EmptyModuleRecordResolver>()) {}
 
 DummyModulator::~DummyModulator() = default;
 
@@ -58,7 +59,21 @@ bool DummyModulator::IsScriptingDisabled() const {
   return false;
 }
 
-ScriptModuleResolver* DummyModulator::GetScriptModuleResolver() {
+bool DummyModulator::ImportMapsEnabled() const {
+  return false;
+}
+
+bool DummyModulator::BuiltInModuleInfraEnabled() const {
+  return false;
+}
+
+bool DummyModulator::BuiltInModuleEnabled(blink::layered_api::Module) const {
+  return false;
+}
+
+void DummyModulator::BuiltInModuleUseCount(blink::layered_api::Module) const {}
+
+ModuleRecordResolver* DummyModulator::GetModuleRecordResolver() {
   return resolver_.Get();
 }
 
@@ -114,7 +129,17 @@ void DummyModulator::ResolveDynamically(const String&,
   NOTREACHED();
 }
 
-void DummyModulator::RegisterImportMap(const ImportMap*) {
+ScriptValue DummyModulator::CreateTypeError(const String& message) const {
+  NOTREACHED();
+  return ScriptValue();
+}
+ScriptValue DummyModulator::CreateSyntaxError(const String& message) const {
+  NOTREACHED();
+  return ScriptValue();
+}
+
+void DummyModulator::RegisterImportMap(const ImportMap*,
+                                       ScriptValue error_to_rethrow) {
   NOTREACHED();
 }
 
@@ -127,19 +152,25 @@ void DummyModulator::ClearIsAcquiringImportMaps() {
   NOTREACHED();
 }
 
+const ImportMap* DummyModulator::GetImportMapForTest() const {
+  NOTREACHED();
+  return nullptr;
+}
+
 ModuleImportMeta DummyModulator::HostGetImportMetaProperties(
-    ScriptModule) const {
+    v8::Local<v8::Module>) const {
   NOTREACHED();
   return ModuleImportMeta(String());
 }
 
-ScriptValue DummyModulator::InstantiateModule(ScriptModule) {
+ScriptValue DummyModulator::InstantiateModule(v8::Local<v8::Module>,
+                                              const KURL&) {
   NOTREACHED();
   return ScriptValue();
 }
 
-Vector<Modulator::ModuleRequest> DummyModulator::ModuleRequestsFromScriptModule(
-    ScriptModule) {
+Vector<Modulator::ModuleRequest> DummyModulator::ModuleRequestsFromModuleRecord(
+    v8::Local<v8::Module>) {
   NOTREACHED();
   return Vector<ModuleRequest>();
 }

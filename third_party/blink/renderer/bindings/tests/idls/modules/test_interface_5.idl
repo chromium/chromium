@@ -39,7 +39,7 @@ callback VoidCallbackFunctionModules = void ();
     Custom=LegacyCallAsFunction,
     DoNotCheckConstants,
     ImplementedAs=TestInterface5Implementation,
-    RuntimeEnabled=FeatureName,
+    RuntimeEnabled=RuntimeFeature,
     Exposed=(Worker,Window)
 ] interface TestInterface5 : TestInterfaceEmpty {
     // members needed to test [ImplementedAs], as this affect attribute

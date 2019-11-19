@@ -7,15 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-extern NSString* const kUMAMetricsButtonAccessibilityIdentifier;
-
 @protocol ApplicationCommands;
+class Browser;
 @protocol SyncPresenter;
-@class TabModel;
-
-namespace ios {
-class ChromeBrowserState;
-}
 
 // The first screen displayed to the user on First Run. User must agree to the
 // Chrome Terms of Service before proceeding to use Chrome.
@@ -29,10 +23,9 @@ class ChromeBrowserState;
 
 // Initializes with the given browser state object and tab model, neither of
 // which can be nil.
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
-                            tabModel:(TabModel*)tabModel
-                           presenter:(id<SyncPresenter>)presenter
-                          dispatcher:(id<ApplicationCommands>)dispatcher
+- (instancetype)initWithBrowser:(Browser*)browser
+                      presenter:(id<SyncPresenter>)presenter
+                     dispatcher:(id<ApplicationCommands>)dispatcher
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

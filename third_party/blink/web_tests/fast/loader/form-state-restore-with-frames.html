@@ -4,7 +4,7 @@
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="cache-control" content="no-cache">
 </head>
-<body onload="startTest()">
+<body onload="setTimeout(startTest, 1)">
 <input name="name1" id="input1">
 <iframe id="frame1" src="resources/form-state-restore-with-frames-1.html">
 </iframe>
@@ -26,12 +26,10 @@ function startTest() {
         shouldBeEqualToString('frame$(frame$($("frame1"), "frame2"), "input3").value', 'value3');
         finishJSTest();
     } else {
-        setTimeout(function() {
-            $('input1').value = 'visited';
-            frame$($('frame1'), 'input2').value = 'value2';
-            frame$(frame$($('frame1'), 'frame2'), 'input3').value = 'value3';
-            $('form1').submit();
-        }, 0);
+        $('input1').value = 'visited';
+        frame$($('frame1'), 'input2').value = 'value2';
+        frame$(frame$($('frame1'), 'frame2'), 'input3').value = 'value3';
+        $('form1').submit();
     }
 }
 

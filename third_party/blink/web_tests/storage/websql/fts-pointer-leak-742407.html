@@ -8,7 +8,8 @@
 
 async_test(testCase => {
   const database = openDatabase(
-      'Fts3CrashTest', '1.0', 'Database for FTS3 crash test', 1024 * 1024);
+      'Fts3PointerLeakTest', '1.0', 'Database for FTS3 pointer leak test',
+      1024 * 1024);
   assert_not_equals(database, null, 'openDatabase should not fail');
 
   database.transaction(testCase.step_func(transaction => {

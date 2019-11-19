@@ -42,12 +42,11 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
-                  const InitCB& init_cb,
+                  InitCB init_cb,
                   const OutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
-  void Decode(scoped_refptr<DecoderBuffer> buffer,
-              const DecodeCB& decode_cb) override;
-  void Reset(const base::Closure& closure) override;
+  void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
+  void Reset(base::OnceClosure closure) override;
 
   // Callback called from within FFmpeg to allocate a buffer based on
   // the dimensions of |codec_context|. See AVCodecContext.get_buffer2

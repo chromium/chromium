@@ -12,12 +12,15 @@ HeapProfiler.disable finished successfully
 IndexedDB.disable finished successfully
 LayerTree.disable finished successfully
 Log.disable finished successfully
+Media.disable finished successfully
 Network.disable finished successfully
 Overlay.disable finished successfully
 Page.disable finished successfully
 Performance.disable finished successfully
 Profiler.disable finished successfully
 Runtime.disable finished successfully
+WebAudio.disable finished successfully
+WebAuthn.disable finished successfully
 
 Accessibility.enable finished successfully
 Accessibility.disable finished successfully
@@ -55,6 +58,9 @@ LayerTree.disable finished successfully
 Log.enable finished successfully
 Log.disable finished successfully
 
+Media.enable finished successfully
+Media.disable finished successfully
+
 Network.enable finished successfully
 Network.disable finished successfully
 
@@ -72,4 +78,10 @@ Profiler.disable finished successfully
 
 Runtime.enable finished successfully
 Runtime.disable finished successfully
+
+WebAudio.enable finished successfully
+WebAudio.disable finished successfully
+
+WebAuthn.enable finished successfully
+WebAuthn.disable finished successfully
 

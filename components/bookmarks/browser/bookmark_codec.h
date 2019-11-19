@@ -11,8 +11,8 @@
 #include <set>
 #include <string>
 
+#include "base/hash/md5.h"
 #include "base/macros.h"
-#include "base/md5.h"
 #include "base/strings/string16.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 
@@ -90,6 +90,10 @@ class BookmarkCodec {
   // false after encoding.
   bool ids_reassigned() const { return ids_reassigned_; }
 
+  // Returns whether the GUIDs were reassigned during decoding. Always returns
+  // false after encoding.
+  bool guids_reassigned() const { return guids_reassigned_; }
+
   // Names of the various keys written to the Value.
   static const char kRootsKey[];
   static const char kRootFolderNameKey[];
@@ -100,6 +104,7 @@ class BookmarkCodec {
   static const char kIdKey[];
   static const char kTypeKey[];
   static const char kNameKey[];
+  static const char kGuidKey[];
   static const char kDateAddedKey[];
   static const char kURLKey[];
   static const char kDateModifiedKey[];
@@ -188,6 +193,9 @@ class BookmarkCodec {
   // Whether or not IDs were reassigned by the codec.
   bool ids_reassigned_;
 
+  // Whether or not GUIDs were reassigned by the codec.
+  bool guids_reassigned_;
+
   // Whether or not IDs are valid. This is initially true, but set to false
   // if an id is missing or not unique.
   bool ids_valid_;
@@ -195,6 +203,10 @@ class BookmarkCodec {
   // Contains the id of each of the nodes found in the file. Used to determine
   // if we have duplicates.
   std::set<int64_t> ids_;
+
+  // Contains the GUID of each of the nodes found in the file. Used to determine
+  // if we have duplicates.
+  std::set<std::string> guids_;
 
   // MD5 context used to compute MD5 hash of all bookmark data.
   base::MD5Context md5_context_;

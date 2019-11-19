@@ -10,6 +10,7 @@ jumbo_component("win") {
   deps = [
     "//base",
     "//skia",
+    "//ui/base",
     "//ui/events",
     "//ui/gfx",
     "//ui/gfx/geometry",

@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Nepodarilo sa dekódovať obrázok: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">Lokalizácia sa použila, parameter default_locale však nebol v manifeste určený.</translation>
 <translation id="2576842806987913196">Súbor CRX s týmto názvom už existuje.</translation>
-<translation id="2753617847762399167">Neplatná cesta (absolútna alebo relatívna s '..'): <ph name="IMAGE_PATH" /></translation>
 <translation id="2785530881066938471">Pre skript obsahu sa nepodarilo sa načítať súbor „<ph name="RELATIVE_PATH" />“. Nepoužíva kódovanie UTF-8.</translation>
 <translation id="2903070246402204397">Rozšírenie <ph name="EXTENSION_NAME" /> (ID rozšírenia: <ph name="EXTENSION_ID" />) je blokované správcom. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Nepodarilo sa nainštalovať balík: <ph name="ERROR_CODE" /></translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Tvarované okná nie sú podporované.</translation>
 <translation id="5456409301717116725">Toto rozšírenie obsahuje súbor kľúča <ph name="KEY_PATH" />. Pravdepodobne to nechcete urobiť.</translation>
 <translation id="5486326529110362464">Vstupná hodnota pre súkromný kľúč musí existovať.</translation>
-<translation id="5627523580512561598">rozšírenie <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">Zobrazenie rozšírenia: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Správca tohto počítača vyžaduje, aby bolo nainštalované rozšírenie <ph name="EXTENSION_NAME" />. Nedá sa odinštalovať.</translation>
 <translation id="6027032947578871493">Neznámy produkt <ph name="PRODUCT_ID" /> od dodávateľa <ph name="VENDOR_NAME" /> (sériové číslo: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> od dodávateľa <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">Aplikácia <ph name="APP_NAME" /> žiada o prístup k jednému alebo viacerým vašim zariadeniam:</translation>
 <translation id="657064425229075395">Nepodarilo sa načítať skript na pozadí „<ph name="BACKGROUND_SCRIPT" />“.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> od dodávateľa <ph name="VENDOR_NAME" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Nepodarilo sa vytvoriť adresár na rozbalenie: <ph name="DIRECTORY_PATH" /></translation>
 <translation id="677806580227005219">Obslužný nástroj štandardu MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Toto rozšírenie sa obnovovalo príliš často.</translation>
 <translation id="7003844668372540529">Neznámy produkt <ph name="PRODUCT_ID" /> od dodávateľa <ph name="VENDOR_NAME" /></translation>

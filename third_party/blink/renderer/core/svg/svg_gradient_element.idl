@@ -26,6 +26,7 @@
 // https://svgwg.org/svg2-draft/pservers.html#InterfaceSVGGradientElement
 
 [
+    Exposed=Window,
     DoNotCheckConstants
 ] interface SVGGradientElement : SVGElement {
     // Spread Method Types
@@ -39,5 +40,5 @@
     [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedEnumeration   spreadMethod;
 };
 
-SVGGradientElement implements SVGURIReference;
-// SVGGradientElement implements SVGUnitTypes;
+SVGGradientElement includes SVGURIReference;
+// SVGGradientElement includes SVGUnitTypes;

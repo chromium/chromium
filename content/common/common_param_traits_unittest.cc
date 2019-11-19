@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/values.h"
 #include "components/viz/common/surfaces/surface_info.h"
+#include "content/common/content_param_traits.h"
 #include "content/common/resource_messages.h"
 #include "content/public/common/content_constants.h"
 #include "ipc/ipc_message.h"
@@ -172,7 +173,6 @@ TEST(IPCMessageTest, SSLInfo) {
   in.is_issued_by_known_root = true;
   in.pkp_bypassed = true;
   in.client_cert_sent = true;
-  in.channel_id_sent = true;
   in.handshake_type = net::SSLInfo::HANDSHAKE_FULL;
   const net::SHA256HashValue kCertPublicKeyHashValue = {{0x01, 0x02}};
   in.public_key_hashes.push_back(net::HashValue(kCertPublicKeyHashValue));
@@ -215,7 +215,6 @@ TEST(IPCMessageTest, SSLInfo) {
   ASSERT_EQ(in.is_issued_by_known_root, out.is_issued_by_known_root);
   ASSERT_EQ(in.pkp_bypassed, out.pkp_bypassed);
   ASSERT_EQ(in.client_cert_sent, out.client_cert_sent);
-  ASSERT_EQ(in.channel_id_sent, out.channel_id_sent);
   ASSERT_EQ(in.handshake_type, out.handshake_type);
   ASSERT_EQ(in.public_key_hashes, out.public_key_hashes);
   ASSERT_EQ(in.pinning_failure_log, out.pinning_failure_log);
@@ -255,9 +254,6 @@ TEST(IPCMessageTest, RenderWidgetSurfaceProperties) {
   input.top_controls_height = 16.5;
   input.top_controls_shown_ratio = 0.4;
 #ifdef OS_ANDROID
-  input.bottom_controls_height = 23.4;
-  input.bottom_controls_shown_ratio = 0.8;
-  input.selection.start.set_type(gfx::SelectionBound::Type::CENTER);
   input.has_transparent_background = true;
 #endif
 
@@ -274,10 +270,6 @@ TEST(IPCMessageTest, RenderWidgetSurfaceProperties) {
   EXPECT_EQ(input.top_controls_height, output.top_controls_height);
   EXPECT_EQ(input.top_controls_shown_ratio, output.top_controls_shown_ratio);
 #ifdef OS_ANDROID
-  EXPECT_EQ(input.bottom_controls_height, output.bottom_controls_height);
-  EXPECT_EQ(input.bottom_controls_shown_ratio,
-            output.bottom_controls_shown_ratio);
-  EXPECT_EQ(input.selection, output.selection);
   EXPECT_EQ(input.has_transparent_background,
             output.has_transparent_background);
 #endif
@@ -302,4 +294,19 @@ TEST(IPCMessageTest, SurfaceInfo) {
       IPC::ParamTraits<viz::SurfaceInfo>::Read(&msg, &iter, &surface_info_out));
 
   ASSERT_EQ(surface_info_in, surface_info_out);
+}
+
+TEST(IPCMessageTest, WebCursor) {
+  content::CursorInfo info(ui::CursorType::kCustom);
+  info.custom_image.allocN32Pixels(32, 32);
+  info.hotspot = gfx::Point(10, 20);
+  info.image_scale_factor = 1.5f;
+  content::WebCursor input(info);
+  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  IPC::ParamTraits<content::WebCursor>::Write(&msg, input);
+
+  content::WebCursor output;
+  base::PickleIterator iter(msg);
+  ASSERT_TRUE(IPC::ParamTraits<content::WebCursor>::Read(&msg, &iter, &output));
+  EXPECT_EQ(output, input);
 }

@@ -102,7 +102,11 @@ leveldb::Status LevelDB::Init(const base::FilePath& database_dir,
             leveldb_chrome::GetSharedBrowserBlockCache()->TotalCharge());
       }
     }
-  } else {
+    // Don't log warnings when result is InvalidArgument and create_if_missing
+    // is false, as this means the DB file doesn't exist and the client didn't
+    // ask to create a new one.
+  } else if (!(status.IsInvalidArgument() &&
+               !open_options_.create_if_missing)) {
     LOG(WARNING) << "Unable to open " << database_dir.value() << ": "
                  << status.ToString();
   }

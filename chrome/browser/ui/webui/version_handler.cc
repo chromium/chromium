@@ -26,6 +26,7 @@
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/common/content_constants.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -56,7 +57,7 @@ void GetFilePaths(const base::FilePath& profile_path,
 
 }  // namespace
 
-VersionHandler::VersionHandler() : weak_ptr_factory_(this) {}
+VersionHandler::VersionHandler() {}
 
 VersionHandler::~VersionHandler() {
 }
@@ -66,53 +67,103 @@ void VersionHandler::RegisterMessages() {
       version_ui::kRequestVersionInfo,
       base::BindRepeating(&VersionHandler::HandleRequestVersionInfo,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      version_ui::kRequestVariationInfo,
+      base::BindRepeating(&VersionHandler::HandleRequestVariationInfo,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      version_ui::kRequestPluginInfo,
+      base::BindRepeating(&VersionHandler::HandleRequestPluginInfo,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      version_ui::kRequestPathInfo,
+      base::BindRepeating(&VersionHandler::HandleRequestPathInfo,
+                          base::Unretained(this)));
 }
 
 void VersionHandler::HandleRequestVersionInfo(const base::ListValue* args) {
+  // This method is overridden by platform-specific handlers which may still
+  // use |CallJavascriptFunction|. Main version info is returned by promise
+  // using handlers below.
+  // TODO(orinj): To fully eliminate chrome.send usage in JS, derived classes
+  // could be made to work more like this base class, using
+  // |ResolveJavascriptCallback| instead of |CallJavascriptFunction|.
   AllowJavascript();
+}
+
+void VersionHandler::HandleRequestVariationInfo(const base::ListValue* args) {
+  AllowJavascript();
+
+  std::string callback_id;
+  bool include_variations_cmd;
+  CHECK_EQ(2U, args->GetSize());
+  CHECK(args->GetString(0, &callback_id));
+  CHECK(args->GetBoolean(1, &include_variations_cmd));
+
+  base::Value response(base::Value::Type::DICTIONARY);
+  response.SetKey(version_ui::kKeyVariationsList,
+                  std::move(*version_ui::GetVariationsList()));
+  if (include_variations_cmd) {
+    response.SetKey(version_ui::kKeyVariationsCmd,
+                    version_ui::GetVariationsCommandLineAsValue());
+  }
+  ResolveJavascriptCallback(base::Value(callback_id), response);
+}
+
+void VersionHandler::HandleRequestPluginInfo(const base::ListValue* args) {
+  AllowJavascript();
+
+  std::string callback_id;
+  CHECK_EQ(1U, args->GetSize());
+  CHECK(args->GetString(0, &callback_id));
+
 #if BUILDFLAG(ENABLE_PLUGINS)
   // The Flash version information is needed in the response, so make sure
   // the plugins are loaded.
   content::PluginService::GetInstance()->GetPlugins(
-      base::Bind(&VersionHandler::OnGotPlugins,
-          weak_ptr_factory_.GetWeakPtr()));
+      base::Bind(&VersionHandler::OnGotPlugins, weak_ptr_factory_.GetWeakPtr(),
+                 callback_id));
+#else
+  RejectJavascriptCallback(base::Value(callback_id), base::Value());
 #endif
+}
+
+void VersionHandler::HandleRequestPathInfo(const base::ListValue* args) {
+  AllowJavascript();
+
+  std::string callback_id;
+  CHECK_EQ(1U, args->GetSize());
+  CHECK(args->GetString(0, &callback_id));
 
   // Grab the executable path on the FILE thread. It is returned in
   // OnGotFilePaths.
   base::string16* exec_path_buffer = new base::string16;
   base::string16* profile_path_buffer = new base::string16;
-  base::PostTaskWithTraitsAndReply(
-      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+  base::PostTaskAndReply(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&GetFilePaths, Profile::FromWebUI(web_ui())->GetPath(),
                      base::Unretained(exec_path_buffer),
                      base::Unretained(profile_path_buffer)),
-      base::BindOnce(
-          &VersionHandler::OnGotFilePaths, weak_ptr_factory_.GetWeakPtr(),
-          base::Owned(exec_path_buffer), base::Owned(profile_path_buffer)));
-
-  // Respond with the variations info immediately.
-  CallJavascriptFunction(version_ui::kReturnVariationInfo,
-                         *version_ui::GetVariationsList());
-  GURL current_url = web_ui()->GetWebContents()->GetVisibleURL();
-  if (current_url.query().find(version_ui::kVariationsShowCmdQuery) !=
-      std::string::npos) {
-    CallJavascriptFunction(version_ui::kReturnVariationCmd,
-                           version_ui::GetVariationsCommandLineAsValue());
-  }
+      base::BindOnce(&VersionHandler::OnGotFilePaths,
+                     weak_ptr_factory_.GetWeakPtr(), callback_id,
+                     base::Owned(exec_path_buffer),
+                     base::Owned(profile_path_buffer)));
 }
 
-void VersionHandler::OnGotFilePaths(base::string16* executable_path_data,
+void VersionHandler::OnGotFilePaths(std::string callback_id,
+                                    base::string16* executable_path_data,
                                     base::string16* profile_path_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  base::Value exec_path(*executable_path_data);
-  base::Value profile_path(*profile_path_data);
-  CallJavascriptFunction(version_ui::kReturnFilePaths, exec_path, profile_path);
+  base::Value response(base::Value::Type::DICTIONARY);
+  response.SetKey(version_ui::kKeyExecPath, base::Value(*executable_path_data));
+  response.SetKey(version_ui::kKeyProfilePath, base::Value(*profile_path_data));
+  ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 void VersionHandler::OnGotPlugins(
+    std::string callback_id,
     const std::vector<content::WebPluginInfo>& plugins) {
   // Obtain the version of the first enabled Flash plugin.
   std::vector<content::WebPluginInfo> info_array;
@@ -132,9 +183,7 @@ void VersionHandler::OnGotPlugins(
       }
     }
   }
-
-  base::Value arg(flash_version_and_path);
-
-  CallJavascriptFunction(version_ui::kReturnFlashVersion, arg);
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(flash_version_and_path));
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)

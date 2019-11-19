@@ -19,9 +19,12 @@ namespace wl {
 
 namespace {
 
-void WriteDataOnWorkerThread(base::ScopedFD fd, const std::string& utf8_text) {
-  if (!base::WriteFileDescriptor(fd.get(), utf8_text.data(), utf8_text.size()))
+void WriteDataOnWorkerThread(base::ScopedFD fd,
+                             const ui::PlatformClipboard::Data& data) {
+  if (!base::WriteFileDescriptor(
+          fd.get(), reinterpret_cast<const char*>(data.data()), data.size())) {
     LOG(ERROR) << "Failed to write selection data to clipboard.";
+  }
 }
 
 void DataOfferAccept(wl_client* client,
@@ -62,25 +65,23 @@ const struct wl_data_offer_interface kTestDataOfferImpl = {
 
 TestDataOffer::TestDataOffer(wl_resource* resource)
     : ServerObject(resource),
-      task_runner_(
-          base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()})),
+      task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock()})),
       write_data_weak_ptr_factory_(this) {}
 
 TestDataOffer::~TestDataOffer() {}
 
 void TestDataOffer::Receive(const std::string& mime_type, base::ScopedFD fd) {
   DCHECK(fd.is_valid());
-  std::string text_data;
-  if (mime_type == kTextMimeTypeUtf8)
-    text_data = kSampleClipboardText;
-  else if (mime_type == kTextMimeTypeText)
-    text_data = kSampleTextForDragAndDrop;
 
-  task_runner_->PostTask(FROM_HERE, base::BindOnce(&WriteDataOnWorkerThread,
-                                                   std::move(fd), text_data));
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&WriteDataOnWorkerThread, std::move(fd),
+                                        data_to_offer_[mime_type]));
 }
 
-void TestDataOffer::OnOffer(const std::string& mime_type) {
+void TestDataOffer::OnOffer(const std::string& mime_type,
+                            const ui::PlatformClipboard::Data& data) {
+  data_to_offer_[mime_type] = data;
   wl_data_offer_send_offer(resource(), mime_type.c_str());
 }
 

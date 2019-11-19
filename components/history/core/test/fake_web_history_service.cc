@@ -121,11 +121,11 @@ const std::string& FakeWebHistoryService::FakeRequest::GetResponseBody() {
     std::vector<std::string> results;
     for (const FakeWebHistoryService::Visit& visit : visits) {
       std::string unix_time = std::to_string(
-          (visit.second - base::Time::UnixEpoch()).InMicroseconds());
-      results.push_back(
-          base::StringPrintf("{\"result\":[{\"id\":[{\"timestamp_usec\":\"%s\"}"
-                             "],\"url\":\"%s\"}]}",
-                             unix_time.c_str(), visit.first.c_str()));
+          (visit.timestamp - base::Time::UnixEpoch()).InMicroseconds());
+      results.push_back(base::StringPrintf(
+          "{\"result\":[{\"id\":[{\"timestamp_usec\":\"%s\"}"
+          "],\"url\":\"%s\",\"favicon_url\":\"%s\"}]}",
+          unix_time.c_str(), visit.url.c_str(), visit.icon_url.c_str()));
     }
     response_body_ += base::JoinString(results, ",");
     response_body_ +=
@@ -197,9 +197,10 @@ void FakeWebHistoryService::SetupFakeResponse(
   emulate_response_code_ = emulate_response_code;
 }
 
-void FakeWebHistoryService::AddSyncedVisit(
-    std::string url, base::Time timestamp) {
-  visits_.push_back(make_pair(url, timestamp));
+void FakeWebHistoryService::AddSyncedVisit(const std::string& url,
+                                           base::Time timestamp,
+                                           const std::string& icon_url) {
+  visits_.emplace_back(Visit(url, timestamp, icon_url));
 }
 
 void FakeWebHistoryService::ClearSyncedVisits() {
@@ -216,13 +217,13 @@ FakeWebHistoryService::GetVisitsBetween(base::Time begin,
   // first.
   std::sort(visits_.begin(), visits_.end(),
             [](const Visit& lhs, const Visit rhs) -> bool {
-              return lhs.second > rhs.second;
+              return lhs.timestamp > rhs.timestamp;
             });
   *more_results_left = false;
   std::vector<Visit> result;
   for (const Visit& visit : visits_) {
     // |begin| is inclusive, |end| is exclusive.
-    if (visit.second >= begin && visit.second < end) {
+    if (visit.timestamp >= begin && visit.timestamp < end) {
       // We found another valid result, but cannot return it because we've
       // reached max count.
       if (count > 0 && result.size() >= count) {
@@ -284,5 +285,10 @@ void FakeWebHistoryService::SetOtherFormsOfBrowsingHistoryPresent(
     bool present) {
   other_forms_of_browsing_history_present_ = present;
 }
+
+FakeWebHistoryService::Visit::Visit(const std::string& url,
+                                    base::Time timestamp,
+                                    const std::string& icon_url)
+    : url(url), timestamp(timestamp), icon_url(icon_url) {}
 
 }  // namespace history

@@ -24,10 +24,10 @@
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/shared_impl/file_system_util.h"
 #include "ppapi/shared_impl/file_type_conversion.h"
-#include "storage/browser/fileapi/file_system_operation_runner.h"
-#include "storage/browser/fileapi/isolated_context.h"
+#include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/common/file_system/file_system_util.h"
 
 namespace content {
 
@@ -48,6 +48,20 @@ scoped_refptr<storage::FileSystemContext> GetFileSystemContextFromRenderId(
   return storage_partition->GetFileSystemContext();
 }
 
+storage::FileSystemType PepperFileSystemTypeToFileSystemType(
+    PP_FileSystemType type) {
+  switch (type) {
+    case PP_FILESYSTEMTYPE_LOCALTEMPORARY:
+      return storage::kFileSystemTypeTemporary;
+    case PP_FILESYSTEMTYPE_LOCALPERSISTENT:
+      return storage::kFileSystemTypePersistent;
+    case PP_FILESYSTEMTYPE_EXTERNAL:
+      return storage::kFileSystemTypeExternal;
+    default:
+      return storage::kFileSystemTypeUnknown;
+  }
+}
+
 }  // namespace
 
 PepperFileSystemBrowserHost::PepperFileSystemBrowserHost(BrowserPpapiHost* host,
@@ -61,8 +75,7 @@ PepperFileSystemBrowserHost::PepperFileSystemBrowserHost(BrowserPpapiHost* host,
       opened_(false),
       file_system_context_(nullptr),
       reserved_quota_(0),
-      reserving_quota_(false),
-      weak_factory_(this) {}
+      reserving_quota_(false) {}
 
 PepperFileSystemBrowserHost::~PepperFileSystemBrowserHost() {
   // If |files_| is not empty, the plugin failed to close some files. It must
@@ -91,7 +104,7 @@ void PepperFileSystemBrowserHost::OpenExisting(const GURL& root_url,
   called_open_ = true;
   // Get the file system context asynchronously, and then complete the Open
   // operation by calling |callback|.
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE, {BrowserThread::UI},
       base::Bind(&GetFileSystemContextFromRenderId, render_process_id),
       base::Bind(&PepperFileSystemBrowserHost::OpenExistingFileSystem,
@@ -173,7 +186,7 @@ int32_t PepperFileSystemBrowserHost::OnHostMsgOpen(
     return PP_ERROR_FAILED;
   }
 
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE, {BrowserThread::UI},
       base::Bind(&GetFileSystemContextFromRenderId, render_process_id),
       base::Bind(&PepperFileSystemBrowserHost::OpenFileSystem,
@@ -339,7 +352,7 @@ int32_t PepperFileSystemBrowserHost::OnHostMsgInitIsolatedFileSystem(
       fsid,
       ppapi::IsolatedFileSystemTypeToRootName(type)));
 
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE, {BrowserThread::UI},
       base::Bind(&GetFileSystemContextFromRenderId, render_process_id),
       base::Bind(&PepperFileSystemBrowserHost::OpenIsolatedFileSystem,

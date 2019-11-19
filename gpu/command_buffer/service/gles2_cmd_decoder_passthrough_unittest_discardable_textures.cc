@@ -8,8 +8,6 @@
 namespace gpu {
 namespace gles2 {
 
-using namespace cmds;
-
 TEST_F(GLES2DecoderPassthroughTest, TestInitDiscardableTexture) {
   DoBindTexture(GL_TEXTURE_2D, kClientTextureId);
   EXPECT_EQ(

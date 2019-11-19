@@ -38,7 +38,7 @@ base::FilePath CreateScript(const std::string script_contents) {
 // Ensure that we don't start the adb binary with superfluous file descriptors
 // from the parent process.
 TEST(HostControllersManagerTest, AdbNoExtraFds) {
-  HostControllersManager manager(base::Bind(&UnusedGetExitNotifierFD));
+  HostControllersManager manager(base::BindRepeating(&UnusedGetExitNotifierFD));
   base::FilePath unrelated_file;
   base::ScopedFILE open_unrelated_file(
       CreateAndOpenTemporaryFile(&unrelated_file));
@@ -57,7 +57,7 @@ TEST(HostControllersManagerTest, AdbNoExtraFds) {
 
 // Ensure that we don't mangle the argument order.
 TEST(HostControllersManagerTest, AdbArgumentSequence) {
-  HostControllersManager manager(base::Bind(&UnusedGetExitNotifierFD));
+  HostControllersManager manager(base::BindRepeating(&UnusedGetExitNotifierFD));
   base::FilePath adb_script =
       CreateScript(base::StringPrintf("#! /bin/sh\n"
                                       "echo -n \"$@\"\n"));

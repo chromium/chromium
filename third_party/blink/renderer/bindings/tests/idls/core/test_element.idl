@@ -1,0 +1,10 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+interface TestElement : Element {
+    [Reflect, CEReactions] attribute boolean reflectedBoolAttribute;
+    [Reflect, CEReactions] attribute DOMString reflectedStringAttribute;
+    [Reflect=rnsa, CEReactions] attribute DOMString? reflectedNullableStringAttribute;
+    [Reflect, RuntimeEnabled=RuntimeFeature, CEReactions] attribute DOMString reflectedRuntimeEnabeld;
+};

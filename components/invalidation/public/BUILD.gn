@@ -8,8 +8,6 @@ static_library("public") {
     "ack_handle.h",
     "ack_handler.cc",
     "ack_handler.h",
-    "active_account_access_token_fetcher_impl.cc",
-    "active_account_access_token_fetcher_impl.h",
     "identity_provider.cc",
     "identity_provider.h",
     "invalidation.cc",

@@ -1,0 +1,14 @@
+# Never include ui/views from here!
+include_rules = [
+  "+components/crash/core/common/crash_key.h",
+  "+components/viz/common",
+  "+mojo/public/cpp/bindings",
+  "+skia/ext",
+  "+ui/accelerated_widget_mac",
+  "+ui/base",
+  "+ui/compositor",
+  "+ui/display",
+  "+ui/events",
+  "+ui/gfx",
+  "+ui/strings/grit"
+]

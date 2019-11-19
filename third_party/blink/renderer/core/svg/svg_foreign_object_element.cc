@@ -21,35 +21,41 @@
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
-inline SVGForeignObjectElement::SVGForeignObjectElement(Document& document)
+SVGForeignObjectElement::SVGForeignObjectElement(Document& document)
     : SVGGraphicsElement(svg_names::kForeignObjectTag, document),
-      x_(SVGAnimatedLength::Create(this,
-                                   svg_names::kXAttr,
-                                   SVGLengthMode::kWidth,
-                                   SVGLength::Initial::kUnitlessZero,
-                                   CSSPropertyX)),
-      y_(SVGAnimatedLength::Create(this,
-                                   svg_names::kYAttr,
-                                   SVGLengthMode::kHeight,
-                                   SVGLength::Initial::kUnitlessZero,
-                                   CSSPropertyY)),
-      width_(SVGAnimatedLength::Create(this,
-                                       svg_names::kWidthAttr,
-                                       SVGLengthMode::kWidth,
-                                       SVGLength::Initial::kUnitlessZero,
-                                       CSSPropertyWidth)),
-      height_(SVGAnimatedLength::Create(this,
-                                        svg_names::kHeightAttr,
-                                        SVGLengthMode::kHeight,
-                                        SVGLength::Initial::kUnitlessZero,
-                                        CSSPropertyHeight)) {
+      x_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kXAttr,
+          SVGLengthMode::kWidth,
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kX)),
+      y_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kYAttr,
+          SVGLengthMode::kHeight,
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kY)),
+      width_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kWidthAttr,
+          SVGLengthMode::kWidth,
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kWidth)),
+      height_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kHeightAttr,
+          SVGLengthMode::kHeight,
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kHeight)) {
   AddToPropertyMap(x_);
   AddToPropertyMap(y_);
   AddToPropertyMap(width_);
@@ -65,8 +71,6 @@ void SVGForeignObjectElement::Trace(blink::Visitor* visitor) {
   visitor->Trace(height_);
   SVGGraphicsElement::Trace(visitor);
 }
-
-DEFINE_NODE_FACTORY(SVGForeignObjectElement)
 
 void SVGForeignObjectElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
@@ -119,8 +123,8 @@ void SVGForeignObjectElement::SvgAttributeChanged(
   SVGGraphicsElement::SvgAttributeChanged(attr_name);
 }
 
-LayoutObject* SVGForeignObjectElement::CreateLayoutObject(
-    const ComputedStyle&) {
+LayoutObject* SVGForeignObjectElement::CreateLayoutObject(const ComputedStyle&,
+                                                          LegacyLayout) {
   return new LayoutSVGForeignObject(this);
 }
 

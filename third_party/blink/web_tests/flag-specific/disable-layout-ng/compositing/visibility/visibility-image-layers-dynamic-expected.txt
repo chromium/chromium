@@ -1,0 +1,276 @@
+Initial
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [785, 626],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "ContentsLayer for LayoutImage IMG class='visible composited box'",
+      "bounds": [184, 124],
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 320, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, 20, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [0.54347825050354, 0, 0, 0],
+        [0, 0.806451618671417, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [0, 0]
+    }
+  ]
+}
+
+After step 1
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [785, 1494],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "ContentsLayer for LayoutImage IMG class='hidden composited box'",
+      "bounds": [184, 124],
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for LayoutImage IMG class='visible composited box'",
+      "bounds": [184, 124],
+      "transform": 6
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 10, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, 20, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [0.54347825050354, 0, 0, 0],
+        [0, 0.806451618671417, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [0, 0]
+    },
+    {
+      "id": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 320, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, 20, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "parent": 5,
+      "transform": [
+        [0.54347825050354, 0, 0, 0],
+        [0, 0.806451618671417, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [0, 0]
+    }
+  ]
+}
+
+After step 2
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [785, 2921],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "ContentsLayer for LayoutImage IMG class='hidden composited box'",
+      "bounds": [184, 124],
+      "transform": 3
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='composited hidden container'",
+      "position": [-4, -4],
+      "bounds": [757, 153],
+      "transform": 4
+    },
+    {
+      "name": "ContentsLayer for LayoutImage IMG class='composited box'",
+      "bounds": [184, 124],
+      "transform": 6
+    },
+    {
+      "name": "ContentsLayer for LayoutImage IMG class='visible composited box'",
+      "bounds": [184, 124],
+      "transform": 9
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 10, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, 20, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [0.54347825050354, 0, 0, 0],
+        [0, 0.806451618671417, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [0, 0]
+    },
+    {
+      "id": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 165, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, 20, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "parent": 5,
+      "transform": [
+        [0.54347825050354, 0, 0, 0],
+        [0, 0.806451618671417, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [0, 0]
+    },
+    {
+      "id": 7,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 320, 0, 1]
+      ]
+    },
+    {
+      "id": 8,
+      "parent": 7,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, 20, 0, 1]
+      ]
+    },
+    {
+      "id": 9,
+      "parent": 8,
+      "transform": [
+        [0.54347825050354, 0, 0, 0],
+        [0, 0.806451618671417, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [0, 0]
+    }
+  ]
+}
+

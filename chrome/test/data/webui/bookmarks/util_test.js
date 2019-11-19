@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestStore} from 'chrome://test/bookmarks/test_store.js';
+import {canEditNode, canReorderChildren, getDescendants, removeIdsFromObject, removeIdsFromSet} from 'chrome://bookmarks/bookmarks.js';
+import {createFolder, createItem, normalizeIterable, testTree} from 'chrome://test/bookmarks/test_util.js';
+
 suite('util', function() {
   test('getDescendants collects all children', function() {
     const nodes = testTree(createFolder('0', [
@@ -20,17 +24,17 @@ suite('util', function() {
           ]),
     ]));
 
-    let descendants = bookmarks.util.getDescendants(nodes, '1');
+    let descendants = getDescendants(nodes, '1');
     assertDeepEquals(['1'], normalizeIterable(descendants));
 
-    descendants = bookmarks.util.getDescendants(nodes, '4');
+    descendants = getDescendants(nodes, '4');
     assertDeepEquals(['4', '6', '7'], normalizeIterable(descendants));
 
-    descendants = bookmarks.util.getDescendants(nodes, '2');
+    descendants = getDescendants(nodes, '2');
     assertDeepEquals(
         ['2', '3', '4', '5', '6', '7'], normalizeIterable(descendants));
 
-    descendants = bookmarks.util.getDescendants(nodes, '42');
+    descendants = getDescendants(nodes, '42');
     assertDeepEquals([], normalizeIterable(descendants));
   });
 
@@ -43,7 +47,7 @@ suite('util', function() {
 
     const nodes = new Set([2, 3, 4]);
 
-    const newMap = bookmarks.util.removeIdsFromObject(obj, nodes);
+    const newMap = removeIdsFromObject(obj, nodes);
 
     assertEquals(undefined, newMap['2']);
     assertEquals(undefined, newMap['4']);
@@ -57,12 +61,12 @@ suite('util', function() {
     const set = new Set(['1', '3', '5']);
     const toRemove = new Set(['1', '2', '3']);
 
-    const newSet = bookmarks.util.removeIdsFromSet(set, toRemove);
+    const newSet = removeIdsFromSet(set, toRemove);
     assertDeepEquals(['5'], normalizeIterable(newSet));
   });
 
   test('canEditNode and canReorderChildren', function() {
-    const store = new bookmarks.TestStore({
+    const store = new TestStore({
       nodes: testTree(
           createFolder(
               '1',
@@ -78,29 +82,29 @@ suite('util', function() {
     });
 
     // Top-level folders are unmodifiable, but their children can be changed.
-    assertFalse(bookmarks.util.canEditNode(store.data, '1'));
-    assertTrue(bookmarks.util.canReorderChildren(store.data, '1'));
+    assertFalse(canEditNode(store.data, '1'));
+    assertTrue(canReorderChildren(store.data, '1'));
 
     // Managed folders are entirely unmodifiable.
-    assertFalse(bookmarks.util.canEditNode(store.data, '4'));
-    assertFalse(bookmarks.util.canReorderChildren(store.data, '4'));
-    assertFalse(bookmarks.util.canEditNode(store.data, '41'));
-    assertFalse(bookmarks.util.canReorderChildren(store.data, '41'));
+    assertFalse(canEditNode(store.data, '4'));
+    assertFalse(canReorderChildren(store.data, '4'));
+    assertFalse(canEditNode(store.data, '41'));
+    assertFalse(canReorderChildren(store.data, '41'));
 
     // Regular nodes are modifiable.
-    assertTrue(bookmarks.util.canEditNode(store.data, '11'));
-    assertTrue(bookmarks.util.canReorderChildren(store.data, '11'));
+    assertTrue(canEditNode(store.data, '11'));
+    assertTrue(canReorderChildren(store.data, '11'));
 
     // When editing is disabled globally, everything is unmodifiable.
     store.data.prefs.canEdit = false;
 
-    assertFalse(bookmarks.util.canEditNode(store.data, '1'));
-    assertFalse(bookmarks.util.canReorderChildren(store.data, '1'));
+    assertFalse(canEditNode(store.data, '1'));
+    assertFalse(canReorderChildren(store.data, '1'));
 
-    assertFalse(bookmarks.util.canEditNode(store.data, '41'));
-    assertFalse(bookmarks.util.canReorderChildren(store.data, '41'));
+    assertFalse(canEditNode(store.data, '41'));
+    assertFalse(canReorderChildren(store.data, '41'));
 
-    assertFalse(bookmarks.util.canEditNode(store.data, '11'));
-    assertFalse(bookmarks.util.canReorderChildren(store.data, '11'));
+    assertFalse(canEditNode(store.data, '11'));
+    assertFalse(canReorderChildren(store.data, '11'));
   });
 });

@@ -35,7 +35,7 @@
 #include "base/optional.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_header_field_parameters.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {

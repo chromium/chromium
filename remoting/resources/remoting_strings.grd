@@ -653,66 +653,17 @@
         <message name="IDS_SERVER_COMMUNICATION_ERROR" desc="Message shown when the client fails to communicate with the back end server.">
           Failed to communicate with the server: <ph name="ERROR">$1<ex>Server Unavailable</ex></ph>
         </message>
-
-<!-- Play Store listings text. These Android-specific strings are not marked
-     with formatter_data="android_java" since they are used only for the Play
-     Store listings, and should not be bundled in the APK.
--->
-        <message name="IDS_PLAY_STORE_TITLE" desc="Play Store title of the Chrome Remote Desktop app for Android. If needed to meet the 30-char limit, please translate just 'Remote Desktop' instead. [CHAR-LIMIT=30] [NAME=play_store_title]" meaning="Title used in Play Store">
-          Chrome Remote Desktop
+        <message name="IDS_TERMS_OF_SERVICE" desc="The label to access the terms of service, displayed in navigation menu." formatter_data="android_java">
+          Terms of Service
         </message>
-        <message name="IDS_PLAY_STORE_TAGLINE" desc="Play Store tagline for the Chrome Remote Desktop app for Android. [CHAR-LIMIT=80] [NAME=play_store_tagline]">
-          Securely access your computers from your Android device.
+        <message name="IDS_PRIVACY_POLICY" desc="The label to access the privacy policy, displayed in navigation menu." formatter_data="android_java">
+          Privacy Policy
         </message>
-        <message name="IDS_PLAY_STORE_DESCRIPTION" desc="Play Store description of the Chrome Remote Desktop app for Android. [CHAR-LIMIT=4000] [NAME=play_store_description]">
-Securely access your computers from your Android device.
-
-• On each of your computers, set up remote access using the Chrome Remote Desktop app from Chrome Web Store: https://chrome.google.com/remotedesktop
-• On your Android device, open the app and tap on any of your online computers to connect.
-
-For information about privacy, please see the Google Privacy Policy (http://goo.gl/SyrVzj) and the Chrome Privacy Policy (http://goo.gl/0uXE5d).
+        <message name="IDS_DISMISS" desc="Label for button to dismiss a dialog" formatter_data="android_java">
+          Dismiss
         </message>
-        <message name="IDS_PLAY_STORE_DESCRIPTION_ALTERNATE" desc="Play Store description of the Chrome Remote Desktop app for Android. [CHAR-LIMIT=4000] [NAME=play_store_description_alternate]">
-Securely access your computers from your Android device.
-
-• On each of your computers, set up remote access using the Chrome Remote Desktop app from Chrome Web Store: https://chrome.google.com/remotedesktop
-• On your Android device, open the app and tap on any of your online computers to connect.
-
-Remote computers with non US-English keyboards may receive incorrect text input. Support for other keyboard layouts is coming soon!
-
-For information about privacy, please see the Google Privacy Policy (http://goo.gl/SyrVzj) and the Chrome Privacy Policy (http://goo.gl/0uXE5d).
-        </message>
-        <message name="IDS_PLAY_STORE_CHANGES" desc="List of what's changed in this release of Chrome Remote Desktop for Android. [CHAR-LIMIT=500] [NAME=play_store_changes]">
-• Added support for Android 9.0 Pie.
-• Support for resizing remote desktop resolution to match your Android device's screen.
-        </message>
-
-        <!-- iOS App Store metadata text. Won't be bundled into the app. -->
-        <message name="IDS_APP_STORE_TITLE" desc="App Store title of the Chrome Remote Desktop app for iOS. If needed to meet the 50-char limit, please translate just 'Remote Desktop' instead. [CHAR-LIMIT=50] [NAME=app_store_title]" meaning="Title used in App Store">
-          Chrome Remote Desktop
-        </message>
-        <message name="IDS_APP_STORE_SUBTITLE" desc="App Store subtitle text. To be displayed below the app title in App Store. No period at the end. [CHAR-LIMIT=30]" meaning="Please try to keep translation below 30 characters. If not possible, please try to translate 'access your computer' instead.">
-          Securely access your computer
-        </message>
-        <message name="IDS_APP_STORE_KEYWORDS" desc="App Store keywords (to be used to search for the app) for the Chrome Remote Desktop app for iOS. Separate keywords with newline. [NAME=app_store_keywords]">
-Chrome
-Remote
-Desktop
-Access
-Support
-Computer
-PC
-        </message>
-        <message name="IDS_APP_STORE_DESCRIPTION" desc="App Store description of the Chrome Remote Desktop app for iOS. [CHAR-LIMIT=4000] [NAME=app_store_description]">
-Securely access your computer from your iOS device. It's fast, simple and free.
-
-• Download the Chrome Remote Desktop app from the Chrome WebStore on the computer you want to access remotely.
-• Install Chrome Remote Desktop software and follow the instructions to complete setup.
-• On your iOS device, open the app and tap on any of your online computers to connect.
-        </message>
-        <message name="IDS_APP_STORE_CHANGES" desc="List of what's changed in this release of Chrome Remote Desktop for iOS. [CHAR-LIMIT=4000] [NAME=app_store_changes]">
-• Better panning and zooming experience on iPhone X.
-• Stability improvements and bug fixes.
+        <message name="IDS_DONT_SHOW_AGAIN" desc="Label for checkbox to make a dialog not showing again." formatter_data="android_java">
+          Don't show again
         </message>
       </if>  <!-- is_android or is_ios -->
 
@@ -1370,21 +1321,68 @@ Securely access your computer from your iOS device. It's fast, simple and free.
         <message name="IDS_HOST_AUTHENTICATION_PROMPT" desc="The prompt to be displayed in the authentication dialog when making changes to the system.  The system will add a sentence asking for an administrator's name and password.  Mac-only.">
           <ph name="PRODUCT_NAME">$1<ex>Chrome Remote Desktop</ex></ph> wants to make changes.
         </message>
-        <message name="IDS_ACCESSIBILITY_PERMISSION_DIALOG_TITLE" desc="The title of the prompt used to ask the user to enable the Chrome Remote Desktop service in the accessibility section of the privacy and security preferences pane.  Mac-only.">
-          Allow remote users to control this machine
+        <message name="IDS_MAC_PERMISSION_WIZARD_TITLE" desc="The title of the dialog/wizard that asks the user to grant various OS permissions to the Chrome Remote Desktop service. Mac-only.">
+          Grant permission to <ph name="PRODUCT_NAME">$1<ex>Chrome Remote Desktop</ex></ph>
         </message>
-        <message name="IDS_ACCESSIBILITY_PERMISSION_DIALOG_BODY_TEXT" desc="The body text of the prompt used to ask the user to enable the Chrome Remote Desktop service in the accessibility section of the privacy and security preferences pane.  Mac-only.">
-An additional configuration step is required before you can control this machine remotely using <ph name="PRODUCT_NAME">$1<ex>Chrome Remote Desktop</ex></ph>.
+        <message name="IDS_MAC_PERMISSION_WIZARD_NEXT_BUTTON" desc="The text on the button in the Mac permission wizard that takes the user to the next stage of the wizard. Mac-only.">
+          Next
+        </message>
+        <message name="IDS_MAC_PERMISSION_WIZARD_OK_BUTTON" desc="The text on the button on the final part of the Mac permission wizard that exits the wizard. Mac-only.">
+          OK
+        </message>
+        <message name="IDS_MAC_PERMISSION_WIZARD_CANCEL_BUTTON" desc="The text on the button in the Mac permission wizard that allows the user to cancel the permission setup and exits the wizard. Mac-only.">
+          Cancel
+        </message>
+        <message name="IDS_MAC_PERMISSION_WIZARD_FINAL_TEXT" desc="The text shown on the final screen of the permission wizard that lets the user know they have successfully granted the permissions necessary for Chrome Remote Desktop to work properly. Mac-only.">
+          You're all set!
+        </message>
+        <message name="IDS_ACCESSIBILITY_PERMISSION_DIALOG_TITLE" desc="The title of the prompt that asks the user to grant 'Accessibility' permission to the Chrome Remote Desktop service. This permission is part of the 'Privacy and Security' preferences pane. Mac-only.">
+          Grant 'Accessibility' permission to <ph name="PRODUCT_NAME">$1<ex>Chrome Remote Desktop</ex></ph>
+        </message>
+        <message name="IDS_ACCESSIBILITY_PERMISSION_DIALOG_BODY_TEXT" desc="The body text of the prompt that asks the user to turn on the Chrome Remote Desktop service. This setting lives in the 'Accessibility' section of the 'Privacy and Security' preferences pane. Mac-only.">
+To use <ph name="PRODUCT_NAME">$1<ex>Chrome Remote Desktop</ex></ph>, you need to grant the 'Accessibility' permission so that input from the remote machine can be injected on this Mac.
 
-To enable this functionality, select '<ph name="BUTTON_NAME">$2<ex>Open Preferences</ex></ph>' to display the Security and Privacy preferences pane, then check the box next to '<ph name="SERVICE_SCRIPT_NAME">$3<ex>org.chromium.chromoting.me2me.sh</ex></ph>'.
+To grant this permission, click '<ph name="BUTTON_NAME">$2<ex>Open Accessibility Preferences</ex></ph>' below to open the 'Accessibility' preferences pane and then check the box next to '<ph name="SERVICE_SCRIPT_NAME">$3<ex>org.chromium.chromoting.me2me.sh</ex></ph>'.
+
+If '<ph name="SERVICE_SCRIPT_NAME">$3<ex>org.chromium.chromoting.me2me.sh</ex></ph>' is already checked, uncheck it and then check it again.
         </message>
-        <message name="IDS_ACCESSIBILITY_PERMISSION_DIALOG_OPEN_BUTTON" desc="The button text of the prompt used to ask the user to enable the Chrome Remote Desktop service in the accessibility section of the privacy and security preferences pane.  Selecting this button will open the security and preferences pane.  Mac-only.">
-          Open Preferences
+        <message name="IDS_ACCESSIBILITY_PERMISSION_DIALOG_OPEN_BUTTON" desc="The button text of the prompt that asks the user to turn on the Chrome Remote Desktop service. This setting lives in the 'Accessibility' section of the 'Privacy and Security' preferences pane. Selecting this button will open the 'Privacy and Security' preferences pane. Mac-only.">
+          Open Accessibility Preferences
         </message>
-        <message name="IDS_ACCESSIBILITY_PERMISSION_DIALOG_NOT_NOW_BUTTON" desc="The button text of the prompt used to ask the user to enable the Chrome Remote Desktop service in the accessibility section of the privacy and security preferences pane.  Selecting this button will close the dialog.  Mac-only.">
+        <message name="IDS_ACCESSIBILITY_PERMISSION_DIALOG_NOT_NOW_BUTTON" desc="The text on the button in the permissions dialog that allows the user to skip granting permission at this time. When the user selects this button, they decline to turn on Chrome Remote Desktop and this dialog will close. Mac-only.">
           Not Now
         </message>
+        <message name="IDS_SCREEN_RECORDING_PERMISSION_DIALOG_TITLE" desc="The title of the prompt that asks the user to grant 'Screen Recording' permission to the Chrome Remote Desktop service. This permission is part of the 'Privacy and Security' preferences pane. Mac-only.">
+          Grant 'Screen Recording' permission to <ph name="PRODUCT_NAME">$1<ex>Chrome Remote Desktop</ex></ph>
+        </message>
+        <message name="IDS_SCREEN_RECORDING_PERMISSION_DIALOG_BODY_TEXT" desc="The body text that asks the user to grant the 'Screen Recording' permission to the Chrome Remote Desktop service. Mac-only, OS 10.15 and later.">
+To use <ph name="PRODUCT_NAME">$1<ex>Chrome Remote Desktop</ex></ph>, you need to grant the 'Screen Recording' permission so that the screen contents on this Mac can be sent to the remote machine.
+
+To grant this permission, click '<ph name="BUTTON_NAME">$2<ex>Open Screen Recording Preferences</ex></ph>' below to open the 'Screen Recording' preferences pane and then check the box next to '<ph name="SERVICE_SCRIPT_NAME">$3<ex>org.chromium.chromoting.me2me.sh</ex></ph>'.
+
+If '<ph name="SERVICE_SCRIPT_NAME">$3<ex>org.chromium.chromoting.me2me.sh</ex></ph>' is already checked, uncheck it and then check it again.
+        </message>
+        <message name="IDS_SCREEN_RECORDING_PERMISSION_DIALOG_OPEN_BUTTON" desc="The text on the button in the permissions dialog that takes the user to the 'Screen Recording' preferences panel. Mac-only, OS 10.15 and later.">
+          Open Screen Recording Preferences
+        </message>
       </if>
+      <if expr="is_linux">
+        <message name="IDS_SESSION_DIALOG_MESSAGE" desc="The message to show at the top of the session-selection dialog.">
+          Select a session to launch within your Chrome Remote Desktop environment. (Note that some session types may not support running within Chrome Remote Desktop and on the local console simultaneously.)
+        </message>
+        <message name="IDS_SESSION_DIALOG_NAME_COLUMN" desc="The title of the column containing the names of potential sessions.">
+          Name
+        </message>
+        <message name="IDS_SESSION_DIALOG_COMMENT_COLUMN" desc="The title of the column containing the comment/description of potential sessions.">
+          Comment
+        </message>
+        <message name="IDS_SESSION_DIALOG_DEFAULT_SESSION_NAME" desc="The name of the entry to launch the default session.">
+          (default)
+        </message>
+        <message name="IDS_SESSION_DIALOG_DEFAULT_SESSION_COMMENT" desc="The comment for the entry to launch the default session.">
+          Launch the default XSession
+        </message>
+      </if> <!-- is_linux -->
     </messages>
   </release>
 </grit>

@@ -17,7 +17,7 @@ cca.util = cca.util || {};
 /**
  * Gets the clockwise rotation and flip that can orient a photo to its upright
  * position.
- * @param {Blob} blob JPEG blob that might contain EXIF orientation field.
+ * @param {!Blob} blob JPEG blob that might contain EXIF orientation field.
  * @return {Promise<Object<number, boolean>>}
  */
 cca.util.getPhotoOrientation = function(blob) {
@@ -25,7 +25,7 @@ cca.util.getPhotoOrientation = function(blob) {
     let reader = new FileReader();
     reader.onload = function(event) {
       let view = new DataView(event.target.result);
-      if (view.getUint16(0, false) != 0xFFD8) {
+      if (view.getUint16(0, false) !== 0xFFD8) {
         resolve(1);
         return;
       }
@@ -37,22 +37,22 @@ cca.util.getPhotoOrientation = function(blob) {
         }
         let marker = view.getUint16(offset, false);
         offset += 2;
-        if (marker == 0xFFE1) {
-          if (view.getUint32(offset += 2, false) != 0x45786966) {
+        if (marker === 0xFFE1) {
+          if (view.getUint32(offset += 2, false) !== 0x45786966) {
             break;
           }
 
-          let little = view.getUint16(offset += 6, false) == 0x4949;
+          let little = view.getUint16(offset += 6, false) === 0x4949;
           offset += view.getUint32(offset + 4, little);
           let tags = view.getUint16(offset, little);
           offset += 2;
           for (let i = 0; i < tags; i++) {
-            if (view.getUint16(offset + (i * 12), little) == 0x0112) {
+            if (view.getUint16(offset + (i * 12), little) === 0x0112) {
               resolve(view.getUint16(offset + (i * 12) + 8, little));
               return;
             }
           }
-        } else if ((marker & 0xFF00) != 0xFF00) {
+        } else if ((marker & 0xFF00) !== 0xFF00) {
           break;
         } else {
           offset += view.getUint16(offset, false);
@@ -89,7 +89,7 @@ cca.util.getPhotoOrientation = function(blob) {
 
 /**
  * Orients a photo to the upright orientation.
- * @param {Blob} blob Photo as a blob.
+ * @param {!Blob} blob Photo as a blob.
  * @param {function(Blob)} onSuccess Success callback with the result photo as
  *     a blob.
  * @param {function()} onFailure Failure callback.
@@ -119,7 +119,7 @@ cca.util.orientPhoto = function(blob, onSuccess, onFailure) {
     context.translate(-centerX, -centerY);
 
     let outputCanvas = document.createElement('canvas');
-    if (orientation.rotation == 90 || orientation.rotation == 270) {
+    if (orientation.rotation === 90 || orientation.rotation === 270) {
       outputCanvas.width = original.height;
       outputCanvas.height = original.width;
     } else {
@@ -143,7 +143,7 @@ cca.util.orientPhoto = function(blob, onSuccess, onFailure) {
   };
 
   cca.util.getPhotoOrientation(blob).then((orientation) => {
-    if (orientation.rotation == 0 && !orientation.flip) {
+    if (orientation.rotation === 0 && !orientation.flip) {
       onSuccess(blob);
     } else {
       let original = document.createElement('img');
@@ -182,7 +182,8 @@ cca.util.isChromeOS = function() {
  */
 cca.util.animateOnce = function(element, callback) {
   element.classList.remove('animate');
-  element.offsetWidth; // Force calculation to re-apply animation.
+  /** @suppress {suspiciousCode} */
+  element.offsetWidth;  // Force calculation to re-apply animation.
   element.classList.add('animate');
   cca.util.waitAnimationCompleted(element, () => {
     element.classList.remove('animate');
@@ -208,7 +209,7 @@ cca.util.animateCancel = function(element) {
 cca.util.waitAnimationCompleted = function(element, callback) {
   var completed = false;
   var onCompleted = (event) => {
-    if (completed || (event && event.target != element)) {
+    if (completed || (event && event.target !== element)) {
       return;
     }
     completed = true;
@@ -371,8 +372,8 @@ cca.util.SmoothScroller.prototype.scrollTo = function(x, y, mode) {
           'translate(' + -dx + 'px, ' + -dy + 'px)';
 
       // If nothing to change, then return.
-      if (this.padder_.style.webkitTransform == transformString ||
-          (dx == 0 && dy == 0 && !this.padder_.style.webkitTransform)) {
+      if (this.padder_.style.webkitTransform === transformString ||
+          (dx === 0 && dy === 0 && !this.padder_.style.webkitTransform)) {
         return;
       }
 
@@ -389,7 +390,7 @@ cca.util.SmoothScroller.prototype.scrollTo = function(x, y, mode) {
       // animation is finished.
       cca.util.waitAnimationCompleted(this.padder_, () => {
         // Check if the animation got invalidated by a later scroll.
-        if (currentAnimationId == this.animationId_) {
+        if (currentAnimationId === this.animationId_) {
           this.flushScroll_();
         }
       });
@@ -452,8 +453,8 @@ cca.util.PointerTracker.prototype.onMouseMove_ = function(event) {
   // Ignore mouse events, which are invoked on the same position, but with
   // changed client coordinates. This will happen eg. when scrolling. We should
   // ignore them, since they are not invoked by an actual mouse move.
-  if (this.lastMousePosition_ && this.lastMousePosition_[0] == event.screenX &&
-      this.lastMousePosition_[1] == event.screenY) {
+  if (this.lastMousePosition_ && this.lastMousePosition_[0] === event.screenX &&
+      this.lastMousePosition_[1] === event.screenY) {
     return;
   }
 
@@ -648,8 +649,8 @@ cca.util.ScrollTracker.prototype.probe_ = function() {
   var scrollTop = this.scroller_.scrollTop;
 
   var scrollChanged =
-      scrollLeft != this.lastScrollPosition_[0] ||
-      scrollTop != this.lastScrollPosition_[1] ||
+      scrollLeft !== this.lastScrollPosition_[0] ||
+      scrollTop !== this.lastScrollPosition_[1] ||
       this.scroller_.animating;
 
   if (scrollChanged) {
@@ -693,12 +694,12 @@ cca.util.ScrollTracker.prototype.probe_ = function() {
 
 /**
  * Makes an element scrollable by dragging with a mouse.
- * @param {cca.util.Scroller} scroller Scroller for the element.
+ * @param {cca.util.SmoothScroller} scroller SmoothScroller for the element.
  * @constructor
  */
 cca.util.MouseScroller = function(scroller) {
   /**
-   * @type {cca.util.Scroller}
+   * @type {cca.util.SmoothScroller}
    * @private
    */
   this.scroller_ = scroller;
@@ -731,7 +732,7 @@ cca.util.MouseScroller = function(scroller) {
  * @private
  */
 cca.util.MouseScroller.prototype.onMouseDown_ = function(event) {
-  if (event.which != 1) {
+  if (event.which !== 1) {
     return;
   }
   this.startPosition_ = [event.screenX, event.screenY];
@@ -753,7 +754,7 @@ cca.util.MouseScroller.prototype.onMouseMove_ = function(event) {
 
   // It may happen that we won't receive the mouseup event, when clicking on
   // the -webkit-app-region: drag area.
-  if (event.which != 1) {
+  if (event.which !== 1) {
     this.startPosition_ = null;
     this.startScrollPosition_ = null;
     return;
@@ -848,15 +849,121 @@ cca.util.updateElementSize = function(
   child.height = Math.round(scale * srcHeight);
 };
 
-/*
+/**
  * Checks if the window is maximized or fullscreen.
  * @return {boolean} True if maximized or fullscreen, false otherwise.
  */
 cca.util.isWindowFullSize = function() {
-  // App-window's isFullscreen state and window's outer-size may not be updated
-  // immediately during resizing. Use app-window's isMaximized state and
-  // window's inner-size here as workarounds.
-  var fullscreen = window.innerWidth >= screen.width &&
-      window.innerHeight >= screen.height;
-  return chrome.app.window.current().isMaximized() || fullscreen;
+  // App-window's isFullscreen, isMaximized state and window's outer-size may
+  // not be updated immediately during resizing. Use if app-window's outerBounds
+  // width matches screen width here as workarounds.
+  return chrome.app.window.current().outerBounds.width >= screen.width ||
+      chrome.app.window.current().outerBounds.height >= screen.height;
+};
+
+/**
+ * Opens help.
+ */
+cca.util.openHelp = function() {
+  window.open(
+      'https://support.google.com/chromebook/?p=camera_usage_on_chromebook');
+};
+
+/**
+ * Sets up i18n messages on DOM subtree by i18n attributes.
+ * @param {!HTMLElement} rootElement Root of DOM subtree to be set up with.
+ */
+cca.util.setupI18nElements = function(rootElement) {
+  var getElements = (attr) => rootElement.querySelectorAll('[' + attr + ']');
+  var getMessage = (element, attr) =>
+      chrome.i18n.getMessage(element.getAttribute(attr));
+  var setAriaLabel = (element, attr) =>
+      element.setAttribute('aria-label', getMessage(element, attr));
+
+  getElements('i18n-content')
+      .forEach(
+          (element) => element.textContent =
+              getMessage(element, 'i18n-content'));
+  getElements('i18n-tooltip-true')
+      .forEach(
+          (element) => element.setAttribute(
+              'tooltip-true', getMessage(element, 'i18n-tooltip-true')));
+  getElements('i18n-tooltip-false')
+      .forEach(
+          (element) => element.setAttribute(
+              'tooltip-false', getMessage(element, 'i18n-tooltip-false')));
+  getElements('i18n-aria')
+      .forEach((element) => setAriaLabel(element, 'i18n-aria'));
+  cca.tooltip.setup(getElements('i18n-label'))
+      .forEach((element) => setAriaLabel(element, 'i18n-label'));
+};
+
+/**
+ * Reads blob into Image.
+ * @param {!Blob} blob
+ * @return {!Promise<!HTMLImageElement>}
+ * @throws {Error}
+ */
+cca.util.blobToImage = function(blob) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('Failed to load unprocessed image'));
+    img.src = URL.createObjectURL(blob);
+  });
+};
+
+/**
+ * Gets default facing according to device mode.
+ * @return {!Promise<string>}
+ */
+cca.util.getDefaultFacing = async function() {
+  return await cca.mojo.ChromeHelper.getInstance().isTabletMode() ?
+      'environment' :
+      'user';
+};
+
+/**
+ * Scales the input picture to target width and height with respect to original
+ * aspect ratio.
+ * @param {string} url Picture as an URL.
+ * @param {boolean} isVideo Picture is a video.
+ * @param {number} width Target width to be scaled to.
+ * @param {number=} height Target height to be scaled to. In default, set to
+ *     corresponding rounded height with respect to target width and aspect
+ *     ratio of input picture.
+ * @return {!Promise<!Blob>} Promise for the result.
+ * @private
+ */
+cca.util.scalePicture = function(url, isVideo, width, height = undefined) {
+  const element = document.createElement(isVideo ? 'video' : 'img');
+  if (isVideo) {
+    element.preload = 'auto';
+  }
+  return new Promise((resolve, reject) => {
+           element.addEventListener(isVideo ? 'canplay' : 'load', resolve);
+           element.addEventListener('error', reject);
+           element.src = url;
+         })
+      .then(() => {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        if (height === undefined) {
+          const ratio = isVideo ? element.videoHeight / element.videoWidth :
+                                  element.height / element.width;
+          height = Math.round(width * ratio);
+        }
+        canvas.width = width;
+        canvas.height = height;
+        context.drawImage(element, 0, 0, width, height);
+        return new Promise((resolve, reject) => {
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error('Failed to create thumbnail.'));
+            }
+          }, 'image/jpeg');
+        });
+      });
 };

@@ -39,6 +39,8 @@ Example usage:
       --files-to-instrument=coverage_instrumentation_input.txt
 """
 
+from __future__ import print_function
+
 import argparse
 import os
 import subprocess
@@ -56,12 +58,26 @@ _COVERAGE_FLAGS = [
     '-mllvm', '-limited-coverage-experimental=true'
 ]
 
+# Files that should not be built with coverage flags by default.
+_DEFAULT_COVERAGE_EXCLUSION_LIST = []
+
 # Map of exclusion lists indexed by target OS.
 # If no target OS is defined, or one is defined that doesn't have a specific
-# entry, use the 'default' exclusion_list. Anything added to 'default' will
-# apply to all platforms that don't have their own specific list.
+# entry, use _DEFAULT_COVERAGE_EXCLUSION_LIST.
 _COVERAGE_EXCLUSION_LIST_MAP = {
-    'default': [],
+    'android': [
+        # This file caused webview native library failed on arm64.
+        '../../device/gamepad/dualshock4_controller.cc',
+    ],
+    'linux': [
+        # These files caused a static initializer to be generated, which
+        # shouldn't.
+        # TODO(crbug.com/990948): Remove when the bug is fixed.
+        '../../chrome/browser/media/router/providers/cast/cast_internal_message_util.cc',  #pylint: disable=line-too-long
+        '../../chrome/common/media_router/providers/cast/cast_media_source.cc',
+        '../../components/cast_channel/cast_channel_enum.cc',
+        '../../components/cast_channel/cast_message_util.cc',
+    ],
     'chromeos': [
         # These files caused clang to crash while compiling them. They are
         # excluded pending an investigation into the underlying compiler bug.
@@ -69,8 +85,10 @@ _COVERAGE_EXCLUSION_LIST_MAP = {
         '../../third_party/icu/source/common/uts46.cpp',
         '../../third_party/icu/source/common/ucnvmbcs.cpp',
         '../../base/android/android_image_reader_compat.cc',
-    ]
+    ],
+    'win': [],
 }
+
 
 
 def _remove_flags_from_command(command):
@@ -116,25 +134,27 @@ def main():
   if not any('clang' in s for s in compile_command):
     return subprocess.call(compile_command)
 
+  target_os = parsed_args.target_os
+
   try:
     # The command is assumed to use Clang as the compiler, and the path to the
     # source file is behind the -c argument, and the path to the source path is
     # relative to the root build directory. For example:
     # clang++ -fvisibility=hidden -c ../../base/files/file_path.cc -o \
     #   obj/base/base/file_path.o
-    index_dash_c = compile_command.index('-c')
+    # On Windows, clang-cl.exe uses /c instead of -c.
+    source_flag = '/c' if target_os == 'win' else '-c'
+    source_flag_index = compile_command.index(source_flag)
   except ValueError:
-    print '-c argument is not found in the compile command.'
+    print('%s argument is not found in the compile command.' % source_flag)
     raise
 
-  if index_dash_c + 1 >= len(compile_command):
+  if source_flag_index + 1 >= len(compile_command):
     raise Exception('Source file to be compiled is missing from the command.')
 
-  compile_source_file = compile_command[index_dash_c + 1]
-  target_os = parsed_args.target_os
-  if target_os not in _COVERAGE_EXCLUSION_LIST_MAP:
-    target_os = 'default'
-  exclusion_list = _COVERAGE_EXCLUSION_LIST_MAP[target_os]
+  compile_source_file = compile_command[source_flag_index + 1]
+  exclusion_list = _COVERAGE_EXCLUSION_LIST_MAP.get(
+      target_os, _DEFAULT_COVERAGE_EXCLUSION_LIST)
 
   if compile_source_file in exclusion_list:
     _remove_flags_from_command(compile_command)

@@ -32,11 +32,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FACE_CREATION_PARAMS_H_
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
-#include "third_party/blink/renderer/platform/wtf/string_hasher.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 namespace blink {
 
@@ -52,14 +52,14 @@ class FontFaceCreationParams {
   FontFaceCreationParams()
       : creation_type_(kCreateFontByFamily),
         family_(AtomicString()),
-        filename_(CString()),
+        filename_(std::string()),
         fontconfig_interface_id_(0),
         ttc_index_(0) {}
 
   explicit FontFaceCreationParams(AtomicString family)
       : creation_type_(kCreateFontByFamily),
         family_(family),
-        filename_(CString()),
+        filename_(std::string()),
         fontconfig_interface_id_(0),
         ttc_index_(0) {
 #if defined(OS_WIN)
@@ -73,7 +73,7 @@ class FontFaceCreationParams {
 #endif
   }
 
-  FontFaceCreationParams(CString filename,
+  FontFaceCreationParams(const std::string& filename,
                          int fontconfig_interface_id,
                          int ttc_index = 0)
       : creation_type_(kCreateFontByFciIdAndTtcIndex),
@@ -86,7 +86,7 @@ class FontFaceCreationParams {
     DCHECK_EQ(creation_type_, kCreateFontByFamily);
     return family_;
   }
-  CString Filename() const {
+  const std::string& Filename() const {
     DCHECK_EQ(creation_type_, kCreateFontByFciIdAndTtcIndex);
     return filename_;
   }
@@ -107,7 +107,7 @@ class FontFaceCreationParams {
       // over a network or permanently stored and only used for the runtime of
       // Chromium, this is not a concern.
       hasher.AddCharacters(reinterpret_cast<const LChar*>(filename_.data()),
-                           filename_.length());
+                           static_cast<unsigned>(filename_.length()));
       hasher.AddCharacters(reinterpret_cast<const LChar*>(&ttc_index_),
                            sizeof(ttc_index_));
       hasher.AddCharacters(
@@ -129,7 +129,7 @@ class FontFaceCreationParams {
  private:
   FontFaceCreationType creation_type_;
   AtomicString family_;
-  CString filename_;
+  std::string filename_;
   int fontconfig_interface_id_;
   int ttc_index_;
 };

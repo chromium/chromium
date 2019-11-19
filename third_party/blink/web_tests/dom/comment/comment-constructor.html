@@ -1,28 +1,27 @@
 <!DOCTYPE html>
+<title>This tests that Comment is constructable</title>
 <body>
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
+assert_equals(new Comment("one").data, "one");
+assert_equals(new Comment().data, "");
+assert_equals(new Comment(undefined).data, "");
+assert_equals(new Comment(null).data, "null");
+assert_equals(new Comment("two").ownerDocument, document);
 
-description('This tests that Comment is constructable.');
-
-shouldBe('new Comment("one").data', '"one"');
-shouldBe('new Comment().data', '""');
-shouldBe('new Comment(undefined).data', '""');
-shouldBe('new Comment(null).data', '"null"');
-shouldBe('new Comment("two").ownerDocument', 'document');
-
-shouldBe('typeof new Comment', '"object"');
-shouldBe('Object.prototype.toString.call(new Comment)', '"[object Comment]"');
-shouldBeTrue('new Comment instanceof Comment');
-shouldBe('Object.getPrototypeOf(new Comment)', 'Comment.prototype');
+assert_equals(typeof new Comment, "object");
+assert_equals(Object.prototype.toString.call(new Comment), "[object Comment]");
+assert_true(new Comment instanceof Comment);
+assert_equals(Object.getPrototypeOf(new Comment), Comment.prototype);
 
 var frame = document.createElement('iframe');
 document.body.appendChild(frame);
 var innerWindow = frame.contentWindow;
 var innerDocument = frame.contentDocument;
 
-shouldBe('new innerWindow.Comment("three").ownerDocument', 'innerDocument')
-shouldBeTrue('new innerWindow.Comment instanceof innerWindow.Comment');
-shouldBe('Object.getPrototypeOf(new innerWindow.Comment)', 'innerWindow.Comment.prototype');
-
+assert_equals(new innerWindow.Comment("three").ownerDocument, innerDocument);
+assert_true(new innerWindow.Comment instanceof innerWindow.Comment);
+assert_equals(Object.getPrototypeOf(new innerWindow.Comment), innerWindow.Comment.prototype);
+done();
 </script>

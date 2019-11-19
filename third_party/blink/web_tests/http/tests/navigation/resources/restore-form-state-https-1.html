@@ -28,8 +28,16 @@ This is test page that has a secure form.  It is part of a test to show that for
     <textarea name="textarea1" rows="10" cols="30" value="Initial text before user input">More initial text before user input.</textarea>
 </form>
 <script>
-    if (document.getElementById('tf').value == "Test Failed")
-        document.getElementById('console').innerHTML = "Test Failed";
+function checkControlState() {
+  testRunner.waitUntilDone();
+  setTimeout(() => {
+    if (document.getElementById('tf').value == "New form text from user")
+      document.getElementById('console').innerHTML = "Test Passed";
+    else
+      document.getElementById('console').innerHTML = "Test Failed";
+    testRunner.notifyDone();
+  }, 1);
+};
 </script>
 </body>
 </html>

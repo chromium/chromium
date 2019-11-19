@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();</script>
+<script src="../../../../fast/forms/resources/picker-common.js"></script>
+</head>
+<body style="background-color: #eeffff;">
+<input type=datetime-local id=datetime-local value="10000-12-31T23:59" list="suggestions" style="width: 300px;" step="0.001">
+<datalist id=suggestions>
+    <option>2012-11-31T00:00</option> <!--invalid-->
+    <option>2012-11-31</option> <!--invalid-->
+    <option>foo</option> <!--invalid-->
+    <option label="Today">2012-11-22T12:00</option>
+    <option label="Tomorrow">2012-11-23T12:00</option>
+    <option>2012-11-22T01:23</option>
+    <option>2012-11-22T01:23:45</option>
+    <option>2012-11-22T01:23:45.678</option>
+    <option>2012-11-22T01:06</option>
+    <option>2012-11-22T01:07</option>
+    <option>2012-11-22T01:08</option>
+    <option>2012-11-22T01:09</option>
+    <option>2012-11-22T01:10</option>
+    <option>2012-11-22T01:11</option>
+</datalist>
+
+<script>
+openPicker(document.getElementById('datetime-local'), finishTest);
+
+function finishTest() {
+  popupWindow.focus();
+  eventSender.keyDown('ArrowDown');
+  testRunner.notifyDone();
+}
+</script>
+</body>
+</html>

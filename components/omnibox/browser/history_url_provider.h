@@ -15,7 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/synchronization/cancellation_flag.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/threading/thread_checker.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/history_match.h"
@@ -103,6 +103,7 @@ struct HistoryURLProviderParams {
   };
 
   HistoryURLProviderParams(const AutocompleteInput& input,
+                           const AutocompleteInput& input_before_fixup,
                            bool trim_http,
                            const AutocompleteMatch& what_you_typed_match,
                            const TemplateURL* default_search_provider,
@@ -118,11 +119,10 @@ struct HistoryURLProviderParams {
   // A copy of the autocomplete input. We need the copy since this object will
   // live beyond the original query while it runs on the history thread.
   AutocompleteInput input;
-
-  // Should inline autocompletion be disabled? This is initalized from
-  // |input.prevent_inline_autocomplete()|, but set to false is the input
-  // contains trailing white space.
-  bool prevent_inline_autocomplete;
+  // |input_before_fixup| is needed for invoking
+  // |AutocompleteMatch::AllowedToBeDefault| which considers trailing input
+  // whitespaces which the fixed up |input| will have trimmed.
+  AutocompleteInput input_before_fixup;
 
   // Set when "http://" should be trimmed from the beginning of the URLs.
   bool trim_http;
@@ -134,7 +134,7 @@ struct HistoryURLProviderParams {
   // the query runs, the query will be abandoned.  This allows us to avoid
   // running queries that are no longer needed.  Since we don't care if we run
   // the extra queries, the lack of signaling is not a problem.
-  base::CancellationFlag cancel_flag;
+  base::AtomicFlag cancel_flag;
 
   // Set by ExecuteWithDB() on the history thread when the query could not be
   // performed because the history system failed to properly init the database.

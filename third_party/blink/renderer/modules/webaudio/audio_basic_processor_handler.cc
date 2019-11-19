@@ -111,12 +111,7 @@ void AudioBasicProcessorHandler::CheckNumberOfChannelsForInput(
   Context()->AssertGraphOwner();
 
   DCHECK_EQ(input, &this->Input(0));
-  if (input != &this->Input(0))
-    return;
-
   DCHECK(Processor());
-  if (!Processor())
-    return;
 
   unsigned number_of_channels = input->NumberOfChannels();
 
@@ -152,6 +147,19 @@ double AudioBasicProcessorHandler::TailTime() const {
 
 double AudioBasicProcessorHandler::LatencyTime() const {
   return processor_->LatencyTime();
+}
+
+bool AudioBasicProcessorHandler::HasNonFiniteOutput() const {
+  AudioBus* output_bus = Output(0).Bus();
+
+  for (wtf_size_t k = 0; k < output_bus->NumberOfChannels(); ++k) {
+    AudioChannel* channel = output_bus->Channel(k);
+    if (channel->length() > 0 && !std::isfinite(channel->Data()[0])) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace blink

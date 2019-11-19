@@ -51,10 +51,10 @@ bool EphemeralProvider::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     const ResourceIdentifier& resource_identifier,
-    base::Value* in_value) {
+    std::unique_ptr<base::Value>&& in_value) {
   DCHECK(CalledOnValidThread());
 
-  if (!base::ContainsKey(supported_types_, content_type))
+  if (!base::Contains(supported_types_, content_type))
     return false;
 
   // Default settings are set using a wildcard pattern for both
@@ -68,7 +68,7 @@ bool EphemeralProvider::SetWebsiteSetting(
     return false;
   }
 
-  std::unique_ptr<base::Value> value(in_value);
+  std::unique_ptr<base::Value> value(std::move(in_value));
   if (value) {
     content_settings_rules_.SetValue(
         primary_pattern, secondary_pattern, content_type, resource_identifier,

@@ -15,7 +15,9 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "base/strings/string_piece.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -47,8 +49,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) HttpServer {
                                const HttpServerRequestInfo& info) = 0;
     virtual void OnWebSocketRequest(int connection_id,
                                     const HttpServerRequestInfo& info) = 0;
-    virtual void OnWebSocketMessage(int connection_id,
-                                    const std::string& data) = 0;
+    virtual void OnWebSocketMessage(int connection_id, std::string data) = 0;
     virtual void OnClose(int connection_id) = 0;
   };
 
@@ -56,7 +57,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) HttpServer {
   // listening, but not accepting.  This constructor schedules accepting
   // connections asynchronously in case when |delegate| is not ready to get
   // callbacks yet.
-  HttpServer(mojom::TCPServerSocketPtr server_socket,
+  HttpServer(mojo::PendingRemote<mojom::TCPServerSocket> server_socket,
              HttpServer::Delegate* delegate);
   ~HttpServer();
 
@@ -64,7 +65,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) HttpServer {
                        const HttpServerRequestInfo& request,
                        net::NetworkTrafficAnnotationTag traffic_annotation);
   void SendOverWebSocket(int connection_id,
-                         const std::string& data,
+                         base::StringPiece data,
                          net::NetworkTrafficAnnotationTag traffic_annotation);
   // Sends the provided data directly to the given connection. No validation is
   // performed that data constitutes a valid HTTP response. A valid HTTP
@@ -103,11 +104,12 @@ class COMPONENT_EXPORT(NETWORK_CPP) HttpServer {
   friend class HttpServerTest;
 
   void DoAcceptLoop();
-  void OnAcceptCompleted(int rv,
-                         const base::Optional<net::IPEndPoint>& remote_addr,
-                         mojom::TCPConnectedSocketPtr connected_socket,
-                         mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
-                         mojo::ScopedDataPipeProducerHandle send_pipe_handle);
+  void OnAcceptCompleted(
+      int rv,
+      const base::Optional<net::IPEndPoint>& remote_addr,
+      mojo::PendingRemote<mojom::TCPConnectedSocket> connected_socket,
+      mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
+      mojo::ScopedDataPipeProducerHandle send_pipe_handle);
 
   void OnReadable(int connection_id,
                   MojoResult result,
@@ -135,13 +137,13 @@ class COMPONENT_EXPORT(NETWORK_CPP) HttpServer {
   // Whether or not Close() has been called during delegate callback processing.
   bool HasClosedConnection(HttpConnection* connection);
 
-  const mojom::TCPServerSocketPtr server_socket_;
+  const mojo::Remote<mojom::TCPServerSocket> server_socket_;
   HttpServer::Delegate* const delegate_;
 
   int last_id_;
   std::map<int, std::unique_ptr<HttpConnection>> id_to_connection_;
 
-  base::WeakPtrFactory<HttpServer> weak_ptr_factory_;
+  base::WeakPtrFactory<HttpServer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HttpServer);
 };

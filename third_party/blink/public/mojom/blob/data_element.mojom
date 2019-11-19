@@ -38,7 +38,7 @@ struct DataElementBytes {
   // equal to |length|.
   array<uint8>? embedded_data;
   // Interface through which the blob registry can request the data.
-  BytesProvider data;
+  pending_remote<BytesProvider> data;
 };
 
 // Interface through which the blob registry can request data when it is ready
@@ -103,7 +103,7 @@ struct DataElementFilesystemURL {
 // A reference to a slice of another blob.
 struct DataElementBlob {
   // The blob being referenced.
-  blink.mojom.Blob blob;
+  pending_remote<blink.mojom.Blob> blob;
   // Offset to the beginning of the slice.
   uint64 offset;
   // Length of the slice.

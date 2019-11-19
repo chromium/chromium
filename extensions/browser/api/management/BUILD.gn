@@ -22,5 +22,6 @@ source_set("management") {
 
   public_deps = [
     "//extensions/browser:browser_sources",
+    "//services/data_decoder/public/cpp",
   ]
 }

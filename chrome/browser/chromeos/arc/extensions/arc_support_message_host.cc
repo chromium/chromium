@@ -10,8 +10,8 @@
 #include "base/json/json_writer.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/arc_support_host.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 
 namespace arc {
 
@@ -23,7 +23,8 @@ const char* const ArcSupportMessageHost::kHostOrigin[] = {
     "chrome-extension://cnbgggchhmkkdmeppjobngjoejnihlei/"};
 
 // static
-std::unique_ptr<extensions::NativeMessageHost> ArcSupportMessageHost::Create() {
+std::unique_ptr<extensions::NativeMessageHost> ArcSupportMessageHost::Create(
+    content::BrowserContext* browser_context) {
   return std::unique_ptr<NativeMessageHost>(new ArcSupportMessageHost());
 }
 

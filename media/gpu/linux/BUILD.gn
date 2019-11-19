@@ -1,0 +1,67 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//media/gpu/args.gni")
+
+assert(use_v4l2_codec || use_vaapi)
+
+source_set("common") {
+  defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
+  sources = [
+    "platform_video_frame_utils.cc",
+    "platform_video_frame_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//gpu/ipc/common:common",
+    "//media",
+    "//media/gpu:command_buffer_helper",
+    "//media/gpu:common",
+    "//ui/gfx:buffer_types",
+    "//ui/gfx:memory_buffer",
+    "//ui/gl",
+  ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+}
+
+source_set("video_frame_mapper") {
+  defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
+  sources = [
+    "generic_dmabuf_video_frame_mapper.cc",
+    "generic_dmabuf_video_frame_mapper.h",
+    "gpu_memory_buffer_video_frame_mapper.cc",
+    "gpu_memory_buffer_video_frame_mapper.h",
+  ]
+
+  deps = [
+    "//base",
+    "//media",
+    "//media/gpu:command_buffer_helper",
+    "//media/gpu:common",
+    "//media/gpu:video_frame_mapper_common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "platform_video_frame_utils_unittest.cc",
+  ]
+  deps = [
+    ":common",
+    "//base",
+    "//base/test:test_support",
+    "//media",
+    "//media/gpu:common",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx:memory_buffer",
+    "//ui/gfx/geometry",
+  ]
+}

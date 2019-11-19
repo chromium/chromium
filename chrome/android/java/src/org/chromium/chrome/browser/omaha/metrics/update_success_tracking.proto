@@ -1,0 +1,43 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package omaha_metrics;
+
+option java_package = "org.chromium.chrome.browser.omaha.metrics";
+option java_outer_classname = "UpdateProtos";
+
+message Tracking {
+  // Timestamp since epoch of when the update started.
+  optional int64 timestamp_ms = 1;
+
+  // The Chrome version string at the time the update started.
+  optional string version = 2;
+
+  enum Type {
+    UNKNOWN_TYPE = -1;
+
+    INTENT = 0;
+    INLINE = 1;
+  }
+  // The type of update that was started.
+  optional Type type = 3 [default = UNKNOWN_TYPE];
+
+  enum Source {
+    UNKNOWN_SOURCE = -1;
+
+    FROM_MENU = 0;
+    FROM_INFOBAR = 1;
+    FROM_NOTIFICATION = 2;
+  }
+  // The UI surface that was interacted with to start the update.
+  optional Source source = 4 [default = UNKNOWN_SOURCE];
+
+  // Whether or not the update success or failure has been recorded for session
+  // attribution.
+  optional bool recorded_session = 5;
+}

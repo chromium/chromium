@@ -63,10 +63,6 @@ function doTap(type)
 if (window.eventSender) {
     jsTestIsAsync = true;
 
-    // Some versions of MacOS native scrollbars intercept events differently, so
-    // use mock scrollbars for consistency.
-    internals.settings.setMockScrollbarsEnabled(true);
-
     target.onload = function() {
         doTap()
         .then(function() { return doTap('mousemove'); })

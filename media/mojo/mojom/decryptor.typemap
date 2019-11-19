@@ -1,0 +1,19 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//media/mojo/mojom/decryptor.mojom"
+
+public_headers = [ "//media/base/decryptor.h" ]
+
+traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]
+
+deps = [
+  "//media",
+  "//media/base/ipc",
+]
+
+type_mappings = [
+  "media.mojom.Decryptor.Status=::media::Decryptor::Status",
+  "media.mojom.Decryptor.StreamType=::media::Decryptor::StreamType",
+]

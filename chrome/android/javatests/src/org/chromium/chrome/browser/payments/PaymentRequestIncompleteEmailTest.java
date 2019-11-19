@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.IMMEDI
 import android.support.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,8 +24,8 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ui.DisableAnimationsTestRule;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -34,13 +35,16 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestIncompleteEmailTest implements MainActivityStartCallback {
+    // Disable animations to reduce flakiness.
+    @ClassRule
+    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
+
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule("payment_request_email_test.html", this);
 
     @Override
-    public void onMainActivityStarted()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has an invalid email address on disk.
         helper.setProfile(new AutofillProfile("", "https://example.com", true, "Jon Doe", "Google",
@@ -54,8 +58,7 @@ public class PaymentRequestIncompleteEmailTest implements MainActivityStartCallb
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testEditIncompleteEmailAndCancel()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testEditIncompleteEmailAndCancel() throws TimeoutException {
         // Not ready to pay since Contact email is invalid.
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
         // Check that there is a selected payment method (makes sure we are not ready to pay because
@@ -78,15 +81,15 @@ public class PaymentRequestIncompleteEmailTest implements MainActivityStartCallb
 
         mPaymentRequestTestRule.clickAndWait(
                 R.id.close_button, mPaymentRequestTestRule.getDismissed());
-        mPaymentRequestTestRule.expectResultContains(new String[] {"Request cancelled"});
+        mPaymentRequestTestRule.expectResultContains(
+                new String[] {"User closed the Payment Request UI."});
     }
 
     /** Attempt to add an invalid email alongside the already invalid data and cancel. */
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testAddIncompleteEmailAndCancel()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testAddIncompleteEmailAndCancel() throws TimeoutException {
         // Not ready to pay since Contact email is invalid.
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
         // Check that there is a selected payment method (makes sure we are not ready to pay because
@@ -110,15 +113,15 @@ public class PaymentRequestIncompleteEmailTest implements MainActivityStartCallb
 
         mPaymentRequestTestRule.clickAndWait(
                 R.id.close_button, mPaymentRequestTestRule.getDismissed());
-        mPaymentRequestTestRule.expectResultContains(new String[] {"Request cancelled"});
+        mPaymentRequestTestRule.expectResultContains(
+                new String[] {"User closed the Payment Request UI."});
     }
 
     /** Update the email with valid data and provide that to the merchant. */
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testEditIncompleteEmailAndPay()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testEditIncompleteEmailAndPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());

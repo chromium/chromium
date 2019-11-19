@@ -18,8 +18,7 @@ BluetoothGattApplicationServiceProviderImpl::
             services)
     : origin_thread_id_(base::PlatformThread::CurrentId()),
       bus_(bus),
-      object_path_(object_path),
-      weak_ptr_factory_(this) {
+      object_path_(object_path) {
   VLOG(1) << "Creating Bluetooth GATT application: " << object_path_.value();
   DCHECK(object_path_.IsValid());
   if (!bus_)

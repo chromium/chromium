@@ -1,0 +1,83 @@
+<!DOCTYPE>
+<title>Wheel scrolling over custom scrollbar should scroll its scroller</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<style>
+::-webkit-scrollbar {
+  width: 50px;
+  height: 50px;
+  background-color: grey;
+}
+html,body {
+  margin: 0;
+}
+.wheelDiv {
+  width: 100px;
+  height: 100px;
+  overflow: auto;
+  border: 1px solid black;
+  margin: 20px;
+}
+.slow {
+  clip: rect(0px, 1000px, 500px, 0px);
+}
+.fast {
+  will-change: transform;
+}
+.space {
+  height: 1000px;
+}
+</style>
+
+<div class="wheelDiv slow">
+  <div class="space">MAIN-THREAD SCROLLING</div>
+</div>
+
+<div class="wheelDiv fast">
+  <div class="space">COMPOSITOR-THREAD SCROLLING</div>
+</div>
+
+<script>
+
+function injectInput() {
+  return smoothScroll(10, x, y, GestureSourceType.MOUSE_INPUT, "down");
+}
+
+window.onload = () => {
+  const divSlow = document.querySelector('.slow');
+  const divFast = document.querySelector('.fast');
+  const rectSlow = divSlow.getBoundingClientRect();
+  const rectFast = divFast.getBoundingClientRect();
+
+  promise_test (async () => {
+    await waitForCompositorCommit();
+
+    const distance = 10;
+    const source_type = GestureSourceType.MOUSE_INPUT; //Mouse == Wheel
+    const direction = 'down';
+    const use_precise_deltas = true;
+    let x = rectSlow.right - 30;
+    let y = rectSlow.top + 50;
+
+    await smoothScroll(distance,
+                       x, y,
+                       source_type,
+                       direction,
+                       SPEED_INSTANT,
+                       use_precise_deltas);
+
+    assert_greater_than(divSlow.scrollTop, 0, "Main-thread scrolling div didn't scroll.");
+
+    x = rectFast.right - 30;
+    y = rectFast.top + 50;
+    await smoothScroll(distance,
+                       x, y,
+                       source_type,
+                       direction,
+                       SPEED_INSTANT,
+                       use_precise_deltas);
+    assert_greater_than(divFast.scrollTop, 0, "Compositor-thread scrolling div didn't scroll.");
+  }, "Test wheel scrolling over custom scrollbars");
+}
+</script>

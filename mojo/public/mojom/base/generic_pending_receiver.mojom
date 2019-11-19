@@ -1,0 +1,16 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo_base.mojom;
+
+// Convenience helper to wrap the pairing of a receiving pipe endpoint and the
+// name of the interface expected by the remote endpoint.
+//
+// This should be used sparingly, in cases where APIs need to dynamically pass
+// different types of receivers that cannot or should not be known at compile
+// time.
+struct GenericPendingReceiver {
+  string interface_name;
+  handle<message_pipe> receiving_pipe;
+};

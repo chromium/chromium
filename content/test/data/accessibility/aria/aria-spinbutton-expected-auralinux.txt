@@ -1,0 +1,5 @@
+[document web]
+++[spin button] current=5.000000 minimum=0.000000 maximum=0.000000
+++++[static] name='Inner text'
+++[spin button] current=5.000000 minimum=1.000000 maximum=10.000000
+++++[static] name='Inner text'

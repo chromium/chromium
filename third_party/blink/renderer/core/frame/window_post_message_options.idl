@@ -6,4 +6,6 @@
 
 dictionary WindowPostMessageOptions : PostMessageOptions {
     USVString targetOrigin = "/";
+    [RuntimeEnabled=UserActivationPostMessageTransfer] boolean transferUserActivation = false;
+    [RuntimeEnabled=ExperimentalAutoplayDynamicDelegation] DOMString allow = "";
 };

@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Vaizdai pakeisti alternatyviu tekstu.</translation>
 <translation id="4896660567607030658">Jokių atsiliepimų, tik rodyti žymeklį.</translation>
 <translation id="4937901943818762779">Leisti animuotus vaizdus, bet tik vieną kartą.</translation>
+<translation id="4949131196216960195">Paspauskite &lt;span class='key'&gt;Paieškos klavišą&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (šviesumo didinimo klavišą arba F7), kad įjungtumėte „Caret Browsing“. Kad išjungtumėte, dar kartą paspauskite šiuos klavišus.</translation>
 <translation id="4954450790315188152">Kai „Caret Browsing“ įgalinta:</translation>
 <translation id="5041932793799765940">Spalvų reguliavimas</translation>
 <translation id="5094574508723441140">Didesnis kontrastas</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="786423340267544509">Pridėkite kraštines prie elementų naudodami atributą „aria-describedat“ arba „longdesc“.</translation>
 <translation id="7942349550061667556">Raudona</translation>
-<translation id="8254860724243898966">Paspauskite &lt;span class='key'&gt;Alt&lt;/span&gt; ir &lt;img src='increase_brightness.png'&gt; (šviesumo didinimo klavišą arba F7), kad įjungtumėte „Caret Browsing“. Paspauskite klavišą dar kartą, kad funkciją išjungtumėte.</translation>
 <translation id="8260673944985561857">„Caret Browsing“ parinktys</translation>
 <translation id="8321034316479930120">Animacijos politika</translation>
 <translation id="8480209185614411573">Didelis kontrastas</translation>

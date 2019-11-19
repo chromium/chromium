@@ -1,0 +1,46 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="../i18n_setup.html">
+<link rel="import" href="../settings_page/settings_animated_pages.html">
+<link rel="import" href="../settings_page/settings_subpage.html">
+<link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="plugin_vm_shared_paths.html">
+<link rel="import" href="plugin_vm_subpage.html">
+
+<dom-module id="settings-plugin-vm-page">
+  <template>
+    <style include="settings-shared"></style>
+
+    <settings-animated-pages id="pages" section="pluginVm"
+        focus-config="[[focusConfig_]]">
+      <div route-path="default">
+        <cr-link-row id="plugin-vm"
+            label="$i18n{pluginVmPageLabel}"
+            sub-label="$i18n{pluginVmPageSubtext}"
+            on-click="onSubpageClick_"
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+      </div>
+
+      <template is="dom-if" route-path="/pluginVm/details">
+        <settings-subpage
+            associated-control="[[$$('#plugin-vm')]]"
+            page-title="$i18n{pluginVmPageLabel}">
+          <settings-plugin-vm-subpage prefs="{{prefs}}">
+          </settings-plugin-vm-subpage>
+        </settings-subpage>
+      </template>
+
+      <template is="dom-if" route-path="/pluginVm/sharedPaths">
+        <settings-subpage
+            associated-control="[[$$('#plugin-vm')]]"
+            page-title="$i18n{pluginVmSharedPaths}">
+          <settings-plugin-vm-shared-paths prefs="{{prefs}}">
+          </settings-plugin-vm-shared-paths>
+        </settings-subpage>
+      </template>
+    </settings-animated-pages>
+  </template>
+  <script src="plugin_vm_page.js"></script>
+</dom-module>

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/sequenced_task_runner.h"
@@ -19,11 +18,11 @@
 namespace net {
 
 URLFetcherStringWriter* URLFetcherResponseWriter::AsStringWriter() {
-  return NULL;
+  return nullptr;
 }
 
 URLFetcherFileWriter* URLFetcherResponseWriter::AsFileWriter() {
-  return NULL;
+  return nullptr;
 }
 
 URLFetcherStringWriter::URLFetcherStringWriter() = default;
@@ -57,8 +56,7 @@ URLFetcherFileWriter::URLFetcherFileWriter(
     const base::FilePath& file_path)
     : file_task_runner_(file_task_runner),
       file_path_(file_path),
-      owns_file_(false),
-      weak_factory_(this) {
+      owns_file_(false) {
   DCHECK(file_task_runner_.get());
 }
 
@@ -83,11 +81,12 @@ int URLFetcherFileWriter::Initialize(CompletionOnceCallback callback) {
                    weak_factory_.GetWeakPtr(),
                    base::Owned(temp_file_path)));
   } else {
-    result = file_stream_->Open(file_path_, base::File::FLAG_WRITE |
-                                                base::File::FLAG_ASYNC |
-                                                base::File::FLAG_CREATE_ALWAYS,
-                                base::Bind(&URLFetcherFileWriter::OnIOCompleted,
-                                           weak_factory_.GetWeakPtr()));
+    result =
+        file_stream_->Open(file_path_,
+                           base::File::FLAG_WRITE | base::File::FLAG_ASYNC |
+                               base::File::FLAG_CREATE_ALWAYS,
+                           base::BindOnce(&URLFetcherFileWriter::OnIOCompleted,
+                                          weak_factory_.GetWeakPtr()));
     DCHECK_NE(OK, result);
   }
 
@@ -107,9 +106,10 @@ int URLFetcherFileWriter::Write(IOBuffer* buffer,
   DCHECK(owns_file_);
   DCHECK(!callback_);
 
-  int result = file_stream_->Write(
-      buffer, num_bytes, base::Bind(&URLFetcherFileWriter::OnIOCompleted,
-                                    weak_factory_.GetWeakPtr()));
+  int result =
+      file_stream_->Write(buffer, num_bytes,
+                          base::BindOnce(&URLFetcherFileWriter::OnIOCompleted,
+                                         weak_factory_.GetWeakPtr()));
   if (result == ERR_IO_PENDING) {
     callback_ = std::move(callback);
     return result;
@@ -136,7 +136,7 @@ int URLFetcherFileWriter::Finish(int net_error,
   DCHECK(!callback_);
   // If the file_stream_ still exists at this point, close it.
   if (file_stream_) {
-    int result = file_stream_->Close(base::Bind(
+    int result = file_stream_->Close(base::BindOnce(
         &URLFetcherFileWriter::CloseComplete, weak_factory_.GetWeakPtr()));
     if (result == ERR_IO_PENDING) {
       callback_ = std::move(callback);
@@ -181,8 +181,8 @@ void URLFetcherFileWriter::DidCreateTempFile(base::FilePath* temp_file_path,
   const int result = file_stream_->Open(
       file_path_,
       base::File::FLAG_WRITE | base::File::FLAG_ASYNC | base::File::FLAG_OPEN,
-      base::Bind(&URLFetcherFileWriter::OnIOCompleted,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&URLFetcherFileWriter::OnIOCompleted,
+                     weak_factory_.GetWeakPtr()));
   if (result != ERR_IO_PENDING)
     OnIOCompleted(result);
 }
@@ -192,14 +192,14 @@ void URLFetcherFileWriter::OnIOCompleted(int result) {
     CloseAndDeleteFile();
 
   if (!callback_.is_null())
-    base::ResetAndReturn(&callback_).Run(result);
+    std::move(callback_).Run(result);
 }
 
 void URLFetcherFileWriter::CloseComplete(int result) {
   // Destroy |file_stream_| whether or not the close succeeded.
   file_stream_.reset();
   if (!callback_.is_null())
-    base::ResetAndReturn(&callback_).Run(result);
+    std::move(callback_).Run(result);
 }
 
 }  // namespace net

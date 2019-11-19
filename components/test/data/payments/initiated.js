@@ -21,7 +21,7 @@ var REQUEST = new PaymentRequest(
 /**
  * Show the Payment Request UI.
  */
-function show() {  // eslint-disable-line no-unused-vars
+function show() { // eslint-disable-line no-unused-vars
   try {
     REQUEST.show()
         .then(function(resp) {
@@ -44,7 +44,7 @@ function show() {  // eslint-disable-line no-unused-vars
 /**
  * Aborts the PaymentRequest UI.
  */
-function abort() {  // eslint-disable-line no-unused-vars
+function abort() { // eslint-disable-line no-unused-vars
   try {
     REQUEST.abort()
         .then(function() {

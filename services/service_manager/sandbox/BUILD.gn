@@ -96,6 +96,8 @@ component("sandbox") {
   }
   if (is_win) {
     sources += [
+      "win/sandbox_diagnostics.cc",
+      "win/sandbox_diagnostics.h",
       "win/sandbox_win.cc",
       "win/sandbox_win.h",
     ]
@@ -108,8 +110,13 @@ component("sandbox") {
     ]
 
     deps += [
+      "//third_party/fuchsia-sdk/sdk:deprecatedtimezone",
       "//third_party/fuchsia-sdk/sdk:fonts",
+      "//third_party/fuchsia-sdk/sdk:logger",
       "//third_party/fuchsia-sdk/sdk:mediacodec",
+      "//third_party/fuchsia-sdk/sdk:net",
+      "//third_party/fuchsia-sdk/sdk:netstack",
+      "//third_party/fuchsia-sdk/sdk:sysmem",
       "//third_party/fuchsia-sdk/sdk:ui_scenic",
     ]
   }

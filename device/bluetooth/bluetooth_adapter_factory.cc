@@ -116,9 +116,9 @@ bool BluetoothAdapterFactory::IsLowEnergySupported() {
   // Windows 8 supports Low Energy GATT operations but it does not support
   // scanning, initiating connections and GATT Server. To keep the API
   // consistent we consider Windows 8 as lacking Low Energy support.
-  return base::win::GetVersion() >= base::win::VERSION_WIN10;
+  return base::win::GetVersion() >= base::win::Version::WIN10;
 #elif defined(OS_MACOSX)
-  return base::mac::IsAtLeastOS10_10();
+  return true;
 #elif defined(OS_LINUX)
   return true;
 #else
@@ -157,7 +157,7 @@ void BluetoothAdapterFactory::GetAdapter(AdapterCallback callback) {
 // static
 void BluetoothAdapterFactory::GetClassicAdapter(AdapterCallback callback) {
 #if defined(OS_WIN)
-  if (base::win::GetVersion() < base::win::VERSION_WIN10) {
+  if (base::win::GetVersion() < base::win::Version::WIN10) {
     // Prior to Win10, the default adapter will support Bluetooth classic.
     GetAdapter(std::move(callback));
     return;
@@ -202,8 +202,22 @@ bool BluetoothAdapterFactory::HasSharedInstanceForTesting() {
   return default_adapter.Get() != nullptr;
 }
 
-BluetoothAdapterFactory::GlobalValuesForTesting::GlobalValuesForTesting()
-    : weak_ptr_factory_(this) {}
+#if defined(OS_CHROMEOS)
+// static
+void BluetoothAdapterFactory::SetBleScanParserCallback(
+    BleScanParserCallback callback) {
+  Get().ble_scan_parser_ = callback;
+}
+
+// static
+BluetoothAdapterFactory::BleScanParserCallback
+BluetoothAdapterFactory::GetBleScanParserCallback() {
+  return Get().ble_scan_parser_;
+}
+#endif  // defined(OS_CHROMEOS)
+
+BluetoothAdapterFactory::GlobalValuesForTesting::GlobalValuesForTesting() =
+    default;
 
 BluetoothAdapterFactory::GlobalValuesForTesting::~GlobalValuesForTesting() =
     default;

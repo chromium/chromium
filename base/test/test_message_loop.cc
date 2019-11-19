@@ -9,7 +9,7 @@ namespace base {
 
 TestMessageLoop::TestMessageLoop() = default;
 
-TestMessageLoop::TestMessageLoop(MessageLoop::Type type) : loop_(type) {}
+TestMessageLoop::TestMessageLoop(MessagePumpType type) : loop_(type) {}
 
 TestMessageLoop::~TestMessageLoop() {
   RunLoop().RunUntilIdle();

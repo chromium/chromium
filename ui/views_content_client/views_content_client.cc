@@ -4,6 +4,8 @@
 
 #include "ui/views_content_client/views_content_client.h"
 
+#include <utility>
+
 #include "build/build_config.h"
 #include "content/public/app/content_main.h"
 #include "ui/views_content_client/views_content_main_delegate.h"
@@ -37,6 +39,13 @@ int ViewsContentClient::RunMain() {
 #endif
 
   return content::ContentMain(params);
+}
+
+void ViewsContentClient::OnPreMainMessageLoopRun(
+    content::BrowserContext* browser_context,
+    gfx::NativeWindow window_context) {
+  std::move(on_pre_main_message_loop_run_callback_)
+      .Run(browser_context, window_context);
 }
 
 }  // namespace ui

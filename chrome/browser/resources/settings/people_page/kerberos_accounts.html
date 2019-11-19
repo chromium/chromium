@@ -1,0 +1,184 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_toast/cr_toast.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
+<link rel="import" href="chrome://resources/html/icon.html">
+<link rel="import" href="chrome://resources/html/util.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../i18n_setup.html">
+<link rel="import" href="../route.html">
+<link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="kerberos_accounts_browser_proxy.html">
+<link rel="import" href="kerberos_add_account_dialog.html">
+
+<dom-module id="settings-kerberos-accounts">
+  <template>
+    <style include="settings-shared iron-flex iron-flex-alignment">
+      .account-icon {
+        background: center no-repeat;
+        border-radius: 20px;
+        flex-shrink: 0;
+        height: 40px;
+        width: 40px;
+      }
+
+      #outer {
+        margin-inline-end: var(--cr-section-padding);
+        margin-inline-start: 60px;
+      }
+
+      #account-list-header {
+        padding-bottom: 1em;
+      }
+
+      .account-toolbar,
+      #remove-account-policy-indicator {
+        margin-inline-start: 1em;
+      }
+
+      #add-account-policy-indicator {
+        margin-inline-end: 1em;
+      }
+
+      #add-account-icon {
+        -webkit-mask-image: url(chrome://resources/images/add.svg);
+        background-color: currentColor;
+        height: 24px;
+        margin-inline-end: 0.5em;
+        width: 24px;
+      }
+
+      #remove-account-container {
+        align-items: center;
+        display: flex;
+      }
+
+      .error-badge {
+        left: 60%;
+        position: relative;
+        top: 60%;
+      }
+
+      .warning {
+        color: red;
+      }
+
+      :host-context([dir='rtl']) .error-badge {
+        left: auto;
+        right: 60%;
+      }
+    </style>
+
+    <div class="settings-box first">
+      <h2 class="first">
+        <!-- Inner div needed to get spacing right in front of 'Learn more'. -->
+        <div inner-h-t-m-l="[[i18nAdvanced('kerberosAccountsDescription')]]">
+        </div>
+      </h2>
+    </div>
+
+    <div class="settings-box first">
+      <div id="account-list-header" class="flex">
+        <h2>$i18n{kerberosAccountsListHeader}</h2>
+      </div>
+      <template is="dom-if" if="[[!addAccountsAllowed_]]">
+        <cr-policy-indicator id="add-account-policy-indicator"
+            indicator-type="userPolicy">
+        </cr-policy-indicator>
+      </template>
+      <cr-button id="add-account-button" on-click="onAddAccountClick_"
+          disabled="[[!addAccountsAllowed_]]">
+        <div id="add-account-icon"></div>
+        $i18n{kerberosAccountsAddAccountLabel}
+      </cr-button>
+    </div>
+
+    <div id="outer" class="layout vertical nowrap">
+      <template is="dom-repeat" id="account-list" items="[[accounts_]]">
+        <div class="settings-box account-list-item">
+
+          <div class="account-icon"
+              style="background-image: [[getIconImageSet_(item.pic)]]">
+            <img class="error-badge" hidden$="[[item.isSignedIn]]"
+                src="chrome://resources/images/error_badge.svg">
+          </div>
+
+          <div class="middle two-line no-min-width">
+            <div class="flex text-elide">
+              <span>[[item.principalName]]</span>
+
+              <div class="secondary signed-in" hidden$="[[!item.isSignedIn]]">
+                [[i18n('kerberosAccountsSignedIn', item.validForDuration)]]
+              </div>
+              <div class="secondary warning signed-out"
+                  hidden$="[[item.isSignedIn]]">
+                $i18n{kerberosAccountsSignedOut}
+              </div>
+            </div>
+          </div>
+
+          <div class="secondary account-toolbar active-indicator"
+              hidden$="[[!item.isActive]]">
+            $i18n{kerberosAccountsTicketActive}
+          </div>
+
+          <cr-button class="account-toolbar reauth-button"
+              hidden$="[[item.isSignedIn]]"
+              on-click="onReauthenticationClick_">
+            $i18n{kerberosAccountsReauthenticationLabel}
+          </cr-button>
+
+          <template is="dom-if" if="[[item.isManaged]]">
+            <cr-policy-indicator indicator-type="userPolicy"
+                class="account-toolbar account-policy-indicator">
+            </cr-policy-indicator>
+          </template>
+
+          <!-- Hamburger menu -->
+          <cr-icon-button class="icon-more-vert more-actions"
+              title="$i18n{moreActions}"
+              on-click="onAccountActionsMenuButtonClick_">
+          </cr-icon-button>
+        </div>
+      </template>
+
+      <div class="clear settings-box"></div>
+
+      <cr-action-menu role-description="$i18n{menu}">
+        <button class="dropdown-item" on-click="onRefreshNowClick_">
+          $i18n{kerberosAccountsRefreshNowLabel}
+        </button>
+        <button class="dropdown-item" on-click="onSetAsActiveAccountClick_">
+          $i18n{kerberosAccountsSetAsActiveAccountLabel}
+        </button>
+        <button class="dropdown-item" on-click="onRemoveAccountClick_"
+            disabled="[[selectedAccount_.isManaged]]">
+          <div id="remove-account-container">
+            $i18n{kerberosAccountsRemoveAccountLabel}
+            <template is="dom-if" if="[[selectedAccount_.isManaged]]">
+              <cr-policy-indicator id="remove-account-policy-indicator"
+                  indicator-type="userPolicy">
+              </cr-policy-indicator>
+            </template>
+          </div>
+        </button>
+      </cr-action-menu>
+    </div>
+
+    <cr-toast id="account-toast" duration="3000">
+      <!-- Gets displayed with black font without div and id :-/ -->
+      <div id="account-toast-label">[[accountToastText_]]</div>
+    </cr-toast>
+
+    <template is="dom-if" if="[[showAddAccountDialog_]]" restamp>
+      <kerberos-add-account-dialog preset-account="[[selectedAccount_]]"
+          on-close="onAddAccountDialogClosed_">
+      </kerberos-add-account-dialog>
+    </template>
+  </template>
+  <script src="kerberos_accounts.js"></script>
+</dom-module>

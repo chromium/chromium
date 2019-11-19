@@ -20,7 +20,7 @@ namespace Resolve = extensions::api::dns::Resolve;
 
 namespace extensions {
 
-DnsResolveFunction::DnsResolveFunction() : binding_(this) {}
+DnsResolveFunction::DnsResolveFunction() = default;
 
 DnsResolveFunction::~DnsResolveFunction() {}
 
@@ -29,11 +29,6 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   std::unique_ptr<Resolve::Params> params(Resolve::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  network::mojom::ResolveHostClientPtr client_ptr;
-  binding_.Bind(mojo::MakeRequest(&client_ptr));
-  binding_.set_connection_error_handler(
-      base::BindOnce(&DnsResolveFunction::OnComplete, base::Unretained(this),
-                     net::ERR_FAILED, base::nullopt));
   // Yes, we are passing zero as the port. There are some interesting but not
   // presently relevant reasons why HostResolver asks for the port of the
   // hostname you'd like to resolve, even though it doesn't use that value in
@@ -41,7 +36,11 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   net::HostPortPair host_port_pair(params->hostname, 0);
   content::BrowserContext::GetDefaultStoragePartition(browser_context())
       ->GetNetworkContext()
-      ->ResolveHost(host_port_pair, nullptr, std::move(client_ptr));
+      ->ResolveHost(host_port_pair, nullptr,
+                    receiver_.BindNewPipeAndPassRemote());
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&DnsResolveFunction::OnComplete, base::Unretained(this),
+                     net::ERR_FAILED, base::nullopt));
 
   // Balanced in OnComplete().
   AddRef();
@@ -52,7 +51,7 @@ void DnsResolveFunction::OnComplete(
     int result,
     const base::Optional<net::AddressList>& resolved_addresses) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  binding_.Close();
+  receiver_.reset();
 
   ResolveCallbackResolveInfo resolve_info;
   resolve_info.result_code = result;

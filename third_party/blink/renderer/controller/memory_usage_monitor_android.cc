@@ -23,12 +23,19 @@ bool ReadFileContents(int fd, base::span<char> contents) {
   return true;
 }
 
+static MemoryUsageMonitor* g_instance_for_testing = nullptr;
+
 }  // namespace
 
 // static
 MemoryUsageMonitor& MemoryUsageMonitor::Instance() {
   DEFINE_STATIC_LOCAL(MemoryUsageMonitorAndroid, monitor, ());
-  return monitor;
+  return g_instance_for_testing ? *g_instance_for_testing : monitor;
+}
+
+// static
+void MemoryUsageMonitor::SetInstanceForTesting(MemoryUsageMonitor* instance) {
+  g_instance_for_testing = instance;
 }
 
 // Since the measurement is done every second in background, optimizations are
@@ -39,7 +46,8 @@ bool MemoryUsageMonitorAndroid::CalculateProcessMemoryFootprint(
     int status_fd,
     uint64_t* private_footprint,
     uint64_t* swap_footprint,
-    uint64_t* vm_size) {
+    uint64_t* vm_size,
+    uint64_t* vm_hwm_size) {
   // Get total resident and shared sizes from statm file.
   static size_t page_size = getpagesize();
   uint64_t resident_pages;
@@ -64,6 +72,14 @@ bool MemoryUsageMonitorAndroid::CalculateProcessMemoryFootprint(
   if (num_scanned != 1)
     return false;
 
+  char* hwm_line = strstr(line, "VmHWM");
+  if (!hwm_line)
+    return false;
+  num_scanned = sscanf(hwm_line, "VmHWM: %" SCNu64 " kB", vm_hwm_size);
+  if (num_scanned != 1)
+    return false;
+
+  *vm_hwm_size *= 1024;
   *swap_footprint *= 1024;
   *private_footprint =
       (resident_pages - shared_pages) * page_size + *swap_footprint;
@@ -76,12 +92,14 @@ void MemoryUsageMonitorAndroid::GetProcessMemoryUsage(MemoryUsage& usage) {
 
   if (!statm_fd_.is_valid() || !status_fd_.is_valid())
     return;
-  uint64_t private_footprint, swap, vm_size;
+  uint64_t private_footprint, swap, vm_size, vm_hwm_size;
   if (CalculateProcessMemoryFootprint(statm_fd_.get(), status_fd_.get(),
-                                      &private_footprint, &swap, &vm_size)) {
+                                      &private_footprint, &swap, &vm_size,
+                                      &vm_hwm_size)) {
     usage.private_footprint_bytes = static_cast<double>(private_footprint);
     usage.swap_bytes = static_cast<double>(swap);
     usage.vm_size_bytes = static_cast<double>(vm_size);
+    usage.peak_resident_bytes = static_cast<double>(vm_hwm_size);
   }
 }
 

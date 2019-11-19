@@ -35,7 +35,7 @@
     uiSourceCode.requestContent().then(step3);
   }
 
-  function step3(content) {
+  function step3({ content, error, isEncoded }) {
     TestRunner.addResult(uiSourceCode.url());
     TestRunner.addResult(content);
     TestRunner.completeTest();

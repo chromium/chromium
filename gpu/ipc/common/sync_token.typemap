@@ -4,9 +4,9 @@
 
 mojom = "//gpu/ipc/common/sync_token.mojom"
 public_headers = [ "//gpu/command_buffer/common/sync_token.h" ]
-traits_headers = [ "//gpu/ipc/common/sync_token_struct_traits.h" ]
+traits_headers = [ "//gpu/ipc/common/sync_token_mojom_traits.h" ]
 deps = [
-  "//gpu/ipc/common:struct_traits",
+  "//gpu/ipc/common:mojom_traits",
 ]
 public_deps = [
   "//gpu/command_buffer/common",

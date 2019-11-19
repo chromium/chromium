@@ -1,0 +1,19 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+import "ui/ozone/public/mojom/scenic_gpu_host.mojom";
+
+// GPU process service that enables presentation to Scenic.
+interface ScenicGpuService {
+  // Initializes the GPU service for presenting to scenic.
+  //
+  // This looks a bit backward because right now we only expose an API for the
+  // browser to bind services in the GPU, but we want the opposite here.
+  //
+  // TODO(spang): Consider providing a way for GPU to request ScenicGpuHost from
+  // service manager instead of returning one from a callback.
+  Initialize(pending_remote<ScenicGpuHost> scenic_gpu_host);
+};

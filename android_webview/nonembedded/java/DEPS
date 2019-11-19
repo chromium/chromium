@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/background_task_scheduler/android/java",
+  "+components/minidump_uploader/android/java",
+  "+components/variations/android/java",
+]

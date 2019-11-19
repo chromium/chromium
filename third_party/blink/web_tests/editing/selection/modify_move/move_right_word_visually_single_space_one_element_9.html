@@ -1,0 +1,80 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="ltr">|aaa אאא bbb</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">aaa |אאא bbb</div>',
+  '9-0 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">a|aa אאא bbb</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">aaa |אאא bbb</div>',
+  '9-1 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">aa|a אאא bbb</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">aaa |אאא bbb</div>',
+  '9-2 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">aaa| אאא bbb</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">aaa \u05D0\u05D0\u05D0 |bbb</div>',
+  '9-3 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">aaa |אאא bbb</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">aaa אאא |bbb</div>',
+  '9-4 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">aaa א|אא bbb</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">aaa אאא |bbb</div>',
+  '9-5 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">aaa אא|א bbb</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">aaa אאא |bbb</div>',
+  '9-6 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">aaa אאא| bbb</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">aaa \u05D0\u05D0\u05D0 bbb|</div>',
+  '9-7 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">aaa אאא |bbb</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">aaa אאא bbb|</div>',
+  '9-8 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">aaa אאא b|bb</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">aaa אאא bbb|</div>',
+  '9-9 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">aaa אאא bb|b</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">aaa אאא bbb|</div>',
+  '9-10 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">aaa אאא bbb|</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">aaa אאא bbb|</div>',
+  '9-11 right word');
+</script>

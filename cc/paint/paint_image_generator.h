@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "cc/paint/frame_metadata.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
@@ -25,7 +24,10 @@ namespace cc {
 // be called from any thread.
 class CC_PAINT_EXPORT PaintImageGenerator : public SkRefCnt {
  public:
+  PaintImageGenerator(const PaintImageGenerator&) = delete;
   ~PaintImageGenerator() override;
+
+  PaintImageGenerator& operator=(const PaintImageGenerator&) = delete;
 
   // Returns a reference to the encoded content of this image.
   virtual sk_sp<SkData> GetEncodedData() const = 0;
@@ -78,6 +80,10 @@ class CC_PAINT_EXPORT PaintImageGenerator : public SkRefCnt {
   const SkImageInfo& GetSkImageInfo() const { return info_; }
   const std::vector<FrameMetadata>& GetFrameMetadata() const { return frames_; }
 
+  // Returns the information required to decide whether or not hardware
+  // acceleration can be used to decode this image.
+  virtual const ImageHeaderMetadata* GetMetadataForDecodeAcceleration() const;
+
  protected:
   // |info| is the info for this paint image generator.
   PaintImageGenerator(const SkImageInfo& info,
@@ -87,8 +93,6 @@ class CC_PAINT_EXPORT PaintImageGenerator : public SkRefCnt {
   const SkImageInfo info_;
   const PaintImage::ContentId generator_content_id_;
   const std::vector<FrameMetadata> frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintImageGenerator);
 };
 
 }  // namespace cc

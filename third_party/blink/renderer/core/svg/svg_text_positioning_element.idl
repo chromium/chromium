@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/text.html#InterfaceSVGTextPositioningElement
 
+[Exposed=Window]
 interface SVGTextPositioningElement : SVGTextContentElement {
     [MeasureAs=SVG1DOMText] readonly attribute SVGAnimatedLengthList x;
     [MeasureAs=SVG1DOMText] readonly attribute SVGAnimatedLengthList y;

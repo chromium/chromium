@@ -36,11 +36,6 @@ struct InteractionsStats {
 
 bool operator==(const InteractionsStats& lhs, const InteractionsStats& rhs);
 
-// Returns an element from |stats| with |username| or nullptr if not found.
-const InteractionsStats* FindStatsByUsername(
-    const std::vector<InteractionsStats>& stats,
-    const base::string16& username);
-
 // Represents the 'stats' table in the Login Database.
 class StatisticsTable {
  public:
@@ -79,6 +74,17 @@ class StatisticsTable {
       const base::Callback<bool(const GURL&)>& origin_filter,
       base::Time delete_begin,
       base::Time delete_end);
+
+  // Returns the number of distinct domains for which at least one account has
+  // |n| or more dismissals.
+  int GetNumDomainsWithAtLeastNDismissals(int64_t n);
+
+  // Returns the number of distinct accounts for which have at least |n| or more
+  // dismissals.
+  int GetNumAccountsWithAtLeastNDismissals(int64_t n);
+
+  // Returns the number of rows (origin/username pairs) in the table.
+  int GetNumAccounts();
 
  private:
   sql::Database* db_;

@@ -1,0 +1,51 @@
+// dot -Tpng third_party/blink/renderer/core/animation/images/lifecycle.png.dot > third_party/blink/renderer/core/animation/images/lifecycle.png
+// When making modifications run the above command to regenerate the diagram.
+
+digraph G {
+  subgraph cluster_start {
+    label = "Create the animation";
+
+    TimelinePlay [ label = "DocumentTimeline::Play"; ]
+    AnimationPlay [ label = "Animation::play"; ]
+    SetOutdatedAnimation [ label="DocumentTimeline::SetOutdatedAnimation"; ]
+    ServiceOnNextFrame [ label="DocumentTimeline::ServiceOnNextFrame"; ]
+
+    TimelinePlay -> AnimationPlay -> SetOutdatedAnimation -> ServiceOnNextFrame;
+  }
+
+  subgraph cluster_chrome {
+    label = "Schedule an update";
+    ScheduleAnimation [ label="LocalFrameView::ScheduleAnimation"; ]
+    SetNeedsBeginFrame [ label="LayerTreeView::SetNeedsBeginFrame"; ]
+    SetNeedsAnimate [ label="LayerTreeHost::SetNeedsAnimate"; ]
+  }
+
+  ServiceOnNextFrame -> ScheduleAnimation -> SetNeedsBeginFrame -> SetNeedsAnimate;
+
+  subgraph cluster_run {
+    label = "Update animations";
+    LayerTreeHostBMF [ label="LayerTreeHost::BeginMainFrame"; ]
+    BeginFrame [ label="WebViewImpl::BeginFrame"; ]
+    Animate [ label="PageWidgetDelegate::Animate"; ]
+    ServiceScriptedAnimations [ label="PageAnimator::ServiceScriptedAnimations"; ]
+
+    LayerTreeHostBMF -> BeginFrame -> Animate -> ServiceScriptedAnimations;
+    ServiceScriptedAnimations -> ScheduleAnimation;
+  }
+  SetNeedsAnimate -> LayerTreeHostBMF [ style="dashed"; ]
+
+  subgraph cluster_apply {
+    label = "Apply an animation";
+    UpdateAnimationTiming [ label="DocumentAnimations::UpdateAnimationTiming"; ]
+    Update [ label="Animation::Update"; ]
+    ApplyEffects [ label="KeyframeEffect::ApplyEffects"; ]
+    SetNeedsAnimationStyleRecalc [ label="Element::SetNeedsAnimationStyleRecalc"; ]
+    UpdateAnimationTiming -> Update
+    Update -> ApplyEffects -> SetNeedsAnimationStyleRecalc;
+  }
+
+  ServiceScriptedAnimations -> UpdateAnimationTiming;
+
+  ExecuteCallbacks [ label="FrameRequestCallbackCollection::ExecuteCallbacks"; ]
+  ServiceScriptedAnimations -> ExecuteCallbacks;
+}

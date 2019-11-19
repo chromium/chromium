@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.infobar;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Paint;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.SwitchCompat;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
@@ -18,15 +17,16 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.DualControlLayout;
-import org.chromium.chrome.browser.widget.RadioButtonLayout;
+import org.chromium.chrome.browser.ui.widget.DualControlLayout;
+import org.chromium.chrome.browser.ui.widget.RadioButtonLayout;
 
 import java.util.List;
 
@@ -261,7 +261,7 @@ public final class InfoBarControlLayout extends ViewGroup {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         int width = right - left;
-        boolean isRtl = ApiCompatibilityUtils.isLayoutRtl(this);
+        boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
 
         // Child positions were already determined during the measurement pass.
         for (int childIndex = 0; childIndex < getChildCount(); childIndex++) {
@@ -463,28 +463,14 @@ public final class InfoBarControlLayout extends ViewGroup {
         ControlLayoutParams params = new ControlLayoutParams();
         params.mMustBeFullWidth = true;
 
-        TextView descriptionView = (TextView) LayoutInflater.from(getContext()).inflate(
-                R.layout.infobar_control_description, this, false);
+        TextView descriptionView =
+                (TextView) LayoutInflater.from(getContext())
+                        .inflate(R.layout.dialog_control_description, this, false);
         addView(descriptionView, params);
 
         descriptionView.setText(message);
         descriptionView.setMovementMethod(LinkMovementMethod.getInstance());
         return descriptionView;
-    }
-
-    /**
-     * Creates and adds a control that shows a review rating score.
-     *
-     * @param rating Fractional rating out of 5 stars.
-     */
-    public View addRatingBar(float rating) {
-        View ratingLayout = LayoutInflater.from(getContext()).inflate(
-                R.layout.infobar_control_rating, this, false);
-        addView(ratingLayout, new ControlLayoutParams());
-
-        RatingBar ratingView = (RatingBar) ratingLayout.findViewById(R.id.control_rating);
-        ratingView.setRating(rating);
-        return ratingView;
     }
 
     /**

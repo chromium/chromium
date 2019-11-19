@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  .a { visibility: visible; }
+  .b { visibility: collapse; }
+  body.flip .a { visibility: collapse; }
+  body.flip .b { visibility: visible; }
+</style>
+</head>
+<body>
+<div role="toolbar">
+  <div role="heading" aria-label="Heading" class="a"></div>
+  <div role="banner" aria-label="Banner" class="b"></div>
+</div>
+<script>
+  function go() {
+    document.body.className = 'flip';
+  }
+</script>
+</body>
+</html>

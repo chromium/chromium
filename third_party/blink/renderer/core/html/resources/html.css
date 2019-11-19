@@ -395,7 +395,7 @@ fieldset {
 }
 
 button {
-    -webkit-appearance: button;
+    -webkit-appearance: button; /* AutoAppearanceFor() should match to this. */
 }
 
 /* Form controls don't go vertical. */
@@ -407,7 +407,7 @@ input, textarea, select, button {
     margin: 0__qem;
     font: -webkit-small-control;
     text-rendering: auto; /* FIXME: Remove when tabs work with optimizeLegibility. */
-    color: initial;
+    color: -internal-light-dark-color(black, white);
     letter-spacing: normal;
     word-spacing: normal;
     line-height: normal;
@@ -423,16 +423,16 @@ input[type="hidden" i] {
 }
 
 input {
-    -webkit-appearance: textfield;
+    -webkit-appearance: textfield; /* AutoAppearanceFor() should match to this. */
     padding: 1px;
-    background-color: white;
+    background-color: -internal-light-dark-color(white, black);
     border: 2px inset;
     -webkit-rtl-ordering: logical;
     cursor: text;
 }
 
 input[type="search" i] {
-    -webkit-appearance: searchfield;
+    -webkit-appearance: searchfield; /* AutoAppearanceFor() should match to this. */
     box-sizing: border-box;
 }
 
@@ -444,7 +444,7 @@ input::-webkit-textfield-decoration-container {
 }
 
 input::-webkit-clear-button {
-    -webkit-appearance: searchfield-cancel-button;
+    -webkit-appearance: searchfield-cancel-button; /* AutoAppearanceFor() should match to this. */
     display: inline-block;
     cursor: default;
     flex: none;
@@ -460,7 +460,7 @@ input:enabled:read-write:-webkit-any(:focus,:hover)::-webkit-clear-button {
 }
 
 input[type="search" i]::-webkit-search-cancel-button {
-    -webkit-appearance: searchfield-cancel-button;
+    -webkit-appearance: searchfield-cancel-button; /* AutoAppearanceFor() should match to this. */
     display: block;
     cursor: default;
     flex: none;
@@ -477,7 +477,7 @@ input[type="search" i]:enabled:read-write:-webkit-any(:focus,:hover)::-webkit-se
 }
 
 input::-webkit-inner-spin-button {
-    -webkit-appearance: inner-spin-button;
+    -webkit-appearance: inner-spin-button; /* AutoAppearanceFor() should match to this. */
     display: inline-block;
     cursor: default;
     flex: none;
@@ -497,8 +497,8 @@ select {
 }
 
 textarea {
-    -webkit-appearance: textarea;
-    background-color: white;
+    -webkit-appearance: textarea; /* AutoAppearanceFor() should match to this. */
+    background-color: -internal-light-dark-color(white, black);
     border: 1px solid;
     -webkit-rtl-ordering: logical;
     flex-direction: column;
@@ -530,6 +530,11 @@ input::-internal-input-suggested {
     overflow: hidden;
 }
 
+input::-internal-input-suggested,
+textarea::-internal-input-suggested {
+    font: -webkit-small-control !important;
+}
+
 input[type="password" i] {
     -webkit-text-security: disc !important;
 }
@@ -539,7 +544,7 @@ input[type="password" i]::-internal-input-suggested {
 }
 
 input[type="hidden" i], input[type="image" i], input[type="file" i] {
-    -webkit-appearance: initial;
+    -webkit-appearance: initial; /* AutoAppearanceFor() should match to this. */
     padding: initial;
     background-color: initial;
     border: initial;
@@ -559,14 +564,19 @@ input[type="image" i] {
 /* TODO(crbug.com/880258): Use different styles for
   `-internal-autofill-previewed` and `-internal-autofill-selected`. */
 input:-internal-autofill-previewed,
-input:-internal-autofill-selected,
 textarea:-internal-autofill-previewed,
+select:-internal-autofill-previewed {
+  background-color: #E8F0FE !important;
+  background-image:none !important;
+  color: -internal-light-dark-color(black, white) !important;
+}
+
+input:-internal-autofill-selected,
 textarea:-internal-autofill-selected,
-select:-internal-autofill-previewed,
 select:-internal-autofill-selected {
   background-color: #E8F0FE !important;
   background-image:none !important;
-  color: #000000 !important;
+  color: -internal-light-dark-color(black, white) !important;
 }
 
 input[type="radio" i], input[type="checkbox" i] {
@@ -578,13 +588,13 @@ input[type="radio" i], input[type="checkbox" i] {
 }
 
 input[type="button" i], input[type="submit" i], input[type="reset" i] {
-    -webkit-appearance: push-button;
+    -webkit-appearance: push-button; /* AutoAppearanceFor() should match to this. */
     -webkit-user-select: none;
     white-space: pre
 }
 
 input[type="file" i]::-webkit-file-upload-button {
-    -webkit-appearance: push-button;
+    -webkit-appearance: push-button; /* AutoAppearanceFor() should match to this. */
     -webkit-user-modify: read-only !important;
     white-space: nowrap;
     margin: 0;
@@ -603,7 +613,7 @@ input[type="button" i], input[type="submit" i], input[type="reset" i], input[typ
 }
 
 input[type="range" i] {
-    -webkit-appearance: slider-horizontal;
+    -webkit-appearance: slider-horizontal; /* AutoAppearanceFor() should match to this. */
     padding: initial;
     border: initial;
     margin: 2px;
@@ -612,7 +622,7 @@ input[type="range" i] {
 }
 
 input[type="range" i]::-webkit-slider-container, input[type="range" i]::-webkit-media-slider-container {
-    -webkit-appearance: inherit;
+    -webkit-appearance: inherit; /* AutoAppearanceFor() should match to this. */
     flex: 1;
     min-width: 0;
     box-sizing: border-box;
@@ -631,7 +641,7 @@ input[type="range" i]::-webkit-slider-runnable-track {
 }
 
 input[type="range" i]::-webkit-slider-thumb, input[type="range" i]::-webkit-media-slider-thumb {
-    -webkit-appearance: sliderthumb-horizontal;
+    -webkit-appearance: sliderthumb-horizontal; /* AutoAppearanceFor() should match to this. */
     box-sizing: border-box;
     -webkit-user-modify: read-only !important;
     display: block;
@@ -641,7 +651,7 @@ input[type="button" i]:disabled, input[type="submit" i]:disabled, input[type="re
 input[type="file" i]:disabled::-webkit-file-upload-button, button:disabled,
 select:disabled, optgroup:disabled, option:disabled,
 select[disabled]>option {
-    color: GrayText
+    color: -internal-light-dark-color(GrayText, #aaa);
 }
 
 input[type="button" i]:active, input[type="submit" i]:active, input[type="reset" i]:active, input[type="file" i]:active::-webkit-file-upload-button, button:active {
@@ -653,12 +663,12 @@ input[type="button" i]:active:disabled, input[type="submit" i]:active:disabled, 
 }
 
 input:disabled, textarea:disabled {
-    color: #545454;
+    color: -internal-light-dark-color(#545454, #aaa);
     cursor: default;
 }
 
 option:-internal-spatial-navigation-focus {
-    outline: black dashed 1px;
+    outline: -internal-light-dark-color(black, white) dashed 1px;
     outline-offset: -1px;
 }
 
@@ -668,6 +678,9 @@ datalist {
 
 area {
     display: inline;
+}
+
+area:-webkit-any-link {
     cursor: pointer;
 }
 
@@ -676,17 +689,17 @@ param {
 }
 
 input[type="checkbox" i] {
-    -webkit-appearance: checkbox;
+    -webkit-appearance: checkbox; /* AutoAppearanceFor() should match to this. */
     box-sizing: border-box;
 }
 
 input[type="radio" i] {
-    -webkit-appearance: radio;
+    -webkit-appearance: radio; /* AutoAppearanceFor() should match to this. */
     box-sizing: border-box;
 }
 
 input[type="color" i] {
-    -webkit-appearance: square-button;
+    -webkit-appearance: square-button; /* AutoAppearanceFor() should match to this. */
     width: 44px;
     height: 23px;
     background-color: ButtonFace;
@@ -714,7 +727,7 @@ input[type="color" i]::-webkit-color-swatch {
 }
 
 input[type="color" i][list] {
-    -webkit-appearance: menulist;
+    -webkit-appearance: menulist; /* AutoAppearanceFor() should match to this. */
     width: 88px;
     height: 23px
 }
@@ -771,14 +784,14 @@ input[readonly]::-webkit-calendar-picker-indicator {
 }
 
 select {
-    -webkit-appearance: menulist;
+    -webkit-appearance: menulist; /* AutoAppearanceFor() should match to this. */
     box-sizing: border-box;
     align-items: center;
     border: 1px solid;
     white-space: pre;
     -webkit-rtl-ordering: logical;
-    color: black;
-    background-color: white;
+    color: -internal-light-dark-color(black, white);
+    background-color: -internal-light-dark-color(white, black);
     cursor: default;
 }
 
@@ -787,7 +800,7 @@ select:not(:-internal-list-box) {
 }
 
 select:-internal-list-box {
-    -webkit-appearance: listbox;
+    -webkit-appearance: listbox; /* AutoAppearanceFor() should match to this. */
     align-items: flex-start;
     border: 1px inset gray;
     border-radius: initial;
@@ -844,6 +857,11 @@ select:-internal-list-box hr {
     margin-block-end: 0;
 }
 
+select:-internal-list-box:focus option:-internal-multi-select-focus {
+    outline: auto 1px -webkit-focus-ring-color;
+    outline-offset: -1px;
+}
+
 output {
     display: inline;
 }
@@ -851,7 +869,7 @@ output {
 /* meter */
 
 meter {
-    -webkit-appearance: meter;
+    -webkit-appearance: meter; /* AutoAppearanceFor() should match to this. */
     box-sizing: border-box;
     display: inline-block;
     height: 1em;
@@ -861,7 +879,7 @@ meter {
 }
 
 meter::-webkit-meter-inner-element {
-    -webkit-appearance: inherit;
+    -webkit-appearance: inherit; /* AutoAppearanceFor() should match to this. */
     box-sizing: inherit;
     display: none;
     -webkit-user-modify: read-only !important;
@@ -909,7 +927,7 @@ meter::-webkit-meter-even-less-good-value {
 /* progress */
 
 progress {
-    -webkit-appearance: progress-bar;
+    -webkit-appearance: progress-bar; /* AutoAppearanceFor() should match to this. */
     box-sizing: border-box;
     display: inline-block;
     height: 1em;
@@ -1003,12 +1021,12 @@ nobr {
 /* states */
 
 :-internal-spatial-navigation-interest {
-  outline: auto 5px -webkit-focus-ring-color !important;
-  box-shadow: none !important
+    outline: auto 1px -webkit-focus-ring-color !important;
+    box-shadow: none !important
 }
 
 :focus {
-    outline: auto 5px -webkit-focus-ring-color
+    outline: auto 1px -webkit-focus-ring-color
 }
 
 html:focus, body:focus {
@@ -1133,8 +1151,8 @@ dialog {
     margin: auto;
     border: solid;
     padding: 1em;
-    background: white;
-    color: black
+    background: -internal-light-dark-color(white, black);
+    color: -internal-light-dark-color(black, white);
 }
 
 /* TODO(foolip): In the Fullscreen spec, there's a ::backdrop block with the

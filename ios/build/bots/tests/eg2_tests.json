@@ -1,0 +1,36 @@
+{
+    "comments": [
+        "EG2 tests to run on the waterfall."
+    ],
+    "tests": [
+        {
+            "app": "ios_chrome_integration_eg2tests_module",
+            "host": "ios_chrome_eg2tests"
+        },
+        {
+            "app": "ios_chrome_smoke_eg2tests_module",
+            "host": "ios_chrome_eg2tests"
+        },
+        {
+            "app": "ios_chrome_settings_eg2tests_module",
+            "host": "ios_chrome_eg2tests"
+        },
+        {
+            "app": "ios_chrome_ui_eg2tests_module",
+            "host": "ios_chrome_eg2tests",
+            "shards": 2
+        },
+        {
+            "app": "ios_chrome_web_eg2tests_module",
+            "host": "ios_chrome_eg2tests"
+        },
+        {
+            "app": "ios_web_shell_eg2tests_module",
+            "host": "ios_web_shell_eg2tests"
+        },
+        {
+            "app":"ios_showcase_eg2tests_module",
+            "host":"ios_showcase_eg2tests"
+        }
+    ]
+}

@@ -8,6 +8,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
@@ -27,6 +28,7 @@ ChildAccountServiceFactory::ChildAccountServiceFactory()
         "ChildAccountService",
         BrowserContextDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(ProfileSyncServiceFactory::GetInstance());
   DependsOn(SupervisedUserServiceFactory::GetInstance());
 }
 

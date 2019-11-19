@@ -13,6 +13,10 @@
 #include "base/synchronization/lock.h"
 #import "ios/web/public/test/http_server/response_provider.h"
 
+namespace base {
+class FilePath;
+}
+
 namespace net {
 namespace test_server {
 class EmbeddedTestServer;
@@ -72,7 +76,7 @@ class HttpServer : public base::RefCountedThreadSafe<HttpServer> {
   // Starts the server on the default port 8080. CHECKs if the server can not be
   // started.
   // Must be called from the main thread.
-  void StartOrDie();
+  void StartOrDie(const base::FilePath& files_path);
   // Stops the server and prevents it from accepting new requests.
   // Must be called from the main thread.
   void Stop();

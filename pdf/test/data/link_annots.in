@@ -1,0 +1,140 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /MediaBox [0 0 612 792]
+  /CropBox [0 0 612 792]
+  /Resources <<
+    /Font <<
+      /F1 5 0 R
+      /F2 6 0 R
+    >>
+  >>
+  /Count 2
+  /Kids [3 0 R 4 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 7 0 R
+  /Annots [9 0 R 10 0 R 11 0 R 12 0 R]
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 8 0 R
+>>
+endobj
+{{object 5 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+{{object 6 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica
+>>
+endobj
+{{object 7 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+70 700 Td
+/F1 18 Tf
+(Link Annotations - Page 1) Tj
+10 -85 Td
+/F2 14 Tf
+(Link with destination to second page) Tj
+-12 -84 Td
+/F2 10 Tf
+(PDF Reference, Version 1.7, Section 8.4.5 defines Annotations) Tj
+2 -53 Td
+(3. Hello World) Tj
+0 -18 Td
+(https://pdfium.googlesource.com/pdfium is link in plain text, not link annotation. These are referred to) Tj
+0 -17 Td
+(as WebLinks in PDFium.)Tj
+ET
+endstream
+endobj
+{{object 8 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+70 700 Td
+/F1 18 Tf
+(Second Page) Tj
+ET
+endstream
+endobj
+{{object 9 0}} <<
+  /Type /Annot
+  /Subtype /Link
+  /BS <<
+    /W 0
+  >>
+  /Rect [80 613 542 633]
+  /Dest [4 0 R /XYZ 200 725 1.75]
+  /F 4
+>>
+endobj
+{{object 10 0}} <<
+  /Type /Annot
+  /Subtype /Link
+  /BS <<
+    /W 0
+  >>
+  /Rect [196 544 66 529]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (https://www.adobe.com)
+  >>
+  /F 4
+>>
+endobj
+{{object 11 0}} <<
+  /Type /Annot
+  /Subtype /Link
+  /BS <<
+    /W 0
+  >>
+  /Rect [83 430 178 453]
+  /QuadPoints [83 453 178 453 83 440 178 440 83 440 178 440 83 430 178 430]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (https://cs.chromium.org)
+  >>
+  /F 4
+>>
+endobj
+{{object 12 0}} <<
+  /Type /Annot
+  /Subtype /Link
+  /BS <<
+    /W 0
+  >>
+  /Rect [40 80 60 100]
+  /A <<
+    /Type /Action
+    /S /URI
+    /URI (https://www.google.com)
+  >>
+  /F 4
+>>
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

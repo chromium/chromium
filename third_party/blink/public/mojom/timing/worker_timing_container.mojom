@@ -1,0 +1,19 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom";
+
+// Used to implement FetchEvent WorkerTiming (https://crbug.com/900700).
+// A service worker uses this interface to send performance timings to a client
+// (a document/worker controlled by the service worker) during the fetch event
+// for a request. The client then incorporates the timings into the
+// blink::PerformanceResourceTiming for the request. The client may be in a
+// different renderer process than the service worker.
+interface WorkerTimingContainer {
+  // Corresponds to FetchEvent#addPerformanceEntry.
+  // https://github.com/wanderview/fetchevent-worker-timing/blob/master/explainer.md
+  AddPerformanceEntry(PerformanceMarkOrMeasure entry);
+};

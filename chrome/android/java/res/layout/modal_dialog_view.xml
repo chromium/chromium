@@ -15,7 +15,7 @@
     <include layout="@layout/modal_dialog_title"
         android:id="@+id/title_container" />
 
-    <org.chromium.chrome.browser.widget.FadingEdgeScrollView
+    <org.chromium.chrome.browser.ui.widget.FadingEdgeScrollView
         android:id="@+id/modal_dialog_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -39,7 +39,7 @@
 
         </LinearLayout>
 
-    </org.chromium.chrome.browser.widget.FadingEdgeScrollView>
+    </org.chromium.chrome.browser.ui.widget.FadingEdgeScrollView>
 
     <FrameLayout
         android:id="@+id/custom"
@@ -48,11 +48,14 @@
         android:layout_weight="1"
         android:visibility="gone" />
 
-    <org.chromium.chrome.browser.widget.DualControlLayout
+    <org.chromium.chrome.browser.ui.widget.DualControlLayout
         android:id="@+id/button_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/modal_dialog_control_padding"
+        android:paddingTop="?attr/dualControlLayoutVerticalPadding"
+        android:paddingBottom="?attr/dualControlLayoutVerticalPadding"
+        android:paddingStart="?attr/dualControlLayoutHorizontalPadding"
+        android:paddingEnd="?attr/dualControlLayoutHorizontalPadding"
         app:stackedMargin="@dimen/button_bar_stacked_margin"
         app:buttonAlignment="end">
 
@@ -68,6 +71,6 @@
             android:layout_height="wrap_content"
             style="?attr/buttonBarNegativeButtonStyle" />
 
-    </org.chromium.chrome.browser.widget.DualControlLayout>
+    </org.chromium.chrome.browser.ui.widget.DualControlLayout>
 
 </org.chromium.chrome.browser.modaldialog.ModalDialogView>

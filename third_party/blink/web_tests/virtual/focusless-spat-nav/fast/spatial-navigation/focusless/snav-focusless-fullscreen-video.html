@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<video id="video" controls></video>
+<button id="button"></button>
+
+<script>
+  let video = document.getElementById("video");
+  let button = document.getElementById("button");
+  let fullscreened = new Promise((resolve) => {
+    document.addEventListener('fullscreenchange', resolve);
+  });
+
+  button.addEventListener('click', function() {
+    video.requestFullscreen();
+  });
+
+  promise_test(async () => {
+    button.focus();
+    eventSender.keyDown('Enter');
+
+    await snavCallback();
+
+    await fullscreened;
+
+    // snav state racily may have changed once or twice when fullscreen state
+    // changes, so if it hasn't updated in response to video controls getting
+    // focused yet, wait for the next update.
+    if (!mockSnavService.hasDefaultVideoControls) {
+      await snavCallback();
+    }
+
+    assert_equals(window.internals.interestedElement,
+                  video,
+                  "Video element should have interest.");
+    assert_equals(document.activeElement,
+                  video,
+                  "Video element should be focused.");
+
+    assert_true(mockSnavService.canExitFocus,
+                "Should be able to exit focus.");
+    assert_true(mockSnavService.canSelectElement,
+                "Should be able to select element.");
+    assert_false(mockSnavService.isFormFocused,
+                 "Form should not be focused.");
+    assert_false(mockSnavService.hasNextFormElement,
+                 "Should be able to move to next form element.");
+    assert_true(mockSnavService.hasDefaultVideoControls,
+                "Should have default video controls active.");
+
+
+  }, "Spat-Nav resets gracefully after focused editable becomes display:none.");
+</script>

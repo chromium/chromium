@@ -1,9 +1,2 @@
 {
-   "AutoConnect": true,
-   "EAP.EAP": "TLS",
-   "EAP.Identity": "${LOGIN_ID}@my.domain.com",
-   "EAP.UseSystemCAs": true,
-   "GUID": "{77db0089-0bc8-4358-929c-123xcv}",
-   "SaveCredentials": true,
-   "Type": "wimax"
 }

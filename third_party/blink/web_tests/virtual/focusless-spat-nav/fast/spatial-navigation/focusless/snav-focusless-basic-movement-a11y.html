@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+</style>
+
+<div id="first" tabindex="0">First</div>
+<div id="second" tabindex="0">Second</div>
+<div id="third" tabindex="0">Third</div>
+
+<script>
+  var resultMap = [
+    ["Down", "first"],
+    ["Down", "second"],
+    ["Down", "third"],
+  ];
+
+  // This test checks basic movement operation of the "focusless spatial
+  // navigation" feature. This feature puts spatial navigation into a mode that
+  // moves a visual-only indicator, rather than page focus. However, in
+  // accessibility mode, we still shift focus, despite the name, since a great
+  // deal of functionality is tied to focus.
+  let no_focus_test = async_test("Focusless SpatNav");
+  let first = document.getElementById("first");
+  let second = document.getElementById("second");
+  let third = document.getElementById("third");
+
+  var count = 0;
+
+  first.addEventListener("focus", () => { count++; });
+  second.addEventListener("focus", () => { count++; });
+  third.addEventListener("focus", () => { count++; });
+
+  let postAssertsFunc = no_focus_test.step_func_done(() => {
+    assert_equals(count, 3);
+    assert_equals(document.activeElement, third);
+  });
+
+  snav.assertFocusMoves(resultMap,
+                        true /* enableSpatnav */,
+                        postAssertsFunc,
+                        true /* focuslessSpatNav */ );
+</script>

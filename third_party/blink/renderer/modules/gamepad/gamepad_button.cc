@@ -4,11 +4,9 @@
 
 #include "third_party/blink/renderer/modules/gamepad/gamepad.h"
 
-namespace blink {
+#include "device/gamepad/public/cpp/gamepad.h"
 
-GamepadButton* GamepadButton::Create() {
-  return MakeGarbageCollected<GamepadButton>();
-}
+namespace blink {
 
 GamepadButton::GamepadButton() : value_(0.), pressed_(false), touched_(false) {}
 

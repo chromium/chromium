@@ -71,9 +71,7 @@ class GraphicsLayerTest : public testing::Test, public PaintTestConfigurations {
   ViewportLayersSetup layers_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         GraphicsLayerTest,
-                         testing::Values(0, kBlinkGenPropertyTrees));
+INSTANTIATE_TEST_SUITE_P(All, GraphicsLayerTest, testing::Values(0));
 
 TEST_P(GraphicsLayerTest, Paint) {
   IntRect interest_rect(1, 2, 3, 4);
@@ -127,18 +125,13 @@ TEST_P(GraphicsLayerTest, PaintRecursively) {
       });
 
   transform1->Update(transform_root,
-                     TransformPaintPropertyNode::State{
-                         TransformationMatrix().Translate(20, 30)});
-  EXPECT_TRUE(transform1->Changed(transform_root));
-  EXPECT_TRUE(transform2->Changed(transform_root));
+                     TransformPaintPropertyNode::State{FloatSize(20, 30)});
+  EXPECT_TRUE(transform1->Changed(PaintPropertyChangeType::kChangedOnlyValues,
+                                  transform_root));
+  EXPECT_TRUE(transform2->Changed(PaintPropertyChangeType::kChangedOnlyValues,
+                                  transform_root));
   layers_.graphics_layer_client().SetNeedsRepaint(true);
   layers_.graphics_layer().PaintRecursively();
-
-  // With BlinkGenPropertyTrees, these are not cleared until after paint.
-  if (!RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled()) {
-    EXPECT_FALSE(transform1->Changed(transform_root));
-    EXPECT_FALSE(transform2->Changed(transform_root));
-  }
 }
 
 TEST_P(GraphicsLayerTest, SetDrawsContentFalse) {
@@ -153,21 +146,16 @@ TEST_P(GraphicsLayerTest, SetDrawsContentFalse) {
   EXPECT_EQ(nullptr, GetInternalRasterInvalidator(layers_.graphics_layer()));
 }
 
-TEST_P(GraphicsLayerTest, CcLayerClient) {
-  auto graphics_layer =
-      std::make_unique<FakeGraphicsLayer>(layers_.graphics_layer_client());
-  graphics_layer->SetDrawsContent(true);
-  scoped_refptr<cc::PictureLayer> cc_layer = graphics_layer->CcLayer();
-  ASSERT_TRUE(cc_layer);
-  EXPECT_TRUE(cc_layer->DrawsContent());
-  EXPECT_TRUE(cc_layer->client());
-  EXPECT_TRUE(cc_layer->GetLayerClientForTesting());
-
-  graphics_layer.reset();
-  EXPECT_FALSE(cc_layer->DrawsContent());
-  EXPECT_FALSE(cc_layer->client());
-  EXPECT_FALSE(cc_layer->GetLayerClientForTesting());
-  EXPECT_FALSE(cc_layer->GetPicture());
+TEST_P(GraphicsLayerTest, ContentsLayer) {
+  auto& graphics_layer = layers_.graphics_layer();
+  auto contents_layer = cc::Layer::Create();
+  GraphicsLayer::RegisterContentsLayer(contents_layer.get());
+  graphics_layer.SetContentsToCcLayer(contents_layer.get(), true);
+  EXPECT_TRUE(graphics_layer.HasContentsLayer());
+  EXPECT_EQ(contents_layer.get(), graphics_layer.ContentsLayer());
+  GraphicsLayer::UnregisterContentsLayer(contents_layer.get());
+  EXPECT_FALSE(graphics_layer.HasContentsLayer());
+  EXPECT_EQ(nullptr, graphics_layer.ContentsLayer());
 }
 
 }  // namespace blink

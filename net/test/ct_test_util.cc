@@ -13,6 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "net/base/hex_utils.h"
 #include "net/cert/ct_serialization.h"
 #include "net/cert/ct_verify_result.h"
 #include "net/cert/merkle_tree_leaf.h"
@@ -24,14 +25,6 @@ namespace net {
 namespace ct {
 
 namespace {
-
-std::string HexToBytes(const char* hex_data) {
-  std::vector<uint8_t> output;
-  std::string result;
-  if (base::HexStringToBytes(hex_data, &output))
-    result.assign(reinterpret_cast<const char*>(&output[0]), output.size());
-  return result;
-}
 
 // The following test vectors are from
 // http://code.google.com/p/certificate-transparency
@@ -171,56 +164,65 @@ const char kSampleSTHTreeHeadSignature[] =
     "d3";
 size_t kSampleSTHTreeSize = 21u;
 
+std::string HexDecode(base::StringPiece input) {
+  std::string result;
+  if (!base::HexStringToString(input, &result))
+    result.clear();
+  return result;
+}
+
 }  // namespace
 
 void GetX509CertSignedEntry(SignedEntryData* entry) {
   entry->type = ct::SignedEntryData::LOG_ENTRY_TYPE_X509;
-  entry->leaf_certificate = HexToBytes(kDefaultDerCert);
+  entry->leaf_certificate = HexDecode(kDefaultDerCert);
 }
 
 void GetX509CertTreeLeaf(MerkleTreeLeaf* tree_leaf) {
   tree_leaf->timestamp = base::Time::FromJsTime(kTestTimestamp);
   GetX509CertSignedEntry(&tree_leaf->signed_entry);
-  tree_leaf->extensions = HexToBytes(kDefaultExtensions);
+  tree_leaf->extensions = HexDecode(kDefaultExtensions);
 }
 
-std::string GetDerEncodedX509Cert() { return HexToBytes(kDefaultDerCert); }
+std::string GetDerEncodedX509Cert() {
+  return HexDecode(kDefaultDerCert);
+}
 
 void GetPrecertSignedEntry(SignedEntryData* entry) {
   entry->type = ct::SignedEntryData::LOG_ENTRY_TYPE_PRECERT;
-  std::string issuer_hash(HexToBytes(kDefaultIssuerKeyHash));
+  std::string issuer_hash(HexDecode(kDefaultIssuerKeyHash));
   memcpy(entry->issuer_key_hash.data, issuer_hash.data(), issuer_hash.size());
-  entry->tbs_certificate = HexToBytes(kDefaultDerTbsCert);
+  entry->tbs_certificate = HexDecode(kDefaultDerTbsCert);
 }
 
 void GetPrecertTreeLeaf(MerkleTreeLeaf* tree_leaf) {
   tree_leaf->timestamp = base::Time::FromJsTime(kTestTimestamp);
   GetPrecertSignedEntry(&tree_leaf->signed_entry);
-  tree_leaf->extensions = HexToBytes(kDefaultExtensions);
+  tree_leaf->extensions = HexDecode(kDefaultExtensions);
 }
 
 std::string GetTestDigitallySigned() {
-  return HexToBytes(kTestDigitallySigned);
+  return HexDecode(kTestDigitallySigned);
 }
 
 std::string GetTestSignedCertificateTimestamp() {
-  return HexToBytes(kTestSignedCertificateTimestamp);
+  return HexDecode(kTestSignedCertificateTimestamp);
 }
 
 std::string GetTestPublicKey() {
-  return HexToBytes(kEcP256PublicKey);
+  return HexDecode(kEcP256PublicKey);
 }
 
 std::string GetTestPublicKeyId() {
-  return HexToBytes(kTestKeyId);
+  return HexDecode(kTestKeyId);
 }
 
 void GetX509CertSCT(scoped_refptr<SignedCertificateTimestamp>* sct_ref) {
-  CHECK(sct_ref != NULL);
+  CHECK(sct_ref != nullptr);
   *sct_ref = new SignedCertificateTimestamp();
   SignedCertificateTimestamp *const sct(sct_ref->get());
   sct->version = ct::SignedCertificateTimestamp::V1;
-  sct->log_id = HexToBytes(kTestKeyId);
+  sct->log_id = HexDecode(kTestKeyId);
   // Time the log issued a SCT for this certificate, which is
   // Fri Apr  5 10:04:16.089 2013
   sct->timestamp = base::Time::UnixEpoch() +
@@ -229,15 +231,15 @@ void GetX509CertSCT(scoped_refptr<SignedCertificateTimestamp>* sct_ref) {
 
   sct->signature.hash_algorithm = ct::DigitallySigned::HASH_ALGO_SHA256;
   sct->signature.signature_algorithm = ct::DigitallySigned::SIG_ALGO_ECDSA;
-  sct->signature.signature_data = HexToBytes(kTestSCTSignatureData);
+  sct->signature.signature_data = HexDecode(kTestSCTSignatureData);
 }
 
 void GetPrecertSCT(scoped_refptr<SignedCertificateTimestamp>* sct_ref) {
-  CHECK(sct_ref != NULL);
+  CHECK(sct_ref != nullptr);
   *sct_ref = new SignedCertificateTimestamp();
   SignedCertificateTimestamp *const sct(sct_ref->get());
   sct->version = ct::SignedCertificateTimestamp::V1;
-  sct->log_id = HexToBytes(kTestKeyId);
+  sct->log_id = HexDecode(kTestKeyId);
   // Time the log issued a SCT for this Precertificate, which is
   // Fri Apr  5 10:04:16.275 2013
   sct->timestamp = base::Time::UnixEpoch() +
@@ -246,27 +248,27 @@ void GetPrecertSCT(scoped_refptr<SignedCertificateTimestamp>* sct_ref) {
 
   sct->signature.hash_algorithm = ct::DigitallySigned::HASH_ALGO_SHA256;
   sct->signature.signature_algorithm = ct::DigitallySigned::SIG_ALGO_ECDSA;
-  sct->signature.signature_data = HexToBytes(kTestSCTPrecertSignatureData);
+  sct->signature.signature_data = HexDecode(kTestSCTPrecertSignatureData);
 }
 
 std::string GetDefaultIssuerKeyHash() {
-  return HexToBytes(kDefaultIssuerKeyHash);
+  return HexDecode(kDefaultIssuerKeyHash);
 }
 
 std::string GetDerEncodedFakeOCSPResponse() {
-return HexToBytes(kFakeOCSPResponse);
+  return HexDecode(kFakeOCSPResponse);
 }
 
 std::string GetFakeOCSPExtensionValue() {
-  return HexToBytes(kFakeOCSPExtensionValue);
+  return HexDecode(kFakeOCSPExtensionValue);
 }
 
 std::string GetDerEncodedFakeOCSPResponseCert() {
-  return HexToBytes(kFakeOCSPResponseCert);
+  return HexDecode(kFakeOCSPResponseCert);
 }
 
 std::string GetDerEncodedFakeOCSPResponseIssuerCert() {
-  return HexToBytes(kFakeOCSPResponseIssuerCert);
+  return HexDecode(kFakeOCSPResponseIssuerCert);
 }
 
 // A sample, valid STH
@@ -287,12 +289,12 @@ bool GetSampleEmptySignedTreeHead(SignedTreeHead* sth) {
   sth->timestamp = base::Time::UnixEpoch() +
                    base::TimeDelta::FromMilliseconds(INT64_C(1450443594920));
   sth->tree_size = 0;
-  std::string empty_root_hash = HexToBytes(
+  std::string empty_root_hash = HexDecode(
       "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
   memcpy(sth->sha256_root_hash, empty_root_hash.c_str(), kSthRootHashLength);
   sth->log_id = GetTestPublicKeyId();
 
-  std::string tree_head_signature = HexToBytes(
+  std::string tree_head_signature = HexDecode(
       "040300463044022046c26401de9416403da54762dc1f1687c38eafd791b15e484ab4c5f7"
       "f52721fe02201bf537a3bbea47109fc76c2273fe0f3349f493a07de9335c266330105fb0"
       "2a4a");
@@ -308,7 +310,7 @@ bool GetBadEmptySignedTreeHead(SignedTreeHead* sth) {
   memset(sth->sha256_root_hash, 'f', kSthRootHashLength);
   sth->log_id = GetTestPublicKeyId();
 
-  std::string tree_head_signature = HexToBytes(
+  std::string tree_head_signature = HexDecode(
       "04030046304402207cab04c62dee5d1cbc95fec30cd8417313f71587b75f133ad2e6f324"
       "74f164d702205e2f3a9bce46f87d7e20e951a4e955da3cb502f8717a22fabd7c5d7e1bef"
       "46ea");
@@ -317,15 +319,15 @@ bool GetBadEmptySignedTreeHead(SignedTreeHead* sth) {
 }
 
 std::string GetSampleSTHSHA256RootHash() {
-  return HexToBytes(kSampleSTHSHA256RootHash);
+  return HexDecode(kSampleSTHSHA256RootHash);
 }
 
 std::string GetSampleSTHTreeHeadSignature() {
-  return HexToBytes(kSampleSTHTreeHeadSignature);
+  return HexDecode(kSampleSTHTreeHeadSignature);
 }
 
 bool GetSampleSTHTreeHeadDecodedSignature(DigitallySigned* signature) {
-  std::string tree_head_signature = HexToBytes(kSampleSTHTreeHeadSignature);
+  std::string tree_head_signature = HexDecode(kSampleSTHTreeHeadSignature);
   base::StringPiece sp(tree_head_signature);
   return DecodeDigitallySigned(&sp, signature) && sp.empty();
 }

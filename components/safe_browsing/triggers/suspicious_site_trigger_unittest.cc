@@ -4,13 +4,16 @@
 
 #include "components/safe_browsing/triggers/suspicious_site_trigger.h"
 
+#include <string>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
+#include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/triggers/mock_trigger_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,6 +31,12 @@ namespace safe_browsing {
 namespace {
 const char kSuspiciousUrl[] = "https://suspicious.com/";
 const char kCleanUrl[] = "https://foo.com/";
+const char kCleanUrl2[] = "https://bar.com/";
+
+// A matcher for the VisibleURLChangeMidLoad_Suspicious test.
+MATCHER_P(ResourceHasUrl, gurl, "") {
+  return arg.url == gurl;
+}
 }  // namespace
 
 class SuspiciousSiteTriggerTest : public content::RenderViewHostTestHarness {
@@ -60,6 +69,7 @@ class SuspiciousSiteTriggerTest : public content::RenderViewHostTestHarness {
     GURL gurl(url);
     auto navigation_simulator =
         NavigationSimulator::CreateRendererInitiated(gurl, frame);
+    navigation_simulator->SetKeepLoading(true);
     navigation_simulator->Commit();
     RenderFrameHost* final_frame_host =
         navigation_simulator->GetFinalRenderFrameHost();
@@ -77,6 +87,14 @@ class SuspiciousSiteTriggerTest : public content::RenderViewHostTestHarness {
     RenderFrameHost* subframe =
         RenderFrameHostTester::For(parent)->AppendChild("subframe");
     return NavigateFrame(url, subframe);
+  }
+
+  // Changes the visible URL (in the URL bar) without committing a navigation.
+  void ChangeVisibleURLWithoutNavigation(const std::string& url) {
+    GURL gurl(url);
+    auto navigation_simulator =
+        NavigationSimulator::CreateBrowserInitiated(gurl, web_contents());
+    navigation_simulator->Start();
   }
 
   void StartNewFakeLoad() {
@@ -174,7 +192,13 @@ TEST_F(SuspiciousSiteTriggerTest, RegularPageNonSuspicious) {
   ExpectNoReportRejection();
 }
 
-TEST_F(SuspiciousSiteTriggerTest, SuspiciousHitDuringLoad) {
+// crbug.com/1010037: fails on win.
+#if defined(OS_WIN)
+#define MAYBE_SuspiciousHitDuringLoad DISABLED_SuspiciousHitDuringLoad
+#else
+#define MAYBE_SuspiciousHitDuringLoad SuspiciousHitDuringLoad
+#endif
+TEST_F(SuspiciousSiteTriggerTest, MAYBE_SuspiciousHitDuringLoad) {
   // When a suspicious site is detected in the middle of a page load, a report
   // is created after the page load has finished.
   CreateTrigger(/*monitor_mode=*/false);
@@ -250,7 +274,7 @@ TEST_F(SuspiciousSiteTriggerTest, SuspiciousHitAfterLoad) {
   ExpectNoReportRejection();
 }
 
-TEST_F(SuspiciousSiteTriggerTest, ReportRejectedByTriggerManager) {
+TEST_F(SuspiciousSiteTriggerTest, DISABLED_ReportRejectedByTriggerManager) {
   // If the trigger manager rejects the report then no report is sent.
   CreateTrigger(/*monitor_mode=*/false);
 
@@ -320,7 +344,8 @@ TEST_F(SuspiciousSiteTriggerTest, NewNavigationMidLoad_NotSuspicious) {
   ExpectNoReportRejection();
 }
 
-TEST_F(SuspiciousSiteTriggerTest, NewNavigationMidLoad_Suspicious) {
+// Flaky. http://crbug.com/1010686
+TEST_F(SuspiciousSiteTriggerTest, DISABLED_NewNavigationMidLoad_Suspicious) {
   // Exercise what happens when a new navigation begins in the middle of a page
   // load when a suspicious site was detected. The report of the first site
   // must be cancelled because we were waiting for the first load to finish
@@ -420,6 +445,83 @@ TEST_F(SuspiciousSiteTriggerTest, MonitorMode_SuspiciousHitDuringLoad) {
   ExpectEventHistogramCount(SuspiciousSiteTriggerEvent::REPORT_STARTED, 0);
   ExpectEventHistogramCount(SuspiciousSiteTriggerEvent::REPORT_FINISHED, 0);
   ExpectEventHistogramCount(SuspiciousSiteTriggerEvent::REPORT_DELAY_TIMER, 0);
+  ExpectNoReportRejection();
+}
+
+TEST_F(SuspiciousSiteTriggerTest, VisibleURLChangeMidLoad_NotSuspicious) {
+  // Exercise what happens when the visible URL changes during load and no
+  // suspicious site was detected.
+  CreateTrigger(/*monitor_mode=*/false);
+
+  EXPECT_CALL(*get_trigger_manager(),
+              StartCollectingThreatDetailsWithReason(_, _, _, _, _, _, _))
+      .Times(0);
+  EXPECT_CALL(*get_trigger_manager(),
+              FinishCollectingThreatDetails(_, _, _, _, _, _))
+      .Times(0);
+
+  NavigateMainFrame(kCleanUrl);
+  // Change visible URL by starting a new navigation without committing it.
+  // Sanity check the visible URL changed.
+  ChangeVisibleURLWithoutNavigation(kCleanUrl2);
+  GURL expected_clean_url_2(kCleanUrl2);
+  EXPECT_EQ(expected_clean_url_2, web_contents()->GetVisibleURL());
+  FinishAllNavigations();
+
+  WaitForTaskRunnerIdle();
+
+  // One page load start and finish. No suspicious sites and no reports sent.
+  ExpectEventHistogramCount(SuspiciousSiteTriggerEvent::PAGE_LOAD_START, 1);
+  ExpectEventHistogramCount(SuspiciousSiteTriggerEvent::PAGE_LOAD_FINISH, 1);
+  ExpectEventHistogramCount(
+      SuspiciousSiteTriggerEvent::SUSPICIOUS_SITE_DETECTED, 0);
+  ExpectEventHistogramCount(SuspiciousSiteTriggerEvent::REPORT_STARTED, 0);
+  ExpectNoReportRejection();
+}
+
+TEST_F(SuspiciousSiteTriggerTest, VisibleURLChangeMidLoad_Suspicious) {
+  // Exercise what happens when the visible URL changes after a suspicious site
+  // has already been detected.
+  CreateTrigger(/*monitor_mode=*/false);
+
+  NavigateMainFrame(kSuspiciousUrl);
+
+  // The resource eventually sent to the trigger manager should include the
+  // original (suspicious) URL.
+  GURL suspicious_url(kSuspiciousUrl);
+  EXPECT_CALL(*get_trigger_manager(),
+              StartCollectingThreatDetailsWithReason(
+                  _, _, ResourceHasUrl(suspicious_url), _, _, _, _))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*get_trigger_manager(),
+              FinishCollectingThreatDetails(_, _, _, _, _, _))
+      .Times(1)
+      .WillOnce(Return(true));
+
+  // Change visible URL by starting a new navigation without committing it.
+  // Sanity check the visible URL changed.
+  ChangeVisibleURLWithoutNavigation(kCleanUrl);
+  GURL expected_clean_url(kCleanUrl);
+  EXPECT_EQ(expected_clean_url, web_contents()->GetVisibleURL());
+  TriggerSuspiciousSite();
+  FinishAllNavigations();
+
+  WaitForTaskRunnerIdle();
+
+  // One page load start and finish. One suspicious site detected and one
+  // report started and sent after the page finished loading.
+  ExpectEventHistogramCount(SuspiciousSiteTriggerEvent::PAGE_LOAD_START, 1);
+  ExpectEventHistogramCount(SuspiciousSiteTriggerEvent::PAGE_LOAD_FINISH, 1);
+  ExpectEventHistogramCount(
+      SuspiciousSiteTriggerEvent::SUSPICIOUS_SITE_DETECTED, 1);
+  ExpectEventHistogramCount(SuspiciousSiteTriggerEvent::REPORT_STARTED, 1);
+
+  // Ensure the delay timer fired and it happened in the REPORT_STARTED state
+  ExpectEventHistogramCount(SuspiciousSiteTriggerEvent::REPORT_DELAY_TIMER, 1);
+  ExpectDelayStateHistogramCount(
+      SuspiciousSiteTrigger::TriggerState::REPORT_STARTED, 1);
+  ExpectEventHistogramCount(SuspiciousSiteTriggerEvent::REPORT_FINISHED, 1);
   ExpectNoReportRejection();
 }
 }  // namespace safe_browsing

@@ -29,8 +29,7 @@ namespace sync_file_system {
 namespace drive_backend {
 
 ConflictResolver::ConflictResolver(SyncEngineContext* sync_context)
-    : sync_context_(sync_context),
-      weak_ptr_factory_(this) {}
+    : sync_context_(sync_context) {}
 
 ConflictResolver::~ConflictResolver() {}
 

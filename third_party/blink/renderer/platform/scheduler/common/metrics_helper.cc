@@ -17,30 +17,30 @@ namespace {
 constexpr base::TimeDelta kLongTaskDiscardingThreshold =
     base::TimeDelta::FromSeconds(30);
 
-scheduling_metrics::ThreadType ConvertBlinkThreadType(
-    WebThreadType thread_type) {
+scheduling_metrics::ThreadType ConvertBlinkThreadType(ThreadType thread_type) {
   switch (thread_type) {
-    case WebThreadType::kMainThread:
+    case ThreadType::kMainThread:
       return scheduling_metrics::ThreadType::kRendererMainThread;
-    case WebThreadType::kCompositorThread:
+    case ThreadType::kCompositorThread:
       return scheduling_metrics::ThreadType::kRendererCompositorThread;
-    case WebThreadType::kDedicatedWorkerThread:
+    case ThreadType::kDedicatedWorkerThread:
       return scheduling_metrics::ThreadType::kRendererDedicatedWorkerThread;
-    case WebThreadType::kServiceWorkerThread:
+    case ThreadType::kServiceWorkerThread:
       return scheduling_metrics::ThreadType::kRendererServiceWorkerThread;
-    case WebThreadType::kAnimationAndPaintWorkletThread:
-    case WebThreadType::kAudioWorkletThread:
-    case WebThreadType::kDatabaseThread:
-    case WebThreadType::kFileThread:
-    case WebThreadType::kHRTFDatabaseLoaderThread:
-    case WebThreadType::kOfflineAudioRenderThread:
-    case WebThreadType::kReverbConvolutionBackgroundThread:
-    case WebThreadType::kSharedWorkerThread:
-    case WebThreadType::kUnspecifiedWorkerThread:
-    case WebThreadType::kWebAudioThread:
-    case WebThreadType::kTestThread:
+    case ThreadType::kAnimationAndPaintWorkletThread:
+    case ThreadType::kAudioWorkletThread:
+    case ThreadType::kDatabaseThread:
+    case ThreadType::kFileThread:
+    case ThreadType::kHRTFDatabaseLoaderThread:
+    case ThreadType::kOfflineAudioRenderThread:
+    case ThreadType::kReverbConvolutionBackgroundThread:
+    case ThreadType::kSharedWorkerThread:
+    case ThreadType::kUnspecifiedWorkerThread:
+    case ThreadType::kTestThread:
+    case ThreadType::kAudioEncoderThread:
+    case ThreadType::kVideoEncoderThread:
       return scheduling_metrics::ThreadType::kRendererOtherBlinkThread;
-    case WebThreadType::kCount:
+    case ThreadType::kCount:
       NOTREACHED();
       return scheduling_metrics::ThreadType::kCount;
   }
@@ -48,7 +48,7 @@ scheduling_metrics::ThreadType ConvertBlinkThreadType(
 
 }  // namespace
 
-MetricsHelper::MetricsHelper(WebThreadType thread_type,
+MetricsHelper::MetricsHelper(ThreadType thread_type,
                              bool has_cpu_timing_for_each_task)
     : thread_type_(thread_type),
       thread_metrics_(ConvertBlinkThreadType(thread_type),
@@ -74,7 +74,9 @@ bool MetricsHelper::ShouldDiscardTask(
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
   // TODO(altimin): Investigate the relationship between thread time and
   // wall time for discarded tasks.
-  return task_timing.wall_duration() > kLongTaskDiscardingThreshold;
+  using State = base::sequence_manager ::TaskQueue::TaskTiming::State;
+  return task_timing.state() == State::Finished &&
+         task_timing.wall_duration() > kLongTaskDiscardingThreshold;
 }
 
 void MetricsHelper::RecordCommonTaskMetrics(

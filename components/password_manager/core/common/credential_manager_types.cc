@@ -77,23 +77,13 @@ std::unique_ptr<autofill::PasswordForm> CreatePasswordFormFromCredentialInfo(
   form->origin = origin;
   form->password_value = info.password.value_or(base::string16());
   form->username_value = info.id.value_or(base::string16());
-  form->scheme = autofill::PasswordForm::SCHEME_HTML;
-  form->type = autofill::PasswordForm::TYPE_API;
+  form->scheme = autofill::PasswordForm::Scheme::kHtml;
+  form->type = autofill::PasswordForm::Type::kApi;
 
   form->signon_realm =
       info.type == CredentialType::CREDENTIAL_TYPE_PASSWORD
           ? origin.GetOrigin().spec()
           : "federation://" + origin.host() + "/" + info.federation.host();
-  return form;
-}
-
-std::unique_ptr<autofill::PasswordForm> CreateObservedPasswordFormFromOrigin(
-    const GURL& origin) {
-  std::unique_ptr<autofill::PasswordForm> form(new autofill::PasswordForm);
-  form->origin = origin;
-  form->scheme = autofill::PasswordForm::SCHEME_HTML;
-  form->type = autofill::PasswordForm::TYPE_API;
-  form->signon_realm = origin.GetOrigin().spec();
   return form;
 }
 

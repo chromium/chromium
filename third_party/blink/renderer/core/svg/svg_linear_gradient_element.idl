@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/pservers.html#InterfaceSVGLinearGradientElement
 
+[Exposed=Window]
 interface SVGLinearGradientElement : SVGGradientElement {
     [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength x1;
     [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedLength y1;

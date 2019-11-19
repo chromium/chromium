@@ -66,13 +66,13 @@ void WebFormElement::GetFormControlElements(
     WebVector<WebFormControlElement>& result) const {
   const HTMLFormElement* form = ConstUnwrap<HTMLFormElement>();
   Vector<WebFormControlElement> form_control_elements;
-
-  const ListedElement::List& listed_elements = form->ListedElements();
-  for (ListedElement::List::const_iterator it = listed_elements.begin();
-       it != listed_elements.end(); ++it) {
-    if ((*it)->IsFormControlElement())
-      form_control_elements.push_back(ToHTMLFormControlElement(*it));
+  for (const auto& element : form->ListedElements()) {
+    if (auto* form_control =
+            blink::DynamicTo<HTMLFormControlElement>(element.Get())) {
+      form_control_elements.push_back(form_control);
+    }
   }
+
   result.Assign(form_control_elements);
 }
 
@@ -87,7 +87,7 @@ WebFormElement& WebFormElement::operator=(HTMLFormElement* e) {
 }
 
 WebFormElement::operator HTMLFormElement*() const {
-  return ToHTMLFormElement(private_.Get());
+  return blink::To<HTMLFormElement>(private_.Get());
 }
 
 }  // namespace blink

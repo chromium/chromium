@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
@@ -37,6 +36,7 @@ import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ime.TextInputType;
 
 import java.util.ArrayList;
@@ -678,7 +678,7 @@ public class ImeTest {
         }));
     }
 
-    private void reloadPage() throws Throwable {
+    private void reloadPage() {
         // Reload the page, then focus will be lost and keyboard should be hidden.
         mRule.fullyLoadUrl(mRule.getWebContents().getLastCommittedUrl());
     }
@@ -806,14 +806,11 @@ public class ImeTest {
     @SmallTest
     @Feature({"TextInput"})
     public void testImePaste() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                ClipboardManager clipboardManager =
-                        (ClipboardManager) mRule.getActivity().getSystemService(
-                                Context.CLIPBOARD_SERVICE);
-                clipboardManager.setPrimaryClip(ClipData.newPlainText("blarg", "blarg"));
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ClipboardManager clipboardManager =
+                    (ClipboardManager) mRule.getActivity().getSystemService(
+                            Context.CLIPBOARD_SERVICE);
+            clipboardManager.setPrimaryClip(ClipData.newPlainText("blarg", "blarg"));
         });
 
         mRule.paste();
@@ -902,9 +899,9 @@ public class ImeTest {
         mRule.setComposingText("h", 1);
         Assert.assertEquals("h", mRule.getTextBeforeCursor(9, 0));
 
-        // O
-        mRule.setComposingText("ho", 1);
-        Assert.assertEquals("ho", mRule.getTextBeforeCursor(9, 0));
+        // A
+        mRule.setComposingText("ha", 1);
+        Assert.assertEquals("ha", mRule.getTextBeforeCursor(9, 0));
 
         mRule.setComposingText("h", 1);
         mRule.setComposingRegion(0, 1);
@@ -998,9 +995,9 @@ public class ImeTest {
         mRule.commitText("h", 1);
         Assert.assertEquals("h", mRule.getTextBeforeCursor(9, 0));
 
-        // O
-        mRule.commitText("o", 1);
-        Assert.assertEquals("ho", mRule.getTextBeforeCursor(9, 0));
+        // A
+        mRule.commitText("a", 1);
+        Assert.assertEquals("ha", mRule.getTextBeforeCursor(9, 0));
 
         // DEL, sent via mRule.dispatchKeyEvent like it is in Android WebView or a physical
         // keyboard.
@@ -1021,9 +1018,9 @@ public class ImeTest {
         mRule.commitText("h", 1);
         Assert.assertEquals("h", mRule.getTextBeforeCursor(9, 0));
 
-        // O
-        mRule.commitText("o", 1);
-        Assert.assertEquals("ho", mRule.getTextBeforeCursor(9, 0));
+        // A
+        mRule.commitText("a", 1);
+        Assert.assertEquals("ha", mRule.getTextBeforeCursor(9, 0));
 
         // Multiple keydowns should each delete one character (this is for physical keyboard
         // key-repeat).
@@ -1601,20 +1598,17 @@ public class ImeTest {
     @Feature({"TextInput"})
     public void testUiThreadAccess() throws Exception {
         final ChromiumBaseInputConnection connection = mRule.getConnection();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                // We allow UI thread access for most functions, except for
-                // beginBatchEdit(), endBatchEdit(), and get* methods().
-                Assert.assertTrue(connection.commitText("a", 1));
-                Assert.assertTrue(connection.setComposingText("b", 1));
-                Assert.assertTrue(connection.setComposingText("bc", 1));
-                Assert.assertTrue(connection.finishComposingText());
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // We allow UI thread access for most functions, except for
+            // beginBatchEdit(), endBatchEdit(), and get* methods().
+            Assert.assertTrue(connection.commitText("a", 1));
+            Assert.assertTrue(connection.setComposingText("b", 1));
+            Assert.assertTrue(connection.setComposingText("bc", 1));
+            Assert.assertTrue(connection.finishComposingText());
         });
         Assert.assertEquals("abc", mRule.runBlockingOnImeThread(new Callable<CharSequence>() {
             @Override
-            public CharSequence call() throws Exception {
+            public CharSequence call() {
                 return connection.getTextBeforeCursor(5, 0);
             }
         }));
@@ -1645,7 +1639,7 @@ public class ImeTest {
             public boolean isSatisfied() {
                 try {
                     return DOMUtils.getNodeContents(webContents, "div").equals("hello world");
-                } catch (InterruptedException | TimeoutException e) {
+                } catch (TimeoutException e) {
                     return false;
                 }
             }

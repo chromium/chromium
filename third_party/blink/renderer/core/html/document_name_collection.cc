@@ -13,12 +13,19 @@ DocumentNameCollection::DocumentNameCollection(ContainerNode& document,
                                                const AtomicString& name)
     : HTMLNameCollection(document, kDocumentNamedItems, name) {}
 
+DocumentNameCollection::DocumentNameCollection(ContainerNode& document,
+                                               CollectionType type,
+                                               const AtomicString& name)
+    : DocumentNameCollection(document, name) {
+  DCHECK_EQ(type, kDocumentNamedItems);
+}
+
 // https://html.spec.whatwg.org/C/#dom-document-nameditem-filter
 bool DocumentNameCollection::ElementMatches(const HTMLElement& element) const {
   // Match images, forms, embeds, objects and iframes by name,
   // object by id, and images by id but only if they have
   // a name attribute (this very strange rule matches IE)
-  if (IsHTMLFormElement(element) || IsHTMLIFrameElement(element) ||
+  if (IsA<HTMLFormElement>(element) || IsA<HTMLIFrameElement>(element) ||
       (IsHTMLEmbedElement(element) && ToHTMLEmbedElement(element).IsExposed()))
     return element.GetNameAttribute() == name_;
   if (IsHTMLObjectElement(element) && ToHTMLObjectElement(element).IsExposed())

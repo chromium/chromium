@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test Sample API when the OS is invalid</title>
+<!-- Generate this token with the command:
+generate_token.py http://127.0.0.1:8000 FrobulateImplied --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial" content="AtU8M1FWS2TbBCuG6ArIzseD6TBqls4fru1tJp4GyEMrvd+BgE14uWvstXek2Aw+iUjrl6QM5l/HZgpqEssvjgcAAABaeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRnJvYnVsYXRlSW52YWxpZE9TIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9" />
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/origintrials.js"></script>
+<script>
+
+// The trial is not enabled on any real OS.
+expect_failure_invalid_os();
+
+</script>

@@ -13,7 +13,7 @@
 #include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/singleton.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
@@ -34,6 +34,7 @@ using local_discovery::ServiceResolverImplMac;
 
 - (id)initWithContainer:
         (ServiceWatcherImplMac::NetServiceBrowserContainer*)serviceWatcherImpl;
+- (void)clearDiscoveredServices;
 
 @end
 
@@ -137,11 +138,12 @@ ServiceDiscoveryClientMac::~ServiceDiscoveryClientMac() {}
 
 std::unique_ptr<ServiceWatcher> ServiceDiscoveryClientMac::CreateServiceWatcher(
     const std::string& service_type,
-    const ServiceWatcher::UpdatedCallback& callback) {
+    ServiceWatcher::UpdatedCallback callback) {
   StartThreadIfNotStarted();
   VLOG(1) << "CreateServiceWatcher: " << service_type;
   return std::make_unique<ServiceWatcherImplMac>(
-      service_type, callback, service_discovery_thread_->task_runner());
+      service_type, std::move(callback),
+      service_discovery_thread_->task_runner());
 }
 
 std::unique_ptr<ServiceResolver>
@@ -170,21 +172,20 @@ void ServiceDiscoveryClientMac::StartThreadIfNotStarted() {
     service_discovery_thread_.reset(
         new base::Thread(kServiceDiscoveryThreadName));
     // Only TYPE_UI uses an NSRunLoop.
-    base::Thread::Options options(base::MessageLoop::TYPE_UI, 0);
+    base::Thread::Options options(base::MessagePumpType::UI, 0);
     service_discovery_thread_->StartWithOptions(options);
   }
 }
 
 ServiceWatcherImplMac::NetServiceBrowserContainer::NetServiceBrowserContainer(
     const std::string& service_type,
-    const ServiceWatcher::UpdatedCallback& callback,
+    ServiceWatcher::UpdatedCallback callback,
     scoped_refptr<base::SingleThreadTaskRunner> service_discovery_runner)
     : service_type_(service_type),
-      callback_(callback),
+      callback_(std::move(callback)),
       callback_runner_(base::ThreadTaskRunnerHandle::Get()),
       service_discovery_runner_(service_discovery_runner),
-      weak_factory_(this) {
-}
+      weak_factory_(this) {}
 
 ServiceWatcherImplMac::NetServiceBrowserContainer::
     ~NetServiceBrowserContainer() {
@@ -196,6 +197,10 @@ ServiceWatcherImplMac::NetServiceBrowserContainer::
   // already gone.
   // https://crbug.com/657495, https://openradar.appspot.com/28943305
   [browser_ setDelegate:nil];
+
+  // Ensure the delegate clears all references to itself, which it had added as
+  // discovered services were reported to it.
+  [delegate_ clearDiscoveredServices];
 }
 
 void ServiceWatcherImplMac::NetServiceBrowserContainer::Start() {
@@ -249,16 +254,16 @@ void ServiceWatcherImplMac::NetServiceBrowserContainer::DeleteSoon() {
 
 ServiceWatcherImplMac::ServiceWatcherImplMac(
     const std::string& service_type,
-    const ServiceWatcher::UpdatedCallback& callback,
+    ServiceWatcher::UpdatedCallback callback,
     scoped_refptr<base::SingleThreadTaskRunner> service_discovery_runner)
     : service_type_(service_type),
-      callback_(callback),
+      callback_(std::move(callback)),
       started_(false),
       weak_factory_(this) {
   container_.reset(new NetServiceBrowserContainer(
       service_type,
-      base::Bind(&ServiceWatcherImplMac::OnServicesUpdate,
-                 weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&ServiceWatcherImplMac::OnServicesUpdate,
+                          weak_factory_.GetWeakPtr()),
       service_discovery_runner));
 }
 
@@ -459,6 +464,14 @@ ServiceResolverImplMac::GetContainerForTesting() {
   return self;
 }
 
+- (void)clearDiscoveredServices {
+  for (NSNetService* netService in services_.get()) {
+    [netService stopMonitoring];
+    [netService setDelegate:nil];
+  }
+  [services_ removeAllObjects];
+}
+
 - (void)netServiceBrowser:(NSNetServiceBrowser*)netServiceBrowser
            didFindService:(NSNetService*)netService
                moreComing:(BOOL)moreServicesComing {
@@ -481,7 +494,9 @@ ServiceResolverImplMac::GetContainerForTesting() {
         base::SysNSStringToUTF8([netService name]));
 
     // Stop monitoring this service for updates.
-    [[services_ objectAtIndex:index] stopMonitoring];
+    DCHECK_EQ(netService, [services_ objectAtIndex:index]);
+    [netService stopMonitoring];
+    [netService setDelegate:nil];
     [services_ removeObjectAtIndex:index];
   }
 }

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<style>
+  .border {
+    border: 5px solid transparent; /* So the <img> under test can not be a directly composited. */
+    border-radius: 220px;
+    height: 240px;
+  }
+</style>
+
+<script>
+  function preload_decode_append_img(title, url, parentNodeId) {
+      const img = new Image();
+      img.title = title;
+      img.src = url;
+      img.decode().then(() => {
+          var parentNode = document.getElementById(parentNodeId);
+          parentNode.appendChild(img);
+          img.classList.add('border');
+          if (++images == expectedNumberImages && window.testRunner) {
+              setTimeout(function() { testRunner.notifyDone() }, 0);
+          }
+      }).catch(() => {
+          var error = document.createElement('p');
+          error.innerText = 'Error loading image'
+          document.body.appendChild(error);
+      });
+  }
+
+  var images = 0;
+  var expectedNumberImages = 6;
+  preload_decode_append_img('png image',
+                            '../resources/red-at-12-oclock-with-color-profile.png',
+                            'first-png-image');
+  preload_decode_append_img('jpeg image',
+                            '../resources/red-at-12-oclock-with-color-profile.jpg',
+                            'first-jpeg-image');
+  preload_decode_append_img('webp image',
+                            '../resources/webp-color-profile-lossy.webp',
+                            'first-webp-image');
+
+  preload_decode_append_img('png image',
+                            '../resources/red-at-12-oclock-with-color-profile.png',
+                            'second-png-image');
+  preload_decode_append_img('jpeg image',
+                            '../resources/red-at-12-oclock-with-color-profile.jpg',
+                            'second-jpeg-image');
+  preload_decode_append_img('webp image',
+                            '../resources/webp-color-profile-lossy.webp',
+                            'second-webp-image');
+
+  if (window.testRunner)
+      testRunner.waitUntilDone();
+</script>
+
+
+<body>
+  <!-- The red sector of the images should be at 12 o'clock. The images should be
+     contained within their CSS border radius circle: they should not look square.-->
+  <span id="first-png-image"></span>
+  <span id="first-jpeg-image"></span>
+  <span id="first-webp-image"></span>
+  <br>
+  <!-- The red sector of the images should be at 12 o'clock. The images should be
+       contained within their CSS border radius circle: they should not look square.-->
+  <span id="second-png-image"></span>
+  <span id="second-jpeg-image"></span>
+  <span id="second-webp-image"></span>
+  <br>
+</body>
+
+</html>

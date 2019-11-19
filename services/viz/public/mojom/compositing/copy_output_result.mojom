@@ -1,0 +1,37 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "gpu/ipc/common/mailbox.mojom";
+import "gpu/ipc/common/sync_token.mojom";
+import "services/viz/public/mojom/compositing/texture_releaser.mojom";
+import "skia/public/mojom/bitmap.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/color_space.mojom";
+
+// See components/viz/common/frame_sinks/copy_output_result.h.
+enum CopyOutputResultFormat {
+  RGBA_BITMAP,
+  RGBA_TEXTURE,
+};
+
+// See components/viz/common/frame_sinks/copy_output_result.h.
+struct CopyOutputResult {
+  CopyOutputResultFormat format;
+  gfx.mojom.Rect rect;
+
+  // Present when the format is RGBA_BITMAP.
+  // If the result is empty, since Bitmap is nullable, |bitmap| will also not be
+  // present.
+  skia.mojom.Bitmap? bitmap;
+
+  // Present when the format is RGBA_TEXTURE.
+  // If the result is empty, then the |mailbox| will be present but empty.
+  gpu.mojom.Mailbox? mailbox;
+  gpu.mojom.SyncToken? sync_token;
+  gfx.mojom.ColorSpace? color_space;
+  // Present when the format is RGBA_TEXTURE and |mailbox| is non-empty.
+  pending_remote<TextureReleaser>? releaser;
+};

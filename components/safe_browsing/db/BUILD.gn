@@ -31,7 +31,6 @@ group("safe_browsing_db_shared") {
     ":hit_report",
     ":safebrowsing_proto",
     ":util",
-    ":v4_feature_list",  # Used by SafeBrowsingService
     "//components/safe_browsing/common:safe_browsing_prefs",
   ]
 }
@@ -135,17 +134,6 @@ static_library("v4_database") {
   ]
 }
 
-static_library("v4_feature_list") {
-  sources = [
-    "v4_feature_list.cc",
-    "v4_feature_list.h",
-  ]
-  deps = [
-    "//base",
-    "//components/safe_browsing:features",
-  ]
-}
-
 static_library("v4_get_hash_protocol_manager") {
   sources = [
     "v4_get_hash_protocol_manager.cc",
@@ -158,7 +146,6 @@ static_library("v4_get_hash_protocol_manager") {
     ":util",
     ":v4_protocol_manager_util",
     "//base",
-    "//components/data_use_measurement/core",
     "//components/safe_browsing:webui_proto",
     "//content/public/browser",
     "//net",
@@ -176,12 +163,14 @@ static_library("v4_local_database_manager") {
     ":hit_report",
     ":safebrowsing_proto",
     ":v4_database",
-    ":v4_feature_list",
     ":v4_get_hash_protocol_manager",
     ":v4_protocol_manager_util",
     ":v4_update_protocol_manager",
     "//base",
+    "//build:branding_buildflags",
     "//components/safe_browsing:webui_proto",
+    "//components/safe_browsing/realtime:policy_engine",
+    "//components/safe_browsing/realtime:url_lookup_service",
     "//content/public/browser",
     "//crypto",
     "//net",
@@ -286,7 +275,7 @@ static_library("v4_update_protocol_manager") {
     ":util",
     ":v4_protocol_manager_util",
     "//base",
-    "//components/data_use_measurement/core",
+    "//components/safe_browsing:buildflags",
     "//components/safe_browsing:webui_proto",
     "//components/safe_browsing/common:safe_browsing_prefs",
     "//net",
@@ -295,93 +284,16 @@ static_library("v4_update_protocol_manager") {
   ]
 }
 
-source_set("v4_database_unittest") {
-  testonly = true
-  sources = [
-    "v4_database_unittest.cc",
-  ]
-  deps = [
-    ":v4_database",
-    ":v4_store",
-    "//base",
-    "//base/test:test_support",
-    "//content/test:test_support",
-    "//testing/gtest",
-  ]
-}
-
-source_set("v4_get_hash_protocol_manager_unittest") {
-  testonly = true
-  sources = [
-    "v4_get_hash_protocol_manager_unittest.cc",
-  ]
-  deps = [
-    ":safebrowsing_proto",
-    ":util",
-    ":v4_database",
-    ":v4_get_hash_protocol_manager",
-    ":v4_local_database_manager",
-    ":v4_test_util",
-    "//base",
-    "//base/test:test_support",
-    "//content/test:test_support",
-    "//net",
-    "//net:test_support",
-    "//services/network:test_support",
-    "//testing/gtest",
-  ]
-}
-
-source_set("v4_local_database_manager_unittest") {
-  testonly = true
-  sources = [
-    "v4_local_database_manager_unittest.cc",
-  ]
-  deps = [
-    ":v4_database",
-    ":v4_local_database_manager",
-    ":v4_protocol_manager_util",
-    ":v4_test_util",
-    "//base",
-    "//base/test:test_support",
-    "//content/test:test_support",
-    "//net",
-    "//net:test_support",
-    "//services/network:test_support",
-    "//testing/gtest",
-  ]
-}
-
-source_set("v4_update_protocol_manager_unittest") {
-  testonly = true
-  sources = [
-    "v4_update_protocol_manager_unittest.cc",
-  ]
-  deps = [
-    ":safebrowsing_proto",
-    ":util",
-    ":v4_test_util",
-    ":v4_update_protocol_manager",
-    "//base",
-    "//base/test:test_support",
-    "//content/public/common",
-    "//net",
-    "//net:test_support",
-    "//services/network:test_support",
-    "//testing/gtest",
-  ]
-}
-
 source_set("unit_tests_shared") {
   testonly = true
   sources = [
+    "allowlist_checker_client_unittest.cc",
     "database_manager_unittest.cc",
-    "util_unittest.cc",
     "v4_get_hash_protocol_manager_unittest.cc",
     "v4_protocol_manager_util_unittest.cc",
-    "whitelist_checker_client_unittest.cc",
   ]
   deps = [
+    ":allowlist_checker_client",
     ":database_manager",
     ":safebrowsing_proto",
     ":test_database_manager",
@@ -389,7 +301,6 @@ source_set("unit_tests_shared") {
     ":v4_get_hash_protocol_manager",
     ":v4_protocol_manager_util",
     ":v4_test_util",
-    ":whitelist_checker_client",
     "//base",
     "//content/public/browser",
     "//content/test:test_support",
@@ -426,6 +337,8 @@ source_set("unit_tests_desktop") {
     ":v4_update_protocol_manager",
     "//base",
     "//components/prefs:test_support",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing:features",
     "//components/safe_browsing/common:safe_browsing_prefs",
     "//content/test:test_support",
     "//crypto",
@@ -442,32 +355,16 @@ source_set("unit_tests_desktop") {
   }
 }
 
-static_library("whitelist_checker_client") {
+static_library("allowlist_checker_client") {
   sources = [
-    "whitelist_checker_client.cc",
-    "whitelist_checker_client.h",
+    "allowlist_checker_client.cc",
+    "allowlist_checker_client.h",
   ]
   deps = [
     ":database_manager",
     "//base:base",
-  ]
-}
-
-source_set("whitelist_checker_client_unittest") {
-  testonly = true
-  sources = [
-    "whitelist_checker_client_unittest.cc",
-  ]
-  deps = [
-    ":database_manager",
-    ":test_database_manager",
-    ":whitelist_checker_client",
-    "//base:base",
-    "//base/test:test_support",
     "//content/public/browser",
-    "//content/test:test_support",
-    "//testing/gmock:gmock",
-    "//testing/gtest:gtest",
+    "//url:url",
   ]
 }
 

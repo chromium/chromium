@@ -13,14 +13,14 @@ namespace base {
 LockFreeAddressHashSet::LockFreeAddressHashSet(size_t buckets_count)
     : buckets_(buckets_count), bucket_mask_(buckets_count - 1) {
   DCHECK(bits::IsPowerOfTwo(buckets_count));
-  DCHECK(bucket_mask_ <= std::numeric_limits<uint32_t>::max());
+  DCHECK_LE(bucket_mask_, std::numeric_limits<uint32_t>::max());
 }
 
 LockFreeAddressHashSet::~LockFreeAddressHashSet() {
-  for (subtle::AtomicWord bucket : buckets_) {
-    Node* node = reinterpret_cast<Node*>(bucket);
+  for (std::atomic<Node*>& bucket : buckets_) {
+    Node* node = bucket.load(std::memory_order_relaxed);
     while (node) {
-      Node* next = reinterpret_cast<Node*>(node->next);
+      Node* next = node->next;
       delete node;
       node = next;
     }
@@ -28,43 +28,35 @@ LockFreeAddressHashSet::~LockFreeAddressHashSet() {
 }
 
 void LockFreeAddressHashSet::Insert(void* key) {
-  // TODO(alph): Replace with DCHECK.
-  CHECK(key != nullptr);
+  DCHECK_NE(key, nullptr);
   CHECK(!Contains(key));
-  subtle::NoBarrier_AtomicIncrement(&size_, 1);
-  uint32_t h = Hash(key);
-  subtle::AtomicWord* bucket_ptr = &buckets_[h & bucket_mask_];
-  Node* node = reinterpret_cast<Node*>(subtle::NoBarrier_Load(bucket_ptr));
+  ++size_;
+  // Note: There's no need to use std::atomic_compare_exchange here,
+  // as we do not support concurrent inserts, so values cannot change midair.
+  std::atomic<Node*>& bucket = buckets_[Hash(key) & bucket_mask_];
+  Node* node = bucket.load(std::memory_order_relaxed);
   // First iterate over the bucket nodes and try to reuse an empty one if found.
-  for (; node != nullptr; node = next_node(node)) {
-    if (subtle::NoBarrier_CompareAndSwap(
-            &node->key, 0, reinterpret_cast<subtle::AtomicWord>(key)) == 0) {
+  for (; node != nullptr; node = node->next) {
+    if (node->key.load(std::memory_order_relaxed) == nullptr) {
+      node->key.store(key, std::memory_order_relaxed);
       return;
     }
   }
-  DCHECK(node == nullptr);
-  // There are no empty nodes to reuse in the bucket.
-  // Create a new node and prepend it to the list.
-  Node* new_node = new Node(key);
-  subtle::AtomicWord current_head = subtle::NoBarrier_Load(bucket_ptr);
-  subtle::AtomicWord expected_head;
-  do {
-    subtle::NoBarrier_Store(&new_node->next, current_head);
-    expected_head = current_head;
-    current_head = subtle::Release_CompareAndSwap(
-        bucket_ptr, current_head,
-        reinterpret_cast<subtle::AtomicWord>(new_node));
-  } while (current_head != expected_head);
+  // There are no empty nodes to reuse left in the bucket.
+  // Create a new node first...
+  Node* new_node = new Node(key, bucket.load(std::memory_order_relaxed));
+  // ... and then publish the new chain.
+  bucket.store(new_node, std::memory_order_release);
 }
 
 void LockFreeAddressHashSet::Copy(const LockFreeAddressHashSet& other) {
   DCHECK_EQ(0u, size());
-  for (subtle::AtomicWord bucket : other.buckets_) {
-    for (Node* node = reinterpret_cast<Node*>(bucket); node;
-         node = next_node(node)) {
-      subtle::AtomicWord k = subtle::NoBarrier_Load(&node->key);
-      if (k)
-        Insert(reinterpret_cast<void*>(k));
+  for (const std::atomic<Node*>& bucket : other.buckets_) {
+    for (Node* node = bucket.load(std::memory_order_relaxed); node;
+         node = node->next) {
+      void* key = node->key.load(std::memory_order_relaxed);
+      if (key)
+        Insert(key);
     }
   }
 }

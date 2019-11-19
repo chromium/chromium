@@ -309,7 +309,7 @@ TEST(ScopedMmapDeathTest, NotIntegralNumberOfPages) {
   ASSERT_TRUE(ScopedMmapResetMmap(&mapping, kHalfPageSize));
   EXPECT_TRUE(mapping.is_valid());
   EXPECT_NE(mapping.addr(), MAP_FAILED);
-  EXPECT_EQ(mapping.len(), kPageSize);
+  EXPECT_EQ(mapping.len(), kHalfPageSize);
 
   TestCookie cookie;
   cookie.SetUp(mapping.addr_as<uint64_t*>());
@@ -319,7 +319,7 @@ TEST(ScopedMmapDeathTest, NotIntegralNumberOfPages) {
   ASSERT_TRUE(mapping.ResetAddrLen(orig_addr, kHalfPageSize));
   EXPECT_TRUE(mapping.is_valid());
   EXPECT_EQ(mapping.addr(), orig_addr);
-  EXPECT_EQ(mapping.len(), kPageSize);
+  EXPECT_EQ(mapping.len(), kHalfPageSize);
 
   EXPECT_EQ(cookie.Observed(), cookie.Expected());
 
@@ -328,14 +328,14 @@ TEST(ScopedMmapDeathTest, NotIntegralNumberOfPages) {
   ASSERT_TRUE(mapping.ResetAddrLen(orig_addr, 1));
   EXPECT_TRUE(mapping.is_valid());
   EXPECT_EQ(mapping.addr(), orig_addr);
-  EXPECT_EQ(mapping.len(), kPageSize);
+  EXPECT_EQ(mapping.len(), 1u);
 
   EXPECT_EQ(cookie.Observed(), cookie.Expected());
 
   ASSERT_TRUE(mapping.ResetAddrLen(orig_addr, kPageSize - 1));
   EXPECT_TRUE(mapping.is_valid());
   EXPECT_EQ(mapping.addr(), orig_addr);
-  EXPECT_EQ(mapping.len(), kPageSize);
+  EXPECT_EQ(mapping.len(), kPageSize - 1);
 
   EXPECT_EQ(cookie.Observed(), cookie.Expected());
 
@@ -356,7 +356,7 @@ TEST(ScopedMmapDeathTest, NotIntegralNumberOfPages) {
   ASSERT_TRUE(mapping.ResetAddrLen(orig_addr, kHalfPageSize));
   EXPECT_TRUE(mapping.is_valid());
   EXPECT_EQ(mapping.addr(), orig_addr);
-  EXPECT_EQ(mapping.len(), kPageSize);
+  EXPECT_EQ(mapping.len(), kHalfPageSize);
 
   EXPECT_EQ(two_cookies[0].Observed(), two_cookies[0].Expected());
   EXPECT_DEATH_CRASH(two_cookies[1].Check(), "");
@@ -376,7 +376,7 @@ TEST(ScopedMmapDeathTest, NotIntegralNumberOfPages) {
   ASSERT_TRUE(mapping.ResetAddrLen(orig_addr, kPageSize + kHalfPageSize));
   EXPECT_TRUE(mapping.is_valid());
   EXPECT_EQ(mapping.addr(), orig_addr);
-  EXPECT_EQ(mapping.len(), 2 * kPageSize);
+  EXPECT_EQ(mapping.len(), kPageSize + kHalfPageSize);
 
   EXPECT_EQ(two_cookies[0].Observed(), two_cookies[0].Expected());
   EXPECT_EQ(two_cookies[1].Observed(), two_cookies[1].Expected());

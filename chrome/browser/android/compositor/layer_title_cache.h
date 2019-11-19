@@ -43,7 +43,7 @@ class LayerTitleCache {
                   jint favicon_end_padding,
                   jint spinner_resource_id,
                   jint spinner_incognito_resource_id);
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
   // Called from Java, updates a native cc::Layer based on the new texture
   // information.

@@ -13,9 +13,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill_device_client.h"
-#include "chromeos/dbus/shill_profile_client.h"
-#include "chromeos/dbus/shill_service_client.h"
+#include "chromeos/dbus/shill/shill_device_client.h"
+#include "chromeos/dbus/shill/shill_profile_client.h"
+#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
@@ -199,8 +199,6 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     // Add a Cellular GSM Device.
     device_test_->AddDevice(kCellularDevicePath, shill::kTypeCellular,
                             "stub_cellular_device1");
-    SetDeviceProperty(kCellularDevicePath, shill::kCarrierProperty,
-                      base::Value("Cellular1_Carrier"));
 
     base::DictionaryValue home_provider;
     home_provider.SetString("name", "Cellular1_Provider");
@@ -1087,7 +1085,6 @@ TEST_F(NetworkingPrivateApiTest, GetCellularProperties) {
                DictionaryBuilder()
                    .Set("AllowRoaming", false)
                    .Set("AutoConnect", true)
-                   .Set("Carrier", "Cellular1_Carrier")
                    .Set("Family", "GSM")
                    .Set("HomeProvider", DictionaryBuilder()
                                             .Set("Code", "000000")
@@ -1135,7 +1132,6 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
                DictionaryBuilder()
                    .Set("AllowRoaming", false)
                    .Set("AutoConnect", true)
-                   .Set("Carrier", "Cellular1_Carrier")
                    .Set("ESN", "test_esn")
                    .Set("Family", "GSM")
                    .Set("HomeProvider", DictionaryBuilder()

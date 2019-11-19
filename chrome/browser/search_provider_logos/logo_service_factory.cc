@@ -7,8 +7,8 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/suggestions/image_decoder_impl.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -64,7 +64,7 @@ KeyedService* LogoServiceFactory::BuildServiceInstanceFor(
       profile->GetPath().Append(kCachedLogoDirectory),
       IdentityManagerFactory::GetForProfile(profile),
       TemplateURLServiceFactory::GetForProfile(profile),
-      std::make_unique<suggestions::ImageDecoderImpl>(),
+      std::make_unique<ImageDecoderImpl>(),
       content::BrowserContext::GetDefaultStoragePartition(profile)
           ->GetURLLoaderFactoryForBrowserProcess(),
       base::BindRepeating(&UseGrayLogo));

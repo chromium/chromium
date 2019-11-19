@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_API_H_
 
+#include <string>
+
 #include "extensions/browser/extension_function.h"
 
 namespace chromeos {
@@ -17,17 +19,19 @@ namespace extensions {
 
 namespace api {
 namespace certificate_provider {
-// The maximum number of times per 10 minutes, extension is allowed to show PIN
-// dialog again after user closed the previous one.
-extern const int kMaxClosedDialogsPer10Mins;
+// The maximum number of times in the given interval the extension is allowed to
+// show the PIN dialog again after user closed the previous one.
+extern const int kMaxClosedDialogsPerMinute;
+extern const int kMaxClosedDialogsPer10Minutes;
 
 struct CertificateInfo;
 }
 }
 
 class CertificateProviderInternalReportCertificatesFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  private:
+  // ExtensionFunction:
   ~CertificateProviderInternalReportCertificatesFunction() override;
   ResponseAction Run() override;
 
@@ -40,8 +44,9 @@ class CertificateProviderInternalReportCertificatesFunction
 };
 
 class CertificateProviderInternalReportSignatureFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  private:
+  // ExtensionFunction:
   ~CertificateProviderInternalReportSignatureFunction() override;
   ResponseAction Run() override;
 
@@ -49,25 +54,28 @@ class CertificateProviderInternalReportSignatureFunction
                              CERTIFICATEPROVIDERINTERNAL_REPORTSIGNATURE)
 };
 
-class CertificateProviderRequestPinFunction : public UIThreadExtensionFunction {
+class CertificateProviderRequestPinFunction : public ExtensionFunction {
  private:
+  // ExtensionFunction:
   ~CertificateProviderRequestPinFunction() override;
   ResponseAction Run() override;
   bool ShouldSkipQuotaLimiting() const override;
   void GetQuotaLimitHeuristics(
       extensions::QuotaLimitHeuristics* heuristics) const override;
-  void OnInputReceived(const base::string16& value);
+
+  void OnInputReceived(const std::string& value);
 
   DECLARE_EXTENSION_FUNCTION("certificateProvider.requestPin",
                              CERTIFICATEPROVIDER_REQUESTPIN)
 };
 
-class CertificateProviderStopPinRequestFunction
-    : public UIThreadExtensionFunction {
+class CertificateProviderStopPinRequestFunction : public ExtensionFunction {
  private:
+  // ExtensionFunction:
   ~CertificateProviderStopPinRequestFunction() override;
   ResponseAction Run() override;
-  void DialogClosed(const base::string16& value);
+
+  void OnPinRequestStopped();
 
   DECLARE_EXTENSION_FUNCTION("certificateProvider.stopPinRequest",
                              CERTIFICATEPROVIDER_STOPPINREQUEST)

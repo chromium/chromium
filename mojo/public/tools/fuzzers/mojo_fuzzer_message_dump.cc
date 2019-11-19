@@ -8,26 +8,27 @@
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "mojo/core/embedder/embedder.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/tools/fuzzers/fuzz.mojom.h"
 #include "mojo/public/tools/fuzzers/fuzz_impl.h"
 
 /* Environment for the executable. Initializes the mojo EDK and sets up a
- * TaskScheduler, because Mojo messages must be sent and processed from
+ * ThreadPool, because Mojo messages must be sent and processed from
  * TaskRunners. */
 struct Environment {
-  Environment() : message_loop() {
-    base::TaskScheduler::CreateAndStartWithDefaultParams(
+  Environment() {
+    base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
         "MojoFuzzerMessageDumpProcess");
     mojo::core::Init();
   }
 
-  /* Message loop to send messages on. */
-  base::MessageLoop message_loop;
+  base::SingleThreadTaskExecutor main_thread_task_executor;
 
   /* Impl to be created. Stored in environment to keep it alive after
    * DumpMessages returns. */
@@ -38,12 +39,12 @@ Environment* env = new Environment();
 
 /* MessageReceiver which dumps raw message bytes to disk in the provided
  * directory. */
-class MessageDumper : public mojo::MessageReceiver {
+class MessageDumper : public mojo::MessageFilter {
  public:
   explicit MessageDumper(std::string directory)
       : directory_(directory), count_(0) {}
 
-  bool Accept(mojo::Message* message) override {
+  bool WillDispatch(mojo::Message* message) override {
     base::FilePath path = directory_.Append(FILE_PATH_LITERAL("message_") +
                                             base::NumberToString(count_++) +
                                             FILE_PATH_LITERAL(".mojomsg"));
@@ -64,6 +65,8 @@ class MessageDumper : public mojo::MessageReceiver {
     }
     return true;
   }
+
+  void DidDispatchOrReject(mojo::Message* message, bool accepted) override {}
 
   base::FilePath directory_;
   int count_;
@@ -225,30 +228,34 @@ void FuzzCallback() {}
 /* Invokes each method in the FuzzInterface and dumps the messages to the
  * supplied directory. */
 void DumpMessages(std::string output_directory) {
-  fuzz::mojom::FuzzInterfacePtr fuzz;
-  fuzz::mojom::FuzzDummyInterfaceAssociatedPtr dummy;
+  mojo::Remote<fuzz::mojom::FuzzInterface> fuzz;
+  mojo::AssociatedRemote<fuzz::mojom::FuzzDummyInterface> dummy;
 
   /* Create the impl and add a MessageDumper to the filter chain. */
-  env->impl = std::make_unique<FuzzImpl>(MakeRequest(&fuzz));
-  env->impl->binding_.RouterForTesting()->AddIncomingMessageFilter(
-      std::make_unique<MessageDumper>(output_directory));
+  env->impl = std::make_unique<FuzzImpl>(fuzz.BindNewPipeAndPassReceiver());
+  env->impl->receiver_.internal_state()
+      ->RouterForTesting()
+      ->SetIncomingMessageFilter(
+          std::make_unique<MessageDumper>(output_directory));
 
   /* Call methods in various ways to generate interesting messages. */
   fuzz->FuzzBasic();
-  fuzz->FuzzBasicResp(base::Bind(FuzzCallback));
+  fuzz->FuzzBasicResp(base::BindOnce(FuzzCallback));
   fuzz->FuzzBasicSyncResp();
   fuzz->FuzzArgs(fuzz::mojom::FuzzStruct::New(),
                  fuzz::mojom::FuzzStructPtr(nullptr));
   fuzz->FuzzArgs(fuzz::mojom::FuzzStruct::New(), GetPopulatedFuzzStruct());
   fuzz->FuzzArgsResp(fuzz::mojom::FuzzStruct::New(), GetPopulatedFuzzStruct(),
-                     base::Bind(FuzzCallback));
+                     base::BindOnce(FuzzCallback));
   fuzz->FuzzArgsResp(fuzz::mojom::FuzzStruct::New(), GetPopulatedFuzzStruct(),
-                     base::Bind(FuzzCallback));
+                     base::BindOnce(FuzzCallback));
   fuzz->FuzzArgsSyncResp(fuzz::mojom::FuzzStruct::New(),
-                         GetPopulatedFuzzStruct(), base::Bind(FuzzCallback));
+                         GetPopulatedFuzzStruct(),
+                         base::BindOnce(FuzzCallback));
   fuzz->FuzzArgsSyncResp(fuzz::mojom::FuzzStruct::New(),
-                         GetPopulatedFuzzStruct(), base::Bind(FuzzCallback));
-  fuzz->FuzzAssociated(MakeRequest(&dummy));
+                         GetPopulatedFuzzStruct(),
+                         base::BindOnce(FuzzCallback));
+  fuzz->FuzzAssociated(dummy.BindNewEndpointAndPassReceiver());
   dummy->Ping();
 }
 
@@ -259,8 +266,8 @@ int main(int argc, char** argv) {
   }
   std::string output_directory(argv[1]);
 
-  /* Dump the messages from a MessageLoop, and wait for it to finish. */
-  env->message_loop.task_runner()->PostTask(
+  /* Dump the messages from a TaskExecutor, and wait for it to finish. */
+  env->main_thread_task_executor.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&DumpMessages, output_directory));
   base::RunLoop().RunUntilIdle();
 

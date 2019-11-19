@@ -13,7 +13,7 @@
           "Outer":"EAP-TLS",
         }
       },
-      "GUID":"guid",
+      "GUID":"policy_ethernet_eap",
       "Name":"name",
       "Type":"Ethernet"
     }

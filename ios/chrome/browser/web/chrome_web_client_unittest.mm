@@ -9,19 +9,24 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/passwords/password_manager_features.h"
 #import "ios/chrome/browser/web/error_page_util.h"
+#import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
 #import "ios/web/public/test/js_test_util.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
-#import "ios/web/public/web_view_creation_util.h"
+#include "net/ssl/ssl_info.h"
+#include "net/test/cert_test_util.h"
+#include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -29,6 +34,9 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::test::ios::kWaitForActionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 const char kTestUrl[] = "http://chromium.test";
@@ -56,7 +64,7 @@ class ChromeWebClientTest : public PlatformTest {
   ios::ChromeBrowserState* browser_state() { return browser_state_.get(); }
 
  private:
-  base::test::ScopedTaskEnvironment environment_;
+  base::test::TaskEnvironment environment_;
   std::unique_ptr<ios::ChromeBrowserState> browser_state_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeWebClientTest);
@@ -187,11 +195,23 @@ TEST_F(ChromeWebClientTest, WKWebViewEarlyPageScriptPaymentRequest) {
 TEST_F(ChromeWebClientTest, PrepareErrorPageNonPostNonOtr) {
   ChromeWebClient web_client;
   NSError* error = CreateTestError();
-  NSString* page = nil;
+  __block bool callback_called = false;
+  __block NSString* page = nil;
+  base::OnceCallback<void(NSString*)> callback =
+      base::BindOnce(^(NSString* error_html) {
+        callback_called = true;
+        page = error_html;
+      });
   web::TestWebState test_web_state;
   web_client.PrepareErrorPage(&test_web_state, GURL(kTestUrl), error,
                               /*is_post=*/false,
-                              /*is_off_the_record=*/false, &page);
+                              /*is_off_the_record=*/false,
+                              /*info=*/base::nullopt,
+                              /*navigation_id=*/0, std::move(callback));
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+    base::RunLoop().RunUntilIdle();
+    return callback_called;
+  }));
   EXPECT_NSEQ(GetErrorPage(GURL(kTestUrl), error, /*is_post=*/false,
                            /*is_off_the_record=*/false),
               page);
@@ -201,11 +221,23 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageNonPostNonOtr) {
 TEST_F(ChromeWebClientTest, PrepareErrorPagePostNonOtr) {
   ChromeWebClient web_client;
   NSError* error = CreateTestError();
-  NSString* page = nil;
+  __block bool callback_called = false;
+  __block NSString* page = nil;
+  base::OnceCallback<void(NSString*)> callback =
+      base::BindOnce(^(NSString* error_html) {
+        callback_called = true;
+        page = error_html;
+      });
   web::TestWebState test_web_state;
   web_client.PrepareErrorPage(&test_web_state, GURL(kTestUrl), error,
                               /*is_post=*/true,
-                              /*is_off_the_record=*/false, &page);
+                              /*is_off_the_record=*/false,
+                              /*info=*/base::nullopt,
+                              /*navigation_id=*/0, std::move(callback));
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+    base::RunLoop().RunUntilIdle();
+    return callback_called;
+  }));
   EXPECT_NSEQ(GetErrorPage(GURL(kTestUrl), error, /*is_post=*/true,
                            /*is_off_the_record=*/false),
               page);
@@ -215,11 +247,23 @@ TEST_F(ChromeWebClientTest, PrepareErrorPagePostNonOtr) {
 TEST_F(ChromeWebClientTest, PrepareErrorPageNonPostOtr) {
   ChromeWebClient web_client;
   NSError* error = CreateTestError();
-  NSString* page = nil;
+  __block bool callback_called = false;
+  __block NSString* page = nil;
+  base::OnceCallback<void(NSString*)> callback =
+      base::BindOnce(^(NSString* error_html) {
+        callback_called = true;
+        page = error_html;
+      });
   web::TestWebState test_web_state;
   web_client.PrepareErrorPage(&test_web_state, GURL(kTestUrl), error,
                               /*is_post=*/false,
-                              /*is_off_the_record=*/true, &page);
+                              /*is_off_the_record=*/true,
+                              /*info=*/base::nullopt,
+                              /*navigation_id=*/0, std::move(callback));
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+    base::RunLoop().RunUntilIdle();
+    return callback_called;
+  }));
   EXPECT_NSEQ(GetErrorPage(GURL(kTestUrl), error, /*is_post=*/false,
                            /*is_off_the_record=*/true),
               page);
@@ -229,12 +273,62 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageNonPostOtr) {
 TEST_F(ChromeWebClientTest, PrepareErrorPagePostOtr) {
   ChromeWebClient web_client;
   NSError* error = CreateTestError();
-  NSString* page = nil;
+  __block bool callback_called = false;
+  __block NSString* page = nil;
+  base::OnceCallback<void(NSString*)> callback =
+      base::BindOnce(^(NSString* error_html) {
+        callback_called = true;
+        page = error_html;
+      });
   web::TestWebState test_web_state;
   web_client.PrepareErrorPage(&test_web_state, GURL(kTestUrl), error,
                               /*is_post=*/true,
-                              /*is_off_the_record=*/true, &page);
+                              /*is_off_the_record=*/true,
+                              /*info=*/base::nullopt,
+                              /*navigation_id=*/0, std::move(callback));
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+    base::RunLoop().RunUntilIdle();
+    return callback_called;
+  }));
   EXPECT_NSEQ(GetErrorPage(GURL(kTestUrl), error, /*is_post=*/true,
                            /*is_off_the_record=*/true),
               page);
+}
+
+// Tests PrepareErrorPage with SSLInfo, which results in an SSL committed
+// interstitial.
+TEST_F(ChromeWebClientTest, PrepareErrorPageWithSSLInfo) {
+  net::SSLInfo info;
+  info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  info.is_fatal_cert_error = false;
+  info.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
+  base::Optional<net::SSLInfo> ssl_info =
+      base::make_optional<net::SSLInfo>(info);
+  ChromeWebClient web_client;
+  NSError* error =
+      [NSError errorWithDomain:NSURLErrorDomain
+                          code:NSURLErrorServerCertificateHasUnknownRoot
+                      userInfo:nil];
+  __block bool callback_called = false;
+  __block NSString* page = nil;
+  base::OnceCallback<void(NSString*)> callback =
+      base::BindOnce(^(NSString* error_html) {
+        callback_called = true;
+        page = error_html;
+      });
+  web::TestWebState test_web_state;
+  test_web_state.SetBrowserState(browser_state());
+  web_client.PrepareErrorPage(&test_web_state, GURL(kTestUrl), error,
+                              /*is_post=*/false,
+                              /*is_off_the_record=*/false,
+                              /*info=*/ssl_info,
+                              /*navigation_id=*/0, std::move(callback));
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+    base::RunLoop().RunUntilIdle();
+    return callback_called;
+  }));
+  NSString* error_string = base::SysUTF8ToNSString(
+      net::ErrorToShortString(net::ERR_CERT_COMMON_NAME_INVALID));
+  EXPECT_TRUE([page containsString:error_string]);
 }

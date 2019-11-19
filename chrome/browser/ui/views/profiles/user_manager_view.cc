@@ -54,7 +54,7 @@
 namespace {
 
 // An open User Manager window. There can only be one open at a time. This
-// is reset to NULL when the window is closed.
+// is reset to nullptr when the window is closed.
 UserManagerView* g_user_manager_view = nullptr;
 base::Closure* g_user_manager_shown_callback_for_testing = nullptr;
 bool g_is_user_manager_view_under_construction = false;
@@ -68,6 +68,9 @@ UserManagerProfileDialogDelegate::UserManagerProfileDialogDelegate(
     const std::string& email_address,
     const GURL& url)
     : parent_(parent), web_view_(web_view), email_address_(email_address) {
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_NONE);
+  DialogDelegate::set_use_custom_frame(false);
+
   AddChildView(web_view_);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -99,10 +102,6 @@ bool UserManagerProfileDialogDelegate::CanMinimize() const {
   return true;
 }
 
-bool UserManagerProfileDialogDelegate::ShouldUseCustomFrame() const {
-  return false;
-}
-
 ui::ModalType UserManagerProfileDialogDelegate::GetModalType() const {
   return ui::MODAL_TYPE_WINDOW;
 }
@@ -114,10 +113,6 @@ void UserManagerProfileDialogDelegate::DeleteDelegate() {
 
 base::string16 UserManagerProfileDialogDelegate::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_PROFILES_GAIA_SIGNIN_TITLE);
-}
-
-int UserManagerProfileDialogDelegate::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_NONE;
 }
 
 views::View* UserManagerProfileDialogDelegate::GetInitiallyFocusedView() {
@@ -300,8 +295,10 @@ UserManagerView::UserManagerView()
     : web_view_(nullptr),
       delegate_(nullptr),
       user_manager_started_showing_(base::Time()) {
-  keep_alive_.reset(new ScopedKeepAlive(KeepAliveOrigin::USER_MANAGER_VIEW,
-                                        KeepAliveRestartOption::DISABLED));
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_NONE);
+  DialogDelegate::set_use_custom_frame(false);
+  keep_alive_ = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::USER_MANAGER_VIEW, KeepAliveRestartOption::DISABLED);
   chrome::RecordDialogCreation(chrome::DialogIdentifier::USER_MANAGER);
 }
 
@@ -397,7 +394,7 @@ void UserManagerView::Init(Profile* system_profile, const GURL& url) {
 
   views::Widget::InitParams params =
       GetDialogWidgetInitParams(this, nullptr, nullptr, bounds);
-  (new views::Widget)->Init(params);
+  (new views::Widget)->Init(std::move(params));
 
   // Since the User Manager can be the only top level window, we don't
   // want to accidentally quit all of Chrome if the user is just trying to
@@ -406,7 +403,7 @@ void UserManagerView::Init(Profile* system_profile, const GURL& url) {
       ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 
 #if defined(OS_WIN)
-  // Set the app id for the task manager to the app id of its parent
+  // Set the app id for the user manager to the app id of its parent.
   ui::win::SetAppIdForWindow(
       shell_integration::win::GetChromiumModelIdForProfile(
           system_profile->GetPath()),
@@ -461,20 +458,12 @@ base::string16 UserManagerView::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
 }
 
-int UserManagerView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_NONE;
-}
-
 void UserManagerView::WindowClosing() {
   // Now that the window is closed, we can allow a new one to be opened.
   // (WindowClosing comes in asynchronously from the call to Close() and we
   // may have already opened a new instance).
   if (g_user_manager_view == this)
-    g_user_manager_view = NULL;
-}
-
-bool UserManagerView::ShouldUseCustomFrame() const {
-  return false;
+    g_user_manager_view = nullptr;
 }
 
 void UserManagerView::DisplayErrorMessage() {

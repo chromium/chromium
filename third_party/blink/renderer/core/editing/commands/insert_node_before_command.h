@@ -32,16 +32,6 @@ namespace blink {
 
 class InsertNodeBeforeCommand final : public SimpleEditCommand {
  public:
-  static InsertNodeBeforeCommand* Create(
-      Node* child_to_insert,
-      Node* child_to_insert_before,
-      ShouldAssumeContentIsAlwaysEditable
-          should_assume_content_is_always_editable) {
-    return MakeGarbageCollected<InsertNodeBeforeCommand>(
-        child_to_insert, child_to_insert_before,
-        should_assume_content_is_always_editable);
-  }
-
   InsertNodeBeforeCommand(Node* child_to_insert,
                           Node* child_to_insert_before,
                           ShouldAssumeContentIsAlwaysEditable);

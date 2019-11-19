@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/renderer/core/animation/length_interpolation_functions.h"
+#include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/length_list_property_functions.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/underlying_length_checker.h"
@@ -31,15 +31,14 @@ InterpolationValue CSSLengthListInterpolationType::MaybeConvertNeutral(
   wtf_size_t underlying_length =
       UnderlyingLengthChecker::GetUnderlyingLength(underlying);
   conversion_checkers.push_back(
-      UnderlyingLengthChecker::Create(underlying_length));
+      std::make_unique<UnderlyingLengthChecker>(underlying_length));
 
   if (underlying_length == 0)
     return nullptr;
 
   return ListInterpolationFunctions::CreateList(
       underlying_length, [](wtf_size_t) {
-        return InterpolationValue(
-            LengthInterpolationFunctions::CreateNeutralInterpolableValue());
+        return InterpolationValue(InterpolableLength::CreateNeutral());
       });
 }
 
@@ -51,8 +50,8 @@ static InterpolationValue MaybeConvertLengthList(
 
   return ListInterpolationFunctions::CreateList(
       length_list.size(), [&length_list, zoom](wtf_size_t index) {
-        return LengthInterpolationFunctions::MaybeConvertLength(
-            length_list[index], zoom);
+        return InterpolationValue(
+            InterpolableLength::MaybeConvertLength(length_list[index], zoom));
       });
 }
 
@@ -69,20 +68,12 @@ InterpolationValue CSSLengthListInterpolationType::MaybeConvertInitial(
 class InheritedLengthListChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
-  ~InheritedLengthListChecker() final = default;
-
-  static std::unique_ptr<InheritedLengthListChecker> Create(
-      const CSSProperty& property,
-      const Vector<Length>& inherited_length_list) {
-    return base::WrapUnique(
-        new InheritedLengthListChecker(property, inherited_length_list));
-  }
-
- private:
   InheritedLengthListChecker(const CSSProperty& property,
                              const Vector<Length>& inherited_length_list)
       : property_(property), inherited_length_list_(inherited_length_list) {}
+  ~InheritedLengthListChecker() final = default;
 
+ private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     Vector<Length> inherited_length_list;
@@ -101,8 +92,8 @@ InterpolationValue CSSLengthListInterpolationType::MaybeConvertInherit(
   Vector<Length> inherited_length_list;
   bool success = LengthListPropertyFunctions::GetLengthList(
       CssProperty(), *state.ParentStyle(), inherited_length_list);
-  conversion_checkers.push_back(
-      InheritedLengthListChecker::Create(CssProperty(), inherited_length_list));
+  conversion_checkers.push_back(std::make_unique<InheritedLengthListChecker>(
+      CssProperty(), inherited_length_list));
   if (!success)
     return nullptr;
   return MaybeConvertLengthList(inherited_length_list,
@@ -116,11 +107,11 @@ InterpolationValue CSSLengthListInterpolationType::MaybeConvertValue(
   if (!value.IsBaseValueList())
     return nullptr;
 
-  const CSSValueList& list = ToCSSValueList(value);
+  const auto& list = To<CSSValueList>(value);
   return ListInterpolationFunctions::CreateList(
       list.length(), [&list](wtf_size_t index) {
-        return LengthInterpolationFunctions::MaybeConvertCSSValue(
-            list.Item(index));
+        return InterpolationValue(
+            InterpolableLength::MaybeConvertCSSValue(list.Item(index)));
       });
 }
 
@@ -130,7 +121,12 @@ PairwiseInterpolationValue CSSLengthListInterpolationType::MaybeMergeSingles(
   return ListInterpolationFunctions::MaybeMergeSingles(
       std::move(start), std::move(end),
       ListInterpolationFunctions::LengthMatchingStrategy::kLowestCommonMultiple,
-      WTF::BindRepeating(LengthInterpolationFunctions::MergeSingles));
+      WTF::BindRepeating(
+          [](InterpolationValue&& start_item, InterpolationValue&& end_item) {
+            return InterpolableLength::MergeSingles(
+                std::move(start_item.interpolable_value),
+                std::move(end_item.interpolable_value));
+          }));
 }
 
 InterpolationValue
@@ -152,8 +148,16 @@ void CSSLengthListInterpolationType::Composite(
       underlying_value_owner, underlying_fraction, *this, value,
       ListInterpolationFunctions::LengthMatchingStrategy::kLowestCommonMultiple,
       WTF::BindRepeating(
-          LengthInterpolationFunctions::NonInterpolableValuesAreCompatible),
-      WTF::BindRepeating(LengthInterpolationFunctions::Composite));
+          ListInterpolationFunctions::InterpolableValuesKnownCompatible),
+      WTF::BindRepeating(
+          ListInterpolationFunctions::VerifyNoNonInterpolableValues),
+      WTF::BindRepeating([](UnderlyingValue& underlying_value,
+                            double underlying_fraction,
+                            const InterpolableValue& interpolable_value,
+                            const NonInterpolableValue*) {
+        underlying_value.MutableInterpolableValue().ScaleAndAdd(
+            underlying_fraction, interpolable_value);
+      }));
 }
 
 void CSSLengthListInterpolationType::ApplyStandardPropertyValue(
@@ -169,9 +173,9 @@ void CSSLengthListInterpolationType::ApplyStandardPropertyValue(
   DCHECK_EQ(non_interpolable_list.length(), length);
   Vector<Length> result(length);
   for (wtf_size_t i = 0; i < length; i++) {
-    result[i] = LengthInterpolationFunctions::CreateLength(
-        *interpolable_list.Get(i), non_interpolable_list.Get(i),
-        state.CssToLengthConversionData(), value_range_);
+    result[i] =
+        To<InterpolableLength>(*interpolable_list.Get(i))
+            .CreateLength(state.CssToLengthConversionData(), value_range_);
   }
   LengthListPropertyFunctions::SetLengthList(CssProperty(), *state.Style(),
                                              std::move(result));

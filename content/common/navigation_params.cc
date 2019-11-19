@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "content/common/service_worker/service_worker_types.h"
+#include "content/common/navigation_params.mojom.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -35,116 +35,20 @@ InitiatorCSPInfo::InitiatorCSPInfo(const InitiatorCSPInfo& other) = default;
 
 InitiatorCSPInfo::~InitiatorCSPInfo() = default;
 
-ResourceInterceptPolicy GetResourceInterceptPolicy(
-    NavigationDownloadPolicy policy) {
-  switch (policy) {
-    case NavigationDownloadPolicy::kDisallowViewSource:
-    case NavigationDownloadPolicy::kDisallowInterstitial:
-    case NavigationDownloadPolicy::kDisallowOpenerCrossOrigin:
-    case NavigationDownloadPolicy::kDisallowSandbox:
-      return ResourceInterceptPolicy::kAllowNone;
-    case NavigationDownloadPolicy::kAllow:
-      return ResourceInterceptPolicy::kAllowAll;
-  }
+mojom::CommonNavigationParamsPtr CreateCommonNavigationParams() {
+  auto common_params = mojom::CommonNavigationParams::New();
+  common_params->referrer = blink::mojom::Referrer::New();
+  common_params->navigation_start = base::TimeTicks::Now();
+
+  return common_params;
 }
 
-bool IsNavigationDownloadAllowed(NavigationDownloadPolicy policy) {
-  return GetResourceInterceptPolicy(policy) ==
-         ResourceInterceptPolicy::kAllowAll;
+mojom::CommitNavigationParamsPtr CreateCommitNavigationParams() {
+  auto commit_params = mojom::CommitNavigationParams::New();
+  commit_params->navigation_token = base::UnguessableToken::Create();
+  commit_params->navigation_timing = mojom::NavigationTiming::New();
+
+  return commit_params;
 }
-
-CommonNavigationParams::CommonNavigationParams() = default;
-
-CommonNavigationParams::CommonNavigationParams(
-    const GURL& url,
-    const base::Optional<url::Origin>& initiator_origin,
-    const Referrer& referrer,
-    ui::PageTransition transition,
-    FrameMsg_Navigate_Type::Value navigation_type,
-    NavigationDownloadPolicy download_policy,
-    bool should_replace_current_entry,
-    const GURL& base_url_for_data_url,
-    const GURL& history_url_for_data_url,
-    PreviewsState previews_state,
-    base::TimeTicks navigation_start,
-    std::string method,
-    const scoped_refptr<network::ResourceRequestBody>& post_data,
-    base::Optional<SourceLocation> source_location,
-    bool started_from_context_menu,
-    bool has_user_gesture,
-    const InitiatorCSPInfo& initiator_csp_info,
-    const std::string& href_translate,
-    base::TimeTicks input_start)
-    : url(url),
-      initiator_origin(initiator_origin),
-      referrer(referrer),
-      transition(transition),
-      navigation_type(navigation_type),
-      download_policy(download_policy),
-      should_replace_current_entry(should_replace_current_entry),
-      base_url_for_data_url(base_url_for_data_url),
-      history_url_for_data_url(history_url_for_data_url),
-      previews_state(previews_state),
-      navigation_start(navigation_start),
-      method(method),
-      post_data(post_data),
-      source_location(source_location),
-      started_from_context_menu(started_from_context_menu),
-      has_user_gesture(has_user_gesture),
-      initiator_csp_info(initiator_csp_info),
-      href_translate(href_translate),
-      input_start(input_start) {
-  // |method != "POST"| should imply absence of |post_data|.
-  if (method != "POST" && post_data) {
-    NOTREACHED();
-    this->post_data = nullptr;
-  }
-}
-
-CommonNavigationParams::CommonNavigationParams(
-    const CommonNavigationParams& other) = default;
-
-CommonNavigationParams::~CommonNavigationParams() = default;
-
-CommitNavigationParams::CommitNavigationParams() = default;
-
-CommitNavigationParams::CommitNavigationParams(
-    const base::Optional<url::Origin>& origin_to_commit,
-    bool is_overriding_user_agent,
-    const std::vector<GURL>& redirects,
-    const GURL& original_url,
-    const std::string& original_method,
-    bool can_load_local_resources,
-    const PageState& page_state,
-    int nav_entry_id,
-    bool is_history_navigation_in_new_child,
-    std::map<std::string, bool> subframe_unique_names,
-    bool intended_as_new_entry,
-    int pending_history_list_offset,
-    int current_history_list_offset,
-    int current_history_list_length,
-    bool is_view_source,
-    bool should_clear_history_list)
-    : origin_to_commit(origin_to_commit),
-      is_overriding_user_agent(is_overriding_user_agent),
-      redirects(redirects),
-      original_url(original_url),
-      original_method(original_method),
-      can_load_local_resources(can_load_local_resources),
-      page_state(page_state),
-      nav_entry_id(nav_entry_id),
-      is_history_navigation_in_new_child(is_history_navigation_in_new_child),
-      subframe_unique_names(subframe_unique_names),
-      intended_as_new_entry(intended_as_new_entry),
-      pending_history_list_offset(pending_history_list_offset),
-      current_history_list_offset(current_history_list_offset),
-      current_history_list_length(current_history_list_length),
-      is_view_source(is_view_source),
-      should_clear_history_list(should_clear_history_list) {}
-
-CommitNavigationParams::CommitNavigationParams(
-    const CommitNavigationParams& other) = default;
-
-CommitNavigationParams::~CommitNavigationParams() = default;
 
 }  // namespace content

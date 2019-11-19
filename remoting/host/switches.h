@@ -34,6 +34,9 @@ extern const char kProcessTypeHost[];
 extern const char kProcessTypeRdpDesktopSession[];
 extern const char kProcessTypeEvaluateCapability[];
 extern const char kProcessTypeFileChooser[];
+#if defined(OS_LINUX)
+extern const char kProcessTypeXSessionChooser[];
+#endif  // defined(OS_LINUX)
 
 extern const char kEvaluateCapabilitySwitchName[];
 
@@ -57,6 +60,21 @@ extern const char kOutputSwitchName[];
 // Token used to create a message pipe between a pair of child and parent
 // processes.
 extern const char kMojoPipeToken[];
+
+// Switch to upgrade the host config with a new refresh token.
+extern const char kUpgradeTokenSwitchName[];
+
+#if defined(OS_MACOSX)
+// NativeMessagingHost switch to check for required OS permissions and request
+// them if necessary.
+extern const char kCheckPermissionSwitchName[];
+
+// Command line switch to check for Accessibility permission.
+extern const char kCheckAccessibilityPermissionSwitchName[];
+
+// Command line switch to check for Screen Recording permission.
+extern const char kCheckScreenRecordingPermissionSwitchName[];
+#endif  // defined OS_MACOSX
 
 }  // namespace remoting
 

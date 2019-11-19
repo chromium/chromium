@@ -8,7 +8,7 @@
 #include "ash/ash_export.h"
 
 namespace ash {
-namespace wm {
+
 class WindowState;
 class WindowStateDelegate;
 
@@ -16,7 +16,6 @@ class WindowStateDelegate;
 ASH_EXPORT void ToggleFullScreen(WindowState* window_state,
                                  WindowStateDelegate* delegate);
 
-}  // namespace wm
 }  // namespace ash
 
 #endif  // ASH_WM_WINDOW_STATE_UTIL_H_

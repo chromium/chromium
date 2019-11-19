@@ -52,9 +52,7 @@ std::string ReadCloudPrintSetupProxyList(const base::FilePath& path) {
 }  // namespace
 
 CloudPrintProxyService::CloudPrintProxyService(Profile* profile)
-    : profile_(profile),
-      weak_factory_(this) {
-}
+    : profile_(profile) {}
 
 CloudPrintProxyService::~CloudPrintProxyService() {
 }
@@ -81,7 +79,7 @@ void CloudPrintProxyService::Initialize() {
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kCloudPrintProxyEnabled,
-      base::Bind(
+      base::BindRepeating(
           base::IgnoreResult(
               &CloudPrintProxyService::ApplyCloudPrintConnectorPolicy),
           base::Unretained(this)));
@@ -90,8 +88,8 @@ void CloudPrintProxyService::Initialize() {
 void CloudPrintProxyService::RefreshStatusFromService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   InvokeServiceTask(
-      base::Bind(&CloudPrintProxyService::RefreshCloudPrintProxyStatus,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&CloudPrintProxyService::RefreshCloudPrintProxyStatus,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void CloudPrintProxyService::EnableForUserWithRobot(
@@ -117,8 +115,8 @@ void CloudPrintProxyService::DisableForUser() {
                             ServiceProcessControl::SERVICE_EVENT_DISABLE,
                             ServiceProcessControl::SERVICE_EVENT_MAX);
   InvokeServiceTask(
-      base::Bind(&CloudPrintProxyService::DisableCloudPrintProxy,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&CloudPrintProxyService::DisableCloudPrintProxy,
+                     weak_factory_.GetWeakPtr()));
 }
 
 bool CloudPrintProxyService::ApplyCloudPrintConnectorPolicy() {
@@ -233,9 +231,10 @@ ServiceProcessControl* CloudPrintProxyService::GetServiceProcessControl() {
 }
 
 cloud_print::mojom::CloudPrint& CloudPrintProxyService::GetCloudPrintProxy() {
-  if (!cloud_print_proxy_ || cloud_print_proxy_.encountered_error()) {
+  if (!cloud_print_proxy_ || !cloud_print_proxy_.is_connected()) {
+    cloud_print_proxy_.reset();
     GetServiceProcessControl()->remote_interfaces().GetInterface(
-        &cloud_print_proxy_);
+        cloud_print_proxy_.BindNewPipeAndPassReceiver());
   }
   return *cloud_print_proxy_;
 }

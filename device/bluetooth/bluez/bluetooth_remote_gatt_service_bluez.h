@@ -15,10 +15,10 @@
 #include "base/memory/weak_ptr.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
-#include "device/bluetooth/bluetooth_uuid.h"
 #include "device/bluetooth/bluez/bluetooth_gatt_service_bluez.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_characteristic_client.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_service_client.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace device {
 
@@ -98,7 +98,7 @@ class BluetoothRemoteGattServiceBlueZ
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<BluetoothRemoteGattServiceBlueZ> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothRemoteGattServiceBlueZ> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattServiceBlueZ);
 };

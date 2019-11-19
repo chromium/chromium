@@ -20,11 +20,17 @@ struct PromoData {
   PromoData& operator=(const PromoData&);
   PromoData& operator=(PromoData&&);
 
-  // The main HTML for the promo.
+  // The main HTML for the promo. May be empty when nothing to show.
   std::string promo_html;
 
-  // URL to ping to log a promo impression.
+  // URL to ping to log a promo impression. May be invalid.
   GURL promo_log_url;
+
+  // The unique identifier for this promo. May be empty.
+  std::string promo_id;
+
+  // Allow the promo to open chrome:// links
+  bool can_open_privileged_links = false;
 };
 
 bool operator==(const PromoData& lhs, const PromoData& rhs);

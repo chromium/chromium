@@ -67,7 +67,7 @@ class DemoModeDetector {
 
   const base::TickClock* tick_clock_;
 
-  base::WeakPtrFactory<DemoModeDetector> weak_ptr_factory_;
+  base::WeakPtrFactory<DemoModeDetector> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DemoModeDetector);
 };

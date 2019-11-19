@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/types.html#InterfaceSVGUnitTypes
 
+[Exposed=Window]
 interface SVGUnitTypes {
     // Unit Types
     const unsigned short SVG_UNIT_TYPE_UNKNOWN           = 0;

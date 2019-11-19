@@ -18,12 +18,12 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #import "chrome/browser/mac/keystone_registration.h"
 #include "chrome/common/channel_info.h"
@@ -41,10 +41,10 @@ namespace ksr = keystone_registration;
 // Constants for the brand file (uses an external file so it can survive
 // updates to Chrome.)
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #define kStableBrandFileName @"Google Chrome Brand.plist"
 #define kCanaryBrandFileName @"Google Chrome Canary Brand.plist"
-#elif defined(CHROMIUM_BUILD)
+#elif BUILDFLAG(CHROMIUM_BRANDING)
 #define kStableBrandFileName @"Chromium Brand.plist"
 #define kCanaryBrandFileName @"Chromium Canary Brand.plist"
 #else
@@ -73,7 +73,7 @@ NSString* SystemBrandFilePath(version_info::Channel channel) {
   return [file stringByStandardizingPath];
 }
 
-// Adaptor for scheduling an Objective-C method call in TaskScheduler.
+// Adaptor for scheduling an Objective-C method call in ThreadPool.
 class PerformBridge : public base::RefCountedThreadSafe<PerformBridge> {
  public:
 
@@ -84,10 +84,11 @@ class PerformBridge : public base::RefCountedThreadSafe<PerformBridge> {
     DCHECK(sel);
 
     scoped_refptr<PerformBridge> op = new PerformBridge(target, sel, arg);
-    base::PostTaskWithTraits(FROM_HERE,
-                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-                             base::BindOnce(&PerformBridge::Run, op.get()));
+    base::PostTask(
+        FROM_HERE,
+        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(&PerformBridge::Run, op.get()));
   }
 
   // Convenience for the no-argument case.
@@ -109,8 +110,9 @@ class PerformBridge : public base::RefCountedThreadSafe<PerformBridge> {
 
   // Happens on a WorkerPool thread.
   void Run() {
-    base::mac::ScopedNSAutoreleasePool pool;
-    [target_ performSelector:sel_ withObject:arg_];
+    @autoreleasepool {
+      [target_ performSelector:sel_ withObject:arg_];
+    }
   }
 
   base::scoped_nsobject<id> target_;
@@ -132,9 +134,6 @@ class PerformBridge : public base::RefCountedThreadSafe<PerformBridge> {
 
 // Called when Keystone registration completes.
 - (void)registrationComplete:(NSNotification*)notification;
-
-// Set the registration active and pass profile count parameters.
-- (void)setRegistrationActive;
 
 // Called periodically to announce activity by pinging the Keystone server.
 - (void)markActive:(NSTimer*)timer;
@@ -269,6 +268,22 @@ NSString* const kVersionKey = @"KSVersion";
                selector:@selector(installUpdateComplete:)
                    name:ksr::KSRegistrationStartUpdateNotification
                  object:nil];
+
+    // Set up the watcher for the staging key, for new-style updating. Use a
+    // long polling time, as this isn't user-blocking, and it doesn't poll on
+    // >=10.12 anyway.
+    const NSTimeInterval kPollingTime = 60 * 60;  // 1 hour
+    stagingKeyWatcher_.reset(
+        [[CrStagingKeyWatcher alloc] initWithPollingTime:kPollingTime]);
+    [stagingKeyWatcher_ setStagingKeyChangedObserver:^(BOOL stagingKeySet) {
+      if (stagingKeySet) {
+        // If the staging key is set, then there is a process waiting for Chrome
+        // to quit, to allow it to switch out the binary on disk. Because
+        // there's nothing for Chrome to do here except restart to allow the
+        // installation, use |kAutoupdateInstalled| to ask the user to restart.
+        [self updateStatus:kAutoupdateInstalled version:nil error:nil];
+      }
+    }];
   }
 
   return self;
@@ -315,7 +330,7 @@ NSString* const kVersionKey = @"KSVersion";
   version_info::Channel channelType = chrome::GetChannelByName(channel);
   if (channelType == version_info::Channel::STABLE) {
     channel = base::SysNSStringToUTF8(ksr::KSRegistrationRemoveExistingTag);
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     DCHECK(chrome::GetChannelByName(channel) == version_info::Channel::STABLE)
         << "-channel name modification has side effect";
 #endif
@@ -492,43 +507,10 @@ NSString* const kVersionKey = @"KSVersion";
 
 - (void)setRegistrationActive {
   DCHECK(registration_);
-
   registrationActive_ = YES;
-
-  // During startup, numProfiles_ defaults to 0.
-  if (!numProfiles_) {
-    [registration_ setActive];
-    return;
-  }
-
-  NSError* reportingError = nil;
-
-  KSReportingAttribute* numAccountsAttr =
-      [ksUnsignedReportingAttributeClass_
-          reportingAttributeWithValue:numProfiles_
-                                 name:@"_NumAccounts"
-                      aggregationType:kKSReportingAggregationSum
-                                error:&reportingError];
-  if (reportingError != nil)
-    VLOG(1) << [reportingError localizedDescription];
-  reportingError = nil;
-
-  KSReportingAttribute* numSignedInAccountsAttr =
-      [ksUnsignedReportingAttributeClass_
-          reportingAttributeWithValue:numSignedInProfiles_
-                                 name:@"_NumSignedIn"
-                      aggregationType:kKSReportingAggregationSum
-                                error:&reportingError];
-  if (reportingError != nil)
-    VLOG(1) << [reportingError localizedDescription];
-  reportingError = nil;
-
-  NSArray* profileCountsInformation =
-      [NSArray arrayWithObjects:numAccountsAttr, numSignedInAccountsAttr, nil];
-
-  if (![registration_ setActiveWithReportingAttributes:profileCountsInformation
-                                                 error:&reportingError]) {
-    VLOG(1) << [reportingError localizedDescription];
+  NSError* setActiveError = nil;
+  if (![registration_ setActiveWithError:&setActiveError]) {
+    VLOG(1) << [setActiveError localizedDescription];
   }
 }
 
@@ -717,6 +699,9 @@ NSString* const kVersionKey = @"KSVersion";
   if (updateSuccessfullyInstalled_) {
     // If an update was successfully installed and this object saw it happen,
     // then don't even bother comparing versions.
+    status = kAutoupdateInstalled;
+  } else if ([stagingKeyWatcher_ isStagingKeySet]) {
+    // If there's a staging key, then the update will happen on restart.
     status = kAutoupdateInstalled;
   } else {
     NSString* currentVersion = base::SysUTF8ToNSString(chrome::kChromeVersion);
@@ -1177,14 +1162,6 @@ NSString* const kVersionKey = @"KSVersion";
     tagSuffix = [tagSuffix stringByAppendingString:@"-full"];
   }
   return tagSuffix;
-}
-
-
-- (void)updateProfileCountsWithNumProfiles:(uint32_t)profiles
-                       numSignedInProfiles:(uint32_t)signedInProfiles {
-  numProfiles_ = profiles;
-  numSignedInProfiles_ = signedInProfiles;
-  [self setRegistrationActive];
 }
 
 @end  // @implementation KeystoneGlue

@@ -16,6 +16,8 @@ python gn/gn_to_cmake.py out/config/project.json
 The first is recommended, as it will auto-update.
 """
 
+from __future__ import print_function
+
 import functools
 import json
 import posixpath
@@ -513,8 +515,8 @@ def WriteTarget(out, target, project):
   out.write('\n')
 
   if target.cmake_type is None:
-    print 'Target {} has unknown target type {}, skipping.'.format(
-        target.gn_name, target.gn_type)
+    print('Target {} has unknown target type {}, skipping.'.format(
+        target.gn_name, target.gn_type))
     return
 
   SetVariable(out, 'target', target.cmake_name)
@@ -672,7 +674,7 @@ def WriteProject(project):
 
 def main():
   if len(sys.argv) != 2:
-    print 'Usage: ' + sys.argv[0] + ' <json_file_name>'
+    print('Usage: ' + sys.argv[0] + ' <json_file_name>')
     exit(1)
 
   json_path = sys.argv[1]

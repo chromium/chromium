@@ -41,12 +41,11 @@ class MEDIA_EXPORT DecryptingVideoDecoder : public VideoDecoder {
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
-                  const InitCB& init_cb,
+                  InitCB init_cb,
                   const OutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
-  void Decode(scoped_refptr<DecoderBuffer> buffer,
-              const DecodeCB& decode_cb) override;
-  void Reset(const base::Closure& closure) override;
+  void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
+  void Reset(base::OnceClosure closure) override;
 
   static const char kDecoderName[];
 
@@ -70,8 +69,7 @@ class MEDIA_EXPORT DecryptingVideoDecoder : public VideoDecoder {
   void DecodePendingBuffer();
 
   // Callback for Decryptor::DecryptAndDecodeVideo().
-  void DeliverFrame(Decryptor::Status status,
-                    const scoped_refptr<VideoFrame>& frame);
+  void DeliverFrame(Decryptor::Status status, scoped_refptr<VideoFrame> frame);
 
   // Callback for the |decryptor_| to notify this object that a new key has been
   // added.
@@ -93,7 +91,7 @@ class MEDIA_EXPORT DecryptingVideoDecoder : public VideoDecoder {
   InitCB init_cb_;
   OutputCB output_cb_;
   DecodeCB decode_cb_;
-  base::Closure reset_cb_;
+  base::OnceClosure reset_cb_;
   WaitingCB waiting_cb_;
 
   VideoDecoderConfig config_;
@@ -115,7 +113,7 @@ class MEDIA_EXPORT DecryptingVideoDecoder : public VideoDecoder {
   bool support_clear_content_ = false;
 
   base::WeakPtr<DecryptingVideoDecoder> weak_this_;
-  base::WeakPtrFactory<DecryptingVideoDecoder> weak_factory_;
+  base::WeakPtrFactory<DecryptingVideoDecoder> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DecryptingVideoDecoder);
 };

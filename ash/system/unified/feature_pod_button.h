@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_UNIFIED_FEATURE_POD_BUTTON_H_
 
 #include "ash/ash_export.h"
+#include "base/bind.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
@@ -22,7 +23,7 @@ class FeaturePodControllerBase;
 // ImageButon internally used in FeaturePodButton. Should not be used directly.
 class FeaturePodIconButton : public views::ImageButton {
  public:
-  explicit FeaturePodIconButton(views::ButtonListener* listener);
+  FeaturePodIconButton(views::ButtonListener* listener, bool is_togglable);
   ~FeaturePodIconButton() override;
 
   // Change the toggle state. See FeaturePodButton::SetToggled.
@@ -36,17 +37,21 @@ class FeaturePodIconButton : public views::ImageButton {
       const override;
   std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  const char* GetClassName() const override;
 
   bool toggled() const { return toggled_; }
 
  private:
-  // Ture if the button is currently toggled.
+  // True if this button is a togglable.
+  const bool is_togglable_;
+
+  // True if the button is currently toggled.
   bool toggled_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(FeaturePodIconButton);
 };
 
-// Buton internally used in FeaturePodButton. Should not be used directly.
+// Button internally used in FeaturePodButton. Should not be used directly.
 class FeaturePodLabelButton : public views::Button {
  public:
   explicit FeaturePodLabelButton(views::ButtonListener* listener);
@@ -65,35 +70,43 @@ class FeaturePodLabelButton : public views::Button {
 
   // views::Button:
   void Layout() override;
-  void OnEnabledChanged() override;
   gfx::Size CalculatePreferredSize() const override;
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
   std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
+  const char* GetClassName() const override;
 
  private:
   // Layout |child| in horizontal center with its vertical origin set to |y|.
   void LayoutInCenter(views::View* child, int y);
 
+  void OnEnabledChanged();
+
   // Owned by views hierarchy.
   views::Label* const label_;
   views::Label* const sub_label_;
   views::ImageView* const detailed_view_arrow_;
+  views::PropertyChangedSubscription enabled_changed_subscription_ =
+      AddEnabledChangedCallback(
+          base::BindRepeating(&FeaturePodLabelButton::OnEnabledChanged,
+                              base::Unretained(this)));
 
   DISALLOW_COPY_AND_ASSIGN(FeaturePodLabelButton);
 };
 
 // A button in FeaturePodsView. These buttons are main entry points of features
 // in UnifiedSystemTray. Each button has its icon, label, and sub-label placed
-// vertically. They are also togglable and the background color indicates the
-// current state.
+// vertically. The button may be togglable and the background color indicates
+// the current state. Otherwise, the button is not a toggle button and just
+// navigates to the appropriate detailed view.
 // See the comment in FeaturePodsView for detail.
 class ASH_EXPORT FeaturePodButton : public views::View,
                                     public views::ButtonListener {
  public:
-  explicit FeaturePodButton(FeaturePodControllerBase* controller);
+  FeaturePodButton(FeaturePodControllerBase* controller,
+                   bool is_togglable = true);
   ~FeaturePodButton() override;
 
   // Set the vector icon shown in a circle.
@@ -122,14 +135,23 @@ class ASH_EXPORT FeaturePodButton : public views::View,
   void DisableLabelButtonFocus();
 
   // Change the toggled state. If toggled, the background color of the circle
-  // will change.
+  // will change. If the button is not togglable, then SetToggled() will do
+  // nothing and |IsToggled()| will always return false.
   void SetToggled(bool toggled);
   bool IsToggled() const { return icon_button_->toggled(); }
 
   // Change the expanded state. 0.0 if collapsed, and 1.0 if expanded.
   // Otherwise, it shows intermediate state. In the collapsed state, the labels
-  // are not shown.
-  void SetExpandedAmount(double expanded_amount);
+  // are not shown, so the label buttons always fade out as expanded_amount
+  // decreases. We also need to fade out the icon button when it's not part of
+  // the buttons visible in the collapsed state. fade_icon_button will be passed
+  // as true for these cases.
+  void SetExpandedAmount(double expanded_amount, bool fade_icon_button);
+
+  // Get opacity for a given expanded_amount value. Used to fade out
+  // all label buttons and icon buttons that are hidden in collapsed state
+  // while collapsing.
+  double GetOpacityForExpandedAmount(double expanded_amount);
 
   // Only called by the container. Same as SetVisible but doesn't change
   // |visible_preferred_| flag.
@@ -139,17 +161,18 @@ class ASH_EXPORT FeaturePodButton : public views::View,
   void SetVisible(bool visible) override;
   bool HasFocus() const override;
   void RequestFocus() override;
-  void OnEnabledChanged() override;
+  const char* GetClassName() const override;
 
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   bool visible_preferred() const { return visible_preferred_; }
 
- protected:
   FeaturePodIconButton* icon_button() const { return icon_button_; }
 
  private:
+  void OnEnabledChanged();
+
   // Unowned.
   FeaturePodControllerBase* const controller_;
 
@@ -163,6 +186,11 @@ class ASH_EXPORT FeaturePodButton : public views::View,
   // In such case, the preferred visibility is reflected after the container is
   // expanded.
   bool visible_preferred_ = true;
+
+  views::PropertyChangedSubscription enabled_changed_subscription_ =
+      AddEnabledChangedCallback(
+          base::BindRepeating(&FeaturePodButton::OnEnabledChanged,
+                              base::Unretained(this)));
 
   DISALLOW_COPY_AND_ASSIGN(FeaturePodButton);
 };

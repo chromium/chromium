@@ -6,12 +6,12 @@
 
 #include "base/android/jni_android.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/android/chrome_jni_headers/FeedLifecycleBridge_jni.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/history/core/browser/history_service.h"
-#include "jni/FeedLifecycleBridge_jni.h"
 
 using base::android::JavaRef;
 using base::android::JavaParamRef;

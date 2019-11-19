@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/lookalikes/lookalike_url_allowlist.h"
+#include "chrome/browser/lookalikes/lookalike_url_tab_storage.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "components/security_interstitials/core/metrics_helper.h"
@@ -54,8 +54,7 @@ void LookalikeUrlControllerClient::GoBack() {
 }
 
 void LookalikeUrlControllerClient::Proceed() {
-  LookalikeUrlAllowlist* allowlist =
-      LookalikeUrlAllowlist::GetOrCreateAllowlist(web_contents_);
-  allowlist->AddDomain(request_url_.host());
+  LookalikeUrlTabStorage::GetOrCreate(web_contents_)
+      ->AllowDomain(request_url_.host());
   Reload();
 }

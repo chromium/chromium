@@ -5,40 +5,8 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 
 #include "base/bind.h"
-#include "chrome/browser/signin/account_fetcher_service_factory.h"
-#include "chrome/browser/signin/account_tracker_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
-#include "chrome/browser/signin/gaia_cookie_manager_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/profile_oauth2_token_service_factory.h"
-#include "chrome/browser/signin/signin_manager_factory.h"
-#include "components/signin/core/browser/fake_account_fetcher_service.h"
-#include "components/signin/core/browser/fake_profile_oauth2_token_service.h"
-
-namespace {
-
-// Testing factory that creates a FakeAccountFetcherService.
-std::unique_ptr<KeyedService> BuildFakeAccountFetcherService(
-    content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
-  auto account_fetcher_service = std::make_unique<FakeAccountFetcherService>();
-  account_fetcher_service->Initialize(
-      ChromeSigninClientFactory::GetForProfile(profile),
-      ProfileOAuth2TokenServiceFactory::GetForProfile(profile),
-      AccountTrackerServiceFactory::GetForProfile(profile),
-      std::make_unique<TestImageDecoder>());
-  return account_fetcher_service;
-}
-
-// Testing factory that creates a FakeProfileOAuth2TokenService.
-std::unique_ptr<KeyedService> BuildFakeProfileOAuth2TokenService(
-    content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
-  std::unique_ptr<FakeProfileOAuth2TokenService> service(
-      new FakeProfileOAuth2TokenService(profile->GetPrefs()));
-  return std::move(service);
-}
-}  // namespace
 
 // static
 std::unique_ptr<TestingProfile> IdentityTestEnvironmentProfileAdaptor::
@@ -94,37 +62,21 @@ void IdentityTestEnvironmentProfileAdaptor::
 // static
 TestingProfile::TestingFactories
 IdentityTestEnvironmentProfileAdaptor::GetIdentityTestEnvironmentFactories() {
-  return {{AccountFetcherServiceFactory::GetInstance(),
-           base::BindRepeating(&BuildFakeAccountFetcherService)},
-          {ProfileOAuth2TokenServiceFactory::GetInstance(),
-           base::BindRepeating(&BuildFakeProfileOAuth2TokenService)}};
+  return {{IdentityManagerFactory::GetInstance(),
+           base::BindRepeating(&BuildIdentityManagerForTests)}};
 }
 
 // static
-TestingProfile::TestingFactories IdentityTestEnvironmentProfileAdaptor::
-    GetIdentityTestEnvironmentFactoriesWithPrimaryAccountSet(
-        const std::string& email) {
-  TestingProfile::TestingFactories testing_factories(
-      GetIdentityTestEnvironmentFactories());
-  testing_factories.emplace_back(
-      IdentityManagerFactory::GetInstance(),
-      base::BindRepeating(
-          IdentityManagerFactory::BuildAuthenticatedServiceInstanceForTesting,
-          identity::GetTestGaiaIdForEmail(email), email, "refresh_token"));
+std::unique_ptr<KeyedService>
+IdentityTestEnvironmentProfileAdaptor::BuildIdentityManagerForTests(
+    content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
 
-  return testing_factories;
+  return signin::IdentityTestEnvironment::BuildIdentityManagerForTests(
+      ChromeSigninClientFactory::GetForProfile(profile), profile->GetPrefs(),
+      profile->GetPath());
 }
 
 IdentityTestEnvironmentProfileAdaptor::IdentityTestEnvironmentProfileAdaptor(
     Profile* profile)
-    : identity_test_env_(
-          profile->GetPrefs(),
-          AccountTrackerServiceFactory::GetForProfile(profile),
-          static_cast<FakeAccountFetcherService*>(
-              AccountFetcherServiceFactory::GetForProfile(profile)),
-          static_cast<FakeProfileOAuth2TokenService*>(
-              ProfileOAuth2TokenServiceFactory::GetForProfile(profile)),
-          SigninManagerFactory::GetForProfile(profile),
-          GaiaCookieManagerServiceFactory::GetForProfile(profile),
-          IdentityManagerFactory::GetForProfile(profile)) {
-}
+    : identity_test_env_(IdentityManagerFactory::GetForProfile(profile)) {}

@@ -10,11 +10,10 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/app/resources/grit/content_resources.h"
-#include "content/app/strings/grit/content_strings.h"
 #include "content/public/common/content_switches.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/shell/grit/shell_resources.h"
-#include "third_party/blink/public/resources/grit/blink_image_resources.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -24,7 +23,7 @@ ShellContentClient::ShellContentClient() {}
 
 ShellContentClient::~ShellContentClient() {}
 
-base::string16 ShellContentClient::GetLocalizedString(int message_id) const {
+base::string16 ShellContentClient::GetLocalizedString(int message_id) {
   if (switches::IsRunWebTestsSwitchPresent()) {
     switch (message_id) {
       case IDS_FORM_OTHER_DATE_LABEL:
@@ -48,34 +47,23 @@ base::string16 ShellContentClient::GetLocalizedString(int message_id) const {
 
 base::StringPiece ShellContentClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) const {
-  if (switches::IsRunWebTestsSwitchPresent()) {
-    switch (resource_id) {
-      case IDR_BROKENIMAGE:
-#if defined(OS_MACOSX)
-        resource_id = IDR_CONTENT_SHELL_MISSING_IMAGE_PNG;
-#else
-        resource_id = IDR_CONTENT_SHELL_MISSING_IMAGE_GIF;
-#endif
-        break;
-    }
-  }
+    ui::ScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
       resource_id, scale_factor);
 }
 
 base::RefCountedMemory* ShellContentClient::GetDataResourceBytes(
-    int resource_id) const {
+    int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
       resource_id);
 }
 
-gfx::Image& ShellContentClient::GetNativeImageNamed(int resource_id) const {
+gfx::Image& ShellContentClient::GetNativeImageNamed(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
       resource_id);
 }
 
-base::DictionaryValue ShellContentClient::GetNetLogConstants() const {
+base::DictionaryValue ShellContentClient::GetNetLogConstants() {
   base::DictionaryValue client_constants;
   client_constants.SetString("name", "content_shell");
   client_constants.SetString(

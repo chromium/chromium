@@ -17,7 +17,7 @@ class CORE_EXPORT ActiveSuggestionMarker final : public StyleableMarker {
   ActiveSuggestionMarker(unsigned start_offset,
                          unsigned end_offset,
                          Color underline_color,
-                         ws::mojom::ImeTextSpanThickness,
+                         ui::mojom::ImeTextSpanThickness,
                          Color background_color);
 
   // DocumentMarker implementations
@@ -26,12 +26,6 @@ class CORE_EXPORT ActiveSuggestionMarker final : public StyleableMarker {
  private:
   DISALLOW_COPY_AND_ASSIGN(ActiveSuggestionMarker);
 };
-
-DEFINE_TYPE_CASTS(ActiveSuggestionMarker,
-                  DocumentMarker,
-                  marker,
-                  marker->GetType() == DocumentMarker::kActiveSuggestion,
-                  marker.GetType() == DocumentMarker::kActiveSuggestion);
 
 }  // namespace blink
 

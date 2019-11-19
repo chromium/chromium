@@ -27,6 +27,16 @@ Polymer({
   onSelect_: function(event) {
     this.selectedPrinter = event.model.item;
   },
+
+  /**
+   * @param {!CupsPrinterInfo} first
+   * @param {!CupsPrinterInfo} second
+   * @return {number} The result of the comparison.
+   * @private
+   */
+  sort_: function(first, second) {
+    return settings.printing.alphabeticalSort(first, second);
+  },
 });
 
 /** 'add-printer-dialog' is the template of the Add Printer dialog. */
@@ -40,5 +50,20 @@ Polymer({
 
   close: function() {
     this.$.dialog.close();
+  },
+});
+
+/**
+ * 'printer-dialog-error' is the error container for dialogs.
+ */
+Polymer({
+  is: 'printer-dialog-error',
+
+  properties: {
+    /** The error text to be displayed on the dialog. */
+    errorText: {
+      type: String,
+      value: '',
+    },
   },
 });

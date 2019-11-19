@@ -650,7 +650,7 @@ TEST(JSONParserTest, LimitedDepth) {
 
   // Test cases. Each pair is a JSON string, and the minimum depth required
   // to successfully parse that string.
-  std::vector<std::pair<const char*, int>> test_cases = {
+  Vector<std::pair<const char*, int>> test_cases = {
       {"[[[[[]]]]]", 5},
       {"[[[[[\"a\"]]]]]", 6},
       {"[[],[],[],[],[]]", 2},

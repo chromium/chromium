@@ -10,7 +10,8 @@
 #include "net/der/input.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
-// TODO(mattm): these require CRL support:
+// These require CRL support, which is not implemented at the
+// VerifyCertificateChain level.
 #define Section7InvalidkeyUsageCriticalcRLSignFalseTest4 \
   DISABLED_Section7InvalidkeyUsageCriticalcRLSignFalseTest4
 #define Section7InvalidkeyUsageNotCriticalcRLSignFalseTest5 \
@@ -119,7 +120,9 @@ INSTANTIATE_TYPED_TEST_SUITE_P(VerifyCertificateChain,
                                PkitsTest16PrivateCertificateExtensions,
                                VerifyCertificateChainPkitsTestDelegate);
 
-// TODO(mattm): CRL support: PkitsTest04BasicCertificateRevocationTests,
+// These require CRL support, which is not implemented at the
+// VerifyCertificateChain level:
+// PkitsTest04BasicCertificateRevocationTests,
 // PkitsTest05VerifyingPathswithSelfIssuedCertificates,
 // PkitsTest14DistributionPoints, PkitsTest15DeltaCRLs
 

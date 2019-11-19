@@ -74,7 +74,7 @@ String DispatchBeforeTextInsertedEvent(const String& text,
   // Send BeforeTextInsertedEvent. The event handler will update text if
   // necessary.
   const Document& document = start_node->GetDocument();
-  BeforeTextInsertedEvent* evt = BeforeTextInsertedEvent::Create(text);
+  auto* evt = MakeGarbageCollected<BeforeTextInsertedEvent>(text);
   RootEditableElement(*start_node)->DispatchEvent(*evt);
   if (IsValidDocument(document) && selection.IsValidFor(document))
     return evt->GetText();
@@ -146,8 +146,7 @@ bool CanAppendNewLineFeedToSelection(const VisibleSelection& selection,
     return false;
 
   const Document& document = element->GetDocument();
-  BeforeTextInsertedEvent* event =
-      BeforeTextInsertedEvent::Create(String("\n"));
+  auto* event = MakeGarbageCollected<BeforeTextInsertedEvent>(String("\n"));
   element->DispatchEvent(*event);
   // event may invalidate frame or selection
   if (IsValidDocument(document) && selection.IsValidFor(document))
@@ -311,9 +310,9 @@ void TypingCommand::AdjustSelectionAfterIncrementalInsertion(
   if (!IsIncrementalInsertion())
     return;
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
-  frame->GetDocument()->UpdateStyleAndLayoutIgnorePendingStylesheets();
+  frame->GetDocument()->UpdateStyleAndLayout();
 
   Element* element = frame->Selection()
                          .ComputeVisibleSelectionInDOMTreeDeprecated()
@@ -378,9 +377,9 @@ void TypingCommand::InsertText(
   if (selection_for_insertion.IsCaret() && new_text.IsEmpty())
     return;
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
-  document.UpdateStyleAndLayoutIgnorePendingStylesheets();
+  document.UpdateStyleAndLayout();
 
   const PlainTextRange selection_offsets =
       GetSelectionOffsets(selection_for_insertion.AsSelection());
@@ -664,7 +663,7 @@ void TypingCommand::InsertTextRunWithoutNewlines(const String& text,
                   kRebalanceLeadingAndTrailingWhitespaces
             : InsertIncrementalTextCommand::kRebalanceAllWhitespaces);
   } else {
-    command = InsertTextCommand::Create(
+    command = MakeGarbageCollected<InsertTextCommand>(
         GetDocument(), text,
         composition_type_ == kTextCompositionNone
             ? InsertTextCommand::kRebalanceLeadingAndTrailingWhitespaces
@@ -684,8 +683,9 @@ void TypingCommand::InsertLineBreak(EditingState* editing_state) {
   if (!CanAppendNewLineFeedToSelection(EndingVisibleSelection(), editing_state))
     return;
 
-  ApplyCommandToComposite(InsertLineBreakCommand::Create(GetDocument()),
-                          editing_state);
+  ApplyCommandToComposite(
+      MakeGarbageCollected<InsertLineBreakCommand>(GetDocument()),
+      editing_state);
   if (editing_state->IsAborted())
     return;
   TypingAddedToOpenCommand(kInsertLineBreak);
@@ -696,7 +696,8 @@ void TypingCommand::InsertParagraphSeparator(EditingState* editing_state) {
     return;
 
   ApplyCommandToComposite(
-      InsertParagraphSeparatorCommand::Create(GetDocument()), editing_state);
+      MakeGarbageCollected<InsertParagraphSeparatorCommand>(GetDocument()),
+      editing_state);
   if (editing_state->IsAborted())
     return;
   TypingAddedToOpenCommand(kInsertParagraphSeparator);
@@ -712,8 +713,9 @@ void TypingCommand::InsertParagraphSeparatorInQuotedContent(
     return;
   }
 
-  ApplyCommandToComposite(BreakBlockquoteCommand::Create(GetDocument()),
-                          editing_state);
+  ApplyCommandToComposite(
+      MakeGarbageCollected<BreakBlockquoteCommand>(GetDocument()),
+      editing_state);
   if (editing_state->IsAborted())
     return;
   TypingAddedToOpenCommand(kInsertParagraphSeparatorInQuotedContent);
@@ -726,7 +728,7 @@ bool TypingCommand::MakeEditableRootEmpty(EditingState* editing_state) {
     return false;
 
   if (root->firstChild() == root->lastChild()) {
-    if (IsHTMLBRElement(root->firstChild())) {
+    if (IsA<HTMLBRElement>(root->firstChild())) {
       // If there is a single child and it could be a placeholder, leave it
       // alone.
       if (root->GetLayoutObject() &&
@@ -735,11 +737,9 @@ bool TypingCommand::MakeEditableRootEmpty(EditingState* editing_state) {
     }
   }
 
-  while (Node* child = root->firstChild()) {
-    RemoveNode(child, editing_state);
-    if (editing_state->IsAborted())
-      return false;
-  }
+  RemoveAllChildrenIfPossible(root, editing_state);
+  if (editing_state->IsAborted() || root->firstChild())
+    return false;
 
   AddBlockPlaceholderIfNeeded(root, editing_state);
   if (editing_state->IsAborted())
@@ -799,7 +799,7 @@ void TypingCommand::DeleteKeyPressed(TextGranularity granularity,
     TypingAddedToOpenCommand(kDeleteKey);
 
   smart_delete_ = false;
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
 
   SelectionModifier selection_modifier(*frame, EndingSelection().AsSelection());
   selection_modifier.SetSelectionIsDirectional(SelectionIsDirectional());
@@ -973,7 +973,7 @@ void TypingCommand::ForwardDeleteKeyPressed(TextGranularity granularity,
   }
 
   smart_delete_ = false;
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
 
   // Handle delete at beginning-of-block case.
   // Do nothing in the case that the caret is at the start of a

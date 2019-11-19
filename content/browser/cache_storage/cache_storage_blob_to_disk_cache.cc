@@ -12,7 +12,6 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "storage/browser/blob/blob_data_handle.h"
-#include "storage/browser/blob/blob_url_request_job_factory.h"
 #include "storage/common/storage_histograms.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 
@@ -23,21 +22,19 @@ const int CacheStorageBlobToDiskCache::kBufferSize = 1024 * 512;
 CacheStorageBlobToDiskCache::CacheStorageBlobToDiskCache()
     : handle_watcher_(FROM_HERE,
                       mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                      base::SequencedTaskRunnerHandle::Get()),
-      client_binding_(this),
-      weak_ptr_factory_(this) {}
+                      base::SequencedTaskRunnerHandle::Get()) {}
 
 CacheStorageBlobToDiskCache::~CacheStorageBlobToDiskCache() = default;
 
 void CacheStorageBlobToDiskCache::StreamBlobToCache(
-    disk_cache::ScopedEntryPtr entry,
+    ScopedWritableEntry entry,
     int disk_cache_body_index,
-    blink::mojom::BlobPtr blob,
+    mojo::PendingRemote<blink::mojom::Blob> blob_remote,
     uint64_t blob_size,
     EntryAndBoolCallback callback) {
   DCHECK(entry);
   DCHECK_LE(0, disk_cache_body_index);
-  DCHECK(blob);
+  DCHECK(blob_remote);
   DCHECK(!consumer_handle_.is_valid());
   DCHECK(!pending_read_);
 
@@ -59,9 +56,9 @@ void CacheStorageBlobToDiskCache::StreamBlobToCache(
   entry_ = std::move(entry);
   callback_ = std::move(callback);
 
-  blink::mojom::BlobReaderClientPtr client;
-  client_binding_.Bind(MakeRequest(&client));
-  blob->ReadAll(std::move(producer_handle), std::move(client));
+  mojo::Remote<blink::mojom::Blob> blob(std::move(blob_remote));
+  blob->ReadAll(std::move(producer_handle),
+                client_receiver_.BindNewPipeAndPassRemote());
 
   handle_watcher_.Watch(
       consumer_handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,
@@ -147,16 +144,15 @@ void CacheStorageBlobToDiskCache::OnDataPipeReadable(MojoResult unused) {
   auto buffer = base::MakeRefCounted<network::MojoToNetIOBuffer>(
       pending_read_.get(), bytes_to_read);
 
-  net::CompletionCallback cache_write_callback =
-      base::AdaptCallbackForRepeating(
-          base::BindOnce(&CacheStorageBlobToDiskCache::DidWriteDataToEntry,
-                         weak_ptr_factory_.GetWeakPtr(), bytes_to_read));
+  net::CompletionOnceCallback cache_write_callback =
+      base::BindOnce(&CacheStorageBlobToDiskCache::DidWriteDataToEntry,
+                     weak_ptr_factory_.GetWeakPtr(), bytes_to_read);
 
-  int rv = entry_->WriteData(disk_cache_body_index_, cache_entry_offset_,
-                             buffer.get(), bytes_to_read, cache_write_callback,
-                             true /* truncate */);
+  int rv = entry_->WriteData(
+      disk_cache_body_index_, cache_entry_offset_, buffer.get(), bytes_to_read,
+      std::move(cache_write_callback), true /* truncate */);
   if (rv != net::ERR_IO_PENDING)
-    std::move(cache_write_callback).Run(rv);
+    CacheStorageBlobToDiskCache::DidWriteDataToEntry(bytes_to_read, rv);
 }
 
 }  // namespace content

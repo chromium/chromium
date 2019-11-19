@@ -59,14 +59,14 @@ void RecordGeopositionErrorCode(mojom::Geoposition::ErrorCode error_code) {
 
 }  // namespace
 
-GeolocationImpl::GeolocationImpl(mojo::InterfaceRequest<Geolocation> request,
+GeolocationImpl::GeolocationImpl(mojo::PendingReceiver<Geolocation> receiver,
                                  GeolocationContext* context)
-    : binding_(this, std::move(request)),
+    : receiver_(this, std::move(receiver)),
       context_(context),
       high_accuracy_(false),
       has_position_to_report_(false) {
   DCHECK(context_);
-  binding_.set_connection_error_handler(base::BindOnce(
+  receiver_.set_disconnect_handler(base::BindOnce(
       &GeolocationImpl::OnConnectionError, base::Unretained(this)));
 }
 

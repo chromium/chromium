@@ -52,16 +52,14 @@ class WebAudioSourceProvider;
 // TODO(hta): Consider merging the two classes.
 
 class PLATFORM_EXPORT MediaStreamComponent final
-    : public GarbageCollectedFinalized<MediaStreamComponent> {
+    : public GarbageCollected<MediaStreamComponent> {
   USING_PRE_FINALIZER(MediaStreamComponent, Dispose);
 
  private:
   static int GenerateUniqueId();
 
  public:
-  static MediaStreamComponent* Create(MediaStreamSource*);
-  static MediaStreamComponent* Create(const String& id, MediaStreamSource*);
-
+  MediaStreamComponent(MediaStreamSource*);
   MediaStreamComponent(const String& id, MediaStreamSource*);
 
   MediaStreamComponent* Clone() const;

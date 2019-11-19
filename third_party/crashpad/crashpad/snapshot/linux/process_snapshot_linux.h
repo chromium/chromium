@@ -39,6 +39,7 @@
 #include "util/linux/ptrace_connection.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/misc/uuid.h"
+#include "util/process/process_id.h"
 #include "util/process/process_memory_range.h"
 
 namespace crashpad {
@@ -58,11 +59,23 @@ class ProcessSnapshotLinux final : public ProcessSnapshot {
   //!     an appropriate message logged.
   bool Initialize(PtraceConnection* connection);
 
+  //! \brief Finds the thread whose stack contains \a stack_address.
+  //!
+  //! \param[in] stack_address A stack address to search for.
+  //! \return The thread ID of the thread whose stack contains \a stack_address
+  //!     or -1 if no matching thread is found.
+  pid_t FindThreadWithStackAddress(VMAddress stack_address);
+
   //! \brief Initializes the object's exception.
   //!
   //! \param[in] exception_info The address of an ExceptionInformation in the
   //!     target process' address space.
-  bool InitializeException(LinuxVMAddress exception_info);
+  //! \param[in] exception_thread_id The thread ID to assocaite the thread with.
+  //!     Optional. If -1, the exception thread will be identified by the
+  //!     ExceptionInformation struct which contains the thread ID in the target
+  //!     process' namespace.
+  bool InitializeException(LinuxVMAddress exception_info,
+                           pid_t exception_thread_id = -1);
 
   //! \brief Sets the value to be returned by ReportID().
   //!
@@ -78,15 +91,16 @@ class ProcessSnapshotLinux final : public ProcessSnapshot {
   //! ClientID() will return an identifier consisting entirely of zeroes.
   void SetClientID(const UUID& client_id) { client_id_ = client_id; }
 
-  //! \brief Sets the value to be returned by AnnotationsSimpleMap().
+  //! \brief Add an annotation to be returned by AnnotationsSimpleMap().
   //!
-  //! All process annotations are under the control of the snapshot
+  //! Most process annotations are under the control of the snapshot
   //! producer, which may call this method to establish these annotations.
-  //! Contrast this with module annotations, which are under the control of the
-  //! process being snapshotted.
-  void SetAnnotationsSimpleMap(
-      const std::map<std::string, std::string>& annotations_simple_map) {
-    annotations_simple_map_ = annotations_simple_map;
+  //! On Android Q or later, the process snapshot may add an "abort_message"
+  //! annotation, which will contain the abort message passed to the
+  //! android_set_abort_message() function. Contrast this with module
+  //! annotations, which are under the control of the process being snapshotted.
+  void AddAnnotation(const std::string& key, const std::string& value) {
+    annotations_simple_map_[key] = value;
   }
 
   //! \brief Returns options from CrashpadInfo structures found in modules in
@@ -98,8 +112,8 @@ class ProcessSnapshotLinux final : public ProcessSnapshot {
 
   // ProcessSnapshot:
 
-  pid_t ProcessID() const override;
-  pid_t ParentProcessID() const override;
+  crashpad::ProcessID ProcessID() const override;
+  crashpad::ProcessID ParentProcessID() const override;
   void SnapshotTime(timeval* snapshot_time) const override;
   void ProcessStartTime(timeval* start_time) const override;
   void ProcessCPUTimes(timeval* user_time, timeval* system_time) const override;
@@ -120,6 +134,7 @@ class ProcessSnapshotLinux final : public ProcessSnapshot {
  private:
   void InitializeThreads();
   void InitializeModules();
+  void InitializeAnnotations();
 
   std::map<std::string, std::string> annotations_simple_map_;
   timeval snapshot_time_;

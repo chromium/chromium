@@ -50,12 +50,10 @@ class AllStatus : public SyncEngineEventListener {
 
   void SetNotificationsEnabled(bool notifications_enabled);
 
-  void IncrementNotifiableCommits();
-
   void IncrementNotificationsReceived();
 
   void SetEncryptedTypes(ModelTypeSet types);
-  void SetCryptographerReady(bool ready);
+  void SetCryptographerCanEncrypt(bool can_encrypt);
   void SetCryptoHasPendingKeys(bool has_pending_keys);
   void SetPassphraseType(PassphraseType type);
   void SetHasKeystoreKey(bool has_keystore_key);
@@ -63,8 +61,6 @@ class AllStatus : public SyncEngineEventListener {
 
   void SetSyncId(const std::string& sync_id);
   void SetInvalidatorClientId(const std::string& invalidator_client_id);
-
-  void IncrementNudgeCounter(NudgeSource source);
 
   void SetLocalBackendFolder(const std::string& folder);
 

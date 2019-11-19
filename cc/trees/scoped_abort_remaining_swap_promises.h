@@ -5,7 +5,6 @@
 #ifndef CC_TREES_SCOPED_ABORT_REMAINING_SWAP_PROMISES_H_
 #define CC_TREES_SCOPED_ABORT_REMAINING_SWAP_PROMISES_H_
 
-#include "base/macros.h"
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/swap_promise_manager.h"
 
@@ -16,15 +15,18 @@ class ScopedAbortRemainingSwapPromises {
   explicit ScopedAbortRemainingSwapPromises(
       SwapPromiseManager* swap_promise_manager)
       : swap_promise_manager_(swap_promise_manager) {}
+  ScopedAbortRemainingSwapPromises(const ScopedAbortRemainingSwapPromises&) =
+      delete;
 
   ~ScopedAbortRemainingSwapPromises() {
     swap_promise_manager_->BreakSwapPromises(SwapPromise::COMMIT_FAILS);
   }
 
+  ScopedAbortRemainingSwapPromises& operator=(
+      const ScopedAbortRemainingSwapPromises&) = delete;
+
  private:
   SwapPromiseManager* swap_promise_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAbortRemainingSwapPromises);
 };
 
 }  // namespace cc

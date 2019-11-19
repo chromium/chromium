@@ -9,35 +9,12 @@
 namespace data_reduction_proxy {
 
 DataReductionProxyServer::DataReductionProxyServer(
-    const net::ProxyServer& proxy_server,
-    ProxyServer_ProxyType proxy_type)
-    : proxy_server_(proxy_server), proxy_type_(proxy_type) {}
+    const net::ProxyServer& proxy_server)
+    : proxy_server_(proxy_server) {}
 
 bool DataReductionProxyServer::operator==(
     const DataReductionProxyServer& other) const {
-  return proxy_server_ == other.proxy_server_ &&
-         proxy_type_ == other.proxy_type_;
-}
-
-bool DataReductionProxyServer::SupportsResourceType(
-    ResourceTypeProvider::ContentType content_type) const {
-  switch (proxy_type_) {
-    case ProxyServer_ProxyType_CORE:
-      return true;
-    case ProxyServer_ProxyType_UNSPECIFIED_TYPE:
-      switch (content_type) {
-        case ResourceTypeProvider::CONTENT_TYPE_UNKNOWN:
-          return true;
-        case ResourceTypeProvider::CONTENT_TYPE_MEDIA:
-          return false;
-        case ResourceTypeProvider::CONTENT_TYPE_MAIN_FRAME:
-          return true;
-        case ResourceTypeProvider::CONTENT_TYPE_MAX:
-          NOTREACHED();
-          return true;
-      }
-  }
-  return true;
+  return proxy_server_ == other.proxy_server_;
 }
 
 // static
@@ -53,7 +30,7 @@ DataReductionProxyServer::ConvertToNetProxyServers(
 }
 
 bool DataReductionProxyServer::IsCoreProxy() const {
-  return proxy_type_ == ProxyServer_ProxyType_CORE;
+  return true;
 }
 
 bool DataReductionProxyServer::IsSecureProxy() const {

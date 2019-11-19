@@ -1,0 +1,10 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// More details about the real-world understanding APIs can be found here:
+// https://github.com/immersive-web/real-world-geometry/blob/master/plane-detection-explainer.md
+dictionary XRWorldTrackingStateInit {
+   XRPlaneDetectionStateInit planeDetectionState;
+};
+

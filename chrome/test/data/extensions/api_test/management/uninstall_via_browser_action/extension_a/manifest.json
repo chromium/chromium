@@ -1,0 +1,10 @@
+{
+  "name": "ExtensionA",
+  "description": "Uninstalls ExtensionB with management.uninstall",
+  "version": "1.0",
+  "manifest_version": 2,
+  "permissions": ["management"],
+  // Note: This extension will also be loaded as SW extension in tests.
+  "background": {"scripts": ["background.js"], "persistent": false},
+  "browser_action": {}
+}

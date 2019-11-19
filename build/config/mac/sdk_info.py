@@ -2,10 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import argparse
 import doctest
 import itertools
 import os
+import plistlib
 import subprocess
 import sys
 
@@ -39,8 +42,18 @@ def FormatVersion(version):
   major, minor, patch = SplitVersion(version)
   return ('%2s%s%s' % (major, minor, patch)).replace(' ', '0')
 
-def FillXcodeVersion(settings):
+def FillXcodeVersion(settings, developer_dir):
   """Fills the Xcode version and build number into |settings|."""
+  if developer_dir:
+    xcode_version_plist_path = os.path.join(
+        developer_dir, 'Contents/version.plist')
+    version_plist = plistlib.readPlist(xcode_version_plist_path)
+    settings['xcode_version'] = FormatVersion(
+        version_plist['CFBundleShortVersionString'])
+    settings['xcode_version_int'] = int(settings['xcode_version'], 10)
+    settings['xcode_build'] = version_plist['ProductBuildVersion']
+    return
+
   lines = subprocess.check_output(['xcodebuild', '-version']).splitlines()
   settings['xcode_version'] = FormatVersion(lines[0].split()[-1])
   settings['xcode_version_int'] = int(settings['xcode_version'], 10)
@@ -75,6 +88,9 @@ if __name__ == '__main__':
 
   parser = argparse.ArgumentParser()
   parser.add_argument("--developer_dir", required=False)
+  parser.add_argument("--get_sdk_info",
+                    action="store_true", dest="get_sdk_info", default=False,
+                    help="Returns SDK info in addition to xcode/machine info.")
   args, unknownargs = parser.parse_known_args()
   if args.developer_dir:
     os.environ['DEVELOPER_DIR'] = args.developer_dir
@@ -87,11 +103,12 @@ if __name__ == '__main__':
 
   settings = {}
   FillMachineOSBuild(settings)
-  FillXcodeVersion(settings)
-  FillSDKPathAndVersion(settings, unknownargs[0], settings['xcode_version'])
+  FillXcodeVersion(settings, args.developer_dir)
+  if args.get_sdk_info:
+    FillSDKPathAndVersion(settings, unknownargs[0], settings['xcode_version'])
 
   for key in sorted(settings):
     value = settings[key]
     if isinstance(value, str):
       value = '"%s"' % value
-    print '%s=%s' % (key, value)
+    print('%s=%s' % (key, value))

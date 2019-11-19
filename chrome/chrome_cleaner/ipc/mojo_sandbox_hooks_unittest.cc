@@ -11,12 +11,15 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/test/multiprocess_test.h"
-#include "base/test/scoped_task_environment.h"
-#include "chrome/chrome_cleaner/interfaces/test_mojo_sandbox_hooks.mojom.h"
+#include "base/test/task_environment.h"
 #include "chrome/chrome_cleaner/ipc/mojo_sandbox_hooks.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
+#include "chrome/chrome_cleaner/mojom/test_mojo_sandbox_hooks.mojom.h"
 #include "chrome/chrome_cleaner/os/early_exit.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "testing/multiprocess_func_list.h"
@@ -27,8 +30,9 @@ namespace {
 
 constexpr char kTestString[] = "Hello World";
 
-using UniqueTestMojoSandboxHooksPtr =
-    std::unique_ptr<mojom::TestMojoSandboxHooksPtr, base::OnTaskRunnerDeleter>;
+using RemoteTestMojoSandboxHooksPtr =
+    std::unique_ptr<mojo::Remote<mojom::TestMojoSandboxHooks>,
+                    base::OnTaskRunnerDeleter>;
 
 class MojoSandboxHooksTest : public base::MultiProcessTest {
  public:
@@ -38,16 +42,17 @@ class MojoSandboxHooksTest : public base::MultiProcessTest {
   scoped_refptr<MojoTaskRunner> mojo_task_runner_;
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 // |TestMojoSandboxHooksImpl| runs and handles mojo requests in the sandbox
 // child process.
 class TestMojoSandboxHooksImpl : mojom::TestMojoSandboxHooks {
  public:
-  explicit TestMojoSandboxHooksImpl(mojom::TestMojoSandboxHooksRequest request)
-      : binding_(this, std::move(request)) {
-    binding_.set_connection_error_handler(base::BindOnce(&EarlyExit, 1));
+  explicit TestMojoSandboxHooksImpl(
+      mojo::PendingReceiver<mojom::TestMojoSandboxHooks> receiver)
+      : receiver_(this, std::move(receiver)) {
+    receiver_.set_disconnect_handler(base::BindOnce(&EarlyExit, 1));
   }
 
   void EchoString(const std::string& input,
@@ -56,7 +61,7 @@ class TestMojoSandboxHooksImpl : mojom::TestMojoSandboxHooks {
   }
 
  private:
-  mojo::Binding<mojom::TestMojoSandboxHooks> binding_;
+  mojo::Receiver<mojom::TestMojoSandboxHooks> receiver_;
 };
 
 class TestSandboxSetupHooks : public MojoSandboxSetupHooks {
@@ -65,41 +70,41 @@ class TestSandboxSetupHooks : public MojoSandboxSetupHooks {
       : mojo_task_runner_(mojo_task_runner),
         // Manually use |new| here because |make_unique| doesn't work with
         // custom deleter.
-        test_mojo_ptr_(new mojom::TestMojoSandboxHooksPtr,
-                       base::OnTaskRunnerDeleter(mojo_task_runner_)) {}
+        test_mojo_(new mojo::Remote<mojom::TestMojoSandboxHooks>(),
+                   base::OnTaskRunnerDeleter(mojo_task_runner_)) {}
 
   ResultCode UpdateSandboxPolicy(sandbox::TargetPolicy* policy,
                                  base::CommandLine* command_line) override {
     mojo::ScopedMessagePipeHandle pipe_handle =
         SetupSandboxMessagePipe(policy, command_line);
 
-    // Unretained pointer of |test_mojo_ptr_| is safe because its deleter is
-    // run on the same task runner. So it won't be deleted before this task.
+    // Unretained pointer of |test_mojo_| is safe because its deleter is run on
+    // the same task runner. So it won't be deleted before this task.
     mojo_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(TestSandboxSetupHooks::BindTestMojoSandboxHooksPtr,
-                       base::Unretained(test_mojo_ptr_.get()),
+        base::BindOnce(TestSandboxSetupHooks::BindTestMojoSandboxHooksRemote,
+                       base::Unretained(test_mojo_.get()),
                        std::move(pipe_handle)));
 
     return RESULT_CODE_SUCCESS;
   }
 
-  UniqueTestMojoSandboxHooksPtr TakeTestMojoSandboxHooksPtr() {
-    return std::move(test_mojo_ptr_);
+  RemoteTestMojoSandboxHooksPtr TakeTestMojoSandboxHooksRemote() {
+    return std::move(test_mojo_);
   }
 
  private:
-  static void BindTestMojoSandboxHooksPtr(
-      mojom::TestMojoSandboxHooksPtr* test_mojo_ptr,
+  static void BindTestMojoSandboxHooksRemote(
+      mojo::Remote<mojom::TestMojoSandboxHooks>* test_mojo,
       mojo::ScopedMessagePipeHandle pipe_handle) {
-    test_mojo_ptr->Bind(
-        mojom::TestMojoSandboxHooksPtrInfo(std::move(pipe_handle), 0));
-    test_mojo_ptr->set_connection_error_handler(base::BindOnce(
+    test_mojo->Bind(mojo::PendingRemote<mojom::TestMojoSandboxHooks>(
+        std::move(pipe_handle), 0));
+    test_mojo->set_disconnect_handler(base::BindOnce(
         [] { FAIL() << "Mojo sandbox setup connection error"; }));
   }
 
   scoped_refptr<MojoTaskRunner> mojo_task_runner_;
-  UniqueTestMojoSandboxHooksPtr test_mojo_ptr_;
+  RemoteTestMojoSandboxHooksPtr test_mojo_;
 };
 
 class TestSandboxTargetHooks : public MojoSandboxTargetHooks {
@@ -107,7 +112,7 @@ class TestSandboxTargetHooks : public MojoSandboxTargetHooks {
   ResultCode TargetDroppedPrivileges(
       const base::CommandLine& command_line) override {
     scoped_refptr<MojoTaskRunner> mojo_task_runner = MojoTaskRunner::Create();
-    mojom::TestMojoSandboxHooksRequest request(
+    mojo::PendingReceiver<mojom::TestMojoSandboxHooks> receiver(
         ExtractSandboxMessagePipe(command_line));
 
     std::unique_ptr<TestMojoSandboxHooksImpl, base::OnTaskRunnerDeleter>
@@ -119,7 +124,7 @@ class TestSandboxTargetHooks : public MojoSandboxTargetHooks {
     mojo_task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(CreateTestMojoSandboxHooksImpl,
-                       base::Unretained(&impl_ptr), std::move(request)));
+                       base::Unretained(&impl_ptr), std::move(receiver)));
     loop.Run();
 
     return RESULT_CODE_SUCCESS;
@@ -129,19 +134,19 @@ class TestSandboxTargetHooks : public MojoSandboxTargetHooks {
   static void CreateTestMojoSandboxHooksImpl(
       std::unique_ptr<TestMojoSandboxHooksImpl, base::OnTaskRunnerDeleter>*
           impl_ptr,
-      mojom::TestMojoSandboxHooksRequest request) {
-    (*impl_ptr).reset(new TestMojoSandboxHooksImpl(std::move(request)));
+      mojo::PendingReceiver<mojom::TestMojoSandboxHooks> receiver) {
+    (*impl_ptr).reset(new TestMojoSandboxHooksImpl(std::move(receiver)));
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
-void RunEchoString(mojom::TestMojoSandboxHooksPtr* test_mojo_ptr,
+void RunEchoString(mojo::Remote<mojom::TestMojoSandboxHooks>* test_mojo,
                    const std::string& input,
                    mojom::TestMojoSandboxHooks::EchoStringCallback callback) {
-  DCHECK(test_mojo_ptr);
+  DCHECK(test_mojo);
 
-  (*test_mojo_ptr)->EchoString(input, std::move(callback));
+  (*test_mojo)->EchoString(input, std::move(callback));
 }
 
 void OnEchoStringDone(std::string* result_string,
@@ -172,8 +177,8 @@ TEST_F(MojoSandboxHooksTest, SpawnSandboxTarget) {
             StartSandboxTarget(MakeCmdLine("MojoSandboxHooksTargetMain"),
                                &setup_hooks, SandboxType::kTest));
 
-  UniqueTestMojoSandboxHooksPtr test_mojo_ptr =
-      setup_hooks.TakeTestMojoSandboxHooksPtr();
+  RemoteTestMojoSandboxHooksPtr test_mojo =
+      setup_hooks.TakeTestMojoSandboxHooksRemote();
 
   std::string test_result_string;
   base::RunLoop loop;
@@ -181,7 +186,7 @@ TEST_F(MojoSandboxHooksTest, SpawnSandboxTarget) {
   // ends.
   mojo_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(RunEchoString, base::Unretained(test_mojo_ptr.get()),
+      base::BindOnce(RunEchoString, base::Unretained(test_mojo.get()),
                      kTestString,
                      base::BindOnce(OnEchoStringDone,
                                     base::Unretained(&test_result_string),

@@ -28,8 +28,8 @@ TEST_F(SyncHandleRegistryTest, DuplicateEventRegistration) {
   bool called1 = false;
   bool called2 = false;
   auto callback = [](bool* called) { *called = true; };
-  auto callback1 = base::Bind(callback, &called1);
-  auto callback2 = base::Bind(callback, &called2);
+  auto callback1 = base::BindRepeating(callback, &called1);
+  auto callback2 = base::BindRepeating(callback, &called2);
 
   base::WaitableEvent e(base::WaitableEvent::ResetPolicy::MANUAL,
                         base::WaitableEvent::InitialState::SIGNALED);
@@ -60,15 +60,17 @@ TEST_F(SyncHandleRegistryTest, UnregisterDuplicateEventInNestedWait) {
   bool called1 = false;
   bool called2 = false;
   bool called3 = false;
-  auto callback1 = base::Bind([](bool* called) { *called = true; }, &called1);
-  auto callback2 = base::Bind(
-      [](base::WaitableEvent* e, const base::Closure& other_callback,
+  auto callback1 =
+      base::BindRepeating([](bool* called) { *called = true; }, &called1);
+  auto callback2 = base::BindRepeating(
+      [](base::WaitableEvent* e, base::RepeatingClosure other_callback,
          scoped_refptr<SyncHandleRegistry> registry, bool* called) {
         registry->UnregisterEvent(e, other_callback);
         *called = true;
       },
       &e, callback1, registry(), &called2);
-  auto callback3 = base::Bind([](bool* called) { *called = true; }, &called3);
+  auto callback3 =
+      base::BindRepeating([](bool* called) { *called = true; }, &called3);
 
   registry()->RegisterEvent(&e, callback1);
   registry()->RegisterEvent(&e, callback2);
@@ -101,10 +103,10 @@ TEST_F(SyncHandleRegistryTest, UnregisterAndRegisterForNewEventInCallback) {
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::SIGNALED);
   bool called = false;
-  base::Closure callback_holder;
-  auto callback = base::Bind(
+  base::RepeatingClosure callback_holder;
+  auto callback = base::BindRepeating(
       [](std::unique_ptr<base::WaitableEvent>* e,
-         base::Closure* callback_holder,
+         base::RepeatingClosure* callback_holder,
          scoped_refptr<SyncHandleRegistry> registry, bool* called) {
         EXPECT_FALSE(*called);
 
@@ -116,8 +118,8 @@ TEST_F(SyncHandleRegistryTest, UnregisterAndRegisterForNewEventInCallback) {
             base::WaitableEvent::ResetPolicy::MANUAL,
             base::WaitableEvent::InitialState::SIGNALED);
         bool nested_called = false;
-        auto nested_callback =
-            base::Bind([](bool* called) { *called = true; }, &nested_called);
+        auto nested_callback = base::BindRepeating(
+            [](bool* called) { *called = true; }, &nested_called);
         registry->RegisterEvent(&nested_event, nested_callback);
         const bool* stop_flag = &nested_called;
         registry->Wait(&stop_flag, 1);
@@ -137,9 +139,9 @@ TEST_F(SyncHandleRegistryTest, UnregisterAndRegisterForSameEventInCallback) {
   base::WaitableEvent e(base::WaitableEvent::ResetPolicy::MANUAL,
                         base::WaitableEvent::InitialState::SIGNALED);
   bool called = false;
-  base::Closure callback_holder;
-  auto callback = base::Bind(
-      [](base::WaitableEvent* e, base::Closure* callback_holder,
+  base::RepeatingClosure callback_holder;
+  auto callback = base::BindRepeating(
+      [](base::WaitableEvent* e, base::RepeatingClosure* callback_holder,
          scoped_refptr<SyncHandleRegistry> registry, bool* called) {
         EXPECT_FALSE(*called);
 
@@ -147,8 +149,8 @@ TEST_F(SyncHandleRegistryTest, UnregisterAndRegisterForSameEventInCallback) {
         *called = true;
 
         bool nested_called = false;
-        auto nested_callback =
-            base::Bind([](bool* called) { *called = true; }, &nested_called);
+        auto nested_callback = base::BindRepeating(
+            [](bool* called) { *called = true; }, &nested_called);
         registry->RegisterEvent(e, nested_callback);
         const bool* stop_flag = &nested_called;
         registry->Wait(&stop_flag, 1);
@@ -171,7 +173,7 @@ TEST_F(SyncHandleRegistryTest, RegisterDuplicateEventFromWithinCallback) {
                         base::WaitableEvent::InitialState::SIGNALED);
   bool called = false;
   int call_count = 0;
-  auto callback = base::Bind(
+  auto callback = base::BindRepeating(
       [](base::WaitableEvent* e, scoped_refptr<SyncHandleRegistry> registry,
          bool* called, int* call_count) {
         // Don't re-enter.
@@ -183,7 +185,7 @@ TEST_F(SyncHandleRegistryTest, RegisterDuplicateEventFromWithinCallback) {
 
         bool called2 = false;
         auto callback2 =
-            base::Bind([](bool* called) { *called = true; }, &called2);
+            base::BindRepeating([](bool* called) { *called = true; }, &called2);
         registry->RegisterEvent(e, callback2);
 
         const bool* stop_flag = &called2;
@@ -212,10 +214,11 @@ TEST_F(SyncHandleRegistryTest, UnregisterUniqueEventInNestedWait) {
                          base::WaitableEvent::InitialState::SIGNALED);
   bool called1 = false;
   bool called2 = false;
-  auto callback1 = base::Bind([](bool* called) { *called = true; }, &called1);
-  auto callback2 = base::Bind(
+  auto callback1 =
+      base::BindRepeating([](bool* called) { *called = true; }, &called1);
+  auto callback2 = base::BindRepeating(
       [](std::unique_ptr<base::WaitableEvent>* e1,
-         const base::Closure& other_callback,
+         base::RepeatingClosure other_callback,
          scoped_refptr<SyncHandleRegistry> registry, bool* called) {
         // Prevent re-entrancy.
         if (*called)
@@ -228,7 +231,7 @@ TEST_F(SyncHandleRegistryTest, UnregisterUniqueEventInNestedWait) {
         // Nest another wait.
         bool called3 = false;
         auto callback3 =
-            base::Bind([](bool* called) { *called = true; }, &called3);
+            base::BindRepeating([](bool* called) { *called = true; }, &called3);
         base::WaitableEvent e3(base::WaitableEvent::ResetPolicy::MANUAL,
                                base::WaitableEvent::InitialState::SIGNALED);
         registry->RegisterEvent(&e3, callback3);

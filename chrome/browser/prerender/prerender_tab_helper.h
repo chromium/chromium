@@ -72,7 +72,7 @@ class PrerenderTabHelper
   // Current URL being loaded.
   GURL url_;
 
-  base::WeakPtrFactory<PrerenderTabHelper> weak_factory_;
+  base::WeakPtrFactory<PrerenderTabHelper> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

@@ -69,22 +69,24 @@ class MHTMLLoadingTest : public testing::Test {
     auto params = std::make_unique<WebNavigationParams>();
     params->url = url;
     params->response = WebURLResponse(url);
-    params->response.SetMIMEType("multipart/related");
+    params->response.SetMimeType("multipart/related");
     params->response.SetHttpStatusCode(200);
     params->response.SetExpectedContentLength(buffer->size());
     auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
     body_loader->Write(*buffer);
     body_loader->Finish();
     params->body_loader = std::move(body_loader);
-    frame->CommitNavigation(std::move(params), nullptr /* extra_data */);
+    frame->CommitNavigation(
+        std::move(params), nullptr /* extra_data */,
+        base::DoNothing::Once() /* call_before_attaching_new_document */);
     frame_test_helpers::PumpPendingRequestsForFrameToLoad(frame);
   }
 
   Page* GetPage() const { return helper_.GetWebView()->GetPage(); }
 
  private:
-  frame_test_helpers::WebViewHelper helper_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
+  frame_test_helpers::WebViewHelper helper_;
 };
 
 // Checks that the domain is set to the actual MHTML file, not the URL it was
@@ -99,11 +101,10 @@ TEST_F(MHTMLLoadingTest, CheckDomain) {
   Document* document = frame->GetDocument();
   ASSERT_TRUE(document);
 
-  EXPECT_STREQ(kFileURL,
-               frame->DomWindow()->location()->toString().Ascii().data());
+  EXPECT_EQ(kFileURL, frame->DomWindow()->location()->toString());
 
   const SecurityOrigin* origin = document->GetSecurityOrigin();
-  EXPECT_STRNE("localhost", origin->Domain().Ascii().data());
+  EXPECT_NE("localhost", origin->Domain().Ascii());
 }
 
 // Checks that full sandboxing protection has been turned on.
@@ -119,8 +120,9 @@ TEST_F(MHTMLLoadingTest, EnforceSandboxFlags) {
 
   // Full sandboxing with the exception to new top-level windows should be
   // turned on.
-  EXPECT_EQ(kSandboxAll & ~(kSandboxPopups |
-                            kSandboxPropagatesToAuxiliaryBrowsingContexts),
+  EXPECT_EQ(WebSandboxFlags::kAll &
+                ~(WebSandboxFlags::kPopups |
+                  WebSandboxFlags::kPropagatesToAuxiliaryBrowsingContexts),
             document->GetSandboxFlags());
 
   // MHTML document should be loaded into unique origin.
@@ -138,8 +140,9 @@ TEST_F(MHTMLLoadingTest, EnforceSandboxFlags) {
   Document* child_document = child_frame->GetDocument();
   ASSERT_TRUE(child_document);
 
-  EXPECT_EQ(kSandboxAll & ~(kSandboxPopups |
-                            kSandboxPropagatesToAuxiliaryBrowsingContexts),
+  EXPECT_EQ(WebSandboxFlags::kAll &
+                ~(WebSandboxFlags::kPopups |
+                  WebSandboxFlags::kPropagatesToAuxiliaryBrowsingContexts),
             child_document->GetSandboxFlags());
 
   // MHTML document should be loaded into unique origin.
@@ -163,8 +166,9 @@ TEST_F(MHTMLLoadingTest, EnforceSandboxFlagsInXSLT) {
 
   // Full sandboxing with the exception to new top-level windows should be
   // turned on.
-  EXPECT_EQ(kSandboxAll & ~(kSandboxPopups |
-                            kSandboxPropagatesToAuxiliaryBrowsingContexts),
+  EXPECT_EQ(WebSandboxFlags::kAll &
+                ~(WebSandboxFlags::kPopups |
+                  WebSandboxFlags::kPropagatesToAuxiliaryBrowsingContexts),
             document->GetSandboxFlags());
 
   // MHTML document should be loaded into unique origin.

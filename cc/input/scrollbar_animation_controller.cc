@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "cc/trees/layer_tree_impl.h"
 
@@ -55,8 +56,7 @@ ScrollbarAnimationController::ScrollbarAnimationController(
       show_scrollbars_on_scroll_gesture_(false),
       need_thinning_animation_(false),
       is_mouse_down_(false),
-      tickmarks_showing_(false),
-      weak_factory_(this) {}
+      tickmarks_showing_(false) {}
 
 ScrollbarAnimationController::ScrollbarAnimationController(
     ElementId scroll_element_id,
@@ -78,8 +78,7 @@ ScrollbarAnimationController::ScrollbarAnimationController(
       show_scrollbars_on_scroll_gesture_(true),
       need_thinning_animation_(true),
       is_mouse_down_(false),
-      tickmarks_showing_(false),
-      weak_factory_(this) {
+      tickmarks_showing_(false) {
   vertical_controller_ = SingleScrollbarAnimationControllerThinning::Create(
       scroll_element_id, ScrollbarOrientation::VERTICAL, client,
       thinning_duration);
@@ -164,7 +163,7 @@ float ScrollbarAnimationController::AnimationProgressAtTime(
     base::TimeTicks now) {
   base::TimeDelta delta = now - last_awaken_time_;
   float progress = delta.InSecondsF() / fade_duration_.InSecondsF();
-  return std::max(std::min(progress, 1.f), 0.f);
+  return base::ClampToRange(progress, 0.0f, 1.0f);
 }
 
 void ScrollbarAnimationController::RunAnimationFrame(float progress) {

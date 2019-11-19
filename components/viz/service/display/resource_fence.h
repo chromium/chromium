@@ -11,14 +11,13 @@ namespace viz {
 
 // An abstract interface used to ensure reading from resources passed between
 // client and service does not happen before writing is completed.
-class ResourceFence : public base::RefCounted<ResourceFence> {
+class ResourceFence : public base::RefCountedThreadSafe<ResourceFence> {
  public:
   virtual void Set() = 0;
   virtual bool HasPassed() = 0;
-  virtual void Wait() = 0;
 
  protected:
-  friend class base::RefCounted<ResourceFence>;
+  friend class base::RefCountedThreadSafe<ResourceFence>;
   ResourceFence() = default;
   virtual ~ResourceFence() = default;
 

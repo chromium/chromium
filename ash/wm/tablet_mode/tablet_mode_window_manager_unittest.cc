@@ -6,20 +6,28 @@
 
 #include <string>
 
+#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/home_screen/home_screen_controller.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_switches.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_prefs.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/public/cpp/window_state_type.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/shell_test_api.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/splitview/multi_display_overview_and_split_view_test.h"
+#include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/switchable_windows.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -29,12 +37,14 @@
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "services/ws/public/mojom/window_tree_constants.mojom.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
@@ -58,7 +68,8 @@ void SetShelfAutoHideBehaviorPref(int64_t display_id,
   SetShelfAutoHideBehaviorPref(prefs, display_id, behavior);
 }
 
-class TabletModeWindowManagerTest : public AshTestBase {
+class TabletModeWindowManagerTest
+    : public MultiDisplayOverviewAndSplitViewTest {
  public:
   TabletModeWindowManagerTest() = default;
   ~TabletModeWindowManagerTest() override = default;
@@ -115,7 +126,7 @@ class TabletModeWindowManagerTest : public AshTestBase {
     views::Widget* widget = new views::Widget();
     views::Widget::InitParams params;
     params.context = CurrentContext();
-    widget->Init(params);
+    widget->Init(std::move(params));
     widget->Show();
     aura::Window* window = widget->GetNativeWindow();
     window->SetBounds(bounds);
@@ -127,14 +138,13 @@ class TabletModeWindowManagerTest : public AshTestBase {
   // Create the tablet mode window manager.
   TabletModeWindowManager* CreateTabletModeWindowManager() {
     EXPECT_FALSE(TabletModeControllerTestApi().tablet_mode_window_manager());
-    Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
     return TabletModeControllerTestApi().tablet_mode_window_manager();
   }
 
   // Destroy the tablet mode window manager.
   void DestroyTabletModeWindowManager() {
-    Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(
-        false);
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
     EXPECT_FALSE(TabletModeControllerTestApi().tablet_mode_window_manager());
   }
 
@@ -160,14 +170,20 @@ class TabletModeWindowManagerTest : public AshTestBase {
     }
     aura::Window* window = aura::test::CreateTestWindowWithDelegateAndType(
         delegate, params.type, 0, params.bounds, NULL, params.show_on_creation);
-    int32_t behavior = ws::mojom::kResizeBehaviorNone;
-    behavior |= params.can_resize ? ws::mojom::kResizeBehaviorCanResize : 0;
-    behavior |= params.can_maximize ? ws::mojom::kResizeBehaviorCanMaximize : 0;
+    int32_t behavior = aura::client::kResizeBehaviorNone;
+    behavior |= params.can_resize ? aura::client::kResizeBehaviorCanResize : 0;
+    behavior |=
+        params.can_maximize ? aura::client::kResizeBehaviorCanMaximize : 0;
     window->SetProperty(aura::client::kResizeBehaviorKey, behavior);
-    aura::Window* container = Shell::GetContainer(
-        Shell::GetPrimaryRootWindow(), wm::kSwitchableWindowContainerIds[0]);
+    aura::Window* container =
+        GetSwitchableContainersForRoot(Shell::GetPrimaryRootWindow(),
+                                       /*active_desk_only=*/true)[0];
     container->AddChild(window);
     return window;
+  }
+
+  SplitViewController* split_view_controller() {
+    return SplitViewController::Get(Shell::GetPrimaryRootWindow());
   }
 
  private:
@@ -176,7 +192,7 @@ class TabletModeWindowManagerTest : public AshTestBase {
 
 // Test that creating the object and destroying it without any windows should
 // not cause any problems.
-TEST_F(TabletModeWindowManagerTest, SimpleStart) {
+TEST_P(TabletModeWindowManagerTest, SimpleStart) {
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();
   ASSERT_TRUE(manager);
   EXPECT_EQ(0, manager->GetNumberOfManagedWindows());
@@ -185,7 +201,7 @@ TEST_F(TabletModeWindowManagerTest, SimpleStart) {
 
 // Test that existing windows will handled properly when going into tablet
 // mode.
-TEST_F(TabletModeWindowManagerTest, PreCreateWindows) {
+TEST_P(TabletModeWindowManagerTest, PreCreateWindows) {
   // Bounds for windows we know can be controlled.
   gfx::Rect rect1(10, 10, 200, 50);
   gfx::Rect rect2(10, 60, 200, 50);
@@ -204,9 +220,9 @@ TEST_F(TabletModeWindowManagerTest, PreCreateWindows) {
       CreateWindow(aura::client::WINDOW_TYPE_MENU, rect));
   std::unique_ptr<aura::Window> w6(
       CreateWindow(aura::client::WINDOW_TYPE_TOOLTIP, rect));
-  EXPECT_FALSE(wm::GetWindowState(w1.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w2.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w3.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w1.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w2.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w3.get())->IsMaximized());
   EXPECT_EQ(rect1.ToString(), w1->bounds().ToString());
   EXPECT_EQ(rect2.ToString(), w2->bounds().ToString());
   EXPECT_EQ(rect3.ToString(), w3->bounds().ToString());
@@ -216,16 +232,16 @@ TEST_F(TabletModeWindowManagerTest, PreCreateWindows) {
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();
   ASSERT_TRUE(manager);
   EXPECT_EQ(3, manager->GetNumberOfManagedWindows());
-  EXPECT_TRUE(wm::GetWindowState(w1.get())->IsMaximized());
-  EXPECT_TRUE(wm::GetWindowState(w2.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w3.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(w1.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(w2.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w3.get())->IsMaximized());
   EXPECT_NE(rect3.origin().ToString(), w3->bounds().origin().ToString());
   EXPECT_EQ(rect3.size().ToString(), w3->bounds().size().ToString());
 
   // All other windows should not have been touched.
-  EXPECT_FALSE(wm::GetWindowState(w4.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w5.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w6.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w4.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w5.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w6.get())->IsMaximized());
   EXPECT_EQ(rect.ToString(), w4->bounds().ToString());
   EXPECT_EQ(rect.ToString(), w5->bounds().ToString());
   EXPECT_EQ(rect.ToString(), w6->bounds().ToString());
@@ -233,9 +249,9 @@ TEST_F(TabletModeWindowManagerTest, PreCreateWindows) {
   // Destroy the manager again and check that the windows return to their
   // previous state.
   DestroyTabletModeWindowManager();
-  EXPECT_FALSE(wm::GetWindowState(w1.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w2.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w3.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w1.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w2.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w3.get())->IsMaximized());
   EXPECT_EQ(rect1.ToString(), w1->bounds().ToString());
   EXPECT_EQ(rect2.ToString(), w2->bounds().ToString());
   EXPECT_EQ(rect3.ToString(), w3->bounds().ToString());
@@ -245,7 +261,7 @@ TEST_F(TabletModeWindowManagerTest, PreCreateWindows) {
 }
 
 // The same test as the above but while a system modal dialog is shown.
-TEST_F(TabletModeWindowManagerTest, GoingToMaximizedWithModalDialogPresent) {
+TEST_P(TabletModeWindowManagerTest, GoingToMaximizedWithModalDialogPresent) {
   // Bounds for windows we know can be controlled.
   gfx::Rect rect1(10, 10, 200, 50);
   gfx::Rect rect2(10, 60, 200, 50);
@@ -264,9 +280,9 @@ TEST_F(TabletModeWindowManagerTest, GoingToMaximizedWithModalDialogPresent) {
       CreateWindow(aura::client::WINDOW_TYPE_MENU, rect));
   std::unique_ptr<aura::Window> w6(
       CreateWindow(aura::client::WINDOW_TYPE_TOOLTIP, rect));
-  EXPECT_FALSE(wm::GetWindowState(w1.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w2.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w3.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w1.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w2.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w3.get())->IsMaximized());
   EXPECT_EQ(rect1.ToString(), w1->bounds().ToString());
   EXPECT_EQ(rect2.ToString(), w2->bounds().ToString());
   EXPECT_EQ(rect3.ToString(), w3->bounds().ToString());
@@ -280,16 +296,16 @@ TEST_F(TabletModeWindowManagerTest, GoingToMaximizedWithModalDialogPresent) {
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();
   ASSERT_TRUE(manager);
   EXPECT_EQ(3, manager->GetNumberOfManagedWindows());
-  EXPECT_TRUE(wm::GetWindowState(w1.get())->IsMaximized());
-  EXPECT_TRUE(wm::GetWindowState(w2.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w3.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(w1.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(w2.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w3.get())->IsMaximized());
   EXPECT_NE(rect3.origin().ToString(), w3->bounds().origin().ToString());
   EXPECT_EQ(rect3.size().ToString(), w3->bounds().size().ToString());
 
   // All other windows should not have been touched.
-  EXPECT_FALSE(wm::GetWindowState(w4.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w5.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w6.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w4.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w5.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w6.get())->IsMaximized());
   EXPECT_EQ(rect.ToString(), w4->bounds().ToString());
   EXPECT_EQ(rect.ToString(), w5->bounds().ToString());
   EXPECT_EQ(rect.ToString(), w6->bounds().ToString());
@@ -297,9 +313,9 @@ TEST_F(TabletModeWindowManagerTest, GoingToMaximizedWithModalDialogPresent) {
   // Destroy the manager again and check that the windows return to their
   // previous state.
   DestroyTabletModeWindowManager();
-  EXPECT_FALSE(wm::GetWindowState(w1.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w2.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w3.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w1.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w2.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w3.get())->IsMaximized());
   EXPECT_EQ(rect1.ToString(), w1->bounds().ToString());
   EXPECT_EQ(rect2.ToString(), w2->bounds().ToString());
   EXPECT_EQ(rect3.ToString(), w3->bounds().ToString());
@@ -310,7 +326,7 @@ TEST_F(TabletModeWindowManagerTest, GoingToMaximizedWithModalDialogPresent) {
 
 // Test that non-maximizable windows get properly handled when going into
 // tablet mode.
-TEST_F(TabletModeWindowManagerTest,
+TEST_P(TabletModeWindowManagerTest,
        PreCreateNonMaximizableButResizableWindows) {
   // The window bounds.
   gfx::Rect rect(10, 10, 200, 50);
@@ -323,16 +339,12 @@ TEST_F(TabletModeWindowManagerTest,
   std::unique_ptr<aura::Window> fixed_window(
       CreateFixedSizeNonMaximizableWindow(aura::client::WINDOW_TYPE_NORMAL,
                                           rect));
-  EXPECT_FALSE(wm::GetWindowState(unlimited_window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(unlimited_window.get())->IsMaximized());
   EXPECT_EQ(rect.ToString(), unlimited_window->bounds().ToString());
-  EXPECT_FALSE(wm::GetWindowState(limited_window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(limited_window.get())->IsMaximized());
   EXPECT_EQ(rect.ToString(), limited_window->bounds().ToString());
-  EXPECT_FALSE(wm::GetWindowState(fixed_window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(fixed_window.get())->IsMaximized());
   EXPECT_EQ(rect.ToString(), fixed_window->bounds().ToString());
-
-  gfx::Size workspace_size =
-      screen_util::GetMaximizedWindowBoundsInParent(unlimited_window.get())
-          .size();
 
   // Create the manager and make sure that all qualifying windows were detected
   // and changed.
@@ -340,17 +352,20 @@ TEST_F(TabletModeWindowManagerTest,
   ASSERT_TRUE(manager);
   EXPECT_EQ(3, manager->GetNumberOfManagedWindows());
   // The unlimited window should have the size of the workspace / parent window.
-  EXPECT_FALSE(wm::GetWindowState(unlimited_window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(unlimited_window.get())->IsMaximized());
   EXPECT_EQ("0,0", unlimited_window->bounds().origin().ToString());
-  EXPECT_EQ(workspace_size.ToString(),
+  const gfx::Size workspace_size_tablet_mode =
+      screen_util::GetMaximizedWindowBoundsInParent(unlimited_window.get())
+          .size();
+  EXPECT_EQ(workspace_size_tablet_mode.ToString(),
             unlimited_window->bounds().size().ToString());
   // The limited window should have the size of the upper possible bounds.
-  EXPECT_FALSE(wm::GetWindowState(limited_window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(limited_window.get())->IsMaximized());
   EXPECT_NE(rect.origin().ToString(),
             limited_window->bounds().origin().ToString());
   EXPECT_EQ(max_size.ToString(), limited_window->bounds().size().ToString());
   // The fixed size window should have the size of the original window.
-  EXPECT_FALSE(wm::GetWindowState(fixed_window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(fixed_window.get())->IsMaximized());
   EXPECT_NE(rect.origin().ToString(),
             fixed_window->bounds().origin().ToString());
   EXPECT_EQ(rect.size().ToString(), fixed_window->bounds().size().ToString());
@@ -358,16 +373,16 @@ TEST_F(TabletModeWindowManagerTest,
   // Destroy the manager again and check that the windows return to their
   // previous state.
   DestroyTabletModeWindowManager();
-  EXPECT_FALSE(wm::GetWindowState(unlimited_window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(unlimited_window.get())->IsMaximized());
   EXPECT_EQ(rect.ToString(), unlimited_window->bounds().ToString());
-  EXPECT_FALSE(wm::GetWindowState(limited_window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(limited_window.get())->IsMaximized());
   EXPECT_EQ(rect.ToString(), limited_window->bounds().ToString());
-  EXPECT_FALSE(wm::GetWindowState(fixed_window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(fixed_window.get())->IsMaximized());
   EXPECT_EQ(rect.ToString(), fixed_window->bounds().ToString());
 }
 
 // Test that creating windows while a maximizer exists picks them properly up.
-TEST_F(TabletModeWindowManagerTest, CreateWindows) {
+TEST_P(TabletModeWindowManagerTest, CreateWindows) {
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();
   ASSERT_TRUE(manager);
   EXPECT_EQ(0, manager->GetNumberOfManagedWindows());
@@ -391,10 +406,10 @@ TEST_F(TabletModeWindowManagerTest, CreateWindows) {
       CreateWindow(aura::client::WINDOW_TYPE_MENU, rect));
   std::unique_ptr<aura::Window> w6(
       CreateWindow(aura::client::WINDOW_TYPE_TOOLTIP, rect));
-  EXPECT_TRUE(wm::GetWindowState(w1.get())->IsMaximized());
-  EXPECT_TRUE(wm::GetWindowState(w2.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(w1.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(w2.get())->IsMaximized());
   EXPECT_EQ(3, manager->GetNumberOfManagedWindows());
-  EXPECT_FALSE(wm::GetWindowState(w3.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w3.get())->IsMaximized());
 
   // Make sure that the position of the unresizable window is in the middle of
   // the screen.
@@ -407,9 +422,9 @@ TEST_F(TabletModeWindowManagerTest, CreateWindows) {
   EXPECT_EQ(centered_window_bounds.ToString(), w3->bounds().ToString());
 
   // All other windows should not have been touched.
-  EXPECT_FALSE(wm::GetWindowState(w4.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w5.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w6.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w4.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w5.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w6.get())->IsMaximized());
   EXPECT_EQ(rect.ToString(), w4->bounds().ToString());
   EXPECT_EQ(rect.ToString(), w5->bounds().ToString());
   EXPECT_EQ(rect.ToString(), w6->bounds().ToString());
@@ -417,9 +432,9 @@ TEST_F(TabletModeWindowManagerTest, CreateWindows) {
   // After the tablet mode was disabled all windows fall back into the mode
   // they were created for.
   DestroyTabletModeWindowManager();
-  EXPECT_FALSE(wm::GetWindowState(w1.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w2.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w3.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w1.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w2.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w3.get())->IsMaximized());
   EXPECT_EQ(rect1.ToString(), w1->bounds().ToString());
   EXPECT_EQ(rect2.ToString(), w2->bounds().ToString());
   EXPECT_EQ(rect3.ToString(), w3->bounds().ToString());
@@ -430,8 +445,8 @@ TEST_F(TabletModeWindowManagerTest, CreateWindows) {
 
 // Test that a window which got created while the tablet mode window manager
 // is active gets restored to a usable (non tiny) size upon switching back.
-TEST_F(TabletModeWindowManagerTest,
-       CreateWindowInMaximizedModeRestoresToUsefulSize) {
+TEST_P(TabletModeWindowManagerTest,
+       CreateWindowInTabletModeRestoresToUsefulSize) {
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();
   ASSERT_TRUE(manager);
   EXPECT_EQ(0, manager->GetNumberOfManagedWindows());
@@ -441,21 +456,31 @@ TEST_F(TabletModeWindowManagerTest,
   gfx::Rect empty_rect(0, 0, 0, 0);
   std::unique_ptr<aura::Window> window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, empty_rect));
-  EXPECT_TRUE(wm::GetWindowState(window.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
   EXPECT_NE(empty_rect.ToString(), window->bounds().ToString());
   gfx::Rect maximized_size = window->bounds();
+  const gfx::Insets tablet_insets =
+      WorkAreaInsets::ForWindow(window.get())->user_work_area_insets();
 
   // Destroy the tablet mode and check that the resulting size of the window
   // is remaining as it is (but not maximized).
   DestroyTabletModeWindowManager();
 
-  EXPECT_FALSE(wm::GetWindowState(window.get())->IsMaximized());
+  if (chromeos::switches::ShouldShowShelfHotseat()) {
+    // Account for work-area updates when leaving tablet mode.
+    const gfx::Insets clamshell_insets =
+        WorkAreaInsets::ForWindow(window.get())->user_work_area_insets();
+    const gfx::Insets offset_difference = clamshell_insets - tablet_insets;
+    maximized_size.Inset(offset_difference);
+  }
+
+  EXPECT_FALSE(WindowState::Get(window.get())->IsMaximized());
   EXPECT_EQ(maximized_size.ToString(), window->bounds().ToString());
 }
 
 // Test that non-maximizable windows get properly handled when created in
 // tablet mode.
-TEST_F(TabletModeWindowManagerTest, CreateNonMaximizableButResizableWindows) {
+TEST_P(TabletModeWindowManagerTest, CreateNonMaximizableButResizableWindows) {
   // Create the manager and make sure that all qualifying windows were detected
   // and changed.
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();
@@ -479,17 +504,17 @@ TEST_F(TabletModeWindowManagerTest, CreateNonMaximizableButResizableWindows) {
   // All windows should be sized now as big as possible and be centered.
   EXPECT_EQ(3, manager->GetNumberOfManagedWindows());
   // The unlimited window should have the size of the workspace / parent window.
-  EXPECT_FALSE(wm::GetWindowState(unlimited_window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(unlimited_window.get())->IsMaximized());
   EXPECT_EQ("0,0", unlimited_window->bounds().origin().ToString());
   EXPECT_EQ(workspace_size.ToString(),
             unlimited_window->bounds().size().ToString());
   // The limited window should have the size of the upper possible bounds.
-  EXPECT_FALSE(wm::GetWindowState(limited_window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(limited_window.get())->IsMaximized());
   EXPECT_NE(rect.origin().ToString(),
             limited_window->bounds().origin().ToString());
   EXPECT_EQ(max_size.ToString(), limited_window->bounds().size().ToString());
   // The fixed size window should have the size of the original window.
-  EXPECT_FALSE(wm::GetWindowState(fixed_window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(fixed_window.get())->IsMaximized());
   EXPECT_NE(rect.origin().ToString(),
             fixed_window->bounds().origin().ToString());
   EXPECT_EQ(rect.size().ToString(), fixed_window->bounds().size().ToString());
@@ -498,11 +523,11 @@ TEST_F(TabletModeWindowManagerTest, CreateNonMaximizableButResizableWindows) {
   // creation state.
   DestroyTabletModeWindowManager();
 
-  EXPECT_FALSE(wm::GetWindowState(unlimited_window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(unlimited_window.get())->IsMaximized());
   EXPECT_EQ(rect.ToString(), unlimited_window->bounds().ToString());
-  EXPECT_FALSE(wm::GetWindowState(limited_window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(limited_window.get())->IsMaximized());
   EXPECT_EQ(rect.ToString(), limited_window->bounds().ToString());
-  EXPECT_FALSE(wm::GetWindowState(fixed_window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(fixed_window.get())->IsMaximized());
   EXPECT_EQ(rect.ToString(), fixed_window->bounds().ToString());
 }
 
@@ -527,12 +552,12 @@ std::string GetPlacementOverride(aura::Window* window) {
 
 // Test that the restore state will be kept at its original value for
 // session restoration purposes.
-TEST_F(TabletModeWindowManagerTest, TestRestoreIntegrety) {
+TEST_P(TabletModeWindowManagerTest, TestRestoreIntegrety) {
   gfx::Rect bounds(10, 10, 200, 50);
   std::unique_ptr<aura::Window> normal_window(CreateWindowWithWidget(bounds));
   std::unique_ptr<aura::Window> maximized_window(
       CreateWindowWithWidget(bounds));
-  wm::GetWindowState(maximized_window.get())->Maximize();
+  WindowState::Get(maximized_window.get())->Maximize();
 
   EXPECT_EQ(std::string(), GetPlacementOverride(normal_window.get()));
   EXPECT_EQ(std::string(), GetPlacementOverride(maximized_window.get()));
@@ -548,7 +573,7 @@ TEST_F(TabletModeWindowManagerTest, TestRestoreIntegrety) {
             GetPlacementOverride(maximized_window.get()));
 
   // Changing a window's state now does not change the returned result.
-  wm::GetWindowState(maximized_window.get())->Minimize();
+  WindowState::Get(maximized_window.get())->Minimize();
   EXPECT_EQ(GetPlacementString(bounds, ui::SHOW_STATE_MAXIMIZED),
             GetPlacementOverride(maximized_window.get()));
 
@@ -558,7 +583,7 @@ TEST_F(TabletModeWindowManagerTest, TestRestoreIntegrety) {
   EXPECT_EQ(std::string(), GetPlacementOverride(maximized_window.get()));
 
   // Changing a window's state now does not bring the overrides back.
-  wm::GetWindowState(maximized_window.get())->Restore();
+  WindowState::Get(maximized_window.get())->Restore();
   gfx::Rect new_bounds(10, 10, 200, 50);
   maximized_window->SetBounds(new_bounds);
 
@@ -567,7 +592,7 @@ TEST_F(TabletModeWindowManagerTest, TestRestoreIntegrety) {
 
 // Test that windows which got created before the maximizer was created can be
 // destroyed while the maximizer is still running.
-TEST_F(TabletModeWindowManagerTest, PreCreateWindowsDeleteWhileActive) {
+TEST_P(TabletModeWindowManagerTest, PreCreateWindowsDeleteWhileActive) {
   TabletModeWindowManager* manager = NULL;
   {
     // Bounds for windows we know can be controlled.
@@ -594,7 +619,7 @@ TEST_F(TabletModeWindowManagerTest, PreCreateWindowsDeleteWhileActive) {
 
 // Test that windows which got created while the maximizer was running can get
 // destroyed before the maximizer gets destroyed.
-TEST_F(TabletModeWindowManagerTest, CreateWindowsAndDeleteWhileActive) {
+TEST_P(TabletModeWindowManagerTest, CreateWindowsAndDeleteWhileActive) {
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();
   ASSERT_TRUE(manager);
   EXPECT_EQ(0, manager->GetNumberOfManagedWindows());
@@ -611,39 +636,39 @@ TEST_F(TabletModeWindowManagerTest, CreateWindowsAndDeleteWhileActive) {
         aura::client::WINDOW_TYPE_NORMAL, rect3));
     // Check that the windows got automatically maximized as well.
     EXPECT_EQ(3, manager->GetNumberOfManagedWindows());
-    EXPECT_TRUE(wm::GetWindowState(w1.get())->IsMaximized());
-    EXPECT_TRUE(wm::GetWindowState(w2.get())->IsMaximized());
-    EXPECT_FALSE(wm::GetWindowState(w3.get())->IsMaximized());
+    EXPECT_TRUE(WindowState::Get(w1.get())->IsMaximized());
+    EXPECT_TRUE(WindowState::Get(w2.get())->IsMaximized());
+    EXPECT_FALSE(WindowState::Get(w3.get())->IsMaximized());
   }
   EXPECT_EQ(0, manager->GetNumberOfManagedWindows());
   DestroyTabletModeWindowManager();
 }
 
 // Test that windows which were maximized stay maximized.
-TEST_F(TabletModeWindowManagerTest, MaximizedShouldRemainMaximized) {
+TEST_P(TabletModeWindowManagerTest, MaximizedShouldRemainMaximized) {
   // Bounds for windows we know can be controlled.
   gfx::Rect rect(10, 10, 200, 50);
   std::unique_ptr<aura::Window> window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::GetWindowState(window.get())->Maximize();
+  WindowState::Get(window.get())->Maximize();
 
   // Create the manager and make sure that the window gets detected.
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();
   ASSERT_TRUE(manager);
   EXPECT_EQ(1, manager->GetNumberOfManagedWindows());
-  EXPECT_TRUE(wm::GetWindowState(window.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
 
   // Destroy the manager again and check that the window will remain maximized.
   DestroyTabletModeWindowManager();
-  EXPECT_TRUE(wm::GetWindowState(window.get())->IsMaximized());
-  wm::GetWindowState(window.get())->Restore();
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
+  WindowState::Get(window.get())->Restore();
   EXPECT_EQ(rect.ToString(), window->bounds().ToString());
 }
 
 // Test that minimized windows do neither get maximized nor restored upon
 // entering tablet mode and get restored to their previous state after
 // leaving.
-TEST_F(TabletModeWindowManagerTest, MinimizedWindowBehavior) {
+TEST_P(TabletModeWindowManagerTest, MinimizedWindowBehavior) {
   // Bounds for windows we know can be controlled.
   gfx::Rect rect(10, 10, 200, 50);
   std::unique_ptr<aura::Window> initially_minimized_window(
@@ -652,41 +677,40 @@ TEST_F(TabletModeWindowManagerTest, MinimizedWindowBehavior) {
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
   std::unique_ptr<aura::Window> initially_maximized_window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::GetWindowState(initially_minimized_window.get())->Minimize();
-  wm::GetWindowState(initially_maximized_window.get())->Maximize();
+  WindowState::Get(initially_minimized_window.get())->Minimize();
+  WindowState::Get(initially_maximized_window.get())->Maximize();
 
   // Create the manager and make sure that the window gets detected.
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();
   ASSERT_TRUE(manager);
   EXPECT_EQ(3, manager->GetNumberOfManagedWindows());
   EXPECT_TRUE(
-      wm::GetWindowState(initially_minimized_window.get())->IsMinimized());
-  EXPECT_TRUE(wm::GetWindowState(initially_normal_window.get())->IsMaximized());
+      WindowState::Get(initially_minimized_window.get())->IsMinimized());
+  EXPECT_TRUE(WindowState::Get(initially_normal_window.get())->IsMaximized());
   EXPECT_TRUE(
-      wm::GetWindowState(initially_maximized_window.get())->IsMaximized());
+      WindowState::Get(initially_maximized_window.get())->IsMaximized());
   // Now minimize the second window to check that upon leaving the window
   // will get restored to its minimized state.
-  wm::GetWindowState(initially_normal_window.get())->Minimize();
-  wm::GetWindowState(initially_maximized_window.get())->Minimize();
+  WindowState::Get(initially_normal_window.get())->Minimize();
+  WindowState::Get(initially_maximized_window.get())->Minimize();
   EXPECT_TRUE(
-      wm::GetWindowState(initially_minimized_window.get())->IsMinimized());
-  EXPECT_TRUE(wm::GetWindowState(initially_normal_window.get())->IsMinimized());
+      WindowState::Get(initially_minimized_window.get())->IsMinimized());
+  EXPECT_TRUE(WindowState::Get(initially_normal_window.get())->IsMinimized());
   EXPECT_TRUE(
-      wm::GetWindowState(initially_maximized_window.get())->IsMinimized());
+      WindowState::Get(initially_maximized_window.get())->IsMinimized());
 
   // Destroy the manager again and check that the window will get minimized.
   DestroyTabletModeWindowManager();
   EXPECT_TRUE(
-      wm::GetWindowState(initially_minimized_window.get())->IsMinimized());
-  EXPECT_FALSE(
-      wm::GetWindowState(initially_normal_window.get())->IsMinimized());
+      WindowState::Get(initially_minimized_window.get())->IsMinimized());
+  EXPECT_FALSE(WindowState::Get(initially_normal_window.get())->IsMinimized());
   EXPECT_TRUE(
-      wm::GetWindowState(initially_maximized_window.get())->IsMaximized());
+      WindowState::Get(initially_maximized_window.get())->IsMaximized());
 }
 
 // Check that resizing the desktop does reposition unmaximizable, unresizable &
 // managed windows.
-TEST_F(TabletModeWindowManagerTest, DesktopSizeChangeMovesUnmaximizable) {
+TEST_P(TabletModeWindowManagerTest, DesktopSizeChangeMovesUnmaximizable) {
   UpdateDisplay("400x400");
   // This window will move because it does not fit the new bounds.
   gfx::Rect rect(20, 300, 100, 100);
@@ -723,7 +747,7 @@ TEST_F(TabletModeWindowManagerTest, DesktopSizeChangeMovesUnmaximizable) {
 
 // Check that windows return to original location if desktop size changes to
 // something else and back while in tablet mode.
-TEST_F(TabletModeWindowManagerTest, SizeChangeReturnWindowToOriginalPos) {
+TEST_P(TabletModeWindowManagerTest, SizeChangeReturnWindowToOriginalPos) {
   gfx::Rect rect(20, 140, 100, 100);
   std::unique_ptr<aura::Window> window(CreateFixedSizeNonMaximizableWindow(
       aura::client::WINDOW_TYPE_NORMAL, rect));
@@ -752,7 +776,7 @@ TEST_F(TabletModeWindowManagerTest, SizeChangeReturnWindowToOriginalPos) {
 
 // Check that enabling of the tablet mode does not have an impact on the MRU
 // order of windows.
-TEST_F(TabletModeWindowManagerTest, ModeChangeKeepsMRUOrder) {
+TEST_P(TabletModeWindowManagerTest, ModeChangeKeepsMRUOrder) {
   gfx::Rect rect(20, 140, 100, 100);
   std::unique_ptr<aura::Window> w1(CreateFixedSizeNonMaximizableWindow(
       aura::client::WINDOW_TYPE_NORMAL, rect));
@@ -768,7 +792,7 @@ TEST_F(TabletModeWindowManagerTest, ModeChangeKeepsMRUOrder) {
   // The windows should be in the reverse order of creation in the MRU list.
   {
     aura::Window::Windows windows =
-        Shell::Get()->mru_window_tracker()->BuildMruWindowList();
+        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
 
     EXPECT_EQ(w1.get(), windows[4]);
     EXPECT_EQ(w2.get(), windows[3]);
@@ -783,7 +807,7 @@ TEST_F(TabletModeWindowManagerTest, ModeChangeKeepsMRUOrder) {
   EXPECT_EQ(5, manager->GetNumberOfManagedWindows());
   {
     aura::Window::Windows windows =
-        Shell::Get()->mru_window_tracker()->BuildMruWindowList();
+        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
     // We do not test maximization here again since that was done already.
     EXPECT_EQ(w1.get(), windows[4]);
     EXPECT_EQ(w2.get(), windows[3]);
@@ -796,7 +820,7 @@ TEST_F(TabletModeWindowManagerTest, ModeChangeKeepsMRUOrder) {
   DestroyTabletModeWindowManager();
   {
     aura::Window::Windows windows =
-        Shell::Get()->mru_window_tracker()->BuildMruWindowList();
+        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
     // We do not test maximization here again since that was done already.
     EXPECT_EQ(w1.get(), windows[4]);
     EXPECT_EQ(w2.get(), windows[3]);
@@ -807,11 +831,11 @@ TEST_F(TabletModeWindowManagerTest, ModeChangeKeepsMRUOrder) {
 }
 
 // Check that a restore state change does always restore to maximized.
-TEST_F(TabletModeWindowManagerTest, IgnoreRestoreStateChages) {
+TEST_P(TabletModeWindowManagerTest, IgnoreRestoreStateChages) {
   gfx::Rect rect(20, 140, 100, 100);
   std::unique_ptr<aura::Window> w1(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* window_state = wm::GetWindowState(w1.get());
+  WindowState* window_state = WindowState::Get(w1.get());
   CreateTabletModeWindowManager();
   EXPECT_TRUE(window_state->IsMaximized());
   window_state->Minimize();
@@ -824,13 +848,13 @@ TEST_F(TabletModeWindowManagerTest, IgnoreRestoreStateChages) {
 }
 
 // Check that minimize and restore do the right thing.
-TEST_F(TabletModeWindowManagerTest, TestMinimize) {
+TEST_P(TabletModeWindowManagerTest, TestMinimize) {
   gfx::Rect rect(10, 10, 100, 100);
   std::unique_ptr<aura::Window> window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   EXPECT_EQ(rect.ToString(), window->bounds().ToString());
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_TRUE(window_state->IsMaximized());
   EXPECT_FALSE(window_state->IsMinimized());
   EXPECT_TRUE(window->IsVisible());
@@ -845,7 +869,7 @@ TEST_F(TabletModeWindowManagerTest, TestMinimize) {
   EXPECT_FALSE(window_state->IsMinimized());
   EXPECT_TRUE(window->IsVisible());
 
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(false);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   EXPECT_FALSE(window_state->IsMaximized());
   EXPECT_FALSE(window_state->IsMinimized());
   EXPECT_TRUE(window->IsVisible());
@@ -853,16 +877,16 @@ TEST_F(TabletModeWindowManagerTest, TestMinimize) {
 
 // Tests that minimized window can restore to pre-minimized show state after
 // entering and leaving tablet mode (https://crbug.com/783310).
-TEST_F(TabletModeWindowManagerTest, MinimizedEnterAndLeaveTabletMode) {
+TEST_P(TabletModeWindowManagerTest, MinimizedEnterAndLeaveTabletMode) {
   gfx::Rect rect(10, 10, 100, 100);
   std::unique_ptr<aura::Window> window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   window_state->Minimize();
   EXPECT_TRUE(window_state->IsMinimized());
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_TRUE(window_state->IsMinimized());
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(false);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   EXPECT_TRUE(window_state->IsMinimized());
 
   window_state->Unminimize();
@@ -873,17 +897,17 @@ TEST_F(TabletModeWindowManagerTest, MinimizedEnterAndLeaveTabletMode) {
 
 // Tests that pre-minimized window show state is persistent after entering and
 // leaving tablet mode, that is not cleared in tablet mode.
-TEST_F(TabletModeWindowManagerTest, PersistPreMinimizedShowState) {
+TEST_P(TabletModeWindowManagerTest, PersistPreMinimizedShowState) {
   gfx::Rect rect(10, 10, 100, 100);
   std::unique_ptr<aura::Window> window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   window_state->Maximize();
   window_state->Minimize();
   EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED,
             window->GetProperty(aura::client::kPreMinimizedShowStateKey));
 
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   window_state->Unminimize();
   // Check that pre-minimized window show state is not cleared due to
   // unminimizing in tablet mode.
@@ -893,44 +917,44 @@ TEST_F(TabletModeWindowManagerTest, PersistPreMinimizedShowState) {
   EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED,
             window->GetProperty(aura::client::kPreMinimizedShowStateKey));
 
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(false);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   window_state->Unminimize();
   EXPECT_TRUE(window_state->IsMaximized());
 }
 
 // Tests unminimizing in tablet mode and then existing tablet mode should have
 // pre-minimized window show state.
-TEST_F(TabletModeWindowManagerTest, UnminimizeInTabletMode) {
+TEST_P(TabletModeWindowManagerTest, UnminimizeInTabletMode) {
   // Tests restoring to maximized show state.
   gfx::Rect rect(10, 10, 100, 100);
   std::unique_ptr<aura::Window> window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   window_state->Maximize();
   window_state->Minimize();
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   window_state->Unminimize();
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(false);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   EXPECT_TRUE(window_state->IsMaximized());
 
   // Tests restoring to normal show state.
   window_state->Restore();
   EXPECT_EQ(gfx::Rect(10, 10, 100, 100), window->GetBoundsInScreen());
   window_state->Minimize();
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   window_state->Unminimize();
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(false);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   EXPECT_EQ(gfx::Rect(10, 10, 100, 100), window->GetBoundsInScreen());
 }
 
 // Check that a full screen window remains full screen upon entering maximize
 // mode. Furthermore, checks that this window is not full screen upon exiting
 // tablet mode if it was un-full-screened while in tablet mode.
-TEST_F(TabletModeWindowManagerTest, KeepFullScreenModeOn) {
+TEST_P(TabletModeWindowManagerTest, KeepFullScreenModeOn) {
   gfx::Rect rect(20, 140, 100, 100);
   std::unique_ptr<aura::Window> w1(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* window_state = wm::GetWindowState(w1.get());
+  WindowState* window_state = WindowState::Get(w1.get());
 
   Shelf* shelf = GetPrimaryShelf();
 
@@ -939,7 +963,7 @@ TEST_F(TabletModeWindowManagerTest, KeepFullScreenModeOn) {
                                SHELF_AUTO_HIDE_BEHAVIOR_ALWAYS);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
 
-  wm::WMEvent event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+  WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
   window_state->OnWMEvent(&event);
 
   // With full screen, the shelf should get hidden.
@@ -968,18 +992,18 @@ TEST_F(TabletModeWindowManagerTest, KeepFullScreenModeOn) {
 }
 
 // Similar to the fullscreen mode, the pinned mode should be kept as well.
-TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case1) {
+TEST_P(TabletModeWindowManagerTest, KeepPinnedModeOn_Case1) {
   // Scenario: in the default state, pin a window, enter to the tablet mode,
   // then unpin.
   gfx::Rect rect(20, 140, 100, 100);
   std::unique_ptr<aura::Window> w1(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* window_state = wm::GetWindowState(w1.get());
+  WindowState* window_state = WindowState::Get(w1.get());
   EXPECT_FALSE(window_state->IsPinned());
 
   // Pin the window.
   {
-    wm::WMEvent event(wm::WM_EVENT_PIN);
+    WMEvent event(WM_EVENT_PIN);
     window_state->OnWMEvent(&event);
   }
   EXPECT_TRUE(window_state->IsPinned());
@@ -997,12 +1021,12 @@ TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case1) {
   EXPECT_FALSE(window_state->IsPinned());
 }
 
-TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case2) {
+TEST_P(TabletModeWindowManagerTest, KeepPinnedModeOn_Case2) {
   // Scenario: in the tablet mode, pin a window, exit tablet mode, then unpin.
   gfx::Rect rect(20, 140, 100, 100);
   std::unique_ptr<aura::Window> w1(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* window_state = wm::GetWindowState(w1.get());
+  WindowState* window_state = WindowState::Get(w1.get());
   EXPECT_FALSE(window_state->IsPinned());
 
   // Enter tablet mode.
@@ -1011,7 +1035,7 @@ TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case2) {
 
   // Pin the window.
   {
-    wm::WMEvent event(wm::WM_EVENT_PIN);
+    WMEvent event(WM_EVENT_PIN);
     window_state->OnWMEvent(&event);
   }
   EXPECT_TRUE(window_state->IsPinned());
@@ -1034,18 +1058,18 @@ TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case2) {
   EXPECT_FALSE(window_state->IsPinned());
 }
 
-TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case3) {
+TEST_P(TabletModeWindowManagerTest, KeepPinnedModeOn_Case3) {
   // Scenario: in the default state, pin a window, enter to the tablet mode,
   // exit from the tablet mode, then unpin.
   gfx::Rect rect(20, 140, 100, 100);
   std::unique_ptr<aura::Window> w1(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* window_state = wm::GetWindowState(w1.get());
+  WindowState* window_state = WindowState::Get(w1.get());
   EXPECT_FALSE(window_state->IsPinned());
 
   // Pin the window.
   {
-    wm::WMEvent event(wm::WM_EVENT_PIN);
+    WMEvent event(WM_EVENT_PIN);
     window_state->OnWMEvent(&event);
   }
   EXPECT_TRUE(window_state->IsPinned());
@@ -1071,13 +1095,13 @@ TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case3) {
   DestroyTabletModeWindowManager();
 }
 
-TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case4) {
+TEST_P(TabletModeWindowManagerTest, KeepPinnedModeOn_Case4) {
   // Scenario: in tablet mode, pin a window, exit tablet mode, enter tablet mode
   // again, then unpin.
   gfx::Rect rect(20, 140, 100, 100);
   std::unique_ptr<aura::Window> w1(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* window_state = wm::GetWindowState(w1.get());
+  WindowState* window_state = WindowState::Get(w1.get());
   EXPECT_FALSE(window_state->IsPinned());
 
   // Enter tablet mode.
@@ -1086,7 +1110,7 @@ TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case4) {
 
   // Pin the window.
   {
-    wm::WMEvent event(wm::WM_EVENT_PIN);
+    WMEvent event(WM_EVENT_PIN);
     window_state->OnWMEvent(&event);
   }
   EXPECT_TRUE(window_state->IsPinned());
@@ -1111,17 +1135,17 @@ TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case4) {
 // Verifies that if a window is un-full-screened while in tablet mode,
 // other changes to that window's state (such as minimizing it) are
 // preserved upon exiting tablet mode.
-TEST_F(TabletModeWindowManagerTest, MinimizePreservedAfterLeavingFullscreen) {
+TEST_P(TabletModeWindowManagerTest, MinimizePreservedAfterLeavingFullscreen) {
   gfx::Rect rect(20, 140, 100, 100);
   std::unique_ptr<aura::Window> w1(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* window_state = wm::GetWindowState(w1.get());
+  WindowState* window_state = WindowState::Get(w1.get());
 
   Shelf* shelf = GetPrimaryShelf();
 
   // Allow the shelf to hide and enter full screen.
   shelf->SetAutoHideBehavior(SHELF_AUTO_HIDE_BEHAVIOR_ALWAYS);
-  wm::WMEvent event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+  WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
   window_state->OnWMEvent(&event);
   ASSERT_FALSE(window_state->IsMinimized());
 
@@ -1138,7 +1162,7 @@ TEST_F(TabletModeWindowManagerTest, MinimizePreservedAfterLeavingFullscreen) {
 
 // Tests that the auto-hide behavior is not affected when entering/exiting
 // tablet mode.
-TEST_F(TabletModeWindowManagerTest, DoNotDisableAutoHideBehaviorOnTabletMode) {
+TEST_P(TabletModeWindowManagerTest, DoNotDisableAutoHideBehaviorOnTabletMode) {
   Shelf* shelf = GetPrimaryShelf();
   SetShelfAutoHideBehaviorPref(GetPrimaryDisplay().id(),
                                SHELF_AUTO_HIDE_BEHAVIOR_ALWAYS);
@@ -1151,11 +1175,11 @@ TEST_F(TabletModeWindowManagerTest, DoNotDisableAutoHideBehaviorOnTabletMode) {
 
 // Check that full screen mode can be turned on in tablet mode and remains
 // upon coming back.
-TEST_F(TabletModeWindowManagerTest, AllowFullScreenMode) {
+TEST_P(TabletModeWindowManagerTest, AllowFullScreenMode) {
   gfx::Rect rect(20, 140, 100, 100);
   std::unique_ptr<aura::Window> w1(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* window_state = wm::GetWindowState(w1.get());
+  WindowState* window_state = WindowState::Get(w1.get());
 
   Shelf* shelf = GetPrimaryShelf();
 
@@ -1175,7 +1199,7 @@ TEST_F(TabletModeWindowManagerTest, AllowFullScreenMode) {
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
 
   // After going into fullscreen mode, the shelf should be hidden.
-  wm::WMEvent event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+  WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
   window_state->OnWMEvent(&event);
   EXPECT_TRUE(window_state->IsFullscreen());
   EXPECT_FALSE(window_state->IsMaximized());
@@ -1190,15 +1214,15 @@ TEST_F(TabletModeWindowManagerTest, AllowFullScreenMode) {
 
 // Check that the full screen mode will stay active when the tablet mode is
 // ended.
-TEST_F(TabletModeWindowManagerTest,
-       FullScreenModeRemainsWhenCreatedInMaximizedMode) {
+TEST_P(TabletModeWindowManagerTest,
+       FullScreenModeRemainsWhenCreatedInTabletMode) {
   CreateTabletModeWindowManager();
 
   gfx::Rect rect(20, 140, 100, 100);
   std::unique_ptr<aura::Window> w1(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* window_state = wm::GetWindowState(w1.get());
-  wm::WMEvent event_full_screen(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+  WindowState* window_state = WindowState::Get(w1.get());
+  WMEvent event_full_screen(WM_EVENT_TOGGLE_FULLSCREEN);
   window_state->OnWMEvent(&event_full_screen);
   EXPECT_TRUE(window_state->IsFullscreen());
 
@@ -1209,13 +1233,13 @@ TEST_F(TabletModeWindowManagerTest,
 
 // Check that the full screen mode will stay active throughout a maximzied mode
 // session.
-TEST_F(TabletModeWindowManagerTest,
+TEST_P(TabletModeWindowManagerTest,
        FullScreenModeRemainsThroughTabletModeSwitch) {
   gfx::Rect rect(20, 140, 100, 100);
   std::unique_ptr<aura::Window> w1(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* window_state = wm::GetWindowState(w1.get());
-  wm::WMEvent event_full_screen(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+  WindowState* window_state = WindowState::Get(w1.get());
+  WMEvent event_full_screen(WM_EVENT_TOGGLE_FULLSCREEN);
   window_state->OnWMEvent(&event_full_screen);
   EXPECT_TRUE(window_state->IsFullscreen());
 
@@ -1226,14 +1250,14 @@ TEST_F(TabletModeWindowManagerTest,
 }
 
 // Check that an empty window does not get restored to a tiny size.
-TEST_F(TabletModeWindowManagerTest,
+TEST_P(TabletModeWindowManagerTest,
        CreateAndMaximizeInTabletModeShouldRetoreToGoodSizeGoingToDefault) {
   CreateTabletModeWindowManager();
   gfx::Rect rect;
   std::unique_ptr<aura::Window> w1(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
   w1->Show();
-  wm::WindowState* window_state = wm::GetWindowState(w1.get());
+  WindowState* window_state = WindowState::Get(w1.get());
   EXPECT_TRUE(window_state->IsMaximized());
 
   // There is a calling order in which the restore bounds can get set to an
@@ -1257,7 +1281,7 @@ TEST_F(TabletModeWindowManagerTest,
 }
 
 // Check that non maximizable windows cannot be dragged by the user.
-TEST_F(TabletModeWindowManagerTest, TryToDesktopSizeDragUnmaximizable) {
+TEST_P(TabletModeWindowManagerTest, TryToDesktopSizeDragUnmaximizable) {
   gfx::Rect rect(10, 10, 100, 100);
   std::unique_ptr<aura::Window> window(CreateFixedSizeNonMaximizableWindow(
       aura::client::WINDOW_TYPE_NORMAL, rect));
@@ -1277,7 +1301,7 @@ TEST_F(TabletModeWindowManagerTest, TryToDesktopSizeDragUnmaximizable) {
 
   // 2. Check that turning on the manager will stop allowing the window from
   // dragging.
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   gfx::Rect center_bounds(window->bounds());
   EXPECT_NE(rect.origin().ToString(), center_bounds.origin().ToString());
   generator.MoveMouseTo(
@@ -1288,7 +1312,7 @@ TEST_F(TabletModeWindowManagerTest, TryToDesktopSizeDragUnmaximizable) {
   generator.ReleaseLeftButton();
   EXPECT_EQ(center_bounds.x(), window->bounds().x());
   EXPECT_EQ(center_bounds.y(), window->bounds().y());
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(false);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
 
   // 3. Releasing the mazimize manager again will restore the window to its
   // previous bounds and
@@ -1302,54 +1326,27 @@ TEST_F(TabletModeWindowManagerTest, TryToDesktopSizeDragUnmaximizable) {
   EXPECT_EQ(first_dragged_origin.y() + 5, window->bounds().y());
 }
 
-// Test that overview is exited before entering / exiting tablet mode so that
-// the window changes made by TabletModeWindowManager do not conflict with
-// those made in WindowOverview.
-TEST_F(TabletModeWindowManagerTest, ExitsOverview) {
-  // Bounds for windows we know can be controlled.
-  gfx::Rect rect1(10, 10, 200, 50);
-  gfx::Rect rect2(10, 60, 200, 50);
-  std::unique_ptr<aura::Window> w1(
-      CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect1));
-  std::unique_ptr<aura::Window> w2(
-      CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect2));
-
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  ASSERT_TRUE(overview_controller->ToggleOverview());
-  ASSERT_TRUE(overview_controller->IsSelecting());
-  TabletModeWindowManager* manager = CreateTabletModeWindowManager();
-  ASSERT_TRUE(manager);
-  EXPECT_FALSE(overview_controller->IsSelecting());
-
-  ASSERT_TRUE(overview_controller->ToggleOverview());
-  ASSERT_TRUE(overview_controller->IsSelecting());
-  // Destroy the manager again and check that the windows return to their
-  // previous state.
-  DestroyTabletModeWindowManager();
-  EXPECT_FALSE(overview_controller->IsSelecting());
-}
-
 // Test that an edge swipe from the top will end full screen mode.
-TEST_F(TabletModeWindowManagerTest, ExitFullScreenWithEdgeSwipeFromTop) {
+TEST_P(TabletModeWindowManagerTest, ExitFullScreenWithEdgeSwipeFromTop) {
   gfx::Rect rect(10, 10, 200, 50);
   std::unique_ptr<aura::Window> background_window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
   std::unique_ptr<aura::Window> foreground_window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* background_window_state =
-      wm::GetWindowState(background_window.get());
-  wm::WindowState* foreground_window_state =
-      wm::GetWindowState(foreground_window.get());
+  WindowState* background_window_state =
+      WindowState::Get(background_window.get());
+  WindowState* foreground_window_state =
+      WindowState::Get(foreground_window.get());
   wm::ActivateWindow(foreground_window.get());
   CreateTabletModeWindowManager();
 
   // Fullscreen both windows.
-  wm::WMEvent event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+  WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
   background_window_state->OnWMEvent(&event);
   foreground_window_state->OnWMEvent(&event);
   EXPECT_TRUE(background_window_state->IsFullscreen());
   EXPECT_TRUE(foreground_window_state->IsFullscreen());
-  EXPECT_EQ(foreground_window.get(), wm::GetActiveWindow());
+  EXPECT_EQ(foreground_window.get(), window_util::GetActiveWindow());
 
   // Do an edge swipe top into screen.
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
@@ -1370,26 +1367,26 @@ TEST_F(TabletModeWindowManagerTest, ExitFullScreenWithEdgeSwipeFromTop) {
 }
 
 // Test that an edge swipe from the bottom will end full screen mode.
-TEST_F(TabletModeWindowManagerTest, ExitFullScreenWithEdgeSwipeFromBottom) {
+TEST_P(TabletModeWindowManagerTest, ExitFullScreenWithEdgeSwipeFromBottom) {
   gfx::Rect rect(10, 10, 200, 50);
   std::unique_ptr<aura::Window> background_window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
   std::unique_ptr<aura::Window> foreground_window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* background_window_state =
-      wm::GetWindowState(background_window.get());
-  wm::WindowState* foreground_window_state =
-      wm::GetWindowState(foreground_window.get());
+  WindowState* background_window_state =
+      WindowState::Get(background_window.get());
+  WindowState* foreground_window_state =
+      WindowState::Get(foreground_window.get());
   wm::ActivateWindow(foreground_window.get());
   CreateTabletModeWindowManager();
 
   // Fullscreen both windows.
-  wm::WMEvent event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+  WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
   background_window_state->OnWMEvent(&event);
   foreground_window_state->OnWMEvent(&event);
   EXPECT_TRUE(background_window_state->IsFullscreen());
   EXPECT_TRUE(foreground_window_state->IsFullscreen());
-  EXPECT_EQ(foreground_window.get(), wm::GetActiveWindow());
+  EXPECT_EQ(foreground_window.get(), window_util::GetActiveWindow());
 
   // Do an edge swipe bottom into screen.
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
@@ -1404,26 +1401,26 @@ TEST_F(TabletModeWindowManagerTest, ExitFullScreenWithEdgeSwipeFromBottom) {
 }
 
 // Test that an edge touch press at the top will end full screen mode.
-TEST_F(TabletModeWindowManagerTest, ExitFullScreenWithEdgeTouchAtTop) {
+TEST_P(TabletModeWindowManagerTest, ExitFullScreenWithEdgeTouchAtTop) {
   gfx::Rect rect(10, 10, 200, 50);
   std::unique_ptr<aura::Window> background_window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
   std::unique_ptr<aura::Window> foreground_window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* background_window_state =
-      wm::GetWindowState(background_window.get());
-  wm::WindowState* foreground_window_state =
-      wm::GetWindowState(foreground_window.get());
+  WindowState* background_window_state =
+      WindowState::Get(background_window.get());
+  WindowState* foreground_window_state =
+      WindowState::Get(foreground_window.get());
   wm::ActivateWindow(foreground_window.get());
   CreateTabletModeWindowManager();
 
   // Fullscreen both windows.
-  wm::WMEvent event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+  WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
   background_window_state->OnWMEvent(&event);
   foreground_window_state->OnWMEvent(&event);
   EXPECT_TRUE(background_window_state->IsFullscreen());
   EXPECT_TRUE(foreground_window_state->IsFullscreen());
-  EXPECT_EQ(foreground_window.get(), wm::GetActiveWindow());
+  EXPECT_EQ(foreground_window.get(), window_util::GetActiveWindow());
 
   // Touch tap on the top edge.
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
@@ -1440,26 +1437,26 @@ TEST_F(TabletModeWindowManagerTest, ExitFullScreenWithEdgeTouchAtTop) {
 }
 
 // Test that an edge touch press at the bottom will end full screen mode.
-TEST_F(TabletModeWindowManagerTest, ExitFullScreenWithEdgeTouchAtBottom) {
+TEST_P(TabletModeWindowManagerTest, ExitFullScreenWithEdgeTouchAtBottom) {
   gfx::Rect rect(10, 10, 200, 50);
   std::unique_ptr<aura::Window> background_window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
   std::unique_ptr<aura::Window> foreground_window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* background_window_state =
-      wm::GetWindowState(background_window.get());
-  wm::WindowState* foreground_window_state =
-      wm::GetWindowState(foreground_window.get());
+  WindowState* background_window_state =
+      WindowState::Get(background_window.get());
+  WindowState* foreground_window_state =
+      WindowState::Get(foreground_window.get());
   wm::ActivateWindow(foreground_window.get());
   CreateTabletModeWindowManager();
 
   // Fullscreen both windows.
-  wm::WMEvent event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+  WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
   background_window_state->OnWMEvent(&event);
   foreground_window_state->OnWMEvent(&event);
   EXPECT_TRUE(background_window_state->IsFullscreen());
   EXPECT_TRUE(foreground_window_state->IsFullscreen());
-  EXPECT_EQ(foreground_window.get(), wm::GetActiveWindow());
+  EXPECT_EQ(foreground_window.get(), window_util::GetActiveWindow());
 
   // Touch tap on the bottom edge.
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
@@ -1479,19 +1476,19 @@ TEST_F(TabletModeWindowManagerTest, ExitFullScreenWithEdgeTouchAtBottom) {
 
 // Test that an edge swipe from the top on an immersive mode window will not end
 // full screen mode.
-TEST_F(TabletModeWindowManagerTest, NoExitImmersiveModeWithEdgeSwipeFromTop) {
+TEST_P(TabletModeWindowManagerTest, NoExitImmersiveModeWithEdgeSwipeFromTop) {
   std::unique_ptr<aura::Window> window(CreateWindow(
       aura::client::WINDOW_TYPE_NORMAL, gfx::Rect(10, 10, 200, 50)));
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   wm::ActivateWindow(window.get());
   CreateTabletModeWindowManager();
 
   // Fullscreen the window.
-  wm::WMEvent event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+  WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
   window_state->OnWMEvent(&event);
   EXPECT_TRUE(window_state->IsFullscreen());
   EXPECT_FALSE(window_state->IsInImmersiveFullscreen());
-  EXPECT_EQ(window.get(), wm::GetActiveWindow());
+  EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 
   window->SetProperty(kImmersiveIsActive, true);
 
@@ -1508,20 +1505,20 @@ TEST_F(TabletModeWindowManagerTest, NoExitImmersiveModeWithEdgeSwipeFromTop) {
 }
 
 // Test that an edge swipe from the bottom will not end immersive mode.
-TEST_F(TabletModeWindowManagerTest,
+TEST_P(TabletModeWindowManagerTest,
        NoExitImmersiveModeWithEdgeSwipeFromBottom) {
   std::unique_ptr<aura::Window> window(CreateWindow(
       aura::client::WINDOW_TYPE_NORMAL, gfx::Rect(10, 10, 200, 50)));
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   wm::ActivateWindow(window.get());
   CreateTabletModeWindowManager();
 
   // Fullscreen the window.
-  wm::WMEvent event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+  WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
   window_state->OnWMEvent(&event);
   EXPECT_TRUE(window_state->IsFullscreen());
   EXPECT_FALSE(window_state->IsInImmersiveFullscreen());
-  EXPECT_EQ(window.get(), wm::GetActiveWindow());
+  EXPECT_EQ(window.get(), window_util::GetActiveWindow());
   window->SetProperty(kImmersiveIsActive, true);
   EXPECT_TRUE(window_state->IsInImmersiveFullscreen());
 
@@ -1541,7 +1538,7 @@ TEST_F(TabletModeWindowManagerTest,
 // Tests that windows with the always-on-top property are not managed by
 // the TabletModeWindowManager while tablet mode is engaged (i.e.,
 // they remain free-floating).
-TEST_F(TabletModeWindowManagerTest, AlwaysOnTopWindows) {
+TEST_P(TabletModeWindowManagerTest, AlwaysOnTopWindows) {
   gfx::Rect rect1(10, 10, 200, 50);
   gfx::Rect rect2(20, 140, 100, 100);
 
@@ -1550,10 +1547,12 @@ TEST_F(TabletModeWindowManagerTest, AlwaysOnTopWindows) {
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect1));
   std::unique_ptr<aura::Window> w2(CreateFixedSizeNonMaximizableWindow(
       aura::client::WINDOW_TYPE_NORMAL, rect2));
-  w1->SetProperty(aura::client::kAlwaysOnTopKey, true);
-  w2->SetProperty(aura::client::kAlwaysOnTopKey, true);
-  EXPECT_FALSE(wm::GetWindowState(w1.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w2.get())->IsMaximized());
+  w1->SetProperty(aura::client::kZOrderingKey,
+                  ui::ZOrderLevel::kFloatingWindow);
+  w2->SetProperty(aura::client::kZOrderingKey,
+                  ui::ZOrderLevel::kFloatingWindow);
+  EXPECT_FALSE(WindowState::Get(w1.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w2.get())->IsMaximized());
   EXPECT_EQ(rect1.ToString(), w1->bounds().ToString());
   EXPECT_EQ(rect2.ToString(), w2->bounds().ToString());
 
@@ -1563,19 +1562,19 @@ TEST_F(TabletModeWindowManagerTest, AlwaysOnTopWindows) {
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();
   ASSERT_TRUE(manager);
   EXPECT_EQ(0, manager->GetNumberOfManagedWindows());
-  EXPECT_FALSE(wm::GetWindowState(w1.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w2.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w1.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w2.get())->IsMaximized());
   EXPECT_EQ(rect1.ToString(), w1->bounds().ToString());
   EXPECT_EQ(rect2.ToString(), w2->bounds().ToString());
 
   // Remove the always-on-top property from both windows while in maximize
   // mode. The windows should become managed, which means they should be
   // maximized/centered and no longer be draggable.
-  w1->SetProperty(aura::client::kAlwaysOnTopKey, false);
-  w2->SetProperty(aura::client::kAlwaysOnTopKey, false);
+  w1->SetProperty(aura::client::kZOrderingKey, ui::ZOrderLevel::kNormal);
+  w2->SetProperty(aura::client::kZOrderingKey, ui::ZOrderLevel::kNormal);
   EXPECT_EQ(2, manager->GetNumberOfManagedWindows());
-  EXPECT_TRUE(wm::GetWindowState(w1.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w2.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(w1.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w2.get())->IsMaximized());
   EXPECT_NE(rect1.origin().ToString(), w1->bounds().origin().ToString());
   EXPECT_NE(rect1.size().ToString(), w1->bounds().size().ToString());
   EXPECT_NE(rect2.origin().ToString(), w2->bounds().origin().ToString());
@@ -1584,71 +1583,73 @@ TEST_F(TabletModeWindowManagerTest, AlwaysOnTopWindows) {
   // Applying the always-on-top property to both windows while in maximize
   // mode should cause both windows to return to their original size,
   // position, and state.
-  w1->SetProperty(aura::client::kAlwaysOnTopKey, true);
-  w2->SetProperty(aura::client::kAlwaysOnTopKey, true);
+  w1->SetProperty(aura::client::kZOrderingKey,
+                  ui::ZOrderLevel::kFloatingWindow);
+  w2->SetProperty(aura::client::kZOrderingKey,
+                  ui::ZOrderLevel::kFloatingWindow);
   EXPECT_EQ(0, manager->GetNumberOfManagedWindows());
-  EXPECT_FALSE(wm::GetWindowState(w1.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w2.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w1.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w2.get())->IsMaximized());
   EXPECT_EQ(rect1.ToString(), w1->bounds().ToString());
   EXPECT_EQ(rect2.ToString(), w2->bounds().ToString());
 
   // The always-on-top windows should not change when leaving tablet mode.
   DestroyTabletModeWindowManager();
-  EXPECT_FALSE(wm::GetWindowState(w1.get())->IsMaximized());
-  EXPECT_FALSE(wm::GetWindowState(w2.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w1.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(w2.get())->IsMaximized());
   EXPECT_EQ(rect1.ToString(), w1->bounds().ToString());
   EXPECT_EQ(rect2.ToString(), w2->bounds().ToString());
 }
 
 // Tests that windows that can control maximized bounds are not maximized
 // and not tracked.
-TEST_F(TabletModeWindowManagerTest, DontMaximizeClientManagedWindows) {
+TEST_P(TabletModeWindowManagerTest, DontMaximizeClientManagedWindows) {
   gfx::Rect rect(10, 10, 200, 50);
   std::unique_ptr<aura::Window> window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
 
-  wm::GetWindowState(window.get())->set_allow_set_bounds_direct(true);
+  WindowState::Get(window.get())->set_allow_set_bounds_direct(true);
 
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();
-  EXPECT_FALSE(wm::GetWindowState(window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(window.get())->IsMaximized());
   EXPECT_EQ(0, manager->GetNumberOfManagedWindows());
 }
 
 // Verify that if tablet mode is started in the lock screen, windows will still
 // be maximized after leaving the lock screen.
-TEST_F(TabletModeWindowManagerTest, CreateManagerInLockScreen) {
+TEST_P(TabletModeWindowManagerTest, CreateManagerInLockScreen) {
   gfx::Rect rect(10, 10, 200, 50);
   std::unique_ptr<aura::Window> window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  ASSERT_FALSE(wm::GetWindowState(window.get())->IsMaximized());
+  ASSERT_FALSE(WindowState::Get(window.get())->IsMaximized());
 
   // Create the tablet mode window manager while inside the lock screen.
   GetSessionControllerClient()->RequestLockScreen();
   CreateTabletModeWindowManager();
   GetSessionControllerClient()->UnlockScreen();
 
-  EXPECT_TRUE(wm::GetWindowState(window.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
 
   DestroyTabletModeWindowManager();
-  EXPECT_FALSE(wm::GetWindowState(window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(window.get())->IsMaximized());
 }
 
 namespace {
 
-class TestObserver : public wm::WindowStateObserver {
+class TestObserver : public WindowStateObserver {
  public:
   TestObserver() = default;
   ~TestObserver() override = default;
 
-  // wm::WindowStateObserver:
-  void OnPreWindowStateTypeChange(wm::WindowState* window_state,
-                                  mojom::WindowStateType old_type) override {
+  // WindowStateObserver:
+  void OnPreWindowStateTypeChange(WindowState* window_state,
+                                  WindowStateType old_type) override {
     pre_count_++;
     last_old_state_ = old_type;
   }
 
-  void OnPostWindowStateTypeChange(wm::WindowState* window_state,
-                                   mojom::WindowStateType old_type) override {
+  void OnPostWindowStateTypeChange(WindowState* window_state,
+                                   WindowStateType old_type) override {
     post_count_++;
     post_layer_visibility_ = window_state->window()->layer()->visible();
     EXPECT_EQ(last_old_state_, old_type);
@@ -1672,9 +1673,9 @@ class TestObserver : public wm::WindowStateObserver {
     return r;
   }
 
-  mojom::WindowStateType GetLastOldStateAndReset() {
-    mojom::WindowStateType r = last_old_state_;
-    last_old_state_ = mojom::WindowStateType::DEFAULT;
+  WindowStateType GetLastOldStateAndReset() {
+    WindowStateType r = last_old_state_;
+    last_old_state_ = WindowStateType::kDefault;
     return r;
   }
 
@@ -1682,14 +1683,14 @@ class TestObserver : public wm::WindowStateObserver {
   int pre_count_ = 0;
   int post_count_ = 0;
   bool post_layer_visibility_ = false;
-  mojom::WindowStateType last_old_state_ = mojom::WindowStateType::DEFAULT;
+  WindowStateType last_old_state_ = WindowStateType::kDefault;
 
   DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace
 
-TEST_F(TabletModeWindowManagerTest, StateTypeChange) {
+TEST_P(TabletModeWindowManagerTest, StateTypeChange) {
   TestObserver observer;
   gfx::Rect rect(10, 10, 200, 50);
   std::unique_ptr<aura::Window> window(
@@ -1697,7 +1698,7 @@ TEST_F(TabletModeWindowManagerTest, StateTypeChange) {
 
   CreateTabletModeWindowManager();
 
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   window_state->AddObserver(&observer);
 
   window->Show();
@@ -1706,37 +1707,33 @@ TEST_F(TabletModeWindowManagerTest, StateTypeChange) {
   EXPECT_EQ(0, observer.GetPostCountAndReset());
 
   // Window is already in tablet mode.
-  wm::WMEvent maximize_event(wm::WM_EVENT_MAXIMIZE);
+  WMEvent maximize_event(WM_EVENT_MAXIMIZE);
   window_state->OnWMEvent(&maximize_event);
   EXPECT_EQ(0, observer.GetPreCountAndReset());
   EXPECT_EQ(0, observer.GetPostCountAndReset());
 
-  wm::WMEvent fullscreen_event(wm::WM_EVENT_FULLSCREEN);
+  WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
   window_state->OnWMEvent(&fullscreen_event);
   EXPECT_EQ(1, observer.GetPreCountAndReset());
   EXPECT_EQ(1, observer.GetPostCountAndReset());
-  EXPECT_EQ(mojom::WindowStateType::MAXIMIZED,
-            observer.GetLastOldStateAndReset());
+  EXPECT_EQ(WindowStateType::kMaximized, observer.GetLastOldStateAndReset());
 
   window_state->OnWMEvent(&maximize_event);
   EXPECT_EQ(1, observer.GetPreCountAndReset());
   EXPECT_EQ(1, observer.GetPostCountAndReset());
-  EXPECT_EQ(mojom::WindowStateType::FULLSCREEN,
-            observer.GetLastOldStateAndReset());
+  EXPECT_EQ(WindowStateType::kFullscreen, observer.GetLastOldStateAndReset());
 
-  wm::WMEvent minimize_event(wm::WM_EVENT_MINIMIZE);
+  WMEvent minimize_event(WM_EVENT_MINIMIZE);
   window_state->OnWMEvent(&minimize_event);
   EXPECT_EQ(1, observer.GetPreCountAndReset());
   EXPECT_EQ(1, observer.GetPostCountAndReset());
-  EXPECT_EQ(mojom::WindowStateType::MAXIMIZED,
-            observer.GetLastOldStateAndReset());
+  EXPECT_EQ(WindowStateType::kMaximized, observer.GetLastOldStateAndReset());
 
-  wm::WMEvent restore_event(wm::WM_EVENT_NORMAL);
+  WMEvent restore_event(WM_EVENT_NORMAL);
   window_state->OnWMEvent(&restore_event);
   EXPECT_EQ(1, observer.GetPreCountAndReset());
   EXPECT_EQ(1, observer.GetPostCountAndReset());
-  EXPECT_EQ(mojom::WindowStateType::MINIMIZED,
-            observer.GetLastOldStateAndReset());
+  EXPECT_EQ(WindowStateType::kMinimized, observer.GetLastOldStateAndReset());
   EXPECT_EQ(true, observer.GetPostLayerVisibilityAndReset());
 
   window_state->RemoveObserver(&observer);
@@ -1746,23 +1743,24 @@ TEST_F(TabletModeWindowManagerTest, StateTypeChange) {
 
 // Test that the restore state will be kept at its original value for
 // session restoration purposes.
-TEST_F(TabletModeWindowManagerTest, SetPropertyOnUnmanagedWindow) {
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+TEST_P(TabletModeWindowManagerTest, SetPropertyOnUnmanagedWindow) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   InitParams params(aura::client::WINDOW_TYPE_NORMAL);
   params.bounds = gfx::Rect(10, 10, 100, 100);
   params.show_on_creation = false;
   std::unique_ptr<aura::Window> window(CreateWindowInWatchedContainer(params));
-  wm::GetWindowState(window.get())->set_allow_set_bounds_direct(true);
-  window->SetProperty(aura::client::kAlwaysOnTopKey, true);
+  WindowState::Get(window.get())->set_allow_set_bounds_direct(true);
+  window->SetProperty(aura::client::kZOrderingKey,
+                      ui::ZOrderLevel::kFloatingWindow);
   window->Show();
 }
 
 // Test that the minimized window bounds doesn't change until it's unminimized.
-TEST_F(TabletModeWindowManagerTest, DontChangeBoundsForMinimizedWindow) {
+TEST_P(TabletModeWindowManagerTest, DontChangeBoundsForMinimizedWindow) {
   gfx::Rect rect(10, 10, 200, 50);
   std::unique_ptr<aura::Window> window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   window_state->Minimize();
   EXPECT_TRUE(window_state->IsMinimized());
 
@@ -1773,18 +1771,18 @@ TEST_F(TabletModeWindowManagerTest, DontChangeBoundsForMinimizedWindow) {
   EXPECT_EQ(window->bounds(), rect);
 
   OverviewController* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->ToggleOverview();
+  overview_controller->StartOverview();
   EXPECT_EQ(window->bounds(), rect);
 
   // Exit overview mode will update all windows' bounds. However, if the window
   // is minimized, the bounds will not be updated.
-  overview_controller->ToggleOverview();
+  overview_controller->EndOverview();
   EXPECT_EQ(window->bounds(), rect);
 }
 
 // Test that if a window is currently in tab-dragging process, its window bounds
 // should not updated.
-TEST_F(TabletModeWindowManagerTest, DontChangeBoundsForTabDraggingWindow) {
+TEST_P(TabletModeWindowManagerTest, DontChangeBoundsForTabDraggingWindow) {
   gfx::Rect rect(0, 0, 200, 200);
   std::unique_ptr<aura::Window> window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
@@ -1798,7 +1796,7 @@ TEST_F(TabletModeWindowManagerTest, DontChangeBoundsForTabDraggingWindow) {
 }
 
 // Make sure that transient children should not be maximized.
-TEST_F(TabletModeWindowManagerTest, DontMaximizeTransientChild) {
+TEST_P(TabletModeWindowManagerTest, DontMaximizeTransientChild) {
   gfx::Rect rect(0, 0, 200, 200);
   std::unique_ptr<aura::Window> parent(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
@@ -1808,10 +1806,308 @@ TEST_F(TabletModeWindowManagerTest, DontMaximizeTransientChild) {
       ->AddTransientChild(child.get());
 
   ASSERT_TRUE(CreateTabletModeWindowManager());
-  EXPECT_TRUE(wm::GetWindowState(parent.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(parent.get())->IsMaximized());
   EXPECT_NE(rect.size(), parent->bounds().size());
-  EXPECT_FALSE(wm::GetWindowState(child.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(child.get())->IsMaximized());
   EXPECT_EQ(rect.size(), child->bounds().size());
 }
+
+// Test clamshell mode <-> tablet mode transition if clamshell splitscreen is
+// not enabled.
+TEST_P(TabletModeWindowManagerTest, ClamshellTabletTransitionTest) {
+  gfx::Rect rect(10, 10, 200, 50);
+  std::unique_ptr<aura::Window> window(
+      CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
+
+  // 1. Clamshell -> tablet. If overview is active, it should be ended after
+  // transition since clamshell splitview is not enabled.
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_TRUE(overview_controller->StartOverview());
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  TabletModeWindowManager* manager = CreateTabletModeWindowManager();
+  EXPECT_TRUE(manager);
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+
+  // 2. Tablet -> Clamshell. If overview is active, it should be ended after
+  // transition.
+  DestroyTabletModeWindowManager();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+
+  // 3. Clamshell -> tablet. If overview is inactive, it should still be kept
+  // inactive after transition. All windows will be maximized.
+  CreateTabletModeWindowManager();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
+
+  // 4. Tablet -> Clamshell. The window should be restored to its old state.
+  DestroyTabletModeWindowManager();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(WindowState::Get(window.get())->IsMaximized());
+
+  // 5. Clamshell -> Tablet. If the window is snapped, it will be carried over
+  // to splitview in tablet mode.
+  const WMEvent event(WM_EVENT_SNAP_LEFT);
+  WindowState::Get(window.get())->OnWMEvent(&event);
+  EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
+  // After transition, we should be in single split screen.
+  CreateTabletModeWindowManager();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
+
+  // 6. Tablet -> Clamshell. Since clamshell splitscreen is not enabled, oveview
+  // and splitview will be both ended, and the window is restored to its old
+  // state.
+  DestroyTabletModeWindowManager();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
+
+  // Create another normal state window to test additional scenarios.
+  std::unique_ptr<aura::Window> window2(
+      CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
+  wm::ActivateWindow(window2.get());
+
+  // 7. Clamshell -> Tablet. Since the top active window is not a snapped
+  // window, all windows will be maximized after the transition.
+  CreateTabletModeWindowManager();
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(window2.get())->IsMaximized());
+
+  // 8. Tablet -> Clamshell. If the two windows are in splitscreen in tablet
+  // mode, after transition they will restore to their old window states.
+  split_view_controller()->SnapWindow(window.get(), SplitViewController::LEFT);
+  split_view_controller()->SnapWindow(window2.get(),
+                                      SplitViewController::RIGHT);
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  DestroyTabletModeWindowManager();
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
+  EXPECT_FALSE(WindowState::Get(window2.get())->IsSnapped());
+
+  // 9. Clamshell -> Tablet. If the top two windows are snapped to both sides of
+  // the screen, they will carry over to tablet split view mode.
+  const WMEvent event2(WM_EVENT_SNAP_RIGHT);
+  WindowState::Get(window2.get())->OnWMEvent(&event2);
+  CreateTabletModeWindowManager();
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+
+  // 10. Tablet -> Clamshell. If overview and splitview are both active, they
+  // will be both ended after the transition.
+  overview_controller->StartOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  DestroyTabletModeWindowManager();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+}
+
+// The class to test TabletModeWindowManagerTest related functionalities when
+// clamshell split screen feature is enabled.
+class TabletModeWindowManagerWithClamshellSplitViewTest
+    : public TabletModeWindowManagerTest {
+ public:
+  TabletModeWindowManagerWithClamshellSplitViewTest() = default;
+  ~TabletModeWindowManagerWithClamshellSplitViewTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kDragToSnapInClamshellMode);
+    TabletModeWindowManagerTest::SetUp();
+    DCHECK(ShouldAllowSplitView());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  DISALLOW_COPY_AND_ASSIGN(TabletModeWindowManagerWithClamshellSplitViewTest);
+};
+
+// Test clamshell mode <-> tablet mode transition if clamshell splitscreen is
+// enabled.
+TEST_P(TabletModeWindowManagerWithClamshellSplitViewTest,
+       ClamshellTabletTransitionTest) {
+  gfx::Rect rect(10, 10, 200, 50);
+  std::unique_ptr<aura::Window> window(
+      CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
+
+  // 1. Clamshell -> tablet. If overview is active, it should still be kept
+  // active after transition.
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_TRUE(overview_controller->StartOverview());
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  TabletModeWindowManager* manager = CreateTabletModeWindowManager();
+  EXPECT_TRUE(manager);
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // 2. Tablet -> Clamshell. If overview is active, it should still be kept
+  // active after transition.
+  DestroyTabletModeWindowManager();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // 3. Clamshell -> tablet. If overview is inactive, it should still be kept
+  // inactive after transition. All windows will be maximized.
+  EXPECT_TRUE(overview_controller->EndOverview());
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  CreateTabletModeWindowManager();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
+
+  // 4. Tablet -> Clamshell. The window should be restored to its old state.
+  DestroyTabletModeWindowManager();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(WindowState::Get(window.get())->IsMaximized());
+
+  // 5. Clamshell -> Tablet. If the window is snapped, it will be carried over
+  // to splitview in tablet mode.
+  const WMEvent event(WM_EVENT_SNAP_LEFT);
+  WindowState::Get(window.get())->OnWMEvent(&event);
+  EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
+  // After transition, we should be in single split screen.
+  CreateTabletModeWindowManager();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
+
+  // 6. Tablet -> Clamshell. Since there is only 1 window, splitview and
+  // overview will be both ended. The window will be kept snapped.
+  DestroyTabletModeWindowManager();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
+
+  // Create another normal state window to test additional scenarios.
+  std::unique_ptr<aura::Window> window2(
+      CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
+  wm::ActivateWindow(window2.get());
+  // 7. Clamshell -> Tablet. Since top window is not a snapped window, all
+  // windows will be maximized.
+  CreateTabletModeWindowManager();
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(window2.get())->IsMaximized());
+
+  // 8. Tablet -> Clamshell. If tablet splitscreen is active with two snapped
+  // windows, the two windows will remain snapped in clamshell mode.
+  split_view_controller()->SnapWindow(window.get(), SplitViewController::LEFT);
+  split_view_controller()->SnapWindow(window2.get(),
+                                      SplitViewController::RIGHT);
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  DestroyTabletModeWindowManager();
+  EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
+  EXPECT_TRUE(WindowState::Get(window2.get())->IsSnapped());
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+
+  // 9. Clamshell -> Tablet. If two window are snapped to two sides of the
+  // screen, they will carry over to splitscreen in tablet mode.
+  CreateTabletModeWindowManager();
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
+  EXPECT_TRUE(WindowState::Get(window2.get())->IsSnapped());
+
+  // 10. Tablet -> Clamshell. If overview and splitview are both active, after
+  // transition, they will remain both active.
+  overview_controller->StartOverview();
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  DestroyTabletModeWindowManager();
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // 11. Clamshell -> Tablet. The same as 10.
+  CreateTabletModeWindowManager();
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+}
+
+// Test the divider position value during tablet <-> clamshell transition.
+TEST_P(TabletModeWindowManagerWithClamshellSplitViewTest,
+       ClamshellTabletTransitionDividerPositionTest) {
+  UpdateDisplay("1200x800");
+  gfx::Rect rect(10, 10, 200, 50);
+  std::unique_ptr<aura::Window> window(
+      CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+
+  // First test 1 window case.
+  const WMEvent left_snap_event(WM_EVENT_SNAP_LEFT);
+  WindowState::Get(window.get())->OnWMEvent(&left_snap_event);
+  const gfx::Rect left_snapped_bounds =
+      gfx::Rect(1200 / 2, 800 - ShelfConfig::Get()->shelf_size());
+  EXPECT_EQ(window->bounds().width(), left_snapped_bounds.width());
+  // Change its bounds horizontally a bit and then enter tablet mode.
+  window->SetBounds(gfx::Rect(400, left_snapped_bounds.height()));
+  CreateTabletModeWindowManager();
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window.get()));
+  // Check the window is moved to 1/3 snapped position.
+  EXPECT_EQ(window->bounds().width(),
+            1200 * 0.33 - kSplitviewDividerShortSideLength / 2);
+  // Exit tablet mode and verify the window stays in the same position.
+  DestroyTabletModeWindowManager();
+  EXPECT_EQ(window->bounds().width(),
+            1200 * 0.33 - kSplitviewDividerShortSideLength / 2);
+
+  // Now test the 2 windows case.
+  std::unique_ptr<aura::Window> window2(
+      CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
+  WindowState::Get(window.get())->OnWMEvent(&left_snap_event);
+  const WMEvent right_snap_event(WM_EVENT_SNAP_RIGHT);
+  WindowState::Get(window2.get())->OnWMEvent(&right_snap_event);
+  // Change their bounds horizontally and then enter tablet mode.
+  window->SetBounds(gfx::Rect(400, left_snapped_bounds.height()));
+  window2->SetBounds(gfx::Rect(400, 0, 800, left_snapped_bounds.height()));
+  CreateTabletModeWindowManager();
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window.get()));
+  EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window2.get()));
+  // Check |window| and |window2| is moved to 1/3 snapped position.
+  EXPECT_EQ(window->bounds().width(),
+            1200 * 0.33 - kSplitviewDividerShortSideLength / 2);
+  EXPECT_EQ(window2->bounds().width(),
+            1200 - window->bounds().width() - kSplitviewDividerShortSideLength);
+  // Exit tablet mode and verify the windows stay in the same position.
+  DestroyTabletModeWindowManager();
+  EXPECT_EQ(window->bounds().width(),
+            1200 * 0.33 - kSplitviewDividerShortSideLength / 2);
+  EXPECT_EQ(window2->bounds().width(), 1200 - window->bounds().width());
+}
+
+// Test that when switching from clamshell mode to tablet mode, if overview mode
+// is active, home launcher is hidden. And after overview mode is dismissed,
+// home launcher will be shown again.
+TEST_P(TabletModeWindowManagerWithClamshellSplitViewTest,
+       HomeLauncherVisibilityTest) {
+  gfx::Rect rect(10, 10, 200, 50);
+  std::unique_ptr<aura::Window> window(
+      CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
+
+  // Clamshell -> Tablet mode transition. If overview is active, it will remain
+  // in overview.
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_TRUE(overview_controller->StartOverview());
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  TabletModeWindowManager* manager = CreateTabletModeWindowManager();
+  EXPECT_TRUE(manager);
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  aura::Window* home_screen_window =
+      Shell::Get()->app_list_controller()->GetHomeScreenWindow();
+  EXPECT_FALSE(home_screen_window->TargetVisibility());
+
+  // Simulate tapping on the home button to go to home launcher.
+  Shell::Get()->home_screen_controller()->GoHome(GetPrimaryDisplay().id());
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(home_screen_window->TargetVisibility());
+}
+
+INSTANTIATE_TEST_SUITE_P(, TabletModeWindowManagerTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(,
+                         TabletModeWindowManagerWithClamshellSplitViewTest,
+                         testing::Bool());
 
 }  // namespace ash

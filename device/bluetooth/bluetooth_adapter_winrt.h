@@ -79,36 +79,31 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWinrt : public BluetoothAdapter {
   ~BluetoothAdapterWinrt() override;
 
   void Init(InitCallback init_cb);
+  // Allow tests to provide their own implementations of statics.
+  void InitForTests(
+      InitCallback init_cb,
+      Microsoft::WRL::ComPtr<
+          ABI::Windows::Devices::Bluetooth::IBluetoothAdapterStatics>
+          bluetooth_adapter_statics,
+      Microsoft::WRL::ComPtr<
+          ABI::Windows::Devices::Enumeration::IDeviceInformationStatics>
+          device_information_statics,
+      Microsoft::WRL::ComPtr<ABI::Windows::Devices::Radios::IRadioStatics>
+          radio_statics);
 
   // BluetoothAdapter:
+  base::WeakPtr<BluetoothAdapter> GetWeakPtr() override;
   bool SetPoweredImpl(bool powered) override;
-  void AddDiscoverySession(
-      BluetoothDiscoveryFilter* discovery_filter,
-      const base::Closure& callback,
-      DiscoverySessionErrorCallback error_callback) override;
-  void RemoveDiscoverySession(
-      BluetoothDiscoveryFilter* discovery_filter,
-      const base::Closure& callback,
-      DiscoverySessionErrorCallback error_callback) override;
-  void SetDiscoveryFilter(
+  void UpdateFilter(std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
+                    DiscoverySessionResultCallback callback) override;
+  void StartScanWithFilter(
       std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
-      const base::Closure& callback,
-      DiscoverySessionErrorCallback error_callback) override;
+      DiscoverySessionResultCallback callback) override;
+  void StopScan(DiscoverySessionResultCallback callback) override;
   void RemovePairingDelegateInternal(
       BluetoothDevice::PairingDelegate* pairing_delegate) override;
 
-  // These are declared virtual so that they can be overridden by tests.
-  virtual HRESULT GetBluetoothAdapterStaticsActivationFactory(
-      ABI::Windows::Devices::Bluetooth::IBluetoothAdapterStatics** statics)
-      const;
-
-  virtual HRESULT GetDeviceInformationStaticsActivationFactory(
-      ABI::Windows::Devices::Enumeration::IDeviceInformationStatics** statics)
-      const;
-
-  virtual HRESULT GetRadioStaticsActivationFactory(
-      ABI::Windows::Devices::Radios::IRadioStatics** statics) const;
-
+  // Declared virtual so that it can be overridden by tests.
   virtual HRESULT ActivateBluetoothAdvertisementLEWatcherInstance(
       ABI::Windows::Devices::Bluetooth::Advertisement::
           IBluetoothLEAdvertisementWatcher** instance) const;
@@ -120,6 +115,45 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWinrt : public BluetoothAdapter {
       uint64_t raw_address);
 
  private:
+  struct StaticsInterfaces {
+    StaticsInterfaces(
+        Microsoft::WRL::ComPtr<IAgileReference>,   // IBluetoothStatics
+        Microsoft::WRL::ComPtr<IAgileReference>,   // IDeviceInformationStatics
+        Microsoft::WRL::ComPtr<IAgileReference>);  // IRadioStatics
+    StaticsInterfaces();
+    StaticsInterfaces(const StaticsInterfaces&);
+    ~StaticsInterfaces();
+
+    Microsoft::WRL::ComPtr<IAgileReference> adapter_statics;
+    Microsoft::WRL::ComPtr<IAgileReference> device_information_statics;
+    Microsoft::WRL::ComPtr<IAgileReference> radio_statics;
+  };
+
+  static StaticsInterfaces PerformSlowInitTasks();
+  static StaticsInterfaces GetAgileReferencesForStatics(
+      Microsoft::WRL::ComPtr<
+          ABI::Windows::Devices::Bluetooth::IBluetoothAdapterStatics>
+          adapter_statics,
+      Microsoft::WRL::ComPtr<
+          ABI::Windows::Devices::Enumeration::IDeviceInformationStatics>
+          device_information_statics,
+      Microsoft::WRL::ComPtr<ABI::Windows::Devices::Radios::IRadioStatics>
+          radio_statics);
+
+  // CompleteInitAgile is a proxy to CompleteInit that resolves agile
+  // references.
+  void CompleteInitAgile(InitCallback init_cb, StaticsInterfaces statics);
+  void CompleteInit(
+      InitCallback init_cb,
+      Microsoft::WRL::ComPtr<
+          ABI::Windows::Devices::Bluetooth::IBluetoothAdapterStatics>
+          bluetooth_adapter_statics,
+      Microsoft::WRL::ComPtr<
+          ABI::Windows::Devices::Enumeration::IDeviceInformationStatics>
+          device_information_statics,
+      Microsoft::WRL::ComPtr<ABI::Windows::Devices::Radios::IRadioStatics>
+          radio_statics);
+
   void OnGetDefaultAdapter(
       base::ScopedClosureRunner on_init,
       Microsoft::WRL::ComPtr<
@@ -197,17 +231,25 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWinrt : public BluetoothAdapter {
 
   std::vector<scoped_refptr<BluetoothAdvertisement>> pending_advertisements_;
 
-  size_t num_discovery_sessions_ = 0;
   EventRegistrationToken advertisement_received_token_;
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::Advertisement::
                              IBluetoothLEAdvertisementWatcher>
       ble_advertisement_watcher_;
 
+  Microsoft::WRL::ComPtr<
+      ABI::Windows::Devices::Bluetooth::IBluetoothAdapterStatics>
+      bluetooth_adapter_statics_;
+  Microsoft::WRL::ComPtr<
+      ABI::Windows::Devices::Enumeration::IDeviceInformationStatics>
+      device_information_statics_;
+  Microsoft::WRL::ComPtr<ABI::Windows::Devices::Radios::IRadioStatics>
+      radio_statics_;
+
   THREAD_CHECKER(thread_checker_);
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<BluetoothAdapterWinrt> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothAdapterWinrt> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterWinrt);
 };

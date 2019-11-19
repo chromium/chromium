@@ -28,6 +28,7 @@ constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
 
 void RenderViewTestAdapter::SetUp() {
   RenderViewTest::SetUp();
+  CreateFakeWebURLLoaderFactory();
 }
 
 Env::Env() {
@@ -41,7 +42,6 @@ Env::Env() {
 
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
   gin::V8Initializer::LoadV8Snapshot(kSnapshotType);
-  gin::V8Initializer::LoadV8Natives();
 #endif
   gin::IsolateHolder::Initialize(gin::IsolateHolder::kStrictMode,
                                  gin::ArrayBufferAllocator::SharedInstance());

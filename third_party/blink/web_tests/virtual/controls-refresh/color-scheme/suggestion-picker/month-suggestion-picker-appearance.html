@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src="../../../../fast/forms/resources/picker-common.js"></script>
+</head>
+<body style="background-color: #eeffff;">
+<input type=month id=month value="10000-12" list="suggestions" style="width: 200px;">
+<datalist id=suggestions>
+    <option>2012-00</option> <!--invalid-->
+    <option>2012-01-01</option> <!--invalid-->
+    <option>foo</option> <!--invalid-->
+    <option label="This Month">2012-01</option>
+    <option>2012-02</option>
+    <option>2012-03</option>
+    <option>2012-04</option>
+    <option>2012-05</option>
+    <option>2012-06</option>
+    <option>2012-07</option>
+</datalist>
+
+<script>
+openPicker(document.getElementById('month'), finishTest);
+
+function finishTest() {
+  popupWindow.focus();
+  eventSender.keyDown('ArrowDown');
+  testRunner.notifyDone();
+}
+</script>
+</body>
+</html>

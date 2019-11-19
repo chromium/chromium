@@ -1,4 +1,0 @@
-# Sanity test that validates basic login functionality.  The full suite of
-# Mash browser tests runs on the mojo.fyi waterfall.
-# Context: http://crbug.com/874090
-LoginUtilsTest.MashLogin

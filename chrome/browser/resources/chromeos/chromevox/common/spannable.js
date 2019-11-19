@@ -32,8 +32,9 @@ Spannable = function(opt_string, opt_annotation) {
   this.spans_ = [];
 
   // Append the initial spannable.
-  if (opt_string instanceof Spannable)
+  if (opt_string instanceof Spannable) {
     this.append(opt_string);
+  }
 
   // Optionally annotate the entire string.
   if (goog.isDef(opt_annotation)) {
@@ -77,8 +78,9 @@ Spannable.prototype = {
       this.spans_.push({value: value, start: start, end: end});
       this.spans_.sort(function(a, b) {
         var ret = a.start - b.start;
-        if (ret == 0)
+        if (ret == 0) {
           ret = a.end - b.end;
+        }
         return ret;
       });
     } else {
@@ -190,8 +192,13 @@ Spannable.prototype = {
    * @return {!Array<{start: number, end: number}>}
    */
   getSpanIntervals: function(value) {
-    return this.spans_.filter(function(s) { return s.value == value; })
-        .map(function(s) { return {start: s.start, end: s.end}; });
+    return this.spans_
+        .filter(function(s) {
+          return s.value == value;
+        })
+        .map(function(s) {
+          return {start: s.start, end: s.end};
+        });
   },
 
   /**
@@ -213,8 +220,9 @@ Spannable.prototype = {
    */
   getSpanByValueOrThrow_: function(value) {
     var span = this.spans_.find(spanValueIs(value));
-    if (span)
+    if (span) {
       return span;
+    }
     throw new Error('Span ' + value + ' doesn\'t exist in spannable');
   },
 
@@ -505,5 +513,4 @@ function spanValueIs(value) {
 function valueOfSpan(span) {
   return span ? span.value : undefined;
 }
-
 });

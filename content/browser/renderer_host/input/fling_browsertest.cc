@@ -84,7 +84,7 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
 
   void LoadURL(const std::string& page_data) {
     const GURL data_url("data:text/html," + page_data);
-    NavigateToURL(shell(), data_url);
+    EXPECT_TRUE(NavigateToURL(shell(), data_url));
 
     RenderWidgetHostImpl* host = GetWidgetHost();
     host->GetView()->SetSize(gfx::Size(400, 400));
@@ -116,7 +116,7 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
       deleted_observer.WaitUntilDeleted();
     }
 
-    WaitForHitTestDataOrChildSurfaceReady(iframe_node->current_frame_host());
+    WaitForHitTestData(iframe_node->current_frame_host());
     FrameTreeVisualizer visualizer;
     ASSERT_EQ(
         " Site A ------------ proxies for B\n"
@@ -149,9 +149,9 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
     blink::WebGestureEvent gesture_scroll_begin(
         blink::WebGestureEvent::kGestureScrollBegin,
         blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
-    gesture_scroll_begin.SetSourceDevice(blink::kWebGestureDeviceTouchscreen);
+    gesture_scroll_begin.SetSourceDevice(blink::WebGestureDevice::kTouchscreen);
     gesture_scroll_begin.data.scroll_begin.delta_hint_units =
-        blink::WebGestureEvent::ScrollUnits::kPrecisePixels;
+        ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
     gesture_scroll_begin.data.scroll_begin.delta_x_hint = fling_velocity.x();
     gesture_scroll_begin.data.scroll_begin.delta_y_hint = fling_velocity.y();
     const gfx::PointF scroll_location_in_widget(1, 1);
@@ -172,7 +172,7 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
     blink::WebGestureEvent gesture_fling_start(
         blink::WebGestureEvent::kGestureFlingStart,
         blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
-    gesture_fling_start.SetSourceDevice(blink::kWebGestureDeviceTouchscreen);
+    gesture_fling_start.SetSourceDevice(blink::WebGestureDevice::kTouchscreen);
     gesture_fling_start.data.fling_start.velocity_x = fling_velocity.x();
     gesture_fling_start.data.fling_start.velocity_y = fling_velocity.y();
     gesture_fling_start.SetPositionInWidget(scroll_location_in_widget);
@@ -198,7 +198,7 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
     blink::WebMouseWheelEvent wheel_event =
         SyntheticWebMouseWheelEventBuilder::Build(
             10, 10, fling_velocity.x() / 1000, fling_velocity.y() / 1000, 0,
-            true);
+            ui::input_types::ScrollGranularity::kScrollByPrecisePixel);
     wheel_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
     const gfx::PointF position_in_widget(1, 1);
     const gfx::PointF position_in_root =
@@ -218,7 +218,7 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
     blink::WebGestureEvent gesture_fling_start(
         blink::WebGestureEvent::kGestureFlingStart,
         blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
-    gesture_fling_start.SetSourceDevice(blink::kWebGestureDeviceTouchpad);
+    gesture_fling_start.SetSourceDevice(blink::WebGestureDevice::kTouchpad);
     gesture_fling_start.data.fling_start.velocity_x = fling_velocity.x();
     gesture_fling_start.data.fling_start.velocity_y = fling_velocity.y();
     gesture_fling_start.SetPositionInWidget(position_in_widget);
@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
   // Navigate to a second page with the same domain.
   GURL second_url(
       embedded_test_server()->GetURL("a.com", "/scrollable_page.html"));
-  NavigateToURL(shell(), second_url);
+  EXPECT_TRUE(NavigateToURL(shell(), second_url));
   SynchronizeThreads();
 
   // Wait for 100ms. Then check that the second page has not scrolled.
@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
   blink::WebGestureEvent gesture_fling_cancel(
       blink::WebGestureEvent::kGestureFlingCancel,
       blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
-  gesture_fling_cancel.SetSourceDevice(blink::kWebGestureDeviceTouchscreen);
+  gesture_fling_cancel.SetSourceDevice(blink::WebGestureDevice::kTouchscreen);
 
   const gfx::PointF location_in_widget(1, 1);
   const gfx::PointF location_in_root =
@@ -453,7 +453,8 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
   // Scroll the parent down so that it is scrollable upward.
 
   // Initialize observer before scrolling changes the position of the OOPIF.
-  HitTestTransformChangeObserver observer(child_view_->GetFrameSinkId());
+  HitTestRegionObserver observer(child_view_->GetFrameSinkId());
+  observer.WaitForHitTestData();
 
   EXPECT_TRUE(
       ExecJs(GetRootNode()->current_frame_host(), "window.scrollTo(0, 20)"));
@@ -463,7 +464,6 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
   WaitForFrameScroll(GetRootNode(), 19);
   SynchronizeThreads();
 
-  // Wait for hit test data to change after scroll happens.
   observer.WaitForHitTestDataChange();
 
   // Fling and wait for the parent to scroll up.

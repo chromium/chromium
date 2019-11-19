@@ -3,7 +3,7 @@
 <head>
 <style>
 .comp {
-  transform: translateZ(0px);
+  will-change: transform;
 }
 body {
   margin:0;
@@ -32,18 +32,13 @@ body {
   background-color: #0d0;
 }
 </style>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
 <script type="text/javascript">
-  if (window.testRunner) {
-    testRunner.dumpAsTextWithPixelResults();
-    testRunner.waitUntilDone();
-  }
-
-  window.onload = function() { setTimeout(function() {
-    document.getElementById('scroll').scrollTop += 300;
-    if (window.testRunner) {
-      testRunner.notifyDone();
-    }
-  }, 0); };
+  window.onload = function() {
+    runAfterLayoutAndPaint(function() {
+      document.getElementById('scroll').scrollTop += 300;
+    }, true);
+  };
 </script>
 </head>
 

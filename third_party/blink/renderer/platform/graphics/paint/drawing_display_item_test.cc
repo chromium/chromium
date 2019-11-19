@@ -7,6 +7,7 @@
 #include "cc/paint/display_item_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -47,12 +48,11 @@ static sk_sp<PaintRecord> CreateRectRecordWithTranslate(
 
 TEST_F(DrawingDisplayItemTest, DrawsContent) {
   FloatRect record_bounds(5.5, 6.6, 7.7, 8.8);
-  LayoutRect drawing_bounds(record_bounds);
-  client_.SetVisualRect(drawing_bounds);
+  client_.SetVisualRect(EnclosingIntRect(record_bounds));
 
   DrawingDisplayItem item(client_, DisplayItem::Type::kDocumentBackground,
                           CreateRectRecord(record_bounds));
-  EXPECT_EQ(FloatRect(drawing_bounds), item.VisualRect());
+  EXPECT_EQ(EnclosingIntRect(record_bounds), item.VisualRect());
   EXPECT_TRUE(item.DrawsContent());
 }
 
@@ -70,7 +70,7 @@ TEST_F(DrawingDisplayItemTest, EmptyPaintRecord) {
 
 TEST_F(DrawingDisplayItemTest, Equals) {
   FloatRect bounds1(100.1, 100.2, 100.3, 100.4);
-  client_.SetVisualRect(LayoutRect(bounds1));
+  client_.SetVisualRect(EnclosingIntRect(bounds1));
   DrawingDisplayItem item1(client_, DisplayItem::kDocumentBackground,
                            CreateRectRecord(bounds1));
   DrawingDisplayItem translated(client_, DisplayItem::kDocumentBackground,
@@ -82,7 +82,7 @@ TEST_F(DrawingDisplayItemTest, Equals) {
       CreateRectRecordWithTranslate(bounds1, 0, 0));
 
   FloatRect bounds2(100.5, 100.6, 100.7, 100.8);
-  client_.SetVisualRect(LayoutRect(bounds2));
+  client_.SetVisualRect(EnclosingIntRect(bounds2));
   DrawingDisplayItem item2(client_, DisplayItem::kDocumentBackground,
                            CreateRectRecord(bounds2));
 

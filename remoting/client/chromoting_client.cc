@@ -20,7 +20,8 @@
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/video_renderer.h"
 #include "remoting/protocol/webrtc_connection_to_host.h"
-#include "remoting/signaling/jid_util.h"
+#include "remoting/signaling/signaling_address.h"
+#include "remoting/signaling/signaling_id_util.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
 namespace remoting {
@@ -72,7 +73,7 @@ void ChromotingClient::Start(
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!session_manager_);  // Start must not be called more than once.
 
-  host_jid_ = NormalizeJid(host_jid);
+  host_jid_ = NormalizeSignalingId(host_jid);
   local_capabilities_ = capabilities;
 
   if (!protocol_config_) {
@@ -126,6 +127,11 @@ void ChromotingClient::Start(
   }
 }
 
+void ChromotingClient::Close() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  connection_->Disconnect(protocol::OK);
+}
+
 void ChromotingClient::SetCapabilities(
     const protocol::Capabilities& capabilities) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -177,19 +183,22 @@ void ChromotingClient::SetVideoLayout(const protocol::VideoLayout& layout) {
   const protocol::VideoTrackLayout& track_layout = layout.video_track(0);
   int x_dpi = track_layout.has_x_dpi() ? track_layout.x_dpi() : kDefaultDpi;
   int y_dpi = track_layout.has_y_dpi() ? track_layout.y_dpi() : kDefaultDpi;
+  if (x_dpi != y_dpi) {
+    LOG(WARNING) << "Mismatched x,y dpi. x=" << x_dpi << " y=" << y_dpi;
+  }
 
   webrtc::DesktopSize size_dips(track_layout.width(), track_layout.height());
-  webrtc::DesktopSize size_pixels(size_dips.width() * x_dpi / kDefaultDpi,
-                                  size_dips.height() * y_dpi / kDefaultDpi);
-  user_interface_->SetDesktopSize(size_pixels,
-                                  webrtc::DesktopVector(x_dpi, y_dpi));
+  webrtc::DesktopSize size_px(size_dips.width() * x_dpi / kDefaultDpi,
+                              size_dips.height() * y_dpi / kDefaultDpi);
+  user_interface_->SetDesktopSize(size_px, webrtc::DesktopVector(x_dpi, y_dpi));
 
-  mouse_input_scaler_.set_input_size(
-      webrtc::DesktopRect::MakeSize(size_pixels));
-  mouse_input_scaler_.set_output_size(
-      connection_->config().protocol() == protocol::SessionConfig::Protocol::ICE
-          ? webrtc::DesktopRect::MakeSize(size_pixels)
-          : webrtc::DesktopRect::MakeSize(size_dips));
+  mouse_input_scaler_.set_input_size(size_px.width(), size_px.height());
+  if (connection_->config().protocol() ==
+      protocol::SessionConfig::Protocol::ICE) {
+    mouse_input_scaler_.set_output_size(size_px.width(), size_px.height());
+  } else {
+    mouse_input_scaler_.set_output_size(size_dips.width(), size_dips.height());
+  }
 }
 
 void ChromotingClient::InjectClipboardEvent(
@@ -235,7 +244,7 @@ void ChromotingClient::OnSignalStrategyStateChange(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (state == SignalStrategy::CONNECTED) {
-    VLOG(1) << "Connected as: " << signal_strategy_->GetLocalAddress().jid();
+    VLOG(1) << "Connected as: " << signal_strategy_->GetLocalAddress().id();
     // After signaling has been connected we can try connecting to the host.
     if (connection_ &&
         connection_->state() == protocol::ConnectionToHost::INITIALIZING) {
@@ -245,7 +254,7 @@ void ChromotingClient::OnSignalStrategyStateChange(
     VLOG(1) << "Signaling connection closed.";
     mouse_input_scaler_.set_input_stub(nullptr);
     connection_.reset();
-    user_interface_->OnConnectionState(protocol::ConnectionToHost::CLOSED,
+    user_interface_->OnConnectionState(protocol::ConnectionToHost::FAILED,
                                        protocol::SIGNALING_ERROR);
   }
 }

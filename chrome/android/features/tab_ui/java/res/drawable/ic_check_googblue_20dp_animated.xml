@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:targetApi="21">
+
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="20dp"
+            android:height="20dp"
+            android:viewportWidth="24.0"
+            android:viewportHeight="24.0">
+
+            <!-- This path is calculated from the icon ic_check_googblue_24dp. -->
+            <path
+                android:name="ic_check"
+                android:pathData="M4.12,12.705 l4.88,4.88 l11.295,-11.29"
+                android:strokeWidth="2"
+                android:strokeColor="@color/default_icon_color_blue"/>
+        </vector>
+    </aapt:attr>
+
+    <target android:name="ic_check">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="400"
+                android:propertyName="trimPathEnd"
+                android:valueFrom="0"
+                android:valueTo="1"
+                tools:valueFrom="1"/>
+        </aapt:attr>
+    </target>
+</animated-vector>

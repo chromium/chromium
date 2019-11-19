@@ -25,26 +25,47 @@
 #import <Cocoa/Cocoa.h>
 #import <math.h>
 
+#import "base/mac/mac_util.h"
 #import "third_party/blink/public/platform/mac/web_sandbox_support.h"
 #import "third_party/blink/public/platform/platform.h"
+#import "third_party/blink/public/resources/grit/blink_resources.h"
+#import "third_party/blink/public/strings/grit/blink_strings.h"
 #import "third_party/blink/renderer/core/css_value_keywords.h"
 #import "third_party/blink/renderer/core/fileapi/file_list.h"
 #import "third_party/blink/renderer/core/html_names.h"
 #import "third_party/blink/renderer/core/layout/layout_progress.h"
+#import "third_party/blink/renderer/core/layout/layout_theme_default.h"
 #import "third_party/blink/renderer/core/layout/layout_view.h"
 #import "third_party/blink/renderer/core/style/shadow_list.h"
 #import "third_party/blink/renderer/platform/data_resource_helper.h"
 #import "third_party/blink/renderer/platform/fonts/string_truncator.h"
 #import "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#import "third_party/blink/renderer/platform/mac/block_exceptions.h"
 #import "third_party/blink/renderer/platform/mac/color_mac.h"
-#import "third_party/blink/renderer/platform/mac/theme_mac.h"
-#import "third_party/blink/renderer/platform/mac/version_util_mac.h"
 #import "third_party/blink/renderer/platform/mac/web_core_ns_cell_extras.h"
 #import "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #import "third_party/blink/renderer/platform/text/platform_locale.h"
-#import "third_party/blink/renderer/platform/theme.h"
 #import "third_party/blink/renderer/platform/web_test_support.h"
 
+// This is a view whose sole purpose is to tell AppKit that it's flipped.
+@interface BlinkFlippedControl : NSControl
+@end
+
+@implementation BlinkFlippedControl
+
+- (BOOL)isFlipped {
+  return YES;
+}
+
+- (NSText*)currentEditor {
+  return nil;
+}
+
+- (BOOL)_automaticFocusRingDisabled {
+  return YES;
+}
+
+@end
 // The methods in this file are specific to the Mac OS X platform.
 
 @interface BlinkLayoutThemeNotificationObserver : NSObject {
@@ -120,6 +141,16 @@ namespace blink {
 
 namespace {
 
+class LayoutThemeMacRefresh final : public LayoutThemeDefault {
+ public:
+  static scoped_refptr<LayoutTheme> Create() {
+    return base::AdoptRef(new LayoutThemeMacRefresh());
+  }
+};
+
+// Inflate an IntRect to account for specific padding around margins.
+enum { kTopMargin = 0, kRightMargin = 1, kBottomMargin = 2, kLeftMargin = 3 };
+
 bool FontSizeMatchesToControlSize(const ComputedStyle& style) {
   int font_size = style.FontSize();
   if (font_size == [NSFont systemFontSizeForControlSize:NSRegularControlSize])
@@ -140,47 +171,85 @@ Color GetSystemColor(MacSystemColorID color_id) {
   return sandbox_support->GetSystemColor(color_id);
 }
 
+// Helper functions used by a bunch of different control parts.
+NSControlSize ControlSizeForFont(const FontDescription& font_description) {
+  int font_size = font_description.ComputedPixelSize();
+  if (font_size >= 16)
+    return NSRegularControlSize;
+  if (font_size >= 11)
+    return NSSmallControlSize;
+  return NSMiniControlSize;
+}
+
+LengthSize SizeFromNSControlSize(NSControlSize ns_control_size,
+                                 const LengthSize& zoomed_size,
+                                 float zoom_factor,
+                                 const IntSize* sizes) {
+  IntSize control_size = sizes[ns_control_size];
+  if (zoom_factor != 1.0f)
+    control_size = IntSize(control_size.Width() * zoom_factor,
+                           control_size.Height() * zoom_factor);
+  LengthSize result = zoomed_size;
+  if (zoomed_size.Width().IsIntrinsicOrAuto() && control_size.Width() > 0)
+    result.SetWidth(Length::Fixed(control_size.Width()));
+  if (zoomed_size.Height().IsIntrinsicOrAuto() && control_size.Height() > 0)
+    result.SetHeight(Length::Fixed(control_size.Height()));
+  return result;
+}
+
+LengthSize SizeFromFont(const FontDescription& font_description,
+                        const LengthSize& zoomed_size,
+                        float zoom_factor,
+                        const IntSize* sizes) {
+  return SizeFromNSControlSize(ControlSizeForFont(font_description),
+                               zoomed_size, zoom_factor, sizes);
+}
+
 }  // namespace
 
 LayoutThemeMac::LayoutThemeMac()
-    : LayoutTheme(PlatformTheme()),
+    : LayoutTheme(),
       notification_observer_(
-          kAdoptNS,
           [[BlinkLayoutThemeNotificationObserver alloc] initWithTheme:this]),
       painter_(*this) {
   [[NSNotificationCenter defaultCenter]
-      addObserver:notification_observer_.Get()
+      addObserver:notification_observer_
          selector:@selector(systemColorsDidChange:)
              name:NSSystemColorsDidChangeNotification
            object:nil];
 }
 
 LayoutThemeMac::~LayoutThemeMac() {
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:notification_observer_.Get()];
+  [[NSNotificationCenter defaultCenter] removeObserver:notification_observer_];
 }
 
-Color LayoutThemeMac::PlatformActiveSelectionBackgroundColor() const {
+Color LayoutThemeMac::PlatformActiveSelectionBackgroundColor(
+    WebColorScheme color_scheme) const {
   return GetSystemColor(MacSystemColorID::kSelectedTextBackground);
 }
 
-Color LayoutThemeMac::PlatformInactiveSelectionBackgroundColor() const {
+Color LayoutThemeMac::PlatformInactiveSelectionBackgroundColor(
+    WebColorScheme color_scheme) const {
   return GetSystemColor(MacSystemColorID::kSecondarySelectedControl);
 }
 
-Color LayoutThemeMac::PlatformActiveSelectionForegroundColor() const {
+Color LayoutThemeMac::PlatformActiveSelectionForegroundColor(
+    WebColorScheme color_scheme) const {
   return Color::kBlack;
 }
 
-Color LayoutThemeMac::PlatformActiveListBoxSelectionBackgroundColor() const {
+Color LayoutThemeMac::PlatformActiveListBoxSelectionBackgroundColor(
+    WebColorScheme color_scheme) const {
   return GetSystemColor(MacSystemColorID::kAlternateSelectedControl);
 }
 
-Color LayoutThemeMac::PlatformActiveListBoxSelectionForegroundColor() const {
+Color LayoutThemeMac::PlatformActiveListBoxSelectionForegroundColor(
+    WebColorScheme color_scheme) const {
   return Color::kWhite;
 }
 
-Color LayoutThemeMac::PlatformInactiveListBoxSelectionForegroundColor() const {
+Color LayoutThemeMac::PlatformInactiveListBoxSelectionForegroundColor(
+    WebColorScheme color_scheme) const {
   return Color::kBlack;
 }
 
@@ -197,11 +266,14 @@ Color LayoutThemeMac::PlatformFocusRingColor() const {
   if (UsesTestModeFocusRingColor())
     return kOldAquaFocusRingColor;
 
-  return SystemColor(CSSValueWebkitFocusRingColor);
+  // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
+  return SystemColor(CSSValueID::kWebkitFocusRingColor,
+                     ComputedStyle::InitialStyle().UsedColorScheme());
 }
 
-Color LayoutThemeMac::PlatformInactiveListBoxSelectionBackgroundColor() const {
-  return PlatformInactiveSelectionBackgroundColor();
+Color LayoutThemeMac::PlatformInactiveListBoxSelectionBackgroundColor(
+    WebColorScheme color_scheme) const {
+  return PlatformInactiveSelectionBackgroundColor(color_scheme);
 }
 
 static FontSelectionValue ToFontWeight(NSInteger app_kit_font_weight) {
@@ -223,20 +295,20 @@ static FontSelectionValue ToFontWeight(NSInteger app_kit_font_weight) {
 
 static inline NSFont* SystemNSFont(CSSValueID system_font_id) {
   switch (system_font_id) {
-    case CSSValueSmallCaption:
+    case CSSValueID::kSmallCaption:
       return [NSFont systemFontOfSize:[NSFont smallSystemFontSize]];
-    case CSSValueMenu:
+    case CSSValueID::kMenu:
       return [NSFont menuFontOfSize:[NSFont systemFontSize]];
-    case CSSValueStatusBar:
+    case CSSValueID::kStatusBar:
       return [NSFont labelFontOfSize:[NSFont labelFontSize]];
-    case CSSValueWebkitMiniControl:
+    case CSSValueID::kWebkitMiniControl:
       return [NSFont
           systemFontOfSize:[NSFont
                                systemFontSizeForControlSize:NSMiniControlSize]];
-    case CSSValueWebkitSmallControl:
+    case CSSValueID::kWebkitSmallControl:
       return [NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:
                                                   NSSmallControlSize]];
-    case CSSValueWebkitControl:
+    case CSSValueID::kWebkitControl:
       return [NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:
                                                   NSRegularControlSize]];
     default:
@@ -267,9 +339,11 @@ void LayoutThemeMac::PlatformColorsDidChange() {
   LayoutTheme::PlatformColorsDidChange();
 }
 
-Color LayoutThemeMac::SystemColor(CSSValueID css_value_id) const {
+Color LayoutThemeMac::SystemColor(CSSValueID css_value_id,
+                                  WebColorScheme color_scheme) const {
   {
-    HashMap<int, RGBA32>::iterator it = system_color_cache_.find(css_value_id);
+    HashMap<CSSValueID, RGBA32>::iterator it =
+        system_color_cache_.find(css_value_id);
     if (it != system_color_cache_.end())
       return it->value;
   }
@@ -277,100 +351,108 @@ Color LayoutThemeMac::SystemColor(CSSValueID css_value_id) const {
   Color color;
   bool needs_fallback = false;
   switch (css_value_id) {
-    case CSSValueActiveborder:
+    case CSSValueID::kActiveborder:
       color = GetSystemColor(MacSystemColorID::kKeyboardFocusIndicator);
       break;
-    case CSSValueActivecaption:
+    case CSSValueID::kActivecaption:
       color = GetSystemColor(MacSystemColorID::kWindowFrameText);
       break;
-    case CSSValueAppworkspace:
+    case CSSValueID::kAppworkspace:
       color = GetSystemColor(MacSystemColorID::kHeader);
       break;
-    case CSSValueBackground:
+    case CSSValueID::kBackground:
       // Use theme independent default
       needs_fallback = true;
       break;
-    case CSSValueButtonface:
+    case CSSValueID::kButtonface:
       color = GetSystemColor(MacSystemColorID::kControlBackground);
       break;
-    case CSSValueButtonhighlight:
+    case CSSValueID::kButtonhighlight:
       color = GetSystemColor(MacSystemColorID::kControlHighlight);
       break;
-    case CSSValueButtonshadow:
+    case CSSValueID::kButtonshadow:
       color = GetSystemColor(MacSystemColorID::kControlShadow);
       break;
-    case CSSValueButtontext:
+    case CSSValueID::kButtontext:
       color = GetSystemColor(MacSystemColorID::kControlText);
       break;
-    case CSSValueCaptiontext:
+    case CSSValueID::kCaptiontext:
       color = GetSystemColor(MacSystemColorID::kText);
       break;
-    case CSSValueGraytext:
+    case CSSValueID::kField:
+      color = GetSystemColor(MacSystemColorID::kControlBackground);
+      break;
+    case CSSValueID::kFieldtext:
+      color = GetSystemColor(MacSystemColorID::kText);
+      break;
+    case CSSValueID::kGraytext:
       color = GetSystemColor(MacSystemColorID::kDisabledControlText);
       break;
-    case CSSValueHighlight:
+    case CSSValueID::kHighlight:
       color = GetSystemColor(MacSystemColorID::kSelectedTextBackground);
       break;
-    case CSSValueHighlighttext:
+    case CSSValueID::kHighlighttext:
       color = GetSystemColor(MacSystemColorID::kSelectedText);
       break;
-    case CSSValueInactiveborder:
+    case CSSValueID::kInactiveborder:
       color = GetSystemColor(MacSystemColorID::kControlBackground);
       break;
-    case CSSValueInactivecaption:
+    case CSSValueID::kInactivecaption:
       color = GetSystemColor(MacSystemColorID::kControlBackground);
       break;
-    case CSSValueInactivecaptiontext:
+    case CSSValueID::kInactivecaptiontext:
       color = GetSystemColor(MacSystemColorID::kText);
       break;
-    case CSSValueInfobackground:
+    case CSSValueID::kInfobackground:
       // There is no corresponding NSColor for this so we use a hard coded
       // value.
       color = 0xFFFBFCC5;
       break;
-    case CSSValueInfotext:
+    case CSSValueID::kInfotext:
       color = GetSystemColor(MacSystemColorID::kText);
       break;
-    case CSSValueMenu:
+    case CSSValueID::kMenu:
       color = GetSystemColor(MacSystemColorID::kMenuBackground);
       break;
-    case CSSValueMenutext:
+    case CSSValueID::kMenutext:
       color = GetSystemColor(MacSystemColorID::kSelectedMenuItemText);
       break;
-    case CSSValueScrollbar:
+    case CSSValueID::kScrollbar:
       color = GetSystemColor(MacSystemColorID::kScrollBar);
       break;
-    case CSSValueText:
+    case CSSValueID::kText:
       color = GetSystemColor(MacSystemColorID::kText);
       break;
-    case CSSValueThreeddarkshadow:
+    case CSSValueID::kThreeddarkshadow:
       color = GetSystemColor(MacSystemColorID::kControlDarkShadow);
       break;
-    case CSSValueThreedshadow:
+    case CSSValueID::kThreedshadow:
       color = GetSystemColor(MacSystemColorID::kShadow);
       break;
-    case CSSValueThreedface:
+    case CSSValueID::kThreedface:
       // We use this value instead of NSColor's controlColor to avoid website
       // incompatibilities. We may want to change this to use the NSColor in
       // future.
       color = 0xFFC0C0C0;
       break;
-    case CSSValueThreedhighlight:
+    case CSSValueID::kThreedhighlight:
       color = GetSystemColor(MacSystemColorID::kHighlight);
       break;
-    case CSSValueThreedlightshadow:
+    case CSSValueID::kThreedlightshadow:
       color = GetSystemColor(MacSystemColorID::kControlLightHighlight);
       break;
-    case CSSValueWebkitFocusRingColor:
+    case CSSValueID::kWebkitFocusRingColor:
       color = GetSystemColor(MacSystemColorID::kKeyboardFocusIndicator);
       break;
-    case CSSValueWindow:
+    case CSSValueID::kWindow:
+    case CSSValueID::kCanvas:
       color = GetSystemColor(MacSystemColorID::kWindowBackground);
       break;
-    case CSSValueWindowframe:
+    case CSSValueID::kWindowframe:
       color = GetSystemColor(MacSystemColorID::kWindowFrame);
       break;
-    case CSSValueWindowtext:
+    case CSSValueID::kWindowtext:
+    case CSSValueID::kCanvastext:
       color = GetSystemColor(MacSystemColorID::kWindowFrameText);
       break;
     default:
@@ -379,19 +461,19 @@ Color LayoutThemeMac::SystemColor(CSSValueID css_value_id) const {
   }
 
   if (needs_fallback)
-    color = LayoutTheme::SystemColor(css_value_id);
+    color = LayoutTheme::SystemColor(css_value_id, color_scheme);
 
   system_color_cache_.Set(css_value_id, color.Rgb());
 
   return color;
 }
 
-bool LayoutThemeMac::IsControlStyled(const ComputedStyle& style) const {
-  if (style.Appearance() == kTextFieldPart ||
-      style.Appearance() == kTextAreaPart)
+bool LayoutThemeMac::IsControlStyled(ControlPart part,
+                                     const ComputedStyle& style) const {
+  if (part == kTextFieldPart || part == kTextAreaPart)
     return style.HasAuthorBorder() || style.BoxShadow();
 
-  if (style.Appearance() == kMenulistPart) {
+  if (part == kMenulistPart) {
     // FIXME: This is horrible, but there is not much else that can be done.
     // Menu lists cannot draw properly when scaled. They can't really draw
     // properly when transformed either. We can't detect the transform case
@@ -410,7 +492,7 @@ bool LayoutThemeMac::IsControlStyled(const ComputedStyle& style) const {
   }
   // Some other cells don't work well when scaled.
   if (style.EffectiveZoom() != 1) {
-    switch (style.Appearance()) {
+    switch (part) {
       case kButtonPart:
       case kPushButtonPart:
       case kSearchFieldPart:
@@ -420,26 +502,24 @@ bool LayoutThemeMac::IsControlStyled(const ComputedStyle& style) const {
         break;
     }
   }
-  return LayoutTheme::IsControlStyled(style);
+  return LayoutTheme::IsControlStyled(part, style);
 }
 
 void LayoutThemeMac::AddVisualOverflow(const Node* node,
                                        const ComputedStyle& style,
                                        IntRect& rect) {
-  ControlPart part = style.Appearance();
-
-  if (HasPlatformTheme()) {
-    switch (part) {
-      case kCheckboxPart:
-      case kRadioPart:
-      case kPushButtonPart:
-      case kSquareButtonPart:
-      case kButtonPart:
-      case kInnerSpinButtonPart:
-        return LayoutTheme::AddVisualOverflow(node, style, rect);
-      default:
-        break;
-    }
+  ControlPart part = style.EffectiveAppearance();
+  switch (part) {
+    case kCheckboxPart:
+    case kRadioPart:
+    case kPushButtonPart:
+    case kSquareButtonPart:
+    case kButtonPart:
+    case kInnerSpinButtonPart:
+      return AddVisualOverflowHelper(part, ControlStatesForNode(node, style),
+                                     style.EffectiveZoom(), rect);
+    default:
+      break;
   }
 
   float zoom_level = style.EffectiveZoom();
@@ -449,7 +529,7 @@ void LayoutThemeMac::AddVisualOverflow(const Node* node,
     IntSize size = PopupButtonSizes()[[PopupButton() controlSize]];
     size.SetHeight(size.Height() * zoom_level);
     size.SetWidth(rect.Width());
-    rect = ThemeMac::InflateRect(rect, size, PopupButtonMargins(), zoom_level);
+    rect = InflateRect(rect, size, PopupButtonMargins(), zoom_level);
   } else if (part == kSliderThumbHorizontalPart ||
              part == kSliderThumbVerticalPart) {
     rect.SetHeight(rect.Height() + kSliderThumbShadowBlur);
@@ -617,13 +697,13 @@ const int* LayoutThemeMac::ProgressBarHeights() const {
   return kSizes;
 }
 
-constexpr TimeDelta LayoutThemeMac::kProgressAnimationFrameRate;
+constexpr base::TimeDelta LayoutThemeMac::kProgressAnimationFrameRate;
 
-TimeDelta LayoutThemeMac::AnimationRepeatIntervalForProgressBar() const {
+base::TimeDelta LayoutThemeMac::AnimationRepeatIntervalForProgressBar() const {
   return kProgressAnimationFrameRate;
 }
 
-TimeDelta LayoutThemeMac::AnimationDurationForProgressBar() const {
+base::TimeDelta LayoutThemeMac::AnimationDurationForProgressBar() const {
   return kProgressAnimationNumFrames * kProgressAnimationFrameRate;
 }
 
@@ -672,22 +752,20 @@ static const int kStyledPopupPaddingBottom = 2;
 // by LayoutMenuList.
 int LayoutThemeMac::PopupInternalPaddingStart(
     const ComputedStyle& style) const {
-  if (style.Appearance() == kMenulistPart)
-    return PopupButtonPadding(
-               ControlSizeForFont(style))[ThemeMac::kLeftMargin] *
+  if (style.EffectiveAppearance() == kMenulistPart)
+    return PopupButtonPadding(ControlSizeForFont(style))[kLeftMargin] *
            style.EffectiveZoom();
-  if (style.Appearance() == kMenulistButtonPart)
+  if (style.EffectiveAppearance() == kMenulistButtonPart)
     return kStyledPopupPaddingStart * style.EffectiveZoom();
   return 0;
 }
 
-int LayoutThemeMac::PopupInternalPaddingEnd(const ChromeClient*,
+int LayoutThemeMac::PopupInternalPaddingEnd(LocalFrame*,
                                             const ComputedStyle& style) const {
-  if (style.Appearance() == kMenulistPart)
-    return PopupButtonPadding(
-               ControlSizeForFont(style))[ThemeMac::kRightMargin] *
+  if (style.EffectiveAppearance() == kMenulistPart)
+    return PopupButtonPadding(ControlSizeForFont(style))[kRightMargin] *
            style.EffectiveZoom();
-  if (style.Appearance() != kMenulistButtonPart)
+  if (style.EffectiveAppearance() != kMenulistButtonPart)
     return 0;
   float font_scale = style.FontSize() / kBaseFontSize;
   float arrow_width = kMenuListBaseArrowWidth * font_scale;
@@ -697,21 +775,20 @@ int LayoutThemeMac::PopupInternalPaddingEnd(const ChromeClient*,
 }
 
 int LayoutThemeMac::PopupInternalPaddingTop(const ComputedStyle& style) const {
-  if (style.Appearance() == kMenulistPart)
-    return PopupButtonPadding(ControlSizeForFont(style))[ThemeMac::kTopMargin] *
+  if (style.EffectiveAppearance() == kMenulistPart)
+    return PopupButtonPadding(ControlSizeForFont(style))[kTopMargin] *
            style.EffectiveZoom();
-  if (style.Appearance() == kMenulistButtonPart)
+  if (style.EffectiveAppearance() == kMenulistButtonPart)
     return kStyledPopupPaddingTop * style.EffectiveZoom();
   return 0;
 }
 
 int LayoutThemeMac::PopupInternalPaddingBottom(
     const ComputedStyle& style) const {
-  if (style.Appearance() == kMenulistPart)
-    return PopupButtonPadding(
-               ControlSizeForFont(style))[ThemeMac::kBottomMargin] *
+  if (style.EffectiveAppearance() == kMenulistPart)
+    return PopupButtonPadding(ControlSizeForFont(style))[kBottomMargin] *
            style.EffectiveZoom();
-  if (style.Appearance() == kMenulistButtonPart)
+  if (style.EffectiveAppearance() == kMenulistButtonPart)
     return kStyledPopupPaddingBottom * style.EffectiveZoom();
   return 0;
 }
@@ -860,8 +937,8 @@ void LayoutThemeMac::AdjustProgressBarBounds(ComputedStyle& style) const {
 
 void LayoutThemeMac::AdjustSliderThumbSize(ComputedStyle& style) const {
   float zoom_level = style.EffectiveZoom();
-  if (style.Appearance() == kSliderThumbHorizontalPart ||
-      style.Appearance() == kSliderThumbVerticalPart) {
+  if (style.EffectiveAppearance() == kSliderThumbHorizontalPart ||
+      style.EffectiveAppearance() == kSliderThumbVerticalPart) {
     style.SetWidth(
         Length::Fixed(static_cast<int>(kSliderThumbWidth * zoom_level)));
     style.SetHeight(
@@ -871,59 +948,59 @@ void LayoutThemeMac::AdjustSliderThumbSize(ComputedStyle& style) const {
 
 NSPopUpButtonCell* LayoutThemeMac::PopupButton() const {
   if (!popup_button_) {
-    popup_button_.AdoptNS(
-        [[NSPopUpButtonCell alloc] initTextCell:@"" pullsDown:NO]);
-    [popup_button_.Get() setUsesItemFromMenu:NO];
-    [popup_button_.Get() setFocusRingType:NSFocusRingTypeExterior];
+    popup_button_.reset([[NSPopUpButtonCell alloc] initTextCell:@""
+                                                      pullsDown:NO]);
+    [popup_button_ setUsesItemFromMenu:NO];
+    [popup_button_ setFocusRingType:NSFocusRingTypeExterior];
   }
 
-  return popup_button_.Get();
+  return popup_button_;
 }
 
 NSSearchFieldCell* LayoutThemeMac::Search() const {
   if (!search_) {
-    search_.AdoptNS([[NSSearchFieldCell alloc] initTextCell:@""]);
-    [search_.Get() setBezelStyle:NSTextFieldRoundedBezel];
-    [search_.Get() setBezeled:YES];
-    [search_.Get() setEditable:YES];
-    [search_.Get() setFocusRingType:NSFocusRingTypeExterior];
+    search_.reset([[NSSearchFieldCell alloc] initTextCell:@""]);
+    [search_ setBezelStyle:NSTextFieldRoundedBezel];
+    [search_ setBezeled:YES];
+    [search_ setEditable:YES];
+    [search_ setFocusRingType:NSFocusRingTypeExterior];
 
     // Suppress NSSearchFieldCell's default placeholder text. Prior to OS10.11,
     // this is achieved by calling |setCenteredLook| with NO. In OS10.11 and
     // later, instead call |setPlaceholderString| with an empty string.
     // See https://crbug.com/752362.
-    if (IsOS10_10()) {
+    if (base::mac::IsAtMostOS10_10()) {
       SEL sel = @selector(setCenteredLook:);
-      if ([search_.Get() respondsToSelector:sel]) {
+      if ([search_ respondsToSelector:sel]) {
         BOOL bool_value = NO;
         NSMethodSignature* signature =
             [NSSearchFieldCell instanceMethodSignatureForSelector:sel];
         NSInvocation* invocation =
             [NSInvocation invocationWithMethodSignature:signature];
-        [invocation setTarget:search_.Get()];
+        [invocation setTarget:search_];
         [invocation setSelector:sel];
         [invocation setArgument:&bool_value atIndex:2];
         [invocation invoke];
       }
     } else {
-      [search_.Get() setPlaceholderString:@""];
+      [search_ setPlaceholderString:@""];
     }
   }
 
-  return search_.Get();
+  return search_;
 }
 
 NSTextFieldCell* LayoutThemeMac::TextField() const {
   if (!text_field_) {
-    text_field_.AdoptNS([[BlinkTextFieldCell alloc] initTextCell:@""]);
-    [text_field_.Get() setBezeled:YES];
-    [text_field_.Get() setEditable:YES];
-    [text_field_.Get() setFocusRingType:NSFocusRingTypeExterior];
-    [text_field_.Get() setDrawsBackground:YES];
-    [text_field_.Get() setBackgroundColor:[NSColor whiteColor]];
+    text_field_.reset([[BlinkTextFieldCell alloc] initTextCell:@""]);
+    [text_field_ setBezeled:YES];
+    [text_field_ setEditable:YES];
+    [text_field_ setFocusRingType:NSFocusRingTypeExterior];
+    [text_field_ setDrawsBackground:YES];
+    [text_field_ setBackgroundColor:[NSColor whiteColor]];
   }
 
-  return text_field_.Get();
+  return text_field_;
 }
 
 String LayoutThemeMac::FileListNameForWidth(Locale& locale,
@@ -935,8 +1012,7 @@ String LayoutThemeMac::FileListNameForWidth(Locale& locale,
 
   String str_to_truncate;
   if (file_list->IsEmpty()) {
-    str_to_truncate =
-        locale.QueryString(WebLocalizedString::kFileButtonNoFileSelectedLabel);
+    str_to_truncate = locale.QueryString(IDS_FORM_FILE_NO_FILE_LABEL);
   } else if (file_list->length() == 1) {
     File* file = file_list->item(0);
     if (file->GetUserVisibility() == File::kIsUserVisible)
@@ -946,7 +1022,7 @@ String LayoutThemeMac::FileListNameForWidth(Locale& locale,
       str_to_truncate = file->name();
   } else {
     return StringTruncator::RightTruncate(
-        locale.QueryString(WebLocalizedString::kMultipleFileUploadText,
+        locale.QueryString(IDS_FORM_FILE_MULTIPLE_UPLOAD,
                            locale.ConvertToLocalizedNumber(
                                String::Number(file_list->length()))),
         width, font);
@@ -961,8 +1037,14 @@ NSView* FlippedView() {
 }
 
 LayoutTheme& LayoutTheme::NativeTheme() {
-  DEFINE_STATIC_REF(LayoutTheme, layout_theme, (LayoutThemeMac::Create()));
-  return *layout_theme;
+  if (RuntimeEnabledFeatures::FormControlsRefreshEnabled()) {
+    DEFINE_STATIC_REF(LayoutTheme, layout_theme,
+                      (LayoutThemeMacRefresh::Create()));
+    return *layout_theme;
+  } else {
+    DEFINE_STATIC_REF(LayoutTheme, layout_theme, (LayoutThemeMac::Create()));
+    return *layout_theme;
+  }
 }
 
 scoped_refptr<LayoutTheme> LayoutThemeMac::Create() {
@@ -1004,14 +1086,15 @@ String LayoutThemeMac::ExtraFullscreenStyleSheet() {
 
 String LayoutThemeMac::ExtraDefaultStyleSheet() {
   return LayoutTheme::ExtraDefaultStyleSheet() +
-         GetDataResourceAsASCIIString("input_multiple_fields.css") +
-         GetDataResourceAsASCIIString("mac.css");
+         UncompressResourceAsASCIIString(
+             IDR_UASTYLE_THEME_INPUT_MULTIPLE_FIELDS_CSS) +
+         UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_MAC_CSS);
 }
 
 bool LayoutThemeMac::ThemeDrawsFocusRing(const ComputedStyle& style) const {
   if (ShouldUseFallbackTheme(style))
     return false;
-  switch (style.Appearance()) {
+  switch (style.EffectiveAppearance()) {
     case kCheckboxPart:
     case kRadioPart:
     case kPushButtonPart:
@@ -1036,10 +1119,575 @@ bool LayoutThemeMac::ThemeDrawsFocusRing(const ComputedStyle& style) const {
 }
 
 bool LayoutThemeMac::ShouldUseFallbackTheme(const ComputedStyle& style) const {
-  ControlPart part = style.Appearance();
+  ControlPart part = style.EffectiveAppearance();
   if (part == kCheckboxPart || part == kRadioPart)
     return style.EffectiveZoom() != 1;
   return false;
+}
+
+// We don't use controlSizeForFont() for steppers because the stepper height
+// should be equal to or less than the corresponding text field height,
+static NSControlSize StepperControlSizeForFont(
+    const FontDescription& font_description) {
+  int font_size = font_description.ComputedPixelSize();
+  if (font_size >= 27)
+    return NSRegularControlSize;
+  if (font_size >= 22)
+    return NSSmallControlSize;
+  return NSMiniControlSize;
+}
+
+NSControlSize LayoutThemeMac::ControlSizeFromPixelSize(
+    const IntSize* sizes,
+    const IntSize& min_zoomed_size,
+    float zoom_factor) {
+  if (min_zoomed_size.Width() >=
+          static_cast<int>(sizes[NSRegularControlSize].Width() * zoom_factor) &&
+      min_zoomed_size.Height() >=
+          static_cast<int>(sizes[NSRegularControlSize].Height() * zoom_factor))
+    return NSRegularControlSize;
+  if (min_zoomed_size.Width() >=
+          static_cast<int>(sizes[NSSmallControlSize].Width() * zoom_factor) &&
+      min_zoomed_size.Height() >=
+          static_cast<int>(sizes[NSSmallControlSize].Height() * zoom_factor))
+    return NSSmallControlSize;
+  return NSMiniControlSize;
+}
+
+static void SetControlSizeThemeMac(NSCell* cell,
+                                   const IntSize* sizes,
+                                   const IntSize& min_zoomed_size,
+                                   float zoom_factor) {
+  ControlSize size = LayoutThemeMac::ControlSizeFromPixelSize(
+      sizes, min_zoomed_size, zoom_factor);
+  // Only update if we have to, since AppKit does work even if the size is the
+  // same.
+  if (size != [cell controlSize])
+    [cell setControlSize:(NSControlSize)size];
+}
+
+static void UpdateStates(NSCell* cell, ControlStates states) {
+  // Hover state is not supported by Aqua.
+
+  // Pressed state
+  bool old_pressed = [cell isHighlighted];
+  bool pressed = states & kPressedControlState;
+  if (pressed != old_pressed)
+    [cell setHighlighted:pressed];
+
+  // Enabled state
+  bool old_enabled = [cell isEnabled];
+  bool enabled = states & kEnabledControlState;
+  if (enabled != old_enabled)
+    [cell setEnabled:enabled];
+
+  // Checked and Indeterminate
+  bool old_indeterminate = [cell state] == NSMixedState;
+  bool indeterminate = (states & kIndeterminateControlState);
+  bool checked = states & kCheckedControlState;
+  bool old_checked = [cell state] == NSOnState;
+  if (old_indeterminate != indeterminate || checked != old_checked)
+    [cell setState:indeterminate ? NSMixedState
+                                 : (checked ? NSOnState : NSOffState)];
+
+  // Window inactive state does not need to be checked explicitly, since we
+  // paint parented to a view in a window whose key state can be detected.
+}
+
+// Return a fake NSView whose sole purpose is to tell AppKit that it's flipped.
+NSView* LayoutThemeMac::EnsuredView(const IntSize& size) {
+  // Use a fake flipped view.
+  static NSView* flipped_view = [[BlinkFlippedControl alloc] init];
+  [flipped_view setFrameSize:NSSizeFromCGSize(CGSize(size))];
+
+  return flipped_view;
+}
+
+LayoutUnit LayoutThemeMac::BaselinePositionAdjustment(
+    const ComputedStyle& style) const {
+  ControlPart part = style.EffectiveAppearance();
+  if (part == kCheckboxPart || part == kRadioPart)
+    return LayoutUnit(style.EffectiveZoom() * -2);
+  return LayoutTheme::BaselinePositionAdjustment(style);
+}
+
+FontDescription LayoutThemeMac::ControlFont(
+    ControlPart part,
+    const FontDescription& font_description,
+    float zoom_factor) const {
+  using ::blink::ControlSizeForFont;
+  switch (part) {
+    case kPushButtonPart: {
+      FontDescription result;
+      result.SetIsAbsoluteSize(true);
+      result.SetGenericFamily(FontDescription::kSerifFamily);
+
+      NSFont* ns_font = [NSFont
+          systemFontOfSize:[NSFont systemFontSizeForControlSize:
+                                       ControlSizeForFont(font_description)]];
+      result.FirstFamily().SetFamily(font_family_names::kSystemUi);
+      result.SetComputedSize([ns_font pointSize] * zoom_factor);
+      result.SetSpecifiedSize([ns_font pointSize] * zoom_factor);
+      return result;
+    }
+    default:
+      return LayoutTheme::ControlFont(part, font_description, zoom_factor);
+  }
+}
+
+LengthSize LayoutThemeMac::GetControlSize(
+    ControlPart part,
+    const FontDescription& font_description,
+    const LengthSize& zoomed_size,
+    float zoom_factor) const {
+  switch (part) {
+    case kCheckboxPart:
+      return CheckboxSize(font_description, zoomed_size, zoom_factor);
+    case kRadioPart:
+      return RadioSize(font_description, zoomed_size, zoom_factor);
+    case kPushButtonPart:
+      // Height is reset to auto so that specified heights can be ignored.
+      return SizeFromFont(font_description,
+                          LengthSize(zoomed_size.Width(), Length()),
+                          zoom_factor, ButtonSizes());
+    case kInnerSpinButtonPart:
+      if (!zoomed_size.Width().IsIntrinsicOrAuto() &&
+          !zoomed_size.Height().IsIntrinsicOrAuto())
+        return zoomed_size;
+      return SizeFromNSControlSize(StepperControlSizeForFont(font_description),
+                                   zoomed_size, zoom_factor, StepperSizes());
+    default:
+      return zoomed_size;
+  }
+}
+
+LengthSize LayoutThemeMac::MinimumControlSize(
+    ControlPart part,
+    const FontDescription& font_description,
+    float zoom_factor,
+    const ComputedStyle& style) const {
+  switch (part) {
+    case kSquareButtonPart:
+    case kButtonPart:
+      return LengthSize(style.MinWidth().Zoom(zoom_factor),
+                        Length::Fixed(static_cast<int>(15 * zoom_factor)));
+    case kInnerSpinButtonPart: {
+      IntSize base = StepperSizes()[NSMiniControlSize];
+      return LengthSize(
+          Length::Fixed(static_cast<int>(base.Width() * zoom_factor)),
+          Length::Fixed(static_cast<int>(base.Height() * zoom_factor)));
+    }
+    default:
+      return LayoutTheme::MinimumControlSize(part, font_description,
+                                             zoom_factor, style);
+  }
+}
+
+LengthBox LayoutThemeMac::ControlPadding(
+    ControlPart part,
+    const FontDescription& font_description,
+    const Length& zoomed_box_top,
+    const Length& zoomed_box_right,
+    const Length& zoomed_box_bottom,
+    const Length& zoomed_box_left,
+    float zoom_factor) const {
+  switch (part) {
+    case kPushButtonPart: {
+      // Just use 8px.  AppKit wants to use 11px for mini buttons, but that
+      // padding is just too large for real-world Web sites (creating a huge
+      // necessary minimum width for buttons whose space is by definition
+      // constrained, since we select mini only for small cramped environments.
+      // This also guarantees the HTML <button> will match our rendering by
+      // default, since we're using a consistent padding.
+      const int padding = 8 * zoom_factor;
+      return LengthBox(2, padding, 3, padding);
+    }
+    default:
+      return LayoutTheme::ControlPadding(part, font_description, zoomed_box_top,
+                                         zoomed_box_right, zoomed_box_bottom,
+                                         zoomed_box_left, zoom_factor);
+  }
+}
+
+LengthBox LayoutThemeMac::ControlBorder(ControlPart part,
+                                        const FontDescription& font_description,
+                                        const LengthBox& zoomed_box,
+                                        float zoom_factor) const {
+  switch (part) {
+    case kSquareButtonPart:
+      return LengthBox(0, zoomed_box.Right().Value(), 0,
+                       zoomed_box.Left().Value());
+    default:
+      return LayoutTheme::ControlBorder(part, font_description, zoomed_box,
+                                        zoom_factor);
+  }
+}
+
+void LayoutThemeMac::AddVisualOverflowHelper(ControlPart part,
+                                             ControlStates states,
+                                             float zoom_factor,
+                                             IntRect& zoomed_rect) const {
+  BEGIN_BLOCK_OBJC_EXCEPTIONS
+  switch (part) {
+    case kCheckboxPart: {
+      // We inflate the rect as needed to account for padding included in the
+      // cell to accommodate the checkbox shadow" and the check.  We don't
+      // consider this part of the bounds of the control in WebKit.
+      NSCell* cell = Checkbox(states, zoomed_rect, zoom_factor);
+      NSControlSize control_size = [cell controlSize];
+      IntSize zoomed_size = CheckboxSizes()[control_size];
+      zoomed_size.SetHeight(zoomed_size.Height() * zoom_factor);
+      zoomed_size.SetWidth(zoomed_size.Width() * zoom_factor);
+      zoomed_rect = InflateRect(zoomed_rect, zoomed_size,
+                                CheckboxMargins(control_size), zoom_factor);
+      break;
+    }
+    case kRadioPart: {
+      // We inflate the rect as needed to account for padding included in the
+      // cell to accommodate the radio button shadow".  We don't consider this
+      // part of the bounds of the control in WebKit.
+      NSCell* cell = Radio(states, zoomed_rect, zoom_factor);
+      NSControlSize control_size = [cell controlSize];
+      IntSize zoomed_size = RadioSizes()[control_size];
+      zoomed_size.SetHeight(zoomed_size.Height() * zoom_factor);
+      zoomed_size.SetWidth(zoomed_size.Width() * zoom_factor);
+      zoomed_rect = InflateRect(zoomed_rect, zoomed_size,
+                                RadioMargins(control_size), zoom_factor);
+      break;
+    }
+    case kPushButtonPart:
+    case kButtonPart: {
+      NSButtonCell* cell = Button(part, states, zoomed_rect, zoom_factor);
+      NSControlSize control_size = [cell controlSize];
+
+      // We inflate the rect as needed to account for the Aqua button's shadow.
+      if ([cell bezelStyle] == NSRoundedBezelStyle) {
+        IntSize zoomed_size = ButtonSizes()[control_size];
+        zoomed_size.SetHeight(zoomed_size.Height() * zoom_factor);
+        // Buttons don't ever constrain width, so the zoomed width can just be
+        // honored.
+        zoomed_size.SetWidth(zoomed_rect.Width());
+        zoomed_rect = InflateRect(zoomed_rect, zoomed_size,
+                                  ButtonMargins(control_size), zoom_factor);
+      }
+      break;
+    }
+    case kInnerSpinButtonPart: {
+      static const int kStepperMargin[4] = {0, 0, 0, 0};
+      ControlSize control_size = ControlSizeFromPixelSize(
+          StepperSizes(), zoomed_rect.Size(), zoom_factor);
+      IntSize zoomed_size = StepperSizes()[control_size];
+      zoomed_size.SetHeight(zoomed_size.Height() * zoom_factor);
+      zoomed_size.SetWidth(zoomed_size.Width() * zoom_factor);
+      zoomed_rect =
+          InflateRect(zoomed_rect, zoomed_size, kStepperMargin, zoom_factor);
+      break;
+    }
+    default:
+      break;
+  }
+  END_BLOCK_OBJC_EXCEPTIONS
+}
+
+void LayoutThemeMac::AdjustControlPartStyle(ComputedStyle& style) {
+  ControlPart part = style.EffectiveAppearance();
+  switch (part) {
+    case kCheckboxPart:
+    case kInnerSpinButtonPart:
+    case kRadioPart:
+    case kPushButtonPart:
+    case kSquareButtonPart:
+    case kButtonPart: {
+      // Border
+      LengthBox border_box(style.BorderTopWidth(), style.BorderRightWidth(),
+                           style.BorderBottomWidth(), style.BorderLeftWidth());
+      border_box = ControlBorder(part, style.GetFont().GetFontDescription(),
+                                 border_box, style.EffectiveZoom());
+      if (border_box.Top().Value() !=
+          static_cast<int>(style.BorderTopWidth())) {
+        if (border_box.Top().Value())
+          style.SetBorderTopWidth(border_box.Top().Value());
+        else
+          style.ResetBorderTop();
+      }
+      if (border_box.Right().Value() !=
+          static_cast<int>(style.BorderRightWidth())) {
+        if (border_box.Right().Value())
+          style.SetBorderRightWidth(border_box.Right().Value());
+        else
+          style.ResetBorderRight();
+      }
+      if (border_box.Bottom().Value() !=
+          static_cast<int>(style.BorderBottomWidth())) {
+        style.SetBorderBottomWidth(border_box.Bottom().Value());
+        if (border_box.Bottom().Value())
+          style.SetBorderBottomWidth(border_box.Bottom().Value());
+        else
+          style.ResetBorderBottom();
+      }
+      if (border_box.Left().Value() !=
+          static_cast<int>(style.BorderLeftWidth())) {
+        style.SetBorderLeftWidth(border_box.Left().Value());
+        if (border_box.Left().Value())
+          style.SetBorderLeftWidth(border_box.Left().Value());
+        else
+          style.ResetBorderLeft();
+      }
+
+      // Padding
+      LengthBox padding_box = ControlPadding(
+          part, style.GetFont().GetFontDescription(), style.PaddingTop(),
+          style.PaddingRight(), style.PaddingBottom(), style.PaddingLeft(),
+          style.EffectiveZoom());
+      if (!style.PaddingEqual(padding_box))
+        style.SetPadding(padding_box);
+
+      // Whitespace
+      if (ControlRequiresPreWhiteSpace(part))
+        style.SetWhiteSpace(EWhiteSpace::kPre);
+
+      // Width / Height
+      // The width and height here are affected by the zoom.
+      LengthSize control_size = GetControlSize(
+          part, style.GetFont().GetFontDescription(),
+          LengthSize(style.Width(), style.Height()), style.EffectiveZoom());
+
+      LengthSize min_control_size =
+          MinimumControlSize(part, style.GetFont().GetFontDescription(),
+                             style.EffectiveZoom(), style);
+
+      // Only potentially set min-size to |control_size| for these parts.
+      if (part == kCheckboxPart || part == kRadioPart)
+        SetMinimumSize(style, &control_size, &min_control_size);
+      else
+        SetMinimumSize(style, nullptr, &min_control_size);
+
+      if (control_size.Width() != style.Width())
+        style.SetWidth(control_size.Width());
+      if (control_size.Height() != style.Height())
+        style.SetHeight(control_size.Height());
+
+      // Font
+      FontDescription control_font = ControlFont(
+          part, style.GetFont().GetFontDescription(), style.EffectiveZoom());
+      if (control_font != style.GetFont().GetFontDescription()) {
+        // Reset our line-height
+        style.SetLineHeight(ComputedStyleInitialValues::InitialLineHeight());
+
+        // Now update our font.
+        if (style.SetFontDescription(control_font))
+          style.GetFont().Update(nullptr);
+      }
+      break;
+    }
+    case kProgressBarPart:
+      AdjustProgressBarBounds(style);
+      break;
+    default:
+      break;
+  }
+}
+
+// static
+IntRect LayoutThemeMac::InflateRect(const IntRect& zoomed_rect,
+                                    const IntSize& zoomed_size,
+                                    const int* margins,
+                                    float zoom_factor) {
+  // Only do the inflation if the available width/height are too small.
+  // Otherwise try to fit the glow/check space into the available box's
+  // width/height.
+  int width_delta = zoomed_rect.Width() -
+                    (zoomed_size.Width() + margins[kLeftMargin] * zoom_factor +
+                     margins[kRightMargin] * zoom_factor);
+  int height_delta = zoomed_rect.Height() -
+                     (zoomed_size.Height() + margins[kTopMargin] * zoom_factor +
+                      margins[kBottomMargin] * zoom_factor);
+  IntRect result(zoomed_rect);
+  if (width_delta < 0) {
+    result.SetX(result.X() - margins[kLeftMargin] * zoom_factor);
+    result.SetWidth(result.Width() - width_delta);
+  }
+  if (height_delta < 0) {
+    result.SetY(result.Y() - margins[kTopMargin] * zoom_factor);
+    result.SetHeight(result.Height() - height_delta);
+  }
+  return result;
+}
+
+// static
+IntRect LayoutThemeMac::InflateRectForFocusRing(const IntRect& rect) {
+  // Just put a margin of 16 units around the rect. The UI elements that use
+  // this don't appropriately scale their focus rings appropriately (e.g, paint
+  // pickers), or switch to non-native widgets when scaled (e.g, check boxes
+  // and radio buttons).
+  const int kMargin = 16;
+  IntRect result;
+  result.SetX(rect.X() - kMargin);
+  result.SetY(rect.Y() - kMargin);
+  result.SetWidth(rect.Width() + 2 * kMargin);
+  result.SetHeight(rect.Height() + 2 * kMargin);
+  return result;
+}
+
+// Checkboxes
+
+const IntSize* LayoutThemeMac::CheckboxSizes() {
+  static const IntSize kSizes[3] = {IntSize(14, 14), IntSize(12, 12),
+                                    IntSize(10, 10)};
+  return kSizes;
+}
+
+const int* LayoutThemeMac::CheckboxMargins(NSControlSize control_size) {
+  static const int kMargins[3][4] = {
+      {3, 4, 4, 2},
+      {4, 3, 3, 3},
+      {4, 3, 3, 3},
+  };
+  return kMargins[control_size];
+}
+
+LengthSize LayoutThemeMac::CheckboxSize(const FontDescription& font_description,
+                                        const LengthSize& zoomed_size,
+                                        float zoom_factor) {
+  // If the width and height are both specified, then we have nothing to do.
+  if (!zoomed_size.Width().IsIntrinsicOrAuto() &&
+      !zoomed_size.Height().IsIntrinsicOrAuto())
+    return zoomed_size;
+
+  // Use the font size to determine the intrinsic width of the control.
+  return SizeFromFont(font_description, zoomed_size, zoom_factor,
+                      CheckboxSizes());
+}
+
+NSButtonCell* LayoutThemeMac::Checkbox(ControlStates states,
+                                       const IntRect& zoomed_rect,
+                                       float zoom_factor) {
+  static NSButtonCell* checkbox_cell;
+  if (!checkbox_cell) {
+    checkbox_cell = [[NSButtonCell alloc] init];
+    [checkbox_cell setButtonType:NSSwitchButton];
+    [checkbox_cell setTitle:nil];
+    [checkbox_cell setAllowsMixedState:YES];
+    [checkbox_cell setFocusRingType:NSFocusRingTypeExterior];
+  }
+
+  // Set the control size based off the rectangle we're painting into.
+  SetControlSizeThemeMac(checkbox_cell, CheckboxSizes(), zoomed_rect.Size(),
+                         zoom_factor);
+
+  // Update the various states we respond to.
+  UpdateStates(checkbox_cell, states);
+
+  return checkbox_cell;
+}
+
+const IntSize* LayoutThemeMac::RadioSizes() {
+  static const IntSize kSizes[3] = {IntSize(14, 15), IntSize(12, 13),
+                                    IntSize(10, 10)};
+  return kSizes;
+}
+
+const int* LayoutThemeMac::RadioMargins(NSControlSize control_size) {
+  static const int kMargins[3][4] = {
+      {2, 2, 4, 2},
+      {3, 2, 3, 2},
+      {1, 0, 2, 0},
+  };
+  return kMargins[control_size];
+}
+
+LengthSize LayoutThemeMac::RadioSize(const FontDescription& font_description,
+                                     const LengthSize& zoomed_size,
+                                     float zoom_factor) {
+  // If the width and height are both specified, then we have nothing to do.
+  if (!zoomed_size.Width().IsIntrinsicOrAuto() &&
+      !zoomed_size.Height().IsIntrinsicOrAuto())
+    return zoomed_size;
+
+  // Use the font size to determine the intrinsic width of the control.
+  return SizeFromFont(font_description, zoomed_size, zoom_factor, RadioSizes());
+}
+
+NSButtonCell* LayoutThemeMac::Radio(ControlStates states,
+                                    const IntRect& zoomed_rect,
+                                    float zoom_factor) {
+  static NSButtonCell* radio_cell;
+  if (!radio_cell) {
+    radio_cell = [[NSButtonCell alloc] init];
+    [radio_cell setButtonType:NSRadioButton];
+    [radio_cell setTitle:nil];
+    [radio_cell setFocusRingType:NSFocusRingTypeExterior];
+  }
+
+  // Set the control size based off the rectangle we're painting into.
+  SetControlSizeThemeMac(radio_cell, RadioSizes(), zoomed_rect.Size(),
+                         zoom_factor);
+
+  // Update the various states we respond to.
+  // Cocoa draws NSMixedState NSRadioButton as NSOnState so we don't want that.
+  states &= ~kIndeterminateControlState;
+  UpdateStates(radio_cell, states);
+
+  return radio_cell;
+}
+
+// Buttons really only constrain height. They respect width.
+const IntSize* LayoutThemeMac::ButtonSizes() {
+  static const IntSize kSizes[3] = {IntSize(0, 21), IntSize(0, 18),
+                                    IntSize(0, 15)};
+  return kSizes;
+}
+
+const int* LayoutThemeMac::ButtonMargins(NSControlSize control_size) {
+  static const int kMargins[3][4] = {
+      {4, 6, 7, 6},
+      {4, 5, 6, 5},
+      {0, 1, 1, 1},
+  };
+  return kMargins[control_size];
+}
+
+static void SetUpButtonCell(NSButtonCell* cell,
+                            ControlPart part,
+                            ControlStates states,
+                            const IntRect& zoomed_rect,
+                            float zoom_factor) {
+  // Set the control size based off the rectangle we're painting into.
+  const IntSize* sizes = LayoutThemeMac::ButtonSizes();
+  if (part == kSquareButtonPart ||
+      zoomed_rect.Height() >
+          LayoutThemeMac::ButtonSizes()[NSRegularControlSize].Height() *
+              zoom_factor) {
+    // Use the square button
+    if ([cell bezelStyle] != NSShadowlessSquareBezelStyle)
+      [cell setBezelStyle:NSShadowlessSquareBezelStyle];
+  } else if ([cell bezelStyle] != NSRoundedBezelStyle)
+    [cell setBezelStyle:NSRoundedBezelStyle];
+
+  SetControlSizeThemeMac(cell, sizes, zoomed_rect.Size(), zoom_factor);
+
+  // Update the various states we respond to.
+  UpdateStates(cell, states);
+}
+
+NSButtonCell* LayoutThemeMac::Button(ControlPart part,
+                                     ControlStates states,
+                                     const IntRect& zoomed_rect,
+                                     float zoom_factor) {
+  static NSButtonCell* cell = nil;
+  if (!cell) {
+    cell = [[NSButtonCell alloc] init];
+    [cell setTitle:nil];
+    [cell setButtonType:NSMomentaryPushInButton];
+  }
+  SetUpButtonCell(cell, part, states, zoomed_rect, zoom_factor);
+  return cell;
+}
+
+const IntSize* LayoutThemeMac::StepperSizes() {
+  static const IntSize kSizes[3] = {IntSize(19, 27), IntSize(15, 22),
+                                    IntSize(13, 15)};
+  return kSizes;
 }
 
 }  // namespace blink

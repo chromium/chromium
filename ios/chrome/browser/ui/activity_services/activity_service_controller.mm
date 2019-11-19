@@ -10,15 +10,23 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/sys_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/send_tab_to_self/send_tab_to_self_model.h"
+#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/send_tab_to_self/target_device_info.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/passwords/password_form_filler.h"
+#import "ios/chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
+#include "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/ui/activity_services/activities/bookmark_activity.h"
 #import "ios/chrome/browser/ui/activity_services/activities/copy_activity.h"
 #import "ios/chrome/browser/ui/activity_services/activities/find_in_page_activity.h"
 #import "ios/chrome/browser/ui/activity_services/activities/print_activity.h"
 #import "ios/chrome/browser/ui/activity_services/activities/reading_list_activity.h"
 #import "ios/chrome/browser/ui/activity_services/activities/request_desktop_or_mobile_site_activity.h"
+#import "ios/chrome/browser/ui/activity_services/activities/send_tab_to_self_activity.h"
 #import "ios/chrome/browser/ui/activity_services/activity_type_util.h"
 #import "ios/chrome/browser/ui/activity_services/appex_constants.h"
 #import "ios/chrome/browser/ui/activity_services/chrome_activity_item_source.h"
@@ -67,7 +75,8 @@ NSString* const kActivityServicesSnackbarCategory =
 - (NSArray*)applicationActivitiesForData:(ShareToData*)data
                               dispatcher:(id<BrowserCommands>)dispatcher
                            bookmarkModel:
-                               (bookmarks::BookmarkModel*)bookmarkModel;
+                               (bookmarks::BookmarkModel*)bookmarkModel
+                        canSendTabToSelf:(BOOL)canSendTabToSelf;
 // Processes |extensionItems| returned from App Extension invocation returning
 // the |activityType|. Calls shareDelegate_ with the processed returned items
 // and |result| of activity. Returns whether caller should reset UI.
@@ -144,17 +153,23 @@ NSString* const kActivityServicesSnackbarCategory =
 
   bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForBrowserState(browserState);
+
+  BOOL canSendTabToSelf =
+      send_tab_to_self::ShouldOfferFeature(browserState, data.shareURL);
+
   DCHECK(!activityViewController_);
   activityViewController_ = [[UIActivityViewController alloc]
       initWithActivityItems:[self activityItemsForData:data]
-      applicationActivities:[self applicationActivitiesForData:data
-                                                    dispatcher:dispatcher
-                                                 bookmarkModel:bookmarkModel]];
+      applicationActivities:[self
+                                applicationActivitiesForData:data
+                                                  dispatcher:dispatcher
+                                               bookmarkModel:bookmarkModel
+                                            canSendTabToSelf:canSendTabToSelf]];
 
   // Reading List and Print activities refer to iOS' version of these.
-  // Chrome-specific implementations of these two activities are provided below
-  // in applicationActivitiesForData:dispatcher:bookmarkModel:
-  // The "Copy" action is also provided by chrome in order to change its icon.
+  // Chrome-specific implementations of these two activities are provided
+  // below in applicationActivitiesForData:dispatcher:bookmarkModel: The
+  // "Copy" action is also provided by chrome in order to change its icon.
   NSArray* excludedActivityTypes = @[
     UIActivityTypeAddToReadingList, UIActivityTypeCopyToPasteboard,
     UIActivityTypePrint, UIActivityTypeSaveToCameraRoll
@@ -244,46 +259,68 @@ NSString* const kActivityServicesSnackbarCategory =
   return activityItems;
 }
 
+- (NSString*)sendTabToSelfContextMenuTitleForDevice:(NSString*)device_name
+                                daysSinceLastUpdate:(int)days {
+  NSString* active_time = @"";
+  if (days == 0) {
+    active_time = l10n_util::GetNSString(
+        IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ITEM_SUBTITLE_TODAY);
+  } else if (days == 1) {
+    active_time = l10n_util::GetNSString(
+        IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ITEM_SUBTITLE_DAY);
+  } else {
+    active_time = l10n_util::GetNSStringF(
+        IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ITEM_SUBTITLE_DAYS,
+        base::NumberToString16(days));
+  }
+  return [NSString stringWithFormat:@"%@ \u2022 %@", device_name, active_time];
+}
+
 - (NSArray*)applicationActivitiesForData:(ShareToData*)data
                               dispatcher:(id<BrowserCommands>)dispatcher
                            bookmarkModel:
-                               (bookmarks::BookmarkModel*)bookmarkModel {
+                               (bookmarks::BookmarkModel*)bookmarkModel
+                        canSendTabToSelf:(BOOL)canSendTabToSelf {
   NSMutableArray* applicationActivities = [NSMutableArray array];
 
   [applicationActivities
       addObject:[[CopyActivity alloc] initWithURL:data.shareURL]];
 
   if (data.shareURL.SchemeIsHTTPOrHTTPS()) {
+    if (canSendTabToSelf) {
+      SendTabToSelfActivity* sendTabToSelfActivity =
+          [[SendTabToSelfActivity alloc] initWithDispatcher:dispatcher];
+      [applicationActivities addObject:sendTabToSelfActivity];
+    }
+
     ReadingListActivity* readingListActivity =
         [[ReadingListActivity alloc] initWithURL:data.shareURL
                                            title:data.title
                                       dispatcher:dispatcher];
     [applicationActivities addObject:readingListActivity];
 
-    if (IsUIRefreshPhase1Enabled()) {
-      if (bookmarkModel) {
-        BOOL bookmarked = bookmarkModel->loaded() &&
-                          bookmarkModel->IsBookmarked(data.visibleURL);
-        BookmarkActivity* bookmarkActivity =
-            [[BookmarkActivity alloc] initWithURL:data.visibleURL
-                                       bookmarked:bookmarked
-                                       dispatcher:dispatcher];
-        [applicationActivities addObject:bookmarkActivity];
-      }
+    if (bookmarkModel) {
+      BOOL bookmarked = bookmarkModel->loaded() &&
+                        bookmarkModel->IsBookmarked(data.visibleURL);
+      BookmarkActivity* bookmarkActivity =
+          [[BookmarkActivity alloc] initWithURL:data.visibleURL
+                                     bookmarked:bookmarked
+                                     dispatcher:dispatcher];
+      [applicationActivities addObject:bookmarkActivity];
+    }
 
-      if (data.isPageSearchable) {
-        FindInPageActivity* findInPageActivity =
-            [[FindInPageActivity alloc] initWithDispatcher:dispatcher];
-        [applicationActivities addObject:findInPageActivity];
-      }
+    if (data.isPageSearchable) {
+      FindInPageActivity* findInPageActivity =
+          [[FindInPageActivity alloc] initWithDispatcher:dispatcher];
+      [applicationActivities addObject:findInPageActivity];
+    }
 
-      if (data.userAgent != web::UserAgentType::NONE) {
-        RequestDesktopOrMobileSiteActivity* requestActivity =
-            [[RequestDesktopOrMobileSiteActivity alloc]
-                initWithDispatcher:dispatcher
-                         userAgent:data.userAgent];
-        [applicationActivities addObject:requestActivity];
-      }
+    if (data.userAgent != web::UserAgentType::NONE) {
+      RequestDesktopOrMobileSiteActivity* requestActivity =
+          [[RequestDesktopOrMobileSiteActivity alloc]
+              initWithDispatcher:dispatcher
+                       userAgent:data.userAgent];
+      [applicationActivities addObject:requestActivity];
     }
   }
   if (data.isPagePrintable) {

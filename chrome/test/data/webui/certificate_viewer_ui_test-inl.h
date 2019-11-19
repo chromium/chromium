@@ -47,7 +47,7 @@ void CertificateViewerUITest::ShowCertificateViewer() {
   content::WebContents* webui_webcontents = dialog->webui_->GetWebContents();
   content::WaitForLoadStop(webui_webcontents);
   content::WebUI* webui = webui_webcontents->GetWebUI();
-  webui_webcontents->GetRenderViewHost()->SetWebUIProperty(
+  webui_webcontents->GetMainFrame()->SetWebUIProperty(
       "expectedUrl", chrome::kChromeUICertificateViewerURL);
   SetWebUIInstance(webui);
 }

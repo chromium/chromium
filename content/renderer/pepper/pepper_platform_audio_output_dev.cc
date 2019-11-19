@@ -240,7 +240,6 @@ PepperPlatformAudioOutputDev::PepperPlatformAudioOutputDev(
       state_(IDLE),
       start_on_authorized_(true),
       play_on_start_(false),
-      session_id_(0),
       device_id_(device_id),
       did_receive_auth_(base::WaitableEvent::ResetPolicy::MANUAL,
                         base::WaitableEvent::InitialState::NOT_SIGNALED),

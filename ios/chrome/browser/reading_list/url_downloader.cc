@@ -59,8 +59,9 @@ URLDownloader::URLDownloader(
       base_directory_(chrome_profile_path),
       mime_type_(),
       url_loader_factory_(std::move(url_loader_factory)),
-      task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       task_tracker_() {}
 
@@ -83,7 +84,7 @@ void URLDownloader::RemoveOfflineURL(const GURL& url) {
 }
 
 void URLDownloader::DownloadOfflineURL(const GURL& url) {
-  if (!base::ContainsValue(tasks_, std::make_pair(DOWNLOAD, url))) {
+  if (!base::Contains(tasks_, std::make_pair(DOWNLOAD, url))) {
     tasks_.push_back(std::make_pair(DOWNLOAD, url));
     HandleNextTask();
   }

@@ -93,7 +93,7 @@ class ExpiredHistogramsTest(unittest.TestCase):
             "expires_after": "2000/10/01"
         }
     }
-    base_date = datetime.date(2000, 10, 01)
+    base_date = datetime.date(2000, 10, 1)
     current_milestone = 60
 
     with self.assertRaises(generate_expired_histograms_array.Error) as error:
@@ -129,7 +129,7 @@ class ExpiredHistogramsTest(unittest.TestCase):
 
     content = "!!FOO!\nMAJOR_BRANCH_DATE=2010-01-01\n!FOO!!"
     base_date = generate_expired_histograms_array._GetBaseDate(content, regex)
-    self.assertEqual(base_date, datetime.date(2010, 01, 01))
+    self.assertEqual(base_date, datetime.date(2010, 1, 1))
 
   def testGenerateHeaderFileContent(self):
     header_filename = "test/test.h"
@@ -153,10 +153,30 @@ class ExpiredHistogramsTest(unittest.TestCase):
     histograms = xml.dom.minidom.parseString("""
 <histogram-configuration>
 <histograms><!-- Must be alphabetical. -->
-  <histogram name="FirstHistogram" expires_after="2010-11-01"/>
-  <histogram name="FourthHistogram" expires_after="M61"/>
-  <histogram name="SecondHistogram" expires_after="2010-09-01"/>
-  <histogram name="ThirdHistogram" expires_after="M60"/>
+  <histogram name="FirstHistogram" expires_after="2010-11-01" units="units">
+    <owner>me@chromium.org</owner>
+    <summary>
+      This is a summary.
+    </summary>
+  </histogram>
+  <histogram name="FourthHistogram" expires_after="M61" units="units">
+    <owner>me@chromium.org</owner>
+    <summary>
+      This is a summary.
+    </summary>
+  </histogram>
+  <histogram name="SecondHistogram" expires_after="2010-09-01" units="units">
+    <owner>me@chromium.org</owner>
+  <summary>
+    This is a summary.
+  </summary>
+    </histogram>
+  <histogram name="ThirdHistogram" expires_after="M60" units="units">
+    <owner>me@chromium.org</owner>
+    <summary>
+      This is a summary.
+    </summary>
+  </histogram>
 </histograms>
 </histogram-configuration>
 """)

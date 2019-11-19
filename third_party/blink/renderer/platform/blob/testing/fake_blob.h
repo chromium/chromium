@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BLOB_TESTING_FAKE_BLOB_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BLOB_TESTING_FAKE_BLOB_H_
 
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 
 namespace blink {
@@ -21,14 +22,15 @@ class FakeBlob : public mojom::blink::Blob {
            const String& body = String(),
            State* state = nullptr);
 
-  void Clone(mojom::blink::BlobRequest) override;
-  void AsDataPipeGetter(network::mojom::blink::DataPipeGetterRequest) override;
+  void Clone(mojo::PendingReceiver<mojom::blink::Blob>) override;
+  void AsDataPipeGetter(
+      mojo::PendingReceiver<network::mojom::blink::DataPipeGetter>) override;
   void ReadRange(uint64_t offset,
                  uint64_t length,
                  mojo::ScopedDataPipeProducerHandle,
-                 mojom::blink::BlobReaderClientPtr) override;
+                 mojo::PendingRemote<mojom::blink::BlobReaderClient>) override;
   void ReadAll(mojo::ScopedDataPipeProducerHandle,
-               mojom::blink::BlobReaderClientPtr) override;
+               mojo::PendingRemote<mojom::blink::BlobReaderClient>) override;
   void ReadSideData(ReadSideDataCallback) override;
   void GetInternalUUID(GetInternalUUIDCallback) override;
  private:

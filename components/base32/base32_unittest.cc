@@ -6,6 +6,7 @@
 
 #include "base/stl_util.h"
 #include "components/base32/base32.h"
+#include "components/base32/base32_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base32 {
@@ -20,9 +21,12 @@ TEST(Base32Test, EncodesRfcTestVectorsCorrectlyWithoutPadding) {
 
   // Run the tests, with one more letter in the input every pass.
   for (size_t i = 0; i < base::size(expected); ++i) {
-    std::string output = Base32Encode(base::StringPiece(test_str, i),
-                                      Base32EncodePolicy::OMIT_PADDING);
-    EXPECT_EQ(expected[i], output);
+    base::StringPiece test_substr(test_str, i);
+    std::string encoded_output =
+        Base32Encode(test_substr, Base32EncodePolicy::OMIT_PADDING);
+    EXPECT_EQ(expected[i], encoded_output);
+    std::string decoded_output = Base32Decode(encoded_output);
+    EXPECT_EQ(test_substr, decoded_output);
   }
 }
 
@@ -36,8 +40,11 @@ TEST(Base32Test, EncodesRfcTestVectorsCorrectlyWithPadding) {
 
   // Run the tests, with one more letter in the input every pass.
   for (size_t i = 0; i < base::size(expected); ++i) {
-    std::string output = Base32Encode(base::StringPiece(test_str, i));
-    EXPECT_EQ(expected[i], output);
+    base::StringPiece test_substr(test_str, i);
+    std::string encoded_output = Base32Encode(test_substr);
+    EXPECT_EQ(expected[i], encoded_output);
+    std::string decoded_output = Base32Decode(encoded_output);
+    EXPECT_EQ(test_substr, decoded_output);
   }
 }
 
@@ -47,9 +54,13 @@ TEST(Base32Test, EncodesSha256HashCorrectly) {
   constexpr char hash[] =
       "\x1f\x25\xe1\xca\xba\x4f\xf9\xb8\x27\x24\x83\x0f\xca\x60\xe4\xc2\xbe\xa8"
       "\xc3\xa9\x44\x1c\x27\xb0\xb4\x3e\x6a\x96\x94\xc7\xb8\x04";
-  std::string output = Base32Encode(base::StringPiece(hash, 32),
-                                    Base32EncodePolicy::OMIT_PADDING);
-  EXPECT_EQ("D4S6DSV2J743QJZEQMH4UYHEYK7KRQ5JIQOCPMFUHZVJNFGHXACA", output);
+  base::StringPiece test_str(hash, 32);
+  std::string encoded_output =
+      Base32Encode(test_str, Base32EncodePolicy::OMIT_PADDING);
+  EXPECT_EQ("D4S6DSV2J743QJZEQMH4UYHEYK7KRQ5JIQOCPMFUHZVJNFGHXACA",
+            encoded_output);
+  std::string decoded_output = Base32Decode(encoded_output);
+  EXPECT_EQ(test_str, decoded_output);
 }
 
 }  // namespace

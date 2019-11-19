@@ -2,33 +2,34 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-mojom = "//services/viz/public/interfaces/compositing/compositor_frame.mojom"
+mojom = "//services/viz/public/mojom/compositing/compositor_frame.mojom"
 public_headers = [ "//components/viz/common/quads/compositor_frame.h" ]
 traits_headers = [
-  "//gpu/ipc/common/mailbox_holder_struct_traits.h",
-  "//gpu/ipc/common/mailbox_struct_traits.h",
-  "//gpu/ipc/common/sync_token_struct_traits.h",
+  "//gpu/ipc/common/mailbox_holder_mojom_traits.h",
+  "//gpu/ipc/common/mailbox_mojom_traits.h",
+  "//gpu/ipc/common/sync_token_mojom_traits.h",
   "//ipc/ipc_message_utils.h",
-  "//services/viz/public/cpp/compositing/compositor_frame_struct_traits.h",
-  "//services/viz/public/cpp/compositing/compositor_frame_metadata_struct_traits.h",
-  "//services/viz/public/cpp/compositing/filter_operation_struct_traits.h",
-  "//services/viz/public/cpp/compositing/filter_operations_struct_traits.h",
-  "//services/viz/public/cpp/compositing/quads_struct_traits.h",
-  "//services/viz/public/cpp/compositing/render_pass_struct_traits.h",
-  "//services/viz/public/cpp/compositing/selection_struct_traits.h",
-  "//services/viz/public/cpp/compositing/shared_quad_state_struct_traits.h",
-  "//services/viz/public/cpp/compositing/transferable_resource_struct_traits.h",
-  "//ui/gfx/mojo/selection_bound_struct_traits.h",
-  "//ui/gfx/mojo/transform_struct_traits.h",
-  "//ui/latency/mojo/latency_info_struct_traits.h",
+  "//services/viz/public/cpp/compositing/compositor_frame_mojom_traits.h",
+  "//services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h",
+  "//services/viz/public/cpp/compositing/filter_operation_mojom_traits.h",
+  "//services/viz/public/cpp/compositing/filter_operations_mojom_traits.h",
+  "//services/viz/public/cpp/compositing/quads_mojom_traits.h",
+  "//services/viz/public/cpp/compositing/render_pass_mojom_traits.h",
+  "//services/viz/public/cpp/compositing/selection_mojom_traits.h",
+  "//services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h",
+  "//services/viz/public/cpp/compositing/transferable_resource_mojom_traits.h",
+  "//ui/gfx/mojom/selection_bound_mojom_traits.h",
+  "//ui/gfx/mojom/transform_mojom_traits.h",
+  "//ui/latency/mojom/latency_info_mojom_traits.h",
 ]
 public_deps = [
   "//components/viz/common",
   "//gpu/ipc/common:interfaces",
-  "//services/viz/public/interfaces",
-  "//skia/public/interfaces",
-  "//ui/gfx/geometry/mojo",
-  "//ui/gfx/mojo",
-  "//ui/latency/mojo:interfaces",
+  "//services/viz/public/mojom",
+  "//skia/public/mojom",
+  "//ui/gfx/geometry/mojom",
+  "//ui/gfx/mojom",
+  "//ui/latency/mojom",
 ]
-type_mappings = [ "viz.mojom.CompositorFrame=viz::CompositorFrame[move_only]" ]
+type_mappings =
+    [ "viz.mojom.CompositorFrame=::viz::CompositorFrame[move_only]" ]

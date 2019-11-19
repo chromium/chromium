@@ -14,6 +14,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.metrics.WebApkUma;
 import org.chromium.chrome.browser.webapps.WebApkActivity;
 import org.chromium.content_public.browser.WebContents;
@@ -55,7 +56,8 @@ class PermissionUpdateInfoBarDelegate implements PermissionCallback {
     private void requestPermissions() {
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
         if (windowAndroid == null) {
-            nativeOnPermissionResult(mNativePtr, false);
+            PermissionUpdateInfoBarDelegateJni.get().onPermissionResult(
+                    mNativePtr, PermissionUpdateInfoBarDelegate.this, false);
             return;
         }
 
@@ -74,7 +76,8 @@ class PermissionUpdateInfoBarDelegate implements PermissionCallback {
             }
         } else {
             if (activity == null) {
-                nativeOnPermissionResult(mNativePtr, false);
+                PermissionUpdateInfoBarDelegateJni.get().onPermissionResult(
+                        mNativePtr, PermissionUpdateInfoBarDelegate.this, false);
                 return;
             }
 
@@ -85,7 +88,8 @@ class PermissionUpdateInfoBarDelegate implements PermissionCallback {
                         ApplicationStatus.unregisterActivityStateListener(this);
                         mActivityStateListener = null;
 
-                        nativeOnPermissionResult(mNativePtr, false);
+                        PermissionUpdateInfoBarDelegateJni.get().onPermissionResult(
+                                mNativePtr, PermissionUpdateInfoBarDelegate.this, false);
                     } else if (newState == ActivityState.RESUMED) {
                         ApplicationStatus.unregisterActivityStateListener(this);
                         mActivityStateListener = null;
@@ -119,9 +123,15 @@ class PermissionUpdateInfoBarDelegate implements PermissionCallback {
                 hasAllPermissions &= windowAndroid.hasPermission(mAndroidPermisisons[i]);
             }
         }
-        if (mNativePtr != 0) nativeOnPermissionResult(mNativePtr, hasAllPermissions);
+        if (mNativePtr != 0) {
+            PermissionUpdateInfoBarDelegateJni.get().onPermissionResult(
+                    mNativePtr, PermissionUpdateInfoBarDelegate.this, hasAllPermissions);
+        }
     }
 
-    private native void nativeOnPermissionResult(
-            long nativePermissionUpdateInfoBarDelegate, boolean allPermissionsGranted);
+    @NativeMethods
+    interface Natives {
+        void onPermissionResult(long nativePermissionUpdateInfoBarDelegate,
+                PermissionUpdateInfoBarDelegate caller, boolean allPermissionsGranted);
+    }
 }

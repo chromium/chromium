@@ -1,0 +1,6 @@
+specific_include_rules = {
+  # Allow access from test file.
+  "hats_service_browsertest\.cc": [
+    "+chrome/browser/ui/views/hats",
+  ]
+}

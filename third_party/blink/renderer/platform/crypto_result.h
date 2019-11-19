@@ -49,8 +49,7 @@ class CryptoResultCancel : public ThreadSafeRefCounted<CryptoResultCancel> {
 };
 
 // Receives notification of completion of the crypto operation.
-class PLATFORM_EXPORT CryptoResult
-    : public GarbageCollectedFinalized<CryptoResult> {
+class PLATFORM_EXPORT CryptoResult : public GarbageCollected<CryptoResult> {
  public:
   virtual ~CryptoResult() = default;
 

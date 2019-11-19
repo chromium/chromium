@@ -1,58 +1,18 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
 
-group("closure_compile") {
+js_type_check("closure_compile") {
   deps = [
-    ":media_router_resources",
-    "elements/issue_banner:closure_compile",
-    "elements/media_router_container:closure_compile",
-    "elements/media_router_header:closure_compile",
-    "elements/media_router_search_highlighter:closure_compile",
-    "elements/route_controls:closure_compile",
-    "elements/route_details:closure_compile",
+    ":media_router_internals",
   ]
 }
 
-js_type_check("media_router_resources") {
+js_library("media_router_internals") {
   deps = [
-    ":media_router",
-    ":media_router_browser_api",
-    ":media_router_data",
-    ":media_router_ui_interface",
-  ]
-}
-
-js_library("media_router") {
-  deps = [
-    ":media_router_ui_interface",
-    "elements/media_router_container:media_router_container_interface",
-    "elements/media_router_header:media_router_header",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("media_router_browser_api") {
-  deps = [
-    ":media_router_data",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("media_router_data") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-js_library("media_router_ui_interface") {
-  deps = [
-    ":media_router_browser_api",
-    "elements/media_router_container:media_router_container_interface",
-    "elements/media_router_header:media_router_header",
-    "elements/route_controls:route_controls_interface",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }

@@ -4,29 +4,59 @@
 
 #include "content/shell/browser/web_test/web_test_background_fetch_delegate.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/download/content/factory/download_service_factory.h"
+#include "components/download/content/factory/download_service_factory_helper.h"
+#include "components/download/public/background_service/blob_context_getter_factory.h"
 #include "components/download/public/background_service/clients.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/background_service/download_service.h"
 #include "components/download/public/background_service/features.h"
+#include "components/keyed_service/core/simple_factory_key.h"
+#include "components/keyed_service/core/simple_key_map.h"
 #include "content/public/browser/background_fetch_description.h"
 #include "content/public/browser/background_fetch_response.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/storage_partition.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {
+
+// Provides BlobContextGetter from a BrowserContext.
+class TestBlobContextGetterFactory : public download::BlobContextGetterFactory {
+ public:
+  TestBlobContextGetterFactory(content::BrowserContext* browser_context)
+      : browser_context_(browser_context) {}
+  ~TestBlobContextGetterFactory() override = default;
+
+ private:
+  // download::BlobContextGetterFactory implementation.
+  void RetrieveBlobContextGetter(
+      download::BlobContextGetterCallback callback) override {
+    auto blob_context_getter =
+        content::BrowserContext::GetBlobStorageContext(browser_context_);
+    std::move(callback).Run(blob_context_getter);
+  }
+
+  content::BrowserContext* browser_context_;
+  DISALLOW_COPY_AND_ASSIGN(TestBlobContextGetterFactory);
+};
 
 // Implementation of a Download Service client that will be servicing
 // Background Fetch requests when running web tests.
@@ -35,7 +65,7 @@ class WebTestBackgroundFetchDelegate::WebTestBackgroundFetchDownloadClient
  public:
   explicit WebTestBackgroundFetchDownloadClient(
       base::WeakPtr<content::BackgroundFetchDelegate::Client> client)
-      : client_(std::move(client)), weak_ptr_factory_(this) {}
+      : client_(std::move(client)) {}
 
   ~WebTestBackgroundFetchDownloadClient() override = default;
 
@@ -56,13 +86,13 @@ class WebTestBackgroundFetchDelegate::WebTestBackgroundFetchDownloadClient
 
   void OnServiceUnavailable() override {}
 
-  download::Client::ShouldDownload OnDownloadStarted(
+  void OnDownloadStarted(
       const std::string& guid,
       const std::vector<GURL>& url_chain,
       const scoped_refptr<const net::HttpResponseHeaders>& headers) override {
     DCHECK(guid_to_unique_job_id_mapping_.count(guid));
     if (!client_)
-      return download::Client::ShouldDownload::ABORT;
+      return;
 
     guid_to_response_[guid] =
         std::make_unique<content::BackgroundFetchResponse>(url_chain,
@@ -73,8 +103,6 @@ class WebTestBackgroundFetchDelegate::WebTestBackgroundFetchDownloadClient
         std::make_unique<content::BackgroundFetchResponse>(
             guid_to_response_[guid]->url_chain,
             guid_to_response_[guid]->headers));
-
-    return download::Client::ShouldDownload::CONTINUE;
   }
 
   void OnDownloadUpdated(const std::string& guid,
@@ -174,12 +202,13 @@ class WebTestBackgroundFetchDelegate::WebTestBackgroundFetchDownloadClient
 
   void DidGetUploadData(download::GetUploadDataCallback callback,
                         blink::mojom::SerializedBlobPtr blob) {
-    network::mojom::DataPipeGetterPtr data_pipe_getter_ptr;
-    blink::mojom::BlobPtr blob_ptr(std::move(blob->blob));
-    blob_ptr->AsDataPipeGetter(MakeRequest(&data_pipe_getter_ptr));
+    mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter_remote;
+    mojo::Remote<blink::mojom::Blob> blob_remote(std::move(blob->blob));
+    blob_remote->AsDataPipeGetter(
+        data_pipe_getter_remote.InitWithNewPipeAndPassReceiver());
 
     auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
-    request_body->AppendDataPipe(std::move(data_pipe_getter_ptr));
+    request_body->AppendDataPipe(std::move(data_pipe_getter_remote));
     std::move(callback).Run(std::move(request_body));
   }
 
@@ -195,7 +224,8 @@ class WebTestBackgroundFetchDelegate::WebTestBackgroundFetchDownloadClient
   base::flat_map<std::string, std::unique_ptr<content::BackgroundFetchResponse>>
       guid_to_response_;
 
-  base::WeakPtrFactory<WebTestBackgroundFetchDownloadClient> weak_ptr_factory_;
+  base::WeakPtrFactory<WebTestBackgroundFetchDownloadClient> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(WebTestBackgroundFetchDownloadClient);
 };
@@ -214,7 +244,7 @@ void WebTestBackgroundFetchDelegate::GetIconDisplaySize(
 
 void WebTestBackgroundFetchDelegate::GetPermissionForOrigin(
     const url::Origin& origin,
-    const ResourceRequestInfo::WebContentsGetter& wc_getter,
+    const WebContents::Getter& wc_getter,
     GetPermissionForOriginCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::move(callback).Run(BackgroundFetchPermission::ALLOWED);
@@ -244,14 +274,18 @@ void WebTestBackgroundFetchDelegate::CreateDownloadJob(
       base::test::ScopedFeatureList download_service_configuration;
       download_service_configuration.InitAndEnableFeatureWithParameters(
           download::kDownloadServiceFeature, {{"start_up_delay_ms", "0"}});
-
-      download_service_ =
-          base::WrapUnique(download::BuildInMemoryDownloadService(
-              browser_context_, std::move(clients),
-              GetNetworkConnectionTracker(), base::FilePath(),
-              BrowserContext::GetBlobStorageContext(browser_context_),
-              base::CreateSingleThreadTaskRunnerWithTraits(
-                  {BrowserThread::IO})));
+      auto* url_loader_factory =
+          BrowserContext::GetDefaultStoragePartition(browser_context_)
+              ->GetURLLoaderFactoryForBrowserProcess()
+              .get();
+      SimpleFactoryKey* simple_key =
+          SimpleKeyMap::GetInstance()->GetForBrowserContext(browser_context_);
+      download_service_ = download::BuildInMemoryDownloadService(
+          simple_key, std::move(clients), GetNetworkConnectionTracker(),
+          base::FilePath(),
+          std::make_unique<TestBlobContextGetterFactory>(browser_context_),
+          base::CreateSingleThreadTaskRunner({BrowserThread::IO}),
+          url_loader_factory);
     }
   }
 }

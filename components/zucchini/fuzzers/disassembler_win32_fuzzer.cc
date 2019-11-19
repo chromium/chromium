@@ -13,6 +13,7 @@
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/disassembler.h"
 #include "components/zucchini/disassembler_win32.h"
+#include "components/zucchini/fuzzers/fuzz_utils.h"
 
 namespace {
 
@@ -21,33 +22,6 @@ struct Environment {
     logging::SetMinLogLevel(logging::LOG_FATAL);  // Disable console spamming.
   }
 };
-
-// Helper function that uses |disassembler| to read all references from
-// |mutable_image| and write them back.
-void ReadAndWriteReferences(
-    std::unique_ptr<zucchini::Disassembler> disassembler,
-    std::vector<uint8_t>* mutable_data) {
-  zucchini::MutableBufferView mutable_image(mutable_data->data(),
-                                            disassembler->size());
-  std::vector<zucchini::Reference> references;
-  auto groups = disassembler->MakeReferenceGroups();
-  std::map<zucchini::PoolTag, std::vector<zucchini::Reference>>
-      references_of_pool;
-  for (const auto& group : groups) {
-    auto reader = group.GetReader(disassembler.get());
-    std::vector<zucchini::Reference>* refs =
-        &references_of_pool[group.pool_tag()];
-    for (auto ref = reader->GetNext(); ref.has_value();
-         ref = reader->GetNext()) {
-      refs->push_back(ref.value());
-    }
-  }
-  for (const auto& group : groups) {
-    auto writer = group.GetWriter(mutable_image, disassembler.get());
-    for (const auto& ref : references_of_pool[group.pool_tag()])
-      writer->PutNext(ref);
-  }
-}
 
 }  // namespace
 
@@ -64,13 +38,15 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   auto disassembler_win32x86 =
       zucchini::Disassembler::Make<zucchini::DisassemblerWin32X86>(image);
   if (disassembler_win32x86) {
-    ReadAndWriteReferences(std::move(disassembler_win32x86), &mutable_data);
+    zucchini::ReadAndWriteReferences(std::move(disassembler_win32x86),
+                                     &mutable_data);
     return 0;
   }
 
   auto disassembler_win32x64 =
       zucchini::Disassembler::Make<zucchini::DisassemblerWin32X64>(image);
   if (disassembler_win32x64)
-    ReadAndWriteReferences(std::move(disassembler_win32x64), &mutable_data);
+    zucchini::ReadAndWriteReferences(std::move(disassembler_win32x64),
+                                     &mutable_data);
   return 0;
 }

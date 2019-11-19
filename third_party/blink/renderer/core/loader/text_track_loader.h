@@ -44,17 +44,12 @@ class TextTrackLoaderClient : public GarbageCollectedMixin {
   virtual void CueLoadingCompleted(TextTrackLoader*, bool loading_failed) = 0;
 };
 
-class TextTrackLoader final : public GarbageCollectedFinalized<TextTrackLoader>,
+class TextTrackLoader final : public GarbageCollected<TextTrackLoader>,
                               public RawResourceClient,
                               private VTTParserClient {
   USING_GARBAGE_COLLECTED_MIXIN(TextTrackLoader);
 
  public:
-  static TextTrackLoader* Create(TextTrackLoaderClient& client,
-                                 Document& document) {
-    return MakeGarbageCollected<TextTrackLoader>(client, document);
-  }
-
   TextTrackLoader(TextTrackLoaderClient&, Document&);
   ~TextTrackLoader() override;
 
@@ -65,6 +60,7 @@ class TextTrackLoader final : public GarbageCollectedFinalized<TextTrackLoader>,
   State LoadState() { return state_; }
 
   void GetNewCues(HeapVector<Member<TextTrackCue>>& output_cues);
+  void GetNewStyleSheets(HeapVector<Member<CSSStyleSheet>>& output_sheets);
 
   void Trace(blink::Visitor*) override;
 

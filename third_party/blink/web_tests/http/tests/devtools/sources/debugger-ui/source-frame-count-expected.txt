@@ -1,9 +1,0 @@
-Tests that scripts panel does not create too many source frames.
-
-
-Running: testSourceFramesCount
-Reloading page...
-Page reloaded.
-Too many frames opened: 4
-Visible view: script5.js
-

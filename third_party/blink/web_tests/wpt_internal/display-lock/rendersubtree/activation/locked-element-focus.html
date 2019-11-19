@@ -1,0 +1,44 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: </title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<div id="container">
+  <div id="focusable" tabIndex="0">
+    Focusable div
+  </div>
+</div>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
+
+<script>
+async_test((t) => {
+
+  async function focusNonActivatableTest() {
+    const acquire_promise = setInvisible(container);
+    await acquire_promise;
+    t.step(() => assert_not_equals(document.activeElement, focusable));
+    focusable.focus();
+    t.step(() => assert_not_equals(document.activeElement, focusable));
+    focusActivatableTest();
+  }
+
+  async function focusActivatableTest() {
+    t.step(() => assert_not_equals(document.activeElement, focusable));
+    const acquire_promise = setInvisibleActivatable(container);
+    await acquire_promise;
+    focusable.focus();
+    t.step(() => assert_equals(document.activeElement, focusable));
+    t.done();
+  }
+
+  window.onload = function() {
+    requestAnimationFrame(() => requestAnimationFrame(focusNonActivatableTest));
+  };
+}, "Testing focus and force layout on element with locked flat-tree ancestor");
+</script>
+</html>

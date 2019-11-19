@@ -54,7 +54,7 @@ class SiteDataSizeCollector {
  private:
   // Callback methods to be invoked when fetching the data is complete.
   void OnAppCacheModelInfoLoaded(
-      scoped_refptr<content::AppCacheInfoCollection>);
+      const std::list<content::StorageUsageInfo>& info_list);
   void OnCookiesModelInfoLoaded(const net::CookieList& cookie_list);
   void OnDatabaseModelInfoLoaded(const DatabaseInfoList& database_info_list);
   void OnLocalStorageModelInfoLoaded(
@@ -96,7 +96,7 @@ class SiteDataSizeCollector {
   // Keeps track of the sum of all fetched size.
   int64_t total_bytes_;
 
-  base::WeakPtrFactory<SiteDataSizeCollector> weak_ptr_factory_;
+  base::WeakPtrFactory<SiteDataSizeCollector> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SiteDataSizeCollector);
 };

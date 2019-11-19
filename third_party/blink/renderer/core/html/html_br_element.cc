@@ -29,15 +29,11 @@
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLBRElement::HTMLBRElement(Document& document)
-    : HTMLElement(kBrTag, document) {}
-
-DEFINE_NODE_FACTORY(HTMLBRElement)
+HTMLBRElement::HTMLBRElement(Document& document)
+    : HTMLElement(html_names::kBrTag, document) {}
 
 bool HTMLBRElement::IsPresentationAttribute(const QualifiedName& name) const {
-  if (name == kClearAttr)
+  if (name == html_names::kClearAttr)
     return true;
   return HTMLElement::IsPresentationAttribute(name);
 }
@@ -46,25 +42,28 @@ void HTMLBRElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (name == kClearAttr) {
+  if (name == html_names::kClearAttr) {
     // If the string is empty, then don't add the clear property.
     // <br clear> and <br clear=""> are just treated like <br> by Gecko, Mac IE,
     // etc. -dwh
     if (!value.IsEmpty()) {
-      if (DeprecatedEqualIgnoringCase(value, "all"))
-        AddPropertyToPresentationAttributeStyle(style, CSSPropertyClear,
-                                                CSSValueBoth);
-      else
-        AddPropertyToPresentationAttributeStyle(style, CSSPropertyClear, value);
+      if (DeprecatedEqualIgnoringCase(value, "all")) {
+        AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kClear,
+                                                CSSValueID::kBoth);
+      } else {
+        AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kClear,
+                                                value);
+      }
     }
   } else {
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);
   }
 }
 
-LayoutObject* HTMLBRElement::CreateLayoutObject(const ComputedStyle& style) {
+LayoutObject* HTMLBRElement::CreateLayoutObject(const ComputedStyle& style,
+                                                LegacyLayout legacy) {
   if (style.HasContent())
-    return LayoutObject::CreateObject(this, style);
+    return LayoutObject::CreateObject(this, style, legacy);
   return new LayoutBR(this);
 }
 

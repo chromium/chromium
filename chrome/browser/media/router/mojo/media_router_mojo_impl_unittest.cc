@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/media/router/mojo/media_router_mojo_impl.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -16,6 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -28,17 +31,18 @@
 #include "chrome/browser/media/router/test/test_helper.h"
 #include "chrome/common/media_router/issue.h"
 #include "chrome/common/media_router/media_route.h"
-#include "chrome/common/media_router/media_source_helper.h"
+#include "chrome/common/media_router/media_source.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/version_info/version_info.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/common/extension.h"
-#include "media/base/gmock_callback_support.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -107,14 +111,6 @@ MediaRoute CreateMediaRoute2() {
   route.set_presentation_id(kPresentationId);
   route.set_controller_type(RouteControllerType::kGeneric);
   return route;
-}
-
-void OnCreateMediaRouteController(
-    Unused,
-    Unused,
-    Unused,
-    mojom::MediaRouteProvider::CreateMediaRouteControllerCallback& cb) {
-  std::move(cb).Run(true);
 }
 
 std::string RouteMessageToString(const RouteMessagePtr& message) {
@@ -982,102 +978,38 @@ TEST_F(MediaRouterMojoImplTest, SearchSinks) {
   TestSearchSinks();
 }
 
-TEST_F(MediaRouterMojoImplTest, GetRouteController) {
-  TestCreateMediaRouteController();
-}
-
-TEST_F(MediaRouterMojoImplTest, GetHangoutsRouteController) {
-  TestCreateHangoutsMediaRouteController();
-}
-
-TEST_F(MediaRouterMojoImplTest, GetRouteControllerMultipleTimes) {
+TEST_F(MediaRouterMojoImplTest, GetMediaController) {
+  MockMediaController mock_controller;
+  mojo::Remote<mojom::MediaController> controller_remote;
+  mojo::PendingRemote<mojom::MediaStatusObserver> observer_remote;
+  MockMediaStatusObserver mock_observer(
+      observer_remote.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::MediaStatusObserver> observer_remote_held_by_controller;
   router()->OnRoutesUpdated(MediaRouteProviderId::EXTENSION,
-                            {CreateMediaRoute(), CreateMediaRoute2()},
-                            std::string(), std::vector<std::string>());
+                            {CreateMediaRoute()}, "", {});
 
   EXPECT_CALL(mock_extension_provider_,
               CreateMediaRouteControllerInternal(kRouteId, _, _, _))
-      .WillOnce(Invoke(OnCreateMediaRouteController));
-  scoped_refptr<MediaRouteController> route_controller1a =
-      router()->GetRouteController(kRouteId);
-
-  // Calling GetRouteController() with the same route ID for the second time
-  // (without destroying the MediaRouteController first) should not result in a
-  // CreateMediaRouteController() call.
-  scoped_refptr<MediaRouteController> route_controller1b =
-      router()->GetRouteController(kRouteId);
-
-  // The same MediaRouteController instance should have been returned.
-  EXPECT_EQ(route_controller1a.get(), route_controller1b.get());
-
-  // Calling GetRouteController() with another route ID should result in a
-  // CreateMediaRouteController() call.
-  EXPECT_CALL(mock_extension_provider_,
-              CreateMediaRouteControllerInternal(kRouteId2, _, _, _))
-      .WillOnce(Invoke(OnCreateMediaRouteController));
-  scoped_refptr<MediaRouteController> route_controller2 =
-      router()->GetRouteController(kRouteId2);
-
+      .WillOnce(
+          [&](const std::string& route_id,
+              mojo::PendingReceiver<mojom::MediaController>& media_controller,
+              mojo::PendingRemote<mojom::MediaStatusObserver>& observer,
+              MockMediaRouteProvider::CreateMediaRouteControllerCallback&
+                  callback) {
+            mock_controller.Bind(std::move(media_controller));
+            observer_remote_held_by_controller.Bind(std::move(observer));
+            std::move(callback).Run(true);
+          });
+  router()->GetMediaController(kRouteId,
+                               controller_remote.BindNewPipeAndPassReceiver(),
+                               std::move(observer_remote));
   base::RunLoop().RunUntilIdle();
-}
 
-TEST_F(MediaRouterMojoImplTest, GetRouteControllerAfterInvalidation) {
-  router()->OnRoutesUpdated(MediaRouteProviderId::EXTENSION,
-                            {CreateMediaRoute()}, std::string(),
-                            std::vector<std::string>());
-
-  EXPECT_CALL(mock_extension_provider_,
-              CreateMediaRouteControllerInternal(kRouteId, _, _, _))
-      .Times(2)
-      .WillRepeatedly(Invoke(OnCreateMediaRouteController));
-
-  scoped_refptr<MediaRouteController> route_controller =
-      router()->GetRouteController(kRouteId);
-  EXPECT_TRUE(route_controller);
-
-  // Invalidate the MediaRouteController.
-  route_controller = nullptr;
-  // Call again with the same route ID. Since we've invalidated the
-  // MediaRouteController, CreateMediaRouteController() should be called again.
-  route_controller = router()->GetRouteController(kRouteId);
-
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(MediaRouterMojoImplTest, GetRouteControllerAfterRouteInvalidation) {
-  router()->OnRoutesUpdated(MediaRouteProviderId::EXTENSION,
-                            {CreateMediaRoute(), CreateMediaRoute2()},
-                            std::string(), std::vector<std::string>());
-
-  EXPECT_CALL(mock_extension_provider_,
-              CreateMediaRouteControllerInternal(kRouteId, _, _, _))
-      .WillOnce(Invoke(OnCreateMediaRouteController));
-  EXPECT_CALL(mock_extension_provider_,
-              CreateMediaRouteControllerInternal(kRouteId2, _, _, _))
-      .Times(2)
-      .WillRepeatedly(Invoke(OnCreateMediaRouteController));
-
-  MockMediaRouteControllerObserver observer1a(
-      router()->GetRouteController(kRouteId));
-  MockMediaRouteControllerObserver observer2a(
-      router()->GetRouteController(kRouteId2));
-
-  // Update the routes list with |kRouteId| but without |kRouteId2|. This should
-  // remove the controller for |kRouteId2|, resulting in
-  // CreateMediaRouteController() getting called again for |kRouteId2| below.
-  router()->OnRoutesUpdated(MediaRouteProviderId::EXTENSION,
-                            {CreateMediaRoute()}, std::string(),
-                            std::vector<std::string>());
-  // Add back |kRouteId2| so that a controller can be created for it.
-  router()->OnRoutesUpdated(MediaRouteProviderId::EXTENSION,
-                            {CreateMediaRoute(), CreateMediaRoute2()},
-                            std::string(), std::vector<std::string>());
-
-  MockMediaRouteControllerObserver observer1b(
-      router()->GetRouteController(kRouteId));
-  MockMediaRouteControllerObserver observer2b(
-      router()->GetRouteController(kRouteId2));
-
+  EXPECT_CALL(mock_controller, Play());
+  controller_remote->Play();
+  EXPECT_CALL(mock_observer, OnMediaStatusUpdated(_));
+  observer_remote_held_by_controller->OnMediaStatusUpdated(
+      mojom::MediaStatus::New());
   base::RunLoop().RunUntilIdle();
 }
 

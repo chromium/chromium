@@ -1,6 +1,5 @@
 include_rules = [
   "-content",
-  "+components/data_use_measurement/core",
   "+components/keyed_service",
   "+components/prefs",
   "+components/sync_preferences",

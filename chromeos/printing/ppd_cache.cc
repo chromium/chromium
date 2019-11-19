@@ -176,14 +176,14 @@ class PpdCacheImpl : public PpdCache {
 
 // static
 scoped_refptr<PpdCache> PpdCache::Create(const base::FilePath& cache_base_dir) {
-  return scoped_refptr<PpdCache>(
-      new PpdCacheImpl(cache_base_dir,
-                       base::CreateSequencedTaskRunnerWithTraits(
-                           {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
-                            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
-                       base::CreateSequencedTaskRunnerWithTraits(
-                           {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
-                            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})));
+  return scoped_refptr<PpdCache>(new PpdCacheImpl(
+      cache_base_dir,
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::TaskPriority::USER_VISIBLE,
+           base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
+           base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})));
 }
 
 scoped_refptr<PpdCache> PpdCache::CreateForTesting(

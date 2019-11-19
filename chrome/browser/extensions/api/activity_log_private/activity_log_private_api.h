@@ -82,8 +82,7 @@ class ActivityLogPrivateGetExtensionActivitiesFunction
 };
 
 // The implementation of activityLogPrivate.deleteActivities
-class ActivityLogPrivateDeleteActivitiesFunction
-    : public UIThreadExtensionFunction {
+class ActivityLogPrivateDeleteActivitiesFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("activityLogPrivate.deleteActivities",
                              ACTIVITYLOGPRIVATE_DELETEACTIVITIES)
@@ -97,7 +96,7 @@ class ActivityLogPrivateDeleteActivitiesFunction
 
 // The implementation of activityLogPrivate.deleteActivitiesByExtension
 class ActivityLogPrivateDeleteActivitiesByExtensionFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("activityLogPrivate.deleteActivitiesByExtension",
                              ACTIVITYLOGPRIVATE_DELETEACTIVITIESBYEXTENSION)
@@ -110,8 +109,7 @@ class ActivityLogPrivateDeleteActivitiesByExtensionFunction
 };
 
 // The implementation of activityLogPrivate.deleteDatabase
-class ActivityLogPrivateDeleteDatabaseFunction
-    : public UIThreadExtensionFunction {
+class ActivityLogPrivateDeleteDatabaseFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("activityLogPrivate.deleteDatabase",
                              ACTIVITYLOGPRIVATE_DELETEDATABASE)
@@ -124,7 +122,7 @@ class ActivityLogPrivateDeleteDatabaseFunction
 };
 
 // The implementation of activityLogPrivate.deleteUrls
-class ActivityLogPrivateDeleteUrlsFunction : public UIThreadExtensionFunction {
+class ActivityLogPrivateDeleteUrlsFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("activityLogPrivate.deleteUrls",
                              ACTIVITYLOGPRIVATE_DELETEURLS)

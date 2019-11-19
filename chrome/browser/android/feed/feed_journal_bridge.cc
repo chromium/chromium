@@ -15,13 +15,13 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/android/chrome_jni_headers/FeedJournalBridge_jni.h"
 #include "chrome/browser/android/feed/feed_host_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/feed/content/feed_host_service.h"
 #include "components/feed/core/feed_journal_database.h"
 #include "components/feed/core/feed_journal_mutation.h"
-#include "jni/FeedJournalBridge_jni.h"
 
 namespace feed {
 
@@ -51,7 +51,7 @@ static jlong JNI_FeedJournalBridge_Init(
 }
 
 FeedJournalBridge::FeedJournalBridge(FeedJournalDatabase* feed_journal_database)
-    : feed_journal_database_(feed_journal_database), weak_ptr_factory_(this) {
+    : feed_journal_database_(feed_journal_database) {
   DCHECK(feed_journal_database_);
 }
 

@@ -1,11 +1,11 @@
 <script src="common.js"></script>
 <script>
+  const url = new URL('../../resources/square.png', location);
+  observeAndReportResourceLoadPriority(url);
+
   const image = new Image();
-  image.src = '../../resources/square.png';
+  image.src = url;
 
-  image.onload = e => {
-    reportPriority(image.src);
-  };
-
-  image.onerror = e => reportFailure;
+  image.onload = reportLoaded;
+  image.onerror = reportFailure;
 </script>

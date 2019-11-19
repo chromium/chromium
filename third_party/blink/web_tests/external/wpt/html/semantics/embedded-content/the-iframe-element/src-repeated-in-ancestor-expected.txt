@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS different path name
-FAIL same path name, no document fragment assert_unreached: Should not navigate Reached unreachable code
-FAIL same path name, different document fragment assert_unreached: Should not navigate Reached unreachable code
-FAIL same path name, no document fragement (intermediary browsing context) assert_unreached: Should not navigate Reached unreachable code
-Harness: the test ran to completion.
-

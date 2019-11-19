@@ -4,17 +4,21 @@
 
 #include "content/browser/service_worker/service_worker_navigation_handle.h"
 
+#include <utility>
+
 #include "base/bind.h"
+#include "base/task/post_task.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_navigation_handle_core.h"
-#include "content/common/service_worker/service_worker_types.h"
+#include "content/common/service_worker/service_worker_utils.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
 
 ServiceWorkerNavigationHandle::ServiceWorkerNavigationHandle(
     ServiceWorkerContextWrapper* context_wrapper)
-    : service_worker_provider_host_id_(kInvalidServiceWorkerProviderId),
-      weak_factory_(this) {
+    : context_wrapper_(context_wrapper) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   core_ = new ServiceWorkerNavigationHandleCore(weak_factory_.GetWeakPtr(),
                                                 context_wrapper);
@@ -22,14 +26,45 @@ ServiceWorkerNavigationHandle::ServiceWorkerNavigationHandle(
 
 ServiceWorkerNavigationHandle::~ServiceWorkerNavigationHandle() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Delete the ServiceWorkerNavigationHandleCore on the IO thread.
-  BrowserThread::DeleteSoon(BrowserThread::IO, FROM_HERE, core_);
+  // Delete the ServiceWorkerNavigationHandleCore on the core thread.
+  BrowserThread::DeleteSoon(ServiceWorkerContext::GetCoreThreadId(), FROM_HERE,
+                            core_);
 }
 
-void ServiceWorkerNavigationHandle::DidCreateServiceWorkerProviderHost(
-    int service_worker_provider_host_id) {
+void ServiceWorkerNavigationHandle::OnCreatedProviderHost(
+    blink::mojom::ServiceWorkerProviderInfoForClientPtr provider_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  service_worker_provider_host_id_ = service_worker_provider_host_id;
+  DCHECK(provider_info->host_remote.is_valid() &&
+         provider_info->client_receiver.is_valid());
+
+  provider_info_ = std::move(provider_info);
+}
+
+void ServiceWorkerNavigationHandle::OnBeginNavigationCommit(
+    int render_process_id,
+    int render_frame_id,
+    network::mojom::CrossOriginEmbedderPolicy cross_origin_embedder_policy,
+    blink::mojom::ServiceWorkerProviderInfoForClientPtr* out_provider_info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // We may have failed to pre-create the provider host.
+  if (!provider_info_)
+    return;
+  ServiceWorkerContextWrapper::RunOrPostTaskOnCoreThread(
+      FROM_HERE,
+      base::BindOnce(
+          &ServiceWorkerNavigationHandleCore::OnBeginNavigationCommit,
+          base::Unretained(core_), render_process_id, render_frame_id,
+          cross_origin_embedder_policy));
+  *out_provider_info = std::move(provider_info_);
+}
+
+void ServiceWorkerNavigationHandle::OnBeginWorkerCommit(
+    network::mojom::CrossOriginEmbedderPolicy cross_origin_embedder_policy) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  ServiceWorkerContextWrapper::RunOrPostTaskOnCoreThread(
+      FROM_HERE,
+      base::BindOnce(&ServiceWorkerNavigationHandleCore::OnBeginWorkerCommit,
+                     base::Unretained(core_), cross_origin_embedder_policy));
 }
 
 }  // namespace content

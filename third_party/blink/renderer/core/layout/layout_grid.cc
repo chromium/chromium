@@ -30,7 +30,6 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/layout/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_state.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
@@ -40,6 +39,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
@@ -319,15 +319,23 @@ void LayoutGrid::UpdateBlockLayout(bool relayout_children) {
 
     // 2- Next, the track sizing algorithm resolves the sizes of the grid rows,
     // using the grid column sizes calculated in the previous step.
+    bool recompute_with_track_based_height = false;
     if (CachedHasDefiniteLogicalHeight()) {
       ComputeTrackSizesForDefiniteSize(
           kForRows, AvailableLogicalHeight(kExcludeMarginBorderPadding));
+    } else if (HasOverrideIntrinsicContentLogicalHeight()) {
+      ComputeTrackSizesForDefiniteSize(kForRows,
+                                       OverrideIntrinsicContentLogicalHeight());
     } else {
       ComputeTrackSizesForIndefiniteSize(track_sizing_algorithm_, kForRows);
+      if (ShouldApplySizeContainment())
+        recompute_with_track_based_height = true;
     }
     LayoutUnit track_based_logical_height =
         track_sizing_algorithm_.ComputeTrackBasedSize() +
         BorderAndPaddingLogicalHeight();
+    if (recompute_with_track_based_height)
+      ComputeTrackSizesForDefiniteSize(kForRows, track_based_logical_height);
 
     // TODO(rego): We shouldn't need this once crbug.com/906530 is fixed.
     // Right now we need this because
@@ -497,8 +505,15 @@ LayoutUnit LayoutGrid::GuttersSize(
 void LayoutGrid::ComputeIntrinsicLogicalWidths(
     LayoutUnit& min_logical_width,
     LayoutUnit& max_logical_width) const {
-  if (ShouldApplySizeContainment())
+  LayoutUnit scrollbar_width = LayoutUnit(ScrollbarLogicalWidth());
+  min_logical_width = scrollbar_width;
+  max_logical_width = scrollbar_width;
+
+  if (HasOverrideIntrinsicContentLogicalWidth()) {
+    min_logical_width += OverrideIntrinsicContentLogicalWidth();
+    max_logical_width = min_logical_width;
     return;
+  }
 
   std::unique_ptr<Grid> grid = Grid::Create(this);
   GridTrackSizingAlgorithm algorithm(this, *grid);
@@ -517,35 +532,35 @@ void LayoutGrid::ComputeIntrinsicLogicalWidths(
     }
   }
 
-  ComputeTrackSizesForIndefiniteSize(algorithm, kForColumns, &min_logical_width,
-                                     &max_logical_width);
+  ComputeTrackSizesForIndefiniteSize(algorithm, kForColumns);
 
-  LayoutUnit scrollbar_width = LayoutUnit(ScrollbarLogicalWidth());
-  min_logical_width += scrollbar_width;
-  max_logical_width += scrollbar_width;
+  size_t number_of_tracks = algorithm.Tracks(kForColumns).size();
+  LayoutUnit total_gutters_size = GuttersSize(
+      algorithm.GetGrid(), kForColumns, 0, number_of_tracks, base::nullopt);
+
+  min_logical_width += algorithm.MinContentSize() + total_gutters_size;
+  max_logical_width += algorithm.MaxContentSize() + total_gutters_size;
 }
 
 void LayoutGrid::ComputeTrackSizesForIndefiniteSize(
     GridTrackSizingAlgorithm& algo,
-    GridTrackSizingDirection direction,
-    LayoutUnit* min_intrinsic_size,
-    LayoutUnit* max_intrinsic_size) const {
+    GridTrackSizingDirection direction) const {
   const Grid& grid = algo.GetGrid();
   algo.Setup(direction, NumTracks(direction, grid), base::nullopt);
   algo.Run();
 
-  size_t number_of_tracks = algo.Tracks(direction).size();
-  LayoutUnit total_gutters_size =
-      GuttersSize(grid, direction, 0, number_of_tracks, base::nullopt);
-
-  if (min_intrinsic_size)
-    *min_intrinsic_size = algo.MinContentSize() + total_gutters_size;
-  if (max_intrinsic_size)
-    *max_intrinsic_size = algo.MaxContentSize() + total_gutters_size;
-
 #if DCHECK_IS_ON()
   DCHECK(algo.TracksAreWiderThanMinTrackBreadth());
 #endif
+}
+
+base::Optional<LayoutUnit> LayoutGrid::OverrideIntrinsicContentLogicalSize(
+    GridTrackSizingDirection direction) const {
+  if (direction == kForColumns && HasOverrideIntrinsicContentLogicalWidth())
+    return OverrideIntrinsicContentLogicalWidth();
+  if (direction == kForRows && HasOverrideIntrinsicContentLogicalHeight())
+    return OverrideIntrinsicContentLogicalHeight();
+  return base::nullopt;
 }
 
 LayoutUnit LayoutGrid::OverrideContainingBlockContentSizeForChild(
@@ -569,6 +584,15 @@ size_t LayoutGrid::ComputeAutoRepeatTracksCount(
     base::Optional<LayoutUnit> available_size) const {
   DCHECK(!available_size || available_size.value() != -1);
   bool is_row_axis = direction == kForColumns;
+  // Since auto-fit collapses empty tracks, and contain: size dictates that
+  // children should be ignored for the purposes of layout, we can conclude that
+  // if these conditions hold we have 0 repetitions.
+  if (ShouldApplySizeContainment() &&
+      ((is_row_axis &&
+        StyleRef().GridAutoRepeatColumnsType() == AutoRepeatType::kAutoFit) ||
+       (!is_row_axis &&
+        StyleRef().GridAutoRepeatRowsType() == AutoRepeatType::kAutoFit)))
+    return 0;
   const auto& auto_repeat_tracks = is_row_axis
                                        ? StyleRef().GridAutoRepeatColumns()
                                        : StyleRef().GridAutoRepeatRows();
@@ -577,32 +601,76 @@ size_t LayoutGrid::ComputeAutoRepeatTracksCount(
   if (!auto_repeat_track_list_length)
     return 0;
 
-  if (!is_row_axis) {
-    if (!available_size) {
-      const Length& max_length = StyleRef().LogicalMaxHeight();
-      if (!max_length.IsMaxSizeNone()) {
-        available_size = ConvertLayoutUnitToOptional(
-            ConstrainContentBoxLogicalHeightByMinMax(
-                AvailableLogicalHeightUsing(max_length,
-                                            kExcludeMarginBorderPadding),
-                LayoutUnit(-1)));
-      }
-    }
-  }
-
   bool needs_to_fulfill_minimum_size = false;
   if (!available_size) {
+    const Length& max_size = is_row_axis ? StyleRef().LogicalMaxWidth()
+                                         : StyleRef().LogicalMaxHeight();
+    base::Optional<LayoutUnit> containing_block_available_size;
+    LayoutUnit available_max_size = LayoutUnit();
+    if (max_size.IsSpecified()) {
+      if (max_size.IsPercentOrCalc()) {
+        containing_block_available_size =
+            is_row_axis ? ContainingBlockLogicalWidthForContent()
+                        : ContainingBlockLogicalHeightForContent(
+                              kExcludeMarginBorderPadding);
+      }
+      LayoutUnit max_size_value = ValueForLength(
+          max_size, containing_block_available_size.value_or(LayoutUnit()));
+      available_max_size =
+          is_row_axis
+              ? AdjustContentBoxLogicalWidthForBoxSizing(max_size_value)
+              : AdjustContentBoxLogicalHeightForBoxSizing(max_size_value);
+    }
+
+    base::Optional<LayoutUnit> intrinsic_size_override =
+        OverrideIntrinsicContentLogicalSize(direction);
+
     const Length& min_size = is_row_axis ? StyleRef().LogicalMinWidth()
                                          : StyleRef().LogicalMinHeight();
-    if (!min_size.IsSpecified())
+    if (!available_max_size && !min_size.IsSpecified() &&
+        !intrinsic_size_override) {
       return auto_repeat_track_list_length;
+    }
 
-    LayoutUnit containing_block_available_size =
-        is_row_axis ? ContainingBlockLogicalWidthForContent()
-                    : ContainingBlockLogicalHeightForContent(
-                          kExcludeMarginBorderPadding);
-    available_size = ValueForLength(min_size, containing_block_available_size);
-    needs_to_fulfill_minimum_size = true;
+    LayoutUnit available_min_size = LayoutUnit();
+    if (min_size.IsSpecified()) {
+      if (!containing_block_available_size && min_size.IsPercentOrCalc()) {
+        containing_block_available_size =
+            is_row_axis ? ContainingBlockLogicalWidthForContent()
+                        : ContainingBlockLogicalHeightForContent(
+                              kExcludeMarginBorderPadding);
+      }
+      LayoutUnit min_size_value = ValueForLength(
+          min_size, containing_block_available_size.value_or(LayoutUnit()));
+      available_min_size =
+          is_row_axis
+              ? AdjustContentBoxLogicalWidthForBoxSizing(min_size_value)
+              : AdjustContentBoxLogicalHeightForBoxSizing(min_size_value);
+    }
+
+    // See https://drafts.csswg.org/css-grid/#auto-repeat for explanation of why
+    // we use needs_to_fulfill_minimum_size. Note that we can treat the
+    // intrinsic-size similar to min-size when filling the remainder of space.
+    // That is, we should fill the intrinsic size fully.
+    if (!max_size.IsSpecified() &&
+        (min_size.IsSpecified() || intrinsic_size_override)) {
+      needs_to_fulfill_minimum_size = true;
+    }
+
+    // Now we need to determine the available size.
+    // We start with the maximum of all of the values. Then, we need to see if
+    // max-size is breached. If it is, then we can shrink the size back up to
+    // the max of min-size and max-size. This is because we can ignore
+    // intrinsic-size in this situation since the min- and max- sizes take
+    // priority.
+    auto available_intrinsic_size =
+        intrinsic_size_override.value_or(LayoutUnit());
+    available_size =
+        std::max(std::max(available_min_size, available_intrinsic_size),
+                 available_max_size);
+    if (max_size.IsSpecified() && available_max_size < available_size) {
+      available_size = std::max(available_min_size, available_max_size);
+    }
   }
 
   LayoutUnit auto_repeat_tracks_size;
@@ -663,8 +731,10 @@ size_t LayoutGrid::ComputeAutoRepeatTracksCount(
 
   // Provided the grid container does not have a definite size or max-size in
   // the relevant axis, if the min size is definite then the number of
-  // repetitions is the largest possible positive integer that fulfills that
-  // minimum requirement.
+  // repetitions is the smallest positive integer that fulfills that
+  // minimum requirement. If after determining the repetitions, we still have
+  // free space, then we need one more repetition to ensure we fill at least all
+  // of the space.
   if (needs_to_fulfill_minimum_size && free_space)
     ++repetitions;
 
@@ -1216,8 +1286,7 @@ void LayoutGrid::UpdateGridAreaLogicalSize(
       OverrideSizeChanged(child, kForRows, grid_area_logical_size);
   if (grid_area_width_changed ||
       (grid_area_height_changed && HasRelativeBlockAxisSize(*this, child))) {
-    child.SetNeedsLayout(layout_invalidation_reason::kGridChanged,
-                         kMarkOnlyThis);
+    child.SetSelfNeedsLayoutForAvailableSpace(true);
   }
 
   child.SetOverrideContainingBlockContentLogicalWidth(
@@ -1227,6 +1296,9 @@ void LayoutGrid::UpdateGridAreaLogicalSize(
 }
 
 void LayoutGrid::LayoutGridItems() {
+  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+    return;
+
   PopulateGridPositionsForDirection(kForColumns);
   PopulateGridPositionsForDirection(kForRows);
 
@@ -1305,6 +1377,9 @@ bool LayoutGrid::HasStaticPositionForChild(
 
 void LayoutGrid::LayoutPositionedObjects(bool relayout_children,
                                          PositionedLayoutBehavior info) {
+  if (LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren))
+    return;
+
   column_of_positioned_item_.clear();
   row_of_positioned_item_.clear();
 
@@ -1503,7 +1578,7 @@ void LayoutGrid::ApplyStretchAlignmentToChildIfNeeded(LayoutBox& child) {
       // TODO (lajava): Can avoid laying out here in some cases. See
       // https://webkit.org/b/87905.
       child.SetLogicalHeight(LayoutUnit());
-      child.SetNeedsLayout(layout_invalidation_reason::kGridChanged);
+      child.SetSelfNeedsLayoutForAvailableSpace(true);
     }
   }
 }
@@ -1534,14 +1609,22 @@ DISABLE_CFI_PERF
 void LayoutGrid::UpdateAutoMarginsInRowAxisIfNeeded(LayoutBox& child) {
   DCHECK(!child.IsOutOfFlowPositioned());
 
+  const Length& margin_start = child.StyleRef().MarginStartUsing(StyleRef());
+  const Length& margin_end = child.StyleRef().MarginEndUsing(StyleRef());
+  LayoutUnit margin_logical_width;
+  // We should only consider computed margins if their specified value isn't
+  // 'auto', since such computed value may come from a previous layout and may
+  // be incorrect now.
+  if (!margin_start.IsAuto())
+    margin_logical_width += child.MarginStart();
+  if (!margin_end.IsAuto())
+    margin_logical_width += child.MarginEnd();
   LayoutUnit available_alignment_space =
       child.OverrideContainingBlockContentLogicalWidth() -
-      child.LogicalWidth() - child.MarginLogicalWidth();
+      child.LogicalWidth() - margin_logical_width;
   if (available_alignment_space <= 0)
     return;
 
-  const Length& margin_start = child.StyleRef().MarginStartUsing(StyleRef());
-  const Length& margin_end = child.StyleRef().MarginEndUsing(StyleRef());
   if (margin_start.IsAuto() && margin_end.IsAuto()) {
     child.SetMarginStart(available_alignment_space / 2, Style());
     child.SetMarginEnd(available_alignment_space / 2, Style());
@@ -1558,14 +1641,22 @@ DISABLE_CFI_PERF
 void LayoutGrid::UpdateAutoMarginsInColumnAxisIfNeeded(LayoutBox& child) {
   DCHECK(!child.IsOutOfFlowPositioned());
 
+  const Length& margin_before = child.StyleRef().MarginBeforeUsing(StyleRef());
+  const Length& margin_after = child.StyleRef().MarginAfterUsing(StyleRef());
+  LayoutUnit margin_logical_height;
+  // We should only consider computed margins if their specified value isn't
+  // 'auto', since such computed value may come from a previous layout and may
+  // be incorrect now.
+  if (!margin_before.IsAuto())
+    margin_logical_height += child.MarginBefore();
+  if (!margin_after.IsAuto())
+    margin_logical_height += child.MarginAfter();
   LayoutUnit available_alignment_space =
       child.OverrideContainingBlockContentLogicalHeight() -
-      child.LogicalHeight() - child.MarginLogicalHeight();
+      child.LogicalHeight() - margin_logical_height;
   if (available_alignment_space <= 0)
     return;
 
-  const Length& margin_before = child.StyleRef().MarginBeforeUsing(StyleRef());
-  const Length& margin_after = child.StyleRef().MarginAfterUsing(StyleRef());
   if (margin_before.IsAuto() && margin_after.IsAuto()) {
     child.SetMarginBefore(available_alignment_space / 2, Style());
     child.SetMarginAfter(available_alignment_space / 2, Style());
@@ -1578,17 +1669,6 @@ void LayoutGrid::UpdateAutoMarginsInColumnAxisIfNeeded(LayoutBox& child) {
 
 // TODO(lajava): This logic is shared by LayoutFlexibleBox, so it might be
 // refactored somehow.
-LayoutUnit LayoutGrid::SynthesizedBaselineFromContentBox(
-    const LayoutBox& box,
-    LineDirectionMode direction) {
-  if (direction == kHorizontalLine) {
-    return box.Size().Height() - box.BorderBottom() - box.PaddingBottom() -
-           box.HorizontalScrollbarHeight();
-  }
-  return box.Size().Width() - box.BorderLeft() - box.PaddingLeft() -
-         box.VerticalScrollbarWidth();
-}
-
 LayoutUnit LayoutGrid::SynthesizedBaselineFromBorderBox(
     const LayoutBox& box,
     LineDirectionMode direction) {
@@ -1602,9 +1682,11 @@ LayoutUnit LayoutGrid::BaselinePosition(FontBaseline,
                                         LinePositionMode mode) const {
   DCHECK_EQ(mode, kPositionOnContainingLine);
   LayoutUnit baseline = FirstLineBoxBaseline();
-  // We take content-box's bottom if no valid baseline.
-  if (baseline == -1)
-    baseline = SynthesizedBaselineFromContentBox(*this, direction);
+  // We take border-box's bottom if no valid baseline.
+  if (baseline == -1) {
+    return SynthesizedBaselineFromBorderBox(*this, direction) +
+           MarginLogicalHeight();
+  }
 
   return baseline + BeforeMarginInLineDirection(direction);
 }
@@ -1659,20 +1741,14 @@ LayoutUnit LayoutGrid::FirstLineBoxBaseline() const {
     LineDirectionMode direction =
         IsHorizontalWritingMode() ? kHorizontalLine : kVerticalLine;
     return SynthesizedBaselineFromBorderBox(*baseline_child, direction) +
-           baseline_child->LogicalTop();
+           LogicalTopForChild(*baseline_child);
   }
 
   return baseline + baseline_child->LogicalTop();
 }
 
 LayoutUnit LayoutGrid::InlineBlockBaseline(LineDirectionMode direction) const {
-  LayoutUnit baseline = FirstLineBoxBaseline();
-  if (baseline != -1)
-    return baseline;
-
-  LayoutUnit margin_height =
-      direction == kHorizontalLine ? MarginTop() : MarginRight();
-  return SynthesizedBaselineFromContentBox(*this, direction) + margin_height;
+  return FirstLineBoxBaseline();
 }
 
 bool LayoutGrid::IsBaselineAlignmentForChild(const LayoutBox& child) const {
@@ -2355,7 +2431,7 @@ LayoutPoint LayoutGrid::GridAreaLogicalPosition(const GridArea& area) const {
 }
 
 void LayoutGrid::PaintChildren(const PaintInfo& paint_info,
-                               const LayoutPoint& paint_offset) const {
+                               const PhysicalOffset& paint_offset) const {
   DCHECK(!grid_->NeedsItemsPlacement());
   if (grid_->HasGridItems()) {
     BlockPainter(*this).PaintChildrenAtomically(grid_->GetOrderIterator(),

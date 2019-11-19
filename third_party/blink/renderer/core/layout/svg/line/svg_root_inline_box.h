@@ -45,11 +45,11 @@ class SVGRootInlineBox final : public RootInlineBox {
 
   void ComputePerCharacterLayoutInformation();
 
-  InlineBox* ClosestLeafChildForPosition(const LayoutPoint&);
+  InlineBox* ClosestLeafChildForPosition(const PhysicalOffset&);
 
   bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation& location_in_container,
-                   const LayoutPoint& accumulated_offset,
+                   const HitTestLocation&,
+                   const PhysicalOffset& accumulated_offset,
                    LayoutUnit line_top,
                    LayoutUnit line_bottom) final;
 

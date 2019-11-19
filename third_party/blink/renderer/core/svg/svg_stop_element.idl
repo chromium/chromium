@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/pservers.html#InterfaceSVGStopElement
 
+[Exposed=Window]
 interface SVGStopElement : SVGElement {
     [MeasureAs=SVG1DOMPaintServer] readonly attribute SVGAnimatedNumber offset;
 };

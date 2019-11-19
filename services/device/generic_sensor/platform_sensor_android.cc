@@ -5,7 +5,7 @@
 #include "services/device/generic_sensor/platform_sensor_android.h"
 
 #include "base/bind.h"
-#include "jni/PlatformSensor_jni.h"
+#include "services/device/generic_sensor/jni_headers/PlatformSensor_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;

@@ -8,9 +8,10 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "media/cast/cast_config.h"
-#include "media/mojo/interfaces/remoting.mojom.h"
-#include "media/mojo/interfaces/remoting_common.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "media/mojo/mojom/remoting.mojom.h"
+#include "media/mojo/mojom/remoting_common.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 namespace cast {
@@ -48,8 +49,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
 
     // Connects the |remoter| with a source tab.
     virtual void ConnectToRemotingSource(
-        media::mojom::RemoterPtr remoter,
-        media::mojom::RemotingSourceRequest source_request) = 0;
+        mojo::PendingRemote<media::mojom::Remoter> remoter,
+        mojo::PendingReceiver<media::mojom::RemotingSource>
+            source_receiver) = 0;
 
     // Requests to start remoting. StartRpcMessaging() / OnRemotingStartFailed()
     // will be called when starting succeeds / fails.
@@ -93,9 +95,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   void StartDataStreams(
       mojo::ScopedDataPipeConsumerHandle audio_pipe,
       mojo::ScopedDataPipeConsumerHandle video_pipe,
-      media::mojom::RemotingDataStreamSenderRequest audio_sender_request,
-      media::mojom::RemotingDataStreamSenderRequest video_sender_request)
-      override;
+      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
+          audio_sender_receiver,
+      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
+          video_sender_receiver) override;
   void SendMessageToSink(const std::vector<uint8_t>& message) override;
   void EstimateTransmissionCapacity(
       media::mojom::Remoter::EstimateTransmissionCapacityCallback callback)
@@ -108,8 +111,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   Client* const client_;  // Outlives this class.
   const media::mojom::RemotingSinkMetadata sink_metadata_;
   MessageDispatcher* const message_dispatcher_;  // Outlives this class.
-  mojo::Binding<media::mojom::Remoter> binding_;
-  media::mojom::RemotingSourcePtr remoting_source_;
+  mojo::Receiver<media::mojom::Remoter> receiver_{this};
+  mojo::Remote<media::mojom::RemotingSource> remoting_source_;
   scoped_refptr<media::cast::CastEnvironment> cast_environment_;
   std::unique_ptr<RemotingSender> audio_sender_;
   std::unique_ptr<RemotingSender> video_sender_;
@@ -140,7 +143,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
     STOPPING_REMOTING,  // Stopping the remoting session.
   } state_;
 
-  base::WeakPtrFactory<MediaRemoter> weak_factory_;
+  base::WeakPtrFactory<MediaRemoter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaRemoter);
 };

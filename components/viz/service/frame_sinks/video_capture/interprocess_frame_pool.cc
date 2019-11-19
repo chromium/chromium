@@ -19,7 +19,7 @@ namespace viz {
 constexpr base::TimeDelta InterprocessFramePool::kMinLoggingPeriod;
 
 InterprocessFramePool::InterprocessFramePool(int capacity)
-    : capacity_(std::max(capacity, 0)), weak_factory_(this) {
+    : capacity_(std::max(capacity, 0)) {
   DCHECK_GT(capacity_, 0u);
 }
 
@@ -29,10 +29,6 @@ scoped_refptr<VideoFrame> InterprocessFramePool::ReserveVideoFrame(
     VideoPixelFormat format,
     const gfx::Size& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Calling this method is a signal that there is no intention of resurrecting
-  // the last frame.
-  resurrectable_buffer_memory_ = nullptr;
 
   const size_t bytes_required = VideoFrame::AllocationSize(format, size);
 
@@ -56,6 +52,8 @@ scoped_refptr<VideoFrame> InterprocessFramePool::ReserveVideoFrame(
                          [](const PooledBuffer& a, const PooledBuffer& b) {
                            return a.mapping.size() < b.mapping.size();
                          });
+    if (it->mapping.memory() == marked_frame_buffer_)
+      marked_frame_buffer_ = nullptr;
     available_buffers_.erase(it.base() - 1);  // Release before allocating more.
     PooledBuffer reallocated =
         mojo::CreateReadOnlySharedMemoryRegion(bytes_required);
@@ -82,33 +80,78 @@ scoped_refptr<VideoFrame> InterprocessFramePool::ReserveVideoFrame(
   return WrapBuffer(std::move(additional), format, size);
 }
 
-scoped_refptr<VideoFrame> InterprocessFramePool::ResurrectLastVideoFrame(
-    VideoPixelFormat expected_format,
-    const gfx::Size& expected_size) {
+void InterprocessFramePool::MarkFrame(const media::VideoFrame& frame) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  marked_frame_buffer_ = frame.data(0);
+  marked_frame_size_ = frame.coded_size();
+  marked_frame_color_space_ = frame.ColorSpace();
+  marked_frame_pixel_format_ = frame.format();
+}
+
+void InterprocessFramePool::ClearFrameMarking() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  marked_frame_buffer_ = nullptr;
+}
+
+bool InterprocessFramePool::HasMarkedFrameWithSize(
+    const gfx::Size& size) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return marked_frame_buffer_ != nullptr && marked_frame_size_ == size;
+}
+
+scoped_refptr<VideoFrame>
+InterprocessFramePool::ResurrectOrDuplicateContentFromMarkedFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Find the tracking entry for the resurrectable buffer. If it is still being
-  // used, or is not of the expected format and size, punt.
-  if (resurrectable_buffer_memory_ == nullptr ||
-      last_delivered_format_ != expected_format ||
-      last_delivered_size_ != expected_size) {
+  if (!marked_frame_buffer_)
     return nullptr;
-  }
-  const auto it = std::find_if(
-      available_buffers_.rbegin(), available_buffers_.rend(),
-      [this](const PooledBuffer& candidate) {
-        return candidate.mapping.memory() == resurrectable_buffer_memory_;
-      });
-  if (it == available_buffers_.rend()) {
-    return nullptr;
+
+  const auto it =
+      std::find_if(available_buffers_.rbegin(), available_buffers_.rend(),
+                   [this](const PooledBuffer& candidate) {
+                     return candidate.mapping.memory() == marked_frame_buffer_;
+                   });
+
+  // If the buffer is available, use it directly.
+  if (it != available_buffers_.rend()) {
+    // Wrap the buffer in a VideoFrame and return it.
+    PooledBuffer resurrected = std::move(*it);
+    available_buffers_.erase(it.base() - 1);
+    auto frame = WrapBuffer(std::move(resurrected), marked_frame_pixel_format_,
+                            marked_frame_size_);
+    frame->set_color_space(marked_frame_color_space_);
+    return frame;
   }
 
-  // Wrap the buffer in a VideoFrame and return it.
-  PooledBuffer resurrected = std::move(*it);
-  available_buffers_.erase(it.base() - 1);
+  // Buffer is currently in use. Reserve a new buffer and copy the contents
+  // over.
   auto frame =
-      WrapBuffer(std::move(resurrected), expected_format, expected_size);
-  frame->set_color_space(last_delivered_color_space_);
+      ReserveVideoFrame(marked_frame_pixel_format_, marked_frame_size_);
+  // The call to ReserverVideoFrame should not have cleared
+  // |marked_frame_buffer_|, because that buffer is currently in use.
+  DCHECK(marked_frame_buffer_);
+  if (!frame)
+    return nullptr;
+#if DCHECK_IS_ON()
+  // Sanity check that |marked_frame_buffer_| indeed corresponds to a buffer in
+  // |utilized_buffers_|. If MarkFrame() was erroneously called with a frame
+  // that did not belong to this pool or was otherwise tampered with, this might
+  // not be the case.
+  const auto source_it = std::find_if(
+      utilized_buffers_.rbegin(), utilized_buffers_.rend(),
+      [this](const std::pair<const media::VideoFrame*,
+                             base::ReadOnlySharedMemoryRegion>& candidate) {
+        return candidate.first->data(0) == marked_frame_buffer_;
+      });
+  DCHECK(source_it != utilized_buffers_.rend());
+#endif  // DCHECK_IS_ON()
+
+  // Copy the contents over.
+  const size_t num_bytes_to_copy = VideoFrame::AllocationSize(
+      marked_frame_pixel_format_, marked_frame_size_);
+  memcpy(frame->data(0), marked_frame_buffer_, num_bytes_to_copy);
+
+  frame->set_color_space(marked_frame_color_space_);
   return frame;
 }
 
@@ -116,16 +159,8 @@ base::ReadOnlySharedMemoryRegion InterprocessFramePool::CloneHandleForDelivery(
     const VideoFrame* frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Record that this frame is the last-delivered one, for possible future calls
-  // to ResurrectLastVideoFrame().
   const auto it = utilized_buffers_.find(frame);
   DCHECK(it != utilized_buffers_.end());
-  // Assumption: The first image plane's memory pointer should be the start of
-  // the writable mapped memory. WrapBuffer() sanity-checks this.
-  resurrectable_buffer_memory_ = frame->data(0);
-  last_delivered_format_ = frame->format();
-  last_delivered_size_ = frame->coded_size();
-  last_delivered_color_space_ = frame->ColorSpace();
 
   return it->second.Duplicate();
 }
@@ -161,7 +196,7 @@ scoped_refptr<VideoFrame> InterprocessFramePool::WrapBuffer(
       static_cast<uint8_t*>(pooled_buffer.mapping.memory()),
       pooled_buffer.mapping.size(), base::TimeDelta());
   DCHECK(frame);
-  // Sanity-check the assumption being made in CloneHandleForDelivery():
+  // Sanity-check the assumption being made for SetMarkedBuffer():
   DCHECK_EQ(frame->data(0), pooled_buffer.mapping.memory());
   utilized_buffers_.emplace(frame.get(), std::move(pooled_buffer.region));
   frame->AddDestructionObserver(

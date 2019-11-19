@@ -6,6 +6,10 @@ import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("execution_context") {
   sources = [
+    "agent.cc",
+    "agent.h",
+    "agent_metrics_collector.cc",
+    "agent_metrics_collector.h",
     "context_lifecycle_notifier.cc",
     "context_lifecycle_notifier.h",
     "context_lifecycle_observer.cc",
@@ -18,5 +22,9 @@ blink_core_sources("execution_context") {
     "remote_security_context.h",
     "security_context.cc",
     "security_context.h",
+    "window_agent.cc",
+    "window_agent.h",
+    "window_agent_factory.cc",
+    "window_agent_factory.h",
   ]
 }

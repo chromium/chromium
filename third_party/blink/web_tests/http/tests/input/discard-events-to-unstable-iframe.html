@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<style>
+html, body {
+  margin: 0;
+}
+iframe {
+  border: 0;
+  position: absolute;
+}
+</style>
+
+<iframe id=iframe src="http://localhost:8080/input/resources/discard-events-to-unstable-iframe-subframe.html" sandbox="allow-scripts"></iframe>
+
+<script>
+async_test(t => {
+  if (!window.chrome || !chrome.gpuBenchmarking) {
+    t.done();
+    return;
+  }
+
+  let iframe = document.getElementById("iframe");
+  let expectedCounts = {};
+
+  let tapAndCount = (x, y, mousedownCount, mouseupCount, clickCount, description) => {
+    // Use double-rAF to stabilize layout before dispatching input event.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        iframe.contentWindow.postMessage({tap: [x, y], description: description}, "*");
+        expectedCounts = {
+          mousedown: mousedownCount,
+          mouseup: mouseupCount,
+          click: clickCount
+        };
+      });
+    });
+  };
+
+  let step0 = () => {
+    tapAndCount(20, 20, 1, 1, 1, "Initial state");
+  };
+
+  let step1 = () => {
+    iframe.style.top = "50px";
+    // Iframe moved, but it's not running an IntersectionObserver, so input events
+    // are unaffected.
+    tapAndCount(20, 70, 1, 1, 1, "Iframe moved, no observer");
+  };
+
+  let step2 = () => {
+    // Start running IntersectionObserver in the iframe.
+    iframe.contentWindow.postMessage("observe", "*");
+  };
+
+  let step3 = () => {
+    iframe.style.left = "50px";
+    // Iframe moved, and it's running an IntersectionObserver with
+    // trackVisibility=true. Input events should be discarded.
+    tapAndCount(70, 70, 0, 0, 0, "Iframe moved, observer active");
+  };
+
+  let step4 = () => {
+    setTimeout(() => {
+      // Iframe position has been stable for 500ms, so input events should not
+      // be discarded.
+      tapAndCount(70, 70, 1, 1, 1, "Iframe stable, observer active");
+    }, 500);
+  };
+
+  let steps = [step0, step1, step2, step3, step4];
+  let runNextStep = () => {
+    if (steps.length) {
+      let step = steps.shift();
+      step();
+    } else {
+      t.done();
+    }
+  };
+
+  addEventListener("message", evt => {
+    if (evt.data.hasOwnProperty("count")) {
+      t.step(() => {
+        Object.keys(expectedCounts).forEach(key => {
+          let description = evt.data["description"] + " [" + key + "] ";
+          assert_equals(evt.data["count"][key], expectedCounts[key], description);
+        });
+      });
+    }
+    runNextStep();
+  });
+
+  iframe.addEventListener("load", runNextStep);
+}, "Input events targeting a cross-origin iframe which has moved recently, and which is using IntersectionObserver V2, should be discarded.");
+</script>

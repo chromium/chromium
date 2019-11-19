@@ -28,7 +28,6 @@
         android:paddingEnd="16dp"
         android:singleLine="true"
         android:textAlignment="viewStart"
-        android:textColor="@color/default_text_color"
-        android:textSize="16sp" />
+        android:textAppearance="@style/TextAppearance.BlackTitle1" />
 
 </LinearLayout>

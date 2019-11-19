@@ -552,7 +552,7 @@ using EntryPoint = remoting::ChromotingEvent::SessionEntryPoint;
       message = l10n_util::GetNSString(IDS_ERROR_P2P_FAILURE);
       break;
     case SessionErrorSignalingTimeout:
-      message = l10n_util::GetNSString(IDS_ERROR_SERVICE_UNAVAILABLE);
+      message = l10n_util::GetNSString(IDS_ERROR_HOST_IS_OFFLINE);
       break;
     case SessionErrorHostOverload:
       message = l10n_util::GetNSString(IDS_ERROR_HOST_OVERLOAD);

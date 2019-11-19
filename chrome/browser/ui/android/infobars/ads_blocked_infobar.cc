@@ -8,7 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "jni/AdsBlockedInfoBar_jni.h"
+#include "chrome/android/chrome_jni_headers/AdsBlockedInfoBar_jni.h"
 
 using base::android::JavaParamRef;
 

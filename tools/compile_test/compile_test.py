@@ -9,6 +9,7 @@ Tries to compile given code, produces different output depending on success.
 This is similar to checks done by ./configure scripts.
 """
 
+from __future__ import print_function
 
 import optparse
 import os
@@ -52,9 +53,9 @@ def DoMain(argv):
                                  stderr=subprocess.PIPE)
     cxx_stdout, cxx_stderr = cxx_popen.communicate()
     if cxx_popen.returncode == 0:
-      print options.on_success
+      print(options.on_success)
     else:
-      print options.on_failure
+      print(options.on_failure)
   finally:
     shutil.rmtree(tmpdir)
 

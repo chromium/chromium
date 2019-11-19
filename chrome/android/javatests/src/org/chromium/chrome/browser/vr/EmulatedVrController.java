@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.vr;
 
 import android.content.Context;
 import android.os.SystemClock;
-import android.support.annotation.IntDef;
+
+import androidx.annotation.IntDef;
 
 import com.google.vr.testframework.controller.ControllerTestApi;
 
@@ -201,6 +202,14 @@ public class EmulatedVrController {
         timestamp = mApi.touchEvent.dragFromTo(
                 xStart, yStart, xEnd, yEnd, steps, timestamp, simulatedDelay, speed);
         getApi().touchEvent.endTouchSequence(xEnd, yEnd, timestamp, simulatedDelay, speed);
+    }
+
+    public void setTouchpadPosition(float xPos, float yPos) {
+        getApi().touchEvent.sendRawTouchEvent(xPos, yPos, 0, 0, 0);
+    }
+
+    public void stopTouchingTouchpad(float xPos, float yPos) {
+        getApi().touchEvent.endTouchSequence(xPos, yPos, 0, 0, 0);
     }
 
     /**

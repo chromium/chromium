@@ -22,8 +22,8 @@
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/omaha/omaha_service_provider.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/test/web_task_environment.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -96,7 +96,7 @@ class OmahaServiceTest : public PlatformTest {
  private:
   bool need_update_;
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(OmahaServiceTest);
 };
@@ -333,11 +333,11 @@ TEST_F(OmahaServiceTest, SendPingFailure) {
   base::Time next_tries_time = service.next_tries_time_;
 
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
-  auto resource_response_head =
-      network::CreateResourceResponseHead(net::HTTP_BAD_REQUEST);
+  auto url_response_head =
+      network::CreateURLResponseHead(net::HTTP_BAD_REQUEST);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url, network::URLLoaderCompletionStatus(net::OK),
-      resource_response_head, std::string());
+      std::move(url_response_head), std::string());
 
   EXPECT_EQ(1, service.number_of_tries_);
   EXPECT_TRUE(service.current_ping_time_.is_null());

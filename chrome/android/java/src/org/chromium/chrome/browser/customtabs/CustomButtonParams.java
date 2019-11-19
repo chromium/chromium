@@ -11,9 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsIntent;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,11 +20,15 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsIntent;
+
 import org.chromium.base.Log;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ui.widget.TintedDrawable;
 import org.chromium.chrome.browser.util.IntentUtils;
-import org.chromium.chrome.browser.widget.TintedDrawable;
 import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
@@ -87,7 +88,7 @@ public class CustomButtonParams {
     /**
      * @return The drawable for the customized button.
      */
-    Drawable getIcon(Context context) {
+    public Drawable getIcon(Context context) {
         if (mShouldTint) {
             return new TintedDrawable(context, mIcon);
         } else {
@@ -98,7 +99,7 @@ public class CustomButtonParams {
     /**
      * @return The content description for the customized button.
      */
-    String getDescription() {
+    public String getDescription() {
         return mDescription;
     }
 
@@ -274,7 +275,11 @@ public class CustomButtonParams {
     /**
      * @return Whether the given icon's size is suitable to put on toolbar.
      */
-    static boolean doesIconFitToolbar(Context context, Bitmap bitmap) {
+    public boolean doesIconFitToolbar(Context context) {
+        return doesIconFitToolbar(context, mIcon);
+    }
+
+    private static boolean doesIconFitToolbar(Context context, Bitmap bitmap) {
         int height = context.getResources().getDimensionPixelSize(R.dimen.toolbar_icon_height);
         if (bitmap.getHeight() < height) return false;
         int scaledWidth = bitmap.getWidth() / bitmap.getHeight() * height;

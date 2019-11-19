@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/no_destructor.h"
-#include "components/autofill/core/browser/strike_database.h"
+#include "components/autofill/core/browser/payments/strike_database.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/web_view/internal/app/application_context.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
@@ -34,7 +34,8 @@ WebViewStrikeDatabaseFactory* WebViewStrikeDatabaseFactory::GetInstance() {
 WebViewStrikeDatabaseFactory::WebViewStrikeDatabaseFactory()
     : BrowserStateKeyedServiceFactory(
           "AutofillStrikeDatabase",
-          BrowserStateDependencyManager::GetInstance()) {}
+          BrowserStateDependencyManager::GetInstance()) {
+}
 
 WebViewStrikeDatabaseFactory::~WebViewStrikeDatabaseFactory() {}
 
@@ -43,9 +44,12 @@ WebViewStrikeDatabaseFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   WebViewBrowserState* browser_state =
       WebViewBrowserState::FromBrowserState(context);
+
+  leveldb_proto::ProtoDatabaseProvider* db_provider =
+      browser_state->GetProtoDatabaseProvider();
+
   return std::make_unique<autofill::StrikeDatabase>(
-      browser_state->GetStatePath().Append(
-          FILE_PATH_LITERAL("AutofillStrikeDatabase")));
+      db_provider, browser_state->GetStatePath());
 }
 
 }  // namespace ios_web_view

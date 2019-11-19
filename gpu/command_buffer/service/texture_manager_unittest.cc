@@ -655,7 +655,7 @@ class TextureTestBase : public GpuServiceTest {
         kMaxArrayTextureLayers, kUseDefaultTextures, nullptr,
         &discardable_manager_));
     decoder_.reset(new ::testing::StrictMock<MockGLES2Decoder>(
-        &command_buffer_service_, &outputter_));
+        &client_, &command_buffer_service_, &outputter_));
     error_state_.reset(new ::testing::StrictMock<MockErrorState>());
     manager_->CreateTexture(kClient1Id, kService1Id);
     texture_ref_ = manager_->GetTexture(kClient1Id);
@@ -689,6 +689,7 @@ class TextureTestBase : public GpuServiceTest {
   }
 
   FakeCommandBufferServiceBase command_buffer_service_;
+  FakeDecoderClient client_;
   TraceOutputter outputter_;
   std::unique_ptr<MockGLES2Decoder> decoder_;
   std::unique_ptr<MockErrorState> error_state_;
@@ -755,12 +756,12 @@ TEST_F(TextureTest, SetTargetTextureExternalOES) {
   EXPECT_FALSE(TextureTestHelper::IsCubeComplete(texture));
   EXPECT_FALSE(manager_->CanGenerateMipmaps(texture_ref_.get()));
   EXPECT_TRUE(TextureTestHelper::IsNPOT(texture));
-  EXPECT_TRUE(manager_->CanRender(texture_ref_.get()));
+  EXPECT_FALSE(manager_->CanRender(texture_ref_.get()));
   EXPECT_TRUE(texture->SafeToRenderFrom());
   EXPECT_TRUE(texture->IsImmutable());
 }
 
-TEST_F(TextureTest, ZeroSizeCanNotRender) {
+TEST_F(TextureTest, ZeroSizeCanNotRender2D) {
   manager_->SetTarget(texture_ref_.get(), GL_TEXTURE_2D);
   EXPECT_FALSE(manager_->CanRender(texture_ref_.get()));
   manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 1,
@@ -768,6 +769,19 @@ TEST_F(TextureTest, ZeroSizeCanNotRender) {
   EXPECT_TRUE(manager_->CanRender(texture_ref_.get()));
   manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, 1,
                          0, GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect());
+  EXPECT_FALSE(manager_->CanRender(texture_ref_.get()));
+}
+
+TEST_F(TextureTest, ZeroSizeCanNotRenderExternalOES) {
+  manager_->SetTarget(texture_ref_.get(), GL_TEXTURE_EXTERNAL_OES);
+  EXPECT_FALSE(manager_->CanRender(texture_ref_.get()));
+  manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_EXTERNAL_OES, 0,
+                         GL_RGBA, 1, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                         gfx::Rect(1, 1));
+  EXPECT_TRUE(manager_->CanRender(texture_ref_.get()));
+  manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_EXTERNAL_OES, 0,
+                         GL_RGBA, 0, 0, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                         gfx::Rect());
   EXPECT_FALSE(manager_->CanRender(texture_ref_.get()));
 }
 

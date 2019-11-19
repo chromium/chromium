@@ -30,171 +30,180 @@ TEST(ProxyConfigServiceWinTest, SetFromIEConfig) {
     ProxyRulesExpectation proxy_rules;
     const char* proxy_bypass_list;  // newline separated
   } tests[] = {
-    // Auto detect.
-    {
-      { // Input.
-        TRUE,  // fAutoDetect
-        NULL,  // lpszAutoConfigUrl
-        NULL,  // lpszProxy
-        NULL,  // lpszProxyBypass
+      // Auto detect.
+      {
+          {
+              // Input.
+              TRUE,     // fAutoDetect
+              nullptr,  // lpszAutoConfigUrl
+              nullptr,  // lpszProxy
+              nullptr,  // lpszProxyBypass
+          },
+
+          // Expected result.
+          true,    // auto_detect
+          GURL(),  // pac_url
+          ProxyRulesExpectation::Empty(),
       },
 
-      // Expected result.
-      true,                       // auto_detect
-      GURL(),                     // pac_url
-      ProxyRulesExpectation::Empty(),
-    },
+      // Valid PAC url
+      {
+          {
+              // Input.
+              FALSE,                    // fAutoDetect
+              L"http://wpad/wpad.dat",  // lpszAutoConfigUrl
+              nullptr,                  // lpszProxy
+              nullptr,                  // lpszProxy_bypass
+          },
 
-    // Valid PAC url
-    {
-      { // Input.
-        FALSE,                    // fAutoDetect
-        L"http://wpad/wpad.dat",  // lpszAutoConfigUrl
-        NULL,                     // lpszProxy
-        NULL,                     // lpszProxy_bypass
+          // Expected result.
+          false,                         // auto_detect
+          GURL("http://wpad/wpad.dat"),  // pac_url
+          ProxyRulesExpectation::Empty(),
       },
 
-      // Expected result.
-      false,                         // auto_detect
-      GURL("http://wpad/wpad.dat"),  // pac_url
-      ProxyRulesExpectation::Empty(),
-    },
+      // Invalid PAC url string.
+      {
+          {
+              // Input.
+              FALSE,        // fAutoDetect
+              L"wpad.dat",  // lpszAutoConfigUrl
+              nullptr,      // lpszProxy
+              nullptr,      // lpszProxy_bypass
+          },
 
-    // Invalid PAC url string.
-    {
-      { // Input.
-        FALSE,        // fAutoDetect
-        L"wpad.dat",  // lpszAutoConfigUrl
-        NULL,         // lpszProxy
-        NULL,         // lpszProxy_bypass
+          // Expected result.
+          false,   // auto_detect
+          GURL(),  // pac_url
+          ProxyRulesExpectation::Empty(),
       },
 
-      // Expected result.
-      false,                      // auto_detect
-      GURL(),                     // pac_url
-      ProxyRulesExpectation::Empty(),
-    },
+      // Single-host in proxy list.
+      {
+          {
+              // Input.
+              FALSE,              // fAutoDetect
+              nullptr,            // lpszAutoConfigUrl
+              L"www.google.com",  // lpszProxy
+              nullptr,            // lpszProxy_bypass
+          },
 
-    // Single-host in proxy list.
-    {
-      { // Input.
-        FALSE,              // fAutoDetect
-        NULL,               // lpszAutoConfigUrl
-        L"www.google.com",  // lpszProxy
-        NULL,               // lpszProxy_bypass
+          // Expected result.
+          false,                                              // auto_detect
+          GURL(),                                             // pac_url
+          ProxyRulesExpectation::Single("www.google.com:80",  // single proxy
+                                        ""),                  // bypass rules
       },
 
-      // Expected result.
-      false,                                   // auto_detect
-      GURL(),                                  // pac_url
-      ProxyRulesExpectation::Single(
-          "www.google.com:80",  // single proxy
-          ""),                  // bypass rules
-    },
+      // Per-scheme proxy rules.
+      {
+          {
+              // Input.
+              FALSE,    // fAutoDetect
+              nullptr,  // lpszAutoConfigUrl
+              L"http=www.google.com:80;https=www.foo.com:110",  // lpszProxy
+              nullptr,  // lpszProxy_bypass
+          },
 
-    // Per-scheme proxy rules.
-    {
-      { // Input.
-        FALSE,                                            // fAutoDetect
-        NULL,                                             // lpszAutoConfigUrl
-        L"http=www.google.com:80;https=www.foo.com:110",  // lpszProxy
-        NULL,                                             // lpszProxy_bypass
+          // Expected result.
+          false,                                                 // auto_detect
+          GURL(),                                                // pac_url
+          ProxyRulesExpectation::PerScheme("www.google.com:80",  // http
+                                           "www.foo.com:110",    // https
+                                           "",                   // ftp
+                                           ""),                  // bypass rules
       },
 
-      // Expected result.
-      false,                                   // auto_detect
-      GURL(),                                  // pac_url
-      ProxyRulesExpectation::PerScheme(
-          "www.google.com:80",  // http
-          "www.foo.com:110",   // https
-          "",                  // ftp
-          ""),                 // bypass rules
-    },
+      // SOCKS proxy configuration.
+      {
+          {
+              // Input.
+              FALSE,    // fAutoDetect
+              nullptr,  // lpszAutoConfigUrl
+              L"http=www.google.com:80;https=www.foo.com:110;"
+              L"ftp=ftpproxy:20;socks=foopy:130",  // lpszProxy
+              nullptr,                             // lpszProxy_bypass
+          },
 
-    // SOCKS proxy configuration.
-    {
-      { // Input.
-        FALSE,                                            // fAutoDetect
-        NULL,                                             // lpszAutoConfigUrl
-        L"http=www.google.com:80;https=www.foo.com:110;"
-        L"ftp=ftpproxy:20;socks=foopy:130",               // lpszProxy
-        NULL,                                             // lpszProxy_bypass
+          // Expected result.
+          // Note that "socks" is interprted as meaning "socks4", since that is
+          // how
+          // Internet Explorer applies the settings. For more details on this
+          // policy, see:
+          // http://code.google.com/p/chromium/issues/detail?id=55912#c2
+          false,   // auto_detect
+          GURL(),  // pac_url
+          ProxyRulesExpectation::PerSchemeWithSocks(
+              "www.google.com:80",   // http
+              "www.foo.com:110",     // https
+              "ftpproxy:20",         // ftp
+              "socks4://foopy:130",  // socks
+              ""),                   // bypass rules
       },
 
-      // Expected result.
-      // Note that "socks" is interprted as meaning "socks4", since that is how
-      // Internet Explorer applies the settings. For more details on this
-      // policy, see:
-      // http://code.google.com/p/chromium/issues/detail?id=55912#c2
-      false,                                   // auto_detect
-      GURL(),                                  // pac_url
-      ProxyRulesExpectation::PerSchemeWithSocks(
-          "www.google.com:80",   // http
-          "www.foo.com:110",     // https
-          "ftpproxy:20",         // ftp
-          "socks4://foopy:130",  // socks
-          ""),                   // bypass rules
-    },
+      // Bypass local names.
+      {
+          {
+              // Input.
+              TRUE,        // fAutoDetect
+              nullptr,     // lpszAutoConfigUrl
+              nullptr,     // lpszProxy
+              L"<local>",  // lpszProxy_bypass
+          },
 
-    // Bypass local names.
-    {
-      { // Input.
-        TRUE,            // fAutoDetect
-        NULL,            // lpszAutoConfigUrl
-        NULL,            // lpszProxy
-        L"<local>",      // lpszProxy_bypass
+          true,    // auto_detect
+          GURL(),  // pac_url
+          ProxyRulesExpectation::EmptyWithBypass("<local>"),
       },
 
-      true,                       // auto_detect
-      GURL(),                     // pac_url
-      ProxyRulesExpectation::EmptyWithBypass("<local>"),
-    },
+      // Bypass "google.com" and local names, using semicolon as delimiter
+      // (ignoring white space).
+      {
+          {
+              // Input.
+              TRUE,                     // fAutoDetect
+              nullptr,                  // lpszAutoConfigUrl
+              nullptr,                  // lpszProxy
+              L"<local> ; google.com",  // lpszProxy_bypass
+          },
 
-    // Bypass "google.com" and local names, using semicolon as delimiter
-    // (ignoring white space).
-    {
-      { // Input.
-        TRUE,                         // fAutoDetect
-        NULL,                         // lpszAutoConfigUrl
-        NULL,                         // lpszProxy
-        L"<local> ; google.com",      // lpszProxy_bypass
+          // Expected result.
+          true,    // auto_detect
+          GURL(),  // pac_url
+          ProxyRulesExpectation::EmptyWithBypass("<local>,google.com"),
       },
 
-      // Expected result.
-      true,                       // auto_detect
-      GURL(),                     // pac_url
-      ProxyRulesExpectation::EmptyWithBypass("<local>,google.com"),
-    },
+      // Bypass "foo.com" and "google.com", using lines as delimiter.
+      {
+          {
+              // Input.
+              TRUE,                      // fAutoDetect
+              nullptr,                   // lpszAutoConfigUrl
+              nullptr,                   // lpszProxy
+              L"foo.com\r\ngoogle.com",  // lpszProxy_bypass
+          },
 
-    // Bypass "foo.com" and "google.com", using lines as delimiter.
-    {
-      { // Input.
-        TRUE,                      // fAutoDetect
-        NULL,                      // lpszAutoConfigUrl
-        NULL,                      // lpszProxy
-        L"foo.com\r\ngoogle.com",  // lpszProxy_bypass
+          // Expected result.
+          true,    // auto_detect
+          GURL(),  // pac_url
+          ProxyRulesExpectation::EmptyWithBypass("foo.com,google.com"),
       },
 
-      // Expected result.
-      true,                       // auto_detect
-      GURL(),                     // pac_url
-      ProxyRulesExpectation::EmptyWithBypass("foo.com,google.com"),
-    },
+      // Bypass "foo.com" and "google.com", using commas as delimiter.
+      {
+          {
+              // Input.
+              TRUE,                    // fAutoDetect
+              nullptr,                 // lpszAutoConfigUrl
+              nullptr,                 // lpszProxy
+              L"foo.com, google.com",  // lpszProxy_bypass
+          },
 
-    // Bypass "foo.com" and "google.com", using commas as delimiter.
-    {
-      { // Input.
-        TRUE,                      // fAutoDetect
-        NULL,                      // lpszAutoConfigUrl
-        NULL,                      // lpszProxy
-        L"foo.com, google.com",    // lpszProxy_bypass
+          // Expected result.
+          true,    // auto_detect
+          GURL(),  // pac_url
+          ProxyRulesExpectation::EmptyWithBypass("foo.com,google.com"),
       },
-
-      // Expected result.
-      true,                       // auto_detect
-      GURL(),                     // pac_url
-      ProxyRulesExpectation::EmptyWithBypass("foo.com,google.com"),
-    },
   };
 
   for (size_t i = 0; i < base::size(tests); ++i) {

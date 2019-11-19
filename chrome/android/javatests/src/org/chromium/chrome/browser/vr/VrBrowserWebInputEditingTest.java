@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_SHORT_
 import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE;
 
 import android.graphics.PointF;
+import android.os.SystemClock;
 import android.support.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -21,24 +22,30 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.vr.keyboard.TextEditAction;
 import org.chromium.chrome.browser.vr.mock.MockBrowserKeyboardInterface;
 import org.chromium.chrome.browser.vr.rules.ChromeTabbedActivityVrTestRule;
 import org.chromium.chrome.browser.vr.util.NativeUiUtils;
+import org.chromium.chrome.browser.vr.util.RenderTestUtils;
 import org.chromium.chrome.browser.vr.util.VrBrowserTransitionUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.RenderTestRule;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.concurrent.TimeoutException;
 
 /**
  * End-to-end tests for interacting with HTML input elements on a webpage.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
 @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
 public class VrBrowserWebInputEditingTest {
     // We explicitly instantiate a rule here instead of using parameterization since this class
@@ -46,10 +53,14 @@ public class VrBrowserWebInputEditingTest {
     @Rule
     public ChromeTabbedActivityVrTestRule mVrTestRule = new ChromeTabbedActivityVrTestRule();
 
+    @Rule
+    public RenderTestRule mRenderTestRule =
+            new RenderTestRule("components/test/data/vr_browser_video/render_tests");
+
     private VrBrowserTestFramework mVrBrowserTestFramework;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mVrBrowserTestFramework = new VrBrowserTestFramework(mVrTestRule);
     }
 
@@ -137,7 +148,7 @@ public class VrBrowserWebInputEditingTest {
      */
     @Test
     @MediumTest
-    public void testSelectTag() throws TimeoutException, InterruptedException {
+    public void testSelectTag() throws TimeoutException {
         mVrTestRule.loadUrl(VrBrowserTestFramework.getFileUrlForHtmlTestFile("test_select_tag"),
                 PAGE_LOAD_TIMEOUT_S);
         VrBrowserTransitionUtils.forceEnterVrBrowserOrFail(POLL_TIMEOUT_LONG_MS);
@@ -418,5 +429,52 @@ public class VrBrowserWebInputEditingTest {
                 },
                 "Keyboard did not hide from app button press", POLL_TIMEOUT_SHORT_MS,
                 POLL_CHECK_INTERVAL_SHORT_MS);
+    }
+
+    /**
+     * Tests that video controls look correct in the VR browser and properly hide when the
+     * controller is pointed outside of the content quad.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser", "RenderTest"})
+    public void testFullscreenVideoControls()
+            throws InterruptedException, TimeoutException, IOException {
+        // There's occasionally slight AA differences along the play button, so tolerate a small
+        // amount of differing.
+        mRenderTestRule.setPixelDiffThreshold(2);
+        VrBrowserTransitionUtils.forceEnterVrBrowserOrFail(POLL_TIMEOUT_LONG_MS);
+        NativeUiUtils.enableMockedInput();
+        mVrBrowserTestFramework.loadUrlAndAwaitInitialization(
+                VrBrowserTestFramework.getFileUrlForHtmlTestFile("test_video_controls"),
+                PAGE_LOAD_TIMEOUT_S);
+
+        // Click the fullscreen button. We use a separate button instead of the controls' fullscreen
+        // button since that's more stable.
+        DOMUtils.clickNode(mVrBrowserTestFramework.getCurrentWebContents(), "fullscreen_button",
+                false /* goThroughRootAndroidView */);
+        mVrBrowserTestFramework.pollJavaScriptBooleanOrFail(
+                "document.getElementById('video_element').readyState === 4", POLL_TIMEOUT_LONG_MS);
+        // The readyState === 4 check only checks that the video can be played through without any
+        // buffering. Wait a bit after that to make sure that the video is actually fully loaded,
+        // and that the loading animation has stopped.
+        SystemClock.sleep(1000);
+
+        NativeUiUtils.waitForUiQuiescence();
+
+        HashMap<String, String> suffixToIds = new HashMap<String, String>();
+        suffixToIds.put(
+                NativeUiUtils.FRAME_BUFFER_SUFFIX_BROWSER_UI, "fullscreen_video_paused_browser_ui");
+        suffixToIds.put(NativeUiUtils.FRAME_BUFFER_SUFFIX_BROWSER_CONTENT,
+                "fullscreen_video_paused_browser_content");
+        RenderTestUtils.dumpAndCompare(suffixToIds, null /* bounds */, mRenderTestRule);
+
+        // Start the video and hover outside of the content quad to make sure that the controls
+        // auto-hide.
+        NativeUiUtils.clickContentNode("video_element", new PointF(), 1, mVrBrowserTestFramework);
+        NativeUiUtils.hoverElement(UserFriendlyElementName.CONTENT_QUAD, new PointF(1.0f, 0.0f));
+        SystemClock.sleep(2000);
+        RenderTestUtils.dumpAndCompare(NativeUiUtils.FRAME_BUFFER_SUFFIX_BROWSER_CONTENT,
+                "fullscreen_video_playing_not_hovered_browser_content", mRenderTestRule);
     }
 }

@@ -10,7 +10,10 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "components/nacl/common/nacl.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "native_client/src/trusted/service_runtime/nacl_error_code.h"
 #include "ppapi/c/pp_instance.h"
 
@@ -20,7 +23,7 @@ class NexeLoadManager;
 class TrustedPluginChannel : public mojom::NaClRendererHost {
  public:
   TrustedPluginChannel(NexeLoadManager* nexe_load_manager,
-                       mojom::NaClRendererHostRequest request,
+                       mojo::PendingReceiver<mojom::NaClRendererHost> receiver,
                        bool is_helper_nexe);
   ~TrustedPluginChannel() override;
 
@@ -32,13 +35,14 @@ class TrustedPluginChannel : public mojom::NaClRendererHost {
                         ReportExitStatusCallback callback) override;
   void ReportLoadStatus(NaClErrorCode load_status,
                         ReportLoadStatusCallback callback) override;
-  void ProvideExitControl(mojom::NaClExitControlPtr exit_control) override;
+  void ProvideExitControl(
+      mojo::PendingRemote<mojom::NaClExitControl> exit_control) override;
 
   // Non-owning pointer. This is safe because the TrustedPluginChannel is owned
   // by the NexeLoadManager pointed to here.
   NexeLoadManager* nexe_load_manager_;
-  mojo::Binding<mojom::NaClRendererHost> binding_;
-  mojom::NaClExitControlPtr exit_control_;
+  mojo::Receiver<mojom::NaClRendererHost> receiver_;
+  mojo::Remote<mojom::NaClExitControl> exit_control_;
   const bool is_helper_nexe_;
 
   DISALLOW_COPY_AND_ASSIGN(TrustedPluginChannel);

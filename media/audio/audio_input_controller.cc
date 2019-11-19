@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/ranges.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -74,7 +75,7 @@ float AveragePower(const AudioBus& buffer) {
 
   // Update accumulated average results, with clamping for sanity.
   const float average_power =
-      std::max(0.0f, std::min(1.0f, sum_power / (frames * channels)));
+      base::ClampToRange(sum_power / (frames * channels), 0.0f, 1.0f);
 
   // Convert average power level to dBFS units, and pin it down to zero if it
   // is insignificantly small.
@@ -184,8 +185,7 @@ AudioInputController::AudioInputController(
       stream_(nullptr),
       sync_writer_(sync_writer),
       type_(type),
-      user_input_monitor_(user_input_monitor),
-      weak_ptr_factory_(this) {
+      user_input_monitor_(user_input_monitor) {
   DCHECK(handler_);
   DCHECK(sync_writer_);
 }

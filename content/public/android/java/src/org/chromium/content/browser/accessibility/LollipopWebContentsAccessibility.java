@@ -13,6 +13,7 @@ import android.content.ReceiverCallNotAllowedException;
 import android.os.Build;
 import android.text.SpannableString;
 import android.text.style.LocaleSpan;
+import android.text.style.SuggestionSpan;
 import android.util.SparseArray;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -141,8 +142,10 @@ public class LollipopWebContentsAccessibility extends KitKatWebContentsAccessibi
     }
 
     @Override
-    protected CharSequence computeText(String text, boolean annotateAsLink, String language) {
-        CharSequence charSequence = super.computeText(text, annotateAsLink, language);
+    protected CharSequence computeText(String text, boolean annotateAsLink, String language,
+            int[] suggestionStarts, int[] suggestionEnds, String[] suggestions) {
+        CharSequence charSequence = super.computeText(
+                text, annotateAsLink, language, suggestionStarts, suggestionEnds, suggestions);
         if (!language.isEmpty() && !language.equals(mSystemLanguageTag)) {
             SpannableString spannable;
             if (charSequence instanceof SpannableString) {
@@ -152,8 +155,33 @@ public class LollipopWebContentsAccessibility extends KitKatWebContentsAccessibi
             }
             Locale locale = Locale.forLanguageTag(language);
             spannable.setSpan(new LocaleSpan(locale), 0, spannable.length(), 0);
-            return spannable;
+            charSequence = spannable;
         }
+
+        if (suggestionStarts != null && suggestionStarts.length > 0) {
+            assert suggestionEnds != null;
+            assert suggestionEnds.length == suggestionStarts.length;
+            assert suggestions != null;
+            assert suggestions.length == suggestionStarts.length;
+
+            SpannableString spannable;
+            if (charSequence instanceof SpannableString) {
+                spannable = (SpannableString) charSequence;
+            } else {
+                spannable = new SpannableString(charSequence);
+            }
+
+            for (int i = 0; i < suggestionStarts.length; i++) {
+                String[] suggestionArray = new String[1];
+                suggestionArray[0] = suggestions[i];
+                int flags = SuggestionSpan.FLAG_MISSPELLED;
+                SuggestionSpan suggestionSpan =
+                        new SuggestionSpan(mContext, suggestionArray, flags);
+                spannable.setSpan(suggestionSpan, suggestionStarts[i], suggestionEnds[i], 0);
+            }
+            charSequence = spannable;
+        }
+
         return charSequence;
     }
 

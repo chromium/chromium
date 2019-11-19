@@ -7,8 +7,8 @@
 
 #include <ostream>
 
-#include "components/arc/common/app.mojom.h"
-#include "components/arc/common/auth.mojom.h"
+#include "components/arc/mojom/app.mojom.h"
+#include "components/arc/mojom/auth.mojom.h"
 
 class Profile;
 
@@ -163,7 +163,10 @@ enum class ProvisioningResult : int {
   // Account type is not supported for authorization.
   UNSUPPORTED_ACCOUNT_TYPE = 22,
 
-  kMaxValue = UNSUPPORTED_ACCOUNT_TYPE,
+  // Account is not present in Chrome OS Account Manager.
+  CHROME_ACCOUNT_NOT_FOUND = 23,
+
+  kMaxValue = CHROME_ACCOUNT_NOT_FOUND,
 };
 
 enum class OptInFlowResult : int {
@@ -235,8 +238,14 @@ void UpdatePlayAutoInstallRequestState(mojom::PaiFlowState state,
                                        const Profile* profile);
 void UpdatePlayAutoInstallRequestTime(const base::TimeDelta& elapsed_time,
                                       const Profile* profile);
-void UpdatePlayStoreShowTime(const base::TimeDelta& elapsed_time,
-                             const Profile* profile);
+void UpdateArcUiAvailableTime(const base::TimeDelta& elapsed_time,
+                              const std::string& mode,
+                              const Profile* profile);
+void UpdatePlayStoreLaunchTime(const base::TimeDelta& elapsed_time);
+// TODO(khmel): Remove this in favor of UpdateArcUiAvailableTime once it is
+// rolled and has confirmed usability.
+void UpdatePlayStoreShownTimeDeprecated(const base::TimeDelta& elapsed_time,
+                                        const Profile* profile);
 void UpdateSilentAuthCodeUMA(OptInSilentAuthCode state);
 void UpdateSupervisionTransitionResultUMA(
     mojom::SupervisionChangeStatus result);
@@ -245,6 +254,9 @@ void UpdateSecondaryAccountSilentAuthCodeUMA(OptInSilentAuthCode state);
 void UpdateAuthTiming(const char* histogram_name, base::TimeDelta elapsed_time);
 void UpdateAuthCheckinAttempts(int32_t num_attempts);
 void UpdateAuthAccountCheckStatus(mojom::AccountCheckStatus status);
+void UpdateMainAccountResolutionStatus(
+    const Profile* profile,
+    mojom::MainAccountResolutionStatus status);
 
 // Outputs the stringified |result| to |os|. This is only for logging purposes.
 std::ostream& operator<<(std::ostream& os, const ProvisioningResult& result);

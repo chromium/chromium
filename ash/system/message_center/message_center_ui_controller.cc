@@ -6,17 +6,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_types.h"
 #include "ui/message_center/notification_blocker.h"
-#include "ui/message_center/views/notification_menu_model.h"
-#include "ui/strings/grit/ui_strings.h"
 
 namespace ash {
 

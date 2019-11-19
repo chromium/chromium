@@ -129,7 +129,7 @@ BOOL forceMagicMouse = NO;
     case blink::WebInputEvent::kGestureScrollBegin:
       if (event.data.scroll_begin.synthetic ||
           event.data.scroll_begin.inertial_phase ==
-              blink::WebGestureEvent::kMomentumPhase) {
+              blink::WebGestureEvent::InertialPhaseState::kMomentum) {
         return;
       }
       // GestureScrollBegin and GestureScrollEnd events are created to wrap

@@ -5,6 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_SERVICE_WORKER_MESSAGE_FILTER_H_
 #define EXTENSIONS_BROWSER_EXTENSION_SERVICE_WORKER_MESSAGE_FILTER_H_
 
+#include <string>
+#include <unordered_set>
+
 #include "base/macros.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
@@ -45,7 +48,10 @@ class ExtensionServiceWorkerMessageFilter
                                         const std::string& request_uuid);
   void OnDecrementServiceWorkerActivity(int64_t service_worker_version_id,
                                         const std::string& request_uuid);
-  void OnEventAckWorker(int64_t service_worker_version_id, int event_id);
+  void OnEventAckWorker(const ExtensionId& extension_id,
+                        int64_t service_worker_version_id,
+                        int thread_id,
+                        int event_id);
   void OnDidInitializeServiceWorkerContext(const ExtensionId& extension_id,
                                            int64_t service_worker_version_id,
                                            int thread_id);
@@ -70,6 +76,8 @@ class ExtensionServiceWorkerMessageFilter
   std::unique_ptr<ExtensionFunctionDispatcher,
                   content::BrowserThread::DeleteOnUIThread>
       dispatcher_;
+
+  std::unordered_set<std::string> active_request_uuids_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionServiceWorkerMessageFilter);
 };

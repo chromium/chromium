@@ -118,7 +118,7 @@ void VrGLThread::SendRequestPresentReply(device::mojom::XRSessionPtr session) {
                                 weak_vr_shell_, std::move(session)));
 }
 
-void VrGLThread::UpdateGamepadData(device::GvrGamepadData pad) {
+void VrGLThread::UpdateGamepadData(GvrGamepadData pad) {
   DCHECK(OnGlThread());
   main_thread_task_runner_->PostTask(
       FROM_HERE,
@@ -130,7 +130,7 @@ void VrGLThread::ForwardEventToContent(std::unique_ptr<InputEvent> event,
   DCHECK(OnGlThread());
   main_thread_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VrShell::ProcessContentGesture, weak_vr_shell_,
-                                base::Passed(std::move(event)), content_id));
+                                std::move(event), content_id));
 }
 
 void VrGLThread::ClearFocusedElement() {
@@ -161,7 +161,7 @@ void VrGLThread::ForwardEventToPlatformUi(std::unique_ptr<InputEvent> event) {
   DCHECK(OnGlThread());
   main_thread_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VrShell::ProcessDialogGesture, weak_vr_shell_,
-                                base::Passed(std::move(event))));
+                                std::move(event)));
 }
 
 void VrGLThread::ForceExitVr() {
@@ -430,9 +430,8 @@ void VrGLThread::SetOmniboxSuggestions(
     std::vector<OmniboxSuggestion> suggestions) {
   DCHECK(OnMainThread());
   task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BrowserUiInterface::SetOmniboxSuggestions,
-                     weak_browser_ui_, base::Passed(std::move(suggestions))));
+      FROM_HERE, base::BindOnce(&BrowserUiInterface::SetOmniboxSuggestions,
+                                weak_browser_ui_, std::move(suggestions)));
 }
 
 void VrGLThread::OnAssetsLoaded(AssetsLoadStatus status,

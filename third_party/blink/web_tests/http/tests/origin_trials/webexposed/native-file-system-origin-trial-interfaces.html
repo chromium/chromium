@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 NativeFileSystem --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial" content="AonTJaP9wZXkdR+DdBwuBMICov7GjWH/biHmn3yiSHBYZttDKA7ZMlB+rfnf7ImSFpYeePoQsT3Fg6i5yxNRNQoAAABYeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiTmF0aXZlRmlsZVN5c3RlbSIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==">
+<title>Native File System API - interfaces exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this, {
+    'FileSystemHandle': ['isFile', 'isDirectory', 'name', 'queryPermission', 'requestPermission'],
+    'FileSystemFileHandle': ['getFile', 'createWriter'],
+    'FileSystemDirectoryHandle': ['getFile', 'getDirectory', 'getEntries', 'removeEntry'],
+    'FileSystemWriter': ['write', 'truncate', 'close'],
+    'global': ['chooseFileSystemEntries'],
+  });
+  assert_true('getSystemDirectory' in self.FileSystemDirectoryHandle);
+}, 'Native File System API interfaces and properties in Origin-Trial enabled document.');
+</script>

@@ -15,12 +15,6 @@ class AnimationPlaybackEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static AnimationPlaybackEvent* Create(const AtomicString& type,
-                                        double current_time,
-                                        double timeline_time) {
-    return MakeGarbageCollected<AnimationPlaybackEvent>(type, current_time,
-                                                        timeline_time);
-  }
   static AnimationPlaybackEvent* Create(
       const AtomicString& type,
       const AnimationPlaybackEventInit* initializer) {

@@ -18,7 +18,7 @@ class TestLocationIconDelegate : public LocationIconView::Delegate {
 
   content::WebContents* GetWebContents() override { return nullptr; }
 
-  bool IsEditingOrEmpty() override { return is_editing_or_empty_; }
+  bool IsEditingOrEmpty() const override { return is_editing_or_empty_; }
   void set_is_editing_or_empty(bool is_editing_or_empty) {
     is_editing_or_empty_ = is_editing_or_empty;
   }
@@ -87,7 +87,7 @@ class LocationIconViewTest : public ChromeViewsTestBase {
 
     base::string16 secure_display_text = base::string16();
     if (level == security_state::SecurityLevel::DANGEROUS ||
-        level == security_state::SecurityLevel::HTTP_SHOW_WARNING)
+        level == security_state::SecurityLevel::WARNING)
       secure_display_text = base::ASCIIToUTF16("Insecure");
 
     location_bar_model()->set_secure_display_text(secure_display_text);
@@ -109,7 +109,7 @@ class LocationIconViewTest : public ChromeViewsTestBase {
     views::Widget::InitParams params =
         CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 200, 200);
-    widget_->Init(params);
+    widget_->Init(std::move(params));
   }
 };
 
@@ -129,7 +129,7 @@ TEST_F(LocationIconViewTest, ShouldAnimateTextWhenWarning) {
   SetSecurityLevel(security_state::SecurityLevel::SECURE);
   view()->Update(/*suppress_animations=*/true);
 
-  SetSecurityLevel(security_state::SecurityLevel::HTTP_SHOW_WARNING);
+  SetSecurityLevel(security_state::SecurityLevel::WARNING);
   view()->Update(/*suppress_animations=*/false);
   EXPECT_TRUE(view()->is_animating_label());
 }
@@ -146,7 +146,7 @@ TEST_F(LocationIconViewTest, ShouldAnimateTextWhenDangerous) {
 
 TEST_F(LocationIconViewTest, ShouldNotAnimateWarningToDangerous) {
   // Make sure the initial status is secure.
-  SetSecurityLevel(security_state::SecurityLevel::HTTP_SHOW_WARNING);
+  SetSecurityLevel(security_state::SecurityLevel::WARNING);
   view()->Update(/*suppress_animations=*/true);
 
   SetSecurityLevel(security_state::SecurityLevel::DANGEROUS);

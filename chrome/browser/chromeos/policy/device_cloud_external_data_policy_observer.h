@@ -78,7 +78,8 @@ class DeviceCloudExternalDataPolicyObserver : public PolicyService::Observer {
   // Delegate that takes care of policy data updates. Cannot be null.
   Delegate* const delegate_;
 
-  base::WeakPtrFactory<DeviceCloudExternalDataPolicyObserver> weak_factory_;
+  base::WeakPtrFactory<DeviceCloudExternalDataPolicyObserver> weak_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceCloudExternalDataPolicyObserver);
 };

@@ -21,9 +21,10 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon_client.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/system/factory_ping_embargo_check.h"
 #include "chromeos/system/statistics_provider.h"
+#include "dbus/bus.h"
 #include "rlz/lib/financial_ping.h"
 #include "rlz/lib/lib_values.h"
 #include "rlz/lib/recursive_cross_process_lock_posix.h"
@@ -112,6 +113,48 @@ bool ConvertToDynamicRlz(const std::string& brand,
   return true;
 }
 
+// Forward declare so that it could be referred in SetRlzPingSent.
+void OnSetRlzPingSent(int retry_count, bool success);
+
+// Calls debug daemon client to set |should_send_rlz_ping| to 0 in RW_VPD.
+// Re-post the work on DBus's original thread if it is not called from there
+// because DBus code is not thread safe.
+void SetRlzPingSent(int retry_count) {
+  // GetSystemBus() could return null in tests.
+  base::TaskRunner* const origin_task_runner =
+      chromeos::DBusThreadManager::Get()->GetSystemBus()
+          ? chromeos::DBusThreadManager::Get()
+                ->GetSystemBus()
+                ->GetOriginTaskRunner()
+          : nullptr;
+  if (origin_task_runner && !origin_task_runner->RunsTasksInCurrentSequence()) {
+    origin_task_runner->PostTask(FROM_HERE,
+                                 base::BindOnce(&SetRlzPingSent, retry_count));
+    return;
+  }
+
+  chromeos::DBusThreadManager::Get()->GetDebugDaemonClient()->SetRlzPingSent(
+      base::BindOnce(&OnSetRlzPingSent, retry_count + 1));
+}
+
+// Callback invoked for DebugDaemonClient::SetRlzPingSent.
+void OnSetRlzPingSent(int retry_count, bool success) {
+  if (success) {
+    UMA_HISTOGRAM_BOOLEAN("Rlz.SetRlzPingSent", true);
+    return;
+  }
+
+  if (retry_count >= RlzValueStoreChromeOS::kMaxRetryCount) {
+    UMA_HISTOGRAM_BOOLEAN("Rlz.SetRlzPingSent", false);
+    LOG(ERROR) << "Setting " << chromeos::system::kShouldSendRlzPingKey
+               << " failed after " << RlzValueStoreChromeOS::kMaxRetryCount
+               << " attempts.";
+    return;
+  }
+
+  SetRlzPingSent(retry_count);
+}
+
 }  // namespace
 
 const int RlzValueStoreChromeOS::kMaxRetryCount = 3;
@@ -119,8 +162,7 @@ const int RlzValueStoreChromeOS::kMaxRetryCount = 3;
 RlzValueStoreChromeOS::RlzValueStoreChromeOS(const base::FilePath& store_path)
     : rlz_store_(new base::DictionaryValue),
       store_path_(store_path),
-      read_only_(true),
-      weak_ptr_factory_(this) {
+      read_only_(true) {
   ReadStore();
 }
 
@@ -137,7 +179,7 @@ bool RlzValueStoreChromeOS::HasAccess(AccessType type) {
 bool RlzValueStoreChromeOS::WritePingTime(Product product, int64_t time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   rlz_store_->SetString(GetKeyName(kPingTimeKey, product),
-                        base::Int64ToString(time));
+                        base::NumberToString(time));
   return true;
 }
 
@@ -274,10 +316,9 @@ bool RlzValueStoreChromeOS::AddStatefulEvent(Product product,
                                              const char* event_rlz) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (strcmp(event_rlz, "CAF") == 0) {
-    set_rlz_ping_sent_attempts_ = 0;
-    SetRlzPingSent();
-  }
+  if (strcmp(event_rlz, "CAF") == 0)
+    SetRlzPingSent(/*retry_count=*/0);
+
   return AddValueToList(GetKeyName(kStatefulEventKey, product),
                         std::make_unique<base::Value>(event_rlz));
 }
@@ -395,25 +436,6 @@ bool RlzValueStoreChromeOS::RemoveValueFromList(const std::string& list_name,
   size_t index;
   list_value->Remove(value, &index);
   return true;
-}
-
-void RlzValueStoreChromeOS::SetRlzPingSent() {
-  ++set_rlz_ping_sent_attempts_;
-  chromeos::DBusThreadManager::Get()->GetDebugDaemonClient()->SetRlzPingSent(
-      base::BindOnce(&RlzValueStoreChromeOS::OnSetRlzPingSent,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void RlzValueStoreChromeOS::OnSetRlzPingSent(bool success) {
-  if (success) {
-    UMA_HISTOGRAM_BOOLEAN("Rlz.SetRlzPingSent", true);
-  } else if (set_rlz_ping_sent_attempts_ >= kMaxRetryCount) {
-    UMA_HISTOGRAM_BOOLEAN("Rlz.SetRlzPingSent", false);
-    LOG(ERROR) << "Setting " << chromeos::system::kShouldSendRlzPingKey
-               << " failed after " << kMaxRetryCount << " attempts.";
-  } else {
-    SetRlzPingSent();
-  }
 }
 
 namespace {

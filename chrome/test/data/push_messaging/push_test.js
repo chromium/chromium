@@ -128,6 +128,18 @@ function documentSubscribePushWithNumericKey() {
   }).catch(sendErrorToTest);
 }
 
+function documentSubscribePushWithBase64URLEncodedString() {
+  navigator.serviceWorker.ready.then(function(swRegistration) {
+    return swRegistration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: kBase64URLEncodedKey
+        })
+        .then(function(subscription) {
+          sendResultToTest(subscription.endpoint);
+        });
+  }).catch(sendErrorToTest);
+}
+
 function workerSubscribePush() {
   // Send the message to the worker for it to subscribe
   navigator.serviceWorker.controller.postMessage({command: 'workerSubscribe'});
@@ -142,9 +154,16 @@ function workerSubscribePushNoKey() {
 }
 
 function workerSubscribePushWithNumericKey(numericKey = '1234567890') {
-  // Send the message to the worker for it to subscribe with the given key
+  // Send the message to the worker for it to subscribe with the given numeric key
   navigator.serviceWorker.controller.postMessage(
       {command: 'workerSubscribeWithNumericKey', key: numericKey});
+}
+
+function workerSubscribePushWithBase64URLEncodedString() {
+  // Send the message to the worker for it to subscribe with the given Base64URLEncoded key
+  navigator.serviceWorker.controller.postMessage(
+      {command: 'workerSubscribePushWithBase64URLEncodedString',
+        key: kBase64URLEncodedKey});
 }
 
 function GetP256dh() {
@@ -157,12 +176,23 @@ function GetP256dh() {
   }).catch(sendErrorToTest);
 }
 
-function permissionState() {
+function pushManagerPermissionState() {
   navigator.serviceWorker.ready.then(function(swRegistration) {
     return swRegistration.pushManager.permissionState({userVisibleOnly: true})
         .then(function(permission) {
           sendResultToTest('permission status - ' + permission);
         });
+  }).catch(sendErrorToTest);
+}
+
+function notificationPermissionState() {
+  sendResultToTest('permission status - ' + Notification.permission);
+}
+
+function notificationPermissionAPIState() {
+  navigator.permissions.query({name: 'notifications'}).then(
+      permission_status => {
+    sendResultToTest('permission status - ' + permission_status.state);
   }).catch(sendErrorToTest);
 }
 

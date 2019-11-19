@@ -26,8 +26,6 @@ std::string AudioProcessingSettings::ToString() const {
     switch (type) {
       case EchoCancellationType::kDisabled:
         return "disabled";
-      case EchoCancellationType::kAec2:
-        return "aec2";
       case EchoCancellationType::kAec3:
         return "aec3";
       case EchoCancellationType::kSystemAec:

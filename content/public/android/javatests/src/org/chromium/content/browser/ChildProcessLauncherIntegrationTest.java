@@ -48,7 +48,8 @@ public class ChildProcessLauncherIntegrationTest {
 
         @Override
         public ChildProcessConnection createConnection(Context context, ComponentName serviceName,
-                boolean bindToCaller, boolean bindAsExternalService, Bundle serviceBundle) {
+                boolean bindToCaller, boolean bindAsExternalService, Bundle serviceBundle,
+                String instanceName) {
             TestChildProcessConnection connection = new TestChildProcessConnection(
                     context, serviceName, bindToCaller, bindAsExternalService, serviceBundle);
             mConnections.add(connection);
@@ -67,7 +68,7 @@ public class ChildProcessLauncherIntegrationTest {
                 boolean bindToCaller, boolean bindAsExternalService,
                 Bundle childProcessCommonParameters) {
             super(context, serviceName, bindToCaller, bindAsExternalService,
-                    childProcessCommonParameters);
+                    childProcessCommonParameters, null /* instanceName */);
         }
 
         @Override
@@ -234,14 +235,15 @@ public class ChildProcessLauncherIntegrationTest {
 
         @Override
         public ChildProcessConnection createConnection(Context context, ComponentName serviceName,
-                boolean bindToCaller, boolean bindAsExternalService, Bundle serviceBundle) {
+                boolean bindToCaller, boolean bindAsExternalService, Bundle serviceBundle,
+                String instanceName) {
             if (mCrashConnection == null) {
                 mCrashConnection = new CrashOnLaunchChildProcessConnection(
                         context, serviceName, bindToCaller, bindAsExternalService, serviceBundle);
                 return mCrashConnection;
             }
-            return super.createConnection(
-                    context, serviceName, bindToCaller, bindAsExternalService, serviceBundle);
+            return super.createConnection(context, serviceName, bindToCaller, bindAsExternalService,
+                    serviceBundle, instanceName);
         }
 
         public CrashOnLaunchChildProcessConnection getCrashConnection() {

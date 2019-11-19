@@ -15,15 +15,15 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,24 +50,18 @@ public class BookmarkModelTest {
     private BookmarkId mDesktopNode;
 
     @Before
-    public void setUp() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                Profile profile = Profile.getLastUsedProfile();
-                mBookmarkModel = new BookmarkModel(profile);
-                mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
-            }
+    public void setUp() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Profile profile = Profile.getLastUsedProfile();
+            mBookmarkModel = new BookmarkModel(profile);
+            mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
         });
 
         BookmarkTestUtil.waitForBookmarkModelLoaded();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mMobileNode = mBookmarkModel.getMobileFolderId();
-                mDesktopNode = mBookmarkModel.getDesktopFolderId();
-                mOtherNode = mBookmarkModel.getOtherFolderId();
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mMobileNode = mBookmarkModel.getMobileFolderId();
+            mDesktopNode = mBookmarkModel.getDesktopFolderId();
+            mOtherNode = mBookmarkModel.getOtherFolderId();
         });
     }
 
@@ -75,7 +69,7 @@ public class BookmarkModelTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Bookmark"})
-    public void testBookmarkPropertySetters() throws Throwable {
+    public void testBookmarkPropertySetters() {
         BookmarkId folderA = mBookmarkModel.addFolder(mMobileNode, 0, "a");
 
         BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", "http://a.com");
@@ -107,7 +101,7 @@ public class BookmarkModelTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Bookmark"})
-    public void testMoveBookmarks() throws Throwable {
+    public void testMoveBookmarks() {
         BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", "http://a.com");
         BookmarkId bookmarkB = addBookmark(mOtherNode, 0, "b", "http://b.com");
         BookmarkId bookmarkC = addBookmark(mMobileNode, 0, "c", "http://c.com");
@@ -134,7 +128,25 @@ public class BookmarkModelTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Bookmark"})
-    public void testDeleteBookmarks() throws Throwable {
+    public void testMoveBookmarksToSameFolder() {
+        BookmarkId folder = mBookmarkModel.addFolder(mMobileNode, 0, "fc");
+        BookmarkId bookmarkA = addBookmark(folder, 0, "a", "http://a.com");
+        BookmarkId bookmarkB = addBookmark(folder, 1, "b", "http://b.com");
+
+        HashSet<BookmarkId> movedBookmarks = new HashSet<BookmarkId>(2);
+        movedBookmarks.add(bookmarkA);
+        movedBookmarks.add(bookmarkB);
+        mBookmarkModel.moveBookmarks(new ArrayList<BookmarkId>(movedBookmarks), folder);
+
+        // Order of the moved bookmarks is not tested.
+        verifyBookmarkListNoOrder(mBookmarkModel.getChildIDs(folder, true, true), movedBookmarks);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"Bookmark"})
+    public void testDeleteBookmarks() {
         BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", "http://a.com");
         BookmarkId bookmarkB = addBookmark(mOtherNode, 0, "b", "http://b.com");
         BookmarkId bookmarkC = addBookmark(mMobileNode, 0, "c", "http://c.com");
@@ -166,7 +178,7 @@ public class BookmarkModelTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Bookmark"})
-    public void testDeleteBookmarksRepeatedly() throws Throwable {
+    public void testDeleteBookmarksRepeatedly() {
         BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", "http://a.com");
         BookmarkId bookmarkB = addBookmark(mOtherNode, 0, "b", "http://b.com");
         BookmarkId bookmarkC = addBookmark(mMobileNode, 0, "c", "http://c.com");
@@ -192,7 +204,7 @@ public class BookmarkModelTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Bookmark"})
-    public void testGetChildIDs() throws Throwable {
+    public void testGetChildIDs() {
         BookmarkId folderA = mBookmarkModel.addFolder(mMobileNode, 0, "fa");
         HashSet<BookmarkId> expectedChildren = new HashSet<>();
         expectedChildren.add(addBookmark(folderA, 0, "a", "http://a.com"));
@@ -217,7 +229,7 @@ public class BookmarkModelTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Bookmark"})
-    public void testAddBookmarksAndFolders() throws Throwable {
+    public void testAddBookmarksAndFolders() {
         BookmarkId bookmarkA = addBookmark(mDesktopNode, 0, "a", "http://a.com");
         verifyBookmark(bookmarkA, "a", "http://a.com/", false, mDesktopNode);
 
@@ -247,12 +259,9 @@ public class BookmarkModelTest {
             final String url) {
         final AtomicReference<BookmarkId> result = new AtomicReference<BookmarkId>();
         final Semaphore semaphore = new Semaphore(0);
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                result.set(mBookmarkModel.addBookmark(parent, index, title, url));
-                semaphore.release();
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            result.set(mBookmarkModel.addBookmark(parent, index, title, url));
+            semaphore.release();
         });
         try {
             if (semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS)) {

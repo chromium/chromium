@@ -165,7 +165,7 @@ InputDelegateForTesting::GetInputSourceState() {
   state->source_id = 1;
   state->description->target_ray_mode =
       device::mojom::XRTargetRayMode::POINTING;
-  state->description->emulated_position = true;
+  state->emulated_position = true;
 
   return state;
 }

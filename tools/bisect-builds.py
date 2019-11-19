@@ -12,6 +12,8 @@ unzipping, and opening Chromium for you. After testing the specific revision,
 it will ask you whether it is good or bad before continuing the search.
 """
 
+from __future__ import print_function
+
 # The base URL for stored build archives.
 CHROMIUM_BASE_URL = ('http://commondatastorage.googleapis.com'
                      '/chromium-browser-snapshots')
@@ -345,7 +347,7 @@ class PathContext(object):
       try:
         data = json.loads(response.read()[4:])
       except ValueError:
-        print 'ValueError for JSON URL: %s' % json_url
+        print('ValueError for JSON URL: %s' % json_url)
         raise ValueError
     else:
       raise ValueError
@@ -362,7 +364,7 @@ class PathContext(object):
                              message[len(message)-1])
           if result:
             return result.group(1)
-    print 'Failed to get svn revision number for %s' % git_sha1
+    print('Failed to get svn revision number for %s' % git_sha1)
     raise ValueError
 
   def _GetSVNRevisionFromGitHashFromGitCheckout(self, git_sha1, depot):
@@ -421,8 +423,8 @@ class PathContext(object):
             revisions = cache.get(cache_dict_key, [])
             githash_svn_dict = cache.get('githash_svn_dict', {})
             if revisions:
-              print 'Loaded revisions %d-%d from %s' % (revisions[0],
-                  revisions[-1], cache_filename)
+              print('Loaded revisions %d-%d from %s' %
+                    (revisions[0], revisions[-1], cache_filename))
             return (revisions, githash_svn_dict)
         except (EnvironmentError, ValueError):
           pass
@@ -437,8 +439,8 @@ class PathContext(object):
         try:
           with open(cache_filename, 'w') as cache_file:
             json.dump(cache, cache_file)
-          print 'Saved revisions %d-%d to %s' % (
-              revlist_all[0], revlist_all[-1], cache_filename)
+          print('Saved revisions %d-%d to %s' %
+                (revlist_all[0], revlist_all[-1], cache_filename))
         except EnvironmentError:
           pass
 
@@ -551,7 +553,7 @@ def FetchRevision(context, rev, filename, quit_event=None, progress_event=None):
   try:
     urllib.urlretrieve(download_url, filename, ReportHook)
     if progress_event and progress_event.isSet():
-      print
+      print()
 
   except RuntimeError:
     pass
@@ -577,7 +579,7 @@ def CopyMissingFileFromCurrentSource(src_glob, dst):
 
 def RunRevision(context, revision, zip_file, profile, num_runs, command, args):
   """Given a zipped revision, unzip it and run the test."""
-  print 'Trying revision %s...' % str(revision)
+  print('Trying revision %s...' % str(revision))
 
   # Create a temp directory and unzip the revision into it.
   cwd = os.getcwd()
@@ -614,25 +616,25 @@ def RunRevision(context, revision, zip_file, profile, num_runs, command, args):
       runcommand.append(
           token.replace('%p', os.path.abspath(context.GetLaunchPath(revision))).
           replace('%s', ' '.join(testargs)))
-
-  results = []
-  for _ in range(num_runs):
-    subproc = subprocess.Popen(runcommand,
-                               bufsize=-1,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
-    (stdout, stderr) = subproc.communicate()
-    results.append((subproc.returncode, stdout, stderr))
-  os.chdir(cwd)
+  result = None
   try:
-    shutil.rmtree(tempdir, True)
-  except Exception:
-    pass
-
-  for (returncode, stdout, stderr) in results:
-    if returncode:
-      return (returncode, stdout, stderr)
-  return results[0]
+    for _ in range(num_runs):
+      subproc = subprocess.Popen(
+          runcommand,
+          bufsize=-1,
+          stdout=subprocess.PIPE,
+          stderr=subprocess.PIPE)
+      (stdout, stderr) = subproc.communicate()
+      result = (subproc.returncode, stdout, stderr)
+      if subproc.returncode:
+        break
+    return result
+  finally:
+    os.chdir(cwd)
+    try:
+      shutil.rmtree(tempdir, True)
+    except Exception:
+      pass
 
 
 # The arguments status, stdout and stderr are unused.
@@ -641,6 +643,8 @@ def RunRevision(context, revision, zip_file, profile, num_runs, command, args):
 # pylint: disable=W0613
 def AskIsGoodBuild(rev, exit_status, stdout, stderr):
   """Asks the user whether build |rev| is good or bad."""
+  if exit_status:
+    print('Chrome exit_status: %d. Use s to see output' % exit_status)
   # Loop until we get a response that we can parse.
   while True:
     response = raw_input('Revision %s is '
@@ -651,8 +655,8 @@ def AskIsGoodBuild(rev, exit_status, stdout, stderr):
     if response == 'q':
       raise SystemExit()
     if response == 's':
-      print stdout
-      print stderr
+      print(stdout)
+      print(stderr)
 
 
 def IsGoodASANBuild(rev, exit_status, stdout, stderr):
@@ -663,21 +667,21 @@ def IsGoodASANBuild(rev, exit_status, stdout, stderr):
   if stderr:
     bad_count = 0
     for line in stderr.splitlines():
-      print line
+      print(line)
       if line.find('ERROR: AddressSanitizer:') != -1:
         bad_count += 1
     if bad_count > 0:
-      print 'Revision %d determined to be bad.' % rev
+      print('Revision %d determined to be bad.' % rev)
       return 'b'
   return AskIsGoodBuild(rev, exit_status, stdout, stderr)
 
 
 def DidCommandSucceed(rev, exit_status, stdout, stderr):
   if exit_status:
-    print 'Bad revision: %s' % rev
+    print('Bad revision: %s' % rev)
     return 'b'
   else:
-    print 'Good revision: %s' % rev
+    print('Good revision: %s' % rev)
     return 'g'
 
 
@@ -718,7 +722,7 @@ class DownloadJob(object):
     """Prints a message and waits for the download to complete. The download
     must have been started previously."""
     assert self.thread, 'DownloadJob must be started before WaitFor is called.'
-    print 'Downloading revision %s...' % str(self.rev)
+    print('Downloading revision %s...' % str(self.rev))
     self.progress_event.set()  # Display progress of download.
     try:
       while self.thread.isAlive():
@@ -737,10 +741,10 @@ def VerifyEndpoint(fetch, context, rev, profile, num_runs, command, try_args,
     (exit_status, stdout, stderr) = RunRevision(
         context, rev, fetch.zip_file, profile, num_runs, command, try_args)
   except Exception, e:
-    print >> sys.stderr, e
+    print(e, file=sys.stderr)
     raise SystemExit
   if (evaluate(rev, exit_status, stdout, stderr) != expected_answer):
-    print 'Unexpected result at a range boundary! Your range is not correct.'
+    print('Unexpected result at a range boundary! Your range is not correct.')
     raise SystemExit
 
 
@@ -785,11 +789,11 @@ def Bisect(context,
   bad_rev = context.bad_revision
   cwd = os.getcwd()
 
-  print 'Downloading list of known revisions...',
+  print('Downloading list of known revisions...', end=' ')
   if not context.use_local_cache:
-    print '(use --use-local-cache to cache and re-use the list of revisions)'
+    print('(use --use-local-cache to cache and re-use the list of revisions)')
   else:
-    print
+    print()
   _GetDownloadPath = lambda rev: os.path.join(cwd,
       '%s-%s' % (str(rev), context.archive_name))
   revlist = context.GetRevList()
@@ -822,7 +826,7 @@ def Bisect(context,
       VerifyEndpoint(maxrev_fetch, context, revlist[maxrev], profile, num_runs,
           command, try_args, evaluate, 'g' if bad_rev < good_rev else 'b')
     except (KeyboardInterrupt, SystemExit):
-      print 'Cleaning up...'
+      print('Cleaning up...')
       fetch.Stop()
       sys.exit(0)
     finally:
@@ -837,11 +841,10 @@ def Bisect(context,
       min_str, max_str = 'bad', 'good'
     else:
       min_str, max_str = 'good', 'bad'
-    print ('Bisecting range [%s (%s), %s (%s)], '
-          'roughly %d steps left.') % (revlist[minrev], min_str,
-                                       revlist[maxrev], max_str,
-                                       int(maxrev - minrev)
-                                       .bit_length())
+    print(
+        'Bisecting range [%s (%s), %s (%s)], '
+        'roughly %d steps left.' % (revlist[minrev], min_str, revlist[maxrev],
+                                    max_str, int(maxrev - minrev).bit_length()))
 
     # Pre-fetch next two possible pivots
     #   - down_pivot is the next revision to check if the current revision turns
@@ -872,7 +875,7 @@ def Bisect(context,
       (exit_status, stdout, stderr) = RunRevision(
           context, rev, fetch.zip_file, profile, num_runs, command, try_args)
     except Exception, e:
-      print >> sys.stderr, e
+      print(e, file=sys.stderr)
 
     # Call the evaluate function to see if the current revision is good or bad.
     # On that basis, kill one of the background downloads and complete the
@@ -934,7 +937,7 @@ def Bisect(context,
       else:
         assert False, 'Unexpected return value from evaluate(): ' + answer
     except (KeyboardInterrupt, SystemExit):
-      print 'Cleaning up...'
+      print('Cleaning up...')
       for f in [_GetDownloadPath(rev),
                 _GetDownloadPath(revlist[down_pivot]),
                 _GetDownloadPath(revlist[up_pivot])]:
@@ -984,7 +987,7 @@ def GetBlinkRevisionForChromiumRevision(context, rev):
     try:
       data = json.loads(url.read())
     except ValueError:
-      print 'ValueError for JSON URL: %s' % file_url
+      print('ValueError for JSON URL: %s' % file_url)
       raise ValueError
   else:
     raise ValueError
@@ -1026,7 +1029,7 @@ def GetChromiumRevision(context, url):
       return int(latest_revision)
     return context.GetSVNRevisionFromGitHash(latest_revision)
   except Exception:
-    print 'Could not determine latest revision. This could be bad...'
+    print('Could not determine latest revision. This could be bad...')
     return 999999999
 
 def GetGitHashFromSVNRevision(svn_revision):
@@ -1040,14 +1043,15 @@ def GetGitHashFromSVNRevision(svn_revision):
 def PrintChangeLog(min_chromium_rev, max_chromium_rev):
   """Prints the changelog URL."""
 
-  print ('  ' + CHANGELOG_URL % (GetGitHashFromSVNRevision(min_chromium_rev),
-         GetGitHashFromSVNRevision(max_chromium_rev)))
+  print('  ' + CHANGELOG_URL % (GetGitHashFromSVNRevision(min_chromium_rev),
+                                GetGitHashFromSVNRevision(max_chromium_rev)))
+
 
 def error_internal_option(option, opt, value, parser):
-   raise optparse.OptionValueError(
-         'The -o and -r options are only\navailable in the internal version of '
-         'this script. Google\nemployees should visit http://go/bisect-builds '
-         'for\nconfiguration instructions.')
+  raise optparse.OptionValueError(
+        'The -o and -r options are only\navailable in the internal version of '
+        'this script. Google\nemployees should visit http://go/bisect-builds '
+        'for\nconfiguration instructions.')
 
 def main():
   usage = ('%prog [options] [-- chromium-options]\n'
@@ -1139,16 +1143,16 @@ def main():
   (opts, args) = parser.parse_args()
 
   if opts.archive is None:
-    print 'Error: missing required parameter: --archive'
-    print
+    print('Error: missing required parameter: --archive')
+    print()
     parser.print_help()
     return 1
 
   if opts.asan:
     supported_platforms = ['linux', 'mac', 'win']
     if opts.archive not in supported_platforms:
-      print 'Error: ASAN bisecting only supported on these platforms: [%s].' % (
-            '|'.join(supported_platforms))
+      print('Error: ASAN bisecting only supported on these platforms: [%s].' %
+            ('|'.join(supported_platforms)))
       return 1
 
   if opts.asan:
@@ -1215,26 +1219,26 @@ def main():
   if opts.blink:
     # We're done. Let the user know the results in an official manner.
     if good_rev > bad_rev:
-      print DONE_MESSAGE_GOOD_MAX % (str(min_blink_rev), str(max_blink_rev))
+      print(DONE_MESSAGE_GOOD_MAX % (str(min_blink_rev), str(max_blink_rev)))
     else:
-      print DONE_MESSAGE_GOOD_MIN % (str(min_blink_rev), str(max_blink_rev))
+      print(DONE_MESSAGE_GOOD_MIN % (str(min_blink_rev), str(max_blink_rev)))
 
-    print 'BLINK CHANGELOG URL:'
-    print '  ' + BLINK_CHANGELOG_URL % (max_blink_rev, min_blink_rev)
+    print('BLINK CHANGELOG URL:')
+    print('  ' + BLINK_CHANGELOG_URL % (max_blink_rev, min_blink_rev))
 
   else:
     # We're done. Let the user know the results in an official manner.
     if good_rev > bad_rev:
-      print DONE_MESSAGE_GOOD_MAX % (str(min_chromium_rev),
-                                     str(max_chromium_rev))
+      print(DONE_MESSAGE_GOOD_MAX % (str(min_chromium_rev),
+                                     str(max_chromium_rev)))
     else:
-      print DONE_MESSAGE_GOOD_MIN % (str(min_chromium_rev),
-                                     str(max_chromium_rev))
+      print(DONE_MESSAGE_GOOD_MIN % (str(min_chromium_rev),
+                                     str(max_chromium_rev)))
     if min_blink_rev != max_blink_rev:
       print ('NOTE: There is a Blink roll in the range, '
              'you might also want to do a Blink bisect.')
 
-    print 'CHANGELOG URL:'
+    print('CHANGELOG URL:')
     PrintChangeLog(min_chromium_rev, max_chromium_rev)
 
 

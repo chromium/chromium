@@ -31,7 +31,10 @@ PASS
 
 xxxx
 xxxx
-PASS
+FAIL:
+Expected 50 for offsetLeft, but got 40. 
+
+<span data-offset-x="50" class="indent">xxxx</span>
 
 
 xxxx
@@ -52,6 +55,9 @@ xxxx
 
 xxxx
 xxxx
-PASS
+FAIL:
+Expected 50 for offsetLeft, but got 40. 
+
+<span data-offset-x="50" class="indent">xxxx</span>
 
 xxxx

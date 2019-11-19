@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "ui/events/event_constants.h"
+#include "ui/gfx/image/image_skia.h"
 
 ArcPlaystoreShortcutLauncherItemController::
     ArcPlaystoreShortcutLauncherItemController()
@@ -28,7 +29,7 @@ void ArcPlaystoreShortcutLauncherItemController::ItemSelected(
   // Report |callback| now, once Play Store launch request may cause inline
   // replacement of this controller to deferred launch controller and |callback|
   // will never be delivered to ash.
-  std::move(callback).Run(ash::SHELF_ACTION_NONE, base::nullopt);
+  std::move(callback).Run(ash::SHELF_ACTION_NONE, {});
   if (!playstore_launcher_) {
     // Play Store launch request has never been scheduled.
     std::unique_ptr<ArcAppLauncher> playstore_launcher =

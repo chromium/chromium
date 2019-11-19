@@ -9,16 +9,11 @@ namespace absl {
 namespace str_format_internal {
 namespace {
 
-template <typename T, size_t N>
-size_t ArraySize(T (&)[N]) {
-  return N;
-}
-
 class FormatBindTest : public ::testing::Test {
  public:
   bool Extract(const char *s, UnboundConversion *props, int *next) const {
-    absl::string_view src = s;
-    return ConsumeUnboundConversion(&src, props, next) && src.empty();
+    return ConsumeUnboundConversion(s, s + strlen(s), props, next) ==
+           s + strlen(s);
   }
 };
 

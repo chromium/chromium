@@ -13,15 +13,18 @@
 #include "base/logging.h"
 #import "base/mac/foundation_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
-#import "ios/web/public/crw_navigation_item_storage.h"
-#import "ios/web/public/crw_session_certificate_policy_cache_storage.h"
-#import "ios/web/public/crw_session_storage.h"
+#import "ios/web/public/session/crw_navigation_item_storage.h"
+#import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
+#import "ios/web/public/session/crw_session_storage.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -81,8 +84,9 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 
 - (instancetype)init {
   scoped_refptr<base::SequencedTaskRunner> taskRunner =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   return [self initWithTaskRunner:taskRunner];
 }
@@ -128,7 +132,11 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 
 - (SessionIOS*)loadSessionFromDirectory:(NSString*)directory {
   NSString* sessionPath = [[self class] sessionPathForDirectory:directory];
-  return [self loadSessionFromPath:sessionPath];
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  SessionIOS* session = [self loadSessionFromPath:sessionPath];
+  UmaHistogramTimes("Session.WebStates.ReadFromFileTime",
+                    base::TimeTicks::Now() - start_time);
+  return session;
 }
 
 - (SessionIOS*)loadSessionFromPath:(NSString*)sessionPath {
@@ -138,8 +146,17 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
     if (!data)
       return nil;
 
+    NSError* error = nil;
     NSKeyedUnarchiver* unarchiver =
-        [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+        [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
+    if (!unarchiver || error) {
+      DLOG(WARNING) << "Error creating unarchiver, session file: "
+                    << base::SysNSStringToUTF8(sessionPath) << ": "
+                    << base::SysNSStringToUTF8([error description]);
+      return nil;
+    }
+
+    unarchiver.requiresSecureCoding = NO;
 
     // Register compatibility aliases to support legacy saved sessions.
     [unarchiver cr_registerCompatibilityAliases];
@@ -176,10 +193,11 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
           return;
 
         NSError* error = nil;
-        if (![fileManager removeItemAtPath:sessionPath error:nil])
+        if (![fileManager removeItemAtPath:sessionPath error:&error] || error) {
           CHECK(false) << "Unable to delete session file: "
                        << base::SysNSStringToUTF8(sessionPath) << ": "
                        << base::SysNSStringToUTF8([error description]);
+        }
       }),
       std::move(callback));
 }
@@ -200,9 +218,26 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
   SessionIOSFactory factory = [_pendingSessions objectForKey:sessionPath];
   [_pendingSessions removeObjectForKey:sessionPath];
   SessionIOS* session = factory();
+  // Because the factory may be called asynchronously after the underlying
+  // web state list is destroyed, the session may be nil; if so, do nothing.
+  if (!session)
+    return;
 
   @try {
-    NSData* sessionData = [NSKeyedArchiver archivedDataWithRootObject:session];
+    NSError* error = nil;
+    NSData* sessionData = [NSKeyedArchiver archivedDataWithRootObject:session
+                                                requiringSecureCoding:NO
+                                                                error:&error];
+    if (!sessionData || error) {
+      DLOG(WARNING) << "Error serializing session for path: "
+                    << base::SysNSStringToUTF8(sessionPath) << ": "
+                    << base::SysNSStringToUTF8([error description]);
+      return;
+    }
+
+    UMA_HISTOGRAM_COUNTS_100000("Session.WebStates.SerializedSize",
+                                sessionData.length / 1024);
+
     _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
                             [self performSaveSessionData:sessionData
                                              sessionPath:sessionPath];
@@ -252,12 +287,15 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
   NSDataWritingOptions options =
       NSDataWritingAtomic | NSDataWritingFileProtectionComplete;
 
+  base::TimeTicks start_time = base::TimeTicks::Now();
   if (![sessionData writeToFile:sessionPath options:options error:&error]) {
     NOTREACHED() << "Error writing session file: "
                  << base::SysNSStringToUTF8(sessionPath) << ": "
                  << base::SysNSStringToUTF8([error description]);
     return;
   }
+  UmaHistogramTimes("Session.WebStates.WriteToFileTime",
+                    base::TimeTicks::Now() - start_time);
 }
 
 @end

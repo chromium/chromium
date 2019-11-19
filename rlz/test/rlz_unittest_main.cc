@@ -6,6 +6,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "rlz/lib/rlz_lib.h"
@@ -26,6 +27,9 @@ int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
 
   mojo::core::Init();
+
+  // RlzLibTest uses base::test::TaskEnvironment that needs TestTimeouts.
+  TestTimeouts::Initialize();
 
   int ret = RUN_ALL_TESTS();
   if (ret == 0) {

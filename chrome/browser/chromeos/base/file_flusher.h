@@ -22,12 +22,11 @@ class FileFlusher {
   FileFlusher();
   ~FileFlusher();
 
-  // Flush everything under |path| except the directories/files in |excludes|.
-  // |excluedes| can hold both absolute or relative paths, where absolute paths
-  // are used as-is and relative paths are appended to |path| to make it
-  // absolute. |callback| is invoked when the request is finished or canceled.
+  // Flush files under |path|.
+  // |recursive| whether to go down and flush sub trees under |path|.
+  // |callback| is invoked when the request is finished or canceled.
   void RequestFlush(const base::FilePath& path,
-                    const std::vector<base::FilePath>& excludes,
+                    bool recursive,
                     const base::Closure& callback);
 
   // Set a callback for every file flush for test. Note the callback is
@@ -59,7 +58,7 @@ class FileFlusher {
 
   bool paused_for_test_ = false;
 
-  base::WeakPtrFactory<FileFlusher> weak_factory_;
+  base::WeakPtrFactory<FileFlusher> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FileFlusher);
 };

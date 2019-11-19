@@ -44,10 +44,6 @@ class SVGNumberList final
  public:
   typedef SVGNumberListTearOff TearOffType;
 
-  static SVGNumberList* Create() {
-    return MakeGarbageCollected<SVGNumberList>();
-  }
-
   SVGNumberList();
   ~SVGNumberList() override;
 
@@ -57,7 +53,7 @@ class SVGNumberList final
   String ValueAsString() const override;
 
   void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(SVGAnimationElement*,
+  void CalculateAnimatedValue(const SVGAnimateElement&,
                               float percentage,
                               unsigned repeat_count,
                               SVGPropertyBase* from_value,

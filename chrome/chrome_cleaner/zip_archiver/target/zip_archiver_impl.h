@@ -7,14 +7,15 @@
 
 #include <string>
 
-#include "chrome/chrome_cleaner/interfaces/zip_archiver.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "chrome/chrome_cleaner/mojom/zip_archiver.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chrome_cleaner {
 
 class ZipArchiverImpl : public mojom::ZipArchiver {
  public:
-  ZipArchiverImpl(mojom::ZipArchiverRequest request,
+  ZipArchiverImpl(mojo::PendingReceiver<mojom::ZipArchiver> receiver,
                   base::OnceClosure connection_error_handler);
   ~ZipArchiverImpl() override;
 
@@ -25,7 +26,7 @@ class ZipArchiverImpl : public mojom::ZipArchiver {
                ArchiveCallback callback) override;
 
  private:
-  mojo::Binding<mojom::ZipArchiver> binding_;
+  mojo::Receiver<mojom::ZipArchiver> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(ZipArchiverImpl);
 };

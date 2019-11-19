@@ -15,7 +15,9 @@ class RenderProcessHost;
 struct ChildProcessTerminationInfo;
 
 // An observer API implemented by classes which are interested
-// in RenderProcessHost lifecycle events.
+// in RenderProcessHost lifecycle events. Note that this does not allow
+// observing the creation of a RenderProcessHost. There is a separate observer
+// for that: RenderProcessHostCreationObserver.
 class CONTENT_EXPORT RenderProcessHostObserver {
  public:
   // This method is invoked when the process was launched and the channel was

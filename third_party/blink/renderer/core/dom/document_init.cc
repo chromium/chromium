@@ -65,7 +65,8 @@ DocumentInit DocumentInit::CreateWithImportsController(
 
 DocumentInit::DocumentInit(HTMLImportsController* imports_controller)
     : imports_controller_(imports_controller),
-      create_new_registration_context_(false) {}
+      create_new_registration_context_(false),
+      content_security_policy_from_context_doc_(false) {}
 
 DocumentInit::DocumentInit(const DocumentInit&) = default;
 
@@ -93,18 +94,16 @@ DocumentLoader* DocumentInit::MasterDocumentLoader() const {
   return nullptr;
 }
 
-SandboxFlags DocumentInit::GetSandboxFlags() const {
-  DCHECK(MasterDocumentLoader());
-  DocumentLoader* loader = MasterDocumentLoader();
-  SandboxFlags flags = loader->GetFrame()->Loader().EffectiveSandboxFlags();
-
+WebSandboxFlags DocumentInit::GetSandboxFlags() const {
+  WebSandboxFlags flags = sandbox_flags_;
+  if (DocumentLoader* loader = MasterDocumentLoader())
+    flags |= loader->GetFrame()->Loader().EffectiveSandboxFlags();
   // If the load was blocked by CSP, force the Document's origin to be unique,
-  // so that the blocked document appears to be a normal cross-origin document's
-  // load per CSP spec: https://www.w3.org/TR/CSP3/#directive-frame-ancestors.
-  if (loader->WasBlockedAfterCSP()) {
-    flags |= kSandboxOrigin;
-  }
-
+  // so that the blocked document appears to be a normal cross-origin
+  // document's load per CSP spec:
+  // https://www.w3.org/TR/CSP3/#directive-frame-ancestors.
+  if (blocked_by_csp_)
+    flags |= WebSandboxFlags::kOrigin;
   return flags;
 }
 
@@ -116,23 +115,17 @@ WebInsecureRequestPolicy DocumentInit::GetInsecureRequestPolicy() const {
   return parent_frame->GetSecurityContext()->GetInsecureRequestPolicy();
 }
 
-SecurityContext::InsecureNavigationsSet*
+const SecurityContext::InsecureNavigationsSet*
 DocumentInit::InsecureNavigationsToUpgrade() const {
   DCHECK(MasterDocumentLoader());
   Frame* parent_frame = MasterDocumentLoader()->GetFrame()->Tree().Parent();
   if (!parent_frame)
     return nullptr;
-  return parent_frame->GetSecurityContext()->InsecureNavigationsToUpgrade();
+  return &parent_frame->GetSecurityContext()->InsecureNavigationsToUpgrade();
 }
 
-bool DocumentInit::IsHostedInReservedIPRange() const {
-  if (DocumentLoader* loader = MasterDocumentLoader()) {
-    if (!loader->GetResponse().RemoteIPAddress().IsEmpty()) {
-      return network_utils::IsReservedIPAddress(
-          loader->GetResponse().RemoteIPAddress());
-    }
-  }
-  return false;
+network::mojom::IPAddressSpace DocumentInit::GetIPAddressSpace() const {
+  return ip_address_space_;
 }
 
 Settings* DocumentInit::GetSettings() const {
@@ -165,6 +158,25 @@ DocumentInit& DocumentInit::WithURL(const KURL& url) {
   return *this;
 }
 
+scoped_refptr<SecurityOrigin> DocumentInit::GetDocumentOrigin() const {
+  // Origin to commit is specified by the browser process, it must be taken
+  // and used directly. It is currently supplied only for session history
+  // navigations, where the origin was already calcuated previously and
+  // stored on the session history entry.
+  if (origin_to_commit_)
+    return origin_to_commit_;
+
+  if (owner_document_)
+    return owner_document_->GetMutableSecurityOrigin();
+
+  // Otherwise, create an origin that propagates precursor information
+  // as needed. For non-opaque origins, this creates a standard tuple
+  // origin, but for opaque origins, it creates an origin with the
+  // initiator origin as the precursor.
+  return SecurityOrigin::CreateWithReferenceOrigin(url_,
+                                                   initiator_origin_.get());
+}
+
 DocumentInit& DocumentInit::WithOwnerDocument(Document* owner_document) {
   DCHECK(!owner_document_);
   DCHECK(!initiator_origin_ || !owner_document ||
@@ -188,8 +200,25 @@ DocumentInit& DocumentInit::WithOriginToCommit(
   return *this;
 }
 
+DocumentInit& DocumentInit::WithIPAddressSpace(
+    network::mojom::IPAddressSpace ip_address_space) {
+  ip_address_space_ = ip_address_space;
+  return *this;
+}
+
 DocumentInit& DocumentInit::WithSrcdocDocument(bool is_srcdoc_document) {
   is_srcdoc_document_ = is_srcdoc_document;
+  return *this;
+}
+
+DocumentInit& DocumentInit::WithBlockedByCSP(bool blocked_by_csp) {
+  blocked_by_csp_ = blocked_by_csp;
+  return *this;
+}
+
+DocumentInit& DocumentInit::WithGrantLoadLocalResources(
+    bool grant_load_local_resources) {
+  grant_load_local_resources_ = grant_load_local_resources;
   return *this;
 }
 
@@ -214,13 +243,56 @@ V0CustomElementRegistrationContext* DocumentInit::RegistrationContext(
     return nullptr;
 
   if (create_new_registration_context_)
-    return V0CustomElementRegistrationContext::Create();
+    return MakeGarbageCollected<V0CustomElementRegistrationContext>();
 
   return registration_context_.Get();
 }
 
 Document* DocumentInit::ContextDocument() const {
   return context_document_;
+}
+
+DocumentInit& DocumentInit::WithFeaturePolicyHeader(const String& header) {
+  DCHECK(feature_policy_header_.IsEmpty());
+  feature_policy_header_ = header;
+  return *this;
+}
+
+DocumentInit& DocumentInit::WithOriginTrialsHeader(const String& header) {
+  DCHECK(origin_trials_header_.IsEmpty());
+  origin_trials_header_ = header;
+  return *this;
+}
+
+DocumentInit& DocumentInit::WithSandboxFlags(WebSandboxFlags flags) {
+  // Only allow adding more sandbox flags.
+  sandbox_flags_ |= flags;
+  return *this;
+}
+
+DocumentInit& DocumentInit::WithContentSecurityPolicy(
+    ContentSecurityPolicy* policy) {
+  content_security_policy_ = policy;
+  return *this;
+}
+
+DocumentInit& DocumentInit::WithContentSecurityPolicyFromContextDoc() {
+  content_security_policy_from_context_doc_ = true;
+  return *this;
+}
+
+ContentSecurityPolicy* DocumentInit::GetContentSecurityPolicy() const {
+  DCHECK(
+      !(content_security_policy_ && content_security_policy_from_context_doc_));
+  if (context_document_ && content_security_policy_from_context_doc_)
+    return context_document_->GetContentSecurityPolicy();
+  return content_security_policy_;
+}
+
+DocumentInit& DocumentInit::WithFramePolicy(
+    const base::Optional<FramePolicy>& frame_policy) {
+  frame_policy_ = frame_policy;
+  return *this;
 }
 
 }  // namespace blink

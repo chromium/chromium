@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/resource_dispatcher_host.h"
-
 #include <memory>
 #include <utility>
 #include <vector>
@@ -20,20 +18,17 @@
 #include "base/test/bind_test_util.h"
 #include "build/build_config.h"
 #include "content/browser/download/download_manager_impl.h"
-#include "content/browser/loader/resource_dispatcher_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/resource_dispatcher_host_delegate.h"
-#include "content/public/browser/resource_request_info.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/common/previews_state.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/url_loader_throttle.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -42,7 +37,6 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
-#include "content/shell/browser/shell_network_delegate.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/base/filename_util.h"
 #include "net/base/load_flags.h"
@@ -53,9 +47,9 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "net/test/url_request/url_request_mock_http_job.h"
-#include "net/url_request/url_request.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/gurl.h"
 
 using base::ASCIIToUTF16;
@@ -72,30 +66,23 @@ class LoaderBrowserTest : public ContentBrowserTest,
  protected:
   void SetUpOnMainThread() override {
     base::FilePath path = GetTestFilePath("", "");
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&net::URLRequestMockHTTPJob::AddUrlHandlers, path));
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&net::URLRequestFailedJob::AddUrlHandler));
+    base::PostTask(FROM_HERE, {BrowserThread::IO},
+                   base::BindOnce(&net::URLRequestFailedJob::AddUrlHandler));
     host_resolver()->AddRule("*", "127.0.0.1");
-  }
-
-  void OnDownloadCreated(DownloadManager* manager,
-                         download::DownloadItem* item) override {
-    if (!got_downloads_)
-      got_downloads_ = !!manager->InProgressCount();
   }
 
   void CheckTitleTest(const GURL& url, const std::string& expected_title) {
     base::string16 expected_title16(ASCIIToUTF16(expected_title));
     TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
-    NavigateToURL(shell(), url);
+    EXPECT_TRUE(NavigateToURL(shell(), url));
     EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
   }
 
   bool GetPopupTitle(const GURL& url, base::string16* title) {
-    NavigateToURL(shell(), url);
+    EXPECT_TRUE(NavigateToURL(shell(), url));
 
     ShellAddedObserver new_shell_observer;
 
@@ -145,47 +132,39 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, DynamicTitle2) {
       << "Actual title: " << title;
 }
 
-IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, SniffHTMLWithNoContentType) {
-  // Covered by URLLoaderTest.SniffMimeType.
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService))
-    return;
+// Tests that the renderer does not crash when issuing a stale-revalidation
+// request when the enable_referrers renderer preference is `false`. See
+// https://crbug.com/966140.
+IN_PROC_BROWSER_TEST_F(LoaderBrowserTest,
+                       DisableReferrersStaleWhileRevalidate) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
 
-  CheckTitleTest(
-      net::URLRequestMockHTTPJob::GetMockUrl("content-sniffer-test0.html"),
-      "Content Sniffer Test 0");
-  EXPECT_EQ("text/html", shell()->web_contents()->GetContentsMimeType());
-}
+  // Navigate to the page that will eventually fetch a stale-revalidation
+  // request. Ensure that the renderer has not crashed.
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/stale-while-revalidate.html")));
 
-IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, RespectNoSniffDirective) {
-  // Covered by URLLoaderTest.RespectNoSniff.
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService))
-    return;
+  // Force-disable the |enable_referrers| preference.
+  web_contents->GetMutableRendererPrefs()->enable_referrers = false;
+  web_contents->SyncRendererPrefs();
 
-  CheckTitleTest(net::URLRequestMockHTTPJob::GetMockUrl("nosniff-test.html"),
-                 "mock.http/nosniff-test.html");
-  EXPECT_EQ("text/plain", shell()->web_contents()->GetContentsMimeType());
-}
+  // Wait for the stale-while-revalidate tests to pass by observing the page's
+  // title. If the renderer crashes, the test immediately fails.
+  base::string16 expected_title = base::ASCIIToUTF16("Pass");
+  TitleWatcher title_watcher(web_contents, expected_title);
 
-IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, DoNotSniffHTMLFromTextPlain) {
-  // Covered by URLLoaderTest.SniffTextPlainDoesNotResultInHTML.
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService))
-    return;
-
-  CheckTitleTest(
-      net::URLRequestMockHTTPJob::GetMockUrl("content-sniffer-test1.html"),
-      "mock.http/content-sniffer-test1.html");
-  EXPECT_EQ("text/plain", shell()->web_contents()->GetContentsMimeType());
-}
-
-IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, DoNotSniffHTMLFromImageGIF) {
-  // Covered by URLLoaderTest.DoNotSniffHTMLFromImageGIF.
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService))
-    return;
-
-  CheckTitleTest(
-      net::URLRequestMockHTTPJob::GetMockUrl("content-sniffer-test2.html"),
-      "mock.http/content-sniffer-test2.html");
-  EXPECT_EQ("image/gif", shell()->web_contents()->GetContentsMimeType());
+  // The invocation of runTest() below starts a test written in JavaScript, that
+  // after some time, creates a stale-revalidation request. The above IPC
+  // message should be handled by the renderer (thus updating its preferences),
+  // before this stale-revalidation request is sent. Technically nothing
+  // guarantees this will happen, so it is theoretically possible the test is
+  // racy, however in practice the renderer will always handle the IPC message
+  // before the stale-revalidation request. This is because the renderer is
+  // never completely blocked from the time the test starts.
+  EXPECT_TRUE(ExecuteScript(shell(), "runTest()"));
+  ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, SniffNoContentTypeNoData) {
@@ -225,8 +204,8 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, ContentDispositionInline) {
 // Test for bug #1091358.
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, SyncXMLHttpRequest) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  NavigateToURL(shell(),
-                embedded_test_server()->GetURL("/sync_xmlhttprequest.html"));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/sync_xmlhttprequest.html")));
 
   // Let's check the XMLHttpRequest ran successfully.
   bool success = false;
@@ -239,8 +218,9 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, SyncXMLHttpRequest) {
 // If this flakes, use http://crbug.com/62776.
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, SyncXMLHttpRequest_Disallowed) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  NavigateToURL(shell(), embedded_test_server()->GetURL(
-                             "/sync_xmlhttprequest_disallowed.html"));
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL("/sync_xmlhttprequest_disallowed.html")));
 
   // Let's check the XMLHttpRequest ran successfully.
   bool success = false;
@@ -281,8 +261,7 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest,
 namespace {
 
 // Responds with a HungResponse for the specified URL to hang on the request.
-// If the network service is enabled, crashes the process. If it's disabled,
-// cancels all requests from specifield |child_id|.
+// It crashes the process.
 //
 // |crash_network_service_callback| crashes the network service when invoked,
 // and must be called on the UI thread.
@@ -294,16 +273,8 @@ std::unique_ptr<net::test_server::HttpResponse> CancelOnRequest(
   if (request.relative_url != relative_url)
     return nullptr;
 
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                             crash_network_service_callback);
-  } else {
-    base::PostTaskWithTraits(
-        FROM_HERE, {content::BrowserThread::IO},
-        base::BindOnce(&ResourceDispatcherHostImpl::CancelRequestsForProcess,
-                       base::Unretained(ResourceDispatcherHostImpl::Get()),
-                       child_id));
-  }
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 crash_network_service_callback);
 
   return std::make_unique<net::test_server::HungResponse>();
 }
@@ -315,12 +286,10 @@ std::unique_ptr<net::test_server::HttpResponse> CancelOnRequest(
 // response to call to AsyncResourceHandler::OnResponseComplete.
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, SyncXMLHttpRequest_Cancelled) {
   // If network service is running in-process, we can't simulate a crash.
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService) &&
-      IsInProcessNetworkService()) {
+  if (IsInProcessNetworkService())
     return;
-  }
 
-  embedded_test_server()->RegisterRequestHandler(base::Bind(
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &CancelOnRequest, "/hung",
       shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
       base::BindRepeating(&BrowserTestBase::SimulateNetworkServiceCrash,
@@ -329,8 +298,9 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, SyncXMLHttpRequest_Cancelled) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WaitForLoadStop(shell()->web_contents());
 
-  NavigateToURL(shell(), embedded_test_server()->GetURL(
-                             "/sync_xmlhttprequest_cancelled.html"));
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL("/sync_xmlhttprequest_cancelled.html")));
 
   int status_code = -1;
   EXPECT_TRUE(ExecuteScriptAndExtractInt(
@@ -371,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest,
 
   // Navigate to a cross-site page that loads immediately without making a
   // network request.  The unload event should still be run.
-  NavigateToURL(shell(), GURL(url::kAboutBlankURL));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   // Check that the cookie was set.
   EXPECT_EQ("onunloadCookie=foo", GetCookies(url));
@@ -400,7 +370,7 @@ std::unique_ptr<net::test_server::HttpResponse> NoContentResponseHandler(
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, CrossSiteNoUnloadOn204) {
   const char kNoContentPath[] = "/nocontent";
   embedded_test_server()->RegisterRequestHandler(
-      base::Bind(&NoContentResponseHandler, kNoContentPath));
+      base::BindRepeating(&NoContentResponseHandler, kNoContentPath));
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -409,7 +379,8 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, CrossSiteNoUnloadOn204) {
   CheckTitleTest(url, "set cookie on unload");
 
   // Navigate to a cross-site URL that returns a 204 No Content response.
-  NavigateToURL(shell(), embedded_test_server()->GetURL(kNoContentPath));
+  EXPECT_TRUE(NavigateToURLAndExpectNoCommit(
+      shell(), embedded_test_server()->GetURL(kNoContentPath)));
 
   // Check that the unload cookie was not set.
   EXPECT_EQ("", GetCookies(url));
@@ -430,13 +401,13 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, CrossSiteNoUnloadOn204) {
 #endif
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, MAYBE_CrossSiteAfterCrash) {
   // Make sure we have a live process before trying to kill it.
-  NavigateToURL(shell(), GURL("about:blank"));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
 
   // Cause the renderer to crash.
   RenderProcessHostWatcher crash_observer(
       shell()->web_contents(),
       RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  NavigateToURL(shell(), GURL(kChromeUICrashURL));
+  EXPECT_FALSE(NavigateToURL(shell(), GURL(kChromeUICrashURL)));
   // Wait for browser to notice the renderer crash.
   crash_observer.Wait();
 
@@ -476,9 +447,11 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest,
   // TODO(creis): If this causes crashes or hangs, it might be for the same
   // reason as ErrorPageTest::DNSError.  See bug 1199491 and
   // http://crbug.com/22877.
-  GURL failed_url =
-      net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
-  NavigateToURL(shell(), failed_url);
+  GURL failed_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(failed_url,
+                                                   net::ERR_NAME_NOT_RESOLVED);
+  EXPECT_FALSE(NavigateToURL(shell(), failed_url));
 
   EXPECT_NE(ASCIIToUTF16("set cookie on unload"),
             shell()->web_contents()->GetTitle());
@@ -517,15 +490,17 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, CrossSiteNavigationErrorPage2) {
   // TODO(creis): If this causes crashes or hangs, it might be for the same
   // reason as ErrorPageTest::DNSError.  See bug 1199491 and
   // http://crbug.com/22877.
-  GURL failed_url =
-      net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
+  GURL failed_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(failed_url,
+                                                   net::ERR_NAME_NOT_RESOLVED);
 
-  NavigateToURL(shell(), failed_url);
+  EXPECT_FALSE(NavigateToURL(shell(), failed_url));
   EXPECT_NE(ASCIIToUTF16("Title Of Awesomeness"),
             shell()->web_contents()->GetTitle());
 
   // Repeat navigation.  We are testing that this completes.
-  NavigateToURL(shell(), failed_url);
+  EXPECT_FALSE(NavigateToURL(shell(), failed_url));
   EXPECT_NE(ASCIIToUTF16("Title Of Awesomeness"),
             shell()->web_contents()->GetTitle());
 }
@@ -555,11 +530,11 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, CrossOriginRedirectBlocked) {
 // See bug 40250.
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, CrossSiteFailedRequest) {
   // Visit another URL first to trigger a cross-site navigation.
-  NavigateToURL(shell(), GetTestUrl("", "simple_page.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "simple_page.html")));
 
   // Visit a URL that fails without calling ResourceDispatcherHost::Read.
   GURL broken_url("chrome://theme");
-  NavigateToURL(shell(), broken_url);
+  EXPECT_FALSE(NavigateToURL(shell(), broken_url));
 }
 
 namespace {
@@ -585,61 +560,32 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRedirectRequest(
 // navigations.
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, CookiePolicy) {
   embedded_test_server()->RegisterRequestHandler(
-      base::Bind(&HandleRedirectRequest, "/redirect?"));
+      base::BindRepeating(&HandleRedirectRequest, "/redirect?"));
   ASSERT_TRUE(embedded_test_server()->Start());
 
   std::string set_cookie_url(base::StringPrintf(
       "http://localhost:%u/set_cookie.html", embedded_test_server()->port()));
   GURL url(embedded_test_server()->GetURL("/redirect?" + set_cookie_url));
 
-  ShellNetworkDelegate::SetBlockThirdPartyCookies(true);
-
-  CheckTitleTest(url, "cookie set");
+  base::string16 expected_title16(ASCIIToUTF16("cookie set"));
+  TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
+  EXPECT_TRUE(NavigateToURL(shell(), url,
+                            GURL(set_cookie_url) /* expected_commit_url */));
+  EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
 }
-
-class PageTransitionResourceDispatcherHostDelegate
-    : public ResourceDispatcherHostDelegate {
- public:
-  explicit PageTransitionResourceDispatcherHostDelegate(GURL watch_url)
-      : watch_url_(watch_url) {}
-
-  // ResourceDispatcherHostDelegate implementation:
-  void RequestBeginning(
-      net::URLRequest* request,
-      ResourceContext* resource_context,
-      AppCacheService* appcache_service,
-      ResourceType resource_type,
-      std::vector<std::unique_ptr<ResourceThrottle>>* throttles) override {
-    if (request->url() == watch_url_) {
-      ResourceRequestInfo* info = ResourceRequestInfo::ForRequest(request);
-      page_transition_ = info->GetPageTransition();
-    }
-  }
-
-  ui::PageTransition page_transition() { return page_transition_; }
-
- private:
-  GURL watch_url_;
-  ui::PageTransition page_transition_;
-};
 
 // Test that ui::PAGE_TRANSITION_CLIENT_REDIRECT is correctly set
 // when encountering a meta refresh tag.
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, PageTransitionClientRedirect) {
-  // TODO(crbug.com/818445): Fix the flakiness on Network Service.
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService))
-    return;
-
   ASSERT_TRUE(embedded_test_server()->Start());
-
-  PageTransitionResourceDispatcherHostDelegate delegate(
-      embedded_test_server()->GetURL("/title1.html"));
-  ResourceDispatcherHost::Get()->SetDelegate(&delegate);
 
   NavigateToURLBlockUntilNavigationsComplete(
       shell(), embedded_test_server()->GetURL("/client_redirect.html"), 2);
 
-  EXPECT_TRUE(delegate.page_transition() & ui::PAGE_TRANSITION_CLIENT_REDIRECT);
+  NavigationEntry* entry =
+      shell()->web_contents()->GetController().GetLastCommittedEntry();
+
+  EXPECT_TRUE(entry->GetTransitionType() & ui::PAGE_TRANSITION_CLIENT_REDIRECT);
 }
 
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, SubresourceRedirectToDataURLBlocked) {
@@ -835,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, Basic) {
   EXPECT_FALSE(first_request->initiator.has_value());
   for (size_t i = 1; i < requests.size(); i++) {
     const RequestData* request = &requests[i];
-    EXPECT_EQ(top_url, request->first_party);
+    EXPECT_EQ(top_origin, url::Origin::Create(request->first_party));
     ASSERT_TRUE(request->initiator.has_value());
     EXPECT_EQ(top_origin, request->initiator);
   }
@@ -897,15 +843,15 @@ IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, BasicCrossSite) {
   EXPECT_EQ(9u, requests.size());
 
   // The first items loaded are the top-level and nested documents. These should
-  // both have a |first_party| that match the URL of the top-level document.
+  // both have a |first_party| that match the origin of the top-level document.
   // The top-level document has no initiator and the nested frame is initiated
   // by the top-level document.
   EXPECT_EQ(top_url, requests[0].url);
-  EXPECT_EQ(top_url, requests[0].first_party);
+  EXPECT_EQ(top_origin, url::Origin::Create(requests[0].first_party));
   EXPECT_FALSE(requests[0].initiator.has_value());
 
   EXPECT_EQ(nested_url, requests[1].url);
-  EXPECT_EQ(top_url, requests[1].first_party);
+  EXPECT_EQ(top_origin, url::Origin::Create(requests[1].first_party));
   EXPECT_EQ(top_origin, requests[1].initiator);
 
   // The remaining items are loaded as subresources in the nested document, and
@@ -933,19 +879,19 @@ IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, SameOriginNested) {
   // URL to which they navigate. The navigation was initiated outside of a
   // document, so there is no |initiator|.
   EXPECT_EQ(top_url, requests[0].url);
-  EXPECT_EQ(top_url, requests[0].first_party);
+  EXPECT_EQ(top_origin, url::Origin::Create(requests[0].first_party));
   EXPECT_FALSE(requests[0].initiator.has_value());
 
   // Subresource requests have a first-party and initiator that matches the
   // document in which they're embedded.
   EXPECT_EQ(image_url, requests[1].url);
-  EXPECT_EQ(top_url, requests[1].first_party);
+  EXPECT_EQ(top_origin, url::Origin::Create(requests[1].first_party));
   EXPECT_EQ(top_origin, requests[1].initiator);
 
   // Same-origin nested frames have a first-party and initiator that matches
   // the document in which they're embedded.
   EXPECT_EQ(nested_url, requests[2].url);
-  EXPECT_EQ(top_url, requests[2].first_party);
+  EXPECT_EQ(top_origin, url::Origin::Create(requests[2].first_party));
   EXPECT_EQ(top_origin, requests[2].initiator);
 }
 
@@ -973,13 +919,14 @@ IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, SameOriginAuxiliary) {
   // URL to which they navigate, even if they fail to load. The navigation was
   // initiated outside of a document, so there is no |initiator|.
   EXPECT_EQ(top_url, requests[0].url);
-  EXPECT_EQ(top_url, requests[0].first_party);
+  EXPECT_EQ(top_origin, url::Origin::Create(requests[0].first_party));
   EXPECT_FALSE(requests[0].initiator.has_value());
 
   // Auxiliary navigations have a first-party that matches the URL to which they
   // navigate, and an initiator that matches the document that triggered them.
   EXPECT_EQ(auxiliary_url, requests[1].url);
-  EXPECT_EQ(auxiliary_url, requests[1].first_party);
+  EXPECT_EQ(url::Origin::Create(auxiliary_url),
+            url::Origin::Create(requests[1].first_party));
   EXPECT_EQ(top_origin, requests[1].initiator);
 }
 
@@ -1015,13 +962,14 @@ IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, CrossOriginAuxiliary) {
   // URL to which they navigate, even if they fail to load. The navigation was
   // initiated outside of a document, so there is no initiator.
   EXPECT_EQ(top_url, requests[0].url);
-  EXPECT_EQ(top_url, requests[0].first_party);
+  EXPECT_EQ(top_origin, url::Origin::Create(requests[0].first_party));
   EXPECT_FALSE(requests[0].initiator.has_value());
 
   // Auxiliary navigations have a first-party that matches the URL to which they
   // navigate, and an initiator that matches the document that triggered them.
   EXPECT_EQ(auxiliary_url, requests[1].url);
-  EXPECT_EQ(auxiliary_url, requests[1].first_party);
+  EXPECT_EQ(url::Origin::Create(auxiliary_url),
+            url::Origin::Create(requests[1].first_party));
   EXPECT_EQ(top_origin, requests[1].initiator);
 }
 
@@ -1040,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, FailedNavigation) {
   // URL to which they navigate, even if they fail to load. The navigation was
   // initiated outside of a document, so there is no initiator.
   EXPECT_EQ(top_url, requests[0].url);
-  EXPECT_EQ(top_url, requests[0].first_party);
+  EXPECT_EQ(top_origin, url::Origin::Create(requests[0].first_party));
   EXPECT_FALSE(requests[0].initiator.has_value());
 }
 
@@ -1064,17 +1012,17 @@ IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, CrossOriginNested) {
   // User-initiated top-level navigations have a |first-party|. The navigation
   // was initiated outside of a document, so there are no initiator.
   EXPECT_EQ(top_url, requests[0].url);
-  EXPECT_EQ(top_url, requests[0].first_party);
+  EXPECT_EQ(top_origin, url::Origin::Create(requests[0].first_party));
   EXPECT_FALSE(requests[0].initiator.has_value());
 
   EXPECT_EQ(top_js_url, requests[1].url);
-  EXPECT_EQ(top_url, requests[1].first_party);
+  EXPECT_EQ(top_origin, url::Origin::Create(requests[1].first_party));
   EXPECT_EQ(top_origin, requests[1].initiator);
 
   // Cross-origin frames have a first-party and initiator that matches the URL
   // in which they're embedded.
   EXPECT_EQ(nested_url, requests[2].url);
-  EXPECT_EQ(top_url, requests[2].first_party);
+  EXPECT_EQ(top_origin, url::Origin::Create(requests[2].first_party));
   EXPECT_EQ(top_origin, requests[2].initiator);
 
   // Cross-origin subresource requests have a unique first-party, and an
@@ -1141,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest,
   }
 }
 
-class URLModifyingThrottle : public URLLoaderThrottle {
+class URLModifyingThrottle : public blink::URLLoaderThrottle {
  public:
   URLModifyingThrottle(bool modify_start, bool modify_redirect)
       : modify_start_(modify_start), modify_redirect_(modify_redirect) {}
@@ -1160,7 +1108,7 @@ class URLModifyingThrottle : public URLLoaderThrottle {
 
   void WillRedirectRequest(
       net::RedirectInfo* redirect_info,
-      const network::ResourceResponseHead& response_head,
+      const network::mojom::URLResponseHead& response_head,
       bool* defer,
       std::vector<std::string>* to_be_removed_request_headers,
       net::HttpRequestHeaders* modified_request_headers) override {
@@ -1168,10 +1116,6 @@ class URLModifyingThrottle : public URLLoaderThrottle {
       return;
 
     modified_request_headers->SetHeader("Foo", "Bar");
-
-    // This is only supported if the network service is enabled.
-    if (!base::FeatureList::IsEnabled(network::features::kNetworkService))
-      return;
 
     if (modified_redirect_url_)
       return;  // Only need to do this once.
@@ -1200,13 +1144,14 @@ class ThrottleContentBrowserClient : public TestContentBrowserClient {
   ~ThrottleContentBrowserClient() override {}
 
   // ContentBrowserClient overrides:
-  std::vector<std::unique_ptr<URLLoaderThrottle>> CreateURLLoaderThrottles(
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottles(
       const network::ResourceRequest& request,
-      ResourceContext* resource_context,
+      BrowserContext* browser_context,
       const base::RepeatingCallback<WebContents*()>& wc_getter,
       NavigationUIData* navigation_ui_data,
       int frame_tree_node_id) override {
-    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles;
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     auto throttle =
         std::make_unique<URLModifyingThrottle>(modify_start_, modify_redirect_);
     throttles.push_back(std::move(throttle));
@@ -1220,8 +1165,8 @@ class ThrottleContentBrowserClient : public TestContentBrowserClient {
   DISALLOW_COPY_AND_ASSIGN(ThrottleContentBrowserClient);
 };
 
-// Ensures if a URLLoaderThrottle modifies a URL in WillStartRequest the new
-// request matches
+// Ensures if a URLLoaderThrottle modifies a URL in WillStartRequest the
+// new request matches
 IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, URLLoaderThrottleStartModify) {
   base::Lock lock;
   ThrottleContentBrowserClient content_browser_client(true, false);
@@ -1240,10 +1185,11 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, URLLoaderThrottleStartModify) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url = embedded_test_server()->GetURL("/simple_page.html");
-  NavigateToURL(shell(), url);
+  GURL expected_url(url.spec() + "?foo=bar");
+  EXPECT_TRUE(
+      NavigateToURL(shell(), url, expected_url /* expected_commit_url */));
 
   {
-    GURL expected_url(url.spec() + "?foo=bar");
     base::AutoLock auto_lock(lock);
     ASSERT_TRUE(urls_requested.find(expected_url) != urls_requested.end());
     ASSERT_TRUE(header_map[expected_url]["Foo"] == "Bar");
@@ -1273,14 +1219,10 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, URLLoaderThrottleRedirectModify) {
 
   GURL url =
       embedded_test_server()->GetURL("/server-redirect?simple_page.html");
-  NavigateToURL(shell(), url);
-
-  GURL expected_url;
-  // This is only supported if the network service is enabled.
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService))
-    expected_url = embedded_test_server()->GetURL("/simple_page.html?foo=bar");
-  else
-    expected_url = embedded_test_server()->GetURL("/simple_page.html");
+  GURL expected_url =
+      embedded_test_server()->GetURL("/simple_page.html?foo=bar");
+  EXPECT_TRUE(
+      NavigateToURL(shell(), url, expected_url /* expected_commit_url */));
 
   {
     base::AutoLock auto_lock(lock);

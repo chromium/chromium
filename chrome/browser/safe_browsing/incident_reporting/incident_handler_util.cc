@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 

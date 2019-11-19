@@ -75,7 +75,7 @@
     },
 
     function testMuteUpdatesWhileScrolling(next) {
-      consoleView._updateStickToBottomOnMouseDown();
+      consoleView._updateStickToBottomOnPointerDown();
       viewport.element.scrollTop -= 10;
 
       TestRunner.addSniffer(Console.ConsoleView.prototype, '_scheduleViewportRefreshForTest', onMessageAdded);
@@ -89,7 +89,7 @@
         TestRunner.addSniffer(
             Console.ConsoleView.prototype, '_scheduleViewportRefreshForTest', onMouseUpScheduledRefresh);
         TestRunner.addSniffer(Console.ConsoleView.prototype, '_updateViewportStickinessForTest', onUpdateStickiness);
-        consoleView._updateStickToBottomOnMouseUp();
+        consoleView._updateStickToBottomOnPointerUp();
       }
 
       /**

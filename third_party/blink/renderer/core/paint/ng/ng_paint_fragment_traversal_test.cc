@@ -23,7 +23,7 @@ class NGPaintFragmentTraversalTest : public RenderingTest,
   void SetUpHtml(const char* container_id, const char* html) {
     SetBodyInnerHTML(html);
     layout_block_flow_ =
-        ToLayoutBlockFlow(GetLayoutObjectByElementId(container_id));
+        To<LayoutBlockFlow>(GetLayoutObjectByElementId(container_id));
     root_fragment_ = layout_block_flow_->PaintFragment();
   }
 
@@ -59,7 +59,7 @@ class NGPaintFragmentTraversalTest : public RenderingTest,
   }
 
   LayoutBlockFlow* layout_block_flow_;
-  NGPaintFragment* root_fragment_;
+  const NGPaintFragment* root_fragment_;
 };
 
 TEST_F(NGPaintFragmentTraversalTest, MoveToNext) {
@@ -178,23 +178,6 @@ TEST_F(NGPaintFragmentTraversalTest, MoveToWithRoot) {
   EXPECT_EQ(span, &*traversal);
   EXPECT_THAT(ToDepthFirstList(&traversal),
               ElementsAreArray({span, span->FirstChild(), br}));
-}
-
-TEST_F(NGPaintFragmentTraversalTest, PreviousLineOf) {
-  SetUpHtml("t", "<div id=t>foo<br>bar</div>");
-  ASSERT_EQ(2u, RootChildren().size());
-  EXPECT_EQ(nullptr, NGPaintFragmentTraversal::PreviousLineOf(
-                         *ToList(RootChildren())[0]));
-  EXPECT_EQ(ToList(RootChildren())[0], NGPaintFragmentTraversal::PreviousLineOf(
-                                           *ToList(RootChildren())[1]));
-}
-
-TEST_F(NGPaintFragmentTraversalTest, PreviousLineInListItem) {
-  SetUpHtml("t", "<ul><li id=t>foo</li></ul>");
-  ASSERT_EQ(2u, RootChildren().size());
-  ASSERT_TRUE(ToList(RootChildren())[0]->PhysicalFragment().IsListMarker());
-  EXPECT_EQ(nullptr, NGPaintFragmentTraversal::PreviousLineOf(
-                         *ToList(RootChildren())[1]));
 }
 
 TEST_F(NGPaintFragmentTraversalTest, InlineDescendantsOf) {

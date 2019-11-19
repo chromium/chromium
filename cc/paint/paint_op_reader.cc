@@ -8,6 +8,7 @@
 #include <algorithm>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
@@ -33,16 +34,15 @@ bool IsValidPaintShaderType(PaintShader::Type type) {
          static_cast<uint8_t>(PaintShader::Type::kShaderCount);
 }
 
-// SkShader::TileMode has no defined backing type, so read/write int32_t's.
+// SkTileMode has no defined backing type, so read/write int32_t's.
 // If read_mode is a valid tile mode, this returns true and updates mode to the
 // equivalent enum value. Otherwise false is returned and mode is not modified.
-bool ValidateAndGetSkShaderTileMode(int32_t read_mode,
-                                    SkShader::TileMode* mode) {
-  if (read_mode < 0 || read_mode >= SkShader::kTileModeCount) {
+bool ValidateAndGetSkShaderTileMode(int32_t read_mode, SkTileMode* mode) {
+  if (read_mode < 0 || read_mode >= kSkTileModeCount) {
     return false;
   }
 
-  *mode = static_cast<SkShader::TileMode>(read_mode);
+  *mode = static_cast<SkTileMode>(read_mode);
   return true;
 }
 
@@ -226,18 +226,16 @@ void PaintOpReader::Read(SkPath* path) {
   switch (entry_state) {
     case PaintCacheEntryState::kEmpty:
       return;
-    case PaintCacheEntryState::kCached: {
-      auto* cached_path = options_.paint_cache->GetPath(path_id);
-      if (!cached_path)
+    case PaintCacheEntryState::kCached:
+      if (!options_.paint_cache->GetPath(path_id, path))
         SetInvalid();
-      else
-        *path = *cached_path;
       return;
-    }
     case PaintCacheEntryState::kInlined: {
       size_t path_bytes = 0u;
       ReadSize(&path_bytes);
-      if (path_bytes > remaining_bytes_ || path_bytes == 0u)
+      if (path_bytes > remaining_bytes_)
+        SetInvalid();
+      if (path_bytes == 0u)
         SetInvalid();
       if (!valid_)
         return;
@@ -358,6 +356,7 @@ void PaintOpReader::Read(PaintImage* image) {
   if (transfer_cache_entry_id == kInvalidImageTransferCacheEntryId)
     return;
 
+  // The transfer cache entry for an image may not exist if the upload fails.
   if (auto* entry =
           options_.transfer_cache->GetEntryAs<ServiceImageTransferCacheEntry>(
               transfer_cache_entry_id)) {
@@ -367,10 +366,6 @@ void PaintOpReader::Read(PaintImage* image) {
                  .set_id(PaintImage::GetNextId())
                  .set_image(entry->image(), PaintImage::kNonLazyStableId)
                  .TakePaintImage();
-  } else {
-    // If a transfer cache id exists, we must have a valid entry for it in the
-    // cache.
-    SetInvalid();
   }
 }
 
@@ -449,7 +444,11 @@ void PaintOpReader::Read(sk_sp<SkTextBlob>* blob) {
   auto* scratch = CopyScratchSpace(data_bytes);
   sk_sp<SkTextBlob> deserialized_blob =
       SkTextBlob::Deserialize(scratch, data_bytes, procs);
-  if (!deserialized_blob || typeface_ctx.invalid_typeface) {
+  if (!deserialized_blob) {
+    SetInvalid();
+    return;
+  }
+  if (typeface_ctx.invalid_typeface) {
     SetInvalid();
     return;
   }
@@ -584,19 +583,17 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   auto* entry =
       options_.transfer_cache->GetEntryAs<ServiceShaderTransferCacheEntry>(
           shader_id);
-  // Only consider entries that use the same scale and color space.
-  // This limits the service side transfer cache to only having one entry
-  // per shader but this will hit the common case of enabling Skia reuse.
-  if (entry && entry->shader()->tile_ == ref.tile_ &&
-      entry->raster_color_space_id() == options_.raster_color_space_id) {
+  // Only consider entries that use the same scale.  This limits the service
+  // side transfer cache to only having one entry per shader but this will hit
+  // the common case of enabling Skia reuse.
+  if (entry && entry->shader()->tile_ == ref.tile_) {
     DCHECK(!ref.cached_shader_);
     ref.cached_shader_ = entry->shader()->GetSkShader();
   } else {
     ref.CreateSkShader();
-    std::unique_ptr<ServiceShaderTransferCacheEntry> entry(
-        new ServiceShaderTransferCacheEntry(
-            *shader, options_.raster_color_space_id, shader_size));
-    options_.transfer_cache->CreateLocalEntry(shader_id, std::move(entry));
+    options_.transfer_cache->CreateLocalEntry(
+        shader_id, std::make_unique<ServiceShaderTransferCacheEntry>(
+                       *shader, shader_size));
   }
 }
 
@@ -617,6 +614,18 @@ void PaintOpReader::Read(SkColorType* color_type) {
   *color_type = static_cast<SkColorType>(raw_color_type);
 }
 
+void PaintOpReader::Read(SkYUVColorSpace* yuv_color_space) {
+  uint32_t raw_yuv_color_space = kIdentity_SkYUVColorSpace;
+  ReadSimple(&raw_yuv_color_space);
+
+  if (raw_yuv_color_space > kLastEnum_SkYUVColorSpace) {
+    SetInvalid();
+    return;
+  }
+
+  *yuv_color_space = static_cast<SkYUVColorSpace>(raw_yuv_color_space);
+}
+
 void PaintOpReader::AlignMemory(size_t alignment) {
   // Due to the math below, alignment must be a power of two.
   DCHECK_GT(alignment, 0u);
@@ -635,7 +644,8 @@ void PaintOpReader::AlignMemory(size_t alignment) {
   remaining_bytes_ -= padding;
 }
 
-inline void PaintOpReader::SetInvalid() {
+// Don't inline this function so that crash reports can show the caller.
+NOINLINE void PaintOpReader::SetInvalid() {
   if (valid_ && options_.crash_dump_on_failure && base::RandInt(1, 10) == 1) {
     base::debug::DumpWithoutCrashing();
   }

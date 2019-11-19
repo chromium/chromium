@@ -24,7 +24,7 @@ message AutofillPageResourceQueryRequest {
 
 // Request to retrieve field suggestions for multiple forms in a page. You can
 // see this as batched form requests.
-// Next ID: 3
+// Next ID: 4
 message AutofillPageQueryRequest {
   // Next ID: 3
   message Form {
@@ -54,6 +54,8 @@ message AutofillPageQueryRequest {
   optional string client_version = 1 [deprecated = true];
   // Forms in the same page for which we want fields suggestions.
   repeated Form forms = 2;
+  // The collection of server-side experiments to use.
+  repeated int64 experiments = 3;
 };
 
 // Response containing field suggestions from Autofill API for

@@ -12,17 +12,16 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
+class SetBoundsWMEvent;
+
 namespace mojom {
 enum class WindowStateType;
 }
 
-namespace wm {
-class SetBoundsEvent;
-
 // DefaultState implements Ash behavior without state machine.
 class DefaultState : public BaseState {
  public:
-  explicit DefaultState(mojom::WindowStateType initial_state_type);
+  explicit DefaultState(WindowStateType initial_state_type);
   ~DefaultState() override;
 
   // WindowState::State overrides:
@@ -42,25 +41,25 @@ class DefaultState : public BaseState {
 
  private:
   // Set the fullscreen/maximized bounds without animation.
-  static bool SetMaximizedOrFullscreenBounds(wm::WindowState* window_state);
+  static bool SetMaximizedOrFullscreenBounds(WindowState* window_state);
 
   static void SetBounds(WindowState* window_state,
-                        const SetBoundsEvent* bounds_event);
+                        const SetBoundsWMEvent* bounds_event);
 
   // Enters next state. This is used when the state moves from one to another
   // within the same desktop mode.
-  void EnterToNextState(wm::WindowState* window_state,
-                        mojom::WindowStateType next_state_type);
+  void EnterToNextState(WindowState* window_state,
+                        WindowStateType next_state_type);
 
   // Reenters the current state. This is called when migrating from
   // previous desktop mode, and the window's state needs to re-construct the
   // state/bounds for this state.
-  void ReenterToCurrentState(wm::WindowState* window_state,
-                             wm::WindowState::State* state_in_previous_mode);
+  void ReenterToCurrentState(WindowState* window_state,
+                             WindowState::State* state_in_previous_mode);
 
   // Animates to new window bounds based on the current and previous state type.
-  void UpdateBoundsFromState(wm::WindowState* window_state,
-                             mojom::WindowStateType old_state_type);
+  void UpdateBoundsFromState(WindowState* window_state,
+                             WindowStateType old_state_type);
 
   // The saved window state for the case that the state gets de-/activated.
   gfx::Rect stored_bounds_;
@@ -75,7 +74,6 @@ class DefaultState : public BaseState {
   DISALLOW_COPY_AND_ASSIGN(DefaultState);
 };
 
-}  // namespace wm
 }  // namespace ash
 
 #endif  // ASH_WM_DEFAULT_STATE_H_

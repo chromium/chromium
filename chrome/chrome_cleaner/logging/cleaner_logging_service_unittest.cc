@@ -18,9 +18,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_reg_util_win.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
+#include "chrome/chrome_cleaner/constants/uws_id.h"
 #include "chrome/chrome_cleaner/http/http_agent_factory.h"
 #include "chrome/chrome_cleaner/http/mock_http_agent_factory.h"
 #include "chrome/chrome_cleaner/logging/pending_logs_service.h"
@@ -36,6 +37,7 @@
 #include "chrome/chrome_cleaner/os/task_scheduler.h"
 #include "chrome/chrome_cleaner/proto/shared_pup_enums.pb.h"
 #include "chrome/chrome_cleaner/pup_data/pup_data.h"
+#include "chrome/chrome_cleaner/pup_data/test_uws.h"
 #include "chrome/chrome_cleaner/test/test_file_util.h"
 #include "chrome/chrome_cleaner/test/test_settings_util.h"
 #include "chrome/chrome_cleaner/test/test_task_scheduler.h"
@@ -105,13 +107,13 @@ const wchar_t kSystemProxySettingsBypass[] = L"http://somebypassurl.com/hello";
 const char kFileContent1[] = "This is the file content.";
 
 constexpr PUPData::UwSSignature kMatchedUwSSignature{
-    /*id=*/1, PUPData::FLAGS_NONE, "Observed/matched_uws"};
+    kGoogleTestAUwSID, PUPData::FLAGS_NONE, "Observed/matched_uws"};
 
 constexpr PUPData::UwSSignature kRemovedUwSSignature{
-    /*id=*/2, PUPData::FLAGS_ACTION_REMOVE, "Removed/removed_uws"};
+    kGoogleTestBUwSID, PUPData::FLAGS_ACTION_REMOVE, "Removed/removed_uws"};
 
 constexpr PUPData::UwSSignature kMatchedUwSSlowSignature{
-    /*id=*/3, PUPData::FLAGS_NONE, "Observed/matched_uws_slow_"};
+    kGoogleTestCUwSID, PUPData::FLAGS_NONE, "Observed/matched_uws_slow_"};
 
 void CompareRegistryEntries(
     const std::vector<PUPData::RegistryFootprint>& expanded_registry_footprints,
@@ -318,8 +320,7 @@ class CleanerLoggingServiceTest : public testing::TestWithParam<ExecutionMode> {
 
   CleanerLoggingServiceTest()
       : logging_service_(nullptr),
-        scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI),
+        task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         done_callback_called_(false),
         upload_success_(false),
         matched_uws_(&kMatchedUwSSignature),
@@ -333,7 +334,7 @@ class CleanerLoggingServiceTest : public testing::TestWithParam<ExecutionMode> {
   std::unique_ptr<RegistryLogger> registry_logger_;
 
   // Needed for the current task runner to be available.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   // |done_callback_called_| is set to true in |LoggingServiceDone| to confirm
   // it was called appropriately.
@@ -1265,8 +1266,10 @@ TEST_P(CleanerLoggingServiceTest, UpdateRemovalStatus) {
   // by the cleaner code. Also, ensures that all RemovalStatus enumerators are
   // checked.
   std::vector<RemovalStatus> all_removal_status;
-  for (int i = RemovalStatus_MIN + 1; i <= RemovalStatus_MAX; ++i)
-    all_removal_status.push_back(static_cast<RemovalStatus>(i));
+  for (int i = RemovalStatus_MIN + 1; i <= RemovalStatus_MAX; ++i) {
+    if (RemovalStatus_IsValid(i))
+      all_removal_status.push_back(static_cast<RemovalStatus>(i));
+  }
 
   FileRemovalStatusUpdater* removal_status_updater =
       FileRemovalStatusUpdater::GetInstance();

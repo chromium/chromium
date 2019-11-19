@@ -40,7 +40,7 @@ class DisplayLockHandleAndroid {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   // Deletes |this|.
-  void Release(JNIEnv* env, const base::android::JavaParamRef<jobject>& jobj);
+  void Release(JNIEnv* env);
 
  private:
   // The DisplayLockHandle that this JNI bridge owns.

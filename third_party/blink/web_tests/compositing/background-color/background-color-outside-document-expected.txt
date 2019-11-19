@@ -1,1 +1,0 @@
-This test passes if the entire background is green (including the region outside the html element).

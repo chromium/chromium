@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.blink_public.platform.WebDisplayMode;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.webapk.lib.common.splash.SplashLayout;
 
 import java.util.HashMap;
 
@@ -59,8 +62,10 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
         mObserver = observer;
 
         mTab.addObserver(this);
-        mNativePointer = nativeInitialize(mOldInfo.scopeUri().toString(), mOldInfo.manifestUrl());
-        nativeStart(mNativePointer, mTab.getWebContents());
+        mNativePointer = WebApkUpdateDataFetcherJni.get().initialize(
+                WebApkUpdateDataFetcher.this, mOldInfo.scopeUrl(), mOldInfo.manifestUrl());
+        WebApkUpdateDataFetcherJni.get().start(
+                mNativePointer, WebApkUpdateDataFetcher.this, mTab.getWebContents());
         return true;
     }
 
@@ -69,7 +74,7 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
      */
     public void destroy() {
         mTab.removeObserver(this);
-        nativeDestroy(mNativePointer);
+        WebApkUpdateDataFetcherJni.get().destroy(mNativePointer, WebApkUpdateDataFetcher.this);
         mNativePointer = 0;
     }
 
@@ -88,7 +93,8 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
      * Updates which WebContents the native WebApkUpdateDataFetcher is monitoring.
      */
     private void updatePointers() {
-        nativeReplaceWebContents(mNativePointer, mTab.getWebContents());
+        WebApkUpdateDataFetcherJni.get().replaceWebContents(
+                mNativePointer, WebApkUpdateDataFetcher.this, mTab.getWebContents());
     }
 
     /**
@@ -97,10 +103,14 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
     @CalledByNative
     protected void onDataAvailable(String manifestStartUrl, String scopeUrl, String name,
             String shortName, String primaryIconUrl, String primaryIconMurmur2Hash,
-            Bitmap primaryIconBitmap, String badgeIconUrl, String badgeIconMurmur2Hash,
-            Bitmap badgeIconBitmap, String[] iconUrls, @WebDisplayMode int displayMode,
-            int orientation, long themeColor, long backgroundColor, String shareAction,
-            String shareParamsTitle, String shareParamsText, String shareParamsUrl) {
+            Bitmap primaryIconBitmap, boolean isPrimaryIconMaskable, String badgeIconUrl,
+            String badgeIconMurmur2Hash, Bitmap badgeIconBitmap, String[] iconUrls,
+            @WebDisplayMode int displayMode, int orientation, long themeColor, long backgroundColor,
+            String shareAction, String shareParamsTitle, String shareParamsText,
+            boolean isShareMethodPost, boolean isShareEncTypeMultipart,
+            String[] shareParamsFileNames, String[][] shareParamsAccepts) {
+        Context appContext = ContextUtils.getApplicationContext();
+
         HashMap<String, String> iconUrlToMurmur2HashMap = new HashMap<String, String>();
         for (String iconUrl : iconUrls) {
             String murmur2Hash = null;
@@ -112,22 +122,32 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
             iconUrlToMurmur2HashMap.put(iconUrl, murmur2Hash);
         }
 
-        WebApkInfo.ShareTarget shareTarget = new WebApkInfo.ShareTarget(
-                shareAction, shareParamsTitle, shareParamsText, shareParamsUrl);
+        // When share action is empty, we use a default empty share target
+        WebApkInfo.ShareTarget shareTarget = TextUtils.isEmpty(shareAction)
+                ? new WebApkInfo.ShareTarget()
+                : new WebApkInfo.ShareTarget(shareAction, shareParamsTitle, shareParamsText,
+                        isShareMethodPost, isShareEncTypeMultipart, shareParamsFileNames,
+                        shareParamsAccepts);
 
-        WebApkInfo info = WebApkInfo.create(mOldInfo.id(), mOldInfo.uri().toString(), scopeUrl,
-                new WebApkInfo.Icon(primaryIconBitmap), new WebApkInfo.Icon(badgeIconBitmap), null,
-                name, shortName, displayMode, orientation, mOldInfo.source(), themeColor,
-                backgroundColor, mOldInfo.webApkPackageName(), mOldInfo.shellApkVersion(),
-                mOldInfo.manifestUrl(), manifestStartUrl, WebApkInfo.WebApkDistributor.BROWSER,
-                iconUrlToMurmur2HashMap, shareTarget, mOldInfo.shouldForceNavigation(),
-                mOldInfo.isSplashProvidedByWebApk(), null);
+        int defaultBackgroundColor = SplashLayout.getDefaultBackgroundColor(appContext);
+        WebApkInfo info = WebApkInfo.create(mOldInfo.url(), scopeUrl,
+                new WebappIcon(primaryIconBitmap), new WebappIcon(badgeIconBitmap), null, name,
+                shortName, displayMode, orientation, mOldInfo.source(), themeColor, backgroundColor,
+                defaultBackgroundColor, isPrimaryIconMaskable, false /* isSplashIconMaskable */,
+                mOldInfo.webApkPackageName(), mOldInfo.shellApkVersion(), mOldInfo.manifestUrl(),
+                manifestStartUrl, WebApkDistributor.BROWSER, iconUrlToMurmur2HashMap, shareTarget,
+                mOldInfo.shouldForceNavigation(), mOldInfo.isSplashProvidedByWebApk(), null,
+                mOldInfo.webApkVersionCode());
         mObserver.onGotManifestData(info, primaryIconUrl, badgeIconUrl);
     }
 
-    private native long nativeInitialize(String scope, String webManifestUrl);
-    private native void nativeReplaceWebContents(
-            long nativeWebApkUpdateDataFetcher, WebContents webContents);
-    private native void nativeDestroy(long nativeWebApkUpdateDataFetcher);
-    private native void nativeStart(long nativeWebApkUpdateDataFetcher, WebContents webContents);
+    @NativeMethods
+    interface Natives {
+        long initialize(WebApkUpdateDataFetcher caller, String scope, String webManifestUrl);
+        void replaceWebContents(long nativeWebApkUpdateDataFetcher, WebApkUpdateDataFetcher caller,
+                WebContents webContents);
+        void destroy(long nativeWebApkUpdateDataFetcher, WebApkUpdateDataFetcher caller);
+        void start(long nativeWebApkUpdateDataFetcher, WebApkUpdateDataFetcher caller,
+                WebContents webContents);
+    }
 }

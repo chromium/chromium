@@ -87,9 +87,10 @@ void DetectAndOpenPrinterConfigDialog() {
 
 namespace printing {
 
-void PrinterManagerDialog::ShowPrinterManagerDialog() {
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+void PrinterManagerDialog::ShowPrinterManagerDialog(Profile* profile) {
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&DetectAndOpenPrinterConfigDialog));
 }
 

@@ -29,12 +29,14 @@ class TestHintsComponentCreator {
   TestHintsComponentCreator();
   ~TestHintsComponentCreator();
 
-  // Creates component data based on |whitelisted_host_suffixes| with page hints
-  // for type |optimization_type| blocking resources specified by
-  // |resource_patterns|, and returns the HintsComponentInfo for it.
+  // Creates component data based on |whitelisted_host_suffixes| and
+  // |page_pattern| with page hints for type |optimization_type| blocking
+  // resources specified by |resource_patterns|, and returns the
+  // HintsComponentInfo for it.
   optimization_guide::HintsComponentInfo CreateHintsComponentInfoWithPageHints(
       optimization_guide::proto::OptimizationType optimization_type,
       const std::vector<std::string>& whitelisted_host_suffixes,
+      const std::string& page_pattern,
       const std::vector<std::string>& resource_patterns);
 
   // Creates component data based on |whitelisted_host_suffixes| with page hints

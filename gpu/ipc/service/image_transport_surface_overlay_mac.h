@@ -16,6 +16,10 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gpu_switching_observer.h"
 
+#if defined(USE_EGL)
+#include "ui/gl/gl_surface_egl.h"
+#endif
+
 @class CAContext;
 @class CALayer;
 
@@ -30,10 +34,17 @@ class GLFence;
 
 namespace gpu {
 
-class ImageTransportSurfaceOverlayMac : public gl::GLSurface,
-                                        public ui::GpuSwitchingObserver {
+// Template ImageTransportSurfaceOverlayMac based on its base class so that it
+// can be used by both the validating and passthrough command decoders by
+// inheriting from GLSurface and GLSurfaceEGL respectively. Once the validating
+// command decoder is removed, the template can be removed and
+// ImageTransportSurfaceOverlayMac can always inherit from GLSurfaceEGL.
+
+template <typename BaseClass>
+class ImageTransportSurfaceOverlayMacBase : public BaseClass,
+                                            public ui::GpuSwitchingObserver {
  public:
-  explicit ImageTransportSurfaceOverlayMac(
+  explicit ImageTransportSurfaceOverlayMacBase(
       base::WeakPtr<ImageTransportSurfaceDelegate> delegate);
 
   // GLSurface implementation
@@ -42,15 +53,17 @@ class ImageTransportSurfaceOverlayMac : public gl::GLSurface,
   void PrepareToDestroy(bool have_context) override;
   bool Resize(const gfx::Size& size,
               float scale_factor,
-              ColorSpace color_space,
+              gl::GLSurface::ColorSpace color_space,
               bool has_alpha) override;
   bool IsOffscreen() override;
-  gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
-  gfx::SwapResult PostSubBuffer(int x,
-                                int y,
-                                int width,
-                                int height,
-                                PresentationCallback callback) override;
+  gfx::SwapResult SwapBuffers(
+      gl::GLSurface::PresentationCallback callback) override;
+  gfx::SwapResult PostSubBuffer(
+      int x,
+      int y,
+      int width,
+      int height,
+      gl::GLSurface::PresentationCallback callback) override;
   bool SupportsPostSubBuffer() override;
   gfx::Size GetSize() override;
   void* GetHandle() override;
@@ -65,20 +78,20 @@ class ImageTransportSurfaceOverlayMac : public gl::GLSurface,
                             std::unique_ptr<gfx::GpuFence> gpu_fence) override;
   bool ScheduleCALayer(const ui::CARendererLayerParams& params) override;
   void ScheduleCALayerInUseQuery(
-      std::vector<CALayerInUseQuery> queries) override;
+      std::vector<gl::GLSurface::CALayerInUseQuery> queries) override;
   bool IsSurfaceless() const override;
-  bool SupportsPresentationCallback() override;
 
   // ui::GpuSwitchingObserver implementation.
-  void OnGpuSwitched() override;
+  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
 
  private:
-  ~ImageTransportSurfaceOverlayMac() override;
+  ~ImageTransportSurfaceOverlayMacBase() override;
 
-  gfx::SwapResult SwapBuffersInternal(const gfx::Rect& pixel_damage_rect,
-                                      PresentationCallback callback);
+  gfx::SwapResult SwapBuffersInternal(
+      const gfx::Rect& pixel_damage_rect,
+      gl::GLSurface::PresentationCallback callback);
   void ApplyBackpressure();
-  void BufferPresented(PresentationCallback callback,
+  void BufferPresented(gl::GLSurface::PresentationCallback callback,
                        const gfx::PresentationFeedback& feedback);
 
   base::WeakPtr<ImageTransportSurfaceDelegate> delegate_;
@@ -90,7 +103,7 @@ class ImageTransportSurfaceOverlayMac : public gl::GLSurface,
   gfx::Size pixel_size_;
   float scale_factor_;
 
-  std::vector<CALayerInUseQuery> ca_layer_in_use_queries_;
+  std::vector<gl::GLSurface::CALayerInUseQuery> ca_layer_in_use_queries_;
 
   // A GLFence marking the end of the previous frame, used for applying
   // backpressure.
@@ -99,8 +112,17 @@ class ImageTransportSurfaceOverlayMac : public gl::GLSurface,
   // The renderer ID that all contexts made current to this surface should be
   // targeting.
   GLint gl_renderer_id_;
-  base::WeakPtrFactory<ImageTransportSurfaceOverlayMac> weak_ptr_factory_;
+  base::WeakPtrFactory<ImageTransportSurfaceOverlayMacBase<BaseClass>>
+      weak_ptr_factory_;
 };
+
+using ImageTransportSurfaceOverlayMac =
+    ImageTransportSurfaceOverlayMacBase<gl::GLSurface>;
+
+#if defined(USE_EGL)
+using ImageTransportSurfaceOverlayMacEGL =
+    ImageTransportSurfaceOverlayMacBase<gl::GLSurfaceEGL>;
+#endif
 
 }  // namespace gpu
 

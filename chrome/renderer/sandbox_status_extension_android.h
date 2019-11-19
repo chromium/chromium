@@ -12,7 +12,8 @@
 #include "base/values.h"
 #include "chrome/common/sandbox_status_extension_android.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "v8/include/v8.h"
 
 namespace gin {
@@ -45,7 +46,8 @@ class SandboxStatusExtension
   void AddSandboxStatusExtension() override;
 
   void OnSandboxStatusExtensionRequest(
-      chrome::mojom::SandboxStatusExtensionAssociatedRequest request);
+      mojo::PendingAssociatedReceiver<chrome::mojom::SandboxStatusExtension>
+          receiver);
 
   // Installs the JavaScript function into the scripting context, if
   // should_install_ is true.
@@ -67,7 +69,8 @@ class SandboxStatusExtension
   // Set to true by AddSandboxStatusExtension().
   bool should_install_ = false;
 
-  mojo::AssociatedBinding<chrome::mojom::SandboxStatusExtension> binding_;
+  mojo::AssociatedReceiver<chrome::mojom::SandboxStatusExtension> receiver_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(SandboxStatusExtension);
 };

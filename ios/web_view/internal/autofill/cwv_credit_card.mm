@@ -5,8 +5,9 @@
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/utils/nsobject_description_utils.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -86,6 +87,14 @@
 
 - (BOOL)isFromGooglePay {
   return _internalCard.record_type() != autofill::CreditCard::LOCAL_CARD;
+}
+
+#pragma mark - NSObject
+
+- (NSString*)debugDescription {
+  NSString* debugDescription = [super debugDescription];
+  return [debugDescription
+      stringByAppendingFormat:@"\n%@", CWVPropertiesDescription(self)];
 }
 
 #pragma mark - Internal

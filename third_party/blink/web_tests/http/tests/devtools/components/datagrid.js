@@ -112,8 +112,8 @@
 
   var columns = [{id: 'id'}];
   var dataGrid = new DataGrid.DataGrid(columns);
-  var a = new DataGrid.DataGridNode({id: 'a', secondCol: 'a foo'});
-  var b = new DataGrid.DataGridNode({id: 'b', secondCol: 'b foo'});
+  var a = new DataGrid.DataGridNode({id: 'TextData', secondCol: 'a foo'});
+  var b = new DataGrid.DataGridNode({id: 'NullData', secondCol: null});
   var root = dataGrid.rootNode();
   attach(root, a);
   dumpNodes();
@@ -121,6 +121,7 @@
   TestRunner.addResult('Added secondCol');
   dumpNodes();
   attach(root, b);
+  dataGrid.autoSizeColumns(20, 80);
   dumpNodes();
   dataGrid.removeColumn('secondCol');
   TestRunner.addResult('Removed secondCol');

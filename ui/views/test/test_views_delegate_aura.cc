@@ -6,22 +6,17 @@
 
 #include "build/build_config.h"
 #include "ui/aura/env.h"
+#include "ui/views/buildflags.h"
 
-#if !defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
-#endif  // !defined(OS_CHROMEOS)
-
+#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)
 
 namespace views {
 
-TestViewsDelegate::TestViewsDelegate()
-    : context_factory_(nullptr),
-      context_factory_private_(nullptr),
-      use_desktop_native_widgets_(false),
-      use_transparent_windows_(false) {}
+TestViewsDelegate::TestViewsDelegate() = default;
 
-TestViewsDelegate::~TestViewsDelegate() {
-}
+TestViewsDelegate::~TestViewsDelegate() = default;
 
 #if defined(OS_WIN)
 HICON TestViewsDelegate::GetSmallWindowIcon() const {
@@ -37,10 +32,10 @@ void TestViewsDelegate::OnBeforeWidgetInit(
         Widget::InitParams::TRANSLUCENT_WINDOW :
         Widget::InitParams::OPAQUE_WINDOW;
   }
-#if !defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
   if (!params->native_widget && use_desktop_native_widgets_)
     params->native_widget = new DesktopNativeWidgetAura(delegate);
-#endif  // !defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)
 }
 
 ui::ContextFactory* TestViewsDelegate::GetContextFactory() {

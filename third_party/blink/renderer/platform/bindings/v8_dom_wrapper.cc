@@ -73,7 +73,10 @@ v8::Local<v8::Object> V8DOMWrapper::CreateWrapper(
 bool V8DOMWrapper::IsWrapper(v8::Isolate* isolate, v8::Local<v8::Value> value) {
   if (value.IsEmpty() || !value->IsObject())
     return false;
+
   v8::Local<v8::Object> object = v8::Local<v8::Object>::Cast(value);
+  if (!object->IsApiWrapper())
+    return false;
 
   if (object->InternalFieldCount() < kV8DefaultWrapperInternalFieldCount)
     return false;
@@ -89,7 +92,10 @@ bool V8DOMWrapper::IsWrapper(v8::Isolate* isolate, v8::Local<v8::Value> value) {
 bool V8DOMWrapper::HasInternalFieldsSet(v8::Local<v8::Value> value) {
   if (value.IsEmpty() || !value->IsObject())
     return false;
+
   v8::Local<v8::Object> object = v8::Local<v8::Object>::Cast(value);
+  if (!object->IsApiWrapper())
+    return false;
 
   if (object->InternalFieldCount() < kV8DefaultWrapperInternalFieldCount)
     return false;

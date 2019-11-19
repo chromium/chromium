@@ -5,6 +5,9 @@
 #include "components/offline_pages/core/model/startup_maintenance_task.h"
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -13,6 +16,7 @@
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/model/model_task_test_base.h"
 #include "components/offline_pages/core/model/offline_page_test_utils.h"
+#include "components/offline_pages/core/offline_page_client_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace offline_pages {
@@ -93,8 +97,8 @@ TEST_F(StartupMaintenanceTaskTest, MAYBE_TestDeletePageInLegacyArchivesDir) {
   EXPECT_EQ(2LL, store_test_util()->GetPageCount());
   EXPECT_EQ(4UL, test_utils::GetFileCountInDirectory(PrivateDir()));
 
-  auto task = std::make_unique<StartupMaintenanceTask>(
-      store(), archive_manager(), policy_controller());
+  auto task =
+      std::make_unique<StartupMaintenanceTask>(store(), archive_manager());
   RunTask(std::move(task));
 
   EXPECT_EQ(1LL, store_test_util()->GetPageCount());
@@ -138,8 +142,8 @@ TEST_F(StartupMaintenanceTaskTest, MAYBE_TestDeleteFileWithoutDbEntry) {
   EXPECT_EQ(PagePresence::FILESYSTEM_ONLY, CheckPagePresence(temporary_page2));
   EXPECT_EQ(PagePresence::FILESYSTEM_ONLY, CheckPagePresence(persistent_page2));
 
-  auto task = std::make_unique<StartupMaintenanceTask>(
-      store(), archive_manager(), policy_controller());
+  auto task =
+      std::make_unique<StartupMaintenanceTask>(store(), archive_manager());
   RunTask(std::move(task));
 
   EXPECT_EQ(2LL, store_test_util()->GetPageCount());
@@ -192,8 +196,8 @@ TEST_F(StartupMaintenanceTaskTest, MAYBE_TestDeleteDbEntryWithoutFile) {
   EXPECT_EQ(PagePresence::DB_ONLY, CheckPagePresence(temporary_page2));
   EXPECT_EQ(PagePresence::DB_ONLY, CheckPagePresence(persistent_page2));
 
-  auto task = std::make_unique<StartupMaintenanceTask>(
-      store(), archive_manager(), policy_controller());
+  auto task =
+      std::make_unique<StartupMaintenanceTask>(store(), archive_manager());
   RunTask(std::move(task));
 
   EXPECT_EQ(3LL, store_test_util()->GetPageCount());
@@ -248,8 +252,8 @@ TEST_F(StartupMaintenanceTaskTest, MAYBE_CombinedTest) {
   EXPECT_EQ(2UL, test_utils::GetFileCountInDirectory(TemporaryDir()));
   EXPECT_EQ(4UL, test_utils::GetFileCountInDirectory(PrivateDir()));
 
-  auto task = std::make_unique<StartupMaintenanceTask>(
-      store(), archive_manager(), policy_controller());
+  auto task =
+      std::make_unique<StartupMaintenanceTask>(store(), archive_manager());
   RunTask(std::move(task));
 
   EXPECT_EQ(2LL, store_test_util()->GetPageCount());
@@ -295,8 +299,8 @@ TEST_F(StartupMaintenanceTaskTest, TestKeepingNonMhtmlFile) {
   EXPECT_EQ(0LL, store_test_util()->GetPageCount());
   EXPECT_EQ(2UL, test_utils::GetFileCountInDirectory(PublicDir()));
 
-  auto task = std::make_unique<StartupMaintenanceTask>(
-      store(), archive_manager(), policy_controller());
+  auto task =
+      std::make_unique<StartupMaintenanceTask>(store(), archive_manager());
   RunTask(std::move(task));
 
   EXPECT_EQ(0LL, store_test_util()->GetPageCount());
@@ -306,7 +310,7 @@ TEST_F(StartupMaintenanceTaskTest, TestKeepingNonMhtmlFile) {
 
 TEST_F(StartupMaintenanceTaskTest, TestReportStorageUsage) {
   generator()->SetFileSize(kTestFileSize);
-  std::vector<std::string> namespaces = policy_controller()->GetAllNamespaces();
+  const std::vector<std::string>& namespaces = GetAllPolicyNamespaces();
 
   // Adding pages into each namespace.
   for (const auto& name_space : namespaces) {
@@ -314,7 +318,7 @@ TEST_F(StartupMaintenanceTaskTest, TestReportStorageUsage) {
     // correct directories, otherwise they might be cleaned based on consistency
     // check.
     generator()->SetNamespace(name_space);
-    if (policy_controller()->IsRemovedOnCacheReset(name_space))
+    if (GetPolicy(name_space).lifetime_type == LifetimeType::TEMPORARY)
       generator()->SetArchiveDirectory(TemporaryDir());
     else
       generator()->SetArchiveDirectory(PrivateDir());
@@ -325,8 +329,8 @@ TEST_F(StartupMaintenanceTaskTest, TestReportStorageUsage) {
       AddPage();
   }
 
-  auto task = std::make_unique<StartupMaintenanceTask>(
-      store(), archive_manager(), policy_controller());
+  auto task =
+      std::make_unique<StartupMaintenanceTask>(store(), archive_manager());
   RunTask(std::move(task));
 
   // For each namespace, check if the storage usage was correctly reported,

@@ -12,7 +12,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -33,20 +33,18 @@
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#include "ios/chrome/browser/ssl/ios_security_state_tab_helper.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
-#import "ios/chrome/browser/ui/autofill/form_input_accessory_mediator.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 #include "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #include "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
-#include "ios/chrome/browser/web_data_service_factory.h"
-#import "ios/web/public/navigation_item.h"
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
-#include "ios/web/public/web_state/web_frame.h"
-#include "ios/web/public/web_state/web_frame_util.h"
-#import "ios/web/public/web_state/web_frames_manager.h"
-#import "ios/web/public/web_state/web_state.h"
+#include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
+#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
 #import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -250,8 +248,6 @@ void AutofillControllerTest::SetUp() {
   // default.
   chrome_browser_state_->CreateWebDataService();
 
-  IOSSecurityStateTabHelper::CreateForWebState(web_state());
-
   autofill_agent_ = [[AutofillAgent alloc]
       initWithPrefService:chrome_browser_state_->GetPrefs()
                  webState:web_state()];
@@ -274,12 +270,13 @@ void AutofillControllerTest::SetUp() {
 
   accessory_mediator_ =
       [[FormInputAccessoryMediator alloc] initWithConsumer:nil
+                                                  delegate:nil
                                               webStateList:NULL
                                        personalDataManager:NULL
-                                             passwordStore:NULL];
+                                             passwordStore:nullptr];
 
   [accessory_mediator_ injectWebState:web_state()];
-  [accessory_mediator_ injectProviders:@[ suggestion_controller_ ]];
+  [accessory_mediator_ injectProvider:suggestion_controller_];
   auto suggestionManager = base::mac::ObjCCastStrict<JsSuggestionManager>(
       [web_state()->GetJSInjectionReceiver()
           instanceOfClass:[JsSuggestionManager class]]);
@@ -322,7 +319,8 @@ bool AutofillControllerTest::LoadHtmlAndWaitForFormFetched(
     NSString* html,
     size_t expected_number_of_forms) {
   LoadHtml(html);
-  web::WebFrame* main_frame = web::GetMainWebFrame(web_state());
+  web::WebFrame* main_frame =
+      web_state()->GetWebFramesManager()->GetMainWebFrame();
   AutofillManager* autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
           ->autofill_manager();
@@ -343,7 +341,8 @@ void AutofillControllerTest::ExpectHappinessMetric(
 // registered as a FormStructure by the AutofillManager.
 TEST_F(AutofillControllerTest, ReadForm) {
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));
-  web::WebFrame* main_frame = web::GetMainWebFrame(web_state());
+  web::WebFrame* main_frame =
+      web_state()->GetWebFramesManager()->GetMainWebFrame();
   AutofillManager* autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
           ->autofill_manager();
@@ -363,7 +362,8 @@ TEST_F(AutofillControllerTest, ReadForm) {
 // name is correctly set.
 TEST_F(AutofillControllerTest, ReadFormName) {
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kMinimalFormWithNameHtml, 1));
-  web::WebFrame* main_frame = web::GetMainWebFrame(web_state());
+  web::WebFrame* main_frame =
+      web_state()->GetWebFramesManager()->GetMainWebFrame();
   AutofillManager* autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
           ->autofill_manager();
@@ -527,7 +527,7 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
                       CreateAutofillEntry(base::ASCIIToUTF16("overwritten"))};
   web_data_service->GetFormValuesForElementName(
       base::UTF8ToUTF16("greeting"), base::string16(), limit, &consumer);
-  base::TaskScheduler::GetInstance()->FlushForTesting();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
   WaitForBackgroundTasks();
   // No value should be returned before anything is loaded via form submission.
   ASSERT_EQ(0U, consumer.result_.size());
@@ -537,7 +537,7 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
         base::UTF8ToUTF16("greeting"), base::string16(), limit, &consumer);
     return consumer.result_.size();
   });
-  base::TaskScheduler::GetInstance()->FlushForTesting();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
   WaitForBackgroundTasks();
   // One result should be returned, matching the filled value.
   ASSERT_EQ(1U, consumer.result_.size());

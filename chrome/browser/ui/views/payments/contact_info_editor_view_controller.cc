@@ -8,11 +8,11 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
-#include "components/autofill/core/browser/autofill_country.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/phone_number_i18n.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/payments/content/payment_request_spec.h"
@@ -141,7 +141,7 @@ void ContactInfoEditorViewController::PopulateProfile(
     autofill::AutofillProfile* profile) {
   for (const auto& field : text_fields()) {
     profile->SetInfo(autofill::AutofillType(field.second.type),
-                     field.first->text(), state()->GetApplicationLocale());
+                     field.first->GetText(), state()->GetApplicationLocale());
   }
   profile->set_origin(autofill::kSettingsOrigin);
 }
@@ -210,14 +210,14 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
   autofill::AutofillProfile* invalid_contact_profile =
       controller_->state()->invalid_contact_profile();
   if (invalid_contact_profile && error_message &&
-      textfield->text() ==
+      textfield->GetText() ==
           controller_->GetValueForType(*invalid_contact_profile, field_.type)) {
     *error_message = controller_->spec()->GetPayerError(field_.type);
     if (!error_message->empty())
       return false;
   }
 
-  if (textfield->text().empty()) {
+  if (textfield->GetText().empty()) {
     is_valid = false;
     if (error_message) {
       *error_message = l10n_util::GetStringUTF16(
@@ -228,7 +228,7 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
       case autofill::PHONE_HOME_WHOLE_NUMBER: {
         const std::string default_region_code =
             autofill::AutofillCountry::CountryCodeForLocale(locale_);
-        if (!autofill::IsPossiblePhoneNumber(textfield->text(),
+        if (!autofill::IsPossiblePhoneNumber(textfield->GetText(),
                                              default_region_code)) {
           is_valid = false;
           if (error_message) {
@@ -240,7 +240,7 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
       }
 
       case autofill::EMAIL_ADDRESS: {
-        if (!autofill::IsValidEmailAddress(textfield->text())) {
+        if (!autofill::IsValidEmailAddress(textfield->GetText())) {
           is_valid = false;
           if (error_message) {
             *error_message = l10n_util::GetStringUTF16(

@@ -8,7 +8,7 @@
 #include <deque>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -59,8 +59,11 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager);
+  LayerTreeFrameSink(const LayerTreeFrameSink&) = delete;
 
   ~LayerTreeFrameSink() override;
+
+  LayerTreeFrameSink& operator=(const LayerTreeFrameSink&) = delete;
 
   base::WeakPtr<LayerTreeFrameSink> GetWeakPtr();
 
@@ -125,13 +128,9 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   virtual void DidNotProduceFrame(const viz::BeginFrameAck& ack) = 0;
 
   // viz::SharedBitmapReporter implementation.
-  void DidAllocateSharedBitmap(mojo::ScopedSharedBufferHandle buffer,
+  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
                                const viz::SharedBitmapId& id) override = 0;
   void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override = 0;
-
-  // Ensure next CompositorFrame is submitted to a new surface. Only used when
-  // surface synchronization is off.
-  virtual void ForceAllocateNewId() {}
 
  protected:
   class ContextLostForwarder;
@@ -152,8 +151,7 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
 
  private:
   THREAD_CHECKER(thread_checker_);
-  base::WeakPtrFactory<LayerTreeFrameSink> weak_ptr_factory_;
-  DISALLOW_COPY_AND_ASSIGN(LayerTreeFrameSink);
+  base::WeakPtrFactory<LayerTreeFrameSink> weak_ptr_factory_{this};
 };
 
 }  // namespace cc

@@ -163,7 +163,6 @@ public class ChildProcessLauncher {
                     };
             mConnection = mDelegate.getBoundConnection(mConnectionAllocator, serviceCallback);
             if (mConnection != null) {
-                assert mConnectionAllocator.isConnectionFromAllocator(mConnection);
                 setupConnection();
                 return true;
             }

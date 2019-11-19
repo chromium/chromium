@@ -14,7 +14,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.R;
@@ -25,6 +24,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -136,23 +136,15 @@ public class UndoBarControllerTest {
     }
 
     private void clickSnackbar() {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mSnackbarManager.onClick(
-                        mActivityTestRule.getActivity().findViewById(R.id.snackbar_button));
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mSnackbarManager.onClick(mActivityTestRule.getActivity().findViewById(
+                                R.id.snackbar_button)));
     }
 
     private void dismissSnackbars() {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mSnackbarManager.dismissSnackbars(
-                        mSnackbarManager.getCurrentSnackbarForTesting().getController());
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mSnackbarManager.dismissSnackbars(
+                                mSnackbarManager.getCurrentSnackbarForTesting().getController()));
     }
 
     private String getSnackbarText() {
@@ -162,9 +154,9 @@ public class UndoBarControllerTest {
     }
 
     private Snackbar getCurrentSnackbar() throws ExecutionException {
-        return ThreadUtils.runOnUiThreadBlocking(new Callable<Snackbar>() {
+        return TestThreadUtils.runOnUiThreadBlocking(new Callable<Snackbar>() {
             @Override
-            public Snackbar call() throws Exception {
+            public Snackbar call() {
                 return mSnackbarManager.getCurrentSnackbarForTesting();
             }
         });

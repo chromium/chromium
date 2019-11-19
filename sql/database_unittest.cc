@@ -20,8 +20,8 @@
 #include "sql/database.h"
 #include "sql/database_memory_dump_provider.h"
 #include "sql/meta_table.h"
-#include "sql/sql_features.h"
 #include "sql/statement.h"
+#include "sql/test/database_test_peer.h"
 #include "sql/test/error_callback_support.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/sql_test_base.h"
@@ -30,19 +30,6 @@
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {
-
-class DatabaseTestPeer {
- public:
-  static bool AttachDatabase(Database* db,
-                             const base::FilePath& other_db_path,
-                             const char* attachment_point) {
-    return db->AttachDatabase(other_db_path, attachment_point,
-                              InternalApiToken());
-  }
-  static bool DetachDatabase(Database* db, const char* attachment_point) {
-    return db->DetachDatabase(attachment_point, InternalApiToken());
-  }
-};
 
 namespace {
 
@@ -222,6 +209,10 @@ TEST_F(SQLDatabaseTest, DoesTableExist) {
   ASSERT_TRUE(db().Execute("CREATE INDEX foo_index ON foo (a)"));
   EXPECT_TRUE(db().DoesTableExist("foo"));
   EXPECT_FALSE(db().DoesTableExist("foo_index"));
+
+  // DoesTableExist() is case-sensitive.
+  EXPECT_FALSE(db().DoesTableExist("Foo"));
+  EXPECT_FALSE(db().DoesTableExist("FOO"));
 }
 
 TEST_F(SQLDatabaseTest, DoesIndexExist) {
@@ -232,6 +223,11 @@ TEST_F(SQLDatabaseTest, DoesIndexExist) {
   ASSERT_TRUE(db().Execute("CREATE INDEX foo_index ON foo (a)"));
   EXPECT_TRUE(db().DoesIndexExist("foo_index"));
   EXPECT_FALSE(db().DoesIndexExist("foo"));
+
+  // DoesIndexExist() is case-sensitive.
+  EXPECT_FALSE(db().DoesIndexExist("Foo_index"));
+  EXPECT_FALSE(db().DoesIndexExist("Foo_Index"));
+  EXPECT_FALSE(db().DoesIndexExist("FOO_INDEX"));
 }
 
 TEST_F(SQLDatabaseTest, DoesViewExist) {
@@ -240,6 +236,10 @@ TEST_F(SQLDatabaseTest, DoesViewExist) {
   EXPECT_FALSE(db().DoesIndexExist("voo"));
   EXPECT_FALSE(db().DoesTableExist("voo"));
   EXPECT_TRUE(db().DoesViewExist("voo"));
+
+  // DoesTableExist() is case-sensitive.
+  EXPECT_FALSE(db().DoesViewExist("Voo"));
+  EXPECT_FALSE(db().DoesViewExist("VOO"));
 }
 
 TEST_F(SQLDatabaseTest, DoesColumnExist) {
@@ -251,9 +251,10 @@ TEST_F(SQLDatabaseTest, DoesColumnExist) {
   ASSERT_FALSE(db().DoesTableExist("bar"));
   EXPECT_FALSE(db().DoesColumnExist("bar", "b"));
 
-  // Names are not case sensitive.
-  EXPECT_TRUE(db().DoesTableExist("FOO"));
+  // SQLite resolves table/column names without case sensitivity.
   EXPECT_TRUE(db().DoesColumnExist("FOO", "A"));
+  EXPECT_TRUE(db().DoesColumnExist("FOO", "a"));
+  EXPECT_TRUE(db().DoesColumnExist("foo", "A"));
 }
 
 TEST_F(SQLDatabaseTest, GetLastInsertRowId) {
@@ -1078,40 +1079,6 @@ TEST_F(SQLDatabaseTest, CollectDiagnosticInfo) {
   EXPECT_NE(std::string::npos, error_info.find("version: 4"));
 }
 
-TEST_F(SQLDatabaseTest, RegisterIntentToUpload) {
-  base::FilePath breadcrumb_path =
-      db_path().DirName().AppendASCII("sqlite-diag");
-
-  // No stale diagnostic store.
-  ASSERT_TRUE(!base::PathExists(breadcrumb_path));
-
-  // The histogram tag is required to enable diagnostic features.
-  EXPECT_FALSE(db().RegisterIntentToUpload());
-  EXPECT_TRUE(!base::PathExists(breadcrumb_path));
-
-  db().Close();
-  db().set_histogram_tag("Test");
-  ASSERT_TRUE(db().Open(db_path()));
-
-  // Should signal upload only once.
-  EXPECT_TRUE(db().RegisterIntentToUpload());
-  EXPECT_TRUE(base::PathExists(breadcrumb_path));
-  EXPECT_FALSE(db().RegisterIntentToUpload());
-
-  // Changing the histogram tag should allow new upload to succeed.
-  db().Close();
-  db().set_histogram_tag("NewTest");
-  ASSERT_TRUE(db().Open(db_path()));
-  EXPECT_TRUE(db().RegisterIntentToUpload());
-  EXPECT_FALSE(db().RegisterIntentToUpload());
-
-  // Old tag is still prevented.
-  db().Close();
-  db().set_histogram_tag("Test");
-  ASSERT_TRUE(db().Open(db_path()));
-  EXPECT_FALSE(db().RegisterIntentToUpload());
-}
-
 // Test that a fresh database has mmap enabled by default, if mmap'ed I/O is
 // enabled by SQLite.
 TEST_F(SQLDatabaseTest, MmapInitiallyEnabled) {
@@ -1265,24 +1232,6 @@ TEST_F(SQLDatabaseTest, CompileError) {
                  "SQL compile error no such column: x");
   }
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_FUCHSIA)
-}
-
-// Verify that Raze() can handle an empty file.  SQLite should treat
-// this as an empty database.
-TEST_F(SQLDatabaseTest, SqlTempMemoryFeatureFlagDefault) {
-  EXPECT_EQ("0", ExecuteWithResult(&db(), "PRAGMA temp_store"))
-      << "temp_store should not be set by default";
-}
-
-TEST_F(SQLDatabaseTest, SqlTempMemoryFeatureFlagEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kSqlTempStoreMemory);
-
-  db().Close();
-
-  ASSERT_TRUE(db().Open(db_path()));
-  EXPECT_EQ("2", ExecuteWithResult(&db(), "PRAGMA temp_store"))
-      << "temp_store should be set by the feature flag SqlTempStoreMemory";
 }
 
 }  // namespace sql

@@ -9,7 +9,9 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/serial.mojom.h"
 
 namespace base {
@@ -31,22 +33,24 @@ class SerialPortManagerImpl : public mojom::SerialPortManager {
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
   ~SerialPortManagerImpl() override;
 
-  void Bind(mojom::SerialPortManagerRequest request);
+  void Bind(mojo::PendingReceiver<mojom::SerialPortManager> receiver);
   void SetSerialEnumeratorForTesting(
       std::unique_ptr<SerialDeviceEnumerator> fake_enumerator);
 
  private:
   // mojom::SerialPortManager methods:
   void GetDevices(GetDevicesCallback callback) override;
-  void GetPort(const base::UnguessableToken& token,
-               mojom::SerialPortRequest request) override;
+  void GetPort(
+      const base::UnguessableToken& token,
+      mojo::PendingReceiver<mojom::SerialPort> receiver,
+      mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher) override;
 
   std::unique_ptr<SerialDeviceEnumerator> enumerator_;
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
-  mojo::BindingSet<SerialPortManager> bindings_;
+  mojo::ReceiverSet<SerialPortManager> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(SerialPortManagerImpl);
 };

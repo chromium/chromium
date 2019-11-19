@@ -9,12 +9,12 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.ntp.TitleUtil;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.widget.tile.TileWithTextView;
 
 /**
@@ -41,7 +41,7 @@ public class ExploreSitesCategoryTileView extends TileWithTextView {
      * after inflation.
      * @param category The object that holds the data to populate this view.
      */
-    public void initialize(ExploreSitesCategory category) {
+    public void initialize(ExploreSitesCategory category, Profile profile) {
         super.initialize(TitleUtil.getTitleForDisplay(category.getTitle(), category.getUrl()),
                 SUPPORTED_OFFLINE, category.getDrawable(), TITLE_LINES);
         mCategory = category;
@@ -57,6 +57,11 @@ public class ExploreSitesCategoryTileView extends TileWithTextView {
         layoutParams.topMargin = getContext().getResources().getDimensionPixelSize(
                 R.dimen.tile_view_icon_background_margin_top_modern);
         mIconView.setLayoutParams(layoutParams);
+        Context context = getContext();
+
+        if (mCategory.getType() == ExploreSitesCategory.CategoryType.MORE_BUTTON) {
+            ExploreSitesIPH.configureIPH(this, profile);
+        }
     }
 
     /** Retrieves url associated with this view. */

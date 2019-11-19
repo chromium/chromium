@@ -35,7 +35,7 @@ class MigrationDelegate {
                             std::unique_ptr<KeyValueMap> keys_entries);
   void OnUpdateEntries(MigrationCallback callback, bool success);
 
-  base::WeakPtrFactory<MigrationDelegate> weak_ptr_factory_;
+  base::WeakPtrFactory<MigrationDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace leveldb_proto

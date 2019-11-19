@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -21,6 +20,7 @@ class StrategySizeAlgorithm;
 class StreamAlgorithm;
 class StreamPromiseResolver;
 class StreamStartAlgorithm;
+class UnderlyingSinkBase;
 class WritableStreamDefaultController;
 class WritableStreamDefaultWriter;
 
@@ -32,6 +32,12 @@ class CORE_EXPORT WritableStreamNative : public WritableStream {
     kErroring,
     kErrored,
   };
+
+  // https://streams.spec.whatwg.org/#ws-constructor
+  static WritableStreamNative* Create(ScriptState*,
+                                      ScriptValue raw_underlying_sink,
+                                      ScriptValue raw_strategy,
+                                      ExceptionState&);
 
   // https://streams.spec.whatwg.org/#create-writable-stream
   // Unlike in the standard, |high_water_mark| and |size_algorithm| are
@@ -45,15 +51,13 @@ class CORE_EXPORT WritableStreamNative : public WritableStream {
                                       StrategySizeAlgorithm* size_algorithm,
                                       ExceptionState&);
 
-  // Used by Create().
-  WritableStreamNative();
+  static WritableStreamNative* CreateWithCountQueueingStrategy(
+      ScriptState*,
+      UnderlyingSinkBase*,
+      size_t high_water_mark);
 
-  // Used when creating a stream from JavaScript.
-  // https://streams.spec.whatwg.org/#ws-constructor
-  WritableStreamNative(ScriptState*,
-                       ScriptValue raw_underlying_sink,
-                       ScriptValue raw_strategy,
-                       ExceptionState&);
+  // Called by Create().
+  WritableStreamNative();
   ~WritableStreamNative() override;
 
   // IDL defined functions
@@ -84,9 +88,19 @@ class CORE_EXPORT WritableStreamNative : public WritableStream {
     return stream->writer_;
   }
 
-  void Serialize(ScriptState*, MessagePort*, ExceptionState&) override {
-    // TODO(ricea): Implement this.
-  }
+  void Serialize(ScriptState*, MessagePort*, ExceptionState&) override;
+
+  static WritableStreamNative* Deserialize(ScriptState*,
+                                           MessagePort*,
+                                           ExceptionState&);
+
+  //
+  // Methods used by ReadableStreamNative::PipeTo
+  //
+
+  // https://streams.spec.whatwg.org/#acquire-writable-stream-default-writer
+  static WritableStreamDefaultWriter*
+  AcquireDefaultWriter(ScriptState*, WritableStreamNative*, ExceptionState&);
 
   //
   // Methods used by WritableStreamDefaultWriter.
@@ -150,6 +164,9 @@ class CORE_EXPORT WritableStreamNative : public WritableStream {
 
   // Accessors for use by other stream classes.
   State GetState() const { return state_; }
+  bool IsErrored() const { return state_ == kErrored; }
+  bool IsErroring() const { return state_ == kErroring; }
+  bool IsWritable() const { return state_ == kWritable; }
 
   bool HasBackpressure() const { return has_backpressure_; }
 
@@ -179,13 +196,16 @@ class CORE_EXPORT WritableStreamNative : public WritableStream {
   void Trace(Visitor*) override;
 
  private:
-  using PromiseQueue = HeapDeque<TraceWrapperMember<StreamPromiseResolver>>;
+  using PromiseQueue = HeapDeque<Member<StreamPromiseResolver>>;
 
   class PendingAbortRequest;
 
-  // https://streams.spec.whatwg.org/#acquire-writable-stream-default-writer
-  static WritableStreamDefaultWriter*
-  AcquireDefaultWriter(ScriptState*, WritableStreamNative*, ExceptionState&);
+  // Used when creating a stream from JavaScript. Called from Create().
+  // https://streams.spec.whatwg.org/#ws-constructor
+  void InitInternal(ScriptState*,
+                    ScriptValue raw_underlying_sink,
+                    ScriptValue raw_strategy,
+                    ExceptionState&);
 
   // https://streams.spec.whatwg.org/#writable-stream-has-operation-marked-in-flight
   static bool HasOperationMarkedInFlight(const WritableStreamNative*);
@@ -211,14 +231,13 @@ class CORE_EXPORT WritableStreamNative : public WritableStream {
   // |state_| is here out of order so it doesn't require 7 bytes of padding.
   State state_ = kWritable;
 
-  TraceWrapperMember<StreamPromiseResolver> close_request_;
-  TraceWrapperMember<StreamPromiseResolver> in_flight_write_request_;
-  TraceWrapperMember<StreamPromiseResolver> in_flight_close_request_;
-  TraceWrapperMember<PendingAbortRequest> pending_abort_request_;
+  Member<StreamPromiseResolver> close_request_;
+  Member<StreamPromiseResolver> in_flight_write_request_;
+  Member<StreamPromiseResolver> in_flight_close_request_;
+  Member<PendingAbortRequest> pending_abort_request_;
   TraceWrapperV8Reference<v8::Value> stored_error_;
-  TraceWrapperMember<WritableStreamDefaultController>
-      writable_stream_controller_;
-  TraceWrapperMember<WritableStreamDefaultWriter> writer_;
+  Member<WritableStreamDefaultController> writable_stream_controller_;
+  Member<WritableStreamDefaultWriter> writer_;
   PromiseQueue write_requests_;
 };
 

@@ -98,9 +98,10 @@ class ColorReferencesTest(unittest.TestCase):
              '</vector>']
     mock_input_api = MockInputApi()
     mock_input_api.files = [MockFile('chrome/java/res_test/test.xml', lines)]
-    errors = checkxmlstyle._CheckColorReferences(
+    result = checkxmlstyle._CheckColorReferences(
         mock_input_api, MockOutputApi())
-    self.assertEqual(0, len(errors))
+    self.assertEqual(1, len(result))
+    self.assertEqual(result[0].type, 'warning')
 
   def testInvalidReference(self):
     lines = ['<TextView',

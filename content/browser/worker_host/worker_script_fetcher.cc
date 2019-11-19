@@ -5,14 +5,17 @@
 #include "content/browser/worker_host/worker_script_fetcher.h"
 
 #include "base/feature_list.h"
+#include "content/browser/loader/navigation_url_loader_impl.h"
+#include "content/browser/worker_host/worker_script_fetch_initiator.h"
 #include "content/browser/worker_host/worker_script_loader.h"
 #include "content/browser/worker_host/worker_script_loader_factory.h"
-#include "content/common/throttling_url_loader.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/url_loader_throttle.h"
+#include "content/public/browser/global_request_id.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_response.h"
+#include "third_party/blink/public/common/loader/throttling_url_loader.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace content {
 
@@ -51,11 +54,10 @@ const net::NetworkTrafficAnnotationTag kWorkerScriptLoadTrafficAnnotation =
 
 void WorkerScriptFetcher::CreateAndStart(
     std::unique_ptr<WorkerScriptLoaderFactory> script_loader_factory,
-    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
     std::unique_ptr<network::ResourceRequest> resource_request,
     CreateAndStartCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(base::FeatureList::IsEnabled(network::features::kNetworkService));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // This fetcher will delete itself. See the class level comment.
   (new WorkerScriptFetcher(std::move(script_loader_factory),
                            std::move(resource_request), std::move(callback)))
@@ -68,18 +70,17 @@ WorkerScriptFetcher::WorkerScriptFetcher(
     CreateAndStartCallback callback)
     : script_loader_factory_(std::move(script_loader_factory)),
       resource_request_(std::move(resource_request)),
-      callback_(std::move(callback)),
-      response_url_loader_binding_(this) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+      callback_(std::move(callback)) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
 WorkerScriptFetcher::~WorkerScriptFetcher() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
 void WorkerScriptFetcher::Start(
-    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto shared_url_loader_factory =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -90,10 +91,11 @@ void WorkerScriptFetcher::Start(
   // workers (https://crbug.com/906991).
   int32_t routing_id = MSG_ROUTING_NONE;
 
-  // NetworkService is not interested in the request ID.
-  int request_id = -1;
+  // Use NavigationURLLoaderImpl to get a unique request id across
+  // browser-initiated navigations and worker script fetch.
+  int request_id = NavigationURLLoaderImpl::MakeGlobalRequestID().request_id;
 
-  url_loader_ = ThrottlingURLLoader::CreateLoaderAndStart(
+  url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
       std::move(shared_url_loader_factory), std::move(throttles), routing_id,
       request_id, network::mojom::kURLLoadOptionNone, resource_request_.get(),
       this, kWorkerScriptLoadTrafficAnnotation,
@@ -101,8 +103,14 @@ void WorkerScriptFetcher::Start(
 }
 
 void WorkerScriptFetcher::OnReceiveResponse(
-    const network::ResourceResponseHead& head) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    network::mojom::URLResponseHeadPtr response_head) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  response_head_ = response_head;
+}
+
+void WorkerScriptFetcher::OnStartLoadingResponseBody(
+    mojo::ScopedDataPipeConsumerHandle response_body) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   base::WeakPtr<WorkerScriptLoader> script_loader =
       script_loader_factory_->GetScriptLoader();
@@ -111,12 +119,13 @@ void WorkerScriptFetcher::OnReceiveResponse(
     // need to see if the request interceptors want to potentially create a new
     // loader for the response, e.g. AppCache's fallback.
     DCHECK(!response_url_loader_);
-    network::mojom::URLLoaderClientRequest response_client_request;
-    if (script_loader->MaybeCreateLoaderForResponse(head, &response_url_loader_,
-                                                    &response_client_request,
-                                                    url_loader_.get())) {
+    mojo::PendingReceiver<network::mojom::URLLoaderClient>
+        response_client_receiver;
+    if (script_loader->MaybeCreateLoaderForResponse(
+            response_head_, &response_body, &response_url_loader_,
+            &response_client_receiver, url_loader_.get())) {
       DCHECK(response_url_loader_);
-      response_url_loader_binding_.Bind(std::move(response_client_request));
+      response_url_loader_receiver_.Bind(std::move(response_client_receiver));
       subresource_loader_params_ = script_loader->TakeSubresourceLoaderParams();
       url_loader_.reset();
       // OnReceiveResponse() will be called again.
@@ -128,7 +137,8 @@ void WorkerScriptFetcher::OnReceiveResponse(
       blink::mojom::WorkerMainScriptLoadParams::New();
 
   // Fill in params for loading worker's main script and subresources.
-  main_script_load_params->response_head = head;
+  main_script_load_params->response_head = std::move(response_head_);
+  main_script_load_params->response_body = std::move(response_body);
   if (url_loader_) {
     // The main script was served by a request interceptor or the default
     // network loader.
@@ -141,11 +151,11 @@ void WorkerScriptFetcher::OnReceiveResponse(
     // a request interceptor created another loader |response_url_loader_| for
     // serving an alternative response.
     DCHECK(response_url_loader_);
-    DCHECK(response_url_loader_binding_.is_bound());
+    DCHECK(response_url_loader_receiver_.is_bound());
     main_script_load_params->url_loader_client_endpoints =
         network::mojom::URLLoaderClientEndpoints::New(
             response_url_loader_.PassInterface(),
-            response_url_loader_binding_.Unbind());
+            response_url_loader_receiver_.Unbind());
   }
 
   for (size_t i = 0; i < redirect_infos_.size(); ++i) {
@@ -162,9 +172,10 @@ void WorkerScriptFetcher::OnReceiveResponse(
 
 void WorkerScriptFetcher::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
-    const network::ResourceResponseHead& head) {
+    network::mojom::URLResponseHeadPtr response_head) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   redirect_infos_.push_back(redirect_info);
-  redirect_response_heads_.push_back(head);
+  redirect_response_heads_.push_back(response_head);
   url_loader_->FollowRedirect({}, /* removed_headers */
                               {} /* modified_headers */);
 }
@@ -175,8 +186,7 @@ void WorkerScriptFetcher::OnUploadProgress(int64_t current_position,
   NOTREACHED();
 }
 
-void WorkerScriptFetcher::OnReceiveCachedMetadata(
-    const std::vector<uint8_t>& data) {
+void WorkerScriptFetcher::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
   NOTREACHED();
 }
 
@@ -184,16 +194,10 @@ void WorkerScriptFetcher::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   NOTREACHED();
 }
 
-void WorkerScriptFetcher::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  // Not reached. At this point, the loader and client endpoints must have
-  // been unbound and forwarded to the renderer.
-  NOTREACHED();
-}
-
 void WorkerScriptFetcher::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
-  // We can reach here only when loading fails before receiving a response head.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // We can reach here only when loading fails before receiving a response_head.
   DCHECK_NE(net::OK, status.error_code);
   std::move(callback_).Run(nullptr /* main_script_load_params */,
                            base::nullopt /* subresource_loader_params */,

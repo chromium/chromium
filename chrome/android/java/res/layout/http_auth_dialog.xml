@@ -17,11 +17,11 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content" />
 
-      <org.chromium.chrome.browser.widget.CompatibilityTextInputLayout
+      <org.chromium.chrome.browser.widget.ChromeTextInputLayout
           android:id="@+id/username_label"
           android:layout_width="match_parent"
           android:layout_height="wrap_content" >
-          <org.chromium.chrome.browser.widget.AlertDialogEditText
+          <org.chromium.chrome.browser.ui.widget.text.AlertDialogEditText
               android:id="@+id/username"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -29,13 +29,13 @@
               android:inputType="textNoSuggestions"
               android:imeOptions="flagNoExtractUi"
               android:importantForAutofill="no" />
-      </org.chromium.chrome.browser.widget.CompatibilityTextInputLayout>
+      </org.chromium.chrome.browser.widget.ChromeTextInputLayout>
 
-      <org.chromium.chrome.browser.widget.CompatibilityTextInputLayout
+      <org.chromium.chrome.browser.widget.ChromeTextInputLayout
           android:id="@+id/password_label"
           android:layout_width="match_parent"
           android:layout_height="wrap_content" >
-          <org.chromium.chrome.browser.widget.AlertDialogEditText
+          <org.chromium.chrome.browser.ui.widget.text.AlertDialogEditText
               android:id="@+id/password"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
               android:inputType="textPassword"
               android:imeOptions="flagNoExtractUi"
               android:importantForAutofill="no" />
-      </org.chromium.chrome.browser.widget.CompatibilityTextInputLayout>
+      </org.chromium.chrome.browser.widget.ChromeTextInputLayout>
 
     </LinearLayout>
 

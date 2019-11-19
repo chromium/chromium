@@ -157,9 +157,6 @@ class DemoSetupController
   using OnSetupError = base::OnceCallback<void(const DemoSetupError&)>;
   using HasPreinstalledDemoResourcesCallback = base::OnceCallback<void(bool)>;
 
-  // Domain that demo mode devices are enrolled into.
-  static constexpr char kDemoModeDomain[] = "cros-demo-mode.com";
-
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Clears demo device enrollment requisition on the given |policy_manager| if
@@ -297,7 +294,7 @@ class DemoSetupController
   // The Demo Mode Resources CrOS Component downloaded for online Demo Mode.
   std::unique_ptr<DemoResources> demo_resources_;
 
-  base::WeakPtrFactory<DemoSetupController> weak_ptr_factory_;
+  base::WeakPtrFactory<DemoSetupController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DemoSetupController);
 };

@@ -6,7 +6,8 @@
 #define CC_TREES_VIEWPORT_LAYERS_H_
 
 #include "base/memory/ref_counted.h"
-#include "cc/trees/element_id.h"
+#include "cc/cc_export.h"
+#include "cc/paint/element_id.h"
 
 namespace cc {
 class Layer;

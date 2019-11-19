@@ -112,19 +112,6 @@ class WTFAtomicStringPrinter(StringPrinter):
     def to_string(self):
         return self.val['string_']
 
-
-class WTFCStringPrinter(StringPrinter):
-    "Print a WTF::CString"
-    def to_string(self):
-        # The CString holds a buffer, which is a refptr to a WTF::CStringBuffer.
-        buf_ptr = self.val['buffer_']['ptr_']
-        if not buf_ptr:
-            return 0
-        data = (buf_ptr + 1).cast(gdb.lookup_type('char').pointer())
-        length = self.val['buffer_']['ptr_']['length_']
-        return ''.join([chr((data + i).dereference()) for i in range(length)])
-
-
 class WTFStringImplPrinter(StringPrinter):
     "Print a WTF::StringImpl"
     def get_length(self):
@@ -377,7 +364,6 @@ def add_pretty_printers():
     pretty_printers = (
         (re.compile("^WTF::Vector<.*>$"), WTFVectorPrinter),
         (re.compile("^WTF::AtomicString$"), WTFAtomicStringPrinter),
-        (re.compile("^WTF::CString$"), WTFCStringPrinter),
         (re.compile("^WTF::String$"), WTFStringPrinter),
         (re.compile("^WTF::StringImpl$"), WTFStringImplPrinter),
         (re.compile("^blink::KURL$"), blinkKURLPrinter),

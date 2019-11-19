@@ -10,6 +10,8 @@
 // clang-format off
 #include "third_party/blink/renderer/bindings/tests/results/core/v8_test_special_operations_not_enumerable.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -18,6 +20,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
+#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 
 namespace blink {
@@ -73,12 +76,12 @@ static void NamedPropertyGetter(const AtomicString& name,
 
 static void NamedPropertyQuery(
     const AtomicString& name, const v8::PropertyCallbackInfo<v8::Integer>& info) {
-  const CString& name_in_utf8 = name.Utf8();
+  const std::string& name_in_utf8 = name.Utf8();
   ExceptionState exception_state(
       info.GetIsolate(),
       ExceptionState::kGetterContext,
       "TestSpecialOperationsNotEnumerable",
-      name_in_utf8.data());
+      name_in_utf8.c_str());
 
   TestSpecialOperationsNotEnumerable* impl = V8TestSpecialOperationsNotEnumerable::ToImpl(info.Holder());
 

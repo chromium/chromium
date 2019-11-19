@@ -28,15 +28,6 @@ ScriptValue IDBObserverChanges::records(ScriptState* script_state) {
   return ScriptValue::From(script_state, map);
 }
 
-IDBObserverChanges* IDBObserverChanges::Create(
-    IDBDatabase* database,
-    IDBTransaction* transaction,
-    const Vector<Persistent<IDBObservation>>& observations,
-    const Vector<int32_t>& observation_indices) {
-  return MakeGarbageCollected<IDBObserverChanges>(
-      database, transaction, observations, observation_indices);
-}
-
 IDBObserverChanges::IDBObserverChanges(
     IDBDatabase* database,
     IDBTransaction* transaction,

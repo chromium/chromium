@@ -50,9 +50,11 @@ def _ExtractDemanglablePart(names):
     if pos > 0:
       name = name[pos:]
 
-    # Some mangled symbols end with '$' followed by 32 lower-case hex digits.
-    # These interfere with demangling by c++filt. This function is an adaptor
-    # for iterable |name| to detect and strip these hash suffixes.
+    # Some mangled symbols end with '$' followed by 32 lower-case hex digits,
+    # and possibly '.cfi'. These interfere with demangling by c++filt, and
+    # should be stripped.
+    if name.endswith('.cfi'):
+      name = name[:-4]
     if len(name) > 33 and name[-33] == '$' and _IsLowerHex(name[-32:]):
       yield name[:-33]
     else:

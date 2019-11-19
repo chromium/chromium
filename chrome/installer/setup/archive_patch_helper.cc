@@ -8,6 +8,7 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "chrome/installer/setup/buildflags.h"
 #include "chrome/installer/util/lzma_util.h"
 #include "components/zucchini/zucchini.h"
@@ -48,12 +49,13 @@ bool ArchivePatchHelper::Uncompress(base::FilePath* last_uncompressed_file) {
 
   // UnPackArchive takes care of logging.
   base::FilePath output_file;
-  UnPackStatus unpack_status = UNPACK_NO_ERROR;
-  int32_t ntstatus = 0;
-  DWORD lzma_result = UnPackArchive(compressed_archive_, working_directory_,
-                                    &output_file, &unpack_status, &ntstatus);
-  RecordUnPackMetrics(unpack_status, ntstatus, lzma_result, consumer_);
-  if (lzma_result != ERROR_SUCCESS)
+  base::Optional<DWORD> error_code;
+  base::Optional<int32_t> ntstatus;
+  UnPackStatus unpack_status =
+      UnPackArchive(compressed_archive_, working_directory_, &output_file,
+                    &error_code, &ntstatus);
+  RecordUnPackMetrics(unpack_status, ntstatus, error_code, consumer_);
+  if (unpack_status != UNPACK_NO_ERROR)
     return false;
 
   last_uncompressed_file_ = output_file;

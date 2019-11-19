@@ -1,0 +1,23 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos_camera.mojom;
+
+import "components/arc/mojom/camera_intent.mojom";
+
+// Interface for communication between Chrome Camera App (Remote) and Chrome
+// (Receiver).
+interface CameraAppHelper {
+  // Sends the captured result |data| for corresponding intent recognized by
+  // |intent_id| back to ARC. The handler should handle |data| and may notify
+  // the intent caller according to the intention of the |action|. |is_success|
+  // will be set to true if the ARC received the result and set to false for
+  // invalid input.
+  HandleCameraResult(uint32 intent_id,
+                     arc.mojom.CameraIntentAction action,
+                     array<uint8> data) => (bool is_success);
+
+  // Checks if device is under tablet mode currently.
+  IsTabletMode() => (bool is_tablet_mode);
+};

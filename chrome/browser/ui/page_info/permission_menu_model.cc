@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/page_info/permission_menu_model.h"
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/plugins/plugin_utils.h"
-#include "chrome/browser/plugins/plugins_field_trial.h"
 #include "chrome/common/chrome_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/origin_util.h"
@@ -25,22 +23,14 @@ PermissionMenuModel::PermissionMenuModel(Profile* profile,
   DCHECK(!callback_.is_null());
   base::string16 label;
 
-  // Retrieve the string to show for the default setting for this permission.
-  ContentSetting effective_default_setting = permission_.default_setting;
-  DCHECK_NE(effective_default_setting, CONTENT_SETTING_NUM_SETTINGS);
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  effective_default_setting = PluginsFieldTrial::EffectiveContentSetting(
-      host_content_settings_map_, permission_.type,
-      permission_.default_setting);
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+  DCHECK_NE(permission_.default_setting, CONTENT_SETTING_NUM_SETTINGS);
 
   // The Material UI for site settings uses comboboxes instead of menubuttons,
   // which means the elements of the menu themselves have to be shorter, instead
   // of simply setting a shorter label on the menubutton.
   label = PageInfoUI::PermissionActionToUIString(
       profile, permission_.type, CONTENT_SETTING_DEFAULT,
-      effective_default_setting, permission_.source);
+      permission_.default_setting, permission_.source);
 
   AddCheckItem(CONTENT_SETTING_DEFAULT, label);
 
@@ -48,23 +38,13 @@ PermissionMenuModel::PermissionMenuModel(Profile* profile,
   if (ShouldShowAllow(url)) {
     label = PageInfoUI::PermissionActionToUIString(
         profile, permission_.type, CONTENT_SETTING_ALLOW,
-        effective_default_setting, permission_.source);
+        permission_.default_setting, permission_.source);
     AddCheckItem(CONTENT_SETTING_ALLOW, label);
-  }
-
-  // TODO(tommycli): With the HTML5 by Default feature, Flash is treated the
-  // same as any other permission with ASK, i.e. there is no ASK exception.
-  // Once the feature flag is gone, remove this block of code entirely.
-  if (permission_.type == CONTENT_SETTINGS_TYPE_PLUGINS &&
-      !PluginUtils::ShouldPreferHtmlOverPlugins(host_content_settings_map_)) {
-    label = l10n_util::GetStringUTF16(
-        IDS_PAGE_INFO_MENU_ITEM_DETECT_IMPORTANT_CONTENT);
-    AddCheckItem(CONTENT_SETTING_DETECT_IMPORTANT_CONTENT, label);
   }
 
   // Retrieve the string to show for blocking the permission.
   label = PageInfoUI::PermissionActionToUIString(
-      profile, info.type, CONTENT_SETTING_BLOCK, effective_default_setting,
+      profile, info.type, CONTENT_SETTING_BLOCK, permission_.default_setting,
       info.source);
   AddCheckItem(CONTENT_SETTING_BLOCK, label);
 
@@ -72,7 +52,7 @@ PermissionMenuModel::PermissionMenuModel(Profile* profile,
   // permission.
   if (ShouldShowAsk(url)) {
     label = PageInfoUI::PermissionActionToUIString(
-        profile, info.type, CONTENT_SETTING_ASK, effective_default_setting,
+        profile, info.type, CONTENT_SETTING_ASK, permission_.default_setting,
         info.source);
     AddCheckItem(CONTENT_SETTING_ASK, label);
   }
@@ -81,14 +61,7 @@ PermissionMenuModel::PermissionMenuModel(Profile* profile,
 PermissionMenuModel::~PermissionMenuModel() {}
 
 bool PermissionMenuModel::IsCommandIdChecked(int command_id) const {
-  ContentSetting setting = permission_.setting;
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  setting = PluginsFieldTrial::EffectiveContentSetting(
-      host_content_settings_map_, permission_.type, permission_.setting);
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
-  return setting == command_id;
+  return permission_.setting == command_id;
 }
 
 bool PermissionMenuModel::IsCommandIdEnabled(int command_id) const {
@@ -101,26 +74,35 @@ void PermissionMenuModel::ExecuteCommand(int command_id, int event_flags) {
 }
 
 bool PermissionMenuModel::ShouldShowAllow(const GURL& url) {
-  // Notifications does not support CONTENT_SETTING_ALLOW in incognito.
-  if (permission_.is_incognito &&
-      permission_.type == CONTENT_SETTINGS_TYPE_NOTIFICATIONS) {
-    return false;
+  switch (permission_.type) {
+    // Notifications does not support CONTENT_SETTING_ALLOW in incognito.
+    case ContentSettingsType::NOTIFICATIONS:
+      return !permission_.is_incognito;
+    // Media only supports CONTENT_SETTING_ALLOW for secure origins.
+    case ContentSettingsType::MEDIASTREAM_MIC:
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
+      return content::IsOriginSecure(url);
+    // Chooser permissions do not support CONTENT_SETTING_ALLOW.
+    case ContentSettingsType::SERIAL_GUARD:
+    case ContentSettingsType::USB_GUARD:
+    // Bluetooth scanning does not support CONTENT_SETTING_ALLOW.
+    case ContentSettingsType::BLUETOOTH_SCANNING:
+    // Native file system write does not support CONTENT_SETTING_ALLOW.
+    case ContentSettingsType::NATIVE_FILE_SYSTEM_WRITE_GUARD:
+      return false;
+    default:
+      return true;
   }
-
-  // Media only supports CONTENT_SETTING_ALLOW for secure origins.
-  if ((permission_.type == CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC ||
-       permission_.type == CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA) &&
-      !content::IsOriginSecure(url)) {
-    return false;
-  }
-
-  // Chooser permissions do not support CONTENT_SETTING_ALLOW.
-  if (permission_.type == CONTENT_SETTINGS_TYPE_USB_GUARD)
-    return false;
-
-  return true;
 }
 
 bool PermissionMenuModel::ShouldShowAsk(const GURL& url) {
-  return permission_.type == CONTENT_SETTINGS_TYPE_USB_GUARD;
+  switch (permission_.type) {
+    case ContentSettingsType::USB_GUARD:
+    case ContentSettingsType::SERIAL_GUARD:
+    case ContentSettingsType::BLUETOOTH_SCANNING:
+    case ContentSettingsType::NATIVE_FILE_SYSTEM_WRITE_GUARD:
+      return true;
+    default:
+      return false;
+  }
 }

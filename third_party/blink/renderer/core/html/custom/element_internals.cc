@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
@@ -30,6 +32,20 @@ bool IsValidityStateFlagsValid(const ValidityStateFlags* flags) {
 }
 }  // anonymous namespace
 
+class CustomStatesTokenList : public DOMTokenList {
+ public:
+  CustomStatesTokenList(Element& element)
+      : DOMTokenList(element, g_null_name) {}
+
+  AtomicString value() const override { return TokenSet().SerializeToString(); }
+
+  void setValue(const AtomicString& new_value) override {
+    DidUpdateAttributeValue(value(), new_value);
+    // Should we have invalidation set for each of state tokens?
+    GetElement().PseudoStateChanged(CSSSelector::kPseudoState);
+  }
+};
+
 ElementInternals::ElementInternals(HTMLElement& target) : target_(target) {
   value_.SetUSVString(String());
 }
@@ -37,19 +53,22 @@ ElementInternals::ElementInternals(HTMLElement& target) : target_(target) {
 void ElementInternals::Trace(Visitor* visitor) {
   visitor->Trace(target_);
   visitor->Trace(value_);
-  visitor->Trace(entry_source_);
+  visitor->Trace(state_);
   visitor->Trace(validity_flags_);
+  visitor->Trace(validation_anchor_);
+  visitor->Trace(custom_states_);
+  visitor->Trace(explicitly_set_attr_elements_map_);
   ListedElement::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
 
-void ElementInternals::setFormValue(const FileOrUSVString& value,
+void ElementInternals::setFormValue(const ControlValue& value,
                                     ExceptionState& exception_state) {
-  setFormValue(value, nullptr, exception_state);
+  setFormValue(value, value, exception_state);
 }
 
-void ElementInternals::setFormValue(const FileOrUSVString& value,
-                                    FormData* entry_source,
+void ElementInternals::setFormValue(const ControlValue& value,
+                                    const ControlValue& state,
                                     ExceptionState& exception_state) {
   if (!IsTargetFormAssociated()) {
     exception_state.ThrowDOMException(
@@ -57,13 +76,22 @@ void ElementInternals::setFormValue(const FileOrUSVString& value,
         "The target element is not a form-associated custom element.");
     return;
   }
-  if (!entry_source) {
+
+  if (value.IsFormData()) {
+    value_ = ControlValue::FromFormData(
+        MakeGarbageCollected<FormData>(*value.GetAsFormData()));
+  } else {
     value_ = value;
-    entry_source_ = nullptr;
-    return;
   }
-  value_ = value;
-  entry_source_ = MakeGarbageCollected<FormData>(*entry_source);
+
+  if (&value == &state) {
+    state_ = value_;
+  } else if (state.IsFormData()) {
+    state_ = ControlValue::FromFormData(
+        MakeGarbageCollected<FormData>(*state.GetAsFormData()));
+  } else {
+    state_ = state;
+  }
   NotifyFormStateChanged();
 }
 
@@ -79,11 +107,18 @@ HTMLFormElement* ElementInternals::form(ExceptionState& exception_state) const {
 
 void ElementInternals::setValidity(ValidityStateFlags* flags,
                                    ExceptionState& exception_state) {
-  setValidity(flags, String(), exception_state);
+  setValidity(flags, String(), nullptr, exception_state);
 }
 
 void ElementInternals::setValidity(ValidityStateFlags* flags,
                                    const String& message,
+                                   ExceptionState& exception_state) {
+  setValidity(flags, message, nullptr, exception_state);
+}
+
+void ElementInternals::setValidity(ValidityStateFlags* flags,
+                                   const String& message,
+                                   Element* anchor,
                                    ExceptionState& exception_state) {
   if (!IsTargetFormAssociated()) {
     exception_state.ThrowDOMException(
@@ -100,7 +135,19 @@ void ElementInternals::setValidity(ValidityStateFlags* flags,
         "first argument are true.");
     return;
   }
+  if (anchor && !Target().IsShadowIncludingAncestorOf(*anchor)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotFoundError,
+        "The Element argument should be a shadow-including descendant of the "
+        "target element.");
+    return;
+  }
+
+  if (validation_anchor_ && validation_anchor_ != anchor) {
+    HideVisibleValidationMessage();
+  }
   validity_flags_ = flags;
+  validation_anchor_ = anchor;
   SetCustomValidationMessage(message);
   SetNeedsValidityCheck();
 }
@@ -148,6 +195,10 @@ String ElementInternals::ValidationSubMessage() const {
   return String();
 }
 
+Element& ElementInternals::ValidationAnchor() const {
+  return validation_anchor_ ? *validation_anchor_ : Target();
+}
+
 bool ElementInternals::checkValidity(ExceptionState& exception_state) {
   if (!IsTargetFormAssociated()) {
     exception_state.ThrowDOMException(
@@ -178,6 +229,37 @@ LabelsNodeList* ElementInternals::labels(ExceptionState& exception_state) {
   return Target().labels();
 }
 
+DOMTokenList* ElementInternals::states() {
+  if (!custom_states_)
+    custom_states_ = MakeGarbageCollected<CustomStatesTokenList>(Target());
+  return custom_states_;
+}
+
+bool ElementInternals::HasState(const AtomicString& state) const {
+  return custom_states_ && custom_states_->contains(state);
+}
+
+const AtomicString& ElementInternals::FastGetAttribute(
+    const QualifiedName& attribute) const {
+  return accessibility_semantics_map_.at(attribute);
+}
+
+const HashMap<QualifiedName, AtomicString>& ElementInternals::GetAttributes()
+    const {
+  return accessibility_semantics_map_;
+}
+
+void ElementInternals::setAttribute(const QualifiedName& attribute,
+                                    const AtomicString& value) {
+  accessibility_semantics_map_.Set(attribute, value);
+  if (AXObjectCache* cache = Target().GetDocument().ExistingAXObjectCache())
+    cache->HandleAttributeChanged(attribute, &Target());
+}
+
+bool ElementInternals::HasAttribute(const QualifiedName& attribute) const {
+  return accessibility_semantics_map_.Contains(attribute);
+}
+
 void ElementInternals::DidUpgrade() {
   ContainerNode* parent = Target().parentNode();
   if (!parent)
@@ -188,7 +270,7 @@ void ElementInternals::DidUpgrade() {
       lists->InvalidateCaches(nullptr);
   }
   for (ContainerNode* node = parent; node; node = node->parentNode()) {
-    if (IsHTMLFieldSetElement(node)) {
+    if (IsA<HTMLFieldSetElement>(node)) {
       // TODO(tkent): Invalidate only HTMLFormControlsCollections.
       if (auto* lists = node->NodeLists())
         lists->InvalidateCaches(nullptr);
@@ -196,6 +278,51 @@ void ElementInternals::DidUpgrade() {
   }
   Target().GetDocument().GetFormController().RestoreControlStateOnUpgrade(
       *this);
+}
+
+void ElementInternals::SetElementAttribute(const QualifiedName& name,
+                                           Element* element) {
+  auto result = explicitly_set_attr_elements_map_.insert(name, nullptr);
+  if (result.is_new_entry) {
+    result.stored_value->value =
+        MakeGarbageCollected<HeapVector<Member<Element>>>();
+  } else {
+    result.stored_value->value->clear();
+  }
+  result.stored_value->value->push_back(element);
+}
+
+Element* ElementInternals::GetElementAttribute(const QualifiedName& name) {
+  HeapVector<Member<Element>>* element_vector =
+      explicitly_set_attr_elements_map_.at(name);
+  if (!element_vector)
+    return nullptr;
+  DCHECK_EQ(element_vector->size(), 1u);
+  return element_vector->at(0);
+}
+
+HeapVector<Member<Element>> ElementInternals::GetElementArrayAttribute(
+    const QualifiedName& name,
+    bool is_null) {
+  is_null = true;
+  auto iter = explicitly_set_attr_elements_map_.find(name);
+  if (iter != explicitly_set_attr_elements_map_.end()) {
+    is_null = false;
+    return *(iter->value);
+  }
+  return HeapVector<Member<Element>>();
+}
+
+void ElementInternals::SetElementArrayAttribute(
+    const QualifiedName& name,
+    HeapVector<Member<Element>> elements,
+    bool is_null) {
+  if (is_null) {
+    explicitly_set_attr_elements_map_.erase(name);
+    return;
+  }
+  explicitly_set_attr_elements_map_.Set(
+      name, MakeGarbageCollected<HeapVector<Member<Element>>>(elements));
 }
 
 bool ElementInternals::IsTargetFormAssociated() const {
@@ -230,7 +357,7 @@ void ElementInternals::AppendToFormData(FormData& form_data) {
   if (Target().IsDisabledFormControl())
     return;
   const AtomicString& name = Target().FastGetAttribute(html_names::kNameAttr);
-  if (!entry_source_) {
+  if (!value_.IsFormData()) {
     if (name.IsEmpty())
       return;
     if (value_.IsFile())
@@ -240,7 +367,7 @@ void ElementInternals::AppendToFormData(FormData& form_data) {
     // Append nothing for null value.
     return;
   }
-  for (const auto& entry : entry_source_->Entries()) {
+  for (const auto& entry : value_.GetAsFormData()->Entries()) {
     if (entry->isFile())
       form_data.append(entry->name(), entry->GetFile());
     else
@@ -298,7 +425,7 @@ void ElementInternals::DisabledStateMightBeChanged() {
   if (is_disabled_ == new_disabled)
     return;
   is_disabled_ = new_disabled;
-  CustomElement::EnqueueDisabledStateChangedCallback(Target(), new_disabled);
+  CustomElement::EnqueueFormDisabledCallback(Target(), new_disabled);
 }
 
 bool ElementInternals::ClassSupportsStateRestore() const {
@@ -319,6 +446,9 @@ FormControlState ElementInternals::SaveFormControlState() const {
     state.Append("File");
     File* file = value_.GetAsFile();
     file->AppendToControlState(state);
+  } else if (value_.IsFormData()) {
+    state.Append("FormData");
+    value_.GetAsFormData()->AppendToControlState(state);
   }
   // Add nothing if value_.IsNull().
   return state;
@@ -328,14 +458,18 @@ void ElementInternals::RestoreFormControlState(const FormControlState& state) {
   if (state.ValueSize() < 2)
     return;
   if (state[0] == "USVString") {
-    value_ = FileOrUSVString::FromUSVString(state[1]);
+    value_ = ControlValue::FromUSVString(state[1]);
   } else if (state[0] == "File") {
     wtf_size_t i = 1;
     if (auto* file = File::CreateFromControlState(state, i))
-      value_ = FileOrUSVString::FromFile(file);
+      value_ = ControlValue::FromFile(file);
+  } else if (state[0] == "FormData") {
+    wtf_size_t i = 1;
+    if (auto* form_data = FormData::CreateFromControlState(state, i))
+      value_ = ControlValue::FromFormData(form_data);
   }
   if (!value_.IsNull())
-    CustomElement::EnqueueRestoreValueCallback(Target(), value_, "restore");
+    CustomElement::EnqueueFormStateRestoreCallback(Target(), value_, "restore");
 }
 
 }  // namespace blink

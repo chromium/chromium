@@ -28,8 +28,10 @@
 
 namespace gpu {
 
-ImageTransportSurfaceOverlayMac::ImageTransportSurfaceOverlayMac(
-    base::WeakPtr<ImageTransportSurfaceDelegate> delegate)
+template <typename BaseClass>
+ImageTransportSurfaceOverlayMacBase<BaseClass>::
+    ImageTransportSurfaceOverlayMacBase(
+        base::WeakPtr<ImageTransportSurfaceDelegate> delegate)
     : delegate_(delegate),
       use_remote_layer_api_(ui::RemoteLayerAPISupported()),
       scale_factor_(1),
@@ -51,12 +53,16 @@ ImageTransportSurfaceOverlayMac::ImageTransportSurfaceOverlayMac(
       use_remote_layer_api_, allow_av_sample_buffer_display_layer));
 }
 
-ImageTransportSurfaceOverlayMac::~ImageTransportSurfaceOverlayMac() {
+template <typename BaseClass>
+ImageTransportSurfaceOverlayMacBase<
+    BaseClass>::~ImageTransportSurfaceOverlayMacBase() {
   ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
   Destroy();
 }
 
-bool ImageTransportSurfaceOverlayMac::Initialize(gl::GLSurfaceFormat format) {
+template <typename BaseClass>
+bool ImageTransportSurfaceOverlayMacBase<BaseClass>::Initialize(
+    gl::GLSurfaceFormat format) {
   // Create the CAContext to send this to the GPU process, and the layer for
   // the context.
   if (use_remote_layer_api_) {
@@ -68,18 +74,22 @@ bool ImageTransportSurfaceOverlayMac::Initialize(gl::GLSurfaceFormat format) {
   return true;
 }
 
-void ImageTransportSurfaceOverlayMac::PrepareToDestroy(bool have_context) {
-}
+template <typename BaseClass>
+void ImageTransportSurfaceOverlayMacBase<BaseClass>::PrepareToDestroy(
+    bool have_context) {}
 
-void ImageTransportSurfaceOverlayMac::Destroy() {
+template <typename BaseClass>
+void ImageTransportSurfaceOverlayMacBase<BaseClass>::Destroy() {
   ca_layer_tree_coordinator_.reset();
 }
 
-bool ImageTransportSurfaceOverlayMac::IsOffscreen() {
+template <typename BaseClass>
+bool ImageTransportSurfaceOverlayMacBase<BaseClass>::IsOffscreen() {
   return false;
 }
 
-void ImageTransportSurfaceOverlayMac::ApplyBackpressure() {
+template <typename BaseClass>
+void ImageTransportSurfaceOverlayMacBase<BaseClass>::ApplyBackpressure() {
   TRACE_EVENT0("gpu", "ImageTransportSurfaceOverlayMac::ApplyBackpressure");
   // Create the fence for the current frame before waiting on the previous
   // frame's fence (to maximize CPU and GPU execution overlap).
@@ -89,8 +99,9 @@ void ImageTransportSurfaceOverlayMac::ApplyBackpressure() {
   previous_frame_fence_ = this_frame_fence;
 }
 
-void ImageTransportSurfaceOverlayMac::BufferPresented(
-    PresentationCallback callback,
+template <typename BaseClass>
+void ImageTransportSurfaceOverlayMacBase<BaseClass>::BufferPresented(
+    gl::GLSurface::PresentationCallback callback,
     const gfx::PresentationFeedback& feedback) {
   DCHECK(!callback.is_null());
   std::move(callback).Run(feedback);
@@ -98,13 +109,18 @@ void ImageTransportSurfaceOverlayMac::BufferPresented(
     delegate_->BufferPresented(feedback);
 }
 
-gfx::SwapResult ImageTransportSurfaceOverlayMac::SwapBuffersInternal(
+template <typename BaseClass>
+gfx::SwapResult
+ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffersInternal(
     const gfx::Rect& pixel_damage_rect,
-    PresentationCallback callback) {
+    gl::GLSurface::PresentationCallback callback) {
   TRACE_EVENT0("gpu", "ImageTransportSurfaceOverlayMac::SwapBuffersInternal");
 
   // Do a GL fence for flush to apply back-pressure before drawing.
-  ApplyBackpressure();
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER("Gpu.Mac.Backpressure");
+    ApplyBackpressure();
+  }
 
   // Update the CALayer tree in the GPU process.
   base::TimeTicks before_transaction_time = base::TimeTicks::Now();
@@ -138,8 +154,8 @@ gfx::SwapResult ImageTransportSurfaceOverlayMac::SwapBuffersInternal(
     params.swap_response.swap_id = 0;  // Set later, in DecoderClient.
     params.swap_response.result = gfx::SwapResult::SWAP_ACK;
     // TODO(brianderson): Tie swap_start to before_flush_time.
-    params.swap_response.swap_start = before_transaction_time;
-    params.swap_response.swap_end = before_transaction_time;
+    params.swap_response.timings.swap_start = before_transaction_time;
+    params.swap_response.timings.swap_end = before_transaction_time;
     for (auto& query : ca_layer_in_use_queries_) {
       gpu::TextureInUseResponse response;
       response.texture = query.texture;
@@ -166,46 +182,55 @@ gfx::SwapResult ImageTransportSurfaceOverlayMac::SwapBuffersInternal(
       0 /* flags */);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(&ImageTransportSurfaceOverlayMac::BufferPresented,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     feedback));
+      base::BindOnce(
+          &ImageTransportSurfaceOverlayMacBase<BaseClass>::BufferPresented,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback), feedback));
   return gfx::SwapResult::SWAP_ACK;
 }
 
-gfx::SwapResult ImageTransportSurfaceOverlayMac::SwapBuffers(
-    PresentationCallback callback) {
+template <typename BaseClass>
+gfx::SwapResult ImageTransportSurfaceOverlayMacBase<BaseClass>::SwapBuffers(
+    gl::GLSurface::PresentationCallback callback) {
   return SwapBuffersInternal(
       gfx::Rect(0, 0, pixel_size_.width(), pixel_size_.height()),
       std::move(callback));
 }
 
-gfx::SwapResult ImageTransportSurfaceOverlayMac::PostSubBuffer(
+template <typename BaseClass>
+gfx::SwapResult ImageTransportSurfaceOverlayMacBase<BaseClass>::PostSubBuffer(
     int x,
     int y,
     int width,
     int height,
-    PresentationCallback callback) {
+    gl::GLSurface::PresentationCallback callback) {
   return SwapBuffersInternal(gfx::Rect(x, y, width, height),
                              std::move(callback));
 }
 
-bool ImageTransportSurfaceOverlayMac::SupportsPostSubBuffer() {
+template <typename BaseClass>
+bool ImageTransportSurfaceOverlayMacBase<BaseClass>::SupportsPostSubBuffer() {
   return true;
 }
 
-gfx::Size ImageTransportSurfaceOverlayMac::GetSize() {
+template <typename BaseClass>
+gfx::Size ImageTransportSurfaceOverlayMacBase<BaseClass>::GetSize() {
   return gfx::Size();
 }
 
-void* ImageTransportSurfaceOverlayMac::GetHandle() {
+template <typename BaseClass>
+void* ImageTransportSurfaceOverlayMacBase<BaseClass>::GetHandle() {
   return nullptr;
 }
 
-gl::GLSurfaceFormat ImageTransportSurfaceOverlayMac::GetFormat() {
+template <typename BaseClass>
+gl::GLSurfaceFormat
+ImageTransportSurfaceOverlayMacBase<BaseClass>::GetFormat() {
   return gl::GLSurfaceFormat();
 }
 
-bool ImageTransportSurfaceOverlayMac::OnMakeCurrent(gl::GLContext* context) {
+template <typename BaseClass>
+bool ImageTransportSurfaceOverlayMacBase<BaseClass>::OnMakeCurrent(
+    gl::GLContext* context) {
   // Ensure that the context is on the appropriate GL renderer. The GL renderer
   // will generally only change when the GPU changes.
   if (gl_renderer_id_ && context)
@@ -213,7 +238,8 @@ bool ImageTransportSurfaceOverlayMac::OnMakeCurrent(gl::GLContext* context) {
   return true;
 }
 
-bool ImageTransportSurfaceOverlayMac::ScheduleOverlayPlane(
+template <typename BaseClass>
+bool ImageTransportSurfaceOverlayMacBase<BaseClass>::ScheduleOverlayPlane(
     int z_order,
     gfx::OverlayTransform transform,
     gl::GLImage* image,
@@ -236,9 +262,10 @@ bool ImageTransportSurfaceOverlayMac::ScheduleOverlayPlane(
     return false;
   }
   const ui::CARendererLayerParams overlay_as_calayer_params(
-      false,        // is_clipped
-      gfx::Rect(),  // clip_rect
-      0,            // sorting_context_id
+      false,          // is_clipped
+      gfx::Rect(),    // clip_rect
+      gfx::RRectF(),  // rounded_corner_bounds
+      0,              // sorting_context_id
       gfx::Transform(), image,
       crop_rect,            // contents_rect
       pixel_frame_rect,     // rect
@@ -250,7 +277,8 @@ bool ImageTransportSurfaceOverlayMac::ScheduleOverlayPlane(
       ->ScheduleCALayer(overlay_as_calayer_params);
 }
 
-bool ImageTransportSurfaceOverlayMac::ScheduleCALayer(
+template <typename BaseClass>
+bool ImageTransportSurfaceOverlayMacBase<BaseClass>::ScheduleCALayer(
     const ui::CARendererLayerParams& params) {
   if (params.image) {
     gl::GLImageIOSurface* io_surface_image =
@@ -264,30 +292,32 @@ bool ImageTransportSurfaceOverlayMac::ScheduleCALayer(
       ->ScheduleCALayer(params);
 }
 
-void ImageTransportSurfaceOverlayMac::ScheduleCALayerInUseQuery(
-    std::vector<CALayerInUseQuery> queries) {
+template <typename BaseClass>
+void ImageTransportSurfaceOverlayMacBase<BaseClass>::ScheduleCALayerInUseQuery(
+    std::vector<gl::GLSurface::CALayerInUseQuery> queries) {
   ca_layer_in_use_queries_.swap(queries);
 }
 
-bool ImageTransportSurfaceOverlayMac::IsSurfaceless() const {
+template <typename BaseClass>
+bool ImageTransportSurfaceOverlayMacBase<BaseClass>::IsSurfaceless() const {
   return true;
 }
 
-bool ImageTransportSurfaceOverlayMac::SupportsPresentationCallback() {
-  return true;
-}
-
-bool ImageTransportSurfaceOverlayMac::Resize(const gfx::Size& pixel_size,
-                                             float scale_factor,
-                                             ColorSpace color_space,
-                                             bool has_alpha) {
+template <typename BaseClass>
+bool ImageTransportSurfaceOverlayMacBase<BaseClass>::Resize(
+    const gfx::Size& pixel_size,
+    float scale_factor,
+    gl::GLSurface::ColorSpace color_space,
+    bool has_alpha) {
   pixel_size_ = pixel_size;
   scale_factor_ = scale_factor;
   ca_layer_tree_coordinator_->Resize(pixel_size, scale_factor);
   return true;
 }
 
-void ImageTransportSurfaceOverlayMac::OnGpuSwitched() {
+template <typename BaseClass>
+void ImageTransportSurfaceOverlayMacBase<BaseClass>::OnGpuSwitched(
+    gl::GpuPreference active_gpu_heuristic) {
   // Create a new context, and use the GL renderer ID that the new context gets.
   scoped_refptr<ui::IOSurfaceContext> context_on_new_gpu =
       ui::IOSurfaceContext::Get(ui::IOSurfaceContext::kCALayerContext);
@@ -311,5 +341,11 @@ void ImageTransportSurfaceOverlayMac::OnGpuSwitched() {
           base::DoNothing::Once<scoped_refptr<ui::IOSurfaceContext>>(),
           context_on_new_gpu));
 }
+
+// Template instantiation
+template class ImageTransportSurfaceOverlayMacBase<gl::GLSurface>;
+#if defined(USE_EGL)
+template class ImageTransportSurfaceOverlayMacBase<gl::GLSurfaceEGL>;
+#endif
 
 }  // namespace gpu

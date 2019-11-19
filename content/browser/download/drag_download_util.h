@@ -42,7 +42,8 @@ CONTENT_EXPORT base::File CreateFileForDrop(base::FilePath* file_path);
 // Implementation of DownloadFileObserver to finalize the download process.
 class PromiseFileFinalizer : public ui::DownloadFileObserver {
  public:
-  explicit PromiseFileFinalizer(DragDownloadFile* drag_file_downloader);
+  explicit PromiseFileFinalizer(
+      std::unique_ptr<DragDownloadFile> drag_file_downloader);
 
   // DownloadFileObserver methods.
   void OnDownloadCompleted(const base::FilePath& file_path) override;
@@ -54,7 +55,7 @@ class PromiseFileFinalizer : public ui::DownloadFileObserver {
  private:
   void Cleanup();
 
-  scoped_refptr<DragDownloadFile> drag_file_downloader_;
+  std::unique_ptr<DragDownloadFile> drag_file_downloader_;
 
   DISALLOW_COPY_AND_ASSIGN(PromiseFileFinalizer);
 };

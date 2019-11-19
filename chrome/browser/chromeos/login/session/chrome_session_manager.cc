@@ -9,16 +9,16 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/chromeos/arc/arc_service_launcher.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_cryptohome_remover.h"
+#include "chrome/browser/chromeos/arc/session/arc_service_launcher.h"
 #include "chrome/browser/chromeos/boot_times_recorder.h"
-#include "chrome/browser/chromeos/child_accounts/consumer_status_reporting_service_factory.h"
+#include "chrome/browser/chromeos/child_accounts/child_status_reporting_service_factory.h"
+#include "chrome/browser/chromeos/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/chromeos/child_accounts/screen_time_controller_factory.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/lock_screen_apps/state_controller.h"
@@ -32,20 +32,26 @@
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/policy/app_install_event_log_manager_wrapper.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/policy/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/tether/tether_service.h"
 #include "chrome/browser/chromeos/tpm_firmware_update_notification.h"
+#include "chrome/browser/chromeos/u2f_notification.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
+#include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
@@ -53,7 +59,6 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/service_manager_connection.h"
-#include "services/identity/public/cpp/identity_manager.h"
 #include "services/service_manager/public/cpp/connector.h"
 
 namespace chromeos {
@@ -64,7 +69,6 @@ namespace {
 bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line) {
   KioskAppManager* app_manager = KioskAppManager::Get();
   return command_line.HasSwitch(switches::kLoginManager) &&
-         !command_line.HasSwitch(switches::kForceLoginManagerInTests) &&
          app_manager->IsAutoLaunchEnabled() &&
          KioskAppLaunchError::Get() == KioskAppLaunchError::NONE &&
          // IsOobeCompleted() is needed to prevent kiosk session start in case
@@ -79,11 +83,11 @@ void StartKioskSession() {
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
 
-  ShowLoginWizard(chromeos::OobeScreen::SCREEN_APP_LAUNCH_SPLASH);
+  ShowLoginWizard(chromeos::AppLaunchSplashScreenView::kScreenId);
 
   // Login screen is skipped but 'login-prompt-visible' signal is still needed.
   VLOG(1) << "Kiosk app auto launch >> login-prompt-visible";
-  DBusThreadManager::Get()->GetSessionManagerClient()->EmitLoginPromptVisible();
+  SessionManagerClient::Get()->EmitLoginPromptVisible();
 }
 
 // Starts the login/oobe screen.
@@ -111,6 +115,10 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   if (command_line->HasSwitch(chromeos::switches::kLoginUser)) {
+    // TODO(https://crbug.com/977489): There's a lot of code duplication with
+    // UserSessionManager::FinalizePrepareProfile, which is (only!) run for
+    // regular session starts. This needs to be refactored.
+
     // This is done in SessionManager::OnProfileCreated during normal login.
     UserSessionManager* user_session_mgr = UserSessionManager::GetInstance();
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
@@ -157,9 +165,13 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
     if (crostini_manager)
       crostini_manager->MaybeUpgradeCrostini();
 
+    g_browser_process->platform_part()->InitializePrimaryProfileServices(
+        user_profile);
+
     if (user->GetType() == user_manager::USER_TYPE_CHILD) {
+      ChildStatusReportingServiceFactory::GetForBrowserContext(user_profile);
+      ChildUserServiceFactory::GetForBrowserContext(user_profile);
       ScreenTimeControllerFactory::GetForBrowserContext(user_profile);
-      ConsumerStatusReportingServiceFactory::GetForBrowserContext(user_profile);
     }
 
     // Send the PROFILE_PREPARED notification and call SessionStarted()
@@ -168,6 +180,8 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
         chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
         content::NotificationService::AllSources(),
         content::Details<Profile>(user_profile));
+    session_manager::SessionManager::Get()->NotifyUserProfileLoaded(
+        ProfileHelper::Get()->GetUserByProfile(user_profile)->GetAccountId());
 
     // This call will set session state to SESSION_STATE_ACTIVE (same one).
     session_manager::SessionManager::Get()->SessionStarted();
@@ -194,8 +208,19 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
     AppListClientImpl::GetInstance()->UpdateProfile();
   }
 
-  UserSessionManager::GetInstance()->CheckEolStatus(user_profile);
+  if (base::FeatureList::IsEnabled(features::kEolWarningNotifications) &&
+      !user_profile->GetProfilePolicyConnector()->IsManaged())
+    UserSessionManager::GetInstance()->CheckEolInfo(user_profile);
+
   tpm_firmware_update::ShowNotificationIfNeeded(user_profile);
+  UserSessionManager::GetInstance()->MaybeShowU2FNotification();
+  UserSessionManager::GetInstance()->MaybeShowReleaseNotesNotification(
+      user_profile);
+  g_browser_process->platform_part()
+      ->browser_policy_connector_chromeos()
+      ->GetTPMAutoUpdateModePolicyHandler()
+      ->ShowTPMAutoUpdateNotificationIfNeeded();
+
   ArcTermsOfServiceScreen::MaybeLaunchArcSettings(user_profile);
   SyncConsentScreen::MaybeLaunchSyncConsentSettings(user_profile);
   UserSessionManager::GetInstance()->StartAccountManagerMigration(user_profile);
@@ -222,8 +247,7 @@ void ChromeSessionManager::Initialize(
   const AccountId login_account_id(
       cryptohome::Identification::FromString(cryptohome_id).GetAccountId());
 
-  KioskAppManager::RemoveObsoleteCryptohomes();
-  ArcKioskAppManager::RemoveObsoleteCryptohomes();
+  KioskCryptohomeRemover::RemoveObsoleteCryptohomes();
 
   if (ShouldAutoLaunchKioskApp(parsed_command_line)) {
     VLOG(1) << "Starting Chrome with kiosk auto launch.";
@@ -242,20 +266,17 @@ void ChromeSessionManager::Initialize(
     oobe_configuration_->CheckConfiguration();
   }
 
-  if (!base::SysInfo::IsRunningOnChromeOS() &&
-      login_account_id == user_manager::StubAccountId()) {
+  if (login_account_id == user_manager::StubAccountId()) {
     // Start a user session with stub user. This also happens on a dev machine
     // when running Chrome w/o login flow. See PreEarlyInitialization().
     // In these contexts, emulate as if sync has been initialized.
     VLOG(1) << "Starting Chrome with stub login.";
 
-    // TODO(https://crbug.com/814787): Change this flow to go through a
-    // mainstream Identity Service API once that API exists. Note that this
-    // might require supplying a valid refresh token here as opposed to an
-    // empty string.
     std::string login_user_id = login_account_id.GetUserEmail();
     IdentityManagerFactory::GetForProfile(profile)
-        ->SetPrimaryAccountSynchronously(login_user_id, login_user_id, "");
+        ->GetPrimaryAccountMutator()
+        ->DeprecatedSetPrimaryAccountAndUpdateAccountInfo(login_user_id,
+                                                          login_user_id);
     StartUserSession(profile, login_user_id);
     return;
   }
@@ -272,12 +293,6 @@ void ChromeSessionManager::SessionStarted() {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (user_manager)
     user_manager->OnSessionStarted();
-
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_SESSION_STARTED,
-      content::Source<session_manager::SessionManager>(this),
-      content::Details<const user_manager::User>(
-          user_manager->GetActiveUser()));
 }
 
 void ChromeSessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,

@@ -86,12 +86,13 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPrlimit64(pid_t target_pid);
 // process).
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictGetrusage();
 
-// Restrict |clk_id| for clock_getres(), clock_gettime() and clock_settime().
-// We allow accessing only CLOCK_MONOTONIC, CLOCK_PROCESS_CPUTIME_ID,
-// CLOCK_REALTIME, and CLOCK_THREAD_CPUTIME_ID.  In particular, this disallows
-// access to arbitrary per-{process,thread} CPU-time clock IDs (such as those
-// returned by {clock,pthread}_getcpuclockid), which can leak information
-// about the state of the host OS.
+// Restrict |clk_id| for clock_getres(), clock_gettime() and clock_settime(). We
+// allow accessing only CLOCK_BOOTTIME, CLOCK_MONOTONIC{,_RAW,_COARSE},
+// CLOCK_PROCESS_CPUTIME_ID, CLOCK_REALTIME{,_COARSE}, and
+// CLOCK_THREAD_CPUTIME_ID.  In particular, this disallows access to arbitrary
+// per-{process,thread} CPU-time clock IDs (such as those returned by
+// {clock,pthread}_getcpuclockid), which can leak information about the state of
+// the host OS.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictClockID();
 
 // Restrict the flags argument to getrandom() to allow only no flags, or

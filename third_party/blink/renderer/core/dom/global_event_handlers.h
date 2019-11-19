@@ -31,7 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_GLOBAL_EVENT_HANDLERS_H_
 
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -40,6 +40,10 @@ class GlobalEventHandlers {
 
  public:
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(abort, kAbort)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(animationend, kAnimationend)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(animationiteration,
+                                         kAnimationiteration)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(animationstart, kAnimationstart)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(activateinvisible, kActivateinvisible)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(auxclick, kAuxclick)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(blur, kBlur)
@@ -97,7 +101,7 @@ class GlobalEventHandlers {
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(pointermove, kPointermove)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(pointerout, kPointerout)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(pointerover, kPointerover)
-  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(pointerrawmove, kPointerrawmove)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(pointerrawupdate, kPointerrawupdate)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(pointerup, kPointerup)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(progress, kProgress)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(ratechange, kRatechange)
@@ -113,6 +117,7 @@ class GlobalEventHandlers {
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(stalled, kStalled)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(submit, kSubmit)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(suspend, kSuspend)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(transitionend, kTransitionend)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(timeupdate, kTimeupdate)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(toggle, kToggle)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(touchcancel, kTouchcancel)

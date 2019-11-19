@@ -4,9 +4,36 @@
      found in the LICENSE file. -->
 
 <resources>
-    <color name="light_active_color">@color/modern_blue_300</color>
-    <color name="control_normal_color">@color/modern_grey_200</color>
+    <color name="text_highlight_color">@color/highlight_color_on_light_text</color>
 
-    <color name="toolbar_background_primary">@color/modern_grey_900_with_white_alpha_8</color>
     <color name="toolbar_text_box_background">@color/modern_grey_800</color>
+
+    <color name="google_logo_tint">@android:color/white</color>
+
+    <color name="bottom_system_nav_color">@android:color/black</color>
+    <color name="bottom_system_nav_divider_color">@android:color/black</color>
+
+    <!-- Account Signin Colors -->
+    <color name="signin_header_animation_background">#28282B</color>
+    <color name="signin_header_animation_line_light">@color/modern_grey_700</color>
+    <color name="signin_header_animation_line_dark">@color/modern_grey_700</color>
+    <color name="signin_header_animation_laptop_screen">@color/modern_grey_900</color>
+
+    <!-- Tab Strip Colors -->
+    <color name="compositor_background_tab_bg">@color/modern_grey_900</color>
+    <color name="compositor_background_tab_outline">@android:color/black</color>
+
+    <!-- Photo Picker colors -->
+    <color name="photo_picker_tile_bg_color">@color/modern_grey_800</color>
+    <color name="photo_picker_special_tile_bg_color">@color/modern_grey_800</color>
+
+    <!-- History Navigation UI colors -->
+    <color name="navigation_bubble_arrow">@android:color/white</color>
+
+    <!-- Scrollbar colors -->
+    <color name="default_scroll_thumb">@color/white_alpha_20</color>
+
+    <!-- Explore Sites colors -->
+    <color name="explore_sites_dense_tile_background_color">@color/modern_secondary_color</color>
+
 </resources>

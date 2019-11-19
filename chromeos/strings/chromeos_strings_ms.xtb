@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> mengurus peranti ini dan mungkin dapat memantau aktiviti anda.</translation>
 <translation id="1510238584712386396">Pelancar</translation>
 <translation id="1734367976349034509">Peranti ini diurus perusahaan</translation>
+<translation id="1930797645656624981">Perkhidmatan Kaedah Input OS Chrome</translation>
+<translation id="1979103255016296513">Kata laluan perlu ditukar</translation>
 <translation id="2049639323467105390">Peranti ini diuruskan oleh <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">Tiada apa-apa ditemui pada skrin</translation>
 <translation id="2338501278241028356">Hidupkan Bluetooth untuk menemui peranti berdekatan</translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="2872961005593481000">Mematikan</translation>
-<translation id="3147142846278915599">Pelancar (menyegerakkan apl...)</translation>
+<translation id="3008341117444806826">MUAT SEMULA</translation>
+<translation id="3838338534323494292">Kata laluan baharu</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> mengurus peranti ini dan mempunyai akses kepada semua aktiviti pengguna, termasuk halaman web yang dilawati, kata laluan dan e-mel.</translation>
+<translation id="4227825898293920515">Kata laluan tamat tempoh dalam <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Tiket Kerberos akan tamat tempoh tidak lama lagi</translation>
+<translation id="445059817448385655">Kata laluan lama</translation>
+<translation id="467510802200863975">Kata laluan tidak sepadan</translation>
 <translation id="4731797938093519117">Akses ibu bapa</translation>
+<translation id="4890353053343094602">Pilih kata laluan baharu secepat mungkin</translation>
 <translation id="5212543919916444558">Saya tidak menemui apa-apa pada skrin anda yang boleh saya bantu.
 Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation>
 <translation id="5222676887888702881">Log keluar</translation>
+<translation id="5317780077021120954">Simpan</translation>
+<translation id="5332948983412042822">Pilih kata laluan baharu sekarang</translation>
 <translation id="5457599981699367932">Semak Imbas sebagai Tetamu</translation>
 <translation id="54609108002486618">Diuruskan</translation>
 <translation id="5832805196449965646">Tambah Orang</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
+<translation id="6058625436358447366">Untuk menyelesaikan proses ini, masukkan kata laluan lama dan baharu</translation>
+<translation id="6106186594183574873">Untuk menyelesaikan proses ini, masukkan kata laluan lama anda</translation>
+<translation id="6146993107019042706">Untuk menyelesaikan proses ini, masukkan kata laluan baharu anda</translation>
 <translation id="7658239707568436148">Batal</translation>
+<translation id="7690294790491645610">Sahkan kata laluan baharu</translation>
+<translation id="808894953321890993">Tukar kata laluan</translation>
+<translation id="8747900814994928677">Sahkan penukaran</translation>
+<translation id="910415269708673980">Muat semula tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Buka kunci</translation>
 </translationbundle>

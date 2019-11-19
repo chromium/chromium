@@ -7,14 +7,15 @@
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
-#include "components/password_manager/core/browser/log_manager.h"
 
 using autofill::SavePasswordProgressLogger;
 
 namespace password_manager {
 
-CredentialManagerLogger::CredentialManagerLogger(const LogManager* log_manager)
+CredentialManagerLogger::CredentialManagerLogger(
+    const autofill::LogManager* log_manager)
     : log_manager_(log_manager) {}
 
 CredentialManagerLogger::~CredentialManagerLogger() = default;
@@ -41,7 +42,7 @@ void CredentialManagerLogger::LogRequestCredential(
   for (const GURL& federation_provider : federations)
     s += SavePasswordProgressLogger::ScrubURL(federation_provider) + ", ";
 
-  log_manager_->LogSavePasswordProgress(s);
+  log_manager_->LogTextMessage(s);
 }
 
 void CredentialManagerLogger::LogSendCredential(const GURL& url,
@@ -49,7 +50,7 @@ void CredentialManagerLogger::LogSendCredential(const GURL& url,
   std::string s("CM API send a credential: origin=" +
                 SavePasswordProgressLogger::ScrubURL(url));
   s += ", CredentialType=" + CredentialTypeToString(type);
-  log_manager_->LogSavePasswordProgress(s);
+  log_manager_->LogTextMessage(s);
 }
 
 void CredentialManagerLogger::LogStoreCredential(const GURL& url,
@@ -57,13 +58,13 @@ void CredentialManagerLogger::LogStoreCredential(const GURL& url,
   std::string s("CM API save a credential: origin=" +
                 SavePasswordProgressLogger::ScrubURL(url));
   s += ", CredentialType=" + CredentialTypeToString(type);
-  log_manager_->LogSavePasswordProgress(s);
+  log_manager_->LogTextMessage(s);
 }
 
 void CredentialManagerLogger::LogPreventSilentAccess(const GURL& url) {
   std::string s("CM API sign out: origin=" +
                 SavePasswordProgressLogger::ScrubURL(url));
-  log_manager_->LogSavePasswordProgress(s);
+  log_manager_->LogTextMessage(s);
 }
 
 }  // namespace password_manager

@@ -5,6 +5,12 @@
 #ifndef BASE_TEST_CLANG_COVERAGE_H_
 #define BASE_TEST_CLANG_COVERAGE_H_
 
+#include "base/clang_coverage_buildflags.h"
+
+#if !BUILDFLAG(CLANG_COVERAGE)
+#error "Clang coverage can only be used if CLANG_COVERAGE macro is defined"
+#endif
+
 namespace base {
 
 // Write out the accumulated code coverage profile to the configured file.
@@ -13,7 +19,6 @@ namespace base {
 // (or triggering a debug crash), where the automatic at-exit writer will not
 // be invoked.
 // This call is thread-safe, and will write profiling data at-most-once.
-// Call-sites invoke this API only if the CLANG_COVERAGE macro is defined.
 void WriteClangCoverageProfile();
 
 }  // namespace base

@@ -13,28 +13,27 @@
 {% if fallback_interface %}
 #include "third_party/blink/renderer/core/{{namespace|lower}}/{{fallback_interface_header}}"
 {% endif %}
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
-typedef {{namespace}}Element* (*{{namespace}}ConstructorFunction)(
-    Document&,
-    const CreateElementFlags);
+using {{namespace}}ConstructorFunction = {{namespace}}Element* (*)(
+    Document&, const CreateElementFlags);
 
-typedef HashMap<AtomicString, {{namespace}}ConstructorFunction> {{namespace}}FunctionMap;
+using {{namespace}}FunctionMap = HashMap<AtomicString, {{namespace}}ConstructorFunction>;
 
-static {{namespace}}FunctionMap* g_{{namespace}}_constructors = 0;
+static {{namespace}}FunctionMap* g_{{namespace|lower}}_constructors = nullptr;
 
 {% for tag in tags|sort if not tag.noConstructor %}
-static {{namespace}}Element* {{namespace}}{{tag|symbol}}Constructor(
-    Document& document,
-    const CreateElementFlags flags) {
+static {{namespace}}Element* {{namespace}}{{tag.name.to_upper_camel_case()}}Constructor(
+    Document& document, const CreateElementFlags flags) {
   {% if tag.runtimeEnabled %}
   if (!RuntimeEnabledFeatures::{{tag.runtimeEnabled}}Enabled())
-    return {{fallback_interface}}::Create({{cpp_namespace}}::{{tag|symbol}}Tag, document);
+    return MakeGarbageCollected<{{fallback_interface}}>({{cpp_namespace}}::{{tag|symbol}}Tag, document);
   {% endif %}
-  return {{tag.interface}}::Create(
+  return MakeGarbageCollected<{{tag.interface}}>(
       {%- if tag.multipleTagNames %}{{cpp_namespace}}::{{tag|symbol}}Tag, {% endif -%}
       document
       {%- if tag.constructorNeedsCreateElementFlags %}, flags{% endif -%}
@@ -47,27 +46,27 @@ struct Create{{namespace}}FunctionMapData {
   {{namespace}}ConstructorFunction func;
 };
 
-static void create{{namespace}}FunctionMap() {
-  DCHECK(!g_{{namespace}}_constructors);
-  g_{{namespace}}_constructors = new {{namespace}}FunctionMap;
+static void Create{{namespace}}FunctionMap() {
+  DCHECK(!g_{{namespace|lower}}_constructors);
+  g_{{namespace|lower}}_constructors = new {{namespace}}FunctionMap;
   // Empty array initializer lists are illegal [dcl.init.aggr] and will not
   // compile in MSVC. If tags list is empty, add check to skip this.
   static const Create{{namespace}}FunctionMapData data[] = {
   {% for tag in tags|sort if not tag.noConstructor %}
-    { {{cpp_namespace}}::{{tag|symbol}}Tag, {{namespace}}{{tag|symbol}}Constructor },
+    { {{cpp_namespace}}::{{tag|symbol}}Tag, {{namespace}}{{tag.name.to_upper_camel_case()}}Constructor },
   {% endfor %}
   };
   for (size_t i = 0; i < base::size(data); i++)
-    g_{{namespace}}_constructors->Set(data[i].tag.LocalName(), data[i].func);
+    g_{{namespace|lower}}_constructors->Set(data[i].tag.LocalName(), data[i].func);
 }
 
 {{namespace}}Element* {{namespace}}ElementFactory::Create(
-    const AtomicString& localName,
+    const AtomicString& local_name,
     Document& document,
     const CreateElementFlags flags) {
-  if (!g_{{namespace}}_constructors)
-    create{{namespace}}FunctionMap();
-  if ({{namespace}}ConstructorFunction function = g_{{namespace}}_constructors->at(localName))
+  if (!g_{{namespace|lower}}_constructors)
+    Create{{namespace}}FunctionMap();
+  if ({{namespace}}ConstructorFunction function = g_{{namespace|lower}}_constructors->at(local_name))
     return function(document, flags);
   return nullptr;
 }

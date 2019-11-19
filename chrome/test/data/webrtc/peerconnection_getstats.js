@@ -5,62 +5,95 @@
  */
 
 /**
- * Maps "RTCStats.type" values to descriptions of whitelisted (allowed to be
- * exposed to the web) RTCStats-derived dictionaries described below.
- * @private
+ * Constructs an RTCStats dictionary by merging the parent RTCStats object with
+ * the dictionary of RTCStats members defined for this dictionary.
  */
-var gStatsWhitelist = new Map();
+function RTCStats(parent, membersObject) {
+  if (parent != null)
+    Object.assign(this, parent);
+  Object.assign(this, membersObject);
+}
+
+const Presence = {
+  MANDATORY: true,
+  OPTIONAL: false,
+};
 
 /**
- * RTCRTPStreamStats
+ * According to spec, multiple stats dictionaries can have the same
+ * "RTCStats.type". For example, "track" refers to any of
+ * RTCSenderVideoTrackAttachmentStats, RTCSenderAudioTrackAttachmentStats,
+ * RTCReceiverVideoTrackAttachmentStats and
+ * RTCReceiverAudioTrackAttachmentStats. Inspection is needed to determine which
+ * dictionary applies to the object; for simplicity, this class merges all of
+ * the associated dictionaries into a single dictionary.
+ */
+class MergedRTCStats {
+  constructor(presence, type, stats) {
+    this.presence_ = presence;
+    this.type_ = type;
+    this.stats_ = stats;
+  }
+
+  presence() {
+    return this.presence_;
+  }
+
+  type() {
+    return this.type_;
+  }
+
+  stats() {
+    return this.stats_;
+  }
+
+  merge(presence, stats) {
+    if (presence)
+      this.presence_ = true;
+    Object.assign(this.stats_, stats);
+  }
+}
+
+/**
+ * Maps "RTCStats.type" values to MergedRTCStats. These are descriptions of
+ * whitelisted (allowed to be exposed to the web) RTCStats-derived dictionaries,
+ * see RTCStats definitions below.
+ * @private
+ */
+const gStatsWhitelist = new Map();
+
+function addRTCStatsToWhitelist(presence, type, stats) {
+  mergedStats = gStatsWhitelist.get(type);
+  if (!mergedStats) {
+    gStatsWhitelist.set(type, new MergedRTCStats(presence, type, stats));
+  } else {
+    mergedStats.merge(presence, stats);
+  }
+}
+
+/**
+ * RTCRtpStreamStats
  * https://w3c.github.io/webrtc-stats/#streamstats-dict*
  * @private
  */
-var kRTCRTPStreamStats = new RTCStats_(null, {
+let kRTCRtpStreamStats = new RTCStats(null, {
   ssrc: 'number',
-  associateStatsId: 'string',
-  isRemote: 'boolean',
-  mediaType: 'string',
+  isRemote: 'boolean',  // Obsolete, type reveals if "remote-" or not.
   kind: 'string',
-  trackId: 'string',
+  mediaType: 'string',  // Obsolete, replaced by |kind|.
   transportId: 'string',
   codecId: 'string',
-  firCount: 'number',
-  pliCount: 'number',
-  nackCount: 'number',
-  sliCount: 'number',
-  qpSum: 'number',
 });
 
-/*
- * RTCCodecStats
- * https://w3c.github.io/webrtc-stats/#codec-dict*
+/**
+ * RTCReceivedRtpStreamStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcreceivedrtpstreamstats
  * @private
  */
-var kRTCCodecStats = new RTCStats_(null, {
-  payloadType: 'number',
-  mimeType: 'string',
-  // TODO(hbos): As soon as |codec| has been renamed |mimeType| in the webrtc
-  // repo, remove this line. https://bugs.webrtc.org/7061
-  codec: 'string',
-  clockRate: 'number',
-  channels: 'number',
-  sdpFmtpLine: 'string',
-  implementation: 'string',
-});
-gStatsWhitelist.set('codec', kRTCCodecStats);
-
-/*
- * RTCInboundRTPStreamStats
- * https://w3c.github.io/webrtc-stats/#inboundrtpstats-dict*
- * @private
- */
-var kRTCInboundRTPStreamStats = new RTCStats_(kRTCRTPStreamStats, {
+let kRTCReceivedRtpStreamStats = new RTCStats(kRTCRtpStreamStats, {
   packetsReceived: 'number',
-  bytesReceived: 'number',
   packetsLost: 'number',
   jitter: 'number',
-  fractionLost: 'number',
   packetsDiscarded: 'number',
   packetsRepaired: 'number',
   burstPacketsLost: 'number',
@@ -71,94 +104,366 @@ var kRTCInboundRTPStreamStats = new RTCStats_(kRTCRTPStreamStats, {
   burstDiscardRate: 'number',
   gapLossRate: 'number',
   gapDiscardRate: 'number',
-  framesDecoded: 'number',
 });
-gStatsWhitelist.set('inbound-rtp', kRTCInboundRTPStreamStats);
 
 /*
- * RTCOutboundRTPStreamStats
+ * RTCInboundRTPStreamStats
+ * https://w3c.github.io/webrtc-stats/#inboundrtpstats-dict*
+ * @private
+ */
+let kRTCInboundRtpStreamStats = new RTCStats(kRTCReceivedRtpStreamStats, {
+  trackId: 'string',
+  receiverId: 'string',
+  remoteId: 'string',
+  framesDecoded: 'number',
+  keyFramesDecoded: 'number',
+  qpSum: 'number',
+  totalDecodeTime: 'number',
+  lastPacketReceivedTimestamp: 'number',
+  averageRtcpInterval: 'number',
+  fecPacketsReceived: 'number',
+  fecPacketsDiscarded: 'number',
+  bytesReceived: 'number',
+  headerBytesReceived: 'number',
+  packetsFailedDecryption: 'number',
+  packetsDuplicated: 'number',
+  perDscpPacketsReceived: 'object',
+  nackCount: 'number',
+  firCount: 'number',
+  pliCount: 'number',
+  sliCount: 'number',
+  estimatedPlayoutTimestamp: 'number',
+  fractionLost: 'number',  // Obsolete, moved to RTCRemoteInboundRtpStreamStats.
+  decoderImplementation: 'string',
+});
+addRTCStatsToWhitelist(
+    Presence.MANDATORY, 'inbound-rtp', kRTCInboundRtpStreamStats);
+
+/*
+ * RTCRemoteInboundRtpStreamStats
+ * https://w3c.github.io/webrtc-stats/#remoteinboundrtpstats-dict*
+ * @private
+ */
+let kRTCRemoteInboundRtpStreamStats =
+    new RTCStats(kRTCReceivedRtpStreamStats, {
+  localId: 'string',
+  roundTripTime: 'number',
+  fractionLost: 'number',
+});
+// TODO(https://crbug.com/967382): Update the browser_tests to wait for the
+// existence of remote-inbound-rtp as well (these are created later than
+// outbound-rtp). When this is done, change presence to MANDATORY.
+addRTCStatsToWhitelist(
+    Presence.OPTIONAL, 'remote-inbound-rtp', kRTCRemoteInboundRtpStreamStats);
+
+/**
+ * RTCSentRtpStreamStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcsentrtpstreamstats
+ * @private
+ */
+let kRTCSentRtpStreamStats = new RTCStats(kRTCRtpStreamStats, {
+  packetsSent: 'number',
+  packetsDiscardedOnSend: 'number',
+  fecPacketsSent: 'number',
+  bytesSent: 'number',
+  bytesDiscardedOnSend: 'number',
+});
+
+/*
+ * RTCOutboundRtpStreamStats
  * https://w3c.github.io/webrtc-stats/#outboundrtpstats-dict*
  * @private
  */
-var kRTCOutboundRTPStreamStats = new RTCStats_(kRTCRTPStreamStats, {
-  packetsSent: 'number',
-  bytesSent: 'number',
+let kRTCOutboundRtpStreamStats = new RTCStats(kRTCSentRtpStreamStats, {
+  trackId: 'string',
+  mediaSourceId: 'string',
+  senderId: 'string',
+  remoteId: 'string',
+  lastPacketSentTimestamp: 'number',
+  retransmittedPacketsSent: 'number',
+  retransmittedBytesSent: 'number',
+  headerBytesSent: 'number',
   targetBitrate: 'number',
-  roundTripTime: 'number',
+  totalEncodedBytesTarget: 'number',
   framesEncoded: 'number',
+  keyFramesEncoded: 'number',
+  qpSum: 'number',
+  totalEncodeTime: 'number',
+  totalPacketSendDelay: 'number',
+  averageRtcpInterval: 'number',
+  qualityLimitationReason: 'string',
+  qualityLimitationDurations: 'object',
+  qualityLimitationResolutionChanges: 'number',
+  perDscpPacketsSent: 'object',
+  nackCount: 'number',
+  firCount: 'number',
+  pliCount: 'number',
+  sliCount: 'number',
+  encoderImplementation: 'string',
 });
-gStatsWhitelist.set('outbound-rtp', kRTCOutboundRTPStreamStats);
+addRTCStatsToWhitelist(
+    Presence.MANDATORY, 'outbound-rtp', kRTCOutboundRtpStreamStats);
+
+/*
+ * RTCRemoteOutboundRtpStreamStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcremoteoutboundrtpstreamstats
+ * @private
+ */
+let kRTCRemoteOutboundRtpStreamStats = new RTCStats(kRTCSentRtpStreamStats, {
+  localId: 'string',
+  remoteTimestamp: 'number',
+});
+// TODO(hbos): When remote-outbound-rtp is implemented, make presence MANDATORY.
+addRTCStatsToWhitelist(
+    Presence.OPTIONAL, 'remote-outbound-rtp', kRTCRemoteOutboundRtpStreamStats);
+
+/**
+ * RTCMediaSourceStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcmediasourcestats
+ * @private
+ */
+const kRTCMediaSourceStats = new RTCStats(null, {
+  trackIdentifier: 'string',
+  kind: 'string',
+});
+
+/**
+ * RTCAudioSourceStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcaudiosourcestats
+ * @private
+ */
+const kRTCAudioSourceStats = new RTCStats(kRTCMediaSourceStats, {
+  audioLevel: 'number',
+  totalAudioEnergy: 'number',
+  totalSamplesDuration: 'number',
+});
+addRTCStatsToWhitelist(
+    Presence.MANDATORY, 'media-source', kRTCAudioSourceStats);
+
+/**
+ * RTCVideoSourceStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcvideosourcestats
+ * @private
+ */
+const kRTCVideoSourceStats = new RTCStats(kRTCMediaSourceStats, {
+  width: 'number',
+  height: 'number',
+  frames: 'number',
+  framesPerSecond: 'number',
+});
+addRTCStatsToWhitelist(
+    Presence.MANDATORY, 'media-source', kRTCVideoSourceStats);
+
+/*
+ * RTCRtpContributingSourceStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcrtpcontributingsourcestats
+ * @private
+ */
+let kRTCRtpContributingSourceStats = new RTCStats(null, {
+  contributorSsrc: 'number',
+  inboundRtpStreamId: 'string',
+  packetsContributedTo: 'number',
+  audioLevel: 'number',
+});
+// TODO(hbos): When csrc is implemented, make presence MANDATORY.
+addRTCStatsToWhitelist(
+    Presence.OPTIONAL, 'csrc', kRTCRtpContributingSourceStats);
+
+/*
+ * RTCCodecStats
+ * https://w3c.github.io/webrtc-stats/#codec-dict*
+ * @private
+ */
+let kRTCCodecStats = new RTCStats(null, {
+  payloadType: 'number',
+  mimeType: 'string',
+  // TODO(hbos): As soon as |codec| has been renamed |mimeType| in the webrtc
+  // repo, remove this line. https://bugs.webrtc.org/7061
+  codec: 'string',
+  clockRate: 'number',
+  channels: 'number',
+  sdpFmtpLine: 'string',
+  implementation: 'string',
+});
+addRTCStatsToWhitelist(Presence.MANDATORY, 'codec', kRTCCodecStats);
 
 /*
  * RTCPeerConnectionStats
  * https://w3c.github.io/webrtc-stats/#pcstats-dict*
  * @private
  */
-var kRTCPeerConnectionStats = new RTCStats_(null, {
+let kRTCPeerConnectionStats = new RTCStats(null, {
   dataChannelsOpened: 'number',
   dataChannelsClosed: 'number',
   dataChannelsRequested: 'number',
   dataChannelsAccepted: 'number',
 });
-gStatsWhitelist.set('peer-connection', kRTCPeerConnectionStats);
+addRTCStatsToWhitelist(
+    Presence.MANDATORY, 'peer-connection', kRTCPeerConnectionStats);
 
 /*
  * RTCMediaStreamStats
  * https://w3c.github.io/webrtc-stats/#msstats-dict*
  * @private
  */
-var kRTCMediaStreamStats = new RTCStats_(null, {
+let kRTCMediaStreamStats = new RTCStats(null, {
   streamIdentifier: 'string',
   trackIds: 'sequence_string',
 });
-gStatsWhitelist.set('stream', kRTCMediaStreamStats);
+addRTCStatsToWhitelist(Presence.MANDATORY, 'stream', kRTCMediaStreamStats);
 
-/*
- * RTCMediaStreamTrackStats
+/**
+ * RTCMediaHandlerStats
  * https://w3c.github.io/webrtc-stats/#mststats-dict*
  * @private
  */
-var kRTCMediaStreamTrackStats = new RTCStats_(null, {
+let kRTCMediaHandlerStats = new RTCStats(null, {
   trackIdentifier: 'string',
   remoteSource: 'boolean',
   ended: 'boolean',
-  detached: 'boolean',
   kind: 'string',
-  estimatedPlayoutTimestamp: 'number',
+  priority: 'string',
+  detached: 'boolean',  // Obsolete, detached stats should fire "onstatsended".
+});
+
+/*
+ * RTCVideoHandlerStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcvideohandlerstats
+ * @private
+ */
+let kRTCVideoHandlerStats = new RTCStats(kRTCMediaHandlerStats, {
   frameWidth: 'number',
   frameHeight: 'number',
   framesPerSecond: 'number',
+});
+
+/*
+ * RTCVideoSenderStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcvideosenderstats
+ * @private
+ */
+let kRTCVideoSenderStats = new RTCStats(kRTCVideoHandlerStats, {
+  mediaSourceId: 'string',
   framesCaptured: 'number',
   framesSent: 'number',
   hugeFramesSent: 'number',
+});
+// TODO(hbos): When sender is implemented, make presence MANDATORY.
+addRTCStatsToWhitelist(Presence.OPTIONAL, 'sender', kRTCVideoSenderStats);
+
+/*
+ * RTCSenderVideoTrackAttachmentStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcsendervideotrackattachmentstats
+ * @private
+ */
+let kRTCSenderVideoTrackAttachmentStats = new RTCStats(kRTCVideoSenderStats, {
+});
+addRTCStatsToWhitelist(
+    Presence.MANDATORY, 'track', kRTCSenderVideoTrackAttachmentStats);
+
+/*
+ * RTCVideoReceiverStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcvideoreceiverstats
+ * @private
+ */
+let kRTCVideoReceiverStats = new RTCStats(kRTCVideoHandlerStats, {
+  estimatedPlayoutTimestamp: 'number',
+  jitterBufferDelay: 'number',
+  jitterBufferEmittedCount: 'number',
   framesReceived: 'number',
   framesDecoded: 'number',
   framesDropped: 'number',
-  framesCorrupted: 'number',
   partialFramesLost: 'number',
   fullFramesLost: 'number',
+});
+// TODO(hbos): When receiver is implemented, make presence MANDATORY.
+addRTCStatsToWhitelist(
+    Presence.OPTIONAL, 'receiver', kRTCVideoReceiverStats);
+
+/*
+ * RTCReceiverVideoTrackAttachmentStats
+ * https://github.com/w3c/webrtc-stats/issues/424
+ * @private
+ */
+let kRTCReceiverVideoTrackAttachmentStats =
+    new RTCStats(kRTCVideoReceiverStats, {
+});
+addRTCStatsToWhitelist(
+    Presence.MANDATORY, 'track', kRTCReceiverVideoTrackAttachmentStats);
+
+/*
+ * RTCAudioHandlerStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcaudiohandlerstats
+ * @private
+ */
+let kRTCAudioHandlerStats = new RTCStats(kRTCMediaHandlerStats, {
   audioLevel: 'number',
   totalAudioEnergy: 'number',
   voiceActivityFlag: 'boolean',
+  totalSamplesDuration: 'number',
+});
+
+/*
+ * RTCAudioSenderStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcaudiosenderstats
+ * @private
+ */
+let kRTCAudioSenderStats = new RTCStats(kRTCAudioHandlerStats, {
+  mediaSourceId: 'string',
   echoReturnLoss: 'number',
   echoReturnLossEnhancement: 'number',
   totalSamplesSent: 'number',
-  totalSamplesReceived: 'number',
-  totalSamplesDuration: 'number',
-  concealedSamples: 'number',
-  concealmentEvents: 'number',
+});
+// TODO(hbos): When sender is implemented, make presence MANDATORY.
+addRTCStatsToWhitelist(Presence.OPTIONAL, 'sender', kRTCAudioSenderStats);
+
+/*
+ * RTCSenderAudioTrackAttachmentStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcsenderaudiotrackattachmentstats
+ * @private
+ */
+let kRTCSenderAudioTrackAttachmentStats = new RTCStats(kRTCAudioSenderStats, {
+});
+addRTCStatsToWhitelist(
+    Presence.MANDATORY, 'track', kRTCSenderAudioTrackAttachmentStats);
+
+/*
+ * RTCAudioReceiverStats
+ * https://w3c.github.io/webrtc-stats/#dom-rtcaudioreceiverstats
+ * @private
+ */
+let kRTCAudioReceiverStats = new RTCStats(kRTCAudioHandlerStats, {
+  estimatedPlayoutTimestamp: 'number',
   jitterBufferDelay: 'number',
   jitterBufferEmittedCount: 'number',
-  priority: 'string'
+  totalSamplesReceived: 'number',
+  concealedSamples: 'number',
+  silentConcealedSamples: 'number',
+  concealmentEvents: 'number',
+  insertedSamplesForDeceleration: 'number',
+  removedSamplesForAcceleration: 'number',
 });
-gStatsWhitelist.set('track', kRTCMediaStreamTrackStats);
+// TODO(hbos): When receiver is implemented, make presence MANDATORY.
+addRTCStatsToWhitelist(
+    Presence.OPTIONAL, 'receiver', kRTCAudioReceiverStats);
+
+/*
+ * RTCReceiverAudioTrackAttachmentStats
+ * https://github.com/w3c/webrtc-stats/issues/424
+ * @private
+ */
+let kRTCReceiverAudioTrackAttachmentStats =
+    new RTCStats(kRTCAudioReceiverStats, {
+});
+addRTCStatsToWhitelist(
+    Presence.MANDATORY, 'track', kRTCReceiverAudioTrackAttachmentStats);
 
 /*
  * RTCDataChannelStats
  * https://w3c.github.io/webrtc-stats/#dcstats-dict*
  * @private
  */
-var kRTCDataChannelStats = new RTCStats_(null, {
+let kRTCDataChannelStats = new RTCStats(null, {
   label: 'string',
   protocol: 'string',
   datachannelid: 'number',
@@ -168,14 +473,15 @@ var kRTCDataChannelStats = new RTCStats_(null, {
   messagesReceived: 'number',
   bytesReceived: 'number',
 });
-gStatsWhitelist.set('data-channel', kRTCDataChannelStats);
+addRTCStatsToWhitelist(
+    Presence.MANDATORY, 'data-channel', kRTCDataChannelStats);
 
 /*
  * RTCTransportStats
  * https://w3c.github.io/webrtc-stats/#transportstats-dict*
  * @private
  */
-var kRTCTransportStats = new RTCStats_(null, {
+let kRTCTransportStats = new RTCStats(null, {
   bytesSent: 'number',
   bytesReceived: 'number',
   rtcpTransportStatsId: 'string',
@@ -183,15 +489,19 @@ var kRTCTransportStats = new RTCStats_(null, {
   selectedCandidatePairId: 'string',
   localCertificateId: 'string',
   remoteCertificateId: 'string',
+  tlsVersion: 'string',
+  dtlsCipher: 'string',
+  srtpCipher: 'string',
+  selectedCandidatePairChanges: 'number',
 });
-gStatsWhitelist.set('transport', kRTCTransportStats);
+addRTCStatsToWhitelist(Presence.MANDATORY, 'transport', kRTCTransportStats);
 
 /*
  * RTCIceCandidateStats
  * https://w3c.github.io/webrtc-stats/#icecandidate-dict*
  * @private
  */
-var kRTCIceCandidateStats = new RTCStats_(null, {
+let kRTCIceCandidateStats = new RTCStats(null, {
   transportId: 'string',
   isRemote: 'boolean',
   networkType: 'string',
@@ -204,15 +514,17 @@ var kRTCIceCandidateStats = new RTCStats_(null, {
   url: 'string',
   deleted: 'boolean',
 });
-gStatsWhitelist.set('local-candidate', kRTCIceCandidateStats);
-gStatsWhitelist.set('remote-candidate', kRTCIceCandidateStats);
+addRTCStatsToWhitelist(
+    Presence.MANDATORY, 'local-candidate', kRTCIceCandidateStats);
+addRTCStatsToWhitelist(
+    Presence.MANDATORY, 'remote-candidate', kRTCIceCandidateStats);
 
 /*
  * RTCIceCandidatePairStats
  * https://w3c.github.io/webrtc-stats/#candidatepair-dict*
  * @private
  */
-var kRTCIceCandidatePairStats = new RTCStats_(null, {
+let kRTCIceCandidatePairStats = new RTCStats(null, {
   transportId: 'string',
   localCandidateId: 'string',
   remoteCandidateId: 'string',
@@ -238,20 +550,21 @@ var kRTCIceCandidatePairStats = new RTCStats_(null, {
   consentResponsesReceived: 'number',
   consentResponsesSent: 'number',
 });
-gStatsWhitelist.set('candidate-pair', kRTCIceCandidatePairStats);
+addRTCStatsToWhitelist(
+    Presence.MANDATORY, 'candidate-pair', kRTCIceCandidatePairStats);
 
 /*
  * RTCCertificateStats
  * https://w3c.github.io/webrtc-stats/#certificatestats-dict*
  * @private
  */
-var kRTCCertificateStats = new RTCStats_(null, {
+let kRTCCertificateStats = new RTCStats(null, {
   fingerprint: 'string',
   fingerprintAlgorithm: 'string',
   base64Certificate: 'string',
   issuerCertificateId: 'string',
 });
-gStatsWhitelist.set('certificate', kRTCCertificateStats);
+addRTCStatsToWhitelist(Presence.MANDATORY, 'certificate', kRTCCertificateStats);
 
 // Public interface to tests. These are expected to be called with
 // ExecuteJavascript invocations from the browser tests and will return answers
@@ -323,15 +636,20 @@ function measureGetStatsPerformance() {
   peerConnection_().getStats()
     .then(function(report) {
       let t1 = performance.now();
-      let statsTypes = new Set();
       for (let stats of report.values()) {
         verifyStatsIsWhitelisted_(stats);
-        statsTypes.add(stats.type);
       }
-      if (statsTypes.size != gStatsWhitelist.size) {
-        returnToTest('The returned report contains a different number (' +
-            statsTypes.size + ') of stats types than the whitelist. ' +
-            JSON.stringify(Array.from(statsTypes)));
+      for (let mandatoryType of mandatoryStatsTypes()) {
+        let mandatoryTypeExists = false;
+        for (let stats of report.values()) {
+          if (stats.type == mandatoryType) {
+            mandatoryTypeExists = true;
+            break;
+          }
+        }
+        if (!mandatoryTypeExists) {
+          returnToTest('Missing mandatory type: ' + mandatoryType);
+        }
       }
       returnToTest('ok-' + (t1 - t0));
     },
@@ -341,20 +659,23 @@ function measureGetStatsPerformance() {
 }
 
 /**
- * Returns a complete list of whitelisted "RTCStats.type" values as a
- * JSON-stringified array of strings to the test.
+ * Returns a complete list of mandatory "RTCStats.type" values from the
+ * whitelist as a JSON-stringified array of strings to the test.
  */
-function getWhitelistedStatsTypes() {
-  returnToTest(JSON.stringify(Array.from(gStatsWhitelist.keys())));
+function getMandatoryStatsTypes() {
+  returnToTest(JSON.stringify(Array.from(mandatoryStatsTypes())));
 }
 
 // Internals.
 
-/** @private */
-function RTCStats_(parent, membersObject) {
-  if (parent != null)
-    Object.assign(this, parent);
-  Object.assign(this, membersObject);
+/** Gets a set of all mandatory stats types. */
+function mandatoryStatsTypes() {
+  const mandatoryTypes = new Set();
+  for (let whitelistedStats of gStatsWhitelist.values()) {
+    if (whitelistedStats.presence() == Presence.MANDATORY)
+      mandatoryTypes.add(whitelistedStats.type());
+  }
+  return mandatoryTypes;
 }
 
 /**
@@ -381,13 +702,15 @@ function verifyStatsIsWhitelisted_(stats) {
   let whitelistedStats = gStatsWhitelist.get(stats.type);
   if (whitelistedStats == null)
     throw failTest('stats.type is not a whitelisted type: ' + stats.type);
+  whitelistedStats = whitelistedStats.stats();
   for (let propertyName in stats) {
     if (propertyName === 'id' || propertyName === 'timestamp' ||
         propertyName === 'type') {
       continue;
     }
     if (!whitelistedStats.hasOwnProperty(propertyName)) {
-      throw failTest('stats.' + propertyName + ' is not a whitelisted ' +
+      throw failTest(
+          stats.type + '.' + propertyName + ' is not a whitelisted ' +
           'member: ' + stats[propertyName]);
     }
     if (whitelistedStats[propertyName] === 'any')

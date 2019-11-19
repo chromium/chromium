@@ -32,7 +32,7 @@ const char kProcDir[] = "/proc";
 const char kStatFile[] = "stat";
 
 FilePath GetProcPidDir(pid_t pid) {
-  return FilePath(kProcDir).Append(IntToString(pid));
+  return FilePath(kProcDir).Append(NumberToString(pid));
 }
 
 pid_t ProcDirSlotToPid(const char* d_name) {

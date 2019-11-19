@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "content/public/browser/provision_fetcher_factory.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace content {
@@ -14,17 +14,17 @@ namespace content {
 // static
 void ProvisionFetcherImpl::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    media::mojom::ProvisionFetcherRequest request) {
+    mojo::PendingReceiver<media::mojom::ProvisionFetcher> receiver) {
   DCHECK(url_loader_factory);
-  mojo::MakeStrongBinding(
+  mojo::MakeSelfOwnedReceiver(
       std::make_unique<ProvisionFetcherImpl>(
           CreateProvisionFetcher(std::move(url_loader_factory))),
-      std::move(request));
+      std::move(receiver));
 }
 
 ProvisionFetcherImpl::ProvisionFetcherImpl(
     std::unique_ptr<media::ProvisionFetcher> provision_fetcher)
-    : provision_fetcher_(std::move(provision_fetcher)), weak_factory_(this) {
+    : provision_fetcher_(std::move(provision_fetcher)) {
   DVLOG(1) << __FUNCTION__;
 }
 

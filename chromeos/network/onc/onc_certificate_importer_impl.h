@@ -101,7 +101,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporterImpl
   // The certificate database to which certificates are imported.
   net::NSSCertDatabase* target_nssdb_;
 
-  base::WeakPtrFactory<CertificateImporterImpl> weak_factory_;
+  base::WeakPtrFactory<CertificateImporterImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CertificateImporterImpl);
 };

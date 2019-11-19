@@ -24,9 +24,6 @@ using views::Widget;
 
 namespace {
 
-// This is 2x of the slide ainmation duration.
-constexpr int kColorUpdateDurationMs = 240;
-
 // Tiles an image into an area, rounding the top corners.
 void TileRoundRect(gfx::Canvas* canvas,
                    const cc::PaintFlags& flags,
@@ -42,6 +39,10 @@ void TileRoundRect(gfx::Canvas* canvas,
                        0,  // bottom-right
                        0,
                        0};  // bottom-left
+  // Antialiasing can result in blending a transparent pixel and
+  // leave non opaque alpha between the frame and the client area.
+  // Extend 1dp to make sure it's fully opaque.
+  rect.fBottom += 1;
   SkPath path;
   path.addRoundRect(rect, radii, SkPath::kCW_Direction);
   canvas->DrawPath(path, flags);
@@ -54,7 +55,7 @@ namespace ash {
 DefaultFrameHeader::ColorAnimator::ColorAnimator(
     gfx::AnimationDelegate* delegate)
     : animation_(delegate) {
-  animation_.SetSlideDuration(kColorUpdateDurationMs);
+  animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(240));
   animation_.SetTweenType(gfx::Tween::EASE_IN);
   animation_.Reset(1);
 }
@@ -172,7 +173,7 @@ SkColor DefaultFrameHeader::GetTitleColor() const {
   const SkColor desired_color = color_utils::IsDark(frame_color)
                                     ? SK_ColorWHITE
                                     : SkColorSetRGB(40, 40, 40);
-  return color_utils::GetColorWithMinimumContrast(desired_color, frame_color);
+  return color_utils::BlendForMinContrast(desired_color, frame_color).color;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

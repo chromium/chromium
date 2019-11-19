@@ -49,7 +49,7 @@ class TetheringHandler : public DevToolsDomainHandler,
   CreateServerSocketCallback socket_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   bool is_active_;
-  base::WeakPtrFactory<TetheringHandler> weak_factory_;
+  base::WeakPtrFactory<TetheringHandler> weak_factory_{this};
 
   static TetheringImpl* impl_;
 

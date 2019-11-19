@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -48,7 +49,7 @@ struct PatternData {
 LayoutSVGResourcePattern::LayoutSVGResourcePattern(SVGPatternElement* node)
     : LayoutSVGResourcePaintServer(node),
       should_collect_pattern_attributes_(true),
-      attributes_wrapper_(PatternAttributesWrapper::Create()),
+      attributes_wrapper_(MakeGarbageCollected<PatternAttributesWrapper>()),
       pattern_map_(MakeGarbageCollected<PatternMap>()) {}
 
 void LayoutSVGResourcePattern::RemoveAllClientsFromCache(

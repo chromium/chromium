@@ -10,9 +10,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
+#include "chrome/android/chrome_jni_headers/GeneratedPasswordSavedInfoBarDelegate_jni.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/GeneratedPasswordSavedInfoBarDelegate_jni.h"
 
 using base::android::JavaParamRef;
 

@@ -24,7 +24,7 @@ for (var i = 0; i < test.childNodes.length; i++) {
     test.childNodes[i].appendChild(textNode);
     // OBJECT fallback content rendering is asynchronous.
     if (window.internals)
-        internals.updateLayoutIgnorePendingStylesheetsAndRunPostLayoutTasks();
+        internals.updateLayoutAndRunPostLayoutTasks();
     window.getSelection().setBaseAndExtent(textNode, 6, textNode, 11);
     document.execCommand('bold', false, null);
 }

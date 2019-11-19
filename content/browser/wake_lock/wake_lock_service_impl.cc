@@ -10,28 +10,31 @@
 namespace content {
 
 // static
-void WakeLockServiceImpl::Create(RenderFrameHost* render_frame_host,
-                                 blink::mojom::WakeLockServiceRequest request) {
+void WakeLockServiceImpl::Create(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::mojom::WakeLockService> receiver) {
   DCHECK(render_frame_host);
-  new WakeLockServiceImpl(render_frame_host, std::move(request));
+  new WakeLockServiceImpl(render_frame_host, std::move(receiver));
 }
 
-void WakeLockServiceImpl::GetWakeLock(device::mojom::WakeLockType type,
-                                      device::mojom::WakeLockReason reason,
-                                      const std::string& description,
-                                      device::mojom::WakeLockRequest request) {
+void WakeLockServiceImpl::GetWakeLock(
+    device::mojom::WakeLockType type,
+    device::mojom::WakeLockReason reason,
+    const std::string& description,
+    mojo::PendingReceiver<device::mojom::WakeLock> receiver) {
   device::mojom::WakeLockContext* wake_lock_context =
       web_contents()->GetWakeLockContext();
 
   if (!wake_lock_context)
     return;
 
-  wake_lock_context->GetWakeLock(type, reason, description, std::move(request));
+  wake_lock_context->GetWakeLock(type, reason, description,
+                                 std::move(receiver));
 }
 
 WakeLockServiceImpl::WakeLockServiceImpl(
     RenderFrameHost* render_frame_host,
-    blink::mojom::WakeLockServiceRequest request)
-    : FrameServiceBase(render_frame_host, std::move(request)) {}
+    mojo::PendingReceiver<blink::mojom::WakeLockService> receiver)
+    : FrameServiceBase(render_frame_host, std::move(receiver)) {}
 
 }  // namespace content

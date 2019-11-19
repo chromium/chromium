@@ -22,7 +22,7 @@ content::WebUIDataSource* CreateSyncFileSystemInternalsHTMLSource() {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(
           chrome::kChromeUISyncFileSystemInternalsHost);
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
   source->AddResourcePath(
       "utils.js",
       IDR_SYNC_FILE_SYSTEM_INTERNALS_UTILS_JS);

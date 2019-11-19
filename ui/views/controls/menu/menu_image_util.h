@@ -11,19 +11,11 @@
 namespace views {
 
 // The width/height of the check and submenu arrows.
-const int kMenuCheckSize = 16;
-const int kSubmenuArrowSize = 8;
+constexpr int kMenuCheckSize = 16;
+constexpr int kSubmenuArrowSize = 8;
 
 // Returns the Menu Check box image (always checked).
 gfx::ImageSkia GetMenuCheckImage(SkColor icon_color);
-
-// Return the RadioButton image for given state. |toggled| is true when
-// the radio option is active, |hovered| describes the menu higlight/selection
-// state, and |default_icon_color| is the base color that should be used for
-// the icon (which may be ignored based on the other two flags).
-gfx::ImageSkia GetRadioButtonImage(bool toggled,
-                                   bool hovered,
-                                   SkColor default_icon_color);
 
 // Returns the image for submenu arrow for current RTL setting.
 gfx::ImageSkia GetSubmenuArrowImage(SkColor icon_color);

@@ -21,6 +21,40 @@ namespace {
 const base::FilePath::CharType kBackgroundScriptFilepath[] =
     FILE_PATH_LITERAL("background.js");
 
+std::unique_ptr<base::Value> ToValue(const std::string& t) {
+  return std::make_unique<base::Value>(t);
+}
+
+std::unique_ptr<base::Value> ToValue(int t) {
+  return std::make_unique<base::Value>(t);
+}
+
+std::unique_ptr<base::Value> ToValue(bool t) {
+  return std::make_unique<base::Value>(t);
+}
+
+std::unique_ptr<base::Value> ToValue(const DictionarySource& source) {
+  return source.ToValue();
+}
+
+template <typename T>
+std::unique_ptr<base::Value> ToValue(const std::vector<T>& vec) {
+  ListBuilder builder;
+  for (const T& t : vec)
+    builder.Append(ToValue(t));
+  return builder.Build();
+}
+
+template <typename T>
+void SetValue(base::DictionaryValue* dict,
+              const char* key,
+              const base::Optional<T>& value) {
+  if (!value)
+    return;
+
+  dict->Set(key, ToValue(*value));
+}
+
 }  // namespace
 
 TestRuleCondition::TestRuleCondition() = default;
@@ -30,25 +64,79 @@ TestRuleCondition& TestRuleCondition::operator=(const TestRuleCondition&) =
     default;
 
 std::unique_ptr<base::DictionaryValue> TestRuleCondition::ToValue() const {
-  auto value = std::make_unique<base::DictionaryValue>();
-  if (url_filter)
-    value->SetString(kUrlFilterKey, *url_filter);
-  if (is_url_filter_case_sensitive) {
-    value->SetBoolean(kIsUrlFilterCaseSensitiveKey,
-                      *is_url_filter_case_sensitive);
-  }
-  if (domains)
-    value->Set(kDomainsKey, ToListValue(*domains));
-  if (excluded_domains)
-    value->Set(kExcludedDomainsKey, ToListValue(*excluded_domains));
-  if (resource_types)
-    value->Set(kResourceTypesKey, ToListValue(*resource_types));
-  if (excluded_resource_types)
-    value->Set(kExcludedResourceTypesKey,
-               ToListValue(*excluded_resource_types));
-  if (domain_type)
-    value->SetString(kDomainTypeKey, *domain_type);
-  return value;
+  auto dict = std::make_unique<base::DictionaryValue>();
+  SetValue(dict.get(), kUrlFilterKey, url_filter);
+  SetValue(dict.get(), kIsUrlFilterCaseSensitiveKey,
+           is_url_filter_case_sensitive);
+  SetValue(dict.get(), kDomainsKey, domains);
+  SetValue(dict.get(), kExcludedDomainsKey, excluded_domains);
+  SetValue(dict.get(), kResourceTypesKey, resource_types);
+  SetValue(dict.get(), kExcludedResourceTypesKey, excluded_resource_types);
+  SetValue(dict.get(), kDomainTypeKey, domain_type);
+  return dict;
+}
+
+TestRuleQueryKeyValue::TestRuleQueryKeyValue() = default;
+TestRuleQueryKeyValue::~TestRuleQueryKeyValue() = default;
+TestRuleQueryKeyValue::TestRuleQueryKeyValue(const TestRuleQueryKeyValue&) =
+    default;
+TestRuleQueryKeyValue& TestRuleQueryKeyValue::operator=(
+    const TestRuleQueryKeyValue&) = default;
+
+std::unique_ptr<base::DictionaryValue> TestRuleQueryKeyValue::ToValue() const {
+  auto dict = std::make_unique<base::DictionaryValue>();
+  SetValue(dict.get(), kQueryKeyKey, key);
+  SetValue(dict.get(), kQueryValueKey, value);
+  return dict;
+}
+
+TestRuleQueryTransform::TestRuleQueryTransform() = default;
+TestRuleQueryTransform::~TestRuleQueryTransform() = default;
+TestRuleQueryTransform::TestRuleQueryTransform(const TestRuleQueryTransform&) =
+    default;
+TestRuleQueryTransform& TestRuleQueryTransform::operator=(
+    const TestRuleQueryTransform&) = default;
+
+std::unique_ptr<base::DictionaryValue> TestRuleQueryTransform::ToValue() const {
+  auto dict = std::make_unique<base::DictionaryValue>();
+  SetValue(dict.get(), kQueryTransformRemoveParamsKey, remove_params);
+  SetValue(dict.get(), kQueryTransformAddReplaceParamsKey,
+           add_or_replace_params);
+  return dict;
+}
+
+TestRuleTransform::TestRuleTransform() = default;
+TestRuleTransform::~TestRuleTransform() = default;
+TestRuleTransform::TestRuleTransform(const TestRuleTransform&) = default;
+TestRuleTransform& TestRuleTransform::operator=(const TestRuleTransform&) =
+    default;
+
+std::unique_ptr<base::DictionaryValue> TestRuleTransform::ToValue() const {
+  auto dict = std::make_unique<base::DictionaryValue>();
+  SetValue(dict.get(), kTransformSchemeKey, scheme);
+  SetValue(dict.get(), kTransformHostKey, host);
+  SetValue(dict.get(), kTransformPortKey, port);
+  SetValue(dict.get(), kTransformPathKey, path);
+  SetValue(dict.get(), kTransformQueryKey, query);
+  SetValue(dict.get(), kTransformQueryTransformKey, query_transform);
+  SetValue(dict.get(), kTransformFragmentKey, fragment);
+  SetValue(dict.get(), kTransformUsernameKey, username);
+  SetValue(dict.get(), kTransformPasswordKey, password);
+  return dict;
+}
+
+TestRuleRedirect::TestRuleRedirect() = default;
+TestRuleRedirect::~TestRuleRedirect() = default;
+TestRuleRedirect::TestRuleRedirect(const TestRuleRedirect&) = default;
+TestRuleRedirect& TestRuleRedirect::operator=(const TestRuleRedirect&) =
+    default;
+
+std::unique_ptr<base::DictionaryValue> TestRuleRedirect::ToValue() const {
+  auto dict = std::make_unique<base::DictionaryValue>();
+  SetValue(dict.get(), kExtensionPathKey, extension_path);
+  SetValue(dict.get(), kTransformKey, transform);
+  SetValue(dict.get(), kRedirectUrlKey, url);
+  return dict;
 }
 
 TestRuleAction::TestRuleAction() = default;
@@ -57,12 +145,11 @@ TestRuleAction::TestRuleAction(const TestRuleAction&) = default;
 TestRuleAction& TestRuleAction::operator=(const TestRuleAction&) = default;
 
 std::unique_ptr<base::DictionaryValue> TestRuleAction::ToValue() const {
-  auto value = std::make_unique<base::DictionaryValue>();
-  if (type)
-    value->SetString(kRuleActionTypeKey, *type);
-  if (redirect_url)
-    value->SetString(kRedirectUrlKey, *redirect_url);
-  return value;
+  auto dict = std::make_unique<base::DictionaryValue>();
+  SetValue(dict.get(), kRuleActionTypeKey, type);
+  SetValue(dict.get(), kRemoveHeadersListKey, remove_headers_list);
+  SetValue(dict.get(), kRedirectKey, redirect);
+  return dict;
 }
 
 TestRule::TestRule() = default;
@@ -71,16 +158,12 @@ TestRule::TestRule(const TestRule&) = default;
 TestRule& TestRule::operator=(const TestRule&) = default;
 
 std::unique_ptr<base::DictionaryValue> TestRule::ToValue() const {
-  auto value = std::make_unique<base::DictionaryValue>();
-  if (id)
-    value->SetInteger(kIDKey, *id);
-  if (priority)
-    value->SetInteger(kPriorityKey, *priority);
-  if (condition)
-    value->Set(kRuleConditionKey, condition->ToValue());
-  if (action)
-    value->Set(kRuleActionKey, action->ToValue());
-  return value;
+  auto dict = std::make_unique<base::DictionaryValue>();
+  SetValue(dict.get(), kIDKey, id);
+  SetValue(dict.get(), kPriorityKey, priority);
+  SetValue(dict.get(), kRuleConditionKey, condition);
+  SetValue(dict.get(), kRuleActionKey, action);
+  return dict;
 }
 
 TestRule CreateGenericRule() {
@@ -101,6 +184,9 @@ std::unique_ptr<base::DictionaryValue> CreateManifest(
     bool has_background_script) {
   std::vector<std::string> permissions = hosts;
   permissions.push_back(kAPIPermission);
+  permissions.push_back(kFeedbackAPIPermission);
+  permissions.push_back("webRequest");
+  permissions.push_back("webRequestBlocking");
 
   std::vector<std::string> background_scripts;
   if (has_background_script)
@@ -119,6 +205,7 @@ std::unique_ptr<base::DictionaryValue> CreateManifest(
       .Set("background", DictionaryBuilder()
                              .Set("scripts", ToListValue(background_scripts))
                              .Build())
+      .Set(keys::kBrowserAction, DictionaryBuilder().Build())
       .Build();
 }
 

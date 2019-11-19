@@ -4,7 +4,6 @@
 
 #include "components/safe_browsing/triggers/ad_sampler_trigger.h"
 
-#include "base/metrics/field_trial_params.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
@@ -13,8 +12,8 @@
 #include "components/safe_browsing/triggers/mock_trigger_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock-generated-function-mockers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -65,17 +64,7 @@ class AdSamplerTriggerTest : public content::RenderViewHostTestHarness {
   // Returns the final RenderFrameHost after navigation commits.
   RenderFrameHost* NavigateFrame(const std::string& url,
                                  RenderFrameHost* frame) {
-    GURL gurl(url);
-    auto navigation_simulator =
-        NavigationSimulator::CreateRendererInitiated(gurl, frame);
-    navigation_simulator->Commit();
-    RenderFrameHost* final_frame_host =
-        navigation_simulator->GetFinalRenderFrameHost();
-    // Call the trigger's FinishLoad event handler directly since it doesn't
-    // happen as part of the navigation.
-    safe_browsing::AdSamplerTrigger::FromWebContents(web_contents())
-        ->DidFinishLoad(final_frame_host, gurl);
-    return final_frame_host;
+    return NavigationSimulator::NavigateAndCommitFromDocument(GURL(url), frame);
   }
 
   // Returns the final RenderFrameHost after navigation commits.
@@ -134,7 +123,7 @@ TEST_F(AdSamplerTriggerTest, TriggerDisabledBySamplingFrequency) {
                                       NO_SAMPLE_AD_SKIPPED_FOR_FREQUENCY, 2);
 }
 
-TEST_F(AdSamplerTriggerTest, PageWithNoAds) {
+TEST_F(AdSamplerTriggerTest, DISABLED_PageWithNoAds) {
   // Make sure the trigger doesn't fire when there are no ads on the page.
   CreateTriggerWithFrequency(/*denominator=*/1);
 
@@ -225,30 +214,20 @@ TEST(AdSamplerTriggerTestFinch, FrequencyDenominatorFeature) {
   // Make sure that setting the frequency denominator via Finch params works as
   // expected, and that the default frequency is used when no Finch config is
   // given.
-  content::TestBrowserThreadBundle thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
   AdSamplerTrigger trigger_default(nullptr, nullptr, nullptr, nullptr, nullptr);
   EXPECT_EQ(kAdSamplerDefaultFrequency,
             trigger_default.sampler_frequency_denominator_);
 
   const size_t kDenominatorInt = 12345;
-  base::FieldTrialList field_trial_list(nullptr);
 
-  base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
-      safe_browsing::kAdSamplerTriggerFeature.name, "Group");
-  std::map<std::string, std::string> feature_params;
+  base::FieldTrialParams feature_params;
   feature_params[std::string(
       safe_browsing::kAdSamplerFrequencyDenominatorParam)] =
       base::NumberToString(kDenominatorInt);
-  base::AssociateFieldTrialParams(safe_browsing::kAdSamplerTriggerFeature.name,
-                                  "Group", feature_params);
-  std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-  feature_list->InitializeFromCommandLine(
-      safe_browsing::kAdSamplerTriggerFeature.name, std::string());
-  feature_list->AssociateReportingFieldTrial(
-      safe_browsing::kAdSamplerTriggerFeature.name,
-      base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial);
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      safe_browsing::kAdSamplerTriggerFeature, feature_params);
 
   AdSamplerTrigger trigger_finch(nullptr, nullptr, nullptr, nullptr, nullptr);
   EXPECT_EQ(kDenominatorInt, trigger_finch.sampler_frequency_denominator_);

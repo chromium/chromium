@@ -12,10 +12,11 @@
 #import "components/password_manager/ios/password_form_helper.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_manager_client.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_manager_driver.h"
-#import "ios/web/public/web_state/web_state_observer_bridge.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 
 @protocol ApplicationCommands;
 @class NotifyUserAutoSigninViewController;
+@protocol PasswordBreachCommands;
 @protocol PasswordFormFiller;
 @protocol PasswordsUiDelegate;
 @class UIViewController;
@@ -63,7 +64,8 @@ class PasswordManagerClient;
 
 // The dispatcher used for the PasswordController. This property can return nil
 // even after being set to a non-nil object.
-@property(nonatomic, weak) id<ApplicationCommands> dispatcher;
+@property(nonatomic, weak) id<ApplicationCommands, PasswordBreachCommands>
+    dispatcher;
 
 // Delegate used by this PasswordController to show UI on BVC.
 @property(weak, nonatomic) id<PasswordControllerDelegate> delegate;
@@ -78,15 +80,6 @@ class PasswordManagerClient;
                         passwordManagerClient NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
-
-// Generates and offers a password to the user based on given |formName| for the
-// given (optional) fields |newPasswordIdentfier| and
-// |confirmPasswordIdentfier|. |completionHandler| called with YES if user
-// accepted the generated password.
-- (void)generatePasswordForFormName:(NSString*)formName
-              newPasswordIdentifier:(NSString*)newPasswordIdentifier
-          confirmPasswordIdentifier:(NSString*)confirmPasswordIdentifier
-                  completionHandler:(void (^)(BOOL))completionHandler;
 
 @end
 

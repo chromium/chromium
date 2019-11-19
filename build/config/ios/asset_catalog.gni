@@ -134,6 +134,12 @@ template("appiconset") {
     asset_type = "appiconset"
   }
 }
+template("colorset") {
+  asset_catalog(target_name) {
+    forward_variables_from(invoker, "*", [ "asset_type" ])
+    asset_type = "colorset"
+  }
+}
 template("imageset") {
   asset_catalog(target_name) {
     forward_variables_from(invoker, "*", [ "asset_type" ])

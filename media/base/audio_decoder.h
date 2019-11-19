@@ -26,15 +26,15 @@ class CdmContext;
 class MEDIA_EXPORT AudioDecoder {
  public:
   // Callback for VideoDecoder initialization.
-  using InitCB = base::Callback<void(bool success)>;
+  using InitCB = base::OnceCallback<void(bool success)>;
 
   // Callback for AudioDecoder to return a decoded frame whenever it becomes
   // available. Only non-EOS frames should be returned via this callback.
-  using OutputCB = base::Callback<void(const scoped_refptr<AudioBuffer>&)>;
+  using OutputCB = base::RepeatingCallback<void(scoped_refptr<AudioBuffer>)>;
 
   // Callback for Decode(). Called after the decoder has accepted corresponding
   // DecoderBuffer, indicating that the pipeline can send next buffer to decode.
-  using DecodeCB = base::Callback<void(DecodeStatus)>;
+  using DecodeCB = base::RepeatingCallback<void(DecodeStatus)>;
 
   AudioDecoder();
 
@@ -69,7 +69,7 @@ class MEDIA_EXPORT AudioDecoder {
   // Initialize().
   virtual void Initialize(const AudioDecoderConfig& config,
                           CdmContext* cdm_context,
-                          const InitCB& init_cb,
+                          InitCB init_cb,
                           const OutputCB& output_cb,
                           const WaitingCB& waiting_cb) = 0;
 
@@ -89,7 +89,7 @@ class MEDIA_EXPORT AudioDecoder {
 
   // Resets decoder state. All pending Decode() requests will be finished or
   // aborted before |closure| is called.
-  virtual void Reset(const base::Closure& closure) = 0;
+  virtual void Reset(base::OnceClosure closure) = 0;
 
   // Returns true if the decoder needs bitstream conversion before decoding.
   virtual bool NeedsBitstreamConversion() const;

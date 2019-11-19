@@ -7,5 +7,6 @@ import("//third_party/protobuf/proto_library.gni")
 proto_library("notification_proto") {
   sources = [
     "notification_database_data.proto",
+    "notification_database_resources.proto",
   ]
 }

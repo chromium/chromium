@@ -6,7 +6,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/pending_user_input.h"
 #include "third_party/blink/renderer/platform/scheduler/public/pending_user_input_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -17,7 +17,7 @@ namespace blink {
 
 bool Scheduling::isInputPending(ScriptState* script_state,
                                 const Vector<String>& input_types) const {
-  DCHECK(origin_trials::ExperimentalIsInputPendingEnabled(
+  DCHECK(RuntimeEnabledFeatures::ExperimentalIsInputPendingEnabled(
       ExecutionContext::From(script_state)));
 
   if (!Platform::Current()->IsLockedToSite()) {
@@ -26,7 +26,8 @@ bool Scheduling::isInputPending(ScriptState* script_state,
     // a process are part of the same site to avoid leaking cross-site inputs.
     ExecutionContext::From(script_state)
         ->AddConsoleMessage(ConsoleMessage::Create(
-            kJSMessageSource, mojom::ConsoleMessageLevel::kWarning,
+            mojom::ConsoleMessageSource::kJavaScript,
+            mojom::ConsoleMessageLevel::kWarning,
             "isInputPending requires site-per-process (crbug.com/910421)."));
     return false;
   }
@@ -50,14 +51,19 @@ bool Scheduling::isInputPending(ScriptState* script_state,
       message.Append("\". Skipping.");
       ExecutionContext::From(script_state)
           ->AddConsoleMessage(ConsoleMessage::Create(
-              kJSMessageSource, mojom::ConsoleMessageLevel::kWarning,
-              message.ToString()));
+              mojom::ConsoleMessageSource::kJavaScript,
+              mojom::ConsoleMessageLevel::kWarning, message.ToString()));
     }
 
     if (!has_pending_input)
       has_pending_input |= input_info.HasPendingInputType(pending_input_type);
   }
   return has_pending_input;
+}
+
+bool Scheduling::isFramePending() const {
+  auto* scheduler = ThreadScheduler::Current();
+  return scheduler->IsBeginMainFrameScheduled();
 }
 
 }  // namespace blink

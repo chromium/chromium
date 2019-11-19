@@ -8,9 +8,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
-#include "jni/CoreImpl_jni.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "mojo/public/java/system/system_impl_java_jni_headers/CoreImpl_jni.h"
 
 namespace mojo {
 namespace android {

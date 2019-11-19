@@ -31,8 +31,7 @@ class ArcApplicationNotifierController : public NotifierController,
   ~ArcApplicationNotifierController() override;
 
   // TODO(hirono): Rewrite the function with new API to fetch package list.
-  std::vector<ash::mojom::NotifierUiDataPtr> GetNotifierList(
-      Profile* profile) override;
+  std::vector<ash::NotifierMetadata> GetNotifierList(Profile* profile) override;
   void SetNotifierEnabled(Profile* profile,
                           const message_center::NotifierId& notifier_id,
                           bool enabled) override;

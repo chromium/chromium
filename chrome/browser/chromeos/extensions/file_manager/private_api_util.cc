@@ -27,13 +27,12 @@
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "components/drive/chromeos/file_system_interface.h"
-#include "components/drive/drive.pb.h"
+#include "chromeos/components/drivefs/drivefs_util.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_errors.h"
 #include "content/public/browser/child_process_security_policy.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 namespace file_manager_private = extensions::api::file_manager_private;
@@ -54,35 +53,10 @@ struct GetSelectedFileInfoParams {
 // the resolved local path when successful, and receives empty path for failure.
 typedef base::OnceCallback<void(const base::FilePath&)> LocalPathCallback;
 
-// Converts a callback from Drive file system to LocalPathCallback.
-void OnDriveGetFile(const base::FilePath& path,
-                    LocalPathCallback callback,
-                    drive::FileError error,
-                    const base::FilePath& local_file_path,
-                    std::unique_ptr<drive::ResourceEntry> entry) {
-  if (error != drive::FILE_ERROR_OK)
-    DLOG(ERROR) << "Failed to get " << path.value() << " with: " << error;
-  std::move(callback).Run(local_file_path);
-}
-
 // Gets a resolved local file path of a non native |path| for file opening.
 void GetFileNativeLocalPathForOpening(Profile* profile,
                                       const base::FilePath& path,
                                       LocalPathCallback callback) {
-  if (drive::util::IsUnderDriveMountPoint(path)) {
-    drive::FileSystemInterface* file_system =
-        drive::util::GetFileSystemByProfile(profile);
-    if (!file_system) {
-      DLOG(ERROR) << "Drive file selected while disabled: " << path.value();
-      std::move(callback).Run(base::FilePath());
-      return;
-    }
-    file_system->GetFile(
-        drive::util::ExtractDrivePath(path),
-        base::BindOnce(&OnDriveGetFile, path, std::move(callback)));
-    return;
-  }
-
   VolumeManager::Get(profile)->snapshot_manager()->CreateManagedSnapshot(
       path, std::move(callback));
 }
@@ -91,21 +65,7 @@ void GetFileNativeLocalPathForOpening(Profile* profile,
 void GetFileNativeLocalPathForSaving(Profile* profile,
                                      const base::FilePath& path,
                                      LocalPathCallback callback) {
-  if (drive::util::IsUnderDriveMountPoint(path)) {
-    drive::FileSystemInterface* file_system =
-        drive::util::GetFileSystemByProfile(profile);
-    if (!file_system) {
-      DLOG(ERROR) << "Drive file selected while disabled: " << path.value();
-      std::move(callback).Run(base::FilePath());
-      return;
-    }
-    file_system->GetFileForSaving(
-        drive::util::ExtractDrivePath(path),
-        base::BindOnce(&OnDriveGetFile, path, std::move(callback)));
-    return;
-  }
-
-  // TODO(kinaba): For now, the only writable non-local volume is Drive.
+  // TODO(kinaba): For now, there are no writable non-local volumes.
   NOTREACHED();
   std::move(callback).Run(base::FilePath());
 }
@@ -212,8 +172,7 @@ void ContinueGetSelectedFileInfoWithDriveFsMetadata(
   const int index = params->selected_files.size();
   const auto& path = params->file_paths[index];
   params->selected_files.emplace_back(path, path);
-  if (metadata &&
-      metadata->type == drivefs::mojom::FileMetadata::Type::kHosted &&
+  if (metadata && drivefs::IsHosted(metadata->type) &&
       !metadata->alternate_url.empty()) {
     params->selected_files.back().url.emplace(
         std::move(metadata->alternate_url));
@@ -334,6 +293,9 @@ void VolumeToVolumeMetadata(
       volume_metadata->volume_type =
           file_manager_private::VOLUME_TYPE_TESTING;
       break;
+    case VOLUME_TYPE_SMB:
+      volume_metadata->volume_type = file_manager_private::VOLUME_TYPE_SMB;
+      break;
     case NUM_VOLUME_TYPE:
       NOTREACHED();
       break;
@@ -362,7 +324,7 @@ void VolumeToVolumeMetadata(
         break;
     }
     volume_metadata->device_path = std::make_unique<std::string>(
-        volume.system_path_prefix().AsUTF8Unsafe());
+        volume.storage_device_path().AsUTF8Unsafe());
     volume_metadata->is_parent_device =
         std::make_unique<bool>(volume.is_parent());
   } else {
@@ -444,18 +406,6 @@ void GetSelectedFileInfo(content::RenderFrameHost* render_frame_host,
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&GetSelectedFileInfoInternal, profile, std::move(params)));
-}
-
-void SetupProfileFileAccessPermissions(int render_view_process_id,
-                                       Profile* profile) {
-  const base::FilePath paths[] = {
-    drive::util::GetDriveMountPointPath(profile),
-    util::GetDownloadsFolderForProfile(profile),
-  };
-  for (size_t i = 0; i < base::size(paths); ++i) {
-    content::ChildProcessSecurityPolicy::GetInstance(
-        )->GrantCreateReadWriteFile(render_view_process_id, paths[i]);
-  }
 }
 
 drive::EventLogger* GetLogger(Profile* profile) {

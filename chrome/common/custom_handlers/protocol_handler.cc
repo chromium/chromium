@@ -9,6 +9,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/value_conversions.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/common/origin_util.h"
+#include "extensions/common/constants.h"
 #include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -32,6 +34,36 @@ bool ProtocolHandler::IsValidDict(const base::DictionaryValue* value) {
   // Note that "title" parameter is ignored.
   // The |last_modified| field is optional as it was introduced in M68.
   return value->HasKey("protocol") && value->HasKey("url");
+}
+
+bool ProtocolHandler::IsValid() const {
+  // TODO(https://crbug.com/977083): Consider limiting to secure contexts.
+
+  // This matches SupportedSchemes() in blink's NavigatorContentUtils.
+
+  // Although not enforced in the spec the spec gives freedom to do additional
+  // security checks. Bugs have arisen from allowing non-http/https URLs, e.g.
+  // https://crbug.com/971917 so we check this here.
+  if (!url_.SchemeIsHTTPOrHTTPS() &&
+      !url_.SchemeIs(extensions::kExtensionScheme)) {
+    return false;
+  }
+
+  // From:
+  // https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme
+  static constexpr const char* const kProtocolSafelist[] = {
+      "bitcoin", "geo",  "im",   "irc",         "ircs", "magnet", "mailto",
+      "mms",     "news", "nntp", "openpgp4fpr", "sip",  "sms",    "smsto",
+      "ssh",     "tel",  "urn",  "webcal",      "wtai", "xmpp"};
+  static constexpr const char kWebPrefix[] = "web+";
+
+  bool has_web_prefix =
+      base::StartsWith(protocol_, kWebPrefix,
+                       base::CompareCase::INSENSITIVE_ASCII) &&
+      protocol_ != kWebPrefix;
+
+  return has_web_prefix ||
+         base::Contains(kProtocolSafelist, base::ToLowerASCII(protocol_));
 }
 
 bool ProtocolHandler::IsSameOrigin(

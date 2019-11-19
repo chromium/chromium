@@ -114,8 +114,8 @@ QueryKeychainItemsForProfile(const std::string& keychain_access_group,
       DLOG(ERROR) << "missing label";
       continue;
     }
-    base::Optional<std::string> opt_rp_id = CredentialMetadata::DecodeRpId(
-        metadata_secret, base::SysCFStringRefToUTF8(sec_attr_label));
+    base::Optional<std::string> opt_rp_id =
+        DecodeRpId(metadata_secret, base::SysCFStringRefToUTF8(sec_attr_label));
     if (!opt_rp_id) {
       DVLOG(1) << "key doesn't belong to this profile";
       continue;

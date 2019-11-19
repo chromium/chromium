@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_SELECTION_CONTROLLER_CLIENT_MANAGER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_SELECTION_CONTROLLER_CLIENT_MANAGER_H_
 
+#include "base/observer_list_types.h"
 #include "content/common/content_export.h"
 
 namespace gfx {
@@ -30,10 +31,8 @@ class CONTENT_EXPORT TouchSelectionControllerClientManager {
 
   // The manager uses this class' methods to notify observers about important
   // events.
-  class CONTENT_EXPORT Observer {
+  class CONTENT_EXPORT Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() {}
-
     // Warns observers the manager is shutting down. The manager's view may not
     // be rigidly defined with respect to the lifetime of the client's views.
     virtual void OnManagerWillDestroy(

@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalTextFragment 'a'",
+          "rect": [0, 5, 15, 15],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'z'",
+          "rect": [0, 5, 15, 15],
+          "reason": "appeared"
+        }
+      ]
+    }
+  ]
+}
+

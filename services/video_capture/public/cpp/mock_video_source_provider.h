@@ -5,6 +5,8 @@
 #ifndef SERVICES_VIDEO_CAPTURE_PUBLIC_CPP_MOCK_VIDEO_SOURCE_PROVIDER_H_
 #define SERVICES_VIDEO_CAPTURE_PUBLIC_CPP_MOCK_VIDEO_SOURCE_PROVIDER_H_
 
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/video_capture/public/mojom/devices_changed_observer.mojom.h"
 #include "services/video_capture/public/mojom/producer.mojom.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
@@ -18,41 +20,50 @@ class MockVideoSourceProvider
   MockVideoSourceProvider();
   ~MockVideoSourceProvider() override;
 
-  void GetVideoSource(
-      const std::string& device_id,
-      video_capture::mojom::VideoSourceRequest source_request) override;
+  void GetVideoSource(const std::string& device_id,
+                      mojo::PendingReceiver<video_capture::mojom::VideoSource>
+                          source_receiver) override;
 
   void GetSourceInfos(GetSourceInfosCallback callback) override;
 
   void AddSharedMemoryVirtualDevice(
       const media::VideoCaptureDeviceInfo& device_info,
-      video_capture::mojom::ProducerPtr producer,
+      mojo::PendingRemote<video_capture::mojom::Producer> producer,
       bool send_buffer_handles_to_producer_as_raw_file_descriptors,
-      video_capture::mojom::SharedMemoryVirtualDeviceRequest virtual_device)
-      override;
+      mojo::PendingReceiver<video_capture::mojom::SharedMemoryVirtualDevice>
+          virtual_device_receiver) override;
 
-  void AddTextureVirtualDevice(const media::VideoCaptureDeviceInfo& device_info,
-                               video_capture::mojom::TextureVirtualDeviceRequest
-                                   virtual_device) override;
+  void AddTextureVirtualDevice(
+      const media::VideoCaptureDeviceInfo& device_info,
+      mojo::PendingReceiver<video_capture::mojom::TextureVirtualDevice>
+          virtual_device_receiver) override;
   void RegisterVirtualDevicesChangedObserver(
-      video_capture::mojom::DevicesChangedObserverPtr observer,
+      mojo::PendingRemote<video_capture::mojom::DevicesChangedObserver>
+          observer,
       bool raise_event_if_virtual_devices_already_present) override {
     NOTIMPLEMENTED();
   }
 
+  void Close(CloseCallback callback) override;
+
   MOCK_METHOD1(DoGetSourceInfos, void(GetSourceInfosCallback& callback));
-  MOCK_METHOD2(DoGetVideoSource,
-               void(const std::string& device_id,
-                    video_capture::mojom::VideoSourceRequest* request));
-  MOCK_METHOD3(DoAddVirtualDevice,
-               void(const media::VideoCaptureDeviceInfo& device_info,
-                    video_capture::mojom::ProducerProxy* producer,
-                    video_capture::mojom::SharedMemoryVirtualDeviceRequest*
-                        virtual_device_request));
+  MOCK_METHOD2(
+      DoGetVideoSource,
+      void(const std::string& device_id,
+           mojo::PendingReceiver<video_capture::mojom::VideoSource>* receiver));
+  MOCK_METHOD3(
+      DoAddVirtualDevice,
+      void(
+          const media::VideoCaptureDeviceInfo& device_info,
+          mojo::PendingRemote<video_capture::mojom::Producer> producer,
+          mojo::PendingReceiver<video_capture::mojom::SharedMemoryVirtualDevice>
+              virtual_device_receiver));
   MOCK_METHOD2(
       DoAddTextureVirtualDevice,
       void(const media::VideoCaptureDeviceInfo& device_info,
-           video_capture::mojom::TextureVirtualDeviceRequest* virtual_device));
+           mojo::PendingReceiver<video_capture::mojom::TextureVirtualDevice>
+               virtual_device_receiver));
+  MOCK_METHOD1(DoClose, void(CloseCallback& callback));
 };
 
 }  // namespace video_capture

@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS Same-origin popup with coop/coep
+FAIL Same-site popup with coop/coep assert_equals: expected "" but got "same-site-popup-with-coop/coep"
+PASS Same-origin popup with coop unsafe-inherit/coep
+FAIL Same-site popup with coop unsafe-inherit/coep assert_equals: expected "" but got "same-site-popup-with-coop-unsafe-inherit/coep"
+FAIL Same-origin popup with coop unsafe-inherit without coep assert_equals: expected "" but got "popup-with-coop-unsafe-inherit-without-coep"
+FAIL Same-site popup with coop unsafe-inherit without coep assert_equals: expected "" but got "same-site-popup-with-coop-unsafe-inherit-without-coep"
+FAIL Same-origin popup without coep assert_equals: expected "" but got "popup-without-coep"
+FAIL Same-site popup without coep assert_equals: expected "" but got "same-site-popup-without-coep"
+FAIL Bonus: window.crossOriginIsolated assert_true: expected true got undefined
+Harness: the test ran to completion.
+

@@ -9,7 +9,6 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/process/launch.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -92,11 +91,6 @@ bool Launchd::GetJobInfo(const std::string& label,
   return mac::services::GetJobInfo(label, info);
 }
 
-bool Launchd::CheckIn(const std::string& socket_key,
-                      mac::services::JobCheckinInfo* info) {
-  return mac::services::CheckIn(socket_key, info);
-}
-
 bool Launchd::RemoveJob(const std::string& label) {
   return mac::services::RemoveJob(label);
 }
@@ -105,63 +99,67 @@ bool Launchd::RestartJob(Domain domain,
                          Type type,
                          CFStringRef name,
                          CFStringRef cf_session_type) {
-  base::mac::ScopedNSAutoreleasePool pool;
-  NSURL* url = GetPlistURL(domain, type, name);
-  NSString* ns_path = [url path];
-  ns_path = SanitizeShellArgument(ns_path);
-  const char* file_path = [ns_path fileSystemRepresentation];
+  @autoreleasepool {
+    NSURL* url = GetPlistURL(domain, type, name);
+    NSString* ns_path = [url path];
+    ns_path = SanitizeShellArgument(ns_path);
+    const char* file_path = [ns_path fileSystemRepresentation];
 
-  NSString* ns_session_type =
-      SanitizeShellArgument(base::mac::CFToNSCast(cf_session_type));
-  if (!file_path || !ns_session_type) {
-    return false;
+    NSString* ns_session_type =
+        SanitizeShellArgument(base::mac::CFToNSCast(cf_session_type));
+    if (!file_path || !ns_session_type) {
+      return false;
+    }
+
+    std::vector<std::string> argv;
+    argv.push_back("/bin/bash");
+    argv.push_back("--noprofile");
+    argv.push_back("-c");
+    std::string command =
+        base::StringPrintf("/bin/launchctl unload -S %s %s;"
+                           "/bin/launchctl load -S %s %s;",
+                           [ns_session_type UTF8String], file_path,
+                           [ns_session_type UTF8String], file_path);
+    argv.push_back(command);
+
+    base::LaunchOptions options;
+    options.new_process_group = true;
+    return base::LaunchProcess(argv, options).IsValid();
   }
-
-  std::vector<std::string> argv;
-  argv.push_back("/bin/bash");
-  argv.push_back("--noprofile");
-  argv.push_back("-c");
-  std::string command = base::StringPrintf(
-      "/bin/launchctl unload -S %s %s;"
-      "/bin/launchctl load -S %s %s;",
-      [ns_session_type UTF8String], file_path,
-      [ns_session_type UTF8String], file_path);
-  argv.push_back(command);
-
-  base::LaunchOptions options;
-  options.new_process_group = true;
-  return base::LaunchProcess(argv, options).IsValid();
 }
 
 CFMutableDictionaryRef Launchd::CreatePlistFromFile(Domain domain,
                                                     Type type,
                                                     CFStringRef name) {
-  base::mac::ScopedNSAutoreleasePool pool;
-  NSURL* ns_url = GetPlistURL(domain, type, name);
-  NSMutableDictionary* plist =
-      [[NSMutableDictionary alloc] initWithContentsOfURL:ns_url];
-  return base::mac::NSToCFCast(plist);
+  @autoreleasepool {
+    NSURL* ns_url = GetPlistURL(domain, type, name);
+    NSMutableDictionary* plist =
+        [[NSMutableDictionary alloc] initWithContentsOfURL:ns_url];
+    return base::mac::NSToCFCast(plist);
+  }
 }
 
 bool Launchd::WritePlistToFile(Domain domain,
                                Type type,
                                CFStringRef name,
                                CFDictionaryRef dict) {
-  base::mac::ScopedNSAutoreleasePool pool;
-  NSURL* ns_url = GetPlistURL(domain, type, name);
-  return [base::mac::CFToNSCast(dict) writeToURL:ns_url atomically:YES];
+  @autoreleasepool {
+    NSURL* ns_url = GetPlistURL(domain, type, name);
+    return [base::mac::CFToNSCast(dict) writeToURL:ns_url atomically:YES];
+  }
 }
 
 bool Launchd::DeletePlist(Domain domain, Type type, CFStringRef name) {
-  base::mac::ScopedNSAutoreleasePool pool;
-  NSURL* ns_url = GetPlistURL(domain, type, name);
-  NSError* err = nil;
-  if (![[NSFileManager defaultManager] removeItemAtPath:[ns_url path]
-                                                  error:&err]) {
-    if ([err code] != NSFileNoSuchFileError) {
-      DLOG(ERROR) << "DeletePlist: " << base::mac::NSToCFCast(err);
+  @autoreleasepool {
+    NSURL* ns_url = GetPlistURL(domain, type, name);
+    NSError* err = nil;
+    if (![[NSFileManager defaultManager] removeItemAtPath:[ns_url path]
+                                                    error:&err]) {
+      if ([err code] != NSFileNoSuchFileError) {
+        DLOG(ERROR) << "DeletePlist: " << base::mac::NSToCFCast(err);
+      }
+      return false;
     }
-    return false;
+    return true;
   }
-  return true;
 }

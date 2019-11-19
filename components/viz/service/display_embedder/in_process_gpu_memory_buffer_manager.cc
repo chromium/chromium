@@ -4,8 +4,12 @@
 
 #include "components/viz/service/display_embedder/in_process_gpu_memory_buffer_manager.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
@@ -34,13 +38,17 @@ InProcessGpuMemoryBufferManager::InProcessGpuMemoryBufferManager(
     : client_id_(gpu::kInProcessCommandBufferClientId),
       gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
       sync_point_manager_(sync_point_manager),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      weak_ptr_factory_(this) {
+      task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      this, "InProcessGpuMemoryBufferManager", task_runner_);
+
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
 
 InProcessGpuMemoryBufferManager::~InProcessGpuMemoryBufferManager() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
 }
 
 std::unique_ptr<gfx::GpuMemoryBuffer>
@@ -54,12 +62,19 @@ InProcessGpuMemoryBufferManager::CreateGpuMemoryBuffer(
       gpu_memory_buffer_factory_->CreateGpuMemoryBuffer(
           id, size, format, usage, client_id_, surface_handle);
 
+  AllocatedBufferInfo buffer_info(buffer_handle, size, format);
+
   auto callback = base::BindOnce(
       &InProcessGpuMemoryBufferManager::ShouldDestroyGpuMemoryBuffer, weak_ptr_,
       id);
-  return gpu_memory_buffer_support_.CreateGpuMemoryBufferImplFromHandle(
+  auto gmb = gpu_memory_buffer_support_.CreateGpuMemoryBufferImplFromHandle(
       std::move(buffer_handle), size, format, usage,
       base::BindOnce(&DestroyOnThread, task_runner_, std::move(callback)));
+
+  if (gmb)
+    allocated_buffers_.insert(std::make_pair(id, buffer_info));
+
+  return gmb;
 }
 
 void InProcessGpuMemoryBufferManager::SetDestructionSyncToken(
@@ -67,6 +82,23 @@ void InProcessGpuMemoryBufferManager::SetDestructionSyncToken(
     const gpu::SyncToken& sync_token) {
   static_cast<gpu::GpuMemoryBufferImpl*>(buffer)->set_destruction_sync_token(
       sync_token);
+}
+
+bool InProcessGpuMemoryBufferManager::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  uint64_t client_tracing_process_id =
+      base::trace_event::MemoryDumpManager::GetInstance()
+          ->GetTracingProcessId();
+
+  for (auto& buffer_pair : allocated_buffers_) {
+    auto& buffer_info = buffer_pair.second;
+    if (!buffer_info.OnMemoryDump(pmd, client_id_, client_tracing_process_id))
+      return false;
+  }
+
+  return true;
 }
 
 void InProcessGpuMemoryBufferManager::ShouldDestroyGpuMemoryBuffer(
@@ -90,6 +122,7 @@ void InProcessGpuMemoryBufferManager::ShouldDestroyGpuMemoryBuffer(
 
 void InProcessGpuMemoryBufferManager::DestroyGpuMemoryBuffer(
     gfx::GpuMemoryBufferId id) {
+  allocated_buffers_.erase(id);
   gpu_memory_buffer_factory_->DestroyGpuMemoryBuffer(id, client_id_);
 }
 

@@ -4,23 +4,28 @@
 
 #include "third_party/blink/renderer/core/display_lock/unyielding_display_lock_budget.h"
 
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
+
 namespace blink {
 
 UnyieldingDisplayLockBudget::UnyieldingDisplayLockBudget(
     DisplayLockContext* context)
     : DisplayLockBudget(context) {}
 
-bool UnyieldingDisplayLockBudget::ShouldPerformPhase(Phase) const {
+bool UnyieldingDisplayLockBudget::ShouldPerformPhase(
+    Phase,
+    const LifecycleData& lifecycle_data) {
   return true;
 }
 
 void UnyieldingDisplayLockBudget::DidPerformPhase(Phase) {}
 
-void UnyieldingDisplayLockBudget::WillStartLifecycleUpdate() {
+void UnyieldingDisplayLockBudget::OnLifecycleChange(
+    const LifecycleData& lifecycle_data) {
   // Mark all the phases dirty since we have no intention of yielding.
   for (auto phase = static_cast<unsigned>(Phase::kFirst);
        phase <= static_cast<unsigned>(Phase::kLast); ++phase) {
-    MarkAncestorsDirtyForPhaseIfNeeded(static_cast<Phase>(phase));
+    MarkDirtyForPhaseIfNeeded(static_cast<Phase>(phase));
   }
 }
 

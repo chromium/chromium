@@ -3,3 +3,6 @@ file://third_party/blink/renderer/bindings/OWNERS
 
 # TEAM: blink-reviews-bindings@chromium.org
 # COMPONENT: Blink>Bindings
+
+per-file *_messages*.h=set noparent
+per-file *_messages*.h=file://ipc/SECURITY_OWNERS

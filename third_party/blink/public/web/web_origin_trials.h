@@ -16,6 +16,8 @@ class WebString;
 // origin trials framework via origin trial tokens.
 class WebOriginTrials {
  public:
+  // This function returns true if the passed trial name is valid and ALL of the
+  // features with that trial name are enabled.
   CORE_EXPORT static bool isTrialEnabled(const WebDocument*, const WebString&);
 };
 

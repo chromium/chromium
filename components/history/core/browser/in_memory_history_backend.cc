@@ -10,18 +10,13 @@
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/in_memory_database.h"
 #include "components/history/core/browser/url_database.h"
 
 namespace history {
 
-InMemoryHistoryBackend::InMemoryHistoryBackend()
-    : history_service_observer_(this) {
-}
-
-InMemoryHistoryBackend::~InMemoryHistoryBackend() {
-}
+InMemoryHistoryBackend::InMemoryHistoryBackend() = default;
+InMemoryHistoryBackend::~InMemoryHistoryBackend() = default;
 
 bool InMemoryHistoryBackend::Init(const base::FilePath& history_filename) {
   db_.reset(new InMemoryDatabase);

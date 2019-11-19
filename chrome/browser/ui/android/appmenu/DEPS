@@ -1,0 +1,11 @@
+noparent = True
+include_rules = [
+  "+base/android",
+  "+base/test/android",
+  "+chrome/browser/ui/android/styles",
+  "+chrome/browser/ui/android/widget",
+  "+chrome/lib/lifecycle/public",
+  "+chrome/test/android",
+  "+content/public/test/android/javatests/src/org/chromium/content_public/browser",
+  "+ui/android",
+]

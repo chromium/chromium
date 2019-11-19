@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,14 +31,14 @@ void MockBrowsingDataCookieHelper::StartFetching(FetchCallback callback) {
 void MockBrowsingDataCookieHelper::DeleteCookie(
     const net::CanonicalCookie& cookie) {
   std::string key = cookie.Name() + "=" + cookie.Value();
-  ASSERT_TRUE(base::ContainsKey(cookies_, key));
+  ASSERT_TRUE(base::Contains(cookies_, key));
   cookies_[key] = false;
 }
 
 void MockBrowsingDataCookieHelper::AddCookieSamples(
     const GURL& url, const std::string& cookie_line) {
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), net::CookieOptions()));
+      url, cookie_line, base::Time::Now(), base::nullopt /* server_time */));
 
   if (cc.get()) {
     for (const auto& cookie : cookie_list_) {

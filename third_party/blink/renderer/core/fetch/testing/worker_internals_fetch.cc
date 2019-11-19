@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/fetch/testing/worker_internals_fetch.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/fetch/response.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -24,20 +26,29 @@ Vector<String> WorkerInternalsFetch::getInternalResponseURLList(
   return url_list;
 }
 
-int WorkerInternalsFetch::getResourcePriority(
+ScriptPromise WorkerInternalsFetch::getResourcePriority(
+    ScriptState* script_state,
     WorkerInternals& internals,
     const String& url,
     WorkerGlobalScope* worker_global) {
-  if (!worker_global)
-    return static_cast<int>(ResourceLoadPriority::kUnresolved);
+  ScriptPromiseResolver* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  KURL resource_url = url_test_helpers::ToKURL(url.Utf8());
+  DCHECK(worker_global);
 
-  Resource* resource = worker_global->Fetcher()->AllResources().at(
-      url_test_helpers::ToKURL(url.Utf8().data()));
+  auto callback = WTF::Bind(&WorkerInternalsFetch::ResolveResourcePriority,
+                            WTF::Passed(WrapPersistent(resolver)));
+  ResourceFetcher::AddPriorityObserverForTesting(resource_url,
+                                                 std::move(callback));
 
-  if (!resource)
-    return static_cast<int>(ResourceLoadPriority::kUnresolved);
+  return promise;
+}
 
-  return static_cast<int>(resource->GetResourceRequest().Priority());
+void WorkerInternalsFetch::ResolveResourcePriority(
+    ScriptPromiseResolver* resolver,
+    int resource_load_priority) {
+  resolver->Resolve(resource_load_priority);
 }
 
 }  // namespace blink

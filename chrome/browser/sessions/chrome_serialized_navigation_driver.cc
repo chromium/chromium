@@ -17,13 +17,23 @@
 
 namespace {
 
-bool IsUberOrUberReplacementURL(const GURL& url) {
-  return url.SchemeIs(content::kChromeUIScheme) &&
-         (url.host_piece() == chrome::kChromeUIHistoryHost ||
-          url.host_piece() == chrome::kChromeUIUberHost ||
-          url.host_piece() == chrome::kChromeUISettingsHost ||
-          url.host_piece() == chrome::kChromeUIHelpHost);
+#if defined(OS_ANDROID)
+// Mutates |navigation| so that it targets |new_destination_url| and has no
+// referrer information.
+void ChangeDestination(const GURL& new_destination_url,
+                       sessions::SerializedNavigationEntry* navigation) {
+  navigation->set_virtual_url(new_destination_url);
+  navigation->set_original_request_url(new_destination_url);
+  navigation->set_encoded_page_state(
+      content::PageState::CreateFromURL(new_destination_url).ToEncodedData());
+
+  // Make sure the referrer stored in the PageState (above) and in the
+  // SerializedNavigationEntry (below) are in-sync.
+  navigation->set_referrer_url(GURL());
+  navigation->set_referrer_policy(
+      static_cast<int>(network::mojom::ReferrerPolicy::kDefault));
 }
+#endif  // defined(OS_ANDROID)
 
 }  // namespace
 
@@ -39,19 +49,11 @@ ChromeSerializedNavigationDriver::GetInstance() {
 
 void ChromeSerializedNavigationDriver::Sanitize(
     sessions::SerializedNavigationEntry* navigation) const {
-  content::Referrer old_referrer(navigation->referrer_url(),
-                                 static_cast<network::mojom::ReferrerPolicy>(
-                                     navigation->referrer_policy()));
+  content::Referrer old_referrer(
+      navigation->referrer_url(),
+      content::Referrer::ConvertToPolicy(navigation->referrer_policy()));
   content::Referrer new_referrer = content::Referrer::SanitizeForRequest(
       navigation->virtual_url(), old_referrer);
-
-  // Clear any Uber UI page state so that these pages are reloaded rather than
-  // restored from page state. This fixes session restore when WebUI URLs
-  // change.
-  if (IsUberOrUberReplacementURL(navigation->virtual_url()) &&
-      IsUberOrUberReplacementURL(navigation->original_request_url())) {
-    navigation->set_encoded_page_state(std::string());
-  }
 
   // No need to compare the policy, as it doesn't change during
   // sanitization. If there has been a change, the referrer needs to be
@@ -69,21 +71,12 @@ void ChromeSerializedNavigationDriver::Sanitize(
   if (navigation->virtual_url().SchemeIs(content::kChromeUIScheme) &&
       (navigation->virtual_url().host_piece() == chrome::kChromeUIWelcomeHost ||
        navigation->virtual_url().host_piece() == chrome::kChromeUINewTabHost)) {
-    navigation->set_virtual_url(GURL(chrome::kChromeUINativeNewTabURL));
-    navigation->set_original_request_url(navigation->virtual_url());
-    navigation->set_encoded_page_state(
-        content::PageState::CreateFromURL(navigation->virtual_url())
-            .ToEncodedData());
+    ChangeDestination(GURL(chrome::kChromeUINativeNewTabURL), navigation);
   }
 
   if (navigation->virtual_url().SchemeIs(content::kChromeUIScheme) &&
       navigation->virtual_url().host_piece() == chrome::kChromeUIHistoryHost) {
-    // Rewrite the old history Web UI to the new android native history.
-    navigation->set_virtual_url(GURL(chrome::kChromeUINativeHistoryURL));
-    navigation->set_original_request_url(navigation->virtual_url());
-    navigation->set_encoded_page_state(
-        content::PageState::CreateFromURL(navigation->virtual_url())
-            .ToEncodedData());
+    ChangeDestination(GURL(chrome::kChromeUINativeHistoryURL), navigation);
   }
 #endif  // defined(OS_ANDROID)
 }

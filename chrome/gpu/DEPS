@@ -1,5 +1,5 @@
 include_rules = [
-  "+components/arc/common",
+  "+components/arc/mojom",
   "+components/arc/video_accelerator",
   "+components/metrics",
   "+content/public/child",

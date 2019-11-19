@@ -6,6 +6,7 @@
 #define UI_VIEWS_EXAMPLES_RADIO_BUTTON_EXAMPLE_H_
 
 #include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "ui/views/controls/button/button.h"
@@ -32,7 +33,7 @@ class VIEWS_EXAMPLES_EXPORT RadioButtonExample : public ExampleBase,
   void ButtonPressed(Button* sender, const ui::Event& event) override;
 
   // Group of 3 radio buttons.
-  RadioButton* radio_buttons_[3];
+  std::vector<RadioButton*> radio_buttons_;
 
   // Control button to select radio buttons, and show the status of buttons.
   LabelButton* select_;

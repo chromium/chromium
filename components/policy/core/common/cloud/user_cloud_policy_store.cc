@@ -172,11 +172,13 @@ DesktopCloudPolicyStore::DesktopCloudPolicyStore(
     const base::FilePath& policy_path,
     const base::FilePath& key_path,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    PolicyScope policy_scope)
-    : UserCloudPolicyStoreBase(background_task_runner, policy_scope),
+    PolicyScope policy_scope,
+    PolicySource policy_source)
+    : UserCloudPolicyStoreBase(background_task_runner,
+                               policy_scope,
+                               policy_source),
       policy_path_(policy_path),
-      key_path_(key_path),
-      weak_factory_(this) {}
+      key_path_(key_path) {}
 
 DesktopCloudPolicyStore::~DesktopCloudPolicyStore() {}
 
@@ -406,7 +408,8 @@ UserCloudPolicyStore::UserCloudPolicyStore(
     : DesktopCloudPolicyStore(policy_path,
                               key_path,
                               background_task_runner,
-                              PolicyScope::POLICY_SCOPE_USER) {}
+                              PolicyScope::POLICY_SCOPE_USER,
+                              PolicySource::POLICY_SOURCE_CLOUD) {}
 
 UserCloudPolicyStore::~UserCloudPolicyStore() {}
 

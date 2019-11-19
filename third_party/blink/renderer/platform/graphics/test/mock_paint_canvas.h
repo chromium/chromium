@@ -19,6 +19,8 @@ namespace blink {
 class MockPaintCanvas : public cc::PaintCanvas {
  public:
   MOCK_CONST_METHOD0(imageInfo, SkImageInfo());
+  MOCK_METHOD3(accessTopLayerPixels,
+               void*(SkImageInfo* info, size_t* rowBytes, SkIPoint* origin));
   MOCK_METHOD0(flush, void());
   MOCK_METHOD0(save, int());
   MOCK_METHOD2(saveLayer, int(const SkRect* bounds, const PaintFlags* flags));
@@ -90,8 +92,9 @@ class MockPaintCanvas : public cc::PaintCanvas {
                void(sk_sp<SkTextBlob>,
                     SkScalar x,
                     SkScalar y,
-                    const PaintFlags& flags,
-                    const cc::NodeHolder& holder));
+                    cc::NodeId node_id,
+                    const PaintFlags& flags));
+
   MOCK_METHOD1(drawPicture, void(sk_sp<const PaintRecord> record));
   MOCK_CONST_METHOD0(isClipEmpty, bool());
   MOCK_CONST_METHOD0(isClipRect, bool());

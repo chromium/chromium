@@ -9,8 +9,11 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_util.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/strings/string_number_conversions.h"
+#include "components/download/internal/common/jni_headers/DownloadCollectionBridge_jni.h"
+#include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
-#include "jni/DownloadCollectionBridge_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
@@ -20,6 +23,15 @@ using base::android::ScopedJavaLocalRef;
 
 namespace download {
 
+namespace {
+// Default value for |kDownloadExpirationDurationFinchKey|, when no parameter is
+// specified.
+const int kDefaultExpirationDurationInDays = 3;
+
+// Finch parameter key value of the duration in days for an intermediate
+// download to expire.
+constexpr char kDownloadExpirationDurationFinchKey[] = "expiration_duration";
+}  // namespace
 // static
 base::FilePath DownloadCollectionBridge::CreateIntermediateUriForPublish(
     const GURL& original_url,
@@ -119,7 +131,7 @@ bool DownloadCollectionBridge::FileNameExists(const base::FilePath& file_name) {
 }
 
 // static
-bool DownloadCollectionBridge::renameDownloadUri(
+bool DownloadCollectionBridge::RenameDownloadUri(
     const base::FilePath& download_uri,
     const base::FilePath& new_display_name) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -142,10 +154,7 @@ void DownloadCollectionBridge::GetDisplayNamesForDownloads(
     std::move(cb).Run(std::move(result));
     return;
   }
-  jsize count = env->GetArrayLength(jdisplay_infos.obj());
-  for (jsize i = 0; i < count; ++i) {
-    base::android::ScopedJavaLocalRef<jobject> jdisplay_info(
-        env, env->GetObjectArrayElement(jdisplay_infos.obj(), i));
+  for (auto jdisplay_info : jdisplay_infos.ReadElements<jobject>()) {
     ScopedJavaLocalRef<jstring> juri =
         Java_DisplayNameInfo_getDownloadUri(env, jdisplay_info);
     ScopedJavaLocalRef<jstring> jdisplay_name =
@@ -163,6 +172,30 @@ void DownloadCollectionBridge::GetDisplayNamesForDownloads(
 bool DownloadCollectionBridge::NeedToRetrieveDisplayNames() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_DownloadCollectionBridge_needToRetrieveDisplayNames(env);
+}
+
+// static
+base::FilePath DownloadCollectionBridge::GetDisplayName(
+    const base::FilePath& download_uri) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> jdownload_uri =
+      ConvertUTF8ToJavaString(env, download_uri.value());
+  ScopedJavaLocalRef<jstring> jdisplay_name =
+      Java_DownloadCollectionBridge_getDisplayName(env, jdownload_uri);
+  if (jdisplay_name) {
+    std::string display_name = ConvertJavaStringToUTF8(env, jdisplay_name);
+    return base::FilePath(display_name);
+  }
+  return base::FilePath();
+}
+
+jint JNI_DownloadCollectionBridge_GetExpirationDurationInDays(JNIEnv* env) {
+  std::string finch_value = base::GetFieldTrialParamValueByFeature(
+      features::kRefreshExpirationDate, kDownloadExpirationDurationFinchKey);
+  int days;
+  return base::StringToInt(finch_value, &days)
+             ? days
+             : kDefaultExpirationDurationInDays;
 }
 
 }  // namespace download

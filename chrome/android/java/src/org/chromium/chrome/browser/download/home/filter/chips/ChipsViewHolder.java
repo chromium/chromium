@@ -47,7 +47,7 @@ public class ChipsViewHolder extends ViewHolder {
         getChipView().setSelected(chip.selected);
         getChipView().setOnClickListener(v -> chip.chipSelectedListener.run());
         getChipView().getPrimaryTextView().setText(chip.text);
-        getChipView().setIcon(chip.icon, true);
+        getChipView().setIcon(chip.selected ? R.drawable.ic_check_googblue_24dp : chip.icon, true);
         getChipView().getPrimaryTextView().setContentDescription(chip.contentDescription);
     }
 }

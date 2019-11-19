@@ -9,7 +9,8 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/autofill_switches.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -27,14 +28,19 @@ class FieldIsTokenBoundarySubstringCaseTest
 
 TEST_P(FieldIsTokenBoundarySubstringCaseTest,
        FieldIsSuggestionSubstringStartingOnTokenBoundary) {
-  // FieldIsSuggestionSubstringStartingOnTokenBoundary should not work yet
-  // without a flag.
-  EXPECT_FALSE(FieldIsSuggestionSubstringStartingOnTokenBoundary(
-      base::ASCIIToUTF16("ab@cd.b"), base::ASCIIToUTF16("b"), false));
+  {
+    base::test::ScopedFeatureList features_disabled;
+    features_disabled.InitAndDisableFeature(
+        features::kAutofillTokenPrefixMatching);
 
-  // Token matching is currently behind a flag.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableSuggestionsWithSubstringMatch);
+    // FieldIsSuggestionSubstringStartingOnTokenBoundary should not work yet
+    // without a flag.
+    EXPECT_FALSE(FieldIsSuggestionSubstringStartingOnTokenBoundary(
+        base::ASCIIToUTF16("ab@cd.b"), base::ASCIIToUTF16("b"), false));
+  }
+
+  base::test::ScopedFeatureList features_enabled;
+  features_enabled.InitAndEnableFeature(features::kAutofillTokenPrefixMatching);
 
   auto test_case = GetParam();
   SCOPED_TRACE(testing::Message()

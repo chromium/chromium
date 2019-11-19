@@ -1,0 +1,17 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":os_toolbar",
+  ]
+}
+
+js_library("os_toolbar") {
+  deps = [
+    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field",
+  ]
+}

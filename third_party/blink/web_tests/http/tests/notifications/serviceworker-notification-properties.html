@@ -13,14 +13,33 @@
       // Service Worker, and b) ServiceWorkerRegistration.getNotifications(), both
       // accurately reflect the attributes with which the notification was created.
 
+      // Serializes a trigger object to send via postMessage.
+      // If the given object is not a trigger, return the same object.
+      function serializeTrigger(trigger) {
+          if (trigger instanceof TimestampTrigger)
+              return { timestamp: trigger.timestamp };
+          return trigger;
+      }
+
+      // Serialize options to send via sendMessage and for deep comparison.
+      function serializeOptions(options) {
+          return {
+              ...options,
+              showTrigger: serializeTrigger(options.showTrigger),
+          };
+      }
+
       // Checks that all the properties in expected also exist and are equal in actual.
       function assert_object_is_superset(actual, expected, description) {
           Object.keys(expected).forEach(function(key) {
+              // Serialize fields that are triggers so we can compare them.
+              var fieldActual = serializeTrigger(actual[key]);
+              var fieldExpected = serializeTrigger(expected[key]);
               var fieldDescription = description + ' [field ' + key + ']';
-              if (typeof expected[key] == 'object')
-                  assert_object_equals(actual[key], expected[key], fieldDescription);
+              if (typeof fieldExpected == 'object')
+                  assert_object_equals(fieldActual, fieldExpected, fieldDescription);
               else
-                  assert_equals(actual[key], expected[key], fieldDescription);
+                  assert_equals(fieldActual, fieldExpected, fieldDescription);
           });
       }
 
@@ -52,7 +71,9 @@
                     scalar: true },
                   12.15
               ],
-              actions: []
+              actions: [],
+              // Make sure the notification is immediately triggered by setting the timestamp in the past.
+              showTrigger: new TimestampTrigger(Date.now().valueOf() - 1000),
           };
           // Deliberately add more actions than are supported.
           for (var i = 0; i < 2 * Notification.maxActions; i++) {
@@ -76,7 +97,7 @@
                   command: 'show',
 
                   title: scope,
-                  options: options
+                  options: serializeOptions(options)
               });
 
               // Now limit actions to the number that we expect to be reflected on notifications.
@@ -89,7 +110,7 @@
           }).then(function(data) {
               // (3) Confirm that all properties set on the cloned Notification object are as expected.
               assert_object_is_superset(data.notification, options, 'The Notification object properties must be the same in notificationclick events.');
-              return registration.getNotifications();
+              return registration.getNotifications({includeTriggered: true});
           }).then(function(notifications) {
               // (4) Check that the properties are also set correctly on the non-cloned Notification
               // object from getNotifications.
@@ -109,7 +130,6 @@
               assert_equals(notifications[0].actions, notifications[0].actions, '`actions` attribute equality');
               assert_equals(notifications[0].data, notifications[0].data, '`data` attribute equality');
               assert_equals(notifications[0].vibrate, notifications[0].vibrate, '`vibrate` attribute equality');
-
               assert_equals(notifications[0].showTrigger, notifications[0].showTrigger, '`showTrigger` attribute equality');
               test.done();
           }).catch(unreached_rejection(test));

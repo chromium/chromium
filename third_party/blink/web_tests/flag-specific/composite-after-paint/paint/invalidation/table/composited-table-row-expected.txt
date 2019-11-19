@@ -1,0 +1,24 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutTableRow TR",
+      "position": [8, 8],
+      "bounds": [74, 24],
+      "backgroundColor": "#FF0000",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalBoxFragment LayoutNGTableCell TD id='target'",
+          "rect": [0, 0, 37, 23],
+          "reason": "appeared"
+        }
+      ]
+    }
+  ]
+}
+

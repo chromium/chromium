@@ -1,0 +1,10 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom =
+    "//services/viz/public/mojom/compositing/vertical_scroll_direction.mojom"
+public_headers = [ "//components/viz/common/vertical_scroll_direction.h" ]
+traits_headers = [ "//services/viz/public/cpp/compositing/vertical_scroll_direction_mojom_traits.h" ]
+type_mappings =
+    [ "viz.mojom.VerticalScrollDirection=::viz::VerticalScrollDirection" ]

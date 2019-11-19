@@ -1,0 +1,54 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package paint_preview;
+
+option optimize_for = LITE_RUNTIME;
+
+// A proto representation of a gfx::Rect.
+// NEXT_TAG = 5
+message RectProto {
+  required int64 x = 1;
+  required int64 y = 2;
+  required int64 width = 3;
+  required int64 height = 4;
+}
+
+// A link represented by its absolute URL and a bounding box for the hit area.
+// NEXT_TAG = 3
+message LinkDataProto {
+  required RectProto rect = 1;
+  required string url = 2;
+}
+
+// A paint preview of a single frame.
+// NEXT_TAG = 6
+message PaintPreviewFrameProto {
+  // Originates in renderer as Routing ID.
+  // Converted to (Process ID || Routing ID) once processed in browser.
+  required uint64 id = 1;
+
+  // Boolean indicating if the frame is the main frame.
+  required bool is_main_frame = 2;
+
+  // The file path to the serialized Skia Picture.
+  optional string file_path = 3;
+
+  // A list of links within the frame.
+  repeated LinkDataProto links = 4;
+
+  // A map between the content IDs of subframes and the |id| field.
+  map<uint32, int64> content_id_proxy_id_map = 5;
+}
+
+// A paint preview of the entire page.
+// NEXT_TAG = 3
+message PaintPreviewProto {
+  // The root frame of the RenderFrame tree. This is often the main frame, but
+  // may be a root node of a subtree (e.g. paint preview of an iframe).
+  required PaintPreviewFrameProto root_frame = 1;
+  repeated PaintPreviewFrameProto subframes = 2;
+}

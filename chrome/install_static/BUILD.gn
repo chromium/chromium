@@ -11,13 +11,14 @@ assert(is_win)
 # Please don't add dependencies on other system libraries.
 static_library("install_static_util") {
   deps = [
+    "//build:branding_buildflags",
     "//components/nacl/common:buildflags",
     "//components/version_info:channel",
     "//components/version_info:generate_version_info",
   ]
 
   public_deps = [
-    "//chrome_elf:nt_registry",
+    "//chrome/chrome_elf:nt_registry",
   ]
 
   sources = [
@@ -94,6 +95,7 @@ test("install_static_unittests") {
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//chrome/install_static:install_static_util",
     "//chrome/install_static/test:test_support",
     "//testing/gmock",

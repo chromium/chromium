@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1482734542997480527">O domínio <ph name="ENROLLMENT_DOMAIN" /> gerencia este dispositivo e pode monitorar sua atividade.</translation>
 <translation id="1510238584712386396">Iniciador</translation>
 <translation id="1734367976349034509">Este dispositivo é gerenciado por uma empresa</translation>
+<translation id="1930797645656624981">Serviço de método de entrada do Chrome OS</translation>
+<translation id="1979103255016296513">O prazo para a alteração de senha foi ultrapassado</translation>
 <translation id="2049639323467105390">Este dispositivo é gerenciado por <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">Nada encontrado na tela</translation>
 <translation id="2338501278241028356">Ativar o Bluetooth para descobrir dispositivos nas proximidades</translation>
 <translation id="2805756323405976993">Apps</translation>
-<translation id="2872961005593481000">Encerrar</translation>
-<translation id="3147142846278915599">Tela de início (sincronizando aplicativos...)</translation>
+<translation id="2872961005593481000">Desligar</translation>
+<translation id="3008341117444806826">ATUALIZAR</translation>
+<translation id="3838338534323494292">Nova senha</translation>
+<translation id="4003259559679196451">O domínio <ph name="ENROLLMENT_DOMAIN" /> gerencia este dispositivo e tem acesso a todas as atividades do usuário, incluindo páginas visitadas, senhas e e-mail.</translation>
+<translation id="4227825898293920515">A senha expirará em <ph name="TIME" /></translation>
+<translation id="4429881212383817840">O tíquete do Kerberos expirará em breve</translation>
+<translation id="445059817448385655">Senha antiga</translation>
+<translation id="467510802200863975">As senhas não são iguais</translation>
 <translation id="4731797938093519117">Acesso de pai/mãe</translation>
+<translation id="4890353053343094602">Escolha uma nova imediatamente</translation>
 <translation id="5212543919916444558">Não foi possível encontrar na sua tela nada com o que eu possa ajudar.
 Tente tocar no microfone para me pedir algo.</translation>
 <translation id="5222676887888702881">Sair</translation>
+<translation id="5317780077021120954">Salvar</translation>
+<translation id="5332948983412042822">Escolha uma nova imediatamente</translation>
 <translation id="5457599981699367932">Navegar como visitante</translation>
 <translation id="54609108002486618">Gerenciado</translation>
 <translation id="5832805196449965646">Adicionar pessoa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="6058625436358447366">Para concluir, insira a senha antiga e a nova</translation>
+<translation id="6106186594183574873">Para concluir, insira sua senha antiga</translation>
+<translation id="6146993107019042706">Para concluir, insira a nova senha</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7690294790491645610">Confirmar nova senha</translation>
+<translation id="808894953321890993">Alterar senha</translation>
+<translation id="8747900814994928677">Confirmar alteração</translation>
+<translation id="910415269708673980">Atualizar tíquete para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 </translationbundle>

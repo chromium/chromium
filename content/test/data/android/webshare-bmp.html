@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Web Share</title>
+        <script>
+            function initiate_share() {
+                if (navigator.share === undefined) {
+                    window.document.title = 'Fail: navigator.share === undefined';
+                    return;
+                }
+
+                // Test standard MIME type "image/bmp",
+                // and also "image/x-ms-bmp".
+                const first = new File(['B'],
+                                       'first.bmp',
+                                       {type: 'image/bmp'});
+                const second = new File(['MP'],
+                                        'second.bmp',
+                                        {type: 'image/x-ms-bmp'});
+                const data = {files: [first, second]};
+                navigator.share(data).then(() => {
+                    window.document.title = 'Success';
+                }).catch(e => {
+                    window.document.title = 'Fail: ' + e;
+                });
+            }
+
+            window.addEventListener('load', () => {
+                window.addEventListener('click', initiate_share);
+            });
+        </script>
+    </head>
+    <body>
+    </body>
+</html>

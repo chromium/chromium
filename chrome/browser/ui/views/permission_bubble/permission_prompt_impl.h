@@ -7,10 +7,15 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
+#include "content/public/browser/web_contents.h"
 
 class Browser;
 class PermissionsBubbleDialogDelegateView;
 
+// This object will create or trigger UI to reflect that a website is requesting
+// a permission. The UI is usually a popup dialog, but may instead be a location
+// bar icon (i.e. "quiet"). The UI lasts for the duration of this object's
+// lifetime.
 class PermissionPromptImpl : public PermissionPrompt {
  public:
   PermissionPromptImpl(Browser* browser, Delegate* delegate);
@@ -19,6 +24,7 @@ class PermissionPromptImpl : public PermissionPrompt {
   // PermissionPrompt:
   void UpdateAnchorPosition() override;
   gfx::NativeWindow GetNativeWindow() override;
+  TabSwitchingBehavior GetTabSwitchingBehavior() override;
 
   void Closing();
   void Accept();
@@ -32,6 +38,8 @@ class PermissionPromptImpl : public PermissionPrompt {
   Browser* const browser_;
   Delegate* const delegate_;
   PermissionsBubbleDialogDelegateView* bubble_delegate_;
+  content::WebContents* web_contents_ = nullptr;
+  bool show_quiet_permission_prompt_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(PermissionPromptImpl);
 };

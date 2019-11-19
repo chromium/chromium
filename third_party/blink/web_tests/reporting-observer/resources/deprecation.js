@@ -20,6 +20,23 @@ async_test(function(test) {
             "reporting-observer/resources/deprecation.js"));
         assert_equals(typeof report.body.lineNumber, "number");
         assert_equals(typeof report.body.columnNumber, "number");
+        // Ensure the toJSON call is successful.
+        const reportJSON = report.toJSON();
+        assert_equals(reportJSON.type, report.type);
+        assert_equals(reportJSON.url, report.url);
+        assert_equals(typeof reportJSON.body, "object");
+        assert_equals(reportJSON.body.id, report.body.id);
+        assert_equals(reportJSON.body.message, report.body.message);
+        assert_equals(reportJSON.body.sourceFile, report.body.sourceFile);
+        assert_equals(reportJSON.body.lineNumber, report.body.lineNumber);
+        assert_equals(reportJSON.body.columnNumber, report.body.columnNumber);
+        assert_equals(
+          JSON.stringify(reportJSON.body.anticipatedRemoval),
+          JSON.stringify(report.body.anticipatedRemoval)
+        );
+        // Ensure that report can be successfully JSON serialized.
+        assert_false(JSON.stringify(report) === "{}");
+        assert_equals(JSON.stringify(report), JSON.stringify(reportJSON));
       }
       assert_not_equals(reports[0].body.id, reports[1].body.id);
     });

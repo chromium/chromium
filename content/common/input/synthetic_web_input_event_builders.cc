@@ -39,7 +39,7 @@ WebMouseEvent SyntheticWebMouseEventBuilder::Build(
   result.SetPositionInScreen(window_x, window_y);
   result.SetModifiers(modifiers);
   result.pointer_type = pointer_type;
-  result.id = ui::MouseEvent::kMousePointerId;
+  result.id = ui::kPointerIdMouse;
   return result;
 }
 
@@ -58,9 +58,8 @@ WebMouseWheelEvent SyntheticWebMouseWheelEventBuilder::Build(
     float dx,
     float dy,
     int modifiers,
-    bool precise,
-    bool scroll_by_page) {
-  return Build(x, y, 0, 0, dx, dy, modifiers, precise, scroll_by_page);
+    ui::input_types::ScrollGranularity delta_units) {
+  return Build(x, y, 0, 0, dx, dy, modifiers, delta_units);
 }
 
 WebMouseWheelEvent SyntheticWebMouseWheelEventBuilder::Build(
@@ -71,20 +70,19 @@ WebMouseWheelEvent SyntheticWebMouseWheelEventBuilder::Build(
     float dx,
     float dy,
     int modifiers,
-    bool precise,
-    bool scroll_by_page) {
+    ui::input_types::ScrollGranularity delta_units) {
   WebMouseWheelEvent result(WebInputEvent::kMouseWheel, modifiers,
                             ui::EventTimeForNow());
   result.SetPositionInScreen(global_x, global_y);
   result.SetPositionInWidget(x, y);
+  result.delta_units = delta_units;
   result.delta_x = dx;
   result.delta_y = dy;
   if (dx)
     result.wheel_ticks_x = dx > 0.0f ? 1.0f : -1.0f;
   if (dy)
     result.wheel_ticks_y = dy > 0.0f ? 1.0f : -1.0f;
-  result.has_precise_scrolling_deltas = precise;
-  result.scroll_by_page = scroll_by_page;
+
   result.event_action = WebMouseWheelEventTraits::GetEventAction(result);
   return result;
 }

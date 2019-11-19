@@ -1,7 +1,5 @@
 #include "rar.hpp"
 
-namespace third_party_unrar {
-
 void Unpack::CopyString20(uint Length,uint Distance)
 {
   LastDist=OldDist[OldDistPtr++]=Distance;
@@ -259,7 +257,6 @@ bool Unpack::ReadTables20()
 void Unpack::ReadLastTables()
 {
   if (ReadTop>=Inp.InAddr+5)
-  {
     if (UnpAudioBlock)
     {
       if (DecodeNumber(Inp,&MD[UnpCurChannel])==256)
@@ -268,7 +265,6 @@ void Unpack::ReadLastTables()
     else
       if (DecodeNumber(Inp,&BlockTables.LD)==269)
         ReadTables20();
-  }
 }
 
 
@@ -381,5 +377,3 @@ byte Unpack::DecodeAudio(int Delta)
   }
   return (byte)Ch;
 }
-
-}  // namespace third_party_unrar

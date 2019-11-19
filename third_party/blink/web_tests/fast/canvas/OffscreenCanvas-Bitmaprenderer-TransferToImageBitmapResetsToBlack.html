@@ -1,0 +1,52 @@
+<html>
+<br> <canvas id="normalColors" width="60" height="60"></canvas>
+<br> <canvas id="blackColors" width="60" height="60"></canvas>
+
+<script>
+  function requestAnimationFrameNtimesThen(times, fn) {
+    if(times>0) {
+      requestAnimationFrame(() => {
+        requestAnimationFrameNtimesThen(times-1, fn);
+      });
+    } else
+      fn();
+  };
+
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+  }
+  // source content as canvas
+  var htmlCanvas = document.createElement('canvas');
+  htmlCanvas.width = 60;
+  htmlCanvas.height = 60;
+  var htmlCanvasCtx = htmlCanvas.getContext("2d");
+  htmlCanvasCtx.fillStyle = "blue";
+  htmlCanvasCtx.fillRect(0, 0, 15, 60);
+  htmlCanvasCtx.fillStyle = "red";
+  htmlCanvasCtx.fillRect(15, 0, 45, 30);
+  htmlCanvasCtx.fillStyle = "green";
+  htmlCanvasCtx.fillRect(15, 30, 45, 30);
+
+  createImageBitmap(htmlCanvas).then(function(bmap){
+    // This offscreen canvas will be used in several tests
+    var canNewOffscreen = new OffscreenCanvas(60,60);
+    var ctxNewOffscreen = canNewOffscreen.getContext("bitmaprenderer");
+    ctxNewOffscreen.transferFromImageBitmap(bmap);
+
+    var outputCanvas = document.getElementById("normalColors");
+    var outputCanvasRenderer = outputCanvas.getContext("bitmaprenderer");
+    outputCanvasRenderer.transferFromImageBitmap(canNewOffscreen.transferToImageBitmap());
+
+    var outputCanvas = document.getElementById("blackColors");
+    var outputCanvasRenderer = outputCanvas.getContext("bitmaprenderer");
+    outputCanvasRenderer.transferFromImageBitmap(canNewOffscreen.transferToImageBitmap());
+
+    if (window.testRunner) {
+      requestAnimationFrameNtimesThen(1, () => {
+        testRunner.notifyDone();
+      });
+    }
+  });
+
+</script>
+</html>

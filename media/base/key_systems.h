@@ -42,7 +42,7 @@ class MEDIA_EXPORT KeySystems {
   // Returns the configuration rule for supporting |encryption_scheme|.
   virtual EmeConfigRule GetEncryptionSchemeConfigRule(
       const std::string& key_system,
-      EncryptionMode encryption_scheme) const = 0;
+      EncryptionScheme encryption_scheme) const = 0;
 
   // Returns the configuration rule for supporting a container and a list of
   // codecs.
@@ -88,6 +88,9 @@ MEDIA_EXPORT bool IsSupportedKeySystemWithInitDataType(
 
 // Returns a name for |key_system| suitable to UMA logging.
 MEDIA_EXPORT std::string GetKeySystemNameForUMA(const std::string& key_system);
+
+// Returns an int mapping to |key_system| suitable for UKM reporting.
+MEDIA_EXPORT int GetKeySystemIntForUKM(const std::string& key_system);
 
 // Returns whether AesDecryptor can be used for the given |key_system|.
 MEDIA_EXPORT bool CanUseAesDecryptor(const std::string& key_system);

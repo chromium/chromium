@@ -12,8 +12,13 @@ namespace media {
 MediaUrlDemuxer::MediaUrlDemuxer(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
     const GURL& media_url,
-    const GURL& site_for_cookies)
-    : params_{media_url, site_for_cookies}, task_runner_(task_runner) {}
+    const GURL& site_for_cookies,
+    const url::Origin& top_frame_origin,
+    bool allow_credentials,
+    bool is_hls)
+    : params_{media_url, site_for_cookies, top_frame_origin, allow_credentials,
+              is_hls},
+      task_runner_(task_runner) {}
 
 MediaUrlDemuxer::~MediaUrlDemuxer() = default;
 
@@ -23,7 +28,7 @@ std::vector<DemuxerStream*> MediaUrlDemuxer::GetAllStreams() {
   return std::vector<DemuxerStream*>();
 }
 
-MediaUrlParams MediaUrlDemuxer::GetMediaUrlParams() const {
+const MediaUrlParams& MediaUrlDemuxer::GetMediaUrlParams() const {
   return params_;
 }
 
@@ -35,10 +40,19 @@ std::string MediaUrlDemuxer::GetDisplayName() const {
   return "MediaUrlDemuxer";
 }
 
+void MediaUrlDemuxer::ForwardDurationChangeToDemuxerHost(
+    base::TimeDelta duration) {
+  DCHECK(host_);
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  host_->SetDuration(duration);
+}
+
 void MediaUrlDemuxer::Initialize(DemuxerHost* host,
-                                 const PipelineStatusCB& status_cb) {
+                                 PipelineStatusCallback status_cb) {
   DVLOG(1) << __func__;
-  task_runner_->PostTask(FROM_HERE, base::BindOnce(status_cb, PIPELINE_OK));
+  host_ = host;
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(std::move(status_cb), PIPELINE_OK));
 }
 
 void MediaUrlDemuxer::StartWaitingForSeek(base::TimeDelta seek_time) {}
@@ -46,8 +60,9 @@ void MediaUrlDemuxer::StartWaitingForSeek(base::TimeDelta seek_time) {}
 void MediaUrlDemuxer::CancelPendingSeek(base::TimeDelta seek_time) {}
 
 void MediaUrlDemuxer::Seek(base::TimeDelta time,
-                           const PipelineStatusCB& status_cb) {
-  task_runner_->PostTask(FROM_HERE, base::BindOnce(status_cb, PIPELINE_OK));
+                           PipelineStatusCallback status_cb) {
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(std::move(status_cb), PIPELINE_OK));
 }
 
 void MediaUrlDemuxer::Stop() {}

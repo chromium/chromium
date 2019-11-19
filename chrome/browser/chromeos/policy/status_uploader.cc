@@ -15,7 +15,7 @@
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
-#include "chrome/browser/chromeos/policy/device_status_collector.h"
+#include "chrome/browser/chromeos/policy/status_collector/status_collector.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -32,25 +32,26 @@ namespace {
 const int kMinUploadDelayMs = 60 * 1000;  // 60 seconds
 // Minimum delay after scheduling an upload
 const int kMinUploadScheduleDelayMs = 60 * 1000;  // 60 seconds
+// Minimum interval between the last upload and the next immediate upload
+constexpr base::TimeDelta kMinImmediateUploadInterval =
+    base::TimeDelta::FromSeconds(10);
 }  // namespace
 
 namespace policy {
 
 StatusUploader::StatusUploader(
     CloudPolicyClient* client,
-    std::unique_ptr<DeviceStatusCollector> collector,
+    std::unique_ptr<StatusCollector> collector,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     base::TimeDelta default_upload_frequency)
     : client_(client),
       collector_(std::move(collector)),
       task_runner_(task_runner),
       upload_frequency_(default_upload_frequency),
-      has_captured_media_(false),
-      weak_factory_(this) {
+      has_captured_media_(false) {
   // Track whether any media capture devices are in use - this changes what
   // type of information we are allowed to upload.
   MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
-
   // Listen for changes to the upload delay, and start sending updates to the
   // server.
   upload_frequency_observer_ =
@@ -81,14 +82,19 @@ bool StatusUploader::ScheduleNextStatusUpload(bool immediately) {
     return false;
   }
 
+  base::Time now = base::Time::NowFromSystemTime();
+
   // Calculate when to fire off the next update (if it should have already
   // happened, this yields a TimeDelta of kMinUploadScheduleDelayMs).
-  base::TimeDelta delay = std::max(
-      (last_upload_ + upload_frequency_) - base::Time::NowFromSystemTime(),
-      base::TimeDelta::FromMilliseconds(kMinUploadScheduleDelayMs));
-  // If we want an immediate status upload, set delay to 0.
+  base::TimeDelta delay =
+      std::max((last_upload_ + upload_frequency_) - now,
+               base::TimeDelta::FromMilliseconds(kMinUploadScheduleDelayMs));
+
+  // The next upload should be scheduled for at least
+  // kMinImmediateUploadInterval after the last upload if it is immediately.
   if (immediately)
-    delay = base::TimeDelta();
+    delay = std::max((last_upload_ + kMinImmediateUploadInterval) - now,
+                     base::TimeDelta());
 
   upload_callback_.Reset(base::Bind(&StatusUploader::UploadStatus,
                                     base::Unretained(this)));
@@ -118,7 +124,6 @@ void StatusUploader::RefreshUploadFrequency() {
     upload_frequency_ = base::TimeDelta::FromMilliseconds(
         std::max(kMinUploadDelayMs, frequency));
   }
-
   // Schedule a new upload with the new frequency - only do this if we've
   // already performed the initial upload, because we want the initial upload
   // to happen in a minute after startup and not get cancelled by settings
@@ -161,14 +166,14 @@ bool StatusUploader::IsSessionDataUploadAllowed() {
 
 void StatusUploader::OnRequestUpdate(int render_process_id,
                                      int render_frame_id,
-                                     blink::MediaStreamType stream_type,
+                                     blink::mojom::MediaStreamType stream_type,
                                      const content::MediaRequestState state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // If a video or audio capture stream is opened, set a flag so we disallow
   // upload of potentially sensitive data.
   if (state == content::MEDIA_REQUEST_STATE_OPENING &&
-      (stream_type == blink::MEDIA_DEVICE_AUDIO_CAPTURE ||
-       stream_type == blink::MEDIA_DEVICE_VIDEO_CAPTURE)) {
+      (stream_type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
+       stream_type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE)) {
     has_captured_media_ = true;
   }
 }
@@ -180,16 +185,15 @@ bool StatusUploader::ScheduleNextStatusUploadImmediately() {
 void StatusUploader::UploadStatus() {
   status_upload_in_progress_ = true;
   // Gather status in the background.
-  collector_->GetDeviceAndSessionStatusAsync(base::Bind(
-      &StatusUploader::OnStatusReceived, weak_factory_.GetWeakPtr()));
+  collector_->GetStatusAsync(base::Bind(&StatusUploader::OnStatusReceived,
+                                        weak_factory_.GetWeakPtr()));
 }
 
-void StatusUploader::OnStatusReceived(
-    std::unique_ptr<em::DeviceStatusReportRequest> device_status,
-    std::unique_ptr<em::SessionStatusReportRequest> session_status) {
-  bool have_device_status = device_status != nullptr;
-  bool have_session_status = session_status != nullptr;
-  if (!have_device_status && !have_session_status) {
+void StatusUploader::OnStatusReceived(StatusCollectorParams callback_params) {
+  bool has_device_status = callback_params.device_status != nullptr;
+  bool has_session_status = callback_params.session_status != nullptr;
+  bool has_child_status = callback_params.child_status != nullptr;
+  if (!has_device_status && !has_session_status && !has_child_status) {
     SYSLOG(INFO) << "Skipping status upload because no data to upload";
     // Don't have any status to upload - just set our timer for next time.
     last_upload_ = base::Time::NowFromSystemTime();
@@ -207,9 +211,12 @@ void StatusUploader::OnStatusReceived(
     return;
   }
 
-  SYSLOG(INFO) << "Starting status upload: have_device_status = "
-               << have_device_status;
-  client_->UploadDeviceStatus(device_status.get(), session_status.get(),
+  SYSLOG(INFO) << "Starting status upload: has_device_status = "
+               << has_device_status;
+
+  client_->UploadDeviceStatus(callback_params.device_status.get(),
+                              callback_params.session_status.get(),
+                              callback_params.child_status.get(),
                               base::Bind(&StatusUploader::OnUploadCompleted,
                                          weak_factory_.GetWeakPtr()));
 }

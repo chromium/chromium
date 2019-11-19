@@ -1,3 +1,0 @@
-include_rules = [
-  "+jingle/glue/network_service_config_test_util.h",
-]

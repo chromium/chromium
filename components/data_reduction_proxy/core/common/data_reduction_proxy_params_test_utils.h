@@ -28,10 +28,15 @@ class TestDataReductionProxyParams : public DataReductionProxyParams {
   const std::vector<DataReductionProxyServer>& proxies_for_http()
       const override;
 
+  net::ProxyList GetAllConfiguredProxies() const override;
+
+  void SetConfiguredProxies(const net::ProxyList& configured_proxies);
+
  private:
   bool override_non_secure_proxies_;
 
   std::vector<DataReductionProxyServer> proxies_for_http_;
+  net::ProxyList configured_proxies_;
 };
 
 }  // namespace data_reduction_proxy

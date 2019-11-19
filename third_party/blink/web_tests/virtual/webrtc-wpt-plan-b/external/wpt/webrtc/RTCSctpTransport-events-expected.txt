@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Cannot read property 'state' of null
+FAIL SctpTransport objects are created at appropriate times assert_not_equals: got disallowed value null
+FAIL SctpTransport reaches connected and closed state promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'state' of null"
+Harness: the test ran to completion.
+

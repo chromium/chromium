@@ -28,7 +28,7 @@ class CONTENT_EXPORT MediaPlayerRendererClientFactory
     : public media::RendererFactory {
  public:
   using GetStreamTextureWrapperCB =
-      base::Callback<media::ScopedStreamTextureWrapper()>;
+      base::RepeatingCallback<media::ScopedStreamTextureWrapper()>;
 
   MediaPlayerRendererClientFactory(
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,

@@ -1,0 +1,7 @@
+group
+++document
+++++region Name='Page 1'
+++++++group
+++++++++img Name='Image 1'
+++++++++img Name='Image 2'
+++++++++img Name='Image 3'

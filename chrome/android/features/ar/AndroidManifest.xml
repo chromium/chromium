@@ -5,18 +5,12 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
-    featureSplit="ar"
-    package="{{manifest_package}}">
-
-    <!-- Chrome AR is only supported on Android N+. -->
-    <uses-sdk
-        android:minSdkVersion="24"
-        android:targetSdkVersion="{{target_sdk_version}}" />
+    featureSplit="ar">
 
     <dist:module
         dist:onDemand="true"
         dist:title="@string/ar_module_title">
-        <dist:fusing dist:include="false" />
+        <dist:fusing dist:include="true" />
     </dist:module>
 
     <application>

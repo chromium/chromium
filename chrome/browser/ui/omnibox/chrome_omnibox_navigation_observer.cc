@@ -29,6 +29,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -221,7 +222,7 @@ void ChromeOmniboxNavigationObserver::WebContentsDestroyed() {
 
 void ChromeOmniboxNavigationObserver::OnURLRedirect(
     const net::RedirectInfo& redirect_info,
-    const network::ResourceResponseHead& response_head,
+    const network::mojom::URLResponseHead& response_head,
     std::vector<std::string>* to_be_removed_headers) {
   bool valid_redirect = IsValidNavigation(alternate_nav_match_.destination_url,
                                           redirect_info.new_url);

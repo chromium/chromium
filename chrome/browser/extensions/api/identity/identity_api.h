@@ -29,10 +29,10 @@
 #include "chrome/browser/extensions/api/identity/identity_remove_cached_auth_token_function.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 #include "chrome/browser/extensions/chrome_extension_function.h"
-#include "components/signin/core/browser/signin_buildflags.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
-#include "services/identity/public/cpp/identity_manager.h"
 
 namespace content {
 class BrowserContext;
@@ -79,7 +79,7 @@ class IdentityTokenCacheValue {
 };
 
 class IdentityAPI : public BrowserContextKeyedAPI,
-                    public identity::IdentityManager::Observer {
+                    public signin::IdentityManager::Observer {
  public:
   typedef std::map<ExtensionTokenKey, IdentityTokenCacheValue> CachedTokens;
 
@@ -128,7 +128,7 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   static const char* service_name() { return "IdentityAPI"; }
   static const bool kServiceIsNULLWhileTesting = true;
 
-  // identity::IdentityManager::Observer:
+  // signin::IdentityManager::Observer:
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
   // NOTE: This class must listen for this callback rather than

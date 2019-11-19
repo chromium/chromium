@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import collections
 import logging
 import optparse
@@ -59,7 +61,7 @@ def main(argv):
   (options, args) = option_parser.parse_args(argv)
 
   if len(args) > 1:
-    print 'Unknown argument: ', args[1:]
+    print('Unknown argument: ', args[1:])
     option_parser.print_help()
     sys.exit(1)
 

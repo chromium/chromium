@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_LINK_LOAD_PARAMETERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_LINK_LOAD_PARAMETERS_H_
 
-#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "base/optional.h"
+#include "base/unguessable_token.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/link_rel_attribute.h"
@@ -43,6 +45,7 @@ struct CORE_EXPORT LinkLoadParameters {
   KURL href;
   String image_srcset;
   String image_sizes;
+  base::Optional<base::UnguessableToken> recursive_prefetch_token;
 };
 
 }  // namespace blink

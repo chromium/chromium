@@ -6,19 +6,20 @@
 
 #include "build/build_config.h"
 #include "ui/aura/client/focus_client.h"
-#include "ui/aura/mus/window_tree_client.h"
 #include "ui/aura/test/aura_test_helper.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/views/mus/mus_client.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
+
+#if defined(OS_LINUX) && BUILDFLAG(ENABLE_DESKTOP_AURA)
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#endif
 
 #if defined(USE_X11)
 #include "ui/gfx/x/x11.h"        // nogncheck
 #include "ui/gfx/x/x11_types.h"  // nogncheck
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_x11.h"
 #endif
 
 namespace views {
@@ -71,8 +72,8 @@ BOOL CALLBACK FindAllWindowsCallback(HWND hwnd, LPARAM param) {
 
 std::vector<aura::Window*> GetAllTopLevelWindows() {
   std::vector<aura::Window*> roots;
-#if defined(USE_X11)
-  roots = DesktopWindowTreeHostX11::GetAllOpenWindows();
+#if defined(OS_LINUX) && BUILDFLAG(ENABLE_DESKTOP_AURA)
+  roots = DesktopWindowTreeHostLinux::GetAllOpenWindows();
 #elif defined(OS_WIN)
   {
     FindAllWindowsData data = {&roots};
@@ -80,20 +81,14 @@ std::vector<aura::Window*> GetAllTopLevelWindows() {
                       reinterpret_cast<LPARAM>(&data));
   }
 #endif
-  if (MusClient::Get()) {
-    auto mus_roots = MusClient::Get()->window_tree_client()->GetRoots();
-    roots.insert(roots.end(), mus_roots.begin(), mus_roots.end());
-  } else {
-    aura::test::AuraTestHelper* aura_test_helper =
-        aura::test::AuraTestHelper::GetInstance();
+  aura::test::AuraTestHelper* aura_test_helper =
+      aura::test::AuraTestHelper::GetInstance();
 #if defined(OS_CHROMEOS)
-    // Chrome OS non-mash unit tests use AuraTestHelper to get the root window.
-    // Chrome OS non-mash browser tests must use ash::Shell::GetAllRootWindows.
-    DCHECK(aura_test_helper) << "Can't find all widgets without a test helper";
+  // Chrome OS browser tests must use ash::Shell::GetAllRootWindows.
+  DCHECK(aura_test_helper) << "Can't find all widgets without a test helper";
 #endif
-    if (aura_test_helper)
-      roots.push_back(aura_test_helper->root_window());
-  }
+  if (aura_test_helper)
+    roots.push_back(aura_test_helper->root_window());
   return roots;
 }
 
@@ -128,7 +123,7 @@ gfx::Size WidgetTest::GetNativeWidgetMinimumContentSize(Widget* widget) {
   // the window manager is interested in knowing the size constraints. On
   // ChromeOS, it's handled internally. Elsewhere, the size constraints need to
   // be pushed to the window server when they change.
-#if defined(OS_CHROMEOS) || defined(OS_WIN)
+#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
   return widget->GetNativeWindow()->delegate()->GetMinimumSize();
 #elif defined(USE_X11)
   XSizeHints hints;
@@ -182,6 +177,9 @@ Widget::Widgets WidgetTest::GetAllWidgets() {
     Widget::GetAllChildWidgets(window->GetRootWindow(), &all_widgets);
   return all_widgets;
 }
+
+// static
+void WidgetTest::WaitForSystemAppActivation() {}
 
 }  // namespace test
 }  // namespace views

@@ -15,21 +15,22 @@ FragmentData::RareData::RareData() : unique_id(NewUniqueObjectId()) {}
 FragmentData::RareData::~RareData() = default;
 
 void FragmentData::DestroyTail() {
-  while (next_fragment_) {
-    // Take the following (next-next) fragment, clearing
-    // |next_fragment_->next_fragment_|.
-    std::unique_ptr<FragmentData> next =
-        std::move(next_fragment_->next_fragment_);
-    // Point |next_fragment_| to the following fragment and destroy
-    // the current |next_fragment_|.
-    next_fragment_ = std::move(next);
+  if (!rare_data_)
+    return;
+  // Take next_fragment_ which clears it in this fragment.
+  std::unique_ptr<FragmentData> next = std::move(rare_data_->next_fragment_);
+  while (next && next->rare_data_) {
+    // Take next_fragment_ which clears it in that fragment, and the assignment
+    // deletes the previous |next|.
+    next = std::move(next->rare_data_->next_fragment_);
   }
+  // The last |next| will be deleted on return.
 }
 
 FragmentData& FragmentData::EnsureNextFragment() {
-  if (!next_fragment_)
-    next_fragment_ = std::make_unique<FragmentData>();
-  return *next_fragment_.get();
+  if (!NextFragment())
+    EnsureRareData().next_fragment_ = std::make_unique<FragmentData>();
+  return *rare_data_->next_fragment_;
 }
 
 FragmentData::RareData& FragmentData::EnsureRareData() {
@@ -142,43 +143,22 @@ void FragmentData::InvalidateClipPathCache() {
   rare_data_->clip_path_path = nullptr;
 }
 
-void FragmentData::SetClipPathCache(const base::Optional<IntRect>& bounding_box,
+void FragmentData::SetClipPathCache(const IntRect& bounding_box,
                                     scoped_refptr<const RefCountedPath> path) {
   EnsureRareData().is_clip_path_cache_valid = true;
   rare_data_->clip_path_bounding_box = bounding_box;
   rare_data_->clip_path_path = std::move(path);
 }
 
-template <typename Rect, typename PaintOffsetFunction>
-static void MapRectBetweenFragment(
-    const FragmentData& from_fragment,
-    const FragmentData& to_fragment,
-    const PaintOffsetFunction& paint_offset_function,
-    Rect& rect) {
-  if (&from_fragment == &to_fragment)
-    return;
-  const auto& from_transform =
-      from_fragment.LocalBorderBoxProperties().Transform();
-  const auto& to_transform = to_fragment.LocalBorderBoxProperties().Transform();
-  rect.MoveBy(paint_offset_function(from_fragment.PaintOffset()));
-  GeometryMapper::SourceToDestinationRect(from_transform, to_transform, rect);
-  rect.MoveBy(-paint_offset_function(to_fragment.PaintOffset()));
-}
-
 void FragmentData::MapRectToFragment(const FragmentData& fragment,
                                      IntRect& rect) const {
-  MapRectBetweenFragment(*this, fragment,
-                         [](const LayoutPoint& paint_offset) {
-                           return RoundedIntPoint(paint_offset);
-                         },
-                         rect);
-}
-
-void FragmentData::MapRectToFragment(const FragmentData& fragment,
-                                     LayoutRect& rect) const {
-  MapRectBetweenFragment(
-      *this, fragment,
-      [](const LayoutPoint& paint_offset) { return paint_offset; }, rect);
+  if (this == &fragment)
+    return;
+  const auto& from_transform = LocalBorderBoxProperties().Transform();
+  const auto& to_transform = fragment.LocalBorderBoxProperties().Transform();
+  rect.MoveBy(RoundedIntPoint(PaintOffset()));
+  GeometryMapper::SourceToDestinationRect(from_transform, to_transform, rect);
+  rect.MoveBy(-RoundedIntPoint(fragment.PaintOffset()));
 }
 
 }  // namespace blink

@@ -7,15 +7,15 @@
 #include <memory>
 #include <utility>
 
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/bluetooth/bluetooth_system.h"
 
 namespace device {
 
 void BluetoothSystemFactory::CreateFactory(
-    mojom::BluetoothSystemFactoryRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<BluetoothSystemFactory>(),
-                          std::move(request));
+    mojo::PendingReceiver<mojom::BluetoothSystemFactory> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<BluetoothSystemFactory>(),
+                              std::move(receiver));
 }
 
 BluetoothSystemFactory::BluetoothSystemFactory() = default;
@@ -23,9 +23,9 @@ BluetoothSystemFactory::BluetoothSystemFactory() = default;
 BluetoothSystemFactory::~BluetoothSystemFactory() = default;
 
 void BluetoothSystemFactory::Create(
-    mojom::BluetoothSystemRequest system_request,
-    mojom::BluetoothSystemClientPtr system_client) {
-  BluetoothSystem::Create(std::move(system_request), std::move(system_client));
+    mojo::PendingReceiver<mojom::BluetoothSystem> system_receiver,
+    mojo::PendingRemote<mojom::BluetoothSystemClient> system_client) {
+  BluetoothSystem::Create(std::move(system_receiver), std::move(system_client));
 }
 
 }  // namespace device

@@ -63,52 +63,74 @@ base::Optional<ConstBufferView> Abs32GapFinder::GetNext() {
 
 /******** Rel32Finder ********/
 
-Rel32Finder::Rel32Finder() = default;
-
-Rel32Finder::Rel32Finder(ConstBufferView region)
-    : region_(region), next_cursor_(region_.begin()) {}
+Rel32Finder::Rel32Finder() {}
 
 Rel32Finder::~Rel32Finder() = default;
 
+void Rel32Finder::SetRegion(ConstBufferView region) {
+  region_ = region;
+  accept_it_ = region.begin();
+}
+
+bool Rel32Finder::FindNext() {
+  NextIterators next_iters = Scan(region_);
+  if (next_iters.reject == nullptr) {
+    region_.seek(region_.end());
+    return false;
+  }
+  region_.seek(next_iters.reject);
+  accept_it_ = next_iters.accept;
+  DCHECK_GE(accept_it_, region_.begin());
+  DCHECK_LE(accept_it_, region_.end());
+  return true;
+}
+
+void Rel32Finder::Accept() {
+  region_.seek(accept_it_);
+}
+
+/******** Rel32FinderIntel ********/
+
+Rel32Finder::NextIterators Rel32FinderIntel::SetResult(
+    ConstBufferView::const_iterator cursor,
+    uint32_t opcode_size,
+    bool can_point_outside_section) {
+  rel32_ = {cursor + opcode_size, can_point_outside_section};
+  return {cursor + 1, cursor + (opcode_size + 4)};
+}
+
 /******** Rel32FinderX86 ********/
 
-ConstBufferView Rel32FinderX86::Scan(ConstBufferView region) {
+Rel32Finder::NextIterators Rel32FinderX86::Scan(ConstBufferView region) {
   ConstBufferView::const_iterator cursor = region.begin();
   while (cursor < region.end()) {
     // Heuristic rel32 detection by looking for opcodes that use them.
     if (cursor + 5 <= region.end()) {
-      if (cursor[0] == 0xE8 || cursor[0] == 0xE9) {  // JMP rel32; CALL rel32
-        rel32_ = {cursor + 1, false};
-        return ConstBufferView::FromRange(cursor, rel32_.location + 4);
-      }
+      if (cursor[0] == 0xE8 || cursor[0] == 0xE9)  // JMP rel32; CALL rel32
+        return SetResult(cursor, 1, false);
     }
     if (cursor + 6 <= region.end()) {
-      if (cursor[0] == 0x0F && (cursor[1] & 0xF0) == 0x80) {  // Jcc long form
-        rel32_ = {cursor + 2, false};
-        return ConstBufferView::FromRange(cursor, rel32_.location + 4);
-      }
+      if (cursor[0] == 0x0F && (cursor[1] & 0xF0) == 0x80)  // Jcc long form
+        return SetResult(cursor, 2, false);
     }
     ++cursor;
   }
-  return {region.end(), 0};
+  return {nullptr, nullptr};
 }
 
 /******** Rel32FinderX64 ********/
 
-ConstBufferView Rel32FinderX64::Scan(ConstBufferView region) {
+Rel32Finder::NextIterators Rel32FinderX64::Scan(ConstBufferView region) {
   ConstBufferView::const_iterator cursor = region.begin();
   while (cursor < region.end()) {
     // Heuristic rel32 detection by looking for opcodes that use them.
     if (cursor + 5 <= region.end()) {
-      if (cursor[0] == 0xE8 || cursor[0] == 0xE9) {  // JMP rel32; CALL rel32
-        rel32_ = {cursor + 1, false};
-        return ConstBufferView::FromRange(cursor, rel32_.location + 4);
-      }
+      if (cursor[0] == 0xE8 || cursor[0] == 0xE9)  // JMP rel32; CALL rel32
+        return SetResult(cursor, 1, false);
     }
     if (cursor + 6 <= region.end()) {
       if (cursor[0] == 0x0F && (cursor[1] & 0xF0) == 0x80) {  // Jcc long form
-        rel32_ = {cursor + 2, false};
-        return ConstBufferView::FromRange(cursor, rel32_.location + 4);
+        return SetResult(cursor, 2, false);
       } else if ((cursor[0] == 0xFF &&
                   (cursor[1] == 0x15 || cursor[1] == 0x25)) ||
                  ((cursor[0] == 0x89 || cursor[0] == 0x8B ||
@@ -128,13 +150,12 @@ ConstBufferView Rel32FinderX64::Scan(ConstBufferView region) {
         //  ModR/M : MMRRRMMM
         //   MM = 00 & MMM = 101 => rip+disp32
         //   RRR: selects reg operand from [eax|ecx|...|edi]
-        rel32_ = {cursor + 2, true};
-        return ConstBufferView::FromRange(cursor, rel32_.location + 4);
+        return SetResult(cursor, 2, true);
       }
     }
     ++cursor;
   }
-  return {region.end(), 0};
+  return {nullptr, nullptr};
 }
 
 }  // namespace zucchini

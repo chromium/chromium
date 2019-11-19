@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "components/sync/engine/non_blocking_sync_common.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
@@ -47,7 +48,7 @@ class ModelTypeProcessor {
   // Informs this object that there are some incoming updates it should
   // handle.
   virtual void OnUpdateReceived(const sync_pb::ModelTypeState& type_state,
-                                const UpdateResponseDataList& updates) = 0;
+                                UpdateResponseDataList updates) = 0;
 };
 
 }  // namespace syncer

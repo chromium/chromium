@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "cc/input/overscroll_behavior.h"
 #include "ui/android/overscroll_refresh_handler.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
 namespace {
@@ -15,13 +16,23 @@ namespace {
 // release results in a small upward fling (quite common during a slow scroll).
 const float kMinFlingVelocityForActivation = -500.f;
 
+// The default distance in dp from a side of the device to start a navigation
+// from.
+const float kNavigationEdgeWidth = 48.f;
+
+// Weighted value used to determine whether a scroll should trigger vertical
+// scroll or horizontal navigation.
+const float kWeightAngle30 = 1.73f;
+
 }  // namespace
 
-OverscrollRefresh::OverscrollRefresh(OverscrollRefreshHandler* handler)
+OverscrollRefresh::OverscrollRefresh(OverscrollRefreshHandler* handler,
+                                     float dpi_scale)
     : scrolled_to_top_(true),
       top_at_scroll_start_(true),
       overflow_y_hidden_(false),
       scroll_consumption_state_(DISABLED),
+      edge_width_(kNavigationEdgeWidth * dpi_scale),
       handler_(handler) {
   DCHECK(handler);
 }
@@ -30,6 +41,7 @@ OverscrollRefresh::OverscrollRefresh()
     : scrolled_to_top_(true),
       overflow_y_hidden_(false),
       scroll_consumption_state_(DISABLED),
+      edge_width_(kNavigationEdgeWidth * 1.f),
       handler_(nullptr) {}
 
 OverscrollRefresh::~OverscrollRefresh() {
@@ -42,7 +54,9 @@ void OverscrollRefresh::Reset() {
   handler_->PullReset();
 }
 
-void OverscrollRefresh::OnScrollBegin() {
+void OverscrollRefresh::OnScrollBegin(const gfx::PointF& pos) {
+  scroll_begin_x_ = pos.x();
+  scroll_begin_y_ = pos.y();
   top_at_scroll_start_ = scrolled_to_top_;
   ReleaseWithoutActivation();
   scroll_consumption_state_ = AWAITING_SCROLL_UPDATE_ACK;
@@ -60,6 +74,7 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior) {
   float ydelta = cumulative_scroll_.y();
   float xdelta = cumulative_scroll_.x();
   bool in_y_direction = std::abs(ydelta) > std::abs(xdelta);
+  bool in_x_direction = std::abs(ydelta) * kWeightAngle30 < std::abs(xdelta);
   OverscrollAction type = OverscrollAction::NONE;
   bool navigate_forward = false;
   if (ydelta > 0 && in_y_direction) {
@@ -70,7 +85,9 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior) {
       return;
     }
     type = OverscrollAction::PULL_TO_REFRESH;
-  } else if (!in_y_direction) {
+  } else if (in_x_direction &&
+             (scroll_begin_x_ < edge_width_ ||
+              viewport_width_ - scroll_begin_x_ < edge_width_)) {
     // Swipe-to-navigate. Check overscroll-behavior-x
     if (behavior.x != cc::OverscrollBehavior::OverscrollBehaviorType::
                           kOverscrollBehaviorTypeAuto) {
@@ -83,7 +100,10 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior) {
 
   if (type != OverscrollAction::NONE) {
     scroll_consumption_state_ =
-        handler_->PullStart(type, navigate_forward) ? ENABLED : DISABLED;
+        handler_->PullStart(type, scroll_begin_x_, scroll_begin_y_,
+                            navigate_forward)
+            ? ENABLED
+            : DISABLED;
   }
 }
 
@@ -130,8 +150,10 @@ bool OverscrollRefresh::IsAwaitingScrollUpdateAck() const {
 }
 
 void OverscrollRefresh::OnFrameUpdated(
+    const gfx::SizeF& viewport_size,
     const gfx::Vector2dF& content_scroll_offset,
     bool root_overflow_y_hidden) {
+  viewport_width_ = viewport_size.width();
   scrolled_to_top_ = content_scroll_offset.y() == 0;
   overflow_y_hidden_ = root_overflow_y_hidden;
 }

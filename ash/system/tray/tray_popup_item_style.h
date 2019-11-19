@@ -36,8 +36,6 @@ class TrayPopupItemStyle {
   enum class FontStyle {
     // Topmost header rows for default view and detailed view.
     TITLE,
-    // Main text used by default view rows.
-    DEFAULT_VIEW_LABEL,
     // Text in sub-section header rows in detailed views.
     SUB_HEADER,
     // Main text used by detailed view rows.

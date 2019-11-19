@@ -26,7 +26,7 @@ class TestUnrecoverableErrorHandler : public UnrecoverableErrorHandler {
   base::WeakPtr<TestUnrecoverableErrorHandler> GetWeakPtr();
 
  private:
-  base::WeakPtrFactory<TestUnrecoverableErrorHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<TestUnrecoverableErrorHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace syncer

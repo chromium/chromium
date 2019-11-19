@@ -22,6 +22,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/localized_string.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -48,37 +49,33 @@ content::WebUIDataSource* CreateWebRtcLogsUIHTMLSource() {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIWebRtcLogsHost);
 
-  source->AddLocalizedString("webrtcLogsTitle", IDS_WEBRTC_LOGS_TITLE);
-  source->AddLocalizedString("webrtcTextLogCountFormat",
-                             IDS_WEBRTC_TEXT_LOGS_LOG_COUNT_BANNER_FORMAT);
-  source->AddLocalizedString("webrtcEventLogCountFormat",
-                             IDS_WEBRTC_EVENT_LOGS_LOG_COUNT_BANNER_FORMAT);
-  source->AddLocalizedString("webrtcLogHeaderFormat",
-                             IDS_WEBRTC_LOGS_LOG_HEADER_FORMAT);
-  source->AddLocalizedString("webrtcLogLocalFileLabelFormat",
-                             IDS_WEBRTC_LOGS_LOG_LOCAL_FILE_LABEL_FORMAT);
-  source->AddLocalizedString("noLocalLogFileMessage",
-                             IDS_WEBRTC_LOGS_NO_LOCAL_LOG_FILE_MESSAGE);
-  source->AddLocalizedString("webrtcLogUploadTimeFormat",
-                             IDS_WEBRTC_LOGS_LOG_UPLOAD_TIME_FORMAT);
-  source->AddLocalizedString("webrtcLogFailedUploadTimeFormat",
-                             IDS_WEBRTC_LOGS_LOG_FAILED_UPLOAD_TIME_FORMAT);
-  source->AddLocalizedString("webrtcLogReportIdFormat",
-                             IDS_WEBRTC_LOGS_LOG_REPORT_ID_FORMAT);
-  source->AddLocalizedString("webrtcEventLogLocalLogIdFormat",
-                             IDS_WEBRTC_LOGS_EVENT_LOG_LOCAL_LOG_ID);
-  source->AddLocalizedString("bugLinkText", IDS_WEBRTC_LOGS_BUG_LINK_LABEL);
-  source->AddLocalizedString("webrtcLogNotUploadedMessage",
-                             IDS_WEBRTC_LOGS_LOG_NOT_UPLOADED_MESSAGE);
-  source->AddLocalizedString("webrtcLogPendingMessage",
-                             IDS_WEBRTC_LOGS_LOG_PENDING_MESSAGE);
-  source->AddLocalizedString("webrtcLogActivelyUploadedMessage",
-                             IDS_WEBRTC_LOGS_LOG_ACTIVELY_UPLOADED_MESSAGE);
-  source->AddLocalizedString("noTextLogsMessage",
-                             IDS_WEBRTC_LOGS_NO_TEXT_LOGS_MESSAGE);
-  source->AddLocalizedString("noEventLogsMessage",
-                             IDS_WEBRTC_LOGS_NO_EVENT_LOGS_MESSAGE);
-  source->SetJsonPath("strings.js");
+  static constexpr LocalizedString kStrings[] = {
+      {"webrtcLogsTitle", IDS_WEBRTC_LOGS_TITLE},
+      {"webrtcTextLogCountFormat",
+       IDS_WEBRTC_TEXT_LOGS_LOG_COUNT_BANNER_FORMAT},
+      {"webrtcEventLogCountFormat",
+       IDS_WEBRTC_EVENT_LOGS_LOG_COUNT_BANNER_FORMAT},
+      {"webrtcLogHeaderFormat", IDS_WEBRTC_LOGS_LOG_HEADER_FORMAT},
+      {"webrtcLogLocalFileLabelFormat",
+       IDS_WEBRTC_LOGS_LOG_LOCAL_FILE_LABEL_FORMAT},
+      {"noLocalLogFileMessage", IDS_WEBRTC_LOGS_NO_LOCAL_LOG_FILE_MESSAGE},
+      {"webrtcLogUploadTimeFormat", IDS_WEBRTC_LOGS_LOG_UPLOAD_TIME_FORMAT},
+      {"webrtcLogFailedUploadTimeFormat",
+       IDS_WEBRTC_LOGS_LOG_FAILED_UPLOAD_TIME_FORMAT},
+      {"webrtcLogReportIdFormat", IDS_WEBRTC_LOGS_LOG_REPORT_ID_FORMAT},
+      {"webrtcEventLogLocalLogIdFormat",
+       IDS_WEBRTC_LOGS_EVENT_LOG_LOCAL_LOG_ID},
+      {"bugLinkText", IDS_WEBRTC_LOGS_BUG_LINK_LABEL},
+      {"webrtcLogNotUploadedMessage", IDS_WEBRTC_LOGS_LOG_NOT_UPLOADED_MESSAGE},
+      {"webrtcLogPendingMessage", IDS_WEBRTC_LOGS_LOG_PENDING_MESSAGE},
+      {"webrtcLogActivelyUploadedMessage",
+       IDS_WEBRTC_LOGS_LOG_ACTIVELY_UPLOADED_MESSAGE},
+      {"noTextLogsMessage", IDS_WEBRTC_LOGS_NO_TEXT_LOGS_MESSAGE},
+      {"noEventLogsMessage", IDS_WEBRTC_LOGS_NO_EVENT_LOGS_MESSAGE},
+  };
+  AddLocalizedStringsBulk(source, kStrings, base::size(kStrings));
+
+  source->UseStringsJs();
   source->AddResourcePath("webrtc_logs.js", IDR_WEBRTC_LOGS_JS);
   source->SetDefaultResource(IDR_WEBRTC_LOGS_HTML);
   return source;
@@ -163,7 +160,7 @@ class WebRtcLogsDOMHandler final : public WebUIMessageHandler {
   std::vector<UploadList::UploadInfo> event_logs_;
 
   // Factory for creating weak references to instances of this class.
-  base::WeakPtrFactory<WebRtcLogsDOMHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<WebRtcLogsDOMHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebRtcLogsDOMHandler);
 };
@@ -177,14 +174,13 @@ WebRtcLogsDOMHandler::WebRtcLogsDOMHandler(Profile* profile)
       original_browser_context_id_(webrtc_event_logging::GetBrowserContextId(
           profile->GetOriginalProfile())),
       text_log_upload_list_(
-          webrtc_logging::TextLogList::CreateWebRtcLogList(profile)),
-      weak_ptr_factory_(this) {
+          webrtc_logging::TextLogList::CreateWebRtcLogList(profile)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
 WebRtcLogsDOMHandler::~WebRtcLogsDOMHandler() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  text_log_upload_list_->CancelCallback();
+  text_log_upload_list_->CancelLoadCallback();
 }
 
 void WebRtcLogsDOMHandler::RegisterMessages() {

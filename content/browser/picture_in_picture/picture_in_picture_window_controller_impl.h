@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
+#include "content/public/browser/media_player_id.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -18,8 +19,7 @@
 namespace content {
 
 class MediaWebContentsObserver;
-class OverlaySurfaceEmbedder;
-class PictureInPictureServiceImpl;
+class PictureInPictureSession;
 class WebContents;
 class WebContentsImpl;
 
@@ -43,28 +43,20 @@ class PictureInPictureWindowControllerImpl
   ~PictureInPictureWindowControllerImpl() override;
 
   using PlayerSet = std::set<int>;
-  using MutedMediaPlayerMap = std::map<RenderFrameHost*, PlayerSet>;
 
   // PictureInPictureWindowController:
-  CONTENT_EXPORT gfx::Size Show() override;
-  CONTENT_EXPORT void Close(bool should_pause_video,
-                            bool should_reset_pip_player) override;
+  CONTENT_EXPORT void Show() override;
+  CONTENT_EXPORT void Close(bool should_pause_video) override;
   CONTENT_EXPORT void CloseAndFocusInitiator() override;
   CONTENT_EXPORT void OnWindowDestroyed() override;
-  CONTENT_EXPORT void EmbedSurface(const viz::SurfaceId& surface_id,
-                                   const gfx::Size& natural_size) override;
   CONTENT_EXPORT OverlayWindow* GetWindowForTesting() override;
   CONTENT_EXPORT void UpdateLayerBounds() override;
   CONTENT_EXPORT bool IsPlayerActive() override;
-  CONTENT_EXPORT bool IsPlayerMuted() override;
   CONTENT_EXPORT WebContents* GetInitiatorWebContents() override;
   CONTENT_EXPORT bool TogglePlayPause() override;
-  CONTENT_EXPORT bool ToggleMute() override;
   CONTENT_EXPORT void UpdatePlaybackState(bool is_playing,
                                           bool reached_end_of_stream) override;
-  CONTENT_EXPORT void UpdateMutedState() override;
   CONTENT_EXPORT void SetAlwaysHidePlayPauseButton(bool is_visible) override;
-  CONTENT_EXPORT void SetAlwaysHideMuteButton(bool is_visible) override;
   CONTENT_EXPORT void SkipAd() override;
   CONTENT_EXPORT void NextTrack() override;
   CONTENT_EXPORT void PreviousTrack() override;
@@ -72,20 +64,29 @@ class PictureInPictureWindowControllerImpl
   CONTENT_EXPORT void MediaSessionActionsChanged(
       const std::set<media_session::mojom::MediaSessionAction>& actions);
 
+  gfx::Size GetSize();
+
   // WebContentsObserver:
   void MediaStartedPlaying(const MediaPlayerInfo&,
                            const MediaPlayerId&) override;
   void MediaStoppedPlaying(const MediaPlayerInfo&,
                            const MediaPlayerId&,
                            WebContentsObserver::MediaStoppedReason) override;
-  void MediaMutedStatusChanged(const MediaPlayerId&, bool muted) override;
 
   // TODO(mlamouri): temporary method used because of the media player id is
   // stored in a different location from the one that is used to update the
   // state of this object.
   void UpdateMediaPlayerId();
 
-  void set_service(PictureInPictureServiceImpl* service) { service_ = service; }
+  // Embeds a surface in the Picture-in-Picture window.
+  void EmbedSurface(const viz::SurfaceId& surface_id,
+                    const gfx::Size& natural_size);
+
+  // Sets the active Picture-in-Picture session associated with the controller.
+  // This is different from the service's active session as there is one
+  // controller per WebContents and one service per RenderFrameHost.
+  // The current session may be shut down as a side effect of this.
+  void SetActiveSession(PictureInPictureSession* session);
 
  private:
   friend class WebContentsUserData<PictureInPictureWindowControllerImpl>;
@@ -96,12 +97,11 @@ class PictureInPictureWindowControllerImpl
       WebContents* initiator);
 
   // Signal to the media player that |this| is leaving Picture-in-Picture mode.
-  void OnLeavingPictureInPicture(bool should_pause_video,
-                                 bool should_reset_pip_player);
+  void OnLeavingPictureInPicture(bool should_pause_video);
 
   // Internal method to set the states after the window was closed, whether via
   // the system or Chromium.
-  void CloseInternal(bool should_pause_video, bool should_reset_pip_player);
+  void CloseInternal(bool should_pause_video);
 
   // Creates a new window if the previous one was destroyed. It can happen
   // because of the system control of the window.
@@ -112,24 +112,17 @@ class PictureInPictureWindowControllerImpl
   // always_hide_play_pause_button_ is false.
   void UpdatePlayPauseButtonVisibility();
 
-  // Used to add/remove a muted player entry to |muted_players_|.
-  void AddMutedPlayerEntry(const MediaPlayerId& id);
-  bool RemoveMutedPlayerEntry(const MediaPlayerId& id);
-
   std::unique_ptr<OverlayWindow> window_;
-  std::unique_ptr<OverlaySurfaceEmbedder> embedder_;
+
   // TODO(929156): remove this as it should be accessible via `web_contents()`.
   WebContentsImpl* const initiator_;
 
   // Used to determine the state of the media player and route messages to
   // the corresponding media player with id |media_player_id_|.
   MediaWebContentsObserver* media_web_contents_observer_;
-  base::Optional<WebContentsObserver::MediaPlayerId> media_player_id_;
+  base::Optional<MediaPlayerId> media_player_id_;
 
   viz::SurfaceId surface_id_;
-
-  // Used to track the muted state of all players.
-  MutedMediaPlayerMap muted_players_;
 
   // Used to show/hide some actions in Picture-in-Picture window. These are set
   // to true when website handles some Media Session actions.
@@ -144,14 +137,11 @@ class PictureInPictureWindowControllerImpl
   // Session API in UpdatePlayPauseButtonVisibility().
   bool always_hide_play_pause_button_ = false;
 
-  // Used to hide mute button if video has no audio track or if MuteButton
-  // origin trial is disabled.
-  bool always_hide_mute_button_ = false;
-
-  // Service currently associated with the Picture-in-Picture window. The
-  // service makes the bridge with the renderer process by sending enter/exit
-  // requests. It is also holding the Picture-in-Picture MediaPlayerId.
-  PictureInPictureServiceImpl* service_ = nullptr;
+  // Session currently associated with the Picture-in-Picture window. The
+  // session object makes the bridge with the renderer process by handling
+  // requests and holding states such as the active player id.
+  // The session will be nullptr when there is no active session.
+  PictureInPictureSession* active_session_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

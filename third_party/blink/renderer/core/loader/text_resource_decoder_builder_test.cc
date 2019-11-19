@@ -13,8 +13,7 @@ namespace blink {
 static const WTF::TextEncoding DefaultEncodingForUrlAndContentType(
     const char* url,
     const char* content_type) {
-  std::unique_ptr<DummyPageHolder> page_holder =
-      DummyPageHolder::Create(IntSize(0, 0));
+  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(0, 0));
   Document& document = page_holder->GetDocument();
   document.SetURL(KURL(NullURL(), url));
   return BuildTextResourceDecoderFor(&document, content_type, g_null_atom)

@@ -37,7 +37,7 @@ const char kCloudManagementEnrollmentMandatory[] =
 
 // Boolean that specifies whether the cloud policy will override conflicting
 // machine policy.
-const char kCloudPolicyOverridesMachinePolicy[] = "policy.cloud_override";
+const char kCloudPolicyOverridesPlatformPolicy[] = "policy.cloud_override";
 
 }  // namespace policy_prefs
 }  // namespace policy

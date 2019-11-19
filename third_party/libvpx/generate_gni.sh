@@ -56,9 +56,6 @@ done
 # $1 - Output base name
 function write_license {
   echo "# This file is generated. Do not edit." >> $1
-  echo "# Copyright (c) 2014 The Chromium Authors. All rights reserved." >> $1
-  echo "# Use of this source code is governed by a BSD-style license that can be" >> $1
-  echo "# found in the LICENSE file." >> $1
   echo "" >> $1
 }
 
@@ -287,6 +284,10 @@ function gen_config_files {
   # Disable HAVE_UNISTD_H as it causes vp8 to try to detect how many cpus
   # available, which doesn't work from inside a sandbox on linux.
   sed -i.bak -e 's/\(HAVE_UNISTD_H[[:space:]]*\)1/\10/' vpx_config.h
+  # Maintain old ARCH_ defines to avoid build errors because assembly file
+  # dependencies are incorrect.
+  sed -i.bak -e 's/\(#define \)VPX_\(ARCH_[_0-9A-Z]\+ [01]\)/&\n\1\2/' vpx_config.h
+
   rm vpx_config.h.bak
 
   # Use the correct ads2gas script.
@@ -339,9 +340,16 @@ cp -R $LIBVPX_SRC_DIR $TEMP_DIR
 cd $TEMP_DIR
 
 echo "Generate config files."
-all_platforms="--enable-external-build --enable-postproc --enable-multi-res-encoding --enable-temporal-denoising"
-all_platforms="${all_platforms} --enable-vp9-temporal-denoising --enable-vp9-postproc --size-limit=16384x16384"
-all_platforms="${all_platforms} --enable-realtime-only --disable-install-docs"
+all_platforms="--enable-external-build"
+all_platforms+=" --enable-postproc"
+all_platforms+=" --enable-multi-res-encoding"
+all_platforms+=" --enable-temporal-denoising"
+all_platforms+=" --enable-vp9-temporal-denoising"
+all_platforms+=" --enable-vp9-postproc"
+all_platforms+=" --size-limit=16384x16384"
+all_platforms+=" --enable-realtime-only"
+all_platforms+=" --disable-install-docs"
+all_platforms+=" --disable-libyuv"
 x86_platforms="--enable-pic --as=yasm $DISABLE_AVX512 $HIGHBD"
 gen_config_files linux/ia32 "--target=x86-linux-gcc ${all_platforms} ${x86_platforms}"
 gen_config_files linux/x64 "--target=x86_64-linux-gcc ${all_platforms} ${x86_platforms}"

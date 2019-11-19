@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <bitset>
 #include <map>
 #include <memory>
 #include <set>
@@ -34,6 +35,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/util/type_safety/id_type.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message_start.h"
 #include "ipc/ipc_param_traits.h"
@@ -41,6 +43,11 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
+#endif
+
+#if defined(OS_FUCHSIA)
+#include <lib/zx/channel.h>
+#include <lib/zx/vmo.h>
 #endif
 
 namespace base {
@@ -404,6 +411,42 @@ struct ParamTraits<std::vector<P>> {
   }
 };
 
+template <std::size_t N>
+struct ParamTraits<std::bitset<N>> {
+  typedef std::bitset<N> param_type;
+  static void Write(base::Pickle* m, const param_type& p) {
+    WriteParam(m, base::checked_cast<int>(p.size()));
+    for (size_t i = 0; i < p.size(); i++)
+      WriteParam(m, p.test(i));
+  }
+
+  static bool Read(const base::Pickle* m,
+                   base::PickleIterator* iter,
+                   param_type* r) {
+    int size;
+    // ReadLength() checks for < 0 itself.
+    if (!iter->ReadLength(&size))
+      return false;
+    if (static_cast<size_t>(size) != r->size())
+      return false;
+    for (size_t i = 0; i < r->size(); i++) {
+      bool value;
+      if (!ReadParam(m, iter, &value))
+        return false;
+      (*r)[i] = value;
+    }
+    return true;
+  }
+
+  static void Log(const param_type& p, std::string* l) {
+    for (size_t i = 0; i < p.size(); ++i) {
+      if (i != 0)
+        l->push_back(' ');
+      LogParam(p.test(i), l);
+    }
+  }
+};
+
 template <class P>
 struct ParamTraits<std::set<P> > {
   typedef std::set<P> param_type;
@@ -552,7 +595,40 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<base::FileDescriptor> {
                    param_type* r);
   static void Log(const param_type& p, std::string* l);
 };
+
+template <>
+struct COMPONENT_EXPORT(IPC) ParamTraits<base::ScopedFD> {
+  typedef base::ScopedFD param_type;
+  static void Write(base::Pickle* m, const param_type& p);
+  static bool Read(const base::Pickle* m,
+                   base::PickleIterator* iter,
+                   param_type* r);
+  static void Log(const param_type& p, std::string* l);
+};
+
 #endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+
+#if defined(OS_FUCHSIA)
+template <>
+struct COMPONENT_EXPORT(IPC) ParamTraits<zx::vmo> {
+  typedef zx::vmo param_type;
+  static void Write(base::Pickle* m, const param_type& p);
+  static bool Read(const base::Pickle* m,
+                   base::PickleIterator* iter,
+                   param_type* r);
+  static void Log(const param_type& p, std::string* l);
+};
+
+template <>
+struct COMPONENT_EXPORT(IPC) ParamTraits<zx::channel> {
+  typedef zx::channel param_type;
+  static void Write(base::Pickle* m, const param_type& p);
+  static bool Read(const base::Pickle* m,
+                   base::PickleIterator* iter,
+                   param_type* r);
+  static void Log(const param_type& p, std::string* l);
+};
+#endif  // defined(OS_FUCHSIA)
 
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<base::SharedMemoryHandle> {
@@ -897,7 +973,7 @@ struct ParamTraits<base::flat_map<Key, Mapped, Compare>> {
         return false;
     }
 
-    *r = param_type(std::move(vect), base::KEEP_FIRST_OF_DUPES);
+    *r = param_type(std::move(vect));
     return true;
   }
   static void Log(const param_type& p, std::string* l) {
@@ -969,6 +1045,48 @@ struct ParamTraits<base::Optional<P>> {
       LogParam(p.value(), l);
     else
       l->append("(unset)");
+  }
+};
+
+// base/util types ParamTraits
+
+template <typename TypeMarker, typename WrappedType, WrappedType kInvalidValue>
+struct ParamTraits<util::IdType<TypeMarker, WrappedType, kInvalidValue>> {
+  using param_type = util::IdType<TypeMarker, WrappedType, kInvalidValue>;
+  static void Write(base::Pickle* m, const param_type& p) {
+    WriteParam(m, p.GetUnsafeValue());
+  }
+  static bool Read(const base::Pickle* m,
+                   base::PickleIterator* iter,
+                   param_type* r) {
+    WrappedType value;
+    if (!ReadParam(m, iter, &value))
+      return false;
+    *r = param_type::FromUnsafeValue(value);
+    return true;
+  }
+  static void Log(const param_type& p, std::string* l) {
+    LogParam(p.GetUnsafeValue(), l);
+  }
+};
+
+template <typename TagType, typename UnderlyingType>
+struct ParamTraits<util::StrongAlias<TagType, UnderlyingType>> {
+  using param_type = util::StrongAlias<TagType, UnderlyingType>;
+  static void Write(base::Pickle* m, const param_type& p) {
+    WriteParam(m, p.value());
+  }
+  static bool Read(const base::Pickle* m,
+                   base::PickleIterator* iter,
+                   param_type* r) {
+    UnderlyingType value;
+    if (!ReadParam(m, iter, &value))
+      return false;
+    *r = param_type::StrongAlias(value);
+    return true;
+  }
+  static void Log(const param_type& p, std::string* l) {
+    LogParam(p.value(), l);
   }
 };
 

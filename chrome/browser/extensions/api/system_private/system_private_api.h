@@ -13,7 +13,7 @@
 namespace extensions {
 
 class SystemPrivateGetIncognitoModeAvailabilityFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("systemPrivate.getIncognitoModeAvailability",
                              SYSTEMPRIVATE_GETINCOGNITOMODEAVAILABILITY)
@@ -26,7 +26,7 @@ class SystemPrivateGetIncognitoModeAvailabilityFunction
 };
 
 // API function which returns the status of system update.
-class SystemPrivateGetUpdateStatusFunction : public UIThreadExtensionFunction {
+class SystemPrivateGetUpdateStatusFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("systemPrivate.getUpdateStatus",
                              SYSTEMPRIVATE_GETUPDATESTATUS)
@@ -39,7 +39,7 @@ class SystemPrivateGetUpdateStatusFunction : public UIThreadExtensionFunction {
 };
 
 // API function which returns the Google API key.
-class SystemPrivateGetApiKeyFunction : public UIThreadExtensionFunction {
+class SystemPrivateGetApiKeyFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("systemPrivate.getApiKey", SYSTEMPRIVATE_GETAPIKEY)
 

@@ -19,11 +19,8 @@ SyncBackendRegistrar::SyncBackendRegistrar(
     ModelSafeWorkerFactory worker_factory)
     : name_(name) {
   DCHECK(!worker_factory.is_null());
-  MaybeAddWorker(worker_factory, GROUP_DB);
-  MaybeAddWorker(worker_factory, GROUP_FILE);
   MaybeAddWorker(worker_factory, GROUP_UI);
   MaybeAddWorker(worker_factory, GROUP_PASSIVE);
-  MaybeAddWorker(worker_factory, GROUP_HISTORY);
   MaybeAddWorker(worker_factory, GROUP_PASSWORD);
 }
 
@@ -61,12 +58,6 @@ void SyncBackendRegistrar::SetInitialTypes(ModelTypeSet initial_types) {
     }
   }
 
-  if (!workers_.count(GROUP_HISTORY)) {
-    LOG_IF(WARNING, initial_types.Has(TYPED_URLS))
-        << "History store disabled, cannot sync Omnibox History";
-    routing_info_.erase(TYPED_URLS);
-  }
-
   if (!workers_.count(GROUP_PASSWORD)) {
     LOG_IF(WARNING, initial_types.Has(PASSWORDS))
         << "Password store not initialized, cannot sync passwords";
@@ -99,10 +90,6 @@ ModelTypeSet SyncBackendRegistrar::ConfigureDataTypes(
     ModelTypeSet types_to_remove) {
   DCHECK(Intersection(types_to_add, types_to_remove).Empty());
   ModelTypeSet filtered_types_to_add = types_to_add;
-  if (workers_.count(GROUP_HISTORY) == 0) {
-    LOG(WARNING) << "No history worker -- removing TYPED_URLS";
-    filtered_types_to_add.Remove(TYPED_URLS);
-  }
   if (workers_.count(GROUP_PASSWORD) == 0) {
     LOG(WARNING) << "No password worker -- removing PASSWORDS";
     filtered_types_to_add.Remove(PASSWORDS);

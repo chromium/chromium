@@ -4,22 +4,29 @@
 
 #include "services/network/proxy_config_service_mojo.h"
 
+#include <utility>
+
 namespace network {
 
 ProxyConfigServiceMojo::ProxyConfigServiceMojo(
-    mojom::ProxyConfigClientRequest proxy_config_client_request,
+    mojo::PendingReceiver<mojom::ProxyConfigClient>
+        proxy_config_client_receiver,
     base::Optional<net::ProxyConfigWithAnnotation> initial_proxy_config,
-    mojom::ProxyConfigPollerClientPtrInfo proxy_poller_client)
-    : binding_(this) {
-  DCHECK(initial_proxy_config || proxy_config_client_request.is_pending());
+    mojo::PendingRemote<mojom::ProxyConfigPollerClient> proxy_poller_client) {
+  DCHECK(initial_proxy_config || proxy_config_client_receiver.is_valid());
 
   if (initial_proxy_config)
     OnProxyConfigUpdated(*initial_proxy_config);
 
-  if (proxy_config_client_request.is_pending()) {
-    binding_.Bind(std::move(proxy_config_client_request));
+  if (proxy_config_client_receiver.is_valid()) {
+    receiver_.Bind(std::move(proxy_config_client_receiver));
     // Only use the |proxy_poller_client| if there's a
-    // |proxy_config_client_request|.
+    // |proxy_config_client_receiver|.
+    if (!proxy_poller_client) {
+      // NullRemote() could be passed in unit tests. In that case, it can't be
+      // bound.
+      return;
+    }
     proxy_poller_client_.Bind(std::move(proxy_poller_client));
   }
 }
@@ -37,6 +44,11 @@ void ProxyConfigServiceMojo::OnProxyConfigUpdated(
 
   for (auto& observer : observers_)
     observer.OnProxyConfigChanged(config_, CONFIG_VALID);
+}
+
+void ProxyConfigServiceMojo::FlushProxyConfig(
+    FlushProxyConfigCallback callback) {
+  std::move(callback).Run();
 }
 
 void ProxyConfigServiceMojo::AddObserver(Observer* observer) {

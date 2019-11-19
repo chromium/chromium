@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/renderer_host/embedded_frame_sink_impl.h"
@@ -21,14 +23,14 @@ EmbeddedFrameSinkProviderImpl::EmbeddedFrameSinkProviderImpl(
 EmbeddedFrameSinkProviderImpl::~EmbeddedFrameSinkProviderImpl() = default;
 
 void EmbeddedFrameSinkProviderImpl::Add(
-    blink::mojom::EmbeddedFrameSinkProviderRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+    mojo::PendingReceiver<blink::mojom::EmbeddedFrameSinkProvider> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void EmbeddedFrameSinkProviderImpl::RegisterEmbeddedFrameSink(
     const viz::FrameSinkId& parent_frame_sink_id,
     const viz::FrameSinkId& frame_sink_id,
-    blink::mojom::EmbeddedFrameSinkClientPtr client) {
+    mojo::PendingRemote<blink::mojom::EmbeddedFrameSinkClient> client) {
   // TODO(kylechar): Kill the renderer too.
   if (parent_frame_sink_id.client_id() != renderer_client_id_) {
     DLOG(ERROR) << "Invalid parent client id " << parent_frame_sink_id;
@@ -50,8 +52,8 @@ void EmbeddedFrameSinkProviderImpl::RegisterEmbeddedFrameSink(
 
 void EmbeddedFrameSinkProviderImpl::CreateCompositorFrameSink(
     const viz::FrameSinkId& frame_sink_id,
-    viz::mojom::CompositorFrameSinkClientPtr client,
-    viz::mojom::CompositorFrameSinkRequest request) {
+    mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver) {
   // TODO(kylechar): Kill the renderer too.
   if (frame_sink_id.client_id() != renderer_client_id_) {
     DLOG(ERROR) << "Invalid client id " << frame_sink_id;
@@ -65,25 +67,29 @@ void EmbeddedFrameSinkProviderImpl::CreateCompositorFrameSink(
   }
 
   iter->second->CreateCompositorFrameSink(std::move(client),
-                                          std::move(request));
+                                          std::move(receiver));
 }
 
 void EmbeddedFrameSinkProviderImpl::CreateSimpleCompositorFrameSink(
     const viz::FrameSinkId& parent_frame_sink_id,
     const viz::FrameSinkId& frame_sink_id,
-    blink::mojom::EmbeddedFrameSinkClientPtr embedded_frame_sink_client,
-    viz::mojom::CompositorFrameSinkClientPtr compositor_frame_sink_client,
-    viz::mojom::CompositorFrameSinkRequest compositor_frame_sink_request) {
+    mojo::PendingRemote<blink::mojom::EmbeddedFrameSinkClient>
+        embedded_frame_sink_client,
+    mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient>
+        compositor_frame_sink_client,
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSink>
+        compositor_frame_sink_receiver) {
   RegisterEmbeddedFrameSink(parent_frame_sink_id, frame_sink_id,
                             std::move(embedded_frame_sink_client));
   CreateCompositorFrameSink(frame_sink_id,
                             std::move(compositor_frame_sink_client),
-                            std::move(compositor_frame_sink_request));
+                            std::move(compositor_frame_sink_receiver));
 }
 
 void EmbeddedFrameSinkProviderImpl::ConnectToEmbedder(
     const viz::FrameSinkId& child_frame_sink_id,
-    blink::mojom::SurfaceEmbedderRequest surface_embedder_request) {
+    mojo::PendingReceiver<blink::mojom::SurfaceEmbedder>
+        surface_embedder_receiver) {
   // TODO(kylechar): Kill the renderer too.
   if (child_frame_sink_id.client_id() != renderer_client_id_) {
     DLOG(ERROR) << "Invalid client id " << child_frame_sink_id;
@@ -96,7 +102,7 @@ void EmbeddedFrameSinkProviderImpl::ConnectToEmbedder(
     return;
   }
 
-  iter->second->ConnectToEmbedder(std::move(surface_embedder_request));
+  iter->second->ConnectToEmbedder(std::move(surface_embedder_receiver));
 }
 
 void EmbeddedFrameSinkProviderImpl::DestroyEmbeddedFrameSink(

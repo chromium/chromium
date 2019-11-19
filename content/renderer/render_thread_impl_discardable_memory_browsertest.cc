@@ -14,16 +14,19 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/discardable_memory.h"
+#include "base/memory/discardable_memory_allocator.h"
+#include "base/memory/madv_free_discardable_memory_allocator_posix.h"
+#include "base/memory/madv_free_discardable_memory_posix.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
-#include "content/browser/browser_main_loop.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "content/renderer/discardable_memory_utils.h"
 #include "content/shell/browser/shell.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -35,7 +38,7 @@ namespace {
 class RenderThreadImplDiscardableMemoryBrowserTest : public ContentBrowserTest {
  public:
   RenderThreadImplDiscardableMemoryBrowserTest()
-      : child_discardable_shared_memory_manager_(nullptr) {}
+      : discardable_memory_allocator_(nullptr) {}
 
   // Overridden from BrowserTestBase:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -43,25 +46,23 @@ class RenderThreadImplDiscardableMemoryBrowserTest : public ContentBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    NavigateToURL(shell(), GURL(url::kAboutBlankURL));
-    PostTaskToInProcessRendererAndWait(base::Bind(
+    EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+    PostTaskToInProcessRendererAndWait(base::BindOnce(
         &RenderThreadImplDiscardableMemoryBrowserTest::SetUpOnRenderThread,
         base::Unretained(this)));
   }
 
-  discardable_memory::ClientDiscardableSharedMemoryManager*
-  child_discardable_shared_memory_manager() {
-    return child_discardable_shared_memory_manager_;
+  base::DiscardableMemoryAllocator* discardable_memory_allocator() {
+    return discardable_memory_allocator_;
   }
 
  private:
   void SetUpOnRenderThread() {
-    child_discardable_shared_memory_manager_ =
-        RenderThreadImpl::current()->GetDiscardableSharedMemoryManagerForTest();
+    discardable_memory_allocator_ =
+        RenderThreadImpl::current()->GetDiscardableMemoryAllocatorForTest();
   }
 
-  discardable_memory::ClientDiscardableSharedMemoryManager*
-      child_discardable_shared_memory_manager_;
+  base::DiscardableMemoryAllocator* discardable_memory_allocator_;
 };
 
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
@@ -69,8 +70,7 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
   const size_t kSize = 1024 * 1024;  // 1MiB.
 
   std::unique_ptr<base::DiscardableMemory> memory =
-      child_discardable_shared_memory_manager()
-          ->AllocateLockedDiscardableMemory(kSize);
+      discardable_memory_allocator()->AllocateLockedDiscardableMemory(kSize);
 
   ASSERT_TRUE(memory);
   void* addr = memory->data();
@@ -78,15 +78,17 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
 
   memory->Unlock();
 
-  // Purge all unlocked memory.
-  BrowserMainLoop::GetInstance()
-      ->discardable_shared_memory_manager()
-      ->SetMemoryLimit(0);
+  // Simulate memory being discarded as if under memory pressure.
+  memory->DiscardForTesting();
 
   // Should fail as memory should have been purged.
   EXPECT_FALSE(memory->Lock());
 }
 
+// Ensure that address space mapped by allocating discardable memory is unmapped
+// after discarding under memory pressure, by creating and discarding a large
+// amount of discardable memory.
+//
 // Disable the test for the Android asan build.
 // See http://crbug.com/667837 for detail.
 #if !(defined(OS_ANDROID) && defined(ADDRESS_SANITIZER))
@@ -95,11 +97,21 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
   const size_t kLargeSize = 4 * 1024 * 1024;   // 4MiB.
   const size_t kNumberOfInstances = 1024 + 1;  // >4GiB total.
 
+  DiscardableMemoryBacking impl = GetDiscardableMemoryBacking();
+
+  // TODO(gordonguan): When MADV_FREE DiscardableMemory is discarded, the
+  // backing memory is freed, but remains mapped in memory. It is only
+  // unmapped when the object is destroyed, or on the next Lock() after
+  // discard. Therefore, an abundance of discarded but mapped discardable
+  // memory instances may cause an out-of-memory condition.
+  if (impl != DiscardableMemoryBacking::kSharedMemory)
+    return;
+
   std::vector<std::unique_ptr<base::DiscardableMemory>> instances;
   for (size_t i = 0; i < kNumberOfInstances; ++i) {
     std::unique_ptr<base::DiscardableMemory> memory =
-        child_discardable_shared_memory_manager()
-            ->AllocateLockedDiscardableMemory(kLargeSize);
+        discardable_memory_allocator()->AllocateLockedDiscardableMemory(
+            kLargeSize);
     ASSERT_TRUE(memory);
     void* addr = memory->data();
     ASSERT_NE(nullptr, addr);
@@ -113,26 +125,32 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
                        ReleaseFreeDiscardableMemory) {
   const size_t kSize = 1024 * 1024;  // 1MiB.
 
+  DiscardableMemoryBacking impl = GetDiscardableMemoryBacking();
+
   std::unique_ptr<base::DiscardableMemory> memory =
-      child_discardable_shared_memory_manager()
-          ->AllocateLockedDiscardableMemory(kSize);
+      discardable_memory_allocator()->AllocateLockedDiscardableMemory(kSize);
 
   EXPECT_TRUE(memory);
+  EXPECT_GE(discardable_memory_allocator()->GetBytesAllocated(), kSize);
   memory.reset();
 
-  EXPECT_GE(BrowserMainLoop::GetInstance()
-                ->discardable_shared_memory_manager()
+  EXPECT_EQ(discardable_memory_allocator()->GetBytesAllocated(), 0U);
+  if (impl != DiscardableMemoryBacking::kSharedMemory)
+    return;
+
+  EXPECT_GE(discardable_memory::DiscardableSharedMemoryManager::Get()
                 ->GetBytesAllocated(),
             kSize);
 
-  child_discardable_shared_memory_manager()->ReleaseFreeMemory();
+  static_cast<discardable_memory::ClientDiscardableSharedMemoryManager*>(
+      discardable_memory_allocator())
+      ->ReleaseFreeMemory();
 
   // Busy wait for host memory usage to be reduced.
   base::TimeTicks end =
       base::TimeTicks::Now() + base::TimeDelta::FromSeconds(5);
   while (base::TimeTicks::Now() < end) {
-    if (!BrowserMainLoop::GetInstance()
-             ->discardable_shared_memory_manager()
+    if (!discardable_memory::DiscardableSharedMemoryManager::Get()
              ->GetBytesAllocated())
       break;
   }
@@ -140,21 +158,18 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
   EXPECT_LT(base::TimeTicks::Now(), end);
 }
 
+// TODO(crbug.com/974850): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
-                       ReleaseFreeMemory) {
+                       DISABLED_ReleaseFreeMemory) {
   const size_t kSize = 1024 * 1024;  // 1MiB.
 
   std::unique_ptr<base::DiscardableMemory> memory =
-      child_discardable_shared_memory_manager()
-          ->AllocateLockedDiscardableMemory(kSize);
+      discardable_memory_allocator()->AllocateLockedDiscardableMemory(kSize);
 
   EXPECT_TRUE(memory);
   memory.reset();
 
-  EXPECT_GE(BrowserMainLoop::GetInstance()
-                ->discardable_shared_memory_manager()
-                ->GetBytesAllocated(),
-            kSize);
+  EXPECT_GE(discardable_memory_allocator()->GetBytesAllocated(), kSize);
 
   // Call RenderThreadImpl::ReleaseFreeMemory through a fake memory pressure
   // notification.
@@ -163,9 +178,7 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
   base::RunLoop().RunUntilIdle();
   RunAllTasksUntilIdle();
 
-  EXPECT_EQ(0U, BrowserMainLoop::GetInstance()
-                    ->discardable_shared_memory_manager()
-                    ->GetBytesAllocated());
+  EXPECT_EQ(0U, discardable_memory_allocator()->GetBytesAllocated());
 }
 
 }  // namespace

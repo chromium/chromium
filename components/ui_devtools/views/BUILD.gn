@@ -13,25 +13,49 @@ source_set("views") {
   sources = [
     "devtools_server_util.cc",
     "devtools_server_util.h",
-    "dom_agent_aura.cc",
-    "dom_agent_aura.h",
-    "overlay_agent_aura.cc",
-    "overlay_agent_aura.h",
+    "dom_agent_views.cc",
+    "dom_agent_views.h",
+    "element_utility.cc",
+    "element_utility.h",
+    "overlay_agent_views.cc",
+    "overlay_agent_views.h",
+    "page_agent_views.cc",
+    "page_agent_views.h",
     "view_element.cc",
     "view_element.h",
     "widget_element.cc",
     "widget_element.h",
-    "window_element.cc",
-    "window_element.h",
   ]
 
   deps = [
     "//components/ui_devtools",
+    "//extensions/common",
     "//skia",
-    "//ui/aura",
     "//ui/views",
-    "//ui/wm:wm",
   ]
+
+  if (use_aura) {
+    sources += [
+      "dom_agent_aura.cc",
+      "dom_agent_aura.h",
+      "overlay_agent_aura.cc",
+      "overlay_agent_aura.h",
+      "window_element.cc",
+      "window_element.h",
+    ]
+    deps += [
+      "//ui/aura",
+      "//ui/wm:wm",
+    ]
+  }
+  if (is_mac) {
+    sources += [
+      "dom_agent_mac.h",
+      "dom_agent_mac.mm",
+      "overlay_agent_mac.h",
+      "overlay_agent_mac.mm",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -45,9 +69,9 @@ source_set("unit_tests") {
   sources = [
     "dom_agent_unittest.cc",
     "overlay_agent_unittest.cc",
+    "page_agent_views_unittest.cc",
     "view_element_unittest.cc",
     "widget_element_unittest.cc",
-    "window_element_unittest.cc",
   ]
 
   deps = [
@@ -56,13 +80,19 @@ source_set("unit_tests") {
     "//components/ui_devtools:test_support",
     "//skia",
     "//testing/gtest",
-    "//ui/aura",
-    "//ui/aura:test_support",
     "//ui/events:test_support",
     "//ui/views",
     "//ui/views:test_support",
-    "//ui/wm:wm",
   ]
+
+  if (use_aura) {
+    sources += [ "window_element_unittest.cc" ]
+    deps += [
+      "//ui/aura",
+      "//ui/aura:test_support",
+      "//ui/wm:wm",
+    ]
+  }
 
   configs += [ "//build/config:precompiled_headers" ]
 }

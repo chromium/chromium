@@ -16,7 +16,7 @@ Initiator:
             callFrames : [
                 [0] : {
                     columnNumber : 33
-                    functionName : 
+                    functionName : eval
                     lineNumber : 0
                     scriptId : <string>
                     url : 

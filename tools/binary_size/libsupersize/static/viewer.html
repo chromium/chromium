@@ -87,6 +87,7 @@ if ('serviceWorker' in navigator) {
     </header>
 
     <input type="hidden" name="load_url" data-dynamic>
+    <input type="hidden" name="before_url">
 
     <fieldset>
       <legend class="subhead">Size options</legend>
@@ -207,34 +208,25 @@ if ('serviceWorker' in navigator) {
       <button type="button" class="text-button" id="type-none">Select none</button>
     </fieldset>
 
-    <fieldset id="highlight-container">
-      <legend class="subhead">Highlight symbols</legend>
+    <fieldset id="flag-container">
+      <legend class="subhead">Filter symbols</legend>
       <div class="radio-wrapper">
-        <input type="radio" id="clearhighlight" name="highlight" value="clear" checked>
-        <label class="radio-label" for="clearhighlight">None</label>
+        <input type="radio" id="clearflag" name="flag_filter" value="clear" checked>
+        <label class="radio-label" for="clearflag">All</label>
       </div>
       <div class="radio-wrapper">
-        <input type="radio" id="hothighlight" name="highlight" value="hot">
-        <label class="radio-label" for="hothighlight">Hot code</label>
+        <input type="radio" id="hotflag" name="flag_filter" value="hot">
+        <label class="radio-label" for="hotflag">Hot code</label>
       </div>
       <div class="radio-wrapper">
-        <input type="radio" id="generatedhighlight" name="highlight" value="generated">
-        <label class="radio-label" for="generatedhighlight">Generated files</label>
+        <input type="radio" id="generatedflag" name="flag_filter" value="generated">
+        <label class="radio-label" for="generatedflag">Generated files</label>
       </div>
       <div class="radio-wrapper">
-        <input type="radio" id="coveragehightlight" name="highlight" value="coverage">
-        <label class="radio-label" for="coveragehightlight">Code coverage (not implemented)</label>
-      </div>
-      <div class="radio-wrapper">
-        <input type="radio" id="uncompressedhighlight" name="highlight" value="uncompressed">
-        <label class="radio-label" for="uncompressedhighlight">Uncompressed .pak files</label>
+        <input type="radio" id="uncompressedflag" name="flag_filter" value="uncompressed">
+        <label class="radio-label" for="uncompressedflag">Uncompressed .pak files</label>
       </div>
     </fieldset>
-
-    <p class="checkbox-wrapper">
-      <input type="checkbox" id="generatedfilter" name="generated_filter" value="on">
-      <label class="checkbox-label" for="generatedfilter">Show only generated files</label>
-    </p>
   </form>
   <div class="symbols">
     <!-- Icons for symbols are stored here and cloned. -->
@@ -283,7 +275,7 @@ if ('serviceWorker' in navigator) {
         <path d="M9.4,16.6L4.8,12l4.6-4.6L8,6l-6,6l6,6L9.4,16.6z M14.6,16.6l4.6-4.6l-4.6-4.6L16,6l6,6l-6,6L14.6,16.6z" />
       </svg>
       <svg class="icon relroicon" height="24" width="24" fill="#fbbc04">
-        <title>Vtable entry</title>
+        <title>.data.rel.ro (read-only after relocations)</title>
         <path d="M20,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h15c1.1,0,2-0.9,2-2V5C22,3.9,21.1,3,20,3z M20,5v3H5V5H20z M15,19h-5v-9h5V19z
                  M5,10h3v9H5V10z M17,19v-9h3v9H17z" />
       </svg>
@@ -409,7 +401,7 @@ if ('serviceWorker' in navigator) {
                              M5,10h3v9H5V10z M17,19v-9h3v9H17z" />
                   </svg>
                 </td>
-                <th scope="row">Vtable entry</th>
+                <th scope="row">.data.rel.ro (read-only after relocations)</th>
                 <td class="count"></td>
                 <td class="size"></td>
                 <td class="percent"></td>

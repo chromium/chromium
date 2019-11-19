@@ -22,7 +22,8 @@ class ProfileNotification {
  public:
   // Returns a string that uniquely identifies a profile + delegate_id pair.
   // The profile_id is used as an identifier to identify a profile instance; it
-  // cannot be NULL. The ID becomes invalid when a profile is destroyed.
+  // can be null for system notifications. The ID becomes invalid when a profile
+  // is destroyed.
   static std::string GetProfileNotificationId(const std::string& delegate_id,
                                               ProfileID profile_id);
 

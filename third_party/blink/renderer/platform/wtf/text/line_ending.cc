@@ -32,8 +32,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -88,34 +87,34 @@ void NormalizeToCRLF(const CharType* src, wtf_size_t src_length, CharType* q) {
 }
 
 #if defined(OS_WIN)
-void InternalNormalizeLineEndingsToCRLF(const CString& from,
+void InternalNormalizeLineEndingsToCRLF(const std::string& from,
                                         Vector<char>& buffer) {
-  size_t new_len = RequiredSizeForCRLF(from.data(), from.length());
+  size_t new_len = RequiredSizeForCRLF(from.c_str(), from.length());
   if (new_len < from.length())
     return;
 
   if (new_len == from.length()) {
-    buffer.Append(from.data(), from.length());
+    buffer.Append(from.c_str(), from.length());
     return;
   }
 
   wtf_size_t old_buffer_size = buffer.size();
   buffer.Grow(old_buffer_size + new_len);
   char* write_position = buffer.data() + old_buffer_size;
-  NormalizeToCRLF(from.data(), from.length(), write_position);
+  NormalizeToCRLF(from.c_str(), from.length(), write_position);
 }
 #endif  // defined(OS_WIN)
 
 }  // namespace
 
-void NormalizeLineEndingsToLF(const CString& from, Vector<char>& result) {
+void NormalizeLineEndingsToLF(const std::string& from, Vector<char>& result) {
   // Compute the new length.
   wtf_size_t new_len = 0;
   bool need_fix = false;
-  const char* p = from.data();
+  const char* p = from.c_str();
   char from_ending_char = '\r';
   char to_ending_char = '\n';
-  while (p < from.data() + from.length()) {
+  while (p < from.c_str() + from.length()) {
     char c = *p++;
     if (c == '\r' && *p == '\n') {
       // Turn CRLF into CR or LF.
@@ -129,7 +128,7 @@ void NormalizeLineEndingsToLF(const CString& from, Vector<char>& result) {
   }
 
   // Grow the result buffer.
-  p = from.data();
+  p = from.c_str();
   wtf_size_t old_result_size = result.size();
   result.Grow(old_result_size + new_len);
   char* q = result.data() + old_result_size;
@@ -141,7 +140,7 @@ void NormalizeLineEndingsToLF(const CString& from, Vector<char>& result) {
   }
 
   // Make a copy of the string.
-  while (p < from.data() + from.length()) {
+  while (p < from.c_str() + from.length()) {
     char c = *p++;
     if (c == '\r' && *p == '\n') {
       // Turn CRLF or CR into CR or LF.
@@ -177,7 +176,8 @@ String NormalizeLineEndingsToCRLF(const String& src) {
   return String::Adopt(buffer);
 }
 
-void NormalizeLineEndingsToNative(const CString& from, Vector<char>& result) {
+void NormalizeLineEndingsToNative(const std::string& from,
+                                  Vector<char>& result) {
 #if defined(OS_WIN)
   InternalNormalizeLineEndingsToCRLF(from, result);
 #else

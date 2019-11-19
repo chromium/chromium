@@ -21,13 +21,13 @@ namespace {
 // If the property's value is not a path(), returns nullptr.
 StylePath* GetPath(const CSSProperty& property, const ComputedStyle& style) {
   switch (property.PropertyID()) {
-    case CSSPropertyD:
+    case CSSPropertyID::kD:
       return style.SvgStyle().D();
-    case CSSPropertyOffsetPath: {
+    case CSSPropertyID::kOffsetPath: {
       BasicShape* offset_path = style.OffsetPath();
       if (!offset_path || offset_path->GetType() != BasicShape::kStylePathType)
         return nullptr;
-      return ToStylePath(style.OffsetPath());
+      return To<StylePath>(style.OffsetPath());
     }
     default:
       NOTREACHED();
@@ -40,10 +40,10 @@ void SetPath(const CSSProperty& property,
              ComputedStyle& style,
              scoped_refptr<blink::StylePath> path) {
   switch (property.PropertyID()) {
-    case CSSPropertyD:
+    case CSSPropertyID::kD:
       style.SetD(std::move(path));
       return;
-    case CSSPropertyOffsetPath:
+    case CSSPropertyID::kOffsetPath:
       style.SetOffsetPath(std::move(path));
       return;
     default:
@@ -94,18 +94,11 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertInitial(
 
 class InheritedPathChecker : public CSSInterpolationType::CSSConversionChecker {
  public:
-  static std::unique_ptr<InheritedPathChecker> Create(
-      const CSSProperty& property,
-      scoped_refptr<StylePath> style_path) {
-    return base::WrapUnique(
-        new InheritedPathChecker(property, std::move(style_path)));
-  }
-
- private:
   InheritedPathChecker(const CSSProperty& property,
                        scoped_refptr<StylePath> style_path)
       : property_(property), style_path_(std::move(style_path)) {}
 
+ private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     return GetPath(property_, *state.ParentStyle()) == style_path_.get();
@@ -121,7 +114,7 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertInherit(
   if (!state.ParentStyle())
     return nullptr;
 
-  conversion_checkers.push_back(InheritedPathChecker::Create(
+  conversion_checkers.push_back(std::make_unique<InheritedPathChecker>(
       CssProperty(), GetPath(CssProperty(), *state.ParentStyle())));
   return PathInterpolationFunctions::ConvertValue(
       GetPath(CssProperty(), *state.ParentStyle()),
@@ -132,12 +125,12 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState*,
     ConversionCheckers& conversion_checkers) const {
-  if (!value.IsPathValue()) {
+  auto* path_value = DynamicTo<cssvalue::CSSPathValue>(value);
+  if (!path_value) {
     return nullptr;
   }
   return PathInterpolationFunctions::ConvertValue(
-      cssvalue::ToCSSPathValue(value).ByteStream(),
-      PathInterpolationFunctions::ForceAbsolute);
+      path_value->ByteStream(), PathInterpolationFunctions::ForceAbsolute);
 }
 
 InterpolationValue

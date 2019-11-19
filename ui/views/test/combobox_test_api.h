@@ -47,4 +47,4 @@ class ComboboxTestApi {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_TEST_MENU_RUNNER_TEST_API_H_
+#endif  // UI_VIEWS_TEST_COMBOBOX_TEST_API_H_

@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/optional.h"
 #include "ui/gfx/codec/codec_export.h"
 
 class SkBitmap;
@@ -37,21 +39,26 @@ class CODEC_EXPORT JPEGCodecRobustSlow {
     FORMAT_SkBitmap
   };
 
-  // Decodes the JPEG data contained in input of length input_size. The
-  // decoded data will be placed in *output with the dimensions in *w and *h
-  // on success (returns true). This data will be written in the'format'
-  // format. On failure, the values of these output variables is undefined.
-  static bool Decode(const unsigned char* input,
-                     size_t input_size,
+  // Decodes the JPEG data contained in |compressed_data|. The decoded data will
+  // be placed in |*output| with the dimensions in |*w| and |*h| on success
+  // (returns |true|). This data will be written in the |format| format.
+  //
+  // On failure, the values of these output variables is undefined.
+  //
+  // This will fail immediately without attempting to decode aything if the
+  // decompressed image data size would exceed |max_decoded_num_bytes| when
+  // given.
+  static bool Decode(base::span<const uint8_t> compressed_data,
                      ColorFormat format,
-                     std::vector<unsigned char>* output,
+                     std::vector<uint8_t>* output,
                      int* w,
-                     int* h);
+                     int* h,
+                     base::Optional<size_t> max_decoded_num_bytes);
 
-  // Decodes the JPEG data contained in input of length input_size. If
-  // successful, a SkBitmap is created and returned. It is up to the caller
-  // to delete the returned bitmap.
-  static SkBitmap* Decode(const unsigned char* input, size_t input_size);
+  // Same as above, but the image is returned as an SkBitmap.
+  static std::unique_ptr<SkBitmap> Decode(
+      base::span<const uint8_t> compressed_data,
+      base::Optional<size_t> max_decoded_num_bytes);
 };
 
 }  // namespace gfx

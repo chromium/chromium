@@ -8,11 +8,9 @@
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/extension_settings_helper.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
-#include "chrome/browser/sync/test/integration/feature_toggler.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/sync/driver/sync_driver_switches.h"
 
 namespace {
 
@@ -60,12 +58,10 @@ void MutateSomeSettings(
   }
 }
 
-class TwoClientExtensionSettingsAndAppSettingsSyncTest : public FeatureToggler,
-                                                         public SyncTest {
+class TwoClientExtensionSettingsAndAppSettingsSyncTest : public SyncTest {
  public:
-  TwoClientExtensionSettingsAndAppSettingsSyncTest()
-      : FeatureToggler(switches::kSyncPseudoUSSExtensionSettings),
-        SyncTest(TWO_CLIENT) {}
+  TwoClientExtensionSettingsAndAppSettingsSyncTest() : SyncTest(TWO_CLIENT) {}
+
   ~TwoClientExtensionSettingsAndAppSettingsSyncTest() override {}
 
  private:
@@ -184,7 +180,7 @@ testing::AssertionResult StartWithDifferentSettingsTest(
   return testing::AssertionSuccess();
 }
 
-IN_PROC_BROWSER_TEST_P(TwoClientExtensionSettingsAndAppSettingsSyncTest,
+IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
                        ExtensionsStartWithSameSettings) {
   ASSERT_TRUE(SetupClients());
   ASSERT_PRED3(StartWithSameSettingsTest, InstallExtensionForAllProfiles(0),
@@ -192,14 +188,14 @@ IN_PROC_BROWSER_TEST_P(TwoClientExtensionSettingsAndAppSettingsSyncTest,
                InstallExtensionForAllProfiles(2));
 }
 
-IN_PROC_BROWSER_TEST_P(TwoClientExtensionSettingsAndAppSettingsSyncTest,
+IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
                        AppsStartWithSameSettings) {
   ASSERT_TRUE(SetupClients());
   ASSERT_PRED3(StartWithSameSettingsTest, InstallAppForAllProfiles(0),
                InstallAppForAllProfiles(1), InstallAppForAllProfiles(2));
 }
 
-IN_PROC_BROWSER_TEST_P(TwoClientExtensionSettingsAndAppSettingsSyncTest,
+IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
                        ExtensionsStartWithDifferentSettings) {
   ASSERT_TRUE(SetupClients());
   ASSERT_PRED3(
@@ -207,15 +203,11 @@ IN_PROC_BROWSER_TEST_P(TwoClientExtensionSettingsAndAppSettingsSyncTest,
       InstallExtensionForAllProfiles(1), InstallExtensionForAllProfiles(2));
 }
 
-IN_PROC_BROWSER_TEST_P(TwoClientExtensionSettingsAndAppSettingsSyncTest,
+IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
                        AppsStartWithDifferentSettings) {
   ASSERT_TRUE(SetupClients());
   ASSERT_PRED3(StartWithDifferentSettingsTest, InstallAppForAllProfiles(0),
                InstallAppForAllProfiles(1), InstallAppForAllProfiles(2));
 }
-
-INSTANTIATE_TEST_SUITE_P(USS,
-                         TwoClientExtensionSettingsAndAppSettingsSyncTest,
-                         ::testing::Values(false, true));
 
 }  // namespace

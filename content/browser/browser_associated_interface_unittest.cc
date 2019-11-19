@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -19,13 +19,14 @@
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/test/test_browser_associated_interfaces.mojom.h"
 #include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -137,10 +138,10 @@ class TestClientRunner {
   static void RunTestClient(mojo::ScopedMessagePipeHandle pipe) {
     base::Thread io_thread("Client IO thread");
     io_thread.StartWithOptions(
-        base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+        base::Thread::Options(base::MessagePumpType::IO, 0));
     ProxyRunner proxy(std::move(pipe), false, io_thread.task_runner());
 
-    mojom::BrowserAssociatedInterfaceTestDriverAssociatedPtr driver;
+    mojo::AssociatedRemote<mojom::BrowserAssociatedInterfaceTestDriver> driver;
     proxy.channel()->GetRemoteAssociatedInterface(&driver);
 
     for (int i = 0; i < kNumTestMessages; ++i) {
@@ -165,11 +166,10 @@ class TestClientRunner {
 };
 
 TEST_F(BrowserAssociatedInterfaceTest, Basic) {
-  TestBrowserThreadBundle browser_threads_;
+  BrowserTaskEnvironment task_environment_;
   mojo::MessagePipe pipe;
-  ProxyRunner proxy(
-      std::move(pipe.handle0), true,
-      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}));
+  ProxyRunner proxy(std::move(pipe.handle0), true,
+                    base::CreateSingleThreadTaskRunner({BrowserThread::IO}));
   AddFilterToChannel(new TestDriverMessageFilter, proxy.channel());
 
   TestClientRunner client(std::move(pipe.handle1));

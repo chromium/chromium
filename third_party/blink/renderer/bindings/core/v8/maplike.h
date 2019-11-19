@@ -26,10 +26,11 @@ class Maplike : public PairIterable<KeyType, ValueType> {
                             ExceptionState& exception_state) {
     ValueType value;
     if (GetMapEntry(script_state, key, value, exception_state))
-      return ScriptValue(script_state,
+      return ScriptValue(script_state->GetIsolate(),
                          ToV8(value, script_state->GetContext()->Global(),
                               script_state->GetIsolate()));
-    return ScriptValue(script_state, v8::Undefined(script_state->GetIsolate()));
+    return ScriptValue(script_state->GetIsolate(),
+                       v8::Undefined(script_state->GetIsolate()));
   }
 
  private:

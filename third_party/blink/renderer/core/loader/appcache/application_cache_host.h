@@ -35,31 +35,31 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
-#include "third_party/blink/public/platform/web_application_cache_host_client.h"
+#include "third_party/blink/public/mojom/appcache/appcache_info.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-class ApplicationCache;
-class DocumentLoader;
-class ResourceRequest;
-class ResourceResponse;
 
-class CORE_EXPORT ApplicationCacheHost final
-    : public GarbageCollectedFinalized<ApplicationCacheHost>,
-      public WebApplicationCacheHostClient {
+class CORE_EXPORT ApplicationCacheHost
+    : public GarbageCollected<ApplicationCacheHost>,
+      public mojom::blink::AppCacheFrontend {
  public:
-  static ApplicationCacheHost* Create(DocumentLoader* loader) {
-    return MakeGarbageCollected<ApplicationCacheHost>(loader);
-  }
-
-  explicit ApplicationCacheHost(DocumentLoader*);
+  ApplicationCacheHost(
+      const BrowserInterfaceBrokerProxy& interface_broker_proxy,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~ApplicationCacheHost() override;
-  void DetachFromDocumentLoader();
+  virtual void Detach();
 
   struct CacheInfo {
     STACK_ALLOCATED();
@@ -68,132 +68,78 @@ class CORE_EXPORT ApplicationCacheHost final
     CacheInfo(const KURL& manifest,
               double creation_time,
               double update_time,
-              long long size)
+              int64_t response_sizes,
+              int64_t padding_sizes)
         : manifest_(manifest),
           creation_time_(creation_time),
           update_time_(update_time),
-          size_(size) {}
+          response_sizes_(response_sizes),
+          padding_sizes_(padding_sizes) {}
+    CacheInfo() = default;
     KURL manifest_;
-    double creation_time_;
-    double update_time_;
-    long long size_;
+    double creation_time_ = 0;
+    double update_time_ = 0;
+    int64_t response_sizes_ = 0;
+    int64_t padding_sizes_ = 0;
   };
 
-  struct ResourceInfo {
-    DISALLOW_NEW();
-    ResourceInfo(const KURL& resource,
-                 bool is_master,
-                 bool is_manifest,
-                 bool is_fallback,
-                 bool is_foreign,
-                 bool is_explicit,
-                 long long size)
-        : resource_(resource),
-          is_master_(is_master),
-          is_manifest_(is_manifest),
-          is_fallback_(is_fallback),
-          is_foreign_(is_foreign),
-          is_explicit_(is_explicit),
-          size_(size) {}
-    KURL resource_;
-    bool is_master_;
-    bool is_manifest_;
-    bool is_fallback_;
-    bool is_foreign_;
-    bool is_explicit_;
-    long long size_;
-  };
-
-  typedef Vector<ResourceInfo> ResourceInfoList;
-
-  void SelectCacheWithoutManifest();
-  void SelectCacheWithManifest(const KURL& manifest_url);
-
-  // Annotate request for ApplicationCache. This internally calls
-  // willStartLoadingMainResource if it's for frame resource or
-  // willStartLoadingResource for subresource requests.
-  void WillStartLoading(ResourceRequest&);
-  void WillStartLoadingMainResource(const KURL&, const String&);
-
-  void DidReceiveResponseForMainResource(const ResourceResponse&);
-  void MainResourceDataReceived(const char* data, size_t length);
-
-  mojom::AppCacheStatus GetStatus() const;
-  bool Update();
-  bool SwapCache();
+  mojom::blink::AppCacheStatus GetStatus() const;
   void Abort();
 
-  void SetApplicationCache(ApplicationCache*);
-  void NotifyApplicationCache(mojom::AppCacheEventID,
-                              int progress_total,
-                              int progress_done,
-                              mojom::AppCacheErrorReason,
-                              const String& error_url,
-                              int error_status,
-                              const String& error_message);
-
-  void
-  StopDeferringEvents();  // Also raises the events that have been queued up.
-
-  void FillResourceList(ResourceInfoList*);
+  void FillResourceList(Vector<mojom::blink::AppCacheResourceInfo>*);
   CacheInfo ApplicationCacheInfo();
-  int GetHostID() const;
 
-  void Trace(blink::Visitor*);
+  const base::UnguessableToken& GetHostID() const;
+  void SetHostID(const base::UnguessableToken& host_id);
+
+  void SelectCacheForWorker(int64_t app_cache_id,
+                            base::OnceClosure completion_callback);
+
+  // mojom::blink::AppCacheFrontend
+  void CacheSelected(mojom::blink::AppCacheInfoPtr info) override;
+  void EventRaised(mojom::blink::AppCacheEventID event_id) override;
+  void ProgressEventRaised(const KURL& url,
+                           int32_t num_total,
+                           int32_t num_complete) override;
+  void ErrorEventRaised(mojom::blink::AppCacheErrorDetailsPtr details) override;
+  void LogMessage(mojom::blink::ConsoleMessageLevel log_level,
+                  const String& message) override {}
+  void SetSubresourceFactory(
+      mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
+          url_loader_factory) override {}
+
+  virtual void Trace(blink::Visitor*) {}
+
+ protected:
+  mojo::Remote<mojom::blink::AppCacheHost> backend_host_;
+  mojom::blink::AppCacheStatus status_ =
+      mojom::blink::AppCacheStatus::APPCACHE_STATUS_UNCACHED;
+
+  // Non-empty |host_id_| must be set before calling this function.
+  bool BindBackend();
 
  private:
-  // WebApplicationCacheHostClient implementation
-  void DidChangeCacheAssociation() final;
-  void NotifyEventListener(mojom::AppCacheEventID) final;
-  void NotifyProgressEventListener(const WebURL&,
-                                   int progress_total,
-                                   int progress_done) final;
-  void NotifyErrorEventListener(mojom::AppCacheErrorReason,
-                                const WebURL&,
-                                int status,
-                                const WebString& message) final;
+  virtual void NotifyApplicationCache(mojom::AppCacheEventID,
+                                      int progress_total,
+                                      int progress_done,
+                                      mojom::AppCacheErrorReason,
+                                      const String& error_url,
+                                      int error_status,
+                                      const String& error_message) {}
 
-  bool IsApplicationCacheEnabled();
-  DocumentLoader* GetDocumentLoader() const { return document_loader_; }
+  void GetAssociatedCacheInfo(CacheInfo* info);
 
-  struct DeferredEvent {
-    mojom::AppCacheEventID event_id;
-    int progress_total;
-    int progress_done;
-    mojom::AppCacheErrorReason error_reason;
-    String error_url;
-    int error_status;
-    String error_message;
-    DeferredEvent(mojom::AppCacheEventID id,
-                  int progress_total,
-                  int progress_done,
-                  mojom::AppCacheErrorReason error_reason,
-                  const String& error_url,
-                  int error_status,
-                  const String& error_message)
-        : event_id(id),
-          progress_total(progress_total),
-          progress_done(progress_done),
-          error_reason(error_reason),
-          error_url(error_url),
-          error_status(error_status),
-          error_message(error_message) {}
-  };
+  mojo::Receiver<mojom::blink::AppCacheFrontend> receiver_{this};
+  mojo::Remote<mojom::blink::AppCacheBackend> backend_remote_;
 
-  WeakMember<ApplicationCache> dom_application_cache_;
-  Member<DocumentLoader> document_loader_;
-  bool defers_events_;  // Events are deferred until after document onload.
-  Vector<DeferredEvent> deferred_events_;
+  base::UnguessableToken host_id_;
+  mojom::blink::AppCacheInfo cache_info_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  void DispatchDOMEvent(mojom::AppCacheEventID,
-                        int progress_total,
-                        int progress_done,
-                        mojom::AppCacheErrorReason,
-                        const String& error_url,
-                        int error_status,
-                        const String& error_message);
+  const BrowserInterfaceBrokerProxy& interface_broker_proxy_;
 
-  std::unique_ptr<WebApplicationCacheHost> host_;
+  // Invoked when CacheSelected() is called.
+  base::OnceClosure select_cache_for_worker_completion_callback_;
 
   FRIEND_TEST_ALL_PREFIXES(DocumentTest, SandboxDisablesAppCache);
 

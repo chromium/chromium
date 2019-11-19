@@ -134,8 +134,8 @@ CommandForKeyEventResult ShortcutCommand(int cmd) {
 const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
   // clang-format off
   static base::NoDestructor<std::vector<KeyboardShortcutData>> keys({
-    //cmd   shift  cntrl  option vkeycode               command
-    //---   -----  -----  ------ --------               -------
+  // cmd    shift  cntrl  option vkeycode               command
+  // ---    -----  -----  ------ --------               -------
     {true,  true,  false, false, kVK_ANSI_RightBracket, IDC_SELECT_NEXT_TAB},
     {true,  true,  false, false, kVK_ANSI_LeftBracket,  IDC_SELECT_PREVIOUS_TAB},
     {false, false, true,  false, kVK_PageDown,          IDC_SELECT_NEXT_TAB},
@@ -144,28 +144,31 @@ const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
     {true,  false, false, true,  kVK_LeftArrow,         IDC_SELECT_PREVIOUS_TAB},
 
     // Cmd-0..8 select the nth tab, with cmd-9 being "last tab".
-    {true, false, false, false, kVK_ANSI_1,             IDC_SELECT_TAB_0},
-    {true, false, false, false, kVK_ANSI_Keypad1,       IDC_SELECT_TAB_0},
-    {true, false, false, false, kVK_ANSI_2,             IDC_SELECT_TAB_1},
-    {true, false, false, false, kVK_ANSI_Keypad2,       IDC_SELECT_TAB_1},
-    {true, false, false, false, kVK_ANSI_3,             IDC_SELECT_TAB_2},
-    {true, false, false, false, kVK_ANSI_Keypad3,       IDC_SELECT_TAB_2},
-    {true, false, false, false, kVK_ANSI_4,             IDC_SELECT_TAB_3},
-    {true, false, false, false, kVK_ANSI_Keypad4,       IDC_SELECT_TAB_3},
-    {true, false, false, false, kVK_ANSI_5,             IDC_SELECT_TAB_4},
-    {true, false, false, false, kVK_ANSI_Keypad5,       IDC_SELECT_TAB_4},
-    {true, false, false, false, kVK_ANSI_6,             IDC_SELECT_TAB_5},
-    {true, false, false, false, kVK_ANSI_Keypad6,       IDC_SELECT_TAB_5},
-    {true, false, false, false, kVK_ANSI_7,             IDC_SELECT_TAB_6},
-    {true, false, false, false, kVK_ANSI_Keypad7,       IDC_SELECT_TAB_6},
-    {true, false, false, false, kVK_ANSI_8,             IDC_SELECT_TAB_7},
-    {true, false, false, false, kVK_ANSI_Keypad8,       IDC_SELECT_TAB_7},
-    {true, false, false, false, kVK_ANSI_9,             IDC_SELECT_LAST_TAB},
-    {true, false, false, false, kVK_ANSI_Keypad9,       IDC_SELECT_LAST_TAB},
-    {true, true,  false, false, kVK_ANSI_M,             IDC_SHOW_AVATAR_MENU},
-    {true, false, false, true,  kVK_ANSI_L,             IDC_SHOW_DOWNLOADS},
+    {true,  false, false, false, kVK_ANSI_1,            IDC_SELECT_TAB_0},
+    {true,  false, false, false, kVK_ANSI_Keypad1,      IDC_SELECT_TAB_0},
+    {true,  false, false, false, kVK_ANSI_2,            IDC_SELECT_TAB_1},
+    {true,  false, false, false, kVK_ANSI_Keypad2,      IDC_SELECT_TAB_1},
+    {true,  false, false, false, kVK_ANSI_3,            IDC_SELECT_TAB_2},
+    {true,  false, false, false, kVK_ANSI_Keypad3,      IDC_SELECT_TAB_2},
+    {true,  false, false, false, kVK_ANSI_4,            IDC_SELECT_TAB_3},
+    {true,  false, false, false, kVK_ANSI_Keypad4,      IDC_SELECT_TAB_3},
+    {true,  false, false, false, kVK_ANSI_5,            IDC_SELECT_TAB_4},
+    {true,  false, false, false, kVK_ANSI_Keypad5,      IDC_SELECT_TAB_4},
+    {true,  false, false, false, kVK_ANSI_6,            IDC_SELECT_TAB_5},
+    {true,  false, false, false, kVK_ANSI_Keypad6,      IDC_SELECT_TAB_5},
+    {true,  false, false, false, kVK_ANSI_7,            IDC_SELECT_TAB_6},
+    {true,  false, false, false, kVK_ANSI_Keypad7,      IDC_SELECT_TAB_6},
+    {true,  false, false, false, kVK_ANSI_8,            IDC_SELECT_TAB_7},
+    {true,  false, false, false, kVK_ANSI_Keypad8,      IDC_SELECT_TAB_7},
+    {true,  false, false, false, kVK_ANSI_9,            IDC_SELECT_LAST_TAB},
+    {true,  false, false, false, kVK_ANSI_Keypad9,      IDC_SELECT_LAST_TAB},
+    {true,  true,  false, false, kVK_ANSI_M,            IDC_SHOW_AVATAR_MENU},
+    {true,  false, false, true,  kVK_ANSI_L,            IDC_SHOW_DOWNLOADS},
     {true,  true,  false, false, kVK_ANSI_C,            IDC_DEV_TOOLS_INSPECT},
-    {true,  false,  false, true, kVK_ANSI_C,            IDC_DEV_TOOLS_INSPECT},
+    {true,  false, false, true,  kVK_ANSI_C,            IDC_DEV_TOOLS_INSPECT},
+
+    {true,  false, false, true,  kVK_DownArrow,         IDC_FOCUS_NEXT_PANE},
+    {true,  false, false, true,  kVK_UpArrow,           IDC_FOCUS_PREVIOUS_PANE},
   });
   // clang-format on
   return *keys;

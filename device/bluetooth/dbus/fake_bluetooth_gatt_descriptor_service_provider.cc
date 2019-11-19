@@ -97,9 +97,8 @@ void FakeBluetoothGattDescriptorServiceProvider::SendValueChanged(
 
 void FakeBluetoothGattDescriptorServiceProvider::GetValue(
     const dbus::ObjectPath& device_path,
-    const device::BluetoothLocalGattService::Delegate::ValueCallback& callback,
-    const device::BluetoothLocalGattService::Delegate::ErrorCallback&
-        error_callback) {
+    device::BluetoothLocalGattService::Delegate::ValueCallback callback,
+    device::BluetoothLocalGattService::Delegate::ErrorCallback error_callback) {
   VLOG(1) << "GATT descriptor value Get request: " << object_path_.value()
           << " UUID: " << uuid_;
   // Check if this descriptor is registered.
@@ -117,27 +116,27 @@ void FakeBluetoothGattDescriptorServiceProvider::GetValue(
   if (!fake_bluetooth_gatt_manager_client->IsServiceRegistered(
           characteristic->service_path())) {
     VLOG(1) << "GATT descriptor not registered.";
-    error_callback.Run();
+    std::move(error_callback).Run();
     return;
   }
 
   if (!CanRead(flags_)) {
     VLOG(1) << "GATT descriptor not readable.";
-    error_callback.Run();
+    std::move(error_callback).Run();
     return;
   }
 
   // Pass on to the delegate.
   DCHECK(delegate_);
-  delegate_->GetValue(device_path, callback, error_callback);
+  delegate_->GetValue(device_path, std::move(callback),
+                      std::move(error_callback));
 }
 
 void FakeBluetoothGattDescriptorServiceProvider::SetValue(
     const dbus::ObjectPath& device_path,
     const std::vector<uint8_t>& value,
-    const base::Closure& callback,
-    const device::BluetoothLocalGattService::Delegate::ErrorCallback&
-        error_callback) {
+    base::OnceClosure callback,
+    device::BluetoothLocalGattService::Delegate::ErrorCallback error_callback) {
   VLOG(1) << "GATT descriptor value Set request: " << object_path_.value()
           << " UUID: " << uuid_;
 
@@ -156,19 +155,20 @@ void FakeBluetoothGattDescriptorServiceProvider::SetValue(
   if (!fake_bluetooth_gatt_manager_client->IsServiceRegistered(
           characteristic->service_path())) {
     VLOG(1) << "GATT descriptor not registered.";
-    error_callback.Run();
+    std::move(error_callback).Run();
     return;
   }
 
   if (!CanWrite(flags_)) {
     VLOG(1) << "GATT descriptor not writeable.";
-    error_callback.Run();
+    std::move(error_callback).Run();
     return;
   }
 
   // Pass on to the delegate.
   DCHECK(delegate_);
-  delegate_->SetValue(device_path, value, callback, error_callback);
+  delegate_->SetValue(device_path, value, std::move(callback),
+                      std::move(error_callback));
 }
 
 const dbus::ObjectPath&

@@ -24,7 +24,7 @@ PublicSessionMediaAccessHandler::~PublicSessionMediaAccessHandler() {}
 
 bool PublicSessionMediaAccessHandler::SupportsStreamType(
     content::WebContents* web_contents,
-    const blink::MediaStreamType type,
+    const blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   return extension_media_access_handler_.SupportsStreamType(web_contents, type,
                                                             extension);
@@ -33,7 +33,7 @@ bool PublicSessionMediaAccessHandler::SupportsStreamType(
 bool PublicSessionMediaAccessHandler::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
-    blink::MediaStreamType type,
+    blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   return extension_media_access_handler_.CheckMediaAccessPermission(
       render_frame_host, security_origin, type, extension);
@@ -60,9 +60,9 @@ void PublicSessionMediaAccessHandler::HandleRequest(
                      std::move(callback), base::RetainedRef(extension)));
 
   extensions::PermissionIDSet requested_permissions;
-  if (request.audio_type == blink::MEDIA_DEVICE_AUDIO_CAPTURE)
+  if (request.audio_type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE)
     requested_permissions.insert(extensions::APIPermission::kAudioCapture);
-  if (request.video_type == blink::MEDIA_DEVICE_VIDEO_CAPTURE)
+  if (request.video_type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE)
     requested_permissions.insert(extensions::APIPermission::kVideoCapture);
 
   extensions::permission_helper::HandlePermissionRequest(
@@ -81,9 +81,9 @@ void PublicSessionMediaAccessHandler::ChainHandleRequest(
   // If the user denies audio or video capture, here it gets filtered out from
   // the request before being passed on to the actual implementation.
   if (!allowed_permissions.ContainsID(extensions::APIPermission::kAudioCapture))
-    request_copy.audio_type = blink::MEDIA_NO_SERVICE;
+    request_copy.audio_type = blink::mojom::MediaStreamType::NO_SERVICE;
   if (!allowed_permissions.ContainsID(extensions::APIPermission::kVideoCapture))
-    request_copy.video_type = blink::MEDIA_NO_SERVICE;
+    request_copy.video_type = blink::mojom::MediaStreamType::NO_SERVICE;
 
   // Pass the request through to the original class.
   extension_media_access_handler_.HandleRequest(web_contents, request_copy,

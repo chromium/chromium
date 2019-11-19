@@ -6,13 +6,14 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(ShouldRecordActiveUse, OrdinaryCommand) {
   base::CommandLine cmd_line(base::FilePath(FILE_PATH_LITERAL("foo.exe")));
-#if !defined(OS_WIN) || defined(GOOGLE_CHROME_BUILD)
+#if !defined(OS_WIN) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(ShouldRecordActiveUse(cmd_line));
 #else
   EXPECT_FALSE(ShouldRecordActiveUse(cmd_line));
@@ -24,7 +25,7 @@ TEST(ShouldRecordActiveUse, OrdinaryCommand) {
 TEST(ShouldRecordActiveUse, FakeTryChromeAgainCommand) {
   base::CommandLine cmd_line(base::FilePath(FILE_PATH_LITERAL("foo.exe")));
   cmd_line.AppendSwitch(switches::kTryChromeAgain);
-#if !defined(OS_WIN) || defined(GOOGLE_CHROME_BUILD)
+#if !defined(OS_WIN) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(ShouldRecordActiveUse(cmd_line));
 #else
   EXPECT_FALSE(ShouldRecordActiveUse(cmd_line));

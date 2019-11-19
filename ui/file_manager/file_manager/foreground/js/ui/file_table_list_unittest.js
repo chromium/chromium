@@ -19,6 +19,9 @@ let historyLoader;
 /** @type {!HTMLElement} */
 let element;
 
+/** @type {!A11yAnnounce} */
+let a11y;
+
 // Set up test components.
 function setUp() {
   // Mock LoadTimeData strings.
@@ -31,6 +34,13 @@ function setUp() {
   historyLoader = /** @type {!importer.HistoryLoader} */ ({
     getHistory: () => {
       return Promise.resolve();
+    },
+  });
+
+  const a11Messages = [];
+  a11y = /** @type {!A11yAnnounce} */ ({
+    speakA11yMessage: (text) => {
+      a11Messages.push(text);
     },
   });
 
@@ -70,8 +80,11 @@ function key(keyName) {
   };
 }
 
-/** @param {string} keyName */
-function ctrlAndKey(keyName) {
+/**
+ * @param {string} keyName
+ * @param {string=} code event.code value.
+ */
+function ctrlAndKey(keyName, code) {
   return {
     ctrlKey: true,
     shiftKey: false,
@@ -79,6 +92,11 @@ function ctrlAndKey(keyName) {
     bubbles: true,
     composed: true,
     key: keyName,
+    code: code,
+    // Get keyCode for key like A, B but not for Escape, Arrow, etc.
+    // A==65, B==66, etc.
+    keyCode: (keyName && keyName.length === 1) ? keyName.charCodeAt(0) :
+                                                 undefined,
   };
 }
 
@@ -89,7 +107,7 @@ function testMultipleSelectionWithKeyboard() {
   // Render the FileTable on |element|.
   const fullPage = true;
   FileTable.decorate(
-      element, metadataModel, volumeManager, historyLoader, fullPage);
+      element, metadataModel, volumeManager, historyLoader, a11y, fullPage);
 
   // Overwrite the selectionModel of the FileTable class (since events
   // would be handled by cr.ui.ListSelectionModel otherwise).
@@ -99,9 +117,9 @@ function testMultipleSelectionWithKeyboard() {
 
   // Add FileTableList file entries, then draw and focus the table list.
   const entries = [
-      new FakeEntry('entry1-label', VolumeManagerCommon.RootType.CROSTINI),
-      new FakeEntry('entry2-label', VolumeManagerCommon.RootType.CROSTINI),
-      new FakeEntry('entry3-label', VolumeManagerCommon.RootType.CROSTINI),
+    new FakeEntry('entry1-label', VolumeManagerCommon.RootType.CROSTINI),
+    new FakeEntry('entry2-label', VolumeManagerCommon.RootType.CROSTINI),
+    new FakeEntry('entry3-label', VolumeManagerCommon.RootType.CROSTINI),
   ];
   const dataModel = new FileListModel(metadataModel);
   dataModel.splice(0, 0, ...entries);
@@ -136,7 +154,7 @@ function testMultipleSelectionWithKeyboard() {
       assertFalse(item.id === tableList.getAttribute('aria-activedescendant'));
     }
   }
- 
+
   // FileTableList always allows multiple selection.
   assertEquals('true', tableList.getAttribute('aria-multiselectable'));
 
@@ -173,12 +191,13 @@ function testMultipleSelectionWithKeyboard() {
   // listItem2 should be focused but not selected.
   assertItemIsTheLead(listItem2);
   assertItemIsSelected(listItem2, false);
- 
+
   // Only one item is selected: multiple selection should be inactive.
   assertFalse(sm.getCheckSelectMode());
-  
+
   // Ctrl+Space selects the focused item.
-  tableList.dispatchEvent(new KeyboardEvent('keydown', ctrlAndKey(' ')));
+  tableList.dispatchEvent(
+      new KeyboardEvent('keydown', ctrlAndKey(' ', 'Space')));
   // Multiple selection mode should now be activated.
   assertTrue(sm.getCheckSelectMode());
   // Both listItem1 and listItem2 should be selected.
@@ -213,4 +232,83 @@ function testMultipleSelectionWithKeyboard() {
         tableList.items[i].hasAttribute('selected'),
         'item ' + i + ' should not have selected attr');
   }
+}
+
+function testKeyboardOperations() {
+  // Render the FileTable on |element|.
+  const fullPage = true;
+  FileTable.decorate(
+      element, metadataModel, volumeManager, historyLoader, a11y, fullPage);
+
+  // Overwrite the selectionModel of the FileTable class (since events
+  // would be handled by cr.ui.ListSelectionModel otherwise).
+  const sm = new FileListSelectionModel();
+  const table = /** @type {FileTable} */ (element);
+  table.selectionModel = sm;
+
+  // Add FileTableList file entries, then draw and focus the table list.
+  const entries = [
+    new FakeEntry('entry1-label', VolumeManagerCommon.RootType.CROSTINI),
+    new FakeEntry('entry2-label', VolumeManagerCommon.RootType.CROSTINI),
+    new FakeEntry('entry3-label', VolumeManagerCommon.RootType.CROSTINI),
+  ];
+  const dataModel = new FileListModel(metadataModel);
+  dataModel.splice(0, 0, ...entries);
+  const tableList = /** @type {FileTableList} */ (element.list);
+  tableList.dataModel = dataModel;
+  tableList.redraw();
+  tableList.focus();
+
+  // Home key selects the first item (index 0).
+  tableList.dispatchEvent(new KeyboardEvent('keydown', key('Home')));
+  // Only 1 item selected.
+  assertEquals(1, sm.selectedIndexes.length);
+  // Index 0 should be selected and focused.
+  assertEquals(0, sm.selectedIndexes[0]);
+
+  // End key selects the last item (index 2).
+  tableList.dispatchEvent(new KeyboardEvent('keydown', key('End')));
+  // Only 1 item selected.
+  assertEquals(1, sm.selectedIndexes.length);
+  // Index 2 should be selected and focused.
+  assertEquals(2, sm.selectedIndexes[0]);
+
+  // Ctrl+A key selects all items.
+  tableList.dispatchEvent(new KeyboardEvent('keydown', ctrlAndKey('A')));
+  // All 3 items are selected.
+  assertEquals(3, sm.selectedIndexes.length);
+  assertEquals(0, sm.selectedIndexes[0]);
+  assertEquals(1, sm.selectedIndexes[1]);
+  assertEquals(2, sm.selectedIndexes[2]);
+
+  // Escape key selects all items.
+  tableList.dispatchEvent(new KeyboardEvent('keydown', key('Escape')));
+  // All 3 items are selected.
+  assertEquals(0, sm.selectedIndexes.length);
+
+  // Home key selects the first item (index 0).
+  tableList.dispatchEvent(new KeyboardEvent('keydown', key('Home')));
+  assertEquals(1, sm.selectedIndexes.length);
+  assertEquals(0, sm.selectedIndexes[0]);
+
+  // ArrowDown moves and selects next item.
+  tableList.dispatchEvent(new KeyboardEvent('keydown', key('ArrowDown')));
+  // Only index 1 should be selected.
+  assertEquals(1, sm.selectedIndexes.length);
+  assertEquals(1, sm.selectedIndexes[0]);
+
+  // ArrowUp moves and selects previous item.
+  tableList.dispatchEvent(new KeyboardEvent('keydown', key('ArrowUp')));
+  // Only index 0 should be selected.
+  assertEquals(1, sm.selectedIndexes.length);
+  assertEquals(0, sm.selectedIndexes[0]);
+
+  // ArrowLeft and ArrowRight aren't really implemented.
+  tableList.dispatchEvent(new KeyboardEvent('keydown', key('ArrowLeft')));
+  // Selected item remains the same.
+  assertEquals(1, sm.selectedIndexes.length);
+  assertEquals(0, sm.selectedIndexes[0]);
+  tableList.dispatchEvent(new KeyboardEvent('keydown', key('ArrowRight')));
+  assertEquals(1, sm.selectedIndexes.length);
+  assertEquals(0, sm.selectedIndexes[0]);
 }

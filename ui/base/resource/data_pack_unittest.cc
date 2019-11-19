@@ -17,6 +17,7 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/resource/data_pack_literal.h"
 #include "ui/base/ui_base_paths.h"
 
@@ -37,6 +38,42 @@ TEST(DataPackTest, LoadFromPath) {
   // Dump contents into the pak file.
   ASSERT_EQ(base::WriteFile(data_path, kSamplePakContentsV4, kSamplePakSizeV4),
             static_cast<int>(kSamplePakSizeV4));
+
+  // Load the file through the data pack API.
+  DataPack pack(SCALE_FACTOR_100P);
+  ASSERT_TRUE(pack.LoadFromPath(data_path));
+
+  base::StringPiece data;
+  ASSERT_TRUE(pack.HasResource(4));
+  ASSERT_TRUE(pack.GetStringPiece(4, &data));
+  EXPECT_EQ("this is id 4", data);
+  ASSERT_TRUE(pack.HasResource(6));
+  ASSERT_TRUE(pack.GetStringPiece(6, &data));
+  EXPECT_EQ("this is id 6", data);
+
+  // Try reading zero-length data blobs, just in case.
+  ASSERT_TRUE(pack.GetStringPiece(1, &data));
+  EXPECT_EQ(0U, data.length());
+  ASSERT_TRUE(pack.GetStringPiece(10, &data));
+  EXPECT_EQ(0U, data.length());
+
+  // Try looking up an invalid key.
+  ASSERT_FALSE(pack.HasResource(140));
+  ASSERT_FALSE(pack.GetStringPiece(140, &data));
+}
+
+TEST(DataPackTest, LoadFromPathCompressed) {
+  base::ScopedTempDir dir;
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  base::FilePath data_path =
+      dir.GetPath().Append(FILE_PATH_LITERAL("sample.pak.gz"));
+
+  // Dump contents into a compressed pak file.
+  std::string compressed;
+  ASSERT_TRUE(compression::GzipCompress(
+      base::StringPiece(kSamplePakContentsV4, kSamplePakSizeV4), &compressed));
+  ASSERT_EQ(base::WriteFile(data_path, compressed.c_str(), compressed.length()),
+            static_cast<int>(compressed.length()));
 
   // Load the file through the data pack API.
   DataPack pack(SCALE_FACTOR_100P);
@@ -166,8 +203,8 @@ TEST(DataPackTest, LoadFromBufferV4) {
 TEST(DataPackTest, LoadFromBufferV5) {
   DataPack pack(SCALE_FACTOR_100P);
 
-  ASSERT_TRUE(pack.LoadFromBuffer(
-      base::StringPiece(kSamplePakContentsV5, kSamplePakSizeV5)));
+  ASSERT_TRUE(pack.LoadFromBuffer(base::StringPiece(
+      kSampleCompressPakContentsV5, kSampleCompressPakSizeV5)));
 
   base::StringPiece data;
   ASSERT_TRUE(pack.HasResource(4));
@@ -175,13 +212,10 @@ TEST(DataPackTest, LoadFromBufferV5) {
   EXPECT_EQ("this is id 4", data);
   ASSERT_TRUE(pack.HasResource(6));
   ASSERT_TRUE(pack.GetStringPiece(6, &data));
-  EXPECT_EQ("this is id 6", data);
-
-  // Try reading zero-length data blobs, just in case.
-  ASSERT_TRUE(pack.GetStringPiece(1, &data));
-  EXPECT_EQ(0U, data.length());
+  ASSERT_TRUE(pack.HasResource(8));
+  ASSERT_TRUE(pack.GetStringPiece(8, &data));
   ASSERT_TRUE(pack.GetStringPiece(10, &data));
-  EXPECT_EQ("this is id 4", data);
+  ASSERT_EQ("this is id 4", data);
 
   // Try looking up an invalid key.
   ASSERT_FALSE(pack.HasResource(140));
@@ -219,11 +253,11 @@ TEST_P(DataPackTest, Write) {
   std::string fifteen("fifteen");
 
   std::map<uint16_t, base::StringPiece> resources;
-  resources.insert(std::make_pair(1, base::StringPiece(one)));
-  resources.insert(std::make_pair(2, base::StringPiece(two)));
-  resources.insert(std::make_pair(15, base::StringPiece(fifteen)));
-  resources.insert(std::make_pair(3, base::StringPiece(three)));
-  resources.insert(std::make_pair(4, base::StringPiece(four)));
+  resources.emplace(1, base::StringPiece(one));
+  resources.emplace(2, base::StringPiece(two));
+  resources.emplace(15, base::StringPiece(fifteen));
+  resources.emplace(3, base::StringPiece(three));
+  resources.emplace(4, base::StringPiece(four));
   ASSERT_TRUE(DataPack::WritePack(file, resources, GetParam()));
 
   // Now try to read the data back in.
@@ -259,13 +293,13 @@ TEST_P(DataPackTest, WriteWithAliases) {
   std::string fifteen("fifteen");
 
   std::map<uint16_t, base::StringPiece> resources;
-  resources.insert(std::make_pair(1, base::StringPiece(one)));
-  resources.insert(std::make_pair(2, base::StringPiece(two)));
-  resources.insert(std::make_pair(15, base::StringPiece(fifteen)));
-  resources.insert(std::make_pair(3, base::StringPiece(three)));
-  resources.insert(std::make_pair(4, base::StringPiece(four)));
-  resources.insert(std::make_pair(10, base::StringPiece(one)));
-  resources.insert(std::make_pair(11, base::StringPiece(three)));
+  resources.emplace(1, base::StringPiece(one));
+  resources.emplace(2, base::StringPiece(two));
+  resources.emplace(15, base::StringPiece(fifteen));
+  resources.emplace(3, base::StringPiece(three));
+  resources.emplace(4, base::StringPiece(four));
+  resources.emplace(10, base::StringPiece(one));
+  resources.emplace(11, base::StringPiece(three));
   ASSERT_TRUE(DataPack::WritePack(file, resources, GetParam()));
 
   // Now try to read the data back in.

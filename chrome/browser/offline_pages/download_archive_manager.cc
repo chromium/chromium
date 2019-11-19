@@ -5,7 +5,6 @@
 #include <string>
 
 #include "chrome/browser/offline_pages/download_archive_manager.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -16,20 +15,20 @@ DownloadArchiveManager::DownloadArchiveManager(
     const base::FilePath& private_archives_dir,
     const base::FilePath& public_archives_dir,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    Profile* profile)
+    PrefService* prefs)
     : ArchiveManager(temporary_archives_dir,
                      private_archives_dir,
                      public_archives_dir,
                      task_runner),
-      profile_(profile) {}
+      prefs_(prefs) {}
 
 DownloadArchiveManager::~DownloadArchiveManager() {}
 
 const base::FilePath& DownloadArchiveManager::GetPublicArchivesDir() {
-  if (profile_) {
+  if (prefs_) {
     // Use the preference set by the download location dialog, if present.
     std::string directory_preference =
-        profile_->GetPrefs()->GetString(prefs::kDownloadDefaultDirectory);
+        prefs_->GetString(prefs::kDownloadDefaultDirectory);
     if (!directory_preference.empty()) {
       download_archives_dir_ = base::FilePath(directory_preference);
       // Must set the member variable so the reference will outlive the

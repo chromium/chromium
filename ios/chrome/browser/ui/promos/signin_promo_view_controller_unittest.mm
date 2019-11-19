@@ -14,13 +14,14 @@
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/ui/promos/signin_promo_view_controller.h"
 #include "ios/chrome/test/block_cleanup_test.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -89,9 +90,12 @@ class SigninPromoViewControllerTest : public BlockCleanupTest {
     chrome_browser_state_ = builder.Build();
     ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
         ->AddIdentities(@[ @"foo", @"bar" ]);
+    WebStateList* web_state_list = nullptr;
+    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
+                                             web_state_list);
     controller_ = [[FakeVersionSigninPromoViewController alloc]
-        initWithBrowserState:chrome_browser_state_.get()
-                  dispatcher:nil];
+        initWithBrowser:browser_.get()
+             dispatcher:nil];
   }
 
   void TearDown() override {
@@ -123,8 +127,9 @@ class SigninPromoViewControllerTest : public BlockCleanupTest {
   }
 
  protected:
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<Browser> browser_;
   SigninPromoViewController* controller_;
 };
 

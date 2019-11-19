@@ -1,0 +1,21 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test") {
+  testonly = true
+  sources = [
+    "fake_overlay_presentation_context.cc",
+    "fake_overlay_presentation_context.h",
+    "fake_overlay_user_data.cc",
+    "fake_overlay_user_data.h",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/overlays",
+    "//testing/gtest",
+  ]
+}

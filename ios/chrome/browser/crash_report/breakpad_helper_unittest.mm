@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/crash_report/breakpad_helper.h"
 #import "base/test/ios/wait_util.h"
 #include "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
-#import "ios/chrome/test/base/scoped_block_swizzler.h"
 #import "ios/chrome/test/ocmock/OCMockObject+BreakpadControllerTesting.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
@@ -18,19 +18,6 @@
 #endif
 
 namespace {
-
-// Wait for the UTE crash processing. This is needed the first time
-// |breakpad_helper::SetUploadingEnabled| is called.
-void WaitMainThreadFreezeCrashProcessingIfNeeded() {
-  if (!
-      [MainThreadFreezeDetector sharedInstance].canUploadBreakpadCrashReports) {
-    EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-        base::test::ios::kWaitForActionTimeout, ^bool {
-          return [MainThreadFreezeDetector sharedInstance]
-              .canUploadBreakpadCrashReports;
-        }));
-  }
-}
 
 const int kCrashReportCount = 3;
 NSString* const kUploadedInRecoveryMode = @"uploaded_in_recovery_mode";
@@ -73,6 +60,7 @@ TEST_F(BreakpadHelperTest, CrashReportUserApplicationStateAllKeys) {
   // single breakpad record.
   breakpad_helper::SetCurrentOrientation(3, 7);
   breakpad_helper::SetCurrentHorizontalSizeClass(2);
+  breakpad_helper::SetCurrentUserInterfaceStyle(2);
   breakpad_helper::SetRegularTabCount(999);
   breakpad_helper::SetIncognitoTabCount(999);
   breakpad_helper::SetDestroyingAndRebuildingIncognitoBrowserState(true);
@@ -102,33 +90,22 @@ TEST_F(BreakpadHelperTest, HasReportToUpload) {
 }
 
 TEST_F(BreakpadHelperTest, IsUploadingEnabled) {
-  // Test when crash reporter is disabled.
+  breakpad_helper::SetUserEnabledUploading(true);
+  EXPECT_TRUE(breakpad_helper::UserEnabledUploading());
   breakpad_helper::SetEnabled(false);
-
-  EXPECT_FALSE(breakpad_helper::IsUploadingEnabled());
-
-  breakpad_helper::SetUploadingEnabled(false);
-  WaitMainThreadFreezeCrashProcessingIfNeeded();
-  EXPECT_FALSE(breakpad_helper::IsUploadingEnabled());
-
-  breakpad_helper::SetUploadingEnabled(true);
-  EXPECT_FALSE(breakpad_helper::IsUploadingEnabled());
-
-  // Test when crash reporter is enabled.
+  EXPECT_TRUE(breakpad_helper::UserEnabledUploading());
   [[mock_breakpad_controller_ expect] start:NO];
   breakpad_helper::SetEnabled(true);
-  EXPECT_FALSE(breakpad_helper::IsUploadingEnabled());
-  EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
+  EXPECT_TRUE(breakpad_helper::UserEnabledUploading());
 
-  [[mock_breakpad_controller_ expect] setUploadingEnabled:NO];
-  breakpad_helper::SetUploadingEnabled(false);
-  EXPECT_FALSE(breakpad_helper::IsUploadingEnabled());
-  EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
-
-  [[mock_breakpad_controller_ expect] setUploadingEnabled:YES];
-  breakpad_helper::SetUploadingEnabled(true);
-  EXPECT_TRUE(breakpad_helper::IsUploadingEnabled());
-  EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
+  breakpad_helper::SetUserEnabledUploading(false);
+  EXPECT_FALSE(breakpad_helper::UserEnabledUploading());
+  [[mock_breakpad_controller_ expect] stop];
+  breakpad_helper::SetEnabled(false);
+  EXPECT_FALSE(breakpad_helper::UserEnabledUploading());
+  [[mock_breakpad_controller_ expect] start:NO];
+  breakpad_helper::SetEnabled(true);
+  EXPECT_FALSE(breakpad_helper::UserEnabledUploading());
 }
 
 TEST_F(BreakpadHelperTest, StartUploadingReportsInRecoveryMode) {

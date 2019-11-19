@@ -29,7 +29,6 @@
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/version_info/version_info.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
@@ -155,8 +154,9 @@ ChromeCleanerFetcher::ChromeCleanerFetcher(
     network::mojom::URLLoaderFactory* url_loader_factory)
     : fetched_callback_(std::move(fetched_callback)),
       url_loader_factory_(url_loader_factory),
-      blocking_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      blocking_task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       scoped_temp_dir_(new base::ScopedTempDir(),
                        base::OnTaskRunnerDeleter(blocking_task_runner_)) {
@@ -192,9 +192,8 @@ void ChromeCleanerFetcher::OnTemporaryDirectoryCreated(bool success) {
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = GetSRTDownloadURL();
-  request->load_flags = net::LOAD_DISABLE_CACHE |
-                        net::LOAD_DO_NOT_SEND_COOKIES |
-                        net::LOAD_DO_NOT_SAVE_COOKIES;
+  request->load_flags = net::LOAD_DISABLE_CACHE;
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   url_loader_ = network::SimpleURLLoader::Create(
       std::move(request), kChromeCleanerTrafficAnnotation);

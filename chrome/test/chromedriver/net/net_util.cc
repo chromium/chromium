@@ -33,8 +33,8 @@ class SyncUrlFetcher {
         url_loader_factory_(url_loader_factory),
         network_task_runner_(g_io_capable_task_runner_for_tests.Get()
                                  ? g_io_capable_task_runner_for_tests.Get()
-                                 : base::CreateSequencedTaskRunnerWithTraits(
-                                       {base::MayBlock()})),
+                                 : base::CreateSequencedTaskRunner(
+                                       {base::ThreadPool(), base::MayBlock()})),
         response_(response),
         event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                base::WaitableEvent::InitialState::NOT_SIGNALED) {}

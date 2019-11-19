@@ -26,6 +26,11 @@ ForceInstalledExtensionScannerImpl::~ForceInstalledExtensionScannerImpl() =
 std::unique_ptr<UwEMatchers>
 ForceInstalledExtensionScannerImpl::CreateUwEMatchersFromResource(
     int resource_id) {
+  if (!resource_id) {
+    // Use empty matchers.
+    LOG(WARNING) << "No UwE matchers set";
+    return std::make_unique<chrome_cleaner::UwEMatchers>();
+  }
   base::StringPiece serialized_matcher_pb;
   if (!chrome_cleaner::LoadResourceOfKind(resource_id, L"TEXT",
                                           &serialized_matcher_pb)) {
@@ -33,9 +38,9 @@ ForceInstalledExtensionScannerImpl::CreateUwEMatchersFromResource(
                 << resource_id;
     return nullptr;
   }
-  chrome_cleaner::UwEMatchers matcher;
-  matcher.ParseFromString(serialized_matcher_pb.as_string());
-  return std::make_unique<chrome_cleaner::UwEMatchers>(matcher);
+  auto uwe_matchers = std::make_unique<chrome_cleaner::UwEMatchers>();
+  uwe_matchers->ParseFromString(serialized_matcher_pb.as_string());
+  return uwe_matchers;
 }
 
 std::vector<ForceInstalledExtension>
@@ -87,7 +92,8 @@ ForceInstalledExtensionScannerImpl::GetForceInstalledExtensions(
     result.emplace(std::move(extension));
   }
 
-  non_whitelist_default_extensions_done.TimedWaitUntil(end_time);
+  non_whitelist_default_extensions_done.TimedWait(end_time -
+                                                  base::TimeTicks::Now());
   while (policy_files_default_extensions.size() > 0) {
     ExtensionPolicyFile file =
         std::move(policy_files_default_extensions.back());
@@ -104,7 +110,7 @@ ForceInstalledExtensionScannerImpl::GetForceInstalledExtensions(
     result.emplace(std::move(extension));
   }
 
-  settings_force_installed_done.TimedWaitUntil(end_time);
+  settings_force_installed_done.TimedWait(end_time - base::TimeTicks::Now());
   while (policy_registry_entries_force_installed.size() > 0) {
     ExtensionPolicyRegistryEntry entry =
         std::move(policy_registry_entries_force_installed.back());
@@ -121,7 +127,7 @@ ForceInstalledExtensionScannerImpl::GetForceInstalledExtensions(
     result.emplace(std::move(extension));
   }
 
-  master_preferences_done.TimedWaitUntil(end_time);
+  master_preferences_done.TimedWait(end_time - base::TimeTicks::Now());
   while (policy_files_master_preferences.size() > 0) {
     ExtensionPolicyFile file =
         std::move(policy_files_master_preferences.back());

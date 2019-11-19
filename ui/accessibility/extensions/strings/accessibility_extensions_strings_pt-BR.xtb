@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">As imagens foram substituídas pelo texto alt correspondente.</translation>
 <translation id="4896660567607030658">Sem feedback, mostrar apenas o cursor.</translation>
 <translation id="4937901943818762779">Permitir imagens animadas, mas apenas uma vez.</translation>
+<translation id="4949131196216960195">Pressione &lt;span class='key'&gt;Pesquisa&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (a tecla de aumentar brilho ou F7) para ativar a Caret Browsing. Pressione novamente para desativá-la.</translation>
 <translation id="4954450790315188152">Quando a extensão Caret Browsing está ativada:</translation>
 <translation id="5041932793799765940">Ajuste de cores</translation>
 <translation id="5094574508723441140">Aumento de contraste</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="786423340267544509">Adicionar fronteira aos elementos com atributos aria-describedat ou Longdesc.</translation>
 <translation id="7942349550061667556">Vermelho</translation>
-<translation id="8254860724243898966">Pressione &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (a tecla de aumento de brilho ou F7) para ativar a extensão Caret Browsing. Pressione novamente para desativá-la.</translation>
 <translation id="8260673944985561857">Opções da extensão Caret Browsing</translation>
 <translation id="8321034316479930120">Política de animação</translation>
 <translation id="8480209185614411573">High Contrast</translation>

@@ -42,7 +42,7 @@ class NET_EXPORT UnixDomainServerSocket : public ServerSocket {
   // Callback that returns whether the already connected client, identified by
   // its credentials, is allowed to keep the connection open. Note that
   // the socket is closed immediately in case the callback returns false.
-  typedef base::Callback<bool (const Credentials&)> AuthCallback;
+  using AuthCallback = base::RepeatingCallback<bool(const Credentials&)>;
 
   UnixDomainServerSocket(const AuthCallback& auth_callack,
                          bool use_abstract_namespace);

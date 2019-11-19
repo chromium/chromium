@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/events/event.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -23,12 +24,14 @@ namespace remoting {
 
 class ClientSessionControl;
 
-// Monitors local input and sends notifications for mouse movements and
-// keyboard shortcuts when they are detected.
+// Monitors local input and sends notifications for mouse and touch movements
+// and keyboard shortcuts when they are detected.
 class LocalInputMonitor {
  public:
-  using MouseMoveCallback =
-      base::RepeatingCallback<void(const webrtc::DesktopVector&)>;
+  using PointerMoveCallback =
+      base::RepeatingCallback<void(const webrtc::DesktopVector&,
+                                   ui::EventType)>;
+  using KeyPressedCallback = base::RepeatingCallback<void(uint32_t)>;
 
   virtual ~LocalInputMonitor() = default;
 
@@ -41,18 +44,18 @@ class LocalInputMonitor {
 
   // Start monitoring and notify using |client_session_control|.  In this mode
   // the LocalInputMonitor will listen for session disconnect hotkeys and mouse
-  // events for input filtering.
+  // and keyboard events (and touch, on some platforms) for input filtering.
   virtual void StartMonitoringForClientSession(
       base::WeakPtr<ClientSessionControl> client_session_control) = 0;
 
   // Start monitoring and notify using the callbacks specified.
   // Monitors are only started if the respective callback is provided.  This
   // means that callbacks are optional, but at least one must be valid.
-  // |on_mouse_input| is called for each mouse movement detected.
+  // |on_pointer_input| is called for each mouse or touch movement detected.
   // |on_keyboard_input| is called for each keypress detected.
   // |on_error| is called if any of the child input monitors fail.
-  virtual void StartMonitoring(MouseMoveCallback on_mouse_input,
-                               base::RepeatingClosure on_keyboard_input,
+  virtual void StartMonitoring(PointerMoveCallback on_pointer_input,
+                               KeyPressedCallback on_keyboard_input,
                                base::RepeatingClosure on_error) = 0;
 
  protected:

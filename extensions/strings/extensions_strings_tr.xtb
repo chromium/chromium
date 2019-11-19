@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Resmin kodu çözülemedi: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Yerelleştirme kullanıldı, ancak bildiride default_locale belirtilmedi.</translation>
 <translation id="2576842806987913196">Bu adla bir CRX dosyası zaten var.</translation>
-<translation id="2753617847762399167">Geçersiz yol (mutlak veya '..' ile göreli): '<ph name="IMAGE_PATH" />'</translation>
 <translation id="2785530881066938471">İçerik komut dosyası için '<ph name="RELATIVE_PATH" />' dosyası yüklenemedi. Dosya UTF-8 olarak kodlanmamış.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (uzantı kimliği "<ph name="EXTENSION_ID" />") yönetici tarafından engelleniyor. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Paket yüklenemedi: '<ph name="ERROR_CODE" />'</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Şekillendirilmiş pencereler desteklenmez.</translation>
 <translation id="5456409301717116725">Bu uzantıda '<ph name="KEY_PATH" />' anahtar dosyası var. Muhtemelen istediğiniz bu değil.</translation>
 <translation id="5486326529110362464">Özel anahtara ilişkin giriş anahtarı olmalıdır.</translation>
-<translation id="5627523580512561598">uzantı: <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Bu makinenin yöneticisi <ph name="EXTENSION_NAME" /> adlı uzantının yüklenmesini şart koşuyor. Uzantı kaldırılamaz.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> tarafından sağlanan <ph name="PRODUCT_NAME" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" uygulaması cihazlarınızdan birine veya birkaçına erişim izni istiyor:</translation>
 <translation id="657064425229075395">Arka plan komut dosyası '<ph name="BACKGROUND_SCRIPT" />' yüklenemedi.</translation>
 <translation id="6580950983454333167">Ürün: <ph name="PRODUCT_NAME" />, Firma: <ph name="VENDOR_NAME" /> (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Açma dizini oluşturulamadı: '<ph name="DIRECTORY_PATH" />'</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Bu uzantı, kendisini yeniden yükleme işlemini çok sık yaptı.</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün</translation>

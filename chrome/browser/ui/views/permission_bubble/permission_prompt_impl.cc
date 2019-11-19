@@ -10,13 +10,17 @@
 
 #include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/permissions/permission_request.h"
+#include "chrome/browser/permissions/permission_request_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/front_eliding_title_label.h"
 #include "chrome/browser/ui/views/page_info/permission_selector_row.h"
 #include "chrome/browser/ui/views/page_info/permission_selector_row_observer.h"
 #include "chrome/grit/generated_resources.h"
@@ -59,23 +63,6 @@ gfx::Rect GetPermissionAnchorRect(Browser* browser) {
 
 }  // namespace
 
-// A custom view for the title label that will be ignored by screen readers
-// (since the PermissionsBubble handles the context).
-class PermissionsLabel : public views::Label {
- public:
-  explicit PermissionsLabel(const base::string16& text)
-      : views::Label(text, views::style::CONTEXT_DIALOG_TITLE) {}
-  ~PermissionsLabel() override {}
-
-  // views::Label:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kIgnored;
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PermissionsLabel);
-};
-
 ///////////////////////////////////////////////////////////////////////////////
 // View implementation for the permissions bubble.
 class PermissionsBubbleDialogDelegateView
@@ -97,9 +84,6 @@ class PermissionsBubbleDialogDelegateView
   bool Accept() override;
   bool Close() override;
   void AddedToWidget() override;
-  int GetDefaultDialogButton() const override;
-  int GetDialogButtons() const override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   void SizeToContents() override;
 
   // Repositions the bubble so it's displayed in the correct location based on
@@ -118,13 +102,22 @@ PermissionsBubbleDialogDelegateView::PermissionsBubbleDialogDelegateView(
     const std::vector<PermissionRequest*>& requests,
     const PermissionPrompt::DisplayNameOrOrigin& name_or_origin)
     : owner_(owner), name_or_origin_(name_or_origin) {
+  // To prevent permissions being accepted accidentally, and as a security
+  // measure against crbug.com/619429, permission prompts should not be accepted
+  // as the default action.
+  DialogDelegate::set_default_button(ui::DIALOG_BUTTON_NONE);
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_CANCEL, l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
+
   DCHECK(!requests.empty());
 
   set_close_on_deactivate(false);
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical, gfx::Insets(),
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
   for (size_t index = 0; index < requests.size(); index++) {
@@ -132,7 +125,7 @@ PermissionsBubbleDialogDelegateView::PermissionsBubbleDialogDelegateView(
     int indent =
         provider->GetDistanceMetric(DISTANCE_SUBSECTION_HORIZONTAL_INDENT);
     label_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::kHorizontal, gfx::Insets(0, indent),
+        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(0, indent),
         provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
     views::ImageView* icon = new views::ImageView();
     const gfx::VectorIcon& vector_id = requests[index]->GetIconId();
@@ -166,25 +159,8 @@ void PermissionsBubbleDialogDelegateView::AddedToWidget() {
   if (!name_or_origin_.is_origin)
     return;
 
-  std::unique_ptr<views::Label> title =
-      std::make_unique<PermissionsLabel>(GetWindowTitle());
-  title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title->set_collapse_when_hidden(true);
-  title->SetMultiLine(true);
-
-  // Elide from head in order to keep the most significant part of the origin
-  // and avoid spoofing. Note that in English, GetWindowTitle() returns a string
-  // "$ORIGIN wants to", so the "wants to" will not be elided. In other
-  // languages, the non-origin part may appear fully or partly before the origin
-  // (e.g., in Filipino, "Gusto ng $ORIGIN na"), which means it may be elided.
-  // This is not optimal, but it is necessary to avoid origin spoofing. See
-  // crbug.com/774438.
-  title->SetElideBehavior(gfx::ELIDE_HEAD);
-
-  // Multiline breaks elision, which would mean a very long origin gets
-  // truncated from the least significant side. Explicitly disable multiline.
-  title->SetMultiLine(false);
-  GetBubbleFrameView()->SetTitleView(std::move(title));
+  GetBubbleFrameView()->SetTitleView(
+      CreateFrontElidingTitleLabel(GetWindowTitle()));
 }
 
 bool PermissionsBubbleDialogDelegateView::ShouldShowCloseButton() const {
@@ -207,28 +183,6 @@ void PermissionsBubbleDialogDelegateView::OnWidgetDestroying(
     owner_->Closing();
     owner_ = nullptr;
   }
-}
-
-int PermissionsBubbleDialogDelegateView::GetDefaultDialogButton() const {
-  // To prevent permissions being accepted accidentally, and as a security
-  // measure against crbug.com/619429, permission prompts should not be accepted
-  // as the default action.
-  return ui::DIALOG_BUTTON_NONE;
-}
-
-int PermissionsBubbleDialogDelegateView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL;
-}
-
-base::string16 PermissionsBubbleDialogDelegateView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  if (button == ui::DIALOG_BUTTON_CANCEL)
-    return l10n_util::GetStringUTF16(IDS_PERMISSION_DENY);
-
-  // The text differs based on whether OK is the only visible button.
-  return l10n_util::GetStringUTF16(GetDialogButtons() == ui::DIALOG_BUTTON_OK
-                                       ? IDS_OK
-                                       : IDS_PERMISSION_ALLOW);
 }
 
 bool PermissionsBubbleDialogDelegateView::Cancel() {
@@ -262,13 +216,30 @@ void PermissionsBubbleDialogDelegateView::UpdateAnchor() {
 // PermissionPromptImpl
 
 PermissionPromptImpl::PermissionPromptImpl(Browser* browser, Delegate* delegate)
-    : browser_(browser), delegate_(delegate), bubble_delegate_(nullptr) {
-  Show();
+    : browser_(browser),
+      delegate_(delegate),
+      bubble_delegate_(nullptr),
+      web_contents_(browser->tab_strip_model()->GetActiveWebContents()) {
+  PermissionRequestManager* manager =
+      PermissionRequestManager::FromWebContents(web_contents_);
+  if (manager->ShouldShowQuietPermissionPrompt()) {
+    show_quiet_permission_prompt_ = true;
+    // Show the prompt as an indicator in the right side of the omnibox.
+    content_settings::UpdateLocationBarUiForWebContents(web_contents_);
+  } else {
+    Show();
+  }
 }
 
 PermissionPromptImpl::~PermissionPromptImpl() {
   if (bubble_delegate_)
     bubble_delegate_->CloseBubble();
+
+  if (show_quiet_permission_prompt_) {
+    // Update location bar to hide the permission prompt if it is shown as a
+    // quiet permission prompt.
+    content_settings::UpdateLocationBarUiForWebContents(web_contents_);
+  }
 }
 
 void PermissionPromptImpl::UpdateAnchorPosition() {
@@ -286,6 +257,12 @@ gfx::NativeWindow PermissionPromptImpl::GetNativeWindow() {
   if (bubble_delegate_ && bubble_delegate_->GetWidget())
     return bubble_delegate_->GetWidget()->GetNativeWindow();
   return nullptr;
+}
+
+PermissionPrompt::TabSwitchingBehavior
+PermissionPromptImpl::GetTabSwitchingBehavior() {
+  return PermissionPrompt::TabSwitchingBehavior::
+      kDestroyPromptButKeepRequestPending;
 }
 
 void PermissionPromptImpl::Closing() {

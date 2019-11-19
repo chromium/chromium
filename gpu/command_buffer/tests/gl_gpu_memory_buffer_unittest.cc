@@ -21,10 +21,12 @@
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/half_float.h"
 #include "ui/gl/gl_image.h"
+#include "ui/gl/test/gl_image_test_support.h"
 
 #if defined(OS_LINUX)
 #include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
@@ -116,83 +118,6 @@ SHADER(
 );
 // clang-format on
 
-void SetRow(gfx::BufferFormat format,
-            uint8_t* buffer,
-            int width,
-            uint8_t pixel[4]) {
-  switch (format) {
-    case gfx::BufferFormat::R_8:
-      for (int i = 0; i < width; ++i)
-        buffer[i] = pixel[0];
-      return;
-    case gfx::BufferFormat::BGR_565:
-      for (int i = 0; i < width * 2; i += 2) {
-        *reinterpret_cast<uint16_t*>(&buffer[i]) =
-            ((pixel[2] >> 3) << 11) | ((pixel[1] >> 2) << 5) | (pixel[0] >> 3);
-      }
-      return;
-    case gfx::BufferFormat::RGBA_4444:
-      for (int i = 0; i < width * 2; i += 2) {
-        buffer[i + 0] = (pixel[1] << 4) | (pixel[0] & 0xf);
-        buffer[i + 1] = (pixel[3] << 4) | (pixel[2] & 0xf);
-      }
-      return;
-    case gfx::BufferFormat::RGBA_8888:
-    case gfx::BufferFormat::RGBX_8888:
-      for (int i = 0; i < width * 4; i += 4) {
-        buffer[i + 0] = pixel[0];
-        buffer[i + 1] = pixel[1];
-        buffer[i + 2] = pixel[2];
-        buffer[i + 3] = pixel[3];
-      }
-      return;
-    case gfx::BufferFormat::BGRA_8888:
-      for (int i = 0; i < width * 4; i += 4) {
-        buffer[i + 0] = pixel[2];
-        buffer[i + 1] = pixel[1];
-        buffer[i + 2] = pixel[0];
-        buffer[i + 3] = pixel[3];
-      }
-      return;
-    case gfx::BufferFormat::RGBA_F16: {
-      float float_pixel[4] = {
-          pixel[0] / 255.f, pixel[1] / 255.f, pixel[2] / 255.f,
-          pixel[3] / 255.f,
-      };
-      uint16_t half_float_pixel[4];
-      gfx::FloatToHalfFloat(float_pixel, half_float_pixel, 4);
-      uint16_t* half_float_buffer = reinterpret_cast<uint16_t*>(buffer);
-      for (int i = 0; i < width * 4; i += 4) {
-        half_float_buffer[i + 0] = half_float_pixel[0];
-        half_float_buffer[i + 1] = half_float_pixel[1];
-        half_float_buffer[i + 2] = half_float_pixel[2];
-        half_float_buffer[i + 3] = half_float_pixel[3];
-      }
-      return;
-    }
-    case gfx::BufferFormat::RGBX_1010102:
-      for (int x = 0; x < width; ++x) {
-        *reinterpret_cast<uint32_t*>(&buffer[x * 4]) =
-            0x3 << 30 |  // Alpha channel is unused
-            ((pixel[2] << 2) | (pixel[2] >> 6)) << 20 |  // B
-            ((pixel[1] << 2) | (pixel[1] >> 6)) << 10 |  // G
-            ((pixel[0] << 2) | (pixel[0] >> 6));         // R
-      }
-      return;
-    case gfx::BufferFormat::BGRX_8888:
-    case gfx::BufferFormat::BGRX_1010102:
-    case gfx::BufferFormat::R_16:
-    case gfx::BufferFormat::RG_88:
-    case gfx::BufferFormat::UYVY_422:
-    case gfx::BufferFormat::YVU_420:
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      NOTREACHED();
-      return;
-  }
-
-  NOTREACHED();
-}
-
 GLenum InternalFormat(gfx::BufferFormat format) {
   switch (format) {
     case gfx::BufferFormat::R_8:
@@ -208,16 +133,16 @@ GLenum InternalFormat(gfx::BufferFormat format) {
     case gfx::BufferFormat::RGBA_8888:
       return GL_RGBA;
     case gfx::BufferFormat::BGRA_8888:
+    case gfx::BufferFormat::BGRX_1010102:
       return GL_BGRA_EXT;
     case gfx::BufferFormat::RGBA_F16:
       return GL_RGBA;
     case gfx::BufferFormat::BGRX_8888:
-    case gfx::BufferFormat::BGRX_1010102:
     case gfx::BufferFormat::RGBX_8888:
-    case gfx::BufferFormat::UYVY_422:
     case gfx::BufferFormat::YVU_420:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
-      NOTREACHED();
+    case gfx::BufferFormat::P010:
+      NOTREACHED() << gfx::BufferFormatToString(format);
       return 0;
   }
 
@@ -225,25 +150,132 @@ GLenum InternalFormat(gfx::BufferFormat format) {
   return 0;
 }
 
+uint32_t BufferFormatToFourCC(gfx::BufferFormat format) {
+  switch (format) {
+    case gfx::BufferFormat::BGR_565:
+      return libyuv::FOURCC_ANY;  // libyuv::FOURCC_RGBP has wrong endianness.
+    case gfx::BufferFormat::RGBA_4444:
+      return libyuv::FOURCC_ANY;  // libyuv::FOURCC_R444 has wrong endianness.
+    case gfx::BufferFormat::RGBA_8888:
+      return libyuv::FOURCC_ABGR;
+    case gfx::BufferFormat::BGRA_8888:
+      return libyuv::FOURCC_ARGB;
+    case gfx::BufferFormat::RGBX_1010102:
+      return libyuv::FOURCC_AB30;
+    case gfx::BufferFormat::BGRX_1010102:
+      return libyuv::FOURCC_AR30;
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
+      return libyuv::FOURCC_NV12;
+    case gfx::BufferFormat::YVU_420:
+      return libyuv::FOURCC_YV12;
+    case gfx::BufferFormat::R_8:
+    case gfx::BufferFormat::R_16:
+    case gfx::BufferFormat::RG_88:
+    case gfx::BufferFormat::RGBA_F16:
+    case gfx::BufferFormat::BGRX_8888:
+    case gfx::BufferFormat::RGBX_8888:
+    case gfx::BufferFormat::P010:
+      return libyuv::FOURCC_ANY;
+  }
+  NOTREACHED();
+  return libyuv::FOURCC_ANY;
+}
+
 }  // namespace
+
+// Verifies that the read-back colour after map-write-unmap is the original.
+TEST_P(GpuMemoryBufferTest, MapUnmap) {
+  const gfx::BufferFormat buffer_format = GetParam();
+  const uint32_t libyuv_fourcc = BufferFormatToFourCC(buffer_format);
+  if (libyuv_fourcc == static_cast<uint32_t>(libyuv::FOURCC_ANY)) {
+    LOG(WARNING) << gfx::BufferFormatToString(buffer_format)
+                 << " not supported, skipping test";
+    return;
+  }
+
+  std::unique_ptr<gfx::GpuMemoryBuffer> buffer(gl_.CreateGpuMemoryBuffer(
+      gfx::Size(kImageWidth, kImageHeight), buffer_format));
+
+  ASSERT_TRUE(buffer->Map());
+  ASSERT_NE(nullptr, buffer->memory(0));
+  ASSERT_NE(0, buffer->stride(0));
+  constexpr uint8_t color_rgba[] = {127u, 0u, 0u, 255u};
+  constexpr uint8_t color_bgra[] = {0u, 0u, 127u, 255u};
+
+  const size_t num_planes = NumberOfPlanesForLinearBufferFormat(buffer_format);
+  for (size_t plane = 0; plane < num_planes; ++plane) {
+    gl::GLImageTestSupport::SetBufferDataToColor(
+        kImageWidth, kImageHeight, buffer->stride(plane), plane, buffer_format,
+        color_rgba, static_cast<uint8_t*>(buffer->memory(plane)));
+  }
+  buffer->Unmap();
+
+  ASSERT_TRUE(buffer->Map());
+  ASSERT_NE(nullptr, buffer->memory(0));
+  ASSERT_NE(0, buffer->stride(0));
+  const uint8_t* data = static_cast<uint8_t*>(buffer->memory(0));
+  const int stride = buffer->stride(0);
+  // libyuv defines the formats as word-order.
+  uint8_t argb[kImageWidth * kImageHeight * 4] = {};
+  const int result = libyuv::ConvertToARGB(
+      data, stride * kImageWidth, argb, kImageWidth /* dst_stride_argb */,
+      0 /* crop_x */, 0 /* crop_y */, kImageWidth, kImageHeight,
+      kImageWidth /* rop_width */, kImageHeight /* crop_height */,
+      libyuv::kRotate0, libyuv_fourcc);
+
+  constexpr int max_error = 2;
+  ASSERT_EQ(result, 0) << gfx::BufferFormatToString(buffer_format);
+  int bad_count = 0;
+  for (int y = 0; y < kImageHeight; ++y) {
+    for (int x = 0; x < kImageWidth; ++x) {
+      int offset = y * kImageWidth + x * 4;
+      for (int c = 0; c < 4; ++c) {
+        // |argb| in word order is read as B, G, R, A on little endian .
+        const uint8_t actual = argb[offset + c];
+        const uint8_t expected = color_bgra[c];
+        EXPECT_NEAR(expected, actual, max_error)
+            << " at " << x << ", " << y << " channel " << c;
+        bad_count += std::abs(actual - expected) > max_error;
+        // Exit early just so we don't spam the log but we print enough to
+        // hopefully make it easy to diagnose the issue.
+        ASSERT_LE(bad_count, 4);
+      }
+    }
+  }
+  buffer->Unmap();
+}
 
 // An end to end test that tests the whole GpuMemoryBuffer lifecycle.
 TEST_P(GpuMemoryBufferTest, Lifecycle) {
-  if (GetParam() == gfx::BufferFormat::R_8 &&
+  const gfx::BufferFormat buffer_format = GetParam();
+
+  if (buffer_format == gfx::BufferFormat::R_8 &&
       !gl_.GetCapabilities().texture_rg) {
     LOG(WARNING) << "texture_rg not supported. Skipping test.";
     return;
   }
 
-  if (GetParam() == gfx::BufferFormat::RGBA_F16 &&
+  if (buffer_format == gfx::BufferFormat::RGBA_F16 &&
       !gl_.GetCapabilities().texture_half_float_linear) {
     LOG(WARNING) << "texture_half_float_linear not supported. Skipping test.";
     return;
   }
 
-  if (GetParam() == gfx::BufferFormat::RGBX_1010102 &&
+  if (buffer_format == gfx::BufferFormat::RGBX_1010102 &&
       !gl_.GetCapabilities().image_xb30) {
     LOG(WARNING) << "image_xb30 not supported. Skipping test.";
+    return;
+  }
+
+  if (buffer_format == gfx::BufferFormat::BGRX_1010102 &&
+      !gl_.GetCapabilities().image_xr30) {
+    LOG(WARNING) << "image_xr30 not supported. Skipping test.";
+    return;
+  }
+
+  if (buffer_format == gfx::BufferFormat::YVU_420 ||
+      buffer_format == gfx::BufferFormat::YUV_420_BIPLANAR) {
+    LOG(WARNING) << "GLImageMemory doesn't support YUV formats, skipping test.";
     return;
   }
 
@@ -258,27 +290,26 @@ TEST_P(GpuMemoryBufferTest, Lifecycle) {
 
   // Create the gpu memory buffer.
   std::unique_ptr<gfx::GpuMemoryBuffer> buffer(gl_.CreateGpuMemoryBuffer(
-      gfx::Size(kImageWidth, kImageHeight), GetParam()));
+      gfx::Size(kImageWidth, kImageHeight), buffer_format));
 
   // Map buffer for writing.
   ASSERT_TRUE(buffer->Map());
   ASSERT_NE(nullptr, buffer->memory(0));
   ASSERT_NE(0, buffer->stride(0));
-  uint8_t pixel[] = {255u, 0u, 0u, 255u};
+  constexpr uint8_t pixel[] = {255u, 0u, 0u, 255u};
 
-  // Assign a value to each pixel.
-  for (int y = 0; y < kImageHeight; ++y) {
-    SetRow(GetParam(),
-           static_cast<uint8_t*>(buffer->memory(0)) + y * buffer->stride(0),
-           kImageWidth, pixel);
+  const size_t num_planes = NumberOfPlanesForLinearBufferFormat(buffer_format);
+  for (size_t plane = 0; plane < num_planes; ++plane) {
+    gl::GLImageTestSupport::SetBufferDataToColor(
+        kImageWidth, kImageHeight, buffer->stride(plane), plane, buffer_format,
+        pixel, static_cast<uint8_t*>(buffer->memory(0)));
   }
-  // Unmap the buffer.
   buffer->Unmap();
 
   // Create the image. This should add the image ID to the ImageManager.
   GLuint image_id =
       glCreateImageCHROMIUM(buffer->AsClientBuffer(), kImageWidth, kImageHeight,
-                            InternalFormat(GetParam()));
+                            InternalFormat(buffer_format));
   ASSERT_NE(0u, image_id);
   ASSERT_TRUE(gl_.decoder()->GetImageManagerForTest()->LookupImage(image_id) !=
               nullptr);
@@ -350,27 +381,26 @@ TEST_F(GpuMemoryBufferTestEGL, GLCreateImageCHROMIUMFromNativePixmap) {
 
   std::unique_ptr<uint8_t[]> pixels(new uint8_t[buffer_size]);
 
-  // Assign a value to each pixel.
-  for (int y = 0; y < size.height(); ++y) {
-    SetRow(format, pixels.get() + y * stride, size.width(), pixel);
-  }
+  gl::GLImageTestSupport::SetBufferDataToColor(kImageWidth, kImageHeight,
+                                               stride, 0 /* plane */, format,
+                                               pixel, pixels.get());
 
   // A real use case would be to export a VAAPI surface as dmabuf fds. But for
   // simplicity the test gets them from a GL texture.
   gfx::NativePixmapHandle native_pixmap_handle =
       CreateNativePixmapHandle(format, size, pixels.get());
-  EXPECT_EQ(1u, native_pixmap_handle.fds.size());
+  EXPECT_EQ(1u, native_pixmap_handle.planes.size());
 
   // Initialize a GpuMemoryBufferHandle to wrap a native pixmap.
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::NATIVE_PIXMAP;
-  handle.native_pixmap_handle = native_pixmap_handle;
+  handle.native_pixmap_handle = std::move(native_pixmap_handle);
   EXPECT_TRUE(handle.id.is_valid());
 
   // Create a GMB to pass to glCreateImageCHROMIUM.
   std::unique_ptr<gfx::GpuMemoryBuffer> buffer =
       gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
-          native_pixmap_factory_.get(), handle, size, format,
+          native_pixmap_factory_.get(), std::move(handle), size, format,
           gfx::BufferUsage::SCANOUT,
           base::RepeatingCallback<void(const gpu::SyncToken&)>());
   EXPECT_NE(nullptr, buffer.get());
@@ -439,15 +469,19 @@ TEST_F(GpuMemoryBufferTestEGL, GLCreateImageCHROMIUMFromNativePixmap) {
 }
 #endif  // defined(OS_LINUX)
 
-INSTANTIATE_TEST_SUITE_P(GpuMemoryBufferTests,
-                         GpuMemoryBufferTest,
-                         ::testing::Values(gfx::BufferFormat::R_8,
-                                           gfx::BufferFormat::BGR_565,
-                                           gfx::BufferFormat::RGBA_4444,
-                                           gfx::BufferFormat::RGBA_8888,
-                                           gfx::BufferFormat::RGBX_1010102,
-                                           gfx::BufferFormat::BGRA_8888,
-                                           gfx::BufferFormat::RGBA_F16));
+INSTANTIATE_TEST_SUITE_P(
+    GpuMemoryBufferTests,
+    GpuMemoryBufferTest,
+    ::testing::Values(gfx::BufferFormat::R_8,
+                      gfx::BufferFormat::BGR_565,
+                      gfx::BufferFormat::RGBA_4444,
+                      gfx::BufferFormat::RGBA_8888,
+                      gfx::BufferFormat::RGBX_1010102,
+                      gfx::BufferFormat::BGRX_1010102,
+                      gfx::BufferFormat::BGRA_8888,
+                      gfx::BufferFormat::RGBA_F16,
+                      gfx::BufferFormat::YVU_420,
+                      gfx::BufferFormat::YUV_420_BIPLANAR));
 
 }  // namespace gles2
 }  // namespace gpu

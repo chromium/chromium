@@ -140,5 +140,6 @@ function assertValidGetCredentialResponse(r) {
         AUTHENTICATOR_DATA, "authenticator_data returned is the same");
     assert_array_equals(new Uint8Array(r.response.signature),
         SIGNATURE, "signature returned is the same");
+    assert_true(r.response.userHandle == null);
     assert_false('attestationObject' in r.response);
 }

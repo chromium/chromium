@@ -42,8 +42,8 @@ void StartSyncOnUIThread(const base::FilePath& profile,
 
 void StartSyncProxy(const base::FilePath& profile,
                     syncer::ModelType type) {
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                           base::BindOnce(&StartSyncOnUIThread, profile, type));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(&StartSyncOnUIThread, profile, type));
 }
 
 }  // namespace

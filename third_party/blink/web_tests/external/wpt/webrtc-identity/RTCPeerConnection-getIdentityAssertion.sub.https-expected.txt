@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL getIdentityAssertion() should load IdP proxy and return assertion generated pc.setIdentityProvider is not a function
+FAIL getIdentityAssertion() should succeed if mock-idp.js return different domain and protocol in assertion pc.setIdentityProvider is not a function
+FAIL getIdentityAssertion() should reject with RTCError('idp-execution-failure') if mock-idp.js throws error assert_equals: Expect initial pc.idpErrorInfo to be null expected (object) null but got (undefined) undefined
+FAIL getIdentityAssertion() should reject with RTCError('idp-bad-script-failure') if IdP proxy script do not register its callback pc.setIdentityProvider is not a function
+FAIL getIdentityAssertion() should reject with OperationError if mock-idp.js return invalid result pc.setIdentityProvider is not a function
+FAIL getIdentityAssertion() should reject with RTCError('idp-load-failure') if IdP cannot be loaded pc.setIdentityProvider is not a function
+FAIL getIdentityAssertion() should reject with RTCError('idp-need-login') when mock-idp.js requires login assert_equals: Expect initial pc.idpLoginUrl to be null expected (object) null but got (undefined) undefined
+FAIL setIdentityProvider() with no peerIdentity provided should use peerIdentity value from getConfiguration() pc.setIdentityProvider is not a function
+FAIL Calling setIdentityProvider() multiple times should reset identity assertions pc.setIdentityProvider is not a function
+FAIL createOffer() should return SDP containing identity assertion string if identity provider is set pc.setIdentityProvider is not a function
+FAIL createOffer() should reject with OperationError if identity assertion request fails pc.setIdentityProvider is not a function
+FAIL createAnswer() should reject with OperationError if identity assertion request fails pc.setIdentityProvider is not a function
+Harness: the test ran to completion.
+

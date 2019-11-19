@@ -4,7 +4,6 @@
 
 package org.chromium.midi;
 
-import android.annotation.TargetApi;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
@@ -12,12 +11,12 @@ import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.hardware.usb.UsbRequest;
-import android.os.Build;
 import android.os.Handler;
 import android.util.SparseArray;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -189,7 +188,7 @@ class UsbMidiDeviceAndroid {
                 if (mIsClosed) {
                     return;
                 }
-                nativeOnData(mNativePointer, endpointNumber, bs);
+                UsbMidiDeviceAndroidJni.get().onData(mNativePointer, endpointNumber, bs);
             }
         });
     }
@@ -215,7 +214,6 @@ class UsbMidiDeviceAndroid {
      * @param endpointNumber The endpoint number of the destination endpoint.
      * @param bs The data to be sent.
      */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @CalledByNative
     void send(int endpointNumber, byte[] bs) {
         if (mIsClosed) {
@@ -321,6 +319,8 @@ class UsbMidiDeviceAndroid {
         return position;
     }
 
-    private static native void nativeOnData(
-            long nativeUsbMidiDeviceAndroid, int endpointNumber, byte[] data);
+    @NativeMethods
+    interface Natives {
+        void onData(long nativeUsbMidiDeviceAndroid, int endpointNumber, byte[] data);
+    }
 }

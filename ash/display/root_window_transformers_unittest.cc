@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/cursor_manager_test_api.h"
+#include "base/command_line.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/env.h"
@@ -39,7 +40,7 @@
 namespace ash {
 namespace {
 
-const char kWallpaperView[] = "WallpaperView";
+const char kWallpaperView[] = "WallpaperViewWidget";
 
 class TestEventHandler : public ui::EventHandler {
  public:
@@ -143,6 +144,24 @@ class RootWindowTransformersTest : public AshTestBase {
   DISALLOW_COPY_AND_ASSIGN(RootWindowTransformersTest);
 };
 
+class UnfiedRootWindowTransformersTest : public RootWindowTransformersTest {
+ public:
+  UnfiedRootWindowTransformersTest() = default;
+  ~UnfiedRootWindowTransformersTest() override = default;
+
+  // RootWindowTransformersTest:
+  void SetUp() override {
+    // kEnableUnifiedDesktop switch needs to be added before DisplayManager
+    // creation. Hence before calling SetUp.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kEnableUnifiedDesktop);
+
+    RootWindowTransformersTest::SetUp();
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(UnfiedRootWindowTransformersTest);
+};
+
 }  // namespace
 
 TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
@@ -168,7 +187,7 @@ TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
   generator1.MoveMouseToInHost(40, 80);
   EXPECT_EQ("50,90", event_handler.GetLocationAndReset());
   EXPECT_EQ("50,90",
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
   EXPECT_EQ(display::Display::ROTATE_0,
             GetActiveDisplayRotation(display1.id()));
   EXPECT_EQ(display::Display::ROTATE_0, GetActiveDisplayRotation(display2_id));
@@ -189,7 +208,7 @@ TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
   generator1.MoveMouseToInHost(39, 120);
   EXPECT_EQ("110,70", event_handler.GetLocationAndReset());
   EXPECT_EQ("110,70",
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
   EXPECT_EQ(display::Display::ROTATE_90,
             GetActiveDisplayRotation(display1.id()));
   EXPECT_EQ(display::Display::ROTATE_0, GetActiveDisplayRotation(display2_id));
@@ -215,7 +234,7 @@ TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
   generator2.MoveMouseToInHost(172, 219);
   EXPECT_EQ("95,80", event_handler.GetLocationAndReset());
   EXPECT_EQ("145,200",
-            Shell::Get()->aura_env()->last_mouse_location().ToString());
+            aura::Env::GetInstance()->last_mouse_location().ToString());
   EXPECT_EQ(display::Display::ROTATE_90,
             GetActiveDisplayRotation(display1.id()));
   EXPECT_EQ(display::Display::ROTATE_270,
@@ -291,7 +310,8 @@ TEST_F(RootWindowTransformersTest, ScaleAndMagnify) {
 // on 2.25 scale factor device so that HW overlay kicks in.
 // https://crbug.com/869090.
 TEST_F(RootWindowTransformersTest, OriginAlignmentWithFractionalScale) {
-  auto* host_window = Shell::GetPrimaryRootWindow()->GetHost()->window();
+  auto* host = Shell::GetPrimaryRootWindow()->GetHost();
+  auto* host_window = host->window();
   EXPECT_EQ(Shell::GetPrimaryRootWindow(), host_window);
 
   float device_scale_factor = 2.25f;
@@ -310,7 +330,7 @@ TEST_F(RootWindowTransformersTest, OriginAlignmentWithFractionalScale) {
     gfx::RectF tmp(1998, 2999);
     // Creates a transform that can be applied to already scaled layer.
     gfx::Transform transform(invert_transform);
-    transform.ConcatTransform(host_window->layer()->transform());
+    transform.ConcatTransform(host->GetRootTransform() * invert_transform);
     transform.ConcatTransform(scale_transform);
     transform.TransformRect(&tmp);
     EXPECT_EQ(gfx::SizeF(2999, 1998), tmp.size());
@@ -323,7 +343,7 @@ TEST_F(RootWindowTransformersTest, OriginAlignmentWithFractionalScale) {
 
     gfx::RectF tmp(2999, 1998);
     gfx::Transform transform(invert_transform);
-    transform.ConcatTransform(host_window->layer()->transform());
+    transform.ConcatTransform(host->GetRootTransform() * invert_transform);
     transform.ConcatTransform(scale_transform);
     transform.TransformRect(&tmp);
     EXPECT_EQ(gfx::SizeF(2999, 1998), tmp.size());
@@ -336,7 +356,7 @@ TEST_F(RootWindowTransformersTest, OriginAlignmentWithFractionalScale) {
 
     gfx::RectF tmp(1998, 2999);
     gfx::Transform transform(invert_transform);
-    transform.ConcatTransform(host_window->layer()->transform());
+    transform.ConcatTransform(host->GetRootTransform() * invert_transform);
     transform.ConcatTransform(scale_transform);
     transform.TransformRect(&tmp);
     EXPECT_EQ(gfx::SizeF(2999, 1998), tmp.size());
@@ -566,6 +586,28 @@ TEST_F(RootWindowTransformersTest, ShouldSetWindowSizeDuringOpacityAnimation) {
   // animation, even there is an opacity animation.
   UpdateDisplay("800x600/r");
   EXPECT_EQ(root_window->GetTargetBounds(), gfx::Rect(0, 0, 600, 800));
+}
+
+TEST_F(UnfiedRootWindowTransformersTest, HostBoundsAndTransform) {
+  UpdateDisplay("800x600,800x600");
+  // Has only one logical root window.
+  EXPECT_EQ(1u, Shell::GetAllRootWindows().size());
+
+  MirrorWindowTestApi test_api;
+  std::vector<aura::WindowTreeHost*> hosts = test_api.GetHosts();
+  // Have 2 WindowTreeHosts, one per display.
+  ASSERT_EQ(2u, hosts.size());
+
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600), hosts[0]->window()->GetBoundsInScreen());
+  gfx::Point viewport_0_origin(0, 0);
+  hosts[0]->window()->transform().TransformPointReverse(&viewport_0_origin);
+  EXPECT_EQ(gfx::Point(0, 0), viewport_0_origin);
+
+  EXPECT_EQ(gfx::Rect(800, 0, 800, 600),
+            hosts[1]->window()->GetBoundsInScreen());
+  gfx::Point viewport_1_origin(0, 0);
+  hosts[1]->window()->transform().TransformPointReverse(&viewport_1_origin);
+  EXPECT_EQ(gfx::Point(800, 0), viewport_1_origin);
 }
 
 }  // namespace ash

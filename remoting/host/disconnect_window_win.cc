@@ -27,6 +27,7 @@
 #include "remoting/host/input_monitor/local_input_monitor.h"
 #include "remoting/host/win/core_resource.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
+#include "ui/events/event.h"
 
 namespace remoting {
 
@@ -103,10 +104,11 @@ class DisconnectWindowWin : public HostWindow {
   void StopAutoHideBehavior();
 
   // Called when local mouse event is seen and shows the dialog (if hidden).
-  void OnLocalMouseEvent(const webrtc::DesktopVector& mouse_position);
+  void OnLocalMouseEvent(const webrtc::DesktopVector& mouse_position,
+                         ui::EventType type);
 
   // Called when local keyboard event is seen and shows the dialog (if hidden).
-  void OnLocalKeyboardEvent();
+  void OnLocalKeyPressed(uint32_t usb_keycode);
 
   // Used to disconnect the client session.
   base::WeakPtr<ClientSessionControl> client_session_control_;
@@ -127,7 +129,7 @@ class DisconnectWindowWin : public HostWindow {
 
   webrtc::DesktopVector mouse_position_;
 
-  base::WeakPtrFactory<DisconnectWindowWin> weak_factory_;
+  base::WeakPtrFactory<DisconnectWindowWin> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DisconnectWindowWin);
 };
@@ -162,8 +164,7 @@ bool GetControlTextWidth(HWND control,
 
 DisconnectWindowWin::DisconnectWindowWin()
     : border_pen_(
-          CreatePen(PS_SOLID, 5, RGB(0.13 * 255, 0.69 * 255, 0.11 * 255))),
-      weak_factory_(this) {}
+          CreatePen(PS_SOLID, 5, RGB(0.13 * 255, 0.69 * 255, 0.11 * 255))) {}
 
 DisconnectWindowWin::~DisconnectWindowWin() {
   EndDialog();
@@ -193,7 +194,7 @@ void DisconnectWindowWin::Start(
     local_input_monitor_->StartMonitoring(
         base::BindRepeating(&DisconnectWindowWin::OnLocalMouseEvent,
                             weak_factory_.GetWeakPtr()),
-        base::BindRepeating(&DisconnectWindowWin::OnLocalKeyboardEvent,
+        base::BindRepeating(&DisconnectWindowWin::OnLocalKeyPressed,
                             weak_factory_.GetWeakPtr()),
         base::BindRepeating(&DisconnectWindowWin::StopAutoHideBehavior,
                             weak_factory_.GetWeakPtr()));
@@ -385,7 +386,8 @@ void DisconnectWindowWin::StopAutoHideBehavior() {
 }
 
 void DisconnectWindowWin::OnLocalMouseEvent(
-    const webrtc::DesktopVector& position) {
+    const webrtc::DesktopVector& position,
+    ui::EventType type) {
   // Don't show the dialog if the position changes by ~1px in any direction.
   // This will prevent the dialog from being reshown due to small movements
   // caused by hardware/software issues which cause cursor drift or small
@@ -402,7 +404,7 @@ void DisconnectWindowWin::OnLocalMouseEvent(
   mouse_position_ = position;
 }
 
-void DisconnectWindowWin::OnLocalKeyboardEvent() {
+void DisconnectWindowWin::OnLocalKeyPressed(uint32_t usb_keycode) {
   // Show the dialog before setting |local_input_seen_|.  That way the dialog
   // will be shown in the center position and subsequent reshows will honor
   // the new position (if any) the dialog is moved to.

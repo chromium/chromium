@@ -1,0 +1,38 @@
+<html>
+<br> <canvas id="can1" width="60" height="60"></canvas>
+<br> <canvas id="can2" width="60" height="60"></canvas>
+
+<script>
+
+function DrawCanvas(srcCanvas, outputCanvasId)
+{
+  var outputCanvas = document.getElementById(outputCanvasId);
+  var outputContext = outputCanvas.getContext("2d");
+  outputContext.drawImage(srcCanvas, 0, 0);
+}
+
+// source content as canvas
+var htmlCanvas = document.createElement('canvas');
+htmlCanvas.width = 60;
+htmlCanvas.height = 60;
+var htmlCanvasCtx = htmlCanvas.getContext("2d");
+htmlCanvasCtx.fillStyle = "blue";
+htmlCanvasCtx.fillRect(0, 0, 15, 60);
+htmlCanvasCtx.fillStyle = "red";
+htmlCanvasCtx.fillRect(15, 0, 45, 30);
+htmlCanvasCtx.fillStyle = "green";
+htmlCanvasCtx.fillRect(15, 30, 45, 30);
+
+DrawCanvas(htmlCanvas, "can1");
+
+var htmlCanvas2 = document.createElement('canvas');
+htmlCanvas2.width = 60;
+htmlCanvas2.height = 60;
+var htmlCanvasCtx2 = htmlCanvas2.getContext("2d");
+htmlCanvasCtx2.fillStyle = "rgba(0, 0, 0, 0)";
+htmlCanvasCtx2.fillRect(0, 0, 60, 60);
+
+DrawCanvas(htmlCanvas2, "can2");
+
+</script>
+</html>

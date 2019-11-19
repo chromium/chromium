@@ -10,6 +10,8 @@
 // clang-format off
 #include "third_party/blink/renderer/bindings/tests/results/core/v8_test_interface_origin_trial_enabled.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -20,6 +22,7 @@
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 
 namespace blink {
@@ -195,6 +198,8 @@ static void VoidMethodPartialOverload2Method(const v8::FunctionCallbackInfo<v8::
 }
 
 static void VoidMethodPartialOverloadMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  scheduler::CooperativeSchedulingManager::Instance()->Safepoint();
+
   bool is_arity_error = false;
 
   switch (std::min(1, info.Length())) {
@@ -291,11 +296,6 @@ void V8TestInterfaceOriginTrialEnabled::VoidMethodPartialOverloadMethodCallback(
   test_interface_origin_trial_enabled_v8_internal::VoidMethodPartialOverloadMethod(info);
 }
 
-static constexpr V8DOMConfiguration::AccessorConfiguration kV8TestInterfaceOriginTrialEnabledAccessors[] = {
-    { "doubleAttribute", V8TestInterfaceOriginTrialEnabled::DoubleAttributeAttributeGetterCallback, V8TestInterfaceOriginTrialEnabled::DoubleAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-    { "staticStringAttribute", V8TestInterfaceOriginTrialEnabled::StaticStringAttributeAttributeGetterCallback, V8TestInterfaceOriginTrialEnabled::StaticStringAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInterface, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-};
-
 static constexpr V8DOMConfiguration::MethodConfiguration kV8TestInterfaceOriginTrialEnabledMethods[] = {
     {"voidMethodDoubleArgFloatArg", V8TestInterfaceOriginTrialEnabled::VoidMethodDoubleArgFloatArgMethodCallback, 2, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds},
     {"voidMethodPartialOverload", V8TestInterfaceOriginTrialEnabled::VoidMethodPartialOverloadMethodCallback, 0, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds},
@@ -327,9 +327,15 @@ static void InstallV8TestInterfaceOriginTrialEnabledTemplate(
   }
   static_assert(0 == TestInterfaceOriginTrialEnabled::kUnsignedLong, "the value of TestInterfaceOriginTrialEnabled_kUnsignedLong does not match with implementation");
   static_assert(1 == TestInterfaceOriginTrialEnabled::kConstJavascript, "the value of TestInterfaceOriginTrialEnabled_kConstJavascript does not match with implementation");
+  static constexpr V8DOMConfiguration::AccessorConfiguration
+  kAccessorConfigurations[] = {
+      { "doubleAttribute", V8TestInterfaceOriginTrialEnabled::DoubleAttributeAttributeGetterCallback, V8TestInterfaceOriginTrialEnabled::DoubleAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+      { "staticStringAttribute", V8TestInterfaceOriginTrialEnabled::StaticStringAttributeAttributeGetterCallback, V8TestInterfaceOriginTrialEnabled::StaticStringAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInterface, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+  };
   V8DOMConfiguration::InstallAccessors(
       isolate, world, instance_template, prototype_template, interface_template,
-      signature, kV8TestInterfaceOriginTrialEnabledAccessors, base::size(kV8TestInterfaceOriginTrialEnabledAccessors));
+      signature, kAccessorConfigurations,
+      base::size(kAccessorConfigurations));
   V8DOMConfiguration::InstallMethods(
       isolate, world, instance_template, prototype_template, interface_template,
       signature, kV8TestInterfaceOriginTrialEnabledMethods, base::size(kV8TestInterfaceOriginTrialEnabledMethods));
@@ -353,15 +359,17 @@ void V8TestInterfaceOriginTrialEnabled::InstallRuntimeEnabledFeaturesOnTemplate(
 
   // Register IDL constants, attributes and operations.
 
-  if (RuntimeEnabledFeatures::FeatureNameEnabled()) {
-    static constexpr V8DOMConfiguration::AccessorConfiguration kConfigurations[] = {
+  if (RuntimeEnabledFeatures::RuntimeFeatureEnabled()) {
+    static constexpr V8DOMConfiguration::AccessorConfiguration
+    kAccessorConfigurations[] = {
         { "conditionalReadOnlyLongAttribute", V8TestInterfaceOriginTrialEnabled::ConditionalReadOnlyLongAttributeAttributeGetterCallback, nullptr, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::ReadOnly), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
         { "staticConditionalReadOnlyLongAttribute", V8TestInterfaceOriginTrialEnabled::StaticConditionalReadOnlyLongAttributeAttributeGetterCallback, nullptr, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::ReadOnly), V8DOMConfiguration::kOnInterface, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
         { "conditionalLongAttribute", V8TestInterfaceOriginTrialEnabled::ConditionalLongAttributeAttributeGetterCallback, V8TestInterfaceOriginTrialEnabled::ConditionalLongAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
     };
     V8DOMConfiguration::InstallAccessors(
         isolate, world, instance_template, prototype_template, interface_template,
-        signature, kConfigurations, base::size(kConfigurations));
+        signature, kAccessorConfigurations,
+        base::size(kAccessorConfigurations));
   }
 
   // Custom signature

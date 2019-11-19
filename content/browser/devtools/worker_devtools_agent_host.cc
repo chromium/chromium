@@ -14,8 +14,8 @@ namespace content {
 
 WorkerDevToolsAgentHost::WorkerDevToolsAgentHost(
     int process_id,
-    blink::mojom::DevToolsAgentPtr agent_ptr,
-    blink::mojom::DevToolsAgentHostRequest host_request,
+    mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
+    mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver,
     const GURL& url,
     const std::string& name,
     const base::UnguessableToken& devtools_worker_token,
@@ -27,22 +27,23 @@ WorkerDevToolsAgentHost::WorkerDevToolsAgentHost(
       name_(name),
       parent_id_(parent_id),
       destroyed_callback_(std::move(destroyed_callback)) {
-  DCHECK(agent_ptr);
+  DCHECK(agent_remote);
   DCHECK(!devtools_worker_token.is_empty());
   AddRef();  // Self keep-alive while the worker agent is alive.
-  agent_ptr.set_connection_error_handler(base::BindOnce(
+  base::OnceClosure connection_error = (base::BindOnce(
       &WorkerDevToolsAgentHost::Disconnected, base::Unretained(this)));
   NotifyCreated();
-  GetRendererChannel()->SetRenderer(
-      std::move(agent_ptr), std::move(host_request), process_id, nullptr);
+  GetRendererChannel()->SetRenderer(std::move(agent_remote),
+                                    std::move(host_receiver), process_id,
+                                    std::move(connection_error));
 }
 
 WorkerDevToolsAgentHost::~WorkerDevToolsAgentHost() {}
 
 void WorkerDevToolsAgentHost::Disconnected() {
   ForceDetachAllSessions();
-  GetRendererChannel()->SetRenderer(
-      nullptr, nullptr, ChildProcessHost::kInvalidUniqueID, nullptr);
+  GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
+                                    ChildProcessHost::kInvalidUniqueID);
   std::move(destroyed_callback_).Run(this);
   Release();  // Matches AddRef() in constructor.
 }

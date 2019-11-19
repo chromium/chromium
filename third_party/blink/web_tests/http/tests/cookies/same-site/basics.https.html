@@ -1,0 +1,75 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/cookies/resources/testharness-helpers.js"></script>
+<script>
+// Set cookies on ORIGINAL_HOST, then move ourselves to TEST_ROOT so
+// we can verify registrable domain and cross-origin behavior.
+// Note: We are using https here because SameSite=None cookies must be Secure.
+if (window.location.hostname == "127.0.0.1") {
+    window.location.hostname = ORIGINAL_HOST;
+} else if (window.location.hostname == ORIGINAL_HOST) {
+    clearKnownCookies();
+    document.cookie = STRICT_DOM + "=1; SameSite=Strict; Max-Age=100; path=/";
+    document.cookie = LAX_DOM + "=1; SameSite=Lax; Max-Age=100; path=/";
+    document.cookie = UNSPECIFIED_DOM + "=1; Max-Age=100; path=/";
+    // SameSite=None cookies must be Secure.
+    document.cookie = NONE_DOM + "=1; SameSite=None; Secure; Max-Age=100; path=/";
+    window.location.hostname = TEST_HOST;
+} else {
+    test(_ => {
+        clearKnownCookies();
+        assert_equals(document.cookie, "");
+
+        document.cookie = STRICT_DOM + "=2; SameSite=Strict; domain=" + TEST_HOST + "; path=/";
+        document.cookie = LAX_DOM + "=2; SameSite=Lax; domain=" + TEST_HOST + "; path=/";
+        document.cookie = UNSPECIFIED_DOM + "=2; domain=" + TEST_HOST + "; path=/";
+        document.cookie = NONE_DOM + "=2; SameSite=None; Secure; domain=" + TEST_HOST + "; path=/";
+        assert_equals(document.cookie, STRICT_DOM + "=2; " + LAX_DOM + "=2; " + UNSPECIFIED_DOM + "=2; " + NONE_DOM + "=2");
+    }, "Cookies can be set from DOM.");
+
+    promise_test(_ => {
+        return fetch("/cookies/resources/echo-json.php", {"credentials": "include"})
+            .then(r => r.json())
+            .then(j => {
+                assert_equals(j[STRICT_DOM], "2", "strict");
+                assert_equals(j[LAX_DOM], "2", "lax");
+                assert_equals(j[UNSPECIFIED_DOM], "2", "unspecified");
+                assert_equals(j[NONE_DOM], "2", "none");
+            });
+    }, "SameSite set from DOM are sent via HTTPS.");
+
+    promise_test(_ => {
+        return fetch("https://subdomain." + TEST_HOST + ":8443/cookies/resources/echo-json.php", {"credentials": "include"})
+            .then(r => r.json())
+            .then(j => {
+                assert_equals(j[STRICT_DOM], "2", "strict");
+                assert_equals(j[LAX_DOM], "2", "lax");
+                assert_equals(j[UNSPECIFIED_DOM], "2", "unspecified");
+                assert_equals(j[NONE_DOM], "2", "none");
+            });
+    }, "Subdomains are same-site.");
+
+    promise_test(_ => {
+        return fetch("https://" + TEST_ROOT + ":8443/cookies/resources/echo-json.php", {"credentials": "include"})
+            .then(r => r.json())
+            .then(j => {
+                assert_equals(j[STRICT_DOM], undefined, "strict");
+                assert_equals(j[LAX_DOM], undefined, "lax");
+                assert_equals(j[UNSPECIFIED_DOM], undefined, "unspecified");
+                assert_equals(j[NONE_DOM], undefined, "none");
+            });
+    }, "`" + TEST_ROOT + "` is same-site but the cookies don't match it: 'samesite' doesn't override matching rules.");
+
+    promise_test(_ => {
+        return fetch("https://" + ORIGINAL_HOST + ":8443/cookies/resources/echo-json.php", {"credentials": "include"})
+            .then(r => r.json())
+            .then(j => {
+                assert_equals(j[STRICT_DOM], undefined, "strict");
+                assert_equals(j[LAX_DOM], undefined, "lax");
+                assert_equals(j[UNSPECIFIED_DOM], undefined, "unspecified");
+                assert_equals(j[NONE_DOM], "1", "none");
+            });
+    }, "'" + ORIGINAL_HOST + "' is not same-site with '" + TEST_HOST + "', so samesite cookies are not sent.");
+}
+</script>

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.metrics;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.webapps.SplashscreenObserver;
 
 /**
@@ -12,35 +11,33 @@ import org.chromium.chrome.browser.webapps.SplashscreenObserver;
  * shell.
  */
 public class WebApkSplashscreenMetrics implements SplashscreenObserver {
-    private long mShellApkLaunchTimeMs = -1;
-    private long mSplashScreenShownTimeMs = -1;
+    private final long mShellApkLaunchTimestamp;
+    private final long mNewStyleSplashShownTimestamp;
 
-    /**
-     * Marks that splashscreen metrics should be tracked (if the {@param shellApkLaunchTimeMs} is
-     * not -1, otherwise it is ignored). Must only be called on the UI thread.
-     */
-    public void trackSplashscreenMetrics(long shellApkLaunchTimeMs) {
-        ThreadUtils.assertOnUiThread();
-        mShellApkLaunchTimeMs = shellApkLaunchTimeMs;
+    public WebApkSplashscreenMetrics(
+            long shellApkLaunchTimestamp, long newStyleSplashShownTimestamp) {
+        mShellApkLaunchTimestamp = shellApkLaunchTimestamp;
+        mNewStyleSplashShownTimestamp = newStyleSplashShownTimestamp;
     }
 
     @Override
-    public void onSplashscreenHidden(long timestamp) {
-        if (mShellApkLaunchTimeMs == -1) return;
+    public void onTranslucencyRemoved() {}
 
-        if (UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground()) {
-            // commit both shown/hidden histograms here because native may not be loaded when the
-            // splashscreen is shown.
-            WebApkUma.recordShellApkLaunchToSplashscreenVisible(
-                    mSplashScreenShownTimeMs - mShellApkLaunchTimeMs);
-            WebApkUma.recordShellApkLaunchToSplashscreenHidden(timestamp - mShellApkLaunchTimeMs);
+    @Override
+    public void onSplashscreenHidden(long startTimestamp, long endTimestamp) {
+        if (!UmaUtils.hasComeToForeground() || UmaUtils.hasComeToBackground()
+                || mShellApkLaunchTimestamp == -1) {
+            return;
         }
-    }
 
-    @Override
-    public void onSplashscreenShown(long timestamp) {
-        assert mSplashScreenShownTimeMs == -1;
-        if (mShellApkLaunchTimeMs == -1) return;
-        mSplashScreenShownTimeMs = timestamp;
+        // commit both shown/hidden histograms here because native may not be loaded when the
+        // splashscreen is shown.
+        WebApkUma.recordShellApkLaunchToSplashVisible(startTimestamp - mShellApkLaunchTimestamp);
+        WebApkUma.recordShellApkLaunchToSplashHidden(endTimestamp - mShellApkLaunchTimestamp);
+
+        if (mNewStyleSplashShownTimestamp != -1) {
+            WebApkUma.recordNewStyleShellApkLaunchToSplashVisible(
+                    mNewStyleSplashShownTimestamp - mShellApkLaunchTimestamp);
+        }
     }
 }

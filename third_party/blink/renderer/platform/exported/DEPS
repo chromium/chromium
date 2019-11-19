@@ -1,6 +1,6 @@
 include_rules = [
-    "+net/cookies/canonical_cookie.h",
-    "+net/cookies/cookie_constants.h",
+    "+net/base/load_flags.h",
+    "+services/network/public/cpp/features.h",
 ]
 
 specific_include_rules = {

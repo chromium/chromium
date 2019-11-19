@@ -87,6 +87,7 @@ class TextIteratorAlgorithm {
   // Returns the position after |char16_offset| in current text run.
   PositionTemplate<Strategy> GetPositionAfter(int char16_offset) const;
 
+  // TODO(xiaochengh): Rename to |GetTextState()|.
   const TextIteratorTextState& GetText() const { return text_state_; }
   int length() const { return text_state_.length(); }
   UChar CharacterAt(unsigned index) const {
@@ -96,14 +97,6 @@ class TextIteratorAlgorithm {
   bool BreaksAtReplacedElement() {
     return !behavior_.DoesNotBreakAtReplacedElement();
   }
-
-  // Calculate the minimum |actualLength >= minLength| such that code units
-  // with offset range [position, position + actualLength) are whole code
-  // points. Append these code points to |output| and return |actualLength|.
-  int CopyTextTo(ForwardsTextBuffer* output,
-                 int position,
-                 int min_length) const;
-  int CopyTextTo(ForwardsTextBuffer* output, int position = 0) const;
 
   // Computes the length of the given range using a text iterator according to
   // the specified iteration behavior. The default iteration behavior is to
@@ -200,12 +193,6 @@ class TextIteratorAlgorithm {
   bool ForInnerText() const { return behavior_.ForInnerText(); }
 
   bool IsBetweenSurrogatePair(unsigned position) const;
-
-  // Append code units with offset range [position, position + copyLength)
-  // to the output buffer.
-  void CopyCodeUnitsTo(ForwardsTextBuffer* output,
-                       unsigned position,
-                       unsigned copy_length) const;
 
   // Ensure container node of current text run for computing position.
   void EnsurePositionContainer() const;

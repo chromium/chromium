@@ -29,12 +29,9 @@ struct Serializer<StringDataView, MaybeConstUserType> {
     if (CallIsNullIfExists<Traits>(input))
       return;
 
-    void* custom_context = CustomContextHelper<Traits>::SetUp(input, context);
-    const size_t size = CallWithContext(Traits::GetSize, input, custom_context);
-    writer->Allocate(size, buffer);
-    memcpy((*writer)->storage(),
-           CallWithContext(Traits::GetData, input, custom_context), size);
-    CustomContextHelper<Traits>::TearDown(input, custom_context);
+    auto r = Traits::GetUTF8(input);
+    writer->Allocate(r.size(), buffer);
+    memcpy((*writer)->storage(), r.data(), r.size());
   }
 
   static bool Deserialize(String_Data* input,

@@ -11,7 +11,9 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "components/image_fetcher/core/cache/image_store_types.h"
+#include "components/image_fetcher/core/cache/proto/cached_image_metadata.pb.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -42,7 +44,9 @@ class ImageCache : public base::RefCounted<ImageCache> {
 
   // Adds or updates the image data for the |url|. If the class hasn't been
   // initialized yet, the call is queued.
-  void SaveImage(std::string url, std::string image_data);
+  void SaveImage(std::string url,
+                 std::string image_data,
+                 bool needs_transcoding);
 
   // Loads the image data for the |url| and passes it to |callback|. If there's
   // no image in the cache, then an empty string is returned. If |read_only|
@@ -67,11 +71,21 @@ class ImageCache : public base::RefCounted<ImageCache> {
   void OnDependencyInitialized();
 
   // Saves the |image_data| for |url|.
-  void SaveImageImpl(const std::string& url, std::string image_data);
+  void SaveImageImpl(const std::string& url,
+                     std::string image_data,
+                     bool needs_transcoding);
   // Loads the data for |url|, calls the user back before updating metadata.
   void LoadImageImpl(bool read_only,
                      const std::string& url,
                      ImageDataCallback callback);
+  // Loads the image metadata for the given |url|, used to inspect if there's
+  // data available on disk that's in need of transcoding.
+  void OnImageMetadataLoadedForLoadImage(
+      bool read_only,
+      const std::string& key,
+      ImageDataCallback callback,
+      base::TimeTicks start_time,
+      base::Optional<CachedImageMetadataProto> metadata);
   // Deletes the data for |url|.
   void DeleteImageImpl(const std::string& url);
 
@@ -105,7 +119,7 @@ class ImageCache : public base::RefCounted<ImageCache> {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::WeakPtrFactory<ImageCache> weak_ptr_factory_;
+  base::WeakPtrFactory<ImageCache> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ImageCache);
 };

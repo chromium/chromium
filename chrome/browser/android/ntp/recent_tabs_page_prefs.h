@@ -12,38 +12,27 @@
 class RecentTabsPagePrefs {
  public:
   explicit RecentTabsPagePrefs(Profile* profile);
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
-  jboolean GetSnapshotDocumentCollapsed(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  jboolean GetSnapshotDocumentCollapsed(JNIEnv* env);
   void SetSnapshotDocumentCollapsed(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       jboolean is_collapsed);
 
-  jboolean GetRecentlyClosedTabsCollapsed(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  jboolean GetRecentlyClosedTabsCollapsed(JNIEnv* env);
   void SetRecentlyClosedTabsCollapsed(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       jboolean is_collapsed);
 
-  jboolean GetSyncPromoCollapsed(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  jboolean GetSyncPromoCollapsed(JNIEnv* env);
   void SetSyncPromoCollapsed(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& obj,
                              jboolean is_collapsed);
 
   jboolean GetForeignSessionCollapsed(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& session_tag);
   void SetForeignSessionCollapsed(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& session_tag,
       jboolean is_collapsed);
 

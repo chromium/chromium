@@ -33,9 +33,8 @@ void ApplyUrlFading(SkCanvas* canvas,
   SkColor fade_colors[2] = {SK_ColorTRANSPARENT, SK_ColorBLACK};
 
   SkPaint overlay;
-  overlay.setShader(
-      SkGradientShader::MakeLinear(fade_points, fade_colors, nullptr, 2,
-                                   SkShader::kClamp_TileMode, 0, nullptr));
+  overlay.setShader(SkGradientShader::MakeLinear(
+      fade_points, fade_colors, nullptr, 2, SkTileMode::kClamp, 0, nullptr));
   if (fade_left) {
     canvas->save();
     canvas->translate(text_bounds.x(), 0);
@@ -57,13 +56,10 @@ void ApplyUrlFading(SkCanvas* canvas,
 
 }  // namespace
 
-UrlText::UrlText(
-    float font_height_dmm,
-    const base::RepeatingCallback<void()>& unhandled_codepoint_callback)
+UrlText::UrlText(float font_height_dmm)
     : Text(font_height_dmm), font_height_dmm_(font_height_dmm) {
   SetLayoutMode(kSingleLineFixedWidth);
 
-  SetOnUnhandledCodePointCallback(unhandled_codepoint_callback);
   SetOnRenderTextCreated(base::BindRepeating(&UrlText::OnRenderTextCreated,
                                              base::Unretained(this)));
   SetOnRenderTextRendered(base::BindRepeating(&UrlText::OnRenderTextRendered,

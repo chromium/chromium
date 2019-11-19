@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/fetch/global_fetch.h"
@@ -38,7 +40,7 @@ struct TypeConverter<CacheQueryOptionsPtr, const blink::CacheQueryOptions*> {
 
 namespace blink {
 
-class CacheStorage;
+class CacheStorageBlobClientList;
 class ExceptionState;
 class Response;
 class Request;
@@ -50,14 +52,8 @@ class MODULES_EXPORT Cache final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static Cache* Create(GlobalFetch::ScopedFetcher*,
-                       CacheStorage*,
-                       mojom::blink::CacheStorageCacheAssociatedPtrInfo,
-                       scoped_refptr<base::SingleThreadTaskRunner>);
-
   Cache(GlobalFetch::ScopedFetcher*,
-        CacheStorage*,
-        mojom::blink::CacheStorageCacheAssociatedPtrInfo,
+        mojo::PendingAssociatedRemote<mojom::blink::CacheStorageCache>,
         scoped_refptr<base::SingleThreadTaskRunner>);
 
   // From Cache.idl:
@@ -114,18 +110,16 @@ class MODULES_EXPORT Cache final : public ScriptWrappable {
                         const String& method_name,
                         const HeapVector<Member<Request>>&,
                         const HeapVector<Member<Response>>&,
-                        ExceptionState&);
+                        ExceptionState&,
+                        int64_t trace_id);
   ScriptPromise KeysImpl(ScriptState*,
                          const Request*,
                          const CacheQueryOptions*);
 
   Member<GlobalFetch::ScopedFetcher> scoped_fetcher_;
-  // Hold a reference to CacheStorage to keep |cache_ptr_| alive.
-  // This is required because |cache_ptr_| is associated with CacheStorage's
-  // mojo message pipe.
-  Member<CacheStorage> cache_storage_;
+  Member<CacheStorageBlobClientList> blob_client_list_;
 
-  mojom::blink::CacheStorageCacheAssociatedPtr cache_ptr_;
+  mojo::AssociatedRemote<mojom::blink::CacheStorageCache> cache_remote_;
 
   DISALLOW_COPY_AND_ASSIGN(Cache);
 };

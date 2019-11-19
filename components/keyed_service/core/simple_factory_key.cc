@@ -4,8 +4,12 @@
 
 #include "components/keyed_service/core/simple_factory_key.h"
 
+#include "components/keyed_service/core/simple_dependency_manager.h"
+
 SimpleFactoryKey::SimpleFactoryKey(const base::FilePath& path,
-                                   SimpleFactoryKey* original_key)
-    : path_(path), original_key_(original_key) {}
+                                   bool is_off_the_record)
+    : path_(path), is_off_the_record_(is_off_the_record) {
+  SimpleDependencyManager::GetInstance()->MarkContextLive(this);
+}
 
 SimpleFactoryKey::~SimpleFactoryKey() = default;

@@ -161,7 +161,7 @@ bool EphemeralRangeTemplate<Strategy>::IsValid() const {
 }
 #endif
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 template <typename Strategy>
 void EphemeralRangeTemplate<Strategy>::ShowTreeForThis() const {
@@ -175,12 +175,9 @@ void EphemeralRangeTemplate<Strategy>::ShowTreeForThis() const {
                    ->ToMarkedTreeString(StartPosition().AnchorNode(), "S",
                                         EndPosition().AnchorNode(), "E")
                    .Utf8()
-                   .data()
-            << "start: "
-            << StartPosition().ToAnchorTypeAndOffsetString().Utf8().data()
+            << "start: " << StartPosition().ToAnchorTypeAndOffsetString().Utf8()
             << std::endl
-            << "end: "
-            << EndPosition().ToAnchorTypeAndOffsetString().Utf8().data();
+            << "end: " << EndPosition().ToAnchorTypeAndOffsetString().Utf8();
 }
 
 #endif
@@ -188,8 +185,8 @@ void EphemeralRangeTemplate<Strategy>::ShowTreeForThis() const {
 Range* CreateRange(const EphemeralRange& range) {
   if (range.IsNull())
     return nullptr;
-  return Range::Create(range.GetDocument(), range.StartPosition(),
-                       range.EndPosition());
+  return MakeGarbageCollected<Range>(range.GetDocument(), range.StartPosition(),
+                                     range.EndPosition());
 }
 
 template <typename Strategy>
@@ -211,6 +208,23 @@ std::ostream& operator<<(std::ostream& ostream, const EphemeralRange& range) {
 std::ostream& operator<<(std::ostream& ostream,
                          const EphemeralRangeInFlatTree& range) {
   return PrintEphemeralRange(ostream, range);
+}
+
+EphemeralRangeInFlatTree ToEphemeralRangeInFlatTree(
+    const EphemeralRange& range) {
+  PositionInFlatTree start = ToPositionInFlatTree(range.StartPosition());
+  PositionInFlatTree end = ToPositionInFlatTree(range.EndPosition());
+  if (start.IsNull() || end.IsNull() ||
+      start.GetDocument() != end.GetDocument())
+    return EphemeralRangeInFlatTree();
+  start.AnchorNode()->UpdateDistributionForFlatTreeTraversal();
+  end.AnchorNode()->UpdateDistributionForFlatTreeTraversal();
+  if (!start.IsValidFor(*start.GetDocument()) ||
+      !end.IsValidFor(*end.GetDocument()))
+    return EphemeralRangeInFlatTree();
+  if (start <= end)
+    return EphemeralRangeInFlatTree(start, end);
+  return EphemeralRangeInFlatTree(end, start);
 }
 
 template class CORE_TEMPLATE_EXPORT EphemeralRangeTemplate<EditingStrategy>;

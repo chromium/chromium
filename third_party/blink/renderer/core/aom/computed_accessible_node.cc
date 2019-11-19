@@ -44,18 +44,11 @@ class ComputedAccessibleNodePromiseResolver::RequestAnimationFrameCallback final
   DISALLOW_COPY_AND_ASSIGN(RequestAnimationFrameCallback);
 };
 
-ComputedAccessibleNodePromiseResolver*
-ComputedAccessibleNodePromiseResolver::Create(ScriptState* script_state,
-                                              Element& element) {
-  return MakeGarbageCollected<ComputedAccessibleNodePromiseResolver>(
-      script_state, element);
-}
-
 ComputedAccessibleNodePromiseResolver::ComputedAccessibleNodePromiseResolver(
     ScriptState* script_state,
     Element& element)
     : element_(element),
-      resolver_(ScriptPromiseResolver::Create(script_state)),
+      resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
       resolve_with_node_(false),
       ax_context_(std::make_unique<AXContext>(element_->GetDocument())) {}
 
@@ -112,12 +105,6 @@ void ComputedAccessibleNodePromiseResolver::UpdateTreeAndResolve() {
 
 // ComputedAccessibleNode ------------------------------------------------------
 
-ComputedAccessibleNode* ComputedAccessibleNode::Create(AXID ax_id,
-                                                       WebComputedAXTree* tree,
-                                                       Document* document) {
-  return MakeGarbageCollected<ComputedAccessibleNode>(ax_id, tree, document);
-}
-
 ComputedAccessibleNode::ComputedAccessibleNode(AXID ax_id,
                                                WebComputedAXTree* tree,
                                                Document* document)
@@ -137,8 +124,8 @@ ScriptPromise ComputedAccessibleNode::ensureUpToDate(
   AXObjectCache* cache = document_->ExistingAXObjectCache();
   DCHECK(cache);
   Element* element = cache->GetElementFromAXID(ax_id_);
-  ComputedAccessibleNodePromiseResolver* resolver =
-      ComputedAccessibleNodePromiseResolver::Create(script_state, *element);
+  auto* resolver = MakeGarbageCollected<ComputedAccessibleNodePromiseResolver>(
+      script_state, *element);
   ScriptPromise promise = resolver->Promise();
   resolver->EnsureUpToDate();
   return promise;

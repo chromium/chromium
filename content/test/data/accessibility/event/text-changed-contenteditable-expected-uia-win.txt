@@ -1,0 +1,4 @@
+Text_TextChanged on role=group, name=d1
+Text_TextChanged on role=group, name=d3
+Text_TextChanged on role=group, name=p1
+Text_TextChanged on role=group, name=p3

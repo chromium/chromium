@@ -27,7 +27,8 @@
 [
     Constructor(AudioContext context, MediaStreamAudioSourceOptions options),
     RaisesException=Constructor,
-    Measure
+    Measure,
+    ActiveScriptWrappable
 ]
 interface MediaStreamAudioSourceNode : AudioNode {
   [SameObject, ImplementedAs=getMediaStream] readonly attribute MediaStream mediaStream;

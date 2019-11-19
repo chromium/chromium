@@ -25,12 +25,12 @@
 
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 
-#include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay.h"
+#include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
 
 namespace blink {
 
 ScrollbarTheme& ScrollbarTheme::NativeTheme() {
-  return ScrollbarThemeOverlay::MobileTheme();
+  return ScrollbarThemeOverlayMobile::GetInstance();
 }
 
 }  // namespace blink

@@ -23,8 +23,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_RARE_DATA_H_
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
@@ -40,17 +40,13 @@ class NodeListsNodeData;
 class NodeMutationObserverData final
     : public GarbageCollected<NodeMutationObserverData> {
  public:
-  static NodeMutationObserverData* Create();
-
   NodeMutationObserverData() = default;
 
-  const HeapVector<TraceWrapperMember<MutationObserverRegistration>>&
-  Registry() {
+  const HeapVector<Member<MutationObserverRegistration>>& Registry() {
     return registry_;
   }
 
-  const HeapHashSet<TraceWrapperMember<MutationObserverRegistration>>&
-  TransientRegistry() {
+  const HeapHashSet<Member<MutationObserverRegistration>>& TransientRegistry() {
     return transient_registry_;
   }
 
@@ -62,9 +58,8 @@ class NodeMutationObserverData final
   void Trace(Visitor* visitor);
 
  private:
-  HeapVector<TraceWrapperMember<MutationObserverRegistration>> registry_;
-  HeapHashSet<TraceWrapperMember<MutationObserverRegistration>>
-      transient_registry_;
+  HeapVector<Member<MutationObserverRegistration>> registry_;
+  HeapHashSet<Member<MutationObserverRegistration>> transient_registry_;
   DISALLOW_COPY_AND_ASSIGN(NodeMutationObserverData);
 };
 
@@ -72,8 +67,8 @@ class NodeRenderingData {
   USING_FAST_MALLOC(NodeRenderingData);
 
  public:
-  explicit NodeRenderingData(LayoutObject*,
-                             scoped_refptr<ComputedStyle> computed_style);
+  NodeRenderingData(LayoutObject*,
+                    scoped_refptr<const ComputedStyle> computed_style);
   ~NodeRenderingData();
 
   LayoutObject* GetLayoutObject() const { return layout_object_; }
@@ -82,15 +77,17 @@ class NodeRenderingData {
     layout_object_ = layout_object;
   }
 
-  ComputedStyle* GetComputedStyle() const { return computed_style_.get(); }
-  void SetComputedStyle(scoped_refptr<ComputedStyle> computed_style);
+  const ComputedStyle* GetComputedStyle() const {
+    return computed_style_.get();
+  }
+  void SetComputedStyle(scoped_refptr<const ComputedStyle> computed_style);
 
   static NodeRenderingData& SharedEmptyData();
   bool IsSharedEmptyData() { return this == &SharedEmptyData(); }
 
  private:
   LayoutObject* layout_object_;
-  scoped_refptr<ComputedStyle> computed_style_;
+  scoped_refptr<const ComputedStyle> computed_style_;
   DISALLOW_COPY_AND_ASSIGN(NodeRenderingData);
 };
 
@@ -114,13 +111,9 @@ class NodeRareDataBase {
   NodeRenderingData* node_layout_data_;
 };
 
-class NodeRareData : public GarbageCollectedFinalized<NodeRareData>,
+class NodeRareData : public GarbageCollected<NodeRareData>,
                      public NodeRareDataBase {
  public:
-  static NodeRareData* Create(NodeRenderingData* node_layout_data) {
-    return MakeGarbageCollected<NodeRareData>(node_layout_data);
-  }
-
   explicit NodeRareData(NodeRenderingData* node_layout_data)
       : NodeRareDataBase(node_layout_data),
         connected_frame_count_(0),
@@ -150,7 +143,8 @@ class NodeRareData : public GarbageCollectedFinalized<NodeRareData>,
   }
   NodeMutationObserverData& EnsureMutationObserverData() {
     if (!mutation_observer_data_) {
-      mutation_observer_data_ = NodeMutationObserverData::Create();
+      mutation_observer_data_ =
+          MakeGarbageCollected<NodeMutationObserverData>();
     }
     return *mutation_observer_data_;
   }
@@ -196,8 +190,8 @@ class NodeRareData : public GarbageCollectedFinalized<NodeRareData>,
  private:
   NodeListsNodeData& CreateNodeLists();
 
-  TraceWrapperMember<NodeListsNodeData> node_lists_;
-  TraceWrapperMember<NodeMutationObserverData> mutation_observer_data_;
+  Member<NodeListsNodeData> node_lists_;
+  Member<NodeMutationObserverData> mutation_observer_data_;
   Member<FlatTreeNodeData> flat_tree_node_data_;
 
   unsigned connected_frame_count_ : kConnectedFrameCountBits;

@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 
 namespace message_center {
 class Notification;
@@ -63,7 +63,7 @@ class LowDiskNotification : public CryptohomeClient::Observer {
   Severity last_notification_severity_ = NONE;
   base::TimeDelta notification_interval_;
   base::ThreadChecker thread_checker_;
-  base::WeakPtrFactory<LowDiskNotification> weak_ptr_factory_;
+  base::WeakPtrFactory<LowDiskNotification> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LowDiskNotification);
 };

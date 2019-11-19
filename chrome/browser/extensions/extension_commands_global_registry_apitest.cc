@@ -12,6 +12,7 @@
 #include "extensions/test/result_catcher.h"
 #include "ui/base/base_window.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/events/event_constants.h"
 
 #if defined(USE_X11)
 #include "ui/aura/window.h"

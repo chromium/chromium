@@ -9,8 +9,6 @@ jumbo_component("views_examples_lib") {
   testonly = true
 
   sources = [
-    "animated_image_view_example.cc",
-    "animated_image_view_example.h",
     "box_layout_example.cc",
     "box_layout_example.h",
     "bubble_example.cc",
@@ -45,6 +43,8 @@ jumbo_component("views_examples_lib") {
     "message_box_example.h",
     "multiline_example.cc",
     "multiline_example.h",
+    "native_theme_example.cc",
+    "native_theme_example.h",
     "progress_bar_example.cc",
     "progress_bar_example.h",
     "radio_button_example.cc",
@@ -91,6 +91,7 @@ jumbo_component("views_examples_lib") {
     "//ui/events",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/native_theme",
     "//ui/resources",
     "//ui/resources:ui_test_pak",
     "//ui/views",
@@ -120,7 +121,9 @@ executable("views_examples_exe") {
     "//build/win:default_exe_manifest",
     "//components/viz/host",
     "//components/viz/service",
+    "//mojo/core/embedder",
     "//ui/base",
+    "//ui/base/ime/init",
     "//ui/compositor",
     "//ui/compositor:test_support",
     "//ui/gfx",

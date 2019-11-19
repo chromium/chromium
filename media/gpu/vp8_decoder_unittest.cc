@@ -100,15 +100,27 @@ void VP8DecoderTest::CompleteToDecodeFirstIFrame() {
 AcceleratedVideoDecoder::DecodeResult VP8DecoderTest::Decode(
     std::string input_frame_file) {
   std::string bitstream;
+  scoped_refptr<DecoderBuffer> buffer;
   if (!input_frame_file.empty()) {
     auto input_file = GetTestDataFilePath(input_frame_file);
     EXPECT_TRUE(base::ReadFileToString(input_file, &bitstream));
-    decoder_->SetStream(bitstream_id_++,
-                        reinterpret_cast<const uint8_t*>(bitstream.data()),
-                        bitstream.size());
+    buffer = DecoderBuffer::CopyFrom(
+        reinterpret_cast<const uint8_t*>(bitstream.data()), bitstream.size());
+    EXPECT_NE(buffer.get(), nullptr);
+    decoder_->SetStream(bitstream_id_++, *buffer);
   }
 
-  return decoder_->Decode();
+  AcceleratedVideoDecoder::DecodeResult result = decoder_->Decode();
+  if (input_frame_file.empty())
+    return result;
+  // Since |buffer| is destroyed in this function, Decode() must consume the
+  // buffer by this Decode(). That happens if the return value is
+  // kRanOutOfStreamData, kAllocateNewSurfaces , or kDecodeError (on failure).
+  EXPECT_TRUE(
+      result == AcceleratedVideoDecoder::DecodeResult::kRanOutOfStreamData ||
+      result == AcceleratedVideoDecoder::DecodeResult::kAllocateNewSurfaces ||
+      result == AcceleratedVideoDecoder::DecodeResult::kDecodeError);
+  return result;
 }
 
 // Test Cases

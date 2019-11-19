@@ -13,9 +13,9 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "jni/LocalizationUtils_jni.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/base/ui_base_jni_headers/LocalizationUtils_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

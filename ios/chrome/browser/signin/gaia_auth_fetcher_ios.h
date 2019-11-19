@@ -64,9 +64,10 @@ class GaiaAuthFetcherIOS
   // GaiaAuthFetcher.
   void CreateAndStartGaiaFetcher(
       const std::string& body,
+      const std::string& body_content_type,
       const std::string& headers,
       const GURL& gaia_gurl,
-      int load_flags,
+      network::mojom::CredentialsMode credentials_mode,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override;
   // GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate.
   void OnFetchComplete(const GURL& url,

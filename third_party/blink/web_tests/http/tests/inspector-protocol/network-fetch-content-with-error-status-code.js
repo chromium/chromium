@@ -20,11 +20,7 @@
 
   var event = await requestWillBeSentPromise;
   testRunner.log('Request will be sent');
-  testRunner.log('Request Method (should be OPTIONS): ' + event.params.request.method);
-  testRunner.log('Event URL has appropriate ending: ' + event.params.request.url.endsWith(url));
-
-  var event = await dp.Network.onceRequestWillBeSent();
-  testRunner.log('Second Response Method (should be GET): ' + event.params.request.method);
+  testRunner.log('Request Method (should be GET): ' + event.params.request.method);
   var requestId = event.params.requestId;
 
   var event = await dp.Network.onceResponseReceived();

@@ -10,7 +10,6 @@ namespace blink {
 
 // static
 constexpr char ContentCaptureTaskHistogramReporter::kCaptureContentTime[];
-constexpr char ContentCaptureTaskHistogramReporter::kCaptureOneContentTime[];
 constexpr char ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime[];
 constexpr char ContentCaptureTaskHistogramReporter::kSendContentTime[];
 constexpr char ContentCaptureTaskHistogramReporter::kSentContentCount[];
@@ -21,7 +20,6 @@ ContentCaptureTaskHistogramReporter::ContentCaptureTaskHistogramReporter()
                                             30000,
                                             50),
       capture_content_time_histogram_(kCaptureContentTime, 0, 50000, 50),
-      capture_one_content_time_histogram_(kCaptureOneContentTime, 0, 50000, 50),
       send_content_time_histogram_(kSendContentTime, 0, 50000, 50),
       sent_content_count_histogram_(kSentContentCount, 0, 10000, 50) {}
 
@@ -31,11 +29,11 @@ ContentCaptureTaskHistogramReporter::~ContentCaptureTaskHistogramReporter() =
 void ContentCaptureTaskHistogramReporter::OnContentChanged() {
   if (content_change_time_)
     return;
-  content_change_time_ = WTF::CurrentTimeTicks();
+  content_change_time_ = base::TimeTicks::Now();
 }
 
 void ContentCaptureTaskHistogramReporter::OnCaptureContentStarted() {
-  capture_content_start_time_ = WTF::CurrentTimeTicks();
+  capture_content_start_time_ = base::TimeTicks::Now();
 }
 
 void ContentCaptureTaskHistogramReporter::OnCaptureContentEnded(
@@ -49,21 +47,19 @@ void ContentCaptureTaskHistogramReporter::OnCaptureContentEnded(
   // Gives content_change_time_ to the change occurred while sending the
   // content.
   captured_content_change_time_ = std::move(content_change_time_);
-  base::TimeDelta delta = WTF::CurrentTimeTicks() - capture_content_start_time_;
+  base::TimeDelta delta = base::TimeTicks::Now() - capture_content_start_time_;
   capture_content_time_histogram_.CountMicroseconds(delta);
-  capture_one_content_time_histogram_.CountMicroseconds(delta /
-                                                        captured_content_count);
 }
 
 void ContentCaptureTaskHistogramReporter::OnSendContentStarted() {
-  send_content_start_time_ = WTF::CurrentTimeTicks();
+  send_content_start_time_ = base::TimeTicks::Now();
 }
 
 void ContentCaptureTaskHistogramReporter::OnSendContentEnded(
     size_t sent_content_count) {
-  TimeTicks now = WTF::CurrentTimeTicks();
+  base::TimeTicks now = base::TimeTicks::Now();
   if (captured_content_change_time_) {
-    TimeTicks content_change_time = captured_content_change_time_.value();
+    base::TimeTicks content_change_time = captured_content_change_time_.value();
     captured_content_change_time_.reset();
     capture_content_delay_time_histogram_.CountMilliseconds(
         now - content_change_time);

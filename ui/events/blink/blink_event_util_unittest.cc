@@ -4,14 +4,48 @@
 
 #include "ui/events/blink/blink_event_util.h"
 
+#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_gesture_event.h"
 #include "third_party/blink/public/platform/web_input_event.h"
 #include "third_party/blink/public/platform/web_mouse_wheel_event.h"
+#include "third_party/blink/public/platform/web_pointer_event.h"
 #include "ui/events/gesture_event_details.h"
 
 namespace ui {
+
+namespace {
+
+blink::WebMouseEvent CreateWebMouseMoveEvent() {
+  blink::WebMouseEvent mouse_event;
+  mouse_event.SetType(blink::WebInputEvent::kMouseMove);
+  mouse_event.id = 1;
+  mouse_event.pointer_type = blink::WebPointerProperties::PointerType::kMouse;
+  return mouse_event;
+}
+
+blink::WebPointerEvent CreateWebPointerMoveEvent() {
+  blink::WebPointerEvent pointer_event;
+  pointer_event.SetType(blink::WebInputEvent::kPointerMove);
+  pointer_event.id = 1;
+  pointer_event.pointer_type = blink::WebPointerProperties::PointerType::kMouse;
+  return pointer_event;
+}
+
+blink::WebTouchEvent CreateWebTouchMoveEvent() {
+  blink::WebTouchPoint touch_point;
+  touch_point.id = 1;
+  touch_point.state = blink::WebTouchPoint::kStateMoved;
+  touch_point.pointer_type = blink::WebPointerProperties::PointerType::kTouch;
+
+  blink::WebTouchEvent touch_event;
+  touch_event.SetType(blink::WebInputEvent::kTouchMove);
+  touch_event.touches[touch_event.touches_length++] = touch_point;
+  return touch_event;
+}
+
+}  // namespace
 
 using BlinkEventUtilTest = testing::Test;
 
@@ -33,11 +67,11 @@ TEST(BlinkEventUtilTest, NonPaginatedWebMouseWheelEvent) {
   blink::WebMouseWheelEvent event(
       blink::WebInputEvent::kMouseWheel, blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
+  event.delta_units = ui::input_types::ScrollGranularity::kScrollByPixel;
   event.delta_x = 1.f;
   event.delta_y = 1.f;
   event.wheel_ticks_x = 1.f;
   event.wheel_ticks_y = 1.f;
-  event.scroll_by_page = false;
   std::unique_ptr<blink::WebInputEvent> webEvent =
       ScaleWebInputEvent(event, 2.f);
   EXPECT_TRUE(webEvent);
@@ -53,11 +87,11 @@ TEST(BlinkEventUtilTest, PaginatedWebMouseWheelEvent) {
   blink::WebMouseWheelEvent event(
       blink::WebInputEvent::kMouseWheel, blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
+  event.delta_units = ui::input_types::ScrollGranularity::kScrollByPage;
   event.delta_x = 1.f;
   event.delta_y = 1.f;
   event.wheel_ticks_x = 1.f;
   event.wheel_ticks_y = 1.f;
-  event.scroll_by_page = true;
   std::unique_ptr<blink::WebInputEvent> webEvent =
       ScaleWebInputEvent(event, 2.f);
   EXPECT_TRUE(webEvent);
@@ -85,8 +119,9 @@ TEST(BlinkEventUtilTest, NonPaginatedScrollBeginEvent) {
 }
 
 TEST(BlinkEventUtilTest, PaginatedScrollBeginEvent) {
-  ui::GestureEventDetails details(ui::ET_GESTURE_SCROLL_BEGIN, 1, 1,
-                                  ui::GestureEventDetails::ScrollUnits::PAGE);
+  ui::GestureEventDetails details(
+      ui::ET_GESTURE_SCROLL_BEGIN, 1, 1,
+      ui::input_types::ScrollGranularity::kScrollByPage);
   details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   auto event =
       CreateWebGestureEvent(details, base::TimeTicks(), gfx::PointF(1.f, 1.f),
@@ -116,8 +151,9 @@ TEST(BlinkEventUtilTest, NonPaginatedScrollUpdateEvent) {
 }
 
 TEST(BlinkEventUtilTest, PaginatedScrollUpdateEvent) {
-  ui::GestureEventDetails details(ui::ET_GESTURE_SCROLL_UPDATE, 1, 1,
-                                  ui::GestureEventDetails::ScrollUnits::PAGE);
+  ui::GestureEventDetails details(
+      ui::ET_GESTURE_SCROLL_UPDATE, 1, 1,
+      ui::input_types::ScrollGranularity::kScrollByPage);
   details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   auto event =
       CreateWebGestureEvent(details, base::TimeTicks(), gfx::PointF(1.f, 1.f),
@@ -131,24 +167,53 @@ TEST(BlinkEventUtilTest, PaginatedScrollUpdateEvent) {
   EXPECT_EQ(1.f, gestureEvent->data.scroll_update.delta_y);
 }
 
+TEST(BlinkEventUtilTest, LineAndDocumentScrollEvents) {
+  static const ui::EventType types[] = {
+      ui::ET_GESTURE_SCROLL_BEGIN,
+      ui::ET_GESTURE_SCROLL_UPDATE,
+  };
+
+  static const ui::input_types::ScrollGranularity units[] = {
+      ui::input_types::ScrollGranularity::kScrollByLine,
+      ui::input_types::ScrollGranularity::kScrollByDocument,
+  };
+
+  for (size_t i = 0; i < base::size(types); i++) {
+    ui::EventType type = types[i];
+    for (size_t j = 0; j < base::size(units); j++) {
+      ui::input_types::ScrollGranularity unit = units[j];
+      ui::GestureEventDetails details(type, 1, 1, unit);
+      details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
+      auto event = CreateWebGestureEvent(details, base::TimeTicks(),
+                                         gfx::PointF(1.f, 1.f),
+                                         gfx::PointF(1.f, 1.f), 0, 0U);
+      std::unique_ptr<blink::WebInputEvent> webEvent =
+          ScaleWebInputEvent(event, 2.f);
+      EXPECT_TRUE(webEvent);
+      blink::WebGestureEvent* gestureEvent =
+          static_cast<blink::WebGestureEvent*>(webEvent.get());
+      // Line and document based scroll events should not be scaled.
+      if (type == ui::ET_GESTURE_SCROLL_BEGIN) {
+        EXPECT_EQ(1.f, gestureEvent->data.scroll_begin.delta_x_hint);
+        EXPECT_EQ(1.f, gestureEvent->data.scroll_begin.delta_y_hint);
+      } else {
+        EXPECT_TRUE(type == ui::ET_GESTURE_SCROLL_UPDATE);
+        EXPECT_EQ(1.f, gestureEvent->data.scroll_update.delta_x);
+        EXPECT_EQ(1.f, gestureEvent->data.scroll_update.delta_y);
+      }
+    }
+  }
+}
+
 TEST(BlinkEventUtilTest, TouchEventCoalescing) {
-  blink::WebTouchPoint touch_point;
-  touch_point.id = 1;
-  touch_point.state = blink::WebTouchPoint::kStateMoved;
-  touch_point.pointer_type = blink::WebPointerProperties::PointerType::kTouch;
-
-  blink::WebTouchEvent coalesced_event;
+  blink::WebTouchEvent coalesced_event = CreateWebTouchMoveEvent();
   coalesced_event.SetType(blink::WebInputEvent::kTouchMove);
-  touch_point.movement_x = 5;
-  touch_point.movement_y = 10;
-  coalesced_event.touches[coalesced_event.touches_length++] = touch_point;
+  coalesced_event.touches[0].movement_x = 5;
+  coalesced_event.touches[0].movement_y = 10;
 
-  blink::WebTouchEvent event_to_be_coalesced;
-  event_to_be_coalesced.SetType(blink::WebInputEvent::kTouchMove);
-  touch_point.movement_x = 3;
-  touch_point.movement_y = -4;
-  event_to_be_coalesced.touches[event_to_be_coalesced.touches_length++] =
-      touch_point;
+  blink::WebTouchEvent event_to_be_coalesced = CreateWebTouchMoveEvent();
+  event_to_be_coalesced.touches[0].movement_x = 3;
+  event_to_be_coalesced.touches[0].movement_y = -4;
 
   EXPECT_TRUE(CanCoalesce(event_to_be_coalesced, coalesced_event));
   Coalesce(event_to_be_coalesced, &coalesced_event);
@@ -157,6 +222,11 @@ TEST(BlinkEventUtilTest, TouchEventCoalescing) {
 
   coalesced_event.touches[0].pointer_type =
       blink::WebPointerProperties::PointerType::kPen;
+  EXPECT_FALSE(CanCoalesce(event_to_be_coalesced, coalesced_event));
+
+  coalesced_event = CreateWebTouchMoveEvent();
+  event_to_be_coalesced = CreateWebTouchMoveEvent();
+  event_to_be_coalesced.SetModifiers(blink::WebInputEvent::kControlKey);
   EXPECT_FALSE(CanCoalesce(event_to_be_coalesced, coalesced_event));
 }
 
@@ -182,21 +252,24 @@ TEST(BlinkEventUtilTest, WebMouseWheelEventCoalescing) {
   coalesced_event.phase = blink::WebMouseWheelEvent::kPhaseEnded;
   EXPECT_FALSE(CanCoalesce(event_to_be_coalesced, coalesced_event));
 
+  // With timer based wheel scroll latching, we break the latching sequence on
+  // direction change when all prior GSU events in the current sequence are
+  // ignored. To do so we dispatch the pending wheel event with phaseEnded and
+  // the first wheel event in the opposite direction will have phaseBegan. The
+  // GSB generated from this wheel event will cause a new hittesting. To make
+  // sure that a GSB will actually get created we should not coalesce the wheel
+  // event with synthetic kPhaseBegan to one with synthetic kPhaseEnded.
   event_to_be_coalesced.has_synthetic_phase = true;
   coalesced_event.has_synthetic_phase = true;
-  EXPECT_TRUE(CanCoalesce(event_to_be_coalesced, coalesced_event));
-  Coalesce(event_to_be_coalesced, &coalesced_event);
-  EXPECT_EQ(blink::WebMouseWheelEvent::kPhaseChanged, coalesced_event.phase);
-  EXPECT_EQ(7, coalesced_event.delta_x);
-  EXPECT_EQ(9, coalesced_event.delta_y);
+  EXPECT_FALSE(CanCoalesce(event_to_be_coalesced, coalesced_event));
 
   event_to_be_coalesced.phase = blink::WebMouseWheelEvent::kPhaseChanged;
   coalesced_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
   EXPECT_TRUE(CanCoalesce(event_to_be_coalesced, coalesced_event));
   Coalesce(event_to_be_coalesced, &coalesced_event);
   EXPECT_EQ(blink::WebMouseWheelEvent::kPhaseBegan, coalesced_event.phase);
-  EXPECT_EQ(10, coalesced_event.delta_x);
-  EXPECT_EQ(13, coalesced_event.delta_y);
+  EXPECT_EQ(7, coalesced_event.delta_x);
+  EXPECT_EQ(9, coalesced_event.delta_y);
 
   event_to_be_coalesced.resending_plugin_id = 3;
   EXPECT_FALSE(CanCoalesce(event_to_be_coalesced, coalesced_event));
@@ -232,7 +305,7 @@ TEST(BlinkEventUtilTest, GesturePinchUpdateCoalescing) {
       blink::WebInputEvent::kGesturePinchUpdate,
       blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests(),
-      blink::kWebGestureDeviceTouchpad);
+      blink::WebGestureDevice::kTouchpad);
   coalesced_event.data.pinch_update.scale = 1.1f;
   coalesced_event.SetPositionInWidget(position);
 
@@ -261,8 +334,8 @@ TEST(BlinkEventUtilTest, GesturePinchUpdateCoalescing) {
       IsCompatibleScrollorPinch(event_to_be_coalesced, coalesced_event));
 
   // Touchscreen pinch events can be logically coalesced.
-  coalesced_event.SetSourceDevice(blink::kWebGestureDeviceTouchscreen);
-  event_to_be_coalesced.SetSourceDevice(blink::kWebGestureDeviceTouchscreen);
+  coalesced_event.SetSourceDevice(blink::WebGestureDevice::kTouchscreen);
+  event_to_be_coalesced.SetSourceDevice(blink::WebGestureDevice::kTouchscreen);
   coalesced_event.data.pinch_update.scale = 1.1f;
   ASSERT_TRUE(
       IsCompatibleScrollorPinch(event_to_be_coalesced, coalesced_event));
@@ -277,32 +350,74 @@ TEST(BlinkEventUtilTest, GesturePinchUpdateCoalescing) {
 }
 
 TEST(BlinkEventUtilTest, MouseEventCoalescing) {
-  blink::WebMouseEvent coalesced_event;
-  coalesced_event.SetType(blink::WebInputEvent::kMouseMove);
+  blink::WebMouseEvent coalesced_event = CreateWebMouseMoveEvent();
+  blink::WebMouseEvent event_to_be_coalesced = CreateWebMouseMoveEvent();
+  EXPECT_TRUE(CanCoalesce(event_to_be_coalesced, coalesced_event));
+
+  // Test coalescing movements.
   coalesced_event.movement_x = 5;
   coalesced_event.movement_y = 10;
-  coalesced_event.id = 1;
-  coalesced_event.pointer_type =
-      blink::WebPointerProperties::PointerType::kMouse;
 
-  blink::WebMouseEvent event_to_be_coalesced;
-  event_to_be_coalesced.SetType(blink::WebInputEvent::kMouseMove);
   event_to_be_coalesced.movement_x = 3;
   event_to_be_coalesced.movement_y = -4;
-  event_to_be_coalesced.id = 1;
-  event_to_be_coalesced.pointer_type =
-      blink::WebPointerProperties::PointerType::kMouse;
-
   EXPECT_TRUE(CanCoalesce(event_to_be_coalesced, coalesced_event));
   Coalesce(event_to_be_coalesced, &coalesced_event);
   EXPECT_EQ(8, coalesced_event.movement_x);
   EXPECT_EQ(6, coalesced_event.movement_y);
 
+  // Test id.
+  coalesced_event = CreateWebMouseMoveEvent();
+  event_to_be_coalesced = CreateWebMouseMoveEvent();
   event_to_be_coalesced.id = 3;
   EXPECT_FALSE(CanCoalesce(event_to_be_coalesced, coalesced_event));
 
+  // Test pointer_type.
+  coalesced_event = CreateWebMouseMoveEvent();
+  event_to_be_coalesced = CreateWebMouseMoveEvent();
   event_to_be_coalesced.pointer_type =
       blink::WebPointerProperties::PointerType::kPen;
+  EXPECT_FALSE(CanCoalesce(event_to_be_coalesced, coalesced_event));
+
+  // Test modifiers
+  coalesced_event = CreateWebMouseMoveEvent();
+  event_to_be_coalesced = CreateWebMouseMoveEvent();
+  event_to_be_coalesced.SetModifiers(blink::WebInputEvent::kControlKey);
+  EXPECT_FALSE(CanCoalesce(event_to_be_coalesced, coalesced_event));
+}
+
+TEST(BlinkEventUtilTest, PointerEventCoalescing) {
+  blink::WebPointerEvent coalesced_event = CreateWebPointerMoveEvent();
+  blink::WebPointerEvent event_to_be_coalesced = CreateWebPointerMoveEvent();
+  EXPECT_TRUE(CanCoalesce(event_to_be_coalesced, coalesced_event));
+
+  // Test coalescing movements.
+  coalesced_event.movement_x = 5;
+  coalesced_event.movement_y = 10;
+
+  event_to_be_coalesced.movement_x = 3;
+  event_to_be_coalesced.movement_y = -4;
+  EXPECT_TRUE(CanCoalesce(event_to_be_coalesced, coalesced_event));
+  Coalesce(event_to_be_coalesced, &coalesced_event);
+  EXPECT_EQ(8, coalesced_event.movement_x);
+  EXPECT_EQ(6, coalesced_event.movement_y);
+
+  // Test id.
+  coalesced_event = CreateWebPointerMoveEvent();
+  event_to_be_coalesced = CreateWebPointerMoveEvent();
+  event_to_be_coalesced.id = 3;
+  EXPECT_FALSE(CanCoalesce(event_to_be_coalesced, coalesced_event));
+
+  // Test pointer_type.
+  coalesced_event = CreateWebPointerMoveEvent();
+  event_to_be_coalesced = CreateWebPointerMoveEvent();
+  event_to_be_coalesced.pointer_type =
+      blink::WebPointerProperties::PointerType::kPen;
+  EXPECT_FALSE(CanCoalesce(event_to_be_coalesced, coalesced_event));
+
+  // Test modifiers
+  coalesced_event = CreateWebPointerMoveEvent();
+  event_to_be_coalesced = CreateWebPointerMoveEvent();
+  event_to_be_coalesced.SetModifiers(blink::WebInputEvent::kControlKey);
   EXPECT_FALSE(CanCoalesce(event_to_be_coalesced, coalesced_event));
 }
 

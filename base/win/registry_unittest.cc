@@ -4,8 +4,8 @@
 
 #include "base/win/registry.h"
 
-#include <stdint.h>
 #include <windows.h>
+#include <stdint.h>
 
 #include <cstring>
 #include <vector>
@@ -14,7 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,7 +23,7 @@ namespace win {
 
 namespace {
 
-const char16 kRootKey[] = STRING16_LITERAL("Base_Registry_Unittest");
+const wchar_t kRootKey[] = L"Base_Registry_Unittest";
 
 class RegistryTest : public testing::Test {
  protected:
@@ -38,18 +38,18 @@ class RegistryTest : public testing::Test {
   RegistryTest() {}
   void SetUp() override {
     // Create a temporary key.
-    RegKey key(HKEY_CURRENT_USER, STRING16_LITERAL(""), KEY_ALL_ACCESS);
+    RegKey key(HKEY_CURRENT_USER, L"", KEY_ALL_ACCESS);
     key.DeleteKey(kRootKey);
     ASSERT_NE(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, kRootKey, KEY_READ));
     ASSERT_EQ(ERROR_SUCCESS, key.Create(HKEY_CURRENT_USER, kRootKey, KEY_READ));
-    foo_software_key_ = STRING16_LITERAL("Software\\");
+    foo_software_key_ = L"Software\\";
     foo_software_key_ += kRootKey;
-    foo_software_key_ += STRING16_LITERAL("\\Foo");
+    foo_software_key_ += L"\\Foo";
   }
 
   void TearDown() override {
     // Clean up the temporary key.
-    RegKey key(HKEY_CURRENT_USER, STRING16_LITERAL(""), KEY_SET_VALUE);
+    RegKey key(HKEY_CURRENT_USER, L"", KEY_SET_VALUE);
     ASSERT_EQ(ERROR_SUCCESS, key.DeleteKey(kRootKey));
     ASSERT_NE(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, kRootKey, KEY_READ));
   }
@@ -62,7 +62,7 @@ class RegistryTest : public testing::Test {
 #endif
   }
 
-  string16 foo_software_key_;
+  std::wstring foo_software_key_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(RegistryTest);
@@ -75,8 +75,8 @@ const REGSAM RegistryTest::kRedirectedViewMask;
 TEST_F(RegistryTest, ValueTest) {
   RegKey key;
 
-  string16 foo_key(kRootKey);
-  foo_key += STRING16_LITERAL("\\Foo");
+  std::wstring foo_key(kRootKey);
+  foo_key += L"\\Foo";
   ASSERT_EQ(ERROR_SUCCESS, key.Create(HKEY_CURRENT_USER, foo_key.c_str(),
                                       KEY_READ));
 
@@ -85,10 +85,10 @@ TEST_F(RegistryTest, ValueTest) {
                                       KEY_READ | KEY_SET_VALUE));
     ASSERT_TRUE(key.Valid());
 
-    const char16 kStringValueName[] = STRING16_LITERAL("StringValue");
-    const char16 kDWORDValueName[] = STRING16_LITERAL("DWORDValue");
-    const char16 kInt64ValueName[] = STRING16_LITERAL("Int64Value");
-    const char16 kStringData[] = STRING16_LITERAL("string data");
+    const wchar_t kStringValueName[] = L"StringValue";
+    const wchar_t kDWORDValueName[] = L"DWORDValue";
+    const wchar_t kInt64ValueName[] = L"Int64Value";
+    const wchar_t kStringData[] = L"string data";
     const DWORD kDWORDData = 0xdeadbabe;
     const int64_t kInt64Data = 0xdeadbabedeadbabeLL;
 
@@ -103,7 +103,7 @@ TEST_F(RegistryTest, ValueTest) {
     EXPECT_TRUE(key.HasValue(kInt64ValueName));
 
     // Test Read
-    string16 string_value;
+    std::wstring string_value;
     DWORD dword_value = 0;
     int64_t int64_value = 0;
     ASSERT_EQ(ERROR_SUCCESS, key.ReadValue(kStringValueName, &string_value));
@@ -114,7 +114,7 @@ TEST_F(RegistryTest, ValueTest) {
     EXPECT_EQ(kInt64Data, int64_value);
 
     // Make sure out args are not touched if ReadValue fails
-    const char16* kNonExistent = STRING16_LITERAL("NonExistent");
+    const wchar_t* kNonExistent = L"NonExistent";
     ASSERT_NE(ERROR_SUCCESS, key.ReadValue(kNonExistent, &string_value));
     ASSERT_NE(ERROR_SUCCESS, key.ReadValueDW(kNonExistent, &dword_value));
     ASSERT_NE(ERROR_SUCCESS, key.ReadInt64(kNonExistent, &int64_value));
@@ -135,8 +135,8 @@ TEST_F(RegistryTest, ValueTest) {
 
 TEST_F(RegistryTest, BigValueIteratorTest) {
   RegKey key;
-  string16 foo_key(kRootKey);
-  foo_key += STRING16_LITERAL("\\Foo");
+  std::wstring foo_key(kRootKey);
+  foo_key += L"\\Foo";
   ASSERT_EQ(ERROR_SUCCESS, key.Create(HKEY_CURRENT_USER, foo_key.c_str(),
                                       KEY_READ));
   ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, foo_key.c_str(),
@@ -144,7 +144,7 @@ TEST_F(RegistryTest, BigValueIteratorTest) {
   ASSERT_TRUE(key.Valid());
 
   // Create a test value that is larger than MAX_PATH.
-  string16 data(MAX_PATH * 2, 'a');
+  std::wstring data(MAX_PATH * 2, 'a');
 
   ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(data.c_str(), data.c_str()));
 
@@ -153,23 +153,23 @@ TEST_F(RegistryTest, BigValueIteratorTest) {
   EXPECT_EQ(data, iterator.Name());
   EXPECT_EQ(data, iterator.Value());
   // ValueSize() is in bytes, including NUL.
-  EXPECT_EQ((MAX_PATH * 2 + 1) * sizeof(char16), iterator.ValueSize());
+  EXPECT_EQ((MAX_PATH * 2 + 1) * sizeof(wchar_t), iterator.ValueSize());
   ++iterator;
   EXPECT_FALSE(iterator.Valid());
 }
 
 TEST_F(RegistryTest, TruncatedCharTest) {
   RegKey key;
-  string16 foo_key(kRootKey);
-  foo_key += STRING16_LITERAL("\\Foo");
+  std::wstring foo_key(kRootKey);
+  foo_key += L"\\Foo";
   ASSERT_EQ(ERROR_SUCCESS, key.Create(HKEY_CURRENT_USER, foo_key.c_str(),
                                       KEY_READ));
   ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, foo_key.c_str(),
                                     KEY_READ | KEY_SET_VALUE));
   ASSERT_TRUE(key.Valid());
 
-  const char16 kName[] = STRING16_LITERAL("name");
-  // kData size is not a multiple of sizeof(char16).
+  const wchar_t kName[] = L"name";
+  // kData size is not a multiple of sizeof(wchar_t).
   const uint8_t kData[] = {1, 2, 3, 4, 5};
   EXPECT_EQ(5u, size(kData));
   ASSERT_EQ(ERROR_SUCCESS,
@@ -179,11 +179,11 @@ TEST_F(RegistryTest, TruncatedCharTest) {
   ASSERT_TRUE(iterator.Valid());
   // Avoid having to use EXPECT_STREQ here by leveraging StringPiece's
   // operator== to perform a deep comparison.
-  EXPECT_EQ(StringPiece16(kName), StringPiece16(iterator.Name()));
+  EXPECT_EQ(WStringPiece(kName), WStringPiece(iterator.Name()));
   // ValueSize() is in bytes.
   ASSERT_EQ(size(kData), iterator.ValueSize());
   // Value() is NUL terminated.
-  int end = (iterator.ValueSize() + sizeof(char16) - 1) / sizeof(char16);
+  int end = (iterator.ValueSize() + sizeof(wchar_t) - 1) / sizeof(wchar_t);
   EXPECT_NE('\0', iterator.Value()[end - 1]);
   EXPECT_EQ('\0', iterator.Value()[end]);
   EXPECT_EQ(0, std::memcmp(kData, iterator.Value(), size(kData)));
@@ -201,50 +201,47 @@ TEST_F(RegistryTest, RecursiveDelete) {
   //                  \->Moo
   //                  \->Foo
   // and delete kRootKey->Foo
-  string16 foo_key(kRootKey);
-  foo_key += STRING16_LITERAL("\\Foo");
+  std::wstring foo_key(kRootKey);
+  foo_key += L"\\Foo";
   ASSERT_EQ(ERROR_SUCCESS,
             key.Create(HKEY_CURRENT_USER, foo_key.c_str(), KEY_WRITE));
-  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(STRING16_LITERAL("Bar"), KEY_WRITE));
-  ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(STRING16_LITERAL("TestValue"),
-                                          STRING16_LITERAL("TestData")));
+  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(L"Bar", KEY_WRITE));
+  ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(L"TestValue", L"TestData"));
   ASSERT_EQ(ERROR_SUCCESS,
             key.Create(HKEY_CURRENT_USER, foo_key.c_str(), KEY_WRITE));
-  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(STRING16_LITERAL("Moo"), KEY_WRITE));
+  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(L"Moo", KEY_WRITE));
   ASSERT_EQ(ERROR_SUCCESS,
             key.Create(HKEY_CURRENT_USER, foo_key.c_str(), KEY_WRITE));
-  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(STRING16_LITERAL("Foo"), KEY_WRITE));
-  foo_key += STRING16_LITERAL("\\Bar");
+  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(L"Foo", KEY_WRITE));
+  foo_key += L"\\Bar";
   ASSERT_EQ(ERROR_SUCCESS,
             key.Open(HKEY_CURRENT_USER, foo_key.c_str(), KEY_WRITE));
-  foo_key += STRING16_LITERAL("\\Foo");
-  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(STRING16_LITERAL("Foo"), KEY_WRITE));
-  ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(STRING16_LITERAL("TestValue"),
-                                          STRING16_LITERAL("TestData")));
+  foo_key += L"\\Foo";
+  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(L"Foo", KEY_WRITE));
+  ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(L"TestValue", L"TestData"));
   ASSERT_EQ(ERROR_SUCCESS,
             key.Open(HKEY_CURRENT_USER, foo_key.c_str(), KEY_READ));
 
   ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, kRootKey, KEY_WRITE));
-  ASSERT_NE(ERROR_SUCCESS, key.DeleteKey(STRING16_LITERAL("Bar")));
-  ASSERT_NE(ERROR_SUCCESS, key.DeleteEmptyKey(STRING16_LITERAL("Foo")));
-  ASSERT_NE(ERROR_SUCCESS,
-            key.DeleteEmptyKey(STRING16_LITERAL("Foo\\Bar\\Foo")));
-  ASSERT_NE(ERROR_SUCCESS, key.DeleteEmptyKey(STRING16_LITERAL("Foo\\Bar")));
-  ASSERT_EQ(ERROR_SUCCESS, key.DeleteEmptyKey(STRING16_LITERAL("Foo\\Foo")));
+  ASSERT_NE(ERROR_SUCCESS, key.DeleteKey(L"Bar"));
+  ASSERT_NE(ERROR_SUCCESS, key.DeleteEmptyKey(L"Foo"));
+  ASSERT_NE(ERROR_SUCCESS, key.DeleteEmptyKey(L"Foo\\Bar\\Foo"));
+  ASSERT_NE(ERROR_SUCCESS, key.DeleteEmptyKey(L"Foo\\Bar"));
+  ASSERT_EQ(ERROR_SUCCESS, key.DeleteEmptyKey(L"Foo\\Foo"));
 
   ASSERT_EQ(ERROR_SUCCESS,
             key.Open(HKEY_CURRENT_USER, foo_key.c_str(), KEY_WRITE));
-  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(STRING16_LITERAL("Bar"), KEY_WRITE));
-  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(STRING16_LITERAL("Foo"), KEY_WRITE));
+  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(L"Bar", KEY_WRITE));
+  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(L"Foo", KEY_WRITE));
   ASSERT_EQ(ERROR_SUCCESS,
             key.Open(HKEY_CURRENT_USER, foo_key.c_str(), KEY_WRITE));
-  ASSERT_EQ(ERROR_SUCCESS, key.DeleteKey(STRING16_LITERAL("")));
+  ASSERT_EQ(ERROR_SUCCESS, key.DeleteKey(L""));
   ASSERT_NE(ERROR_SUCCESS,
             key.Open(HKEY_CURRENT_USER, foo_key.c_str(), KEY_READ));
 
   ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, kRootKey, KEY_WRITE));
-  ASSERT_EQ(ERROR_SUCCESS, key.DeleteKey(STRING16_LITERAL("Foo")));
-  ASSERT_NE(ERROR_SUCCESS, key.DeleteKey(STRING16_LITERAL("Foo")));
+  ASSERT_EQ(ERROR_SUCCESS, key.DeleteKey(L"Foo"));
+  ASSERT_NE(ERROR_SUCCESS, key.DeleteKey(L"Foo"));
   ASSERT_NE(ERROR_SUCCESS,
             key.Open(HKEY_CURRENT_USER, foo_key.c_str(), KEY_READ));
 }
@@ -273,18 +270,15 @@ TEST_F(RegistryTest, DISABLED_Wow64RedirectedFromNative) {
 
   // Open the non-redirected view of the parent and try to delete the test key.
   ASSERT_EQ(ERROR_SUCCESS,
-            key.Open(HKEY_LOCAL_MACHINE, STRING16_LITERAL("Software"),
-                     KEY_SET_VALUE));
+            key.Open(HKEY_LOCAL_MACHINE, L"Software", KEY_SET_VALUE));
   ASSERT_NE(ERROR_SUCCESS, key.DeleteKey(kRootKey));
-  ASSERT_EQ(ERROR_SUCCESS,
-            key.Open(HKEY_LOCAL_MACHINE, STRING16_LITERAL("Software"),
-                     KEY_SET_VALUE | kNativeViewMask));
+  ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_LOCAL_MACHINE, L"Software",
+                                    KEY_SET_VALUE | kNativeViewMask));
   ASSERT_NE(ERROR_SUCCESS, key.DeleteKey(kRootKey));
 
   // Open the redirected view and delete the key created above.
-  ASSERT_EQ(ERROR_SUCCESS,
-            key.Open(HKEY_LOCAL_MACHINE, STRING16_LITERAL("Software"),
-                     KEY_SET_VALUE | kRedirectedViewMask));
+  ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_LOCAL_MACHINE, L"Software",
+                                    KEY_SET_VALUE | kRedirectedViewMask));
   ASSERT_EQ(ERROR_SUCCESS, key.DeleteKey(kRootKey));
 }
 
@@ -294,13 +288,11 @@ TEST_F(RegistryTest, DISABLED_Wow64RedirectedFromNative) {
 TEST_F(RegistryTest, SameWowFlags) {
   RegKey key;
 
+  ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_LOCAL_MACHINE, L"Software",
+                                    KEY_READ | KEY_WOW64_64KEY));
   ASSERT_EQ(ERROR_SUCCESS,
-            key.Open(HKEY_LOCAL_MACHINE, STRING16_LITERAL("Software"),
-                     KEY_READ | KEY_WOW64_64KEY));
-  ASSERT_EQ(ERROR_SUCCESS, key.OpenKey(STRING16_LITERAL("Microsoft"),
-                                       KEY_READ | KEY_WOW64_64KEY));
-  ASSERT_EQ(ERROR_SUCCESS, key.OpenKey(STRING16_LITERAL("Windows"),
-                                       KEY_READ | KEY_WOW64_64KEY));
+            key.OpenKey(L"Microsoft", KEY_READ | KEY_WOW64_64KEY));
+  ASSERT_EQ(ERROR_SUCCESS, key.OpenKey(L"Windows", KEY_READ | KEY_WOW64_64KEY));
 }
 
 // TODO(wfh): flaky test on Vista.  See http://crbug.com/377917
@@ -323,14 +315,12 @@ TEST_F(RegistryTest, DISABLED_Wow64NativeFromRedirected) {
 
   // Open the redirected view of the parent and try to delete the test key
   // from the non-redirected view.
-  ASSERT_EQ(ERROR_SUCCESS,
-            key.Open(HKEY_LOCAL_MACHINE, STRING16_LITERAL("Software"),
-                     KEY_SET_VALUE | kRedirectedViewMask));
+  ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_LOCAL_MACHINE, L"Software",
+                                    KEY_SET_VALUE | kRedirectedViewMask));
   ASSERT_NE(ERROR_SUCCESS, key.DeleteKey(kRootKey));
 
-  ASSERT_EQ(ERROR_SUCCESS,
-            key.Open(HKEY_LOCAL_MACHINE, STRING16_LITERAL("Software"),
-                     KEY_SET_VALUE | kNativeViewMask));
+  ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_LOCAL_MACHINE, L"Software",
+                                    KEY_SET_VALUE | kNativeViewMask));
   ASSERT_EQ(ERROR_SUCCESS, key.DeleteKey(kRootKey));
 }
 
@@ -341,18 +331,18 @@ TEST_F(RegistryTest, OpenSubKey) {
                      kRootKey,
                      KEY_READ | KEY_CREATE_SUB_KEY));
 
-  ASSERT_NE(ERROR_SUCCESS, key.OpenKey(STRING16_LITERAL("foo"), KEY_READ));
-  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(STRING16_LITERAL("foo"), KEY_READ));
+  ASSERT_NE(ERROR_SUCCESS, key.OpenKey(L"foo", KEY_READ));
+  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(L"foo", KEY_READ));
   ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, kRootKey, KEY_READ));
-  ASSERT_EQ(ERROR_SUCCESS, key.OpenKey(STRING16_LITERAL("foo"), KEY_READ));
+  ASSERT_EQ(ERROR_SUCCESS, key.OpenKey(L"foo", KEY_READ));
 
-  string16 foo_key(kRootKey);
-  foo_key += STRING16_LITERAL("\\Foo");
+  std::wstring foo_key(kRootKey);
+  foo_key += L"\\Foo";
   ASSERT_EQ(ERROR_SUCCESS,
             key.Open(HKEY_CURRENT_USER, foo_key.c_str(), KEY_READ));
 
   ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, kRootKey, KEY_WRITE));
-  ASSERT_EQ(ERROR_SUCCESS, key.DeleteKey(STRING16_LITERAL("foo")));
+  ASSERT_EQ(ERROR_SUCCESS, key.DeleteKey(L"foo"));
 }
 
 class TestChangeDelegate {
@@ -378,15 +368,15 @@ class TestChangeDelegate {
 TEST_F(RegistryTest, ChangeCallback) {
   RegKey key;
   TestChangeDelegate delegate;
-  test::ScopedTaskEnvironment scoped_task_environment;
+  test::TaskEnvironment task_environment;
 
-  string16 foo_key(kRootKey);
-  foo_key += STRING16_LITERAL("\\Foo");
+  std::wstring foo_key(kRootKey);
+  foo_key += L"\\Foo";
   ASSERT_EQ(ERROR_SUCCESS, key.Create(HKEY_CURRENT_USER, foo_key.c_str(),
                                       KEY_READ));
 
-  ASSERT_TRUE(key.StartWatching(Bind(&TestChangeDelegate::OnKeyChanged,
-                                     Unretained(&delegate))));
+  ASSERT_TRUE(key.StartWatching(
+      BindRepeating(&TestChangeDelegate::OnKeyChanged, Unretained(&delegate))));
   EXPECT_FALSE(delegate.WasCalled());
 
   // Make some change.
@@ -394,8 +384,7 @@ TEST_F(RegistryTest, ChangeCallback) {
   ASSERT_EQ(ERROR_SUCCESS, key2.Open(HKEY_CURRENT_USER, foo_key.c_str(),
                                       KEY_READ | KEY_SET_VALUE));
   ASSERT_TRUE(key2.Valid());
-  EXPECT_EQ(ERROR_SUCCESS, key2.WriteValue(STRING16_LITERAL("name"),
-                                           STRING16_LITERAL("data")));
+  EXPECT_EQ(ERROR_SUCCESS, key2.WriteValue(L"name", L"data"));
 
   // Allow delivery of the notification.
   EXPECT_FALSE(delegate.WasCalled());
@@ -404,17 +393,16 @@ TEST_F(RegistryTest, ChangeCallback) {
   ASSERT_TRUE(delegate.WasCalled());
   EXPECT_FALSE(delegate.WasCalled());
 
-  ASSERT_TRUE(key.StartWatching(Bind(&TestChangeDelegate::OnKeyChanged,
-                                     Unretained(&delegate))));
+  ASSERT_TRUE(key.StartWatching(
+      BindRepeating(&TestChangeDelegate::OnKeyChanged, Unretained(&delegate))));
 
   // Change something else.
-  EXPECT_EQ(ERROR_SUCCESS, key2.WriteValue(STRING16_LITERAL("name2"),
-                                           STRING16_LITERAL("data2")));
+  EXPECT_EQ(ERROR_SUCCESS, key2.WriteValue(L"name2", L"data2"));
   RunLoop().Run();
   ASSERT_TRUE(delegate.WasCalled());
 
-  ASSERT_TRUE(key.StartWatching(Bind(&TestChangeDelegate::OnKeyChanged,
-                                     Unretained(&delegate))));
+  ASSERT_TRUE(key.StartWatching(
+      BindRepeating(&TestChangeDelegate::OnKeyChanged, Unretained(&delegate))));
   RunLoop().RunUntilIdle();
   EXPECT_FALSE(delegate.WasCalled());
 }

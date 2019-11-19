@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<body>
+<script src="../interpolation/resources/interpolation-test.js"></script>
+<script>
+// Addition and accumulation of perspective values are very similar, but not
+// identical. We can test the difference by constructing a scenario where a
+// perspective parameter would go negative in one case (and thus be clamped
+// to 0), and would not go negative in the other case.
+//
+// In the test below, the values differ at 1.5 progress. The reason for this
+// is that at 1.5 progress, the addition case (which uses concatenation)
+// computes to:
+//
+//   perspective(10px) perspective(-50px)
+//
+// Since perspective cannot go negative, this is clamped to:
+//
+//   perspective(10px) identity
+//
+// The accumulation case, on the other hand, combines the components
+// and so ends up blending from perspective(5px) to perspective(8.33...px) at
+// 1.5 progress, which results in perspective(12.5px) - this is what you would
+// get with addition too, if not for the clamping behavior.
+
+// ------------ Addition tests --------------
+
+assertComposition({
+  property: 'transform',
+  underlying: 'perspective(10px)',
+  addFrom: 'perspective(10px)',
+  addTo: 'perspective(50px)',
+}, [
+  {at: -0.5, is: 'perspective(4.12px)'},
+  {at: 0, is: 'perspective(5px)'},
+  {at: 0.25, is: 'perspective(5.45px)'},
+  {at: 0.5, is: 'perspective(6.15px)'},
+  {at: 0.75, is: 'perspective(7.06px)'},
+  {at: 1, is: 'perspective(8.33px)'},
+  {at: 1.5, is: 'perspective(10px)'},
+]);
+
+// ------------ Accumulation tests --------------
+
+assertComposition({
+  property: 'transform',
+  underlying: 'perspective(10px)',
+  accumulateFrom: 'perspective(10px)',
+  accumulateTo: 'perspective(50px)',
+}, [
+  {at: -0.5, is: 'perspective(4.12px)'},
+  {at: 0, is: 'perspective(5px)'},
+  {at: 0.25, is: 'perspective(5.45px)'},
+  {at: 0.5, is: 'perspective(6.15px)'},
+  {at: 0.75, is: 'perspective(7.06px)'},
+  {at: 1, is: 'perspective(8.33px)'},
+  {at: 1.5, is: 'perspective(12.5px)'},
+]);
+</script>
+</body>

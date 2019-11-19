@@ -14,11 +14,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-const char AutocompleteMatchType::kAlternateTabSwitchButtonMessage[] =
-    "Navigation button, press Enter to navigate in this tab";
-const char AutocompleteMatchType::kAlternateTabSwitchMessage[] =
-    "Switch to this tab,";
-
 // static
 std::string AutocompleteMatchType::ToString(AutocompleteMatchType::Type type) {
   // clang-format off
@@ -78,25 +73,15 @@ base::string16 AddTabSwitchLabelTextIfNecessary(
     return base_message;
   }
 
-  if (is_tab_switch_button_focused !=
-      OmniboxFieldTrial::IsTabSwitchLogicReversed()) {
-    if (is_tab_switch_button_focused) {
-      const int button_message_id = IDS_ACC_TAB_SWITCH_BUTTON_FOCUSED_PREFIX;
-      if (label_prefix_length) {
-        const base::string16 sentinal =
-            base::WideToUTF16(kAccessibilityLabelPrefixEndSentinal);
-        *label_prefix_length += AccessibilityLabelPrefixLength(
-            l10n_util::GetStringFUTF16(button_message_id, sentinal));
-      }
-      return l10n_util::GetStringFUTF16(button_message_id, base_message);
-    } else {
-      return base::ASCIIToUTF16(
-                 AutocompleteMatchType::kAlternateTabSwitchMessage) +
-             base_message;
+  if (is_tab_switch_button_focused) {
+    const int button_message_id = IDS_ACC_TAB_SWITCH_BUTTON_FOCUSED_PREFIX;
+    if (label_prefix_length) {
+      const base::string16 sentinal =
+          base::WideToUTF16(kAccessibilityLabelPrefixEndSentinal);
+      *label_prefix_length += AccessibilityLabelPrefixLength(
+          l10n_util::GetStringFUTF16(button_message_id, sentinal));
     }
-  } else if (is_tab_switch_button_focused) {
-    return base::ASCIIToUTF16(
-        AutocompleteMatchType::kAlternateTabSwitchButtonMessage);
+    return l10n_util::GetStringFUTF16(button_message_id, base_message);
   }
 
   return l10n_util::GetStringFUTF16(IDS_ACC_TAB_SWITCH_SUFFIX, base_message);
@@ -155,6 +140,19 @@ base::string16 AutocompleteMatchType::ToAccessibilityLabel(
 
   if (label_prefix_length)
     *label_prefix_length = 0;
+
+  // Document provider should use its full display text; description has
+  // already been constructed via IDS_DRIVE_SUGGESTION_DESCRIPTION_TEMPLATE.
+  // TODO(skare) http://crbug.com/951109: format as string in grd so this isn't
+  // special-cased.
+  if (match.type == AutocompleteMatchType::DOCUMENT_SUGGESTION) {
+    base::string16 doc_string = match.contents + base::ASCIIToUTF16(", ") +
+                                match.description + base::ASCIIToUTF16(", ") +
+                                match_text;
+    return AddTabSwitchLabelTextIfNecessary(doc_string, match.has_tab_match,
+                                            is_tab_switch_button_focused,
+                                            label_prefix_length);
+  }
 
   int message = message_ids[match.type];
   if (!message) {

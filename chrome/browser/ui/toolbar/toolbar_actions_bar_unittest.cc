@@ -172,7 +172,7 @@ void ToolbarActionsBarUnitTest::SetUp() {
   browser_action_test_util_ = BrowserActionTestUtil::Create(browser(), false);
 
   overflow_browser_action_test_util_ =
-      browser_action_test_util_->CreateOverflowBar();
+      browser_action_test_util_->CreateOverflowBar(browser());
 }
 
 void ToolbarActionsBarUnitTest::TearDown() {

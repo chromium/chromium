@@ -77,62 +77,6 @@ bool CallSetToNullIfExists(UserType* output) {
   return false;
 }
 
-template <typename T>
-struct HasSetUpContextMethod {
-  template <typename U>
-  static char Test(decltype(U::SetUpContext) *);
-  template <typename U>
-  static int Test(...);
-  static const bool value = sizeof(Test<T>(0)) == sizeof(char);
-
- private:
-  EnsureTypeIsComplete<T> check_t_;
-};
-
-template <typename Traits,
-          bool has_context = HasSetUpContextMethod<Traits>::value>
-struct CustomContextHelper;
-
-template <typename Traits>
-struct CustomContextHelper<Traits, true> {
-  template <typename MaybeConstUserType>
-  static void* SetUp(MaybeConstUserType& input, SerializationContext* context) {
-    return Traits::SetUpContext(input);
-  }
-
-  template <typename MaybeConstUserType>
-  static void TearDown(MaybeConstUserType& input, void* custom_context) {
-    Traits::TearDownContext(input, custom_context);
-  }
-};
-
-template <typename Traits>
-struct CustomContextHelper<Traits, false> {
-  template <typename MaybeConstUserType>
-  static void* SetUp(MaybeConstUserType& input, SerializationContext* context) {
-    return nullptr;
-  }
-
-  template <typename MaybeConstUserType>
-  static void TearDown(MaybeConstUserType& input, void* custom_context) {
-    DCHECK(!custom_context);
-  }
-};
-
-template <typename ReturnType, typename ParamType, typename InputUserType>
-ReturnType CallWithContext(ReturnType (*f)(ParamType, void*),
-                           InputUserType&& input,
-                           void* context) {
-  return f(std::forward<InputUserType>(input), context);
-}
-
-template <typename ReturnType, typename ParamType, typename InputUserType>
-ReturnType CallWithContext(ReturnType (*f)(ParamType),
-                           InputUserType&& input,
-                           void* context) {
-  return f(std::forward<InputUserType>(input));
-}
-
 template <typename T, typename MaybeConstUserType>
 struct HasGetBeginMethod {
   template <typename U>

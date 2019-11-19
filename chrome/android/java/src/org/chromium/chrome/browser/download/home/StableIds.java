@@ -14,4 +14,7 @@ public class StableIds {
 
     /** The stable ID associated with the Just Now section. */
     public static long JUST_NOW_SECTION = Long.MAX_VALUE - 3;
+
+    /** The stable ID associated with the pagination header. */
+    public static long PAGINATION_HEADER = Long.MAX_VALUE - 4;
 }

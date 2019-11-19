@@ -179,6 +179,10 @@ bool IsValidImageSection(HANDLE section,
 // Converts an ansi string to an UNICODE_STRING.
 UNICODE_STRING* AnsiToUnicode(const char* string);
 
+// Resolves a handle to an nt path. Returns true if the handle can be resolved.
+bool NtGetPathFromHandle(HANDLE handle,
+                         std::unique_ptr<wchar_t, NtAllocDeleter>* path);
+
 // Provides a simple way to temporarily change the protection of a memory page.
 class AutoProtectMemory {
  public:

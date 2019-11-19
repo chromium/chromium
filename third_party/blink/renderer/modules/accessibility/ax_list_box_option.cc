@@ -42,11 +42,6 @@ AXListBoxOption::AXListBoxOption(LayoutObject* layout_object,
 
 AXListBoxOption::~AXListBoxOption() = default;
 
-AXListBoxOption* AXListBoxOption::Create(LayoutObject* layout_object,
-                                         AXObjectCacheImpl& ax_object_cache) {
-  return MakeGarbageCollected<AXListBoxOption>(layout_object, ax_object_cache);
-}
-
 ax::mojom::Role AXListBoxOption::DetermineAccessibilityRole() {
   if ((aria_role_ = DetermineAriaRoleAttribute()) != ax::mojom::Role::kUnknown)
     return aria_role_;
@@ -63,15 +58,16 @@ ax::mojom::Role AXListBoxOption::DetermineAccessibilityRole() {
 }
 
 bool AXListBoxOption::IsParentPresentationalRole() const {
-  AXObject* parent = ParentObject();
+  LayoutObject* parent_layout_object = GetLayoutObject()->Parent();
+  if (!parent_layout_object)
+    return false;
+
+  AXObject* parent = AXObjectCache().GetOrCreate(parent_layout_object);
   if (!parent)
     return false;
 
-  LayoutObject* layout_object = parent->GetLayoutObject();
-  if (!layout_object)
-    return false;
-
-  if (layout_object->IsListBox() && parent->HasInheritedPresentationalRole())
+  if (parent_layout_object->IsListBox() &&
+      parent->HasInheritedPresentationalRole())
     return true;
 
   return false;
@@ -81,10 +77,9 @@ AccessibilitySelectedState AXListBoxOption::IsSelected() const {
   if (!GetNode() || !CanSetSelectedAttribute())
     return kSelectedStateUndefined;
 
-  return (IsHTMLOptionElement(GetNode()) &&
-          ToHTMLOptionElement(GetNode())->Selected())
-             ? kSelectedStateTrue
-             : kSelectedStateFalse;
+  auto* option_element = DynamicTo<HTMLOptionElement>(GetNode());
+  return (option_element && option_element->Selected()) ? kSelectedStateTrue
+                                                        : kSelectedStateFalse;
 }
 
 bool AXListBoxOption::IsSelectedOptionActive() const {
@@ -128,7 +123,7 @@ String AXListBoxOption::TextAlternative(bool recursive,
     return text_alternative;
 
   name_from = ax::mojom::NameFrom::kContents;
-  text_alternative = ToHTMLOptionElement(GetNode())->DisplayLabel();
+  text_alternative = To<HTMLOptionElement>(GetNode())->DisplayLabel();
   if (name_sources) {
     name_sources->push_back(NameSource(found_text_alternative));
     name_sources->back().type = name_from;
@@ -155,7 +150,7 @@ bool AXListBoxOption::OnNativeSetSelectedAction(bool selected) {
   if ((is_selected && selected) || (!is_selected && !selected))
     return false;
 
-  select_element->SelectOptionByAccessKey(ToHTMLOptionElement(GetNode()));
+  select_element->SelectOptionByAccessKey(To<HTMLOptionElement>(GetNode()));
   return true;
 }
 
@@ -163,7 +158,7 @@ HTMLSelectElement* AXListBoxOption::ListBoxOptionParentNode() const {
   if (!GetNode())
     return nullptr;
 
-  if (auto* option = ToHTMLOptionElementOrNull(GetNode()))
+  if (auto* option = DynamicTo<HTMLOptionElement>(GetNode()))
     return option->OwnerSelectElement();
 
   return nullptr;

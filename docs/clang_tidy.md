@@ -18,17 +18,28 @@ or bugs that can be deduced via static analysis.
 
 ## Setting Up
 
+### Automatic Setup
+
+The script [clang_tidy_tool.py](../tools/clang/scripts/clang_tidy_tool.py) will
+automatically fetch, build, and invoke `clang-tidy`. To do this manually, follow
+the steps in the next section.
+
+### Manual Setup
+
 In addition to a full Chromium checkout, you need the clang-tidy binary. We
 recommend checking llvm's clang source and building the clang-tidy binary
 directly. Instructions for getting started with clang are available from
 [llvm](http://clang.llvm.org/get_started.html). You'll need to get llvm,
 clang, and the extra clang tools (you won't need Compiler-RT or libcxx).
-If you don't have it, you'll also need to install cmake as a part of this
+If you don't have it, you'll also need to install CMake as a part of this
 process.
 
 Instead of building with `"Unix Makefiles"`, generate build files for Ninja with
 ```
-cmake -GNinja -DCMAKE_BUILD_TYPE=Release ../llvm
+cmake -GNinja \
+    -DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra \
+    -DCMAKE_BUILD_TYPE=Release \
+    ../llvm
 ```
 
 Then, instead of using `make`, use ninja to build the clang-tidy binary with
@@ -47,8 +58,7 @@ ninja clang-apply-replacements
 ## Running clang-tidy
 
 Running clang-tidy is (hopefully) simple.
-1.  Build chrome normally.\* Note that [Jumbo builds](jumbo.md) are not
-    supported.
+1.  Build chrome normally.
 ```
 ninja -C out/Release chrome
 ```
@@ -62,7 +72,7 @@ cd out/Release
 ```
 4.  Run clang-tidy.
 ```
-<PATH_TO_LLVM_SRC>/tools/clang/tools/extra/clang-tidy/tool/run-clang-tidy.py \
+<PATH_TO_LLVM_SRC>/clang-tools-extra/clang-tidy/tool/run-clang-tidy.py \
     -p . \# Set the root project directory, where compile_commands.json is.
     # Set the clang-tidy binary path, if it's not in your $PATH.
     -clang-tidy-binary <PATH_TO_LLVM_BUILD>/bin/clang-tidy \
@@ -77,7 +87,7 @@ cd out/Release
     chrome/browser # The path to the files you want to check.
 
 Copy-Paste Friendly (though you'll still need to stub in the variables):
-<PATH_TO_LLVM_SRC>/tools/clang/tools/extra/clang-tidy/tool/run-clang-tidy.py \
+<PATH_TO_LLVM_SRC>/clang-tools-extra/clang-tidy/tool/run-clang-tidy.py \
     -p . \
     -clang-tidy-binary <PATH_TO_LLVM_BUILD>/bin/clang-tidy \
     -clang-apply-replacements-binary \
@@ -88,9 +98,9 @@ Copy-Paste Friendly (though you'll still need to stub in the variables):
     chrome/browser
 ```
 
-\*It's not clear which, if any, `gn` flags outside of `use_jumbo_build` may
-cause issues for `clang-tidy`. I've had no problems building a component release
-build, both with and without goma. if you run into issues, let us know!
+\*It's not clear which, if any, `gn` flags may cause issues for
+`clang-tidy`. I've had no problems building a component release build,
+both with and without goma. if you run into issues, let us know!
 
 ## Questions
 

@@ -34,7 +34,7 @@ static bool disable_auto_positioning = false;
 bool UseAutoWindowManager(const aura::Window* window) {
   if (disable_auto_positioning)
     return false;
-  const wm::WindowState* window_state = wm::GetWindowState(window);
+  const WindowState* window_state = WindowState::Get(window);
   return !window_state->is_dragged() &&
          window_state->GetWindowPositionManaged();
 }
@@ -46,7 +46,7 @@ bool UseAutoWindowManager(const aura::Window* window) {
 bool WindowPositionCanBeManaged(const aura::Window* window) {
   if (disable_auto_positioning)
     return false;
-  const wm::WindowState* window_state = wm::GetWindowState(window);
+  const WindowState* window_state = WindowState::Get(window);
   return window_state->GetWindowPositionManaged() &&
          !window_state->IsMinimized() && !window_state->IsMaximized() &&
          !window_state->IsFullscreen() && !window_state->IsPinned() &&
@@ -127,10 +127,10 @@ void AutoPlaceSingleWindow(aura::Window* window, bool animated) {
   gfx::Rect work_area = screen_util::GetDisplayWorkAreaBoundsInParent(window);
   gfx::Rect bounds = window->bounds();
   const base::Optional<gfx::Rect> user_defined_area =
-      wm::GetWindowState(window)->pre_auto_manage_window_bounds();
+      WindowState::Get(window)->pre_auto_manage_window_bounds();
   if (user_defined_area) {
     bounds = *user_defined_area;
-    wm::AdjustBoundsToEnsureMinimumWindowVisibility(work_area, &bounds);
+    AdjustBoundsToEnsureMinimumWindowVisibility(work_area, &bounds);
   } else {
     // Center the window (only in x).
     bounds.set_x(work_area.x() + (work_area.width() - bounds.width()) / 2);
@@ -149,13 +149,14 @@ aura::Window* GetReferenceWindow(const aura::Window* root_window,
   if (single_window)
     *single_window = true;
   // Get the active window.
-  aura::Window* active = wm::GetActiveWindow();
+  aura::Window* active = window_util::GetActiveWindow();
   if (active && active->GetRootWindow() != root_window)
     active = NULL;
 
   // Get a list of all windows.
   const aura::Window::Windows windows =
-      Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal();
+      Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
+          kActiveDesk);
 
   if (windows.empty())
     return nullptr;
@@ -177,7 +178,7 @@ aura::Window* GetReferenceWindow(const aura::Window* root_window,
     if (window != exclude &&
         window->type() == aura::client::WINDOW_TYPE_NORMAL &&
         window->GetRootWindow() == root_window && window->TargetVisibility() &&
-        wm::GetWindowState(window)->GetWindowPositionManaged()) {
+        WindowState::Get(window)->GetWindowPositionManaged()) {
       if (found && found != window) {
         // no need to check !single_window because the function must have
         // been already returned in the "if (!single_window)" below.
@@ -213,7 +214,7 @@ void WindowPositioner::GetBoundsAndShowStateForNewWindow(
     return;
   }
 
-  wm::WindowState* top_window_state = wm::GetWindowState(top_window);
+  WindowState* top_window_state = WindowState::Get(top_window);
   bool maximized = top_window_state->IsMaximized();
   // We ignore the saved show state, but look instead for the top level
   // window's show state.
@@ -272,7 +273,7 @@ bool WindowPositioner::DisableAutoPositioning(bool ignore) {
 // static
 void WindowPositioner::RearrangeVisibleWindowOnShow(
     aura::Window* added_window) {
-  wm::WindowState* added_window_state = wm::GetWindowState(added_window);
+  WindowState* added_window_state = WindowState::Get(added_window);
   if (!added_window->TargetVisibility() ||
       !UseAutoWindowManager(added_window) ||
       added_window_state->bounds_changed_by_user()) {
@@ -305,8 +306,7 @@ void WindowPositioner::RearrangeVisibleWindowOnShow(
     // When going from one to two windows both windows loose their
     // "positioned by user" flags.
     added_window_state->set_bounds_changed_by_user(false);
-    wm::WindowState* other_window_state =
-        wm::GetWindowState(other_shown_window);
+    WindowState* other_window_state = WindowState::Get(other_shown_window);
     other_window_state->set_bounds_changed_by_user(false);
 
     if (WindowPositionCanBeManaged(other_shown_window)) {

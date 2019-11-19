@@ -21,7 +21,8 @@ class MetricsRotationScheduler : public MetricsScheduler {
   // |rotation_callback| must arrange to call RotationFinished on completion.
   MetricsRotationScheduler(
       const base::Closure& rotation_callback,
-      const base::Callback<base::TimeDelta(void)>& interval_callback);
+      const base::Callback<base::TimeDelta(void)>& interval_callback,
+      bool fast_startup_for_testing);
   ~MetricsRotationScheduler() override;
 
   // Callback from MetricsService when the startup init task has completed.

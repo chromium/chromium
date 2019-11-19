@@ -9,8 +9,6 @@ component("content") {
   sources = [
     "browser_context_dependency_manager.cc",
     "browser_context_dependency_manager.h",
-    "browser_context_keyed_base_factory.cc",
-    "browser_context_keyed_base_factory.h",
     "browser_context_keyed_service_factory.cc",
     "browser_context_keyed_service_factory.h",
     "browser_context_keyed_service_shutdown_notifier_factory.cc",

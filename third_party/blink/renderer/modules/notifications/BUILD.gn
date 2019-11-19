@@ -12,8 +12,6 @@ blink_modules_sources("notifications") {
     "notification_data.h",
     "notification_event.cc",
     "notification_event.h",
-    "notification_image_loader.cc",
-    "notification_image_loader.h",
     "notification_manager.cc",
     "notification_manager.h",
     "notification_resources_loader.cc",

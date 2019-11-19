@@ -37,7 +37,6 @@ struct ButtonMenuItemModel::Item {
   int command_id;
   ButtonType type;
   base::string16 label;
-  int icon_idr;
   bool part_of_group;
 };
 
@@ -53,25 +52,24 @@ ButtonMenuItemModel::~ButtonMenuItemModel() {
 
 void ButtonMenuItemModel::AddGroupItemWithStringId(
     int command_id, int string_id) {
-  Item item = { command_id, TYPE_BUTTON, l10n_util::GetStringUTF16(string_id),
-                -1, true };
+  Item item = {command_id, TYPE_BUTTON, l10n_util::GetStringUTF16(string_id),
+               true};
   items_.push_back(item);
 }
 
-void ButtonMenuItemModel::AddItemWithImage(int command_id,
-                                           int icon_idr) {
-  Item item = { command_id, TYPE_BUTTON, base::string16(), icon_idr, false };
+void ButtonMenuItemModel::AddImageItem(int command_id) {
+  Item item = {command_id, TYPE_BUTTON, base::string16(), false};
   items_.push_back(item);
 }
 
 void ButtonMenuItemModel::AddButtonLabel(int command_id, int string_id) {
-  Item item = { command_id, TYPE_BUTTON_LABEL,
-                l10n_util::GetStringUTF16(string_id), -1, false };
+  Item item = {command_id, TYPE_BUTTON_LABEL,
+               l10n_util::GetStringUTF16(string_id), false};
   items_.push_back(item);
 }
 
 void ButtonMenuItemModel::AddSpace() {
-  Item item = { 0, TYPE_SPACE, base::string16(), -1, false };
+  Item item = {0, TYPE_SPACE, base::string16(), false};
   items_.push_back(item);
 }
 
@@ -107,14 +105,6 @@ base::string16 ButtonMenuItemModel::GetLabelAt(int index) const {
   if (IsItemDynamicAt(index))
     return delegate_->GetLabelForCommandId(GetCommandIdAt(index));
   return items_[index].label;
-}
-
-bool ButtonMenuItemModel::GetIconAt(int index, int* icon_idr) const {
-  if (items_[index].icon_idr == -1)
-    return false;
-
-  *icon_idr = items_[index].icon_idr;
-  return true;
 }
 
 bool ButtonMenuItemModel::PartOfGroup(int index) const {

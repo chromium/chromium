@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/ui/webui_login_view.h"
 #include "chrome/browser/ui/login/login_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/notification_details.h"
@@ -107,11 +109,9 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthOnUserBoardScreenTest,
   }
 
   {
-    OobeScreenWaiter screen_waiter(OobeScreen::SCREEN_GAIA_SIGNIN);
+    OobeScreenWaiter screen_waiter(GaiaView::kScreenId);
     ProxyAuthDialogWaiter auth_dialog_waiter;
-    ASSERT_TRUE(content::ExecuteScript(
-        LoginDisplayHost::default_host()->GetOobeWebContents(),
-        "$('add-user-button').click()"));
+    ASSERT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
     screen_waiter.Wait();
     auth_dialog_waiter.Wait();
     ASSERT_TRUE(auth_dialog_waiter.login_handler());

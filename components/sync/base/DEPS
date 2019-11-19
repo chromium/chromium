@@ -1,5 +1,5 @@
 include_rules = [
-  "+chromeos",
+  "+chromeos/constants",
   "+components/invalidation",
   "+components/os_crypt",
   "+components/pref_registry",
@@ -7,8 +7,8 @@ include_rules = [
   "+components/reading_list/features",
   "+components/sync/protocol",
   "+components/sync_preferences",
-  "+crypto",
   "+google/cacheinvalidation",
+  "+third_party/metrics_proto",
   "+third_party/zlib",  # For UniquePosition compression
-  "+net/base",
+  "+net",
 ]

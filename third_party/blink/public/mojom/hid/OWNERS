@@ -1,0 +1,7 @@
+file://third_party/blink/renderer/modules/hid/OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+# TEAM: device-dev@chromium.org
+# COMPONENT: Blink>HID

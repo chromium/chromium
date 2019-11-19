@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.webapps;
 
-import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
 
 import org.junit.After;
@@ -13,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -24,12 +22,12 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class WebappAuthenticatorTest {
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         RecordHistogram.setDisabledForTests(true);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         RecordHistogram.setDisabledForTests(false);
     }
 
@@ -37,7 +35,6 @@ public class WebappAuthenticatorTest {
     @SmallTest
     @Feature({"Webapps"})
     public void testAuthentication() {
-        ContextUtils.initApplicationContextForTests(InstrumentationRegistry.getTargetContext());
         String url = "http://www.example.org/hello.html";
         byte[] mac = WebappAuthenticator.getMacForUrl(url);
         Assert.assertNotNull(mac);

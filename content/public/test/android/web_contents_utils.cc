@@ -11,7 +11,7 @@
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/WebContentsUtils_jni.h"
+#include "content/public/test/android/content_test_jni/WebContentsUtils_jni.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::JavaParamRef;
@@ -26,7 +26,7 @@ void JNI_WebContentsUtils_ReportAllFrameSubmissions(
     const JavaParamRef<jobject>& jweb_contents,
     jboolean enabled) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
-  RenderFrameMetadataProvider* provider =
+  RenderFrameMetadataProviderImpl* provider =
       RenderWidgetHostImpl::From(web_contents->GetRenderViewHost()->GetWidget())
           ->render_frame_metadata_provider();
   provider->ReportAllFrameSubmissionsForTesting(enabled);

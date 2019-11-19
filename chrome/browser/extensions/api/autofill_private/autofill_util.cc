@@ -16,12 +16,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "chrome/common/pref_names.h"
-#include "components/autofill/core/browser/autofill_country.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/country_combobox_model.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/ui/country_combobox_model.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -216,35 +216,6 @@ CreditCardEntryList GenerateCreditCardList(
 
   CreditCardEntryList list;
   for (const autofill::CreditCard* card : cards)
-    list.push_back(CreditCardToCreditCardEntry(*card, personal_data));
-
-  return list;
-}
-
-CreditCardEntryList GenerateLocalCreditCardList(
-    const autofill::PersonalDataManager& personal_data) {
-  const std::vector<autofill::CreditCard*>& all_cards =
-      personal_data.GetCreditCards();
-
-  CreditCardEntryList list;
-  for (const autofill::CreditCard* card : all_cards) {
-    // Keep only local and full server cards.
-    if (card->record_type() == autofill::CreditCard::LOCAL_CARD ||
-        card->record_type() == autofill::CreditCard::FULL_SERVER_CARD) {
-      list.push_back(CreditCardToCreditCardEntry(*card, personal_data));
-    }
-  }
-
-  return list;
-}
-
-CreditCardEntryList GenerateServerCreditCardList(
-    const autofill::PersonalDataManager& personal_data) {
-  const std::vector<autofill::CreditCard*>& server_cards =
-      personal_data.GetServerCreditCards();
-
-  CreditCardEntryList list;
-  for (const autofill::CreditCard* card : server_cards)
     list.push_back(CreditCardToCreditCardEntry(*card, personal_data));
 
   return list;

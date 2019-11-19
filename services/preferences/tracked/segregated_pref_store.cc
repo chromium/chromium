@@ -53,7 +53,8 @@ SegregatedPrefStore::SegregatedPrefStore(
     const scoped_refptr<PersistentPrefStore>& default_pref_store,
     const scoped_refptr<PersistentPrefStore>& selected_pref_store,
     const std::set<std::string>& selected_pref_names,
-    prefs::mojom::TrackedPreferenceValidationDelegatePtr validation_delegate)
+    mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>
+        validation_delegate)
     : validation_delegate_(std::move(validation_delegate)),
       default_pref_store_(default_pref_store),
       selected_pref_store_(selected_pref_store),
@@ -204,16 +205,14 @@ SegregatedPrefStore::~SegregatedPrefStore() {
 }
 
 PersistentPrefStore* SegregatedPrefStore::StoreForKey(const std::string& key) {
-  return (base::ContainsKey(selected_preference_names_, key)
-              ? selected_pref_store_
-              : default_pref_store_)
+  return (base::Contains(selected_preference_names_, key) ? selected_pref_store_
+                                                          : default_pref_store_)
       .get();
 }
 
 const PersistentPrefStore* SegregatedPrefStore::StoreForKey(
     const std::string& key) const {
-  return (base::ContainsKey(selected_preference_names_, key)
-              ? selected_pref_store_
-              : default_pref_store_)
+  return (base::Contains(selected_preference_names_, key) ? selected_pref_store_
+                                                          : default_pref_store_)
       .get();
 }

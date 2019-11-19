@@ -31,24 +31,22 @@ class ImmersiveFullscreenController;
 // the target widget because ImmersiveFullscreenController is not owned by
 // NonClientFrameViewAsh. Investigate if we integrate this into
 // NonClientFrameViewAsh.
-class ASH_EXPORT WideFrameView
-    : public views::WidgetDelegateView,
-      public aura::WindowObserver,
-      public display::DisplayObserver,
-      public ash::ImmersiveFullscreenControllerDelegate,
-      public OverviewObserver {
+class ASH_EXPORT WideFrameView : public views::WidgetDelegateView,
+                                 public aura::WindowObserver,
+                                 public display::DisplayObserver,
+                                 public ImmersiveFullscreenControllerDelegate {
  public:
   explicit WideFrameView(views::Widget* target);
   ~WideFrameView() override;
 
   // Initialize |immersive_fullscreen_controller| so that the controller reveals
   // and |hides_header_| in immersive mode.
-  void Init(ash::ImmersiveFullscreenController* controller);
+  void Init(ImmersiveFullscreenController* controller);
 
   // Set the caption model for caption buttions on this frame.
-  void SetCaptionButtonModel(std::unique_ptr<ash::CaptionButtonModel> mode);
+  void SetCaptionButtonModel(std::unique_ptr<CaptionButtonModel> mode);
 
-  ash::HeaderView* header_view() { return header_view_; }
+  HeaderView* header_view() { return header_view_; }
 
  private:
   static gfx::Rect GetFrameBounds(views::Widget* target);
@@ -67,7 +65,7 @@ class ASH_EXPORT WideFrameView
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
-  // ash::ImmersiveFullscreenControllerDelegate:
+  // ImmersiveFullscreenControllerDelegate:
   void OnImmersiveRevealStarted() override;
   void OnImmersiveRevealEnded() override;
   void OnImmersiveFullscreenEntered() override;
@@ -75,18 +73,14 @@ class ASH_EXPORT WideFrameView
   void SetVisibleFraction(double visible_fraction) override;
   std::vector<gfx::Rect> GetVisibleBoundsInScreen() const override;
 
-  // OverviewObserver:
-  void OnOverviewModeStarting() override;
-  void OnOverviewModeEnded() override;
-
-  ash::HeaderView* GetTargetHeaderView();
+  HeaderView* GetTargetHeaderView();
 
   // The target widget this frame will control.
   views::Widget* target_;
 
   std::unique_ptr<views::Widget> widget_;
 
-  ash::HeaderView* header_view_ = nullptr;
+  HeaderView* header_view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WideFrameView);
 };

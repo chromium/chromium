@@ -1,0 +1,12 @@
+Tests memory trend calculation.
+
+initial: count=0 slope=0
+(1, 1):  count=1 slope=0
+(2, 2):  count=2 slope=1
+(3, 4):  count=3 slope=1.5
+(4, 5):  count=4 slope=1.4
+(5, 5):  count=4 slope=1
+(6, 4):  count=4 slope=0
+(7, 3):  count=4 slope=-0.7
+(9, 1):  count=4 slope=-1
+

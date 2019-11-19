@@ -26,22 +26,26 @@
 // https://w3c.github.io/IndexedDB/#idbfactory
 
 [
-    Exposed=(Window,Worker)
+  Exposed=(Window,Worker)
 ] interface IDBFactory {
-    [
-      NewObject,
-      CallWith=ScriptState,
-      Measure,
-      RaisesException
-    ] IDBOpenDBRequest open(DOMString name,
-                            optional [EnforceRange] unsigned long long version);
-    [NewObject, CallWith=ScriptState, RaisesException] IDBOpenDBRequest deleteDatabase(DOMString name);
-    [CallWith=ScriptState, RaisesException] short cmp(any first, any second);
-    [
-      CallWith=ScriptState,
-      ImplementedAs=GetDatabaseInfo,
-      Measure,
-      RaisesException
-    ] Promise<sequence<IDBDatabaseInfo>> databases();
+  [
+    CallWith=ScriptState,
+    Measure,
+    NewObject,
+    RaisesException
+  ] IDBOpenDBRequest open(DOMString name,
+                          optional [EnforceRange] unsigned long long version);
+
+  [CallWith=ScriptState, MeasureAs=IndexedDBWrite, NewObject, RaisesException]
+  IDBOpenDBRequest deleteDatabase(DOMString name);
+
+  [CallWith=ScriptState, RaisesException] short cmp(any first, any second);
+
+  [
+    CallWith=ScriptState,
+    ImplementedAs=GetDatabaseInfo,
+    Measure,
+    RaisesException
+  ] Promise<sequence<IDBDatabaseInfo>> databases();
 };
 

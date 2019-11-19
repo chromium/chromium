@@ -14,10 +14,6 @@ namespace blink {
 // Used to implement the -webkit-box-reflect property as a filter.
 class PLATFORM_EXPORT FEBoxReflect final : public FilterEffect {
  public:
-  static FEBoxReflect* Create(Filter* filter, const BoxReflection& reflection) {
-    return MakeGarbageCollected<FEBoxReflect>(filter, reflection);
-  }
-
   FEBoxReflect(Filter*, const BoxReflection&);
 
   // FilterEffect implementation

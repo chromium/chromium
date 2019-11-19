@@ -1,0 +1,43 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV id='keep' class='item'",
+          "rect": [348, 88, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV id='to_remove' class='item'",
+          "rect": [348, 88, 100, 100],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV id='keep' class='item'",
+          "rect": [88, 88, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment '\u00A0'",
+          "rect": [348, 88, 4, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment '\u00A0'",
+          "rect": [348, 88, 4, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment '\u00A0'",
+          "rect": [88, 88, 4, 19],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

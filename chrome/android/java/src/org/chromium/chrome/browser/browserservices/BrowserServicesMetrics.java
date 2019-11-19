@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.browserservices;
 
 import android.os.SystemClock;
-import android.support.annotation.IntDef;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.CachedMetrics;
 import org.chromium.base.metrics.RecordHistogram;
@@ -43,6 +44,12 @@ public class BrowserServicesMetrics {
                 "BrowserServices.VerificationResult", result, VerificationResult.NUM_ENTRIES);
     }
 
+    public static void recordVerificationTime(long duration, boolean online) {
+        RecordHistogram.recordTimesHistogram(
+                online ? "BrowserServices.VerificationTime.Online"
+                        : "BrowserServices.VerificationTime.Offline", duration);
+    }
+
     /**
      * Returns a {@link TimingMetric} that records the amount of time spent querying the Android
      * system for ResolveInfos that will deal with a given URL when launching from a background
@@ -58,6 +65,14 @@ public class BrowserServicesMetrics {
      */
     public static TimingMetric getClientAppDataLoadTimingContext() {
         return new TimingMetric("BrowserServices.ClientAppDataLoad");
+    }
+
+    /**
+     * Returns a {@link TimingMetric} that records the amount of time taken to check if a package
+     * handles a Browsable intent.
+     */
+    public static TimingMetric getBrowsableIntentResolutionTimingContext() {
+        return new TimingMetric("BrowserServices.BrowsableIntentCheck");
     }
 
     /**

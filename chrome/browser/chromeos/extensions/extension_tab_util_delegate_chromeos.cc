@@ -18,17 +18,16 @@ ExtensionTabUtilDelegateChromeOS::ExtensionTabUtilDelegateChromeOS() {}
 
 ExtensionTabUtilDelegateChromeOS::~ExtensionTabUtilDelegateChromeOS() {}
 
-void ExtensionTabUtilDelegateChromeOS::ScrubTabForExtension(
-    const Extension* extension,
-    content::WebContents* contents,
-    api::tabs::Tab* tab) {
-  if (!profiles::ArePublicSessionRestrictionsEnabled() || !tab->url ||
+ExtensionTabUtil::ScrubTabBehaviorType
+ExtensionTabUtilDelegateChromeOS::GetScrubTabBehavior(
+    const Extension* extension) {
+  if (!profiles::ArePublicSessionRestrictionsEnabled() ||
       chromeos::DeviceLocalAccountManagementPolicyProvider::IsWhitelisted(
           extension->id())) {
-    return;
+    return ExtensionTabUtil::kDontScrubTab;
   }
-  // Scrub URL down to the origin (security reasons inside Public Sessions).
-  tab->url = std::make_unique<std::string>(GURL(*tab->url).GetOrigin().spec());
+
+  return ExtensionTabUtil::kScrubTabUrlToOrigin;
 }
 
 }  // namespace extensions

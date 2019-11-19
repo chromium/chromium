@@ -148,8 +148,7 @@ std::unique_ptr<SkCanvas> CreatePlatformCanvasWithSharedSection(
     }
   }
 
-  if (failure_type == CRASH_ON_FAILURE)
-    SK_CRASH();
+  CHECK(failure_type != CRASH_ON_FAILURE);
   return nullptr;
 }
 

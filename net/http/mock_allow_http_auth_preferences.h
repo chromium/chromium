@@ -18,7 +18,8 @@ class MockAllowHttpAuthPreferences : public HttpAuthPreferences {
   ~MockAllowHttpAuthPreferences() override;
 
   bool CanUseDefaultCredentials(const GURL& auth_origin) const override;
-  bool CanDelegate(const GURL& auth_origin) const override;
+  HttpAuth::DelegationType GetDelegationType(
+      const GURL& auth_origin) const override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockAllowHttpAuthPreferences);

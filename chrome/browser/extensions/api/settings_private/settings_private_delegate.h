@@ -50,6 +50,8 @@ class SettingsPrivateDelegate : public KeyedService {
   // Sets the pref.
   virtual settings_private::SetPrefResult SetDefaultZoom(double zoom);
 
+  Profile* profile_for_test() { return profile_; }
+
  protected:
   Profile* profile_;  // weak; not owned by us
   std::unique_ptr<PrefsUtil> prefs_util_;

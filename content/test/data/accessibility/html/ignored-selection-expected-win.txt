@@ -1,0 +1,5 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE caret_offset=24 n_selections=1 selection_start=0 selection_end=24
+++ROLE_SYSTEM_STATICTEXT name='this text is not ignored' n_selections=1 selection_start=0 selection_end=24
+++IA2_ROLE_SECTION caret_offset=0 n_selections=0
+++++ROLE_SYSTEM_STATICTEXT name='after selection' caret_offset=0 n_selections=0
+++ROLE_SYSTEM_STATICTEXT name='Done' n_selections=0

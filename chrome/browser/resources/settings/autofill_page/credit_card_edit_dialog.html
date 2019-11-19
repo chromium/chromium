@@ -1,17 +1,18 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/md_select_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="../settings_shared_css.html">
 <link rel="import" href="../settings_vars_css.html">
 
 <dom-module id="settings-credit-card-edit-dialog">
   <template>
-    <style include="settings-shared md-select">
+    <style include="cr-shared-style settings-shared md-select">
       cr-input {
         --cr-input-error-display: none;
         margin-bottom: var(--cr-form-field-bottom-spacing);
@@ -22,8 +23,7 @@
         margin-inline-start: 8px;
       }
 
-      /* Prevent focus-outline from being chopped by the bottom of dialog body.
-         TODO(scottchen): find a more general way to solve this. */
+      /* Prevent focus-outline from being chopped by bottom of dialog body. */
       .md-select {
         margin-bottom: 2px;
       }
@@ -38,6 +38,14 @@
         padding: 0 0 0 8px;
       }
 
+      @media (prefers-color-scheme: dark) {
+        #expired {
+          background-color: unset;
+          font-weight: bold;
+          padding: 0;
+        }
+      }
+
       #month {
         width: 70px;
       }
@@ -48,10 +56,6 @@
 
       #year {
         width: 100px;
-      }
-
-      label {
-        @apply --cr-form-field-label;
       }
     </style>
     <cr-dialog id="dialog" close-text="$i18n{close}">
@@ -65,10 +69,12 @@
             value="{{creditCard.cardNumber}}"
             on-input="onCreditCardNameOrNumberChanged_">
         </cr-input>
-        <label>$i18n{creditCardExpiration}</label>
+        <label id="creditCardExpiration" class="cr-form-field-label">
+          $i18n{creditCardExpiration}
+        </label>
         <select class="md-select" id="month" value="[[expirationMonth_]]"
             on-change="onMonthChange_"
-            aria-label="$i18n{creditCardExpirationMonth}">
+            aria-labelledby="creditCardExpiration">
           <template is="dom-repeat" items="[[monthList_]]">
             <option>[[item]]</option>
           </template>
@@ -90,10 +96,10 @@
         </div>
       </div>
       <div slot="button-container">
-        <paper-button id="cancelButton" class="cancel-button"
-            on-click="onCancelButtonTap_">$i18n{cancel}</paper-button>
-        <paper-button id="saveButton" class="action-button"
-            on-click="onSaveButtonTap_" disabled>$i18n{save}</paper-button>
+        <cr-button id="cancelButton" class="cancel-button"
+            on-click="onCancelButtonTap_">$i18n{cancel}</cr-button>
+        <cr-button id="saveButton" class="action-button"
+            on-click="onSaveButtonTap_" disabled>$i18n{save}</cr-button>
       </div>
     </cr-dialog>
   </template>

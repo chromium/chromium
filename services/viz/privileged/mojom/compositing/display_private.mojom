@@ -1,0 +1,106 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "gpu/ipc/common/context_result.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/mojom/ca_layer_params.mojom";
+import "ui/gfx/mojom/color_space.mojom";
+import "ui/gfx/mojom/overlay_transform.mojom";
+import "ui/gfx/mojom/transform.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/latency/mojom/latency_info.mojom";
+import "services/viz/privileged/mojom/compositing/layered_window_updater.mojom";
+import "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom";
+
+// See ui/compositor/compositor.h: ContextFactoryPrivate.
+// The DisplayPrivate is used by privileged clients to talk to Display.
+// DisplayPrivate would eventually replace or be used by ContextFactoryPrivate.
+interface DisplayPrivate {
+  SetDisplayVisible(bool visible);
+
+  // Attempts to immediately swap a frame with the current size if possible,
+  // then will no longer swap until Resize() is called with a non-empty size.
+  [Sync] DisableSwapUntilResize() => ();
+
+  // Resizes the display.
+  Resize(gfx.mojom.Size size);
+
+  // Sets the matrix that will be used to transform the output color of the
+  // display. This only works in GPU compositing.
+  SetDisplayColorMatrix(gfx.mojom.Transform color_matrix);
+
+  // Sets the device color space for rendering and white level in nits used for
+  // scaling SDR content.  This only works in GPU compositing.
+  SetDisplayColorSpace(gfx.mojom.ColorSpace device_color_space,
+                       float sdr_white_level);
+  SetOutputIsSecure(bool secure);
+
+  // Updates vsync parameters used to generate BeginFrames for this display.
+  // This will do nothing if the display is using an external BeginFrame source.
+  SetDisplayVSyncParameters(
+    mojo_base.mojom.TimeTicks timebase,
+    mojo_base.mojom.TimeDelta interval);
+
+  // Attempts to immediately draw and swap a frame if possible. Note that this
+  // is not a sync IPC, as all current uses are during tear down of the root
+  // compositor frame sink and are immediately followed by a call to
+  // FrameSinkManager::DestroyCompositorFrameSink which is an associated sync
+  // IPC. If this function is needed in cases where ordering isn't guaranteed
+  // by other means, it should be made sync.
+  ForceImmediateDrawAndSwapIfPossible();
+
+  // Notifies the display to pause VSync signals. Used for VR.
+  [EnableIf=is_android]
+  SetVSyncPaused(bool paused);
+
+  // Updates the refresh rate of the associated Display.
+  [EnableIf=is_android]
+  UpdateRefreshRate(float refresh_rate);
+
+  // Updates the list of refresh rates supported by the associated Display.
+  [EnableIf=is_android]
+  SetSupportedRefreshRates(array<float> refresh_rates);
+
+  // Adds an observer that gets notified about vsync parameter changes. See
+  // VSyncParameterObserver for details.
+  //
+  // Note that only one observer can be added. Adding a new observer will
+  // replace the old one, which is fine since only exo uses this. If you are
+  // adding a new use case VSyncParameterListener needs to be extended to
+  // support multiple observers.
+  AddVSyncParameterObserver(
+    pending_remote<VSyncParameterObserver> observer);
+
+  // Notifies the Display of the current screen rotation.
+  SetDisplayTransformHint(gfx.mojom.OverlayTransform transform);
+};
+
+interface DisplayClient {
+  [EnableIf=is_mac]
+  OnDisplayReceivedCALayerParams(gfx.mojom.CALayerParams ca_layer_params);
+
+  // Creates a LayeredWindowUpdater implementation to draw into a layered
+  // window.
+  [EnableIf=is_win]
+  CreateLayeredWindowUpdater(pending_receiver<LayeredWindowUpdater> receiver);
+
+  // Notifies that a swap has occurred and provides information about the pixel
+  // size of the swapped frame.
+  [EnableIf=is_android]
+  DidCompleteSwapWithSize(gfx.mojom.Size size);
+
+  // Notifies that a swap has occurred with a new size.
+  [EnableIf=is_linux]
+  DidCompleteSwapWithNewSize(gfx.mojom.Size size);
+
+  // Notifies the client of the result of context creation attempt. On Android we can't
+  // fall back to SW in failure cases, so we need to handle this specifically.
+  [EnableIf=is_android]
+  OnContextCreationResult(gpu.mojom.ContextResult result);
+
+  [EnableIf=is_android]
+  SetPreferredRefreshRate(float refresh_rate);
+};

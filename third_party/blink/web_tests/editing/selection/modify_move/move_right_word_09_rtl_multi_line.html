@@ -17,13 +17,13 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">a|bc ghi<div><img src=../../resources/abe.png></div><div></div><div></div>opq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="rtl">|abc ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-1 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">ab|c ghi<div><img src=../../resources/abe.png></div><div></div><div></div>opq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="rtl">|abc ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-2 rtl right word');
 
 selection_test(
@@ -41,73 +41,73 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">abc g|hi<div><img src=../../resources/abe.png></div><div></div><div></div>opq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">|abc ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="rtl">abc |ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-5 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc gh|i<div><img src=../../resources/abe.png></div><div></div><div></div>opq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">|abc ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="rtl">abc |ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-6 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc ghi|<div><img src=../../resources/abe.png></div><div></div><div></div>opq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="rtl">abc |ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-7 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc ghi<div>|<img src=../../resources/abe.png></div><div></div><div></div>opq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="rtl">abc |ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-8 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc ghi<div><img src=../../resources/abe.png>|</div><div></div><div></div>opq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="rtl">abc ghi<div>|<img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-9 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc ghi<div><img src=../../resources/abe.png></div>|<div></div><div></div>opq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="rtl">abc ghi<div>|<img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-10 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc ghi<div><img src=../../resources/abe.png></div><div>|</div><div></div>opq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="rtl">abc ghi<div>|<img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-11 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc ghi<div><img src=../../resources/abe.png></div><div></div>|<div></div>opq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="rtl">abc ghi<div>|<img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-12 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc ghi<div><img src=../../resources/abe.png></div><div></div><div>|</div>opq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="rtl">abc ghi<div>|<img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-13 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc ghi<div><img src=../../resources/abe.png></div><div></div><div></div>|opq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="rtl">abc ghi<div>|<img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-14 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc ghi<div><img src=../../resources/abe.png></div><div></div><div></div>o|pq rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq| rst</div>',
+  '<div contenteditable dir="rtl">abc ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>|opq rst</div>',
   '9-15 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc ghi<div><img src=../../resources/abe.png></div><div></div><div></div>op|q rst</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq| rst</div>',
+  '<div contenteditable dir="rtl">abc ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>|opq rst</div>',
   '9-16 rtl right word');
 
 selection_test(
@@ -125,18 +125,18 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">abc ghi<div><img src=../../resources/abe.png></div><div></div><div></div>opq r|st</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>|opq rst</div>',
+  '<div contenteditable dir="rtl">abc ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq |rst</div>',
   '9-19 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc ghi<div><img src=../../resources/abe.png></div><div></div><div></div>opq rs|t</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>|opq rst</div>',
+  '<div contenteditable dir="rtl">abc ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq |rst</div>',
   '9-20 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc ghi<div><img src=../../resources/abe.png></div><div></div><div></div>opq rst|</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq| rst</div>',
+  '<div contenteditable dir="rtl">abc ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq |rst</div>',
   '9-21 rtl right word');
 </script>

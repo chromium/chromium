@@ -6,33 +6,30 @@
  * @fileoverview Polymer element for displaying and modifying a list of cellular
  * mobile networks.
  */
+(function() {
+'use strict';
+
 Polymer({
   is: 'network-choose-mobile',
 
   behaviors: [I18nBehavior],
 
   properties: {
-    /**
-     * The current set of properties for the network.
-     * @type {!CrOnc.NetworkProperties|undefined}
-     */
-    networkProperties: {
+    /** @private {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
+    managedProperties: {
       type: Object,
-      observer: 'networkPropertiesChanged_',
+      observer: 'managedPropertiesChanged_',
+    },
+
+    /** @type {?OncMojo.DeviceStateProperties} */
+    deviceState: {
+      type: Object,
+      value: null,
     },
 
     /**
-     * Interface for networkingPrivate calls.
-     * @type {NetworkingPrivate}
-     */
-    networkingPrivate: {
-      type: Object,
-      value: chrome.networkingPrivate,
-    },
-
-    /**
-     * The networkingPrivate.FoundNetworkProperties.NetworkId of the selected
-     * mobile network.
+     * The mojom.FoundNetworkProperties.networkId of the selected mobile
+     * network.
      * @private
      */
     selectedMobileNetworkId_: {
@@ -41,8 +38,8 @@ Polymer({
     },
 
     /**
-     * Selectable list of FoundNetwork dictionaries for the UI.
-     * @private {!Array<!chrome.networkingPrivate.FoundNetworkProperties>}
+     * Selectable list of mojom.FoundNetworkProperties dictionaries for the UI.
+     * @private {!Array<!chromeos.networkConfig.mojom.FoundNetworkProperties>}
      */
     mobileNetworkList_: {
       type: Array,
@@ -55,106 +52,129 @@ Polymer({
   /** @private {boolean} */
   scanRequested_: false,
 
+  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
+  networkConfig_: null,
+
   /** @override */
   attached: function() {
     this.scanRequested_ = false;
   },
 
   /**
-   * Polymer networkProperties changed method.
+   * @return {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote}
+   * @private
    */
-  networkPropertiesChanged_: function() {
-    if (!this.networkProperties || !this.networkProperties.Cellular) {
-      return;
+  getNetworkConfig_() {
+    if (!this.networkConfig_) {
+      this.networkConfig_ =
+          network_config.MojoInterfaceProviderImpl.getInstance()
+              .getMojoServiceRemote();
     }
-    const cellular = this.networkProperties.Cellular;
-    this.mobileNetworkList_ = cellular.FoundNetworks ||
-        [{NetworkId: 'none', LongName: this.i18n('networkCellularNoNetworks')}];
+    return this.networkConfig_;
+  },
 
+  /**
+   * Polymer managedProperties changed method.
+   * @private
+   */
+  managedPropertiesChanged_: function() {
+    const cellular = this.managedProperties.typeProperties.cellular;
+    this.mobileNetworkList_ = cellular.foundNetworks || [];
+    if (!this.mobileNetworkList_.length) {
+      this.mobileNetworkList_ = [
+        {networkId: 'none', longName: this.i18n('networkCellularNoNetworks')}
+      ];
+    }
     // Set selectedMobileNetworkId_ after the dom-repeat has been stamped.
     this.async(() => {
       let selected = this.mobileNetworkList_.find(function(mobileNetwork) {
-        return mobileNetwork.Status == 'current';
+        return mobileNetwork.status == 'current';
       });
       if (!selected) {
         selected = this.mobileNetworkList_[0];
       }
-      this.selectedMobileNetworkId_ = selected.NetworkId;
+      this.selectedMobileNetworkId_ = selected.networkId;
     });
   },
 
   /**
-   * @param {!chrome.networkingPrivate.FoundNetworkProperties} network
+   * @param {!chromeos.networkConfig.mojom.FoundNetworkProperties} foundNetwork
    * @return {boolean}
    * @private
    */
-  getMobileNetworkIsDisabled_: function(network) {
-    return network.Status != 'available' && network.Status != 'current';
+  getMobileNetworkIsDisabled_: function(foundNetwork) {
+    return foundNetwork.status != 'available' &&
+        foundNetwork.status != 'current';
   },
 
   /**
-   * @param {!chrome.networkingPrivate.NetworkProperties} properties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties} properties
    * @return {boolean}
    * @private
    */
   getEnableScanButton_: function(properties) {
-    return properties.ConnectionState == CrOnc.ConnectionState.NOT_CONNECTED &&
-        !this.get('Cellular.Scanning', properties);
+    return properties.connectionState ==
+        chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected &&
+        !!this.deviceState && !this.deviceState.scanning;
   },
 
   /**
-   * @param {!chrome.networkingPrivate.NetworkProperties} properties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties} properties
    * @return {boolean}
    * @private
    */
   getEnableSelectNetwork_: function(properties) {
-    if (this.get('Cellular.Scanning', properties) ||
-        properties.ConnectionState != CrOnc.ConnectionState.NOT_CONNECTED) {
-      return false;
-    }
-    const found = this.get('Cellular.FoundNetworks', properties);
-    return !!found && found.length > 0;
+    return (
+        !!this.deviceState && !this.deviceState.scanning &&
+        properties.connectionState ==
+            chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected &&
+        !!properties.typeProperties.cellular.foundNetworks &&
+        properties.typeProperties.cellular.foundNetworks.length > 0);
   },
 
   /**
-   * @param {!chrome.networkingPrivate.NetworkProperties} properties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties} properties
    * @return {string}
    * @private
    */
   getSecondaryText_: function(properties) {
-    if (!properties || !properties.Cellular) {
+    if (!properties) {
       return '';
     }
-    const cellular = properties.Cellular;
-    if (cellular.Scanning) {
+    if (!!this.deviceState && this.deviceState.scanning) {
       return this.i18n('networkCellularScanning');
-    } else if (this.scanRequested_) {
+    }
+    if (this.scanRequested_) {
       return this.i18n('networkCellularScanCompleted');
-    } else if (
-        properties.ConnectionState != CrOnc.ConnectionState.NOT_CONNECTED) {
+    }
+    if (properties.connectionState !=
+        chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected) {
       return this.i18n('networkCellularScanConnectedHelp');
     }
     return '';
   },
 
   /**
-   * @param {!chrome.networkingPrivate.FoundNetworkProperties} network
+   * @param {!chromeos.networkConfig.mojom.FoundNetworkProperties} foundNetwork
    * @return {string}
    * @private
    */
-  getName_: function(network) {
-    return network.LongName || network.ShortName || network.NetworkId;
+  getName_: function(foundNetwork) {
+    return foundNetwork.longName || foundNetwork.shortName ||
+        foundNetwork.networkId;
   },
 
   /**
    * Request a Cellular scan to populate the list of networks. This will
-   * triger a change to networkProperties when completed (if
+   * triger a change to managedProperties when completed (if
    * Cellular.FoundNetworks changes).
    * @private
    */
   onScanTap_: function() {
     this.scanRequested_ = true;
-    this.networkingPrivate.requestNetworkScan(CrOnc.Type.CELLULAR);
+
+    this.getNetworkConfig_().requestNetworkScan(
+        chromeos.networkConfig.mojom.NetworkType.kCellular);
   },
 
   /**
@@ -166,7 +186,9 @@ Polymer({
     if (!target.value || target.value == 'none') {
       return;
     }
-    this.networkingPrivate.selectCellularMobileNetwork(
-        this.networkProperties.GUID, target.value);
+
+    this.getNetworkConfig_().selectCellularMobileNetwork(
+        this.managedProperties.guid, target.value);
   },
 });
+})();

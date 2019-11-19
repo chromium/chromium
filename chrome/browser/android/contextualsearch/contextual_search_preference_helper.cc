@@ -5,8 +5,8 @@
 #include "chrome/browser/android/contextualsearch/contextual_search_preference_helper.h"
 
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/ContextualSearchPreferenceHelper_jni.h"
 #include "components/contextual_search/core/browser/contextual_search_preference.h"
-#include "jni/ContextualSearchPreferenceHelper_jni.h"
 
 ContextualSearchPreferenceHelper::ContextualSearchPreferenceHelper(
     JNIEnv* env,

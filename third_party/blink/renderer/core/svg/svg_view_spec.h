@@ -30,7 +30,7 @@ class SVGRect;
 class SVGTransformList;
 class SVGViewElement;
 
-class SVGViewSpec final : public GarbageCollectedFinalized<SVGViewSpec> {
+class SVGViewSpec final : public GarbageCollected<SVGViewSpec> {
  public:
   static SVGViewSpec* CreateFromFragment(const String&);
   static SVGViewSpec* CreateForViewElement(const SVGViewElement&);

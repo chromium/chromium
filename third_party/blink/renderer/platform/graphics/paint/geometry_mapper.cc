@@ -72,7 +72,7 @@ GeometryMapper::SourceToDestinationProjectionInternal(
   if (source.Parent() && &destination == &source.Parent()->Unalias()) {
     if (source.IsIdentityOr2DTranslation()) {
       success = true;
-      return Translation2DOrMatrix(source.Matrix().To2DTranslation());
+      return Translation2DOrMatrix(source.Translation2D());
     }
     // The result will be translate(origin)*matrix*translate(-origin) which
     // equals to matrix if the origin is zero or if the matrix is just
@@ -86,7 +86,7 @@ GeometryMapper::SourceToDestinationProjectionInternal(
   if (destination.IsIdentityOr2DTranslation() && destination.Parent() &&
       &source == &destination.Parent()->Unalias()) {
     success = true;
-    return Translation2DOrMatrix(-destination.Matrix().To2DTranslation());
+    return Translation2DOrMatrix(-destination.Translation2D());
   }
 
   const auto& source_cache = source.GetTransformCache();
@@ -154,29 +154,6 @@ bool GeometryMapper::LocalToAncestorVisualRect(
                                                   inclusive_behavior, success);
   DCHECK(success);
   return result;
-}
-
-bool GeometryMapper::PointVisibleInAncestorSpace(
-    const PropertyTreeState& local_state,
-    const PropertyTreeState& ancestor_state,
-    const FloatPoint& local_point) {
-  const auto& ancestor_clip = ancestor_state.Clip().Unalias();
-  for (const auto* clip = &local_state.Clip().Unalias();
-       clip && clip != &ancestor_clip; clip = SafeUnalias(clip->Parent())) {
-    FloatPoint mapped_point =
-        SourceToDestinationProjection(local_state.Transform(),
-                                      clip->LocalTransformSpace())
-            .MapPoint(local_point);
-
-    if (!clip->ClipRect().IntersectsQuad(
-            FloatRect(mapped_point, FloatSize(1, 1))))
-      return false;
-
-    if (clip->ClipPath() && !clip->ClipPath()->Contains(mapped_point))
-      return false;
-  }
-
-  return true;
 }
 
 bool GeometryMapper::LocalToAncestorVisualRectInternal(
@@ -317,7 +294,7 @@ static FloatClipRect GetClipRect(const ClipPaintPropertyNode& clip_node_arg,
   FloatClipRect clip_rect(
       UNLIKELY(clip_behavior == kExcludeOverlayScrollbarSizeForHitTesting)
           ? clip_node.ClipRectExcludingOverlayScrollbars()
-          : clip_node.ClipRect());
+          : FloatClipRect(clip_node.ClipRect()));
   if (clip_node.ClipPath())
     clip_rect.ClearIsTight();
   return clip_rect;

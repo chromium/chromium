@@ -87,13 +87,13 @@ TEST_F(ModelSafeWorkerTest, ModelSafeRoutingInfoToValue) {
   ModelSafeRoutingInfo routing_info;
   routing_info[BOOKMARKS] = GROUP_PASSIVE;
   routing_info[NIGORI] = GROUP_UI;
-  routing_info[PREFERENCES] = GROUP_DB;
+  routing_info[PASSWORDS] = GROUP_PASSWORD;
   routing_info[APPS] = GROUP_NON_BLOCKING;
   base::DictionaryValue expected_value;
   expected_value.SetString("Apps", "Group Non Blocking");
   expected_value.SetString("Bookmarks", "Group Passive");
   expected_value.SetString("Encryption Keys", "Group UI");
-  expected_value.SetString("Preferences", "Group DB");
+  expected_value.SetString("Passwords", "Group Password");
   std::unique_ptr<base::DictionaryValue> value(
       ModelSafeRoutingInfoToValue(routing_info));
   EXPECT_TRUE(value->Equals(&expected_value));
@@ -104,10 +104,10 @@ TEST_F(ModelSafeWorkerTest, ModelSafeRoutingInfoToString) {
   routing_info[APPS] = GROUP_NON_BLOCKING;
   routing_info[BOOKMARKS] = GROUP_PASSIVE;
   routing_info[NIGORI] = GROUP_UI;
-  routing_info[PREFERENCES] = GROUP_DB;
+  routing_info[PASSWORDS] = GROUP_PASSWORD;
   EXPECT_EQ(
       "{\"Apps\":\"Group Non Blocking\",\"Bookmarks\":\"Group Passive\","
-      "\"Encryption Keys\":\"Group UI\",\"Preferences\":\"Group DB\"}",
+      "\"Encryption Keys\":\"Group UI\",\"Passwords\":\"Group Password\"}",
       ModelSafeRoutingInfoToString(routing_info));
 }
 
@@ -115,8 +115,8 @@ TEST_F(ModelSafeWorkerTest, GetRoutingInfoTypes) {
   ModelSafeRoutingInfo routing_info;
   routing_info[BOOKMARKS] = GROUP_PASSIVE;
   routing_info[NIGORI] = GROUP_UI;
-  routing_info[PREFERENCES] = GROUP_DB;
-  const ModelTypeSet expected_types(BOOKMARKS, NIGORI, PREFERENCES);
+  routing_info[PASSWORDS] = GROUP_PASSWORD;
+  const ModelTypeSet expected_types(BOOKMARKS, NIGORI, PASSWORDS);
   EXPECT_EQ(expected_types, GetRoutingInfoTypes(routing_info));
 }
 

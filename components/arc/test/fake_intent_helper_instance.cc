@@ -55,6 +55,10 @@ FakeIntentHelperInstance::~FakeIntentHelperInstance() {}
 void FakeIntentHelperInstance::AddPreferredPackage(
     const std::string& package_name) {}
 
+void FakeIntentHelperInstance::AddPreferredApp(const std::string& package_name,
+                                               IntentFilter intent_filter,
+                                               mojom::IntentInfoPtr intent) {}
+
 void FakeIntentHelperInstance::GetFileSizeDeprecated(
     const std::string& url,
     GetFileSizeDeprecatedCallback callback) {}
@@ -110,7 +114,12 @@ void FakeIntentHelperInstance::RequestIntentHandlerList(
 
 void FakeIntentHelperInstance::RequestUrlHandlerList(
     const std::string& url,
-    RequestUrlHandlerListCallback callback) {}
+    RequestUrlHandlerListCallback callback) {
+  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  // Post the reply to run asynchronously to match the real implementation.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(handlers)));
+}
 
 void FakeIntentHelperInstance::RequestUrlListHandlerList(
     std::vector<mojom::UrlWithMimeTypePtr> urls,
@@ -132,6 +141,12 @@ void FakeIntentHelperInstance::RequestTextSelectionActions(
     const std::string& text,
     ::arc::mojom::ScaleFactor scale_factor,
     RequestTextSelectionActionsCallback callback) {}
+
+void FakeIntentHelperInstance::HandleCameraResult(
+    uint32_t intent_id,
+    arc::mojom::CameraIntentAction action,
+    const std::vector<uint8_t>& data,
+    HandleCameraResultCallback callback) {}
 
 std::vector<FakeIntentHelperInstance::Broadcast>
 FakeIntentHelperInstance::GetBroadcastsForAction(

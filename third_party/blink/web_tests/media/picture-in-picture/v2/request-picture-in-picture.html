@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<title>picture in picture v2 requires gesture</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="utils.js"></script>
+<body>
+<div id=example></div>
+<script>
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element = document.getElementById('example');
+  return promise_rejects(t, 'NotAllowedError', element.requestPictureInPicture({ aspectRatio: 1 }));
+}, 'request Picture-in-Picture requires a user gesture');
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element = document.getElementById('example');
+  return requestPictureInPictureWithTrustedClick(element, { height: 1, width: 1 });
+}, 'request Picture-in-Picture resolves on user click');
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element = document.getElementById('example');
+  return requestPictureInPictureWithTrustedClick(element, { height: 1, width: 1, interactive: true });
+}, 'request Picture-in-Picture takes an interactive option that can be true');
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element = document.getElementById('example');
+  return requestPictureInPictureWithTrustedClick(element, { height: 1, width: 1, interactive: false });
+}, 'request Picture-in-Picture takes an interactive option that can be false');
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element = document.getElementById('example');
+  return requestPictureInPictureWithTrustedClick(element, { height: 1, width: 1, interactive: 'test' });
+}, 'request Picture-in-Picture validates interactive option');
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element = document.getElementById('example');
+  return requestPictureInPictureWithTrustedClick(element, {});
+}, 'request Picture-in-Picture does not require width/height by default');
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element = document.getElementById('example');
+  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ height: 1 }));
+}, 'request Picture-in-Picture requires width option if height present');
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element = document.getElementById('example');
+  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ width: 1 }));
+}, 'request Picture-in-Picture requires height option if width present');
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element = document.getElementById('example');
+  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ width: -10, height: -10 }));
+}, 'request Picture-in-Picture requires width/height to be positive (both negative)');
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element = document.getElementById('example');
+  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ width: 10, height: -10 }));
+}, 'request Picture-in-Picture requires width/height to be positive (negative width)');
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element = document.getElementById('example');
+  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ width: -10, height: 10 }));
+}, 'request Picture-in-Picture requires width/height to be positive (negative height)');
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element = document.getElementById('example');
+  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ width: 0, height: 0 }));
+}, 'request Picture-in-Picture requires width/height to not be zero (both zero)');
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element = document.getElementById('example');
+  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ width: 10, height: 0 }));
+}, 'request Picture-in-Picture requires width/height to not be zero (width zero)');
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element = document.getElementById('example');
+  return promise_rejects(t, new TypeError(), element.requestPictureInPicture({ width: 0, height: 10 }));
+}, 'request Picture-in-Picture requires width/height to not be zero (height zero)');
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element = document.getElementById('example');
+  await test_driver.bless('request Picture-in-Picture');
+  return element.requestPictureInPicture();
+}, 'request Picture-in-Picture does not require options');
+</script>
+</body>

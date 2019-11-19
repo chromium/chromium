@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.chrome.features.start_surface.BottomBarView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ss_bottom_bar"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/ss_bottom_bar_height"
+    android:layout_gravity="bottom"
+    android:background="@color/modern_primary_color"
+    android:visibility="invisible">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_shadow_height"
+        android:src="@drawable/modern_toolbar_shadow"
+        android:scaleType="fitXY"
+        android:scaleY="-1"
+        android:importantForAccessibility="no" />
+    <android.support.design.widget.TabLayout
+        android:id="@+id/bottom_tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/toolbar_shadow_height"
+        app:tabIndicatorColor="@color/light_active_color"
+        app:tabGravity="fill"
+        app:tabMode="fixed"
+        app:tabMaxWidth="2000dp">
+        <android.support.design.widget.TabItem
+            android:id="@+id/ss_home_tab"
+            android:layout="@layout/ss_home_button"/>
+        <android.support.design.widget.TabItem
+            android:id="@+id/ss_explore_tab"
+            android:layout="@layout/ss_explore_button"/>
+    </android.support.design.widget.TabLayout>
+</org.chromium.chrome.features.start_surface.BottomBarView>

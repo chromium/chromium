@@ -25,7 +25,7 @@ class SerialChooserContext;
 
 // SerialChooserController provides data for the Serial API permission prompt.
 // It is owned by ChooserBubbleDelegate.
-class SerialChooserController : public ChooserController {
+class SerialChooserController final : public ChooserController {
  public:
   SerialChooserController(
       content::RenderFrameHost* render_frame_host,
@@ -55,6 +55,8 @@ class SerialChooserController : public ChooserController {
 
   base::WeakPtr<SerialChooserContext> chooser_context_;
   std::vector<device::mojom::SerialPortInfoPtr> ports_;
+
+  base::WeakPtrFactory<SerialChooserController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SerialChooserController);
 };

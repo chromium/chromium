@@ -7,27 +7,20 @@
 
 #import "ios/chrome/browser/ui/authentication/chrome_signin_view_controller.h"
 
-extern NSString* const kSignInButtonAccessibilityIdentifier;
-extern NSString* const kSignInSkipButtonAccessibilityIdentifier;
-
 @protocol ApplicationCommands;
+class Browser;
 @class FirstRunConfiguration;
-namespace ios {
-class ChromeBrowserState;
-}
 @protocol SyncPresenter;
-@class TabModel;
 
 // A ChromeSigninViewController that is used during the run.
 @interface FirstRunChromeSigninViewController : ChromeSigninViewController
 
 // Designated initialzer.
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
-                            tabModel:(TabModel*)tabModel
-                      firstRunConfig:(FirstRunConfiguration*)firstRunConfig
-                      signInIdentity:(ChromeIdentity*)identity
-                           presenter:(id<SyncPresenter>)presenter
-                          dispatcher:(id<ApplicationCommands>)dispatcher;
+- (instancetype)initWithBrowser:(Browser*)browser
+                 firstRunConfig:(FirstRunConfiguration*)firstRunConfig
+                 signInIdentity:(ChromeIdentity*)identity
+                      presenter:(id<SyncPresenter>)presenter
+                     dispatcher:(id<ApplicationCommands>)dispatcher;
 
 @end
 

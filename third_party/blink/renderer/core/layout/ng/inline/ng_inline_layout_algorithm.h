@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NGInlineLayoutAlgorithm_h
-#define NGInlineLayoutAlgorithm_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_LAYOUT_ALGORITHM_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_LAYOUT_ALGORITHM_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
@@ -74,15 +74,15 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
                                    const NGInlineItemResult&,
                                    NGInlineBoxState*);
 
-  void BidiReorder();
+  void BidiReorder(TextDirection base_direction);
 
   void PlaceControlItem(const NGInlineItem&,
                         const NGLineInfo&,
                         NGInlineItemResult*,
                         NGInlineBoxState*);
-  void PlaceGeneratedContent(scoped_refptr<const NGPhysicalFragment>,
-                             UBiDiLevel,
-                             NGInlineBoxState*);
+  void PlaceHyphen(const NGInlineItemResult&,
+                   LayoutUnit hyphen_inline_size,
+                   NGInlineBoxState*);
   NGInlineBoxState* PlaceAtomicInline(const NGInlineItem&,
                                       const NGLineInfo&,
                                       NGInlineItemResult*);
@@ -123,4 +123,4 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
 
 }  // namespace blink
 
-#endif  // NGInlineLayoutAlgorithm_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_LAYOUT_ALGORITHM_H_

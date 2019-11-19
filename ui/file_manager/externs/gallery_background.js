@@ -5,12 +5,12 @@
 /**
  * This is a type to let closure compiler recognize extended methods to Window
  * instance at gallery/js/gallery.js.
- * @constructor
- * @extends {Window}
  */
-function GalleryWindow() {}
-
-/**
- * @type {Promise}
- */
-window.initializePromise;
+class GalleryWindow extends Window {
+  constructor() {
+    /**
+     * @type {Promise}
+     */
+    this.initializePromise;
+  }
+}

@@ -64,10 +64,6 @@ TEST_P(PaintPropertyTreeUpdateTest,
 
 TEST_P(PaintPropertyTreeUpdateTest,
        BackgroundAttachmentFixedMainThreadScrollReasonsWithNestedScrollers) {
-  // This test needs the |FastMobileScrolling| feature to be disabled
-  // although it is stable on Android.
-  ScopedFastMobileScrollingForTest fast_mobile_scrolling(false);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       #overflowA {
@@ -151,10 +147,6 @@ TEST_P(PaintPropertyTreeUpdateTest,
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, ParentFrameMainThreadScrollReasons) {
-  // This test needs the |FastMobileScrolling| feature to be disabled
-  // although it is stable on Android.
-  ScopedFastMobileScrollingForTest fast_mobile_scrolling(false);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       body { margin: 0; }
@@ -191,10 +183,6 @@ TEST_P(PaintPropertyTreeUpdateTest, ParentFrameMainThreadScrollReasons) {
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, ChildFrameMainThreadScrollReasons) {
-  // This test needs the |FastMobileScrolling| feature to be disabled
-  // although it is stable on Android.
-  ScopedFastMobileScrollingForTest fast_mobile_scrolling(false);
-
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0; }</style>
     <iframe></iframe>
@@ -234,10 +222,6 @@ TEST_P(PaintPropertyTreeUpdateTest, ChildFrameMainThreadScrollReasons) {
 
 TEST_P(PaintPropertyTreeUpdateTest,
        BackgroundAttachmentFixedMainThreadScrollReasonsWithFixedScroller) {
-  // This test needs the |FastMobileScrolling| feature to be disabled
-  // although it is stable on Android.
-  ScopedFastMobileScrollingForTest fast_mobile_scrolling(false);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       #overflowA {
@@ -270,8 +254,6 @@ TEST_P(PaintPropertyTreeUpdateTest,
   )HTML");
   Element* overflow_a = GetDocument().getElementById("overflowA");
   Element* overflow_b = GetDocument().getElementById("overflowB");
-  VisualViewport& visual_viewport =
-      GetDocument().GetPage()->GetVisualViewport();
 
   // This should be false. We are not as strict about main thread scrolling
   // reasons as we could be.
@@ -281,18 +263,21 @@ TEST_P(PaintPropertyTreeUpdateTest,
                   ->ScrollTranslation()
                   ->ScrollNode()
                   ->HasBackgroundAttachmentFixedDescendants());
-  EXPECT_FALSE(overflow_b->GetLayoutObject()
-                   ->FirstFragment()
-                   .PaintProperties()
-                   ->ScrollTranslation()
-                   ->ScrollNode()
-                   ->HasBackgroundAttachmentFixedDescendants());
-  EXPECT_EQ(visual_viewport.GetScrollNode(), overflow_b->GetLayoutObject()
-                                                 ->FirstFragment()
-                                                 .PaintProperties()
-                                                 ->ScrollTranslation()
-                                                 ->ScrollNode()
-                                                 ->Parent());
+  // This could be false since it's fixed with respect to the layout viewport.
+  // However, it would be simpler to avoid the main thread by doing this check
+  // on the compositor thread. https://crbug.com/985127.
+  EXPECT_TRUE(overflow_b->GetLayoutObject()
+                  ->FirstFragment()
+                  .PaintProperties()
+                  ->ScrollTranslation()
+                  ->ScrollNode()
+                  ->HasBackgroundAttachmentFixedDescendants());
+  EXPECT_EQ(DocScroll(), overflow_b->GetLayoutObject()
+                             ->FirstFragment()
+                             .PaintProperties()
+                             ->ScrollTranslation()
+                             ->ScrollNode()
+                             ->Parent());
 
   // Removing a main thread scrolling reason should update the entire tree.
   overflow_b->removeAttribute("class");
@@ -412,7 +397,7 @@ TEST_P(PaintPropertyTreeUpdateTest, BuildingStopsAtThrottledFrames) {
   )HTML");
 
   // Move the child frame offscreen so it becomes available for throttling.
-  auto* iframe = ToHTMLIFrameElement(GetDocument().getElementById("iframe"));
+  auto* iframe = To<HTMLIFrameElement>(GetDocument().getElementById("iframe"));
   iframe->setAttribute(html_names::kStyleAttr, "transform: translateY(5555px)");
   UpdateAllLifecyclePhasesForTest();
   // Ensure intersection observer notifications get delivered.
@@ -740,20 +725,18 @@ TEST_P(PaintPropertyTreeUpdateTest, TransformUpdatesOnRelativeLengthChanges) {
 
   auto* transform = GetDocument().getElementById("transform");
   auto* transform_object = transform->GetLayoutObject();
-  EXPECT_EQ(TransformationMatrix().Translate3d(50, 100, 0),
-            transform_object->FirstFragment()
-                .PaintProperties()
-                ->Transform()
-                ->Matrix());
+  EXPECT_EQ(FloatSize(50, 100), transform_object->FirstFragment()
+                                    .PaintProperties()
+                                    ->Transform()
+                                    ->Translation2D());
 
   transform->setAttribute(html_names::kStyleAttr,
                           "width: 200px; height: 300px;");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(TransformationMatrix().Translate3d(100, 150, 0),
-            transform_object->FirstFragment()
-                .PaintProperties()
-                ->Transform()
-                ->Matrix());
+  EXPECT_EQ(FloatSize(100, 150), transform_object->FirstFragment()
+                                     .PaintProperties()
+                                     ->Transform()
+                                     ->Translation2D());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, CSSClipDependingOnSize) {
@@ -837,6 +820,62 @@ TEST_P(PaintPropertyTreeUpdateTest,
   EXPECT_EQ(IntSize(800, 600), visual_viewport.GetScrollNode()->ContentsSize());
 }
 
+TEST_P(PaintPropertyTreeUpdateTest, ViewportAddRemoveDeviceEmulationNode) {
+  SetBodyInnerHTML(
+      "<style>body {height: 10000px; width: 10000px; margin: 0;}</style>");
+
+  auto& visual_viewport = GetDocument().GetPage()->GetVisualViewport();
+  EXPECT_FALSE(visual_viewport.GetDeviceEmulationTransformNode());
+  // The LayoutView (instead of VisualViewport) creates scrollbars because
+  // viewport is disabled.
+  ASSERT_FALSE(GetDocument().GetPage()->GetSettings().GetViewportEnabled());
+  EXPECT_FALSE(visual_viewport.LayerForHorizontalScrollbar());
+  EXPECT_FALSE(visual_viewport.LayerForVerticalScrollbar());
+  ASSERT_TRUE(GetLayoutView().GetScrollableArea());
+  auto* scrollbar_layer = GetLayoutView()
+                              .GetScrollableArea()
+                              ->GraphicsLayerForHorizontalScrollbar();
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    ASSERT_TRUE(scrollbar_layer);
+    EXPECT_EQ(&TransformPaintPropertyNode::Root(),
+              &scrollbar_layer->GetPropertyTreeState().Transform());
+  } else {
+    // TODO(wangxianzhu): Test for CompositeAfterPaint.
+    EXPECT_FALSE(scrollbar_layer);
+  }
+
+  // These emulate WebViewImpl::SetDeviceEmulationTransform().
+  GetChromeClient().SetDeviceEmulationTransform(
+      TransformationMatrix().Scale(2));
+  visual_viewport.SetNeedsPaintPropertyUpdate();
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(visual_viewport.GetDeviceEmulationTransformNode());
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    ASSERT_TRUE(scrollbar_layer);
+    EXPECT_EQ(visual_viewport.GetDeviceEmulationTransformNode(),
+              &scrollbar_layer->GetPropertyTreeState().Transform());
+  } else {
+    // TODO(wangxianzhu): Test for CompositeAfterPaint.
+    EXPECT_FALSE(scrollbar_layer);
+  }
+
+  // These emulate WebViewImpl::SetDeviceEmulationTransform().
+  GetChromeClient().SetDeviceEmulationTransform(TransformationMatrix());
+  visual_viewport.SetNeedsPaintPropertyUpdate();
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(visual_viewport.GetDeviceEmulationTransformNode());
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    ASSERT_TRUE(scrollbar_layer);
+    EXPECT_EQ(&TransformPaintPropertyNode::Root(),
+              &scrollbar_layer->GetPropertyTreeState().Transform());
+  } else {
+    // TODO(wangxianzhu): Test for CompositeAfterPaint.
+    EXPECT_FALSE(scrollbar_layer);
+  }
+}
+
 TEST_P(PaintPropertyTreeUpdateTest, ScrollbarWidthChange) {
   SetBodyInnerHTML(R"HTML(
     <style>::-webkit-scrollbar {width: 20px; height: 20px}</style>
@@ -891,7 +930,7 @@ TEST_P(PaintPropertyTreeUpdateTest, MenuListControlClipChange) {
   EXPECT_NE(nullptr, select->FirstFragment().PaintProperties()->OverflowClip());
 
   // Should not assert in FindPropertiesNeedingUpdate.
-  ToHTMLSelectElement(select->GetNode())->setSelectedIndex(1);
+  To<HTMLSelectElement>(select->GetNode())->setSelectedIndex(1);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_NE(nullptr, select->FirstFragment().PaintProperties()->OverflowClip());
 }
@@ -1070,14 +1109,14 @@ TEST_P(PaintPropertyTreeUpdateTest, WillTransformChangeAboveFixed) {
   EXPECT_EQ(container->FirstFragment().PaintProperties()->Transform(),
             &fixed->FirstFragment().LocalBorderBoxProperties().Transform());
 
-  ToElement(container->GetNode())
+  To<Element>(container->GetNode())
       ->setAttribute(html_names::kStyleAttr, "will-change: top");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(
       &GetLayoutView().FirstFragment().LocalBorderBoxProperties().Transform(),
       &fixed->FirstFragment().LocalBorderBoxProperties().Transform());
 
-  ToElement(container->GetNode())
+  To<Element>(container->GetNode())
       ->setAttribute(html_names::kStyleAttr, "will-change: transform");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(container->FirstFragment().PaintProperties()->Transform(),
@@ -1304,9 +1343,11 @@ TEST_P(PaintPropertyTreeUpdateTest, EnsureSnapContainerData) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
+    html {
+      scroll-snap-type: both proximity;
+    }
     body {
       overflow: scroll;
-      scroll-snap-type: both proximity;
       height: 300px;
       width: 300px;
       margin: 0px;
@@ -1326,7 +1367,6 @@ TEST_P(PaintPropertyTreeUpdateTest, EnsureSnapContainerData) {
       height: 200px;
       scroll-snap-align: start;
     }
-
     </style>
 
     <div id="container">
@@ -1592,40 +1632,50 @@ TEST_P(PaintPropertyTreeUpdateTest, SubpixelAccumulationAcrossIsolation) {
   auto* parent = parent_element->GetLayoutObject();
   auto* isolation_properties = PaintPropertiesForElement("isolation");
   auto* child = GetLayoutObjectByElementId("child");
-  EXPECT_EQ(LayoutPoint(LayoutUnit(10.25), LayoutUnit()),
+  EXPECT_EQ(PhysicalOffset(LayoutUnit(10.25), LayoutUnit()),
             parent->FirstFragment().PaintOffset());
-  EXPECT_EQ(FloatSize(10, 0), isolation_properties->PaintOffsetTranslation()
-                                  ->Matrix()
-                                  .To2DTranslation());
+  EXPECT_EQ(FloatSize(10, 0),
+            isolation_properties->PaintOffsetTranslation()->Translation2D());
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(LayoutPoint(), child->FirstFragment().PaintOffset());
+    EXPECT_EQ(PhysicalOffset(), child->FirstFragment().PaintOffset());
   } else {
-    EXPECT_EQ(LayoutPoint(LayoutUnit(0.25), LayoutUnit()),
+    EXPECT_EQ(PhysicalOffset(LayoutUnit(0.25), LayoutUnit()),
               child->FirstFragment().PaintOffset());
   }
 
   parent_element->setAttribute(html_names::kStyleAttr, "margin-left: 12.75px");
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(LayoutPoint(LayoutUnit(12.75), LayoutUnit()),
+  EXPECT_EQ(PhysicalOffset(LayoutUnit(12.75), LayoutUnit()),
             parent->FirstFragment().PaintOffset());
-  EXPECT_EQ(FloatSize(13, 0), isolation_properties->PaintOffsetTranslation()
-                                  ->Matrix()
-                                  .To2DTranslation());
+  EXPECT_EQ(FloatSize(13, 0),
+            isolation_properties->PaintOffsetTranslation()->Translation2D());
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(LayoutPoint(), child->FirstFragment().PaintOffset());
+    EXPECT_EQ(PhysicalOffset(), child->FirstFragment().PaintOffset());
   } else {
-    EXPECT_EQ(LayoutPoint(LayoutUnit(-0.25), LayoutUnit()),
+    EXPECT_EQ(PhysicalOffset(LayoutUnit(-0.25), LayoutUnit()),
               child->FirstFragment().PaintOffset());
   }
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      !RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled())
-    return;
+  SetBodyInnerHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        @keyframes animation {
+          0% { opacity: 0.3; }
+          100% { opacity: 0.4; }
+        }
+        #target {
+          animation-name: animation;
+          animation-duration: 1s;
+          width: 100px;
+          height: 100px;
+        }
+      </style>
+      <div id='target'></div>
+  )HTML");
 
-  SetBodyInnerHTML("<div id='target' style='width: 100px; height: 100px'>");
   auto* target = GetLayoutObjectByElementId("target");
   auto style = ComputedStyle::Clone(target->StyleRef());
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
@@ -1640,41 +1690,24 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   const auto* transform_node =
       target->FirstFragment().PaintProperties()->Transform();
   ASSERT_TRUE(transform_node);
-  EXPECT_TRUE(transform_node->IsRunningAnimationOnCompositor());
+  EXPECT_TRUE(transform_node->HasActiveTransformAnimation());
   EXPECT_EQ(TransformationMatrix(), transform_node->Matrix());
   EXPECT_EQ(FloatPoint3D(50, 50, 0), transform_node->Origin());
   // Change of animation status should update PaintArtifactCompositor.
   auto* paint_artifact_compositor =
-      GetDocument().View()->GetPaintArtifactCompositorForTesting();
+      GetDocument().View()->GetPaintArtifactCompositor();
   EXPECT_TRUE(paint_artifact_compositor->NeedsUpdate());
   // PaintArtifactCompositor can't clear the NeedsUpdate flag by itself when
   // there is no cc::LayerTreeHost.
   paint_artifact_compositor->ClearNeedsUpdateForTesting();
 
-  // Simulates changing transform during animation.
+  // Simulates changing transform and transform-origin during an animation.
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   style = ComputedStyle::Clone(target->StyleRef());
   TransformOperations transform;
   transform.Operations().push_back(
       RotateTransformOperation::Create(10, TransformOperation::kRotate));
   style->SetTransform(transform);
-  target->SetStyle(std::move(style));
-  EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
-  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
-  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
-
-  ASSERT_EQ(transform_node,
-            target->FirstFragment().PaintProperties()->Transform());
-  EXPECT_TRUE(transform_node->IsRunningAnimationOnCompositor());
-  EXPECT_EQ(TransformationMatrix().Rotate(10), transform_node->Matrix());
-  EXPECT_EQ(FloatPoint3D(50, 50, 0), transform_node->Origin());
-  // Only transform value change during composited animation should not schedule
-  // PaintArtifactCompositor update.
-  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
-
-  // Simulates changing transform origin during animation.
-  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  style = ComputedStyle::Clone(target->StyleRef());
   style->SetTransformOrigin(TransformOrigin(Length(70, Length::kFixed),
                                             Length(30, Length::kFixed), 0));
   target->SetStyle(std::move(style));
@@ -1684,12 +1717,87 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
 
   ASSERT_EQ(transform_node,
             target->FirstFragment().PaintProperties()->Transform());
-  EXPECT_TRUE(transform_node->IsRunningAnimationOnCompositor());
+  EXPECT_TRUE(transform_node->HasActiveTransformAnimation());
   EXPECT_EQ(TransformationMatrix().Rotate(10), transform_node->Matrix());
   EXPECT_EQ(FloatPoint3D(70, 30, 0), transform_node->Origin());
-  // Only transform value change during composited animation should not schedule
-  // PaintArtifactCompositor update.
+  EXPECT_TRUE(transform_node->BackfaceVisibilitySameAsParent());
+  // Changing only transform or transform-origin values during a composited
+  // animation should not schedule a PaintArtifactCompositor update.
+  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+
+  // Simulates changing backface visibility during animation.
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  style = ComputedStyle::Clone(target->StyleRef());
+  style->SetBackfaceVisibility(EBackfaceVisibility::kHidden);
+  target->SetStyle(std::move(style));
+  EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
+
+  ASSERT_EQ(transform_node,
+            target->FirstFragment().PaintProperties()->Transform());
+  EXPECT_TRUE(transform_node->HasActiveTransformAnimation());
+  EXPECT_EQ(TransformationMatrix().Rotate(10), transform_node->Matrix());
+  EXPECT_EQ(FloatPoint3D(70, 30, 0), transform_node->Origin());
+  EXPECT_FALSE(transform_node->BackfaceVisibilitySameAsParent());
+  // Only transform and transform-origin value changes during composited
+  // animation should not schedule PaintArtifactCompositor update. Backface
+  // visibility changes should schedule an update.
   EXPECT_TRUE(paint_artifact_compositor->NeedsUpdate());
+}
+
+TEST_P(PaintPropertyTreeUpdateTest, BackfaceVisibilityInvalidatesProperties) {
+  SetBodyInnerHTML("<span id='span'>a</span>");
+
+  auto* span = GetDocument().getElementById("span");
+  span->setAttribute(html_names::kStyleAttr, "backface-visibility: hidden;");
+  GetDocument().View()->UpdateLifecycleToLayoutClean();
+  EXPECT_TRUE(span->GetLayoutObject()->NeedsPaintPropertyUpdate());
+}
+
+TEST_P(PaintPropertyTreeUpdateTest, FixedPositionCompositing) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="space" style="height: 200px"></div>
+    <div id="fixed" style="position: fixed; top: 50px; left: 60px">Fixed</div>
+  )HTML");
+
+  EXPECT_FALSE(PaintPropertiesForElement("fixed"));
+
+  auto* space = GetDocument().getElementById("space");
+  space->setAttribute(html_names::kStyleAttr, "height: 2000px");
+  UpdateAllLifecyclePhasesForTest();
+  auto* properties = PaintPropertiesForElement("fixed");
+  ASSERT_TRUE(properties);
+  auto* paint_offset_translation = properties->PaintOffsetTranslation();
+  ASSERT_TRUE(paint_offset_translation);
+  EXPECT_EQ(FloatSize(60, 50), paint_offset_translation->Translation2D());
+  EXPECT_TRUE(paint_offset_translation->HasDirectCompositingReasons());
+  EXPECT_FALSE(properties->Transform());
+
+  space->setAttribute(html_names::kStyleAttr, "height: 100px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(PaintPropertiesForElement("fixed"));
+}
+
+TEST_P(PaintPropertyTreeUpdateTest, InlineFilterReferenceBoxChange) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="spacer" style="display: inline-block; height: 20px"></div>
+    <br>
+    <span id="span" style="filter: blur(1px); font-size: 20px">SPAN</span>
+  )HTML");
+
+  const auto* properties = PaintPropertiesForElement("span");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->Filter());
+  EXPECT_EQ(FloatPoint(0, 20),
+            properties->Filter()->Filter().ReferenceBox().Location());
+
+  GetDocument().getElementById("spacer")->setAttribute(
+      html_names::kStyleAttr, "display: inline-block; height: 100px");
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(properties, PaintPropertiesForElement("span"));
+  EXPECT_EQ(FloatPoint(0, 100),
+            properties->Filter()->Filter().ReferenceBox().Location());
 }
 
 }  // namespace blink

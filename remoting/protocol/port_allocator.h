@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "remoting/base/url_request.h"
 #include "remoting/protocol/ice_config.h"
 #include "remoting/protocol/transport_context.h"
 #include "third_party/webrtc/p2p/client/basic_port_allocator.h"
@@ -60,25 +59,15 @@ class PortAllocatorSession : public cricket::BasicPortAllocatorSession {
   // Callback for TransportContext::GetIceConfig().
   void OnIceConfig(const IceConfig& ice_config);
 
-  // Creates PortConfiguration that inclues STUN and TURN servers from
+  // Creates PortConfiguration that includes STUN and TURN servers from
   // |ice_config_|.
   std::unique_ptr<cricket::PortConfiguration> GetPortConfiguration();
-
-  // Attempts to allocate relay session.
-  void TryCreateRelaySession();
-
-  // Result handler for UrlRequest objects in |url_requests_|.
-  void OnSessionRequestResult(const UrlRequest::Result& result);
 
   scoped_refptr<TransportContext> transport_context_;
 
   IceConfig ice_config_;
 
-  int attempts_ = 0;
-
-  std::set<std::unique_ptr<UrlRequest>> url_requests_;
-
-  base::WeakPtrFactory<PortAllocatorSession> weak_factory_;
+  base::WeakPtrFactory<PortAllocatorSession> weak_factory_{this};
 };
 
 }  // namespace protocol

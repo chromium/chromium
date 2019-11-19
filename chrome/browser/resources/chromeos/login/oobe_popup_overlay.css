@@ -18,14 +18,17 @@
   z-index: 5;
 }
 
+/* please use oobe-popup inside a popup-overlay only */
 .oobe-popup {
   background: white;
   border: 1px solid rgb(188, 193, 208);
   border-radius: 2px;
   box-shadow: 0 5px 80px #505050;
+  flex: 1 1 auto;
+  max-width: 460px;
   min-height: 250px;
+  min-width: 50px;
   position: relative;
-  width: 460px;
   z-index: 10;
 }
 

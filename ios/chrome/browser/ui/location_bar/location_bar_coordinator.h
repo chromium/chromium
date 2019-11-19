@@ -11,12 +11,9 @@
 #import "ios/chrome/browser/ui/omnibox/location_bar_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/public/omnibox_focuser.h"
 
-namespace ios {
-class ChromeBrowserState;
-}
-class WebStateList;
 @class CommandDispatcher;
 @protocol ApplicationCommands;
+class Browser;
 @protocol BrowserCommands;
 @protocol EditViewAnimatee;
 @protocol LocationBarAnimatee;
@@ -32,15 +29,13 @@ class WebStateList;
 // View controller containing the omnibox.
 @property(nonatomic, strong, readonly)
     UIViewController* locationBarViewController;
-// Weak reference to ChromeBrowserState;
-@property(nonatomic, assign) ios::ChromeBrowserState* browserState;
+// The location bar's Browser.
+@property(nonatomic, assign) Browser* browser;
 // The dispatcher for this view controller.
 @property(nonatomic, weak) CommandDispatcher* dispatcher;
 // Delegate for this coordinator.
 // TODO(crbug.com/799446): Change this.
 @property(nonatomic, weak) id<ToolbarCoordinatorDelegate> delegate;
-// The web state list this ToolbarCoordinator is handling.
-@property(nonatomic, assign) WebStateList* webStateList;
 
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>
     popupPresenterDelegate;

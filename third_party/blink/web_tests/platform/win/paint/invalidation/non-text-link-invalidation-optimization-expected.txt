@@ -1,49 +1,38 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "InlineTextBox ' text is invalidated and '",
+          "object": "NGPhysicalTextFragment ' text is invalidated and '",
           "rect": [156, 8, 137, 19],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox ' passes if '",
+          "object": "NGPhysicalTextFragment ' passes if '",
           "rect": [72, 8, 59, 19],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'This test '",
+          "object": "NGPhysicalTextFragment 'This test '",
           "rect": [8, 8, 54, 19],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox ' images.'",
+          "object": "NGPhysicalTextFragment ' images.'",
           "rect": [336, 8, 49, 19],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox 'only'",
+          "object": "NGPhysicalTextFragment 'only'",
           "rect": [131, 8, 25, 19],
           "reason": "style change"
         },
         {
-          "object": "InlineTextBox ' no '",
+          "object": "NGPhysicalTextFragment ' no '",
           "rect": [303, 8, 23, 19],
           "reason": "style change"
         }

@@ -12,6 +12,7 @@
 #include "chrome/app/chrome_main_delegate.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "content/public/app/content_main.h"
 #include "content/public/common/content_switches.h"
 #include "headless/public/headless_shell.h"
@@ -24,10 +25,10 @@
 #if defined(OS_WIN)
 #include "base/debug/dump_without_crashing.h"
 #include "base/win/win_util.h"
+#include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/install_static/initialize_from_primary_module.h"
 #include "chrome/install_static/install_details.h"
-#include "chrome_elf/chrome_elf_main.h"
 
 #define DLLEXPORT __declspec(dllexport)
 
@@ -92,6 +93,12 @@ int ChromeMain(int argc, const char** argv) {
 #if defined(OS_MACOSX)
   SetUpBundleOverrides();
 #endif
+
+  // Start the sampling profiler as early as possible - namely, once the command
+  // line data is available. Allocated as an object on the stack to ensure that
+  // the destructor runs on shutdown, which is important to avoid the profiler
+  // thread's destruction racing with main thread destruction.
+  MainThreadStackSamplingProfiler scoped_sampling_profiler;
 
   // Chrome-specific process modes.
 #if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)

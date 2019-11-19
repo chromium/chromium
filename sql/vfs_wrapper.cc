@@ -14,9 +14,14 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
+#include "build/build_config.h"
 
 #if defined(OS_MACOSX) && !defined(OS_IOS)
 #include "base/mac/mac_util.h"
+#endif
+
+#if defined(OS_FUCHSIA)
+#include "sql/vfs_wrapper_fuchsia.h"
 #endif
 
 namespace sql {
@@ -36,14 +41,6 @@ sqlite3_vfs* GetWrappedVfs(sqlite3_vfs* wrapped_vfs) {
   return static_cast<sqlite3_vfs*>(wrapped_vfs->pAppData);
 }
 
-// NOTE(shess): This structure is allocated by SQLite using malloc.  Do not add
-// C++ objects, they will not be correctly constructed and destructed.  Instead,
-// manually manage a pointer to a C++ object in Open() and Close().
-struct VfsFile {
-  const sqlite3_io_methods* methods;
-  sqlite3_file* wrapped_file;
-};
-
 VfsFile* AsVfsFile(sqlite3_file* wrapper_file) {
   return reinterpret_cast<VfsFile*>(wrapper_file);
 }
@@ -56,8 +53,16 @@ int Close(sqlite3_file* sqlite_file)
 {
   VfsFile* file = AsVfsFile(sqlite_file);
 
+#if defined(OS_FUCHSIA)
+  FuchsiaVfsUnlock(sqlite_file, SQLITE_LOCK_NONE);
+#endif
+
   int r = file->wrapped_file->pMethods->xClose(file->wrapped_file);
   sqlite3_free(file->wrapped_file);
+
+  // Memory will be freed with sqlite3_free(), so the destructor needs to be
+  // called explicitly.
+  file->~VfsFile();
   memset(file, '\0', sizeof(*file));
   return r;
 }
@@ -93,6 +98,8 @@ int FileSize(sqlite3_file* sqlite_file, sqlite3_int64* size)
   return wrapped_file->pMethods->xFileSize(wrapped_file, size);
 }
 
+#if !defined(OS_FUCHSIA)
+
 int Lock(sqlite3_file* sqlite_file, int file_lock)
 {
   sqlite3_file* wrapped_file = GetWrappedFile(sqlite_file);
@@ -110,6 +117,8 @@ int CheckReservedLock(sqlite3_file* sqlite_file, int* result)
   sqlite3_file* wrapped_file = GetWrappedFile(sqlite_file);
   return wrapped_file->pMethods->xCheckReservedLock(wrapped_file, result);
 }
+
+#endif  // !defined(OS_FUCHSIA)
 
 int FileControl(sqlite3_file* sqlite_file, int op, void* arg)
 {
@@ -209,18 +218,25 @@ int Open(sqlite3_vfs* vfs, const char* file_name, sqlite3_file* wrapper_file,
   // the version of the wrapped files.
   //
   // At a first glance, it might be tempting to simplify the code by
-  // restricting wrapping support to VFS version 3. However, this would fail
-  // on Fuchsia and might fail on Mac.
+  // restricting wrapping support to VFS version 3. However, this might fail on
+  // Mac.
   //
   // On Mac, SQLite built with SQLITE_ENABLE_LOCKING_STYLE ends up using a VFS
   // that dynamically dispatches between a few variants of sqlite3_io_methods,
   // based on whether the opened database is on a local or on a remote (AFS,
   // NFS) filesystem. Some variants return a VFS version 1 structure.
-  //
-  // Fuchsia doesn't implement POSIX locking, so it always uses dot-style
-  // locking, which returns VFS version 1 files.
   VfsFile* file = AsVfsFile(wrapper_file);
+
+  // Call constructor explicitly since the memory is already allocated.
+  new (file) VfsFile();
+
   file->wrapped_file = wrapped_file;
+
+#if defined(OS_FUCHSIA)
+  file->file_name = file_name;
+  file->lock_level = SQLITE_LOCK_NONE;
+#endif
+
   if (wrapped_file->pMethods->iVersion == 1) {
     static const sqlite3_io_methods io_methods = {
       1,
@@ -230,9 +246,15 @@ int Open(sqlite3_vfs* vfs, const char* file_name, sqlite3_file* wrapper_file,
       Truncate,
       Sync,
       FileSize,
+#if !defined(OS_FUCHSIA)
       Lock,
       Unlock,
       CheckReservedLock,
+#else
+      FuchsiaVfsLock,
+      FuchsiaVfsUnlock,
+      FuchsiaVfsCheckReservedLock,
+#endif
       FileControl,
       SectorSize,
       DeviceCharacteristics,
@@ -247,9 +269,15 @@ int Open(sqlite3_vfs* vfs, const char* file_name, sqlite3_file* wrapper_file,
       Truncate,
       Sync,
       FileSize,
+#if !defined(OS_FUCHSIA)
       Lock,
       Unlock,
       CheckReservedLock,
+#else
+      FuchsiaVfsLock,
+      FuchsiaVfsUnlock,
+      FuchsiaVfsCheckReservedLock,
+#endif
       FileControl,
       SectorSize,
       DeviceCharacteristics,
@@ -269,9 +297,15 @@ int Open(sqlite3_vfs* vfs, const char* file_name, sqlite3_file* wrapper_file,
       Truncate,
       Sync,
       FileSize,
+#if !defined(OS_FUCHSIA)
       Lock,
       Unlock,
       CheckReservedLock,
+#else
+      FuchsiaVfsLock,
+      FuchsiaVfsUnlock,
+      FuchsiaVfsCheckReservedLock,
+#endif
       FileControl,
       SectorSize,
       DeviceCharacteristics,
@@ -306,26 +340,6 @@ int FullPathname(sqlite3_vfs* vfs, const char* relative_path,
       wrapped_vfs, relative_path, buf_size, absolute_path);
 }
 
-void* DlOpen(sqlite3_vfs* vfs, const char* filename) {
-  sqlite3_vfs* wrapped_vfs = GetWrappedVfs(vfs);
-  return wrapped_vfs->xDlOpen(wrapped_vfs, filename);
-}
-
-void DlError(sqlite3_vfs* vfs, int buf_size, char* error_buffer) {
-  sqlite3_vfs* wrapped_vfs = GetWrappedVfs(vfs);
-  wrapped_vfs->xDlError(wrapped_vfs, buf_size, error_buffer);
-}
-
-void(*DlSym(sqlite3_vfs* vfs, void* handle, const char* sym))(void) {
-  sqlite3_vfs* wrapped_vfs = GetWrappedVfs(vfs);
-  return wrapped_vfs->xDlSym(wrapped_vfs, handle, sym);
-}
-
-void DlClose(sqlite3_vfs* vfs, void* handle) {
-  sqlite3_vfs* wrapped_vfs = GetWrappedVfs(vfs);
-  wrapped_vfs->xDlClose(wrapped_vfs, handle);
-}
-
 int Randomness(sqlite3_vfs* vfs, int buf_size, char* buffer) {
   sqlite3_vfs* wrapped_vfs = GetWrappedVfs(vfs);
   return wrapped_vfs->xRandomness(wrapped_vfs, buf_size, buffer);
@@ -336,11 +350,6 @@ int Sleep(sqlite3_vfs* vfs, int microseconds) {
   return wrapped_vfs->xSleep(wrapped_vfs, microseconds);
 }
 
-int CurrentTime(sqlite3_vfs* vfs, double* now) {
-  sqlite3_vfs* wrapped_vfs = GetWrappedVfs(vfs);
-  return wrapped_vfs->xCurrentTime(wrapped_vfs, now);
-}
-
 int GetLastError(sqlite3_vfs* vfs, int e, char* s) {
   sqlite3_vfs* wrapped_vfs = GetWrappedVfs(vfs);
   return wrapped_vfs->xGetLastError(wrapped_vfs, e, s);
@@ -349,22 +358,6 @@ int GetLastError(sqlite3_vfs* vfs, int e, char* s) {
 int CurrentTimeInt64(sqlite3_vfs* vfs, sqlite3_int64* now) {
   sqlite3_vfs* wrapped_vfs = GetWrappedVfs(vfs);
   return wrapped_vfs->xCurrentTimeInt64(wrapped_vfs, now);
-}
-
-int SetSystemCall(sqlite3_vfs* vfs, const char* name,
-                  sqlite3_syscall_ptr func) {
-  sqlite3_vfs* wrapped_vfs = GetWrappedVfs(vfs);
-  return wrapped_vfs->xSetSystemCall(wrapped_vfs, name, func);
-}
-
-sqlite3_syscall_ptr GetSystemCall(sqlite3_vfs* vfs, const char* name) {
-  sqlite3_vfs* wrapped_vfs = GetWrappedVfs(vfs);
-  return wrapped_vfs->xGetSystemCall(wrapped_vfs, name);
-}
-
-const char* NextSystemCall(sqlite3_vfs* vfs, const char* name) {
-  sqlite3_vfs* wrapped_vfs = GetWrappedVfs(vfs);
-  return wrapped_vfs->xNextSystemCall(wrapped_vfs, name);
 }
 
 }  // namespace
@@ -379,10 +372,18 @@ sqlite3_vfs* VFSWrapper() {
       return vfs;
   }
 
-  // Get the default VFS for this platform.  If no default VFS, give up.
-  sqlite3_vfs* wrapped_vfs = sqlite3_vfs_find(nullptr);
-  if (!wrapped_vfs)
+  // Get the default VFS on all platforms except Fuchsia.
+  const char* base_vfs_name = nullptr;
+#if defined(OS_FUCHSIA)
+  base_vfs_name = "unix-none";
+#endif
+  sqlite3_vfs* wrapped_vfs = sqlite3_vfs_find(base_vfs_name);
+
+  // Give up if there is no VFS implementation for the current platform.
+  if (!wrapped_vfs) {
+    NOTREACHED();
     return nullptr;
+  }
 
   std::unique_ptr<sqlite3_vfs, std::function<void(sqlite3_vfs*)>> wrapper_vfs(
       static_cast<sqlite3_vfs*>(sqlite3_malloc(sizeof(sqlite3_vfs))),
@@ -393,13 +394,18 @@ sqlite3_vfs* VFSWrapper() {
 
   // VFS implementations should always work with a SQLite that only knows about
   // earlier versions.
-  wrapper_vfs->iVersion = std::min(wrapped_vfs->iVersion, 3);
+  constexpr int kSqliteVfsApiVersion = 3;
+  wrapper_vfs->iVersion = kSqliteVfsApiVersion;
+
+  // All the SQLite VFS implementations used by Chrome should support the
+  // version proxied here.
+  DCHECK_GE(wrapped_vfs->iVersion, kSqliteVfsApiVersion);
 
   // Caller of xOpen() allocates this much space.
   wrapper_vfs->szOsFile = sizeof(VfsFile);
 
   wrapper_vfs->mxPathname = wrapped_vfs->mxPathname;
-  wrapper_vfs->pNext = nullptr;
+  wrapper_vfs->pNext = nullptr;  // Field used by SQLite.
   wrapper_vfs->zName = kVFSName;
 
   // Keep a reference to the wrapped vfs for use in methods.
@@ -410,26 +416,39 @@ sqlite3_vfs* VFSWrapper() {
   wrapper_vfs->xDelete = &Delete;
   wrapper_vfs->xAccess = &Access;
   wrapper_vfs->xFullPathname = &FullPathname;
-  wrapper_vfs->xDlOpen = &DlOpen;
-  wrapper_vfs->xDlError = &DlError;
-  wrapper_vfs->xDlSym = &DlSym;
-  wrapper_vfs->xDlClose = &DlClose;
+
+  // SQLite's dynamic extension loading is disabled in Chrome. Not proxying
+  // these methods lets us ship less logic and provides a tiny bit of extra
+  // security, as we know for sure that SQLite will not dynamically load code.
+  wrapper_vfs->xDlOpen = nullptr;
+  wrapper_vfs->xDlError = nullptr;
+  wrapper_vfs->xDlSym = nullptr;
+  wrapper_vfs->xDlClose = nullptr;
+
   wrapper_vfs->xRandomness = &Randomness;
   wrapper_vfs->xSleep = &Sleep;
-  // |xCurrentTime| is null when SQLite is built with SQLITE_OMIT_DEPRECATED.
-  wrapper_vfs->xCurrentTime =
-      (wrapped_vfs->xCurrentTime ? &CurrentTime : nullptr);
+
+  // |xCurrentTime| is null when SQLite is built with SQLITE_OMIT_DEPRECATED, so
+  // it does not need to be proxied.
+  wrapper_vfs->xCurrentTime = nullptr;
+
   wrapper_vfs->xGetLastError = &GetLastError;
-  // The methods above are in version 1 of sqlite_vfs.
-  DCHECK(wrapped_vfs->xCurrentTimeInt64);
+
+  // The methods above are in version 1 of SQLite's VFS API.
+
+  DCHECK(wrapped_vfs->xCurrentTimeInt64 != nullptr);
   wrapper_vfs->xCurrentTimeInt64 = &CurrentTimeInt64;
-  // The methods above are in version 2 of sqlite_vfs.
-  DCHECK(wrapped_vfs->xSetSystemCall);
-  wrapper_vfs->xSetSystemCall = &SetSystemCall;
-  DCHECK(wrapped_vfs->xGetSystemCall);
-  wrapper_vfs->xGetSystemCall = &GetSystemCall;
-  DCHECK(wrapped_vfs->xNextSystemCall);
-  wrapper_vfs->xNextSystemCall = &NextSystemCall;
+
+  // The methods above are in version 2 of SQLite's VFS API.
+
+  // The VFS system call interception API is intended for very low-level SQLite
+  // testing and tweaks. Proxying these methods is not necessary because Chrome
+  // does not do very low-level SQLite testing, and the VFS wrapper supports all
+  // the needed tweaks.
+  wrapper_vfs->xSetSystemCall = nullptr;
+  wrapper_vfs->xGetSystemCall = nullptr;
+  wrapper_vfs->xNextSystemCall = nullptr;
+
   // The methods above are in version 3 of sqlite_vfs.
 
   if (SQLITE_OK == sqlite3_vfs_register(wrapper_vfs.get(), 0)) {

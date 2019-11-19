@@ -41,14 +41,15 @@
 
     <div class="settings-box first" actionable on-click="onEnableTap_">
       <div id="onOff" class="start settings-box-text"
-          on$="[[bluetoothToggleState]]">
+          on$="[[bluetoothToggleState]]" aria-hidden="true">
         [[getOnOffString_(bluetoothToggleState,
           '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]
       </div>
       <cr-toggle id="enableBluetooth"
           checked="{{bluetoothToggleState}}"
           disabled$="[[!isToggleEnabled_(adapterState, stateChangeInProgress)]]"
-          aria-label="$i18n{bluetoothToggleA11yLabel}">
+          aria-label="$i18n{bluetoothToggleA11yLabel}"
+          aria-live="polite" aria-relevant="all">
       </cr-toggle>
     </div>
 
@@ -65,7 +66,7 @@
     <div id="pairedContainer" class="container"
         scrollable on-device-event="onDeviceEvent_"
         hidden="[[!showDevices_(bluetoothToggleState, pairedDeviceList_)]]">
-      <iron-list id="pairedDevices" preserve-focus items="[[pairedDeviceList_]]"
+      <iron-list id="pairedDevices" items="[[pairedDeviceList_]]"
           selection-enabled selected-item="{{selectedPairedItem_}}"
           scroll-target="pairedContainer" class="cr-separators">
         <template>
@@ -91,7 +92,7 @@
     <div id="unpairedContainer" class="container"
         scrollable on-device-event="onDeviceEvent_"
         hidden="[[!showDevices_(bluetoothToggleState, unpairedDeviceList_)]]">
-      <iron-list id="unpairedDevices" class="cr-separators" preserve-focus
+      <iron-list id="unpairedDevices" class="cr-separators"
           items="[[unpairedDeviceList_]]"
           selection-enabled selected-item="{{selectedUnpairedItem_}}"
           scroll-target="unpairedContainer">

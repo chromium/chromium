@@ -5,7 +5,7 @@
 #include "media/midi/midi_output_port_android.h"
 
 #include "base/android/jni_array.h"
-#include "jni/MidiOutputPortAndroid_jni.h"
+#include "media/midi/midi_jni_headers/MidiOutputPortAndroid_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

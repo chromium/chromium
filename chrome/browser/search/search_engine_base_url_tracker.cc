@@ -6,7 +6,6 @@
 
 
 #include "components/search_engines/search_terms_data.h"
-#include "components/search_engines/template_url_service.h"
 
 SearchEngineBaseURLTracker::SearchEngineBaseURLTracker(
     TemplateURLService* template_url_service,
@@ -15,7 +14,6 @@ SearchEngineBaseURLTracker::SearchEngineBaseURLTracker(
     : template_url_service_(template_url_service),
       search_terms_data_(std::move(search_terms_data)),
       base_url_changed_callback_(base_url_changed_callback),
-      observer_(this),
       previous_google_base_url_(search_terms_data_->GoogleBaseURLValue()) {
   DCHECK(template_url_service_);
 

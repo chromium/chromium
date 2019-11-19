@@ -100,7 +100,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkInterceptor {
   uint64_t download_last_tick_;
   uint64_t upload_last_tick_;
 
-  base::WeakPtrFactory<ThrottlingNetworkInterceptor> weak_ptr_factory_;
+  base::WeakPtrFactory<ThrottlingNetworkInterceptor> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ThrottlingNetworkInterceptor);
 };

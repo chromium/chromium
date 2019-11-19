@@ -55,8 +55,12 @@ SyncValueStoreCache::~SyncValueStoreCache() {
   DCHECK(IsOnBackendSequence());
 }
 
+base::WeakPtr<SyncValueStoreCache> SyncValueStoreCache::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 syncer::SyncableService* SyncValueStoreCache::GetSyncableService(
-    syncer::ModelType type) const {
+    syncer::ModelType type) {
   DCHECK(IsOnBackendSequence());
   DCHECK(initialized_);
 

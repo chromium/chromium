@@ -18,7 +18,8 @@ chrome.test.runTests([
             chrome.management.uninstall(results[i].id, pass(function() {
               chrome.tabs.query({'url': uninstall_url}, pass(function(tabs) {
                 chrome.test.assertEq(tabs.length, 1);
-                chrome.test.assertEq(tabs[0].url, uninstall_url);
+                chrome.test.assertEq(tabs[0].pendingUrl || tabs[0].url,
+                                     uninstall_url);
               }));
             }));
           }));

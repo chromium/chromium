@@ -30,16 +30,16 @@
 
 #include "third_party/blink/renderer/platform/text/locale_mac.h"
 
-#import <Foundation/NSDateFormatter.h>
-#import <Foundation/NSLocale.h>
+#import <Foundation/Foundation.h>
+
 #include <memory>
 
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/language.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
-#include "third_party/blink/renderer/platform/wtf/retain_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -53,25 +53,25 @@ static inline String LanguageFromLocale(const String& locale) {
   return normalized_locale.Left(separator_position);
 }
 
-static RetainPtr<NSLocale> DetermineLocale(const String& locale) {
+static NSLocale* DetermineLocale(const String& locale) {
   if (!WebTestSupport::IsRunningWebTest()) {
-    RetainPtr<NSLocale> current_locale = [NSLocale currentLocale];
+    NSLocale* current_locale = [NSLocale currentLocale];
     String current_locale_language =
-        LanguageFromLocale(String([current_locale.Get() localeIdentifier]));
+        LanguageFromLocale(String([current_locale localeIdentifier]));
     String locale_language = LanguageFromLocale(locale);
     if (DeprecatedEqualIgnoringCase(current_locale_language, locale_language))
       return current_locale;
   }
-  // It seems initWithLocaleIdentifier accepts dash-separated locale identifier.
-  return RetainPtr<NSLocale>(
-      kAdoptNS, [[NSLocale alloc] initWithLocaleIdentifier:locale]);
+  // It seems localeWithLocaleIdentifier accepts dash-separated locale
+  // identifier.
+  return [NSLocale localeWithLocaleIdentifier:locale];
 }
 
 std::unique_ptr<Locale> Locale::Create(const String& locale) {
-  return LocaleMac::Create(DetermineLocale(locale).Get());
+  return LocaleMac::Create(DetermineLocale(locale));
 }
 
-static RetainPtr<NSDateFormatter> CreateDateTimeFormatter(
+static base::scoped_nsobject<NSDateFormatter> CreateDateTimeFormatter(
     NSLocale* locale,
     NSCalendar* calendar,
     NSDateFormatterStyle date_style,
@@ -82,40 +82,37 @@ static RetainPtr<NSDateFormatter> CreateDateTimeFormatter(
   [formatter setTimeStyle:time_style];
   [formatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
   [formatter setCalendar:calendar];
-  return AdoptNS(formatter);
+  return base::scoped_nsobject<NSDateFormatter>(formatter);
 }
 
 LocaleMac::LocaleMac(NSLocale* locale)
-    : locale_(locale),
-      gregorian_calendar_(
-          kAdoptNS,
-          [[NSCalendar alloc]
-              initWithCalendarIdentifier:NSCalendarIdentifierGregorian]),
+    : locale_([locale retain]),
+      gregorian_calendar_([[NSCalendar alloc]
+          initWithCalendarIdentifier:NSCalendarIdentifierGregorian]),
       did_initialize_number_data_(false) {
   NSArray* available_languages = [NSLocale ISOLanguageCodes];
   // NSLocale returns a lower case NSLocaleLanguageCode so we don't have care
   // about case.
-  NSString* language = [locale_.Get() objectForKey:NSLocaleLanguageCode];
+  NSString* language = [locale_ objectForKey:NSLocaleLanguageCode];
   if ([available_languages indexOfObject:language] == NSNotFound)
-    locale_.AdoptNS(
+    locale_.reset(
         [[NSLocale alloc] initWithLocaleIdentifier:DefaultLanguage()]);
-  [gregorian_calendar_.Get() setLocale:locale_.Get()];
+  [gregorian_calendar_ setLocale:locale_];
 }
 
 LocaleMac::~LocaleMac() {}
 
 std::unique_ptr<LocaleMac> LocaleMac::Create(const String& locale_identifier) {
-  RetainPtr<NSLocale> locale =
-      [[NSLocale alloc] initWithLocaleIdentifier:locale_identifier];
-  return base::WrapUnique(new LocaleMac(locale.Get()));
+  NSLocale* locale = [NSLocale localeWithLocaleIdentifier:locale_identifier];
+  return LocaleMac::Create(locale);
 }
 
 std::unique_ptr<LocaleMac> LocaleMac::Create(NSLocale* locale) {
   return base::WrapUnique(new LocaleMac(locale));
 }
 
-RetainPtr<NSDateFormatter> LocaleMac::ShortDateFormatter() {
-  return CreateDateTimeFormatter(locale_.Get(), gregorian_calendar_.Get(),
+base::scoped_nsobject<NSDateFormatter> LocaleMac::ShortDateFormatter() {
+  return CreateDateTimeFormatter(locale_, gregorian_calendar_,
                                  NSDateFormatterShortStyle,
                                  NSDateFormatterNoStyle);
 }
@@ -124,7 +121,7 @@ const Vector<String>& LocaleMac::MonthLabels() {
   if (!month_labels_.IsEmpty())
     return month_labels_;
   month_labels_.ReserveCapacity(12);
-  NSArray* array = [ShortDateFormatter().Get() monthSymbols];
+  NSArray* array = [ShortDateFormatter() monthSymbols];
   if ([array count] == 12) {
     for (unsigned i = 0; i < 12; ++i)
       month_labels_.push_back(String([array objectAtIndex:i]));
@@ -139,7 +136,9 @@ const Vector<String>& LocaleMac::WeekDayShortLabels() {
   if (!week_day_short_labels_.IsEmpty())
     return week_day_short_labels_;
   week_day_short_labels_.ReserveCapacity(7);
-  NSArray* array = [ShortDateFormatter().Get() shortWeekdaySymbols];
+  NSArray* array = RuntimeEnabledFeatures::FormControlsRefreshEnabled()
+                       ? [ShortDateFormatter() veryShortWeekdaySymbols]
+                       : [ShortDateFormatter() shortWeekdaySymbols];
   if ([array count] == 7) {
     for (unsigned i = 0; i < 7; ++i)
       week_day_short_labels_.push_back(String([array objectAtIndex:i]));
@@ -156,36 +155,38 @@ unsigned LocaleMac::FirstDayOfWeek() {
   // The document for NSCalendar - firstWeekday doesn't have an explanation of
   // firstWeekday value. We can guess it by the document of NSDateComponents -
   // weekDay, so it can be 1 through 7 and 1 is Sunday.
-  return [gregorian_calendar_.Get() firstWeekday] - 1;
+  return [gregorian_calendar_ firstWeekday] - 1;
 }
 
 bool LocaleMac::IsRTL() {
   return NSLocaleLanguageDirectionRightToLeft ==
          [NSLocale characterDirectionForLanguage:
                        [NSLocale canonicalLanguageIdentifierFromString:
-                                     [locale_.Get() localeIdentifier]]];
+                                     [locale_ localeIdentifier]]];
 }
 
-RetainPtr<NSDateFormatter> LocaleMac::TimeFormatter() {
-  return CreateDateTimeFormatter(locale_.Get(), gregorian_calendar_.Get(),
+base::scoped_nsobject<NSDateFormatter> LocaleMac::TimeFormatter() {
+  return CreateDateTimeFormatter(locale_, gregorian_calendar_,
                                  NSDateFormatterNoStyle,
                                  NSDateFormatterMediumStyle);
 }
 
-RetainPtr<NSDateFormatter> LocaleMac::ShortTimeFormatter() {
-  return CreateDateTimeFormatter(locale_.Get(), gregorian_calendar_.Get(),
+base::scoped_nsobject<NSDateFormatter> LocaleMac::ShortTimeFormatter() {
+  return CreateDateTimeFormatter(locale_, gregorian_calendar_,
                                  NSDateFormatterNoStyle,
                                  NSDateFormatterShortStyle);
 }
 
-RetainPtr<NSDateFormatter> LocaleMac::DateTimeFormatterWithSeconds() {
-  return CreateDateTimeFormatter(locale_.Get(), gregorian_calendar_.Get(),
+base::scoped_nsobject<NSDateFormatter>
+LocaleMac::DateTimeFormatterWithSeconds() {
+  return CreateDateTimeFormatter(locale_, gregorian_calendar_,
                                  NSDateFormatterShortStyle,
                                  NSDateFormatterMediumStyle);
 }
 
-RetainPtr<NSDateFormatter> LocaleMac::DateTimeFormatterWithoutSeconds() {
-  return CreateDateTimeFormatter(locale_.Get(), gregorian_calendar_.Get(),
+base::scoped_nsobject<NSDateFormatter>
+LocaleMac::DateTimeFormatterWithoutSeconds() {
+  return CreateDateTimeFormatter(locale_, gregorian_calendar_,
                                  NSDateFormatterShortStyle,
                                  NSDateFormatterShortStyle);
 }
@@ -193,7 +194,7 @@ RetainPtr<NSDateFormatter> LocaleMac::DateTimeFormatterWithoutSeconds() {
 String LocaleMac::DateFormat() {
   if (!date_format_.IsNull())
     return date_format_;
-  date_format_ = [ShortDateFormatter().Get() dateFormat];
+  date_format_ = [ShortDateFormatter() dateFormat];
   return date_format_;
 }
 
@@ -204,7 +205,7 @@ String LocaleMac::MonthFormat() {
   // "MMMM" in some locales.
   month_format_ = [NSDateFormatter dateFormatFromTemplate:@"yyyyMMMM"
                                                   options:0
-                                                   locale:locale_.Get()];
+                                                   locale:locale_];
   return month_format_;
 }
 
@@ -213,29 +214,28 @@ String LocaleMac::ShortMonthFormat() {
     return short_month_format_;
   short_month_format_ = [NSDateFormatter dateFormatFromTemplate:@"yyyyMMM"
                                                         options:0
-                                                         locale:locale_.Get()];
+                                                         locale:locale_];
   return short_month_format_;
 }
 
 String LocaleMac::TimeFormat() {
   if (!time_format_with_seconds_.IsNull())
     return time_format_with_seconds_;
-  time_format_with_seconds_ = [TimeFormatter().Get() dateFormat];
+  time_format_with_seconds_ = [TimeFormatter() dateFormat];
   return time_format_with_seconds_;
 }
 
 String LocaleMac::ShortTimeFormat() {
   if (!time_format_without_seconds_.IsNull())
     return time_format_without_seconds_;
-  time_format_without_seconds_ = [ShortTimeFormatter().Get() dateFormat];
+  time_format_without_seconds_ = [ShortTimeFormatter() dateFormat];
   return time_format_without_seconds_;
 }
 
 String LocaleMac::DateTimeFormatWithSeconds() {
   if (!date_time_format_with_seconds_.IsNull())
     return date_time_format_with_seconds_;
-  date_time_format_with_seconds_ =
-      [DateTimeFormatterWithSeconds().Get() dateFormat];
+  date_time_format_with_seconds_ = [DateTimeFormatterWithSeconds() dateFormat];
   return date_time_format_with_seconds_;
 }
 
@@ -243,7 +243,7 @@ String LocaleMac::DateTimeFormatWithoutSeconds() {
   if (!date_time_format_without_seconds_.IsNull())
     return date_time_format_without_seconds_;
   date_time_format_without_seconds_ =
-      [DateTimeFormatterWithoutSeconds().Get() dateFormat];
+      [DateTimeFormatterWithoutSeconds() dateFormat];
   return date_time_format_without_seconds_;
 }
 
@@ -251,7 +251,7 @@ const Vector<String>& LocaleMac::ShortMonthLabels() {
   if (!short_month_labels_.IsEmpty())
     return short_month_labels_;
   short_month_labels_.ReserveCapacity(12);
-  NSArray* array = [ShortDateFormatter().Get() shortMonthSymbols];
+  NSArray* array = [ShortDateFormatter() shortMonthSymbols];
   if ([array count] == 12) {
     for (unsigned i = 0; i < 12; ++i)
       short_month_labels_.push_back([array objectAtIndex:i]);
@@ -265,7 +265,7 @@ const Vector<String>& LocaleMac::ShortMonthLabels() {
 const Vector<String>& LocaleMac::StandAloneMonthLabels() {
   if (!stand_alone_month_labels_.IsEmpty())
     return stand_alone_month_labels_;
-  NSArray* array = [ShortDateFormatter().Get() standaloneMonthSymbols];
+  NSArray* array = [ShortDateFormatter() standaloneMonthSymbols];
   if ([array count] == 12) {
     stand_alone_month_labels_.ReserveCapacity(12);
     for (unsigned i = 0; i < 12; ++i)
@@ -279,7 +279,7 @@ const Vector<String>& LocaleMac::StandAloneMonthLabels() {
 const Vector<String>& LocaleMac::ShortStandAloneMonthLabels() {
   if (!short_stand_alone_month_labels_.IsEmpty())
     return short_stand_alone_month_labels_;
-  NSArray* array = [ShortDateFormatter().Get() shortStandaloneMonthSymbols];
+  NSArray* array = [ShortDateFormatter() shortStandaloneMonthSymbols];
   if ([array count] == 12) {
     short_stand_alone_month_labels_.ReserveCapacity(12);
     for (unsigned i = 0; i < 12; ++i)
@@ -294,9 +294,9 @@ const Vector<String>& LocaleMac::TimeAMPMLabels() {
   if (!time_ampm_labels_.IsEmpty())
     return time_ampm_labels_;
   time_ampm_labels_.ReserveCapacity(2);
-  RetainPtr<NSDateFormatter> formatter = ShortTimeFormatter();
-  time_ampm_labels_.push_back([formatter.Get() AMSymbol]);
-  time_ampm_labels_.push_back([formatter.Get() PMSymbol]);
+  base::scoped_nsobject<NSDateFormatter> formatter(ShortTimeFormatter());
+  time_ampm_labels_.push_back([formatter AMSymbol]);
+  time_ampm_labels_.push_back([formatter PMSymbol]);
   return time_ampm_labels_;
 }
 
@@ -305,30 +305,30 @@ void LocaleMac::InitializeLocaleData() {
     return;
   did_initialize_number_data_ = true;
 
-  RetainPtr<NSNumberFormatter> formatter(kAdoptNS,
-                                         [[NSNumberFormatter alloc] init]);
-  [formatter.Get() setLocale:locale_.Get()];
-  [formatter.Get() setNumberStyle:NSNumberFormatterDecimalStyle];
-  [formatter.Get() setUsesGroupingSeparator:NO];
+  base::scoped_nsobject<NSNumberFormatter> formatter(
+      [[NSNumberFormatter alloc] init]);
+  [formatter setLocale:locale_];
+  [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
+  [formatter setUsesGroupingSeparator:NO];
 
-  RetainPtr<NSNumber> sample_number(
-      kAdoptNS, [[NSNumber alloc] initWithDouble:9876543210]);
-  String nine_to_zero([formatter.Get() stringFromNumber:sample_number.Get()]);
+  base::scoped_nsobject<NSNumber> sample_number(
+      [[NSNumber alloc] initWithDouble:9876543210]);
+  String nine_to_zero([formatter stringFromNumber:sample_number]);
   if (nine_to_zero.length() != 10)
     return;
   Vector<String, kDecimalSymbolsSize> symbols;
   for (unsigned i = 0; i < 10; ++i)
     symbols.push_back(nine_to_zero.Substring(9 - i, 1));
   DCHECK(symbols.size() == kDecimalSeparatorIndex);
-  symbols.push_back([formatter.Get() decimalSeparator]);
+  symbols.push_back([formatter decimalSeparator]);
   DCHECK(symbols.size() == kGroupSeparatorIndex);
-  symbols.push_back([formatter.Get() groupingSeparator]);
+  symbols.push_back([formatter groupingSeparator]);
   DCHECK(symbols.size() == kDecimalSymbolsSize);
 
-  String positive_prefix([formatter.Get() positivePrefix]);
-  String positive_suffix([formatter.Get() positiveSuffix]);
-  String negative_prefix([formatter.Get() negativePrefix]);
-  String negative_suffix([formatter.Get() negativeSuffix]);
+  String positive_prefix([formatter positivePrefix]);
+  String positive_suffix([formatter positiveSuffix]);
+  String negative_prefix([formatter negativePrefix]);
+  String negative_suffix([formatter negativeSuffix]);
   SetLocaleData(symbols, positive_prefix, positive_suffix, negative_prefix,
                 negative_suffix);
 }

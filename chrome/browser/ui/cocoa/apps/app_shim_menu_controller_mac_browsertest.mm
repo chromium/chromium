@@ -12,7 +12,6 @@
 #import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_shim/extension_app_shim_handler_mac.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -42,12 +41,6 @@ class AppShimMenuControllerBrowserTest
         app_2_(nullptr),
         hosted_app_(nullptr),
         initial_menu_item_count_(0) {}
-
-  // testing::Test:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kBookmarkApps);
-    PlatformAppBrowserTest::SetUp();
-  }
 
   // Start testing apps and wait for them to launch. |flags| is a bitmask of
   // AvailableApps.
@@ -136,8 +129,6 @@ class AppShimMenuControllerBrowserTest
   NSUInteger initial_menu_item_count_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   DISALLOW_COPY_AND_ASSIGN(AppShimMenuControllerBrowserTest);
 };
 

@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -305,7 +305,7 @@ class Symbolizer {
                                            char *tmp_buf, int tmp_buf_size);
 
   enum {
-    SYMBOL_BUF_SIZE = 2048,
+    SYMBOL_BUF_SIZE = 3072,
     TMP_BUF_SIZE = 1024,
     SYMBOL_CACHE_LINES = 128,
   };
@@ -762,37 +762,27 @@ FindSymbolResult Symbolizer::GetSymbolFromObjectFile(
     }
   }
 
-  // Consult a regular symbol table first.
-  if (!GetSectionHeaderByType(obj.fd, obj.elf_header.e_shnum,
-                              obj.elf_header.e_shoff, SHT_SYMTAB, &symtab,
-                              tmp_buf, tmp_buf_size)) {
-    return SYMBOL_NOT_FOUND;
-  }
-  if (!ReadFromOffsetExact(
-          obj.fd, &strtab, sizeof(strtab),
-          obj.elf_header.e_shoff + symtab.sh_link * sizeof(symtab))) {
-    return SYMBOL_NOT_FOUND;
-  }
-  const FindSymbolResult rc =
-      FindSymbol(pc, obj.fd, out, out_size, relocation, &strtab, &symtab,
-                 opd_ptr, tmp_buf, tmp_buf_size);
-  if (rc != SYMBOL_NOT_FOUND) {
-    return rc;  // Found the symbol in a regular symbol table.
+  // Consult a regular symbol table, then fall back to the dynamic symbol table.
+  for (const auto symbol_table_type : {SHT_SYMTAB, SHT_DYNSYM}) {
+    if (!GetSectionHeaderByType(obj.fd, obj.elf_header.e_shnum,
+                                obj.elf_header.e_shoff, symbol_table_type,
+                                &symtab, tmp_buf, tmp_buf_size)) {
+      continue;
+    }
+    if (!ReadFromOffsetExact(
+            obj.fd, &strtab, sizeof(strtab),
+            obj.elf_header.e_shoff + symtab.sh_link * sizeof(symtab))) {
+      continue;
+    }
+    const FindSymbolResult rc =
+        FindSymbol(pc, obj.fd, out, out_size, relocation, &strtab, &symtab,
+                   opd_ptr, tmp_buf, tmp_buf_size);
+    if (rc != SYMBOL_NOT_FOUND) {
+      return rc;
+    }
   }
 
-  // If the symbol is not found, then consult a dynamic symbol table.
-  if (!GetSectionHeaderByType(obj.fd, obj.elf_header.e_shnum,
-                              obj.elf_header.e_shoff, SHT_DYNSYM, &symtab,
-                              tmp_buf, tmp_buf_size)) {
-    return SYMBOL_NOT_FOUND;
-  }
-  if (!ReadFromOffsetExact(
-          obj.fd, &strtab, sizeof(strtab),
-          obj.elf_header.e_shoff + symtab.sh_link * sizeof(symtab))) {
-    return SYMBOL_NOT_FOUND;
-  }
-  return FindSymbol(pc, obj.fd, out, out_size, relocation, &strtab, &symtab,
-                    opd_ptr, tmp_buf, tmp_buf_size);
+  return SYMBOL_NOT_FOUND;
 }
 
 namespace {
@@ -925,6 +915,14 @@ static const char *GetHex(const char *start, const char *end,
   return p;
 }
 
+// Normally we are only interested in "r?x" maps.
+// On the PowerPC, function pointers point to descriptors in the .opd
+// section.  The descriptors themselves are not executable code, so
+// we need to relax the check below to "r??".
+static bool ShouldUseMapping(const char *const flags) {
+  return flags[0] == 'r' && (kPlatformUsesOPDSections || flags[2] == 'x');
+}
+
 // Read /proc/self/maps and run "callback" for each mmapped file found.  If
 // "callback" returns false, stop scanning and return true. Else continue
 // scanning /proc/self/maps. Return true if no parse error is found.
@@ -994,12 +992,8 @@ static ABSL_ATTRIBUTE_NOINLINE bool ReadAddrMap(
       return false;
     }
 
-    // Check flags.  Normally we are only interested in "r-x" maps.  On
-    // the PowerPC, function pointers point to descriptors in the .opd
-    // section.  The descriptors themselves are not executable code.  So
-    // we need to relax the check below to "r**".
-    if (memcmp(flags_start, "r-x", 3) != 0 &&  // Not a "r-x" map.
-        !(kPlatformUsesOPDSections && flags_start[0] == 'r')) {
+    // Check flags.
+    if (!ShouldUseMapping(flags_start)) {
       continue;  // We skip this map.
     }
     ++cursor;  // Skip ' '.

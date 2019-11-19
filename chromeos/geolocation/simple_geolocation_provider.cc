@@ -68,11 +68,9 @@ void SimpleGeolocationProvider::RequestGeolocation(
   // "this" because destruction of SimpleGeolocationProvider cancels all
   // requests.
   SimpleGeolocationRequest::ResponseCallback callback_tmp(
-      base::Bind(&SimpleGeolocationProvider::OnGeolocationResponse,
-                 base::Unretained(this),
-                 request,
-                 callback));
-  request->MakeRequest(callback_tmp);
+      base::BindOnce(&SimpleGeolocationProvider::OnGeolocationResponse,
+                     base::Unretained(this), request, std::move(callback)));
+  request->MakeRequest(std::move(callback_tmp));
 }
 
 // static
@@ -88,7 +86,7 @@ void SimpleGeolocationProvider::OnGeolocationResponse(
     const base::TimeDelta elapsed) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  callback.Run(geoposition, server_error, elapsed);
+  std::move(callback).Run(geoposition, server_error, elapsed);
 
   std::vector<std::unique_ptr<SimpleGeolocationRequest>>::iterator position =
       std::find_if(

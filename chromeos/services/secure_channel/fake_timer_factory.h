@@ -47,7 +47,7 @@ class FakeTimerFactory : public TimerFactory {
       id_to_active_one_shot_timer_map_;
   size_t num_instances_created_ = 0u;
 
-  base::WeakPtrFactory<FakeTimerFactory> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeTimerFactory> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeTimerFactory);
 };

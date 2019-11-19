@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 5: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/resources/echo-intertag.pl?clutter=text%0a%3Cimg%3E%3E&q=%3Cscript%3Ealert(1)%2b`&q2=`%3C/script%3E' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-

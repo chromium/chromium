@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/modules/storage/testing/mock_storage_area.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -31,11 +32,11 @@ class CachedStorageAreaTest : public testing::Test,
   void SetUp() override {
     if (IsSessionStorage()) {
       cached_area_ = CachedStorageArea::CreateForSessionStorage(
-          kOrigin, mock_storage_area_.GetAssociatedInterfacePtr(),
+          kOrigin, mock_storage_area_.GetAssociatedInterfaceRemote(),
           scheduler::GetSingleThreadTaskRunnerForTesting(), this);
     } else {
       cached_area_ = CachedStorageArea::CreateForLocalStorage(
-          kOrigin, mock_storage_area_.GetInterfacePtr(),
+          kOrigin, mock_storage_area_.GetInterfaceRemote(),
           scheduler::GetSingleThreadTaskRunnerForTesting(), this);
     }
     source_area_ = MakeGarbageCollected<FakeAreaSource>(kPageUrl);
@@ -498,33 +499,36 @@ TEST_P(StringEncoding, RoundTrip_Latin1) {
 }
 
 TEST_P(StringEncoding, RoundTrip_UTF16) {
-  String key("key");
-  key.append(UChar(0xd83d));
-  key.append(UChar(0xde00));
-  EXPECT_EQ(
-      Uint8VectorToString(StringToUint8Vector(key, GetParam()), GetParam()),
-      key);
+  StringBuilder key;
+  key.Append("key");
+  key.Append(UChar(0xd83d));
+  key.Append(UChar(0xde00));
+  EXPECT_EQ(Uint8VectorToString(StringToUint8Vector(key.ToString(), GetParam()),
+                                GetParam()),
+            key);
 }
 
 TEST_P(StringEncoding, RoundTrip_InvalidUTF16) {
-  String key("foo");
-  key.append(UChar(0xd83d));
-  key.append(UChar(0xde00));
-  key.append(UChar(0xdf01));
-  key.append("bar");
+  StringBuilder key;
+  key.Append("foo");
+  key.Append(UChar(0xd83d));
+  key.Append(UChar(0xde00));
+  key.Append(UChar(0xdf01));
+  key.Append("bar");
   if (GetParam() != FormatOption::kSessionStorageForceUTF8) {
-    EXPECT_EQ(
-        Uint8VectorToString(StringToUint8Vector(key, GetParam()), GetParam()),
-        key);
+    EXPECT_EQ(Uint8VectorToString(
+                  StringToUint8Vector(key.ToString(), GetParam()), GetParam()),
+              key);
   } else {
-    String validKey("foo");
-    validKey.append(UChar(0xd83d));
-    validKey.append(UChar(0xde00));
-    validKey.append(UChar(0xfffd));
-    validKey.append("bar");
-    EXPECT_EQ(
-        Uint8VectorToString(StringToUint8Vector(key, GetParam()), GetParam()),
-        validKey);
+    StringBuilder validKey;
+    validKey.Append("foo");
+    validKey.Append(UChar(0xd83d));
+    validKey.Append(UChar(0xde00));
+    validKey.Append(UChar(0xfffd));
+    validKey.Append("bar");
+    EXPECT_EQ(Uint8VectorToString(
+                  StringToUint8Vector(key.ToString(), GetParam()), GetParam()),
+              validKey.ToString());
   }
 }
 
@@ -532,14 +536,15 @@ TEST_P(StringEncoding, RoundTrip_InvalidUTF16) {
 
 TEST_F(CachedStorageAreaTest, StringEncoding_LocalStorage) {
   String ascii_key("simplekey");
-  String non_ascii_key("key");
-  non_ascii_key.append(UChar(0xd83d));
-  non_ascii_key.append(UChar(0xde00));
+  StringBuilder non_ascii_key;
+  non_ascii_key.Append("key");
+  non_ascii_key.Append(UChar(0xd83d));
+  non_ascii_key.Append(UChar(0xde00));
   EXPECT_EQ(
       StringToUint8Vector(ascii_key, FormatOption::kLocalStorageDetectFormat)
           .size(),
       ascii_key.length() + 1);
-  EXPECT_EQ(StringToUint8Vector(non_ascii_key,
+  EXPECT_EQ(StringToUint8Vector(non_ascii_key.ToString(),
                                 FormatOption::kLocalStorageDetectFormat)
                 .size(),
             non_ascii_key.length() * 2 + 1);
@@ -547,29 +552,31 @@ TEST_F(CachedStorageAreaTest, StringEncoding_LocalStorage) {
 
 TEST_F(CachedStorageAreaTest, StringEncoding_UTF8) {
   String ascii_key("simplekey");
-  String non_ascii_key("key");
-  non_ascii_key.append(UChar(0xd83d));
-  non_ascii_key.append(UChar(0xde00));
+  StringBuilder non_ascii_key;
+  non_ascii_key.Append("key");
+  non_ascii_key.Append(UChar(0xd83d));
+  non_ascii_key.Append(UChar(0xde00));
   EXPECT_EQ(
       StringToUint8Vector(ascii_key, FormatOption::kSessionStorageForceUTF8)
           .size(),
       ascii_key.length());
-  EXPECT_EQ(
-      StringToUint8Vector(non_ascii_key, FormatOption::kSessionStorageForceUTF8)
-          .size(),
-      7u);
+  EXPECT_EQ(StringToUint8Vector(non_ascii_key.ToString(),
+                                FormatOption::kSessionStorageForceUTF8)
+                .size(),
+            7u);
 }
 
 TEST_F(CachedStorageAreaTest, StringEncoding_UTF16) {
   String ascii_key("simplekey");
-  String non_ascii_key("key");
-  non_ascii_key.append(UChar(0xd83d));
-  non_ascii_key.append(UChar(0xde00));
+  StringBuilder non_ascii_key;
+  non_ascii_key.Append("key");
+  non_ascii_key.Append(UChar(0xd83d));
+  non_ascii_key.Append(UChar(0xde00));
   EXPECT_EQ(
       StringToUint8Vector(ascii_key, FormatOption::kSessionStorageForceUTF16)
           .size(),
       ascii_key.length() * 2);
-  EXPECT_EQ(StringToUint8Vector(non_ascii_key,
+  EXPECT_EQ(StringToUint8Vector(non_ascii_key.ToString(),
                                 FormatOption::kSessionStorageForceUTF16)
                 .size(),
             non_ascii_key.length() * 2);

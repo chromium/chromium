@@ -46,7 +46,7 @@
   }
 
   function printContent(next) {
-    function result(content) {
+    function result({ content, error, isEncoded }) {
       TestRunner.addResult('Inspector stylesheet content:');
       TestRunner.addResult(content);
       if (next)

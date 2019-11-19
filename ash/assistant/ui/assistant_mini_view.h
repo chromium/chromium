@@ -12,6 +12,7 @@
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "ui/views/controls/button/button.h"
 
@@ -46,7 +47,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantMiniView
   // AssistantInteractionModelObserver:
   void OnInputModalityChanged(InputModality input_modality) override;
   void OnResponseChanged(
-      const std::shared_ptr<AssistantResponse>& response) override;
+      const scoped_refptr<AssistantResponse>& response) override;
 
   // AssistantUiModelObserver:
   void OnUiVisibilityChanged(

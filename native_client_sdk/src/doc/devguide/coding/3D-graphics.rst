@@ -82,9 +82,9 @@ check for the extensions and the features you need. For example:
   exists.
 
 * If you are using DXT1, DXT3, or DXT5 textures, make sure the corresponding
-  extensions ``EXT_texture_compression_dxt1``,
-  ``GL_CHROMIUM_texture_compression_dxt3``, and
-  ``GL_CHROMIUM_texture_compression_dxt5`` exist.
+  extensions ``GL_ANGLE_texture_compression_dxt1``,
+  ``GL_ANGLE_texture_compression_dxt3``, and
+  ``GL_ANGLE_texture_compression_dxt5`` exist.
 
 * If you are using the functions ``glDrawArraysInstancedANGLE``,
   ``glDrawElementsInstancedANGLE``, ``glVertexAttribDivisorANGLE``, or the PPAPI

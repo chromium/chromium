@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -139,6 +139,7 @@
   #define ABSL_ANNOTATE_MEMORY_IS_INITIALIZED(address, size) /* empty */
   #define ABSL_ANNOTATE_MEMORY_IS_UNINITIALIZED(address, size) /* empty */
 #endif  /* ABSL_DYNAMIC_ANNOTATIONS_ENABLED || MEMORY_SANITIZER */
+
 /* TODO(delesley) -- Replace __CLANG_SUPPORT_DYN_ANNOTATION__ with the
    appropriate feature ID. */
 #if defined(__clang__) && (!defined(SWIG)) \
@@ -376,7 +377,7 @@ inline T ABSL_ANNOTATE_UNPROTECTED_READ(const volatile T &x) { /* NOLINT */
   struct { char x[8] __attribute__ ((aligned (8))); } name
 #else
 #define ABSL_ANNOTATE_CONTIGUOUS_CONTAINER(beg, end, old_mid, new_mid)
-#define ABSL_ADDRESS_SANITIZER_REDZONE(name)
+#define ABSL_ADDRESS_SANITIZER_REDZONE(name) static_assert(true, "")
 #endif  // ADDRESS_SANITIZER
 
 /* Undefine the macros intended only in this file. */

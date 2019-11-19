@@ -14,14 +14,13 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync/model_impl/client_tag_based_model_type_processor.h"
-#include "components/sync/user_events/no_op_user_event_service.h"
-#include "components/sync/user_events/user_event_service_impl.h"
-#include "components/sync/user_events/user_event_sync_bridge.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "components/sync_user_events/no_op_user_event_service.h"
+#include "components/sync_user_events/user_event_service_impl.h"
+#include "components/sync_user_events/user_event_sync_bridge.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/sync/model_type_store_service_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/web/public/browser_state.h"
@@ -52,16 +51,12 @@ IOSUserEventServiceFactory::~IOSUserEventServiceFactory() {}
 std::unique_ptr<KeyedService>
 IOSUserEventServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
-
-  syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state);
-  if (!syncer::UserEventServiceImpl::MightRecordEvents(
-          browser_state->IsOffTheRecord(), sync_service)) {
+  if (context->IsOffTheRecord()) {
     return std::make_unique<syncer::NoOpUserEventService>();
   }
 
+  ios::ChromeBrowserState* browser_state =
+      ios::ChromeBrowserState::FromBrowserState(context);
   syncer::OnceModelTypeStoreFactory store_factory =
       ModelTypeStoreServiceFactory::GetForBrowserState(browser_state)
           ->GetStoreFactory();
@@ -72,8 +67,7 @@ IOSUserEventServiceFactory::BuildServiceInstanceFor(
               &syncer::ReportUnrecoverableError, ::GetChannel())),
       SessionSyncServiceFactory::GetForBrowserState(browser_state)
           ->GetGlobalIdMapper());
-  return std::make_unique<syncer::UserEventServiceImpl>(sync_service,
-                                                        std::move(bridge));
+  return std::make_unique<syncer::UserEventServiceImpl>(std::move(bridge));
 }
 
 web::BrowserState* IOSUserEventServiceFactory::GetBrowserStateToUse(

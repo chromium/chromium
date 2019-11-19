@@ -8,7 +8,8 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/sha1.h"
+#include "base/hash/sha1.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_queue.h"
 
 namespace syncer {
@@ -39,21 +40,19 @@ void MockModelTypeProcessor::GetLocalChanges(size_t max_entries,
 void MockModelTypeProcessor::OnCommitCompleted(
     const sync_pb::ModelTypeState& type_state,
     const CommitResponseDataList& response_list) {
-  base::Closure task =
-      base::Bind(&MockModelTypeProcessor::OnCommitCompletedImpl,
-                 base::Unretained(this), type_state, response_list);
-  pending_tasks_.push_back(task);
+  pending_tasks_.push_back(
+      base::BindOnce(&MockModelTypeProcessor::OnCommitCompletedImpl,
+                     base::Unretained(this), type_state, response_list));
   if (is_synchronous_)
     RunQueuedTasks();
 }
 
 void MockModelTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& type_state,
-    const UpdateResponseDataList& response_list) {
-  base::Closure task =
-      base::Bind(&MockModelTypeProcessor::OnUpdateReceivedImpl,
-                 base::Unretained(this), type_state, response_list);
-  pending_tasks_.push_back(task);
+    UpdateResponseDataList response_list) {
+  pending_tasks_.push_back(base::BindOnce(
+      &MockModelTypeProcessor::OnUpdateReceivedImpl, base::Unretained(this),
+      type_state, std::move(response_list)));
   if (is_synchronous_)
     RunQueuedTasks();
 }
@@ -64,66 +63,66 @@ void MockModelTypeProcessor::SetSynchronousExecution(bool is_synchronous) {
 
 void MockModelTypeProcessor::RunQueuedTasks() {
   for (auto it = pending_tasks_.begin(); it != pending_tasks_.end(); ++it) {
-    it->Run();
+    std::move(*it).Run();
   }
   pending_tasks_.clear();
 }
 
-CommitRequestData MockModelTypeProcessor::CommitRequest(
-    const std::string& tag_hash,
+std::unique_ptr<CommitRequestData> MockModelTypeProcessor::CommitRequest(
+    const ClientTagHash& tag_hash,
     const sync_pb::EntitySpecifics& specifics) {
   const int64_t base_version = GetBaseVersion(tag_hash);
 
-  EntityData data;
+  auto data = std::make_unique<syncer::EntityData>();
 
   if (HasServerAssignedId(tag_hash)) {
-    data.id = GetServerAssignedId(tag_hash);
+    data->id = GetServerAssignedId(tag_hash);
   }
 
-  data.client_tag_hash = tag_hash;
-  data.specifics = specifics;
+  data->client_tag_hash = tag_hash;
+  data->specifics = specifics;
 
   // These fields are not really used for much, but we set them anyway
   // to make this item look more realistic.
-  data.creation_time = base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
-  data.modification_time =
-      data.creation_time + base::TimeDelta::FromSeconds(base_version);
-  data.non_unique_name = "Name: " + tag_hash;
+  data->creation_time = base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
+  data->modification_time =
+      data->creation_time + base::TimeDelta::FromSeconds(base_version);
+  data->name = "Name: " + tag_hash.value();
 
-  CommitRequestData request_data;
-  request_data.entity = data.PassToPtr();
-  request_data.sequence_number = GetNextSequenceNumber(tag_hash);
-  request_data.base_version = base_version;
+  auto request_data = std::make_unique<CommitRequestData>();
+  request_data->entity = std::move(data);
+  request_data->sequence_number = GetNextSequenceNumber(tag_hash);
+  request_data->base_version = base_version;
   base::Base64Encode(base::SHA1HashString(specifics.SerializeAsString()),
-                     &request_data.specifics_hash);
+                     &request_data->specifics_hash);
 
   return request_data;
 }
 
-CommitRequestData MockModelTypeProcessor::DeleteRequest(
-    const std::string& tag_hash) {
+std::unique_ptr<CommitRequestData> MockModelTypeProcessor::DeleteRequest(
+    const ClientTagHash& tag_hash) {
   const int64_t base_version = GetBaseVersion(tag_hash);
 
-  EntityData data;
+  auto data = std::make_unique<syncer::EntityData>();
 
   if (HasServerAssignedId(tag_hash)) {
-    data.id = GetServerAssignedId(tag_hash);
+    data->id = GetServerAssignedId(tag_hash);
   }
 
-  data.client_tag_hash = tag_hash;
+  data->client_tag_hash = tag_hash;
 
   // These fields have little or no effect on behavior.  We set them anyway to
   // make the test more realistic.
-  data.creation_time = base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
-  data.non_unique_name = "Name deleted";
+  data->creation_time = base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
+  data->name = "Name deleted";
 
-  data.modification_time =
-      data.creation_time + base::TimeDelta::FromSeconds(base_version);
+  data->modification_time =
+      data->creation_time + base::TimeDelta::FromSeconds(base_version);
 
-  CommitRequestData request_data;
-  request_data.entity = data.PassToPtr();
-  request_data.sequence_number = GetNextSequenceNumber(tag_hash);
-  request_data.base_version = base_version;
+  auto request_data = std::make_unique<CommitRequestData>();
+  request_data->entity = std::move(data);
+  request_data->sequence_number = GetNextSequenceNumber(tag_hash);
+  request_data->base_version = base_version;
 
   pending_deleted_hashes_.insert(tag_hash);
 
@@ -134,10 +133,15 @@ size_t MockModelTypeProcessor::GetNumUpdateResponses() const {
   return received_update_responses_.size();
 }
 
-UpdateResponseDataList MockModelTypeProcessor::GetNthUpdateResponse(
-    size_t n) const {
+std::vector<const UpdateResponseData*>
+MockModelTypeProcessor::GetNthUpdateResponse(size_t n) const {
   DCHECK_LT(n, GetNumUpdateResponses());
-  return received_update_responses_[n];
+  std::vector<const UpdateResponseData*> nth_update_responses;
+  for (const std::unique_ptr<UpdateResponseData>& response :
+       received_update_responses_[n]) {
+    nth_update_responses.push_back(response.get());
+  }
+  return nth_update_responses;
 }
 
 sync_pb::ModelTypeState MockModelTypeProcessor::GetNthUpdateState(
@@ -163,26 +167,26 @@ sync_pb::ModelTypeState MockModelTypeProcessor::GetNthCommitState(
 }
 
 bool MockModelTypeProcessor::HasUpdateResponse(
-    const std::string& tag_hash) const {
+    const ClientTagHash& tag_hash) const {
   auto it = update_response_items_.find(tag_hash);
   return it != update_response_items_.end();
 }
 
-UpdateResponseData MockModelTypeProcessor::GetUpdateResponse(
-    const std::string& tag_hash) const {
+const UpdateResponseData& MockModelTypeProcessor::GetUpdateResponse(
+    const ClientTagHash& tag_hash) const {
   DCHECK(HasUpdateResponse(tag_hash));
   auto it = update_response_items_.find(tag_hash);
-  return it->second;
+  return *it->second;
 }
 
 bool MockModelTypeProcessor::HasCommitResponse(
-    const std::string& tag_hash) const {
+    const ClientTagHash& tag_hash) const {
   auto it = commit_response_items_.find(tag_hash);
   return it != commit_response_items_.end();
 }
 
 CommitResponseData MockModelTypeProcessor::GetCommitResponse(
-    const std::string& tag_hash) const {
+    const ClientTagHash& tag_hash) const {
   DCHECK(HasCommitResponse(tag_hash));
   auto it = commit_response_items_.find(tag_hash);
   return it->second;
@@ -194,8 +198,8 @@ void MockModelTypeProcessor::SetDisconnectCallback(
 }
 
 void MockModelTypeProcessor::SetCommitRequest(
-    const CommitRequestDataList& commit_request) {
-  commit_request_ = commit_request;
+    CommitRequestDataList commit_request) {
+  commit_request_ = std::move(commit_request);
 }
 
 int MockModelTypeProcessor::GetLocalChangesCallCount() const {
@@ -208,7 +212,7 @@ void MockModelTypeProcessor::OnCommitCompletedImpl(
   received_commit_responses_.push_back(response_list);
   type_states_received_on_commit_.push_back(type_state);
   for (auto it = response_list.begin(); it != response_list.end(); ++it) {
-    const std::string tag_hash = it->client_tag_hash;
+    const ClientTagHash& tag_hash = it->client_tag_hash;
     commit_response_items_.insert(std::make_pair(tag_hash, *it));
 
     if (pending_deleted_hashes_.find(tag_hash) !=
@@ -229,22 +233,22 @@ void MockModelTypeProcessor::OnCommitCompletedImpl(
 
 void MockModelTypeProcessor::OnUpdateReceivedImpl(
     const sync_pb::ModelTypeState& type_state,
-    const UpdateResponseDataList& response_list) {
-  received_update_responses_.push_back(response_list);
+    UpdateResponseDataList response_list) {
   type_states_received_on_update_.push_back(type_state);
   for (auto it = response_list.begin(); it != response_list.end(); ++it) {
-    const std::string client_tag_hash = it->entity->client_tag_hash;
-    update_response_items_.insert(std::make_pair(client_tag_hash, *it));
-
+    const ClientTagHash& client_tag_hash = (*it)->entity->client_tag_hash;
     // Server wins.  Set the model's base version.
-    SetBaseVersion(client_tag_hash, it->response_version);
-    SetServerAssignedId(client_tag_hash, it->entity->id);
+    SetBaseVersion(client_tag_hash, (*it)->response_version);
+    SetServerAssignedId(client_tag_hash, (*it)->entity->id);
+
+    update_response_items_.insert(std::make_pair(client_tag_hash, it->get()));
   }
+  received_update_responses_.push_back(std::move(response_list));
 }
 
 // Fetches the sequence number as of the most recent update request.
 int64_t MockModelTypeProcessor::GetCurrentSequenceNumber(
-    const std::string& tag_hash) const {
+    const ClientTagHash& tag_hash) const {
   auto it = sequence_numbers_.find(tag_hash);
   if (it == sequence_numbers_.end()) {
     return 0;
@@ -256,7 +260,7 @@ int64_t MockModelTypeProcessor::GetCurrentSequenceNumber(
 // The model thread should be sending us items with strictly increasing
 // sequence numbers.  Here's where we emulate that behavior.
 int64_t MockModelTypeProcessor::GetNextSequenceNumber(
-    const std::string& tag_hash) {
+    const ClientTagHash& tag_hash) {
   int64_t sequence_number = GetCurrentSequenceNumber(tag_hash);
   sequence_number++;
   sequence_numbers_[tag_hash] = sequence_number;
@@ -264,7 +268,7 @@ int64_t MockModelTypeProcessor::GetNextSequenceNumber(
 }
 
 int64_t MockModelTypeProcessor::GetBaseVersion(
-    const std::string& tag_hash) const {
+    const ClientTagHash& tag_hash) const {
   auto it = base_versions_.find(tag_hash);
   if (it == base_versions_.end()) {
     return kUncommittedVersion;
@@ -273,23 +277,23 @@ int64_t MockModelTypeProcessor::GetBaseVersion(
   }
 }
 
-void MockModelTypeProcessor::SetBaseVersion(const std::string& tag_hash,
+void MockModelTypeProcessor::SetBaseVersion(const ClientTagHash& tag_hash,
                                             int64_t version) {
   base_versions_[tag_hash] = version;
 }
 
 bool MockModelTypeProcessor::HasServerAssignedId(
-    const std::string& tag_hash) const {
+    const ClientTagHash& tag_hash) const {
   return assigned_ids_.find(tag_hash) != assigned_ids_.end();
 }
 
 const std::string& MockModelTypeProcessor::GetServerAssignedId(
-    const std::string& tag_hash) const {
+    const ClientTagHash& tag_hash) const {
   DCHECK(HasServerAssignedId(tag_hash));
   return assigned_ids_.find(tag_hash)->second;
 }
 
-void MockModelTypeProcessor::SetServerAssignedId(const std::string& tag_hash,
+void MockModelTypeProcessor::SetServerAssignedId(const ClientTagHash& tag_hash,
                                                  const std::string& id) {
   assigned_ids_[tag_hash] = id;
 }

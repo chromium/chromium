@@ -53,7 +53,7 @@ V8ObjectBuilder& V8ObjectBuilder::AddStringOrNull(const StringView& name,
 }
 
 ScriptValue V8ObjectBuilder::GetScriptValue() const {
-  return ScriptValue(script_state_, object_);
+  return ScriptValue(script_state_->GetIsolate(), object_);
 }
 
 void V8ObjectBuilder::AddInternal(const StringView& name,

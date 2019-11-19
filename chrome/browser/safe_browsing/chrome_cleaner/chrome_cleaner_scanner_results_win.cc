@@ -4,9 +4,6 @@
 
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results_win.h"
 
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_extension_util_win.h"
-
 namespace safe_browsing {
 
 ChromeCleanerScannerResults::ChromeCleanerScannerResults() = default;
@@ -33,12 +30,6 @@ ChromeCleanerScannerResults& ChromeCleanerScannerResults::operator=(
   registry_keys_ = other.registry_keys_;
   extension_ids_ = other.extension_ids_;
   return *this;
-}
-
-void ChromeCleanerScannerResults::FetchExtensionNames(
-    Profile* profile,
-    ChromeCleanerScannerResults::ExtensionCollection* extension_names) const {
-  GetExtensionNamesFromIds(profile, extension_ids_, extension_names);
 }
 
 }  // namespace safe_browsing

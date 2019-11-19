@@ -12,6 +12,7 @@ namespace prefs {
 
 extern const char kPluginVmImage[];
 extern const char kPluginVmImageExists[];
+extern const char kEngagementPrefsPrefix[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

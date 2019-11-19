@@ -7,8 +7,9 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/values.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/content_verifier.h"
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
@@ -214,5 +215,25 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(BackgroundManifestType::kNone,
                     BackgroundManifestType::kBackgroundScript,
                     BackgroundManifestType::kBackgroundPage));
+
+TEST(ContentVerifierTest, NormalizeRelativePath) {
+// This macro helps avoid wrapped lines in the test structs.
+#define FPL(x) FILE_PATH_LITERAL(x)
+  struct TestData {
+    base::FilePath::StringPieceType input;
+    base::FilePath::StringPieceType expected;
+  } test_cases[] = {{FPL("foo/bar"), FPL("foo/bar")},
+                    {FPL("foo//bar"), FPL("foo/bar")},
+                    {FPL("foo/bar/"), FPL("foo/bar/")},
+                    {FPL("foo/bar//"), FPL("foo/bar/")},
+                    {FPL("foo/options.html/"), FPL("foo/options.html/")}};
+#undef FPL
+  for (const auto& test_case : test_cases) {
+    base::FilePath input(test_case.input);
+    base::FilePath expected(test_case.expected);
+    EXPECT_EQ(expected,
+              ContentVerifier::NormalizeRelativePathForTesting(input));
+  }
+}
 
 }  // namespace extensions

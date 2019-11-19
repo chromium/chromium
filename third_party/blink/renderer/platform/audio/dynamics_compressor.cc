@@ -33,8 +33,6 @@
 
 namespace blink {
 
-using namespace audio_utilities;
-
 DynamicsCompressor::DynamicsCompressor(float sample_rate,
                                        unsigned number_of_channels)
     : number_of_channels_(number_of_channels),
@@ -51,8 +49,7 @@ DynamicsCompressor::DynamicsCompressor(float sample_rate,
 
 void DynamicsCompressor::SetParameterValue(unsigned parameter_id, float value) {
   DCHECK_LT(parameter_id, static_cast<unsigned>(kParamLast));
-  if (parameter_id < kParamLast)
-    parameters_[parameter_id] = value;
+  parameters_[parameter_id] = value;
 }
 
 void DynamicsCompressor::InitializeParameters() {
@@ -101,11 +98,6 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
 
   DCHECK_EQ(number_of_channels, number_of_channels_);
   DCHECK(number_of_source_channels);
-
-  if (number_of_channels != number_of_channels_ || !number_of_source_channels) {
-    destination_bus->Zero();
-    return;
-  }
 
   switch (number_of_channels) {
     case 2:  // stereo

@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<script src="../resources/gc.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+
+
+<div role="grid" id="aria-column-example" aria-colcount=5>
+  <div role="rowgroup">
+    <div role="row">
+      <!--- column 1 hidden in DOM -->
+      <span role="columnheader" id="spanning-column-header" aria-colindex=2 aria-colspan=2>Spanning col header</span>
+      <!--- column 4 hidden in DOM -->
+      <span role="columnheader" id="single-cell-columnheader" aria-colindex=5>Single col header</span>
+    </div>
+  </div>
+  <div role="rowgroup">
+    <div role="row">
+      <span role="gridcell" aria-colindex=2>Span B</span>
+      <span role="gridcell" aria-colindex=3>Span C</span>
+      <span role="gridcell" aria-colindex=5>Span E</span>
+    </div>
+  </div>
+</div>
+
+<script>
+test(function(t) {
+  var colCountAxNode = accessibilityController.accessibleElementById("aria-column-example");
+  assert_equals(colCountAxNode.ariaColumnCount, 5, "aria-colcount");
+
+  var spanningColAxNode = accessibilityController.accessibleElementById("spanning-column-header");
+  assert_equals(spanningColAxNode.ariaColumnIndex, 2, "aria-colindex");
+  assert_equals(spanningColAxNode.ariaColumnSpan, 2, "aria-colspan");
+
+  var singleCellAxNode = accessibilityController.accessibleElementById("single-cell-columnheader");
+  assert_equals(singleCellAxNode.ariaColumnIndex, 5);
+}, "aria-colcount, aria-colindex, aria-colspan." );
+</script>
+
+<div role="grid" id="aria-row-example" aria-rowcount=4>
+  <div role="rowgroup">
+    <div role="row">
+      <span role="rowheader" id="spanning-row-header" aria-rowindex=1 aria-rowspan=2>Spanning row header</span>
+      <span role="gridcell" aria-rowindex=1>1, 2</span>
+      <span role="gridcell" aria-rowindex=1>1, 3</span>
+    </div>
+  </div>
+  <div role="rowgroup">
+    <div role="row">
+      <span role="gridcell" aria-rowindex=1>2, 2</span>
+      <span role="gridcell" aria-rowindex=2>2, 3</span>
+    </div>
+  </div>
+  <!--- row 3 hidden in DOM -->
+  <div role="rowgroup">
+    <div role="row">
+      <span role="rowheader" id="single-cell-rowheader" aria-rowindex=4>
+      <span role="gridcell" aria-rowindex=4>4,2</span>
+      <span role="gridcell" aria-rowindex=4>4,3</span>
+    </div>
+  </div>
+</div>
+
+<script>
+test(function(t) {
+  var rowCountAxNode = accessibilityController.accessibleElementById("aria-row-example");
+  assert_equals(rowCountAxNode.ariaRowCount, 4, "aria-rowcount");
+
+  var spanningRowAxNode = accessibilityController.accessibleElementById("spanning-row-header");
+  assert_equals(spanningRowAxNode.ariaRowIndex, 1, "aria-rowindex");
+  assert_equals(spanningRowAxNode.ariaRowSpan, 2, "aria-rowspan");
+
+  var singleCellRowAxNode = accessibilityController.accessibleElementById("single-cell-rowheader");
+  assert_equals(singleCellRowAxNode.ariaRowIndex, 4);
+}, "aria-rowcount, aria-rowindex, and aria-rowspan");
+</script>

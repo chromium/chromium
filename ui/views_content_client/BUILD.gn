@@ -30,6 +30,7 @@ jumbo_component("views_content_client") {
     "//content/shell:content_shell_lib",
     "//third_party/icu",
     "//ui/base",
+    "//ui/base/ime/init",
     "//ui/display",
     "//ui/events",
     "//ui/gfx",

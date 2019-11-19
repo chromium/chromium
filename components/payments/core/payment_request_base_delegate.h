@@ -43,10 +43,6 @@ class PaymentRequestBaseDelegate {
   // Returns whether the user is in Incognito mode.
   virtual bool IsIncognito() const = 0;
 
-  // Returns true if the SSL certificate is valid. Should be called only for
-  // cryptographic schemes.
-  virtual bool IsSslCertificateValid() = 0;
-
   // Returns the URL of the page that is currently being displayed.
   virtual const GURL& GetLastCommittedURL() const = 0;
 

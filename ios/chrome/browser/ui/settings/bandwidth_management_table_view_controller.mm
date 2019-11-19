@@ -10,9 +10,9 @@
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/pref_names.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_detail_item.h"
 #import "ios/chrome/browser/ui/settings/dataplan_usage_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
@@ -51,7 +51,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   PrefChangeRegistrar _prefChangeRegistrarApplicationContext;
 
   // Updatable Items
-  SettingsDetailItem* _preloadWebpagesDetailItem;
+  TableViewDetailIconItem* _preloadWebpagesDetailItem;
 }
 
 @end
@@ -156,14 +156,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Private
 
-// Returns a newly created SettingsDetailItem for the preload webpages menu.
-- (SettingsDetailItem*)preloadWebpagesItem {
+// Returns a newly created TableViewDetailIconItem for the preload webpages
+// menu.
+- (TableViewDetailIconItem*)preloadWebpagesItem {
   NSString* detailText = [DataplanUsageTableViewController
       currentLabelForPreference:_browserState->GetPrefs()
                        basePref:prefs::kNetworkPredictionEnabled
                        wifiPref:prefs::kNetworkPredictionWifiOnly];
   _preloadWebpagesDetailItem =
-      [[SettingsDetailItem alloc] initWithType:ItemTypePreload];
+      [[TableViewDetailIconItem alloc] initWithType:ItemTypePreload];
 
   _preloadWebpagesDetailItem.text =
       l10n_util::GetNSString(IDS_IOS_OPTIONS_PRELOAD_WEBPAGES);

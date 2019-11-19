@@ -1,0 +1,4 @@
+Tests accessibility in the Clear Storage view using the axe-core linter.
+Clear storage view is visible: true
+aXe violations: []
+

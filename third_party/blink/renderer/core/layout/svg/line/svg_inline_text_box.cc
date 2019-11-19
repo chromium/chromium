@@ -21,6 +21,9 @@
 
 #include "third_party/blink/renderer/core/layout/svg/line/svg_inline_text_box.h"
 
+#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
+#include "third_party/blink/renderer/core/editing/markers/text_marker_base.h"
+#include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
@@ -237,24 +240,22 @@ void SVGInlineTextBox::PaintDocumentMarker(GraphicsContext&,
   // spellchecking, etc).
 }
 
-void SVGInlineTextBox::PaintTextMatchMarkerForeground(
-    const PaintInfo& paint_info,
-    const LayoutPoint& point,
-    const TextMatchMarker& marker,
-    const ComputedStyle& style,
-    const Font& font) const {
-  SVGInlineTextBoxPainter(*this).PaintTextMatchMarkerForeground(
-      paint_info, point, marker, style, font);
+void SVGInlineTextBox::PaintTextMarkerForeground(const PaintInfo& paint_info,
+                                                 const LayoutPoint& point,
+                                                 const TextMarkerBase& marker,
+                                                 const ComputedStyle& style,
+                                                 const Font& font) const {
+  SVGInlineTextBoxPainter(*this).PaintTextMarkerForeground(paint_info, point,
+                                                           marker, style, font);
 }
 
-void SVGInlineTextBox::PaintTextMatchMarkerBackground(
-    const PaintInfo& paint_info,
-    const LayoutPoint& point,
-    const TextMatchMarker& marker,
-    const ComputedStyle& style,
-    const Font& font) const {
-  SVGInlineTextBoxPainter(*this).PaintTextMatchMarkerBackground(
-      paint_info, point, marker, style, font);
+void SVGInlineTextBox::PaintTextMarkerBackground(const PaintInfo& paint_info,
+                                                 const LayoutPoint& point,
+                                                 const TextMarkerBase& marker,
+                                                 const ComputedStyle& style,
+                                                 const Font& font) const {
+  SVGInlineTextBoxPainter(*this).PaintTextMarkerBackground(paint_info, point,
+                                                           marker, style, font);
 }
 
 FloatRect SVGInlineTextBox::CalculateBoundaries() const {
@@ -277,7 +278,7 @@ FloatRect SVGInlineTextBox::CalculateBoundaries() const {
 }
 
 bool SVGInlineTextBox::HitTestFragments(
-    const HitTestLocation& location_in_container) const {
+    const HitTestLocation& hit_test_location) const {
   auto line_layout_item = LineLayoutSVGInlineText(GetLineLayoutItem());
   const SimpleFontData* font_data = line_layout_item.ScaledFont().PrimaryFont();
   DCHECK(font_data);
@@ -289,15 +290,15 @@ bool SVGInlineTextBox::HitTestFragments(
                    line_layout_item.ScalingFactor();
   for (const SVGTextFragment& fragment : text_fragments_) {
     FloatQuad fragment_quad = fragment.BoundingQuad(baseline);
-    if (location_in_container.Intersects(fragment_quad))
+    if (hit_test_location.Intersects(fragment_quad))
       return true;
   }
   return false;
 }
 
 bool SVGInlineTextBox::NodeAtPoint(HitTestResult& result,
-                                   const HitTestLocation& location_in_container,
-                                   const LayoutPoint& accumulated_offset,
+                                   const HitTestLocation& hit_test_location,
+                                   const PhysicalOffset& accumulated_offset,
                                    LayoutUnit,
                                    LayoutUnit) {
   // FIXME: integrate with InlineTextBox::nodeAtPoint better.
@@ -315,15 +316,15 @@ bool SVGInlineTextBox::NodeAtPoint(HitTestResult& result,
        (style.SvgStyle().HasStroke() || !hit_rules.require_stroke)) ||
       (hit_rules.can_hit_fill &&
        (style.SvgStyle().HasFill() || !hit_rules.require_fill))) {
-    LayoutRect rect(Location(), Size());
-    rect.MoveBy(accumulated_offset);
-    if (location_in_container.Intersects(rect)) {
-      if (HitTestFragments(location_in_container)) {
+    // Currently SVGInlineTextBox doesn't flip in blocks direction.
+    PhysicalRect rect{PhysicalOffset(Location()), PhysicalSize(Size())};
+    rect.Move(accumulated_offset);
+    if (hit_test_location.Intersects(rect)) {
+      if (HitTestFragments(hit_test_location)) {
         line_layout_item.UpdateHitTestResult(
-            result,
-            location_in_container.Point() - ToLayoutSize(accumulated_offset));
+            result, hit_test_location.Point() - accumulated_offset);
         if (result.AddNodeToListBasedTestResult(line_layout_item.GetNode(),
-                                                location_in_container,
+                                                hit_test_location,
                                                 rect) == kStopHitTesting)
           return true;
       }

@@ -4,16 +4,15 @@
 
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/keyed_service/core/simple_dependency_manager.h"
 
 // static
-SupervisedUserSettingsService*
-SupervisedUserSettingsServiceFactory::GetForProfile(Profile* profile) {
+SupervisedUserSettingsService* SupervisedUserSettingsServiceFactory::GetForKey(
+    SimpleFactoryKey* key) {
   return static_cast<SupervisedUserSettingsService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+      GetInstance()->GetServiceForKey(key, true));
 }
 
 // static
@@ -23,22 +22,20 @@ SupervisedUserSettingsServiceFactory::GetInstance() {
 }
 
 SupervisedUserSettingsServiceFactory::SupervisedUserSettingsServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SupervisedUserSettingsService",
-          BrowserContextDependencyManager::GetInstance()) {
-}
+    : SimpleKeyedServiceFactory("SupervisedUserSettingsService",
+                                SimpleDependencyManager::GetInstance()) {}
 
 SupervisedUserSettingsServiceFactory::
     ~SupervisedUserSettingsServiceFactory() {}
 
-KeyedService* SupervisedUserSettingsServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
-  return new SupervisedUserSettingsService(
-      Profile::FromBrowserContext(profile));
+std::unique_ptr<KeyedService>
+SupervisedUserSettingsServiceFactory::BuildServiceInstanceFor(
+    SimpleFactoryKey* key) const {
+  return std::make_unique<SupervisedUserSettingsService>();
 }
 
-content::BrowserContext*
-SupervisedUserSettingsServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
+SimpleFactoryKey* SupervisedUserSettingsServiceFactory::GetKeyToUse(
+    SimpleFactoryKey* key) const {
+  ProfileKey* profile_key = ProfileKey::FromSimpleFactoryKey(key);
+  return profile_key->GetOriginalKey();
 }

@@ -26,19 +26,6 @@ class CommandLine;
 // initialize the profile.
 class StartupBrowserCreator {
  public:
-  // The type of page to be shown in a tab when the user is being welcomed back
-  // to Chrome.
-  enum class WelcomeBackPage {
-    kNone,
-#if defined(OS_WIN)
-    // chrome://welcome-win10/ if Chrome's default browser UX may be shown;
-    // otherwise, see kWelcomeStandard.
-    kWelcomeWin10,
-#endif
-    // chrome://welcome/ if sign-in is allowed; otherwise, none.
-    kWelcomeStandard,
-  };
-
   typedef std::vector<Profile*> Profiles;
 
   StartupBrowserCreator();
@@ -52,10 +39,10 @@ class StartupBrowserCreator {
   // tab before other tabs (e.g., those from session restore). This is used for
   // specific launches via retention experiments for which no URLs are provided
   // on the command line. No "welcome back" page is shown to supervised users.
-  void set_welcome_back_page(WelcomeBackPage welcome_back_page) {
+  void set_welcome_back_page(bool welcome_back_page) {
     welcome_back_page_ = welcome_back_page;
   }
-  WelcomeBackPage welcome_back_page() const { return welcome_back_page_; }
+  bool welcome_back_page() const { return welcome_back_page_; }
 
   // This function is equivalent to ProcessCommandLine but should only be
   // called during actual process startup.
@@ -102,22 +89,6 @@ class StartupBrowserCreator {
   static SessionStartupPref GetSessionStartupPref(
       const base::CommandLine& command_line,
       Profile* profile);
-
-  void set_is_default_browser_dialog_suppressed(bool new_value) {
-    is_default_browser_dialog_suppressed_ = new_value;
-  }
-
-  bool is_default_browser_dialog_suppressed() const {
-    return is_default_browser_dialog_suppressed_;
-  }
-
-  void set_show_main_browser_window(bool show_main_browser_window) {
-    show_main_browser_window_ = show_main_browser_window;
-  }
-
-  bool show_main_browser_window() const {
-    return show_main_browser_window_;
-  }
 
   // For faking that no profiles have been launched yet.
   static void ClearLaunchedProfilesForTesting();
@@ -196,16 +167,7 @@ class StartupBrowserCreator {
   std::vector<GURL> first_run_tabs_;
 
   // The page to be shown in a tab when welcoming a user back to Chrome.
-  WelcomeBackPage welcome_back_page_ = WelcomeBackPage::kNone;
-
-  // True if the set-as-default dialog has been explicitly suppressed.
-  // This information is used to allow the default browser prompt to show on
-  // first-run when the dialog has been suppressed.
-  bool is_default_browser_dialog_suppressed_;
-
-  // Whether the browser window should be shown immediately after it has been
-  // created. Default is true.
-  bool show_main_browser_window_;
+  bool welcome_back_page_ = false;
 
   // True if we have already read and reset the preference kWasRestarted. (A
   // member variable instead of a static variable inside WasRestarted because

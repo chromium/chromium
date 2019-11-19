@@ -10,12 +10,15 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_container_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
 #include "chrome/browser/ui/views/passwords/password_items_view.h"
 #include "chrome/browser/ui/views/passwords/password_pending_view.h"
 #include "chrome/browser/ui/views/passwords/password_save_confirmation_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "ui/views/controls/button/button.h"
 
 // static
 PasswordBubbleViewBase* PasswordBubbleViewBase::g_manage_passwords_bubble_ =
@@ -31,31 +34,21 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
          !g_manage_passwords_bubble_->GetWidget()->IsVisible());
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  views::View* const anchor_view =
-      browser_view->toolbar_button_provider()->GetAnchorView();
+  ToolbarButtonProvider* button_provider =
+      browser_view->toolbar_button_provider();
+  views::View* anchor_view =
+      button_provider->GetAnchorView(PageActionIconType::kManagePasswords);
 
   PasswordBubbleViewBase* bubble =
-      CreateBubble(web_contents, anchor_view, gfx::Point(), reason);
+      CreateBubble(web_contents, anchor_view, reason);
   DCHECK(bubble);
-  DCHECK(bubble == g_manage_passwords_bubble_);
+  DCHECK_EQ(bubble, g_manage_passwords_bubble_);
 
-  if (anchor_view) {
-    g_manage_passwords_bubble_->SetHighlightedButton(
-        browser_view->toolbar_button_provider()
-            ->GetPageActionIconContainerView()
-            ->GetPageActionIconView(PageActionIconType::kManagePasswords));
-  } else {
-    g_manage_passwords_bubble_->set_parent_window(
-        web_contents->GetNativeView());
-  }
+  g_manage_passwords_bubble_->SetHighlightedButton(
+      button_provider->GetPageActionIconView(
+          PageActionIconType::kManagePasswords));
 
   views::BubbleDialogDelegateView::CreateBubble(g_manage_passwords_bubble_);
-
-  // Adjust for fullscreen after creation as it relies on the content size.
-  if (!anchor_view) {
-    g_manage_passwords_bubble_->AdjustForFullscreen(
-        browser_view->GetBoundsInScreen());
-  }
 
   g_manage_passwords_bubble_->ShowForReason(reason);
 }
@@ -64,25 +57,20 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
 PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
     content::WebContents* web_contents,
     views::View* anchor_view,
-    const gfx::Point& anchor_point,
     DisplayReason reason) {
   PasswordBubbleViewBase* view = nullptr;
   password_manager::ui::State model_state =
       PasswordsModelDelegateFromWebContents(web_contents)->GetState();
   if (model_state == password_manager::ui::MANAGE_STATE) {
-    view =
-        new PasswordItemsView(web_contents, anchor_view, anchor_point, reason);
+    view = new PasswordItemsView(web_contents, anchor_view, reason);
   } else if (model_state == password_manager::ui::AUTO_SIGNIN_STATE) {
-    view = new PasswordAutoSignInView(web_contents, anchor_view, anchor_point,
-                                      reason);
+    view = new PasswordAutoSignInView(web_contents, anchor_view, reason);
   } else if (model_state == password_manager::ui::CONFIRMATION_STATE) {
-    view = new PasswordSaveConfirmationView(web_contents, anchor_view,
-                                            anchor_point, reason);
+    view = new PasswordSaveConfirmationView(web_contents, anchor_view, reason);
   } else if (model_state ==
                  password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
              model_state == password_manager::ui::PENDING_PASSWORD_STATE) {
-    view = new PasswordPendingView(web_contents, anchor_view, anchor_point,
-                                   reason);
+    view = new PasswordPendingView(web_contents, anchor_view, reason);
   } else {
     NOTREACHED();
   }
@@ -119,14 +107,23 @@ bool PasswordBubbleViewBase::ShouldShowWindowTitle() const {
 PasswordBubbleViewBase::PasswordBubbleViewBase(
     content::WebContents* web_contents,
     views::View* anchor_view,
-    const gfx::Point& anchor_point,
-    DisplayReason reason)
-    : LocationBarBubbleDelegateView(anchor_view, anchor_point, web_contents),
+    DisplayReason reason,
+    bool easily_dismissable)
+    : LocationBarBubbleDelegateView(anchor_view, web_contents),
       model_(PasswordsModelDelegateFromWebContents(web_contents),
              reason == AUTOMATIC ? ManagePasswordsBubbleModel::AUTOMATIC
-                                 : ManagePasswordsBubbleModel::USER_ACTION),
-      mouse_handler_(
-          std::make_unique<WebContentMouseHandler>(this, web_contents)) {}
+                                 : ManagePasswordsBubbleModel::USER_ACTION) {
+  // The |mouse_handler| closes the bubble if a keyboard or mouse interactions
+  // happens outside of the bubble. By this the bubble becomes
+  // 'easily-dissmisable' and this behavior can be enforced by the
+  // corresponding flag.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kStickyBubble) ||
+      easily_dismissable) {
+    mouse_handler_ =
+        std::make_unique<WebContentMouseHandler>(this, web_contents);
+  }
+}
 
 PasswordBubbleViewBase::~PasswordBubbleViewBase() {
   if (g_manage_passwords_bubble_ == this)

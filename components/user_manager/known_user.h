@@ -16,6 +16,7 @@ class PrefRegistrySimple;
 
 namespace base {
 class DictionaryValue;
+class Value;
 }
 
 namespace user_manager {
@@ -67,6 +68,21 @@ bool USER_MANAGER_EXPORT GetIntegerPref(const AccountId& account_id,
 void USER_MANAGER_EXPORT SetIntegerPref(const AccountId& account_id,
                                         const std::string& path,
                                         const int in_value);
+
+// Returns true if |account_id| preference by |path| does exist,
+// fills in |out_value|. Otherwise returns false.
+bool USER_MANAGER_EXPORT GetPref(const AccountId& account_id,
+                                 const std::string& path,
+                                 const base::Value** out_value);
+
+// Updates user's identified by |account_id| value preference |path|.
+void USER_MANAGER_EXPORT SetPref(const AccountId& account_id,
+                                 const std::string& path,
+                                 base::Value in_value);
+
+// Removes user's identified by |account_id| preference |path|.
+void USER_MANAGER_EXPORT RemovePref(const AccountId& account_id,
+                                    const std::string& path);
 
 // Returns the list of known AccountIds.
 std::vector<AccountId> USER_MANAGER_EXPORT GetKnownAccountIds();
@@ -136,6 +152,15 @@ void USER_MANAGER_EXPORT UpdateUsingSAML(const AccountId& account_id,
 // returns false.
 bool USER_MANAGER_EXPORT IsUsingSAML(const AccountId& account_id);
 
+// Setter and getter for the known user preference that stores whether the user
+// authenticated via SAML using the principals API.
+void USER_MANAGER_EXPORT
+UpdateIsUsingSAMLPrincipalsAPI(const AccountId& account_id,
+                               bool is_using_saml_principals_api);
+
+bool USER_MANAGER_EXPORT
+GetIsUsingSAMLPrincipalsAPI(const AccountId& account_id);
+
 // Enum describing whether a user's profile requires policy. If kPolicyRequired,
 // the profile initialization code will ensure that valid policy is loaded
 // before session initialization completes.
@@ -156,6 +181,10 @@ void USER_MANAGER_EXPORT
 SetProfileRequiresPolicy(const AccountId& account_id,
                          ProfileRequiresPolicy policy_required);
 
+// Clears information whether profile requires policy.
+void USER_MANAGER_EXPORT
+ClearProfileRequiresPolicy(const AccountId& account_id);
+
 // Saves why the user has to go through re-auth flow.
 void USER_MANAGER_EXPORT UpdateReauthReason(const AccountId& account_id,
                                             const int reauth_reason);
@@ -174,6 +203,17 @@ SetUserHomeMinimalMigrationAttempted(const AccountId& account_id,
 // Returns true if minimal migration was attempted for this user's cryptohome.
 bool USER_MANAGER_EXPORT
 WasUserHomeMinimalMigrationAttempted(const AccountId& account_id);
+
+// Setter and getter for the information about challenge-response keys that can
+// be used by this user to authenticate.
+// The getter returns a null value when the property isn't present.
+// For the format of the value, refer to
+// chromeos/login/auth/challenge_response/known_user_pref_utils.h.
+void USER_MANAGER_EXPORT SetChallengeResponseKeys(const AccountId& account_id,
+                                                  base::Value value);
+
+base::Value USER_MANAGER_EXPORT
+GetChallengeResponseKeys(const AccountId& account_id);
 
 // Removes all user preferences associated with |account_id|.
 // Not exported as code should not be calling this outside this component

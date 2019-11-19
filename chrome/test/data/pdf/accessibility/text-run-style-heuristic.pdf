@@ -1,0 +1,160 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /MediaBox [ 0 0 200 200 ]
+  /Count 1
+  /Kids [ 3 0 R ]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R %Basic font. Times-Roman, no style.
+      /F2 5 0 R %Basic font. Helvetica, no style.
+      /F3 6 0 R %F2 + font-weigth (/stemV and /Weight)
+      /F4 8 0 R %F3 + italic flag
+    >>
+  >>
+  /Contents 10 0 R
+>>
+endobj
+4 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+5 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica
+>>
+endobj
+6 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica-Bold
+  /FontDescriptor 7 0 R
+>>
+endobj
+7 0 obj <<
+  /Type /FontDescriptor
+  /FontName /Helvetica-Bold
+  /FontWeight 600
+  /StemV 80
+  /ItalicAngle 0
+  /Ascent 776
+  /Flags 0
+  /FontBBox [-250 -236 2827 1000]
+  /CapHeight 763
+  /Descent -223
+>>
+endobj
+8 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica-Bold-Italic
+  /FontDescriptor 9 0 R
+>>
+endobj
+9 0 obj <<
+  /Type /FontDescriptor
+  /FontName /Helvetica-Bold-Italic
+  /FontWeight 600
+  /StemV 80
+  /ItalicAngle 45
+  /Ascent 776
+  /Flags 64
+  /FontBBox [-250 -236 2827 1000]
+  /CapHeight 763
+  /Descent -223
+>>
+endobj
+10 0 obj <<
+  /Length 469
+>>
+stream
+BT
+0 0 Td
+/F1 9 Tf
+1 0 0 1 2 30 Tm
+(Hello) Tj
+
+0 0 Td
+/F2 9 Tf
+1 0 0 1 22 30 Tm
+( world!) Tj
+
+0 0 Td
+/F2 8 Tf
+1 0 0 1 48 30 Tm
+( One) Tj
+
+0 0 Td
+/F3 8 Tf
+1 0 0 1 65 30 Tm
+( word) Tj
+
+0 0 Td
+/F4 8 Tf
+1 0 0 1 85 30 Tm
+( equals) Tj
+
+0 0 Td
+/F4 8 Tf
+1 0 0 1 121 30 Tm
+3 Tr
+( to) Tj
+
+0 0 Td
+/F4 8 Tf
+1 0 0 1 137 30 Tm
+1 Tr
+( one) Tj
+
+0 0 Td
+/F4 8 Tf
+1 0 0 1 154 30 Tm
+1 0 0 rg
+0 1 0 RG
+2 Tr
+( text) Tj
+
+0 0 Td
+/F4 8 Tf
+1 0 0 1 170 30 Tm
+0 0 1 rg
+1 0 0 RG
+1 Tr
+( run.) Tj
+ET
+endstream
+endobj
+xref
+0 11
+0000000000 65535 f 
+0000000015 00000 n 
+0000000068 00000 n 
+0000000161 00000 n 
+0000000463 00000 n 
+0000000541 00000 n 
+0000000617 00000 n 
+0000000722 00000 n 
+0000000934 00000 n 
+0000001046 00000 n 
+0000001267 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 11
+>>
+startxref
+1789
+%%EOF

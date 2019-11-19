@@ -32,7 +32,7 @@ class ScreenCaptureNotificationUiBrowserTest : public DialogBrowserTest {
                 test->run_loop_->QuitWhenIdle();
             },
             base::Unretained(this)),
-        base::RepeatingClosure());
+        content::MediaStreamUI::SourceCallback());
   }
 
   bool VerifyUi() override {
@@ -54,6 +54,11 @@ class ScreenCaptureNotificationUiBrowserTest : public DialogBrowserTest {
     run_loop_->Run();
     run_loop_.reset();
     screen_capture_notification_ui_.reset();
+  }
+
+  std::string GetNonDialogName() override {
+    // This class tests a non-dialog widget with the following name.
+    return "ScreenCaptureNotificationUIViews";
   }
 
  private:

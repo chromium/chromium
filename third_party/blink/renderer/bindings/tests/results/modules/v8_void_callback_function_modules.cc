@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
 namespace blink {
 
@@ -59,6 +60,11 @@ v8::Maybe<void> V8VoidCallbackFunctionModules::Invoke(bindings::V8ValueOrScriptW
   // step: Prepare to run a callback with stored settings.
   v8::Context::BackupIncumbentScope backup_incumbent_scope(
       IncumbentScriptState()->GetContext());
+
+  if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
+    ScriptForbiddenScope::ThrowScriptForbiddenException(GetIsolate());
+    return v8::Nothing<void>();
+  }
 
   v8::Local<v8::Function> function;
   // callback function's invoke:
@@ -110,16 +116,6 @@ void V8VoidCallbackFunctionModules::InvokeAndReportException(bindings::V8ValueOr
       Invoke(callback_this_value);
   // An exception if any is killed with the v8::TryCatch above.
   ALLOW_UNUSED_LOCAL(maybe_result);
-}
-
-v8::Maybe<void> V8PersistentCallbackFunction<V8VoidCallbackFunctionModules>::Invoke(bindings::V8ValueOrScriptWrappableAdapter callback_this_value) {
-  return Proxy()->Invoke(
-      callback_this_value);
-}
-
-void V8PersistentCallbackFunction<V8VoidCallbackFunctionModules>::InvokeAndReportException(bindings::V8ValueOrScriptWrappableAdapter callback_this_value) {
-  Proxy()->InvokeAndReportException(
-      callback_this_value);
 }
 
 }  // namespace blink

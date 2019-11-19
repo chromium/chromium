@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import sys
 import traceback
 
@@ -50,7 +52,7 @@ def KindsAreEqual(kind1, kind2):
     return True
   if kind1.__class__ == mojom.Array:
     return KindsAreEqual(kind1.kind, kind2.kind)
-  print 'Unknown Kind class: ', kind1.__class__.__name__
+  print('Unknown Kind class: ', kind1.__class__.__name__)
   return False
 
 
@@ -158,7 +160,7 @@ def PrintFailure(string):
   stack = traceback.extract_stack()
   frame = stack[len(stack)-3]
   sys.stderr.write("ERROR at %s:%d, %s\n" % (frame[0], frame[1], string))
-  print "Traceback:"
+  print("Traceback:")
   for line in traceback.format_list(stack[:len(stack)-2]):
     sys.stderr.write(line)
 

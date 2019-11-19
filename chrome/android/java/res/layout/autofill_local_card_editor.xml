@@ -9,7 +9,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Name -->
-    <org.chromium.chrome.browser.widget.CompatibilityTextInputLayout
+    <org.chromium.chrome.browser.widget.ChromeTextInputLayout
         android:id="@+id/credit_card_name_label"
         android:labelFor="@+id/credit_card_name_edit"
         android:layout_width="match_parent"
@@ -27,10 +27,10 @@
             android:inputType="textCapWords"
             android:hint="@string/autofill_credit_card_editor_name" />
 
-    </org.chromium.chrome.browser.widget.CompatibilityTextInputLayout>
+    </org.chromium.chrome.browser.widget.ChromeTextInputLayout>
 
     <!-- Credit card number -->
-    <org.chromium.chrome.browser.widget.CompatibilityTextInputLayout
+    <org.chromium.chrome.browser.widget.ChromeTextInputLayout
         android:id="@+id/credit_card_number_label"
         android:labelFor="@+id/credit_card_number_edit"
         android:layout_width="match_parent"
@@ -49,7 +49,7 @@
             android:digits="0123456789- "
             android:hint="@string/autofill_credit_card_editor_number" />
 
-    </org.chromium.chrome.browser.widget.CompatibilityTextInputLayout>
+    </org.chromium.chrome.browser.widget.ChromeTextInputLayout>
 
     <!-- Expiration date -->
     <TextView

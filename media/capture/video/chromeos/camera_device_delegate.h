@@ -9,25 +9,34 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
-#include "media/capture/video/chromeos/mojo/camera3.mojom.h"
-#include "media/capture/video/chromeos/mojo/camera_common.mojom.h"
+#include "media/capture/video/chromeos/mojom/camera3.mojom.h"
+#include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/range/range.h"
 
 namespace media {
 
 class Camera3AController;
+class CameraAppDeviceImpl;
 class CameraDeviceContext;
 class CameraHalDelegate;
-class ReprocessManager;
 class RequestManager;
 
 enum class StreamType : uint64_t {
-  kPreview = 0,
-  kStillCapture = 1,
+  kPreviewOutput = 0,
+  kJpegOutput = 1,
+  kYUVInput = 2,
+  kYUVOutput = 3,
   kUnknown,
 };
+
+// Returns true if the given stream type is an input stream.
+bool IsInputStream(StreamType stream_type);
 
 StreamType StreamIdToStreamType(uint64_t stream_id);
 
@@ -68,7 +77,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final {
       VideoCaptureDeviceDescriptor device_descriptor,
       scoped_refptr<CameraHalDelegate> camera_hal_delegate,
       scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
-      ReprocessManager* reprocess_manager);
+      CameraAppDeviceImpl* camera_app_device);
 
   ~CameraDeviceDelegate();
 
@@ -99,7 +108,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final {
   void OnMojoConnectionError();
 
   // Reconfigure streams for picture taking.
-  void OnFlushed(int32_t result);
+  void OnFlushed(base::Optional<gfx::Size> new_blob_resolution, int32_t result);
 
   // Callback method for the Close Mojo IPC call.  This method resets the Mojo
   // connection and closes the camera device.
@@ -107,9 +116,6 @@ class CAPTURE_EXPORT CameraDeviceDelegate final {
 
   // Resets the Mojo interface and bindings.
   void ResetMojoInterface();
-
-  // Sets |static_metadata_| from |camera_info|.
-  void OnGotCameraInfo(int32_t result, cros::mojom::CameraInfoPtr camera_info);
 
   // Creates the Mojo connection to the camera device.
   void OnOpenedDevice(int32_t result);
@@ -126,10 +132,20 @@ class CAPTURE_EXPORT CameraDeviceDelegate final {
   // indicates.  If there's no error OnConfiguredStreams notifies
   // |client_| the capture has started by calling OnStarted, and proceeds to
   // ConstructDefaultRequestSettings.
-  void ConfigureStreams(bool require_photo);
+  void ConfigureStreams(bool require_photo,
+                        base::Optional<gfx::Size> new_blob_resolution);
   void OnConfiguredStreams(
+      gfx::Size blob_resolution,
       int32_t result,
       cros::mojom::Camera3StreamConfigurationPtr updated_config);
+
+  // Checks metadata in |static_metadata_| to ensure field
+  // request.availableCapabilities contains YUV reprocessing and field
+  // scaler.availableInputOutputFormatsMap contains YUV => BLOB mapping.
+  // If above checks both pass, fill the max yuv width and height in
+  // |max_width| and |max_height| and return true if both width and height are
+  // positive numbers. Return false otherwise.
+  bool IsYUVReprocessingSupported(int* max_width, int* max_height);
 
   // ConstructDefaultRequestSettings asks the camera HAL for the default request
   // settings of the stream in |stream_context_|.
@@ -145,6 +161,9 @@ class CAPTURE_EXPORT CameraDeviceDelegate final {
   void OnConstructedDefaultStillCaptureRequestSettings(
       cros::mojom::CameraMetadataPtr settings);
 
+  void OnGotFpsRange(cros::mojom::CameraMetadataPtr settings,
+                     base::Optional<gfx::Range> specified_fps_range);
+
   // StreamCaptureInterface implementations.  These methods are called by
   // |stream_buffer_manager_| on |ipc_task_runner_|.
   void ProcessCaptureRequest(cros::mojom::Camera3CaptureRequestPtr request,
@@ -156,7 +175,8 @@ class CAPTURE_EXPORT CameraDeviceDelegate final {
 
   const VideoCaptureDeviceDescriptor device_descriptor_;
 
-  int32_t camera_id_;
+  // Current configured resolution of BLOB stream.
+  gfx::Size current_blob_resolution_;
 
   const scoped_refptr<CameraHalDelegate> camera_hal_delegate_;
 
@@ -175,7 +195,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final {
   // settings, etc.
   cros::mojom::CameraMetadataPtr static_metadata_;
 
-  cros::mojom::Camera3DeviceOpsPtr device_ops_;
+  mojo::Remote<cros::mojom::Camera3DeviceOps> device_ops_;
 
   // Where all the Mojo IPC calls takes place.
   const scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner_;
@@ -184,9 +204,9 @@ class CAPTURE_EXPORT CameraDeviceDelegate final {
 
   VideoCaptureDevice::SetPhotoOptionsCallback set_photo_option_callback_;
 
-  ReprocessManager* reprocess_manager_;  // weak
+  CameraAppDeviceImpl* camera_app_device_;  // Weak.
 
-  base::WeakPtrFactory<CameraDeviceDelegate> weak_ptr_factory_;
+  base::WeakPtrFactory<CameraDeviceDelegate> weak_ptr_factory_{this};
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(CameraDeviceDelegate);
 };

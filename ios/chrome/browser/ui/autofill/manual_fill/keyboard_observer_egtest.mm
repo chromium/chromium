@@ -2,29 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
-
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/ui/autofill/manual_fill/keyboard_observer_helper.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/app/tab_test_util.h"
+#import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
+#import "ios/chrome/browser/ui/util/keyboard_observer_helper_app_interface.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/web/public/test/earl_grey/web_view_actions.h"
-#import "ios/web/public/test/earl_grey/web_view_matchers.h"
-#include "ios/web/public/test/element_selector.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-using web::test::ElementSelector;
+#if defined(CHROME_EARL_GREY_2)
+// TODO(crbug.com/1015113): The EG2 macro is breaking indexing for some reason
+// without the trailing semicolon.  For now, disable the extra semi warning
+// so Xcode indexing works for the egtest.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
+GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(KeyboardObserverHelperAppInterface);
+#pragma clang diagnostic pop
+#endif  // defined(CHROME_EARL_GREY_2)
+
+using base::TimeDelta;
+using base::test::ios::SpinRunLoopWithMinDelay;
+using base::test::ios::WaitUntilConditionOrTimeout;
+using chrome_test_util::TapWebElementWithId;
+using chrome_test_util::WebViewMatcher;
 
 namespace {
 
@@ -35,14 +44,10 @@ const std::string kFormElementSubmit = "submit";
 // If an element is focused in the webview, returns its ID. Returns an empty
 // NSString otherwise.
 NSString* GetFocusedElementID() {
-  NSString* js =
-      @"(function() {"
-       "  return document.activeElement.id;"
-       "})();";
-  NSError* error = nil;
-  NSString* result = chrome_test_util::ExecuteJavaScript(js, &error);
-  GREYAssertNil(error, @"Unexpected error when executing JavaScript.");
-  return result;
+  NSString* javaScript = @"(function() {"
+                          "  return document.activeElement.id;"
+                          "})();";
+  return [ChromeEarlGrey executeJavaScript:javaScript];
 }
 
 // Verifies that |elementId| is the selected element in the web page.
@@ -55,18 +60,13 @@ void AssertElementIsFocused(const std::string& element_id) {
   ConditionBlock condition = ^{
     return base::SysNSStringToUTF8(GetFocusedElementID()) == element_id;
   };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(10, condition),
-             description);
+  GREYAssert(WaitUntilConditionOrTimeout(10, condition), description);
 }
 
 // Helper to tap a web element.
 void TapOnWebElementWithID(const std::string& elementID) {
-  [[EarlGrey
-      selectElementWithMatcher:web::WebViewInWebState(
-                                   chrome_test_util::GetCurrentWebState())]
-      performAction:web::WebViewTapElement(
-                        chrome_test_util::GetCurrentWebState(),
-                        ElementSelector::ElementSelectorId(elementID))];
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
+      performAction:TapWebElementWithId(elementID)];
 }
 
 }  // namespace
@@ -75,11 +75,7 @@ void TapOnWebElementWithID(const std::string& elementID) {
 @interface KeyboardObserverTestCase : ChromeTestCase
 
 // Observer to be tested.
-@property(nonatomic, strong) KeyboardObserverHelper* keyboardObserver;
-
-// Delegate mock to confirm the observer callbacks.
-@property(nonatomic, strong)
-    OCMockObject<KeyboardObserverHelperConsumer>* keyboardObserverDelegateMock;
+@property(nonatomic, strong) KeyboardObserverHelper* keyboardObserverHelper;
 
 @end
 
@@ -87,85 +83,44 @@ void TapOnWebElementWithID(const std::string& elementID) {
 
 - (void)setUp {
   [super setUp];
-  self.keyboardObserver = [[KeyboardObserverHelper alloc] init];
-  self.keyboardObserverDelegateMock =
-      OCMProtocolMock(@protocol(KeyboardObserverHelperConsumer));
-  self.keyboardObserver.consumer = self.keyboardObserverDelegateMock;
+  self.keyboardObserverHelper =
+      [KeyboardObserverHelperAppInterface appSharedInstance];
 
-  web::test::SetUpFileBasedHttpServer();
-  GURL URL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/multi_field_form.html");
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL URL = self.testServer->GetURL("/multi_field_form.html");
   [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGrey waitForWebViewContainingText:"hello!"];
-
-  // Opening the keyboard from a webview blocks EarlGrey's synchronization.
-  [[GREYConfiguration sharedInstance]
-          setValue:@NO
-      forConfigKey:kGREYConfigKeySynchronizationEnabled];
+  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
 }
 
 - (void)tearDown {
-  self.keyboardObserverDelegateMock = nil;
-  self.keyboardObserver = nil;
-
-  // |setUp| disables synchronization.  Reenable here.
-  [[GREYConfiguration sharedInstance]
-          setValue:@YES
-      forConfigKey:kGREYConfigKeySynchronizationEnabled];
+  self.keyboardObserverHelper = nil;
   [super tearDown];
 }
 
-// Tests the observer correctly identifies when the keyboard stays on screen.
-- (void)testKeyboardDidStayOnScreen {
-  // Brings up the keyboard by tapping on one of the form's field.
-  TapOnWebElementWithID(kFormElementID1);
-
-  // Verifies that the taped element is focused.
-  AssertElementIsFocused(kFormElementID1);
-
-  // Create the callback expectation.
-  OCMExpect([self.keyboardObserverDelegateMock keyboardDidStayOnScreen]);
-
-  // Tap the second field.
-  TapOnWebElementWithID(kFormElementID2);
-
-  // Verifies that the taped element is focused.
-  AssertElementIsFocused(kFormElementID2);
-
-  // Verify the delegate call was made.
-  [self.keyboardObserverDelegateMock verify];
-
-  // Add another callback expectation.
-  OCMExpect([self.keyboardObserverDelegateMock keyboardDidStayOnScreen]);
-
-  // Tap the first field.
-  TapOnWebElementWithID(kFormElementID1);
-
-  // Verifies that the taped element is focused.
-  AssertElementIsFocused(kFormElementID1);
-
-  // Verify the delegate call was made.
-  [self.keyboardObserverDelegateMock verify];
-}
-
 // Tests that when the keyboard actually dismiss the right callback is done.
-// TODO(crbug.com/914374): Address flakiness and reenable.
-- (void)DISABLED_testKeyboardDidHide {
+- (void)testKeyboardHideState {
+  // Opening the keyboard from a webview blocks EarlGrey's synchronization.
+  ScopedSynchronizationDisabler disabler;
+
   // Brings up the keyboard by tapping on one of the form's field.
   TapOnWebElementWithID(kFormElementID1);
+  SpinRunLoopWithMinDelay(TimeDelta::FromSeconds(1));
 
   // Verifies that the taped element is focused.
   AssertElementIsFocused(kFormElementID1);
 
-  // Create the callback expectation.
-  OCMExpect([self.keyboardObserverDelegateMock keyboardDidHide]);
+  // Verify the visible state.
+  KeyboardObserverHelper* observer = self.keyboardObserverHelper;
+  GREYAssertTrue(observer.keyboardState.isVisible,
+                 @"Keyboard should be visible.");
 
   // Tap the "Submit" button, and let the run loop spin.
   TapOnWebElementWithID(kFormElementSubmit);
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(1));
+  SpinRunLoopWithMinDelay(TimeDelta::FromSeconds(1));
 
-  // Verify the delegate call was made.
-  [self.keyboardObserverDelegateMock verify];
+  // Verify the state changed.
+  GREYAssertFalse(observer.keyboardState.isVisible,
+                  @"Keyboard shouldn't be visible.");
 }
 
 @end

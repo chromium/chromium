@@ -37,9 +37,7 @@ namespace blink {
 
 class SubmitInputType final : public BaseButtonInputType {
  public:
-  static InputType* Create(HTMLInputElement&);
-
-  SubmitInputType(HTMLInputElement& element) : BaseButtonInputType(element) {}
+  explicit SubmitInputType(HTMLInputElement& element);
 
  private:
   const AtomicString& FormControlType() const override;

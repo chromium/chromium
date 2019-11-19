@@ -51,8 +51,8 @@ class MediaAutoplayTest : public ContentBrowserTest {
 // This is a regression test from a crash from autoplay_initiated_ not being set
 // in the Blink's AutoplayPolicy.
 IN_PROC_BROWSER_TEST_F(MediaAutoplayTest, Crash_AutoplayInitiated) {
-  NavigateToURL(shell(),
-                embedded_test_server()->GetURL("/media/video-player.html"));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/media/video-player.html")));
 
   WaitForMediaPlaying wait_for_media_playing(shell()->web_contents());
 

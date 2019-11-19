@@ -50,12 +50,6 @@ void ExpireEntriesByAge(syncable::Directory* dir,
                         ModelType type,
                         int32_t age_watermark_in_days);
 
-// If the number of sync entities exceeds |max_number_of_items|, sync
-// client will tombstone the extra sync entities based on the LRU rule.
-void ExpireEntriesByItemLimit(syncable::Directory* dir,
-                              syncable::ModelNeutralWriteTransaction* trans,
-                              ModelType type,
-                              int64_t max_number_of_items);
 
 }  // namespace syncer
 

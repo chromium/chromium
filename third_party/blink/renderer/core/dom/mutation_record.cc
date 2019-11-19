@@ -70,9 +70,9 @@ class ChildListRecord : public MutationRecord {
   Node* previousSibling() override { return previous_sibling_.Get(); }
   Node* nextSibling() override { return next_sibling_.Get(); }
 
-  TraceWrapperMember<Node> target_;
-  TraceWrapperMember<StaticNodeList> added_nodes_;
-  TraceWrapperMember<StaticNodeList> removed_nodes_;
+  Member<Node> target_;
+  Member<StaticNodeList> added_nodes_;
+  Member<StaticNodeList> removed_nodes_;
   Member<Node> previous_sibling_;
   Member<Node> next_sibling_;
 };
@@ -102,14 +102,14 @@ class RecordWithEmptyNodeLists : public MutationRecord {
   static StaticNodeList* LazilyInitializeEmptyNodeList(
       Member<StaticNodeList>& node_list) {
     if (!node_list)
-      node_list = StaticNodeList::CreateEmpty();
+      node_list = MakeGarbageCollected<StaticNodeList>();
     return node_list.Get();
   }
 
-  TraceWrapperMember<Node> target_;
+  Member<Node> target_;
   String old_value_;
-  TraceWrapperMember<StaticNodeList> added_nodes_;
-  TraceWrapperMember<StaticNodeList> removed_nodes_;
+  Member<StaticNodeList> added_nodes_;
+  Member<StaticNodeList> removed_nodes_;
 };
 
 class AttributesRecord : public RecordWithEmptyNodeLists {
@@ -166,7 +166,7 @@ class MutationRecordWithNullOldValue : public MutationRecord {
 
   String oldValue() override { return String(); }
 
-  TraceWrapperMember<MutationRecord> record_;
+  Member<MutationRecord> record_;
 };
 
 const AtomicString& ChildListRecord::type() {

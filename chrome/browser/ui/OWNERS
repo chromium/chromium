@@ -1,5 +1,6 @@
 ellyjones@chromium.org
 msw@chromium.org
+pbos@chromium.org
 pkasting@chromium.org
 sky@chromium.org
 tapted@chromium.org
@@ -20,5 +21,10 @@ per-file browser_instant_controller*=file://chrome/browser/search/OWNERS
 # Signin and avatars.
 per-file avatar_*=file://components/signin/OWNERS
 per-file signin_*=file://components/signin/OWNERS
+
+per-file ui_features.cc=*
+per-file ui_features.h=*
+
+per-file settings_window_manager*chromeos*=file://chrome/browser/ui/ash/OWNERS
 
 # COMPONENT: UI>Browser

@@ -5,10 +5,6 @@
    version="1.0"
    width="200"
    height="200">
-<script><![CDATA[
-    if (window.testRunner)
-        testRunner.dumpAsTextWithPixelResults();
-]]></script>
 <defs>
   <linearGradient id="linearGradient0">
     <stop offset="0" stop-color="white"/>

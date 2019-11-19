@@ -171,6 +171,17 @@ void OutgoingInvitation::Send(OutgoingInvitation invitation,
 }
 
 // static
+void OutgoingInvitation::SendAsync(OutgoingInvitation invitation,
+                                   base::ProcessHandle target_process,
+                                   PlatformChannelEndpoint channel_endpoint,
+                                   const ProcessErrorCallback& error_callback) {
+  SendInvitation(std::move(invitation.handle_), target_process,
+                 channel_endpoint.TakePlatformHandle(),
+                 MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_ASYNC,
+                 MOJO_SEND_INVITATION_FLAG_NONE, error_callback, "");
+}
+
+// static
 ScopedMessagePipeHandle OutgoingInvitation::SendIsolated(
     PlatformChannelEndpoint channel_endpoint,
     base::StringPiece connection_name) {
@@ -214,7 +225,8 @@ IncomingInvitation& IncomingInvitation::operator=(IncomingInvitation&& other) =
 
 // static
 IncomingInvitation IncomingInvitation::Accept(
-    PlatformChannelEndpoint channel_endpoint) {
+    PlatformChannelEndpoint channel_endpoint,
+    MojoAcceptInvitationFlags flags) {
   MojoPlatformHandle endpoint_handle;
   PlatformHandle::ToMojoPlatformHandle(channel_endpoint.TakePlatformHandle(),
                                        &endpoint_handle);
@@ -223,6 +235,34 @@ IncomingInvitation IncomingInvitation::Accept(
   MojoInvitationTransportEndpoint transport_endpoint;
   transport_endpoint.struct_size = sizeof(transport_endpoint);
   transport_endpoint.type = MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL;
+  transport_endpoint.num_platform_handles = 1;
+  transport_endpoint.platform_handles = &endpoint_handle;
+
+  MojoAcceptInvitationOptions options;
+  options.struct_size = sizeof(options);
+  options.flags = flags;
+
+  MojoHandle invitation_handle;
+  MojoResult result =
+      MojoAcceptInvitation(&transport_endpoint, &options, &invitation_handle);
+  if (result != MOJO_RESULT_OK)
+    return IncomingInvitation();
+
+  return IncomingInvitation(
+      ScopedInvitationHandle(InvitationHandle(invitation_handle)));
+}
+
+// static
+IncomingInvitation IncomingInvitation::AcceptAsync(
+    PlatformChannelEndpoint channel_endpoint) {
+  MojoPlatformHandle endpoint_handle;
+  PlatformHandle::ToMojoPlatformHandle(channel_endpoint.TakePlatformHandle(),
+                                       &endpoint_handle);
+  CHECK_NE(endpoint_handle.type, MOJO_PLATFORM_HANDLE_TYPE_INVALID);
+
+  MojoInvitationTransportEndpoint transport_endpoint;
+  transport_endpoint.struct_size = sizeof(transport_endpoint);
+  transport_endpoint.type = MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_ASYNC;
   transport_endpoint.num_platform_handles = 1;
   transport_endpoint.platform_handles = &endpoint_handle;
 

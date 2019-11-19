@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_element_factory.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -33,6 +34,7 @@ CustomElementDefinition::CustomElementDefinition(
       observed_attributes_(observed_attributes),
       has_style_attribute_changed_callback_(
           observed_attributes.Contains(html_names::kStyleAttr.LocalName())),
+      disable_shadow_(disabled_features.Contains(String("shadow"))),
       disable_internals_(disabled_features.Contains(String("internals"))),
       is_form_associated_(form_association_flag == FormAssociationFlag::kYes) {}
 
@@ -104,10 +106,10 @@ HTMLElement* CustomElementDefinition::CreateElementForConstructor(
   if (element) {
     element->SetIsValue(Descriptor().GetName());
   } else {
-    element =
-        HTMLElement::Create(QualifiedName(g_null_atom, Descriptor().LocalName(),
-                                          html_names::xhtmlNamespaceURI),
-                            document);
+    element = MakeGarbageCollected<HTMLElement>(
+        QualifiedName(g_null_atom, Descriptor().LocalName(),
+                      html_names::xhtmlNamespaceURI),
+        document);
   }
   // TODO(davaajav): write this as one call to setCustomElementState instead of
   // two
@@ -148,7 +150,7 @@ HTMLElement* CustomElementDefinition::CreateElement(
       Upgrade(*result);
     else
       EnqueueUpgradeReaction(*result);
-    return ToHTMLElement(result);
+    return To<HTMLElement>(result);
   }
 
   // 6. If definition is non-null, then:
@@ -162,7 +164,7 @@ HTMLElement* CustomElementDefinition::CreateElement(
   // interface, with no attributes, namespace set to the HTML namespace,
   // namespace prefix set to prefix, local name set to localName, custom
   // element state set to "undefined", and node document set to document.
-  HTMLElement* element = HTMLElement::Create(tag_name, document);
+  auto* element = MakeGarbageCollected<HTMLElement>(tag_name, document);
   element->SetCustomElementState(CustomElementState::kUndefined);
   // 6.2.2. Enqueue a custom element upgrade reaction given result and
   // definition.
@@ -210,7 +212,7 @@ void CustomElementDefinition::Upgrade(Element& element) {
   element.SetCustomElementDefinition(this);
 
   if (IsFormAssociated())
-    ToHTMLElement(element).EnsureElementInternals().DidUpgrade();
+    To<HTMLElement>(element).EnsureElementInternals().DidUpgrade();
   AddDefaultStylesTo(element);
 }
 

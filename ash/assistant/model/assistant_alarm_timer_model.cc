@@ -24,7 +24,7 @@ void AssistantAlarmTimerModel::RemoveObserver(
 }
 
 void AssistantAlarmTimerModel::AddAlarmTimer(const AlarmTimer& alarm_timer) {
-  DCHECK(!base::ContainsKey(alarms_timers_, alarm_timer.id));
+  DCHECK(!base::Contains(alarms_timers_, alarm_timer.id));
   alarms_timers_[alarm_timer.id] = alarm_timer;
   NotifyAlarmTimerAdded(alarm_timer, /*time_remaining=*/base::TimeTicks::Now() -
                                          alarm_timer.end_time);

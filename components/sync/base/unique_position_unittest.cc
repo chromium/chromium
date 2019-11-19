@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/sha1.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/protocol/unique_position.pb.h"

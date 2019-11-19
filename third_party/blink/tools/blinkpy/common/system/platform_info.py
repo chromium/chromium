@@ -147,10 +147,7 @@ class PlatformInfo(object):
 
     def _determine_mac_version(self, mac_version_string):
         minor_release = int(mac_version_string.split('.')[1])
-        assert 9 <= minor_release <= 14, 'Unsupported mac OS version: %s' % mac_version_string
-        if minor_release == 9:
-            # 10.9 is only partially supported; we pretend we're 10.10.
-            return 'mac10.10'
+        assert 10 <= minor_release <= 15, 'Unsupported mac OS version: %s' % mac_version_string
         return 'mac10.%d' % minor_release
 
     def _determine_linux_version(self, _):

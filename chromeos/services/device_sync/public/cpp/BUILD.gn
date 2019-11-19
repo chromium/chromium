@@ -20,7 +20,6 @@ source_set("cpp") {
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
     "//chromeos/services/device_sync/public/mojom",
-    "//services/service_manager/public/cpp",
   ]
 
   deps = [
@@ -32,6 +31,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_client_app_metadata_provider.cc",
+    "fake_client_app_metadata_provider.h",
     "fake_device_sync_client.cc",
     "fake_device_sync_client.h",
     "fake_gcm_device_info_provider.cc",
@@ -64,24 +65,10 @@ source_set("unit_tests") {
     "//chromeos/services/device_sync",
     "//chromeos/services/device_sync:test_support",
     "//components/gcm_driver:test_support",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//net",
-    "//services/identity/public/cpp:test_support",
     "//services/network:test_support",
-    "//services/service_manager/public/cpp/test:test_support",
     "//testing/gtest",
-  ]
-}
-
-source_set("manifest") {
-  sources = [
-    "manifest.cc",
-    "manifest.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chromeos/services/device_sync/public/mojom",
-    "//services/preferences/public/mojom",
-    "//services/service_manager/public/cpp",
   ]
 }

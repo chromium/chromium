@@ -14,13 +14,12 @@ namespace autofill_assistant {
 // An action to reset Autofill Assistant state.
 class ResetAction : public Action {
  public:
-  explicit ResetAction(const ActionProto& proto);
+  explicit ResetAction(ActionDelegate* delegate, const ActionProto& proto);
   ~ResetAction() override;
 
  private:
   // Overrides Action:
-  void InternalProcessAction(ActionDelegate* delegate,
-                             ProcessActionCallback callback) override;
+  void InternalProcessAction(ProcessActionCallback callback) override;
 
   DISALLOW_COPY_AND_ASSIGN(ResetAction);
 };

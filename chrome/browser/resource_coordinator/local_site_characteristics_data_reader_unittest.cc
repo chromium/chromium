@@ -40,18 +40,17 @@ class MockLocalSiteCharacteristicsDatabase
                         ReadSiteCharacteristicsFromDBCallback&));
 
   MOCK_METHOD2(WriteSiteCharacteristicsIntoDB,
-               void(const url::Origin&, const SiteCharacteristicsProto&));
+               void(const url::Origin&, const SiteDataProto&));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockLocalSiteCharacteristicsDatabase);
 };
 
-void InitializeSiteCharacteristicsProto(
-    SiteCharacteristicsProto* site_characteristics) {
+void InitializeSiteDataProto(SiteDataProto* site_characteristics) {
   DCHECK(site_characteristics);
   site_characteristics->set_last_loaded(42);
 
-  SiteCharacteristicsFeatureProto used_feature_proto;
+  SiteDataFeatureProto used_feature_proto;
   used_feature_proto.set_observation_duration(0U);
   used_feature_proto.set_use_timestamp(1U);
 
@@ -89,7 +88,8 @@ class LocalSiteCharacteristicsDataReaderTest : public ::testing::Test {
   }
 
   ~LocalSiteCharacteristicsDataReaderTest() override {
-    test_impl_->NotifySiteUnloaded(TabVisibility::kBackground);
+    test_impl_->NotifySiteUnloaded(
+        performance_manager::TabVisibility::kBackground);
   }
 
   base::SimpleTestTickClock test_clock_;
@@ -116,32 +116,32 @@ class LocalSiteCharacteristicsDataReaderTest : public ::testing::Test {
 
 TEST_F(LocalSiteCharacteristicsDataReaderTest, TestAccessors) {
   // Initially we have no information about any of the features.
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureUsageUnknown,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
             reader_->UpdatesFaviconInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureUsageUnknown,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
             reader_->UpdatesTitleInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureUsageUnknown,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
             reader_->UsesAudioInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureUsageUnknown,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureUsageUnknown,
             reader_->UsesNotificationsInBackground());
 
   // Simulates a title update event, make sure it gets reported directly.
   test_impl_->NotifyUpdatesTitleInBackground();
 
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureInUse,
             reader_->UpdatesTitleInBackground());
 
   // Advance the clock by a large amount of time, enough for the unused features
   // observation windows to expire.
   test_clock_.Advance(base::TimeDelta::FromDays(31));
 
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureNotInUse,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureNotInUse,
             reader_->UpdatesFaviconInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureInUse,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureInUse,
             reader_->UpdatesTitleInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureNotInUse,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureNotInUse,
             reader_->UsesAudioInBackground());
-  EXPECT_EQ(SiteFeatureUsage::kSiteFeatureNotInUse,
+  EXPECT_EQ(performance_manager::SiteFeatureUsage::kSiteFeatureNotInUse,
             reader_->UsesNotificationsInBackground());
 }
 
@@ -152,14 +152,13 @@ TEST_F(LocalSiteCharacteristicsDataReaderTest,
 
   // Override the read callback to simulate a successful read from the
   // database.
-  SiteCharacteristicsProto proto = {};
-  InitializeSiteCharacteristicsProto(&proto);
+  SiteDataProto proto = {};
+  InitializeSiteDataProto(&proto);
   auto read_from_db_mock_impl =
       [&](const url::Origin& origin,
           LocalSiteCharacteristicsDatabase::
               ReadSiteCharacteristicsFromDBCallback& callback) {
-        std::move(callback).Run(
-            base::Optional<SiteCharacteristicsProto>(proto));
+        std::move(callback).Run(base::Optional<SiteDataProto>(proto));
       };
 
   EXPECT_CALL(database, OnReadSiteCharacteristicsFromDB(

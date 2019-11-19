@@ -64,7 +64,7 @@ class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool action_taken_;
 
   // Used to delay the expiration of the info-bar.
-  base::WeakPtrFactory<DefaultBrowserInfoBarDelegate> weak_factory_;
+  base::WeakPtrFactory<DefaultBrowserInfoBarDelegate> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DefaultBrowserInfoBarDelegate);
 };

@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(ProcessesApiTest, DISABLED_Processes) {
   ASSERT_TRUE(RunExtensionTest("processes/api")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ProcessesApiTest, ProcessesApiListeners) {
+IN_PROC_BROWSER_TEST_F(ProcessesApiTest, DISABLED_ProcessesApiListeners) {
   EXPECT_EQ(0, GetListenersCount());
 
   // Load extension that adds a listener in background page

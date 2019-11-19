@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<canvas id='canvas' style="contain: strict">
+<script>
+async_test(t => {
+  // TODO(aaronhk) this test should be in external/wpt/css/css-contain but
+  // currently fast/canvas is the only directory that runs tests with
+  // accelerated canvases. see crbug.com/985075
+
+  // When the canvas is created the context is created lazily, thus it looks
+  // non-composited
+  var canvas = document.getElementById("canvas");
+  // Make sure the canvas is accelerated
+  canvas.width = 1024;
+  canvas.height = 1024;
+  var ctx = canvas.getContext('2d');
+
+  // Wait two frames, then create the accelerated, composited context.
+  // The compositor should detect this change and bubble up the parent layers
+  // otherwise a DCHECK will fail and crash the process
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      ctx.fillRect(0, 0, 1, 1);
+      t.done();
+    });
+  });
+}, `Verify that changing a canvas element from non-composited to composited
+    does not crash the process.`);
+</script>

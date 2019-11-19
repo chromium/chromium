@@ -12,7 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/default_clock.h"
 #include "chrome/common/media_router/media_sink.h"
-#include "chrome/common/media_router/media_source_helper.h"
+#include "chrome/common/media_router/media_source.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -77,10 +77,12 @@ const char MediaRouterMetrics::kHistogramStopRoute[] =
     "MediaRouter.Ui.Action.StopRoute";
 const char MediaRouterMetrics::kHistogramUiDeviceCount[] =
     "MediaRouter.Ui.Device.Count";
-const char MediaRouterMetrics::kHistogramUiDialogPaint[] =
-    "MediaRouter.Ui.Dialog.Paint";
+const char MediaRouterMetrics::kHistogramUiDialogIconStateAtOpen[] =
+    "MediaRouter.Ui.Dialog.IconStateAtOpen";
 const char MediaRouterMetrics::kHistogramUiDialogLoadedWithData[] =
     "MediaRouter.Ui.Dialog.LoadedWithData";
+const char MediaRouterMetrics::kHistogramUiDialogPaint[] =
+    "MediaRouter.Ui.Dialog.Paint";
 const char MediaRouterMetrics::kHistogramUiFirstAction[] =
     "MediaRouter.Ui.FirstAction";
 
@@ -215,6 +217,11 @@ void MediaRouterMetrics::RecordStopRemoteRoute() {
 // static
 void MediaRouterMetrics::RecordSearchSinkOutcome(bool success) {
   UMA_HISTOGRAM_BOOLEAN(kHistogramRecordSearchSinkOutcome, success);
+}
+
+// static
+void MediaRouterMetrics::RecordIconStateAtDialogOpen(bool is_pinned) {
+  UMA_HISTOGRAM_BOOLEAN(kHistogramUiDialogIconStateAtOpen, is_pinned);
 }
 
 }  // namespace media_router

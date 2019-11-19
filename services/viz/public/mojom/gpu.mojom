@@ -1,0 +1,53 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "gpu/ipc/common/gpu_feature_info.mojom";
+import "gpu/ipc/common/gpu_info.mojom";
+import "gpu/ipc/common/sync_token.mojom";
+[EnableIf=is_chromeos]
+import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
+import "media/mojo/mojom/video_encode_accelerator.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/buffer_types.mojom";
+
+interface GpuMemoryBufferFactory {
+  // Tells the GPU service to create a new GPU memory buffer.
+  CreateGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id,
+                        gfx.mojom.Size size,
+                        gfx.mojom.BufferFormat format,
+                        gfx.mojom.BufferUsage usage)
+      => (gfx.mojom.GpuMemoryBufferHandle buffer_handle);
+
+  // Tells the GPU process to destroy GPU memory buffer.
+  DestroyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id,
+                         gpu.mojom.SyncToken sync_token);
+};
+
+// API exposed to clients with lower level of trust, e.g. Renderers.
+interface Gpu {
+  // Note: The bound-to GpuMemoryBufferFactory instance is only guaranteed to
+  // stay alive for as long as the invoked Gpu instance.
+  CreateGpuMemoryBufferFactory(
+      pending_receiver<GpuMemoryBufferFactory> receiver);
+
+  // Tells the GPU service to create a new channel for communication with a
+  // client. The GPU service responds with client ID, IPC handle and
+  // GPUInfo.
+  EstablishGpuChannel() => (int32 client_id,
+                            handle<message_pipe>? channel_handle,
+                            gpu.mojom.GpuInfo gpu_info,
+                            gpu.mojom.GpuFeatureInfo gpu_feature_info);
+
+  // Creates a new JpegDecodeAccelerator and binds it to |jda|.
+  [EnableIf=is_chromeos]
+  CreateJpegDecodeAccelerator(
+      pending_receiver<chromeos_camera.mojom.MjpegDecodeAccelerator> jda);
+
+  // Creates a VideoEncodeAcceleratorProvider and binds it to |vea_provider|.
+  CreateVideoEncodeAcceleratorProvider(
+      pending_receiver<media.mojom.VideoEncodeAcceleratorProvider>
+          vea_provider);
+};

@@ -17,7 +17,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/invalidation/impl/fake_invalidation_state_tracker.h"
 #include "components/invalidation/impl/push_client_channel.h"
@@ -445,7 +445,7 @@ class SyncInvalidationListenerTest : public testing::Test {
   ObjectIdSet registered_ids_;
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   notifier::FakePushClient* const fake_push_client_;
 
  protected:
@@ -777,18 +777,18 @@ TEST_F(SyncInvalidationListenerTest, UnregisterCleansUpStateMapCache) {
   EXPECT_TRUE(GetSavedInvalidations().empty());
   FireInvalidate(id, 1, "hello");
   EXPECT_EQ(1U, GetSavedInvalidations().size());
-  EXPECT_TRUE(base::ContainsKey(GetSavedInvalidations(), id));
+  EXPECT_TRUE(base::Contains(GetSavedInvalidations(), id));
   FireInvalidate(kPreferencesId_, 2, "world");
   EXPECT_EQ(2U, GetSavedInvalidations().size());
 
-  EXPECT_TRUE(base::ContainsKey(GetSavedInvalidations(), id));
-  EXPECT_TRUE(base::ContainsKey(GetSavedInvalidations(), kPreferencesId_));
+  EXPECT_TRUE(base::Contains(GetSavedInvalidations(), id));
+  EXPECT_TRUE(base::Contains(GetSavedInvalidations(), kPreferencesId_));
 
   ObjectIdSet ids;
   ids.insert(id);
   listener_.UpdateRegisteredIds(ids);
   EXPECT_EQ(1U, GetSavedInvalidations().size());
-  EXPECT_TRUE(base::ContainsKey(GetSavedInvalidations(), id));
+  EXPECT_TRUE(base::Contains(GetSavedInvalidations(), id));
 }
 
 TEST_F(SyncInvalidationListenerTest, DuplicateInvaldiations_Simple) {

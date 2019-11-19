@@ -8,9 +8,9 @@
 #include "chrome/browser/chromeos/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/settings/stub_install_attributes.h"
+#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,7 +33,7 @@ class InstallLimiterTest
   ~InstallLimiterTest() override = default;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   chromeos::ScopedStubInstallAttributes test_install_attributes_;
   user_manager::ScopedUserManager scoped_user_manager_;
 
@@ -42,8 +42,9 @@ class InstallLimiterTest
 
 TEST_P(InstallLimiterTest, ShouldDeferInstall) {
   const std::vector<std::string> screensaver_ids = {
-      extension_misc::kScreensaverAppId, extension_misc::kScreensaverAlt1AppId,
-      extension_misc::kScreensaverAlt2AppId};
+      extension_misc::kScreensaverAppId, extension_misc::kScreensaverEveAppId,
+      extension_misc::kScreensaverNocturneAppId,
+      extension_misc::kScreensaverAltAppId};
 
   chromeos::DemoModeTestHelper demo_mode_test_helper;
   if (GetParam() != chromeos::DemoSession::DemoModeConfig::kNone)

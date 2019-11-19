@@ -34,7 +34,7 @@ base::FilePath GetAppShortcutFilename(const base::FilePath& profile_path,
 // This searches the file system for .desktop files in appropriate locations. A
 // shortcut with NoDisplay=true causes hidden to become true, instead of
 // creating at APP_MENU_LOCATIONS_SUBDIR_CHROMEAPPS.
-web_app::ShortcutLocations GetExistingShortcutLocations(
+ShortcutLocations GetExistingShortcutLocations(
     base::Environment* env,
     const base::FilePath& profile_path,
     const std::string& extension_id);
@@ -42,7 +42,7 @@ web_app::ShortcutLocations GetExistingShortcutLocations(
 // Version of GetExistingShortcutLocations which takes an explicit path
 // to the user's desktop directory. Useful for testing.
 // If |desktop_path| is empty, the desktop is not searched.
-web_app::ShortcutLocations GetExistingShortcutLocations(
+ShortcutLocations GetExistingShortcutLocations(
     base::Environment* env,
     const base::FilePath& profile_path,
     const std::string& extension_id,

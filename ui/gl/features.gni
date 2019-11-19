@@ -12,7 +12,7 @@ declare_args() {
   use_egl = is_win || is_android || is_linux || is_fuchsia || is_mac
 
   # Should Dawn support be compiled to back the WebGPU implementation.
-  # Also controls linking Dawn depdencies in such as shaderc, SPIRV-Tools and
+  # Also controls linking Dawn depedencies in such as SPIRV-Tools and
   # SPIRV-Cross
-  use_dawn = false
+  use_dawn = is_mac || is_win
 }

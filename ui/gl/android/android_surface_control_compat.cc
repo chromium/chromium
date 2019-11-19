@@ -5,11 +5,19 @@
 #include "ui/gl/android/android_surface_control_compat.h"
 
 #include <dlfcn.h>
+#include <android/ndk-version.h>
+#if __NDK_MAJOR__ >= 18
+#include <android/data_space.h>
+#endif
 
 #include "base/android/build_info.h"
+#include "base/atomic_sequence_num.h"
 #include "base/bind.h"
+#include "base/debug/crash_logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/gfx/color_space.h"
 
 extern "C" {
@@ -31,11 +39,7 @@ enum {
   ASURFACE_TRANSACTION_TRANSPARENCY_OPAQUE = 2,
 };
 
-enum {
-  ASURFACE_TRANSACTION_VISIBILITY_HIDE = 0,
-  ASURFACE_TRANSACTION_VISIBILITY_SHOW = 1,
-};
-
+#if __NDK_MAJOR__ < 18
 enum {
   ADATASPACE_UNKNOWN = 0,
   ADATASPACE_SCRGB_LINEAR = 406913024,
@@ -43,6 +47,13 @@ enum {
   ADATASPACE_DISPLAY_P3 = 143261696,
   ADATASPACE_BT2020_PQ = 163971072,
 };
+#endif
+
+#if __NDK_MAJOR__ < 20
+enum {
+  AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY = 1ULL << 11,
+};
+#endif
 
 // ASurfaceTransaction
 using pASurfaceTransaction_create = ASurfaceTransaction* (*)(void);
@@ -83,6 +94,8 @@ using pASurfaceTransaction_setBufferDataSpace =
 // ASurfaceTransactionStats
 using pASurfaceTransactionStats_getPresentFenceFd =
     int (*)(ASurfaceTransactionStats* stats);
+using pASurfaceTransactionStats_getLatchTime =
+    int64_t (*)(ASurfaceTransactionStats* stats);
 using pASurfaceTransactionStats_getASurfaceControls =
     void (*)(ASurfaceTransactionStats* stats,
              ASurfaceControl*** surface_controls,
@@ -95,6 +108,10 @@ using pASurfaceTransactionStats_getPreviousReleaseFenceFd =
 
 namespace gl {
 namespace {
+
+base::AtomicSequenceNumber g_next_transaction_id;
+
+uint64_t g_agb_required_usage_bits = AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY;
 
 #define LOAD_FUNCTION(lib, func)                             \
   do {                                                       \
@@ -137,6 +154,7 @@ struct SurfaceControlMethods {
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setBufferDataSpace);
 
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransactionStats_getPresentFenceFd);
+    LOAD_FUNCTION(main_dl_handle, ASurfaceTransactionStats_getLatchTime);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransactionStats_getASurfaceControls);
     LOAD_FUNCTION(main_dl_handle,
                   ASurfaceTransactionStats_releaseASurfaceControls);
@@ -170,6 +188,8 @@ struct SurfaceControlMethods {
   // TransactionStats methods.
   pASurfaceTransactionStats_getPresentFenceFd
       ASurfaceTransactionStats_getPresentFenceFdFn;
+  pASurfaceTransactionStats_getLatchTime
+      ASurfaceTransactionStats_getLatchTimeFn;
   pASurfaceTransactionStats_getASurfaceControls
       ASurfaceTransactionStats_getASurfaceControlsFn;
   pASurfaceTransactionStats_releaseASurfaceControls
@@ -183,6 +203,8 @@ ARect RectToARect(const gfx::Rect& rect) {
 }
 
 int32_t OverlayTransformToWindowTransform(gfx::OverlayTransform transform) {
+  // Note that the gfx::OverlayTransform expresses rotations in anticlockwise
+  // direction while the ANativeWindow rotations are in clockwise direction.
   switch (transform) {
     case gfx::OVERLAY_TRANSFORM_INVALID:
       DCHECK(false) << "Invalid Transform";
@@ -194,11 +216,11 @@ int32_t OverlayTransformToWindowTransform(gfx::OverlayTransform transform) {
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL:
       return ANATIVEWINDOW_TRANSFORM_MIRROR_VERTICAL;
     case gfx::OVERLAY_TRANSFORM_ROTATE_90:
-      return ANATIVEWINDOW_TRANSFORM_ROTATE_90;
+      return ANATIVEWINDOW_TRANSFORM_ROTATE_270;
     case gfx::OVERLAY_TRANSFORM_ROTATE_180:
       return ANATIVEWINDOW_TRANSFORM_ROTATE_180;
     case gfx::OVERLAY_TRANSFORM_ROTATE_270:
-      return ANATIVEWINDOW_TRANSFORM_ROTATE_270;
+      return ANATIVEWINDOW_TRANSFORM_ROTATE_90;
   };
   NOTREACHED();
   return ANATIVEWINDOW_TRANSFORM_IDENTITY;
@@ -225,6 +247,13 @@ SurfaceControl::TransactionStats ToTransactionStats(
   transaction_stats.present_fence = base::ScopedFD(
       SurfaceControlMethods::Get().ASurfaceTransactionStats_getPresentFenceFdFn(
           stats));
+  transaction_stats.latch_time =
+      base::TimeTicks() +
+      base::TimeDelta::FromNanoseconds(
+          SurfaceControlMethods::Get().ASurfaceTransactionStats_getLatchTimeFn(
+              stats));
+  if (transaction_stats.latch_time == base::TimeTicks())
+    transaction_stats.latch_time = base::TimeTicks::Now();
 
   ASurfaceControl** surface_controls = nullptr;
   size_t size = 0u;
@@ -247,6 +276,7 @@ SurfaceControl::TransactionStats ToTransactionStats(
 }
 
 struct TransactionAckCtx {
+  int id = 0;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner;
   SurfaceControl::Transaction::OnCompleteCb callback;
 };
@@ -257,6 +287,8 @@ void OnTransactionCompletedOnAnyThread(void* context,
                                        ASurfaceTransactionStats* stats) {
   auto* ack_ctx = static_cast<TransactionAckCtx*>(context);
   auto transaction_stats = ToTransactionStats(stats);
+  TRACE_EVENT_ASYNC_END0("gpu,benchmark", "SurfaceControlTransaction",
+                         ack_ctx->id);
 
   if (ack_ctx->task_runner) {
     ack_ctx->task_runner->PostTask(
@@ -272,10 +304,8 @@ void OnTransactionCompletedOnAnyThread(void* context,
 
 // static
 bool SurfaceControl::IsSupported() {
-  if (!base::android::BuildInfo::GetInstance()->is_at_least_q()) {
-    LOG(ERROR) << "SurfaceControl requires at least Q";
+  if (!base::android::BuildInfo::GetInstance()->is_at_least_q())
     return false;
-  }
   return SurfaceControlMethods::Get().supported;
 }
 
@@ -283,18 +313,30 @@ bool SurfaceControl::SupportsColorSpace(const gfx::ColorSpace& color_space) {
   return ColorSpaceToADataSpace(color_space) != ADATASPACE_UNKNOWN;
 }
 
+uint64_t SurfaceControl::RequiredUsage() {
+  if (!IsSupported())
+    return 0u;
+  return g_agb_required_usage_bits;
+}
+
+void SurfaceControl::EnableQualcommUBWC() {
+  g_agb_required_usage_bits |= AHARDWAREBUFFER_USAGE_VENDOR_0;
+}
+
 SurfaceControl::Surface::Surface() = default;
 
 SurfaceControl::Surface::Surface(const Surface& parent, const char* name) {
   surface_ = SurfaceControlMethods::Get().ASurfaceControl_createFn(
       parent.surface(), name);
-  DCHECK(surface_);
+  if (!surface_)
+    LOG(ERROR) << "Failed to create ASurfaceControl : " << name;
 }
 
 SurfaceControl::Surface::Surface(ANativeWindow* parent, const char* name) {
   surface_ = SurfaceControlMethods::Get().ASurfaceControl_createFromWindowFn(
       parent, name);
-  DCHECK(surface_);
+  if (!surface_)
+    LOG(ERROR) << "Failed to create ASurfaceControl : " << name;
 }
 
 SurfaceControl::Surface::~Surface() {
@@ -317,13 +359,34 @@ SurfaceControl::TransactionStats::TransactionStats(TransactionStats&& other) =
 SurfaceControl::TransactionStats& SurfaceControl::TransactionStats::operator=(
     TransactionStats&& other) = default;
 
-SurfaceControl::Transaction::Transaction() {
+SurfaceControl::Transaction::Transaction()
+    : id_(g_next_transaction_id.GetNext()) {
   transaction_ = SurfaceControlMethods::Get().ASurfaceTransaction_createFn();
   DCHECK(transaction_);
 }
 
 SurfaceControl::Transaction::~Transaction() {
-  SurfaceControlMethods::Get().ASurfaceTransaction_deleteFn(transaction_);
+  if (transaction_)
+    SurfaceControlMethods::Get().ASurfaceTransaction_deleteFn(transaction_);
+}
+
+SurfaceControl::Transaction::Transaction(Transaction&& other)
+    : id_(other.id_), transaction_(other.transaction_) {
+  other.transaction_ = nullptr;
+  other.id_ = 0;
+}
+
+SurfaceControl::Transaction& SurfaceControl::Transaction::operator=(
+    Transaction&& other) {
+  if (transaction_)
+    SurfaceControlMethods::Get().ASurfaceTransaction_deleteFn(transaction_);
+
+  transaction_ = other.transaction_;
+  id_ = other.id_;
+
+  other.transaction_ = nullptr;
+  other.id_ = 0;
+  return *this;
 }
 
 void SurfaceControl::Transaction::SetVisibility(const Surface& surface,
@@ -372,8 +435,17 @@ void SurfaceControl::Transaction::SetDamageRect(const Surface& surface,
 void SurfaceControl::Transaction::SetColorSpace(
     const Surface& surface,
     const gfx::ColorSpace& color_space) {
+  auto data_space = ColorSpaceToADataSpace(color_space);
+
+  // Log the data space in crash keys for debugging crbug.com/997592.
+  static auto* kCrashKey = base::debug::AllocateCrashKeyString(
+      "data_space_for_buffer", base::debug::CrashKeySize::Size256);
+  auto crash_key_value = base::NumberToString(data_space);
+  base::debug::ScopedCrashKeyString scoped_crash_key(kCrashKey,
+                                                     crash_key_value);
+
   SurfaceControlMethods::Get().ASurfaceTransaction_setBufferDataSpaceFn(
-      transaction_, surface.surface(), ColorSpaceToADataSpace(color_space));
+      transaction_, surface.surface(), data_space);
 }
 
 void SurfaceControl::Transaction::SetOnCompleteCb(
@@ -382,12 +454,14 @@ void SurfaceControl::Transaction::SetOnCompleteCb(
   TransactionAckCtx* ack_ctx = new TransactionAckCtx;
   ack_ctx->callback = std::move(cb);
   ack_ctx->task_runner = std::move(task_runner);
+  ack_ctx->id = id_;
 
   SurfaceControlMethods::Get().ASurfaceTransaction_setOnCompleteFn(
       transaction_, ack_ctx, &OnTransactionCompletedOnAnyThread);
 }
 
 void SurfaceControl::Transaction::Apply() {
+  TRACE_EVENT_ASYNC_BEGIN0("gpu,benchmark", "SurfaceControlTransaction", id_);
   SurfaceControlMethods::Get().ASurfaceTransaction_applyFn(transaction_);
 }
 

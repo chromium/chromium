@@ -5,15 +5,15 @@
 #include "third_party/blink/renderer/core/testing/origin_trials_test.h"
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 bool OriginTrialsTest::throwingAttribute(ScriptState* script_state,
                                          ExceptionState& exception_state) {
   String error_message;
-  if (!origin_trials::OriginTrialsSampleAPIEnabled(
+  if (!RuntimeEnabledFeatures::OriginTrialsSampleAPIEnabled(
           ExecutionContext::From(script_state))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,

@@ -6,7 +6,7 @@
 #define ASH_ACCESSIBILITY_ACCESSIBILITY_PANEL_LAYOUT_MANAGER_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/interfaces/accessibility_controller.mojom.h"
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/shell_observer.h"
 #include "base/macros.h"
 #include "ui/aura/layout_manager.h"
@@ -39,8 +39,7 @@ class ASH_EXPORT AccessibilityPanelLayoutManager
 
   // Controls the panel's visibility and location.
   void SetAlwaysVisible(bool always_visible);
-  void SetPanelBounds(const gfx::Rect& bounds,
-                      mojom::AccessibilityPanelState state);
+  void SetPanelBounds(const gfx::Rect& bounds, AccessibilityPanelState state);
 
   // aura::LayoutManager:
   void OnWindowResized() override {}
@@ -65,7 +64,7 @@ class ASH_EXPORT AccessibilityPanelLayoutManager
 
   // ShellObserver:
   void OnFullscreenStateChanged(bool is_fullscreen,
-                                aura::Window* root_window) override;
+                                aura::Window* container) override;
 
   aura::Window* panel_window_for_test() { return panel_window_; }
 
@@ -73,8 +72,8 @@ class ASH_EXPORT AccessibilityPanelLayoutManager
   // Updates the panel window bounds.
   void UpdateWindowBounds();
 
-  // Updates the display work area to account for the panel.
-  void UpdateWorkArea();
+  // Sets cached height of the accessibility panel.
+  void UpdateWorkAreaForPanelHeight();
 
   // The panel being managed (e.g. the ChromeVoxPanel's native aura window).
   aura::Window* panel_window_ = nullptr;
@@ -86,8 +85,7 @@ class ASH_EXPORT AccessibilityPanelLayoutManager
   bool always_visible_ = false;
 
   // Determines how the panel_bounds_ are used when displaying the panel.
-  mojom::AccessibilityPanelState panel_state_ =
-      mojom::AccessibilityPanelState::BOUNDED;
+  AccessibilityPanelState panel_state_ = AccessibilityPanelState::BOUNDED;
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityPanelLayoutManager);
 };

@@ -29,14 +29,33 @@ usage() {
   exit 1
 }
 
+# Build list of apt packages in dpkg --get-selections format.
+build_apt_package_list() {
+  echo "Building apt package list." >&2
+  apt-cache dumpavail | \
+    python -c '\
+      from __future__ import print_function; \
+      import re,sys; \
+      o = sys.stdin.read(); \
+      p = {"i386": ":i386"}; \
+      f = re.M | re.S; \
+      r = re.compile(r"^Package: (.+?)$.+?^Architecture: (.+?)$", f); \
+      m = ["%s%s" % (x, p.get(y, "")) for x, y in re.findall(r, o)]; \
+      print("\n".join(m))'
+}
+
 # Checks whether a particular package is available in the repos.
+# Uses pre-formatted ${apt_package_list}.
 # USAGE: $ package_exists <package name>
 package_exists() {
+  if [ -z "${apt_package_list}" ]; then
+    echo "Call build_apt_package_list() prior to calling package_exists()" >&2
+    apt_package_list=$(build_apt_package_list)
+  fi
   # 'apt-cache search' takes a regex string, so eg. the +'s in packages like
   # "libstdc++" need to be escaped.
   local escaped="$(echo $1 | sed 's/[\~\+\.\:-]/\\&/g')"
-  [ ! -z "$(apt-cache search --names-only "${escaped}" | \
-            awk '$1 == "'$1'" { print $1; }')" ]
+  [ ! -z "$(grep "^${escaped}$" <<< "${apt_package_list}")" ]
 }
 
 # These default to on because (some) bots need them and it keeps things
@@ -83,16 +102,16 @@ fi
 
 distro_codename=$(lsb_release --codename --short)
 distro_id=$(lsb_release --id --short)
-supported_codenames="(trusty|xenial|artful|bionic)"
+supported_codenames="(trusty|xenial|bionic|disco)"
 supported_ids="(Debian)"
 if [ 0 -eq "${do_unsupported-0}" ] && [ 0 -eq "${do_quick_check-0}" ] ; then
   if [[ ! $distro_codename =~ $supported_codenames &&
         ! $distro_id =~ $supported_ids ]]; then
     echo -e "ERROR: The only supported distros are\n" \
-      "\tUbuntu 14.04 LTS (trusty)\n" \
-      "\tUbuntu 16.04 LTS (xenial)\n" \
-      "\tUbuntu 17.10 (artful)\n" \
-      "\tUbuntu 18.04 LTS (bionic)\n" \
+      "\tUbuntu 14.04 LTS (trusty with EoL April 2022)\n" \
+      "\tUbuntu 16.04 LTS (xenial with EoL April 2024)\n" \
+      "\tUbuntu 18.04 LTS (bionic with EoL April 2028)\n" \
+      "\tUbuntu 19.04 (disco)\n" \
       "\tDebian 8 (jessie) or later" >&2
     exit 1
   fi
@@ -108,6 +127,14 @@ if [ "x$(id -u)" != x0 ] && [ 0 -eq "${do_quick_check-0}" ]; then
   echo "You might have to enter your password one or more times for 'sudo'."
   echo
 fi
+
+if [ "$do_inst_lib32" = "1" ] || [ "$do_inst_nacl" = "1" ]; then
+  sudo dpkg --add-architecture i386
+fi
+sudo apt-get update
+
+# Populate ${apt_package_list} for package_exists() parsing.
+apt_package_list=$(build_apt_package_list)
 
 # Packages needed for chromeos only
 chromeos_dev_list="libbluetooth-dev libxkbcommon-dev"
@@ -129,9 +156,7 @@ dev_list="\
   devscripts
   fakeroot
   flex
-  g++
   git-core
-  git-svn
   gperf
   libappindicator3-dev
   libasound2-dev
@@ -140,6 +165,7 @@ dev_list="\
   libbz2-dev
   libcairo2-dev
   libcap-dev
+  libc6-dev
   libcups2-dev
   libcurl4-gnutls-dev
   libdrm-dev
@@ -269,15 +295,15 @@ backwards_compatible_list="\
   fonts-stix
   fonts-thai-tlwg
   fonts-tlwg-garuda
+  g++
+  git-svn
   language-pack-da
   language-pack-fr
   language-pack-he
   language-pack-zh-hant
   libappindicator-dev
   libappindicator1
-  libappindicator3-1:i386
   libdconf-dev
-  libdconf-dev:i386
   libdconf1
   libdconf1:i386
   libexif-dev
@@ -371,9 +397,14 @@ case $distro_codename in
     arm_list+=" g++-4.8-multilib-arm-linux-gnueabihf
                 gcc-4.8-multilib-arm-linux-gnueabihf"
     ;;
-  xenial|artful|bionic)
+  xenial|bionic)
     arm_list+=" g++-5-multilib-arm-linux-gnueabihf
                 gcc-5-multilib-arm-linux-gnueabihf
+                gcc-arm-linux-gnueabihf"
+    ;;
+  disco)
+    arm_list+=" g++-9-multilib-arm-linux-gnueabihf
+                gcc-9-multilib-arm-linux-gnueabihf
                 gcc-arm-linux-gnueabihf"
     ;;
 esac
@@ -615,45 +646,34 @@ if [ 1 -eq "${do_quick_check-0}" ] ; then
   exit 0
 fi
 
-if [ "$do_inst_lib32" = "1" ] || [ "$do_inst_nacl" = "1" ]; then
-  sudo dpkg --add-architecture i386
-fi
-sudo apt-get update
-
-# We initially run "apt-get" with the --reinstall option and parse its output.
-# This way, we can find all the packages that need to be newly installed
-# without accidentally promoting any packages from "auto" to "manual".
-# We then re-run "apt-get" with just the list of missing packages.
 echo "Finding missing packages..."
 # Intentionally leaving $packages unquoted so it's more readable.
 echo "Packages required: " $packages
 echo
-new_list_cmd="sudo apt-get install --reinstall $(echo $packages)"
-if new_list="$(yes n | LANGUAGE=en LANG=C $new_list_cmd)"; then
-  # We probably never hit this following line.
-  echo "No missing packages, and the packages are up to date."
-elif [ $? -eq 1 ]; then
-  # We expect apt-get to have exit status of 1.
-  # This indicates that we cancelled the install with "yes n|".
-  new_list=$(echo "$new_list" |
-    sed -e '1,/The following NEW packages will be installed:/d;s/^  //;t;d')
-  new_list=$(echo "$new_list" | sed 's/ *$//')
-  if [ -z "$new_list" ] ; then
+query_cmd="apt-get --just-print install $(echo $packages)"
+if cmd_output="$(LANGUAGE=en LANG=C $query_cmd)"; then
+  new_list=$(echo "$cmd_output" |
+    sed -e '1,/The following NEW packages will be installed:/d;s/^  //;t;d' |
+    sed 's/ *$//')
+  upgrade_list=$(echo "$cmd_output" |
+    sed -e '1,/The following packages will be upgraded:/d;s/^  //;t;d' |
+    sed 's/ *$//')
+  if [ -z "$new_list" ] && [ -z "$upgrade_list" ]; then
     echo "No missing packages, and the packages are up to date."
   else
-    echo "Installing missing packages: $new_list."
-    sudo apt-get install ${do_quietly-} ${new_list}
+    echo "Installing and upgrading packages: $new_list $upgrade_list."
+    sudo apt-get install ${do_quietly-} ${new_list} ${upgrade_list}
   fi
   echo
 else
   # An apt-get exit status of 100 indicates that a real error has occurred.
 
-  # I am intentionally leaving out the '"'s around new_list_cmd,
+  # I am intentionally leaving out the '"'s around query_cmd,
   # as this makes it easier to cut and paste the output
-  echo "The following command failed: " ${new_list_cmd}
+  echo "The following command failed: " ${query_cmd}
   echo
-  echo "It produces the following output:"
-  yes n | $new_list_cmd || true
+  echo "It produced the following output:"
+  echo "$cmd_output"
   echo
   echo "You will have to install the above packages yourself."
   echo

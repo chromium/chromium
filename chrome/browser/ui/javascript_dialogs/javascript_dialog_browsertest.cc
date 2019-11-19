@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -42,7 +43,8 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, ReloadDoesntHang) {
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
   js_helper->SetDialogShownCallbackForTesting(runner->QuitClosure());
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16("alert()"));
+  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16("alert()"),
+                                                 base::NullCallback());
   runner->Run();
 
   // Try reloading.
@@ -64,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   content::WebContentsAddedObserver new_wc_observer;
   tab1->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16("window.open('about:blank');"));
+      base::UTF8ToUTF16("window.open('about:blank');"), base::NullCallback());
   content::WebContents* tab2 = new_wc_observer.GetWebContents();
   ASSERT_NE(tab1, tab2);
   ASSERT_EQ(tab1->GetMainFrame()->GetProcess(),
@@ -76,7 +78,8 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   JavaScriptDialogTabHelper* js_helper2 =
       JavaScriptDialogTabHelper::FromWebContents(tab2);
   js_helper2->SetDialogShownCallbackForTesting(runner->QuitClosure());
-  tab2->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16("alert()"));
+  tab2->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16("alert()"),
+                                                  base::NullCallback());
   runner->Run();
 
   // Tab two is closed while the dialog is up.
@@ -106,7 +109,8 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
   js_helper->SetDialogShownCallbackForTesting(runner->QuitClosure());
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16(script));
+  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16(script),
+                                                 base::NullCallback());
   runner->Run();
 
   // The tab is closed while the dialog is up.

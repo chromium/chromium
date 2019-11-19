@@ -36,6 +36,18 @@ class HidConnection : public base::RefCountedThreadSafe<HidConnection> {
 
   using WriteCallback = base::OnceCallback<void(bool success)>;
 
+  class Client {
+   public:
+    // Notify the client when an input report is received from the connected
+    // device. |buffer| contains the report data, and |size| is the size of the
+    // received report. The buffer is sized to fit the largest input report
+    // supported by the device, which may be larger than |size|.
+    virtual void OnInputReport(scoped_refptr<base::RefCountedBytes> buffer,
+                               size_t size) = 0;
+  };
+
+  void SetClient(Client* client);
+
   scoped_refptr<HidDeviceInfo> device_info() const { return device_info_; }
   bool has_protected_collection() const { return has_protected_collection_; }
   bool closed() const { return closed_; }
@@ -84,6 +96,7 @@ class HidConnection : public base::RefCountedThreadSafe<HidConnection> {
 
  private:
   scoped_refptr<HidDeviceInfo> device_info_;
+  Client* client_ = nullptr;
   bool has_protected_collection_;
   bool closed_;
 

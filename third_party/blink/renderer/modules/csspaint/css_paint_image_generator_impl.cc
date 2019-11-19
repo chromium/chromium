@@ -54,12 +54,14 @@ void CSSPaintImageGeneratorImpl::NotifyGeneratorReady() {
 scoped_refptr<Image> CSSPaintImageGeneratorImpl::Paint(
     const ImageResourceObserver& observer,
     const FloatSize& container_size,
-    const CSSStyleValueVector* data) {
-  return paint_worklet_->Paint(name_, observer, container_size, data);
+    const CSSStyleValueVector* data,
+    float device_scale_factor) {
+  return paint_worklet_->Paint(name_, observer, container_size, data,
+                               device_scale_factor);
 }
 
 bool CSSPaintImageGeneratorImpl::HasDocumentDefinition() const {
-  return paint_worklet_->GetDocumentDefinitionMap().Contains(name_);
+  return paint_worklet_->GetDocumentDefinitionMap().at(name_);
 }
 
 bool CSSPaintImageGeneratorImpl::GetValidDocumentDefinition(
@@ -67,13 +69,22 @@ bool CSSPaintImageGeneratorImpl::GetValidDocumentDefinition(
   if (!HasDocumentDefinition())
     return false;
   definition = paint_worklet_->GetDocumentDefinitionMap().at(name_);
-  if (definition != kInvalidDocumentPaintDefinition &&
-      definition->GetRegisteredDefinitionCount() !=
-          PaintWorklet::kNumGlobalScopes) {
-    definition = kInvalidDocumentPaintDefinition;
+  // In off-thread CSS Paint, we register CSSPaintDefinition on the worklet
+  // thread first. Once the same CSSPaintDefinition is successfully registered
+  // to all the paint worklet global scopes, we then post to the main thread and
+  // register that CSSPaintDefinition on the main thread. So for the off-thread
+  // case, as long as the DocumentPaintDefinition exists in the map, it should
+  // be valid.
+  if (RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled()) {
+    DCHECK(definition);
+    return true;
+  }
+  if (definition->GetRegisteredDefinitionCount() !=
+      PaintWorklet::kNumGlobalScopesPerThread) {
+    definition = nullptr;
     return false;
   }
-  return definition != kInvalidDocumentPaintDefinition;
+  return definition;
 }
 
 unsigned CSSPaintImageGeneratorImpl::GetRegisteredDefinitionCountForTesting()
@@ -82,8 +93,6 @@ unsigned CSSPaintImageGeneratorImpl::GetRegisteredDefinitionCountForTesting()
     return 0;
   DocumentPaintDefinition* definition =
       paint_worklet_->GetDocumentDefinitionMap().at(name_);
-  if (definition == kInvalidDocumentPaintDefinition)
-    return 0;
   return definition->GetRegisteredDefinitionCount();
 }
 
@@ -109,12 +118,12 @@ bool CSSPaintImageGeneratorImpl::HasAlpha() const {
   DocumentPaintDefinition* definition;
   if (!GetValidDocumentDefinition(definition))
     return false;
-  return definition->GetPaintRenderingContext2DSettings()->alpha();
+  return definition->alpha();
 }
 
-const Vector<CSSSyntaxDescriptor>&
+const Vector<CSSSyntaxDefinition>&
 CSSPaintImageGeneratorImpl::InputArgumentTypes() const {
-  DEFINE_STATIC_LOCAL(Vector<CSSSyntaxDescriptor>, empty_vector, ());
+  DEFINE_STATIC_LOCAL(Vector<CSSSyntaxDefinition>, empty_vector, ());
   DocumentPaintDefinition* definition;
   if (!GetValidDocumentDefinition(definition))
     return empty_vector;
@@ -123,6 +132,10 @@ CSSPaintImageGeneratorImpl::InputArgumentTypes() const {
 
 bool CSSPaintImageGeneratorImpl::IsImageGeneratorReady() const {
   return HasDocumentDefinition();
+}
+
+int CSSPaintImageGeneratorImpl::WorkletId() const {
+  return paint_worklet_->WorkletId();
 }
 
 void CSSPaintImageGeneratorImpl::Trace(blink::Visitor* visitor) {

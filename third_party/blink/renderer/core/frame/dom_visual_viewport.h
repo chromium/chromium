@@ -47,10 +47,6 @@ class CORE_EXPORT DOMVisualViewport final : public EventTargetWithInlineData {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DOMVisualViewport* Create(LocalDOMWindow* window) {
-    return MakeGarbageCollected<DOMVisualViewport>(window);
-  }
-
   explicit DOMVisualViewport(LocalDOMWindow*);
   ~DOMVisualViewport() override;
 

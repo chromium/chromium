@@ -4,9 +4,16 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CREDENTIAL_MANAGER_IMPL_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CREDENTIAL_MANAGER_IMPL_H_
 
+#include <memory>
+#include <utility>
+#include <vector>
+
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/credential_manager_password_form_manager.h"
 #include "components/password_manager/core/browser/credential_manager_pending_prevent_silent_access_task.h"
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
+#include "components/password_manager/core/browser/leak_detection_delegate.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/prefs/pref_member.h"
 
@@ -46,6 +53,12 @@ class CredentialManagerImpl
   // Exposed publicly for testing.
   PasswordStore::FormDigest GetSynthesizedFormForOrigin() const;
 
+#if defined(UNIT_TEST)
+  void set_leak_factory(std::unique_ptr<LeakDetectionCheckFactory> factory) {
+    leak_delegate_.set_leak_factory(std::move(factory));
+  }
+#endif  // defined(UNIT_TEST)
+
  private:
   // CredentialManagerPendingRequestTaskDelegate:
   GURL GetOrigin() const override;
@@ -81,6 +94,9 @@ class CredentialManagerImpl
   // Calls DoneRequiringUserMediation on this delegate.
   std::unique_ptr<CredentialManagerPendingPreventSilentAccessTask>
       pending_require_user_mediation_;
+
+  // Helper for making the requests on leak detection.
+  LeakDetectionDelegate leak_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(CredentialManagerImpl);
 };

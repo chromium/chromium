@@ -23,7 +23,8 @@
 #include "chrome/browser/sync_file_system/sync_file_system_test_util.h"
 #include "components/drive/drive_uploader.h"
 #include "components/drive/service/fake_drive_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_set.h"
@@ -62,38 +63,35 @@ class MockSyncTask : public ExclusiveTask {
 
 class MockExtensionService : public TestExtensionService {
  public:
-  MockExtensionService() {}
+  MockExtensionService() : registry_(nullptr) {}
   ~MockExtensionService() override {}
 
   void AddExtension(const extensions::Extension* extension) override {
-    extensions_.Insert(base::WrapRefCounted(extension));
-  }
-
-  const extensions::Extension* GetInstalledExtension(
-      const std::string& extension_id) const override {
-    return extensions_.GetByID(extension_id);
+    registry_.AddEnabled(base::WrapRefCounted(extension));
   }
 
   bool IsExtensionEnabled(const std::string& extension_id) const override {
-    return extensions_.Contains(extension_id) &&
-        !disabled_extensions_.Contains(extension_id);
+    return registry_.enabled_extensions().Contains(extension_id);
   }
 
   void UninstallExtension(const std::string& extension_id) {
-    extensions_.Remove(extension_id);
-    disabled_extensions_.Remove(extension_id);
+    EXPECT_TRUE(registry_.RemoveEnabled(extension_id) ||
+                registry_.RemoveDisabled(extension_id));
   }
 
   void DisableExtension(const std::string& extension_id) {
     if (!IsExtensionEnabled(extension_id))
       return;
-    const extensions::Extension* extension = extensions_.GetByID(extension_id);
-    disabled_extensions_.Insert(base::WrapRefCounted(extension));
+    scoped_refptr<const extensions::Extension> extension =
+        registry_.GetInstalledExtension(extension_id);
+    EXPECT_TRUE(registry_.RemoveEnabled(extension_id));
+    registry_.AddDisabled(extension);
   }
 
+  extensions::ExtensionRegistry& registry() { return registry_; }
+
  private:
-  extensions::ExtensionSet extensions_;
-  extensions::ExtensionSet disabled_extensions_;
+  extensions::ExtensionRegistry registry_;
 
   DISALLOW_COPY_AND_ASSIGN(MockExtensionService);
 };
@@ -119,9 +117,9 @@ class SyncWorkerTest : public testing::Test,
             base::ThreadTaskRunnerHandle::Get() /* ui_task_runner */,
             base::ThreadTaskRunnerHandle::Get() /* worker_task_runner */));
 
-    sync_worker_.reset(new SyncWorker(profile_dir_.GetPath(),
-                                      extension_service_->AsWeakPtr(),
-                                      in_memory_env_.get()));
+    sync_worker_.reset(
+        new SyncWorker(profile_dir_.GetPath(), extension_service_->AsWeakPtr(),
+                       &extension_service_->registry(), in_memory_env_.get()));
     sync_worker_->Initialize(std::move(sync_engine_context));
 
     sync_worker_->SetSyncEnabled(true);
@@ -157,7 +155,7 @@ class SyncWorkerTest : public testing::Test,
   }
 
  private:
-  content::TestBrowserThreadBundle browser_threads_;
+  content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir profile_dir_;
   std::unique_ptr<leveldb::Env> in_memory_env_;
 
@@ -233,7 +231,7 @@ TEST_F(SyncWorkerTest, UpdateRegisteredApps) {
 
   extension_service()->DisableExtension("app_1");
   extension_service()->UninstallExtension("app_2");
-  ASSERT_FALSE(extension_service()->GetInstalledExtension("app_2"));
+  ASSERT_FALSE(extension_service()->registry().GetInstalledExtension("app_2"));
   UpdateRegisteredApps();
   base::RunLoop().RunUntilIdle();
 

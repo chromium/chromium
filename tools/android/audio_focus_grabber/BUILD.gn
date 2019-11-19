@@ -12,7 +12,7 @@ android_apk("audio_focus_grabber_apk") {
   deps = [
     ":audio_focus_grabber_apk_resources",
     "//base:base_java",
-    "//third_party/android_deps:android_support_compat_java",
+    "//third_party/android_deps:com_android_support_support_compat_java",
   ]
 
   java_files = [

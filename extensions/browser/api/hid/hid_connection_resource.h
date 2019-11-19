@@ -11,6 +11,8 @@
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
 namespace extensions {
@@ -20,8 +22,9 @@ class HidConnectionResource : public ApiResource {
   static const content::BrowserThread::ID kThreadId =
       content::BrowserThread::UI;
 
-  HidConnectionResource(const std::string& owner_extension_id,
-                        device::mojom::HidConnectionPtr connection);
+  HidConnectionResource(
+      const std::string& owner_extension_id,
+      mojo::PendingRemote<device::mojom::HidConnection> connection);
   ~HidConnectionResource() override;
 
   device::mojom::HidConnection* connection() const { return connection_.get(); }
@@ -31,7 +34,7 @@ class HidConnectionResource : public ApiResource {
   static const char* service_name() { return "HidConnectionResourceManager"; }
 
  private:
-  device::mojom::HidConnectionPtr connection_;
+  mojo::Remote<device::mojom::HidConnection> connection_;
 
   DISALLOW_COPY_AND_ASSIGN(HidConnectionResource);
 };

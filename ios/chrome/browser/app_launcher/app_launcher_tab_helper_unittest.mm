@@ -8,18 +8,15 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
-#include "ios/chrome/browser/app_launcher/app_launcher_flags.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper_delegate.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_util.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
-#import "ios/chrome/browser/tabs/legacy_tab_helper.h"
 #import "ios/chrome/browser/u2f/u2f_tab_helper.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/web/public/test/fakes/test_navigation_manager.h"
@@ -143,7 +140,6 @@ class AppLauncherTabHelperTest : public PlatformTest {
         chrome_browser_state_.get(),
         base::BindRepeating(&BuildReadingListModel));
     TabIdTabHelper::CreateForWebState(&web_state_);
-    LegacyTabHelper::CreateForWebState(&web_state_);
     is_reading_list_initialized_ = true;
   }
 
@@ -186,7 +182,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
     return entry->IsRead() == expected_read_status;
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   web::TestWebState web_state_;
   FakeNavigationManager* navigation_manager_ = nullptr;
 
@@ -312,7 +308,6 @@ TEST_F(AppLauncherTabHelperTest, InsecureUrls) {
 TEST_F(AppLauncherTabHelperTest, U2FUrls) {
   // Add required tab helpers for the U2F check.
   TabIdTabHelper::CreateForWebState(&web_state_);
-  LegacyTabHelper::CreateForWebState(&web_state_);
   std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
 
   // "u2f-x-callback" scheme should only be created by the browser. External
@@ -366,38 +361,10 @@ TEST_F(AppLauncherTabHelperTest, ChromeBundleUrlScheme) {
   EXPECT_EQ(1U, delegate_.countOfAppsLaunched);
 }
 
-// Tests that ShouldAllowRequest updates the reading list correctly, when there
-// is a valid app URL to be launches successfully.
-// TODO(crbug.com/850760): Remove this test, once the new AppLauncherRefresh
-// logic is always enabled.
-TEST_F(AppLauncherTabHelperTest, UpdatingTheReadingList) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kAppLauncherRefresh);
-  // Reading list isn't expected to be updated if there was no app launch.
-  EXPECT_TRUE(TestReadingListUpdate(/*is_app_blocked=*/true,
-                                    /*is_link_transition*/ false,
-                                    /*expected_read_status*/ false));
-  EXPECT_EQ(0U, delegate_.countOfAppsLaunched);
-
-  // Reading list to be updated when app launch is successful.
-  EXPECT_TRUE(TestReadingListUpdate(/*is_app_blocked=*/false,
-                                    /*is_link_transition*/ false,
-                                    /*expected_read_status*/ true));
-  EXPECT_EQ(1U, delegate_.countOfAppsLaunched);
-
-  // Transition type doesn't affect the reading list status
-  EXPECT_TRUE(TestReadingListUpdate(/*is_app_blocked=*/false,
-                                    /*is_link_transition*/ true,
-                                    /*expected_read_status*/ true));
-  EXPECT_EQ(2U, delegate_.countOfAppsLaunched);
-}
-
 // Tests that ShouldAllowRequest updates the reading list correctly for non-link
 // transitions regardless of the app launching success when AppLauncherRefresh
 // flag is enabled.
-TEST_F(AppLauncherTabHelperTest, UpdatingTheReadingListWithAppLauncherRefresh) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kAppLauncherRefresh);
+TEST_F(AppLauncherTabHelperTest, UpdatingTheReadingList) {
   // Update reading list if the transition is not a link transition.
   EXPECT_TRUE(TestReadingListUpdate(/*is_app_blocked=*/true,
                                     /*is_link_transition*/ false,

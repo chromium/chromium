@@ -23,6 +23,9 @@ class SSLCertRequestInfo;
 
 class SSLClientCertificateSelector : public chrome::CertificateSelector {
  public:
+  // Writes a callback to the output parameter |cancellation_callback|. The
+  // callback expects to be invoked on the UI thread and will invoke this
+  // instance's OnCancel.
   SSLClientCertificateSelector(
       content::WebContents* web_contents,
       const scoped_refptr<net::SSLCertRequestInfo>& cert_request_info,
@@ -38,10 +41,18 @@ class SSLClientCertificateSelector : public chrome::CertificateSelector {
   void AcceptCertificate(
       std::unique_ptr<net::ClientCertIdentity> identity) override;
 
+  void OnCancel();
+
+  // Returns a UI-thread callback that will cancel this CertificateSelector. The
+  // callback may be null. The callback is not required to be called.
+  base::OnceClosure GetCancellationCallback();
+
  private:
   class SSLClientAuthObserverImpl;
 
   std::unique_ptr<SSLClientAuthObserverImpl> auth_observer_impl_;
+
+  base::WeakPtrFactory<SSLClientCertificateSelector> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SSLClientCertificateSelector);
 };

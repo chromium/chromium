@@ -1,114 +1,103 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "InlineTextBox 'about all the stuff'",
+          "object": "NGPhysicalTextFragment 'about all the stuff'",
           "rect": [8, 250, 113, 18],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'about all the stuff'",
+          "object": "NGPhysicalTextFragment 'about all the stuff'",
           "rect": [8, 150, 113, 18],
           "reason": "disappeared"
         },
         {
-          "object": "InlineTextBox 'write a book'",
+          "object": "NGPhysicalTextFragment 'write a book'",
           "rect": [8, 132, 80, 18],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'write a book'",
+          "object": "NGPhysicalTextFragment 'write a book'",
           "rect": [8, 132, 80, 18],
           "reason": "disappeared"
         },
         {
-          "object": "InlineTextBox 'more words.'",
+          "object": "NGPhysicalTextFragment 'more words.'",
           "rect": [8, 96, 80, 18],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'more words.'",
+          "object": "NGPhysicalTextFragment 'more words.'",
           "rect": [8, 96, 80, 18],
           "reason": "disappeared"
         },
         {
-          "object": "InlineTextBox 'that comes'",
+          "object": "NGPhysicalTextFragment 'that comes'",
           "rect": [8, 268, 69, 18],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'that comes'",
+          "object": "NGPhysicalTextFragment 'that comes'",
           "rect": [8, 168, 69, 18],
           "reason": "disappeared"
         },
         {
-          "object": "InlineTextBox 'the break.'",
+          "object": "NGPhysicalTextFragment 'the break.'",
           "rect": [8, 304, 64, 18],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'the break.'",
+          "object": "NGPhysicalTextFragment 'the break.'",
           "rect": [8, 204, 64, 18],
           "reason": "disappeared"
         },
         {
-          "object": "InlineTextBox 'I could'",
+          "object": "NGPhysicalTextFragment 'I could'",
           "rect": [8, 114, 45, 18],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'I could'",
+          "object": "NGPhysicalTextFragment 'I could'",
           "rect": [8, 114, 45, 18],
           "reason": "disappeared"
         },
         {
-          "object": "InlineTextBox 'words,'",
+          "object": "NGPhysicalTextFragment 'words,'",
           "rect": [8, 78, 44, 18],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'words,'",
+          "object": "NGPhysicalTextFragment 'words,'",
           "rect": [8, 78, 44, 18],
           "reason": "disappeared"
         },
         {
-          "object": "InlineTextBox 'Word,'",
+          "object": "NGPhysicalTextFragment 'Word,'",
           "rect": [8, 60, 40, 18],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'Word,'",
+          "object": "NGPhysicalTextFragment 'Word,'",
           "rect": [8, 60, 40, 18],
           "reason": "disappeared"
         },
         {
-          "object": "InlineTextBox 'after'",
+          "object": "NGPhysicalTextFragment 'after'",
           "rect": [8, 286, 30, 18],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'after'",
+          "object": "NGPhysicalTextFragment 'after'",
           "rect": [8, 186, 30, 18],
           "reason": "disappeared"
         },
         {
-          "object": "LayoutBlockFlow DIV id='target'",
+          "object": "LayoutNGBlockFlow DIV id='target'",
           "rect": [8, 150, 10, 100],
           "reason": "appeared"
         }

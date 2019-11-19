@@ -10,7 +10,7 @@
 <translation id="1703735871906654364">דפדוף עם סמן</translation>
 <translation id="1791496371305830581">אפשר את כל התמונות המכילות אנימציה.</translation>
 <translation id="1996252509865389616">האם להפעיל?</translation>
-<translation id="2079545284768500474">בטל פעולה</translation>
+<translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2179565792157161713">פתיחת תיאור ארוך בכרטיסייה חדשה</translation>
 <translation id="2223143012868735942">מסנן צבע הניתן להתאמה המופעל באתרים כדי לשפר את ההבחנה בין צבעים.</translation>
 <translation id="2394933097471027016">נסה עכשיו - דפדוף עם סמן מופעל תמיד בדף זה!</translation>
@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">‏תמונות הוחלפו על-ידי טקסט ה-alt שלהן.</translation>
 <translation id="4896660567607030658">אין משוב, פשוט הצג את הסמן.</translation>
 <translation id="4937901943818762779">אפשר תמונות המכילות אנימציה, אך רק פעם אחת.</translation>
+<translation id="4949131196216960195">‏כדי להפעיל דפדוף עם סמן יש להקיש על &lt;span class='key'&gt;חיפוש&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (מקש הגברת הבהירות או F7). כדי להשבית אותו יש להקיש עליו שוב.</translation>
 <translation id="4954450790315188152">כאשר 'דפדוף עם סמן' מופעל:</translation>
 <translation id="5041932793799765940">שינוי צבע</translation>
 <translation id="5094574508723441140">ניגודיות מוגברת</translation>
@@ -59,7 +60,6 @@
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="786423340267544509">‏הוסף גבול לאלמנטים עם מסגרות aria-describedat או longdesc.</translation>
 <translation id="7942349550061667556">אדום</translation>
-<translation id="8254860724243898966">‏הקש על ‎&lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt;‎ (המקש 'הגברת בהירות', או F7) כדי להפעיל דפדוף עם סמן. כדי להשבית, הקש שוב על המקש.</translation>
 <translation id="8260673944985561857">אפשרויות דפדוף עם סמן</translation>
 <translation id="8321034316479930120">מדיניות בנושא אנימציה</translation>
 <translation id="8480209185614411573">ניגודיות גבוהה</translation>

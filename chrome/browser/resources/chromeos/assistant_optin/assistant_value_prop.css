@@ -4,7 +4,7 @@
 
 #value-prop-view {
   display: block;
-  height: 256px;
+  height: 232px;
   margin: auto;
 }
 
@@ -13,18 +13,18 @@
 }
 
 #value-prop-container {
-  border-right: 1px solid rgb(218, 220, 224);
+  border-inline-end: 1px solid rgb(218, 220, 224);
   width: 50%;
 }
 
 #consents-container {
-  padding-left: 24px;
+  padding-inline-start: 24px;
   width: 50%;
 }
 
 #user-name {
   color: #757575;
-  padding-left: 8px;
+  padding-inline-start: 8px;
 }
 
 #footer-text {
@@ -40,7 +40,7 @@
 .oobe-popup {
   border-radius: 8px;
   box-shadow: unset;
-  width: 512px;
+  max-width: 512px;
 }
 
 #overlay-text {
@@ -63,7 +63,7 @@
 }
 
 #overlay-close-button {
-  margin-right: 0;
+  margin-inline-end: 0;
 }
 
 #close-button-text {

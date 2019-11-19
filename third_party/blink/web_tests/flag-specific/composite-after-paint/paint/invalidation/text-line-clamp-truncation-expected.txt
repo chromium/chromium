@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutDeprecatedFlexibleBox DIV id='container' class='folded'",
+          "rect": [8, 8, 285, 24],
+          "reason": "chunk disappeared"
+        },
+        {
+          "object": "LayoutFlexibleBox DIV id='container'",
+          "rect": [8, 10, 284, 43],
+          "reason": "chunk appeared"
+        }
+      ]
+    }
+  ]
+}
+

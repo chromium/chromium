@@ -77,7 +77,7 @@ public class FullscreenVideoTest {
      */
     @Test
     @FlakyTest(message = "crbug.com/458368")
-    public void testExitFullscreenNotifiesTabObservers() throws InterruptedException {
+    public void testExitFullscreenNotifiesTabObservers() {
         String url = mTestServerRule.getServer().getURL(
                 "/chrome/test/data/android/media/video-fullscreen.html");
         mActivityTestRule.loadUrl(url);
@@ -102,7 +102,7 @@ public class FullscreenVideoTest {
      */
     @Test
     @MediumTest
-    public void testFullscreenDimensions() throws InterruptedException, TimeoutException {
+    public void testFullscreenDimensions() throws TimeoutException {
         String url =
                 mTestServerRule.getServer().getURL("/content/test/data/media/video-player.html");
         String video = "video";

@@ -5,7 +5,7 @@
 #include "remoting/host/file_transfer/buffered_file_writer.h"
 
 #include "base/bind.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "remoting/host/file_transfer/fake_file_operations.h"
 #include "remoting/protocol/file_transfer_helpers.h"
@@ -34,7 +34,7 @@ class BufferedFileWriterTest : public testing::Test {
   bool complete_called_ = false;
   base::Optional<protocol::FileTransfer_Error> error_ = base::nullopt;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 BufferedFileWriterTest::BufferedFileWriterTest() = default;
@@ -69,16 +69,16 @@ TEST_F(BufferedFileWriterTest, WritesThreeChunks) {
                      base::Unretained(this)));
 
   writer.Start(kTestFilename);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   writer.Write(kTestDataOne);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   writer.Write(kTestDataTwo);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   writer.Write(kTestDataThree);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   writer.Close();
   ASSERT_EQ(false, complete_called_);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   ASSERT_EQ(true, complete_called_);
 
   ASSERT_EQ(1ul, test_io.files_written.size());
@@ -107,7 +107,7 @@ TEST_F(BufferedFileWriterTest, QueuesOperations) {
   writer.Write(kTestDataThree);
   writer.Close();
   ASSERT_EQ(false, complete_called_);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   ASSERT_EQ(true, complete_called_);
 
   ASSERT_EQ(1ul, test_io.files_written.size());
@@ -135,11 +135,11 @@ TEST_F(BufferedFileWriterTest, HandlesWriteError) {
   writer.Start(kTestFilename);
   writer.Write(kTestDataOne);
   writer.Write(kTestDataTwo);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   test_io.io_error = fake_error;
   writer.Write(kTestDataThree);
   writer.Close();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   ASSERT_TRUE(error_);
   ASSERT_EQ(fake_error.SerializeAsString(), error_->SerializeAsString());
 
@@ -166,10 +166,10 @@ TEST_F(BufferedFileWriterTest, CancelsWriter) {
     writer.Start(kTestFilename);
     writer.Write(kTestDataOne);
     writer.Write(kTestDataTwo);
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     writer.Write(kTestDataThree);
   }
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   ASSERT_TRUE(!complete_called_ && !error_);
 
   ASSERT_EQ(1ul, test_io.files_written.size());

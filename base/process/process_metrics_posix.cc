@@ -10,6 +10,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+#include "base/allocator/buildflags.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 
@@ -71,6 +72,15 @@ size_t GetMaxFds() {
   return static_cast<size_t>(max_fds);
 }
 
+size_t GetHandleLimit() {
+#if defined(OS_MACOSX)
+  // Taken from a small test that allocated ports in a loop.
+  return static_cast<size_t>(1 << 18);
+#else
+  return GetMaxFds();
+#endif
+}
+
 void IncreaseFdLimitTo(unsigned int max_descriptors) {
   struct rlimit limits;
   if (getrlimit(RLIMIT_NOFILE, &limits) == 0) {
@@ -102,7 +112,7 @@ size_t ProcessMetrics::GetMallocUsage() {
   return stats.size_in_use;
 #elif defined(OS_LINUX) || defined(OS_ANDROID)
   struct mallinfo minfo = mallinfo();
-#if defined(USE_TCMALLOC)
+#if BUILDFLAG(USE_TCMALLOC)
   return minfo.uordblks;
 #else
   return minfo.hblkhd + minfo.arena;

@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 namespace blink {
 
 class SVGResourceClient;
@@ -65,11 +65,12 @@ class ReferenceClipPathOperation final : public ClipPathOperation {
   AtomicString url_;
 };
 
-DEFINE_TYPE_CASTS(ReferenceClipPathOperation,
-                  ClipPathOperation,
-                  op,
-                  op->GetType() == ClipPathOperation::REFERENCE,
-                  op.GetType() == ClipPathOperation::REFERENCE);
+template <>
+struct DowncastTraits<ReferenceClipPathOperation> {
+  static bool AllowFrom(const ClipPathOperation& op) {
+    return op.GetType() == ClipPathOperation::REFERENCE;
+  }
+};
 
 }  // namespace blink
 

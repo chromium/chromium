@@ -505,9 +505,9 @@ void SupervisedUserManagerImpl::LoadSupervisedUserToken(
   base::FilePath profile_dir = ProfileHelper::GetProfilePathByUserIdHash(
       ProfileHelper::Get()->GetUserByProfile(profile)->username_hash());
   PostTaskAndReplyWithResult(
-      base::CreateTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
+      base::CreateTaskRunner({base::ThreadPool(), base::MayBlock(),
+                              base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
           .get(),
       FROM_HERE, base::Bind(&LoadSyncToken, profile_dir), callback);
 }

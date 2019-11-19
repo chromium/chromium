@@ -6,17 +6,17 @@
 #define UI_OZONE_PUBLIC_OZONE_SWITCHES_H_
 
 #include "base/compiler_specific.h"
-#include "ui/ozone/ozone_base_export.h"
+#include "base/component_export.h"
 
 namespace switches {
 
-OZONE_BASE_EXPORT extern const char kOzonePlatform[];
+COMPONENT_EXPORT(OZONE_BASE) extern const char kOzonePlatform[];
 
-OZONE_BASE_EXPORT extern const char kOzoneDumpFile[];
+COMPONENT_EXPORT(OZONE_BASE) extern const char kOzoneDumpFile[];
 
-OZONE_BASE_EXPORT extern const char kEnableWaylandIme[];
+COMPONENT_EXPORT(OZONE_BASE) extern const char kEnableWaylandIme[];
 
-OZONE_BASE_EXPORT extern const char kEnableExplicitDmaFences[];
+COMPONENT_EXPORT(OZONE_BASE) extern const char kDisableExplicitDmaFences[];
 
 }  // namespace switches
 

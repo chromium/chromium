@@ -27,7 +27,7 @@ const String& TestEnumOrTestEnumSequence::GetAsTestEnum() const {
 void TestEnumOrTestEnumSequence::SetTestEnum(const String& value) {
   DCHECK(IsNull());
   NonThrowableExceptionState exception_state;
-  const char* kValidValues[] = {
+  const char* const kValidValues[] = {
       "",
       "EnumValue1",
       "EnumValue2",
@@ -55,7 +55,7 @@ const Vector<String>& TestEnumOrTestEnumSequence::GetAsTestEnumSequence() const 
 void TestEnumOrTestEnumSequence::SetTestEnumSequence(const Vector<String>& value) {
   DCHECK(IsNull());
   NonThrowableExceptionState exception_state;
-  const char* kValidValues[] = {
+  const char* const kValidValues[] = {
       "",
       "EnumValue1",
       "EnumValue2",
@@ -98,7 +98,7 @@ void V8TestEnumOrTestEnumSequence::ToImpl(
     Vector<String> cpp_value = NativeValueTraits<IDLSequence<IDLString>>::NativeValue(isolate, v8_value, exception_state);
     if (exception_state.HadException())
       return;
-    const char* kValidValues[] = {
+    const char* const kValidValues[] = {
         "",
         "EnumValue1",
         "EnumValue2",
@@ -114,7 +114,7 @@ void V8TestEnumOrTestEnumSequence::ToImpl(
     V8StringResource<> cpp_value = v8_value;
     if (!cpp_value.Prepare(exception_state))
       return;
-    const char* kValidValues[] = {
+    const char* const kValidValues[] = {
         "",
         "EnumValue1",
         "EnumValue2",

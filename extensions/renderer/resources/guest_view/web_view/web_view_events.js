@@ -26,35 +26,11 @@ function WebViewEvents(webViewImpl) {
   this.setupWebRequestEvents();
 }
 
-var jsEvent;
-function createCustomDeclarativeEvent(name, schema, options, webviewId) {
-  if (bindingUtil) {
-    return bindingUtil.createCustomDeclarativeEvent(
-        name, options.actions, options.conditions, webviewId || 0);
-  }
-  if (!jsEvent)
-    jsEvent = require('event_bindings').Event;
-  return new jsEvent(name, schema, options, webviewId);
-}
-
-function createCustomEvent(name, schema, options) {
-  var supportsLazyListeners = false;
-  if (bindingUtil) {
-    return bindingUtil.createCustomEvent(name, undefined, false,
-                                         supportsLazyListeners);
-  }
-  if (!jsEvent)
-    jsEvent = require('event_bindings').Event;
-
-  if (!options)
-    options = {__proto__: null, supportsLazyListeners: false};
-  DCHECK(!options.supportsLazyListeners);
-  return new jsEvent(name, schema, options);
-}
-
 function createOnMessageEvent(name, schema, options, webviewId) {
   var subEventName = name + '/' + IdGenerator.GetNextId();
-  var newEvent = createCustomEvent(subEventName, schema, options);
+  var newEvent = bindingUtil.createCustomEvent(
+      subEventName, false /* supports filters */,
+      false /* supports lazy listeners */);
 
   var view = GuestViewInternalNatives.GetViewFromID(webviewId || 0);
   if (view) {
@@ -234,11 +210,10 @@ WebViewEvents.prototype.setupWebRequestEvents = function() {
                                           webRequestEvent.options,
                                           this.view.viewInstanceId);
         } else {
-          newEvent =
-              createCustomDeclarativeEvent(eventName,
-                                           webRequestEvent.parameters,
-                                           webRequestEvent.options,
-                                           this.view.viewInstanceId);
+          newEvent = bindingUtil.createCustomDeclarativeEvent(
+              eventName, webRequestEvent.options.actions,
+              webRequestEvent.options.conditions,
+              this.view.viewInstanceId || 0);
         }
         this[webRequestEvent.name] = newEvent;
       }

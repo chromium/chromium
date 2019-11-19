@@ -4,7 +4,7 @@
 
 #include "ash/system/palette/tools/create_note_action.h"
 
-#include "ash/note_taking_controller.h"
+#include "ash/public/cpp/note_taking_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -12,6 +12,14 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
+namespace {
+NoteTakingClient* GetAvailableClient() {
+  auto* client = NoteTakingClient::GetInstance();
+  if (!client || !client->CanCreateNote())
+    return nullptr;
+  return client;
+}
+}  // namespace
 
 CreateNoteAction::CreateNoteAction(Delegate* delegate)
     : CommonPaletteTool(delegate) {}
@@ -29,14 +37,16 @@ PaletteToolId CreateNoteAction::GetToolId() const {
 void CreateNoteAction::OnEnable() {
   CommonPaletteTool::OnEnable();
 
-  Shell::Get()->note_taking_controller()->CreateNote();
+  auto* client = GetAvailableClient();
+  if (client)
+    client->CreateNote();
 
   delegate()->DisableTool(GetToolId());
   delegate()->HidePalette();
 }
 
 views::View* CreateNoteAction::CreateView() {
-  if (!Shell::Get()->note_taking_controller()->CanCreateNote())
+  if (!GetAvailableClient())
     return nullptr;
 
   return CreateDefaultView(

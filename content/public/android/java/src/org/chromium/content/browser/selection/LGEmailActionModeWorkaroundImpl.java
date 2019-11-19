@@ -35,7 +35,7 @@ import java.lang.reflect.Method;
  * This is a version code limited workaround to avoid crashes in the app.
  */
 public final class LGEmailActionModeWorkaroundImpl {
-    private static final String TAG = "cr_Ime";
+    private static final String TAG = "Ime";
 
     // This is the last broken version shipped on LG V20/NRD90M.
     public static final int LGEmailWorkaroundMaxVersion = 67502100;

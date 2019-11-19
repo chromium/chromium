@@ -5,35 +5,39 @@
 package org.chromium.chrome.browser.preferences.password;
 
 import android.app.Activity;
-import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceGroup;
-import android.preference.PreferenceScreen;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceCategory;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceGroup;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.VisibleForTesting;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.preferences.ChromeBaseCheckBoxPreference;
 import org.chromium.chrome.browser.preferences.ChromeBasePreference;
 import org.chromium.chrome.browser.preferences.ChromeSwitchPreference;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.browser.preferences.PreferencesLauncher;
 import org.chromium.chrome.browser.preferences.SearchUtils;
 import org.chromium.chrome.browser.preferences.TextMessagePreference;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.text.SpanApplier;
 
 import java.util.Locale;
@@ -43,8 +47,10 @@ import java.util.Locale;
  * saving, to view saved passwords (just the username and URL), and to delete saved passwords.
  */
 public class SavePasswordsPreferences
-        extends PreferenceFragment implements PasswordManagerHandler.PasswordListObserver,
-                                              Preference.OnPreferenceClickListener {
+        extends PreferenceFragmentCompat implements PasswordManagerHandler.PasswordListObserver,
+                                                    Preference.OnPreferenceClickListener {
+    public static final String PASSWORD_LEAK_DETECTION_FEATURE = "PasswordLeakDetection";
+
     // Keys for name/password dictionaries.
     public static final String PASSWORD_LIST_URL = "url";
     public static final String PASSWORD_LIST_NAME = "name";
@@ -58,22 +64,24 @@ public class SavePasswordsPreferences
 
     public static final String PREF_SAVE_PASSWORDS_SWITCH = "save_passwords_switch";
     public static final String PREF_AUTOSIGNIN_SWITCH = "autosignin_switch";
+    public static final String PREF_LEAK_DETECTION_SWITCH = "leak_detection_switch";
+    public static final String PREF_KEY_MANAGE_ACCOUNT_LINK = "manage_account_link";
 
-    // A PasswordEntryEditor receives a boolean value with this key. If set true, the the entry was
+    // A PasswordEntryViewer receives a boolean value with this key. If set true, the the entry was
     // part of a search result.
     public static final String EXTRA_FOUND_VIA_SEARCH = "found_via_search_args";
 
     private static final String PREF_KEY_CATEGORY_SAVED_PASSWORDS = "saved_passwords";
     private static final String PREF_KEY_CATEGORY_EXCEPTIONS = "exceptions";
-    private static final String PREF_KEY_MANAGE_ACCOUNT_LINK = "manage_account_link";
     private static final String PREF_KEY_SAVED_PASSWORDS_NO_TEXT = "saved_passwords_no_text";
 
     private static final int ORDER_SWITCH = 0;
-    private static final int ORDER_AUTO_SIGNIN_CHECKBOX = 1;
-    private static final int ORDER_MANAGE_ACCOUNT_LINK = 2;
-    private static final int ORDER_SAVED_PASSWORDS = 3;
-    private static final int ORDER_EXCEPTIONS = 4;
-    private static final int ORDER_SAVED_PASSWORDS_NO_TEXT = 5;
+    private static final int ORDER_AUTO_LEAK_DETECTION_SWITCH = 1;
+    private static final int ORDER_AUTO_SIGNIN_CHECKBOX = 2;
+    private static final int ORDER_MANAGE_ACCOUNT_LINK = 3;
+    private static final int ORDER_SAVED_PASSWORDS = 4;
+    private static final int ORDER_EXCEPTIONS = 5;
+    private static final int ORDER_SAVED_PASSWORDS_NO_TEXT = 6;
 
     private boolean mNoPasswords;
     private boolean mNoPasswordExceptions;
@@ -85,6 +93,7 @@ public class SavePasswordsPreferences
     private Preference mLinkPref;
     private ChromeSwitchPreference mSavePasswordsSwitch;
     private ChromeBaseCheckBoxPreference mAutoSignInSwitch;
+    private ChromeSwitchPreference mAutoLeakDetectionSwitch;
     private TextMessagePreference mEmptyView;
     private boolean mSearchRecorded;
     private Menu mMenu;
@@ -99,8 +108,7 @@ public class SavePasswordsPreferences
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         mExportFlow.onCreate(savedInstanceState, new ExportFlow.Delegate() {
             @Override
             public Activity getActivity() {
@@ -118,7 +126,7 @@ public class SavePasswordsPreferences
             }
         });
         getActivity().setTitle(R.string.prefs_saved_passwords_title);
-        setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getActivity()));
+        setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getStyledContext()));
         PasswordManagerHandlerProvider.getInstance().addObserver(this);
 
         setHasOptionsMenu(true); // Password Export might be optional but Search is always present.
@@ -132,6 +140,14 @@ public class SavePasswordsPreferences
     }
 
     @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Disable animations of preference changes.
+        getListView().setItemAnimator(null);
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         mMenu = menu;
@@ -140,24 +156,9 @@ public class SavePasswordsPreferences
         menu.findItem(R.id.export_passwords).setEnabled(false);
         mSearchItem = menu.findItem(R.id.menu_id_search);
         mSearchItem.setVisible(true);
-        mHelpItem = menu.findItem(R.id.menu_id_general_help);
-        SearchUtils.initializeSearchView(mSearchItem, mSearchQuery, getActivity(), (query) -> {
-            maybeRecordTriggeredPasswordSearch(true);
-            filterPasswords(query);
-        });
-    }
-
-    /**
-     * Record the search only, if the feature is enabled and it hasn't been recorded for this
-     * instance of the view.
-     * @param searchTriggered Whether to log a triggered search or no triggered search.
-     */
-    private void maybeRecordTriggeredPasswordSearch(boolean searchTriggered) {
-        if (!mSearchRecorded) {
-            mSearchRecorded = true;
-            RecordHistogram.recordBooleanHistogram(
-                    "PasswordManager.Android.PasswordSearchTriggered", searchTriggered);
-        }
+        mHelpItem = menu.findItem(R.id.menu_id_targeted_help);
+        SearchUtils.initializeSearchView(
+                mSearchItem, mSearchQuery, getActivity(), this::filterPasswords);
     }
 
     @Override
@@ -177,6 +178,11 @@ public class SavePasswordsPreferences
             filterPasswords(null);
             return true;
         }
+        if (id == R.id.menu_id_targeted_help) {
+            HelpAndFeedback.getInstance().show(getActivity(),
+                    getString(R.string.help_context_passwords), Profile.getLastUsedProfile(), null);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -191,10 +197,12 @@ public class SavePasswordsPreferences
      * Empty screen message when no passwords or exceptions are stored.
      */
     private void displayEmptyScreenMessage() {
-        mEmptyView = new TextMessagePreference(getActivity(), null);
+        mEmptyView = new TextMessagePreference(getStyledContext(), null);
         mEmptyView.setSummary(R.string.saved_passwords_none_text);
         mEmptyView.setKey(PREF_KEY_SAVED_PASSWORDS_NO_TEXT);
         mEmptyView.setOrder(ORDER_SAVED_PASSWORDS_NO_TEXT);
+        mEmptyView.setDividerAllowedAbove(false);
+        mEmptyView.setDividerAllowedBelow(false);
         getPreferenceScreen().addPreference(mEmptyView);
     }
 
@@ -208,8 +216,11 @@ public class SavePasswordsPreferences
         mNoPasswords = false;
         mNoPasswordExceptions = false;
         getPreferenceScreen().removeAll();
-        createSavePasswordsSwitch();
-        createAutoSignInCheckbox();
+        if (mSearchQuery == null) {
+            createSavePasswordsSwitch();
+            createAutoLeakDetectionSwitch();
+            createAutoSignInCheckbox();
+        }
         PasswordManagerHandlerProvider.getInstance()
                 .getPasswordManagerHandler()
                 .updatePasswordLists();
@@ -253,7 +264,7 @@ public class SavePasswordsPreferences
 
         PreferenceGroup passwordParent;
         if (mSearchQuery == null) {
-            PreferenceCategory profileCategory = new PreferenceCategory(getActivity());
+            PreferenceCategory profileCategory = new PreferenceCategory(getStyledContext());
             profileCategory.setKey(PREF_KEY_CATEGORY_SAVED_PASSWORDS);
             profileCategory.setTitle(R.string.prefs_saved_passwords_title);
             profileCategory.setOrder(ORDER_SAVED_PASSWORDS);
@@ -272,16 +283,16 @@ public class SavePasswordsPreferences
             if (shouldBeFiltered(url, name)) {
                 continue; // The current password won't show with the active filter, try the next.
             }
-            PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getActivity());
-            screen.setTitle(url);
-            screen.setOnPreferenceClickListener(this);
-            screen.setSummary(name);
-            Bundle args = screen.getExtras();
+            Preference preference = new Preference(getStyledContext());
+            preference.setTitle(url);
+            preference.setOnPreferenceClickListener(this);
+            preference.setSummary(name);
+            Bundle args = preference.getExtras();
             args.putString(PASSWORD_LIST_NAME, name);
             args.putString(PASSWORD_LIST_URL, url);
             args.putString(PASSWORD_LIST_PASSWORD, password);
             args.putInt(PASSWORD_LIST_ID, i);
-            passwordParent.addPreference(screen);
+            passwordParent.addPreference(preference);
         }
         mNoPasswords = passwordParent.getPreferenceCount() == 0;
         if (mNoPasswords) {
@@ -291,7 +302,7 @@ public class SavePasswordsPreferences
                 getPreferenceScreen().removePreference(passwordParent);
             } else {
                 getView().announceForAccessibility(
-                        getResources().getText(R.string.accessible_find_in_page_no_results));
+                        getString(R.string.accessible_find_in_page_no_results));
             }
         }
     }
@@ -326,7 +337,7 @@ public class SavePasswordsPreferences
 
         displayManageAccountLink();
 
-        PreferenceCategory profileCategory = new PreferenceCategory(getActivity());
+        PreferenceCategory profileCategory = new PreferenceCategory(getStyledContext());
         profileCategory.setKey(PREF_KEY_CATEGORY_EXCEPTIONS);
         profileCategory.setTitle(R.string.section_saved_passwords_exceptions);
         profileCategory.setOrder(ORDER_EXCEPTIONS);
@@ -335,13 +346,13 @@ public class SavePasswordsPreferences
             String exception = PasswordManagerHandlerProvider.getInstance()
                                        .getPasswordManagerHandler()
                                        .getSavedPasswordException(i);
-            PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getActivity());
-            screen.setTitle(exception);
-            screen.setOnPreferenceClickListener(this);
-            Bundle args = screen.getExtras();
+            Preference preference = new Preference(getStyledContext());
+            preference.setTitle(exception);
+            preference.setOnPreferenceClickListener(this);
+            Bundle args = preference.getExtras();
             args.putString(PASSWORD_LIST_URL, exception);
             args.putInt(PASSWORD_LIST_ID, i);
-            profileCategory.addPreference(screen);
+            profileCategory.addPreference(preference);
         }
     }
 
@@ -364,7 +375,6 @@ public class SavePasswordsPreferences
     @Override
     public void onDestroy() {
         super.onDestroy();
-        maybeRecordTriggeredPasswordSearch(false);
         PasswordManagerHandlerProvider.getInstance().removeObserver(this);
     }
 
@@ -380,38 +390,34 @@ public class SavePasswordsPreferences
             intent.setPackage(getActivity().getPackageName());
             getActivity().startActivity(intent);
         } else {
-            // Launch preference activity with PasswordEntryEditor fragment with
+            // Launch preference activity with PasswordEntryViewer fragment with
             // intent extras specifying the object.
             Bundle fragmentAgs = new Bundle(preference.getExtras());
             fragmentAgs.putBoolean(
                     SavePasswordsPreferences.EXTRA_FOUND_VIA_SEARCH, mSearchQuery != null);
             PreferencesLauncher.launchSettingsPage(
-                    getActivity(), PasswordEntryEditor.class, fragmentAgs);
+                    getActivity(), PasswordEntryViewer.class, fragmentAgs);
         }
         return true;
     }
 
     private void createSavePasswordsSwitch() {
-        if (mSearchQuery != null) {
-            return; // Don't create this option when the preferences are filtered for passwords.
-        }
-        mSavePasswordsSwitch = new ChromeSwitchPreference(getActivity(), null);
+        mSavePasswordsSwitch = new ChromeSwitchPreference(getStyledContext(), null);
         mSavePasswordsSwitch.setKey(PREF_SAVE_PASSWORDS_SWITCH);
         mSavePasswordsSwitch.setTitle(R.string.prefs_saved_passwords);
         mSavePasswordsSwitch.setOrder(ORDER_SWITCH);
         mSavePasswordsSwitch.setSummaryOn(R.string.text_on);
         mSavePasswordsSwitch.setSummaryOff(R.string.text_off);
-        mSavePasswordsSwitch.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                PrefServiceBridge.getInstance().setRememberPasswordsEnabled((boolean) newValue);
-                return true;
-            }
+        mSavePasswordsSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+            PrefServiceBridge.getInstance().setBoolean(
+                    Pref.REMEMBER_PASSWORDS_ENABLED, (boolean) newValue);
+            return true;
         });
-        mSavePasswordsSwitch.setManagedPreferenceDelegate(
-                preference -> PrefServiceBridge.getInstance().isRememberPasswordsManaged());
+        mSavePasswordsSwitch.setManagedPreferenceDelegate(preference
+                -> PrefServiceBridge.getInstance().isManagedPreference(
+                        Pref.REMEMBER_PASSWORDS_ENABLED));
 
-        try (StrictModeContext ctx = StrictModeContext.allowDiskReads()) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             getPreferenceScreen().addPreference(mSavePasswordsSwitch);
         }
 
@@ -420,34 +426,65 @@ public class SavePasswordsPreferences
         // (e.g. the switch will say "On" when save passwords is really turned off), so
         // .setChecked() should be called after .addPreference()
         mSavePasswordsSwitch.setChecked(
-                PrefServiceBridge.getInstance().isRememberPasswordsEnabled());
+                PrefServiceBridge.getInstance().getBoolean(Pref.REMEMBER_PASSWORDS_ENABLED));
     }
 
     private void createAutoSignInCheckbox() {
-        if (mSearchQuery != null) {
-            return; // Don't create this option when the preferences are filtered for passwords.
-        }
-        mAutoSignInSwitch = new ChromeBaseCheckBoxPreference(getActivity(), null);
+        mAutoSignInSwitch = new ChromeBaseCheckBoxPreference(getStyledContext(), null);
         mAutoSignInSwitch.setKey(PREF_AUTOSIGNIN_SWITCH);
         mAutoSignInSwitch.setTitle(R.string.passwords_auto_signin_title);
         mAutoSignInSwitch.setOrder(ORDER_AUTO_SIGNIN_CHECKBOX);
         mAutoSignInSwitch.setSummary(R.string.passwords_auto_signin_description);
-        mAutoSignInSwitch.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                PrefServiceBridge.getInstance().setPasswordManagerAutoSigninEnabled(
-                        (boolean) newValue);
-                return true;
-            }
+        mAutoSignInSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+            PrefServiceBridge.getInstance().setBoolean(
+                    Pref.PASSWORD_MANAGER_AUTO_SIGNIN_ENABLED, (boolean) newValue);
+            return true;
         });
-        mAutoSignInSwitch.setManagedPreferenceDelegate(
-                preference -> PrefServiceBridge.getInstance().isPasswordManagerAutoSigninManaged());
+        mAutoSignInSwitch.setManagedPreferenceDelegate(preference
+                -> PrefServiceBridge.getInstance().isManagedPreference(
+                        Pref.PASSWORD_MANAGER_AUTO_SIGNIN_ENABLED));
         getPreferenceScreen().addPreference(mAutoSignInSwitch);
-        mAutoSignInSwitch.setChecked(
-                PrefServiceBridge.getInstance().isPasswordManagerAutoSigninEnabled());
+        mAutoSignInSwitch.setChecked(PrefServiceBridge.getInstance().getBoolean(
+                Pref.PASSWORD_MANAGER_AUTO_SIGNIN_ENABLED));
+    }
+
+    private void createAutoLeakDetectionSwitch() {
+        if (!ChromeFeatureList.isEnabled(PASSWORD_LEAK_DETECTION_FEATURE)) return;
+
+        mAutoLeakDetectionSwitch = new ChromeSwitchPreference(getStyledContext(), null);
+        mAutoLeakDetectionSwitch.setKey(PREF_LEAK_DETECTION_SWITCH);
+        mAutoLeakDetectionSwitch.setTitle(R.string.passwords_leak_detection_switch_title);
+        mAutoLeakDetectionSwitch.setOrder(ORDER_AUTO_LEAK_DETECTION_SWITCH);
+        mAutoLeakDetectionSwitch.setManagedPreferenceDelegate(preference
+                -> PrefServiceBridge.getInstance().isManagedPreference(
+                        Pref.PASSWORD_MANAGER_LEAK_DETECTION_ENABLED));
+
+        getPreferenceScreen().addPreference(mAutoLeakDetectionSwitch);
+
+        if (PasswordUIView.hasAccountForLeakCheckRequest()) {
+            mAutoLeakDetectionSwitch.setChecked(PrefServiceBridge.getInstance().getBoolean(
+                    Pref.PASSWORD_MANAGER_LEAK_DETECTION_ENABLED));
+            mAutoLeakDetectionSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+                PrefServiceBridge.getInstance().setBoolean(
+                        Pref.PASSWORD_MANAGER_LEAK_DETECTION_ENABLED, (boolean) newValue);
+                return true;
+            });
+        } else {
+            mAutoLeakDetectionSwitch.setChecked(false);
+            mAutoLeakDetectionSwitch.setEnabled(false);
+            mAutoLeakDetectionSwitch.setOnPreferenceClickListener(null);
+            if (PrefServiceBridge.getInstance().getBoolean(
+                        Pref.PASSWORD_MANAGER_LEAK_DETECTION_ENABLED)) {
+                mAutoLeakDetectionSwitch.setSummary(
+                        R.string.passwords_leak_detection_switch_signed_out_enable_description);
+            }
+        }
     }
 
     private void displayManageAccountLink() {
+        if (!PreferencesLauncher.isSyncingPasswordsWithoutCustomPassphrase()) {
+            return;
+        }
         if (mSearchQuery != null && !mNoPasswords) {
             return; // Don't add the Manage Account link if there is a search going on.
         }
@@ -463,12 +500,16 @@ public class SavePasswordsPreferences
                 ApiCompatibilityUtils.getColor(getResources(), R.color.default_text_color_link));
         SpannableString title = SpanApplier.applySpans(getString(R.string.manage_passwords_text),
                 new SpanApplier.SpanInfo("<link>", "</link>", colorSpan));
-        mLinkPref = new ChromeBasePreference(getActivity());
+        mLinkPref = new ChromeBasePreference(getStyledContext());
         mLinkPref.setKey(PREF_KEY_MANAGE_ACCOUNT_LINK);
         mLinkPref.setTitle(title);
         mLinkPref.setOnPreferenceClickListener(this);
         mLinkPref.setOrder(ORDER_MANAGE_ACCOUNT_LINK);
         getPreferenceScreen().addPreference(mLinkPref);
+    }
+
+    private Context getStyledContext() {
+        return getPreferenceManager().getContext();
     }
 
     @VisibleForTesting

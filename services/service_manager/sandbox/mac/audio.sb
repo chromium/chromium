@@ -48,3 +48,20 @@
   (sysctl-name "hw.optional.sse4_1")
   (sysctl-name "hw.optional.sse4_2")
 )
+
+; This is available in 10.15+, and rolled out as a Finch experiment.
+(if (param-true? filter-syscalls)
+  (when (defined? 'syscall-unix)
+    (deny syscall-unix (with send-signal SIGSYS))
+    (allow syscall-unix
+      (syscall-number SYS_csrctl)
+      (syscall-number SYS_mlock)
+      (syscall-number SYS_poll)
+      (syscall-number SYS_proc_rlimit_control)
+      (syscall-number SYS_psynch_cvbroad)
+      (syscall-number SYS_psynch_cvwait)
+      (syscall-number SYS_setsockopt)
+      (syscall-number SYS_socketpair)
+      (syscall-number SYS_work_interval_ctl)
+      (syscall-number SYS_write)
+)))

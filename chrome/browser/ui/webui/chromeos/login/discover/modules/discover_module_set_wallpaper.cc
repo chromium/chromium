@@ -35,8 +35,7 @@ class DiscoverModuleSetWallpaperHandler : public DiscoverHandler {
 
 DiscoverModuleSetWallpaperHandler::DiscoverModuleSetWallpaperHandler(
     JSCallsContainer* js_calls_container)
-    : DiscoverHandler(DiscoverModuleSetWallpaper::kModuleName,
-                      js_calls_container) {}
+    : DiscoverHandler(js_calls_container) {}
 
 void DiscoverModuleSetWallpaperHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {

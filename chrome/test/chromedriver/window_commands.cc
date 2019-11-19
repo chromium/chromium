@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,10 +36,12 @@
 #include "chrome/test/chromedriver/element_util.h"
 #include "chrome/test/chromedriver/key_converter.h"
 #include "chrome/test/chromedriver/keycode_text_conversion.h"
+#include "chrome/test/chromedriver/net/command_id.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "chrome/test/chromedriver/session.h"
 #include "chrome/test/chromedriver/util.h"
 #include "ui/gfx/geometry/point.h"
+#include "url/url_util.h"
 
 namespace {
 
@@ -48,6 +51,9 @@ namespace {
 // necessary to compare against both the old and new error URL.
 static const char kUnreachableWebDataURL[] = "chrome-error://chromewebdata/";
 const char kDeprecatedUnreachableWebDataURL[] = "data:text/html,chromewebdata";
+
+// Match to content/browser/devtools/devTools_session const of same name
+const char kTargetClosedMessage[] = "Inspected target navigated or closed";
 
 // TODO(johnchen@chromium.org): Remove when we stop supporting legacy protocol.
 // Defaults to 20 years into the future when adding a cookie.
@@ -334,7 +340,7 @@ Status ExecuteTouchEvent(
   std::list<TouchEvent> events;
   events.push_back(
       TouchEvent(type, relative_x, relative_y));
-  return web_view->DispatchTouchEvents(events);
+  return web_view->DispatchTouchEvents(events, false);
 }
 
 Status WindowViewportSize(Session* session,
@@ -371,70 +377,46 @@ Status ProcessPauseAction(const base::DictionaryValue* action_item,
   return Status(kOk);
 }
 
-// Implements "compute the tick duration" algorithm from W3C spec
-// (https://w3c.github.io/webdriver/#dfn-computing-the-tick-duration).
-// For convenience, this function computes durations of all ticks, while the
-// original algorithm computes duration of one tick.
-void ComputeTickDurations(std::vector<int>* tick_durations,
-                          const base::ListValue& actions_list) {
-  for (size_t i = 0; i < actions_list.GetSize(); i++) {
-    const base::DictionaryValue* action_sequence = nullptr;
-    actions_list.GetDictionary(i, &action_sequence);
-    const base::ListValue* actions = nullptr;
-    action_sequence->GetList("actions", &actions);
-    std::string type;
-    action_sequence->GetString("sourceType", &type);
-
-    for (size_t j = 0; j < actions->GetSize(); j++) {
-      const base::DictionaryValue* action = nullptr;
-      actions->GetDictionary(j, &action);
-      std::string subtype;
-      action->GetString("subtype", &subtype);
-
-      if (subtype == "pause" ||
-          (type == "pointer" && subtype == "pointerMove")) {
-        if (j >= tick_durations->size())
-          tick_durations->resize(j + 1);
-        int duration = 0;
-        GetOptionalInt(action, "duration", &duration);
-        if (duration > (*tick_durations)[j])
-          (*tick_durations)[j] = duration;
-      }
-    }
-  }
-}
-
 Status ElementInViewCenter(Session* session,
                            WebView* web_view,
                            std::string element_id,
                            int* center_x,
                            int* center_y) {
-  WebRect region;
-  Status status = GetElementRegion(session, web_view, element_id, &region);
+  WebPoint center_location;
+  Status status = GetElementLocationInViewCenter(session, web_view, element_id,
+                                                 &center_location);
   if (status.IsError())
     return status;
-  WebPoint region_offset;
-  status = ScrollElementRegionIntoView(session, web_view, element_id, region,
-                                       true /* center */, std::string(),
-                                       &region_offset);
-  if (status.IsError())
-    return status;
-  int innerWidth, innerHeight;
-  status = WindowViewportSize(session, web_view, &innerWidth, &innerHeight);
-  if (status.IsError())
-    return status;
-  int left =
-      std::max(0, std::min(region_offset.x, region_offset.x + region.Width()));
-  int right = std::min(
-      innerWidth, std::max(region_offset.x, region_offset.x + region.Width()));
-  int top =
-      std::max(0, std::min(region_offset.y, region_offset.y + region.Height()));
-  int bottom =
-      std::min(innerHeight,
-               std::max(region_offset.y, region_offset.y + region.Height()));
-  *center_x = static_cast<int>(std::floor((left + right) / 2));
-  *center_y = static_cast<int>(std::floor((top + bottom) / 2));
+
+  *center_x = center_location.x;
+  *center_y = center_location.y;
   return Status(kOk);
+}
+
+bool IsRepeatedClickEvent(float x,
+                          float y,
+                          float last_x,
+                          float last_y,
+                          int click_count,
+                          const base::TimeTicks& timestamp,
+                          const base::TimeTicks& last_mouse_click_time) {
+  const int kDoubleClickTimeMS = 500;
+  const int kDoubleClickRange = 4;
+
+  if (click_count == 0)
+    return false;
+
+  base::TimeDelta time_difference = timestamp - last_mouse_click_time;
+  if (time_difference.InMilliseconds() > kDoubleClickTimeMS)
+    return false;
+
+  if (std::abs(x - last_x) > kDoubleClickRange / 2)
+    return false;
+
+  if (std::abs(y - last_y) > kDoubleClickRange / 2)
+    return false;
+
+  return true;
 }
 
 }  // namespace
@@ -501,6 +483,12 @@ Status ExecuteWindowCommand(const WindowCommand& command,
       // If the command timed out, let WaitForPendingNavigations cancel
       // the navigation if there is one.
       continue;
+    } else if (status.code() == kUnknownError && web_view->IsNonBlocking() &&
+               status.message().find(kTargetClosedMessage) !=
+                   std::string::npos) {
+      // When pageload strategy is None, new navigation can occur during
+      // execution of a command. Retry the command.
+      continue;
     } else if (status.IsError()) {
       // If the command failed while a new page or frame started loading, retry
       // the command after the pending navigation has completed.
@@ -524,6 +512,8 @@ Status ExecuteWindowCommand(const WindowCommand& command,
     return nav_status;
   if (status.code() == kUnexpectedAlertOpen)
     return Status(kOk);
+  if (status.code() == kUnexpectedAlertOpen_Keep)
+    return Status(kUnexpectedAlertOpen);
   return status;
 }
 
@@ -561,9 +551,16 @@ Status ExecuteExecuteScript(Session* session,
     const base::ListValue* args;
     if (!params.GetList("args", &args))
       return Status(kInvalidArgument, "'args' must be a list");
+    // Need to support line oriented comment
+    if (script.find("//") != std::string::npos)
+      script = script + "\n";
 
-    return web_view->CallFunction(session->GetCurrentFrameId(),
-                                  "function(){" + script + "}", *args, value);
+    Status status =
+        web_view->CallUserSyncScript(session->GetCurrentFrameId(), script,
+                                     *args, session->script_timeout, value);
+    if (status.code() == kTimeout)
+      return Status(kScriptTimeout);
+    return status;
   }
 }
 
@@ -579,9 +576,48 @@ Status ExecuteExecuteAsyncScript(Session* session,
   if (!params.GetList("args", &args))
     return Status(kInvalidArgument, "'args' must be a list");
 
-  return web_view->CallUserAsyncFunction(
-      session->GetCurrentFrameId(), "function(){" + script + "}", *args,
+  // Need to support line oriented comment
+  if (script.find("//") != std::string::npos)
+    script = script + "\n";
+
+  Status status = web_view->CallUserAsyncFunction(
+      session->GetCurrentFrameId(), "async function(){" + script + "}", *args,
       session->script_timeout, value);
+  if (status.code() == kTimeout)
+    return Status(kScriptTimeout);
+  return status;
+}
+
+Status ExecuteNewWindow(Session* session,
+                        WebView* web_view,
+                        const base::DictionaryValue& params,
+                        std::unique_ptr<base::Value>* value,
+                        Timeout* timeout) {
+  std::string type = "";
+  // "type" can either be None or a string.
+  auto* type_param = params.FindKey("type");
+  if (!(!type_param || type_param->is_none() ||
+        params.GetString("type", &type)))
+    return Status(kInvalidArgument, "missing or invalid 'type'");
+
+  // By default, creates new tab.
+  Chrome::WindowType window_type = (type == "window")
+                                       ? Chrome::WindowType::kWindow
+                                       : Chrome::WindowType::kTab;
+
+  std::string handle = "";
+  Status status =
+      session->chrome->NewWindow(session->window, window_type, &handle);
+
+  if (status.IsError())
+    return status;
+
+  auto results = std::make_unique<base::DictionaryValue>();
+  results->SetString("handle", WebViewIdToWindowHandle(handle));
+  results->SetString(
+      "type", (window_type == Chrome::WindowType::kWindow) ? "window" : "tab");
+  *value = std::move(results);
+  return Status(kOk);
 }
 
 Status ExecuteSwitchToFrame(Session* session,
@@ -695,8 +731,7 @@ Status ExecuteGetPageSource(Session* session,
                             std::unique_ptr<base::Value>* value,
                             Timeout* timeout) {
   const char kGetPageSource[] =
-      " () => document.documentElement"
-      " ? document.documentElement.outerHTML : ''";
+      " () => (document.documentElement || {}).outerHTML || ''";
 
   base::ListValue args;
   return web_view->CallFunction(
@@ -834,8 +869,8 @@ Status ExecuteMouseMoveTo(Session* session,
   events.push_back(MouseEvent(kMovedMouseEventType,
                               session->pressed_mouse_button, location.x,
                               location.y, session->sticky_modifiers, 0, 0));
-  Status status =
-      web_view->DispatchMouseEvents(events, session->GetCurrentFrameId());
+  Status status = web_view->DispatchMouseEvents(
+      events, session->GetCurrentFrameId(), false);
   if (status.IsOk())
     session->mouse_position = location;
   return status;
@@ -859,7 +894,8 @@ Status ExecuteMouseClick(Session* session,
                  session->mouse_position.y, session->sticky_modifiers,
                  MouseButtonToButtons(button), 1));
   session->pressed_mouse_button = kNoneMouseButton;
-  return web_view->DispatchMouseEvents(events, session->GetCurrentFrameId());
+  return web_view->DispatchMouseEvents(events, session->GetCurrentFrameId(),
+                                       false);
 }
 
 Status ExecuteMouseButtonDown(Session* session,
@@ -876,7 +912,8 @@ Status ExecuteMouseButtonDown(Session* session,
       MouseEvent(kPressedMouseEventType, button, session->mouse_position.x,
                  session->mouse_position.y, session->sticky_modifiers, 0, 1));
   session->pressed_mouse_button = button;
-  return web_view->DispatchMouseEvents(events, session->GetCurrentFrameId());
+  return web_view->DispatchMouseEvents(events, session->GetCurrentFrameId(),
+                                       false);
 }
 
 Status ExecuteMouseButtonUp(Session* session,
@@ -894,7 +931,8 @@ Status ExecuteMouseButtonUp(Session* session,
                  session->mouse_position.y, session->sticky_modifiers,
                  MouseButtonToButtons(button), 1));
   session->pressed_mouse_button = kNoneMouseButton;
-  return web_view->DispatchMouseEvents(events, session->GetCurrentFrameId());
+  return web_view->DispatchMouseEvents(events, session->GetCurrentFrameId(),
+                                       false);
 }
 
 Status ExecuteMouseDoubleClick(Session* session,
@@ -922,7 +960,8 @@ Status ExecuteMouseDoubleClick(Session* session,
                  session->mouse_position.y, session->sticky_modifiers,
                  MouseButtonToButtons(button), 2));
   session->pressed_mouse_button = kNoneMouseButton;
-  return web_view->DispatchMouseEvents(events, session->GetCurrentFrameId());
+  return web_view->DispatchMouseEvents(events, session->GetCurrentFrameId(),
+                                       false);
 }
 
 Status ExecuteTouchDown(Session* session,
@@ -972,26 +1011,10 @@ Status ExecuteTouchScroll(Session* session,
       location.x, location.y, xoffset, yoffset);
 }
 
-Status ExecuteTouchPinch(Session* session,
-                         WebView* web_view,
-                         const base::DictionaryValue& params,
-                         std::unique_ptr<base::Value>* value,
-                         Timeout* timeout) {
-  WebPoint location;
-  if (!params.GetInteger("x", &location.x))
-    return Status(kInvalidArgument, "'x' must be an integer");
-  if (!params.GetInteger("y", &location.y))
-    return Status(kInvalidArgument, "'y' must be an integer");
-  double scale_factor;
-  if (!params.GetDouble("scale", &scale_factor))
-    return Status(kInvalidArgument, "'scale' must be an integer");
-  return web_view->SynthesizePinchGesture(location.x, location.y, scale_factor);
-}
-
 Status ProcessInputActionSequence(
     Session* session,
     const base::DictionaryValue* action_sequence,
-    std::unique_ptr<base::DictionaryValue>* action_sequence_result) {
+    std::vector<std::unique_ptr<base::DictionaryValue>>* action_list) {
   std::string id;
   std::string type;
   const base::DictionaryValue* source;
@@ -1020,9 +1043,6 @@ Status ProcessInputActionSequence(
       pointer_type = "mouse";
     }
   }
-  (*action_sequence_result)->SetString("sourceType", type);
-  (*action_sequence_result)->SetString("pointerType", pointer_type);
-  (*action_sequence_result)->SetString("id", id);
 
   bool found = false;
   for (size_t i = 0; i < session->active_input_sources.GetSize(); i++) {
@@ -1030,8 +1050,10 @@ Status ProcessInputActionSequence(
     DCHECK(source);
 
     std::string source_id;
+    std::string source_type;
     source->GetString("id", &source_id);
-    if (source_id == id) {
+    source->GetString("type", &source_type);
+    if (source_id == id && source_type == type) {
       found = true;
       if (type == "pointer") {
         std::string source_pointer_type;
@@ -1041,12 +1063,6 @@ Status ProcessInputActionSequence(
                         "'pointerType' must be a string that matches sources "
                         "pointer type");
         }
-      }
-      std::string source_type;
-      source->GetString("type", &source_type);
-      if (source_type != type) {
-        return Status(kInvalidArgument,
-                      "input state with same id has a different type");
       }
       break;
     }
@@ -1076,11 +1092,11 @@ Status ProcessInputActionSequence(
       // enum KeyModifierMask.
       tmp_state.SetInteger("modifiers", 0);
     } else if (type == "pointer") {
-      std::unique_ptr<base::ListValue> pressed(new base::ListValue);
       int x = 0;
       int y = 0;
 
-      tmp_state.SetList("pressed", std::move(pressed));
+      // "pressed" is stored as a bitmask of pointer buttons.
+      tmp_state.SetInteger("pressed", 0);
       tmp_state.SetString("subtype", pointer_type);
 
       tmp_state.SetInteger("x", x);
@@ -1097,6 +1113,7 @@ Status ProcessInputActionSequence(
   std::unique_ptr<base::ListValue> actions_result(new base::ListValue);
   for (size_t i = 0; i < actions->GetSize(); i++) {
     std::unique_ptr<base::DictionaryValue> action(new base::DictionaryValue());
+
     const base::DictionaryValue* action_item;
     if (!actions->GetDictionary(i, &action_item))
       return Status(
@@ -1150,6 +1167,7 @@ Status ProcessInputActionSequence(
         action->SetString("value", key);
       }
     } else if (type == "pointer") {
+      action->SetString("pointerType", pointer_type);
       std::string subtype;
       if (!action_item->GetString("type", &subtype) ||
           (subtype != "pointerUp" && subtype != "pointerDown" &&
@@ -1220,9 +1238,8 @@ Status ProcessInputActionSequence(
           return status;
       }
     }
-    actions_result->Append(std::move(action));
+    action_list->push_back(std::move(action));
   }
-  (*action_sequence_result)->SetList("actions", std::move(actions_result));
   return Status(kOk);
 }
 
@@ -1232,258 +1249,284 @@ Status ExecutePerformActions(Session* session,
                              std::unique_ptr<base::Value>* value,
                              Timeout* timeout) {
   // extract action sequence
-  const base::DictionaryValue* actions_dict;
   const base::ListValue* actions_input;
 
-  // TODO(lanwei): The below line will be removed after this pull request is
-  // merged, https://github.com/web-platform-tests/wpt/pull/14345.
-  if (!params.GetDictionary("actions", &actions_dict))
-    actions_dict = &params;
-
-  if (!actions_dict->GetList("actions", &actions_input))
+  if (!params.GetList("actions", &actions_input))
     return Status(kInvalidArgument, "'actions' must be an array");
 
   // the processed actions
-  base::ListValue actions_list;
-
+  std::vector<std::vector<std::unique_ptr<base::DictionaryValue>>> actions_list;
   for (size_t i = 0; i < actions_input->GetSize(); i++) {
-    std::unique_ptr<base::DictionaryValue> input_source_actions(
-        new base::DictionaryValue());
     // proccess input action sequence
     const base::DictionaryValue* action_sequence;
     if (!actions_input->GetDictionary(i, &action_sequence))
       return Status(kInvalidArgument, "each argument must be a dictionary");
-    Status status = ProcessInputActionSequence(session, action_sequence,
-                                               &input_source_actions);
+
+    std::vector<std::unique_ptr<base::DictionaryValue>> action_list;
+    Status status =
+        ProcessInputActionSequence(session, action_sequence, &action_list);
+    actions_list.push_back(std::move(action_list));
+
     if (status.IsError())
       return Status(kInvalidArgument, status);
-    actions_list.Append(std::move(input_source_actions));
   }
 
-  std::string input_pointer_type;
   std::set<std::string> pointer_id_set;
-  std::string type;
-  std::vector<std::vector<MouseEvent>> mouse_events_list;
-  std::vector<std::vector<TouchEvent>> touch_events_list;
-  std::vector<std::vector<KeyEvent>> key_events_list;
-  std::vector<base::DictionaryValue*> key_input_states;
-  size_t longest_mouse_list_size = 0;
-  size_t longest_touch_list_size = 0;
-  size_t longest_key_list_size = 0;
-  for (size_t i = 0; i < actions_list.GetSize(); i++) {
-    base::DictionaryValue* action_sequence;
-    actions_list.GetDictionary(i, &action_sequence);
-    const base::ListValue* actions;
-    action_sequence->GetList("actions", &actions);
-    DCHECK(actions);
-    action_sequence->GetString("sourceType", &type);
+  std::vector<base::DictionaryValue*> action_input_states;
+  std::map<std::string, gfx::Point> action_locations;
+  std::map<std::string, bool> has_touch_start;
+  std::map<std::string, int> buttons;
+  std::map<std::string, std::string> button_type;
+  int viewport_width = 0, viewport_height = 0;
+  int init_x = 0, init_y = 0;
 
-    std::string id;
-    action_sequence->GetString("id", &id);
+  size_t longest_action_list_size = 0;
+  for (size_t i = 0; i < actions_list.size(); i++) {
+    longest_action_list_size =
+        std::max(longest_action_list_size, actions_list[i].size());
+  }
 
-    base::DictionaryValue* input_state;
-    if (!session->input_state_table.GetDictionary(id, &input_state))
-      return Status(kUnknownError, "missing input state");
-
-    // key actions
-    if (type == "key") {
-      KeyEventBuilder builder;
-      std::vector<KeyEvent> key_events;
-      for (size_t j = 0; j < actions->GetSize(); j++) {
-        const base::DictionaryValue* action;
-        actions->GetDictionary(j, &action);
-        std::string subtype;
-        action->GetString("subtype", &subtype);
-
-        if (subtype == "pause") {
-          key_events.push_back(builder.SetType(kPauseEventType)->Build());
-        } else {
-          Status status = ConvertKeyActionToKeyEvent(
-              action, input_state, subtype == "keyDown", &key_events);
-
-          if (status.IsError())
-            return status;
-        }
-      }
-      longest_key_list_size =
-          std::max(key_events.size(), longest_key_list_size);
-      key_events_list.push_back(key_events);
-      key_input_states.push_back(input_state);
-    } else if (type == "pointer") {
-      std::string pointer_type;
-      action_sequence->GetString("pointerType", &pointer_type);
-
-      if (input_pointer_type.empty())
-        input_pointer_type = pointer_type;
-
-      if (input_pointer_type != pointer_type) {
-        return Status(kInvalidArgument,
-                      "multiple input pointer types are not supported now");
-      }
-
-      std::string pointer_id;
-      action_sequence->GetString("id", &pointer_id);
-      if (pointer_id_set.find(pointer_id) != pointer_id_set.end())
-        return Status(kInvalidArgument, "'id' already exists");
-      pointer_id_set.insert(pointer_id);
-
-      std::vector<MouseEvent> mouse_events;
-      std::vector<TouchEvent> touch_events;
-      double x = 0;
-      double y = 0;
-      bool has_touch_start = false;
-      int buttons = 0;
-      std::string button_type;
-      std::string element_id;
-      for (size_t j = 0; j < actions->GetSize(); j++) {
-        const base::DictionaryValue* pointer_action;
-        actions->GetDictionary(j, &pointer_action);
+  for (size_t i = 0; i < longest_action_list_size; i++) {
+    // Find the last pointer action, and it has to be sent synchronously by
+    // default.
+    size_t last_action_index = 0;
+    size_t last_touch_index = 0;
+    for (size_t j = 0; j < actions_list.size(); j++) {
+      if (actions_list[j].size() > i) {
+        const base::DictionaryValue* action = actions_list[j][i].get();
+        std::string type;
         std::string action_type;
-        pointer_action->GetString("subtype", &action_type);
-        if (action_type == "pointerMove") {
-          pointer_action->GetDouble("x", &x);
-          pointer_action->GetDouble("y", &y);
-          const base::DictionaryValue* origin_dict;
-          element_id = "";
-          if (pointer_action->HasKey("origin") &&
-              pointer_action->GetDictionary("origin", &origin_dict)) {
-            origin_dict->GetString(GetElementKey(), &element_id);
-          }
-        }
+        action->GetString("type", &type);
+        action->GetString("subtype", &action_type);
+        if (type != "none" && action_type != "pause")
+          last_action_index = j;
 
-        if (pointer_type == "mouse" || pointer_type == "pen") {
-          int click_count = 0;
-          if (action_type == "pointerDown" || action_type == "pointerUp") {
-            pointer_action->GetString("button", &button_type);
-            click_count = 1;
-          }
-          MouseEvent event(StringToMouseEventType(action_type),
-                           StringToMouseButton(button_type), x, y, 0, buttons,
-                           click_count);
-          event.element_id = element_id;
-          event.pointer_type = StringToPointerType(pointer_type);
-          mouse_events.push_back(event);
-          if (action_type == "pointerDown")
-            buttons |= StringToModifierMouseButton(button_type);
-          else if (action_type == "pointerUp")
-            buttons &= ~StringToModifierMouseButton(button_type);
-        } else if (pointer_type == "touch") {
-          if (action_type == "pointerDown")
-            has_touch_start = true;
-          else if (action_type == "pointerUp")
-            has_touch_start = false;
-
-          if (action_type != "pointerMove" || has_touch_start) {
-            TouchEvent event(StringToTouchEventType(action_type), x, y);
-            event.element_id = element_id;
-            touch_events.push_back(event);
-          }
-        }
-      }
-
-      if (pointer_type == "mouse" || pointer_type == "pen") {
-        longest_mouse_list_size =
-            std::max(mouse_events.size(), longest_mouse_list_size);
-        mouse_events_list.push_back(mouse_events);
-      } else if (pointer_type == "touch") {
-        longest_touch_list_size =
-            std::max(touch_events.size(), longest_touch_list_size);
-        touch_events_list.push_back(touch_events);
-      }
-    }
-  }
-
-  std::vector<int> tick_durations;
-  ComputeTickDurations(&tick_durations, actions_list);
-
-  size_t max_list_length =
-      std::max({longest_mouse_list_size, longest_touch_list_size,
-                longest_key_list_size, tick_durations.size()});
-  std::map<std::string, gfx::Point> element_center_point;
-  int key_modifiers = 0;
-  for (size_t i = 0; i < max_list_length; i++) {
-    std::list<KeyEvent> dispatch_key_events;
-    for (size_t j = 0; j < key_events_list.size(); j++) {
-      if (i < key_events_list[j].size() &&
-          key_events_list[j][i].type != kPauseEventType) {
-        const KeyEvent& event = key_events_list[j][i];
-        dispatch_key_events.push_back(event);
-        if (event.type == kKeyDownEventType) {
-          session->input_cancel_list.emplace_back(key_input_states[j], nullptr,
-                                                  nullptr, &event);
-          key_modifiers |= KeyToKeyModifiers(event.key);
-        } else if (event.type == kKeyUpEventType) {
-          key_modifiers &= ~KeyToKeyModifiers(event.key);
+        if (type == "pointer") {
+          std::string pointer_type;
+          action->GetString("pointerType", &pointer_type);
+          if (pointer_type == "touch")
+            last_touch_index = j;
         }
       }
     }
-    if (dispatch_key_events.size() > 0) {
-      Status status = web_view->DispatchKeyEvents(dispatch_key_events);
-      if (status.IsError())
-        return status;
-    }
 
-    std::list<MouseEvent> dispatch_mouse_events;
-    for (size_t j = 0; j < mouse_events_list.size(); j++) {
-      if (i < mouse_events_list[j].size() &&
-          mouse_events_list[j][i].type != kPauseMouseEventType) {
-        MouseEvent event = mouse_events_list[j][i];
-        if (!event.element_id.empty()) {
-          if (event.type == kMovedMouseEventType ||
-              element_center_point.find(event.element_id) ==
-                  element_center_point.end()) {
-            int center_x = 0, center_y = 0;
-            ElementInViewCenter(session, web_view, event.element_id, &center_x,
-                                &center_y);
-            element_center_point[event.element_id] =
-                gfx::Point(center_x, center_y);
-          }
-          event.x += element_center_point[event.element_id].x();
-          event.y += element_center_point[event.element_id].y();
-        }
-        event.modifiers = key_modifiers;
-        dispatch_mouse_events.push_back(event);
-      }
-    }
-    if (dispatch_mouse_events.size() > 0) {
-      Status status = web_view->DispatchMouseEvents(
-          dispatch_mouse_events, session->GetCurrentFrameId());
-      if (status.IsError())
-        return status;
-    }
-
+    // Implements "compute the tick duration" algorithm from W3C spec
+    // (https://w3c.github.io/webdriver/#dfn-computing-the-tick-duration).
+    // This is the duration for actions in one tick.
+    int tick_duration = 0;
     std::list<TouchEvent> dispatch_touch_events;
-    for (size_t j = 0; j < touch_events_list.size(); j++) {
-      if (i < touch_events_list[j].size() &&
-          touch_events_list[j][i].type != kPause) {
-        TouchEvent event = touch_events_list[j][i];
-        if (!event.element_id.empty()) {
-          if (event.type == kTouchMove ||
-              element_center_point.find(event.element_id) ==
-                  element_center_point.end()) {
-            int center_x = 0, center_y = 0;
-            ElementInViewCenter(session, web_view, event.element_id, &center_x,
-                                &center_y);
-            element_center_point[event.element_id] =
-                gfx::Point(center_x, center_y);
+    for (size_t j = 0; j < actions_list.size(); j++) {
+      if (actions_list[j].size() > i) {
+        const base::DictionaryValue* action = actions_list[j][i].get();
+        std::string id;
+        std::string type;
+        std::string action_type;
+        action->GetString("id", &id);
+        base::DictionaryValue* input_state;
+        if (!session->input_state_table.GetDictionary(id, &input_state))
+          return Status(kUnknownError, "missing input state");
+
+        action->GetString("type", &type);
+        if (i == 0) {
+          if (pointer_id_set.find(id) != pointer_id_set.end())
+            return Status(kInvalidArgument, "'id' already exists");
+          pointer_id_set.insert(id);
+          action_input_states.push_back(input_state);
+
+          if (type == "pointer") {
+            Status status = WindowViewportSize(
+                session, web_view, &viewport_width, &viewport_height);
+            if (status.IsError())
+              return status;
+
+            input_state->GetInteger("x", &init_x);
+            input_state->GetInteger("y", &init_y);
+            action_locations.insert(
+                std::make_pair(id, gfx::Point(init_x, init_y)));
+
+            std::string pointer_type;
+            action->GetString("pointerType", &pointer_type);
+            if (pointer_type == "mouse" || pointer_type == "pen")
+              buttons[id] = input_state->FindKey("pressed")->GetInt();
+            else if (pointer_type == "touch")
+              has_touch_start[id] = false;
           }
-          event.x += element_center_point[event.element_id].x();
-          event.y += element_center_point[event.element_id].y();
         }
-        dispatch_touch_events.push_back(event);
+
+        action->GetString("subtype", &action_type);
+        int duration = 0;
+        if (action_type == "pause") {
+          GetOptionalInt(action, "duration", &duration);
+          tick_duration = std::max(tick_duration, duration);
+        }
+
+        if (type != "none") {
+          bool async_dispatch_event = true;
+          if (j == last_action_index) {
+            async_dispatch_event = false;
+            GetOptionalBool(action, "asyncDispatch", &async_dispatch_event);
+          }
+
+          if (type == "key") {
+            if (action_type != "pause") {
+              std::list<KeyEvent> dispatch_key_events;
+              KeyEventBuilder builder;
+              Status status = ConvertKeyActionToKeyEvent(
+                  action, input_state, action_type == "keyDown",
+                  &dispatch_key_events);
+              if (status.IsError())
+                return status;
+
+              if (dispatch_key_events.size() > 0) {
+                const KeyEvent& event = dispatch_key_events.front();
+                if (action_type == "keyDown") {
+                  session->input_cancel_list.emplace_back(
+                      action_input_states[j], nullptr, nullptr, &event);
+                  session->sticky_modifiers |= KeyToKeyModifiers(event.key);
+                } else if (action_type == "keyUp") {
+                  session->sticky_modifiers &= ~KeyToKeyModifiers(event.key);
+                }
+
+                Status status = web_view->DispatchKeyEvents(
+                    dispatch_key_events, async_dispatch_event);
+                if (status.IsError())
+                  return status;
+              }
+            }
+          } else if (type == "pointer") {
+            std::string pointer_type;
+            action->GetString("pointerType", &pointer_type);
+            double x = 0, y = 0;
+            OriginType origin = kViewPort;
+            std::string element_id = "";
+            if (action_type == "pointerMove") {
+              action->GetDouble("x", &x);
+              action->GetDouble("y", &y);
+              const base::DictionaryValue* origin_dict;
+              if (action->HasKey("origin")) {
+                if (action->GetDictionary("origin", &origin_dict)) {
+                  origin = kElement;
+                  origin_dict->GetString(GetElementKey(), &element_id);
+                  if (!element_id.empty()) {
+                    int center_x = 0, center_y = 0;
+                    Status status = ElementInViewCenter(
+                        session, web_view, element_id, &center_x, &center_y);
+                    if (status.IsError())
+                      return status;
+                    x += center_x;
+                    y += center_y;
+                  }
+                } else {
+                  std::string origin_str;
+                  action->GetString("origin", &origin_str);
+                  if (origin_str == "pointer") {
+                    origin = kPointer;
+                    x += action_locations[id].x();
+                    y += action_locations[id].y();
+                  }
+                }
+              }
+              if (x < 0 || x > viewport_width || y < 0 || y > viewport_height)
+                return Status(kMoveTargetOutOfBounds);
+
+              action_locations[id] = gfx::Point(x, y);
+
+              duration = 0;
+              GetOptionalInt(action, "duration", &duration);
+              tick_duration = std::max(tick_duration, duration);
+            }
+
+            if (pointer_type == "mouse" || pointer_type == "pen") {
+              if (action_type != "pause") {
+                std::list<MouseEvent> dispatch_mouse_events;
+                int click_count = 0;
+                if (action_type == "pointerDown" ||
+                    action_type == "pointerUp") {
+                  std::string button;
+                  action->GetString("button", &button);
+                  button_type[id] = button;
+                  click_count = 1;
+                } else if (buttons[id] == 0) {
+                  button_type[id].clear();
+                }
+                MouseEvent event(StringToMouseEventType(action_type),
+                                 StringToMouseButton(button_type[id]),
+                                 action_locations[id].x(),
+                                 action_locations[id].y(), 0, buttons[id],
+                                 click_count);
+                event.pointer_type = StringToPointerType(pointer_type);
+                event.modifiers = session->sticky_modifiers;
+                if (event.type == kPressedMouseEventType) {
+                  base::TimeTicks timestamp = base::TimeTicks::Now();
+                  bool is_repeated_click = IsRepeatedClickEvent(
+                      event.x, event.y, session->mouse_position.x,
+                      session->mouse_position.y, session->click_count,
+                      timestamp, session->mouse_click_timestamp);
+                  event.click_count = is_repeated_click ? 2 : 1;
+                  buttons[id] |= StringToModifierMouseButton(button_type[id]);
+                  session->mouse_position = WebPoint(event.x, event.y);
+                  session->click_count = event.click_count;
+                  session->mouse_click_timestamp = timestamp;
+                  session->input_cancel_list.emplace_back(
+                      action_input_states[j], &event, nullptr, nullptr);
+                  action_input_states[j]->SetInteger(
+                      "pressed",
+                      action_input_states[j]->FindKey("pressed")->GetInt() |
+                          (1 << event.button));
+                } else if (event.type == kReleasedMouseEventType) {
+                  event.click_count = session->click_count;
+                  buttons[id] &= ~StringToModifierMouseButton(button_type[id]);
+                  action_input_states[j]->SetInteger(
+                      "pressed",
+                      action_input_states[j]->FindKey("pressed")->GetInt() &
+                          ~(1 << event.button));
+                }
+                dispatch_mouse_events.push_back(event);
+                Status status = web_view->DispatchMouseEvents(
+                    dispatch_mouse_events, session->GetCurrentFrameId(),
+                    async_dispatch_event);
+                if (status.IsError())
+                  return status;
+              }
+            } else if (pointer_type == "touch") {
+              if (action_type == "pointerDown")
+                has_touch_start[id] = true;
+              TouchEvent event(StringToTouchEventType(action_type),
+                               action_locations[id].x(),
+                               action_locations[id].y());
+              if (event.type == kTouchStart) {
+                session->input_cancel_list.emplace_back(
+                    action_input_states[j], nullptr, &event, nullptr);
+                action_input_states[j]->SetInteger("pressed", 1);
+              } else if (event.type == kTouchEnd) {
+                action_input_states[j]->SetInteger("pressed", 0);
+              }
+              if (has_touch_start[id]) {
+                event.id = dispatch_touch_events.size();
+                dispatch_touch_events.push_back(event);
+              }
+              if (j == last_touch_index) {
+                Status status = web_view->DispatchTouchEventWithMultiPoints(
+                    dispatch_touch_events, async_dispatch_event);
+                if (status.IsError())
+                  return status;
+              }
+              if (action_type == "pointerUp")
+                has_touch_start[id] = false;
+            }
+            action_input_states[j]->SetInteger("x", action_locations[id].x());
+            action_input_states[j]->SetInteger("y", action_locations[id].y());
+          }
+        }
       }
     }
-    if (dispatch_touch_events.size() > 0) {
-      Status status = web_view->DispatchTouchEvents(dispatch_touch_events);
-      if (status.IsError())
-        return status;
-    }
 
-    if (i < tick_durations.size() && tick_durations[i] > 0) {
+    if (tick_duration > 0) {
       base::PlatformThread::Sleep(
-          base::TimeDelta::FromMilliseconds(tick_durations[i]));
+          base::TimeDelta::FromMilliseconds(tick_duration));
     }
   }
+
   return Status(kOk);
 }
 
@@ -1492,8 +1535,6 @@ Status ExecuteReleaseActions(Session* session,
                              const base::DictionaryValue& params,
                              std::unique_ptr<base::Value>* value,
                              Timeout* timeout) {
-  // TODO(https://crbug.com/chromedriver/1897): Process "input cancel list" for
-  // mouse and touch events.
   for (auto it = session->input_cancel_list.rbegin();
        it != session->input_cancel_list.rend(); ++it) {
     if (it->key_event) {
@@ -1501,14 +1542,32 @@ Status ExecuteReleaseActions(Session* session,
       it->input_state->GetDictionary("pressed", &pressed);
       if (!pressed->HasKey(it->key_event->key))
         continue;
-      web_view->DispatchKeyEvents({*it->key_event});
+      web_view->DispatchKeyEvents({*it->key_event}, false);
       pressed->Remove(it->key_event->key, nullptr);
+    } else if (it->mouse_event) {
+      int pressed = it->input_state->FindKey("pressed")->GetInt();
+      int button_mask = 1 << it->mouse_event->button;
+      if ((pressed & button_mask) == 0)
+        continue;
+      web_view->DispatchMouseEvents({*it->mouse_event},
+                                    session->GetCurrentFrameId(), false);
+      it->input_state->SetInteger("pressed", pressed & ~button_mask);
+    } else if (it->touch_event) {
+      int pressed = it->input_state->FindKey("pressed")->GetInt();
+      if (pressed == 0)
+        continue;
+      web_view->DispatchTouchEvents({*it->touch_event}, false);
+      it->input_state->SetInteger("pressed", 0);
     }
   }
 
   session->input_cancel_list.clear();
   session->input_state_table.Clear();
   session->active_input_sources.Clear();
+  session->mouse_position = WebPoint(0, 0);
+  session->click_count = 0;
+  session->mouse_click_timestamp = base::TimeTicks::Now();
+  session->sticky_modifiers = 0;
 
   return Status(kOk);
 }
@@ -1527,6 +1586,28 @@ Status ExecuteSendCommand(Session* session,
     return Status(kInvalidArgument, "params not passed");
   }
   return web_view->SendCommand(cmd, *cmdParams);
+}
+
+Status ExecuteSendCommandFromWebSocket(Session* session,
+                                       WebView* web_view,
+                                       const base::DictionaryValue& params,
+                                       std::unique_ptr<base::Value>* value,
+                                       Timeout* timeout) {
+  std::string cmd;
+  if (!params.GetString("method", &cmd)) {
+    return Status(kInvalidArgument, "command not passed");
+  }
+  const base::DictionaryValue* cmdParams;
+  if (!params.GetDictionary("params", &cmdParams)) {
+    return Status(kInvalidArgument, "params not passed");
+  }
+  int client_cmd_id;
+  if (!params.GetInteger("id", &client_cmd_id) ||
+      !CommandId::IsClientCommandId(client_cmd_id)) {
+    return Status(kInvalidArgument, "command id must be negative");
+  }
+
+  return web_view->SendCommandFromWebSocket(cmd, *cmdParams, client_cmd_id);
 }
 
 Status ExecuteSendCommandAndGetResult(Session* session,
@@ -1698,24 +1779,16 @@ Status ExecuteScreenshot(Session* session,
     return status;
 
   std::string screenshot;
-  ChromeDesktopImpl* desktop = NULL;
-  status = session->chrome->GetAsDesktop(&desktop);
-  if (status.IsOk() && !session->force_devtools_screenshot) {
-    AutomationExtension* extension = NULL;
-    status = desktop->GetAutomationExtension(&extension,
-                                             session->w3c_compliant);
-    if (status.IsError())
-      return status;
-    status = extension->CaptureScreenshot(&screenshot);
-  } else {
-    std::unique_ptr<base::DictionaryValue> screenshot_params(
-        const base::DictionaryValue&);
   status = web_view->CaptureScreenshot(&screenshot, base::DictionaryValue());
-  }
   if (status.IsError()) {
-    LOG(WARNING) << "screenshot failed, retrying";
-    std::unique_ptr<base::DictionaryValue> screenshot_params(
-        new base::DictionaryValue);
+    if (status.code() == kUnexpectedAlertOpen) {
+      LOG(WARNING) << status.message() << ", cancelling screenshot";
+      // we can't take screenshot in this state
+      // but we must return kUnexpectedAlertOpen_Keep instead
+      // see https://crbug.com/chromedriver/2117
+      return Status(kUnexpectedAlertOpen_Keep);
+    }
+    LOG(WARNING) << "screenshot failed, retrying " << status.message();
     status = web_view->CaptureScreenshot(&screenshot, base::DictionaryValue());
   }
   if (status.IsError())
@@ -1785,9 +1858,17 @@ Status ExecuteAddCookie(Session* session,
   Status status = GetUrl(web_view, session->GetCurrentFrameId(), &url);
   if (status.IsError())
     return status;
+  if (!base::StartsWith(url, "http://", base::CompareCase::INSENSITIVE_ASCII) &&
+      !base::StartsWith(url, "https://",
+                        base::CompareCase::INSENSITIVE_ASCII) &&
+      !base::StartsWith(url, "ftp://", base::CompareCase::INSENSITIVE_ASCII))
+    return Status(kInvalidCookieDomain);
   std::string domain;
   if (!GetOptionalString(cookie, "domain", &domain))
     return Status(kInvalidArgument, "invalid 'domain'");
+  if (session->w3c_compliant)
+    if (!domain.empty() && domain[0] != '.' && !url::HostIsIPAddress(domain))
+      domain.insert(0, 1, '.');
   std::string path("/");
   if (!GetOptionalString(cookie, "path", &path))
     return Status(kInvalidArgument, "invalid 'path'");
@@ -2164,4 +2245,42 @@ Status ExecuteGetIssueMessage(Session* session,
                               Timeout* timeout) {
   *value = web_view->GetCastIssueMessage();
   return Status(kOk);
+}
+
+Status ExecuteSetPermission(Session* session,
+                            WebView* web_view,
+                            const base::DictionaryValue& params,
+                            std::unique_ptr<base::Value>* value,
+                            Timeout* timeout) {
+  const base::DictionaryValue* descriptor;
+  if (!params.GetDictionary("descriptor", &descriptor))
+    return Status(kInvalidArgument, "no descriptor dictionary");
+
+  std::string name;
+  if (!descriptor->GetString("name", &name))
+    return Status(kInvalidArgument, "no name in descriptor");
+
+  std::string permission_state;
+  if (!params.GetString("state", &permission_state))
+    return Status(kInvalidArgument, "no permission state");
+
+  bool one_realm = false;
+  if (!GetOptionalBool(&params, "oneRealm", &one_realm, nullptr))
+    return Status(kInvalidArgument, "oneRealm defined but not a boolean");
+
+  Chrome::PermissionState valid_state;
+  if (permission_state == "granted")
+    valid_state = Chrome::PermissionState::kGranted;
+  else if (permission_state == "denied")
+    valid_state = Chrome::PermissionState::kDenied;
+  else if (permission_state == "prompt")
+    valid_state = Chrome::PermissionState::kPrompt;
+  else
+    return Status(kInvalidArgument, "unrecognized permission state");
+
+  auto val = base::Value::ToUniquePtrValue(descriptor->Clone());
+  auto dict = base::DictionaryValue::From(std::move(val));
+
+  return session->chrome->SetPermission(std::move(dict), valid_state, one_realm,
+                                        web_view);
 }

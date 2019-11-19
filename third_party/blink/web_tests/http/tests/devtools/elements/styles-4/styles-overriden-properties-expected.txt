@@ -4,15 +4,15 @@ Tests that overriding shorthands within rule are visible.
 element.style { ()
 
 [expanded] 
-#main { (<style>…</style>)
+#main { (<style>)
 /-- overloaded --/     -x: ;
 
 [expanded] 
-#main { (<style>…</style>)
+#main { (<style>)
 /-- overloaded --/     -x: ;
 
 [expanded] 
-#main { (<style>…</style>)
+#main { (<style>)
 /-- overloaded --/     background: #000;
     background: #bada55;
 

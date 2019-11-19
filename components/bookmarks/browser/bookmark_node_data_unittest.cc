@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -27,8 +27,7 @@ namespace bookmarks {
 class BookmarkNodeDataTest : public testing::Test {
  public:
   BookmarkNodeDataTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
   void SetUp() override {
     model_ = TestBookmarkClient::CreateModel();
@@ -56,7 +55,7 @@ class BookmarkNodeDataTest : public testing::Test {
  private:
   base::ScopedTempDir profile_dir_;
   std::unique_ptr<BookmarkModel> model_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkNodeDataTest);
 };
@@ -279,7 +278,7 @@ TEST_F(BookmarkNodeDataTest, MultipleNodes) {
   EXPECT_TRUE(read_data.GetFirstNode(model(), GetProfilePath()) == nullptr);
 }
 
-TEST_F(BookmarkNodeDataTest, WriteToClipboardURL) {
+TEST_F(BookmarkNodeDataTest, DISABLED_WriteToClipboardURL) {
   BookmarkNodeData data;
   GURL url(GURL("http://foo.com"));
   const base::string16 title(ASCIIToUTF16("blah"));
@@ -289,11 +288,16 @@ TEST_F(BookmarkNodeDataTest, WriteToClipboardURL) {
 
   // Now read the data back in.
   base::string16 clipboard_result;
-  clipboard().ReadText(ui::CLIPBOARD_TYPE_COPY_PASTE, &clipboard_result);
+  clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste, &clipboard_result);
   EXPECT_EQ(base::UTF8ToUTF16(url.spec()), clipboard_result);
 }
 
-TEST_F(BookmarkNodeDataTest, WriteToClipboardMultipleURLs) {
+#if defined(OS_MACOSX)
+#define MAYBE_WriteToClipboardMultipleURLs DISABLED_WriteToClipboardMultipleURLs
+#else
+#define MAYBE_WriteToClipboardMultipleURLs WriteToClipboardMultipleURLs
+#endif
+TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardMultipleURLs) {
   BookmarkNodeData data;
   const BookmarkNode* root = model()->bookmark_bar_node();
   GURL url(GURL("http://foo.com"));
@@ -319,11 +323,16 @@ TEST_F(BookmarkNodeDataTest, WriteToClipboardMultipleURLs) {
   combined_text = base::UTF8ToUTF16(url.spec()) + new_line
     + base::UTF8ToUTF16(url2.spec());
   base::string16 clipboard_result;
-  clipboard().ReadText(ui::CLIPBOARD_TYPE_COPY_PASTE, &clipboard_result);
+  clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste, &clipboard_result);
   EXPECT_EQ(combined_text, clipboard_result);
 }
 
-TEST_F(BookmarkNodeDataTest, WriteToClipboardEmptyFolder) {
+#if defined(OS_MACOSX)
+#define MAYBE_WriteToClipboardEmptyFolder DISABLED_WriteToClipboardEmptyFolder
+#else
+#define MAYBE_WriteToClipboardEmptyFolder WriteToClipboardEmptyFolder
+#endif
+TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardEmptyFolder) {
   BookmarkNodeData data;
   const BookmarkNode* root = model()->bookmark_bar_node();
   const BookmarkNode* folder = model()->AddFolder(root, 0, ASCIIToUTF16("g1"));
@@ -335,7 +344,7 @@ TEST_F(BookmarkNodeDataTest, WriteToClipboardEmptyFolder) {
 
   // Now read the data back in.
   base::string16 clipboard_result;
-  clipboard().ReadText(ui::CLIPBOARD_TYPE_COPY_PASTE, &clipboard_result);
+  clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste, &clipboard_result);
   EXPECT_EQ(base::ASCIIToUTF16("g1"), clipboard_result);
 }
 
@@ -354,11 +363,13 @@ TEST_F(BookmarkNodeDataTest, WriteToClipboardFolderWithChildren) {
 
   // Now read the data back in.
   base::string16 clipboard_result;
-  clipboard().ReadText(ui::CLIPBOARD_TYPE_COPY_PASTE, &clipboard_result);
+  clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste, &clipboard_result);
   EXPECT_EQ(base::ASCIIToUTF16("g1"), clipboard_result);
 }
 
-TEST_F(BookmarkNodeDataTest, WriteToClipboardFolderAndURL) {
+// TODO(https://crbug.com/1010415): This test is flaky on various platforms, fix
+// and re-enable it.
+TEST_F(BookmarkNodeDataTest, DISABLED_WriteToClipboardFolderAndURL) {
   BookmarkNodeData data;
   GURL url(GURL("http://foo.com"));
   const base::string16 title(ASCIIToUTF16("blah"));
@@ -382,7 +393,7 @@ TEST_F(BookmarkNodeDataTest, WriteToClipboardFolderAndURL) {
   base::string16 folder_title = ASCIIToUTF16("g1");
   combined_text = base::ASCIIToUTF16(url.spec()) + new_line + folder_title;
   base::string16 clipboard_result;
-  clipboard().ReadText(ui::CLIPBOARD_TYPE_COPY_PASTE, &clipboard_result);
+  clipboard().ReadText(ui::ClipboardBuffer::kCopyPaste, &clipboard_result);
   EXPECT_EQ(combined_text, clipboard_result);
 }
 
@@ -413,5 +424,16 @@ TEST_F(BookmarkNodeDataTest, MetaInfo) {
   EXPECT_EQ("somevalue", meta_info_map["somekey"]);
   EXPECT_EQ("someothervalue", meta_info_map["someotherkey"]);
 }
+
+#if !defined(OS_MACOSX)
+TEST_F(BookmarkNodeDataTest, ReadFromPickleTooManyNodes) {
+  // Test case determined by a fuzzer. See https://crbug.com/956583.
+  const char pickled_data[] = {0x08, 0x00, 0x00, 0x00, 0x00, 0x00,
+                               0x00, 0x00, 0xff, 0x03, 0x03, 0x41};
+  base::Pickle pickle(pickled_data, sizeof(pickled_data));
+  BookmarkNodeData bookmark_node_data;
+  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(&pickle));
+}
+#endif
 
 }  // namespace bookmarks

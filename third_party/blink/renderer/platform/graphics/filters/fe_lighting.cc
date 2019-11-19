@@ -27,12 +27,12 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_lighting.h"
 
-#include "SkLightingImageFilter.h"
-#include "SkPoint3.h"
 #include "third_party/blink/renderer/platform/graphics/filters/distant_light_source.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/graphics/filters/point_light_source.h"
 #include "third_party/blink/renderer/platform/graphics/filters/spot_light_source.h"
+#include "third_party/skia/include/core/SkPoint3.h"
+#include "third_party/skia/include/effects/SkLightingImageFilter.h"
 
 namespace blink {
 

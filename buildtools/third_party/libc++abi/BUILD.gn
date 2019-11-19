@@ -5,20 +5,19 @@
 import("//build/config/c++/c++.gni")
 
 source_set("libc++abi") {
-  visibility = [
-    "//buildtools/third_party/libc++",
-    "//build/config:executable_deps",
-    "//build/config:loadable_module_deps",
-    "//build/config:shared_library_deps",
-  ]
-  deps = []
+  if (export_libcxxabi_from_executables) {
+    visibility = [ "//build/config:executable_deps" ]
+  } else {
+    visibility = [ "//buildtools/third_party/libc++" ]
+  }
 
   # Fuchsia builds don't link against any libraries that provide stack
   # unwinding symbols, unlike Linux does with glibc.  Build and link against
   # libunwind manually to get this functionality.
-  # TODO(thomasanderson): Move this to exe_and_shlib_deps.
   if (is_fuchsia) {
-    deps += [ "//buildtools/third_party/libunwind" ]
+    deps = [
+      "//buildtools/third_party/libunwind",
+    ]
   }
 
   sources = [
@@ -57,7 +56,7 @@ source_set("libc++abi") {
 
   # This file should really be included on linux as well, but that
   # would introduce an unwanted glibc 2.18 dependency.
-  if (is_fuchsia || (is_posix && !is_mac && !is_linux)) {
+  if (is_fuchsia || (is_posix && !is_mac && !is_ios && !is_linux)) {
     sources += [ "trunk/src/cxa_thread_atexit.cpp" ]
   }
 

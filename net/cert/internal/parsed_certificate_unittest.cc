@@ -135,8 +135,6 @@ TEST(ParsedCertificateTest, ExtensionsDuplicateKeyUsage) {
 
 // Parses a certificate with a bad key usage extension (BIT STRING with zero
 // elements).
-//
-// TODO(eroman): This should be a verification failure not a parsing failure.
 TEST(ParsedCertificateTest, BadKeyUsage) {
   ASSERT_FALSE(ParseCertificateFromFile("bad_key_usage.pem", {}));
 }
@@ -286,7 +284,26 @@ TEST(ParsedCertificateTest, ExtensionsReal) {
 
   EXPECT_TRUE(cert->has_key_usage());
   EXPECT_TRUE(cert->has_basic_constraints());
+  EXPECT_TRUE(cert->has_authority_info_access());
   EXPECT_TRUE(cert->has_policy_oids());
+
+  ASSERT_TRUE(cert->authority_key_identifier());
+  ASSERT_TRUE(cert->authority_key_identifier()->key_identifier);
+  EXPECT_FALSE(cert->authority_key_identifier()->authority_cert_issuer);
+  EXPECT_FALSE(cert->authority_key_identifier()->authority_cert_serial_number);
+  const uint8_t expected_authority_key_identifier[] = {
+      0xc0, 0x7a, 0x98, 0x68, 0x8d, 0x89, 0xfb, 0xab, 0x05, 0x64,
+      0x0c, 0x11, 0x7d, 0xaa, 0x7d, 0x65, 0xb8, 0xca, 0xcc, 0x4e,
+  };
+  EXPECT_EQ(der::Input(expected_authority_key_identifier),
+            cert->authority_key_identifier()->key_identifier);
+
+  ASSERT_TRUE(cert->subject_key_identifier());
+  const uint8_t expected_subject_key_identifier[] = {
+      0x4a, 0xdd, 0x06, 0x16, 0x1b, 0xbc, 0xf6, 0x68, 0xb5, 0x76,
+      0xf5, 0x81, 0xb6, 0xbb, 0x62, 0x1a, 0xba, 0x5a, 0x81, 0x2f};
+  EXPECT_EQ(der::Input(expected_subject_key_identifier),
+            cert->subject_key_identifier());
 
   ParsedExtension extension;
   ASSERT_TRUE(cert->GetExtension(CertificatePoliciesOid(), &extension));
@@ -294,7 +311,7 @@ TEST(ParsedCertificateTest, ExtensionsReal) {
   EXPECT_FALSE(extension.critical);
   EXPECT_EQ(16u, extension.value.Length());
 
-  // TODO(eroman): Verify the other 4 extensions' values.
+  // TODO(eroman): Verify the other extensions' values.
 }
 
 // Parses a BasicConstraints with no CA or pathlen.
@@ -547,6 +564,20 @@ TEST(ParsedCertificateTest, InhibitAnyPolicy) {
   uint8_t skip_count;
   ASSERT_TRUE(ParseInhibitAnyPolicy(extension.value, &skip_count));
   EXPECT_EQ(3, skip_count);
+}
+
+// Tests a subjectKeyIdentifier that is not an OCTET_STRING.
+TEST(ParsedCertificateTest, SubjectKeyIdentifierNotOctetString) {
+  scoped_refptr<ParsedCertificate> cert = ParseCertificateFromFile(
+      "subject_key_identifier_not_octet_string.pem", {});
+  ASSERT_FALSE(cert);
+}
+
+// Tests an authorityKeyIdentifier that is not a SEQUENCE.
+TEST(ParsedCertificateTest, AuthourityKeyIdentifierNotSequence) {
+  scoped_refptr<ParsedCertificate> cert =
+      ParseCertificateFromFile("authority_key_identifier_not_sequence.pem", {});
+  ASSERT_FALSE(cert);
 }
 
 }  // namespace

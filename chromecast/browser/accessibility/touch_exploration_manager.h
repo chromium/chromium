@@ -8,6 +8,8 @@
 #ifndef CHROMECAST_BROWSER_ACCESSIBILITY_TOUCH_EXPLORATION_MANAGER_H_
 #define CHROMECAST_BROWSER_ACCESSIBILITY_TOUCH_EXPLORATION_MANAGER_H_
 
+#include <memory>
+
 #include "chromecast/browser/accessibility/accessibility_sound_player.h"
 #include "chromecast/browser/accessibility/touch_exploration_controller.h"
 #include "chromecast/graphics/accessibility/accessibility_focus_ring_controller.h"
@@ -41,12 +43,9 @@ class TouchExplorationManager : public ui::EventRewriter,
   void Enable(bool enabled);
 
   // ui::EventRewriter overrides:
-  ui::EventRewriteStatus RewriteEvent(
+  ui::EventDispatchDetails RewriteEvent(
       const ui::Event& event,
-      std::unique_ptr<ui::Event>* rewritten_event) override;
-  ui::EventRewriteStatus NextDispatchEvent(
-      const ui::Event& last_event,
-      std::unique_ptr<ui::Event>* new_event) override;
+      const Continuation continuation) override;
 
   // TouchExplorationControllerDelegate overrides:
   void HandleAccessibilityGesture(ax::mojom::Gesture gesture) override;

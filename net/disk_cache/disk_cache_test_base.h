@@ -15,7 +15,7 @@
 #include "base/threading/thread.h"
 #include "net/base/cache_type.h"
 #include "net/disk_cache/disk_cache.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -40,8 +40,7 @@ class SimpleFileTracker;
 // Mac, so this needs to be a PlatformTest.  Even tests that do not require a
 // cache (and that do not need to be a DiskCacheTestWithCache) are susceptible
 // to this problem; all such tests should use TEST_F(DiskCacheTest, ...).
-class DiskCacheTest : public PlatformTest,
-                      public net::WithScopedTaskEnvironment {
+class DiskCacheTest : public PlatformTest, public net::WithTaskEnvironment {
  protected:
   DiskCacheTest();
   ~DiskCacheTest() override;
@@ -132,11 +131,12 @@ class DiskCacheTestWithCache : public DiskCacheTest {
   }
 
   // Utility methods to access the cache and wait for each operation to finish.
-  int OpenOrCreateEntry(const std::string& key,
-                        disk_cache::EntryWithOpened* entry_struct);
-  int OpenOrCreateEntryWithPriority(const std::string& key,
-                                    net::RequestPriority request_priority,
-                                    disk_cache::EntryWithOpened* entry_struct);
+  // Also closer to legacy API.
+  // TODO(morlovich): Port all the tests to EntryResult.
+  disk_cache::EntryResult OpenOrCreateEntry(const std::string& key);
+  disk_cache::EntryResult OpenOrCreateEntryWithPriority(
+      const std::string& key,
+      net::RequestPriority request_priority);
   int OpenEntry(const std::string& key, disk_cache::Entry** entry);
   int OpenEntryWithPriority(const std::string& key,
                             net::RequestPriority request_priority,
@@ -168,6 +168,10 @@ class DiskCacheTestWithCache : public DiskCacheTest {
                       int64_t offset,
                       net::IOBuffer* buf,
                       int len);
+  int GetAvailableRange(disk_cache::Entry* entry,
+                        int64_t offset,
+                        int len,
+                        int64_t* start);
 
   // Asks the cache to trim an entry. If |empty| is true, the whole cache is
   // deleted.
@@ -180,6 +184,8 @@ class DiskCacheTestWithCache : public DiskCacheTest {
   // Makes sure that some time passes before continuing the test. Time::Now()
   // before and after this method will not be the same.
   void AddDelay();
+
+  void OnExternalCacheHit(const std::string& key);
 
   void TearDown() override;
 

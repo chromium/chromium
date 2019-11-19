@@ -48,10 +48,8 @@ generated_json_strings("generated_api_json_strings") {
 
   sources += [
     "app.json",
-    "browser_action.json",
     "commands.json",
     "declarative_content.json",
-    "page_action.json",
     "privacy.json",
     "proxy.json",
     "tts.json",

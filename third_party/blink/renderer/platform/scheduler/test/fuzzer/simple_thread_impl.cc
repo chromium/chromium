@@ -7,7 +7,7 @@ namespace base {
 namespace sequence_manager {
 
 SimpleThreadImpl::SimpleThreadImpl(ThreadPoolManager* thread_pool_manager,
-                                   TimeTicks initial_time,
+                                   base::TimeTicks initial_time,
                                    ThreadCallback callback)
     : SimpleThread("TestThread"),
       thread_pool_manager_(thread_pool_manager),

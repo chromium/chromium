@@ -31,15 +31,15 @@ class AuthenticatorRequestSheetView;
 // use to connect their security key (either USB, BLE, NFC, or internal), and
 // then guides them through the flow of setting up their security key using the
 // selecting transport protocol, and finally shows success/failure indications.
+//
+// Note that as a DialogDelegateView, AuthenticatorRequestDialogView is
+// deleted when DeleteDelegate() is called.
 class AuthenticatorRequestDialogView
     : public views::DialogDelegateView,
       public AuthenticatorRequestDialogModel::Observer,
       public content::WebContentsObserver,
       public views::ButtonListener {
  public:
-  AuthenticatorRequestDialogView(
-      content::WebContents* web_contents,
-      std::unique_ptr<AuthenticatorRequestDialogModel> model);
   ~AuthenticatorRequestDialogView() override;
 
  protected:
@@ -66,13 +66,10 @@ class AuthenticatorRequestDialogView
 
   // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
-  views::View* CreateExtraView() override;
   bool Accept() override;
   bool Cancel() override;
   bool Close() override;
   int GetDialogButtons() const override;
-  int GetDefaultDialogButton() const override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   View* GetInitiallyFocusedView() override;
   ui::ModalType GetModalType() const override;
@@ -88,14 +85,33 @@ class AuthenticatorRequestDialogView
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
  private:
   friend class test::AuthenticatorRequestDialogViewTestApi;
+  friend void ShowAuthenticatorRequestDialog(
+      content::WebContents* web_contents,
+      std::unique_ptr<AuthenticatorRequestDialogModel> model);
+
+  // Show by calling ShowAuthenticatorRequestDialog().
+  AuthenticatorRequestDialogView(
+      content::WebContents* web_contents,
+      std::unique_ptr<AuthenticatorRequestDialogModel> model);
+
+  // Shows the dialog after creation or after being hidden.
+  void Show();
 
   std::unique_ptr<AuthenticatorRequestDialogModel> model_;
 
   AuthenticatorRequestSheetView* sheet_ = nullptr;
-  views::Button* other_transports_button_ = nullptr;
+  views::View* other_transports_button_ = nullptr;
   std::unique_ptr<views::MenuRunner> other_transports_menu_runner_;
+  bool first_shown_ = false;
+
+  // web_contents_hidden_ is true if the |WebContents| that this dialog should
+  // attach to is currently hidden. In this case, the dialog won't be shown
+  // when requested, but will wait until the WebContents is visible again.
+  bool web_contents_hidden_;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestDialogView);
 };

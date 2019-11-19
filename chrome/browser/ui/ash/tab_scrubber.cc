@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/ranges.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -19,18 +20,10 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/tabs/tab_style.h"
+#include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
-
-namespace {
-
-inline float Clamp(float value, float low, float high) {
-  return std::min(high, std::max(value, low));
-}
-
-}  // namespace
 
 // static
 TabScrubber* TabScrubber::GetInstance() {
@@ -134,7 +127,7 @@ void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
   if (!new_tab)
     return;
 
-  int new_index = tab_strip_->GetModelIndexOfTab(new_tab);
+  int new_index = tab_strip_->GetModelIndexOf(new_tab);
   if (highlighted_tab_ == -1 &&
       new_index == browser_->tab_strip_model()->active_index()) {
     return;
@@ -202,7 +195,7 @@ void TabScrubber::OnTabRemoved(int index) {
 
 Browser* TabScrubber::GetActiveBrowser() {
   Browser* browser = chrome::FindLastActive();
-  if (!browser || browser->type() != Browser::TYPE_TABBED ||
+  if (!browser || !browser->is_type_normal() ||
       !browser->window()->IsActive()) {
     return nullptr;
   }
@@ -214,6 +207,7 @@ void TabScrubber::BeginScrub(BrowserView* browser_view, float x_offset) {
   DCHECK(browser_view);
   DCHECK(browser_view->browser());
 
+  scrubbing_start_time_ = base::TimeTicks::Now();
   tab_strip_ = browser_view->tabstrip();
   scrubbing_ = true;
   browser_ = browser_view->browser();
@@ -239,10 +233,12 @@ void TabScrubber::FinishScrub(bool activate) {
     TabStrip* tab_strip = browser_view->tabstrip();
     if (activate && highlighted_tab_ != -1) {
       Tab* tab = tab_strip->tab_at(highlighted_tab_);
-      tab->tab_style()->HideHover(GlowHoverController::HideStyle::kImmediate);
+      tab->tab_style()->HideHover(TabStyle::HideHoverStyle::kImmediate);
       int distance = std::abs(highlighted_tab_ -
                               browser_->tab_strip_model()->active_index());
       UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.ScrubDistance", distance, 1, 20, 21);
+      UMA_HISTOGRAM_TIMES("Tabs.ScrubDuration",
+                          base::TimeTicks::Now() - scrubbing_start_time_);
       browser_->tab_strip_model()->ActivateTabAt(
           highlighted_tab_, {TabStripModel::GestureType::kOther});
     }
@@ -289,8 +285,9 @@ void TabScrubber::UpdateSwipeX(float x_offset) {
   // Each added tab introduces a reduction of 2% in |x_offset|, with a value of
   // one fourth of |x_offset| as the minimum (i.e. we need 38 tabs to reach
   // that minimum reduction).
-  swipe_x_ += Clamp(x_offset - (tab_strip_->tab_count() * 0.02f * x_offset),
-                    0.25f * x_offset, x_offset);
+  swipe_x_ += base::ClampToRange(
+      x_offset - (tab_strip_->tab_count() * 0.02f * x_offset), 0.25f * x_offset,
+      x_offset);
 
   // In an RTL layout, everything is mirrored, i.e. the index of the first tab
   // (with the smallest X mirrored co-ordinates) is actually the index of the
@@ -318,13 +315,12 @@ void TabScrubber::UpdateHighlightedTab(Tab* new_tab, int new_index) {
 
   if (highlighted_tab_ != -1) {
     Tab* tab = tab_strip_->tab_at(highlighted_tab_);
-    tab->tab_style()->HideHover(GlowHoverController::HideStyle::kImmediate);
+    tab->tab_style()->HideHover(TabStyle::HideHoverStyle::kImmediate);
   }
 
   if (new_index != browser_->tab_strip_model()->active_index()) {
     highlighted_tab_ = new_index;
-    new_tab->tab_style()->ShowHover(
-        GlowHoverController::ShowStyle::kPronounced);
+    new_tab->tab_style()->ShowHover(TabStyle::ShowHoverStyle::kPronounced);
   } else {
     highlighted_tab_ = -1;
   }

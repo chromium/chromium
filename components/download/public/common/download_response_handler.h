@@ -8,15 +8,18 @@
 #include <string>
 #include <vector>
 
+#include "base/optional.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_source.h"
 #include "components/download/public/common/download_stream.mojom.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/download_utils.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/cert_status_flags.h"
 #include "services/network/public/cpp/resource_response.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "url/origin.h"
 
 namespace download {
 
@@ -46,21 +49,22 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadResponseHandler
       bool is_parallel_request,
       bool is_transient,
       bool fetch_error_body,
-      bool follow_cross_origin_redirects,
+      network::mojom::RedirectMode cross_origin_redirects,
       const DownloadUrlParameters::RequestHeadersType& request_headers,
       const std::string& request_origin,
       DownloadSource download_source,
-      std::vector<GURL> url_chain);
+      std::vector<GURL> url_chain,
+      bool is_background_mode);
   ~DownloadResponseHandler() override;
 
   // network::mojom::URLLoaderClient
-  void OnReceiveResponse(const network::ResourceResponseHead& head) override;
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
-                         const network::ResourceResponseHead& head) override;
+                         network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback callback) override;
-  void OnReceiveCachedMetadata(const std::vector<uint8_t>& data) override;
+  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override;
@@ -87,23 +91,25 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadResponseHandler
   net::URLRequest::ReferrerPolicy referrer_policy_;
   bool is_transient_;
   bool fetch_error_body_;
-  bool follow_cross_origin_redirects_;
+  network::mojom::RedirectMode cross_origin_redirects_;
   url::Origin first_origin_;
   DownloadUrlParameters::RequestHeadersType request_headers_;
   std::string request_origin_;
   DownloadSource download_source_;
   net::CertStatus cert_status_;
   bool has_strong_validators_;
-  GURL origin_;
+  base::Optional<url::Origin> request_initiator_;
   bool is_partial_request_;
   bool completed_;
 
   // The abort reason if this class decides to block the download.
   DownloadInterruptReason abort_reason_;
 
-  // Mojo interface ptr to send the completion status to the download sink.
-  mojom::DownloadStreamClientPtr client_ptr_;
+  // Mojo interface remote to send the completion status to the download sink.
+  mojo::Remote<mojom::DownloadStreamClient> client_remote_;
 
+  // Whether the download is running in background mode.
+  bool is_background_mode_;
   DISALLOW_COPY_AND_ASSIGN(DownloadResponseHandler);
 };
 

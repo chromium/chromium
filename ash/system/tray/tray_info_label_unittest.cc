@@ -9,6 +9,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -76,7 +77,7 @@ class TrayInfoLabelTest : public AshTestBase {
     EXPECT_EQ(expected_clickable, label_->IsClickable());
     EXPECT_EQ(expected_clickable ? views::View::FocusBehavior::ALWAYS
                                  : views::View::FocusBehavior::NEVER,
-              label_->focus_behavior());
+              label_->GetFocusBehavior());
 
     ui::AXNodeData node_data;
     label_->GetAccessibleNodeData(&node_data);

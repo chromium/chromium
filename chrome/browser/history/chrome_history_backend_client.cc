@@ -65,15 +65,6 @@ std::vector<history::URLAndTitle> ChromeHistoryBackendClient::GetPinnedURLs() {
   return result;
 }
 
-bool ChromeHistoryBackendClient::ShouldReportDatabaseError() {
-  // TODO(shess): For now, don't report on beta or stable so as not to
-  // overwhelm the crash server.  Once the big fish are fried,
-  // consider reporting at a reduced rate on the bigger channels.
-  version_info::Channel channel = chrome::GetChannel();
-  return channel != version_info::Channel::STABLE &&
-         channel != version_info::Channel::BETA;
-}
-
 bool ChromeHistoryBackendClient::IsWebSafe(const GURL& url) {
   return content::ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
       url.scheme());

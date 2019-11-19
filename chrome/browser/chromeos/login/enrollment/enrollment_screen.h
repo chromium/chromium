@@ -14,12 +14,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/chromeos/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/chromeos/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 #include "chrome/browser/chromeos/policy/active_directory_join_delegate.h"
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
-#include "chromeos/login/auth/authpolicy_login_helper.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "net/base/backoff_entry.h"
@@ -30,7 +30,6 @@ class ElapsedTimer;
 
 namespace chromeos {
 
-class BaseScreenDelegate;
 class ScreenManager;
 
 namespace test {
@@ -48,8 +47,7 @@ class EnrollmentScreen
   enum class Result { COMPLETED, BACK };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  EnrollmentScreen(BaseScreenDelegate* base_screen_delegate,
-                   EnrollmentScreenView* view,
+  EnrollmentScreen(EnrollmentScreenView* view,
                    const ScreenExitCallback& exit_callback);
   ~EnrollmentScreen() override;
 
@@ -205,9 +203,9 @@ class EnrollmentScreen
 
   // Helper to call AuthPolicyClient and cancel calls if needed. Used to join
   // Active Directory domain.
-  std::unique_ptr<AuthPolicyLoginHelper> authpolicy_login_helper_;
+  std::unique_ptr<AuthPolicyHelper> authpolicy_login_helper_;
 
-  base::WeakPtrFactory<EnrollmentScreen> weak_ptr_factory_;
+  base::WeakPtrFactory<EnrollmentScreen> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(EnrollmentScreen);
 };
 

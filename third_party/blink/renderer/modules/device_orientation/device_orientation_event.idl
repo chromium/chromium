@@ -27,7 +27,7 @@
 
 [
     Constructor(DOMString type, optional DeviceOrientationEventInit eventInitDict),
-    Exposed=Window, SecureContext=RestrictDeviceSensorEventsToSecureContexts
+    Exposed=Window, SecureContext
 ] interface DeviceOrientationEvent : Event {
     readonly attribute double? alpha;
     readonly attribute double? beta;

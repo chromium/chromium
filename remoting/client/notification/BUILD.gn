@@ -1,0 +1,43 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("notification") {
+  sources = [
+    "gstatic_json_fetcher.cc",
+    "gstatic_json_fetcher.h",
+    "json_fetcher.h",
+    "notification_client.cc",
+    "notification_client.h",
+    "notification_message.cc",
+    "notification_message.h",
+    "version_range.cc",
+    "version_range.h",
+  ]
+
+  configs += [ "//remoting/build/config:version" ]
+
+  deps = [
+    "//base",
+    "//net",
+    "//remoting/base",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "gstatic_json_fetcher_unittest.cc",
+    "notification_client_unittest.cc",
+    "version_range_unittest.cc",
+  ]
+
+  deps = [
+    ":notification",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

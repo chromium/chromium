@@ -6,6 +6,8 @@ import("//build/config/features.gni")
 
 static_library("browser") {
   sources = [
+    "content_record_page_language.cc",
+    "content_record_page_language.h",
     "content_translate_driver.cc",
     "content_translate_driver.h",
   ]
@@ -19,6 +21,7 @@ static_library("browser") {
   deps = [
     "//components/language/core/browser",
     "//components/search_engines:search_engines",
+    "//components/ukm/content",
     "//content/public/browser",
     "//content/public/common",
     "//net",

@@ -24,7 +24,6 @@
 
 // <include src="../../../webui/resources/js/cr/ui.js">
 // <include src="../../../webui/resources/js/cr/event_target.js">
-// <include src="../../../webui/resources/js/cr/ui/touch_handler.js">
 // <include src="../../../webui/resources/js/cr/ui/array_data_model.js">
 // <include src="../../../webui/resources/js/cr/ui/dialogs.js">
 // <include src="../../../webui/resources/js/cr/ui/list_item.js">

@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/drm/host/drm_native_display_delegate.h"
 
+#include <utility>
+
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_observer.h"
 #include "ui/ozone/platform/drm/host/drm_display_host.h"

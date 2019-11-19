@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_WEBUI_NET_EXPORT_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_WEBUI_NET_EXPORT_TAB_HELPER_H_
 
-#import "ios/web/public/web_state/web_state_user_data.h"
+#import "ios/web/public/web_state_user_data.h"
 
 @protocol NetExportTabHelperDelegate;
 @class ShowMailComposerContext;

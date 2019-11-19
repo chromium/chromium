@@ -8,22 +8,24 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/observer_list_threadsafe.h"
+#include "base/sequenced_task_runner_helpers.h"
 
 namespace base {
 class SingleThreadTaskRunner;
 }
 
-namespace net {
-class URLRequestContextGetter;
-}
+namespace network {
+class SharedURLLoaderFactoryInfo;
+class NetworkConnectionTracker;
+}  // namespace network
 
 namespace chromecast {
 
 // Checks if internet connectivity is available.
 class ConnectivityChecker
-    : public base::RefCountedThreadSafe<ConnectivityChecker> {
+    : public base::RefCountedDeleteOnSequence<ConnectivityChecker> {
  public:
   class ConnectivityObserver {
    public:
@@ -40,9 +42,9 @@ class ConnectivityChecker
 
   static scoped_refptr<ConnectivityChecker> Create(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
-      net::URLRequestContextGetter* url_request_context_getter);
-
-  ConnectivityChecker();
+      std::unique_ptr<network::SharedURLLoaderFactoryInfo>
+          url_loader_factory_info,
+      network::NetworkConnectionTracker* network_connection_tracker);
 
   void AddConnectivityObserver(ConnectivityObserver* observer);
   void RemoveConnectivityObserver(ConnectivityObserver* observer);
@@ -54,13 +56,16 @@ class ConnectivityChecker
   virtual void Check() = 0;
 
  protected:
+  explicit ConnectivityChecker(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   virtual ~ConnectivityChecker();
 
   // Notifies observes that connectivity has changed.
   void Notify(bool connected);
 
  private:
-  friend class base::RefCountedThreadSafe<ConnectivityChecker>;
+  friend class base::RefCountedDeleteOnSequence<ConnectivityChecker>;
+  friend class base::DeleteHelper<ConnectivityChecker>;
 
   const scoped_refptr<base::ObserverListThreadSafe<ConnectivityObserver>>
       connectivity_observer_list_;

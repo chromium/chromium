@@ -30,7 +30,6 @@ static_library("feedback") {
 
   deps = [
     "//base",
-    "//components/data_use_measurement/core",
     "//components/feedback/proto",
     "//components/keyed_service/content",
     "//components/keyed_service/core",

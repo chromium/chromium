@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
   <head>
     <meta charset="utf-8">
@@ -19,21 +19,25 @@
   </head>
   <body>
     <tabbox id="tabbox">
-      <tabs id="tabs" class="new-style-tabs">
-        <tab>$i18n{general}</tab>
-        <tab>$i18n{details}</tab>
+      <tabs id="tabs" class="new-style-tabs" role="tablist">
+        <tab id="general-tab" role="tab" aria-controls="general" tabindex="0">
+          $i18n{general}
+        </tab>
+        <tab id="details-tab" role="tab" aria-controls="details">
+          $i18n{details}
+        </tab>
       </tabs>
       <tabpanels id="tabpanels" class="new-style-tabs">
         <!-- General -->
-        <tabpanel id="general">
+        <tabpanel id="general" aria-labelledby="general-tab">
           <!-- Usages -->
-          <h3 id="usages-title">$i18n{usages}</h3>
+          <h3 id="usages-title" role="group">$i18n{usages}</h3>
           <div id="usages"></div>
 
           <div class="groups">
             <!-- Issued to -->
             <div>
-              <h3>$i18n{issuedTo}</h3>
+              <h3 role="group">$i18n{issuedTo}</h3>
             </div>
             <div>
               <div class="attribute">$i18n{cn}</div>
@@ -50,7 +54,7 @@
 
             <!-- Issued by -->
             <div>
-              <h3>$i18n{issuedBy}</h3>
+              <h3 role="group">$i18n{issuedBy}</h3>
             </div>
             <div>
               <div class="attribute">$i18n{cn}</div>
@@ -67,7 +71,7 @@
 
             <!-- Validity -->
             <div>
-              <h3>$i18n{validity}</h3>
+              <h3 role="group">$i18n{validity}</h3>
             </div>
             <div>
               <div class="attribute">$i18n{issuedOn}</div>
@@ -80,7 +84,7 @@
 
             <!-- Fingerprints -->
             <div>
-              <h3>$i18n{fingerprints}</h3>
+              <h3 role="group">$i18n{fingerprints}</h3>
             </div>
             <div>
               <div class="attribute">$i18n{sha256}</div>
@@ -94,20 +98,26 @@
         </tabpanel>
 
         <!-- Details -->
-        <tabpanel>
+        <tabpanel id="details" aria-labelledby="details-tab">
           <div id="hierarchy-section" class="vertical-box">
-            <h3>$i18n{hierarchy}</h3>
+            <h3 id="hierarchy-label" role="group">$i18n{hierarchy}</h3>
             <tree id="hierarchy" class="section-contents"
-                icon-visibility='hidden'></tree>
+                  aria-labelledby="hierarchy-label"
+                  icon-visibility='hidden'></tree>
           </div>
           <div id="cert-fields-section" class="vertical-box">
-            <h3>$i18n{certFields}</h3>
+            <h3 id="cert-fields-label" role="group">$i18n{certFields}</h3>
             <tree id="cert-fields" class="section-contents"
-                icon-visibility='hidden'></tree>
+                  aria-labelledby="cert-fields-label"
+                  icon-visibility='hidden'></tree>
           </div>
           <div id="cert-field-value-section" class="vertical-box">
-            <h3>$i18n{certFieldVal}</h3>
-            <div id="cert-field-value" class="section-contents"></div>
+            <h3 id="cert-field-value-label" role="group">
+              $i18n{certFieldVal}
+            </h3>
+            <div id="cert-field-value" class="section-contents" tabindex="0"
+                 aria-live="polite" aria-atomic="true" aria-readonly="true"
+                 aria-labelledby="cert-field-value-label" role="textbox"></div>
             <div>
               <button id="export">$i18n{export}</button>
             </div>

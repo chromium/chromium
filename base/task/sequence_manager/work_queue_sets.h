@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/task/common/intrusive_heap.h"
+#include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/work_queue.h"
 #include "base/trace_event/traced_value.h"
@@ -37,7 +38,9 @@ class BASE_EXPORT WorkQueueSets {
     virtual void WorkQueueSetBecameNonEmpty(size_t set_index) = 0;
   };
 
-  WorkQueueSets(const char* name, Observer* observer);
+  WorkQueueSets(const char* name,
+                Observer* observer,
+                const SequenceManager::Settings& settings);
   ~WorkQueueSets();
 
   // O(log num queues)
@@ -71,6 +74,16 @@ class BASE_EXPORT WorkQueueSets {
       size_t set_index,
       EnqueueOrder* out_enqueue_order) const;
 
+#if DCHECK_IS_ON()
+  // O(1)
+  WorkQueue* GetRandomQueueInSet(size_t set_index) const;
+
+  // O(1)
+  WorkQueue* GetRandomQueueAndEnqueueOrderInSet(
+      size_t set_index,
+      EnqueueOrder* out_enqueue_order) const;
+#endif
+
   // O(1)
   bool IsSetEmpty(size_t set_index) const;
 
@@ -81,6 +94,12 @@ class BASE_EXPORT WorkQueueSets {
 #endif
 
   const char* GetName() const { return name_; }
+
+  // Collects ready tasks which where skipped over when |selected_work_queue|
+  // was selected. Note this is somewhat expensive.
+  void CollectSkippedOverLowerPriorityTasks(
+      const internal::WorkQueue* selected_work_queue,
+      std::vector<const Task*>* result) const;
 
  private:
   struct OldestTaskEnqueueOrder {
@@ -98,16 +117,40 @@ class BASE_EXPORT WorkQueueSets {
     void ClearHeapHandle() {
       value->set_heap_handle(base::internal::HeapHandle());
     }
+
+    HeapHandle GetHeapHandle() const { return value->heap_handle(); }
   };
 
   const char* const name_;
-  Observer* const observer_;
 
   // For each set |work_queue_heaps_| has a queue of WorkQueue ordered by the
   // oldest task in each WorkQueue.
   std::array<base::internal::IntrusiveHeap<OldestTaskEnqueueOrder>,
              TaskQueue::kQueuePriorityCount>
       work_queue_heaps_;
+
+#if DCHECK_IS_ON()
+  static inline uint64_t MurmurHash3(uint64_t value) {
+    value ^= value >> 33;
+    value *= uint64_t{0xFF51AFD7ED558CCD};
+    value ^= value >> 33;
+    value *= uint64_t{0xC4CEB9FE1A85EC53};
+    value ^= value >> 33;
+    return value;
+  }
+
+  // This is for a debugging feature which lets us randomize task selection. Its
+  // not for production use.
+  // TODO(alexclarke): Use a seedable PRNG from ::base if one is added.
+  uint64_t Random() const {
+    last_rand_ = MurmurHash3(last_rand_);
+    return last_rand_;
+  }
+
+  mutable uint64_t last_rand_;
+#endif
+
+  Observer* const observer_;
 
   DISALLOW_COPY_AND_ASSIGN(WorkQueueSets);
 };

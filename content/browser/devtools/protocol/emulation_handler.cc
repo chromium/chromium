@@ -103,7 +103,7 @@ Response EmulationHandler::Disable() {
 
 Response EmulationHandler::SetGeolocationOverride(
     Maybe<double> latitude, Maybe<double> longitude, Maybe<double> accuracy) {
-  if (!GetWebContents())
+  if (!host_)
     return Response::InternalError();
 
   auto* geolocation_context = GetWebContents()->GetGeolocationContext();
@@ -126,7 +126,7 @@ Response EmulationHandler::SetGeolocationOverride(
 }
 
 Response EmulationHandler::ClearGeolocationOverride() {
-  if (!GetWebContents())
+  if (!host_)
     return Response::InternalError();
 
   auto* geolocation_context = GetWebContents()->GetGeolocationContext();
@@ -148,10 +148,11 @@ Response EmulationHandler::CanEmulate(bool* result) {
   *result = false;
 #else
   *result = true;
-  if (WebContentsImpl* web_contents = GetWebContents())
-    *result &= !web_contents->GetVisibleURL().SchemeIs(kChromeDevToolsScheme);
-  if (host_ && host_->GetRenderWidgetHost())
-    *result &= !host_->GetRenderWidgetHost()->auto_resize_enabled();
+  if (host_) {
+    if (GetWebContents()->GetVisibleURL().SchemeIs(kChromeDevToolsScheme) ||
+        host_->GetRenderWidgetHost()->auto_resize_enabled())
+      *result = false;
+  }
 #endif  // defined(OS_ANDROID)
   return Response::OK();
 }
@@ -173,9 +174,7 @@ Response EmulationHandler::SetDeviceMetricsOverride(
   const static double max_scale = 10;
   const static int max_orientation_angle = 360;
 
-  RenderWidgetHostImpl* widget_host =
-      host_ ? host_->GetRenderWidgetHost() : nullptr;
-  if (!widget_host)
+  if (!host_)
     return Response::Error("Target does not support metrics override");
 
   if (screen_width.fromMaybe(0) < 0 || screen_height.fromMaybe(0) < 0 ||
@@ -243,7 +242,7 @@ Response EmulationHandler::SetDeviceMetricsOverride(
     params.viewport_offset.y = viewport.fromJust()->GetY();
 
     ScreenInfo screen_info;
-    widget_host->GetScreenInfo(&screen_info);
+    host_->GetRenderWidgetHost()->GetScreenInfo(&screen_info);
     double dpfactor = device_scale_factor ? device_scale_factor /
                                                 screen_info.device_scale_factor
                                           : 1;
@@ -289,17 +288,16 @@ Response EmulationHandler::SetDeviceMetricsOverride(
 Response EmulationHandler::ClearDeviceMetricsOverride() {
   if (!device_emulation_enabled_)
     return Response::OK();
-  if (GetWebContents())
-    GetWebContents()->ClearDeviceEmulationSize();
-  else
+  if (!host_)
     return Response::Error("Can't find the associated web contents");
+  GetWebContents()->ClearDeviceEmulationSize();
   device_emulation_enabled_ = false;
   device_emulation_params_ = blink::WebDeviceEmulationParams();
   UpdateDeviceEmulationState();
   // Renderer should answer after emulation was disabled, so that the response
   // is only sent to the client once updates were applied.
   // Unless the renderer has crashed.
-  if (GetWebContents() && GetWebContents()->IsCrashed())
+  if (GetWebContents()->IsCrashed())
     return Response::OK();
   return Response::FallThrough();
 }
@@ -308,11 +306,9 @@ Response EmulationHandler::SetVisibleSize(int width, int height) {
   if (width < 0 || height < 0)
     return Response::InvalidParams("Width and height must be non-negative");
 
-  if (GetWebContents())
-    GetWebContents()->SetDeviceEmulationSize(gfx::Size(width, height));
-  else
+  if (!host_)
     return Response::Error("Can't find the associated web contents");
-
+  GetWebContents()->SetDeviceEmulationSize(gfx::Size(width, height));
   return Response::OK();
 }
 
@@ -340,23 +336,25 @@ blink::WebDeviceEmulationParams EmulationHandler::GetDeviceEmulationParams() {
 void EmulationHandler::SetDeviceEmulationParams(
     const blink::WebDeviceEmulationParams& params) {
   bool enabled = params != blink::WebDeviceEmulationParams();
+  bool enable_changed = enabled != device_emulation_enabled_;
+  bool params_changed = params != device_emulation_params_;
+  if (!device_emulation_enabled_ && !enable_changed)
+    return;  // Still disabled.
+  if (!enable_changed && !params_changed)
+    return;  // Nothing changed.
   device_emulation_enabled_ = enabled;
   device_emulation_params_ = params;
   UpdateDeviceEmulationState();
 }
 
 WebContentsImpl* EmulationHandler::GetWebContents() {
-  return host_ ?
-      static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(host_)) :
-      nullptr;
+  DCHECK(host_);  // Only call if |host_| is set.
+  return static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(host_));
 }
 
 void EmulationHandler::UpdateTouchEventEmulationState() {
-  if (!host_ || !host_->GetRenderWidgetHost())
+  if (!host_)
     return;
-  if (host_->GetParent() && !host_->IsCrossProcessSubframe())
-    return;
-
   // We only have a single TouchEmulator for all frames, so let the main frame's
   // EmulationHandler enable/disable it.
   if (!host_->frame_tree_node()->IsMainFrame())
@@ -373,17 +371,16 @@ void EmulationHandler::UpdateTouchEventEmulationState() {
     if (auto* touch_emulator = host_->GetRenderWidgetHost()->GetTouchEmulator())
       touch_emulator->Disable();
   }
-  if (GetWebContents()) {
-    GetWebContents()->SetForceDisableOverscrollContent(
-        touch_emulation_enabled_);
-  }
+  GetWebContents()->SetForceDisableOverscrollContent(touch_emulation_enabled_);
 }
 
 void EmulationHandler::UpdateDeviceEmulationState() {
-  if (!host_ || !host_->GetRenderWidgetHost())
+  if (!host_)
     return;
-  if (host_->GetParent() && !host_->IsCrossProcessSubframe())
+  // Device emulation only happens on the main frame.
+  if (!host_->frame_tree_node()->IsMainFrame())
     return;
+
   // TODO(eseckler): Once we change this to mojo, we should wait for an ack to
   // these messages from the renderer. The renderer should send the ack once the
   // emulation params were applied. That way, we can avoid having to handle

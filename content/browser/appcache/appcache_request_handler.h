@@ -18,8 +18,10 @@
 #include "content/browser/appcache/appcache_request_handler.h"
 #include "content/browser/appcache/appcache_service_impl.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
+#include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/common/content_export.h"
 #include "content/public/common/resource_type.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace net {
@@ -36,7 +38,6 @@ class AppCacheJob;
 class AppCacheSubresourceURLFactory;
 class AppCacheRequest;
 class AppCacheRequestHandlerTest;
-class AppCacheURLRequestJob;
 class AppCacheHost;
 
 // An instance is created for each net::URLRequest. The instance survives all
@@ -51,62 +52,52 @@ class CONTENT_EXPORT AppCacheRequestHandler
       public AppCacheStorage::Delegate,
       public NavigationLoaderInterceptor {
  public:
+  using AppCacheLoaderCallback =
+      base::OnceCallback<void(SingleRequestURLLoaderFactory::RequestHandler)>;
+
   ~AppCacheRequestHandler() override;
-
-  // These are called on each request intercept opportunity.
-  // When the NetworkService is not enabled, the AppCacheInterceptor calls these
-  // methods directly. When the NetworkService is enabled, the various
-  // MaybeCreateLoader methods below call call these internally.
-  AppCacheJob* MaybeLoadResource(net::NetworkDelegate* network_delegate);
-  AppCacheJob* MaybeLoadFallbackForRedirect(
-      net::NetworkDelegate* network_delegate,
-      const GURL& location);
-  AppCacheJob* MaybeLoadFallbackForResponse(
-      net::NetworkDelegate* network_delegate);
-
-  void GetExtraResponseInfo(int64_t* cache_id, GURL* manifest_url);
 
   // NetworkService loading
 
   // NavigationLoaderInterceptor overrides - main resource loading.
   // These methods are used by the NavigationURLLoaderImpl.
-  // Internally they use same methods used by the network library based impl,
-  // MaybeLoadResource and MaybeLoadFallbackForResponse.
+  // Internally they use MaybeLoadResource and MaybeLoadFallbackForResponse.
   // Eventually one of the Deliver*Response() methods is called and the
   // LoaderCallback is invoked.
   void MaybeCreateLoader(
       const network::ResourceRequest& tentative_resource_request,
-      ResourceContext* resource_context,
+      BrowserContext* browser_context,
       LoaderCallback callback,
       FallbackCallback fallback_callback) override;
   // MaybeCreateLoaderForResponse always returns synchronously.
   bool MaybeCreateLoaderForResponse(
       const network::ResourceRequest& request,
-      const network::ResourceResponseHead& response,
+      const network::ResourceResponseHead& response_head,
+      mojo::ScopedDataPipeConsumerHandle* response_body,
       network::mojom::URLLoaderPtr* loader,
-      network::mojom::URLLoaderClientRequest* client_request,
-      ThrottlingURLLoader* url_loader,
-      bool* skip_other_interceptors) override;
+      mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
+      blink::ThrottlingURLLoader* url_loader,
+      bool* skip_other_interceptors,
+      bool* will_return_unsafe_redirect) override;
   base::Optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
       override;
 
   // These methods are used for subresource loading by the
   // AppCacheSubresourceURLFactory::SubresourceLoader class.
-  // Internally they use same methods used by the network library based impl,
-  // MaybeLoadResource, MaybeLoadFallbackForResponse, and
+  // Internally they use MaybeLoadResource, MaybeLoadFallbackForResponse, and
   // MaybeLoadFallbackForRedirect. Eventually one of the Deliver*Response()
   // methods is called and the LoaderCallback is invoked.
   void MaybeCreateSubresourceLoader(
       const network::ResourceRequest& resource_request,
-      LoaderCallback callback);
+      AppCacheLoaderCallback callback);
   void MaybeFallbackForSubresourceResponse(
       const network::ResourceResponseHead& response,
-      LoaderCallback callback);
+      AppCacheLoaderCallback callback);
   void MaybeFallbackForSubresourceRedirect(
       const net::RedirectInfo& redirect_info,
-      LoaderCallback callback);
+      AppCacheLoaderCallback callback);
   void MaybeFollowSubresourceRedirect(const net::RedirectInfo& redirect_info,
-                                      LoaderCallback callback);
+                                      AppCacheLoaderCallback callback);
 
   static std::unique_ptr<AppCacheRequestHandler>
   InitializeForMainResourceNetworkService(
@@ -129,10 +120,14 @@ class CONTENT_EXPORT AppCacheRequestHandler
                          bool should_reset_appcache,
                          std::unique_ptr<AppCacheRequest> request);
 
-  // AppCacheHost::Observer override
+  void MaybeCreateLoaderInternal(
+      const network::ResourceRequest& resource_request,
+      AppCacheLoaderCallback callback);
+
+  // AppCacheHost::Observer.
   void OnDestructionImminent(AppCacheHost* host) override;
 
-  // AppCacheServiceImpl::Observer override
+  // AppCacheServiceImpl::Observer.
   void OnServiceDestructionImminent(AppCacheServiceImpl* service) override;
 
   // Helpers to instruct a waiting job with what response to
@@ -145,10 +140,6 @@ class CONTENT_EXPORT AppCacheRequestHandler
   void DeliverNetworkResponse();
   void DeliverErrorResponse();
 
-  // Called just before the request is restarted. Grabs the reason for
-  // restarting, so can correctly continue to handle the request.
-  void OnPrepareToRestartURLRequest();
-
   // Helper method to create an AppCacheJob and populate job_.
   // Caller takes ownership of returned value.
   std::unique_ptr<AppCacheJob> CreateJob(
@@ -160,6 +151,17 @@ class CONTENT_EXPORT AppCacheRequestHandler
   bool is_main_resource() const {
     return IsMainResourceType(resource_type_);
   }
+
+  // These are called on each request intercept opportunity, by the various
+  // MaybeCreateLoader methods in the public API.
+  AppCacheJob* MaybeLoadResource(net::NetworkDelegate* network_delegate);
+  AppCacheJob* MaybeLoadFallbackForRedirect(
+      net::NetworkDelegate* network_delegate,
+      const GURL& location);
+  AppCacheJob* MaybeLoadFallbackForResponse(
+      net::NetworkDelegate* network_delegate);
+
+  void GetExtraResponseInfo(int64_t* cache_id, GURL* manifest_url);
 
   // Main-resource loading -------------------------------------
   // Frame and SharedWorker main resources are handled here.
@@ -181,6 +183,8 @@ class CONTENT_EXPORT AppCacheRequestHandler
   // runs for the main resource. This flips |should_create_subresource_loader_|
   // if a non-null |handler| is given. Always invokes |callback| with |handler|.
   void RunLoaderCallbackForMainResource(
+      int frame_tree_node_id,
+      BrowserContext* browser_context,
       LoaderCallback callback,
       SingleRequestURLLoaderFactory::RequestHandler handler);
 
@@ -250,7 +254,7 @@ class CONTENT_EXPORT AppCacheRequestHandler
 
   // Network service related members.
 
-  LoaderCallback loader_callback_;
+  AppCacheLoaderCallback loader_callback_;
 
   // Flipped to true if AppCache wants to handle subresource requests
   // (i.e. when |loader_callback_| is fired with a non-null
@@ -261,7 +265,7 @@ class CONTENT_EXPORT AppCacheRequestHandler
   // AppCacheSubresourceURLFactory instance on creation.
   base::WeakPtr<AppCacheHost> appcache_host_;
 
-  base::WeakPtrFactory<AppCacheRequestHandler> weak_factory_;
+  base::WeakPtrFactory<AppCacheRequestHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppCacheRequestHandler);
 };

@@ -4,22 +4,21 @@
 
 #import "ios/chrome/browser/ui/settings/table_cell_catalog_view_controller.h"
 
-#import "ios/chrome/browser/ui/authentication/cells/account_control_item.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/settings/cells/account_sign_in_item.h"
-#import "ios/chrome/browser/ui/settings/cells/autofill_data_item.h"
 #import "ios/chrome/browser/ui/settings/cells/copied_to_chrome_item.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_detail_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
@@ -28,6 +27,8 @@
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
 #include "url/gurl.h"
@@ -54,6 +55,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeURLNoMetadata,
   ItemTypeTextAccessoryImage,
   ItemTypeTextAccessoryNoImage,
+  ItemTypeTextEditItem,
   ItemTypeURLWithTimestamp,
   ItemTypeURLWithSize,
   ItemTypeURLWithSupplementalText,
@@ -61,12 +63,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeTextSettingsDetail,
   ItemTypeLinkFooter,
   ItemTypeDetailText,
+  ItemTypeMultiDetailText,
   ItemTypeAccountSignInItem,
   ItemTypeSettingsSwitch1,
   ItemTypeSettingsSwitch2,
   ItemTypeSyncSwitch,
   ItemTypeSettingsSyncError,
-  ItemTypeAutofillEditItem,
   ItemTypeAutofillData,
   ItemTypeAccount,
 };
@@ -114,7 +116,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewTextItem alloc] initWithType:ItemTypeText];
   textItem.text = @"Simple Text Cell";
   textItem.textAlignment = NSTextAlignmentCenter;
-  textItem.textColor = [UIColor blackColor];
+  textItem.textColor = UIColor.cr_labelColor;
   [model addItem:textItem toSectionWithIdentifier:SectionIdentifierText];
 
   textItem = [[TableViewTextItem alloc] initWithType:ItemTypeText];
@@ -131,10 +133,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewImageItem* textImageItem2 =
       [[TableViewImageItem alloc] initWithType:ItemTypeTextAccessoryImage];
   textImageItem2.title = @"Image item without image, and disabled";
-  textImageItem2.textColor = UIColor.redColor;
+  textImageItem2.textColor = [UIColor colorNamed:kRedColor];
   textImageItem2.detailText =
       @"Very very very long detail text for the image cell without image";
-  textImageItem2.detailTextColor = UIColor.redColor;
+  textImageItem2.detailTextColor = [UIColor colorNamed:kRedColor];
   textImageItem2.enabled = NO;
   [model addItem:textImageItem2 toSectionWithIdentifier:SectionIdentifierText];
 
@@ -156,9 +158,45 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewTextButtonItem* textActionButtonItem =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeTextButton];
-  textActionButtonItem.text = @"Hello, you should do something.";
+  textActionButtonItem.text = @"Hello, you should do something. Also as you "
+                              @"can see this text is centered.";
   textActionButtonItem.buttonText = @"Do something";
   [model addItem:textActionButtonItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewTextButtonItem* textActionButtonAlignmentItem =
+      [[TableViewTextButtonItem alloc] initWithType:ItemTypeTextButton];
+  textActionButtonAlignmentItem.text =
+      @"Hello, you should do something. Also as you can see this text is using "
+      @"NSTextAlignmentNatural";
+  textActionButtonAlignmentItem.textAlignment = NSTextAlignmentNatural;
+  textActionButtonAlignmentItem.buttonText = @"Do something";
+  [model addItem:textActionButtonAlignmentItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewTextButtonItem* textActionButtoExpandedItem =
+      [[TableViewTextButtonItem alloc] initWithType:ItemTypeTextButton];
+  textActionButtoExpandedItem.text = @"Hello, you should do something.";
+  textActionButtoExpandedItem.disableButtonIntrinsicWidth = YES;
+  textActionButtoExpandedItem.buttonText = @"Expanded Button";
+  [model addItem:textActionButtoExpandedItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewTextButtonItem* textActionButtonNoTextItem =
+      [[TableViewTextButtonItem alloc] initWithType:ItemTypeTextButton];
+  textActionButtonNoTextItem.buttonText = @"Do something, no Top Text";
+  [model addItem:textActionButtonNoTextItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewTextButtonItem* textActionButtonColorItem =
+      [[TableViewTextButtonItem alloc] initWithType:ItemTypeTextButton];
+  textActionButtonColorItem.text = @"Hello, you should do something.";
+  textActionButtonColorItem.disableButtonIntrinsicWidth = YES;
+  textActionButtonColorItem.buttonBackgroundColor = [UIColor lightGrayColor];
+  textActionButtonColorItem.buttonTextColor =
+    [UIColor colorNamed:@"settings_catalog_example_text"];
+  textActionButtonColorItem.buttonText = @"Do something, different Colors";
+  [model addItem:textActionButtonColorItem
       toSectionWithIdentifier:SectionIdentifierText];
 
   TableViewDetailTextItem* detailTextItem =
@@ -174,26 +212,106 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:noDetailTextItem
       toSectionWithIdentifier:SectionIdentifierText];
 
+  TableViewDetailIconItem* detailIconItem =
+      [[TableViewDetailIconItem alloc] initWithType:ItemTypeTextSettingsDetail];
+  detailIconItem.text = @"Detail Icon Item Cell";
+  detailIconItem.iconImageName = @"settings_article_suggestions";
+  detailIconItem.detailText = @"Short";
+  [model addItem:detailIconItem toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewDetailIconItem* detailIconItemLeftLong =
+      [[TableViewDetailIconItem alloc] initWithType:ItemTypeTextSettingsDetail];
+  detailIconItemLeftLong.text =
+      @"Left label is very very very very very very very long";
+  detailIconItemLeftLong.detailText = @"R";
+  [model addItem:detailIconItemLeftLong
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewDetailIconItem* detailIconItemRightLong =
+      [[TableViewDetailIconItem alloc] initWithType:ItemTypeTextSettingsDetail];
+  detailIconItemRightLong.text = @"L";
+  detailIconItemRightLong.detailText =
+      @"Right label is very very very very very very very long";
+  [model addItem:detailIconItemRightLong
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewDetailIconItem* detailIconItemBothLong =
+      [[TableViewDetailIconItem alloc] initWithType:ItemTypeTextSettingsDetail];
+  detailIconItemBothLong.text = @"Left label occupy 75% of row space";
+  detailIconItemBothLong.detailText = @"Right label occupy 25% of row space";
+  [model addItem:detailIconItemBothLong
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewTextEditItem* textEditItem =
+      [[TableViewTextEditItem alloc] initWithType:ItemTypeTextEditItem];
+  textEditItem.textFieldName = @"Edit Text Item";
+  textEditItem.textFieldValue = @" with no icons";
+  textEditItem.hideIcon = YES;
+  textEditItem.textFieldEnabled = YES;
+  [model addItem:textEditItem toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewTextEditItem* textEditItemEditIcon =
+      [[TableViewTextEditItem alloc] initWithType:ItemTypeTextEditItem];
+  textEditItemEditIcon.textFieldName = @"Edit Text Item";
+  textEditItemEditIcon.textFieldValue = @" with edit icon";
+  textEditItemEditIcon.textFieldEnabled = YES;
+  [model addItem:textEditItemEditIcon
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewTextEditItem* textEditItemBothIcons =
+      [[TableViewTextEditItem alloc] initWithType:ItemTypeTextEditItem];
+  textEditItemBothIcons.textFieldName = @"Edit Text Item";
+  textEditItemBothIcons.textFieldValue = @" with edit and custom icons";
+  textEditItemBothIcons.identifyingIcon =
+      [UIImage imageNamed:@"table_view_cell_check_mark"];
+  textEditItemBothIcons.textFieldEnabled = YES;
+  [model addItem:textEditItemBothIcons
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewTextEditItem* textEditItemIconButton =
+      [[TableViewTextEditItem alloc] initWithType:ItemTypeTextEditItem];
+  textEditItemIconButton.textFieldName = @"Edit Text Item";
+  textEditItemIconButton.textFieldValue = @" icon is a button.";
+  textEditItemIconButton.identifyingIcon =
+      [UIImage imageNamed:@"table_view_cell_check_mark"];
+  textEditItemIconButton.identifyingIconEnabled = YES;
+  textEditItemIconButton.textFieldEnabled = NO;
+  [model addItem:textEditItemIconButton
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewMultiDetailTextItem* tableViewMultiDetailTextItem =
+      [[TableViewMultiDetailTextItem alloc]
+          initWithType:ItemTypeMultiDetailText];
+  tableViewMultiDetailTextItem.text = @"Main Text";
+  tableViewMultiDetailTextItem.trailingDetailText = @"Trailing Detail Text";
+  [model addItem:tableViewMultiDetailTextItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  tableViewMultiDetailTextItem = [[TableViewMultiDetailTextItem alloc]
+      initWithType:ItemTypeMultiDetailText];
+  tableViewMultiDetailTextItem.text = @"Main Text";
+  tableViewMultiDetailTextItem.leadingDetailText = @"Leading Detail Text";
+  tableViewMultiDetailTextItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  [model addItem:tableViewMultiDetailTextItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  tableViewMultiDetailTextItem = [[TableViewMultiDetailTextItem alloc]
+      initWithType:ItemTypeMultiDetailText];
+  tableViewMultiDetailTextItem.text = @"Main Text";
+  tableViewMultiDetailTextItem.leadingDetailText = @"Leading Detail Text";
+  tableViewMultiDetailTextItem.trailingDetailText = @"Trailing Detail Text";
+  tableViewMultiDetailTextItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  [model addItem:tableViewMultiDetailTextItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
   // SectionIdentifierSettings.
   TableViewTextHeaderFooterItem* settingsHeader =
       [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeTextHeader];
   settingsHeader.text = @"Settings";
   [model setHeader:settingsHeader
       forSectionWithIdentifier:SectionIdentifierSettings];
-
-  SettingsDetailItem* settingsDetailItem =
-      [[SettingsDetailItem alloc] initWithType:ItemTypeTextSettingsDetail];
-  settingsDetailItem.text = @"Settings cells";
-  settingsDetailItem.detailText = @"Short";
-  [model addItem:settingsDetailItem
-      toSectionWithIdentifier:SectionIdentifierSettings];
-
-  SettingsDetailItem* settingsDetailItemLong =
-      [[SettingsDetailItem alloc] initWithType:ItemTypeTextSettingsDetail];
-  settingsDetailItemLong.text = @"Very long text eating the other detail label";
-  settingsDetailItemLong.detailText = @"A bit less short";
-  [model addItem:settingsDetailItemLong
-      toSectionWithIdentifier:SectionIdentifierSettings];
 
   AccountSignInItem* accountSignInItem =
       [[AccountSignInItem alloc] initWithType:ItemTypeAccountSignInItem];
@@ -231,7 +349,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   imageDetailTextItem.text = @"This is an error description about sync";
   imageDetailTextItem.detailText =
       @"This is more detail about the sync error description";
-  imageDetailTextItem.image = [ChromeIcon infoIcon];
+  imageDetailTextItem.image = [[ChromeIcon infoIcon]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   [model addItem:imageDetailTextItem
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -248,41 +367,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   autofillHeader.text = @"Autofill";
   [model setHeader:autofillHeader
       forSectionWithIdentifier:SectionIdentifierAutofill];
-
-  AutofillEditItem* autofillEditItem =
-      [[AutofillEditItem alloc] initWithType:ItemTypeAutofillEditItem];
-  autofillEditItem.textFieldName = @"Autofill field";
-  autofillEditItem.textFieldValue = @" with a value";
-  autofillEditItem.identifyingIcon =
-      [UIImage imageNamed:@"table_view_cell_check_mark"];
-  [model addItem:autofillEditItem
-      toSectionWithIdentifier:SectionIdentifierAutofill];
-
-  AutofillDataItem* autofillItemWithMainLeading =
-      [[AutofillDataItem alloc] initWithType:ItemTypeAutofillData];
-  autofillItemWithMainLeading.text = @"Main Text";
-  autofillItemWithMainLeading.trailingDetailText = @"Trailing Detail Text";
-  [model addItem:autofillItemWithMainLeading
-      toSectionWithIdentifier:SectionIdentifierAutofill];
-
-  AutofillDataItem* autofillItemWithLeading =
-      [[AutofillDataItem alloc] initWithType:ItemTypeAutofillData];
-  autofillItemWithLeading.text = @"Main Text";
-  autofillItemWithLeading.leadingDetailText = @"Leading Detail Text";
-  autofillItemWithLeading.accessoryType =
-      UITableViewCellAccessoryDisclosureIndicator;
-  [model addItem:autofillItemWithLeading
-      toSectionWithIdentifier:SectionIdentifierAutofill];
-
-  AutofillDataItem* autofillItemWithAllTexts =
-      [[AutofillDataItem alloc] initWithType:ItemTypeAutofillData];
-  autofillItemWithAllTexts.text = @"Main Text";
-  autofillItemWithAllTexts.leadingDetailText = @"Leading Detail Text";
-  autofillItemWithAllTexts.trailingDetailText = @"Trailing Detail Text";
-  autofillItemWithAllTexts.accessoryType =
-      UITableViewCellAccessoryDisclosureIndicator;
-  [model addItem:autofillItemWithAllTexts
-      toSectionWithIdentifier:SectionIdentifierAutofill];
 
   CopiedToChromeItem* copiedToChrome =
       [[CopiedToChromeItem alloc] initWithType:ItemTypeAutofillData];
@@ -327,28 +411,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       @"eiusmod tempor incididunt ut labore et dolore magna aliqua.";
   accountItemCheckMark.accessoryType = UITableViewCellAccessoryCheckmark;
   [model addItem:accountItemCheckMark
-      toSectionWithIdentifier:SectionIdentifierAccount];
-
-  AccountControlItem* accountControlItem =
-      [[AccountControlItem alloc] initWithType:ItemTypeAccount];
-  accountControlItem.image = [UIImage imageNamed:@"settings_sync"];
-  accountControlItem.text = @"Account Sync Settings";
-  accountControlItem.detailText = @"Detail text";
-  accountControlItem.accessoryType =
-      UITableViewCellAccessoryDisclosureIndicator;
-  [model addItem:accountControlItem
-      toSectionWithIdentifier:SectionIdentifierAccount];
-
-  AccountControlItem* accountControlItemWithExtraLongText =
-      [[AccountControlItem alloc] initWithType:ItemTypeAccount];
-  accountControlItemWithExtraLongText.image = [ChromeIcon infoIcon];
-  accountControlItemWithExtraLongText.text =
-      @"Account Control Settings - long title";
-  accountControlItemWithExtraLongText.detailText =
-      @"Detail text detail text detail text detail text detail text.";
-  accountControlItemWithExtraLongText.accessoryType =
-      UITableViewCellAccessoryDisclosureIndicator;
-  [model addItem:accountControlItemWithExtraLongText
       toSectionWithIdentifier:SectionIdentifierAccount];
 
   // SectionIdentifierURL.

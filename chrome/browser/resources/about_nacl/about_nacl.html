@@ -1,0 +1,27 @@
+<!doctype html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="stylesheet" href="chrome://nacl/about_nacl.css">
+</head>
+<body>
+<div id="loading-message">Loading...</div>
+<div id="body-container" hidden>
+  <div id="header">
+    <h1>About NaCl</h1>
+  </div>
+  <div id="naclInfoTemplate">
+    <div jsselect="naclInfo">
+      <span jscontent="key" class="key"></span>
+      <span jscontent="value" class="value"></span>
+    </div>
+  </div>
+</div>
+<script src="chrome://resources/js/promise_resolver.js"></script>
+<script src="chrome://resources/js/cr.js"></script>
+<script src="chrome://nacl/about_nacl.js"></script>
+<script src="chrome://resources/js/jstemplate_compiled.js"></script>
+<script src="chrome://resources/js/util.js"></script>
+</body>
+</html>

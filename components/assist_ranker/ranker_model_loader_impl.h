@@ -162,7 +162,7 @@ class RankerModelLoaderImpl : public RankerModelLoader {
   LoaderState state_ = LoaderState::NOT_STARTED;
 
   // Creates weak pointer references to the loader.
-  base::WeakPtrFactory<RankerModelLoaderImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<RankerModelLoaderImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RankerModelLoaderImpl);
 };

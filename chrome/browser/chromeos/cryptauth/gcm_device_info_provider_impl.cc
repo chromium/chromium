@@ -8,8 +8,8 @@
 #include <stdint.h>
 #include <string>
 
+#include "base/hash/md5.h"
 #include "base/linux_util.h"
-#include "base/md5.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/version.h"

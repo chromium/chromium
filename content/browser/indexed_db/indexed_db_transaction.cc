@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,7 +20,7 @@
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_tracing.h"
-#include "third_party/blink/public/platform/modules/indexeddb/web_idb_database_exception.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 namespace content {
@@ -27,15 +28,6 @@ namespace content {
 namespace {
 
 const int64_t kInactivityTimeoutPeriodSeconds = 60;
-
-// Helper for posting a task to call IndexedDBTransaction::Commit when we know
-// the transaction had no requests and therefore the commit must succeed.
-void CommitUnused(base::WeakPtr<IndexedDBTransaction> transaction) {
-  if (!transaction)
-    return;
-  leveldb::Status status = transaction->Commit();
-  DCHECK(status.ok());
-}
 
 // Used for UMA metrics - do not change values.
 enum UmaIDBException {
@@ -50,21 +42,21 @@ enum UmaIDBException {
 };
 
 // Used for UMA metrics - do not change mappings.
-UmaIDBException ExceptionCodeToUmaEnum(uint16_t code) {
+UmaIDBException ExceptionCodeToUmaEnum(blink::mojom::IDBException code) {
   switch (code) {
-    case blink::kWebIDBDatabaseExceptionUnknownError:
+    case blink::mojom::IDBException::kUnknownError:
       return UmaIDBExceptionUnknownError;
-    case blink::kWebIDBDatabaseExceptionConstraintError:
+    case blink::mojom::IDBException::kConstraintError:
       return UmaIDBExceptionConstraintError;
-    case blink::kWebIDBDatabaseExceptionDataError:
+    case blink::mojom::IDBException::kDataError:
       return UmaIDBExceptionDataError;
-    case blink::kWebIDBDatabaseExceptionVersionError:
+    case blink::mojom::IDBException::kVersionError:
       return UmaIDBExceptionVersionError;
-    case blink::kWebIDBDatabaseExceptionAbortError:
+    case blink::mojom::IDBException::kAbortError:
       return UmaIDBExceptionAbortError;
-    case blink::kWebIDBDatabaseExceptionQuotaError:
+    case blink::mojom::IDBException::kQuotaError:
       return UmaIDBExceptionQuotaError;
-    case blink::kWebIDBDatabaseExceptionTimeoutError:
+    case blink::mojom::IDBException::kTimeoutError:
       return UmaIDBExceptionTimeoutError;
     default:
       NOTREACHED();
@@ -74,8 +66,8 @@ UmaIDBException ExceptionCodeToUmaEnum(uint16_t code) {
 
 }  // namespace
 
-IndexedDBTransaction::TaskQueue::TaskQueue() {}
-IndexedDBTransaction::TaskQueue::~TaskQueue() { clear(); }
+IndexedDBTransaction::TaskQueue::TaskQueue() = default;
+IndexedDBTransaction::TaskQueue::~TaskQueue() = default;
 
 void IndexedDBTransaction::TaskQueue::clear() {
   while (!queue_.empty())
@@ -89,8 +81,8 @@ IndexedDBTransaction::Operation IndexedDBTransaction::TaskQueue::pop() {
   return task;
 }
 
-IndexedDBTransaction::TaskStack::TaskStack() {}
-IndexedDBTransaction::TaskStack::~TaskStack() { clear(); }
+IndexedDBTransaction::TaskStack::TaskStack() = default;
+IndexedDBTransaction::TaskStack::~TaskStack() = default;
 
 void IndexedDBTransaction::TaskStack::clear() {
   while (!stack_.empty())
@@ -109,16 +101,21 @@ IndexedDBTransaction::IndexedDBTransaction(
     IndexedDBConnection* connection,
     const std::set<int64_t>& object_store_ids,
     blink::mojom::IDBTransactionMode mode,
+    TasksAvailableCallback tasks_available_callback,
+    TearDownCallback tear_down_callback,
     IndexedDBBackingStore::Transaction* backing_store_transaction)
     : id_(id),
       object_store_ids_(object_store_ids),
       mode_(mode),
       connection_(connection->GetWeakPtr()),
-      transaction_(backing_store_transaction),
-      ptr_factory_(this) {
+      run_tasks_callback_(std::move(tasks_available_callback)),
+      tear_down_callback_(std::move(tear_down_callback)),
+      transaction_(backing_store_transaction) {
   IDB_ASYNC_TRACE_BEGIN("IndexedDBTransaction::lifetime", this);
   callbacks_ = connection_->callbacks();
   database_ = connection_->database();
+  if (database_)
+    database_->TransactionCreated();
 
   diagnostics_.tasks_scheduled = 0;
   diagnostics_.tasks_completed = 0;
@@ -137,9 +134,13 @@ IndexedDBTransaction::~IndexedDBTransaction() {
   DCHECK(!processing_event_queue_);
 }
 
+void IndexedDBTransaction::SetCommitFlag() {
+  is_commit_pending_ = true;
+  run_tasks_callback_.Run();
+}
+
 void IndexedDBTransaction::ScheduleTask(blink::mojom::IDBTaskType type,
                                         Operation task) {
-  DCHECK_NE(state_, COMMITTING);
   if (state_ == FINISHED)
     return;
 
@@ -151,7 +152,8 @@ void IndexedDBTransaction::ScheduleTask(blink::mojom::IDBTaskType type,
   } else {
     preemptive_task_queue_.push(std::move(task));
   }
-  RunTasksIfStarted();
+  if (state() == STARTED)
+    run_tasks_callback_.Run();
 }
 
 void IndexedDBTransaction::ScheduleAbortTask(AbortOperation abort_task) {
@@ -160,59 +162,25 @@ void IndexedDBTransaction::ScheduleAbortTask(AbortOperation abort_task) {
   abort_task_stack_.push(std::move(abort_task));
 }
 
-void IndexedDBTransaction::RunTasksIfStarted() {
-  DCHECK(used_);
-
-  // Not started by the coordinator yet.
-  if (state_ != STARTED)
-    return;
-
-  // A task is already posted.
-  if (should_process_queue_)
-    return;
-
-  should_process_queue_ = true;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&IndexedDBTransaction::ProcessTaskQueue,
-                                ptr_factory_.GetWeakPtr()));
-}
-
-void IndexedDBTransaction::ForcePendingCommit() {
-  IDB_TRACE1("IndexedDBTransaction::ForceCommit", "txn.id", id());
-  DCHECK(is_commit_pending_);
+leveldb::Status IndexedDBTransaction::Abort(
+    const IndexedDBDatabaseError& error) {
   if (state_ == FINISHED)
-    return;
+    return leveldb::Status::OK();
 
-  should_process_queue_ = true;
-  state_ = STARTED;
-  if (!task_queue_.empty()) {
-    // Commits when completed.
-    ProcessTaskQueue();
-  } else {
-    leveldb::Status result = Commit();
-    if (!result.ok())
-      database_->ReportError(result);
-  }
-}
+  base::UmaHistogramEnumeration("WebCore.IndexedDB.TransactionAbortReason",
+                                ExceptionCodeToUmaEnum(error.code()),
+                                UmaIDBExceptionExclusiveMaxValue);
 
-void IndexedDBTransaction::Abort(const IndexedDBDatabaseError& error) {
-  DCHECK(!processing_event_queue_);
-  DCHECK(!is_commit_pending_);
-
-  if (state_ == FINISHED)
-    return;
-
-  UMA_HISTOGRAM_ENUMERATION("WebCore.IndexedDB.TransactionAbortReason",
-                            ExceptionCodeToUmaEnum(error.code()),
-                            UmaIDBExceptionExclusiveMaxValue);
-
+  aborted_ = true;
   timeout_timer_.Stop();
 
   state_ = FINISHED;
-  should_process_queue_ = false;
 
-  if (backing_store_transaction_begun_)
-    transaction_->Rollback();
+  if (backing_store_transaction_begun_) {
+    leveldb::Status status = transaction_->Rollback();
+    if (!status.ok())
+      return status;
+  }
 
   // Run the abort tasks, if any.
   while (!abort_task_stack_.empty())
@@ -241,18 +209,22 @@ void IndexedDBTransaction::Abort(const IndexedDBDatabaseError& error) {
   // Transactions must also be marked as completed before the
   // front-end is notified, as the transaction completion unblocks
   // operations like closing connections.
-  locks_.clear();
+  locks_receiver_.locks.clear();
+  locks_receiver_.AbortLockRequest();
 
   if (callbacks_.get())
     callbacks_->OnAbort(*this, error);
 
-  database_->TransactionFinished(this, false);
+  if (database_)
+    database_->TransactionFinished(mode_, false);
+  run_tasks_callback_.Run();
+  return leveldb::Status::OK();
+}
 
-  // RemoveTransaction will delete |this|.
-  // Note: During force-close situations, the connection can be destroyed during
-  // the |IndexedDBDatabase::TransactionFinished| call
-  if (connection_)
-    connection_->RemoveTransaction(id_);
+// static
+leveldb::Status IndexedDBTransaction::CommitPhaseTwoProxy(
+    IndexedDBTransaction* transaction) {
+  return transaction->CommitPhaseTwo();
 }
 
 bool IndexedDBTransaction::IsTaskQueueEmpty() const {
@@ -271,45 +243,20 @@ void IndexedDBTransaction::UnregisterOpenCursor(IndexedDBCursor* cursor) {
   open_cursors_.erase(cursor);
 }
 
-void IndexedDBTransaction::Start(std::vector<ScopeLock> locks) {
-  // TransactionCoordinator has started this transaction.
+void IndexedDBTransaction::Start() {
   DCHECK_EQ(CREATED, state_);
   state_ = STARTED;
-  locks_ = std::move(locks);
+  DCHECK(!locks_receiver_.locks.empty());
   diagnostics_.start_time = base::Time::Now();
-
-  if (!used_) {
-    if (is_commit_pending_) {
-      // The transaction has never had requests issued against it, but the
-      // front-end previously requested a commit; do the commit now, but not
-      // re-entrantly as that may renter the coordinator.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(&CommitUnused, ptr_factory_.GetWeakPtr()));
-    }
-    return;
-  }
-
-  RunTasksIfStarted();
+  run_tasks_callback_.Run();
 }
 
-class BlobWriteCallbackImpl : public IndexedDBBackingStore::BlobWriteCallback {
- public:
-  explicit BlobWriteCallbackImpl(
-      base::WeakPtr<IndexedDBTransaction> transaction)
-      : transaction_(std::move(transaction)) {}
-
-  leveldb::Status Run(IndexedDBBackingStore::BlobWriteResult result) override {
-    if (!transaction_)
-      return leveldb::Status::OK();
-    return transaction_->BlobWriteComplete(result);
+void IndexedDBTransaction::EnsureBackingStoreTransactionBegun() {
+  if (!backing_store_transaction_begun_) {
+    transaction_->Begin(std::move(locks_receiver_.locks));
+    backing_store_transaction_begun_ = true;
   }
-
- protected:
-  ~BlobWriteCallbackImpl() override {}
-
- private:
-  base::WeakPtr<IndexedDBTransaction> transaction_;
-};
+}
 
 leveldb::Status IndexedDBTransaction::BlobWriteComplete(
     IndexedDBBackingStore::BlobWriteResult result) {
@@ -318,27 +265,24 @@ leveldb::Status IndexedDBTransaction::BlobWriteComplete(
     return leveldb::Status::OK();
   DCHECK_EQ(state_, COMMITTING);
 
-  leveldb::Status s = leveldb::Status::OK();
-  // Switch statement to protect against adding new enum values.
   switch (result) {
-    case IndexedDBBackingStore::BlobWriteResult::FAILURE_ASYNC:
-      Abort(IndexedDBDatabaseError(blink::kWebIDBDatabaseExceptionDataError,
-                                   "Failed to write blobs."));
+    case IndexedDBBackingStore::BlobWriteResult::kFailure: {
+      leveldb::Status status = Abort(IndexedDBDatabaseError(
+          blink::mojom::IDBException::kDataError, "Failed to write blobs."));
+      if (!status.ok())
+        tear_down_callback_.Run(status);
+      // The result is ignored.
       return leveldb::Status::OK();
-    case IndexedDBBackingStore::BlobWriteResult::SUCCESS_ASYNC:
-    case IndexedDBBackingStore::BlobWriteResult::SUCCESS_SYNC: {
-      // Save the database as |this| can be destroyed in the next line. We also
-      // make
-      // sure to handle the error if we're not being called synchronously.
-      scoped_refptr<IndexedDBDatabase> database = database_;
-      s = CommitPhaseTwo();
-      if (!s.ok() &&
-          result == IndexedDBBackingStore::BlobWriteResult::SUCCESS_ASYNC)
-        database->ReportError(s);
-      break;
+    }
+    case IndexedDBBackingStore::BlobWriteResult::kRunPhaseTwoAsync:
+      ScheduleTask(base::BindOnce(&CommitPhaseTwoProxy));
+      run_tasks_callback_.Run();
+      return leveldb::Status::OK();
+    case IndexedDBBackingStore::BlobWriteResult::kRunPhaseTwoAndReturnResult: {
+      return CommitPhaseTwo();
     }
   }
-  return s;
+  NOTREACHED();
 }
 
 leveldb::Status IndexedDBTransaction::Commit() {
@@ -373,8 +317,8 @@ leveldb::Status IndexedDBTransaction::Commit() {
   // properly handled.
   if (num_errors_sent_ != num_errors_handled_) {
     is_commit_pending_ = false;
-    Abort(IndexedDBDatabaseError(blink::kWebIDBDatabaseExceptionUnknownError));
-    return leveldb::Status::OK();
+    return Abort(
+        IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError));
   }
 
   state_ = COMMITTING;
@@ -383,11 +327,16 @@ leveldb::Status IndexedDBTransaction::Commit() {
   if (!used_) {
     s = CommitPhaseTwo();
   } else {
-    scoped_refptr<IndexedDBBackingStore::BlobWriteCallback> callback(
-        new BlobWriteCallbackImpl(ptr_factory_.GetWeakPtr()));
     // CommitPhaseOne will call the callback synchronously if there are no blobs
     // to write.
-    s = transaction_->CommitPhaseOne(callback);
+    s = transaction_->CommitPhaseOne(base::BindOnce(
+        [](base::WeakPtr<IndexedDBTransaction> transaction,
+           IndexedDBBackingStore::BlobWriteResult result) {
+          if (!transaction)
+            return leveldb::Status::OK();
+          return transaction->BlobWriteComplete(result);
+        },
+        ptr_factory_.GetWeakPtr()));
   }
 
   return s;
@@ -449,15 +398,16 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
   // Transactions must also be marked as completed before the
   // front-end is notified, as the transaction completion unblocks
   // operations like closing connections.
-  locks_.clear();
+  locks_receiver_.locks.clear();
 
   if (committed) {
     abort_task_stack_.clear();
 
-    // SendObservations must be called before OnComplete to ensure consistency
-    // of callbacks at renderer.
+    // |observations_callback_| must be called before OnComplete to ensure
+    // consistency of callbacks at renderer.
     if (!connection_changes_map_.empty()) {
-      database_->SendObservations(std::move(connection_changes_map_));
+      if (database_)
+        database_->SendObservations(std::move(connection_changes_map_));
       connection_changes_map_.clear();
     }
     {
@@ -468,10 +418,8 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
     }
     if (!pending_observers_.empty() && connection_)
       connection_->ActivatePendingObservers(std::move(pending_observers_));
-
-    database_->TransactionFinished(this, true);
-    // RemoveTransaction will delete |this|.
-    connection_->RemoveTransaction(id_);
+    if (database_)
+      database_->TransactionFinished(mode_, true);
     return s;
   } else {
     while (!abort_task_stack_.empty())
@@ -480,87 +428,94 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
     IndexedDBDatabaseError error;
     if (leveldb_env::IndicatesDiskFull(s)) {
       error = IndexedDBDatabaseError(
-          blink::kWebIDBDatabaseExceptionQuotaError,
+          blink::mojom::IDBException::kQuotaError,
           "Encountered disk full while committing transaction.");
     } else {
-      error =
-          IndexedDBDatabaseError(blink::kWebIDBDatabaseExceptionUnknownError,
-                                 "Internal error committing transaction.");
+      error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
+                                     "Internal error committing transaction.");
     }
     callbacks_->OnAbort(*this, error);
-    database_->TransactionFinished(this, false);
+    if (database_)
+      database_->TransactionFinished(mode_, false);
   }
   return s;
 }
 
-void IndexedDBTransaction::ProcessTaskQueue() {
-  IDB_TRACE1("IndexedDBTransaction::ProcessTaskQueue", "txn.id", id());
+std::tuple<IndexedDBTransaction::RunTasksResult, leveldb::Status>
+IndexedDBTransaction::RunTasks() {
+  IDB_TRACE1("IndexedDBTransaction::RunTasks", "txn.id", id());
 
   DCHECK(!processing_event_queue_);
 
   // May have been aborted.
-  if (!should_process_queue_)
-    return;
+  if (aborted_)
+    return {RunTasksResult::kAborted, leveldb::Status::OK()};
+  if (IsTaskQueueEmpty() && !is_commit_pending_)
+    return {RunTasksResult::kNotFinished, leveldb::Status::OK()};
 
   processing_event_queue_ = true;
 
-  DCHECK(!IsTaskQueueEmpty());
-  should_process_queue_ = false;
-
   if (!backing_store_transaction_begun_) {
-    transaction_->Begin();
+    transaction_->Begin(std::move(locks_receiver_.locks));
     backing_store_transaction_begun_ = true;
   }
 
+  bool run_preemptive_queue =
+      !preemptive_task_queue_.empty() || pending_preemptive_events_ != 0;
   TaskQueue* task_queue =
-      pending_preemptive_events_ ? &preemptive_task_queue_ : &task_queue_;
+      run_preemptive_queue ? &preemptive_task_queue_ : &task_queue_;
   while (!task_queue->empty() && state_ != FINISHED) {
-    DCHECK_EQ(state_, STARTED);
+    DCHECK(state_ == STARTED || state_ == COMMITTING) << state_;
     Operation task(task_queue->pop());
     leveldb::Status result = std::move(task).Run(this);
-    if (!pending_preemptive_events_) {
+    if (!run_preemptive_queue) {
       DCHECK(diagnostics_.tasks_completed < diagnostics_.tasks_scheduled);
       ++diagnostics_.tasks_completed;
     }
     if (!result.ok()) {
       processing_event_queue_ = false;
-      database_->ReportError(result);
-      return;
+      return {
+          RunTasksResult::kError,
+          result,
+      };
     }
 
+    run_preemptive_queue =
+        !preemptive_task_queue_.empty() || pending_preemptive_events_ != 0;
     // Event itself may change which queue should be processed next.
-    task_queue =
-        pending_preemptive_events_ ? &preemptive_task_queue_ : &task_queue_;
+    task_queue = run_preemptive_queue ? &preemptive_task_queue_ : &task_queue_;
   }
 
   // If there are no pending tasks, we haven't already committed/aborted,
   // and the front-end requested a commit, it is now safe to do so.
-  if (!HasPendingTasks() && state_ != FINISHED && is_commit_pending_) {
+  if (!HasPendingTasks() && state_ == STARTED && is_commit_pending_) {
     processing_event_queue_ = false;
     // This can delete |this|.
     leveldb::Status result = Commit();
     if (!result.ok())
-      database_->ReportError(result);
-    return;
+      return {RunTasksResult::kError, result};
   }
 
   // The transaction may have been aborted while processing tasks.
   if (state_ == FINISHED) {
     processing_event_queue_ = false;
-    return;
+    return {aborted_ ? RunTasksResult::kAborted : RunTasksResult::kCommitted,
+            leveldb::Status::OK()};
   }
 
-  DCHECK(state_ == STARTED);
+  DCHECK(state_ == STARTED || state_ == COMMITTING) << state_;
 
   // Otherwise, start a timer in case the front-end gets wedged and
   // never requests further activity. Read-only transactions don't
   // block other transactions, so don't time those out.
-  if (mode_ != blink::mojom::IDBTransactionMode::ReadOnly) {
+  if (mode_ != blink::mojom::IDBTransactionMode::ReadOnly &&
+      state_ == STARTED) {
     timeout_timer_.Start(FROM_HERE, GetInactivityTimeout(),
                          base::BindOnce(&IndexedDBTransaction::Timeout,
                                         ptr_factory_.GetWeakPtr()));
   }
   processing_event_queue_ = false;
+  return {RunTasksResult::kNotFinished, leveldb::Status::OK()};
 }
 
 base::TimeDelta IndexedDBTransaction::GetInactivityTimeout() const {
@@ -568,9 +523,11 @@ base::TimeDelta IndexedDBTransaction::GetInactivityTimeout() const {
 }
 
 void IndexedDBTransaction::Timeout() {
-  Abort(IndexedDBDatabaseError(
-      blink::kWebIDBDatabaseExceptionTimeoutError,
+  leveldb::Status result = Abort(IndexedDBDatabaseError(
+      blink::mojom::IDBException::kTimeoutError,
       base::ASCIIToUTF16("Transaction timed out due to inactivity.")));
+  if (!result.ok())
+    tear_down_callback_.Run(result);
 }
 
 void IndexedDBTransaction::CloseOpenCursorBindings() {
@@ -583,9 +540,13 @@ void IndexedDBTransaction::CloseOpenCursorBindings() {
 
 void IndexedDBTransaction::CloseOpenCursors() {
   IDB_TRACE1("IndexedDBTransaction::CloseOpenCursors", "txn.id", id());
-  for (auto* cursor : open_cursors_)
-    cursor->Close();
+
+  // IndexedDBCursor::Close() indirectly mutates |open_cursors_|, when it calls
+  // IndexedDBTransaction::UnregisterOpenCursor().
+  std::set<IndexedDBCursor*> open_cursors = std::move(open_cursors_);
   open_cursors_.clear();
+  for (auto* cursor : open_cursors)
+    cursor->Close();
 }
 
 void IndexedDBTransaction::AddPendingObserver(
@@ -601,7 +562,7 @@ void IndexedDBTransaction::RemovePendingObservers(
   const auto& it = std::remove_if(
       pending_observers_.begin(), pending_observers_.end(),
       [&pending_observer_ids](const std::unique_ptr<IndexedDBObserver>& o) {
-        return base::ContainsValue(pending_observer_ids, o->id());
+        return base::Contains(pending_observer_ids, o->id());
       });
   if (it != pending_observers_.end())
     pending_observers_.erase(it, pending_observers_.end());
@@ -613,8 +574,7 @@ void IndexedDBTransaction::AddObservation(
   auto it = connection_changes_map_.find(connection_id);
   if (it == connection_changes_map_.end()) {
     it = connection_changes_map_
-             .insert(std::make_pair(connection_id,
-                                    blink::mojom::IDBObserverChanges::New()))
+             .insert({connection_id, blink::mojom::IDBObserverChanges::New()})
              .first;
   }
   it->second->observations.push_back(std::move(observation));

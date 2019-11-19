@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div role="grid" id="grid-readonly-undefined">
   <div role="row">
@@ -36,42 +35,42 @@ function axElementById(id) {
     return accessibilityController.accessibleElementById(id);
 }
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var cell = axElementById("cell-undef-undef");
     assert_equals(cell.restriction, "none");
 }, "readonly=false on cell where readonly is undefined on grid+cell");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var cell = axElementById("cell-undef-true");
     assert_equals(cell.restriction, "readOnly");
 }, "readonly=true on a cell");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var cell = axElementById("cell-undef-false");
     assert_equals(cell.restriction, "none");
 }, "readonly=false on a cell");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var cell = axElementById("cell-true-undef");
     assert_equals(cell.restriction, "readOnly");
 }, "Propagation of readonly=true from grid to cells");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var cell = axElementById("cell-true-false");
     assert_equals(cell.restriction, "none");
 }, "Cell readonly=false overrides propagation of grid readonly=true");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var cell = axElementById("cell-false-undef");
     assert_equals(cell.restriction, "none");
 }, "Propagation of readonly=false from grid to cells");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var cell = axElementById("cell-false-true");
     assert_equals(cell.restriction, "readOnly");
 }, "Cell readonly=true overrides propagation of grid readonly=false");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var cell = axElementById("treegrid-cell-true-undef");
     assert_equals(cell.restriction, "readOnly");
 }, "Propagation of readonly=true in a readonly treegrid");

@@ -11,33 +11,35 @@
 
 namespace blink {
 
-class XRStageBounds;
-
 class XRBoundedReferenceSpace final : public XRReferenceSpace {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  XRBoundedReferenceSpace(XRSession*);
+  explicit XRBoundedReferenceSpace(XRSession*);
+  XRBoundedReferenceSpace(XRSession*, XRRigidTransform*);
   ~XRBoundedReferenceSpace() override;
 
-  void UpdateBoundsGeometry(XRStageBounds*);
+  std::unique_ptr<TransformationMatrix> DefaultViewerPose() override;
+  std::unique_ptr<TransformationMatrix> SpaceFromMojo(
+      const TransformationMatrix& mojo_from_viewer) override;
 
-  std::unique_ptr<TransformationMatrix> DefaultPose() override;
-  std::unique_ptr<TransformationMatrix> TransformBasePose(
-      const TransformationMatrix& base_pose) override;
+  HeapVector<Member<DOMPointReadOnly>> boundsGeometry();
 
-  HeapVector<Member<DOMPointReadOnly>> boundsGeometry() const {
-    return bounds_geometry_;
-  }
+  base::Optional<XRNativeOriginInformation> NativeOrigin() const override;
 
   void Trace(blink::Visitor*) override;
 
+  void OnReset() override;
+
  private:
-  void UpdateFloorLevelTransform();
+  XRBoundedReferenceSpace* cloneWithOriginOffset(
+      XRRigidTransform* origin_offset) override;
+
+  void EnsureUpdated();
 
   HeapVector<Member<DOMPointReadOnly>> bounds_geometry_;
-  std::unique_ptr<TransformationMatrix> floor_level_transform_;
-  unsigned int display_info_id_ = 0;
+  std::unique_ptr<TransformationMatrix> bounded_space_from_mojo_;
+  unsigned int stage_parameters_id_ = 0;
 };
 
 }  // namespace blink

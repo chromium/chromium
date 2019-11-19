@@ -85,15 +85,13 @@ gfx::Image ExtensionAction::FallbackIcon() {
 const int ExtensionAction::kDefaultTabId = -1;
 
 ExtensionAction::ExtensionAction(const extensions::Extension& extension,
-                                 extensions::ActionInfo::Type action_type,
                                  const extensions::ActionInfo& manifest_data)
     : extension_id_(extension.id()),
       extension_name_(extension.name()),
-      action_type_(action_type) {
-  // Page/script actions are hidden/disabled by default, and browser actions are
-  // visible/enabled by default.
+      action_type_(manifest_data.type),
+      default_state_(manifest_data.default_state) {
   SetIsVisible(kDefaultTabId,
-               action_type == extensions::ActionInfo::TYPE_BROWSER);
+               default_state_ == extensions::ActionInfo::STATE_ENABLED);
   Populate(extension, manifest_data);
 }
 
@@ -216,6 +214,7 @@ void ExtensionAction::ClearAllValuesForTab(int tab_id) {
   title_.erase(tab_id);
   icon_.erase(tab_id);
   badge_text_.erase(tab_id);
+  dnr_action_count_.erase(tab_id);
   badge_text_color_.erase(tab_id);
   badge_background_color_.erase(tab_id);
   is_visible_.erase(tab_id);
@@ -253,6 +252,18 @@ gfx::Image ExtensionAction::GetPlaceholderIconImage() const {
   return placeholder_icon_image_;
 }
 
+std::string ExtensionAction::GetDisplayBadgeText(int tab_id) const {
+  return UseDNRActionCountAsBadgeText(tab_id)
+             ? base::NumberToString(GetDNRActionCount(tab_id))
+             : GetExplicitlySetBadgeText(tab_id);
+}
+
+bool ExtensionAction::UseDNRActionCountAsBadgeText(int tab_id) const {
+  // Tab specific badge text set by an extension overrides the automatically set
+  // action count.
+  return !HasBadgeText(tab_id) && HasDNRActionCount(tab_id);
+}
+
 bool ExtensionAction::HasPopupUrl(int tab_id) const {
   return HasValue(popup_url_, tab_id);
 }
@@ -279,6 +290,10 @@ bool ExtensionAction::HasIsVisible(int tab_id) const {
 
 bool ExtensionAction::HasIcon(int tab_id) const {
   return HasValue(icon_, tab_id);
+}
+
+bool ExtensionAction::HasDNRActionCount(int tab_id) const {
+  return HasValue(dnr_action_count_, tab_id);
 }
 
 void ExtensionAction::SetDefaultIconForTest(

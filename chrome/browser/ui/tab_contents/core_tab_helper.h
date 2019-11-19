@@ -57,7 +57,8 @@ class CoreTabHelper : public content::WebContentsObserver,
   void NavigationEntriesDeleted() override;
 
   void DoSearchByImageInNewTab(
-      chrome::mojom::ChromeRenderFrameAssociatedPtr chrome_render_frame,
+      mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+          chrome_render_frame,
       const GURL& src_url,
       const std::vector<uint8_t>& thumbnail_data,
       const gfx::Size& original_size);
@@ -70,7 +71,7 @@ class CoreTabHelper : public content::WebContentsObserver,
   // (full-page plugins for now only) permissions.
   int content_restrictions_;
 
-  base::WeakPtrFactory<CoreTabHelper> weak_factory_;
+  base::WeakPtrFactory<CoreTabHelper> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

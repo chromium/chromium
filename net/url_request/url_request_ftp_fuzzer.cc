@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/url_request/url_request.h"
-
 #include <stddef.h>
 #include <stdint.h>
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/fuzzed_data_provider.h"
 #include "net/base/request_priority.h"
-#include "net/dns/fuzzed_host_resolver.h"
+#include "net/dns/context_host_resolver.h"
+#include "net/dns/fuzzed_host_resolver_util.h"
+#include "net/ftp/ftp_auth_cache.h"
 #include "net/ftp/ftp_network_transaction.h"
 #include "net/ftp/ftp_transaction_factory.h"
 #include "net/socket/client_socket_factory.h"
@@ -54,21 +55,25 @@ class FuzzedFtpTransactionFactory : public net::FtpTransactionFactory {
 
 // Integration fuzzer for URLRequestFtpJob.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::FuzzedDataProvider data_provider(data, size);
+  FuzzedDataProvider data_provider(data, size);
   net::TestURLRequestContext url_request_context(true);
   net::FuzzedSocketFactory fuzzed_socket_factory(&data_provider);
   url_request_context.set_client_socket_factory(&fuzzed_socket_factory);
 
   // Need to fuzz the HostResolver to select between IPv4 and IPv6.
-  net::FuzzedHostResolver host_resolver(net::HostResolver::Options(), nullptr,
-                                        &data_provider);
-  url_request_context.set_host_resolver(&host_resolver);
+  std::unique_ptr<net::ContextHostResolver> host_resolver =
+      net::CreateFuzzedContextHostResolver(net::HostResolver::ManagerOptions(),
+                                           nullptr, &data_provider,
+                                           true /* enable_caching */);
+  url_request_context.set_host_resolver(host_resolver.get());
 
   net::URLRequestJobFactoryImpl job_factory;
+  net::FtpAuthCache auth_cache;
   job_factory.SetProtocolHandler(
       "ftp", net::FtpProtocolHandler::CreateForTesting(
                  std::make_unique<FuzzedFtpTransactionFactory>(
-                     &host_resolver, &fuzzed_socket_factory)));
+                     host_resolver.get(), &fuzzed_socket_factory),
+                 &auth_cache));
   url_request_context.set_job_factory(&job_factory);
 
   url_request_context.Init();

@@ -97,7 +97,9 @@ def _FromObjdumpLine(line):
   if not m:
     return None
 
-  assert m.group('assert_scope') in set(['g', 'l']), line
+  # A symbol can be (g)lobal, (l)ocal, or neither (a space). Per objdump's
+  # manpage, "A symbol can be neither local or global for a variety of reasons".
+  assert m.group('assert_scope') in set(['g', 'l', ' ']), line
   assert m.group('assert_weak_or_strong') in set(['w', ' ']), line
   assert m.group('assert_tab') == '\t', line
   assert m.group('assert_4spaces') == ' ' * 4, line
@@ -234,8 +236,8 @@ _NM_PATH = os.path.join(_SRC_PATH, 'third_party', 'llvm-build',
 
 def CheckLlvmNmExists():
   assert os.path.exists(_NM_PATH), (
-      'llvm-nm not found. Please run //tools/clang/scripts/download_objdump.py'
-      ' to install it.')
+      'llvm-nm not found. Please run '
+      '//tools/clang/scripts/update.py --package=objdump to install it.')
 
 
 def SymbolNamesFromLlvmBitcodeFile(filename):

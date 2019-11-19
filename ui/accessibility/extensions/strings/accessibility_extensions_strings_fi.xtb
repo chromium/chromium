@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Kuvat on korvattu niiden vaihtoehtoisella tekstillä.</translation>
 <translation id="4896660567607030658">Ei palautetta, näytä osoitin.</translation>
 <translation id="4937901943818762779">Salli kuvien animointi, mutta vain kerran.</translation>
+<translation id="4949131196216960195">Ota Näppäimistöselaaminen käyttöön painamalla &lt;span class='key'&gt;Haku&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (kirkkauden lisäämisnäppäin tai F7). Poista Caps Lock käytöstä painamalla samaa näppäinyhdistelmää uudelleen.</translation>
 <translation id="4954450790315188152">Kun Näppäimistöselaaminen on käytössä:</translation>
 <translation id="5041932793799765940">Värien säätö</translation>
 <translation id="5094574508723441140">Lisäkontrasti</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">Peruuta</translation>
 <translation id="786423340267544509">Lisää reunus elementteihin, joissa on aria-describedat- tai longdesc-attribuutteja.</translation>
 <translation id="7942349550061667556">Punainen</translation>
-<translation id="8254860724243898966">Ota Näppäimistöselaaminen käyttöön painamalla &lt;span class='key'&gt;alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (kirkkauden lisäämisnäppäin tai F7). Poista ominaisuus käytöstä painamalla näppäimiä uudelleen.</translation>
 <translation id="8260673944985561857">Näppäimistöselaamisen asetukset</translation>
 <translation id="8321034316479930120">Animaatiokäytäntö</translation>
 <translation id="8480209185614411573">Korkea kontrasti</translation>

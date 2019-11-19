@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_VIEW_UTILS_H_
 #define CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_VIEW_UTILS_H_
 
+#include <utility>
+
 #include "base/strings/string16.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
+#include "components/password_manager/core/browser/origin_credential_store.h"
 
 namespace autofill {
 struct PasswordForm;
@@ -70,6 +73,11 @@ void GetManagePasswordsDialogTitleText(const GURL& user_visible_url,
 // Returns an username in the form that should be shown in the bubble.
 base::string16 GetDisplayUsername(const autofill::PasswordForm& form);
 
+// Returns either the username or the |IDS_PASSWORD_MANAGER_EMPTY_LOGIN| in case
+// it is empty.
+base::string16 GetDisplayUsername(
+    const password_manager::CredentialPair& credential_pair);
+
 // Returns |federation_origin| in a human-readable format.
 base::string16 GetDisplayFederation(const autofill::PasswordForm& form);
 
@@ -100,5 +108,8 @@ void NavigateToGooglePasswordManager(
 void NavigateToManagePasswordsPage(
     Browser* browser,
     password_manager::ManagePasswordsReferrer referrer);
+
+// Navigates to Passwords Checkup page.
+void NavigateToPasswordCheckupPage(Profile* profile);
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_VIEW_UTILS_H_

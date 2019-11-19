@@ -1,0 +1,36 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  generate_java = true
+  sources = [
+    "cursor.mojom",
+    "ui_base_types.mojom",
+    "window_open_disposition.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [
+    "cursor_mojom_traits_unittest.cc",
+  ]
+  deps = [
+    ":mojom",
+    "//skia/public/mojom",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events",
+    "//ui/gfx/geometry/mojom:mojom_traits",
+  ]
+}

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
+#include "components/language/android/jni_headers/GeoLanguageProviderBridge_jni.h"
 #include "components/language/content/browser/geo_language_provider.h"
-#include "jni/GeoLanguageProviderBridge_jni.h"
 
 static void JNI_GeoLanguageProviderBridge_GetCurrentGeoLanguages(
     JNIEnv* env,

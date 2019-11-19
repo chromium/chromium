@@ -4,7 +4,6 @@
 
 #include "extensions/browser/shared_user_script_master.h"
 
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/host_id.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
@@ -16,8 +15,7 @@ SharedUserScriptMaster::SharedUserScriptMaster(
     : loader_(browser_context,
               HostID(),
               true /* listen_for_extension_system_loaded */),
-      browser_context_(browser_context),
-      extension_registry_observer_(this) {
+      browser_context_(browser_context) {
   extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
 }
 

@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox.geo;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
 import android.support.v4.util.ObjectsCompat;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

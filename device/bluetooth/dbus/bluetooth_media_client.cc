@@ -50,8 +50,7 @@ BluetoothMediaClient::EndpointProperties::~EndpointProperties() = default;
 class BluetoothMediaClientImpl : public BluetoothMediaClient,
                                  dbus::ObjectManager::Interface {
  public:
-  BluetoothMediaClientImpl()
-      : object_manager_(nullptr), weak_ptr_factory_(this) {}
+  BluetoothMediaClientImpl() : object_manager_(nullptr) {}
 
   ~BluetoothMediaClientImpl() override {
     object_manager_->UnregisterInterface(kBluetoothMediaInterface);
@@ -210,7 +209,7 @@ class BluetoothMediaClientImpl : public BluetoothMediaClient,
   // List of observers interested in event notifications from us.
   base::ObserverList<BluetoothMediaClient::Observer>::Unchecked observers_;
 
-  base::WeakPtrFactory<BluetoothMediaClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothMediaClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothMediaClientImpl);
 };

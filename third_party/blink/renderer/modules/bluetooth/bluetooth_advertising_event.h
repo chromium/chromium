@@ -19,28 +19,6 @@ class BluetoothAdvertisingEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static BluetoothAdvertisingEvent* Create(
-      const AtomicString& event_type,
-      const BluetoothAdvertisingEventInit* initializer) {
-    return MakeGarbageCollected<BluetoothAdvertisingEvent>(event_type,
-                                                           initializer);
-  }
-
-  static BluetoothAdvertisingEvent* Create(
-      const AtomicString& event_type,
-      BluetoothDevice* device,
-      const String& name,
-      const HeapVector<StringOrUnsignedLong>& uuids,
-      base::Optional<uint16_t> appearance,
-      base::Optional<int8_t> txPower,
-      base::Optional<int8_t> rssi,
-      BluetoothManufacturerDataMap* manufacturer_data_map,
-      BluetoothServiceDataMap* service_data_map) {
-    return MakeGarbageCollected<BluetoothAdvertisingEvent>(
-        event_type, device, name, uuids, appearance, txPower, rssi,
-        manufacturer_data_map, service_data_map);
-  }
-
   BluetoothAdvertisingEvent(const AtomicString& event_type,
                             const BluetoothAdvertisingEventInit* initializer);
 

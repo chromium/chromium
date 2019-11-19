@@ -80,7 +80,7 @@ std::vector<std::string> UlpLanguageCodeLocator::GetLanguageCodes(
           celllangs_cached->GetList()[index] =
               GetCellLanguagePairValue(cell.parent(level), language);
         } else {
-          celllangs_cached->GetList().push_back(
+          celllangs_cached->Append(
               GetCellLanguagePairValue(cell.parent(level), language));
         }
       }

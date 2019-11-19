@@ -4,7 +4,6 @@
 
 #include "ash/accessibility/touch_exploration_manager.h"
 
-#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -41,19 +40,14 @@ TEST_F(TouchExplorationManagerTest, AdjustSound) {
 TEST_F(TouchExplorationManagerTest, HandleAccessibilityGesture) {
   RootWindowController* controller = Shell::GetPrimaryRootWindowController();
   TouchExplorationManager touch_exploration_manager(controller);
-  AccessibilityController* a11y_controller =
-      Shell::Get()->accessibility_controller();
   TestAccessibilityControllerClient client;
-  a11y_controller->SetClient(client.CreateInterfacePtrAndBind());
 
   touch_exploration_manager.HandleAccessibilityGesture(
       ax::mojom::Gesture::kClick);
-  a11y_controller->FlushMojoForTest();
   EXPECT_EQ(ax::mojom::Gesture::kClick, client.last_a11y_gesture());
 
   touch_exploration_manager.HandleAccessibilityGesture(
       ax::mojom::Gesture::kSwipeLeft1);
-  a11y_controller->FlushMojoForTest();
   EXPECT_EQ(ax::mojom::Gesture::kSwipeLeft1, client.last_a11y_gesture());
 }
 

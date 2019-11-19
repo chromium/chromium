@@ -7,11 +7,12 @@ First letter text transform causes assert and bad type cast. This can cause a cr
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 AXRole: AXWebArea
-    AXRole: AXDescriptionListTerm
-        AXRole: AXStaticText "Dt"
-            AXRole: AXInlineTextBox "Dt"
-    AXRole: AXParagraph
-        AXRole: AXStaticText "End of test"
+    AXRole: AXGenericContainer
+        AXRole: AXDescriptionListTerm
+            AXRole: AXStaticText "Dt"
+                AXRole: AXInlineTextBox "Dt"
+        AXRole: AXParagraph
+            AXRole: AXStaticText "End of test"
 
 PASS successfullyParsed is true
 

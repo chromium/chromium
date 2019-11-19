@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- TODO(crbug.com/971791): Copied over this TextView for empty state because there are minor
+         UI differences between it and the built-in android.R.id.empty view in support library
+         preferences, but we should later investigate whether we can remove this and take advantage
+         of the default implementation instead. -->
+    <TextView
+        android:id="@+id/empty_storage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="@string/no_saved_website_settings"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="gone" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_shadow_height"
+        android:layout_gravity="bottom"
+        android:background="@drawable/modern_toolbar_shadow"
+        android:scaleY="-1" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/clear_button"
+        style="@style/TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:text="@string/storage_clear_button_title"
+        app:verticalInset="0dp" />
+</merge>

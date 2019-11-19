@@ -1,0 +1,72 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+    <style>
+      html {
+        background-color: var(--md-background-color);
+      }
+    </style>
+    <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+    <link rel="import" href="chrome://resources/html/polymer.html">
+    <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+    <link rel="import" href="signin_shared_old_css.html">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+    <custom-style>
+      <style include="signin-dialog-shared">
+        .details {
+          padding: 0 24px;
+        }
+        #undoButton {
+<if expr="is_macosx or is_linux">
+          margin-inline-end: 8px;
+</if>
+<if expr="not is_macosx and not is_linux">
+          margin-inline-start: 8px;
+</if>
+        }
+
+        #syncDisabledDetails {
+          line-height: 20px;
+          margin-bottom: 8px;
+          margin-top: 16px;
+          padding: 0 24px;
+        }
+
+      </style>
+    </custom-style>
+  </head>
+  <body>
+    <!--
+      Use the 'consent-description' attribute to annotate all the UI elements
+      that are part of the text the user reads before consenting to the Sync
+      data collection . Similarly, use 'consent-confirmation' on UI elements on
+      which user clicks to indicate consent.
+    -->
+    <div class="container">
+      <div class="top-title-bar" consent-description>
+        $i18n{syncDisabledConfirmationTitle}
+      </div>
+      <div class="details" id="syncDisabledDetails">
+        <div class="body text" consent-description>
+          $i18n{syncDisabledConfirmationDetails}
+        </div>
+      </div>
+      <div class="action-container">
+        <cr-button class="action-button" id="confirmButton"
+            consent-confirmation>
+          $i18n{syncDisabledConfirmationConfirmLabel}
+        </cr-button>
+        <cr-button id="undoButton">
+          $i18n{syncDisabledConfirmationUndoLabel}
+        </cr-button>
+      </div>
+    </div>
+  </body>
+  <link rel="import" href="chrome://resources/html/cr.html">
+  <link rel="import" href="chrome://resources/html/load_time_data.html">
+  <link rel="import" href="chrome://resources/html/util.html">
+  <script src="sync_disabled_confirmation.js"></script>
+  <script src="chrome://sync-confirmation/strings.js"></script>
+</html>

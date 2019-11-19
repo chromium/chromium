@@ -33,7 +33,6 @@ class CC_EXPORT SwapPromiseMonitor {
 
   virtual void OnSetNeedsCommitOnMain() = 0;
   virtual void OnSetNeedsRedrawOnImpl() = 0;
-  virtual void OnForwardScrollUpdateToMainThreadOnImpl() = 0;
 
  protected:
   SwapPromiseManager* swap_promise_manager_;

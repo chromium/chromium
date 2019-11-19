@@ -23,7 +23,7 @@ class MenuHostRootView : public internal::RootView {
  public:
   MenuHostRootView(Widget* widget, SubmenuView* submenu);
 
-  void ClearSubmenu() { submenu_ = NULL; }
+  void ClearSubmenu() { submenu_ = nullptr; }
 
   // Overridden from View:
   bool OnMousePressed(const ui::MouseEvent& event) override;

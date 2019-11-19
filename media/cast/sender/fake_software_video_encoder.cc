@@ -31,7 +31,7 @@ FakeSoftwareVideoEncoder::~FakeSoftwareVideoEncoder() = default;
 void FakeSoftwareVideoEncoder::Initialize() {}
 
 void FakeSoftwareVideoEncoder::Encode(
-    const scoped_refptr<media::VideoFrame>& video_frame,
+    scoped_refptr<media::VideoFrame> video_frame,
     const base::TimeTicks& reference_time,
     SenderEncodedFrame* encoded_frame) {
   DCHECK(encoded_frame);

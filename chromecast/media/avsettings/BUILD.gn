@@ -1,0 +1,39 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//chromecast/chromecast.gni")
+
+buildflag_header("avsettings_buildflags") {
+  header = "avsettings_buildflags.h"
+
+  flags = [
+    "VOLUME_CONTROL_IN_AVSETTINGS_SHLIB=$cast_volume_control_in_avsettings",
+  ]
+}
+
+cast_source_set("avsettings_dummy") {
+  sources = [
+    "avsettings_dummy.cc",
+    "avsettings_dummy.h",
+  ]
+
+  deps = [
+    "//chromecast/public",
+  ]
+}
+
+# Target for OEM partners to override avsettings shared library, i.e.
+# libcast_avsettings_1.0.so.
+cast_shared_library("libcast_avsettings_1.0") {
+  sources = [
+    "avsettings_shlib.cc",
+  ]
+
+  deps = [
+    ":avsettings_buildflags",
+    ":avsettings_dummy",
+    "//chromecast/public",
+  ]
+}

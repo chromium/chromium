@@ -1,164 +1,183 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "InlineTextBox 'begin again, it was very provoking to find that the'",
-          "rect": [14, 240, 406, 139],
+          "object": "NGPhysicalTextFragment 'begin again, it was very provoking to find that the'",
+          "rect": [14, 240, 407, 139],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'besides all\n'",
-          "rect": [14, 240, 406, 139],
+          "object": "NGPhysicalTextFragment 'besides all this, there was generally a ridge or furrow in the way'",
+          "rect": [14, 240, 407, 139],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'doubled-up\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'doubled-up\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'hedgehog had\n'",
-          "rect": [14, 240, 406, 139],
+          "object": "NGPhysicalTextFragment 'doubled-up soldiers were always getting up and walking off to'",
+          "rect": [14, 240, 407, 139],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'other parts of\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'other parts of\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'she wanted to send the hedgehog to, and, as the'",
-          "rect": [14, 240, 406, 139],
+          "object": "NGPhysicalTextFragment 'hedgehog had unrolled itself, and was in the act of crawling away:'",
+          "rect": [14, 240, 407, 139],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'soldiers were always getting up and walking off to'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'soldiers were always getting up and walking off to'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'the ground, Alice soon came to the conclusion that it'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'the ground, Alice soon came to the conclusion that it'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'this, there was generally a ridge or furrow in the way'",
-          "rect": [14, 240, 406, 139],
+          "object": "NGPhysicalTextFragment 'other parts of the ground, Alice soon came to the conclusion that it'",
+          "rect": [14, 240, 407, 139],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'unrolled itself, and was in the act of crawling away:'",
-          "rect": [14, 240, 406, 139],
+          "object": "NGPhysicalTextFragment 'was a very '",
+          "rect": [14, 240, 407, 139],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'was a very\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'was a very\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'wherever\n'",
-          "rect": [14, 240, 406, 139],
+          "object": "NGPhysicalTextFragment 'wherever she wanted to send the hedgehog to, and, as the'",
+          "rect": [14, 240, 407, 139],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'a very short time '",
+          "object": "NGPhysicalTextFragment 'Alice began to feel very uneasy: to be sure, she had not as yet had'",
+          "rect": [14, 500, 407, 99],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'They\u2019re dreadfully fond of beheading people here; the great'",
+          "rect": [14, 500, 407, 99],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'any dispute with the Queen, but she knew that it might happen any'",
+          "rect": [14, 500, 407, 99],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'minute, \u2018and then,\u2019 thought she, \u2018what would become of me?'",
+          "rect": [14, 500, 407, 99],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'wonder is, that there\u2018s any one left alive!\u2019'",
+          "rect": [14, 500, 407, 99],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment ' twist itself round and look up in her'",
+          "rect": [14, 180, 407, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'bursting out laughing: and when she had got its head down, and was'",
+          "rect": [14, 180, 407, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'face, with such a puzzled expression that she could not help'",
+          "rect": [14, 180, 407, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'going to '",
+          "rect": [14, 180, 407, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'The chief difficulty Alice found at first was in managing her'",
+          "rect": [14, 80, 355, 119],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'blow with its head, it '",
+          "rect": [14, 80, 355, 119],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'comfortably enough, under her arm, with its legs hanging'",
+          "rect": [14, 80, 355, 119],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'down, but generally, just as she had got its neck nicely'",
+          "rect": [14, 80, 355, 119],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'flamingo: she succeeded in getting its body tucked away,'",
+          "rect": [14, 80, 355, 119],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'straightened out, and was going to give the hedgehog a'",
+          "rect": [14, 80, 355, 119],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'once in a minute.'",
+          "rect": [14, 440, 355, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'shouting \u2018Off with his head!\u2019 or \u2018Off with her head!\u2019 about'",
+          "rect": [14, 440, 355, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'was in a furious passion, and went stamping about, and'",
+          "rect": [14, 440, 355, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'for'",
           "rect": [65, 380, 304, 59],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'for'",
-          "rect": [65, 380, 304, 59],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'for'",
-          "rect": [65, 380, 304, 59],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'hedgehogs; and in\n'",
+          "object": "NGPhysicalTextFragment 'hedgehogs; and in a very short time '",
           "rect": [65, 380, 304, 59],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'quarrelling all the while, and fighting for the'",
+          "object": "NGPhysicalTextFragment 'turns, quarrelling all the while, and fighting for the'",
           "rect": [65, 380, 304, 59],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'turns,\n'",
-          "rect": [65, 380, 304, 59],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'The players all played at once without waiting\n'",
+          "object": "NGPhysicalTextFragment 'The players all played at once without waiting '",
           "rect": [65, 380, 287, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'The players all played at once without waiting\n'",
-          "rect": [65, 380, 287, 19],
-          "reason": "disappeared"
+          "object": "NGPhysicalTextFragment 'difficult game indeed.'",
+          "rect": [134, 360, 128, 19],
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'difficult game indeed.\n'",
-          "rect": [134, 360, 132, 19],
-          "reason": "appeared"
+          "object": "NGPhysicalTextFragment 'the Queen'",
+          "rect": [303, 420, 66, 19],
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'difficult game indeed.\n'",
-          "rect": [134, 360, 132, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "LayoutBlockFlow (floating) SPAN id='blueFloat'",
+          "object": "LayoutNGBlockFlow (floating) SPAN id='blueFloat'",
           "rect": [14, 363, 48, 65],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow (floating) SPAN id='blueFloat'",
+          "rect": [14, 363, 48, 65],
+          "reason": "appeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'would'",
+          "rect": [151, 180, 40, 19],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'foo'",
+          "object": "NGPhysicalTextFragment 'foo'",
           "rect": [28, 363, 20, 20],
           "reason": "appeared"
         }

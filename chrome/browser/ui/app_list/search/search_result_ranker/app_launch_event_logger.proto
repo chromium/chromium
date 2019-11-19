@@ -1,0 +1,63 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package app_list;
+
+message AppLaunchEvent {
+  enum LaunchedFrom {
+    GRID = 1;
+    SUGGESTION_CHIP = 2;
+    SHELF = 3;
+    SEARCH_BOX = 4;
+  }
+  // The component that the user launched the app from.
+  optional LaunchedFrom launched_from = 1;
+
+  enum AppType {
+    OTHER = 0;
+    CHROME = 1;
+    PLAY = 2;
+    // PWA AppType includes bookmark apps in addition to PWAs.
+    PWA = 3;
+  }
+  // The type of App.
+  optional AppType app_type = 2;
+  // The id of the app as a 32 character string. e.g.
+  // "pjkljhegncpnkpknbcohdijeoejaedia".
+  optional string app_id = 3;
+  // The location of the app. e.g. the 0th, 1st, 2nd, etc app in grid.
+  optional int32 index = 4;
+  // The package name for PLAY apps.
+  optional string arc_package_name = 5;
+  // The URL for PWA apps.
+  optional string pwa_url = 6;
+}
+
+// The App features used for training and inference.
+message AppLaunchFeatures {
+  // The id of the app as a 32 character string. e.g.
+  // "pjkljhegncpnkpknbcohdijeoejaedia".
+  optional string app_id = 1;
+  optional AppLaunchEvent.AppType app_type = 2;
+  optional string arc_package_name = 3;
+  optional string pwa_url = 4;
+  optional int32 sequence_number = 5;
+  optional int32 most_recently_used_index = 6;
+  // Not logged in UKM.
+  optional int64 time_of_last_click_sec = 7;
+  optional int32 time_since_last_click_sec = 8;
+  optional int32 clicks_last_hour = 9;
+  optional int32 clicks_last_24_hours = 10;
+  optional int32 total_clicks = 11;
+  repeated int32 clicks_each_hour = 12;
+  optional AppLaunchEvent.LaunchedFrom last_launched_from = 13;
+  // Records which apps the logging policy allows to be logged.
+  // Not logged in UKM.
+  optional bool is_policy_compliant = 14;
+  optional int32 click_rank = 15;
+}

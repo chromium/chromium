@@ -244,8 +244,6 @@ TEST(ContainerNamesTest, FileCheckSWF) {
 TEST(ContainerNamesTest, FileCheckUNKNOWN) {
   TestFile(CONTAINER_UNKNOWN, GetTestDataFilePath("ten_byte_file"));
   TestFile(CONTAINER_UNKNOWN, GetTestDataFilePath("README"));
-  TestFile(CONTAINER_UNKNOWN, GetTestDataFilePath("bali_640x360_P422.yuv"));
-  TestFile(CONTAINER_UNKNOWN, GetTestDataFilePath("bali_640x360_RGB24.rgb"));
   TestFile(CONTAINER_UNKNOWN, GetTestDataFilePath("webm_vp8_track_entry"));
 }
 

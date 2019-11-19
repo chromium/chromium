@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<div id=target>Hello, world!</div>
+
+<script>
+let eventCounts = {};
+let eventTypes = [
+  "mousedown",
+  "mouseup",
+  "click"];
+eventTypes.forEach(eventType => {
+  eventCounts[eventType] = 0;
+  document.addEventListener(eventType, evt => {
+    eventCounts[eventType]++;
+  });
+});
+
+addEventListener("message", evt => {
+  if (evt.data == "observe") {
+    new IntersectionObserver(entries => {
+      evt.source.postMessage("didObserve", "*");
+    }, {trackVisibility: true, delay: 100}).observe(document.getElementById("target"));
+  }
+  if (evt.data.hasOwnProperty("tap")) {
+    chrome.gpuBenchmarking.tap(evt.data["tap"][0], evt.data["tap"][1], () => {
+      evt.source.postMessage({count: eventCounts, description: evt.data["description"]}, "*");
+      Object.keys(eventCounts).forEach(key => { eventCounts[key] = 0 });
+    });
+  }
+});
+</script>

@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "content/public/common/content_features.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace content {
 
@@ -28,12 +28,12 @@ class AudioServiceTestHelper::TestingApi : public audio::mojom::TestingApi {
     base::Process::TerminateCurrentProcessImmediately(1);
   }
 
-  void BindRequest(audio::mojom::TestingApiRequest request) {
-    bindings_.AddBinding(this, std::move(request));
+  void BindReceiver(mojo::PendingReceiver<audio::mojom::TestingApi> receiver) {
+    receivers_.Add(this, std::move(receiver));
   }
 
  private:
-  mojo::BindingSet<audio::mojom::TestingApi> bindings_;
+  mojo::ReceiverSet<audio::mojom::TestingApi> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(TestingApi);
 };
@@ -44,17 +44,17 @@ AudioServiceTestHelper::AudioServiceTestHelper()
 AudioServiceTestHelper::~AudioServiceTestHelper() = default;
 
 void AudioServiceTestHelper::RegisterAudioBinders(
-    service_manager::BinderRegistry* registry) {
+    service_manager::BinderMap* binders) {
   if (!base::FeatureList::IsEnabled(features::kAudioServiceOutOfProcess))
     return;
 
-  registry->AddInterface(base::BindRepeating(
-      &AudioServiceTestHelper::BindTestingApiRequest, base::Unretained(this)));
+  binders->Add(base::BindRepeating(
+      &AudioServiceTestHelper::BindTestingApiReceiver, base::Unretained(this)));
 }
 
-void AudioServiceTestHelper::BindTestingApiRequest(
-    audio::mojom::TestingApiRequest request) {
-  testing_api_->BindRequest(std::move(request));
+void AudioServiceTestHelper::BindTestingApiReceiver(
+    mojo::PendingReceiver<audio::mojom::TestingApi> receiver) {
+  testing_api_->BindReceiver(std::move(receiver));
 }
 
 }  // namespace content

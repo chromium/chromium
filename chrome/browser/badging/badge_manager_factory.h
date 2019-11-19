@@ -22,6 +22,8 @@ class BadgeManager;
 // Singleton that provides access to Profile specific BadgeManagers.
 class BadgeManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
+  // Gets the BadgeManager for the current profile. |nullptr| for guest and
+  // incognito profiles.
   static BadgeManager* GetForProfile(Profile* profile);
 
   // Returns the BadgeManagerFactory singleton.

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<title>Scrollbar forward button must not scroll ancestor</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<style>
+.subscroller {
+  width:100px;
+  height:100px;
+  overflow:auto;
+  position:absolute;
+  top:0px;
+  left:0px;
+}
+.subscroller>.child {
+  height:400px;
+}
+.talldiv {
+  height:4000px;
+}
+</style>
+
+<div class="subscroller">
+  <div class="child">subscroller</div>
+</div>
+<div class="talldiv">talldiv</div>
+
+<script>
+
+promise_test(async () => {
+  // Scroll the subscroller to the end, on the y-axis
+  let subscroller = document.querySelector(".subscroller");
+  subscroller.scrollTo(0, 400);
+  assert_equals(subscroller.scrollTop, 300);
+
+  // Click down for a period of time, but grow the content inside the
+  // subscroller to ensure autoscrolling of the pressed part works.
+  await mouseDownAt(95, 95);
+
+  window.requestAnimationFrame(function() {
+      document.querySelector('.child').style.height = "1000px";
+  });
+
+  let pointerPauseThenUp = new Promise((resolve, reject) => {
+      chrome.gpuBenchmarking.pointerActionSequence([{
+          source: 'mouse',
+          // The autoscroll time begins 250ms after the mouse down so we add a
+          // bit of buffer.
+          actions: [{ 'name': 'pause', duration: 300 },
+                    { 'name': 'pointerUp' }]
+      }], resolve);
+  });
+
+  await pointerPauseThenUp;
+
+  assert_equals(window.scrollY, 0, "Root scroller must not scroll when " +
+      "subscroller is scrolled with scrollbars");
+  assert_greater_than(subscroller.scrollTop, 300, "Subscroller must continue " +
+      "scrolling when mouse is held down and it grows in height");
+}, "Clicking a scrollbar that is at its maximum offset must not scroll " +
+   "its parent in the scroll chain");
+</script>

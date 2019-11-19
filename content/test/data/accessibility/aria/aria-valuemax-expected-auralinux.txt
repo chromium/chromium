@@ -1,0 +1,6 @@
+[document web]
+++[progress bar] current=51.000000 minimum=1.000000 maximum=101.000000
+++[scroll bar] current=52.000000 minimum=2.000000 maximum=102.000000
+++[slider] horizontal current=53.000000 minimum=3.000000 maximum=103.000000
+++[spin button] current=54.000000 minimum=4.000000 maximum=104.000000
+++++[static] name='Spin'

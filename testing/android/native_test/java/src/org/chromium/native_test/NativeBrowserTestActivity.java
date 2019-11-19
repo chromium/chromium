@@ -4,26 +4,16 @@
 
 package org.chromium.native_test;
 
-import android.app.Activity;
 import android.os.Bundle;
-
-import org.chromium.base.Log;
+import android.support.v4.app.FragmentActivity;
 
 import java.io.File;
 
 /**
  * An {@link android.app.Activity} for running native browser tests.
  */
-public abstract class NativeBrowserTestActivity extends Activity {
-    private static final String TAG = "cr_NativeTest";
-
-    private static final String BROWSER_TESTS_FLAGS[] = {
-        // content::kSingleProcessTestsFlag
-        "--single_process",
-
-        // switches::kUseFakeDeviceForMediaStream
-        "--use-fake-device-for-media-stream"
-    };
+public abstract class NativeBrowserTestActivity extends FragmentActivity {
+    private static final String TAG = "NativeTest";
 
     private NativeTest mTest = new NativeTest();
     private boolean mStarted;
@@ -33,60 +23,32 @@ public abstract class NativeBrowserTestActivity extends Activity {
         mTest.preCreate(this);
         super.onCreate(savedInstanceState);
         mTest.postCreate(this);
-        for (String flag : BROWSER_TESTS_FLAGS) {
+        for (String flag : NativeBrowserTest.BROWSER_TESTS_FLAGS) {
             appendCommandLineFlags(flag);
         }
     }
 
     @Override
     public void onStart() {
+        super.onStart();
+
         // onStart can be called any number of times see:
         // https://developer.android.com/guide/components/activities/activity-lifecycle#onstart
         // We only want to run the test once (or bad things can happen) so bail out if we've
         // already started.
-        if (mStarted) {
-            super.onStart();
-            return;
-        }
+        if (mStarted) return;
+
         mStarted = true;
-        deletePrivateDataDirectory();
+        NativeBrowserTest.deletePrivateDataDirectory(getPrivateDataDirectory());
         initializeBrowserProcess();
-        super.onStart();
+    }
+
+    protected void runTests() {
         mTest.postStart(this, false);
     }
 
     public void appendCommandLineFlags(String flags) {
         mTest.appendCommandLineFlags(flags);
-    }
-
-    /** Deletes a file or directory along with any of its children.
-     *
-     *  Note that, like File.delete(), this returns false if the file or directory couldn't be
-     *  fully deleted. This means that, in the directory case, some files may be deleted even if
-     *  the entire directory couldn't be.
-     *
-     *  @param file The file or directory to delete.
-     *  @return Whether or not the file or directory was deleted.
-     */
-    private static boolean deleteRecursive(File file) {
-        if (file == null) return true;
-
-        File[] children = file.listFiles();
-        if (children != null) {
-            for (File child : children) {
-                if (!deleteRecursive(child)) {
-                    return false;
-                }
-            }
-        }
-        return file.delete();
-    }
-
-    private void deletePrivateDataDirectory() {
-        File privateDataDirectory = getPrivateDataDirectory();
-        if (!deleteRecursive(privateDataDirectory)) {
-            Log.e(TAG, "Failed to remove %s", privateDataDirectory.getAbsolutePath());
-        }
     }
 
     /** Returns the test suite's private data directory. */

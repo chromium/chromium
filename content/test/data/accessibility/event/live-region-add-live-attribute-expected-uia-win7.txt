@@ -1,0 +1,2 @@
+AriaProperties changed on role=group
+LiveRegionChanged on role=group

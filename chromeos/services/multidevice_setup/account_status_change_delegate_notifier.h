@@ -7,6 +7,8 @@
 
 #include "base/macros.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
@@ -21,17 +23,19 @@ class AccountStatusChangeDelegateNotifier {
  public:
   virtual ~AccountStatusChangeDelegateNotifier();
 
-  void SetAccountStatusChangeDelegatePtr(
-      mojom::AccountStatusChangeDelegatePtr delegate_ptr);
+  void SetAccountStatusChangeDelegateRemote(
+      mojo::PendingRemote<mojom::AccountStatusChangeDelegate> delegate_remote);
 
  protected:
   AccountStatusChangeDelegateNotifier();
 
   // Derived classes should override this function to be alerted when
-  // SetAccountStatusChangeDelegatePtr() is called.
+  // SetAccountStatusChangeDelegateRemote() is called.
   virtual void OnDelegateSet();
 
-  mojom::AccountStatusChangeDelegate* delegate() { return delegate_ptr_.get(); }
+  mojom::AccountStatusChangeDelegate* delegate() {
+    return delegate_remote_.is_bound() ? delegate_remote_.get() : nullptr;
+  }
 
  private:
   friend class MultiDeviceSetupImpl;
@@ -40,7 +44,7 @@ class AccountStatusChangeDelegateNotifier {
 
   void FlushForTesting();
 
-  mojom::AccountStatusChangeDelegatePtr delegate_ptr_;
+  mojo::Remote<mojom::AccountStatusChangeDelegate> delegate_remote_;
 
   DISALLOW_COPY_AND_ASSIGN(AccountStatusChangeDelegateNotifier);
 };

@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/touch_emulator_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,8 +32,8 @@ class TouchEmulatorTest : public testing::Test,
                           public TouchEmulatorClient {
  public:
   TouchEmulatorTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI),
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
         last_event_time_(base::TimeTicks::Now()),
         event_time_delta_(base::TimeDelta::FromMilliseconds(100)),
         shift_pressed_(false),
@@ -89,7 +89,8 @@ class TouchEmulatorTest : public testing::Test,
   }
 
   void ShowContextMenuAtPoint(const gfx::Point& point,
-                              const ui::MenuSourceType source_type) override {}
+                              const ui::MenuSourceType source_type,
+                              RenderWidgetHostViewBase* target) override {}
 
  protected:
   TouchEmulator* emulator() const {
@@ -250,14 +251,10 @@ class TouchEmulatorTest : public testing::Test,
 
   void DisableSynchronousTouchAck() { ack_touches_synchronously_ = false; }
 
-  float GetCursorScaleFactor() {
-    CursorInfo info;
-    cursor_.GetCursorInfo(&info);
-    return info.image_scale_factor;
-  }
+  float GetCursorScaleFactor() { return cursor_.info().image_scale_factor; }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<TouchEmulator> emulator_;
   std::vector<WebInputEvent::Type> forwarded_events_;
   base::TimeTicks last_event_time_;

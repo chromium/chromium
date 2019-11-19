@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Makes sure that preloaded resources are downloaded Uncaught Error: assert_equals: resources/white.mp4 expected 1 but got 0
+Harness: the test ran to completion.
+

@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Изображения заменены альтернативным текстом.</translation>
 <translation id="4896660567607030658">Отключить эффекты при появлении курсора</translation>
 <translation id="4937901943818762779">Разрешить анимацию изображений один раз.</translation>
+<translation id="4949131196216960195">Чтобы включить или отключить режим активного курсора, нажмите клавиши &lt;span class='key'&gt;Поиск&lt;/span&gt; + "Увеличить яркость" &lt;img src='increase_brightness.png'&gt; или F7.</translation>
 <translation id="4954450790315188152">Когда режим активного курсора включен:</translation>
 <translation id="5041932793799765940">Регулировка цвета</translation>
 <translation id="5094574508723441140">Резкий контраст</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="786423340267544509">Добавить границу к элементам с атрибутами aria-describedat или longdesc</translation>
 <translation id="7942349550061667556">Красный</translation>
-<translation id="8254860724243898966">Чтобы включить/отключить режим активного курсора, нажмите клавиши &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; ("Усилить яркость" или F7).</translation>
 <translation id="8260673944985561857">Режим активного курсора</translation>
 <translation id="8321034316479930120">Правила демонстрации анимированных изображений</translation>
 <translation id="8480209185614411573">Резкий контраст</translation>

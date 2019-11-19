@@ -33,11 +33,23 @@ var StatsTable = (function(ssrcInfoManager) {
      *     the value.
      */
     addStatsReport: function(peerConnectionElement, report) {
+      if (report.type == 'codec') {
+        return;
+      }
       var statsTable = this.ensureStatsTable_(peerConnectionElement, report);
 
       if (report.stats) {
         this.addStatsToTable_(
             statsTable, report.stats.timestamp, report.stats.values);
+      }
+    },
+
+    clearStatsLists: function(peerConnectionElement) {
+      let containerId = peerConnectionElement.id + '-table-container';
+      let container = $(containerId);
+      if (container) {
+        peerConnectionElement.removeChild(container);
+        this.ensureStatsTableContainer_(peerConnectionElement);
       }
     },
 

@@ -12,18 +12,55 @@ namespace blink {
 class NGConstraintSpace;
 class NGLayoutResult;
 
-// Returns true if for a given |new_space|, the |node| will provide the same
-// |NGLayoutResult| as |cached_layout_result|, and therefore might be able to
-// skip layout.
-bool MaySkipLayout(const NGBlockNode node,
-                   const NGLayoutResult& cached_layout_result,
-                   const NGConstraintSpace& new_space);
+// NGLayoutCacheStatus indicates what type of cache hit/miss occurred. For
+// various types of misses we may be able to perform less work than a full
+// layout.
+//
+// See |NGSimplifiedLayoutAlgorithm| for details about the
+// |kNeedsSimplifiedLayout| cache miss type.
+enum class NGLayoutCacheStatus {
+  kHit,                   // Cache hit, no additional work required.
+  kNeedsLayout,           // Cache miss, full layout required.
+  kNeedsSimplifiedLayout  // Cache miss, simplified layout required.
+};
 
-// Return true if layout is considered complete. In some cases we require more
-// than one layout pass.
-// This function never considers intermediate layouts with
-// |NGConstraintSpace::IsIntermediateLayout| to be complete.
-bool IsBlockLayoutComplete(const NGConstraintSpace&, const NGLayoutResult&);
+// Calculates the |NGLayoutCacheStatus| based on sizing information. Returns:
+//  - |NGLayoutCacheStatus::kHit| if the size will be the same as
+//    |cached_layout_result|, and therefore might be able to skip layout.
+//  - |NGLayoutCacheStatus::kNeedsSimplifiedLayout| if a simplified layout may
+//    be possible (just based on the sizing information at this point).
+//  - |NGLayoutCacheStatus::kNeedsLayout| if a full layout is required.
+//
+// May pre-compute the |fragment_geometry| while calculating this status.
+NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
+    const NGBlockNode& node,
+    const NGLayoutResult& cached_layout_result,
+    const NGConstraintSpace& new_space,
+    base::Optional<NGFragmentGeometry>* fragment_geometry);
+
+// Similar to |MaySkipLayout| but for legacy layout roots. Doesn't attempt to
+// pre-compute the geometry of the fragment.
+bool MaySkipLegacyLayout(const NGBlockNode& node,
+                         const NGLayoutResult& cached_layout_result,
+                         const NGConstraintSpace& new_space);
+
+// Returns true if for a given |new_space|, the |cached_layout_result| won't be
+// affected by clearance, or floats, and therefore might be able to skip
+// layout.
+// Additionally (if this function returns true) it will calculate the new
+// |bfc_block_offset|, |block_offset_delta|, and |end_margin_strut| for the
+// layout result.
+//
+// |bfc_block_offset| may still be |base::nullopt| if not previously set.
+//
+// If this function returns false, |bfc_block_offset|, |block_offset_delta|,
+// and |end_margin_strut| are in an undefined state and should not be used.
+bool MaySkipLayoutWithinBlockFormattingContext(
+    const NGLayoutResult& cached_layout_result,
+    const NGConstraintSpace& new_space,
+    base::Optional<LayoutUnit>* bfc_block_offset,
+    LayoutUnit* block_offset_delta,
+    NGMarginStrut* end_margin_strut);
 
 }  // namespace blink
 

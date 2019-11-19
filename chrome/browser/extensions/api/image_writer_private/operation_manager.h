@@ -18,6 +18,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
 #include "url/gurl.h"
@@ -29,7 +30,6 @@ class BrowserContext;
 }
 
 namespace extensions {
-class ExtensionRegistry;
 
 namespace image_writer {
 
@@ -86,10 +86,6 @@ class OperationManager : public BrowserContextKeyedAPI,
   static BrowserContextKeyedAPIFactory<OperationManager>* GetFactoryInstance();
   static OperationManager* Get(content::BrowserContext* context);
 
- protected:
-  // Overridden in test.
-  virtual std::unique_ptr<service_manager::Connector> CreateConnector();
-
  private:
   static const char* service_name() {
     return "OperationManager";
@@ -120,9 +116,9 @@ class OperationManager : public BrowserContextKeyedAPI,
 
   // Listen to extension unloaded notification.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
-  base::WeakPtrFactory<OperationManager> weak_factory_;
+  base::WeakPtrFactory<OperationManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OperationManager);
 };

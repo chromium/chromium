@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
 #include "third_party/blink/renderer/platform/fonts/web_font_decoder.h"
 #include "third_party/blink/renderer/platform/fonts/web_font_typeface_factory.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
@@ -67,6 +67,7 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     bool italic,
     const FontSelectionRequest& selection_request,
     const FontSelectionCapabilities& selection_capabilities,
+    const OpticalSizing& optical_sizing,
     FontOrientation orientation,
     const FontVariationSettings* variation_settings) {
   DCHECK(base_typeface_);
@@ -105,13 +106,22 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     axes.push_back(width_axis);
     axes.push_back(slant_axis);
 
+    bool explicit_opsz_configured = false;
     if (variation_settings && variation_settings->size() < UINT16_MAX) {
       axes.ReserveCapacity(variation_settings->size() + axes.size());
       for (const auto& setting : *variation_settings) {
+        if (setting.Tag() == AtomicString("opsz"))
+          explicit_opsz_configured = true;
         SkFontArguments::Axis axis = {AtomicStringToFourByteTag(setting.Tag()),
                                       SkFloatToScalar(setting.Value())};
         axes.push_back(axis);
       }
+    }
+
+    if (optical_sizing == kAutoOpticalSizing && !explicit_opsz_configured) {
+      SkFontArguments::Axis opsz_axis = {SkSetFourByteTag('o', 'p', 's', 'z'),
+                                         SkFloatToScalar(size)};
+      axes.push_back(opsz_axis);
     }
 
     int index;
@@ -132,12 +142,12 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     }
   }
 
-  return FontPlatformData(std::move(return_typeface), CString(), size,
+  return FontPlatformData(std::move(return_typeface), std::string(), size,
                           bold && !base_typeface_->isBold(),
                           italic && !base_typeface_->isItalic(), orientation);
 }
 
-SkString FontCustomPlatformData::FamilyNameForInspector() const {
+String FontCustomPlatformData::FamilyNameForInspector() const {
   SkTypeface::LocalizedStrings* font_family_iterator =
       base_typeface_->createFamilyNameIterator();
   SkTypeface::LocalizedString localized_string;
@@ -150,7 +160,8 @@ SkString FontCustomPlatformData::FamilyNameForInspector() const {
     }
   }
   font_family_iterator->unref();
-  return localized_string.fString;
+  return String::FromUTF8(localized_string.fString.c_str(),
+                          localized_string.fString.size());
 }
 
 scoped_refptr<FontCustomPlatformData> FontCustomPlatformData::Create(

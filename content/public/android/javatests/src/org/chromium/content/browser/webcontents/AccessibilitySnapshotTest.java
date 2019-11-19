@@ -11,7 +11,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.UrlUtils;
@@ -19,6 +18,7 @@ import org.chromium.content_public.browser.AccessibilitySnapshotCallback;
 import org.chromium.content_public.browser.AccessibilitySnapshotNode;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.UseZoomForDSFPolicy;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
@@ -79,7 +79,7 @@ public class AccessibilitySnapshotTest {
     private double cssToPixel(double css) {
         double zoomFactor = 0;
         try {
-            zoomFactor = ThreadUtils.runOnUiThreadBlocking(() -> {
+            zoomFactor = TestThreadUtils.runOnUiThreadBlocking(() -> {
                 Coordinates coord = Coordinates.createFor(mActivityTestRule.getWebContents());
                 return coord.getDeviceScaleFactor();
             });
@@ -103,7 +103,7 @@ public class AccessibilitySnapshotTest {
         Assert.assertEquals(1, child.children.size());
         Assert.assertEquals("", child.text);
         AccessibilitySnapshotNode grandChild = child.children.get(0);
-        Assert.assertEquals(0, grandChild.children.size());
+        Assert.assertEquals(1, grandChild.children.size());
         Assert.assertEquals("Click", grandChild.text);
     }
 

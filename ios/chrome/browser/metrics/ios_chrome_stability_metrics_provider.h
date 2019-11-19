@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/stability_metrics_helper.h"
-#include "ios/web/public/web_state/global_web_state_observer.h"
+#include "ios/web/public/deprecated/global_web_state_observer.h"
 
 class PrefService;
 

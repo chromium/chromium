@@ -2,29 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
-
+#include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "ios/chrome/test/app/settings_test_util.h"
-#import "ios/chrome/test/app/tab_test_util.h"
-#import "ios/chrome/test/app/web_view_interaction_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::TapWebViewElementWithId;
+using chrome_test_util::OmniboxText;
 using web::test::HttpServer;
 
 namespace {
 // Test link text and ids.
-const char kNamedWindowLink[] = "openWindowWithName";
-const char kUnnamedWindowLink[] = "openWindowNoName";
+NSString* kNamedWindowLink = @"openWindowWithName";
+NSString* kUnnamedWindowLink = @"openWindowNoName";
 
 // Web view text that indicates window's closed state.
 const char kWindow2NeverOpen[] = "window2.closed: never opened";
@@ -32,6 +33,34 @@ const char kWindow1Open[] = "window1.closed: false";
 const char kWindow2Open[] = "window2.closed: false";
 const char kWindow1Closed[] = "window1.closed: true";
 const char kWindow2Closed[] = "window2.closed: true";
+
+// URLs for testWindowOpenWriteAndReload.
+const char kWriteReloadPath[] = "/writeReload.html";
+const char kSlowPath[] = "/slow.html";
+const char kSlowPathContent[] = "Slow Page";
+int kSlowPathDelay = 3;
+
+// net::EmbeddedTestServer handler for kWriteReloadPath and kSlowPath.
+std::unique_ptr<net::test_server::HttpResponse> WriteReloadHandler(
+    const net::test_server::HttpRequest& request) {
+  if (request.GetURL().path() == kSlowPath) {
+    auto slow_http_response =
+        std::make_unique<net::test_server::DelayedHttpResponse>(
+            base::TimeDelta::FromSeconds(kSlowPathDelay));
+    slow_http_response->set_content_type("text/html");
+    slow_http_response->set_content(kSlowPathContent);
+    return std::move(slow_http_response);
+  }
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_content_type("text/html");
+  http_response->set_content(base::StringPrintf(
+      "<html><body><script>function start(){var x = window.open('javascript"
+      ":document.write(1)');setTimeout(function(){x.location='%s'}, "
+      "500);};</script><input onclick='start()' id='button' value='button' "
+      "type='button' /></body></html>",
+      kSlowPath));
+  return std::move(http_response);
+}
 
 }  // namespace
 
@@ -41,14 +70,27 @@ const char kWindow2Closed[] = "window2.closed: true";
 
 @implementation ChildWindowOpenByDOMTestCase
 
+#if defined(CHROME_EARL_GREY_2)
++ (void)setUpForTestCase {
+  [super setUpForTestCase];
+  [self setUpHelper];
+}
+#elif defined(CHROME_EARL_GREY_1)
 + (void)setUp {
   [super setUp];
-  chrome_test_util::SetContentSettingsBlockPopups(CONTENT_SETTING_ALLOW);
+  [self setUpHelper];
+}
+#else
+#error Not an EarlGrey Test
+#endif
+
++ (void)setUpHelper {
+  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_ALLOW];
   web::test::SetUpFileBasedHttpServer();
 }
 
 + (void)tearDown {
-  chrome_test_util::SetContentSettingsBlockPopups(CONTENT_SETTING_DEFAULT);
+  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_DEFAULT];
   [super tearDown];
 }
 
@@ -58,7 +100,8 @@ const char kWindow2Closed[] = "window2.closed: true";
   const char kChildWindowTestURL[] =
       "http://ios/testing/data/http_server_files/window_proxy.html";
   [ChromeEarlGrey loadURL:HttpServer::MakeUrl(kChildWindowTestURL)];
-  [ChromeEarlGrey waitForWebViewContainingText:kNamedWindowLink];
+  [ChromeEarlGrey waitForWebStateContainingText:(base::SysNSStringToUTF8(
+                                                    kNamedWindowLink))];
   [ChromeEarlGrey waitForMainTabCount:1];
 }
 
@@ -66,64 +109,55 @@ const char kWindow2Closed[] = "window2.closed: true";
 // the same window object.
 - (void)test2ChildWindowsWithName {
   // Open two windows with the same name.
-  GREYAssert(TapWebViewElementWithId(kNamedWindowLink), @"Failed to tap %s",
-             kNamedWindowLink);
+  [ChromeEarlGrey tapWebStateElementWithID:kNamedWindowLink];
   [ChromeEarlGrey waitForMainTabCount:2];
-  chrome_test_util::SelectTabAtIndexInCurrentMode(0);
+  [ChromeEarlGrey selectTabAtIndex:0];
 
-  GREYAssert(TapWebViewElementWithId(kNamedWindowLink), @"Failed to tap %s",
-             kNamedWindowLink);
+  [ChromeEarlGrey tapWebStateElementWithID:kNamedWindowLink];
   [ChromeEarlGrey waitForMainTabCount:2];
-  chrome_test_util::SelectTabAtIndexInCurrentMode(0);
+  [ChromeEarlGrey selectTabAtIndex:0];
 
   // Check that they're the same window.
-  GREYAssert(TapWebViewElementWithId("compareNamedWindows"),
-             @"Failed to tap \"compareNamedWindows\"");
+  [ChromeEarlGrey tapWebStateElementWithID:@"compareNamedWindows"];
   const char kWindowsEqualText[] = "named windows equal: true";
-  [ChromeEarlGrey waitForWebViewContainingText:kWindowsEqualText];
+  [ChromeEarlGrey waitForWebStateContainingText:kWindowsEqualText];
 }
 
 // Tests that multiple calls to window.open() with no window name passed in
 // returns a unique window object each time.
 - (void)test2ChildWindowsWithoutName {
   // Open two unnamed windows.
-  GREYAssert(TapWebViewElementWithId(kUnnamedWindowLink), @"Failed to tap %s",
-             kUnnamedWindowLink);
+  [ChromeEarlGrey tapWebStateElementWithID:kUnnamedWindowLink];
   [ChromeEarlGrey waitForMainTabCount:2];
-  chrome_test_util::SelectTabAtIndexInCurrentMode(0);
+  [ChromeEarlGrey selectTabAtIndex:0];
 
-  GREYAssert(TapWebViewElementWithId(kUnnamedWindowLink), @"Failed to tap %s",
-             kUnnamedWindowLink);
+  [ChromeEarlGrey tapWebStateElementWithID:kUnnamedWindowLink];
   [ChromeEarlGrey waitForMainTabCount:3];
-  chrome_test_util::SelectTabAtIndexInCurrentMode(0);
+  [ChromeEarlGrey selectTabAtIndex:0];
 
   // Check that they aren't the same window object.
-  GREYAssert(TapWebViewElementWithId("compareUnnamedWindows"),
-             @"Failed to tap \"compareUnnamedWindows\"");
-  const char kWindowsEqualText[] = "unnamed windows equal: false";
-  [ChromeEarlGrey waitForWebViewContainingText:kWindowsEqualText];
+  [ChromeEarlGrey tapWebStateElementWithID:@"compareUnnamedWindows"];
+  std::string kWindowsEqualText = "unnamed windows equal: false";
+  [ChromeEarlGrey waitForWebStateContainingText:kWindowsEqualText];
 }
 
 // Tests that calling window.open() with a name returns a different window
 // object than a subsequent call to window.open() without a name.
 - (void)testChildWindowsWithAndWithoutName {
   // Open a named window.
-  GREYAssert(TapWebViewElementWithId(kNamedWindowLink), @"Failed to tap %s",
-             kNamedWindowLink);
+  [ChromeEarlGrey tapWebStateElementWithID:kNamedWindowLink];
   [ChromeEarlGrey waitForMainTabCount:2];
-  chrome_test_util::SelectTabAtIndexInCurrentMode(0);
+  [ChromeEarlGrey selectTabAtIndex:0];
 
   // Open an unnamed window.
-  GREYAssert(TapWebViewElementWithId(kUnnamedWindowLink), @"Failed to tap %s",
-             kUnnamedWindowLink);
+  [ChromeEarlGrey tapWebStateElementWithID:kUnnamedWindowLink];
   [ChromeEarlGrey waitForMainTabCount:3];
-  chrome_test_util::SelectTabAtIndexInCurrentMode(0);
+  [ChromeEarlGrey selectTabAtIndex:0];
 
   // Check that they aren't the same window object.
-  GREYAssert(TapWebViewElementWithId("compareNamedAndUnnamedWindows"),
-             @"Failed to tap \"compareNamedAndUnnamedWindows\"");
+  [ChromeEarlGrey tapWebStateElementWithID:@"compareNamedAndUnnamedWindows"];
   const char kWindowsEqualText[] = "named and unnamed equal: false";
-  [ChromeEarlGrey waitForWebViewContainingText:kWindowsEqualText];
+  [ChromeEarlGrey waitForWebStateContainingText:kWindowsEqualText];
 }
 
 // Tests that window.closed is correctly set to true when the corresponding tab
@@ -132,86 +166,95 @@ const char kWindow2Closed[] = "window2.closed: true";
 // results in window.closed being set to true for all references to the window
 // object for that tab.
 - (void)testWindowClosedWithName {
-  GREYAssert(TapWebViewElementWithId("openWindowWithName"),
-             @"Failed to tap \"openWindowWithName\"");
+  [ChromeEarlGrey tapWebStateElementWithID:@"openWindowWithName"];
   [ChromeEarlGrey waitForMainTabCount:2];
-  chrome_test_util::SelectTabAtIndexInCurrentMode(0);
+  [ChromeEarlGrey selectTabAtIndex:0];
 
   // Check that named window 1 is opened and named window 2 isn't.
   const char kCheckWindow1Link[] = "checkNamedWindow1Closed";
-  [ChromeEarlGrey waitForWebViewContainingText:kCheckWindow1Link];
-  GREYAssert(TapWebViewElementWithId(kCheckWindow1Link), @"Failed to tap %s",
-             kCheckWindow1Link);
-  [ChromeEarlGrey waitForWebViewContainingText:kWindow1Open];
-  const char kCheckWindow2Link[] = "checkNamedWindow2Closed";
-  GREYAssert(TapWebViewElementWithId(kCheckWindow2Link), @"Failed to tap %s",
-             kCheckWindow2Link);
-  [ChromeEarlGrey waitForWebViewContainingText:kWindow2NeverOpen];
+  [ChromeEarlGrey waitForWebStateContainingText:kCheckWindow1Link];
+  [ChromeEarlGrey
+      tapWebStateElementWithID:[NSString
+                                   stringWithUTF8String:kCheckWindow1Link]];
+  [ChromeEarlGrey waitForWebStateContainingText:kWindow1Open];
+  NSString* kCheckWindow2Link = @"checkNamedWindow2Closed";
+  [ChromeEarlGrey tapWebStateElementWithID:kCheckWindow2Link];
+  [ChromeEarlGrey waitForWebStateContainingText:kWindow2NeverOpen];
 
   // Open another window with the same name. Check that named window 2 is now
   // opened.
-  GREYAssert(TapWebViewElementWithId("openWindowWithName"),
-             @"Failed to tap \"openWindowWithName\"");
+  [ChromeEarlGrey tapWebStateElementWithID:@"openWindowWithName"];
   [ChromeEarlGrey waitForMainTabCount:2];
-  chrome_test_util::SelectTabAtIndexInCurrentMode(0);
-  GREYAssert(TapWebViewElementWithId(kCheckWindow2Link), @"Failed to tap %s",
-             kCheckWindow2Link);
-  [ChromeEarlGrey waitForWebViewContainingText:kWindow2Open];
+  [ChromeEarlGrey selectTabAtIndex:0];
+  [ChromeEarlGrey tapWebStateElementWithID:kCheckWindow2Link];
+  [ChromeEarlGrey waitForWebStateContainingText:kWindow2Open];
 
   // Close the opened window. Check that named window 1 and 2 are both closed.
-  chrome_test_util::CloseTabAtIndex(1);
+  [ChromeEarlGrey closeTabAtIndex:1];
   [ChromeEarlGrey waitForMainTabCount:1];
-  GREYAssert(TapWebViewElementWithId(kCheckWindow1Link), @"Failed to tap %s",
-             kCheckWindow1Link);
-  [ChromeEarlGrey waitForWebViewContainingText:kWindow1Closed];
-  GREYAssert(TapWebViewElementWithId(kCheckWindow2Link), @"Failed to tap %s",
-             kCheckWindow2Link);
-  [ChromeEarlGrey waitForWebViewContainingText:kWindow2Closed];
+  [ChromeEarlGrey
+      tapWebStateElementWithID:[NSString
+                                   stringWithUTF8String:kCheckWindow1Link]];
+  [ChromeEarlGrey waitForWebStateContainingText:kWindow1Closed];
+  [ChromeEarlGrey tapWebStateElementWithID:kCheckWindow2Link];
+  [ChromeEarlGrey waitForWebStateContainingText:kWindow2Closed];
 }
 
 // Tests that closing a tab will set window.closed to true for only
 // corresponding window object and not for any other window objects.
 - (void)testWindowClosedWithoutName {
-  GREYAssert(TapWebViewElementWithId("openWindowNoName"),
-             @"Failed to tap \"openWindowNoName\"");
+  [ChromeEarlGrey tapWebStateElementWithID:@"openWindowNoName"];
   [ChromeEarlGrey waitForMainTabCount:2];
-  chrome_test_util::SelectTabAtIndexInCurrentMode(0);
+  [ChromeEarlGrey selectTabAtIndex:0];
 
   // Check that unnamed window 1 is opened and unnamed window 2 isn't.
   const char kCheckWindow1Link[] = "checkUnnamedWindow1Closed";
-  [ChromeEarlGrey waitForWebViewContainingText:kCheckWindow1Link];
-  GREYAssert(TapWebViewElementWithId(kCheckWindow1Link), @"Failed to tap %s",
-             kCheckWindow1Link);
-  [ChromeEarlGrey waitForWebViewContainingText:kWindow1Open];
-  const char kCheckWindow2Link[] = "checkUnnamedWindow2Closed";
-  GREYAssert(TapWebViewElementWithId(kCheckWindow2Link), @"Failed to tap %s",
-             kCheckWindow2Link);
-  [ChromeEarlGrey waitForWebViewContainingText:kWindow2NeverOpen];
+  [ChromeEarlGrey waitForWebStateContainingText:kCheckWindow1Link];
+  [ChromeEarlGrey
+      tapWebStateElementWithID:[NSString
+                                   stringWithUTF8String:kCheckWindow1Link]];
+  [ChromeEarlGrey waitForWebStateContainingText:kWindow1Open];
+  NSString* kCheckWindow2Link = @"checkUnnamedWindow2Closed";
+  [ChromeEarlGrey tapWebStateElementWithID:kCheckWindow2Link];
+  [ChromeEarlGrey waitForWebStateContainingText:kWindow2NeverOpen];
 
   // Open another unnamed window. Check that unnamed window 2 is now opened.
-  GREYAssert(TapWebViewElementWithId("openWindowNoName"),
-             @"Failed to tap \"openWindowNoName\"");
+  [ChromeEarlGrey tapWebStateElementWithID:@"openWindowNoName"];
   [ChromeEarlGrey waitForMainTabCount:3];
-  chrome_test_util::SelectTabAtIndexInCurrentMode(0);
-  GREYAssert(TapWebViewElementWithId(kCheckWindow2Link), @"Failed to tap %s",
-             kCheckWindow2Link);
-  [ChromeEarlGrey waitForWebViewContainingText:kWindow2Open];
+  [ChromeEarlGrey selectTabAtIndex:0];
+  [ChromeEarlGrey tapWebStateElementWithID:kCheckWindow2Link];
+  [ChromeEarlGrey waitForWebStateContainingText:kWindow2Open];
 
   // Close the first opened window. Check that unnamed window 1 is closed and
   // unnamed window 2 is still open.
-  chrome_test_util::CloseTabAtIndex(1);
-  GREYAssert(TapWebViewElementWithId(kCheckWindow1Link), @"Failed to tap %s",
-             kCheckWindow1Link);
-  [ChromeEarlGrey waitForWebViewContainingText:kWindow1Closed];
-  GREYAssert(TapWebViewElementWithId(kCheckWindow2Link), @"Failed to tap %s",
-             kCheckWindow2Link);
-  [ChromeEarlGrey waitForWebViewContainingText:kWindow2Open];
+  [ChromeEarlGrey closeTabAtIndex:1];
+  [ChromeEarlGrey
+      tapWebStateElementWithID:[NSString
+                                   stringWithUTF8String:kCheckWindow1Link]];
+  [ChromeEarlGrey waitForWebStateContainingText:kWindow1Closed];
+  [ChromeEarlGrey tapWebStateElementWithID:kCheckWindow2Link];
+  [ChromeEarlGrey waitForWebStateContainingText:kWindow2Open];
 
   // Close the second opened window. Check that unnamed window 2 is closed.
-  chrome_test_util::CloseTabAtIndex(1);
-  GREYAssert(TapWebViewElementWithId(kCheckWindow2Link), @"Failed to tap %s",
-             kCheckWindow2Link);
-  [ChromeEarlGrey waitForWebViewContainingText:kWindow2Closed];
+  [ChromeEarlGrey closeTabAtIndex:1];
+  [ChromeEarlGrey tapWebStateElementWithID:kCheckWindow2Link];
+  [ChromeEarlGrey waitForWebStateContainingText:kWindow2Closed];
+}
+
+// Tests that reloading a window.open with a document.write does not leave a
+// dangling pending item. This is a regression test from crbug.com/1011898
+- (void)testWindowOpenWriteAndReload {
+  self.testServer->RegisterRequestHandler(base::Bind(&WriteReloadHandler));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kWriteReloadPath)];
+  [ChromeEarlGrey tapWebStateElementWithID:@"button"];
+  [ChromeEarlGrey reload];
+  [ChromeEarlGrey waitForWebStateContainingText:kSlowPathContent
+                                        timeout:kSlowPathDelay * 2];
+
+  GURL slowURL = self.testServer->GetURL(kSlowPath);
+  [[EarlGrey selectElementWithMatcher:OmniboxText(slowURL.GetContent())]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

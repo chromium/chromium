@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarVoiceRecognitionHandler.Vo
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestion.MatchClassification;
-import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +40,8 @@ public class VoiceSuggestionProviderTest {
         List<MatchClassification> classifications = new ArrayList<>();
         classifications.add(new MatchClassification(0, MatchClassificationStyle.NONE));
         return new OmniboxSuggestion(OmniboxSuggestionType.SEARCH_SUGGEST, true, 0, 1, text,
-                classifications, null, classifications, null, "", "http://www.google.com", false,
-                false);
+                classifications, null, classifications, null, "", "http://www.google.com", null,
+                null, false, false);
     }
 
     private static List<OmniboxSuggestion> createDummySuggestions(String... texts) {

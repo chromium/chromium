@@ -30,7 +30,7 @@ class AbortHelper {
 
  private:
   CallbackTracker* tracker_;  // Not owned.
-  base::WeakPtrFactory<AbortHelper> weak_ptr_factory_;
+  base::WeakPtrFactory<AbortHelper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AbortHelper);
 };

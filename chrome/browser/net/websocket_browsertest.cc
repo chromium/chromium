@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
     content::TitleWatcher connected_title_watcher(
         raw_new_tab, base::ASCIIToUTF16("CONNECTED"));
     connected_title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("CLOSED"));
-    NavigateToHTTP("counted_connection.html");
+    NavigateToHTTP("connect_and_be_observed.html");
     const base::string16 result = connected_title_watcher.WaitAndGetTitle();
     EXPECT_TRUE(base::EqualsASCII(result, "CONNECTED"));
 
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
     destroyed_watcher.Wait();
   }
 
-  NavigateToHTTP("count_connection.html");
+  NavigateToHTTP("close_observer.html");
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketAppliesHSTS) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(
       net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
-  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   net::SpawnedTestServer wss_server(
       net::SpawnedTestServer::TYPE_WSS,
       net::SpawnedTestServer::SSLOptions(
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketAppliesHSTS) {
   // This test sets HSTS on localhost. To avoid being redirected to https, start
   // the http server on 127.0.0.1 instead.
   net::EmbeddedTestServer http_server;
-  http_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  http_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   ASSERT_TRUE(https_server.Start());
   ASSERT_TRUE(http_server.Start());
   ASSERT_TRUE(wss_server.StartInBackground());

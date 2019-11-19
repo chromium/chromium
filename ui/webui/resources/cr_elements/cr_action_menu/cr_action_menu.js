@@ -38,7 +38,7 @@ let ShowAtPositionConfig;
  * @enum {number}
  * @const
  */
-const AnchorAlignment = {
+/* #export */ const AnchorAlignment = {
   BEFORE_START: -2,
   AFTER_START: -1,
   CENTER: 0,
@@ -164,7 +164,8 @@ Polymer({
       value: false,
     },
 
-    ariaLabel: String,
+    /* Descriptor of the menu. Should be something along the lines of "menu" */
+    roleDescription: String,
   },
 
   listeners: {
@@ -183,7 +184,7 @@ Polymer({
    * @return {!HTMLDialogElement}
    */
   getDialog: function() {
-    return this.$.dialog;
+    return /** @type {!HTMLDialogElement} */ (this.$.dialog);
   },
 
   /** @private */
@@ -237,20 +238,29 @@ Polymer({
    */
   onKeyDown_: function(e) {
     e.stopPropagation();
-
     if (e.key == 'Tab' || e.key == 'Escape') {
       this.close();
       e.preventDefault();
       return;
     }
 
-    let selectNext = e.key == 'ArrowDown';
+    if (e.key != 'Enter' && e.key != 'ArrowUp' && e.key != 'ArrowDown') {
+      return;
+    }
+
+    const query = '.dropdown-item:not([disabled]):not([hidden])';
+    const options = Array.from(this.querySelectorAll(query));
+    if (options.length == 0) {
+      return;
+    }
+
+    const focused = getDeepActiveElement();
+    const index = options.findIndex(
+        option => cr.ui.FocusRow.getFocusableElement(option) == focused);
+
     if (e.key == 'Enter') {
       // If a menu item has focus, don't change focus or close menu on 'Enter'.
-      const options = this.querySelectorAll('.dropdown-item');
-      const focusedIndex =
-          Array.prototype.indexOf.call(options, getDeepActiveElement());
-      if (focusedIndex != -1) {
+      if (index != -1) {
         return;
       }
 
@@ -259,26 +269,18 @@ Polymer({
         e.preventDefault();
         return;
       }
-      selectNext = true;
-    }
-
-    if (e.key !== 'ArrowUp' && !selectNext) {
-      return;
-    }
-
-    const nextOption = this.getNextOption_(selectNext ? 1 : -1);
-    if (nextOption) {
-      if (!this.hasMousemoveListener_) {
-        this.hasMousemoveListener_ = true;
-        listenOnce(this, 'mousemove', e => {
-          this.onMouseover_(e);
-          this.hasMousemoveListener_ = false;
-        });
-      }
-      nextOption.focus();
     }
 
     e.preventDefault();
+    this.updateFocus_(options, index, e.key != 'ArrowUp');
+
+    if (!this.hasMousemoveListener_) {
+      this.hasMousemoveListener_ = true;
+      this.addEventListener('mousemove', e => {
+        this.onMouseover_(e);
+        this.hasMousemoveListener_ = false;
+      }, {once: true});
+    }
   },
 
   /**
@@ -286,55 +288,28 @@ Polymer({
    * @private
    */
   onMouseover_: function(e) {
-    // TODO(scottchen): Using "focus" to determine selected item might mess
-    // with screen readers in some edge cases.
-    let i = 0;
-    let target;
-    do {
-      target = e.path[i++];
-      if (target.classList && target.classList.contains('dropdown-item') &&
-          !target.disabled) {
-        target.focus();
-        return;
-      }
-    } while (this != target);
-
-    // The user moved the mouse off the options. Reset focus to the dialog.
-    this.$.dialog.focus();
+    const query = '.dropdown-item:not([disabled])';
+    const item = e.composedPath().find(el => el.matches && el.matches(query));
+    (item || this.$.wrapper).focus();
   },
 
   /**
-   * @param {number} step -1 for getting previous option (up), 1 for getting
-   *     next option (down).
-   * @return {?Element} The next focusable option, taking into account
-   *     disabled/hidden attributes, or null if no focusable option exists.
+   * @param {!Array<!HTMLElement>} options
+   * @param {number} focusedIndex
+   * @param {boolean} next
    * @private
    */
-  getNextOption_: function(step) {
-    // Using a counter to ensure no infinite loop occurs if all elements are
-    // hidden/disabled.
-    let counter = 0;
-    let nextOption = null;
-    const options = this.querySelectorAll('.dropdown-item');
+  updateFocus_: function(options, focusedIndex, next) {
     const numOptions = options.length;
-    let focusedIndex =
-        Array.prototype.indexOf.call(options, getDeepActiveElement());
-
-    // Handle case where nothing is focused and up is pressed.
-    if (focusedIndex === -1 && step === -1) {
-      focusedIndex = 0;
+    assert(numOptions > 0);
+    let index;
+    if (focusedIndex == -1) {
+      index = next ? 0 : numOptions - 1;
+    } else {
+      const delta = next ? 1 : -1;
+      index = (numOptions + focusedIndex + delta) % numOptions;
     }
-
-    do {
-      focusedIndex = (numOptions + focusedIndex + step) % numOptions;
-      nextOption = options[focusedIndex];
-      if (nextOption.disabled || nextOption.hidden) {
-        nextOption = null;
-      }
-      counter++;
-    } while (!nextOption && counter < numOptions);
-
-    return nextOption;
+    options[index].focus();
   },
 
   close: function() {
@@ -384,6 +359,7 @@ Polymer({
           anchorAlignmentX: AnchorAlignment.BEFORE_END,
         },
         opt_config)));
+    this.$.wrapper.focus();
   },
 
   /**

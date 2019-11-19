@@ -1,2 +1,14 @@
-Crash is a layered component [1] to enable it to be shared cleanly on iOS.
-[1]: (https://sites.google.com/a/chromium.org/dev/developers/design-documents/layered-components-design)
+# Crash
+
+Crash is a [layered component] to enable it to be shared cleanly on iOS.
+
+[layered component]: (https://sites.google.com/a/chromium.org/dev/developers/design-documents/layered-components-design)
+
+## Debugging
+
+### Breakpad (iOS)
+
+iOS crash reporting uses Breakpad. Some [code changes] are necessary in order
+to enable crash reporting in local debug builds.
+
+[code changes]: http://crrev.com/c/1570168

@@ -6,31 +6,20 @@
 
 #include "ash/shell.h"
 #include "base/logging.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 
 namespace chromeos {
 
 InputEventsBlocker::InputEventsBlocker() {
-  // TODO(crbug.com/854323): Mash support. Needs mojo API, or to move to ash.
-  if (!features::IsMultiProcessMash()) {
-    ash::Shell::Get()->AddPreTargetHandler(this,
-                                           ui::EventTarget::Priority::kSystem);
-    VLOG(1) << "InputEventsBlocker " << this << " created.";
-  } else {
-    NOTIMPLEMENTED();
-  }
+  ash::Shell::Get()->AddPreTargetHandler(this,
+                                         ui::EventTarget::Priority::kSystem);
+  VLOG(1) << "InputEventsBlocker " << this << " created.";
 }
 
 InputEventsBlocker::~InputEventsBlocker() {
-  if (!features::IsMultiProcessMash()) {
-    if (ash::Shell::HasInstance())
-      ash::Shell::Get()->RemovePreTargetHandler(this);
-
-    VLOG(1) << "InputEventsBlocker " << this << " destroyed.";
-  } else {
-    NOTIMPLEMENTED();
-  }
+  if (ash::Shell::HasInstance())
+    ash::Shell::Get()->RemovePreTargetHandler(this);
+  VLOG(1) << "InputEventsBlocker " << this << " destroyed.";
 }
 
 void InputEventsBlocker::OnKeyEvent(ui::KeyEvent* event) {

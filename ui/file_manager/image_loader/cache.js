@@ -27,7 +27,7 @@ ImageCache.DB_NAME = 'image-loader';
  * @type {number}
  * @const
  */
-ImageCache.DB_VERSION = 12;
+ImageCache.DB_VERSION = 14;
 
 /**
  * Memory limit for images data in bytes.
@@ -200,13 +200,15 @@ ImageCache.prototype.evictCache_ = function(
  * Saves an image in the cache.
  *
  * @param {string} key Cache key.
- * @param {string} data Image data.
+ * @param {number} timestamp Last modification timestamp. Used to detect
+ *     if the image cache entry is out of date.
  * @param {number} width Image width.
  * @param {number} height Image height.
- * @param {number} timestamp Last modification timestamp. Used to detect
- *     if the cache entry becomes out of date.
+ * @param {?string} ifd Image ifd, null if none.
+ * @param {string} data Image data.
  */
-ImageCache.prototype.saveImage = function(key, data, width, height, timestamp) {
+ImageCache.prototype.saveImage = function(
+    key, timestamp, width, height, ifd, data) {
   if (!this.db_) {
     console.warn('Cache database not available.');
     return;
@@ -218,8 +220,11 @@ ImageCache.prototype.saveImage = function(key, data, width, height, timestamp) {
       timestamp: timestamp,
       width: width,
       height: height,
+      ifd: ifd,
       size: data.length,
-      lastLoadTimestamp: Date.now()};
+      lastLoadTimestamp: Date.now(),
+    };
+
     var dataEntry = {key: key, data: data};
 
     var transaction = this.db_.transaction(['settings', 'metadata', 'data'],
@@ -241,13 +246,13 @@ ImageCache.prototype.saveImage = function(key, data, width, height, timestamp) {
 };
 
 /**
- * Loads an image from the cache (if available) or returns null.
+ * Loads an image from the cache.
  *
  * @param {string} key Cache key.
  * @param {number} timestamp Last modification timestamp. If different
- *     that the one in cache, then the entry will be invalidated.
- * @param {function(string, number, number)} onSuccess Success callback with
- *     the image's data, width, height.
+ *     than the one in cache, then the entry will be invalidated.
+ * @param {function(number, number, ?string, string)} onSuccess Success
+ *     callback with the image width, height, ?ifd, and data.
  * @param {function()} onFailure Failure callback.
  */
 ImageCache.prototype.loadImage = function(
@@ -296,7 +301,9 @@ ImageCache.prototype.loadImage = function(
       // image data.
       metadataEntry.lastLoadTimestamp = Date.now();
       metadataStore.put(metadataEntry);  // Added asynchronously.
-      onSuccess(dataEntry.data, metadataEntry.width, metadataEntry.height);
+      onSuccess(
+          metadataEntry.width, metadataEntry.height, metadataEntry.ifd,
+          dataEntry.data);
     }
   }.bind(this);
 

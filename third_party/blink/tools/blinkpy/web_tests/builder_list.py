@@ -48,11 +48,14 @@ class BuilderList(object):
                 Valid values for the version specifier can be found in
                 TestExpectationsParser._configuration_tokens_list, and valid
                 values for the build type specifier include "Release" and "Debug".
-            "is_try_builder": Whether the builder is a try bot.
+            "is_try_builder": Whether the builder is a trybot.
+            "master": The master name of the builder. It is deprecated, but still required
+                by test-results.appspot.com API."
+            "has_webdriver_tests": Whether webdriver_tests_suite runs on this builder.
 
         Possible refactoring note: Potentially, it might make sense to use
-        blinkpy.common.buildbot.Builder and add port_name and specifiers
-        properties to that class.
+        blinkpy.common.net.results_fetcher.Builder and add port_name and
+        specifiers properties to that class.
         """
         self._builders = builders_dict
         for builder in builders_dict:
@@ -81,6 +84,12 @@ class BuilderList(object):
 
     def bucket_for_builder(self, builder_name):
         return self._builders[builder_name].get('bucket', '')
+
+    def master_for_builder(self, builder_name):
+        return self._builders[builder_name].get('master', '')
+
+    def has_webdriver_tests_for_builder(self, builder_name):
+        return self._builders[builder_name].get('has_webdriver_tests')
 
     def port_name_for_builder_name(self, builder_name):
         return self._builders[builder_name]['port_name']

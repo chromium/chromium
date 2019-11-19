@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/policy/profile_policy_connector_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
@@ -52,7 +51,7 @@ ManagedBookmarkServiceFactory::GetDefaultFactory() {
 std::string ManagedBookmarkServiceFactory::GetManagedBookmarksDomain(
     Profile* profile) {
   policy::ProfilePolicyConnector* connector =
-      policy::ProfilePolicyConnectorFactory::GetForBrowserContext(profile);
+      profile->GetProfilePolicyConnector();
   if (connector->IsManaged() &&
       connector->IsProfilePolicy(policy::key::kManagedBookmarks)) {
     return gaia::ExtractDomainName(profile->GetProfileUserName());
@@ -63,9 +62,7 @@ std::string ManagedBookmarkServiceFactory::GetManagedBookmarksDomain(
 ManagedBookmarkServiceFactory::ManagedBookmarkServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "ManagedBookmarkService",
-          BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(policy::ProfilePolicyConnectorFactory::GetInstance());
-}
+          BrowserContextDependencyManager::GetInstance()) {}
 
 ManagedBookmarkServiceFactory::~ManagedBookmarkServiceFactory() {}
 

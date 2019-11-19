@@ -10,23 +10,24 @@
 
 namespace service_manager {
 
-Connector::Connector(mojom::ConnectorPtrInfo unbound_state)
-    : unbound_state_(std::move(unbound_state)), weak_factory_(this) {
+Connector::Connector(mojo::PendingRemote<mojom::Connector> unbound_state)
+    : unbound_state_(std::move(unbound_state)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-Connector::Connector(mojom::ConnectorPtr connector)
-    : connector_(std::move(connector)), weak_factory_(this) {
-  connector_.set_connection_error_handler(
-      base::Bind(&Connector::OnConnectionError, base::Unretained(this)));
+Connector::Connector(mojo::Remote<mojom::Connector> connector)
+    : connector_(std::move(connector)) {
+  connector_.set_disconnect_handler(
+      base::BindOnce(&Connector::OnConnectionError, base::Unretained(this)));
 }
 
 Connector::~Connector() = default;
 
-std::unique_ptr<Connector> Connector::Create(mojom::ConnectorRequest* request) {
-  mojom::ConnectorPtr proxy;
-  *request = mojo::MakeRequest(&proxy);
-  return std::make_unique<Connector>(proxy.PassInterface());
+std::unique_ptr<Connector> Connector::Create(
+    mojo::PendingReceiver<mojom::Connector>* receiver) {
+  mojo::PendingRemote<mojom::Connector> proxy;
+  *receiver = proxy.InitWithNewPipeAndPassReceiver();
+  return std::make_unique<Connector>(std::move(proxy));
 }
 
 void Connector::WarmService(const ServiceFilter& filter,
@@ -38,17 +39,17 @@ void Connector::WarmService(const ServiceFilter& filter,
 
 void Connector::RegisterServiceInstance(
     const Identity& identity,
-    mojom::ServicePtr service,
-    mojom::PIDReceiverRequest pid_receiver_request,
+    mojo::PendingRemote<mojom::Service> service,
+    mojo::PendingReceiver<mojom::ProcessMetadata> metadata_receiver,
     RegisterServiceInstanceCallback callback) {
   if (!BindConnectorIfNecessary())
     return;
 
   DCHECK(identity.IsValid());
-  DCHECK(service.is_bound() && pid_receiver_request.is_pending());
-  connector_->RegisterServiceInstance(
-      identity, service.PassInterface().PassHandle(),
-      std::move(pid_receiver_request), std::move(callback));
+  DCHECK(service);
+  connector_->RegisterServiceInstance(identity, service.PassPipe(),
+                                      std::move(metadata_receiver),
+                                      std::move(callback));
 }
 
 void Connector::QueryService(const std::string& service_name,
@@ -81,10 +82,10 @@ void Connector::BindInterface(const ServiceFilter& filter,
 }
 
 std::unique_ptr<Connector> Connector::Clone() {
-  mojom::ConnectorPtrInfo connector;
-  auto request = mojo::MakeRequest(&connector);
+  mojo::PendingRemote<mojom::Connector> connector;
+  auto receiver = connector.InitWithNewPipeAndPassReceiver();
   if (BindConnectorIfNecessary())
-    connector_->Clone(std::move(request));
+    connector_->Clone(std::move(receiver));
   return std::make_unique<Connector>(std::move(connector));
 }
 
@@ -92,21 +93,11 @@ bool Connector::IsBound() const {
   return connector_.is_bound();
 }
 
-void Connector::FilterInterfaces(const std::string& spec,
-                                 const Identity& source_identity,
-                                 mojom::InterfaceProviderRequest request,
-                                 mojom::InterfaceProviderPtr target) {
+void Connector::BindConnectorReceiver(
+    mojo::PendingReceiver<mojom::Connector> receiver) {
   if (!BindConnectorIfNecessary())
     return;
-  DCHECK(source_identity.IsValid());
-  connector_->FilterInterfaces(spec, source_identity, std::move(request),
-                               std::move(target));
-}
-
-void Connector::BindConnectorRequest(mojom::ConnectorRequest request) {
-  if (!BindConnectorIfNecessary())
-    return;
-  connector_->Clone(std::move(request));
+  connector_->Clone(std::move(receiver));
 }
 
 base::WeakPtr<Connector> Connector::GetWeakPtr() {
@@ -127,7 +118,7 @@ bool Connector::HasBinderOverrideForTesting(
   if (service_overrides == local_binder_overrides_.end())
     return false;
 
-  return base::ContainsKey(service_overrides->second, interface_name);
+  return base::Contains(service_overrides->second, interface_name);
 }
 
 void Connector::ClearBinderOverrideForTesting(
@@ -162,8 +153,8 @@ bool Connector::BindConnectorIfNecessary() {
     }
 
     connector_.Bind(std::move(unbound_state_));
-    connector_.set_connection_error_handler(
-        base::Bind(&Connector::OnConnectionError, base::Unretained(this)));
+    connector_.set_disconnect_handler(
+        base::BindOnce(&Connector::OnConnectionError, base::Unretained(this)));
   }
 
   return true;

@@ -73,47 +73,48 @@ class AnimationAnimationInputHelpersTest : public PageTestBase {
 
   void TearDown() override {
     document.Release();
-    ThreadState::Current()->CollectAllGarbage();
+    ThreadState::Current()->CollectAllGarbageForTesting();
   }
 
   Persistent<Document> document;
 };
 
 TEST_F(AnimationAnimationInputHelpersTest, ParseKeyframePropertyAttributes) {
-  EXPECT_EQ(CSSPropertyLineHeight,
+  EXPECT_EQ(CSSPropertyID::kLineHeight,
             KeyframeAttributeToCSSProperty("lineHeight"));
-  EXPECT_EQ(CSSPropertyBorderTopWidth,
+  EXPECT_EQ(CSSPropertyID::kBorderTopWidth,
             KeyframeAttributeToCSSProperty("borderTopWidth"));
-  EXPECT_EQ(CSSPropertyWidth, KeyframeAttributeToCSSProperty("width"));
-  EXPECT_EQ(CSSPropertyFloat, KeyframeAttributeToCSSProperty("float"));
-  EXPECT_EQ(CSSPropertyFloat, KeyframeAttributeToCSSProperty("cssFloat"));
-  EXPECT_EQ(CSSPropertyVariable, KeyframeAttributeToCSSProperty("--"));
-  EXPECT_EQ(CSSPropertyVariable, KeyframeAttributeToCSSProperty("---"));
-  EXPECT_EQ(CSSPropertyVariable, KeyframeAttributeToCSSProperty("--x"));
-  EXPECT_EQ(CSSPropertyVariable,
+  EXPECT_EQ(CSSPropertyID::kWidth, KeyframeAttributeToCSSProperty("width"));
+  EXPECT_EQ(CSSPropertyID::kFloat, KeyframeAttributeToCSSProperty("float"));
+  EXPECT_EQ(CSSPropertyID::kFloat, KeyframeAttributeToCSSProperty("cssFloat"));
+  EXPECT_EQ(CSSPropertyID::kVariable, KeyframeAttributeToCSSProperty("--"));
+  EXPECT_EQ(CSSPropertyID::kVariable, KeyframeAttributeToCSSProperty("---"));
+  EXPECT_EQ(CSSPropertyID::kVariable, KeyframeAttributeToCSSProperty("--x"));
+  EXPECT_EQ(CSSPropertyID::kVariable,
             KeyframeAttributeToCSSProperty("--webkit-custom-property"));
 
-  EXPECT_EQ(CSSPropertyInvalid, KeyframeAttributeToCSSProperty(""));
-  EXPECT_EQ(CSSPropertyInvalid, KeyframeAttributeToCSSProperty("-"));
-  EXPECT_EQ(CSSPropertyInvalid, KeyframeAttributeToCSSProperty("line-height"));
-  EXPECT_EQ(CSSPropertyInvalid,
+  EXPECT_EQ(CSSPropertyID::kInvalid, KeyframeAttributeToCSSProperty(""));
+  EXPECT_EQ(CSSPropertyID::kInvalid, KeyframeAttributeToCSSProperty("-"));
+  EXPECT_EQ(CSSPropertyID::kInvalid,
+            KeyframeAttributeToCSSProperty("line-height"));
+  EXPECT_EQ(CSSPropertyID::kInvalid,
             KeyframeAttributeToCSSProperty("border-topWidth"));
-  EXPECT_EQ(CSSPropertyInvalid, KeyframeAttributeToCSSProperty("Width"));
-  EXPECT_EQ(CSSPropertyInvalid,
+  EXPECT_EQ(CSSPropertyID::kInvalid, KeyframeAttributeToCSSProperty("Width"));
+  EXPECT_EQ(CSSPropertyID::kInvalid,
             KeyframeAttributeToCSSProperty("-epub-text-transform"));
-  EXPECT_EQ(CSSPropertyInvalid,
+  EXPECT_EQ(CSSPropertyID::kInvalid,
             KeyframeAttributeToCSSProperty("EpubTextTransform"));
-  EXPECT_EQ(CSSPropertyInvalid,
+  EXPECT_EQ(CSSPropertyID::kInvalid,
             KeyframeAttributeToCSSProperty("-internal-marquee-repetition"));
-  EXPECT_EQ(CSSPropertyInvalid,
+  EXPECT_EQ(CSSPropertyID::kInvalid,
             KeyframeAttributeToCSSProperty("InternalMarqueeRepetition"));
-  EXPECT_EQ(CSSPropertyInvalid,
+  EXPECT_EQ(CSSPropertyID::kInvalid,
             KeyframeAttributeToCSSProperty("-webkit-filter"));
-  EXPECT_EQ(CSSPropertyInvalid,
+  EXPECT_EQ(CSSPropertyID::kInvalid,
             KeyframeAttributeToCSSProperty("-webkit-transform"));
-  EXPECT_EQ(CSSPropertyInvalid,
+  EXPECT_EQ(CSSPropertyID::kInvalid,
             KeyframeAttributeToCSSProperty("webkitTransform"));
-  EXPECT_EQ(CSSPropertyInvalid,
+  EXPECT_EQ(CSSPropertyID::kInvalid,
             KeyframeAttributeToCSSProperty("WebkitTransform"));
 }
 
@@ -129,7 +130,6 @@ TEST_F(AnimationAnimationInputHelpersTest, ParseAnimationTimingFunction) {
   TimingFunctionRoundTrips("ease-in", exception_state);
   TimingFunctionRoundTrips("ease-out", exception_state);
   TimingFunctionRoundTrips("ease-in-out", exception_state);
-  TimingFunctionRoundTrips("frames(3)", exception_state);
   TimingFunctionRoundTrips("cubic-bezier(0.1, 5, 0.23, 0)", exception_state);
 
   EXPECT_EQ("steps(1, start)",
@@ -146,8 +146,6 @@ TEST_F(AnimationAnimationInputHelpersTest, ParseAnimationTimingFunction) {
 
   TimingFunctionThrows("steps(3, nowhere)", exception_state);
   TimingFunctionThrows("steps(-3, end)", exception_state);
-  TimingFunctionThrows("frames(3, end)", exception_state);
-  TimingFunctionThrows("frames(1)", exception_state);
   TimingFunctionThrows("cubic-bezier(0.1, 0, 4, 0.4)", exception_state);
 }
 

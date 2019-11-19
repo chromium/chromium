@@ -17,6 +17,8 @@
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/accelerated_video_decoder.h"
 #include "media/gpu/vp9_picture.h"
+#include "media/gpu/vp9_reference_frame_vector.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media {
 
@@ -59,12 +61,11 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
     // |lf_params| does not need to remain valid after this method returns.
     //
     // Return true when successful, false otherwise.
-    virtual bool SubmitDecode(
-        const scoped_refptr<VP9Picture>& pic,
-        const Vp9SegmentationParams& segm_params,
-        const Vp9LoopFilterParams& lf_params,
-        const std::vector<scoped_refptr<VP9Picture>>& ref_pictures,
-        const base::Closure& done_cb) = 0;
+    virtual bool SubmitDecode(scoped_refptr<VP9Picture> pic,
+                              const Vp9SegmentationParams& segm_params,
+                              const Vp9LoopFilterParams& lf_params,
+                              const Vp9ReferenceFrameVector& reference_frames,
+                              const base::Closure& done_cb) = 0;
 
     // Schedule output (display) of |pic|.
     //
@@ -76,7 +77,7 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
     // immediately after calling this method.
     //
     // Return true when successful, false otherwise.
-    virtual bool OutputPicture(const scoped_refptr<VP9Picture>& pic) = 0;
+    virtual bool OutputPicture(scoped_refptr<VP9Picture> pic) = 0;
 
     // Return true if the accelerator requires the client to provide frame
     // context in order to decode. If so, the Vp9FrameHeader provided by the
@@ -85,33 +86,29 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
 
     // Set |frame_ctx| to the state after decoding |pic|, returning true on
     // success, false otherwise.
-    virtual bool GetFrameContext(const scoped_refptr<VP9Picture>& pic,
+    virtual bool GetFrameContext(scoped_refptr<VP9Picture> pic,
                                  Vp9FrameContext* frame_ctx) = 0;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(VP9Accelerator);
   };
 
-  VP9Decoder(std::unique_ptr<VP9Accelerator> accelerator,
-             const VideoColorSpace& container_color_space = VideoColorSpace());
+  explicit VP9Decoder(
+      std::unique_ptr<VP9Accelerator> accelerator,
+      const VideoColorSpace& container_color_space = VideoColorSpace());
   ~VP9Decoder() override;
 
   // AcceleratedVideoDecoder implementation.
-  void SetStream(int32_t id,
-                 const uint8_t* ptr,
-                 size_t size,
-                 const DecryptConfig* decrypt_config = nullptr) override;
+  void SetStream(int32_t id, const DecoderBuffer& decoder_buffer) override;
   bool Flush() override WARN_UNUSED_RESULT;
   void Reset() override;
   DecodeResult Decode() override WARN_UNUSED_RESULT;
   gfx::Size GetPicSize() const override;
+  gfx::Rect GetVisibleRect() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
 
  private:
-  // Update ref_frames_ based on the information in current frame header.
-  void RefreshReferenceFrames(const scoped_refptr<VP9Picture>& pic);
-
   // Decode and possibly output |pic| (if the picture is to be shown).
   // Return true on success, false otherwise.
   bool DecodeAndOutputPicture(scoped_refptr<VP9Picture> pic);
@@ -119,7 +116,7 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
   // Get frame context state after decoding |pic| from the accelerator, and call
   // |context_refresh_cb| with the acquired state.
   void UpdateFrameContext(
-      const scoped_refptr<VP9Picture>& pic,
+      scoped_refptr<VP9Picture> pic,
       const base::Callback<void(const Vp9FrameContext&)>& context_refresh_cb);
 
   // Called on error, when decoding cannot continue. Sets state_ to kError and
@@ -141,15 +138,20 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
 
   // Current frame header to be used in decoding the next picture.
   std::unique_ptr<Vp9FrameHeader> curr_frame_hdr_;
+  // Current frame size that is necessary to decode |curr_frame_hdr_|.
+  gfx::Size curr_frame_size_;
 
   // Color space provided by the container.
   const VideoColorSpace container_color_space_;
 
   // Reference frames currently in use.
-  std::vector<scoped_refptr<VP9Picture>> ref_frames_;
+  Vp9ReferenceFrameVector ref_frames_;
 
   // Current coded resolution.
   gfx::Size pic_size_;
+
+  // Visible rectangle on the most recent allocation.
+  gfx::Rect visible_rect_;
 
   size_t size_change_failure_counter_ = 0;
 

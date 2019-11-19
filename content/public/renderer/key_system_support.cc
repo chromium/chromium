@@ -7,7 +7,8 @@
 #include "base/logging.h"
 #include "content/public/common/service_names.mojom.h"
 #include "content/public/renderer/render_thread.h"
-#include "media/mojo/interfaces/key_system_support.mojom.h"
+#include "media/mojo/mojom/key_system_support.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/connector.h"
 
 namespace content {
@@ -18,9 +19,9 @@ bool IsKeySystemSupported(
   DVLOG(3) << __func__ << " key_system: " << key_system;
 
   bool is_supported = false;
-  media::mojom::KeySystemSupportPtr key_system_support;
-  content::RenderThread::Get()->GetConnector()->BindInterface(
-      mojom::kBrowserServiceName, mojo::MakeRequest(&key_system_support));
+  mojo::Remote<media::mojom::KeySystemSupport> key_system_support;
+  content::RenderThread::Get()->BindHostReceiver(
+      key_system_support.BindNewPipeAndPassReceiver());
 
   key_system_support->IsKeySystemSupported(key_system, &is_supported,
                                            key_system_capability);

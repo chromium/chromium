@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop.h"
+#include "base/task/task_observer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/cancelable_closure_holder.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
@@ -41,7 +41,7 @@ class SchedulerHelper;
 //
 // Idle tasks are supplied a deadline, and should endeavor to finished before it
 // ends to avoid jank.
-class PLATFORM_EXPORT IdleHelper : public base::MessageLoop::TaskObserver,
+class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
                                    public SingleThreadIdleTaskRunner::Delegate {
  public:
   // Used to by scheduler implementations to customize idle behaviour.
@@ -145,7 +145,7 @@ class PLATFORM_EXPORT IdleHelper : public base::MessageLoop::TaskObserver,
   void DidProcessIdleTask() override;
   base::TimeTicks NowTicks() override;
 
-  // base::MessageLoop::TaskObserver implementation:
+  // base::TaskObserver implementation:
   void WillProcessTask(const base::PendingTask& pending_task) override;
   void DidProcessTask(const base::PendingTask& pending_task) override;
 
@@ -239,7 +239,7 @@ class PLATFORM_EXPORT IdleHelper : public base::MessageLoop::TaskObserver,
   bool is_shutdown_;
 
   base::WeakPtr<IdleHelper> weak_idle_helper_ptr_;
-  base::WeakPtrFactory<IdleHelper> weak_factory_;
+  base::WeakPtrFactory<IdleHelper> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IdleHelper);
 };

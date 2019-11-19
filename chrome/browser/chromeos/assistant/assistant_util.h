@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_ASSISTANT_ASSISTANT_UTIL_H_
 #define CHROME_BROWSER_CHROMEOS_ASSISTANT_ASSISTANT_UTIL_H_
 
-#include "ash/public/interfaces/voice_interaction_controller.mojom.h"
+#include "ash/public/mojom/assistant_state_controller.mojom.h"
 
 class Profile;
 

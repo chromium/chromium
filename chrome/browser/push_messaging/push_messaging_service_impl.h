@@ -21,7 +21,7 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/gcm_driver/common/gcm_messages.h"
+#include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/gcm_client.h"
@@ -30,26 +30,32 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/push_messaging_service.h"
+#include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 
+class GURL;
 class Profile;
 class PushMessagingAppIdentifier;
 class PushMessagingServiceTest;
 class ScopedKeepAlive;
-struct PushSubscriptionOptions;
 
-namespace content {
+namespace blink {
 namespace mojom {
 enum class PushDeliveryStatus;
 enum class PushRegistrationStatus;
 }  // namespace mojom
+}  // namespace blink
+
+namespace content {
+class DevToolsBackgroundServicesContext;
 }  // namespace content
 
 namespace gcm {
 class GCMDriver;
-}
+}  // namespace gcm
+
 namespace instance_id {
 class InstanceIDDriver;
-}
+}  // namespace instance_id
 
 class PushMessagingServiceImpl : public content::PushMessagingService,
                                  public gcm::GCMAppHandler,
@@ -78,31 +84,33 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       const gcm::GCMClient::SendErrorDetails& send_error_details) override;
   void OnSendAcknowledged(const std::string& app_id,
                           const std::string& message_id) override;
+  void OnMessageDecryptionFailed(const std::string& app_id,
+                                 const std::string& message_id,
+                                 const std::string& error_message) override;
   bool CanHandle(const std::string& app_id) const override;
 
   // content::PushMessagingService implementation:
-  GURL GetEndpoint(bool standard_protocol) const override;
   void SubscribeFromDocument(const GURL& requesting_origin,
                              int64_t service_worker_registration_id,
                              int renderer_id,
                              int render_frame_id,
-                             const content::PushSubscriptionOptions& options,
+                             blink::mojom::PushSubscriptionOptionsPtr options,
                              bool user_gesture,
-                             const RegisterCallback& callback) override;
+                             RegisterCallback callback) override;
   void SubscribeFromWorker(const GURL& requesting_origin,
                            int64_t service_worker_registration_id,
-                           const content::PushSubscriptionOptions& options,
-                           const RegisterCallback& callback) override;
+                           blink::mojom::PushSubscriptionOptionsPtr options,
+                           RegisterCallback callback) override;
   void GetSubscriptionInfo(const GURL& origin,
                            int64_t service_worker_registration_id,
                            const std::string& sender_id,
                            const std::string& subscription_id,
                            const SubscriptionInfoCallback& callback) override;
-  void Unsubscribe(content::mojom::PushUnregistrationReason reason,
+  void Unsubscribe(blink::mojom::PushUnregistrationReason reason,
                    const GURL& requesting_origin,
                    int64_t service_worker_registration_id,
                    const std::string& sender_id,
-                   const UnregisterCallback&) override;
+                   UnregisterCallback) override;
   bool SupportNonVisibleMessages() override;
   void DidDeleteServiceWorkerRegistration(
       const GURL& origin,
@@ -148,50 +156,56 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
                               int64_t service_worker_registration_id,
                               const gcm::IncomingMessage& message,
                               const base::Closure& message_handled_closure,
-                              content::mojom::PushDeliveryStatus status);
+                              blink::mojom::PushDeliveryStatus status);
 
   void DidHandleMessage(const std::string& app_id,
-                        const base::Closure& completion_closure);
+                        const std::string& push_message_id,
+                        const base::RepeatingClosure& completion_closure,
+                        bool did_show_generic_notification);
 
   // Subscribe methods ---------------------------------------------------------
 
   void DoSubscribe(const PushMessagingAppIdentifier& app_identifier,
-                   const content::PushSubscriptionOptions& options,
-                   const RegisterCallback& callback,
+                   blink::mojom::PushSubscriptionOptionsPtr options,
+                   RegisterCallback callback,
                    ContentSetting permission_status);
 
-  void SubscribeEnd(const RegisterCallback& callback,
+  void SubscribeEnd(RegisterCallback callback,
                     const std::string& subscription_id,
+                    const GURL& endpoint,
                     const std::vector<uint8_t>& p256dh,
                     const std::vector<uint8_t>& auth,
-                    content::mojom::PushRegistrationStatus status);
+                    blink::mojom::PushRegistrationStatus status);
 
-  void SubscribeEndWithError(const RegisterCallback& callback,
-                             content::mojom::PushRegistrationStatus status);
+  void SubscribeEndWithError(RegisterCallback callback,
+                             blink::mojom::PushRegistrationStatus status);
 
   void DidSubscribe(const PushMessagingAppIdentifier& app_identifier,
                     const std::string& sender_id,
-                    const RegisterCallback& callback,
+                    RegisterCallback callback,
                     const std::string& subscription_id,
                     instance_id::InstanceID::Result result);
 
   void DidSubscribeWithEncryptionInfo(
       const PushMessagingAppIdentifier& app_identifier,
-      const RegisterCallback& callback,
+      RegisterCallback callback,
       const std::string& subscription_id,
-      const std::string& p256dh,
-      const std::string& auth_secret);
+      const GURL& endpoint,
+      std::string p256dh,
+      std::string auth_secret);
 
   // GetSubscriptionInfo methods -----------------------------------------------
 
   void DidValidateSubscription(const std::string& app_id,
                                const std::string& sender_id,
+                               const GURL& endpoint,
                                const SubscriptionInfoCallback& callback,
                                bool is_valid);
 
-  void DidGetEncryptionInfo(const SubscriptionInfoCallback& callback,
-                            const std::string& p256dh,
-                            const std::string& auth_secret) const;
+  void DidGetEncryptionInfo(const GURL& endpoint,
+                            const SubscriptionInfoCallback& callback,
+                            std::string p256dh,
+                            std::string auth_secret) const;
 
   // Unsubscribe methods -------------------------------------------------------
 
@@ -199,18 +213,17 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // whenever they can be obtained. It's valid for |origin| to be empty and
   // |service_worker_registration_id| to be kInvalidServiceWorkerRegistrationId,
   // or for app_id to be empty, but not both at once.
-  void UnsubscribeInternal(content::mojom::PushUnregistrationReason reason,
+  void UnsubscribeInternal(blink::mojom::PushUnregistrationReason reason,
                            const GURL& origin,
                            int64_t service_worker_registration_id,
                            const std::string& app_id,
                            const std::string& sender_id,
-                           const UnregisterCallback& callback);
+                           UnregisterCallback callback);
 
-  void DidClearPushSubscriptionId(
-      content::mojom::PushUnregistrationReason reason,
-      const std::string& app_id,
-      const std::string& sender_id,
-      const UnregisterCallback& callback);
+  void DidClearPushSubscriptionId(blink::mojom::PushUnregistrationReason reason,
+                                  const std::string& app_id,
+                                  const std::string& sender_id,
+                                  UnregisterCallback callback);
 
   void DidUnregister(bool was_subscribed, gcm::GCMClient::Result result);
   void DidDeleteID(const std::string& app_id,
@@ -223,7 +236,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 
   void UnsubscribeBecausePermissionRevoked(
       const PushMessagingAppIdentifier& app_identifier,
-      const UnregisterCallback& callback,
+      UnregisterCallback callback,
       const std::string& sender_id,
       bool success,
       bool not_found);
@@ -244,9 +257,16 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       const std::string& sender_id,
       gcm::GCMEncryptionProvider::EncryptionInfoCallback callback);
 
+  // Returns the URL used to send push messages to the subscription identified
+  // by |subscription_id|.
+  GURL CreateEndpoint(const std::string& subscription_id) const;
+
   gcm::GCMDriver* GetGCMDriver() const;
 
   instance_id::InstanceIDDriver* GetInstanceIDDriver() const;
+
+  content::DevToolsBackgroundServicesContext* GetDevToolsContext(
+      const GURL& origin) const;
 
   // Testing methods -----------------------------------------------------------
 
@@ -294,7 +314,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // messages when this is true.
   bool shutdown_started_ = false;
 
-  base::WeakPtrFactory<PushMessagingServiceImpl> weak_factory_;
+  base::WeakPtrFactory<PushMessagingServiceImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PushMessagingServiceImpl);
 };

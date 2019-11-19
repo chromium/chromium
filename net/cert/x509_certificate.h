@@ -145,7 +145,7 @@ class NET_EXPORT X509Certificate
   // The format is [int count], [data - this certificate],
   // [data - intermediate1], ... [data - intermediateN].
   // All certificates are stored in DER form.
-  void Persist(base::Pickle* pickle);
+  void Persist(base::Pickle* pickle) const;
 
   // The serial number, DER encoded, possibly including a leading 00 byte.
   const std::string& serial_number() const { return serial_number_; }
@@ -189,7 +189,7 @@ class NET_EXPORT X509Certificate
 
   // Do any of the given issuer names appear in this cert's chain of trust?
   // |valid_issuers| is a list of DER-encoded X.509 DistinguishedNames.
-  bool IsIssuedByEncoded(const std::vector<std::string>& valid_issuers);
+  bool IsIssuedByEncoded(const std::vector<std::string>& valid_issuers) const;
 
   // Verifies that |hostname| matches this certificate.
   // Does not verify that the certificate is valid, only that the certificate

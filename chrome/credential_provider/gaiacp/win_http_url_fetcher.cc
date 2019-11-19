@@ -69,6 +69,12 @@ HRESULT WinHttpUrlFetcher::SetRequestBody(const char* body) {
   return S_OK;
 }
 
+HRESULT WinHttpUrlFetcher::SetHttpRequestTimeout(const int timeout_in_millis) {
+  DCHECK(timeout_in_millis);
+  timeout_in_millis_ = timeout_in_millis;
+  return S_OK;
+}
+
 HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
   USES_CONVERSION;
   DCHECK(response);
@@ -91,6 +97,19 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
       return hr;
     }
     connect.Set(connect_tmp);
+  }
+
+  {
+    // Set timeout if specified.
+    if (timeout_in_millis_ != 0) {
+      if (!::WinHttpSetTimeouts(session_.Get(), timeout_in_millis_,
+                                timeout_in_millis_, timeout_in_millis_,
+                                timeout_in_millis_)) {
+        HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+        LOGFN(ERROR) << "WinHttpSetTimeouts hr=" << putHR(hr);
+        return hr;
+      }
+    }
   }
 
   {

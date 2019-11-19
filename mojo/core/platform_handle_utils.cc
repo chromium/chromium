@@ -54,7 +54,7 @@ CreateSharedMemoryRegionHandleFromPlatformHandles(
   return zx::vmo(handle.TakeHandle());
 #elif defined(OS_MACOSX) && !defined(OS_IOS)
   DCHECK(!readonly_handle.is_valid());
-  return handle.TakeMachPort();
+  return handle.TakeMachSendRight();
 #elif defined(OS_ANDROID)
   DCHECK(!readonly_handle.is_valid());
   return handle.TakeFD();

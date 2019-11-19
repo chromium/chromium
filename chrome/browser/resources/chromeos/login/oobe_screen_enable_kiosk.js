@@ -9,13 +9,6 @@
 login.createScreen('KioskEnableScreen', 'kiosk-enable', function() {
   return {
     EXTERNAL_API: ['enableKioskForTesting', 'onCompleted'],
-    /**
-     * Header text of the screen.
-     * @type {string}
-     */
-    get header() {
-      return loadTimeData.getString('kioskEnableTitle');
-    },
 
     /**
      * Buttons in oobe wizard's button strip.
@@ -86,7 +79,7 @@ login.createScreen('KioskEnableScreen', 'kiosk-enable', function() {
     enableKioskForTesting: function(confirm) {
       var button =
           confirm ? $('kiosk-enable-button') : $('kiosk-cancel-button');
-      var clickEvent = cr.doc.createEvent('Event');
+      var clickEvent = document.createEvent('Event');
       clickEvent.initEvent('click', true, true);
       button.dispatchEvent(clickEvent);
     },

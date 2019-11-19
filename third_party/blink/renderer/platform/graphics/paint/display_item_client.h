@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_CLIENT_H_
 
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -52,7 +52,7 @@ class PLATFORM_EXPORT DisplayItemClient {
   // space of the object that owns the GraphicsLayer, i.e. offset by
   // GraphicsLayer::OffsetFromLayoutObjectWithSubpixelAccumulation().
   // It's in the space of the parent transform node.
-  virtual LayoutRect VisualRect() const = 0;
+  virtual IntRect VisualRect() const = 0;
 
   // The outset will be used to inflate visual rect after the visual rect is
   // mapped into the space of the composited layer, for any special raster
@@ -61,9 +61,7 @@ class PLATFORM_EXPORT DisplayItemClient {
 
   // The rect that needs to be invalidated partially for rasterization in this
   // client. It's in the same coordinate space as VisualRect().
-  virtual LayoutRect PartialInvalidationVisualRect() const {
-    return LayoutRect();
-  }
+  virtual IntRect PartialInvalidationVisualRect() const { return IntRect(); }
 
   // Called by PaintController::FinishCycle() for all clients after painting.
   virtual void ClearPartialInvalidationVisualRect() const {}
@@ -125,6 +123,7 @@ class PLATFORM_EXPORT DisplayItemClient {
 
  private:
   friend class FakeDisplayItemClient;
+  friend class ObjectPaintInvalidatorTest;
   friend class PaintController;
 
   void Validate() const {

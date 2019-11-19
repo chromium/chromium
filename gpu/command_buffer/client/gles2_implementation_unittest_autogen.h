@@ -2724,6 +2724,17 @@ TEST_F(GLES2ImplementationTest, DispatchCompute) {
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
+TEST_F(GLES2ImplementationTest, DispatchComputeIndirect) {
+  struct Cmds {
+    cmds::DispatchComputeIndirect cmd;
+  };
+  Cmds expected;
+  expected.cmd.Init(1);
+
+  gl_->DispatchComputeIndirect(1);
+  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+}
+
 TEST_F(GLES2ImplementationTest, GetProgramInterfaceiv) {
   struct Cmds {
     cmds::GetProgramInterfaceiv cmd;
@@ -2831,6 +2842,17 @@ TEST_F(GLES2ImplementationTest, DrawArraysInstancedANGLE) {
   expected.cmd.Init(GL_POINTS, 2, 3, 4);
 
   gl_->DrawArraysInstancedANGLE(GL_POINTS, 2, 3, 4);
+  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+}
+
+TEST_F(GLES2ImplementationTest, DrawArraysInstancedBaseInstanceANGLE) {
+  struct Cmds {
+    cmds::DrawArraysInstancedBaseInstanceANGLE cmd;
+  };
+  Cmds expected;
+  expected.cmd.Init(GL_POINTS, 2, 3, 4, 5);
+
+  gl_->DrawArraysInstancedBaseInstanceANGLE(GL_POINTS, 2, 3, 4, 5);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
@@ -3227,14 +3249,14 @@ TEST_F(GLES2ImplementationTest, DestroyGpuFenceCHROMIUM) {
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
-TEST_F(GLES2ImplementationTest, FramebufferTextureMultiviewLayeredANGLE) {
+TEST_F(GLES2ImplementationTest, FramebufferTextureMultiviewOVR) {
   struct Cmds {
-    cmds::FramebufferTextureMultiviewLayeredANGLE cmd;
+    cmds::FramebufferTextureMultiviewOVR cmd;
   };
   Cmds expected;
   expected.cmd.Init(1, 2, 3, 4, 5, 6);
 
-  gl_->FramebufferTextureMultiviewLayeredANGLE(1, 2, 3, 4, 5, 6);
+  gl_->FramebufferTextureMultiviewOVR(1, 2, 3, 4, 5, 6);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 

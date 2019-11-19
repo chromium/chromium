@@ -30,7 +30,8 @@
 // https://drafts.csswg.org/css-device-adapt/#css-viewport-rule-interface
 
 [
-    RuntimeEnabled=CSSViewport
+    RuntimeEnabled=CSSViewport,
+    Exposed=Window
 ] interface CSSViewportRule : CSSRule {
     readonly attribute CSSStyleDeclaration style;
 };

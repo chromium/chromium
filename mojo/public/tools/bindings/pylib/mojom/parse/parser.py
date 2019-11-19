@@ -273,6 +273,8 @@ class Parser(object):
   def p_basictypename(self, p):
     """basictypename : remotetype
                      | receivertype
+                     | associatedremotetype
+                     | associatedreceivertype
                      | identifier
                      | ASSOCIATED identifier
                      | handletype"""
@@ -288,6 +290,16 @@ class Parser(object):
   def p_receivertype(self, p):
     """receivertype : PENDING_RECEIVER LANGLE identifier RANGLE"""
     p[0] = "rcv<%s>" % p[3]
+
+  def p_associatedremotetype(self, p):
+    """associatedremotetype : PENDING_ASSOCIATED_REMOTE LANGLE identifier \
+                                  RANGLE"""
+    p[0] = "rma<%s>" % p[3]
+
+  def p_associatedreceivertype(self, p):
+    """associatedreceivertype : PENDING_ASSOCIATED_RECEIVER LANGLE identifier \
+                                    RANGLE"""
+    p[0] = "rca<%s>" % p[3]
 
   def p_handletype(self, p):
     """handletype : HANDLE

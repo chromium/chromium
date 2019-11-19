@@ -310,6 +310,19 @@ SANDBOX_INTERCEPT NTSTATUS WINAPI TargetConfigureOPMProtectedOutput64(
     ULONG additional_parameters_size,
     const BYTE* additional_parameters);
 
+// -----------------------------------------------------------------------
+// Interceptors handled by the signed process code.
+
+// Interception of NtCreateSection on the child process.
+SANDBOX_INTERCEPT NTSTATUS WINAPI
+TargetNtCreateSection64(PHANDLE section_handle,
+                        ACCESS_MASK desired_access,
+                        POBJECT_ATTRIBUTES object_attributes,
+                        PLARGE_INTEGER maximum_size,
+                        ULONG section_page_protection,
+                        ULONG allocation_attributes,
+                        HANDLE file_handle);
+
 }  // extern "C"
 
 }  // namespace sandbox

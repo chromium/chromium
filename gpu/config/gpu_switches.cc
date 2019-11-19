@@ -33,26 +33,27 @@ const char kGpuPreferences[] = "gpu-preferences";
 // Ignores GPU blacklist.
 const char kIgnoreGpuBlacklist[] = "ignore-gpu-blacklist";
 
-// Allows user to override maximum number of active WebGL contexts per
-// renderer process.
-const char kMaxActiveWebGLContexts[] = "max-active-webgl-contexts";
-
 // Allows explicitly specifying the shader disk cache size for embedded devices.
 // Default value is 6MB. On Android, 2MB is default and 128KB for low-end
 // devices.
 const char kShaderDiskCacheSizeKB[] = "shader-disk-cache-size-kb";
-
-// Set the antialiasing method used for webgl. (none, explicit, implicit, or
-// screenspace)
-const char kWebglAntialiasingMode[] = "webgl-antialiasing-mode";
-
-// Set a default sample count for webgl if msaa is enabled.
-const char kWebglMSAASampleCount[] = "webgl-msaa-sample-count";
 
 // Disables the non-sandboxed GPU process for DX12 and Vulkan info collection
 const char kDisableGpuProcessForDX12VulkanInfoCollection[] =
     "disable-gpu-process-for-dx12-vulkan-info-collection";
 
 const char kEnableUnsafeWebGPU[] = "enable-unsafe-webgpu";
+
+// Increases the priority (to REALTIME_AUDIO) of gpu process and compositor
+// thread.
+// This is only to be used for perf tests on macOS for more reliable values.
+const char kUseHighGPUThreadPriorityForPerfTests[] =
+    "use-gpu-high-thread-priority-for-perf-tests";
+
+// Start the non-sandboxed GPU process for DX12 and Vulkan info collection
+// immediately after the browser starts. The default is to delay for 120
+// seconds.
+const char kNoDelayForDX12VulkanInfoCollection[] =
+    "no-delay-for-dx12-vulkan-info-collection";
 
 }  // namespace switches

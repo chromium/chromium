@@ -1,0 +1,3 @@
+[document web]
+++[dialog]
+++++[static] name='This is ARIA dialog.'

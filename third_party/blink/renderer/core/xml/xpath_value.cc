@@ -64,7 +64,7 @@ NodeSet& Value::ModifiableNodeSet(EvaluationContext& context) {
     context.had_type_conversion_error = true;
 
   if (!data_)
-    data_ = ValueData::Create();
+    data_ = MakeGarbageCollected<ValueData>();
 
   type_ = kNodeSetValue;
   return data_->GetNodeSet();

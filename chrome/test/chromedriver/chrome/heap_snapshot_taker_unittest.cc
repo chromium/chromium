@@ -22,10 +22,8 @@ namespace {
 const char* const chunks[] = {"{\"a\": 1,", "\"b\": 2}"};
 
 std::unique_ptr<base::Value> GetSnapshotAsValue() {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetInteger("a", 1);
-  dict->SetInteger("b", 2);
-  return std::move(dict);
+  std::string str_snapshot = "{\"a\": 1,\"b\": 2}";
+  return std::make_unique<base::Value>(std::move(str_snapshot));;
 }
 
 class DummyDevToolsClient : public StubDevToolsClient {

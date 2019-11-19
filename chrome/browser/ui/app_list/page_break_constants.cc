@@ -21,7 +21,7 @@ const size_t kDefaultPageBreakAppIdsLength =
 
 // Returns true if |item_id| is of a default-installed page break item.
 bool IsDefaultPageBreakItem(const std::string& item_id) {
-  return base::ContainsValue(kDefaultPageBreakAppIds, item_id);
+  return base::Contains(kDefaultPageBreakAppIds, item_id);
 }
 
 }  // namespace app_list

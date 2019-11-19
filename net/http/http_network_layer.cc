@@ -11,7 +11,7 @@
 #include "base/strings/string_util.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_network_transaction.h"
-#include "net/http/http_server_properties_impl.h"
+#include "net/http/http_server_properties.h"
 #include "net/http/http_stream_factory_job.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
@@ -24,18 +24,14 @@ HttpNetworkLayer::HttpNetworkLayer(HttpNetworkSession* session)
       suspended_(false) {
   DCHECK(session_);
 #if defined(OS_WIN)
-  base::PowerMonitor* power_monitor = base::PowerMonitor::Get();
-  if (power_monitor)
-    power_monitor->AddObserver(this);
+  base::PowerMonitor::AddObserver(this);
 #endif
 }
 
 HttpNetworkLayer::~HttpNetworkLayer() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 #if defined(OS_WIN)
-  base::PowerMonitor* power_monitor = base::PowerMonitor::Get();
-  if (power_monitor)
-    power_monitor->RemoveObserver(this);
+  base::PowerMonitor::RemoveObserver(this);
 #endif
 }
 
@@ -50,7 +46,7 @@ int HttpNetworkLayer::CreateTransaction(
 }
 
 HttpCache* HttpNetworkLayer::GetCache() {
-  return NULL;
+  return nullptr;
 }
 
 HttpNetworkSession* HttpNetworkLayer::GetSession() {

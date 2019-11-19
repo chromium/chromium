@@ -15,10 +15,14 @@ namespace scheduler {
 
 class NonMainThreadSchedulerImpl;
 
+// TODO(carlscab): This class is not really needed and should be removed
 class PLATFORM_EXPORT NonMainThreadSchedulerHelper : public SchedulerHelper {
  public:
+  // |sequence_manager| must remain valid until Shutdown() is called or the
+  // object is destroyed. |main_thread_scheduler| must remain valid for the
+  // entire lifetime of this object.
   NonMainThreadSchedulerHelper(
-      std::unique_ptr<base::sequence_manager::SequenceManager> manager,
+      base::sequence_manager::SequenceManager* manager,
       NonMainThreadSchedulerImpl* non_main_thread_scheduler,
       TaskType default_task_type);
   ~NonMainThreadSchedulerHelper() override;
@@ -35,6 +39,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerHelper : public SchedulerHelper {
  protected:
   scoped_refptr<base::sequence_manager::TaskQueue> DefaultTaskQueue() override;
   scoped_refptr<base::sequence_manager::TaskQueue> ControlTaskQueue() override;
+  void ShutdownAllQueues() override;
 
  private:
   NonMainThreadSchedulerImpl* non_main_thread_scheduler_;  // NOT OWNED

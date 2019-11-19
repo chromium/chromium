@@ -23,8 +23,10 @@
 
 #if defined(OS_WIN)
 #include "base/allocator/partition_allocator/page_allocator_internals_win.h"
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif defined(OS_POSIX)
 #include "base/allocator/partition_allocator/page_allocator_internals_posix.h"
+#elif defined(OS_FUCHSIA)
+#include "base/allocator/partition_allocator/page_allocator_internals_fuchsia.h"
 #else
 #error Platform not supported.
 #endif
@@ -114,19 +116,6 @@ void* AllocPages(void* address,
   uintptr_t align_offset_mask = align - 1;
   uintptr_t align_base_mask = ~align_offset_mask;
   DCHECK(!(reinterpret_cast<uintptr_t>(address) & align_offset_mask));
-
-#if defined(OS_LINUX) && defined(ARCH_CPU_64_BITS)
-  // On 64 bit Linux, we may need to adjust the address space limit for
-  // guarded allocations.
-  if (length >= kMinimumGuardedMemorySize) {
-    CHECK_EQ(PageInaccessible, accessibility);
-    CHECK(!commit);
-    if (!AdjustAddressSpaceLimit(base::checked_cast<int64_t>(length))) {
-      DLOG(WARNING) << "Could not adjust address space by " << length;
-      // Fall through. Try the allocation, since we may have a reserve.
-    }
-  }
-#endif
 
   // If the client passed null as the address, choose a good one.
   if (address == nullptr) {

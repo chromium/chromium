@@ -7,7 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/big_buffer.mojom";
 
 // Struct which represents the contents of an ArrayBuffer, e.g.
-// WTF::ArrayBufferContents.
+// ArrayBufferContents.
 struct SerializedArrayBufferContents {
   mojo_base.mojom.BigBuffer contents;
 };

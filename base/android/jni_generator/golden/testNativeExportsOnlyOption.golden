@@ -76,12 +76,12 @@ inline jclass
 JNI_GENERATOR_EXPORT jint
     Java_org_chromium_example_jni_1generator_SampleForTests_nativeStaticMethod(
     JNIEnv* env,
-    jobject jcaller,
+    jclass jcaller,
     jlong nativeTest,
     jint arg1) {
   Test* native = reinterpret_cast<Test*>(nativeTest);
   CHECK_NATIVE_PTR(env, jcaller, native, "StaticMethod", 0);
-  return native->StaticMethod(env, base::android::JavaParamRef<jobject>(env, jcaller), arg1);
+  return native->StaticMethod(env, arg1);
 }
 
 JNI_GENERATOR_EXPORT jint Java_org_chromium_example_jni_1generator_SampleForTests_nativeMethod(

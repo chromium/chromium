@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/sequenced_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -180,12 +180,12 @@ class CloudPolicyManagerTest : public testing::Test {
     expected_bundle_.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
         .CopyFrom(policy_map_);
 
-    policy_.payload().mutable_passwordmanagerenabled()->set_value(false);
+    policy_.payload().mutable_searchsuggestenabled()->set_value(false);
     policy_.Build();
 
     EXPECT_CALL(store_, Load());
     manager_.reset(new TestCloudPolicyManager(
-        &store_, scoped_task_environment_.GetMainThreadTaskRunner()));
+        &store_, task_environment_.GetMainThreadTaskRunner()));
     manager_->Init(&schema_registry_);
     Mock::VerifyAndClearExpectations(&store_);
     manager_->AddObserver(&observer_);
@@ -197,7 +197,7 @@ class CloudPolicyManagerTest : public testing::Test {
   }
 
   // Needs to be the first member.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   // Testing policy.
   const std::string policy_type_;

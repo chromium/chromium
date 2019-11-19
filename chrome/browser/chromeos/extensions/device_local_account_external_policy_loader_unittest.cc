@@ -24,13 +24,14 @@
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/external_provider_interface.h"
@@ -39,6 +40,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -164,7 +166,9 @@ class DeviceLocalAccountExternalPolicyLoaderTest : public testing::Test {
   void VerifyAndResetVisitorCallExpectations();
   void SetForceInstallListPolicy();
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+  std::unique_ptr<TestingProfile> profile_;
   base::ScopedTempDir temp_dir_;
   base::FilePath cache_dir_;
   policy::MockCloudPolicyStore store_;
@@ -186,7 +190,7 @@ class DeviceLocalAccountExternalPolicyLoaderTest : public testing::Test {
 
 DeviceLocalAccountExternalPolicyLoaderTest::
     DeviceLocalAccountExternalPolicyLoaderTest()
-    : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP),
+    : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
       test_shared_loader_factory_(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
               &test_url_loader_factory_)) {}
@@ -196,6 +200,7 @@ DeviceLocalAccountExternalPolicyLoaderTest::
 }
 
 void DeviceLocalAccountExternalPolicyLoaderTest::SetUp() {
+  profile_ = std::make_unique<TestingProfile>();
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   cache_dir_ = temp_dir_.GetPath().Append(kCacheDir);
   ASSERT_TRUE(base::CreateDirectoryAndGetError(cache_dir_, NULL));
@@ -205,10 +210,7 @@ void DeviceLocalAccountExternalPolicyLoaderTest::SetUp() {
 
   loader_ = new DeviceLocalAccountExternalPolicyLoader(&store_, cache_dir_);
   provider_.reset(new extensions::ExternalProviderImpl(
-      &visitor_,
-      loader_,
-      NULL,
-      extensions::Manifest::EXTERNAL_POLICY,
+      &visitor_, loader_, profile_.get(), extensions::Manifest::EXTERNAL_POLICY,
       extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD,
       extensions::Extension::NO_FLAGS));
 

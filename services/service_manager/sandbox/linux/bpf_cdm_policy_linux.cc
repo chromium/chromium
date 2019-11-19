@@ -31,6 +31,7 @@ ResultExpr CdmProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_fdatasync:
     case __NR_fsync:
     case __NR_ftruncate:
+    case __NR_fallocate:
 #if defined(__i386__) || defined(__x86_64__) || defined(__mips__) || \
     defined(__aarch64__)
     case __NR_getrlimit:

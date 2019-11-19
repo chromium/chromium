@@ -9,7 +9,7 @@
 
 promise_test(async () => {
   let interceptor =
-      new MojoInterfaceInterceptor(blink.mojom.SerialService.name);
+      new MojoInterfaceInterceptor(blink.mojom.SerialService.name, "context", true);
   interceptor.oninterfacerequest = e => e.handle.close();
   interceptor.start();
 
@@ -19,7 +19,7 @@ promise_test(async () => {
   interceptor.stop();
 }, 'getPorts() returns empty list if Mojo service connection fails');
 
-serial_test(async (fake) => {
+serial_test(async (t, fake) => {
   fake.addPort();
   fake.addPort();
 
@@ -30,7 +30,7 @@ serial_test(async (fake) => {
   // TODO: Assert that product IDs (if provided) are passed through.
 }, 'getPorts() returns the set of configured fake ports');
 
-serial_test(async (fake) => {
+serial_test(async (t, fake) => {
   fake.addPort();
 
   let portsFirst = await navigator.serial.getPorts();

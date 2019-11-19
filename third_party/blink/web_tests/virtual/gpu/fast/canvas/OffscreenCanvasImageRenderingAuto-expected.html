@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+    <style type="text/css">
+              #can {
+                width: 500px;
+                height: 500px;
+                image-rendering: auto;
+              }
+    </style>
+</head>
+<body>
+    <canvas id="can" width="50" height="50"></canvas>
+<script>
+
+var outputCanvas = document.getElementById("can");
+var outputContext = outputCanvas.getContext("2d");
+outputContext.fillRect(10, 10, 30, 30);
+
+</script>
+</body>
+</html>

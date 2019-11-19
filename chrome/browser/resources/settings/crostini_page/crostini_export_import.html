@@ -1,0 +1,41 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="crostini_browser_proxy.html">
+<link rel="import" href="crostini_import_confirmation_dialog.html">
+<link rel="import" href="../i18n_setup.html">
+<link rel="import" href="../settings_shared_css.html">
+
+<dom-module id="settings-crostini-export-import">
+  <template>
+    <style include="settings-shared"></style>
+    <div class="list-frame vertical-list">
+      <div id="export" class="list-item">
+        <div id="exportCrostiniLabel" class="start secondary">
+          $i18n{crostiniExportLabel}
+        </div>
+        <cr-button on-click="onExportClick_" disabled="[[!enableButtons_]]"
+            aria-labelledby="exportCrostiniLabel">
+          $i18n{crostiniExport}
+        </cr-button>
+      </div>
+      <div id="import" class="list-item">
+        <div id="importCrostiniLabel" class="start secondary">
+          $i18n{crostiniImportLabel}
+        </div>
+        <cr-button on-click="onImportClick_" disabled="[[!enableButtons_]]"
+            aria-labelledby="importCrostiniLabel">
+          $i18n{crostiniImport}
+        </cr-button>
+      </div>
+    </div>
+    <template is="dom-if" if="[[showImportConfirmationDialog_]]" restamp>
+      <settings-crostini-import-confirmation-dialog
+          on-close="onImportConfirmationDialogClose_">
+      </settings-crostini-import-confirmation-dialog>
+    </template>
+  </template>
+  <script src="crostini_export_import.js"></script>
+</dom-module>

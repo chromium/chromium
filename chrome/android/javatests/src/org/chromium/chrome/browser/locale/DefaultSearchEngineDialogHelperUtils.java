@@ -9,11 +9,13 @@ import android.view.ViewGroup;
 
 import org.junit.Assert;
 
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.search_engines.TemplateUrlService;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Utilities for interacting with a {@link DefaultSearchEngineDialogHelper}.
@@ -36,13 +38,10 @@ public class DefaultSearchEngineDialogHelperUtils {
         });
 
         // Click on the first search engine option available.
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                ViewGroup options = (ViewGroup) rootView.findViewById(OPTION_LAYOUT_ID);
-                options.getChildAt(0).performClick();
-                sSelectedEngine = (String) (options.getChildAt(0).getTag());
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ViewGroup options = (ViewGroup) rootView.findViewById(OPTION_LAYOUT_ID);
+            options.getChildAt(0).performClick();
+            sSelectedEngine = (String) (options.getChildAt(0).getTag());
         });
 
         // Wait for the OK button to be clicakble.
@@ -55,24 +54,18 @@ public class DefaultSearchEngineDialogHelperUtils {
         });
 
         // Click on the OK button.
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                View view = rootView.findViewById(OK_BUTTON_ID);
-                view.performClick();
-            }
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            View view = rootView.findViewById(OK_BUTTON_ID);
+            view.performClick();
         });
 
         // Confirm the engine was set appropriately.
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                Assert.assertEquals("Search engine wasn't set",
-                        TemplateUrlService.getInstance()
-                                .getDefaultSearchEngineTemplateUrl()
-                                .getKeyword(),
-                        sSelectedEngine);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> Assert.assertEquals("Search engine wasn't set",
+                                TemplateUrlServiceFactory.get()
+                                        .getDefaultSearchEngineTemplateUrl()
+                                        .getKeyword(),
+                                sSelectedEngine));
     }
 }

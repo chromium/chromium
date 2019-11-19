@@ -18,6 +18,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/sequence_local_storage_slot.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
 
 namespace mojo {
@@ -60,8 +61,7 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
                base::WaitableEvent::InitialState::NOT_SIGNALED),
         event_watcher_(&event_,
                        base::BindRepeating(&SequenceLocalState::OnEventSignaled,
-                                           base::Unretained(this))),
-        weak_ptr_factory_(this) {
+                                           base::Unretained(this))) {
     // We always allow this event handler to be awoken during any sync event on
     // the sequence. Individual watchers still must opt into having such
     // wake-ups propagated to them.
@@ -73,10 +73,7 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
   // Initializes a SequenceLocalState instance in sequence-local storage if
   // not already initialized. Returns a WeakPtr to the stored state object.
   static base::WeakPtr<SequenceLocalState> GetOrCreate() {
-    auto& state_ptr = GetStorageSlot().Get();
-    if (!state_ptr)
-      state_ptr = std::make_unique<SequenceLocalState>();
-    return state_ptr->weak_ptr_factory_.GetWeakPtr();
+    return GetStorageSlot().GetOrCreateValue().weak_ptr_factory_.GetWeakPtr();
   }
 
   // Registers a new watcher and returns an iterator into the WatcherStateMap to
@@ -108,7 +105,11 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
     if (registered_watchers_.empty()) {
       // If no more watchers are registered, clear our sequence-local storage.
       // Deletes |this|.
-      GetStorageSlot().Get().reset();
+      // Check if the current task runner is valid before doing this to avoid
+      // races at shutdown when other objects use SequenceLocalStorageSlot and
+      // indirectly call to here.
+      if (base::SequencedTaskRunnerHandle::IsSet())
+        GetStorageSlot().reset();
     }
   }
 
@@ -168,8 +169,7 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
   }
 
  private:
-  using StorageSlotType =
-      base::SequenceLocalStorageSlot<std::unique_ptr<SequenceLocalState>>;
+  using StorageSlotType = base::SequenceLocalStorageSlot<SequenceLocalState>;
   static StorageSlotType& GetStorageSlot() {
     static base::NoDestructor<StorageSlotType> storage;
     return *storage;
@@ -194,7 +194,7 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
   base::Lock ready_watchers_lock_;
   base::flat_set<const SequenceLocalSyncEventWatcher*> ready_watchers_;
 
-  base::WeakPtrFactory<SequenceLocalState> weak_ptr_factory_;
+  base::WeakPtrFactory<SequenceLocalState> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SequenceLocalState);
 };

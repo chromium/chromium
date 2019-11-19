@@ -112,6 +112,11 @@ Polymer({
   boundOnCommand_: null,
 
   /** @override */
+  created: function() {
+    listenForPrivilegedLinkClicks();
+  },
+
+  /** @override */
   attached: function() {
     cr.ui.decorate('command', cr.ui.Command);
     this.boundOnCanExecute_ = this.onCanExecute_.bind(this);

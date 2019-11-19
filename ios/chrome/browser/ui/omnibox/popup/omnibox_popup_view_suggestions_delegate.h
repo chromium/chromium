@@ -5,6 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_POPUP_VIEW_SUGGESTIONS_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_POPUP_VIEW_SUGGESTIONS_DELEGATE_H_
 
+#include "base/optional.h"
+#include "components/omnibox/browser/suggestion_answer.h"
+
 struct AutocompleteMatch;
 class AutocompleteResult;
 class GURL;
@@ -13,8 +16,13 @@ enum class WindowOpenDisposition;
 class OmniboxPopupViewSuggestionsDelegate {
  public:
   // Called whenever the topmost suggestion image has changed.
+  // Current UI should only use |matchType|; new UI may use |answerType| and
+  // |faviconURL| if available.
   virtual void OnTopmostSuggestionImageChanged(
-      AutocompleteMatchType::Type type) = 0;
+      AutocompleteMatchType::Type match_type,
+      base::Optional<SuggestionAnswer::AnswerType> answer_type,
+      GURL favicon_url) = 0;
+
   // Called when results are updated.
   virtual void OnResultsChanged(const AutocompleteResult& result) = 0;
   // Called whenever the popup is scrolled.

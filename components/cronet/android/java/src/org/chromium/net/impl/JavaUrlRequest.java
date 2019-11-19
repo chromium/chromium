@@ -4,26 +4,25 @@
 
 package org.chromium.net.impl;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.net.TrafficStats;
 import android.os.Build;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.net.CronetException;
 import org.chromium.net.InlineExecutionProhibitedException;
 import org.chromium.net.ThreadStatsUid;
 import org.chromium.net.UploadDataProvider;
-import org.chromium.net.UploadDataSink;
 import org.chromium.net.UrlResponseInfo;
+import org.chromium.net.impl.JavaUrlRequestUtils.CheckedRunnable;
+import org.chromium.net.impl.JavaUrlRequestUtils.DirectPreventingExecutor;
+import org.chromium.net.impl.JavaUrlRequestUtils.State;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -53,8 +52,8 @@ final class JavaUrlRequest extends UrlRequestBase {
     private static final String X_ANDROID = "X-Android";
     private static final String X_ANDROID_SELECTED_TRANSPORT = "X-Android-Selected-Transport";
     private static final String TAG = JavaUrlRequest.class.getSimpleName();
-    private static final int DEFAULT_UPLOAD_BUFFER_SIZE = 8192;
-    private static final int DEFAULT_CHUNK_LENGTH = DEFAULT_UPLOAD_BUFFER_SIZE;
+    private static final int DEFAULT_CHUNK_LENGTH =
+            JavaUploadDataSinkBase.DEFAULT_UPLOAD_BUFFER_SIZE;
     private static final String USER_AGENT = "User-Agent";
     private final AsyncUrlRequestCallback mCallbackAsync;
     private final Executor mExecutor;
@@ -103,29 +102,6 @@ final class JavaUrlRequest extends UrlRequestBase {
     private String mPendingRedirectUrl;
     private HttpURLConnection mCurrentUrlConnection; // Only accessed on mExecutor.
     private OutputStreamDataSink mOutputStreamDataSink; // Only accessed on mExecutor.
-
-    /**
-     *             /- AWAITING_FOLLOW_REDIRECT <-  REDIRECT_RECEIVED <-\     /- READING <--\
-     *             |                                                   |     |             |
-     *             \                                                   /     \             /
-     * NOT_STARTED --->                   STARTED                       ----> AWAITING_READ --->
-     * COMPLETE
-     */
-    @IntDef({State.NOT_STARTED, State.STARTED, State.REDIRECT_RECEIVED,
-            State.AWAITING_FOLLOW_REDIRECT, State.AWAITING_READ, State.READING, State.ERROR,
-            State.COMPLETE, State.CANCELLED})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface State {
-        int NOT_STARTED = 0;
-        int STARTED = 1;
-        int REDIRECT_RECEIVED = 2;
-        int AWAITING_FOLLOW_REDIRECT = 3;
-        int AWAITING_READ = 4;
-        int READING = 5;
-        int ERROR = 6;
-        int COMPLETE = 7;
-        int CANCELLED = 8;
-    }
 
     // Executor that runs one task at a time on an underlying Executor.
     // NOTE: Do not use to wrap user supplied Executor as lock is held while underlying execute()
@@ -335,194 +311,86 @@ final class JavaUrlRequest extends UrlRequestBase {
         }
     }
 
-    @IntDef({SinkState.AWAITING_READ_RESULT, SinkState.AWAITING_REWIND_RESULT, SinkState.UPLOADING,
-            SinkState.NOT_STARTED})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface SinkState {
-        int AWAITING_READ_RESULT = 0;
-        int AWAITING_REWIND_RESULT = 1;
-        int UPLOADING = 2;
-        int NOT_STARTED = 3;
-    }
-
-    private final class OutputStreamDataSink extends UploadDataSink {
-        final AtomicReference<Integer /*SinkState*/> mSinkState =
-                new AtomicReference<>(SinkState.NOT_STARTED);
-        final Executor mUserUploadExecutor;
-        final Executor mExecutor;
-        final HttpURLConnection mUrlConnection;
-        final AtomicBoolean mOutputChannelClosed = new AtomicBoolean(false);
-        WritableByteChannel mOutputChannel;
-        OutputStream mUrlConnectionOutputStream;
-        final VersionSafeCallbacks.UploadDataProviderWrapper mUploadProvider;
-        ByteBuffer mBuffer;
-        /** This holds the total bytes to send (the content-length). -1 if unknown. */
-        long mTotalBytes;
-        /** This holds the bytes written so far */
-        long mWrittenBytes;
+    private final class OutputStreamDataSink extends JavaUploadDataSinkBase {
+        private final HttpURLConnection mUrlConnection;
+        private final AtomicBoolean mOutputChannelClosed = new AtomicBoolean(false);
+        private WritableByteChannel mOutputChannel;
+        private OutputStream mUrlConnectionOutputStream;
 
         OutputStreamDataSink(final Executor userExecutor, Executor executor,
                 HttpURLConnection urlConnection,
                 VersionSafeCallbacks.UploadDataProviderWrapper provider) {
-            this.mUserUploadExecutor = new Executor() {
-                @Override
-                public void execute(Runnable runnable) {
-                    try {
-                        userExecutor.execute(runnable);
-                    } catch (RejectedExecutionException e) {
-                        enterUploadErrorState(e);
-                    }
-                }
-            };
-            this.mExecutor = executor;
-            this.mUrlConnection = urlConnection;
-            this.mUploadProvider = provider;
+            super(userExecutor, executor, provider);
+            mUrlConnection = urlConnection;
         }
 
         @Override
-        @SuppressLint("DefaultLocale")
-        public void onReadSucceeded(final boolean finalChunk) {
-            if (!mSinkState.compareAndSet(SinkState.AWAITING_READ_RESULT, SinkState.UPLOADING)) {
-                throw new IllegalStateException(
-                        "Not expecting a read result, expecting: " + mSinkState.get());
-            }
-            mExecutor.execute(errorSetting(new CheckedRunnable() {
-                @Override
-                public void run() throws Exception {
-                    mBuffer.flip();
-                    if (mTotalBytes != -1 && mTotalBytes - mWrittenBytes < mBuffer.remaining()) {
-                        enterUploadErrorState(new IllegalArgumentException(String.format(
-                                "Read upload data length %d exceeds expected length %d",
-                                mWrittenBytes + mBuffer.remaining(), mTotalBytes)));
-                        return;
-                    }
-                    while (mBuffer.hasRemaining()) {
-                        mWrittenBytes += mOutputChannel.write(mBuffer);
-                    }
-                    // Forces a chunk to be sent, rather than buffering to the DEFAULT_CHUNK_LENGTH.
-                    // This allows clients to trickle-upload bytes as they become available without
-                    // introducing latency due to buffering.
-                    mUrlConnectionOutputStream.flush();
-
-                    if (mWrittenBytes < mTotalBytes || (mTotalBytes == -1 && !finalChunk)) {
-                        mBuffer.clear();
-                        mSinkState.set(SinkState.AWAITING_READ_RESULT);
-                        executeOnUploadExecutor(new CheckedRunnable() {
-                            @Override
-                            public void run() throws Exception {
-                                mUploadProvider.read(OutputStreamDataSink.this, mBuffer);
-                            }
-                        });
-                    } else if (mTotalBytes == -1) {
-                        finish();
-                    } else if (mTotalBytes == mWrittenBytes) {
-                        finish();
-                    } else {
-                        enterUploadErrorState(new IllegalArgumentException(String.format(
-                                "Read upload data length %d exceeds expected length %d",
-                                mWrittenBytes, mTotalBytes)));
-                    }
-                }
-            }));
-        }
-
-        @Override
-        public void onRewindSucceeded() {
-            if (!mSinkState.compareAndSet(SinkState.AWAITING_REWIND_RESULT, SinkState.UPLOADING)) {
-                throw new IllegalStateException("Not expecting a read result");
-            }
-            startRead();
-        }
-
-        @Override
-        public void onReadError(Exception exception) {
-            enterUploadErrorState(exception);
-        }
-
-        @Override
-        public void onRewindError(Exception exception) {
-            enterUploadErrorState(exception);
-        }
-
-        void startRead() {
-            mExecutor.execute(errorSetting(new CheckedRunnable() {
-                @Override
-                public void run() throws Exception {
-                    if (mOutputChannel == null) {
-                        mAdditionalStatusDetails = Status.CONNECTING;
-                        mUrlConnection.connect();
-                        mAdditionalStatusDetails = Status.SENDING_REQUEST;
-                        mUrlConnectionOutputStream = mUrlConnection.getOutputStream();
-                        mOutputChannel = Channels.newChannel(mUrlConnectionOutputStream);
-                    }
-                    mSinkState.set(SinkState.AWAITING_READ_RESULT);
-                    executeOnUploadExecutor(new CheckedRunnable() {
-                        @Override
-                        public void run() throws Exception {
-                            mUploadProvider.read(OutputStreamDataSink.this, mBuffer);
-                        }
-                    });
-                }
-            }));
-        }
-
-        private void executeOnUploadExecutor(CheckedRunnable runnable) {
-            try {
-                mUserUploadExecutor.execute(uploadErrorSetting(runnable));
-            } catch (RejectedExecutionException e) {
-                enterUploadErrorState(e);
+        protected void initializeRead() throws IOException {
+            if (mOutputChannel == null) {
+                mAdditionalStatusDetails = Status.CONNECTING;
+                mUrlConnection.setDoOutput(true);
+                mUrlConnection.connect();
+                mAdditionalStatusDetails = Status.SENDING_REQUEST;
+                mUrlConnectionOutputStream = mUrlConnection.getOutputStream();
+                mOutputChannel = Channels.newChannel(mUrlConnectionOutputStream);
             }
         }
 
         void closeOutputChannel() throws IOException {
-            if (mOutputChannel != null && mOutputChannelClosed.compareAndSet(false, true)) {
+            if (mOutputChannel != null
+                    && mOutputChannelClosed.compareAndSet(
+                            /* expected= */ false, /* updated= */ true)) {
                 mOutputChannel.close();
             }
         }
 
-        void finish() throws IOException {
+        @Override
+        protected void finish() throws IOException {
             closeOutputChannel();
             fireGetHeaders();
         }
 
-        void start(final boolean firstTime) {
-            executeOnUploadExecutor(new CheckedRunnable() {
-                @Override
-                public void run() throws Exception {
-                    mTotalBytes = mUploadProvider.getLength();
-                    if (mTotalBytes == 0) {
-                        finish();
-                    } else {
-                        // If we know how much data we have to upload, and it's small, we can save
-                        // memory by allocating a reasonably sized buffer to read into.
-                        if (mTotalBytes > 0 && mTotalBytes < DEFAULT_UPLOAD_BUFFER_SIZE) {
-                            // Allocate one byte more than necessary, to detect callers uploading
-                            // more bytes than they specified in length.
-                            mBuffer = ByteBuffer.allocateDirect((int) mTotalBytes + 1);
-                        } else {
-                            mBuffer = ByteBuffer.allocateDirect(DEFAULT_UPLOAD_BUFFER_SIZE);
-                        }
+        @Override
+        protected void initializeStart(long totalBytes) {
+            if (totalBytes > 0 && totalBytes <= Integer.MAX_VALUE) {
+                mUrlConnection.setFixedLengthStreamingMode((int) totalBytes);
+            } else if (totalBytes > Integer.MAX_VALUE
+                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                mUrlConnection.setFixedLengthStreamingMode(totalBytes);
+            } else {
+                // Even if we know the length, but we're running pre-kitkat and it's larger
+                // than an int can hold, we have to use chunked - otherwise we'll end up
+                // buffering the whole response in memory.
+                mUrlConnection.setChunkedStreamingMode(DEFAULT_CHUNK_LENGTH);
+            }
+        }
 
-                        if (mTotalBytes > 0 && mTotalBytes <= Integer.MAX_VALUE) {
-                            mUrlConnection.setFixedLengthStreamingMode((int) mTotalBytes);
-                        } else if (mTotalBytes > Integer.MAX_VALUE
-                                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                            mUrlConnection.setFixedLengthStreamingMode(mTotalBytes);
-                        } else {
-                            // If we know the length, but we're running pre-kitkat and it's larger
-                            // than an int can hold, we have to use chunked - otherwise we'll end up
-                            // buffering the whole response in memory.
-                            mUrlConnection.setChunkedStreamingMode(DEFAULT_CHUNK_LENGTH);
-                        }
-                        if (firstTime) {
-                            startRead();
-                        } else {
-                            mSinkState.set(SinkState.AWAITING_REWIND_RESULT);
-                            mUploadProvider.rewind(OutputStreamDataSink.this);
-                        }
-                    }
-                }
-            });
+        @Override
+        protected int processSuccessfulRead(ByteBuffer buffer) throws IOException {
+            int totalBytesProcessed = 0;
+            while (buffer.hasRemaining()) {
+                totalBytesProcessed += mOutputChannel.write(buffer);
+            }
+            // Forces a chunk to be sent, rather than buffering to the DEFAULT_CHUNK_LENGTH.
+            // This allows clients to trickle-upload bytes as they become available without
+            // introducing latency due to buffering.
+            mUrlConnectionOutputStream.flush();
+            return totalBytesProcessed;
+        }
+
+        @Override
+        protected Runnable getErrorSettingRunnable(CheckedRunnable runnable) {
+            return errorSetting(runnable);
+        }
+
+        @Override
+        protected Runnable getUploadErrorSettingRunnable(CheckedRunnable runnable) {
+            return uploadErrorSetting(runnable);
+        }
+
+        @Override
+        protected void processUploadError(Throwable exception) {
+            enterUploadErrorState(exception);
         }
     }
 
@@ -558,7 +426,7 @@ final class JavaUrlRequest extends UrlRequestBase {
                 case State.CANCELLED:
                     return false; // Already in a terminal state
                 default: {
-                    if (mState.compareAndSet(oldState, error)) {
+                    if (mState.compareAndSet(/* expected= */ oldState, /* updated= */ error)) {
                         return true;
                     }
                 }
@@ -666,7 +534,9 @@ final class JavaUrlRequest extends UrlRequestBase {
     }
 
     private void fireCloseUploadDataProvider() {
-        if (mUploadDataProvider != null && mUploadProviderClosed.compareAndSet(false, true)) {
+        if (mUploadDataProvider != null
+                && mUploadProviderClosed.compareAndSet(
+                        /* expected= */ false, /* updated= */ true)) {
             try {
                 mUploadExecutor.execute(uploadErrorSetting(new CheckedRunnable() {
                     @Override
@@ -779,8 +649,6 @@ final class JavaUrlRequest extends UrlRequestBase {
         };
     }
 
-    private interface CheckedRunnable { void run() throws Exception; }
-
     @Override
     public void read(final ByteBuffer buffer) {
         Preconditions.checkDirect(buffer);
@@ -806,7 +674,8 @@ final class JavaUrlRequest extends UrlRequestBase {
             if (mResponseChannel != null) {
                 mResponseChannel.close();
             }
-            if (mState.compareAndSet(State.READING, State.COMPLETE)) {
+            if (mState.compareAndSet(
+                        /* expected= */ State.READING, /* updated= */ State.COMPLETE)) {
                 fireDisconnect();
                 mCallbackAsync.onSucceeded(mUrlResponseInfo);
             }
@@ -951,7 +820,8 @@ final class JavaUrlRequest extends UrlRequestBase {
             execute(new CheckedRunnable() {
                 @Override
                 public void run() throws Exception {
-                    if (mState.compareAndSet(State.STARTED, State.AWAITING_READ)) {
+                    if (mState.compareAndSet(/* expected= */ State.STARTED,
+                                /* updated= */ State.AWAITING_READ)) {
                         mCallback.onResponseStarted(JavaUrlRequest.this, mUrlResponseInfo);
                     }
                 }
@@ -962,7 +832,8 @@ final class JavaUrlRequest extends UrlRequestBase {
             execute(new CheckedRunnable() {
                 @Override
                 public void run() throws Exception {
-                    if (mState.compareAndSet(State.READING, State.AWAITING_READ)) {
+                    if (mState.compareAndSet(/* expected= */ State.READING,
+                                /* updated= */ State.AWAITING_READ)) {
                         mCallback.onReadCompleted(JavaUrlRequest.this, info, byteBuffer);
                     }
                 }
@@ -1032,55 +903,5 @@ final class JavaUrlRequest extends UrlRequestBase {
                 }
             }
         });
-    }
-
-    /**
-     * Executor that detects and throws if its mDelegate runs a submitted runnable inline.
-     */
-    static final class DirectPreventingExecutor implements Executor {
-        private final Executor mDelegate;
-
-        DirectPreventingExecutor(Executor delegate) {
-            this.mDelegate = delegate;
-        }
-
-        @Override
-        public void execute(Runnable command) {
-            Thread currentThread = Thread.currentThread();
-            InlineCheckingRunnable runnable = new InlineCheckingRunnable(command, currentThread);
-            mDelegate.execute(runnable);
-            if (runnable.mExecutedInline != null) {
-                throw runnable.mExecutedInline;
-            } else {
-                // It's possible that this method is being called on an executor, and the runnable
-                // that
-                // was just queued will run on this thread after the current runnable returns. By
-                // nulling out the mCallingThread field, the InlineCheckingRunnable's current thread
-                // comparison will not fire.
-                runnable.mCallingThread = null;
-            }
-        }
-
-        private static final class InlineCheckingRunnable implements Runnable {
-            private final Runnable mCommand;
-            private Thread mCallingThread;
-            private InlineExecutionProhibitedException mExecutedInline;
-
-            private InlineCheckingRunnable(Runnable command, Thread callingThread) {
-                this.mCommand = command;
-                this.mCallingThread = callingThread;
-            }
-
-            @Override
-            public void run() {
-                if (Thread.currentThread() == mCallingThread) {
-                    // Can't throw directly from here, since the delegate executor could catch this
-                    // exception.
-                    mExecutedInline = new InlineExecutionProhibitedException();
-                    return;
-                }
-                mCommand.run();
-            }
-        }
     }
 }

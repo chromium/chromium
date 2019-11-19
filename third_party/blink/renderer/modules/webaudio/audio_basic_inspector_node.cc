@@ -30,14 +30,11 @@
 
 namespace blink {
 
-AudioBasicInspectorHandler::AudioBasicInspectorHandler(
-    NodeType node_type,
-    AudioNode& node,
-    float sample_rate,
-    unsigned output_channel_count)
+AudioBasicInspectorHandler::AudioBasicInspectorHandler(NodeType node_type,
+                                                       AudioNode& node,
+                                                       float sample_rate)
     : AudioHandler(node_type, node, sample_rate), need_automatic_pull_(false) {
   AddInput();
-  AddOutput(output_channel_count);
 }
 
 // We override pullInputs() as an optimization allowing this node to take
@@ -56,8 +53,6 @@ void AudioBasicInspectorHandler::CheckNumberOfChannelsForInput(
   Context()->AssertGraphOwner();
 
   DCHECK_EQ(input, &this->Input(0));
-  if (input != &this->Input(0))
-    return;
 
   unsigned number_of_channels = input->NumberOfChannels();
 

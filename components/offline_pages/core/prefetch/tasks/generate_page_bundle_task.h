@@ -10,13 +10,11 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/offline_pages/core/prefetch/prefetch_dispatcher.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/offline_pages/task/task.h"
 
 namespace offline_pages {
-class PrefetchGCMHandler;
 class PrefetchNetworkRequestFactory;
 class PrefetchStore;
 
@@ -28,7 +26,7 @@ class GeneratePageBundleTask : public Task {
 
   GeneratePageBundleTask(PrefetchDispatcher* prefetch_dispatcher,
                          PrefetchStore* prefetch_store,
-                         PrefetchGCMHandler* gcm_handler,
+                         const std::string& gcm_token,
                          PrefetchNetworkRequestFactory* request_factory,
                          PrefetchRequestFinishedCallback callback);
   ~GeneratePageBundleTask() override;
@@ -38,17 +36,14 @@ class GeneratePageBundleTask : public Task {
 
  private:
   void StartGeneratePageBundle(std::unique_ptr<UrlAndIds> url_and_ids);
-  void GotRegistrationId(std::unique_ptr<UrlAndIds> url_and_ids,
-                         const std::string& id,
-                         instance_id::InstanceID::Result result);
 
   PrefetchDispatcher* prefetch_dispatcher_;
   PrefetchStore* prefetch_store_;
-  PrefetchGCMHandler* gcm_handler_;
+  std::string gcm_token_;
   PrefetchNetworkRequestFactory* request_factory_;
   PrefetchRequestFinishedCallback callback_;
 
-  base::WeakPtrFactory<GeneratePageBundleTask> weak_factory_;
+  base::WeakPtrFactory<GeneratePageBundleTask> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(GeneratePageBundleTask);
 };
 

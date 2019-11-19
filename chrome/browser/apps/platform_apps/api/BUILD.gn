@@ -59,10 +59,16 @@ source_set("api") {
     "//extensions/browser",
   ]
 
+  public_deps = [
+    "//chrome/browser/apps/platform_apps/api/music_manager_private",
+  ]
+
   if (is_chromeos) {
     sources += [
       "arc_apps_private/arc_apps_private_api.cc",
       "arc_apps_private/arc_apps_private_api.h",
+      "first_run_private/first_run_private_api.cc",
+      "first_run_private/first_run_private_api.h",
       "webstore_widget_private/app_installer.cc",
       "webstore_widget_private/app_installer.h",
       "webstore_widget_private/webstore_widget_private_api.cc",

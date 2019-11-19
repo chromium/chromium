@@ -1,0 +1,32 @@
+{
+  "name": "test",
+  "manifest_version": 2,
+  "description": "App with file_handlers manifest.",
+  "version": "1",
+  "app": {
+    "launch": {
+      "web_url": "/"
+    }
+  },
+  "file_handlers": {
+    "text": {
+      "types": [
+        "text/*"
+      ]
+    },
+    "image": {
+      "types": [
+        "image/*"
+      ],
+      "extensions": [
+        ".png",
+        ".gif"
+      ],
+      "verb": "add_to"
+    },
+    "directories": {
+      "extensions": ["*/*"],
+      "include_directories": true
+    }
+  }
+}

@@ -4,12 +4,12 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/WarmupManager_jni.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "content/public/browser/render_process_host.h"
-#include "jni/WarmupManager_jni.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;

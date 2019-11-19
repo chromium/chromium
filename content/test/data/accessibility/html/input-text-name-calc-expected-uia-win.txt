@@ -1,0 +1,11 @@
+document
+++textbox Name='Title0' HelpText='Title0'
+++textbox Name='Label1' HelpText='Title1'
+++textbox Name='AriaLabel2' HelpText='Title2'
+++textbox Name='LabelledBy3' HelpText='Title3'
+++textbox Name='Placeholder4' HelpText='Placeholder4'
+++textbox Name='ARIA Placeholder4a' HelpText='ARIA Placeholder4a'
+++textbox Name='Placeholder4b' HelpText='Placeholder4b'
+++textbox Name='Placeholder5' HelpText='Placeholder5'
+++textbox Name='LabelledBy6' HelpText='Title6'
+++textbox Name='AriaLabel7' HelpText='Placeholder7'

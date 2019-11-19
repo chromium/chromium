@@ -11,3 +11,8 @@ paper-progress {
   padding: 40px 0 0 0;
   width: 100%;
 }
+
+.supervision-icon {
+  --iron-icon-height: 32px;
+  --iron-icon-width: 32px;
+}

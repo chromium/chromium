@@ -3,14 +3,8 @@
 <script src="../resources/testharnessreport.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/mojo/public/mojom/base/big_buffer.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/barcodedetection.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/barcodedetection_provider.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/facedetection.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/facedetection_provider.mojom.js"></script>
 <script src="file:///gen/services/shape_detection/public/mojom/textdetection.mojom.js"></script>
 <script src="resources/big-buffer-helpers.js"></script>
-<script src="resources/mock-barcodedetection.js"></script>
-<script src="resources/mock-facedetection.js"></script>
 <script src="resources/mock-textdetection.js"></script>
 <body>
 <img id="img" src="../media/content/greenbox.png"/>
@@ -32,31 +26,6 @@ var createTestForImageElement = function(createDetector, mock,
   });
 };
 
-function FaceDetectorDetectionResultTest(detectionResult, mock) {
-  const imageReceivedByMock = mock.getFrameData();
-  assert_equals(imageReceivedByMock.byteLength, 2500, "Image length");
-  const GREEN_PIXEL = 0xFF00FF00;
-  assert_equals(imageReceivedByMock[0], GREEN_PIXEL, "Pixel color");
-  assert_equals(detectionResult.length, 3, "Number of faces");
-  assert_equals(detectionResult[0].landmarks.length, 2, "Number of landmarks");
-  assert_object_equals(detectionResult[0].landmarks[0],
-                      {type : 'eye', locations : [{x : 4.0, y : 5.0}]},
-                      "landmark #1");
-  assert_equals(detectionResult[0].landmarks[1].locations.length, 8,
-                "Number of locations along eye");
-  assert_object_equals(detectionResult[1].landmarks[0],
-                      {type : 'nose', locations : [{x : 100.0, y : 50.0}]},
-                      "landmark #2");
-  assert_equals(detectionResult[1].landmarks[1].locations.length, 9,
-                "Number of locations along nose");
-}
-
-function BarcodeDetectorDetectionResultTest(detectionResult, mock) {
-  assert_equals(detectionResult.length, 2, "Number of barcodes");
-  assert_equals(detectionResult[0].rawValue, "cats", "barcode 1");
-  assert_equals(detectionResult[1].rawValue, "dogs", "barcode 2");
-}
-
 function TextDetectorDetectionResultTest(detectionResult, mock) {
   assert_equals(detectionResult.length, 2, "Number of textBlocks");
   assert_equals(detectionResult[0].rawValue, "cats", "textBlock 1");
@@ -72,20 +41,8 @@ function TextDetectorDetectionResultTest(detectionResult, mock) {
 }
 
 // These tests verify that a Detector's detect() works on an HTMLImageElement.
-// Use the mock mojo server implemented in mock-{barcode,face}detection.js.
+// Use the mock mojo server implemented in mock-textdetection.js.
 generate_tests(createTestForImageElement, [
-  [
-    "Face - detect(HTMLImageElement)",
-    () => { return new FaceDetector(); },
-    mockFaceDetectionProvider,
-    FaceDetectorDetectionResultTest
-  ],
-  [
-    "Barcode - detect(HTMLImageElement)",
-    () => { return new BarcodeDetector(); },
-    mockBarcodeDetectionProvider,
-    BarcodeDetectorDetectionResultTest
-  ],
   [
     "Text - detect(HTMLImageElement)",
     () => { return new TextDetector(); },

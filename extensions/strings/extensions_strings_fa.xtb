@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">رمزگشایی تصویر امکان‌پذیر نیست: «<ph name="IMAGE_NAME" />»</translation>
 <translation id="2350172092385603347">‏بومی سازی استفاده شده است، اما default_locale در اظهارنامه مشخص نشده است.</translation>
 <translation id="2576842806987913196">‏یک فایل CRX در حال حاضر با این نام وجود دارد.</translation>
-<translation id="2753617847762399167">مسیر غیرمجاز (مطلق یا نسبی با «..»): «<ph name="IMAGE_PATH" />»</translation>
 <translation id="2785530881066938471">‏بارگیری فایل "<ph name="RELATIVE_PATH" />" برای اسکریپت محتوا ممکن نیست. رمزگذاری آن UTF-8 نیست.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (شناسه افزونه «<ph name="EXTENSION_ID" />») توسط سرپرست مسدود شده است. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">بسته نصب نشد: "<ph name="ERROR_CODE" />"</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">پنجره‌های دارای اشکال مختلف پشتیبانی نمی‌شوند.</translation>
 <translation id="5456409301717116725">این برنامهٔ افزودنی شامل فایل کلید «<ph name="KEY_PATH" />» است. احتمالاً نمی‌خواهید این کار را انجام دهید.</translation>
 <translation id="5486326529110362464">مقدار ورودی برای کلید خصوصی باید وجود داشته باشد.</translation>
-<translation id="5627523580512561598">برنامهٔ افزودنی <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">سرپرست این دستگاه نصب <ph name="EXTENSION_NAME" /> را لازم می‌داند. این برنامه افزودنی نمی‌تواند حذف نصب شود.</translation>
 <translation id="6027032947578871493">محصول نامشخص <ph name="PRODUCT_ID" /> از <ph name="VENDOR_NAME" /> (شماره سریال <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> از فروشنده <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">«<ph name="APP_NAME" />» درخواست دسترسی به یک یا چند دستگاه شما را دارد:</translation>
 <translation id="657064425229075395">بارگیری اسکریپت پس‌زمینه "<ph name="BACKGROUND_SCRIPT" />" ممکن نیست.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> از <ph name="VENDOR_NAME" /> (شماره سریال <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">ایجاد دایرکتوری برای خارج کردن «<ph name="DIRECTORY_PATH" />» از حالت زیپ امکان‌پذیر نیست</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">این برنامه افزودنی بیش از حد خود را بارگیری مجدد می‌کند.</translation>
 <translation id="7003844668372540529">محصول نامشخص <ph name="PRODUCT_ID" /> از <ph name="VENDOR_NAME" /></translation>

@@ -1,0 +1,2 @@
+StructureChanged/ChildRemoved on role=list
+StructureChanged/ChildrenReordered on role=list

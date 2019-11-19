@@ -6,6 +6,7 @@
 dictionary SpeechSynthesisEventInit : EventInit {
     required SpeechSynthesisUtterance utterance;
     unsigned long charIndex = 0;
+    unsigned long charLength = 0;
     float elapsedTime = 0;
     DOMString name = "";
 };

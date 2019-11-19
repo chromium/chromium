@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/macros.h"
-#include "components/autofill/core/browser/region_combobox_model.h"
+#include "components/autofill/core/browser/ui/region_combobox_model.h"
 #include "ui/base/models/combobox_model_observer.h"
 
 namespace autofill {

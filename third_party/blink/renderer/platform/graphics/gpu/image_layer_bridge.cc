@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/image_layer_bridge.h"
 
+#include "base/memory/read_only_shared_memory_region.h"
 #include "cc/layers/texture_layer.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
@@ -28,6 +29,7 @@ ImageLayerBridge::ImageLayerBridge(OpacityMode opacity_mode)
     : opacity_mode_(opacity_mode) {
   layer_ = cc::TextureLayer::CreateForMailbox(this);
   layer_->SetIsDrawable(true);
+  layer_->SetHitTestable(true);
   layer_->SetNearestNeighbor(filter_quality_ == kNone_SkFilterQuality);
   if (opacity_mode_ == kOpaque) {
     layer_->SetContentsOpaque(true);
@@ -44,6 +46,11 @@ ImageLayerBridge::~ImageLayerBridge() {
 void ImageLayerBridge::SetImage(scoped_refptr<StaticBitmapImage> image) {
   if (disposed_)
     return;
+  // There could be the case that the current SkImage (encapsulated in the image
+  // parameter of the function) is null, that means that something went wrong
+  // during the creation of the image and we should not try and setImage with it
+  if (image && !image->PaintImageForCurrentFrame().GetSkImage())
+    return;
 
   image_ = std::move(image);
   if (image_) {
@@ -51,16 +58,20 @@ void ImageLayerBridge::SetImage(scoped_refptr<StaticBitmapImage> image) {
       layer_->SetContentsOpaque(image_->CurrentFrameKnownToBeOpaque());
       layer_->SetBlendBackgroundColor(!image_->CurrentFrameKnownToBeOpaque());
     }
-  }
-  if (!has_presented_since_last_set_image_ && image_ &&
-      image_->IsTextureBacked()) {
-    // If the layer bridge is not presenting, the GrContext may not be getting
-    // flushed regularly.  The flush is normally triggered inside the
-    // m_image->EnsureMailbox() call of
-    // ImageLayerBridge::PrepareTransferableResource. To prevent a potential
-    // memory leak we must flush the GrContext here.
-    image_->PaintImageForCurrentFrame().GetSkImage()->getBackendTexture(
-        true);  // GrContext flush.
+    if (opacity_mode_ == kOpaque) {
+      // If we in opaque mode but image might have transparency we need to
+      // ensure its opacity is not used.
+      layer_->SetForceTextureToOpaque(!image_->CurrentFrameKnownToBeOpaque());
+    }
+    if (!has_presented_since_last_set_image_ && image_->IsTextureBacked()) {
+      // If the layer bridge is not presenting, the GrContext may not be getting
+      // flushed regularly.  The flush is normally triggered inside the
+      // m_image->EnsureMailbox() call of
+      // ImageLayerBridge::PrepareTransferableResource. To prevent a potential
+      // memory leak we must flush the GrContext here.
+      image_->PaintImageForCurrentFrame().GetSkImage()->getBackendTexture(
+          true);  // GrContext flush.
+    }
   }
   has_presented_since_last_set_image_ = false;
 }
@@ -115,12 +126,15 @@ bool ImageLayerBridge::PrepareTransferableResource(
     if (!image_for_compositor)
       return false;
 
+    const gfx::Size size(image_for_compositor->width(),
+                         image_for_compositor->height());
     uint32_t filter =
         filter_quality_ == kNone_SkFilterQuality ? GL_NEAREST : GL_LINEAR;
     image_for_compositor->EnsureMailbox(kUnverifiedSyncToken, filter);
     *out_resource = viz::TransferableResource::MakeGL(
         image_for_compositor->GetMailbox(), filter, GL_TEXTURE_2D,
-        image_for_compositor->GetSyncToken());
+        image_for_compositor->GetSyncToken(), size,
+        false /* is_overlay_candidate */);
     auto func =
         WTF::Bind(&ImageLayerBridge::ResourceReleasedGpu,
                   WrapWeakPersistent(this), std::move(image_for_compositor));
@@ -146,7 +160,7 @@ bool ImageLayerBridge::PrepareTransferableResource(
     SkImageInfo dst_info =
         SkImageInfo::Make(size.width(), size.height(), sk_image->colorType(),
                           kPremul_SkAlphaType, sk_image->refColorSpace());
-    void* pixels = registered.bitmap->shared_memory()->memory();
+    void* pixels = registered.bitmap->memory();
 
     // Copy from SkImage into SharedMemory owned by |registered|.
     if (!sk_image->readPixels(dst_info, pixels, dst_info.minRowBytes(), 0, 0))
@@ -191,8 +205,8 @@ ImageLayerBridge::RegisteredBitmap ImageLayerBridge::CreateOrRecycleBitmap(
 
   // There are no bitmaps to recycle so allocate a new one.
   viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
-  std::unique_ptr<base::SharedMemory> shm =
-      viz::bitmap_allocation::AllocateMappedBitmap(size, format);
+  base::MappedReadOnlyRegion shm =
+      viz::bitmap_allocation::AllocateSharedBitmap(size, format);
 
   RegisteredBitmap registered;
   registered.bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(

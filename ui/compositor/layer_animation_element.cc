@@ -269,6 +269,83 @@ class ColorTransition : public LayerAnimationElement {
   DISALLOW_COPY_AND_ASSIGN(ColorTransition);
 };
 
+// ClipRectTransition ----------------------------------------------------------
+
+class ClipRectTransition : public LayerAnimationElement {
+ public:
+  ClipRectTransition(const gfx::Rect& target, base::TimeDelta duration)
+      : LayerAnimationElement(CLIP, duration), target_(target) {}
+  ~ClipRectTransition() override {}
+
+ protected:
+  std::string DebugName() const override { return "ClipRectTransition"; }
+  void OnStart(LayerAnimationDelegate* delegate) override {
+    start_ = delegate->GetClipRectForAnimation();
+  }
+
+  bool OnProgress(double t, LayerAnimationDelegate* delegate) override {
+    delegate->SetClipRectFromAnimation(
+        gfx::Tween::RectValueBetween(t, start_, target_),
+        PropertyChangeReason::FROM_ANIMATION);
+    return true;
+  }
+
+  void OnGetTarget(TargetValue* target) const override {
+    target->clip_rect = target_;
+  }
+
+  void OnAbort(LayerAnimationDelegate* delegate) override {}
+
+ private:
+  gfx::Rect start_;
+  const gfx::Rect target_;
+
+  DISALLOW_COPY_AND_ASSIGN(ClipRectTransition);
+};
+
+// RoundedCornersTransition ----------------------------------------------------
+
+class RoundedCornersTransition : public LayerAnimationElement {
+ public:
+  RoundedCornersTransition(const gfx::RoundedCornersF& target,
+                           base::TimeDelta duration)
+      : LayerAnimationElement(ROUNDED_CORNERS, duration), target_(target) {}
+  ~RoundedCornersTransition() override = default;
+
+ protected:
+  std::string DebugName() const override { return "RoundedCornersTransition"; }
+  void OnStart(LayerAnimationDelegate* delegate) override {
+    start_ = delegate->GetRoundedCornersForAnimation();
+  }
+
+  bool OnProgress(double t, LayerAnimationDelegate* delegate) override {
+    delegate->SetRoundedCornersFromAnimation(
+        gfx::RoundedCornersF(
+            gfx::Tween::FloatValueBetween(t, start_.upper_left(),
+                                          target_.upper_left()),
+            gfx::Tween::FloatValueBetween(t, start_.upper_right(),
+                                          target_.upper_right()),
+            gfx::Tween::FloatValueBetween(t, start_.lower_right(),
+                                          target_.lower_right()),
+            gfx::Tween::FloatValueBetween(t, start_.lower_left(),
+                                          target_.lower_left())),
+        PropertyChangeReason::FROM_ANIMATION);
+    return true;
+  }
+
+  void OnGetTarget(TargetValue* target) const override {
+    target->rounded_corners = target_;
+  }
+
+  void OnAbort(LayerAnimationDelegate* delegate) override {}
+
+ private:
+  gfx::RoundedCornersF start_;
+  gfx::RoundedCornersF target_;
+
+  DISALLOW_COPY_AND_ASSIGN(RoundedCornersTransition);
+};
+
 // ThreadedLayerAnimationElement -----------------------------------------------
 
 class ThreadedLayerAnimationElement : public LayerAnimationElement {
@@ -487,8 +564,10 @@ LayerAnimationElement::TargetValue::TargetValue(
       visibility(delegate ? delegate->GetVisibilityForAnimation() : false),
       brightness(delegate ? delegate->GetBrightnessForAnimation() : 0.0f),
       grayscale(delegate ? delegate->GetGrayscaleForAnimation() : 0.0f),
-      color(delegate ? delegate->GetColorForAnimation() : SK_ColorTRANSPARENT) {
-}
+      color(delegate ? delegate->GetColorForAnimation() : SK_ColorTRANSPARENT),
+      clip_rect(delegate ? delegate->GetClipRectForAnimation() : gfx::Rect()),
+      rounded_corners(delegate ? delegate->GetRoundedCornersForAnimation()
+                               : gfx::RoundedCornersF()) {}
 
 // LayerAnimationElement -------------------------------------------------------
 
@@ -502,8 +581,7 @@ LayerAnimationElement::LayerAnimationElement(AnimatableProperties properties,
       animation_group_id_(0),
       last_progressed_fraction_(0.0),
       animation_metrics_reporter_(nullptr),
-      start_frame_number_(0),
-      weak_ptr_factory_(this) {}
+      start_frame_number_(0) {}
 
 LayerAnimationElement::LayerAnimationElement(
     const LayerAnimationElement& element)
@@ -515,8 +593,7 @@ LayerAnimationElement::LayerAnimationElement(
       animation_group_id_(element.animation_group_id_),
       last_progressed_fraction_(element.last_progressed_fraction_),
       animation_metrics_reporter_(nullptr),
-      start_frame_number_(0),
-      weak_ptr_factory_(this) {}
+      start_frame_number_(0) {}
 
 LayerAnimationElement::~LayerAnimationElement() {
 }
@@ -698,6 +775,12 @@ std::string LayerAnimationElement::AnimatablePropertiesToString(
         case COLOR:
           str.append("COLOR");
           break;
+        case CLIP:
+          str.append("CLIP");
+          break;
+        case ROUNDED_CORNERS:
+          str.append("ROUNDED_CORNERS");
+          break;
         case SENTINEL:
           NOTREACHED();
           break;
@@ -791,6 +874,19 @@ std::unique_ptr<LayerAnimationElement>
 LayerAnimationElement::CreateColorElement(SkColor color,
                                           base::TimeDelta duration) {
   return std::make_unique<ColorTransition>(color, duration);
+}
+
+std::unique_ptr<LayerAnimationElement>
+LayerAnimationElement::CreateClipRectElement(const gfx::Rect& clip_rect,
+                                             base::TimeDelta duration) {
+  return std::make_unique<ClipRectTransition>(clip_rect, duration);
+}
+
+std::unique_ptr<LayerAnimationElement>
+LayerAnimationElement::CreateRoundedCornersElement(
+    const gfx::RoundedCornersF& rounded_corners,
+    base::TimeDelta duration) {
+  return std::make_unique<RoundedCornersTransition>(rounded_corners, duration);
 }
 
 }  // namespace ui

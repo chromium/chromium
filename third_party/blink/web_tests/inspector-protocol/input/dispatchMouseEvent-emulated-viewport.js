@@ -6,6 +6,15 @@
     if (message.error)
       testRunner.log('Error: ' + message.error.message);
   }
+  async function sendClick(protocol) {
+    dumpError(await protocol.Input.dispatchMouseEvent({
+      type: 'mousePressed',
+      button: 'left',
+      clickCount: 1,
+      x: 55,
+      y: 55
+    }));
+  }
   async function testClick() {
     await session.evaluate(`
       window.result = 'Not Clicked';
@@ -18,13 +27,7 @@
       button.style.height = '10px';
       button.onmousedown = () => window.result = 'Clicked';
     `);
-    dumpError(await dp.Input.dispatchMouseEvent({
-      type: 'mousePressed',
-      button: 'left',
-      clickCount: 1,
-      x: 55,
-      y: 55
-    }));
+    await sendClick(dp);
 
     testRunner.log(await session.evaluate(`window.result`));
   }
@@ -38,6 +41,12 @@
   }));
   await session.navigate('../resources/blank.html')
   await testClick();
+
+  await session.evaluate(`window.result = 'FAIL: not Clicked'`);
+  testRunner.log('Emulate mobile viewport and click via another session');
+  const dp2 = (await page.createSession()).protocol;
+  await sendClick(dp2);
+  testRunner.log(await session.evaluate(`window.result`));
 
   testRunner.log('\nClick with viewport tag');
   await session.navigate('data:text/html,<head><meta name="viewport" content="width=device-width, initial-scale=1"></head>');

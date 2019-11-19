@@ -9,7 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/task_environment.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
@@ -57,7 +57,8 @@ class DataplanUsageTableViewControllerTest
 
     sync_preferences::PrefServiceMockFactory factory;
     base::FilePath path("DataplanUsageTableViewControllerTest.pref");
-    factory.SetUserPrefsFile(path, message_loop_.task_runner().get());
+    factory.SetUserPrefsFile(path,
+                             task_environment_.GetMainThreadTaskRunner().get());
     return factory.Create(registry.get());
   }
 
@@ -70,7 +71,8 @@ class DataplanUsageTableViewControllerTest
     EXPECT_EQ(accessory_type, cell.accessoryType);
   }
 
-  base::MessageLoopForUI message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   std::unique_ptr<PrefService> pref_service_;
   DataplanUsageTableViewController* dataplanController_;
 };

@@ -12,22 +12,24 @@ java_strings_grd("java_strings_grd") {
   defines = chrome_grit_defines
   grd_file = "java/strings/android_chrome_vr_strings.grd"
   outputs = [
+    "values/android_chrome_vr_strings.xml",
     "values-am/android_chrome_vr_strings.xml",
     "values-ar/android_chrome_vr_strings.xml",
     "values-bg/android_chrome_vr_strings.xml",
+    "values-bn/android_chrome_vr_strings.xml",
     "values-ca/android_chrome_vr_strings.xml",
     "values-cs/android_chrome_vr_strings.xml",
     "values-da/android_chrome_vr_strings.xml",
     "values-de/android_chrome_vr_strings.xml",
     "values-el/android_chrome_vr_strings.xml",
-    "values/android_chrome_vr_strings.xml",
     "values-en-rGB/android_chrome_vr_strings.xml",
     "values-es/android_chrome_vr_strings.xml",
     "values-es-rUS/android_chrome_vr_strings.xml",
+    "values-et/android_chrome_vr_strings.xml",
     "values-fa/android_chrome_vr_strings.xml",
     "values-fi/android_chrome_vr_strings.xml",
-    "values-tl/android_chrome_vr_strings.xml",
     "values-fr/android_chrome_vr_strings.xml",
+    "values-gu/android_chrome_vr_strings.xml",
     "values-hi/android_chrome_vr_strings.xml",
     "values-hr/android_chrome_vr_strings.xml",
     "values-hu/android_chrome_vr_strings.xml",
@@ -35,11 +37,15 @@ java_strings_grd("java_strings_grd") {
     "values-it/android_chrome_vr_strings.xml",
     "values-iw/android_chrome_vr_strings.xml",
     "values-ja/android_chrome_vr_strings.xml",
+    "values-kn/android_chrome_vr_strings.xml",
     "values-ko/android_chrome_vr_strings.xml",
     "values-lt/android_chrome_vr_strings.xml",
     "values-lv/android_chrome_vr_strings.xml",
-    "values-nl/android_chrome_vr_strings.xml",
+    "values-ml/android_chrome_vr_strings.xml",
+    "values-mr/android_chrome_vr_strings.xml",
+    "values-ms/android_chrome_vr_strings.xml",
     "values-nb/android_chrome_vr_strings.xml",
+    "values-nl/android_chrome_vr_strings.xml",
     "values-pl/android_chrome_vr_strings.xml",
     "values-pt-rBR/android_chrome_vr_strings.xml",
     "values-pt-rPT/android_chrome_vr_strings.xml",
@@ -50,7 +56,10 @@ java_strings_grd("java_strings_grd") {
     "values-sr/android_chrome_vr_strings.xml",
     "values-sv/android_chrome_vr_strings.xml",
     "values-sw/android_chrome_vr_strings.xml",
+    "values-ta/android_chrome_vr_strings.xml",
+    "values-te/android_chrome_vr_strings.xml",
     "values-th/android_chrome_vr_strings.xml",
+    "values-tl/android_chrome_vr_strings.xml",
     "values-tr/android_chrome_vr_strings.xml",
     "values-uk/android_chrome_vr_strings.xml",
     "values-vi/android_chrome_vr_strings.xml",
@@ -105,30 +114,36 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/vr/VrWindowAndroid.java",
   ]
 
-  classpath_deps = [
+  deps = [
+    ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
     "//chrome/android:chrome_java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/util:java",
     "//components/policy/android:policy_java",
     "//content/public/android:content_java",
+    "//device/vr:java",
     "//third_party/android_deps:android_arch_lifecycle_common_java",
     "//third_party/android_deps:android_arch_lifecycle_runtime_java",
-    "//third_party/android_deps:android_support_annotations_java",
+    "//third_party/android_deps:android_arch_lifecycle_viewmodel_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/gvr-android-keyboard:kb_java",
+    "//third_party/gvr-android-sdk:gvr_common_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",
   ]
 
-  deps = [
-    ":java_resources",
-    "//third_party/gvr-android-sdk:gvr_common_java",
-  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/vr/AndroidUiGestureTarget.java",
     "java/src/org/chromium/chrome/browser/vr/AndroidVSyncHelper.java",
+    "java/src/org/chromium/chrome/browser/vr/ConsentFlowMetrics.java",
+    "java/src/org/chromium/chrome/browser/vr/VrConsentDialog.java",
     "java/src/org/chromium/chrome/browser/vr/VrCoreInfo.java",
     "java/src/org/chromium/chrome/browser/vr/VrInputConnection.java",
     "java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java",
@@ -137,5 +152,9 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/vr/keyboard/GvrKeyboardLoaderClient.java",
     "java/src/org/chromium/chrome/browser/vr/keyboard/TextEditAction.java",
   ]
-  jni_package = "vr"
+
+  if (enable_arcore) {
+    sources +=
+        [ "java/src/org/chromium/chrome/browser/vr/ArConsentDialog.java" ]
+  }
 }

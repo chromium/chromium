@@ -15,6 +15,10 @@
 
 class Profile;
 
+namespace base {
+class OneShotTimer;
+}
+
 namespace message_center {
 class Notification;
 }
@@ -30,8 +34,6 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
  public:
   enum class ButtonCommand {
     CANCEL_PRINTING,
-    PAUSE_PRINTING,
-    RESUME_PRINTING,
     GET_HELP,
   };
 
@@ -55,6 +57,8 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
   void UpdateNotificationBodyMessage();
   void UpdateNotificationType();
   void UpdateNotificationButtons();
+
+  void CleanUpNotification();
 
   // Returns the buttons according to the print job's current status.
   std::vector<ButtonCommand> GetButtonCommands() const;
@@ -80,7 +84,10 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
   // status.
   std::vector<ButtonCommand> button_commands_;
 
-  base::WeakPtrFactory<CupsPrintJobNotification> weak_factory_;
+  // Timer to close the notification in case of success.
+  std::unique_ptr<base::OneShotTimer> success_timer_;
+
+  base::WeakPtrFactory<CupsPrintJobNotification> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CupsPrintJobNotification);
 };

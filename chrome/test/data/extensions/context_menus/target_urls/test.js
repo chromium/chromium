@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-window.onload = function() {
-  var patterns = [ "http://*.google.com/*" ];
-  chrome.contextMenus.create({"title":"item1", "contexts": ["link"],
-                              "targetUrlPatterns": patterns}, function() {
-    if (!chrome.runtime.lastError) {
-      chrome.test.sendMessage("created items");
-    }
-  });
-};
+var patterns = [ "http://*.google.com/*" ];
+
+chrome.contextMenus.create({"title":"item1", "contexts": ["link"],
+                            "targetUrlPatterns": patterns}, function() {
+  if (!chrome.runtime.lastError) {
+    chrome.test.sendMessage("created items");
+  }
+});

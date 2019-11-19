@@ -7,8 +7,9 @@
 </head>
 <body>
 <script>
-promise_test(function() {
+promise_test(async t => {
   let pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
   return createStreams({audio:true, video:false}, 1)
     .then(function(streams) {
       let stream = streams[0];
@@ -19,8 +20,9 @@ promise_test(function() {
     });
 }, 'addTrack() for a single track.');
 
-promise_test(function() {
+promise_test(async t => {
   let pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
   return createStreams({audio:true, video:false}, 1)
     .then(function(streams) {
       let stream = streams[0];
@@ -31,8 +33,9 @@ promise_test(function() {
     });
 }, 'addTrack() for a single track and its stream.');
 
-promise_test(function() {
+promise_test(async t => {
   let pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
   return createStreams({audio:true, video:false}, 2)
     .then(function(streams) {
       let streamA = streams[0];
@@ -46,6 +49,7 @@ promise_test(function() {
 
 promise_test(async t => {
   let pc = new RTCPeerConnection({sdpSemantics: "plan-b"});
+  t.add_cleanup(() => pc.close());
   let [streamA, streamB] = await createStreams({audio:true, video:false}, 2);
   let track = streamA.getAudioTracks()[0];
   assert_throws('NotSupportedError', () => {
@@ -55,6 +59,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   let pc = new RTCPeerConnection({sdpSemantics: "unified-plan"});
+  t.add_cleanup(() => pc.close());
   let [streamA, streamB] = await createStreams({audio:true, video:false}, 2);
   let track = streamA.getAudioTracks()[0];
   let sender =  pc.addTrack(track, streamA, streamB);
@@ -62,8 +67,9 @@ promise_test(async t => {
   assert_array_equals(pc.getLocalStreams(), [ streamA, streamB ]);
 }, 'addTrack() for a single track and two streams (Unified Plan).');
 
-promise_test(function() {
+promise_test(async t => {
   let pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
   return createStreams({audio:true, video:false}, 1)
     .then(function(streams) {
       let stream = streams[0];
@@ -80,8 +86,9 @@ promise_test(function() {
     });
 }, 'addTrack() when already added throws InvalidAccessError.');
 
-promise_test(function() {
+promise_test(async t => {
   let pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
   return createStreams({audio:true, video:false}, 1)
     .then(function(streams) {
       let stream = streams[0];
@@ -102,8 +109,9 @@ promise_test(function() {
     });
 }, 'addTrack() after addStream() throws InvalidAccessError.');
 
-promise_test(function() {
+promise_test(async t => {
   let pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
   return createStreams({audio:true, video:false}, 1)
     .then(function(streams) {
       let stream = streams[0];
@@ -122,8 +130,9 @@ promise_test(function() {
     });
 }, 'addTrack() before addStream() works.');
 
-promise_test(function() {
+promise_test(async t => {
   let pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
   return createStreams({audio:true, video:true}, 1)
     .then(function(streams) {
       let stream = streams[0];

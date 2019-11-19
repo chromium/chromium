@@ -1,0 +1,17 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("scopes_metadata_proto") {
+  visibility = [ "//components/services/storage/*" ]
+
+  proto_in_dir = "."
+  proto_out_dir = "components/services/storage/indexed_db/scopes"
+  sources = [
+    "scopes_metadata.proto",
+  ]
+
+  generate_python = false
+}

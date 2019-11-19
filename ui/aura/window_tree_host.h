@@ -18,8 +18,8 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
-#include "components/viz/common/surfaces/local_surface_id.h"
 #include "ui/aura/aura_export.h"
+#include "ui/aura/scoped_enable_unadjusted_mouse_events.h"
 #include "ui/aura/window.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/ime/input_method_delegate.h"
@@ -28,6 +28,7 @@
 #include "ui/events/event_source.h"
 #include "ui/events/platform_event.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/overlay_transform.h"
 
 namespace gfx {
 class Point;
@@ -51,7 +52,6 @@ namespace test {
 class WindowTreeHostTestApi;
 }
 
-class Env;
 class ScopedKeyboardHook;
 class WindowEventDispatcher;
 class WindowTreeHostObserver;
@@ -66,11 +66,9 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
  public:
   ~WindowTreeHost() override;
 
-  // Creates a new WindowTreeHost with the specified |properties| and an
-  // optional |env|. If |env| is null, the default Env::GetInstance() is used.
+  // Creates a new WindowTreeHost with the specified |properties|.
   static std::unique_ptr<WindowTreeHost> Create(
-      ui::PlatformWindowInitProperties properties,
-      Env* env = nullptr);
+      ui::PlatformWindowInitProperties properties);
 
   // Returns the WindowTreeHost for the specified accelerated widget, or NULL
   // if there is none associated.
@@ -103,6 +101,8 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   virtual void SetRootTransform(const gfx::Transform& transform);
   virtual gfx::Transform GetInverseRootTransform() const;
 
+  void SetDisplayTransformHint(gfx::OverlayTransform transform);
+
   // These functions are used in event translation for translating the local
   // coordinates of LocatedEvents. Default implementation calls to non-local
   // ones (e.g. GetRootTransform()).
@@ -116,6 +116,10 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // between this call, GetBounds, and OnHostResizedInPixels is ambiguous and
   // allows for inconsistencies.
   void UpdateRootWindowSizeInPixels();
+
+  // Updates the compositor's size and scale from |new_size_in_pixels|,
+  // |device_scale_factor_| and the compositor's transform hint.
+  void UpdateCompositorScaleAndSize(const gfx::Size& new_size_in_pixels);
 
   // Converts |point| from the root window's coordinate system to native
   // screen's.
@@ -176,9 +180,7 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   void SetSharedInputMethod(ui::InputMethod* input_method);
 
   // Overridden from ui::internal::InputMethodDelegate:
-  ui::EventDispatchDetails DispatchKeyEventPostIME(
-      ui::KeyEvent* event,
-      DispatchKeyEventPostIMECallback callback) final;
+  ui::EventDispatchDetails DispatchKeyEventPostIME(ui::KeyEvent* event) final;
 
   // Overridden from ui::EventSource:
   ui::EventSink* GetEventSink() override;
@@ -204,12 +206,7 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // the old bounds, because SetBoundsInPixels() can take effect asynchronously,
   // depending on the platform. The |local_surface_id| takes effect when (and
   // if) the new size is confirmed (potentially asynchronously) by the platform.
-  // If |local_surface_id| is invalid, then a new LocalSurfaceId is allocated
-  // when the size change takes effect.
-  virtual void SetBoundsInPixels(
-      const gfx::Rect& bounds_in_pixels,
-      const viz::LocalSurfaceIdAllocation& local_surface_id_allocation =
-          viz::LocalSurfaceIdAllocation()) = 0;
+  virtual void SetBoundsInPixels(const gfx::Rect& bounds_in_pixels) = 0;
   virtual gfx::Rect GetBoundsInPixels() const = 0;
 
   // Sets the OS capture to the root window.
@@ -248,6 +245,19 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // observers of the change.
   virtual void SetNativeWindowOcclusionState(Window::OcclusionState state);
 
+  Window::OcclusionState GetNativeWindowOcclusionState() {
+    return occlusion_state_;
+  }
+
+  // Requests using unadjusted movement mouse events, i.e. WM_INPUT on Windows.
+  // Returns a ScopedEnableUnadjustedMouseEvents instance which stops using
+  // unadjusted mouse events when destroyed, returns nullptr if unadjusted mouse
+  // event is not not implemented or failed.
+  virtual std::unique_ptr<ScopedEnableUnadjustedMouseEvents>
+  RequestUnadjustedMovement();
+
+  bool holding_pointer_moves() const { return holding_pointer_moves_; }
+
  protected:
   friend class ScopedKeyboardHook;
   friend class TestScreen;  // TODO(beng): see if we can remove/consolidate.
@@ -262,17 +272,13 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   void DestroyDispatcher();
 
   // If frame_sink_id is not passed in, one will be grabbed from
-  // ContextFactoryPrivate. |are_events_in_pixels| indicates if events are
-  // received in pixels. If |are_events_in_pixels| is false, events are
-  // received in DIPs. See Compositor() for details on |trace_environment_name|
-  // and |automatically_allocate_surface_ids|.
+  // ContextFactoryPrivate. See Compositor() for details on
+  // |trace_environment_name|.
   void CreateCompositor(
       const viz::FrameSinkId& frame_sink_id = viz::FrameSinkId(),
       bool force_software_compositor = false,
-      ui::ExternalBeginFrameClient* external_begin_frame_client = nullptr,
-      bool are_events_in_pixels = true,
-      const char* trace_environment_name = nullptr,
-      bool automatically_allocate_surface_ids = true);
+      bool use_external_begin_frame_control = false,
+      const char* trace_environment_name = nullptr);
 
   void InitCompositor();
   void OnAcceleratedWidgetAvailable();
@@ -281,10 +287,7 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   virtual gfx::Point GetLocationOnScreenInPixels() const = 0;
 
   void OnHostMovedInPixels(const gfx::Point& new_location_in_pixels);
-  void OnHostResizedInPixels(
-      const gfx::Size& new_size_in_pixels,
-      const viz::LocalSurfaceIdAllocation& local_surface_id_allocation =
-          viz::LocalSurfaceIdAllocation());
+  void OnHostResizedInPixels(const gfx::Size& new_size_in_pixels);
   void OnHostWorkspaceChanged();
   void OnHostDisplayChanged();
   void OnHostCloseRequested();
@@ -322,10 +325,6 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
 
   virtual gfx::Rect GetTransformedRootWindowBoundsInPixels(
       const gfx::Size& size_in_pixels) const;
-
-  // Returns true if a LocalSurfaceId should be allocated when the size changes
-  // and a LocalSurfaceId was not supplied.
-  virtual bool ShouldAllocateLocalSurfaceIdOnResize();
 
   const base::ObserverList<WindowTreeHostObserver>::Unchecked& observers()
       const {
@@ -391,7 +390,7 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // Set to true if this WindowTreeHost is currently holding pointer moves.
   bool holding_pointer_moves_ = false;
 
-  base::WeakPtrFactory<WindowTreeHost> weak_factory_;
+  base::WeakPtrFactory<WindowTreeHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WindowTreeHost);
 };

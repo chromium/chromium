@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
-#include "net/base/completion_callback.h"
+#include "net/base/completion_once_callback.h"
 
 namespace base {
 class TaskRunner;
@@ -21,7 +21,7 @@ void ClearHttpCache(const scoped_refptr<net::URLRequestContextGetter>& getter,
                     const scoped_refptr<base::TaskRunner>& network_task_runner,
                     const base::Time& delete_begin,
                     const base::Time& delete_end,
-                    const net::CompletionCallback& callback);
+                    net::CompletionOnceCallback callback);
 
 }  // namespace net
 

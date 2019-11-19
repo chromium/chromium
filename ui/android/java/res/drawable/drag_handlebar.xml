@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:shape="rectangle"
+    tools:ignore="UnusedResources">
+    <size android:height="4dp"
+        android:width="40dp"/>
+    <corners
+        android:radius="2dp" />
+    <solid android:color="@color/drag_handlebar_color" />
+</shape>

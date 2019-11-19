@@ -5,8 +5,10 @@
 module blink.mojom;
 
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "services/service_manager/public/mojom/interface_provider.mojom";
 import "third_party/blink/public/mojom/cache_storage/cache_storage.mojom";
+import "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_object.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_provider_type.mojom";
@@ -17,28 +19,28 @@ import "third_party/blink/public/mojom/service_worker/service_worker_registratio
 // and browser.
 const string kNavigation_ServiceWorkerSpec = "navigation:service_worker";
 
-// S13nServiceWorker:
-// Sent from the browser process to the renderer. Contains parameters for the
-// WebServiceWorkerNetworkProvider used for starting a web worker (dedicated
-// worker or shared worker).
-struct ServiceWorkerProviderInfoForWorker {
-  int32 provider_id;
-  associated ServiceWorkerContainerHost host_ptr_info;
-  associated ServiceWorkerContainer& client_request;
+// Sent from the browser process to the renderer. Contains info needed
+// for a service worker client (window or web worker) to talk with the
+// ServiceWorkerContainerHost in the browser process.
+struct ServiceWorkerProviderInfoForClient {
+  pending_associated_remote<ServiceWorkerContainerHost> host_remote;
+  pending_associated_receiver<ServiceWorkerContainer> client_receiver;
 };
 
-// Sent from the browser process to the renderer. Contains parameters for the
-// WebServiceWorkerNetworkProvider used for starting a service worker.
+// Sent from the browser process to the renderer. Contains parameters used for
+// starting a service worker.
+//
+// TODO(falken): Merge this with EmbeddedWorkerStartParams, there is no logical
+// grouping between the two.
 struct ServiceWorkerProviderInfoForStartWorker {
-  int32 provider_id;
+  // No methods on |host_remote| are called, but it's needed to keep the host
+  // implementation in the browser process alive.
+  // TODO(https://crbug.com/931087): Use a separate interface.
+  pending_associated_remote<ServiceWorkerContainerHost> host_remote;
 
-  associated ServiceWorkerContainerHost host_ptr_info;
-  associated ServiceWorkerContainer& client_request;
-
-  // S13nServiceWorker:
   // The loader to use for loading the worker's main script and
   // importScripts().
-  associated network.mojom.URLLoaderFactory? script_loader_factory_ptr_info;
+  pending_remote<network.mojom.URLLoaderFactory>? script_loader_factory_remote;
 
   // |cache_storage| is an optional optimization so the service worker can use
   // the Cache Storage API immediately without using InterfaceProvider. May be
@@ -47,50 +49,12 @@ struct ServiceWorkerProviderInfoForStartWorker {
   // byte-to-byte update check before running.
   CacheStorage? cache_storage;
 
+  // TODO(crbug.com/990845): remove when no longer used.
   service_manager.mojom.InterfaceProvider interface_provider;
-};
 
-// Describes a browser-side provider host. See
-// content::ServiceWorkerProviderHost.
-struct ServiceWorkerProviderHostInfo {
-  // |provider_id| may be browser-assigned or renderer-assigned.
-  // Browser-assigned ids are unique among all providers. Renderer-assigned ids
-  // are unique among providers in a given renderer process. Most providers have
-  // browser-assigned ids. The exceptions are about:blank iframes, and shared
-  // workers (in the non-S13nServiceWorker case).
-  int32 provider_id;
-
-  // When this provider is created for a document, |route_id| is the frame ID of
-  // it. Otherwise |route_id| is MSG_ROUTING_NONE.
-  int32 route_id;
-
-  // This identifies whether this provider is for a service worker or for a
-  // service worker client (Documents and Shared Workers).
-  ServiceWorkerProviderType type;
-
-  // |is_parent_frame_secure| is false if the provider is created for a document
-  // whose parent frame is not secure from the point of view of the document;
-  // that is, blink::WebFrame::canHaveSecureChild() returns false. This doesn't
-  // mean the document is necessarily an insecure context, because the document
-  // may have a URL whose scheme is granted an exception that allows bypassing
-  // the ancestor secure context check. See the comment in
-  // blink::Document::isSecureContextImpl for more details. If the provider is
-  // not created for a document, or the document does not have a parent frame,
-  // is_parent_frame_secure| is true.
-  bool is_parent_frame_secure;
-
-  // Mojo endpoint to send a message from the renderer to the browser. This
-  // will be associated with ServiceWorkerDisptacherHost. |host_request| should
-  // be valid when ServiceWorkerProviderHostInfo is passed to any Mojo method.
-  // After used to create the ServiceWorkerProviderHost, this will be invalid.
-  associated ServiceWorkerContainerHost& host_request;
-
-  // Mojo endpoint to send a message from the browser to the renderer. This
-  // will be associated with ServiceWorkerDispatcherHost. |client_ptr_info|
-  // should be valid when ServiceWorkerProviderHostInfo is passed to any Mojo
-  // method.
-  // After used to create the ServiceWorkerProviderHost, this will be invalid.
-  associated ServiceWorkerContainer client_ptr_info;
+  // Used for accessing services from the worker.
+  // Should replace the |interface_provider| above.
+  pending_remote<blink.mojom.BrowserInterfaceBroker> browser_interface_broker;
 };
 
 // ServiceWorkerWorkerClient represents a service worker client that is a worker
@@ -113,23 +77,9 @@ interface ServiceWorkerWorkerClient {
 // nested workers.
 interface ServiceWorkerWorkerClientRegistry {
   // Adds a new ServiceWorkerWorkerClient.
-  RegisterWorkerClient(ServiceWorkerWorkerClient client);
+  RegisterWorkerClient(pending_remote<ServiceWorkerWorkerClient> client);
 
   // Clones this host.
-  CloneWorkerClientRegistry(ServiceWorkerWorkerClientRegistry& host);
-};
-
-// An interface implemented by the browser process, with one implementation per
-// renderer process. The renderer uses this interface to tell the browser when
-// potential service worker clients are created.
-//
-// This interface is on the channel-associated interface to the renderer
-// process.
-interface ServiceWorkerDispatcherHost {
-  // Creates a content::ServiceWorkerProviderHost on the browser
-  // process. |provider_info| has Mojo endpoints to connect the container host
-  // and the container on the renderer together. The lifetime of
-  // ServiceWorkerProviderHost will be tied to the
-  // blink::mojom::ServiceWorkerContainerHost interface.
-  OnProviderCreated(ServiceWorkerProviderHostInfo provider_info);
+  CloneWorkerClientRegistry(
+      pending_receiver<ServiceWorkerWorkerClientRegistry> host);
 };

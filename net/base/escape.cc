@@ -193,8 +193,6 @@ bool ShouldUnescapeCodePoint(UnescapeRule::Type rules, uint32_t code_point) {
   // TODO(https://crbug.com/829873): Try to make this use icu, both to
   // protect against regressions as the Unicode standard is updated and to
   // reduce the number of long lists of characters.
-  // TODO(https://crbug.com/824715): Add default ignorable and formatting
-  // code points.
   return !(
       // Per http://tools.ietf.org/html/rfc3987#section-4.1, certain BiDi
       // control characters are not allowed to appear unescaped in URLs.
@@ -241,7 +239,62 @@ bool ShouldUnescapeCodePoint(UnescapeRule::Type rules, uint32_t code_point) {
       code_point == 0x2029 ||  // PARAGRAPH SEPARATOR        (%E2%80%A9)
       code_point == 0x202F ||  // NARROW NO-BREAK SPACE      (%E2%80%AF)
       code_point == 0x205F ||  // MEDIUM MATHEMATICAL SPACE  (%E2%81%9F)
-      code_point == 0x3000);   // IDEOGRAPHIC SPACE          (%E3%80%80)
+      code_point == 0x3000 ||  // IDEOGRAPHIC SPACE          (%E3%80%80)
+
+      // Default Ignorable ([:Default_Ignorable_Code_Point=Yes:]) and Format
+      // characters ([:Cf:]) are also banned (see crbug.com/824715).
+      code_point == 0x00AD ||  // SOFT HYPHEN               (%C2%AD)
+      code_point == 0x034F ||  // COMBINING GRAPHEME JOINER (%CD%8F)
+      // Arabic number formatting
+      (code_point >= 0x0600 && code_point <= 0x0605) ||
+      // U+061C is already banned as a BiDi control character.
+      code_point == 0x06DD ||  // ARABIC END OF AYAH          (%DB%9D)
+      code_point == 0x070F ||  // SYRIAC ABBREVIATION MARK    (%DC%8F)
+      code_point == 0x08E2 ||  // ARABIC DISPUTED END OF AYAH (%E0%A3%A2)
+      code_point == 0x115F ||  // HANGUL CHOSEONG FILLER      (%E1%85%9F)
+      code_point == 0x1160 ||  // HANGUL JUNGSEONG FILLER     (%E1%85%A0)
+      code_point == 0x17B4 ||  // KHMER VOWEL INHERENT AQ     (%E1%9E%B4)
+      code_point == 0x17B5 ||  // KHMER VOWEL INHERENT AA     (%E1%9E%B5)
+      code_point == 0x180B ||  // MONGOLIAN FREE VARIATION SELECTOR ONE
+                               // (%E1%A0%8B)
+      code_point == 0x180C ||  // MONGOLIAN FREE VARIATION SELECTOR TWO
+                               // (%E1%A0%8C)
+      code_point == 0x180D ||  // MONGOLIAN FREE VARIATION SELECTOR THREE
+                               // (%E1%A0%8D)
+      code_point == 0x180E ||  // MONGOLIAN VOWEL SEPARATOR   (%E1%A0%8E)
+      code_point == 0x200B ||  // ZERO WIDTH SPACE            (%E2%80%8B)
+      code_point == 0x200C ||  // ZERO WIDTH SPACE NON-JOINER (%E2%80%8C)
+      code_point == 0x200D ||  // ZERO WIDTH JOINER           (%E2%80%8D)
+      // U+200E, U+200F, U+202A--202E, and U+2066--2069 are already banned as
+      // BiDi control characters.
+      code_point == 0x2060 ||  // WORD JOINER          (%E2%81%A0)
+      code_point == 0x2061 ||  // FUNCTION APPLICATION (%E2%81%A1)
+      code_point == 0x2062 ||  // INVISIBLE TIMES      (%E2%81%A2)
+      code_point == 0x2063 ||  // INVISIBLE SEPARATOR  (%E2%81%A3)
+      code_point == 0x2064 ||  // INVISIBLE PLUS       (%E2%81%A4)
+      code_point == 0x2065 ||  // null (%E2%81%A5)
+      // 0x2066--0x2069 are already banned as a BiDi control characters.
+      // General Punctuation - Deprecated (U+206A--206F)
+      (code_point >= 0x206A && code_point <= 0x206F) ||
+      code_point == 0x3164 ||  // HANGUL FILLER (%E3%85%A4)
+      (code_point >= 0xFFF0 && code_point <= 0xFFF8) ||  // null
+      // Variation selectors (%EF%B8%80 -- %EF%B8%8F)
+      (code_point >= 0xFE00 && code_point <= 0xFE0F) ||
+      code_point == 0xFEFF ||   // ZERO WIDTH NO-BREAK SPACE (%EF%BB%BF)
+      code_point == 0xFFA0 ||   // HALFWIDTH HANGUL FILLER (%EF%BE%A0)
+      code_point == 0xFFF9 ||   // INTERLINEAR ANNOTATION ANCHOR     (%EF%BF%B9)
+      code_point == 0xFFFA ||   // INTERLINEAR ANNOTATION SEPARATOR  (%EF%BF%BA)
+      code_point == 0xFFFB ||   // INTERLINEAR ANNOTATION TERMINATOR (%EF%BF%BB)
+      code_point == 0x110BD ||  // KAITHI NUMBER SIGN       (%F0%91%82%BD)
+      code_point == 0x110CD ||  // KAITHI NUMBER SIGN ABOVE (%F0%91%83%8D)
+      // Egyptian hieroglyph formatting (%F0%93%90%B0 -- %F0%93%90%B8)
+      (code_point >= 0x13430 && code_point <= 0x13438) ||
+      // Shorthand format controls (%F0%9B%B2%A0 -- %F0%9B%B2%A3)
+      (code_point >= 0x1BCA0 && code_point <= 0x1BCA3) ||
+      // Beams and slurs (%F0%9D%85%B3 -- %F0%9D%85%BA)
+      (code_point >= 0x1D173 && code_point <= 0x1D17A) ||
+      // Tags, Variation Selectors, nulls
+      (code_point >= 0xE0000 && code_point <= 0xE0FFF));
 }
 
 // Unescapes |escaped_text| according to |rules|, returning the resulting
@@ -395,6 +448,11 @@ static const Charmap kNonASCIICharmapAndPercent = {
     {0x00000000L, 0x00000020L, 0x00000000L, 0x00000000L, 0xffffffffL,
      0xffffffffL, 0xffffffffL, 0xffffffffL}};
 
+// non-7bit
+static const Charmap kNonASCIICharmap = {{0x00000000L, 0x00000000L, 0x00000000L,
+                                          0x00000000L, 0xffffffffL, 0xffffffffL,
+                                          0xffffffffL, 0xffffffffL}};
+
 // Everything except alphanumerics, the reserved characters(;/?:@&=+$,) and
 // !'()*-._~#[]
 static const Charmap kExternalHandlerCharmap = {{
@@ -430,6 +488,10 @@ std::string EscapeNonASCIIAndPercent(base::StringPiece input) {
   return Escape(input, kNonASCIICharmapAndPercent, false);
 }
 
+std::string EscapeNonASCII(base::StringPiece input) {
+  return Escape(input, kNonASCIICharmap, false);
+}
+
 std::string EscapeExternalHandlerValue(base::StringPiece text) {
   return Escape(text, kExternalHandlerCharmap, false, true);
 }
@@ -449,11 +511,6 @@ base::string16 EscapeForHTML(base::StringPiece16 input) {
 std::string UnescapeURLComponent(base::StringPiece escaped_text,
                                  UnescapeRule::Type rules) {
   return UnescapeURLWithAdjustmentsImpl(escaped_text, rules, nullptr);
-}
-
-base::string16 UnescapeAndDecodeUTF8URLComponent(base::StringPiece text,
-                                                 UnescapeRule::Type rules) {
-  return UnescapeAndDecodeUTF8URLComponentWithAdjustments(text, rules, nullptr);
 }
 
 base::string16 UnescapeAndDecodeUTF8URLComponentWithAdjustments(
@@ -478,48 +535,68 @@ base::string16 UnescapeAndDecodeUTF8URLComponentWithAdjustments(
   return base::UTF8ToUTF16WithAdjustments(text, adjustments);
 }
 
-void UnescapeBinaryURLComponent(const std::string& escaped_text,
-                                UnescapeRule::Type rules,
-                                std::string* unescaped_text) {
+std::string UnescapeBinaryURLComponent(base::StringPiece escaped_text,
+                                       UnescapeRule::Type rules) {
   // Only NORMAL and REPLACE_PLUS_WITH_SPACE are supported.
   DCHECK(rules != UnescapeRule::NONE);
   DCHECK(!(rules &
            ~(UnescapeRule::NORMAL | UnescapeRule::REPLACE_PLUS_WITH_SPACE)));
+
+  std::string unescaped_text;
 
   // The output of the unescaping is always smaller than the input, so we can
   // reserve the input size to make sure we have enough buffer and don't have
   // to allocate in the loop below.
   // Increase capacity before size, as just resizing can grow capacity
   // needlessly beyond our requested size.
-  if (unescaped_text->capacity() < escaped_text.size())
-    unescaped_text->reserve(escaped_text.size());
-  if (unescaped_text->size() < escaped_text.size())
-    unescaped_text->resize(escaped_text.size());
+  unescaped_text.reserve(escaped_text.size());
+  unescaped_text.resize(escaped_text.size());
 
   size_t output_index = 0;
 
-  for (size_t i = 0, max = unescaped_text->size(); i < max;) {
+  for (size_t i = 0, max = escaped_text.size(); i < max;) {
     unsigned char byte;
     // UnescapeUnsignedByteAtIndex does bounds checking, so this is always safe
     // to call.
     if (UnescapeUnsignedByteAtIndex(escaped_text, i, &byte)) {
-      (*unescaped_text)[output_index++] = byte;
+      unescaped_text[output_index++] = byte;
       i += 3;
       continue;
     }
 
     if ((rules & UnescapeRule::REPLACE_PLUS_WITH_SPACE) &&
         escaped_text[i] == '+') {
-      (*unescaped_text)[output_index++] = ' ';
+      unescaped_text[output_index++] = ' ';
       ++i;
       continue;
     }
 
-    (*unescaped_text)[output_index++] = escaped_text[i++];
+    unescaped_text[output_index++] = escaped_text[i++];
   }
 
-  DCHECK_LE(output_index, unescaped_text->size());
-  unescaped_text->resize(output_index);
+  DCHECK_LE(output_index, unescaped_text.size());
+  unescaped_text.resize(output_index);
+  return unescaped_text;
+}
+
+bool UnescapeBinaryURLComponentSafe(base::StringPiece escaped_text,
+                                    bool fail_on_path_separators,
+                                    std::string* unescaped_text) {
+  unescaped_text->clear();
+
+  std::set<unsigned char> illegal_encoded_bytes;
+  for (char c = '\x00'; c < '\x20'; ++c) {
+    illegal_encoded_bytes.insert(c);
+  }
+  if (fail_on_path_separators) {
+    illegal_encoded_bytes.insert('/');
+    illegal_encoded_bytes.insert('\\');
+  }
+  if (ContainsEncodedBytes(escaped_text, illegal_encoded_bytes))
+    return false;
+
+  *unescaped_text = UnescapeBinaryURLComponent(escaped_text);
+  return true;
 }
 
 base::string16 UnescapeForHTML(base::StringPiece16 input) {

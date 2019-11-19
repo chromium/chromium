@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "base/timer/timer.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/metrics/daily_event.h"
 
 class PrefRegistrySimple;
@@ -27,12 +27,18 @@ class MetricsReporter : public PowerManagerClient::Observer {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class UserAdjustment {
+  enum class DeviceClass {
     kNoAls = 0,
     kSupportedAls = 1,
     kUnsupportedAls = 2,
-    kMaxValue = kUnsupportedAls
+    kAtlas = 3,
+    kEve = 4,
+    kNocturne = 5,
+    kMaxValue = kNocturne
   };
+
+  static constexpr int kNumberDeviceClasses =
+      static_cast<int>(DeviceClass::kMaxValue) + 1;
 
   // A histogram recorded in UMA, showing reasons why daily metrics are
   // reported.
@@ -46,6 +52,12 @@ class MetricsReporter : public PowerManagerClient::Observer {
       "AutoScreenBrightness.DailyUserAdjustment.SupportedAls";
   static constexpr char kUnsupportedAlsUserAdjustmentName[] =
       "AutoScreenBrightness.DailyUserAdjustment.UnsupportedAls";
+  static constexpr char kAtlasUserAdjustmentName[] =
+      "AutoScreenBrightness.DailyUserAdjustment.Atlas";
+  static constexpr char kEveUserAdjustmentName[] =
+      "AutoScreenBrightness.DailyUserAdjustment.Eve";
+  static constexpr char kNocturneUserAdjustmentName[] =
+      "AutoScreenBrightness.DailyUserAdjustment.Nocturne";
 
   // Registers prefs used by MetricsReporter in |registry|.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -58,8 +70,13 @@ class MetricsReporter : public PowerManagerClient::Observer {
   // PowerManagerClient::Observer:
   void SuspendDone(const base::TimeDelta& duration) override;
 
-  // Increments number of adjustments with type |user_adjustment|.
-  void OnUserBrightnessChangeRequested(UserAdjustment user_adjustment);
+  // Sets |device_class_|. Should only be called once after adapter is
+  // initialized.
+  void SetDeviceClass(DeviceClass device_class);
+
+  // Increments number of adjustments for |device_class_|. Should only
+  // be called after |SetDeviceClass| is called.
+  void OnUserBrightnessChangeRequested();
 
   // Calls ReportDailyMetrics directly.
   void ReportDailyMetricsForTesting(metrics::DailyEvent::IntervalType type);
@@ -71,6 +88,10 @@ class MetricsReporter : public PowerManagerClient::Observer {
   // |daily_event_|.
   void ReportDailyMetrics(metrics::DailyEvent::IntervalType type);
 
+  // Used as an index into |daily_counts_| for counting adjustments.
+  // Set once and then never changed during the Chrome session.
+  base::Optional<DeviceClass> device_class_;
+
   ScopedObserver<PowerManagerClient, PowerManagerClient::Observer>
       power_manager_client_observer_;
 
@@ -81,8 +102,9 @@ class MetricsReporter : public PowerManagerClient::Observer {
   // Instructs |daily_event_| to check if a day has passed.
   base::RepeatingTimer timer_;
 
-  // Daily count for each UserAjustment. Ordered by UserAdjustment values.
-  std::array<int, 3> daily_counts_;
+  // Daily count for each DeviceClass. Ordered by DeviceClass values.
+  // Initial values will be loaded from prefs service.
+  std::array<int, kNumberDeviceClasses> daily_counts_;
 
   DISALLOW_COPY_AND_ASSIGN(MetricsReporter);
 };

@@ -72,6 +72,7 @@ class DEVICE_EVENT_LOG_EXPORT DeviceEventLogImpl {
                           size_t max_events);
 
   // Implements device_event_log::Clear.
+  void ClearAll();
   void Clear(const base::Time& begin, const base::Time& end);
 
   // Called from device_event_log::AddEntry if the global instance has not been
@@ -97,7 +98,7 @@ class DEVICE_EVENT_LOG_EXPORT DeviceEventLogImpl {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   size_t max_entries_;
   LogEntryList entries_;
-  base::WeakPtrFactory<DeviceEventLogImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<DeviceEventLogImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceEventLogImpl);
 };

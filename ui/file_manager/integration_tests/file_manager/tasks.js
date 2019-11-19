@@ -36,6 +36,26 @@ const DOWNLOADS_FAKE_TASKS = [
 ];
 
 /**
+ * Fake tasks for a local volume opening in browser.
+ *
+ * @type {Array<FakeTask>}
+ * @const
+ */
+const DOWNLOADS_FAKE_TEXT = [
+  new FakeTask(true, FILE_MANAGER_EXTENSIONS_ID + '|file|view-in-browser'),
+];
+
+/**
+ * Fake tasks for a PDF file opening in browser.
+ *
+ * @type {Array<FakeTask>}
+ * @const
+ */
+const DOWNLOADS_FAKE_PDF = [
+  new FakeTask(true, FILE_MANAGER_EXTENSIONS_ID + '|file|view-as-pdf'),
+];
+
+/**
  * Fake tasks for a drive volume.
  *
  * @type {Array<FakeTask>}
@@ -166,6 +186,18 @@ testcase.executeDefaultTaskDrive = async () => {
 testcase.executeDefaultTaskDownloads = async () => {
   const appId = await setupTaskTest(RootPath.DOWNLOADS, DOWNLOADS_FAKE_TASKS);
   await executeDefaultTask(appId, 'dummytaskid|open-with');
+};
+
+testcase.defaultTaskForTextPlain = async () => {
+  const appId = await setupTaskTest(RootPath.DOWNLOADS, DOWNLOADS_FAKE_TEXT);
+  await executeDefaultTask(
+      appId, FILE_MANAGER_EXTENSIONS_ID + '|file|view-in-browser');
+};
+
+testcase.defaultTaskForPdf = async () => {
+  const appId = await setupTaskTest(RootPath.DOWNLOADS, DOWNLOADS_FAKE_PDF);
+  await executeDefaultTask(
+      appId, FILE_MANAGER_EXTENSIONS_ID + '|file|view-as-pdf');
 };
 
 testcase.defaultTaskDialogDrive = async () => {

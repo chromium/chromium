@@ -13,13 +13,15 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "net/base/network_delegate.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/resource_response.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -31,117 +33,126 @@ class IPEndPoint;
 namespace extensions {
 
 // A WebRequestProxyingWebSocket proxies a WebSocket connection and dispatches
-// WebRequest API events. This is used only when the network service is enabled.
+// WebRequest API events.
 class WebRequestProxyingWebSocket
     : public WebRequestAPI::Proxy,
-      public network::mojom::WebSocket,
-      public network::mojom::WebSocketClient,
-      public network::mojom::AuthenticationHandler {
+      public network::mojom::WebSocketHandshakeClient,
+      public network::mojom::AuthenticationHandler,
+      public network::mojom::TrustedHeaderClient {
  public:
+  using WebSocketFactory = content::ContentBrowserClient::WebSocketFactory;
+
   WebRequestProxyingWebSocket(
+      WebSocketFactory factory,
+      const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
+          handshake_client,
+      bool has_extra_headers,
       int process_id,
       int render_frame_id,
-      const url::Origin& origin,
       content::BrowserContext* browser_context,
-      content::ResourceContext* resource_context,
-      InfoMap* info_map,
       scoped_refptr<WebRequestAPI::RequestIDGenerator> request_id_generator,
-      network::mojom::WebSocketPtr proxied_socket,
-      network::mojom::WebSocketRequest proxied_request,
-      network::mojom::AuthenticationHandlerRequest auth_request,
       WebRequestAPI::ProxySet* proxies);
   ~WebRequestProxyingWebSocket() override;
 
-  // mojom::WebSocket methods:
-  void AddChannelRequest(
-      const GURL& url,
-      const std::vector<std::string>& requested_protocols,
-      const GURL& site_for_cookies,
-      std::vector<network::mojom::HttpHeaderPtr> additional_headers,
-      network::mojom::WebSocketClientPtr client) override;
-  void SendFrame(bool fin,
-                 network::mojom::WebSocketMessageType type,
-                 const std::vector<uint8_t>& data) override;
-  void SendFlowControl(int64_t quota) override;
-  void StartClosingHandshake(uint16_t code, const std::string& reason) override;
+  void Start();
 
-  // mojom::WebSocketClient methods:
-  void OnFailChannel(const std::string& reason) override;
-  void OnStartOpeningHandshake(
+  // network::mojom::WebSocketHandshakeClient methods:
+  void OnOpeningHandshakeStarted(
       network::mojom::WebSocketHandshakeRequestPtr request) override;
-  void OnFinishOpeningHandshake(
-      network::mojom::WebSocketHandshakeResponsePtr response) override;
-  void OnAddChannelResponse(const std::string& selected_protocol,
-                            const std::string& extensions) override;
-  void OnDataFrame(bool fin,
-                   network::mojom::WebSocketMessageType type,
-                   const std::vector<uint8_t>& data) override;
-  void OnFlowControl(int64_t quota) override;
-  void OnDropChannel(bool was_clean,
-                     uint16_t code,
-                     const std::string& reason) override;
-  void OnClosingHandshake() override;
+  void OnConnectionEstablished(
+      mojo::PendingRemote<network::mojom::WebSocket> websocket,
+      mojo::PendingReceiver<network::mojom::WebSocketClient> client_receiver,
+      network::mojom::WebSocketHandshakeResponsePtr response,
+      mojo::ScopedDataPipeConsumerHandle readable) override;
 
-  // mojom::AuthenticationHandler method:
-  void OnAuthRequired(const scoped_refptr<net::AuthChallengeInfo>& auth_info,
+  // network::mojom::AuthenticationHandler method:
+  void OnAuthRequired(const net::AuthChallengeInfo& auth_info,
                       const scoped_refptr<net::HttpResponseHeaders>& headers,
                       const net::IPEndPoint& remote_endpoint,
                       OnAuthRequiredCallback callback) override;
 
+  // network::mojom::TrustedHeaderClient methods:
+  void OnBeforeSendHeaders(const net::HttpRequestHeaders& headers,
+                           OnBeforeSendHeadersCallback callback) override;
+  void OnHeadersReceived(const std::string& headers,
+                         const net::IPEndPoint& endpoint,
+                         OnHeadersReceivedCallback callback) override;
+
   static void StartProxying(
+      WebSocketFactory factory,
+      const GURL& url,
+      const GURL& site_for_cookies,
+      const base::Optional<std::string>& user_agent,
+      mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
+          handshake_client,
+      bool has_extra_headers,
       int process_id,
       int render_frame_id,
       scoped_refptr<WebRequestAPI::RequestIDGenerator> request_id_generator,
       const url::Origin& origin,
       content::BrowserContext* browser_context,
-      content::ResourceContext* resource_context,
-      InfoMap* info_map,
-      network::mojom::WebSocketPtrInfo proxied_socket_ptr_info,
-      network::mojom::WebSocketRequest proxied_request,
-      network::mojom::AuthenticationHandlerRequest auth_request);
+      WebRequestAPI::ProxySet* proxies);
 
  private:
   void OnBeforeRequestComplete(int error_code);
-  void OnBeforeSendHeadersComplete(int error_code);
+  void OnBeforeSendHeadersComplete(const std::set<std::string>& removed_headers,
+                                   const std::set<std::string>& set_headers,
+                                   int error_code);
+  void ContinueToStartRequest(int error_code);
   void OnHeadersReceivedComplete(int error_code);
-  void OnAuthRequiredComplete(net::NetworkDelegate::AuthRequiredResponse rv);
-  void OnHeadersReceivedCompleteForAuth(
-      scoped_refptr<net::AuthChallengeInfo> auth_info,
-      int rv);
+  void ContinueToHeadersReceived();
+  void OnAuthRequiredComplete(
+      ExtensionWebRequestEventRouter::AuthRequiredResponse rv);
+  void OnHeadersReceivedCompleteForAuth(const net::AuthChallengeInfo& auth_info,
+                                        int rv);
+  void ContinueToCompleted();
 
   void PauseIncomingMethodCallProcessing();
   void ResumeIncomingMethodCallProcessing();
   void OnError(int result);
+  void OnMojoConnectionError(uint32_t custom_reason,
+                             const std::string& description);
 
-  const int process_id_;
-  const int render_frame_id_;
-  const url::Origin origin_;
+  WebSocketFactory factory_;
   content::BrowserContext* const browser_context_;
-  content::ResourceContext* const resource_context_;
-  InfoMap* const info_map_;
-  scoped_refptr<WebRequestAPI::RequestIDGenerator> request_id_generator_;
-  network::mojom::WebSocketPtr proxied_socket_;
-  network::mojom::WebSocketClientPtr forwarding_client_;
-  mojo::Binding<network::mojom::WebSocket> binding_as_websocket_;
-  mojo::Binding<network::mojom::WebSocketClient> binding_as_client_;
-  mojo::Binding<network::mojom::AuthenticationHandler> binding_as_auth_handler_;
+  mojo::Remote<network::mojom::WebSocketHandshakeClient>
+      forwarding_handshake_client_;
+  mojo::Receiver<network::mojom::WebSocketHandshakeClient>
+      receiver_as_handshake_client_{this};
+  mojo::Receiver<network::mojom::AuthenticationHandler>
+      receiver_as_auth_handler_{this};
+  mojo::Receiver<network::mojom::TrustedHeaderClient>
+      receiver_as_header_client_{this};
 
-  network::ResourceRequest request_;
-  network::ResourceResponseHead response_;
+  net::HttpRequestHeaders request_headers_;
+  network::mojom::URLResponseHeadPtr response_;
   net::AuthCredentials auth_credentials_;
   OnAuthRequiredCallback auth_required_callback_;
   scoped_refptr<net::HttpResponseHeaders> override_headers_;
-  std::vector<std::string> websocket_protocols_;
+  std::vector<network::mojom::HttpHeaderPtr> additional_headers_;
+
+  OnBeforeSendHeadersCallback on_before_send_headers_callback_;
+  OnHeadersReceivedCallback on_headers_received_callback_;
 
   GURL redirect_url_;
   bool is_done_ = false;
+  bool has_extra_headers_;
+  mojo::PendingRemote<network::mojom::WebSocket> websocket_;
+  mojo::PendingReceiver<network::mojom::WebSocketClient> client_receiver_;
+  network::mojom::WebSocketHandshakeResponsePtr handshake_response_ = nullptr;
+  mojo::ScopedDataPipeConsumerHandle readable_;
 
-  base::Optional<WebRequestInfo> info_;
+  WebRequestInfo info_;
 
   // Owns |this|.
   WebRequestAPI::ProxySet* const proxies_;
 
-  base::WeakPtrFactory<WebRequestProxyingWebSocket> weak_factory_;
+  // Notifies the proxy that the browser context has been shutdown.
+  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
+      shutdown_notifier_;
+
+  base::WeakPtrFactory<WebRequestProxyingWebSocket> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(WebRequestProxyingWebSocket);
 };
 

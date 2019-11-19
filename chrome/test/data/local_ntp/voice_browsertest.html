@@ -25,7 +25,7 @@
     </div>
   </template>
   <template id="voice-text-template">
-    <div class="text-container">
+    <div id="text-container" aria-live="polite">
       <!-- Low confidence text underneath high confidence text. -->
       <span id="voice-text-i" class="voice-text"></span>
       <!-- High confidence text on top of low confidence text. -->
@@ -53,7 +53,7 @@
                 </div>
               </span>
             </div>
-            <div class="text-container">
+            <div id="text-container" aria-live="polite">
               <!-- Low confidence text underneath high confidence text. -->
               <span id="voice-text-i" class="voice-text"></span>
               <!-- High confidence text on top of low confidence text. -->

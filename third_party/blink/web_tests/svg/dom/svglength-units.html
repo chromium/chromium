@@ -102,9 +102,10 @@ test(function() {
     "ch": 2
   };
   for (var unit in invalidUnits) {
-    assert_throws(new SyntaxError, function() { createLength(10 + unit) });
+    var length = createLength(10 + unit);
+    assert_equals(length.unitType, SVGLength.SVG_LENGTHTYPE_UNKNOWN);
   }
-}, "Test invalid unit types are not accepted in valueAsString");
+}, "Test unit types that don't have a corresponding IDL constant");
 
 test(function() {
   var unitConstants = {

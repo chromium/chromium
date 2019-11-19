@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_SCROLL_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_SCROLL_STATE_H_
 
-#include <deque>
 #include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -14,6 +13,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_state_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -68,7 +68,7 @@ class CORE_EXPORT ScrollState final : public ScriptWrappable {
   void ConsumeDeltaNative(double x, double y);
 
   // TODO(tdresser): this needs to be web exposed. See crbug.com/483091.
-  void SetScrollChain(std::deque<DOMNodeId> scroll_chain) {
+  void SetScrollChain(Deque<DOMNodeId> scroll_chain) {
     scroll_chain_ = scroll_chain;
   }
 
@@ -97,7 +97,7 @@ class CORE_EXPORT ScrollState final : public ScriptWrappable {
   ScrollState() = delete;
 
   std::unique_ptr<ScrollStateData> data_;
-  std::deque<DOMNodeId> scroll_chain_;
+  Deque<DOMNodeId> scroll_chain_;
   Member<Node> node_;
 };
 

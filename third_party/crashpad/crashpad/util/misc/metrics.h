@@ -139,6 +139,9 @@ class Metrics {
     //! \brief Sanitization caused this crash dump to be skipped.
     kSkippedDueToSanitization = 11,
 
+    //! \brief Failure to open a memfd caused this crash dump to be skipped.
+    kOpenMemfdFailed = 12,
+
     //! \brief The number of values in this enumeration; not a valid value.
     kMaxValue
   };

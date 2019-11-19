@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/memory_mapped_file.h"
+#include "base/native_library.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,10 +23,10 @@ namespace debug {
 // builds.
 #if defined(OFFICIAL_BUILD) || defined(OS_FUCHSIA)
 
-#if defined(OS_FUCHSIA)
-constexpr size_t kExpectedBuildIdStringLength = 16;  // 64-bit int in hex.
-#else
+#if defined(OFFICIAL_BUILD)
 constexpr size_t kExpectedBuildIdStringLength = 40;  // SHA1 hash in hex.
+#else
+constexpr size_t kExpectedBuildIdStringLength = 16;  // 64-bit int in hex.
 #endif
 
 TEST(ElfReaderTest, ReadElfBuildIdUppercase) {
@@ -55,32 +56,29 @@ TEST(ElfReaderTest, ReadElfBuildIdLowercase) {
 }
 #endif  // defined(OFFICIAL_BUILD) || defined(OS_FUCHSIA)
 
-#if !defined(OS_FUCHSIA)
 TEST(ElfReaderTest, ReadElfLibraryName) {
 #if defined(OS_ANDROID)
   // On Android the library loader memory maps the full so file.
-  const char kLibraryName[] = "lib_base_unittests__library";
+  const char kLibraryName[] = "libbase_unittests__library";
   const void* addr = &__executable_start;
 #else
+  const char kLibraryName[] = MALLOC_WRAPPER_LIB;
   // On Linux the executable does not contain soname and is not mapped till
   // dynamic segment. So, use malloc wrapper so file on which the test already
   // depends on.
-  const char kLibraryName[] = MALLOC_WRAPPER_LIB;
   // Find any symbol in the loaded file.
-  void* handle = dlopen(kLibraryName, RTLD_NOW | RTLD_LOCAL);
-  const void* init_addr = dlsym(handle, "_init");
+  //
+  NativeLibraryLoadError error;
+  NativeLibrary library =
+      LoadNativeLibrary(base::FilePath(kLibraryName), &error);
+  void* init_addr =
+      GetFunctionPointerFromNativeLibrary(library, "MallocWrapper");
+
   // Use this symbol to get full path to the loaded library.
   Dl_info info;
   int res = dladdr(init_addr, &info);
   ASSERT_NE(0, res);
-  std::string filename(info.dli_fname);
-  EXPECT_FALSE(filename.empty());
-  EXPECT_NE(std::string::npos, filename.find(kLibraryName));
-
-  // Memory map the so file and use it to test reading so name.
-  MemoryMappedFile file;
-  ASSERT_TRUE(file.Initialize(FilePath(filename)));
-  const void* addr = file.data();
+  const void* addr = info.dli_fbase;
 #endif
 
   auto name = ReadElfLibraryName(addr);
@@ -88,8 +86,11 @@ TEST(ElfReaderTest, ReadElfLibraryName) {
   EXPECT_NE(std::string::npos, name->find(kLibraryName))
       << "Library name " << *name << " doesn't contain expected "
       << kLibraryName;
+
+#if !defined(OS_ANDROID)
+  UnloadNativeLibrary(library);
+#endif
 }
-#endif  // !defined(OS_FUCHSIA)
 
 }  // namespace debug
 }  // namespace base

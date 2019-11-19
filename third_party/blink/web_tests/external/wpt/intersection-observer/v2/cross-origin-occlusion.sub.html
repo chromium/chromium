@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/intersection-observer-test-utils.js"></script>
@@ -55,7 +56,7 @@ async_test(function(t) {
 
   window.addEventListener("message", event => {
     if (steps.length) {
-      t.step_func(steps.shift(), event);
+      t.step(steps.shift(), t, event);
       waitForFrame(t, () => {
         iframe.contentWindow.postMessage("", "*");
       });

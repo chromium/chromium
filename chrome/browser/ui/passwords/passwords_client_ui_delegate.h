@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/strings/string16.h"
 #include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 
 namespace content {
 class WebContents;
@@ -80,14 +81,18 @@ class PasswordsClientUIDelegate {
 
   // Called when a form is autofilled with login information, so we can manage
   // password credentials for the current site which are stored in
-  // |password_form_map|. This stores a copy of |password_form_map| and shows
+  // |password_forms|. This stores a copy of |password_forms| and shows
   // the manage password icon. |federated_matches| contain the matching stored
   // federated credentials to display in the UI.
   virtual void OnPasswordAutofilled(
-      const std::map<base::string16, const autofill::PasswordForm*>&
-          password_form_map,
+      const std::vector<const autofill::PasswordForm*>& password_forms,
       const GURL& origin,
       const std::vector<const autofill::PasswordForm*>* federated_matches) = 0;
+
+  // Called when user credentials were leaked. This triggers the UI to prompt
+  // the user whether they would like to check their passwords.
+  virtual void OnCredentialLeak(password_manager::CredentialLeakType leak_type,
+                                const GURL& origin) = 0;
 
  protected:
   virtual ~PasswordsClientUIDelegate() = default;

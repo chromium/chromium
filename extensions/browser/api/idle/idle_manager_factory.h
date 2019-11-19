@@ -27,7 +27,7 @@ class IdleManagerFactory : public BrowserContextKeyedServiceFactory {
   IdleManagerFactory();
   ~IdleManagerFactory() override;
 
-  // BrowserContextKeyedBaseFactory implementation.
+  // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(

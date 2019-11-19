@@ -15,7 +15,9 @@ namespace {
 
 class CrashKeyStringTest : public testing::Test {
  public:
-  void SetUp() override { InitializeCrashKeys(); }
+  void SetUp() override { InitializeCrashKeysForTesting(); }
+
+  void TearDown() override { ResetCrashKeysForTesting(); }
 };
 
 TEST_F(CrashKeyStringTest, ScopedCrashKeyString) {

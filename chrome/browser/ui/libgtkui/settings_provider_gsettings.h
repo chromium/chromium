@@ -7,6 +7,8 @@
 
 #include <gio/gio.h>
 
+#include <string>
+
 #include "base/macros.h"
 #include "chrome/browser/ui/libgtkui/settings_provider.h"
 #include "ui/base/glib/glib_signal.h"

@@ -4,13 +4,19 @@
 
 #include "chrome/chrome_cleaner/settings/settings.h"
 
+#include <algorithm>
+#include <set>
+
 #include "base/command_line.h"
 #include "base/guid.h"
 #include "base/logging.h"
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/win/win_util.h"
+#include "chrome/chrome_cleaner/buildflags.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
-#include "chrome/chrome_cleaner/engines/engine_resources.h"
+#include "chrome/chrome_cleaner/settings/engine_settings.h"
 #include "chrome/chrome_cleaner/settings/settings_definitions.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 
@@ -28,17 +34,19 @@ base::string16 GetSessionId(const base::CommandLine& command_line) {
 Engine::Name GetEngine(const base::CommandLine& command_line) {
   if (command_line.HasSwitch(kEngineSwitch)) {
     std::string value = command_line.GetSwitchValueASCII(kEngineSwitch);
-    int numeric_value = Engine::URZA;
+    int numeric_value = Engine::UNKNOWN;
     if (base::StringToInt(value, &numeric_value) &&
         Engine_Name_IsValid(numeric_value) &&
-        numeric_value != Engine::UNKNOWN) {
+        numeric_value != Engine::UNKNOWN &&
+        numeric_value != Engine::DEPRECATED_URZA) {
       return static_cast<Engine::Name>(numeric_value);
     }
 
-    LOG(WARNING) << "Invalid engine (" << value << "), using default engine";
+    LOG(WARNING) << "Invalid engine (" << value << "), using default engine "
+                 << GetDefaultEngine();
   }
 
-  return Engine::URZA;
+  return GetDefaultEngine();
 }
 
 ExecutionMode GetExecutionMode(const base::CommandLine& command_line) {
@@ -85,6 +93,12 @@ bool GetLogsUploadAllowed(const base::CommandLine& command_line,
   if (command_line.HasSwitch(kNoReportUploadSwitch))
     return false;
 
+#if !BUILDFLAG(IS_OFFICIAL_CHROME_CLEANER_BUILD)
+  // Unofficial builds upload logs only if test a logging URL is specified.
+  if (!command_line.HasSwitch(kTestLoggingURLSwitch))
+    return false;
+#endif
+
   return GetLogsCollectionEnabled(command_line, target_binary, execution_mode);
 }
 
@@ -115,9 +129,15 @@ std::string GetCleanerRunId(const base::CommandLine& command_line) {
 // Populates |result| with locations that should be scanned. Returns true if no
 // invalid location values were provided on the command line.
 bool GetLocationsToScan(const base::CommandLine& command_line,
+                        TargetBinary target_binary,
                         std::vector<UwS::TraceLocation>* result) {
   std::vector<UwS::TraceLocation> valid_locations = GetValidTraceLocations();
   if (!command_line.HasSwitch(kScanLocationsSwitch)) {
+    // Do not scan Program Files or CLSID in the reporter since they are slow.
+    if (target_binary == TargetBinary::kReporter) {
+      base::Erase(valid_locations, UwS::FOUND_IN_CLSID);
+      base::Erase(valid_locations, UwS::FOUND_IN_PROGRAMFILES);
+    }
     result->swap(valid_locations);
     return true;
   }
@@ -151,6 +171,18 @@ bool GetLocationsToScan(const base::CommandLine& command_line,
   }
 
   return all_values_valid;
+}
+
+int64_t GetOpenFileSizeLimit(const base::CommandLine& command_line,
+                             TargetBinary target_binary) {
+  int64_t result;
+  if (target_binary == TargetBinary::kReporter) {
+    std::string open_file_size_limit_str =
+        command_line.GetSwitchValueASCII(kFileSizeLimitSwitch);
+    if (base::StringToInt64(open_file_size_limit_str, &result) && result > 0)
+      return result;
+  }
+  return 0;
 }
 
 }  // namespace
@@ -236,7 +268,7 @@ bool Settings::logs_allowed_in_cleanup_mode() const {
 }
 
 void Settings::set_logs_allowed_in_cleanup_mode(bool new_value) {
-  // TODO Make the global settings object immutable.
+  // TODO(joenotcharles): Make the global settings object immutable.
   DCHECK_EQ(ExecutionMode::kScanning, execution_mode_);
   logs_allowed_in_cleanup_mode_ = new_value;
 }
@@ -251,6 +283,58 @@ bool Settings::sber_enabled() const {
 
 const std::string& Settings::chrome_mojo_pipe_token() const {
   return chrome_mojo_pipe_token_;
+}
+
+bool Settings::prompt_using_mojo() const {
+  return prompt_using_mojo_;
+}
+
+HANDLE Settings::prompt_response_read_handle() const {
+  return prompt_response_read_handle_;
+}
+
+HANDLE Settings::prompt_request_write_handle() const {
+  return prompt_request_write_handle_;
+}
+
+bool Settings::switches_valid_for_ipc() const {
+  // IPC is only used in scanning mode. In other modes ignore the flags.
+  if (execution_mode() != ExecutionMode::kScanning) {
+    return true;
+  }
+
+  // Only one IPC mechanism can be used.
+  if (prompt_using_mojo_ && prompt_using_proto_) {
+    return false;
+  }
+
+  // At least one IPC mechanism has to be used.
+  if (!prompt_using_mojo_ && !prompt_using_proto_) {
+    return false;
+  }
+
+  // Mojo use requires two flags.
+  if (prompt_using_mojo_) {
+    if (chrome_mojo_pipe_token().empty() || !has_parent_pipe_handle()) {
+      return false;
+    }
+  }
+
+  // Proto use requires two flags.
+  if (prompt_using_proto_) {
+    if (prompt_response_read_handle_ == INVALID_HANDLE_VALUE ||
+        prompt_request_write_handle_ == INVALID_HANDLE_VALUE) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool Settings::has_any_ipc_switch() const {
+  return !chrome_mojo_pipe_token_.empty() || has_parent_pipe_handle_ ||
+         prompt_response_read_handle_ != INVALID_HANDLE_VALUE ||
+         prompt_request_write_handle_ != INVALID_HANDLE_VALUE;
 }
 
 bool Settings::has_parent_pipe_handle() const {
@@ -297,6 +381,14 @@ bool Settings::scan_switches_correct() const {
   return scan_switches_correct_;
 }
 
+int64_t Settings::open_file_size_limit() const {
+  return open_file_size_limit_;
+}
+
+bool Settings::run_without_sandbox_for_testing() const {
+  return run_without_sandbox_for_testing_;
+}
+
 Settings::Settings() {
   Initialize(*base::CommandLine::ForCurrentProcess(), GetTargetBinary());
 }
@@ -309,6 +401,7 @@ void Settings::Initialize(const base::CommandLine& command_line,
   session_id_ = GetSessionId(command_line);
   cleanup_id_ = GetCleanerRunId(command_line);
   engine_ = GetEngine(command_line);
+  DCHECK_NE(engine_, Engine::UNKNOWN);
 
   metrics_enabled_ = command_line.HasSwitch(kUmaUserSwitch);
   // WARNING: this switch is used by internal test systems, be careful when
@@ -319,12 +412,38 @@ void Settings::Initialize(const base::CommandLine& command_line,
       GetLogsUploadAllowed(command_line, target_binary, execution_mode_);
   logs_collection_enabled_ =
       GetLogsCollectionEnabled(command_line, target_binary, execution_mode_);
+
+  // Mojo related.
   chrome_mojo_pipe_token_ = command_line.GetSwitchValueASCII(
       chrome_cleaner::kChromeMojoPipeTokenSwitch);
   has_parent_pipe_handle_ =
       command_line.HasSwitch(mojo::PlatformChannel::kHandleSwitch);
-#if !defined(CHROME_CLEANER_OFFICIAL_BUILD)
+  if (!chrome_mojo_pipe_token_.empty() || has_parent_pipe_handle_) {
+    prompt_using_mojo_ = true;
+  }
+
+  // Proto related.
+  uint32_t handle_value;
+  if (base::StringToUint(command_line.GetSwitchValueNative(
+                             chrome_cleaner::kChromeReadHandleSwitch),
+                         &handle_value)) {
+    prompt_response_read_handle_ = base::win::Uint32ToHandle(handle_value);
+  }
+  if (base::StringToUint(command_line.GetSwitchValueNative(
+                             chrome_cleaner::kChromeWriteHandleSwitch),
+                         &handle_value)) {
+    prompt_request_write_handle_ = base::win::Uint32ToHandle(handle_value);
+  }
+
+  if (prompt_response_read_handle_ != INVALID_HANDLE_VALUE ||
+      prompt_request_write_handle_ != INVALID_HANDLE_VALUE) {
+    prompt_using_proto_ = true;
+  }
+
+#if !BUILDFLAG(IS_OFFICIAL_CHROME_CLEANER_BUILD)
   remove_report_only_uws_ = command_line.HasSwitch(kRemoveScanOnlyUwS);
+  run_without_sandbox_for_testing_ =
+      command_line.HasSwitch(kRunWithoutSandboxForTestingSwitch);
 #endif
 
   cleaning_timeout_overridden_ = GetTimeoutOverride(
@@ -334,7 +453,8 @@ void Settings::Initialize(const base::CommandLine& command_line,
   user_response_timeout_overridden_ = GetTimeoutOverride(
       command_line, kUserResponseTimeoutMinutesSwitch, &user_response_timeout_);
   scan_switches_correct_ =
-      GetLocationsToScan(command_line, &locations_to_scan_);
+      GetLocationsToScan(command_line, target_binary, &locations_to_scan_);
+  open_file_size_limit_ = GetOpenFileSizeLimit(command_line, target_binary);
 }
 
 }  // namespace chrome_cleaner

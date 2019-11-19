@@ -65,8 +65,8 @@ D3D11H264Accelerator::D3D11H264Accelerator(
     D3D11VideoDecoderClient* client,
     MediaLog* media_log,
     CdmProxyContext* cdm_proxy_context,
-    Microsoft::WRL::ComPtr<ID3D11VideoDecoder> video_decoder,
-    Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device,
+    ComD3D11VideoDecoder video_decoder,
+    ComD3D11VideoDevice video_device,
     std::unique_ptr<VideoContextWrapper> video_context)
     : client_(client),
       media_log_(media_log),
@@ -97,7 +97,7 @@ Status D3D11H264Accelerator::SubmitFrameMetadata(
     const H264Picture::Vector& ref_pic_listp0,
     const H264Picture::Vector& ref_pic_listb0,
     const H264Picture::Vector& ref_pic_listb1,
-    const scoped_refptr<H264Picture>& pic) {
+    scoped_refptr<H264Picture> pic) {
   const bool is_encrypted = pic->decrypt_config();
 
   std::unique_ptr<D3D11_VIDEO_DECODER_BEGIN_FRAME_CRYPTO_SESSION> content_key;
@@ -123,13 +123,11 @@ Status D3D11H264Accelerator::SubmitFrameMetadata(
                      pic->decrypt_config()->iv().end());
   }
 
-  scoped_refptr<D3D11H264Picture> our_pic(
-      static_cast<D3D11H264Picture*>(pic.get()));
-
   HRESULT hr;
   for (;;) {
     hr = video_context_->DecoderBeginFrame(
-        video_decoder_.Get(), our_pic->picture->output_view().Get(),
+        video_decoder_.Get(),
+        static_cast<D3D11H264Picture*>(pic.get())->picture->output_view().Get(),
         content_key ? sizeof(*content_key) : 0, content_key.get());
 
     if (hr == E_PENDING || hr == D3DERR_WASSTILLDRAWING) {
@@ -158,8 +156,7 @@ Status D3D11H264Accelerator::SubmitFrameMetadata(
 
   int i = 0;
   for (auto it = dpb.begin(); it != dpb.end(); i++, it++) {
-    scoped_refptr<D3D11H264Picture> our_ref_pic(
-        static_cast<D3D11H264Picture*>(it->get()));
+    D3D11H264Picture* our_ref_pic = static_cast<D3D11H264Picture*>(it->get());
     if (!our_ref_pic->ref)
       continue;
     ref_frame_list_[i].Index7Bits = our_ref_pic->level_;
@@ -305,9 +302,8 @@ void D3D11H264Accelerator::PicParamsFromSliceHeader(
   pic_param->IntraPicFlag = slice_hdr->IsISlice();
 }
 
-void D3D11H264Accelerator::PicParamsFromPic(
-    DXVA_PicParams_H264* pic_param,
-    const scoped_refptr<H264Picture>& pic) {
+void D3D11H264Accelerator::PicParamsFromPic(DXVA_PicParams_H264* pic_param,
+                                            scoped_refptr<H264Picture> pic) {
   pic_param->CurrPic.Index7Bits =
       static_cast<D3D11H264Picture*>(pic.get())->level_;
   pic_param->RefPicFlag = pic->ref;
@@ -330,12 +326,11 @@ Status D3D11H264Accelerator::SubmitSlice(
     const H264SliceHeader* slice_hdr,
     const H264Picture::Vector& ref_pic_list0,
     const H264Picture::Vector& ref_pic_list1,
-    const scoped_refptr<H264Picture>& pic,
+    scoped_refptr<H264Picture> pic,
     const uint8_t* data,
     size_t size,
     const std::vector<SubsampleEntry>& subsamples) {
-  scoped_refptr<D3D11H264Picture> our_pic(
-      static_cast<D3D11H264Picture*>(pic.get()));
+  const bool is_encrypted = pic->decrypt_config();
   DXVA_PicParams_H264 pic_param = {};
   FillPicParamsWithConstants(&pic_param);
 
@@ -343,7 +338,7 @@ Status D3D11H264Accelerator::SubmitSlice(
   if (!PicParamsFromPPS(&pic_param, pps))
     return Status::kFail;
   PicParamsFromSliceHeader(&pic_param, slice_hdr);
-  PicParamsFromPic(&pic_param, pic);
+  PicParamsFromPic(&pic_param, std::move(pic));
 
   memcpy(pic_param.RefFrameList, ref_frame_list_,
          sizeof pic_param.RefFrameList);
@@ -422,8 +417,6 @@ Status D3D11H264Accelerator::SubmitSlice(
 
   size_t remaining_bitstream = out_bitstream_size;
   size_t start_location = 0;
-
-  const bool is_encrypted = pic->decrypt_config();
 
   if (is_encrypted) {
     // For now, the entire frame has to fit into the bitstream buffer. This way
@@ -574,8 +567,7 @@ bool D3D11H264Accelerator::SubmitSliceData() {
   return true;
 }
 
-Status D3D11H264Accelerator::SubmitDecode(
-    const scoped_refptr<H264Picture>& pic) {
+Status D3D11H264Accelerator::SubmitDecode(scoped_refptr<H264Picture> pic) {
   if (!SubmitSliceData()) {
     RecordFailure("SubmitSliceData failed");
     return Status::kFail;
@@ -603,12 +595,10 @@ void D3D11H264Accelerator::Reset() {
   CHECK(SUCCEEDED(hr));
 }
 
-bool D3D11H264Accelerator::OutputPicture(
-    const scoped_refptr<H264Picture>& pic) {
-  scoped_refptr<D3D11H264Picture> our_pic(
-      static_cast<D3D11H264Picture*>(pic.get()));
+bool D3D11H264Accelerator::OutputPicture(scoped_refptr<H264Picture> pic) {
+  D3D11H264Picture* our_pic = static_cast<D3D11H264Picture*>(pic.get());
 
-  client_->OutputResult(pic.get(), our_pic->picture);
+  client_->OutputResult(our_pic, our_pic->picture);
   return true;
 }
 

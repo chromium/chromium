@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>WebSQL: fts3_tokenizer() is not allowed</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+async_test(testCase => {
+  const database = openDatabase(
+      'Fts3TokenizerNotAllowedTest', '1.0',
+      'Database for fts3_tokenizer() blocking test', 1024 * 1024);
+  assert_not_equals(database, null, 'openDatabase should not fail');
+
+  database.transaction(testCase.step_func(transaction => {
+    transaction.executeSql(
+        'SELECT fts3_tokenizer("simple");', [],
+        testCase.unreached_func('fts3_tokenizer() usage should not succeed'),
+        testCase.step_func_done());
+  }));
+}, 'fts3_tokenizer() function calls should not be allowed');
+</script>

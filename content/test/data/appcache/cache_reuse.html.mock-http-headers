@@ -1,0 +1,3 @@
+HTTP/1.1 200 OK
+Content-Type: text/html
+Cache-Control: max-age=31536000

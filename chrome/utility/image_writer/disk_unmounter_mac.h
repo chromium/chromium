@@ -49,9 +49,6 @@ class DiskUnmounterMac {
                             DADissenterRef dissenter,
                             void* context);
 
-  // A |MessagePumpFactory| for creating the thread.
-  static std::unique_ptr<base::MessagePump> CreateMessagePump();
-
   // Starts the unmount process.  Should be posted to the |cf_thread_|.
   void UnmountOnWorker(const std::string& device_path);
 

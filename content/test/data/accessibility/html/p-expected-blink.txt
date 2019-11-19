@@ -1,8 +1,9 @@
 rootWebArea
-++staticText name='Before'
-++++inlineTextBox name='Before' wordStarts=0 wordEnds=6
-++paragraph
-++++staticText name='Paragraph'
-++++++inlineTextBox name='Paragraph' wordStarts=0 wordEnds=9
-++staticText name='After'
-++++inlineTextBox name='After' wordStarts=0 wordEnds=5
+++genericContainer ignored
+++++staticText name='Before'
+++++++inlineTextBox name='Before' wordStarts=0 wordEnds=6
+++++paragraph
+++++++staticText name='Paragraph'
+++++++++inlineTextBox name='Paragraph' wordStarts=0 wordEnds=9
+++++staticText name='After'
+++++++inlineTextBox name='After' wordStarts=0 wordEnds=5

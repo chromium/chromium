@@ -4,6 +4,7 @@
 
 #include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -12,6 +13,11 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+
+#if defined(OS_WIN)
+#include "base/files/scoped_temp_dir.h"
+#include "content/browser/renderer_host/dwrite_font_lookup_table_builder_win.h"
+#endif
 
 namespace content {
 namespace {
@@ -108,19 +114,52 @@ const char* kExpectedFontFamilyNames[] = {"Cambria Math", "MingLiU_HKSCS-ExtB",
 class FontUniqueNameBrowserTest : public DevToolsProtocolTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    DevToolsProtocolTest::SetUpCommandLine(command_line);
     feature_list_.InitAndEnableFeature(features::kFontSrcLocalMatching);
   }
 
+#if defined(OS_WIN)
+  // The Windows service for font unique name lookup needs a cache directory to
+  // persist the cached information. Configure a temporary one before running
+  // this test.
+  void SetUpInProcessBrowserTestFixture() override {
+    DevToolsProtocolTest::SetUpInProcessBrowserTestFixture();
+    DWriteFontLookupTableBuilder* table_builder =
+        DWriteFontLookupTableBuilder::GetInstance();
+    ASSERT_TRUE(cache_directory_.CreateUniqueTempDir());
+    table_builder->SetCacheDirectoryForTesting(cache_directory_.GetPath());
+  }
+
+  void PreRunTestOnMainThread() override {
+    DWriteFontLookupTableBuilder* table_builder =
+        DWriteFontLookupTableBuilder::GetInstance();
+    table_builder->SchedulePrepareFontUniqueNameTableIfNeeded();
+    DevToolsProtocolTest::PreRunTestOnMainThread();
+  }
+
+  void PostRunTestOnMainThread() override {
+    DWriteFontLookupTableBuilder* table_builder =
+        DWriteFontLookupTableBuilder::GetInstance();
+    table_builder->ResetStateForTesting();
+    DevToolsProtocolTest::PostRunTestOnMainThread();
+  }
+#endif
+
   void LoadAndWait(const std::string& url) {
+    base::ScopedAllowBlockingForTesting blocking_for_load;
     ASSERT_TRUE(embedded_test_server()->Start());
     TestNavigationObserver navigation_observer(
         static_cast<WebContentsImpl*>(shell()->web_contents()));
-    NavigateToURL(shell(), embedded_test_server()->GetURL("a.com", url));
+    EXPECT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("a.com", url)));
     ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+#if defined(OS_WIN)
+  base::ScopedTempDir cache_directory_;
+#endif
 };
 
 #if !defined(OS_FUCHSIA)

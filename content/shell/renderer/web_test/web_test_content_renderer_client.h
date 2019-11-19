@@ -22,7 +22,6 @@ class WebTestContentRendererClient : public ShellContentRendererClient {
   void RenderThreadStarted() override;
   void RenderFrameCreated(RenderFrame* render_frame) override;
   void RenderViewCreated(RenderView* render_view) override;
-  blink::WebThemeEngine* OverrideThemeEngine() override;
   std::unique_ptr<blink::WebMediaStreamRendererFactory>
   CreateMediaStreamRendererFactory() override;
   std::unique_ptr<content::WebSocketHandshakeThrottleProvider>
@@ -31,7 +30,6 @@ class WebTestContentRendererClient : public ShellContentRendererClient {
       v8::Local<v8::Context> context) override;
   void SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() override;
   bool IsIdleMediaSuspendEnabled() override;
-  bool SuppressLegacyTLSVersionConsoleMessage() override;
 
  private:
   std::unique_ptr<WebTestRenderThreadObserver> shell_observer_;

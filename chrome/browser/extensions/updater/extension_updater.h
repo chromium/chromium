@@ -8,12 +8,12 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <queue>
 #include <set>
 #include <string>
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/containers/stack.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -34,6 +34,7 @@ namespace extensions {
 
 class ExtensionCache;
 class ExtensionPrefs;
+class ExtensionRegistry;
 class ExtensionServiceInterface;
 class ExtensionSet;
 struct ExtensionUpdateCheckParams;
@@ -122,10 +123,6 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   // already a pending task that has not yet run.
   void CheckSoon();
 
-  // Starts an update check for the specified extension soon.
-  void CheckExtensionSoon(const std::string& extension_id,
-                          FinishedCallback callback);
-
   // Starts an update check right now, instead of waiting for the next
   // regularly scheduled check or a pending check from CheckSoon().
   void CheckNow(CheckParams params);
@@ -137,6 +134,14 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
 
   // Overrides the extension cache with |extension_cache| for testing.
   void SetExtensionCacheForTesting(ExtensionCache* extension_cache);
+
+  // Overrides the extension downloader with |downloader| for testing.
+  void SetExtensionDownloaderForTesting(
+      std::unique_ptr<ExtensionDownloader> downloader);
+
+  // After this is called, the next ExtensionUpdater instance to be started will
+  // call CheckNow() instead of CheckSoon() for its initial update.
+  static void UpdateImmediatelyForFirstRun();
 
  private:
   friend class ExtensionUpdaterTest;
@@ -196,7 +201,11 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   void DoCheckSoon();
 
   // Implementation of ExtensionDownloaderDelegate.
-  void OnExtensionDownloadFailed(const std::string& id,
+  void OnExtensionDownloadStageChanged(const ExtensionId& id,
+                                       Stage stage) override;
+  void OnExtensionDownloadCacheStatusRetrieved(const ExtensionId& id,
+                                               CacheStatus status) override;
+  void OnExtensionDownloadFailed(const ExtensionId& id,
                                  Error error,
                                  const PingResult& ping,
                                  const std::set<int>& request_ids) override;
@@ -207,14 +216,14 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
                                    const PingResult& ping,
                                    const std::set<int>& request_id,
                                    const InstallCallback& callback) override;
-  bool GetPingDataForExtension(const std::string& id,
+  bool GetPingDataForExtension(const ExtensionId& id,
                                ManifestFetchData::PingData* ping_data) override;
-  std::string GetUpdateUrlData(const std::string& id) override;
-  bool IsExtensionPending(const std::string& id) override;
-  bool GetExtensionExistingVersion(const std::string& id,
+  std::string GetUpdateUrlData(const ExtensionId& id) override;
+  bool IsExtensionPending(const ExtensionId& id) override;
+  bool GetExtensionExistingVersion(const ExtensionId& id,
                                    std::string* version) override;
 
-  void UpdatePingData(const std::string& id, const PingResult& ping_result);
+  void UpdatePingData(const ExtensionId& id, const PingResult& ping_result);
 
   // Starts installing a crx file that has been fetched but not installed yet.
   void MaybeInstallCRXFile();
@@ -264,6 +273,8 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   PrefService* prefs_;
   Profile* profile_;
 
+  ExtensionRegistry* registry_;
+
   std::map<int, InProgressCheck> requests_in_progress_;
   int next_request_id_;
 
@@ -275,12 +286,12 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   bool crx_install_is_running_;
 
   // Fetched CRX files waiting to be installed.
-  std::stack<FetchedCRXFile> fetched_crx_files_;
+  std::queue<FetchedCRXFile> fetched_crx_files_;
   FetchedCRXFile current_crx_file_;
 
   ExtensionCache* extension_cache_;
 
-  base::WeakPtrFactory<ExtensionUpdater> weak_ptr_factory_;
+  base::WeakPtrFactory<ExtensionUpdater> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionUpdater);
 };

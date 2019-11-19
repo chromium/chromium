@@ -1,20 +1,20 @@
-CONSOLE ERROR: line 13: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "null".  The frame requesting access has a protocol of "http", the frame being accessed has a protocol of "data". Protocols must match.
+CONSOLE ERROR: line 19: Unsafe JavaScript attempt to initiate navigation for frame with URL 'data:text/html,<p>Inner text should not be replaced.<p>' from frame with URL 'http://127.0.0.1:8000/security/xss-DENIED-javascript-variations.html'. The frame attempting navigation must be same-origin with the target if navigating to a javascript: url
 
-CONSOLE ERROR: line 14: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "null".  The frame requesting access has a protocol of "http", the frame being accessed has a protocol of "data". Protocols must match.
+CONSOLE ERROR: line 20: Unsafe JavaScript attempt to initiate navigation for frame with URL 'data:text/html,<p>Inner text should not be replaced.<p>' from frame with URL 'http://127.0.0.1:8000/security/xss-DENIED-javascript-variations.html'. The frame attempting navigation must be same-origin with the target if navigating to a javascript: url
 
-CONSOLE ERROR: line 16: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "null".  The frame requesting access has a protocol of "http", the frame being accessed has a protocol of "data". Protocols must match.
+CONSOLE ERROR: line 21: Unsafe JavaScript attempt to initiate navigation for frame with URL 'data:text/html,<p>Inner text should not be replaced.<p>' from frame with URL 'http://127.0.0.1:8000/security/xss-DENIED-javascript-variations.html'. The frame attempting navigation must be same-origin with the target if navigating to a javascript: url
 
-CONSOLE ERROR: line 19: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "null".  The frame requesting access has a protocol of "http", the frame being accessed has a protocol of "data". Protocols must match.
+CONSOLE ERROR: line 19: Unsafe JavaScript attempt to initiate navigation for frame with URL 'data:text/html,<p>Inner text should not be replaced.<p>' from frame with URL 'http://127.0.0.1:8000/security/xss-DENIED-javascript-variations.html'. The frame attempting navigation must be same-origin with the target if navigating to a javascript: url
 
-CONSOLE ERROR: line 20: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "null".  The frame requesting access has a protocol of "http", the frame being accessed has a protocol of "data". Protocols must match.
+CONSOLE ERROR: line 20: Unsafe JavaScript attempt to initiate navigation for frame with URL 'data:text/html,<p>Inner text should not be replaced.<p>' from frame with URL 'http://127.0.0.1:8000/security/xss-DENIED-javascript-variations.html'. The frame attempting navigation must be same-origin with the target if navigating to a javascript: url
 
-CONSOLE ERROR: line 22: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "null".  The frame requesting access has a protocol of "http", the frame being accessed has a protocol of "data". Protocols must match.
+CONSOLE ERROR: line 21: Unsafe JavaScript attempt to initiate navigation for frame with URL 'data:text/html,<p>Inner text should not be replaced.<p>' from frame with URL 'http://127.0.0.1:8000/security/xss-DENIED-javascript-variations.html'. The frame attempting navigation must be same-origin with the target if navigating to a javascript: url
 
-CONSOLE ERROR: line 24: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "null".  The frame requesting access has a protocol of "http", the frame being accessed has a protocol of "data". Protocols must match.
+CONSOLE ERROR: line 19: Unsafe JavaScript attempt to initiate navigation for frame with URL 'data:text/html,<p>Inner text should not be replaced.<p>' from frame with URL 'http://127.0.0.1:8000/security/xss-DENIED-javascript-variations.html'. The frame attempting navigation must be same-origin with the target if navigating to a javascript: url
 
-CONSOLE ERROR: line 25: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "null".  The frame requesting access has a protocol of "http", the frame being accessed has a protocol of "data". Protocols must match.
+CONSOLE ERROR: line 20: Unsafe JavaScript attempt to initiate navigation for frame with URL 'data:text/html,<p>Inner text should not be replaced.<p>' from frame with URL 'http://127.0.0.1:8000/security/xss-DENIED-javascript-variations.html'. The frame attempting navigation must be same-origin with the target if navigating to a javascript: url
 
-CONSOLE ERROR: line 27: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "null".  The frame requesting access has a protocol of "http", the frame being accessed has a protocol of "data". Protocols must match.
+CONSOLE ERROR: line 21: Unsafe JavaScript attempt to initiate navigation for frame with URL 'data:text/html,<p>Inner text should not be replaced.<p>' from frame with URL 'http://127.0.0.1:8000/security/xss-DENIED-javascript-variations.html'. The frame attempting navigation must be same-origin with the target if navigating to a javascript: url
 
 
 

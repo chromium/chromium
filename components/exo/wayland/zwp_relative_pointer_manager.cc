@@ -26,12 +26,21 @@ class WaylandRelativePointerDelegate : public RelativePointerDelegate {
  public:
   WaylandRelativePointerDelegate(wl_resource* resource, Pointer* pointer)
       : resource_(resource), pointer_(pointer) {
-    pointer_->EnablePointerCapture(this);
+    pointer->RegisterRelativePointerDelegate(this);
+    // TODO(b/124059008): See below, when requesting relative motion we will
+    // also try to gain pointer lock even though the client hasn't asked for it
+    // yet...
+    pointer_->EnablePointerCapture();
   }
 
   ~WaylandRelativePointerDelegate() override {
-    if (pointer_)
+    if (pointer_) {
+      // TODO(b/124059008): For whatever reason, exo conflates pointer capture
+      // and relative motion. Normally in wayland, removing the relative pointer
+      // would not break pointer capture, but in exo that is the case.
       pointer_->DisablePointerCapture();
+      pointer_->UnregisterRelativePointerDelegate(this);
+    }
   }
   void OnPointerDestroying(Pointer* pointer) override { pointer_ = nullptr; }
   void OnPointerRelativeMotion(base::TimeTicks time_stamp,

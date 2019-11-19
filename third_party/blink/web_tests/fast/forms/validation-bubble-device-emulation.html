@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<p>Check if a validation bubble is shown at a correct position in correct scale
+   with device emulation.</p>
+<input pattern="\d{4}" title="Please specify four digits." value="abc"
+       style="position:absolute; top: 100px; left: 50px;">
+<script>
+if (window.internals)
+  internals.setDeviceEmulationScale(2);
+document.querySelector('input').reportValidity();
+</script>

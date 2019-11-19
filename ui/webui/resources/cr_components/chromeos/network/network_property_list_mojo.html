@@ -1,0 +1,60 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior_mojo.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_indicator_mojo.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="network_shared_css.html">
+
+<dom-module id="network-property-list-mojo">
+  <template>
+    <style include="network-shared iron-flex">
+      /* Property lists are embedded; remove the padding. */
+      .property-box {
+        padding: 0;
+      }
+
+      cr-input[readonly] {
+        --cr-input-background-color: transparent;
+      }
+
+      cr-policy-network-indicator-mojo {
+        margin-inline-start: var(--settings-controlled-by-spacing);
+      }
+    </style>
+    <template is="dom-repeat" items="[[fields]]"
+        filter="[[computeFilter_(prefix, editFieldTypes, propertyDict)]]">
+      <div class="property-box single-column two-line stretch">
+        <!-- Property label -->
+        <div class="layout horizontal center">
+          <div>[[getPropertyLabel_(item, prefix)]]</div>
+          <template is="dom-if" restamp
+              if="[[isEditType_(item, editFieldTypes)]]">
+            <cr-policy-network-indicator-mojo
+                property="[[getIndicatorProperty_(item, propertyDict)]]">
+            </cr-policy-network-indicator-mojo>
+          </template>
+        </div>
+        <!-- Uneditable property value -->
+        <template is="dom-if" restamp
+            if="[[!showEditable_(item, editFieldTypes, propertyDict)]]">
+          <div class="secondary">
+            [[getPropertyValue_(item, prefix, propertyDict)]]
+          </div>
+        </template>
+        <!-- Editable property value -->
+        <template is="dom-if" restamp
+            if="[[showEditable_(item, editFieldTypes, propertyDict)]]">
+          <cr-input id="[[item]]"
+              readonly="[[!isEditable_(item, editFieldTypes, propertyDict)]]"
+              value="[[getPropertyValue_(item, prefix, propertyDict)]]"
+              on-change="onValueChange_"
+              type="[[getEditInputType_(item, editFieldTypes)]]">
+          </cr-input>
+        </template>
+      </div>
+    </template>
+  </template>
+  <script src="network_property_list_mojo.js"></script>
+</dom-module>

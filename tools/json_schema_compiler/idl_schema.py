@@ -3,12 +3,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import itertools
 import json
 import os.path
 import pprint
 import re
 import sys
+
+if sys.version_info.major == 2:
+  from itertools import izip_longest as zip_longest
+else:
+  from itertools import zip_longest
 
 from json_parse import OrderedDict
 
@@ -80,8 +87,8 @@ def ProcessComment(comment):
                     .replace('\n', ''))
 
   params = OrderedDict()
-  for (cur_param, next_param) in itertools.izip_longest(parameter_starts,
-                                                        parameter_starts[1:]):
+  for (cur_param, next_param) in zip_longest(parameter_starts,
+                                             parameter_starts[1:]):
     param_name = cur_param.group(1)
 
     # A parameter's comment goes from the end of its introduction to the
@@ -183,7 +190,7 @@ class Member(object):
     if self.node.GetProperty('deprecated'):
       properties['deprecated'] = self.node.GetProperty('deprecated')
 
-    for property_name in ['allowAmbiguousOptionalArguments', 'forIOThread',
+    for property_name in ['allowAmbiguousOptionalArguments',
                           'nodoc', 'nocompile', 'nodart', 'nodefine']:
       if self.node.GetProperty(property_name):
         properties[property_name] = True
@@ -362,6 +369,8 @@ class Enum(object):
     for node in self.node.GetChildren():
       if node.cls == 'EnumItem':
         enum_value = {'name': node.GetName()}
+        if node.GetProperty('nodoc'):
+          enum_value['nodoc'] = True
         for child in node.GetChildren():
           if child.cls == 'Comment':
             enum_value['description'] = ProcessComment(child.GetName())[0]
@@ -432,9 +441,8 @@ class Namespace(object):
           # Properties are given as key-value pairs, but IDL will parse
           # it as a list. Convert back to key-value pairs.
           prop_name = prop.pop('name')
-          assert not self.properties.has_key(prop_name), (
-                 'Property "%s" cannot be specified more than once.' %
-                 prop_name)
+          assert not prop_name in self.properties, (
+              'Property "%s" cannot be specified more than once.' % prop_name)
           self.properties[prop_name] = prop
       elif node.cls == 'Enum':
         self.types.append(Enum(node).process())
@@ -566,12 +574,12 @@ def Main():
   if len(sys.argv) > 1:
     for filename in sys.argv[1:]:
       schema = Load(filename)
-      print json.dumps(schema, indent=2)
+      print(json.dumps(schema, indent=2))
   else:
     contents = sys.stdin.read()
     idl = idl_parser.IDLParser().ParseData(contents, '<stdin>')
     schema = IDLSchema(idl).process()
-    print json.dumps(schema, indent=2)
+    print(json.dumps(schema, indent=2))
 
 
 if __name__ == '__main__':

@@ -5,30 +5,35 @@
 #include "ash/shelf/shelf_tooltip_bubble.h"
 
 #include "ash/system/tray/tray_constants.h"
+#include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ui/aura/window.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace ash {
-
-// Tooltip layout constants.
+namespace {
 
 // Shelf item tooltip height.
-const int kTooltipHeight = 24;
+constexpr int kTooltipHeight = 24;
 
 // The maximum width of the tooltip bubble.  Borrowed the value from
 // ash/tooltip/tooltip_controller.cc
-const int kTooltipMaxWidth = 250;
+constexpr int kTooltipMaxWidth = 250;
 
 // Shelf item tooltip internal text margins.
-const int kTooltipTopBottomMargin = 4;
-const int kTooltipLeftRightMargin = 8;
+constexpr int kTooltipTopBottomMargin = 4;
+constexpr int kTooltipLeftRightMargin = 8;
 
 // The offset for the tooltip bubble - making sure that the bubble is spaced
 // with a fixed gap. The gap is accounted for by the transparent arrow in the
 // bubble and an additional 1px padding for the shelf item views.
-const int kArrowTopBottomOffset = 1;
-const int kArrowLeftRightOffset = 1;
+constexpr int kArrowTopBottomOffset = 1;
+constexpr int kArrowLeftRightOffset = 1;
+
+// Padding used to position the tooltip relative to the shelf.
+constexpr int kTooltipPaddingHorizontalBottom = 6;
+
+}  // namespace
 
 ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
                                        ShelfAlignment alignment,
@@ -56,10 +61,12 @@ ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
   // Adjust the anchor location for asymmetrical borders of shelf item.
   if (anchor->border())
     insets += anchor->border()->GetInsets();
-  insets += gfx::Insets(-kBubblePaddingHorizontalBottom);
+  insets += gfx::Insets(-kTooltipPaddingHorizontalBottom);
   set_anchor_view_insets(insets);
 
   CreateBubble();
+  CollisionDetectionUtils::IgnoreWindowForCollisionDetection(
+      GetWidget()->GetNativeWindow());
 }
 
 gfx::Size ShelfTooltipBubble::CalculatePreferredSize() const {

@@ -17,7 +17,7 @@
 #include "chrome/chrome_cleaner/os/file_path_set.h"
 #include "chrome/chrome_cleaner/os/file_remover_api.h"
 #include "chrome/chrome_cleaner/os/layered_service_provider_api.h"
-#include "chrome/chrome_cleaner/zip_archiver/sandboxed_zip_archiver.h"
+#include "chrome/chrome_cleaner/zip_archiver/zip_archiver.h"
 
 namespace chrome_cleaner {
 
@@ -26,22 +26,12 @@ class FileRemover : public FileRemoverAPI {
  public:
   typedef base::OnceCallback<void(QuarantineStatus)> QuarantineResultCallback;
 
-  // Checks whether deletion of the file at |path| is allowed. Files at paths in
-  // |fordbid_deletion| are never allowed to be deleted. Files at paths in
-  // |allow_deletion| are allowed to be deleted even if they do not appear to be
-  // executable.
-  static DeletionValidationStatus IsFileRemovalAllowed(
-      const base::FilePath& path,
-      const FilePathSet& allow_deletion,
-      const FilePathSet& forbid_deletion);
-
   // |digest_verifier| can be either nullptr or an instance of DigestVerifier.
   // If it is an instance of DigestVerifier, any files known to the
   // DigestVerifier will not be removed.
-  FileRemover(std::shared_ptr<DigestVerifier> digest_verifier,
-              std::unique_ptr<SandboxedZipArchiver> archiver,
+  FileRemover(scoped_refptr<DigestVerifier> digest_verifier,
+              std::unique_ptr<ZipArchiver> archiver,
               const LayeredServiceProviderAPI& lsp,
-              const FilePathSet& deletion_allowed_paths,
               base::RepeatingClosure reboot_needed_callback);
 
   ~FileRemover() override;
@@ -56,8 +46,12 @@ class FileRemover : public FileRemoverAPI {
   DeletionValidationStatus CanRemove(const base::FilePath& file) const override;
 
  private:
+  using RemovalCallback = base::OnceCallback<
+      void(const base::FilePath&, DoneCallback, QuarantineStatus)>;
+
   void TryToQuarantine(const base::FilePath& path,
                        QuarantineResultCallback callback) const;
+
   void RemoveFile(const base::FilePath& path,
                   DoneCallback removal_done_callback,
                   QuarantineStatus result) const;
@@ -66,10 +60,13 @@ class FileRemover : public FileRemoverAPI {
                        DoneCallback removal_done_callback,
                        QuarantineStatus quarantine_status) const;
 
-  std::shared_ptr<DigestVerifier> digest_verifier_;
-  std::unique_ptr<SandboxedZipArchiver> archiver_;
+  void ValidateAndQuarantineFile(const base::FilePath& file_path,
+                                 RemovalCallback removal_callback,
+                                 DoneCallback removal_done_callback) const;
+
+  scoped_refptr<DigestVerifier> digest_verifier_;
+  std::unique_ptr<ZipArchiver> archiver_;
   FilePathSet deletion_forbidden_paths_;
-  FilePathSet deletion_allowed_paths_;
   base::RepeatingClosure reboot_needed_callback_;
 };
 

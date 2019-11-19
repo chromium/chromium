@@ -8,7 +8,6 @@ var expectedEventData;
 var capturedEventData;
 var capturedUnexpectedData;
 var expectedEventOrder;
-var networkServiceState = "unknown";
 var tabId;
 var tabIdMap;
 var frameIdMap;
@@ -28,9 +27,10 @@ var listeners = {
   'onCompleted': [],
   'onErrorOccurred': []
 };
-// Requests initiated by an extension or user interaction with the browser is a
-// BROWSER_INITIATED action. If the request was instead initiated by a website
-// or code run in the context of a website then it's WEB_INITIATED.
+// Requests initiated by a user interaction with the browser is a
+// BROWSER_INITIATED action. If the request was instead initiated by the tabs
+// extension API, a website or code run in the context of a website then it's
+// WEB_INITIATED.
 const initiators = {
   BROWSER_INITIATED: 2,
   WEB_INITIATED: 3
@@ -43,7 +43,7 @@ var ignoreUnexpected = false;
 
 // This is a debugging aid to print all received events as well as the
 // information whether they were expected.
-var logAllRequests = false;
+var debug = false;
 
 // Runs the |tests| using the |tab| as a default tab.
 function runTestsForTab(tests, tab) {
@@ -60,17 +60,19 @@ function runTestsForTab(tests, tab) {
 // Creates an "about:blank" tab and runs |tests| with this tab as default.
 function runTests(tests) {
   chrome.test.getConfig(function(config) {
+    if (config.customArg == 'debug')
+      debug = true;
+
     var waitForAboutBlank = function(_, info, tab) {
+      if (debug) {
+        console.log("tabs.OnUpdated received in waitForAboutBlank: " +
+          JSON.stringify(info) + " " + JSON.stringify(tab));
+      }
       if (info.status == "complete" && tab.url == "about:blank") {
         chrome.tabs.onUpdated.removeListener(waitForAboutBlank);
         runTestsForTab(tests, tab);
       }
     };
-
-    if (config.customArg === "NetworkServiceEnabled")
-      networkServiceState = "enabled";
-    else if (config.customArg === "NetworkServiceDisabled")
-      networkServiceState = "disabled";
 
     chrome.tabs.onUpdated.addListener(waitForAboutBlank);
     chrome.tabs.create({url: "about:blank"});
@@ -124,12 +126,16 @@ function getServerDomain(navigationType, opt_host, opt_scheme) {
 function navigateAndWait(url, callback) {
   var done = chrome.test.listenForever(chrome.tabs.onUpdated,
       function (_, info, tab) {
+    if (debug) {
+      console.log("tabs.OnUpdated received in navigateAndWait: " +
+        JSON.stringify(info) + " " + JSON.stringify(tab));
+    }
     if (tab.id == tabId && info.status == "complete") {
       if (callback) callback(tab);
       done();
     }
   });
-  chrome.tabs.update(tabId, {url: url});
+  chrome.test.sendMessage(JSON.stringify({navigate: {tabId: tabId, url: url}}));
 }
 
 function deepCopy(obj) {
@@ -174,23 +180,6 @@ function expect(data, order, filter, extraInfoSpec) {
   capturedEventData = [];
   capturedUnexpectedData = [];
   expectedEventOrder = order || [];
-
-  expectedEventData = expectedEventData.filter(function(event) {
-    if (!event.details.requiredNetworkServiceState)
-      return true;
-
-    if (networkServiceState == "unknown") {
-      chrome.test.fail("Test expectations specify a Network Service " +
-          "requirement, but the Network Service was neither explicitly set " +
-          "as enabled or disabled by the test runner. This test should be " +
-          "run with the custom argument NetworkServiceEnabled or " +
-          "NetworkServiceDisabled.");
-    }
-
-    var requiredState = event.details.requiredNetworkServiceState;
-    delete event.details.requiredNetworkServiceState;
-    return networkServiceState === requiredState;
-  });
 
   if (expectedEventData.length > 0) {
     eventsCaptured = chrome.test.callbackAdded();
@@ -259,6 +248,7 @@ function checkExpectations() {
     });
   });
 
+  removeListeners();
   eventsCaptured();
 }
 
@@ -393,8 +383,9 @@ function captureEvent(name, details, callback) {
   var retval;
   var retval_function;
   if (matchingExpectedEvent) {
-    if (logAllRequests) {
-      console.log("Expected: " + name + ": " + JSON.stringify(details));
+    if (debug) {
+      console.log("Expected event received: " + name + ": " +
+        JSON.stringify(details));
     }
     capturedEventData.push(
         {label: matchingExpectedEvent.label, event: name, details: details});
@@ -408,8 +399,9 @@ function captureEvent(name, details, callback) {
     retval = matchingExpectedEvent.retval;
     retval_function = matchingExpectedEvent.retval_function;
   } else {
-    if (logAllRequests) {
-      console.log('NOT Expected: ' + name + ': ' + JSON.stringify(details));
+    if (debug) {
+      console.log('NOT Expected event received: ' + name + ': ' +
+        JSON.stringify(details));
     }
     capturedUnexpectedData.push({event: name, details: details});
   }
@@ -535,4 +527,28 @@ function removeListeners() {
 
 function resetDeclarativeRules() {
   chrome.declarativeWebRequest.onRequest.removeRules();
+}
+
+function checkHeaders(headers, requiredNames, disallowedNames) {
+  var headerMap = {};
+  for (var i = 0; i < headers.length; i++)
+    headerMap[headers[i].name.toLowerCase()] = headers[i].value;
+
+  for (var i = 0; i < requiredNames.length; i++) {
+    chrome.test.assertTrue(!!headerMap[requiredNames[i]],
+        'Missing header: ' + requiredNames[i]);
+  }
+  for (var i = 0; i < disallowedNames.length; i++) {
+    chrome.test.assertFalse(!!headerMap[disallowedNames[i]],
+        'Header should not be present: ' + disallowedNames[i]);
+  }
+}
+
+function removeHeader(headers, name) {
+  for (var i = 0; i < headers.length; i++) {
+    if (headers[i].name.toLowerCase() == name) {
+      headers.splice(i, 1);
+      break;
+    }
+  }
 }

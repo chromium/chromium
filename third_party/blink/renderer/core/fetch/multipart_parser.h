@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -25,7 +25,7 @@ namespace blink {
 // - If MultipartParser::cancel() is called, Client's methods will not be
 //   called anymore.
 class CORE_EXPORT MultipartParser final
-    : public GarbageCollectedFinalized<MultipartParser> {
+    : public GarbageCollected<MultipartParser> {
  public:
   // Client recieves parsed part header fields and data.
   class CORE_EXPORT Client : public GarbageCollectedMixin {

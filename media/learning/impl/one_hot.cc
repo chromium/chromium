@@ -111,7 +111,7 @@ ConvertingModel::ConvertingModel(std::unique_ptr<OneHotConverter> converter,
     : converter_(std::move(converter)), model_(std::move(model)) {}
 ConvertingModel::~ConvertingModel() = default;
 
-TargetDistribution ConvertingModel::PredictDistribution(
+TargetHistogram ConvertingModel::PredictDistribution(
     const FeatureVector& instance) {
   FeatureVector converted_instance = converter_->Convert(instance);
   return model_->PredictDistribution(converted_instance);

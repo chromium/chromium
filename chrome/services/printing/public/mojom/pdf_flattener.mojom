@@ -1,0 +1,18 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module printing.mojom;
+
+import "mojo/public/mojom/base/shared_memory.mojom";
+
+// Interface used to flatten a PDF in a printing service utility process.
+// Flattening a PDF converts forms and form data to text and graphics so they
+// can no longer be modified and makes most JavaScript objects useless.
+interface PdfFlattener {
+  // Flattens a PDF.
+  // |src_pdf_region| contains the PDF needing to be flattened.
+  // |flattened_pdf_region| contains the flattened PDF.
+  FlattenPdf(mojo_base.mojom.ReadOnlySharedMemoryRegion src_pdf_region)
+      => (mojo_base.mojom.ReadOnlySharedMemoryRegion? flattened_pdf_region);
+};

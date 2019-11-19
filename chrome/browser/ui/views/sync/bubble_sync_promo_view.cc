@@ -9,7 +9,7 @@
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "components/signin/core/browser/account_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/font.h"
@@ -32,7 +32,7 @@ BubbleSyncPromoView::BubbleSyncPromoView(
                 views::StyledLabel::RangeStyleInfo::CreateForLink());
 
   views::StyledLabel::RangeStyleInfo promo_style;
-  promo_style.text_style = STYLE_SECONDARY;
+  promo_style.text_style = views::style::STYLE_SECONDARY;
   gfx::Range before_link_range(0, offset);
   if (!before_link_range.is_empty())
     AddStyleRange(before_link_range, promo_style);

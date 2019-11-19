@@ -69,7 +69,7 @@ class GCMChannelStatusRequest {
   GCMChannelStatusRequestCallback callback_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   net::BackoffEntry backoff_entry_;
-  base::WeakPtrFactory<GCMChannelStatusRequest> weak_ptr_factory_;
+  base::WeakPtrFactory<GCMChannelStatusRequest> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GCMChannelStatusRequest);
 };

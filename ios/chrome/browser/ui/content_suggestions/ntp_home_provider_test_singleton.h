@@ -10,6 +10,10 @@
 #include "components/ntp_snippets/content_suggestions_service.h"
 #include "components/ntp_snippets/mock_content_suggestions_provider.h"
 
+namespace ntp_snippets {
+class AdditionalSuggestionsHelper;
+}
+
 // Singleton allowing to register the provider in the +setup and still access it
 // from inside the tests.
 @interface ContentSuggestionsTestSingleton : NSObject
@@ -17,11 +21,27 @@
 // Shared instance of this singleton.
 + (instancetype)sharedInstance;
 
+// Whether the @"focusOmniboxFromSearchButton" selector has been called on the
+// location bar coordinator. This is the method swizzled by the methods below.
+@property(nonatomic, assign, readonly)
+    BOOL locationBarCoordinatorSearchButtonMethodCalled;
+
+// Resets the stored additionalSuggestions helper with |URL|.
+- (void)resetAdditionalSuggestionsHelperWithURL:(const GURL&)URL;
+// Returns the stored additionalSuggestionsHelper.
+- (ntp_snippets::AdditionalSuggestionsHelper*)additionalSuggestionsHelper;
+
 // Returns the provider registered.
 - (ntp_snippets::MockContentSuggestionsProvider*)provider;
 // Registers a provider in the |service|.
 - (void)registerArticleProvider:
     (ntp_snippets::ContentSuggestionsService*)service;
+
+// Enables the swizzling of the @"focusOmniboxFromSearchButton" selector on the
+// location bar coordinator.
+- (void)swizzleLocationBarCoordinatorSearchButton;
+// Resets the swizzling of the location bar coordinator.
+- (void)resetSwizzle;
 
 @end
 

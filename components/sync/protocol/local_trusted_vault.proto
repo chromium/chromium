@@ -1,0 +1,26 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+message LocalTrustedVaultKey {
+  // The actual key.
+  optional bytes key_material = 1;
+}
+
+message LocalTrustedVaultPerUser {
+  // User identifier.
+  optional bytes gaia_id = 1;
+
+  // All keys known for a user.
+  repeated LocalTrustedVaultKey key = 2;
+}
+
+message LocalTrustedVault {
+  repeated LocalTrustedVaultPerUser user = 1;
+}

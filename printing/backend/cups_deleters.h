@@ -6,8 +6,7 @@
 #define PRINTING_BACKEND_CUPS_DELETERS_H_
 
 #include <cups/cups.h>
-
-#include "base/macros.h"
+#include <memory>
 
 namespace printing {
 
@@ -27,16 +26,10 @@ struct OptionDeleter {
   void operator()(cups_option_t* option) const;
 };
 
-class JobsDeleter {
- public:
-  explicit JobsDeleter(int num_jobs);
-  void operator()(cups_job_t* jobs) const;
-
- private:
-  int num_jobs_;
-
-  DISALLOW_COPY_AND_ASSIGN(JobsDeleter);
-};
+using ScopedHttpPtr = std::unique_ptr<http_t, HttpDeleter>;
+using ScopedDestination = std::unique_ptr<cups_dest_t, DestinationDeleter>;
+using ScopedDestInfo = std::unique_ptr<cups_dinfo_t, DestInfoDeleter>;
+using ScopedCupsOption = std::unique_ptr<cups_option_t, OptionDeleter>;
 
 }  // namespace printing
 

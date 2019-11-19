@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "chromecast/media/cma/backend/video_decoder_for_mixer.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
@@ -98,6 +99,9 @@ class MediaPipelineBackendForMixer : public MediaPipelineBackend,
   bool video_ready_to_play_ = false;
   bool playback_started_ = false;
   float starting_playback_rate_ = 1.0;
+
+  base::WeakPtr<MediaPipelineBackendForMixer> weak_this_;
+  base::WeakPtrFactory<MediaPipelineBackendForMixer> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaPipelineBackendForMixer);
 };

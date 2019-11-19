@@ -22,7 +22,7 @@ using base::sequence_manager::FakeTaskTiming;
 
 class MetricsHelperForTest : public MetricsHelper {
  public:
-  MetricsHelperForTest(WebThreadType thread_type,
+  MetricsHelperForTest(ThreadType thread_type,
                        bool has_cpu_timing_for_each_task)
       : MetricsHelper(thread_type, has_cpu_timing_for_each_task) {}
   ~MetricsHelperForTest() = default;
@@ -44,11 +44,10 @@ TEST(MetricsHelperTest, TaskDurationPerThreadType) {
   base::HistogramTester histogram_tester;
 
   MetricsHelperForTest main_thread_metrics(
-      WebThreadType::kMainThread, false /* has_cpu_timing_for_each_task */);
+      ThreadType::kMainThread, false /* has_cpu_timing_for_each_task */);
   MetricsHelperForTest compositor_metrics(
-      WebThreadType::kCompositorThread,
-      false /* has_cpu_timing_for_each_task */);
-  MetricsHelperForTest worker_metrics(WebThreadType::kUnspecifiedWorkerThread,
+      ThreadType::kCompositorThread, false /* has_cpu_timing_for_each_task */);
+  MetricsHelperForTest worker_metrics(ThreadType::kUnspecifiedWorkerThread,
                                       false /* has_cpu_timing_for_each_task */);
 
   main_thread_metrics.RecordCommonTaskMetrics(
@@ -70,19 +69,19 @@ TEST(MetricsHelperTest, TaskDurationPerThreadType) {
       histogram_tester.GetAllSamples(
           "RendererScheduler.TaskDurationPerThreadType2"),
       testing::UnorderedElementsAre(
-          base::Bucket(static_cast<int>(WebThreadType::kMainThread), 40),
-          base::Bucket(static_cast<int>(WebThreadType::kCompositorThread), 170),
-          base::Bucket(
-              static_cast<int>(WebThreadType::kUnspecifiedWorkerThread), 115)));
+          base::Bucket(static_cast<int>(ThreadType::kMainThread), 40),
+          base::Bucket(static_cast<int>(ThreadType::kCompositorThread), 170),
+          base::Bucket(static_cast<int>(ThreadType::kUnspecifiedWorkerThread),
+                       115)));
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "RendererScheduler.TaskCPUDurationPerThreadType2"),
       testing::UnorderedElementsAre(
-          base::Bucket(static_cast<int>(WebThreadType::kMainThread), 15),
-          base::Bucket(static_cast<int>(WebThreadType::kCompositorThread), 5),
-          base::Bucket(
-              static_cast<int>(WebThreadType::kUnspecifiedWorkerThread), 25)));
+          base::Bucket(static_cast<int>(ThreadType::kMainThread), 15),
+          base::Bucket(static_cast<int>(ThreadType::kCompositorThread), 5),
+          base::Bucket(static_cast<int>(ThreadType::kUnspecifiedWorkerThread),
+                       25)));
 }
 
 }  // namespace scheduler

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/component_updater/third_party_module_list_component_installer_win.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -13,9 +14,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "chrome/browser/conflicts/module_blacklist_cache_util_win.h"
-#include "chrome/browser/conflicts/module_database_win.h"
-#include "chrome/browser/conflicts/third_party_conflicts_manager_win.h"
+#include "chrome/browser/win/conflicts/module_blacklist_cache_util.h"
+#include "chrome/browser/win/conflicts/module_database.h"
+#include "chrome/browser/win/conflicts/third_party_conflicts_manager.h"
+
+namespace component_updater {
 
 namespace {
 
@@ -26,9 +29,43 @@ constexpr base::FilePath::CharType kRelativeModuleListPath[] =
 
 constexpr char kComponentId[] = "ehgidpndbllacpjalkiimkbadgjfnnmc";
 
-}  // namespace
+base::Version GetComponentVersion(
+    const ComponentUpdateService* component_update_service) {
+  DCHECK(component_update_service);
 
-namespace component_updater {
+  auto components = component_update_service->GetComponents();
+  auto iter = std::find_if(
+      components.begin(), components.end(),
+      [](const auto& component) { return component.id == kComponentId; });
+  DCHECK(iter != components.end());
+
+  return iter->version;
+}
+
+void OnModuleListComponentReady(const base::FilePath& module_list_path) {
+  DCHECK(ModuleDatabase::GetTaskRunner()->RunsTasksInCurrentSequence());
+
+  ThirdPartyConflictsManager* manager =
+      ModuleDatabase::GetInstance()->third_party_conflicts_manager();
+  if (!manager)
+    return;
+
+  manager->LoadModuleList(module_list_path);
+}
+
+void OnModuleListComponentRegistered(const base::Version& component_version) {
+  DCHECK(ModuleDatabase::GetTaskRunner()->RunsTasksInCurrentSequence());
+
+  // Notify the ThirdPartyConflictsManager.
+  ThirdPartyConflictsManager* manager =
+      ModuleDatabase::GetInstance()->third_party_conflicts_manager();
+  if (!manager)
+    return;
+
+  manager->OnModuleListComponentRegistered(kComponentId, component_version);
+}
+
+}  // namespace
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component.
 constexpr uint8_t kThirdPartyModuleListPublicKeySHA256[32] = {
@@ -72,15 +109,12 @@ void ThirdPartyModuleListComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     std::unique_ptr<base::DictionaryValue> manifest) {
-  // Forward the notification to the ThirdPartyConflictsManager on the current
-  // (UI) thread. The manager is responsible for the work of actually loading
-  // the module list, etc, on background threads.
-  ThirdPartyConflictsManager* manager =
-      ModuleDatabase::GetInstance()->third_party_conflicts_manager();
-  if (!manager)
-    return;
-
-  manager->LoadModuleList(GetModuleListPath(install_dir));
+  // Forward the notification to the ThirdPartyConflictsManager on the
+  // ModuleDatabase task runner. The manager is responsible for the work of
+  // actually loading the module list, etc, on background threads.
+  ModuleDatabase::GetTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&OnModuleListComponentReady,
+                                GetModuleListPath(install_dir)));
 }
 
 bool ThirdPartyModuleListComponentInstallerPolicy::VerifyInstallation(
@@ -127,23 +161,18 @@ void RegisterThirdPartyModuleListComponent(
     ComponentUpdateService* component_update_service) {
   DVLOG(1) << "Registering Third Party Module List component.";
 
-  // Check if component is needed. The ThirdPartyConflictsManager instance only
-  // exists when the module list is needed.
-  if (!ModuleDatabase::GetInstance()->third_party_conflicts_manager())
-    return;
-
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<ThirdPartyModuleListComponentInstallerPolicy>());
   installer->Register(
-      component_update_service, base::BindOnce([]() {
-        // Notify the ThirdPartyConflictsManager.
-        ThirdPartyConflictsManager* manager =
-            ModuleDatabase::GetInstance()->third_party_conflicts_manager();
-        if (!manager)
-          return;
-
-        manager->OnModuleListComponentRegistered(kComponentId);
-      }));
+      component_update_service,
+      base::BindOnce(
+          [](ComponentUpdateService* component_update_service) {
+            ModuleDatabase::GetTaskRunner()->PostTask(
+                FROM_HERE,
+                base::BindOnce(&OnModuleListComponentRegistered,
+                               GetComponentVersion(component_update_service)));
+          },
+          component_update_service));
 }
 
 }  // namespace component_updater

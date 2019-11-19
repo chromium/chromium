@@ -1,3 +1,4 @@
 file://third_party/blink/renderer/modules/manifest/OWNERS
 
 # COMPONENT: Manifest
+# TEAM: chromium-reviews@chromium.org

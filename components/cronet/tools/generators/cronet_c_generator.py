@@ -220,13 +220,16 @@ class Generator(generator.Generator):
     """
     used_typemaps = []
     seen_types = set()
+    def IsBasicKind(kind):
+      return (mojom.IsIntegralKind(kind) or mojom.IsStringKind(kind) or
+              mojom.IsDoubleKind(kind) or mojom.IsFloatKind(kind) or
+              mojom.IsAnyHandleKind(kind) or
+              mojom.IsInterfaceKind(kind) or
+              mojom.IsInterfaceRequestKind(kind) or
+              mojom.IsAssociatedKind(kind))
+
     def AddKind(kind):
-      if (mojom.IsIntegralKind(kind) or mojom.IsStringKind(kind) or
-          mojom.IsDoubleKind(kind) or mojom.IsFloatKind(kind) or
-          mojom.IsAnyHandleKind(kind) or
-          mojom.IsInterfaceKind(kind) or
-          mojom.IsInterfaceRequestKind(kind) or
-          mojom.IsAssociatedKind(kind)):
+      if IsBasicKind(kind):
         pass
       elif mojom.IsArrayKind(kind):
         AddKind(kind.kind)

@@ -14,18 +14,19 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/net_export.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
-#include "net/http/http_response_info.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/ssl_client_socket.h"
+#include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config_service.h"
 
 namespace net {
 
-class ClientSocketHandle;
 class HostPortPair;
 class HttpProxySocketParams;
+class SocketTag;
 class SOCKSSocketParams;
 class TransportSocketParams;
 
@@ -36,12 +37,13 @@ class NET_EXPORT_PRIVATE SSLSocketParams
 
   // Exactly one of |direct_params|, |socks_proxy_params|, and
   // |http_proxy_params| must be non-NULL.
-  SSLSocketParams(const scoped_refptr<TransportSocketParams>& direct_params,
-                  const scoped_refptr<SOCKSSocketParams>& socks_proxy_params,
-                  const scoped_refptr<HttpProxySocketParams>& http_proxy_params,
+  SSLSocketParams(scoped_refptr<TransportSocketParams> direct_params,
+                  scoped_refptr<SOCKSSocketParams> socks_proxy_params,
+                  scoped_refptr<HttpProxySocketParams> http_proxy_params,
                   const HostPortPair& host_and_port,
                   const SSLConfig& ssl_config,
-                  PrivacyMode privacy_mode);
+                  PrivacyMode privacy_mode,
+                  NetworkIsolationKey network_isolation_key);
 
   // Returns the type of the underlying connection.
   ConnectionType GetConnectionType() const;
@@ -59,6 +61,9 @@ class NET_EXPORT_PRIVATE SSLSocketParams
   const HostPortPair& host_and_port() const { return host_and_port_; }
   const SSLConfig& ssl_config() const { return ssl_config_; }
   PrivacyMode privacy_mode() const { return privacy_mode_; }
+  const NetworkIsolationKey& network_isolation_key() const {
+    return network_isolation_key_;
+  }
 
  private:
   friend class base::RefCounted<SSLSocketParams>;
@@ -70,6 +75,7 @@ class NET_EXPORT_PRIVATE SSLSocketParams
   const HostPortPair host_and_port_;
   const SSLConfig ssl_config_;
   const PrivacyMode privacy_mode_;
+  const NetworkIsolationKey network_isolation_key_;
 
   DISALLOW_COPY_AND_ASSIGN(SSLSocketParams);
 };
@@ -82,8 +88,9 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // Note: the SSLConnectJob does not own |messenger| so it must outlive the
   // job.
   SSLConnectJob(RequestPriority priority,
-                const CommonConnectJobParams& common_connect_job_params,
-                const scoped_refptr<SSLSocketParams>& params,
+                const SocketTag& socket_tag,
+                const CommonConnectJobParams* common_connect_job_params,
+                scoped_refptr<SSLSocketParams> params,
                 ConnectJob::Delegate* delegate,
                 const NetLogWithSource* net_log);
   ~SSLConnectJob() override;
@@ -98,14 +105,13 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
                         HttpAuthController* auth_controller,
                         base::OnceClosure restart_with_auth_callback,
                         ConnectJob* job) override;
+  ConnectionAttempts GetConnectionAttempts() const override;
+  bool IsSSLError() const override;
+  scoped_refptr<SSLCertRequestInfo> GetCertRequestInfo() override;
 
-  void GetAdditionalErrorState(ClientSocketHandle* handle) override;
-
-  // Returns the connection timeout that will be used by a HttpProxyConnectJob
-  // created with the specified parameters, given current network conditions.
-  static base::TimeDelta ConnectionTimeout(
-      const SSLSocketParams& params,
-      const NetworkQualityEstimator* network_quality_estimator);
+  // Returns the timeout for the SSL handshake. This is the same for all
+  // connections regardless of whether or not there is a proxy in use.
+  static base::TimeDelta HandshakeTimeoutForTesting();
 
  private:
   enum State {
@@ -153,7 +159,10 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   std::unique_ptr<StreamSocket> nested_socket_;
   std::unique_ptr<SSLClientSocket> ssl_socket_;
 
-  HttpResponseInfo error_response_info_;
+  // True once SSL negotiation has started.
+  bool ssl_negotiation_started_;
+
+  scoped_refptr<SSLCertRequestInfo> ssl_cert_request_info_;
 
   ConnectionAttempts connection_attempts_;
   // The address of the server the connect job is connected to. Populated if

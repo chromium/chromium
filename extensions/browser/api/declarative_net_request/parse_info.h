@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string_piece_forward.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 
 namespace extensions {
@@ -28,8 +27,7 @@ class ParseInfo {
 
   // Returns the error string corresponding to this ParseInfo. Should not be
   // called on a successful parse.
-  std::string GetErrorDescription(
-      const base::StringPiece json_rules_filename) const;
+  std::string GetErrorDescription() const;
 
  private:
   ParseResult result_;

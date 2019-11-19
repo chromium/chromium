@@ -172,13 +172,13 @@ TEST(RedirectUtilTest, RemovedHeaders) {
     HttpRequestHeaders initial_headers, modified_headers, final_headers;
     std::vector<std::string> removed_headers;
     for (const char* header : test.initial_headers)
-      initial_headers.AddHeadersFromString(header);
+      initial_headers.AddHeaderFromString(header);
     for (const char* header : test.modified_headers)
-      modified_headers.AddHeadersFromString(header);
+      modified_headers.AddHeaderFromString(header);
     for (const char* header : test.removed_headers)
       removed_headers.push_back(header);
     for (const char* header : test.final_headers)
-      final_headers.AddHeadersFromString(header);
+      final_headers.AddHeaderFromString(header);
     bool should_clear_upload(false);  // unused.
 
     RedirectUtil::UpdateHttpRequest(GURL(),         // original_url
@@ -196,8 +196,8 @@ TEST(RedirectUtilTest, RemovedHeaders) {
 // Test with removed_headers = base::nullopt.
 TEST(RedirectUtilTest, RemovedHeadersNullOpt) {
   HttpRequestHeaders initial_headers, final_headers;
-  initial_headers.AddHeadersFromString("A:0");
-  final_headers.AddHeadersFromString("A:0");
+  initial_headers.SetHeader("A", "0");
+  final_headers.SetHeader("A", "0");
   base::Optional<std::vector<std::string>> removed_headers(base::nullopt);
   base::Optional<HttpRequestHeaders> modified_headers(base::in_place);
   bool should_clear_upload(false);  // unused.
@@ -216,8 +216,8 @@ TEST(RedirectUtilTest, RemovedHeadersNullOpt) {
 // Test with modified_headers = base::nullopt.
 TEST(RedirectUtilTest, ModifyHeadersNullopt) {
   HttpRequestHeaders initial_headers, final_headers;
-  initial_headers.AddHeadersFromString("A:0");
-  final_headers.AddHeadersFromString("A:0");
+  initial_headers.SetHeader("A", "0");
+  final_headers.SetHeader("A", "0");
   base::Optional<std::vector<std::string>> removed_headers(base::in_place);
   base::Optional<HttpRequestHeaders> modified_headers(base::nullopt);
   bool should_clear_upload(false);  // unused.

@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/printing/print_view_manager_base.h"
+#include "components/printing/common/print.mojom.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "printing/buildflags/buildflags.h"
 
@@ -33,11 +34,16 @@ class PrintViewManager : public PrintViewManagerBase,
   // preview dialog.
   bool BasicPrint(content::RenderFrameHost* rfh);
 
-  // Initiate print preview of the current document by first notifying the
-  // renderer. Since this happens asynchronous, the print preview dialog
-  // creation will not be completed on the return of this function. Returns
-  // false if print preview is impossible at the moment.
+  // Initiate print preview of the current document and specify whether a
+  // selection or the entire frame is being printed.
   bool PrintPreviewNow(content::RenderFrameHost* rfh, bool has_selection);
+
+  // Initiate print preview of the current document and provide the renderer
+  // a printing::mojom::PrintRenderer to perform the actual rendering of
+  // the print document.
+  bool PrintPreviewWithPrintRenderer(
+      content::RenderFrameHost* rfh,
+      mojom::PrintRendererAssociatedPtrInfo print_renderer);
 
   // Notify PrintViewManager that print preview is starting in the renderer for
   // a particular WebNode.
@@ -72,6 +78,15 @@ class PrintViewManager : public PrintViewManagerBase,
   };
 
   struct FrameDispatchHelper;
+
+  // Helper method for PrintPreviewNow() and PrintPreviewWithRenderer().
+  // Initiate print preview of the current document by first notifying the
+  // renderer. Since this happens asynchronously, the print preview dialog
+  // creation will not be completed on the return of this function. Returns
+  // false if print preview is impossible at the moment.
+  bool PrintPreview(content::RenderFrameHost* rfh,
+                    mojom::PrintRendererAssociatedPtrInfo print_renderer,
+                    bool has_selection);
 
   // IPC Message handlers.
   void OnDidShowPrintDialog(content::RenderFrameHost* rfh);

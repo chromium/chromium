@@ -17,8 +17,7 @@ TooltipControllerTestHelper::TooltipControllerTestHelper(
   controller_->DisableTooltipShowDelay();
 }
 
-TooltipControllerTestHelper::~TooltipControllerTestHelper() {
-}
+TooltipControllerTestHelper::~TooltipControllerTestHelper() = default;
 
 base::string16 TooltipControllerTestHelper::GetTooltipText() {
   return controller_->tooltip_text_;
@@ -45,16 +44,12 @@ bool TooltipControllerTestHelper::IsTooltipVisible() {
   return controller_->IsTooltipVisible();
 }
 
-TooltipTestView::TooltipTestView() {
-}
+TooltipTestView::TooltipTestView() = default;
 
-TooltipTestView::~TooltipTestView() {
-}
+TooltipTestView::~TooltipTestView() = default;
 
-bool TooltipTestView::GetTooltipText(const gfx::Point& p,
-                                     base::string16* tooltip) const {
-  *tooltip = tooltip_text_;
-  return true;
+base::string16 TooltipTestView::GetTooltipText(const gfx::Point& p) const {
+  return tooltip_text_;
 }
 
 }  // namespace test

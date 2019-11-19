@@ -32,6 +32,8 @@ std::string CSPDirective::NameToString(CSPDirective::Name name) {
       return "upgrade-insecure-requests";
     case NavigateTo:
       return "navigate-to";
+    case FrameAncestors:
+      return "frame-ancestors";
     case Unknown:
       return "";
   }
@@ -53,6 +55,8 @@ CSPDirective::Name CSPDirective::StringToName(const std::string& name) {
     return CSPDirective::UpgradeInsecureRequests;
   if (name == "navigate-to")
     return CSPDirective::NavigateTo;
+  if (name == "frame-ancestors")
+    return CSPDirective::FrameAncestors;
   return CSPDirective::Unknown;
 }
 

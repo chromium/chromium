@@ -28,7 +28,7 @@ DummyDriveService::DummyDriveService() = default;
 
 DummyDriveService::~DummyDriveService() = default;
 
-void DummyDriveService::Initialize(const std::string& account_id) {}
+void DummyDriveService::Initialize(const CoreAccountId& account_id) {}
 
 void DummyDriveService::AddObserver(DriveServiceObserver* observer) {}
 

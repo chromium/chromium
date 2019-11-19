@@ -43,7 +43,26 @@ namespace base {
 //   // On any thread...
 //   scoped_refptr<SequencedTaskRunner> main_task_runner = ...;
 //   auto widget = SequenceBound<MyClass>(main_task_runner, "My Title");
-//   widget.Post(&MyObject::DoSomething, 1234);
+//
+//   // Execute a single method on the object, on |main_task_runner|.
+//   widget.Post(FROM_HERE, &MyClass::DoSomething, 1234);
+//
+//   // Execute an arbitrary task on |main_task_runner| with a non-const pointer
+//   // to the object.
+//   widget.PostTaskWithThisObject(
+//       FROM_HERE,
+//       base::BindOnce([](MyClass* widget) {
+//         // Unlike with Post, we can issue multiple calls on |widget| within
+//         // the same stack frame.
+//         widget->DoSomething(42);
+//         widget->DoSomething(13);
+//       }));
+//
+//   // Execute an arbitrary task on |main_task_runner| with a const reference
+//   // to the object.
+//   widget.PostTaskWithThisObject(
+//       FROM_HERE,
+//       base::BindOnce([](const MyClass& widget) { ... }));
 //
 // Note that |widget| is constructed asynchronously on |main_task_runner|,
 // but calling Post() immediately is safe, since the actual call is posted
@@ -154,36 +173,40 @@ class SequenceBound {
     return *this;
   }
 
-  // Move everything from |other|, doing pointer adjustment as needed.
-  // This method is marked as NO_SANITIZE since (a) it might run before the
-  // posted ctor runs on |impl_task_runner_|, and (b) implicit conversions to
-  // non-virtual base classes are allowed before construction by the standard.
-  // See http://eel.is/c++draft/basic.life#6 for more information.
-  template <typename From>
-  void NO_SANITIZE("cfi-unrelated-cast") MoveRecordFrom(From&& other) {
-    // |other| might be is_null(), but that's okay.
-    impl_task_runner_ = std::move(other.impl_task_runner_);
-
-    // Note that static_cast<> isn't, in general, safe, since |other| might not
-    // be constructed yet.  Implicit conversion is supported, as long as it
-    // doesn't convert to a virtual base.  Of course, it allows only upcasts.
-    t_ = other.t_;
-
-    // The original storage is kept unmodified, so we can free it later.
-    storage_ = other.storage_;
-
-    other.storage_ = nullptr;
-    other.t_ = nullptr;
-  }
-
   // Post a call to |method| to |impl_task_runner_|.
   template <typename... MethodArgs, typename... Args>
   void Post(const base::Location& from_here,
             void (T::*method)(MethodArgs...),
             Args&&... args) const {
+    DCHECK(t_);
     impl_task_runner_->PostTask(from_here,
                                 base::BindOnce(method, base::Unretained(t_),
                                                std::forward<Args>(args)...));
+  }
+
+  // Posts |task| to |impl_task_runner_|, passing it a reference to the wrapped
+  // object. This allows arbitrary logic to be safely executed on the object's
+  // task runner. The object is guaranteed to remain alive for the duration of
+  // the task.
+  using ConstPostTaskCallback = base::OnceCallback<void(const T&)>;
+  void PostTaskWithThisObject(const base::Location& from_here,
+                              ConstPostTaskCallback callback) const {
+    DCHECK(t_);
+    impl_task_runner_->PostTask(
+        from_here,
+        base::BindOnce([](ConstPostTaskCallback callback,
+                          const T* t) { std::move(callback).Run(*t); },
+                       std::move(callback), t_));
+  }
+
+  // Same as above, but for non-const operations. The callback takes a pointer
+  // to the wrapped object rather than a const ref.
+  using PostTaskCallback = base::OnceCallback<void(T*)>;
+  void PostTaskWithThisObject(const base::Location& from_here,
+                              PostTaskCallback callback) const {
+    DCHECK(t_);
+    impl_task_runner_->PostTask(from_here,
+                                base::BindOnce(std::move(callback), t_));
   }
 
   // TODO(liberato): Add PostOrCall(), to support cases where synchronous calls
@@ -209,6 +232,26 @@ class SequenceBound {
     storage_ = nullptr;
   }
 
+  // Same as above, but allows the caller to provide a closure to be invoked
+  // immediately after destruction. The Closure is invoked on
+  // |impl_task_runner_|, iff the owned object was non-null.
+  void ResetWithCallbackAfterDestruction(base::OnceClosure callback) {
+    if (is_null())
+      return;
+
+    impl_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::OnceClosure callback, T* t, void* storage) {
+                         DeleteOwnerRecord(t, storage);
+                         std::move(callback).Run();
+                       },
+                       std::move(callback), t_, storage_));
+
+    impl_task_runner_ = nullptr;
+    t_ = nullptr;
+    storage_ = nullptr;
+  }
+
   // Return whether we own anything.  Note that this does not guarantee that any
   // previously owned object has been destroyed.  In particular, it will return
   // true immediately after a call to Reset(), though the underlying object
@@ -219,6 +262,28 @@ class SequenceBound {
   explicit operator bool() const { return !is_null(); }
 
  private:
+  // Move everything from |other|, doing pointer adjustment as needed.
+  // This method is marked as NO_SANITIZE since (a) it might run before the
+  // posted ctor runs on |impl_task_runner_|, and (b) implicit conversions to
+  // non-virtual base classes are allowed before construction by the standard.
+  // See http://eel.is/c++draft/basic.life#6 for more information.
+  template <typename From>
+  void NO_SANITIZE("cfi-unrelated-cast") MoveRecordFrom(From&& other) {
+    // |other| might be is_null(), but that's okay.
+    impl_task_runner_ = std::move(other.impl_task_runner_);
+
+    // Note that static_cast<> isn't, in general, safe, since |other| might not
+    // be constructed yet.  Implicit conversion is supported, as long as it
+    // doesn't convert to a virtual base.  Of course, it allows only upcasts.
+    t_ = other.t_;
+
+    // The original storage is kept unmodified, so we can free it later.
+    storage_ = other.storage_;
+
+    other.storage_ = nullptr;
+    other.t_ = nullptr;
+  }
+
   // Pointer to the object,  Pointer may be modified on the owning thread.
   T* t_ = nullptr;
 
@@ -234,8 +299,8 @@ class SequenceBound {
 
   // Run on impl thread to construct |t|'s storage.
   template <typename... Args>
-  static void ConstructOwnerRecord(T* t, Args&&... args) {
-    new (t) T(std::forward<Args>(args)...);
+  static void ConstructOwnerRecord(T* t, std::decay_t<Args>&&... args) {
+    new (t) T(std::move(args)...);
   }
 
   // Destruct the object associated with |t|, and delete |storage|.

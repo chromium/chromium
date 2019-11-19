@@ -209,7 +209,7 @@ TEST_F(PluginVarTrackerTest, PluginObjectInstanceDeleted) {
 
   // Release the plugin ref to the var. WebKit hasn't called destroy so
   // we won't get a destroy call.
-  object = NULL;
+  object.reset();
   var_tracker().ReleaseVar(plugin_var);
   EXPECT_EQ(0, deallocate_called);
 
@@ -243,7 +243,7 @@ TEST_F(PluginVarTrackerTest, PluginObjectLeaked) {
 
   // Release the plugin ref to the var. Since the instance is gone this should
   // call deallocate.
-  object = NULL;
+  object.reset();
   var_tracker().ReleaseVar(plugin_var);
   EXPECT_EQ(1, deallocate_called);
 }

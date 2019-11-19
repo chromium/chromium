@@ -72,6 +72,8 @@ struct FeatureEntry {
     // passed from the server in a trial config). When set to Enabled, the
     // feature is overriden to be enabled and empty set of parameters is used
     // boiling down to the default behavior in the code.
+    // TODO(crbug.com/805766): The resulting chrome://flags entries will not work on Chrome OS
+    // devices (but will work in the CrOS-emulated build on Linux).
     FEATURE_WITH_PARAMS_VALUE,
 
     // Corresponds to a command line switch where the value is treatead as a

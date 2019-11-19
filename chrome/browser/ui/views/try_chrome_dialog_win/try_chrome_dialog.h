@@ -52,7 +52,6 @@ class TryChromeDialog : public views::ButtonListener,
   enum Result {
     NOT_NOW,                    // Don't launch chrome. Exit now.
     OPEN_CHROME_WELCOME,        // Launch Chrome to the standard Welcome page.
-    OPEN_CHROME_WELCOME_WIN10,  // Launch Chrome to the Win10 Welcome page.
     OPEN_CHROME_DEFAULT,        // Launch Chrome to the default page.
     OPEN_CHROME_DEFER,          // Launch Chrome on account of a rendezvous,
                                 // deferring to the caller's command line.

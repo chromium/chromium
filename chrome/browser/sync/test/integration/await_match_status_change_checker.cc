@@ -19,10 +19,7 @@ AwaitMatchStatusChangeChecker::AwaitMatchStatusChangeChecker(
 AwaitMatchStatusChangeChecker::~AwaitMatchStatusChangeChecker() {
 }
 
-bool AwaitMatchStatusChangeChecker::IsExitConditionSatisfied() {
+bool AwaitMatchStatusChangeChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for: " + debug_message_;
   return condition_.Run();
-}
-
-std::string AwaitMatchStatusChangeChecker::GetDebugMessage() const {
-  return "Waiting for: " + debug_message_;
 }

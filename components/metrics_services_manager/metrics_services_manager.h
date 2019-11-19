@@ -82,6 +82,9 @@ class MetricsServicesManager {
   // Gets the current state of metric reporting.
   bool IsMetricsReportingEnabled() const;
 
+  // Gets the current state of metrics consent.
+  bool IsMetricsConsentGiven() const;
+
  private:
   // Update the managed services when permissions for recording/uploading
   // metrics change.

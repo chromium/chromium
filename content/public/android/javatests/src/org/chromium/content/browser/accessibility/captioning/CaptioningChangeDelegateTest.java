@@ -13,8 +13,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.content.browser.accessibility.captioning.CaptioningChangeDelegate.ClosedCaptionEdgeAttribute;
-import org.chromium.content.browser.accessibility.captioning.CaptioningChangeDelegate.ClosedCaptionFont;
 
 /**
   * Test suite to ensure that platform settings are translated to CSS appropriately
@@ -84,46 +82,18 @@ public class CaptioningChangeDelegateTest {
     @Test
     @SmallTest
     public void testClosedCaptionEdgeAttributeWithDefaults() {
-        ClosedCaptionEdgeAttribute edge = ClosedCaptionEdgeAttribute.fromSystemEdgeAttribute(
-                null, null);
-        Assert.assertEquals(DEFAULT_CAPTIONING_PREF_VALUE, edge.getTextShadow());
-
-        edge = ClosedCaptionEdgeAttribute.fromSystemEdgeAttribute(null, "red");
-        Assert.assertEquals(DEFAULT_CAPTIONING_PREF_VALUE, edge.getTextShadow());
-
-        edge = ClosedCaptionEdgeAttribute.fromSystemEdgeAttribute(0, "red");
-        Assert.assertEquals(DEFAULT_CAPTIONING_PREF_VALUE, edge.getTextShadow());
-
-        edge = ClosedCaptionEdgeAttribute.fromSystemEdgeAttribute(2, null);
-        Assert.assertEquals("silver 0.05em 0.05em 0.1em", edge.getTextShadow());
-
-        edge = ClosedCaptionEdgeAttribute.fromSystemEdgeAttribute(2, "");
-        Assert.assertEquals("silver 0.05em 0.05em 0.1em", edge.getTextShadow());
-
-        edge = ClosedCaptionEdgeAttribute.fromSystemEdgeAttribute(2, "red");
-        Assert.assertEquals("red 0.05em 0.05em 0.1em", edge.getTextShadow());
-    }
-
-    @Test
-    @SmallTest
-    public void testClosedCaptionEdgeAttributeWithCustomDefaults() {
-        ClosedCaptionEdgeAttribute.setShadowOffset("0.00em");
-        ClosedCaptionEdgeAttribute.setDefaultEdgeColor("red");
-        ClosedCaptionEdgeAttribute edge = ClosedCaptionEdgeAttribute.fromSystemEdgeAttribute(
-                null, null);
-        Assert.assertEquals(DEFAULT_CAPTIONING_PREF_VALUE, edge.getTextShadow());
-
-        edge = ClosedCaptionEdgeAttribute.fromSystemEdgeAttribute(null, "red");
-        Assert.assertEquals(DEFAULT_CAPTIONING_PREF_VALUE, edge.getTextShadow());
-
-        edge = ClosedCaptionEdgeAttribute.fromSystemEdgeAttribute(0, "red");
-        Assert.assertEquals(DEFAULT_CAPTIONING_PREF_VALUE, edge.getTextShadow());
-
-        edge = ClosedCaptionEdgeAttribute.fromSystemEdgeAttribute(2, null);
-        Assert.assertEquals("red 0.00em 0.00em 0.1em", edge.getTextShadow());
-
-        edge = ClosedCaptionEdgeAttribute.fromSystemEdgeAttribute(2, "silver");
-        Assert.assertEquals("silver 0.00em 0.00em 0.1em", edge.getTextShadow());
+        Assert.assertEquals(DEFAULT_CAPTIONING_PREF_VALUE,
+                CaptioningChangeDelegate.getShadowFromColorAndSystemEdge(null, null));
+        Assert.assertEquals(DEFAULT_CAPTIONING_PREF_VALUE,
+                CaptioningChangeDelegate.getShadowFromColorAndSystemEdge("red", null));
+        Assert.assertEquals(DEFAULT_CAPTIONING_PREF_VALUE,
+                CaptioningChangeDelegate.getShadowFromColorAndSystemEdge("red", 0));
+        Assert.assertEquals("silver 0.05em 0.05em 0.1em",
+                CaptioningChangeDelegate.getShadowFromColorAndSystemEdge(null, 2));
+        Assert.assertEquals("silver 0.05em 0.05em 0.1em",
+                CaptioningChangeDelegate.getShadowFromColorAndSystemEdge("", 2));
+        Assert.assertEquals("red 0.05em 0.05em 0.1em",
+                CaptioningChangeDelegate.getShadowFromColorAndSystemEdge("red", 2));
     }
 
     /**
@@ -132,18 +102,17 @@ public class CaptioningChangeDelegateTest {
     @Test
     @SmallTest
     public void testClosedCaptionDefaultFonts() {
-        final ClosedCaptionFont nullFont = ClosedCaptionFont.fromSystemFont(null);
         Assert.assertEquals("Null typeface should return the default font family.",
-                DEFAULT_CAPTIONING_PREF_VALUE, nullFont.getFontFamily());
+                DEFAULT_CAPTIONING_PREF_VALUE,
+                CaptioningChangeDelegate.getFontFromSystemFont(null));
 
-        final ClosedCaptionFont defaultFont = ClosedCaptionFont.fromSystemFont(Typeface.DEFAULT);
         Assert.assertEquals("Typeface.DEFAULT should return the default font family.",
-                DEFAULT_CAPTIONING_PREF_VALUE, defaultFont.getFontFamily());
+                DEFAULT_CAPTIONING_PREF_VALUE,
+                CaptioningChangeDelegate.getFontFromSystemFont(Typeface.DEFAULT));
 
-        final ClosedCaptionFont defaultBoldFont = ClosedCaptionFont.fromSystemFont(
-                Typeface.DEFAULT_BOLD);
         Assert.assertEquals("Typeface.BOLD should return the default font family.",
-                DEFAULT_CAPTIONING_PREF_VALUE, defaultBoldFont.getFontFamily());
+                DEFAULT_CAPTIONING_PREF_VALUE,
+                CaptioningChangeDelegate.getFontFromSystemFont(Typeface.DEFAULT_BOLD));
     }
 
     /**
@@ -154,36 +123,25 @@ public class CaptioningChangeDelegateTest {
     @Test
     @SmallTest
     public void testClosedCaptionNonDefaultFonts() {
-        final ClosedCaptionFont monospaceFont = ClosedCaptionFont.fromSystemFont(
-                Typeface.MONOSPACE);
         if (Typeface.MONOSPACE.equals(Typeface.DEFAULT)) {
             Assert.assertEquals(
                     "Since the default font is monospace, the default family should be returned.",
-                    DEFAULT_CAPTIONING_PREF_VALUE, monospaceFont.getFontFamily());
-        } else {
-            Assert.assertTrue("Typeface.MONOSPACE should return a monospace font family.",
-                    monospaceFont.mFlags.contains(ClosedCaptionFont.Flags.MONOSPACE));
+                    DEFAULT_CAPTIONING_PREF_VALUE,
+                    CaptioningChangeDelegate.getFontFromSystemFont(Typeface.MONOSPACE));
         }
 
-        final ClosedCaptionFont sansSerifFont = ClosedCaptionFont.fromSystemFont(
-                Typeface.SANS_SERIF);
         if (Typeface.SANS_SERIF.equals(Typeface.DEFAULT)) {
             Assert.assertEquals(
                     "Since the default font is sans-serif, the default family should be returned.",
-                    DEFAULT_CAPTIONING_PREF_VALUE, sansSerifFont.getFontFamily());
-        } else {
-            Assert.assertTrue("Typeface.SANS_SERIF should return a sans-serif font family.",
-                    sansSerifFont.mFlags.contains(ClosedCaptionFont.Flags.SANS_SERIF));
+                    DEFAULT_CAPTIONING_PREF_VALUE,
+                    CaptioningChangeDelegate.getFontFromSystemFont(Typeface.SANS_SERIF));
         }
 
-        final ClosedCaptionFont serifFont = ClosedCaptionFont.fromSystemFont(Typeface.SERIF);
         if (Typeface.SERIF.equals(Typeface.DEFAULT)) {
             Assert.assertEquals(
                     "Since the default font is serif, the default font family should be returned.",
-                    DEFAULT_CAPTIONING_PREF_VALUE, serifFont.getFontFamily());
-        } else {
-            Assert.assertTrue("Typeface.SERIF should return a serif font family.",
-                    serifFont.mFlags.contains(ClosedCaptionFont.Flags.SERIF));
+                    DEFAULT_CAPTIONING_PREF_VALUE,
+                    CaptioningChangeDelegate.getFontFromSystemFont(Typeface.SANS_SERIF));
         }
     }
 }

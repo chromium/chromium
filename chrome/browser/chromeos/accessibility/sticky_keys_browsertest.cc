@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, SearchLeftOmnibox) {
       browser()->window()->GetLocationBar()->GetOmniboxView();
 
   // Give the omnibox focus.
-  omnibox->SetFocus();
+  omnibox->SetFocus(/*is_user_initiated=*/true);
 
   // Make sure that the AppList is not erroneously displayed and the omnibox
   // doesn't lose focus.

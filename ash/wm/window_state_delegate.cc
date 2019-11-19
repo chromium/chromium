@@ -5,7 +5,6 @@
 #include "ash/wm/window_state_delegate.h"
 
 namespace ash {
-namespace wm {
 
 WindowStateDelegate::WindowStateDelegate() = default;
 
@@ -15,5 +14,4 @@ bool WindowStateDelegate::ToggleFullscreen(WindowState* window_state) {
   return false;
 }
 
-}  // namespace wm
 }  // namespace ash

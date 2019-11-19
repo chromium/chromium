@@ -5,6 +5,8 @@
 '''The 'grit sdiff' tool.
 '''
 
+from __future__ import print_function
+
 import os
 import getopt
 import sys
@@ -67,11 +69,11 @@ class DiffStructures(interface.Tool):
         sys.exit(0)
 
     if len(args) != 2:
-      print "Incorrect usage - 'grit help sdiff' for usage details."
+      print("Incorrect usage - 'grit help sdiff' for usage details.")
       return 2
 
     if 'P4DIFF' not in os.environ:
-      print "Environment variable P4DIFF not set; defaulting to 'windiff'."
+      print("Environment variable P4DIFF not set; defaulting to 'windiff'.")
       diff_program = 'windiff'
     else:
       diff_program = os.environ['P4DIFF']

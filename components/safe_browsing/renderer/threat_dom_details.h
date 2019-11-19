@@ -15,7 +15,8 @@
 #include "base/feature_list.h"
 #include "components/safe_browsing/common/safe_browsing.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
 namespace safe_browsing {
@@ -60,6 +61,10 @@ class ThreatDOMDetails : public content::RenderFrameObserver,
   // Exposed for testing.
   void ExtractResources(std::vector<mojom::ThreatDOMDetailsNodePtr>* resources);
 
+  std::vector<TagAndAttributesItem> GetTagAndAttributesListForTest() {
+    return tag_and_attributes_list_;
+  }
+
  private:
   // Creates a ThreatDOMDetails for the specified RenderFrame.
   // The ThreatDOMDetails should be destroyed prior to destroying
@@ -72,9 +77,10 @@ class ThreatDOMDetails : public content::RenderFrameObserver,
   // safe_browsing::mojom::ThreatReporter:
   void GetThreatDOMDetails(GetThreatDOMDetailsCallback callback) override;
 
-  void OnThreatReporterRequest(mojom::ThreatReporterRequest request);
+  void OnThreatReporterReceiver(
+      mojo::PendingReceiver<mojom::ThreatReporter> receiver);
 
-  mojo::BindingSet<mojom::ThreatReporter> threat_reporter_bindings_;
+  mojo::ReceiverSet<mojom::ThreatReporter> threat_reporter_receivers_;
 
   // A list of tag names and associates attributes, used to determine which
   // elements need to be collected.

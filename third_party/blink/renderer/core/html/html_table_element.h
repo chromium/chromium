@@ -41,8 +41,6 @@ class CORE_EXPORT HTMLTableElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLTableElement);
-
   explicit HTMLTableElement(Document&);
 
   HTMLTableCaptionElement* caption() const;

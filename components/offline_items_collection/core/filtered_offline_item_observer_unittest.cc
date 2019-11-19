@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::Eq;
 
 namespace offline_items_collection {
 namespace {
@@ -31,11 +32,11 @@ TEST(FilteredOfflineItemObserverTest, TestBasicUsage) {
   MockFilteredOfflineItemObserver::ScopedMockObserver obs2(&filter, id2);
   MockFilteredOfflineItemObserver::ScopedMockObserver obs3(&filter, id3);
 
-  EXPECT_CALL(obs2, OnItemUpdated(item2)).Times(1);
+  EXPECT_CALL(obs2, OnItemUpdated(item2, Eq(base::nullopt))).Times(1);
   EXPECT_CALL(obs3, OnItemRemoved(id3)).Times(1);
 
   provider.NotifyOnItemsAdded({item1});
-  provider.NotifyOnItemUpdated(item2);
+  provider.NotifyOnItemUpdated(item2, base::nullopt);
   provider.NotifyOnItemRemoved(id3);
   provider.NotifyOnItemRemoved(id4);
 }
@@ -50,22 +51,22 @@ TEST(FilteredOfflineItemObserverTest, AddRemoveObservers) {
   MockFilteredOfflineItemObserver::MockObserver obs1;
 
   {
-    EXPECT_CALL(obs1, OnItemUpdated(_)).Times(0);
-    provider.NotifyOnItemUpdated(item1);
+    EXPECT_CALL(obs1, OnItemUpdated(_, _)).Times(0);
+    provider.NotifyOnItemUpdated(item1, base::nullopt);
   }
 
   filter.AddObserver(id1, &obs1);
 
   {
-    EXPECT_CALL(obs1, OnItemUpdated(_)).Times(1);
-    provider.NotifyOnItemUpdated(item1);
+    EXPECT_CALL(obs1, OnItemUpdated(_, _)).Times(1);
+    provider.NotifyOnItemUpdated(item1, base::nullopt);
   }
 
   filter.RemoveObserver(id1, &obs1);
 
   {
-    EXPECT_CALL(obs1, OnItemUpdated(_)).Times(0);
-    provider.NotifyOnItemUpdated(item1);
+    EXPECT_CALL(obs1, OnItemUpdated(_, _)).Times(0);
+    provider.NotifyOnItemUpdated(item1, base::nullopt);
   }
 }
 

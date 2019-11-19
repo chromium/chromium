@@ -68,11 +68,11 @@ class NGPhysicalFragmentCollectorBase {
     DCHECK(fragment.IsContainer());
     DCHECK(fragment.IsInline() || fragment.IsLineBox() ||
            (fragment.IsBlockFlow() &&
-            ToNGPhysicalBoxFragment(fragment).ChildrenInline()));
+            To<NGPhysicalBoxFragment>(fragment).ChildrenInline()));
 
     for (const auto& child :
-         ToNGPhysicalContainerFragment(fragment).Children()) {
-      base::AutoReset<NGPhysicalOffset> offset_resetter(
+         To<NGPhysicalContainerFragment>(fragment).Children()) {
+      base::AutoReset<PhysicalOffset> offset_resetter(
           &current_offset_to_root_, current_offset_to_root_ + child.Offset());
       base::AutoReset<const NGPhysicalFragment*> fragment_resetter(
           &current_fragment_, child.get());
@@ -86,7 +86,7 @@ class NGPhysicalFragmentCollectorBase {
  private:
   const NGPhysicalFragment* root_fragment_ = nullptr;
   const NGPhysicalFragment* current_fragment_ = nullptr;
-  NGPhysicalOffset current_offset_to_root_;
+  PhysicalOffset current_offset_to_root_;
   Vector<Result> results_;
   bool should_stop_traversing_ = false;
 
@@ -111,27 +111,6 @@ class DescendantCollector final : public NGPhysicalFragmentCollectorBase {
   }
 
   DISALLOW_COPY_AND_ASSIGN(DescendantCollector);
-};
-
-// The visitor emitting all visited fragments.
-class InclusiveDescendantCollector final
-    : public NGPhysicalFragmentCollectorBase {
-  STACK_ALLOCATED();
-
- public:
-  InclusiveDescendantCollector() = default;
-
-  Vector<Result> CollectFrom(const NGPhysicalFragment& fragment) final {
-    return CollectInclusivelyFrom(fragment);
-  }
-
- private:
-  void Visit() final {
-    Emit();
-    VisitChildren();
-  }
-
-  DISALLOW_COPY_AND_ASSIGN(InclusiveDescendantCollector);
 };
 
 // The visitor emitting fragments generated from the given LayoutInline,
@@ -182,113 +161,12 @@ class LayoutInlineCollector final : public NGPhysicalFragmentCollectorBase {
   DISALLOW_COPY_AND_ASSIGN(LayoutInlineCollector);
 };
 
-// The visitor emitting ancestors of the given fragment in bottom-up order.
-class AncestorCollector : public NGPhysicalFragmentCollectorBase {
-  STACK_ALLOCATED();
-
- public:
-  explicit AncestorCollector(const NGPhysicalFragment& target)
-      : target_(target) {}
-
-  Vector<Result> CollectFrom(const NGPhysicalFragment& fragment) final {
-    // TODO(xiaochengh): Change this into CollectInclusivlyFrom() to include
-    // subtree root to align with NodeTraversal::AncestorsOf().
-    return CollectExclusivelyFrom(fragment);
-  }
-
- private:
-  void Visit() final {
-    if (&GetFragment() == &target_) {
-      SetShouldStopTraversing();
-      return;
-    }
-
-    VisitChildren();
-    if (HasStoppedTraversing())
-      Emit();
-  }
-
-  const NGPhysicalFragment& target_;
-};
-
-// The visitor emitting inclusive ancestors of the given fragment in bottom-up
-// order.
-class InclusiveAncestorCollector : public NGPhysicalFragmentCollectorBase {
-  STACK_ALLOCATED();
-
- public:
-  explicit InclusiveAncestorCollector(const NGPhysicalFragment& target)
-      : target_(target) {}
-
-  Vector<Result> CollectFrom(const NGPhysicalFragment& fragment) final {
-    // TODO(xiaochengh): Change this into CollectInclusivlyFrom() to include
-    // subtree root to align with NodeTraversal::InclusiveAncestorsOf().
-    return CollectExclusivelyFrom(fragment);
-  }
-
- private:
-  void Visit() final {
-    if (&GetFragment() == &target_) {
-      SetShouldStopTraversing();
-      Emit();
-      return;
-    }
-
-    VisitChildren();
-    if (HasStoppedTraversing())
-      Emit();
-  }
-
-  const NGPhysicalFragment& target_;
-};
-
 }  // namespace
-
-// static
-Vector<Result> NGInlineFragmentTraversal::SelfFragmentsOf(
-    const NGPhysicalContainerFragment& container,
-    const LayoutObject* layout_object) {
-  if (const LayoutInline* layout_inline = ToLayoutInlineOrNull(layout_object)) {
-    // TODO(crbug.com/874361): Stop partial culling of inline boxes, so that we
-    // can simply check existence of paint fragments below.
-    if (!layout_inline->HasSelfPaintingLayer()) {
-      return LayoutInlineCollector(ToLayoutInline(*layout_object))
-          .CollectFrom(container);
-    }
-  }
-  Vector<Result> result;
-  for (const NGPaintFragment* fragment :
-       NGPaintFragment::InlineFragmentsFor(layout_object)) {
-    result.push_back(Result{&fragment->PhysicalFragment(),
-                            fragment->InlineOffsetToContainerBox()});
-  }
-  return result;
-}
 
 // static
 Vector<Result> NGInlineFragmentTraversal::DescendantsOf(
     const NGPhysicalContainerFragment& container) {
   return DescendantCollector().CollectFrom(container);
-}
-
-// static
-Vector<Result> NGInlineFragmentTraversal::InclusiveDescendantsOf(
-    const NGPhysicalFragment& root) {
-  return InclusiveDescendantCollector().CollectFrom(root);
-}
-
-// static
-Vector<Result> NGInlineFragmentTraversal::InclusiveAncestorsOf(
-    const NGPhysicalContainerFragment& container,
-    const NGPhysicalFragment& target) {
-  return InclusiveAncestorCollector(target).CollectFrom(container);
-}
-
-// static
-Vector<Result> NGInlineFragmentTraversal::AncestorsOf(
-    const NGPhysicalContainerFragment& container,
-    const NGPhysicalFragment& target) {
-  return AncestorCollector(target).CollectFrom(container);
 }
 
 }  // namespace blink

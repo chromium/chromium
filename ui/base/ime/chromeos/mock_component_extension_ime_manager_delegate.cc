@@ -16,8 +16,8 @@ MockComponentExtIMEManagerDelegate::MockComponentExtIMEManagerDelegate()
       unload_call_count_(0) {
 }
 
-MockComponentExtIMEManagerDelegate::~MockComponentExtIMEManagerDelegate() {
-}
+MockComponentExtIMEManagerDelegate::~MockComponentExtIMEManagerDelegate() =
+    default;
 
 std::vector<ComponentExtensionIME>
     MockComponentExtIMEManagerDelegate::ListIME() {

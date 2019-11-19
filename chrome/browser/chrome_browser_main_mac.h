@@ -10,14 +10,12 @@
 
 class ChromeBrowserMainPartsMac : public ChromeBrowserMainPartsPosix {
  public:
-  ChromeBrowserMainPartsMac(
-      const content::MainFunctionParams& parameters,
-      ChromeFeatureListCreator* chrome_feature_list_creator);
+  ChromeBrowserMainPartsMac(const content::MainFunctionParams& parameters,
+                            StartupData* startup_data);
   ~ChromeBrowserMainPartsMac() override;
 
   // BrowserParts overrides.
   int PreEarlyInitialization() override;
-  void PostEarlyInitialization() override;
   void PreMainMessageLoopStart() override;
   void PostMainMessageLoopStart() override;
   void PreProfileInit() override;

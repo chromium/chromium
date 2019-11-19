@@ -80,13 +80,13 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">they said "|\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C."</div>',
   selection => selection.modify('extend', 'left', 'word'),
-  '<div contenteditable dir="ltr">they |said "^\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C."</div>',
+  '<div contenteditable dir="ltr">they said |"^\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C."</div>',
   `${behavior} 18-11 ltr left word`);
 
 selection_test(
   '<div contenteditable dir="ltr">they said "\u202B|car \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C."</div>',
   selection => selection.modify('extend', 'left', 'word'),
-  '<div contenteditable dir="ltr">they |said "\u202B^car \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C."</div>',
+  '<div contenteditable dir="ltr">they said |"\u202B^car \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C."</div>',
   `${behavior} 18-12 ltr left word`);
 
 selection_test(
@@ -164,7 +164,13 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">they said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C.|"</div>',
   selection => selection.modify('extend', 'left', 'word'),
-  '<div contenteditable dir="ltr">they said "\u202Bcar \u05D3\u05D4\u05D5 |\u05D0\u05D1\u05D2\u202C.^"</div>',
+  '<div contenteditable dir="ltr">they said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C|.^"</div>',
   `${behavior} 18-25 ltr left word`);
+
+  selection_test(
+  '<div contenteditable dir="ltr">they said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C|."</div>',
+  selection => selection.modify('extend', 'left', 'word'),
+  '<div contenteditable dir="ltr">they said "\u202Bcar \u05D3\u05D4\u05D5 |\u05D0\u05D1\u05D2\u202C^."</div>',
+  `${behavior} 18-26 ltr left word`);
 }
 </script>

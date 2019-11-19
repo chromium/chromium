@@ -36,6 +36,10 @@ class CC_PAINT_EXPORT DecodedDrawImage {
                    bool needs_mips,
                    bool is_budgeted);
   DecodedDrawImage(const DecodedDrawImage& other);
+  DecodedDrawImage(DecodedDrawImage&& other);
+  DecodedDrawImage& operator=(const DecodedDrawImage&);
+  DecodedDrawImage& operator=(DecodedDrawImage&&);
+
   DecodedDrawImage();
   ~DecodedDrawImage();
 

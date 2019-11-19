@@ -25,6 +25,7 @@
 
 // See https://webaudio.github.io/web-audio-api/#mediaelementaudiosourcenode
 [
+    Exposed=Window,
     Constructor(AudioContext context, MediaElementAudioSourceOptions options),
     RaisesException=Constructor,
     Measure

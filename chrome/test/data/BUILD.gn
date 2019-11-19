@@ -3,8 +3,9 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
 
 grit("webui_test_resources") {
   source = "webui_test_resources.grd"
@@ -28,5 +29,25 @@ grit("webui_test_resources") {
 mojom("web_ui_test_bindings") {
   sources = [
     "webui/web_ui_test.mojom",
+  ]
+}
+
+js_type_check("closure_compile") {
+  deps = [
+    ":test_api_js",
+  ]
+}
+
+js_library("test_api_js") {
+  sources = [
+    "webui/test_api.js",
+  ]
+  externs_list = [
+    "webui/mock4js_externs.js",
+    "//third_party/chaijs/externs/chai-3.5.js",
+    "//ui/webui/resources/js/dom_automation_controller.js",
+  ]
+  deps = [
+    ":web_ui_test_bindings_js_library_for_compile",
   ]
 }

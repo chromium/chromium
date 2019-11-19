@@ -54,7 +54,6 @@ class FailingHttpTransaction : public HttpTransaction {
            int buf_len,
            CompletionOnceCallback callback) override;
   void StopCaching() override;
-  bool GetFullRequestHeaders(HttpRequestHeaders* headers) const override;
   int64_t GetTotalReceivedBytes() const override;
   int64_t GetTotalSentBytes() const override;
   void DoneReading() override;
@@ -124,11 +123,6 @@ int FailingHttpTransaction::Read(IOBuffer* buf,
 }
 
 void FailingHttpTransaction::StopCaching()  {}
-
-bool FailingHttpTransaction::GetFullRequestHeaders(
-    HttpRequestHeaders* headers) const  {
-  return false;
-}
 
 int64_t FailingHttpTransaction::GetTotalReceivedBytes() const {
   return 0;
@@ -211,7 +205,7 @@ int FailingHttpTransactionFactory::CreateTransaction(
 }
 
 HttpCache* FailingHttpTransactionFactory::GetCache() {
-  return NULL;
+  return nullptr;
 }
 
 HttpNetworkSession* FailingHttpTransactionFactory::GetSession() {

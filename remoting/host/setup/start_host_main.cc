@@ -10,18 +10,18 @@
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "net/url_request/url_fetcher.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/logging.h"
-#include "remoting/base/oauth_helper.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/host/setup/host_starter.h"
@@ -45,8 +45,7 @@ namespace {
 // True if the host was started successfully.
 bool g_started = false;
 
-// The main message loop.
-base::MessageLoop* g_message_loop = nullptr;
+base::SingleThreadTaskExecutor* g_main_thread_task_executor = nullptr;
 
 // The active RunLoop.
 base::RunLoop* g_active_run_loop = nullptr;
@@ -96,9 +95,9 @@ std::string ReadString(bool no_echo) {
 
 // Called when the HostStarter has finished.
 void OnDone(HostStarter::Result result) {
-  if (!g_message_loop->task_runner()->BelongsToCurrentThread()) {
-    g_message_loop->task_runner()->PostTask(FROM_HERE,
-                                            base::BindOnce(&OnDone, result));
+  if (!g_main_thread_task_executor->task_runner()->BelongsToCurrentThread()) {
+    g_main_thread_task_executor->task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&OnDone, result));
     return;
   }
   switch (result) {
@@ -132,10 +131,12 @@ int StartHostMain(int argc, char** argv) {
   base::AtExitManager exit_manager;
 
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
 
-  base::TaskScheduler::CreateAndStartWithDefaultParams("RemotingHostSetup");
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
+      "RemotingHostSetup");
 
   mojo::core::Init();
 
@@ -214,10 +215,11 @@ int StartHostMain(int argc, char** argv) {
     }
   }
 
-  // Provide message loops and threads for the URLRequestContextGetter.
-  base::MessageLoop message_loop;
-  g_message_loop = &message_loop;
-  base::Thread::Options io_thread_options(base::MessageLoop::TYPE_IO, 0);
+  // Provide SingleThreadTaskExecutor and threads for the
+  // URLRequestContextGetter.
+  base::SingleThreadTaskExecutor main_thread_task_executor;
+  g_main_thread_task_executor = &main_thread_task_executor;
+  base::Thread::Options io_thread_options(base::MessagePumpType::IO, 0);
   base::Thread io_thread("IO thread");
   io_thread.StartWithOptions(io_thread_options);
 
@@ -230,18 +232,18 @@ int StartHostMain(int argc, char** argv) {
 
   // Start the host.
   std::unique_ptr<HostStarter> host_starter(HostStarter::Create(
-      remoting::ServiceUrls::GetInstance()->directory_hosts_url(),
+      remoting::ServiceUrls::GetInstance()->remoting_server_endpoint(),
       url_loader_factory_owner.GetURLLoaderFactory()));
   host_starter->StartHost(host_name, host_pin,
                           /*consent_to_data_collection=*/true, auth_code,
                           redirect_url, base::Bind(&OnDone));
 
-  // Run the message loop until the StartHost completion callback.
+  // Run the task executor until the StartHost completion callback.
   base::RunLoop run_loop;
   g_active_run_loop = &run_loop;
   run_loop.Run();
 
-  g_message_loop = nullptr;
+  g_main_thread_task_executor = nullptr;
   g_active_run_loop = nullptr;
 
   // Destroy the HostStarter and URLRequestContextGetter before stopping the

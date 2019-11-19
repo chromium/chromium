@@ -36,7 +36,7 @@ bool AXUniqueId::operator!=(const AXUniqueId& other) const {
 }
 
 bool AXUniqueId::IsAssigned(const int32_t id) const {
-  return base::ContainsKey(g_assigned_ids.Get(), id);
+  return base::Contains(g_assigned_ids.Get(), id);
 }
 
 int32_t AXUniqueId::GetNextAXUniqueId(const int32_t max_id) {

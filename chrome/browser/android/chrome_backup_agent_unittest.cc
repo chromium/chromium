@@ -18,7 +18,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace android {
@@ -47,7 +47,7 @@ class ChromeBackupAgentTest : public ::testing::Test {
     registry_->RegisterBooleanPref("dummy", false);
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::vector<std::string> expected_pref_names_;
   TestingProfileManager testing_profile_manager_;
   TestingProfile* testing_profile_;

@@ -21,10 +21,6 @@
 
 // Progress bar displayed below the toolbar.
 @property(nonatomic, strong, readonly) MDCProgressView* progressBar;
-
-// The blur visual effect view.
-@property(nonatomic, strong, readonly) UIView* blur;
-
 // Button to navigate back.
 @property(nonatomic, strong, readonly) ToolbarButton* backButton;
 // Buttons to navigate forward.
@@ -42,7 +38,9 @@
 // Button to display the tools menu.
 @property(nonatomic, strong, readonly) ToolbarToolsMenuButton* toolsMenuButton;
 // Button to display the tools menu.
-@property(nonatomic, strong, readonly) ToolbarButton* omniboxButton;
+@property(nonatomic, strong, readonly) ToolbarButton* searchButton;
+// Separator between the toolbar and the content.
+@property(nonatomic, strong, readonly) UIView* separator;
 
 @end
 

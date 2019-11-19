@@ -10,8 +10,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import org.chromium.base.ThreadUtils;
-
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -216,6 +214,6 @@ public class TestTouchUtils {
      */
     public static void performLongClickOnMainSync(Instrumentation instrumentation, final View v)
             throws ExecutionException {
-        ThreadUtils.runOnUiThreadBlocking(() -> v.performLongClick());
+        TestThreadUtils.runOnUiThreadBlocking(() -> v.performLongClick());
     }
 }

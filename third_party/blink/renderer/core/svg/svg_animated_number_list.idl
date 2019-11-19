@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/types.html#InterfaceSVGAnimatedNumberList
 
+[Exposed=Window]
 interface SVGAnimatedNumberList {
     readonly attribute SVGNumberList baseVal;
     readonly attribute SVGNumberList animVal;

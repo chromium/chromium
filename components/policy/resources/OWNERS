@@ -6,13 +6,6 @@
 # The rules are documented at:
 # https://sites.google.com/a/chromium.org/dev/developers/how-tos/enterprise/adding-new-policies
 per-file policy_templates.json=set noparent
-per-file policy_templates.json=atwilson@chromium.org
-per-file policy_templates.json=bartfab@chromium.org
-per-file policy_templates.json=emaxx@chromium.org
-per-file policy_templates.json=ljusten@chromium.org
-per-file policy_templates.json=pastarmovj@chromium.org
-per-file policy_templates.json=pmarko@chromium.org
-per-file policy_templates.json=poromov@chromium.org
-per-file policy_templates.json=rsorokin@chromium.org
+per-file policy_templates.json=file://components/policy/resources/ENTERPRISE_POLICY_OWNERS
 
 # COMPONENT: Enterprise

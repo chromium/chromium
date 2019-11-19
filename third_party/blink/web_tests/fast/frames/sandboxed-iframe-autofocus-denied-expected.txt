@@ -1,3 +1,3 @@
-CONSOLE ERROR: line 32: Blocked autofocusing on a form control because the form's frame is sandboxed and the 'allow-scripts' permission is not set.
+CONSOLE ERROR: line 31: Blocked autofocusing on a form control because the form's frame is sandboxed and the 'allow-scripts' permission is not set.
 CONSOLE MESSAGE: line 16: PASS: The input element is not focused.
 This test passes if the input element in the sandboxed frame is not automatically focused upon, as it should be blocked by the sandboxed scripts flag. A console warning to that effect should also be present.

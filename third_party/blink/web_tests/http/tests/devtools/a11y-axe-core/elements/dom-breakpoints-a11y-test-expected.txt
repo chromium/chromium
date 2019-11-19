@@ -1,0 +1,5 @@
+Tests accessibility in DOM breakpoints using the axe-core linter.
+Test DOM breakpoint container with multiple breakpoints.
+aXe violations: []
+
+

@@ -32,6 +32,7 @@
       <structure type="chrome_scaled_image" name="IDR_IOS_INFOBAR_CLOSE" file="infobar_close.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_INFOBAR_RESTORE_SESSION" file="infobar_restore_session.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_INFOBAR_SAVE_PASSWORD" file="infobar_save_password.png" />
+      <structure type="chrome_scaled_image" name="IDR_IOS_INFOBAR_SEND_TAB_TO_SELF" file="infobar_send_tab_to_self.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_INFOBAR_TRANSLATE" file="infobar_translate.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_LOCATION_BAR_HTTP" file="omnibox_http.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_OMNIBOX_CALCULATOR" file="omnibox_calculator.png" />
@@ -47,7 +48,6 @@
       <structure type="chrome_scaled_image" name="IDR_IOS_OMNIBOX_HTTPS_POLICY_WARNING" file="controlled_setting_mandatory.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_OMNIBOX_HTTPS_VALID" file="omnibox_https_valid.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND" file="omnibox/append_ios.png" />
-      <structure type="chrome_scaled_image" name="IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND_INCOGNITO" file="omnibox/append_incognito_ios.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_OMNIBOX_OFFLINE" file="omnibox_offline.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_OMNIBOX_SEARCH" file="omnibox_search.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_OMNIBOX_SEARCH_INCOGNITO" file="omnibox_search_incognito.png" />

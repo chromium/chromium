@@ -31,28 +31,29 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_OVERLAY_MOCK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_OVERLAY_MOCK_H_
 
-#include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay.h"
+#include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
 
 namespace blink {
 
-class CORE_EXPORT ScrollbarThemeOverlayMock : public ScrollbarThemeOverlay {
+class CORE_EXPORT ScrollbarThemeOverlayMock
+    : public ScrollbarThemeOverlayMobile {
  public:
+  // These parameters should be the same as those used by
+  // cc::SolidColorScrollbarLayerImpl to make sure composited and
+  // non-composited scrollbars have the same appearance for tests using mock
+  // overlay scrollbars.
   ScrollbarThemeOverlayMock()
-      : ScrollbarThemeOverlay(3, 4, kDisallowHitTest, Color(128, 128, 128)) {}
+      : ScrollbarThemeOverlayMobile(3, 4, Color(128, 128, 128, 128)) {}
 
-  TimeDelta OverlayScrollbarFadeOutDelay() const override { return delay_; }
-  TimeDelta OverlayScrollbarFadeOutDuration() const override {
-    return TimeDelta();
+  base::TimeDelta OverlayScrollbarFadeOutDelay() const override {
+    return delay_;
+  }
+  base::TimeDelta OverlayScrollbarFadeOutDuration() const override {
+    return base::TimeDelta();
   }
 
-  void SetOverlayScrollbarFadeOutDelay(TimeDelta delay) { delay_ = delay; }
-
-  void PaintThumb(GraphicsContext& gc,
-                  const Scrollbar& scrollbar,
-                  const IntRect& rect) override {
-    if (!scrollbar.Enabled())
-      return;
-    ScrollbarThemeOverlay::PaintThumb(gc, scrollbar, rect);
+  void SetOverlayScrollbarFadeOutDelay(base::TimeDelta delay) {
+    delay_ = delay;
   }
 
   bool ShouldSnapBackToDragOrigin(const Scrollbar& scrollbar,
@@ -60,11 +61,14 @@ class CORE_EXPORT ScrollbarThemeOverlayMock : public ScrollbarThemeOverlay {
     return false;
   }
 
-  int MinimumThumbLength(const Scrollbar&) override { return 7; }
+  int MinimumThumbLength(const Scrollbar& scrollbar) override {
+    return ThumbThickness(scrollbar);
+  }
 
  private:
-  TimeDelta delay_;
   bool IsMockTheme() const final { return true; }
+
+  base::TimeDelta delay_;
 };
 
 }  // namespace blink

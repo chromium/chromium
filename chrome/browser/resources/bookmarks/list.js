@@ -2,11 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Polymer, html, afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {isMac} from 'chrome://resources/js/cr.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import {deselectItems, selectAll, selectItem, updateAnchor} from './actions.js';
+import {BrowserProxy} from './browser_proxy.js';
+import {CommandManager} from './command_manager.js';
+import {MenuSource} from './constants.js';
+import './item.js';
+import './shared_style.js';
+import {StoreClient} from './store_client.js';
+import './strings.m.js';
+import {BookmarksPageState} from './types.js';
+import {canReorderChildren, getDisplayedList} from './util.js';
+import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
+
 Polymer({
   is: 'bookmarks-list',
 
+  _template: html`{__html_template__}`,
+
   behaviors: [
-    bookmarks.StoreClient,
+    StoreClient,
     ListPropertyUpdateBehavior,
   ],
 
@@ -43,6 +65,9 @@ Polymer({
       type: String,
       observer: 'onDisplayedListSourceChange_',
     },
+
+    /** @private {Set<string>} */
+    selectedItems_: Object,
   },
 
   listeners: {
@@ -56,7 +81,7 @@ Polymer({
     list.scrollTarget = this;
 
     this.watch('displayedIds_', function(state) {
-      return bookmarks.util.getDisplayedList(state);
+      return getDisplayedList(/** @type {!BookmarksPageState} */ (state));
     });
     this.watch('searchTerm_', function(state) {
       return state.search.term;
@@ -64,6 +89,7 @@ Polymer({
     this.watch('selectedFolder_', function(state) {
       return state.selectedFolder;
     });
+    this.watch('selectedItems_', ({selection: {items}}) => items);
     this.updateFromStore();
 
     this.$.list.addEventListener(
@@ -73,8 +99,8 @@ Polymer({
     this.boundOnHighlightItems_ = this.onHighlightItems_.bind(this);
     document.addEventListener('highlight-items', this.boundOnHighlightItems_);
 
-    Polymer.RenderStatus.afterNextRender(this, function() {
-      Polymer.IronA11yAnnouncer.requestAvailability();
+    afterNextRender(this, function() {
+      IronA11yAnnouncer.requestAvailability();
     });
   },
 
@@ -85,7 +111,7 @@ Polymer({
 
   /** @return {HTMLElement} */
   getDropTarget: function() {
-    return this.$.message;
+    return /** @type {!HTMLDivElement} */ (this.$.message);
   },
 
   /**
@@ -97,13 +123,38 @@ Polymer({
    */
   onDisplayedIdsChanged_: async function(newValue, oldValue) {
     const updatedList = newValue.map(id => ({id: id}));
+    let skipFocus = false;
+    let selectIndex = -1;
+    if (this.matches(':focus-within')) {
+      if (this.selectedItems_.size > 0) {
+        const selectedId = Array.from(this.selectedItems_)[0];
+        skipFocus = newValue.some(id => id == selectedId);
+        selectIndex = this.displayedList_.findIndex(({id}) => selectedId == id);
+      }
+      if (selectIndex == -1 && updatedList.length > 0) {
+        selectIndex = 0;
+      } else {
+        selectIndex = Math.min(selectIndex, updatedList.length - 1);
+      }
+    }
     this.updateList('displayedList_', item => item.id, updatedList);
     // Trigger a layout of the iron list. Otherwise some elements may render
     // as blank entries. See https://crbug.com/848683
     this.$.list.fire('iron-resize');
-    const label = await cr.sendWithPromise(
-        'getPluralString', 'listChanged', this.displayedList_.length);
+    const label = await BrowserProxy.getInstance().getPluralString(
+        'listChanged', this.displayedList_.length);
     this.fire('iron-announce', {text: label});
+
+    if (!skipFocus && selectIndex > -1) {
+      setTimeout(() => {
+        this.$.list.focusItem(selectIndex);
+        // Focus menu button so 'Undo' is only one tab stop away on delete.
+        const item = getDeepActiveElement();
+        if (item) {
+          item.focusMenuButton();
+        }
+      });
+    }
   },
 
   /** @private */
@@ -129,7 +180,7 @@ Polymer({
   emptyListMessage_: function() {
     let emptyListMessage = 'noSearchResults';
     if (!this.searchTerm_) {
-      emptyListMessage = bookmarks.util.canReorderChildren(
+      emptyListMessage = canReorderChildren(
                              this.getState(), this.getState().selectedFolder) ?
           'emptyList' :
           'emptyUnmodifiableList';
@@ -144,7 +195,7 @@ Polymer({
 
   /** @private */
   deselectItems_: function() {
-    this.dispatch(bookmarks.actions.deselectItems());
+    this.dispatch(deselectItems());
   },
 
   /**
@@ -186,7 +237,7 @@ Polymer({
 
     const leadId = toHighlight[0];
     this.dispatch(
-        bookmarks.actions.selectAll(toHighlight, this.getState(), leadId));
+        selectAll(toHighlight, this.getState(), leadId));
 
     // Allow iron-list time to render additions to the list.
     this.async(function() {
@@ -198,7 +249,7 @@ Polymer({
   },
 
   /**
-   * @param {KeyboardEvent} e
+   * @param {Event} e
    * @private
    */
   onItemKeydown_: function(e) {
@@ -208,7 +259,7 @@ Polymer({
     let focusedIndex =
         this.getIndexForItemElement_(/** @type {HTMLElement} */ (e.target));
     const oldFocusedIndex = focusedIndex;
-    const cursorModifier = cr.isMac ? e.metaKey : e.ctrlKey;
+    const cursorModifier = isMac ? e.metaKey : e.ctrlKey;
     if (e.key == 'ArrowUp') {
       focusedIndex--;
       focusMoved = true;
@@ -223,7 +274,7 @@ Polymer({
       focusedIndex = list.items.length - 1;
       focusMoved = true;
     } else if (e.key == ' ' && cursorModifier) {
-      this.dispatch(bookmarks.actions.selectItem(
+      this.dispatch(selectItem(
           this.displayedIds_[focusedIndex], this.getState(), {
             clear: false,
             range: false,
@@ -239,11 +290,11 @@ Polymer({
 
       if (cursorModifier && !e.shiftKey) {
         this.dispatch(
-            bookmarks.actions.updateAnchor(this.displayedIds_[focusedIndex]));
+            updateAnchor(this.displayedIds_[focusedIndex]));
       } else {
         // If shift-selecting with no anchor, use the old focus index.
         if (e.shiftKey && this.getState().selection.anchor == null) {
-          this.dispatch(bookmarks.actions.updateAnchor(
+          this.dispatch(updateAnchor(
               this.displayedIds_[oldFocusedIndex]));
         }
 
@@ -255,7 +306,7 @@ Polymer({
           toggle: false,
         };
 
-        this.dispatch(bookmarks.actions.selectItem(
+        this.dispatch(selectItem(
             this.displayedIds_[focusedIndex], this.getState(), config));
       }
     }
@@ -271,7 +322,7 @@ Polymer({
     }
 
     if (!handled) {
-      handled = bookmarks.CommandManager.getInstance().handleKeyEvent(
+      handled = CommandManager.getInstance().handleKeyEvent(
           e, this.getState().selection.items);
     }
 

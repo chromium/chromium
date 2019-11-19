@@ -1,10 +1,11 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if defined(__has_feature)
+#if !defined(__has_feature)
+#define __has_feature(x) 0
+#endif
 #if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
 #define OPENSSL_NO_ASM
-#endif
 #endif
 
 #if !defined(OPENSSL_NO_ASM)
@@ -1081,27 +1082,13 @@ _bsaes_key_convert:
 	@ don't save last round key
 	bx	lr
 .size	_bsaes_key_convert,.-_bsaes_key_convert
-@ TODO(davidben): This should be aes_nohw_cbc_encrypt, but that function does
-@ not exist. Rather than add it, patch this fallback out. See
-@ https://crbug.com/boringssl/256.
-
-
-
 .globl	bsaes_cbc_encrypt
 .hidden	bsaes_cbc_encrypt
 .type	bsaes_cbc_encrypt,%function
 .align	5
 bsaes_cbc_encrypt:
-#ifndef	__KERNEL__
-	cmp	r2, #128
-#ifndef	__thumb__
-	blo	AES_cbc_encrypt
-#else
-	bhs	1f
-	b	AES_cbc_encrypt
-1:
-#endif
-#endif
+	@ In OpenSSL, this function had a fallback to aes_nohw_cbc_encrypt for
+	@ short inputs. We patch this out, using bsaes for all input sizes.
 
 	@ it is up to the caller to make sure we are called with enc == 0
 
@@ -1199,10 +1186,7 @@ bsaes_cbc_encrypt:
 	adds	r2, r2, #8
 	beq	.Lcbc_dec_done
 
-	vld1.8	{q0}, [r0]!		@ load input
-	cmp	r2, #2
-	blo	.Lcbc_dec_one
-	vld1.8	{q1}, [r0]!
+	@ Set up most parameters for the _bsaes_decrypt8 call.
 #ifndef	BSAES_ASM_EXTENDED_KEY
 	mov	r4, sp			@ pass the key
 #else
@@ -1210,6 +1194,11 @@ bsaes_cbc_encrypt:
 #endif
 	mov	r5, r10
 	vstmia	r9, {q15}			@ put aside IV
+
+	vld1.8	{q0}, [r0]!		@ load input
+	cmp	r2, #2
+	blo	.Lcbc_dec_one
+	vld1.8	{q1}, [r0]!
 	beq	.Lcbc_dec_two
 	vld1.8	{q2}, [r0]!
 	cmp	r2, #4
@@ -1327,16 +1316,11 @@ bsaes_cbc_encrypt:
 .align	4
 .Lcbc_dec_one:
 	sub	r0, r0, #0x10
-	mov	r10, r1			@ save original out pointer
-	mov	r1, r9			@ use the iv scratch space as out buffer
-	mov	r2, r3
-	vmov	q4,q15		@ just in case ensure that IV
-	vmov	q5,q0			@ and input are preserved
-	bl	aes_nohw_decrypt
-	vld1.8	{q0}, [r9]		@ load result
-	veor	q0, q0, q4	@ ^= IV
-	vmov	q15, q5		@ q5 holds input
-	vst1.8	{q0}, [r10]		@ write output
+	bl	_bsaes_decrypt8
+	vldmia	r9, {q14}			@ reload IV
+	vld1.8	{q15}, [r0]!		@ reload input
+	veor	q0, q0, q14	@ ^= IV
+	vst1.8	{q0}, [r1]!		@ write output
 
 .Lcbc_dec_done:
 #ifndef	BSAES_ASM_EXTENDED_KEY
@@ -1354,15 +1338,13 @@ bsaes_cbc_encrypt:
 	VFP_ABI_POP
 	ldmia	sp!, {r4,r5,r6,r7,r8,r9,r10, pc}
 .size	bsaes_cbc_encrypt,.-bsaes_cbc_encrypt
-
 .globl	bsaes_ctr32_encrypt_blocks
 .hidden	bsaes_ctr32_encrypt_blocks
 .type	bsaes_ctr32_encrypt_blocks,%function
 .align	5
 bsaes_ctr32_encrypt_blocks:
-	cmp	r2, #8			@ use plain AES for
-	blo	.Lctr_enc_short			@ small sizes
-
+	@ In OpenSSL, short inputs fall back to aes_nohw_* here. We patch this
+	@ out to retain a constant-time implementation.
 	mov	ip, sp
 	stmdb	sp!, {r4,r5,r6,r7,r8,r9,r10, lr}
 	VFP_ABI_PUSH
@@ -1538,51 +1520,10 @@ bsaes_ctr32_encrypt_blocks:
 	VFP_ABI_POP
 	ldmia	sp!, {r4,r5,r6,r7,r8,r9,r10, pc}	@ return
 
-.align	4
-.Lctr_enc_short:
-	ldr	ip, [sp]		@ ctr pointer is passed on stack
-	stmdb	sp!, {r4,r5,r6,r7,r8, lr}
-
-	mov	r4, r0		@ copy arguments
-	mov	r5, r1
-	mov	r6, r2
-	mov	r7, r3
-	ldr	r8, [ip, #12]		@ load counter .LSW
-	vld1.8	{q1}, [ip]		@ load whole counter value
-#ifdef __ARMEL__
-	rev	r8, r8
-#endif
-	sub	sp, sp, #0x10
-	vst1.8	{q1}, [sp]		@ copy counter value
-	sub	sp, sp, #0x10
-
-.Lctr_enc_short_loop:
-	add	r0, sp, #0x10		@ input counter value
-	mov	r1, sp			@ output on the stack
-	mov	r2, r7			@ key
-
-	bl	aes_nohw_encrypt
-
-	vld1.8	{q0}, [r4]!	@ load input
-	vld1.8	{q1}, [sp]		@ load encrypted counter
-	add	r8, r8, #1
-#ifdef __ARMEL__
-	rev	r0, r8
-	str	r0, [sp, #0x1c]		@ next counter value
-#else
-	str	r8, [sp, #0x1c]		@ next counter value
-#endif
-	veor	q0,q0,q1
-	vst1.8	{q0}, [r5]!	@ store output
-	subs	r6, r6, #1
-	bne	.Lctr_enc_short_loop
-
-	vmov.i32	q0, #0
-	vmov.i32	q1, #0
-	vstmia	sp!, {q0,q1}
-
-	ldmia	sp!, {r4,r5,r6,r7,r8, pc}
+	@ OpenSSL contains aes_nohw_* fallback code here. We patch this
+	@ out to retain a constant-time implementation.
 .size	bsaes_ctr32_encrypt_blocks,.-bsaes_ctr32_encrypt_blocks
 #endif
 #endif
 #endif  // !OPENSSL_NO_ASM
+.section	.note.GNU-stack,"",%progbits

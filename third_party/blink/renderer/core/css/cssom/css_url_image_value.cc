@@ -5,33 +5,10 @@
 #include "third_party/blink/renderer/core/css/cssom/css_url_image_value.h"
 
 #include "third_party/blink/renderer/core/css/css_image_value.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
-
-CSSURLImageValue* CSSURLImageValue::Create(ScriptState* script_state,
-                                           const AtomicString& url,
-                                           ExceptionState& exception_state) {
-  const auto* execution_context = ExecutionContext::From(script_state);
-  DCHECK(execution_context);
-  KURL parsed_url = execution_context->CompleteURL(url);
-  if (!parsed_url.IsValid()) {
-    exception_state.ThrowTypeError("Failed to parse URL from " + url);
-    return nullptr;
-  }
-  // Use absolute URL for CSSImageValue but keep relative URL for
-  // getter and serialization.
-  return MakeGarbageCollected<CSSURLImageValue>(
-      *CSSImageValue::Create(url, parsed_url, Referrer()));
-}
-
-CSSURLImageValue* CSSURLImageValue::FromCSSValue(const CSSImageValue& value) {
-  return MakeGarbageCollected<CSSURLImageValue>(value);
-}
 
 const String& CSSURLImageValue::url() const {
   return value_->RelativeUrl();

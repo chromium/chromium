@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="common.js"></script>
+
+<style>
+.img {
+  display: block;
+}
+
+.img-container {
+  width: 200px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+</style>
+
+<script>
+  const subpixel_position_img = new ElementLoadPromise("subpixel_position_img");
+  async_test(function(t) {
+    subpixel_position_img.promise.then(t.step_func_done());
+  }, "Test that the in viewport image with sub-pixel starting position and overflow:hidden style is loaded");
+</script>
+
+<body>
+  <div style="height:0.5px;">
+    This div makes the img-container below to start at sub-pixel top position
+  </div>
+  <div class="img-container">
+    <img id="subpixel_position_img" class="img" loading="lazy"
+         src="../loading/resources/base-image1.png"
+         onload="subpixel_position_img.resolve();">
+  </div>
+</body>

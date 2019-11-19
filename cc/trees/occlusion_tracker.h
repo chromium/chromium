@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "cc/base/simple_enclosed_region.h"
 #include "cc/cc_export.h"
 #include "cc/layers/effect_tree_layer_list_iterator.h"
@@ -31,7 +30,10 @@ class RenderSurfaceImpl;
 class CC_EXPORT OcclusionTracker {
  public:
   explicit OcclusionTracker(const gfx::Rect& screen_space_clip_rect);
+  OcclusionTracker(const OcclusionTracker&) = delete;
   ~OcclusionTracker();
+
+  OcclusionTracker& operator=(const OcclusionTracker&) = delete;
 
   // Return an occlusion that retains the current state of the tracker
   // and can be used outside of a layer walk to check occlusion.
@@ -102,8 +104,6 @@ class CC_EXPORT OcclusionTracker {
 
   gfx::Rect screen_space_clip_rect_;
   gfx::Size minimum_tracking_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(OcclusionTracker);
 };
 
 }  // namespace cc

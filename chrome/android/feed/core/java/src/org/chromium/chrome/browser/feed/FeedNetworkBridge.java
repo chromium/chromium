@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.feed;
 
+import com.google.android.libraries.feed.api.host.network.HttpRequest;
+import com.google.android.libraries.feed.api.host.network.HttpResponse;
+import com.google.android.libraries.feed.api.host.network.NetworkClient;
 import com.google.android.libraries.feed.common.functional.Consumer;
-import com.google.android.libraries.feed.host.network.HttpRequest;
-import com.google.android.libraries.feed.host.network.HttpResponse;
-import com.google.android.libraries.feed.host.network.NetworkClient;
 
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
@@ -28,7 +29,7 @@ public class FeedNetworkBridge implements NetworkClient {
      * @param profile Profile of the user we are rendering the Feed for.
      */
     public FeedNetworkBridge(Profile profile) {
-        mNativeBridge = nativeInit(profile);
+        mNativeBridge = FeedNetworkBridgeJni.get().init(FeedNetworkBridge.this, profile);
     }
 
     /*
@@ -36,7 +37,7 @@ public class FeedNetworkBridge implements NetworkClient {
      */
     public void destroy() {
         assert mNativeBridge != 0;
-        nativeDestroy(mNativeBridge);
+        FeedNetworkBridgeJni.get().destroy(mNativeBridge, FeedNetworkBridge.this);
         mNativeBridge = 0;
     }
 
@@ -45,8 +46,8 @@ public class FeedNetworkBridge implements NetworkClient {
         if (mNativeBridge == 0) {
             responseConsumer.accept(createHttpResponse(500, new byte[0]));
         } else {
-            nativeSendNetworkRequest(mNativeBridge, request.getUri().toString(),
-                    request.getMethod(), request.getBody(),
+            FeedNetworkBridgeJni.get().sendNetworkRequest(mNativeBridge, FeedNetworkBridge.this,
+                    request.getUri().toString(), request.getMethod(), request.getBody(),
                     result -> responseConsumer.accept(result));
         }
     }
@@ -57,7 +58,7 @@ public class FeedNetworkBridge implements NetworkClient {
         // See https://crbug.com/901414.
         if (mNativeBridge == 0) return;
 
-        nativeCancelRequests(mNativeBridge);
+        FeedNetworkBridgeJni.get().cancelRequests(mNativeBridge, FeedNetworkBridge.this);
     }
 
     @CalledByNative
@@ -65,9 +66,12 @@ public class FeedNetworkBridge implements NetworkClient {
         return new HttpResponse(code, body);
     }
 
-    private native long nativeInit(Profile profile);
-    private native void nativeDestroy(long nativeFeedNetworkBridge);
-    private native void nativeSendNetworkRequest(long nativeFeedNetworkBridge, String url,
-            String requestType, byte[] body, Callback<HttpResponse> resultCallback);
-    private native void nativeCancelRequests(long nativeFeedNetworkBridge);
+    @NativeMethods
+    interface Natives {
+        long init(FeedNetworkBridge caller, Profile profile);
+        void destroy(long nativeFeedNetworkBridge, FeedNetworkBridge caller);
+        void sendNetworkRequest(long nativeFeedNetworkBridge, FeedNetworkBridge caller, String url,
+                String requestType, byte[] body, Callback<HttpResponse> resultCallback);
+        void cancelRequests(long nativeFeedNetworkBridge, FeedNetworkBridge caller);
+    }
 }

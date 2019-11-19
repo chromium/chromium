@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #import "ios/chrome/browser/metrics/previous_session_info.h"
 #include "testing/platform_test.h"
@@ -52,7 +52,7 @@ class MemoryWarningHelperTest : public PlatformTest {
   void RunMessageLoop() { run_loop_.Run(); }
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::RunLoop run_loop_;
   base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;

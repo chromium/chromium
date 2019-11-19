@@ -30,8 +30,9 @@ CallbackHelper.prototype = {
         lastCall = new Error().stack;
       }
       callback.apply(this.fixture_, arguments);
-      if (--this.pendingCallbacks_ <= 0)
+      if (--this.pendingCallbacks_ <= 0) {
         CallbackHelper.testDone_();
+      }
     }.bind(this));
     // runAllActionsAsync catches exceptions and puts them in the test
     // framework's list of errors and fails the test if appropriate.

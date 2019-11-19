@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/material_components/chrome_app_bar_view_controller.h"
 #import "ios/chrome/browser/ui/material_components/utils.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 #import "ios/third_party/material_components_ios/src/components/CollectionCells/src/MaterialCollectionCells.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -61,6 +62,11 @@
                name:UIContentSizeCategoryDidChangeNotification
              object:nil];
   }
+
+  // Suport dark mode.
+  self.collectionView.backgroundColor = UIColor.cr_systemGroupedBackgroundColor;
+  self.styler.cellBackgroundColor =
+      UIColor.cr_secondarySystemGroupedBackgroundColor;
 }
 
 - (void)contentSizeCategoryDidChange:(id)sender {
@@ -92,6 +98,23 @@
     CollectionViewItem* item =
         [self.collectionViewModel itemAtIndexPath:indexPath];
     [self reconfigureCellAtIndexPath:indexPath withItem:item];
+  }
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 13, *)) {
+    if ([self.traitCollection
+            hasDifferentColorAppearanceComparedToTraitCollection:
+                previousTraitCollection]) {
+      // MDCCollectionView doesn't support dynamic colors, so they have to be
+      // resolved now.
+      // TODO(crbug.com/984928): Clean up once dynamic color support is added.
+      self.styler.cellBackgroundColor =
+          [UIColor.cr_secondarySystemGroupedBackgroundColor
+              resolvedColorWithTraitCollection:self.traitCollection];
+      [self.collectionViewLayout invalidateLayout];
+    }
   }
 }
 

@@ -37,7 +37,9 @@ class CounterContent {
   CounterContent(const AtomicString& identifier,
                  EListStyleType style,
                  const AtomicString& separator)
-      : identifier_(identifier), list_style_(style), separator_(separator) {}
+      : identifier_(identifier), list_style_(style), separator_(separator) {
+    DCHECK_NE(style, EListStyleType::kString);
+  }
 
   const AtomicString& Identifier() const { return identifier_; }
   EListStyleType ListStyle() const { return list_style_; }

@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
@@ -51,12 +50,12 @@ namespace {
 const double kNoneMaxBandwidthMbps = 0.0;
 const double kBluetoothMaxBandwidthMbps = 1.0;
 const double kEthernetMaxBandwidthMbps = 2.0;
-const base::Optional<TimeDelta> kEthernetHttpRtt(
-    TimeDelta::FromMilliseconds(50));
-const base::Optional<TimeDelta> kEthernetTransportRtt(
-    TimeDelta::FromMilliseconds(25));
+const base::Optional<base::TimeDelta> kEthernetHttpRtt(
+    base::TimeDelta::FromMilliseconds(50));
+const base::Optional<base::TimeDelta> kEthernetTransportRtt(
+    base::TimeDelta::FromMilliseconds(25));
 const base::Optional<double> kEthernetThroughputMbps(75.0);
-const base::Optional<TimeDelta> kUnknownRtt;
+const base::Optional<base::TimeDelta> kUnknownRtt;
 const base::Optional<double> kUnknownThroughputMbps;
 
 enum class SaveData {
@@ -82,8 +81,8 @@ class StateObserver : public NetworkStateNotifier::NetworkStateObserver {
   void ConnectionChange(WebConnectionType type,
                         double max_bandwidth_mbps,
                         WebEffectiveConnectionType effective_type,
-                        const base::Optional<TimeDelta>& http_rtt,
-                        const base::Optional<TimeDelta>& transport_rtt,
+                        const base::Optional<base::TimeDelta>& http_rtt,
+                        const base::Optional<base::TimeDelta>& transport_rtt,
                         const base::Optional<double>& downlink_throughput_mbps,
                         bool save_data) override {
     observed_type_ = type;
@@ -112,10 +111,10 @@ class StateObserver : public NetworkStateNotifier::NetworkStateObserver {
   WebEffectiveConnectionType ObservedEffectiveType() const {
     return observed_effective_type_;
   }
-  base::Optional<TimeDelta> ObservedHttpRtt() const {
+  base::Optional<base::TimeDelta> ObservedHttpRtt() const {
     return observed_http_rtt_;
   }
-  base::Optional<TimeDelta> ObservedTransportRtt() const {
+  base::Optional<base::TimeDelta> ObservedTransportRtt() const {
     return observed_transport_rtt_;
   }
   base::Optional<double> ObservedDownlinkThroughputMbps() const {
@@ -154,8 +153,8 @@ class StateObserver : public NetworkStateNotifier::NetworkStateObserver {
   WebConnectionType observed_type_;
   double observed_max_bandwidth_mbps_;
   WebEffectiveConnectionType observed_effective_type_;
-  base::Optional<TimeDelta> observed_http_rtt_;
-  base::Optional<TimeDelta> observed_transport_rtt_;
+  base::Optional<base::TimeDelta> observed_http_rtt_;
+  base::Optional<base::TimeDelta> observed_transport_rtt_;
   base::Optional<double> observed_downlink_throughput_mbps_;
   bool observed_on_line_state_;
   SaveData observed_save_data_;
@@ -196,8 +195,8 @@ class NetworkStateNotifierTest : public testing::Test {
   void SetConnection(WebConnectionType type,
                      double max_bandwidth_mbps,
                      WebEffectiveConnectionType effective_type,
-                     const base::Optional<TimeDelta>& http_rtt,
-                     const base::Optional<TimeDelta>& transport_rtt,
+                     const base::Optional<base::TimeDelta>& http_rtt,
+                     const base::Optional<base::TimeDelta>& transport_rtt,
                      const base::Optional<double>& downlink_throughput_mbps,
                      SaveData save_data) {
     notifier_.SetWebConnection(type, max_bandwidth_mbps);
@@ -222,13 +221,13 @@ class NetworkStateNotifierTest : public testing::Test {
       WebConnectionType expected_type,
       double expected_max_bandwidth_mbps,
       WebEffectiveConnectionType expected_effective_type,
-      const base::Optional<TimeDelta>& expected_http_rtt,
+      const base::Optional<base::TimeDelta>& expected_http_rtt,
       const base::Optional<double>& expected_downlink_throughput_mbps,
       SaveData expected_save_data) const {
     WebConnectionType initial_type;
     double initial_downlink_max_mbps;
     WebEffectiveConnectionType initial_effective_type;
-    base::Optional<TimeDelta> initial_http_rtt;
+    base::Optional<base::TimeDelta> initial_http_rtt;
     base::Optional<double> initial_downlink_mbps;
     bool initial_save_data;
 
@@ -249,8 +248,8 @@ class NetworkStateNotifierTest : public testing::Test {
       WebConnectionType type,
       double max_bandwidth_mbps,
       WebEffectiveConnectionType effective_type,
-      const base::Optional<TimeDelta>& http_rtt,
-      const base::Optional<TimeDelta>& transport_rtt,
+      const base::Optional<base::TimeDelta>& http_rtt,
+      const base::Optional<base::TimeDelta>& transport_rtt,
       const base::Optional<double>& downlink_throughput_mbps,
       SaveData save_data) const {
     EXPECT_EQ(type, observer.ObservedType());
@@ -1002,13 +1001,16 @@ TEST_F(NetworkStateNotifierTest, SetNetworkConnectionInfoOverrideGenerateECTs) {
       kNoneMaxBandwidthMbps, SaveData::kOff));
 
   const struct {
-    base::Optional<TimeDelta> rtt;
+    base::Optional<base::TimeDelta> rtt;
     WebEffectiveConnectionType expected_effective_connection_type;
   } tests[] = {
-      {TimeDelta::FromMilliseconds(100), WebEffectiveConnectionType::kType4G},
-      {TimeDelta::FromMilliseconds(600), WebEffectiveConnectionType::kType3G},
-      {TimeDelta::FromMilliseconds(1600), WebEffectiveConnectionType::kType2G},
-      {TimeDelta::FromMilliseconds(2800),
+      {base::TimeDelta::FromMilliseconds(100),
+       WebEffectiveConnectionType::kType4G},
+      {base::TimeDelta::FromMilliseconds(600),
+       WebEffectiveConnectionType::kType3G},
+      {base::TimeDelta::FromMilliseconds(1600),
+       WebEffectiveConnectionType::kType2G},
+      {base::TimeDelta::FromMilliseconds(2800),
        WebEffectiveConnectionType::kTypeSlow2G},
   };
 

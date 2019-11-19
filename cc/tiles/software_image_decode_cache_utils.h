@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSize.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -49,13 +50,13 @@ class SoftwareImageDecodeCacheUtils {
     bool operator==(const CacheKey& other) const {
       // The frame_key always has to be the same. However, after that all
       // original decodes are the same, so if we can use the original decode,
-      // return true. If not, then we have to compare every field. Note we don't
-      // compare |nearest_neighbor_| because we would only use kOriginal type in
-      // that case (dchecked below), which implies no scale. The returned scale
-      // to Skia would respect the nearest neighbor value of the requested
-      // image.
-      DCHECK(!is_nearest_neighbor_ || type_ == kOriginal);
+      // return true. If not, then we have to compare every field.
+      // |nearest_neighbor_| is not compared below since it is not used for
+      // scaled decodes and does not affect the contents of the cache entry
+      // (just passed to skia for the filtering to be done at raster time).
+      DCHECK(!is_nearest_neighbor_ || type_ != kSubrectAndScale);
       return frame_key_ == other.frame_key_ && type_ == other.type_ &&
+             target_color_space_ == other.target_color_space_ &&
              (type_ == kOriginal || (src_rect_ == other.src_rect_ &&
                                      target_size_ == other.target_size_));
     }
@@ -68,6 +69,9 @@ class SoftwareImageDecodeCacheUtils {
     bool is_nearest_neighbor() const { return is_nearest_neighbor_; }
     gfx::Rect src_rect() const { return src_rect_; }
     gfx::Size target_size() const { return target_size_; }
+    const gfx::ColorSpace& target_color_space() const {
+      return target_color_space_;
+    }
 
     size_t get_hash() const { return hash_; }
 
@@ -89,7 +93,8 @@ class SoftwareImageDecodeCacheUtils {
              ProcessingType type,
              bool is_nearest_neighbor,
              const gfx::Rect& src_rect,
-             const gfx::Size& size);
+             const gfx::Size& size,
+             const gfx::ColorSpace& target_color_space);
 
     PaintImage::FrameKey frame_key_;
     // The stable id is does not factor into the cache key's value for hashing
@@ -100,6 +105,7 @@ class SoftwareImageDecodeCacheUtils {
     bool is_nearest_neighbor_;
     gfx::Rect src_rect_;
     gfx::Size target_size_;
+    gfx::ColorSpace target_color_space_;
     size_t hash_;
   };
 
@@ -179,7 +185,6 @@ class SoftwareImageDecodeCacheUtils {
       const CacheKey& key,
       const PaintImage& image,
       SkColorType color_type,
-      sk_sp<SkColorSpace> color_space,
       PaintImage::GeneratorClientId client_id);
   static std::unique_ptr<CacheEntry> GenerateCacheEntryFromCandidate(
       const CacheKey& key,

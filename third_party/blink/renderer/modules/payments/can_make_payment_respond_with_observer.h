@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_CAN_MAKE_PAYMENT_RESPOND_WITH_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_CAN_MAKE_PAYMENT_RESPOND_WITH_OBSERVER_H_
 
-#include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/service_worker/respond_with_observer.h"
 
@@ -26,7 +26,8 @@ class MODULES_EXPORT CanMakePaymentRespondWithObserver final
   ~CanMakePaymentRespondWithObserver() override = default;
 
   void OnResponseRejected(mojom::ServiceWorkerResponseError) override;
-  void OnResponseFulfilled(const ScriptValue&,
+  void OnResponseFulfilled(ScriptState*,
+                           const ScriptValue&,
                            ExceptionState::ContextType,
                            const char* interface_name,
                            const char* property_name) override;

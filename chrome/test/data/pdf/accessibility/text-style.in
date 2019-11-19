@@ -1,0 +1,92 @@
+{{header}}
+%@BLINK-ALLOW:fontFamily='Helvetica-Bold-Italic'
+%@BLINK-ALLOW:fontSize=38.00
+%@BLINK-ALLOW:fontWeight=800.00
+%@BLINK-ALLOW:color=*
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /MediaBox [ 0 0 200 200 ]
+  /Count 1
+  /Kids [ 3 0 R ]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Contents 6 0 R
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica-Bold-Italic
+  /FontDescriptor 5 0 R
+>>
+{{object 5 0}} <<
+  /Type /FontDescriptor
+  /FontName /Helvetica-Bold-Italic
+  /FontWeight 800
+  /StemV 165
+  /ItalicAngle 45
+  /Ascent 776
+  /Flags 64
+  /FontBBox [ -250 -236 2827 1000 ]
+  /CapHeight 763
+  /Descent -223
+>>
+endobj
+{{object 6 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 150 Td
+/F1 38 Tf
+0 1 0 RG
+1 0 0 rg
+0 Tr
+(Case 1) Tj
+ET
+
+BT
+20 110 Td
+/F1 38 Tf
+0 1 0 RG
+1 0 0 rg
+1 Tr
+(Case 2) Tj
+ET
+
+BT
+20 70 Td
+/F1 38 Tf
+0 1 0 RG
+1 0 0 rg
+2 Tr
+(Case 3) Tj
+ET
+
+BT
+20 30 Td
+/F1 38 Tf
+0 1 0 RG
+1 0 0 rg
+3 Tr
+(Case 4) Tj
+ET
+endstream
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

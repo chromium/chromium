@@ -8,7 +8,7 @@
 
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/root_window_controller.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "base/bind.h"
@@ -17,34 +17,13 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "services/ws/public/cpp/input_devices/input_device_controller_client.h"
+#include "ui/ozone/public/input_controller.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/wm/core/cursor_manager.h"
 
 namespace ash {
 
 namespace {
-
-void OnSetTouchpadEnabledDone(bool enabled, bool succeeded) {
-  // Don't log here, |succeeded| is only true if there is a touchpad *and* the
-  // value changed. In other words |succeeded| is false when not on device or
-  // the value was already at the value specified. Neither of these are
-  // interesting failures.
-  if (!succeeded)
-    return;
-
-  ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
-  if (!cursor_manager)
-    return;
-
-  if (enabled)
-    cursor_manager->ShowCursor();
-  else
-    cursor_manager->HideCursor();
-}
-
-ws::InputDeviceControllerClient* GetInputDeviceControllerClient() {
-  return Shell::Get()->shell_delegate()->GetInputDeviceControllerClient();
-}
 
 PrefService* GetActivePrefService() {
   return Shell::Get()->session_controller()->GetActivePrefService();
@@ -57,11 +36,9 @@ void TouchDevicesController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kTapDraggingEnabled, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF |
-          PrefRegistry::PUBLIC);
-  registry->RegisterBooleanPref(prefs::kTouchpadEnabled, PrefRegistry::PUBLIC);
-  registry->RegisterBooleanPref(prefs::kTouchscreenEnabled,
-                                PrefRegistry::PUBLIC);
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
+  registry->RegisterBooleanPref(prefs::kTouchpadEnabled, true);
+  registry->RegisterBooleanPref(prefs::kTouchscreenEnabled, true);
 }
 
 TouchDevicesController::TouchDevicesController() {
@@ -182,30 +159,36 @@ void TouchDevicesController::UpdateTapDraggingEnabled() {
 
   UMA_HISTOGRAM_BOOLEAN("Touchpad.TapDragging.Changed", enabled);
 
-  if (!GetInputDeviceControllerClient())
-    return;  // Happens in tests.
-
-  GetInputDeviceControllerClient()->SetTapDragging(enabled);
+  ui::OzonePlatform::GetInstance()->GetInputController()->SetTapDragging(
+      enabled);
 }
 
 void TouchDevicesController::UpdateTouchpadEnabled() {
-  if (!GetInputDeviceControllerClient())
-    return;  // Happens in tests.
-
   bool enabled = GetTouchpadEnabled(TouchDeviceEnabledSource::GLOBAL) &&
                  GetTouchpadEnabled(TouchDeviceEnabledSource::USER_PREF);
+  ui::InputController* input_controller =
+      ui::OzonePlatform::GetInstance()->GetInputController();
+  const bool old_value = input_controller->IsInternalTouchpadEnabled();
+  input_controller->SetInternalTouchpadEnabled(enabled);
+  if (old_value == input_controller->IsInternalTouchpadEnabled())
+    return;  // Value didn't actually change.
 
-  GetInputDeviceControllerClient()->SetInternalTouchpadEnabled(
-      enabled, base::BindRepeating(&OnSetTouchpadEnabledDone, enabled));
+  ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
+  if (!cursor_manager)
+    return;
+
+  if (enabled)
+    cursor_manager->ShowCursor();
+  else
+    cursor_manager->HideCursor();
 }
 
 void TouchDevicesController::UpdateTouchscreenEnabled() {
-  if (!GetInputDeviceControllerClient())
-    return;  // Happens in tests.
-
-  GetInputDeviceControllerClient()->SetTouchscreensEnabled(
-      GetTouchscreenEnabled(TouchDeviceEnabledSource::GLOBAL) &&
-      GetTouchscreenEnabled(TouchDeviceEnabledSource::USER_PREF));
+  ui::OzonePlatform::GetInstance()
+      ->GetInputController()
+      ->SetTouchscreensEnabled(
+          GetTouchscreenEnabled(TouchDeviceEnabledSource::GLOBAL) &&
+          GetTouchscreenEnabled(TouchDeviceEnabledSource::USER_PREF));
 }
 
 }  // namespace ash

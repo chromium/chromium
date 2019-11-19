@@ -5,11 +5,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include "base/compiler_specific.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/task_environment.h"
 #include "ppapi/shared_impl/proxy_lock.h"
+#include "ppapi/shared_impl/test_globals.h"
 #include "ppapi/shared_impl/var.h"
 #include "ppapi/shared_impl/var_tracker.h"
-#include "ppapi/shared_impl/test_globals.h"
 
 namespace ppapi {
 
@@ -49,7 +49,8 @@ class VarTrackerTest : public testing::Test {
   VarTracker& var_tracker() { return *globals_.GetVarTracker(); }
 
  private:
-  base::MessageLoop message_loop_;  // Required to receive callbacks.
+  base::test::SingleThreadTaskEnvironment
+      task_environment_;  // Required to receive callbacks.
   TestGlobals globals_;
 };
 
@@ -68,7 +69,7 @@ TEST_F(VarTrackerTest, LastResourceRef) {
   EXPECT_FALSE(var->HasValidVarID());
   EXPECT_EQ(1, mock_var_alive_count);
 
-  var = NULL;
+  var.reset();
   EXPECT_EQ(0, mock_var_alive_count);
 }
 
@@ -93,10 +94,10 @@ TEST_F(VarTrackerTest, GetPluginRefAgain) {
   EXPECT_FALSE(var->HasValidVarID());
   EXPECT_EQ(1, mock_var_alive_count);
 
-  var = NULL;
+  var.reset();
   EXPECT_FALSE(var_tracker().GetVar(pp_var));
   EXPECT_EQ(1, mock_var_alive_count);
-  another_var = NULL;
+  another_var.reset();
   EXPECT_FALSE(var_tracker().GetVar(pp_var));
   EXPECT_EQ(0, mock_var_alive_count);
 }
@@ -109,7 +110,7 @@ TEST_F(VarTrackerTest, PluginRefWithoutVarRef) {
   scoped_refptr<MockStringVar> var(new MockStringVar(std::string("zzz")));
   PP_Var pp_var = var->GetPPVar();
   EXPECT_EQ(1, mock_var_alive_count);
-  var = NULL;
+  var.reset();
   EXPECT_EQ(1, mock_var_alive_count);
 
   // The var is owned only by VarTracker. PP_Var must be still valid.
@@ -138,10 +139,10 @@ TEST_F(VarTrackerTest, ObjectRef) {
   EXPECT_EQ(1, mock_var_alive_count);
 
   // Releasing all references, then only VarTracker own the instance.
-  var = NULL;
+  var.reset();
   EXPECT_TRUE(var_tracker().GetVar(pp_var));
   EXPECT_EQ(1, mock_var_alive_count);
-  another_var = NULL;
+  another_var.reset();
   EXPECT_TRUE(var_tracker().GetVar(pp_var));
   EXPECT_EQ(1, mock_var_alive_count);
 

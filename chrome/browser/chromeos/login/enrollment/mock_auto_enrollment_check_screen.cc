@@ -7,10 +7,10 @@
 namespace chromeos {
 
 MockAutoEnrollmentCheckScreen::MockAutoEnrollmentCheckScreen(
-    BaseScreenDelegate* base_screen_delegate,
     AutoEnrollmentCheckScreenView* view,
+    ErrorScreen* error_screen,
     const base::RepeatingClosure& exit_callback)
-    : AutoEnrollmentCheckScreen(base_screen_delegate, view, exit_callback) {}
+    : AutoEnrollmentCheckScreen(view, error_screen, exit_callback) {}
 
 MockAutoEnrollmentCheckScreen::~MockAutoEnrollmentCheckScreen() {}
 

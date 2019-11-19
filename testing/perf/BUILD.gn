@@ -5,10 +5,27 @@
 source_set("perf") {
   testonly = true
   sources = [
+    "luci_test_result.cc",
+    "luci_test_result.h",
+    "perf_result_reporter.cc",
+    "perf_result_reporter.h",
     "perf_test.cc",
     "perf_test.h",
   ]
   deps = [
     "//base",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "luci_test_result_unittest.cc",
+  ]
+  deps = [
+    ":perf",
+    "//base",
+    "//testing/gtest",
   ]
 }

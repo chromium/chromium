@@ -1,0 +1,12 @@
+[document web]
+++[table] xml-roles:grid cols=2 headers=('Browser', 'Rendering Engine'); rows=2 headers=(NONE); caption=false; spans=(all: 1x1)
+++++[table row] selectable xml-roles:row
+++++++[column header] name='Browser' selectable colindex:1 rowindex:1 xml-roles:columnheader (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Browser'
+++++++[column header] name='Rendering Engine' selectable colindex:2 rowindex:1 xml-roles:columnheader (row=0, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Rendering Engine'
+++++[table row] selectable xml-roles:row
+++++++[table cell] name='Chrome' selectable colindex:1 rowindex:2 xml-roles:gridcell (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='Chrome'
+++++++[table cell] name='Blink' selectable colindex:2 rowindex:2 xml-roles:gridcell (row=1, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='Blink'

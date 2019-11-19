@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -22,11 +21,13 @@
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
 #include "chrome/browser/ui/find_bar/find_tab_helper.h"
-#include "chrome/browser/ui/page_action/page_action_icon_container.h"
+#include "chrome/browser/ui/find_bar/find_types.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_source.h"
+#include "content/public/browser/notification_types.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
@@ -44,10 +45,10 @@ constexpr int kMinFindWndDistanceFromSelection = 5;
 class FindBrowserListObserver : public BrowserListObserver {
  public:
   FindBrowserListObserver() {
-    // Can't use base::ScopedObserver because BrowserListObserver isn't derived
-    // from Observer. Not that this object will ever be destructed anyway.
     BrowserList::AddObserver(this);
   }
+
+  ~FindBrowserListObserver() override { BrowserList::RemoveObserver(this); }
 
   static void EnsureInstance() {
     static base::NoDestructor<FindBrowserListObserver> the_instance;
@@ -93,8 +94,9 @@ class FindBrowserListObserver : public BrowserListObserver {
 
 }  // namespace
 
-FindBarController::FindBarController(FindBar* find_bar, Browser* browser)
-    : find_bar_(find_bar),
+FindBarController::FindBarController(std::unique_ptr<FindBar> find_bar,
+                                     Browser* browser)
+    : find_bar_(std::move(find_bar)),
       browser_(browser),
       find_bar_platform_helper_(FindBarPlatformHelper::Create(this)) {
   FindBrowserListObserver::EnsureInstance();
@@ -104,23 +106,48 @@ FindBarController::~FindBarController() {
   DCHECK(!web_contents_);
 }
 
-void FindBarController::Show() {
+void FindBarController::Show(bool find_next, bool forward_direction) {
   FindTabHelper* find_tab_helper =
       FindTabHelper::FromWebContents(web_contents_);
 
   // Only show the animation if we're not already showing a find bar for the
   // selected WebContents.
   if (!find_tab_helper->find_ui_active()) {
+    has_user_modified_text_ = false;
     MaybeSetPrepopulateText();
 
     find_tab_helper->set_find_ui_active(true);
     find_bar_->Show(true);
   }
   find_bar_->SetFocusAndSelection();
+
+  base::string16 find_text;
+  if (!find_next && !has_user_modified_text_) {
+    base::string16 selected_text = GetSelectedText();
+    if (selected_text.length() <= 250)
+      find_text = selected_text;
+  }
+
+#if defined(OS_MACOSX)
+  // We always want to search for the current contents of the find bar on
+  // OS X. For regular profile it's always the current find pboard. For
+  // Incognito window it's the newest value of the find pboard content and
+  // user-typed text.
+  find_text = find_bar_->GetFindText();
+#endif
+
+  if (!find_text.empty() || find_next) {
+    // Don't update the local input if we're using the global pasteboard.
+    if (!find_bar_->HasGlobalFindPasteboard())
+      find_bar_->SetFindTextAndSelectedRange(find_text,
+                                             gfx::Range(0, find_text.length()));
+    find_tab_helper->StartFinding(find_text, forward_direction, false);
+  }
 }
 
-void FindBarController::EndFindSession(SelectionAction selection_action,
-                                       ResultAction result_action) {
+void FindBarController::EndFindSession(
+    FindOnPageSelectionAction selection_action,
+    FindBoxResultAction result_action) {
   find_bar_->Hide(true);
 
   // |web_contents_| can be NULL for a number of reasons, for example when the
@@ -134,7 +161,7 @@ void FindBarController::EndFindSession(SelectionAction selection_action,
     // tickmarks and highlighting.
     find_tab_helper->StopFinding(selection_action);
 
-    if (result_action == kClearResultsInFindBox)
+    if (result_action == FindBoxResultAction::kClear)
       find_bar_->ClearResults(find_tab_helper->find_result());
 
     // When we get dismissed we restore the focus to where it belongs.
@@ -143,8 +170,7 @@ void FindBarController::EndFindSession(SelectionAction selection_action,
 }
 
 void FindBarController::FindBarVisibilityChanged() {
-  browser_->window()->GetPageActionIconContainer()->UpdatePageActionIcon(
-      PageActionIconType::kFind);
+  browser_->OnFindBarVisibilityChanged();
 }
 
 void FindBarController::ChangeWebContents(WebContents* contents) {
@@ -154,13 +180,17 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
 
     FindTabHelper* find_tab_helper =
         FindTabHelper::FromWebContents(web_contents_);
-    if (find_tab_helper)
+    if (find_tab_helper) {
       find_tab_helper->set_selected_range(find_bar_->GetSelectedRange());
+      find_tab_observer_.Remove(find_tab_helper);
+    }
   }
 
   web_contents_ = contents;
   FindTabHelper* find_tab_helper =
       web_contents_ ? FindTabHelper::FromWebContents(web_contents_) : nullptr;
+  if (find_tab_helper)
+    find_tab_observer_.Add(find_tab_helper);
 
   // Hide any visible find window from the previous tab if a NULL tab contents
   // is passed in or if the find UI is not active in the new tab.
@@ -172,9 +202,6 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
   if (!web_contents_)
     return;
 
-  registrar_.Add(this,
-                 chrome::NOTIFICATION_FIND_RESULT_AVAILABLE,
-                 content::Source<WebContents>(web_contents_));
   registrar_.Add(
       this,
       content::NOTIFICATION_NAV_ENTRY_COMMITTED,
@@ -200,6 +227,8 @@ void FindBarController::SetText(base::string16 text) {
 }
 
 void FindBarController::OnUserChangedFindText(base::string16 text) {
+  has_user_modified_text_ = !text.empty();
+
   if (find_bar_platform_helper_)
     find_bar_platform_helper_->OnUserChangedFindText(text);
 }
@@ -210,24 +239,21 @@ void FindBarController::OnUserChangedFindText(base::string16 text) {
 void FindBarController::Observe(int type,
                                 const content::NotificationSource& source,
                                 const content::NotificationDetails& details) {
-  if (type == chrome::NOTIFICATION_FIND_RESULT_AVAILABLE) {
-    DCHECK(content::Source<WebContents>(source).ptr() == web_contents_);
-    OnFindResultAvailable();
-  } else if (type == content::NOTIFICATION_NAV_ENTRY_COMMITTED) {
-    NavigationController* source_controller =
-        content::Source<NavigationController>(source).ptr();
-    if (source_controller == &web_contents_->GetController()) {
-      content::LoadCommittedDetails* commit_details =
-          content::Details<content::LoadCommittedDetails>(details).ptr();
-      ui::PageTransition transition_type =
-          commit_details->entry->GetTransitionType();
-      // Hide the find bar on reload or navigation.
-      if (find_bar_->IsFindBarVisible() && commit_details->is_main_frame &&
-          (ui::PageTransitionCoreTypeIs(transition_type,
-                                        ui::PAGE_TRANSITION_RELOAD) ||
-           commit_details->is_navigation_to_different_page()))
-        EndFindSession(kKeepSelectionOnPage, kClearResultsInFindBox);
-    }
+  DCHECK_EQ(content::NOTIFICATION_NAV_ENTRY_COMMITTED, type);
+  NavigationController* source_controller =
+      content::Source<NavigationController>(source).ptr();
+  if (source_controller == &web_contents_->GetController()) {
+    content::LoadCommittedDetails* commit_details =
+        content::Details<content::LoadCommittedDetails>(details).ptr();
+    ui::PageTransition transition_type =
+        commit_details->entry->GetTransitionType();
+    // Hide the find bar on reload or navigation.
+    if (find_bar_->IsFindBarVisible() && commit_details->is_main_frame &&
+        (ui::PageTransitionCoreTypeIs(transition_type,
+                                      ui::PAGE_TRANSITION_RELOAD) ||
+         commit_details->is_navigation_to_different_page()))
+      EndFindSession(FindOnPageSelectionAction::kKeep,
+                     FindBoxResultAction::kClear);
   }
 }
 
@@ -271,7 +297,9 @@ gfx::Rect FindBarController::GetLocationForFindbarView(
   return new_pos;
 }
 
-void FindBarController::OnFindResultAvailable() {
+void FindBarController::OnFindResultAvailable(
+    content::WebContents* web_contents) {
+  DCHECK_EQ(web_contents, web_contents_);
   UpdateFindBarForCurrentResult();
 
   FindTabHelper* find_tab_helper =
@@ -350,4 +378,17 @@ void FindBarController::MaybeSetPrepopulateText() {
   // clear the result count display when there's nothing in the box.
   find_bar_->SetFindTextAndSelectedRange(find_string,
                                          find_tab_helper->selected_range());
+}
+
+base::string16 FindBarController::GetSelectedText() {
+  auto* host_view = web_contents_->GetRenderWidgetHostView();
+  if (!host_view)
+    return base::string16();
+
+  base::string16 selected_text = host_view->GetSelectedText();
+  // This should be kept in sync with what TextfieldModel::Paste() does, since
+  // that's what would run if the user explicitly pasted this text into the find
+  // bar.
+  base::TrimWhitespace(selected_text, base::TRIM_ALL, &selected_text);
+  return selected_text;
 }

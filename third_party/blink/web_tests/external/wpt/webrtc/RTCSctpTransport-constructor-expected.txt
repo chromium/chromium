@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL setRemoteDescription() with answer containing data media should initialize pc.sctp assert_equals: expected (object) null but got (undefined) undefined
-FAIL setLocalDescription() with answer containing data media should initialize pc.sctp assert_equals: expected (object) null but got (undefined) undefined
-Harness: the test ran to completion.
-

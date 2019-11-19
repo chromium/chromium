@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_impl.h"
@@ -28,7 +27,10 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
                                                   int id) {
     return base::WrapUnique(new TextureLayerImpl(tree_impl, id));
   }
+  TextureLayerImpl(const TextureLayerImpl&) = delete;
   ~TextureLayerImpl() override;
+
+  TextureLayerImpl& operator=(const TextureLayerImpl&) = delete;
 
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* layer_tree_impl) override;
@@ -49,6 +51,7 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   void SetTextureId(unsigned id);
   void SetPremultipliedAlpha(bool premultiplied_alpha);
   void SetBlendBackgroundColor(bool blend);
+  void SetForceTextureToOpaque(bool opaque);
   void SetFlipped(bool flipped);
   void SetNearestNeighbor(bool nearest_neighbor);
   void SetUVTopLeft(const gfx::PointF& top_left);
@@ -85,6 +88,7 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
 
   bool premultiplied_alpha_ = true;
   bool blend_background_color_ = false;
+  bool force_texture_to_opaque_ = false;
   bool flipped_ = true;
   bool nearest_neighbor_ = false;
   gfx::PointF uv_top_left_ = gfx::PointF();
@@ -123,8 +127,6 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   // As a pending layer, the set of SharedBitmapIds that the active layer should
   // unregister.
   std::vector<viz::SharedBitmapId> to_unregister_bitmap_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextureLayerImpl);
 };
 
 }  // namespace cc

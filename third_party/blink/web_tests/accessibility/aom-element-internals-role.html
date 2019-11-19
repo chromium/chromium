@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<body>
+
+<script>
+class TestElement extends HTMLElement {
+  constructor() {
+    super();
+    this._internals = this.attachInternals();
+  }
+
+  get internals() {
+    return this._internals;
+  }
+
+  set internals(val) {
+    throw "Can't set internals!";
+  }
+}
+customElements.define("test-element", TestElement);
+
+function createTestElement(id) {
+  const element = document.createElement("test-element");
+  element.id = id;
+  document.body.appendChild(element);
+  return element;
+}
+
+function axElementById(id) {
+  return accessibilityController.accessibleElementById(id);
+}
+
+test(function(t) {
+  const element = createTestElement("test1");
+  element.internals.role = "button";
+  assert_equals(element.role, null);
+  assert_equals(element.internals.role, "button");
+  assert_equals(axElementById("test1").role, "AXRole: AXButton");
+}, "Role set through element internals affects role in AX object, doesn't affect element.role");
+
+test(function(t) {
+  const element = createTestElement("test2");
+  element.internals.role = "button";
+  assert_equals(element.role, null);
+  assert_equals(element.internals.role, "button");
+  assert_equals(axElementById("test2").role, "AXRole: AXButton");
+  element.role = "checkbox";
+  assert_equals(element.internals.role, "button");
+  assert_equals(axElementById("test2").role, "AXRole: AXCheckBox");
+}, "Role set through element internals can be overridden by element.role");
+
+test(function(t) {
+  const element = createTestElement("test3");
+  element.internals.role = "button";
+  assert_equals(axElementById("test3").role, "AXRole: AXButton");
+  element.internals.role = "checkbox";
+  assert_equals(element.internals.role, "checkbox");
+  assert_equals(axElementById("test3").role, "AXRole: AXCheckBox");;
+}, "Role set through element internals can be changed.");
+
+</script>
+</body>

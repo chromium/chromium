@@ -37,7 +37,7 @@
                   {
                     "name": "encoding",
                     "type": "string",
-                    "description": "Empty if content is not encoded, encoding name otherwise. Currently, only base64 is supported."
+                    "description": "Empty if the content is not encoded, encoding name otherwise. Currently, only base64 is supported."
                   }
                 ]
               }

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<title>Mojo data pipe tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+let kElementNumBytes = 1;
+let kCapacityNumBytes = 64;
+
+function createDataPipe() {
+  return Mojo.createDataPipe({
+      elementNumBytes: kElementNumBytes,
+      capacityNumBytes: kCapacityNumBytes
+  });
+};
+
+test(() => {
+  let {result, producer, consumer} = createDataPipe();
+  assert_equals(result, Mojo.RESULT_OK);
+  assert_true(producer instanceof MojoHandle);
+  assert_true(consumer instanceof MojoHandle);
+}, "Create data pipe");
+
+test(() => {
+  assert_equals(Mojo.createDataPipe({}).result, Mojo.RESULT_INVALID_ARGUMENT);
+  assert_equals(Mojo.createDataPipe({elementNumBytes: kElementNumBytes}).result,
+                Mojo.RESULT_INVALID_ARGUMENT);
+  assert_equals(
+      Mojo.createDataPipe({capacityNumBytes: kCapacityNumBytes}).result,
+      Mojo.RESULT_INVALID_ARGUMENT);
+})
+
+test(() => {
+  let {producer, consumer} = createDataPipe();
+  let data = new Uint8Array(kCapacityNumBytes);
+
+  let {result, numBytes} = producer.writeData(data);
+  assert_equals(result, Mojo.RESULT_OK);
+  assert_equals(numBytes, data.length);
+}, "Write data");
+
+test(() => {
+  let {producer, consumer} = createDataPipe();
+  let data = new Uint8Array(kCapacityNumBytes + 1);
+
+  let {result, numBytes} = producer.writeData(data, {allOrNone: true});
+  assert_equals(result, Mojo.RESULT_OUT_OF_RANGE);
+  assert_equals(numBytes, 0);
+}, "Write data all or none");
+
+async_test((test) => {
+  let {producer, consumer} = createDataPipe();
+  let data = new Uint8Array(kCapacityNumBytes);
+
+  consumer.watch({readable: true}, test.step_func_done((result) => {
+    var {result, numBytes} = consumer.queryData();
+    assert_equals(result, Mojo.RESULT_OK);
+    assert_equals(numBytes, data.length);
+  }));
+  producer.writeData(data);
+}, "Query data");
+
+async_test((test) => {
+  let {producer, consumer} = createDataPipe();
+  let data = new Uint8Array(kCapacityNumBytes);
+  for (let i = 0; i < data.length; ++i)
+    data[i] = i;
+
+  consumer.watch({readable: true}, test.step_func_done((result) => {
+    var kDiscardNumBytes = data.length / 2;
+
+    var {result, numBytes} = consumer.discardData(kDiscardNumBytes);
+    assert_equals(result, Mojo.RESULT_OK);
+    assert_equals(numBytes, kDiscardNumBytes);
+
+    var {result, numBytes} = consumer.queryData();
+    assert_equals(result, Mojo.RESULT_OK);
+    assert_equals(numBytes, kDiscardNumBytes);
+
+    var buffer = new Uint8Array(kDiscardNumBytes);
+    var {result, numBytes} = consumer.readData(buffer);
+    assert_equals(result, Mojo.RESULT_OK);
+    assert_equals(numBytes, kDiscardNumBytes);
+    assert_array_equals(buffer, data.slice(kDiscardNumBytes));
+  }));
+  producer.writeData(data);
+}, "Discard data");
+
+async_test((test) => {
+  let {producer, consumer} = createDataPipe();
+  let data = new Uint8Array(kCapacityNumBytes);
+
+  consumer.watch({readable: true}, test.step_func_done((result) => {
+    var {result, numBytes} = consumer.discardData(data.length + 1, {allOrNone: true});
+    assert_equals(result, Mojo.RESULT_OUT_OF_RANGE);
+    assert_equals(numBytes, 0);
+  }));
+  producer.writeData(data);
+}, "Discard data all or none");
+
+async_test((test) => {
+  let {producer, consumer} = createDataPipe();
+  let data = new Uint8Array(kCapacityNumBytes);
+  for (let i = 0; i < data.length; ++i)
+    data[i] = i;
+
+  consumer.watch({readable: true}, test.step_func_done((result) => {
+    var buffer = new Uint8Array(data.length);
+    var {result, numBytes} = consumer.readData(buffer);
+    assert_equals(result, Mojo.RESULT_OK);
+    assert_equals(numBytes, data.length);
+    assert_array_equals(buffer, data);
+
+    var {result, numBytes} = consumer.queryData();
+    assert_equals(result, Mojo.RESULT_OK);
+    assert_equals(numBytes, 0);
+  }));
+  producer.writeData(data);
+}, "Read data");
+
+async_test((test) => {
+  let {producer, consumer} = createDataPipe();
+  let data = new Uint8Array(kCapacityNumBytes);
+
+  consumer.watch({readable: true}, test.step_func_done((result) => {
+    var buffer = new Uint8Array(data.length + 1);
+    var {result, numBytes} = consumer.readData(buffer, {allOrNone: true});
+    assert_equals(result, Mojo.RESULT_OUT_OF_RANGE);
+    assert_equals(numBytes, 0);
+  }));
+  producer.writeData(data);
+}, "Read data all or none");
+
+async_test((test) => {
+  let {producer, consumer} = createDataPipe();
+  let data = new Uint8Array(kCapacityNumBytes);
+  for (let i = 0; i < data.length; ++i)
+    data[i] = i;
+
+  consumer.watch({readable: true}, test.step_func_done((result) => {
+    var buffer = new Uint8Array(data.length);
+    var {result, numBytes} = consumer.readData(buffer, {peek: true});
+    assert_equals(result, Mojo.RESULT_OK);
+    assert_equals(numBytes, data.length);
+    assert_array_equals(buffer, data);
+
+    var {result, numBytes} = consumer.queryData();
+    assert_equals(result, Mojo.RESULT_OK);
+    assert_equals(numBytes, data.length);
+  }));
+  producer.writeData(data);
+}, "Peek data");
+
+</script>

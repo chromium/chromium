@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/webxr/resources/webxr_util.js"></script>
+<script src="/webxr/resources/webxr_test_constants.js"></script>
+<canvas />
+<script>
+xr_promise_test("Test devicechange fires when devices are connected.",
+  (t) => {
+  let eventWatcher = new EventWatcher(t, navigator.xr, ["devicechange"]);
+
+  // The event should fire when a listener is added (which EventWatcher does)
+  // even if the devices are not explicity queried with navigator.xr.requestDevice().
+  // Note: This behaviour is chrome specific, the spec does not explicitly
+  // state when devicechange events should occur.
+
+  let promise = eventWatcher.wait_for(["devicechange"]);
+
+  // Timeout here is required because addEventListener sends a call to mojo to
+  // register the listener on the backend, which doesn't go through until the
+  // javascript pauses.
+  t.step_timeout(() => {
+    navigator.xr.test.simulateDeviceConnection(TRACKED_IMMERSIVE_DEVICE);
+  }, 100);
+
+  return promise;
+
+});
+
+</script>

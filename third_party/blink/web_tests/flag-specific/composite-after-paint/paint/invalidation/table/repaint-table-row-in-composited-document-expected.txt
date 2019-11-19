@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGTableCell TD",
+          "rect": [256, 306, 204, 104],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutNGTableCell TD",
+          "rect": [256, 156, 204, 104],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

@@ -58,7 +58,7 @@ class GCCallback {
   // to execute |callback_|.
   base::Closure fallback_;
 
-  base::WeakPtrFactory<GCCallback> weak_ptr_factory_;
+  base::WeakPtrFactory<GCCallback> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GCCallback);
 };

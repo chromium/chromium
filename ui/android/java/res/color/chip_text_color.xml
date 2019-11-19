@@ -5,6 +5,11 @@
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/default_text_color_link" android:state_selected="true" />
-    <item android:color="@color/default_text_color_secondary" />
+    <item android:alpha="@dimen/default_disabled_alpha"
+        android:color="@color/chip_text_color_selected"
+        android:state_selected="true" android:state_enabled="false"/>
+    <item android:alpha="@dimen/default_disabled_alpha"
+        android:color="@color/chip_text_color_default" android:state_enabled="false" />
+    <item android:color="@color/chip_text_color_selected" android:state_selected="true" />
+    <item android:color="@color/chip_text_color_default" />
 </selector>

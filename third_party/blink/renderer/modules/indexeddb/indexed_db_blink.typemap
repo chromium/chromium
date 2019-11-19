@@ -24,9 +24,9 @@ deps = [
 type_mappings = [
   "blink.mojom.IDBDatabaseMetadata=::blink::IDBDatabaseMetadata",
   "blink.mojom.IDBIndexKeys=::blink::IDBIndexKeys[move_only]",
-  "blink.mojom.IDBIndexMetadata=scoped_refptr<::blink::IDBIndexMetadata>",
-  "blink.mojom.IDBKey=std::unique_ptr<::blink::IDBKey>[move_only]",
+  "blink.mojom.IDBIndexMetadata=::scoped_refptr<::blink::IDBIndexMetadata>",
+  "blink.mojom.IDBKey=::std::unique_ptr<::blink::IDBKey>[move_only]",
   "blink.mojom.IDBKeyPath=::blink::IDBKeyPath",
-  "blink.mojom.IDBObjectStoreMetadata=scoped_refptr<::blink::IDBObjectStoreMetadata>",
-  "blink.mojom.IDBValue=std::unique_ptr<::blink::IDBValue>[move_only]",
+  "blink.mojom.IDBObjectStoreMetadata=::scoped_refptr<::blink::IDBObjectStoreMetadata>",
+  "blink.mojom.IDBValue=::std::unique_ptr<::blink::IDBValue>[move_only]",
 ]

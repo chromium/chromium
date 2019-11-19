@@ -1,13 +1,16 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_network_listener_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_types.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/html/chromeos/onc_mojo.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
+<link rel="import" href="../chromeos/os_settings_icons_css.html">
+<link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../prefs/prefs.html">
 <link rel="import" href="../route.html">
 <link rel="import" href="../settings_page/settings_animated_pages.html">
@@ -16,12 +19,13 @@
 <link rel="import" href="internet_config.html">
 <link rel="import" href="internet_detail_page.html">
 <link rel="import" href="internet_known_networks_page.html">
+<link rel="import" href="internet_page_browser_proxy.html">
 <link rel="import" href="internet_subpage.html">
 <link rel="import" href="network_summary.html">
 
 <dom-module id="settings-internet-page">
   <template>
-    <style include="settings-shared">
+    <style include="os-settings-icons settings-shared">
       iron-icon.policy {
         height: 24px;
         margin-inline-end: 12px;
@@ -33,8 +37,7 @@
         focus-config="[[focusConfig_]]">
       <div route-path="default">
         <network-summary default-network="{{defaultNetwork}}"
-            device-states="{{deviceStates}}"
-            networking-private="[[networkingPrivate]]">
+            device-states="{{deviceStates}}">
         </network-summary>
         <template is="dom-if" if="[[allowAddConnection_(globalPolicy_,
             managedNetworkAvailable)]]">
@@ -43,52 +46,39 @@
               class="settings-box two-line"
               expanded="{{addConnectionExpanded_}}"
               id="expandAddConnections">
-            $i18n{internetAddConnection}
+            <span aria-hidden="true">
+              $i18n{internetAddConnection}
+            </span>
           </cr-expand-button>
           <template is="dom-if" if="[[addConnectionExpanded_]]">
             <div class="list-frame vertical-list">
-              <template is="dom-if"
-                  if="[[deviceIsEnabled_(deviceStates.WiFi)]]">
+              <template is="dom-if" if="[[wifiIsEnabled_(deviceStates)]]">
                 <div actionable class="list-item" on-click="onAddWiFiTap_">
-                  <div class="start settings-box-text">
+                  <div class="start settings-box-text"
+                      id="add-wifi-label" aria-hidden="true">
                     $i18n{internetAddWiFi}
                   </div>
-                  <paper-icon-button-light
-                      class$="[[getAddNetworkClass_('WiFi')]]">
-                    <button aria-label="$i18n{internetAddWiFi}"></button>
-                  </paper-icon-button-light>
+                  <cr-icon-button class="icon-add-wifi"
+                      aria-labelledby="add-wifi-label"></cr-icon-button>
                 </div>
               </template>
               <div actionable class="list-item" on-click="onAddVPNTap_">
-                <div class="start settings-box-text">
+                <div class="start settings-box-text"
+                    id="add-vpn-label" aria-hidden="true">
                   $i18n{internetAddVPN}
                 </div>
-                <paper-icon-button-light
-                    class$="[[getAddNetworkClass_('VPN')]]">
-                  <button aria-label="$i18n{internetAddVPN}"></button>
-                </paper-icon-button-light>
+                <cr-icon-button class="icon-add-circle"
+                    aria-labelledby="add-vpn-label"></cr-icon-button>
               </div>
-              <template is="dom-repeat" items="[[thirdPartyVpnProviders_]]">
+              <template is="dom-repeat" items="[[vpnProviders_]]">
                 <div actionable class="list-item"
-                    on-click="onAddThirdPartyVpnTap_" provider="[[item]]">
+                    on-click="onAddThirdPartyVpnTap_">
                   <div class="start settings-box-text">
                     [[getAddThirdPartyVpnLabel_(item)]]
                   </div>
-                  <paper-icon-button-light class="icon-external">
-                    <button aria-label$="[[getAddThirdPartyVpnLabel_(item)]]">
-                    </button>
-                  </paper-icon-button-light>
-                </div>
-              </template>
-              <template is="dom-if" if="[[arcVpnProviders_.length]]">
-                <div actionable class="list-item" id="addArcVpn"
-                    on-click="onAddArcVpnTap_">
-                  <div class="setting-box-text">
-                    $i18n{internetAddArcVPN}
-                  </div>
-                  <paper-icon-button-light class="icon-external">
-                    <button aria-label$="$i18n{internetAddArcVPN}"></button>
-                  </paper-icon-button-light>
+                  <cr-icon-button class="icon-external"
+                     aria-label$="[[getAddThirdPartyVpnLabel_(item)]]">
+                  </cr-icon-button>
                 </div>
               </template>
             </div>
@@ -110,7 +100,6 @@
           <settings-internet-detail-page prefs="{{prefs}}"
               default-network="[[defaultNetwork]]"
               global-policy="[[globalPolicy_]]"
-              networking-private="[[networkingPrivate]]"
               managed-network-available="[[managedNetworkAvailable]]">
           </settings-internet-detail-page>
         </settings-subpage>
@@ -119,23 +108,21 @@
       <template is="dom-if" route-path="/knownNetworks" no-search restamp>
         <settings-subpage page-title="$i18n{internetKnownNetworksPageTitle}">
           <settings-internet-known-networks-page
-              network-type="[[knownNetworksType_]]"
-              networking-private="[[networkingPrivate]]">
+              network-type="[[knownNetworksType_]]">
           </settings-internet-known-networks-page>
         </settings-subpage>
       </template>
 
       <template is="dom-if" route-path="/networks" no-search restamp>
         <settings-subpage page-title="[[getNetworksPageTitle_(subpageType_)]]"
-            show-spinner="[[showSpinner_]]">
+            show-spinner="[[showSpinner_]]"
+            spinner-title="$i18n{networkScanningLabel}">
           <settings-internet-subpage
               default-network="[[defaultNetwork]]"
               device-state="[[getDeviceState_(subpageType_, deviceStates)]]"
-              tether-device-state="[[get('Tether', deviceStates)]]"
+              tether-device-state="[[getTetherDeviceState_(deviceStates)]]"
               global-policy="[[globalPolicy_]]"
-              third-party-vpn-providers="[[thirdPartyVpnProviders_]]"
-              arc-vpn-providers="[[arcVpnProviders_]]"
-              networking-private="[[networkingPrivate]]"
+              vpn-providers="[[vpnProviders_]]"
               show-spinner="{{showSpinner_}}">
           </settings-internet-subpage>
         </settings-subpage>
@@ -143,10 +130,10 @@
 
     </settings-animated-pages>
 
-    <internet-config id="configDialog"
-        networking-private="[[networkingPrivate]]"
-        global-policy="[[globalPolicy_]]">
-    </internet-config>
+    <template is="dom-if" if="[[showInternetConfig_]]" restamp>
+      <internet-config id="configDialog" on-close="onInternetConfigClose_">
+      </internet-config>
+    </template>
 
   </template>
   <script src="internet_page.js"></script>

@@ -10,7 +10,7 @@
 
 namespace url {
 class Origin;
-}
+}  // namespace url
 
 namespace content {
 

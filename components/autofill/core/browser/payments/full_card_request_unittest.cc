@@ -8,20 +8,19 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/autofill/core/common/autofill_prefs.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/testing_pref_service.h"
+#include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -77,14 +76,9 @@ class FullCardRequestTest : public testing::Test {
         test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
-    std::unique_ptr<TestingPrefServiceSimple> pref_service(
-        new TestingPrefServiceSimple());
-    pref_service->registry()->RegisterDoublePref(
-        prefs::kAutofillBillingCustomerNumber, 0.0);
-    autofill_client_.SetPrefs(std::move(pref_service));
     payments_client_ = std::make_unique<PaymentsClient>(
-        test_shared_loader_factory_, autofill_client_.GetPrefs(),
-        autofill_client_.GetIdentityManager(), &personal_data_);
+        test_shared_loader_factory_, autofill_client_.GetIdentityManager(),
+        &personal_data_);
     request_ = std::make_unique<FullCardRequest>(
         &autofill_client_, payments_client_.get(), &personal_data_);
     personal_data_.SetAccountInfoForPayments(
@@ -111,11 +105,23 @@ class FullCardRequestTest : public testing::Test {
 
   void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
                        const std::string& real_pan) {
-    request_->OnDidGetRealPan(result, real_pan);
+    payments::PaymentsClient::UnmaskResponseDetails response;
+    request_->OnDidGetRealPan(result, response.with_real_pan(real_pan));
   }
 
+  void OnDidGetRealPanWithDcvv(AutofillClient::PaymentsRpcResult result,
+                               const std::string& real_pan,
+                               const std::string& dcvv) {
+    payments::PaymentsClient::UnmaskResponseDetails response;
+    request_->OnDidGetRealPan(result,
+                              response.with_real_pan(real_pan).with_dcvv(dcvv));
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   MockPersonalDataManager personal_data_;
   MockResultDelegate result_delegate_;
   MockUIDelegate ui_delegate_;
@@ -146,7 +152,7 @@ MATCHER_P4(CardMatches, record_type, number, month, year, "") {
 }
 
 // Verify getting the full PAN and the CVC for a masked server card.
-TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForMaskedServerCard) {
+TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForMaskedServerCardViaCvc) {
   EXPECT_CALL(*result_delegate(),
               OnFullCardRequestSucceeded(
                   testing::Ref(*request()),
@@ -160,11 +166,76 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForMaskedServerCard) {
       CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
       AutofillClient::UNMASK_FOR_AUTOFILL, result_delegate()->AsWeakPtr(),
       ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::SUCCESS, "4111");
   card_unmask_delegate()->OnUnmaskPromptClosed();
+}
+
+// Verify getting the full PAN and the dCVV for a masked server card when cloud
+// tokenization is enabled.
+TEST_F(FullCardRequestTest, GetFullCardPanAndDcvvForMaskedServerCardViaDcvv) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillAlwaysReturnCloudTokenizedCard);
+  EXPECT_CALL(*result_delegate(),
+              OnFullCardRequestSucceeded(
+                  testing::Ref(*request()),
+                  CardMatches(CreditCard::FULL_SERVER_CARD, "4111"),
+                  base::ASCIIToUTF16("321")));
+  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
+  EXPECT_CALL(*ui_delegate(),
+              OnUnmaskVerificationResult(AutofillClient::SUCCESS));
+
+  request()->GetFullCard(
+      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
+      AutofillClient::UNMASK_FOR_AUTOFILL, result_delegate()->AsWeakPtr(),
+      ui_delegate()->AsWeakPtr());
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
+  OnDidGetRealPanWithDcvv(AutofillClient::SUCCESS, "4111", "321");
+  card_unmask_delegate()->OnUnmaskPromptClosed();
+}
+
+// Verify getting the full PAN for a masked server card when cloud
+// tokenization is enabled but no dCVV is returned.
+TEST_F(FullCardRequestTest, GetFullCardPanForMaskedServerCardWithoutDcvv) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillAlwaysReturnCloudTokenizedCard);
+  EXPECT_CALL(*result_delegate(),
+              OnFullCardRequestSucceeded(
+                  testing::Ref(*request()),
+                  CardMatches(CreditCard::FULL_SERVER_CARD, "4111"),
+                  base::ASCIIToUTF16("123")));
+  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
+  EXPECT_CALL(*ui_delegate(),
+              OnUnmaskVerificationResult(AutofillClient::SUCCESS));
+
+  request()->GetFullCard(
+      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
+      AutofillClient::UNMASK_FOR_AUTOFILL, result_delegate()->AsWeakPtr(),
+      ui_delegate()->AsWeakPtr());
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
+  OnDidGetRealPan(AutofillClient::SUCCESS, "4111");
+  card_unmask_delegate()->OnUnmaskPromptClosed();
+}
+
+// Verify getting the full PAN for a masked server card.
+TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForMaskedServerCardViaFido) {
+  EXPECT_CALL(*result_delegate(),
+              OnFullCardRequestSucceeded(
+                  testing::Ref(*request()),
+                  CardMatches(CreditCard::FULL_SERVER_CARD, "4111"),
+                  base::ASCIIToUTF16("")));
+
+  request()->GetFullCardViaFIDO(
+      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
+      AutofillClient::UNMASK_FOR_AUTOFILL, result_delegate()->AsWeakPtr(),
+      base::Value(base::Value::Type::DICTIONARY));
+  OnDidGetRealPan(AutofillClient::SUCCESS, "4111");
 }
 
 // Verify getting the CVC for a local card.
@@ -183,9 +254,9 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForLocalCard) {
   request()->GetFullCard(card, AutofillClient::UNMASK_FOR_AUTOFILL,
                          result_delegate()->AsWeakPtr(),
                          ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
@@ -206,9 +277,9 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForFullServerCard) {
   request()->GetFullCard(full_server_card, AutofillClient::UNMASK_FOR_AUTOFILL,
                          result_delegate()->AsWeakPtr(),
                          ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
@@ -233,11 +304,11 @@ TEST_F(FullCardRequestTest,
   request()->GetFullCard(full_server_card, AutofillClient::UNMASK_FOR_AUTOFILL,
                          result_delegate()->AsWeakPtr(),
                          ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  response.exp_year = base::ASCIIToUTF16("2051");
-  response.exp_month = base::ASCIIToUTF16("12");
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  details.exp_year = base::ASCIIToUTF16("2051");
+  details.exp_month = base::ASCIIToUTF16("12");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::SUCCESS, "4111");
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
@@ -256,7 +327,7 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredFullServerCard) {
               OnUnmaskVerificationResult(AutofillClient::SUCCESS));
 
   base::Time::Exploded today;
-  base::Time::Now().LocalExplode(&today);
+  AutofillClock::Now().LocalExplode(&today);
   CreditCard full_server_card(CreditCard::FULL_SERVER_CARD, "server_id");
   test::SetCreditCardInfo(&full_server_card, nullptr, "4111", "12",
                           base::StringPrintf("%d", today.year - 1).c_str(),
@@ -265,11 +336,11 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredFullServerCard) {
   request()->GetFullCard(full_server_card, AutofillClient::UNMASK_FOR_AUTOFILL,
                          result_delegate()->AsWeakPtr(),
                          ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  response.exp_year = base::ASCIIToUTF16("2051");
-  response.exp_month = base::ASCIIToUTF16("12");
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  details.exp_year = base::ASCIIToUTF16("2051");
+  details.exp_month = base::ASCIIToUTF16("12");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::SUCCESS, "4111");
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
@@ -309,15 +380,15 @@ TEST_F(FullCardRequestTest, SecondRequestOkAfterFirstFinished) {
   request()->GetFullCard(card, AutofillClient::UNMASK_FOR_AUTOFILL,
                          result_delegate()->AsWeakPtr(),
                          ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   card_unmask_delegate()->OnUnmaskPromptClosed();
 
   request()->GetFullCard(card, AutofillClient::UNMASK_FOR_AUTOFILL,
                          result_delegate()->AsWeakPtr(),
                          ui_delegate()->AsWeakPtr());
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
@@ -347,9 +418,9 @@ TEST_F(FullCardRequestTest, PermanentFailure) {
       CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
       AutofillClient::UNMASK_FOR_AUTOFILL, result_delegate()->AsWeakPtr(),
       ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::PERMANENT_FAILURE, "");
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
@@ -366,9 +437,9 @@ TEST_F(FullCardRequestTest, NetworkError) {
       CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
       AutofillClient::UNMASK_FOR_AUTOFILL, result_delegate()->AsWeakPtr(),
       ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::NETWORK_ERROR, "");
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
@@ -385,9 +456,9 @@ TEST_F(FullCardRequestTest, TryAgainFailureGiveUp) {
       CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
       AutofillClient::UNMASK_FOR_AUTOFILL, result_delegate()->AsWeakPtr(),
       ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::TRY_AGAIN_FAILURE, "");
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
@@ -411,12 +482,12 @@ TEST_F(FullCardRequestTest, TryAgainFailureRetry) {
       CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
       AutofillClient::UNMASK_FOR_AUTOFILL, result_delegate()->AsWeakPtr(),
       ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("789");
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("789");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::TRY_AGAIN_FAILURE, "");
-  response.cvc = base::ASCIIToUTF16("123");
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  details.cvc = base::ASCIIToUTF16("123");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::SUCCESS, "4111");
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
@@ -436,11 +507,11 @@ TEST_F(FullCardRequestTest, UpdateExpDateForMaskedServerCard) {
       CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
       AutofillClient::UNMASK_FOR_AUTOFILL, result_delegate()->AsWeakPtr(),
       ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  response.exp_month = base::ASCIIToUTF16("12");
-  response.exp_year = base::ASCIIToUTF16("2050");
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  details.exp_month = base::ASCIIToUTF16("12");
+  details.exp_year = base::ASCIIToUTF16("2050");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::SUCCESS, "4111");
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
@@ -462,11 +533,11 @@ TEST_F(FullCardRequestTest, UpdateExpDateForFullServerCard) {
   request()->GetFullCard(full_server_card, AutofillClient::UNMASK_FOR_AUTOFILL,
                          result_delegate()->AsWeakPtr(),
                          ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  response.exp_month = base::ASCIIToUTF16("12");
-  response.exp_year = base::ASCIIToUTF16("2050");
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  details.exp_month = base::ASCIIToUTF16("12");
+  details.exp_year = base::ASCIIToUTF16("2050");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::SUCCESS, "4111");
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
@@ -486,7 +557,7 @@ TEST_F(FullCardRequestTest, UpdateExpDateForLocalCard) {
               OnUnmaskVerificationResult(AutofillClient::SUCCESS));
 
   base::Time::Exploded today;
-  base::Time::Now().LocalExplode(&today);
+  AutofillClock::Now().LocalExplode(&today);
   CreditCard card;
   test::SetCreditCardInfo(&card, nullptr, "4111", "10",
                           base::StringPrintf("%d", today.year - 1).c_str(),
@@ -494,11 +565,11 @@ TEST_F(FullCardRequestTest, UpdateExpDateForLocalCard) {
   request()->GetFullCard(card, AutofillClient::UNMASK_FOR_AUTOFILL,
                          result_delegate()->AsWeakPtr(),
                          ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  response.exp_month = base::ASCIIToUTF16("12");
-  response.exp_year = base::ASCIIToUTF16("2051");
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  details.exp_month = base::ASCIIToUTF16("12");
+  details.exp_year = base::ASCIIToUTF16("2051");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
@@ -520,12 +591,12 @@ TEST_F(FullCardRequestTest, SaveRealPan) {
       CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
       AutofillClient::UNMASK_FOR_AUTOFILL, result_delegate()->AsWeakPtr(),
       ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  response.exp_month = base::ASCIIToUTF16("12");
-  response.exp_year = base::ASCIIToUTF16("2050");
-  response.should_store_pan = true;
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  details.exp_month = base::ASCIIToUTF16("12");
+  details.exp_year = base::ASCIIToUTF16("2050");
+  details.should_store_pan = true;
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::SUCCESS, "4111");
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
@@ -545,80 +616,11 @@ TEST_F(FullCardRequestTest, UnmaskForPaymentRequest) {
       CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
       AutofillClient::UNMASK_FOR_PAYMENT_REQUEST,
       result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr());
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  card_unmask_delegate()->OnUnmaskResponse(response);
+  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
+  details.cvc = base::ASCIIToUTF16("123");
+  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::SUCCESS, "4111");
   card_unmask_delegate()->OnUnmaskPromptClosed();
-}
-
-// Verify that FullCardRequest::IsGettingFullCard() is true until the server
-// returns the full PAN for a masked card.
-TEST_F(FullCardRequestTest, IsGettingFullCardForMaskedServerCard) {
-  EXPECT_CALL(*result_delegate(),
-              OnFullCardRequestSucceeded(
-                  testing::Ref(*request()),
-                  CardMatches(CreditCard::FULL_SERVER_CARD, "4111"),
-                  base::ASCIIToUTF16("123")));
-  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
-  EXPECT_CALL(*ui_delegate(),
-              OnUnmaskVerificationResult(AutofillClient::SUCCESS));
-
-  EXPECT_FALSE(request()->IsGettingFullCard());
-
-  request()->GetFullCard(
-      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_id"),
-      AutofillClient::UNMASK_FOR_AUTOFILL, result_delegate()->AsWeakPtr(),
-      ui_delegate()->AsWeakPtr());
-
-  EXPECT_TRUE(request()->IsGettingFullCard());
-
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  card_unmask_delegate()->OnUnmaskResponse(response);
-
-  EXPECT_TRUE(request()->IsGettingFullCard());
-
-  OnDidGetRealPan(AutofillClient::SUCCESS, "4111");
-
-  EXPECT_FALSE(request()->IsGettingFullCard());
-
-  card_unmask_delegate()->OnUnmaskPromptClosed();
-
-  EXPECT_FALSE(request()->IsGettingFullCard());
-}
-
-// Verify that FullCardRequest::IsGettingFullCard() is true until the user types
-// in the CVC for a card that is not masked.
-TEST_F(FullCardRequestTest, IsGettingFullCardForLocalCard) {
-  EXPECT_CALL(
-      *result_delegate(),
-      OnFullCardRequestSucceeded(testing::Ref(*request()),
-                                 CardMatches(CreditCard::LOCAL_CARD, "4111"),
-                                 base::ASCIIToUTF16("123")));
-  EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
-  EXPECT_CALL(*ui_delegate(),
-              OnUnmaskVerificationResult(AutofillClient::SUCCESS));
-
-  EXPECT_FALSE(request()->IsGettingFullCard());
-
-  CreditCard card;
-  test::SetCreditCardInfo(&card, nullptr, "4111", "12", "2050", "1");
-  request()->GetFullCard(card, AutofillClient::UNMASK_FOR_AUTOFILL,
-                         result_delegate()->AsWeakPtr(),
-                         ui_delegate()->AsWeakPtr());
-
-  EXPECT_TRUE(request()->IsGettingFullCard());
-
-  CardUnmaskDelegate::UnmaskResponse response;
-  response.cvc = base::ASCIIToUTF16("123");
-  card_unmask_delegate()->OnUnmaskResponse(response);
-
-  EXPECT_FALSE(request()->IsGettingFullCard());
-
-  card_unmask_delegate()->OnUnmaskPromptClosed();
-
-  EXPECT_FALSE(request()->IsGettingFullCard());
 }
 
 }  // namespace payments

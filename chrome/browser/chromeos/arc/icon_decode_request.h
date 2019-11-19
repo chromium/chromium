@@ -28,7 +28,7 @@ class IconDecodeRequest : public ImageDecoder::ImageRequest {
   // Icons are decoded at a separate process created by ImageDecoder. In unit
   // tests these tasks may not finish before the test exits, which causes a
   // failure in the base::MessageLoopCurrent::Get()->IsIdleForTesting() check
-  // in test_browser_thread_bundle.cc.
+  // in content::~BrowserTaskEnvironment().
   static void DisableSafeDecodingForTesting();
 
   // Starts image decoding. Safe asynchronous decoding is used unless

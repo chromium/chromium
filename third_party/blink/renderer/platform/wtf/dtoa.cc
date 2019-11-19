@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 
 #include <string.h>
+
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -52,7 +53,7 @@ const char* NumberToString(double d, NumberToStringBuffer buffer) {
 static inline const char* FormatStringTruncatingTrailingZerosIfNeeded(
     NumberToStringBuffer buffer,
     double_conversion::StringBuilder& builder) {
-  int length = builder.GetPosition();
+  int length = builder.position();
 
   // If there is an exponent, stripping trailing zeros would be incorrect.
   // FIXME: Zeros should be stripped before the 'e'.
@@ -85,8 +86,9 @@ static inline const char* FormatStringTruncatingTrailingZerosIfNeeded(
   }
 
   // Truncate the StringBuilder, and return the final result.
-  builder.SetPosition(truncated_length + 1);
-  return builder.Finalize();
+  char* result = builder.Finalize();
+  result[truncated_length + 1] = '\0';
+  return result;
 }
 
 const char* NumberToFixedPrecisionString(double d,
@@ -141,6 +143,14 @@ double ParseDoubleFromLongString(const UChar* string,
   for (wtf_size_t i = 0; i < conversion_length; ++i)
     conversion_buffer[i] = IsASCII(string[i]) ? string[i] : 0;
   return ParseDouble(conversion_buffer.data(), length, parsed_length);
+}
+
+const double_conversion::StringToDoubleConverter& GetDoubleConverter() {
+  static double_conversion::StringToDoubleConverter converter(
+      double_conversion::StringToDoubleConverter::ALLOW_LEADING_SPACES |
+          double_conversion::StringToDoubleConverter::ALLOW_TRAILING_JUNK,
+      0.0, 0, nullptr, nullptr);
+  return converter;
 }
 
 }  // namespace internal

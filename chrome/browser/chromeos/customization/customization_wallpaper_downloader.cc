@@ -72,8 +72,7 @@ CustomizationWallpaperDownloader::CustomizationWallpaperDownloader(
                                 kTemporarySuffix),
       retries_(0),
       retry_delay_(base::TimeDelta::FromSeconds(kRetrySleepSeconds)),
-      on_wallpaper_fetch_completed_(on_wallpaper_fetch_completed),
-      weak_factory_(this) {
+      on_wallpaper_fetch_completed_(on_wallpaper_fetch_completed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -89,7 +88,7 @@ void CustomizationWallpaperDownloader::StartRequest() {
   resource_request->url = wallpaper_url_;
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
-  resource_request->allow_credentials = false;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   // TODO(crbug.com/833390): Add a real traffic annotation here.
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     MISSING_TRAFFIC_ANNOTATION);
@@ -135,9 +134,10 @@ void CustomizationWallpaperDownloader::Start() {
                      base::Unretained(success.get()));
   base::OnceClosure on_created_closure = base::BindOnce(
       &CustomizationWallpaperDownloader::OnWallpaperDirectoryCreated,
-      weak_factory_.GetWeakPtr(), base::Passed(std::move(success)));
-  base::PostTaskWithTraitsAndReply(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      weak_factory_.GetWeakPtr(), std::move(success));
+  base::PostTaskAndReply(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       std::move(mkdir_closure), std::move(on_created_closure));
 }
 
@@ -169,11 +169,12 @@ void CustomizationWallpaperDownloader::OnSimpleLoaderComplete(
   base::OnceClosure rename_closure = base::BindOnce(
       &RenameTemporaryFile, response_path, wallpaper_downloaded_file_,
       base::Unretained(success.get()));
-  base::OnceClosure on_rename_closure = base::BindOnce(
-      &CustomizationWallpaperDownloader::OnTemporaryFileRenamed,
-      weak_factory_.GetWeakPtr(), base::Passed(std::move(success)));
-  base::PostTaskWithTraitsAndReply(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::OnceClosure on_rename_closure =
+      base::BindOnce(&CustomizationWallpaperDownloader::OnTemporaryFileRenamed,
+                     weak_factory_.GetWeakPtr(), std::move(success));
+  base::PostTaskAndReply(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       std::move(rename_closure), std::move(on_rename_closure));
 }
 

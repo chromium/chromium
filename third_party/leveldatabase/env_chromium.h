@@ -19,12 +19,20 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/metrics/histogram.h"
+#include "base/synchronization/condition_variable.h"
+#include "build/build_config.h"
 #include "leveldb/cache.h"
 #include "leveldb/db.h"
 #include "leveldb/env.h"
 #include "leveldb/export.h"
 #include "port/port_chromium.h"
 #include "util/mutexlock.h"
+
+#if defined(OS_WIN) && defined(DeleteFile)
+// See comment in env.h.
+#undef DeleteFile
+#define ENV_CHROMIUM_DELETEFILE_UNDEFINED
+#endif  // defined(OS_WIN) && defined(DeleteFile)
 
 namespace base {
 namespace trace_event {
@@ -79,9 +87,19 @@ enum LevelDBStatusValue {
 LEVELDB_EXPORT LevelDBStatusValue
 GetLevelDBStatusUMAValue(const leveldb::Status& s);
 
+using DatabaseErrorReportingCallback =
+    base::RepeatingCallback<void(const leveldb::Status&)>;
+
 // Create the default leveldb options object suitable for leveldb operations.
 struct LEVELDB_EXPORT Options : public leveldb::Options {
   Options();
+
+  // Called when there is a error during the Get() call. Intended for metrics
+  // reporting.
+  DatabaseErrorReportingCallback on_get_error;
+  // Called when there is a error during the Write() call, which is called for
+  // Write(), Put() and Delete(). Intended for metrics reporting.
+  DatabaseErrorReportingCallback on_write_error;
 };
 
 LEVELDB_EXPORT const char* MethodIDToString(MethodID method);
@@ -217,9 +235,7 @@ class LEVELDB_EXPORT ChromiumEnv : public leveldb::Env,
     reinterpret_cast<ChromiumEnv*>(arg)->BGThread();
   }
 
-  void RecordLockFileAncestors(int num_missing_ancestors) const;
   base::HistogramBase* GetMethodIOErrorHistogram() const;
-  base::HistogramBase* GetLockFileAncestorHistogram() const;
 
   // RetrierProvider implementation.
   int MaxRetryTimeMillis() const override { return kMaxRetryTimeMillis; }
@@ -301,7 +317,7 @@ class LEVELDB_EXPORT DBTracker {
   // memory-infra and is enumerated by VisitDatabases() method.
   // This function is an implementation detail of leveldb_env::OpenDB(), and
   // has similar guarantees regarding |dbptr| argument.
-  leveldb::Status OpenDatabase(const leveldb::Options& options,
+  leveldb::Status OpenDatabase(const leveldb_env::Options& options,
                                const std::string& name,
                                TrackedDB** dbptr);
 
@@ -366,7 +382,13 @@ LEVELDB_EXPORT leveldb::Status RewriteDB(const leveldb_env::Options& options,
 
 LEVELDB_EXPORT base::StringPiece MakeStringPiece(const leveldb::Slice& s);
 LEVELDB_EXPORT leveldb::Slice MakeSlice(const base::StringPiece& s);
+LEVELDB_EXPORT leveldb::Slice MakeSlice(base::span<const uint8_t> s);
 
 }  // namespace leveldb_env
+
+// Redefine DeleteFile if necessary.
+#if defined(OS_WIN) && defined(ENV_CHROMIUM_DELETEFILE_UNDEFINED)
+#define DeleteFile DeleteFileW
+#endif
 
 #endif  // THIRD_PARTY_LEVELDATABASE_ENV_CHROMIUM_H_

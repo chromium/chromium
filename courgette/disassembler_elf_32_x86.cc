@@ -108,6 +108,7 @@ CheckBool DisassemblerElf32X86::ParseRelocationSection(
 
   std::vector<RVA>::const_iterator reloc_iter = abs32_locations_.begin();
 
+  // Try to match successive reloc units with (sorted) |abs32_locations_|.
   while (match && (reloc_iter != abs32_locations_.end())) {
     if (section_relocs_iter->r_info != R_386_RELATIVE ||
         section_relocs_iter->r_offset != *reloc_iter) {
@@ -118,7 +119,7 @@ CheckBool DisassemblerElf32X86::ParseRelocationSection(
   }
 
   if (match) {
-    // Skip over relocation tables.
+    // Success: Emit relocation table.
     if (!receptor->EmitElfRelocation())
       return false;
     file_offset += sizeof(Elf32_Rel) * abs32_locations_.size();

@@ -96,7 +96,7 @@ class SubresourceFilterAbusiveTest
   bool DidSendConsoleMessage(const std::string& message) {
     const auto& messages =
         content::RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
-    return base::ContainsValue(messages, message);
+    return base::Contains(messages, message);
   }
 
  protected:

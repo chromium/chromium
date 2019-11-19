@@ -1,0 +1,20 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":browser_proxy",
+  ]
+}
+
+js_library("browser_proxy") {
+  sources = [
+    "browser_proxy.js",
+    "browser_proxy_interface.js",
+    "webui_browser_proxy.js",
+  ]
+  externs_list = [ "$externs_path/chrome_extensions.js" ]
+}

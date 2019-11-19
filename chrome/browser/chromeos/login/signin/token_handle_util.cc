@@ -26,7 +26,7 @@ constexpr int kMaxRetries = 3;
 
 }  // namespace
 
-TokenHandleUtil::TokenHandleUtil() : weak_factory_(this) {}
+TokenHandleUtil::TokenHandleUtil() {}
 
 TokenHandleUtil::~TokenHandleUtil() {
   weak_factory_.InvalidateWeakPtrs();

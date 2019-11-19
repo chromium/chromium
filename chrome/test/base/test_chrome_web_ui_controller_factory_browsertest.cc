@@ -35,8 +35,8 @@ class MockWebUIProvider
 };
 
 // Dummy URL location for us to override.
-const char kChromeTestChromeWebUIControllerFactory[] =
-    "chrome://ChromeTestChromeWebUIControllerFactory/";
+const std::string kChromeTestChromeWebUIControllerFactory =
+    content::GetWebUIURLString("ChromeTestChromeWebUIControllerFactory/");
 
 // Sets up and tears down the factory override for our url's host. It is
 // necessary to do this here, rather than in the test declaration, which is too

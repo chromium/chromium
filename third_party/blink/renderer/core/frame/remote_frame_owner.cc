@@ -17,11 +17,10 @@
 namespace blink {
 
 RemoteFrameOwner::RemoteFrameOwner(
-    SandboxFlags flags,
-    const ParsedFeaturePolicy& container_policy,
+    const FramePolicy& frame_policy,
     const WebFrameOwnerProperties& frame_owner_properties,
     FrameOwnerElementType frame_owner_element_type)
-    : sandbox_flags_(flags),
+    : frame_policy_(frame_policy),
       browsing_context_container_name_(
           static_cast<String>(frame_owner_properties.name)),
       scrolling_(
@@ -31,8 +30,8 @@ RemoteFrameOwner::RemoteFrameOwner(
       allow_fullscreen_(frame_owner_properties.allow_fullscreen),
       allow_payment_request_(frame_owner_properties.allow_payment_request),
       is_display_none_(frame_owner_properties.is_display_none),
+      needs_occlusion_tracking_(false),
       required_csp_(frame_owner_properties.required_csp),
-      container_policy_(container_policy),
       frame_owner_element_type_(frame_owner_element_type) {}
 
 void RemoteFrameOwner::Trace(blink::Visitor* visitor) {
@@ -90,6 +89,15 @@ void RemoteFrameOwner::IntrinsicSizingInfoChanged() {
   WebLocalFrameImpl::FromFrame(local_frame)
       ->FrameWidgetImpl()
       ->IntrinsicSizingInfoChanged(intrinsic_sizing_info);
+}
+
+void RemoteFrameOwner::SetNeedsOcclusionTracking(bool needs_tracking) {
+  if (needs_tracking == needs_occlusion_tracking_)
+    return;
+  needs_occlusion_tracking_ = needs_tracking;
+  LocalFrame* local_frame = To<LocalFrame>(frame_.Get());
+  local_frame->GetLocalFrameHostRemote().SetNeedsOcclusionTracking(
+      needs_tracking);
 }
 
 bool RemoteFrameOwner::ShouldLazyLoadChildren() const {

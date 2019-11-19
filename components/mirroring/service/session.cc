@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -39,19 +40,19 @@
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/mojo/clients/mojo_video_encode_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "net/base/ip_endpoint.h"
-#include "services/ws/public/cpp/gpu/gpu.h"
+#include "services/viz/public/cpp/gpu/gpu.h"
 
-using media::cast::FrameSenderConfig;
-using media::cast::RtpPayloadType;
 using media::cast::CastTransportStatus;
 using media::cast::Codec;
 using media::cast::FrameEvent;
-using media::cast::PacketEvent;
+using media::cast::FrameSenderConfig;
 using media::cast::OperationalStatus;
 using media::cast::Packet;
+using media::cast::PacketEvent;
+using media::cast::RtpPayloadType;
 using media::mojom::RemotingSinkAudioCapability;
 using media::mojom::RemotingSinkVideoCapability;
 using mirroring::mojom::SessionError;
@@ -151,10 +152,9 @@ bool IsHardwareVP8EncodingSupported(
 bool IsHardwareH264EncodingSupported(
     const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
         profiles) {
-// TODO(miu): Look into why H.264 hardware encoder on MacOS is broken.
-// http://crbug.com/596674
-// TODO(emircan): Look into HW encoder initialization issues on Win.
-// https://crbug.com/636064
+// TODO(crbug.com/1015482): Look into why H.264 hardware encoder on MacOS is
+// broken.
+// TODO(crbug.com/1015482): Look into HW encoder initialization issues on Win.
 #if !defined(OS_MACOSX) && !defined(OS_WIN)
   for (const auto& vea_profile : profiles) {
     if (vea_profile.profile >= media::H264PROFILE_MIN &&
@@ -241,13 +241,15 @@ void AddStreamObject(int stream_index,
 }
 
 // Checks whether receiver's build version is less than "1.|base_version|.xxxx".
-// Returns false if given version doesn't have the format of "1.xx.xxxx".
+// Returns true if given version doesn't have the format of "1.xx.xxxx", so that
+// we don't assume that the receiver has the required new capabilities.
 bool NeedsWorkaroundForOlder1DotXVersions(
     const std::string& receiver_build_version,
     int base_version) {
   if (!base::StartsWith(receiver_build_version, "1.",
-                        base::CompareCase::SENSITIVE))
-    return false;
+                        base::CompareCase::SENSITIVE)) {
+    return true;
+  }
   const size_t end_pos = receiver_build_version.find_first_of('.', 2);
   if (end_pos == std::string::npos)
     return false;
@@ -313,7 +315,7 @@ media::mojom::RemotingSinkMetadata ToRemotingSinkMetadata(
 
   // Enable remoting 1080p 30fps or higher resolution/fps content for Chromecast
   // Ultra receivers only.
-  // TODO(xjz): Receiver should report this capability.
+  // TODO(crbug.com/1015467): Receiver should report this capability.
   if (params.receiver_model_name == "Chromecast Ultra") {
     sink_metadata.video_capabilities.push_back(
         RemotingSinkVideoCapability::SUPPORT_4K);
@@ -345,18 +347,15 @@ class Session::AudioCapturingCallback final
 
   // Called on audio thread.
   void Capture(const media::AudioBus* audio_bus,
-               int audio_delay_milliseconds,
+               base::TimeTicks audio_capture_time,
                double volume,
                bool key_pressed) override {
-    // TODO(xjz): Don't copy the audio data. Instead, send |audio_bus| directly
-    // to the encoder.
+    // TODO(crbug.com/1015467): Don't copy the audio data. Instead, send
+    // |audio_bus| directly to the encoder.
     std::unique_ptr<media::AudioBus> captured_audio =
         media::AudioBus::Create(audio_bus->channels(), audio_bus->frames());
     audio_bus->CopyTo(captured_audio.get());
-    const base::TimeTicks recorded_time =
-        base::TimeTicks::Now() -
-        base::TimeDelta::FromMilliseconds(audio_delay_milliseconds);
-    audio_data_callback_.Run(std::move(captured_audio), recorded_time);
+    audio_data_callback_.Run(std::move(captured_audio), audio_capture_time);
   }
 
   void OnCaptureError(const std::string& message) override {
@@ -372,13 +371,14 @@ class Session::AudioCapturingCallback final
   DISALLOW_COPY_AND_ASSIGN(AudioCapturingCallback);
 };
 
-Session::Session(mojom::SessionParametersPtr session_params,
-                 const gfx::Size& max_resolution,
-                 mojom::SessionObserverPtr observer,
-                 mojom::ResourceProviderPtr resource_provider,
-                 mojom::CastMessageChannelPtr outbound_channel,
-                 mojom::CastMessageChannelRequest inbound_channel,
-                 std::unique_ptr<ws::Gpu> gpu)
+Session::Session(
+    mojom::SessionParametersPtr session_params,
+    const gfx::Size& max_resolution,
+    mojo::PendingRemote<mojom::SessionObserver> observer,
+    mojo::PendingRemote<mojom::ResourceProvider> resource_provider,
+    mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
+    mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : session_params_(*session_params),
       state_(MIRRORING),
       observer_(std::move(observer)),
@@ -387,21 +387,27 @@ Session::Session(mojom::SessionParametersPtr session_params,
                           std::move(inbound_channel),
                           base::BindRepeating(&Session::OnResponseParsingError,
                                               base::Unretained(this))),
-      gpu_(std::move(gpu)),
-      gpu_channel_host_(nullptr),
-      weak_factory_(this) {
+      gpu_channel_host_(nullptr) {
   DCHECK(resource_provider_);
   mirror_settings_.SetResolutionContraints(max_resolution.width(),
                                            max_resolution.height());
-  resource_provider_->GetNetworkContext(mojo::MakeRequest(&network_context_));
+  resource_provider_->GetNetworkContext(
+      network_context_.BindNewPipeAndPassReceiver());
+
+  if (session_params->type != mojom::SessionType::AUDIO_ONLY &&
+      io_task_runner) {
+    mojo::PendingRemote<viz::mojom::Gpu> remote_gpu;
+    resource_provider_->BindGpu(remote_gpu.InitWithNewPipeAndPassReceiver());
+    gpu_ = viz::Gpu::Create(std::move(remote_gpu), io_task_runner);
+  }
 
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
   params->process_id = network::mojom::kBrowserProcessId;
   params->is_corb_enabled = false;
-  network::mojom::URLLoaderFactoryPtr url_loader_factory;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
   network_context_->CreateURLLoaderFactory(
-      mojo::MakeRequest(&url_loader_factory), std::move(params));
+      url_loader_factory.InitWithNewPipeAndPassReceiver(), std::move(params));
 
   // Generate session level tags.
   base::Value session_tags(base::Value::Type::DICTIONARY);
@@ -443,6 +449,7 @@ Session::~Session() {
 }
 
 void Session::ReportError(SessionError error) {
+  UMA_HISTOGRAM_ENUMERATION("MediaRouter.MirroringService.SessionError", error);
   if (session_monitor_.has_value())
     session_monitor_->OnStreamingError(error);
   if (state_ == REMOTING) {
@@ -511,8 +518,8 @@ void Session::OnEncoderStatusChange(OperationalStatus status) {
     case OperationalStatus::STATUS_UNINITIALIZED:
     case OperationalStatus::STATUS_CODEC_REINIT_PENDING:
     // Not an error.
-    // TODO(miu): As an optimization, signal the client to pause sending more
-    // frames until the state becomes STATUS_INITIALIZED again.
+    // TODO(crbug.com/1015467): As an optimization, signal the client to pause
+    // sending more frames until the state becomes STATUS_INITIALIZED again.
     case OperationalStatus::STATUS_INITIALIZED:
       break;
     case OperationalStatus::STATUS_INVALID_CONFIGURATION:
@@ -540,13 +547,14 @@ void Session::CreateVideoEncodeAccelerator(
       gpu_->CreateVideoEncodeAcceleratorProvider(
           mojo::MakeRequest(&vea_provider_));
     }
-    media::mojom::VideoEncodeAcceleratorPtr vea;
-    vea_provider_->CreateVideoEncodeAccelerator(mojo::MakeRequest(&vea));
+    mojo::PendingRemote<media::mojom::VideoEncodeAccelerator> vea;
+    vea_provider_->CreateVideoEncodeAccelerator(
+        vea.InitWithNewPipeAndPassReceiver());
     // std::make_unique doesn't work to create a unique pointer of the subclass.
     mojo_vea.reset(new media::MojoVideoEncodeAccelerator(std::move(vea),
                                                          supported_profiles_));
   }
-  callback.Run(video_encode_thread_, std::move(mojo_vea));
+  callback.Run(base::ThreadTaskRunnerHandle::Get(), std::move(mojo_vea));
 }
 
 void Session::CreateVideoEncodeMemory(
@@ -554,23 +562,13 @@ void Session::CreateVideoEncodeMemory(
     const media::cast::ReceiveVideoEncodeMemoryCallback& callback) {
   DVLOG(1) << __func__;
 
-  mojo::ScopedSharedBufferHandle mojo_buf =
-      mojo::SharedBufferHandle::Create(size);
-  if (!mojo_buf->is_valid()) {
-    LOG(WARNING) << "Browser failed to allocate shared memory.";
-    callback.Run(nullptr);
-    return;
-  }
+  base::UnsafeSharedMemoryRegion buf =
+      mojo::CreateUnsafeSharedMemoryRegion(size);
 
-  base::SharedMemoryHandle shared_buf;
-  if (mojo::UnwrapSharedMemoryHandle(std::move(mojo_buf), &shared_buf, nullptr,
-                                     nullptr) != MOJO_RESULT_OK) {
+  if (!buf.IsValid())
     LOG(WARNING) << "Browser failed to allocate shared memory.";
-    callback.Run(nullptr);
-    return;
-  }
 
-  callback.Run(std::make_unique<base::SharedMemory>(shared_buf, false));
+  callback.Run(std::move(buf));
 }
 
 void Session::OnTransportStatusChanged(CastTransportStatus status) {
@@ -669,12 +667,12 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
   const bool initially_starting_session =
       !audio_encode_thread_ && !video_encode_thread_;
   if (initially_starting_session) {
-    audio_encode_thread_ = base::CreateSingleThreadTaskRunnerWithTraits(
-        {base::TaskPriority::USER_BLOCKING,
+    audio_encode_thread_ = base::CreateSingleThreadTaskRunner(
+        {base::ThreadPool(), base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
         base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-    video_encode_thread_ = base::CreateSingleThreadTaskRunnerWithTraits(
-        {base::TaskPriority::USER_BLOCKING,
+    video_encode_thread_ = base::CreateSingleThreadTaskRunner(
+        {base::ThreadPool(), base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
         base::SingleThreadTaskRunnerThreadMode::DEDICATED);
   }
@@ -708,9 +706,9 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
       audio_stream_ = std::make_unique<AudioRtpStream>(
           std::move(audio_sender), weak_factory_.GetWeakPtr());
       DCHECK(!audio_capturing_callback_);
-      // TODO(xjz): Elliminate the thread hops. The audio data is thread-hopped
-      // from the audio thread, and later thread-hopped again to the encoding
-      // thread.
+      // TODO(crbug.com/1015467): Eliminate the thread hops. The audio data is
+      // thread-hopped from the audio thread, and later thread-hopped again to
+      // the encoding thread.
       audio_capturing_callback_ = std::make_unique<AudioCapturingCallback>(
           media::BindToCurrentLoop(base::BindRepeating(
               &AudioRtpStream::InsertAudio, audio_stream_->AsWeakPtr())),
@@ -740,8 +738,9 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
       video_stream_ = std::make_unique<VideoRtpStream>(
           std::move(video_sender), weak_factory_.GetWeakPtr());
       if (!video_capture_client_) {
-        media::mojom::VideoCaptureHostPtr video_host;
-        resource_provider_->GetVideoCaptureHost(mojo::MakeRequest(&video_host));
+        mojo::PendingRemote<media::mojom::VideoCaptureHost> video_host;
+        resource_provider_->GetVideoCaptureHost(
+            video_host.InitWithNewPipeAndPassReceiver());
         video_capture_client_ = std::make_unique<VideoCaptureClient>(
             mirror_settings_.GetVideoCaptureParams(), std::move(video_host));
         video_capture_client_->Start(
@@ -767,12 +766,11 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
   if (answer.supports_get_status) {
     wifi_status_monitor =
         std::make_unique<WifiStatusMonitor>(&message_dispatcher_);
-    // Before 1.28 Android TV Chromecast receivers respond to GET_CAPABILITIES
-    // even though they don't support remoting.
+    // Nest Hub devices do not support remoting despite having a relatively new
+    // build version, so we cannot filter with
+    // NeedsWorkaroundForOlder1DotXVersions() here.
     if (initially_starting_session &&
-        (!NeedsWorkaroundForOlder1DotXVersions(
-             session_monitor_->GetReceiverBuildVersion(), 28) ||
-         base::StartsWith(session_params_.receiver_model_name, "Chromecast",
+        (base::StartsWith(session_params_.receiver_model_name, "Chromecast",
                           base::CompareCase::SENSITIVE) ||
          base::StartsWith(session_params_.receiver_model_name, "Eureka Dongle",
                           base::CompareCase::SENSITIVE))) {
@@ -788,12 +786,13 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
 }
 
 void Session::OnResponseParsingError(const std::string& error_message) {
-  // TODO(xjz): Log the |error_message| in the mirroring logs.
+  // TODO(crbug.com/1015467): Log the |error_message| in the mirroring logs.
 }
 
-void Session::CreateAudioStream(mojom::AudioStreamCreatorClientPtr client,
-                                const media::AudioParameters& params,
-                                uint32_t shared_memory_count) {
+void Session::CreateAudioStream(
+    mojo::PendingRemote<mojom::AudioStreamCreatorClient> client,
+    const media::AudioParameters& params,
+    uint32_t shared_memory_count) {
   resource_provider_->CreateAudioStream(std::move(client), params,
                                         shared_memory_count);
 }
@@ -897,10 +896,10 @@ void Session::CreateAndSendOffer() {
 }
 
 void Session::ConnectToRemotingSource(
-    media::mojom::RemoterPtr remoter,
-    media::mojom::RemotingSourceRequest request) {
+    mojo::PendingRemote<media::mojom::Remoter> remoter,
+    mojo::PendingReceiver<media::mojom::RemotingSource> receiver) {
   resource_provider_->ConnectToRemotingSource(std::move(remoter),
-                                              std::move(request));
+                                              std::move(receiver));
 }
 
 void Session::RequestRemotingStreaming() {

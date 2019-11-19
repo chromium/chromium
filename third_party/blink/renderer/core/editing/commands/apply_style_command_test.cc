@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -41,13 +42,14 @@ TEST_F(ApplyStyleCommandTest, RemoveRedundantBlocksWithStarEditableStyle) {
           .Build(),
       SetSelectionOptions());
 
-  MutableCSSPropertyValueSet* style =
-      MutableCSSPropertyValueSet::Create(kHTMLQuirksMode);
-  style->SetProperty(CSSPropertyTextAlign, "center", /* important */ false,
+  auto* style =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
+  style->SetProperty(CSSPropertyID::kTextAlign, "center", /* important */ false,
                      SecureContextMode::kInsecureContext);
-  ApplyStyleCommand::Create(GetDocument(), EditingStyle::Create(style),
-                            InputEvent::InputType::kFormatJustifyCenter,
-                            ApplyStyleCommand::kForceBlockProperties)
+  MakeGarbageCollected<ApplyStyleCommand>(
+      GetDocument(), MakeGarbageCollected<EditingStyle>(style),
+      InputEvent::InputType::kFormatJustifyCenter,
+      ApplyStyleCommand::kForceBlockProperties)
       ->Apply();
   // Shouldn't crash.
 }
@@ -70,13 +72,14 @@ TEST_F(ApplyStyleCommandTest, JustifyRightDetachesDestination) {
   GetDocument().UpdateStyleAndLayout();
   Selection().SelectAll();
 
-  MutableCSSPropertyValueSet* style =
-      MutableCSSPropertyValueSet::Create(kHTMLQuirksMode);
-  style->SetProperty(CSSPropertyTextAlign, "right", /* important */ false,
+  auto* style =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
+  style->SetProperty(CSSPropertyID::kTextAlign, "right", /* important */ false,
                      SecureContextMode::kInsecureContext);
-  ApplyStyleCommand::Create(GetDocument(), EditingStyle::Create(style),
-                            InputEvent::InputType::kFormatJustifyCenter,
-                            ApplyStyleCommand::kForceBlockProperties)
+  MakeGarbageCollected<ApplyStyleCommand>(
+      GetDocument(), MakeGarbageCollected<EditingStyle>(style),
+      InputEvent::InputType::kFormatJustifyCenter,
+      ApplyStyleCommand::kForceBlockProperties)
       ->Apply();
   // Shouldn't crash.
 }
@@ -88,12 +91,14 @@ TEST_F(ApplyStyleCommandTest, FontSizeDeltaWithSpanElement) {
           "<div contenteditable>^<div></div>a<span></span>|</div>"),
       SetSelectionOptions());
 
-  MutableCSSPropertyValueSet* style =
-      MutableCSSPropertyValueSet::Create(kHTMLQuirksMode);
-  style->SetProperty(CSSPropertyWebkitFontSizeDelta, "3", /* important */ false,
+  auto* style =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
+  style->SetProperty(CSSPropertyID::kWebkitFontSizeDelta, "3",
+                     /* important */ false,
                      GetDocument().GetSecureContextMode());
-  ApplyStyleCommand::Create(GetDocument(), EditingStyle::Create(style),
-                            InputEvent::InputType::kNone)
+  MakeGarbageCollected<ApplyStyleCommand>(
+      GetDocument(), MakeGarbageCollected<EditingStyle>(style),
+      InputEvent::InputType::kNone)
       ->Apply();
   EXPECT_EQ("<div contenteditable><div></div><span>^a|</span></div>",
             GetSelectionTextFromBody());

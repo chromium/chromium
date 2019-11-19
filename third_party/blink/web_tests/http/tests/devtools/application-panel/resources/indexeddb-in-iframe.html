@@ -1,0 +1,22 @@
+<script>
+  function makeDB() {
+    return new Promise((resolve) => {
+      indexedDB.open('Database-iframe').onupgradeneeded = event => {
+          const db = event.target.result;
+          const objectStore = db.createObjectStore('Database-iframe');
+          objectStore.transaction.oncomplete = _ => {
+            indexedDB.open('Database-iframe').onsuccess = event => event.target.result
+              .transaction('Database-iframe', 'readwrite')
+              .objectStore('Database-iframe')
+              .add(940123, 'key');
+          }
+          resolve();
+      }
+    });
+  }
+
+  window.addEventListener("load", async function(e) {
+    await makeDB();
+  }, false);
+
+</script>

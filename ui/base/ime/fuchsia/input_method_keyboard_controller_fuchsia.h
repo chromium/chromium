@@ -7,14 +7,14 @@
 
 #include <fuchsia/ui/input/cpp/fidl.h>
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "ui/base/ime/input_method_keyboard_controller.h"
-#include "ui/base/ime/ui_base_ime_export.h"
 
 namespace ui {
 
 // Manages visibility of the onscreen keyboard.
-class UI_BASE_IME_EXPORT InputMethodKeyboardControllerFuchsia
+class COMPONENT_EXPORT(UI_BASE_IME) InputMethodKeyboardControllerFuchsia
     : public InputMethodKeyboardController {
  public:
   // |ime_service| must outlive |this|.

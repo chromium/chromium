@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.sync.ui;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -15,7 +13,8 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.customtabs.CustomTabsIntent;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
@@ -42,6 +41,8 @@ import org.chromium.chrome.browser.util.IntentUtils;
 import org.chromium.components.sync.Passphrase;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
+
+import androidx.browser.customtabs.CustomTabsIntent;
 
 /**
  * Dialog to ask to user to enter their sync passphrase.
@@ -181,8 +182,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
                 new SpanInfo("<learnmore>", "</learnmore>", new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        HelpAndFeedback help = HelpAndFeedback.getInstance(getActivity());
-                        help.show(getActivity(), helpContext, Profile.getLastUsedProfile(), null);
+                        HelpAndFeedback.getInstance().show(
+                                getActivity(), helpContext, Profile.getLastUsedProfile(), null);
                     }
                 }));
     }

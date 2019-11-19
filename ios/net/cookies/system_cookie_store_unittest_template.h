@@ -112,8 +112,6 @@ void SetCookieInStoreWithNoCallback(NSHTTPCookie* cookie,
 // The delegate class has to implement the following functions:
 //   GetCookieStore()
 //     Returns a SystemCookieStore implementation object.
-//   bool IsTestEnabled()
-//     Returns wether the subclass test should run or not.
 //   bool IsCookieSet(NSHttpCookie cookie, NSURL url)
 //     Returns wether |cookie| is set for |url| in the internal cookie store or
 //     not.
@@ -128,13 +126,8 @@ class SystemCookieStoreTest : public PlatformTest {
       : test_cookie_url1_([NSURL URLWithString:@"http://foo.google.com/bar"]),
         test_cookie_url2_([NSURL URLWithString:@"http://bar.xyz.abc/"]),
         test_cookie_url3_([NSURL URLWithString:@"http://123.foo.bar/"]) {
-    if (!IsTestEnabled())
-      return;
     ClearCookies();
   }
-
-  // Returns wether the delegate testing is enabled or not.
-  bool IsTestEnabled() { return delegate_.IsTestEnabled(); }
 
   // Gets the SystemCookieStore implementation class instance.
   SystemCookieStore* GetCookieStore() { return delegate_.GetCookieStore(); }
@@ -162,8 +155,6 @@ class SystemCookieStoreTest : public PlatformTest {
 TYPED_TEST_SUITE_P(SystemCookieStoreTest);
 
 TYPED_TEST_P(SystemCookieStoreTest, SetCookieAsync) {
-  if (!this->IsTestEnabled())
-    return;
   NSHTTPCookie* system_cookie =
       CreateCookie(@"a", @"b", this->test_cookie_url1_);
   SystemCookieCallbackRunVerifier callback_verifier;
@@ -178,8 +169,6 @@ TYPED_TEST_P(SystemCookieStoreTest, SetCookieAsync) {
 
 // Tests cases of GetAllCookiesAsync and GetCookiesForURLAsync.
 TYPED_TEST_P(SystemCookieStoreTest, GetCookiesAsync) {
-  if (!this->IsTestEnabled())
-    return;
   SystemCookieStore* cookie_store = this->GetCookieStore();
   NSMutableDictionary* input_cookies = [[NSMutableDictionary alloc] init];
   NSHTTPCookie* system_cookie =
@@ -227,8 +216,6 @@ TYPED_TEST_P(SystemCookieStoreTest, GetCookiesAsync) {
 // Tests deleting cookies for different URLs and for different
 // cookie key/value pairs.
 TYPED_TEST_P(SystemCookieStoreTest, DeleteCookiesAsync) {
-  if (!this->IsTestEnabled())
-    return;
   SystemCookieStore* cookie_store = this->GetCookieStore();
   NSHTTPCookie* system_cookie1 =
       CreateCookie(@"a", @"b", this->test_cookie_url1_);
@@ -262,8 +249,6 @@ TYPED_TEST_P(SystemCookieStoreTest, DeleteCookiesAsync) {
 }
 
 TYPED_TEST_P(SystemCookieStoreTest, ClearCookiesAsync) {
-  if (!this->IsTestEnabled())
-    return;
   SystemCookieStore* cookie_store = this->GetCookieStore();
   SetCookieInStoreWithNoCallback(
       CreateCookie(@"a", @"b", this->test_cookie_url1_), cookie_store);
@@ -280,8 +265,6 @@ TYPED_TEST_P(SystemCookieStoreTest, ClearCookiesAsync) {
 }
 
 TYPED_TEST_P(SystemCookieStoreTest, GetCookieAcceptPolicy) {
-  if (!this->IsTestEnabled())
-    return;
   SystemCookieStore* cookie_store = this->GetCookieStore();
   EXPECT_EQ([NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy,
             cookie_store->GetCookieAcceptPolicy());

@@ -1,0 +1,12 @@
+--- ./configure	2019-10-23 01:30:58.573430728 +0000
++++ ../avahi-0.6.31-patched/configure	2019-10-23 01:30:44.741426407 +0000
+@@ -16892,7 +16892,8 @@ test -n "$PTHREAD_CC" || PTHREAD_CC="${C
+ 
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to check for GCC pthread/shared inconsistencies" >&5
+ $as_echo_n "checking whether to check for GCC pthread/shared inconsistencies... " >&6; }
+-   check_inconsistencies=yes
++   # Necessary to make ./configure compatible with clang.
++   check_inconsistencies=no
+    case "${host_cpu}-${host_os}" in
+      *-darwin*) check_inconsistencies=no ;;
+    esac

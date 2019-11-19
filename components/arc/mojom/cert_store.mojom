@@ -1,0 +1,138 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 2
+
+//
+// CertStoreHost is modeled after Android keymaster interface
+// hardware/libhardware/include/hardware/keymaster2.h
+//
+// and must follow the concept if extended in the future.
+// Please keep names in sync as far as it is possible.
+//
+// Enums/structures are modeled after structures from
+// hardware/libhardware/include/hardware/keymaster_defs.h
+//
+
+module arc.mojom;
+
+// Describes a keymaster operation result.
+[Extensible]
+enum KeymasterError {
+  ERROR_OK = 0,
+  ERROR_INVALID_OPERATION_HANDLE = -28,
+  ERROR_INVALID_KEY_BLOB = -33,
+  ERROR_UNIMPLEMENTED = -100,
+  ERROR_UNKNOWN_ERROR = -1000,
+};
+
+// Enumerates the crypto algorithms supported by Host.
+[Extensible]
+enum Algorithm {
+  ALGORITHM_RSA = 1,
+  ALGORITHM_EC = 3,
+};
+
+// Enumerates the digests supported by Host.
+[Extensible]
+enum Digest {
+  DIGEST_NONE = 0,
+  DIGEST_SHA1 = 2,
+  DIGEST_SHA_2_224 = 3,
+  DIGEST_SHA_2_256 = 4,
+  DIGEST_SHA_2_384 = 5,
+  DIGEST_SHA_2_512 = 6,
+};
+
+// Enumerates the paddings supported by Host.
+[Extensible]
+enum Padding {
+  PAD_NONE = 1,
+  PAD_RSA_PKCS1_1_5_SIGN = 5,
+};
+
+// Describes a parameter of client certificate provided by Host.
+union KeyParam {
+  Algorithm algorithm;
+  Digest digest;
+  Padding padding;
+};
+
+// Describes a client certificate provided by Host.
+// Does not correspond to keymaster type.
+struct Certificate {
+  // Nickname/alias of the certificate.
+  string alias;
+
+  // PEM-encoded client certificate.
+  string cert;
+};
+
+// Next method ID: 6
+// The interface is modeled after keymaster interface and must follow the format
+// if extended in the future.
+interface CertStoreHost {
+  // The helper method, which does not correspond to keymaster interface.
+  // It returns a list of Chrome OS corporate usage client certificates if
+  // any Android app is whitelisted to use them, otherwise returns an
+  // empty list.
+  ListCertificates@0() => (array<Certificate> certs);
+
+  // Retrieves key characteristics for the specified key with alias.
+  // params is null if any error occurred during retrieval.
+  GetKeyCharacteristics@1(string alias)
+      => (KeymasterError error, array<KeyParam>? params);
+
+  // Begins the operation using the specified key with alias and operation
+  // parameters (such as algorithm, digest, padding).
+  // If all is well, returns ERROR_OK and creates an operation handle which
+  // must be passed to subsequent calls to Update(), Finish() or Abort().
+  // Currently only signature operations are supported.
+  Begin@2(string alias, array<KeyParam> params)
+      => (KeymasterError error, uint64 operation_handle);
+
+  // Provides data to an ongoing cryptographic operation begun with Begin().
+  // Returns an amount of data consumed by Update().
+  Update@3(uint64 operation_handle, array<uint8> data)
+      => (KeymasterError error, uint32 input_consumed);
+
+  // Finalizes a cryptographic operation begun with Begin() and invalidates
+  // operation handle. Retrieves the result (signature). In case of any error,
+  // signed_data is null.
+  Finish@4(uint64 operation_handle)
+      => (KeymasterError error, array<uint8>? signed_data);
+
+  // Aborts a cryptographic operation begun with Begin(), freeing all internal
+  // resources and invalidating operation handle.
+  Abort@5(uint64 operation_handle) => (KeymasterError error);
+};
+
+// Next method ID: 4
+interface CertStoreInstance {
+  // DEPRECATED: Please use Init@3 instead.
+  InitDeprecated@0(CertStoreHost host_ptr);
+
+  // Establishes full-duplex communication with the host.
+  [MinVersion=1] Init@3(CertStoreHost host_ptr) => ();
+
+  // Informs the key permissions are changed: only listed packages are allowed
+  // to use exposed certificates.
+  OnKeyPermissionsChanged@1(array<string> permissions);
+
+  // Informs the certificates are changed (added, removed or updated):
+  // CertStoreInstance must call ListCertficates to update its database.
+  OnCertificatesChanged@2();
+};
+
+// Next method ID: 1
+interface SmartCardManagerHost {
+  // Refreshes smart card certificates available to Android apps.
+  Refresh@0() => (bool result);
+};
+
+// Next method ID: 1
+interface SmartCardManagerInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(SmartCardManagerHost host_ptr) => ();
+};

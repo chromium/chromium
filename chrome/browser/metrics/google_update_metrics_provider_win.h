@@ -59,7 +59,7 @@ class GoogleUpdateMetricsProviderWin : public metrics::MetricsProvider {
   // filled in only after the successful completion of GetGoogleUpdateData().
   GoogleUpdateMetrics google_update_metrics_;
 
-  base::WeakPtrFactory<GoogleUpdateMetricsProviderWin> weak_ptr_factory_;
+  base::WeakPtrFactory<GoogleUpdateMetricsProviderWin> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GoogleUpdateMetricsProviderWin);
 };

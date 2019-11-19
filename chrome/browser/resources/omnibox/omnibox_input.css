@@ -2,6 +2,10 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+[hidden] {
+  display: none !important;
+}
+
 :host {
   --hover-color: #f5f5f5;
   --input-alignment-indentation: 9px;
@@ -49,6 +53,15 @@ select {
   color: gray;
   font-size: .625rem;
   margin-inline-start: var(--input-alignment-indentation);
+}
+
+.column-container {
+  display: flex;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
 }
 
 /* :hover, :focus, & :active */

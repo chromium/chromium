@@ -39,6 +39,48 @@ source_set("trigger_throttler") {
   ]
 }
 
+source_set("trigger_util") {
+  sources = [
+    "trigger_util.cc",
+    "trigger_util.h",
+  ]
+  deps = [
+    ":triggers",
+    "//content/public/browser",
+  ]
+}
+
+source_set("ad_popup_trigger") {
+  sources = [
+    "ad_popup_trigger.cc",
+    "ad_popup_trigger.h",
+  ]
+  deps = [
+    ":trigger_throttler",
+    ":trigger_util",
+    ":triggers",
+    "//base:base",
+    "//components/safe_browsing:features",
+    "//content/public/browser",
+  ]
+}
+
+source_set("ad_redirect_trigger") {
+  sources = [
+    "ad_redirect_trigger.cc",
+    "ad_redirect_trigger.h",
+  ]
+  deps = [
+    ":trigger_throttler",
+    ":trigger_util",
+    ":triggers",
+    "//base:base",
+    "//components/safe_browsing:features",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+}
+
 source_set("ad_sampler_trigger") {
   sources = [
     "ad_sampler_trigger.cc",
@@ -46,6 +88,7 @@ source_set("ad_sampler_trigger") {
   ]
   deps = [
     ":trigger_throttler",
+    ":trigger_util",
     ":triggers",
     "//base:base",
     "//components/safe_browsing:features",
@@ -73,6 +116,7 @@ source_set("suspicious_site_trigger") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "ad_popup_trigger_unittest.cc",
     "ad_sampler_trigger_unittest.cc",
     "mock_trigger_manager.cc",
     "mock_trigger_manager.h",
@@ -81,6 +125,7 @@ source_set("unit_tests") {
     "trigger_throttler_unittest.cc",
   ]
   deps = [
+    ":ad_popup_trigger",
     ":ad_sampler_trigger",
     ":suspicious_site_trigger",
     ":trigger_throttler",
@@ -90,6 +135,8 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/safe_browsing:features",
     "//components/safe_browsing/browser:browser",
+    "//components/subresource_filter/content/browser:test_support",
+    "//content/public/browser:browser",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

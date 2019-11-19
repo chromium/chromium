@@ -11,32 +11,42 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 
-namespace base {
-class SequencedTaskRunner;
-}
-
 namespace feedback {
+
+class FeedbackReport;
 
 // Repeating since for every feedback report file on disk, the callback to
 // queue it in the uploader needs to be invoked.
 using QueueCallback =
-    base::RepeatingCallback<void(std::unique_ptr<std::string>)>;
+    base::RepeatingCallback<void(scoped_refptr<FeedbackReport>)>;
 
 // This class holds a feedback report. Once a report is created, a disk backup
 // for it is created automatically. This backup needs to explicitly be
 // deleted by calling DeleteReportOnDisk.
 class FeedbackReport : public base::RefCountedThreadSafe<FeedbackReport> {
  public:
+  // Creates a new feedback report with the contents of |data|.
   FeedbackReport(const base::FilePath& path,
                  const base::Time& upload_at,
+                 std::unique_ptr<std::string> data,
+                 scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  // Creates a feedback report from an existing one on-disk at |path|, the
+  // |upload_at| time should be set after construction.
+  FeedbackReport(base::FilePath path,
                  std::unique_ptr<std::string> data,
                  scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // The ID of the product specific data for the crash report IDs as stored by
   // the feedback server.
   static const char kCrashReportIdsKey[];
+
+  // The ID of the product specific data for the list of all crash report IDs as
+  // stored by the feedback server. Only used for @google.com emails.
+  static const char kAllCrashReportIdsKey[];
 
   // Loads the reports still on disk and queues then using the given callback.
   // This call blocks on the file reads.
@@ -50,6 +60,9 @@ class FeedbackReport : public base::RefCountedThreadSafe<FeedbackReport> {
   const base::Time& upload_at() const { return upload_at_; }
   void set_upload_at(const base::Time& time) { upload_at_ = time; }
   const std::string& data() const { return *data_; }
+  scoped_refptr<base::SequencedTaskRunner> reports_task_runner() const {
+    return reports_task_runner_;
+  }
 
  private:
   friend class base::RefCountedThreadSafe<FeedbackReport>;

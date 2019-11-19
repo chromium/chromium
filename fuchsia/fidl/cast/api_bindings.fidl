@@ -1,0 +1,25 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+library chromium.cast;
+
+using fuchsia.mem;
+using fuchsia.web;
+
+/// Provides Cast platform API binding scripts and methods for connecting those
+/// scripts with Agent backends.
+[Discoverable]
+protocol ApiBindings {
+    /// Gets the list of bindings to early-inject into the page at load time.
+    GetAll() -> (vector<ApiBinding> bindings);
+
+    /// Should be invoked when a connecting a named MessagePort to a native
+    /// bindings backend.
+    Connect(string port_name, fuchsia.web.MessagePort message_port);
+};
+
+table ApiBinding {
+    /// Script to execute before the load of a web document.
+    1: fuchsia.mem.Buffer before_load_script;
+};

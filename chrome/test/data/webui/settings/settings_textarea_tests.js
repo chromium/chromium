@@ -38,7 +38,27 @@ suite('SettingsTextarea', function() {
     assertTrue(label.hidden);
     settingsTextarea.label = 'foobar';
     assertFalse(label.hidden);
-    assertEquals('foobar', label.textContent);
+    assertEquals('foobar', label.textContent.trim());
     assertEquals('foobar', textarea.getAttribute('aria-label'));
+  });
+
+  test('disabledSetCorrectly', function() {
+    assertFalse(textarea.disabled);
+    assertFalse(textarea.hasAttribute('disabled'));
+    assertFalse(settingsTextarea.hasAttribute('disabled'));
+    assertEquals('false', settingsTextarea.getAttribute('aria-disabled'));
+    settingsTextarea.disabled = true;
+    assertTrue(textarea.disabled);
+    assertTrue(textarea.hasAttribute('disabled'));
+    assertTrue(settingsTextarea.hasAttribute('disabled'));
+    assertEquals('true', settingsTextarea.getAttribute('aria-disabled'));
+  });
+
+  test('rowsSetCorrectly', function() {
+    const kDefaultRows = settingsTextarea.rows;
+    const kNewRows = 42;
+    assertEquals(kDefaultRows, textarea.rows);
+    settingsTextarea.rows = kNewRows;
+    assertEquals(kNewRows, textarea.rows);
   });
 });

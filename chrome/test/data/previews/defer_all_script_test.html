@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <title>Test page for DeferAllScript Preview.</title>
+  </head>
+  <body>
+    <!-- Scripts log when they execute in the scriptlog element -->
+    <pre id="scriptlog">ScriptLog:</pre>
+    <script>
+      function log(scripttag) {
+        const endelement = document.getElementById("bodyend");
+        if (endelement && endelement.textContent) {
+          <!-- Log that bodyend element was parsed prior to scripttag -->
+          document.getElementById("scriptlog").textContent += "_BodyEnd";
+          <!-- Clear endelement content to only log bodyend once -->
+          endelement.textContent = null;
+        }
+        <!-- Append scripttag to the scriptlog -->
+        document.getElementById("scriptlog").textContent += "_" + scripttag;
+      }
+      function sendLogToTest() {
+        <!-- Send the scriptlog contents to the test calling this. -->
+        window.domAutomationController.send(document.getElementById("scriptlog").textContent);
+      }
+      function onLoad() {
+        log("OnLoad");
+        var xhr_finish = new XMLHttpRequest();
+        xhr_finish.open("GET", "ScriptOrder" + document.getElementById("scriptlog").textContent + ".jpg", false /* async */);
+        xhr_finish.send();
+      }
+      const endelement = document.getElementById("bodyend");
+      window.addEventListener("load", onLoad);
+      log("InlineScript");
+    </script>
+    <script src="defer_all_script_deferscript.js" defer></script>
+    <script src="defer_all_script_syncscript.js"></script>
+    <pre id="bodyend">End</pre>
+  </body>
+</html>

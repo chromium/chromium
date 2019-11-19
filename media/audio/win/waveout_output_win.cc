@@ -4,7 +4,8 @@
 
 #include "media/audio/win/waveout_output_win.h"
 
-#include "base/atomicops.h"
+#include <atomic>
+
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -211,7 +212,7 @@ void PCMWaveOutAudioOutputStream::Start(AudioSourceCallback* callback) {
   // From now on |pending_bytes_| would be accessed by callback thread.
   // Most likely waveOutPause() or waveOutRestart() has its own memory barrier,
   // but issuing our own is safer.
-  base::subtle::MemoryBarrier();
+  std::atomic_thread_fence(std::memory_order_seq_cst);
 
   MMRESULT result = ::waveOutPause(waveout_);
   if (result != MMSYSERR_NOERROR) {
@@ -246,7 +247,7 @@ void PCMWaveOutAudioOutputStream::Stop() {
   if (state_ != PCMA_PLAYING)
     return;
   state_ = PCMA_STOPPING;
-  base::subtle::MemoryBarrier();
+  std::atomic_thread_fence(std::memory_order_seq_cst);
 
   // Stop watching for buffer event, waits until outstanding callbacks finish.
   if (waiting_handle_) {
@@ -300,6 +301,10 @@ void PCMWaveOutAudioOutputStream::Close() {
   // we do on this function.
   manager_->ReleaseOutputStream(this);
 }
+
+// This stream is always used with sub second buffer sizes, where it's
+// sufficient to simply always flush upon Start().
+void PCMWaveOutAudioOutputStream::Flush() {}
 
 void PCMWaveOutAudioOutputStream::SetVolume(double volume) {
   if (!waveout_)

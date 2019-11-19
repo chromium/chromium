@@ -1,0 +1,42 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/jumbo.gni")
+import("//build/config/ui.gni")
+
+jumbo_component("init") {
+  output_name = "ui_base_ime_init"
+
+  sources = [
+    "input_method_factory.cc",
+    "input_method_factory.h",
+    "input_method_initializer.cc",
+    "input_method_initializer.h",
+  ]
+
+  defines = [ "IS_UI_BASE_IME_INIT_IMPL" ]
+
+  public_deps = [
+    "//base",
+    "//ui/base/ime",
+    "//ui/gfx:native_widget_types",
+  ]
+
+  deps = [
+    "//ui/base",
+  ]
+
+  if (is_win) {
+    deps += [ "//ui/base/ime/win" ]
+  }
+  if (is_mac) {
+    deps += [ "//ui/base/ime/mac" ]
+  }
+  if (is_linux && !is_chromeos) {
+    deps += [ "//ui/base/ime/linux" ]
+  }
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+}

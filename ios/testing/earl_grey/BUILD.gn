@@ -2,11 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-config("earl_grey_support_config") {
-  include_dirs = [ "." ]
-  visibility = [ ":earl_grey_support" ]
-}
-
 source_set("earl_grey_support") {
   defines = [ "CHROME_EARL_GREY_1" ]
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -14,17 +9,33 @@ source_set("earl_grey_support") {
 
   deps = [
     "//base/test:test_support",
+    "//build/config/ios:xctest",
     "//ios/third_party/earl_grey:earl_grey+link",
+    "//ios/web/common",
+    "//testing/gtest:gtest",
   ]
 
   sources = [
+    "app_launch_manager.h",
+    "app_launch_manager.mm",
+    "base_earl_grey_test_case.h",
+    "base_earl_grey_test_case.mm",
+    "base_earl_grey_test_case_app_interface.h",
+    "base_earl_grey_test_case_app_interface.mm",
+    "base_eg_test_helper_impl.h",
+    "base_eg_test_helper_impl.mm",
+    "coverage_utils.h",
+    "coverage_utils.mm",
     "disabled_test_macros.h",
+    "earl_grey_app.h",
+    "earl_grey_app.mm",
+    "earl_grey_test.h",
+    "earl_grey_test.mm",
+    "keyboard_app_interface.h",
+    "keyboard_app_interface.mm",
     "matchers.h",
     "matchers.mm",
   ]
-
-  public_configs = [ ":earl_grey_support_config" ]
-  configs += [ ":earl_grey_support_config" ]
 }
 
 source_set("eg_app_support+eg2") {
@@ -34,23 +45,54 @@ source_set("eg_app_support+eg2") {
 
   deps = [
     "//base/test:test_support",
+    "//build/config/ios:xctest",
     "//ios/third_party/earl_grey2:app_framework+link",
+    "//testing/gtest:gtest",
   ]
 
   sources = [
+    "base_earl_grey_test_case_app_interface.h",
+    "base_earl_grey_test_case_app_interface.mm",
+    "coverage_utils.h",
+    "coverage_utils.mm",
+    "earl_grey_app.h",
+    "earl_grey_app.mm",
+    "keyboard_app_interface.h",
+    "keyboard_app_interface.mm",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "app_launch_manager.h",
+    "app_launch_manager.mm",
+    "base_earl_grey_test_case.h",
+    "base_earl_grey_test_case.mm",
+    "base_earl_grey_test_case_app_interface.h",
+    "base_eg_test_helper_impl.h",
+    "base_eg_test_helper_impl.mm",
+    "coverage_utils.h",
+    "coverage_utils_stub.mm",
+    "disabled_test_macros.h",
+    "earl_grey_test.h",
+    "earl_grey_test.mm",
+    "keyboard_app_interface.h",
+    "keyboard_app_interface_stub.mm",
     "matchers.h",
     "matchers.mm",
   ]
 
-  public_configs = [ ":earl_grey_support_config" ]
-  configs += [ ":earl_grey_support_config" ]
-}
-
-source_set("eg_test_support+eg2") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-
-  sources = [
-    "disabled_test_macros.h",
+  deps = [
+    "//base",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/common",
+    "//testing/gtest:gtest",
   ]
 }

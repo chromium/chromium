@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Modify buffer after passing it in (ArrayBuffer)
+FAIL Modify buffer after passing it in (SharedArrayBuffer) Failed to execute 'decode' on 'TextDecoder': The provided value is not of type '(ArrayBuffer or ArrayBufferView)'
+Harness: the test ran to completion.
+

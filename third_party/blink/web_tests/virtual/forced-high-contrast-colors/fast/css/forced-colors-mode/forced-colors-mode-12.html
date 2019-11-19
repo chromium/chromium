@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>
+  Forced colors mode - animations.
+  Tests that animation colors are overridden in forced colors mode.
+</title>
+<link rel="help" href="https://www.w3.org/TR/css-color-adjust-1/#forced-colors-properties">
+<script src="../../../../../animations/resources/animation-test-helpers.js"></script>
+<style media="screen">
+  #box {
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-name: anim;
+  }
+  @keyframes anim {
+    from { color: red; }
+    to   { color: green; }
+  }
+</style>
+<script type="text/javascript" charset="utf-8">
+  const expectedValues = [
+    // [time, element-id, property, expected-value, tolerance]
+    [0.0, "box", "color", "rgb(0, 0, 0)", 1],
+    [0.5, "box", "color", "rgb(0, 0, 0)", 1],
+    [1.0, "box", "color", "rgb(0, 0, 0)", 1],
+  ];
+  runAnimationTest(expectedValues);
+</script>
+<body>
+  <div id="box"></div>
+</body>

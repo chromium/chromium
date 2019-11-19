@@ -516,10 +516,6 @@ namespace downloads {
     // |callback|: Called when the danger prompt dialog closes.
     static void acceptDanger(long downloadId, optional NullCallback callback);
 
-    // Initiate dragging the downloaded file to another application. Call in a
-    // javascript <code>ondragstart</code> handler.
-    static void drag(long downloadId);
-
     // Enable or disable the gray shelf at the bottom of every window associated
     // with the current browser profile. The shelf will be disabled as long as
     // at least one extension has disabled it. Enabling the shelf while at least

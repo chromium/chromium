@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<p>Check if text in a validation bubble is wrapped within the bubble.</p>
+<input type="email" value="emailaddressemailaddressemailaddressemailaddressemailaddressemailaddressemailaddressemailaddressemailaddressemailaddressemailaddressemailaddressemailaddressemailaddress">
+<script>
+runAfterLayoutAndPaint(() => {
+  document.querySelector('input').reportValidity();
+}, true);
+</script>

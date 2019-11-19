@@ -4,7 +4,9 @@
 
 // https://w3c.github.io/staticrange/#interface-staticrange
 
-interface StaticRange {
+[
+    Exposed=Window
+] interface StaticRange {
     readonly attribute Node startContainer;
     readonly attribute unsigned long startOffset;
     readonly attribute Node endContainer;

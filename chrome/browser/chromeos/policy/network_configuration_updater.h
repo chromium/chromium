@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_POLICY_NETWORK_CONFIGURATION_UPDATER_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -13,6 +14,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "chromeos/network/onc/certificate_scope.h"
 #include "chromeos/network/onc/onc_parsed_certificates.h"
 #include "chromeos/network/policy_certificate_provider.h"
 #include "components/onc/onc_constants.h"
@@ -54,16 +56,22 @@ class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
       chromeos::PolicyCertificateProvider::Observer* observer) override;
   void RemovePolicyProvidedCertsObserver(
       chromeos::PolicyCertificateProvider::Observer* observer) override;
-  net::CertificateList GetAllServerAndAuthorityCertificates() const override;
-  net::CertificateList GetAllAuthorityCertificates() const override;
-  net::CertificateList GetWebTrustedCertificates() const override;
-  net::CertificateList GetCertificatesWithoutWebTrust() const override;
+  net::CertificateList GetAllServerAndAuthorityCertificates(
+      const chromeos::onc::CertificateScope& scope) const override;
+  net::CertificateList GetAllAuthorityCertificates(
+      const chromeos::onc::CertificateScope& scope) const override;
+  net::CertificateList GetWebTrustedCertificates(
+      const chromeos::onc::CertificateScope& scope) const override;
+  net::CertificateList GetCertificatesWithoutWebTrust(
+      const chromeos::onc::CertificateScope& scope) const override;
+
+  const std::set<std::string>& GetExtensionIdsWithPolicyCertificates()
+      const override;
 
  protected:
   NetworkConfigurationUpdater(
       onc::ONCSource onc_source,
       std::string policy_key,
-      bool allow_trusted_certs_from_policy,
       PolicyService* policy_service,
       chromeos::ManagedNetworkConfigurationHandler* network_config_handler);
 
@@ -90,6 +98,14 @@ class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
   void ParseCurrentPolicy(base::ListValue* network_configs,
                           base::DictionaryValue* global_network_config,
                           base::ListValue* certificates);
+
+  // Determines if |policy_map| contains an ONC policy under |policy_key| that
+  // mandates that at least one additional certificate should be used and
+  // assignd 'Web' trust.
+  static bool PolicyHasWebTrustedAuthorityCertificate(
+      const PolicyMap& policy_map,
+      onc::ONCSource onc_source,
+      const std::string& policy_key);
 
   const std::vector<chromeos::onc::OncParsedCertificates::ClientCertificate>&
   GetClientCertificates() const;
@@ -134,9 +150,6 @@ class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
 
   std::string policy_key_;
 
-  // Whether Web trust is allowed or not.
-  bool allow_trusted_certificates_from_policy_;
-
   // Used to register for notifications from the |policy_service_|.
   PolicyChangeRegistrar policy_change_registrar_;
 
@@ -145,6 +158,7 @@ class NetworkConfigurationUpdater : public chromeos::PolicyCertificateProvider,
 
   // Holds certificates from the last parsed ONC policy.
   std::unique_ptr<chromeos::onc::OncParsedCertificates> certs_;
+  std::set<std::string> extension_ids_with_policy_certificates_;
 
   // Observer list for notifying about ONC-provided server and CA certificate
   // changes.

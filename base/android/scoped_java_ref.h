@@ -96,6 +96,10 @@ class BASE_EXPORT JavaRef<jobject> {
   DISALLOW_COPY_AND_ASSIGN(JavaRef);
 };
 
+// Forward declare the object array reader for the convenience function.
+template <typename T>
+class JavaObjectArrayReader;
+
 // Generic base class for ScopedJavaLocalRef and ScopedJavaGlobalRef. Useful
 // for allowing functions to accept a reference without having to mandate
 // whether it is a local or global type.
@@ -107,6 +111,17 @@ class JavaRef : public JavaRef<jobject> {
   ~JavaRef() {}
 
   T obj() const { return static_cast<T>(JavaRef<jobject>::obj()); }
+
+  // Get a JavaObjectArrayReader for the array pointed to by this reference.
+  // Only defined for JavaRef<jobjectArray>.
+  // You must pass the type of the array elements (usually jobject) as the
+  // template parameter.
+  template <typename ElementType,
+            typename T_ = T,
+            typename = std::enable_if_t<std::is_same<T_, jobjectArray>::value>>
+  JavaObjectArrayReader<ElementType> ReadElements() const {
+    return JavaObjectArrayReader<ElementType>(*this);
+  }
 
  protected:
   JavaRef(JNIEnv* env, T obj) : JavaRef<jobject>(env, obj) {}
@@ -283,6 +298,10 @@ class ScopedJavaLocalRef : public JavaRef<T> {
   // Friend required to get env_ from conversions.
   template <typename U>
   friend class ScopedJavaLocalRef;
+
+  // Avoids JavaObjectArrayReader having to accept and store its own env.
+  template <typename U>
+  friend class JavaObjectArrayReader;
 };
 
 // Holds a global reference to a Java object. The global reference is scoped
@@ -385,6 +404,135 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
   // global reference when it is done with it. Note that calling a Java method
   // is *not* a transfer of ownership and Release() should not be used.
   T Release() { return static_cast<T>(JavaRef<T>::ReleaseInternal()); }
+};
+
+// Wrapper for a jobjectArray which supports input iteration, allowing Java
+// arrays to be iterated over with a range-based for loop, or used with
+// <algorithm> functions that accept input iterators.
+//
+// The iterator returns each object in the array in turn, wrapped in a
+// ScopedJavaLocalRef<T>. T will usually be jobject, but if you know that the
+// array contains a more specific type (such as jstring) you can use that
+// instead. This does not check the type at runtime!
+//
+// The wrapper holds a local reference to the array and only queries the size of
+// the array once, so must only be used as a stack-based object from the current
+// thread.
+//
+// Note that this does *not* update the contents of the array if you mutate the
+// returned ScopedJavaLocalRef.
+template <typename T>
+class JavaObjectArrayReader {
+ public:
+  class iterator {
+   public:
+    // We can only be an input iterator, as all richer iterator types must
+    // implement the multipass guarantee (always returning the same object for
+    // the same iterator position), which is not practical when returning
+    // temporary objects.
+    using iterator_category = std::input_iterator_tag;
+
+    using difference_type = ptrdiff_t;
+    using value_type = ScopedJavaLocalRef<T>;
+
+    // It doesn't make sense to return a reference type as the iterator creates
+    // temporary wrapper objects when dereferenced. Fortunately, it's not
+    // required that input iterators actually use references, and defining it
+    // as value_type is valid.
+    using reference = value_type;
+
+    // This exists to make operator-> work as expected: its return value must
+    // resolve to an actual pointer (otherwise the compiler just keeps calling
+    // operator-> on the return value until it does), so we need an extra level
+    // of indirection. This is sometimes called an "arrow proxy" or similar, and
+    // this version is adapted from base/value_iterators.h.
+    class pointer {
+     public:
+      explicit pointer(const reference& ref) : ref_(ref) {}
+      pointer(const pointer& ptr) = default;
+      pointer& operator=(const pointer& ptr) = delete;
+      reference* operator->() { return &ref_; }
+
+     private:
+      reference ref_;
+    };
+
+    iterator(const iterator&) = default;
+    ~iterator() = default;
+
+    iterator& operator=(const iterator&) = default;
+
+    bool operator==(const iterator& other) const {
+      DCHECK(reader_ == other.reader_);
+      return i_ == other.i_;
+    }
+
+    bool operator!=(const iterator& other) const {
+      DCHECK(reader_ == other.reader_);
+      return i_ != other.i_;
+    }
+
+    reference operator*() const {
+      DCHECK(i_ < reader_->size_);
+      // JNIEnv functions return unowned local references; take ownership with
+      // Adopt so that ~ScopedJavaLocalRef will release it automatically later.
+      return value_type::Adopt(
+          reader_->array_.env_,
+          static_cast<T>(reader_->array_.env_->GetObjectArrayElement(
+              reader_->array_.obj(), i_)));
+    }
+
+    pointer operator->() const { return pointer(operator*()); }
+
+    iterator& operator++() {
+      DCHECK(i_ < reader_->size_);
+      ++i_;
+      return *this;
+    }
+
+    iterator operator++(int) {
+      iterator old = *this;
+      ++*this;
+      return old;
+    }
+
+   private:
+    iterator(const JavaObjectArrayReader* reader, jsize i)
+        : reader_(reader), i_(i) {}
+    const JavaObjectArrayReader* reader_;
+    jsize i_;
+
+    friend JavaObjectArrayReader;
+  };
+
+  JavaObjectArrayReader(const JavaRef<jobjectArray>& array) : array_(array) {
+    size_ = array_.env_->GetArrayLength(array_.obj());
+  }
+
+  // Copy constructor to allow returning it from JavaRef::ReadElements().
+  JavaObjectArrayReader(const JavaObjectArrayReader& other) = default;
+
+  // Assignment operator for consistency with copy constructor.
+  JavaObjectArrayReader& operator=(const JavaObjectArrayReader& other) =
+      default;
+
+  // Allow move constructor and assignment since this owns a local ref.
+  JavaObjectArrayReader(JavaObjectArrayReader&& other) = default;
+  JavaObjectArrayReader& operator=(JavaObjectArrayReader&& other) = default;
+
+  bool empty() const { return size_ == 0; }
+
+  jsize size() const { return size_; }
+
+  iterator begin() const { return iterator(this, 0); }
+
+  iterator end() const { return iterator(this, size_); }
+
+ private:
+  ScopedJavaLocalRef<jobjectArray> array_;
+  jsize size_;
+
+  friend iterator;
 };
 
 }  // namespace android

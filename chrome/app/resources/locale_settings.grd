@@ -134,25 +134,6 @@
         55
       </message>
 
-      <if expr="chromeos">
-        <!-- The width and height of the Join Wi-Fi network dialog box in -->
-        <!-- characters and lines (See above). -->
-        <message name="IDS_JOIN_WIFI_NETWORK_DIALOG_WIDTH_CHARS" use_name_for_id="true">
-          60
-        </message>
-        <message name="IDS_JOIN_WIFI_NETWORK_DIALOG_MINIMUM_HEIGHT_LINES" use_name_for_id="true">
-          4
-        </message>
-
-        <!-- The height of the advanced Join Wi-Fi network dialog box in lines. -->
-        <message name="IDS_JOIN_WIFI_NETWORK_DIALOG_ADVANCED_WIDTH_CHARS" use_name_for_id="true">
-          100
-        </message>
-        <message name="IDS_JOIN_WIFI_NETWORK_DIALOG_ADVANCED_MINIMUM_HEIGHT_LINES" use_name_for_id="true">
-          30
-        </message>
-      </if>
-
       <!-- The width and height of the Edit Bookmark dialog box in characters and lines -->
       <!-- (See above). -->
       <message name="IDS_EDITBOOKMARK_DIALOG_WIDTH_CHARS" use_name_for_id="true">

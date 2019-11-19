@@ -5,21 +5,13 @@
 (async function() {
   TestRunner.addResult(`Test that each agent could be enabled/disabled separately.\n`);
 
-
-  var requestsSent = 0;
-  var responsesReceived = 0;
-
-  function finishWhenDone(agentName, action, errorString) {
+  function printResult(agentName, action, errorString) {
     if (action === 'enable')
       TestRunner.addResult('');
     if (errorString)
       TestRunner.addResult(agentName + '.' + action + ' finished with error ' + errorString);
     else
       TestRunner.addResult(agentName + '.' + action + ' finished successfully');
-
-    ++responsesReceived;
-    if (responsesReceived === requestsSent)
-      TestRunner.completeTest();
   }
 
   var targets = SDK.targetManager.targets();
@@ -39,24 +31,25 @@
                          .sort();
 
     async function disableAgent(agentName) {
-      ++requestsSent;
       var agent = target._agents[agentName];
       var response = await agent.invoke_disable({});
-      finishWhenDone(agentName, 'disable', response[Protocol.Error]);
+      printResult(agentName, 'disable', response[Protocol.Error]);
     }
 
     async function enableAgent(agentName) {
-      ++requestsSent;
       var agent = target._agents[agentName];
       var response = await agent.invoke_enable({});
-      finishWhenDone(agentName, 'enable', response[Protocol.Error]);
+      printResult(agentName, 'enable', response[Protocol.Error]);
     }
 
-    agentNames.forEach(disableAgent);
+    for (agentName of agentNames)
+      await disableAgent(agentName);
 
-    agentNames.forEach(agentName => {
-      enableAgent(agentName);
-      disableAgent(agentName);
-    });
+    for (agentName of agentNames) {
+      await enableAgent(agentName);
+      await disableAgent(agentName);
+    }
   }
+
+  TestRunner.completeTest();
 })();

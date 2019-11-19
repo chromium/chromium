@@ -24,7 +24,8 @@
 namespace content {
 
 WebUI::TypeID ContentWebUIControllerFactory::GetWebUIType(
-      BrowserContext* browser_context, const GURL& url) const {
+    BrowserContext* browser_context,
+    const GURL& url) {
   if (!url.SchemeIs(kChromeUIScheme))
     return WebUI::kNoWebUI;
 
@@ -46,19 +47,20 @@ WebUI::TypeID ContentWebUIControllerFactory::GetWebUIType(
 }
 
 bool ContentWebUIControllerFactory::UseWebUIForURL(
-    BrowserContext* browser_context, const GURL& url) const {
+    BrowserContext* browser_context,
+    const GURL& url) {
   return GetWebUIType(browser_context, url) != WebUI::kNoWebUI;
 }
 
 bool ContentWebUIControllerFactory::UseWebUIBindingsForURL(
-    BrowserContext* browser_context, const GURL& url) const {
+    BrowserContext* browser_context,
+    const GURL& url) {
   return UseWebUIForURL(browser_context, url);
 }
 
 std::unique_ptr<WebUIController>
-ContentWebUIControllerFactory::CreateWebUIControllerForURL(
-    WebUI* web_ui,
-    const GURL& url) const {
+ContentWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
+                                                           const GURL& url) {
   if (!url.SchemeIs(kChromeUIScheme))
     return nullptr;
 

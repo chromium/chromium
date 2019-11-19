@@ -12,7 +12,7 @@ js_type_check("closure_compile") {
 
 js_library("local_state") {
   deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }

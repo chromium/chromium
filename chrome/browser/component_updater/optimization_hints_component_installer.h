@@ -59,6 +59,7 @@ class OptimizationHintsComponentInstallerPolicy
 };
 
 void RegisterOptimizationHintsComponent(ComponentUpdateService* cus,
+                                        bool is_off_the_record_profile,
                                         PrefService* profile_prefs);
 
 }  // namespace component_updater

@@ -7,6 +7,7 @@
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/ui/webui/chromeos/login/device_disabled_screen_handler.h"
 
 namespace chromeos {
 namespace system {
@@ -20,7 +21,7 @@ void DeviceDisablingManagerDefaultDelegate::RestartToLoginScreen() {
 
 void DeviceDisablingManagerDefaultDelegate::ShowDeviceDisabledScreen() {
   LoginDisplayHost::default_host()->StartWizard(
-      OobeScreen::SCREEN_DEVICE_DISABLED);
+      DeviceDisabledScreenView::kScreenId);
 }
 
 }  // namespace system

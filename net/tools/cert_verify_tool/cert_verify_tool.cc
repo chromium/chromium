@@ -9,10 +9,10 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/strings/string_split.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -20,6 +20,7 @@
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/internal/system_trust_store.h"
 #include "net/cert_net/cert_net_fetcher_impl.h"
 #include "net/tools/cert_verify_tool/cert_verify_tool_util.h"
 #include "net/tools/cert_verify_tool/verify_using_cert_verify_proc.h"
@@ -43,8 +44,10 @@ std::string GetUserAgent() {
   return "cert_verify_tool/0.1";
 }
 
-void SetUpOnNetworkThread(std::unique_ptr<net::URLRequestContext>* context,
-                          base::WaitableEvent* initialization_complete_event) {
+void SetUpOnNetworkThread(
+    std::unique_ptr<net::URLRequestContext>* context,
+    scoped_refptr<net::CertNetFetcherImpl>* cert_net_fetcher,
+    base::WaitableEvent* initialization_complete_event) {
   net::URLRequestContextBuilder url_request_context_builder;
   url_request_context_builder.set_user_agent(GetUserAgent());
 #if defined(OS_LINUX)
@@ -61,12 +64,18 @@ void SetUpOnNetworkThread(std::unique_ptr<net::URLRequestContext>* context,
 #if defined(USE_NSS_CERTS)
   net::SetURLRequestContextForNSSHttpIO(context->get());
 #endif
-  net::SetGlobalCertNetFetcher(net::CreateCertNetFetcher(context->get()));
+  // TODO(mattm): add command line flag to configure using
+  // CertNetFetcher
+  *cert_net_fetcher = base::MakeRefCounted<net::CertNetFetcherImpl>();
+  (*cert_net_fetcher)->SetURLRequestContext(context->get());
   initialization_complete_event->Signal();
 }
 
-void ShutdownOnNetworkThread(std::unique_ptr<net::URLRequestContext>* context) {
-  net::ShutdownGlobalCertNetFetcher();
+void ShutdownOnNetworkThread(
+    std::unique_ptr<net::URLRequestContext>* context,
+    scoped_refptr<net::CertNetFetcherImpl>* cert_net_fetcher) {
+  (*cert_net_fetcher)->Shutdown();
+  cert_net_fetcher->reset();
   context->reset();
 }
 
@@ -137,6 +146,13 @@ class CertVerifyImplUsingProc : public CertVerifyImpl {
 // Runs certificate verification using CertPathBuilder.
 class CertVerifyImplUsingPathBuilder : public CertVerifyImpl {
  public:
+  explicit CertVerifyImplUsingPathBuilder(
+      scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+      std::unique_ptr<net::SystemTrustStoreProvider>
+          system_trust_store_provider)
+      : cert_net_fetcher_(std::move(cert_net_fetcher)),
+        system_trust_store_provider_(std::move(system_trust_store_provider)) {}
+
   std::string GetName() const override { return "CertPathBuilder"; }
 
   bool VerifyCert(const CertInput& target_der_cert,
@@ -154,26 +170,62 @@ class CertVerifyImplUsingPathBuilder : public CertVerifyImpl {
       verify_time = base::Time::Now();
     }
 
-    return VerifyUsingPathBuilder(target_der_cert, intermediate_der_certs,
-                                  root_der_certs, verify_time,
-                                  dump_prefix_path);
+    return VerifyUsingPathBuilder(
+        target_der_cert, intermediate_der_certs, root_der_certs, verify_time,
+        dump_prefix_path, cert_net_fetcher_,
+        system_trust_store_provider_->CreateSystemTrustStore());
+  }
+
+ private:
+  scoped_refptr<net::CertNetFetcher> cert_net_fetcher_;
+  std::unique_ptr<net::SystemTrustStoreProvider> system_trust_store_provider_;
+};
+
+class DummySystemTrustStoreProvider : public net::SystemTrustStoreProvider {
+ public:
+  std::unique_ptr<net::SystemTrustStore> CreateSystemTrustStore() override {
+    return net::CreateEmptySystemTrustStore();
   }
 };
 
+std::unique_ptr<net::SystemTrustStoreProvider> CreateSystemTrustStoreProvider(
+    bool use_system_roots) {
+  return use_system_roots ? net::SystemTrustStoreProvider::CreateDefaultForSSL()
+                          : std::make_unique<DummySystemTrustStoreProvider>();
+}
+
 // Creates an subclass of CertVerifyImpl based on its name, or returns nullptr.
 std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
-    base::StringPiece impl_name) {
-  if (impl_name == "platform")
+    base::StringPiece impl_name,
+    scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+    bool use_system_roots) {
+#if !defined(OS_FUCHSIA)
+  if (impl_name == "platform") {
+    if (!use_system_roots) {
+      std::cerr << "WARNING: platform verifier not supported with "
+                   "--no-system-roots, skipping.\n";
+      return nullptr;
+    }
+
     return std::make_unique<CertVerifyImplUsingProc>(
-        "CertVerifyProc (default)", net::CertVerifyProc::CreateDefault());
+        "CertVerifyProc (system)", net::CertVerifyProc::CreateSystemVerifyProc(
+                                       std::move(cert_net_fetcher)));
+  }
+#endif
 
   if (impl_name == "builtin") {
     return std::make_unique<CertVerifyImplUsingProc>(
-        "CertVerifyProcBuiltin", net::CreateCertVerifyProcBuiltin());
+        "CertVerifyProcBuiltin",
+        net::CreateCertVerifyProcBuiltin(
+            std::move(cert_net_fetcher),
+            CreateSystemTrustStoreProvider(use_system_roots)));
   }
 
-  if (impl_name == "pathbuilder")
-    return std::make_unique<CertVerifyImplUsingPathBuilder>();
+  if (impl_name == "pathbuilder") {
+    return std::make_unique<CertVerifyImplUsingPathBuilder>(
+        std::move(cert_net_fetcher),
+        CreateSystemTrustStoreProvider(use_system_roots));
+  }
 
   std::cerr << "WARNING: Unrecognized impl: " << impl_name << "\n";
   return nullptr;
@@ -196,6 +248,11 @@ const char kUsage[] =
     " --roots=<certs path>\n"
     "      <certs path> is a file containing certificates [1] to interpret as\n"
     "      trust anchors (without any anchor constraints).\n"
+    "\n"
+    " --no-system-roots\n"
+    "      Do not use system provided trust roots, only trust roots specified\n"
+    "      by --roots or --trust-last-cert will be used. Only supported by\n"
+    "      the builtin and pathbuilter impls.\n"
     "\n"
     " --intermediates=<certs path>\n"
     "      <certs path> is a file containing certificates [1] for use when\n"
@@ -253,12 +310,13 @@ int main(int argc, char** argv) {
     std::cerr << "ERROR in CommandLine::Init\n";
     return 1;
   }
-  base::TaskScheduler::CreateAndStartWithDefaultParams("cert_verify_tool");
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("cert_verify_tool");
   base::ScopedClosureRunner cleanup(
-      base::BindOnce([] { base::TaskScheduler::GetInstance()->Shutdown(); }));
+      base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
 
   base::CommandLine::StringVector args = command_line.GetArgs();
@@ -278,13 +336,15 @@ int main(int argc, char** argv) {
     }
   }
 
+  bool use_system_roots = !command_line.HasSwitch("no-system-roots");
+
   base::FilePath roots_path = command_line.GetSwitchValuePath("roots");
   base::FilePath intermediates_path =
       command_line.GetSwitchValuePath("intermediates");
   base::FilePath target_path = base::FilePath(args[0]);
 
   base::FilePath crlset_path = command_line.GetSwitchValuePath("crlset");
-  scoped_refptr<net::CRLSet> crl_set;
+  scoped_refptr<net::CRLSet> crl_set = net::CRLSet::BuiltinCRLSet();
   if (!crlset_path.empty()) {
     std::string crl_set_bytes;
     if (!ReadFromFile(crlset_path, &crl_set_bytes))
@@ -331,18 +391,20 @@ int main(int argc, char** argv) {
 
   // Create a network thread to be used for AIA fetches, and wait for a
   // CertNetFetcher to be constructed on that thread.
-  base::Thread::Options options(base::MessageLoop::TYPE_IO, 0);
+  base::Thread::Options options(base::MessagePumpType::IO, 0);
   base::Thread thread("network_thread");
   CHECK(thread.StartWithOptions(options));
   // Owned by this thread, but initialized, used, and shutdown on the network
   // thread.
   std::unique_ptr<net::URLRequestContext> context;
+  scoped_refptr<net::CertNetFetcherImpl> cert_net_fetcher;
   base::WaitableEvent initialization_complete_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
   thread.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&SetUpOnNetworkThread, &context,
-                                &initialization_complete_event));
+      FROM_HERE,
+      base::BindOnce(&SetUpOnNetworkThread, &context, &cert_net_fetcher,
+                     &initialization_complete_event));
   initialization_complete_event.Wait();
 
   std::vector<std::unique_ptr<CertVerifyImpl>> impls;
@@ -350,14 +412,20 @@ int main(int argc, char** argv) {
   // Parse the ordered list of CertVerifyImpl passed via command line flags into
   // |impls|.
   std::string impls_str = command_line.GetSwitchValueASCII("impls");
-  if (impls_str.empty())
-    impls_str = "platform,builtin,pathbuilder";  // Default value.
+  if (impls_str.empty()) {
+    // Default value.
+#if !defined(OS_FUCHSIA)
+    impls_str = "platform,";
+#endif
+    impls_str += "builtin,pathbuilder";
+  }
 
   std::vector<std::string> impl_names = base::SplitString(
       impls_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   for (const std::string& impl_name : impl_names) {
-    auto verify_impl = CreateCertVerifyImplFromName(impl_name);
+    auto verify_impl = CreateCertVerifyImplFromName(impl_name, cert_net_fetcher,
+                                                    use_system_roots);
     if (verify_impl)
       impls.push_back(std::move(verify_impl));
   }
@@ -381,7 +449,8 @@ int main(int argc, char** argv) {
   // Clean up on the network thread and stop it (which waits for the clean up
   // task to run).
   thread.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&ShutdownOnNetworkThread, &context));
+      FROM_HERE,
+      base::BindOnce(&ShutdownOnNetworkThread, &context, &cert_net_fetcher));
   thread.Stop();
 
   return all_impls_success ? 0 : 1;

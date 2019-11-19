@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+
+<!-- READ BEFORE UPDATING:
+If this test is updated make sure to increment the "revision" value of the
+associated test in content/test/gpu/page_sets/pixel_tests.py. This will ensure
+that the baseline images are regenerated on the next run.
+-->
+
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1">
+<title>WebGL Canvas Save/Copy Image Test</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+}
+</style>
+<script>
+let g_swapsBeforeAck = 15;
+
+function waitForFinish()
+{
+  if (g_swapsBeforeAck == 0) {
+    sendResult("SUCCESS");
+  } else {
+    g_swapsBeforeAck--;
+    window.requestAnimationFrame(waitForFinish);
+  }
+}
+
+function sendResult(status) {
+  if (domAutomationController) {
+    domAutomationController.send(status);
+  } else {
+    console.log(status);
+  }
+}
+
+function main()
+{
+  let canvas = document.getElementById("c");
+  let gl = canvas.getContext("webgl");
+  if (!gl) {
+    sendResult("FAILURE", "WebGL context not supported");
+    return;
+  }
+
+  // Diagonally opposite green and blue box, over red box to test correctness
+  // w.r.t. to both vertical and horizontal flips.
+  gl.scissor(0, 0, 100, 100);
+  gl.enable(gl.SCISSOR_TEST);
+  gl.clearColor(1, 0, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  gl.scissor(0, 50, 50, 50);
+  gl.clearColor(0, 1, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  gl.scissor(50, 0, 50, 50);
+  gl.clearColor(0, 0, 1, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  let dataURL = canvas.toDataURL();
+
+  let image = document.getElementById("i");
+  image.src = dataURL;
+
+  waitForFinish();
+}
+</script>
+</head>
+<body onload="main()" class="nomargin" style="display:inline-flex">
+<canvas id="c" width="100" height="100" class="nomargin" style="background-color:black"></canvas>
+<img id="i" width="100" height="100" class="nomargin" style="background-color:black">
+</body>
+</html>

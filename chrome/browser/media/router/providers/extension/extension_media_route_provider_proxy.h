@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_EXTENSION_EXTENSION_MEDIA_ROUTE_PROVIDER_PROXY_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/common/media_router/mojo/media_router.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "chrome/common/media_router/mojom/media_router.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class BrowserContext;
@@ -24,9 +27,9 @@ class EventPageRequestManager;
 // the request passed into the ctor.
 //
 // Calls from this object to the component extension MRP are queued with
-// EventPageRequestManager. When the extension is awake, the Mojo pointer to the
+// EventPageRequestManager. When the extension is awake, the Mojo remote to the
 // MRP is valid, so the request is executed immediately. Otherwise, when the
-// extension is awakened, this object obtains a valid Mojo pointer to the MRP
+// extension is awakened, this object obtains a valid Mojo remote to the MRP
 // from MediaRouter, and MediaRouter makes EventPageRequestManager execute all
 // the requests.
 class ExtensionMediaRouteProviderProxy : public mojom::MediaRouteProvider {
@@ -34,9 +37,9 @@ class ExtensionMediaRouteProviderProxy : public mojom::MediaRouteProvider {
   explicit ExtensionMediaRouteProviderProxy(content::BrowserContext* context);
   ~ExtensionMediaRouteProviderProxy() override;
 
-  // Binds |request| to |this|. If |this| is already bound to a previous
-  // request, that previous request will be dropped.
-  void Bind(mojom::MediaRouteProviderRequest request);
+  // Binds |receiver| to |this|. If |this| is already bound to a previous
+  // receiver, that previous receiver will be reset first.
+  void Bind(mojo::PendingReceiver<mojom::MediaRouteProvider> receiver);
 
   // mojom::MediaRouteProvider implementation. Forwards the calls to
   // |media_route_provider_| through |request_manager_|.
@@ -87,14 +90,14 @@ class ExtensionMediaRouteProviderProxy : public mojom::MediaRouteProvider {
       const std::vector<media_router::MediaSinkInternal>& sinks) override;
   void CreateMediaRouteController(
       const std::string& route_id,
-      mojom::MediaControllerRequest media_controller,
-      mojom::MediaStatusObserverPtr observer,
+      mojo::PendingReceiver<mojom::MediaController> media_controller,
+      mojo::PendingRemote<mojom::MediaStatusObserver> observer,
       CreateMediaRouteControllerCallback callback) override;
 
   // Sets the MediaRouteProvider to forward calls to. Notifies
   // |request_manager_| that Mojo connections are ready.
   void RegisterMediaRouteProvider(
-      mojom::MediaRouteProviderPtr media_route_provider);
+      mojo::PendingRemote<mojom::MediaRouteProvider> media_route_provider);
 
   // Called when a Mojo connection to the component extension is invalidated.
   void OnMojoConnectionError();
@@ -156,24 +159,24 @@ class ExtensionMediaRouteProviderProxy : public mojom::MediaRouteProvider {
       const std::vector<media_router::MediaSinkInternal>& sinks);
   void DoCreateMediaRouteController(
       const std::string& route_id,
-      mojom::MediaControllerRequest media_controller,
-      mojom::MediaStatusObserverPtr observer,
+      mojo::PendingReceiver<mojom::MediaController> media_controller,
+      mojo::PendingRemote<mojom::MediaStatusObserver> observer,
       CreateMediaRouteControllerCallback callback);
 
-  // Mojo pointer to the MediaRouteProvider in the component extension.
-  // Set to null initially, and later set to the Mojo pointer passed in via
-  // RegisterMediaRouteProvider(). This is set to null again when the component
+  // Mojo remote to the MediaRouteProvider in the component extension.
+  // Set to NullRemote initially, and later set to the Mojo remote passed in via
+  // RegisterMediaRouteProvider(). This is set to NullRemote again when
   // extension is suspended or a Mojo channel error occurs.
-  mojom::MediaRouteProviderPtr media_route_provider_;
+  mojo::Remote<mojom::MediaRouteProvider> media_route_provider_;
 
-  // Binds |this| to the Mojo request passed into the ctor.
-  mojo::Binding<mojom::MediaRouteProvider> binding_;
+  // Binds |this| to the Mojo receiver passed into the ctor.
+  mojo::Receiver<mojom::MediaRouteProvider> receiver_{this};
 
   // Request manager responsible for waking the component extension and calling
   // the requests to it.
   EventPageRequestManager* const request_manager_;
 
-  base::WeakPtrFactory<ExtensionMediaRouteProviderProxy> weak_factory_;
+  base::WeakPtrFactory<ExtensionMediaRouteProviderProxy> weak_factory_{this};
 };
 
 }  // namespace media_router

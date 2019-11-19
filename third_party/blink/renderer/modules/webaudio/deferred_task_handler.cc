@@ -29,10 +29,10 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -69,11 +69,6 @@ void DeferredTaskHandler::OfflineLock() {
   context_graph_mutex_.lock();
 }
 
-void DeferredTaskHandler::AddDeferredBreakConnection(AudioHandler& node) {
-  DCHECK(IsAudioThread());
-  deferred_break_connection_list_.push_back(&node);
-}
-
 void DeferredTaskHandler::BreakConnections() {
   DCHECK(IsAudioThread());
   AssertGraphOwner();
@@ -88,10 +83,6 @@ void DeferredTaskHandler::BreakConnections() {
     }
     finished_source_handlers_.clear();
   }
-
-  for (unsigned i = 0; i < deferred_break_connection_list_.size(); ++i)
-    deferred_break_connection_list_[i]->BreakConnectionWithLock();
-  deferred_break_connection_list_.clear();
 }
 
 void DeferredTaskHandler::MarkSummingJunctionDirty(
@@ -334,11 +325,11 @@ void DeferredTaskHandler::RequestToDeleteHandlersOnMainThread() {
   AssertGraphOwner();
 
   // Quick exit if there are no handlers that need to be deleted so that we
-  // don't unecessarily post a task.  Be onsistent with
+  // don't unecessarily post a task.  Be consistent with
   // |DeleteHandlersOnMainThread()| so we don't accidentally return early when
   // there are handlers that could be deleted.
   if (rendering_orphan_handlers_.IsEmpty() &&
-      finished_tail_processing_handlers_.size()) {
+      finished_tail_processing_handlers_.size() == 0) {
     return;
   }
 
@@ -346,8 +337,8 @@ void DeferredTaskHandler::RequestToDeleteHandlersOnMainThread() {
   rendering_orphan_handlers_.clear();
   PostCrossThreadTask(
       *task_runner_, FROM_HERE,
-      CrossThreadBind(&DeferredTaskHandler::DeleteHandlersOnMainThread,
-                      scoped_refptr<DeferredTaskHandler>(this)));
+      CrossThreadBindOnce(&DeferredTaskHandler::DeleteHandlersOnMainThread,
+                          scoped_refptr<DeferredTaskHandler>(this)));
 }
 
 void DeferredTaskHandler::DeleteHandlersOnMainThread() {

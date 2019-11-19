@@ -1,8 +1,0 @@
-CONSOLE WARNING: line 16: The `devicemotion` event is deprecated on insecure origins and will be removed in M76, around July 2019. Event handlers can still be registered but are no longer invoked since M74, around April 2019. See https://www.chromestatus.com/feature/5688035094036480 for more details.
-CONSOLE WARNING: line 16: The `deviceorientation` event is deprecated on insecure origins and will be removed in M76, around July 2019. Event handlers can still be registered but are no longer invoked since M74, around April 2019. See https://www.chromestatus.com/feature/5468407470227456 for more details.
-This is a testharness.js-based test.
-PASS Event interfaces are not exposed on `window`.
-PASS DeviceMotionEvent never fires.
-PASS DeviceOrientationEvent never fires.
-Harness: the test ran to completion.
-

@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//testing/libfuzzer/fuzzer_test.gni")
-
 declare_args() {
   # Flip to true to build sfntly sample programs.
   build_sfntly_samples = false
@@ -163,17 +161,6 @@ static_library("sfntly") {
     ":sfntly_chromium",
     "//third_party/icu:icuuc",
   ]
-}
-
-fuzzer_test("sfntly_fuzzer") {
-  sources = [
-    "fuzzers/subset_font_fuzzer.cc",
-  ]
-  deps = [
-    ":sfntly",
-    "//base/test:test_support",
-  ]
-  seed_corpus = "fuzzers/corpora/sfntly_fuzzer"
 }
 
 if (build_sfntly_samples) {

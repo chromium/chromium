@@ -42,7 +42,6 @@ class Widget;
 
 namespace ash {
 
-class ImmersiveContext;
 class ImmersiveFocusWatcher;
 class ImmersiveFullscreenControllerDelegate;
 class ImmersiveFullscreenControllerTestApi;
@@ -76,7 +75,7 @@ class ASH_PUBLIC_EXPORT ImmersiveFullscreenController
   // (primary display above/below secondary display).
   static const int kMouseRevealBoundsHeight;
 
-  explicit ImmersiveFullscreenController(ImmersiveContext* context);
+  ImmersiveFullscreenController();
   ~ImmersiveFullscreenController() override;
 
   // Initializes the controller. Must be called prior to enabling immersive
@@ -137,7 +136,7 @@ class ASH_PUBLIC_EXPORT ImmersiveFullscreenController
 
   static void EnableForWidget(views::Widget* widget, bool enabled);
 
-  static ImmersiveFullscreenController* GetForTest(views::Widget* widget);
+  static ImmersiveFullscreenController* Get(views::Widget* widget);
 
  private:
   friend class ImmersiveFullscreenControllerTest;
@@ -201,7 +200,7 @@ class ASH_PUBLIC_EXPORT ImmersiveFullscreenController
   bool UpdateRevealedLocksForSwipe(SwipeType swipe_type);
 
   // Returns the animation duration given |animate|.
-  int GetAnimationDuration(Animate animate) const;
+  base::TimeDelta GetAnimationDuration(Animate animate) const;
 
   // Temporarily reveals the top-of-window views while in immersive mode,
   // hiding them when the cursor exits the area of the top views. If |animate|
@@ -254,7 +253,6 @@ class ASH_PUBLIC_EXPORT ImmersiveFullscreenController
   void EnableTouchInsets(bool enable);
 
   // Not owned.
-  ImmersiveContext* immersive_context_;
   ImmersiveFullscreenControllerDelegate* delegate_ = nullptr;
   views::View* top_container_ = nullptr;
   views::Widget* widget_ = nullptr;

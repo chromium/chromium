@@ -7,6 +7,9 @@
 
 #include "chromecast/browser/accessibility/touch_exploration_manager.h"
 
+#include <utility>
+#include <vector>
+
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/common/extensions_api/accessibility_private.h"
@@ -47,23 +50,12 @@ void TouchExplorationManager::Enable(bool enabled) {
   UpdateTouchExplorationState();
 }
 
-ui::EventRewriteStatus TouchExplorationManager::RewriteEvent(
+ui::EventDispatchDetails TouchExplorationManager::RewriteEvent(
     const ui::Event& event,
-    std::unique_ptr<ui::Event>* rewritten_event) {
-  if (touch_exploration_controller_) {
-    return touch_exploration_controller_->RewriteEvent(event, rewritten_event);
-  }
-  return ui::EVENT_REWRITE_CONTINUE;
-}
-
-ui::EventRewriteStatus TouchExplorationManager::NextDispatchEvent(
-    const ui::Event& last_event,
-    std::unique_ptr<ui::Event>* new_event) {
-  if (touch_exploration_controller_) {
-    return touch_exploration_controller_->NextDispatchEvent(last_event,
-                                                            new_event);
-  }
-  return ui::EVENT_REWRITE_CONTINUE;
+    const Continuation continuation) {
+  return touch_exploration_controller_
+             ? touch_exploration_controller_->RewriteEvent(event, continuation)
+             : SendEvent(continuation, &event);
 }
 
 void TouchExplorationManager::HandleAccessibilityGesture(
@@ -120,8 +112,7 @@ void TouchExplorationManager::UpdateTouchExplorationState() {
     }
     if (pass_through_surface) {
       const display::Display display =
-          display::Screen::GetScreen()->GetDisplayNearestWindow(
-              root_window_);
+          display::Screen::GetScreen()->GetDisplayNearestWindow(root_window_);
       const gfx::Rect work_area = display.work_area();
       touch_exploration_controller_->SetExcludeBounds(work_area);
       // Clear the focus highlight.

@@ -19,7 +19,6 @@ COPY_FROM_TARGET = 1
 def _IsLinkLocalIPv6(hostname):
   return hostname.startswith('fe80::')
 
-# Adds ""
 def _EscapeIfIPv6Address(address):
   if ':' in address:
     return '[' + address + ']'

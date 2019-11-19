@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/push-api/#idl-def-PushEvent
+// https://w3c.github.io/push-api/#pushevent-interface
 
 [
     Constructor(DOMString type, optional PushEventInit eventInitDict),

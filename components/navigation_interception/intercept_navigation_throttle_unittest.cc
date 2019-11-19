@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/navigation_interception/navigation_params.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -121,8 +122,17 @@ class InterceptNavigationThrottleTest
   std::unique_ptr<MockInterceptCallbackReceiver> mock_callback_receiver_;
 };
 
+// TODO(https://crbug.com/1009359): Fix flakes on win10_chromium_x64_rel_ng and
+// re-enable this test.
+#if defined(OS_WIN)
+#define MAYBE_RequestCompletesIfNavigationNotIgnored \
+  DISABLED_RequestCompletesIfNavigationNotIgnored
+#else
+#define MAYBE_RequestCompletesIfNavigationNotIgnored \
+  RequestCompletesIfNavigationNotIgnored
+#endif
 TEST_P(InterceptNavigationThrottleTest,
-       RequestCompletesIfNavigationNotIgnored) {
+       MAYBE_RequestCompletesIfNavigationNotIgnored) {
   ON_CALL(*mock_callback_receiver_, ShouldIgnoreNavigation(_, _))
       .WillByDefault(Return(false));
   EXPECT_CALL(
@@ -134,7 +144,17 @@ TEST_P(InterceptNavigationThrottleTest,
   EXPECT_EQ(NavigationThrottle::PROCEED, result);
 }
 
-TEST_P(InterceptNavigationThrottleTest, RequestCancelledIfNavigationIgnored) {
+// TODO(https://crbug.com/1010187): Fix flakes on win10_chromium_x64_rel_ng and
+// re-enable this test.
+#if defined(OS_WIN)
+#define MAYBE_RequestCancelledIfNavigationIgnored \
+  DISABLED_RequestCancelledIfNavigationIgnored
+#else
+#define MAYBE_RequestCancelledIfNavigationIgnored \
+  RequestCancelledIfNavigationIgnored
+#endif
+TEST_P(InterceptNavigationThrottleTest,
+       MAYBE_RequestCancelledIfNavigationIgnored) {
   ON_CALL(*mock_callback_receiver_, ShouldIgnoreNavigation(_, _))
       .WillByDefault(Return(true));
   EXPECT_CALL(

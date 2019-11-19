@@ -37,8 +37,6 @@ namespace blink {
 
 class EmailInputType final : public BaseTextInputType {
  public:
-  static InputType* Create(HTMLInputElement&);
-
   explicit EmailInputType(HTMLInputElement&);
 
   // They are public for unit testing.

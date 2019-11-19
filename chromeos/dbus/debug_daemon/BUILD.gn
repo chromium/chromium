@@ -1,0 +1,24 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("debug_daemon") {
+  defines = [ "IS_DEBUG_DAEMON_IMPL" ]
+
+  deps = [
+    "//base",
+    "//chromeos/dbus:common",
+    "//dbus",
+  ]
+
+  sources = [
+    "debug_daemon_client.cc",
+    "debug_daemon_client.h",
+    "debug_daemon_client_provider.cc",
+    "debug_daemon_client_provider.h",
+    "fake_debug_daemon_client.cc",
+    "fake_debug_daemon_client.h",
+  ]
+}

@@ -1,0 +1,30 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Functionality for enumerating and connecting to devices within the HID
+// subsystem.
+// https://wicg.github.io/webhid/index.html#enumeration
+
+[
+    Exposed(Window WebHID),
+    SecureContext
+] interface HID : EventTarget {
+    attribute EventHandler onconnect;
+    attribute EventHandler ondisconnect;
+
+    // Retrieves information about all available HID subsystem devices.
+    [
+        CallWith=ScriptState,
+        RaisesException,
+        MeasureAs=HidGetDevices
+    ] Promise<sequence<HIDDevice>> getDevices();
+
+    // Requests permission from the user to use a device.
+    [
+        CallWith=ScriptState,
+        RaisesException,
+        MeasureAs=HidRequestDevice
+    ] Promise<sequence<HIDDevice>> requestDevice(
+        HIDDeviceRequestOptions options);
+};

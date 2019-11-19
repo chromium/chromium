@@ -6,10 +6,7 @@
 #define CONTENT_BROWSER_ANDROID_JAVA_GIN_JAVA_JAVA_BRIDGE_THREAD_H_
 
 #include "base/android/java_handler_thread.h"
-
-namespace base {
-class TaskRunner;
-}
+#include "base/single_thread_task_runner.h"
 
 namespace content {
 
@@ -21,7 +18,9 @@ class JavaBridgeThread : public base::android::JavaHandlerThread {
   ~JavaBridgeThread() override;
 
   static bool CurrentlyOn();
-  static base::TaskRunner* GetTaskRunner();
+  // TODO(altimin): Make it const scoped_refptr& after we support this
+  // which is blocked by revoming MessageLoop::SetTaskRunner.
+  static scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 };
 
 }  // namespace content

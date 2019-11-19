@@ -21,7 +21,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_SCRIPT_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_SCRIPT_LOADER_H_
 
-#include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/script/script_runner.h"
 #include "third_party/blink/renderer/core/script/script_scheduling_type.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_fetch_options.h"
@@ -48,23 +47,15 @@ class Script;
 class ScriptResource;
 class Modulator;
 
-class CORE_EXPORT ScriptLoader final
-    : public GarbageCollectedFinalized<ScriptLoader>,
-      public PendingScriptClient,
-      public NameClient {
+class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
+                                       public PendingScriptClient,
+                                       public NameClient {
   USING_GARBAGE_COLLECTED_MIXIN(ScriptLoader);
 
  public:
-  static ScriptLoader* Create(ScriptElementBase* element,
-                              bool created_by_parser,
-                              bool is_evaluated) {
-    return MakeGarbageCollected<ScriptLoader>(element, created_by_parser,
-                                              is_evaluated);
-  }
-
   ScriptLoader(ScriptElementBase*, bool created_by_parser, bool is_evaluated);
   ~ScriptLoader() override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) override;
   const char* NameInHeapSnapshot() const override { return "ScriptLoader"; }
 
   enum LegacyTypeSupport {
@@ -86,7 +77,7 @@ class CORE_EXPORT ScriptLoader final
 
   static bool BlockForNoModule(mojom::ScriptType, bool nomodule);
 
-  static network::mojom::FetchCredentialsMode ModuleScriptCredentialsMode(
+  static network::mojom::CredentialsMode ModuleScriptCredentialsMode(
       CrossOriginAttributeValue);
 
   // https://html.spec.whatwg.org/C/#prepare-a-script
@@ -104,6 +95,7 @@ class CORE_EXPORT ScriptLoader final
   bool WillExecuteWhenDocumentFinishedParsing() const {
     return will_execute_when_document_finished_parsing_;
   }
+  bool IsForceDeferred() const { return force_deferred_; }
   bool IsParserInserted() const { return parser_inserted_; }
   bool AlreadyStarted() const { return already_started_; }
   bool IsNonBlocking() const { return non_blocking_; }
@@ -153,33 +145,27 @@ class CORE_EXPORT ScriptLoader final
   // https://html.spec.whatwg.org/C/#script-processing-model
   // "A script element has several associated pieces of state.":
 
-  // <spec
-  // href="https://html.spec.whatwg.org/C/#already-started">
-  // ... Initially, script elements must have this flag unset ...</spec>
+  // <spec href="https://html.spec.whatwg.org/C/#already-started">... Initially,
+  // script elements must have this flag unset ...</spec>
   bool already_started_ = false;
 
-  // <spec
-  // href="https://html.spec.whatwg.org/C/#parser-inserted">
-  // ... Initially, script elements must have this flag unset. ...</spec>
+  // <spec href="https://html.spec.whatwg.org/C/#parser-inserted">... Initially,
+  // script elements must have this flag unset. ...</spec>
   bool parser_inserted_ = false;
 
-  // <spec
-  // href="https://html.spec.whatwg.org/C/#non-blocking">
-  // ... Initially, script elements must have this flag set. ...</spec>
+  // <spec href="https://html.spec.whatwg.org/C/#non-blocking">... Initially,
+  // script elements must have this flag set. ...</spec>
   bool non_blocking_ = true;
 
-  // <spec
-  // href="https://html.spec.whatwg.org/C/#ready-to-be-parser-executed">
+  // <spec href="https://html.spec.whatwg.org/C/#ready-to-be-parser-executed">
   // ... Initially, script elements must have this flag unset ...</spec>
   bool ready_to_be_parser_executed_ = false;
 
-  // <spec
-  // href="https://html.spec.whatwg.org/C/#concept-script-type">
-  // ... It is determined when the script is prepared, ...</spec>
+  // <spec href="https://html.spec.whatwg.org/C/#concept-script-type">... It is
+  // determined when the script is prepared, ...</spec>
   mojom::ScriptType script_type_ = mojom::ScriptType::kClassic;
 
-  // <spec
-  // href="https://html.spec.whatwg.org/C/#concept-script-external">
+  // <spec href="https://html.spec.whatwg.org/C/#concept-script-external">
   // ... It is determined when the script is prepared, ...</spec>
   bool is_external_script_ = false;
 
@@ -188,18 +174,21 @@ class CORE_EXPORT ScriptLoader final
 
   bool will_execute_when_document_finished_parsing_;
 
+  // The script will be force deferred (https://crbug.com/976061).
+  bool force_deferred_;
+
   // A PendingScript is first created in PrepareScript() and stored in
   // |prepared_pending_script_|.
   // Later, TakePendingScript() is called, and its caller holds a reference
   // to the PendingScript instead and |prepared_pending_script_| is cleared.
-  TraceWrapperMember<PendingScript> prepared_pending_script_;
+  Member<PendingScript> prepared_pending_script_;
 
   // If the script is controlled by ScriptRunner, then
   // ScriptLoader::pending_script_ holds a reference to the PendingScript and
   // ScriptLoader is its client.
   // Otherwise, HTMLParserScriptRunner or XMLParserScriptRunner holds the
   // reference and |pending_script_| here is null.
-  TraceWrapperMember<PendingScript> pending_script_;
+  Member<PendingScript> pending_script_;
 
   // This is used only to keep the ScriptResource of a classic script alive
   // and thus to keep it on MemoryCache, even after script execution, as long

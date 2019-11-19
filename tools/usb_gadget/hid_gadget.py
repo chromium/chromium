@@ -10,6 +10,8 @@ own Report ID and will be called upon to answer get/set input/output/feature
 report requests as necessary.
 """
 
+from __future__ import print_function
+
 import math
 import struct
 import uuid
@@ -157,8 +159,8 @@ class HidCompositeFeature(composite_gadget.CompositeFeature):
 
     if request == hid_constants.Request.GET_REPORT:
       report_type, report_id = value >> 8, value & 0xFF
-      print ('GetReport(type={}, id={}, length={})'
-             .format(report_type, report_id, length))
+      print('GetReport(type={}, id={}, length={})'.format(
+          report_type, report_id, length))
       return self.GetReport(report_type, report_id, length)
 
   def ClassControlWrite(self, recipient, request, value, index, data):

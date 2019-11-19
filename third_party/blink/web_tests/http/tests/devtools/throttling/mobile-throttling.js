@@ -12,7 +12,6 @@
 
   var deviceModeThrottling = deviceModeView._toolbar._throttlingConditionsItem;
   var networkPanelThrottling = UI.panels.network.throttlingSelectForTest();
-  var networkPanelOfflineCheckbox = UI.panels.network.offlineCheckboxForTest().inputElement;
   var networkConfigView = self.runtime.sharedInstance(Network.NetworkConfigView);
   var networkConditionsDrawerThrottlingSelector =
       networkConfigView.contentElement.querySelector('.network-config-throttling select.chrome-select');
@@ -25,7 +24,6 @@
     TestRunner.addResult(`Network throttling - download: ${download} upload: ${upload} latency: ${latency}`);
     TestRunner.addResult('CPU throttling rate: ' + MobileThrottling.throttlingManager().cpuThrottlingRate());
     TestRunner.addResult('Device mode throttling: ' + deviceModeThrottling._text);
-    TestRunner.addResult('Network panel offline checkbox: ' + networkPanelOfflineCheckbox.checked);
     TestRunner.addResult('Network panel throttling: ' + networkPanelThrottling.selectedOption().text);
     TestRunner.addResult('Network conditions drawer throttling: ' + networkConditionsDrawerThrottlingSelector.value);
     TestRunner.addResult(
@@ -42,10 +40,6 @@
   MobileThrottling.throttlingManager().setCPUThrottlingRate(MobileThrottling.OfflineConditions.cpuThrottlingRate);
   dumpThrottlingState();
 
-  TestRunner.addResult('Toggle network offline checkbox');
-  networkPanelOfflineCheckbox.click();
-  dumpThrottlingState();
-
   TestRunner.addResult('Change to low-end mobile in device mode');
   SDK.multitargetNetworkManager.setNetworkConditions(MobileThrottling.LowEndMobileConditions.network);
   MobileThrottling.throttlingManager().setCPUThrottlingRate(MobileThrottling.LowEndMobileConditions.cpuThrottlingRate);
@@ -53,14 +47,6 @@
 
   TestRunner.addResult('Change network to Fast 3G');
   SDK.multitargetNetworkManager.setNetworkConditions(SDK.NetworkManager.Fast3GConditions);
-  dumpThrottlingState();
-
-  TestRunner.addResult('Toggle network offline checkbox (enable offline)');
-  networkPanelOfflineCheckbox.click();
-  dumpThrottlingState();
-
-  TestRunner.addResult('Toggle network offline checkbox (disable offline)');
-  networkPanelOfflineCheckbox.click();
   dumpThrottlingState();
 
   TestRunner.addResult('Change to mid-tier mobile in device mode');

@@ -30,8 +30,7 @@ ImplementationBase::ImplementationBase(CommandBufferHelper* helper,
     : transfer_buffer_(transfer_buffer),
       gpu_control_(gpu_control),
       capabilities_(gpu_control->GetCapabilities()),
-      helper_(helper),
-      weak_ptr_factory_(this) {}
+      helper_(helper) {}
 
 ImplementationBase::~ImplementationBase() {
   // The gpu_control_ outlives this class, so clear the client on it before we
@@ -81,6 +80,92 @@ bool ImplementationBase::IsSyncTokenSignaled(const SyncToken& sync_token) {
   DCHECK_EQ(gpu_control_->GetNamespaceID(), sync_token.namespace_id());
   DCHECK_EQ(gpu_control_->GetCommandBufferID(), sync_token.command_buffer_id());
   return gpu_control_->IsFenceSyncReleased(sync_token.release_count());
+}
+
+void ImplementationBase::GenSyncToken(GLbyte* sync_token) {
+  if (!sync_token) {
+    SetGLError(GL_INVALID_VALUE, "glGenSyncTokenCHROMIUM", "empty sync_token");
+    return;
+  }
+
+  uint64_t fence_sync = gpu_control_->GenerateFenceSyncRelease();
+  helper_->InsertFenceSync(fence_sync);
+  helper_->CommandBufferHelper::OrderingBarrier();
+  gpu_control_->EnsureWorkVisible();
+
+  // Copy the data over after setting the data to ensure alignment.
+  SyncToken sync_token_data(gpu_control_->GetNamespaceID(),
+                            gpu_control_->GetCommandBufferID(), fence_sync);
+  sync_token_data.SetVerifyFlush();
+  memcpy(sync_token, &sync_token_data, sizeof(sync_token_data));
+}
+
+void ImplementationBase::GenUnverifiedSyncToken(GLbyte* sync_token) {
+  if (!sync_token) {
+    SetGLError(GL_INVALID_VALUE, "glGenUnverifiedSyncTokenCHROMIUM",
+               "empty sync_token");
+    return;
+  }
+
+  uint64_t fence_sync = gpu_control_->GenerateFenceSyncRelease();
+  helper_->InsertFenceSync(fence_sync);
+  helper_->CommandBufferHelper::OrderingBarrier();
+
+  // Copy the data over after setting the data to ensure alignment.
+  SyncToken sync_token_data(gpu_control_->GetNamespaceID(),
+                            gpu_control_->GetCommandBufferID(), fence_sync);
+  memcpy(sync_token, &sync_token_data, sizeof(sync_token_data));
+}
+
+void ImplementationBase::VerifySyncTokens(GLbyte** sync_tokens, GLsizei count) {
+  bool requires_synchronization = false;
+  for (GLsizei i = 0; i < count; ++i) {
+    if (sync_tokens[i]) {
+      SyncToken sync_token;
+      memcpy(&sync_token, sync_tokens[i], sizeof(sync_token));
+
+      if (sync_token.HasData() && !sync_token.verified_flush()) {
+        if (!GetVerifiedSyncTokenForIPC(sync_token, &sync_token)) {
+          SetGLError(GL_INVALID_VALUE, "glVerifySyncTokensCHROMIUM",
+                     "Cannot verify sync token using this context.");
+          return;
+        }
+        requires_synchronization = true;
+        DCHECK(sync_token.verified_flush());
+      }
+
+      // Set verify bit on empty sync tokens too.
+      sync_token.SetVerifyFlush();
+
+      memcpy(sync_tokens[i], &sync_token, sizeof(sync_token));
+    }
+  }
+
+  // Ensure all the fence syncs are visible on GPU service.
+  if (requires_synchronization)
+    gpu_control_->EnsureWorkVisible();
+}
+
+void ImplementationBase::WaitSyncToken(const GLbyte* sync_token_data) {
+  if (!sync_token_data)
+    return;
+
+  // Copy the data over before data access to ensure alignment.
+  SyncToken sync_token, verified_sync_token;
+  memcpy(&sync_token, sync_token_data, sizeof(SyncToken));
+
+  if (!sync_token.HasData())
+    return;
+
+  if (!GetVerifiedSyncTokenForIPC(sync_token, &verified_sync_token)) {
+    SetGLError(GL_INVALID_VALUE, "glWaitSyncTokenCHROMIUM",
+               "Cannot wait on sync_token which has not been verified");
+    return;
+  }
+
+  // Enqueue sync token in flush after inserting command so that it's not
+  // included in an automatic flush.
+  gpu_control_->WaitSyncToken(verified_sync_token);
 }
 
 void ImplementationBase::SignalQuery(uint32_t query,
@@ -328,6 +413,11 @@ void ImplementationBase::WillCallGLFromSkia() {
 void ImplementationBase::DidCallGLFromSkia() {
   // Should only be called on subclasses that have GrContextSupport
   NOTREACHED();
+}
+
+void ImplementationBase::SetDisplayTransform(gfx::OverlayTransform transform) {
+  helper_->Flush();
+  gpu_control_->SetDisplayTransform(transform);
 }
 
 }  // namespace gpu

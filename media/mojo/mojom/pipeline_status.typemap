@@ -1,0 +1,11 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//media/mojo/mojom/media_types.mojom"
+public_headers = [ "//media/base/pipeline_status.h" ]
+traits_headers = [ "//media/mojo/mojom/pipeline_status_mojom_traits.h" ]
+type_mappings = [
+  "media.mojom.PipelineStatistics=::media::PipelineStatistics",
+  "media.mojom.PipelineDecoderInfo=::media::PipelineDecoderInfo",
+]

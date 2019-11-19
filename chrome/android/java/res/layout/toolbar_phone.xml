@@ -38,7 +38,7 @@
             android:inflatedId="@+id/experimental_toolbar_button"
             android:layout="@layout/experimental_toolbar_button"
             style="@style/ToolbarButton"
-            android:paddingStart="8dp"
+            android:paddingStart="12dp"
             android:visibility="gone" />
 
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton

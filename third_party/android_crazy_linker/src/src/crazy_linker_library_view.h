@@ -52,7 +52,8 @@ class LibraryView {
   const char* GetName() const { return name_.c_str(); }
 
   // Returns SharedLibrary handle if valid, nullptr otherwise.
-  SharedLibrary* GetCrazy() const { return IsCrazy() ? crazy_ : NULL; }
+  const SharedLibrary* GetCrazy() const { return IsCrazy() ? crazy_ : nullptr; }
+  SharedLibrary* GetCrazy() { return IsCrazy() ? crazy_ : nullptr; }
 
   // Returns system handle if valid, nullptr otherwise.
   void* GetSystem() const { return IsSystem() ? system_ : NULL; }

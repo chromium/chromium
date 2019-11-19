@@ -7,11 +7,11 @@
 
 #include <memory>
 
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
-#include "chrome/browser/ui/ash/tablet_mode_client_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller.h"
 #include "content/public/browser/notification_observer.h"
@@ -38,7 +38,7 @@ class TopControlsSlideTabObserver;
 // - Page security level changes.
 class TopControlsSlideControllerChromeOS
     : public TopControlsSlideController,
-      public TabletModeClientObserver,
+      public ash::TabletModeObserver,
       public TabStripModelObserver,
       public content::NotificationObserver {
  public:
@@ -55,8 +55,9 @@ class TopControlsSlideControllerChromeOS
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   bool IsTopControlsGestureScrollInProgress() const override;
 
-  // TabletModeClientObserver:
-  void OnTabletModeToggled(bool tablet_mode_enabled) override;
+  // ash::TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

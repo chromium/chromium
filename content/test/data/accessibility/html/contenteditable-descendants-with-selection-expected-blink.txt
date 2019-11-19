@@ -1,26 +1,29 @@
 rootWebArea
-++genericContainer editable multiline richlyEditable value='A contenteditable with a link and an  and a .<newline><newline>Always expose editable tables as tables.<newline>Editable list item.' editableRoot=true
-++++paragraph editable richlyEditable
-++++++staticText editable richlyEditable name='A contenteditable with a ' TreeData.textSelStartOffset=0
-++++++++inlineTextBox name='A contenteditable with a '
-++++++link editable richlyEditable name='link'
-++++++++staticText editable richlyEditable name='link'
-++++++++++inlineTextBox name='link'
-++++++staticText editable richlyEditable name=' and an '
-++++++++inlineTextBox name=' and an '
-++++++image editable richlyEditable name='Image'
-++++++staticText editable richlyEditable name=' and a '
-++++++++inlineTextBox name=' and a '
-++++++button editable richlyEditable name='Button'
-++++++staticText editable richlyEditable name='.'
-++++++++inlineTextBox name='.'
-++++table editable richlyEditable
-++++++row editable richlyEditable
-++++++++cell editable richlyEditable name='Always expose editable tables as tables.'
-++++++++++staticText editable richlyEditable name='Always expose editable tables as tables.'
-++++++++++++inlineTextBox name='Always expose editable tables as tables.'
-++++list editable richlyEditable
-++++++listItem editable richlyEditable
-++++++++listMarker editable richlyEditable name='1. '
-++++++++staticText editable richlyEditable name='Editable list item.' TreeData.textSelEndOffset=19
-++++++++++inlineTextBox name='Editable list item.'
+++genericContainer ignored
+++++genericContainer editable multiline richlyEditable value='A contenteditable with a link and an  and a .<newline><newline>Always expose editable tables as tables.<newline>Editable list item.' editableRoot=true TreeData.textSelStartOffset=0 TreeData.textSelEndOffset=3
+++++++paragraph editable richlyEditable
+++++++++staticText editable richlyEditable name='A contenteditable with a '
+++++++++++inlineTextBox name='A contenteditable with a '
+++++++++link editable richlyEditable name='link'
+++++++++++staticText editable richlyEditable name='link'
+++++++++++++inlineTextBox name='link'
+++++++++staticText editable richlyEditable name=' and an '
+++++++++++inlineTextBox name=' and an '
+++++++++image editable richlyEditable name='Image'
+++++++++staticText editable richlyEditable name=' and a '
+++++++++++inlineTextBox name=' and a '
+++++++++button editable richlyEditable name='Button'
+++++++++++staticText name='Button'
+++++++++++++inlineTextBox name='Button'
+++++++++staticText editable richlyEditable name='.'
+++++++++++inlineTextBox name='.'
+++++++table editable richlyEditable
+++++++++row editable richlyEditable
+++++++++++cell editable richlyEditable name='Always expose editable tables as tables.'
+++++++++++++staticText editable richlyEditable name='Always expose editable tables as tables.'
+++++++++++++++inlineTextBox name='Always expose editable tables as tables.'
+++++++list editable richlyEditable
+++++++++listItem editable richlyEditable
+++++++++++listMarker editable richlyEditable name='1. '
+++++++++++staticText editable richlyEditable name='Editable list item.'
+++++++++++++inlineTextBox name='Editable list item.'

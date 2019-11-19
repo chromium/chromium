@@ -21,6 +21,8 @@ declare_args() {
     } else {
       cast_product_type = 4  # CAST_PRODUCT_TYPE_ANDROID_TV
     }
+  } else if (is_fuchsia) {
+    cast_product_type = 8  # CAST_PRODUCT_TYPE_FUCHSIA_OS
   } else {
     cast_product_type = 0  # CAST_PRODUCT_TYPE_UNKNOWN
   }
@@ -31,7 +33,7 @@ if (is_android_arc) {
 } else if (is_android) {
   assert(cast_product_type == 4 || cast_product_type == 6)
 } else {
-  assert(cast_product_type >= 0 && cast_product_type <= 7 &&
+  assert(cast_product_type >= 0 && cast_product_type <= 8 &&
          cast_product_type != 4 && cast_product_type != 6 &&
          cast_product_type != 7)
 }
@@ -40,6 +42,8 @@ cast_source_set("base") {
   sources = [
     "alarm_manager.cc",
     "alarm_manager.h",
+    "android/cast_settings_manager.cc",
+    "android/cast_settings_manager.h",
     "android/dumpstate_writer.cc",
     "android/dumpstate_writer.h",
     "android/system_time_change_notifier_android.cc",
@@ -181,27 +185,58 @@ test("cast_base_unittests") {
     ":thread_health_checker",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//chromecast/base/static_sequence:tests",
     "//testing/gmock",
     "//testing/gtest",
   ]
 }
 
-if (build_for_android_things_n) {
-  config("absence-no-function-error") {
-    # for n build doesn't use all functions
-    cflags = [ "-Wno-unused-function" ]
-  }
+# Declares CreateSysInfo() without defining the implementation (see below).
+cast_source_set("cast_sys_info_util") {
+  public = [
+    "cast_sys_info_util.h",
+  ]
 }
 
-cast_source_set("cast_sys_info") {
+# Defines a CastSysInfoDummy suitable for use in tests, and public builds.
+cast_source_set("dummy_cast_sys_info") {
   sources = [
     "cast_sys_info_dummy.cc",
     "cast_sys_info_dummy.h",
-    "cast_sys_info_util.h",
   ]
+  deps = [
+    "//base",
+    "//chromecast/public",
+  ]
+}
 
-  if (is_android) {
-    sources += [
+# Links a CreateSysInfo() implementation that returns CastSysInfoDummy.
+cast_source_set("dummy_create_sys_info") {
+  sources = [
+    "cast_sys_info_util_simple.cc",
+  ]
+  deps = [
+    ":dummy_cast_sys_info",
+  ]
+  public_deps = [
+    ":cast_sys_info_util",
+  ]
+}
+
+# Links the default CreateSysInfo() implementation for Android.
+if (is_android) {
+  cast_source_set("android_create_sys_info") {
+    deps = [
+      ":cast_version",
+      "//base",
+      "//chromecast:chromecast_buildflags",
+      "//chromecast/browser:jni_headers",
+      "//chromecast/public",
+    ]
+    public_deps = [
+      ":cast_sys_info_util",
+    ]
+    sources = [
       "cast_sys_info_android.cc",
       "cast_sys_info_android.h",
       "cast_sys_info_android_factory.cc",
@@ -211,54 +246,54 @@ cast_source_set("cast_sys_info") {
         "cast_sys_info_android_things.cc",
         "cast_sys_info_android_things.h",
       ]
-      if (build_for_android_things_n) {
-        configs += [ ":absence-no-function-error" ]
-      }
     }
   }
-
-  deps = [
-    "//base",
-    "//chromecast/public",
-  ]
-
-  if (is_android) {
-    deps += [
-      ":cast_version",
-      "//chromecast:chromecast_buildflags",
-      "//chromecast/browser:jni_headers",
+} else {  # !is_android
+  # Target for OEM partners to override sys_info shared library, i.e.
+  # libcast_sys_info_1.0.so.
+  cast_shared_library("libcast_sys_info_1.0") {
+    sources = [
+      "cast_sys_info_shlib.cc",
     ]
-  } else if (chromecast_branding == "public" || is_fuchsia) {
-    sources += [ "cast_sys_info_util_simple.cc" ]
+
+    deps = [
+      ":cast_sys_info_util",
+      ":dummy_cast_sys_info",
+      "//chromecast/public",
+    ]
   }
-}
 
-# Target for OEM partners to override sys_info shared library, i.e.
-# libcast_sys_info_1.0.so.
-cast_shared_library("libcast_sys_info_1.0") {
-  sources = [
-    "cast_sys_info_dummy.cc",
-    "cast_sys_info_dummy.h",
-    "cast_sys_info_shlib.cc",
-  ]
-
-  deps = [
-    "//chromecast/public",
-  ]
-}
-
-# Note: Android links //chromecast/base:cast_sys_info statically.
-cast_source_set("cast_sys_info_shlib") {
-  if (!is_android && !is_fuchsia) {
+  # Links a CreateSysInfo() that loads libcast_sys_info_1.0.so.
+  cast_source_set("shlib_create_sys_info") {
     sources = [
       "cast_sys_info_util_shlib.cc",
     ]
 
     deps = [
-      ":cast_sys_info",
       ":libcast_sys_info_1.0",
       "//base",
       "//chromecast/public",
+    ]
+
+    public_deps = [
+      ":cast_sys_info_util",
+    ]
+  }
+}  # is_android
+
+# Links the default CreateSysInfo() for this build configuration.
+group("default_create_sys_info") {
+  if (is_android) {
+    public_deps = [
+      ":android_create_sys_info",
+    ]
+  } else if (chromecast_branding == "public") {
+    public_deps = [
+      ":dummy_create_sys_info",
+    ]
+  } else {
+    public_deps = [
+      ":shlib_create_sys_info",
     ]
   }
 }
@@ -308,11 +343,10 @@ process_version("cast_version") {
 if (is_android) {
   generate_jni("jni_headers") {
     sources = [
+      "java/src/org/chromium/chromecast/base/CastSettingsManager.java",
       "java/src/org/chromium/chromecast/base/DumpstateWriter.java",
       "java/src/org/chromium/chromecast/base/SystemTimeChangeNotifierAndroid.java",
     ]
-
-    jni_package = "chromecast"
   }
 
   android_library("base_java") {
@@ -346,7 +380,9 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//base:jni_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   android_library("cast_base_test_utils_java") {
@@ -367,6 +403,7 @@ if (is_android) {
     java_test_dir = "//chromecast/base/java/test"
     java_files = [
       "$java_test_dir/org/chromium/chromecast/base/BothTest.java",
+      "$java_test_dir/org/chromium/chromecast/base/CastSettingsManagerTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ControllerTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ItertoolsTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableAndTest.java",
@@ -383,6 +420,7 @@ if (is_android) {
     deps = [
       ":base_java",
       ":cast_base_test_utils_java",
+      "//base:base_junit_test_support",
       "//third_party/hamcrest:hamcrest_java",
     ]
   }

@@ -44,7 +44,7 @@ $ ./out/Debug/bin/run_net_unittests --fast-local-dev
 ```
 
 For more information about running net_unittests, read
-[Android Test Instructions](/docs/android_test_instructions.md).
+[Android Test Instructions](/docs/testing/android_test_instructions.md).
 
 There are a small number of C++ Cronet unit tests, called
 cronet_unittests_android, that can be run by following the above instructions

@@ -121,6 +121,38 @@ TEST_F(SyncPointManagerTest, BasicFenceSyncRelease) {
   EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token));
 }
 
+TEST_F(SyncPointManagerTest, OutOfOrderSyncTokenRelease) {
+  CommandBufferNamespace kNamespaceId = gpu::CommandBufferNamespace::GPU_IO;
+  CommandBufferId kBufferId = CommandBufferId::FromUnsafeValue(0x123);
+
+  uint64_t release_count_1 = 2;
+  SyncToken sync_token_1(kNamespaceId, kBufferId, release_count_1);
+  uint64_t release_count_2 = 1;
+  SyncToken sync_token_2(kNamespaceId, kBufferId, release_count_2);
+
+  SyncPointStream stream(sync_point_manager_.get(), kNamespaceId, kBufferId);
+  stream.AllocateOrderNum();
+  stream.AllocateOrderNum();
+
+  EXPECT_FALSE(sync_point_manager_->IsSyncTokenReleased(sync_token_1));
+  EXPECT_FALSE(sync_point_manager_->IsSyncTokenReleased(sync_token_2));
+
+  // Releasing the first sync token also releases the second because the first
+  // token's release count is larger.
+  stream.order_data->BeginProcessingOrderNumber(1);
+  stream.client_state->ReleaseFenceSync(release_count_1);
+  stream.order_data->FinishProcessingOrderNumber(1);
+  EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token_1));
+  EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token_2));
+
+  // Releasing the second token should be a no-op.
+  stream.order_data->BeginProcessingOrderNumber(2);
+  stream.client_state->ReleaseFenceSync(release_count_2);
+  stream.order_data->FinishProcessingOrderNumber(2);
+  EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token_1));
+  EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token_2));
+}
+
 TEST_F(SyncPointManagerTest, MultipleClientsPerOrderData) {
   CommandBufferNamespace kNamespaceId = gpu::CommandBufferNamespace::GPU_IO;
   CommandBufferId kCmdBufferId1 = CommandBufferId::FromUnsafeValue(0x123);
@@ -180,6 +212,82 @@ TEST_F(SyncPointManagerTest, BasicFenceSyncWaitRelease) {
   EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token));
 }
 
+TEST_F(SyncPointManagerTest, WaitWithOutOfOrderSyncTokenRelease) {
+  CommandBufferNamespace kNamespaceId = gpu::CommandBufferNamespace::GPU_IO;
+  CommandBufferId kReleaseCmdBufferId = CommandBufferId::FromUnsafeValue(0x123);
+  CommandBufferId kWaitCmdBufferId = CommandBufferId::FromUnsafeValue(0x234);
+
+  int test_num_1 = 10;
+  int test_num_2 = 10;
+  int test_num_3 = 10;
+  SyncPointStream release_stream(sync_point_manager_.get(), kNamespaceId,
+                                 kReleaseCmdBufferId);
+  SyncPointStream wait_stream(sync_point_manager_.get(), kNamespaceId,
+                              kWaitCmdBufferId);
+
+  release_stream.AllocateOrderNum();
+  uint64_t release_count_1 = 2;
+  SyncToken sync_token_1(kNamespaceId, kReleaseCmdBufferId, release_count_1);
+  release_stream.AllocateOrderNum();
+  uint64_t release_count_2 = 1;
+  SyncToken sync_token_2(kNamespaceId, kReleaseCmdBufferId, release_count_2);
+  release_stream.AllocateOrderNum();
+  uint64_t release_count_3 = 3;
+  SyncToken sync_token_3(kNamespaceId, kReleaseCmdBufferId, release_count_3);
+
+  wait_stream.AllocateOrderNum();
+  wait_stream.BeginProcessing();
+  bool valid_wait = wait_stream.client_state->Wait(
+      sync_token_1, base::BindOnce(&SyncPointManagerTest::SetIntegerFunction,
+                                   &test_num_1, 123));
+  EXPECT_TRUE(valid_wait);
+  EXPECT_EQ(10, test_num_1);
+  EXPECT_FALSE(sync_point_manager_->IsSyncTokenReleased(sync_token_1));
+  wait_stream.EndProcessing();
+
+  wait_stream.AllocateOrderNum();
+  wait_stream.BeginProcessing();
+  valid_wait = wait_stream.client_state->Wait(
+      sync_token_2, base::BindOnce(&SyncPointManagerTest::SetIntegerFunction,
+                                   &test_num_2, 123));
+  EXPECT_TRUE(valid_wait);
+  EXPECT_EQ(10, test_num_2);
+  EXPECT_FALSE(sync_point_manager_->IsSyncTokenReleased(sync_token_2));
+  wait_stream.EndProcessing();
+
+  wait_stream.AllocateOrderNum();
+  wait_stream.BeginProcessing();
+  valid_wait = wait_stream.client_state->Wait(
+      sync_token_3, base::BindOnce(&SyncPointManagerTest::SetIntegerFunction,
+                                   &test_num_3, 123));
+  EXPECT_TRUE(valid_wait);
+  EXPECT_EQ(10, test_num_3);
+  EXPECT_FALSE(sync_point_manager_->IsSyncTokenReleased(sync_token_3));
+  wait_stream.EndProcessing();
+
+  // Releasing the first sync token should release the second one. Then,
+  // releasing the second one should be a no-op.
+  release_stream.BeginProcessing();
+  release_stream.client_state->ReleaseFenceSync(release_count_1);
+  EXPECT_EQ(123, test_num_1);
+  EXPECT_EQ(123, test_num_2);
+  EXPECT_EQ(10, test_num_3);
+  EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token_1));
+  EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token_2));
+  EXPECT_FALSE(sync_point_manager_->IsSyncTokenReleased(sync_token_3));
+  release_stream.EndProcessing();
+
+  release_stream.BeginProcessing();
+  release_stream.client_state->ReleaseFenceSync(release_count_2);
+  EXPECT_EQ(123, test_num_1);
+  EXPECT_EQ(123, test_num_2);
+  EXPECT_EQ(10, test_num_3);
+  EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token_1));
+  EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token_2));
+  EXPECT_FALSE(sync_point_manager_->IsSyncTokenReleased(sync_token_3));
+  release_stream.EndProcessing();
+}
+
 TEST_F(SyncPointManagerTest, WaitOnSelfFails) {
   CommandBufferNamespace kNamespaceId = gpu::CommandBufferNamespace::GPU_IO;
   CommandBufferId kReleaseCmdBufferId = CommandBufferId::FromUnsafeValue(0x123);
@@ -206,7 +314,7 @@ TEST_F(SyncPointManagerTest, WaitOnSelfFails) {
   EXPECT_FALSE(sync_point_manager_->IsSyncTokenReleased(sync_token));
 }
 
-TEST_F(SyncPointManagerTest, OutOfOrderRelease) {
+TEST_F(SyncPointManagerTest, ReleaseAfterWaitOrderNumber) {
   CommandBufferNamespace kNamespaceId = gpu::CommandBufferNamespace::GPU_IO;
   CommandBufferId kReleaseCmdBufferId = CommandBufferId::FromUnsafeValue(0x123);
   CommandBufferId kWaitCmdBufferId = CommandBufferId::FromUnsafeValue(0x234);

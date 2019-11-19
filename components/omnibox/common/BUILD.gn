@@ -4,6 +4,11 @@
 
 source_set("common") {
   sources = [
+    "omnibox_features.cc",
+    "omnibox_features.h",
     "omnibox_focus_state.h",
+  ]
+  deps = [
+    "//base",
   ]
 }

@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import sys
 
 from idl_log import ErrOut, InfoOut, WarnOut
@@ -66,7 +68,7 @@ class Generator(object):
     rangestr = GetOption('range')
     releasestr = GetOption('release')
 
-    print "Found releases: %s" % ast.releases
+    print("Found releases: %s" % ast.releases)
 
     # Generate list of files to ignore due to errors
     for filenode in ast.GetListOf('File'):
@@ -87,9 +89,9 @@ class Generator(object):
 
         # Generate 'start' and 'end' represent first and last found.
         if vmin == 'start':
-            vmin = ast.releases[0]
+          vmin = ast.releases[0]
         if vmax == 'end':
-            vmax = ast.releases[-1]
+          vmax = ast.releases[-1]
 
         vmin = ast.releases.index(vmin)
         vmax = ast.releases.index(vmax) + 1
@@ -223,7 +225,7 @@ class GeneratorReleaseTest(Generator):
       check_item = check_map[item]
       option_item = options.get(item, None)
       if check_item != option_item:
-        print 'Option %s is %s, expecting %s' % (item, option_item, check_item)
+        print('Option %s is %s, expecting %s' % (item, option_item, check_item))
         check_release = 0
 
     if release != 'M14':
@@ -243,24 +245,24 @@ def Test():
 
   ParseOptions(['--testgen_opt=so_long,MyOpt=XYZ,goodbye'])
   if Generator.Run('AST') != 0:
-    print 'Generate release: Failed.\n'
+    print('Generate release: Failed.\n')
     return -1
 
   if check_release != 1 or check_range != 0:
-    print 'Gererate release: Failed to run.\n'
+    print('Gererate release: Failed to run.\n')
     return -1
 
   check_release = 0
   ParseOptions(['--testgen_opt="HELLO"', '--range=M14,M16'])
   if Generator.Run('AST') != 0:
-    print 'Generate range: Failed.\n'
+    print('Generate range: Failed.\n')
     return -1
 
   if check_release != 0 or check_range != 1:
-    print 'Gererate range: Failed to run.\n'
+    print('Gererate range: Failed to run.\n')
     return -1
 
-  print 'Generator test: Pass'
+  print('Generator test: Pass')
   return 0
 
 

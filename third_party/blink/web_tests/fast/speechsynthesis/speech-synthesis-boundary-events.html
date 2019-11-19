@@ -25,7 +25,8 @@
     }
 
     u.onboundary = function(event) {
-       debug("Boundary event: " + event.name + ", Character index: " + event.charIndex);
+       debug("Boundary event: " + event.name + ", Character index: " +
+                event.charIndex + ", Character length: " + event.charLength);
     }
 
     u.onend = function(event) {

@@ -11,7 +11,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
-#include "components/signin/core/browser/signin_buildflags.h"
+#include "components/signin/public/base/signin_buildflags.h"
 
 using signin::AccountConsistencyMethod;
 

@@ -191,7 +191,7 @@ Selection changed from 7 to null
 Resizing
 Creating element for 15
 Creating element for 16
-----list[length=20][height=84]----
+----list[length=20][height=83]----
  [0] top
 *[0] 0
 *[10] 1
@@ -216,29 +216,29 @@ Scrolling to 19
 Creating element for 17
 Creating element for 18
 Creating element for 19
-----list[length=20][height=84]----
- [-116] top
- [-86] 3
- [-76] 4
- [-66] 5
- [-56] 6
- [-46] 7
- [-36] 8
- [-26] 9
- [-16] 10
-+[-6] 11
-*[4] 12
-*[14] 13
-*[24] 14
-*[34] 15
-*[44] 16
-*[54] 17
-*[64] 18
-*[74] 19
- [84] bottom
+----list[length=20][height=83]----
+ [-117] top
+ [-87] 3
+ [-77] 4
+ [-67] 5
+ [-57] 6
+ [-47] 7
+ [-37] 8
+ [-27] 9
+ [-17] 10
++[-7] 11
+*[3] 12
+*[13] 13
+*[23] 14
+*[33] 15
+*[43] 16
+*[53] 17
+*[63] 18
+*[73] 19
+ [83] bottom
 
 Scrolling to 5
-----list[length=20][height=84]----
+----list[length=20][height=83]----
  [-50] top
  [-50] 0
  [-40] 1
@@ -263,7 +263,7 @@ Scrolling to 5
  [150] bottom
 
 Scrolling to 12
-----list[length=20][height=84]----
+----list[length=20][height=83]----
  [-50] top
  [-50] 0
  [-40] 1
@@ -288,29 +288,29 @@ Scrolling to 12
  [150] bottom
 
 Scrolling to 13
-----list[length=20][height=84]----
- [-56] top
- [-56] 0
- [-46] 1
- [-36] 2
- [-26] 3
- [-16] 4
-+[-6] 5
-*[4] 6
-*[14] 7
-*[24] 8
-*[34] 9
-*[44] 10
-*[54] 11
-*[64] 12
-*[74] 13
- [84] 14
- [94] 15
- [104] 16
- [114] 17
- [124] 18
- [134] 19
- [144] bottom
+----list[length=20][height=83]----
+ [-57] top
+ [-57] 0
+ [-47] 1
+ [-37] 2
+ [-27] 3
+ [-17] 4
++[-7] 5
+*[3] 6
+*[13] 7
+*[23] 8
+*[33] 9
+*[43] 10
+*[53] 11
+*[63] 12
+*[73] 13
+ [83] 14
+ [93] 15
+ [103] 16
+ [113] 17
+ [123] 18
+ [133] 19
+ [143] bottom
 
 Changing the item height
 Creating element for 0
@@ -328,87 +328,87 @@ Creating element for 11
 Creating element for 12
 Creating element for 13
 Creating element for 14
-----list[length=20][height=84]----
- [-56] top
- [-56] 0
- [-41] 1
- [-26] 2
-+[-11] 3
-*[4] 4
-*[19] 5
-*[34] 6
-*[49] 7
-*[64] 8
-+[79] 9
- [94] 10
- [109] 11
- [124] 12
- [139] 13
- [154] 14
- [169] bottom
+----list[length=20][height=83]----
+ [-57] top
+ [-57] 0
+ [-42] 1
+ [-27] 2
++[-12] 3
+*[3] 4
+*[18] 5
+*[33] 6
+*[48] 7
+*[63] 8
++[78] 9
+ [93] 10
+ [108] 11
+ [123] 12
+ [138] 13
+ [153] 14
+ [168] bottom
 
 Selecting 7
 Selection changed from null to 7
-----list[length=20][height=84]----
- [-56] top
- [-56] 0
- [-41] 1
- [-26] 2
-+[-11] 3
-*[4] 4
-*[19] 5
-*[34] 6
-*[49] 7 (selected)
-*[64] 8
-+[79] 9
- [94] 10
- [109] 11
- [124] 12
- [139] 13
- [154] 14
- [169] bottom
+----list[length=20][height=83]----
+ [-57] top
+ [-57] 0
+ [-42] 1
+ [-27] 2
++[-12] 3
+*[3] 4
+*[18] 5
+*[33] 6
+*[48] 7 (selected)
+*[63] 8
++[78] 9
+ [93] 10
+ [108] 11
+ [123] 12
+ [138] 13
+ [153] 14
+ [168] bottom
 
 Replacing 7 with 27
 Creating element for 27
 Selection changed from 7 to 10
-----list[length=20][height=84]----
- [-56] top
- [-56] 0
- [-41] 1
- [-26] 2
-+[-11] 3
-*[4] 4
-*[19] 5
-*[34] 6
-*[49] 27
-*[64] 8
-+[79] 9
- [94] 10 (selected)
- [109] 11
- [124] 12
- [139] 13
- [154] 14
- [169] bottom
+----list[length=20][height=83]----
+ [-57] top
+ [-57] 0
+ [-42] 1
+ [-27] 2
++[-12] 3
+*[3] 4
+*[18] 5
+*[33] 6
+*[48] 27
+*[63] 8
++[78] 9
+ [93] 10 (selected)
+ [108] 11
+ [123] 12
+ [138] 13
+ [153] 14
+ [168] bottom
 
 Replacing 18, 19 with 28, 29
-----list[length=20][height=84]----
- [-56] top
- [-56] 0
- [-41] 1
- [-26] 2
-+[-11] 3
-*[4] 4
-*[19] 5
-*[34] 6
-*[49] 27
-*[64] 8
-+[79] 9
- [94] 10 (selected)
- [109] 11
- [124] 12
- [139] 13
- [154] 14
- [169] bottom
+----list[length=20][height=83]----
+ [-57] top
+ [-57] 0
+ [-42] 1
+ [-27] 2
++[-12] 3
+*[3] 4
+*[18] 5
+*[33] 6
+*[48] 27
+*[63] 8
++[78] 9
+ [93] 10 (selected)
+ [108] 11
+ [123] 12
+ [138] 13
+ [153] 14
+ [168] bottom
 
 PageDown
 Creating element for 15
@@ -417,144 +417,144 @@ Creating element for 17
 Creating element for 28
 Creating element for 29
 Selection changed from 10 to 17
-----list[length=20][height=84]----
- [-186] top
- [-96] 6
- [-81] 27
- [-66] 8
- [-51] 9
- [-36] 10
- [-21] 11
-+[-6] 12
-*[9] 13
-*[24] 14
-*[39] 15
-*[54] 16
-*[69] 17 (selected)
- [84] 28
- [99] 29
- [114] bottom
+----list[length=20][height=83]----
+ [-187] top
+ [-97] 6
+ [-82] 27
+ [-67] 8
+ [-52] 9
+ [-37] 10
+ [-22] 11
++[-7] 12
+*[8] 13
+*[23] 14
+*[38] 15
+*[53] 16
+*[68] 17 (selected)
+ [83] 28
+ [98] 29
+ [113] bottom
 
 Replacing 1, 2, 3 with [31-43]
-----list[length=30][height=84]----
- [-336] top
- [-96] 6
- [-81] 27
- [-66] 8
- [-51] 9
- [-36] 10
- [-21] 11
-+[-6] 12
-*[9] 13
-*[24] 14
-*[39] 15
-*[54] 16
-*[69] 17 (selected)
- [84] 28
- [99] 29
- [114] bottom
+----list[length=30][height=83]----
+ [-337] top
+ [-97] 6
+ [-82] 27
+ [-67] 8
+ [-52] 9
+ [-37] 10
+ [-22] 11
++[-7] 12
+*[8] 13
+*[23] 14
+*[38] 15
+*[53] 16
+*[68] 17 (selected)
+ [83] 28
+ [98] 29
+ [113] bottom
 
 Scrolling to 13 (center)
-----list[length=30][height=84]----
- [-310] top
- [-85] 5
- [-70] 6
- [-55] 27
- [-40] 8
- [-25] 9
-+[-10] 10
-*[5] 11
-*[20] 12
-*[35] 13
-*[50] 14
-*[65] 15
-+[80] 16
- [95] 17 (selected)
- [110] 28
- [125] 29
- [140] bottom
+----list[length=30][height=83]----
+ [-311] top
+ [-86] 5
+ [-71] 6
+ [-56] 27
+ [-41] 8
+ [-26] 9
++[-11] 10
+*[4] 11
+*[19] 12
+*[34] 13
+*[49] 14
+*[64] 15
++[79] 16
+ [94] 17 (selected)
+ [109] 28
+ [124] 29
+ [139] bottom
 
 ArrowUp
 Selection changed from 17 to 15
-----list[length=30][height=84]----
- [-310] top
- [-85] 5
- [-70] 6
- [-55] 27
- [-40] 8
- [-25] 9
-+[-10] 10
-*[5] 11
-*[20] 12
-*[35] 13
-*[50] 14
-*[65] 15 (selected)
-+[80] 16
- [95] 17
- [110] 28
- [125] 29
- [140] bottom
+----list[length=30][height=83]----
+ [-311] top
+ [-86] 5
+ [-71] 6
+ [-56] 27
+ [-41] 8
+ [-26] 9
++[-11] 10
+*[4] 11
+*[19] 12
+*[34] 13
+*[49] 14
+*[64] 15 (selected)
++[79] 16
+ [94] 17
+ [109] 28
+ [124] 29
+ [139] bottom
 
 Selecting -1
 Selection changed from 15 to null
-----list[length=30][height=84]----
- [-310] top
- [-85] 5
- [-70] 6
- [-55] 27
- [-40] 8
- [-25] 9
-+[-10] 10
-*[5] 11
-*[20] 12
-*[35] 13
-*[50] 14
-*[65] 15
-+[80] 16
- [95] 17
- [110] 28
- [125] 29
- [140] bottom
+----list[length=30][height=83]----
+ [-311] top
+ [-86] 5
+ [-71] 6
+ [-56] 27
+ [-41] 8
+ [-26] 9
++[-11] 10
+*[4] 11
+*[19] 12
+*[34] 13
+*[49] 14
+*[64] 15
++[79] 16
+ [94] 17
+ [109] 28
+ [124] 29
+ [139] bottom
 
 ArrowUp
 Selection changed from null to 17
-----list[length=30][height=84]----
- [-336] top
- [-96] 6
- [-81] 27
- [-66] 8
- [-51] 9
- [-36] 10
- [-21] 11
-+[-6] 12
-*[9] 13
-*[24] 14
-*[39] 15
-*[54] 16
-*[69] 17 (selected)
- [84] 28
- [99] 29
- [114] bottom
+----list[length=30][height=83]----
+ [-337] top
+ [-97] 6
+ [-82] 27
+ [-67] 8
+ [-52] 9
+ [-37] 10
+ [-22] 11
++[-7] 12
+*[8] 13
+*[23] 14
+*[38] 15
+*[53] 16
+*[68] 17 (selected)
+ [83] 28
+ [98] 29
+ [113] bottom
 
 Selecting -1
 Selection changed from 17 to null
-----list[length=30][height=84]----
- [-336] top
- [-96] 6
- [-81] 27
- [-66] 8
- [-51] 9
- [-36] 10
- [-21] 11
-+[-6] 12
-*[9] 13
-*[24] 14
-*[39] 15
-*[54] 16
-*[69] 17
- [84] 28
- [99] 29
- [114] bottom
+----list[length=30][height=83]----
+ [-337] top
+ [-97] 6
+ [-82] 27
+ [-67] 8
+ [-52] 9
+ [-37] 10
+ [-22] 11
++[-7] 12
+*[8] 13
+*[23] 14
+*[38] 15
+*[53] 16
+*[68] 17
+ [83] 28
+ [98] 29
+ [113] bottom
 
 ArrowDown
 Creating element for 41
@@ -569,7 +569,7 @@ Creating element for 33
 Creating element for 32
 Creating element for 31
 Selection changed from null to 0
-----list[length=30][height=84]----
+----list[length=30][height=83]----
  [0] top
 *[0] 0 (selected)
 *[15] 31
@@ -587,7 +587,7 @@ Selection changed from null to 0
 
 Selecting -1
 Selection changed from 0 to null
-----list[length=30][height=84]----
+----list[length=30][height=83]----
  [0] top
 *[0] 0
 *[15] 31
@@ -607,37 +607,37 @@ PageUp
 Creating element for 42
 Creating element for 43
 Selection changed from null to 12
-----list[length=30][height=84]----
- [-261] top
- [-96] 41
- [-81] 42
- [-66] 43
- [-51] 4
- [-36] 5
- [-21] 6
-+[-6] 27
-*[9] 8
-*[24] 9
-*[39] 10
-*[54] 11
-*[69] 12 (selected)
- [84] 13
- [99] 14
- [114] 15
- [129] 16
- [144] 17
- [159] 28
- [174] bottom
+----list[length=30][height=83]----
+ [-262] top
+ [-97] 41
+ [-82] 42
+ [-67] 43
+ [-52] 4
+ [-37] 5
+ [-22] 6
++[-7] 27
+*[8] 8
+*[23] 9
+*[38] 10
+*[53] 11
+*[68] 12 (selected)
+ [83] 13
+ [98] 14
+ [113] 15
+ [128] 16
+ [143] 17
+ [158] 28
+ [173] bottom
 
 Replacing all but 29 with []
 Selection changed from 12 to null
-----list[length=1][height=84]----
+----list[length=1][height=83]----
  [0] top
 *[0] 29
 *[15] bottom
 
 ArrowDown
-----list[length=1][height=84]----
+----list[length=1][height=83]----
  [0] top
 *[0] 29
 *[15] bottom
@@ -646,7 +646,7 @@ Replacing model with [5-7]
 Creating element for 5
 Creating element for 6
 Creating element for 7
-----list[length=1][height=84]----
+----list[length=1][height=83]----
  [0] top
 *[0] 5
 *[15] 6
@@ -655,7 +655,7 @@ Creating element for 7
 
 Pushing 8
 Creating element for 8
-----list[length=1][height=84]----
+----list[length=1][height=83]----
  [0] top
 *[0] 5
 *[15] 6
@@ -664,7 +664,7 @@ Creating element for 8
 *[60] bottom
 
 Pushing 9 to old model
-----list[length=2][height=84]----
+----list[length=2][height=83]----
  [0] top
 *[0] 5
 *[15] 6

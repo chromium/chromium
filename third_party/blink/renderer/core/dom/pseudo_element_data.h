@@ -13,8 +13,6 @@ namespace blink {
 
 class PseudoElementData final : public GarbageCollected<PseudoElementData> {
  public:
-  static PseudoElementData* Create();
-
   PseudoElementData() = default;
 
   void SetPseudoElement(PseudoId, PseudoElement*);
@@ -35,10 +33,6 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData> {
   Member<PseudoElement> backdrop_;
   DISALLOW_COPY_AND_ASSIGN(PseudoElementData);
 };
-
-inline PseudoElementData* PseudoElementData::Create() {
-  return MakeGarbageCollected<PseudoElementData>();
-}
 
 inline bool PseudoElementData::HasPseudoElements() const {
   return generated_before_ || generated_after_ || backdrop_ ||

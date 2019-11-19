@@ -46,6 +46,7 @@ enum Token {
   kConfigMacSierra,
   kConfigMacHighSierra,
   kConfigMacMojave,
+  kConfigMacCatalina,
   kConfigMac,
   kConfigLinux,
   kConfigChromeOS,
@@ -103,6 +104,7 @@ const TokenInfo kTokenData[] = {
     {"sierra", GPUTestConfig::kOsMacSierra},
     {"highsierra", GPUTestConfig::kOsMacHighSierra},
     {"mojave", GPUTestConfig::kOsMacMojave},
+    {"catalina", GPUTestConfig::kOsMacCatalina},
     {"mac", GPUTestConfig::kOsMac},
     {"linux", GPUTestConfig::kOsLinux},
     {"chromeos", GPUTestConfig::kOsChromeOS},
@@ -267,6 +269,7 @@ bool GPUTestExpectationsParser::ParseConfig(
       case kConfigMacSierra:
       case kConfigMacHighSierra:
       case kConfigMacMojave:
+      case kConfigMacCatalina:
       case kConfigMac:
       case kConfigLinux:
       case kConfigChromeOS:
@@ -329,6 +332,7 @@ bool GPUTestExpectationsParser::ParseLine(
       case kConfigMacSierra:
       case kConfigMacHighSierra:
       case kConfigMacMojave:
+      case kConfigMacCatalina:
       case kConfigMac:
       case kConfigLinux:
       case kConfigChromeOS:
@@ -454,6 +458,7 @@ bool GPUTestExpectationsParser::UpdateTestConfig(GPUTestConfig* config,
     case kConfigMacSierra:
     case kConfigMacHighSierra:
     case kConfigMacMojave:
+    case kConfigMacCatalina:
     case kConfigMac:
     case kConfigLinux:
     case kConfigChromeOS:
@@ -568,4 +573,3 @@ GPUTestExpectationsParser:: GPUTestExpectationEntry::GPUTestExpectationEntry()
 }
 
 }  // namespace gpu
-

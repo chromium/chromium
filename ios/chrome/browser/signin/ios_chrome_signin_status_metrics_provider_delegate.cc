@@ -5,11 +5,11 @@
 #include "ios/chrome/browser/signin/ios_chrome_signin_status_metrics_provider_delegate.h"
 
 #include "components/signin/core/browser/signin_status_metrics_provider.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "services/identity/public/cpp/identity_manager.h"
 
 IOSChromeSigninStatusMetricsProviderDelegate::
     IOSChromeSigninStatusMetricsProviderDelegate() {}
@@ -45,13 +45,13 @@ IOSChromeSigninStatusMetricsProviderDelegate::GetStatusOfAllAccounts() {
   return accounts_status;
 }
 
-std::vector<identity::IdentityManager*>
+std::vector<signin::IdentityManager*>
 IOSChromeSigninStatusMetricsProviderDelegate::
     GetIdentityManagersForAllAccounts() {
-  std::vector<identity::IdentityManager*> managers;
+  std::vector<signin::IdentityManager*> managers;
   for (ios::ChromeBrowserState* browser_state :
        GetLoadedChromeBrowserStates()) {
-    identity::IdentityManager* manager =
+    signin::IdentityManager* manager =
         IdentityManagerFactory::GetForBrowserStateIfExists(browser_state);
     if (manager) {
       managers.push_back(manager);
@@ -62,12 +62,12 @@ IOSChromeSigninStatusMetricsProviderDelegate::
 }
 
 void IOSChromeSigninStatusMetricsProviderDelegate::IdentityManagerCreated(
-    identity::IdentityManager* manager) {
+    signin::IdentityManager* manager) {
   owner()->OnIdentityManagerCreated(manager);
 }
 
 void IOSChromeSigninStatusMetricsProviderDelegate::IdentityManagerShutdown(
-    identity::IdentityManager* manager) {
+    signin::IdentityManager* manager) {
   owner()->OnIdentityManagerShutdown(manager);
 }
 

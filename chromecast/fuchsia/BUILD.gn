@@ -1,0 +1,17 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+
+cast_source_set("fuchsia") {
+  sources = [
+    "queryable_data_host_fuchsia.cc",
+    "queryable_data_host_fuchsia.h",
+  ]
+  deps = [
+    "//base",
+    "//chromecast/activity",
+    "//chromecast/common:queryable_data",
+  ]
+}

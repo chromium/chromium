@@ -4,7 +4,7 @@
 
 package org.chromium.mojo.bindings;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,7 +43,7 @@ public class ExecutorFactoryTest {
      * @see MojoTestCase#setUp()
      */
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mExecutor = ExecutorFactory.getExecutorForCurrentThread(CoreImpl.getInstance());
         mThreadContainer = new ArrayList<Thread>();
     }

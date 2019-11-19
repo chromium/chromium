@@ -7,19 +7,35 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/performance_manager/render_process_user_data.h"
+#include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/performance_manager_impl.h"
+#include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
+#include "components/performance_manager/render_process_user_data.h"
+#include "content/public/browser/render_process_host.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace {
 
-void BindProcessPerformanceManager(
-    content::RenderProcessHost* render_process_host,
-    resource_coordinator::mojom::ProcessCoordinationUnitRequest request) {
+void BindProcessNode(
+    int render_process_host_id,
+    mojo::PendingReceiver<performance_manager::mojom::ProcessCoordinationUnit>
+        receiver) {
+  content::RenderProcessHost* render_process_host =
+      content::RenderProcessHost::FromID(render_process_host_id);
+  if (!render_process_host)
+    return;
+
   performance_manager::RenderProcessUserData* user_data =
       performance_manager::RenderProcessUserData::GetForRenderProcessHost(
           render_process_host);
 
-  user_data->process_resource_coordinator()->AddBinding(std::move(request));
+  DCHECK(performance_manager::PerformanceManagerImpl::GetInstance());
+  performance_manager::PerformanceManagerImpl::GetTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&performance_manager::ProcessNodeImpl::Bind,
+                                base::Unretained(user_data->process_node()),
+                                std::move(receiver)));
 }
 
 }  // namespace
@@ -35,15 +51,12 @@ void ChromeContentBrowserClientPerformanceManagerPart::
         blink::AssociatedInterfaceRegistry* associated_registry,
         content::RenderProcessHost* render_process_host) {
   registry->AddInterface(
-      base::BindRepeating(&BindProcessPerformanceManager,
-                          base::Unretained(render_process_host)),
+      base::BindRepeating(&BindProcessNode, render_process_host->GetID()),
       base::SequencedTaskRunnerHandle::Get());
 
-  // When a RenderFrameHost is "resurrected" with a new process  it will already
-  // have user data attached. This will happen on renderer crash.
-  if (!performance_manager::RenderProcessUserData::GetForRenderProcessHost(
-          render_process_host)) {
-    performance_manager::RenderProcessUserData::CreateForRenderProcessHost(
-        render_process_host);
-  }
+  // Ideally this would strictly be a "CreateForRenderProcess", but when a
+  // RenderFrameHost is "resurrected" with a new process it will already have
+  // user data attached. This will happen on renderer crash.
+  performance_manager::RenderProcessUserData::GetOrCreateForRenderProcessHost(
+      render_process_host);
 }

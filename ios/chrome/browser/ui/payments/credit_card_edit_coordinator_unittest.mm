@@ -10,10 +10,10 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/payments/core/autofill_payment_instrument.h"
-#include "components/payments/core/payment_instrument.h"
+#include "components/payments/core/autofill_payment_app.h"
+#include "components/payments/core/payment_app.h"
 #include "ios/chrome/browser/payments/payment_request_test_util.h"
 #include "ios/chrome/browser/payments/payment_request_unittest_base.h"
 #include "ios/chrome/browser/payments/test_payment_request.h"
@@ -45,9 +45,8 @@ class MockPaymentRequest : public payments::TestPaymentRequest {
                                      browser_state,
                                      web_state,
                                      personal_data_manager) {}
-  MOCK_METHOD1(
-      CreateAndAddAutofillPaymentInstrument,
-      payments::AutofillPaymentInstrument*(const autofill::CreditCard&));
+  MOCK_METHOD1(CreateAndAddAutofillPaymentInstrument,
+               payments::AutofillPaymentApp*(const autofill::CreditCard&));
   MOCK_METHOD1(UpdateAutofillPaymentInstrument,
                void(const autofill::CreditCard&));
 };
@@ -121,6 +120,7 @@ class PaymentRequestCreditCardEditCoordinatorTest
 
   // PlatformTest:
   void SetUp() override {
+    PlatformTest::SetUp();
     DoSetUp();
 
     payment_request_ = std::make_unique<MockPaymentRequest>(
@@ -129,7 +129,10 @@ class PaymentRequestCreditCardEditCoordinatorTest
   }
 
   // PlatformTest:
-  void TearDown() override { DoTearDown(); }
+  void TearDown() override {
+    DoTearDown();
+    PlatformTest::TearDown();
+  }
 
   autofill::TestPersonalDataManager personal_data_manager_;
   std::unique_ptr<MockPaymentRequest> payment_request_;
@@ -187,8 +190,7 @@ TEST_F(PaymentRequestCreditCardEditCoordinatorTest, DidFinishCreatingWithSave) {
       mockForProtocol:@protocol(CreditCardEditCoordinatorDelegate)];
   [[delegate expect]
           creditCardEditCoordinator:coordinator
-      didFinishEditingPaymentMethod:static_cast<
-                                        payments::AutofillPaymentInstrument*>(
+      didFinishEditingPaymentMethod:static_cast<payments::AutofillPaymentApp*>(
                                         [OCMArg anyPointer])];
   [coordinator setDelegate:delegate];
 
@@ -242,8 +244,7 @@ TEST_F(PaymentRequestCreditCardEditCoordinatorTest, DidFinishCreatingNoSave) {
       mockForProtocol:@protocol(CreditCardEditCoordinatorDelegate)];
   [[delegate expect]
           creditCardEditCoordinator:coordinator
-      didFinishEditingPaymentMethod:static_cast<
-                                        payments::AutofillPaymentInstrument*>(
+      didFinishEditingPaymentMethod:static_cast<payments::AutofillPaymentApp*>(
                                         [OCMArg anyPointer])];
   [coordinator setDelegate:delegate];
 
@@ -290,7 +291,7 @@ TEST_F(PaymentRequestCreditCardEditCoordinatorTest, DidFinishEditing) {
 
   // Set the payment method to be edited.
   autofill::CreditCard credit_card;
-  payments::AutofillPaymentInstrument payment_method(
+  payments::AutofillPaymentApp payment_method(
       "", credit_card, false, payment_request_->billing_profiles(), "", nil);
   [coordinator setPaymentMethod:&payment_method];
 
@@ -299,8 +300,7 @@ TEST_F(PaymentRequestCreditCardEditCoordinatorTest, DidFinishEditing) {
       mockForProtocol:@protocol(CreditCardEditCoordinatorDelegate)];
   [[delegate expect]
           creditCardEditCoordinator:coordinator
-      didFinishEditingPaymentMethod:static_cast<
-                                        payments::AutofillPaymentInstrument*>(
+      didFinishEditingPaymentMethod:static_cast<payments::AutofillPaymentApp*>(
                                         [OCMArg anyPointer])];
   [coordinator setDelegate:delegate];
 

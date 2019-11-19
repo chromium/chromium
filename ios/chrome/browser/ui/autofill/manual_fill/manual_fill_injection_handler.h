@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_delegate.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
 
 @protocol AutofillSecurityAlertPresenter<NSObject>
 
@@ -22,7 +22,7 @@
 class WebStateList;
 
 // Handler with the common logic for injecting data from manual fill.
-@interface ManualFillInjectionHandler : NSObject<ManualFillContentDelegate>
+@interface ManualFillInjectionHandler : NSObject <ManualFillContentInjector>
 
 // Returns a handler using the |WebStateList| to inject JS to the active web
 // state and |securityAlertPresenter| to present alerts.

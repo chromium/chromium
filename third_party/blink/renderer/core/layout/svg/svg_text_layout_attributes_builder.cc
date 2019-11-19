@@ -106,8 +106,7 @@ static SVGTextPositioningElement* PositioningElementFromLayoutObject(
   DCHECK(node);
   DCHECK(node->IsSVGElement());
 
-  return IsSVGTextPositioningElement(*node) ? ToSVGTextPositioningElement(node)
-                                            : nullptr;
+  return DynamicTo<SVGTextPositioningElement>(node);
 }
 
 void SVGTextLayoutAttributesBuilder::CollectTextPositioningElements(

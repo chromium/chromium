@@ -12,7 +12,11 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
+#include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "net/base/ip_address.h"
+#include "net/base/mock_network_change_notifier.h"
+#include "net/base/net_errors.h"
 #include "net/dns/dns_socket_pool.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/log/net_log_source.h"
@@ -20,6 +24,7 @@
 #include "net/socket/socket_test_util.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/stream_socket.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -45,12 +50,12 @@ class TestClientSocketFactory : public ClientSocketFactory {
   }
 
   std::unique_ptr<SSLClientSocket> CreateSSLClientSocket(
+      SSLClientContext* context,
       std::unique_ptr<StreamSocket> stream_socket,
       const HostPortPair& host_and_port,
-      const SSLConfig& ssl_config,
-      const SSLClientSocketContext& context) override {
+      const SSLConfig& ssl_config) override {
     NOTIMPLEMENTED();
-    return std::unique_ptr<SSLClientSocket>();
+    return nullptr;
   }
 
   std::unique_ptr<ProxyClientSocket> CreateProxyClientSocket(
@@ -63,7 +68,6 @@ class TestClientSocketFactory : public ClientSocketFactory {
       bool using_spdy,
       NextProto negotiated_protocol,
       ProxyDelegate* proxy_delegate,
-      bool is_https_proxy,
       const NetworkTrafficAnnotationTag& traffic_annotation) override {
     NOTIMPLEMENTED();
     return nullptr;
@@ -78,13 +82,13 @@ struct PoolEvent {
   unsigned server_index;
 };
 
-class DnsSessionTest : public testing::Test {
+class DnsSessionTest : public TestWithTaskEnvironment {
  public:
   void OnSocketAllocated(unsigned server_index);
   void OnSocketFreed(unsigned server_index);
 
  protected:
-  void Initialize(unsigned num_servers);
+  void Initialize(unsigned num_servers, unsigned num_doh_servers);
   std::unique_ptr<DnsSession::SocketLease> Allocate(unsigned server_index);
   bool DidAllocate(unsigned server_index);
   bool DidFree(unsigned server_index);
@@ -127,13 +131,22 @@ class MockDnsSocketPool : public DnsSocketPool {
   DnsSessionTest* test_;
 };
 
-void DnsSessionTest::Initialize(unsigned num_servers) {
+void DnsSessionTest::Initialize(unsigned num_servers,
+                                unsigned num_doh_servers) {
   CHECK(num_servers < 256u);
   config_.nameservers.clear();
+  config_.dns_over_https_servers.clear();
   for (unsigned char i = 0; i < num_servers; ++i) {
     IPEndPoint dns_endpoint(IPAddress(192, 168, 1, i),
                             dns_protocol::kDefaultPort);
     config_.nameservers.push_back(dns_endpoint);
+  }
+  for (unsigned char i = 0; i < num_doh_servers; ++i) {
+    std::string server_template(
+        base::StringPrintf("https://mock.http/doh_test_%d{?dns}", i));
+    config_.dns_over_https_servers.push_back(
+        DnsConfig::DnsOverHttpsServerConfig(server_template,
+                                            true /* is_post */));
   }
 
   test_client_socket_factory_.reset(new TestClientSocketFactory());
@@ -143,7 +156,7 @@ void DnsSessionTest::Initialize(unsigned num_servers) {
 
   session_ =
       new DnsSession(config_, std::unique_ptr<DnsSocketPool>(dns_socket_pool),
-                     base::Bind(&base::RandInt), NULL /* NetLog */);
+                     base::Bind(&base::RandInt), nullptr /* NetLog */);
 
   events_.clear();
 }
@@ -211,7 +224,7 @@ TestClientSocketFactory::~TestClientSocketFactory() = default;
 TEST_F(DnsSessionTest, AllocateFree) {
   std::unique_ptr<DnsSession::SocketLease> lease1, lease2;
 
-  Initialize(2);
+  Initialize(2 /* num_servers */, 0 /* num_doh_servers */);
   EXPECT_TRUE(NoMoreEvents());
 
   lease1 = Allocate(0);
@@ -233,16 +246,20 @@ TEST_F(DnsSessionTest, AllocateFree) {
 
 // Expect default calculated timeout to be within 10ms of one in DnsConfig.
 TEST_F(DnsSessionTest, HistogramTimeoutNormal) {
-  Initialize(2);
+  Initialize(2 /* num_servers */, 2 /* num_doh_servers */);
   base::TimeDelta delta = session_->NextTimeout(0, 0) - config_.timeout;
+  EXPECT_LE(delta.InMilliseconds(), 10);
+  delta = session_->NextDohTimeout(0) - config_.timeout;
   EXPECT_LE(delta.InMilliseconds(), 10);
 }
 
 // Expect short calculated timeout to be within 10ms of one in DnsConfig.
 TEST_F(DnsSessionTest, HistogramTimeoutShort) {
   config_.timeout = base::TimeDelta::FromMilliseconds(15);
-  Initialize(2);
+  Initialize(2 /* num_servers */, 2 /* num_doh_servers */);
   base::TimeDelta delta = session_->NextTimeout(0, 0) - config_.timeout;
+  EXPECT_LE(delta.InMilliseconds(), 10);
+  delta = session_->NextDohTimeout(0) - config_.timeout;
   EXPECT_LE(delta.InMilliseconds(), 10);
 }
 
@@ -251,16 +268,101 @@ TEST_F(DnsSessionTest, HistogramTimeoutShort) {
 // the config timeout.)
 TEST_F(DnsSessionTest, HistogramTimeoutLong) {
   config_.timeout = base::TimeDelta::FromSeconds(15);
-  Initialize(2);
+  Initialize(2 /* num_servers */, 2 /* num_doh_servers */);
   base::TimeDelta timeout = session_->NextTimeout(0, 0);
+  EXPECT_EQ(timeout.InMilliseconds(), config_.timeout.InMilliseconds());
+  timeout = session_->NextDohTimeout(0);
   EXPECT_EQ(timeout.InMilliseconds(), config_.timeout.InMilliseconds());
 }
 
 // Ensures that reported negative RTT values don't cause a crash. Regression
 // test for https://crbug.com/753568.
 TEST_F(DnsSessionTest, NegativeRtt) {
-  Initialize(2);
-  session_->RecordRTT(0, base::TimeDelta::FromMilliseconds(-1));
+  Initialize(2 /* num_servers */, 2 /* num_doh_servers */);
+  session_->RecordRTT(0, false /* is_doh_server */,
+                      base::TimeDelta::FromMilliseconds(-1), OK /* rv */);
+  session_->RecordRTT(0, true /* is_doh_server */,
+                      base::TimeDelta::FromMilliseconds(-1), OK /* rv */);
+}
+
+TEST_F(DnsSessionTest, DohServerAvailability) {
+  Initialize(2 /* num_servers */, 2 /* num_doh_servers */);
+  EXPECT_FALSE(session_->HasAvailableDohServer());
+  EXPECT_EQ(session_->NumAvailableDohServers(), 0u);
+  session_->SetProbeSuccess(1, true /* success */);
+  EXPECT_TRUE(session_->HasAvailableDohServer());
+  EXPECT_EQ(session_->NumAvailableDohServers(), 1u);
+
+  // Record a probe failure.
+  session_->SetProbeSuccess(1, false /* success */);
+  EXPECT_FALSE(session_->HasAvailableDohServer());
+  EXPECT_EQ(session_->NumAvailableDohServers(), 0u);
+}
+
+class TestDnsObserver : public NetworkChangeNotifier::DNSObserver {
+ public:
+  void OnDNSChanged() override { ++dns_changed_calls_; }
+
+  int dns_changed_calls() const { return dns_changed_calls_; }
+
+ private:
+  int dns_changed_calls_ = 0;
+};
+
+TEST_F(DnsSessionTest, DohServerAvailabilityNotification) {
+  test::ScopedMockNetworkChangeNotifier mock_network_change_notifier;
+  TestDnsObserver config_observer;
+  NetworkChangeNotifier::AddDNSObserver(&config_observer);
+  Initialize(2 /* num_servers */, 2 /* num_doh_servers */);
+
+  base::RunLoop().RunUntilIdle();  // Notifications are async.
+  EXPECT_EQ(0, config_observer.dns_changed_calls());
+
+  // Expect notification on first available DoH server.
+  session_->SetProbeSuccess(0, true /* success */);
+  base::RunLoop().RunUntilIdle();  // Notifications are async.
+  EXPECT_EQ(1, config_observer.dns_changed_calls());
+
+  // No notifications as additional servers are available or unavailable.
+  session_->SetProbeSuccess(1, true /* success */);
+  session_->SetProbeSuccess(0, false /* success */);
+  base::RunLoop().RunUntilIdle();  // Notifications are async.
+  EXPECT_EQ(1, config_observer.dns_changed_calls());
+
+  // Expect notification on last server unavailable.
+  session_->SetProbeSuccess(1, false /* success */);
+  base::RunLoop().RunUntilIdle();  // Notifications are async.
+  EXPECT_EQ(2, config_observer.dns_changed_calls());
+
+  NetworkChangeNotifier::RemoveDNSObserver(&config_observer);
+}
+
+TEST_F(DnsSessionTest, DohProbeConsecutiveFailures) {
+  Initialize(2 /* num_servers */, 2 /* num_doh_servers */);
+  session_->SetProbeSuccess(1, true /* success */);
+
+  for (size_t i = 0; i < kAutomaticModeFailureLimit; i++) {
+    EXPECT_TRUE(session_->HasAvailableDohServer());
+    session_->RecordServerFailure(1, true /* is_doh_server */);
+  }
+  EXPECT_FALSE(session_->HasAvailableDohServer());
+}
+
+TEST_F(DnsSessionTest, DohProbeNonConsecutiveFailures) {
+  Initialize(2 /* num_servers */, 2 /* num_doh_servers */);
+  session_->SetProbeSuccess(1, true /* success */);
+
+  for (size_t i = 0; i < kAutomaticModeFailureLimit - 1; i++) {
+    EXPECT_TRUE(session_->HasAvailableDohServer());
+    session_->RecordServerFailure(1, true /* is_doh_server */);
+  }
+  EXPECT_TRUE(session_->HasAvailableDohServer());
+
+  session_->RecordServerSuccess(1, true /* is_doh_server */);
+  EXPECT_TRUE(session_->HasAvailableDohServer());
+
+  session_->RecordServerFailure(1, true /* is_doh_server */);
+  EXPECT_FALSE(session_->HasAvailableDohServer());
 }
 
 }  // namespace

@@ -57,10 +57,6 @@ MSG CopyNativeEvent(const MSG& event) {
 
 void ReleaseCopiedNativeEvent(const MSG& event) {}
 
-void ClearTouchIdIfReleased(const MSG& xev) {
-  NOTIMPLEMENTED();
-}
-
 int GetTouchId(const MSG& xev) {
   NOTIMPLEMENTED();
   return 0;

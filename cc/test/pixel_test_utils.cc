@@ -72,8 +72,8 @@ bool MatchesBitmap(const SkBitmap& gen_bmp,
     std::string gen_bmp_data_url = GetPNGDataUrl(gen_bmp);
     std::string ref_bmp_data_url = GetPNGDataUrl(ref_bmp);
     LOG(ERROR) << "Pixels do not match!";
-    LOG(ERROR) << "Actual: " << gen_bmp_data_url;
-    LOG(ERROR) << "Expected: " << ref_bmp_data_url;
+    LOG(ERROR) << "Actual pixels (open in browser):\n" << gen_bmp_data_url;
+    LOG(ERROR) << "Expected pixels (open in browser):\n" << ref_bmp_data_url;
   }
   return compare;
 }

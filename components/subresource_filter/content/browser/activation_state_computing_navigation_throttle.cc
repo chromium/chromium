@@ -9,9 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
-#include "components/subresource_filter/core/common/time_measurements.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -48,8 +46,7 @@ ActivationStateComputingNavigationThrottle::
         VerifiedRuleset::Handle* ruleset_handle)
     : content::NavigationThrottle(navigation_handle),
       parent_activation_state_(parent_activation_state),
-      ruleset_handle_(ruleset_handle),
-      weak_ptr_factory_(this) {}
+      ruleset_handle_(ruleset_handle) {}
 
 ActivationStateComputingNavigationThrottle::
     ~ActivationStateComputingNavigationThrottle() = default;
@@ -95,13 +92,12 @@ ActivationStateComputingNavigationThrottle::WillProcessResponse() {
   // finish, or start a new check now if there was no previous speculative
   // check.
   if (async_filter_ && async_filter_->has_activation_state()) {
-    LogDelayMetrics(base::TimeDelta::FromMilliseconds(0));
     if (navigation_handle()->IsInMainFrame())
       UpdateWithMoreAccurateState();
     return content::NavigationThrottle::PROCEED;
   }
-  DCHECK(!defer_timer_);
-  defer_timer_ = std::make_unique<base::ElapsedTimer>();
+  DCHECK(!deferred_);
+  deferred_ = true;
   if (!async_filter_) {
     DCHECK(navigation_handle()->IsInMainFrame());
     CheckActivationState();
@@ -138,8 +134,7 @@ void ActivationStateComputingNavigationThrottle::CheckActivationState() {
 
 void ActivationStateComputingNavigationThrottle::OnActivationStateComputed(
     mojom::ActivationState state) {
-  if (defer_timer_) {
-    LogDelayMetrics(defer_timer_->Elapsed());
+  if (deferred_) {
     if (navigation_handle()->IsInMainFrame())
       UpdateWithMoreAccurateState();
     Resume();
@@ -154,20 +149,6 @@ void ActivationStateComputingNavigationThrottle::UpdateWithMoreAccurateState() {
   DCHECK(parent_activation_state_);
   DCHECK(async_filter_);
   async_filter_->UpdateWithMoreAccurateState(*parent_activation_state_);
-}
-
-void ActivationStateComputingNavigationThrottle::LogDelayMetrics(
-    base::TimeDelta delay) const {
-  UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
-      "SubresourceFilter.DocumentLoad.ActivationComputingDelay", delay,
-      base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
-      50);
-  if (navigation_handle()->IsInMainFrame()) {
-    UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(
-        "SubresourceFilter.DocumentLoad.ActivationComputingDelay.MainFrame",
-        delay, base::TimeDelta::FromMicroseconds(1),
-        base::TimeDelta::FromSeconds(10), 50);
-  }
 }
 
 AsyncDocumentSubresourceFilter*

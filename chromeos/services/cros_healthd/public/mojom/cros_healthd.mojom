@@ -1,0 +1,41 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// API exposed by the cros_healthd daemon. This API is normally consumed by the
+// browser and the telem and diag command-line tools.
+
+// NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
+// in src/platform2/diagnostics/mojo/cros_healthd.mojom.
+
+module chromeos.cros_healthd.mojom;
+
+import "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom";
+
+// Interface exposed by the cros_healthd daemon.
+interface CrosHealthdService {
+  // ------------------- Start of probe definitions ---------------------
+
+  // Returns telemetry information for the desired categories. This IPC is
+  // exposed so that the browser can pull data from cros_healthd. The browser
+  // will periodically call ProbeTelemetryInfo and upload the results to the EMM
+  // API in the cloud, where the data collected from cros_healthd will be made
+  // available to OEMs. Since the browser is making requests and cros_healthd is
+  // replying, we can consider cros_healthd the privileged side of this
+  // communication. ProbeTelemetryInfo only returns parsed data, so the browser
+  // will not do any parsing. cros_healthd does not process input that could be
+  // controlled by a malicious attacker.
+  //
+  // The request:
+  // * |categories| - list of each of the categories that ProbeTelemetryInfo
+  //                  should return information for.
+  //
+  // The response:
+  // * |telemetry_info| - information for each of the requested categories. Only
+  //                      the fields corresponding to the requested categories
+  //                      will be non-null.
+  ProbeTelemetryInfo(array<ProbeCategoryEnum> categories)
+      => (TelemetryInfo telemetry_info);
+
+  // ------------------- End of probe definitions -----------------------
+};

@@ -118,7 +118,7 @@ void ScreenPositionController::SetBounds(aura::Window* window,
     return;
   }
 
-  wm::SetBoundsInScreen(window, bounds, display);
+  SetBoundsInScreen(window, bounds, display);
 }
 
 }  // namespace ash

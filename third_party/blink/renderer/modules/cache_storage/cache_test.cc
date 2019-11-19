@@ -10,7 +10,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request.h"
@@ -50,15 +52,11 @@ const char kNotImplementedString[] =
     "NotSupportedError: Method is not implemented.";
 
 class ScopedFetcherForTests final
-    : public GarbageCollectedFinalized<ScopedFetcherForTests>,
+    : public GarbageCollected<ScopedFetcherForTests>,
       public GlobalFetch::ScopedFetcher {
   USING_GARBAGE_COLLECTED_MIXIN(ScopedFetcherForTests);
 
  public:
-  static ScopedFetcherForTests* Create() {
-    return MakeGarbageCollected<ScopedFetcherForTests>();
-  }
-
   ScopedFetcherForTests() : fetch_count_(0), expected_url_(nullptr) {}
 
   ScriptPromise Fetch(ScriptState* script_state,
@@ -75,8 +73,8 @@ class ScopedFetcherForTests final
     }
 
     if (response_) {
-      ScriptPromiseResolver* resolver =
-          ScriptPromiseResolver::Create(script_state);
+      auto* resolver =
+          MakeGarbageCollected<ScriptPromiseResolver>(script_state);
       const ScriptPromise promise = resolver->Promise();
       resolver->Resolve(response_);
       response_ = nullptr;
@@ -143,6 +141,8 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
 
   void Match(mojom::blink::FetchAPIRequestPtr fetch_api_request,
              mojom::blink::CacheQueryOptionsPtr query_options,
+             bool in_related_fetch_event,
+             int64_t trace_id,
              MatchCallback callback) override {
     last_error_web_cache_method_called_ = "dispatchMatch";
     CheckUrlIfProvided(fetch_api_request->url);
@@ -153,6 +153,7 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
   }
   void MatchAll(mojom::blink::FetchAPIRequestPtr fetch_api_request,
                 mojom::blink::CacheQueryOptionsPtr query_options,
+                int64_t trace_id,
                 MatchAllCallback callback) override {
     last_error_web_cache_method_called_ = "dispatchMatchAll";
     if (fetch_api_request)
@@ -165,6 +166,7 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
   }
   void Keys(mojom::blink::FetchAPIRequestPtr fetch_api_request,
             mojom::blink::CacheQueryOptionsPtr query_options,
+            int64_t trace_id,
             KeysCallback callback) override {
     last_error_web_cache_method_called_ = "dispatchKeys";
     if (fetch_api_request && !fetch_api_request->url.IsEmpty()) {
@@ -177,18 +179,11 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
     std::move(callback).Run(std::move(result));
   }
   void Batch(Vector<mojom::blink::BatchOperationPtr> batch_operations,
-             bool fail_on_duplicates,
+             int64_t trace_id,
              BatchCallback callback) override {
     last_error_web_cache_method_called_ = "dispatchBatch";
     CheckBatchOperationsIfProvided(batch_operations);
     std::move(callback).Run(CacheStorageVerboseError::New(error_, String()));
-  }
-  void SetSideData(const KURL& url,
-                   base::Time response_time,
-                   const Vector<uint8_t>& side_data,
-                   SetSideDataCallback callback) override {
-    std::move(callback).Run(
-        blink::mojom::CacheStorageError::kErrorNotImplemented);
   }
 
  protected:
@@ -271,14 +266,14 @@ class CacheStorageTest : public PageTestBase {
 
   Cache* CreateCache(ScopedFetcherForTests* fetcher,
                      std::unique_ptr<ErrorCacheForTests> cache) {
-    mojom::blink::CacheStorageCacheAssociatedPtr cache_ptr;
-    auto request = mojo::MakeRequestAssociatedWithDedicatedPipe(&cache_ptr);
+    mojo::AssociatedRemote<mojom::blink::CacheStorageCache> cache_remote;
     cache_ = std::move(cache);
-    binding_ = std::make_unique<
-        mojo::AssociatedBinding<mojom::blink::CacheStorageCache>>(
-        cache_.get(), std::move(request));
-    return Cache::Create(
-        fetcher, nullptr /* cache_storage */, cache_ptr.PassInterface(),
+    receiver_ = std::make_unique<
+        mojo::AssociatedReceiver<mojom::blink::CacheStorageCache>>(
+        cache_.get(),
+        cache_remote.BindNewEndpointAndPassDedicatedReceiverForTesting());
+    return MakeGarbageCollected<Cache>(
+        fetcher, cache_remote.Unbind(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
@@ -302,12 +297,10 @@ class CacheStorageTest : public PageTestBase {
 
   // Convenience methods for testing the returned promises.
   ScriptValue GetRejectValue(ScriptPromise& promise) {
-    ScriptValue on_reject;
-    promise.Then(UnreachableFunction::Create(GetScriptState()),
-                 TestFunction::Create(GetScriptState(), &on_reject));
-    v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
-    test::RunPendingTasks();
-    return on_reject;
+    ScriptPromiseTester tester(GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+    return tester.Value();
   }
 
   std::string GetRejectString(ScriptPromise& promise) {
@@ -319,12 +312,10 @@ class CacheStorageTest : public PageTestBase {
   }
 
   ScriptValue GetResolveValue(ScriptPromise& promise) {
-    ScriptValue on_resolve;
-    promise.Then(TestFunction::Create(GetScriptState(), &on_resolve),
-                 UnreachableFunction::Create(GetScriptState()));
-    v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
-    test::RunPendingTasks();
-    return on_resolve;
+    ScriptPromiseTester tester(GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    return tester.Value();
   }
 
   std::string GetResolveString(ScriptPromise& promise) {
@@ -336,51 +327,9 @@ class CacheStorageTest : public PageTestBase {
   }
 
  private:
-  // A ScriptFunction that creates a test failure if it is ever called.
-  class UnreachableFunction : public ScriptFunction {
-   public:
-    static v8::Local<v8::Function> Create(ScriptState* script_state) {
-      UnreachableFunction* self =
-          MakeGarbageCollected<UnreachableFunction>(script_state);
-      return self->BindToV8Function();
-    }
-
-    UnreachableFunction(ScriptState* script_state)
-        : ScriptFunction(script_state) {}
-
-    ScriptValue Call(ScriptValue value) override {
-      ADD_FAILURE() << "Unexpected call to a null ScriptFunction.";
-      return value;
-    }
-  };
-
-  // A ScriptFunction that saves its parameter; used by tests to assert on
-  // correct values being passed.
-  class TestFunction : public ScriptFunction {
-   public:
-    static v8::Local<v8::Function> Create(ScriptState* script_state,
-                                          ScriptValue* out_value) {
-      TestFunction* self =
-          MakeGarbageCollected<TestFunction>(script_state, out_value);
-      return self->BindToV8Function();
-    }
-
-    TestFunction(ScriptState* script_state, ScriptValue* out_value)
-        : ScriptFunction(script_state), value_(out_value) {}
-
-    ScriptValue Call(ScriptValue value) override {
-      DCHECK(!value.IsEmpty());
-      *value_ = value;
-      return value;
-    }
-
-   private:
-    ScriptValue* value_;
-  };
-
   std::unique_ptr<ErrorCacheForTests> cache_;
-  std::unique_ptr<mojo::AssociatedBinding<mojom::blink::CacheStorageCache>>
-      binding_;
+  std::unique_ptr<mojo::AssociatedReceiver<mojom::blink::CacheStorageCache>>
+      receiver_;
 };
 
 RequestInfo StringToRequestInfo(const String& value) {
@@ -398,7 +347,7 @@ RequestInfo RequestToRequestInfo(Request* value) {
 TEST_F(CacheStorageTest, Basics) {
   ScriptState::Scope scope(GetScriptState());
   NonThrowableExceptionState exception_state;
-  ScopedFetcherForTests* fetcher = ScopedFetcherForTests::Create();
+  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
   Cache* cache =
       CreateCache(fetcher, std::make_unique<NotImplementedErrorCache>());
   DCHECK(cache);
@@ -430,7 +379,7 @@ TEST_F(CacheStorageTest, Basics) {
 TEST_F(CacheStorageTest, BasicArguments) {
   ScriptState::Scope scope(GetScriptState());
   NonThrowableExceptionState exception_state;
-  ScopedFetcherForTests* fetcher = ScopedFetcherForTests::Create();
+  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
   Cache* cache =
       CreateCache(fetcher, std::make_unique<NotImplementedErrorCache>());
   DCHECK(cache);
@@ -509,7 +458,7 @@ TEST_F(CacheStorageTest, BasicArguments) {
 TEST_F(CacheStorageTest, BatchOperationArguments) {
   ScriptState::Scope scope(GetScriptState());
   NonThrowableExceptionState exception_state;
-  ScopedFetcherForTests* fetcher = ScopedFetcherForTests::Create();
+  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
   Cache* cache =
       CreateCache(fetcher, std::make_unique<NotImplementedErrorCache>());
   DCHECK(cache);
@@ -559,7 +508,8 @@ TEST_F(CacheStorageTest, BatchOperationArguments) {
     auto& put_operation = expected_put_operations.back();
     put_operation->operation_type = mojom::blink::OperationType::kPut;
     put_operation->request = request->CreateFetchAPIRequest();
-    put_operation->response = response->PopulateFetchAPIResponse();
+    put_operation->response =
+        response->PopulateFetchAPIResponse(request->url());
   }
   test_cache()->SetExpectedBatchOperations(&expected_put_operations);
 
@@ -589,6 +539,8 @@ class MatchTestCache : public NotImplementedErrorCache {
   // From WebServiceWorkerCache:
   void Match(mojom::blink::FetchAPIRequestPtr fetch_api_request,
              mojom::blink::CacheQueryOptionsPtr query_options,
+             bool in_related_fetch_event,
+             int64_t trace_id,
              MatchCallback callback) override {
     mojom::blink::MatchResultPtr result = mojom::blink::MatchResult::New();
     result->set_response(std::move(response_));
@@ -602,7 +554,7 @@ class MatchTestCache : public NotImplementedErrorCache {
 TEST_F(CacheStorageTest, MatchResponseTest) {
   ScriptState::Scope scope(GetScriptState());
   NonThrowableExceptionState exception_state;
-  ScopedFetcherForTests* fetcher = ScopedFetcherForTests::Create();
+  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
   const String request_url = "http://request.url/";
   const String response_url = "http://match.response.test/";
 
@@ -634,6 +586,7 @@ class KeysTestCache : public NotImplementedErrorCache {
 
   void Keys(mojom::blink::FetchAPIRequestPtr fetch_api_request,
             mojom::blink::CacheQueryOptionsPtr query_options,
+            int64_t trace_id,
             KeysCallback callback) override {
     mojom::blink::CacheKeysResultPtr result =
         mojom::blink::CacheKeysResult::New();
@@ -648,7 +601,7 @@ class KeysTestCache : public NotImplementedErrorCache {
 TEST_F(CacheStorageTest, KeysResponseTest) {
   ScriptState::Scope scope(GetScriptState());
   NonThrowableExceptionState exception_state;
-  ScopedFetcherForTests* fetcher = ScopedFetcherForTests::Create();
+  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
   const String url1 = "http://first.request/";
   const String url2 = "http://second.request/";
 
@@ -690,6 +643,7 @@ class MatchAllAndBatchTestCache : public NotImplementedErrorCache {
 
   void MatchAll(mojom::blink::FetchAPIRequestPtr fetch_api_request,
                 mojom::blink::CacheQueryOptionsPtr query_options,
+                int64_t trace_id,
                 MatchAllCallback callback) override {
     mojom::blink::MatchAllResultPtr result =
         mojom::blink::MatchAllResult::New();
@@ -697,7 +651,7 @@ class MatchAllAndBatchTestCache : public NotImplementedErrorCache {
     std::move(callback).Run(std::move(result));
   }
   void Batch(Vector<mojom::blink::BatchOperationPtr> batch_operations,
-             bool fail_on_duplicates,
+             int64_t trace_id,
              BatchCallback callback) override {
     std::move(callback).Run(CacheStorageVerboseError::New(
         mojom::blink::CacheStorageError::kSuccess, String()));
@@ -710,7 +664,7 @@ class MatchAllAndBatchTestCache : public NotImplementedErrorCache {
 TEST_F(CacheStorageTest, MatchAllAndBatchResponseTest) {
   ScriptState::Scope scope(GetScriptState());
   NonThrowableExceptionState exception_state;
-  ScopedFetcherForTests* fetcher = ScopedFetcherForTests::Create();
+  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
   const String url1 = "http://first.response/";
   const String url2 = "http://second.response/";
 
@@ -763,7 +717,7 @@ TEST_F(CacheStorageTest, MatchAllAndBatchResponseTest) {
 TEST_F(CacheStorageTest, Add) {
   ScriptState::Scope scope(GetScriptState());
   NonThrowableExceptionState exception_state;
-  ScopedFetcherForTests* fetcher = ScopedFetcherForTests::Create();
+  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
   const String url = "http://www.cacheadd.test/";
   const String content_type = "text/plain";
   const String content = "hello cache";
@@ -789,7 +743,8 @@ TEST_F(CacheStorageTest, Add) {
 
     put_operation->operation_type = mojom::blink::OperationType::kPut;
     put_operation->request = request->CreateFetchAPIRequest();
-    put_operation->response = response->PopulateFetchAPIResponse();
+    put_operation->response =
+        response->PopulateFetchAPIResponse(request->url());
     expected_put_operations[0] = std::move(put_operation);
   }
   test_cache()->SetExpectedBatchOperations(&expected_put_operations);

@@ -33,4 +33,8 @@ void CastWebContents::Observer::ResetCastWebContents() {
   cast_web_contents_ = nullptr;
 }
 
+CastWebContents::InitParams::InitParams() = default;
+CastWebContents::InitParams::InitParams(const InitParams& other) = default;
+CastWebContents::InitParams::~InitParams() = default;
+
 }  // namespace chromecast

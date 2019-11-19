@@ -4,7 +4,8 @@
 
 package org.chromium.content_public.browser;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 /**
  * The NavigationController Java wrapper to allow communicating with the native
@@ -147,6 +148,12 @@ public interface NavigationController {
     public NavigationEntry getEntryAtIndex(int index);
 
     /**
+     * @return The {@link NavigationEntry} that is appropriate to be displayed in the address bar.
+     */
+    @Nullable
+    NavigationEntry getVisibleEntry();
+
+    /**
      * @return The pending {@link NavigationEntry} for this controller or {@code null} if none
      *         exists.
      */
@@ -163,6 +170,12 @@ public interface NavigationController {
      *         call discards any transient or pending entries.
      */
     public boolean removeEntryAtIndex(int index);
+
+    /**
+     * Discards any transient or pending entries, then discards all entries after the current entry
+     * index.
+     */
+    void pruneForwardEntries();
 
     /**
      * Gets extra data on the {@link NavigationEntry} at {@code index}.

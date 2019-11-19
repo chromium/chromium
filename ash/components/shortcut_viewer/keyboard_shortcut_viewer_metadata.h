@@ -35,6 +35,13 @@ base::string16 GetStringForCategory(ShortcutCategory category);
 // character.
 base::string16 GetStringForKeyboardCode(ui::KeyboardCode key_code);
 
+// Certain punctuation is not verbalized by ChromeVox, i.e. ".". So, whenever
+// one of these is used in a keyboard shortcut, need to set the accessible name
+// to explicitly specified text, such as "period".
+// Returns empty string if there is no special accessible name for the
+// |key_code|.
+base::string16 GetAccessibleNameForKeyboardCode(ui::KeyboardCode key_code);
+
 // Returns the VectorIcon if |key_code| need to be represented as an icon.
 // Returns nullptr if |key_code| should not be represented as an icon.
 const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code);

@@ -24,18 +24,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_RUN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_RUN_H_
 
+#include <unicode/utf16.h>
+
+#include "base/containers/span.h"
 #include "base/optional.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/tab_size.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/text_justify.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
-#include <SkRefCnt.h>
-#include <unicode/utf16.h>
+#include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
 
@@ -161,6 +162,16 @@ class PLATFORM_EXPORT TextRun final {
     SECURITY_DCHECK(i < len_);
     DCHECK(!Is8Bit());
     return &data_.characters16[i];
+  }
+
+  // Prefer Span8() and Span16() to Characters8() and Characters16().
+  base::span<const LChar> Span8() const {
+    DCHECK(Is8Bit());
+    return {data_.characters8, len_};
+  }
+  base::span<const UChar> Span16() const {
+    DCHECK(!Is8Bit());
+    return {data_.characters16, len_};
   }
 
   const LChar* Characters8() const {

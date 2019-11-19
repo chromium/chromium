@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_FILEAPI_RECENT_FILE_H_
 
 #include "base/time/time.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 namespace chromeos {
 

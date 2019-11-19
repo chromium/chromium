@@ -118,6 +118,24 @@ function replaceStatePath() {
   updateStatusText('replaceStatePath');
 };
 
+function replaceStateThenPushState() {
+  clearOnloadDivText();
+  window.history.replaceState('firstReplaceState', 'First replaceState',
+      '#firstReplaceState');
+  window.history.pushState('replaceStateThenPushState',
+      'Replace state then push state', '#replaceStateThenPushState');
+  updateStatusText('replaceStateThenPushState');
+}
+
+function pushStateThenReplaceState() {
+  clearOnloadDivText();
+  window.history.pushState('firstPushState', 'First pushState',
+      '#firstPushState');
+  window.history.replaceState('pushStateThenReplaceState',
+      'Push state then replace state', '#pushStateThenReplaceState');
+  updateStatusText('pushStateThenReplaceState');
+}
+
 function goBack() {
   clearOnloadDivText();
   window.history.back();

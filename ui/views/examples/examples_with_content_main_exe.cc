@@ -29,7 +29,7 @@ void ShowContentExampleWindow(ui::ViewsContentClient* views_content_client,
   // dlsym search path, which breaks (usually valid) assumptions made in
   // sandbox::InitLibcUrandomOverrides(). See http://crbug.com/374712.
   if (!browser_context) {
-    content::BrowserContext::SaveSessionState(NULL);
+    content::BrowserContext::SaveSessionState(nullptr);
     NOTREACHED();
   }
 }
@@ -38,7 +38,7 @@ void ShowContentExampleWindow(ui::ViewsContentClient* views_content_client,
 
 #if defined(OS_WIN)
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
-  sandbox::SandboxInterfaceInfo sandbox_info = {0};
+  sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   content::InitializeSandboxInfo(&sandbox_info);
   ui::ViewsContentClient views_content_client(instance, &sandbox_info);
 #else
@@ -46,7 +46,7 @@ int main(int argc, const char** argv) {
   ui::ViewsContentClient views_content_client(argc, argv);
 #endif
 
-  views_content_client.set_task(base::Bind(
+  views_content_client.set_on_pre_main_message_loop_run_callback(base::BindOnce(
       &ShowContentExampleWindow, base::Unretained(&views_content_client)));
   return views_content_client.RunMain();
 }

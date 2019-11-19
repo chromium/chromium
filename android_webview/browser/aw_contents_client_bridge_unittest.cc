@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "android_webview/test/android_webview_unittests_jni/MockAwContentsClientBridge_jni.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
@@ -14,8 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "content/public/browser/client_certificate_delegate.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "jni/MockAwContentsClientBridge_jni.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
@@ -48,7 +48,7 @@ class AwContentsClientBridgeTest : public Test {
   void SetUp() override;
   void TestCertType(SSLClientCertType type, const std::string& expected_name);
   // Create the TestBrowserThreads. Just instantiate the member variable.
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   base::android::ScopedJavaGlobalRef<jobject> jbridge_;
   std::unique_ptr<AwContentsClientBridge> bridge_;
   scoped_refptr<SSLCertRequestInfo> cert_request_info_;
@@ -88,7 +88,7 @@ void AwContentsClientBridgeTest::SetUp() {
   bridge_.reset(new AwContentsClientBridge(env_, jbridge_));
   selected_cert_ = nullptr;
   cert_selected_callbacks_ = 0;
-  cert_request_info_ = new net::SSLCertRequestInfo;
+  cert_request_info_ = base::MakeRefCounted<net::SSLCertRequestInfo>();
 }
 
 void AwContentsClientBridgeTest::CertSelected(

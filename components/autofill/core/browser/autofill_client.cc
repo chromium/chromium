@@ -8,12 +8,23 @@
 
 namespace autofill {
 
+AutofillClient::UnmaskDetails::UnmaskDetails() {}
+AutofillClient::UnmaskDetails::~UnmaskDetails() {}
+
 version_info::Channel AutofillClient::GetChannel() const {
   return version_info::Channel::UNKNOWN;
 }
 
 std::string AutofillClient::GetPageLanguage() const {
   return std::string();
+}
+
+LogManager* AutofillClient::GetLogManager() const {
+  return nullptr;
+}
+
+bool AutofillClient::CloseWebauthnOfferDialog() {
+  return false;
 }
 
 }  // namespace autofill

@@ -57,9 +57,6 @@ class NET_EXPORT DoNothingCTVerifier : public CTVerifier {
               SignedCertificateTimestampAndStatusList* output_scts,
               const NetLogWithSource& net_log) override;
 
-  void SetObserver(Observer* observer) override;
-  Observer* GetObserver() const override;
-
  private:
   DISALLOW_COPY_AND_ASSIGN(DoNothingCTVerifier);
 };

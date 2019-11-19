@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 /**
  * @fileoverview Tests the text module of Voice Search on the local NTP.
  */
-
 
 /**
  * Voice Search Text module's object for test and setup functions.
  */
 test.text = {};
-
 
 /**
  * Utility to test code that uses timeouts.
@@ -20,13 +17,11 @@ test.text = {};
  */
 test.text.clock = new MockClock();
 
-
 /**
  * Utility to mock out object properties.
  * @type {Replacer}
  */
 test.text.stubs = new Replacer();
-
 
 /**
  * Set up the text DOM and test environment.
@@ -58,7 +53,6 @@ test.text.setUp = function() {
   text.init();
 };
 
-
 /**
  * Makes sure text sets up with the correct settings.
  */
@@ -66,7 +60,6 @@ test.text.testInit = function() {
   assertEquals('', text.interim_.textContent);
   assertEquals('', text.final_.textContent);
 };
-
 
 /**
  * Test updating the text values.
@@ -78,7 +71,6 @@ test.text.testUpdateText = function() {
   assertEquals(interimText, text.interim_.textContent);
   assertEquals(finalText, text.final_.textContent);
 };
-
 
 /**
  * Test updating the text with an error message containing a link.
@@ -94,7 +86,6 @@ test.text.testShowErrorMessageWithLink = function() {
   assertEquals('', text.final_.innerHTML);
 };
 
-
 /**
  * Test updating the text with an error message containing a "Try Again" link.
  */
@@ -109,21 +100,23 @@ test.text.testShowErrorMessageWithTryAgainLink = function() {
   assertEquals('', text.final_.innerHTML);
 };
 
-
 /**
  * Test clearing the text elements.
  */
 test.text.testClearText = function() {
   const interimText = 'interim '.repeat(100);
   const finalText = 'final '.repeat(100);
+  // Explicitly set height to some large number in order to have 5 text lines,
+  // which will be case if height exceeds a calculated maximum.
+  text.interim_.style.height = '1000px';
 
   assertEquals('voice-text', text.interim_.className);
   assertEquals('voice-text', text.final_.className);
   text.updateTextArea(interimText, finalText);
   assertEquals(interimText, text.interim_.textContent);
   assertEquals(finalText, text.final_.textContent);
-  assertEquals('voice-text voice-text-3l', text.interim_.className);
-  assertEquals('voice-text voice-text-3l', text.final_.className);
+  assertEquals('voice-text voice-text-5l', text.interim_.className);
+  assertEquals('voice-text voice-text-5l', text.final_.className);
 
   text.clear();
   assertEquals('', text.interim_.textContent);
@@ -131,7 +124,6 @@ test.text.testClearText = function() {
   assertEquals('voice-text', text.interim_.className);
   assertEquals('voice-text', text.final_.className);
 };
-
 
 /**
  * Test showing the initialization message after an initial timeout.
@@ -155,7 +147,6 @@ test.text.testSetInitializationMessage = function() {
   assertEquals(0, test.text.clock.pendingTimeouts.length);
 };
 
-
 /**
  * Test showing the ready message.
  */
@@ -173,7 +164,6 @@ test.text.testReadyMessage = function() {
   assertEquals(1, test.text.clock.pendingTimeouts.length);
   assertEquals(2001, test.text.clock.pendingTimeouts[0].activationTime);
 };
-
 
 /**
  * Test showing the listening message when the ready message is shown,
@@ -198,7 +188,6 @@ test.text.testListeningMessageWhenReady = function() {
   assertEquals(0, test.text.clock.pendingTimeouts.length);
 };
 
-
 /**
  * Test not showing the listening message when the ready message is shown,
  * but results were already received.
@@ -222,7 +211,6 @@ test.text.testListeningMessageWhenReadyButResultsAlreadyReceived = function() {
   assertEquals('', text.final_.textContent);
   assertEquals(0, test.text.clock.pendingTimeouts.length);
 };
-
 
 /**
  * Test showing the listening message when the ready message is not shown,

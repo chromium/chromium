@@ -6,9 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_SENSOR_PROVIDER_PROXY_H_
 
 #include "base/macros.h"
-#include "services/device/public/mojom/sensor.mojom-blink.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/mojom/sensor.mojom-blink-forward.h"
 #include "services/device/public/mojom/sensor_provider.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -18,8 +20,8 @@ class SensorProxy;
 
 // This class wraps 'SensorProvider' mojo interface and it manages
 // 'SensorProxy' instances.
-class SensorProviderProxy final
-    : public GarbageCollectedFinalized<SensorProviderProxy>,
+class MODULES_EXPORT SensorProviderProxy final
+    : public GarbageCollected<SensorProviderProxy>,
       public Supplement<Document> {
   USING_GARBAGE_COLLECTED_MIXIN(SensorProviderProxy);
 
@@ -56,7 +58,7 @@ class SensorProviderProxy final
   void OnSensorProviderConnectionError();
   SensorsSet sensor_proxies_;
 
-  device::mojom::blink::SensorProviderPtr sensor_provider_;
+  mojo::Remote<device::mojom::blink::SensorProvider> sensor_provider_;
   bool inspector_mode_;
 
   DISALLOW_COPY_AND_ASSIGN(SensorProviderProxy);

@@ -14,11 +14,15 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/network_change_notifier.h"
@@ -54,9 +58,11 @@ class P2PSocketManager
   // P2PSocketManager. The P2PSocketManager must be destroyed before the
   // |url_request_context|.
   P2PSocketManager(
-      mojom::P2PTrustedSocketManagerClientPtr trusted_socket_manager_client,
-      mojom::P2PTrustedSocketManagerRequest trusted_socket_manager_request,
-      mojom::P2PSocketManagerRequest socket_manager_request,
+      mojo::PendingRemote<mojom::P2PTrustedSocketManagerClient>
+          trusted_socket_manager_client,
+      mojo::PendingReceiver<mojom::P2PTrustedSocketManager>
+          trusted_socket_manager_receiver,
+      mojo::PendingReceiver<mojom::P2PSocketManager> socket_manager_receiver,
       DeleteCallback delete_callback,
       net::URLRequestContext* url_request_context);
   ~P2PSocketManager() override;
@@ -83,7 +89,7 @@ class P2PSocketManager
 
   // mojom::P2PSocketManager overrides:
   void StartNetworkNotifications(
-      mojom::P2PNetworkNotificationClientPtr client) override;
+      mojo::PendingRemote<mojom::P2PNetworkNotificationClient> client) override;
   void GetHostAddress(
       const std::string& host_name,
       bool enable_mdns,
@@ -92,8 +98,8 @@ class P2PSocketManager
                     const net::IPEndPoint& local_address,
                     const P2PPortRange& port_range,
                     const P2PHostAndIPEndPoint& remote_address,
-                    mojom::P2PSocketClientPtr client,
-                    mojom::P2PSocketRequest request) override;
+                    mojo::PendingRemote<mojom::P2PSocketClient> client,
+                    mojo::PendingReceiver<mojom::P2PSocket> receiver) override;
 
   // mojom::P2PTrustedSocketManager overrides:
   void StartRtpDump(bool incoming, bool outgoing) override;
@@ -121,7 +127,8 @@ class P2PSocketManager
 
   base::flat_map<P2PSocket*, std::unique_ptr<P2PSocket>> sockets_;
 
-  std::set<std::unique_ptr<DnsRequest>> dns_requests_;
+  std::set<std::unique_ptr<DnsRequest>, base::UniquePtrComparator>
+      dns_requests_;
   P2PMessageThrottler throttler_;
 
   bool dump_incoming_rtp_packet_ = false;
@@ -131,13 +138,16 @@ class P2PSocketManager
   // default local address involves creating a dummy socket.
   const scoped_refptr<base::SequencedTaskRunner> network_list_task_runner_;
 
-  mojom::P2PTrustedSocketManagerClientPtr trusted_socket_manager_client_;
-  mojo::Binding<mojom::P2PTrustedSocketManager> trusted_socket_manager_binding_;
-  mojo::Binding<mojom::P2PSocketManager> socket_manager_binding_;
+  mojo::Remote<mojom::P2PTrustedSocketManagerClient>
+      trusted_socket_manager_client_;
+  mojo::Receiver<mojom::P2PTrustedSocketManager>
+      trusted_socket_manager_receiver_;
+  mojo::Receiver<mojom::P2PSocketManager> socket_manager_receiver_;
 
-  mojom::P2PNetworkNotificationClientPtr network_notification_client_;
+  mojo::Remote<mojom::P2PNetworkNotificationClient>
+      network_notification_client_;
 
-  base::WeakPtrFactory<P2PSocketManager> weak_factory_;
+  base::WeakPtrFactory<P2PSocketManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(P2PSocketManager);
 };

@@ -3,14 +3,8 @@
 <script src="../resources/testharnessreport.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/mojo/public/mojom/base/big_buffer.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/barcodedetection.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/barcodedetection_provider.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/facedetection.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/facedetection_provider.mojom.js"></script>
 <script src="file:///gen/services/shape_detection/public/mojom/textdetection.mojom.js"></script>
 <script src="resources/big-buffer-helpers.js"></script>
-<script src="resources/mock-barcodedetection.js"></script>
-<script src="resources/mock-facedetection.js"></script>
 <script src="resources/mock-textdetection.js"></script>
 <script>
 
@@ -38,40 +32,15 @@ var createTestForImageData = function(createDetector, mock,
   });
 };
 
-function CheckDetectedFaceSameObjects(detectedFaces) {
-  assert_greater_than(detectedFaces.length, 0, "Number of faces");
-  assert_equals(detectedFaces[0].boundingBox, detectedFaces[0].boundingBox);
-  assert_equals(detectedFaces[0].landmarks, detectedFaces[0].landmarks);
-}
-
-function CheckDetectedBarcodesSameObjects(detectedBarcodes) {
-  assert_greater_than(detectedBarcodes.length, 0, "Number of barcodes");
-  assert_equals(detectedBarcodes[0].rawValue, detectedBarcodes[0].rawValue);
-  assert_equals(detectedBarcodes[0].boundingBox, detectedBarcodes[0].boundingBox);
-  assert_equals(detectedBarcodes[0].cornerPoints, detectedBarcodes[0].cornerPoints);
-}
-
 function CheckDetectedTextBlocksSameObjects(detectedTextBlocks) {
   assert_greater_than(detectedTextBlocks.length, 0, "Number of textBlocks");
   assert_equals(detectedTextBlocks[0].rawValue, detectedTextBlocks[0].rawValue);
   assert_equals(detectedTextBlocks[0].boundingBox, detectedTextBlocks[0].boundingBox);
 }
 
-// These tests verify that detect()ed Detected{Barcode,Face,Text}'s individual
+// These tests verify that detect()ed Detected Text's individual
 // fields are [SameObject].
 generate_tests(createTestForImageData, [
-  [
-    "Face - detect(ImageData), [SameObject]",
-    () => { return new FaceDetector(); },
-    mockFaceDetectionProvider,
-    CheckDetectedFaceSameObjects
-  ],
-  [
-    "Barcode - detect(ImageData), [SameObject]",
-    () => { return new BarcodeDetector(); },
-    mockBarcodeDetectionProvider,
-    CheckDetectedBarcodesSameObjects
-  ],
   [
     "Text - detect(ImageData), [SameObject]",
     () => { return new TextDetector(); },

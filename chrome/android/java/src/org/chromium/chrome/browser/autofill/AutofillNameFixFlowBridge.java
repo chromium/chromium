@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ResourceId;
@@ -57,12 +58,14 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
 
     @Override
     public void onPromptDismissed() {
-        nativePromptDismissed(mNativeCardNameFixFlowViewAndroid);
+        AutofillNameFixFlowBridgeJni.get().promptDismissed(
+                mNativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge.this);
     }
 
     @Override
     public void onUserAccept(String name) {
-        nativeOnUserAccept(mNativeCardNameFixFlowViewAndroid, name);
+        AutofillNameFixFlowBridgeJni.get().onUserAccept(
+                mNativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge.this, name);
     }
 
     /**
@@ -88,6 +91,11 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
         }
     }
 
-    private native void nativePromptDismissed(long nativeCardNameFixFlowViewAndroid);
-    private native void nativeOnUserAccept(long nativeCardNameFixFlowViewAndroid, String name);
+    @NativeMethods
+    interface Natives {
+        void promptDismissed(
+                long nativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge caller);
+        void onUserAccept(long nativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge caller,
+                String name);
+    }
 }

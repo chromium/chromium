@@ -1,0 +1,36 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// A MessagePortDescriptor represents one end of a message channel. It
+// encompasses a small bit of state used to uniquely identify a message handle
+// and to provide information about it to the browser. Otherwise, this is a
+// simple wrapper around a Mojo message_pipe. Messages being sent over this pipe
+// are serialized versions of a TransferableMessage struct.
+//
+// The corresponding public Blink type for this object is a move-only type,
+// ensuring that there can only ever be a single handle to a pipe endpoint (and
+// its associated state) at any moment in time.
+//
+// TODO(crbug.com/750468): Consider using an actual Mojo interface for message
+// ports.
+struct MessagePortDescriptor {
+  // The actual handle. Simply called |handle| on the C++ counterpart, but
+  // that's a reserved name in Mojo.
+  handle<message_pipe> pipe_handle;
+
+  // The name of the handle, so that it can be tracked as it is passed along
+  // from one execution context to another.
+  mojo_base.mojom.UnguessableToken id;
+
+  // The sequence number of the instrumentation messages related to this handle.
+  // Since these messages can arrive out of order in the browser process (the
+  // messages can be sent from multiple distinct renderer processes if the
+  // endpoint is passed around), this is used to reorder them so that consistent
+  // state can be maintained in the browser.
+  uint64 sequence_number;
+};

@@ -4,26 +4,9 @@
 
 #include "chromeos/services/device_sync/cryptauth_enrollment_manager.h"
 
-#include "chromeos/services/device_sync/pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
-
 namespace chromeos {
 
 namespace device_sync {
-
-// static
-void CryptAuthEnrollmentManager::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(
-      prefs::kCryptAuthEnrollmentIsRecoveringFromFailure, false);
-  registry->RegisterDoublePref(
-      prefs::kCryptAuthEnrollmentLastEnrollmentTimeSeconds, 0.0);
-  registry->RegisterIntegerPref(prefs::kCryptAuthEnrollmentReason,
-                                cryptauth::INVOCATION_REASON_UNKNOWN);
-  registry->RegisterStringPref(prefs::kCryptAuthEnrollmentUserPublicKey,
-                               std::string());
-  registry->RegisterStringPref(prefs::kCryptAuthEnrollmentUserPrivateKey,
-                               std::string());
-}
 
 CryptAuthEnrollmentManager::CryptAuthEnrollmentManager() = default;
 

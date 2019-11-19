@@ -49,7 +49,7 @@ class IncognitoWebStateObserver : public TabModelListObserver,
   virtual void OnIncognitoWebStateRemoved() = 0;
 
  private:
-  ScopedObserver<WebStateList, IncognitoWebStateObserver> scoped_observer_;
+  ScopedObserver<WebStateList, WebStateListObserver> scoped_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IncognitoWebStateObserver);
 };

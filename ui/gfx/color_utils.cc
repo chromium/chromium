@@ -324,61 +324,40 @@ SkColor PickContrastingColor(SkColor foreground1,
       foreground1 : foreground2;
 }
 
-SkColor GetColorWithMinimumContrast(SkColor default_foreground,
-                                    SkColor background) {
-  const SkColor contrasting_color = GetColorWithMaxContrast(background);
-  const SkAlpha alpha = GetBlendValueWithMinimumContrast(
-      default_foreground, contrasting_color, background,
-      kMinimumReadableContrastRatio);
-  return AlphaBlend(contrasting_color, default_foreground, alpha);
-}
+BlendResult BlendForMinContrast(
+    SkColor default_foreground,
+    SkColor background,
+    base::Optional<SkColor> high_contrast_foreground,
+    float contrast_ratio) {
+  DCHECK_EQ(SkColorGetA(background), SK_AlphaOPAQUE);
+  default_foreground = GetResultingPaintColor(default_foreground, background);
+  if (GetContrastRatio(default_foreground, background) >= contrast_ratio)
+    return {SK_AlphaTRANSPARENT, default_foreground};
+  const SkColor target_foreground = GetResultingPaintColor(
+      high_contrast_foreground.value_or(GetColorWithMaxContrast(background)),
+      background);
 
-SkAlpha GetBlendValueWithMinimumContrast(SkColor source,
-                                         SkColor target,
-                                         SkColor base,
-                                         float contrast_ratio) {
-  DCHECK_EQ(SkColorGetA(base), SK_AlphaOPAQUE);
+  const float background_luminance = GetRelativeLuminance(background);
 
-  source = GetResultingPaintColor(source, base);
-  if (GetContrastRatio(source, base) >= contrast_ratio)
-    return 0;
-  target = GetResultingPaintColor(target, base);
-
-  constexpr int kCloseEnoughAlphaDelta = 0x04;
-  return FindBlendValueForContrastRatio(source, target, base, contrast_ratio,
-                                        kCloseEnoughAlphaDelta);
-}
-
-SkAlpha FindBlendValueForContrastRatio(SkColor source,
-                                       SkColor target,
-                                       SkColor base,
-                                       float contrast_ratio,
-                                       int alpha_error_tolerance) {
-  DCHECK_EQ(SkColorGetA(source), SK_AlphaOPAQUE);
-  DCHECK_EQ(SkColorGetA(target), SK_AlphaOPAQUE);
-  DCHECK_EQ(SkColorGetA(base), SK_AlphaOPAQUE);
-  DCHECK_GE(alpha_error_tolerance, 0);
-
-  const float base_luminance = GetRelativeLuminance(base);
-
+  SkAlpha best_alpha = SK_AlphaOPAQUE;
+  SkColor best_color = target_foreground;
   // Use int for inclusive lower bound and exclusive upper bound, reserving
   // conversion to SkAlpha for the end (reduces casts).
-  int low = SK_AlphaTRANSPARENT;
-  int high = SK_AlphaOPAQUE + 1;
-  SkAlpha best = SK_AlphaOPAQUE;
-  while (low + alpha_error_tolerance < high) {
+  for (int low = SK_AlphaTRANSPARENT, high = SK_AlphaOPAQUE + 1; low < high;) {
     const SkAlpha alpha = (low + high) / 2;
-    const SkColor blended = AlphaBlend(target, source, alpha);
-    const float luminance = GetRelativeLuminance(blended);
-    const float contrast = GetContrastRatio(luminance, base_luminance);
+    const SkColor color =
+        AlphaBlend(target_foreground, default_foreground, alpha);
+    const float luminance = GetRelativeLuminance(color);
+    const float contrast = GetContrastRatio(luminance, background_luminance);
     if (contrast >= contrast_ratio) {
-      best = alpha;
+      best_alpha = alpha;
+      best_color = color;
       high = alpha;
     } else {
       low = alpha + 1;
     }
   }
-  return best;
+  return {best_alpha, best_color};
 }
 
 SkColor InvertColor(SkColor color) {

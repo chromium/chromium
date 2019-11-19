@@ -6,8 +6,13 @@
 #define CHROME_BROWSER_EXTENSIONS_BROWSERTEST_UTIL_H_
 
 class Browser;
+class GURL;
 class Profile;
 struct WebApplicationInfo;
+
+namespace content {
+class WebContents;
+}
 
 namespace extensions {
 
@@ -30,6 +35,9 @@ Browser* LaunchAppBrowser(Profile* profile, const Extension* app);
 // Launches a new tab for |app| in |profile|.
 Browser* LaunchBrowserForAppInTab(Profile* profile,
                                   const Extension* extension_app);
+
+// Adds a tab to |browser| and returns the newly added WebContents.
+content::WebContents* AddTab(Browser* browser, const GURL& url);
 
 }  // namespace browsertest_util
 }  // namespace extensions

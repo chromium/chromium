@@ -262,8 +262,8 @@ bool RemoveChars(const std::string& input,
   return ReplaceCharsT(input, remove_chars, StringPiece(), output);
 }
 
-template<typename Str>
-TrimPositions TrimStringT(const Str& input,
+template <typename Str>
+TrimPositions TrimStringT(BasicStringPiece<Str> input,
                           BasicStringPiece<Str> trim_chars,
                           TrimPositions positions,
                           Str* output) {
@@ -271,40 +271,40 @@ TrimPositions TrimStringT(const Str& input,
   // a StringPiece version of input to be able to call find* on it with the
   // StringPiece version of trim_chars (normally the trim_chars will be a
   // constant so avoid making a copy).
-  BasicStringPiece<Str> input_piece(input);
   const size_t last_char = input.length() - 1;
-  const size_t first_good_char = (positions & TRIM_LEADING) ?
-      input_piece.find_first_not_of(trim_chars) : 0;
-  const size_t last_good_char = (positions & TRIM_TRAILING) ?
-      input_piece.find_last_not_of(trim_chars) : last_char;
+  const size_t first_good_char =
+      (positions & TRIM_LEADING) ? input.find_first_not_of(trim_chars) : 0;
+  const size_t last_good_char = (positions & TRIM_TRAILING)
+                                    ? input.find_last_not_of(trim_chars)
+                                    : last_char;
 
   // When the string was all trimmed, report that we stripped off characters
   // from whichever position the caller was interested in. For empty input, we
   // stripped no characters, but we still need to clear |output|.
-  if (input.empty() ||
-      (first_good_char == Str::npos) || (last_good_char == Str::npos)) {
+  if (input.empty() || first_good_char == Str::npos ||
+      last_good_char == Str::npos) {
     bool input_was_empty = input.empty();  // in case output == &input
     output->clear();
     return input_was_empty ? TRIM_NONE : positions;
   }
 
   // Trim.
-  *output =
-      input.substr(first_good_char, last_good_char - first_good_char + 1);
+  output->assign(input.data() + first_good_char,
+                 last_good_char - first_good_char + 1);
 
   // Return where we trimmed from.
   return static_cast<TrimPositions>(
-      ((first_good_char == 0) ? TRIM_NONE : TRIM_LEADING) |
-      ((last_good_char == last_char) ? TRIM_NONE : TRIM_TRAILING));
+      (first_good_char == 0 ? TRIM_NONE : TRIM_LEADING) |
+      (last_good_char == last_char ? TRIM_NONE : TRIM_TRAILING));
 }
 
-bool TrimString(const string16& input,
+bool TrimString(StringPiece16 input,
                 StringPiece16 trim_chars,
                 string16* output) {
   return TrimStringT(input, trim_chars, TRIM_ALL, output) != TRIM_NONE;
 }
 
-bool TrimString(const std::string& input,
+bool TrimString(StringPiece input,
                 StringPiece trim_chars,
                 std::string* output) {
   return TrimStringT(input, trim_chars, TRIM_ALL, output) != TRIM_NONE;
@@ -370,7 +370,7 @@ void TruncateUTF8ToByteSize(const std::string& input,
     output->clear();
 }
 
-TrimPositions TrimWhitespace(const string16& input,
+TrimPositions TrimWhitespace(StringPiece16 input,
                              TrimPositions positions,
                              string16* output) {
   return TrimStringT(input, StringPiece16(kWhitespaceUTF16), positions, output);
@@ -381,7 +381,7 @@ StringPiece16 TrimWhitespace(StringPiece16 input,
   return TrimStringPieceT(input, StringPiece16(kWhitespaceUTF16), positions);
 }
 
-TrimPositions TrimWhitespaceASCII(const std::string& input,
+TrimPositions TrimWhitespaceASCII(StringPiece input,
                                   TrimPositions positions,
                                   std::string* output) {
   return TrimStringT(input, StringPiece(kWhitespaceASCII), positions, output);
@@ -913,7 +913,7 @@ void ReplaceSubstringsAfterOffset(std::string* str,
 template <class string_type>
 inline typename string_type::value_type* WriteIntoT(string_type* str,
                                                     size_t length_with_null) {
-  DCHECK_GT(length_with_null, 1u);
+  DCHECK_GE(length_with_null, 1u);
   str->reserve(length_with_null);
   str->resize(length_with_null - 1);
   return &((*str)[0]);
@@ -1084,6 +1084,32 @@ string16 ReplaceStringPlaceholders(const string16& format_string,
     *offset = offsets[0];
   return result;
 }
+
+#if defined(OS_WIN) && defined(BASE_STRING16_IS_STD_U16STRING)
+
+TrimPositions TrimWhitespace(WStringPiece input,
+                             TrimPositions positions,
+                             std::wstring* output) {
+  return TrimStringT(input, WStringPiece(kWhitespaceWide), positions, output);
+}
+
+WStringPiece TrimWhitespace(WStringPiece input, TrimPositions positions) {
+  return TrimStringPieceT(input, WStringPiece(kWhitespaceWide), positions);
+}
+
+bool TrimString(WStringPiece input,
+                WStringPiece trim_chars,
+                std::wstring* output) {
+  return TrimStringT(input, trim_chars, TRIM_ALL, output) != TRIM_NONE;
+}
+
+WStringPiece TrimString(WStringPiece input,
+                        WStringPiece trim_chars,
+                        TrimPositions positions) {
+  return TrimStringPieceT(input, trim_chars, positions);
+}
+
+#endif
 
 // The following code is compatible with the OpenBSD lcpy interface.  See:
 //   http://www.gratisoft.us/todd/papers/strlcpy.html

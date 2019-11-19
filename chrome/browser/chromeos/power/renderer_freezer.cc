@@ -30,7 +30,7 @@ namespace chromeos {
 
 RendererFreezer::RendererFreezer(
     std::unique_ptr<RendererFreezer::Delegate> delegate)
-    : delegate_(std::move(delegate)), weak_factory_(this) {
+    : delegate_(std::move(delegate)) {
   delegate_->CheckCanFreezeRenderers(
       base::Bind(&RendererFreezer::OnCheckCanFreezeRenderersComplete,
                  weak_factory_.GetWeakPtr()));

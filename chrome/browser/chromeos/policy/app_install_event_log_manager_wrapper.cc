@@ -10,7 +10,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/chromeos/policy/user_policy_manager_factory_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -66,8 +65,7 @@ void AppInstallEventLogManagerWrapper::Init() {
 void AppInstallEventLogManagerWrapper::CreateManager() {
   log_manager_ = std::make_unique<AppInstallEventLogManager>(
       log_task_runner_.get(),
-      UserPolicyManagerFactoryChromeOS::GetCloudPolicyManagerForProfile(
-          profile_)
+      profile_->GetUserCloudPolicyManagerChromeOS()
           ->GetAppInstallEventLogUploader(),
       profile_);
 }

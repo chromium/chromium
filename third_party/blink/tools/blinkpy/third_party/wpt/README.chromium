@@ -80,7 +80,10 @@ the desired HEAD position. You can then call "./checkout.sh clone" which will
 pull in all the code.
 
 It is also important to update the hashes in the 'Version:' fields of
-tools/blinkpy/third_party/README.chromium.
+tools/blinkpy/third_party/README.chromium. While you're in this file, look at
+the "Local Modifications" section which lists ways in which Chromium has
+diverged from WPT. Make sure these modifications are persisted when reviewing
+the changes being made.
 
 You can examine what's pulled in and update WPTWhiteList if some new files are
 required to run the updated version.

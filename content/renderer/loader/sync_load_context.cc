@@ -11,12 +11,13 @@
 #include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
-#include "content/public/common/url_loader_throttle.h"
 #include "content/renderer/loader/navigation_response_override_parameters.h"
 #include "content/renderer/loader/sync_load_response.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/resource_response_info.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace content {
 
@@ -92,13 +93,12 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     std::unique_ptr<network::SharedURLLoaderFactoryInfo>
         url_loader_factory_info,
-    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
     SyncLoadResponse* response,
     base::WaitableEvent* redirect_or_response_event,
     base::WaitableEvent* abort_event,
     base::TimeDelta timeout,
-    blink::mojom::BlobRegistryPtrInfo download_to_blob_registry) {
-  bool download_to_blob = download_to_blob_registry.is_valid();
+    mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry) {
   auto* context = new SyncLoadContext(
       request.get(), std::move(url_loader_factory_info), response,
       redirect_or_response_event, abort_event, timeout,
@@ -106,7 +106,6 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
   context->request_id_ = context->resource_dispatcher_->StartAsync(
       std::move(request), routing_id, std::move(loading_task_runner),
       traffic_annotation, true /* is_sync */,
-      download_to_blob /* pass_response_pipe_to_peer */,
       base::WrapUnique(context), context->url_loader_factory_,
       std::move(throttles), nullptr /* navigation_response_override_params */);
 }
@@ -118,7 +117,7 @@ SyncLoadContext::SyncLoadContext(
     base::WaitableEvent* redirect_or_response_event,
     base::WaitableEvent* abort_event,
     base::TimeDelta timeout,
-    blink::mojom::BlobRegistryPtrInfo download_to_blob_registry,
+    mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : response_(response),
       body_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
@@ -148,10 +147,10 @@ void SyncLoadContext::OnUploadProgress(uint64_t position, uint64_t size) {}
 
 bool SyncLoadContext::OnReceivedRedirect(
     const net::RedirectInfo& redirect_info,
-    const network::ResourceResponseInfo& info) {
+    network::mojom::URLResponseHeadPtr head) {
   DCHECK(!Completed());
   response_->url = redirect_info.new_url;
-  response_->info = info;
+  response_->head = std::move(head);
   response_->redirect_info = redirect_info;
   response_->context_for_redirect = this;
   resource_dispatcher_->SetDefersLoading(request_id_, true);
@@ -179,9 +178,9 @@ void SyncLoadContext::CancelRedirect() {
 }
 
 void SyncLoadContext::OnReceivedResponse(
-    const network::ResourceResponseInfo& info) {
+    network::mojom::URLResponseHeadPtr head) {
   DCHECK(!Completed());
-  response_->info = info;
+  response_->head = std::move(head);
 }
 
 void SyncLoadContext::OnStartLoadingResponseBody(
@@ -193,9 +192,9 @@ void SyncLoadContext::OnStartLoadingResponseBody(
     blob_response_started_ = true;
 
     download_to_blob_registry_->RegisterFromStream(
-        response_->info.mime_type, "",
-        std::max<int64_t>(0, response_->info.content_length), std::move(body),
-        nullptr,
+        response_->head->mime_type, "",
+        std::max<int64_t>(0, response_->head->content_length), std::move(body),
+        mojo::NullAssociatedRemote(),
         base::BindOnce(&SyncLoadContext::OnFinishCreatingBlob,
                        base::Unretained(this)));
     return;
@@ -213,14 +212,6 @@ void SyncLoadContext::OnStartLoadingResponseBody(
   body_watcher_.ArmOrNotify();
 }
 
-void SyncLoadContext::OnReceivedData(std::unique_ptr<ReceivedData> data) {
-  if (mode_ == Mode::kInitial)
-    mode_ = Mode::kNonDataPipe;
-  DCHECK_EQ(Mode::kNonDataPipe, mode_);
-  DCHECK(!Completed());
-  response_->data.append(data->payload(), data->length());
-}
-
 void SyncLoadContext::OnTransferSizeUpdated(int transfer_size_diff) {}
 
 void SyncLoadContext::OnCompletedRequest(
@@ -234,8 +225,8 @@ void SyncLoadContext::OnCompletedRequest(
   response_->error_code = status.error_code;
   response_->extended_error_code = status.extended_error_code;
   response_->cors_error = status.cors_error_status;
-  response_->info.encoded_data_length = status.encoded_data_length;
-  response_->info.encoded_body_length = status.encoded_body_length;
+  response_->head->encoded_data_length = status.encoded_data_length;
+  response_->head->encoded_body_length = status.encoded_body_length;
   if ((blob_response_started_ && !blob_finished_) || body_handle_.is_valid()) {
     // The body is still begin downloaded as a Blob, or being read through the
     // handle. Wait until it's completed.

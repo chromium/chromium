@@ -1,14 +1,13 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div class="container">
     <ul id="future_parent" aria-owns="future_child"></ul>
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axFutureParent = accessibilityController.accessibleElementById("future_parent");
     assert_equals(axFutureParent.childrenCount, 0);
     var futureParent = document.getElementById("future_parent");
@@ -32,7 +31,8 @@ test_after_layout_and_paint(function(t) {
     assert_equals(axFutureParent.childrenCount, 1, "after setting aria-oens");
 
     child.style.visibility = 'hidden';
-    assert_equals(axFutureParent.childrenCount, 0, "after setting hidden");
+    assert_equals(axFutureParent.childrenCount, 1, "after setting hidden");
+    assert_true(axFutureParent.childAtIndex(0).isIgnored);
 
     child.style.visibility = 'visible';
     assert_equals(axFutureParent.childrenCount, 1, "after setting visible");
@@ -48,7 +48,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
   var source1 = document.getElementById("source1");
   var target = document.getElementById("target");
   var axSource1 = accessibilityController.accessibleElementById("source1");
@@ -73,7 +73,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t)
+test(function(t)
 {
     var axLogicalParent = accessibilityController.accessibleElementById("logical_parent");
 

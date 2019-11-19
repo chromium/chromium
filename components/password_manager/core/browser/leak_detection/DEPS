@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/signin/public",
+  "+third_party/private-join-and-compute/src",
+]

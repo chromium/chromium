@@ -32,6 +32,12 @@
 #include "base/win/windows_version.h"
 #endif
 
+#if defined(OS_FUCHSIA)
+#include <lib/zx/vmar.h>
+#include <zircon/types.h>
+#include "base/fuchsia/fuchsia_logging.h"
+#endif
+
 namespace base {
 namespace {
 
@@ -416,7 +422,17 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
     void* ptr = VirtualAlloc(address, length, MEM_RESET, PAGE_READWRITE);
     CHECK(ptr);
   }
-#endif
+#elif defined(OS_FUCHSIA)
+  // De-commit via our VMAR, rather than relying on the VMO handle, since the
+  // handle may have been closed after the memory was mapped into this process.
+  uint64_t address_int = reinterpret_cast<uint64_t>(
+      static_cast<char*>(shared_memory_mapping_.memory()) +
+      AlignToPageSize(sizeof(SharedState)));
+  zx_status_t status = zx::vmar::root_self()->op_range(
+      ZX_VMO_OP_DECOMMIT, address_int, AlignToPageSize(mapped_size_), nullptr,
+      0);
+  ZX_DCHECK(status == ZX_OK, status) << "zx_vmo_op_range(ZX_VMO_OP_DECOMMIT)";
+#endif  // defined(OS_FUCHSIA)
 
   last_known_usage_ = Time();
   return true;

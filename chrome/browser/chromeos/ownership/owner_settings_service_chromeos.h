@@ -13,14 +13,13 @@
 #include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/ownership/owner_settings_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 class Profile;
 
@@ -42,7 +41,7 @@ namespace chromeos {
 // TODO (ygorshenin@): move write path for device settings here
 // (crbug.com/230018).
 class OwnerSettingsServiceChromeOS : public ownership::OwnerSettingsService,
-                                     public content::NotificationObserver,
+                                     public ProfileManagerObserver,
                                      public SessionManagerClient::Observer,
                                      public DeviceSettingsService::Observer {
  public:
@@ -78,10 +77,8 @@ class OwnerSettingsServiceChromeOS : public ownership::OwnerSettingsService,
   bool CommitTentativeDeviceSettings(
       std::unique_ptr<enterprise_management::PolicyData> policy) override;
 
-  // NotificationObserver implementation:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
 
   // SessionManagerClient::Observer:
   void OwnerKeySet(bool success) override;
@@ -165,9 +162,6 @@ class OwnerSettingsServiceChromeOS : public ownership::OwnerSettingsService,
   // User ID this service instance belongs to.
   std::string user_id_;
 
-  // Whether profile still needs to be initialized.
-  bool waiting_for_profile_creation_ = true;
-
   // Whether TPM token still needs to be initialized.
   bool waiting_for_tpm_token_ = true;
 
@@ -185,11 +179,10 @@ class OwnerSettingsServiceChromeOS : public ownership::OwnerSettingsService,
   std::unique_ptr<enterprise_management::ChromeDeviceSettingsProto>
       tentative_settings_;
 
-  content::NotificationRegistrar registrar_;
+  base::WeakPtrFactory<OwnerSettingsServiceChromeOS> weak_factory_{this};
 
-  base::WeakPtrFactory<OwnerSettingsServiceChromeOS> weak_factory_;
-
-  base::WeakPtrFactory<OwnerSettingsServiceChromeOS> store_settings_factory_;
+  base::WeakPtrFactory<OwnerSettingsServiceChromeOS> store_settings_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(OwnerSettingsServiceChromeOS);
 };

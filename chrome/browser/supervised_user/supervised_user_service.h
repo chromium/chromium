@@ -20,7 +20,6 @@
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/net/file_downloader.h"
-#include "chrome/browser/supervised_user/experimental/safe_search_url_reporter.h"
 #include "chrome/browser/supervised_user/experimental/supervised_user_blacklist.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/browser/supervised_user/supervised_users.h"
@@ -31,6 +30,8 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "components/sync/model/sync_change.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/management_policy.h"
 #endif
@@ -47,10 +48,6 @@ class SupervisedUserWhitelistService;
 namespace base {
 class FilePath;
 class Version;
-}
-
-namespace extensions {
-class ExtensionRegistry;
 }
 
 namespace user_prefs {
@@ -109,28 +106,6 @@ class SupervisedUserService : public KeyedService,
   // Adds an access request for the given URL.
   void AddURLAccessRequest(const GURL& url, SuccessCallback callback);
 
-  // Reports |url| to the SafeSearch API, because the user thinks this is an
-  // inappropriate URL.
-  void ReportURL(const GURL& url, SuccessCallback callback);
-
-  // Adds an install request for the given WebStore item (App/Extension).
-  void AddExtensionInstallRequest(const std::string& extension_id,
-                                  const base::Version& version,
-                                  SuccessCallback callback);
-
-  // Same as above, but without a callback, just logging errors on failure.
-  void AddExtensionInstallRequest(const std::string& extension_id,
-                                  const base::Version& version);
-
-  // Adds an update request for the given WebStore item (App/Extension).
-  void AddExtensionUpdateRequest(const std::string& extension_id,
-                                 const base::Version& version,
-                                 SuccessCallback callback);
-
-  // Same as above, but without a callback, just logging errors on failure.
-  void AddExtensionUpdateRequest(const std::string& extension_id,
-                                 const base::Version& version);
-
   // Get the string used to identify an extension install or update request.
   // Public for testing.
   static std::string GetExtensionRequestId(const std::string& extension_id,
@@ -138,6 +113,9 @@ class SupervisedUserService : public KeyedService,
 
   // Returns the email address of the custodian.
   std::string GetCustodianEmailAddress() const;
+
+  // Returns the obfuscated GAIA id of the custodian.
+  std::string GetCustodianObfuscatedGaiaId() const;
 
   // Returns the name of the custodian, or the email address if the name is
   // empty.
@@ -147,13 +125,19 @@ class SupervisedUserService : public KeyedService,
   // if there is no second custodian.
   std::string GetSecondCustodianEmailAddress() const;
 
+  // Returns the obfuscated GAIA id of the second custodian or the empty
+  // string if there is no second custodian.
+  std::string GetSecondCustodianObfuscatedGaiaId() const;
+
   // Returns the name of the second custodian, or the email address if the name
-  // is empty, or the empty string is there is no second custodian.
+  // is empty, or the empty string if there is no second custodian.
   std::string GetSecondCustodianName() const;
 
   // Returns a message saying that extensions can only be modified by the
   // custodian.
   base::string16 GetExtensionsLockedMessage() const;
+
+  bool IsSupervisedUserIframeFilterEnabled() const;
 
 #if !defined(OS_ANDROID)
   // Initializes this profile for syncing, using the provided |refresh_token| to
@@ -167,14 +151,12 @@ class SupervisedUserService : public KeyedService,
   void AddPermissionRequestCreator(
       std::unique_ptr<PermissionRequestCreator> creator);
 
-  void SetSafeSearchURLReporter(
-      std::unique_ptr<SafeSearchURLReporter> reporter);
-
   // ProfileKeyedService override:
   void Shutdown() override;
 
   // SyncTypePreferenceProvider implementation:
-  syncer::ModelTypeSet GetForcedDataTypes() const override;
+  syncer::UserSelectableTypeSet GetForcedTypes() const override;
+  bool IsEncryptEverythingAllowed() const override;
 
 #if !defined(OS_ANDROID)
   // BrowserListObserver implementation:
@@ -183,6 +165,29 @@ class SupervisedUserService : public KeyedService,
 
   // SupervisedUserURLFilter::Observer implementation:
   void OnSiteListUpdated() override;
+
+#if !defined(OS_ANDROID)
+  bool signout_required_after_supervision_enabled() {
+    return signout_required_after_supervision_enabled_;
+  }
+  void set_signout_required_after_supervision_enabled() {
+    signout_required_after_supervision_enabled_ = true;
+  }
+#endif  // !defined(OS_ANDROID)
+
+  void SetPrimaryPermissionCreatorForTest(
+      std::unique_ptr<PermissionRequestCreator> permission_creator);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Updates the map of approved extensions.
+  // If |type| is SyncChangeType::ADD, then add custodian approval for enabling
+  // the extension by adding the approved version to the map of approved
+  // extensions. If |type| is SyncChangeType::DELETE, then remove the extension
+  // from the map of approved extensions.
+  void UpdateApprovedExtensions(const std::string& extension_id,
+                                const std::string& version,
+                                syncer::SyncChange::SyncChangeType type);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
  private:
   friend class SupervisedUserServiceExtensionTestBase;
@@ -214,8 +219,6 @@ class SupervisedUserService : public KeyedService,
                    base::string16* error) const override;
   bool UserMayModifySettings(const extensions::Extension* extension,
                              base::string16* error) const override;
-  bool MustRemainInstalled(const extensions::Extension* extension,
-                           base::string16* error) const override;
   bool MustRemainDisabled(const extensions::Extension* extension,
                           extensions::disable_reason::DisableReason* reason,
                           base::string16* error) const override;
@@ -227,7 +230,6 @@ class SupervisedUserService : public KeyedService,
 
   // An extension can be in one of the following states:
   //
-  // FORCED: if it is installed by the custodian.
   // REQUIRE_APPROVAL: if it is installed by the supervised user and
   //    hasn't been approved by the custodian yet.
   // ALLOWED: Components, Themes, Default extensions ..etc
@@ -235,7 +237,7 @@ class SupervisedUserService : public KeyedService,
   //    custodian are also allowed.
   // BLOCKED: if it is not ALLOWED or FORCED
   //    and supervised users initiated installs are disabled.
-  enum class ExtensionState { FORCED, BLOCKED, ALLOWED, REQUIRE_APPROVAL };
+  enum class ExtensionState { BLOCKED, ALLOWED, REQUIRE_APPROVAL };
 
   // Returns the state of an extension whether being FORCED, BLOCKED, ALLOWED or
   // REQUIRE_APPROVAL from the Supervised User service's point of view.
@@ -248,11 +250,7 @@ class SupervisedUserService : public KeyedService,
   // Enables/Disables extensions upon change in approved version of the
   // extension_id.
   void ChangeExtensionStateIfNecessary(const std::string& extension_id);
-
-  // Updates the map of approved extensions when the corresponding preference
-  // is changed.
-  void UpdateApprovedExtensions();
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   SupervisedUserSettingsService* GetSettingsService();
 
@@ -343,18 +341,19 @@ class SupervisedUserService : public KeyedService,
   // Used to create permission requests.
   std::vector<std::unique_ptr<PermissionRequestCreator>> permissions_creators_;
 
-  // Used to report inappropriate URLs to SafeSarch API.
-  std::unique_ptr<SafeSearchURLReporter> url_reporter_;
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
-      registry_observer_;
+      registry_observer_{this};
 #endif
 
   base::ObserverList<SupervisedUserServiceObserver>::Unchecked observer_list_;
 
-  base::WeakPtrFactory<SupervisedUserService> weak_ptr_factory_;
+#if !defined(OS_ANDROID)
+  bool signout_required_after_supervision_enabled_ = false;
+#endif
+
+  base::WeakPtrFactory<SupervisedUserService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserService);
 };

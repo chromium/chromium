@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.chrome.browser.tab.TabState.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
-import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -36,13 +36,13 @@ public class TabStateTest {
     private TestTabModelDirectory mTestTabModelDirectory;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mTestTabModelDirectory = new TestTabModelDirectory(
                 InstrumentationRegistry.getTargetContext(), "TabStateTest", null);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         TabState.setChannelNameOverrideForTest(null);
         mTestTabModelDirectory.tearDown();
     }
@@ -92,7 +92,7 @@ public class TabStateTest {
 
     @Test
     @SmallTest
-    public void testSaveLoadThroughBundle() throws Exception {
+    public void testSaveLoadThroughBundle() {
         TabState tabState = new TabState();
         byte[] bytes = {'A', 'B', 'C'};
         tabState.contentsState = new WebContentsState(ByteBuffer.allocateDirect(bytes.length));
@@ -101,7 +101,6 @@ public class TabStateTest {
         tabState.parentId = 2;
         tabState.openerAppId = "app";
         tabState.contentsState.setVersion(TabState.CONTENTS_STATE_CURRENT_VERSION);
-        tabState.shouldPreserve = true;
         tabState.themeColor = Color.BLACK;
         tabState.mIsIncognito = true;
 
@@ -116,7 +115,6 @@ public class TabStateTest {
         Assert.assertEquals(tabState.timestampMillis, restoredState.timestampMillis);
         Assert.assertEquals(
                 tabState.contentsState.version(), restoredState.contentsState.version());
-        Assert.assertEquals(tabState.shouldPreserve, restoredState.shouldPreserve);
         Assert.assertEquals(tabState.themeColor, restoredState.themeColor);
         Assert.assertEquals(tabState.mIsIncognito, restoredState.mIsIncognito);
     }

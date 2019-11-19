@@ -9,6 +9,16 @@
     return TestRunner.dumpSyntaxHighlight(str, 'text/javascript');
   }
 
+  dumpSyntaxHighlightJS('1_23.45_67');
+  dumpSyntaxHighlightJS('0xDEAD_c0de');
+  dumpSyntaxHighlightJS('0o123_456');
+  dumpSyntaxHighlightJS('0b1011_1101');
+  dumpSyntaxHighlightJS('123_456');
+  dumpSyntaxHighlightJS('.123_456e0_1');
+  dumpSyntaxHighlightJS('1E+12_34');
+  dumpSyntaxHighlightJS('123_456n');
+  dumpSyntaxHighlightJS('window._abc');
+  dumpSyntaxHighlightJS('window._for');
   dumpSyntaxHighlightJS('return\'foo\';');
   dumpSyntaxHighlightJS('/\\\//g');
   dumpSyntaxHighlightJS('//ig\';');

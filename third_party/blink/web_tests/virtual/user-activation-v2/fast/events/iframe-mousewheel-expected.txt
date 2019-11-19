@@ -1,9 +1,0 @@
-This test can be used to verify that a mousewheel event is fired when wheeling over the subframe but not dispatched to the parent frame.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS received mousewheel event.

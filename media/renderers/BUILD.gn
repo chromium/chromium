@@ -39,20 +39,25 @@ source_set("renderers") {
     "//cc/base",  # For MathUtil.
     "//cc/paint",
     "//components/viz/client",
+    "//components/viz/common",
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/common",
+    "//media:media_buildflags",
     "//media/audio",
     "//media/base",
     "//media/filters",
     "//media/video",
-    "//skia",
-    "//third_party/libaom:av1_buildflags",
+    "//third_party/libaom:libaom_buildflags",
     "//third_party/libyuv",
     "//ui/gfx:geometry_skia",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
     "//ui/gl",
   ]
+
+  if (is_fuchsia) {
+    deps += [ "//fuchsia/engine:switches" ]
+  }
 
   configs += [
     "//media:subcomponent_config",
@@ -87,5 +92,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/libyuv",
     "//ui/gfx",
+    "//ui/gl",
+    "//ui/gl:test_support",
   ]
 }

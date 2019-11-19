@@ -21,17 +21,11 @@ namespace infobars {
 class InfoBar;
 }  // namespace infobars
 
-namespace metrics {
-class TranslateEventProto;
-}  // namespace metrics
-
 namespace translate {
 
 class TranslateAcceptLanguages;
 class TranslateDriver;
 class TranslateInfoBarDelegate;
-
-struct LanguageDetectionDetails;
 
 // A client interface that needs to be supplied to TranslateManager by the
 // embedder.
@@ -53,16 +47,6 @@ class TranslateClient {
 
   // Returns the associated TranslateAcceptLanguages.
   virtual TranslateAcceptLanguages* GetTranslateAcceptLanguages() = 0;
-
-  // Record language detection event.
-  virtual void RecordLanguageDetectionEvent(
-      const LanguageDetectionDetails& details) const = 0;
-
-  // Record translate event.
-  // This is for user ID keyed event logging.
-  // This function will take metrics::TranslateEventProto and log the evnet that
-  // we care about.
-  virtual void RecordTranslateEvent(const metrics::TranslateEventProto&) = 0;
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
   // Returns a translate infobar that owns |delegate|.

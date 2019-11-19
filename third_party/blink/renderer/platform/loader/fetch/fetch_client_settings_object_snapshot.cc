@@ -18,7 +18,10 @@ FetchClientSettingsObjectSnapshot::FetchClientSettingsObjectSnapshot(
           fetch_client_setting_object.GetOutgoingReferrer(),
           fetch_client_setting_object.GetHttpsState(),
           fetch_client_setting_object.MimeTypeCheckForClassicWorkerScript(),
-          fetch_client_setting_object.GetAddressSpace()) {}
+          fetch_client_setting_object.GetAddressSpace(),
+          fetch_client_setting_object.GetInsecureRequestsPolicy(),
+          fetch_client_setting_object.GetUpgradeInsecureNavigationsSet(),
+          fetch_client_setting_object.GetMixedAutoUpgradeOptOut()) {}
 
 FetchClientSettingsObjectSnapshot::FetchClientSettingsObjectSnapshot(
     std::unique_ptr<CrossThreadFetchClientSettingsObjectData> data)
@@ -30,7 +33,10 @@ FetchClientSettingsObjectSnapshot::FetchClientSettingsObjectSnapshot(
           data->outgoing_referrer,
           data->https_state,
           data->mime_type_check_for_classic_worker_script,
-          data->address_space) {}
+          data->address_space,
+          data->insecure_requests_policy,
+          data->insecure_navigations_set,
+          data->mixed_autoupgrade_opt_out) {}
 
 FetchClientSettingsObjectSnapshot::FetchClientSettingsObjectSnapshot(
     const KURL& global_object_url,
@@ -40,7 +46,10 @@ FetchClientSettingsObjectSnapshot::FetchClientSettingsObjectSnapshot(
     const String& outgoing_referrer,
     HttpsState https_state,
     AllowedByNosniff::MimeTypeCheck mime_type_check_for_classic_worker_script,
-    base::Optional<mojom::IPAddressSpace> address_space)
+    network::mojom::IPAddressSpace address_space,
+    WebInsecureRequestPolicy insecure_requests_policy,
+    InsecureNavigationsSet insecure_navigations_set,
+    bool mixed_autoupgrade_opt_out)
     : global_object_url_(global_object_url),
       base_url_(base_url),
       security_origin_(std::move(security_origin)),
@@ -49,6 +58,9 @@ FetchClientSettingsObjectSnapshot::FetchClientSettingsObjectSnapshot(
       https_state_(https_state),
       mime_type_check_for_classic_worker_script_(
           mime_type_check_for_classic_worker_script),
-      address_space_(address_space) {}
+      address_space_(address_space),
+      insecure_requests_policy_(insecure_requests_policy),
+      insecure_navigations_set_(std::move(insecure_navigations_set)),
+      mixed_autoupgrade_opt_out_(mixed_autoupgrade_opt_out) {}
 
 }  // namespace blink

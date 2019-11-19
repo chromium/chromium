@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.verify;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -54,6 +55,8 @@ public class PropertyModelTest {
             new WritableObjectPropertyKey<>();
     public static WritableObjectPropertyKey<List<Integer>> OBJECT_PROPERTY_C =
             new WritableObjectPropertyKey<>();
+    public static WritableObjectPropertyKey<Object> OBJECT_PROPERTY_SKIP_EQUALITY =
+            new WritableObjectPropertyKey<>(true);
 
     @Test
     public void getAllSetProperties() {
@@ -215,5 +218,107 @@ public class PropertyModelTest {
     @Test(expected = IllegalArgumentException.class)
     public void preventsDuplicateKeys() {
         new PropertyModel(BOOLEAN_PROPERTY_A, BOOLEAN_PROPERTY_A);
+    }
+
+    @Test
+    public void testCompareValue_Boolean() {
+        PropertyModel model1 =
+                new PropertyModel(BOOLEAN_PROPERTY_A, BOOLEAN_PROPERTY_B, BOOLEAN_PROPERTY_C);
+        model1.set(BOOLEAN_PROPERTY_A, true);
+        model1.set(BOOLEAN_PROPERTY_B, true);
+        model1.set(BOOLEAN_PROPERTY_C, false);
+
+        PropertyModel model2 =
+                new PropertyModel(BOOLEAN_PROPERTY_A, BOOLEAN_PROPERTY_B, BOOLEAN_PROPERTY_C);
+        model2.set(BOOLEAN_PROPERTY_A, true);
+        model2.set(BOOLEAN_PROPERTY_B, false);
+
+        Assert.assertTrue("BOOLEAN_PROPERTY_A should be equal",
+                model1.compareValue(model2, BOOLEAN_PROPERTY_A));
+        Assert.assertFalse("BOOLEAN_PROPERTY_B should not be equal",
+                model1.compareValue(model2, BOOLEAN_PROPERTY_B));
+        Assert.assertFalse("BOOLEAN_PROPERTY_C should not be equal",
+                model1.compareValue(model2, BOOLEAN_PROPERTY_C));
+    }
+
+    @Test
+    public void testCompareValue_Integer() {
+        PropertyModel model1 = new PropertyModel(INT_PROPERTY_A, INT_PROPERTY_B, INT_PROPERTY_C);
+        model1.set(INT_PROPERTY_A, 1);
+        model1.set(INT_PROPERTY_B, 2);
+        model1.set(INT_PROPERTY_C, 3);
+
+        PropertyModel model2 = new PropertyModel(INT_PROPERTY_A, INT_PROPERTY_B, INT_PROPERTY_C);
+        model2.set(INT_PROPERTY_A, 1);
+        model2.set(INT_PROPERTY_B, 3);
+
+        Assert.assertTrue(
+                "INT_PROPERTY_A should be equal", model1.compareValue(model2, INT_PROPERTY_A));
+        Assert.assertFalse(
+                "INT_PROPERTY_B should not be equal", model1.compareValue(model2, INT_PROPERTY_B));
+        Assert.assertFalse(
+                "INT_PROPERTY_C should not be equal", model1.compareValue(model2, INT_PROPERTY_C));
+    }
+
+    @Test
+    public void testCompareValue_Float() {
+        PropertyModel model1 =
+                new PropertyModel(FLOAT_PROPERTY_A, FLOAT_PROPERTY_B, FLOAT_PROPERTY_C);
+        model1.set(FLOAT_PROPERTY_A, 1.2f);
+        model1.set(FLOAT_PROPERTY_B, 2.2f);
+        model1.set(FLOAT_PROPERTY_C, 3.2f);
+
+        PropertyModel model2 =
+                new PropertyModel(FLOAT_PROPERTY_A, FLOAT_PROPERTY_B, FLOAT_PROPERTY_C);
+        model2.set(FLOAT_PROPERTY_A, 1.2f);
+        model2.set(FLOAT_PROPERTY_B, 3.2f);
+
+        Assert.assertTrue(
+                "FLOAT_PROPERTY_A should be equal", model1.compareValue(model2, FLOAT_PROPERTY_A));
+        Assert.assertFalse("FLOAT_PROPERTY_B should not be equal",
+                model1.compareValue(model2, FLOAT_PROPERTY_B));
+        Assert.assertFalse("FLOAT_PROPERTY_C should not be equal",
+                model1.compareValue(model2, FLOAT_PROPERTY_C));
+    }
+
+    @Test
+    public void testCompareValue_Object() {
+        Object sharedObject = new Object();
+
+        PropertyModel model1 =
+                new PropertyModel(OBJECT_PROPERTY_A, OBJECT_PROPERTY_B, OBJECT_PROPERTY_C);
+        model1.set(OBJECT_PROPERTY_A, sharedObject);
+        model1.set(OBJECT_PROPERTY_B, "Test");
+        model1.set(OBJECT_PROPERTY_C, new ArrayList<>());
+
+        PropertyModel model2 =
+                new PropertyModel(OBJECT_PROPERTY_A, OBJECT_PROPERTY_B, OBJECT_PROPERTY_C);
+        model2.set(OBJECT_PROPERTY_A, sharedObject);
+        model2.set(OBJECT_PROPERTY_B, "Test");
+
+        Assert.assertTrue("OBJECT_PROPERTY_A should be equal",
+                model1.compareValue(model2, OBJECT_PROPERTY_A));
+        Assert.assertTrue("OBJECT_PROPERTY_B should be equal",
+                model1.compareValue(model2, OBJECT_PROPERTY_B));
+        Assert.assertFalse("OBJECT_PROPERTY_C should not be equal",
+                model1.compareValue(model2, OBJECT_PROPERTY_C));
+
+        model2.set(OBJECT_PROPERTY_B, "Test2");
+        Assert.assertFalse("OBJECT_PROPERTY_B should not be equal",
+                model1.compareValue(model2, OBJECT_PROPERTY_B));
+    }
+
+    @Test
+    public void testCompareValue_Object_SkipEquality() {
+        Object sharedObject = new Object();
+
+        PropertyModel model1 = new PropertyModel(OBJECT_PROPERTY_SKIP_EQUALITY);
+        model1.set(OBJECT_PROPERTY_SKIP_EQUALITY, sharedObject);
+
+        PropertyModel model2 = new PropertyModel(OBJECT_PROPERTY_SKIP_EQUALITY);
+        model2.set(OBJECT_PROPERTY_SKIP_EQUALITY, sharedObject);
+
+        Assert.assertFalse("OBJECT_PROPERTY_A should not be equal",
+                model1.compareValue(model2, OBJECT_PROPERTY_SKIP_EQUALITY));
     }
 }

@@ -135,6 +135,10 @@ std::unique_ptr<base::Value> ConvertRegistryValue(const base::Value& value,
     case base::Value::Type::BINARY:
       // No conversion possible.
       break;
+    // TODO(crbug.com/859477): Remove after root cause is found.
+    case base::Value::Type::DEAD:
+      CHECK(false);
+      return nullptr;
   }
 
   LOG(WARNING) << "Failed to convert " << value.type() << " to "

@@ -13,7 +13,8 @@
 #include "third_party/blink/renderer/platform/animation/compositor_target_property.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace cc {
 class KeyframeModel;
@@ -23,6 +24,7 @@ namespace blink {
 
 class CompositorAnimationCurve;
 class CompositorFloatAnimationCurve;
+class CompositorColorAnimationCurve;
 
 // A compositor driven animation.
 class PLATFORM_EXPORT CompositorKeyframeModel {
@@ -32,15 +34,14 @@ class PLATFORM_EXPORT CompositorKeyframeModel {
   using Direction = cc::KeyframeModel::Direction;
   using FillMode = cc::KeyframeModel::FillMode;
 
-  static std::unique_ptr<CompositorKeyframeModel> Create(
-      const blink::CompositorAnimationCurve& curve,
-      compositor_target_property::Type target,
-      int group_id,
-      int keyframe_model_id) {
-    return base::WrapUnique(new CompositorKeyframeModel(
-        curve, target, keyframe_model_id, group_id));
-  }
-
+  // The |custom_property_name| has a default value of an empty string,
+  // indicating that the animated property is a native property. When it is an
+  // animated custom property, it should be the property name.
+  CompositorKeyframeModel(const CompositorAnimationCurve&,
+                          compositor_target_property::Type,
+                          int keyframe_model_id,
+                          int group_id,
+                          const AtomicString& custom_property_name = "");
   ~CompositorKeyframeModel();
 
   // An id must be unique.
@@ -59,6 +60,7 @@ class PLATFORM_EXPORT CompositorKeyframeModel {
 
   double StartTime() const;
   void SetStartTime(double monotonic_time);
+  void SetStartTime(base::TimeTicks);
 
   double TimeOffset() const;
   void SetTimeOffset(double monotonic_time);
@@ -78,13 +80,13 @@ class PLATFORM_EXPORT CompositorKeyframeModel {
   std::unique_ptr<cc::KeyframeModel> ReleaseCcKeyframeModel();
 
   std::unique_ptr<CompositorFloatAnimationCurve> FloatCurveForTesting() const;
+  std::unique_ptr<CompositorColorAnimationCurve> ColorCurveForTesting() const;
+
+  const std::string& GetCustomPropertyNameForTesting() const {
+    return keyframe_model_->custom_property_name();
+  }
 
  private:
-  CompositorKeyframeModel(const CompositorAnimationCurve&,
-                          compositor_target_property::Type,
-                          int keyframe_model_id,
-                          int group_id);
-
   std::unique_ptr<cc::KeyframeModel> keyframe_model_;
 
   DISALLOW_COPY_AND_ASSIGN(CompositorKeyframeModel);

@@ -91,5 +91,9 @@
 ; Needed for VideoToolbox usage - https://crbug.com/767037
 (allow mach-lookup (global-name "com.apple.coremedia.videodecoder"))
 
+; Needed for 10.14.5+ - https://crbug.com/957217
+(if (defined? 'xpc-service-name)
+  (allow mach-lookup (xpc-service-name "com.apple.MTLCompilerService")))
+
 ; Needed for GPU process to fallback to SwiftShader - https://crbug.com/897914
 (allow file-read-data file-read-metadata (subpath (param bundle-version-path)))

@@ -4,18 +4,29 @@
 
 #include "media/audio/fake_audio_input_stream.h"
 
+#include <memory>
+#include <string>
+
 #include "base/atomicops.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_split.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/simple_sources.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
 
 namespace media {
@@ -33,15 +44,20 @@ AudioInputStream* FakeAudioInputStream::MakeFakeStream(
 FakeAudioInputStream::FakeAudioInputStream(AudioManagerBase* manager,
                                            const AudioParameters& params)
     : audio_manager_(manager),
-      callback_(NULL),
-      fake_audio_worker_(manager->GetWorkerTaskRunner(), params),
+      callback_(nullptr),
       params_(params),
-      audio_bus_(AudioBus::Create(params)) {
+      audio_bus_(AudioBus::Create(params)),
+      capture_thread_(
+          nullptr,
+          base::OnTaskRunnerDeleter(manager->GetWorkerTaskRunner())) {
   DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
 }
 
 FakeAudioInputStream::~FakeAudioInputStream() {
+  // |worker_| should be null as Stop() should have been called before.
+  DCHECK(!capture_thread_);
   DCHECK(!callback_);
+  DCHECK(!fake_audio_worker_);
 }
 
 bool FakeAudioInputStream::Open() {
@@ -51,17 +67,49 @@ bool FakeAudioInputStream::Open() {
   return true;
 }
 
-void FakeAudioInputStream::Start(AudioInputCallback* callback)  {
+void FakeAudioInputStream::Start(AudioInputCallback* callback) {
   DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
-  callback_ = callback;
-  fake_audio_worker_.Start(base::Bind(
+  DCHECK(!capture_thread_);
+  DCHECK(callback);
+  DCHECK(!fake_audio_worker_);
+
+  capture_thread_.reset(new base::Thread("FakeAudioInput"));
+  base::Thread::Options options;
+  // REALTIME_AUDIO priority is needed to avoid audio playout delays.
+  // See crbug.com/971265
+  options.priority = base::ThreadPriority::REALTIME_AUDIO;
+  CHECK(capture_thread_->StartWithOptions(options));
+
+  {
+    base::AutoLock lock(callback_lock_);
+    DCHECK(!callback_);
+    callback_ = callback;
+  }
+
+  fake_audio_worker_ = std::make_unique<FakeAudioWorker>(
+      capture_thread_->task_runner(), params_);
+  fake_audio_worker_->Start(base::BindRepeating(
       &FakeAudioInputStream::ReadAudioFromSource, base::Unretained(this)));
 }
 
 void FakeAudioInputStream::Stop() {
   DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
-  fake_audio_worker_.Stop();
-  callback_ = NULL;
+  // Start has not been called yet.
+  if (!capture_thread_) {
+    return;
+  }
+
+  {
+    base::AutoLock lock(callback_lock_);
+    DCHECK(callback_);
+    callback_ = nullptr;
+  }
+
+  DCHECK(fake_audio_worker_);
+  fake_audio_worker_->Stop();
+  fake_audio_worker_.reset();
+
+  capture_thread_.reset();
 }
 
 void FakeAudioInputStream::Close() {
@@ -102,21 +150,37 @@ void FakeAudioInputStream::SetOutputDeviceForAec(
   // Not supported. Do nothing.
 }
 
-void FakeAudioInputStream::ReadAudioFromSource() {
-  DCHECK(audio_manager_->GetWorkerTaskRunner()->BelongsToCurrentThread());
-  DCHECK(callback_);
+void FakeAudioInputStream::ReadAudioFromSource(base::TimeTicks ideal_time,
+                                               base::TimeTicks now) {
+  DCHECK(capture_thread_->task_runner()->BelongsToCurrentThread());
 
   if (!audio_source_)
     audio_source_ = ChooseSource();
 
-  audio_source_->OnMoreData(base::TimeDelta(), base::TimeTicks::Now(), 0,
-                            audio_bus_.get());
-  callback_->OnData(audio_bus_.get(), base::TimeTicks::Now(), 1.0);
+  // This OnMoreData()/OnData() timing would never happen in a real system:
+  //
+  //   1. Real AudioSources would never be asked to generate audio that should
+  //      already be playing-out exactly at this very moment; they are asked to
+  //      do so for audio to be played-out in the future.
+  //   2. Real AudioInputStreams could never provide audio that is striking a
+  //      microphone element exactly at this very moment; they provide audio
+  //      that happened in the recent past.
+  //
+  // However, it would be pointless to add a FIFO queue here to delay the signal
+  // in this "fake" implementation. So, just hack the timing and carry-on.
+  {
+    base::AutoLock lock(callback_lock_);
+    if (audio_bus_ && callback_) {
+      audio_source_->OnMoreData(base::TimeDelta(), ideal_time, 0,
+                                audio_bus_.get());
+      callback_->OnData(audio_bus_.get(), ideal_time, 1.0);
+    }
+  }
 }
 
 using AudioSourceCallback = AudioOutputStream::AudioSourceCallback;
 std::unique_ptr<AudioSourceCallback> FakeAudioInputStream::ChooseSource() {
-  DCHECK(audio_manager_->GetWorkerTaskRunner()->BelongsToCurrentThread());
+  DCHECK(capture_thread_->task_runner()->BelongsToCurrentThread());
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kUseFileForFakeAudioCapture)) {

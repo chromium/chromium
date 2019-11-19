@@ -25,10 +25,11 @@ cca.views.camera = cca.views.camera || {};
  */
 cca.views.camera.RecordTime = function() {
   /**
-   * @type {HTMLElement}
+   * @type {!HTMLElement}
    * @private
    */
-  this.recordTime_ = document.querySelector('#record-time');
+  this.recordTime_ =
+      /** @type {!HTMLElement} */ (document.querySelector('#record-time'));
 
   /**
    * Timeout to count every tick of elapsed recording time.

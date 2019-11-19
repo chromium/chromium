@@ -7,8 +7,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:targetApi="21"
-    android:width="@dimen/default_card_corner_radius"
-    android:height="@dimen/default_card_corner_radius"
+    android:width="@dimen/default_rounded_corner_radius"
+    android:height="@dimen/default_rounded_corner_radius"
     android:viewportWidth="10"
     android:viewportHeight="10">
     <path

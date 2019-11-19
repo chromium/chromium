@@ -1,0 +1,44 @@
+<template>
+  <style>
+    :host {
+      --navi-border-color: var(--google-grey-refresh-300);
+      --navi-check-icon-color: lightgrey;
+      --navi-keyboard-focus-color: rgba(var(--google-blue-600-rgb), .4);
+      --navi-option-box-shadow:
+          0 1px 2px 0 rgba(var(--google-grey-800-rgb), .3),
+          0 3px 6px 2px rgba(var(--google-grey-800-rgb), .15);
+      --navi-option-icon-shadow-color: var(--google-grey-refresh-100);
+      --navi-shape-blue-color: rgb(26, 115, 232);  /* #1A73E8 */
+      --navi-shape-green-color: rgb(49, 167, 83); /* #31A753 */
+      --navi-shape-grey-color: rgb(241, 243, 244); /* #F1F3F4 */
+      --navi-shape-red-color: rgb(233, 66, 53); /* #E94235 */
+      --navi-shape-yellow-dots-color: rgb(253, 214, 99); /* #FDD663 */
+      --navi-shape-yellow-semicircle-color: rgb(250, 207, 76); /* #FACF4C */
+      --navi-step-indicator-active-color:
+          rgba(var(--google-blue-600-rgb), .5);
+      --navi-step-indicator-color: var(--google-grey-200);
+      --navi-wallpaper-text-color: var(--google-grey-refresh-700);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :host {
+        --navi-border-color: var(--google-grey-refresh-700);
+        --navi-check-icon-color: var(--google-grey-refresh-700);
+        --navi-keyboard-focus-color:
+            rgba(var(--google-blue-refresh-300-rgb), .5);
+        --navi-option-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .3),
+                                  0 3px 6px 2px rgba(0, 0, 0, .15);
+        --navi-option-icon-shadow-color: var(--google-grey-refresh-700);
+        --navi-shape-blue-color: rgb(138, 180, 248); /* #8AB4F8 */
+        --navi-shape-green-color: rgb(129, 201, 149); /* #81C995 */
+        --navi-shape-grey-color: rgb(154, 160, 166); /* #9AA0A6 */
+        --navi-shape-red-color: rgb(238, 103, 92); /* #EE675C */
+        /* --navi-shape-yellow-dots-color is same color in dark mode */
+        --navi-shape-yellow-semicircle-color: rgb(253, 214, 99); /* #FDD663 */
+        --navi-step-indicator-active-color: var(--google-blue-refresh-300);
+        --navi-step-indicator-color: var(--google-grey-refresh-500);
+        --navi-wallpaper-text-color: var(--google-grey-200);
+      }
+    }
+  </style>
+</template>

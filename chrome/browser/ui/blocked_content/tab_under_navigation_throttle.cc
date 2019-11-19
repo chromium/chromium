@@ -33,12 +33,12 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/common/console_message_level.h"
 #include "extensions/common/constants.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
@@ -50,16 +50,9 @@
 
 namespace {
 
-void LogAction(TabUnderNavigationThrottle::Action action, bool off_the_record) {
+void LogAction(TabUnderNavigationThrottle::Action action) {
   UMA_HISTOGRAM_ENUMERATION("Tab.TabUnderAction", action,
                             TabUnderNavigationThrottle::Action::kCount);
-  if (off_the_record) {
-    UMA_HISTOGRAM_ENUMERATION("Tab.TabUnderAction.OTR", action,
-                              TabUnderNavigationThrottle::Action::kCount);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("Tab.TabUnderAction.NonOTR", action,
-                              TabUnderNavigationThrottle::Action::kCount);
-  }
 }
 
 #if defined(OS_ANDROID)
@@ -76,24 +69,19 @@ TabUnderNavigationThrottle::Action GetActionForOutcome(
   NOTREACHED();
 }
 
-void LogOutcome(bool off_the_record, InterventionOutcome outcome) {
-  LogAction(GetActionForOutcome(outcome), off_the_record);
+void LogOutcome(InterventionOutcome outcome) {
+  LogAction(GetActionForOutcome(outcome));
 }
 #else
-void OnListItemClicked(bool off_the_record,
-                       const GURL& url,
-                       size_t index,
-                       size_t total_size) {
-  LogAction(TabUnderNavigationThrottle::Action::kClickedThrough,
-            off_the_record);
+void OnListItemClicked(const GURL& url, size_t index, size_t total_size) {
+  LogAction(TabUnderNavigationThrottle::Action::kClickedThrough);
   UMA_HISTOGRAM_ENUMERATION("Tab.TabUnder.ClickThroughPosition",
                             GetListItemPositionFromDistance(index, total_size));
 }
 #endif
 
-void LogTabUnderAttempt(content::NavigationHandle* handle,
-                        bool off_the_record) {
-  LogAction(TabUnderNavigationThrottle::Action::kDidTabUnder, off_the_record);
+void LogTabUnderAttempt(content::NavigationHandle* handle) {
+  LogAction(TabUnderNavigationThrottle::Action::kDidTabUnder);
 
   // The source id should generally be set, except for very rare circumstances
   // where the popup opener tab helper is not observing at the time the
@@ -126,8 +114,6 @@ TabUnderNavigationThrottle::~TabUnderNavigationThrottle() = default;
 TabUnderNavigationThrottle::TabUnderNavigationThrottle(
     content::NavigationHandle* handle)
     : content::NavigationThrottle(handle),
-      off_the_record_(
-          handle->GetWebContents()->GetBrowserContext()->IsOffTheRecord()),
       block_(base::FeatureList::IsEnabled(kBlockTabUnders)),
       has_opened_popup_since_last_user_gesture_at_start_(
           HasOpenedPopupSinceLastUserGesture()),
@@ -185,15 +171,15 @@ TabUnderNavigationThrottle::MaybeBlockNavigation() {
   DCHECK(popup_opener);
   popup_opener->OnDidTabUnder();
 
-  LogTabUnderAttempt(navigation_handle(), off_the_record_);
+  LogTabUnderAttempt(navigation_handle());
 
   if (block_ && !TabUndersAllowedBySettings()) {
     const std::string error =
         base::StringPrintf(kBlockTabUnderFormatMessage,
                            navigation_handle()->GetURL().spec().c_str());
     contents->GetMainFrame()->AddMessageToConsole(
-        content::CONSOLE_MESSAGE_LEVEL_ERROR, error.c_str());
-    LogAction(Action::kBlocked, off_the_record_);
+        blink::mojom::ConsoleMessageLevel::kError, error.c_str());
+    LogAction(Action::kBlocked);
     ShowUI();
     return content::NavigationThrottle::CANCEL;
   }
@@ -203,17 +189,14 @@ TabUnderNavigationThrottle::MaybeBlockNavigation() {
 void TabUnderNavigationThrottle::ShowUI() {
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
   const GURL& url = navigation_handle()->GetURL();
-  bool off_the_record = web_contents->GetBrowserContext()->IsOffTheRecord();
 #if defined(OS_ANDROID)
   FramebustBlockInfoBar::Show(
-      web_contents,
-      std::make_unique<FramebustBlockMessageDelegate>(
-          web_contents, url, base::BindOnce(&LogOutcome, off_the_record)));
+      web_contents, std::make_unique<FramebustBlockMessageDelegate>(
+                        web_contents, url, base::BindOnce(&LogOutcome)));
 #else
   if (auto* tab_helper =
           FramebustBlockTabHelper::FromWebContents(web_contents)) {
-    tab_helper->AddBlockedUrl(
-        url, base::BindOnce(&OnListItemClicked, off_the_record));
+    tab_helper->AddBlockedUrl(url, base::BindOnce(&OnListItemClicked));
   }
 #endif
 }
@@ -232,14 +215,14 @@ bool TabUnderNavigationThrottle::TabUndersAllowedBySettings() const {
           Profile::FromBrowserContext(contents->GetBrowserContext()));
   DCHECK(settings_map);
   return settings_map->GetContentSetting(contents->GetLastCommittedURL(),
-                                         GURL(), CONTENT_SETTINGS_TYPE_POPUPS,
+                                         GURL(), ContentSettingsType::POPUPS,
                                          std::string()) ==
          CONTENT_SETTING_ALLOW;
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 TabUnderNavigationThrottle::WillStartRequest() {
-  LogAction(Action::kStarted, off_the_record_);
+  LogAction(Action::kStarted);
   return MaybeBlockNavigation();
 }
 

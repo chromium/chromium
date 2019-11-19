@@ -5,15 +5,17 @@
 module content.mojom;
 
 import "services/service_manager/public/mojom/interface_provider.mojom";
-import "third_party/blink/public/mojom/frame/document_interface_broker.mojom";
+import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 
 struct DocumentScopedInterfaceBundle {
   // The InterfaceProvider through which the main RenderFrame can access
   // services exposed by its RenderFrameHost.
   service_manager.mojom.InterfaceProvider interface_provider;
 
-  // The DocumentInterfaceBroker through which the RenderFrame can access
-  // interfaces exposed by its RenderFrameHost
-  blink.mojom.DocumentInterfaceBroker document_interface_broker_content;
-  blink.mojom.DocumentInterfaceBroker document_interface_broker_blink;
+  // The BrowserInterfaceBroker through which the RenderFrame can access
+  // interfaces exposed by its RenderFrameHost.
+  // It will eventually replace interface_provider above and become the
+  // only way to get document-scoped interfaces from the browser
+  // (see crbug.com/985120).
+  pending_remote<blink.mojom.BrowserInterfaceBroker> browser_interface_broker;
 };

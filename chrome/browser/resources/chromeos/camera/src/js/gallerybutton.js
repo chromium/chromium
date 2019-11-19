@@ -79,6 +79,11 @@ cca.GalleryButton.prototype.openGallery_ = function(picture) {
     const id = 'nlkncpkkdoccmpiclbokaimcnedabhhm|app|open';
     const entry = picture.pictureEntry;
     chrome.fileManagerPrivate.executeTask(id, [entry], (result) => {
+      if (chrome.runtime.lastError) {
+        console.warn(
+            'Unable to open picture: ' + chrome.runtime.lastError.message);
+        return;
+      }
       if (result != 'opened' && result != 'message_sent') {
         console.warn('Unable to open picture: ' + result);
       }

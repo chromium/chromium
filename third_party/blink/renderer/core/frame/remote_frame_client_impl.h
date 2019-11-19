@@ -16,8 +16,6 @@ class WebRemoteFrameImpl;
 
 class RemoteFrameClientImpl final : public RemoteFrameClient {
  public:
-  static RemoteFrameClientImpl* Create(WebRemoteFrameImpl*);
-
   explicit RemoteFrameClientImpl(WebRemoteFrameImpl*);
 
   void Trace(blink::Visitor*) override;
@@ -31,7 +29,6 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
   Frame* Top() const override;
   Frame* NextSibling() const override;
   Frame* FirstChild() const override;
-  void FrameFocused() const override;
   base::UnguessableToken GetDevToolsFrameToken() const override;
 
   // RemoteFrameClient overrides:
@@ -39,20 +36,19 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
                 bool should_replace_current_entry,
                 bool is_opener_navigation,
                 bool prevent_sandboxed_download,
-                mojom::blink::BlobURLTokenPtr) override;
+                bool initiator_frame_is_ad,
+                mojo::PendingRemote<mojom::blink::BlobURLToken>) override;
   unsigned BackForwardLength() override;
   void CheckCompleted() override;
   void ForwardPostMessage(MessageEvent*,
                           scoped_refptr<const SecurityOrigin> target,
-                          LocalFrame* source,
-                          bool has_user_gesture) const override;
+                          LocalFrame* source) const override;
   void FrameRectsChanged(const IntRect& local_frame_rect,
                          const IntRect& screen_space_rect) override;
-  void UpdateRemoteViewportIntersection(const IntRect&, bool) override;
+  void UpdateRemoteViewportIntersection(
+      const ViewportIntersectionState& intersection_state) override;
   void AdvanceFocus(WebFocusType, LocalFrame*) override;
-  void VisibilityChanged(blink::mojom::FrameVisibility) override;
   void SetIsInert(bool) override;
-  void SetInheritedEffectiveTouchAction(TouchAction) override;
   void UpdateRenderThrottlingStatus(bool is_throttled,
                                     bool subtree_throttled) override;
   uint32_t Print(const IntRect&, cc::PaintCanvas*) const override;

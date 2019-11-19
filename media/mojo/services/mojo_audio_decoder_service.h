@@ -12,8 +12,10 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/audio_decoder.h"
-#include "media/mojo/interfaces/audio_decoder.mojom.h"
+#include "media/mojo/mojom/audio_decoder.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace media {
 
@@ -29,7 +31,8 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService : public mojom::AudioDecoder {
   ~MojoAudioDecoderService() final;
 
   // mojom::AudioDecoder implementation
-  void Construct(mojom::AudioDecoderClientAssociatedPtrInfo client) final;
+  void Construct(
+      mojo::PendingAssociatedRemote<mojom::AudioDecoderClient> client) final;
   void Initialize(const AudioDecoderConfig& config,
                   int32_t cdm_id,
                   InitializeCallback callback) final;
@@ -57,7 +60,7 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService : public mojom::AudioDecoder {
   void OnResetDone(ResetCallback callback);
 
   // Called by |decoder_| for each decoded buffer.
-  void OnAudioBufferReady(const scoped_refptr<AudioBuffer>& audio_buffer);
+  void OnAudioBufferReady(scoped_refptr<AudioBuffer> audio_buffer);
 
   // Called by |decoder_| when it's waiting because of |reason|, e.g. waiting
   // for decryption key.
@@ -69,7 +72,7 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService : public mojom::AudioDecoder {
   MojoCdmServiceContext* const mojo_cdm_service_context_ = nullptr;
 
   // The destination for the decoded buffers.
-  mojom::AudioDecoderClientAssociatedPtr client_;
+  mojo::AssociatedRemote<mojom::AudioDecoderClient> client_;
 
   // Holds the CdmContextRef to keep the CdmContext alive for the lifetime of
   // the |decoder_|.
@@ -82,7 +85,7 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService : public mojom::AudioDecoder {
   std::unique_ptr<media::AudioDecoder> decoder_;
 
   base::WeakPtr<MojoAudioDecoderService> weak_this_;
-  base::WeakPtrFactory<MojoAudioDecoderService> weak_factory_;
+  base::WeakPtrFactory<MojoAudioDecoderService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MojoAudioDecoderService);
 };

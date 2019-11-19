@@ -62,7 +62,7 @@ class MEDIA_MOJO_EXPORT MojoCdmAllocator : public CdmAllocator {
   base::ThreadChecker thread_checker_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<MojoCdmAllocator> weak_ptr_factory_;
+  base::WeakPtrFactory<MojoCdmAllocator> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MojoCdmAllocator);
 };

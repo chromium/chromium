@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
@@ -32,7 +33,8 @@ class ASH_EXPORT ResolutionNotificationController
   ResolutionNotificationController();
   ~ResolutionNotificationController() override;
 
-  // If |display_id| is not the internal display, Prepare a resolution change
+  // If |display_id| is not the internal display and |source| is |kSourceUser|
+  // (which means user initiated the change), Prepare a resolution change
   // notification for |display_id| from |old_resolution| to |new_resolution|,
   // which offers a button to revert the change in case something goes wrong.
   // The notification times out if there's only one display connected and the
@@ -44,9 +46,10 @@ class ASH_EXPORT ResolutionNotificationController
   // In case SetDisplayMode() fails, the prepared notification will be
   // discarded.
   //
-  // If |display_id| is the internal display, the resolution change is applied
-  // directly without preparing the confirm/revert notification (this kind of
-  // notification is only useful for external displays).
+  // If |display_id| is the internal display or |source| is |kSourcePolicy|, the
+  // resolution change is applied directly without preparing the confirm/revert
+  // notification (this kind of notification is only useful for external
+  // displays).
   //
   // This method does not create a notification itself. The notification will be
   // created the next OnDisplayConfigurationChanged(), which will be called
@@ -59,6 +62,7 @@ class ASH_EXPORT ResolutionNotificationController
       int64_t display_id,
       const display::ManagedDisplayMode& old_resolution,
       const display::ManagedDisplayMode& new_resolution,
+      ash::mojom::DisplayConfigSource source,
       base::OnceClosure accept_callback) WARN_UNUSED_RESULT;
 
   // Returns true if the notification is visible or scheduled to be visible and
@@ -107,7 +111,7 @@ class ASH_EXPORT ResolutionNotificationController
 
   std::unique_ptr<ResolutionChangeInfo> change_info_;
 
-  base::WeakPtrFactory<ResolutionNotificationController> weak_factory_;
+  base::WeakPtrFactory<ResolutionNotificationController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ResolutionNotificationController);
 };

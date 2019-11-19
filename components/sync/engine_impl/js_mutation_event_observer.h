@@ -61,7 +61,7 @@ class JsMutationEventObserver : public SyncManager::ChangeObserver,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<JsMutationEventObserver> weak_ptr_factory_;
+  base::WeakPtrFactory<JsMutationEventObserver> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(JsMutationEventObserver);
 };

@@ -1,4 +1,16 @@
 <!doctype html>
+<title>Fetching</title>
 <script>
-p = fetch('/beacon', {keepalive: true});
+const params = new URL(location.href).searchParams;
+const numRequests = params.has('requests') ? Number(params.get('requests')) : 1;
+const promises = [];
+for (let i = 0; i < numRequests; i += 1) {
+    promises.push(fetch('/beacon', {keepalive: true, cache: 'no-store'}));
+}
+document.title = 'Waiting';
+Promise.all(promises).then(() => {
+    document.title = 'Resolved';
+}, () => {
+    document.title = 'Rejected';
+});
 </script>

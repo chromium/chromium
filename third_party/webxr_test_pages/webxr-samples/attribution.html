@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='chrome=1'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+
+    <meta name='twitter:card' content='summary'>
+    <meta name='twitter:title' content='WebXR Samples'>
+    <meta name='twitter:description' content='Sample WebXR pages for testing and reference'>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+
+    <link rel='stylesheet' href='css/stylesheet.css'>
+    <link rel='stylesheet' href='css/pygment_trac.css'>
+
+    <style>
+      article {
+        position: relative;
+        padding: 0.5em;
+        background-color: rgba(255, 255, 255, 0.90);
+        margin-bottom: 1em;
+        border-radius: 3px;
+      }
+
+      article h3 {
+        font-size: 1.0em;
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+
+      article h3::before {
+        display: inline-block;
+        content: attr(data-index) ' - ';
+        font-weight: bold;
+        white-space: nowrap;
+        margin-right: 0.2em;
+      }
+
+      article h4 {
+        position: absolute;
+        right: 0.5em;
+        top: 0.5em;
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+
+      article p {
+        margin: 0.5em;
+      }
+
+      article .links {
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+      }
+
+      article a {
+        display: inline-block;
+      }
+
+      article a:not(:first-child)::before {
+        display: inline-block;
+        content: '•';
+        font-weight: bold;
+        white-space: nowrap;
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+      }
+
+      .github-link {
+        font-size: 0.8em;
+      }
+    </style>
+
+    <!--[if lt IE 9]>
+    <script src='https://html5shiv.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <title>Models Attribution</title>
+  </head>
+  <body>
+    <p>
+      <b>Camp</b><br>
+      All models used in this scene are licensed under [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/legalcode).<br>
+"Campground" scene by Brandon Jones.<br>
+"[Lowpoly Squirrel](https://poly.google.com/view/eGdXC-5V2wM)" model by Tipatat Chennavasin.<br>
+"[Fox](https://poly.google.com/view/1DsQKS4G-aj)" model by Jake Blakeley.<br>
+"[Tent](https://poly.google.com/view/2tvQrMLf_tP)" model by Jarlan Perez.<br>
+"[Pine Tree](https://poly.google.com/view/2Qo-fmVKuSG)" and "[Pastel Plume Flowers](https://poly.google.com/view/eLVv17bTyB-)" models by Danny Bittman.<br>
+    </p>
+    <p>
+      <b>Cave</b><br>
+      All models used in this scene are licensed under [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/legalcode).<br>
+"Cave" scene by Brandon Jones.<br>
+"[Mushroom](https://poly.google.com/view/2DAaKHD48ZP)" and "[Bat](https://poly.google.com/view/fzJn9xTT-UO)" models by Poly by Google.<br>
+"[Crystal Cluster](https://poly.google.com/view/6NY2BPvOISW)" model by Lee Mason.<br>
+"[Tree-2](https://poly.google.com/view/cRipmFHCEVU)" model by Trackball.<br>
+    </p>
+    <p>
+      <b>Controller</b><br>
+      "[controller](https://poly.google.com/view/cdts4fBVXe7)" model by Jack Brookes is licensed under [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/legalcode).<br>
+      Minor edits by Brandon Jones.<br>
+    </p>
+    <p>
+      <b>Cube Room</b><br>
+      "[Cube Room](https://poly.google.com/view/1fahMeqZOw_)" model by Naomi Chen is licensed under [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/legalcode).<br>
+    </p>
+    <p>
+      <b>Garage</b><br>
+All models used in this scene are licensed under [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/legalcode).<br>
+"Garage" scene by Brandon Jones.<br>
+"[Light Switch](https://poly.google.com/view/7yVvvpp-ftQ)", "[CRT Monitor](https://poly.google.com/view/8jVB0zIXKCv)", "[Fire Extinguisher](https://poly.google.com/view/71rR7PaeXNN)", "[Wooden Stool](https://poly.google.com/view/dn419U6vWYx)", "[Cork Board](https://poly.google.com/view/5Ql0Sdq6fmy)", "[Industrial Broom](https://poly.google.com/view/eH6PcHmWOdK)", "[Wall Shelf](https://poly.google.com/view/7544dJq1UVu)", and "[HTC Vive Headset](https://poly.google.com/view/bFZbl-mmCeD)" models by Jarlan Perez.<br>
+"[Red Cooler](https://poly.google.com/view/f7q6m6IL8UI)" model by S. Paul Michael.<br>
+"[Ladder](https://poly.google.com/view/32UszyQQLtJ)" model by Carwyn Pelley.<br>
+"[Window](https://poly.google.com/view/dwBpM-aSA_t)" model by Justin Randall.<br>
+"[SNES](https://poly.google.com/view/7yVvvpp-ftQ)" model by Gabriel Valdivia.<br>
+    </p>
+    <p>
+      <b>Headset</b><br>
+      "[VR Headset](https://poly.google.com/view/bvd33G7Q66m)" model by Poly by Google is licensed under [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/legalcode).<br>
+    </p>
+    <p>
+      <b>Home Theater</b><br>
+All models used in this scene are licensed under [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/legalcode).<br>
+"[Home Theater](https://poly.google.com/view/6wJboiESaWR)" scene by Brandon Jones.<br>
+"[Projector](https://poly.google.com/view/4oVHZbDvwV8)" and "[Window](https://poly.google.com/view/9FqbXmzB-CS)" models by Jonathan Granskog.<br>
+"[Woonkamerkast](https://poly.google.com/view/70n22Lhssat)" model by Vincent van de Goolberg.<br>
+"[Nice Door](https://poly.google.com/view/00xFHE4LR_6)" model by Wesley Thompson.<br>
+    </p>
+    <p>
+      <b>Space</b><br>
+      "[Solar System](https://poly.google.com/view/8hnnpNiQMmy)" model by Jarlan Perez is licensed under [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/legalcode).<br>
+    </p>
+    <p>
+      <b>Stereo</b><br>
+      "[Stereo](https://poly.google.com/view/5gXgHgP-dmh)" model by Poly by Google is licensed under [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/legalcode).<br>
+    </p>
+    <p>
+      <b>Sunflower</b><br>
+      All models used in this application are licensed under [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/legalcode).<br>
+      "[Sunflower](https://poly.google.com/view/ce4GXw3VYE5)" by Poly by Google.<br>
+    </p>
+    <p>
+      <b>Textures</b><br>
+      "[Le panorama de la Voie Lactée](http://www.eso.org/public/images/eso0932a/)" image by European Southern Observatory is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode).<br>
+    </p>
+    <p>
+      <b>Video</b><br>
+      "[Big Buck Bunny](https://peach.blender.org/about/)" by the [Blender Foundation](www.blender.org) is licensed under [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/legalcode).<br>
+    </p>
+  </body>
+</html>

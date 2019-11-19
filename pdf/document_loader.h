@@ -37,8 +37,6 @@ class DocumentLoader {
     virtual void OnDocumentComplete() = 0;
     // Notification called when document loading is canceled.
     virtual void OnDocumentCanceled() = 0;
-    // Called when initial loader was closed.
-    virtual void CancelBrowserDownload() = 0;
   };
 
   virtual ~DocumentLoader() = default;

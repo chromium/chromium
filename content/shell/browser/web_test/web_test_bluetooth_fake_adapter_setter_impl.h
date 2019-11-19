@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "content/shell/common/web_test/web_test_bluetooth_fake_adapter_setter.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
@@ -16,7 +17,8 @@ class WebTestBluetoothFakeAdapterSetterImpl
   WebTestBluetoothFakeAdapterSetterImpl();
   ~WebTestBluetoothFakeAdapterSetterImpl() override;
 
-  static void Create(mojom::WebTestBluetoothFakeAdapterSetterRequest request);
+  static void Create(
+      mojo::PendingReceiver<mojom::WebTestBluetoothFakeAdapterSetter> receiver);
 
  private:
   void Set(const std::string& adapter_name, SetCallback callback) override;

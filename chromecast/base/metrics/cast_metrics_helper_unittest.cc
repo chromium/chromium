@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/json/json_reader.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,26 +70,27 @@ class MockMetricsSink : public CastMetricsHelper::MetricsSink {
 class CastMetricsHelperTest : public ::testing::Test {
  public:
   CastMetricsHelperTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME),
-        metrics_helper_(scoped_task_environment_.GetMainThreadTaskRunner(),
-                        scoped_task_environment_.GetMockTickClock()) {
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        metrics_helper_(task_environment_.GetMainThreadTaskRunner(),
+                        task_environment_.GetMockTickClock()) {
     metrics_helper_.SetMetricsSink(&metrics_sink_);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   MockMetricsSink metrics_sink_;
   CastMetricsHelper metrics_helper_;
 };
 
 TEST_F(CastMetricsHelperTest, RecordEventWithValue) {
-  const base::TimeDelta time = base::TimeDelta::FromSeconds(5);
-  scoped_task_environment_.FastForwardBy(time);
+  const auto expected_time = task_environment_.NowTicks();
 
-  EXPECT_CALL(metrics_sink_,
-              OnAction(AllOf(HasString("name", kEvent),
-                             HasDouble("time", time.InMicroseconds()),
-                             HasInt("value", kValue))));
+  EXPECT_CALL(
+      metrics_sink_,
+      OnAction(
+          AllOf(HasString("name", kEvent),
+                HasDouble("time",
+                          (expected_time - base::TimeTicks()).InMicroseconds()),
+                HasInt("value", kValue))));
   metrics_helper_.RecordApplicationEventWithValue(kEvent, kValue);
 }
 
@@ -98,13 +99,14 @@ TEST_F(CastMetricsHelperTest, RecordApplicationEvent) {
   metrics_helper_.DidCompleteLoad(kAppId1, kSessionId1);
   metrics_helper_.UpdateSDKInfo(kSdkVersion);
 
-  const base::TimeDelta time = base::TimeDelta::FromSeconds(5);
-  scoped_task_environment_.FastForwardBy(time);
+  const auto expected_time = task_environment_.NowTicks();
 
   EXPECT_CALL(
       metrics_sink_,
       OnAction(AllOf(
-          HasString("name", kEvent), HasDouble("time", time.InMicroseconds()),
+          HasString("name", kEvent),
+          HasDouble("time",
+                    (expected_time - base::TimeTicks()).InMicroseconds()),
           HasString("app_id", kAppId1), HasString("session_id", kSessionId1),
           HasString("sdk_version", kSdkVersion))));
   metrics_helper_.RecordApplicationEvent(kEvent);
@@ -115,13 +117,14 @@ TEST_F(CastMetricsHelperTest, RecordApplicationEventWithValue) {
   metrics_helper_.DidCompleteLoad(kAppId1, kSessionId1);
   metrics_helper_.UpdateSDKInfo(kSdkVersion);
 
-  const base::TimeDelta time = base::TimeDelta::FromSeconds(5);
-  scoped_task_environment_.FastForwardBy(time);
+  const auto expected_time = task_environment_.NowTicks();
 
   EXPECT_CALL(
       metrics_sink_,
       OnAction(AllOf(
-          HasString("name", kEvent), HasDouble("time", time.InMicroseconds()),
+          HasString("name", kEvent),
+          HasDouble("time",
+                    (expected_time - base::TimeTicks()).InMicroseconds()),
           HasString("app_id", kAppId1), HasString("session_id", kSessionId1),
           HasString("sdk_version", kSdkVersion), HasInt("value", kValue))));
   metrics_helper_.RecordApplicationEventWithValue(kEvent, kValue);
@@ -131,12 +134,12 @@ TEST_F(CastMetricsHelperTest, LogTimeToFirstPaint) {
   metrics_helper_.DidStartLoad(kAppId1);
   metrics_helper_.DidCompleteLoad(kAppId1, kSessionId1);
 
-  const base::TimeDelta time_to_first_paint = base::TimeDelta::FromSeconds(5);
-  scoped_task_environment_.FastForwardBy(time_to_first_paint);
+  constexpr base::TimeDelta kTimeToFirstPaint = base::TimeDelta::FromSeconds(5);
+  task_environment_.FastForwardBy(kTimeToFirstPaint);
 
   EXPECT_CALL(metrics_sink_, OnTimeEvent(AllOf(HasSubstr(kAppId1),
                                                HasSubstr("TimeToFirstPaint")),
-                                         time_to_first_paint, _, _, _));
+                                         kTimeToFirstPaint, _, _, _));
   metrics_helper_.LogTimeToFirstPaint();
 }
 
@@ -144,18 +147,18 @@ TEST_F(CastMetricsHelperTest, LogTimeToFirstAudio) {
   metrics_helper_.DidStartLoad(kAppId1);
   metrics_helper_.DidCompleteLoad(kAppId1, kSessionId1);
 
-  const base::TimeDelta time_to_first_audio = base::TimeDelta::FromSeconds(5);
-  scoped_task_environment_.FastForwardBy(time_to_first_audio);
+  constexpr base::TimeDelta kTimeToFirstAudio = base::TimeDelta::FromSeconds(5);
+  task_environment_.FastForwardBy(kTimeToFirstAudio);
 
   EXPECT_CALL(metrics_sink_, OnTimeEvent(AllOf(HasSubstr(kAppId1),
                                                HasSubstr("TimeToFirstAudio")),
-                                         time_to_first_audio, _, _, _));
+                                         kTimeToFirstAudio, _, _, _));
   metrics_helper_.LogTimeToFirstAudio();
 }
 
 TEST_F(CastMetricsHelperTest, MultipleApps) {
   metrics_helper_.DidStartLoad(kAppId1);
-  scoped_task_environment_.FastForwardBy(kAppLoadTimeout);
+  task_environment_.FastForwardBy(kAppLoadTimeout);
   metrics_helper_.DidStartLoad(kAppId2);
   metrics_helper_.DidStartLoad(kAppId3);
   metrics_helper_.DidCompleteLoad(kAppId3, kSessionId3);

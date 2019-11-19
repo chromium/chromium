@@ -7,10 +7,10 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
@@ -19,7 +19,7 @@ namespace {
 
 template <typename T>
 class GlobalCacheStorageImpl final
-    : public GarbageCollectedFinalized<GlobalCacheStorageImpl<T>>,
+    : public GarbageCollected<GlobalCacheStorageImpl<T>>,
       public Supplement<T> {
   USING_GARBAGE_COLLECTED_MIXIN(GlobalCacheStorageImpl);
 
@@ -43,7 +43,7 @@ class GlobalCacheStorageImpl final
   CacheStorage* Caches(T& fetching_scope, ExceptionState& exception_state) {
     ExecutionContext* context = fetching_scope.GetExecutionContext();
     if (!context->GetSecurityOrigin()->CanAccessCacheStorage()) {
-      if (context->GetSecurityContext().IsSandboxed(kSandboxOrigin)) {
+      if (context->GetSecurityContext().IsSandboxed(WebSandboxFlags::kOrigin)) {
         exception_state.ThrowSecurityError(
             "Cache storage is disabled because the context is sandboxed and "
             "lacks the 'allow-same-origin' flag.");
@@ -68,14 +68,12 @@ class GlobalCacheStorageImpl final
             "provider.");
         return nullptr;
       }
-      caches_ = CacheStorage::Create(
+      caches_ = MakeGarbageCollected<CacheStorage>(
           context, GlobalFetch::ScopedFetcher::From(fetching_scope));
     }
     return caches_;
   }
 
-  // Promptly dispose of associated CacheStorage.
-  EAGERLY_FINALIZE();
   void Trace(blink::Visitor* visitor) override {
     visitor->Trace(caches_);
     Supplement<T>::Trace(visitor);

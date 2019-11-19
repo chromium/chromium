@@ -41,23 +41,9 @@ class AppearanceHandler : public SettingsPageUIHandler {
   void HandleUseSystemTheme(const base::ListValue* args);
 #endif
 
-#if defined(OS_CHROMEOS)
-  // Whether the wallpaper setting should be shown.
-  void IsWallpaperSettingVisible(const base::ListValue* args);
-
-  // Whether the wallpaper is policy controlled.
-  void IsWallpaperPolicyControlled(const base::ListValue* args);
-
-  // Open the wallpaper manager app.
-  void HandleOpenWallpaperManager(const base::ListValue* args);
-
-  // Helper function to resolve the Javascript callback.
-  void ResolveCallback(const base::Value& callback_id, bool result);
-#endif
-
   Profile* profile_;  // Weak pointer.
 
-  base::WeakPtrFactory<AppearanceHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<AppearanceHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppearanceHandler);
 };

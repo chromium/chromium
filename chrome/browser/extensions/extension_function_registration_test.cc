@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/one_shot_event.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/common/one_shot_event.h"
 
 namespace extensions {
 

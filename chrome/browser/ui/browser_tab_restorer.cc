@@ -58,7 +58,7 @@ class BrowserTabRestorer : public sessions::TabRestoreServiceObserver,
 
 BrowserTabRestorer::~BrowserTabRestorer() {
   tab_restore_service_->RemoveObserver(this);
-  BrowserList::GetInstance()->RemoveObserver(this);
+  BrowserList::RemoveObserver(this);
 }
 
 // static
@@ -78,7 +78,7 @@ BrowserTabRestorer::BrowserTabRestorer(Browser* browser)
   DCHECK(tab_restore_service_);
   DCHECK(!tab_restore_service_->IsLoaded());
   tab_restore_service_->AddObserver(this);
-  BrowserList::GetInstance()->AddObserver(this);
+  BrowserList::AddObserver(this);
   browser_->profile()->SetUserData(kBrowserTabRestorerKey,
                                    base::WrapUnique(this));
   tab_restore_service_->LoadTabsFromLastSession();
@@ -103,11 +103,9 @@ void BrowserTabRestorer::OnBrowserRemoved(Browser* browser) {
 
 void RestoreTab(Browser* browser) {
   base::RecordAction(base::UserMetricsAction("RestoreTab"));
-#if BUILDFLAG(ENABLE_DESKTOP_IN_PRODUCT_HELP)
   auto* reopen_tab_iph =
       ReopenTabInProductHelpFactory::GetForProfile(browser->profile());
   reopen_tab_iph->TabReopened();
-#endif
 
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser->profile());

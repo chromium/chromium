@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -15,6 +16,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font.h"
+#include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -32,6 +34,7 @@
 
 #if defined(OS_WIN)
 #include "ui/display/win/screen_win.h"
+#include "ui/gfx/system_fonts_win.h"
 #endif
 
 namespace views {
@@ -40,42 +43,35 @@ namespace {
 
 // The frame border is only visible in restored mode and is hardcoded to 4 px on
 // each side regardless of the system window border size.
-const int kFrameBorderThickness = 4;
+constexpr int kFrameBorderThickness = 4;
 // In the window corners, the resize areas don't actually expand bigger, but the
 // 16 px at the end of each edge triggers diagonal resizing.
-const int kResizeAreaCornerSize = 16;
+constexpr int kResizeAreaCornerSize = 16;
 // The titlebar never shrinks too short to show the caption button plus some
 // padding below it.
-const int kCaptionButtonHeightWithPadding = 19;
+constexpr int kCaptionButtonHeightWithPadding = 19;
 // The titlebar has a 2 px 3D edge along the top and bottom.
-const int kTitlebarTopAndBottomEdgeThickness = 2;
+constexpr int kTitlebarTopAndBottomEdgeThickness = 2;
 // The icon is inset 2 px from the left frame border.
-const int kIconLeftSpacing = 2;
+constexpr int kIconLeftSpacing = 2;
 // The space between the window icon and the title text.
-const int kTitleIconOffsetX = 4;
+constexpr int kTitleIconOffsetX = 4;
 // The space between the title text and the caption buttons.
-const int kTitleCaptionSpacing = 5;
+constexpr int kTitleCaptionSpacing = 5;
 
 #if defined(OS_CHROMEOS)
 // Chrome OS uses a dark gray.
-const SkColor kDefaultColorFrame = SkColorSetRGB(109, 109, 109);
-const SkColor kDefaultColorFrameInactive = SkColorSetRGB(176, 176, 176);
+constexpr SkColor kDefaultColorFrame = SkColorSetRGB(109, 109, 109);
+constexpr SkColor kDefaultColorFrameInactive = SkColorSetRGB(176, 176, 176);
 #else
 // Windows and Linux use a blue.
-const SkColor kDefaultColorFrame = SkColorSetRGB(66, 116, 201);
-const SkColor kDefaultColorFrameInactive = SkColorSetRGB(161, 182, 228);
+constexpr SkColor kDefaultColorFrame = SkColorSetRGB(66, 116, 201);
+constexpr SkColor kDefaultColorFrameInactive = SkColorSetRGB(161, 182, 228);
 #endif
-
-const gfx::FontList& GetTitleFontList() {
-  static const gfx::FontList title_font_list =
-      internal::NativeWidgetPrivate::GetWindowTitleFontList();
-  return title_font_list;
-}
 
 void LayoutButton(ImageButton* button, const gfx::Rect& bounds) {
   button->SetVisible(true);
-  button->SetImageAlignment(ImageButton::ALIGN_LEFT,
-                            ImageButton::ALIGN_BOTTOM);
+  button->SetImageVerticalAlignment(ImageButton::ALIGN_BOTTOM);
   button->SetBoundsRect(bounds);
 }
 
@@ -84,20 +80,9 @@ void LayoutButton(ImageButton* button, const gfx::Rect& bounds) {
 ///////////////////////////////////////////////////////////////////////////////
 // CustomFrameView, public:
 
-CustomFrameView::CustomFrameView()
-    : frame_(NULL),
-      window_icon_(NULL),
-      minimize_button_(NULL),
-      maximize_button_(NULL),
-      restore_button_(NULL),
-      close_button_(NULL),
-      frame_background_(new FrameBackground()),
-      minimum_title_bar_x_(0),
-      maximum_title_bar_x_(-1) {
-}
+CustomFrameView::CustomFrameView() : frame_background_(new FrameBackground()) {}
 
-CustomFrameView::~CustomFrameView() {
-}
+CustomFrameView::~CustomFrameView() = default;
 
 void CustomFrameView::Init(Widget* frame) {
   frame_ = frame;
@@ -210,10 +195,7 @@ void CustomFrameView::SizeConstraintsChanged() {
   LayoutWindowControls();
 }
 
-void CustomFrameView::ActivationChanged(bool active) {
-  if (active_ == active)
-    return;
-  active_ = active;
+void CustomFrameView::PaintAsActiveChanged(bool active) {
   SchedulePaint();
 }
 
@@ -324,8 +306,8 @@ int CustomFrameView::IconSize() const {
   return display::win::ScreenWin::GetSystemMetricsInDIP(SM_CYSMICON);
 #else
   // The icon never shrinks below 16 px on a side.
-  const int kIconMinimumSize = 16;
-  return std::max(GetTitleFontList().GetHeight(), kIconMinimumSize);
+  constexpr int kIconMinimumSize = 16;
+  return std::max(GetWindowTitleFontList().GetHeight(), kIconMinimumSize);
 #endif
 }
 
@@ -354,15 +336,9 @@ gfx::Rect CustomFrameView::IconBounds() const {
 }
 
 bool CustomFrameView::ShouldShowTitleBarAndBorder() const {
-  if (frame_->IsFullscreen())
-    return false;
-
-  if (ViewsDelegate::GetInstance()) {
-    return !ViewsDelegate::GetInstance()->WindowManagerProvidesTitleBar(
-        frame_->IsMaximized());
-  }
-
-  return true;
+  return !frame_->IsFullscreen() &&
+         !ViewsDelegate::GetInstance()->WindowManagerProvidesTitleBar(
+             frame_->IsMaximized());
 }
 
 bool CustomFrameView::ShouldShowClientEdge() const {
@@ -413,7 +389,7 @@ void CustomFrameView::PaintTitleBar(gfx::Canvas* canvas) {
 
   gfx::Rect rect = title_bounds_;
   rect.set_x(GetMirroredXForRect(title_bounds_));
-  canvas->DrawStringRect(delegate->GetWindowTitle(), GetTitleFontList(),
+  canvas->DrawStringRect(delegate->GetWindowTitle(), GetWindowTitleFontList(),
                          SK_ColorWHITE, rect);
 }
 
@@ -521,14 +497,14 @@ void CustomFrameView::LayoutWindowControls() {
   const std::vector<views::FrameButton>& trailing_buttons =
       button_order->trailing_buttons();
 
-  ImageButton* button = NULL;
-  for (auto it = leading_buttons.begin(); it != leading_buttons.end(); ++it) {
-    button = GetImageButton(*it);
+  ImageButton* button = nullptr;
+  for (auto frame_button : leading_buttons) {
+    button = GetImageButton(frame_button);
     if (!button)
       continue;
     gfx::Rect target_bounds(gfx::Point(next_button_x, caption_y),
                             button->GetPreferredSize());
-    if (it == leading_buttons.begin())
+    if (frame_button == leading_buttons.front())
       target_bounds.set_width(target_bounds.width() + extra_width);
     LayoutButton(button, target_bounds);
     next_button_x += button->width();
@@ -537,14 +513,13 @@ void CustomFrameView::LayoutWindowControls() {
 
   // Trailing buttions are laid out in a RTL fashion
   next_button_x = width() - FrameBorderThickness();
-  for (auto it = trailing_buttons.rbegin(); it != trailing_buttons.rend();
-       ++it) {
-    button = GetImageButton(*it);
+  for (auto frame_button : base::Reversed(trailing_buttons)) {
+    button = GetImageButton(frame_button);
     if (!button)
       continue;
     gfx::Rect target_bounds(gfx::Point(next_button_x, caption_y),
                             button->GetPreferredSize());
-    if (it == trailing_buttons.rbegin())
+    if (frame_button == trailing_buttons.back())
       target_bounds.set_width(target_bounds.width() + extra_width);
     target_bounds.Offset(-target_bounds.width(), 0);
     LayoutButton(button, target_bounds);
@@ -558,7 +533,7 @@ void CustomFrameView::LayoutTitleBar() {
   // The window title position is calculated based on the icon position, even
   // when there is no icon.
   gfx::Rect icon_bounds(IconBounds());
-  bool show_window_icon = window_icon_ != NULL;
+  bool show_window_icon = window_icon_ != nullptr;
   if (show_window_icon)
     window_icon_->SetBoundsRect(icon_bounds);
 
@@ -568,7 +543,7 @@ void CustomFrameView::LayoutTitleBar() {
   // The offset between the window left edge and the title text.
   int title_x = show_window_icon ? icon_bounds.right() + kTitleIconOffsetX
                                  : icon_bounds.x();
-  int title_height = GetTitleFontList().GetHeight();
+  int title_height = GetWindowTitleFontList().GetHeight();
   // We bias the title position so that when the difference between the icon and
   // title heights is odd, the extra pixel of the title is above the vertical
   // midline rather than below.  This compensates for how the icon is already
@@ -612,20 +587,20 @@ ImageButton* CustomFrameView::InitWindowCaptionButton(
 }
 
 ImageButton* CustomFrameView::GetImageButton(views::FrameButton frame_button) {
-  ImageButton* button = NULL;
+  ImageButton* button = nullptr;
   switch (frame_button) {
-    case views::FRAME_BUTTON_MINIMIZE: {
+    case views::FrameButton::kMinimize: {
       button = minimize_button_;
       // If we should not show the minimize button, then we return NULL as we
       // don't want this button to become visible and to be laid out.
       bool should_show = frame_->widget_delegate()->CanMinimize();
       button->SetVisible(should_show);
       if (!should_show)
-        return NULL;
+        return nullptr;
 
       break;
     }
-    case views::FRAME_BUTTON_MAXIMIZE: {
+    case views::FrameButton::kMaximize: {
       bool is_restored = !frame_->IsMaximized() && !frame_->IsMinimized();
       button = is_restored ? maximize_button_ : restore_button_;
       // If we should not show the maximize/restore button, then we return
@@ -634,16 +609,25 @@ ImageButton* CustomFrameView::GetImageButton(views::FrameButton frame_button) {
       bool should_show = frame_->widget_delegate()->CanMaximize();
       button->SetVisible(should_show);
       if (!should_show)
-        return NULL;
+        return nullptr;
 
       break;
     }
-    case views::FRAME_BUTTON_CLOSE: {
+    case views::FrameButton::kClose: {
       button = close_button_;
       break;
     }
   }
   return button;
+}
+
+// static
+gfx::FontList CustomFrameView::GetWindowTitleFontList() {
+#if defined(OS_WIN)
+  return gfx::FontList(gfx::win::GetSystemFont(gfx::win::SystemFont::kCaption));
+#else
+  return gfx::FontList();
+#endif
 }
 
 }  // namespace views

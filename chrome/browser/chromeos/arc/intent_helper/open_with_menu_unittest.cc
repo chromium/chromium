@@ -17,7 +17,7 @@
 #include "components/arc/intent_helper/link_handler_model.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -166,7 +166,7 @@ TEST(OpenWithMenuTest, TestBuildHandlersMap) {
 }
 
 TEST(OpenWithMenuTest, TestModelChanged) {
-  content::TestBrowserThreadBundle thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
   MockRenderViewContextMenu mock_menu(false);
   OpenWithMenu observer(nullptr, &mock_menu);
   mock_menu.SetObserver(&observer);

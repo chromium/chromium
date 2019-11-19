@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/shared_memory.h"
 #include "base/sync_socket.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"

@@ -13,12 +13,11 @@
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
 #import "ios/chrome/browser/snapshots/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/tabs/tab.h"
 #import "ios/chrome/browser/ui/activity_services/share_to_data.h"
 #import "ios/testing/ocmock_complex_type_helper.h"
 #import "ios/web/public/test/fakes/test_navigation_manager.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -38,33 +37,6 @@ const char kExpectedUrl[] = "http://www.testurl.net/";
 const char kExpectedTitle[] = "title";
 }  // namespace
 
-@interface ShareToDataBuilderTestTabMock : OCMockComplexTypeHelper {
-  std::unique_ptr<web::TestWebState> _webState;
-}
-
-@property(nonatomic, readonly) web::WebState* webState;
-
-@end
-
-@implementation ShareToDataBuilderTestTabMock
-
-- (web::WebState*)webState {
-  return _webState.get();
-}
-
-- (instancetype)initWithWebState:(std::unique_ptr<web::TestWebState>)webState {
-  id representedObject = [OCMockObject niceMockForClass:[Tab class]];
-  if ((self = [super initWithRepresentedObject:representedObject])) {
-    _webState = std::move(webState);
-  }
-  return self;
-}
-
-- (void)close {
-  _webState.reset();
-}
-
-@end
 
 class ShareToDataBuilderTest : public PlatformTest {
  public:
@@ -78,51 +50,36 @@ class ShareToDataBuilderTest : public PlatformTest {
     navigation_manager->GetLastCommittedItem()->SetTitle(
         base::UTF8ToUTF16(kExpectedTitle));
 
-    auto web_state = std::make_unique<web::TestWebState>();
-    web_state->SetNavigationManager(std::move(navigation_manager));
-    web_state->SetBrowserState(chrome_browser_state_.get());
-    web_state->SetVisibleURL(GURL(kExpectedUrl));
+    web_state_ = std::make_unique<web::TestWebState>();
+    web_state_->SetNavigationManager(std::move(navigation_manager));
+    web_state_->SetBrowserState(chrome_browser_state_.get());
+    web_state_->SetVisibleURL(GURL(kExpectedUrl));
 
     // Attach SnapshotTabHelper to allow snapshot generation.
-    SnapshotTabHelper::CreateForWebState(web_state.get(),
+    SnapshotTabHelper::CreateForWebState(web_state_.get(),
                                          [[NSUUID UUID] UUIDString]);
     delegate_ = [[FakeSnapshotGeneratorDelegate alloc] init];
-    SnapshotTabHelper::FromWebState(web_state.get())->SetDelegate(delegate_);
-
-    // Needed by the ShareToDataForTab to get the tab title.
-    DownloadManagerTabHelper::CreateForWebState(web_state.get(),
+    SnapshotTabHelper::FromWebState(web_state_.get())->SetDelegate(delegate_);
+    // Needed by the ShareToDataForWebState to get the tab title.
+    DownloadManagerTabHelper::CreateForWebState(web_state_.get(),
                                                 /*delegate=*/nullptr);
-    web_state->SetTitle(base::UTF8ToUTF16(kExpectedTitle));
+    web_state_->SetTitle(base::UTF8ToUTF16(kExpectedTitle));
 
     // Add a fake view to the TestWebState. This will be used to capture the
     // snapshot. By default the WebState is not ready for taking snapshot.
     CGRect frame = {CGPointZero, CGSizeMake(300, 400)};
     delegate_.view = [[UIView alloc] initWithFrame:frame];
     delegate_.view.backgroundColor = [UIColor blueColor];
-
-    tab_ = [[ShareToDataBuilderTestTabMock alloc]
-        initWithWebState:std::move(web_state)];
-    OCMockObject* tab_mock = static_cast<OCMockObject*>(tab_);
-
-    ios::ChromeBrowserState* ptr = chrome_browser_state_.get();
-    [[[tab_mock stub] andReturnValue:OCMOCK_VALUE(ptr)] browserState];
   }
 
-  void TearDown() override {
-    [tab_ close];
-    tab_ = nil;
-    PlatformTest::TearDown();
-  }
-
-  Tab* tab() { return static_cast<Tab*>(tab_); }
-
-  ShareToDataBuilderTestTabMock* tab_mock() { return tab_; }
+  web::WebState* web_state() { return web_state_.get(); }
 
  private:
   FakeSnapshotGeneratorDelegate* delegate_ = nil;
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ios::ChromeBrowserState> chrome_browser_state_;
-  ShareToDataBuilderTestTabMock* tab_;
+  std::unique_ptr<web::TestWebState> web_state_;
+
   DISALLOW_COPY_AND_ASSIGN(ShareToDataBuilderTest);
 };
 
@@ -130,8 +87,8 @@ class ShareToDataBuilderTest : public PlatformTest {
 // is a URL provided for share extensions.
 TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingNpShareUrl) {
   const char* kExpectedShareUrl = "http://www.testurl.com/";
-  ShareToData* actual_data =
-      activity_services::ShareToDataForTab(tab(), GURL(kExpectedShareUrl));
+  ShareToData* actual_data = activity_services::ShareToDataForWebState(
+      web_state(), GURL(kExpectedShareUrl));
 
   ASSERT_TRUE(actual_data);
   EXPECT_EQ(kExpectedShareUrl, actual_data.shareURL);
@@ -142,7 +99,7 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingNpShareUrl) {
 
   const CGSize size = CGSizeMake(40, 40);
   EXPECT_TRUE(UIImagesAreEqual(
-      actual_data.thumbnailGenerator(size),
+      [actual_data.thumbnailGenerator thumbnailWithSize:size],
       UIImageWithSizeAndSolidColor(size, [UIColor blueColor])));
 }
 
@@ -150,7 +107,7 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingNpShareUrl) {
 // URL designated for share extensions is empty.
 TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingNoShareUrl) {
   ShareToData* actual_data =
-      activity_services::ShareToDataForTab(tab(), GURL());
+      activity_services::ShareToDataForWebState(web_state(), GURL());
 
   ASSERT_TRUE(actual_data);
   EXPECT_EQ(kExpectedUrl, actual_data.shareURL);
@@ -161,14 +118,12 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingNoShareUrl) {
 
   const CGSize size = CGSizeMake(40, 40);
   EXPECT_TRUE(UIImagesAreEqual(
-      actual_data.thumbnailGenerator(size),
+      [actual_data.thumbnailGenerator thumbnailWithSize:size],
       UIImageWithSizeAndSolidColor(size, [UIColor blueColor])));
 }
 
-// Verifies that |ShareToDataForTab()| returns nil if the Tab is in the process
-// of being closed.
+// Verifies that |ShareToDataForWebState()| returns nil if the WebState passed
+// is nullptr.
 TEST_F(ShareToDataBuilderTest, TestReturnsNilWhenClosing) {
-  [tab_mock() close];
-
-  EXPECT_EQ(nil, activity_services::ShareToDataForTab(tab(), GURL()));
+  EXPECT_EQ(nil, activity_services::ShareToDataForWebState(nullptr, GURL()));
 }

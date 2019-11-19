@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL e.style['font-language-override'] = "normal" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['font-language-override'] = "\"ksw\"" should set the property value assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

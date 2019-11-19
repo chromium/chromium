@@ -1,0 +1,72 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+
+source_set("deprecated") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//ios/web/public:web_state_observer",
+    "//url",
+  ]
+  sources = [
+    "crw_context_menu_delegate.h",
+    "crw_js_injection_evaluator.h",
+    "crw_js_injection_manager.h",
+    "crw_js_injection_receiver.h",
+    "crw_native_content.h",
+    "crw_native_content_holder.h",
+    "crw_native_content_provider.h",
+    "global_web_state_observer.h",
+    "url_verification_constants.h",
+  ]
+}
+
+# A separate target is needed for util to prevent cyclic dependency, as
+# "web_state:web_state_impl_header" depends on ":deprecated" target.
+source_set("deprecated_web_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":deprecated",
+    "//ios/web/public",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui",
+  ]
+  sources = [
+    "crw_web_controller_util.h",
+    "crw_web_controller_util.mm",
+  ]
+}
+
+source_set("deprecated_navigation_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [
+    "navigation_item_list.h",
+    "navigation_item_list.mm",
+  ]
+}
+
+source_set("test_doubles") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":deprecated",
+    "//ios/web/js_messaging",
+    "//ios/web/public",
+    "//url",
+  ]
+
+  sources = [
+    "crw_test_js_injection_receiver.h",
+    "crw_test_js_injection_receiver.mm",
+    "test_native_content.h",
+    "test_native_content.mm",
+    "test_native_content_provider.h",
+    "test_native_content_provider.mm",
+  ]
+}

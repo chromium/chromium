@@ -28,8 +28,9 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
 import org.chromium.chrome.browser.test.CommandLineInitRule;
+import org.chromium.chrome.browser.util.UrlConstants;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,7 +117,7 @@ public class IntentHandlerTest {
 
         for (String url : urls) {
             mIntent.setData(Uri.parse(url));
-            if (mIntentHandler.intentHasValidUrl(mIntent) != isValid) {
+            if (IntentHandler.intentHasValidUrl(mIntent) != isValid) {
                 failedTests.add(url);
             }
         }
@@ -144,7 +145,7 @@ public class IntentHandlerTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         IntentHandler.setTestIntentsEnabled(false);
         mIntentHandler = new IntentHandler(null, null);
         mIntent = new Intent();
@@ -211,14 +212,14 @@ public class IntentHandlerTest {
     public void testNullUrlIntent() {
         mIntent.setData(null);
         Assert.assertTrue(
-                "Intent with null data should be valid", mIntentHandler.intentHasValidUrl(mIntent));
+                "Intent with null data should be valid", IntentHandler.intentHasValidUrl(mIntent));
     }
 
     @Test
     @MediumTest
     @UiThreadTest
     @Feature({"Android-AppBase"})
-    public void testGetQueryFromVoiceSearchResultIntent_validVoiceQuery() throws Throwable {
+    public void testGetQueryFromVoiceSearchResultIntent_validVoiceQuery() {
         Intent intent = new Intent(RecognizerResultsIntent.ACTION_VOICE_SEARCH_RESULTS);
         intent.putStringArrayListExtra(RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_STRINGS,
                 CollectionUtil.newArrayList(VOICE_SEARCH_QUERY));
@@ -232,7 +233,7 @@ public class IntentHandlerTest {
     @MediumTest
     @UiThreadTest
     @Feature({"Android-AppBase"})
-    public void testGetQueryFromVoiceSearchResultIntent_validUrlQuery() throws Throwable {
+    public void testGetQueryFromVoiceSearchResultIntent_validUrlQuery() {
         Intent intent = new Intent(RecognizerResultsIntent.ACTION_VOICE_SEARCH_RESULTS);
         intent.putStringArrayListExtra(RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_STRINGS,
                 CollectionUtil.newArrayList(VOICE_URL_QUERY));
@@ -249,7 +250,7 @@ public class IntentHandlerTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Android-AppBase"})
-    public void testRefererUrl_extraReferrer() throws Throwable {
+    public void testRefererUrl_extraReferrer() {
         // Check that EXTRA_REFERRER is not accepted with a random URL.
         Intent foreignIntent = new Intent(Intent.ACTION_VIEW);
         foreignIntent.putExtra(Intent.EXTRA_REFERRER, GOOGLE_URL);
@@ -282,7 +283,7 @@ public class IntentHandlerTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Android-AppBase"})
-    public void testRefererUrl_extraHeadersInclReferer() throws Throwable {
+    public void testRefererUrl_extraHeadersInclReferer() {
         // Check that invalid header specified in EXTRA_HEADERS isn't used.
         Bundle bundle = new Bundle();
         bundle.putString("X-custom-header", "X-custom-value");
@@ -298,7 +299,7 @@ public class IntentHandlerTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Android-AppBase"})
-    public void testRefererUrl_extraHeadersInclRefererMultiple() throws Throwable {
+    public void testRefererUrl_extraHeadersInclRefererMultiple() {
         // Check that invalid header specified in EXTRA_HEADERS isn't used.
         Bundle bundle = new Bundle();
         bundle.putString("X-custom-header", "X-custom-value");
@@ -315,7 +316,7 @@ public class IntentHandlerTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Android-AppBase"})
-    public void testRefererUrl_extraHeadersOnlyReferer() throws Throwable {
+    public void testRefererUrl_extraHeadersOnlyReferer() {
         // Check that invalid header specified in EXTRA_HEADERS isn't used.
         Bundle bundle = new Bundle();
         bundle.putString("Referer", GOOGLE_URL);
@@ -328,7 +329,7 @@ public class IntentHandlerTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Android-AppBase"})
-    public void testRefererUrl_extraHeadersAndExtraReferrer() throws Throwable {
+    public void testRefererUrl_extraHeadersAndExtraReferrer() {
         String validReferer = "android-app://package/http/url";
         Bundle bundle = new Bundle();
         bundle.putString("Referer", GOOGLE_URL);
@@ -344,7 +345,7 @@ public class IntentHandlerTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Android-AppBase"})
-    public void testRefererUrl_extraHeadersValidReferrer() throws Throwable {
+    public void testRefererUrl_extraHeadersValidReferrer() {
         String validReferer = "android-app://package/http/url";
         Bundle bundle = new Bundle();
         bundle.putString("Referer", validReferer);
@@ -386,7 +387,7 @@ public class IntentHandlerTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Android-AppBase"})
-    public void testRemoveChromeCustomHeaderFromExtraIntentHeaders() throws Throwable {
+    public void testRemoveChromeCustomHeaderFromExtraIntentHeaders() {
         Bundle bundle = new Bundle();
         bundle.putString("X-Chrome-intent-type", "X-custom-value");
         Intent headersIntent = new Intent(Intent.ACTION_VIEW);

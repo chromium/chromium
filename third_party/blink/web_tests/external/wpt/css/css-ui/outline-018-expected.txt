@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL outline-style is animated as a discrete type assert_equals: expected "dotted" but got "solid"
-Harness: the test ran to completion.
-

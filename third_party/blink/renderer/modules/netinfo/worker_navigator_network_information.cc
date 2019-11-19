@@ -57,7 +57,7 @@ NetworkInformation* WorkerNavigatorNetworkInformation::connection(
     ExecutionContext* context) {
   DCHECK(context);
   if (!connection_)
-    connection_ = NetworkInformation::Create(context);
+    connection_ = MakeGarbageCollected<NetworkInformation>(context);
   return connection_.Get();
 }
 

@@ -27,11 +27,11 @@
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 
 #include <memory>
-#include <vector>
 #include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace {
 // CSSSelector is one of the top types that consume renderer memory,
@@ -89,9 +89,8 @@ CSSSelectorList CSSSelectorList::ConcatenateListExpansion(
   return list;
 }
 
-std::vector<const CSSSelector*> SelectorBoundaries(
-    const CSSSelectorList& list) {
-  std::vector<const CSSSelector*> result;
+Vector<const CSSSelector*> SelectorBoundaries(const CSSSelectorList& list) {
+  Vector<const CSSSelector*> result;
   for (const CSSSelector* s = list.First(); s; s = list.Next(*s)) {
     result.push_back(s);
   }
@@ -134,17 +133,16 @@ void AddToList(CSSSelector*& destination,
 CSSSelectorList CSSSelectorList::ExpandedFirstPseudoClass() const {
   DCHECK(this->RequiresExpansion());
   unsigned original_length = this->ComputeLength();
-  std::vector<const CSSSelector*> selector_boundaries =
-      SelectorBoundaries(*this);
+  Vector<const CSSSelector*> selector_boundaries = SelectorBoundaries(*this);
 
-  size_t i = 0;
+  size_t begin = 0;
   CSSSelectorList transformed = this->Copy();
-  while (!selector_boundaries[i]->HasPseudoIs() &&
-         !selector_boundaries[i]->HasPseudoWhere())
-    ++i;
+  while (!selector_boundaries[begin]->HasPseudoIs() &&
+         !selector_boundaries[begin]->HasPseudoWhere())
+    ++begin;
 
-  const CSSSelector* selector_to_expand_begin = selector_boundaries[i];
-  const CSSSelector* selector_to_expand_end = selector_boundaries[i + 1];
+  const CSSSelector* selector_to_expand_begin = selector_boundaries[begin];
+  const CSSSelector* selector_to_expand_end = selector_boundaries[begin + 1];
   unsigned selector_to_expand_length =
       static_cast<unsigned>(selector_to_expand_end - selector_to_expand_begin);
 
@@ -156,7 +154,7 @@ CSSSelectorList CSSSelectorList::ExpandedFirstPseudoClass() const {
 
   unsigned inner_selector_length =
       simple_selector->SelectorList()->ComputeLength();
-  std::vector<const CSSSelector*> selector_arg_boundaries =
+  Vector<const CSSSelector*> selector_arg_boundaries =
       SelectorBoundaries(*simple_selector->SelectorList());
 
   wtf_size_t num_args =

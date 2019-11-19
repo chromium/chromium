@@ -2,9 +2,8 @@ Async stack trace for worker.postMessage.
 Setup page session
 Set breakpoint before postMessage
 Run stepInto with breakOnAsyncCall flag
-Get scheduledAsyncStackId
 Setup worker session
-Request pause on async task and run worker
+Run worker
 onmessage at worker.js:0:27
 --Worker.postMessage--
 (anonymous) at test.js:3:7

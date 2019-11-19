@@ -59,7 +59,7 @@ class TreeScope;
 //
 // <event> -> SVG...Element -> SVGResource -> SVGResourceClient(0..N)
 //
-class SVGResource : public GarbageCollectedFinalized<SVGResource> {
+class SVGResource : public GarbageCollected<SVGResource> {
  public:
   virtual ~SVGResource();
 

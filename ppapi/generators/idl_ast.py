@@ -4,6 +4,8 @@
 
 """Nodes for PPAPI IDL AST."""
 
+from __future__ import print_function
+
 from idl_namespace import IDLNamespace
 from idl_node import IDLNode
 from idl_option import GetOption
@@ -71,7 +73,7 @@ class IDLNamespaceVersionResolver(IDLVisitor):
     if node.cls not in self.NamespaceSet:
       node.namespace = parent_namespace
     else:
-    # otherwise create one.
+      # otherwise create one.
       node.namespace = IDLNamespace(parent_namespace)
 
     # If this node is named, place it in its parent's namespace
@@ -116,7 +118,7 @@ class IDLFileTypeResolver(IDLVisitor):
     if not node.IsA('AST'):
       file_min, _ = filenode.release_map.GetReleaseRange()
       if not file_min:
-        print 'Resetting min on %s to %s' % (node, file_min)
+        print('Resetting min on %s to %s' % (node, file_min))
         node.SetMinRange(file_min)
 
     # If this node has a TYPEREF, resolve it to a version list

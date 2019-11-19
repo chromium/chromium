@@ -1,6 +1,0 @@
-CONSOLE WARNING: line 26: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
-CONSOLE ERROR: line 27: XMLHttpRequest cannot load iamthewalrus. Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
-This test checks for rdar://problem/4962298 REGRESSION: Synchronous XHR for missing local file throws exception -- breaks Wikipedia widget
-
-FAIL: Caught exception NetworkError: Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'file:///iamthewalrus'..
-

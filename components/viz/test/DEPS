@@ -1,24 +1,32 @@
 # Please consult components/viz/README.md about allowable dependencies.
 
 include_rules = [
-  "+cc",
   "+components/viz",
   "+gpu/command_buffer/client/context_support.h",
+  "+gpu/command_buffer/client/gles2_implementation.h",
   "+gpu/command_buffer/client/gles2_interface_stub.h",
   "+gpu/command_buffer/client/raster_implementation_gles.h",
   "+gpu/command_buffer/client/shared_image_interface.h",
+  "+gpu/command_buffer/client/shared_memory_limits.h",
   "+gpu/command_buffer/common/capabilities.h",
+  "+gpu/command_buffer/common/context_creation_attribs.h",
   "+gpu/command_buffer/common/context_result.h",
+  "+gpu/command_buffer/common/mailbox.h",
+  "+gpu/command_buffer/common/mailbox_holder.h",
+  "+gpu/command_buffer/common/shared_image_usage.h",
   "+gpu/command_buffer/common/skia_utils.h",
   "+gpu/command_buffer/common/sync_token.h",
+  "+gpu/command_buffer/service/image_factory.h",
   "+gpu/config/gpu_feature_info.h",
   "+gpu/GLES2",
+  "+gpu/ipc/gl_in_process_context.h",
+  "+gpu/ipc/raster_in_process_context.h",
+  "+gpu/ipc/test_gpu_thread_holder.h",
   "+gpu/skia_bindings/grcontext_for_gles2_interface.h",
-  "+media",
   "+mojo/public/cpp/bindings",
   "+mojo/public/cpp/system",
-  "+services/viz/privileged/interfaces",
-  "+services/viz/public/interfaces",
+  "+services/viz/privileged/mojom",
+  "+services/viz/public/mojom",
   "+third_party/khronos/GLES2/gl2.h",
   "+third_party/khronos/GLES2/gl2ext.h",
   "+third_party/skia/include",
@@ -37,5 +45,23 @@ specific_include_rules = {
 
   "run_all_unittests\.cc": [
     "+mojo/core/embedder/embedder.h",
+  ],
+
+  "test_gpu_service_holder\.h": [
+    "+gpu/vulkan/buildflags.h",
+  ],
+
+  "test_gpu_service_holder\.cc": [
+    "+gpu/command_buffer/service/service_utils.h",
+    "+gpu/config",
+    "+gpu/ipc/gpu_in_process_thread_service.h",
+    "+gpu/ipc/service/gpu_watchdog_thread.h",
+    "+gpu/vulkan/init/vulkan_factory.h",
+    "+gpu/vulkan/vulkan_implementation.h",
+  ],
+
+  "run_all_perftests\.cc": [
+    "+mojo/core/embedder/embedder.h",
+    "+skia/ext/event_tracer_impl.h",
   ],
 }

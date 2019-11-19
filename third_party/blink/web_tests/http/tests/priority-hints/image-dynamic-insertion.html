@@ -1,22 +1,28 @@
-<script src=resources/common.js></script>
+<script src=../priorities/resources/common.js></script>
 <script src=../resources/testharness.js></script>
 <script src=../resources/testharnessreport.js></script>
 
 <script>
   const tests = [
-    {test: async_test('high importance on <img>s not fetched by the preload scanner must translate to kHigh resource load priority'), importance: 'high', expected_priority: kHigh},
-    {test: async_test('low importance on <img>s not fetched by the preload scanner must translate to kLow resource load priority'), importance: 'low', expected_priority: kLow},
-    {test: async_test('auto importance on <img>s not fetched by the preload scanner must have no effect on resource load priority'), importance: 'auto', expected_priority: kLow},
-    {test: async_test('invalid importance on <img>s not fetched by the preload scanner must have no effect on resource load priority'), importance: 'xyz', expected_priority: kLow},
-    {test: async_test('missing importance on <img>s not fetched by the preload scanner must have no effect on resource load priority'), expected_priority: kLow}
+    {description: 'high importance on <img>s not fetched by the preload scanner must translate to kHigh resource load priority', importance: 'high', expected_priority: kHigh},
+    {description: 'low importance on <img>s not fetched by the preload scanner must translate to kLow resource load priority', importance: 'low', expected_priority: kLow},
+    {description: 'auto importance on <img>s not fetched by the preload scanner must have no effect on resource load priority', importance: 'auto', expected_priority: kLow},
+    {description: 'invalid importance on <img>s not fetched by the preload scanner must have no effect on resource load priority', importance: 'xyz', expected_priority: kLow},
+    {description: 'missing importance on <img>s not fetched by the preload scanner must have no effect on resource load priority', expected_priority: kLow}
   ];
 
   let iteration = 0;
   for (const test of tests) {
-    const img = document.createElement('img');
-    img.alt = 'img';
-    if (test.importance) img.importance = test.importance;
-    img.src = `../resources/square.png?${iteration++}`;
-    img.onload = assert_priority_onload(img.src, test.expected_priority, test.test);
+    promise_test(async () => {
+      const img = document.createElement('img');
+      img.alt = 'img';
+      if (test.importance) img.importance = test.importance;
+
+      const url = new URL(`../resources/square.png?${iteration++}`, location);
+      const priorityPromise = internals.getResourcePriority(url, document);
+      img.src = url;
+      const priority = await priorityPromise;
+      assert_equals(priority, test.expected_priority, test.description);
+    });
   }
 </script>

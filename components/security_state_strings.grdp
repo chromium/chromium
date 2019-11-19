@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
   <!-- Strings describing Chrome security policy for DevTools security panel -->
-  <message name="IDS_EDITED_NONSECURE_SUMMARY" desc="Main summary for an HTTP page where a user has entered data in a form field." translateable="false">
+  <message name="IDS_ERROR_PAGE_SUMMARY" desc="Main summary for a non cert error page." translateable="false">
+    This is an error page.
+  </message>
+  <message name="IDS_NON_CRYPTO_SECURE_SUMMARY" desc="Main summary for where the site has a non-cryptographic secure origin." translateable="false">
+    This page has a non-HTTPS secure origin.
+  </message>
+  <message name="IDS_HTTP_NONSECURE_SUMMARY" desc="Main summary for where the site is non-secure HTTP." translateable="false">
     This page is insecure (unencrypted HTTP).
   </message>
   <message name="IDS_EDITED_NONSECURE" desc="Summary phrase for a security problem where the site is non-secure (HTTP) and user has entered data in a form field." translateable="false">
@@ -134,5 +140,28 @@
   </message>
   <message name="IDS_NON_SECURE_FORM_DESCRIPTION" desc="" translateable="false">
     This page includes a form with a non-secure "action" attribute.
+  </message>
+
+  <!-- Safety tips -->
+  <message name="IDS_SECURITY_TAB_SAFETY_TIP_TITLE" desc="Title of the devtools security tab when the page you are on triggered a safety tip.">
+    This page is suspicious (flagged by Chrome).
+  </message>
+  <message name="IDS_SECURITY_TAB_SAFETY_TIP_BAD_REPUTATION_SUMMARY" desc="Message to display in devtools security tab when the page you are on triggered a safety tip.">
+    This page is suspicious
+  </message>
+  <message name="IDS_SECURITY_TAB_SAFETY_TIP_BAD_REPUTATION_DESCRIPTION" desc="Body of
+    message to display in devtools security tab when you are viewing a page that
+    triggered a safety tip.">
+    Chrome has determined that this site could be fake or fraudulent.
+
+    If you believe this is shown in error please visit https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.
+  </message>
+  <message name="IDS_SECURITY_TAB_SAFETY_TIP_LOOKALIKE_SUMMARY" desc="Summary of a warning when the user visits a page that triggered a Safety Tip because the domain looked like another domain.">
+    Possible spoofing URL
+  </message>
+  <message name="IDS_SECURITY_TAB_SAFETY_TIP_LOOKALIKE_DESCRIPTION" desc="Body of a warning when the user visits a page that triggered a Safety Tip because the domain looked like another domain.">
+    This site's hostname looks similar to <ph name='LOOKALIKE_DOMAIN'>$1<ex>google.com</ex></ph>. Attackers sometimes mimic sites by making small, hard-to-see changes to the domain name.
+
+    If you believe this is shown in error please visit https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.
   </message>
 </grit-part>

@@ -1,0 +1,13 @@
+<!doctype html>
+<style>
+#target {
+  width: 200px;
+  height: 200px;
+  background-color: green;
+  /* blocked because the URL's port number doesn't match this document's origin. */
+  -webkit-mask-image: url("http://localhost:8080/resources/square100.png");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+</style>
+<div id="target"></div>

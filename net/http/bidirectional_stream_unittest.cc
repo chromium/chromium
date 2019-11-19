@@ -40,7 +40,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -399,7 +399,7 @@ class MockTimer : public base::MockOneShotTimer {
 
 }  // namespace
 
-class BidirectionalStreamTest : public TestWithScopedTaskEnvironment {
+class BidirectionalStreamTest : public TestWithTaskEnvironment {
  public:
   BidirectionalStreamTest()
       : default_url_(kDefaultUrl),
@@ -408,7 +408,7 @@ class BidirectionalStreamTest : public TestWithScopedTaskEnvironment {
     ssl_data_.next_proto = kProtoHTTP2;
     ssl_data_.ssl_info.cert =
         ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
-    net_log_.SetCaptureMode(NetLogCaptureMode::IncludeSocketBytes());
+    net_log_.SetObserverCaptureMode(NetLogCaptureMode::kEverything);
     socket_factory_ = new MockTaggingClientSocketFactory();
     session_deps_.socket_factory.reset(socket_factory_);
   }
@@ -433,7 +433,8 @@ class BidirectionalStreamTest : public TestWithScopedTaskEnvironment {
     http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
     SpdySessionKey key(host_port_pair_, ProxyServer::Direct(),
                        PRIVACY_MODE_DISABLED,
-                       SpdySessionKey::IsProxySession::kFalse, socket_tag);
+                       SpdySessionKey::IsProxySession::kFalse, socket_tag,
+                       NetworkIsolationKey(), false /* disable_secure_dns */);
     session_ = CreateSpdySession(http_session_.get(), key, net_log_.bound());
   }
 
@@ -591,7 +592,7 @@ TEST_F(BidirectionalStreamTest,
 }
 
 TEST_F(BidirectionalStreamTest, ClientAuthRequestIgnored) {
-  scoped_refptr<SSLCertRequestInfo> cert_request(new SSLCertRequestInfo());
+  auto cert_request = base::MakeRefCounted<SSLCertRequestInfo>();
   cert_request->host_and_port = host_port_pair_;
 
   // First attempt receives client auth request.
@@ -627,7 +628,8 @@ TEST_F(BidirectionalStreamTest, ClientAuthRequestIgnored) {
   http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
   SpdySessionKey key(host_port_pair_, ProxyServer::Direct(),
                      PRIVACY_MODE_DISABLED,
-                     SpdySessionKey::IsProxySession::kFalse, SocketTag());
+                     SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                     NetworkIsolationKey(), false /* disable_secure_dns */);
   std::unique_ptr<BidirectionalStreamRequestInfo> request_info(
       new BidirectionalStreamRequestInfo);
   request_info->method = "GET";
@@ -646,7 +648,7 @@ TEST_F(BidirectionalStreamTest, ClientAuthRequestIgnored) {
   // Ensure the certificate was added to the client auth cache.
   scoped_refptr<X509Certificate> client_cert;
   scoped_refptr<SSLPrivateKey> client_private_key;
-  ASSERT_TRUE(http_session_->ssl_client_auth_cache()->Lookup(
+  ASSERT_TRUE(http_session_->ssl_client_context()->GetClientCertificate(
       host_port_pair_, &client_cert, &client_private_key));
   ASSERT_FALSE(client_cert);
   ASSERT_FALSE(client_private_key);
@@ -830,8 +832,7 @@ TEST_F(BidirectionalStreamTest, TestNetLogContainEntries) {
   // Destroy the delegate will destroy the stream, so we can get an end event
   // for BIDIRECTIONAL_STREAM_ALIVE.
   delegate.reset();
-  TestNetLogEntry::List entries;
-  net_log_.GetEntries(&entries);
+  auto entries = net_log_.GetEntries();
 
   size_t index = ExpectLogContainsSomewhere(
       entries, 0, NetLogEventType::BIDIRECTIONAL_STREAM_ALIVE,
@@ -858,29 +859,23 @@ TEST_F(BidirectionalStreamTest, TestNetLogContainEntries) {
   index = ExpectLogContainsSomewhere(
       entries, index, NetLogEventType::BIDIRECTIONAL_STREAM_READ_DATA,
       NetLogEventPhase::NONE);
-  TestNetLogEntry entry = entries[index];
-  int read_result = 0;
-  EXPECT_TRUE(entry.params->GetInteger("rv", &read_result));
-  EXPECT_EQ(ERR_IO_PENDING, read_result);
+  EXPECT_EQ(ERR_IO_PENDING, GetIntegerValueFromParams(entries[index], "rv"));
 
   // Sent bytes. Sending data is always asynchronous.
   index = ExpectLogContainsSomewhere(
       entries, index, NetLogEventType::BIDIRECTIONAL_STREAM_BYTES_SENT,
       NetLogEventPhase::NONE);
-  entry = entries[index];
-  EXPECT_EQ(NetLogSourceType::BIDIRECTIONAL_STREAM, entry.source.type);
+  EXPECT_EQ(NetLogSourceType::BIDIRECTIONAL_STREAM, entries[index].source.type);
   // Received bytes for asynchronous read.
   index = ExpectLogContainsSomewhere(
       entries, index, NetLogEventType::BIDIRECTIONAL_STREAM_BYTES_RECEIVED,
       NetLogEventPhase::NONE);
-  entry = entries[index];
-  EXPECT_EQ(NetLogSourceType::BIDIRECTIONAL_STREAM, entry.source.type);
+  EXPECT_EQ(NetLogSourceType::BIDIRECTIONAL_STREAM, entries[index].source.type);
   // Received bytes for synchronous read.
   index = ExpectLogContainsSomewhere(
       entries, index, NetLogEventType::BIDIRECTIONAL_STREAM_BYTES_RECEIVED,
       NetLogEventPhase::NONE);
-  entry = entries[index];
-  EXPECT_EQ(NetLogSourceType::BIDIRECTIONAL_STREAM, entry.source.type);
+  EXPECT_EQ(NetLogSourceType::BIDIRECTIONAL_STREAM, entries[index].source.type);
   ExpectLogContainsSomewhere(entries, index,
                              NetLogEventType::BIDIRECTIONAL_STREAM_ALIVE,
                              NetLogEventPhase::END);
@@ -1051,41 +1046,30 @@ TEST_F(BidirectionalStreamTest, TestCoalesceSmallDataBuffers) {
   EXPECT_EQ(CountWriteBytes(writes), delegate->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
 
-  TestNetLogEntry::List entries;
-  net_log_.GetEntries(&entries);
+  auto entries = net_log_.GetEntries();
   size_t index = ExpectLogContainsSomewhere(
       entries, 0, NetLogEventType::BIDIRECTIONAL_STREAM_SENDV_DATA,
       NetLogEventPhase::NONE);
-  TestNetLogEntry entry = entries[index];
-  int num_buffers = 0;
-  EXPECT_TRUE(entry.params->GetInteger("num_buffers", &num_buffers));
-  EXPECT_EQ(2, num_buffers);
+  EXPECT_EQ(2, GetIntegerValueFromParams(entries[index], "num_buffers"));
 
   index = ExpectLogContainsSomewhereAfter(
       entries, index,
       NetLogEventType::BIDIRECTIONAL_STREAM_BYTES_SENT_COALESCED,
       NetLogEventPhase::BEGIN);
-  entry = entries[index];
-  int num_buffers_coalesced = 0;
-  EXPECT_TRUE(entry.params->GetInteger("num_buffers_coalesced",
-                                       &num_buffers_coalesced));
-  EXPECT_EQ(2, num_buffers_coalesced);
+  EXPECT_EQ(2,
+            GetIntegerValueFromParams(entries[index], "num_buffers_coalesced"));
 
   index = ExpectLogContainsSomewhereAfter(
       entries, index, NetLogEventType::BIDIRECTIONAL_STREAM_BYTES_SENT,
       NetLogEventPhase::NONE);
-  entry = entries[index];
-  int byte_count = 0;
-  EXPECT_TRUE(entry.params->GetInteger("byte_count", &byte_count));
-  EXPECT_EQ(buf->size(), byte_count);
+  EXPECT_EQ(buf->size(),
+            GetIntegerValueFromParams(entries[index], "byte_count"));
 
   index = ExpectLogContainsSomewhereAfter(
       entries, index + 1, NetLogEventType::BIDIRECTIONAL_STREAM_BYTES_SENT,
       NetLogEventPhase::NONE);
-  entry = entries[index];
-  byte_count = 0;
-  EXPECT_TRUE(entry.params->GetInteger("byte_count", &byte_count));
-  EXPECT_EQ(buf2->size(), byte_count);
+  EXPECT_EQ(buf2->size(),
+            GetIntegerValueFromParams(entries[index], "byte_count"));
 
   ExpectLogContainsSomewhere(
       entries, index,
@@ -1464,7 +1448,7 @@ TEST_F(BidirectionalStreamTest, PropagateProtocolError) {
   delegate->Start(std::move(request_info), http_session_.get());
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(delegate->error(), IsError(ERR_SPDY_PROTOCOL_ERROR));
+  EXPECT_THAT(delegate->error(), IsError(ERR_HTTP2_PROTOCOL_ERROR));
   EXPECT_EQ(delegate->response_headers().end(),
             delegate->response_headers().find(":status"));
   EXPECT_EQ(0, delegate->on_data_read_count());
@@ -1476,25 +1460,19 @@ TEST_F(BidirectionalStreamTest, PropagateProtocolError) {
             delegate->GetTotalSentBytes());
   EXPECT_EQ(0, delegate->GetTotalReceivedBytes());
 
-  TestNetLogEntry::List entries;
-  net_log_.GetEntries(&entries);
+  auto entries = net_log_.GetEntries();
 
   size_t index = ExpectLogContainsSomewhere(
       entries, 0, NetLogEventType::BIDIRECTIONAL_STREAM_READY,
       NetLogEventPhase::NONE);
-  TestNetLogEntry entry = entries[index];
-  bool request_headers_sent = false;
   EXPECT_TRUE(
-      entry.params->GetBoolean("request_headers_sent", &request_headers_sent));
-  EXPECT_TRUE(request_headers_sent);
+      GetBooleanValueFromParams(entries[index], "request_headers_sent"));
 
   index = ExpectLogContainsSomewhere(
       entries, index, NetLogEventType::BIDIRECTIONAL_STREAM_FAILED,
       NetLogEventPhase::NONE);
-  entry = entries[index];
-  int net_error = OK;
-  EXPECT_TRUE(entry.params->GetInteger("net_error", &net_error));
-  EXPECT_THAT(net_error, IsError(ERR_SPDY_PROTOCOL_ERROR));
+  EXPECT_EQ(ERR_HTTP2_PROTOCOL_ERROR,
+            GetNetErrorCodeFromParams(entries[index]));
 }
 
 TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnHeadersReceived) {
@@ -1704,7 +1682,7 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnFailed) {
             delegate->response_headers().find(":status"));
   EXPECT_EQ(0, delegate->on_data_sent_count());
   EXPECT_EQ(0, delegate->on_data_read_count());
-  EXPECT_THAT(delegate->error(), IsError(ERR_SPDY_PROTOCOL_ERROR));
+  EXPECT_THAT(delegate->error(), IsError(ERR_HTTP2_PROTOCOL_ERROR));
 
   EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
   // Bytes sent excludes the RST frame.
@@ -1764,7 +1742,7 @@ TEST_F(BidirectionalStreamTest, TestHonorAlternativeServiceHeader) {
 
   AlternativeServiceInfoVector alternative_service_info_vector =
       http_session_->http_server_properties()->GetAlternativeServiceInfos(
-          url::SchemeHostPort(default_url_));
+          url::SchemeHostPort(default_url_), NetworkIsolationKey());
   ASSERT_EQ(1u, alternative_service_info_vector.size());
   AlternativeService alternative_service(kProtoQUIC, "www.example.org", 443);
   EXPECT_EQ(alternative_service,

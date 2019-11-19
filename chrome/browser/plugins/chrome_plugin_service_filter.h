@@ -36,9 +36,9 @@ class ChromePluginServiceFilter : public content::PluginServiceFilter,
   static ChromePluginServiceFilter* GetInstance();
 
   // This method should be called on the UI thread.
-  void RegisterResourceContext(Profile* profile, const void* context);
+  void RegisterProfile(Profile* profile);
 
-  void UnregisterResourceContext(const void* context);
+  void UnregisterProfile(Profile* profile);
 
   // Overrides the plugin lookup mechanism for a given tab to use a specific
   // plugin.
@@ -63,7 +63,6 @@ class ChromePluginServiceFilter : public content::PluginServiceFilter,
   // generate |main_frame_origin|. These parameters may be empty.
   bool IsPluginAvailable(int render_process_id,
                          int render_frame_id,
-                         const void* context,
                          const GURL& plugin_content_url,
                          const url::Origin& main_frame_origin,
                          content::WebPluginInfo* plugin) override;
@@ -106,7 +105,7 @@ class ChromePluginServiceFilter : public content::PluginServiceFilter,
 
   base::Lock lock_;  // Guards access to member variables.
 
-  std::map<const void*, std::unique_ptr<ContextInfo>> resource_context_map_;
+  std::map<const void*, std::unique_ptr<ContextInfo>> browser_context_map_;
 
   std::map<int, ProcessDetails> plugin_details_;
 };

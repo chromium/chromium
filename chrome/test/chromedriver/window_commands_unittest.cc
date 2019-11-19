@@ -66,7 +66,7 @@ TEST(WindowCommandsTest, ExecuteResume) {
 
 TEST(WindowCommandsTest, ProcessInputActionSequencePointerMouse) {
   Session session("1");
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
+  std::vector<std::unique_ptr<base::DictionaryValue>> action_list;
   std::unique_ptr<base::DictionaryValue> action_sequence(
       new base::DictionaryValue());
   std::unique_ptr<base::ListValue> actions(new base::ListValue());
@@ -94,12 +94,10 @@ TEST(WindowCommandsTest, ProcessInputActionSequencePointerMouse) {
   action_sequence->SetList("actions", std::move(actions));
   const base::DictionaryValue* input_action_sequence = action_sequence.get();
   Status status =
-      ProcessInputActionSequence(&session, input_action_sequence, &result);
+      ProcessInputActionSequence(&session, input_action_sequence, &action_list);
   ASSERT_TRUE(status.IsOk());
 
   // check resulting action dictionary
-  const base::ListValue* actions_result;
-  const base::DictionaryValue* action_result;
   std::string pointer_type;
   std::string source_type;
   std::string id;
@@ -107,37 +105,49 @@ TEST(WindowCommandsTest, ProcessInputActionSequencePointerMouse) {
   int x, y;
   std::string button;
 
-  result->GetString("sourceType", &source_type);
-  result->GetString("pointerType", &pointer_type);
-  result->GetString("id", &id);
+  ASSERT_EQ(3U, action_list.size());
+  const base::DictionaryValue* action1 = action_list[0].get();
+  action1->GetString("type", &source_type);
+  action1->GetString("pointerType", &pointer_type);
+  action1->GetString("id", &id);
   ASSERT_EQ("pointer", source_type);
   ASSERT_EQ("mouse", pointer_type);
   ASSERT_EQ("pointer1", id);
-
-  result->GetList("actions", &actions_result);
-  ASSERT_EQ(3U, actions_result->GetSize());
-  actions_result->GetDictionary(0, &action_result);
-  action_result->GetString("subtype", &action_type);
-  action_result->GetInteger("x", &x);
-  action_result->GetInteger("y", &y);
+  action1->GetString("subtype", &action_type);
+  action1->GetInteger("x", &x);
+  action1->GetInteger("y", &y);
   ASSERT_EQ("pointerMove", action_type);
   ASSERT_EQ(30, x);
   ASSERT_EQ(60, y);
-  actions_result->GetDictionary(1, &action_result);
-  action_result->GetString("subtype", &action_type);
-  action_result->GetString("button", &button);
+
+  const base::DictionaryValue* action2 = action_list[1].get();
+  action2->GetString("type", &source_type);
+  action2->GetString("pointerType", &pointer_type);
+  action2->GetString("id", &id);
+  ASSERT_EQ("pointer", source_type);
+  ASSERT_EQ("mouse", pointer_type);
+  ASSERT_EQ("pointer1", id);
+  action2->GetString("subtype", &action_type);
+  action2->GetString("button", &button);
   ASSERT_EQ("pointerDown", action_type);
   ASSERT_EQ("left", button);
-  actions_result->GetDictionary(2, &action_result);
-  action_result->GetString("subtype", &action_type);
-  action_result->GetString("button", &button);
+
+  const base::DictionaryValue* action3 = action_list[2].get();
+  action3->GetString("type", &source_type);
+  action3->GetString("pointerType", &pointer_type);
+  action3->GetString("id", &id);
+  ASSERT_EQ("pointer", source_type);
+  ASSERT_EQ("mouse", pointer_type);
+  ASSERT_EQ("pointer1", id);
+  action3->GetString("subtype", &action_type);
+  action3->GetString("button", &button);
   ASSERT_EQ("pointerUp", action_type);
   ASSERT_EQ("left", button);
 }
 
 TEST(WindowCommandsTest, ProcessInputActionSequencePointerTouch) {
   Session session("1");
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
+  std::vector<std::unique_ptr<base::DictionaryValue>> action_list;
   std::unique_ptr<base::DictionaryValue> action_sequence(
       new base::DictionaryValue());
   std::unique_ptr<base::ListValue> actions(new base::ListValue());
@@ -163,38 +173,48 @@ TEST(WindowCommandsTest, ProcessInputActionSequencePointerTouch) {
   action_sequence->SetList("actions", std::move(actions));
   const base::DictionaryValue* input_action_sequence = action_sequence.get();
   Status status =
-      ProcessInputActionSequence(&session, input_action_sequence, &result);
+      ProcessInputActionSequence(&session, input_action_sequence, &action_list);
   ASSERT_TRUE(status.IsOk());
 
   // check resulting action dictionary
-  const base::ListValue* actions_result;
-  const base::DictionaryValue* action_result;
   std::string pointer_type;
   std::string source_type;
   std::string id;
   std::string action_type;
   int x, y;
 
-  result->GetString("sourceType", &source_type);
-  result->GetString("pointerType", &pointer_type);
-  result->GetString("id", &id);
+  ASSERT_EQ(3U, action_list.size());
+  const base::DictionaryValue* action1 = action_list[0].get();
+  action1->GetString("type", &source_type);
+  action1->GetString("pointerType", &pointer_type);
+  action1->GetString("id", &id);
   ASSERT_EQ("pointer", source_type);
   ASSERT_EQ("touch", pointer_type);
   ASSERT_EQ("pointer1", id);
-
-  result->GetList("actions", &actions_result);
-  ASSERT_EQ(3U, actions_result->GetSize());
-  actions_result->GetDictionary(0, &action_result);
-  action_result->GetString("subtype", &action_type);
-  action_result->GetInteger("x", &x);
-  action_result->GetInteger("y", &y);
+  action1->GetString("subtype", &action_type);
+  action1->GetInteger("x", &x);
+  action1->GetInteger("y", &y);
   ASSERT_EQ("pointerMove", action_type);
   ASSERT_EQ(30, x);
   ASSERT_EQ(60, y);
-  actions_result->GetDictionary(1, &action_result);
-  action_result->GetString("subtype", &action_type);
+
+  const base::DictionaryValue* action2 = action_list[1].get();
+  action2->GetString("type", &source_type);
+  action2->GetString("pointerType", &pointer_type);
+  action2->GetString("id", &id);
+  ASSERT_EQ("pointer", source_type);
+  ASSERT_EQ("touch", pointer_type);
+  ASSERT_EQ("pointer1", id);
+  action2->GetString("subtype", &action_type);
   ASSERT_EQ("pointerDown", action_type);
-  actions_result->GetDictionary(2, &action_result);
-  action_result->GetString("subtype", &action_type);
+
+  const base::DictionaryValue* action3 = action_list[2].get();
+  action3->GetString("type", &source_type);
+  action3->GetString("pointerType", &pointer_type);
+  action3->GetString("id", &id);
+  ASSERT_EQ("pointer", source_type);
+  ASSERT_EQ("touch", pointer_type);
+  ASSERT_EQ("pointer1", id);
+  action3->GetString("subtype", &action_type);
   ASSERT_EQ("pointerUp", action_type);
 }

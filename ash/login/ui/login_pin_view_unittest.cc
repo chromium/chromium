@@ -33,6 +33,8 @@ class LoginPinViewTest : public LoginTestBase {
                          base::BindRepeating(&LoginPinViewTest::OnPinKey,
                                              base::Unretained(this)),
                          base::BindRepeating(&LoginPinViewTest::OnPinBackspace,
+                                             base::Unretained(this)),
+                         base::BindRepeating(&LoginPinViewTest::OnPinBack,
                                              base::Unretained(this)));
 
     SetWidget(CreateWidgetWithContent(view_));
@@ -41,11 +43,14 @@ class LoginPinViewTest : public LoginTestBase {
   // Called when a password is submitted.
   void OnPinKey(int value) { value_ = value; }
   void OnPinBackspace() { ++backspace_; }
+  void OnPinBack() { ++back_; }
 
   LoginPinView* view_ = nullptr;  // Owned by test widget view hierarchy.
   base::Optional<int> value_;
   // Number of times the backspace event has been fired.
   int backspace_ = 0;
+  // Number of times the back event has been fired.
+  int back_ = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(LoginPinViewTest);
@@ -74,6 +79,8 @@ TEST_F(LoginPinViewTest, ButtonsFireEvents) {
   test_api.GetBackspaceButton()->RequestFocus();
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
   EXPECT_EQ(1, backspace_);
+
+  EXPECT_EQ(0, back_);
 }
 
 // Validates buttons have the correct spacing for alphanumeric PIN keyboard
@@ -214,6 +221,38 @@ TEST_F(LoginPinViewTest, BackspaceAutoSubmitsAndRepeats) {
   backspace_ = 0;
   generator->ReleaseLeftButton();
   EXPECT_EQ(0, backspace_);
+}
+
+// Verifies that pressing Enter on the "back" button fires the corresponding
+// event.
+TEST_F(LoginPinViewTest, BackButtonEnter) {
+  CreateLoginPinViewWithStyle(LoginPinView::Style::kAlphanumeric);
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  LoginPinView::TestApi test_api(view_);
+
+  EXPECT_FALSE(test_api.GetBackButton()->GetVisible());
+
+  view_->SetBackButtonVisible(true);
+  test_api.GetBackButton()->RequestFocus();
+  EXPECT_EQ(0, back_);
+  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+  EXPECT_EQ(1, back_);
+}
+
+// Verifies that clicking on the "back" button fires the corresponding event.
+TEST_F(LoginPinViewTest, BackButtonClick) {
+  CreateLoginPinViewWithStyle(LoginPinView::Style::kAlphanumeric);
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  LoginPinView::TestApi test_api(view_);
+
+  EXPECT_FALSE(test_api.GetBackButton()->GetVisible());
+
+  view_->SetBackButtonVisible(true);
+  generator->MoveMouseTo(
+      test_api.GetBackButton()->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(0, back_);
+  generator->PressLeftButton();
+  EXPECT_EQ(1, back_);
 }
 
 }  // namespace ash

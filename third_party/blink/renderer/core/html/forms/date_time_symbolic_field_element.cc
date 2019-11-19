@@ -49,10 +49,11 @@ static AtomicString MakeVisibleEmptyValue(const Vector<String>& symbols) {
 DateTimeSymbolicFieldElement::DateTimeSymbolicFieldElement(
     Document& document,
     FieldOwner& field_owner,
+    DateTimeField type,
     const Vector<String>& symbols,
     int minimum,
     int maximum)
-    : DateTimeFieldElement(document, field_owner),
+    : DateTimeFieldElement(document, field_owner, type),
       symbols_(symbols),
       visible_empty_value_(MakeVisibleEmptyValue(symbols)),
       selected_index_(-1),

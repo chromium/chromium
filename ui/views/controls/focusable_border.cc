@@ -18,7 +18,7 @@
 
 namespace {
 
-const int kInsetSize = 1;
+constexpr int kInsetSize = 1;
 
 }  // namespace
 
@@ -26,8 +26,7 @@ namespace views {
 
 FocusableBorder::FocusableBorder() : insets_(kInsetSize) {}
 
-FocusableBorder::~FocusableBorder() {
-}
+FocusableBorder::~FocusableBorder() = default;
 
 void FocusableBorder::SetColorId(
     const base::Optional<ui::NativeTheme::ColorId>& color_id) {
@@ -42,12 +41,12 @@ void FocusableBorder::Paint(const View& view, gfx::Canvas* canvas) {
   gfx::ScopedCanvas scoped(canvas);
   float dsf = canvas->UndoDeviceScaleFactor();
 
-  const int stroke_width_px = 1;
-  flags.setStrokeWidth(SkIntToScalar(stroke_width_px));
+  constexpr int kStrokeWidthPx = 1;
+  flags.setStrokeWidth(SkIntToScalar(kStrokeWidthPx));
 
   // Scale the rect and snap to pixel boundaries.
   gfx::RectF rect(gfx::ScaleToEnclosedRect(view.GetLocalBounds(), dsf));
-  rect.Inset(gfx::InsetsF(stroke_width_px / 2.0f));
+  rect.Inset(gfx::InsetsF(kStrokeWidthPx / 2.0f));
 
   SkPath path;
     flags.setAntiAlias(true);
@@ -81,9 +80,9 @@ SkColor FocusableBorder::GetCurrentColor(const View& view) const {
     color_id = *override_color_id_;
 
   SkColor color = view.GetNativeTheme()->GetSystemColor(color_id);
-  return view.enabled() ? color
-                        : color_utils::BlendTowardMaxContrast(
-                              color, gfx::kDisabledControlAlpha);
+  return view.GetEnabled() ? color
+                           : color_utils::BlendTowardMaxContrast(
+                                 color, gfx::kDisabledControlAlpha);
 }
 
 }  // namespace views

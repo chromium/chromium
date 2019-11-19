@@ -21,20 +21,21 @@ source_set("app_shim") {
 
   deps = [
     "//chrome:strings",
-    "//chrome/browser/ui:ui",
+    "//chrome/app:command_ids",
+    "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
     "//components/crash/content/app",
+    "//components/remote_cocoa/app_shim",
     "//content/public/browser",
     "//ipc",
     "//mojo/core/embedder",
     "//ui/accelerated_widget_mac",
     "//ui/base",
-    "//ui/views:views",
   ]
 }
 
-tweak_info_plist("app_mode_loader_plist") {
+tweak_info_plist("tweak_app_mode_loader_plist") {
   info_plist = "app_mode-Info.plist"
   args = [
     "--breakpad=0",
@@ -43,13 +44,30 @@ tweak_info_plist("app_mode_loader_plist") {
   ]
 }
 
-mac_app_bundle("app_mode_loader") {
-  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
+mac_info_plist("app_mode_loader_plist") {
+  info_plist_target = ":tweak_app_mode_loader_plist"
 
-  info_plist_target = ":app_mode_loader_plist"
+  executable_name = "app_mode_loader"
+
   extra_substitutions = [
     "APP_MODE_APP_BUNDLE_ID=$chrome_mac_bundle_id.app.@APP_MODE_SHORTCUT_ID@",
   ]
+}
+
+bundle_data("app_mode_loader_plist_bundle_data") {
+  sources = get_target_outputs(":app_mode_loader_plist")
+
+  outputs = [
+    "{{bundle_resources_dir}}/app_mode-Info.plist",
+  ]
+
+  public_deps = [
+    ":app_mode_loader_plist",
+  ]
+}
+
+executable("app_mode_loader") {
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   sources = [
     "app_mode_loader_mac.mm",

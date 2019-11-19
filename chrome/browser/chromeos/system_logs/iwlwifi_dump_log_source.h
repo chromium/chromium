@@ -14,6 +14,8 @@
 
 namespace system_logs {
 
+constexpr char kIwlwifiDumpKey[] = "iwlwifi_dump";
+
 // The classes here are used to attach debug dump information from
 // Intel Wi-Fi NICs that will be produced when those NICs have issues
 // such as firmware crashes. This information will be used to help
@@ -49,16 +51,7 @@ class IwlwifiDumpLogSource : public SystemLogsSource {
 };
 
 // Checks to see if |sys_logs| contains the iwlwifi logs key.
-bool ContainsIwlwifiLogs(FeedbackCommon::SystemLogsMap* sys_logs);
-
-// This should be passed as a callback to the fetcher that will fetch logs
-// from the IwlwifiDumpLogSource above. It will merge the
-// |fetched_iwlwifi_response| into the |original_sys_logs| and call the
-// |callback| with that result.
-void MergeIwlwifiLogs(
-    std::unique_ptr<FeedbackCommon::SystemLogsMap> original_sys_logs,
-    system_logs::SysLogsFetcherCallback callback,
-    std::unique_ptr<system_logs::SystemLogsResponse> fetched_iwlwifi_response);
+bool ContainsIwlwifiLogs(const FeedbackCommon::SystemLogsMap* sys_logs);
 
 }  // namespace system_logs
 

@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS .grid 1
+PASS .grid 2
+PASS .grid 3
+FAIL .grid 4 assert_equals: 
+<div class="grid" style="-webkit-writing-mode: vertical-lr">
+  <div id="baseline6" data-offset-x="18" class="firstRowFirstColumn alignSelfBaseline">ahem</div>
+  <div id="baseline7" data-offset-x="18" class="firstRowSecondColumn alignSelfBaseline"><img src="../../fast/replaced/resources/1x1-blue.png" style="width: 50px;"></div>
+  <div data-expected-width="50" data-offset-x="25" class="firstRowThirdColumn alignSelfCenter"><img src="../../fast/replaced/resources/1x1-blue.png" style="width: 50px; vertical-align: middle"></div>
+  <div data-expected-width="50" data-offset-x="0" class="firstRowFourthColumn alignSelfBaseline"><img src="../../fast/replaced/resources/1x1-blue.png" style="width: 50px; vertical-align: middle"></div>
+  <div data-expected-width="100" data-offset-x="0" class="firstRowFifthColumn" style="width: 100px;"></div>
+</div>
+offsetLeft expected 18 but got 17
+PASS .grid 5
+Harness: the test ran to completion.
+

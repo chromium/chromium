@@ -24,7 +24,7 @@ source_set("transitions") {
 
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/ui/util",
   ]
 }

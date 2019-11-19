@@ -15,19 +15,11 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "media/base/encryption_pattern.h"
+#include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
 #include "media/base/subsample_entry.h"
 
 namespace media {
-
-// The encryption mode. The definitions are from ISO/IEC 23001-7:2016.
-// TODO(crbug.com/825041): Merge this with existing media::EncryptionScheme.
-enum class EncryptionMode {
-  kUnencrypted = 0,
-  kCenc,  // 'cenc' subsample encryption using AES-CTR mode.
-  kCbcs,  // 'cbcs' pattern encryption using AES-CBC mode.
-  kMaxValue = kCbcs
-};
 
 // Contains all information that a decryptor needs to decrypt a media sample.
 class MEDIA_EXPORT DecryptConfig {
@@ -57,7 +49,7 @@ class MEDIA_EXPORT DecryptConfig {
       const std::vector<SubsampleEntry>& subsamples,
       base::Optional<EncryptionPattern> encryption_pattern);
 
-  DecryptConfig(const EncryptionMode& encryption_mode,
+  DecryptConfig(EncryptionScheme encryption_scheme,
                 const std::string& key_id,
                 const std::string& iv,
                 const std::vector<SubsampleEntry>& subsamples,
@@ -67,7 +59,7 @@ class MEDIA_EXPORT DecryptConfig {
   const std::string& key_id() const { return key_id_; }
   const std::string& iv() const { return iv_; }
   const std::vector<SubsampleEntry>& subsamples() const { return subsamples_; }
-  const EncryptionMode& encryption_mode() const { return encryption_mode_; }
+  EncryptionScheme encryption_scheme() const { return encryption_scheme_; }
   const base::Optional<EncryptionPattern>& encryption_pattern() const {
     return encryption_pattern_;
   }
@@ -92,7 +84,7 @@ class MEDIA_EXPORT DecryptConfig {
  private:
   DecryptConfig(const DecryptConfig& other);
 
-  const EncryptionMode encryption_mode_;
+  const EncryptionScheme encryption_scheme_;
   const std::string key_id_;
 
   // Initialization vector.

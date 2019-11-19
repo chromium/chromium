@@ -8,7 +8,8 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import java.util.HashSet;
 import java.util.Set;

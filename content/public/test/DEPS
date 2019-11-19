@@ -1,8 +1,9 @@
 include_rules = [
   "-content",
-  "+content/common/service_worker/service_worker_types.h",
   "+content/public",
+  "+components/discardable_memory/service",
   "+components/download/public/common",
+  "+components/leveldb_proto/public",
   "+components/viz/common",
   "+components/viz/host",
   "+components/viz/service",
@@ -10,9 +11,12 @@ include_rules = [
   "+services/audio/public/mojom",
   "+services/network",
   "+services/service_manager",
+  "+services/tracing/public/cpp",
+  "+testing/android/native_test/native_browser_test_support.h",
   "+ui/ozone/public",
-  "+ui/views/test",
+  "+ui/views",
   "+v8/include/v8.h",
+  "+ui/platform_window/common/platform_window_defaults.h",
 ]
 
 # Ensure we don't leak internal content headers through public headers.

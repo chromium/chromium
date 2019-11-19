@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test worker termination on script fetch failure</title>
+<body></body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+// This test should not be upstreamed to WPT because of using Internals API.
+
+function run_test(worker_url, worker_options, fetch_type) {
+  promise_test(async t => {
+    assert_equals(window.internals.workerThreadCount, 0);
+    const worker = new Worker(worker_url, worker_options);
+
+    // A failure of worker script fetch should be reported to the onerror
+    // handler.
+    await new Promise(resolve => worker.onerror = resolve);
+
+    // Also, it should terminate the worker thread.
+    await new Promise(resolve => {
+      const timer = setInterval(() => {
+        if (window.internals.workerThreadCount === 0) {
+          clearInterval(timer);
+          resolve();
+        }
+      }, 10);
+    });
+  }, `A failure on ${fetch_type} fetch should terminate the worker`);
+}
+
+// Loading non-existent top-level classic worker script should terminate the
+// worker.
+run_test('resources/non-existent-script.js',
+         { type: 'classic' },
+         'top-level classic worker script');
+
+// Loading non-existent top-level module worker script should terminate the
+// worker.
+run_test('resources/non-existent-script.js',
+         { type: 'module' },
+         'top-level module worker script');
+
+// Static import to non-existent module worker script should terminate the
+// worker.
+run_test('resources/worker-static-import-nonexistent-script.js',
+         { type: 'module' },
+         'static import');
+
+</script>

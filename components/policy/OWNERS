@@ -1,10 +1,12 @@
 atwilson@chromium.org
 bartfab@chromium.org
 emaxx@chromium.org
-ljusten@chromium.org
+hendrich@chromium.org
 pastarmovj@chromium.org
 pmarko@chromium.org
 poromov@chromium.org
 rsorokin@chromium.org
+zmin@chromium.org
 
-# COMPONENT: Enterprise
+# COMPONENT: Enterprise>CloudPolicy
+# TEAM: chromium-reviews@chromium.org

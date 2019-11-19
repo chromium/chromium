@@ -29,7 +29,8 @@ class MEDIA_EXPORT AudioPushFifo final {
   // Push().  If zero or positive, the output contains data from the current
   // call to Push().  Clients can use this to adjust timestamps.
   using OutputCallback =
-      base::Callback<void(const AudioBus& output_bus, int frame_delay)>;
+      base::RepeatingCallback<void(const AudioBus& output_bus,
+                                   int frame_delay)>;
 
   // Creates a new AudioPushFifo which delivers re-buffered audio by running
   // |callback|.

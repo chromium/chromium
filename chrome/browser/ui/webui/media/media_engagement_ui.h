@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_MEDIA_MEDIA_ENGAGEMENT_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_MEDIA_MEDIA_ENGAGEMENT_UI_H_
 
+#include <memory>
+
 #include "base/macros.h"
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 // The UI for chrome://media-engagement/.
@@ -17,7 +20,8 @@ class MediaEngagementUI : public ui::MojoWebUIController {
 
  private:
   void BindMediaEngagementScoreDetailsProvider(
-      media::mojom::MediaEngagementScoreDetailsProviderRequest request);
+      mojo::PendingReceiver<media::mojom::MediaEngagementScoreDetailsProvider>
+          receiver);
 
   std::unique_ptr<media::mojom::MediaEngagementScoreDetailsProvider>
       ui_handler_;

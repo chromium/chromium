@@ -26,8 +26,7 @@ DecryptingMediaResource::DecryptingMediaResource(
     : media_resource_(media_resource),
       cdm_context_(cdm_context),
       media_log_(media_log),
-      task_runner_(task_runner),
-      weak_factory_(this) {
+      task_runner_(task_runner) {
   DCHECK(media_resource);
   DCHECK_EQ(MediaResource::STREAM, media_resource->GetType());
   DCHECK(cdm_context_);
@@ -86,7 +85,7 @@ int DecryptingMediaResource::DecryptingDemuxerStreamCountForTesting() const {
 void DecryptingMediaResource::OnDecryptingDemuxerInitialized(
     PipelineStatus status) {
   DVLOG(2) << __func__ << ": DecryptingDemuxerStream initialization ended "
-           << "with the status: " << MediaLog::PipelineStatusToString(status);
+           << "with the status: " << status;
 
   // Decrement the count of DecryptingDemuxerStreams that need to be
   // initialized.

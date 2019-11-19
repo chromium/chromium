@@ -5,6 +5,7 @@
 
 '''Unit tests for grit.gather.rc'''
 
+from __future__ import print_function
 
 import os
 import sys
@@ -12,7 +13,8 @@ if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
 import unittest
-import StringIO
+
+from six import StringIO
 
 from grit.gather import rc
 from grit import util
@@ -40,7 +42,7 @@ BEGIN
 END
 ''' % self.part_we_want
 
-    f = StringIO.StringIO(buf)
+    f = StringIO(buf)
 
     out = rc.Section(f, 'IDC_KLONKACC')
     out.ReadSection()
@@ -57,7 +59,7 @@ END
 
 
   def testDialog(self):
-    dlg = rc.Dialog(StringIO.StringIO('''IDD_ABOUTBOX DIALOGEX 22, 17, 230, 75
+    dlg = rc.Dialog(StringIO('''IDD_ABOUTBOX DIALOGEX 22, 17, 230, 75
 STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "System", 0, 0, 0x0
@@ -84,7 +86,7 @@ END
     self.failUnless(transl.strip() == dlg.GetText().strip())
 
   def testAlternateSkeleton(self):
-    dlg = rc.Dialog(StringIO.StringIO('''IDD_ABOUTBOX DIALOGEX 22, 17, 230, 75
+    dlg = rc.Dialog(StringIO('''IDD_ABOUTBOX DIALOGEX 22, 17, 230, 75
 STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "System", 0, 0, 0x0
@@ -95,7 +97,7 @@ END
 '''), 'IDD_ABOUTBOX')
     dlg.Parse()
 
-    alt_dlg = rc.Dialog(StringIO.StringIO('''IDD_ABOUTBOX DIALOGEX 040704, 17, 230, 75
+    alt_dlg = rc.Dialog(StringIO('''IDD_ABOUTBOX DIALOGEX 040704, 17, 230, 75
 STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 CAPTION "XXXXXXXXX"
 FONT 8, "System", 0, 0, 0x0
@@ -112,7 +114,7 @@ END
     self.failUnless(transl.count('Yipee skippy'))
 
   def testMenu(self):
-    menu = rc.Menu(StringIO.StringIO('''IDC_KLONK MENU
+    menu = rc.Menu(StringIO('''IDC_KLONK MENU
 BEGIN
     POPUP "&File """
     BEGIN
@@ -141,7 +143,7 @@ END'''), 'IDC_KLONK')
     self.failUnless(transl.strip() == menu.GetText().strip())
 
   def testVersion(self):
-    version = rc.Version(StringIO.StringIO('''
+    version = rc.Version(StringIO('''
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION 1,0,0,1
  PRODUCTVERSION 1,0,0,1
@@ -184,7 +186,7 @@ END
 
 
   def testRegressionDialogBox(self):
-    dialog = rc.Dialog(StringIO.StringIO('''
+    dialog = rc.Dialog(StringIO('''
 IDD_SIDEBAR_WEATHER_PANEL_PROPPAGE DIALOGEX 0, 0, 205, 157
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -208,7 +210,7 @@ END'''.strip()), 'IDD_SIDEBAR_WEATHER_PANEL_PROPPAGE')
 
 
   def testRegressionDialogBox2(self):
-    dialog = rc.Dialog(StringIO.StringIO('''
+    dialog = rc.Dialog(StringIO('''
 IDD_SIDEBAR_EMAIL_PANEL_PROPPAGE DIALOG DISCARDABLE 0, 0, 264, 220
 STYLE WS_CHILD
 FONT 8, "MS Shell Dlg"
@@ -228,7 +230,7 @@ END'''.strip()), 'IDD_SIDEBAR_EMAIL_PANEL_PROPPAGE')
 
 
   def testRegressionMenuId(self):
-    menu = rc.Menu(StringIO.StringIO('''
+    menu = rc.Menu(StringIO('''
 IDR_HYPERMENU_FOLDER MENU
 BEGIN
     POPUP "HyperFolder"
@@ -240,7 +242,7 @@ END'''.strip()), 'IDR_HYPERMENU_FOLDER')
     self.failUnless(len(menu.GetTextualIds()) == 2)
 
   def testRegressionNewlines(self):
-    menu = rc.Menu(StringIO.StringIO('''
+    menu = rc.Menu(StringIO('''
 IDR_HYPERMENU_FOLDER MENU
 BEGIN
     POPUP "Hyper\\nFolder"
@@ -254,7 +256,7 @@ END'''.strip()), 'IDR_HYPERMENU_FOLDER')
     self.failUnless(transl.find('\\\\n') == -1)
 
   def testRegressionTabs(self):
-    menu = rc.Menu(StringIO.StringIO('''
+    menu = rc.Menu(StringIO('''
 IDR_HYPERMENU_FOLDER MENU
 BEGIN
     POPUP "Hyper\\tFolder"
@@ -280,7 +282,7 @@ END'''.strip()), 'IDR_HYPERMENU_FOLDER')
     self.failUnless(unescaped == '..\\..\\trs\\res\\nav_first.gif')
 
   def testRegressionDialogItemsTextOnly(self):
-    dialog = rc.Dialog(StringIO.StringIO('''IDD_OPTIONS_SEARCH DIALOGEX 0, 0, 280, 292
+    dialog = rc.Dialog(StringIO('''IDD_OPTIONS_SEARCH DIALOGEX 0, 0, 280, 292
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP |
     WS_DISABLED | WS_CAPTION | WS_SYSMENU
 CAPTION "Search"
@@ -301,7 +303,7 @@ END'''), 'IDD_OPTIONS_SEARCH')
     self.failUnless('Use Google site:' in translateables)
 
   def testAccelerators(self):
-    acc = rc.Accelerators(StringIO.StringIO('''\
+    acc = rc.Accelerators(StringIO('''\
 IDR_ACCELERATOR1 ACCELERATORS
 BEGIN
     "^C",           ID_ACCELERATOR32770,    ASCII,  NOINVERT
@@ -318,7 +320,7 @@ END
 
 
   def testRegressionEmptyString(self):
-    dlg = rc.Dialog(StringIO.StringIO('''\
+    dlg = rc.Dialog(StringIO('''\
 IDD_CONFIRM_QUIT_GD_DLG DIALOGEX 0, 0, 267, 108
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP |
     WS_CAPTION

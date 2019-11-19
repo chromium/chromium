@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<style>
+section {
+  border: 1px solid blue;
+}
+div {
+  font: 20px Arial;
+}
+.no-kern {
+  font-kerning: none;
+}
+.pre > div { white-space: pre; }
+.pre-wrap > div { white-space: pre-wrap; }
+</style>
+<body>
+  <p>For each section,
+    the first and the second should be the same.
+    If the third is also the same, the test is invalid.
+  </p>
+  <section class="pre">
+    <div><span class="no-kern">AV</span></div>
+    <div><span>A&#8204;V</span></div>
+    <div><span>AV</span></div>
+  </section>
+  <section class="pre-wrap">
+    <div><span class="no-kern">AV</span></div>
+    <div><span>A&#8204;V</span></div>
+    <div><span>AV</span></div>
+  </section>
+  <section class="pre">
+    <div><span class="no-kern">A A</span></div>
+    <div><span>A&#8204; &#8204;A</span></div>
+    <div><span>A A</span></div>
+  </section>
+  <section class="pre-wrap">
+    <div><span class="no-kern">A A</span></div>
+    <div><span>A&#8204; &#8204;A</span></div>
+    <div><span>A A</span></div>
+  </section>
+</body>

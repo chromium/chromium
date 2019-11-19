@@ -12,7 +12,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/libxml/chromium/libxml_utils.h"
+#include "third_party/libxml/chromium/xml_reader.h"
+#include "third_party/libxml/chromium/xml_writer.h"
 #include "third_party/protobuf/src/google/protobuf/text_format.h"
 #include "tools/traffic_annotation/auditor/traffic_annotation_auditor.h"
 
@@ -185,7 +186,7 @@ void TrafficAnnotationExporter::UpdateAnnotations(
     int content_hash_code = annotation.GetContentHashCode();
     // If annotation unique id is already in the imported annotations list,
     // check if other fields have changed.
-    if (base::ContainsKey(archive_, annotation.proto.unique_id())) {
+    if (base::Contains(archive_, annotation.proto.unique_id())) {
       ArchivedAnnotation* current = &archive_[annotation.proto.unique_id()];
 
       // Check second id.
@@ -197,7 +198,7 @@ void TrafficAnnotationExporter::UpdateAnnotations(
       }
 
       // Check platform.
-      if (!base::ContainsValue(current->os_list, current_platform_)) {
+      if (!base::Contains(current->os_list, current_platform_)) {
         current->os_list.push_back(current_platform_);
         modified_ = true;
       }
@@ -236,10 +237,10 @@ void TrafficAnnotationExporter::UpdateAnnotations(
 
   // If a none-reserved annotation is removed from current platform, update it.
   for (auto& item : archive_) {
-    if (base::ContainsValue(item.second.os_list, current_platform_) &&
+    if (base::Contains(item.second.os_list, current_platform_) &&
         item.second.content_hash_code != -1 &&
-        !base::ContainsKey(current_platform_hashcodes,
-                           item.second.unique_id_hash_code)) {
+        !base::Contains(current_platform_hashcodes,
+                        item.second.unique_id_hash_code)) {
       base::Erase(item.second.os_list, current_platform_);
       modified_ = true;
     }
@@ -247,7 +248,7 @@ void TrafficAnnotationExporter::UpdateAnnotations(
 
   // If there is a new reserved id, add it.
   for (const auto& item : reserved_ids) {
-    if (!base::ContainsKey(archive_, item.second)) {
+    if (!base::Contains(archive_, item.second)) {
       ArchivedAnnotation new_item;
       new_item.unique_id_hash_code = item.first;
       new_item.os_list = all_supported_platforms_;
@@ -364,7 +365,7 @@ void TrafficAnnotationExporter::CheckArchivedAnnotations(
   // Check for annotation hash code duplications.
   std::map<int, std::string> used_codes;
   for (auto& item : archive_) {
-    if (base::ContainsKey(used_codes, item.second.unique_id_hash_code)) {
+    if (base::Contains(used_codes, item.second.unique_id_hash_code)) {
       AuditorResult error(AuditorResult::Type::ERROR_HASH_CODE_COLLISION);
       error.AddDetail(used_codes[item.second.unique_id_hash_code]);
       error.AddDetail(item.first);
@@ -387,7 +388,7 @@ void TrafficAnnotationExporter::CheckArchivedAnnotations(
   // Check that listed OSes are valid.
   for (const auto& pair : archive_) {
     for (const auto& os : pair.second.os_list) {
-      if (!base::ContainsValue(all_supported_platforms_, os)) {
+      if (!base::Contains(all_supported_platforms_, os)) {
         AuditorResult error(AuditorResult::Type::ERROR_INVALID_OS,
                             std::string(), kAnnotationsXmlPath.MaybeAsASCII(),
                             AuditorResult::kNoCodeLineSpecified);
@@ -463,7 +464,7 @@ std::string TrafficAnnotationExporter::GetXMLDifferences(
   }
 
   for (const std::string& id : old_keys) {
-    if (base::ContainsKey(new_items, id) && old_items[id] != new_items[id]) {
+    if (base::Contains(new_items, id) && old_items[id] != new_items[id]) {
       message +=
           base::StringPrintf("\n\tUpdate line: '%s' --> '%s'",
                              old_items[id].c_str(), new_items[id].c_str());

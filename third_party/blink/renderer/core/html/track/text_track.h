@@ -28,9 +28,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_TEXT_TRACK_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/html/track/track_base.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -127,13 +127,19 @@ class CORE_EXPORT TextTrack : public EventTargetWithInlineData,
 
   virtual bool IsDefault() const { return false; }
 
-  void RemoveAllCues();
+  void Reset();
 
   // EventTarget methods
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
   void Trace(Visitor*) override;
+
+  const HeapVector<Member<CSSStyleSheet>>& GetCSSStyleSheets() const {
+    return style_sheets_;
+  }
+
+  void SetCSSStyleSheets(HeapVector<Member<CSSStyleSheet>>);
 
  protected:
   void AddListOfCues(HeapVector<Member<TextTrackCue>>&);
@@ -142,8 +148,9 @@ class CORE_EXPORT TextTrack : public EventTargetWithInlineData,
   CueTimeline* GetCueTimeline() const;
 
   TextTrackCueList* EnsureTextTrackCueList();
-  TraceWrapperMember<TextTrackCueList> cues_;
+  Member<TextTrackCueList> cues_;
   Member<TextTrackCueList> active_cues_;
+  HeapVector<Member<CSSStyleSheet>> style_sheets_;
 
   Member<TextTrackList> track_list_;
   AtomicString mode_;

@@ -1,0 +1,9 @@
+<!doctype html>
+<p>You should see the word PASS below.</p>
+<div id="host"></div>
+<script>
+  const root = host.createShadowRoot();
+  root.innerHTML = '<content><span style="display:none">PASS</span></content>';
+  host.offsetTop;
+  root.firstChild.firstChild.style.display = "";
+</script>

@@ -5,9 +5,9 @@
 ; --- The contents of common.sb implicitly included here. ---
 
 ; Injected parameters.
-(define darwin-user-cache-dir "DARWIN_USER_CACHE_DIR")
 (define network-service-storage-paths-count "NETWORK_SERVICE_STORAGE_PATHS_COUNT")
 (define network-service-storage-path-n "NETWORK_SERVICE_STORAGE_PATH_")
+(define network-service-test-certs-dir "NETWORK_SERVICE_TEST_CERTS_DIR")
 
 ; Allow access to the [0,N) storage location paths.
 (let ((count (string->number (param network-service-storage-paths-count))))
@@ -43,15 +43,18 @@
 ; Certificate databases.
 (allow file-read*
   (path "/Library/Preferences/com.apple.security.plist")
-  (path "/System/Library/Keychains/SystemTrustSettings.plist")
   (subpath "/Library/Keychains")
+  (subpath "/System/Library/Keychains")
   (subpath "/System/Library/Security")
   (subpath "/private/var/db/mds")
   (subpath (user-homedir-path "/Library/Keychains"))
 )
 (allow file-read* file-write*
   (subpath (param darwin-user-cache-dir))
+  (subpath (param darwin-user-temp-dir))
 )
+(if (param-defined? network-service-test-certs-dir)
+  (allow file-read* (subpath (param network-service-test-certs-dir))))
 
 ; Network socket access.
 (allow network-outbound
@@ -105,4 +108,14 @@
 
 (allow sysctl-read
   (sysctl-name-regex #"^net.routetable")
+)
+
+; Kerberos support. This should be removed after GSS is moved out of the
+; network service. https://crbug.com/1017830
+(allow mach-lookup
+  (global-name "org.h5l.kcm")
+)
+(allow file-read*
+  (path "/private/etc/krb5.conf")
+  (subpath "/System/Library/KerberosPlugins/KerberosFrameworkPlugins")
 )

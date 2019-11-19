@@ -47,9 +47,16 @@ class MockSettings : public Settings {
   MOCK_CONST_METHOD0(sber_enabled, bool());
   MOCK_CONST_METHOD0(chrome_mojo_pipe_token, const std::string&());
   MOCK_CONST_METHOD0(has_parent_pipe_handle, bool());
+  MOCK_CONST_METHOD0(prompt_using_mojo, bool());
+  MOCK_CONST_METHOD0(prompt_response_read_handle, HANDLE());
+  MOCK_CONST_METHOD0(prompt_request_write_handle, HANDLE());
+  MOCK_CONST_METHOD0(switches_valid_for_ipc, bool());
+  MOCK_CONST_METHOD0(has_any_ipc_switch, bool());
   MOCK_CONST_METHOD0(execution_mode, ExecutionMode());
   MOCK_CONST_METHOD0(locations_to_scan,
                      const std::vector<UwS::TraceLocation>&());
+  MOCK_CONST_METHOD0(open_file_size_limit, int64_t());
+  MOCK_CONST_METHOD0(run_without_sandbox_for_testing, bool());
 };
 
 }  // namespace chrome_cleaner

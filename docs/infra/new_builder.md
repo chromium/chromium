@@ -8,24 +8,15 @@ on chromium builders, but parts may be applicable to other projects.
 ## TL;DR
 
 For a typical chromium builder using the chromium recipe,
-you'll need to acquire hardware and then land **three** CLs:
+you'll need to acquire a host and then land **three** CLs:
 
-1. in [infradata/config][16], modifying swarming's bots.cfg.
+1. in [infradata/config][16], modifying `chromium.star`.
 2. in [chromium/tools/build][17], modifying the chromium\_tests
    configuration.
 3. in [chromium/src][18], modifying all of the following:
     1. LUCI service configurations in `//infra/config`
     2. Compile configuration in `//tools/mb`
     3. Test configuration in `//testing/buildbot`
-
-## Obtain hardware
-
-If you're setting up a new builder, you'll typically need hardware to run it.
-For CI / waterfall builders or manually triggered try builders,
-[file a labs bug][1] (internal).
-For CQ try bots, please file a [capacity bug][2] (internal) first.
-In both cases, note that your builder will be running on swarming
-(not on buildbot) and should be provisioned accordingly.
 
 ## Pick a name and a master
 
@@ -38,47 +29,49 @@ though buildbot itself is largely deprecated). FYI builders should use
 > **Note:** If you're creating a try builder, its name should match the
 > name of the CI builder it mirrors.
 
+## Obtain a host
+
+When you're setting up a new builder, you'll need a host to run it. For CQ try
+bots, you'll likely need a large number of hosts to handle the load in parallel.
+For CI / waterfall builders or manually triggered try builders, you'll typically
+only need a single host.
+
+To acquire the hosts, please file a [capacity bug][1] (internal) and describe
+the amount needed, along with any specialized hardware that's required (e.g.
+mac hardware, attached mobile devices, a specific GPU, etc.).
+
 ## Register hardware with swarming
 
-Once you've obtained hardware, you'll need to associate it with your
-new builder in swarming. You can do so by modifying the relevant swarming
-instance's configuration.
+Once your resource request has been approved and you've obtained the hardware,
+you'll need to associate it with your new builder in swarming. You can do so by
+modifying the relevant swarming instance's configuration.
 
-Swarming's bots.cfg schema is [here][20].
-chromium-swarm's bots.cfg instance is [here][4].
+This configuration is written in Starlark, and then used to generate Protobuf
+files which are also checked in to the repo. Chromium's configuration is in
+[`chromium.star`][4] (internal only).
 
-You'll want to add something like the following:
+If you're simply using a generic GCE bot, find the stanza corresponding to
+the OS and size that you want, and increment the number of bots allocated for
+that configuration. For example:
 
-``` sh
-bot_group {
-  dimensions: "builder:$BUILDER_NAME"
-  # Add a brief comment about hardware, particularly if you're doing
-  # anything unique or atypical.
-  # $COMMENT_ABOUT_HARDWARE
-  bot_id: "$HARDWARE"
+```diff
+    # os:Ubuntu-16.04, cpu:x86-64
+    chrome.gce_xenial(
+        prefix = 'luci-chromium-ci-xenial-8',
+        zone = 'us-central1-b',
+        disk_gb = 400,
+        lifetime = time.week,
+-       amount = 20,
++       amount = 21,
+    )
+```
 
-  # luci-eng@google.com is typically fine for generic chromium builders.
-  # If you're doing something more specialized, or if you're creating
-  # a non-chromium builder, consider a different list.
-  owners: "$OWNER_EMAIL"
+If you've been given a specific hostname, instead add an entry for your bot
+name to be mapped to that hostname. For example:
 
-  # See the schema for more information on these options. The values
-  # listed below should be reasonable defaults for chromium builders.
-  auth {
-    require_luci_machine_token: true
-    ip_whitelist: "chromium-swarm-bots"
-  }
-
-  # This is the service account used by the swarming bot to authenticate to
-  # LUCI services for system purposes (i.e., not within tasks).
-  # For chromium builders, the bots-chrome@ account below should be fine.
-  system_service_account: "bots-chrome@chromium-swarm.iam.gserviceaccount.com"
-
-  # POOL_NAME should be:
-  #   - luci.chromium.ci for public chromium CI / waterfall builders
-  #   - luci.chromium.try for public chromium try builders
-  dimensions: "pool:$POOL_NAME"
-}
+```diff
++   # os:Ubuntu-16.04, cpu:x86-64
++   'Linux Tests': 'swarm1234-c4',
 ```
 
 ## Recipe configuration
@@ -212,6 +205,12 @@ buckets {
       #
       mixins: "$MASTER_NAME_MIXIN"
 
+      # If you're running a bunch of bots on GCE, you probably don't
+      # want those bots to be keyed by buildername. Rather, they should
+      # share the large pool with all the other bots using similar hardware.
+      # To enable this, use the builderless mixin:
+      mixins: builderless
+
       # Add other mixins and dimensions as necessary. You will
       # usually at least want an os dimension configured, so if
       # none of your included mixins have one, consider adding one.
@@ -229,7 +228,7 @@ consoles.
 Milo's configuration schema is [here][9].
 Chromium's milo configuration is [here][10].
 
-A typical chromium builder should be added to one or two consoles 
+A typical chromium builder should be added to one or two consoles
 at most: one corresponding to its master, and possibly the main
 console, e.g.
 
@@ -317,8 +316,7 @@ If you're in need of further assistance, if you're not sure about
 one or more steps, or if you found this documentation lacking, please
 reach out to infra-dev@chromium.org or [file a bug][19]!
 
-[1]: http://go/infrasys-bug
-[2]: http://go/cci-capacity-bug
+[1]: http://go/file-chrome-resource-bug
 [3]: https://bit.ly/chromium-build-naming
 [4]: https://luci-config.appspot.com/#/services/chromium-swarm
 [5]: https://chromium.googlesource.com/chromium/tools/build/+/master/scripts/slave/recipe_modules/chromium_tests

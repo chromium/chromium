@@ -67,6 +67,11 @@ class VIEWS_EXPORT Background {
 // Creates a background that fills the canvas in the specified color.
 VIEWS_EXPORT std::unique_ptr<Background> CreateSolidBackground(SkColor color);
 
+// Creates a background that fills the canvas with rounded corners.
+VIEWS_EXPORT std::unique_ptr<Background> CreateRoundedRectBackground(
+    SkColor color,
+    float radius);
+
 // Creates a background that fills the canvas in the color specified by the
 // view's NativeTheme and the given color identifier.
 VIEWS_EXPORT std::unique_ptr<Background> CreateThemedSolidBackground(

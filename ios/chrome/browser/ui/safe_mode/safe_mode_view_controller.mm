@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
 
@@ -79,7 +80,7 @@ const NSTimeInterval kUploadTotalTime = 5;
   // If uploading is enabled and more than one report has stacked up, then we
   // assume that the app may be in a state that is preventing crash report
   // uploads before crashing again.
-  return breakpad_helper::IsUploadingEnabled() &&
+  return breakpad_helper::UserEnabledUploading() &&
          breakpad_helper::GetCrashReportCount() > 1;
 }
 
@@ -153,22 +154,18 @@ const NSTimeInterval kUploadTotalTime = 5;
   }
   UIScrollView* scrollView = [[UIScrollView alloc] initWithFrame:mainBounds];
   self.view = scrollView;
-  [self.view setBackgroundColor:[UIColor colorWithWhite:0.902 alpha:1.0]];
+  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   const CGFloat kIPadInset =
       (mainBounds.size.width - kIPadWidth - kHorizontalSpacing) / 2;
   const CGFloat widthInset = IsIPadIdiom() ? kIPadInset : kHorizontalSpacing;
   innerView_ = [[UIView alloc]
       initWithFrame:CGRectInset(mainBounds, widthInset, kVerticalSpacing * 2)];
-  [innerView_ setBackgroundColor:[UIColor whiteColor]];
-  [innerView_ layer].cornerRadius = 3;
-  [innerView_ layer].borderWidth = 1;
-  [innerView_ layer].borderColor =
-      [UIColor colorWithWhite:0.851 alpha:1.0].CGColor;
-  [innerView_ layer].masksToBounds = YES;
   [scrollView addSubview:innerView_];
 
-  UIImage* fatalImage = [UIImage imageNamed:@"fatal_error.png"];
+  UIImage* fatalImage = [[UIImage imageNamed:@"fatal_error.png"]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   UIImageView* imageView = [[UIImageView alloc] initWithImage:fatalImage];
+  imageView.tintColor = [UIColor colorNamed:kPlaceholderImageTintColor];
   // Shift the image down a bit.
   CGRect imageFrame = [imageView frame];
   imageFrame.origin.y = kVerticalSpacing;
@@ -178,8 +175,7 @@ const NSTimeInterval kUploadTotalTime = 5;
 
   UILabel* awSnap = [[UILabel alloc] init];
   [awSnap setText:NSLocalizedString(@"IDS_IOS_SAFE_MODE_AW_SNAP", @"")];
-  [awSnap setBackgroundColor:[UIColor clearColor]];
-  [awSnap setTextColor:[UIColor blackColor]];
+  awSnap.textColor = [UIColor colorNamed:kTextPrimaryColor];
   [awSnap setFont:[UIFont boldSystemFontOfSize:21]];
   [awSnap sizeToFit];
   [self centerView:awSnap afterView:imageView];
@@ -187,8 +183,7 @@ const NSTimeInterval kUploadTotalTime = 5;
 
   UILabel* description = [[UILabel alloc] init];
   [description setText:[self startupCrashModuleText]];
-  [description setBackgroundColor:[UIColor clearColor]];
-  [description setTextColor:[UIColor colorWithWhite:0.31 alpha:1.0]];
+  description.textColor = [UIColor colorNamed:kTextSecondaryColor];
   [description setTextAlignment:NSTextAlignmentCenter];
   [description setNumberOfLines:0];
   [description setLineBreakMode:NSLineBreakByWordWrapping];
@@ -237,9 +232,8 @@ const NSTimeInterval kUploadTotalTime = 5;
       [uploadDescription_
           setText:NSLocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT",
                                     @"")];
-      [uploadDescription_ setBackgroundColor:[UIColor clearColor]];
       [uploadDescription_ setFont:[UIFont systemFontOfSize:13]];
-      [uploadDescription_ setTextColor:[UIColor colorWithWhite:0.31 alpha:1.0]];
+      uploadDescription_.textColor = [UIColor colorNamed:kTextSecondaryColor];
       [uploadDescription_ sizeToFit];
       [self centerView:uploadDescription_ afterView:startButton_];
       [innerView_ addSubview:uploadDescription_];

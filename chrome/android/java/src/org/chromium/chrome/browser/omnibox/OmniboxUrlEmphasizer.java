@@ -9,11 +9,13 @@ import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.VisibleForTesting;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 
 import java.util.Locale;
@@ -82,7 +84,8 @@ public class OmniboxUrlEmphasizer {
      */
     public static EmphasizeComponentsResponse parseForEmphasizeComponents(
             Profile profile, String text) {
-        int[] emphasizeValues = nativeParseForEmphasizeComponents(profile, text);
+        int[] emphasizeValues =
+                OmniboxUrlEmphasizerJni.get().parseForEmphasizeComponents(profile, text);
         assert emphasizeValues != null;
         assert emphasizeValues.length == 4;
 
@@ -179,22 +182,28 @@ public class OmniboxUrlEmphasizer {
                 switch (securityLevel) {
                     case ConnectionSecurityLevel.NONE:
                     // Intentional fall-through:
-                    case ConnectionSecurityLevel.HTTP_SHOW_WARNING:
+                    case ConnectionSecurityLevel.WARNING:
                         // Draw attention to the data: URI scheme for anti-spoofing reasons.
                         if (UrlConstants.DATA_SCHEME.equals(
                                     emphasizeResponse.extractScheme(urlString))) {
-                            colorId = useDarkColors ? R.color.url_emphasis_default_text
-                                                    : R.color.url_emphasis_light_default_text;
+                            colorId = useDarkColors ? R.color.default_text_color_dark
+                                                    : R.color.default_text_color_light;
                         }
                         break;
                     case ConnectionSecurityLevel.DANGEROUS:
-                        if (emphasizeScheme) colorId = R.color.google_red_700;
+                        if (emphasizeScheme) {
+                            colorId = useDarkColors ? R.color.default_red_dark
+                                                    : R.color.default_red_light;
+                        }
                         strikeThroughScheme = true;
                         break;
                     case ConnectionSecurityLevel.EV_SECURE:
                     // Intentional fall-through:
                     case ConnectionSecurityLevel.SECURE:
-                        if (emphasizeScheme) colorId = R.color.google_green_700;
+                        if (emphasizeScheme) {
+                            colorId = useDarkColors ? R.color.default_green_dark
+                                                    : R.color.default_green_light;
+                        }
                         break;
                     default:
                         assert false;
@@ -324,5 +333,8 @@ public class OmniboxUrlEmphasizer {
         }
     }
 
-    private static native int[] nativeParseForEmphasizeComponents(Profile profile, String text);
+    @NativeMethods
+    interface Natives {
+        int[] parseForEmphasizeComponents(Profile profile, String text);
+    }
 }

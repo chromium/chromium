@@ -1,0 +1,26 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":os_apps_page",
+  ]
+}
+
+js_library("os_apps_page") {
+  deps = [
+    "../../:route",
+    "../../android_apps_page:android_apps_browser_proxy",
+    "../../android_apps_page:android_apps_subpage",
+    "../../prefs:prefs_behavior",
+    "../../settings_page:settings_animated_pages",
+    "app_management_page",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+
+  externs_list = [ "$externs_path/metrics_private.js" ]
+}

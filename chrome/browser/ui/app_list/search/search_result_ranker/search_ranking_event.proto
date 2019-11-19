@@ -1,0 +1,62 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package app_list;
+
+// SearchRankingItem contains information about a non-app item that is shown
+// in launcher search. Details of specific fields can be seen in
+// search_ranking_event_logger.cc.
+message SearchRankingItem {
+  // Contain features about a specific item.
+  message Features {
+    // Category of the item.
+    optional int32 category = 1;
+    // Extension of the file. Only available if category is FILE.
+    optional int32 file_extension = 2;
+    // Position of the item. Topmost is position 0.
+    optional int32 position = 3;
+    // How many times this item has been launched during this session. Rounded
+    // down to the nearest exponential bucket, with a bucket ratio of 1.15.
+    optional int32 launches_this_session = 4;
+    // Seconds since this item was last launched in this session. Rounded down
+    // to the nearest exponential bucket, with a bucket ratio of 1.045. This
+    // makes the bucket at 24 hour mark approximately 1 hour long.
+    optional int32 time_since_last_launch = 5;
+    // The hour when the previous launch of this item occurred. Hours measured
+    // from midnight in the local timezone. This can be any value 0-23, as the
+    // last launch could have been on a previous day.
+    optional int32 time_of_last_launch = 6;
+    // Whether the item was launched or not (1 is launched).
+    optional int32 is_launched = 7;
+    // The length of the raw search query with whitespace trimmed. Rounded down
+    // to the nearest exponential bucket, with a bucket ratio of 1.15.
+    optional int32 query_length = 8;
+    // The raw relevance score returned by the relevant search provider for this
+    // item.
+    optional float relevance_score = 9;
+    // The hour of the day that the event was logged in. Hours measured from
+    // midnight in the local timezone.
+    optional int32 hour_of_day = 10;
+    // The day of the week that the event was logged on, in the local time zone.
+    // Sunday is 0.
+    optional int32 day_of_week = 11;
+    // A vector of 24 number, each corresponds to number of launches of this
+    // item per hour. Rounded down to the nearest exponential bucket, with a
+    // bucket ratio of 1.15.
+    repeated int32 launches_at_hour = 12;
+    // Domain of the item.
+    optional string domain = 13;
+  }
+
+  optional Features features = 1;
+  // An ID linking together events within a single set of launcher search
+  // results.
+  optional int32 event_id = 2;
+  // ID of the item.
+  optional string target = 3;
+}

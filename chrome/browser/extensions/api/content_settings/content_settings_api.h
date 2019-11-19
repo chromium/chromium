@@ -14,8 +14,7 @@ struct WebPluginInfo;
 
 namespace extensions {
 
-class ContentSettingsContentSettingClearFunction
-    : public UIThreadExtensionFunction {
+class ContentSettingsContentSettingClearFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("contentSettings.clear", CONTENTSETTINGS_CLEAR)
 
@@ -26,8 +25,7 @@ class ContentSettingsContentSettingClearFunction
   ResponseAction Run() override;
 };
 
-class ContentSettingsContentSettingGetFunction
-    : public UIThreadExtensionFunction {
+class ContentSettingsContentSettingGetFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("contentSettings.get", CONTENTSETTINGS_GET)
 
@@ -38,8 +36,7 @@ class ContentSettingsContentSettingGetFunction
   ResponseAction Run() override;
 };
 
-class ContentSettingsContentSettingSetFunction
-    : public UIThreadExtensionFunction {
+class ContentSettingsContentSettingSetFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("contentSettings.set", CONTENTSETTINGS_SET)
 

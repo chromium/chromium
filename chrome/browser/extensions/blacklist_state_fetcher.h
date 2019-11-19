@@ -65,7 +65,7 @@ class BlacklistStateFetcher {
   // Callbacks by extension ID.
   CallbackMultiMap callbacks_;
 
-  base::WeakPtrFactory<BlacklistStateFetcher> weak_ptr_factory_;
+  base::WeakPtrFactory<BlacklistStateFetcher> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BlacklistStateFetcher);
 };

@@ -4,10 +4,10 @@
 
 #include "ash/system/accessibility/tray_accessibility.h"
 
-#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
@@ -321,7 +321,7 @@ TEST_F(TrayAccessibilityTest, CheckMenuVisibilityOnDetailMenu) {
 }
 
 TEST_F(TrayAccessibilityTest, ClickDetailMenu) {
-  AccessibilityController* accessibility_controller =
+  AccessibilityControllerImpl* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Confirms that the check item toggles the spoken feedback.
   EXPECT_FALSE(accessibility_controller->spoken_feedback_enabled());

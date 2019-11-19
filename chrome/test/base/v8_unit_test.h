@@ -10,7 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8/include/v8.h"
 
@@ -75,7 +75,7 @@ class V8UnitTest : public testing::Test {
   // Initializes paths and libraries.
   void InitPathsAndLibraries();
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   // Handle scope that is used throughout the life of this class.
   v8::HandleScope handle_scope_;

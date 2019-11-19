@@ -32,6 +32,12 @@ enum class BrowserTaskType {
   // Critical startup tasks.
   kBootstrap,
 
+  // Navigation related tasks.
+  kNavigation,
+
+  // A subset of network tasks related to preconnection.
+  kPreconnect,
+
   // Used to validate values in Java
   kBrowserTaskType_Last
 };
@@ -42,10 +48,10 @@ enum class BrowserTaskType {
 // to a BrowserThread.
 //
 // To post a task to the UI thread (analogous for IO thread):
-//     base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, task);
+//     base::PostTask(FROM_HERE, {BrowserThread::UI}, task);
 //
 // To obtain a TaskRunner for the UI thread (analogous for the IO thread):
-//     base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI});
+//     base::CreateSingleThreadTaskRunner({BrowserThread::UI});
 //
 // Tasks posted to the same BrowserThread with the same traits will be executed
 // in the order they were posted, regardless of the TaskRunners they were
@@ -74,11 +80,21 @@ class CONTENT_EXPORT BrowserTaskTraitsExtension {
           base::trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value>>
   constexpr BrowserTaskTraitsExtension(ArgTypes... args)
       : browser_thread_(
-            base::trait_helpers::GetEnum<BrowserThread::ID>(args...)),
+            base::trait_helpers::GetEnum<BrowserThread::ID, BrowserThread::UI>(
+                args...)),
         task_type_(
             base::trait_helpers::GetEnum<BrowserTaskType,
                                          BrowserTaskType::kDefault>(args...)),
-        nestable_(!base::trait_helpers::HasTrait<NonNestable>(args...)) {}
+        nestable_(!base::trait_helpers::HasTrait<NonNestable, ArgTypes...>()) {
+    constexpr bool has_current_thread =
+        base::trait_helpers::HasTrait<base::CurrentThread, ArgTypes...>();
+    constexpr bool has_browser_thread =
+        base::trait_helpers::HasTrait<BrowserThread::ID, ArgTypes...>();
+    static_assert(
+        has_current_thread != has_browser_thread,
+        "Either content::BrowserThread::ID or base::CurrentThread must be set, "
+        "but not both");
+  }
 
   // Keep in sync with UiThreadTaskTraits.java
   constexpr base::TaskTraitsExtensionStorage Serialize() const {
@@ -99,7 +115,9 @@ class CONTENT_EXPORT BrowserTaskTraitsExtension {
         static_cast<bool>(extension.data[2]));
   }
 
+  // This must be ignored if base::CurrentThread is specified.
   constexpr BrowserThread::ID browser_thread() const { return browser_thread_; }
+
   constexpr BrowserTaskType task_type() const { return task_type_; }
 
   // Returns true if tasks with these traits may run in a nested RunLoop.

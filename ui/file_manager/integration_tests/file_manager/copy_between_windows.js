@@ -43,15 +43,11 @@ async function copyBetweenWindows(
 
   await remoteCall.waitForFiles(window1, [file.getExpectedRow()]);
 
-  await remoteCall.callRemoteTestUtil('fakeMouseClick', window1, []);
-
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('selectFile', window1, [name]),
       'Failed: selectFile ' + name);
 
   await remoteCall.callRemoteTestUtil('execCommand', window1, ['copy']);
-
-  await remoteCall.callRemoteTestUtil('fakeMouseClick', window2, []);
 
   await remoteCall.callRemoteTestUtil('execCommand', window2, ['paste']);
 

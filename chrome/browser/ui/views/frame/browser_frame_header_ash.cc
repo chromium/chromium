@@ -7,9 +7,9 @@
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "ash/public/cpp/frame_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/logging.h"
-#include "chrome/browser/ui/ash/tablet_mode_client.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -69,8 +69,7 @@ void PaintThemedFrame(gfx::Canvas* canvas,
   if (!frame_image.isNull()) {
     canvas->TileImageInt(frame_image, image_inset_x, image_inset_y, 0, 0,
                          bounds.width(), bounds.height(), 1.0f,
-                         SkShader::kRepeat_TileMode,
-                         SkShader::kMirror_TileMode);
+                         SkTileMode::kRepeat, SkTileMode::kMirror);
   }
   if (!frame_overlay_image.isNull())
     canvas->DrawImageInt(frame_overlay_image, 0, 0);
@@ -154,8 +153,8 @@ void BrowserFrameHeaderAsh::DoPaintHeader(gfx::Canvas* canvas) {
 views::CaptionButtonLayoutSize BrowserFrameHeaderAsh::GetButtonLayoutSize()
     const {
   return target_widget()->IsMaximized() || target_widget()->IsFullscreen() ||
-                 (TabletModeClient::Get() &&
-                  TabletModeClient::Get()->tablet_mode_enabled())
+                 (ash::TabletMode::Get() &&
+                  ash::TabletMode::Get()->InTabletMode())
              ? views::CaptionButtonLayoutSize::kBrowserCaptionMaximized
              : views::CaptionButtonLayoutSize::kBrowserCaptionRestored;
 }

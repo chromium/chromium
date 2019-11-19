@@ -40,11 +40,6 @@ class CSSSupportsRule final : public CSSConditionRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static CSSSupportsRule* Create(StyleRuleSupports* rule,
-                                 CSSStyleSheet* sheet) {
-    return MakeGarbageCollected<CSSSupportsRule>(rule, sheet);
-  }
-
   CSSSupportsRule(StyleRuleSupports*, CSSStyleSheet*);
   ~CSSSupportsRule() override = default;
 

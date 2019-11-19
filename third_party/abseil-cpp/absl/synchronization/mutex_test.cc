@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,7 @@
 
 #include "absl/synchronization/mutex.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -425,10 +425,10 @@ TEST(Mutex, CondVarWaitSignalsAwait) {
   // Use a struct so the lock annotations apply.
   struct {
     absl::Mutex barrier_mu;
-    bool barrier GUARDED_BY(barrier_mu) = false;
+    bool barrier ABSL_GUARDED_BY(barrier_mu) = false;
 
     absl::Mutex release_mu;
-    bool release GUARDED_BY(release_mu) = false;
+    bool release ABSL_GUARDED_BY(release_mu) = false;
     absl::CondVar released_cv;
   } state;
 
@@ -466,10 +466,10 @@ TEST(Mutex, CondVarWaitWithTimeoutSignalsAwait) {
   // Use a struct so the lock annotations apply.
   struct {
     absl::Mutex barrier_mu;
-    bool barrier GUARDED_BY(barrier_mu) = false;
+    bool barrier ABSL_GUARDED_BY(barrier_mu) = false;
 
     absl::Mutex release_mu;
-    bool release GUARDED_BY(release_mu) = false;
+    bool release ABSL_GUARDED_BY(release_mu) = false;
     absl::CondVar released_cv;
   } state;
 
@@ -770,7 +770,7 @@ static void GetReadLock(ReaderDecrementBugStruct *x) {
 
 // Test for reader counter being decremented incorrectly by waiter
 // with false condition.
-TEST(Mutex, MutexReaderDecrementBug) NO_THREAD_SAFETY_ANALYSIS {
+TEST(Mutex, MutexReaderDecrementBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
   ReaderDecrementBugStruct x;
   x.cond = false;
   x.waiting_on_cond = false;
@@ -815,7 +815,12 @@ TEST(Mutex, MutexReaderDecrementBug) NO_THREAD_SAFETY_ANALYSIS {
 
 // Test that we correctly handle the situation when a lock is
 // held and then destroyed (w/o unlocking).
-TEST(Mutex, LockedMutexDestructionBug) NO_THREAD_SAFETY_ANALYSIS {
+#ifdef THREAD_SANITIZER
+// TSAN reports errors when locked Mutexes are destroyed.
+TEST(Mutex, DISABLED_LockedMutexDestructionBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
+#else
+TEST(Mutex, LockedMutexDestructionBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
+#endif
   for (int i = 0; i != 10; i++) {
     // Create, lock and destroy 10 locks.
     const int kNumLocks = 10;
@@ -1030,11 +1035,11 @@ TEST(Mutex, DeadlockDetector) {
 class ScopedDisableBazelTestWarnings {
  public:
   ScopedDisableBazelTestWarnings() {
-#ifdef WIN32
+#ifdef _WIN32
     char file[MAX_PATH];
-    if (GetEnvironmentVariable(kVarName, file, sizeof(file)) < sizeof(file)) {
+    if (GetEnvironmentVariableA(kVarName, file, sizeof(file)) < sizeof(file)) {
       warnings_output_file_ = file;
-      SetEnvironmentVariable(kVarName, nullptr);
+      SetEnvironmentVariableA(kVarName, nullptr);
     }
 #else
     const char *file = getenv(kVarName);
@@ -1047,8 +1052,8 @@ class ScopedDisableBazelTestWarnings {
 
   ~ScopedDisableBazelTestWarnings() {
     if (!warnings_output_file_.empty()) {
-#ifdef WIN32
-      SetEnvironmentVariable(kVarName, warnings_output_file_.c_str());
+#ifdef _WIN32
+      SetEnvironmentVariableA(kVarName, warnings_output_file_.c_str());
 #else
       setenv(kVarName, warnings_output_file_.c_str(), 0);
 #endif
@@ -1062,7 +1067,12 @@ class ScopedDisableBazelTestWarnings {
 const char ScopedDisableBazelTestWarnings::kVarName[] =
     "TEST_WARNINGS_OUTPUT_FILE";
 
+#ifdef THREAD_SANITIZER
+// This test intentionally creates deadlocks to test the deadlock detector.
+TEST(Mutex, DISABLED_DeadlockDetectorBazelWarning) {
+#else
 TEST(Mutex, DeadlockDetectorBazelWarning) {
+#endif
   absl::SetMutexDeadlockDetectionMode(absl::OnDeadlockCycle::kReport);
 
   // Cause deadlock detection to detect something, if it's
@@ -1087,11 +1097,11 @@ TEST(Mutex, DeadlockDetectorBazelWarning) {
   absl::SetMutexDeadlockDetectionMode(absl::OnDeadlockCycle::kAbort);
 }
 
-// This test is tagged with NO_THREAD_SAFETY_ANALYSIS because the
+// This test is tagged with ABSL_NO_THREAD_SAFETY_ANALYSIS because the
 // annotation-based static thread-safety analysis is not currently
 // predicate-aware and cannot tell if the two for-loops that acquire and
 // release the locks have the same predicates.
-TEST(Mutex, DeadlockDetectorStessTest) NO_THREAD_SAFETY_ANALYSIS {
+TEST(Mutex, DeadlockDetectorStessTest) ABSL_NO_THREAD_SAFETY_ANALYSIS {
   // Stress test: Here we create a large number of locks and use all of them.
   // If a deadlock detector keeps a full graph of lock acquisition order,
   // it will likely be too slow for this test to pass.
@@ -1109,7 +1119,12 @@ TEST(Mutex, DeadlockDetectorStessTest) NO_THREAD_SAFETY_ANALYSIS {
   }
 }
 
-TEST(Mutex, DeadlockIdBug) NO_THREAD_SAFETY_ANALYSIS {
+#ifdef THREAD_SANITIZER
+// TSAN reports errors when locked Mutexes are destroyed.
+TEST(Mutex, DISABLED_DeadlockIdBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
+#else
+TEST(Mutex, DeadlockIdBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
+#endif
   // Test a scenario where a cached deadlock graph node id in the
   // list of held locks is not invalidated when the corresponding
   // mutex is deleted.

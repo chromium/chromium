@@ -5,7 +5,7 @@
 #include "chrome/browser/android/vr/vr_core_info.h"
 
 #include "base/android/jni_android.h"
-#include "jni/VrCoreInfo_jni.h"
+#include "chrome/android/features/vr/jni_headers/VrCoreInfo_jni.h"
 
 using base::android::JavaParamRef;
 

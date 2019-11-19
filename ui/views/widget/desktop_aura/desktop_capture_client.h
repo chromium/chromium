@@ -50,15 +50,19 @@ class VIEWS_EXPORT DesktopCaptureClient : public aura::client::CaptureClient {
   void RemoveObserver(aura::client::CaptureClientObserver* observer) override;
 
  private:
-  typedef std::set<DesktopCaptureClient*> CaptureClients;
+  using Comparator = bool (*)(const base::WeakPtr<DesktopCaptureClient>&,
+                              const base::WeakPtr<DesktopCaptureClient>&);
+  using ClientSet = std::set<base::WeakPtr<DesktopCaptureClient>, Comparator>;
 
   aura::Window* root_;
-  aura::Window* capture_window_;
+  aura::Window* capture_window_ = nullptr;
 
-  // Set of DesktopCaptureClients.
-  static CaptureClients* capture_clients_;
+  // The global set of DesktopCaptureClients.
+  static ClientSet* clients_;
 
   base::ObserverList<aura::client::CaptureClientObserver>::Unchecked observers_;
+
+  base::WeakPtrFactory<DesktopCaptureClient> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DesktopCaptureClient);
 };

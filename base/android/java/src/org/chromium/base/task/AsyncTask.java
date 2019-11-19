@@ -5,9 +5,10 @@
 package org.chromium.base.task;
 
 import android.os.Binder;
-import android.support.annotation.IntDef;
-import android.support.annotation.MainThread;
-import android.support.annotation.WorkerThread;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.MainThread;
+import androidx.annotation.WorkerThread;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -276,6 +277,8 @@ public abstract class AsyncTask<Result> {
      *         while waiting.
      */
     @DoNotInline
+    // The string passed is safe since it is class and method name.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public final Result get() throws InterruptedException, ExecutionException {
         Result r;
         if (getStatus() != Status.FINISHED && ThreadUtils.runningOnUiThread()) {

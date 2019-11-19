@@ -15,12 +15,13 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -88,7 +89,7 @@ class Worker : public Listener, public Sender {
     channel_->Close();
   }
   void Start() {
-    StartThread(&listener_thread_, base::MessageLoop::TYPE_DEFAULT);
+    StartThread(&listener_thread_, base::MessagePumpType::DEFAULT);
     ListenerThread()->task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&Worker::OnStart, base::Unretained(this)));
   }
@@ -192,7 +193,7 @@ class Worker : public Listener, public Sender {
   // Called on the listener thread to create the sync channel.
   void OnStart() {
     // Link ipc_thread_, listener_thread_ and channel_ altogether.
-    StartThread(&ipc_thread_, base::MessageLoop::TYPE_IO);
+    StartThread(&ipc_thread_, base::MessagePumpType::IO);
     channel_.reset(CreateChannel());
     channel_created_->Signal();
     Run();
@@ -237,9 +238,9 @@ class Worker : public Listener, public Sender {
     return true;
   }
 
-  void StartThread(base::Thread* thread, base::MessageLoop::Type type) {
+  void StartThread(base::Thread* thread, base::MessagePumpType type) {
     base::Thread::Options options;
-    options.message_loop_type = type;
+    options.message_pump_type = type;
     thread->StartWithOptions(options);
   }
 
@@ -290,7 +291,7 @@ void RunTest(std::vector<Worker*> workers) {
 
 class IPCSyncChannelTest : public testing::Test {
  private:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 //------------------------------------------------------------------------------
@@ -1040,7 +1041,7 @@ class SyncMessageFilterServer : public Worker {
                std::move(channel_handle)),
         thread_("helper_thread") {
     base::Thread::Options options;
-    options.message_loop_type = base::MessageLoop::TYPE_DEFAULT;
+    options.message_pump_type = base::MessagePumpType::DEFAULT;
     thread_.StartWithOptions(options);
     filter_ = new TestSyncMessageFilter(shutdown_event(), this,
                                         thread_.task_runner());

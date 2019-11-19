@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 #include "base/memory/ref_counted.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/image_fetcher/core/image_data_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
 
@@ -19,8 +18,6 @@ class SharedURLLoaderFactory;
 class GURL;
 
 namespace image_fetcher {
-
-using DataUseServiceName = data_use_measurement::DataUseUserData::ServiceName;
 
 class IOSImageDataFetcherWrapper {
  public:
@@ -47,9 +44,6 @@ class IOSImageDataFetcherWrapper {
       const std::string& referrer,
       net::URLRequest::ReferrerPolicy referrer_policy,
       bool send_cookies = false);
-
-  // Sets a service name against which to track data usage.
-  void SetDataUseServiceName(DataUseServiceName data_use_service_name);
 
   // Test-only accessor for underlying ImageDataFetcher.
   ImageDataFetcher* AccessImageDataFetcherForTesting() {

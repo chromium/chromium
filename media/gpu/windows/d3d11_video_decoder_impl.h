@@ -75,7 +75,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoderImpl {
   // Has thread affinity -- must be run on the gpu main thread.
   THREAD_CHECKER(thread_checker_);
 
-  base::WeakPtrFactory<D3D11VideoDecoderImpl> weak_factory_;
+  base::WeakPtrFactory<D3D11VideoDecoderImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(D3D11VideoDecoderImpl);
 };

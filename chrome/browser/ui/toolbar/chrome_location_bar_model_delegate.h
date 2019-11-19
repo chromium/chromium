@@ -27,7 +27,22 @@ class ChromeLocationBarModelDelegate : public LocationBarModelDelegate {
   bool ShouldPreventElision() const override;
 
   // LocationBarModelDelegate:
+  base::string16 FormattedStringWithEquivalentMeaning(
+      const GURL& url,
+      const base::string16& formatted_url) const override;
+  bool GetURL(GURL* url) const override;
   bool ShouldDisplayURL() const override;
+  security_state::SecurityLevel GetSecurityLevel() const override;
+  std::unique_ptr<security_state::VisibleSecurityState>
+  GetVisibleSecurityState() const override;
+  scoped_refptr<net::X509Certificate> GetCertificate() const override;
+  const gfx::VectorIcon* GetVectorIconOverride() const override;
+  bool IsOfflinePage() const override;
+  bool IsInstantNTP() const override;
+  bool IsNewTabPage(const GURL& url) const override;
+  bool IsHomePage(const GURL& url) const override;
+  AutocompleteClassifier* GetAutocompleteClassifier() override;
+  TemplateURLService* GetTemplateURLService() override;
 
  protected:
   ChromeLocationBarModelDelegate();
@@ -37,17 +52,6 @@ class ChromeLocationBarModelDelegate : public LocationBarModelDelegate {
   content::NavigationEntry* GetNavigationEntry() const;
 
  private:
-  base::string16 FormattedStringWithEquivalentMeaning(
-      const GURL& url,
-      const base::string16& formatted_url) const override;
-  bool GetURL(GURL* url) const override;
-  void GetSecurityInfo(security_state::SecurityInfo* result) const override;
-  scoped_refptr<net::X509Certificate> GetCertificate() const override;
-  const gfx::VectorIcon* GetVectorIconOverride() const override;
-  bool IsOfflinePage() const override;
-  AutocompleteClassifier* GetAutocompleteClassifier() override;
-  TemplateURLService* GetTemplateURLService() override;
-
   // Returns the navigation controller used to retrieve the navigation entry
   // from which the states are retrieved. If this returns null, default values
   // are used.

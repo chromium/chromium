@@ -13,7 +13,6 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(WM_CORE_EXPORT, float)
 
 namespace wm {
 
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSnapChildrenToPixelBoundary, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kUsesScreenCoordinatesKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(base::TimeDelta,
                              kWindowVisibilityAnimationDurationKey,

@@ -14,7 +14,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/selection_model.h"
 
-namespace app_list {
+namespace ash {
 
 class SearchBoxModelObserver;
 
@@ -83,6 +83,6 @@ class APP_LIST_MODEL_EXPORT SearchBoxModel {
   DISALLOW_COPY_AND_ASSIGN(SearchBoxModel);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_MODEL_SEARCH_SEARCH_BOX_MODEL_H_

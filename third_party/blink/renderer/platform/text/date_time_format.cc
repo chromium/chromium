@@ -25,7 +25,7 @@
 
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
 
-#include "third_party/blink/renderer/platform/wtf/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {

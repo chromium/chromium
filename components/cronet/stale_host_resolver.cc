@@ -17,6 +17,8 @@
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
+#include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_resolver_source.h"
 #include "net/log/net_log_with_source.h"
@@ -47,6 +49,9 @@ enum RequestOutcome {
 
   // Stale data returned; network got ERR_NAME_NOT_RESOLVED.
   STALE_INSTEAD_OF_NETWORK_NAME_NOT_RESOLVED = 6,
+
+  // Stale data is explicitly requested and returned immediately.
+  STALE_SYNCHRONOUS = 7,
 
   MAX_REQUEST_OUTCOME
 };
@@ -87,6 +92,7 @@ class StaleHostResolver::RequestImpl
   // StaleOptions will be read directly from |resolver|.
   RequestImpl(base::WeakPtr<StaleHostResolver> resolver,
               const net::HostPortPair& host,
+              const net::NetworkIsolationKey& network_isolation_key,
               const net::NetLogWithSource& net_log,
               const ResolveHostParameters& input_parameters,
               const base::TickClock* tick_clock);
@@ -99,6 +105,7 @@ class StaleHostResolver::RequestImpl
       const override;
   const base::Optional<std::vector<net::HostPortPair>>& GetHostnameResults()
       const override;
+  const base::Optional<net::EsniContent>& GetEsniResults() const override;
   const base::Optional<net::HostCache::EntryStaleness>& GetStaleInfo()
       const override;
   void ChangeRequestPriority(net::RequestPriority priority) override;
@@ -138,6 +145,7 @@ class StaleHostResolver::RequestImpl
   base::WeakPtr<StaleHostResolver> resolver_;
 
   const net::HostPortPair host_;
+  const net::NetworkIsolationKey network_isolation_key_;
   const net::NetLogWithSource net_log_;
   const ResolveHostParameters input_parameters_;
 
@@ -165,24 +173,25 @@ class StaleHostResolver::RequestImpl
   // Current HostCache size at the time the cache was checked.
   size_t current_size_;
 
-  base::WeakPtrFactory<RequestImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<RequestImpl> weak_ptr_factory_{this};
 };
 
 StaleHostResolver::RequestImpl::RequestImpl(
     base::WeakPtr<StaleHostResolver> resolver,
     const net::HostPortPair& host,
+    const net::NetworkIsolationKey& network_isolation_key,
     const net::NetLogWithSource& net_log,
     const ResolveHostParameters& input_parameters,
     const base::TickClock* tick_clock)
     : resolver_(std::move(resolver)),
       host_(host),
+      network_isolation_key_(network_isolation_key),
       net_log_(net_log),
       input_parameters_(input_parameters),
       cache_error_(net::ERR_DNS_CACHE_MISS),
       stale_timer_(tick_clock),
       restore_size_(0),
-      current_size_(0),
-      weak_ptr_factory_(this) {
+      current_size_(0) {
   DCHECK(resolver_);
 }
 
@@ -203,8 +212,8 @@ int StaleHostResolver::RequestImpl::Start(
   cache_parameters.cache_usage =
       net::HostResolver::ResolveHostParameters::CacheUsage::STALE_ALLOWED;
   cache_parameters.source = net::HostResolverSource::LOCAL_ONLY;
-  cache_request_ = resolver_->inner_resolver_->CreateRequest(host_, net_log_,
-                                                             cache_parameters);
+  cache_request_ = resolver_->inner_resolver_->CreateRequest(
+      host_, network_isolation_key_, net_log_, cache_parameters);
   cache_error_ =
       cache_request_->Start(base::BindOnce([](int error) { NOTREACHED(); }));
   DCHECK_NE(net::ERR_IO_PENDING, cache_error_);
@@ -213,6 +222,13 @@ int StaleHostResolver::RequestImpl::Start(
       (!cache_request_->GetStaleInfo() ||
        !cache_request_->GetStaleInfo().value().is_stale())) {
     RecordSynchronousRequest();
+    return cache_error_;
+  }
+
+  if (cache_error_ != net::ERR_DNS_CACHE_MISS &&
+      input_parameters_.cache_usage ==
+          net::HostResolver::ResolveHostParameters::CacheUsage::STALE_ALLOWED) {
+    RecordRequestOutcome(STALE_SYNCHRONOUS);
     return cache_error_;
   }
 
@@ -236,7 +252,7 @@ int StaleHostResolver::RequestImpl::Start(
   no_cache_parameters.cache_usage =
       net::HostResolver::ResolveHostParameters::CacheUsage::DISALLOWED;
   network_request_ = resolver_->inner_resolver_->CreateRequest(
-      host_, net_log_, no_cache_parameters);
+      host_, network_isolation_key_, net_log_, no_cache_parameters);
   int network_rv = network_request_->Start(
       base::BindOnce(&StaleHostResolver::OnNetworkRequestComplete, resolver_,
                      network_request_.get(), weak_ptr_factory_.GetWeakPtr()));
@@ -275,6 +291,15 @@ StaleHostResolver::RequestImpl::GetHostnameResults() const {
 
   DCHECK(cache_request_);
   return cache_request_->GetHostnameResults();
+}
+
+const base::Optional<net::EsniContent>&
+StaleHostResolver::RequestImpl::GetEsniResults() const {
+  if (network_request_)
+    return network_request_->GetEsniResults();
+
+  DCHECK(cache_request_);
+  return cache_request_->GetEsniResults();
 }
 
 const base::Optional<net::HostCache::EntryStaleness>&
@@ -422,37 +447,29 @@ StaleHostResolver::StaleOptions::StaleOptions()
       use_stale_on_name_not_resolved(false) {}
 
 StaleHostResolver::StaleHostResolver(
-    std::unique_ptr<net::HostResolverImpl> inner_resolver,
+    std::unique_ptr<net::ContextHostResolver> inner_resolver,
     const StaleOptions& stale_options)
-    : inner_resolver_(std::move(inner_resolver)),
-      options_(stale_options),
-      weak_ptr_factory_(this) {
+    : inner_resolver_(std::move(inner_resolver)), options_(stale_options) {
   DCHECK_LE(0, stale_options.max_expired_time.InMicroseconds());
   DCHECK_LE(0, stale_options.max_stale_uses);
 }
 
 StaleHostResolver::~StaleHostResolver() {}
 
+void StaleHostResolver::OnShutdown() {
+  inner_resolver_->OnShutdown();
+}
+
 std::unique_ptr<net::HostResolver::ResolveHostRequest>
 StaleHostResolver::CreateRequest(
     const net::HostPortPair& host,
+    const net::NetworkIsolationKey& network_isolation_key,
     const net::NetLogWithSource& net_log,
     const base::Optional<ResolveHostParameters>& optional_parameters) {
   DCHECK(tick_clock_);
   return std::make_unique<RequestImpl>(
-      weak_ptr_factory_.GetWeakPtr(), host, net_log,
+      weak_ptr_factory_.GetWeakPtr(), host, network_isolation_key, net_log,
       optional_parameters.value_or(ResolveHostParameters()), tick_clock_);
-}
-
-bool StaleHostResolver::HasCached(
-    base::StringPiece hostname,
-    net::HostCache::Entry::Source* source_out,
-    net::HostCache::EntryStaleness* stale_out) const {
-  return inner_resolver_->HasCached(hostname, source_out, stale_out);
-}
-
-void StaleHostResolver::SetDnsClientEnabled(bool enabled) {
-  inner_resolver_->SetDnsClientEnabled(enabled);
 }
 
 net::HostCache* StaleHostResolver::GetHostCache() {
@@ -461,6 +478,11 @@ net::HostCache* StaleHostResolver::GetHostCache() {
 
 std::unique_ptr<base::Value> StaleHostResolver::GetDnsConfigAsValue() const {
   return inner_resolver_->GetDnsConfigAsValue();
+}
+
+void StaleHostResolver::SetRequestContext(
+    net::URLRequestContext* request_context) {
+  inner_resolver_->SetRequestContext(request_context);
 }
 
 void StaleHostResolver::OnNetworkRequestComplete(

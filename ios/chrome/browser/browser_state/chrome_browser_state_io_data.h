@@ -42,7 +42,6 @@ enum class ChromeBrowserStateType;
 }
 
 namespace net {
-class ChannelIDService;
 class CookieStore;
 class HttpServerProperties;
 class HttpTransactionFactory;
@@ -68,10 +67,6 @@ class ChromeBrowserStateIOData {
 
   virtual ~ChromeBrowserStateIOData();
 
-  // Returns true if |scheme| is handled in Chrome, or by default handlers in
-  // net::URLRequest.
-  static bool IsHandledProtocol(const std::string& scheme);
-
   // Utility to install additional WebUI handlers into the |job_factory|.
   // Ownership of the handlers is transferred from |protocol_handlers|
   // to the |job_factory|.
@@ -85,9 +80,6 @@ class ChromeBrowserStateIOData {
   void Init(ProtocolHandlerMap* protocol_handlers) const;
 
   net::URLRequestContext* GetMainRequestContext() const;
-  net::URLRequestContext* GetIsolatedAppRequestContext(
-      net::URLRequestContext* main_context,
-      const base::FilePath& partition_path) const;
 
   // Sets the cookie store associated with a partition path.
   // The path must exist. If there is already a cookie store, it is deleted.
@@ -100,10 +92,6 @@ class ChromeBrowserStateIOData {
   // that browser state.
   content_settings::CookieSettings* GetCookieSettings() const;
   HostContentSettingsMap* GetHostContentSettingsMap() const;
-
-  StringPrefMember* google_services_account_id() const {
-    return &google_services_user_account_id_;
-  }
 
   net::TransportSecurityState* transport_security_state() const {
     return transport_security_state_.get();
@@ -132,8 +120,6 @@ class ChromeBrowserStateIOData {
     AppRequestContext();
 
     void SetCookieStore(std::unique_ptr<net::CookieStore> cookie_store);
-    void SetChannelIDService(
-        std::unique_ptr<net::ChannelIDService> channel_id_service);
     void SetHttpNetworkSession(
         std::unique_ptr<net::HttpNetworkSession> http_network_session);
     void SetHttpTransactionFactory(
@@ -144,7 +130,6 @@ class ChromeBrowserStateIOData {
 
    private:
     std::unique_ptr<net::CookieStore> cookie_store_;
-    std::unique_ptr<net::ChannelIDService> channel_id_service_;
     std::unique_ptr<net::HttpNetworkSession> http_network_session_;
     std::unique_ptr<net::HttpTransactionFactory> http_factory_;
     std::unique_ptr<net::URLRequestJobFactory> job_factory_;
@@ -181,10 +166,6 @@ class ChromeBrowserStateIOData {
   void InitializeOnUIThread(ios::ChromeBrowserState* browser_state);
   void ApplyProfileParamsToContext(net::URLRequestContext* context) const;
 
-  std::unique_ptr<net::URLRequestJobFactory> SetUpJobFactoryDefaults(
-      std::unique_ptr<net::URLRequestJobFactoryImpl> job_factory,
-      net::NetworkDelegate* network_delegate) const;
-
   // Called when the ChromeBrowserState is destroyed. |context_getters| must
   // include all URLRequestContextGetters that refer to the
   // ChromeBrowserStateIOData's URLRequestContexts. Triggers destruction of the
@@ -194,11 +175,6 @@ class ChromeBrowserStateIOData {
   //     is really silly.  Can we do something cleaner?
   void ShutdownOnUIThread(
       std::unique_ptr<IOSChromeURLRequestContextGetterVector> context_getters);
-
-  // A ChannelIDService object is created by a derived class of
-  // ChromeBrowserStateIOData, and the derived class calls this method to set
-  // the channel_id_service_ member and transfers ownership to the base class.
-  void set_channel_id_service(net::ChannelIDService* channel_id_service) const;
 
   net::ProxyResolutionService* proxy_resolution_service() const {
     return proxy_resolution_service_.get();
@@ -242,16 +218,6 @@ class ChromeBrowserStateIOData {
       ProfileParams* profile_params,
       ProtocolHandlerMap* protocol_handlers) const = 0;
 
-  // Does an on-demand initialization of a RequestContext for the given
-  // isolated app.
-  virtual AppRequestContext* InitializeAppRequestContext(
-      net::URLRequestContext* main_context) const = 0;
-
-  // These functions are used to transfer ownership of the lazily initialized
-  // context from ChromeBrowserStateIOData to the URLRequestContextGetter.
-  virtual AppRequestContext* AcquireIsolatedAppRequestContext(
-      net::URLRequestContext* main_context) const = 0;
-
   // The order *DOES* matter for the majority of these member variables, so
   // don't move them around unless you know what you're doing!
   // General rules:
@@ -272,16 +238,11 @@ class ChromeBrowserStateIOData {
   // ChromeBrowserStateIOData. Deleted after lazy initialization.
   mutable std::unique_ptr<ProfileParams> profile_params_;
 
-  mutable StringPrefMember google_services_user_account_id_;
-
   // Member variables which are pointed to by the various context objects.
   mutable BooleanPrefMember enable_referrers_;
   mutable BooleanPrefMember enable_do_not_track_;
 
   BooleanPrefMember enable_metrics_;
-
-  // Pointed to by URLRequestContext.
-  mutable std::unique_ptr<net::ChannelIDService> channel_id_service_;
 
   mutable std::unique_ptr<net::ProxyResolutionService>
       proxy_resolution_service_;

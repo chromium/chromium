@@ -125,7 +125,7 @@ void CastFocusClientAura::FocusWindow(aura::Window* window) {
     aura::Window* top_level = GetZOrderWindow(window);
     DCHECK(top_level);
     DLOG(INFO) << "Requesting focus for " << LOG_WINDOW_INFO(top_level, window);
-    if (!base::ContainsValue(focusable_windows_, window)) {
+    if (!base::Contains(focusable_windows_, window)) {
       // We're not yet tracking this focusable window, so start tracking it as a
       // potential focus target.
       window->AddObserver(this);

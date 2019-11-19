@@ -24,7 +24,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_loop_current.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -400,8 +400,8 @@ class OCSPRequestSession
     request_ = url_request_context->CreateRequest(url_, DEFAULT_PRIORITY, this,
                                                   traffic_annotation);
     // To meet the privacy requirements of incognito mode.
-    request_->SetLoadFlags(LOAD_DISABLE_CACHE | LOAD_DO_NOT_SAVE_COOKIES |
-                           LOAD_DO_NOT_SEND_COOKIES);
+    request_->SetLoadFlags(LOAD_DISABLE_CACHE);
+    request_->set_allow_credentials(false);
 
     if (http_request_method_ == "POST") {
       DCHECK(!upload_content_.empty());
@@ -519,12 +519,12 @@ void OCSPIOLoop::PostTaskToIOLoop(const base::Location& from_here,
 }
 
 void OCSPIOLoop::AddRequest(OCSPRequestSession* request) {
-  DCHECK(!base::ContainsKey(requests_, request));
+  DCHECK(!base::Contains(requests_, request));
   requests_.insert(request);
 }
 
 void OCSPIOLoop::RemoveRequest(OCSPRequestSession* request) {
-  DCHECK(base::ContainsKey(requests_, request));
+  DCHECK(base::Contains(requests_, request));
   requests_.erase(request);
 }
 

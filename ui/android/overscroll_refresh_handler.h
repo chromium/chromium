@@ -24,7 +24,10 @@ class UI_ANDROID_EXPORT OverscrollRefreshHandler {
   // Signals the start of an overscrolling pull. Returns whether the handler
   // will consume the overscroll gesture, in which case it will receive the
   // remaining pull updates.
-  virtual bool PullStart(OverscrollAction type, bool navigate_forward);
+  virtual bool PullStart(OverscrollAction type,
+                         float startx,
+                         float starty,
+                         bool navigate_forward);
 
   // Signals a pull update, where |x_delta| and |y_delta| are in device pixels.
   virtual void PullUpdate(float x_delta, float y_delta);

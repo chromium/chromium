@@ -17,6 +17,7 @@ ui::EventDispatchDetails TestEventRewriter::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {
   ++events_seen_;
+  last_event_ = ui::Event::Clone(event);
   return SendEvent(continuation, &event);
 }
 

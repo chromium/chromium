@@ -1,7 +1,5 @@
 #include "rar.hpp"
 
-namespace third_party_unrar {
-
 MKDIR_CODE MakeDir(const wchar *Name,bool SetAttr,uint Attr)
 {
 #ifdef _WIN_ALL
@@ -350,7 +348,7 @@ wchar *MkTemp(wchar *Name,size_t MaxSize)
     swprintf(RndText,ASIZE(RndText),L"%u.%03u",PID,Ext);
     if (Length+wcslen(RndText)>=MaxSize || Attempt==1000)
       return NULL;
-    wcscpy(Name+Length,RndText);
+    wcsncpyz(Name+Length,RndText,MaxSize-Length);
     if (!FileExist(Name))
       break;
   }
@@ -501,5 +499,12 @@ bool SetFileCompression(const wchar *Name,bool State)
 }
 #endif
 
-}  // namespace third_party_unrar
+
+
+
+
+
+
+
+
 

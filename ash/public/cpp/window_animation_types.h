@@ -8,7 +8,6 @@
 #include "ui/wm/core/window_animations.h"
 
 namespace ash {
-namespace wm {
 
 // An extension of the window animations provided by CoreWm. These are
 // Ash-specific only.
@@ -18,15 +17,13 @@ enum WindowVisibilityAnimationType {
       ::wm::WINDOW_VISIBILITY_ANIMATION_MAX,
   // Fade in/out using brightness and grayscale web filters.
   WINDOW_VISIBILITY_ANIMATION_TYPE_BRIGHTNESS_GRAYSCALE,
-  // Window slides down from above screen to show and, meanwhile, home launcher
-  // slides down off screen.
-  WINDOW_VISIBILITY_ANIMATION_TYPE_SLIDE_DOWN,
   // Animate a window out of the closest side of the screen. Fade in if it
   // re-appears.
   WINDOW_VISIBILITY_ANIMATION_TYPE_FADE_IN_SLIDE_OUT,
+  // Show or hide the window at the end of animation.
+  WINDOW_VISIBILITY_ANIMATION_TYPE_STEP_END,
 };
 
-}  // namespace wm
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_WINDOW_ANIMATION_TYPES_H_

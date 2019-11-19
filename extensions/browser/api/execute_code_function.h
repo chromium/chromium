@@ -17,7 +17,7 @@ namespace extensions {
 // Base class for javascript code injection.
 // This is used by both chrome.webview.executeScript and
 // chrome.tabs.executeScript.
-class ExecuteCodeFunction : public UIThreadExtensionFunction {
+class ExecuteCodeFunction : public ExtensionFunction {
  public:
   ExecuteCodeFunction();
 

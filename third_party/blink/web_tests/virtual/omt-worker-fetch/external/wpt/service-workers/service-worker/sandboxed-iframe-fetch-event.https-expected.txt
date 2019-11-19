@@ -1,0 +1,32 @@
+This is a testharness.js-based test.
+PASS Prepare a service worker.
+PASS Prepare a normal iframe.
+PASS Prepare an iframe sandboxed by <iframe sandbox="allow-scripts">.
+PASS Prepare an iframe sandboxed by <iframe sandbox="allow-scripts allow-same-origin">.
+PASS Prepare an iframe sandboxed by CSP HTTP header with allow-scripts.
+PASS Prepare an iframe sandboxed by CSP HTTP header with allow-scripts and allow-same-origin.
+PASS Fetch request from a normal iframe
+FAIL Fetch request from a worker in a normal iframe assert_equals: The fetch request should be handled by SW. expected 1 but got 0
+PASS Request for an iframe in the normal iframe
+PASS Request for an sandboxed iframe with allow-scripts flag in the normal iframe
+PASS Request for an sandboxed iframe with allow-scripts and allow-same-origin flag in the normal iframe
+PASS Fetch request from iframe sandboxed by an attribute with allow-scripts flag
+PASS Fetch request from a worker in iframe sandboxed by an attribute with allow-scripts flag
+PASS Request for an iframe in the iframe sandboxed by an attribute with allow-scripts flag
+PASS Request for an sandboxed iframe with allow-scripts flag in the iframe sandboxed by an attribute with allow-scripts flag
+PASS Request for an sandboxed iframe with allow-scripts and allow-same-origin flag in the iframe sandboxed by an attribute with allow-scripts flag
+PASS Fetch request from iframe sandboxed by an attribute with allow-scripts and allow-same-origin flag
+FAIL Fetch request from a worker in iframe sandboxed by an attribute with allow-scripts and allow-same-origin flag assert_equals: The fetch request should be handled by SW. expected 1 but got 0
+PASS Request for an iframe in the iframe sandboxed by an attribute with allow-scripts and allow-same-origin flag
+PASS Request for an sandboxed iframe with allow-scripts flag in the iframe sandboxed by attribute with allow-scripts and allow-same-origin flag
+PASS Request for an sandboxed iframe with allow-scripts and allow-same-origin flag in the iframe sandboxed by attribute with allow-scripts and allow-same-origin flag
+PASS Fetch request from iframe sandboxed by CSP HTTP header with allow-scripts flag
+PASS Request for an iframe in the iframe sandboxed by CSP HTTP header with allow-scripts flag
+PASS Request for an sandboxed iframe with allow-scripts flag in the iframe sandboxed by CSP HTTP header with allow-scripts flag
+PASS Request for an sandboxed iframe with allow-scripts and allow-same-origin flag in the iframe sandboxed by CSP HTTP header with allow-scripts flag
+PASS Fetch request from iframe sandboxed by CSP HTTP header with allow-scripts and allow-same-origin flag
+PASS Request for an iframe in the iframe sandboxed by CSP HTTP header with allow-scripts and allow-same-origin flag
+PASS Request for an sandboxed iframe with allow-scripts flag in the iframe sandboxed by CSP HTTP header with allow-scripts and allow-same-origin flag
+PASS Request for an sandboxed iframe with allow-scripts and allow-same-origin flag in the iframe sandboxed by CSP HTTP header with allow-scripts and allow-same-origin flag
+Harness: the test ran to completion.
+

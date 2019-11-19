@@ -7,4 +7,5 @@ interface StaticSelection {
     readonly attribute unsigned long anchorOffset;
     readonly attribute Node? focusNode;
     readonly attribute unsigned long focusOffset;
+    readonly attribute boolean isCollapsed;
 };

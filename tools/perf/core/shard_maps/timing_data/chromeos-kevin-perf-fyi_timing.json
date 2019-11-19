@@ -1,0 +1,982 @@
+[
+    {
+        "duration": "26.0",
+        "name": "rendering.desktop/accu_weather_2018"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.desktop/accu_weather_pinch_2018"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/amazon_2018"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/amazon_pinch_2018"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/analog_clock_svg"
+    },
+    {
+        "duration": "1.0",
+        "name": "rendering.desktop/animometer_webgl"
+    },
+    {
+        "duration": "1.0",
+        "name": "rendering.desktop/animometer_webgl_attrib_arrays"
+    },
+    {
+        "duration": "1.0",
+        "name": "rendering.desktop/animometer_webgl_multi_draw"
+    },
+    {
+        "duration": "1.0",
+        "name": "rendering.desktop/aquarium"
+    },
+    {
+        "duration": "2.0",
+        "name": "rendering.desktop/aquarium_20k"
+    },
+    {
+        "duration": "32.0",
+        "name": "rendering.desktop/background_color_animation"
+    },
+    {
+        "duration": "18.0",
+        "name": "rendering.desktop/background_color_animation_with_gradient"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/balls_css_key_frame_animations"
+    },
+    {
+        "duration": "17.0",
+        "name": "rendering.desktop/balls_css_key_frame_animations_composited_transform"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/balls_css_transition_2_properties"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/balls_css_transition_40_properties"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/balls_css_transition_all_properties"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/balls_javascript_canvas"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/balls_javascript_css"
+    },
+    {
+        "duration": "1.0",
+        "name": "rendering.desktop/blob"
+    },
+    {
+        "duration": "15.0",
+        "name": "rendering.desktop/blogspot_2018"
+    },
+    {
+        "duration": "11.0",
+        "name": "rendering.desktop/blogspot_pinch_2018"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.desktop/blur_rotating_background"
+    },
+    {
+        "duration": "10.0",
+        "name": "rendering.desktop/booking.com_2018"
+    },
+    {
+        "duration": "11.0",
+        "name": "rendering.desktop/booking_pinch_2018"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/bouncing_balls_15"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/bouncing_balls_shadow"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/bouncing_clipped_rectangles"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/bouncing_gradient_circles"
+    },
+    {
+        "duration": "6.0",
+        "name": "rendering.desktop/bouncing_png_images"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/bouncing_svg_images"
+    },
+    {
+        "duration": "1.0",
+        "name": "rendering.desktop/camera_to_webgl"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/canvas_05000_pixels_per_second"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/canvas_10000_pixels_per_second"
+    },
+    {
+        "duration": "5.0",
+        "name": "rendering.desktop/canvas_20000_pixels_per_second"
+    },
+    {
+        "duration": "4.0",
+        "name": "rendering.desktop/canvas_40000_pixels_per_second"
+    },
+    {
+        "duration": "3.0",
+        "name": "rendering.desktop/canvas_60000_pixels_per_second"
+    },
+    {
+        "duration": "3.0",
+        "name": "rendering.desktop/canvas_75000_pixels_per_second"
+    },
+    {
+        "duration": "3.0",
+        "name": "rendering.desktop/canvas_90000_pixels_per_second"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/canvas_animation_no_clear"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/canvas_arcs"
+    },
+    {
+        "duration": "8.0",
+        "name": "rendering.desktop/canvas_font_cycler"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/canvas_lines"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/canvas_to_blob"
+    },
+    {
+        "duration": "3.0",
+        "name": "rendering.desktop/cats_unscaled"
+    },
+    {
+        "duration": "2.0",
+        "name": "rendering.desktop/cats_viewport_width"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.desktop/cc_poster_circle"
+    },
+    {
+        "duration": "10.0",
+        "name": "rendering.desktop/cc_scroll_text_only"
+    },
+    {
+        "duration": "11.0",
+        "name": "rendering.desktop/chip_tune"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.desktop/cnn_2018"
+    },
+    {
+        "duration": "20.0",
+        "name": "rendering.desktop/cnn_pinch_2018"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/compositor_heavy_animation"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/crafty_mind"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/css_animations_many_keyframes"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/css_animations_simultaneous_inline_style"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/css_animations_simultaneous_new_element"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/css_animations_simultaneous_style_element"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/css_animations_simultaneous_updating_class"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/css_animations_staggered_infinite_iterations"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/css_animations_staggered_inline_style"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/css_animations_staggered_new_element"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/css_animations_staggered_style_element"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/css_animations_staggered_updating_class"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/css_animations_triggered_inline_style"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/css_animations_triggered_new_element"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/css_animations_triggered_style_element"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/css_animations_triggered_updating_class"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.desktop/css_opacity_plus_n_layers_99"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.desktop/css_transitions_inline_style"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/css_transitions_new_element"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/css_transitions_staggered_inline_style"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/css_transitions_staggered_new_element"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/css_transitions_staggered_style_element"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/css_transitions_staggered_updating_class"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/css_transitions_style_element"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/css_transitions_triggered_inline_style"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/css_transitions_triggered_new_element"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/css_transitions_triggered_style_element"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/css_transitions_triggered_updating_class"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/css_transitions_updating_class"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/css_value_type_color"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/css_value_type_filter"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/css_value_type_length"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/css_value_type_length_complex"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/css_value_type_length_simple"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/css_value_type_path"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/css_value_type_shadow"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/css_value_type_transform_complex"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/css_value_type_transform_simple"
+    },
+    {
+        "duration": "2.0",
+        "name": "rendering.desktop/dynamic_cube_map"
+    },
+    {
+        "duration": "1.0",
+        "name": "rendering.desktop/earth"
+    },
+    {
+        "duration": "10.0",
+        "name": "rendering.desktop/ebay_2018"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.desktop/ebay_pinch_2018"
+    },
+    {
+        "duration": "10.0",
+        "name": "rendering.desktop/effect_games"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.desktop/espn_2018"
+    },
+    {
+        "duration": "19.0",
+        "name": "rendering.desktop/espn_pinch_2018"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/extra_large_texture_uploads"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/facebook_2018"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.desktop/facebook_pinch_2018"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/fill_shapes"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.desktop/filter_terrain_svg"
+    },
+    {
+        "duration": "6.0",
+        "name": "rendering.desktop/geo_apis"
+    },
+    {
+        "duration": "15.0",
+        "name": "rendering.desktop/gmail_2018"
+    },
+    {
+        "duration": "31.0",
+        "name": "rendering.desktop/gmail_move_2018"
+    },
+    {
+        "duration": "15.0",
+        "name": "rendering.desktop/gmail_pinch_2018"
+    },
+    {
+        "duration": "5.0",
+        "name": "rendering.desktop/google_calendar_2018"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/google_calendar_pinch_2018"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/google_docs_2018"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/google_image_pinch_2018"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/google_image_search_2018"
+    },
+    {
+        "duration": "10.0",
+        "name": "rendering.desktop/google_plus_2018"
+    },
+    {
+        "duration": "8.0",
+        "name": "rendering.desktop/google_search_pinch_2018"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/google_web_search_2018"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/guimark_vector_chart"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/hakim"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.desktop/ie_chalkboard"
+    },
+    {
+        "duration": "17.0",
+        "name": "rendering.desktop/ie_pirate_mark"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/infinite_scroll_element_n_layers_99"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/infinite_scroll_root_fixed_n_layers_99"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/infinite_scroll_root_n_layers_99"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/jarro_doverson"
+    },
+    {
+        "duration": "6.0",
+        "name": "rendering.desktop/jpeg_decoding_rgb_and_gpu_rasterization"
+    },
+    {
+        "duration": "6.0",
+        "name": "rendering.desktop/jpeg_decoding_yuv_and_gpu_rasterization"
+    },
+    {
+        "duration": "18.0",
+        "name": "rendering.desktop/js_full_screen_invalidation"
+    },
+    {
+        "duration": "15.0",
+        "name": "rendering.desktop/js_opacity_plus_n_layers_99"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.desktop/js_paint_plus_n_layers_99"
+    },
+    {
+        "duration": "15.0",
+        "name": "rendering.desktop/js_poster_circle"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/js_scroll_text_only"
+    },
+    {
+        "duration": "10.0",
+        "name": "rendering.desktop/kevs_3d"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.desktop/keyframed_animations"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/large_texture_uploads"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/linkedin_2018"
+    },
+    {
+        "duration": "18.0",
+        "name": "rendering.desktop/linkedin_pinch_2018"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/main_0fps_impl_60fps"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/main_30fps_impl_60fps"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/main_60fps_impl_60fps"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/man_in_blue"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/many_images"
+    },
+    {
+        "duration": "2.0",
+        "name": "rendering.desktop/many_planets_deep"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/maps_move_2018"
+    },
+    {
+        "duration": "1.0",
+        "name": "rendering.desktop/maps_perf_test"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/medium_texture_uploads"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/megi_dish"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/microsoft_asteroid_belt"
+    },
+    {
+        "duration": "10.0",
+        "name": "rendering.desktop/microsoft_fireflies"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/microsoft_fish_ie_tank"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/microsoft_performance"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/microsoft_snow"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/microsoft_speed_reading"
+    },
+    {
+        "duration": "8.0",
+        "name": "rendering.desktop/microsoft_tweet_map"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/microsoft_video_city"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/microsoft_worker_fountains"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/mix_10k"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/mix_blend_mode_animation_difference"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/mix_blend_mode_animation_hue"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/mix_blend_mode_animation_propagating_isolation"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/mix_blend_mode_animation_screen"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/motion_mark_canvas_fill_shapes"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/motion_mark_canvas_stroke_shapes"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.desktop/new_tilings"
+    },
+    {
+        "duration": "1.0",
+        "name": "rendering.desktop/nvidia_vertex_buffer_object"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/overlay_background_color_css_transitions_page"
+    },
+    {
+        "duration": "1.0",
+        "name": "rendering.desktop/particles"
+    },
+    {
+        "duration": "15.0",
+        "name": "rendering.desktop/pinterest_2018"
+    },
+    {
+        "duration": "8.0",
+        "name": "rendering.desktop/put_get_image_data"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/raf"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/raf_animation"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/raf_canvas"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/raf_touch_animation"
+    },
+    {
+        "duration": "11.0",
+        "name": "rendering.desktop/repaint_amazon_2018"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/repaint_cnn_2018"
+    },
+    {
+        "duration": "8.0",
+        "name": "rendering.desktop/repaint_facebook_2018"
+    },
+    {
+        "duration": "8.0",
+        "name": "rendering.desktop/repaint_google_search_2018"
+    },
+    {
+        "duration": "8.0",
+        "name": "rendering.desktop/repaint_instagram_2018"
+    },
+    {
+        "duration": "8.0",
+        "name": "rendering.desktop/repaint_reddit_2018"
+    },
+    {
+        "duration": "11.0",
+        "name": "rendering.desktop/repaint_theverge_2018"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/repaint_twitter_2018"
+    },
+    {
+        "duration": "8.0",
+        "name": "rendering.desktop/repaint_wikipedia_2018"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/repaint_yahoo_homepage_2018"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/runway"
+    },
+    {
+        "duration": "1.0",
+        "name": "rendering.desktop/san_angeles"
+    },
+    {
+        "duration": "3.0",
+        "name": "rendering.desktop/second_batch_js_heavy"
+    },
+    {
+        "duration": "3.0",
+        "name": "rendering.desktop/second_batch_js_light"
+    },
+    {
+        "duration": "3.0",
+        "name": "rendering.desktop/second_batch_js_medium"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/simple_text_page"
+    },
+    {
+        "duration": "5.0",
+        "name": "rendering.desktop/simple_touch_drag"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/small_texture_uploads"
+    },
+    {
+        "duration": "10.0",
+        "name": "rendering.desktop/smash_cat"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/spielzeugz"
+    },
+    {
+        "duration": "8.0",
+        "name": "rendering.desktop/stroke_shapes"
+    },
+    {
+        "duration": "8.0",
+        "name": "rendering.desktop/sync_scroll_offset"
+    },
+    {
+        "duration": "18.0",
+        "name": "rendering.desktop/techcrunch_2018"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/text_05000_pixels_per_second"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.desktop/text_10000_pixels_per_second"
+    },
+    {
+        "duration": "5.0",
+        "name": "rendering.desktop/text_20000_pixels_per_second"
+    },
+    {
+        "duration": "4.0",
+        "name": "rendering.desktop/text_40000_pixels_per_second"
+    },
+    {
+        "duration": "3.0",
+        "name": "rendering.desktop/text_60000_pixels_per_second"
+    },
+    {
+        "duration": "3.0",
+        "name": "rendering.desktop/text_75000_pixels_per_second"
+    },
+    {
+        "duration": "3.0",
+        "name": "rendering.desktop/text_90000_pixels_per_second"
+    },
+    {
+        "duration": "11.0",
+        "name": "rendering.desktop/text_constant_full_page_raster_05000_pixels_per_second"
+    },
+    {
+        "duration": "10.0",
+        "name": "rendering.desktop/text_constant_full_page_raster_10000_pixels_per_second"
+    },
+    {
+        "duration": "7.0",
+        "name": "rendering.desktop/text_constant_full_page_raster_20000_pixels_per_second"
+    },
+    {
+        "duration": "5.0",
+        "name": "rendering.desktop/text_constant_full_page_raster_40000_pixels_per_second"
+    },
+    {
+        "duration": "4.0",
+        "name": "rendering.desktop/text_constant_full_page_raster_60000_pixels_per_second"
+    },
+    {
+        "duration": "4.0",
+        "name": "rendering.desktop/text_constant_full_page_raster_75000_pixels_per_second"
+    },
+    {
+        "duration": "4.0",
+        "name": "rendering.desktop/text_constant_full_page_raster_90000_pixels_per_second"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/text_hover_05000_pixels_per_second"
+    },
+    {
+        "duration": "8.0",
+        "name": "rendering.desktop/text_hover_10000_pixels_per_second"
+    },
+    {
+        "duration": "5.0",
+        "name": "rendering.desktop/text_hover_20000_pixels_per_second"
+    },
+    {
+        "duration": "4.0",
+        "name": "rendering.desktop/text_hover_40000_pixels_per_second"
+    },
+    {
+        "duration": "3.0",
+        "name": "rendering.desktop/text_hover_60000_pixels_per_second"
+    },
+    {
+        "duration": "3.0",
+        "name": "rendering.desktop/text_hover_75000_pixels_per_second"
+    },
+    {
+        "duration": "3.0",
+        "name": "rendering.desktop/text_hover_90000_pixels_per_second"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.desktop/touch_handler_scrolling"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/transform_transitions"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/transform_transitions_js_block"
+    },
+    {
+        "duration": "11.0",
+        "name": "rendering.desktop/twitch_2018"
+    },
+    {
+        "duration": "26.0",
+        "name": "rendering.desktop/twitch_pinch_2018"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.desktop/twitter_2018"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/twitter_pinch_2018"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/web_animation_value_type_color"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/web_animation_value_type_length_3d"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/web_animation_value_type_length_complex"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/web_animation_value_type_length_simple"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/web_animation_value_type_path"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/web_animation_value_type_shadow"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/web_animation_value_type_transform_complex"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/web_animation_value_type_transform_simple"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.desktop/web_animations_many_keyframes"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/web_animations_set_current_time"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/web_animations_simultaneous"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/web_animations_staggered_chaining"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.desktop/web_animations_staggered_infinite_iterations"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/web_animations_staggered_triggering_page"
+    },
+    {
+        "duration": "6.0",
+        "name": "rendering.desktop/webp_decoding_rgb_and_gpu_rasterization"
+    },
+    {
+        "duration": "6.0",
+        "name": "rendering.desktop/webp_decoding_yuv_and_gpu_rasterization"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.desktop/wikipedia_2018"
+    },
+    {
+        "duration": "13.0",
+        "name": "rendering.desktop/wordpress_2018"
+    },
+    {
+        "duration": "6.0",
+        "name": "rendering.desktop/yahoo_answers_2018"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.desktop/yahoo_news_2018"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.desktop/yahoo_news_pinch_2018"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.desktop/yahoo_sports_2018"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.desktop/yahoo_sports_pinch_2018"
+    },
+    {
+        "duration": "8.0",
+        "name": "rendering.desktop/youtube_2018"
+    },
+    {
+        "duration": "17.0",
+        "name": "rendering.desktop/youtube_pinch_2018"
+    }
+]

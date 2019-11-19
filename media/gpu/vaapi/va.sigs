@@ -20,13 +20,17 @@ VAStatus vaDestroySurfaces(VADisplay dpy, VASurfaceID *surfaces, int num_surface
 int vaDisplayIsValid(VADisplay dpy);
 VAStatus vaEndPicture(VADisplay dpy, VAContextID context);
 const char *vaErrorStr(VAStatus error_status);
+VAStatus vaExportSurfaceHandle(VADisplay dpy, VASurfaceID surface_id, uint32_t mem_type, uint32_t flags, void *descriptor);
 VAStatus vaGetConfigAttributes(VADisplay dpy, VAProfile profile, VAEntrypoint entrypoint, VAConfigAttrib *attrib_list, int num_attribs);
 VAStatus vaGetImage(VADisplay dpy, VASurfaceID surface, int x, int y, unsigned int width, unsigned int height, VAImageID image);
 VAStatus vaInitialize(VADisplay dpy, int *major_version, int *minor_version);
 VAStatus vaMapBuffer(VADisplay dpy, VABufferID buf_id, void **pbuf);
+int vaMaxNumConfigAttributes(VADisplay dpy);
 int vaMaxNumEntrypoints(VADisplay dpy);
 int vaMaxNumImageFormats(VADisplay dpy);
 int vaMaxNumProfiles(VADisplay dpy);
+VAStatus vaPutImage (VADisplay dpy, VASurfaceID surface, VAImageID image, int src_x, int src_y, unsigned int src_width, unsigned int src_height, int dest_x, int dest_y, unsigned int dest_width, unsigned int dest_height);
+VAStatus vaQueryConfigAttributes(VADisplay dpy, VAConfigID config_id, VAProfile *profile, VAEntrypoint *entrypoint, VAConfigAttrib *attrib_list, int *num_attribs);
 VAStatus vaQueryConfigEntrypoints(VADisplay dpy, VAProfile profile, VAEntrypoint *entrypoint_list, int *num_entrypoints);
 VAStatus vaQueryConfigProfiles(VADisplay dpy, VAProfile *profile_list, int *num_profiles);
 VAStatus vaQueryImageFormats(VADisplay dpy, VAImageFormat *format_list, int *num_formats);

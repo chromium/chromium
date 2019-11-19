@@ -1,0 +1,51 @@
+<style include="print-preview-shared md-select">
+  :host([error-state_='0']) #pageSettingsCustomInput,
+  :host([error-state_='3']) #pageSettingsCustomInput {
+    --cr-input-error-display: none;
+  }
+
+  /* Margin = standard margin (16px) - error field margin (8px) */
+  :host([error-state_='1']) #customInputWrapper,
+  :host([error-state_='2']) #customInputWrapper {
+    margin-bottom: 8px;
+  }
+
+  #pageSettingsCustomInput {
+    cursor: default;
+    --cr-form-field-label-height: 100%;
+  }
+
+  :host #title {
+    align-self: baseline;
+  }
+</style>
+<print-preview-settings-section>
+  <span slot="title" id="pages-label">$i18n{pagesLabel}</span>
+  <div slot="controls">
+    <select class="md-select" aria-labelledby="pages-label"
+        disabled$="[[controlsDisabled_]]" value="{{selectedValue::change}}"
+        on-blur="onSelectBlur_">
+      <option value="[[pagesValueEnum_.ALL]]" selected>
+        $i18n{optionAllPages}
+      </option>
+      <option value="[[pagesValueEnum_.CUSTOM]]">
+        $i18n{optionCustomPages}
+      </option>
+    </select>
+  </div>
+</print-preview-settings-section>
+<iron-collapse opened="[[customSelected_]]"
+    on-transitionend="onCollapseChanged_">
+  <print-preview-settings-section id="customInputWrapper">
+    <div slot="title"></div>
+    <div slot="controls">
+      <cr-input id="pageSettingsCustomInput" type="text"
+          data-timeout-delay="500" invalid="[[hasError_]]"
+          disabled$="[[inputDisabled_(controlsDisabled_, customSelected_)]]"
+          spellcheck="false" placeholder="$i18n{examplePageRangeText}"
+          error-message="[[getHintMessage_(errorState_, pageCount)]]"
+          on-blur="onCustomInputBlur_">
+      </cr-input>
+    </div>
+  </print-preview-settings-section>
+</iron-collapse>

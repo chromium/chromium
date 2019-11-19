@@ -1,22 +1,11 @@
-diff -ru protobuf/src/google/protobuf/compiler/cpp/cpp_message.cc protobuf2/src/google/protobuf/compiler/cpp/cpp_message.cc
---- protobuf/src/google/protobuf/compiler/cpp/cpp_message.cc    2018-05-25 08:49:22.423803658 -0700
-+++ protobuf2/src/google/protobuf/compiler/cpp/cpp_message.cc   2018-05-25 08:51:00.622866069 -0700
-@@ -994,7 +994,7 @@
-   vars["new_final"] = " PROTOBUF_FINAL";
+--- a/src/google/protobuf/compiler/cpp/cpp_message.cc
++++ b/src/google/protobuf/compiler/cpp/cpp_message.cc
+@@ -1216,7 +1216,7 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* printer) {
  
-   printer->Print(vars,
--    "void Swap($classname$* other);\n"
-+    "GOOGLE_ATTRIBUTE_NOINLINE void Swap($classname$* other);\n"
-     "friend void swap($classname$& a, $classname$& b) {\n"
-     "  a.Swap(&b);\n"
-     "}\n"
-@@ -2973,7 +2973,7 @@
-     // ownership situation: swapping across arenas or between an arena and a
-     // heap requires copying.
-     printer->Print(
--        "void $classname$::Swap($classname$* other) {\n"
-+        "GOOGLE_ATTRIBUTE_NOINLINE void $classname$::Swap($classname$* other) {\n"
+   if (SupportsArenas(descriptor_)) {
+     format(
+-        "inline void Swap($classname$* other) {\n"
++        "PROTOBUF_NOINLINE void Swap($classname$* other) {\n"
          "  if (other == this) return;\n"
          "  if (GetArenaNoVirtual() == other->GetArenaNoVirtual()) {\n"
          "    InternalSwap(other);\n"
-

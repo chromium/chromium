@@ -1,0 +1,7 @@
+include_rules = [
+  "+cc/base",
+  "+content/public/browser",
+  "+content/public/test",
+  "+third_party/blink/public/common",
+  "+third_party/zlib/google",
+]

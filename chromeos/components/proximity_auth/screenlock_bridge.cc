@@ -11,8 +11,7 @@
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 
 namespace proximity_auth {
 namespace {
@@ -149,9 +148,7 @@ bool ScreenlockBridge::IsLocked() const {
 }
 
 void ScreenlockBridge::Lock() {
-  chromeos::SessionManagerClient* session_manager =
-      chromeos::DBusThreadManager::Get()->GetSessionManagerClient();
-  session_manager->RequestLockScreen();
+  chromeos::SessionManagerClient::Get()->RequestLockScreen();
 }
 
 void ScreenlockBridge::Unlock(const AccountId& account_id) {

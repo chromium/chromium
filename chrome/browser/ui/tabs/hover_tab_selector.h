@@ -37,7 +37,7 @@ class HoverTabSelector {
   int tab_transition_tab_index_;
 
   // Factory for creating tab transition tasks.
-  base::WeakPtrFactory<HoverTabSelector> weak_factory_;
+  base::WeakPtrFactory<HoverTabSelector> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HoverTabSelector);
 };

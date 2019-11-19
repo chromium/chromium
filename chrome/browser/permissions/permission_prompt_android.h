@@ -5,18 +5,26 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_PERMISSION_PROMPT_ANDROID_H_
 #define CHROME_BROWSER_PERMISSIONS_PERMISSION_PROMPT_ANDROID_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
+#include "chrome/browser/permissions/permission_request_notification_android.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/infobars/core/infobar_manager.h"
 
 namespace content {
 class WebContents;
 }
+namespace infobars {
+class InfoBar;
+}
+class PermissionRequestNotificationAndroid;
 
-class PermissionPromptAndroid : public PermissionPrompt {
+class PermissionPromptAndroid : public PermissionPrompt,
+                                public infobars::InfoBarManager::Observer {
  public:
   PermissionPromptAndroid(content::WebContents* web_contents,
                           Delegate* delegate);
@@ -25,6 +33,7 @@ class PermissionPromptAndroid : public PermissionPrompt {
   // PermissionPrompt:
   void UpdateAnchorPosition() override;
   gfx::NativeWindow GetNativeWindow() override;
+  TabSwitchingBehavior GetTabSwitchingBehavior() override;
 
   void Closing();
   void Accept();
@@ -35,7 +44,12 @@ class PermissionPromptAndroid : public PermissionPrompt {
   size_t PermissionCount() const;
   ContentSettingsType GetContentSettingType(size_t position) const;
   int GetIconId() const;
+  base::string16 GetTitleText() const;
   base::string16 GetMessageText() const;
+
+  // InfoBar::Manager:
+  void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
+  void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
 
  private:
   // PermissionPromptAndroid is owned by PermissionRequestManager, so it should
@@ -45,7 +59,16 @@ class PermissionPromptAndroid : public PermissionPrompt {
   // |delegate_| is the PermissionRequestManager, which owns this object.
   Delegate* delegate_;
 
-  base::WeakPtrFactory<PermissionPromptAndroid> weak_factory_;
+  // The permission requestion notification used to display the permission
+  // request, if displayed in that format.
+  std::unique_ptr<PermissionRequestNotificationAndroid>
+      permission_request_notification_;
+
+  // The infobar used to display the permission request, if displayed in that
+  // format. Never assume that this pointer is currently alive.
+  infobars::InfoBar* permission_infobar_;
+
+  base::WeakPtrFactory<PermissionPromptAndroid> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PermissionPromptAndroid);
 };

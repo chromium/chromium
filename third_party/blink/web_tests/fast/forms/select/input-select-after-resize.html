@@ -8,10 +8,8 @@
     addEventListener('load', function() {
         // This test passes if the menu dropdown is drawn attached to the
         // <select> box. This is a test for crbug.com/638671.
-        if (window.testRunner) {
+        if (window.testRunner)
             testRunner.waitUntilDone();
-            testRunner.dumpAsTextWithPixelResults();
-        }
 
         window.moveBy(400, 400);
         window.resizeBy(2000, 2000);

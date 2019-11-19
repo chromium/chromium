@@ -1,0 +1,11 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Used by NativeFileSystemDirectoryIterator to represents results of next() calls.
+// https://github.com/WICG/writable-files/blob/master/EXPLAINER.md
+// https://www.ecma-international.org/ecma-262/9.0/index.html#sec-iteratorresult-interface
+dictionary NativeFileSystemDirectoryIteratorEntry {
+  FileSystemHandle value;
+  boolean done = false;
+};

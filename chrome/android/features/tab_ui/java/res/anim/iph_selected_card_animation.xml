@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:ordering="sequentially">
+    <!--Dummy animation to restore the shape.-->
+    <set android:ordering="together">
+        <objectAnimator
+            android:propertyName="scaleX"
+            android:duration="0"
+            android:valueFrom="1"
+            android:valueTo="1"/>
+        <objectAnimator
+            android:propertyName="scaleY"
+            android:duration="0"
+            android:valueFrom="1"
+            android:valueTo="1"/>
+        <objectAnimator
+            android:propertyName="translateX"
+            android:duration="0"
+            android:valueFrom="0"
+            android:valueTo="0"/>
+        <objectAnimator
+            android:propertyName="translateY"
+            android:duration="0"
+            android:valueFrom="0"
+            android:valueTo="0"/>
+    </set>
+    <!--Dummy animation to work as start offset.-->
+    <objectAnimator
+        android:propertyName="translateX"
+        android:duration="1000"
+        android:valueFrom="0"
+        android:valueTo="0"/>
+     <set android:ordering="together">
+        <objectAnimator
+            android:interpolator="@anim/fast_out_slow_in_interpolator"
+            android:propertyName="scaleX"
+            android:duration="300"
+            android:valueFrom="1"
+            android:valueTo="0.7"/>
+        <objectAnimator
+            android:interpolator="@anim/fast_out_slow_in_interpolator"
+            android:propertyName="scaleY"
+            android:duration="300"
+            android:valueFrom="1"
+            android:valueTo="0.7"/>
+    </set>
+    <!--Dummy animation to work as start offset.-->
+    <objectAnimator
+        android:propertyName="translateX"
+        android:duration="1000"
+        android:valueFrom="0"
+        android:valueTo="0" />
+    <set android:ordering="together">
+        <objectAnimator
+            android:propertyName="translateX"
+            android:duration="300"
+            android:valueFrom="0"
+            android:valueTo="-230"/>
+        <objectAnimator
+            android:propertyName="translateY"
+            android:duration="300"
+            android:valueFrom="0"
+            android:valueTo="70"/>
+    </set>
+    <!--Dummy animation to work as start offset.-->
+    <objectAnimator
+        android:propertyName="translateX"
+        android:duration="1050"
+        android:valueFrom="-230"
+        android:valueTo="-230"/>
+    <set android:ordering="together">
+        <objectAnimator
+            android:propertyName="scaleX"
+            android:duration="300"
+            android:valueFrom="0.7"
+            android:valueTo="0.4"/>
+        <objectAnimator
+            android:propertyName="scaleY"
+            android:duration="300"
+            android:valueFrom="0.7"
+            android:valueTo="0.4"/>
+        <objectAnimator
+            android:propertyName="translateX"
+            android:duration="300"
+            android:valueFrom="-230"
+            android:valueTo="-245"/>
+        <objectAnimator
+            android:propertyName="translateY"
+            android:duration="300"
+            android:valueFrom="70"
+            android:valueTo="-60"/>
+    </set>
+</set>

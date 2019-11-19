@@ -1,0 +1,61 @@
+{
+   "automation": {
+      "desktop": true
+   },
+   "background": {
+      "page": "cvox2/background/background.html"
+   },
+   "commands": {
+      "nextObject": {
+         "description": "__MSG_CHROMEVOX_NEXT_OBJECT__",
+         "suggested_key": {
+            "default": "Alt+Shift+Right"
+         }
+      },
+      "performDefaultAction": {
+         "description": "__MSG_CHROMEVOX_PERFORM_DEFAULT_ACTION__",
+         "suggested_key": {
+            "default": "Alt+Shift+Space"
+         }
+      },
+      "previousObject": {
+         "description": "__MSG_CHROMEVOX_PREVIOUS_OBJECT__",
+         "suggested_key": {
+            "default": "Alt+Shift+Left"
+         }
+      },
+      "readFromHere": {
+         "description": "__MSG_CHROMEVOX_READ_FROM_HERE__",
+         "suggested_key": {
+            "default": "Alt+Shift+R"
+         }
+      },
+      "toggleChromeVoxVersion": {
+         "description": "__MSG_CHROMEVOX_TOGGLE_CHROMEVOX__",
+         "suggested_key": {
+            "default": "Alt+Shift+Q"
+         }
+      }
+   },
+   "content_scripts": [ {
+      "all_frames": true,
+      "exclude_globs": [  ],
+      "js": [ "chromeVoxChromePageScript.js" ],
+      "matches": [ "\u003Call_urls>" ]
+   } ],
+   "default_locale": "en",
+   "description": "__MSG_CHROMEVOX_DESCRIPTION__",
+   "icons": {
+      "128": "images/chromevox-128.png",
+      "16": "images/chromevox-16.png",
+      "48": "images/chromevox-48.png"
+   },
+   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDEGBi/oD7Yl/Y16w3+gee/95/EUpRZ2U6c+8orV5ei+3CRsBsoXI/DPGBauZ3rWQ47aQnfoG00sXigFdJA2NhNK9OgmRA2evnsRRbjYm2BG1twpaLsgQPPus3PyczbDCvhFu8k24wzFyEtxLrfxAGBseBPb9QrCz7B4k2QgxD/CwIDAQAB",
+   "manifest_version": 2,
+   "name": "__MSG_CHROMEVOX_NAME__",
+   "options_page": "chromevox/background/options.html",
+   "permissions": [ "accessibilityPrivate", "bookmarks", "brailleDisplayPrivate", "commands.accessibility", "commandLinePrivate", "experimental", "history", "notifications", "storage", "tabs", "tts", "virtualKeyboardPrivate", "\u003Call_urls>" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "53.0.2784.6",
+   "web_accessible_resources": [ "chromevox/background/keymaps/next_keymap.json", "chromevox/injected/api.js", "chromevox/injected/api_util.js", "chromevox/injected/mathjax.js", "chromevox/injected/mathjax_external_util.js" ]
+}

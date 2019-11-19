@@ -289,8 +289,9 @@ void AudioDebugFileWriter::Write(std::unique_ptr<AudioBus> data) {
   file_task_runner_->PostTask(
       FROM_HERE,
       // Callback takes ownership of |data|:
-      base::Bind(&AudioFileWriter::Write, base::Unretained(file_writer_.get()),
-                 base::Owned(data.release())));
+      base::BindOnce(&AudioFileWriter::Write,
+                     base::Unretained(file_writer_.get()),
+                     base::Owned(data.release())));
 }
 
 bool AudioDebugFileWriter::WillWrite() {

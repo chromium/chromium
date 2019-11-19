@@ -69,17 +69,15 @@ bool SetAsDefaultBrowser() {
   // behind the Chrome window. The user never sees the dialog, and therefore
   // never confirms the change. Make the CoreServicesUIAgent active so the
   // confirmation dialog comes to the front.
-  if (base::mac::IsAtLeastOS10_10()) {
-    NSString* const kCoreServicesUIAgentBundleID =
-        @"com.apple.coreservices.uiagent";
+  NSString* const kCoreServicesUIAgentBundleID =
+      @"com.apple.coreservices.uiagent";
 
-    for (NSRunningApplication* application in
-         [[NSWorkspace sharedWorkspace] runningApplications]) {
-      if ([[application bundleIdentifier]
-              isEqualToString:kCoreServicesUIAgentBundleID]) {
-        [application activateWithOptions:NSApplicationActivateAllWindows];
-        break;
-      }
+  for (NSRunningApplication* application in
+       [[NSWorkspace sharedWorkspace] runningApplications]) {
+    if ([[application bundleIdentifier]
+            isEqualToString:kCoreServicesUIAgentBundleID]) {
+      [application activateWithOptions:NSApplicationActivateAllWindows];
+      break;
     }
   }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_WIDGET_DESKTOP_FOCUS_RULES_H_
-#define UI_VIEWS_WIDGET_DESKTOP_FOCUS_RULES_H_
+#ifndef UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_FOCUS_RULES_H_
+#define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_FOCUS_RULES_H_
 
 #include "base/macros.h"
 #include "ui/wm/core/base_focus_rules.h"
@@ -36,4 +36,4 @@ class DesktopFocusRules : public wm::BaseFocusRules {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_WIDGET_DESKTOP_FOCUS_RULES_H_
+#endif  // UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_FOCUS_RULES_H_

@@ -5,15 +5,14 @@
 module content.mojom;
 
 import "services/service_manager/public/mojom/interface_provider.mojom";
-import "third_party/blink/public/mojom/frame/document_interface_broker.mojom";
+import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 
 [Native]
 struct DidCommitProvisionalLoadParams;
 
 struct DidCommitProvisionalLoadInterfaceParams {
   service_manager.mojom.InterfaceProvider& interface_provider_request;
-  blink.mojom.DocumentInterfaceBroker&
-      document_interface_broker_content_request;
-  blink.mojom.DocumentInterfaceBroker& document_interface_broker_blink_request;
+  pending_receiver<blink.mojom.BrowserInterfaceBroker>
+      browser_interface_broker_receiver;
 };
 

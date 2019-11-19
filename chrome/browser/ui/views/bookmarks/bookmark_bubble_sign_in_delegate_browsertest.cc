@@ -23,15 +23,15 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/signin/core/browser/account_consistency_method.h"
-#include "components/signin/core/browser/account_info.h"
+#include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/range/range.h"
 
 #if !defined(OS_CHROMEOS)
-#include "chrome/browser/ui/views/profiles/profile_chooser_view.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #endif
 
 namespace {
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest,
   if (IsSigninModal(profile())) {
 #if !defined(OS_CHROMEOS)
     // ProfileChooser doesn't show in an incognito window.
-    EXPECT_FALSE(ProfileChooserView::IsShowing());
+    EXPECT_FALSE(ProfileMenuView::IsShowing());
 #endif
 
     // Sign-in dialog is shown when there is at least one tab in the

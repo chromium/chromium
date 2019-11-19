@@ -31,7 +31,9 @@
 
 #include "third_party/blink/renderer/core/html/forms/reset_input_type.h"
 
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -39,8 +41,8 @@
 
 namespace blink {
 
-InputType* ResetInputType::Create(HTMLInputElement& element) {
-  return MakeGarbageCollected<ResetInputType>(element);
+void ResetInputType::CountUsage() {
+  CountUsageIfVisible(WebFeature::kInputTypeReset);
 }
 
 const AtomicString& ResetInputType::FormControlType() const {
@@ -59,7 +61,7 @@ void ResetInputType::HandleDOMActivateEvent(Event& event) {
 }
 
 String ResetInputType::DefaultLabel() const {
-  return GetLocale().QueryString(WebLocalizedString::kResetButtonDefaultLabel);
+  return GetLocale().QueryString(IDS_FORM_RESET_LABEL);
 }
 
 bool ResetInputType::IsTextButton() const {

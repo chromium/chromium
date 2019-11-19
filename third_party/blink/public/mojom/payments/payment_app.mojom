@@ -8,6 +8,7 @@ import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/manifest/manifest.mojom";
 import "third_party/blink/public/mojom/payments/payment_request.mojom";
+import "third_party/blink/public/mojom/payments/payment_handler_host.mojom";
 import "url/mojom/url.mojom";
 
 enum PaymentHandlerStatus {
@@ -17,6 +18,27 @@ enum PaymentHandlerStatus {
   STORAGE_OPERATION_FAILED,
   FETCH_INSTRUMENT_ICON_FAILED,
   FETCH_PAYMENT_APP_INFO_FAILED,
+};
+
+enum PaymentEventResponseType {
+  PAYMENT_EVENT_SUCCESS,
+  PAYMENT_EVENT_REJECT,
+  PAYMENT_EVENT_SERVICE_WORKER_ERROR,
+  PAYMENT_HANDLER_WINDOW_CLOSING,
+  PAYMENT_EVENT_INTERNAL_ERROR,
+  PAYMENT_EVENT_NO_RESPONSE,
+  PAYMENT_DETAILS_STRINGIFY_ERROR,
+  PAYMENT_METHOD_NAME_EMPTY,
+  PAYMENT_DETAILS_ABSENT,
+  PAYMENT_DETAILS_NOT_OBJECT,
+  PAYMENT_EVENT_BROWSER_ERROR,
+  PAYMENT_EVENT_TIMEOUT,
+  PAYMENT_HANDLER_INSECURE_NAVIGATION,
+  PAYER_NAME_EMPTY,
+  PAYER_EMAIL_EMPTY,
+  PAYER_PHONE_EMPTY,
+  SHIPPING_ADDRESS_INVALID,
+  SHIPPING_OPTION_EMPTY,
 };
 
 // This struct is provided to hold a payment instrument from render
@@ -31,6 +53,13 @@ struct PaymentInstrument {
   // Below arrays are non-empty only if enabled_methods contains "basic-card".
   array<BasicCardNetwork> supported_networks;
   array<BasicCardType> supported_types;
+};
+
+enum PaymentDelegation {
+  SHIPPING_ADDRESS,
+  PAYER_NAME,
+  PAYER_PHONE,
+  PAYER_EMAIL,
 };
 
 // This interface provides implementation of PaymentInstruments.idl
@@ -55,6 +84,11 @@ interface PaymentManager {
   ClearPaymentInstruments()
       => (PaymentHandlerStatus status);
   SetUserHint(string user_hint);
+  // A method from PaymentManager.idl which lets payment handlers specify
+  // whether or not they can handle shipping address or contact info (payer's
+  // name/email/phone).
+  EnableDelegations(array<PaymentDelegation> delegations)
+     =>(PaymentHandlerStatus status);
 };
 
 // This struct is provided to send payment request data to render side
@@ -76,6 +110,12 @@ struct PaymentRequestEventData {
   PaymentCurrencyAmount total;
   array<PaymentDetailsModifier> modifiers;
   string instrument_key;
+  PaymentOptions? payment_options;
+  array<PaymentShippingOption>? shipping_options;
+
+  // Handles events raised by the payment handler, such as "payment method
+  // changed" event. Null in content_browsertests.
+  PaymentHandlerHost? payment_handler_host;
 };
 
 // This struct is provided to receive payment app response from render
@@ -83,6 +123,12 @@ struct PaymentRequestEventData {
 struct PaymentHandlerResponse {
   string method_name;
   string stringified_details;
+  PaymentEventResponseType response_type;
+  string? payer_name;
+  string? payer_email;
+  string? payer_phone;
+  PaymentAddress? shipping_address;
+  string? shipping_option;
 };
 
 // This interface is provided to pass a payment handler response from payment

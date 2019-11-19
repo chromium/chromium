@@ -1,2 +1,3 @@
 rootWebArea
-++list
+++genericContainer ignored
+++++list

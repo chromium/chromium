@@ -12,7 +12,7 @@ MockScreenAvailabilityListener::MockScreenAvailabilityListener(
 
 MockScreenAvailabilityListener::~MockScreenAvailabilityListener() {}
 
-GURL MockScreenAvailabilityListener::GetAvailabilityUrl() const {
+GURL MockScreenAvailabilityListener::GetAvailabilityUrl() {
   return availability_url_;
 }
 

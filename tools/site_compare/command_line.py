@@ -11,6 +11,8 @@ Basically, a better optparse. I took heed of epg's WHINE() in gvn.cmdline
 and dumped optparse in favor of something better.
 """
 
+from __future__ import print_function
+
 import os.path
 import re
 import string
@@ -738,8 +740,8 @@ def main():
       # ...and so is this
       pass
     else:
-      print ("FAILURE: expected an exception for '%s'"
-             " and didn't get it" % exception_case)
+      print("FAILURE: expected an exception for '%s'"
+            " and didn't get it" % exception_case)
 
   # Let's do some parsing! first, the minimal success line:
   MIN = "test --reqint 123 param1 --req1 "
@@ -789,11 +791,11 @@ def main():
     cmdline.ParseCommandLine([x.strip() for x in test.strip().split(" ")])
 
     if not len(cmdline.command.parse_errors) == expected_failures:
-      print "FAILED:\n  issued: '%s'\n  expected: %d\n  received: %d\n\n" % (
-        test, expected_failures, len(cmdline.command.parse_errors))
+      print("FAILED:\n  issued: '%s'\n  expected: %d\n  received: %d\n\n" %
+            (test, expected_failures, len(cmdline.command.parse_errors)))
       badtests += 1
 
-  print "%d failed out of %d tests" % (badtests, len(test_lines))
+  print("%d failed out of %d tests" % (badtests, len(test_lines)))
 
   cmdline.ParseCommandLine(["help", "test"])
 

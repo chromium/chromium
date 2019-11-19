@@ -46,7 +46,7 @@ inline ScrollOffset ToScrollOffset(const FloatPoint& p) {
 }
 
 using ScrollDirection = WebScrollDirection;
-using ScrollGranularity = WebScrollGranularity;
+using ui::input_types::ScrollGranularity;
 
 enum ScrollDirectionPhysical {
   kScrollUp,
@@ -163,7 +163,7 @@ enum ScrollbarOrientation { kHorizontalScrollbar, kVerticalScrollbar };
 
 enum ScrollOrientation { kHorizontalScroll, kVerticalScroll };
 
-enum ScrollbarMode { kScrollbarAuto, kScrollbarAlwaysOff, kScrollbarAlwaysOn };
+enum class ScrollbarMode { kAuto, kAlwaysOff, kAlwaysOn };
 
 enum ScrollbarControlSize { kRegularScrollbar, kSmallScrollbar };
 
@@ -178,13 +178,13 @@ enum ScrollbarControlStateMask {
 enum ScrollbarPart {
   kNoPart = 0,
   kBackButtonStartPart = 1,
-  kForwardButtonStartPart = 1 << 1,
+  kForwardButtonStartPart = 1 << 1,  // For custom scrollbars only.
   kBackTrackPart = 1 << 2,
   kThumbPart = 1 << 3,
   kForwardTrackPart = 1 << 4,
-  kBackButtonEndPart = 1 << 5,
+  kBackButtonEndPart = 1 << 5,  // For custom scrollbars only.
   kForwardButtonEndPart = 1 << 6,
-  kScrollbarBGPart = 1 << 7,
+  kScrollbarBGPart = 1 << 7,  // For custom scrollbars only.
   kTrackBGPart = 1 << 8,
   kAllParts = 0xffffffff
 };
@@ -244,23 +244,6 @@ inline ScrollOffset ToScrollDelta(ScrollDirectionPhysical dir, float delta) {
   return (dir == kScrollLeft || dir == kScrollRight) ? ScrollOffset(delta, 0)
                                                      : ScrollOffset(0, delta);
 }
-
-inline ScrollGranularity ToPlatformScrollGranularity(
-    WebGestureEvent::ScrollUnits units) {
-  switch (units) {
-    case WebGestureEvent::ScrollUnits::kPrecisePixels:
-      return ScrollGranularity::kScrollByPrecisePixel;
-    case WebGestureEvent::ScrollUnits::kPixels:
-      return ScrollGranularity::kScrollByPixel;
-    case WebGestureEvent::ScrollUnits::kPage:
-      return ScrollGranularity::kScrollByPage;
-    default:
-      NOTREACHED();
-      return ScrollGranularity::kScrollByPrecisePixel;
-  }
-}
-
-typedef unsigned ScrollbarControlPartMask;
 
 }  // namespace blink
 

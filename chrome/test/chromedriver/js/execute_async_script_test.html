@@ -8,17 +8,37 @@ function resetAsyncScriptInfo() {
   delete document[ASYNC_INFO_KEY];
 }
 
-function testScriptThrows() {
-  resetAsyncScriptInfo();
-  var info = getAsyncScriptInfo();
-
-  executeAsyncScript('f(123);', [], true);
-  assertEquals(StatusCode.JAVASCRIPT_ERROR, info.result.status);
-  executeAsyncScript('f(123);', [], false);
-  assertEquals(StatusCode.UNKNOWN_ERROR, info.result.status);
+function waitForResultToPopulate(callback) {
+  const info = getAsyncScriptInfo();
+  setTimeout(() => {
+    if (info.result)
+      callback(info);
+    else
+      waitForResultToPopulate(callback);
+  }, 10);
 }
 
-function testUserScriptWithArgs() {
+function testUserScriptThrows(runner) {
+  resetAsyncScriptInfo();
+  executeAsyncScript('f(123);', [], true);
+  waitForResultToPopulate((info) => {
+    assertEquals(StatusCode.JAVASCRIPT_ERROR, info.result.status);
+    runner.continueTesting();
+  });
+  runner.waitForAsync();
+}
+
+function testScriptThrows(runner) {
+  resetAsyncScriptInfo();
+  executeAsyncScript('f(123);', [], false);
+  waitForResultToPopulate((info) => {
+    assertEquals(StatusCode.UNKNOWN_ERROR, info.result.status);
+    runner.continueTesting();
+  });
+  runner.waitForAsync();
+}
+
+function testUserScriptWithArgs(runner) {
   resetAsyncScriptInfo();
 
   var injectedArgs = null;
@@ -31,93 +51,54 @@ function testUserScriptWithArgs() {
       'var args = arguments; args[0](args); args[args.length - 1](args[1]);';
   var script_args = [captureArguments, 1];
   executeAsyncScript(script, script_args, true);
+  waitForResultToPopulate((info) => {
+    assertEquals(3, injectedArgs.length);
+    assertEquals(captureArguments, injectedArgs[0]);
+    assertEquals(1, injectedArgs[1]);
 
-  assertEquals(3, injectedArgs.length);
-  assertEquals(captureArguments, injectedArgs[0]);
-  assertEquals(1, injectedArgs[1]);
-
-  var info = getAsyncScriptInfo();
-  assertEquals(0, info.result.status);
-  assertEquals(1, info.result.value);
-  assertEquals(2, info.id);
+    assertEquals(0, info.result.status);
+    assertEquals(1, info.result.value);
+    assertEquals(2, info.id);
+    runner.continueTesting();
+  });
+  runner.waitForAsync();
 }
 
-function testNonUserScript() {
+function testNonUserScriptCallback(runner) {
   resetAsyncScriptInfo();
-  var info = getAsyncScriptInfo();
-
   executeAsyncScript('arguments[1](arguments[0])', [33], false);
-  assertEquals(0, info.result.status);
-  assertEquals(33, info.result.value);
-
-  executeAsyncScript('arguments[2](new Error("ERR"))', [33], false);
-  assertEquals(StatusCode.UNKNOWN_ERROR, info.result.status);
-  assertEquals(0, info.result.value.indexOf('ERR'));
-
-  executeAsyncScript('var e = new Error("ERR"); e.code = 111; arguments[1](e)',
-                     [], false);
-  assertEquals(111, info.result.status);
-  assertEquals(0, info.result.value.indexOf('ERR'));
-}
-
-function testNoResultBeforeTimeout() {
-  resetAsyncScriptInfo();
-  var info = getAsyncScriptInfo();
-
-  executeAsyncScript(
-      'var a = arguments; window.setTimeout(function() {a[0](33)}, 0);',
-      [], true, 0);
-
-  assert(!info.result);
-}
-
-function testZeroTimeout(runner) {
-  resetAsyncScriptInfo();
-  var info = getAsyncScriptInfo();
-
-  executeAsyncScript(
-      'var a = arguments; window.setTimeout(function() {a[0](33)}, 0);',
-      [], true, 0);
-
-  window.setTimeout(function() {
+  waitForResultToPopulate((info) => {
     assertEquals(0, info.result.status);
     assertEquals(33, info.result.value);
     runner.continueTesting();
-  }, 0);
+  });
   runner.waitForAsync();
 }
 
-function testUserScriptTimesOut(runner) {
+function testNonUserScriptCustomError(runner) {
   resetAsyncScriptInfo();
-  var info = getAsyncScriptInfo();
-
-  executeAsyncScript('', [], true, 500);
-
-  window.setTimeout(function() {
-    assertEquals(StatusCode.SCRIPT_TIMEOUT, info.result.status);
-    assert(info.result.value.indexOf('0.5') != -1);
-    runner.continueTesting();
-  }, 500);
-
-  runner.waitForAsync();
-}
-
-function testNonUserScriptTimesOut(runner) {
-  resetAsyncScriptInfo();
-  var info = getAsyncScriptInfo();
-
-  executeAsyncScript('', [], false, 500);
-
-  window.setTimeout(function() {
+  executeAsyncScript('arguments[2](new Error("ERR"))', [33], false);
+  waitForResultToPopulate((info) => {
     assertEquals(StatusCode.UNKNOWN_ERROR, info.result.status);
-    assert(info.result.value.indexOf('0.5') != -1);
+    assertEquals(0, info.result.value.indexOf('ERR'));
     runner.continueTesting();
-  }, 500);
-
+  });
   runner.waitForAsync();
 }
 
-function testFirstScriptFinishAfterSecondScriptExecute() {
+function testNonUserScriptCustomErrorCode(runner) {
+  resetAsyncScriptInfo();
+  executeAsyncScript('var e = new Error("ERR"); e.code = 111; arguments[1](e)',
+                     [], false);
+  waitForResultToPopulate((info) => {
+    assertEquals(111, info.result.status);
+    assertEquals(0, info.result.value.indexOf('ERR'));
+    runner.continueTesting();
+  });
+  runner.waitForAsync();
+}
+
+function testFirstScriptFinishAfterSecondScriptExecute(runner) {
   resetAsyncScriptInfo();
 
   executeAsyncScript(
@@ -127,9 +108,13 @@ function testFirstScriptFinishAfterSecondScriptExecute() {
   assertEquals(1, info.id);
 
   executeAsyncScript('var fn = arguments[0]; fn(2);', []);
-  assertEquals(0, info.result.status);
-  assertEquals(2, info.result.value);
-  assertEquals(3, info.id);
+  waitForResultToPopulate((info) => {
+    assertEquals(0, info.result.status);
+    assertEquals(2, info.result.value);
+    assertEquals(3, info.id);
+    runner.continueTesting();
+  });
+  runner.waitForAsync();
 }
 
 </script>

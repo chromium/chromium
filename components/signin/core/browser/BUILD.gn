@@ -2,120 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//components/signin/features.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-buildflag_header("signin_buildflags") {
-  header = "signin_buildflags.h"
-  flags = [
-    "ENABLE_DICE_SUPPORT=$enable_dice_support",
-    "ENABLE_MIRROR=$enable_mirror",
-  ]
-}
-
-# This target contains code that will be shared between the Identity Service
-# implementation and its client library/clients. Currently, this code is used
-# both by IdentityManager and by its clients.
-static_library("shared") {
-  sources = [
-    "account_consistency_method.cc",
-    "account_consistency_method.h",
-    "account_info.cc",
-    "account_info.h",
-    "account_info_util.cc",
-    "account_info_util.h",
-    "avatar_icon_util.cc",
-    "avatar_icon_util.h",
-    "identity_utils.cc",
-    "identity_utils.h",
-    "signin_metrics.cc",
-    "signin_metrics.h",
-    "signin_pref_names.cc",
-    "signin_pref_names.h",
-    "signin_switches.cc",
-    "signin_switches.h",
-    "ubertoken_fetcher.cc",
-    "ubertoken_fetcher.h",
-  ]
-  deps = [
-    ":signin_buildflags",
-    "//components/account_id",
-    "//components/prefs:prefs",
-    "//third_party/icu:icui18n",
-    "//third_party/re2",
-    "//ui/gfx",
-    "//url",
-  ]
-  public_deps = [
-    "//base",
-
-    # TODO(blundell): Analyze this dependency.
-    "//google_apis",
-  ]
-}
-
-# This target contains what will become the core of the Identity Service
-# implementation. It currently forms the core of the IdentityManager
-# implementation (//services/identity/public/cpp/identity_manager.*). We are
-# actively converting the codebase away from using the code in this target
-# directly to using IdentityManager (tracked in https://crbug.com/796544). Do
-# not add code to this target without consulting with blundell@chromium.org.
-static_library("internals") {
-  sources = [
-    "account_fetcher_service.cc",
-    "account_fetcher_service.h",
-    "account_info_fetcher.cc",
-    "account_info_fetcher.h",
-    "account_tracker_service.cc",
-    "account_tracker_service.h",
-    "child_account_info_fetcher_android.cc",
-    "child_account_info_fetcher_android.h",
-    "device_id_helper.cc",
-    "device_id_helper.h",
-    "gaia_cookie_manager_service.cc",
-    "gaia_cookie_manager_service.h",
-    "oauth2_token_service_delegate_android.cc",
-    "oauth2_token_service_delegate_android.h",
-    "profile_oauth2_token_service.cc",
-    "profile_oauth2_token_service.h",
-    "signin_client.cc",
-    "signin_client.h",
-    "signin_manager.cc",
-    "signin_manager.h",
-    "signin_manager_base.cc",
-    "signin_manager_base.h",
-    "ubertoken_fetcher_impl.cc",
-    "ubertoken_fetcher_impl.h",
-  ]
-
-  if (is_chromeos) {
-    sources -= [ "signin_manager.cc" ]
-  }
-
-  deps = [
-    ":shared",
-    ":signin_buildflags",
-    "//base",
-    "//components/data_use_measurement/core",
-    "//components/image_fetcher/core",
-    "//components/keyed_service/core",
-    "//components/prefs",
-    "//google_apis",
-    "//net",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
-    "//ui/gfx",
-  ]
-
-  if (is_android) {
-    deps += [ "android:jni_headers" ]
-  }
-}
-
+# This target contains code that is used by clients of //components/signin.
 static_library("browser") {
   sources = [
     "about_signin_internals.cc",
@@ -128,6 +21,10 @@ static_library("browser") {
     "account_reconcilor_delegate.h",
     "chrome_connected_header_helper.cc",
     "chrome_connected_header_helper.h",
+    "consistency_cookie_manager_base.cc",
+    "consistency_cookie_manager_base.h",
+    "cookie_reminter.cc",
+    "cookie_reminter.h",
     "cookie_settings_util.cc",
     "cookie_settings_util.h",
     "dice_account_reconcilor_delegate.cc",
@@ -138,8 +35,6 @@ static_library("browser") {
     "mice_account_reconcilor_delegate.h",
     "mirror_account_reconcilor_delegate.cc",
     "mirror_account_reconcilor_delegate.h",
-    "mutable_profile_oauth2_token_service_delegate.cc",
-    "mutable_profile_oauth2_token_service_delegate.h",
     "signin_error_controller.cc",
     "signin_error_controller.h",
     "signin_header_helper.cc",
@@ -154,24 +49,18 @@ static_library("browser") {
     "signin_status_metrics_provider_base.h",
     "signin_status_metrics_provider_delegate.cc",
     "signin_status_metrics_provider_delegate.h",
-    "webdata/token_service_table.cc",
-    "webdata/token_service_table.h",
-    "webdata/token_web_data.cc",
-    "webdata/token_web_data.h",
   ]
 
   configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
   public_deps = [
-    ":internals",
-    ":shared",
-    ":signin_buildflags",
     "//base",
-    "//components/account_id",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
     "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_buildflags",
     "//google_apis",
     "//net",
     "//services/network/public/cpp",
@@ -180,13 +69,12 @@ static_library("browser") {
   ]
   deps = [
     "//base:i18n",
-    "//components/data_use_measurement/core",
-    "//components/google/core/browser",
+    "//components/google/core/common",
     "//components/metrics",
     "//components/os_crypt",
+    "//components/signin/public/identity_manager",
     "//components/webdata/common",
     "//crypto",
-    "//services/identity/public/cpp",
     "//services/network/public/cpp",
     "//skia",
     "//sql",
@@ -194,10 +82,23 @@ static_library("browser") {
   ]
 
   if (is_chromeos) {
+    sources += [
+      "active_directory_account_reconcilor_delegate.cc",
+      "active_directory_account_reconcilor_delegate.h",
+    ]
+    deps += [ "//chromeos/tpm:tpm" ]
     sources -= [
       "signin_status_metrics_provider.cc",
       "signin_status_metrics_provider_delegate.cc",
     ]
+  }
+
+  if (is_android) {
+    sources += [
+      "consistency_cookie_manager_android.cc",
+      "consistency_cookie_manager_android.h",
+    ]
+    deps += [ "android:jni_headers" ]
   }
 
   if (!enable_dice_support) {
@@ -210,97 +111,51 @@ static_library("browser") {
   }
 }
 
-# This target contains test support that backs the test support for
-# IdentityManager (and eventually likely for the Identity Service). We are
-# actively converting the codebase away from using the code in this target
-# directly to using IdentityManager (tracked in https://crbug.com/796544). Do
-# not add code to this target without consulting with blundell@chromium.org.
-static_library("internals_test_support") {
-  testonly = true
-  sources = [
-    "fake_account_fetcher_service.cc",
-    "fake_account_fetcher_service.h",
-    "fake_profile_oauth2_token_service.cc",
-    "fake_profile_oauth2_token_service.h",
-
-    # TODO(https://crbug.com/907782): Move list_accounts_test_utils to
-    # //services/identity/public/cpp once FakeGCMS no longer depends on it.
-    "list_accounts_test_utils.cc",
-    "list_accounts_test_utils.h",
-    "test_signin_client.cc",
-    "test_signin_client.h",
-  ]
-
-  deps = [
-    "//base/test:test_support",
-    "//components/image_fetcher/core",
-    "//components/prefs",
-    "//google_apis:test_support",
-    "//ui/gfx:test_support",
-  ]
-
-  public_deps = [
-    ":internals",
-    ":shared",
-    "//base",
-    "//services/network:test_support",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "account_info_unittest.cc",
-    "account_info_util_unittest.cc",
     "account_investigator_unittest.cc",
-    "account_reconcilor_delegate_unittest.cc",
     "account_reconcilor_unittest.cc",
-    "account_tracker_service_unittest.cc",
-    "avatar_icon_util_unittest.cc",
-    "device_id_helper_unittest.cc",
     "dice_account_reconcilor_delegate_unittest.cc",
-    "gaia_cookie_manager_service_unittest.cc",
-    "identity_utils_unittest.cc",
     "mice_account_reconcilor_delegate_unittest.cc",
-    "mutable_profile_oauth2_token_service_delegate_unittest.cc",
     "signin_error_controller_unittest.cc",
     "signin_header_helper_unittest.cc",
     "signin_investigator_unittest.cc",
-    "signin_manager_unittest.cc",
-    "signin_metrics_unittest.cc",
     "signin_status_metrics_provider_unittest.cc",
-    "ubertoken_fetcher_impl_unittest.cc",
-    "webdata/token_service_table_unittest.cc",
   ]
 
   deps = [
     ":browser",
-    ":internals_test_support",
-    ":signin_buildflags",
+    "//base",
     "//base/test:test_support",
     "//components/content_settings/core/browser",
-    "//components/image_fetcher/core",
-    "//components/image_fetcher/core:test_support",
-    "//components/os_crypt:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//components/sync_preferences",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_buildflags",
+    "//components/signin/public/base:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
-    "//components/webdata/common",
-    "//google_apis:test_support",
+    "//google_apis",
     "//net:test_support",
-    "//services/identity/public/cpp:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/gfx:test_support",
+    "//url",
   ]
 
   if (is_chromeos) {
+    deps += [ "//chromeos/tpm:test_support" ]
     sources -= [
       "account_investigator_unittest.cc",
-      "signin_manager_unittest.cc",
       "signin_status_metrics_provider_unittest.cc",
     ]
+  }
+
+  if (is_android) {
+    sources += [ "consistency_cookie_manager_unittest.cc" ]
   }
 
   if (!enable_dice_support) {

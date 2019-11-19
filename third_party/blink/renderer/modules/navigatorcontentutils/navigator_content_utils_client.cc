@@ -4,35 +4,32 @@
 
 #include "third_party/blink/renderer/modules/navigatorcontentutils/navigator_content_utils_client.h"
 
-#include "third_party/blink/public/web/web_local_frame_client.h"
-#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
-NavigatorContentUtilsClient* NavigatorContentUtilsClient::Create(
-    WebLocalFrameImpl* web_frame) {
-  return MakeGarbageCollected<NavigatorContentUtilsClient>(web_frame);
-}
-
-NavigatorContentUtilsClient::NavigatorContentUtilsClient(
-    WebLocalFrameImpl* web_frame)
-    : web_frame_(web_frame) {}
+NavigatorContentUtilsClient::NavigatorContentUtilsClient(LocalFrame* frame)
+    : frame_(frame) {}
 
 void NavigatorContentUtilsClient::Trace(blink::Visitor* visitor) {
-  visitor->Trace(web_frame_);
+  visitor->Trace(frame_);
 }
 
 void NavigatorContentUtilsClient::RegisterProtocolHandler(const String& scheme,
                                                           const KURL& url,
                                                           const String& title) {
-  web_frame_->Client()->RegisterProtocolHandler(scheme, url, title);
+  bool user_gesture = LocalFrame::HasTransientUserActivation(frame_);
+  frame_->GetLocalFrameHostRemote().RegisterProtocolHandler(scheme, url, title,
+                                                            user_gesture);
 }
 
 void NavigatorContentUtilsClient::UnregisterProtocolHandler(
     const String& scheme,
     const KURL& url) {
-  web_frame_->Client()->UnregisterProtocolHandler(scheme, url);
+  bool user_gesture = LocalFrame::HasTransientUserActivation(frame_);
+  frame_->GetLocalFrameHostRemote().UnregisterProtocolHandler(scheme, url,
+                                                              user_gesture);
 }
 
 }  // namespace blink

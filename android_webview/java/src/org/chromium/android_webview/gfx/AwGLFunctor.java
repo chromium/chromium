@@ -7,10 +7,12 @@ package org.chromium.android_webview.gfx;
 import android.graphics.Canvas;
 import android.view.ViewGroup;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.android_webview.AwContents;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Manages state associated with the Android render thread and the draw functor
@@ -30,7 +32,7 @@ public class AwGLFunctor implements AwFunctor {
 
     public AwGLFunctor(
             AwContents.NativeDrawFunctorFactory nativeDrawFunctorFactory, ViewGroup containerView) {
-        mNativeAwGLFunctor = nativeCreate(this);
+        mNativeAwGLFunctor = AwGLFunctorJni.get().create(this);
         mNativeDrawGLFunctor = nativeDrawFunctorFactory.createGLFunctor(mNativeAwGLFunctor);
         mContainerView = containerView;
         if (mNativeDrawGLFunctor.supportsDrawGLFunctorReleasedCallback()) {
@@ -44,18 +46,20 @@ public class AwGLFunctor implements AwFunctor {
     @Override
     public void destroy() {
         assert mRefCount > 0;
-        nativeRemoveFromCompositorFrameProducer(mNativeAwGLFunctor);
+        AwGLFunctorJni.get().removeFromCompositorFrameProducer(
+                mNativeAwGLFunctor, AwGLFunctor.this);
         removeReference();
     }
 
     public static long getAwDrawGLFunction() {
-        return nativeGetAwDrawGLFunction();
+        return AwGLFunctorJni.get().getAwDrawGLFunction();
     }
 
     @Override
     public long getNativeCompositorFrameConsumer() {
         assert mRefCount > 0;
-        return nativeGetCompositorFrameConsumer(mNativeAwGLFunctor);
+        return AwGLFunctorJni.get().getCompositorFrameConsumer(
+                mNativeAwGLFunctor, AwGLFunctor.this);
     }
 
     @Override
@@ -78,9 +82,9 @@ public class AwGLFunctor implements AwFunctor {
             // When |mRefCount| decreases to zero, the functor is neither attached to a view, nor
             // referenced from the render tree, and so it is safe to delete the HardwareRenderer
             // instance to free up resources because the current state will not be drawn again.
-            nativeDeleteHardwareRenderer(mNativeAwGLFunctor);
+            AwGLFunctorJni.get().deleteHardwareRenderer(mNativeAwGLFunctor, AwGLFunctor.this);
             mNativeDrawGLFunctor.destroy();
-            nativeDestroy(mNativeAwGLFunctor);
+            AwGLFunctorJni.get().destroy(mNativeAwGLFunctor);
         }
     }
 
@@ -98,7 +102,7 @@ public class AwGLFunctor implements AwFunctor {
     @Override
     public void trimMemory() {
         assert mRefCount > 0;
-        nativeDeleteHardwareRenderer(mNativeAwGLFunctor);
+        AwGLFunctorJni.get().deleteHardwareRenderer(mNativeAwGLFunctor, AwGLFunctor.this);
     }
 
     /**
@@ -107,15 +111,17 @@ public class AwGLFunctor implements AwFunctor {
      */
     @VisibleForTesting
     public static int getNativeInstanceCount() {
-        return nativeGetNativeInstanceCount();
+        return AwGLFunctorJni.get().getNativeInstanceCount();
     }
 
-    private native void nativeDeleteHardwareRenderer(long nativeAwGLFunctor);
-    private native void nativeRemoveFromCompositorFrameProducer(long nativeAwGLFunctor);
-    private native long nativeGetCompositorFrameConsumer(long nativeAwGLFunctor);
-
-    private static native long nativeGetAwDrawGLFunction();
-    private static native void nativeDestroy(long nativeAwGLFunctor);
-    private static native long nativeCreate(AwGLFunctor javaProxy);
-    private static native int nativeGetNativeInstanceCount();
+    @NativeMethods
+    interface Natives {
+        void deleteHardwareRenderer(long nativeAwGLFunctor, AwGLFunctor caller);
+        void removeFromCompositorFrameProducer(long nativeAwGLFunctor, AwGLFunctor caller);
+        long getCompositorFrameConsumer(long nativeAwGLFunctor, AwGLFunctor caller);
+        long getAwDrawGLFunction();
+        void destroy(long nativeAwGLFunctor);
+        long create(AwGLFunctor javaProxy);
+        int getNativeInstanceCount();
+    }
 }

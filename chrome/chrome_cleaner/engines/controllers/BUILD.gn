@@ -1,0 +1,216 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
+source_set("common") {
+  sources = [
+    "scanner_impl.cc",
+    "scanner_impl.h",
+    "uwe_scanner_wrapper.cc",
+    "uwe_scanner_wrapper.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/chrome_cleaner/chrome_utils:force_installed_extension",
+    "//chrome/chrome_cleaner/constants:uws_id",
+    "//chrome/chrome_cleaner/engines/broker:common",
+    "//chrome/chrome_cleaner/engines/broker:interface_metadata_observer",
+    "//chrome/chrome_cleaner/engines/common",
+    "//chrome/chrome_cleaner/ipc:mojo_task_runner",
+    "//chrome/chrome_cleaner/ipc:sandbox",
+    "//chrome/chrome_cleaner/logging:common",
+    "//chrome/chrome_cleaner/mojom:engine_sandbox_interface",
+    "//chrome/chrome_cleaner/os:common_os",
+    "//chrome/chrome_cleaner/proto:shared_pup_enums_proto",
+    "//chrome/chrome_cleaner/proto:uwe_matcher_proto",
+    "//chrome/chrome_cleaner/pup_data:pup_data_base",
+    "//chrome/chrome_cleaner/scanner:scanner_api",
+    "//chrome/chrome_cleaner/scanner:scanner_api",
+    "//chrome/chrome_cleaner/settings",
+    "//components/chrome_cleaner/public/constants:constants",
+    "//mojo/public/cpp/system",
+  ]
+
+  libs = [
+    "crypt32.lib",
+    "wintrust.lib",
+  ]
+}
+
+source_set("main_controller") {
+  sources = [
+    "main_controller.cc",
+    "main_controller.h",
+  ]
+
+  deps = [
+    ":engine_cleaner_lib",
+    ":facade_interface_header",
+    "//base",
+    "//chrome/chrome_cleaner/cleaner:cleaner_headers",
+    "//chrome/chrome_cleaner/components:components",
+    "//chrome/chrome_cleaner/constants:common_strings",
+    "//chrome/chrome_cleaner/constants:uws_id",
+    "//chrome/chrome_cleaner/engines/common",
+    "//chrome/chrome_cleaner/ipc:chrome_prompt_ipc",
+    "//chrome/chrome_cleaner/ipc:sandbox",
+    "//chrome/chrome_cleaner/logging:common",
+    "//chrome/chrome_cleaner/logging:scoped_timed_task_logger",
+    "//chrome/chrome_cleaner/os:cleaner_os",
+    "//chrome/chrome_cleaner/os:common_os",
+    "//chrome/chrome_cleaner/scanner:scanner_api",
+    "//chrome/chrome_cleaner/scanner:signature_matcher_api",
+    "//chrome/chrome_cleaner/settings",
+    "//chrome/chrome_cleaner/settings:settings_types",
+    "//chrome/chrome_cleaner/ui:cleaner_ui",
+    "//components/chrome_cleaner/public/constants:constants",
+  ]
+}
+
+source_set("scanner_controller") {
+  sources = [
+    "scanner_controller_impl.cc",
+    "scanner_controller_impl.h",
+  ]
+
+  deps = [
+    ":common",
+    "//base",
+    "//chrome/chrome_cleaner/constants:common_strings",
+    "//chrome/chrome_cleaner/engines/broker:common",
+    "//chrome/chrome_cleaner/ipc:sandbox",
+    "//chrome/chrome_cleaner/logging:common",
+    "//chrome/chrome_cleaner/logging/proto:reporter_logs_proto",
+    "//chrome/chrome_cleaner/os:common_os",
+    "//chrome/chrome_cleaner/parsers/shortcut_parser/broker:shortcut_parser_api",
+    "//chrome/chrome_cleaner/pup_data:pup_data_base",
+    "//chrome/chrome_cleaner/scanner:reporter_scanner",
+    "//chrome/chrome_cleaner/settings",
+  ]
+}
+
+source_set("facade_interface_header") {
+  sources = [
+    "engine_facade_interface.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/chrome_cleaner/cleaner:cleaner_headers",
+    "//chrome/chrome_cleaner/scanner:scanner_api",
+  ]
+}
+
+source_set("engine_cleaner_lib") {
+  sources = [
+    "elevating_facade.cc",
+    "elevating_facade.h",
+    "engine_cleaner.cc",
+    "engine_cleaner.h",
+    "engine_facade.cc",
+    "engine_facade.h",
+    "uwe_engine_cleaner_wrapper.cc",
+    "uwe_engine_cleaner_wrapper.h",
+  ]
+
+  deps = [
+    ":common",
+    ":facade_interface_header",
+    "//base",
+    "//chrome/chrome_cleaner/chrome_utils:extensions_util_lib",
+    "//chrome/chrome_cleaner/chrome_utils:force_installed_extension",
+    "//chrome/chrome_cleaner/cleaner:cleaner_headers",
+    "//chrome/chrome_cleaner/constants:common_strings",
+    "//chrome/chrome_cleaner/engines/broker:cleaner_sandbox_interface",
+    "//chrome/chrome_cleaner/engines/broker:common",
+    "//chrome/chrome_cleaner/engines/common",
+    "//chrome/chrome_cleaner/engines/common:resources_header",
+    "//chrome/chrome_cleaner/ipc:chrome_prompt_ipc",
+    "//chrome/chrome_cleaner/ipc:mojo_task_runner",
+    "//chrome/chrome_cleaner/ipc:sandbox",
+    "//chrome/chrome_cleaner/logging:common",
+    "//chrome/chrome_cleaner/logging/proto:removal_status_proto",
+    "//chrome/chrome_cleaner/os:cleaner_os",
+    "//chrome/chrome_cleaner/os:common_os",
+    "//chrome/chrome_cleaner/parsers/json_parser",
+    "//chrome/chrome_cleaner/proto:uwe_matcher_proto",
+    "//chrome/chrome_cleaner/pup_data:pup_data_base",
+    "//chrome/chrome_cleaner/scanner:force_installed_extension_scanner",
+    "//chrome/chrome_cleaner/scanner:force_installed_extension_scanner",
+    "//chrome/chrome_cleaner/scanner:force_installed_extension_scanner_api",
+    "//chrome/chrome_cleaner/scanner:scanner_api",
+    "//chrome/chrome_cleaner/settings",
+    "//chrome/chrome_cleaner/ui:cleaner_ui",
+    "//components/chrome_cleaner/public/constants:constants",
+    "//mojo/public/cpp/platform",
+    "//sandbox/win:sandbox",
+  ]
+}
+
+source_set("unittest_sources") {
+  testonly = true
+
+  sources = [
+    "engine_cleaner_unittest.cc",
+    "extension_removal_unittest.cc",
+    "main_controller_unittest.cc",
+    "scanner_controller_impl_unittest.cc",
+    "scanner_impl_unittest.cc",
+    "uwe_scanner_wrapper_unittest.cc",
+  ]
+
+  deps = [
+    ":common",
+    ":engine_cleaner_lib",
+    ":main_controller",
+    ":scanner_controller",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/chrome_cleaner/chrome_utils:extension_id",
+    "//chrome/chrome_cleaner/components:components",
+    "//chrome/chrome_cleaner/constants:common_strings",
+    "//chrome/chrome_cleaner/engines/broker:common",
+    "//chrome/chrome_cleaner/engines/broker:engine_client_mock",
+    "//chrome/chrome_cleaner/engines/common",
+    "//chrome/chrome_cleaner/engines/target:common",
+    "//chrome/chrome_cleaner/engines/target:test_engine_delegate",
+    "//chrome/chrome_cleaner/ipc:chrome_prompt_ipc",
+    "//chrome/chrome_cleaner/ipc:mock_chrome_prompt_ipc",
+    "//chrome/chrome_cleaner/ipc:mojo_task_runner",
+    "//chrome/chrome_cleaner/ipc:sandbox",
+    "//chrome/chrome_cleaner/logging:common",
+    "//chrome/chrome_cleaner/logging:mock_logging_service",
+    "//chrome/chrome_cleaner/logging/proto:removal_status_proto",
+    "//chrome/chrome_cleaner/mojom:mojo_sandbox_hooks_test_interface",
+    "//chrome/chrome_cleaner/os:cleaner_os",
+    "//chrome/chrome_cleaner/os:common_os",
+    "//chrome/chrome_cleaner/os:file_remover_api",
+    "//chrome/chrome_cleaner/parsers/broker:parser_sandbox_broker",
+    "//chrome/chrome_cleaner/parsers/json_parser",
+    "//chrome/chrome_cleaner/parsers/shortcut_parser/broker:fake_shortcut_parser",
+    "//chrome/chrome_cleaner/parsers/target:parser_sandbox_target",
+    "//chrome/chrome_cleaner/pup_data:pup_data_base",
+    "//chrome/chrome_cleaner/pup_data:test_uws",
+    "//chrome/chrome_cleaner/scanner:force_installed_extension_scanner",
+    "//chrome/chrome_cleaner/scanner:force_installed_extension_scanner_api",
+    "//chrome/chrome_cleaner/scanner:mock_force_installed_extension_scanner",
+    "//chrome/chrome_cleaner/scanner:signature_matcher_api",
+    "//chrome/chrome_cleaner/settings",
+    "//chrome/chrome_cleaner/test:scoped_file",
+    "//chrome/chrome_cleaner/test:test_component",
+    "//chrome/chrome_cleaner/test:test_extensions",
+    "//chrome/chrome_cleaner/test:test_pup_data",
+    "//chrome/chrome_cleaner/test:test_util",
+    "//chrome/chrome_cleaner/test:test_uws_catalog",
+    "//chrome/chrome_cleaner/ui:cleaner_ui",
+    "//chrome/chrome_cleaner/zip_archiver:common",
+    "//components/chrome_cleaner/test:test_name_helper",
+    "//sandbox/win:sandbox",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

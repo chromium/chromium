@@ -1,0 +1,10 @@
+endpoint_type: LOCAL
+fuzz_handshake: false
+messages {
+  id: 0x4d4f4a4f
+  include_body_if_not_complex: false
+  # The channel expects there to be a msgh_descriptor_count, which will be
+  # filled with A's here. This won't match the message not having the COMPLEX
+  # msgh_bits set.
+  data: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+}

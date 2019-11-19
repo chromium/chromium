@@ -9,7 +9,7 @@
 #include <CoreGraphics/CGGeometry.h>
 
 #include "base/ios/block_types.h"
-#import "ios/web/public/web_state/js/crw_js_injection_manager.h"
+#import "ios/web/public/deprecated/crw_js_injection_manager.h"
 
 // Data from find in page.
 typedef struct FindInPageEntry {

@@ -37,21 +37,29 @@ class SearchIPCRouterPolicyImpl : public SearchIPCRouter::Policy {
   bool ShouldProcessDeleteCustomLink() override;
   bool ShouldProcessUndoCustomLinkAction() override;
   bool ShouldProcessResetCustomLinks() override;
+  bool ShouldProcessToggleMostVisitedOrCustomLinks() override;
+  bool ShouldProcessToggleShortcutsVisibility() override;
   bool ShouldProcessLogEvent() override;
+  bool ShouldProcessLogSuggestionEventWithValue() override;
   bool ShouldProcessPasteIntoOmnibox(bool is_active_tab) override;
-  bool ShouldProcessChromeIdentityCheck() override;
-  bool ShouldProcessHistorySyncCheck() override;
   bool ShouldSendSetInputInProgress(bool is_active_tab) override;
   bool ShouldSendOmniboxFocusChanged() override;
-  bool ShouldSendMostVisitedItems() override;
-  bool ShouldSendThemeBackgroundInfo() override;
-  bool ShouldProcessSetCustomBackgroundURL() override;
-  bool ShouldProcessSetCustomBackgroundURLWithAttributions() override;
+  bool ShouldSendMostVisitedInfo() override;
+  bool ShouldSendNtpTheme() override;
+  bool ShouldSendLocalBackgroundSelected() override;
+  bool ShouldProcessSetCustomBackgroundInfo() override;
   bool ShouldProcessSelectLocalBackgroundImage() override;
   bool ShouldProcessBlocklistSearchSuggestion() override;
   bool ShouldProcessBlocklistSearchSuggestionWithHash() override;
   bool ShouldProcessSearchSuggestionSelected() override;
   bool ShouldProcessOptOutOfSearchSuggestions() override;
+  bool ShouldProcessThemeChangeMessages() override;
+  bool ShouldProcessAutocompleteResultChanged(bool is_active_tab) override;
+  bool ShouldProcessQueryAutocomplete(bool is_active_tab) override;
+  bool ShouldProcessStopAutocomplete() override;
+  bool ShouldProcessBlocklistPromo() override;
+  bool ShouldProcessOpenAutocompleteMatch(bool is_active_tab) override;
+  bool ShouldProcessDeleteAutocompleteMatch() override;
 
   // Used by unit tests.
   void set_is_incognito(bool is_incognito) {

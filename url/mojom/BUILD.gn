@@ -5,12 +5,14 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("url_mojom_gurl") {
+  generate_java = true
   sources = [
     "url.mojom",
   ]
 }
 
 mojom("url_mojom_origin") {
+  generate_java = true
   sources = [
     "origin.mojom",
   ]

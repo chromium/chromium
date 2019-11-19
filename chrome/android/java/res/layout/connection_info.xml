@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lineSpacingExtra="6dp"
-            android:textAppearance="@style/TextAppearance.ConnectionInfoDescription" />
+            android:textAppearance="@style/TextAppearance.BlackCaptionDefault" />
     </LinearLayout>
 
 </LinearLayout>

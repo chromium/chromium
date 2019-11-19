@@ -1,0 +1,278 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="/shared_styles.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+
+<dom-module id="user-manager-tutorial">
+  <template>
+    <style include="shared-styles">
+      .tutorial-slide {
+        @apply --cr-card-elevation;
+        -webkit-transition: opacity 200ms ease-in-out;
+        background-color: var(--cr-card-background-color);
+        border-radius: var(--cr-card-border-radius);
+        bottom: 0;
+        height: 408px;
+        left: 0;
+        margin: auto;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 320px;
+        z-index: 100;
+      }
+
+      :host.single-pod #yourChrome,
+      :host.single-pod #complete {
+        margin-inline-start: 30px;
+      }
+
+      #guests {
+        bottom: 20px;
+        left: auto;
+        margin: 0;
+        right: 100px;
+        top: auto;
+      }
+
+      :host-context([dir='rtl']) #guests {
+        left: 100px;
+        right: auto;
+      }
+
+      #friends,
+      #notYou {
+        bottom: 20px;
+        left: auto;
+        margin: 0;
+        right: 20px;
+        top: auto;
+      }
+
+      :host-context([dir='rtl']) #friends,
+      :host-context([dir='rtl']) #notYou {
+        left: 20px;
+        right: auto;
+      }
+
+      #notYou {
+        height: 100px;
+        width: 240px;
+      }
+
+      .slide-contents {
+        color: var(--cr-primary-text-color);
+        padding: 0 20px;
+        text-align: center;
+      }
+
+      .slide-title {
+        font-size: 20px;
+        line-height: 20px;
+        margin: 30px 0;
+      }
+
+      .slide-text {
+        font-size: 15px;
+        line-height: 20px;
+      }
+
+      .slide-buttons {
+        bottom: 20px;
+        position: absolute;
+        text-align: center;
+        width: 100%;
+      }
+
+      .slide-buttons [is='action-link'] {
+        width: 100%;
+      }
+
+      .slide-buttons button {
+        bottom: 0;
+        height: 35px;
+        padding: 0 15px;
+        width: 138px;
+      }
+
+      .arrow-down {
+        border-bottom: 10px solid white;
+        border-left: 10px solid white;  /* csschecker-disable-line left-right */
+        border-right: 10px solid transparent;  /* csschecker-disable-line left-right */
+        border-top: 10px solid transparent;
+        bottom: -10px;
+        box-shadow: var(--cr-card-shadow);
+        clip-path: inset(0 0 -5px -5px);
+        height: 0;
+        position: absolute;
+        right: 40px;
+        transform: rotate(-45deg);
+        width: 0;
+      }
+
+      :host-context([dir='rtl']) .arrow-down {
+        left: 40px;
+        right: auto;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .arrow-down {
+          --gg900-blended-with-4percent-white: rgb(40, 41, 44);
+          border-bottom-color: var(--gg900-blended-with-4percent-white);
+          border-left-color: var(--gg900-blended-with-4percent-white);  /* csschecker-disable-line left-right */
+        }
+      }
+
+      #guests .arrow-down {
+        right: 110px;
+      }
+
+      :host-context([dir='rtl']) #guests .arrow-down {
+        left: 110px;
+        right: auto;
+      }
+
+      .slide-image {
+        border-radius:
+            var(--cr-card-border-radius) var(--cr-card-border-radius) 0 0;
+        height: 182px;
+      }
+
+      #yourChrome .slide-image {
+        background-color: rgb(241, 202, 58);
+        background-image:
+            url(chrome://theme/IDR_ICON_USER_MANAGER_TUTORIAL_YOUR_CHROME);
+      }
+
+      #guests .slide-image {
+        background-color: rgb(90, 196, 144);
+        background-image: url(chrome://theme/IDR_ICON_USER_MANAGER_TUTORIAL_GUESTS);
+      }
+
+      #friends .slide-image {
+        background-color: var(--paper-light-blue-100);
+        background-image:
+            url(chrome://theme/IDR_ICON_USER_MANAGER_TUTORIAL_FRIENDS);
+      }
+
+      #complete .slide-image {
+        background-color: white;
+        background-image:
+            url(chrome://theme/IDR_ICON_USER_MANAGER_TUTORIAL_COMPLETE);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #notYou {
+          color: var(--cr-primary-text-color);
+        }
+      }
+
+      #notYou #dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 5px;
+        top: 5px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #notYou #dismiss {
+          color: var(--google-grey-500);
+        }
+      }
+
+      #notYou #slide-add-user {
+        margin-top: 10px;
+      }
+
+      :host-context([dir='rtl']) #notYou #dismiss {
+        left: 5px;
+        right: auto;
+      }
+    </style>
+    <template is="dom-if" if="[[!hidden_]]">
+      <template is="dom-if"
+          if="[[!isStepHidden_(currentStep_, steps_.YOUR_CHROME)]]">
+        <div class="tutorial-slide" id="[[steps_.YOUR_CHROME]]">
+          <div class="slide-image"></div>
+          <div class="slide-contents">
+            <div class="slide-title">$i18n{slideYourChromeTitle}</div>
+            <div class="slide-text">$i18n{slideYourChromeText}</div>
+          </div>
+          <div class="slide-buttons">
+            <cr-button on-click="onNextClick_" data-next$="[[steps_.GUESTS]]">
+              $i18n{tutorialNext}
+            </cr-button>
+          </div>
+        </div>
+      </template>
+      <template is="dom-if"
+          if="[[!isStepHidden_(currentStep_, steps_.GUESTS)]]">
+        <div class="tutorial-slide" id="[[steps_.GUESTS]]">
+          <div class="slide-image"></div>
+          <div class="slide-contents">
+            <div class="slide-title">$i18n{slideGuestsTitle}</div>
+            <div class="slide-text">$i18n{slideGuestsText}</div>
+          </div>
+          <div class="slide-buttons">
+            <cr-button on-click="onNextClick_" data-next$="[[steps_.FRIENDS]]">
+              $i18n{tutorialNext}
+            </cr-button>
+          </div>
+          <div class="arrow-down"></div>
+        </div>
+      </template>
+      <template is="dom-if"
+          if="[[!isStepHidden_(currentStep_, steps_.FRIENDS)]]">
+        <div class="tutorial-slide" id="[[steps_.FRIENDS]]">
+          <div class="slide-image"></div>
+          <div class="slide-contents">
+            <div class="slide-title">$i18n{slideFriendsTitle}</div>
+            <div class="slide-text">$i18n{slideFriendsText}</div>
+          </div>
+          <div class="slide-buttons">
+            <cr-button on-click="onNextClick_" data-next$="[[steps_.COMPLETE]]">
+              $i18n{tutorialNext}
+            </cr-button>
+          </div>
+          <div class="arrow-down"></div>
+        </div>
+      </template>
+      <template is="dom-if"
+          if="[[!isStepHidden_(currentStep_, steps_.COMPLETE)]]">
+        <div class="tutorial-slide" id="[[steps_.COMPLETE]]">
+          <div class="slide-image"></div>
+          <div class="slide-contents">
+            <div class="slide-title">$i18n{slideCompleteTitle}</div>
+            <div class="slide-text">$i18n{slideCompleteText}</div>
+          </div>
+          <div class="slide-buttons">
+            <cr-button on-click="onNextClick_" data-next$="[[steps_.NOT_YOU]]">
+              $i18n{tutorialDone}
+            </cr-button>
+          </div>
+        </div>
+      </template>
+      <template is="dom-if" if="[[!isStepHidden_(currentStep_, 'notYou')]]">
+        <div class="tutorial-slide" id="notYou">
+          <iron-icon id="dismiss" icon="cr:close"
+              on-tap="onDissmissTap_">
+          </iron-icon>
+          <div class="slide-buttons">
+            <div class="slide-text">
+              $i18n{slideCompleteUserNotFound}
+            </div>
+            <div id="slide-add-user">
+              <a id="addUser" is="action-link" on-tap="onAddUserTap_">
+                $i18n{slideCompleteAddUser}
+              </a>
+            </div>
+          </div>
+          <div class="arrow-down"></div>
+        </div>
+      </template>
+    </template>
+  </template>
+  <script src="user_manager_tutorial.js"></script>
+</dom-module>

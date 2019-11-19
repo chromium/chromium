@@ -13,7 +13,7 @@ CastAppAvailabilityTracker::~CastAppAvailabilityTracker() = default;
 
 base::flat_set<std::string> CastAppAvailabilityTracker::RegisterSource(
     const CastMediaSource& source) {
-  if (base::ContainsKey(registered_sources_, source.source_id()))
+  if (base::Contains(registered_sources_, source.source_id()))
     return base::flat_set<std::string>();
 
   registered_sources_.emplace(source.source_id(), source);

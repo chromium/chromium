@@ -19,10 +19,6 @@ class ListedElement;
 
 class AXValidationMessage final : public AXMockObject {
  public:
-  static AXValidationMessage* Create(AXObjectCacheImpl& ax_object_cache) {
-    return MakeGarbageCollected<AXValidationMessage>(ax_object_cache);
-  }
-
   explicit AXValidationMessage(AXObjectCacheImpl&);
   ~AXValidationMessage() override;
 

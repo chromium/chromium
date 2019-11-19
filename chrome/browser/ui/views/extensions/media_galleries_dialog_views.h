@@ -45,10 +45,8 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
   views::View* GetContentsView() override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   ui::ModalType GetModalType() const override;
-  views::View* CreateExtraView() override;
   bool Cancel() override;
   bool Accept() override;
 
@@ -56,9 +54,9 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // views::ContextMenuController implementation:
-  void ShowContextMenuForView(views::View* source,
-                              const gfx::Point& point,
-                              ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(views::View* source,
+                                  const gfx::Point& point,
+                                  ui::MenuSourceType source_type) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaGalleriesDialogTest, InitializeCheckboxes);

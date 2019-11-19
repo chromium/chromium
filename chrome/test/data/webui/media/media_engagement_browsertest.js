@@ -5,9 +5,8 @@
 /**
  * @fileoverview Test suite for the Media Engagement WebUI.
  */
-var ROOT_PATH = '../../../../../';
-var EXAMPLE_URL_1 = 'http://example.com/';
-var EXAMPLE_URL_2 = 'http://shmlexample.com/';
+var EXAMPLE_URL_1 = 'http://example.com';
+var EXAMPLE_URL_2 = 'http://shmlexample.com';
 
 GEN('#include "chrome/browser/media/media_engagement_service.h"');
 GEN('#include "chrome/browser/media/media_engagement_service_factory.h"');
@@ -21,7 +20,7 @@ MediaEngagementWebUIBrowserTest.prototype = {
 
   browsePreload: 'chrome://media-engagement',
 
-  featureList: ['media::kRecordMediaEngagementScores', ''],
+  featureList: {enabled: ['media::kRecordMediaEngagementScores']},
 
   runAccessibilityChecks: false,
 
@@ -31,21 +30,21 @@ MediaEngagementWebUIBrowserTest.prototype = {
     GEN('MediaEngagementService* service =');
     GEN('  MediaEngagementServiceFactory::GetForProfile(');
     GEN('    browser()->profile());');
-    GEN('MediaEngagementScore score1 =');
-    GEN('     service->CreateEngagementScore(GURL("' + EXAMPLE_URL_1 + '"));');
+    GEN('MediaEngagementScore score1 = service->CreateEngagementScore(');
+    GEN('     url::Origin::Create(GURL("' + EXAMPLE_URL_1 + '")));');
     GEN('score1.IncrementVisits();');
     GEN('score1.IncrementMediaPlaybacks();');
     GEN('score1.Commit();');
-    GEN('MediaEngagementScore score2 =');
-    GEN('     service->CreateEngagementScore(GURL("' + EXAMPLE_URL_2 + '"));');
+    GEN('MediaEngagementScore score2 = service->CreateEngagementScore(');
+    GEN('     url::Origin::Create(GURL("' + EXAMPLE_URL_2 + '")));');
     GEN('score2.IncrementVisits();');
     GEN('score2.IncrementMediaPlaybacks();');
     GEN('score2.Commit();');
   },
 
   extraLibraries: [
-    ROOT_PATH + 'third_party/mocha/mocha.js',
-    ROOT_PATH + 'chrome/test/data/webui/mocha_adapter.js',
+    '//third_party/mocha/mocha.js',
+    '//chrome/test/data/webui/mocha_adapter.js',
   ],
 };
 

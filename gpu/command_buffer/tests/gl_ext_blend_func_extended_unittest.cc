@@ -8,6 +8,7 @@
 #include <GLES3/gl3.h>
 #include <stdint.h>
 
+#include "base/numerics/ranges.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "gpu/config/gpu_test_config.h"
@@ -54,7 +55,7 @@ void BlendEquationFuncAdd(float dst[4],
          dst[3] * Weight<Ad, 3>(dst, src, src1);
   for (int i = 0; i < 4; ++i) {
     result[i] = static_cast<uint8_t>(
-        std::floor(std::max(0.0f, std::min(1.0f, r[i])) * 255.0f));
+        std::floor(base::ClampToRange(r[i], 0.0f, 1.0f) * 255.0f));
   }
 }
 

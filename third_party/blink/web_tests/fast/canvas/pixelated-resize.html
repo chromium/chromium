@@ -16,10 +16,6 @@
     <canvas width="4" height="4"></canvas>
 </body>
 <script>
-    // Ignore the render tree.
-    if (window.testRunner)
-      testRunner.dumpAsTextWithPixelResults();
-
     function drawToCanvas(canvas) {
         var ctx = canvas.getContext("2d")
         ctx.drawImage(document.getElementsByTagName("img")[0], 1, 1);

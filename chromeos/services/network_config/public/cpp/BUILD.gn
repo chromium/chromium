@@ -1,0 +1,40 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+source_set("cpp") {
+  sources = [
+    "cros_network_config_util.cc",
+    "cros_network_config_util.h",
+  ]
+
+  deps = [
+    "//chromeos/services/network_config/public/mojom",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "cros_network_config_test_helper.cc",
+    "cros_network_config_test_helper.h",
+    "cros_network_config_test_observer.cc",
+    "cros_network_config_test_observer.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/network:test_support",
+    "//chromeos/services/network_config/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    "//chromeos/network",
+    "//chromeos/services/network_config",
+    "//chromeos/services/network_config:in_process_instance",
+  ]
+}

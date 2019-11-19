@@ -6,11 +6,11 @@
 
 #include <utility>
 
+#include "ash/public/cpp/tablet_mode.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
-#include "chrome/browser/ui/ash/tablet_mode_client.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_system.h"
 #include "ui/gfx/color_utils.h"
@@ -24,13 +24,11 @@ namespace {
 
 AppListControllerDelegate* g_controller_for_test = nullptr;
 
-ash::mojom::AppListItemMetadataPtr CreateDefaultMetadata(
+std::unique_ptr<ash::AppListItemMetadata> CreateDefaultMetadata(
     const std::string& app_id) {
-  return ash::mojom::AppListItemMetadata::New(
-      app_id, std::string() /* name */, std::string() /* short_name */,
-      std::string() /* folder_id */, syncer::StringOrdinal(),
-      false /* is_folder */, false /* is_persistent */,
-      gfx::ImageSkia() /* icon */, false /* is_page_break */);
+  auto metadata = std::make_unique<ash::AppListItemMetadata>();
+  metadata->id = app_id;
+  return metadata;
 }
 
 }  // namespace
@@ -87,12 +85,13 @@ void ChromeAppListItem::SetPercentDownloaded(int32_t percent_downloaded) {
 }
 
 void ChromeAppListItem::SetMetadata(
-    ash::mojom::AppListItemMetadataPtr metadata) {
+    std::unique_ptr<ash::AppListItemMetadata> metadata) {
   metadata_ = std::move(metadata);
 }
 
-ash::mojom::AppListItemMetadataPtr ChromeAppListItem::CloneMetadata() const {
-  return metadata_.Clone();
+std::unique_ptr<ash::AppListItemMetadata> ChromeAppListItem::CloneMetadata()
+    const {
+  return std::make_unique<ash::AppListItemMetadata>(*metadata_);
 }
 
 void ChromeAppListItem::PerformActivate(int event_flags) {
@@ -126,17 +125,9 @@ app_list::AppContextMenu* ChromeAppListItem::GetAppContextMenu() {
 void ChromeAppListItem::MaybeDismissAppList() {
   // Launching apps can take some time. It looks nicer to dismiss the app list.
   // Do not close app list for home launcher.
-  if (!TabletModeClient::Get() ||
-      !TabletModeClient::Get()->tablet_mode_enabled()) {
+  if (!ash::TabletMode::Get() || !ash::TabletMode::Get()->InTabletMode()) {
     GetController()->DismissView();
   }
-}
-
-void ChromeAppListItem::ContextMenuItemSelected(int command_id,
-                                                int event_flags) {
-  app_list::AppContextMenu* menu = GetAppContextMenu();
-  if (menu)
-    menu->ExecuteCommand(command_id, event_flags);
 }
 
 extensions::AppSorting* ChromeAppListItem::GetAppSorting() {

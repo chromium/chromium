@@ -11,17 +11,19 @@ import android.os.Build;
 import android.text.format.DateUtils;
 import android.util.Xml;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.xmlpull.v1.XmlSerializer;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.identity.SettingsSecureBasedIdentificationGenerator;
 import org.chromium.chrome.browser.identity.UniqueIdentificationGeneratorFactory;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.ChromeSigninController;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.IOException;
@@ -197,10 +199,11 @@ public abstract class RequestGenerator {
     public int getNumGoogleAccountsOnDevice() {
         // RequestGenerator may be invoked from JobService or AlarmManager (through OmahaService),
         // so have to make sure AccountManagerFacade instance is initialized.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> ProcessInitializationHandler.getInstance().initializePreNative());
         int numAccounts = 0;
         try {
+            // TODO(waffles@chromium.org): Ideally, this should be asynchronous.
+            PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT,
+                    () -> ProcessInitializationHandler.getInstance().initializePreNative());
             numAccounts = AccountManagerFacade.get().getGoogleAccounts().size();
         } catch (Exception e) {
             Log.e(TAG, "Can't get number of accounts.", e);

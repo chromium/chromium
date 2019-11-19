@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/interfaces/constants.mojom.h"
-#include "ash/public/interfaces/system_tray_test_api.test-mojom-test-utils.h"
-#include "ash/public/interfaces/system_tray_test_api.test-mojom.h"
+#include "ash/public/cpp/system_tray_test_api.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
@@ -20,8 +18,6 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
-#include "content/public/common/service_manager_connection.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace em = enterprise_management;
@@ -31,27 +27,17 @@ namespace chromeos {
 class SystemUse24HourClockPolicyTest
     : public policy::DevicePolicyCrosBrowserTest {
  public:
-  SystemUse24HourClockPolicyTest() {
-  }
+  SystemUse24HourClockPolicyTest() = default;
 
   // policy::DevicePolicyCrosBrowserTest:
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-    // Connect to the ash test interface.
-    content::ServiceManagerConnection::GetForProcess()
-        ->GetConnector()
-        ->BindInterface(ash::mojom::kServiceName, &tray_test_api_);
+    tray_test_api_ = ash::SystemTrayTestApi::Create();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kLoginManager);
     command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    InstallOwnerKey();
-    MarkAsEnterpriseOwned();
-    DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
   void TearDownOnMainThread() override {
@@ -75,10 +61,7 @@ class SystemUse24HourClockPolicyTest
   }
 
   bool IsPrimarySystemTrayUse24Hour() {
-    ash::mojom::SystemTrayTestApiAsyncWaiter wait_for(tray_test_api_.get());
-    bool is_24_hour = false;
-    wait_for.Is24HourClock(&is_24_hour);
-    return is_24_hour;
+    return tray_test_api_->Is24HourClock();
   }
 
   static bool SystemClockShouldUse24Hour() {
@@ -88,7 +71,7 @@ class SystemUse24HourClockPolicyTest
   }
 
  private:
-  ash::mojom::SystemTrayTestApiPtr tray_test_api_;
+  std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
 
   DISALLOW_COPY_AND_ASSIGN(SystemUse24HourClockPolicyTest);
 };

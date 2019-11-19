@@ -7,14 +7,12 @@
     #image {
         width: 200px;
         height: 200px;
-        transform: translateZ(0);
+        will-change: transform;
     }
 </style>
 <script type="text/javascript" charset="utf-8">
-    if (window.testRunner) {
+    if (window.testRunner)
         testRunner.waitUntilDone();
-        testRunner.dumpAsTextWithPixelResults();
-    }
     function doTest()
     {
         var image = document.getElementById("image");

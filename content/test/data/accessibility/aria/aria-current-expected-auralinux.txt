@@ -1,0 +1,24 @@
+[document web]
+++[link] name='Section one'
+++++[static] name='Section one'
+++[static] name=' '
+++[link] name='Section two'
+++++[static] name='Section two'
+++[static] name=' '
+++[link] name='Section three' current:location
+++++[static] name='Section three'
+++[static] name='<newline>'
+++[heading] name='Section one heading'
+++++[static] name='Section one heading'
+++[heading] name='Section two heading'
+++++[static] name='Section two heading'
+++[heading] name='Section three heading'
+++++[static] name='Section three heading'
+++[static] name='<newline>'
+++[section]
+++++[static] name='Span 1'
+++++[static] name=' '
+++++[section] current:true
+++++++[static] name='Span 2'
+++++[static] name=' '
+++++[static] name='Span 3'

@@ -13,9 +13,6 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
-    /** @private {!VersionInfo} */
-    versionInfo_: Object,
-
     /** @private */
     currentlyOnChannelText_: String,
 
@@ -24,17 +21,17 @@ Polymer({
 
     /** @private */
     canChangeChannel_: Boolean,
+
+    eolMessageWithMonthAndYear: {
+      type: String,
+      value: '',
+    },
   },
 
   /** @override */
   ready: function() {
     const browserProxy = settings.AboutPageBrowserProxyImpl.getInstance();
     browserProxy.pageReady();
-
-    browserProxy.getVersionInfo().then(versionInfo => {
-      this.versionInfo_ = versionInfo;
-    });
-
     this.updateChannelInfo_();
   },
 
@@ -48,15 +45,6 @@ Polymer({
           this.i18n(settings.browserChannelToI18nId(info.targetChannel)));
       this.canChangeChannel_ = info.canChangeChannel;
     });
-  },
-
-  /**
-   * @param {string} version
-   * @return {boolean}
-   * @private
-   */
-  shouldShowVersion_: function(version) {
-    return version.length > 0;
   },
 
   /**
@@ -93,10 +81,19 @@ Polymer({
     this.showChannelSwitcherDialog_ = true;
   },
 
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onBuildDetailsTap_: function(e) {
+    e.preventDefault();
+    window.open('chrome://version');
+  },
+
   /** @private */
   onChannelSwitcherDialogClosed_: function() {
     this.showChannelSwitcherDialog_ = false;
-    cr.ui.focusWithoutInk(assert(this.$$('paper-button')));
+    cr.ui.focusWithoutInk(assert(this.$$('cr-button')));
     this.updateChannelInfo_();
   },
 });

@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_LINUX_SERVICES_BROKER_PROCESS_H_
-#define SANDBOX_LINUX_SERVICES_BROKER_PROCESS_H_
+#ifndef SANDBOX_LINUX_SYSCALL_BROKER_BROKER_PROCESS_H_
+#define SANDBOX_LINUX_SYSCALL_BROKER_BROKER_PROCESS_H_
+
+#include <sys/stat.h>
 
 #include <memory>
 #include <string>
@@ -69,7 +71,7 @@ class SANDBOX_EXPORT BrokerProcess {
   // point, since we need to fork().
   // broker_process_init_callback will be called in the new broker process,
   // after fork() returns.
-  bool Init(const base::Callback<bool(void)>& broker_process_init_callback);
+  bool Init(base::OnceCallback<bool(void)> broker_process_init_callback);
 
   // Return the PID of the child created by Init().
   int broker_pid() const { return broker_pid_; }
@@ -139,4 +141,4 @@ class SANDBOX_EXPORT BrokerProcess {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_LINUX_SERVICES_BROKER_PROCESS_H_
+#endif  // SANDBOX_LINUX_SYSCALL_BROKER_BROKER_PROCESS_H_

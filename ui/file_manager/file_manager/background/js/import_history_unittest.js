@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** @const {string} */
-const FILE_LAST_MODIFIED = new Date("Dec 4 1968").toString();
+const FILE_LAST_MODIFIED = new Date('Dec 4 1968').toString();
 
 /** @const {number} */
 const FILE_SIZE = 1234;
@@ -26,7 +26,7 @@ const SPACE_CAMP = /** @type !importer.Destination<string> */ ('Space Camp');
 /** @type {!MockFileSystem} */
 let testFileSystem;
 
-/** @type {!MockFileEntry} */
+/** @type {!FileEntry} */
 let testFileEntry;
 
 /** @type {!importer.TestLogger} */
@@ -48,7 +48,7 @@ function setUp() {
 
   testFileSystem = new MockFileSystem('abc-123', 'filesystem:abc-123');
 
-  testFileEntry = new MockFileEntry(
+  testFileEntry = MockFileEntry.create(
       testFileSystem, FILE_PATH,
       /** @type Metadata */ ({
         size: FILE_SIZE,
@@ -60,8 +60,7 @@ function setUp() {
   storage = new TestRecordStorage();
 
   const history = new importer.PersistentImportHistory(
-      importer.createMetadataHashcode,
-      storage);
+      importer.createMetadataHashcode, storage);
 
   historyProvider = history.whenReady();
 }
@@ -74,63 +73,52 @@ function tearDown() {
 function testWasCopied_FalseForUnknownEntry(callback) {
   // TestRecordWriter is pre-configured with a Space Cloud entry
   // but not for this file.
-  testPromise = historyProvider.then(
-      history => {
-        return history.wasCopied(testFileEntry, SPACE_CAMP).then(assertFalse);
-      });
+  testPromise = historyProvider.then(history => {
+    return history.wasCopied(testFileEntry, SPACE_CAMP).then(assertFalse);
+  });
 
   reportPromise(testPromise, callback);
 }
 
 function testWasCopied_TrueForKnownEntryLoadedFromStorage(callback) {
   // TestRecordWriter is pre-configured with this entry.
-  testPromise = historyProvider.then(
-      history => {
-        return history.wasCopied(testFileEntry, GOOGLE_DRIVE).then(assertTrue);
-      });
+  testPromise = historyProvider.then(history => {
+    return history.wasCopied(testFileEntry, GOOGLE_DRIVE).then(assertTrue);
+  });
 
   reportPromise(testPromise, callback);
 }
 
 
 function testMarkCopied_FiresChangedEvent(callback) {
-  testPromise = historyProvider.then(
-      history => {
-        const recorder = new TestCallRecorder();
-        history.addObserver(recorder.callback);
-        return history.markCopied(testFileEntry, SPACE_CAMP, 'url1').then(
-            () => {
-              return Promise.resolve()
-                  .then(
-                      () => {
-                        recorder.assertCallCount(1);
-                        assertEquals(
-                            importer.ImportHistoryState.COPIED,
-                            recorder.getLastArguments()[0]['state']);
-                      });
-            });
+  testPromise = historyProvider.then(history => {
+    const recorder = new TestCallRecorder();
+    history.addObserver(recorder.callback);
+    return history.markCopied(testFileEntry, SPACE_CAMP, 'url1').then(() => {
+      return Promise.resolve().then(() => {
+        recorder.assertCallCount(1);
+        assertEquals(
+            importer.ImportHistoryState.COPIED,
+            recorder.getLastArguments()[0]['state']);
       });
+    });
+  });
 
   reportPromise(testPromise, callback);
 }
 
 function testMarkImported_ByUrl(callback) {
-  const destinationUrl = 'filesystem:chrome-extension://abc/photos/splosion.jpg';
-  testPromise = historyProvider.then(
-      history => {
-        return history.markCopied(testFileEntry, SPACE_CAMP, destinationUrl)
-            .then(
-                () => {
-                  return history.markImportedByUrl(destinationUrl)
-                      .then(
-                          () => {
-                            return history.wasImported(
-                                testFileEntry,
-                                SPACE_CAMP)
-                                .then(assertTrue);
-                          });
-                });
-      });
+  const destinationUrl =
+      'filesystem:chrome-extension://abc/photos/splosion.jpg';
+  testPromise = historyProvider.then(history => {
+    return history.markCopied(testFileEntry, SPACE_CAMP, destinationUrl)
+        .then(() => {
+          return history.markImportedByUrl(destinationUrl).then(() => {
+            return history.wasImported(testFileEntry, SPACE_CAMP)
+                .then(assertTrue);
+          });
+        });
+  });
 
   reportPromise(testPromise, callback);
 }
@@ -138,95 +126,77 @@ function testMarkImported_ByUrl(callback) {
 function testWasImported_FalseForUnknownEntry(callback) {
   // TestRecordWriter is pre-configured with a Space Cloud entry
   // but not for this file.
-  testPromise = historyProvider.then(
-      history => {
-        return history.wasImported(testFileEntry, SPACE_CAMP).then(assertFalse);
-      });
+  testPromise = historyProvider.then(history => {
+    return history.wasImported(testFileEntry, SPACE_CAMP).then(assertFalse);
+  });
 
   reportPromise(testPromise, callback);
 }
 
 function testWasImported_TrueForKnownEntryLoadedFromStorage(callback) {
   // TestRecordWriter is pre-configured with this entry.
-  testPromise = historyProvider.then(
-      history => {
-        return history.wasImported(testFileEntry, GOOGLE_DRIVE)
-            .then(assertTrue);
-      });
+  testPromise = historyProvider.then(history => {
+    return history.wasImported(testFileEntry, GOOGLE_DRIVE).then(assertTrue);
+  });
 
   reportPromise(testPromise, callback);
 }
 
 function testWasImported_TrueForKnownEntrySetAtRuntime(callback) {
-  testPromise = historyProvider.then(
-      history => {
-        return history.markImported(testFileEntry, SPACE_CAMP).then(
-            () => {
-              return history.wasImported(testFileEntry, SPACE_CAMP)
-                  .then(assertTrue);
-            });
-      });
+  testPromise = historyProvider.then(history => {
+    return history.markImported(testFileEntry, SPACE_CAMP).then(() => {
+      return history.wasImported(testFileEntry, SPACE_CAMP).then(assertTrue);
+    });
+  });
 
   reportPromise(testPromise, callback);
 }
 
 function testMarkImport_FiresChangedEvent(callback) {
-  testPromise = historyProvider.then(
-      history => {
-        const recorder = new TestCallRecorder();
-        history.addObserver(recorder.callback);
-        return history.markImported(testFileEntry, SPACE_CAMP).then(
-            () => {
-              return Promise.resolve()
-                  .then(
-                      () => {
-                        recorder.assertCallCount(1);
-                        assertEquals(
-                            importer.ImportHistoryState.IMPORTED,
-                            recorder.getLastArguments()[0]['state']);
-                      });
-            });
+  testPromise = historyProvider.then(history => {
+    const recorder = new TestCallRecorder();
+    history.addObserver(recorder.callback);
+    return history.markImported(testFileEntry, SPACE_CAMP).then(() => {
+      return Promise.resolve().then(() => {
+        recorder.assertCallCount(1);
+        assertEquals(
+            importer.ImportHistoryState.IMPORTED,
+            recorder.getLastArguments()[0]['state']);
       });
+    });
+  });
 
   reportPromise(testPromise, callback);
 }
 
 function testHistoryObserver_Unsubscribe(callback) {
-  testPromise = historyProvider.then(
-      history => {
-        const recorder = new TestCallRecorder();
-        history.addObserver(recorder.callback);
-        history.removeObserver(recorder.callback);
+  testPromise = historyProvider.then(history => {
+    const recorder = new TestCallRecorder();
+    history.addObserver(recorder.callback);
+    history.removeObserver(recorder.callback);
 
-        const promises = [];
-        promises.push(history.markCopied(testFileEntry, SPACE_CAMP, 'url2'));
-        promises.push(history.markImported(testFileEntry, SPACE_CAMP));
-        return Promise.all(promises).then(
-            () => {
-              return Promise.resolve()
-                  .then(
-                      () => {
-                        recorder.assertCallCount(0);
-                      });
-            });
+    const promises = [];
+    promises.push(history.markCopied(testFileEntry, SPACE_CAMP, 'url2'));
+    promises.push(history.markImported(testFileEntry, SPACE_CAMP));
+    return Promise.all(promises).then(() => {
+      return Promise.resolve().then(() => {
+        recorder.assertCallCount(0);
       });
+    });
+  });
 
   reportPromise(testPromise, callback);
 }
 
 function testRecordStorage_RemembersPreviouslyWrittenRecords(callback) {
   const recorder = new TestCallRecorder();
-  testPromise = createRealStorage(['recordStorageTest.data'])
-      .then(
-          storage => {
-            return storage.write(['abc', '123']).then(
-                () => {
-                  return storage.readAll(recorder.callback).then(
-                      () => {
-                        recorder.assertCallCount(1);
-                      });
-                });
-          });
+  testPromise = createRealStorage(['recordStorageTest.data']).then(storage => {
+    return storage.write(['abc', '123']).then(() => {
+      return storage.readAll(recorder.callback).then(() => {
+        recorder.assertCallCount(1);
+      });
+    });
+  });
 
   reportPromise(testPromise, callback);
 }
@@ -234,70 +204,55 @@ function testRecordStorage_RemembersPreviouslyWrittenRecords(callback) {
 function testRecordStorage_LoadsRecordsFromMultipleHistoryFiles(callback) {
   const recorder = new TestCallRecorder();
 
-  const remoteData = createRealStorage(['multiStorage-1.data'])
-      .then(
-          storage => {
-            return storage.write(['remote-data', '98765432']);
-          });
-  const moreRemoteData = createRealStorage(['multiStorage-2.data'])
-      .then(
-          storage => {
-            return storage.write(['antarctica-data', '777777777777']);
-          });
+  const remoteData =
+      createRealStorage(['multiStorage-1.data']).then(storage => {
+        return storage.write(['remote-data', '98765432']);
+      });
+  const moreRemoteData =
+      createRealStorage(['multiStorage-2.data']).then(storage => {
+        return storage.write(['antarctica-data', '777777777777']);
+      });
 
-  testPromise = Promise.all([remoteData, moreRemoteData]).then(
-    () => {
-      return createRealStorage([
-        'multiStorage-0.data',
-        'multiStorage-1.data',
-        'multiStorage-2.data'])
-        .then(
-            storage => {
-              const writePromises = [
-                storage.write(['local-data', '111'])
-              ];
-              return Promise.all(writePromises)
-                  .then(
-                      () => {
-                        return storage.readAll(recorder.callback).then(
-                            () => {
-                              recorder.assertCallCount(3);
-                              assertEquals(
-                                  'local-data',
-                                  recorder.getArguments(0)[0][0]);
-                              assertEquals(
-                                  'remote-data',
-                                  recorder.getArguments(1)[0][0]);
-                              assertEquals(
-                                  'antarctica-data',
-                                  recorder.getArguments(2)[0][0]);
-                            });
-                      });
+  testPromise = Promise.all([remoteData, moreRemoteData]).then(() => {
+    return createRealStorage([
+             'multiStorage-0.data',
+             'multiStorage-1.data',
+             'multiStorage-2.data',
+           ])
+        .then(storage => {
+          const writePromises = [storage.write(['local-data', '111'])];
+          return Promise.all(writePromises).then(() => {
+            return storage.readAll(recorder.callback).then(() => {
+              recorder.assertCallCount(3);
+              assertEquals('local-data', recorder.getArguments(0)[0][0]);
+              assertEquals('remote-data', recorder.getArguments(1)[0][0]);
+              assertEquals('antarctica-data', recorder.getArguments(2)[0][0]);
             });
-    });
+          });
+        });
+  });
 
   reportPromise(testPromise, callback);
 }
 
 function testRecordStorage_SerializingOperations(callback) {
   const recorder = new TestCallRecorder();
-  testPromise = createRealStorage(['recordStorageTestForSerializing.data'])
-      .then(
-          storage => {
-            const writePromises = [];
-            const WRITES_COUNT = 20;
-            for (let i = 0; i < WRITES_COUNT; i++) {
-              writePromises.push(storage.write(['abc', '123']));
-            }
-            const readAllPromise = storage.readAll(recorder.callback).then(
-              () => {
-                recorder.assertCallCount(WRITES_COUNT);
-              });
-            // Write an extra record, which must be executed afte reading is
-            // completed.
-            writePromises.push(storage.write(['abc', '123']));
-            return Promise.all(writePromises.concat([readAllPromise]));
-          });
+  testPromise = createRealStorage([
+                  'recordStorageTestForSerializing.data'
+                ]).then(storage => {
+    const writePromises = [];
+    const WRITES_COUNT = 20;
+    for (let i = 0; i < WRITES_COUNT; i++) {
+      writePromises.push(storage.write(['abc', '123']));
+    }
+    const readAllPromise = storage.readAll(recorder.callback).then(() => {
+      recorder.assertCallCount(WRITES_COUNT);
+    });
+    // Write an extra record, which must be executed afte reading is
+    // completed.
+    writePromises.push(storage.write(['abc', '123']));
+    return Promise.all(writePromises.concat([readAllPromise]));
+  });
 
   reportPromise(testPromise, callback);
 }
@@ -352,65 +307,50 @@ function createRealStorage(fileNames) {
  * @return {!Promise<!FileEntry>}
  */
 function createFileEntry(fileName) {
-  return new Promise(
-      (resolve, reject) => {
-        const onFileSystemReady = fileSystem => {
-          fileSystem.root.getFile(
-              fileName,
-              {
-                create: true,
-                exclusive: false
-              },
-              resolve,
-              reject);
-        };
+  return new Promise((resolve, reject) => {
+    const onFileSystemReady = fileSystem => {
+      fileSystem.root.getFile(
+          fileName, {create: true, exclusive: false}, resolve, reject);
+    };
 
-        window.webkitRequestFileSystem(
-            TEMPORARY,
-            1024 * 1024,
-            onFileSystemReady,
-            reject);
-      });
+    window.webkitRequestFileSystem(
+        TEMPORARY, 1024 * 1024, onFileSystemReady, reject);
+  });
 }
 
 /**
  * In-memory test implementation of {@code RecordStorage}.
  *
- * @constructor
  * @implements {importer.RecordStorage}
- * @struct
  */
-var TestRecordStorage = function() {
-  const timeStamp = importer.toSecondsFromEpoch(FILE_LAST_MODIFIED);
+class TestRecordStorage {
+  constructor() {
+    const timeStamp = importer.toSecondsFromEpoch(FILE_LAST_MODIFIED);
 
-  // Pre-populate the store with some "previously written" data <wink>.
-  /** @private {!Array<!Array<string>>} */
-  this.records_ = [
-    [1,
-      timeStamp + '_' + FILE_SIZE, GOOGLE_DRIVE],
-    [0,
-      timeStamp + '_' + FILE_SIZE,
-      'google-drive',
-      '$/some/url/snazzy.pants',
-      '$/someother/url/snazzy.pants'],
-    [1, '99999_99999', SPACE_CAMP]
-  ];
+    // Pre-populate the store with some "previously written" data <wink>.
+    /** @private {!Array<!Array<string>>} */
+    this.records_ = [
+      [1, timeStamp + '_' + FILE_SIZE, GOOGLE_DRIVE],
+      [
+        0,
+        timeStamp + '_' + FILE_SIZE,
+        'google-drive',
+        '$/some/url/snazzy.pants',
+        '$/someother/url/snazzy.pants',
+      ],
+      [1, '99999_99999', SPACE_CAMP],
+    ];
+  }
 
-  /**
-   * @override
-   * @this {TestRecordStorage}
-   */
-  this.readAll = function(recordCallback) {
+  /** @override */
+  readAll(recordCallback) {
     this.records_.forEach(recordCallback);
     return Promise.resolve(this.records_);
-  };
+  }
 
-  /**
-   * @override
-   * @this {TestRecordStorage}
-   */
-  this.write = function(record) {
+  /** @override */
+  write(record) {
     this.records_.push(record);
     return Promise.resolve();
-  };
-};
+  }
+}

@@ -13,8 +13,6 @@
 #include "components/user_manager/remove_user_delegate.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 class AccountId;
 
@@ -30,8 +28,7 @@ class OobeUI;
 // the user. It is a 'per-session' class; SignInScreenHandler, in comparsion, is
 // tied to the WebContents lifetime and therefore may live beyond this class.
 class SignInScreenController : public user_manager::RemoveUserDelegate,
-                               public user_manager::UserManager::Observer,
-                               public content::NotificationObserver {
+                               public user_manager::UserManager::Observer {
  public:
   explicit SignInScreenController(OobeUI* oobe_ui);
   ~SignInScreenController() override;
@@ -66,11 +63,6 @@ class SignInScreenController : public user_manager::RemoveUserDelegate,
   // user_manager::UserManager::Observer implementation:
   void OnUserImageChanged(const user_manager::User& user) override;
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   static SignInScreenController* instance_;
 
   OobeUI* oobe_ui_ = nullptr;
@@ -82,9 +74,6 @@ class SignInScreenController : public user_manager::RemoveUserDelegate,
   std::unique_ptr<UserSelectionScreen> user_selection_screen_;
 
   base::WeakPtr<UserBoardView> user_board_view_;
-
-  // Used for notifications during the login process.
-  content::NotificationRegistrar registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(SignInScreenController);
 };

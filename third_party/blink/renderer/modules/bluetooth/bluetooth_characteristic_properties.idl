@@ -4,9 +4,8 @@
 
 // https://webbluetoothcg.github.io/web-bluetooth/#bluetoothcharacteristicproperties
 
-// Implement BluetoothCharacteristicProperties interface: http://crbug.com/483345
-
 [
+    Exposed=Window,
     RuntimeEnabled=WebBluetooth,
     SecureContext
 ] interface BluetoothCharacteristicProperties {

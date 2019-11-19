@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/jumbo.gni")
+import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 import("//third_party/libaom/options.gni")
 
@@ -24,7 +25,6 @@ jumbo_source_set("filters") {
     "audio_timestamp_validator.h",
     "chunk_demuxer.cc",
     "chunk_demuxer.h",
-    "context_3d.h",
     "decoder_selector.cc",
     "decoder_selector.h",
     "decoder_stream.cc",
@@ -45,8 +45,6 @@ jumbo_source_set("filters") {
     "frame_buffer_pool.h",
     "frame_processor.cc",
     "frame_processor.h",
-    "gpu_video_decoder.cc",
-    "gpu_video_decoder.h",
     "memory_data_source.cc",
     "memory_data_source.h",
     "offloading_video_decoder.cc",
@@ -56,10 +54,6 @@ jumbo_source_set("filters") {
     "source_buffer_parse_warnings.h",
     "source_buffer_range.cc",
     "source_buffer_range.h",
-    "source_buffer_range_by_dts.cc",
-    "source_buffer_range_by_dts.h",
-    "source_buffer_range_by_pts.cc",
-    "source_buffer_range_by_pts.h",
     "source_buffer_state.cc",
     "source_buffer_state.h",
     "source_buffer_stream.cc",
@@ -70,10 +64,6 @@ jumbo_source_set("filters") {
     "video_cadence_estimator.h",
     "video_renderer_algorithm.cc",
     "video_renderer_algorithm.h",
-    "vp8_bool_decoder.cc",
-    "vp8_bool_decoder.h",
-    "vp8_parser.cc",
-    "vp8_parser.h",
     "vp9_bool_decoder.cc",
     "vp9_bool_decoder.h",
     "vp9_compressed_header_parser.cc",
@@ -94,20 +84,15 @@ jumbo_source_set("filters") {
     "//media:subcomponent_config",
   ]
 
-  public_deps = [
-    ":jpeg_parser",
-  ]
-
   deps = [
     "//cc/base",  # For MathUtil.
-    "//gpu/command_buffer/common",
+    "//media:media_buildflags",
     "//media/base",
     "//media/cdm",
     "//media/formats",
     "//media/video",
-    "//skia",
-    "//third_party/libaom:av1_buildflags",
     "//third_party/libyuv",
+    "//ui/gfx/geometry:geometry",
   ]
 
   libs = []
@@ -155,7 +140,7 @@ jumbo_source_set("filters") {
     deps += [ "//third_party/libvpx" ]
   }
 
-  if (enable_av1_decoder) {
+  if (enable_libaom_decoder) {
     sources += [
       "aom_video_decoder.cc",
       "aom_video_decoder.h",
@@ -180,7 +165,7 @@ jumbo_source_set("filters") {
         "ffmpeg_h264_to_annex_b_bitstream_converter.h",
       ]
 
-      if (enable_hevc_demuxing) {
+      if (enable_platform_hevc) {
         sources += [
           "ffmpeg_h265_to_annex_b_bitstream_converter.cc",
           "ffmpeg_h265_to_annex_b_bitstream_converter.h",
@@ -212,7 +197,7 @@ jumbo_source_set("filters") {
     deps += [ "//media/base/android" ]
   }
 
-  if (current_cpu != "arm" && is_linux) {
+  if (use_vaapi) {
     sources += [
       "h264_bitstream_buffer.cc",
       "h264_bitstream_buffer.h",
@@ -225,38 +210,18 @@ jumbo_source_set("filters") {
       "fuchsia/fuchsia_video_decoder.h",
     ]
     deps += [
+      "//gpu/command_buffer/client",
+      "//gpu/command_buffer/common",
+      "//gpu/ipc/common",
+      "//media/fuchsia/cdm",
+      "//media/fuchsia/common",
       "//third_party/fuchsia-sdk/sdk:media",
       "//third_party/fuchsia-sdk/sdk:mediacodec",
+      "//third_party/fuchsia-sdk/sdk:sys_cpp",
+      "//third_party/fuchsia-sdk/sdk:sysmem",
+      "//ui/ozone",
     ]
   }
-}
-
-# This component allows other targets to use the JPEG parser as a standalone,
-# general-purpose utility without having to pull all of //media as a dependency
-# (which could potentially result in cycles).
-component("jpeg_parser") {
-  output_name = "media_filters_jpeg_parser"
-  sources = [
-    "jpeg_parser.cc",
-    "jpeg_parser.h",
-  ]
-  defines = [ "IS_JPEG_PARSER_IMPL" ]
-  deps = [
-    "//base",
-  ]
-}
-
-source_set("jpeg_parser_unit_tests") {
-  testonly = true
-  sources = [
-    "jpeg_parser_unittest.cc",
-  ]
-  deps = [
-    ":jpeg_parser",
-    "//base",
-    "//media:test_support",
-    "//testing/gtest",
-  ]
 }
 
 source_set("perftests") {
@@ -326,14 +291,11 @@ source_set("unit_tests") {
     "video_cadence_estimator_unittest.cc",
     "video_decoder_stream_unittest.cc",
     "video_renderer_algorithm_unittest.cc",
-    "vp8_bool_decoder_unittest.cc",
-    "vp8_parser_unittest.cc",
     "vp9_parser_unittest.cc",
     "vp9_raw_bits_reader_unittest.cc",
   ]
 
   deps = [
-    ":jpeg_parser_unit_tests",
     "//base/test:test_support",
     "//media:test_support",
     "//testing/gmock",
@@ -358,6 +320,12 @@ source_set("unit_tests") {
 
   if (is_fuchsia) {
     sources += [ "fuchsia/fuchsia_video_decoder_unittest.cc" ]
+    deps += [
+      "//components/viz/test:test_support",
+      "//gpu/command_buffer/client",
+      "//third_party/fuchsia-sdk/sdk:sys_cpp",
+      "//third_party/fuchsia-sdk/sdk:sysmem",
+    ]
   }
 
   # libvpx for running vpx test on chromecast doesn't support high bit depth.
@@ -399,15 +367,15 @@ source_set("unit_tests") {
     sources += [ "vpx_video_decoder_unittest.cc" ]
   }
 
-  if (enable_av1_decoder) {
+  if (enable_libaom_decoder) {
     sources += [ "aom_video_decoder_unittest.cc" ]
-
-    if (enable_dav1d_decoder) {
-      sources += [ "dav1d_video_decoder_unittest.cc" ]
-    }
   }
 
-  if (current_cpu != "arm" && is_linux) {
+  if (enable_dav1d_decoder) {
+    sources += [ "dav1d_video_decoder_unittest.cc" ]
+  }
+
+  if (use_vaapi) {
     sources += [ "h264_bitstream_buffer_unittest.cc" ]
   }
 

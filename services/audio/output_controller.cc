@@ -53,31 +53,6 @@ void LogInitialStreamCreationResult(StreamCreationResult result) {
       STREAM_CREATION_RESULT_MAX + 1);
 }
 
-void SanitizeAudioBus(media::AudioBus* bus) {
-  size_t channel_size = bus->frames();
-  for (int i = 0; i < bus->channels(); ++i) {
-    float* channel = bus->channel(i);
-    for (size_t j = 0; j < channel_size; ++j) {
-      // First check for all the invalid cases with a single conditional to
-      // optimize for the typical (data ok) case. Different cases are handled
-      // inside of the conditional. The condition is written like this to catch
-      // NaN. It cannot be simplified to "channel[j] < -1.f || channel[j] >
-      // 1.f", which isn't equivalent.
-      if (UNLIKELY(!(channel[j] >= -1.f && channel[j] <= 1.f))) {
-        // Don't just set all bad values to 0. If a value like 1.0001 is
-        // produced due to floating-point shenanigans, 1 will sound better than
-        // 0.
-        if (channel[j] < -1.f) {
-          channel[j] = -1.f;
-        } else {
-          // channel[j] > 1 or NaN.
-          channel[j] = 1.f;
-        }
-      }
-    }
-  }
-}
-
 }  // namespace
 
 OutputController::ErrorStatisticsTracker::ErrorStatisticsTracker()
@@ -130,7 +105,6 @@ OutputController::OutputController(
       output_device_id_(output_device_id),
       stream_(NULL),
       disable_local_output_(false),
-      should_duplicate_(0),
       volume_(1.0),
       state_(kEmpty),
       sync_reader_(sync_reader),
@@ -138,8 +112,7 @@ OutputController::OutputController(
       processing_id_(processing_id),
       power_monitor_(
           params.sample_rate(),
-          TimeDelta::FromMilliseconds(kPowerMeasurementTimeConstantMillis)),
-      weak_factory_for_stream_(this) {
+          TimeDelta::FromMilliseconds(kPowerMeasurementTimeConstantMillis)) {
   DCHECK(audio_manager);
   DCHECK(handler_);
   DCHECK(sync_reader_);
@@ -152,7 +125,6 @@ OutputController::~OutputController() {
   DCHECK_EQ(kClosed, state_);
   DCHECK_EQ(nullptr, stream_);
   DCHECK(snoopers_.empty());
-  DCHECK(should_duplicate_.IsZero());
   UMA_HISTOGRAM_LONG_TIMES("Media.AudioOutputController.LifeTime",
                            base::TimeTicks::Now() - construction_time_);
 }
@@ -344,6 +316,21 @@ void OutputController::Pause() {
   handler_->OnControllerPaused();
 }
 
+void OutputController::Flush() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  TRACE_EVENT0("audio", "OutputController::Flush");
+  handler_->OnLog("OutputController::Flush");
+
+  if (state_ == kPlaying) {
+    handler_->OnControllerError();
+    return;
+  }
+
+  if (stream_) {
+    stream_->Flush();
+  }
+}
+
 void OutputController::Close() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   SCOPED_UMA_HISTOGRAM_TIMER("Media.AudioOutputController.CloseTime");
@@ -401,10 +388,12 @@ int OutputController::OnMoreData(base::TimeDelta delay,
   const base::TimeTicks reference_time = delay_timestamp + delay;
 
   if (!dest->is_bitstream_format()) {
-    base::AutoLock lock(realtime_snooper_lock_);
-    if (!realtime_snoopers_.empty()) {
-      SanitizeAudioBus(dest);
-      for (Snooper* snooper : realtime_snoopers_) {
+    base::AutoLock lock(snooper_lock_);
+    if (!snoopers_.empty()) {
+      TRACE_EVENT1("audio", "OutputController::BroadcastDataToSnoopers",
+                   "reference_time (ms)",
+                   (reference_time - base::TimeTicks()).InMillisecondsF());
+      for (Snooper* snooper : snoopers_) {
         snooper->OnData(*dest, reference_time, volume_);
       }
     }
@@ -416,15 +405,6 @@ int OutputController::OnMoreData(base::TimeDelta delay,
       media::AudioTimestampHelper::FramesToTime(frames, params_.sample_rate());
 
   sync_reader_->RequestMoreData(delay, delay_timestamp, prior_frames_skipped);
-
-  if (!should_duplicate_.IsZero() && !dest->is_bitstream_format()) {
-    std::unique_ptr<media::AudioBus> copy(media::AudioBus::Create(params_));
-    dest->CopyTo(copy.get());
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&OutputController::BroadcastDataToSnoopers,
-                       weak_this_for_stream_, std::move(copy), reference_time));
-  }
 
   if (will_monitor_audio_levels()) {
     // Note: this code path should never be hit when using bitstream streams.
@@ -445,20 +425,6 @@ int OutputController::OnMoreData(base::TimeDelta delay,
                    (delay_timestamp - base::TimeTicks()).InMillisecondsF(),
                    "delay (ms)", delay.InMillisecondsF());
   return frames;
-}
-
-void OutputController::BroadcastDataToSnoopers(
-    std::unique_ptr<media::AudioBus> audio_bus,
-    base::TimeTicks reference_time) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  TRACE_EVENT1("audio", "OutputController::BroadcastDataToSnoopers",
-               "reference_time (ms)",
-               (reference_time - base::TimeTicks()).InMillisecondsF());
-  if (state_ != kPlaying)
-    return;
-
-  for (Snooper* snooper : snoopers_)
-    snooper->OnData(*audio_bus, reference_time, volume_);
 }
 
 void OutputController::LogAudioPowerLevel(const char* call_name) {
@@ -525,42 +491,28 @@ std::string OutputController::GetDeviceId() const {
              : output_device_id_;
 }
 
-void OutputController::StartSnooping(Snooper* snooper, SnoopingMode mode) {
+void OutputController::StartSnooping(Snooper* snooper) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(snooper);
 
-  if (mode == SnoopingMode::kDeferred) {
-    if (snoopers_.empty())
-      should_duplicate_.Increment();
-    DCHECK(!base::ContainsValue(snoopers_, snooper));
-    snoopers_.push_back(snooper);
-  } else {  // SnoopingMode::kRealtime
-    // The list will only update on this thread, but may be read from another.
-    DCHECK(!base::ContainsValue(realtime_snoopers_, snooper));
-    base::AutoLock lock(realtime_snooper_lock_);
-    realtime_snoopers_.push_back(snooper);
-  }
+  // The list will only update on this thread, and only be read on the realtime
+  // audio thread.
+  DCHECK(!base::Contains(snoopers_, snooper));
+  base::AutoLock lock(snooper_lock_);
+  snoopers_.push_back(snooper);
 }
 
-void OutputController::StopSnooping(Snooper* snooper, SnoopingMode mode) {
+void OutputController::StopSnooping(Snooper* snooper) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  if (mode == SnoopingMode::kDeferred) {
-    const auto it = std::find(snoopers_.begin(), snoopers_.end(), snooper);
-    DCHECK(it != snoopers_.end());
-    snoopers_.erase(it);
-    if (snoopers_.empty())
-      should_duplicate_.Decrement();
-  } else {  // SnoopingMode::kRealtime
-    // The list will only update on this thread, but may be read from another.
-    const auto it = std::find(realtime_snoopers_.begin(),
-                              realtime_snoopers_.end(), snooper);
-    DCHECK(it != realtime_snoopers_.end());
-    // We also don't care about ordering, so swap and pop rather than erase.
-    base::AutoLock lock(realtime_snooper_lock_);
-    *it = realtime_snoopers_.back();
-    realtime_snoopers_.pop_back();
-  }
+  // The list will only update on this thread, and only be read on the realtime
+  // audio thread.
+  const auto it = std::find(snoopers_.begin(), snoopers_.end(), snooper);
+  DCHECK(it != snoopers_.end());
+  // We also don't care about ordering, so swap and pop rather than erase.
+  base::AutoLock lock(snooper_lock_);
+  *it = snoopers_.back();
+  snoopers_.pop_back();
 }
 
 void OutputController::StartMuting() {

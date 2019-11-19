@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/lib/pending_remote_state.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
@@ -19,46 +20,36 @@ namespace mojo {
 template <typename Interface>
 class InterfacePtrInfo {
  public:
-  InterfacePtrInfo() : version_(0u) {}
+  InterfacePtrInfo() = default;
   InterfacePtrInfo(std::nullptr_t) : InterfacePtrInfo() {}
 
   InterfacePtrInfo(ScopedMessagePipeHandle handle, uint32_t version)
-      : handle_(std::move(handle)), version_(version) {}
+      : state_(std::move(handle), version) {}
 
-  InterfacePtrInfo(InterfacePtrInfo&& other)
-      : handle_(std::move(other.handle_)), version_(other.version_) {
-    other.version_ = 0u;
-  }
+  InterfacePtrInfo(InterfacePtrInfo&& other) = default;
 
   ~InterfacePtrInfo() {}
 
-  InterfacePtrInfo& operator=(InterfacePtrInfo&& other) {
-    if (this != &other) {
-      handle_ = std::move(other.handle_);
-      version_ = other.version_;
-      other.version_ = 0u;
-    }
+  InterfacePtrInfo& operator=(InterfacePtrInfo&& other) = default;
 
-    return *this;
-  }
+  bool is_valid() const { return state_.pipe.is_valid(); }
 
-  bool is_valid() const { return handle_.is_valid(); }
-
-  ScopedMessagePipeHandle PassHandle() { return std::move(handle_); }
-  const ScopedMessagePipeHandle& handle() const { return handle_; }
+  ScopedMessagePipeHandle PassHandle() { return std::move(state_.pipe); }
+  const ScopedMessagePipeHandle& handle() const { return state_.pipe; }
   void set_handle(ScopedMessagePipeHandle handle) {
-    handle_ = std::move(handle);
+    state_.pipe = std::move(handle);
   }
 
-  uint32_t version() const { return version_; }
-  void set_version(uint32_t version) { version_ = version; }
+  uint32_t version() const { return state_.version; }
+  void set_version(uint32_t version) { state_.version = version; }
 
   // Allow InterfacePtrInfo<> to be used in boolean expressions.
-  explicit operator bool() const { return handle_.is_valid(); }
+  explicit operator bool() const { return state_.pipe.is_valid(); }
+
+  internal::PendingRemoteState* internal_state() { return &state_; }
 
  private:
-  ScopedMessagePipeHandle handle_;
-  uint32_t version_;
+  internal::PendingRemoteState state_;
 
   DISALLOW_COPY_AND_ASSIGN(InterfacePtrInfo);
 };

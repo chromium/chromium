@@ -85,7 +85,7 @@ class TetherHostFetcherImpl
       multidevice_setup_client_;
 
   multidevice::RemoteDeviceRefList current_remote_device_list_;
-  base::WeakPtrFactory<TetherHostFetcherImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<TetherHostFetcherImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TetherHostFetcherImpl);
 };

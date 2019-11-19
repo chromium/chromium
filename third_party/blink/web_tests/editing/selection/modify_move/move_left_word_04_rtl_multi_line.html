@@ -37,7 +37,7 @@ selection_test(
   selection => selection.modify('move', 'left', 'word'),
   isMac
       ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '4-3 rtl left word');
 
 selection_test(
@@ -45,7 +45,7 @@ selection_test(
   selection => selection.modify('move', 'left', 'word'),
   isMac
       ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '4-4 rtl left word');
 
 selection_test(
@@ -53,7 +53,7 @@ selection_test(
   selection => selection.modify('move', 'left', 'word'),
   isMac
       ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '4-5 rtl left word');
 
 selection_test(
@@ -61,7 +61,7 @@ selection_test(
   selection => selection.modify('move', 'left', 'word'),
   isMac
       ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '4-6 rtl left word');
 
 selection_test(
@@ -69,23 +69,23 @@ selection_test(
   selection => selection.modify('move', 'left', 'word'),
   isMac
       ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>',
   '4-7 rtl left word');
 
 selection_test(
   '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div>|<br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   selection => selection.modify('move', 'left', 'word'),
   isMac
-      ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div>|<br></div><div><br></div>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>'
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>',
   '4-8 rtl left word');
 
 selection_test(
   '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br>|</div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   selection => selection.modify('move', 'left', 'word'),
   isMac
-      ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div>|<br></div><div><br></div>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>'
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>',
   '4-9 rtl left word');
 
 selection_test(
@@ -93,7 +93,7 @@ selection_test(
   selection => selection.modify('move', 'left', 'word'),
   isMac
       ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>',
   '4-10 rtl left word');
 
 selection_test(
@@ -101,7 +101,7 @@ selection_test(
   selection => selection.modify('move', 'left', 'word'),
   isMac
       ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>',
   '4-11 rtl left word');
 
 selection_test(
@@ -109,7 +109,7 @@ selection_test(
   selection => selection.modify('move', 'left', 'word'),
   isMac
       ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>',
   '4-12 rtl left word');
 
 selection_test(
@@ -117,7 +117,7 @@ selection_test(
   selection => selection.modify('move', 'left', 'word'),
   isMac
       ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>',
   '4-13 rtl left word');
 
 selection_test(
@@ -125,7 +125,7 @@ selection_test(
   selection => selection.modify('move', 'left', 'word'),
   isMac
       ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>',
   '4-14 rtl left word');
 
 selection_test(
@@ -133,7 +133,7 @@ selection_test(
   selection => selection.modify('move', 'left', 'word'),
   isMac
       ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0| \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>|\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>',
   '4-15 rtl left word');
 
 selection_test(
@@ -165,7 +165,7 @@ selection_test(
   selection => selection.modify('move', 'left', 'word'),
   isMac
       ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<div><br></div><div><br></div><div><br></div>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|</div>',
   '4-19 rtl left word');
 
 selection_test(

@@ -11,10 +11,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
-namespace net {
-class URLRequestContextGetter;
-}
-
 namespace network {
 namespace mojom {
 class NetworkContext;
@@ -26,19 +22,13 @@ namespace safe_browsing {
 // This class owns the NetworkContext that is used for requests by Safe
 // Browsing.
 // All methods are called on the UI thread.
-// Note: temporarily this is wrapping SafeBrowsingURLRequestContextGetter,
-// however once all requests are converted to using the network service mojo
-// APIs we can delete SafeBrowsingURLRequestContextGetter and this object will
-// create the NetworkContext directly.  http://crbug.com/825242
 class SafeBrowsingNetworkContext {
  public:
-  // |request_context_getter| is used only if network service is disabled.
-  // Otherwise |user_dtaa_dir| and |network_context_params_factory| are used
+  // |user_data_dir| and |network_context_params_factory| are used
   // to construct a URLRequestContext through the network service.
   using NetworkContextParamsFactory =
       base::RepeatingCallback<network::mojom::NetworkContextParamsPtr()>;
   SafeBrowsingNetworkContext(
-      scoped_refptr<net::URLRequestContextGetter> request_context_getter,
       const base::FilePath& user_data_dir,
       NetworkContextParamsFactory network_context_params_factory);
   ~SafeBrowsingNetworkContext();
@@ -52,8 +42,7 @@ class SafeBrowsingNetworkContext {
   // Flushes NetworkContext and URLLoaderFactory pipes.
   void FlushForTesting();
 
-  // Called at shutdown to ensure that the URLRequestContextGetter reference is
-  // destroyed..
+  // Called at shutdown to ensure that the URLLoaderFactory is cleaned up.
   void ServiceShuttingDown();
 
  private:

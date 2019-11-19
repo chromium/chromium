@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/audio/cras_audio_handler.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
@@ -36,6 +35,8 @@ base::string16 GetAudioDeviceName(const chromeos::AudioDevice& device) {
       return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_AUDIO_USB_DEVICE,
                                         base::UTF8ToUTF16(device.display_name));
     case chromeos::AUDIO_TYPE_BLUETOOTH:
+      FALLTHROUGH;
+    case chromeos::AUDIO_TYPE_BLUETOOTH_NB_MIC:
       return l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_AUDIO_BLUETOOTH_DEVICE,
           base::UTF8ToUTF16(device.display_name));
@@ -68,6 +69,10 @@ AudioDetailedView::~AudioDetailedView() = default;
 void AudioDetailedView::Update() {
   UpdateAudioDevices();
   Layout();
+}
+
+const char* AudioDetailedView::GetClassName() const {
+  return "AudioDetailedView";
 }
 
 void AudioDetailedView::AddAudioSubHeader(const gfx::VectorIcon& icon,

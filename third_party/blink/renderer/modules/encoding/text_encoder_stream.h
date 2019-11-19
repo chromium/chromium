@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/streams/transform_stream.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -19,7 +18,7 @@ class ScriptState;
 class WritableStream;
 class Visitor;
 
-// Implements the TextDecoderStream interface as specified at
+// Implements the TextEncoderStream interface as specified at
 // https://encoding.spec.whatwg.org/#interface-textencoderstream.
 // Converts a stream of text data in the form of string chunks to a stream of
 // binary data in the form of UInt8Array chunks. After construction
@@ -43,7 +42,7 @@ class TextEncoderStream final : public ScriptWrappable {
  private:
   class Transformer;
 
-  const TraceWrapperMember<TransformStream> transform_;
+  const Member<TransformStream> transform_;
 
   DISALLOW_COPY_AND_ASSIGN(TextEncoderStream);
 };

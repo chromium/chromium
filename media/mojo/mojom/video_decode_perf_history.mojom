@@ -1,0 +1,18 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/media_types.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// This service will query the history of playback stats to evaluate how
+// a video stream with the given configuration will perform.
+interface VideoDecodePerfHistory {
+  // Parameters describe the stream characteristics for which we will return
+  // performance info.
+  // TODO(liberato): Consider making this return PredictionTargets, and move the
+  // conversion to bool higher in the stack.
+  GetPerfInfo(PredictionFeatures features) => (bool is_smooth, bool is_power_efficient);
+};

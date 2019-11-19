@@ -115,14 +115,14 @@ Create a single Eclipse project for everything:
 1.  Select toolchain: Linux GCC
 1.  Click Finish.
 
-Chromium uses C++11, so tell the indexer about it. Otherwise it will get
+Chromium uses C++14, so tell the indexer about it. Otherwise it will get
 confused about things like std::unique_ptr.
 
 1.  Right-click on "src" and select "Properties..."
 1.  Navigate to C/C++ General > Preprocess Include Paths, Macros etc. >
     Providers
 1.  Select CDT GCC Built-in Compiler Settings
-1.  In the text box entitled Command to get compiler specs append "-std=c++11"
+1.  In the text box entitled Command to get compiler specs append "-std=c++14"
     (leaving out the quotes)
 
 Chromium has a huge amount of code, enough that Eclipse can take a very long

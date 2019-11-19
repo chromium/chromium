@@ -10,8 +10,8 @@
 
 #include "cc/layers/layer.h"
 #include "cc/layers/ui_resource_layer.h"
+#include "chrome/android/chrome_jni_headers/LayerTitleCache_jni.h"
 #include "chrome/browser/android/compositor/decoration_title.h"
-#include "jni/LayerTitleCache_jni.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -47,7 +47,7 @@ LayerTitleCache::LayerTitleCache(JNIEnv* env,
       resource_manager_(nullptr) {
 }
 
-void LayerTitleCache::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
+void LayerTitleCache::Destroy(JNIEnv* env) {
   delete this;
 }
 

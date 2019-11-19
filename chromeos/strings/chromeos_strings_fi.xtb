@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> ylläpitää tätä laitetta ja voi ehkä seurata toimintaasi.</translation>
 <translation id="1510238584712386396">Käynnistysohjelma</translation>
 <translation id="1734367976349034509">Tämä laite on yrityksen hallinnoima.</translation>
+<translation id="1930797645656624981">Chrome-käyttöjärjestelmän syöttöpalvelu</translation>
+<translation id="1979103255016296513">Salasanan vaihto myöhässä</translation>
 <translation id="2049639323467105390">Tätä laitetta hallinnoi <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">Ei tuloksia näytöllä</translation>
 <translation id="2338501278241028356">Löydä lähellä olevat laitteet ottamalla ensin Bluetooth käyttöön.</translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="2872961005593481000">Sammuta</translation>
-<translation id="3147142846278915599">Käynnistysohjelma (synkronoidaan sovelluksia…)</translation>
+<translation id="3008341117444806826">PÄIVITÄ</translation>
+<translation id="3838338534323494292">Uusi salasana</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> ylläpitää tätä laitetta ja pääsee näkemään kaiken käyttäjätoiminnan, kuten avatut verkkosivustot, salasanat ja sähköpostit.</translation>
+<translation id="4227825898293920515">Salasana vanhenee: <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Kerberos-tukipyyntö vanhenee pian</translation>
+<translation id="445059817448385655">Vanha salasana</translation>
+<translation id="467510802200863975">Salasanat eivät täsmää</translation>
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
+<translation id="4890353053343094602">Valitse uusi välittömästi</translation>
 <translation id="5212543919916444558">En löydä näytöltä mitään, minkä kanssa voisin auttaa sinua.
 Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5222676887888702881">Kirjaudu ulos</translation>
+<translation id="5317780077021120954">Tallenna</translation>
+<translation id="5332948983412042822">Valitse uusi nyt</translation>
 <translation id="5457599981699367932">Selaa vierailijana</translation>
 <translation id="54609108002486618">Hallinnoitu</translation>
 <translation id="5832805196449965646">Lisää henkilö</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
+<translation id="6058625436358447366">Lisää lopuksi vanha ja uusi salasana</translation>
+<translation id="6106186594183574873">Lisää lopuksi vanha salasana</translation>
+<translation id="6146993107019042706">Lisää lopuksi uusi salasana</translation>
 <translation id="7658239707568436148">Peruuta</translation>
+<translation id="7690294790491645610">Vahvista uusi salasana</translation>
+<translation id="808894953321890993">Vaihda salasana</translation>
+<translation id="8747900814994928677">Vahvista muutos</translation>
+<translation id="910415269708673980">Päivitä tukipyyntö: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Poista lukitus</translation>
 </translationbundle>

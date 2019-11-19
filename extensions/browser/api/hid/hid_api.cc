@@ -176,7 +176,7 @@ ExtensionFunction::ResponseAction HidConnectFunction::Run() {
 }
 
 void HidConnectFunction::OnConnectComplete(
-    device::mojom::HidConnectionPtr connection) {
+    mojo::PendingRemote<device::mojom::HidConnection> connection) {
   if (!connection) {
     Respond(Error(kErrorFailedToOpenDevice));
     return;

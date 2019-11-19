@@ -24,7 +24,7 @@ namespace {
 ui::TouchscreenDevice CreateTouchscreenDevice(int id,
                                               ui::InputDeviceType type,
                                               const gfx::Size& size) {
-  ui::TouchscreenDevice device(id, type, base::IntToString(id), size, 0);
+  ui::TouchscreenDevice device(id, type, base::NumberToString(id), size, 0);
   device.vendor_id = id * id;
   device.product_id = device.vendor_id * id;
   return device;

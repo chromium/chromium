@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -101,6 +102,7 @@ void swap(TestObject& lhs, TestObject& rhs) {
 }
 
 class NonTriviallyDestructible {
+ public:
   ~NonTriviallyDestructible() {}
 };
 
@@ -2117,6 +2119,29 @@ TEST(OptionalTest, DontCallNewMemberFunction) {
 
   a = DeleteNewOperators();
   EXPECT_TRUE(a.has_value());
+}
+
+TEST(OptionalTest, DereferencingNoValueCrashes) {
+  class C {
+   public:
+    void Method() const {}
+  };
+
+  {
+    const Optional<C> const_optional;
+    EXPECT_CHECK_DEATH(const_optional.value());
+    EXPECT_CHECK_DEATH(const_optional->Method());
+    EXPECT_CHECK_DEATH(*const_optional);
+    EXPECT_CHECK_DEATH(*std::move(const_optional));
+  }
+
+  {
+    Optional<C> non_const_optional;
+    EXPECT_CHECK_DEATH(non_const_optional.value());
+    EXPECT_CHECK_DEATH(non_const_optional->Method());
+    EXPECT_CHECK_DEATH(*non_const_optional);
+    EXPECT_CHECK_DEATH(*std::move(non_const_optional));
+  }
 }
 
 TEST(OptionalTest, Noexcept) {

@@ -32,7 +32,6 @@ namespace net {
 
 class DhcpPacFileFetcher;
 class NetLog;
-class NetLogCaptureMode;
 class ProxyResolver;
 class PacFileFetcher;
 
@@ -100,7 +99,8 @@ class NET_EXPORT_PRIVATE PacFileDecider {
             CompletionOnceCallback callback);
 
   // Shuts down any in-progress DNS requests, and cancels any ScriptFetcher
-  // requests.  Does not call OnShutdown on the [Dhcp]PacFileFetcher.
+  // requests. Does not call OnShutdown() on the [Dhcp]PacFileFetcher. Any
+  // pending callback will not be invoked.
   void OnShutdown();
 
   const ProxyConfigWithAnnotation& effective_config() const;
@@ -119,12 +119,10 @@ class NET_EXPORT_PRIVATE PacFileDecider {
 
     PacSource(Type type, const GURL& url) : type(type), url(url) {}
 
-    // Returns a Value representing the PacSource.  |effective_pac_url| must
-    // be non-NULL and point to the URL derived from information contained in
+    // Returns a Value representing the PacSource.  |effective_pac_url| is the
+    // URL derived from information contained in
     // |this|, if Type is not WPAD_DHCP.
-    std::unique_ptr<base::Value> NetLogCallback(
-        const GURL* effective_pac_url,
-        NetLogCaptureMode capture_mode) const;
+    base::Value NetLogParams(const GURL& effective_pac_url) const;
 
     Type type;
     GURL url;  // Empty unless |type == PAC_SOURCE_CUSTOM|.

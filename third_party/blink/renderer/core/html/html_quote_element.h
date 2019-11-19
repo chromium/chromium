@@ -33,11 +33,9 @@ class HTMLQuoteElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_ELEMENT_FACTORY_WITH_TAGNAME(HTMLQuoteElement);
-
- private:
   HTMLQuoteElement(const QualifiedName&, Document&);
 
+ private:
   bool IsURLAttribute(const Attribute&) const override;
   bool HasLegalLinkAttribute(const QualifiedName&) const override;
   const QualifiedName& SubResourceAttributeName() const override;

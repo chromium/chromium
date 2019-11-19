@@ -9,8 +9,8 @@
 namespace chromecast {
 
 MemoryPressureObserverImpl::MemoryPressureObserverImpl(
-    mojom::MemoryPressureObserverPtr* proxy)
-    : binding_(this, mojo::MakeRequest(proxy)) {}
+    mojo::PendingRemote<mojom::MemoryPressureObserver>* observer)
+    : receiver_(this, observer->InitWithNewPipeAndPassReceiver()) {}
 
 MemoryPressureObserverImpl::~MemoryPressureObserverImpl() = default;
 

@@ -91,6 +91,8 @@ blink_core_sources("svg_layout") {
     "svg_text_metrics.h",
     "svg_text_query.cc",
     "svg_text_query.h",
+    "transform_helper.cc",
+    "transform_helper.h",
     "transformed_hit_test_location.cc",
     "transformed_hit_test_location.h",
   ]

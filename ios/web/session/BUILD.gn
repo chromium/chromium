@@ -1,0 +1,44 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("session") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    "//base",
+    "//ios/web/public",
+    "//ios/web/public/security",
+    "//ios/web/public/session",
+    "//net",
+  ]
+  sources = [
+    "crw_session_certificate_policy_cache_storage.mm",
+    "crw_session_storage.mm",
+    "session_certificate_policy_cache_impl.h",
+    "session_certificate_policy_cache_impl.mm",
+    "session_certificate_policy_cache_storage_builder.h",
+    "session_certificate_policy_cache_storage_builder.mm",
+  ]
+}
+
+source_set("unittests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  deps = [
+    "//ios/web/public",
+    "//ios/web/public/security",
+    "//ios/web/public/session",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//ios/web/session",
+    "//net",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+  sources = [
+    "crw_session_certificate_policy_cache_storage_unittest.mm",
+    "serializable_user_data_manager_unittest.mm",
+    "session_certificate_policy_cache_impl_unittest.mm",
+    "session_certificate_policy_cache_storage_builder_unittest.mm",
+  ]
+}

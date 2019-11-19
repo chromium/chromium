@@ -10,7 +10,8 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/ppb_image_data.h"
 #include "ppapi/shared_impl/ppb_image_data_shared.h"
@@ -20,10 +21,6 @@
 
 class SkCanvas;
 class TransportDIB;
-
-namespace base {
-class SharedMemory;
-}
 
 namespace content {
 
@@ -48,8 +45,8 @@ class CONTENT_EXPORT PPB_ImageData_Impl
     virtual TransportDIB* GetTransportDIB() const = 0;
     virtual void* Map() = 0;
     virtual void Unmap() = 0;
-    virtual int32_t GetSharedMemory(base::SharedMemory** shm,
-                                    uint32_t* byte_count) = 0;
+    virtual int32_t GetSharedMemoryRegion(
+        base::UnsafeSharedMemoryRegion** region) = 0;
     virtual SkCanvas* GetCanvas() = 0;
     virtual SkBitmap GetMappedBitmap() const = 0;
   };
@@ -93,8 +90,8 @@ class CONTENT_EXPORT PPB_ImageData_Impl
   PP_Bool Describe(PP_ImageDataDesc* desc) override;
   void* Map() override;
   void Unmap() override;
-  int32_t GetSharedMemory(base::SharedMemory** shm,
-                          uint32_t* byte_count) override;
+  int32_t GetSharedMemoryRegion(
+      base::UnsafeSharedMemoryRegion** region) override;
   SkCanvas* GetCanvas() override;
   void SetIsCandidateForReuse() override;
 
@@ -132,8 +129,8 @@ class ImageDataPlatformBackend : public PPB_ImageData_Impl::Backend {
   TransportDIB* GetTransportDIB() const override;
   void* Map() override;
   void Unmap() override;
-  int32_t GetSharedMemory(base::SharedMemory** shm,
-                          uint32_t* byte_count) override;
+  int32_t GetSharedMemoryRegion(
+      base::UnsafeSharedMemoryRegion** region) override;
   SkCanvas* GetCanvas() override;
   SkBitmap GetMappedBitmap() const override;
 
@@ -165,13 +162,14 @@ class ImageDataSimpleBackend : public PPB_ImageData_Impl::Backend {
   TransportDIB* GetTransportDIB() const override;
   void* Map() override;
   void Unmap() override;
-  int32_t GetSharedMemory(base::SharedMemory** shm,
-                          uint32_t* byte_count) override;
+  int32_t GetSharedMemoryRegion(
+      base::UnsafeSharedMemoryRegion** region) override;
   SkCanvas* GetCanvas() override;
   SkBitmap GetMappedBitmap() const override;
 
  private:
-  std::unique_ptr<base::SharedMemory> shared_memory_;
+  base::UnsafeSharedMemoryRegion shm_region_;
+  base::WritableSharedMemoryMapping shm_mapping_;
   // skia_bitmap_ is backed by shared_memory_.
   SkBitmap skia_bitmap_;
   std::unique_ptr<SkCanvas> skia_canvas_;

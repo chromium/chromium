@@ -1,0 +1,22 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("colors") {
+  sources = [
+    "UIColor+cr_dynamic_colors.h",
+    "UIColor+cr_dynamic_colors.mm",
+    "UIColor+cr_semantic_colors.h",
+    "UIColor+cr_semantic_colors.mm",
+    "dynamic_color_util.h",
+    "dynamic_color_util.mm",
+    "semantic_color_names.h",
+    "semantic_color_names.mm",
+  ]
+  deps = [
+    "resources",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

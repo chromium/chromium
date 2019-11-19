@@ -10,6 +10,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/strings/grit/extensions_strings.h"
@@ -74,9 +75,15 @@ std::string
 bool StandardManagementPolicyProvider::UserMayLoad(
     const Extension* extension,
     base::string16* error) const {
-  // Component extensions are always allowed.
-  if (Manifest::IsComponentLocation(extension->location()))
+  // Component extensions are always allowed, besides the camera app that can be
+  // disabled by extension policy. This is a temporary solution until there's a
+  // dedicated policy to disable the camera, at which point the special check in
+  // the 'if' statement should be removed.
+  // TODO(http://crbug.com/1002935)
+  if (Manifest::IsComponentLocation(extension->location()) &&
+      extension->id() != extension_misc::kCameraAppId) {
     return true;
+  }
 
   // Shared modules are always allowed too: they only contain resources that
   // are used by other extensions. The extension that depends on the shared
@@ -108,7 +115,8 @@ bool StandardManagementPolicyProvider::UserMayLoad(
     case Manifest::TYPE_HOSTED_APP:
     case Manifest::TYPE_LEGACY_PACKAGED_APP:
     case Manifest::TYPE_PLATFORM_APP:
-    case Manifest::TYPE_SHARED_MODULE: {
+    case Manifest::TYPE_SHARED_MODULE:
+    case Manifest::TYPE_LOGIN_SCREEN_EXTENSION: {
       if (!settings_->IsAllowedManifestType(extension->GetType(),
                                             extension->id()))
         return ReturnLoadError(extension, error);
@@ -120,8 +128,10 @@ bool StandardManagementPolicyProvider::UserMayLoad(
 
   ExtensionManagement::InstallationMode installation_mode =
       settings_->GetInstallationMode(extension);
-  if (installation_mode == ExtensionManagement::INSTALLATION_BLOCKED)
+  if (installation_mode == ExtensionManagement::INSTALLATION_BLOCKED ||
+      installation_mode == ExtensionManagement::INSTALLATION_REMOVED) {
     return ReturnLoadError(extension, error);
+  }
 
   return true;
 }
@@ -194,6 +204,18 @@ bool StandardManagementPolicyProvider::MustRemainInstalled(
           IDS_EXTENSION_CANT_UNINSTALL_POLICY_REQUIRED,
           base::UTF8ToUTF16(extension->name()));
     }
+    return true;
+  }
+  return false;
+}
+
+bool StandardManagementPolicyProvider::ShouldForceUninstall(
+    const Extension* extension,
+    base::string16* error) const {
+  if (UserMayLoad(extension, error))
+    return false;
+  if (settings_->GetInstallationMode(extension) ==
+      ExtensionManagement::INSTALLATION_REMOVED) {
     return true;
   }
   return false;

@@ -38,7 +38,7 @@ class MockMDnsClient : public MDnsClient {
                                        const std::string&,
                                        int,
                                        const MDnsTransaction::ResultCallback&));
-  MOCK_METHOD1(StartListening, bool(MDnsSocketFactory*));
+  MOCK_METHOD1(StartListening, int(MDnsSocketFactory*));
   MOCK_METHOD0(StopListening, void());
   MOCK_CONST_METHOD0(IsListening, bool());
 };

@@ -34,11 +34,12 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -75,8 +76,11 @@ void CSSFontSelector::DispatchInvalidationCallbacks() {
 
   HeapVector<Member<FontSelectorClient>> clients;
   CopyToVector(clients_, clients);
-  for (auto& client : clients)
-    client->FontsNeedUpdate(this);
+  for (auto& client : clients) {
+    if (client) {
+      client->FontsNeedUpdate(this);
+    }
+  }
 }
 
 void CSSFontSelector::FontFaceInvalidated() {

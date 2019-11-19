@@ -17,7 +17,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/sync/driver/sync_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,7 +36,7 @@ class BrowsingDataCounterUtilsTest : public testing::Test {
   TestingProfile* GetProfile() { return &profile_; }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 };
 
@@ -148,26 +148,55 @@ TEST_F(BrowsingDataCounterUtilsTest, DeletePasswordsAndSigninData) {
     int num_passwords;
     int num_webauthn_credentials;
     bool sync_enabled;
+    std::vector<std::string> domain_examples;
     std::string expected_output;
   } kTestCases[] = {
-      {0, 0, false, "None"},
-      {0, 0, true, "None"},
-      {1, 0, false, "1 password"},
-      {1, 0, true, "1 password (synced)"},
-      {2, 0, false, "2 passwords"},
-      {2, 0, true, "2 passwords (synced)"},
-      {0, 1, false, "sign-in data for 1 account"},
-      {0, 1, true, "sign-in data for 1 account"},
-      {0, 2, false, "sign-in data for 2 accounts"},
-      {0, 2, true, "sign-in data for 2 accounts"},
-      {1, 2, false, "1 password; sign-in data for 2 accounts"},
-      {2, 1, false, "2 passwords; sign-in data for 1 account"},
-      {2, 3, true, "2 passwords (synced); sign-in data for 3 accounts"},
-  };
+      {0, 0, false, {}, "None"},
+      {0, 0, true, {}, "None"},
+      {1, 0, false, {"a.com"}, "1 password (for a.com)"},
+      {1, 0, true, {"a.com"}, "1 password (for a.com, synced)"},
+      {2, 0, false, {"a.com"}, "2 passwords (for a.com)"},
+      {2, 0, false, {"a.com", "b.com"}, "2 passwords (for a.com, b.com)"},
+      {2,
+       0,
+       true,
+       {"a.com", "b.com"},
+       "2 passwords (for a.com, b.com, synced)"},
+      {0, 1, false, {}, "sign-in data for 1 account"},
+      {0, 1, true, {}, "sign-in data for 1 account"},
+      {0, 2, false, {}, "sign-in data for 2 accounts"},
+      {0, 2, true, {}, "sign-in data for 2 accounts"},
+      {1,
+       2,
+       false,
+       {"a.de"},
+       "1 password (for a.de); sign-in data for 2 accounts"},
+      {2,
+       1,
+       false,
+       {"a.de", "b.de"},
+       "2 passwords (for a.de, b.de); sign-in data for 1 account"},
+      {2,
+       3,
+       true,
+       {"a.de", "b.de"},
+       "2 passwords (for a.de, b.de, synced); sign-in data for 3 "
+       "accounts"},
+      {4,
+       2,
+       false,
+       {"a.de", "b.de"},
+       "4 passwords (for a.de, b.de, and 2 more); sign-in data for 2 "
+       "accounts"},
+      {8,
+       0,
+       true,
+       {"a.de", "b.de", "c.de", "d.de", "e.de", "f.de", "g.de", "h.de"},
+       "8 passwords (for a.de, b.de, and 6 more, synced)"}};
   for (const auto& test_case : kTestCases) {
     browsing_data::SigninDataCounter::SigninDataResult result(
         &counter, test_case.num_passwords, test_case.num_webauthn_credentials,
-        test_case.sync_enabled);
+        test_case.sync_enabled, test_case.domain_examples);
     std::string output = base::UTF16ToASCII(
         GetChromeCounterTextFromResult(&result, GetProfile()));
     EXPECT_EQ(test_case.expected_output, output);

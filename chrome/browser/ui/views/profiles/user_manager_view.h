@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_VIEW_H_
 
 #include <memory>
+#include <string>
 
 #include "base/auto_reset.h"
 #include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/user_manager.h"
-#include "components/signin/core/browser/signin_metrics.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -47,11 +48,9 @@ class UserManagerProfileDialogDelegate
   bool CanResize() const override;
   bool CanMaximize() const override;
   bool CanMinimize() const override;
-  bool ShouldUseCustomFrame() const override;
   ui::ModalType GetModalType() const override;
   void DeleteDelegate() override;
   base::string16 GetWindowTitle() const override;
-  int GetDialogButtons() const override;
   views::View* GetInitiallyFocusedView() override;
 
   UserManagerView* parent_;  // Not owned.
@@ -125,9 +124,7 @@ class UserManagerView : public views::DialogDelegateView {
   bool CanMaximize() const override;
   bool CanMinimize() const override;
   base::string16 GetWindowTitle() const override;
-  int GetDialogButtons() const override;
   void WindowClosing() override;
-  bool ShouldUseCustomFrame() const override;
 
   views::WebView* web_view_;
 

@@ -41,8 +41,7 @@ class MEDIA_EXPORT MediaCryptoContextImpl : public MediaCryptoContext {
   void UnregisterPlayer(int registration_id) final;
 
   // MediaCryptoContext implementation.
-  void SetMediaCryptoReadyCB(
-      const MediaCryptoReadyCB& media_crypto_ready_cb) final;
+  void SetMediaCryptoReadyCB(MediaCryptoReadyCB media_crypto_ready_cb) final;
 
  private:
   MediaDrmBridge* const media_drm_bridge_;

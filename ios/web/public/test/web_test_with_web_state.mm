@@ -10,11 +10,13 @@
 #include "base/scoped_observer.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/web/js_messaging/crw_js_injector.h"
+#import "ios/web/navigation/crw_wk_navigation_states.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
+#include "ios/web/public/deprecated/url_verification_constants.h"
 #import "ios/web/public/web_client.h"
-#include "ios/web/public/web_state/url_verification_constants.h"
-#include "ios/web/public/web_state/web_state_observer.h"
+#include "ios/web/public/web_state_observer.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/web_state_impl.h"
@@ -39,12 +41,12 @@ CRWWebController* GetWebController(web::WebState* web_state) {
 
 namespace web {
 
-WebTestWithWebState::WebTestWithWebState(TestWebThreadBundle::Options options)
+WebTestWithWebState::WebTestWithWebState(WebTaskEnvironment::Options options)
     : WebTest(options) {}
 
 WebTestWithWebState::WebTestWithWebState(
     std::unique_ptr<web::WebClient> web_client,
-    TestWebThreadBundle::Options options)
+    WebTaskEnvironment::Options options)
     : WebTest(std::move(web_client), options) {}
 
 WebTestWithWebState::~WebTestWithWebState() {}
@@ -56,6 +58,8 @@ void WebTestWithWebState::SetUp() {
 
   // Force generation of child views; necessary for some tests.
   web_state_->GetView();
+
+  web_state()->SetKeepRenderProcessAlive(true);
 }
 
 void WebTestWithWebState::TearDown() {
@@ -79,58 +83,54 @@ void WebTestWithWebState::AddTransientItem(const GURL& url) {
 }
 
 bool WebTestWithWebState::LoadHtmlWithoutSubresources(const std::string& html) {
-  if (@available(iOS 11, *)) {
-    NSString* block_all = @"[{"
-                           "  \"trigger\": {"
-                           "    \"url-filter\": \".*\""
-                           "  },"
-                           "  \"action\": {"
-                           "    \"type\": \"block\""
-                           "  }"
-                           "}]";
-    __block WKContentRuleList* content_rule_list = nil;
-    __block NSError* error = nil;
-    __block BOOL rule_compilation_completed = NO;
-    [WKContentRuleListStore.defaultStore
-        compileContentRuleListForIdentifier:@"block_everything"
-                     encodedContentRuleList:block_all
-                          completionHandler:^(WKContentRuleList* rule_list,
-                                              NSError* err) {
-                            error = err;
-                            content_rule_list = rule_list;
-                            rule_compilation_completed = YES;
-                          }];
+  NSString* block_all = @"[{"
+                         "  \"trigger\": {"
+                         "    \"url-filter\": \".*\""
+                         "  },"
+                         "  \"action\": {"
+                         "    \"type\": \"block\""
+                         "  }"
+                         "}]";
+  __block WKContentRuleList* content_rule_list = nil;
+  __block NSError* error = nil;
+  __block BOOL rule_compilation_completed = NO;
+  [WKContentRuleListStore.defaultStore
+      compileContentRuleListForIdentifier:@"block_everything"
+                   encodedContentRuleList:block_all
+                        completionHandler:^(WKContentRuleList* rule_list,
+                                            NSError* err) {
+                          error = err;
+                          content_rule_list = rule_list;
+                          rule_compilation_completed = YES;
+                        }];
 
-    bool success = WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-      return rule_compilation_completed;
-    });
-    if (!success) {
-      DLOG(WARNING) << "ContentRuleList compilation timed out.";
-      return false;
-    }
-    if (error) {
-      DLOG(WARNING) << "ContentRuleList compilation failed with error: "
-                    << base::SysNSStringToUTF8(error.description);
-      return false;
-    }
-    DCHECK(content_rule_list);
-    WKWebViewConfigurationProvider& configuration_provider =
-        WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
-    WKWebViewConfiguration* configuration =
-        configuration_provider.GetWebViewConfiguration();
-    [configuration.userContentController addContentRuleList:content_rule_list];
-    bool result = LoadHtml(html);
-    [configuration.userContentController
-        removeContentRuleList:content_rule_list];
-    return result;
+  bool success = WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+    return rule_compilation_completed;
+  });
+  if (!success) {
+    DLOG(WARNING) << "ContentRuleList compilation timed out.";
+    return false;
   }
-  return LoadHtml(html);
+  if (error) {
+    DLOG(WARNING) << "ContentRuleList compilation failed with error: "
+                  << base::SysNSStringToUTF8(error.description);
+    return false;
+  }
+  DCHECK(content_rule_list);
+  WKWebViewConfigurationProvider& configuration_provider =
+      WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
+  WKWebViewConfiguration* configuration =
+      configuration_provider.GetWebViewConfiguration();
+  [configuration.userContentController addContentRuleList:content_rule_list];
+  bool result = LoadHtml(html);
+  [configuration.userContentController removeContentRuleList:content_rule_list];
+  return result;
 }
 
 void WebTestWithWebState::LoadHtml(NSString* html, const GURL& url) {
   // Initiate asynchronous HTML load.
   CRWWebController* web_controller = GetWebController(web_state());
-  ASSERT_EQ(PAGE_LOADED, web_controller.loadPhase);
+  ASSERT_EQ(web::WKNavigationState::FINISHED, web_controller.navigationState);
 
   // If the underlying WKWebView is empty, first load a placeholder to create a
   // WKBackForwardListItem to store the NavigationItem associated with the
@@ -142,18 +142,28 @@ void WebTestWithWebState::LoadHtml(NSString* html, const GURL& url) {
     GURL placeholder_url = wk_navigation_util::CreatePlaceholderUrlForUrl(url);
     NavigationManager::WebLoadParams params(placeholder_url);
     web_state()->GetNavigationManager()->LoadURLWithParams(params);
+
+    // Set NoNavigationError so the placeHolder doesn't trigger a
+    // kNavigatingToFailedNavigationItem.
+    web::WebStateImpl* web_state_impl =
+        static_cast<web::WebStateImpl*>(web_state());
+    web_state_impl->GetNavigationManagerImpl()
+        .GetCurrentItemImpl()
+        ->error_retry_state_machine()
+        .SetIgnorePlaceholderNavigation();
+
     ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-      return web_controller.loadPhase == PAGE_LOADED;
+      return web_controller.navigationState == web::WKNavigationState::FINISHED;
     }));
   }
 
   [web_controller loadHTML:html forURL:url];
-  ASSERT_EQ(LOAD_REQUESTED, web_controller.loadPhase);
+  ASSERT_EQ(web::WKNavigationState::REQUESTED, web_controller.navigationState);
 
   // Wait until the page is loaded.
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     base::RunLoop().RunUntilIdle();
-    return web_controller.loadPhase == PAGE_LOADED;
+    return web_controller.navigationState == web::WKNavigationState::FINISHED;
   }));
 
   // Wait until the script execution is possible. Script execution will fail if
@@ -208,7 +218,7 @@ id WebTestWithWebState::ExecuteJavaScript(NSString* script) {
   __block id execution_result = nil;
   __block bool execution_completed = false;
   SCOPED_TRACE(base::SysNSStringToUTF8(script));
-  [GetWebController(web_state())
+  [GetWebController(web_state()).jsInjector
       executeJavaScript:script
       completionHandler:^(id result, NSError* error) {
         // Most of executed JS does not return the result, and there is no need

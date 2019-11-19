@@ -24,18 +24,29 @@
 #include "base/os_compat_nacl.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_FUCHSIA)
+#include <fuchsia/deprecatedtimezone/cpp/fidl.h>
+#include <lib/sys/cpp/component_context.h>
+#include "base/fuchsia/default_context.h"
+#include "base/fuchsia/fuchsia_logging.h"
+#include "base/no_destructor.h"
+#include "base/numerics/clamped_math.h"
+#endif
+
+#if defined(OS_MACOSX) || defined(OS_IOS)
 static_assert(sizeof(time_t) >= 8, "Y2038 problem!");
 #endif
 
 namespace {
 
+#if !defined(OS_FUCHSIA)
 // This prevents a crash on traversing the environment global and looking up
 // the 'TZ' variable in libc. See: crbug.com/390567.
 base::Lock* GetSysTimeToTimeStructLock() {
   static auto* lock = new base::Lock();
   return lock;
 }
+#endif  // !defined(OS_FUCHSIA)
 
 // Define a system-specific SysTime that wraps either to a time_t or
 // a time64_t depending on the host system, and associated convertion.
@@ -59,6 +70,75 @@ void SysTimeToTimeStruct(SysTime t, struct tm* timestruct, bool is_local) {
     gmtime64_r(&t, timestruct);
 }
 
+#elif defined(OS_FUCHSIA)
+typedef time_t SysTime;
+
+fuchsia::deprecatedtimezone::TimezoneSyncPtr ConnectTimeZoneServiceSync() {
+  fuchsia::deprecatedtimezone::TimezoneSyncPtr timezone;
+  base::fuchsia::ComponentContextForCurrentProcess()->svc()->Connect(
+      timezone.NewRequest());
+  return timezone;
+}
+
+SysTime GetTimezoneOffset(SysTime utc_time) {
+  static base::NoDestructor<fuchsia::deprecatedtimezone::TimezoneSyncPtr>
+      timezone(ConnectTimeZoneServiceSync());
+
+  int64_t milliseconds_since_epoch =
+      base::ClampMul(utc_time, base::Time::kMillisecondsPerSecond);
+  int32_t local_offset_minutes = 0;
+  int32_t dst_offset_minutes = 0;
+  zx_status_t status = (*timezone.get())
+                           ->GetTimezoneOffsetMinutes(milliseconds_since_epoch,
+                                                      &local_offset_minutes,
+                                                      &dst_offset_minutes);
+  if (status != ZX_OK) {
+    ZX_DLOG(ERROR, status) << "Failed to get current timezone offset.";
+    return 0;
+  }
+  return (local_offset_minutes + dst_offset_minutes) *
+         base::Time::kSecondsPerMinute;
+}
+
+SysTime SysTimeFromTimeStruct(struct tm* timestruct, bool is_local) {
+  SysTime result = timegm(timestruct);
+  if (is_local) {
+    // Local->UTC conversion may be ambiguous, particularly when local clock is
+    // changed back (e.g. in when DST ends). In such cases there are 2 correct
+    // results and this function will return one of them. Also some local time
+    // values may be invalid. Specifically when local time is rolled forward
+    // (when DST starts) the values in the transitional period are invalid and
+    // don't have corresponding values in the UTC timeline. In those cases using
+    // timezone offset either before or after transition is acceptable.
+    //
+    // fuchsia::deprecatedtimezone API returns offset based on UTC time. It may
+    // return incorrect result when called with a value that also includes
+    // timezone offset. Particularly this is a problem when the time is close to
+    // DST transitions. For example, when transitioning from PST (UTC-8,
+    // non-DST) to PDT (UTC-7, DST) GetTimezoneOffset(local_time) will return a
+    // value that's off by 1 hour for 8 hours after the transition. To avoid
+    // this problem the offset is estimated as GetTimezoneOffset(local_time)
+    // from which |approx_utc_time| is calculated. Then
+    // GetTimezoneOffset(approx_utc_time) is used to calculate the actual
+    // offset. This works correctly assuming timezone transition can happen at
+    // most once per day. When both before and after offsets are in the [-1H,
+    // 1H] range then the |approx_utc_time| is correct (see the note above for
+    // definition of what is considered correct). Otherwise |approx_utc_time|
+    // may be off by 1 hour. In those cases GetTimezoneOffset(approx_utc_time)
+    // will return correct offset because we can assume there are no timezone
+    // changes in the [UTC-1H, UTC+1H] period (the transition is scheduled
+    // either before UTC-1H or after UTC+1H).
+    int64_t approx_utc_time = result - GetTimezoneOffset(result);
+    result -= GetTimezoneOffset(approx_utc_time);
+  }
+  return result;
+}
+
+void SysTimeToTimeStruct(SysTime t, struct tm* timestruct, bool is_local) {
+  if (is_local)
+    t += GetTimezoneOffset(t);
+  gmtime_r(&t, timestruct);
+}
 #elif defined(OS_AIX)
 
 // The function timegm is not available on AIX.

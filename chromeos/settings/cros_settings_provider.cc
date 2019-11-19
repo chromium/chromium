@@ -19,20 +19,6 @@ CrosSettingsProvider::CrosSettingsProvider(
 
 CrosSettingsProvider::~CrosSettingsProvider() = default;
 
-void CrosSettingsProvider::Set(const std::string& path,
-                               const base::Value& value) {
-  // We don't allow changing any of the cros settings without prefix
-  // "cros.session." in the guest mode.
-  // It should not reach here from UI in the guest mode, but just in case.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kGuestSession) &&
-      !base::StartsWith(path, "cros.session.", base::CompareCase::SENSITIVE)) {
-    LOG(ERROR) << "Ignoring the guest request to change: " << path;
-    return;
-  }
-  DoSet(path, value);
-}
-
 void CrosSettingsProvider::NotifyObservers(const std::string& path) {
   if (!notify_cb_.is_null())
     notify_cb_.Run(path);

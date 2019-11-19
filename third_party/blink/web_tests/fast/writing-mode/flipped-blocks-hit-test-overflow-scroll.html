@@ -13,7 +13,7 @@
         testRunner.dumpAsText();
 
     var scrollable = document.getElementById("scrollable");
-    scrollable.scrollLeft = 40;
+    scrollable.scrollLeft = -60;
     var target = document.getElementById("target");
     var hitContainer = document.caretRangeFromPoint(58, 100).startContainer;
     document.getElementById("result").innerText = hitContainer === target ? "PASS" : "FAIL";

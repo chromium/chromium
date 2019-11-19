@@ -7,8 +7,9 @@
 </head>
 <body>
 <script>
-promise_test(async function() {
+promise_test(async t => {
     let pc = new RTCPeerConnection();
+    t.add_cleanup(() => pc.close());
     pc.createDataChannel('foo');
     let candidates = [];
     pc.onicecandidate = function(event) {

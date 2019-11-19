@@ -8,18 +8,14 @@
 #include <cassert>
 #include <cstring>
 #include <memory>
+#include <unicode/ucptrie.h>
+#include <unicode/umutablecptrie.h>
+
+#include "base/logging.h"
 #include "third_party/blink/renderer/platform/text/character_property.h"
-#if !defined(USING_SYSTEM_ICU)
-#define MUTEX_H  // Prevent compile failure of utrie2.h on Windows
-#include <utrie2.h>
-#endif
 
 namespace blink {
 namespace {
-
-#if defined(USING_SYSTEM_ICU)
-static void GenerateCharacterPropertyData(FILE*) {}
-#else
 
 const UChar32 kMaxCodepoint = 0x10FFFF;
 #define ARRAY_LENGTH(a) (sizeof(a) / sizeof((a)[0]))
@@ -80,14 +76,14 @@ static void GenerateCharacterPropertyData(FILE* fp) {
             CharacterProperty::name);
 
   SET(kIsCJKIdeographOrSymbol);
-  SET(kIsUprightInMixedVertical);
   SET(kIsPotentialCustomElementNameChar);
   SET(kIsBidiControl);
   SET(kIsHangul);
 
   // Create a trie from the value array.
   UErrorCode error = U_ZERO_ERROR;
-  UTrie2* trie = utrie2_open(0, 0, &error);
+  std::unique_ptr<UMutableCPTrie, decltype(&umutablecptrie_close)> trie(
+      umutablecptrie_open(0, 0, &error), umutablecptrie_close);
   assert(error == U_ZERO_ERROR);
   UChar32 start = 0;
   CharacterProperty value = values[0];
@@ -95,8 +91,8 @@ static void GenerateCharacterPropertyData(FILE* fp) {
     if (c < kSize && values[c] == value)
       continue;
     if (static_cast<uint32_t>(value)) {
-      utrie2_setRange32(trie, start, c - 1, static_cast<uint32_t>(value), TRUE,
-                        &error);
+      umutablecptrie_setRange(trie.get(), start, c - 1,
+                              static_cast<uint32_t>(value), &error);
       assert(error == U_ZERO_ERROR);
     }
     if (c >= kSize)
@@ -105,21 +101,29 @@ static void GenerateCharacterPropertyData(FILE* fp) {
     value = values[start];
   }
 
-  // Freeze and serialize the trie to a byte array.
-  utrie2_freeze(trie, UTrie2ValueBits::UTRIE2_16_VALUE_BITS, &error);
+  // Convert to immutable UCPTrie in order to be able to serialize.
+  std::unique_ptr<UCPTrie, decltype(&ucptrie_close)> immutable_trie(
+      umutablecptrie_buildImmutable(trie.get(), UCPTrieType::UCPTRIE_TYPE_FAST,
+                                    UCPTrieValueWidth::UCPTRIE_VALUE_BITS_16,
+                                    &error),
+      ucptrie_close);
+
   assert(error == U_ZERO_ERROR);
-  int32_t serialized_size = utrie2_serialize(trie, nullptr, 0, &error);
+
+  int32_t serialized_size =
+      ucptrie_toBinary(immutable_trie.get(), nullptr, 0, &error);
   error = U_ZERO_ERROR;
+
   std::unique_ptr<uint8_t[]> serialized(new uint8_t[serialized_size]);
-  serialized_size =
-      utrie2_serialize(trie, serialized.get(), serialized_size, &error);
+  // Ensure 32-bit alignment, as ICU requires that to the ucptrie_toBinary call.
+  CHECK(!(reinterpret_cast<intptr_t>(serialized.get()) % 4));
+
+  serialized_size = ucptrie_toBinary(immutable_trie.get(), serialized.get(),
+                                     serialized_size, &error);
   assert(error == U_ZERO_ERROR);
 
   GenerateUTrieSerialized(fp, serialized_size, serialized.get());
-
-  utrie2_close(trie);
 }
-#endif
 
 }  // namespace
 }  // namespace blink

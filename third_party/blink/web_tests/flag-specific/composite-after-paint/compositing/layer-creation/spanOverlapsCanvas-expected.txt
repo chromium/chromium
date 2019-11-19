@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='world'",
+      "position": [8, 8],
+      "bounds": [100, 50]
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='output'",
+      "position": [8, 8],
+      "bounds": [100, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000"
+    }
+  ]
+}
+

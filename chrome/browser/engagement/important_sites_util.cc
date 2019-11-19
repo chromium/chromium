@@ -15,6 +15,7 @@
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -32,7 +33,12 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_util.h"
+
+#if defined(OS_ANDROID)
+#include "chrome/browser/android/search_permissions/search_permissions_service.h"
+#endif
 
 namespace {
 using bookmarks::BookmarkModel;
@@ -201,20 +207,19 @@ std::unordered_set<std::string> GetBlacklistedImportantDomains(
   ContentSettingsForOneType content_settings_list;
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile);
-  map->GetSettingsForOneType(CONTENT_SETTINGS_TYPE_IMPORTANT_SITE_INFO,
+  map->GetSettingsForOneType(ContentSettingsType::IMPORTANT_SITE_INFO,
                              content_settings::ResourceIdentifier(),
                              &content_settings_list);
   std::unordered_set<std::string> ignoring_domains;
   for (const ContentSettingPatternSource& site : content_settings_list) {
     GURL origin(site.primary_pattern.ToString());
-    if (!origin.is_valid() ||
-        base::ContainsKey(ignoring_domains, origin.host())) {
+    if (!origin.is_valid() || base::Contains(ignoring_domains, origin.host())) {
       continue;
     }
 
     std::unique_ptr<base::DictionaryValue> dict =
         base::DictionaryValue::From(map->GetWebsiteSetting(
-            origin, origin, CONTENT_SETTINGS_TYPE_IMPORTANT_SITE_INFO, "",
+            origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO, "",
             nullptr));
 
     if (!dict)
@@ -274,14 +279,29 @@ void PopulateInfoMapWithContentTypeAllowed(
   HostContentSettingsMapFactory::GetForProfile(profile)->GetSettingsForOneType(
       content_type, content_settings::ResourceIdentifier(),
       &content_settings_list);
+
   // Extract a set of urls, using the primary pattern. We don't handle
   // wildcard patterns.
   std::set<GURL> content_origins;
   for (const ContentSettingPatternSource& site : content_settings_list) {
     if (site.GetContentSetting() != CONTENT_SETTING_ALLOW)
       continue;
-    MaybePopulateImportantInfoForReason(GURL(site.primary_pattern.ToString()),
-                                        &content_origins, reason, output);
+    GURL url(site.primary_pattern.ToString());
+
+#if defined(OS_ANDROID)
+    SearchPermissionsService* search_permissions_service =
+        SearchPermissionsService::Factory::GetInstance()->GetForBrowserContext(
+            profile);
+    // If the permission is controlled by the Default Search Engine then don't
+    // consider it important. The DSE gets these permissions by default.
+    if (search_permissions_service &&
+        search_permissions_service->IsPermissionControlledByDSE(
+            content_type, url::Origin::Create(url))) {
+      continue;
+    }
+#endif
+
+    MaybePopulateImportantInfoForReason(url, &content_origins, reason, output);
   }
 }
 
@@ -363,6 +383,7 @@ void ImportantSitesUtil::RegisterProfilePrefs(
 std::vector<ImportantDomainInfo>
 ImportantSitesUtil::GetImportantRegisterableDomains(Profile* profile,
                                                     size_t max_results) {
+  SCOPED_UMA_HISTOGRAM_TIMER("Storage.ImportantSites.GenerationTime");
   std::map<std::string, ImportantDomainInfo> important_info;
   std::map<GURL, double> engagement_map;
 
@@ -370,11 +391,11 @@ ImportantSitesUtil::GetImportantRegisterableDomains(Profile* profile,
                                 &engagement_map, &important_info);
 
   PopulateInfoMapWithContentTypeAllowed(
-      profile, CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+      profile, ContentSettingsType::NOTIFICATIONS,
       ImportantReason::NOTIFICATIONS, &important_info);
 
   PopulateInfoMapWithContentTypeAllowed(
-      profile, CONTENT_SETTINGS_TYPE_DURABLE_STORAGE, ImportantReason::DURABLE,
+      profile, ContentSettingsType::DURABLE_STORAGE, ImportantReason::DURABLE,
       &important_info);
 
   PopulateInfoMapWithBookmarks(profile, engagement_map, &important_info);
@@ -432,7 +453,7 @@ void ImportantSitesUtil::RecordBlacklistedAndIgnoredImportantSites(
       GURL origin("http://" + ignored_site);
       std::unique_ptr<base::DictionaryValue> dict =
           base::DictionaryValue::From(map->GetWebsiteSetting(
-              origin, origin, CONTENT_SETTINGS_TYPE_IMPORTANT_SITE_INFO, "",
+              origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO, "",
               nullptr));
 
       if (!dict)
@@ -441,7 +462,7 @@ void ImportantSitesUtil::RecordBlacklistedAndIgnoredImportantSites(
       RecordIgnore(dict.get());
 
       map->SetWebsiteSettingDefaultScope(
-          origin, origin, CONTENT_SETTINGS_TYPE_IMPORTANT_SITE_INFO, "",
+          origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO, "",
           std::move(dict));
     }
   } else {
@@ -457,9 +478,9 @@ void ImportantSitesUtil::RecordBlacklistedAndIgnoredImportantSites(
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
     dict->SetInteger(kNumTimesIgnoredName, 0);
     dict->Remove(kTimeLastIgnored, nullptr);
-    map->SetWebsiteSettingDefaultScope(
-        origin, origin, CONTENT_SETTINGS_TYPE_IMPORTANT_SITE_INFO, "",
-        std::move(dict));
+    map->SetWebsiteSettingDefaultScope(origin, origin,
+                                       ContentSettingsType::IMPORTANT_SITE_INFO,
+                                       "", std::move(dict));
   }
 
   // Finally, record our old crossed-stats.

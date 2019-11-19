@@ -149,7 +149,7 @@ def main():
   for path in params.dependency:
     typemaps.update(ReadTypemap(path))
 
-  WriteFile(json.dumps({'c++': typemaps}, indent=2), params.output)
+  WriteFile(json.dumps({'c++': typemaps}, indent=2).encode(), params.output)
 
 
 if __name__ == '__main__':

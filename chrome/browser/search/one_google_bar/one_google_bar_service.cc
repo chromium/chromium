@@ -9,14 +9,14 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_loader.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 class OneGoogleBarService::SigninObserver
-    : public identity::IdentityManager::Observer {
+    : public signin::IdentityManager::Observer {
  public:
   using SigninStatusChangedCallback = base::Closure;
 
-  SigninObserver(identity::IdentityManager* identity_manager,
+  SigninObserver(signin::IdentityManager* identity_manager,
                  const SigninStatusChangedCallback& callback)
       : identity_manager_(identity_manager), callback_(callback) {
     identity_manager_->AddObserver(this);
@@ -27,17 +27,17 @@ class OneGoogleBarService::SigninObserver
  private:
   // IdentityManager::Observer implementation.
   void OnAccountsInCookieUpdated(
-      const identity::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override {
     callback_.Run();
   }
 
-  identity::IdentityManager* const identity_manager_;
+  signin::IdentityManager* const identity_manager_;
   SigninStatusChangedCallback callback_;
 };
 
 OneGoogleBarService::OneGoogleBarService(
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     std::unique_ptr<OneGoogleBarLoader> loader)
     : loader_(std::move(loader)),
       signin_observer_(std::make_unique<SigninObserver>(
@@ -70,6 +70,11 @@ void OneGoogleBarService::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+void OneGoogleBarService::SetLanguageCodeForTesting(
+    const std::string& language_code) {
+  language_code_ = language_code;
+}
+
 void OneGoogleBarService::SigninStatusChanged() {
   // If we have cached data, clear it and notify observers.
   if (one_google_bar_data_.has_value()) {
@@ -85,6 +90,7 @@ void OneGoogleBarService::OneGoogleBarDataLoaded(
   // notify observers of the finished load (attempt).
   if (status != OneGoogleBarLoader::Status::TRANSIENT_ERROR) {
     one_google_bar_data_ = data;
+    language_code_ = data.has_value() ? data->language_code : std::string();
   }
   NotifyObservers();
 }

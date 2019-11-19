@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "content/common/visual_properties.h"
 
 namespace blink {
 class WebMouseEvent;
@@ -38,17 +39,8 @@ class CONTENT_EXPORT RenderWidgetHostOwnerDelegate {
   // The RenderWidget was closed. Only swapped-in RenderWidgets receive this.
   virtual void RenderWidgetDidClose() = 0;
 
-  // The RenderWidget was closed while in a swapped out state. Used to
-  // notify the swapped in render widget to close, which will result in a
-  // RenderWidgetDidClose() on the swapped in widget eventually.
-  virtual void RenderWidgetNeedsToRouteCloseEvent() = 0;
-
   // The RenderWidget finished the first visually non-empty paint.
   virtual void RenderWidgetDidFirstVisuallyNonEmptyPaint() = 0;
-
-  // The RenderWidget has issued a draw command, signaling the widget
-  // has been visually updated.
-  virtual void RenderWidgetDidCommitAndDrawCompositorFrame() = 0;
 
   // The RenderWidgetHost got the focus.
   virtual void RenderWidgetGotFocus() = 0;

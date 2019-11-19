@@ -9,16 +9,17 @@
 
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 
-class GURL;
+struct UrlLoadParams;
 
-// Mocks a class adopting the TabOpening protocol. It save the arguments of
-// -dismissModalsAndOpenSelectedTabInMode:withURL:transition:completion:.
+// Mocks a class adopting the TabOpening protocol. It saves the arguments of
+// -dismissModalsAndOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
+//  completion:.
 @interface MockTabOpener : NSObject<TabOpening>
 // Arguments for
-// -dismissModalsAndOpenSelectedTabInMode:withURL:virtualURL:transition:completion:.
-@property(nonatomic, readonly) GURL url;
-@property(nonatomic, readonly) GURL virtualURL;
-@property(nonatomic, readonly) ApplicationMode applicationMode;
+// -dismissModalsAndOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
+//  completion:.
+@property(nonatomic, readonly) UrlLoadParams urlLoadParams;
+@property(nonatomic, readonly) ApplicationModeForTabOpening applicationMode;
 @property(nonatomic, strong, readonly) void (^completionBlock)(void);
 
 // Clear the URL.

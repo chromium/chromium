@@ -19,7 +19,7 @@
 class KeyStorageLinux;
 #endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
 class PrefRegistrySimple;
 class PrefService;
 #endif
@@ -73,15 +73,16 @@ class OSCrypt {
       const std::string& ciphertext,
       std::string* plaintext);
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
   // Registers preferences used by OSCrypt.
   static COMPONENT_EXPORT(OS_CRYPT) void RegisterLocalPrefs(
       PrefRegistrySimple* registry);
 
   // Initialises OSCrypt.
   // This method should be called on the main UI thread before any calls to
-  // encryption or decryption.
-  static COMPONENT_EXPORT(OS_CRYPT) void Init(PrefService* local_state);
+  // encryption or decryption. Returns |true| if os_crypt successfully
+  // initialized.
+  static COMPONENT_EXPORT(OS_CRYPT) bool Init(PrefService* local_state);
 #endif
 
 #if defined(OS_MACOSX)
@@ -96,7 +97,9 @@ class OSCrypt {
   // mock Keychain. Use OSCryptMocker, instead of calling this method directly.
   static COMPONENT_EXPORT(OS_CRYPT) void UseLockedMockKeychainForTesting(
       bool use_locked);
+#endif
 
+#if defined(OS_WIN) || defined(OS_MACOSX)
   // Get the raw encryption key to be used for all AES encryption. Returns an
   // empty string in the case password access is denied or key generation error
   // occurs. This method is thread-safe.
@@ -106,6 +109,22 @@ class OSCrypt {
   // This method is thread-safe.
   static COMPONENT_EXPORT(OS_CRYPT) void SetRawEncryptionKey(
       const std::string& key);
+#endif
+
+#if defined(OS_WIN)
+  // For unit testing purposes we instruct the Encryptor to use a mock Key. The
+  // default is to use the real Key bound to profile. Use OSCryptMocker, instead
+  // of calling this method directly.
+  static COMPONENT_EXPORT(OS_CRYPT) void UseMockKeyForTesting(bool use_mock);
+
+  // For unit testing purposes, encrypt data using the older DPAPI method rather
+  // than using a session key.
+  static COMPONENT_EXPORT(OS_CRYPT) void SetLegacyEncryptionForTesting(
+      bool legacy);
+
+  // For unit testing purposes, reset the state of OSCrypt so a new key can be
+  // loaded via Init() or SetRawEncryptionkey().
+  static COMPONENT_EXPORT(OS_CRYPT) void ResetStateForTesting();
 #endif
 
  private:

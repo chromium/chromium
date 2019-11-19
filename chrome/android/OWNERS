@@ -1,5 +1,7 @@
 agrieve@chromium.org
+bsazonov@chromium.org
 dtrainor@chromium.org
+mthiesse@chromium.org
 nyquist@chromium.org
 tedchoc@chromium.org
 twellington@chromium.org
@@ -8,11 +10,15 @@ yusufo@chromium.org
 
 per-file static_initializers.gni=*
 per-file java_sources.gni=*
+per-file chrome_java_sources.gni=*
+per-file chrome_test_java_sources.gni=*
+per-file chrome_junit_test_java_sources.gni=*
+
+per-file BUILD.gn=estevenson@chromium.org
+per-file BUILD.gn=tiborg@chromium.org
+per-file BUILD.gn=wnwen@chromium.org
 # For VR Javatest changes
 per-file BUILD.gn=bsheedy@chromium.org
-
-per-file *.proguard_flags.expected=*
-per-file *.AndroidManifest.expected=*
 
 # Translation artifacts:
 per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS

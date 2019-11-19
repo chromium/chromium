@@ -1,0 +1,44 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: locked attribute</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<div id="container"></div>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+
+<script>
+async_test((t) => {
+  async function runTest() {
+    const container = document.getElementById("container");
+    const acquire_promise = setInvisible(container);
+    t.step(() => assert_equals(container.renderSubtree, INVISIBLE_NOT_ACTIVATABLE, "context before acquire finishes is locked"));
+
+    await acquire_promise;
+    t.step(() => assert_equals(container.renderSubtree, INVISIBLE_NOT_ACTIVATABLE, "context after acquire finishes is locked"));
+
+    const update_promise = container.updateRendering();
+    t.step(() => assert_equals(container.renderSubtree, INVISIBLE_NOT_ACTIVATABLE, "context during update is locked"));
+
+    await update_promise;
+    t.step(() => assert_equals(container.renderSubtree, INVISIBLE_NOT_ACTIVATABLE, "context after update is locked"));
+
+    const commit_promise = setVisible(container);
+    t.step(() => assert_equals(container.renderSubtree, "", "context during commit is unlocked"));
+
+    await commit_promise;
+    t.step(() => assert_equals(container.renderSubtree, "", "context after commit is unlocked"));
+
+    t.done();
+  }
+
+  window.onload = function() {
+    requestAnimationFrame(() => requestAnimationFrame(runTest));
+  };
+}, "locked attribute");
+</script>
+</html>

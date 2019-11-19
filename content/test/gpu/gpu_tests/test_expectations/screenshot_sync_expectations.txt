@@ -1,0 +1,24 @@
+# tags: [ linux mac win android ]
+# tags: [ debug ]
+# tags: [ amd amd-0x6613 intel intel-0x3e92 ]
+# tags: [ android-nexus-5x ]
+# tags: [ skia-renderer ]
+# results: [ Failure RetryOnFailure Skip ]
+
+crbug.com/599776 [ win amd ] ScreenshotSync_GPURasterWithCanvas [ RetryOnFailure ]
+crbug.com/599776 [ mac intel ] ScreenshotSync_GPURasterWithCanvas [ RetryOnFailure ]
+crbug.com/599776 [ mac intel ] ScreenshotSync_GPURasterWithDivs [ RetryOnFailure ]
+crbug.com/639489 [ win amd-0x6613 ] ScreenshotSync_GPURasterWithDivs [ Failure ]
+crbug.com/978492 [ mac amd ] ScreenshotSync_GPURasterWithDivs [ RetryOnFailure ]
+crbug.com/978492 [ mac amd ] ScreenshotSync_SWRasterWithCanvas [ RetryOnFailure ]
+
+# TODO(kbr): flakily timing out on this configuration.
+crbug.com/648369 [ linux debug intel ] * [ RetryOnFailure ]
+
+# Flakily getting a WebSocketException on Windows w/ Intel UHD 630
+crbug.com/986939 [ win intel-0x3e92 ] ScreenshotSync_GPURasterWithCanvas [ RetryOnFailure ]
+
+crbug.com/1006045 [ android android-nexus-5x skia-renderer ] ScreenshotSync_GPURasterWithCanvas [ Failure ]
+crbug.com/1006045 [ android android-nexus-5x skia-renderer ] ScreenshotSync_GPURasterWithDivs [ Failure ]
+crbug.com/1006045 [ android android-nexus-5x skia-renderer ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
+crbug.com/1006045 [ android android-nexus-5x skia-renderer ] ScreenshotSync_SWRasterWithDivs [ Failure ]

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+
+<style>
+  #container {
+    width:500px;
+    height:100px;
+    overflow:auto;
+    border:2px solid red;
+    padding:0px;
+  }
+  #spacer {
+    height:200px;
+  }
+</style>
+
+<ol>
+  <li>Middle-click inside the &lt;div&gt; with the red border below to activate autoscroll.</li>
+  <li>First, move the mouse such that you scroll the &lt;div&gt; in unavailable scroll direction and then in scrollable direction.</li>
+  <li>If bug repros, it won't scroll in available direction.</li>
+</ol>
+<div id="container">
+  <div id="spacer"></div>
+</div>
+
+<script>
+
+window.onload = async function()
+{
+    const container = document.getElementById("container");
+    const leftButton = 0;
+    const middleButton = 1;
+
+    promise_test (async (t) => {
+      await waitForCompositorCommit();
+      await mouseClickOn(container.offsetLeft + 10, container.offsetTop + 10, middleButton);
+      //Move mouse in unavailable direction first.
+      await mouseMoveTo(container.offsetLeft + (container.offsetWidth/2), container.offsetTop + 10);
+      //Move mouse in available direction to scroll the content.
+      await mouseMoveTo(container.offsetLeft + (container.offsetWidth/2), container.offsetTop + container.offsetHeight);
+
+      await waitFor(() => {
+        return container.scrollTop === container.scrollHeight - container.clientHeight;
+      }, "Failed to scroll container with middle-click autoscroll.");
+    }, "Container scrolled in available direction.");
+}
+</script>

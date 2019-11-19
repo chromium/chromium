@@ -1,0 +1,14 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Test Periodic Background Sync Permission.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/permissions-helper.js"></script>
+
+<script>
+  promise_test(test => {
+    internals.runtimeFlags.periodicBackgroundSyncEnabled = true;
+    return navigator.permissions.query({name:'periodic-background-sync'})
+      .then(result => assert_true(result instanceof PermissionStatus));
+  });
+</script>

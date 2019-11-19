@@ -5,10 +5,11 @@
 package com.android.webview.chromium;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.webkit.TracingConfig;
 import android.webkit.TracingController;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.OutputStream;
 import java.util.concurrent.Executor;

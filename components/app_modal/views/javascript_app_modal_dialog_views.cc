@@ -79,10 +79,6 @@ bool JavaScriptAppModalDialogViews::IsShowing() const {
 //////////////////////////////////////////////////////////////////////////////
 // JavaScriptAppModalDialogViews, views::DialogDelegate implementation:
 
-int JavaScriptAppModalDialogViews::GetDefaultDialogButton() const {
-  return ui::DIALOG_BUTTON_OK;
-}
-
 int JavaScriptAppModalDialogViews::GetDialogButtons() const {
   if (parent_->javascript_dialog_type() ==
       content::JAVASCRIPT_DIALOG_TYPE_ALERT)

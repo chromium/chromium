@@ -6,43 +6,8 @@
 
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller.h"
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller_delegate.h"
-#include "base/run_loop.h"
 #include "ui/aura/env.h"
-#include "ui/aura/event_injector.h"
-#include "ui/aura/window.h"
-#include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/widget/widget.h"
-
-namespace {
-
-// Update mouse location for |window|. For local window, update its aura::Env
-// directly. For remote window, update aura::Env by injecting a mouse move
-// event. EventInjector is used so that the Window Service side code under mash
-// sees the updated mouse location as well.
-void UpdateMouseLocation(aura::Window* window,
-                         const gfx::Point& screen_location,
-                         bool wait) {
-  if (window->env()->mode() == aura::Env::Mode::LOCAL) {
-    window->env()->SetLastMouseLocation(screen_location);
-    return;
-  }
-
-  ui::MouseEvent event(ui::ET_MOUSE_MOVED, screen_location, screen_location,
-                       ui::EventTimeForNow(), ui::EF_NONE, 0);
-  if (!wait) {
-    aura::EventInjector().Inject(window->GetHost(), &event);
-    return;
-  }
-
-  // Ensure the mouse event goes through when |wait| is set.
-  aura::EventInjector event_injector;
-  base::RunLoop run_loop;
-  event_injector.Inject(window->GetHost(), &event, run_loop.QuitClosure());
-  run_loop.Run();
-}
-
-}  // namespace
 
 namespace ash {
 
@@ -53,8 +18,7 @@ ImmersiveFullscreenControllerTestApi::ImmersiveFullscreenControllerTestApi(
 ImmersiveFullscreenControllerTestApi::~ImmersiveFullscreenControllerTestApi() =
     default;
 
-void ImmersiveFullscreenControllerTestApi::SetupForTest(
-    bool wait_for_mouse_event) {
+void ImmersiveFullscreenControllerTestApi::SetupForTest() {
   immersive_fullscreen_controller_->animations_disabled_for_test_ = true;
 
   // Move the mouse off of the top-of-window views so that it does not keep the
@@ -68,9 +32,7 @@ void ImmersiveFullscreenControllerTestApi::SetupForTest(
       bottommost_in_screen = bounds_in_screen[i].bottom();
   }
   gfx::Point cursor_pos(0, bottommost_in_screen + 10);
-  UpdateMouseLocation(
-      immersive_fullscreen_controller_->widget()->GetNativeView(), cursor_pos,
-      wait_for_mouse_event);
+  aura::Env::GetInstance()->SetLastMouseLocation(cursor_pos);
   immersive_fullscreen_controller_->UpdateLocatedEventRevealedLock();
 }
 

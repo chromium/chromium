@@ -2,28 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("manifest") {
+source_set("prefs") {
   sources = [
-    "manifest.cc",
-    "manifest.h",
+    "assistant_prefs.cc",
+    "assistant_prefs.h",
   ]
 
   deps = [
-    "//base",
-    "//chromeos/services/assistant/public/mojom",
-    "//services/service_manager/public/cpp",
-  ]
-}
-
-source_set("audio_decoder_manifest") {
-  sources = [
-    "audio_decoder_manifest.cc",
-    "audio_decoder_manifest.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chromeos/services/assistant/public/mojom",
-    "//services/service_manager/public/cpp",
+    "//components/prefs",
   ]
 }

@@ -3,15 +3,10 @@
  * found in the LICENSE file. */
 
 :host {
-  --title-font-size: 28px;
-  --title-font-distance-to-baseline: 7px;
-  --subtitle-font-size: 13px;
-  --subtitle-font-distance-to-baseline: 3px;
-  --subtitle-line-height: 18px;
-  --offline-gaia-dialog-width: 768px;
+  --offline-gaia-dialog-width: 100%;
+  --offline-gaia-animation-margin: 50%;
   display: flex;
   flex-direction: column;
-  font-size: 18px;
   min-height: 0;
   overflow: hidden;
   position: relative;
@@ -33,31 +28,23 @@
 }
 
 #title-container {
-  min-height: calc(64px + var(--title-font-distance-to-baseline));
+  padding-top: 20px;
 }
 
 h1 {
-  color: var(--google-grey-900);
-  font-size: var(--title-font-size);
-  font-weight: normal;
+  color: var(--oobe-header-text-color);
+  @apply --oobe-header-font;
   margin: 0;
 }
 
 #subtitle-container {
-  min-height: calc(64px - var(--title-font-distance-to-baseline));
+  padding-top: 8px;
 }
 
 #subtitle-container * {
-  color: var(--google-grey-900);
-  font-size: var(--subtitle-font-size);
+  color: var(--oobe-subheader-text-color);
   line-height: var(--subtitle-line-height);
-  /* margin 12px = 32 - line-height
-                   - 5 (line height - font size)
-                   + 3 (distance to baseline 13px)
-                 =  32 + font size + distance to baseline 13px */
-  margin: calc(32px - var(--subtitle-line-height)
-               - (var(--subtitle-line-height) - var(--subtitle-font-size))
-               + var(--subtitle-font-distance-to-baseline)) 0 0 0;
+  margin: 0;
 }
 
 /** ******** Animations ******* */
@@ -78,10 +65,10 @@ h1 {
 }
 
 .section {
-  --section-padding: 64px;
-  --section-width: calc(var(--offline-gaia-dialog-width)
-                         - 2 * var(--section-padding));
+  --section-padding: var(--oobe-dialog-content-padding);
+  --section-width: var(--offline-gaia-animation-margin);
   animation-duration: 700ms;
+  box-sizing: border-box;
   display: none;
   /** For sliding to work correctly we need fixed size of moving objects. */
   max-width: var(--section-width);
@@ -91,7 +78,7 @@ h1 {
 
 @keyframes show-from-left {
   from {
-    margin-left: -768px; /** Full dialog width negative. */
+    margin-left: calc(-1 * var(--offline-gaia-animation-margin));
   }
   to {
     margin-left: 0;
@@ -100,7 +87,7 @@ h1 {
 
 @keyframes show-from-right {
   from {
-    margin-left: var(--offline-gaia-dialog-width);
+    margin-left: var(--offline-gaia-animation-margin);
   }
   to {
     margin-left: 0;
@@ -112,7 +99,7 @@ h1 {
     margin-left: 0;
   }
   to {
-    margin-left: calc(-1 * var(--offline-gaia-dialog-width));
+    margin-left: calc(-1 * var(--offline-gaia-animation-margin));
   }
 }
 
@@ -121,7 +108,7 @@ h1 {
     margin-left: 0;
   }
   to {
-    margin-left: var(--offline-gaia-dialog-width);
+    margin-left: var(--offline-gaia-animation-margin);
   }
 }
 

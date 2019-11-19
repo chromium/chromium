@@ -15,17 +15,19 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
 #include "base/values.h"
+#import "ios/web/js_messaging/web_frames_manager_impl.h"
 #import "ios/web/navigation/navigation_manager_delegate.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
-#import "ios/web/public/java_script_dialog_callback.h"
-#include "ios/web/public/java_script_dialog_type.h"
-#include "ios/web/public/web_state/web_frame.h"
-#import "ios/web/public/web_state/web_state.h"
-#import "ios/web/public/web_state/web_state_delegate.h"
-#import "ios/web/public/web_state/web_state_policy_decider.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/navigation/web_state_policy_decider.h"
+#import "ios/web/public/ui/java_script_dialog_callback.h"
+#include "ios/web/public/ui/java_script_dialog_type.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_delegate.h"
 #include "url/gurl.h"
 
 @class CRWSessionStorage;
@@ -36,10 +38,6 @@
 @protocol CRWWebViewNavigationProxy;
 @class UIViewController;
 
-namespace net {
-class HttpResponseHeaders;
-}
-
 namespace web {
 
 class BrowserState;
@@ -49,7 +47,6 @@ class NavigationContextImpl;
 class NavigationManager;
 class SessionCertificatePolicyCacheImpl;
 class WebInterstitialImpl;
-class WebStateInterfaceProvider;
 class WebUIIOS;
 
 // Implementation of WebState.
@@ -64,7 +61,9 @@ class WebUIIOS;
 //  - SessionWindows are transient owners, passing ownership into WebControllers
 //    during session restore, and discarding owned copies of WebStateImpls after
 //    writing them out for session saves.
-class WebStateImpl : public WebState, public NavigationManagerDelegate {
+class WebStateImpl : public WebState,
+                     public NavigationManagerDelegate,
+                     public WebFramesManagerDelegate {
  public:
   // Constructor for WebStateImpls created for new sessions.
   explicit WebStateImpl(const CreateParams& params);
@@ -94,12 +93,10 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   void OnRenderProcessGone();
 
   // Called when a script command is received.
-  // Returns true if the command was handled.
-  bool OnScriptCommandReceived(const std::string& command,
+  void OnScriptCommandReceived(const std::string& command,
                                const base::DictionaryValue& value,
-                               const GURL& url,
+                               const GURL& page_url,
                                bool user_is_interacting,
-                               bool is_main_frame,
                                web::WebFrame* sender_frame);
 
   void SetIsLoading(bool is_loading);
@@ -114,6 +111,10 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   const NavigationManagerImpl& GetNavigationManagerImpl() const;
   NavigationManagerImpl& GetNavigationManagerImpl();
 
+  // Returns the associated WebFramesManagerImpl.
+  const WebFramesManagerImpl& GetWebFramesManagerImpl() const;
+  WebFramesManagerImpl& GetWebFramesManagerImpl();
+
   // Returns the SessionCertificatePolicyCacheImpl for this WebStateImpl.
   const SessionCertificatePolicyCacheImpl&
   GetSessionCertificatePolicyCacheImpl() const;
@@ -127,26 +128,6 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   void ClearWebUI();
   // Returns true if there is a WebUI active.
   bool HasWebUI();
-  // Processes a message from a WebUI displayed at the given URL.
-  void ProcessWebUIMessage(const GURL& source_url,
-                           const std::string& message,
-                           const base::ListValue& args);
-  // Invokes page load for WebUI URL with HTML. URL must have an application
-  // specific scheme.
-  virtual void LoadWebUIHtml(const base::string16& html, const GURL& url);
-
-  // Gets the HTTP response headers associated with the current page.
-  // NOTE: For a WKWebView-based WebState, these headers are generated via
-  // net::CreateHeadersFromNSHTTPURLResponse(); see comments in
-  // http_response_headers_util.h for limitations.
-  net::HttpResponseHeaders* GetHttpResponseHeaders() const;
-
-  // Called when HTTP response headers are received.
-  // |resource_url| is the URL associated with the headers.
-  // This function has no visible effects until UpdateHttpResponseHeaders() is
-  // called.
-  void OnHttpResponseHeadersReceived(net::HttpResponseHeaders* response_headers,
-                                     const GURL& resource_url);
 
   // Explicitly sets the MIME type, overwriting any MIME type that was set by
   // headers. Note that this should be called after OnNavigationCommitted, as
@@ -175,10 +156,9 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   void CommitPreviewingViewController(
       UIViewController* previewing_view_controller);
 
-  // Called when a new frame is available in the web_state.
-  void OnWebFrameAvailable(web::WebFrame* frame);
-  // Called when a frame is removed  in the web_state
-  void OnWebFrameUnavailable(web::WebFrame* frame);
+  // WebFramesManagerDelegate.
+  void OnWebFrameAvailable(web::WebFrame* frame) override;
+  void OnWebFrameUnavailable(web::WebFrame* frame) override;
 
   // WebState:
   WebStateDelegate* GetDelegate() override;
@@ -188,11 +168,14 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   UIView* GetView() override;
   void WasShown() override;
   void WasHidden() override;
+  void SetKeepRenderProcessAlive(bool keep_alive) override;
   BrowserState* GetBrowserState() const override;
   void OpenURL(const WebState::OpenURLParams& params) override;
   void Stop() override;
   const NavigationManager* GetNavigationManager() const override;
   NavigationManager* GetNavigationManager() override;
+  const WebFramesManager* GetWebFramesManager() const override;
+  WebFramesManager* GetWebFramesManager() override;
   const SessionCertificatePolicyCache* GetSessionCertificatePolicyCache()
       const override;
   SessionCertificatePolicyCache* GetSessionCertificatePolicyCache() override;
@@ -217,17 +200,15 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const override;
   bool IsShowingWebInterstitial() const override;
   WebInterstitial* GetWebInterstitial() const override;
-  void AddScriptCommandCallback(const ScriptCommandCallback& callback,
-                                const std::string& command_prefix) override;
-  void RemoveScriptCommandCallback(const std::string& command_prefix) override;
+  std::unique_ptr<ScriptCommandSubscription> AddScriptCommandCallback(
+      const ScriptCommandCallback& callback,
+      const std::string& command_prefix) override;
   id<CRWWebViewProxy> GetWebViewProxy() const override;
-  WebStateInterfaceProvider* GetWebStateInterfaceProvider() override;
   void DidChangeVisibleSecurityState() override;
-  void BindInterfaceRequestFromMainFrame(
-      const std::string& interface_name,
-      mojo::ScopedMessagePipeHandle interface_pipe) override;
+  InterfaceBinder* GetInterfaceBinderForMainFrame() override;
   bool HasOpener() const override;
   void SetHasOpener(bool has_opener) override;
+  bool CanTakeSnapshot() const override;
   void TakeSnapshot(const gfx::RectF& rect, SnapshotCallback callback) override;
   void AddObserver(WebStateObserver* observer) override;
   void RemoveObserver(WebStateObserver* observer) override;
@@ -273,6 +254,7 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
 
   // NavigationManagerDelegate:
   void ClearTransientContent() override;
+  void ClearDialogs() override;
   void RecordPageStateInNavigationItem() override;
   void OnGoToIndexSameDocumentNavigation(NavigationInitiationType type,
                                          bool has_user_gesture) override;
@@ -283,11 +265,6 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   void OnNavigationItemsPruned(size_t pruned_item_count) override;
   void OnNavigationItemCommitted(NavigationItem* item) override;
 
-  // Updates the HTTP response headers for the main page using the headers
-  // passed to the OnHttpResponseHeadersReceived() function below.
-  // GetHttpResponseHeaders() can be used to get the headers.
-  void UpdateHttpResponseHeaders(const GURL& url);
-
   WebState* GetWebState() override;
   id<CRWWebViewNavigationProxy> GetWebViewNavigationProxy() const override;
   void GoToBackForwardListItem(WKBackForwardListItem* wk_item,
@@ -295,6 +272,7 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
                                NavigationInitiationType type,
                                bool has_user_gesture) override;
   void RemoveWebView() override;
+  NavigationItemImpl* GetPendingItem() override;
 
  protected:
   void AddPolicyDecider(WebStatePolicyDecider* decider) override;
@@ -304,6 +282,13 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   // The SessionStorageBuilder functions require access to private variables of
   // WebStateImpl.
   friend SessionStorageBuilder;
+
+  // Called when a dialog presented by the JavaScriptDialogPresenter is
+  // dismissed.  |original_callback| is the callback provided to
+  // RunJavaScriptDialog(), and is executed with |success| and |user_input|.
+  void JavaScriptDialogClosed(DialogClosedCallback callback,
+                              bool success,
+                              NSString* user_input);
 
   // Creates a WebUIIOS object for |url| that is owned by the caller. Returns
   // nullptr if |url| does not correspond to a WebUI page.
@@ -330,6 +315,9 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   // The NavigationManagerImpl that stores session info for this WebStateImpl.
   std::unique_ptr<NavigationManagerImpl> navigation_manager_;
 
+  // The associated WebFramesManagerImpl.
+  WebFramesManagerImpl web_frames_manager_;
+
   // The SessionCertificatePolicyCacheImpl that stores the certificate policy
   // information for this WebStateImpl.
   std::unique_ptr<SessionCertificatePolicyCacheImpl> certificate_policy_cache_;
@@ -348,12 +336,6 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   // code, hence the ObserverList.
   base::ObserverList<WebStatePolicyDecider, true>::Unchecked policy_deciders_;
 
-  // Map of all the HTTP response headers received, for each URL.
-  // This map is cleared after each page load, and only the headers of the main
-  // page are used.
-  std::map<GURL, scoped_refptr<net::HttpResponseHeaders> >
-      response_headers_map_;
-  scoped_refptr<net::HttpResponseHeaders> http_response_headers_;
   std::string mime_type_;
 
   // Weak pointer to the interstitial page being displayed, if any.
@@ -363,14 +345,12 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   base::string16 empty_string16_;
 
   // Callbacks associated to command prefixes.
-  std::map<std::string, ScriptCommandCallback> script_command_callbacks_;
+  std::map<std::string, base::CallbackList<ScriptCommandCallbackSignature>>
+      script_command_callbacks_;
 
   // Whether this WebState has an opener.  See
   // WebState::CreateParams::created_with_opener_ for more details.
   bool created_with_opener_;
-
-  // Mojo interface registry for this WebState.
-  std::unique_ptr<WebStateInterfaceProvider> web_state_interface_provider_;
 
   // The most recently restored session history that has not yet committed in
   // the WKWebView. This is reset in OnNavigationItemCommitted().
@@ -381,6 +361,15 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   // navigations, so this cache will be used to avoid running expensive favicon
   // fetching JavaScript.
   std::vector<web::FaviconURL> cached_favicon_urls_;
+
+  // Whether a JavaScript dialog is currently being presented.
+  bool running_javascript_dialog_ = false;
+
+  // The InterfaceBinder exposed by WebStateImpl. Used to handle Mojo interface
+  // requests from the main frame.
+  InterfaceBinder interface_binder_{this};
+
+  base::WeakPtrFactory<WebStateImpl> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(WebStateImpl);
 };

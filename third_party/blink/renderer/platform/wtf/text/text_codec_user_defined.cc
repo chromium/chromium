@@ -27,7 +27,6 @@
 
 #include <memory>
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -66,9 +65,9 @@ String TextCodecUserDefined::Decode(const char* bytes,
 }
 
 template <typename CharType>
-static CString EncodeComplexUserDefined(const CharType* characters,
-                                        wtf_size_t length,
-                                        UnencodableHandling handling) {
+static std::string EncodeComplexUserDefined(const CharType* characters,
+                                            wtf_size_t length,
+                                            UnencodableHandling handling) {
   DCHECK_NE(handling, kNoUnencodables);
   wtf_size_t target_length = length;
   Vector<char> result(target_length);
@@ -104,22 +103,21 @@ static CString EncodeComplexUserDefined(const CharType* characters,
     }
   }
 
-  return CString(bytes, result_length);
+  return std::string(bytes, result_length);
 }
 
 template <typename CharType>
-CString TextCodecUserDefined::EncodeCommon(const CharType* characters,
-                                           wtf_size_t length,
-                                           UnencodableHandling handling) {
-  char* bytes;
-  CString result = CString::CreateUninitialized(length, bytes);
+std::string TextCodecUserDefined::EncodeCommon(const CharType* characters,
+                                               wtf_size_t length,
+                                               UnencodableHandling handling) {
+  std::string result(length, '\0');
 
   // Convert the string a fast way and simultaneously do an efficient check to
   // see if it's all ASCII.
   UChar ored = 0;
   for (wtf_size_t i = 0; i < length; ++i) {
     UChar c = characters[i];
-    bytes[i] = static_cast<char>(c);
+    result[i] = static_cast<char>(c);
     ored |= c;
   }
 
@@ -130,15 +128,15 @@ CString TextCodecUserDefined::EncodeCommon(const CharType* characters,
   return EncodeComplexUserDefined(characters, length, handling);
 }
 
-CString TextCodecUserDefined::Encode(const UChar* characters,
-                                     wtf_size_t length,
-                                     UnencodableHandling handling) {
+std::string TextCodecUserDefined::Encode(const UChar* characters,
+                                         wtf_size_t length,
+                                         UnencodableHandling handling) {
   return EncodeCommon(characters, length, handling);
 }
 
-CString TextCodecUserDefined::Encode(const LChar* characters,
-                                     wtf_size_t length,
-                                     UnencodableHandling handling) {
+std::string TextCodecUserDefined::Encode(const LChar* characters,
+                                         wtf_size_t length,
+                                         UnencodableHandling handling) {
   return EncodeCommon(characters, length, handling);
 }
 

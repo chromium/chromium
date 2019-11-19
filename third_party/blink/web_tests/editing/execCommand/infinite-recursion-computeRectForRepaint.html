@@ -1,7 +1,7 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-    if (window.testRunner)
-        testRunner.dumpAsText();
-
     function go() {
         document.execCommand("selectall", false);
         document.designMode="on";
@@ -41,5 +41,5 @@
         document.execCommand("insertorderedlist");
     }
 </script>
-<body onload="go()">
+<body onload="test(go)">
 </body>

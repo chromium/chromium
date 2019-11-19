@@ -5,27 +5,46 @@
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
 
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/layout_replaced.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
-#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
-#include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/paint/element_timing_utils.h"
+#include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
-// TODO(npm): decide on a reasonable value for the threshold.
-constexpr const float kImageTimingSizeThreshold = 0.15f;
+namespace internal {
+
+// "CORE_EXPORT" is needed to make this function visible to tests.
+bool CORE_EXPORT
+IsExplicitlyRegisteredForTiming(const LayoutObject* layout_object) {
+  DCHECK(layout_object);
+  const auto* element = DynamicTo<Element>(layout_object->GetNode());
+  if (!element)
+    return false;
+
+  // If the element has no 'elementtiming' attribute, do not
+  // generate timing entries for the element. See
+  // https://wicg.github.io/element-timing/#sec-modifications-DOM for report
+  // vs. ignore criteria.
+  return element->FastHasAttribute(html_names::kElementtimingAttr);
+}
+
+}  // namespace internal
 
 // static
 const char ImageElementTiming::kSupplementName[] = "ImageElementTiming";
+
+AtomicString ImagePaintString() {
+  DEFINE_STATIC_LOCAL(const AtomicString, kImagePaint, ("image-paint"));
+  return kImagePaint;
+}
 
 // static
 ImageElementTiming& ImageElementTiming::From(LocalDOMWindow& window) {
@@ -39,106 +58,191 @@ ImageElementTiming& ImageElementTiming::From(LocalDOMWindow& window) {
 }
 
 ImageElementTiming::ImageElementTiming(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window) {
-  DCHECK(origin_trials::ElementTimingEnabled(GetSupplementable()->document()));
+    : Supplement<LocalDOMWindow>(window) {}
+
+void ImageElementTiming::NotifyImageFinished(
+    const LayoutObject& layout_object,
+    const ImageResourceContent* cached_image) {
+  if (!internal::IsExplicitlyRegisteredForTiming(&layout_object))
+    return;
+
+  const auto& insertion_result = images_notified_.insert(
+      std::make_pair(&layout_object, cached_image), ImageInfo());
+  if (insertion_result.is_new_entry)
+    insertion_result.stored_value->value.load_time_ = base::TimeTicks::Now();
+}
+
+void ImageElementTiming::NotifyBackgroundImageFinished(
+    const StyleFetchedImage* style_image) {
+  const auto& insertion_result =
+      background_image_timestamps_.insert(style_image, base::TimeTicks());
+  if (insertion_result.is_new_entry)
+    insertion_result.stored_value->value = base::TimeTicks::Now();
+}
+
+base::TimeTicks ImageElementTiming::GetBackgroundImageLoadTime(
+    const StyleFetchedImage* style_image) {
+  return background_image_timestamps_.at(style_image);
 }
 
 void ImageElementTiming::NotifyImagePainted(
     const LayoutObject* layout_object,
     const ImageResourceContent* cached_image,
-    const PaintLayer* painting_layer) {
-  auto result = images_notified_.insert(layout_object);
-  if (!result.is_new_entry)
+    const PropertyTreeState& current_paint_chunk_properties) {
+  DCHECK(layout_object);
+
+  if (!internal::IsExplicitlyRegisteredForTiming(layout_object))
     return;
 
+  auto it = images_notified_.find(std::make_pair(layout_object, cached_image));
+  DCHECK(it != images_notified_.end());
+  if (!it->value.is_painted_ && cached_image) {
+    it->value.is_painted_ = true;
+    NotifyImagePaintedInternal(layout_object->GetNode(), *layout_object,
+                               *cached_image, current_paint_chunk_properties,
+                               it->value.load_time_);
+  }
+}
 
+void ImageElementTiming::NotifyImagePaintedInternal(
+    Node* node,
+    const LayoutObject& layout_object,
+    const ImageResourceContent& cached_image,
+    const PropertyTreeState& current_paint_chunk_properties,
+    base::TimeTicks load_time) {
   LocalFrame* frame = GetSupplementable()->GetFrame();
-  DCHECK(frame == layout_object->GetDocument().GetFrame());
-  if (!frame || !cached_image)
+  DCHECK(frame == layout_object.GetDocument().GetFrame());
+  DCHECK(node);
+  // Background images could cause |node| to not be an element. For example,
+  // style applied to body causes this node to be a Document Node. Therefore,
+  // bail out if that is the case.
+  auto* element = DynamicTo<Element>(node);
+  if (!frame || !element)
     return;
 
-  // Skip the computations below if the element is not same origin.
-  DCHECK(GetSupplementable()->document() == &layout_object->GetDocument());
-  DCHECK(layout_object->GetDocument().GetSecurityOrigin());
-  if (!Performance::PassesTimingAllowCheck(
-          cached_image->GetResponse(),
-          *layout_object->GetDocument().GetSecurityOrigin(),
-          &layout_object->GetDocument()))
+  // We do not expose elements in shadow trees, for now. We might expose
+  // something once the discussions at
+  // https://github.com/WICG/element-timing/issues/3 and
+  // https://github.com/w3c/webcomponents/issues/816 have been resolved.
+  if (node->IsInShadowTree())
     return;
 
-  // Compute the viewport rect.
-  WebLayerTreeView* layerTreeView =
-      frame->GetChromeClient().GetWebLayerTreeView(frame);
-  if (!layerTreeView)
+  // Do not expose elements which should have effective zero opacity.
+  // We can afford to call this expensive method because this is only called
+  // once per image annotated with the elementtiming attribute.
+  if (!layout_object.HasNonZeroEffectiveOpacity())
     return;
 
-  IntRect viewport = frame->View()->LayoutViewport()->VisibleContentRect();
-
-  // Compute the visible part of the image rect.
-  LayoutRect image_visual_rect = layout_object->FirstFragment().VisualRect();
-  const auto& local_transform = painting_layer->GetLayoutObject()
-                                    .FirstFragment()
-                                    .LocalBorderBoxProperties()
-                                    .Transform();
-  const auto& ancestor_transform = painting_layer->GetLayoutObject()
-                                       .View()
-                                       ->FirstFragment()
-                                       .LocalBorderBoxProperties()
-                                       .Transform();
-  FloatRect new_visual_rect_abs = FloatRect(image_visual_rect);
-  GeometryMapper::SourceToDestinationRect(local_transform, ancestor_transform,
-                                          new_visual_rect_abs);
-  IntRect visible_new_visual_rect = RoundedIntRect(new_visual_rect_abs);
-  visible_new_visual_rect.Intersect(viewport);
-
-  const Element* element = ToElement(layout_object->GetNode());
+  FloatRect intersection_rect = ElementTimingUtils::ComputeIntersectionRect(
+      frame, layout_object.FirstFragment().VisualRect(),
+      current_paint_chunk_properties);
   const AtomicString attr =
       element->FastGetAttribute(html_names::kElementtimingAttr);
-  // Do not create an entry if 'elementtiming' is not present or the image is
-  // below a certain size threshold.
-  if (attr.IsEmpty() &&
-      visible_new_visual_rect.Size().Area() <=
-          viewport.Size().Area() * kImageTimingSizeThreshold) {
+
+  const AtomicString& id = element->GetIdAttribute();
+
+  const KURL& url = cached_image.Url();
+  DCHECK(GetSupplementable()->document() == &layout_object.GetDocument());
+  DCHECK(layout_object.GetDocument().GetSecurityOrigin());
+  // It's ok to expose rendering timestamp for data URIs so exclude those from
+  // the Timing-Allow-Origin check.
+  bool tainted = false;
+  if (!url.ProtocolIsData() &&
+      !Performance::PassesTimingAllowCheck(
+          cached_image.GetResponse(),
+          *layout_object.GetDocument().GetSecurityOrigin(),
+          &layout_object.GetDocument(), &tainted)) {
+    WindowPerformance* performance =
+        DOMWindowPerformance::performance(*GetSupplementable());
+    if (performance) {
+      // Create an entry with a |startTime| of 0.
+      performance->AddElementTiming(
+          ImagePaintString(), url.GetString(), intersection_rect,
+          base::TimeTicks(), load_time, attr,
+          cached_image.IntrinsicSize(kDoNotRespectImageOrientation), id,
+          element);
+    }
     return;
   }
 
-  // Compute the |name| for the entry. Use the 'elementtiming' attribute. If
-  // empty, use the ID. If empty, use 'img'.
-  AtomicString name = attr;
-  if (name.IsEmpty())
-    name = element->FastGetAttribute(html_names::kIdAttr);
-  if (name.IsEmpty())
-    name = "img";
-  element_timings_.emplace_back(name, visible_new_visual_rect);
+  // If the image URL is a data URL ("data:image/..."), then the |name| of the
+  // PerformanceElementTiming entry should be the URL trimmed to 100 characters.
+  // If it is not, then pass in the full URL regardless of the length to be
+  // consistent with Resource Timing.
+  const String& image_url = url.ProtocolIsData()
+                                ? url.GetString().Left(kInlineImageMaxChars)
+                                : url.GetString();
+  element_timings_.emplace_back(MakeGarbageCollected<ElementTimingInfo>(
+      image_url, intersection_rect, load_time, attr,
+      cached_image.IntrinsicSize(kDoNotRespectImageOrientation), id, element));
   // Only queue a swap promise when |element_timings_| was empty. All of the
   // records in |element_timings_| will be processed when the promise succeeds
   // or fails, and at that time the vector is cleared.
   if (element_timings_.size() == 1) {
-    layerTreeView->NotifySwapTime(ConvertToBaseCallback(
-        CrossThreadBind(&ImageElementTiming::ReportImagePaintSwapTime,
-                        WrapCrossThreadWeakPersistent(this))));
+    frame->GetChromeClient().NotifySwapTime(
+        *frame,
+        CrossThreadBindOnce(&ImageElementTiming::ReportImagePaintSwapTime,
+                            WrapCrossThreadWeakPersistent(this)));
   }
 }
 
-void ImageElementTiming::ReportImagePaintSwapTime(WebLayerTreeView::SwapResult,
+void ImageElementTiming::NotifyBackgroundImagePainted(
+    Node* node,
+    const StyleFetchedImage* background_image,
+    const PropertyTreeState& current_paint_chunk_properties) {
+  DCHECK(node);
+  DCHECK(background_image);
+
+  const LayoutObject* layout_object = node->GetLayoutObject();
+  if (!layout_object)
+    return;
+
+  if (!internal::IsExplicitlyRegisteredForTiming(layout_object))
+    return;
+
+  const ImageResourceContent* cached_image = background_image->CachedImage();
+  if (!cached_image || !cached_image->IsLoaded())
+    return;
+
+  auto it = background_image_timestamps_.find(background_image);
+  DCHECK(it != background_image_timestamps_.end());
+
+  ImageInfo& info =
+      images_notified_
+          .insert(std::make_pair(layout_object, cached_image), ImageInfo())
+          .stored_value->value;
+  if (!info.is_painted_) {
+    info.is_painted_ = true;
+    NotifyImagePaintedInternal(layout_object->GetNode(), *layout_object,
+                               *cached_image, current_paint_chunk_properties,
+                               it->value);
+  }
+}
+
+void ImageElementTiming::ReportImagePaintSwapTime(WebWidgetClient::SwapResult,
                                                   base::TimeTicks timestamp) {
   WindowPerformance* performance =
       DOMWindowPerformance::performance(*GetSupplementable());
-  if (performance && (performance->HasObserverFor(PerformanceEntry::kElement) ||
-                      performance->ShouldBufferEntries())) {
+  if (performance) {
     for (const auto& element_timing : element_timings_) {
-      performance->AddElementTiming(element_timing.name, element_timing.rect,
-                                    timestamp);
+      performance->AddElementTiming(
+          ImagePaintString(), element_timing->url, element_timing->rect,
+          timestamp, element_timing->response_end, element_timing->identifier,
+          element_timing->intrinsic_size, element_timing->id,
+          element_timing->element);
     }
   }
   element_timings_.clear();
 }
 
-void ImageElementTiming::NotifyWillBeDestroyed(const LayoutObject* image) {
-  images_notified_.erase(image);
+void ImageElementTiming::NotifyImageRemoved(const LayoutObject* layout_object,
+                                            const ImageResourceContent* image) {
+  images_notified_.erase(std::make_pair(layout_object, image));
 }
 
 void ImageElementTiming::Trace(blink::Visitor* visitor) {
+  visitor->Trace(element_timings_);
+  visitor->Trace(background_image_timestamps_);
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
 

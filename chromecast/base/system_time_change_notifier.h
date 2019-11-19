@@ -32,9 +32,6 @@ class SystemTimeChangeNotifier {
 
   virtual ~SystemTimeChangeNotifier();
 
-  virtual void Initialize() = 0;
-  virtual void Finalize() = 0;
-
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -62,10 +59,6 @@ class SystemTimeChangeNotifierPeriodicMonitor
   explicit SystemTimeChangeNotifierPeriodicMonitor(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
   ~SystemTimeChangeNotifierPeriodicMonitor() override;
-
-  // SystemTimeChangeNotifier implementation:
-  void Initialize() override;
-  void Finalize() override;
 
   // For unittests.
   void set_fake_now_for_testing(base::Time now) { fake_now_ = now; }

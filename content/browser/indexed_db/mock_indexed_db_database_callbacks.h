@@ -17,11 +17,11 @@ class MockIndexedDBDatabaseCallbacks : public IndexedDBDatabaseCallbacks {
  public:
   MockIndexedDBDatabaseCallbacks();
 
-  void OnVersionChange(int64_t old_version, int64_t new_version) override {}
+  void OnVersionChange(int64_t old_version, int64_t new_version) override;
   void OnForcedClose() override;
   void OnAbort(const IndexedDBTransaction& transaction,
                const IndexedDBDatabaseError& error) override;
-  void OnComplete(const IndexedDBTransaction& transaction) override {}
+  void OnComplete(const IndexedDBTransaction& transaction) override;
 
   bool abort_called() const { return abort_called_; }
   bool forced_close_called() const { return forced_close_called_; }

@@ -47,32 +47,32 @@ TextStream& TextStream::operator<<(bool b) {
   return *this << (b ? "1" : "0");
 }
 
-TextStream& TextStream::operator<<(int i) {
+TextStream& TextStream::operator<<(int16_t i) {
   text_.AppendNumber(i);
   return *this;
 }
 
-TextStream& TextStream::operator<<(unsigned i) {
+TextStream& TextStream::operator<<(uint16_t i) {
   text_.AppendNumber(i);
   return *this;
 }
 
-TextStream& TextStream::operator<<(long i) {
+TextStream& TextStream::operator<<(int32_t i) {
   text_.AppendNumber(i);
   return *this;
 }
 
-TextStream& TextStream::operator<<(unsigned long i) {
+TextStream& TextStream::operator<<(uint32_t i) {
   text_.AppendNumber(i);
   return *this;
 }
 
-TextStream& TextStream::operator<<(long long i) {
+TextStream& TextStream::operator<<(int64_t i) {
   text_.AppendNumber(i);
   return *this;
 }
 
-TextStream& TextStream::operator<<(unsigned long long i) {
+TextStream& TextStream::operator<<(uint64_t i) {
   text_.AppendNumber(i);
   return *this;
 }

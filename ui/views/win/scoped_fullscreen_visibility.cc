@@ -9,7 +9,7 @@
 namespace views {
 
 // static
-std::map<HWND, int>* ScopedFullscreenVisibility::full_screen_windows_ = NULL;
+std::map<HWND, int>* ScopedFullscreenVisibility::full_screen_windows_ = nullptr;
 
 ScopedFullscreenVisibility::ScopedFullscreenVisibility(HWND hwnd)
     : hwnd_(hwnd) {
@@ -24,9 +24,9 @@ ScopedFullscreenVisibility::ScopedFullscreenVisibility(HWND hwnd)
     // ShowWindow(SW_HIDE) will automatically activate another window).  This
     // code can be called while a window is being deactivated, and activating
     // another window will screw up the activation that is already in progress.
-    SetWindowPos(hwnd_, NULL, 0, 0, 0, 0,
+    SetWindowPos(hwnd_, nullptr, 0, 0, 0, 0,
                  SWP_HIDEWINDOW | SWP_NOACTIVATE | SWP_NOMOVE |
-                 SWP_NOREPOSITION | SWP_NOSIZE | SWP_NOZORDER);
+                     SWP_NOREPOSITION | SWP_NOSIZE | SWP_NOZORDER);
   }
 }
 
@@ -39,7 +39,7 @@ ScopedFullscreenVisibility::~ScopedFullscreenVisibility() {
   }
   if (full_screen_windows_->empty()) {
     delete full_screen_windows_;
-    full_screen_windows_ = NULL;
+    full_screen_windows_ = nullptr;
   }
 }
 

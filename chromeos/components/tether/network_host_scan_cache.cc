@@ -118,7 +118,7 @@ bool NetworkHostScanCache::HasConnectedToHost(
           tether_network_guid);
   std::vector<std::string> connected_device_ids =
       tether_host_response_recorder_->GetPreviouslyConnectedHostIds();
-  return base::ContainsValue(connected_device_ids, device_id);
+  return base::Contains(connected_device_ids, device_id);
 }
 
 }  // namespace tether

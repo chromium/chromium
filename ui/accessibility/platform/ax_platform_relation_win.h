@@ -79,4 +79,4 @@ class AXPlatformRelationWin : public CComObjectRootEx<CComMultiThreadModel>,
 
 }  // namespace ui
 
-#endif  // UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_WIN_H_
+#endif  // UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_RELATION_WIN_H_

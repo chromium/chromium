@@ -196,12 +196,6 @@
       <message name="IDS_EXTENSION_MANIFEST_INVALID" desc="">
         Manifest file is invalid
       </message>
-      <message name="IDS_EXTENSION_PACKAGE_DIRECTORY_ERROR" desc="Message for when an error occurs while trying to create the temporary directory needed to unzip a packaged extension or app.">
-        Could not create directory for unzipping: '<ph name="DIRECTORY_PATH">$1<ex>profile/Extensions/CRX_INSTALL</ex></ph>'
-      </message>
-      <message name="IDS_EXTENSION_PACKAGE_IMAGE_PATH_ERROR" desc="Error message for when a packaged extension or app contains a reference to an image that could be outside the package.">
-        Illegal path (absolute or relative with '..'): '<ph name="IMAGE_PATH">$1<ex>../image.png</ex></ph>'
-      </message>
       <message name="IDS_EXTENSION_PACKAGE_IMAGE_ERROR" desc="Message for when an error occurs while trying to decode an image found within a packaged extension or app.">
         Could not decode image: '<ph name="IMAGE_NAME">$1<ex>image.png</ex></ph>'
       </message>
@@ -237,9 +231,6 @@
       </message>
       <message name="IDS_EXTENSION_PUBLIC_KEY_FAILED_TO_EXPORT" desc="Warning displayed in pack dialog when exporting a public key failed.">
         Failed to export public key.
-      </message>
-      <message name="IDS_LOAD_STATE_PARAMETER_EXTENSION" desc="Parameter to IDS_LOAD_STATE_WAITING_FOR_DELEGATE when we are waiting for an extension. The variable is the extension name.">
-        extension <ph name="EXTENSION_NAME">$1<ex>Adblock</ex></ph>
       </message>
       <message name="IDS_EXTENSION_SHARING_VIOLATION" desc="Warning displayed in pack dialog when a sharing violation is found during creation of the crx.">
         Failed to replace crx file. Check to see if the file is in use.
@@ -323,9 +314,6 @@
       </message>
       <message name="IDS_EXTENSION_TASK_MANAGER_EXTENSIONOPTIONS_TAG_PREFIX" desc="The prefix for a guest page loaded in an extensionoptions tag in the Task Manager">
         Options: <ph name="EXTENSIONOPTIONS_TAG_NAME">$1<ex>Google Hangouts</ex></ph>
-      </message>
-      <message name="IDS_EXTENSION_TASK_MANAGER_EXTENSIONVIEW_TAG_PREFIX" desc="The prefix for a guest page loaded in an extensionview tag in the Task Manager">
-        ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME">$1<ex>Google Hangouts</ex></ph>
       </message>
       <message name="IDS_EXTENSION_TASK_MANAGER_MIMEHANDLERVIEW_TAG_PREFIX" desc="The prefix for a guest page loaded in a mime handler view page in the task manager">
         Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME">$1<ex>My mime handler view</ex></ph>

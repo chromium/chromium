@@ -52,19 +52,9 @@ enum PromptTypeHistogramValue {
   PROMPT_TYPE_MAX,
 };
 
-// These values are used to record the method used to prompt the user to reboot
-// the machine. Must be in sync with the SoftwareReporterRebootPromptType enum
-// from enums.xml.
-enum RebootPromptType {
-  REBOOT_PROMPT_TYPE_OPEN_SETTINGS_PAGE = 1,
-  REBOOT_PROMPT_TYPE_SHOW_MODAL_DIALOG = 2,
-  REBOOT_PROMPT_TYPE_SHOW_NON_MODAL_DIALOG = 3,
-  REBOOT_PROMPT_TYPE_MAX,
-};
-
-// When enabled, shows a prompt dialog if a cleanup requires a reboot and the
-// Settings page is not the current active tab.
-extern const base::Feature kRebootPromptDialogFeature;
+// Feature to control whether users should be prompted for a cleanup if the
+// software reporter finds bad software on their machine.
+extern const base::Feature kChromeCleanupInBrowserPromptFeature;
 
 // Feature, parameters of which control which software reporter and cleanup tool
 // versions will be downloaded. When not enabled, default versions will be used.
@@ -74,15 +64,9 @@ extern const base::Feature kChromeCleanupDistributionFeature;
 // for, and cleanup, bad extensions.
 extern const base::Feature kChromeCleanupExtensionsFeature;
 
-extern const char kSRTPromptTrial[];
-
 // Returns true if this Chrome is in a field trial group which shows the SRT
 // prompt.
-bool IsInSRTPromptFieldTrialGroups();
-
-// Returns true if this Chrome is in a field trial group which doesn't need an
-// elevation icon, i.e., the SRT won't ask for elevation on startup.
-bool SRTPromptNeedsElevationIcon();
+bool IsSRTPromptFeatureEnabled();
 
 // Returns the correct SRT download URL for the current field trial.
 GURL GetSRTDownloadURL();
@@ -90,11 +74,9 @@ GURL GetSRTDownloadURL();
 // Returns the value of the incoming SRT seed.
 std::string GetIncomingSRTSeed();
 
-// Returns the group name in the SRTPrompt field trial.
-std::string GetSRTFieldTrialGroupName();
-
-// Returns the method that should be used to prompt the user.
-RebootPromptType GetRebootPromptType();
+// Returns the value of the "Group" parameter associed with the SRTPrompt
+// feature.
+std::string GetSRTPromptGroupName();
 
 // Records a value for the SRT Prompt Histogram.
 void RecordSRTPromptHistogram(SRTPromptHistogramValue value);

@@ -1,0 +1,124 @@
+\barrondissement\s+administratif\s+de\b	
+\barrondissement\s+administratif\s+d\b	
+\bbrussels\s+hoofdstedelijk\s+gewest\b	brussel
+\bbrussel\s+hoofdstedelijk\s+gewest\b	brussel
+\bregion\s+de\s+bruxelles\s+capitale\b	brussel
+\bseptieme\s+division\s+francaise\b	7eme division frcse
+\bonze\s+lieve\s+heersebeestjes\b	onze lieve heersbeestjes
+\bregion\s+brussel\s+hauptstadt\b	brussel
+\balbert\s+en\s+marie\s+louise\b	a & m l
+\balbert\s+et\s+marie\s+louise\b	a & m l
+\bandree\s+payfa\s+fosseprez\b	a payfa fosseprez
+\bseptieme\s+d\s+i\s+francaise\b	7eme division frcse
+\bwereldtentoonstellings\b	wereldtentoonstelings
+\bberchem\s+sainte\s+agathe\b	st agatha berchem
+\bflandres\s+occidentales\b	westflandern
+\bsaint\s+josse\s+ten\s+noode\b	saint josse
+\bflandre\s+occidentales\b	westflandern
+\bflandres\s+occidentale\b	westflandern
+\bhenri\s+victor\s+wolvens\b	h v wolvens
+\bjoseph\s+van\s+boterdael\b	joseph van boterdae
+\bmarilyn\s+monroegaarde\b	marilyn monroe
+\bflandre\s+occidentale\b	westflandern
+\bflandres\s+orientales\b	ostflandern
+\bwoluwe\s+saint\s+pierre\b	st pieters woluwe
+\bbruxelles\s+capitale\b	brussel
+\bflandre\s+orientales\b	ostflandern
+\bflandres\s+orientale\b	ostflandern
+\bhendrik\s+conscience\b	henri conscience
+\bleonoardo\s+da\s+vinci\b	leonard de vinci
+\bwallonisch\s+brabant\b	waals brabant
+\bwallonische\s+region\b	wallonie
+\bbischoffsheimlaan\b	bischoffsheim
+\bbrouck\s+du\s+tilleul\b	brouck au tilleul
+\bflandre\s+orientale\b	ostflandern
+\bleonardo\s+da\s+vinci\b	leonard de vinci
+\barmand\s+scheitler\b	armand scheiter
+\bflamisch\s+brabant\b	vlaams brabant
+\bflamische\s+region\b	vlaams gewest
+\bhenri\s+wafelaerts\b	henri wafelaert
+\bpieter\s+hauwaerts\b	pierre hauwaerts
+\bregion\s+wallonien\b	wallonie
+\brennequin\s+sualem\b	renkin sualem
+\baugust\s+de\s+boeck\b	a de boeck
+\bbrabant\s+flamand\b	vlaams brabant
+\bbruxelles\s+ville\b	brussel
+\bflamisch\s+region\b	vlaams gewest
+\bgodefroid\s+kurth\b	godfroid kurth
+\boost\s+vlaanderen\b	ostflandern
+\bregion\s+flamande\b	vlaams gewest
+\bregion\s+wallonne\b	wallonie
+\bwest\s+vlaanderen\b	westflandern
+\barrondissement\b	
+\bbrabant\s+wallon\b	waals brabant
+\blimburg\s+strium\b	limburg stirum
+\bde\s+ribaucourt\b	ribaucourt
+\bmichel\s+angelo\b	michel ange
+\bpater\s+damiaan\b	pater damian
+\bprofondeville\b	profondville
+\bsint\s+lenaerts\b	sint lenaarts
+\bsualem\s+renkin\b	renkin sualem
+\bdendermondse\b	dendermonde
+\bminnezangers\b	menestrelen
+\bvooruitgangs\b	vooruitgang
+\bwaals\s+gewest\b	wallonie
+\bcortenbergh\b	cortenberg
+\bjette\s+jetse\b	jette
+\bl\s+urbanisme\b	i urbanisme
+\bprovince\s+de\b	
+\bprovince\s+du\b	
+\bpuits\s+no\s+iv\b	puits n4
+\bterhulpense\b	terhulpse
+\bhenegouwen\b	hainaut
+\blanguesdoc\b	languedoc
+\bluxembourg\b	luxemburg
+\bprovince\s+d\b	
+\bpuit\s+no\s+iv\b	puits n4
+\bvan\s+volxem\b	volxem
+\bantwerpen\b	anvers
+\bboulevard\b	bd
+\bbruxelles\b	brussel
+\bluitenant\b	liutenant
+\bwallonien\b	wallonie
+\bwestphael\b	wesphal
+\bbelgique\b	be
+\bbrussels\b	brussel
+\bchaussee\b	chee
+\bhennegau\b	hainaut
+\blimbourg\b	limburg
+\bsteenweg\b	stwg
+\bterrasse\b	tsse
+\bwestphal\b	wesphal
+\bavenues\b	av
+\bbelgien\b	be
+\bbelgium\b	be
+\bde\s+wand\b	wand
+\bimpasse\b	imp
+\bjettese\b	jetse
+\bluttich\b	luik
+\bprovinz\b	
+\bstrasse\b	str
+\ballees\b	all
+\bavenue\b	av
+\bbelgie\b	be
+\bcentre\b	ctre
+\bsainte\b	st
+\bsquare\b	sq
+\bstraat\b	str
+\ballee\b	all
+\bliege\b	luik
+\bnamur\b	namen
+\bpiein\b	pl
+\bplace\b	pl
+\bplatz\b	pl
+\bplein\b	pl
+\broute\b	rte
+\bsaint\b	st
+\bsankt\b	st
+\bthier\b	their
+\bsint\b	st
+\bdes\b	d
+\brue\b	r
+\bste\b	st
+\bde\b	d
+\bdu\b	d

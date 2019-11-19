@@ -1,0 +1,37 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: acquire in div with columns</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="acquire-in-breakable-div-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="resources/utils.js"></script>
+
+<style>
+#container {
+  border-top: solid green 50px;
+  border-bottom: solid green 50px;
+}
+#parent {
+  columns: 2;
+  height: 0px;
+  width: 200px;
+  column-gap: 0;
+}
+</style>
+
+<div id="parent">
+  <div id="container"></div>
+</div>
+
+<script>
+async function runTest() {
+  const container = document.getElementById("container");
+  await setInvisible(container);
+  takeScreenshot();
+}
+
+window.onload = runTest;
+</script>
+</html>

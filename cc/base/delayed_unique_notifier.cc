@@ -18,8 +18,7 @@ DelayedUniqueNotifier::DelayedUniqueNotifier(
     : task_runner_(task_runner),
       closure_(std::move(closure)),
       delay_(delay),
-      notification_pending_(false),
-      weak_ptr_factory_(this) {}
+      notification_pending_(false) {}
 
 DelayedUniqueNotifier::~DelayedUniqueNotifier() = default;
 

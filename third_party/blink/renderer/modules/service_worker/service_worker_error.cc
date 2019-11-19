@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 using blink::WebServiceWorkerError;
 
@@ -123,7 +124,7 @@ ExceptionParams GetExceptionParams(const WebServiceWorkerError& web_error) {
 DOMException* ServiceWorkerError::Take(ScriptPromiseResolver*,
                                        const WebServiceWorkerError& web_error) {
   ExceptionParams params = GetExceptionParams(web_error);
-  return DOMException::Create(params.code, params.message);
+  return MakeGarbageCollected<DOMException>(params.code, params.message);
 }
 
 // static

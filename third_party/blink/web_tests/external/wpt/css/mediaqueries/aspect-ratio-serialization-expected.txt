@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL <ratio> serializes with spaces around the integer. assert_equals: expected "(aspect-ratio: 1 / 3)" but got "(aspect-ratio: 1/3)"
+Harness: the test ran to completion.
+

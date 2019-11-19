@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/policy_low_level.h"
@@ -34,13 +33,13 @@ class SyncPolicy {
   // eval_result is the desired policy action to accomplish.
   static NTSTATUS CreateEventAction(EvalResult eval_result,
                                     const ClientInfo& client_info,
-                                    const base::string16& event_name,
+                                    const std::wstring& event_name,
                                     uint32_t event_type,
                                     uint32_t initial_state,
                                     HANDLE* handle);
   static NTSTATUS OpenEventAction(EvalResult eval_result,
                                   const ClientInfo& client_info,
-                                  const base::string16& event_name,
+                                  const std::wstring& event_name,
                                   uint32_t desired_access,
                                   HANDLE* handle);
 };

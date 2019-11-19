@@ -1,0 +1,52 @@
+rootWebArea
+++genericContainer
+++++date inputType='date' value='2008-09-01' controlsIds=rootWebArea
+++++++genericContainer
+++++++++genericContainer
+++++++++++spinButton name='Month' value='09' valueForRange=9.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++staticText name='09'
+++++++++++++++inlineTextBox name='09'
+++++++++++staticText name='/'
+++++++++++++inlineTextBox name='/'
+++++++++++spinButton name='Day' value='01' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=31.00
+++++++++++++staticText name='01'
+++++++++++++++inlineTextBox name='01'
+++++++++++staticText name='/'
+++++++++++++inlineTextBox name='/'
+++++++++++spinButton name='Year' value='2008' valueForRange=2008.00 minValueForRange=1.00 maxValueForRange=275760.00
+++++++++++++staticText name='2008'
+++++++++++++++inlineTextBox name='2008'
+++++++popUpButton name='Show date picker'
+++++++rootWebArea
+++++++++genericContainer ignored
+++++++++++genericContainer
+++++++++++++genericContainer
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer
+++++++++++++++++++button name='Show month selection panel'
+++++++++++++++++++++staticText name='September 2008'
+++++++++++++++++++++svgRoot
+++++++++++++++++button name='Show previous month'
+++++++++++++++++++svgRoot
+++++++++++++++++button name='Today'
+++++++++++++++++++genericContainer
+++++++++++++++++button name='Show next month'
+++++++++++++++++++svgRoot
+++++++++++++++grid
+++++++++++++++++genericContainer
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='Sun'
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='Mon'
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='Tue'
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='Wed'
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='Thu'
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='Fri'
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='Sat'
+++++++++++++++++genericContainer
+++++++++++++++++++genericContainer

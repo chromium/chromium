@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="zh-TW">
+<translation id="1075622780330595106">你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近沒有使用過。要關閉這些分頁嗎？</translation>
+<translation id="1181037720776840403">移除</translation>
+<translation id="125153950246128346">輕觸即可查看另一個分頁</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
+<translation id="257674075312929031">群組</translation>
+<translation id="2613747923081026172">建立群組</translation>
+<translation id="2671423594960767771">分享群組項目</translation>
+<translation id="2977480621796371840">從群組中移除</translation>
+<translation id="4212246570487010370">繼續瀏覽</translation>
+<translation id="4648718555153979859">你的分頁都集中顯示在這裡</translation>
+<translation id="5007392906805964215">查看</translation>
+<translation id="5073204694187207510">隱藏全螢幕格狀檢視</translation>
+<translation id="5082793167783849073">建立群組以快速比較多個頁面。如要開始建立，請輕觸並按住連結。</translation>
+<translation id="5580090775658607195">已將 <ph name="TAB_COUNT" /> 個分頁加入群組</translation>
+<translation id="5792534911093536736">更多分頁</translation>
+<translation id="58326064309361797">拖曳分頁即可進行分組</translation>
+<translation id="6040143037577758943">關閉</translation>
+<translation id="6193448654517602979">選取分頁</translation>
+<translation id="6615455863669487791">顯示</translation>
+<translation id="6840760312327750441">如要將分頁加入群組，請輕觸並按住分頁，然後將其拖曳到其他分頁上。</translation>
+<translation id="7151209024774799310">從群組中移除分頁</translation>
+<translation id="7559245342362162951">以全螢幕格狀檢視顯示群組的分頁</translation>
+<translation id="9150694013019234766">在靠近畫面底部的分頁群組中切換分頁</translation>
+<translation id="9169594135889675189">在群組中新增分頁</translation>
+<translation id="959682366969460160">保持井然有序</translation>
+</translationbundle>

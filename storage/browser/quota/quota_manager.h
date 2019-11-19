@@ -33,7 +33,6 @@
 #include "storage/browser/quota/quota_settings.h"
 #include "storage/browser/quota/quota_task.h"
 #include "storage/browser/quota/special_storage_policy.h"
-#include "storage/browser/quota/storage_observer.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 
 namespace base {
@@ -50,7 +49,6 @@ namespace content {
 class MockQuotaManager;
 class MockStorageClient;
 class QuotaManagerTest;
-class StorageMonitorTest;
 }  // namespace content
 
 namespace storage {
@@ -58,12 +56,13 @@ namespace storage {
 class QuotaDatabase;
 class QuotaManagerProxy;
 class QuotaTemporaryStorageEvictor;
-class StorageMonitor;
 class UsageTracker;
 
 struct QuotaManagerDeleter;
 
-// An interface called by QuotaTemporaryStorageEvictor.
+// An interface called by QuotaTemporaryStorageEvictor. This is a grab bag of
+// methods called by QuotaTemporaryStorageEvictor that need to be stubbed for
+// testing.
 class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaEvictionHandler {
  public:
   using EvictionRoundInfoCallback =
@@ -81,7 +80,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaEvictionHandler {
   // Returns next origin to evict, or nullopt if there are no evictable
   // origins.
   virtual void GetEvictionOrigin(blink::mojom::StorageType type,
-                                 const std::set<url::Origin>& extra_exceptions,
                                  int64_t global_quota,
                                  GetOriginCallback callback) = 0;
 
@@ -102,10 +100,19 @@ struct UsageInfo {
   const int64_t usage;
 };
 
-// Each StoragePartition owns exactly one QuotaManager.
+// Entry point into the Quota System
 //
-// Methods must be called on the IO thread, except for the constructor and
-// proxy().
+// Each StoragePartition has exactly one QuotaManager instance, which
+// coordinates quota across the Web platform features subject to quota.
+// Each storage system interacts with quota via their own implementations of
+// the QuotaClient interface.
+//
+// The class sets limits and defines the parameters of the systems heuristics.
+// QuotaManager coordinates clients to orchestrate the collection of usage
+// information, enforce quota limits, and evict stale data.
+//
+// The constructor and proxy() methods can be called on any thread. All other
+// methods must be called on the IO thread.
 class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
     : public QuotaTaskObserver,
       public QuotaEvictionHandler,
@@ -181,7 +188,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   void NotifyOriginNoLongerInUse(const url::Origin& origin);
   bool IsOriginInUse(const url::Origin& origin) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return base::ContainsKey(origins_in_use_, origin);
+    return base::Contains(origins_in_use_, origin);
   }
 
   void SetUsageCacheEnabled(QuotaClient::ID client_id,
@@ -243,11 +250,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
 
   bool ResetUsageTracker(blink::mojom::StorageType type);
 
-  // Used to register/deregister observers that wish to monitor storage events.
-  void AddStorageObserver(StorageObserver* observer,
-                          const StorageObserver::MonitorParams& params);
-  void RemoveStorageObserver(StorageObserver* observer);
-
   static const int64_t kPerHostPersistentQuotaLimit;
   static const char kDatabaseName[];
   static const int kThresholdOfErrorsToBeBlacklisted;
@@ -268,7 +270,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   friend class base::DeleteHelper<QuotaManager>;
   friend class base::RefCountedDeleteOnSequence<QuotaManager>;
   friend class content::QuotaManagerTest;
-  friend class content::StorageMonitorTest;
   friend class content::MockQuotaManager;
   friend class content::MockStorageClient;
   friend class quota_internals::QuotaInternalsProxy;
@@ -277,7 +278,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   friend struct QuotaManagerDeleter;
 
   class EvictionRoundInfoHelper;
-  class UsageAndQuotaHelper;
+  class UsageAndQuotaInfoGatherer;
   class GetUsageInfoTask;
   class OriginDataDeleter;
   class HostDataDeleter;
@@ -370,19 +371,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   void ReportHistogram();
   void DidGetTemporaryGlobalUsageForHistogram(int64_t usage,
                                               int64_t unlimited_usage);
+  void DidGetStorageCapacityForHistogram(int64_t usage,
+                                         int64_t total_space,
+                                         int64_t available_space);
   void DidGetPersistentGlobalUsageForHistogram(int64_t usage,
                                                int64_t unlimited_usage);
   void DidDumpOriginInfoTableForHistogram(
       const OriginInfoTableEntries& entries);
 
-  std::set<url::Origin> GetEvictionOriginExceptions(
-      const std::set<url::Origin>& extra_exceptions);
+  std::set<url::Origin> GetEvictionOriginExceptions();
   void DidGetEvictionOrigin(GetOriginCallback callback,
                             const base::Optional<url::Origin>& origin);
 
   // QuotaEvictionHandler.
   void GetEvictionOrigin(blink::mojom::StorageType type,
-                         const std::set<url::Origin>& extra_exceptions,
                          int64_t global_quota,
                          GetOriginCallback callback) override;
   void EvictOriginData(const url::Origin& origin,
@@ -402,8 +404,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   void DidGetLRUOrigin(std::unique_ptr<base::Optional<url::Origin>> origin,
                        bool success);
   void GetQuotaSettings(QuotaSettingsCallback callback);
-  void DidGetSettings(base::TimeTicks start_ticks,
-                      base::Optional<QuotaSettings> settings);
+  void DidGetSettings(base::Optional<QuotaSettings> settings);
   void GetStorageCapacity(StorageCapacityCallback callback);
   void ContinueIncognitoGetStorageCapacity(const QuotaSettings& settings);
   void DidGetStorageCapacity(
@@ -479,11 +480,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   // values. The default value points to QuotaManager::GetVolumeInfo.
   GetVolumeInfoFn get_volume_info_fn_;
 
-  std::unique_ptr<StorageMonitor> storage_monitor_;
-
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<QuotaManager> weak_factory_;
+  base::WeakPtrFactory<QuotaManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(QuotaManager);
 };

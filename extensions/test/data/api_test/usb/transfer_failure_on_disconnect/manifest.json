@@ -1,0 +1,16 @@
+{
+  "name": "Transfers fail on device disconnect",
+  "manifest_version": 2,
+  "version": "0.1",
+  "description": "Transfers fail on device disconnect",
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "permissions": [
+    "usb",
+    // This is a test device emulated by the mocks enabled for the test.
+    { "usbDevices": [{ "vendorId": 0, "productId": 0 }]}
+  ]
+}

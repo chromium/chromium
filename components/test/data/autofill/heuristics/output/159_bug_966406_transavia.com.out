@@ -1,0 +1,10 @@
+UNKNOWN_TYPE | terms | Par ex. Comment puis-je m'enregistrer en ligne ? |  | terms_1-default
+EMAIL_ADDRESS | loginID | Adresse e-mail |  | loginID_1-default
+UNKNOWN_TYPE | password | Mot de passe |  | loginID_1-default
+UNKNOWN_TYPE | retrieveBookingByLastname.RecordLocator | Numéro de réservation |  | retrieveBookingByLastname.RecordLocator_1-default
+# INCORRECT: This should be a last name, but the parser cannot return a last name without a first name
+NAME_FULL | retrieveBookingByLastname.LastName | Nom de famille |  | retrieveBookingByLastname.RecordLocator_1-default
+UNKNOWN_TYPE | retrieveBookingByLastname.Day | Jour |  | retrieveBookingByLastname.RecordLocator_1-default
+UNKNOWN_TYPE | retrieveBookingByLastname.Month | Mois |  | retrieveBookingByLastname.RecordLocator_1-default
+UNKNOWN_TYPE | retrieveBookingByLastname.Year | Année |  | retrieveBookingByLastname.RecordLocator_1-default
+UNKNOWN_TYPE | terms | Par ex. Comment puis-je m'enregistrer en ligne ? |  | terms_1-default

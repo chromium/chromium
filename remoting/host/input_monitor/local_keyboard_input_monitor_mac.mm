@@ -15,7 +15,7 @@ std::unique_ptr<LocalKeyboardInputMonitor> LocalKeyboardInputMonitor::Create(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    base::RepeatingClosure on_key_event_callback,
+    LocalInputMonitor::KeyPressedCallback on_key_event_callback,
     base::OnceClosure disconnect_callback) {
   return nullptr;
 }

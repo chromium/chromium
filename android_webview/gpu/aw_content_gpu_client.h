@@ -17,19 +17,25 @@ class AwContentGpuClient : public content::ContentGpuClient {
       base::RepeatingCallback<gpu::SyncPointManager*()>;
   using GetSharedImageManagerCallback =
       base::RepeatingCallback<gpu::SharedImageManager*()>;
+  using GetVizCompositorThreadRunnerCallback =
+      base::RepeatingCallback<viz::VizCompositorThreadRunner*()>;
 
   AwContentGpuClient(
       const GetSyncPointManagerCallback& sync_point_manager_callback,
-      const GetSharedImageManagerCallback& shared_image_manager_callback);
+      const GetSharedImageManagerCallback& shared_image_manager_callback,
+      const GetVizCompositorThreadRunnerCallback&
+          viz_compositor_thread_runner_callback);
   ~AwContentGpuClient() override;
 
   // content::ContentGpuClient implementation.
   gpu::SyncPointManager* GetSyncPointManager() override;
   gpu::SharedImageManager* GetSharedImageManager() override;
+  viz::VizCompositorThreadRunner* GetVizCompositorThreadRunner() override;
 
  private:
   GetSyncPointManagerCallback sync_point_manager_callback_;
   GetSharedImageManagerCallback shared_image_manager_callback_;
+  GetVizCompositorThreadRunnerCallback viz_compositor_thread_runner_callback_;
   DISALLOW_COPY_AND_ASSIGN(AwContentGpuClient);
 };
 

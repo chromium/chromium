@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='chrome=1'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+
+    <meta name='twitter:card' content='summary'>
+    <meta name='twitter:title' content='WebXR Samples'>
+    <meta name='twitter:description' content='Sample WebXR pages for testing and reference'>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+
+    <link rel='stylesheet' href='css/stylesheet.css'>
+    <link rel='stylesheet' href='css/pygment_trac.css'>
+
+    <style>
+      article {
+        position: relative;
+        padding: 0.5em;
+        background-color: rgba(255, 255, 255, 0.90);
+        margin-bottom: 1em;
+        border-radius: 3px;
+      }
+
+      article h3 {
+        font-size: 1.0em;
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+
+      article h3::before {
+        display: inline-block;
+        content: attr(data-index) ' - ';
+        font-weight: bold;
+        white-space: nowrap;
+        margin-right: 0.2em;
+      }
+
+      article h4 {
+        position: absolute;
+        right: 0.5em;
+        top: 0.5em;
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+
+      article p {
+        margin: 0.5em;
+      }
+
+      article .links {
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+      }
+
+      article a {
+        display: inline-block;
+      }
+
+      article a:not(:first-child)::before {
+        display: inline-block;
+        content: '•';
+        font-weight: bold;
+        white-space: nowrap;
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+      }
+
+      .github-link {
+        font-size: 0.8em;
+      }
+    </style>
+
+    <!--[if lt IE 9]>
+    <script src='https://html5shiv.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <title>WebXR - Samples</title>
+  </head>
+  <body>
+
+    <div class='container' id='container'>
+        <h1><a href='' class='wordmark'><span>WebXR Samples for Chrome</span></a></h1>
+      </header>
+
+      <main class='main' id='main'>
+        <p>
+          <b><em>THESE SAMPLES ARE DEPRECATED - DO NOT USE WITH CHROME 78+</b></em>
+          <br/>
+           For Chrome 78 and later, please use <a href="https://immersive-web.github.io/webxr-samples">these samples</a>, maintained by the Immersive Web Working Group.
+        </p>
+
+        <script>
+          let pages = [
+            { title: 'Barebones', category: 'Basics',
+              path: 'xr-barebones.html',
+              description: 'Extremely simple use of WebXR with no library dependencies. Doesn\'t render anything exciting.' },
+
+            { title: 'Magic Window', category: 'Basics',
+              path: 'magic-window.html',
+              description: 'Demonstrates use of a non-exclusive XRSession to present "Magic Window" content.' },
+
+            { title: 'Teleportation', category: 'Spatial Tracking, Input',
+              path: 'teleportation.html',
+              description: 'Demonstrates teleporting the viewer by updating the XRSession reference space.' },
+
+            { title: 'Gamepad', category: 'Input',
+              path: 'gamepad.html',
+              description: 'Demonstrates handling input from Gamepads attached to XRInputSources.' }
+          ];
+
+          let mainElement = document.getElementById("main");
+
+          // Append an element for every item in the pages list.
+          let tag_count = 0;
+          for (var i = 0; i < pages.length; ++i) {
+            var page = pages[i];
+
+            if (page.tag) {
+              tag_count++;
+              mainElement.appendChild(document.createElement(page.tag));
+              continue;
+            }
+
+            let article = document.createElement('article');
+
+            let title = document.createElement('h3');
+            title.setAttribute('data-index', i + 1 - tag_count);
+
+            let titleLink = document.createElement('a');
+            titleLink.href = page.path;
+            titleLink.innerHTML = page.title;
+            title.appendChild(titleLink);
+            article.appendChild(title);
+
+            let category = document.createElement('h4');
+            category.innerHTML = page.category;
+            article.appendChild(category);
+
+            let description = document.createElement('p');
+            description.innerHTML = page.description;
+            article.appendChild(description);
+
+            let links = document.createElement('div');
+            links.classList.add('links');
+
+            let liveLink = document.createElement('a');
+            liveLink.href = page.path;
+            liveLink.innerHTML = 'Open';
+            links.appendChild(liveLink);
+
+            let polyfillLink = document.createElement('a');
+            polyfillLink.href = page.path + '?allowPolyfill=1';
+            polyfillLink.innerHTML = 'Open with Polyfill';
+            links.appendChild(polyfillLink);
+
+            article.appendChild(links);
+
+            mainElement.appendChild(article);
+          }
+        </script>
+      </main>
+
+      <p>Models used in these samples come from <a href="https://poly.google.com">Poly</a>, and many were modeled in <a href="https://vr.google.com/blocks/">Blocks</a>.<br/>
+      They are stored and loaded using the <a href="https://www.khronos.org/gltf/">glTF 2.0 format</a>.<br/>
+      Attribution for individual models can be found <a href="attribution.html">here</a>.</p>
+
+      <p>To host these samples locally:<br></p>
+      <ol>
+        <li>Download and unzip <a href="source.zip">source</a></li>
+        <li>Download and unzip <a href="../media.zip">media</a> to a subfolder in your local source.</li>
+        <li>Run a command in your local source directory, such as "python -m SimpleHTTPServer"</li>
+      </ol>
+
+      <footer class='footer'>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -11,10 +11,10 @@ enum ParityType {
 };
 
 dictionary SerialOptions {
-  long baudrate = 9600;
-  octet databits = 8;
-  octet stopbits = 1;
+  required [EnforceRange] unsigned long baudrate;
+  [EnforceRange] octet databits = 8;
+  [EnforceRange] octet stopbits = 1;
   ParityType parity = "none";
-  long buffersize = 255;
+  [EnforceRange] unsigned long buffersize = 255;
   boolean rtscts = false;
 };

@@ -1,7 +1,8 @@
 rootWebArea
-++staticText name='Before'
-++++inlineTextBox name='Before'
-++splitter horizontal
-++splitter horizontal valueForRange=1.00 minValueForRange=1.00 maxValueForRange=3.00
-++staticText name='After'
-++++inlineTextBox name='After'
+++genericContainer ignored
+++++staticText name='Before'
+++++++inlineTextBox name='Before'
+++++splitter horizontal
+++++splitter horizontal valueForRange=1.00 minValueForRange=1.00 maxValueForRange=3.00
+++++staticText name='After'
+++++++inlineTextBox name='After'

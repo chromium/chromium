@@ -1,0 +1,23 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+// This file is used only for testing purposes, and is never used for
+// production.  For production purposes, see the following file:
+//     //third_party/blink/renderer/platform/runtime_enabled_features.json5
+//
+// This file is used to add runtime enabled features in order to test the Web
+// IDL compiler and bindings code generator.
+
+{
+  data: [
+    {
+      name: "TestFeature1",
+    },
+    {
+      name: "TestFeature2",
+      origin_trial_feature_name: "TestFeature2",
+    },
+  ]
+}

@@ -72,7 +72,7 @@ TEST_F(GrCacheControllerTest, PurgeGrCache) {
     SkImageInfo info = SkImageInfo::MakeN32Premul(10, 10);
     ASSERT_TRUE(bm.tryAllocPixels(info));
     sk_sp<SkImage> uploaded =
-        SkImage::MakeFromBitmap(bm)->makeTextureImage(gr_context(), nullptr);
+        SkImage::MakeFromBitmap(bm)->makeTextureImage(gr_context());
     ASSERT_TRUE(uploaded);
   }
   EXPECT_GT(gr_context()->getResourceCachePurgeableBytes(), 0u);
@@ -94,7 +94,7 @@ TEST_F(GrCacheControllerTest, ResetPurgeGrCacheOnReuse) {
     SkImageInfo info = SkImageInfo::MakeN32Premul(10, 10);
     ASSERT_TRUE(bm.tryAllocPixels(info));
     sk_sp<SkImage> uploaded =
-        SkImage::MakeFromBitmap(bm)->makeTextureImage(gr_context(), nullptr);
+        SkImage::MakeFromBitmap(bm)->makeTextureImage(gr_context());
     ASSERT_TRUE(uploaded);
   }
   EXPECT_GT(gr_context()->getResourceCachePurgeableBytes(), 0u);

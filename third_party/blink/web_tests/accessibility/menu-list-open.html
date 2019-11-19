@@ -1,14 +1,13 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 <select id="menulist">
   <option id="item0">Alicia</option>
   <option id="item1">Peter</option>
   <option id="item2">Kalinda</option>
 </select>
 <script>
-async_test_after_layout_and_paint(function(t)
+async_test(function(t)
 {
     var menulist = document.getElementById("menulist");
     menulist.selectedIndex = 0;

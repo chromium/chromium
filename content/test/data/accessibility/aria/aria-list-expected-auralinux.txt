@@ -1,0 +1,8 @@
+[document web]
+++[list]
+++++[list item] name='1'
+++++++[static] name='Item 1'
+++++[list item] name='2'
+++++++[static] name='Item 2'
+++++[list item] name='3'
+++++++[static] name='Item 3'

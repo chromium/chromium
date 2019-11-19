@@ -51,7 +51,7 @@ public class DisplayCutoutControllerTest {
     private DisplayCutoutController mDisplayCutoutController;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         // Mock dependency on InsetObserverView.
@@ -63,7 +63,7 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
-    public void testViewportFitUpdate() throws Throwable {
+    public void testViewportFitUpdate() {
         verify(mDisplayCutoutController, never()).maybeUpdateLayout();
 
         mDisplayCutoutController.setViewportFit(ViewportFit.COVER);
@@ -72,7 +72,7 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
-    public void testViewportFitUpdateNotChanged() throws Throwable {
+    public void testViewportFitUpdateNotChanged() {
         verify(mDisplayCutoutController, never()).maybeUpdateLayout();
 
         mDisplayCutoutController.setViewportFit(ViewportFit.AUTO);
@@ -81,7 +81,7 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
-    public void testCutoutModeWhenAutoAndInteractable() throws Throwable {
+    public void testCutoutModeWhenAutoAndInteractable() {
         when(mTab.isUserInteractable()).thenReturn(true);
 
         mDisplayCutoutController.setViewportFit(ViewportFit.AUTO);
@@ -91,7 +91,7 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
-    public void testCutoutModeWhenCoverAndInteractable() throws Throwable {
+    public void testCutoutModeWhenCoverAndInteractable() {
         when(mTab.isUserInteractable()).thenReturn(true);
 
         mDisplayCutoutController.setViewportFit(ViewportFit.COVER);
@@ -101,7 +101,7 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
-    public void testCutoutModeWhenCoverForcedAndInteractable() throws Throwable {
+    public void testCutoutModeWhenCoverForcedAndInteractable() {
         when(mTab.isUserInteractable()).thenReturn(true);
 
         mDisplayCutoutController.setViewportFit(ViewportFit.COVER_FORCED_BY_USER_AGENT);
@@ -111,7 +111,7 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
-    public void testCutoutModeWhenContainAndInteractable() throws Throwable {
+    public void testCutoutModeWhenContainAndInteractable() {
         when(mTab.isUserInteractable()).thenReturn(true);
 
         mDisplayCutoutController.setViewportFit(ViewportFit.CONTAIN);
@@ -121,7 +121,7 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
-    public void testCutoutModeWhenAutoAndNotInteractable() throws Throwable {
+    public void testCutoutModeWhenAutoAndNotInteractable() {
         mDisplayCutoutController.setViewportFit(ViewportFit.AUTO);
         Assert.assertEquals("LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT",
                 mDisplayCutoutController.getDisplayCutoutMode());
@@ -129,7 +129,7 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
-    public void testCutoutModeWhenCoverAndNotInteractable() throws Throwable {
+    public void testCutoutModeWhenCoverAndNotInteractable() {
         mDisplayCutoutController.setViewportFit(ViewportFit.COVER);
         Assert.assertEquals("LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT",
                 mDisplayCutoutController.getDisplayCutoutMode());
@@ -137,7 +137,7 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
-    public void testCutoutModeWhenCoverForcedAndNotInteractable() throws Throwable {
+    public void testCutoutModeWhenCoverForcedAndNotInteractable() {
         mDisplayCutoutController.setViewportFit(ViewportFit.COVER_FORCED_BY_USER_AGENT);
         Assert.assertEquals("LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT",
                 mDisplayCutoutController.getDisplayCutoutMode());
@@ -145,7 +145,7 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
-    public void testCutoutModeWhenContainAndNotInteractable() throws Throwable {
+    public void testCutoutModeWhenContainAndNotInteractable() {
         mDisplayCutoutController.setViewportFit(ViewportFit.CONTAIN);
         Assert.assertEquals("LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT",
                 mDisplayCutoutController.getDisplayCutoutMode());
@@ -153,7 +153,7 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
-    public void testLayoutOnInteractability_True() throws Throwable {
+    public void testLayoutOnInteractability_True() {
         // In this test we are checking for a side effect of maybeUpdateLayout.
         // This is because the tab observer holds a reference to the original
         // mDisplayCutoutController and not the spied one.
@@ -166,7 +166,7 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
-    public void testLayoutOnInteractability_False() throws Throwable {
+    public void testLayoutOnInteractability_False() {
         // In this test we are checking for a side effect of maybeUpdateLayout.
         // This is because the tab observer holds a reference to the original
         // mDisplayCutoutController and not the spied one.
@@ -179,7 +179,7 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
-    public void testLayoutOnShown() throws Throwable {
+    public void testLayoutOnShown() {
         // In this test we are checking for a side effect of maybeUpdateLayout.
         // This is because the tab observer holds a reference to the original
         // mDisplayCutoutController and not the spied one.

@@ -368,7 +368,7 @@ class ServerProcess(object):
         if not self._proc:
             self._start()
 
-    def stop(self, timeout_secs=0.0):
+    def stop(self, timeout_secs=0.0, kill_tree=True):
         if not self._proc:
             return (None, None)
 
@@ -387,7 +387,7 @@ class ServerProcess(object):
                 _log.warning('stopping %s(pid %d) timed out, killing it', self._name, self._proc.pid)
 
         if self._proc.poll() is None:
-            self._kill()
+            self._kill(kill_tree)
             killed = True
             _log.debug('killed pid %d', self._proc.pid)
 
@@ -404,8 +404,8 @@ class ServerProcess(object):
     def kill(self):
         self.stop(0.0)
 
-    def _kill(self):
-        self._host.executive.kill_process(self._proc.pid)
+    def _kill(self, kill_tree=True):
+        self._host.executive.kill_process(self._proc.pid, kill_tree)
         if self._proc.poll() is not None:
             self._proc.wait()
 

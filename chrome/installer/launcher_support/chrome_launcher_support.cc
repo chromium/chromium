@@ -6,27 +6,26 @@
 
 #include <windows.h>
 
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/string16.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
+#include "build/branding_buildflags.h"
 
 namespace chrome_launcher_support {
 
 namespace {
 
 // TODO(huangs) Refactor the constants: http://crbug.com/148538
-#if defined(GOOGLE_CHROME_BUILD)
-const wchar_t kInstallationRegKey[] =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+const wchar_t kUpdateClientStateRegKey[] =
     L"Software\\Google\\Update\\ClientState";
 
-// Copied from chrome_appid.cc.
+const wchar_t kUpdateClientsRegKey[] = L"Software\\Google\\Update\\Clients";
+
+// Copied from google_chrome_install_modes.cc.
 const wchar_t kBinariesAppGuid[] = L"{4DC8B4CA-1BDA-483e-B5FA-D3C12E15B62D}";
-
-// Copied from google_chrome_distribution.cc.
 const wchar_t kBrowserAppGuid[] = L"{8A69D345-D564-463c-AFF1-A69D9E530F96}";
-
-// Copied frome google_chrome_sxs_distribution.cc.
 const wchar_t kSxSBrowserAppGuid[] = L"{4ea16ac7-fd5a-47c3-875b-dbf4a2008c20}";
 #else
 const wchar_t kInstallationRegKey[] = L"Software\\Chromium";
@@ -35,16 +34,37 @@ const wchar_t kInstallationRegKey[] = L"Software\\Chromium";
 // Copied from util_constants.cc.
 const wchar_t kChromeExe[] = L"chrome.exe";
 const wchar_t kUninstallStringField[] = L"UninstallString";
+const wchar_t kVersionStringField[] = L"pv";
+
+// Returns the registry path to where Client state is stored.
+base::string16 GetClientStateRegKey() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return kUpdateClientStateRegKey;
+#else
+  return kInstallationRegKey;
+#endif
+}
+
+// Returns the registry path to where basic information about the Clients
+// like name and version information are stored.
+base::string16 GetClientsRegKey() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return kUpdateClientsRegKey;
+#else
+  return kInstallationRegKey;
+#endif
+}
 
 // Reads a string value from the specified product's registry key. Returns true
 // iff the value is present and successfully read.
-bool GetClientStateValue(InstallationLevel level,
-                         const wchar_t* app_guid,
-                         const wchar_t* value_name,
-                         base::string16* value) {
+bool GetValueFromRegistry(InstallationLevel level,
+                          const base::string16 key_path,
+                          const wchar_t* app_guid,
+                          const wchar_t* value_name,
+                          base::string16* value) {
   HKEY root_key = (level == USER_LEVEL_INSTALLATION) ?
       HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
-  base::string16 subkey(kInstallationRegKey);
+  base::string16 subkey(key_path);
   if (app_guid)
     subkey.append(1, L'\\').append(app_guid);
   base::win::RegKey reg_key;
@@ -64,7 +84,8 @@ bool GetClientStateValue(InstallationLevel level,
 base::FilePath GetSetupExeFromRegistry(InstallationLevel level,
                                        const wchar_t* app_guid) {
   base::string16 uninstall;
-  if (GetClientStateValue(level, app_guid, kUninstallStringField, &uninstall)) {
+  if (GetValueFromRegistry(level, GetClientStateRegKey(), app_guid,
+                           kUninstallStringField, &uninstall)) {
     base::FilePath setup_exe_path(uninstall);
     if (base::PathExists(setup_exe_path))
       return setup_exe_path;
@@ -76,7 +97,7 @@ base::FilePath GetSetupExeFromRegistry(InstallationLevel level,
 // be found via the registry.
 base::FilePath GetSetupExeForInstallationLevel(InstallationLevel level) {
   base::FilePath setup_exe_path;
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Look in the registry for Chrome Binaries first.
   setup_exe_path = GetSetupExeFromRegistry(level, kBinariesAppGuid);
   // If the above fails, look in the registry for Chrome next.
@@ -118,7 +139,7 @@ base::FilePath FindExeRelativeToSetupExe(const base::FilePath setup_exe_path,
 base::FilePath GetChromePathForInstallationLevel(InstallationLevel level,
                                                  bool is_sxs) {
   if (is_sxs) {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     return FindExeRelativeToSetupExe(
         GetSetupExeFromRegistry(level, kSxSBrowserAppGuid), kChromeExe);
 #else
@@ -137,6 +158,27 @@ base::FilePath GetAnyChromePath(bool is_sxs) {
   if (path.empty())
     path = GetChromePathForInstallationLevel(USER_LEVEL_INSTALLATION, is_sxs);
   return path;
+}
+
+base::Version GetChromeVersionForInstallationLevel(InstallationLevel level,
+                                                   bool is_sxs) {
+  const wchar_t* app_guid = nullptr;  // Chromium doesn't use App GUIDs.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  app_guid = is_sxs ? kSxSBrowserAppGuid : kBrowserAppGuid;
+#else
+  // There is no SxS build for Chromium.
+  if (is_sxs)
+    return base::Version();
+#endif
+
+  base::string16 version_str;
+  if (GetValueFromRegistry(level, GetClientsRegKey(), app_guid,
+                           kVersionStringField, &version_str)) {
+    base::Version version(base::UTF16ToASCII(version_str));
+    if (version.IsValid())
+      return version;
+  }
+  return base::Version();
 }
 
 }  // namespace chrome_launcher_support

@@ -80,12 +80,12 @@ class VIEWS_EXPORT ViewModelBase {
   friend class ViewModelUtils;
 
   struct Entry {
-    Entry() : view(NULL) {}
+    Entry() = default;
 
-    View* view;
+    View* view = nullptr;
     gfx::Rect ideal_bounds;
   };
-  typedef std::vector<Entry> Entries;
+  using Entries = std::vector<Entry>;
 
 #if !defined(NDEBUG)
   void check_index(int index) const {
@@ -109,7 +109,7 @@ class VIEWS_EXPORT ViewModelBase {
 template <class T>
 class ViewModelT : public ViewModelBase {
  public:
-  ViewModelT<T>() {}
+  ViewModelT<T>() = default;
 
   // Adds |view| to this model. This does not add |view| to a view hierarchy,
   // only to this model.
@@ -125,7 +125,7 @@ class ViewModelT : public ViewModelBase {
 // ViewModel is a collection of views with no specfic type. If all views have
 // the same type, the use of ViewModelT is preferred so that the views can be
 // retrieved without potentially unsafe downcasts.
-typedef ViewModelT<View> ViewModel;
+using ViewModel = ViewModelT<View>;
 
 }  // namespace views
 

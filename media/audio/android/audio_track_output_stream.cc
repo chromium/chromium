@@ -11,8 +11,8 @@
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
-#include "jni/AudioTrackOutputStream_jni.h"
 #include "media/audio/audio_manager_base.h"
+#include "media/base/android/media_jni_headers/AudioTrackOutputStream_jni.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 
@@ -87,6 +87,10 @@ void AudioTrackOutputStream::Close() {
                                     j_audio_output_stream_);
   audio_manager_->ReleaseOutputStream(this);
 }
+
+// This stream is always used with sub second buffer sizes, where it's
+// sufficient to simply always flush upon Start().
+void AudioTrackOutputStream::Flush() {}
 
 void AudioTrackOutputStream::SetMute(bool muted) {
   if (params_.IsBitstreamFormat() && muted) {

@@ -1,0 +1,64 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "drawsContent": false,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Scrolling Layer",
+      "bounds": [785, 585],
+      "drawsContent": false
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [2008, 2096],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox 'Bug 36461 - No vertical scrollbar after the CSS class change'",
+          "rect": [124, 52, 383, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'Bug 36461 - No vertical scrollbar after the CSS class change'",
+          "rect": [124, 52, 383, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'You should see both vertical and horizontal scrollbars.'",
+          "rect": [8, 16, 340, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'You should see both vertical and horizontal scrollbars.'",
+          "rect": [8, 16, 340, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'This is the test for '",
+          "rect": [8, 52, 116, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'This is the test for '",
+          "rect": [8, 52, 116, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox '.'",
+          "rect": [507, 52, 4, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox '.'",
+          "rect": [507, 52, 4, 19],
+          "reason": "disappeared"
+        }
+      ]
+    }
+  ]
+}
+

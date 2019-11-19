@@ -18,7 +18,7 @@
 #include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace device {
 
@@ -45,11 +45,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWinrt
   // BluetoothRemoteGattCharacteristic:
   const std::vector<uint8_t>& GetValue() const override;
   BluetoothRemoteGattService* GetService() const override;
-  void ReadRemoteCharacteristic(const ValueCallback& callback,
-                                const ErrorCallback& error_callback) override;
+  void ReadRemoteCharacteristic(ValueCallback callback,
+                                ErrorCallback error_callback) override;
   void WriteRemoteCharacteristic(const std::vector<uint8_t>& value,
-                                 const base::Closure& callback,
-                                 const ErrorCallback& error_callback) override;
+                                 base::OnceClosure callback,
+                                 ErrorCallback error_callback) override;
   bool WriteWithoutResponse(base::span<const uint8_t> value) override;
 
   void UpdateDescriptors(BluetoothGattDiscovererWinrt* gatt_discoverer);
@@ -61,12 +61,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWinrt
  protected:
   // BluetoothRemoteGattCharacteristic:
   void SubscribeToNotifications(BluetoothRemoteGattDescriptor* ccc_descriptor,
-                                const base::Closure& callback,
-                                const ErrorCallback& error_callback) override;
+                                base::OnceClosure callback,
+                                ErrorCallback error_callback) override;
   void UnsubscribeFromNotifications(
       BluetoothRemoteGattDescriptor* ccc_descriptor,
-      const base::Closure& callback,
-      const ErrorCallback& error_callback) override;
+      base::OnceClosure callback,
+      ErrorCallback error_callback) override;
 
  private:
   struct PendingReadCallbacks {
@@ -101,7 +101,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWinrt
       ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
           GattClientCharacteristicConfigurationDescriptorValue value,
       base::OnceClosure callback,
-      const ErrorCallback& error_callback);
+      ErrorCallback error_callback);
 
   void OnReadValue(Microsoft::WRL::ComPtr<
                    ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
@@ -146,7 +146,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWinrt
   base::Optional<EventRegistrationToken> value_changed_token_;
 
   base::WeakPtrFactory<BluetoothRemoteGattCharacteristicWinrt>
-      weak_ptr_factory_;
+      weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattCharacteristicWinrt);
 };

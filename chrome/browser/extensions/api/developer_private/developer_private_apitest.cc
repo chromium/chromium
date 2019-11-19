@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
   const Extension* app = LoadAndLaunchApp(dir);
 
   // Get the info about the app, including the inspectable views.
-  scoped_refptr<UIThreadExtensionFunction> function(
+  scoped_refptr<ExtensionFunction> function(
       new api::DeveloperPrivateGetExtensionInfoFunction());
   std::unique_ptr<base::Value> result(
       extension_function_test_utils::RunFunctionAndReturnSingleResult(
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   WaitForExtensionNotIdle(extension->id());
 
   // Get the info about the extension, including the inspectable views.
-  scoped_refptr<UIThreadExtensionFunction> function(
+  scoped_refptr<ExtensionFunction> function(
       new api::DeveloperPrivateGetExtensionInfoFunction());
   std::unique_ptr<base::Value> result(
       extension_function_test_utils::RunFunctionAndReturnSingleResult(

@@ -32,10 +32,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_LOADER_OPTIONS_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -74,19 +76,18 @@ enum CacheAwareLoadingEnabled : uint8_t {
 };
 
 // This class is thread-bound. Do not copy/pass an instance across threads.
-struct ResourceLoaderOptions {
+struct PLATFORM_EXPORT ResourceLoaderOptions {
   USING_FAST_MALLOC(ResourceLoaderOptions);
 
  public:
-  ResourceLoaderOptions()
-      : data_buffering_policy(kBufferData),
-        content_security_policy_option(kCheckContentSecurityPolicy),
-        request_initiator_context(kDocumentContext),
-        synchronous_policy(kRequestAsynchronously),
-        cors_handling_by_resource_fetcher(kEnableCorsHandlingByResourceFetcher),
-        cors_flag(false),
-        parser_disposition(kParserInserted),
-        cache_aware_loading_enabled(kNotCacheAwareLoadingEnabled) {}
+  // We define constructors, destructor, and assignment operator in
+  // resource_loader_options.cc because they require the full definition of
+  // URLLoaderFactory for |url_loader_factory| data member, and we'd like
+  // to avoid to include huge url_loader_factory.mojom-blink.h.
+  ResourceLoaderOptions();
+  ResourceLoaderOptions(const ResourceLoaderOptions& other);
+  ResourceLoaderOptions& operator=(const ResourceLoaderOptions& other);
+  ~ResourceLoaderOptions();
 
   FetchInitiatorInfo initiator_info;
 
@@ -112,8 +113,8 @@ struct ResourceLoaderOptions {
   // If not null, this URLLoaderFactory should be used to load this resource
   // rather than whatever factory the system might otherwise use.
   // Used for example for loading blob: URLs and for prefetch loading.
-  scoped_refptr<
-      base::RefCountedData<network::mojom::blink::URLLoaderFactoryPtr>>
+  scoped_refptr<base::RefCountedData<
+      mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>>
       url_loader_factory;
 };
 

@@ -85,9 +85,10 @@ class EasyUnlockService : public KeyedService {
   // Gets/Sets/Clears the permit access for the local device.
   virtual void ClearPermitAccess() = 0;
 
-  // Gets/Sets the remote devices list.
+  // Retrieve the stored remote devices list:
+  //   * If in regular context, device list is retrieved from prefs.
+  //   * If in sign-in context, device list is retrieved from TPM.
   virtual const base::ListValue* GetRemoteDevices() const = 0;
-  virtual void SetRemoteDevices(const base::ListValue& devices) = 0;
 
   // Gets the challenge bytes for the user currently associated with the
   // service.
@@ -298,7 +299,7 @@ class EasyUnlockService : public KeyedService {
 
   bool tpm_key_checked_;
 
-  base::WeakPtrFactory<EasyUnlockService> weak_ptr_factory_;
+  base::WeakPtrFactory<EasyUnlockService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockService);
 };

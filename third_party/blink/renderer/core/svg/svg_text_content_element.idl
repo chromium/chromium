@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/text.html#InterfaceSVGTextContentElement
 
+[Exposed=Window]
 interface SVGTextContentElement : SVGGraphicsElement {
     // lengthAdjust Types
     [MeasureAs=SVG1DOMText] const unsigned short LENGTHADJUST_UNKNOWN          = 0;

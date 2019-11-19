@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <!-- The windowLightStatusBar attribute was added in API 23, but we avoid using it via XML prior
+         to 28 due to: https://crbug.com/884144 and https://crbug.com/1014844 -->
+    <style name="Theme.Chromium.Preferences" parent="Base.V21.Theme.Chromium.Preferences">
+        <item name="android:statusBarColor">@color/modern_primary_color</item>
+        <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
+    </style>
+</resources>
+

@@ -18,7 +18,7 @@
 
 class Profile;
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
@@ -39,7 +39,7 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
       PrefService* local_state,
       DeviceManagementService* device_management_service,
       UserCloudPolicyManager* policy_manager,
-      identity::IdentityManager* identity_manager,
+      signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
   ~UserPolicySigninService() override;
 
@@ -87,7 +87,7 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
   // The PrefService associated with the profile.
   PrefService* profile_prefs_;
 
-  base::WeakPtrFactory<UserPolicySigninService> weak_factory_;
+  base::WeakPtrFactory<UserPolicySigninService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UserPolicySigninService);
 };

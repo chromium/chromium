@@ -17,10 +17,6 @@ class MediaControlPopupMenuElement : public MediaControlDivElement {
 
   void SetIsWanted(bool) override;
 
-  // Only use when !IsModern to get the element that should be used an as anchor
-  // for the popup.
-  virtual Element* PopupAnchor() const = 0;
-
   // Callback run when an item is selected from the popup menu.
   virtual void OnItemSelected();
 
@@ -46,7 +42,7 @@ class MediaControlPopupMenuElement : public MediaControlDivElement {
  private:
   class EventListener;
 
-  Element* EffectivePopupAnchor() const;
+  Element* PopupAnchor() const;
 
   void HideIfNotFocused();
 

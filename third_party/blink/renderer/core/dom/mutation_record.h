@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_MUTATION_RECORD_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/probe/async_task_id.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -76,6 +77,11 @@ class CORE_EXPORT MutationRecord : public ScriptWrappable {
   virtual const AtomicString& attributeNamespace() { return g_null_atom; }
 
   virtual String oldValue() { return String(); }
+
+  probe::AsyncTaskId* async_task_id() { return &async_task_id_; }
+
+ private:
+  probe::AsyncTaskId async_task_id_;
 };
 
 }  // namespace blink

@@ -56,7 +56,7 @@ class ResizingHostObserver : public ScreenControls {
   base::TimeTicks previous_resize_time_;
   base::Callback<base::TimeTicks(void)> now_function_;
 
-  base::WeakPtrFactory<ResizingHostObserver> weak_factory_;
+  base::WeakPtrFactory<ResizingHostObserver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ResizingHostObserver);
 };

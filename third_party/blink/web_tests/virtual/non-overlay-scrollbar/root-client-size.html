@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src="../../resources/js-test.js"></script>
+<style>
+    :root { width: 100%; height: 100% }
+    #container.wide { width: 5000px; height: 10px; }
+    #container.tall { height: 5000px; width: 10px; }
+</style>
+<div id="container"></div>
+<script>
+    description("Style recalc when reading clientWidth/clientHeight of documentElement in strict mode.");
+
+    shouldBeDefined(window.internals);
+    shouldBeFalse("internals.overlayScrollbarsEnabled");
+
+    function runClientSizeTest(testClass, expectWidthChange, expectHeightChange, expectedRecalcCount) {
+
+        var origWidth = document.documentElement.clientWidth;
+        var origHeight = document.documentElement.clientHeight;
+        internals.updateStyleAndReturnAffectedElementCount();
+
+        container.classList.add(testClass)
+
+        var afterWidth = document.documentElement.clientWidth;
+        var afterHeight = document.documentElement.clientHeight;
+
+        shouldBe("internals.updateStyleAndReturnAffectedElementCount()", ""+expectedRecalcCount);
+
+        if (expectWidthChange)
+            shouldBeGreaterThan(""+origWidth, ""+afterWidth);
+        else
+            shouldBe(""+origWidth, ""+afterWidth);
+
+        if (expectHeightChange)
+            shouldBeGreaterThan(""+origHeight, ""+afterHeight);
+        else
+            shouldBe(""+origHeight, ""+afterHeight);
+
+        container.classList.remove(testClass)
+    }
+
+    runClientSizeTest("wide", false, true, 0);
+    runClientSizeTest("tall", true, false, 0);
+</script>

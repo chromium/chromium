@@ -135,8 +135,6 @@ void SincResampler::InitializeKernel() {
 void SincResampler::ConsumeSource(float* buffer,
                                   unsigned number_of_source_frames) {
   DCHECK(source_provider_);
-  if (!source_provider_)
-    return;
 
   // Wrap the provided buffer by an AudioBus for use by the source provider.
   scoped_refptr<AudioBus> bus =
@@ -209,12 +207,10 @@ void SincResampler::Process(const float* source,
 void SincResampler::Process(AudioSourceProvider* source_provider,
                             float* destination,
                             uint32_t frames_to_process) {
-  bool is_good = source_provider && block_size_ > kernel_size_ &&
-                 input_buffer_.size() >= block_size_ + kernel_size_ &&
-                 !(kernel_size_ % 2);
-  DCHECK(is_good);
-  if (!is_good)
-    return;
+  DCHECK(source_provider);
+  DCHECK_GT(block_size_, kernel_size_);
+  DCHECK_GE(input_buffer_.size(), block_size_ + kernel_size_);
+  DCHECK_EQ(kernel_size_ % 2, 0u);
 
   source_provider_ = source_provider;
 

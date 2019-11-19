@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/svg/properties/svg_animated_property.h"
 #include "third_party/blink/renderer/core/svg/svg_string_list_tear_off.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -42,9 +43,8 @@ class SVGElement;
 // SVGStringList property implementations for SVGTests properties.
 // Inherits SVGAnimatedPropertyBase to enable XML attribute synchronization, but
 // this is never animated.
-class SVGStaticStringList final
-    : public GarbageCollectedFinalized<SVGStaticStringList>,
-      public SVGAnimatedPropertyBase {
+class SVGStaticStringList final : public GarbageCollected<SVGStaticStringList>,
+                                  public SVGAnimatedPropertyBase {
   USING_GARBAGE_COLLECTED_MIXIN(SVGStaticStringList);
 
  public:
@@ -53,7 +53,7 @@ class SVGStaticStringList final
                                      const QualifiedName& attribute_name) {
     return MakeGarbageCollected<SVGStaticStringList>(
         context_element, attribute_name,
-        SVGStringList<list_delimiter>::Create());
+        MakeGarbageCollected<SVGStringList<list_delimiter>>());
   }
 
   SVGStaticStringList(SVGElement*,

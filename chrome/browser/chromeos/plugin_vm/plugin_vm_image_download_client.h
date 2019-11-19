@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_CHROMEOS_PLUGIN_VM_PLUGIN_VM_IMAGE_DOWNLOAD_CLIENT_H_
 #define CHROME_BROWSER_CHROMEOS_PLUGIN_VM_PLUGIN_VM_IMAGE_DOWNLOAD_CLIENT_H_
 
+#include <set>
+#include <string>
+
 #include "base/macros.h"
 #include "components/download/public/background_service/client.h"
 
@@ -25,6 +28,7 @@ class PluginVmImageDownloadClient : public download::Client {
   ~PluginVmImageDownloadClient() override;
 
  private:
+  std::set<std::string> old_downloads_;
   Profile* profile_ = nullptr;
   int64_t content_length_ = -1;
 
@@ -35,7 +39,7 @@ class PluginVmImageDownloadClient : public download::Client {
       bool state_lost,
       const std::vector<download::DownloadMetaData>& downloads) override;
   void OnServiceUnavailable() override;
-  download::Client::ShouldDownload OnDownloadStarted(
+  void OnDownloadStarted(
       const std::string& guid,
       const std::vector<GURL>& url_chain,
       const scoped_refptr<const net::HttpResponseHeaders>& headers) override;

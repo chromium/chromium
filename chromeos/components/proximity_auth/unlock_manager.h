@@ -25,9 +25,6 @@ class UnlockManager {
   // authentication is inactive.
   virtual void SetRemoteDeviceLifeCycle(RemoteDeviceLifeCycle* life_cycle) = 0;
 
-  // Called when the life cycle's state changes.
-  virtual void OnLifeCycleStateChanged() = 0;
-
   // Called when the user pod is clicked for an authentication attempt of type
   // |auth_type|.
   // Exposed for testing.

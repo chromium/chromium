@@ -45,9 +45,7 @@ constexpr std::array<PrefetchItemState, 6>
 FinalizeDismissedUrlSuggestionTask::FinalizeDismissedUrlSuggestionTask(
     PrefetchStore* prefetch_store,
     const ClientId& client_id)
-    : prefetch_store_(prefetch_store),
-      client_id_(client_id),
-      weak_ptr_factory_(this) {
+    : prefetch_store_(prefetch_store), client_id_(client_id) {
   DCHECK(prefetch_store_);
 }
 

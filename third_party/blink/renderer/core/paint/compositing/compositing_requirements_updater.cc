@@ -31,9 +31,8 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/core/paint/paint_layer_stacking_node.h"
-#include "third_party/blink/renderer/core/paint/paint_layer_stacking_node_iterator.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
@@ -184,12 +183,23 @@ static CompositingReasons SubtreeReasonsForCompositing(
     subtree_reasons |= CompositingReason::kIsolateCompositedDescendants;
   }
 
+  if (layer->GetLayoutObject().StyleRef().GetPosition() == EPosition::kFixed) {
+    subtree_reasons |=
+        CompositingReason::kPositionFixedWithCompositedDescendants;
+  }
+
   // A layer with preserve-3d or perspective only needs to be composited if
   // there are descendant layers that will be affected by the preserve-3d or
   // perspective.
   if (has3d_transformed_descendants) {
-    subtree_reasons |= layer->PotentialCompositingReasonsFromStyle() &
-                       CompositingReason::kCombo3DDescendants;
+    const ComputedStyle& style = layer->GetLayoutObject().StyleRef();
+    if (style.UsedTransformStyle3D() == ETransformStyle3D::kPreserve3d)
+      subtree_reasons |= CompositingReason::kPreserve3DWith3DDescendants;
+
+    // Perspective (specified either by perspective or transform properties)
+    // with 3d descendants need a render surface for flattening purposes.
+    if (style.HasPerspective() || style.Transform().HasPerspective())
+      subtree_reasons |= CompositingReason::kPerspectiveWith3DDescendants;
   }
 
   return subtree_reasons;
@@ -227,11 +237,7 @@ void CompositingRequirementsUpdater::Update(
 
 #if DCHECK_IS_ON()
 static void CheckSubtreeHasNoCompositing(PaintLayer* layer) {
-  if (!layer->StackingNode())
-    return;
-  PaintLayerStackingNodeIterator iterator(
-      *layer->StackingNode(),
-      kNegativeZOrderChildren | kNormalFlowChildren | kPositiveZOrderChildren);
+  PaintLayerPaintOrderIterator iterator(*layer, kAllChildren);
   while (PaintLayer* cur_layer = iterator.Next()) {
     DCHECK(cur_layer->GetCompositingState() == kNotComposited);
     DCHECK(!cur_layer->DirectCompositingReasons() ||
@@ -291,7 +297,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
 
   if (layer->GetScrollableArea() &&
       layer->GetScrollableArea()->NeedsCompositedScrolling())
-    direct_reasons |= CompositingReason::kOverflowScrollingTouch;
+    direct_reasons |= CompositingReason::kOverflowScrolling;
 
   bool can_be_composited = compositor->CanBeComposited(layer);
   if (can_be_composited)
@@ -389,9 +395,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   }
 
 #if DCHECK_IS_ON()
-  base::Optional<LayerListMutationDetector> mutation_checker;
-  if (layer->StackingNode())
-    mutation_checker.emplace(layer->StackingNode());
+  PaintLayerListMutationDetector mutation_checker(*layer);
 #endif
 
   bool any_descendant_has3d_transform = false;
@@ -421,10 +425,8 @@ void CompositingRequirementsUpdater::UpdateRecursive(
       !layer->HasCompositingDescendant() &&
       !layer->DescendantMayNeedCompositingRequirementsUpdate();
 
-  if (!skip_children &&
-      layer->GetLayoutObject().StyleRef().IsStackingContext()) {
-    PaintLayerStackingNodeIterator iterator(*layer->StackingNode(),
-                                            kNegativeZOrderChildren);
+  if (!skip_children) {
+    PaintLayerPaintOrderIterator iterator(*layer, kNegativeZOrderChildren);
     while (PaintLayer* child_layer = iterator.Next()) {
       IntRect absolute_child_descendant_bounding_box;
       UpdateRecursive(layer, child_layer, overlap_map, child_recursion_data,
@@ -473,9 +475,9 @@ void CompositingRequirementsUpdater::UpdateRecursive(
     child_recursion_data.testing_overlap_ = true;
   }
 
-  if (!skip_children && layer->StackingNode()) {
-    PaintLayerStackingNodeIterator iterator(
-        *layer->StackingNode(), kNormalFlowChildren | kPositiveZOrderChildren);
+  if (!skip_children) {
+    PaintLayerPaintOrderIterator iterator(*layer,
+                                          kNormalFlowAndPositiveZOrderChildren);
     while (PaintLayer* child_layer = iterator.Next()) {
       IntRect absolute_child_descendant_bounding_box;
       UpdateRecursive(layer, child_layer, overlap_map, child_recursion_data,

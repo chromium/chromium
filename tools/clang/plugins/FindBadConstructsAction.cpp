@@ -36,7 +36,7 @@ FindBadConstructsAction::FindBadConstructsAction() {
 std::unique_ptr<ASTConsumer> FindBadConstructsAction::CreateASTConsumer(
     CompilerInstance& instance,
     llvm::StringRef ref) {
-  return llvm::make_unique<PluginConsumer>(&instance, options_);
+  return std::make_unique<PluginConsumer>(&instance, options_);
 }
 
 bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,

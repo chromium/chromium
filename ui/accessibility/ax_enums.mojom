@@ -2,87 +2,92 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Must also be kept in sync with chrome/common/extensions/api/automation.idl.
+// Must also be kept in sync with extensions/common/api/automation.idl.
 module ax.mojom;
 
- // For new entries to the following four enums, also add to
- // chrome/common/extensions/api/automation.idl. This is enforced
- // by a PRESUBMIT check.
- //
- // Explanation of in-lined comments next to some enum values/attributes:
- //
- // Web: this attribute is only used in web content.
- //
- // Native: this attribute is only used in native UI.
- //
- // Implicit: for events, it would be cleaner if we just updated the AX node and
- //     each platform fired the appropriate events to indicate which
- //     platform-specific attributes changed.
- //
- //  if Native / [Platform1, ...] is specified, the attribute is only used
- //  on those platforms.
- //
- // If unspecified, the atribute is used across web and native on multiple
- // platforms.
+// For new entries to the following four enums, also add to
+// extensions/common/api/automation.idl. This is enforced
+// by a PRESUBMIT check.
+//
+// Explanation of in-lined comments next to some enum values/attributes:
+//
+// Web: this attribute is only used in web content.
+//
+// Native: this attribute is only used in native UI.
+//
+// Implicit: for events, it would be cleaner if we just updated the AX node and
+//     each platform fired the appropriate events to indicate which
+//     platform-specific attributes changed.
+//
+//  if Native / [Platform1, ...] is specified, the attribute is only used
+//  on those platforms.
+//
+// If unspecified, the attribute is used across web and native on multiple
+// platforms.
 
 enum Event {
   kNone,
-  kActiveDescendantChanged,   // Web
+  kActiveDescendantChanged,  // Web
   kAlert,
-  kAriaAttributeChanged,      // Implicit
-  kAutocorrectionOccured,     // Unknown: http://crbug.com/392498
-  kBlur,                      // Remove: http://crbug.com/392502
-  kCheckedStateChanged,       // Implicit
+  kAriaAttributeChanged,   // Implicit
+  kAutocorrectionOccured,  // Unknown: http://crbug.com/392498
+  kBlur,                   // Remove: http://crbug.com/392502
+  kCheckedStateChanged,    // Implicit
   kChildrenChanged,
   kClicked,
+  kControlsChanged,
   kDocumentSelectionChanged,
   kDocumentTitleChanged,
-  kExpandedChanged,           // Web
+  kEndOfTest,        // Sentinel value indicating the end of a test
+  kExpandedChanged,  // Web
   kFocus,
-  kFocusContext,              // Contextual focus event that must delay the next focus event
-  kHide,                      // Remove: http://crbug.com/392502
+  kFocusContext,  // Contextual focus event that must delay the next focus event
+  kHide,          // Remove: http://crbug.com/392502
   kHitTestResult,
   kHover,
-  kImageFrameUpdated,         // Web
-  kInvalidStatusChanged,      // Implicit
-  kLayoutComplete,            // Web
-  kLiveRegionCreated,         // Implicit
-  kLiveRegionChanged,         // Web
-  kLoadComplete,              // Web
-  kLoadStart,                 // Web / AuraLinux
-  kLocationChanged,           // Web
-  kMediaStartedPlaying,       // Native / Automation
-  kMediaStoppedPlaying,       // Native / Automation
-  kMenuEnd,                   // Native / Win
-  kMenuListItemSelected,      // Web
-  kMenuListValueChanged,      // Web
-  kMenuPopupEnd,              // Native
-  kMenuPopupHide,             // Native / AuraLinux
-  kMenuPopupStart,            // Native
-  kMenuStart,                 // Native / Win
+  kImageFrameUpdated,     // Web
+  kInvalidStatusChanged,  // Implicit
+  kLayoutComplete,        // Web
+  kLiveRegionCreated,     // Implicit
+  kLiveRegionChanged,     // Web
+  kLoadComplete,          // Web
+  kLoadStart,             // Web / AuraLinux
+  kLocationChanged,       // Web
+  kMediaStartedPlaying,   // Native / Automation
+  kMediaStoppedPlaying,   // Native / Automation
+  kMenuEnd,               // Native / Win
+  kMenuListItemSelected,  // Web
+  kMenuListValueChanged,  // Web
+  kMenuPopupEnd,          // Native
+  kMenuPopupHide,         // Native / AuraLinux
+  kMenuPopupStart,        // Native
+  kMenuStart,             // Native / Win
   kMouseCanceled,
   kMouseDragged,
   kMouseMoved,
   kMousePressed,
   kMouseReleased,
-  kRowCollapsed,              // Web / Mac
-  kRowCountChanged,           // Web / Mac
-  kRowExpanded,               // Web / Mac
-  kScrollPositionChanged,     // Web
-  kScrolledToAnchor,          // Web
-  kSelectedChildrenChanged,   // Web
-  kSelection,                 // Native
-  kSelectionAdd,              // Native
-  kSelectionRemove,           // Native
-  kShow,                      // Remove: http://crbug.com/392502
-  kStateChanged,              // Native / Automation
+  kRowCollapsed,             // Web / Mac
+  kRowCountChanged,          // Web / Mac
+  kRowExpanded,              // Web / Mac
+  kScrollPositionChanged,    // Web
+  kScrolledToAnchor,         // Web
+  kSelectedChildrenChanged,  // Web
+  kSelection,                // Native
+  kSelectionAdd,             // Native
+  kSelectionRemove,          // Native
+  kShow,                     // Remove: http://crbug.com/392502
+  kStateChanged,             // Native / Automation
   kTextChanged,
-  kWindowActivated,           // Native
-  kWindowDeactivated,         // Native
+  kWindowActivated,             // Native
+  kWindowDeactivated,           // Native
+  kWindowVisibilityChanged,     // Native
   kTextSelectionChanged,
-  kTreeChanged,               // Accessibility tree changed. Don't
-                              // explicitly fire an accessibility event,
-                              // only implicitly due to the change.
+  kTooltipClosed,
+  kTooltipOpened,
+  kTreeChanged,  // Accessibility tree changed. Don't
+                 // explicitly fire an accessibility event,
+                 // only implicitly due to the change.
   kValueChanged,
 };
 
@@ -94,17 +99,16 @@ enum Event {
 // internal roles used by the accessibility infrastructure.
 //
 // Explanation of in-lined comments next to some enum values.
- //
- // Web: this attribute is only used in web content.
- //
- // Native: this attribute is only used in native UI.
+//
+// Web: this attribute is only used in web content.
+//
+// Native: this attribute is only used in native UI.
 enum Role {
   kNone,
   kAbbr,
   kAlert,
   kAlertDialog,
   kAnchor,
-  kAnnotation,
   kApplication,
   kArticle,
   kAudio,
@@ -117,12 +121,15 @@ enum Role {
   kCell,
   kCheckBox,
   kClient,
+  kCode,
   kColorWell,
   kColumn,
   kColumnHeader,
   kComboBoxGrouping,
   kComboBoxMenuButton,
   kComplementary,
+  kComment,
+  kCommentSection,
   kContentDeletion,
   kContentInsertion,
   kContentInfo,
@@ -183,10 +190,12 @@ enum Role {
   // --------------------------------------------------------------
   kDocument,
   kEmbeddedObject,
+  kEmphasis,
   kFeed,
   kFigcaption,
   kFigure,
   kFooter,
+  kFooterAsNonLandmark,
   kForm,
   kGenericContainer,
   // --------------------------------------------------------------
@@ -199,6 +208,8 @@ enum Role {
   // --------------------------------------------------------------
   kGrid,
   kGroup,
+  kHeader,
+  kHeaderAsNonLandmark,
   kHeading,
   kIframe,
   kIframePresentational,
@@ -250,20 +261,25 @@ enum Role {
   kRadioButton,
   kRadioGroup,
   kRegion,
+  kRevision,
   kRootWebArea,
   kRow,
   kRowHeader,
   kRuby,
+  kRubyAnnotation,
   kScrollBar,
   kScrollView,
   kSearch,
   kSearchBox,
+  kSection,
   kSlider,
   kSliderThumb,
   kSpinButton,
   kSplitter,
   kStaticText,
   kStatus,
+  kStrong,
+  kSuggestion,
   kSvgRoot,
   kSwitch,
   kTab,
@@ -298,7 +314,7 @@ enum State {
   kEditable,
   kExpanded,
   kFocusable,
-   // Grows horizontally, e.g. most toolbars and separators.
+  // Grows horizontally, e.g. most toolbars and separators.
   kHorizontal,
   kHovered,
   // Skip over this node in the accessibility tree, but keep its subtree.
@@ -310,14 +326,14 @@ enum State {
   kProtected,
   kRequired,
   kRichlyEditable,
-   // Grows vertically, e.g. menu or combo box.
+  // Grows vertically, e.g. menu or combo box.
   kVertical,
   kVisited,
 };
 
- // An action to be taken on an accessibility node.
- // In contrast to |AXDefaultActionVerb|, these describe what happens to the
- // object, e.g. "FOCUS".
+// An action to be taken on an accessibility node.
+// In contrast to |AXDefaultActionVerb|, these describe what happens to the
+// object, e.g. "FOCUS".
 enum Action {
   kNone,
 
@@ -333,38 +349,44 @@ enum Action {
 
   kCustomAction,
 
-   // Decrement a slider or range control by one step value.
+  // Decrement a slider or range control by one step value.
   kDecrement,
 
-   // Do the default action for an object, typically this means "click".
+  // Do the default action for an object, typically this means "click".
   kDoDefault,
 
   kFocus,
 
-   // Return the content of this image object in the image_data attribute.
+  // Return the content of this image object in the image_data attribute.
   kGetImageData,
 
   // Gets the bounding rect for a range of text.
   kGetTextLocation,
 
-   // Given a point, find the object it corresponds to and fire a
-   // |AXActionData.hit_test_event_to_fire| event on it in response.
+  kHideTooltip,
+
+  // Given a point, find the object it corresponds to and fire a
+  // |AXActionData.hit_test_event_to_fire| event on it in response.
   kHitTest,
 
-   // Increment a slider or range control by one step value.
+  // Increment a slider or range control by one step value.
   kIncrement,
 
-   // Load inline text boxes for this subtree, providing information
-   // about word boundaries, line layout, and individual character
-   // bounding boxes.
+  // For internal use only; signals to tree sources to invalidate an entire
+  // tree.
+  kInternalInvalidateTree,
+
+  // Load inline text boxes for this subtree, providing information
+  // about word boundaries, line layout, and individual character
+  // bounding boxes.
   kLoadInlineTextBoxes,
 
-   // Delete any selected text in the control's text value and
-   // insert |AXActionData::value| in its place, like when typing or pasting.
+  // Delete any selected text in the control's text value and
+  // insert |AXActionData::value| in its place, like when typing or pasting.
   kReplaceSelectedText,
 
-   // Scrolls by approximately one screen in a specific direction. Should be
-   // called on a node that has scrollable boolean set to true.
+  // Scrolls by approximately one screen in a specific direction. Should be
+  // called on a node that has scrollable boolean set to true.
   kScrollBackward,
   kScrollDown,
   kScrollForward,
@@ -372,13 +394,13 @@ enum Action {
   kScrollRight,
   kScrollUp,
 
-   // Scroll any scrollable containers to make the target object visible
-   // on the screen.  Optionally pass a subfocus rect in
-   // AXActionData.target_rect, in node-local coordinates.
+  // Scroll any scrollable containers to make the target object visible
+  // on the screen.  Optionally pass a subfocus rect in
+  // AXActionData.target_rect, in node-local coordinates.
   kScrollToMakeVisible,
 
-   // Scroll the given object to a specified point on the screen in
-   // global screen coordinates. Pass a point in AXActionData.target_point.
+  // Scroll the given object to a specified point on the screen in
+  // global screen coordinates. Pass a point in AXActionData.target_point.
   kScrollToPoint,
 
   // Notifies a node that it has accessibility focus.
@@ -389,15 +411,19 @@ enum Action {
   kSetScrollOffset,
   kSetSelection,
 
-   // Don't focus this node, but set it as the sequential focus navigation
-   // starting point, so that pressing Tab moves to the next element
-   // following this one, for example.
+  // Don't focus this node, but set it as the sequential focus navigation
+  // starting point, so that pressing Tab moves to the next element
+  // following this one, for example.
   kSetSequentialFocusNavigationStartingPoint,
 
-   // Replace the value of the control with AXActionData::value and
-   // reset the selection, if applicable.
+  // Replace the value of the control with AXActionData::value and
+  // reset the selection, if applicable.
   kSetValue,
   kShowContextMenu,
+
+  // Send an event signaling the end of a test.
+  kSignalEndOfTest,
+  kShowTooltip,
 };
 
 enum ActionFlags {
@@ -406,22 +432,35 @@ enum ActionFlags {
   kRequestInlineTextBoxes,
 };
 
- // A list of valid values for the |AXIntAttribute| |default_action_verb|.
- // These will describe the action that will be performed on a given node when
- // executing the default action, which is a click.
- // In contrast to |AXAction|, these describe what the user can do on the
- // object, e.g. "PRESS", not what happens to the object as a result.
- // Only one verb can be used at a time to describe the default action.
+// A list of valid values for the horizontal and vertical scroll alignment
+// arguments in |AXActionData|. These values control where a node is scrolled
+// in the viewport.
+enum ScrollAlignment {
+  kNone,
+  kScrollAlignmentCenter,
+  kScrollAlignmentTop,
+  kScrollAlignmentBottom,
+  kScrollAlignmentLeft,
+  kScrollAlignmentRight,
+  kScrollAlignmentClosestEdge
+};
+
+// A list of valid values for the |AXIntAttribute| |default_action_verb|.
+// These will describe the action that will be performed on a given node when
+// executing the default action, which is a click.
+// In contrast to |AXAction|, these describe what the user can do on the
+// object, e.g. "PRESS", not what happens to the object as a result.
+// Only one verb can be used at a time to describe the default action.
 enum DefaultActionVerb {
   kNone,
   kActivate,
   kCheck,
   kClick,
 
-   // A click will be performed on one of the node's ancestors.
-   // This happens when the node itself is not clickable, but one of its
-   // ancestors has click handlers attached which are able to capture the click
-   // as it bubbles up.
+  // A click will be performed on one of the node's ancestors.
+  // This happens when the node itself is not clickable, but one of its
+  // ancestors has click handlers attached which are able to capture the click
+  // as it bubbles up.
   kClickAncestor,
 
   kJump,
@@ -431,7 +470,7 @@ enum DefaultActionVerb {
   kUncheck,
 };
 
- // A change to the accessibility tree.
+// A change to the accessibility tree.
 enum Mutation {
   kNone,
   kNodeCreated,
@@ -443,16 +482,16 @@ enum Mutation {
 enum StringAttribute {
   kNone,
   kAccessKey,
-   // Only used when invalid_state == invalid_state_other.
+  // Only used when invalid_state == invalid_state_other.
   kAriaInvalidValue,
   kAutoComplete,
   kChildTreeId,
-  kClassName,       // Native / Android
+  kClassName,  // Native / Android
   kContainerLiveRelevant,
   kContainerLiveStatus,
   kDescription,
   kDisplay,
-   // Only present when different from parent.
+  // Only present when different from parent.
   kFontFamily,
   kHtmlTag,
   // Stores an automatic image annotation if one is available. Only valid on
@@ -460,15 +499,19 @@ enum StringAttribute {
   kImageAnnotation,
   kImageDataUrl,
   kInnerHtml,
+  kInputType,
   kKeyShortcuts,
-   // Only present when different from parent.
+  // Only present when different from parent.
   kLanguage,
   kName,
   kLiveRelevant,
   kLiveStatus,
+  // Only if not already exposed in kName (NameFrom::kPlaceholder)
   kPlaceholder,
   kRole,
   kRoleDescription,
+  // Only if not already exposed in kName (NameFrom::kTitle)
+  kTooltip,
   kUrl,
   kValue,
 };
@@ -476,7 +519,7 @@ enum StringAttribute {
 enum IntAttribute {
   kNone,
   kDefaultActionVerb,
-   // Scrollable container attributes.
+  // Scrollable container attributes.
   kScrollX,
   kScrollXMin,
   kScrollXMax,
@@ -484,115 +527,140 @@ enum IntAttribute {
   kScrollYMin,
   kScrollYMax,
 
-   // Attributes for retrieving the endpoints of a selection.
+  // Attributes for retrieving the endpoints of a selection.
   kTextSelStart,
   kTextSelEnd,
 
-   // aria_col* and aria_row* attributes
+  // aria_col* and aria_row* attributes
   kAriaColumnCount,
   kAriaCellColumnIndex,
+  kAriaCellColumnSpan,
   kAriaRowCount,
   kAriaCellRowIndex,
+  kAriaCellRowSpan,
 
-   // Table attributes.
+  // Table attributes.
   kTableRowCount,
   kTableColumnCount,
   kTableHeaderId,
 
-   // Table row attributes.
+  // Table row attributes.
   kTableRowIndex,
   kTableRowHeaderId,
 
-   // Table column attributes.
+  // Table column attributes.
   kTableColumnIndex,
   kTableColumnHeaderId,
 
-   // Table cell attributes.
+  // Table cell attributes.
   kTableCellColumnIndex,
   kTableCellColumnSpan,
   kTableCellRowIndex,
   kTableCellRowSpan,
   kSortDirection,
 
-   // Tree control attributes.
+  // Tree control attributes.
   kHierarchicalLevel,
 
-   // What information was used to compute the object's name
-   // (of type AXNameFrom).
+  // What information was used to compute the object's name
+  // (of type AXNameFrom).
   kNameFrom,
 
-   // What information was used to compute the object's description
-   // (of type AXDescriptionFrom).
+  // What information was used to compute the object's description
+  // (of type AXDescriptionFrom).
   kDescriptionFrom,
 
-   // Relationships between this element and other elements.
+  // Relationships between this element and other elements.
   kActivedescendantId,
   kDetailsId,
   kErrormessageId,
   kInPageLinkTargetId,
   kMemberOfId,
   kNextOnLineId,
+  kPopupForId,
   kPreviousOnLineId,
 
-   // Input restriction, if any, such as readonly or disabled.
-   // Of type AXRestriction, see below.
-   // No value or enabled control or other object that is not disabled.
+  // Input restriction, if any, such as readonly or disabled.
+  // Of type AXRestriction, see below.
+  // No value or enabled control or other object that is not disabled.
   kRestriction,
 
-   // Position or Number of items in current set of listitems or treeitems
+  // Position or Number of items in current set of listitems or treeitems
   kSetSize,
   kPosInSet,
 
-   // In the case of Role::kColorWell, specifies the selected color.
+  // In the case of Role::kColorWell, specifies the selected color.
   kColorValue,
 
-   // Indicates the element that represents the current item within a container
-   // or set of related elements.
+  // Indicates the element that represents the current item within a container
+  // or set of related elements.
   kAriaCurrentState,
 
-   // Text attributes.
+  // Text attributes.
 
-   // Foreground and background color in RGBA.
+  // Foreground and background color in RGBA.
   kBackgroundColor,
   kColor,
 
   kHasPopup,
 
-   // Indicates if a form control has invalid input or
-   // if an element has an aria-invalid attribute.
+  // Image annotation status, of type ImageAnnotationStatus.
+  kImageAnnotationStatus,
+
+  // Indicates if a form control has invalid input or
+  // if an element has an aria-invalid attribute.
   kInvalidState,
 
-   // Of type AXCheckedState
+  // Of type AXCheckedState
   kCheckedState,
 
-   // Specifies the direction of the text, e.g., right-to-left.
+  // The list style type. Only available on list items.
+  kListStyle,
+
+  // Specifies the direction of the text, e.g., right-to-left.
   kTextDirection,
 
-   // Specifies the position of the text, e.g., subscript.
+  // Specifies the position of the text, e.g., subscript.
   kTextPosition,
 
-   // Bold, italic, underline, etc.
+  // Bold, italic, underline, etc.
   kTextStyle,
 
-   // Focus traversal in views and Android.
+  // The overline text decoration style.
+  kTextOverlineStyle,
+
+  // The strikethrough text decoration style.
+  kTextStrikethroughStyle,
+
+  // The underline text decoration style.
+  kTextUnderlineStyle,
+
+  // Focus traversal in views and Android.
   kPreviousFocusId,
   kNextFocusId,
 
-   // Image annotation status, of type ImageAnnotationStatus.
-  kImageAnnotationStatus,
+  // For indicating what functions can be performed when a dragged object
+  // is released on the drop target.
+  // Note: aria-dropeffect is deprecated in WAI-ARIA 1.1.
+  kDropeffect,
 };
 
 enum FloatAttribute {
   kNone,
-   // Range attributes.
+  // Range attributes.
   kValueForRange,
   kMinValueForRange,
   kMaxValueForRange,
   kStepValueForRange,
 
-   // Text attributes.
-   // Font size is in pixels.
+  // Text attributes.
+  // Font size is in pixels.
   kFontSize,
+
+  // Font weight can take on any arbitrary numeric value. Increments of 100 in
+  // range [0, 900] represent keywords such as light, normal, bold, etc. 0 is
+  // the default.
+  kFontWeight,
 };
 
 // These attributes can take three states:
@@ -605,35 +673,37 @@ enum FloatAttribute {
 // given attribute, while another tree source only uses two.
 enum BoolAttribute {
   kNone,
-   // Generic busy state, does not have to be on a live region.
+
+  // Generic busy state, does not have to be on a live region.
   kBusy,
-   // The object is at the root of an editable field, such as a content
-   // editable.
+
+  // The object is at the root of an editable field, such as a content
+  // editable.
   kEditableRoot,
 
-   // Live region attributes.
+  // Live region attributes.
   kContainerLiveAtomic,
   kContainerLiveBusy,
   kLiveAtomic,
 
-   // If a dialog box is marked as explicitly modal
+  // If a dialog box is marked as explicitly modal
   kModal,
 
-   // If this is set, all of the other fields in this struct should
-   // be ignored and only the locations should change.
+  // If this is set, all of the other fields in this struct should
+  // be ignored and only the locations should change.
   kUpdateLocationOnly,
 
-   // Set on a canvas element if it has fallback content.
+  // Set on a canvas element if it has fallback content.
   kCanvasHasFallback,
 
-   // Indicates this node is scrollable (Android only).
+  // Indicates this node is scrollable (Android only).
   kScrollable,
 
-   // A hint to clients that the node is clickable.
+  // A hint to clients that the node is clickable.
   kClickable,
 
-   // Indicates that this node clips its children, i.e. may have
-   // overflow: hidden or clip children by default.
+  // Indicates that this node clips its children, i.e. may have
+  // overflow: hidden or clip children by default.
   kClipsChildren,
 
   // Indicates whether this node is selected or unselected.
@@ -641,68 +711,79 @@ enum BoolAttribute {
 
   // Indicates whether this node supports text location.
   kSupportsTextLocation,
+
+  // Indicates whether this node can be grabbed for drag-and-drop operation.
+  // Note: aria-grabbed is deprecated in WAI-ARIA 1.1.
+  kGrabbed,
+
+  // Indicates whether this node causes a hard line-break
+  // (e.g. block level elements, or <br>)
+  kIsLineBreakingObject,
+
+  // Indicates whether this node causes a page break
+  kIsPageBreakingObject,
 };
 
 enum IntListAttribute {
   kNone,
-   // Ids of nodes that are children of this node logically, but are
-   // not children of this node in the tree structure. As an example,
-   // a table cell is a child of a row, and an 'indirect' child of a
-   // column.
+  // Ids of nodes that are children of this node logically, but are
+  // not children of this node in the tree structure. As an example,
+  // a table cell is a child of a row, and an 'indirect' child of a
+  // column.
   kIndirectChildIds,
 
-   // Relationships between this element and other elements.
+  // Relationships between this element and other elements.
   kControlsIds,
   kDescribedbyIds,
   kFlowtoIds,
   kLabelledbyIds,
   kRadioGroupIds,
 
-   // For static text. These int lists must be the same size; they represent
-   // the start and end character offset of each marker. Examples of markers
-   // include spelling and grammar errors, and find-in-page matches.
+  // For static text. These int lists must be the same size; they represent
+  // the start and end character offset of each marker. Examples of markers
+  // include spelling and grammar errors, and find-in-page matches.
   kMarkerTypes,
   kMarkerStarts,
   kMarkerEnds,
 
-   // For inline text. This is the pixel position of the end of this
-   // character within the bounding rectangle of this object, in the
-   // direction given by StringAttribute::kTextDirection. For example,
-   // for left-to-right text, the first offset is the right coordinate of
-   // the first character within the object's bounds, the second offset
-   // is the right coordinate of the second character, and so on.
+  // For inline text. This is the pixel position of the end of this
+  // character within the bounding rectangle of this object, in the
+  // direction given by StringAttribute::kTextDirection. For example,
+  // for left-to-right text, the first offset is the right coordinate of
+  // the first character within the object's bounds, the second offset
+  // is the right coordinate of the second character, and so on.
   kCharacterOffsets,
 
-   // Used for caching. Do not read directly. Use
-   // |AXNode::GetOrComputeLineStartOffsets|
-   // For all text fields and content editable roots: A list of the start
-   // offsets of each line inside this object.
+  // Used for caching. Do not read directly. Use
+  // |AXNode::GetOrComputeLineStartOffsets|
+  // For all text fields and content editable roots: A list of the start
+  // offsets of each line inside this object.
   kCachedLineStarts,
 
-   // For inline text. These int lists must be the same size; they represent
-   // the start and end character offset of each word within this text.
+  // For inline text. These int lists must be the same size; they represent
+  // the start and end character offset of each word within this text.
   kWordStarts,
   kWordEnds,
 
-   // Used for an UI element to define custom actions for it. For example, a
-   // list UI will allow a user to reorder items in the list by dragging the
-   // items. Developer can expose those actions as custom actions. Currently
-   // custom actions are used only in Android window.
+  // Used for an UI element to define custom actions for it. For example, a
+  // list UI will allow a user to reorder items in the list by dragging the
+  // items. Developer can expose those actions as custom actions. Currently
+  // custom actions are used only in Android window.
   kCustomActionIds,
 };
 
 enum StringListAttribute {
   kNone,
-   // Descriptions for custom actions. This must be aligned with
-   // custom_action_ids.
+  // Descriptions for custom actions. This must be aligned with
+  // custom_action_ids.
   kCustomActionDescriptions,
 };
 
- // TODO(dmazzoni, nektar): make this list not grow exponentially as new
- // MarkerTypes are added
+// TODO(dmazzoni, nektar): make this list not grow exponentially as new
+// MarkerTypes are added
 enum MarkerType {
   kNone,
-   // Assignments are ignored by the parser, but are kept here for clarity.
+  // Assignments are ignored by the parser, but are kept here for clarity.
   kSpelling = 1,
   kGrammar = 2,
   kSpellingGrammar = 3,
@@ -710,8 +791,8 @@ enum MarkerType {
   kSpellingTextMatch = 5,
   kGrammarTextMatch = 6,
   kSpellingGrammarTextMatch = 7,
-   // DocumentMarker::MarkerType::Composition = 8 is ignored for accessibility
-   // purposes
+  // DocumentMarker::MarkerType::Composition = 8 is ignored for accessibility
+  // purposes
   kActiveSuggestion = 16,
   kSpellingActiveSuggestion = 17,
   kGrammarActiveSuggestion = 18,
@@ -728,7 +809,7 @@ enum MarkerType {
   kSpellingTextMatchSuggestion = 37,
   kGrammarTextMatchSuggestion = 38,
   kSpellingGrammarTextMatchSuggestion = 39,
-   // We again skip over DocumentMarker::MarkerType::Composition = 8 here
+  // We again skip over DocumentMarker::MarkerType::Composition = 8 here
   kActiveSuggestionSuggestion = 48,
   kSpellingActiveSuggestionSuggestion = 49,
   kGrammarActiveSuggestionSuggestion = 50,
@@ -737,6 +818,16 @@ enum MarkerType {
   kSpellingTextMatchActiveSuggestionSuggestion = 53,
   kGrammarTextMatchActiveSuggestionSuggestion = 54,
   kSpellingGrammarTextMatchActiveSuggestionSuggestion = 55,
+};
+
+enum ListStyle {
+  kNone,
+  kCircle,
+  kDisc,
+  kImage,
+  kNumeric,
+  kSquare,
+  kOther, // Language specific ordering (alpha, roman, cjk-ideographic, etc...)
 };
 
 enum TextDirection {
@@ -753,14 +844,24 @@ enum TextPosition {
   kSuperscript,
 };
 
- // A Java counterpart will be generated for this enum.
- // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.accessibility
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.accessibility
 enum TextStyle {
   kBold,
   kItalic,
   kUnderline,
   kLineThrough,
+  kOverline,
   kNone,
+};
+
+enum TextDecorationStyle {
+  kNone,
+  kDotted,
+  kDashed,
+  kSolid,
+  kDouble,
+  kWavy,
 };
 
 enum AriaCurrentState {
@@ -790,15 +891,13 @@ enum InvalidState {
   kNone,
   kFalse,
   kTrue,
-  kSpelling,
-  kGrammar,
   kOther,
 };
 
- // Input restriction associated with an object.
- // No value for a control means it is enabled.
- // Use read_only for a textbox that allows focus/selection but not input.
- // Use disabled for a control or group of controls that disallows input.
+// Input restriction associated with an object.
+// No value for a control means it is enabled.
+// Use read_only for a textbox that allows focus/selection but not input.
+// Use disabled for a control or group of controls that disallows input.
 enum Restriction {
   kNone,
   kReadOnly,
@@ -838,8 +937,8 @@ enum DescriptionFrom {
   kUninitialized,
   kAttribute,
   kContents,
-  kPlaceholder,
   kRelatedElement,
+  kTitle,
 };
 
 enum EventFrom {
@@ -849,7 +948,7 @@ enum EventFrom {
   kAction,
 };
 
- // Touch gestures on Chrome OS.
+// Touch gestures on Chrome OS.
 enum Gesture {
   kNone,
   kClick,
@@ -880,19 +979,19 @@ enum TextAffinity {
   kUpstream,
 };
 
- // Compares two nodes in an accessibility tree in pre-order traversal.
+// Compares two nodes in an accessibility tree in pre-order traversal.
 enum TreeOrder {
   kNone,
-   // Not in the same tree, or other error.
+  // Not in the same tree, or other error.
   kUndefined,
 
-   // First node is before the second one.
+  // First node is before the second one.
   kBefore,
 
-   // Nodes are the same.
+  // Nodes are the same.
   kEqual,
 
-   // First node is after the second one.
+  // First node is after the second one.
   kAfter,
 };
 
@@ -903,32 +1002,50 @@ enum AXTreeIDType {
 };
 
 enum ImageAnnotationStatus {
-   // Not an image, or image annotation feature not enabled.
+  // Not an image, or image annotation feature not enabled.
   kNone,
 
-   // Not loaded yet, already labeled by the author, or not eligible
-   // due to size, type, etc.
+  // Not eligible due to the scheme of the page. Image annotations are only
+  // generated for images on http, https, file and data URLs.
+  kWillNotAnnotateDueToScheme,
+
+  // Not loaded yet, already labeled by the author, or not eligible
+  // due to size, type, etc.
   kIneligibleForAnnotation,
 
-   // Eligible to be automatically annotated if the user requests it.
+  // Eligible to be automatically annotated if the user requests it.
+  // This is communicated to the user via a tutor message.
   kEligibleForAnnotation,
 
-   // An annotation has been requested but has not been received yet.
+  // Eligible to be automatically annotated but this is not communicated to the
+  // user.
+  kSilentlyEligibleForAnnotation,
+
+  // An annotation has been requested but has not been received yet.
   kAnnotationPending,
 
-   // An annotation has been provided and kImageAnnotation contains the
-   // annotation text.
+  // An annotation has been provided and kImageAnnotation contains the
+  // annotation text.
   kAnnotationSucceeded,
 
-   // The annotation request was processed successfully, but it was not
-   // possible to come up with an annotation for this image.
+  // The annotation request was processed successfully, but it was not
+  // possible to come up with an annotation for this image.
   kAnnotationEmpty,
 
-   // The image is classified as adult content and no annotation will
-   // be generated.
+  // The image is classified as adult content and no annotation will
+  // be generated.
   kAnnotationAdult,
 
-   // The annotation process failed, e.g. unable to contact the server,
-   // request timed out, etc.
+  // The annotation process failed, e.g. unable to contact the server,
+  // request timed out, etc.
   kAnnotationProcessFailed,
+};
+
+enum Dropeffect {
+  kNone,
+  kCopy,
+  kExecute,
+  kLink,
+  kMove,
+  kPopup,
 };

@@ -26,6 +26,7 @@ public class ThumbnailRequestGlue implements ThumbnailRequest {
     private final OfflineItem mItem;
     private final int mIconWidthPx;
     private final int mIconHeightPx;
+    private final float mMaxThumbnailScaleFactor;
     private final VisualsCallback mCallback;
 
     /** Creates a {@link ThumbnailRequestGlue} instance. */
@@ -35,9 +36,9 @@ public class ThumbnailRequestGlue implements ThumbnailRequest {
         mProvider = provider;
         mItem = item;
 
-        // Scale the thumbnail quality to mdpi for high dpi devices.
-        mIconWidthPx = downscaleThumbnailSize(iconWidthPx, maxThumbnailScaleFactor);
-        mIconHeightPx = downscaleThumbnailSize(iconHeightPx, maxThumbnailScaleFactor);
+        mIconWidthPx = iconWidthPx;
+        mIconHeightPx = iconHeightPx;
+        mMaxThumbnailScaleFactor = maxThumbnailScaleFactor;
 
         mCallback = callback;
     }
@@ -81,14 +82,24 @@ public class ThumbnailRequestGlue implements ThumbnailRequest {
                 callback.onResult(null);
             } else {
                 Bitmap bitmap = visuals.icon;
+                int newWidth = bitmap.getWidth();
+                int newHeight = bitmap.getHeight();
 
+                // Downscale to save memory if the bitmap is not smaller than the icon view.
+                if (newWidth > mIconWidthPx && newHeight > mIconHeightPx) {
+                    newWidth = downscaleThumbnailSize(bitmap.getWidth());
+                    newHeight = downscaleThumbnailSize(bitmap.getHeight());
+                }
+
+                // Fit the bitmap into the icon view. Note that we have to use width here because
+                // the ThumbnailProviderImpl only keys off of width as well.
                 int minDimension = Math.min(bitmap.getWidth(), bitmap.getHeight());
-                // Note that we have to use width here because the ThumbnailProviderImpl only keys
-                // off of width as well.
                 if (minDimension > mIconWidthPx) {
-                    int newWidth = (int) (((long) bitmap.getWidth()) * mIconWidthPx / minDimension);
-                    int newHeight =
-                            (int) (((long) bitmap.getHeight()) * mIconWidthPx / minDimension);
+                    newWidth = (int) (((long) bitmap.getWidth()) * mIconWidthPx / minDimension);
+                    newHeight = (int) (((long) bitmap.getHeight()) * mIconWidthPx / minDimension);
+                }
+
+                if (bitmap.getWidth() != newWidth || bitmap.getHeight() != newHeight) {
                     bitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, false);
                 }
 
@@ -100,14 +111,12 @@ public class ThumbnailRequestGlue implements ThumbnailRequest {
     /**
      * Returns size in pixel used by the thumbnail request, considering dip scale factor.
      * @param currentSize The current size before considering the dip scale factor.
-     * @param maxScaleFactor The maximum scale factor we expected to show as the thumbnail. Device
-     *                       with higher scale factor will be downscaled to this level.
      */
-    private int downscaleThumbnailSize(int currentSize, float maxScaleFactor) {
+    private int downscaleThumbnailSize(int currentSize) {
         DisplayAndroid display =
                 DisplayAndroid.getNonMultiDisplay(ContextUtils.getApplicationContext());
         float scale = display.getDipScale();
-        if (scale <= maxScaleFactor) return currentSize;
-        return (int) (maxScaleFactor * currentSize / scale);
+        if (scale <= mMaxThumbnailScaleFactor) return currentSize;
+        return (int) (mMaxThumbnailScaleFactor * currentSize / scale);
     }
 }

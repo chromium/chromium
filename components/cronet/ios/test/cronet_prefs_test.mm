@@ -79,7 +79,7 @@ class PrefsTest : public CronetTestBase {
   NSURLSession* session_;
 };
 
-TEST_F(PrefsTest, HttpSeverProperties) {
+TEST_F(PrefsTest, HttpServerProperties) {
   base::FilePath storage_path;
   bool result = base::PathService::Get(base::DIR_CACHE, &storage_path);
   ASSERT_TRUE(result);
@@ -115,13 +115,11 @@ TEST_F(PrefsTest, HttpSeverProperties) {
   // Check the file content
   ASSERT_TRUE(prefs_file_content);
   ASSERT_TRUE(
-      [prefs_file_content containsString:@"{\"http_server_properties\":{"])
+      [prefs_file_content containsString:@"{\"http_server_properties\":"])
       << "Unable to find 'http_server_properties' in the JSON prefs.";
-  ASSERT_TRUE(
-      [prefs_file_content containsString:@"\"supports_quic\":{\"address\""
-                                          ":\"127.0.0.1\",\"used_quic\":true}"])
+  ASSERT_TRUE([prefs_file_content containsString:@"\"supports_quic\":"])
       << "Unable to find 'supports_quic' in the JSON prefs.";
-  ASSERT_TRUE([prefs_file_content containsString:@"{\"server_info\":\""])
+  ASSERT_TRUE([prefs_file_content containsString:@"\"server_info\":"])
       << "Unable to find 'server_info' in the JSON prefs.";
 
   // Delete the prefs file to avoid side effects with other tests.

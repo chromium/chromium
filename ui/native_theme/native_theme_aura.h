@@ -24,34 +24,41 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
   static NativeThemeAura* instance();
   static NativeThemeAura* web_instance();
 
-  // Overridden from NativeThemeBase:
-  SkColor GetSystemColor(ColorId color_id) const override;
+  // NativeThemeBase:
+  SkColor GetSystemColor(ColorId color_id,
+                         ColorScheme color_scheme) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
       const gfx::Size& size,
-      const MenuBackgroundExtraParams& menu_background) const override;
-  void PaintMenuItemBackground(
-      cc::PaintCanvas* canvas,
-      State state,
-      const gfx::Rect& rect,
-      const MenuItemExtraParams& menu_item) const override;
+      const MenuBackgroundExtraParams& menu_background,
+      ColorScheme color_scheme) const override;
+  void PaintMenuItemBackground(cc::PaintCanvas* canvas,
+                               State state,
+                               const gfx::Rect& rect,
+                               const MenuItemExtraParams& menu_item,
+                               ColorScheme color_scheme) const override;
   void PaintArrowButton(cc::PaintCanvas* gc,
                         const gfx::Rect& rect,
                         Part direction,
-                        State state) const override;
+                        State state,
+                        ColorScheme color_scheme,
+                        const ScrollbarArrowExtraParams& arrow) const override;
   void PaintScrollbarTrack(cc::PaintCanvas* canvas,
                            Part part,
                            State state,
                            const ScrollbarTrackExtraParams& extra_params,
-                           const gfx::Rect& rect) const override;
+                           const gfx::Rect& rect,
+                           ColorScheme color_scheme) const override;
   void PaintScrollbarThumb(cc::PaintCanvas* canvas,
                            Part part,
                            State state,
                            const gfx::Rect& rect,
-                           ScrollbarOverlayColorTheme theme) const override;
+                           ScrollbarOverlayColorTheme theme,
+                           ColorScheme color_scheme) const override;
   void PaintScrollbarCorner(cc::PaintCanvas* canvas,
                             State state,
-                            const gfx::Rect& rect) const override;
+                            const gfx::Rect& rect,
+                            ColorScheme color_scheme) const override;
   gfx::Size GetPartSize(Part part,
                         State state,
                         const ExtraParams& extra) const override;
@@ -60,6 +67,14 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
   gfx::Rect GetNinePatchAperture(Part part) const override;
 
  private:
+  static void DrawPartiallyRoundRect(cc::PaintCanvas* canvas,
+                                     const gfx::Rect& rect,
+                                     const SkScalar upper_left_radius,
+                                     const SkScalar upper_right_radius,
+                                     const SkScalar lower_right_radius,
+                                     const SkScalar lower_left_radius,
+                                     const cc::PaintFlags& flags);
+
   bool use_overlay_scrollbars_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeThemeAura);

@@ -7,8 +7,10 @@
 #include <sys/socket.h>
 
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
+#include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_sets.h"
+#include "sandbox/linux/services/syscall_wrappers.h"
 #include "sandbox/linux/syscall_broker/broker_process.h"
 #include "sandbox/linux/system_headers/linux_futex.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
@@ -38,6 +40,9 @@ ResultExpr AudioProcessPolicy::EvaluateSyscall(int system_call_number) const {
 #endif
 #if defined(__NR_ftruncate64)
     case __NR_ftruncate64:
+#endif
+#if defined(__NR_fallocate)
+    case __NR_fallocate:
 #endif
 #if defined(__NR_getdents)
     case __NR_getdents:
@@ -86,6 +91,23 @@ ResultExpr AudioProcessPolicy::EvaluateSyscall(int system_call_number) const {
 #else
       return sandbox::RestrictFutex();
 #endif
+    }
+#endif
+#if defined(__NR_kill)
+    case __NR_kill: {
+      // man kill says:
+      // "If sig is 0, then no signal is sent, but existence and permission
+      //  checks are still performed; this can be used to check for the
+      //  existence of a process ID or process group ID that the caller is
+      //  permitted to signal."
+      //
+      // This seems to be tripping up at least ESET's NOD32 anti-virus, causing
+      // an unnecessary crash in the audio process. See: http://crbug.com/904787
+      const Arg<pid_t> pid(0);
+      const Arg<int> sig(1);
+      return If(pid == sandbox::sys_getpid(), Allow())
+          .ElseIf(sig == 0, Error(EPERM))
+          .Else(sandbox::CrashSIGSYSKill());
     }
 #endif
 #if defined(__NR_socket)

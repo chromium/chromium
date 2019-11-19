@@ -16,8 +16,7 @@ namespace blink {
 class BackgroundFetchManager;
 
 class ServiceWorkerRegistrationBackgroundFetch final
-    : public GarbageCollectedFinalized<
-          ServiceWorkerRegistrationBackgroundFetch>,
+    : public GarbageCollected<ServiceWorkerRegistrationBackgroundFetch>,
       public Supplement<ServiceWorkerRegistration> {
   USING_GARBAGE_COLLECTED_MIXIN(ServiceWorkerRegistrationBackgroundFetch);
 

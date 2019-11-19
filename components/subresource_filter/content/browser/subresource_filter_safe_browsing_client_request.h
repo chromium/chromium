@@ -35,6 +35,7 @@ class SubresourceFilterSafeBrowsingClientRequest
  public:
   SubresourceFilterSafeBrowsingClientRequest(
       size_t request_id,
+      base::TimeTicks start_time_,
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
@@ -73,13 +74,14 @@ class SubresourceFilterSafeBrowsingClientRequest
   // SubresourceFilterSafeBrowsingClient).
   const size_t request_id_;
 
+  // The time when the request started, measured on the UI thread.
+  const base::TimeTicks start_time_;
+
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
   SubresourceFilterSafeBrowsingClient* client_ = nullptr;
 
   // Timer to abort the safe browsing check if it takes too long.
   base::OneShotTimer timer_;
-
-  base::TimeTicks start_time_;
 
   bool request_completed_ = false;
 

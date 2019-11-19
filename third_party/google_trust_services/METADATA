@@ -1,0 +1,16 @@
+name: "Google Trust Services Recommended Roots"
+description:
+    "The list of root certificates recommended by Google Trust Services as "
+    "suitable for connecting to Google services, either now or in the future. "
+    "Described at https://pki.goog/faq.html for purposes of embedded "
+    "devices/software."
+
+third_party {
+  url {
+    type: ARCHIVE
+    value: "https://pki.goog/roots.pem"
+  }
+  version: ""
+  last_upgrade_date { year: 2019 month: 4 day: 22 }
+  license_type: NOTICE
+}

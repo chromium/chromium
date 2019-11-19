@@ -23,10 +23,10 @@ void TetherHostResponseRecorder::RegisterPrefs(
   // same prioritization criteria.
   registry->RegisterListPref(
       prefs::kMostRecentTetherAvailablilityResponderIds,
-      user_prefs::PrefRegistrySyncable::PrefRegistrationFlags::SYNCABLE_PREF);
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterListPref(
       prefs::kMostRecentConnectTetheringResponderIds,
-      user_prefs::PrefRegistrySyncable::PrefRegistrationFlags::SYNCABLE_PREF);
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 TetherHostResponseRecorder::TetherHostResponseRecorder(

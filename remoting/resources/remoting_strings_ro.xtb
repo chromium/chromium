@@ -5,17 +5,10 @@
 <translation id="1008557486741366299">Nu acum</translation>
 <translation id="1050693411695664090">Slabă</translation>
 <translation id="1152528166145813711">Selectează...</translation>
-<translation id="1199593201721843963">Dezactivați conexiunile la distanță</translation>
+<translation id="1199593201721843963">Dezactivează conexiunile la distanță</translation>
+<translation id="1201402288615127009">Înainte</translation>
 <translation id="1291443878853470558">Trebuie să activați conexiunile la distanță dacă doriți să utilizați Chromoting pentru a accesa acest computer.</translation>
 <translation id="1297009705180977556">Eroare la conectarea la <ph name="HOSTNAME" /></translation>
-<translation id="1300633907480909701">Accesați în siguranță computerele dvs. de pe dispozitivul Android.
-
-• Pe fiecare computer, configurați accesul la distanță folosind aplicația Desktop la distanță Chrome din Magazinul web Chrome: https://chrome.google.com/remotedesktop
-• Pe dispozitivul Android, pentru a vă conecta, deschideți aplicația și atingeți oricare dintre computerele online.
-
-Este posibil ca textul introdus să fie recunoscut incorect pe computerele la distanță care au tastaturi cu alt aspect decât engleză S.U.A. În curând vor fi disponibile și alte aspecte de tastatură!
-
-Pentru informații privind confidențialitatea, accesați Politica de confidențialitate Google (http://goo.gl/SyrVzj) și Politica de confidențialitate Chrome (http://goo.gl/0uXE5d).</translation>
 <translation id="1324095856329524885">(această funcție nu este încă disponibilă pe computerul tău)</translation>
 <translation id="1342297293546459414">Vedeți și controlați un computer la care se permite accesul.</translation>
 <translation id="1389790901665088353">Descarcă programul de instalare gazdă pentru Desktop la distanță Chrome</translation>
@@ -27,8 +20,8 @@ Pentru informații privind confidențialitatea, accesați Politica de confidenț
 <translation id="1624185583382384493">Aplicația Desktop la distanță Chrome este acum pe web. Încearcă <ph name="LINK_BEGIN" />aplicația web<ph name="LINK_END" />. Este rapidă, gratuită și are multe funcții, inclusiv compatibilitate îmbunătățită pentru mai monitoare multiple.</translation>
 <translation id="1643640058022401035">Părăsind această pagină, veți încheia sesiunea Chromoting.</translation>
 <translation id="1654128982815600832">Se activează conexiunile la distanță pentru acest computer…</translation>
+<translation id="1697532407822776718">Ești gata!</translation>
 <translation id="170207782578677537">Înregistrarea acestui computer nu a reușit.</translation>
-<translation id="1727412735341161734">Desktop la distanță Chrome</translation>
 <translation id="174018511426417793">Nu aveți niciun computer înregistrat. Pentru a activa conexiunile la distanță pentru un alt computer, instalați Desktop la distanță Chrome pe acesta și dați clic pe „<ph name="BUTTON_NAME" />”.</translation>
 <translation id="1742469581923031760">Se conectează…</translation>
 <translation id="1770394049404108959">Nu pot deschide aplicația.</translation>
@@ -46,13 +39,11 @@ Pentru informații privind confidențialitatea, accesați Politica de confidenț
 <translation id="2078880767960296260">Proces gazdă</translation>
 <translation id="20876857123010370">Modul trackpad</translation>
 <translation id="2089514346391228378">Conexiunile la distanță pentru acest computer au fost activate.</translation>
-<translation id="2118549242412205620">Accesați în siguranță computerele dvs. de pe dispozitivul Android.
+<translation id="2198363917176605566">Ca să folosești <ph name="PRODUCT_NAME" />, trebuie să acorzi permisiunea pentru „Înregistrarea ecranului”, astfel încât conținutul de pe ecranul acestui computer Mac să poată fi trimis la dispozitivul la distanță.
 
-• Pe fiecare computer, configurați accesul la distanță folosind aplicația Desktop la distanță Chrome din Magazinul web Chrome: https://chrome.google.com/remotedesktop
-• Pe dispozitivul Android, pentru a vă conecta, deschideți aplicația și atingeți oricare dintre computerele online.
+Ca să acorzi această permisiune, dă clic pe butonul „<ph name="BUTTON_NAME" />” de mai jos pentru a deschide panoul de preferințe pentru „Înregistrarea ecranului”, apoi bifează caseta de lângă „<ph name="SERVICE_SCRIPT_NAME" />”.
 
-Pentru informații privind confidențialitatea, accesați Politica de confidențialitate Google (http://goo.gl/SyrVzj) și Politica de confidențialitate Chrome (http://goo.gl/0uXE5d).</translation>
-<translation id="2124408767156847088">Accesați în siguranță computerele dvs. de pe dispozitivul Android.</translation>
+Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debifeaz-o și bifeaz-o din nou.</translation>
 <translation id="2208514473086078157">Setările politicii nu acceptă permiterea accesului la acest computer în calitate de gazdă pentru Desktop la distanță Chrome. Contactați administratorul de sistem pentru asistență.</translation>
 <translation id="2220529011494928058">Semnalați o problemă</translation>
 <translation id="2221097377466213233">Folosește tasta Ctrl din dreapta pentru tasta Windows (⌘ pe Mac)</translation>
@@ -64,13 +55,13 @@ Pentru informații privind confidențialitatea, accesați Politica de confidenț
 <translation id="2314101195544969792">Sesiunea <ph name="APPLICATION_NAME" /> este inactivă de ceva timp și în curând va fi deconectată.</translation>
 <translation id="2317666076142640974">Încearcă în avans noua <ph name="LINK_BEGIN" />aplicație web Desktop la distanță Chrome<ph name="LINK_END" />. Ne-ar face plăcere să primim feedbackul tău.</translation>
 <translation id="2320166752086256636">Ascunde tastatura</translation>
-<translation id="2332192922827071008">Deschide Preferințele</translation>
 <translation id="2353140552984634198">Puteți accesa acest computer în siguranță utilizând Chromoting.</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2366718077645204424">Gazda nu poate fi accesată. Acest lucru este cauzat, probabil, de configurația rețelei pe care o utilizați.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Ultima dată online <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2405928220797050937">Această aplicație nu mai este acceptată. Pentru a te asigura că beneficiezi de cele mai recente funcții și actualizări de securitate, folosește <ph name="LINK_BEGIN" />aplicația web Desktop la distanță Chrome<ph name="LINK_END" />.</translation>
 <translation id="2499160551253595098">Ajutați-ne să îmbunătățim Desktop la distanță Chrome, permițându-ne să colectăm statistici de utilizare și rapoarte de blocare.</translation>
+<translation id="2504109125669302160">Acordă permisiunea „Accesibilitate” pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Conectat la <ph name="HOSTNAME" /></translation>
 <translation id="2512228156274966424">NOTĂ: pentru a vă asigura că toate comenzile rapide de la tastatură sunt disponibile, puteți seta Desktop la distanță Chrome în modul „Deschideți ca fereastră”.</translation>
 <translation id="2540992418118313681">Dorești să permiți accesul la acest computer altui utilizator, pentru ca acesta să îl poată vedea și controla?</translation>
@@ -86,11 +77,6 @@ Pentru informații privind confidențialitatea, accesați Politica de confidenț
 <translation id="2851754573186462851">Chromium App Streaming</translation>
 <translation id="2888969873284818612">A apărut o eroare de rețea. Vom reporni aplicația când dispozitivul va fi online din nou.</translation>
 <translation id="2891243864890517178">Pentru Mac (OS X Yosemite 10.10 și versiuni ulterioare)</translation>
-<translation id="289405675947420287">Accesează-ți în siguranță computerul de pe dispozitivul iOS. Este rapid, simplu și gratuit.
-
-• Pe computerul pe care dorești să îl accesezi de la distanță, descarcă aplicația Desktop la distanță Chrome din Magazinul web Chrome.
-• Instalează software-ul Desktop la distanță Chrome și urmează instrucțiunile pentru a finaliza configurarea.
-• Pe dispozitivul iOS, deschide aplicația și atinge oricare dintre computerele tale online pentru a te conecta.</translation>
 <translation id="2894654864775534701">Momentan, accesul la computer este permis de pe un alt cont.</translation>
 <translation id="2919669478609886916">În prezent, permiteți accesul unui alt utilizator la acest computer. Doriți să permiteți în continuare accesul?</translation>
 <translation id="2921543551052660690">Anterior te-ai conectat ca <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />). Pentru a-ți accesa computerele folosind contul respectiv, <ph name="LINK_BEGIN" />conectează-te la Chromium<ph name="LINK_END" /> cu acel cont și reinstalează Chromoting.</translation>
@@ -104,7 +90,6 @@ Pentru informații privind confidențialitatea, accesați Politica de confidenț
 <translation id="310979712355504754">Ștergeți tot</translation>
 <translation id="3150823315463303127">Gazda nu a putut citi politica.</translation>
 <translation id="3171922709365450819">Dispozitivul nu este acceptat de acest client deoarece necesită autentificarea printr-o terță parte.</translation>
-<translation id="3194245623920924351">Desktop la distanță Chrome</translation>
 <translation id="3197730452537982411">Desktop la distanță</translation>
 <translation id="324272851072175193">Trimite aceste instrucțiuni prin e-mail</translation>
 <translation id="3258789396564295715">Puteți accesa acest computer în siguranță utilizând Desktop la distanță Chrome.</translation>
@@ -126,8 +111,6 @@ Pentru informații privind confidențialitatea, accesați Politica de confidenț
 <translation id="3695446226812920698">Află cum</translation>
 <translation id="3718805989288361841">A apărut o eroare la setările politicii pentru Desktop la distanță Chrome. Contactează administratorul de sistem pentru asistență.</translation>
 <translation id="3776024066357219166">Sesiunea Desktop la distanță Chrome s-a încheiat.</translation>
-<translation id="3846148461359626420">• Funcții de deplasare și zoom îmbunătățite pe iPhone X.
-• Stabilitate îmbunătățită și erori remediate.</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3884839335308961732">Confirmați mai jos contul și codul PIN pentru a permite accesarea prin intermediul aplicației Desktop la distanță Chrome.</translation>
 <translation id="3897092660631435901">Meniu</translation>
@@ -153,30 +136,26 @@ Pentru informații privind confidențialitatea, accesați Politica de confidenț
 <translation id="4240294130679914010">Program de dezinstalare a gazdei Chromoting</translation>
 <translation id="4277463233460010382">Acest computer este configurat să permită conectarea unuia sau a mai multor clienți fără introducerea unui PIN.</translation>
 <translation id="4277736576214464567">Codul de acces este greșit. Încercați din nou.</translation>
+<translation id="4281844954008187215">Condiții de furnizare a serviciilor</translation>
 <translation id="4361728918881830843">Pentru a activa conexiunile la distanță pentru un alt computer, instalați Desktop la distanță Chrome pe acesta și dați clic pe „<ph name="BUTTON_NAME" />”.</translation>
 <translation id="4394049700291259645">Dezactivează</translation>
 <translation id="4405930547258349619">Biblioteca nucleu</translation>
 <translation id="4430435636878359009">Dezactivați conexiunile la distanță la acest computer</translation>
 <translation id="4430915108080446161">Se generează codul de acces...</translation>
+<translation id="443560535555262820">Deschide preferințele pentru accesibilitate</translation>
+<translation id="4450893287417543264">Nu mai afișa</translation>
 <translation id="4472575034687746823">Începeți</translation>
 <translation id="4481276415609939789">Nu aveți niciun computer înregistrat. Pentru a activa conexiunile la distanță pentru un alt computer, instalați Chromoting pe acesta și dați clic pe „<ph name="BUTTON_NAME" />”.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4517233780764084060">NOTĂ: pentru a vă asigura că toate comenzile rapide de la tastatură sunt disponibile, puteți configura Chromoting la „Deschideți ca fereastră”.</translation>
 <translation id="4563926062592110512">Client deconectat: <ph name="CLIENT_USERNAME" />.</translation>
-<translation id="4572065712096155137">Accesați</translation>
+<translation id="4572065712096155137">Accesează</translation>
 <translation id="4592037108270173918">Când te conectezi la un dispozitiv prin rețeaua mobilă pot fi aplicate costuri pentru date. Dorești să continui?</translation>
 <translation id="4619978527973181021">Acceptă și instalează</translation>
 <translation id="4635770493235256822">Dispozitive la distanță</translation>
 <translation id="4660011489602794167">Afișează tastatura</translation>
 <translation id="4703302905453407178">O componentă obligatorie nu mai funcționează. Raportează această problemă dezvoltatorilor.</translation>
 <translation id="4703799847237267011">Sesiunea Chromoting s-a încheiat.</translation>
-<translation id="4706355010316049867">Chrome
-La distanță
-Desktop
-Acces
-Asistență
-Computer
-PC</translation>
 <translation id="4736223761657662401">Istoricul conexiunilor</translation>
 <translation id="4741792197137897469">Autentificarea nu a reușit. Conectează-te din nou la Chrome.</translation>
 <translation id="477305884757156764">Aplicația este prea lentă.</translation>
@@ -193,9 +172,6 @@ PC</translation>
 <translation id="4973800994433240357">Descărcând programul de instalare gazdă pentru Chromoting, accepți <ph name="LINK_BEGIN" />Termenii și condițiile<ph name="LINK_END" /> Google.</translation>
 <translation id="4974476491460646149">Conexiunea a fost închisă pentru <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Mai întâi, trebuie să configurezi computerul pentru accesul la distanță</translation>
-<translation id="5059773780693835145">Este necesar încă un pas de configurare înainte să poți controla acest dispozitiv de la distanță folosind <ph name="PRODUCT_NAME" />.
-
-Pentru a activa această funcție, selectează „<ph name="BUTTON_NAME" />” pentru a afișa panoul de preferințe pentru securitate și confidențialitate, apoi bifează căsuța de lângă „<ph name="SERVICE_SCRIPT_NAME" />”.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="5070121137485264635">Gazda la distanță solicită să vă autentificați pe un site terță parte. Pentru a continua, trebuie să acordați permisiuni suplimentare aplicației Desktop la distanță Chrome pentru a accesa această adresă:</translation>
 <translation id="507204348399810022">Sigur dorești să dezactivezi conexiunile la distanță la <ph name="HOSTNAME" />?</translation>
@@ -205,8 +181,10 @@ Pentru a activa această funcție, selectează „<ph name="BUTTON_NAME" />” p
 <translation id="518094545883702183">Această informație este folosită numai pentru diagnosticarea problemei pe care o raportezi, este disponibilă numai pentru persoana care îți examinează raportul și nu este păstrată pentru mai mult de 30 de zile.</translation>
 <translation id="5204575267916639804">Întrebări frecvente</translation>
 <translation id="5222676887888702881">Deconectează-te</translation>
+<translation id="5234764350956374838">Închide</translation>
 <translation id="5254120496627797685">Părăsind această pagină, veți încheia sesiunea Desktop la distanță Chrome.</translation>
 <translation id="5308380583665731573">Conectează-te</translation>
+<translation id="5327248766486351172">Nume</translation>
 <translation id="533625276787323658">Niciun dispozitiv la care te poți conecta</translation>
 <translation id="5363265567587775042">Roagă utilizatorul al cărui computer dorești să îl accesezi să dea clic pe „<ph name="SHARE" />” și să îți trimită codul de acces.</translation>
 <translation id="5379087427956679853">Cu aplicația Desktop la distanță Chrome, puteți permite accesul în siguranță la computerul dvs. pe web. Ambii utilizatori trebuie să ruleze aplicația Desktop la distanță Chrome, care poate fi găsită la <ph name="URL" />.</translation>
@@ -244,14 +222,19 @@ Pentru a activa această funcție, selectează „<ph name="BUTTON_NAME" />” p
 <translation id="6198252989419008588">Schimbă codul PIN</translation>
 <translation id="6204583485351780592"><ph name="HOSTNAME" /> (neactualizată)</translation>
 <translation id="6221358653751391898">Nu te-ai conectat la Chrome. Conectează-te și încearcă din nou.</translation>
+<translation id="6223301979382383752">Deschide preferințele pentru Înregistrarea ecranului</translation>
 <translation id="6227369581881558336">Aplicația Desktop la distanță Chrome este acum pe web cu noi funcții, inclusiv transfer de fișiere! Vezi noua noastră <ph name="LINK_BEGIN" />aplicație web<ph name="LINK_END" />.</translation>
 <translation id="6284412385303060032">Executarea gazdei pe ecranul de conectare al consolei a fost oprită pentru a accepta modul perdea, comutând la o gazdă care rulează într-o sesiune specifică utilizatorului.</translation>
 <translation id="629730747756840877">Cont</translation>
 <translation id="6304318647555713317">Client</translation>
 <translation id="6381670701864002291">Altă problemă.</translation>
 <translation id="6398765197997659313">Ieși din ecranul complet</translation>
+<translation id="6411861157501911556">Ca să folosești <ph name="PRODUCT_NAME" />, trebuie să acorzi permisiunea „Accesibilitate”, astfel încât intrările de la dispozitivul la distanță să poată fi introduse pe acest computer Mac.
+
+Ca să acorzi această permisiune, dă clic pe butonul „<ph name="BUTTON_NAME" />” de mai jos pentru a deschide panoul de preferințe pentru „Accesibilitate”, apoi bifează caseta de lângă „<ph name="SERVICE_SCRIPT_NAME" />”.
+
+Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debifeaz-o și bifeaz-o din nou.</translation>
 <translation id="6441316101718669559">Integrarea desktop nu este compatibilă cu această platformă. Poți să folosești în continuare această aplicație, însă experiența de utilizare va fi inferioară.</translation>
-<translation id="6502629188777329097">Acces în siguranță la computer</translation>
 <translation id="652218476070540101">Se actualizează codul PIN pentru acest computer…</translation>
 <translation id="6527303717912515753">Trimite</translation>
 <translation id="6541219117979389420">Jurnalele aplicațiilor pot să includă informații private, inclusiv identitatea ta (adresa de e-mail) și numele și proprietățile fișierelor și dosarelor din Google Drive.</translation>
@@ -292,11 +275,11 @@ Pentru a activa această funcție, selectează „<ph name="BUTTON_NAME" />” p
 <translation id="7434397035092923453">Acces interzis pentru clientul: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Client conectat: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Schimbă contul</translation>
-<translation id="7606912958770842224">Activați conexiunile la distanță</translation>
+<translation id="7606912958770842224">Activează conexiunile la distanță</translation>
 <translation id="7628469622942688817">Reține codul meu PIN pe acest dispozitiv.</translation>
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7658239707568436148">Anulează</translation>
-<translation id="7665369617277396874">Adăugați un cont</translation>
+<translation id="7665369617277396874">Adaugă un cont</translation>
 <translation id="7672203038394118626">Conexiunile la distanță pentru acest computer au fost dezactivate.</translation>
 <translation id="7678209621226490279">Andochează în stânga</translation>
 <translation id="7693372326588366043">Actualizați lista gazdelor</translation>
@@ -311,6 +294,7 @@ Pentru a activa această funcție, selectează „<ph name="BUTTON_NAME" />” p
 <translation id="7948001860594368197">Opțiuni ecran</translation>
 <translation id="7970576581263377361">Autentificarea nu a reușit. Conectează-te din nou la Chromium.</translation>
 <translation id="7981525049612125370">Sesiunea la distanță a expirat.</translation>
+<translation id="8038111231936746805">(prestabilit)</translation>
 <translation id="8041089156583427627">Trimiteți feedback</translation>
 <translation id="8041721485428375115">Descărcând programul de instalare gazdă pentru Desktop la distanță Chrome, accepți <ph name="LINK_BEGIN" />Termenii și condițiile<ph name="LINK_END" /> Google.</translation>
 <translation id="8060029310790625334">Centrul de ajutor</translation>
@@ -320,7 +304,6 @@ Pentru a activa această funcție, selectează „<ph name="BUTTON_NAME" />” p
 <translation id="809687642899217504">Computerele mele</translation>
 <translation id="811307782653349804">Accesați-vă computerul de oriunde.</translation>
 <translation id="8116630183974937060">A apărut o eroare de rețea. Verificați dacă dispozitivul este online și încercați din nou.</translation>
-<translation id="8123581458650016326">Permite utilizatorilor la distanță să controleze acest dispozitiv</translation>
 <translation id="8178433417677596899">Permiterea accesului la ecran de tip utilizator-la-utilizator, perfectă pentru asistența tehnică la distanță.</translation>
 <translation id="8187079423890319756">Copyright 2013 The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="8196755618196986400">Pentru a putea să te contactăm pentru mai multe informații, adresa ta de e-mail va fi inclusă în orice feedback pe care îl trimiți.</translation>
@@ -331,20 +314,22 @@ Pentru a activa această funcție, selectează „<ph name="BUTTON_NAME" />” p
 <translation id="837021510621780684">De la acest computer</translation>
 <translation id="8383794970363966105">Pentru a folosi Chromoting, va trebui să adăugați un Cont Google pe dispozitiv.</translation>
 <translation id="8386846956409881180">Gazda este configurată cu date de conectare OAuth nevalide.</translation>
+<translation id="8397385476380433240">Acordă permisiunea pentru <ph name="PRODUCT_NAME" /></translation>
+<translation id="8406498562923498210">Selectează o sesiune pe care să o lansezi în mediul Desktop la distanță Chrome. (Reține că este posibil ca unele tipuri de sesiuni să nu accepte rularea simultană în Desktop la distanță Chrome și pe consola locală.)</translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8445362773033888690">Vedeți în Magazin Google Play</translation>
 <translation id="8509907436388546015">Proces de integrare desktop</translation>
 <translation id="8513093439376855948">Gazda de mesagerie nativă pentru gestionarea gazdei la distanță</translation>
 <translation id="8525306231823319788">Ecran complet</translation>
 <translation id="8548209692293300397">Anterior te-ai conectat ca <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />). Pentru a accesa computerele în contul respectiv, <ph name="LINK_BEGIN" />conectează-te la Google Chrome<ph name="LINK_END" /> folosind contul respectiv și reinstalează Desktop la distanță Chrome.</translation>
+<translation id="858006550102277544">Comentariu</translation>
 <translation id="8642984861538780905">Acceptabilă</translation>
-<translation id="8705151241155781642">• Aplicația este acum compatibilă cu Android 9.0 Pie.
-• Acum poți redimensiona rezoluția desktopului la distanță în funcție de ecranul dispozitivului Android.</translation>
 <translation id="8712909229180978490">Nu pot vedea fișierele salvate online în Google Drive.</translation>
 <translation id="8743328882720071828">Dorești să-i permiți utilizatorului <ph name="CLIENT_USERNAME" /> să vadă și să îți controleze computerul?</translation>
 <translation id="8747048596626351634">Sesiunea s-a blocat sau nu a pornit. Dacă pe computerul la distanță există ~/.chrome-remote-desktop-session, asigură-te că inițiază un proces în prim-plan de lungă durată, cum ar fi un mediu de desktop sau un manager de ferestre.</translation>
 <translation id="8759753423332885148">Află mai multe.</translation>
 <translation id="8791202241915690908">Descarcă programul de instalare gazdă pentru Chromoting</translation>
+<translation id="8804164990146287819">Politica de confidențialitate</translation>
 <translation id="894763922177556086">Bună</translation>
 <translation id="895780780740011433">Pentru Windows 7 și versiuni ulterioare</translation>
 <translation id="897805526397249209">Pentru a activa conexiunile la distanță pentru un alt computer, instalați Chromoting pe acesta și dați clic pe „<ph name="BUTTON_NAME" />”.</translation>
@@ -355,6 +340,8 @@ Pentru a activa această funcție, selectează „<ph name="BUTTON_NAME" />” p
 <translation id="9126115402994542723">Nu mai solicita un cod PIN când mă conectez la această gazdă de pe acest dispozitiv.</translation>
 <translation id="9149580767411232853">Păstrează vizibil tot desktopul la distanță</translation>
 <translation id="9149992051684092333">Pentru a începe să permiteți accesul la desktopul dvs., trimiteți codul de acces de mai jos persoanei care vă va oferi asistență.</translation>
+<translation id="916856682307586697">Lansează sesiunea XSession prestabilită</translation>
+<translation id="9187628920394877737">Acordă permisiunea „Înregistrarea ecranului” pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="9188433529406846933">Autorizați</translation>
 <translation id="9213184081240281106">Configurație nevalidă a gazdei.</translation>
 <translation id="951991426597076286">Refuză</translation>

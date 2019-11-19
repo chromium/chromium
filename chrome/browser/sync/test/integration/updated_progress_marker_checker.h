@@ -23,13 +23,11 @@
 // of this checker.  Please do not use it in new tests.
 class UpdatedProgressMarkerChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit UpdatedProgressMarkerChecker(
-      browser_sync::ProfileSyncService* service);
+  explicit UpdatedProgressMarkerChecker(syncer::ProfileSyncService* service);
   ~UpdatedProgressMarkerChecker() override;
 
   // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // syncer::SyncServiceObserver implementation.
   void OnSyncCycleCompleted(syncer::SyncService* sync) override;
@@ -39,7 +37,7 @@ class UpdatedProgressMarkerChecker : public SingleClientStatusChangeChecker {
 
   base::Optional<bool> has_unsynced_items_;
 
-  base::WeakPtrFactory<UpdatedProgressMarkerChecker> weak_ptr_factory_;
+  base::WeakPtrFactory<UpdatedProgressMarkerChecker> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_UPDATED_PROGRESS_MARKER_CHECKER_H_

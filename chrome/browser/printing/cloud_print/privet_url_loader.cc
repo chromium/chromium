@@ -27,6 +27,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace cloud_print {
 
@@ -87,8 +88,7 @@ PrivetURLLoader::PrivetURLLoader(
       url_loader_factory_(url_loader_factory),
       traffic_annotation_(traffic_annotation),
       delegate_(delegate),
-      max_retries_(kPrivetMaxRetries),
-      weak_factory_(this) {}
+      max_retries_(kPrivetMaxRetries) {}
 
 PrivetURLLoader::~PrivetURLLoader() {}
 
@@ -155,8 +155,8 @@ void PrivetURLLoader::Try() {
   request->url = url_;
   request->method = request_type_;
   // Privet requests are relevant to hosts on local network only.
-  request->load_flags = net::LOAD_BYPASS_PROXY | net::LOAD_DISABLE_CACHE |
-                        net::LOAD_DO_NOT_SEND_COOKIES;
+  request->load_flags = net::LOAD_BYPASS_PROXY | net::LOAD_DISABLE_CACHE;
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   std::string token = GetPrivetAccessToken();
   if (token.empty())
@@ -221,7 +221,7 @@ void PrivetURLLoader::SetUploadData(const std::string& upload_content_type,
 
 void PrivetURLLoader::OnResponseStarted(
     const GURL& final_url,
-    const network::ResourceResponseHead& response_head) {
+    const network::mojom::URLResponseHead& response_head) {
   if (!response_head.headers ||
       response_head.headers->response_code() == net::HTTP_SERVICE_UNAVAILABLE) {
     url_loader_.reset();

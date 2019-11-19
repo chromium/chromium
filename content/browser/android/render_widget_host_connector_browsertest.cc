@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostConnectorTest,
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostConnectorTest,
                        UpdateRWHVAInConnectorAtRenderViewHostSwapping) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.ServeFilesFromSourceDirectory("content/test/data");
+  https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
   ASSERT_TRUE(https_server.Start());
 
   GURL http_url(embedded_test_server()->GetURL("/title1.html"));

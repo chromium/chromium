@@ -17,7 +17,18 @@ enum class FcmChannelState {
   kMaxValue = NO_INSTANCE_ID_TOKEN,
 };
 
+enum class SubscriptionChannelState {
+  NOT_STARTED,
+  ENABLED,
+  ACCESS_TOKEN_FAILURE,
+  SUBSCRIPTION_FAILURE,
+
+  kMaxValue = SUBSCRIPTION_FAILURE,
+};
+
 const char* FcmChannelStateToString(FcmChannelState state);
+
+const char* SubscriptionChannelStateToString(SubscriptionChannelState state);
 
 }  // namespace syncer
 

@@ -5,13 +5,13 @@
 #ifndef CHROMECAST_MEDIA_CMA_BACKEND_ALSA_MIXER_OUTPUT_STREAM_ALSA_H_
 #define CHROMECAST_MEDIA_CMA_BACKEND_ALSA_MIXER_OUTPUT_STREAM_ALSA_H_
 
+#include <alsa/asoundlib.h>
+
 #include <cstdint>
 #include <vector>
 
 #include "base/macros.h"
 #include "chromecast/public/media/mixer_output_stream.h"
-
-#include <alsa/asoundlib.h>
 
 namespace chromecast {
 namespace media {
@@ -28,6 +28,7 @@ class MixerOutputStreamAlsa : public MixerOutputStream {
 
   // MixerOutputStream implementation:
   bool Start(int requested_sample_rate, int channels) override;
+  int GetNumChannels() override;
   int GetSampleRate() override;
   MediaPipelineBackend::AudioDecoder::RenderingDelay GetRenderingDelay()
       override;
@@ -55,6 +56,11 @@ class MixerOutputStreamAlsa : public MixerOutputStream {
   int DetermineOutputRate(int requested_rate);
 
   void UpdateRenderingDelay();
+
+  // Checks ALSA output for current state and if it's suspended, tries to
+  // recover.
+  // Returns true if ALSA device is recovered successfully.
+  bool MaybeRecoverDeviceFromSuspendedState();
 
   std::unique_ptr<AlsaWrapper> alsa_;
 

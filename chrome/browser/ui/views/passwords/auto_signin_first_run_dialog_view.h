@@ -12,7 +12,7 @@
 class AutoSigninFirstRunDialogView : public views::DialogDelegateView,
                                      public AutoSigninFirstRunPrompt {
  public:
-  AutoSigninFirstRunDialogView(PasswordDialogController* controller,
+  AutoSigninFirstRunDialogView(CredentialManagerDialogController* controller,
                                content::WebContents* web_contents);
   ~AutoSigninFirstRunDialogView() override;
 
@@ -30,13 +30,12 @@ class AutoSigninFirstRunDialogView : public views::DialogDelegateView,
   bool Cancel() override;
   bool Accept() override;
   bool Close() override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
 
   // Sets up the child views.
   void InitWindow();
 
   // A weak pointer to the controller.
-  PasswordDialogController* controller_;
+  CredentialManagerDialogController* controller_;
   content::WebContents* const web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(AutoSigninFirstRunDialogView);

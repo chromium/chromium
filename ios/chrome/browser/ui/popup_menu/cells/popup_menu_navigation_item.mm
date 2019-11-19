@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -17,7 +18,6 @@ namespace {
 const CGFloat kImageSize = 16;
 const CGFloat kImageCornerRadius = 2;
 const CGFloat kFaviconBackgroundSize = 28;
-const CGFloat kFaviconBackgroundColorAlpha = 0.03;
 const CGFloat kFaviconBackgroundCornerRadius = 7;
 const CGFloat kCellHeight = 44;
 const CGFloat kIconTextMargin = 11;
@@ -87,7 +87,7 @@ const CGFloat kMaxHeight = 100;
   if (self) {
     UIView* selectedBackgroundView = [[UIView alloc] init];
     selectedBackgroundView.backgroundColor =
-        [UIColor colorWithWhite:0 alpha:kSelectedItemBackgroundAlpha];
+        [UIColor colorNamed:kTableViewRowHighlightColor];
     self.selectedBackgroundView = selectedBackgroundView;
 
     _titleLabel = [[UILabel alloc] init];
@@ -98,7 +98,7 @@ const CGFloat kMaxHeight = 100;
     UIView* faviconBackground = [[UIView alloc] init];
     faviconBackground.translatesAutoresizingMaskIntoConstraints = NO;
     faviconBackground.backgroundColor =
-        [UIColor colorWithWhite:0 alpha:kFaviconBackgroundColorAlpha];
+        [UIColor colorNamed:kFaviconBackgroundColor];
     faviconBackground.layer.cornerRadius = kFaviconBackgroundCornerRadius;
 
     _faviconImageView = [[UIImageView alloc] init];

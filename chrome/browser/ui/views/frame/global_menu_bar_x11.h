@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
@@ -16,20 +17,16 @@
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "components/dbus/menu/menu.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/top_sites.h"
 #include "components/history/core/browser/top_sites_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
-#include "ui/base/glib/glib_signal.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_observer_x11.h"
-
-typedef struct _DbusmenuMenuitem DbusmenuMenuitem;
-typedef struct _DbusmenuServer   DbusmenuServer;
-
-namespace history {
-class TopSites;
-}
+#include "ui/aura/window_tree_host.h"
+#include "ui/base/models/simple_menu_model.h"
+#include "ui/gfx/x/x11_types.h"
 
 namespace ui {
 class Accelerator;
@@ -37,67 +34,45 @@ class Accelerator;
 
 class Browser;
 class BrowserView;
-class Profile;
-
-class BrowserDesktopWindowTreeHostX11;
 struct GlobalMenuBarCommand;
+class Profile;
 
 // Controls the Mac style menu bar on Unity.
 //
 // Unity has an Apple-like menu bar at the top of the screen that changes
-// depending on the active window. In the GTK port, we had a hidden GtkMenuBar
-// object in each GtkWindow which existed only to be scrapped by the
-// libdbusmenu-gtk code. Since we don't have GtkWindows anymore, we need to
-// interface directly with the lower level libdbusmenu-glib, which we
-// opportunistically dlopen() since not everyone is running Ubuntu.
+// depending on the active window.
 class GlobalMenuBarX11 : public AvatarMenuObserver,
                          public BrowserListObserver,
                          public CommandObserver,
                          public history::TopSitesObserver,
                          public sessions::TabRestoreServiceObserver,
-                         public views::DesktopWindowTreeHostObserverX11 {
+                         public ui::SimpleMenuModel::Delegate {
  public:
-  GlobalMenuBarX11(BrowserView* browser_view,
-                   BrowserDesktopWindowTreeHostX11* host);
+  GlobalMenuBarX11(BrowserView* browser_view, aura::WindowTreeHost* host);
   ~GlobalMenuBarX11() override;
 
+  void Initialize(DbusMenu::InitializedCallback callback);
+
   // Creates the object path for DbusemenuServer which is attached to |xid|.
-  static std::string GetPathForWindow(unsigned long xid);
+  std::string GetPath() const;
+
+  XID xid() const { return xid_; }
 
  private:
   struct HistoryItem;
-  typedef std::map<int, DbusmenuMenuitem*> CommandIDMenuItemMap;
-
-  // Builds a separator.
-  DbusmenuMenuitem* BuildSeparator();
-
-  // Creates an individual menu item from a title and command, and subscribes
-  // to the activation signal.
-  DbusmenuMenuitem* BuildMenuItem(const std::string& label, int tag_id);
-
-  // Creates a DbusmenuServer, and attaches all the menu items.
-  void InitServer(unsigned long xid);
-
-  // Stops listening to enable state changed events.
-  void Disable();
 
   // Creates a whole menu defined with |commands| and titled with the string
-  // |menu_str_id|. Then appends it to |parent|.
-  DbusmenuMenuitem* BuildStaticMenu(DbusmenuMenuitem* parent,
-                                    int menu_str_id,
-                                    GlobalMenuBarCommand* commands);
-
-  // Sets the accelerator for |item|.
-  void RegisterAccelerator(DbusmenuMenuitem* item,
-                           const ui::Accelerator& accelerator);
+  // |string_id|. Then appends it to |root_menu_|.
+  ui::SimpleMenuModel* BuildStaticMenu(int string_id,
+                                       const GlobalMenuBarCommand* commands);
 
   // Creates a HistoryItem from the data in |entry|.
-  HistoryItem* HistoryItemForTab(const sessions::TabRestoreService::Tab& entry);
+  std::unique_ptr<HistoryItem> HistoryItemForTab(
+      const sessions::TabRestoreService::Tab& entry);
 
   // Creates a menu item form |item| and inserts it in |menu| at |index|.
-  void AddHistoryItemToMenu(HistoryItem* item,
-                            DbusmenuMenuitem* menu,
-                            int tag,
+  void AddHistoryItemToMenu(std::unique_ptr<HistoryItem> item,
+                            ui::SimpleMenuModel* menu,
                             int index);
 
   // Sends a message off to History for data.
@@ -111,66 +86,67 @@ class GlobalMenuBarX11 : public AvatarMenuObserver,
 
   void RebuildProfilesMenu();
 
-  // Find the first index of the item in |menu| with the tag |tag_id|.
-  int GetIndexOfMenuItemWithTag(DbusmenuMenuitem* menu, int tag_id);
+  // This will remove all menu items in |history_menu_| starting from the item
+  // with command |header_command_id| up to the item with command
+  // MENU_SEPARATOR, non-inclusive.  Returns the index of the separator.
+  int ClearHistoryMenuSection(int header_command_id);
 
-  // This will remove all menu items in |menu| with |tag| as their tag. This
-  // clears state about HistoryItems* that we keep to prevent that data from
-  // going stale. That's why this method recurses into its child menus.
-  void ClearMenuSection(DbusmenuMenuitem* menu, int tag_id);
+  // Start listening for enabled state changes for |command|.
+  void RegisterCommandObserver(int command);
 
-  // Deleter function for HistoryItem implementation detail.
-  static void DeleteHistoryItem(void* void_item);
+  // Returns a command ID for use in menus.  The command will not conflict with
+  // Chrome commands or reserved commands.
+  int NextCommandId();
 
-  // Overridden from AvatarMenuObserver:
+  // AvatarMenuObserver:
   void OnAvatarMenuChanged(AvatarMenu* avatar_menu) override;
 
-  // Overridden from BrowserListObserver:
+  // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
 
-  // Overridden from CommandObserver:
+  // CommandObserver:
   void EnabledStateChangedForCommand(int id, bool enabled) override;
 
-  // Overridden from history::TopSitesObserver:
+  // history::TopSitesObserver:
   void TopSitesLoaded(history::TopSites* top_sites) override;
   void TopSitesChanged(history::TopSites* top_sites,
                        ChangeReason change_reason) override;
 
-  // Overridden from TabRestoreServiceObserver:
+  // TabRestoreServiceObserver:
   void TabRestoreServiceChanged(sessions::TabRestoreService* service) override;
   void TabRestoreServiceDestroyed(
       sessions::TabRestoreService* service) override;
 
-  // Overridden from views::DesktopWindowTreeHostObserverX11:
-  void OnWindowMapped(unsigned long xid) override;
-  void OnWindowUnmapped(unsigned long xid) override;
+  // ui::SimpleMenuModel::Delegate:
+  bool IsCommandIdChecked(int command_id) const override;
+  bool IsCommandIdEnabled(int command_id) const override;
+  void ExecuteCommand(int command_id, int event_flags) override;
+  void OnMenuWillShow(ui::SimpleMenuModel* source) override;
+  bool GetAcceleratorForCommandId(int command_id,
+                                  ui::Accelerator* accelerator) const override;
 
-  CHROMEG_CALLBACK_1(GlobalMenuBarX11, void, OnItemActivated, DbusmenuMenuitem*,
-                     unsigned int);
-  CHROMEG_CALLBACK_1(GlobalMenuBarX11, void, OnHistoryItemActivated,
-                     DbusmenuMenuitem*, unsigned int);
-  CHROMEG_CALLBACK_0(GlobalMenuBarX11, void, OnHistoryMenuAboutToShow,
-                     DbusmenuMenuitem*);
-  CHROMEG_CALLBACK_1(GlobalMenuBarX11, void, OnProfileItemActivated,
-                     DbusmenuMenuitem*, unsigned int);
-  CHROMEG_CALLBACK_1(GlobalMenuBarX11, void, OnEditProfileItemActivated,
-                     DbusmenuMenuitem*, unsigned int);
-  CHROMEG_CALLBACK_1(GlobalMenuBarX11, void, OnCreateProfileItemActivated,
-                     DbusmenuMenuitem*, unsigned int);
-
+  // State for the browser window we're tracking.
   Browser* const browser_;
   Profile* profile_;
   BrowserView* browser_view_;
-  BrowserDesktopWindowTreeHostX11* host_;
+  XID xid_;
 
-  // Maps command ids to DbusmenuMenuitems so we can modify their
-  // enabled/checked state in response to state change notifications.
-  CommandIDMenuItemMap id_to_menu_item_;
+  // Has Initialize() been called?
+  bool initialized_ = false;
 
-  DbusmenuServer* server_;
-  DbusmenuMenuitem* root_item_;
-  DbusmenuMenuitem* history_menu_;
-  DbusmenuMenuitem* profiles_menu_;
+  // The DBus menu service.
+  std::unique_ptr<DbusMenu> menu_service_;
+
+  // Menu models.  Menus don't own their children, so we must own them.
+  // |toplevel_menus_| are children of |root_menu_|.
+  // |recently_closed_window_menus_| are children of |history_menu_|.
+  // |history_menu_| and |profiles_menu_| are owned by |toplevel_menus_|.
+  std::unique_ptr<ui::SimpleMenuModel> root_menu_;
+  std::vector<std::unique_ptr<ui::SimpleMenuModel>> toplevel_menus_;
+  std::vector<std::unique_ptr<ui::SimpleMenuModel>>
+      recently_closed_window_menus_;
+  ui::SimpleMenuModel* history_menu_ = nullptr;
+  ui::SimpleMenuModel* profiles_menu_ = nullptr;
 
   // Tracks value of the kShowBookmarkBar preference.
   PrefChangeRegistrar pref_change_registrar_;
@@ -181,10 +157,23 @@ class GlobalMenuBarX11 : public AvatarMenuObserver,
 
   std::unique_ptr<AvatarMenu> avatar_menu_;
 
-  ScopedObserver<history::TopSites, history::TopSitesObserver> scoped_observer_;
+  ScopedObserver<history::TopSites, history::TopSitesObserver> scoped_observer_{
+      this};
+
+  // Maps from history item command ID to HistoryItem data.
+  std::map<int, std::unique_ptr<HistoryItem>> history_items_;
+
+  // Maps from profile item command ID to an index into |avatar_menu_|, at the
+  // time the menu was created.
+  std::map<int, int> profile_commands_;
+  int active_profile_index_ = -1;
+
+  base::flat_set<int> observed_commands_;
+
+  int last_command_id_;
 
   // For callbacks may be run after destruction.
-  base::WeakPtrFactory<GlobalMenuBarX11> weak_ptr_factory_;
+  base::WeakPtrFactory<GlobalMenuBarX11> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GlobalMenuBarX11);
 };

@@ -43,7 +43,7 @@ bool CastDownloadManagerDelegate::ShouldOpenFileBasedOnExtension(
 
 bool CastDownloadManagerDelegate::ShouldCompleteDownload(
     download::DownloadItem* item,
-    const base::Closure& callback) {
+    base::OnceClosure callback) {
   return false;
 }
 

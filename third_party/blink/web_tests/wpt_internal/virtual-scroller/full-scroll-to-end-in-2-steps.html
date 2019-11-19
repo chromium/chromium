@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+  <meta charset="utf8">
+  <title>Creates several pages of divs and scrolls in 2 steps.</title>
+  <style>body { overflow:hidden; }</style>
+  <link rel="author" title="Fergal Daly" href="mailto:fergal@chromium.org">
+  <link rel="match" href="full-scroll-to-end-in-2-steps-ref.html">
+  <script type="module">
+    import 'std:elements/virtual-scroller';
+    import * as refTests from './resources/ref-tests.mjs';
+    refTests.withVirtualScroller(refTests.testFullScrollToEndIn2Steps);
+  </script>
+</html>

@@ -90,10 +90,6 @@ assertInterpolation({
   {at: 1.5, is: '2.5dppx 2dppx'}
 ]);
 
-// Composition and neutralKeyframe tests assume that composite:add means
-// component-wise addition, which may or may not be the behavior we want.
-// https://github.com/w3c/css-houdini-drafts/issues/799
-
 assertInterpolation({
   property: '--resolution-list',
   from: neutralKeyframe,

@@ -4,12 +4,14 @@
 
 #include "content/browser/renderer_host/file_utilities_host_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/files/file_util.h"
 #include "base/optional.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
 
@@ -20,9 +22,9 @@ FileUtilitiesHostImpl::~FileUtilitiesHostImpl() = default;
 
 void FileUtilitiesHostImpl::Create(
     int process_id,
-    blink::mojom::FileUtilitiesHostRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<FileUtilitiesHostImpl>(process_id),
-                          std::move(request));
+    mojo::PendingReceiver<blink::mojom::FileUtilitiesHost> receiver) {
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<FileUtilitiesHostImpl>(process_id), std::move(receiver));
 }
 
 void FileUtilitiesHostImpl::GetFileInfo(const base::FilePath& path,

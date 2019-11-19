@@ -6,8 +6,8 @@
 
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
-#import "ios/chrome/test/base/scoped_block_swizzler.h"
 #include "ios/chrome/test/block_cleanup_test.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #import "ios/third_party/material_components_ios/src/components/CollectionCells/src/MaterialCollectionCells.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -131,13 +131,12 @@ bool VerifyUsingPathBuilder(
     const std::vector<CertInput>& intermediate_der_certs,
     const std::vector<CertInput>& root_der_certs,
     const base::Time at_time,
-    const base::FilePath& dump_prefix_path) {
+    const base::FilePath& dump_prefix_path,
+    scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+    std::unique_ptr<net::SystemTrustStore> ssl_trust_store) {
   base::Time::Exploded exploded_time;
   at_time.UTCExplode(&exploded_time);
   net::der::GeneralizedTime time = ConvertExplodedTime(exploded_time);
-
-  std::unique_ptr<net::SystemTrustStore> ssl_trust_store =
-      net::CreateSslSystemTrustStore();
 
   for (const auto& der_cert : root_der_certs) {
     scoped_refptr<net::ParsedCertificate> cert = ParseCertificate(der_cert);
@@ -165,29 +164,33 @@ bool VerifyUsingPathBuilder(
   // Verify the chain.
   net::SimplePathBuilderDelegate delegate(
       2048, net::SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
-  net::CertPathBuilder::Result result;
   net::CertPathBuilder path_builder(
       target_cert, ssl_trust_store->GetTrustStore(), &delegate, time,
       net::KeyPurpose::SERVER_AUTH, net::InitialExplicitPolicy::kFalse,
       {net::AnyPolicy()}, net::InitialPolicyMappingInhibit::kFalse,
-      net::InitialAnyPolicyInhibit::kFalse, &result);
+      net::InitialAnyPolicyInhibit::kFalse);
   path_builder.AddCertIssuerSource(&intermediate_cert_issuer_source);
 
-  // TODO(mattm): add command line flags to configure using
-  // CertIssuerSourceAia
-  DCHECK(net::GetGlobalCertNetFetcher());
-  net::CertIssuerSourceAia aia_cert_issuer_source(
-      net::GetGlobalCertNetFetcher());
-  path_builder.AddCertIssuerSource(&aia_cert_issuer_source);
+  std::unique_ptr<net::CertIssuerSourceAia> aia_cert_issuer_source;
+  if (cert_net_fetcher.get()) {
+    aia_cert_issuer_source =
+        std::make_unique<net::CertIssuerSourceAia>(std::move(cert_net_fetcher));
+    path_builder.AddCertIssuerSource(aia_cert_issuer_source.get());
+  }
+
+  // TODO(mattm): should this be a command line flag?
+  path_builder.SetExploreAllPaths(true);
 
   // Run the path builder.
-  path_builder.Run();
+  net::CertPathBuilder::Result result = path_builder.Run();
 
   // TODO(crbug.com/634443): Display any errors/warnings associated with path
   //                         building that were not part of a particular
   //                         PathResult.
   std::cout << "CertPathBuilder result: "
             << (result.HasValidPath() ? "SUCCESS" : "FAILURE") << "\n";
+
+  PrintDebugData(&result);
 
   for (size_t i = 0; i < result.paths.size(); ++i) {
     PrintResultPath(result.paths[i].get(), i, i == result.best_result_index);

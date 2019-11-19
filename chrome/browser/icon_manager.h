@@ -68,7 +68,7 @@ class IconManager {
   gfx::Image* LookupIconFromFilepath(const base::FilePath& file_path,
                                      IconLoader::IconSize size);
 
-  using IconRequestCallback = base::OnceCallback<void(gfx::Image*)>;
+  using IconRequestCallback = base::OnceCallback<void(gfx::Image)>;
 
   // Asynchronous call to lookup and return the icon associated with file. The
   // work is done on the file thread, with the callbacks running on the thread
@@ -90,7 +90,7 @@ class IconManager {
   void OnIconLoaded(IconRequestCallback callback,
                     base::FilePath file_path,
                     IconLoader::IconSize size,
-                    std::unique_ptr<gfx::Image> result,
+                    gfx::Image result,
                     const IconLoader::IconGroup& group);
 
   struct CacheKey {
@@ -104,9 +104,9 @@ class IconManager {
   };
 
   std::map<base::FilePath, IconLoader::IconGroup> group_cache_;
-  std::map<CacheKey, std::unique_ptr<gfx::Image>> icon_cache_;
+  std::map<CacheKey, gfx::Image> icon_cache_;
 
-  base::WeakPtrFactory<IconManager> weak_factory_;
+  base::WeakPtrFactory<IconManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IconManager);
 };

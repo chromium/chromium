@@ -7,10 +7,8 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
-#include "services/identity/public/cpp/identity_manager.h"
 
 namespace {
 
@@ -28,15 +26,6 @@ extensions::SafeBrowsingPrivateEventRouter* GetEventRouter(
   return extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
       browser_context);
 }
-
-std::string GetUserName(content::WebContents* web_contents) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto* identity_manager =
-      IdentityManagerFactory::GetForProfileIfExists(profile);
-  return identity_manager ? identity_manager->GetPrimaryAccountInfo().email
-                          : std::string();
-}
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
@@ -51,8 +40,7 @@ void MaybeTriggerSecurityInterstitialShownEvent(
       GetEventRouter(web_contents);
   if (!event_router)
     return;
-  event_router->OnSecurityInterstitialShown(page_url, reason, net_error_code,
-                                            GetUserName(web_contents));
+  event_router->OnSecurityInterstitialShown(page_url, reason, net_error_code);
 #endif
 }
 
@@ -66,8 +54,8 @@ void MaybeTriggerSecurityInterstitialProceededEvent(
       GetEventRouter(web_contents);
   if (!event_router)
     return;
-  event_router->OnSecurityInterstitialProceeded(
-      page_url, reason, net_error_code, GetUserName(web_contents));
+  event_router->OnSecurityInterstitialProceeded(page_url, reason,
+                                                net_error_code);
 #endif
 }
 
@@ -93,11 +81,16 @@ std::string GetThreatTypeStringForInterstitial(
     case safe_browsing::SB_THREAT_TYPE_CSD_WHITELIST:
     case safe_browsing::
         DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
-    case safe_browsing::SB_THREAT_TYPE_SIGN_IN_PASSWORD_REUSE:
+    case safe_browsing::SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
+    case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
+    case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
     case safe_browsing::SB_THREAT_TYPE_AD_SAMPLE:
+    case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_POPUP:
+    case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
     case safe_browsing::SB_THREAT_TYPE_SUSPICIOUS_SITE:
     case safe_browsing::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
     case safe_browsing::SB_THREAT_TYPE_APK_DOWNLOAD:
+    case safe_browsing::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
       NOTREACHED();
       break;
   }

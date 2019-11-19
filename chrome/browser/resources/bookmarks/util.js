@@ -2,18 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {BookmarkNode, BookmarksPageState, NodeMap} from './types.js';
+import {BOOKMARKS_BAR_ID, ROOT_NODE_ID, IncognitoAvailability} from './constants.js';
+
 /**
  * @fileoverview Utility functions for the Bookmarks page.
  */
 
-cr.define('bookmarks.util', function() {
   /**
    * Returns the list of bookmark IDs to be displayed in the UI, taking into
    * account search and the currently selected folder.
    * @param {!BookmarksPageState} state
    * @return {!Array<string>}
    */
-  function getDisplayedList(state) {
+  export function getDisplayedList(state) {
     if (isShowingSearch(state)) {
       return assert(state.search.results);
     }
@@ -25,7 +28,7 @@ cr.define('bookmarks.util', function() {
    * @param {BookmarkTreeNode} treeNode
    * @return {!BookmarkNode}
    */
-  function normalizeNode(treeNode) {
+  export function normalizeNode(treeNode) {
     const node = Object.assign({}, treeNode);
     // Node index is not necessary and not kept up-to-date. Remove it from the
     // data structure so we don't accidentally depend on the incorrect
@@ -45,7 +48,7 @@ cr.define('bookmarks.util', function() {
    * @param {BookmarkTreeNode} rootNode
    * @return {NodeMap}
    */
-  function normalizeNodes(rootNode) {
+  export function normalizeNodes(rootNode) {
     /** @type {NodeMap} */
     const nodeMap = {};
     const stack = [];
@@ -67,7 +70,7 @@ cr.define('bookmarks.util', function() {
   }
 
   /** @return {!BookmarksPageState} */
-  function createEmptyState() {
+  export function createEmptyState() {
     return {
       nodes: {},
       selectedFolder: BOOKMARKS_BAR_ID,
@@ -92,7 +95,7 @@ cr.define('bookmarks.util', function() {
    * @param {BookmarksPageState} state
    * @return {boolean}
    */
-  function isShowingSearch(state) {
+  export function isShowingSearch(state) {
     return state.search.results != null;
   }
 
@@ -105,7 +108,7 @@ cr.define('bookmarks.util', function() {
    * @param {string} itemId
    * @return {boolean}
    */
-  function canEditNode(state, itemId) {
+  export function canEditNode(state, itemId) {
     return itemId != ROOT_NODE_ID &&
         state.nodes[itemId].parentId != ROOT_NODE_ID &&
         !state.nodes[itemId].unmodifiable && state.prefs.canEdit;
@@ -118,7 +121,7 @@ cr.define('bookmarks.util', function() {
    * @param {string} itemId
    * @return {boolean}
    */
-  function canReorderChildren(state, itemId) {
+  export function canReorderChildren(state, itemId) {
     return itemId != ROOT_NODE_ID && !state.nodes[itemId].unmodifiable &&
         state.prefs.canEdit;
   }
@@ -128,7 +131,7 @@ cr.define('bookmarks.util', function() {
    * @param {NodeMap} nodes
    * @return {boolean}
    */
-  function hasChildFolders(id, nodes) {
+  export function hasChildFolders(id, nodes) {
     const children = nodes[id].children;
     for (let i = 0; i < children.length; i++) {
       if (nodes[children[i]].children) {
@@ -144,7 +147,7 @@ cr.define('bookmarks.util', function() {
    * @param {string} baseId
    * @return {!Set<string>}
    */
-  function getDescendants(nodes, baseId) {
+  export function getDescendants(nodes, baseId) {
     const descendants = new Set();
     const stack = [];
     stack.push(baseId);
@@ -172,21 +175,12 @@ cr.define('bookmarks.util', function() {
   }
 
   /**
-   * @param {string} name
-   * @param {number} value
-   * @param {number} maxValue
-   */
-  function recordEnumHistogram(name, value, maxValue) {
-    chrome.send('metricsHandler:recordInHistogram', [name, value, maxValue]);
-  }
-
-  /**
    * @param {!Object<string, T>} map
    * @param {!Set<string>} ids
    * @return {!Object<string, T>}
    * @template T
    */
-  function removeIdsFromObject(map, ids) {
+  export function removeIdsFromObject(map, ids) {
     const newObject = Object.assign({}, map);
     ids.forEach(function(id) {
       delete newObject[id];
@@ -201,7 +195,7 @@ cr.define('bookmarks.util', function() {
    * @return {!Map<string, T>}
    * @template T
    */
-  function removeIdsFromMap(map, ids) {
+  export function removeIdsFromMap(map, ids) {
     const newMap = new Map(map);
     ids.forEach(function(id) {
       newMap.delete(id);
@@ -214,7 +208,7 @@ cr.define('bookmarks.util', function() {
    * @param {!Set<string>} ids
    * @return {!Set<string>}
    */
-  function removeIdsFromSet(set, ids) {
+  export function removeIdsFromSet(set, ids) {
     const difference = new Set(set);
     ids.forEach(function(id) {
       difference.delete(id);
@@ -222,19 +216,3 @@ cr.define('bookmarks.util', function() {
     return difference;
   }
 
-  return {
-    canEditNode: canEditNode,
-    canReorderChildren: canReorderChildren,
-    createEmptyState: createEmptyState,
-    getDescendants: getDescendants,
-    getDisplayedList: getDisplayedList,
-    hasChildFolders: hasChildFolders,
-    isShowingSearch: isShowingSearch,
-    normalizeNode: normalizeNode,
-    normalizeNodes: normalizeNodes,
-    recordEnumHistogram: recordEnumHistogram,
-    removeIdsFromMap: removeIdsFromMap,
-    removeIdsFromObject: removeIdsFromObject,
-    removeIdsFromSet: removeIdsFromSet,
-  };
-});

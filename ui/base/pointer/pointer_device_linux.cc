@@ -5,24 +5,25 @@
 #include "ui/base/pointer/pointer_device.h"
 
 #include "base/logging.h"
-#include "ui/events/devices/input_device_manager.h"
+#include "ui/events/devices/device_data_manager.h"
 
 namespace ui {
 
 namespace {
 
 bool IsTouchDevicePresent() {
-  return !InputDeviceManager::GetInstance()->GetTouchscreenDevices().empty();
+  return !DeviceDataManager::GetInstance()->GetTouchscreenDevices().empty();
 }
 
 bool IsMouseOrTouchpadPresent() {
-  InputDeviceManager* input_manager = InputDeviceManager::GetInstance();
-  for (const ui::InputDevice& device : input_manager->GetTouchpadDevices()) {
+  DeviceDataManager* device_data_manager = DeviceDataManager::GetInstance();
+  for (const ui::InputDevice& device :
+       device_data_manager->GetTouchpadDevices()) {
     if (device.enabled)
       return true;
   }
   // We didn't find a touchpad then let's look if there is a mouse connected.
-  for (const ui::InputDevice& device : input_manager->GetMouseDevices()) {
+  for (const ui::InputDevice& device : device_data_manager->GetMouseDevices()) {
     if (device.enabled)
       return true;
   }
@@ -57,7 +58,7 @@ TouchScreensAvailability GetTouchScreensAvailability() {
   if (!IsTouchDevicePresent())
     return TouchScreensAvailability::NONE;
 
-  return InputDeviceManager::GetInstance()->AreTouchscreensEnabled()
+  return DeviceDataManager::GetInstance()->AreTouchscreensEnabled()
              ? TouchScreensAvailability::ENABLED
              : TouchScreensAvailability::DISABLED;
 }
@@ -65,7 +66,7 @@ TouchScreensAvailability GetTouchScreensAvailability() {
 int MaxTouchPoints() {
   int max_touch = 0;
   const std::vector<ui::TouchscreenDevice>& touchscreen_devices =
-      ui::InputDeviceManager::GetInstance()->GetTouchscreenDevices();
+      ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices();
   for (const ui::TouchscreenDevice& device : touchscreen_devices) {
     if (device.touch_points > max_touch)
       max_touch = device.touch_points;

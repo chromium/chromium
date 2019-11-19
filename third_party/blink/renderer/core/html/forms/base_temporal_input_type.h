@@ -33,7 +33,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/date_time_edit_element.h"
 #include "third_party/blink/renderer/core/html/forms/input_type.h"
-#include "third_party/blink/renderer/platform/date_components.h"
+#include "third_party/blink/renderer/platform/text/date_components.h"
 
 namespace blink {
 

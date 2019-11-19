@@ -31,16 +31,31 @@ const char kClientId2[] = "ID-2";
 const char kClientId3[] = "ID-3";
 const char kTestThumbnailURL[] = "http://thumbnail.com/";
 PrefetchURL PrefetchURL1() {
-  return {kClientId1, GURL("https://www.url1.com/"),
-          base::ASCIIToUTF16("Title 1")};
+  return {kClientId1,
+          GURL("https://www.url1.com/"),
+          base::UTF8ToUTF16("Title 1"),
+          GURL("https://www.url1.com/thumbnail.png"),
+          GURL("https://www.url1.com/favicon.png"),
+          "snippet 1",
+          "url1.com"};
 }
 PrefetchURL PrefetchURL2() {
-  return {kClientId2, GURL("http://www.url2.com/"),
-          base::ASCIIToUTF16("Title 2")};
+  return {kClientId2,
+          GURL("https://www.url2.com/"),
+          base::UTF8ToUTF16("Title 2"),
+          GURL("https://www.url2.com/thumbnail.png"),
+          GURL("https://www.url2.com/favicon.png"),
+          "snippet 2",
+          "url2.com"};
 }
 PrefetchURL PrefetchURL3() {
-  return {kClientId3, GURL("http://www.url3.com/"),
-          base::ASCIIToUTF16("Title 3")};
+  return {kClientId3,
+          GURL("https://www.url3.com/"),
+          base::UTF8ToUTF16("Title 3"),
+          GURL("https://www.url3.com/thumbnail.png"),
+          GURL("https://www.url3.com/favicon.png"),
+          "snippet 3",
+          "url3.com"};
 }
 }  // namespace
 
@@ -91,6 +106,9 @@ TEST_F(AddUniqueUrlsTaskTest, AddTaskInEmptyStore) {
   EXPECT_EQ(kTestNamespace, items[kClientId1].client_id.name_space);
   EXPECT_EQ(PrefetchURL1().title, items[kClientId1].title);
   EXPECT_EQ(kTestThumbnailURL, items[kClientId1].thumbnail_url);
+  EXPECT_EQ(PrefetchURL1().favicon_url, items[kClientId1].favicon_url);
+  EXPECT_EQ(PrefetchURL1().snippet, items[kClientId1].snippet);
+  EXPECT_EQ(PrefetchURL1().attribution, items[kClientId1].attribution);
 
   // Check that the second item exists.
   ASSERT_GT(items.count(kClientId2), 0UL);

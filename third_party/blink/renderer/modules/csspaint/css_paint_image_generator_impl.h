@@ -15,7 +15,7 @@
 
 namespace blink {
 
-class CSSSyntaxDescriptor;
+class CSSSyntaxDefinition;
 class Document;
 class DocumentPaintDefinition;
 class Image;
@@ -35,12 +35,14 @@ class MODULES_EXPORT CSSPaintImageGeneratorImpl final
   // The |container_size| is without subpixel snapping.
   scoped_refptr<Image> Paint(const ImageResourceObserver&,
                              const FloatSize& container_size,
-                             const CSSStyleValueVector*) final;
+                             const CSSStyleValueVector*,
+                             float device_scale_factor) final;
   const Vector<CSSPropertyID>& NativeInvalidationProperties() const final;
   const Vector<AtomicString>& CustomInvalidationProperties() const final;
   bool HasAlpha() const final;
-  const Vector<CSSSyntaxDescriptor>& InputArgumentTypes() const final;
+  const Vector<CSSSyntaxDefinition>& InputArgumentTypes() const final;
   bool IsImageGeneratorReady() const final;
+  int WorkletId() const final;
 
   // Should be called from the PaintWorkletGlobalScope when a javascript class
   // is registered with the same name.
@@ -55,7 +57,10 @@ class MODULES_EXPORT CSSPaintImageGeneratorImpl final
   void Trace(blink::Visitor*) override;
 
  private:
+  // Used for main-thread CSS Paint.
   bool HasDocumentDefinition() const;
+
+  // Used for main-thread CSS Paint.
   // This function first checks whether the document definition with |name_|
   // exists or not. If it does exist, the function fetches the document
   // definition and checks if it is valid. The function returns true when the

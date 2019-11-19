@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<script src="../../resources/testharness.js"></script>
 <style>
 .scale-transform {
   transform: scale(0.75);
@@ -8,21 +7,20 @@
   transform: translateX(5px);
 }
 </style>
-<div style="will-change: transform; width: 200px; height: 200px; background: lightgray;"></div>
+<div id="should-not-squash" style="will-change: transform; width: 200px; height: 200px; background: lightgray;"></div>
 <div class="scale-transform" style="position: absolute; width: 200px; height: 200px; top: 100px; left: 100px; background: lightblue"></div>
 <div class="translate-transform" style="position: absolute; width: 200px; height: 200px; top: 100px; left: 100px; background: lightblue"></div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner)
-    testRunner.dumpAsText();
 onload = function() {
-    if (window.internals) {
-        var layers = JSON.parse(internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_DEBUG_INFO))["layers"];
-
-        var willChangeDIVLayer = layers[4];
-        var scaleTransformDIVLayer = layers[5];
-        // Both transformed layers squash together after the will-change layer.
-        assert_true(willChangeDIVLayer.compositingReasons[0] == "Has a will-change compositing hint");
-        assert_true(scaleTransformDIVLayer.compositingReasons[0] == "Secondary layer, home for a group of squashable content");
-    }
+    test(function() {
+        if (window.internals) {
+            var layer_tree = internals.layerTreeAsText(document);
+            assert_true(layer_tree.includes("id='should-not-squash'"), 'should not squash into scale transform');
+            assert_true(layer_tree.includes("class='scale-transform'"), 'the scale transform');
+            assert_false(layer_tree.includes("id='translate-transform'"), 'translate transform is squashed');
+        }
+    });
 };
 </script>

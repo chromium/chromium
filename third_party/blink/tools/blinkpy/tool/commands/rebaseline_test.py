@@ -28,7 +28,6 @@ class RebaselineTest(AbstractRebaseliningCommand):
     def execute(self, options, args, tool):
         self._tool = tool
         self._rebaseline_test_and_update_expectations(options)
-        self._print_expectation_line_changes()
 
     def _rebaseline_test_and_update_expectations(self, options):
         self._baseline_suffix_list = options.suffixes.split(',')
@@ -36,19 +35,14 @@ class RebaselineTest(AbstractRebaseliningCommand):
         if options.results_directory:
             results_url = 'file://' + options.results_directory
         else:
-            results_url = self._tool.buildbot.results_url(
+            results_url = self._tool.results_fetcher.results_url(
                 options.builder, build_number=options.build_number,
                 step_name=options.step_name)
 
-        succeeded = True
         port_name = options.port_name or self._tool.builders.port_name_for_builder_name(options.builder)
         test_name = options.test
         for suffix in self._baseline_suffix_list:
-            if not self._rebaseline_test(port_name, test_name, suffix, results_url):
-                succeeded = False
-
-        if succeeded:
-            self.expectation_line_changes.remove_line(test=test_name, port_name=port_name)
+            self._rebaseline_test(port_name, test_name, suffix, results_url)
 
     def _rebaseline_test(self, port_name, test_name, suffix, results_url):
         """Downloads a baseline file and saves it to the filesystem.
@@ -60,9 +54,6 @@ class RebaselineTest(AbstractRebaseliningCommand):
             suffix: The baseline file extension (e.g. png); together with the
                 test name and results_url this determines what file to download.
             results_url: Base URL to download the actual result from.
-
-        Returns:
-            True if the rebaseline is successful.
         """
         port = self._tool.port_factory.get(port_name)
 
@@ -71,10 +62,8 @@ class RebaselineTest(AbstractRebaseliningCommand):
         source_baseline = '%s/%s' % (results_url, self._file_name_for_actual_result(test_name, suffix))
         target_baseline = self._tool.filesystem.join(baseline_directory, self._file_name_for_expected_result(test_name, suffix))
 
-        succeeded = True
         if suffix == 'png' and port.reference_files(test_name):
             _log.warning('Cannot rebaseline image result for reftest: %s', test_name)
-            succeeded = False
             data = ''
             # Still continue in case we can remove extra -expected.png.
         else:
@@ -91,7 +80,3 @@ class RebaselineTest(AbstractRebaseliningCommand):
         filesystem = self._tool.filesystem
         filesystem.maybe_make_directory(filesystem.dirname(target_baseline))
         filesystem.write_binary_file(target_baseline, data)
-        return succeeded
-
-    def _print_expectation_line_changes(self):
-        print json.dumps(self.expectation_line_changes.to_dict())

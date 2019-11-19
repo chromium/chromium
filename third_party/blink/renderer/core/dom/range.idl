@@ -21,7 +21,8 @@
 // https://dom.spec.whatwg.org/#interface-range
 [
     Constructor,
-    ConstructorCallWith=Document
+    ConstructorCallWith=Document,
+    Exposed=Window
 ] interface Range {
     readonly attribute Node startContainer;
     readonly attribute unsigned long startOffset;

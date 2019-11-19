@@ -19,6 +19,12 @@ Storage
 Cache
   Cache Storage
   Application Cache
+Background Services
+  Background Fetch
+  Background Sync
+  Notifications
+  Payment Handler
+  Push Messaging
 Frames
   top
 Selection: ["cookies://http://127.0.0.1:8000","category://Cookies"]
@@ -42,6 +48,12 @@ Storage
 Cache
   Cache Storage
   Application Cache
+Background Services
+  Background Fetch
+  Background Sync
+  Notifications
+  Payment Handler
+  Push Messaging
 Frames
   top
 Selection: ["cookies://http://127.0.0.1:8000","category://Cookies"]

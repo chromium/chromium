@@ -17,6 +17,7 @@
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_bindings_system_unittest.h"
 #include "extensions/renderer/bindings/api_invocation_errors.h"
+#include "extensions/renderer/bindings/test_interaction_provider.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/try_catch.h"
@@ -120,7 +121,7 @@ void APIBindingsSystemTest::SetUp() {
       base::BindRepeating(&AllowAllAPIs),
       base::BindRepeating(&APIBindingsSystemTest::OnAPIRequest,
                           base::Unretained(this)),
-      base::BindRepeating(&GetTestUserActivationState),
+      std::make_unique<TestInteractionProvider>(),
       base::BindRepeating(&APIBindingsSystemTest::OnEventListenersChanged,
                           base::Unretained(this)),
       base::BindRepeating(get_context_owner), base::DoNothing(),
@@ -159,7 +160,7 @@ v8::Local<v8::Object> APIBindingsSystemTest::GetLastErrorParent(
 
 const base::DictionaryValue& APIBindingsSystemTest::GetAPISchema(
     const std::string& api_name) {
-  EXPECT_TRUE(base::ContainsKey(api_schemas_, api_name));
+  EXPECT_TRUE(base::Contains(api_schemas_, api_name));
   return *api_schemas_[api_name];
 }
 

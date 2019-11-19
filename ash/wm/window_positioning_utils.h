@@ -22,8 +22,6 @@ class Size;
 
 namespace ash {
 
-namespace wm {
-
 // We force at least this many DIPs for any window on the screen.
 const int kMinimumOnScreenArea = 25;
 
@@ -66,7 +64,6 @@ ASH_EXPORT void SetBoundsInScreen(aura::Window* window,
                                   const gfx::Rect& bounds_in_screen,
                                   const display::Display& display);
 
-}  // namespace wm
 }  // namespace ash
 
 #endif  // ASH_WM_WINDOW_POSITIONING_UTILS_H_

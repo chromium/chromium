@@ -59,4 +59,8 @@ bool FileUtilsWrapper::DeleteFile(const base::FilePath& path, bool recursive) {
   return base::DeleteFile(path, recursive);
 }
 
+bool FileUtilsWrapper::DeleteFileRecursively(const base::FilePath& path) {
+  return base::DeleteFileRecursively(path);
+}
+
 }  // namespace web_app

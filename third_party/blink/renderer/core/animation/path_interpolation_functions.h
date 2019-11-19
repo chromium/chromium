@@ -8,12 +8,15 @@
 #include <memory>
 #include "third_party/blink/renderer/core/animation/interpolation_type.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class StylePath;
 
 class PathInterpolationFunctions {
+  STATIC_ONLY(PathInterpolationFunctions);
+
  public:
   enum CoordinateConversion { PreserveCoordinates, ForceAbsolute };
 

@@ -7,12 +7,12 @@
  * and selections.
  */
 
-goog.provide('cvox.BrailleTextStyleSpan');
-goog.provide('cvox.ExtraCellsSpan');
-goog.provide('cvox.ValueSelectionSpan');
-goog.provide('cvox.ValueSpan');
+goog.provide('BrailleTextStyleSpan');
+goog.provide('ExtraCellsSpan');
+goog.provide('ValueSelectionSpan');
+goog.provide('ValueSpan');
 
-goog.require('cvox.LibLouis.FormType');
+goog.require('LibLouis.FormType');
 goog.require('Spannable');
 
 /**
@@ -20,7 +20,7 @@ goog.require('Spannable');
  * @param {number} offset The offset of the span into the value.
  * @constructor
  */
-cvox.ValueSpan = function(offset) {
+ValueSpan = function(offset) {
   /**
    * The offset of the span into the value.
    * @type {number}
@@ -32,10 +32,10 @@ cvox.ValueSpan = function(offset) {
 /**
  * Creates a value span from a json serializable object.
  * @param {!Object} obj The json serializable object to convert.
- * @return {!cvox.ValueSpan} The value span.
+ * @return {!ValueSpan} The value span.
  */
-cvox.ValueSpan.fromJson = function(obj) {
-  return new cvox.ValueSpan(obj.offset);
+ValueSpan.fromJson = function(obj) {
+  return new ValueSpan(obj.offset);
 };
 
 
@@ -43,34 +43,33 @@ cvox.ValueSpan.fromJson = function(obj) {
  * Converts this object to a json serializable object.
  * @return {!Object} The JSON representation.
  */
-cvox.ValueSpan.prototype.toJson = function() {
+ValueSpan.prototype.toJson = function() {
   return this;
 };
 
 
 Spannable.registerSerializableSpan(
-    cvox.ValueSpan, 'cvox.ValueSpan', cvox.ValueSpan.fromJson,
-    cvox.ValueSpan.prototype.toJson);
+    ValueSpan, 'ValueSpan', ValueSpan.fromJson, ValueSpan.prototype.toJson);
 
 
 /**
  * Attached to the selected text within a value.
  * @constructor
  */
-cvox.ValueSelectionSpan = function() {};
+ValueSelectionSpan = function() {};
 
 
 Spannable.registerStatelessSerializableSpan(
-    cvox.ValueSelectionSpan, 'cvox.ValueSelectionSpan');
+    ValueSelectionSpan, 'ValueSelectionSpan');
 
 
 /**
  * Causes raw cells to be added when translating from text to braille.
- * This is supported by the {@code cvox.ExpandingBrailleTranslator}
+ * This is supported by the {@code ExpandingBrailleTranslator}
  * class.
  * @constructor
  */
-cvox.ExtraCellsSpan = function() {
+ExtraCellsSpan = function() {
   /** @type {ArrayBuffer} */
   this.cells = new Uint8Array(0).buffer;
 };
@@ -78,10 +77,10 @@ cvox.ExtraCellsSpan = function() {
 
 /**
  * Indicates a text form during translation in Liblouis.
- * @param {cvox.LibLouis.FormType} formType
+ * @param {LibLouis.FormType} formType
  * @constructor
  */
-cvox.BrailleTextStyleSpan = function(formType) {
-  /** @type {cvox.LibLouis.FormType} */
+BrailleTextStyleSpan = function(formType) {
+  /** @type {LibLouis.FormType} */
   this.formType = formType;
 };

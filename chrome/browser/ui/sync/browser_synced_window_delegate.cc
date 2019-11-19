@@ -54,12 +54,8 @@ int BrowserSyncedWindowDelegate::GetActiveIndex() const {
   return browser_->tab_strip_model()->active_index();
 }
 
-bool BrowserSyncedWindowDelegate::IsApp() const {
-  return browser_->is_app();
-}
-
-bool BrowserSyncedWindowDelegate::IsTypeTabbed() const {
-  return browser_->is_type_tabbed();
+bool BrowserSyncedWindowDelegate::IsTypeNormal() const {
+  return browser_->is_type_normal();
 }
 
 bool BrowserSyncedWindowDelegate::IsTypePopup() const {
@@ -71,7 +67,5 @@ bool BrowserSyncedWindowDelegate::IsSessionRestoreInProgress() const {
 }
 
 bool BrowserSyncedWindowDelegate::ShouldSync() const {
-  if (IsApp())
-    return false;
-  return IsTypeTabbed() || IsTypePopup();
+  return IsTypeNormal() || IsTypePopup();
 }

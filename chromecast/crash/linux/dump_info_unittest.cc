@@ -41,7 +41,6 @@ TEST(DumpInfoTest, BadTimeStringIsNotValid) {
 TEST(DumpInfoTest, AllRequiredFieldsIsValid) {
   std::unique_ptr<DumpInfo> info(
       CreateDumpInfo("{"
-                     "\"name\": \"name\","
                      "\"dump_time\" : \"2001-11-12 18:31:01\","
                      "\"dump\": \"dump_string\","
                      "\"uptime\": \"123456789\","
@@ -58,7 +57,6 @@ TEST(DumpInfoTest, AllRequiredFieldsIsValid) {
   EXPECT_TRUE(base::Time::FromLocalExploded(ex, &dump_time));
 
   ASSERT_TRUE(info->valid());
-  ASSERT_EQ("name", info->params().process_name);
   ASSERT_EQ(dump_time, info->dump_time());
   ASSERT_EQ("dump_string", info->crashed_process_dump());
   ASSERT_EQ(123456789u, info->params().process_uptime);
@@ -97,7 +95,6 @@ TEST(DumpInfoTest, SomeRequiredFieldsEmptyIsValid) {
   EXPECT_TRUE(base::Time::FromLocalExploded(ex, &dump_time));
 
   ASSERT_TRUE(info->valid());
-  ASSERT_EQ("name", info->params().process_name);
   ASSERT_EQ(dump_time, info->dump_time());
   ASSERT_EQ("", info->crashed_process_dump());
   ASSERT_EQ(0u, info->params().process_uptime);
@@ -131,7 +128,6 @@ TEST(DumpInfoTest, AllOptionalFieldsIsValid) {
   EXPECT_TRUE(base::Time::FromLocalExploded(ex, &dump_time));
 
   ASSERT_TRUE(info->valid());
-  ASSERT_EQ("name", info->params().process_name);
   ASSERT_EQ(dump_time, info->dump_time());
   ASSERT_EQ("dump_string", info->crashed_process_dump());
   ASSERT_EQ(123456789u, info->params().process_uptime);
@@ -166,7 +162,6 @@ TEST(DumpInfoTest, SomeOptionalFieldsIsValid) {
   EXPECT_TRUE(base::Time::FromLocalExploded(ex, &dump_time));
 
   ASSERT_TRUE(info->valid());
-  ASSERT_EQ("name", info->params().process_name);
   ASSERT_EQ(dump_time, info->dump_time());
   ASSERT_EQ("dump_string", info->crashed_process_dump());
   ASSERT_EQ(123456789u, info->params().process_uptime);

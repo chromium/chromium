@@ -5,6 +5,8 @@
 
 """ Generator for C style prototypes and definitions """
 
+from __future__ import print_function
+
 import glob
 import os
 import sys
@@ -199,7 +201,7 @@ class CGen(object):
   def Log(self, txt):
     if not GetOption('cgen_debug'): return
     tabs = '  ' * self.dbg_depth
-    print '%s%s' % (tabs, txt)
+    print('%s%s' % (tabs, txt))
 
   def LogEnter(self, txt):
     if txt: self.Log(txt)
@@ -766,7 +768,7 @@ def TestFile(filenode):
 
     outstr = cgen.Define(node, releases=['M14'])
     if GetOption('verbose'):
-      print outstr + '\n'
+      print(outstr + '\n')
     outstr = CleanString(outstr)
 
     if instr != outstr:
@@ -809,10 +811,10 @@ def main(args):
   cgen = CGen()
   for f in ast.GetListOf('File'):
     if f.GetProperty('ERRORS') > 0:
-      print 'Skipping %s' % f.GetName()
+      print('Skipping %s' % f.GetName())
       continue
     for node in f.GetChildren()[2:]:
-      print cgen.Define(node, ast.releases, comment=True, prefix='tst_')
+      print(cgen.Define(node, ast.releases, comment=True, prefix='tst_'))
 
 
 if __name__ == '__main__':

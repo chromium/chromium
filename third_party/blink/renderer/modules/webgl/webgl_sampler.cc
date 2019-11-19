@@ -20,9 +20,7 @@ WebGLSampler::WebGLSampler(WebGL2RenderingContextBase* ctx)
   SetObject(sampler);
 }
 
-WebGLSampler::~WebGLSampler() {
-  RunDestructor();
-}
+WebGLSampler::~WebGLSampler() = default;
 
 void WebGLSampler::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
   gl->DeleteSamplers(1, &object_);

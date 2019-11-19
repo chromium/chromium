@@ -19,7 +19,7 @@ namespace chromeos {
 
 class SeneschalClientImpl : public SeneschalClient {
  public:
-  SeneschalClientImpl() : weak_ptr_factory_(this) {}
+  SeneschalClientImpl() {}
 
   ~SeneschalClientImpl() override = default;
 
@@ -94,7 +94,7 @@ class SeneschalClientImpl : public SeneschalClient {
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<SeneschalClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<SeneschalClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SeneschalClientImpl);
 };

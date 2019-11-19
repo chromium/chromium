@@ -5,7 +5,7 @@
 #include "components/search_engines/search_terms_data.h"
 
 #include "base/logging.h"
-#include "components/google/core/browser/google_url_tracker.h"
+#include "components/google/core/common/google_util.h"
 #include "url/gurl.h"
 
 SearchTermsData::SearchTermsData() {
@@ -15,7 +15,7 @@ SearchTermsData::~SearchTermsData() {
 }
 
 std::string SearchTermsData::GoogleBaseURLValue() const {
-  return GoogleURLTracker::kDefaultGoogleHomepage;
+  return google_util::kGoogleHomepageURL;
 }
 
 std::string SearchTermsData::GoogleBaseSuggestURLValue() const {

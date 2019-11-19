@@ -143,11 +143,9 @@ class CertVerifyProcAndroidTestWithAIAFetching : public testing::Test {
  public:
   void SetUp() override {
     fetcher_ = base::MakeRefCounted<MockCertNetFetcher>();
-    SetGlobalCertNetFetcherForTesting(fetcher_);
   }
 
   void TearDown() override {
-    ShutdownGlobalCertNetFetcher();
     // Ensure that mock expectations are checked, since the CertNetFetcher is
     // global and leaky.
     ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(fetcher_.get()));
@@ -178,14 +176,16 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
        NoFetchIfProperIntermediatesSupplied) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
-      base::MakeRefCounted<CertVerifyProcAndroid>();
+      base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
   scoped_refptr<X509Certificate> leaf;
   ASSERT_TRUE(
       CreateCertificateChainFromFiles({"target_one_aia.pem", "i.pem"}, &leaf));
   CertVerifyResult verify_result;
-  EXPECT_EQ(OK, proc->Verify(leaf.get(), "target", std::string(), 0,
-                             CRLSet::BuiltinCRLSet().get(), empty_cert_list_,
-                             &verify_result));
+  EXPECT_EQ(
+      OK,
+      proc->Verify(leaf.get(), "target", /*ocsp_response=*/std::string(),
+                   /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
+                   empty_cert_list_, &verify_result));
 }
 
 // Tests that if the certificate does not contain an AIA URL, no AIA fetch
@@ -193,14 +193,15 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
 TEST_F(CertVerifyProcAndroidTestWithAIAFetching, NoAIAURL) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
-      base::MakeRefCounted<CertVerifyProcAndroid>();
+      base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
   scoped_refptr<X509Certificate> cert;
   ASSERT_TRUE(ReadTestCert("target_no_aia.pem", &cert));
   CertVerifyResult verify_result;
-  EXPECT_EQ(ERR_CERT_AUTHORITY_INVALID,
-            proc->Verify(cert.get(), "target", std::string(), 0,
-                         CRLSet::BuiltinCRLSet().get(), empty_cert_list_,
-                         &verify_result));
+  EXPECT_EQ(
+      ERR_CERT_AUTHORITY_INVALID,
+      proc->Verify(cert.get(), "target", /*ocsp_response=*/std::string(),
+                   /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
+                   empty_cert_list_, &verify_result));
 }
 
 // Tests that if a certificate contains one file:// URL and one http:// URL,
@@ -209,7 +210,7 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, NoAIAURL) {
 TEST_F(CertVerifyProcAndroidTestWithAIAFetching, OneFileAndOneHTTPURL) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
-      base::MakeRefCounted<CertVerifyProcAndroid>();
+      base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
   scoped_refptr<X509Certificate> cert;
   ASSERT_TRUE(ReadTestCert("target_file_and_http_aia.pem", &cert));
   scoped_refptr<X509Certificate> intermediate;
@@ -228,9 +229,11 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, OneFileAndOneHTTPURL) {
           ByMove(CreateMockRequestFromX509Certificate(OK, intermediate))));
 
   CertVerifyResult verify_result;
-  EXPECT_EQ(OK, proc->Verify(cert.get(), "target", std::string(), 0,
-                             CRLSet::BuiltinCRLSet().get(), empty_cert_list_,
-                             &verify_result));
+  EXPECT_EQ(
+      OK,
+      proc->Verify(cert.get(), "target", /*ocsp_response=*/std::string(),
+                   /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
+                   empty_cert_list_, &verify_result));
 }
 
 // Tests that if an AIA request returns the wrong intermediate, certificate
@@ -239,7 +242,7 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
        UnsuccessfulVerificationWithLeafOnly) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
-      base::MakeRefCounted<CertVerifyProcAndroid>();
+      base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
   scoped_refptr<X509Certificate> cert;
   ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
   const scoped_refptr<X509Certificate> bad_intermediate =
@@ -250,10 +253,11 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
           ByMove(CreateMockRequestFromX509Certificate(OK, bad_intermediate))));
 
   CertVerifyResult verify_result;
-  EXPECT_EQ(ERR_CERT_AUTHORITY_INVALID,
-            proc->Verify(cert.get(), "target", std::string(), 0,
-                         CRLSet::BuiltinCRLSet().get(), empty_cert_list_,
-                         &verify_result));
+  EXPECT_EQ(
+      ERR_CERT_AUTHORITY_INVALID,
+      proc->Verify(cert.get(), "target", /*ocsp_response=*/std::string(),
+                   /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
+                   empty_cert_list_, &verify_result));
 }
 
 // Tests that if an AIA request returns an error, certificate verification
@@ -262,7 +266,7 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
        UnsuccessfulVerificationWithLeafOnlyAndErrorOnFetch) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
-      base::MakeRefCounted<CertVerifyProcAndroid>();
+      base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
   scoped_refptr<X509Certificate> cert;
   ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
 
@@ -270,10 +274,11 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
       .WillOnce(Return(ByMove(CreateMockRequestWithError(ERR_FAILED))));
 
   CertVerifyResult verify_result;
-  EXPECT_EQ(ERR_CERT_AUTHORITY_INVALID,
-            proc->Verify(cert.get(), "target", std::string(), 0,
-                         CRLSet::BuiltinCRLSet().get(), empty_cert_list_,
-                         &verify_result));
+  EXPECT_EQ(
+      ERR_CERT_AUTHORITY_INVALID,
+      proc->Verify(cert.get(), "target", /*ocsp_response=*/std::string(),
+                   /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
+                   empty_cert_list_, &verify_result));
 }
 
 // Tests that if an AIA request returns an unparseable cert, certificate
@@ -282,7 +287,7 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
        UnsuccessfulVerificationWithLeafOnlyAndUnparseableFetch) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
-      base::MakeRefCounted<CertVerifyProcAndroid>();
+      base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
   scoped_refptr<X509Certificate> cert;
   ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
 
@@ -290,10 +295,11 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
       .WillOnce(Return(ByMove(CreateMockRequestWithInvalidCertificate())));
 
   CertVerifyResult verify_result;
-  EXPECT_EQ(ERR_CERT_AUTHORITY_INVALID,
-            proc->Verify(cert.get(), "target", std::string(), 0,
-                         CRLSet::BuiltinCRLSet().get(), empty_cert_list_,
-                         &verify_result));
+  EXPECT_EQ(
+      ERR_CERT_AUTHORITY_INVALID,
+      proc->Verify(cert.get(), "target", /*ocsp_response=*/std::string(),
+                   /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
+                   empty_cert_list_, &verify_result));
 }
 
 // Tests that if a certificate has two HTTP AIA URLs, they are both fetched. If
@@ -302,7 +308,7 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
 TEST_F(CertVerifyProcAndroidTestWithAIAFetching, TwoHTTPURLs) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
-      base::MakeRefCounted<CertVerifyProcAndroid>();
+      base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
   scoped_refptr<X509Certificate> cert;
   ASSERT_TRUE(ReadTestCert("target_two_aia.pem", &cert));
   scoped_refptr<X509Certificate> intermediate;
@@ -324,9 +330,11 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, TwoHTTPURLs) {
           ByMove(CreateMockRequestFromX509Certificate(OK, intermediate))));
 
   CertVerifyResult verify_result;
-  EXPECT_EQ(OK, proc->Verify(cert.get(), "target", std::string(), 0,
-                             CRLSet::BuiltinCRLSet().get(), empty_cert_list_,
-                             &verify_result));
+  EXPECT_EQ(
+      OK,
+      proc->Verify(cert.get(), "target", /*ocsp_response=*/std::string(),
+                   /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
+                   empty_cert_list_, &verify_result));
 }
 
 // Tests that if an intermediate is fetched via AIA, and the intermediate itself
@@ -337,7 +345,7 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
   // then the intermediate i2.pem would not require an AIA fetch. With the test
   // root untrusted, i2.pem does not verify and so it will trigger an AIA fetch.
   scoped_refptr<CertVerifyProcAndroid> proc =
-      base::MakeRefCounted<CertVerifyProcAndroid>();
+      base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
   scoped_refptr<X509Certificate> cert;
   ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
   scoped_refptr<X509Certificate> intermediate;
@@ -357,10 +365,11 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
   CertVerifyResult verify_result;
   // This chain results in an AUTHORITY_INVALID root because |root_| is not
   // trusted.
-  EXPECT_EQ(ERR_CERT_AUTHORITY_INVALID,
-            proc->Verify(cert.get(), "target", std::string(), 0,
-                         CRLSet::BuiltinCRLSet().get(), empty_cert_list_,
-                         &verify_result));
+  EXPECT_EQ(
+      ERR_CERT_AUTHORITY_INVALID,
+      proc->Verify(cert.get(), "target", /*ocsp_response=*/std::string(),
+                   /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
+                   empty_cert_list_, &verify_result));
 }
 
 // Tests that if a certificate contains six AIA URLs, only the first five are
@@ -368,7 +377,7 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
 TEST_F(CertVerifyProcAndroidTestWithAIAFetching, MaxAIAFetches) {
   ASSERT_TRUE(SetUpTestRoot());
   scoped_refptr<CertVerifyProcAndroid> proc =
-      base::MakeRefCounted<CertVerifyProcAndroid>();
+      base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
   scoped_refptr<X509Certificate> cert;
   ASSERT_TRUE(ReadTestCert("target_six_aia.pem", &cert));
 
@@ -380,10 +389,11 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, MaxAIAFetches) {
       .WillOnce(Return(ByMove(CreateMockRequestWithError(ERR_FAILED))));
 
   CertVerifyResult verify_result;
-  EXPECT_EQ(ERR_CERT_AUTHORITY_INVALID,
-            proc->Verify(cert.get(), "target", std::string(), 0,
-                         CRLSet::BuiltinCRLSet().get(), empty_cert_list_,
-                         &verify_result));
+  EXPECT_EQ(
+      ERR_CERT_AUTHORITY_INVALID,
+      proc->Verify(cert.get(), "target", /*ocsp_response=*/std::string(),
+                   /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
+                   empty_cert_list_, &verify_result));
 }
 
 // Tests that if the supplied chain contains an intermediate with an AIA URL,
@@ -393,7 +403,7 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, FetchForSuppliedIntermediate) {
   // then the intermediate i.pem would not require an AIA fetch. With the test
   // root untrusted, i.pem does not verify and so it will trigger an AIA fetch.
   scoped_refptr<CertVerifyProcAndroid> proc =
-      base::MakeRefCounted<CertVerifyProcAndroid>();
+      base::MakeRefCounted<CertVerifyProcAndroid>(fetcher_);
   scoped_refptr<X509Certificate> leaf;
   ASSERT_TRUE(
       CreateCertificateChainFromFiles({"target_one_aia.pem", "i.pem"}, &leaf));
@@ -407,10 +417,11 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, FetchForSuppliedIntermediate) {
   CertVerifyResult verify_result;
   // This chain results in an AUTHORITY_INVALID root because |root_| is not
   // trusted.
-  EXPECT_EQ(ERR_CERT_AUTHORITY_INVALID,
-            proc->Verify(leaf.get(), "target", std::string(), 0,
-                         CRLSet::BuiltinCRLSet().get(), empty_cert_list_,
-                         &verify_result));
+  EXPECT_EQ(
+      ERR_CERT_AUTHORITY_INVALID,
+      proc->Verify(leaf.get(), "target", /*ocsp_response=*/std::string(),
+                   /*sct_list=*/std::string(), 0, CRLSet::BuiltinCRLSet().get(),
+                   empty_cert_list_, &verify_result));
 }
 
 }  // namespace net

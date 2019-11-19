@@ -12,11 +12,13 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/cert/x509_cert_types.h"
 
 namespace net {
 
+class CertNetFetcher;
 class CertVerifyResult;
 class CRLSet;
 class X509Certificate;
@@ -53,8 +55,29 @@ class NET_EXPORT CertVerifyProc
     VERIFY_DISABLE_SYMANTEC_ENFORCEMENT = 1 << 3,
   };
 
-  // Creates and returns the default CertVerifyProc.
-  static scoped_refptr<CertVerifyProc> CreateDefault();
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class NameNormalizationResult {
+    kError = 0,
+    kByteEqual = 1,
+    kNormalized = 2,
+    kChainLengthOne = 3,
+    kMaxValue = kChainLengthOne
+  };
+
+#if !defined(OS_FUCHSIA)
+  // Creates and returns a CertVerifyProc that uses the system verifier.
+  // |cert_net_fetcher| may not be used, depending on the implementation.
+  static scoped_refptr<CertVerifyProc> CreateSystemVerifyProc(
+      scoped_refptr<CertNetFetcher> cert_net_fetcher);
+#endif
+
+#if defined(OS_FUCHSIA) || defined(USE_NSS_CERTS) || \
+    (defined(OS_MACOSX) && !defined(OS_IOS))
+  // Creates and returns a CertVerifyProcBuiltin using the SSL SystemTrustStore.
+  static scoped_refptr<CertVerifyProc> CreateBuiltinVerifyProc(
+      scoped_refptr<CertNetFetcher> cert_net_fetcher);
+#endif
 
   // Verifies the certificate against the given hostname as an SSL server
   // certificate. Returns OK if successful or an error code upon failure.
@@ -66,6 +89,9 @@ class NET_EXPORT CertVerifyProc
   // error is returned.
   //
   // |ocsp_response|, if non-empty, is a stapled OCSP response to use.
+  //
+  // |sct_list|, if non-empty, is a SignedCertificateTimestampList from the TLS
+  // extension as described in RFC6962 section 3.3.1.
   //
   // |flags| is bitwise OR'd of VerifyFlags:
   //
@@ -84,6 +110,7 @@ class NET_EXPORT CertVerifyProc
   int Verify(X509Certificate* cert,
              const std::string& hostname,
              const std::string& ocsp_response,
+             const std::string& sct_list,
              int flags,
              CRLSet* crl_set,
              const CertificateList& additional_trust_anchors,
@@ -97,6 +124,17 @@ class NET_EXPORT CertVerifyProc
  protected:
   CertVerifyProc();
   virtual ~CertVerifyProc();
+
+  // Record a histogram of whether Name normalization was used in verifying the
+  // chain. This should only be called for successfully validated chains.
+  static void LogNameNormalizationResult(const std::string& histogram_suffix,
+                                         NameNormalizationResult result);
+
+  // Record a histogram of whether Name normalization was used in verifying the
+  // chain. This should only be called for successfully validated chains.
+  static void LogNameNormalizationMetrics(const std::string& histogram_suffix,
+                                          X509Certificate* verified_cert,
+                                          bool is_issued_by_known_root);
 
  private:
   friend class base::RefCountedThreadSafe<CertVerifyProc>;
@@ -129,13 +167,11 @@ class NET_EXPORT CertVerifyProc
   virtual int VerifyInternal(X509Certificate* cert,
                              const std::string& hostname,
                              const std::string& ocsp_response,
+                             const std::string& sct_list,
                              int flags,
                              CRLSet* crl_set,
                              const CertificateList& additional_trust_anchors,
                              CertVerifyResult* verify_result) = 0;
-
-  // Returns true if |cert| is explicitly blacklisted.
-  static bool IsBlacklisted(X509Certificate* cert);
 
   // HasNameConstraintsViolation returns true iff one of |public_key_hashes|
   // (which are hashes of SubjectPublicKeyInfo structures) has name constraints

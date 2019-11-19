@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <EarlGrey/EarlGrey.h>
 #import <XCTest/XCTest.h>
 
+#include "base/ios/ios_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
+#include "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -39,24 +42,37 @@ using chrome_test_util::SettingsMenuPrivacyButton;
                                              clearBrowsingDataDialogLabel)];
 }
 
-// Test that opening the clear browsing data dialog does not cause a crash
-// with the old UI.
-- (void)testOpenClearBrowsingDataDialogOldUI {
-  _featureList.InitAndDisableFeature(kNewClearBrowsingDataUI);
-
+// Test that opening the clear browsing data dialog does not crash.
+- (void)testOpenClearBrowsingDataDialogUI {
   [self openClearBrowsingDataDialog];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 }
 
-// Test that opening the clear browsing data dialog does not cause a crash
-// with the new UI.
-- (void)testOpenClearBrowsingDataDialogNewUI {
-  _featureList.InitAndEnableFeature(kNewClearBrowsingDataUI);
-
+// Verifies that the CBD screen can be swiped down to dismiss.
+- (void)testClearBrowsingDataSwipeDown {
+  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
+  }
   [self openClearBrowsingDataDialog];
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
+
+  // Check that CBD is presented.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Swipe TableView down.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that Settings has been dismissed.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kClearBrowsingDataViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

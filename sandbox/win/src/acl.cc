@@ -151,4 +151,21 @@ bool AddKnownSidToObject(HANDLE object,
   return true;
 }
 
+bool ReplacePackageSidInDacl(HANDLE object,
+                             SE_OBJECT_TYPE object_type,
+                             const Sid& package_sid,
+                             ACCESS_MASK access) {
+  if (!AddKnownSidToObject(object, object_type, package_sid, REVOKE_ACCESS,
+                           0)) {
+    return false;
+  }
+
+  Sid any_package_sid(::WinBuiltinAnyPackageSid);
+  if (!AddKnownSidToObject(object, object_type, any_package_sid, GRANT_ACCESS,
+                           access)) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace sandbox

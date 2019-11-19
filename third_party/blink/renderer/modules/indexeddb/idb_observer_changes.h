@@ -20,12 +20,6 @@ class IDBObserverChanges final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static IDBObserverChanges* Create(
-      IDBDatabase*,
-      IDBTransaction*,
-      const Vector<Persistent<IDBObservation>>& observations,
-      const Vector<int32_t>& observation_indices);
-
   IDBObserverChanges(IDBDatabase*,
                      IDBTransaction*,
                      const Vector<Persistent<IDBObservation>>& observations,

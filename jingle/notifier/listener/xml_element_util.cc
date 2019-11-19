@@ -35,7 +35,7 @@ jingle_xmpp::XmlElement* MakeIntXmlElement(const char* name, int value) {
   const jingle_xmpp::QName intAttrQName(jingle_xmpp::STR_EMPTY, "int");
   jingle_xmpp::XmlElement* int_xml_element =
       new jingle_xmpp::XmlElement(elementQName, true);
-  int_xml_element->AddAttr(intAttrQName, base::IntToString(value));
+  int_xml_element->AddAttr(intAttrQName, base::NumberToString(value));
   return int_xml_element;
 }
 

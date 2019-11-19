@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/strings/stringize_macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -54,7 +53,7 @@ void GcdStateUpdater::SetHostOfflineReason(
     const base::TimeDelta& timeout,
     const base::Callback<void(bool success)>& ack_callback) {
   // TODO(jrw): Implement this.  Refer to
-  // HeartbeatSender::SetHostOfflineReason.
+  // XmppHeartbeatSender::SetHostOfflineReason.
   NOTIMPLEMENTED();
 }
 
@@ -82,7 +81,7 @@ void GcdStateUpdater::OnPatchStateResult(GcdRestClient::Result result) {
   }
 
   if (result == GcdRestClient::NETWORK_ERROR ||
-      pending_request_jid_ != signal_strategy_->GetLocalAddress().jid()) {
+      pending_request_jid_ != signal_strategy_->GetLocalAddress().id()) {
     // Continue exponential backoff.
     return;
   }
@@ -91,12 +90,12 @@ void GcdStateUpdater::OnPatchStateResult(GcdRestClient::Result result) {
   if (result == GcdRestClient::SUCCESS) {
     if (!on_update_successful_callback_.is_null()) {
       on_unknown_host_id_error_.Reset();
-      base::ResetAndReturn(&on_update_successful_callback_).Run();
+      std::move(on_update_successful_callback_).Run();
     }
   } else if (result == GcdRestClient::NO_SUCH_HOST) {
     if (!on_unknown_host_id_error_.is_null()) {
       on_update_successful_callback_.Reset();
-      base::ResetAndReturn(&on_unknown_host_id_error_).Run();
+      std::move(on_unknown_host_id_error_).Run();
     }
   } else {
     // For any other error, do nothing since there's no way to handle
@@ -118,7 +117,7 @@ void GcdStateUpdater::MaybeSendStateUpdate() {
   // Construct an update to the remote state.
   std::unique_ptr<base::DictionaryValue> patch(new base::DictionaryValue);
   std::unique_ptr<base::DictionaryValue> base_state(new base::DictionaryValue);
-  pending_request_jid_ = signal_strategy_->GetLocalAddress().jid();
+  pending_request_jid_ = signal_strategy_->GetLocalAddress().id();
   base_state->SetString("_jabberId", pending_request_jid_);
   base_state->SetString("_hostVersion", STRINGIZE(VERSION));
   patch->Set("base", std::move(base_state));

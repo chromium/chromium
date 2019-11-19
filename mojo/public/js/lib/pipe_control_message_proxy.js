@@ -10,7 +10,7 @@
         mojo.pipeControl.RunOrClosePipeMessageParams();
     runOrClosePipeMessageParams.input = runOrClosePipeInput;
 
-    var messageName = mojo.pipeControl.kRunOrClosePipeMessageId;
+    var messageName = mojo.pipeControl.RUN_OR_CLOSE_PIPE_MESSAGE_ID;
     var payloadSize =
         mojo.pipeControl.RunOrClosePipeMessageParams.encodedSize;
 

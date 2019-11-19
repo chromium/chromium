@@ -13,6 +13,8 @@ to convert locally with goma to create generated headers, then disable goma,
 re-run gn, and then run this script.
 """
 
+from __future__ import print_function
+
 import argparse
 import glob
 import json
@@ -68,13 +70,15 @@ def main():
 
     had_error = False
     if 'gomacc' in clang_cmd:
-      print >>sys.stderr, 'need builddir with use_goma not set'
+      print('need builddir with use_goma not set', file=sys.stderr)
       had_error = True
     if 'jumbo' in clang_cmd:
-      print >>sys.stderr, 'need builddir with use_jumbo_build not set'
+      print('need builddir with use_jumbo_build not set', file=sys.stderr)
       had_error = True
     if 'precompile.h-m' in clang_cmd:
-      print >>sys.stderr, 'need builddir with enable_precompiled_headers=false'
+      print(
+          'need builddir with enable_precompiled_headers=false',
+          file=sys.stderr)
       had_error = True
     if had_error:
       sys.exit(1)
@@ -120,11 +124,11 @@ def main():
     #flags += ['-Xclang', '-objcmt-migrate-designated-init']
     clang_cmd += ' ' + ' '.join(flags)
 
-    print objc_file
+    print(objc_file)
     subprocess.check_call(clang_cmd, shell=True, cwd=cmd['directory'])
 
   if not os.path.exists(remap_file):
-    print 'no changes'
+    print('no changes')
     return
 
   # Done with rewriting. Now the read the above-described 'remap' file and
@@ -136,11 +140,11 @@ def main():
       # Ignore rewritten header files not containing args.substr too.
       continue
     if math.trunc(os.path.getmtime(infile)) != int(mtime):
-      print '%s was modified since rewriting; exiting' % infile
+      print('%s was modified since rewriting; exiting' % infile)
       sys.exit(1)
     os.rename(outfile, infile)  # Copy rewritten file over.
 
-  print 'all done. commit, run `git cl format`, commit again, and upload!'
+  print('all done. commit, run `git cl format`, commit again, and upload!')
 
 
 if __name__ == '__main__':

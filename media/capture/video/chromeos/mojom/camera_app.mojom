@@ -1,0 +1,134 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cros.mojom;
+
+import "media/capture/mojom/image_capture.mojom";
+import "media/capture/video/chromeos/mojom/camera_common.mojom";
+import "media/capture/video/chromeos/mojom/camera_metadata.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/range/mojom/range.mojom";
+
+// Effect that recognized by Chrome OS.
+enum Effect {
+  NO_EFFECT = 0,
+  PORTRAIT_MODE = 1,
+};
+
+// Stream types that can be observed by camera app device.
+// This is a mirror of the StreamType in camera_device_delegate.h
+enum StreamType {
+  PREVIEW_OUTPUT = 0,
+  JPEG_OUTPUT = 1,
+  YUV_INPUT = 2,
+  YUV_OUTPUT = 3,
+  UNKNOWN = 4,
+};
+
+// Status code for getting camera app device.
+enum GetCameraAppDeviceStatus {
+  SUCCESS = 0,
+  ERROR_INVALID_ID = 1,
+};
+
+// The purpose of this capture is to help the camera device decide optimal
+// configurations.
+enum CaptureIntent {
+  DEFAULT = 0,
+  VIDEO_RECORD = 1,
+  STILL_CAPTURE = 2,
+};
+
+// Interface to let Chrome Camera App (Remote) get specific CameraAppDevice from
+// Chrome (Receiver).
+interface CameraAppDeviceProvider {
+  // Gets the interface to communicate with specific camera device given by
+  // |source_id|. If the |status| is not success, the |device| would be null.
+  GetCameraAppDevice(string source_id)
+      => (GetCameraAppDeviceStatus status,
+          pending_remote<CameraAppDevice>? device);
+
+  // Checks if the device supports direct communication between camera devices
+  // and camera app. Currently only devices running camera HAL v3 support this
+  // feature.
+  IsSupported() => (bool is_supported);
+};
+
+// Inner interface that used to communicate between browser process (Remote) and
+// the Video Capture service (Receiver).
+interface CameraAppDeviceBridge {
+  // Gets the interface to communicate with specific camera device given by
+  // |device_id|. If the |status| is not success, the |device| would be null.
+  GetCameraAppDevice(string device_id)
+      => (GetCameraAppDeviceStatus status,
+          pending_remote<CameraAppDevice>? device);
+
+  // Checks if the device supports direct communication between camera devices
+  // and camera app. Currently only devices running camera HAL v3 support this
+  // feature.
+  IsSupported() => (bool is_supported);
+};
+
+// Interface for communication between Chrome Camera App (Remote) and camera
+// device (Receiver).
+interface CameraAppDevice {
+  // Gets camera information |camera_info| which includes camera facing,
+  // characteristics, orientation, etc.
+  GetCameraInfo() => (CameraInfo camera_info);
+
+  // Sets reprocess option to bind with the coming take photo request. When this
+  // method is called, the reprocess option will be queued. All reprocess
+  // options in the queue will be consumed when ImageCapture::TakePhoto() is
+  // triggered and all the queued reprocess options will be bound
+  // to that take photo request.
+  SetReprocessOption(Effect effect)
+      => (int32 status, media.mojom.Blob? blob);
+
+  // Sets the fps range for upcoming configured camera stream.
+  // The caller sets the |fps_range| for target |resolution|.
+  // If the given fps range is valid and set successfully, |is_success| returns
+  // true. If the given fps range is invalid, the fps range which is cached
+  // previously will be cleared and |is_success| will return false.
+  SetFpsRange(gfx.mojom.Size resolution, gfx.mojom.Range fps_range)
+      => (bool is_success);
+
+  // Sets the intent for the upcoming capture session. The underlying video
+  // capture device should configure the streams accordingly. Returns an empty
+  // response after the intent is set, which could be used to sequence the
+  // other calls such as getUserMedia().
+  SetCaptureIntent(CaptureIntent intent) => ();
+
+  // Adds the remote of a ResultMetadataObserver to CameraAppDevice.
+  // The |observer| will have a remote call from camera device.
+  AddResultMetadataObserver(pending_remote<ResultMetadataObserver> observer,
+                            StreamType stream_type)
+      => (uint32 id);
+
+  // Remove a ResultMetadataObserver by supplying its id returned by
+  // AddResultMetadataObserver.
+  // If the ResultMetadataObserver is found, |is_success| returns true.
+  RemoveResultMetadataObserver(uint32 id) => (bool is_success);
+
+  // Adds an observer for camera events and returns the observer |id|. The
+  // |observer| is the remote of the observer to be added.
+  AddCameraEventObserver(pending_remote<CameraEventObserver> observer)
+      => (uint32 id);
+
+  // Removes the camera events observer according to given observer |id|. Sets
+  // |is_success| to true if remove successfully, false otherwise.
+  RemoveCameraEventObserver(uint32 id) => (bool is_success);
+};
+
+// Interface for camera device to send camera metadata to Chrome Camera App.
+interface ResultMetadataObserver {
+  // Remotely invoked by camera device whenever a |camera_metadata| of a frame
+  // is produced.
+  OnMetadataAvailable(CameraMetadata camera_metadata);
+};
+
+// Interface for observing camera events such as shutter done.
+interface CameraEventObserver {
+  // Triggered when the shutter is done for a still capture image.
+  OnShutterDone();
+};

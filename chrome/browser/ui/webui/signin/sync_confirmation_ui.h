@@ -44,8 +44,6 @@ class SyncConfirmationUI : public SigninWebDialogUI {
 
   std::unordered_map<std::string, int> js_localized_string_to_ids_map_;
 
-  consent_auditor::Feature consent_feature_;
-
   DISALLOW_COPY_AND_ASSIGN(SyncConfirmationUI);
 };
 

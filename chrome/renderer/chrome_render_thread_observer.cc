@@ -35,15 +35,10 @@
 #include "chrome/common/net/net_resource_provider.h"
 #include "chrome/common/render_messages.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/renderer/content_settings_observer.h"
-#include "chrome/renderer/security_filter_peer.h"
 #include "components/visitedlink/renderer/visitedlink_slave.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/resource_usage_reporter_type_converters.h"
-#include "content/public/common/service_manager_connection.h"
-#include "content/public/common/service_names.mojom.h"
-#include "content/public/common/simple_connection_filter.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/render_view.h"
 #include "content/public/renderer/render_view_visitor.h"
@@ -51,11 +46,8 @@
 #include "extensions/buildflags/buildflags.h"
 #include "ipc/ipc_sync_channel.h"
 #include "media/base/localized_strings.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_module.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -81,14 +73,9 @@ const int kCacheStatsDelayMS = 2000;
 
 class RendererResourceDelegate : public content::ResourceDispatcherDelegate {
  public:
-  RendererResourceDelegate()
-      : weak_factory_(this) {
-  }
+  RendererResourceDelegate() {}
 
-  std::unique_ptr<content::RequestPeer> OnRequestComplete(
-      std::unique_ptr<content::RequestPeer> current_peer,
-      content::ResourceType resource_type,
-      int error_code) override {
+  void OnRequestComplete() override {
     // Update the browser about our cache.
     // Rate limit informing the host of our cache stats.
     if (!weak_factory_.HasWeakPtrs()) {
@@ -98,14 +85,6 @@ class RendererResourceDelegate : public content::ResourceDispatcherDelegate {
                          weak_factory_.GetWeakPtr()),
           base::TimeDelta::FromMilliseconds(kCacheStatsDelayMS));
     }
-
-    if (error_code == net::ERR_ABORTED) {
-      return current_peer;
-    }
-
-    // Resource canceled with a specific error are filtered.
-    return SecurityFilterPeer::CreateSecurityFilterPeerForDeniedRequest(
-        resource_type, std::move(current_peer), error_code);
   }
 
   std::unique_ptr<content::RequestPeer> OnReceivedResponse(
@@ -133,7 +112,7 @@ class RendererResourceDelegate : public content::ResourceDispatcherDelegate {
 
   chrome::mojom::CacheStatsRecorderAssociatedPtr cache_stats_recorder_;
 
-  base::WeakPtrFactory<RendererResourceDelegate> weak_factory_;
+  base::WeakPtrFactory<RendererResourceDelegate> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RendererResourceDelegate);
 };
@@ -157,11 +136,12 @@ bool ChromeRenderThreadObserver::is_incognito_process_ = false;
 // static
 scoped_refptr<ChromeRenderThreadObserver::ChromeOSListener>
 ChromeRenderThreadObserver::ChromeOSListener::Create(
-    chrome::mojom::ChromeOSListenerRequest chromeos_listener_request) {
+    mojo::PendingReceiver<chrome::mojom::ChromeOSListener>
+        chromeos_listener_receiver) {
   scoped_refptr<ChromeOSListener> helper = new ChromeOSListener();
   content::ChildThread::Get()->GetIOTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&ChromeOSListener::BindOnIOThread, helper,
-                                std::move(chromeos_listener_request)));
+                                std::move(chromeos_listener_receiver)));
   return helper;
 }
 
@@ -190,14 +170,14 @@ ChromeRenderThreadObserver::ChromeOSListener::ChromeOSListener()
     : session_merged_callbacks_(base::MakeRefCounted<DelayedCallbackGroup>(
           MergeSessionLoaderThrottle::GetMergeSessionTimeout(),
           GetCallbackGroupTaskRunner())),
-      merge_session_running_(true),
-      binding_(this) {}
+      merge_session_running_(true) {}
 
 ChromeRenderThreadObserver::ChromeOSListener::~ChromeOSListener() {}
 
 void ChromeRenderThreadObserver::ChromeOSListener::BindOnIOThread(
-    chrome::mojom::ChromeOSListenerRequest chromeos_listener_request) {
-  binding_.Bind(std::move(chromeos_listener_request));
+    mojo::PendingReceiver<chrome::mojom::ChromeOSListener>
+        chromeos_listener_receiver) {
+  receiver_.Bind(std::move(chromeos_listener_receiver));
 }
 #endif  // defined(OS_CHROMEOS)
 
@@ -207,16 +187,14 @@ chrome::mojom::DynamicParams* GetDynamicConfigParams() {
 }
 
 ChromeRenderThreadObserver::ChromeRenderThreadObserver()
-    : visited_link_slave_(new visitedlink::VisitedLinkSlave),
-      weak_factory_(this) {
+    : visited_link_slave_(new visitedlink::VisitedLinkSlave) {
   RenderThread* thread = RenderThread::Get();
   resource_delegate_.reset(new RendererResourceDelegate());
   thread->SetResourceDispatcherDelegate(resource_delegate_.get());
 
   // Configure modules that need access to resources.
-  net::NetModule::SetResourceProvider(chrome_common_net::NetResourceProvider);
-  media::SetLocalizedStringProvider(
-      chrome_common_media::LocalizedStringProvider);
+  net::NetModule::SetResourceProvider(ChromeNetResourceProvider);
+  media::SetLocalizedStringProvider(ChromeMediaLocalizedStringProvider);
 
   // chrome-native: is a scheme used for placeholder navigations that allow
   // UIs to be drawn with platform native widgets instead of HTML.  These pages
@@ -229,16 +207,6 @@ ChromeRenderThreadObserver::ChromeRenderThreadObserver()
   WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(native_scheme);
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs(
       native_scheme);
-
-  auto registry = std::make_unique<service_manager::BinderRegistry>();
-  registry->AddInterface(visited_link_slave_->GetBindCallback(),
-                         base::ThreadTaskRunnerHandle::Get());
-  if (content::ChildThread::Get()) {
-    content::ChildThread::Get()
-        ->GetServiceManagerConnection()
-        ->AddConnectionFilter(std::make_unique<content::SimpleConnectionFilter>(
-            std::move(registry)));
-  }
 }
 
 ChromeRenderThreadObserver::~ChromeRenderThreadObserver() {}
@@ -247,11 +215,6 @@ ChromeRenderThreadObserver::~ChromeRenderThreadObserver() {}
 const chrome::mojom::DynamicParams&
 ChromeRenderThreadObserver::GetDynamicParams() {
   return *GetDynamicConfigParams();
-}
-
-base::WeakPtr<ChromeRenderThreadObserver>
-ChromeRenderThreadObserver::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
 }
 
 void ChromeRenderThreadObserver::RegisterMojoInterfaces(
@@ -269,12 +232,13 @@ void ChromeRenderThreadObserver::UnregisterMojoInterfaces(
 
 void ChromeRenderThreadObserver::SetInitialConfiguration(
     bool is_incognito_process,
-    chrome::mojom::ChromeOSListenerRequest chromeos_listener_request) {
+    mojo::PendingReceiver<chrome::mojom::ChromeOSListener>
+        chromeos_listener_receiver) {
   is_incognito_process_ = is_incognito_process;
 #if defined(OS_CHROMEOS)
-  if (chromeos_listener_request) {
+  if (chromeos_listener_receiver) {
     chromeos_listener_ =
-        ChromeOSListener::Create(std::move(chromeos_listener_request));
+        ChromeOSListener::Create(std::move(chromeos_listener_receiver));
   }
 #endif  // defined(OS_CHROMEOS)
 }
@@ -296,8 +260,9 @@ void ChromeRenderThreadObserver::SetFieldTrialGroup(
 }
 
 void ChromeRenderThreadObserver::OnRendererConfigurationAssociatedRequest(
-    chrome::mojom::RendererConfigurationAssociatedRequest request) {
-  renderer_configuration_bindings_.AddBinding(this, std::move(request));
+    mojo::PendingAssociatedReceiver<chrome::mojom::RendererConfiguration>
+        receiver) {
+  renderer_configuration_receivers_.Add(this, std::move(receiver));
 }
 
 const RendererContentSettingRules*

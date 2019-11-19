@@ -5,6 +5,7 @@
 #ifndef MEDIA_BASE_MEDIA_STATUS_H_
 #define MEDIA_BASE_MEDIA_STATUS_H_
 
+#include "base/callback.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 
@@ -67,6 +68,11 @@ struct MEDIA_EXPORT MediaStatus {
   // True if we have reached the end of stream.
   bool reached_end_of_stream = false;
 };
+
+using RemotePlayStateChangeCB =
+    base::RepeatingCallback<void(MediaStatus::State)>;
+using RequestRemotePlayStateChangeCB =
+    base::OnceCallback<void(RemotePlayStateChangeCB)>;
 
 }  // namespace media
 

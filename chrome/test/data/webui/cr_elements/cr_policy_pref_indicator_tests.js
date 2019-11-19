@@ -58,5 +58,13 @@ suite('CrPolicyPrefIndicator', function() {
     indicator.set('pref.value', 'bar');
     Polymer.dom.flush();
     assertEquals('matches', icon.tooltipText);
+
+    indicator.set(
+        'pref.enforcement',
+        chrome.settingsPrivate.Enforcement.PARENT_SUPERVISED);
+    Polymer.dom.flush();
+    assertFalse(icon.hidden);
+    assertEquals('cr20:kite', icon.iconClass);
+    assertEquals(CrPolicyStrings.controlledSettingParent, icon.tooltipText);
   });
 });

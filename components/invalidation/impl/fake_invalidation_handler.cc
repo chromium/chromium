@@ -37,4 +37,8 @@ void FakeInvalidationHandler::OnIncomingInvalidation(
 
 std::string FakeInvalidationHandler::GetOwnerName() const { return "Fake"; }
 
+bool FakeInvalidationHandler::IsPublicTopic(const syncer::Topic& topic) const {
+  return topic == "PREFERENCE";
+}
+
 }  // namespace syncer

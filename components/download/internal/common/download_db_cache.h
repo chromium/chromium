@@ -80,7 +80,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadDBCache
   // Used to trigger db updates.
   base::OneShotTimer update_timer_;
 
-  base::WeakPtrFactory<DownloadDBCache> weak_factory_;
+  base::WeakPtrFactory<DownloadDBCache> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DownloadDBCache);
 };

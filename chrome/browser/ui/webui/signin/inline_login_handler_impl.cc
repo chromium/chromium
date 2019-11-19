@@ -58,19 +58,18 @@
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/about_signin_internals.h"
-#include "components/signin/core/browser/signin_header_helper.h"
-#include "components/signin/core/browser/signin_investigator.h"
-#include "components/signin/core/browser/signin_metrics.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
+#include "components/signin/public/identity_manager/accounts_mutator.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
-#include "services/identity/public/cpp/accounts_mutator.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/primary_account_mutator.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_WIN)
@@ -250,7 +249,7 @@ void OnSyncSetupComplete(Profile* profile,
                          const std::string& username,
                          const std::string& password) {
   DCHECK(signin_util::IsForceSigninEnabled());
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   bool has_primary_account = identity_manager->HasPrimaryAccount();
   if (has_primary_account && !password.empty()) {
@@ -259,7 +258,7 @@ void OnSyncSetupComplete(Profile* profile,
                                             ServiceAccessType::EXPLICIT_ACCESS);
     password_store->SaveGaiaPasswordHash(
         username, base::UTF8ToUTF16(password),
-        password_manager::metrics_util::SyncPasswordHashChange::
+        password_manager::metrics_util::GaiaPasswordHashChange::
             SAVED_ON_CHROME_SIGNIN);
 
     if (profiles::IsLockAvailable(profile))
@@ -357,14 +356,8 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
       AboutSigninInternalsFactory::GetForProfile(profile_);
   about_signin_internals->OnRefreshTokenReceived("Successful");
 
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-
-  // Seed the account with this combination of gaia id/display email.
-  AccountInfo account_info;
-  account_info.gaia = gaia_id_;
-  account_info.email = email_;
-  identity_manager->LegacySeedAccountInfo(account_info);
 
   std::string primary_email = identity_manager->GetPrimaryAccountInfo().email;
   if (gaia::AreEmailsSame(email_, primary_email) &&
@@ -381,7 +374,7 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
     if (password_store && !primary_email.empty()) {
       password_store->SaveGaiaPasswordHash(
           primary_email, base::UTF8ToUTF16(password_),
-          password_manager::metrics_util::SyncPasswordHashChange::
+          password_manager::metrics_util::GaiaPasswordHashChange::
               SAVED_ON_CHROME_SIGNIN);
     }
   }
@@ -405,7 +398,7 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
     if (identity_manager->HasPrimaryAccount()) {
       identity_manager->GetAccountsCookieMutator()->AddAccountToCookie(
           identity_manager->GetPrimaryAccountId(),
-          gaia::GaiaSource::kSigninManager, {});
+          gaia::GaiaSource::kPrimaryAccountManager, {});
     }
 
     signin_metrics::LogSigninReason(
@@ -447,7 +440,7 @@ void InlineSigninHelper::UntrustedSigninConfirmed(
 
 void InlineSigninHelper::CreateSyncStarter(const std::string& refresh_token) {
   DCHECK(signin_util::IsForceSigninEnabled());
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager->HasPrimaryAccount()) {
     // Already signed in, nothing to do.
@@ -455,7 +448,7 @@ void InlineSigninHelper::CreateSyncStarter(const std::string& refresh_token) {
   }
 
   Browser* browser = chrome::FindLastActiveWithProfile(profile_);
-  std::string account_id =
+  CoreAccountId account_id =
       identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
           gaia_id_, email_, refresh_token,
           /*is_under_advanced_protection=*/false,
@@ -490,7 +483,7 @@ void InlineSigninHelper::OnClientOAuthFailure(
 }
 
 InlineLoginHandlerImpl::InlineLoginHandlerImpl()
-    : confirm_untrusted_signin_(false), weak_factory_(this) {}
+    : confirm_untrusted_signin_(false) {}
 
 InlineLoginHandlerImpl::~InlineLoginHandlerImpl() {}
 
@@ -509,7 +502,6 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictionaryValue& params) {
   HandlerSigninReason reason = GetHandlerSigninReason(current_url);
 
   const GURL& url = GaiaUrls::GetInstance()->embedded_signin_url();
-  params.SetBoolean("isNewGaiaFlow", true);
   params.SetString("clientId",
                    GaiaUrls::GetInstance()->oauth2_chrome_client_id());
   params.SetString("gaiaPath", url.path().substr(1));
@@ -530,6 +522,9 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictionaryValue& params) {
     // This will keep the user from being able to access a fully functional
     // Chrome window in incognito mode.
     params.SetBoolean("dontResizeNonEmbeddedPages", true);
+
+    // Scrape the SAML password if possible.
+    params.SetBoolean("extractSamlPasswordAttributes", true);
 
     GURL windows_url = GaiaUrls::GetInstance()->embedded_setup_windows_url();
     // Redirect to specified gaia endpoint path for GCPW:
@@ -553,9 +548,24 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictionaryValue& params) {
     case HandlerSigninReason::FORCED_SIGNIN_PRIMARY_ACCOUNT:
       flow = "enterprisefsi";
       break;
-    case HandlerSigninReason::FETCH_LST_ONLY:
+    case HandlerSigninReason::FETCH_LST_ONLY: {
+#if defined(OS_WIN)
+      // Treat a sign in request that specifies a gaia id that must be validated
+      // as a reauth request. We only get a gaia id from GCPW when trying to
+      // reauth an existing user on the system.
+      std::string validate_gaia_id;
+      net::GetValueForKeyInQuery(
+          current_url, credential_provider::kValidateGaiaIdSigninPromoParameter,
+          &validate_gaia_id);
+      if (validate_gaia_id.empty()) {
+        flow = "signin";
+      } else {
+        flow = "reauth";
+      }
+#else
       flow = "signin";
-      break;
+#endif
+    } break;
   }
   params.SetString("flow", flow);
 

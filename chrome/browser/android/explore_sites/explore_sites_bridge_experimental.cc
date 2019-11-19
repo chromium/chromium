@@ -11,18 +11,18 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/android/chrome_jni_headers/ExploreSitesBridgeExperimental_jni.h"
+#include "chrome/android/chrome_jni_headers/ExploreSitesCategoryTile_jni.h"
 #include "chrome/browser/android/explore_sites/catalog.h"
 #include "chrome/browser/android/explore_sites/catalog.pb.h"
 #include "chrome/browser/android/explore_sites/ntp_json_fetcher.h"
 #include "chrome/browser/android/explore_sites/url_util_experimental.h"
+#include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/search/suggestions/image_decoder_impl.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "content/public/browser/storage_partition.h"
-#include "jni/ExploreSitesBridgeExperimental_jni.h"
-#include "jni/ExploreSitesCategoryTile_jni.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -131,7 +131,7 @@ static void JNI_ExploreSitesBridgeExperimental_GetIcon(
                                            kImageFetcherUmaClientName);
 
   auto image_fetcher = std::make_unique<image_fetcher::ImageFetcherImpl>(
-      std::make_unique<suggestions::ImageDecoderImpl>(), url_loader_factory);
+      std::make_unique<ImageDecoderImpl>(), url_loader_factory);
   // |image_fetcher| will be owned by the callback and gets destroyed at the end
   // of the callback.
   image_fetcher::ImageFetcher* image_fetcher_ptr = image_fetcher.get();

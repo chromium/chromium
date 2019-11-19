@@ -9,21 +9,18 @@
 
 namespace network {
 
-TestChunkedDataPipeGetter::TestChunkedDataPipeGetter() : binding_(this) {}
+TestChunkedDataPipeGetter::TestChunkedDataPipeGetter() = default;
 
-TestChunkedDataPipeGetter::~TestChunkedDataPipeGetter() {}
+TestChunkedDataPipeGetter::~TestChunkedDataPipeGetter() = default;
 
-mojom::ChunkedDataPipeGetterPtr
-TestChunkedDataPipeGetter::GetDataPipeGetterPtr() {
-  EXPECT_FALSE(binding_.is_bound());
-
-  mojom::ChunkedDataPipeGetterPtr data_pipe_getter_ptr;
-  binding_.Bind(mojo::MakeRequest(&data_pipe_getter_ptr));
-  return data_pipe_getter_ptr;
+mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
+TestChunkedDataPipeGetter::GetDataPipeGetterRemote() {
+  EXPECT_FALSE(receiver_.is_bound());
+  return receiver_.BindNewPipeAndPassRemote();
 }
 
 void TestChunkedDataPipeGetter::ClosePipe() {
-  binding_.Close();
+  receiver_.reset();
 }
 
 mojom::ChunkedDataPipeGetter::GetSizeCallback

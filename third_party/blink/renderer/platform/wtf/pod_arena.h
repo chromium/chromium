@@ -31,7 +31,7 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -45,6 +45,8 @@ namespace WTF {
 // destructors.
 
 class PODArena final : public RefCounted<PODArena> {
+  USING_FAST_MALLOC(PODArena);
+
  public:
   // The arena is configured with an allocator, which is responsible
   // for allocating and freeing chunks of memory at a time.

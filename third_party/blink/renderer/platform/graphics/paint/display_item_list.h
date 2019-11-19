@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/contiguous_container.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
-#include "third_party/blink/renderer/platform/graphics/paint/hit_test_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
@@ -19,8 +19,8 @@ struct PaintChunk;
 // each derived display item; the ideal value is the least common multiple.
 // The validity of kDisplayItemAlignment and kMaximumDisplayItemSize are checked
 // in PaintController::CreateAndAppend().
-static const size_t kDisplayItemAlignment = alignof(HitTestDisplayItem);
-static const size_t kMaximumDisplayItemSize = sizeof(HitTestDisplayItem);
+static const size_t kDisplayItemAlignment = alignof(ScrollbarDisplayItem);
+static const size_t kMaximumDisplayItemSize = sizeof(ScrollbarDisplayItem);
 
 // A container for a list of display items.
 class PLATFORM_EXPORT DisplayItemList
@@ -44,11 +44,16 @@ class PLATFORM_EXPORT DisplayItemList
     // on item which replaces it with a tombstone/"dead display item" that
     // can be safely destructed but should never be used except for debugging.
     DCHECK(item.IsTombstone());
-    DCHECK(item.GetId() == result.GetId());
     // We need |visual_rect_| and |outset_for_raster_effects_| of the old
-    // display item for raster invalidation. As their values were initialized
-    // to default values in DisplayItem's default constructor, now copy their
-    // original values back from |result|.
+    // display item for raster invalidation. Also, the fields that make up the
+    // ID (|client_|, |type_| and |fragment_|) need to match. As their values
+    // were either initialized to default values or were left uninitialized by
+    // DisplayItem's default constructor, now copy their original values back
+    // from |result|.
+    item.client_ = result.client_;
+    item.type_ = result.type_;
+    item.fragment_ = result.fragment_;
+    DCHECK(item.GetId() == result.GetId());
     item.visual_rect_ = result.visual_rect_;
     item.outset_for_raster_effects_ = result.outset_for_raster_effects_;
     return result;
@@ -73,10 +78,12 @@ class PLATFORM_EXPORT DisplayItemList
 #if DCHECK_IS_ON()
   enum JsonOptions {
     kDefault = 0,
-    kShowPaintRecords = 1,
-    kSkipNonDrawings = 1 << 1,
-    kClientKnownToBeAlive = 1 << 2,
-    kShownOnlyDisplayItemTypes = 1 << 3
+    kClientKnownToBeAlive = 1,
+    // Only show a compact representation of the display item list. This flag
+    // cannot be used with additional flags such as kShowPaintRecords.
+    kCompact = 1 << 1,
+    kShowPaintRecords = 1 << 2,
+    kShowOnlyDisplayItemTypes = 1 << 3
   };
   typedef unsigned JsonFlags;
 

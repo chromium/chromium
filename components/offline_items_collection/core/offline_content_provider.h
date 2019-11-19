@@ -12,6 +12,8 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "components/offline_items_collection/core/launch_location.h"
+#include "components/offline_items_collection/core/rename_result.h"
+#include "components/offline_items_collection/core/update_delta.h"
 #include "url/gurl.h"
 
 namespace offline_items_collection {
@@ -34,6 +36,31 @@ class OfflineContentProvider {
   using MultipleItemCallback = base::OnceCallback<void(const OfflineItemList&)>;
   using SingleItemCallback =
       base::OnceCallback<void(const base::Optional<OfflineItem>&)>;
+  using RenameCallback = base::OnceCallback<void(RenameResult)>;
+  using DownloadRenameCallback = base::OnceCallback<RenameCallback>;
+
+  // Used by GetVisualsForItem to specify which visuals are needed.
+  struct GetVisualsOptions {
+    bool get_icon;
+    bool get_custom_favicon;
+    static GetVisualsOptions NoVisuals() { return GetVisualsOptions(); }
+    static GetVisualsOptions IconOnly() {
+      GetVisualsOptions options;
+      options.get_icon = true;
+      return options;
+    }
+    static GetVisualsOptions CustomFaviconOnly() {
+      GetVisualsOptions options;
+      options.get_custom_favicon = true;
+      return options;
+    }
+    static GetVisualsOptions IconAndCustomFavicon() {
+      GetVisualsOptions options;
+      options.get_icon = true;
+      options.get_custom_favicon = true;
+      return options;
+    }
+  };
 
   // An observer class that should be notified of relevant changes to the
   // underlying data source.
@@ -62,8 +89,11 @@ class OfflineContentProvider {
     // TODO(dtrainor): Make this take a list of OfflineItems.
     // If Observer maintains a cache of items, the changes may already be
     // applied to the items in the cache, so there is no difference between
-    // items. In this case, this call should be ignored.
-    virtual void OnItemUpdated(const OfflineItem& item) = 0;
+    // items. This can be used in conjunction with the |update_delta| to
+    // determine whether this call should be ignored.
+    virtual void OnItemUpdated(
+        const OfflineItem& item,
+        const base::Optional<UpdateDelta>& update_delta) = 0;
 
    protected:
     virtual ~Observer() = default;
@@ -100,10 +130,12 @@ class OfflineContentProvider {
   // Asks for an OfflineItemVisuals struct for an OfflineItem represented by
   // |id| or |nullptr| if one doesn't exist.  The implementer should post any
   // replies even if the results are available immediately to prevent reentrancy
-  // and for consistent behavior.
+  // and for consistent behavior. |options| may be set to let the implementer
+  // know that it need not create the |icon| or |custom_favicon| members.
   // |callback| should be called no matter what (error, unavailable content,
   // etc.).
   virtual void GetVisualsForItem(const ContentId& id,
+                                 GetVisualsOptions options,
                                  VisualsCallback callback) = 0;
 
   // Asks for the right URI to use to share an OfflineItem represented by |id|
@@ -114,6 +146,13 @@ class OfflineContentProvider {
   // etc.).
   virtual void GetShareInfoForItem(const ContentId& id,
                                    ShareCallback callback) = 0;
+
+  // Called to rename a downloaded OfflineItem represented by |id|, new name is
+  // given by |name|. Implementer should post and replies the results of rename
+  // attempt.
+  virtual void RenameItem(const ContentId& id,
+                          const std::string& name,
+                          RenameCallback callback) = 0;
 
   // Adds an observer that should be notified of OfflineItem list modifications.
   virtual void AddObserver(Observer* observer) = 0;

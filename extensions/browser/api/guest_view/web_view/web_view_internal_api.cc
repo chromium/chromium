@@ -18,7 +18,6 @@
 #include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/stop_find_action.h"
@@ -267,7 +266,7 @@ std::unique_ptr<extensions::UserScriptList> ParseContentScripts(
 namespace extensions {
 
 bool WebViewInternalExtensionFunction::PreRunValidation(std::string* error) {
-  if (!UIThreadExtensionFunction::PreRunValidation(error))
+  if (!ExtensionFunction::PreRunValidation(error))
     return false;
 
   int instance_id = 0;
@@ -275,8 +274,7 @@ bool WebViewInternalExtensionFunction::PreRunValidation(std::string* error) {
   // TODO(780728): Remove crash key once the cause of the kill is known.
   static crash_reporter::CrashKeyString<128> name_key("webview-function");
   crash_reporter::ScopedCrashKeyString name_key_scope(&name_key, name());
-  guest_ = WebViewGuest::From(render_frame_host()->GetProcess()->GetID(),
-                              instance_id);
+  guest_ = WebViewGuest::From(source_process_id(), instance_id);
   if (!guest_) {
     *error = "Could not find guest";
     return false;
@@ -333,7 +331,7 @@ void WebViewInternalCaptureVisibleRegionFunction::OnCaptureSuccess(
     return;
   }
 
-  Respond(OneArgument(std::make_unique<base::Value>(base64_result)));
+  Respond(OneArgument(std::make_unique<base::Value>(std::move(base64_result))));
 }
 
 void WebViewInternalCaptureVisibleRegionFunction::OnCaptureFailure(
@@ -433,10 +431,8 @@ bool WebViewInternalExecuteCodeFunction::CanExecuteScriptOnPage(
 
 extensions::ScriptExecutor*
 WebViewInternalExecuteCodeFunction::GetScriptExecutor(std::string* error) {
-  if (!render_frame_host() || !render_frame_host()->GetProcess())
-    return nullptr;
-  WebViewGuest* guest = WebViewGuest::From(
-      render_frame_host()->GetProcess()->GetID(), guest_instance_id_);
+  WebViewGuest* guest =
+      WebViewGuest::From(source_process_id(), guest_instance_id_);
   if (!guest)
     return nullptr;
 
@@ -454,10 +450,8 @@ const GURL& WebViewInternalExecuteCodeFunction::GetWebViewSrc() const {
 bool WebViewInternalExecuteCodeFunction::LoadFileForWebUI(
     const std::string& file_src,
     WebUIURLFetcher::WebUILoadFileCallback callback) {
-  if (!render_frame_host() || !render_frame_host()->GetProcess())
-    return false;
-  WebViewGuest* guest = WebViewGuest::From(
-      render_frame_host()->GetProcess()->GetID(), guest_instance_id_);
+  WebViewGuest* guest =
+      WebViewGuest::From(source_process_id(), guest_instance_id_);
   if (!guest || host_id().type() != HostID::WEBUI)
     return false;
 
@@ -465,8 +459,8 @@ bool WebViewInternalExecuteCodeFunction::LoadFileForWebUI(
   GURL file_url(owner_base_url.Resolve(file_src));
 
   url_fetcher_ = std::make_unique<WebUIURLFetcher>(
-      render_frame_host()->GetProcess()->GetID(),
-      render_frame_host()->GetRoutingID(), file_url, std::move(callback));
+      source_process_id(), render_frame_host()->GetRoutingID(), file_url,
+      std::move(callback));
   url_fetcher_->Start();
   return true;
 }
@@ -531,9 +525,8 @@ WebViewInternalAddContentScriptsFunction::Run() {
       WebViewContentScriptManager::Get(browser_context());
   DCHECK(manager);
 
-  manager->AddContentScripts(
-      render_frame_host()->GetProcess()->GetID(),
-      render_frame_host(), params->instance_id, host_id, std::move(result));
+  manager->AddContentScripts(source_process_id(), render_frame_host(),
+                             params->instance_id, host_id, std::move(result));
 
   return RespondNow(NoArguments());
 }
@@ -565,9 +558,8 @@ WebViewInternalRemoveContentScriptsFunction::Run() {
   std::vector<std::string> script_name_list;
   if (params->script_name_list)
     script_name_list.swap(*params->script_name_list);
-  manager->RemoveContentScripts(
-      render_frame_host()->GetProcess()->GetID(),
-      params->instance_id, host_id, script_name_list);
+  manager->RemoveContentScripts(source_process_id(), params->instance_id,
+                                host_id, script_name_list);
   return RespondNow(NoArguments());
 }
 

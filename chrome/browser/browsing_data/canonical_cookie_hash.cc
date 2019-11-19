@@ -4,7 +4,7 @@
 
 #include "chrome/browser/browsing_data/canonical_cookie_hash.h"
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 
 namespace canonical_cookie {
 

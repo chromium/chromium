@@ -19,7 +19,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using bookmarks::BookmarkModel;
@@ -65,7 +65,7 @@ class ExtensionBookmarksTest : public testing::Test {
         folder_, 0, base::ASCIIToUTF16("CNet"), GURL("http://cnet.com"));
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   bookmarks::ManagedBookmarkService* managed_;
   BookmarkModel* model_;
@@ -165,10 +165,10 @@ TEST_F(ExtensionBookmarksTest, RemoveNodeNotRecursive) {
 }
 
 TEST_F(ExtensionBookmarksTest, RemoveNodeRecursive) {
-  EXPECT_EQ(3, model_->other_node()->child_count());
+  EXPECT_EQ(3u, model_->other_node()->children().size());
   std::string error;
   EXPECT_TRUE(RemoveNode(model_, managed_, folder_->id(), true, &error));
-  EXPECT_EQ(2, model_->other_node()->child_count());
+  EXPECT_EQ(2u, model_->other_node()->children().size());
 }
 
 TEST_F(ExtensionBookmarksTest, GetMetaInfo) {

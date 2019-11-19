@@ -26,25 +26,22 @@
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLModElement::HTMLModElement(const QualifiedName& tag_name,
-                                      Document& document)
+HTMLModElement::HTMLModElement(const QualifiedName& tag_name,
+                               Document& document)
     : HTMLElement(tag_name, document) {}
 
-DEFINE_ELEMENT_FACTORY_WITH_TAGNAME(HTMLModElement)
-
 bool HTMLModElement::IsURLAttribute(const Attribute& attribute) const {
-  return attribute.GetName() == kCiteAttr ||
+  return attribute.GetName() == html_names::kCiteAttr ||
          HTMLElement::IsURLAttribute(attribute);
 }
 
 bool HTMLModElement::HasLegalLinkAttribute(const QualifiedName& name) const {
-  return name == kCiteAttr || HTMLElement::HasLegalLinkAttribute(name);
+  return name == html_names::kCiteAttr ||
+         HTMLElement::HasLegalLinkAttribute(name);
 }
 
 const QualifiedName& HTMLModElement::SubResourceAttributeName() const {
-  return kCiteAttr;
+  return html_names::kCiteAttr;
 }
 
 }  // namespace blink

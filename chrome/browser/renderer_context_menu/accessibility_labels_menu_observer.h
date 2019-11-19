@@ -35,8 +35,11 @@ class AccessibilityLabelsMenuObserver : public RenderViewContextMenuObserver {
   bool IsCommandIdEnabled(int command_id) override;
   void ExecuteCommand(int command_id) override;
 
- private:
+  // Whether the accessibility labels menu item should be shown in the menu.
+  // This might depend on whether a screen reader is running.
   bool ShouldShowLabelsItem();
+
+ private:
   void ShowConfirmBubble(Profile* profile, bool enable_always);
 
   // The interface to add a context-menu item and update it. This class uses

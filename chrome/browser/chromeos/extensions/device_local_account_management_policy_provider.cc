@@ -238,7 +238,7 @@ const char* const kSafeManifestEntries[] = {
 
     emk::kTheme,
 
-    // Might need this for accessibilty, but has content access. Manual
+    // Might need this for accessibility, but has content access. Manual
     // whitelisting might be reasonable here?
     // emk::kTtsEngine,
 
@@ -832,9 +832,11 @@ std::string DeviceLocalAccountManagementPolicyProvider::
 bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
     const extensions::Extension* extension,
     base::string16* error) const {
-  if (account_type_ == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION) {
-    // Allow extension if it is an externally hosted component of Chrome.
-    if (extension->location() == extensions::Manifest::EXTERNAL_COMPONENT) {
+  if (account_type_ == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION ||
+      account_type_ == policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION) {
+    // Allow extension if it is a component of Chrome.
+    if (extension->location() == extensions::Manifest::EXTERNAL_COMPONENT ||
+        extension->location() == extensions::Manifest::COMPONENT) {
       return true;
     }
 
@@ -862,6 +864,10 @@ bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
     if (extension->GetType() == extensions::Manifest::TYPE_PLATFORM_APP ||
         extension->GetType() == extensions::Manifest::TYPE_SHARED_MODULE ||
         extension->GetType() == extensions::Manifest::TYPE_EXTENSION) {
+      return true;
+    }
+  } else if (account_type_ == policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
+    if (extension->GetType() == extensions::Manifest::TYPE_EXTENSION) {
       return true;
     }
   }

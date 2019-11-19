@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
@@ -25,9 +24,16 @@ class PaintFlags;
 class CC_PAINT_EXPORT RecordPaintCanvas final : public PaintCanvas {
  public:
   RecordPaintCanvas(DisplayItemList* list, const SkRect& bounds);
+  RecordPaintCanvas(const RecordPaintCanvas&) = delete;
   ~RecordPaintCanvas() override;
 
+  RecordPaintCanvas& operator=(const RecordPaintCanvas&) = delete;
+
   SkImageInfo imageInfo() const override;
+
+  void* accessTopLayerPixels(SkImageInfo* info,
+                             size_t* rowBytes,
+                             SkIPoint* origin = nullptr) override;
 
   void flush() override;
 
@@ -90,13 +96,12 @@ class CC_PAINT_EXPORT RecordPaintCanvas final : public PaintCanvas {
   void drawTextBlob(sk_sp<SkTextBlob> blob,
                     SkScalar x,
                     SkScalar y,
-                    const PaintFlags& flags,
-                    const NodeHolder& holder) override;
+                    NodeId node_id,
+                    const PaintFlags& flags) override;
 
   void drawPicture(sk_sp<const PaintRecord> record) override;
 
   bool isClipEmpty() const override;
-  bool isClipRect() const override;
   const SkMatrix& getTotalMatrix() const override;
 
   void Annotate(AnnotationType type,
@@ -130,8 +135,6 @@ class CC_PAINT_EXPORT RecordPaintCanvas final : public PaintCanvas {
   // lazy initialize the canvas can still be const.
   mutable base::Optional<SkNoDrawCanvas> canvas_;
   SkRect recording_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecordPaintCanvas);
 };
 
 }  // namespace cc

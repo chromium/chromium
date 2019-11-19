@@ -21,17 +21,15 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
   // BrowsingDataFilterBuilder implementation:
   void AddOrigin(const url::Origin& origin) override;
   void AddRegisterableDomain(const std::string& registrable_domain) override;
-  bool IsEmptyBlacklist() const override;
-  base::RepeatingCallback<bool(const GURL&)>
-      BuildGeneralFilter() const override;
-  network::mojom::ClearDataFilterPtr BuildNetworkServiceFilter() const override;
-  network::mojom::CookieDeletionFilterPtr BuildCookieDeletionFilter()
-      const override;
-  base::RepeatingCallback<bool(const std::string& site)>
-      BuildPluginFilter() const override;
-  Mode GetMode() const override;
-  std::unique_ptr<BrowsingDataFilterBuilder> Copy() const override;
-  bool operator==(const BrowsingDataFilterBuilder& other) const override;
+  bool IsEmptyBlacklist() override;
+  base::RepeatingCallback<bool(const GURL&)> BuildGeneralFilter() override;
+  network::mojom::ClearDataFilterPtr BuildNetworkServiceFilter() override;
+  network::mojom::CookieDeletionFilterPtr BuildCookieDeletionFilter() override;
+  base::RepeatingCallback<bool(const std::string& site)> BuildPluginFilter()
+      override;
+  Mode GetMode() override;
+  std::unique_ptr<BrowsingDataFilterBuilder> Copy() override;
+  bool operator==(const BrowsingDataFilterBuilder& other) override;
 
  private:
   Mode mode_;

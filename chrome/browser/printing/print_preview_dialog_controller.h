@@ -6,13 +6,12 @@
 #define CHROME_BROWSER_PRINTING_PRINT_PREVIEW_DIALOG_CONTROLLER_H_
 
 #include <map>
+#include <memory>
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/sessions/core/session_id.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 class GURL;
 
@@ -31,9 +30,10 @@ namespace printing {
 // track of the 1:1 relationship between initiator tabs and print preview
 // dialogs.
 class PrintPreviewDialogController
-    : public base::RefCounted<PrintPreviewDialogController>,
-      public content::NotificationObserver {
+    : public base::RefCounted<PrintPreviewDialogController> {
  public:
+  class WebContentsObserver;
+
   PrintPreviewDialogController();
 
   static PrintPreviewDialogController* GetInstance();
@@ -62,12 +62,7 @@ class PrintPreviewDialogController
 
   // Run |callback| on the dialog of each active print preview operation.
   void ForEachPreviewDialog(
-      base::Callback<void(content::WebContents*)> callback);
-
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+      base::RepeatingCallback<void(content::WebContents*)> callback);
 
   // Erase the initiator info associated with |preview_dialog|.
   void EraseInitiatorInfo(content::WebContents* preview_dialog);
@@ -85,26 +80,26 @@ class PrintPreviewDialogController
   using PrintPreviewDialogMap =
       std::map<content::WebContents*, content::WebContents*>;
 
-  ~PrintPreviewDialogController() override;
+  ~PrintPreviewDialogController();
 
-  // Handler for the RENDERER_PROCESS_CLOSED notification. This is observed when
-  // the initiator renderer crashed.
+  // Handles the closing of the RenderProcessHost. This is observed when the
+  // initiator renderer crashes.
   void OnRendererProcessClosed(content::RenderProcessHost* rph);
 
-  // Handler for the WEB_CONTENTS_DESTROYED notification. This is observed when
-  // either WebContents is closed.
+  // Handles the destruction of |contents|. This is observed when either
+  // the initiator or preview WebContents is closed.
   void OnWebContentsDestroyed(content::WebContents* contents);
 
-  // Handler for the NAV_ENTRY_COMMITTED notification. This is observed when the
-  // renderer is navigated to a different page.
+  // Handles the commit of a navigation entry for |contents|. This is observed
+  // when the renderer for either WebContents is navigated to a different page.
   void OnNavEntryCommitted(content::WebContents* contents,
-                           const content::LoadCommittedDetails* details);
+                           const content::LoadCommittedDetails& details);
 
   // Helpers for OnNavEntryCommitted().
   void OnInitiatorNavigated(content::WebContents* initiator,
-                            const content::LoadCommittedDetails* details);
+                            const content::LoadCommittedDetails& details);
   void OnPreviewDialogNavigated(content::WebContents* preview_dialog,
-                                const content::LoadCommittedDetails* details);
+                                const content::LoadCommittedDetails& details);
 
   // Creates a new print preview dialog.
   content::WebContents* CreatePrintPreviewDialog(
@@ -114,9 +109,9 @@ class PrintPreviewDialogController
   // |preview_dialog| in |preview_dialog|'s PrintPreviewUI.
   void SaveInitiatorTitle(content::WebContents* preview_dialog);
 
-  // Adds/Removes observers for notifications from |contents|.
-  void AddObservers(content::WebContents* contents);
-  void RemoveObservers(content::WebContents* contents);
+  // Adds/Removes the WebContentsObserver for |contents|.
+  void AddObserver(content::WebContents* contents);
+  void RemoveObserver(content::WebContents* contents);
 
   // Removes WebContents when they close/crash/navigate.
   void RemoveInitiator(content::WebContents* initiator);
@@ -124,9 +119,6 @@ class PrintPreviewDialogController
 
   // Mapping between print preview dialog and the corresponding initiator.
   PrintPreviewDialogMap preview_dialog_map_;
-
-  // A registrar for listening to notifications.
-  content::NotificationRegistrar registrar_;
 
   // True if the controller is waiting for a new preview dialog via
   // content::NAVIGATION_TYPE_NEW_PAGE.
@@ -136,11 +128,8 @@ class PrintPreviewDialogController
   // print preview dialog.
   bool is_creating_print_preview_dialog_ = false;
 
-  // How many web contents (dialogs and initiators) are watching a given render
-  // process host. Used to determine when a render process host's
-  // NOTIFICATION_RENDERER_PROCESS_CLOSED notification should be removed from
-  // the registrar.
-  std::map<content::RenderProcessHost*, int> host_contents_count_map_;
+  std::map<content::WebContents*, std::unique_ptr<WebContentsObserver>>
+      web_contents_observers_;
 
   DISALLOW_COPY_AND_ASSIGN(PrintPreviewDialogController);
 };

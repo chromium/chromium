@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "net/base/sys_addrinfo.h"
@@ -15,28 +16,11 @@
 
 namespace net {
 
-namespace {
-
-std::unique_ptr<base::Value> NetLogAddressListCallback(
-    const AddressList* address_list,
-    NetLogCaptureMode capture_mode) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  std::unique_ptr<base::ListValue> list(new base::ListValue());
-
-  for (auto it = address_list->begin(); it != address_list->end(); ++it) {
-    list->AppendString(it->ToString());
-  }
-
-  dict->Set("address_list", std::move(list));
-  dict->SetString("canonical_name", address_list->canonical_name());
-  return std::move(dict);
-}
-
-}  // namespace
-
 AddressList::AddressList() = default;
 
 AddressList::AddressList(const AddressList&) = default;
+
+AddressList& AddressList::operator=(const AddressList&) = default;
 
 AddressList::~AddressList() = default;
 
@@ -93,8 +77,36 @@ void AddressList::SetDefaultCanonicalName() {
   set_canonical_name(front().ToStringWithoutPort());
 }
 
-NetLogParametersCallback AddressList::CreateNetLogCallback() const {
-  return base::Bind(&NetLogAddressListCallback, this);
+base::Value AddressList::NetLogParams() const {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value list(base::Value::Type::LIST);
+
+  for (const auto& ip_endpoint : *this)
+    list.Append(ip_endpoint.ToString());
+
+  dict.SetKey("address_list", std::move(list));
+  dict.SetStringKey("canonical_name", canonical_name());
+  return dict;
+}
+
+void AddressList::Deduplicate() {
+  if (size() > 1) {
+    std::vector<std::pair<IPEndPoint, int>> make_me_into_a_map(size());
+    for (auto& addr : *this)
+      make_me_into_a_map.emplace_back(addr, 0);
+    base::flat_map<IPEndPoint, int> inserted(std::move(make_me_into_a_map));
+
+    std::vector<IPEndPoint> deduplicated_addresses;
+    deduplicated_addresses.reserve(inserted.size());
+    for (const auto& addr : *this) {
+      int& count = inserted[addr];
+      if (!count) {
+        deduplicated_addresses.push_back(addr);
+        ++count;
+      }
+    }
+    endpoints_.swap(deduplicated_addresses);
+  }
 }
 
 }  // namespace net

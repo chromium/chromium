@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
+#include "components/viz/common/vertical_scroll_direction.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/reload_type.h"
@@ -50,7 +51,10 @@ struct AXEventNotificationDetails;
 struct AXLocationChangeNotificationDetails;
 struct EntryChangedDetails;
 struct FaviconURL;
+struct FocusedNodeDetails;
 struct LoadCommittedDetails;
+struct MediaPlayerId;
+struct MediaPlayerWatchTime;
 struct PrunedDetails;
 struct Referrer;
 
@@ -169,13 +173,16 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // Called when a navigation encountered a server redirect.
   virtual void DidRedirectNavigation(NavigationHandle* navigation_handle) {}
 
-  // Called when the navigation is ready to be committed in a renderer. Most
-  // observers should use DidFinishNavigation instead, which happens right
+  // Called when the navigation is ready to be committed in a renderer. This
+  // occurs when the response code isn't 204/205 (which tell the browser that
+  // the request is successful but there's no content that follows) or a
+  // download (either from a response header or based on mime sniffing the
+  // response). The browser then is ready to switch rendering the new document.
+  // Most observers should use DidFinishNavigation instead, which happens right
   // after the navigation commits. This method is for observers that want to
   // initialize renderer-side state just before the RenderFrame commits the
   // navigation.
   //
-  // PlzNavigate
   // This is the first point in time where a RenderFrameHost is associated with
   // the navigation.
   virtual void ReadyToCommitNavigation(NavigationHandle* navigation_handle) {}
@@ -208,10 +215,8 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // be called multiple times for a given navigation, such as a typed URL
   // followed by a cross-process client or server redirect.
   //
-  // SOON TO BE DEPRECATED. Use DidStartNavigation instead in PlzNavigate. In
-  // default mode, it is still necessary to override this function to be
-  // notified about a navigation earlier than DidStartProvisionalLoad. This
-  // function will be removed when PlzNavigate is enabled.
+  // SOON TO BE DEPRECATED. Use DidStartNavigation instead.
+  // TODO(clamy): Remove this function.
   virtual void DidStartNavigationToPendingEntry(const GURL& url,
                                                 ReloadType reload_type) {}
 
@@ -224,18 +229,24 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void DidReceiveResponse() {}
   virtual void DidStopLoading() {}
 
+  // The page has made some progress loading. |progress| is a value between 0.0
+  // (nothing loaded) to 1.0 (page fully loaded).
+  virtual void LoadProgressChanged(double progress) {}
+
   // This method is invoked once the window.document object of the main frame
   // was created.
   virtual void DocumentAvailableInMainFrame() {}
 
   // This method is invoked once the onload handler of the main frame has
   // completed.
+  // Prefer using WebContents::IsDocumentOnLoadCompletedInMainFrame instead
+  // of saving this state in your component.
   virtual void DocumentOnLoadCompletedInMainFrame() {}
 
   // This method is invoked when the document in the given frame finished
   // loading. At this point, scripts marked as defer were executed, and
   // content scripts marked "document_end" get injected into the frame.
-  virtual void DocumentLoadedInFrame(RenderFrameHost* render_frame_host) {}
+  virtual void DOMContentLoaded(RenderFrameHost* render_frame_host) {}
 
   // This method is invoked when the load is done, i.e. the spinner of the tab
   // will stop spinning, and the onload event was dispatched.
@@ -269,6 +280,22 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
       RenderFrameHost* render_frame_host,
       const GlobalRequestID& request_id,
       const mojom::ResourceLoadInfo& resource_load_info) {}
+
+  // This method is invoked when a document or resource reads a cookie. Note
+  // that this isn't tied to any particular navigation (e.g., it may be called
+  // after a subsequent navigation commits).
+  virtual void OnCookiesRead(const GURL& url,
+                             const GURL& first_party_url,
+                             const net::CookieList& cookie_list,
+                             bool blocked_by_policy) {}
+
+  // This method is invoked when an attempt has been made to set |cookie|. Note
+  // that this isn't tied to any particular navigation (e.g., it may be called
+  // after a subsequent navigation commits).
+  virtual void OnCookieChange(const GURL& url,
+                              const GURL& first_party_url,
+                              const net::CanonicalCookie& cookie,
+                              bool blocked_by_policy) {}
 
   // This method is invoked when a new non-pending navigation entry is created.
   // This corresponds to one NavigationController entry being created
@@ -323,12 +350,6 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // invokes this method. If there are ongoing navigations, their respective
   // failure methods will also be invoked.
   virtual void NavigationStopped() {}
-
-  // This method is invoked when the WebContents reloads all the LoFi images in
-  // the frame. LoFi is a type of Preview where Chrome shows gray boxes in place
-  // of the images on a webpage in order to conserve data for data-sensitive
-  // users. See http://bit.ly/LoFiPublicDoc.
-  virtual void DidReloadLoFiImages() {}
 
   // Called when there has been direct user interaction with the WebContents.
   // The type argument specifies the kind of interaction. Direct user input
@@ -451,6 +472,15 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void DidAttachInterstitialPage() {}
   virtual void DidDetachInterstitialPage() {}
 
+  // Invoked when the vertical scroll direction of the root layer is changed.
+  // Note that if a scroll in a given direction occurs, the scroll is completed,
+  // and then another scroll in the *same* direction occurs, we will not
+  // consider the second scroll event to have caused a change in direction. Also
+  // note that this API will *never* be called with |kNull| which only exists to
+  // indicate the absence of a vertical scroll direction.
+  virtual void DidChangeVerticalScrollDirection(
+      viz::VerticalScrollDirection scroll_direction) {}
+
   // Invoked before a form repost warning is shown.
   virtual void BeforeFormRepostWarningShow() {}
 
@@ -472,7 +502,7 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
       const std::vector<AXLocationChangeNotificationDetails>& details) {}
 
   // Invoked when theme color is changed to |theme_color|.
-  virtual void DidChangeThemeColor(SkColor theme_color) {}
+  virtual void DidChangeThemeColor(base::Optional<SkColor> theme_color) {}
 
   // Invoked when media is playing or paused.  |id| is unique per player and per
   // RenderFrameHost.  There may be multiple players within a RenderFrameHost
@@ -489,22 +519,9 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
     bool has_audio;
   };
 
-  struct CONTENT_EXPORT MediaPlayerId {
-   public:
-    static MediaPlayerId createMediaPlayerIdForTests();
-
-    MediaPlayerId(RenderFrameHost* render_frame_host, int delegate_id);
-
-    bool operator==(const MediaPlayerId& other) const;
-    bool operator!=(const MediaPlayerId& other) const;
-    bool operator<(const MediaPlayerId& other) const;
-
-    RenderFrameHost* render_frame_host = nullptr;
-    int delegate_id = 0;
-
-   private:
-    MediaPlayerId() = default;
-  };
+  // Invoked when media playback is interrupted or completed.
+  virtual void MediaWatchTimeChanged(
+      const content::MediaPlayerWatchTime& watch_time) {}
 
   virtual void MediaStartedPlaying(const MediaPlayerInfo& video_type,
                                    const MediaPlayerId& id) {}
@@ -531,6 +548,9 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // Invoked when the renderer process changes the page scale factor.
   virtual void OnPageScaleFactorChanged(float page_scale_factor) {}
 
+  // Invoked when a paste event occurs.
+  virtual void OnPaste() {}
+
   // Invoked if an IPC message is coming from a specific RenderFrameHost.
   virtual bool OnMessageReceived(const IPC::Message& message,
                                  RenderFrameHost* render_frame_host);
@@ -542,6 +562,14 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // Notification that the |render_widget_host| for this WebContents has lost
   // focus.
   virtual void OnWebContentsLostFocus(RenderWidgetHost* render_widget_host) {}
+
+  // Notification that a RenderFrameHost inside this WebContents has updated
+  // its focused element. |details| contains information on the element
+  // that has received focus. This allows for observing focus changes
+  // within WebContents, as opposed to OnWebContentsFocused/LostFocus
+  // which allows observation that the RenderWidgetHost for the
+  // WebContents has gained/lost focus.
+  virtual void OnFocusChangedInPage(FocusedNodeDetails* details) {}
 
   // Notifies that the manifest URL for the main frame changed to
   // |manifest_url|. This will be invoked when a document with a manifest loads
@@ -558,11 +586,6 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
       RenderFrameHost* render_frame_host,
       const std::string& interface_name,
       mojo::ScopedMessagePipeHandle* interface_pipe) {}
-
-  // Notifies that the RenderWidgetCompositor has issued a draw command. An
-  // observer can use this method to detect when Chrome visually updated a
-  // tab.
-  virtual void DidCommitAndDrawCompositorFrame() {}
 
   // Called when "audible" playback starts or stops on a WebAudio AudioContext.
   using AudioContextId = std::pair<RenderFrameHost*, int>;

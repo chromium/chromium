@@ -4,8 +4,9 @@
 
 #include "chrome/browser/chromeos/login/mojo_system_info_dispatcher.h"
 
+#include "ash/public/cpp/login_screen.h"
+#include "ash/public/cpp/login_screen_model.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/version_info/channel.h"
@@ -47,13 +48,26 @@ void MojoSystemInfoDispatcher::OnDeviceInfoUpdated(
   OnSystemInfoUpdated();
 }
 
+void MojoSystemInfoDispatcher::OnAdbSideloadStatusUpdated(bool enabled) {
+  adb_sideloading_enabled_ = enabled;
+  OnSystemInfoUpdated();
+}
+
 void MojoSystemInfoDispatcher::OnSystemInfoUpdated() {
-  version_info::Channel channel = chrome::GetChannel();
-  bool show_if_hidden = channel != version_info::Channel::STABLE &&
-                        channel != version_info::Channel::BETA;
-  LoginScreenClient::Get()->login_screen()->SetSystemInfo(
-      show_if_hidden, os_version_label_text_, enterprise_info_,
-      bluetooth_name_);
+  const base::Optional<bool> policy_show =
+      version_info_updater_.IsSystemInfoEnforced();
+  bool enforced = policy_show.has_value();
+  bool show = false;
+  if (enforced) {
+    show = policy_show.value();
+  } else {
+    version_info::Channel channel = chrome::GetChannel();
+    show = channel != version_info::Channel::STABLE &&
+           channel != version_info::Channel::BETA;
+  }
+  ash::LoginScreen::Get()->GetModel()->SetSystemInfo(
+      show, enforced, os_version_label_text_, enterprise_info_, bluetooth_name_,
+      adb_sideloading_enabled_);
 }
 
 }  // namespace chromeos

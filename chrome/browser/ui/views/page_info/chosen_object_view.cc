@@ -35,7 +35,7 @@ ChosenObjectView::ChosenObjectView(
   // Where the icon and close button columns are fixed widths.
 
   views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>(this));
+      SetLayoutManager(std::make_unique<views::GridLayout>());
   const int column_set_id = 0;
 
   const int related_label_padding =
@@ -65,27 +65,27 @@ ChosenObjectView::ChosenObjectView(
   layout->StartRowWithPadding(1.0, column_set_id, views::GridLayout::kFixedSize,
                               list_item_padding);
   // Create the chosen object icon.
-  icon_ = new views::ImageView();
-  layout->AddView(icon_);
+  icon_ = layout->AddView(std::make_unique<views::ImageView>());
 
   // Create the label that displays the chosen object name.
-  views::Label* label = new views::Label(
+  auto label = std::make_unique<views::Label>(
       PageInfoUI::ChosenObjectToUIString(*info_), CONTEXT_BODY_TEXT_LARGE);
   icon_->SetImage(
-      PageInfoUI::GetChosenObjectIcon(*info_, false, label->enabled_color()));
-  layout->AddView(label);
+      PageInfoUI::GetChosenObjectIcon(*info_, false, label->GetEnabledColor()));
+  layout->AddView(std::move(label));
 
   // Create the delete button.
-  delete_button_ = views::CreateVectorImageButton(this);
+  std::unique_ptr<views::ImageButton> delete_button =
+      views::CreateVectorImageButton(this);
   views::SetImageFromVectorIcon(
-      delete_button_, vector_icons::kCloseRoundedIcon,
+      delete_button.get(), vector_icons::kCloseRoundedIcon,
       views::style::GetColor(*this, CONTEXT_BODY_TEXT_LARGE,
                              views::style::STYLE_PRIMARY));
-  delete_button_->SetFocusForPlatform();
-  delete_button_->set_request_focus_on_press(true);
-  delete_button_->SetTooltipText(
+  delete_button->SetFocusForPlatform();
+  delete_button->set_request_focus_on_press(true);
+  delete_button->SetTooltipText(
       l10n_util::GetStringUTF16(info_->ui_info.delete_tooltip_string_id));
-  layout->AddView(delete_button_);
+  delete_button_ = layout->AddView(std::move(delete_button));
 
   // Display secondary text underneath the name of the chosen object to describe
   // what the chosen object actually is.
@@ -94,14 +94,14 @@ ChosenObjectView::ChosenObjectView(
 
   // Disable the delete button for policy controlled objects and display the
   // allowed by policy string below for |secondary_label|.
-  views::Label* secondary_label = nullptr;
+  std::unique_ptr<views::Label> secondary_label;
   if (info_->chooser_object->source ==
       content_settings::SettingSource::SETTING_SOURCE_POLICY) {
     delete_button_->SetEnabled(false);
-    secondary_label = new views::Label(l10n_util::GetStringUTF16(
+    secondary_label = std::make_unique<views::Label>(l10n_util::GetStringUTF16(
         info_->ui_info.allowed_by_policy_description_string_id));
   } else {
-    secondary_label = new views::Label(
+    secondary_label = std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(info_->ui_info.description_string_id));
   }
 
@@ -114,11 +114,11 @@ ChosenObjectView::ChosenObjectView(
   int preferred_width = secondary_label->GetPreferredSize().width();
   constexpr int kMaxSecondaryLabelWidth = 140;
   if (preferred_width > kMaxSecondaryLabelWidth) {
-    layout->AddView(secondary_label, /*col_span=*/1, /*row_span=*/1,
+    layout->AddView(std::move(secondary_label), /*col_span=*/1, /*row_span=*/1,
                     views::GridLayout::LEADING, views::GridLayout::CENTER,
                     kMaxSecondaryLabelWidth, /*pref_height=*/0);
   } else {
-    layout->AddView(secondary_label, /*col_span=*/1, /*row_span=*/1,
+    layout->AddView(std::move(secondary_label), /*col_span=*/1, /*row_span=*/1,
                     views::GridLayout::FILL, views::GridLayout::CENTER);
   }
 
@@ -139,7 +139,7 @@ void ChosenObjectView::ButtonPressed(views::Button* sender,
       views::style::GetColor(*this, views::style::CONTEXT_LABEL,
                              views::style::STYLE_PRIMARY)));
 
-  DCHECK(delete_button_->visible());
+  DCHECK(delete_button_->GetVisible());
   delete_button_->SetVisible(false);
 
   for (ChosenObjectViewObserver& observer : observer_list_) {

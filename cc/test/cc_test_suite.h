@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_suite.h"
 
@@ -20,7 +19,10 @@ namespace cc {
 class CCTestSuite : public base::TestSuite {
  public:
   CCTestSuite(int argc, char** argv);
+  CCTestSuite(const CCTestSuite&) = delete;
   ~CCTestSuite() override;
+
+  CCTestSuite& operator=(const CCTestSuite&) = delete;
 
  protected:
   // Overridden from base::TestSuite:
@@ -31,7 +33,6 @@ class CCTestSuite : public base::TestSuite {
   std::unique_ptr<base::MessageLoop> message_loop_;
 
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
-  DISALLOW_COPY_AND_ASSIGN(CCTestSuite);
 };
 
 }  // namespace cc

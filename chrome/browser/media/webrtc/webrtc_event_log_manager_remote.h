@@ -308,7 +308,8 @@ class WebRtcRemoteEventLogManager final
   void MaybeRemovePendingLogs(
       const base::Time& delete_begin,
       const base::Time& delete_end,
-      base::Optional<BrowserContextId> browser_context_id = base::nullopt);
+      base::Optional<BrowserContextId> browser_context_id,
+      bool is_cache_clear);
 
   // Remove all history files associated with |browser_context_id| which were
   // either captured or uploaded between |delete_begin| and |delete_end|.

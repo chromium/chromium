@@ -17,14 +17,6 @@ namespace protocol {
 
 namespace {
 
-constexpr base::TaskTraits kBlockingSkippableTraits = {
-    // Requires IO.
-    base::MayBlock(),
-
-    // TaskShutdownBehavior: use SKIP_ON_SHUTDOWN so that the helper's
-    // fields do not suddenly become invalid.
-    base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
-
 void ClearFileReferenceOnIOThread(
     scoped_refptr<storage::ShareableFileReference>) {}
 
@@ -37,7 +29,7 @@ DevToolsMHTMLHelper::DevToolsMHTMLHelper(
 
 DevToolsMHTMLHelper::~DevToolsMHTMLHelper() {
   if (mhtml_file_.get()) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&ClearFileReferenceOnIOThread, std::move(mhtml_file_)));
   }
@@ -49,8 +41,15 @@ void DevToolsMHTMLHelper::Capture(
     std::unique_ptr<PageHandler::CaptureSnapshotCallback> callback) {
   scoped_refptr<DevToolsMHTMLHelper> helper =
       new DevToolsMHTMLHelper(page_handler, std::move(callback));
-  base::PostTaskWithTraits(
-      FROM_HERE, kBlockingSkippableTraits,
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(),
+       // Requires IO.
+       base::MayBlock(),
+
+       // TaskShutdownBehavior: use SKIP_ON_SHUTDOWN so that the helper's
+       // fields do not suddenly become invalid.
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&DevToolsMHTMLHelper::CreateTemporaryFile, helper));
 }
 
@@ -59,7 +58,7 @@ void DevToolsMHTMLHelper::CreateTemporaryFile() {
     ReportFailure("Unable to create temporary file");
     return;
   }
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&DevToolsMHTMLHelper::TemporaryFileCreatedOnIO, this));
 }
@@ -72,8 +71,9 @@ void DevToolsMHTMLHelper::TemporaryFileCreatedOnIO() {
   mhtml_file_ = storage::ShareableFileReference::GetOrCreate(
       mhtml_snapshot_path_,
       storage::ShareableFileReference::DELETE_ON_FINAL_RELEASE,
-      base::CreateSequencedTaskRunnerWithTraits(
-          {// Requires IO.
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(),
+           // Requires IO.
            base::MayBlock(),
 
            // Because we are using DELETE_ON_FINAL_RELEASE here, the
@@ -83,7 +83,7 @@ void DevToolsMHTMLHelper::TemporaryFileCreatedOnIO() {
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})
           .get());
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&DevToolsMHTMLHelper::TemporaryFileCreatedOnUI, this));
 }
@@ -111,9 +111,15 @@ void DevToolsMHTMLHelper::MHTMLGeneratedOnUI(int64_t mhtml_file_size) {
     ReportFailure("Failed to generate MHTML");
     return;
   }
-  base::PostTaskWithTraits(
-      FROM_HERE, kBlockingSkippableTraits,
-      base::BindOnce(&DevToolsMHTMLHelper::ReadMHTML, this));
+  base::PostTask(FROM_HERE,
+                 {base::ThreadPool(),
+                  // Requires IO.
+                  base::MayBlock(),
+
+                  // TaskShutdownBehavior: use SKIP_ON_SHUTDOWN so that the
+                  // helper's fields do not suddenly become invalid.
+                  base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+                 base::BindOnce(&DevToolsMHTMLHelper::ReadMHTML, this));
 }
 
 void DevToolsMHTMLHelper::ReadMHTML() {
@@ -130,7 +136,7 @@ void DevToolsMHTMLHelper::ReadMHTML() {
 
 void DevToolsMHTMLHelper::ReportFailure(const std::string& message) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&DevToolsMHTMLHelper::ReportFailure, this, message));
     return;
@@ -144,9 +150,9 @@ void DevToolsMHTMLHelper::ReportFailure(const std::string& message) {
 void DevToolsMHTMLHelper::ReportSuccess(
     std::unique_ptr<std::string> mhtml_snapshot) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                             base::BindOnce(&DevToolsMHTMLHelper::ReportSuccess,
-                                            this, std::move(mhtml_snapshot)));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(&DevToolsMHTMLHelper::ReportSuccess, this,
+                                  std::move(mhtml_snapshot)));
     return;
   }
   callback_->sendSuccess(*mhtml_snapshot);

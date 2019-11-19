@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/proxy_config/proxy_prefs.h"
 
 class PrefService;
 
@@ -18,6 +19,8 @@ class Value;
 }
 
 namespace chromeos {
+
+class NetworkState;
 
 // This class provides an interface to the UI for getting a network proxy
 // configuration.
@@ -56,6 +59,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) UIProxyConfigService {
   // Returns true if there is a default network and it has a proxy configuration
   // with mode == MODE_FIXED_SERVERS.
   bool HasDefaultNetworkProxyConfigured();
+
+  // Returns the ProxyMode for |network| using |local_state_prefs_|
+  ProxyPrefs::ProxyMode ProxyModeForNetwork(const NetworkState* network);
 
  private:
   void OnPreferenceChanged(const std::string& pref_name);

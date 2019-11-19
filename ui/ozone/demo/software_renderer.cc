@@ -4,12 +4,16 @@
 
 #include "ui/ozone/demo/software_renderer.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/platform_window_surface.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 #include "ui/ozone/public/surface_ozone_canvas.h"
 
@@ -20,20 +24,23 @@ const int kFrameDelayMilliseconds = 16;
 
 }  // namespace
 
-SoftwareRenderer::SoftwareRenderer(gfx::AcceleratedWidget widget,
-                                   const gfx::Size& size)
+SoftwareRenderer::SoftwareRenderer(
+    gfx::AcceleratedWidget widget,
+    std::unique_ptr<PlatformWindowSurface> window_surface,
+    const gfx::Size& size)
     : RendererBase(widget, size),
-      vsync_period_(base::TimeDelta::FromMilliseconds(kFrameDelayMilliseconds)),
-      weak_ptr_factory_(this) {
-}
+      window_surface_(std::move(window_surface)),
+      vsync_period_(
+          base::TimeDelta::FromMilliseconds(kFrameDelayMilliseconds)) {}
 
-SoftwareRenderer::~SoftwareRenderer() {
-}
+SoftwareRenderer::~SoftwareRenderer() {}
 
 bool SoftwareRenderer::Initialize() {
-  software_surface_ = ui::OzonePlatform::GetInstance()
-                          ->GetSurfaceFactoryOzone()
-                          ->CreateCanvasForWidget(widget_);
+  software_surface_ =
+      ui::OzonePlatform::GetInstance()
+          ->GetSurfaceFactoryOzone()
+          ->CreateCanvasForWidget(widget_,
+                                  base::ThreadTaskRunnerHandle::Get().get());
   if (!software_surface_) {
     LOG(ERROR) << "Failed to create software surface";
     return false;
@@ -61,8 +68,8 @@ void SoftwareRenderer::RenderFrame() {
 
   if (vsync_provider_) {
     vsync_provider_->GetVSyncParameters(
-        base::Bind(&SoftwareRenderer::UpdateVSyncParameters,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&SoftwareRenderer::UpdateVSyncParameters,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   timer_.Start(FROM_HERE, vsync_period_, this, &SoftwareRenderer::RenderFrame);

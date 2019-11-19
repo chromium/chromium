@@ -8,7 +8,7 @@
 #include "base/bind_helpers.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/user_image_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/user_manager/user.h"
@@ -60,8 +60,8 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
 void MultideviceSetupHandler::HandleOpenMultiDeviceSettings(
     const base::ListValue* args) {
   DCHECK(args->empty());
-  chrome::ShowSettingsSubPageForProfile(Profile::FromWebUI(web_ui()),
-                                        chrome::kConnectedDevicesSubPage);
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      Profile::FromWebUI(web_ui()), chrome::kConnectedDevicesSubPage);
 }
 
 }  // namespace multidevice_setup

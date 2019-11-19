@@ -11,7 +11,7 @@
 
 #include "base/strings/string_number_conversions.h"
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/mac/make_credential_operation.h"
@@ -61,7 +61,7 @@ bool MakeCredential() API_AVAILABLE(macos(10.12.2)) {
 // keychain-access-group entitlement.
 TEST(GetAssertionOperationTest, DISABLED_TestRun)
 API_AVAILABLE(macos(10.12.2)) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   ASSERT_TRUE(MakeCredential());
 
   TestCallbackReceiver<CtapDeviceResponseCode,

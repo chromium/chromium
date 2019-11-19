@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_PAYMENT_RESPONSE_HELPER_H_
 #define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_RESPONSE_HELPER_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/address_normalizer.h"
-#include "components/autofill/core/browser/autofill_profile.h"
-#include "components/payments/core/payment_instrument.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/payments/core/payment_app.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
 namespace payments {
@@ -19,7 +21,7 @@ class PaymentRequestSpec;
 
 // A helper class to facilitate the creation of the PaymentResponse.
 class PaymentResponseHelper
-    : public PaymentInstrument::Delegate,
+    : public PaymentApp::Delegate,
       public base::SupportsWeakPtr<PaymentResponseHelper> {
  public:
   class Delegate {
@@ -28,23 +30,25 @@ class PaymentResponseHelper
 
     virtual void OnPaymentResponseReady(
         mojom::PaymentResponsePtr payment_response) = 0;
+
+    virtual void OnPaymentResponseError(const std::string& error_message) = 0;
   };
 
-  // The spec, selected_instrument and delegate cannot be null.
+  // The spec, selected_app and delegate cannot be null.
   PaymentResponseHelper(const std::string& app_locale,
                         PaymentRequestSpec* spec,
-                        PaymentInstrument* selected_instrument,
+                        PaymentApp* selected_app,
                         PaymentRequestDelegate* payment_request_delegate,
                         autofill::AutofillProfile* selected_shipping_profile,
                         autofill::AutofillProfile* selected_contact_profile,
                         Delegate* delegate);
   ~PaymentResponseHelper() override;
 
-  // PaymentInstrument::Delegate
-  void OnInstrumentDetailsReady(
-      const std::string& method_name,
-      const std::string& stringified_details) override;
-  void OnInstrumentDetailsError() override {}
+  // PaymentApp::Delegate
+  void OnInstrumentDetailsReady(const std::string& method_name,
+                                const std::string& stringified_details,
+                                const PayerData& payer_data) override;
+  void OnInstrumentDetailsError(const std::string& error_message) override;
 
   mojom::PayerDetailPtr GeneratePayerDetail(
       const autofill::AutofillProfile* selected_contact_profile) const;
@@ -64,7 +68,7 @@ class PaymentResponseHelper
   // Not owned, cannot be null.
   PaymentRequestSpec* spec_;
   Delegate* delegate_;
-  PaymentInstrument* selected_instrument_;
+  PaymentApp* selected_app_;
   PaymentRequestDelegate* payment_request_delegate_;
 
   // Not owned, can be null (dependent on the spec).
@@ -78,7 +82,12 @@ class PaymentResponseHelper
   std::string method_name_;
   std::string stringified_details_;
 
-  base::WeakPtrFactory<PaymentResponseHelper> weak_ptr_factory_;
+  // Details from payment handler response that will be included in the
+  // PaymentResponse when shipping/contact handling is delegated to the payment
+  // handler.
+  PayerData payer_data_from_app_;
+
+  base::WeakPtrFactory<PaymentResponseHelper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PaymentResponseHelper);
 };

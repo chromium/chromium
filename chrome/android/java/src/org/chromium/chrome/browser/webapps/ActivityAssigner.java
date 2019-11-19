@@ -6,14 +6,13 @@ package org.chromium.chrome.browser.webapps;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.SystemClock;
-import android.support.annotation.IntDef;
 import android.util.Log;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
-import org.chromium.base.metrics.RecordHistogram;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -107,9 +106,7 @@ public class ActivityAssigner {
     private static final Object LOCK = new Object();
     private static List<ActivityAssigner> sInstances;
 
-    private final Context mContext;
     private final List<ActivityEntry> mActivityList;
-
     private final String mPrefPackage;
     private final String mPrefNumSavedEntries;
     private final String mPrefActivityIndex;
@@ -119,7 +116,8 @@ public class ActivityAssigner {
      * Pre-load shared prefs to avoid being blocked on the
      * disk access async task in the future.
      */
-    public static void warmUpSharedPrefs(Context context) {
+    public static void warmUpSharedPrefs() {
+        Context context = ContextUtils.getApplicationContext();
         for (int i = 0; i < ActivityAssignerNamespace.NUM_ENTRIES; ++i) {
             context.getSharedPreferences(PREF_PACKAGE[i], Context.MODE_PRIVATE);
         }
@@ -153,8 +151,6 @@ public class ActivityAssigner {
     }
 
     private ActivityAssigner(int activityTypeIndex) {
-        mContext = ContextUtils.getApplicationContext();
-
         mPrefPackage = PREF_PACKAGE[activityTypeIndex];
         mPrefNumSavedEntries = PREF_NUM_SAVED_ENTRIES[activityTypeIndex];
         mPrefActivityIndex = PREF_ACTIVITY_INDEX[activityTypeIndex];
@@ -273,16 +269,10 @@ public class ActivityAssigner {
 
         // Restore any entries that were previously saved.  If it seems that the preferences have
         // been corrupted somehow, just discard the whole map.
-        SharedPreferences prefs = mContext.getSharedPreferences(mPrefPackage, Context.MODE_PRIVATE);
+        SharedPreferences prefs = ContextUtils.getApplicationContext().getSharedPreferences(
+                mPrefPackage, Context.MODE_PRIVATE);
         try {
-            long time = SystemClock.elapsedRealtime();
             final int numSavedEntries = prefs.getInt(mPrefNumSavedEntries, 0);
-            try {
-                RecordHistogram.recordTimesHistogram("Android.StrictMode.WebappSharedPrefs",
-                        SystemClock.elapsedRealtime() - time);
-            } catch (UnsatisfiedLinkError error) {
-                // Intentionally ignored - it's ok to miss recording the metric occasionally.
-            }
             if (numSavedEntries <= NUM_WEBAPP_ACTIVITIES) {
                 for (int i = 0; i < numSavedEntries; ++i) {
                     String currentActivityIndexPref = mPrefActivityIndex + i;
@@ -327,7 +317,8 @@ public class ActivityAssigner {
      * Saves the mapping between apps and Activities.
      */
     private void storeActivityList() {
-        SharedPreferences prefs = mContext.getSharedPreferences(mPrefPackage, Context.MODE_PRIVATE);
+        SharedPreferences prefs = ContextUtils.getApplicationContext().getSharedPreferences(
+                mPrefPackage, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.clear();
         editor.putInt(mPrefNumSavedEntries, mActivityList.size());

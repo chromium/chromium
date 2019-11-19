@@ -22,9 +22,7 @@
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
@@ -80,15 +78,10 @@ class FakeWebMediaPlayer final : public EmptyWebMediaPlayer {
 
 class MediaStubLocalFrameClient : public EmptyLocalFrameClient {
  public:
-  static MediaStubLocalFrameClient* Create() {
-    return MakeGarbageCollected<MediaStubLocalFrameClient>();
-  }
-
   std::unique_ptr<WebMediaPlayer> CreateWebMediaPlayer(
       HTMLMediaElement&,
       const WebMediaPlayerSource&,
-      WebMediaPlayerClient* client,
-      WebLayerTreeView*) override {
+      WebMediaPlayerClient* client) override {
     return std::make_unique<FakeWebMediaPlayer>(client);
   }
 };
@@ -102,7 +95,8 @@ using testing::Return;
 class HTMLMediaElementEventListenersTest : public PageTestBase {
  protected:
   void SetUp() override {
-    SetupPageWithClients(nullptr, MediaStubLocalFrameClient::Create());
+    SetupPageWithClients(nullptr,
+                         MakeGarbageCollected<MediaStubLocalFrameClient>());
   }
 
   void DestroyDocument() { PageTestBase::TearDown(); }
@@ -152,7 +146,7 @@ TEST_F(HTMLMediaElementEventListenersTest, RemovingFromDocumentCollectsAll) {
 
   test::RunPendingTasks();
 
-  ThreadState::Current()->CollectAllGarbage();
+  ThreadState::Current()->CollectAllGarbageForTesting();
 
   // They have been GC'd.
   EXPECT_EQ(weak_persistent_video, nullptr);
@@ -182,7 +176,7 @@ TEST_F(HTMLMediaElementEventListenersTest,
 
   test::RunPendingTasks();
 
-  ThreadState::Current()->CollectAllGarbage();
+  ThreadState::Current()->CollectAllGarbageForTesting();
 
   EXPECT_NE(Video(), nullptr);
   EXPECT_NE(Controls(), nullptr);
@@ -215,7 +209,7 @@ TEST_F(HTMLMediaElementEventListenersTest,
   Persistent<MediaCustomControlsFullscreenDetector> detector =
       FullscreenDetector();
 
-  std::vector<blink::WebFullscreenVideoStatus> observed_results;
+  Vector<blink::WebFullscreenVideoStatus> observed_results;
 
   ON_CALL(*WebMediaPlayer(), SetIsEffectivelyFullscreen(_))
       .WillByDefault(testing::Invoke(
@@ -240,10 +234,6 @@ TEST_F(HTMLMediaElementEventListenersTest,
 
 class MockEventListener final : public NativeEventListener {
  public:
-  static MockEventListener* Create() {
-    return MakeGarbageCollected<MockEventListener>();
-  }
-
   MOCK_METHOD2(Invoke, void(ExecutionContext* executionContext, Event*));
 };
 
@@ -251,20 +241,17 @@ class HTMLMediaElementWithMockSchedulerTest
     : public HTMLMediaElementEventListenersTest {
  protected:
   void SetUp() override {
+    EnablePlatform();
     // We want total control over when to advance the clock. This also allows
-    // us to call platform_->RunUntilIdle() to run all pending tasks without
+    // us to call platform()->RunUntilIdle() to run all pending tasks without
     // fear of looping forever.
-    platform_->SetAutoAdvanceNowToPendingTasks(false);
+    platform()->SetAutoAdvanceNowToPendingTasks(false);
 
     // DocumentParserTiming has DCHECKS to make sure time > 0.0.
-    platform_->AdvanceClockSeconds(1);
+    platform()->AdvanceClockSeconds(1);
 
     HTMLMediaElementEventListenersTest::SetUp();
   }
-
-  // MockSchdulere to control scheduling of task_timer_;
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform_;
 };
 
 TEST_F(HTMLMediaElementWithMockSchedulerTest, OneTimeupdatePerSeek) {
@@ -274,10 +261,10 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, OneTimeupdatePerSeek) {
   // Set a src to trigger WebMediaPlayer creation.
   Video()->SetSrc("http://example.com");
 
-  platform_->RunUntilIdle();
+  platform()->RunUntilIdle();
   ASSERT_NE(WebMediaPlayer(), nullptr);
 
-  MockEventListener* timeupdate_handler = MockEventListener::Create();
+  auto* timeupdate_handler = MakeGarbageCollected<MockEventListener>();
   Video()->addEventListener(event_type_names::kTimeupdate, timeupdate_handler);
 
   // Simulate conditions where playback is possible.
@@ -292,16 +279,20 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, OneTimeupdatePerSeek) {
   // While playing, timeupdate should fire every 250 ms -> 4x per second as long
   // as media player's CurrentTime continues to advance.
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(4);
-  platform_->RunForPeriodSeconds(1);
+  platform()->RunForPeriodSeconds(1);
 
   // If media playback time is fixed, periodic timeupdate's should not continue
   // to fire.
   WebMediaPlayer()->SetAutoAdvanceCurrentTime(false);
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(0);
-  platform_->RunForPeriodSeconds(1);
+  platform()->RunForPeriodSeconds(1);
 
-  // Seek to some time in the past. A completed seek should trigger a *single*
-  // timeupdate.
+  EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(1);
+  Video()->pause();
+  platform()->RunUntilIdle();
+
+  // Seek to some time in the past. A completed seek while paused should trigger
+  // a *single* timeupdate.
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(1);
   ASSERT_GE(WebMediaPlayer()->CurrentTime(), 1);
   Video()->setCurrentTime(WebMediaPlayer()->CurrentTime() - 1);
@@ -310,7 +301,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, OneTimeupdatePerSeek) {
   WebMediaPlayer()->FinishSeek();
 
   // Give the scheduled timeupdate a chance to fire.
-  platform_->RunUntilIdle();
+  platform()->RunUntilIdle();
 }
 
 TEST_F(HTMLMediaElementWithMockSchedulerTest, PeriodicTimeupdateAfterSeek) {
@@ -320,10 +311,10 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, PeriodicTimeupdateAfterSeek) {
   // Set a src to trigger WebMediaPlayer creation.
   Video()->SetSrc("http://example.com");
 
-  platform_->RunUntilIdle();
+  platform()->RunUntilIdle();
   EXPECT_NE(WebMediaPlayer(), nullptr);
 
-  MockEventListener* timeupdate_handler = MockEventListener::Create();
+  auto* timeupdate_handler = MakeGarbageCollected<MockEventListener>();
   Video()->addEventListener(event_type_names::kTimeupdate, timeupdate_handler);
 
   // Simulate conditions where playback is possible.
@@ -338,15 +329,15 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, PeriodicTimeupdateAfterSeek) {
   // Advance a full periodic timeupdate interval (250 ms) and expect a single
   // timeupdate.
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(1);
-  platform_->RunForPeriodSeconds(.250);
+  platform()->RunForPeriodSeconds(.250);
   // The event is scheduled, but needs one more scheduler cycle to fire.
-  platform_->RunUntilIdle();
+  platform()->RunUntilIdle();
 
   // Now advance 125 ms to reach the middle of the periodic timeupdate interval.
   // no additional timeupdate should trigger.
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(0);
-  platform_->RunForPeriodSeconds(.125);
-  platform_->RunUntilIdle();
+  platform()->RunForPeriodSeconds(.125);
+  platform()->RunUntilIdle();
 
   // While still in the middle of the periodic timeupdate interval, start and
   // complete a seek and verify that a *non-periodic* timeupdate is fired.
@@ -354,29 +345,33 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, PeriodicTimeupdateAfterSeek) {
   ASSERT_GE(WebMediaPlayer()->CurrentTime(), 1);
   Video()->setCurrentTime(WebMediaPlayer()->CurrentTime() - 1);
   WebMediaPlayer()->FinishSeek();
-  platform_->RunUntilIdle();
+
+  // Expect another timeupdate after FinishSeek due to
+  // seeking -> begin scrubbing -> pause -> timeupdate.
+  EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(1);
+  platform()->RunUntilIdle();
 
   // Advancing the remainder of the last periodic timeupdate interval should be
-  // insufficient to triggger a new timeupdate event because the seek's
+  // insufficient to trigger a new timeupdate event because the seek's
   // timeupdate occurred only 125ms ago. We desire to fire periodic timeupdates
   // exactly every 250ms from the last timeupdate, and the seek's timeupdate
   // should reset that 250ms ms countdown.
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(0);
-  platform_->RunForPeriodSeconds(.125);
-  platform_->RunUntilIdle();
+  platform()->RunForPeriodSeconds(.125);
+  platform()->RunUntilIdle();
 
   // Advancing another 125ms, we should expect a new timeupdate because we are
   // now 250ms from the seek's timeupdate.
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(1);
-  platform_->RunForPeriodSeconds(.125);
-  platform_->RunUntilIdle();
+  platform()->RunForPeriodSeconds(.125);
+  platform()->RunUntilIdle();
 
   // Advancing 250ms further, we should expect yet another timeupdate because
   // this represents a full periodic timeupdate interval with no interruptions
   // (e.g. no-seeks).
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(1);
-  platform_->RunForPeriodSeconds(.250);
-  platform_->RunUntilIdle();
+  platform()->RunForPeriodSeconds(.250);
+  platform()->RunUntilIdle();
 }
 
 }  // namespace blink

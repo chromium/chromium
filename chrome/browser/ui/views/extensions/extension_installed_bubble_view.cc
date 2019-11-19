@@ -23,7 +23,10 @@
 #include "chrome/browser/ui/extensions/extension_installed_bubble.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -34,9 +37,8 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bubble/bubble_controller.h"
-#include "components/signin/core/browser/account_info.h"
-#include "components/signin/core/browser/signin_buildflags.h"
-#include "components/signin/core/browser/signin_metrics.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "extensions/common/extension.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -75,13 +77,23 @@ views::View* AnchorViewForBrowser(ExtensionInstalledBubble* controller,
 
   switch (controller->anchor_position()) {
     case ExtensionInstalledBubble::ANCHOR_ACTION: {
-      BrowserActionsContainer* container =
-          browser_view->toolbar()->browser_actions();
-      // Hitting this DCHECK means |ShouldShow| failed.
-      DCHECK(container);
-      DCHECK(!container->animating());
+      if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
+        // TODO(pbos): Make sure this view pops out so that we can actually
+        // anchor to a visible action. Right now this view is most likely not
+        // visible, and will fall back on the default case on showing the
+        // installed dialog anchored to the general extensions toolbar button.
+        reference_view =
+            browser_view->toolbar_button_provider()->GetToolbarActionViewForId(
+                controller->extension()->id());
+      } else {
+        BrowserActionsContainer* container =
+            browser_view->toolbar()->browser_actions();
+        // Hitting this DCHECK means |ShouldShow| failed.
+        DCHECK(container);
+        DCHECK(!container->animating());
 
-      reference_view = container->GetViewForId(controller->extension()->id());
+        reference_view = container->GetViewForId(controller->extension()->id());
+      }
       break;
     }
     case ExtensionInstalledBubble::ANCHOR_OMNIBOX: {
@@ -94,9 +106,37 @@ views::View* AnchorViewForBrowser(ExtensionInstalledBubble* controller,
   }
 
   // Default case.
-  if (!reference_view || !reference_view->visible())
-    return browser_view->toolbar_button_provider()->GetAppMenuButton();
+  if (!reference_view || !reference_view->GetVisible()) {
+    return browser_view->toolbar_button_provider()
+        ->GetDefaultExtensionDialogAnchorView();
+  }
   return reference_view;
+}
+
+std::unique_ptr<views::View> CreateSigninPromoView(
+    int bubble_options,
+    Profile* profile,
+    BubbleSyncPromoDelegate* delegate) {
+#if defined(OS_CHROMEOS)
+  // ChromeOS does not show the signin promo.
+  return nullptr;
+#else
+  if (!(bubble_options & ExtensionInstalledBubble::SIGN_IN_PROMO))
+    return nullptr;
+
+  BubbleSyncPromoViewParams params;
+  params.link_text_resource_id = IDS_EXTENSION_INSTALLED_SYNC_PROMO_LINK_NEW;
+  params.message_text_resource_id = IDS_EXTENSION_INSTALLED_SYNC_PROMO_NEW;
+  params.dice_no_accounts_promo_message_resource_id =
+      IDS_EXTENSION_INSTALLED_DICE_PROMO_SIGNIN_MESSAGE;
+  params.dice_accounts_promo_message_resource_id =
+      IDS_EXTENSION_INSTALLED_DICE_PROMO_SYNC_MESSAGE;
+
+  return CreateBubbleSyncPromoView(
+      profile, delegate,
+      signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
+      params);
+#endif
 }
 
 }  // namespace
@@ -131,8 +171,6 @@ class ExtensionInstalledBubbleView : public BubbleSyncPromoDelegate,
   gfx::ImageSkia GetWindowIcon() override;
   bool ShouldShowWindowIcon() const override;
   bool ShouldShowCloseButton() const override;
-  View* CreateFootnoteView() override;
-  int GetDialogButtons() const override;
   void Init() override;
 
   // BubbleSyncPromoDelegate:
@@ -167,6 +205,9 @@ ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
       bubble_reference_(bubble_reference),
       manage_shortcut_(nullptr) {
   chrome::RecordDialogCreation(chrome::DialogIdentifier::EXTENSION_INSTALLED);
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_NONE);
+  DialogDelegate::SetFootnoteView(CreateSigninPromoView(
+      controller->options(), controller->browser()->profile(), this));
 }
 
 ExtensionInstalledBubbleView::~ExtensionInstalledBubbleView() {}
@@ -213,34 +254,6 @@ bool ExtensionInstalledBubbleView::ShouldShowWindowIcon() const {
   return true;
 }
 
-views::View* ExtensionInstalledBubbleView::CreateFootnoteView() {
-#if defined(OS_CHROMEOS)
-  // ChromeOS does not show the signin promo.
-  return nullptr;
-#else
-  if (!(controller_->options() & ExtensionInstalledBubble::SIGN_IN_PROMO))
-    return nullptr;
-
-  BubbleSyncPromoViewParams params;
-  params.link_text_resource_id = IDS_EXTENSION_INSTALLED_SYNC_PROMO_LINK_NEW;
-  params.message_text_resource_id = IDS_EXTENSION_INSTALLED_SYNC_PROMO_NEW;
-  params.dice_no_accounts_promo_message_resource_id =
-      IDS_EXTENSION_INSTALLED_DICE_PROMO_SIGNIN_MESSAGE;
-  params.dice_accounts_promo_message_resource_id =
-      IDS_EXTENSION_INSTALLED_DICE_PROMO_SYNC_MESSAGE;
-
-  return CreateBubbleSyncPromoView(
-             browser()->profile(), this,
-             signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
-             params)
-      .release();
-#endif
-}
-
-int ExtensionInstalledBubbleView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_NONE;
-}
-
 bool ExtensionInstalledBubbleView::ShouldShowCloseButton() const {
   return true;
 }
@@ -267,7 +280,7 @@ void ExtensionInstalledBubbleView::Init() {
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   auto layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical, gfx::Insets(),
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL));
   layout->set_minimum_cross_axis_size(kRightColumnWidth);
   // Indent by the size of the icon.
@@ -277,7 +290,7 @@ void ExtensionInstalledBubbleView::Init() {
           provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL),
       0, 0));
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_START);
+      views::BoxLayout::CrossAxisAlignment::kStart);
   SetLayoutManager(std::move(layout));
 
   if (controller_->options() & ExtensionInstalledBubble::HOW_TO_USE)
@@ -370,6 +383,8 @@ void ExtensionInstalledBubbleUi::OnWidgetClosing(views::Widget* widget) {
 
 // Views (BrowserView) specific implementation.
 bool ExtensionInstalledBubble::ShouldShow() {
+  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu))
+    return true;
   if (anchor_position() == ANCHOR_ACTION) {
     BrowserActionsContainer* container =
         BrowserView::GetBrowserViewForBrowser(browser())

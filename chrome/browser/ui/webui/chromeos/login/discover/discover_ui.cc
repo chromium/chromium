@@ -100,7 +100,7 @@ void DiscoverUI::GetAdditionalParameters(base::DictionaryValue* dict) {
 void DiscoverUI::Initialize() {
   for (Observer& observer : observers_)
     observer.OnInitialized();
-  js_calls_container_.ExecuteDeferredJSCalls();
+  js_calls_container_.ExecuteDeferredJSCalls(web_ui_);
 }
 
 void DiscoverUI::Show() {}

@@ -4,39 +4,15 @@
 
 #include "chrome/browser/ui/ash/accessibility/fake_accessibility_controller.h"
 
-#include <utility>
+FakeAccessibilityController::FakeAccessibilityController() = default;
 
-#include "ash/public/interfaces/constants.mojom.h"
-#include "base/bind.h"
-#include "content/public/common/service_manager_connection.h"
-#include "services/service_manager/public/cpp/connector.h"
-#include "services/service_manager/public/cpp/service_filter.h"
-
-FakeAccessibilityController::FakeAccessibilityController() {
-  CHECK(content::ServiceManagerConnection::GetForProcess())
-      << "ServiceManager is uninitialized. Did you forget to create a "
-         "content::TestServiceManagerContext?";
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->OverrideBinderForTesting(
-          service_manager::ServiceFilter::ByName(ash::mojom::kServiceName),
-          ash::mojom::AccessibilityController::Name_,
-          base::BindRepeating(&FakeAccessibilityController::Bind,
-                              base::Unretained(this)));
-}
-
-FakeAccessibilityController::~FakeAccessibilityController() {
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->ClearBinderOverrideForTesting(
-          service_manager::ServiceFilter::ByName(ash::mojom::kServiceName),
-          ash::mojom::AccessibilityController::Name_);
-}
+FakeAccessibilityController::~FakeAccessibilityController() = default;
 
 void FakeAccessibilityController::SetClient(
-    ash::mojom::AccessibilityControllerClientPtr client) {
+    ash::AccessibilityControllerClient* client) {
   was_client_set_ = true;
 }
+
 void FakeAccessibilityController::SetDarkenScreen(bool darken) {}
 
 void FakeAccessibilityController::BrailleDisplayStateChanged(bool connected) {}
@@ -52,29 +28,40 @@ void FakeAccessibilityController::SetAccessibilityPanelAlwaysVisible(
 
 void FakeAccessibilityController::SetAccessibilityPanelBounds(
     const gfx::Rect& bounds,
-    ash::mojom::AccessibilityPanelState state) {}
+    ash::AccessibilityPanelState state) {}
 
 void FakeAccessibilityController::SetSelectToSpeakState(
-    ash::mojom::SelectToSpeakState state) {}
+    ash::SelectToSpeakState state) {}
 
 void FakeAccessibilityController::SetSelectToSpeakEventHandlerDelegate(
-    ash::mojom::SelectToSpeakEventHandlerDelegatePtr delegate) {}
+    ash::SelectToSpeakEventHandlerDelegate* delegate) {}
 
 void FakeAccessibilityController::SetSwitchAccessEventHandlerDelegate(
-    ash::mojom::SwitchAccessEventHandlerDelegatePtr delegate) {}
+    ash::SwitchAccessEventHandlerDelegate* delegate) {}
 
-void FakeAccessibilityController::SetSwitchAccessKeysToCapture(
-    const std::vector<int>& keys_to_capture) {}
+void FakeAccessibilityController::SetDictationActive(bool is_active) {}
 
 void FakeAccessibilityController::ToggleDictationFromSource(
-    ash::mojom::DictationToggleSource source) {}
+    ash::DictationToggleSource source) {}
+
+void FakeAccessibilityController::OnAutoclickScrollableBoundsFound(
+    gfx::Rect& bounds_in_screen) {}
 
 void FakeAccessibilityController::ForwardKeyEventsToSwitchAccess(
     bool should_forward) {}
 
-void FakeAccessibilityController::GetBatteryDescription(
-    GetBatteryDescriptionCallback callback) {}
-
-void FakeAccessibilityController::Bind(mojo::ScopedMessagePipeHandle handle) {
-  binding_.Bind(ash::mojom::AccessibilityControllerRequest(std::move(handle)));
+base::string16 FakeAccessibilityController::GetBatteryDescription() const {
+  return base::string16();
 }
+
+void FakeAccessibilityController::SetVirtualKeyboardVisible(bool is_visible) {}
+
+void FakeAccessibilityController::NotifyAccessibilityStatusChanged() {}
+
+bool FakeAccessibilityController::IsAccessibilityFeatureVisibleInTrayMenu(
+    const std::string& path) {
+  return true;
+}
+
+void FakeAccessibilityController::
+    SetSwitchAccessIgnoreVirtualKeyEventForTesting(bool should_ignore) {}

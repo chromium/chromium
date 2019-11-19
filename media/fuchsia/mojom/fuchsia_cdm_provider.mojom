@@ -1,0 +1,21 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+// Mojo struct for
+// fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>.
+struct CdmRequest {
+  handle request;
+};
+
+// Interface for asking privileged process to create connection to
+// fuchsia CDM service.
+interface FuchsiaCdmProvider {
+  // Create connection to fuchsia::media::drm::ContentDecryptionModule for
+  // |key_system|.
+  // Implementation should make sure the persistent storage are isolated
+  // for different web origins.
+  CreateCdmInterface(string key_system, CdmRequest cdm_request);
+};

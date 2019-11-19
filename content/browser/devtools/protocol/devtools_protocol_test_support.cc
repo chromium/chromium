@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/security_style_explanations.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
@@ -37,7 +38,7 @@ void DevToolsProtocolTest::SetUpOnMainThread() {
 
 bool DevToolsProtocolTest::DidAddMessageToConsole(
     WebContents* source,
-    int32_t level,
+    blink::mojom::ConsoleMessageLevel log_level,
     const base::string16& message,
     int32_t line_no,
     const base::string16& source_id) {
@@ -138,7 +139,7 @@ DevToolsProtocolTest::WaitForNotification(const std::string& notification,
   return std::move(waiting_for_notification_params_);
 }
 
-blink::WebSecurityStyle DevToolsProtocolTest::GetSecurityStyle(
+blink::SecurityStyle DevToolsProtocolTest::GetSecurityStyle(
     content::WebContents* web_contents,
     content::SecurityStyleExplanations* security_style_explanations) {
   security_style_explanations->secure_explanations.push_back(
@@ -146,7 +147,7 @@ blink::WebSecurityStyle DevToolsProtocolTest::GetSecurityStyle(
           "an explanation title", "an explanation summary",
           "an explanation description", cert_,
           blink::WebMixedContentContextType::kNotMixedContent));
-  return blink::kWebSecurityStyleNeutral;
+  return blink::SecurityStyle::kNeutral;
 }
 
 std::unique_ptr<base::DictionaryValue>

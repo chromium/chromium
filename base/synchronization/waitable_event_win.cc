@@ -17,6 +17,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/time/time_override.h"
 
 namespace base {
 
@@ -72,22 +73,38 @@ void WaitableEvent::Wait() {
   DCHECK_EQ(WAIT_OBJECT_0, result);
 }
 
-namespace {
+bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
+  if (wait_delta <= TimeDelta())
+    return IsSignaled();
 
-// Helper function called from TimedWait and TimedWaitUntil.
-bool WaitUntil(HANDLE handle, const TimeTicks& now, const TimeTicks& end_time) {
-  TimeDelta delta = end_time - now;
-  DCHECK_GT(delta, TimeDelta());
+  // Record the event that this thread is blocking upon (for hang diagnosis) and
+  // consider it blocked for scheduling purposes. Ignore this for non-blocking
+  // WaitableEvents.
+  Optional<debug::ScopedEventWaitActivity> event_activity;
+  Optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
+      scoped_blocking_call;
+  if (waiting_is_blocking_) {
+    event_activity.emplace(this);
+    scoped_blocking_call.emplace(BlockingType::MAY_BLOCK);
+  }
 
-  do {
-    // On Windows, waiting for less than 1 ms results in WaitForSingleObject
-    // returning promptly which may result in the caller code spinning.
-    // We need to ensure that we specify at least the minimally possible 1 ms
-    // delay unless the initial timeout was exactly zero.
-    delta = std::max(delta, TimeDelta::FromMilliseconds(1));
-    // Truncate the timeout to milliseconds.
-    DWORD timeout_ms = saturated_cast<DWORD>(delta.InMilliseconds());
-    DWORD result = WaitForSingleObject(handle, timeout_ms);
+  // TimeTicks takes care of overflow but we special case is_max() nonetheless
+  // to avoid invoking TimeTicksNowIgnoringOverride() unnecessarily.
+  // WaitForSingleObject(handle_.Get(), INFINITE) doesn't spuriously wakeup so
+  // we don't need to worry about is_max() for the increment phase of the loop.
+  const TimeTicks end_time =
+      wait_delta.is_max() ? TimeTicks::Max()
+                          : subtle::TimeTicksNowIgnoringOverride() + wait_delta;
+  for (TimeDelta remaining = wait_delta; remaining > TimeDelta();
+       remaining = end_time - subtle::TimeTicksNowIgnoringOverride()) {
+    // Truncate the timeout to milliseconds, rounded up to avoid spinning
+    // (either by returning too early or because a < 1ms timeout on Windows
+    // tends to return immediately).
+    const DWORD timeout_ms =
+        remaining.is_max()
+            ? INFINITE
+            : saturated_cast<DWORD>(remaining.InMillisecondsRoundedUp());
+    const DWORD result = WaitForSingleObject(handle_.Get(), timeout_ms);
     DCHECK(result == WAIT_OBJECT_0 || result == WAIT_TIMEOUT)
         << "Unexpected WaitForSingleObject result " << result;
     switch (result) {
@@ -98,57 +115,10 @@ bool WaitUntil(HANDLE handle, const TimeTicks& now, const TimeTicks& end_time) {
         // Windows. To make this consistent with the posix implementation we
         // should guarantee that TimedWait doesn't return earlier than the
         // specified |max_time| and wait again for the remaining time.
-        delta = end_time - TimeTicks::Now();
-        break;
+        continue;
     }
-  } while (delta > TimeDelta());
+  }
   return false;
-}
-
-}  // namespace
-
-bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
-  DCHECK_GE(wait_delta, TimeDelta());
-  if (wait_delta.is_zero())
-    return IsSignaled();
-
-  // Record the event that this thread is blocking upon (for hang diagnosis) and
-  // consider it blocked for scheduling purposes. Ignore this for non-blocking
-  // WaitableEvents.
-  Optional<debug::ScopedEventWaitActivity> event_activity;
-  Optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
-      scoped_blocking_call;
-  if (waiting_is_blocking_) {
-    event_activity.emplace(this);
-    scoped_blocking_call.emplace(BlockingType::MAY_BLOCK);
-  }
-
-  TimeTicks now(TimeTicks::Now());
-  // TimeTicks takes care of overflow including the cases when wait_delta
-  // is a maximum value.
-  return WaitUntil(handle_.Get(), now, now + wait_delta);
-}
-
-bool WaitableEvent::TimedWaitUntil(const TimeTicks& end_time) {
-  if (end_time.is_null())
-    return IsSignaled();
-
-  // Record the event that this thread is blocking upon (for hang diagnosis) and
-  // consider it blocked for scheduling purposes. Ignore this for non-blocking
-  // WaitableEvents.
-  Optional<debug::ScopedEventWaitActivity> event_activity;
-  Optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
-      scoped_blocking_call;
-  if (waiting_is_blocking_) {
-    event_activity.emplace(this);
-    scoped_blocking_call.emplace(BlockingType::MAY_BLOCK);
-  }
-
-  TimeTicks now(TimeTicks::Now());
-  if (end_time <= now)
-    return IsSignaled();
-
-  return WaitUntil(handle_.Get(), now, end_time);
 }
 
 // static

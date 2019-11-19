@@ -1,0 +1,29 @@
+# Copyright 2019 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("libipp") {
+  include_dirs = [ "." ]
+  sources = [
+    "libipp/ipp.h",
+    "libipp/ipp_attribute.cc",
+    "libipp/ipp_attribute.h",
+    "libipp/ipp_base.cc",
+    "libipp/ipp_base.h",
+    "libipp/ipp_collections.cc",
+    "libipp/ipp_collections.h",
+    "libipp/ipp_encoding.h",
+    "libipp/ipp_enums.cc",
+    "libipp/ipp_enums.h",
+    "libipp/ipp_export.h",
+    "libipp/ipp_frame.h",
+    "libipp/ipp_frame_builder.cc",
+    "libipp/ipp_frame_builder.h",
+    "libipp/ipp_operations.cc",
+    "libipp/ipp_operations.h",
+    "libipp/ipp_package.cc",
+    "libipp/ipp_package.h",
+    "libipp/ipp_parser.cc",
+    "libipp/ipp_parser.h",
+  ]
+}

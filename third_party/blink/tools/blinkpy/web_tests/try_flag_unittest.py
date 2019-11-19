@@ -5,9 +5,9 @@
 import unittest
 
 from blinkpy.common.host_mock import MockHost
-from blinkpy.common.net.buildbot import Build
 from blinkpy.common.net.git_cl import TryJobStatus
 from blinkpy.common.net.git_cl_mock import MockGitCL
+from blinkpy.common.net.results_fetcher import Build
 from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.try_flag import TryFlag
@@ -68,50 +68,50 @@ class TryFlagTest(unittest.TestCase):
         self._run_trigger_test(regenerate=False)
         self._run_trigger_test(regenerate=True)
 
-    def _setup_mock_results(self, buildbot):
-        buildbot.set_results(self.linux_build, WebTestResults({
+    def _setup_mock_results(self, results_fetcher):
+        results_fetcher.set_results(self.linux_build, WebTestResults({
             'tests': {
                 'something': {
                     'fail-everywhere.html': {
                         'expected': 'FAIL',
-                        'actual': 'IMAGE+TEXT',
+                        'actual': 'FAIL',
                         'is_unexpected': True
                     },
                     'fail-win-and-linux.html': {
                         'expected': 'FAIL',
-                        'actual': 'IMAGE+TEXT',
+                        'actual': 'FAIL',
                         'is_unexpected': True
                     }
                 }
             }
         }))
-        buildbot.set_results(self.win_build, WebTestResults({
+        results_fetcher.set_results(self.win_build, WebTestResults({
             'tests': {
                 'something': {
                     'fail-everywhere.html': {
                         'expected': 'FAIL',
-                        'actual': 'IMAGE+TEXT',
+                        'actual': 'FAIL',
                         'is_unexpected': True
                     },
                     'fail-win-and-linux.html': {
                         'expected': 'FAIL',
-                        'actual': 'IMAGE+TEXT',
+                        'actual': 'FAIL',
                         'is_unexpected': True
                     }
                 }
             }
         }))
-        buildbot.set_results(self.mac_build, WebTestResults({
+        results_fetcher.set_results(self.mac_build, WebTestResults({
             'tests': {
                 'something': {
                     'pass-unexpectedly-mac.html': {
-                        'expected': 'IMAGE+TEXT',
+                        'expected': 'FAIL',
                         'actual': 'PASS',
                         'is_unexpected': True
                     },
                     'fail-everywhere.html': {
                         'expected': 'FAIL',
-                        'actual': 'IMAGE+TEXT',
+                        'actual': 'FAIL',
                         'is_unexpected': True
                     }
                 }
@@ -129,7 +129,7 @@ class TryFlagTest(unittest.TestCase):
             flag_expectations_file,
             'something/pass-unexpectedly-mac.html [ Fail ]')
 
-        self._setup_mock_results(host.buildbot)
+        self._setup_mock_results(host.results_fetcher)
         cmd = ['update', '--flag=--foo']
         TryFlag(cmd, host, MockGitCL(host, self.mock_try_results)).run()
 
@@ -163,7 +163,7 @@ class TryFlagTest(unittest.TestCase):
         finder = PathFinder(filesystem)
         flag_expectations_file = finder.path_from_web_tests(
             'FlagExpectations', 'foo')
-        self._setup_mock_results(host.buildbot)
+        self._setup_mock_results(host.results_fetcher)
         cmd = ['update', '--flag=--foo']
 
         # Unexpected passes that don't have flag-specific failure expectations

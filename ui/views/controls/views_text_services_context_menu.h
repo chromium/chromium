@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_CONTROLS_TEXTFIELD_VIEWS_TEXT_SERVICES_CONTEXT_MENU_H_
-#define UI_VIEWS_CONTROLS_TEXTFIELD_VIEWS_TEXT_SERVICES_CONTEXT_MENU_H_
+#ifndef UI_VIEWS_CONTROLS_VIEWS_TEXT_SERVICES_CONTEXT_MENU_H_
+#define UI_VIEWS_CONTROLS_VIEWS_TEXT_SERVICES_CONTEXT_MENU_H_
 
 #include <memory>
 
@@ -45,4 +45,4 @@ class ViewsTextServicesContextMenu : public ui::AcceleratorProvider {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_CONTROLS_TEXTFIELD_VIEWS_TEXT_SERVICES_CONTEXT_MENU_H_
+#endif  // UI_VIEWS_CONTROLS_VIEWS_TEXT_SERVICES_CONTEXT_MENU_H_

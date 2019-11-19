@@ -34,9 +34,11 @@ class CryptAuthKeyProofComputerImpl : public CryptAuthKeyProofComputer {
   ~CryptAuthKeyProofComputerImpl() override;
 
   // CryptAuthKeyProofComputer:
-  base::Optional<std::string> ComputeKeyProof(const CryptAuthKey& key,
-                                              const std::string& payload,
-                                              const std::string& salt) override;
+  base::Optional<std::string> ComputeKeyProof(
+      const CryptAuthKey& key,
+      const std::string& payload,
+      const std::string& salt,
+      const base::Optional<std::string>& info) override;
 
  private:
   CryptAuthKeyProofComputerImpl();
@@ -44,7 +46,8 @@ class CryptAuthKeyProofComputerImpl : public CryptAuthKeyProofComputer {
   base::Optional<std::string> ComputeSymmetricKeyProof(
       const CryptAuthKey& symmetric_key,
       const std::string& payload,
-      const std::string& salt);
+      const std::string& salt,
+      const std::string& info);
   base::Optional<std::string> ComputeAsymmetricKeyProof(
       const CryptAuthKey& asymmetric_key,
       const std::string& payload,

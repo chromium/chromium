@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <utility>
 
 #include "base/macros.h"
 #include "base/time/time.h"
@@ -49,11 +50,11 @@ void DrmWindow::Shutdown() {
   device_manager_->RemoveDrmDevice(widget_);
 }
 
-gfx::AcceleratedWidget DrmWindow::GetAcceleratedWidget() {
+gfx::AcceleratedWidget DrmWindow::GetAcceleratedWidget() const {
   return widget_;
 }
 
-HardwareDisplayController* DrmWindow::GetController() {
+HardwareDisplayController* DrmWindow::GetController() const {
   return controller_;
 }
 
@@ -127,13 +128,13 @@ void DrmWindow::SchedulePageFlip(
                                 std::move(presentation_callback));
 }
 
-std::vector<OverlayCheckReturn_Params> DrmWindow::TestPageFlip(
-    const std::vector<OverlayCheck_Params>& overlay_params) {
+OverlayStatusList DrmWindow::TestPageFlip(
+    const OverlaySurfaceCandidateList& overlay_params) {
   return overlay_validator_->TestPageFlip(overlay_params,
                                           last_submitted_planes_);
 }
 
-const DrmOverlayPlane* DrmWindow::GetLastModesetBuffer() {
+const DrmOverlayPlane* DrmWindow::GetLastModesetBuffer() const {
   return DrmOverlayPlane::GetPrimaryPlane(last_submitted_planes_);
 }
 

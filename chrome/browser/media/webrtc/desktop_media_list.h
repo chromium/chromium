@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_H_
 
+#include <vector>
+
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -16,6 +18,8 @@ class DesktopMediaListObserver;
 // tabs), and their thumbnails, to the desktop media picker dialog. It
 // transparently updates the list in the background, and notifies the desktop
 // media picker when something changes.
+//
+// TODO(crbug.com/987001): Consider renaming this class.
 class DesktopMediaList {
  public:
   // Struct used to represent each entry in the list.
@@ -29,6 +33,8 @@ class DesktopMediaList {
     // The thumbnail for the source.
     gfx::ImageSkia thumbnail;
   };
+
+  using UpdateCallback = base::OnceClosure;
 
   virtual ~DesktopMediaList() {}
 
@@ -52,6 +58,14 @@ class DesktopMediaList {
   // on the update period, and notifications generated only for changes in the
   // model.
   virtual void StartUpdating(DesktopMediaListObserver* observer) = 0;
+
+  // Updates the model and calls |callback| when all currently existing sources
+  // have been found, passing |this| as the argument.  In most respects, this is
+  // a simplified version of StartUpdating().  This method should only be called
+  // once per DesktopMediaList instance.  It should not be called after
+  // StartUpdating(), and StartUpdating() should not be called until |callback|
+  // has been called.
+  virtual void Update(UpdateCallback callback) = 0;
 
   virtual int GetSourceCount() const = 0;
   virtual const Source& GetSource(int index) const = 0;

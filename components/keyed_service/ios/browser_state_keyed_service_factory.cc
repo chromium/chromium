@@ -29,7 +29,7 @@ KeyedService* BrowserStateKeyedServiceFactory::SetTestingFactoryAndUse(
     TestingFactory testing_factory) {
   DCHECK(testing_factory);
   return KeyedServiceFactory::SetTestingFactoryAndUse(
-      context, nullptr /* side_parameter */,
+      context,
       base::BindRepeating(
           [](const TestingFactory& testing_factory, void* context) {
             return testing_factory.Run(
@@ -41,8 +41,7 @@ KeyedService* BrowserStateKeyedServiceFactory::SetTestingFactoryAndUse(
 BrowserStateKeyedServiceFactory::BrowserStateKeyedServiceFactory(
     const char* name,
     BrowserStateDependencyManager* manager)
-    : KeyedServiceFactory(name, manager) {
-}
+    : KeyedServiceFactory(name, manager, BROWSER_STATE) {}
 
 BrowserStateKeyedServiceFactory::~BrowserStateKeyedServiceFactory() {
 }
@@ -50,8 +49,7 @@ BrowserStateKeyedServiceFactory::~BrowserStateKeyedServiceFactory() {
 KeyedService* BrowserStateKeyedServiceFactory::GetServiceForBrowserState(
     web::BrowserState* context,
     bool create) {
-  return KeyedServiceFactory::GetServiceForContext(
-      context, nullptr /* side_parameter */, create);
+  return KeyedServiceFactory::GetServiceForContext(context, create);
 }
 
 web::BrowserState* BrowserStateKeyedServiceFactory::GetBrowserStateToUse(
@@ -85,9 +83,7 @@ void BrowserStateKeyedServiceFactory::BrowserStateDestroyed(
 }
 
 std::unique_ptr<KeyedService>
-BrowserStateKeyedServiceFactory::BuildServiceInstanceFor(
-    void* context,
-    void* side_parameter) const {
+BrowserStateKeyedServiceFactory::BuildServiceInstanceFor(void* context) const {
   return BuildServiceInstanceFor(static_cast<web::BrowserState*>(context));
 }
 
@@ -118,6 +114,5 @@ void BrowserStateKeyedServiceFactory::RegisterPrefs(
 }
 
 void BrowserStateKeyedServiceFactory::CreateServiceNow(void* context) {
-  KeyedServiceFactory::GetServiceForContext(context,
-                                            nullptr /* side_parameter */, true);
+  KeyedServiceFactory::GetServiceForContext(context, true);
 }

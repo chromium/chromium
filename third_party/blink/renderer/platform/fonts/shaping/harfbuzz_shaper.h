@@ -33,7 +33,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -58,15 +58,27 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
   // occur, such as at the beginning or end of lines or at element boundaries.
   // If given arbitrary positions the results are not guaranteed to be correct.
   // May be called multiple times; font and direction may vary between calls.
-  //
-  // If |pre_segmented| is given, it is assumed that the string is already
-  // segmented. Otherwise the string is segmented into runs before shaping.
+  scoped_refptr<ShapeResult> Shape(const Font*,
+                                   TextDirection,
+                                   unsigned start,
+                                   unsigned end) const;
+
+  // Shape a range that has already been pre-segmented. Start and end positions
+  // must match the positions defined by the ranges and must be at valid break
+  // positions.
   scoped_refptr<ShapeResult> Shape(
       const Font*,
       TextDirection,
       unsigned start,
       unsigned end,
-      const RunSegmenter::RunSegmenterRange* pre_segmented = nullptr) const;
+      const Vector<RunSegmenter::RunSegmenterRange>&) const;
+
+  // Shape a single range. Start and end positions defined by the range.
+  scoped_refptr<ShapeResult> Shape(const Font*,
+                                   TextDirection,
+                                   unsigned start,
+                                   unsigned end,
+                                   const RunSegmenter::RunSegmenterRange) const;
 
   // Shape the entire string with a single font and direction.
   // Equivalent to calling the range version with a start offset of zero and an

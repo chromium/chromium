@@ -4,7 +4,10 @@
 
 #include "components/autofill/content/renderer/page_passwords_analyser.h"
 
+#include <map>
 #include <stack>
+#include <string>
+#include <vector>
 
 #include "base/lazy_instance.h"
 #include "base/strings/stringprintf.h"
@@ -19,6 +22,18 @@
 #include "third_party/blink/public/web/web_label_element.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/re2/src/re2/re2.h"
+
+using blink::WebDocument;
+using blink::WebElement;
+using blink::WebElementCollection;
+using blink::WebFormControlElement;
+using blink::WebFormElement;
+using blink::WebInputElement;
+using blink::WebLabelElement;
+using blink::WebLocalFrame;
+using blink::WebNode;
+using blink::WebString;
+using blink::WebVector;
 
 namespace autofill {
 
@@ -45,7 +60,7 @@ std::string LinkDocumentation(const std::string& message,
 // during the DOM traversal (e.g. whether it lies within a <form>
 // element, which is necessary for some of the warnings).
 struct TraversalInfo {
-  const blink::WebNode node;
+  const WebNode node;
   const bool in_form;
 };
 
@@ -53,8 +68,8 @@ struct TraversalInfo {
 // relevant to the Password Manager, which consists of the text and password
 // inputs in a form, as well as their ordering.
 struct FormInputCollection {
-  blink::WebFormElement form;
-  std::vector<blink::WebFormControlElement> inputs;
+  WebFormElement form;
+  std::vector<WebFormControlElement> inputs;
   std::vector<size_t> text_inputs;
   std::vector<size_t> password_inputs;
   std::vector<size_t> explicit_password_inputs;
@@ -64,7 +79,7 @@ struct FormInputCollection {
   // username and password fields respectively. This is used to quickly match
   // against well-known <input> patterns to guess what kind of form we are
   // dealing with, and provide intelligent autocomplete suggestions.
-  void AddInput(const blink::WebFormControlElement& input) {
+  void AddInput(const WebFormControlElement& input) {
     std::string type(
         input.HasAttribute("type") ? input.GetAttribute("type").Utf8() : "");
     signature +=
@@ -109,15 +124,10 @@ DECLARE_LAZY_MATCHER(telephone_matcher, R"((mobile)?(telephone)?(number|no))");
 // field).
 struct InputHint {
   const re2::RE2* regex;
-  std::string tokens;
   size_t match;
 
-  InputHint(const re2::RE2* regex) : regex(regex), match(std::string::npos) {}
-
-  InputHint(const re2::RE2* regex, const std::string tokens)
-      : InputHint(regex) {
-    this->tokens = " " + tokens;
-  }
+  explicit InputHint(const re2::RE2* regex)
+      : regex(regex), match(std::string::npos) {}
 
   void MatchLabel(std::string& label_content, size_t index) {
     if (re2::RE2::FullMatch(label_content, *regex))
@@ -143,9 +153,8 @@ bool FormIsTooComplex(const std::string& signature) {
 }
 
 // Stores an element's id in |ids| for duplicity-checking.
-void TrackElementId(
-    const blink::WebElement& element,
-    std::map<std::string, std::vector<blink::WebNode>>* nodes_for_id) {
+void TrackElementId(const WebElement& element,
+                    std::map<std::string, std::vector<WebNode>>* nodes_for_id) {
   if (element.HasAttribute("id")) {
     std::string id_attr = element.GetAttribute("id").Utf8();
     (*nodes_for_id)[id_attr].push_back(element);
@@ -157,15 +166,15 @@ void TrackElementId(
 // example if an invalid attribute is added), but these cases are assumed
 // to be rare, and are ignored for the sake of simplicity.
 // The id of |node| will additionally be added to the corresponding |ids| set.
-bool TrackElementIfUntracked(
-    const blink::WebElement& node,
-    std::set<blink::WebNode>* skip_nodes,
-    std::map<std::string, std::vector<blink::WebNode>>* nodes_for_id) {
-  if (skip_nodes->count(node))
+bool TrackElementByRendererIdIfUntracked(
+    const WebElement& element,
+    const uint32_t renderer_id,
+    std::set<uint32_t>* skip_renderer_ids,
+    std::map<std::string, std::vector<WebNode>>* nodes_for_id) {
+  if (skip_renderer_ids->count(renderer_id))
     return true;
-  skip_nodes->insert(node);
-  // If we don't skip the node, we want to make sure its id is tracked.
-  TrackElementId(node, nodes_for_id);
+  skip_renderer_ids->insert(renderer_id);
+  TrackElementId(element, nodes_for_id);
   return false;
 }
 
@@ -173,44 +182,53 @@ bool TrackElementIfUntracked(
 // duplicate ids, etc. Returns a list of the forms found in the DOM for further
 // analysis.
 std::vector<FormInputCollection> ExtractFormsForAnalysis(
-    const blink::WebDocument& document,
-    std::set<blink::WebNode>* skip_nodes,
+    const WebDocument& document,
+    std::set<uint32_t>* skip_form_ids,
+    std::set<uint32_t>* skip_control_ids,
     PageFormAnalyserLogger* logger) {
   std::vector<FormInputCollection> form_input_collections;
 
   // Keep track of inputs that are inside <form> elements to find the complement
   // for warnings afterwards.
-  std::set<blink::WebFormControlElement> inputs_with_forms;
-  std::map<std::string, std::vector<blink::WebNode>> nodes_for_id;
+  std::set<WebFormControlElement> inputs_with_forms;
+  std::map<std::string, std::vector<WebNode>> nodes_for_id;
 
-  blink::WebVector<blink::WebFormElement> forms;
+  WebVector<WebFormElement> forms;
   document.Forms(forms);
-  for (const blink::WebFormElement& form : forms) {
+  for (const WebFormElement& form : forms) {
     form_input_collections.push_back(FormInputCollection{form});
     // Collect all the inputs in the form.
-    blink::WebVector<blink::WebFormControlElement> form_control_elements;
+    WebVector<WebFormControlElement> form_control_elements;
     form.GetFormControlElements(form_control_elements);
-    for (const blink::WebFormControlElement& input : form_control_elements) {
-      if (TrackElementIfUntracked(input, skip_nodes, &nodes_for_id))
+    for (const WebFormControlElement& input : form_control_elements) {
+      if (TrackElementByRendererIdIfUntracked(
+              input, input.UniqueRendererFormControlId(), skip_control_ids,
+              &nodes_for_id))
         continue;
       // We are only interested in a subset of input elements -- those likely
       // to be username or password fields.
       if (input.TagName() == "INPUT" &&
           (!input.HasAttribute("type") ||
-           base::ContainsValue(kTypeAttributes,
-                               input.GetAttribute("type").Utf8()))) {
+           base::Contains(kTypeAttributes,
+                          input.GetAttribute("type").Utf8()))) {
         form_input_collections.back().AddInput(input);
         inputs_with_forms.insert(input);
       }
     }
-
-    TrackElementIfUntracked(form, skip_nodes, &nodes_for_id);
+    TrackElementByRendererIdIfUntracked(form, form.UniqueRendererFormId(),
+                                        skip_form_ids, &nodes_for_id);
   }
 
   // Check for password fields that are not contained inside forms.
   auto password_inputs = document.QuerySelectorAll("input[type=\"password\"]");
   for (unsigned i = 0; i < password_inputs.size(); ++i) {
-    if (TrackElementIfUntracked(password_inputs[i], skip_nodes, &nodes_for_id))
+    const WebInputElement* input_element =
+        ToWebInputElement(&password_inputs[i]);
+    if (!input_element || input_element->IsNull())
+      continue;
+    if (TrackElementByRendererIdIfUntracked(
+            password_inputs[i], input_element->UniqueRendererFormControlId(),
+            skip_control_ids, &nodes_for_id))
       continue;
     // Any password fields inside <form> elements will have been skipped,
     // leaving just those without associated forms.
@@ -224,18 +242,22 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
   std::string selector = "input:not([type])";
   for (const char* text_type : kTypeTextAttributes)
     selector += ", input[type=\"" + std::string(text_type) + "\"]";
-  auto text_inputs =
-      document.QuerySelectorAll(blink::WebString::FromUTF8(selector));
-  for (const blink::WebElement& text_input : text_inputs)
-    TrackElementIfUntracked(text_input, skip_nodes, &nodes_for_id);
-
+  auto text_inputs = document.QuerySelectorAll(WebString::FromUTF8(selector));
+  for (const WebElement& text_input : text_inputs) {
+    const WebInputElement* input_element = ToWebInputElement(&text_input);
+    if (!input_element || input_element->IsNull())
+      continue;
+    TrackElementByRendererIdIfUntracked(
+        text_input, input_element->UniqueRendererFormControlId(),
+        skip_control_ids, &nodes_for_id);
+  }
   // Warn against elements sharing an id attribute. Duplicate id attributes both
   // are against the HTML specification and can cause issues with password
   // saving/filling, as the Password Manager makes the assumption that ids may
   // be used as a unique identifier for nodes.
   for (const auto& pair : nodes_for_id) {
     const std::string& id_attr = pair.first;
-    const std::vector<blink::WebNode>& nodes = pair.second;
+    const std::vector<WebNode>& nodes = pair.second;
     if (nodes.size() <= 1)
       continue;
     if (!id_attr.empty()) {
@@ -262,27 +284,25 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
 // likely to indicate the desired field, and will be prioritised over
 // other fields.
 void InferUsernameField(
-    const blink::WebFormElement& form,
-    const std::vector<blink::WebFormControlElement>& inputs,
+    const WebFormElement& form,
+    const std::vector<WebFormControlElement>& inputs,
     size_t username_field_guess,
     std::map<size_t, std::string>* autocomplete_suggestions) {
-  blink::WebElementCollection labels(form.GetElementsByHTMLTagName("label"));
+  WebElementCollection labels(form.GetElementsByHTMLTagName("label"));
   DCHECK(!labels.IsNull());
 
   std::vector<InputHint> input_hints;
-  std::string username_field_guess_tokens;
 
   input_hints.push_back(InputHint(username_matcher.Pointer()));
-  input_hints.push_back(InputHint(email_matcher.Pointer(), "email"));
-  input_hints.push_back(InputHint(telephone_matcher.Pointer(), "tel"));
+  input_hints.push_back(InputHint(email_matcher.Pointer()));
+  input_hints.push_back(InputHint(telephone_matcher.Pointer()));
 
-  for (blink::WebElement item = labels.FirstItem(); !item.IsNull();
+  for (WebElement item = labels.FirstItem(); !item.IsNull();
        item = labels.NextItem()) {
-    blink::WebLabelElement label(item.To<blink::WebLabelElement>());
-    blink::WebElement control(label.CorrespondingControl());
+    WebLabelElement label(item.To<WebLabelElement>());
+    WebElement control(label.CorrespondingControl());
     if (!control.IsNull() && control.IsFormControlElement()) {
-      blink::WebFormControlElement form_control(
-          control.To<blink::WebFormControlElement>());
+      WebFormControlElement form_control(control.To<WebFormControlElement>());
       auto found = std::find(inputs.begin(), inputs.end(), form_control);
       if (found != inputs.end()) {
         std::string label_content(
@@ -299,13 +319,11 @@ void InferUsernameField(
   for (InputHint& input_hint : input_hints) {
     if (input_hint.match != std::string::npos) {
       username_field_guess = input_hint.match;
-      username_field_guess_tokens = input_hint.tokens;
       break;
     }
   }
 
-  (*autocomplete_suggestions)[username_field_guess] =
-      "username" + username_field_guess_tokens;
+  (*autocomplete_suggestions)[username_field_guess] = "username";
 }
 
 // Infer what kind of form a form corresponds to (e.g. a
@@ -337,8 +355,8 @@ void GuessAutocompleteAttributesForPasswordFields(
 // autocomplete attributes, or missing username fields, etc.).
 void AnalyseForm(const FormInputCollection& form_input_collection,
                  PageFormAnalyserLogger* logger) {
-  const blink::WebFormElement& form = form_input_collection.form;
-  const std::vector<blink::WebFormControlElement>& inputs =
+  const WebFormElement& form = form_input_collection.form;
+  const std::vector<WebFormControlElement>& inputs =
       form_input_collection.inputs;
   const std::vector<size_t>& text_inputs = form_input_collection.text_inputs;
   const std::vector<size_t>& explicit_password_inputs =
@@ -428,17 +446,19 @@ PagePasswordsAnalyser::PagePasswordsAnalyser() {}
 PagePasswordsAnalyser::~PagePasswordsAnalyser() {}
 
 void PagePasswordsAnalyser::Reset() {
-  skip_nodes_.clear();
+  skip_control_element_renderer_ids_.clear();
+  skip_form_element_renderer_ids_.clear();
 }
 
-void PagePasswordsAnalyser::AnalyseDocumentDOM(blink::WebLocalFrame* frame,
+void PagePasswordsAnalyser::AnalyseDocumentDOM(WebLocalFrame* frame,
                                                PageFormAnalyserLogger* logger) {
   DCHECK(frame);
 
-  blink::WebDocument document(frame->GetDocument());
+  WebDocument document(frame->GetDocument());
   // Extract all the forms from the DOM, and provide relevant warnings.
   std::vector<FormInputCollection> forms(
-      ExtractFormsForAnalysis(document, &skip_nodes_, logger));
+      ExtractFormsForAnalysis(document, &skip_form_element_renderer_ids_,
+                              &skip_control_element_renderer_ids_, logger));
 
   // Analyse each form in turn, for example with respect to autocomplete
   // attributes.
@@ -449,7 +469,7 @@ void PagePasswordsAnalyser::AnalyseDocumentDOM(blink::WebLocalFrame* frame,
   logger->Flush();
 }
 
-void PagePasswordsAnalyser::AnalyseDocumentDOM(blink::WebLocalFrame* frame) {
+void PagePasswordsAnalyser::AnalyseDocumentDOM(WebLocalFrame* frame) {
   PageFormAnalyserLogger logger(frame);
   AnalyseDocumentDOM(frame, &logger);
 }

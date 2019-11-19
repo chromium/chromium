@@ -12,6 +12,9 @@
 
 namespace ui {
 
+constexpr base::TimeDelta kExpectedDefaultTimeInterval =
+    base::TimeDelta::FromMilliseconds(8);
+
 // Base class for predictor unit tests
 class InputPredictorTest : public testing::Test {
  public:
@@ -26,6 +29,13 @@ class InputPredictorTest : public testing::Test {
   void ValidatePredictor(const std::vector<double>& x,
                          const std::vector<double>& y,
                          const std::vector<double>& timestamp_ms);
+
+  void ValidatePredictor(const std::vector<double>& events_x,
+                         const std::vector<double>& events_y,
+                         const std::vector<double>& events_ts_ms,
+                         const std::vector<double>& prediction_ts_ms,
+                         const std::vector<double>& predicted_x,
+                         const std::vector<double>& predicted_y);
 
  protected:
   static constexpr double kEpsilon = 0.1;

@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8/include/v8.h"
 
@@ -30,7 +30,7 @@ class V8Test : public testing::Test {
  protected:
   // This is used during SetUp() to initialize instance_.
   virtual std::unique_ptr<IsolateHolder> CreateIsolateHolder() const;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<IsolateHolder> instance_;
   v8::Persistent<v8::Context> context_;
 

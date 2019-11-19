@@ -28,7 +28,7 @@ void WorkerResourceFetcherProperties::Trace(Visitor* visitor) {
 
 mojom::ControllerServiceWorkerMode
 WorkerResourceFetcherProperties::GetControllerServiceWorkerMode() const {
-  return web_context_->IsControlledByServiceWorker();
+  return web_context_->GetControllerServiceWorkerMode();
 }
 
 bool WorkerResourceFetcherProperties::IsPaused() const {

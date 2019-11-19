@@ -32,12 +32,12 @@ namespace ppapi {
 namespace proxy {
 
 VideoDecoderResource::ShmBuffer::ShmBuffer(
-    std::unique_ptr<base::SharedMemory> shm_ptr,
-    uint32_t size,
+    base::UnsafeSharedMemoryRegion region,
     uint32_t shm_id)
-    : shm(std::move(shm_ptr)), addr(NULL), shm_id(shm_id) {
-  if (shm->Map(size))
-    addr = shm->memory();
+    : region(std::move(region)), shm_id(shm_id) {
+  mapping = this->region.Map();
+  if (mapping.IsValid())
+    addr = mapping.memory();
 }
 
 VideoDecoderResource::ShmBuffer::~ShmBuffer() {
@@ -199,7 +199,7 @@ int32_t VideoDecoderResource::Decode(uint32_t decode_id,
   decode_ids_[uid % kMaximumPictureDelay] = decode_id;
 
   if (available_shm_buffers_.empty() ||
-      available_shm_buffers_.back()->shm->mapped_size() < size) {
+      available_shm_buffers_.back()->mapping.size() < size) {
     uint32_t shm_id;
     if (shm_buffers_.size() < kMaximumPendingDecodes) {
       // Signal the host to create a new shm buffer by passing an index outside
@@ -227,13 +227,12 @@ int32_t VideoDecoderResource::Decode(uint32_t decode_id,
     if (!UnpackMessage<PpapiPluginMsg_VideoDecoder_GetShmReply>(reply,
                                                                 &shm_size))
       return PP_ERROR_FAILED;
-    base::SharedMemoryHandle shm_handle;
-    if (!reply_params.TakeSharedMemoryHandleAtIndex(0, &shm_handle))
+    base::UnsafeSharedMemoryRegion shm_region;
+    if (!reply_params.TakeUnsafeSharedMemoryRegionAtIndex(0, &shm_region) ||
+        !shm_region.IsValid() || shm_region.GetSize() != shm_size)
       return PP_ERROR_NOMEMORY;
-    std::unique_ptr<base::SharedMemory> shm(
-        new base::SharedMemory(shm_handle, false /* read_only */));
     std::unique_ptr<ShmBuffer> shm_buffer(
-        new ShmBuffer(std::move(shm), shm_size, shm_id));
+        new ShmBuffer(std::move(shm_region), shm_id));
     if (!shm_buffer->addr)
       return PP_ERROR_NOMEMORY;
 
@@ -246,7 +245,7 @@ int32_t VideoDecoderResource::Decode(uint32_t decode_id,
 
   // At this point we should have shared memory to hold the plugin's buffer.
   DCHECK(!available_shm_buffers_.empty() &&
-         available_shm_buffers_.back()->shm->mapped_size() >= size);
+         available_shm_buffers_.back()->mapping.size() >= size);
 
   ShmBuffer* shm_buffer = available_shm_buffers_.back();
   available_shm_buffers_.pop_back();
@@ -336,10 +335,10 @@ int32_t VideoDecoderResource::Reset(scoped_refptr<TrackedCallback> callback) {
   // to avoid reentering the plugin.
   if (TrackedCallback::IsPending(decode_callback_))
     decode_callback_->PostAbort();
-  decode_callback_ = NULL;
+  decode_callback_.reset();
   if (TrackedCallback::IsPending(get_picture_callback_))
     get_picture_callback_->PostAbort();
-  get_picture_callback_ = NULL;
+  get_picture_callback_.reset();
   Call<PpapiPluginMsg_VideoDecoder_ResetReply>(
       RENDERER,
       PpapiHostMsg_VideoDecoder_Reset(),

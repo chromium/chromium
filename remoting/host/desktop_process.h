@@ -89,7 +89,7 @@ class DesktopProcess : public DesktopSessionAgent::Delegate,
   // the network process.
   scoped_refptr<DesktopSessionAgent> desktop_agent_;
 
-  base::WeakPtrFactory<DesktopProcess> weak_factory_;
+  base::WeakPtrFactory<DesktopProcess> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DesktopProcess);
 };

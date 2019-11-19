@@ -5,11 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_BLINK_FUZZER_TEST_SUPPORT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_BLINK_FUZZER_TEST_SUPPORT_H_
 
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
 namespace blink {
 
 // Instantiating BlinkFuzzerTestSupport will spin up an environment similar to
 // blink_unittests. It should be statically initialized and leaked in fuzzers.
 class BlinkFuzzerTestSupport {
+  STACK_ALLOCATED();
+
  public:
   // Use this constructor in LLVMFuzzerTestOneInput.
   BlinkFuzzerTestSupport();

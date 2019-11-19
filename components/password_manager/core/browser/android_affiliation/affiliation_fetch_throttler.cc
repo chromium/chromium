@@ -62,8 +62,8 @@ AffiliationFetchThrottler::AffiliationFetchThrottler(
       state_(IDLE),
       has_network_connectivity_(false),
       is_fetch_scheduled_(false),
-      exponential_backoff_(new net::BackoffEntry(&kBackoffPolicy, tick_clock_)),
-      weak_ptr_factory_(this) {
+      exponential_backoff_(
+          new net::BackoffEntry(&kBackoffPolicy, tick_clock_)) {
   DCHECK(delegate);
   // Start observing before querying the current connectivity state, so that if
   // the state changes concurrently in-between, it will not go unnoticed.

@@ -1,7 +1,0 @@
-file://content/browser/fileapi/OWNERS
-
-per-file *_messages*.h=set noparent
-per-file *_messages*.h=file://ipc/SECURITY_OWNERS
-
-# TEAM: storage-dev@chromium.org
-# COMPONENT: Blink>Storage>FileSystem

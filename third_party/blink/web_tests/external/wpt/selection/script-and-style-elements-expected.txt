@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Selection: STYLE and SCRIPT elements should be included in Selection.toString() if they are display!=none assert_equals: expected "\nstyle { display:block; color: green; } script { color: blue; }\nfunction test_block_script() { let pre = document.createElement(\"pre\"); pre.append(document.createTextNode(\"PASS\")); document.getElementById(\"p1\").append(pre); }\n\nPASS" but got "style { display:block; color: green; } script { color: blue; }\nfunction test_block_script() { let pre = document.createElement(\"pre\"); pre.append(document.createTextNode(\"PASS\")); document.getElementById(\"p1\").append(pre); }\nPASS"
+Harness: the test ran to completion.
+

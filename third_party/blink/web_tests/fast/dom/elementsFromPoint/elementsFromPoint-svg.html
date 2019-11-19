@@ -62,9 +62,6 @@ window.jsTestIsAsync = true;
 if (window.testRunner)
     testRunner.dumpAsText();
 
-if (window.internals)
-    internals.settings.setMockScrollbarsEnabled(true);
-
 onload = function() {
     // Verify two overlapping rects can be hit.
     assertElementsFromPoint('document.elementsFromPoint(125, 125)', [topLeftRect3, topLeftRect1, svg, sandbox, document.body, document.documentElement]);

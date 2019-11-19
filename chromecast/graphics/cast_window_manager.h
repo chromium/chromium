@@ -6,8 +6,10 @@
 #define CHROMECAST_GRAPHICS_CAST_WINDOW_MANAGER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/macros.h"
+#include "chromecast/ui/mojom/ui_service.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ui {
@@ -31,16 +33,26 @@ class CastWindowManager {
     // Base layer for WebUiManager and apps and activities managed by it.
     APP = BOTTOM,
     // Apps running in this layer won't be managed by WebUiManager.
-    UNMANAGED_APP,
-    DEBUG_OVERLAY,
-    INFO_OVERLAY,
-    SOFT_KEYBOARD,
-    VOLUME,
-    MEDIA_INFO,
-    SETTINGS,
-    BOOT_ANIMATION_OVERLAY,
-    CORNERS_OVERLAY,
+    UNMANAGED_APP = 0,
+    DEBUG_OVERLAY = 1,
+    INFO_OVERLAY = 2,
+    SOFT_KEYBOARD = 3,
+    VOLUME = 4,
+    MEDIA_INFO = 5,
+    SETTINGS = 6,
+    BOOT_ANIMATION_OVERLAY = 7,
+    CORNERS_OVERLAY = 8,
     TOP = CORNERS_OVERLAY
+  };
+
+  class Observer {
+   public:
+    // Advertises a change in the current window ordering. Use
+    // CastWindowManager::GetWindowOrder() to retrieve the window ordering.
+    virtual void WindowOrderChanged() = 0;
+
+   protected:
+    virtual ~Observer() = default;
   };
 
   virtual ~CastWindowManager() {}
@@ -55,14 +67,24 @@ class CastWindowManager {
   // causing it to initialize.
   virtual void AddWindow(gfx::NativeView window) = 0;
 
-  // Sets a window's ID.
-  virtual void SetWindowId(gfx::NativeView window, WindowId window_id) = 0;
+  // Sets the Z order for the window. This allows windows with the same parent
+  // to stack in a well-defined order.
+  virtual void SetZOrder(gfx::NativeView window, mojom::ZOrder z_order) = 0;
 
   // Return the root window that holds all top-level windows.
   virtual gfx::NativeView GetRootWindow() = 0;
 
+  // Returns the current window ordering. The IDs are ordered by z-order, from
+  // lowest (bottom) to highest (top). Only visible windows are included in the
+  // list.
+  virtual std::vector<WindowId> GetWindowOrder() = 0;
+
   // Inject a UI event into the Cast window.
   virtual void InjectEvent(ui::Event* event) = 0;
+
+  // Observer methods:
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Register a new handler for system gesture events.
   virtual void AddGestureHandler(CastGestureHandler* handler) = 0;
@@ -81,6 +103,12 @@ class CastWindowManager {
   // disabled.
   virtual void RemoveTouchActivityObserver(
       CastTouchActivityObserver* observer) = 0;
+
+  // Turns on and off the root window rounded window corners decoration.
+  virtual void SetEnableRoundedCorners(bool enable) = 0;
+
+  // Called when color inversion is turned on or off.
+  virtual void NotifyColorInversionEnabled(bool enabled) = 0;
 };
 
 }  // namespace chromecast

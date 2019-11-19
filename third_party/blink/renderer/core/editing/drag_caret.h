@@ -40,13 +40,11 @@ namespace blink {
 class LayoutBlock;
 struct PaintInvalidatorContext;
 
-class DragCaret final : public GarbageCollectedFinalized<DragCaret>,
+class DragCaret final : public GarbageCollected<DragCaret>,
                         public SynchronousMutationObserver {
   USING_GARBAGE_COLLECTED_MIXIN(DragCaret);
 
  public:
-  static DragCaret* Create();
-
   DragCaret();
   virtual ~DragCaret();
 
@@ -59,12 +57,12 @@ class DragCaret final : public GarbageCollectedFinalized<DragCaret>,
   bool ShouldPaintCaret(const LayoutBlock&) const;
   void PaintDragCaret(const LocalFrame*,
                       GraphicsContext&,
-                      const LayoutPoint&) const;
+                      const PhysicalOffset&) const;
 
   bool IsContentRichlyEditable() const;
 
   bool HasCaret() const { return position_.IsNotNull(); }
-  const PositionWithAffinity& CaretPosition() { return position_; }
+  const PositionWithAffinity& CaretPosition() const { return position_; }
   void SetCaretPosition(const PositionWithAffinity&);
   void Clear() { SetCaretPosition(PositionWithAffinity()); }
 

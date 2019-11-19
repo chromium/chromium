@@ -11,7 +11,7 @@
 
 #include "base/base64url.h"
 #include "base/strings/string_util.h"
-#include "components/gcm_driver/common/gcm_messages.h"
+#include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/crypto/gcm_message_cryptographer.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "crypto/ec_private_key.h"

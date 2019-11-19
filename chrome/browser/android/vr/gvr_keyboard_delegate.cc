@@ -158,11 +158,22 @@ void GvrKeyboardDelegate::OnButtonUp(const gfx::PointF& position) {
 
 void GvrKeyboardDelegate::UpdateInput(const TextInputInfo& info) {
   cached_text_input_info_ = info;
-  gvr_keyboard_set_text(gvr_keyboard_, base::UTF16ToUTF8(info.text).c_str());
-  gvr_keyboard_set_selection_indices(gvr_keyboard_, info.selection_start,
-                                     info.selection_end);
-  gvr_keyboard_set_composing_indices(gvr_keyboard_, info.composition_start,
-                                     info.composition_end);
+
+  // Gvr doesn't like inverted selections, so un-invert them for Gvr.
+  if (cached_text_input_info_.selection_start >
+      cached_text_input_info_.selection_end) {
+    std::swap(cached_text_input_info_.selection_start,
+              cached_text_input_info_.selection_end);
+  }
+
+  gvr_keyboard_set_text(
+      gvr_keyboard_, base::UTF16ToUTF8(cached_text_input_info_.text).c_str());
+  gvr_keyboard_set_selection_indices(gvr_keyboard_,
+                                     cached_text_input_info_.selection_start,
+                                     cached_text_input_info_.selection_end);
+  gvr_keyboard_set_composing_indices(gvr_keyboard_,
+                                     cached_text_input_info_.composition_start,
+                                     cached_text_input_info_.composition_end);
   pause_keyboard_update_ = false;
 }
 

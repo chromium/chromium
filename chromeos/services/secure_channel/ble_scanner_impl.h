@@ -109,7 +109,7 @@ class BleScannerImpl : public BleScanner,
   std::unique_ptr<base::WeakPtrFactory<device::BluetoothDiscoverySession>>
       discovery_session_weak_ptr_factory_;
 
-  base::WeakPtrFactory<BleScannerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<BleScannerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BleScannerImpl);
 };

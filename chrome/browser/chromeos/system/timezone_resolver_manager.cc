@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/preferences.h"
 #include "chrome/browser/chromeos/system/input_device_settings.h"
 #include "chrome/browser/chromeos/system/timezone_util.h"
@@ -33,11 +34,6 @@ enum ServiceConfiguration {
 // SystemTimezoneAutomaticDetectionPolicy.
 // Returns SHOULD_* if timezone resolver status is controlled by this policy.
 ServiceConfiguration GetServiceConfigurationFromAutomaticDetectionPolicy() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kDisableSystemTimezoneAutomaticDetectionPolicy)) {
-    return UNSPECIFIED;
-  }
-
   PrefService* local_state = g_browser_process->local_state();
   const bool is_managed = local_state->IsManagedPreference(
       prefs::kSystemTimezoneAutomaticDetectionPolicy);
@@ -124,7 +120,7 @@ ServiceConfiguration GetServiceConfigurationForSigninScreen() {
 
 }  // anonymous namespace.
 
-TimeZoneResolverManager::TimeZoneResolverManager() : weak_factory_(this) {
+TimeZoneResolverManager::TimeZoneResolverManager() {
   local_state_initialized_ =
       g_browser_process->local_state()->GetInitializationStatus() ==
       PrefService::INITIALIZATION_STATUS_SUCCESS;

@@ -14,7 +14,9 @@
 #include "base/scoped_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 
 namespace content {
@@ -24,8 +26,6 @@ class WindowedNotificationObserver;
 }
 
 namespace extensions {
-class ExtensionRegistry;
-class ProcessManager;
 
 // Test helper class for observing extension-related events.
 class ExtensionTestNotificationObserver : public content::NotificationObserver,
@@ -107,7 +107,7 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
     base::CallbackList<void()> callback_list_;
     ScopedObserver<extensions::ProcessManager,
                    extensions::ProcessManagerObserver>
-        process_manager_observer_;
+        process_manager_observer_{this};
     DISALLOW_COPY_AND_ASSIGN(NotificationSet);
   };
 
@@ -143,7 +143,7 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
 
   // Listens to extension loaded notifications.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_;
+      registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionTestNotificationObserver);
 };

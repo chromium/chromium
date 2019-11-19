@@ -23,6 +23,10 @@ int64_t TestAppListControllerDelegate::GetAppListDisplayId() {
 
 void TestAppListControllerDelegate::DismissView() {}
 
+gfx::NativeWindow TestAppListControllerDelegate::GetAppListWindow() {
+  return nullptr;
+}
+
 bool TestAppListControllerDelegate::IsAppPinned(const std::string& app_id) {
   return false;
 }

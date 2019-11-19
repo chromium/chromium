@@ -1,0 +1,82 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//media/media_options.gni")
+
+component("parsers") {
+  sources = [
+    "jpeg_parser.cc",
+    "jpeg_parser.h",
+    "media_parsers_export.h",
+    "vp8_bool_decoder.cc",
+    "vp8_bool_decoder.h",
+    "vp8_parser.cc",
+    "vp8_parser.h",
+    "webp_parser.cc",
+    "webp_parser.h",
+  ]
+  defines = [ "IS_MEDIA_PARSER_IMPL" ]
+  deps = [
+    "//base",
+  ]
+
+  # This target is used in GPU IPC code and cannot depend on any //media code.
+  assert_no_deps = [
+    "//media",
+    "//media:shared_memory_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "jpeg_parser_unittest.cc",
+    "vp8_bool_decoder_unittest.cc",
+    "vp8_parser_unittest.cc",
+    "webp_parser_unittest.cc",
+  ]
+  deps = [
+    ":parsers",
+    "//base",
+    "//media:test_support",
+    "//testing/gtest",
+  ]
+}
+
+fuzzer_test("media_jpeg_parser_picture_fuzzer") {
+  sources = [
+    "jpeg_parser_picture_fuzzertest.cc",
+  ]
+  deps = [
+    ":parsers",
+    "//base",
+  ]
+  seed_corpus = "//media/test/data"
+  dict = "//media/test/jpeg.dict"
+}
+
+fuzzer_test("media_vp8_parser_fuzzer") {
+  sources = [
+    "vp8_parser_fuzzertest.cc",
+  ]
+  deps = [
+    ":parsers",
+    "//base",
+    "//media:test_support",
+  ]
+  libfuzzer_options = [ "max_len = 400000" ]
+  dict = "//media/test/vp8.dict"
+}
+
+fuzzer_test("media_webp_parser_fuzzer") {
+  sources = [
+    "webp_parser_fuzzertest.cc",
+  ]
+  deps = [
+    ":parsers",
+    "//base",
+  ]
+  seed_corpus = "//media/test/data"
+  dict = "//media/test/webp.dict"
+}

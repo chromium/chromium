@@ -18,7 +18,10 @@ namespace {
 
 const char kCroshExtensionEntryPoint[] = "/html/crosh.html";
 
-const Extension* GetTerminalExtension(Profile* profile) {
+}  // namespace
+
+const Extension* TerminalExtensionHelper::GetTerminalExtension(
+    Profile* profile) {
   // Search order for terminal extensions.
   // We prefer hterm-dev, then hterm, then the builtin crosh extension.
   static const char* const kPossibleAppIds[] = {
@@ -39,10 +42,8 @@ const Extension* GetTerminalExtension(Profile* profile) {
       return extension;
   }
 
-  return NULL;
+  return nullptr;
 }
-
-}  // namespace
 
 GURL TerminalExtensionHelper::GetCroshExtensionURL(Profile* profile) {
   GURL url;

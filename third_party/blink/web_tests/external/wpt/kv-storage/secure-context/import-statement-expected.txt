@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Prerequisite check
+FAIL Static import kv-storage in non-secure context assert_unreached: script error event should not be fired Reached unreachable code
+Harness: the test ran to completion.
+

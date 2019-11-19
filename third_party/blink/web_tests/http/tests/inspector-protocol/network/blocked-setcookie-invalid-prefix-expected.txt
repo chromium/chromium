@@ -1,0 +1,19 @@
+Verifies that setting a cookie with an invalid __Secure- or __Host- prefix sends us Network.ResponseReceivedExtraInfo events with corresponding blocked cookies.
+
+Bad __Secure- prefix blocked set-cookies: [
+  {
+    "blockedReasons": [
+      "InvalidPrefix"
+    ],
+    "cookieLine": "__Secure-name=value"
+  }
+]
+Bad __Host- prefix blocked set-cookies: [
+  {
+    "blockedReasons": [
+      "InvalidPrefix"
+    ],
+    "cookieLine": "__Host-name=value; Secure"
+  }
+]
+

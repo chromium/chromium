@@ -8,7 +8,10 @@
 Polymer({
   is: 'network-config-toggle',
 
-  behaviors: [CrPolicyNetworkBehavior, NetworkConfigElementBehavior],
+  behaviors: [
+    CrPolicyNetworkBehaviorMojo,
+    NetworkConfigElementBehavior,
+  ],
 
   properties: {
     label: String,

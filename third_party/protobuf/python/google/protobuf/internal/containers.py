@@ -41,12 +41,16 @@ are:
 
 __author__ = 'petar@google.com (Petar Petrov)'
 
-import collections
 import sys
+try:
+  # This fallback applies for all versions of Python before 3.3
+  import collections.abc as collections_abc
+except ImportError:
+  import collections as collections_abc
 
 if sys.version_info[0] < 3:
-  # We would use collections.MutableMapping all the time, but in Python 2 it
-  # doesn't define __slots__.  This causes two significant problems:
+  # We would use collections_abc.MutableMapping all the time, but in Python 2
+  # it doesn't define __slots__.  This causes two significant problems:
   #
   # 1. we can't disallow arbitrary attribute assignment, even if our derived
   #    classes *do* define __slots__.
@@ -59,7 +63,7 @@ if sys.version_info[0] < 3:
   # verbatim, except that:
   # 1. We declare __slots__.
   # 2. We don't declare this as a virtual base class.  The classes defined
-  #    in collections are the interesting base classes, not us.
+  #    in collections_abc are the interesting base classes, not us.
   #
   # Note: deriving from object is critical.  It is the only thing that makes
   # this a true type, allowing us to derive from it in C++ cleanly and making
@@ -106,7 +110,7 @@ if sys.version_info[0] < 3:
     __hash__ = None
 
     def __eq__(self, other):
-      if not isinstance(other, collections.Mapping):
+      if not isinstance(other, collections_abc.Mapping):
         return NotImplemented
       return dict(self.items()) == dict(other.items())
 
@@ -173,13 +177,13 @@ if sys.version_info[0] < 3:
         self[key] = default
       return default
 
-  collections.Mapping.register(Mapping)
-  collections.MutableMapping.register(MutableMapping)
+  collections_abc.Mapping.register(Mapping)
+  collections_abc.MutableMapping.register(MutableMapping)
 
 else:
   # In Python 3 we can just use MutableMapping directly, because it defines
   # __slots__.
-  MutableMapping = collections.MutableMapping
+  MutableMapping = collections_abc.MutableMapping
 
 
 class BaseContainer(object):
@@ -225,6 +229,8 @@ class BaseContainer(object):
     if 'sort_function' in kwargs:
       kwargs['cmp'] = kwargs.pop('sort_function')
     self._values.sort(*args, **kwargs)
+
+collections_abc.MutableSequence.register(BaseContainer)
 
 
 class RepeatedScalarFieldContainer(BaseContainer):
@@ -337,8 +343,6 @@ class RepeatedScalarFieldContainer(BaseContainer):
     # We are presumably comparing against some other sequence type.
     return other == self._values
 
-collections.MutableSequence.register(BaseContainer)
-
 
 class RepeatedCompositeFieldContainer(BaseContainer):
 
@@ -375,6 +379,24 @@ class RepeatedCompositeFieldContainer(BaseContainer):
     if not self._message_listener.dirty:
       self._message_listener.Modified()
     return new_element
+
+  def append(self, value):
+    """Appends one element by copying the message."""
+    new_element = self._message_descriptor._concrete_class()
+    new_element._SetListener(self._message_listener)
+    new_element.CopyFrom(value)
+    self._values.append(new_element)
+    if not self._message_listener.dirty:
+      self._message_listener.Modified()
+
+  def insert(self, key, value):
+    """Inserts the item at the specified position by copying."""
+    new_element = self._message_descriptor._concrete_class()
+    new_element._SetListener(self._message_listener)
+    new_element.CopyFrom(value)
+    self._values.insert(key, new_element)
+    if not self._message_listener.dirty:
+      self._message_listener.Modified()
 
   def extend(self, elem_seq):
     """Extends by appending the given sequence of elements of the same type
@@ -628,3 +650,130 @@ class MessageMap(MutableMapping):
 
   def GetEntryClass(self):
     return self._entry_descriptor._concrete_class
+
+
+class _UnknownField(object):
+
+  """A parsed unknown field."""
+
+  # Disallows assignment to other attributes.
+  __slots__ = ['_field_number', '_wire_type', '_data']
+
+  def __init__(self, field_number, wire_type, data):
+    self._field_number = field_number
+    self._wire_type = wire_type
+    self._data = data
+    return
+
+  def __lt__(self, other):
+    # pylint: disable=protected-access
+    return self._field_number < other._field_number
+
+  def __eq__(self, other):
+    if self is other:
+      return True
+    # pylint: disable=protected-access
+    return (self._field_number == other._field_number and
+            self._wire_type == other._wire_type and
+            self._data == other._data)
+
+
+class UnknownFieldRef(object):
+
+  def __init__(self, parent, index):
+    self._parent = parent
+    self._index = index
+    return
+
+  def _check_valid(self):
+    if not self._parent:
+      raise ValueError('UnknownField does not exist. '
+                       'The parent message might be cleared.')
+    if self._index >= len(self._parent):
+      raise ValueError('UnknownField does not exist. '
+                       'The parent message might be cleared.')
+
+  @property
+  def field_number(self):
+    self._check_valid()
+    # pylint: disable=protected-access
+    return self._parent._internal_get(self._index)._field_number
+
+  @property
+  def wire_type(self):
+    self._check_valid()
+    # pylint: disable=protected-access
+    return self._parent._internal_get(self._index)._wire_type
+
+  @property
+  def data(self):
+    self._check_valid()
+    # pylint: disable=protected-access
+    return self._parent._internal_get(self._index)._data
+
+
+class UnknownFieldSet(object):
+
+  """UnknownField container"""
+
+  # Disallows assignment to other attributes.
+  __slots__ = ['_values']
+
+  def __init__(self):
+    self._values = []
+
+  def __getitem__(self, index):
+    if self._values is None:
+      raise ValueError('UnknownFields does not exist. '
+                       'The parent message might be cleared.')
+    size = len(self._values)
+    if index < 0:
+      index += size
+    if index < 0 or index >= size:
+      raise IndexError('index %d out of range'.index)
+
+    return UnknownFieldRef(self, index)
+
+  def _internal_get(self, index):
+    return self._values[index]
+
+  def __len__(self):
+    if self._values is None:
+      raise ValueError('UnknownFields does not exist. '
+                       'The parent message might be cleared.')
+    return len(self._values)
+
+  def _add(self, field_number, wire_type, data):
+    unknown_field = _UnknownField(field_number, wire_type, data)
+    self._values.append(unknown_field)
+    return unknown_field
+
+  def __iter__(self):
+    for i in range(len(self)):
+      yield UnknownFieldRef(self, i)
+
+  def _extend(self, other):
+    if other is None:
+      return
+    # pylint: disable=protected-access
+    self._values.extend(other._values)
+
+  def __eq__(self, other):
+    if self is other:
+      return True
+    # Sort unknown fields because their order shouldn't
+    # affect equality test.
+    values = list(self._values)
+    if other is None:
+      return not values
+    values.sort()
+    # pylint: disable=protected-access
+    other_values = sorted(other._values)
+    return values == other_values
+
+  def _clear(self):
+    for value in self._values:
+      # pylint: disable=protected-access
+      if isinstance(value._data, UnknownFieldSet):
+        value._data._clear()  # pylint: disable=protected-access
+    self._values = None

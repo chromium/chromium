@@ -89,7 +89,7 @@ class NotificationImageRetainer {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // For callbacks may run after destruction.
-  base::WeakPtrFactory<NotificationImageRetainer> weak_ptr_factory_;
+  base::WeakPtrFactory<NotificationImageRetainer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NotificationImageRetainer);
 };

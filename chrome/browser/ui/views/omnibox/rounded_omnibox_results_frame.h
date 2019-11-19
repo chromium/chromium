@@ -17,7 +17,7 @@ class LocationBarView;
 class RoundedOmniboxResultsFrame : public views::View {
  public:
   RoundedOmniboxResultsFrame(views::View* contents,
-                             const LocationBarView* location_bar);
+                             LocationBarView* location_bar);
   ~RoundedOmniboxResultsFrame() override;
 
   // Hook to customize Widget initialization.

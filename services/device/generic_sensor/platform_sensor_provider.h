@@ -5,27 +5,29 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_PROVIDER_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_PROVIDER_H_
 
+#include <memory>
+
 #include "services/device/generic_sensor/platform_sensor_provider_base.h"
 
 namespace device {
 
-// This a singleton class returning the actual sensor provider
-// implementation for the current platform.
+// This the base class for platform-specific sensor provider implementations.
+// In typical usage a single instance is owned by DeviceService.
 class PlatformSensorProvider : public PlatformSensorProviderBase {
  public:
-  // Returns the PlatformSensorProvider singleton.
+  // Returns a PlatformSensorProvider for the current platform.
   // Note: returns 'nullptr' if there is no available implementation for
   // the current platform.
-  static PlatformSensorProvider* GetInstance();
+  static std::unique_ptr<PlatformSensorProvider> Create();
 
-  // This method allows to set a provider for testing and therefore
-  // skip the default platform provider. This allows testing without
-  // relying on the platform provider.
-  static void SetProviderForTesting(PlatformSensorProvider* provider);
+  ~PlatformSensorProvider() override = default;
 
  protected:
   PlatformSensorProvider() = default;
-  ~PlatformSensorProvider() override = default;
+
+  // Determines if the ISensor or Windows.Devices.Sensors implementation
+  // should be used on Windows.
+  static bool UseWindowsWinrt();
 
   DISALLOW_COPY_AND_ASSIGN(PlatformSensorProvider);
 };

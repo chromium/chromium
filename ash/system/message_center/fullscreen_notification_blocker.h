@@ -27,7 +27,7 @@ class FullscreenNotificationBlocker
  private:
   // ShellObserver:
   void OnFullscreenStateChanged(bool is_fullscreen,
-                                aura::Window* root_window) override;
+                                aura::Window* container) override;
 
   bool should_block_ = false;
 

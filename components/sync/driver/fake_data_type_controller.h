@@ -31,13 +31,13 @@ class FakeDataTypeController : public DirectoryDataTypeController {
   bool ShouldLoadModelBeforeConfigure() const override;
   void LoadModels(const ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
-  void RegisterWithBackend(base::OnceCallback<void(bool)> set_downloaded,
-                           ModelTypeConfigurer* configurer) override;
+  RegisterWithBackendResult RegisterWithBackend(
+      ModelTypeConfigurer* configurer) override;
   void StartAssociating(StartCallback start_callback) override;
   void Stop(ShutdownReason shutdown_reason) override;
   ChangeProcessor* GetChangeProcessor() const override;
   State state() const override;
-  bool ReadyForStart() const override;
+  PreconditionState GetPreconditionState() const override;
   std::unique_ptr<DataTypeErrorHandler> CreateErrorHandler() override;
 
   void FinishStart(ConfigureResult result);
@@ -48,7 +48,7 @@ class FakeDataTypeController : public DirectoryDataTypeController {
 
   void SimulateModelLoadFinishing();
 
-  void SetReadyForStart(bool ready);
+  void SetPreconditionState(PreconditionState state);
 
   void SetShouldLoadModelBeforeConfigure(bool value);
 
@@ -64,7 +64,7 @@ class FakeDataTypeController : public DirectoryDataTypeController {
   StartCallback last_start_callback_;
   ModelLoadCallback model_load_callback_;
   SyncError load_error_;
-  bool ready_for_start_;
+  PreconditionState precondition_state_;
   bool should_load_model_before_configure_;
   int register_with_backend_call_count_;
   int clear_metadata_call_count_;

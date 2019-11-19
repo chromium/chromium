@@ -18,7 +18,7 @@ class HTMLMediaElement;
 class ScriptState;
 
 class MODULES_EXPORT HTMLMediaElementAudioOutputDevice final
-    : public GarbageCollectedFinalized<HTMLMediaElementAudioOutputDevice>,
+    : public GarbageCollected<HTMLMediaElementAudioOutputDevice>,
       public Supplement<HTMLMediaElement> {
   USING_GARBAGE_COLLECTED_MIXIN(HTMLMediaElementAudioOutputDevice);
 

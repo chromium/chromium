@@ -1,0 +1,13 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# NOTE: Created with generate_gn_v3.py, please do not edit.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_library("iron-a11y-announcer") {
+  deps = [
+    "../polymer:polymer_bundled",
+  ]
+}

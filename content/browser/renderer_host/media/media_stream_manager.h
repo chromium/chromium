@@ -54,6 +54,7 @@
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace media {
 class AudioSystem;
@@ -86,7 +87,7 @@ class CONTENT_EXPORT MediaStreamManager
                               std::unique_ptr<MediaStreamUIProxy> ui)>;
 
   using GenerateStreamCallback =
-      base::OnceCallback<void(blink::MediaStreamRequestResult result,
+      base::OnceCallback<void(blink::mojom::MediaStreamRequestResult result,
                               const std::string& label,
                               const blink::MediaStreamDevices& audio_devices,
                               const blink::MediaStreamDevices& video_devices)>;
@@ -175,16 +176,18 @@ class CONTENT_EXPORT MediaStreamManager
   // to determine where the infobar will appear to the user. |device_stopped_cb|
   // is set to receive device stopped notifications. |device_change_cb| is set
   // to receive device changed notifications.
-  void GenerateStream(int render_process_id,
-                      int render_frame_id,
-                      int requester_id,
-                      int page_request_id,
-                      const blink::StreamControls& controls,
-                      MediaDeviceSaltAndOrigin salt_and_origin,
-                      bool user_gesture,
-                      GenerateStreamCallback generate_stream_cb,
-                      DeviceStoppedCallback device_stopped_cb,
-                      DeviceChangedCallback device_changed_cb);
+  void GenerateStream(
+      int render_process_id,
+      int render_frame_id,
+      int requester_id,
+      int page_request_id,
+      const blink::StreamControls& controls,
+      MediaDeviceSaltAndOrigin salt_and_origin,
+      bool user_gesture,
+      blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
+      GenerateStreamCallback generate_stream_cb,
+      DeviceStoppedCallback device_stopped_cb,
+      DeviceChangedCallback device_changed_cb);
 
   // Cancel an open request identified by |page_request_id| for the given frame.
   // Must be called on the IO thread.
@@ -209,7 +212,7 @@ class CONTENT_EXPORT MediaStreamManager
                         int render_frame_id,
                         int requester_id,
                         const std::string& device_id,
-                        int session_id);
+                        const base::UnguessableToken& session_id);
 
   // Open a device identified by |device_id|. |type| must be either
   // MEDIA_DEVICE_AUDIO_CAPTURE or MEDIA_DEVICE_VIDEO_CAPTURE.
@@ -220,7 +223,7 @@ class CONTENT_EXPORT MediaStreamManager
                   int requester_id,
                   int page_request_id,
                   const std::string& device_id,
-                  blink::MediaStreamType type,
+                  blink::mojom::MediaStreamType type,
                   MediaDeviceSaltAndOrigin salt_and_origin,
                   OpenDeviceCallback open_device_cb,
                   DeviceStoppedCallback device_stopped_cb);
@@ -230,27 +233,29 @@ class CONTENT_EXPORT MediaStreamManager
   // given |source_id|, false if nothing matched it.
   // TODO(guidou): Update to provide a callback-based interface.
   // See http://crbug.com/648155.
-  bool TranslateSourceIdToDeviceId(blink::MediaStreamType stream_type,
+  bool TranslateSourceIdToDeviceId(blink::mojom::MediaStreamType stream_type,
                                    const std::string& salt,
                                    const url::Origin& security_origin,
                                    const std::string& source_id,
                                    std::string* device_id) const;
 
   // Find |device_id| in the list of |requests_|, and returns its session id,
-  // or MediaStreamDevice::kNoId if not found. Must be called on the IO thread.
-  int VideoDeviceIdToSessionId(const std::string& device_id) const;
+  // or an empty base::UnguessableToken if not found. Must be called on the IO
+  // thread.
+  base::UnguessableToken VideoDeviceIdToSessionId(
+      const std::string& device_id) const;
 
   // Called by UI to make sure the device monitor is started so that UI receive
   // notifications about device changes.
   void EnsureDeviceMonitorStarted();
 
   // Implements MediaStreamProviderListener.
-  void Opened(blink::MediaStreamType stream_type,
-              int capture_session_id) override;
-  void Closed(blink::MediaStreamType stream_type,
-              int capture_session_id) override;
-  void Aborted(blink::MediaStreamType stream_type,
-               int capture_session_id) override;
+  void Opened(blink::mojom::MediaStreamType stream_type,
+              const base::UnguessableToken& capture_session_id) override;
+  void Closed(blink::mojom::MediaStreamType stream_type,
+              const base::UnguessableToken& capture_session_id) override;
+  void Aborted(blink::mojom::MediaStreamType stream_type,
+               const base::UnguessableToken& capture_session_id) override;
 
   // Returns all devices currently opened by a request with label |label|.
   // If no request with |label| exist, an empty array is returned.
@@ -261,7 +266,7 @@ class CONTENT_EXPORT MediaStreamManager
   // destroyed. So we need to know when IO thread is being destroyed so that
   // we can delete VideoCaptureManager and AudioInputDeviceManager.
   // Note: In tests it is sometimes necessary to invoke this explicitly when
-  // using TestBrowserThreadBundle because the notification happens too late.
+  // using BrowserTaskEnvironment because the notification happens too late.
   // (see http://crbug.com/247525#c14).
   void WillDestroyCurrentMessageLoop() override;
 
@@ -300,6 +305,19 @@ class CONTENT_EXPORT MediaStreamManager
                                          const std::string& device_guid,
                                          const std::string& raw_unique_id);
 
+  // Convenience method to get the raw device ID from the HMAC |hmac_device_id|
+  // for the given |security_origin| and |salt|. |stream_type| must be
+  // blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE or
+  // blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE. The result will
+  // be returned via |callback| on the given |task_runner|.
+  static void GetMediaDeviceIDForHMAC(
+      blink::mojom::MediaStreamType stream_type,
+      std::string salt,
+      url::Origin security_origin,
+      std::string hmac_device_id,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      base::OnceCallback<void(const base::Optional<std::string>&)> callback);
+
   // Returns true if the renderer process identified with |render_process_id|
   // is allowed to access |origin|.
   static bool IsOriginAllowed(int render_process_id, const url::Origin& origin);
@@ -308,8 +326,8 @@ class CONTENT_EXPORT MediaStreamManager
   // |session_id|, |render_process_id|, and the MediaStreamType |type|.
   // Must be called on the IO thread.
   void SetCapturingLinkSecured(int render_process_id,
-                               int session_id,
-                               blink::MediaStreamType type,
+                               const base::UnguessableToken& session_id,
+                               blink::mojom::MediaStreamType type,
                                bool is_secure);
 
   // Helper for sending up-to-date device lists to media observer when a
@@ -339,7 +357,8 @@ class CONTENT_EXPORT MediaStreamManager
   // |DeviceRequests| is a list to ensure requests are processed in the order
   // they arrive. The first member of the pair is the label of the
   // |DeviceRequest|.
-  using LabeledDeviceRequest = std::pair<std::string, DeviceRequest*>;
+  using LabeledDeviceRequest =
+      std::pair<std::string, std::unique_ptr<DeviceRequest>>;
   using DeviceRequests = std::list<LabeledDeviceRequest>;
 
   void InitializeMaybeAsync(
@@ -350,13 +369,14 @@ class CONTENT_EXPORT MediaStreamManager
       const std::string& label,
       const media::AudioParameters& output_parameters,
       const blink::MediaStreamDevices& devices,
-      blink::MediaStreamRequestResult result);
+      blink::mojom::MediaStreamRequestResult result);
   void HandleChangeSourceRequestResponse(
       const std::string& label,
       DeviceRequest* request,
       const blink::MediaStreamDevices& devices);
   void StopMediaStreamFromBrowser(const std::string& label);
-  void ChangeMediaStreamSourceFromBrowser(const std::string& label);
+  void ChangeMediaStreamSourceFromBrowser(const std::string& label,
+                                          const DesktopMediaID& media_id);
 
   // Helpers.
   // Checks if all devices that was requested in the request identififed by
@@ -365,16 +385,19 @@ class CONTENT_EXPORT MediaStreamManager
   // Stop the use of the device associated with |session_id| of type |type| in
   // all |requests_|. The device is removed from the request. If a request
   /// doesn't use any devices as a consequence, the request is deleted.
-  void StopDevice(blink::MediaStreamType type, int session_id);
+  void StopDevice(blink::mojom::MediaStreamType type,
+                  const base::UnguessableToken& session_id);
   // Calls the correct capture manager and close the device with |session_id|.
   // All requests that uses the device are updated.
-  void CloseDevice(blink::MediaStreamType type, int session_id);
+  void CloseDevice(blink::mojom::MediaStreamType type,
+                   const base::UnguessableToken& session_id);
   // Returns true if a request for devices has been completed and the devices
   // has either been opened or an error has occurred.
   bool RequestDone(const DeviceRequest& request) const;
-  MediaStreamProvider* GetDeviceManager(blink::MediaStreamType stream_type);
+  MediaStreamProvider* GetDeviceManager(
+      blink::mojom::MediaStreamType stream_type);
   void StartEnumeration(DeviceRequest* request, const std::string& label);
-  std::string AddRequest(DeviceRequest* request);
+  std::string AddRequest(std::unique_ptr<DeviceRequest> request);
   DeviceRequest* FindRequest(const std::string& label) const;
   void DeleteRequest(const std::string& label);
   // Prepare the request with label |label| by starting device enumeration if
@@ -397,7 +420,8 @@ class CONTENT_EXPORT MediaStreamManager
   // Prepare |request| for being posted to the UI to bring up the picker again
   // to change the desktop capture source.
   void SetUpDesktopCaptureChangeSourceRequest(DeviceRequest* request,
-                                              const std::string& label);
+                                              const std::string& label,
+                                              const DesktopMediaID& media_id);
 
   DesktopMediaID ResolveTabCaptureDeviceIdOnUIThread(
       const std::string& capture_device_id,
@@ -434,7 +458,7 @@ class CONTENT_EXPORT MediaStreamManager
   void FinalizeGenerateStream(const std::string& label, DeviceRequest* request);
   void FinalizeRequestFailed(const std::string& label,
                              DeviceRequest* request,
-                             blink::MediaStreamRequestResult result);
+                             blink::mojom::MediaStreamRequestResult result);
   void FinalizeOpenDevice(const std::string& label, DeviceRequest* request);
   void FinalizeChangeDevice(const std::string& label, DeviceRequest* request);
   void FinalizeMediaAccessRequest(const std::string& label,
@@ -458,7 +482,7 @@ class CONTENT_EXPORT MediaStreamManager
   // must be MEDIA_DEVICE_AUDIO_CAPTURE or MEDIA_DEVICE_VIDEO_CAPTURE.
   bool GetRequestedDeviceCaptureId(
       const DeviceRequest* request,
-      blink::MediaStreamType type,
+      blink::mojom::MediaStreamType type,
       const blink::WebMediaDeviceInfoArray& devices,
       std::string* device_id) const;
 
@@ -467,7 +491,7 @@ class CONTENT_EXPORT MediaStreamManager
 
   // Handles the callback from MediaStreamUIProxy to receive the UI window id,
   // used for excluding the notification window in desktop capturing.
-  void OnMediaStreamUIWindowId(blink::MediaStreamType video_type,
+  void OnMediaStreamUIWindowId(blink::mojom::MediaStreamType video_type,
                                const blink::MediaStreamDevices& devices,
                                gfx::NativeViewId window_id);
 
@@ -487,7 +511,7 @@ class CONTENT_EXPORT MediaStreamManager
   // video capture device it also uses cached content from
   // |video_capture_manager_| to set the MediaStreamDevice fields.
   blink::MediaStreamDevices ConvertToMediaStreamDevices(
-      blink::MediaStreamType stream_type,
+      blink::mojom::MediaStreamType stream_type,
       const blink::WebMediaDeviceInfoArray& device_infos);
 
   // Activate the specified tab and bring it to the front.

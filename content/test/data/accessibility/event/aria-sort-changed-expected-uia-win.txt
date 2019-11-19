@@ -1,0 +1,4 @@
+AriaProperties changed on role=columnheader, name=columnheader2
+AriaProperties changed on role=columnheader, name=columnheader3
+AriaProperties changed on role=columnheader, name=columnheader4
+AriaProperties changed on role=columnheader, name=columnheader5

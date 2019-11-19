@@ -66,8 +66,7 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
   void Shutdown() override;
   void Display(NotificationHandler::Type notification_type,
                const message_center::Notification& notification,
-               std::unique_ptr<NotificationCommon::Metadata> metadata =
-                   nullptr) override;
+               std::unique_ptr<NotificationCommon::Metadata> metadata) override;
   void Close(NotificationHandler::Type notification_type,
              const std::string& notification_id) override;
   void GetDisplayed(DisplayedNotificationsCallback callback) override;
@@ -102,7 +101,7 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
   std::map<NotificationHandler::Type, std::unique_ptr<NotificationHandler>>
       notification_handlers_;
 
-  base::WeakPtrFactory<NotificationDisplayServiceImpl> weak_factory_;
+  base::WeakPtrFactory<NotificationDisplayServiceImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NotificationDisplayServiceImpl);
 };

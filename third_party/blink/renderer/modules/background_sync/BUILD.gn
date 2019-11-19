@@ -6,6 +6,10 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("background_sync") {
   sources = [
+    "periodic_sync_event.cc",
+    "periodic_sync_event.h",
+    "periodic_sync_manager.cc",
+    "periodic_sync_manager.h",
     "service_worker_global_scope_sync.h",
     "service_worker_registration_sync.cc",
     "service_worker_registration_sync.h",

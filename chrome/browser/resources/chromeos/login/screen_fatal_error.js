@@ -33,17 +33,6 @@ login.createScreen('FatalErrorScreen', 'fatal-error', function() {
       return $('fatal-error-card').submitButton;
     },
 
-    /** @override */
-    onBeforeShow: function() {
-      this.savedUIStates_.headerHidden = Oobe.getInstance().headerHidden;
-      Oobe.getInstance().headerHidden = true;
-    },
-
-    /** @override */
-    onBeforeHide: function() {
-      Oobe.getInstance().headerHidden = this.savedUIStates_.headerHidden;
-    },
-
     /**
      * Invoked when user clicks on the ok button.
      */

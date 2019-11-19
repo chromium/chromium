@@ -16,7 +16,7 @@
 
 namespace blink {
 
-class MODULES_EXPORT PaymentAddress final : public ScriptWrappable {
+class MODULES_EXPORT PaymentAddress : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

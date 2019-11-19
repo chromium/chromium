@@ -15,6 +15,10 @@
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/skia_font_delegate.h"
 
+#if defined(OS_WIN)
+#include "ui/gfx/system_fonts_win.h"
+#endif
+
 namespace gfx {
 
 // Implementation of SkiaFontDelegate used to control the default font
@@ -60,12 +64,17 @@ class TestFontDelegate : public SkiaFontDelegate {
 
 class PlatformFontSkiaTest : public testing::Test {
  public:
-  PlatformFontSkiaTest() {
+  PlatformFontSkiaTest() = default;
+  ~PlatformFontSkiaTest() override = default;
+
+  void SetUp() override {
     original_font_delegate_ = SkiaFontDelegate::instance();
     SkiaFontDelegate::SetInstance(&test_font_delegate_);
+    PlatformFontSkia::ReloadDefaultFont();
   }
 
-  ~PlatformFontSkiaTest() override {
+  void TearDown() override {
+    DCHECK_EQ(&test_font_delegate_, SkiaFontDelegate::instance());
     SkiaFontDelegate::SetInstance(
         const_cast<SkiaFontDelegate*>(original_font_delegate_));
     PlatformFontSkia::ReloadDefaultFont();
@@ -111,5 +120,23 @@ TEST_F(PlatformFontSkiaTest, DefaultFont) {
   EXPECT_NE(font2->GetStyle() & Font::ITALIC, 0);
   EXPECT_EQ(gfx::Font::Weight::BOLD, font2->GetWeight());
 }
+
+#if defined(OS_WIN)
+TEST(PlatformFontSkiaOnWindowsTest, SystemFont) {
+  // Ensures that the font styles are kept while creating the default font.
+  gfx::Font system_font = win::GetDefaultSystemFont();
+  gfx::Font default_font;
+
+  EXPECT_EQ(system_font.GetFontName(), default_font.GetFontName());
+  EXPECT_EQ(system_font.GetFontSize(), default_font.GetFontSize());
+  EXPECT_EQ(system_font.GetStyle(), default_font.GetStyle());
+  EXPECT_EQ(system_font.GetWeight(), default_font.GetWeight());
+  EXPECT_EQ(system_font.GetHeight(), default_font.GetHeight());
+  EXPECT_EQ(system_font.GetBaseline(), default_font.GetBaseline());
+  EXPECT_EQ(system_font.GetBaseline(), default_font.GetBaseline());
+  EXPECT_EQ(system_font.GetFontRenderParams(),
+            default_font.GetFontRenderParams());
+}
+#endif  // OS_WIN
 
 }  // namespace gfx

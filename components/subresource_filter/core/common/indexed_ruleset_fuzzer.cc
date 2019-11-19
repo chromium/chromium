@@ -7,13 +7,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include <string>
 #include <vector>
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
 #include "base/strings/string_piece.h"
-#include "base/test/fuzzed_data_provider.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"
 #include "components/subresource_filter/core/common/unindexed_ruleset.h"
 #include "components/url_pattern_index/url_pattern_index.h"
@@ -29,7 +30,7 @@ struct TestCase {
 TestCase* test_case = new TestCase();
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::FuzzedDataProvider fuzzed_data(data, size);
+  FuzzedDataProvider fuzzed_data(data, size);
 
   // Split the input into two sections, the URL to check, and the ruleset
   // itself.
@@ -41,7 +42,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (!url_to_check.is_valid())
     return 0;
 
-  std::vector<uint8_t> remaining_bytes = fuzzed_data.ConsumeRemainingBytes();
+  std::vector<uint8_t> remaining_bytes =
+      fuzzed_data.ConsumeRemainingBytes<uint8_t>();
 
   // First, interpret the remaining fuzzed data as an unindexed ruleset.
   google::protobuf::io::ArrayInputStream input_stream(remaining_bytes.data(),

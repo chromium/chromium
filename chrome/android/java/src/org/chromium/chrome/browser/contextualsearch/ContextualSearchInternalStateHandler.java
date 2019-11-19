@@ -18,10 +18,10 @@ public interface ContextualSearchInternalStateHandler {
     void hideContextualSearchUi(@StateChangeReason int reason);
 
     /**
-     * Shows the Contextual Search user interface for a Tap.
-     * @see ContextualSearchInternalStateController.InternalState#SHOW_FULL_TAP_UI
+     * Shows the Contextual Search user interface for a resolving search.
+     * @see ContextualSearchInternalStateController.InternalState#SHOW_RESOLVING_UI
      */
-    void showContextualSearchTapUi();
+    void showContextualSearchResolvingUi();
 
     /**
      * Shows the Contextual Search user interface for a Long-press.

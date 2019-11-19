@@ -1,4 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=50012 Moving cursor down in table cycles at the end of a row
-
-Cursor should be at the end
-PASS

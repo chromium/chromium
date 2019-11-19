@@ -6,32 +6,21 @@ import("//build/symlink.gni")
 import("//testing/test.gni")
 assert(is_win)
 
-# Don't target the tool to non-win host for cross build because the tool depends
-# on Win32 API.
-# TODO(thakis): Enable this in cross builds, https://crbug.com/799827
-if (current_toolchain == host_toolchain || host_os != "win") {
-  executable("alternate_version_generator") {
-    testonly = true
-    sources = [
-      "alternate_version_generator_main.cc",
-    ]
+executable("alternate_version_generator") {
+  testonly = true
+  sources = [
+    "alternate_version_generator_main.cc",
+  ]
 
-    deps = [
-      ":alternate_version_generator_lib",
-      "//base",
-      "//base/test:test_support",
-      "//build/win:default_exe_manifest",
-      "//chrome/common:constants",
-      "//chrome/installer/util:with_rc_strings",
-      "//testing/gtest",
-    ]
-  }
-} else {
-  binary_symlink("alternate_version_generator") {
-    testonly = true
-    binary_label = ":$target_name($host_toolchain)"
-    binary_output_name = "alternate_version_generator.exe"
-  }
+  deps = [
+    ":alternate_version_generator_lib",
+    "//base",
+    "//base/test:test_support",
+    "//build/win:default_exe_manifest",
+    "//chrome/common:constants",
+    "//chrome/installer/util:with_rc_strings",
+    "//testing/gtest",
+  ]
 }
 
 static_library("alternate_version_generator_lib") {

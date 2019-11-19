@@ -1,5 +1,0 @@
-X 
-X
-PASS
-
-crbug.com/585064: Two contiguous anonymous blocks with inline content should be merged together. There should be a single green rectangle below.

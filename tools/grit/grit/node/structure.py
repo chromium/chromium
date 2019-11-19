@@ -5,6 +5,8 @@
 '''The <structure> element.
 '''
 
+from __future__ import print_function
+
 import os
 import platform
 import re
@@ -52,7 +54,7 @@ class StructureNode(base.Node):
   # VALUE must escape all commas: ',' -> ',,'.  Each variable definition
   # should be separated by a comma with no extra whitespace.
   # Example: THING1=foo,THING2=bar
-  variable_pattern = re.compile('([^,=\s]+)=((?:,,|[^,])*)')
+  variable_pattern = re.compile(r'([^,=\s]+)=((?:,,|[^,])*)')
 
   def __init__(self):
     super(StructureNode, self).__init__()
@@ -137,14 +139,9 @@ class StructureNode(base.Node):
              'preprocess': 'false',
              'flattenhtml': 'false',
              'fallback_to_low_resolution': 'default',
-             # TODO(joi) this is a hack - should output all generated files
-             # as SCons dependencies; however, for now there is a bug I can't
-             # find where GRIT doesn't build the matching fileset, therefore
-             # this hack so that only the files you really need are marked as
-             # dependencies.
-             'sconsdep' : 'false',
              'variables': '',
              'compress': 'false',
+             'use_base_dir': 'true',
              }
 
   def IsExcludedFromRc(self):
@@ -165,10 +162,10 @@ class StructureNode(base.Node):
     with open(flat_filename, 'wb') as outfile:
       if self.ExpandVariables():
         text = self.gatherer.GetText()
-        file_contents = self._Substitute(text).encode('utf-8')
+        file_contents = self._Substitute(text)
       else:
         file_contents = self.gatherer.GetData('', 'utf-8')
-      outfile.write(file_contents)
+      outfile.write(file_contents.encode('utf-8'))
 
     self._last_flat_filename = flat_filename
     return os.path.basename(flat_filename)
@@ -185,7 +182,8 @@ class StructureNode(base.Node):
       return '\r'
     else:
       raise exception.UnexpectedAttribute(
-        "Attribute 'line_end' must be one of 'unix' (default), 'windows' or 'mac'")
+        "Attribute 'line_end' must be one of 'unix' (default), 'windows' or "
+        "'mac'")
 
   def GetCliques(self):
     return self.gatherer.GetCliques()
@@ -204,7 +202,24 @@ class StructureNode(base.Node):
     return self.gatherer.GetHtmlResourceFilenames()
 
   def GetInputPath(self):
-    return self.gatherer.GetInputPath()
+    path = self.gatherer.GetInputPath()
+    if path is None:
+      return path
+
+    # Do not mess with absolute paths, that would make them invalid.
+    if os.path.isabs(os.path.expandvars(path)):
+      return path
+
+    # We have no control over code that calls ToRealPath later, so convert
+    # the path to be relative against our basedir.
+    if self.attrs.get('use_base_dir', 'true') != 'true':
+      # Normalize the directory path to use the appropriate OS separator.
+      # GetBaseDir() may return paths\like\this or paths/like/this, since it is
+      # read from the base_dir attribute in the grd file.
+      norm_base_dir = util.normpath(self.GetRoot().GetBaseDir())
+      return os.path.relpath(path, norm_base_dir)
+
+    return path
 
   def GetTextualIds(self):
     if not hasattr(self, 'gatherer'):
@@ -216,8 +231,8 @@ class StructureNode(base.Node):
 
   def RunPreSubstitutionGatherer(self, debug=False):
     if debug:
-      print 'Running gatherer %s for file %s' % (
-          str(type(self.gatherer)), self.GetInputPath())
+      print('Running gatherer %s for file %s' %
+            (type(self.gatherer), self.GetInputPath()))
 
     # Note: Parse() is idempotent, therefore this method is also.
     self.gatherer.Parse()

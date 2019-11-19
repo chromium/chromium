@@ -243,7 +243,7 @@ TEST(ChunkedUploadDataStreamTest, EmptyUpload) {
   int result = stream.Read(buf.get(), kTestBufferSize, callback.callback());
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
 
-  stream.AppendData(NULL, 0, true);
+  stream.AppendData(nullptr, 0, true);
   int read = callback.WaitForResult();
   EXPECT_EQ(0, read);
   EXPECT_EQ(0u, stream.position());
@@ -252,7 +252,7 @@ TEST(ChunkedUploadDataStreamTest, EmptyUpload) {
 
 TEST(ChunkedUploadDataStreamTest, EmptyUploadEndedBeforeInit) {
   ChunkedUploadDataStream stream(0);
-  stream.AppendData(NULL, 0, true);
+  stream.AppendData(nullptr, 0, true);
 
   ASSERT_THAT(
       stream.Init(TestCompletionCallback().callback(), NetLogWithSource()),

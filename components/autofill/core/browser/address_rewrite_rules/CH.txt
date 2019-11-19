@@ -1,0 +1,199 @@
+\bappenzell\s+rhodes\s+exterieures\b	ar
+\bappenzell\s+ausserrhoden\b	ar
+\bappenzell\s+innerrhoden\b	ai
+\bjura\s+north\s+vaudois\b	jura nord vaudois
+\bprettigovia\s+davos\b	davos
+\bbasel\s+landschaft\b	bl
+\bprattigau\s+davos\b	davos
+\bsankt\s+silvester\b	st silvester
+\bbale\s+campagne\b	bl
+\bbasilea\s+citta\b	bs
+\bsankt\s+stephan\b	st stephan
+\bwallis\s+valais\b	vs
+\bdix\s+huitieme\b	18
+\bdix\s+neuvieme\b	19
+\bdix\s+septieme\b	17
+\bsaint\s+gallen\b	sg
+\bsankt\s+gallen\b	sg
+\bschaffhausen\b	sh
+\bbasel\s+stadt\b	bs
+\bbelinzonese\b	bellinzona
+\bquatorzieme\b	14
+\bsaint\s+gallo\b	sg
+\bsan\s+nazzaro\b	s nazzaro
+\bsan\s+vittore\b	s vittore
+\bsankt\s+gallo\b	sg
+\bschaffhouse\b	sh
+\bswitzerland\b	ch
+\bwinterthour\b	winterthur
+\bbale\s+ville\b	bs
+\bbasel\s+city\b	bs
+\bbasel\s+land\b	bl
+\bbasel\s+stad\b	bs
+\bbazel\s+stad\b	bs
+\bbellinzone\b	bellinzona
+\benclave\s+de\b	
+\bgraubunden\b	gr
+\bsaint\s+gall\b	sg
+\bsan\s+gallen\b	sg
+\bsankt\s+gall\b	sg
+\bst\.\s+gallen\b	sg
+\bvaud\s+waadt\b	vd
+\bwaadt\s+vaud\b	vd
+\bcinquieme\b	5
+\blaufental\b	laufen
+\bneuchatel\b	ne
+\bneuenburg\b	ne
+\bnidwalden\b	nw
+\bquatrieme\b	4
+\bquinzieme\b	15
+\bsan\s+gallo\b	sg
+\bsciaffusa\b	sh
+\bsolothurn\b	so
+\bst\s+gallen\b	sg
+\bst\.\s+gallo\b	sg
+\bthurgovia\b	tg
+\bthurgovie\b	tg
+\btreizieme\b	13
+\btroisieme\b	3
+\bvingtieme\b	20
+\bd\\\'uster\b	uster
+\bdeuxieme\b	2
+\bdouzieme\b	12
+\bfreiburg\b	fr
+\bfribourg\b	fr
+\bfriburgo\b	fr
+\bgessenay\b	saanen
+\bgrigioni\b	gr
+\bhuitieme\b	8
+\bmaloggia\b	maloja
+\bneuvieme\b	9
+\bnidvaldo\b	nw
+\bobwalden\b	ow
+\bpremiere\b	1
+\bsan\s+gall\b	sg
+\bseizième\b	16
+\bseptieme\b	7
+\bst\s+gallo\b	sg
+\bst\.\s+gall\b	sg
+\bturgovia\b	tg
+\bzofingue\b	zofingen
+\bargovia\b	ag
+\bargovie\b	ag
+\bdixieme\b	x
+\bfriburg\b	fr
+\bginevra\b	ge
+\bglarona\b	gl
+\bgrisons\b	gr
+\blucerna\b	lu
+\blucerne\b	lu
+\bnidwald\b	nw
+\bobvaldo\b	ow
+\bonzieme\b	11
+\bschweiz\b	ch
+\bschwytz\b	sz
+\bsixieme\b	6
+\bsoletta\b	so
+\bsoleure\b	so
+\bst\s+gall\b	sg
+\bthurgau\b	tg
+\bturicum\b	zh
+\bvallais\b	vs
+\bvallese\b	vs
+\bzuerich\b	zh
+\baargau\b	ag
+\bbienna\b	biel
+\bbienne\b	biel
+\bbrigue\b	brig
+\bgeneva\b	ge
+\bgeneve\b	ge
+\bglaris\b	gl
+\bglarus\b	gl
+\blaufon\b	laufen
+\bluzern\b	lu
+\bobwald\b	ow
+\bregion\b	
+\bsainte\b	
+\bschwyz\b	sz
+\bsvitto\b	sz
+\btessin\b	ti
+\bthoune\b	thun
+\bticino\b	ti
+\bvalais\b	vs
+\bwallis\b	vs
+\bzurich\b	zh
+\bzurigo\b	zh
+\baaray\b	aarau
+\bberna\b	be
+\bberne\b	be
+\bbriga\b	brig
+\bde\s+l\'\b	
+\bde\s+la\b	
+\bet\s+du\b	
+\bgiura\b	ju
+\bmount\b	mt
+\bnorth\b	n
+\bouest\b	o
+\bsaint\b	
+\bsouth\b	s
+\bstadt\b	
+\bviege\b	visp
+\bwaadt\b	vd
+\bxviii\b	18
+\bbern\b	be
+\bgenf\b	ge
+\bieme\b	
+\bjura\b	ju
+\bnord\b	n
+\bstad\b	
+\bvaud\b	vd
+\bviii\b	8
+\bwest\b	o
+\bxiii\b	13
+\bxvii\b	17
+\bzoug\b	zg
+\bzugo\b	zg
+\bdes\b	
+\beme\b	
+\bere\b	
+\best\b	
+\biii\b	3
+\bles\b	
+\bmte\b	mt
+\bste\b	
+\bsud\b	s
+\bsur\b	
+\buri\b	ur
+\bvii\b	7
+\bxii\b	12
+\bxiv\b	14
+\bxix\b	19
+\bxvi\b	16
+\bzug\b	zg
+\b10\b	x
+\bd\'\b	
+\bde\b	
+\bdu\b	
+\ben\b	
+\ber\b	
+\bii\b	2
+\bin\b	
+\biv\b	4
+\bix\b	9
+\bl\'\b	
+\bla\b	
+\ble\b	
+\bnd\b	
+\bof\b	
+\brd\b	
+\bre\b	
+\bst\b	
+\bth\b	
+\bvi\b	6
+\bxi\b	11
+\bxv\b	15
+\bxx\b	20
+\be\b	
+\bi\b	1
+\bv\b	5
+\bw\b	o

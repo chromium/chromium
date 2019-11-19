@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="nl">
+<translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van je tabbladen zijn niet recent gebruikt. Wil je ze sluiten?</translation>
+<translation id="1181037720776840403">Verwijderen</translation>
+<translation id="125153950246128346">Tik om nog een tabblad te bekijken</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad}other{<ph name="TABS_COUNT_MANY" /> tabbladen}}</translation>
+<translation id="257674075312929031">Groep</translation>
+<translation id="2613747923081026172">Groep maken</translation>
+<translation id="2671423594960767771">Groep delen</translation>
+<translation id="2977480621796371840">Uit groep verwijderen</translation>
+<translation id="4212246570487010370">Verder browsen</translation>
+<translation id="4648718555153979859">Je tabbladen zijn hier gegroepeerd</translation>
+<translation id="5007392906805964215">Bekijken</translation>
+<translation id="5073204694187207510">Raster op volledig scherm verbergen</translation>
+<translation id="5082793167783849073">Vergelijk pagina's snel door een groep te maken. Tik op een link en houd deze vast om te beginnen.</translation>
+<translation id="5580090775658607195"><ph name="TAB_COUNT" /> tabbladen gegroepeerd</translation>
+<translation id="5792534911093536736">Meer tabbladen</translation>
+<translation id="58326064309361797">Sleep de tabbladen om ze te groeperen</translation>
+<translation id="6040143037577758943">Sluiten</translation>
+<translation id="6193448654517602979">Tabbladen selecteren</translation>
+<translation id="6615455863669487791">Weergeven</translation>
+<translation id="6840760312327750441">Als je tabbladen wilt groeperen, tik je op een tabblad en houd je dit vast. Sleep het vervolgens op een ander tabblad.</translation>
+<translation id="7151209024774799310">Tabbladen uit groep verwijderen</translation>
+<translation id="7559245342362162951">Tabbladen van groep weergeven in raster op volledig scherm</translation>
+<translation id="9150694013019234766">Je kunt onderaan het scherm schakelen tussen tabbladen in je tabbladgroep</translation>
+<translation id="9169594135889675189">Nieuw tabblad aan groep toevoegen</translation>
+<translation id="959682366969460160">Georganiseerd werken</translation>
+</translationbundle>

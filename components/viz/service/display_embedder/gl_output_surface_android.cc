@@ -4,16 +4,14 @@
 
 #include "components/viz/service/display_embedder/gl_output_surface_android.h"
 
-#include "components/viz/service/display_embedder/compositor_overlay_candidate_validator_android.h"
+#include "components/viz/service/display_embedder/overlay_candidate_validator_android.h"
 
 namespace viz {
 
 GLOutputSurfaceAndroid::GLOutputSurfaceAndroid(
     scoped_refptr<VizProcessContextProvider> context_provider,
-    SyntheticBeginFrameSource* synthetic_begin_frame_source)
-    : GLOutputSurface(context_provider, synthetic_begin_frame_source),
-      overlay_candidate_validator_(
-          std::make_unique<CompositorOverlayCandidateValidatorAndroid>()) {}
+    gpu::SurfaceHandle surface_handle)
+    : GLOutputSurface(context_provider, surface_handle) {}
 
 GLOutputSurfaceAndroid::~GLOutputSurfaceAndroid() = default;
 
@@ -25,11 +23,6 @@ void GLOutputSurfaceAndroid::HandlePartialSwap(
   DCHECK(sub_buffer_rect.IsEmpty());
   context_provider_->ContextSupport()->CommitOverlayPlanes(
       flags, std::move(swap_callback), std::move(presentation_callback));
-}
-
-OverlayCandidateValidator*
-GLOutputSurfaceAndroid::GetOverlayCandidateValidator() const {
-  return overlay_candidate_validator_.get();
 }
 
 }  // namespace viz

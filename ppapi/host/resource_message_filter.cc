@@ -36,15 +36,13 @@ void ResourceMessageFilterDeleteTraits::Destruct(
 ResourceMessageFilter::ResourceMessageFilter()
     : deletion_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       reply_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      resource_host_(NULL) {
-}
+      resource_host_(nullptr) {}
 
 ResourceMessageFilter::ResourceMessageFilter(
     scoped_refptr<base::SingleThreadTaskRunner> reply_thread_task_runner)
     : deletion_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       reply_thread_task_runner_(reply_thread_task_runner),
-      resource_host_(NULL) {
-}
+      resource_host_(nullptr) {}
 
 ResourceMessageFilter::~ResourceMessageFilter() {
 }
@@ -92,7 +90,7 @@ void ResourceMessageFilter::SendReply(const ReplyMessageContext& context,
 
 scoped_refptr<base::TaskRunner>
 ResourceMessageFilter::OverrideTaskRunnerForMessage(const IPC::Message& msg) {
-  return NULL;
+  return nullptr;
 }
 
 void ResourceMessageFilter::DispatchMessage(const IPC::Message& msg,

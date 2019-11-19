@@ -1,3 +1,0 @@
-CONSOLE ERROR: line 5: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/resources/echo-intertag.pl?q=%3clink%20rel=import%20href=http:%26sol%3b%26sol%3blocalhost:8000%26sol%3bsecurity%26sol%3bxssAuditor%26sol%3bresources%26sol%3bxss.html%26quest%3b' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-CONSOLE WARNING: HTML Imports is deprecated and will be removed in M73, around March 2019. Please use ES modules instead. See https://www.chromestatus.com/features/5144752345317376 for more details.
-

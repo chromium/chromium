@@ -14,6 +14,10 @@
   function enterPictureInPicture() {
     video.requestPictureInPicture().then(() => {
       window.domAutomationController.send(true);
+
+      video.addEventListener('leavepictureinpicture', () => {
+        document.title = 'leavepictureinpicture';
+      }, { once: true });
     });
   }
 

@@ -5,17 +5,19 @@
 #include "content/browser/renderer_host/cursor_manager.h"
 
 #include "build/build_config.h"
+#include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/common/cursors/webcursor.h"
 #include "content/public/common/cursor_info.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "content/test/mock_render_widget_host_delegate.h"
 #include "content/test/mock_widget_impl.h"
 #include "content/test/test_render_view_host.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // CursorManager is only instantiated on Aura and Mac.
@@ -39,7 +41,7 @@ class MockRenderWidgetHostViewForCursors : public TestRenderWidgetHostView {
 
   CursorManager* GetCursorManager() override { return cursor_manager_.get(); }
 
-  WebCursor cursor() { return current_cursor_; }
+  const WebCursor& cursor() { return current_cursor_; }
 
  private:
   WebCursor current_cursor_;
@@ -51,9 +53,10 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
   static MockRenderWidgetHost* Create(RenderWidgetHostDelegate* delegate,
                                       RenderProcessHost* process,
                                       int32_t routing_id) {
-    mojom::WidgetPtr widget;
+    mojo::PendingRemote<mojom::Widget> widget;
     std::unique_ptr<MockWidgetImpl> widget_impl =
-        std::make_unique<MockWidgetImpl>(mojo::MakeRequest(&widget));
+        std::make_unique<MockWidgetImpl>(
+            widget.InitWithNewPipeAndPassReceiver());
 
     return new MockRenderWidgetHost(delegate, process, routing_id,
                                     std::move(widget_impl), std::move(widget));
@@ -64,12 +67,13 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
                        RenderProcessHost* process,
                        int routing_id,
                        std::unique_ptr<MockWidgetImpl> widget_impl,
-                       mojom::WidgetPtr widget)
+                       mojo::PendingRemote<mojom::Widget> widget)
       : RenderWidgetHostImpl(delegate,
                              process,
                              routing_id,
                              std::move(widget),
-                             false),
+                             /*hidden=*/false,
+                             std::make_unique<FrameTokenMessageQueue>()),
         widget_impl_(std::move(widget_impl)) {}
 
   std::unique_ptr<MockWidgetImpl> widget_impl_;
@@ -104,7 +108,7 @@ class CursorManagerTest : public testing::Test {
   }
 
  protected:
-  TestBrowserThreadBundle thread_bundle_;
+  BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<MockRenderProcessHost> process_host_;
@@ -128,17 +132,16 @@ TEST_F(CursorManagerTest, CursorOnSingleView) {
   top_view_->GetCursorManager()->UpdateViewUnderCursor(top_view_);
 
   // The view should be using the default cursor.
-  EXPECT_TRUE(top_view_->cursor().IsEqual(WebCursor()));
+  EXPECT_EQ(top_view_->cursor(), WebCursor());
 
-  CursorInfo cursor_info(blink::WebCursorInfo::kTypeHand);
-  WebCursor cursor_hand;
-  cursor_hand.InitFromCursorInfo(cursor_info);
+  CursorInfo cursor_info(ui::CursorType::kHand);
+  WebCursor cursor_hand(cursor_info);
 
   // Update the view with a non-default cursor.
   top_view_->GetCursorManager()->UpdateCursor(top_view_, cursor_hand);
 
   // Verify the RenderWidgetHostView now uses the correct cursor.
-  EXPECT_TRUE(top_view_->cursor().IsEqual(cursor_hand));
+  EXPECT_EQ(top_view_->cursor(), cursor_hand);
 }
 
 // Verify cursor interactions between a parent frame and an out-of-process
@@ -148,22 +151,21 @@ TEST_F(CursorManagerTest, CursorOverChildView) {
   std::unique_ptr<MockRenderWidgetHostViewForCursors> child_view(
       new MockRenderWidgetHostViewForCursors(widget_host.get(), false));
 
-  CursorInfo cursor_info(blink::WebCursorInfo::kTypeHand);
-  WebCursor cursor_hand;
-  cursor_hand.InitFromCursorInfo(cursor_info);
+  CursorInfo cursor_info(ui::CursorType::kHand);
+  WebCursor cursor_hand(cursor_info);
 
   // Set the child frame's cursor to a hand. This should not propagate to the
   // top-level view without the mouse moving over the child frame.
   top_view_->GetCursorManager()->UpdateCursor(child_view.get(), cursor_hand);
-  EXPECT_FALSE(top_view_->cursor().IsEqual(cursor_hand));
+  EXPECT_NE(top_view_->cursor(), cursor_hand);
 
   // Now moving the mouse over the child frame should update the overall cursor.
   top_view_->GetCursorManager()->UpdateViewUnderCursor(child_view.get());
-  EXPECT_TRUE(top_view_->cursor().IsEqual(cursor_hand));
+  EXPECT_EQ(top_view_->cursor(), cursor_hand);
 
   // Destruction of the child view should restore the parent frame's cursor.
   top_view_->GetCursorManager()->ViewBeingDestroyed(child_view.get());
-  EXPECT_FALSE(top_view_->cursor().IsEqual(cursor_hand));
+  EXPECT_NE(top_view_->cursor(), cursor_hand);
 }
 
 // Verify interactions between two independent OOPIFs, including interleaving
@@ -177,47 +179,44 @@ TEST_F(CursorManagerTest, CursorOverMultipleChildViews) {
   std::unique_ptr<MockRenderWidgetHostViewForCursors> child_view2(
       new MockRenderWidgetHostViewForCursors(widget_host2.get(), false));
 
-  CursorInfo cursor_info_hand(blink::WebCursorInfo::kTypeHand);
-  WebCursor cursor_hand;
-  cursor_hand.InitFromCursorInfo(cursor_info_hand);
+  CursorInfo cursor_info_hand(ui::CursorType::kHand);
+  WebCursor cursor_hand(cursor_info_hand);
 
-  CursorInfo cursor_info_cross(blink::WebCursorInfo::kTypeCross);
-  WebCursor cursor_cross;
-  cursor_cross.InitFromCursorInfo(cursor_info_cross);
+  CursorInfo cursor_info_cross(ui::CursorType::kCross);
+  WebCursor cursor_cross(cursor_info_cross);
 
-  CursorInfo cursor_info_pointer(blink::WebCursorInfo::kTypePointer);
-  WebCursor cursor_pointer;
-  cursor_pointer.InitFromCursorInfo(cursor_info_pointer);
+  CursorInfo cursor_info_pointer(ui::CursorType::kPointer);
+  WebCursor cursor_pointer(cursor_info_pointer);
 
   // Initialize each View to a different cursor.
   top_view_->GetCursorManager()->UpdateCursor(top_view_, cursor_hand);
   top_view_->GetCursorManager()->UpdateCursor(child_view1.get(), cursor_cross);
   top_view_->GetCursorManager()->UpdateCursor(child_view2.get(),
                                               cursor_pointer);
-  EXPECT_TRUE(top_view_->cursor().IsEqual(cursor_hand));
+  EXPECT_EQ(top_view_->cursor(), cursor_hand);
 
   // Simulate moving the mouse between child views and receiving cursor updates.
   top_view_->GetCursorManager()->UpdateViewUnderCursor(child_view1.get());
-  EXPECT_TRUE(top_view_->cursor().IsEqual(cursor_cross));
+  EXPECT_EQ(top_view_->cursor(), cursor_cross);
   top_view_->GetCursorManager()->UpdateViewUnderCursor(child_view2.get());
-  EXPECT_TRUE(top_view_->cursor().IsEqual(cursor_pointer));
+  EXPECT_EQ(top_view_->cursor(), cursor_pointer);
 
   // Simulate cursor updates to both child views and the parent view. An
   // update to child_view1 or the parent view should not change the current
   // cursor because the mouse is over child_view2.
   top_view_->GetCursorManager()->UpdateCursor(child_view1.get(), cursor_hand);
-  EXPECT_TRUE(top_view_->cursor().IsEqual(cursor_pointer));
+  EXPECT_EQ(top_view_->cursor(), cursor_pointer);
   top_view_->GetCursorManager()->UpdateCursor(child_view2.get(), cursor_cross);
-  EXPECT_TRUE(top_view_->cursor().IsEqual(cursor_cross));
+  EXPECT_EQ(top_view_->cursor(), cursor_cross);
   top_view_->GetCursorManager()->UpdateCursor(top_view_, cursor_hand);
-  EXPECT_TRUE(top_view_->cursor().IsEqual(cursor_cross));
+  EXPECT_EQ(top_view_->cursor(), cursor_cross);
 
   // Similarly, destroying child_view1 should have no effect on the cursor,
   // but destroying child_view2 should change it.
   top_view_->GetCursorManager()->ViewBeingDestroyed(child_view1.get());
-  EXPECT_TRUE(top_view_->cursor().IsEqual(cursor_cross));
+  EXPECT_EQ(top_view_->cursor(), cursor_cross);
   top_view_->GetCursorManager()->ViewBeingDestroyed(child_view2.get());
-  EXPECT_TRUE(top_view_->cursor().IsEqual(cursor_hand));
+  EXPECT_EQ(top_view_->cursor(), cursor_hand);
 }
 
 }  // namespace content

@@ -5,7 +5,7 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_BROWSER_URL_REWRITER_PROVIDER_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_BROWSER_URL_REWRITER_PROVIDER_H_
 
-#include "ios/web/public/browser_url_rewriter.h"
+#include "ios/web/public/navigation/browser_url_rewriter.h"
 
 #include "base/macros.h"
 

@@ -12,7 +12,6 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 
 using content::NavigationController;
@@ -25,10 +24,7 @@ namespace {
 bool g_repeat_prompting = false;
 }
 
-NavigationObserver::NavigationObserver(Profile* profile)
-    : profile_(profile),
-      extension_registry_observer_(this),
-      weak_factory_(this) {
+NavigationObserver::NavigationObserver(Profile* profile) : profile_(profile) {
   RegisterForNotifications();
   extension_registry_observer_.Add(ExtensionRegistry::Get(profile));
 }
@@ -123,10 +119,9 @@ void NavigationObserver::OnInstallPromptDone(
   if (in_progress_prompt_extension_id_.empty())
     return;
 
-  ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-  const Extension* extension = extension_service->GetExtensionById(
-      in_progress_prompt_extension_id_, true);
+  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
+  const Extension* extension = extension_registry->GetExtensionById(
+      in_progress_prompt_extension_id_, ExtensionRegistry::EVERYTHING);
   CHECK(extension);
 
   if (result == ExtensionInstallPrompt::Result::ACCEPTED) {
@@ -134,6 +129,8 @@ void NavigationObserver::OnInstallPromptDone(
         in_progress_prompt_navigation_controller_;
     CHECK(nav_controller);
 
+    ExtensionService* extension_service =
+        ExtensionSystem::Get(profile_)->extension_service();
     // Grant permissions, re-enable the extension, and then reload the tab.
     extension_service->GrantPermissionsAndEnableExtension(extension);
     nav_controller->Reload(content::ReloadType::NORMAL, true);
@@ -150,7 +147,7 @@ void NavigationObserver::OnInstallPromptDone(
                                                         histogram_name.c_str());
   }
 
-  in_progress_prompt_extension_id_ = std::string();
+  in_progress_prompt_extension_id_.clear();
   in_progress_prompt_navigation_controller_ = nullptr;
   extension_install_prompt_.reset();
 }

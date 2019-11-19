@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -390,6 +392,84 @@ TEST_P(ParameterizedLayoutTextFragmentTest,
       0));  // "(x| <span>xx</span>"
   EXPECT_TRUE(GetRemainingText()->IsAfterNonCollapsedCharacter(
       1));  // "(x |<span>xx</span>"
+}
+
+TEST_P(ParameterizedLayoutTextFragmentTest, SetTextWithFirstLetter) {
+  // Note: |V8TestingScope| is needed for |Text::splitText()|.
+  V8TestingScope scope;
+
+  SetBodyInnerHTML(
+      "<style>div::first-letter {color: red;}</style>"
+      "<div id=sample>a</div>");
+  const Element& sample = *GetElementById("sample");
+  // |letter_x| is "a" then "" finally "x"
+  Text& letter_x = *To<Text>(sample.firstChild());
+  ASSERT_TRUE(letter_x.GetLayoutObject()->IsTextFragment());
+  EXPECT_TRUE(letter_x.GetLayoutObject()->GetFirstLetterPart());
+  EXPECT_TRUE(ToLayoutTextFragment(letter_x.GetLayoutObject())
+                  ->IsRemainingTextLayoutObject());
+  ASSERT_TRUE(letter_x.GetLayoutObject()->GetFirstLetterPart());
+  EXPECT_EQ("a", letter_x.GetLayoutObject()->GetFirstLetterPart()->GetText());
+
+  // Make <div>"" "a"</div>
+  Text& letter_a = *letter_x.splitText(0, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(letter_a.GetLayoutObject()->IsTextFragment())
+      << "'a' is still first-letter";
+  EXPECT_TRUE(letter_a.GetLayoutObject()->GetFirstLetterPart());
+  EXPECT_TRUE(ToLayoutTextFragment(letter_a.GetLayoutObject())
+                  ->IsRemainingTextLayoutObject());
+  ASSERT_TRUE(letter_a.GetLayoutObject()->GetFirstLetterPart());
+  EXPECT_EQ("a", letter_a.GetLayoutObject()->GetFirstLetterPart()->GetText());
+  EXPECT_TRUE(letter_x.GetLayoutObject()->IsTextFragment());
+  EXPECT_FALSE(letter_x.GetLayoutObject()->GetFirstLetterPart());
+
+  // Make <div>"x" "a"</div>
+  letter_x.setTextContent("x");
+  UpdateAllLifecyclePhasesForTest();
+
+  // See |FirstLetterPseudoElement::DetachLayoutTree()| which updates remaining
+  // part |LayoutTextFragment|.
+  EXPECT_TRUE(letter_a.GetLayoutObject()->IsTextFragment())
+      << "We still use LayoutTextFragment for 'a'";
+  EXPECT_FALSE(letter_a.GetLayoutObject()->GetFirstLetterPart());
+  EXPECT_FALSE(ToLayoutTextFragment(letter_a.GetLayoutObject())
+                   ->IsRemainingTextLayoutObject());
+  EXPECT_FALSE(ToLayoutTextFragment(letter_a.GetLayoutObject())
+                   ->GetFirstLetterPseudoElement());
+  ASSERT_TRUE(letter_x.GetLayoutObject()->IsTextFragment())
+      << "'x' is first letter-part";
+  EXPECT_TRUE(ToLayoutTextFragment(letter_x.GetLayoutObject())
+                  ->IsRemainingTextLayoutObject());
+  ASSERT_TRUE(letter_x.GetLayoutObject()->GetFirstLetterPart());
+  EXPECT_EQ("x", letter_x.GetLayoutObject()->GetFirstLetterPart()->GetText());
+}
+
+// For http://crbug.com/984389
+TEST_P(ParameterizedLayoutTextFragmentTest, SplitTextWithZero) {
+  // Note: |V8TestingScope| is needed for |Text::splitText()|.
+  V8TestingScope scope;
+
+  SetBodyInnerHTML(
+      "<style>div::first-letter {color: red;}</style>"
+      "<div><b id=sample> x y</b></div>");
+  const Element& sample = *GetElementById("sample");
+  // Make " " "x y"
+  To<Text>(sample.firstChild())->splitText(1, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Make "" " " "x y"
+  To<Text>(sample.firstChild())->splitText(0, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  Text& xy = To<Text>(*sample.lastChild());
+  FirstLetterPseudoElement& first_letter_element =
+      *ToLayoutTextFragment(xy.GetLayoutObject())
+           ->GetFirstLetterPseudoElement();
+  EXPECT_EQ(first_letter_element.GetLayoutObject(),
+            xy.GetLayoutObject()->PreviousSibling())
+      << "first-letter remaining part should be next to first-letter part";
 }
 
 }  // namespace blink

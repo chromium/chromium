@@ -33,7 +33,7 @@ class HeadlessShell : public HeadlessWebContents::Observer,
   HeadlessShell();
   ~HeadlessShell() override;
 
-  virtual void OnStart(HeadlessBrowser* browser);
+  void OnStart(HeadlessBrowser* browser);
 
   HeadlessDevToolsClient* devtools_client() const {
     return devtools_client_.get();
@@ -43,6 +43,7 @@ class HeadlessShell : public HeadlessWebContents::Observer,
   // HeadlessWebContents::Observer implementation:
   void DevToolsTargetReady() override;
   void OnTargetCrashed(const inspector::TargetCrashedParams& params) override;
+  void HeadlessWebContentsDestroyed() override;
 
   // emulation::Observer implementation:
   void OnVirtualTimeBudgetExpired(
@@ -51,7 +52,8 @@ class HeadlessShell : public HeadlessWebContents::Observer,
   // page::Observer implementation:
   void OnLoadEventFired(const page::LoadEventFiredParams& params) override;
 
-  virtual void Shutdown();
+  void Detach();
+  void Shutdown();
 
   void FetchTimeout();
 
@@ -95,16 +97,16 @@ class HeadlessShell : public HeadlessWebContents::Observer,
   bool RemoteDebuggingEnabled() const;
 
   GURL url_;
-  HeadlessBrowser* browser_;  // Not owned.
+  HeadlessBrowser* browser_ = nullptr;  // Not owned.
   std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
 #if !defined(CHROME_MULTIPLE_DLL_CHILD)
-  HeadlessWebContents* web_contents_;
-  HeadlessBrowserContext* browser_context_;
+  HeadlessWebContents* web_contents_ = nullptr;
+  HeadlessBrowserContext* browser_context_ = nullptr;
 #endif
-  bool processed_page_ready_;
+  bool processed_page_ready_ = false;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   std::unique_ptr<base::FileProxy> file_proxy_;
-  base::WeakPtrFactory<HeadlessShell> weak_factory_;
+  base::WeakPtrFactory<HeadlessShell> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HeadlessShell);
 };

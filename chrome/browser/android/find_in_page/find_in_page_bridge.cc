@@ -5,9 +5,10 @@
 #include "chrome/browser/android/find_in_page/find_in_page_bridge.h"
 
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/FindInPageBridge_jni.h"
 #include "chrome/browser/ui/find_bar/find_tab_helper.h"
+#include "chrome/browser/ui/find_bar/find_types.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/FindInPageBridge_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaParamRef;
@@ -40,9 +41,9 @@ void FindInPageBridge::StartFinding(JNIEnv* env,
 void FindInPageBridge::StopFinding(JNIEnv* env,
                                    const JavaParamRef<jobject>& obj,
                                    jboolean clearSelection) {
-  FindTabHelper::FromWebContents(web_contents_)->
-      StopFinding(clearSelection ? FindBarController::kClearSelectionOnPage
-          : FindBarController::kKeepSelectionOnPage);
+  FindTabHelper::FromWebContents(web_contents_)
+      ->StopFinding(clearSelection ? FindOnPageSelectionAction::kClear
+                                   : FindOnPageSelectionAction::kKeep);
 }
 
 ScopedJavaLocalRef<jstring> FindInPageBridge::GetPreviousFindText(

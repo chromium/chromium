@@ -9,26 +9,12 @@ namespace switches {
 // Allow access to external pages during web tests.
 const char kAllowExternalPages[] = "allow-external-pages";
 
-#if defined(OS_ANDROID)
-// Redirect stderr to the given port. Only supported on Android.
-const char kAndroidStderrPort[] = "android-stderr-port";
-
-// Redirect stdin to the given port. Only supported on Android.
-const char kAndroidStdinPort[] = "android-stdin-port";
-
-// Redirect stdout to the given port. Only supported on Android.
-const char kAndroidStdoutPort[] = "android-stdout-port";
-#endif  // defined(OS_ANDROID)
-
 // When specified to "enable-leak-detection" command-line option,
 // causes the leak detector to cause immediate crash when found leak.
 const char kCrashOnFailure[] = "crash-on-failure";
 
 // Run devtools tests in debug mode (not bundled and minified)
 const char kDebugDevTools[] = "debug-devtools";
-
-// Specify a custom path to devtools for devtools tests
-const char kCustomDevToolsFrontend[] = "custom-devtools-frontend";
 
 // Enable accelerated 2D canvas.
 const char kEnableAccelerated2DCanvas[] = "enable-accelerated-2d-canvas";
@@ -56,9 +42,9 @@ const char kRunWebTests[] = "run-web-tests";
 // http://dev.chromium.org/blink/runtime-enabled-features.
 const char kStableReleaseMode[] = "stable-release-mode";
 
-// Enable pixel dumps via "real" surface readbacks, instead of synchronously
-// compositing and reading back pixels.
-const char kEnableDisplayCompositorPixelDump[] =
-    "enable-display-compositor-pixel-dump";
+// Disables the shell from beginning in headless mode. Tests will then attempt
+// to use the hardware GPU for rendering. This is only followed when
+// kRunWebTests is set.
+const char kDisableHeadlessMode[] = "disable-headless-mode";
 
 }  // namespace switches

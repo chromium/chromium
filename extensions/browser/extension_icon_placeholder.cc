@@ -70,7 +70,7 @@ gfx::Image GetBackgroundImageForIconSize(extension_misc::ExtensionIcons size) {
 ExtensionIconPlaceholder::ExtensionIconPlaceholder(
     extension_misc::ExtensionIcons size,
     const std::string& name)
-    : gfx::CanvasImageSource(gfx::Size(size, size), false),
+    : gfx::CanvasImageSource(gfx::Size(size, size)),
       icon_size_(size),
       base_image_(GetBackgroundImageForIconSize(size)) {
   // Remove RTL formatting characters, if any, that may pad the extension name.

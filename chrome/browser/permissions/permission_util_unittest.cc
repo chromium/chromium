@@ -9,15 +9,19 @@
 #include "chrome/browser/permissions/permission_uma_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class PermissionUtilTest : public testing::Test {
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(PermissionUtilTest, ScopedRevocationReporter) {
   TestingProfile profile;
+  ASSERT_TRUE(profile.CreateHistoryService(
+      /* delete_file= */ true,
+      /* no_db= */ false));
+
   // TODO(tsergeant): Add more comprehensive tests of PermissionUmaUtil.
   base::HistogramTester histograms;
   HostContentSettingsMap* map =
@@ -27,7 +31,7 @@ TEST_F(PermissionUtilTest, ScopedRevocationReporter) {
       ContentSettingsPattern::FromURLNoWildcard(host);
   ContentSettingsPattern host_containing_wildcards_pattern =
       ContentSettingsPattern::FromString("https://[*.]example.com/");
-  ContentSettingsType type = CONTENT_SETTINGS_TYPE_GEOLOCATION;
+  ContentSettingsType type = ContentSettingsType::GEOLOCATION;
   PermissionSourceUI source_ui = PermissionSourceUI::SITE_SETTINGS;
 
   // Allow->Block triggers a revocation.

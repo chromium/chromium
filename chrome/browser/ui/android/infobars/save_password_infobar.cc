@@ -9,9 +9,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/SavePasswordInfoBar_jni.h"
 #include "chrome/browser/password_manager/save_password_infobar_delegate_android.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
-#include "jni/SavePasswordInfoBar_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -39,9 +39,7 @@ SavePasswordInfoBar::CreateRenderInfoBar(JNIEnv* env) {
 
   base::android::ScopedJavaLocalRef<jobject> infobar;
   infobar.Reset(Java_SavePasswordInfoBar_show(
-      env, GetEnumeratedIconId(), message_text,
-      save_password_delegate->message_link_range().start(),
-      save_password_delegate->message_link_range().end(), details_message_text,
+      env, GetEnumeratedIconId(), message_text, details_message_text,
       ok_button_text, cancel_button_text));
 
   java_infobar_.Reset(env, infobar.obj());

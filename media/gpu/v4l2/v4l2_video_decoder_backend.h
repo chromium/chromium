@@ -1,0 +1,98 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_H_
+#define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_H_
+
+#include "base/memory/scoped_refptr.h"
+#include "media/base/decode_status.h"
+#include "media/base/video_decoder.h"
+#include "ui/gfx/geometry/rect.h"
+
+namespace media {
+
+class V4L2Device;
+class V4L2Queue;
+class V4L2ReadableBuffer;
+using V4L2ReadableBufferRef = scoped_refptr<V4L2ReadableBuffer>;
+
+// Abstract class that performs the low-level V4L2 decoding tasks depending
+// on the decoding API chosen (stateful or stateless).
+//
+// The backend receives encoded buffers via EnqueueDecodeTask() and is
+// responsible for acquiring the V4L2 resources (output and capture buffers,
+// etc) and sending them to the V4L2 driver. When a decoded buffer is dequeued,
+// |OutputBufferDequeued| is automatically called from the decoder.
+//
+// The backend can call into some of the decoder methods, notably OutputFrame()
+// to send a |VideoFrame| to the decoder's client, and Error() to signal that
+// an unrecoverable error has occurred.
+//
+// This class must run entirely inside the decoder thread. All overridden
+// methods must check that they are called from sequence_checker_.
+class V4L2VideoDecoderBackend {
+ public:
+  // Interface for the backend to call back into the decoder it is serving.
+  // All methods must be called from the same sequence as the backend.
+  class Client {
+   public:
+    // Inform that an unrecoverable error has occurred in the backend.
+    virtual void OnBackendError() = 0;
+    // Returns true is we are in a state that allows decoding to proceed.
+    virtual bool IsDecoding() const = 0;
+    // Start flushing. No new decoding requests will be processed until
+    // CompleteFlush() is called.
+    virtual void InitiateFlush() = 0;
+    // Inform the flushing is complete.
+    virtual void CompleteFlush() = 0;
+    // Stop the stream to reallocate the CAPTURE buffers. Can only be done
+    // between calls to |InitiateFlush| and |CompleteFlush|.
+    virtual bool ChangeResolution(gfx::Size pic_size,
+                                  gfx::Rect visible_rect,
+                                  size_t num_output_frames) = 0;
+    // Convert the frame and call the output callback.
+    virtual void OutputFrame(scoped_refptr<VideoFrame> frame,
+                             const gfx::Rect& visible_rect,
+                             base::TimeDelta timestamp) = 0;
+  };
+
+  virtual ~V4L2VideoDecoderBackend();
+
+  virtual bool Initialize() = 0;
+
+  // Schedule |buffer| to be processed, with bitstream ID |bitstream_id|.
+  // The backend must call |decode_cb| once the buffer is not used anymore.
+  virtual void EnqueueDecodeTask(scoped_refptr<DecoderBuffer> buffer,
+                                 VideoDecoder::DecodeCB decode_cb,
+                                 int32_t bitstream_id) = 0;
+  // Called by the decoder when it has dequeued a buffer from the CAPTURE queue.
+  virtual void OnOutputBufferDequeued(V4L2ReadableBufferRef buf) = 0;
+  // Called whenever the V4L2 stream is stopped (|Streamoff| called on both
+  // |V4L2Queue|s).
+  virtual void OnStreamStopped() = 0;
+  // Clear all pending decoding tasks and call all pending decode callbacks
+  // with |status| as argument.
+  virtual void ClearPendingRequests(DecodeStatus status) = 0;
+
+ protected:
+  V4L2VideoDecoderBackend(Client* const client,
+                          scoped_refptr<V4L2Device> device);
+
+  // The decoder we are serving. |client_| is the owner of this backend
+  // instance, and is guaranteed to live longer than it. Thus it is safe to use
+  // a raw pointer here.
+  Client* const client_;
+  // V4L2 device to use.
+  scoped_refptr<V4L2Device> device_;
+  // Input and output queued from which to get buffers.
+  scoped_refptr<V4L2Queue> input_queue_;
+  scoped_refptr<V4L2Queue> output_queue_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  DISALLOW_COPY_AND_ASSIGN(V4L2VideoDecoderBackend);
+};
+
+}  // namespace media
+
+#endif  // MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_H_

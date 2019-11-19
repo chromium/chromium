@@ -32,10 +32,13 @@ class CC_EXPORT SoftwareImageDecodeCache
 
   enum class DecodeTaskType { USE_IN_RASTER_TASKS, USE_OUT_OF_RASTER_TASKS };
 
+  // Identifies whether a decode task performed decode work, or was fulfilled /
+  // failed trivially.
+  enum class TaskProcessingResult { kFullDecode, kLockOnly, kCancelled };
+
   SoftwareImageDecodeCache(SkColorType color_type,
                            size_t locked_memory_limit_bytes,
-                           PaintImage::GeneratorClientId generator_client_id,
-                           sk_sp<SkColorSpace> target_color_space);
+                           PaintImage::GeneratorClientId generator_client_id);
   ~SoftwareImageDecodeCache() override;
 
   // ImageDecodeCache overrides.
@@ -54,12 +57,13 @@ class CC_EXPORT SoftwareImageDecodeCache
   void ClearCache() override;
   size_t GetMaximumMemoryLimitBytes() const override;
   bool UseCacheForDrawImage(const DrawImage& image) const override;
+  void RecordStats() override {}
 
   // Decode the given image and store it in the cache. This is only called by an
   // image decode task from a worker thread.
-  void DecodeImageInTask(const CacheKey& key,
-                         const PaintImage& paint_image,
-                         DecodeTaskType task_type);
+  TaskProcessingResult DecodeImageInTask(const CacheKey& key,
+                                         const PaintImage& paint_image,
+                                         DecodeTaskType task_type);
 
   void OnImageDecodeTaskCompleted(const CacheKey& key,
                                   DecodeTaskType task_type);
@@ -124,9 +128,9 @@ class CC_EXPORT SoftwareImageDecodeCache
 
   CacheEntry* AddCacheEntry(const CacheKey& key);
 
-  void DecodeImageIfNecessary(const CacheKey& key,
-                              const PaintImage& paint_image,
-                              CacheEntry* cache_entry);
+  TaskProcessingResult DecodeImageIfNecessary(const CacheKey& key,
+                                              const PaintImage& paint_image,
+                                              CacheEntry* cache_entry);
   void AddBudgetForImage(const CacheKey& key, CacheEntry* entry);
   void RemoveBudgetForImage(const CacheKey& key, CacheEntry* entry);
   base::Optional<CacheKey> FindCachedCandidate(const CacheKey& key);
@@ -151,16 +155,12 @@ class CC_EXPORT SoftwareImageDecodeCache
                      PaintImage::FrameKeyHash>
       frame_key_to_image_keys_;
 
-  const sk_sp<SkColorSpace> target_color_space_;
   MemoryBudget locked_images_budget_;
 
   const SkColorType color_type_;
   const PaintImage::GeneratorClientId generator_client_id_;
 
   size_t max_items_in_cache_;
-  // Records the maximum number of items in the cache over the lifetime of the
-  // cache. This is updated anytime we are requested to reduce cache usage.
-  size_t lifetime_max_items_in_cache_ = 0u;
 };
 
 }  // namespace cc

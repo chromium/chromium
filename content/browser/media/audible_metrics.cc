@@ -32,7 +32,7 @@ void AudibleMetrics::UpdateAudibleWebContentsState(
 
 void AudibleMetrics::WebContentsDestroyed(const WebContents* web_contents,
                                           bool recently_audible) {
-  if (base::ContainsKey(audible_web_contents_, web_contents))
+  if (base::Contains(audible_web_contents_, web_contents))
     RemoveAudibleWebContents(web_contents);
 
   // If we have two web contents and we go down to one, we should record

@@ -5,8 +5,10 @@
 #include "content/browser/webrtc/webrtc_internals_message_handler.h"
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
+#include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/webrtc/webrtc_internals.h"
-#include "content/common/media/peer_connection_tracker_messages.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -32,8 +34,12 @@ WebRTCInternalsMessageHandler::~WebRTCInternalsMessageHandler() {
 
 void WebRTCInternalsMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "getAllStats",
-      base::BindRepeating(&WebRTCInternalsMessageHandler::OnGetAllStats,
+      "getStandardStats",
+      base::BindRepeating(&WebRTCInternalsMessageHandler::OnGetStandardStats,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getLegacyStats",
+      base::BindRepeating(&WebRTCInternalsMessageHandler::OnGetLegacyStats,
                           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
@@ -83,12 +89,25 @@ RenderFrameHost* WebRTCInternalsMessageHandler::GetWebRTCInternalsHost() const {
   return host;
 }
 
-void WebRTCInternalsMessageHandler::OnGetAllStats(
+void WebRTCInternalsMessageHandler::OnGetStandardStats(
+    const base::ListValue* /* unused_list */) {
+  for (RenderProcessHost::iterator i(
+           content::RenderProcessHost::AllHostsIterator());
+       !i.IsAtEnd(); i.Advance()) {
+    auto* render_process_host =
+        static_cast<RenderProcessHostImpl*>(i.GetCurrentValue());
+    render_process_host->GetPeerConnectionTrackerHost()->GetStandardStats();
+  }
+}
+
+void WebRTCInternalsMessageHandler::OnGetLegacyStats(
     const base::ListValue* /* unused_list */) {
   for (RenderProcessHost::iterator i(
        content::RenderProcessHost::AllHostsIterator());
        !i.IsAtEnd(); i.Advance()) {
-    i.GetCurrentValue()->Send(new PeerConnectionTracker_GetAllStats());
+    auto* render_process_host =
+        static_cast<RenderProcessHostImpl*>(i.GetCurrentValue());
+    render_process_host->GetPeerConnectionTrackerHost()->GetLegacyStats();
   }
 }
 
@@ -153,7 +172,7 @@ void WebRTCInternalsMessageHandler::ExecuteJavascriptCommand(
     args_vector.push_back(args);
 
   base::string16 script = WebUI::GetJavascriptCall(command, args_vector);
-  host->ExecuteJavaScript(script);
+  host->ExecuteJavaScript(script, base::NullCallback());
 }
 
 }  // namespace content

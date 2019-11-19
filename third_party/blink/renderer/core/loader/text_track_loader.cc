@@ -25,17 +25,18 @@
 
 #include "third_party/blink/renderer/core/loader/text_track_loader.h"
 
-#include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
@@ -75,8 +76,10 @@ void TextTrackLoader::DataReceived(Resource* resource,
   if (state_ == kFailed)
     return;
 
-  if (!cue_parser_)
-    cue_parser_ = VTTParser::Create(this, GetDocument());
+  if (!cue_parser_) {
+    cue_parser_ = MakeGarbageCollected<VTTParser, VTTParserClient*, Document&>(
+        this, GetDocument());
+  }
 
   cue_parser_->ParseBytes(data, length);
 }
@@ -94,7 +97,7 @@ void TextTrackLoader::NotifyFinished(Resource* resource) {
   }
 
   if (!cue_load_timer_.IsActive())
-    cue_load_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+    cue_load_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 
   CancelLoad();
 }
@@ -112,8 +115,8 @@ bool TextTrackLoader::Load(const KURL& url,
   FetchParameters cue_fetch_params(ResourceRequest(url), options);
 
   if (cross_origin == kCrossOriginAttributeNotSet) {
-    cue_fetch_params.MutableResourceRequest().SetFetchRequestMode(
-        network::mojom::FetchRequestMode::kSameOrigin);
+    cue_fetch_params.MutableResourceRequest().SetMode(
+        network::mojom::RequestMode::kSameOrigin);
   } else {
     cue_fetch_params.SetCrossOriginAccessControl(
         GetDocument().GetSecurityOrigin(), cross_origin);
@@ -128,14 +131,14 @@ void TextTrackLoader::NewCuesParsed() {
     return;
 
   new_cues_available_ = true;
-  cue_load_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+  cue_load_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 }
 
 void TextTrackLoader::FileFailedToParse() {
   state_ = kFailed;
 
   if (!cue_load_timer_.IsActive())
-    cue_load_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+    cue_load_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 
   CancelLoad();
 }
@@ -145,6 +148,13 @@ void TextTrackLoader::GetNewCues(
   DCHECK(cue_parser_);
   if (cue_parser_)
     cue_parser_->GetNewCues(output_cues);
+}
+
+void TextTrackLoader::GetNewStyleSheets(
+    HeapVector<Member<CSSStyleSheet>>& output_sheets) {
+  DCHECK(cue_parser_);
+  if (cue_parser_)
+    cue_parser_->GetNewStyleSheets(output_sheets);
 }
 
 void TextTrackLoader::Trace(blink::Visitor* visitor) {

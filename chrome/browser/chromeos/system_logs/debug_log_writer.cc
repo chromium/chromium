@@ -20,7 +20,7 @@
 #include "base/task/post_task.h"
 #include "chrome/common/logging_chrome.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon_client.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -36,7 +36,8 @@ const char kTarCommand[] = "/bin/tar";
 
 base::LazySequencedTaskRunner g_sequenced_task_runner =
     LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::MayBlock(),
+        base::TaskTraits(base::ThreadPool(),
+                         base::MayBlock(),
                          base::TaskPriority::BEST_EFFORT,
                          base::TaskShutdownBehavior::BLOCK_SHUTDOWN));
 
@@ -115,7 +116,7 @@ void OnCompressArchiveCompleted(const base::FilePath& tar_file_path,
                                 bool compression_command_success) {
   if (!compression_command_success) {
     LOG(ERROR) << "Failed compressing " << compressed_output_path.value();
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(std::move(callback), base::FilePath(), false));
     base::DeleteFile(tar_file_path, false);
@@ -123,7 +124,7 @@ void OnCompressArchiveCompleted(const base::FilePath& tar_file_path,
     return;
   }
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(std::move(callback), compressed_output_path, true));
 }
@@ -135,7 +136,7 @@ void CompressArchive(const base::FilePath& tar_file_path,
                      bool add_user_logs_command_success) {
   if (!add_user_logs_command_success) {
     LOG(ERROR) << "Failed adding user logs to " << tar_file_path.value();
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(std::move(callback), base::FilePath(), false));
     base::DeleteFile(tar_file_path, false);
@@ -181,8 +182,9 @@ void OnSystemLogsAdded(DebugLogWriter::StoreLogsCallback callback,
   base::FilePath user_log_dir =
       logging::GetSessionLogDir(*base::CommandLine::ForCurrentProcess());
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&AddUserLogsToArchive, user_log_dir, tar_file_path,
                      compressed_output_path, std::move(callback)));
 }

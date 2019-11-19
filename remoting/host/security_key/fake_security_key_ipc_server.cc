@@ -31,8 +31,7 @@ FakeSecurityKeyIpcServer::FakeSecurityKeyIpcServer(
     : connection_id_(connection_id),
       send_message_callback_(send_message_callback),
       connect_callback_(connect_callback),
-      channel_closed_callback_(channel_closed_callback),
-      weak_factory_(this) {}
+      channel_closed_callback_(channel_closed_callback) {}
 
 FakeSecurityKeyIpcServer::~FakeSecurityKeyIpcServer() = default;
 

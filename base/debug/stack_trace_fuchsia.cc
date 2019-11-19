@@ -29,11 +29,7 @@
 
 namespace base {
 namespace debug {
-
 namespace {
-
-const char kProcessNamePrefix[] = "app:";
-const size_t kProcessNamePrefixLength = base::size(kProcessNamePrefix) - 1;
 
 struct BacktraceData {
   void** trace_array;
@@ -90,7 +86,7 @@ class SymbolMap {
     const void* addr = nullptr;
     std::array<Segment, kMaxSegmentCount> segments;
     size_t segment_count = 0;
-    char name[ZX_MAX_NAME_LEN + kProcessNamePrefixLength + 1] = {0};
+    char name[ZX_MAX_NAME_LEN + 1] = {0};
     char build_id[kMaxBuildIdStringLength + 1] = {0};
   };
 
@@ -129,11 +125,19 @@ void SymbolMap::Populate() {
   // if we keep hitting problems with truncation, find a way to plumb argv[0]
   // through to here instead, e.g. using CommandLine::GetProgramName().
   char app_name[std::extent<decltype(SymbolMap::Module::name)>()];
-  strncpy(app_name, kProcessNamePrefix, sizeof(kProcessNamePrefix));
-  zx_status_t status = zx_object_get_property(
-      process, ZX_PROP_NAME, app_name + kProcessNamePrefixLength,
-      sizeof(app_name) - kProcessNamePrefixLength);
-  if (status != ZX_OK) {
+  zx_status_t status =
+      zx_object_get_property(process, ZX_PROP_NAME, app_name, sizeof(app_name));
+  if (status == ZX_OK) {
+    // The process name may have a process type suffix at the end (e.g.
+    // "context", "renderer", gpu"), which doesn't belong in the module list.
+    // Trim the suffix from the name.
+    for (size_t i = 0; i < base::size(app_name) && app_name[i] != '\0'; ++i) {
+      if (app_name[i] == ':') {
+        app_name[i] = 0;
+        break;
+      }
+    }
+  } else {
     DPLOG(WARNING)
         << "Couldn't get name, falling back to 'app' for program name: "
         << status;

@@ -19,7 +19,6 @@ class Time;
 
 namespace offline_pages {
 
-class ClientPolicyController;
 class OfflinePageMetadataStore;
 
 // This task is responsible for clearing expired temporary pages from metadata
@@ -47,7 +46,6 @@ class ClearStorageTask : public Task {
 
   ClearStorageTask(OfflinePageMetadataStore* store,
                    ArchiveManager* archive_manager,
-                   ClientPolicyController* policy_controller,
                    const base::Time& clearup_time,
                    ClearStorageCallback callback);
   ~ClearStorageTask() override;
@@ -65,13 +63,10 @@ class ClearStorageTask : public Task {
   // The archive manager owning the archive directories to delete pages from.
   // Not owned.
   ArchiveManager* archive_manager_;
-  // The policy controller which is used to determine if a page needs to be
-  // cleared. Not owned.
-  ClientPolicyController* policy_controller_;
   ClearStorageCallback callback_;
   base::Time clearup_time_;
 
-  base::WeakPtrFactory<ClearStorageTask> weak_ptr_factory_;
+  base::WeakPtrFactory<ClearStorageTask> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(ClearStorageTask);
 };
 

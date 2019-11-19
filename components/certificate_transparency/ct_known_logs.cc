@@ -35,33 +35,22 @@ std::vector<CTLogInfo> GetKnownLogs() {
   return logs;
 }
 
-bool IsLogOperatedByGoogle(base::StringPiece log_id) {
-  CHECK_EQ(log_id.size(), crypto::kSHA256Length);
-
-  return std::binary_search(std::begin(kGoogleLogIDs), std::end(kGoogleLogIDs),
-                            log_id.data(), [](const char* a, const char* b) {
-                              return memcmp(a, b, crypto::kSHA256Length) < 0;
-                            });
+std::vector<std::string> GetLogsOperatedByGoogle() {
+  std::vector<std::string> result;
+  for (const auto& log_id : kGoogleLogIDs) {
+    result.push_back(std::string(log_id, crypto::kSHA256Length));
+  }
+  return result;
 }
 
-bool IsLogDisqualified(base::StringPiece log_id,
-                       base::Time* disqualification_date) {
-  CHECK_EQ(log_id.size(), base::size(kDisqualifiedCTLogList[0].log_id) - 1);
-
-  auto* p = std::lower_bound(
-      std::begin(kDisqualifiedCTLogList), std::end(kDisqualifiedCTLogList),
-      log_id.data(),
-      [](const DisqualifiedCTLogInfo& disqualified_log, const char* log_id) {
-        return memcmp(disqualified_log.log_id, log_id, crypto::kSHA256Length) <
-               0;
-      });
-  if (p == std::end(kDisqualifiedCTLogList) ||
-      memcmp(p->log_id, log_id.data(), crypto::kSHA256Length) != 0) {
-    return false;
+std::vector<std::pair<std::string, base::TimeDelta>> GetDisqualifiedLogs() {
+  std::vector<std::pair<std::string, base::TimeDelta>> result;
+  for (const auto& log : kDisqualifiedCTLogList) {
+    result.push_back(
+        std::make_pair(std::string(log.log_id, crypto::kSHA256Length),
+                       log.disqualification_date));
   }
-
-  *disqualification_date = base::Time::UnixEpoch() + p->disqualification_date;
-  return true;
+  return result;
 }
 
 }  // namespace certificate_transparency

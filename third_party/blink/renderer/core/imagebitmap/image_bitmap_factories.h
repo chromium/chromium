@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
+#include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -60,7 +61,7 @@ class ImageBitmapSource;
 class ImageBitmapOptions;
 
 class ImageBitmapFactories final
-    : public GarbageCollectedFinalized<ImageBitmapFactories>,
+    : public GarbageCollected<ImageBitmapFactories>,
       public Supplement<LocalDOMWindow>,
       public Supplement<WorkerGlobalScope>,
       public NameClient {
@@ -101,10 +102,9 @@ class ImageBitmapFactories final
   }
 
  private:
-  class ImageBitmapLoader final
-      : public GarbageCollectedFinalized<ImageBitmapLoader>,
-        public ContextLifecycleObserver,
-        public FileReaderLoaderClient {
+  class ImageBitmapLoader final : public GarbageCollected<ImageBitmapLoader>,
+                                  public ContextLifecycleObserver,
+                                  public FileReaderLoaderClient {
     USING_GARBAGE_COLLECTED_MIXIN(ImageBitmapLoader);
 
    public:
@@ -129,6 +129,8 @@ class ImageBitmapFactories final
     ~ImageBitmapLoader() override;
 
    private:
+    SEQUENCE_CHECKER(sequence_checker_);
+
     enum ImageBitmapRejectionReason {
       kUndecodableImageBitmapRejectionReason,
       kAllocationFailureImageBitmapRejectionReason,
@@ -136,12 +138,7 @@ class ImageBitmapFactories final
 
     void RejectPromise(ImageBitmapRejectionReason);
 
-    void ScheduleAsyncImageBitmapDecoding(DOMArrayBuffer*);
-    void DecodeImageOnDecoderThread(
-        scoped_refptr<base::SingleThreadTaskRunner>,
-        DOMArrayBuffer*,
-        const String& premultiply_alpha_option,
-        const String& color_space_conversion_option);
+    void ScheduleAsyncImageBitmapDecoding(ArrayBufferContents);
     void ResolvePromiseOnOriginalThread(sk_sp<SkImage>);
 
     // ContextLifecycleObserver

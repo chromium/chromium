@@ -7,7 +7,13 @@ per-file web_ax_enums.h=nektar@chromium.org
 per-file web_performance.h=bmcquade@chromium.org
 per-file web_performance.h=csharrison@chromium.org
 
+# Workers
+per-file web_embedded_worker.h=file://content/browser/service_worker/OWNERS
+per-file web_embedded_worker_start_data.h=file://content/browser/service_worker/OWNERS
+per-file web_shared_worker.h=file://third_party/blink/renderer/core/workers/OWNERS
+per-file web_shared_worker_client.h=file://third_party/blink/renderer/core/workers/OWNERS
+
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
-per-file *_struct_traits*.*=set noparent
-per-file *_struct_traits*.*=file://ipc/SECURITY_OWNERS
+per-file *_mojom_traits*.*=set noparent
+per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS

@@ -1,0 +1,17 @@
+<html>
+<head>
+<script>
+function makeDeeper() {
+  // Create an about:blank iframe nested inside the existing #f1 about:blank
+  // iframe.
+  var iframe = document.getElementById("f1");
+  var grandKid = iframe.contentDocument.createElement("iframe");
+  iframe.contentDocument.body.appendChild(grandKid);
+}
+</script>
+</head>
+<body onload="makeDeeper()">
+  <p>This page has an iframe. Yay for iframes!
+  <p><iframe src="about:blank" id="f1"></iframe>
+</body>
+</html>

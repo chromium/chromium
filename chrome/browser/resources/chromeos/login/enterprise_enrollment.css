@@ -1,0 +1,100 @@
+/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+:host {
+  padding: 0;
+}
+
+:host(.saml) #oauth-enroll-step-contents {
+  padding-top: 44px;
+}
+
+:host(:not(.saml)) #oauth-saml-notice-container {
+  display: none;
+}
+
+#oauth-enroll-step-contents,
+#oauth-enroll-step-contents > div {
+  height: 100%;
+  width: 100%;
+}
+
+#oauth-enroll-step-contents {
+  color: #666;
+}
+
+#step-error {
+  display: table;
+  height: 480px;
+  margin: 0 auto;
+}
+
+#oauth-enroll-auth-view {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  padding: 0;
+  width: 100%;
+}
+
+#oauth-enroll-learn-more-link {
+  display: inline;
+}
+
+.oauth-enroll-step-content {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.oauth-enroll-step-message {
+  display: inline-block;
+  padding-top: 20px;
+  text-align: start;
+  vertical-align: top;
+}
+
+.oauth-enroll-link {
+  color: rgb(17, 85, 204);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.oauth-enroll-button {
+  display: none;
+}
+
+#oauth-saml-notice-container {
+  align-items: center;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.17);
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  left: 0;
+  min-height: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#oauth-saml-notice-message {
+  color: rgb(106, 106, 106);
+  font-size: 13px;
+}
+
+#oauth-enroll-attribute-prompt-message {
+  color: black;
+}
+
+#oauth-enroll-attribute-input {
+  padding-top: 24px;
+}
+
+#oauth-enroll-navigation {
+  color: rgba(0, 0, 0, .54);
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}

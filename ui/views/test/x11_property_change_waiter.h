@@ -53,7 +53,7 @@ class X11PropertyChangeWaiter : public ui::PlatformEventDispatcher {
   bool wait_;
 
   // Ends the run loop.
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
 
   std::unique_ptr<ui::ScopedEventDispatcher> dispatcher_;
 

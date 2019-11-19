@@ -31,7 +31,7 @@ class BASE_EXPORT TraceConfigCategoryFilter {
   void InitializeFromString(const StringPiece& category_filter_string);
 
   // Initializes TraceConfigCategoryFilter object from the config dictionary.
-  void InitializeFromConfigDict(const DictionaryValue& dict);
+  void InitializeFromConfigDict(const Value& dict);
 
   // Merges this with category filter config.
   void Merge(const TraceConfigCategoryFilter& config);
@@ -48,7 +48,7 @@ class BASE_EXPORT TraceConfigCategoryFilter {
   // category is enabled from the tracing runtime's perspective.
   bool IsCategoryEnabled(const StringPiece& category_name) const;
 
-  void ToDict(DictionaryValue* dict) const;
+  void ToDict(Value* dict) const;
 
   std::string ToFilterString() const;
 
@@ -59,12 +59,12 @@ class BASE_EXPORT TraceConfigCategoryFilter {
   const StringList& excluded_categories() const { return excluded_categories_; }
 
  private:
-  void SetCategoriesFromIncludedList(const ListValue& included_list);
-  void SetCategoriesFromExcludedList(const ListValue& excluded_list);
+  void SetCategoriesFromIncludedList(const Value& included_list);
+  void SetCategoriesFromExcludedList(const Value& excluded_list);
 
   void AddCategoriesToDict(const StringList& categories,
                            const char* param,
-                           DictionaryValue* dict) const;
+                           Value* dict) const;
 
   void WriteCategoryFilterString(const StringList& values,
                                  std::string* out,

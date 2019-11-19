@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ash_switches.h"
 #include "base/command_line.h"
+#include "chrome/browser/chromeos/child_accounts/child_account_test_utils.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -15,14 +16,17 @@ namespace chromeos {
 
 namespace {
 constexpr char kGAIAHost[] = "accounts.google.com";
-constexpr char kTestAllScopeAccessToken[] = "fake-all-scope-token";
 }  // namespace
 
 // static
 const char FakeGaiaMixin::kFakeUserEmail[] = "fake-email@gmail.com";
 const char FakeGaiaMixin::kFakeUserPassword[] = "fake-password";
 const char FakeGaiaMixin::kFakeUserGaiaId[] = "fake-gaiaId";
+const char FakeGaiaMixin::kFakeAuthCode[] = "fake-auth-code";
+const char FakeGaiaMixin::kFakeRefreshToken[] = "fake-refresh-token";
 const char FakeGaiaMixin::kEmptyUserServices[] = "[]";
+const char FakeGaiaMixin::kFakeAllScopeAccessToken[] = "fake-all-scope-token";
+const int FakeGaiaMixin::kFakeAccessTokenExpiration = 3600;
 
 const char FakeGaiaMixin::kFakeSIDCookie[] = "fake-SID-cookie";
 const char FakeGaiaMixin::kFakeLSIDCookie[] = "fake-LSID-cookie";
@@ -52,11 +56,50 @@ void FakeGaiaMixin::SetupFakeGaiaForLogin(const std::string& user_email,
     fake_gaia_->MapEmailToGaiaId(user_email, gaia_id);
 
   FakeGaia::AccessTokenInfo token_info;
-  token_info.token = kTestAllScopeAccessToken;
+  token_info.token = kFakeAllScopeAccessToken;
   token_info.audience = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   token_info.email = user_email;
   token_info.any_scope = true;
+  token_info.expires_in = kFakeAccessTokenExpiration;
   fake_gaia_->IssueOAuthToken(refresh_token, token_info);
+}
+
+void FakeGaiaMixin::SetupFakeGaiaForChildUser(const std::string& user_email,
+                                              const std::string& gaia_id,
+                                              const std::string& refresh_token,
+                                              bool issue_any_scope_token) {
+  if (!gaia_id.empty())
+    fake_gaia_->MapEmailToGaiaId(user_email, gaia_id);
+
+  FakeGaia::AccessTokenInfo user_info_token;
+  user_info_token.scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
+  user_info_token.scopes.insert(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
+  user_info_token.audience = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
+
+  user_info_token.token = "fake-userinfo-token";
+  user_info_token.expires_in = kFakeAccessTokenExpiration;
+  user_info_token.email = user_email;
+  fake_gaia_->IssueOAuthToken(refresh_token, user_info_token);
+
+  if (issue_any_scope_token) {
+    FakeGaia::AccessTokenInfo all_scopes_token;
+    all_scopes_token.token = kFakeAllScopeAccessToken;
+    all_scopes_token.audience =
+        GaiaUrls::GetInstance()->oauth2_chrome_client_id();
+    all_scopes_token.expires_in = kFakeAccessTokenExpiration;
+    all_scopes_token.email = user_email;
+    all_scopes_token.any_scope = true;
+    fake_gaia_->IssueOAuthToken(refresh_token, all_scopes_token);
+  }
+
+  if (initialize_fake_merge_session()) {
+    fake_gaia_->SetFakeMergeSessionParams(user_email, kFakeSIDCookie,
+                                          kFakeLSIDCookie);
+
+    FakeGaia::MergeSessionParams merge_session_update;
+    merge_session_update.id_token = test::GetChildAccountOAuthIdToken();
+    fake_gaia_->UpdateMergeSessionParams(merge_session_update);
+  }
 }
 
 void FakeGaiaMixin::SetupFakeGaiaForLoginManager() {
@@ -66,6 +109,7 @@ void FakeGaiaMixin::SetupFakeGaiaForLoginManager() {
   token_info.audience = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
 
   token_info.token = kTestUserinfoToken1;
+  token_info.expires_in = kFakeAccessTokenExpiration;
   token_info.email = kEnterpriseUser1;
   fake_gaia_->IssueOAuthToken(kTestRefreshToken1, token_info);
 
@@ -83,8 +127,8 @@ void FakeGaiaMixin::SetUpCommandLine(base::CommandLine* command_line) {
   // This needs to happen after the embedded test server is initialized, which
   // happens after FakeGaiaMixin::SetUp() but before
   // FakeGaiaMixin::SetUpCommandLine().
-  ASSERT_TRUE(gaia_https_forwarder_.Initialize(
-      kGAIAHost, embedded_test_server_->base_url()));
+  CHECK(gaia_https_forwarder_.Initialize(kGAIAHost,
+                                         embedded_test_server_->base_url()));
 
   GURL gaia_url = gaia_https_forwarder_.GetURLForSSLHost(std::string());
   command_line->AppendSwitchASCII(::switches::kGaiaUrl, gaia_url.spec());
@@ -102,6 +146,10 @@ void FakeGaiaMixin::SetUpOnMainThread() {
     fake_gaia_->SetFakeMergeSessionParams(kFakeUserEmail, kFakeSIDCookie,
                                           kFakeLSIDCookie);
   }
+}
+
+void FakeGaiaMixin::TearDownOnMainThread() {
+  EXPECT_TRUE(gaia_https_forwarder_.Stop());
 }
 
 }  // namespace chromeos

@@ -17,8 +17,11 @@ class GURL;
 namespace content {
 class NavigationHandle;
 class WebContents;
-enum class OriginPolicyErrorReason;
 }  // namespace content
+
+namespace network {
+enum class OriginPolicyState;
+}
 
 namespace security_interstitials {
 class SecurityInterstitialPage;
@@ -29,13 +32,13 @@ class OriginPolicyUI {
   // Create the error page for the given NavigationHandle.
   // This is intended to implement the ContentBrowserClient interface.
   static base::Optional<std::string> GetErrorPageAsHTML(
-      content::OriginPolicyErrorReason error_reason,
+      network::OriginPolicyState error_reason,
       content::NavigationHandle* handle);
 
   // Create the error page instance for the given WebContents + URL.
   // This is intended for use by debug functions (like chrome:://interstitials).
   static SecurityInterstitialPage* GetBlockingPage(
-      content::OriginPolicyErrorReason error_reason,
+      network::OriginPolicyState error_reason,
       content::WebContents* web_contents,
       const GURL& url);
 };

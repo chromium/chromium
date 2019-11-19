@@ -91,10 +91,10 @@ TEST_P(SignedExchangeEnvelopeTest, ParseGoldenFile) {
   base::StringPiece signature_header_field(
       contents.data() + signature_header_field_offset,
       prologue_b.signature_header_field_length());
-  const auto cbor_bytes = base::make_span<const uint8_t>(
-      contents_bytes + signature_header_field_offset +
-          prologue_b.signature_header_field_length(),
-      prologue_b.cbor_header_length());
+  const auto cbor_bytes =
+      base::make_span(contents_bytes + signature_header_field_offset +
+                          prologue_b.signature_header_field_length(),
+                      prologue_b.cbor_header_length());
   const base::Optional<SignedExchangeEnvelope> envelope =
       SignedExchangeEnvelope::Parse(
           SignedExchangeVersion::kB3, prologue_b.fallback_url(),

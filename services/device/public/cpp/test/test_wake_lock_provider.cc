@@ -9,8 +9,8 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/public/mojom/constants.mojom.h"
 
 namespace device {
@@ -19,12 +19,12 @@ namespace device {
 class TestWakeLockProvider::TestWakeLock : public mojom::WakeLock,
                                            public service_manager::Service {
  public:
-  TestWakeLock(mojom::WakeLockRequest request,
+  TestWakeLock(mojo::PendingReceiver<mojom::WakeLock> receiver,
                mojom::WakeLockType type,
                TestWakeLockProvider* provider)
       : type_(type), provider_(provider) {
-    AddClient(std::move(request));
-    bindings_.set_connection_error_handler(base::BindRepeating(
+    AddClient(std::move(receiver));
+    receivers_.set_disconnect_handler(base::BindRepeating(
         &TestWakeLock::OnConnectionError, base::Unretained(this)));
   }
 
@@ -34,35 +34,34 @@ class TestWakeLockProvider::TestWakeLock : public mojom::WakeLock,
 
   // mojom::WakeLock:
   void RequestWakeLock() override {
-    DCHECK(bindings_.dispatch_context());
+    DCHECK(receivers_.current_context());
     DCHECK_GE(num_lock_requests_, 0);
 
     // Coalesce consecutive requests from the same client.
-    if (*bindings_.dispatch_context())
+    if (*receivers_.current_context())
       return;
 
-    *bindings_.dispatch_context() = true;
+    *receivers_.current_context() = true;
     num_lock_requests_++;
     CheckAndNotifyProvider();
   }
 
   void CancelWakeLock() override {
-    DCHECK(bindings_.dispatch_context());
+    DCHECK(receivers_.current_context());
 
     // Coalesce consecutive cancel requests from the same client. Also ignore a
     // CancelWakeLock call without a RequestWakeLock call.
-    if (!(*bindings_.dispatch_context()))
+    if (!(*receivers_.current_context()))
       return;
 
     DCHECK_GT(num_lock_requests_, 0);
-    *bindings_.dispatch_context() = false;
+    *receivers_.current_context() = false;
     num_lock_requests_--;
     CheckAndNotifyProvider();
   }
 
-  void AddClient(mojom::WakeLockRequest request) override {
-    bindings_.AddBinding(this, std::move(request),
-                         std::make_unique<bool>(false));
+  void AddClient(mojo::PendingReceiver<mojom::WakeLock> receiver) override {
+    receivers_.Add(this, std::move(receiver), std::make_unique<bool>(false));
   }
 
   void ChangeType(mojom::WakeLockType type,
@@ -77,15 +76,15 @@ class TestWakeLockProvider::TestWakeLock : public mojom::WakeLock,
   void OnConnectionError() {
     // If there is an outstanding request by this client then decrement its
     // request and check if the wake lock is deactivated.
-    DCHECK(bindings_.dispatch_context());
-    if (*bindings_.dispatch_context() && num_lock_requests_ > 0) {
+    DCHECK(receivers_.current_context());
+    if (*receivers_.current_context() && num_lock_requests_ > 0) {
       num_lock_requests_--;
       CheckAndNotifyProvider();
     }
 
     // TestWakeLockProvider will take care of deleting this object as it owns
     // it.
-    if (bindings_.empty())
+    if (receivers_.empty())
       provider_->OnConnectionError(type_, this);
   }
 
@@ -107,7 +106,7 @@ class TestWakeLockProvider::TestWakeLock : public mojom::WakeLock,
   // Not owned.
   TestWakeLockProvider* provider_;
 
-  mojo::BindingSet<mojom::WakeLock, std::unique_ptr<bool>> bindings_;
+  mojo::ReceiverSet<mojom::WakeLock, std::unique_ptr<bool>> receivers_;
 
   int num_lock_requests_ = 0;
 
@@ -119,7 +118,6 @@ class TestWakeLockProvider::TestWakeLock : public mojom::WakeLock,
 // would be 3.
 struct TestWakeLockProvider::WakeLockDataPerType {
   WakeLockDataPerType() = default;
-  WakeLockDataPerType(WakeLockDataPerType&&) = default;
   ~WakeLockDataPerType() = default;
 
   // Currently held count of this wake lock type.
@@ -130,14 +128,12 @@ struct TestWakeLockProvider::WakeLockDataPerType {
   std::map<TestWakeLock*, std::unique_ptr<TestWakeLock>> wake_locks;
 
   // Observers for this wake lock type.
-  mojo::InterfacePtrSet<mojom::WakeLockObserver> observers;
+  mojo::RemoteSet<mojom::WakeLockObserver> observers;
 
   DISALLOW_COPY_AND_ASSIGN(WakeLockDataPerType);
 };
 
-TestWakeLockProvider::TestWakeLockProvider(
-    service_manager::mojom::ServiceRequest request)
-    : service_binding_(this, std::move(request)) {
+TestWakeLockProvider::TestWakeLockProvider() {
   // Populates |wake_lock_store_| with entries for all types of wake locks.
   wake_lock_store_[mojom::WakeLockType::kPreventAppSuspension] =
       std::make_unique<WakeLockDataPerType>();
@@ -147,11 +143,22 @@ TestWakeLockProvider::TestWakeLockProvider(
       std::make_unique<WakeLockDataPerType>();
 }
 
+TestWakeLockProvider::TestWakeLockProvider(
+    service_manager::mojom::ServiceRequest request)
+    : TestWakeLockProvider() {
+  service_binding_.Bind(std::move(request));
+}
+
 TestWakeLockProvider::~TestWakeLockProvider() = default;
+
+void TestWakeLockProvider::BindReceiver(
+    mojo::PendingReceiver<mojom::WakeLockProvider> receiver) {
+  receivers_.Add(this, std::move(receiver));
+}
 
 void TestWakeLockProvider::GetWakeLockContextForID(
     int context_id,
-    mojo::InterfaceRequest<mojom::WakeLockContext> request) {
+    mojo::PendingReceiver<mojom::WakeLockContext> receiver) {
   // This method is only used on Android.
   NOTIMPLEMENTED();
 }
@@ -160,10 +167,10 @@ void TestWakeLockProvider::GetWakeLockWithoutContext(
     mojom::WakeLockType type,
     mojom::WakeLockReason reason,
     const std::string& description,
-    mojom::WakeLockRequest request) {
+    mojo::PendingReceiver<mojom::WakeLock> receiver) {
   // Create a wake lock and store it to manage it's lifetime.
   auto wake_lock =
-      std::make_unique<TestWakeLock>(std::move(request), type, this);
+      std::make_unique<TestWakeLock>(std::move(receiver), type, this);
   GetWakeLockDataPerType(type).wake_locks[wake_lock.get()] =
       std::move(wake_lock);
 }
@@ -173,8 +180,8 @@ void TestWakeLockProvider::OnBindInterface(
     const std::string& interface_name,
     mojo::ScopedMessagePipeHandle interface_pipe) {
   DCHECK_EQ(interface_name, mojom::WakeLockProvider::Name_);
-  bindings_.AddBinding(
-      this, mojom::WakeLockProviderRequest(std::move(interface_pipe)));
+  receivers_.Add(this, mojo::PendingReceiver<mojom::WakeLockProvider>(
+                           std::move(interface_pipe)));
 }
 
 void TestWakeLockProvider::OnConnectionError(mojom::WakeLockType type,
@@ -209,22 +216,21 @@ void TestWakeLockProvider::OnWakeLockDeactivated(mojom::WakeLockType type) {
   // Notify observers of the last cancelation i.e. deactivation of wake lock
   // type |type|.
   if (new_count == 0) {
-    GetWakeLockDataPerType(type).observers.ForAllPtrs(
-        [type](mojom::WakeLockObserver* wake_lock_observer) {
-          wake_lock_observer->OnWakeLockDeactivated(type);
-        });
+    for (auto& observer : GetWakeLockDataPerType(type).observers)
+      observer->OnWakeLockDeactivated(type);
   }
 }
 
 void TestWakeLockProvider::NotifyOnWakeLockDeactivation(
     mojom::WakeLockType type,
-    mojom::WakeLockObserverPtr observer) {
+    mojo::PendingRemote<mojom::WakeLockObserver> pending_observer) {
+  mojo::Remote<mojom::WakeLockObserver> observer(std::move(pending_observer));
   // Notify observer immediately if wake lock is deactivated. Add it to the
   // observers list for future deactivation notifications.
   if (GetWakeLockDataPerType(type).count == 0) {
     observer->OnWakeLockDeactivated(type);
   }
-  GetWakeLockDataPerType(type).observers.AddPtr(std::move(observer));
+  GetWakeLockDataPerType(type).observers.Add(std::move(observer));
 }
 
 void TestWakeLockProvider::GetActiveWakeLocksForTests(

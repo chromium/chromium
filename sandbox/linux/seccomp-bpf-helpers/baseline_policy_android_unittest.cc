@@ -33,5 +33,10 @@ BPF_TEST_C(BaselinePolicyAndroid, CanOpenProcCpuinfo, BaselinePolicyAndroid) {
   BPF_ASSERT_NE(-1, open("/proc/cpuinfo", O_RDONLY));
 }
 
+BPF_TEST_C(BaselinePolicyAndroid, Membarrier, BaselinePolicyAndroid) {
+  // Should not crash.
+  syscall(__NR_membarrier, 32 /* cmd */, 0 /* flags */);
+}
+
 }  // namespace
 }  // namespace sandbox

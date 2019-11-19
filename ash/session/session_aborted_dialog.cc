@@ -5,7 +5,7 @@
 #include "ash/session/session_aborted_dialog.h"
 
 #include "ash/root_window_controller.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -57,12 +57,6 @@ int SessionAbortedDialog::GetDialogButtons() const {
   return ui::DIALOG_BUTTON_OK;
 }
 
-base::string16 SessionAbortedDialog::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  return l10n_util::GetStringUTF16(
-      IDS_ASH_MULTIPROFILES_SESSION_ABORT_BUTTON_LABEL);
-}
-
 ui::ModalType SessionAbortedDialog::GetModalType() const {
   return ui::MODAL_TYPE_SYSTEM;
 }
@@ -82,7 +76,13 @@ gfx::Size SessionAbortedDialog::CalculatePreferredSize() const {
       GetLayoutManager()->GetPreferredHeightForWidth(this, kDefaultWidth));
 }
 
-SessionAbortedDialog::SessionAbortedDialog() = default;
+SessionAbortedDialog::SessionAbortedDialog() {
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_MULTIPROFILES_SESSION_ABORT_BUTTON_LABEL));
+}
+
 SessionAbortedDialog::~SessionAbortedDialog() = default;
 
 void SessionAbortedDialog::InitDialog(const std::string& user_email) {

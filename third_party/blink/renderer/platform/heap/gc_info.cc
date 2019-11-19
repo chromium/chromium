@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/heap/gc_info.h"
 
+#include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/bits.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -51,7 +52,7 @@ void GCInfoTable::CreateGlobalTable() {
 
 uint32_t GCInfoTable::EnsureGCInfoIndex(
     const GCInfo* gc_info,
-    std::atomic_uint32_t* gc_info_index_slot) {
+    std::atomic<uint32_t>* gc_info_index_slot) {
   DCHECK(gc_info);
   DCHECK(gc_info_index_slot);
 
@@ -113,7 +114,7 @@ GCInfoTable::GCInfoTable() {
   CHECK(!table_);
   table_ = reinterpret_cast<GCInfo const**>(base::AllocPages(
       nullptr, MaxTableSize(), base::kPageAllocationGranularity,
-      base::PageInaccessible));
+      base::PageInaccessible, base::PageTag::kBlinkGC));
   CHECK(table_);
   Resize();
 }

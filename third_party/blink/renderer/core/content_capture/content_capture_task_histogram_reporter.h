@@ -7,9 +7,8 @@
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
@@ -22,8 +21,6 @@ class CORE_EXPORT ContentCaptureTaskHistogramReporter
       "ContentCapture.CaptureContentDelayTime";
   static constexpr char kCaptureContentTime[] =
       "ContentCapture.CaptureContentTime";
-  static constexpr char kCaptureOneContentTime[] =
-      "ContentCapture.CaptureOneContentTime";
   static constexpr char kSendContentTime[] = "ContentCapture.SendContentTime";
   static constexpr char kSentContentCount[] = "ContentCapture.SentContentCount";
 
@@ -39,15 +36,15 @@ class CORE_EXPORT ContentCaptureTaskHistogramReporter
 
  private:
   // The time of first content change since the last content captured.
-  base::Optional<WTF::TimeTicks> content_change_time_;
+  base::Optional<base::TimeTicks> content_change_time_;
   // The copy of |content_change_time| after the content has been captured; we
   // need to record the time the content has been sent, |content_change_time_|
   // shall be released for the next content change.
-  base::Optional<WTF::TimeTicks> captured_content_change_time_;
+  base::Optional<base::TimeTicks> captured_content_change_time_;
   // The time to start capturing content.
-  WTF::TimeTicks capture_content_start_time_;
+  base::TimeTicks capture_content_start_time_;
   // The time to start sending content.
-  WTF::TimeTicks send_content_start_time_;
+  base::TimeTicks send_content_start_time_;
 
   // Records time from first content change to content that has been sent, its
   // range is 500ms from to 30s.
@@ -55,10 +52,6 @@ class CORE_EXPORT ContentCaptureTaskHistogramReporter
   // Records time to capture the content, its range is from 0 to 50,000
   // microseconds.
   CustomCountHistogram capture_content_time_histogram_;
-  // Records time to capture one content, this is the average of all captured
-  // content for a specific ContentCapture, its range is from 0 to 50,000
-  // microseconds.
-  CustomCountHistogram capture_one_content_time_histogram_;
   // Records time to send the content, its range is from 0 to 50,000
   // microseconds.
   CustomCountHistogram send_content_time_histogram_;

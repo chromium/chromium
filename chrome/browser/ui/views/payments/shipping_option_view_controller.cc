@@ -121,4 +121,9 @@ ShippingOptionViewController::CreateExtraFooterView() {
   return nullptr;
 }
 
+bool ShippingOptionViewController::ShouldShowSecondaryButton() {
+  // Do not show the "Cancel Payment" button.
+  return false;
+}
+
 }  // namespace payments

@@ -1,0 +1,8 @@
+[document web] enabled
+++[section] enabled
+++++[combo box] enabled setsize:4
+++++++[menu] enabled setsize:4
+++++++++[menu item] name='Volvo Label' enabled selectable posinset:1 setsize:4
+++++++++[menu item] name='Saab Label' enabled selectable posinset:2 setsize:4
+++++++++[menu item] name='Mercedes Label' enabled selectable selected posinset:3 setsize:4
+++++++++[menu item] name='Audi Label' enabled selectable posinset:4 setsize:4

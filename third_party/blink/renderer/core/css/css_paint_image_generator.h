@@ -13,7 +13,7 @@
 
 namespace blink {
 
-class CSSSyntaxDescriptor;
+class CSSSyntaxDefinition;
 class Document;
 class Image;
 class ImageResourceObserver;
@@ -21,13 +21,13 @@ class ImageResourceObserver;
 // Produces a PaintGeneratedImage from a CSS Paint API callback.
 // https://drafts.css-houdini.org/css-paint-api/
 class CORE_EXPORT CSSPaintImageGenerator
-    : public GarbageCollectedFinalized<CSSPaintImageGenerator> {
+    : public GarbageCollected<CSSPaintImageGenerator> {
  public:
   // This observer is used if the paint worklet doesn't have a javascript
   // class registered with the correct name yet.
   // paintImageGeneratorReady is called when the javascript class is
   // registered and ready to use.
-  class Observer : public GarbageCollectedFinalized<Observer> {
+  class Observer : public GarbageCollected<Observer> {
    public:
     virtual ~Observer() = default;
 
@@ -45,19 +45,22 @@ class CORE_EXPORT CSSPaintImageGenerator
       const Document&,
       Observer*);
   static void Init(CSSPaintImageGeneratorCreateFunction);
+  static CSSPaintImageGeneratorCreateFunction* GetCreateFunctionForTesting();
 
   // Invokes the CSS Paint API 'paint' callback. May return a nullptr
   // representing an invalid image if an error occurred.
   // The |container_size| is the container size with subpixel snapping.
   virtual scoped_refptr<Image> Paint(const ImageResourceObserver&,
                                      const FloatSize& container_size,
-                                     const CSSStyleValueVector*) = 0;
+                                     const CSSStyleValueVector*,
+                                     float device_scale_factor) = 0;
 
   virtual const Vector<CSSPropertyID>& NativeInvalidationProperties() const = 0;
   virtual const Vector<AtomicString>& CustomInvalidationProperties() const = 0;
   virtual bool HasAlpha() const = 0;
-  virtual const Vector<CSSSyntaxDescriptor>& InputArgumentTypes() const = 0;
+  virtual const Vector<CSSSyntaxDefinition>& InputArgumentTypes() const = 0;
   virtual bool IsImageGeneratorReady() const = 0;
+  virtual int WorkletId() const = 0;
 
   virtual void Trace(blink::Visitor* visitor) {}
 };

@@ -1,0 +1,240 @@
+This scenario verifies that the green "container" element and lime "innerScrolling" element scroll properly even though there is a blue fixed-position element layered in between them.
+
+The catch is that the squashing requirements should be computed in correct paint order, so that the green container does not accidentally position itself with respect to the wrong layer and not scroll.
+
+CASE 1, original layer tree:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [785, 4100],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='backgroundFixed'",
+      "bounds": [400, 400],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='container'",
+      "bounds": [100, 4000],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='innerFixed'",
+      "bounds": [200, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='innerScrolling'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FF00",
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 100, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 150, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 0, 0, 1]
+      ]
+    }
+  ]
+}
+
+CASE 2, scrolling y by 10 pixels, both the "container" and "inner" should scroll properly.
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [785, 4100],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='backgroundFixed'",
+      "bounds": [400, 400],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='container'",
+      "bounds": [100, 4000],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='innerFixed'",
+      "bounds": [200, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 3
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='innerScrolling'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FF00",
+      "transform": 4
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -10, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 100, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 150, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 0, 0, 1]
+      ]
+    }
+  ]
+}
+
+CASE 3, scrolling y further so that "inner" no longer overlaps the fixed-pos layer, then the stacking context of "container" includes the "innerScrolling" layer, and doubles in width:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [785, 4100],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='backgroundFixed'",
+      "bounds": [400, 400],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='container'",
+      "bounds": [200, 4000],
+      "backgroundColor": "#008000",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='innerScrolling'",
+          "rect": [100, 0, 100, 100],
+          "reason": "appeared"
+        }
+      ],
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='innerFixed'",
+      "bounds": [200, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -110, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 100, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 150, 0, 1]
+      ]
+    }
+  ]
+}
+

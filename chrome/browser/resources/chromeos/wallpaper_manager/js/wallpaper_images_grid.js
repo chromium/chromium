@@ -90,7 +90,7 @@ cr.define('wallpapers', function() {
         return;
       }
 
-      var imageEl = cr.doc.createElement('img');
+      var imageEl = document.createElement('img');
       // Do not show the image until |cropImageToFitGrid_| is done.
       imageEl.style.visibility = 'hidden';
       imageEl.setAttribute('aria-hidden', 'true');
@@ -391,6 +391,7 @@ cr.define('wallpapers', function() {
         }
       }
 
+      // eslint-disable-next-line no-restricted-properties
       var parentSetter = cr.ui.Grid.prototype.__lookupSetter__('dataModel');
       parentSetter.call(this, dataModel);
     },
@@ -523,7 +524,7 @@ cr.define('wallpapers', function() {
       // checkmark_ needs to be initialized before set data model. Otherwise, we
       // may try to access checkmark before initialization in
       // updateActiveThumb_().
-      this.checkmark_ = cr.doc.createElement('div');
+      this.checkmark_ = document.createElement('div');
       this.checkmark_.classList.add('check');
       this.checkmark_.setAttribute(
           'aria-label', loadTimeData.getString('setSuccessfullyMessage'));
@@ -595,18 +596,21 @@ cr.define('wallpapers', function() {
      */
     updateActiveThumb_: function() {
       var selectedGridItem = this.getListItem(this.activeItem_);
-      if (this.checkmark_.parentNode &&
-          this.checkmark_.parentNode == selectedGridItem) {
-        return;
-      }
 
       // Clears previous checkmark.
       var previousSelectedGridItem = this.checkmark_.parentNode;
-      if (previousSelectedGridItem)
+      if (previousSelectedGridItem) {
+        previousSelectedGridItem.selected = false;
         previousSelectedGridItem.removeChild(this.checkmark_);
+      }
 
-      if (selectedGridItem)
+      if (selectedGridItem) {
+        selectedGridItem.selected = true;
         selectedGridItem.appendChild(this.checkmark_);
+      }
+
+      WallpaperUtil.saveToLocalStorage(
+          Constants.AccessLastUsedImageInfoKey, this.activeItem_);
     },
 
     /**
@@ -709,12 +713,16 @@ cr.define('wallpapers', function() {
         var scrollUp =
             this.cachedScrollTop_ && this.cachedScrollTop_ > this.scrollTop;
         for (var i = 0; i < this.dataModel.length; ++i) {
-          if (this.getListItemByIndex(i)) {
-            this.getListItemByIndex(i).classList.toggle(
+          const listItem = this.getListItemByIndex(i);
+          if (listItem) {
+            listItem.classList.toggle(
                 'first-row',
                 i < this.columns &&
                     (this.firstIndex_ == 0 || i != this.firstIndex_ ||
                      scrollUp));
+            listItem.tabIndex = 0;
+            listItem.setAttribute(
+                'aria-label', this.dataModel.item(i).ariaLabel);
           }
         }
       }

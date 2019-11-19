@@ -6,7 +6,7 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "ui/gfx/mojo/font_render_params.mojom";
+import "ui/gfx/mojom/font_render_params.mojom";
 
 const int64 kDefaultCaretBlinkIntervalInMilliseconds = 500;
 
@@ -40,11 +40,8 @@ struct RendererPreferences {
   // positions for glyphs.  Currently only used by Linux.
   bool use_subpixel_positioning = false;
 
+  // The color of the focus ring. Currently only used on Linux.
   uint32 focus_ring_color = 0xFFE59700;
-  [EnableIf=is_android]
-  float minimum_stroke_width_for_focus_ring = 1.0;
-  [EnableIf=is_android]
-  bool is_focus_ring_outset = false;
 
   // The colors used in selection text. Currently only used on Linux and Ash.
   uint32 active_selection_bg_color = 0xFF1E90FF;
@@ -66,11 +63,13 @@ struct RendererPreferences {
   bool use_custom_colors = true;
 
   // Set to false to not send referrers.
-  // The default value should be in sync with blink::PrivacyPreferences.
   bool enable_referrers = true;
 
+  // Set to true to allow third-party sub-content to pop-up HTTP basic auth
+  // dialog boxes.
+  bool allow_cross_origin_auth_prompt = false;
+
   // Set to true to indicate that the preference to set DNT to 1 is enabled.
-  // The default value should be in sync with blink::PrivacyPreferences.
   bool enable_do_not_track = false;
 
   // Whether to allow the use of Encrypted Media Extensions (EME), except for
@@ -87,6 +86,8 @@ struct RendererPreferences {
   // zero in both fields means all ports are allowed.
   uint16 webrtc_udp_min_port = 0;
   uint16 webrtc_udp_max_port = 0;
+
+  array<string> webrtc_local_ips_allowed_urls;
 
   // The user agent given to WebKit when it requests one and the user agent is
   // being overridden for the current navigation.

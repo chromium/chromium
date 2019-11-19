@@ -2,12 +2,12 @@
 ++[article] xml-roles:article
 ++++[section]
 ++++++[paragraph]
-++++++++[text] name='footer inside article.'
+++++++++[static] name='footer inside article.'
 ++[section] xml-roles:region
 ++++[section]
 ++++++[paragraph]
-++++++++[text] name='footer inside section.'
+++++++++[static] name='footer inside section.'
 ++[landmark] xml-roles:main
 ++++[section]
 ++++++[paragraph]
-++++++++[text] name='footer inside main.'
+++++++++[static] name='footer inside main.'

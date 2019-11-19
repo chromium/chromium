@@ -103,14 +103,15 @@ function replaceChromeWithMock() {
 function setUp() {
   replaceChromeWithMock();
   mockFileSystem = new MockFileSystem('volumeId', 'filesystem://rootURL');
-  mockFileSystem.entries['/'] = new MockDirectoryEntry(mockFileSystem, '/');
+  mockFileSystem.entries['/'] = MockDirectoryEntry.create(mockFileSystem, '/');
   mockFileSystem.entries['/A.txt'] =
-      new MockFileEntry(mockFileSystem, '/A.txt');
+      MockFileEntry.create(mockFileSystem, '/A.txt');
   mockFileSystem.entries['/B.txt'] =
-      new MockFileEntry(mockFileSystem, '/B.txt');
-  mockFileSystem.entries['/C/'] = new MockDirectoryEntry(mockFileSystem, '/C/');
+      MockFileEntry.create(mockFileSystem, '/B.txt');
+  mockFileSystem.entries['/C/'] =
+      MockDirectoryEntry.create(mockFileSystem, '/C/');
   mockFileSystem.entries['/C/D.txt'] =
-      new MockFileEntry(mockFileSystem, '/C/D.txt');
+      MockFileEntry.create(mockFileSystem, '/C/D.txt');
 }
 
 function testAddWatcher() {

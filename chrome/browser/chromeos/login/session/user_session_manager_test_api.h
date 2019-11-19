@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOGIN_SESSION_USER_SESSION_MANAGER_TEST_API_H_
 #define CHROME_BROWSER_CHROMEOS_LOGIN_SESSION_USER_SESSION_MANAGER_TEST_API_H_
 
+#include <memory>
+
 #include "base/macros.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 
@@ -18,7 +20,11 @@ class UserSessionManagerTestApi {
 
   // Injects |user_context| that will be used to create StubAuthenticator
   // instance when UserSessionManager::CreateAuthenticator() is called.
+  // DEPRECATED: Use InjectStubAuthenticatorBuilder instead.
   void InjectStubUserContext(const UserContext& user_context);
+
+  void InjectAuthenticatorBuilder(
+      std::unique_ptr<StubAuthenticatorBuilder> builder);
 
   // Controls whether browser instance should be launched after sign in
   // (used in tests).

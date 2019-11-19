@@ -25,10 +25,9 @@ source_set("usb") {
   deps = [
     "//content/public/browser",
     "//content/public/common",
-    "//device/usb",
-    "//device/usb/public/cpp",
-    "//device/usb/public/mojom",
     "//extensions/common/api",
+    "//services/device/public/cpp/usb",
+    "//services/device/public/mojom:usb",
   ]
 
   public_deps = [

@@ -41,10 +41,6 @@
 
 namespace blink {
 
-TreeOrderedMap* TreeOrderedMap::Create() {
-  return MakeGarbageCollected<TreeOrderedMap>();
-}
-
 TreeOrderedMap::TreeOrderedMap() = default;
 
 #if DCHECK_IS_ON()
@@ -65,14 +61,14 @@ inline bool KeyMatchesId(const AtomicString& key, const Element& element) {
 }
 
 inline bool KeyMatchesMapName(const AtomicString& key, const Element& element) {
-  return IsHTMLMapElement(element) &&
-         ToHTMLMapElement(element).GetName() == key;
+  auto* html_map_element = DynamicTo<HTMLMapElement>(element);
+  return html_map_element && html_map_element->GetName() == key;
 }
 
 inline bool KeyMatchesSlotName(const AtomicString& key,
                                const Element& element) {
-  return IsHTMLSlotElement(element) &&
-         ToHTMLSlotElement(element).GetName() == key;
+  auto* html_slot_element = DynamicTo<HTMLSlotElement>(element);
+  return html_slot_element && html_slot_element->GetName() == key;
 }
 
 void TreeOrderedMap::Add(const AtomicString& key, Element& element) {
@@ -192,7 +188,7 @@ Element* TreeOrderedMap::GetElementByMapName(const AtomicString& key,
 HTMLSlotElement* TreeOrderedMap::GetSlotByName(const AtomicString& key,
                                                const TreeScope& scope) const {
   if (Element* slot = Get<KeyMatchesSlotName>(key, scope))
-    return ToHTMLSlotElement(slot);
+    return To<HTMLSlotElement>(slot);
   return nullptr;
 }
 

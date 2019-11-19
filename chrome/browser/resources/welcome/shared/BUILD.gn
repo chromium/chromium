@@ -1,0 +1,98 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "js_module_root=../../chrome/browser/resources/welcome/",
+                    "js_module_root=gen/chrome/browser/resources/welcome/",
+                  ]
+  deps = [
+    ":bookmark_proxy",
+    ":module_metrics_proxy",
+    ":nux_types",
+    ":step_indicator",
+  ]
+}
+
+js_library("bookmark_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+  ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/chrome_send.js",
+  ]
+}
+
+js_library("module_metrics_proxy") {
+  externs_list = [ "$externs_path/metrics_private.js" ]
+}
+
+js_library("nux_types") {
+}
+
+js_library("step_indicator") {
+  deps = [
+    ":nux_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+polymer_modulizer("animations_css") {
+  js_file = "animations_css.js"
+  html_file = "animations_css.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("chooser_shared_css") {
+  js_file = "chooser_shared_css.js"
+  html_file = "chooser_shared_css.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("navi_colors_css") {
+  js_file = "navi_colors_css.js"
+  html_file = "navi_colors_css.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("action_link_style_css") {
+  js_file = "action_link_style_css.js"
+  html_file = "action_link_style_css.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("splash_pages_shared_css") {
+  js_file = "splash_pages_shared_css.js"
+  html_file = "splash_pages_shared_css.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("onboarding_background") {
+  js_file = "onboarding_background.js"
+  html_file = "onboarding_background.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("step_indicator") {
+  js_file = "step_indicator.js"
+  html_file = "step_indicator.html"
+  html_type = "v3-ready"
+}
+
+group("polymer3_elements") {
+  deps = [
+    ":action_link_style_css_module",
+    ":animations_css_module",
+    ":chooser_shared_css_module",
+    ":navi_colors_css_module",
+    ":onboarding_background_module",
+    ":splash_pages_shared_css_module",
+    ":step_indicator_module",
+  ]
+}

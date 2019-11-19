@@ -13,13 +13,15 @@
 #include <stddef.h>
 
 #include <map>
+#include <memory>
+#include <string>
 #include <unordered_set>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
-#include "base/message_loop/message_pump_for_io.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -32,8 +34,7 @@ namespace internal {
 
 // Keeps track of network interface addresses using rtnetlink. Used by
 // NetworkChangeNotifier to provide signals to registered IPAddressObservers.
-class NET_EXPORT_PRIVATE AddressTrackerLinux
-    : public base::MessagePumpForIO::FdWatcher {
+class NET_EXPORT_PRIVATE AddressTrackerLinux {
  public:
   typedef std::map<IPAddress, struct ifaddrmsg> AddressMap;
 
@@ -58,7 +59,7 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux
       const base::Closure& link_callback,
       const base::Closure& tunnel_callback,
       const std::unordered_set<std::string>& ignored_interfaces);
-  ~AddressTrackerLinux() override;
+  virtual ~AddressTrackerLinux();
 
   // In tracking mode, it starts watching the system configuration for
   // changes. The current thread must have a MessageLoopForIO. In
@@ -120,8 +121,8 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux
   // |*link_changed| to true if |online_links_| changed, sets |*tunnel_changed|
   // to true if |online_links_| changed with regards to a tunnel interface while
   // reading the message from |buffer|.
-  void HandleMessage(char* buffer,
-                     size_t length,
+  void HandleMessage(const char* buffer,
+                     int length,
                      bool* address_changed,
                      bool* link_changed,
                      bool* tunnel_changed);
@@ -129,9 +130,8 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux
   // Call when some part of initialization failed; forces online and unblocks.
   void AbortAndForceOnline();
 
-  // MessagePumpForIO::FdWatcher:
-  void OnFileCanReadWithoutBlocking(int fd) override;
-  void OnFileCanWriteWithoutBlocking(int /* fd */) override;
+  // Called by |watcher_| when |netlink_fd_| can be read without blocking.
+  void OnFileCanReadWithoutBlocking();
 
   // Does |interface_index| refer to a tunnel interface?
   bool IsTunnelInterface(int interface_index) const;
@@ -157,7 +157,7 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux
 
   // Note that |watcher_| must be inactive when |netlink_fd_| is closed.
   base::ScopedFD netlink_fd_;
-  base::MessagePumpForIO::FdWatchController watcher_;
+  std::unique_ptr<base::FileDescriptorWatcher::Controller> watcher_;
 
   mutable base::Lock address_map_lock_;
   AddressMap address_map_;

@@ -132,7 +132,7 @@ BrowserAccessibilityManagerMac::~BrowserAccessibilityManagerMac() {}
 // static
 ui::AXTreeUpdate BrowserAccessibilityManagerMac::GetEmptyDocument() {
   ui::AXNodeData empty_document;
-  empty_document.id = 0;
+  empty_document.id = 1;
   empty_document.role = ax::mojom::Role::kRootWebArea;
   ui::AXTreeUpdate update;
   update.root_id = empty_document.id;
@@ -140,7 +140,7 @@ ui::AXTreeUpdate BrowserAccessibilityManagerMac::GetEmptyDocument() {
   return update;
 }
 
-BrowserAccessibility* BrowserAccessibilityManagerMac::GetFocus() {
+BrowserAccessibility* BrowserAccessibilityManagerMac::GetFocus() const {
   BrowserAccessibility* focus = BrowserAccessibilityManager::GetFocus();
 
   // For editable combo boxes, focus should stay on the combo box so the user
@@ -336,7 +336,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       // Use native VoiceOver support for live regions.
       base::scoped_nsobject<BrowserAccessibilityCocoa> retained_node(
           [native_node retain]);
-      base::PostDelayedTaskWithTraits(
+      base::PostDelayedTask(
           FROM_HERE, {BrowserThread::UI},
           base::BindOnce(
               [](base::scoped_nsobject<BrowserAccessibilityCocoa> node) {
@@ -371,19 +371,54 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
       mac_notification = NSAccessibilityMenuItemSelectedNotification;
       break;
+    case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
+    case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
     case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
+    case ui::AXEventGenerator::Event::BUSY_CHANGED:
     case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
+    case ui::AXEventGenerator::Event::CONTROLS_CHANGED:
+    case ui::AXEventGenerator::Event::CLASS_NAME_CHANGED:
+    case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
     case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED:
     case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
+    case ui::AXEventGenerator::Event::DROPEFFECT_CHANGED:
+    case ui::AXEventGenerator::Event::ENABLED_CHANGED:
+    case ui::AXEventGenerator::Event::FOCUS_CHANGED:
+    case ui::AXEventGenerator::Event::FLOW_FROM_CHANGED:
+    case ui::AXEventGenerator::Event::FLOW_TO_CHANGED:
+    case ui::AXEventGenerator::Event::GRABBED_CHANGED:
+    case ui::AXEventGenerator::Event::HASPOPUP_CHANGED:
+    case ui::AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
+    case ui::AXEventGenerator::Event::IGNORED_CHANGED:
+    case ui::AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED:
+    case ui::AXEventGenerator::Event::KEY_SHORTCUTS_CHANGED:
+    case ui::AXEventGenerator::Event::LABELED_BY_CHANGED:
+    case ui::AXEventGenerator::Event::LANGUAGE_CHANGED:
+    case ui::AXEventGenerator::Event::LAYOUT_INVALIDATED:
     case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED:
+    case ui::AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
+    case ui::AXEventGenerator::Event::LIVE_STATUS_CHANGED:
     case ui::AXEventGenerator::Event::LOAD_START:
+    case ui::AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
+    case ui::AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
     case ui::AXEventGenerator::Event::NAME_CHANGED:
     case ui::AXEventGenerator::Event::OTHER_ATTRIBUTE_CHANGED:
+    case ui::AXEventGenerator::Event::PLACEHOLDER_CHANGED:
+    case ui::AXEventGenerator::Event::POSITION_IN_SET_CHANGED:
+    case ui::AXEventGenerator::Event::READONLY_CHANGED:
     case ui::AXEventGenerator::Event::RELATED_NODE_CHANGED:
+    case ui::AXEventGenerator::Event::REQUIRED_STATE_CHANGED:
     case ui::AXEventGenerator::Event::ROLE_CHANGED:
-    case ui::AXEventGenerator::Event::SCROLL_POSITION_CHANGED:
+    case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
+    case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
     case ui::AXEventGenerator::Event::SELECTED_CHANGED:
+    case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
+    case ui::AXEventGenerator::Event::SORT_CHANGED:
     case ui::AXEventGenerator::Event::STATE_CHANGED:
+    case ui::AXEventGenerator::Event::SUBTREE_CREATED:
+    case ui::AXEventGenerator::Event::VALUE_MAX_CHANGED:
+    case ui::AXEventGenerator::Event::VALUE_MIN_CHANGED:
+    case ui::AXEventGenerator::Event::VALUE_STEP_CHANGED:
       // There are some notifications that aren't meaningful on Mac.
       // It's okay to skip them.
       return;
@@ -404,12 +439,10 @@ void BrowserAccessibilityManagerMac::FireNativeMacNotification(
   NSAccessibilityPostNotification(native_node, mac_notification);
 }
 
-void BrowserAccessibilityManagerMac::OnAccessibilityEvents(
+bool BrowserAccessibilityManagerMac::OnAccessibilityEvents(
     const AXEventNotificationDetails& details) {
   text_edits_.clear();
-  // Call the base method last as it might delete the tree if it receives an
-  // invalid message.
-  BrowserAccessibilityManager::OnAccessibilityEvents(details);
+  return BrowserAccessibilityManager::OnAccessibilityEvents(details);
 }
 
 void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
@@ -451,7 +484,7 @@ NSDictionary* BrowserAccessibilityManagerMac::
                 forKey:NSAccessibilityTextSelectionGranularity];
   [user_info setObject:@YES forKey:NSAccessibilityTextSelectionChangedFocus];
 
-  int32_t focus_id = GetTreeData().sel_focus_object_id;
+  int32_t focus_id = ax_tree()->GetUnignoredSelection().focus_object_id;
   BrowserAccessibility* focus_object = GetFromID(focus_id);
   if (focus_object) {
     focus_object = focus_object->GetClosestPlatformObject();

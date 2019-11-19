@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_MENU_MENU_CLOSURE_ANIMATION_MAC_H_
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -29,7 +30,9 @@ class SubmenuView;
 // This class also supports animating a menu away without animating the
 // selection effect, which is achieved by passing nullptr for the item to
 // animate. In this case, the animation skips straight to step 3 above.
-class VIEWS_EXPORT MenuClosureAnimationMac : public gfx::AnimationDelegate {
+class VIEWS_EXPORT MenuClosureAnimationMac
+    : public gfx::AnimationDelegate,
+      public base::SupportsWeakPtr<MenuClosureAnimationMac> {
  public:
   // After this closure animation is done, |callback| is run to finish
   // dismissing the menu. If |item| is given, this will animate the item being

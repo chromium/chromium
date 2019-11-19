@@ -43,7 +43,7 @@
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
-#include "chrome/common/descriptors_android.h"
+#include "chrome/common/chrome_descriptors.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "components/crash/content/browser/child_process_crash_observer_android.h"
 #endif
@@ -122,6 +122,11 @@ class OutOfMemoryReporterTest : public ChromeRenderViewHostTestHarness,
   }
 
   void SimulateRendererCreated() {
+#if defined(OS_ANDROID)
+    content::RenderProcessHostCreationObserver* creation_observer =
+        crash_reporter::ChildExitObserver::GetInstance();
+    creation_observer->OnRenderProcessHostCreated(process());
+#endif
     content::NotificationService::current()->Notify(
         content::NOTIFICATION_RENDERER_PROCESS_CREATED,
         content::Source<content::RenderProcessHost>(process()),

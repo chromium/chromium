@@ -24,10 +24,10 @@ TEST(LatencyInfoTest, AddTwoSeparateEvent) {
   info.set_trace_id(1);
   EXPECT_FALSE(info.began());
   info.AddLatencyNumberWithTimestamp(INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT,
-                                     ToTestTimeTicks(100), 1);
+                                     ToTestTimeTicks(100));
   EXPECT_TRUE(info.began());
   info.AddLatencyNumberWithTimestamp(INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT,
-                                     ToTestTimeTicks(1000), 2);
+                                     ToTestTimeTicks(1000));
 
   EXPECT_EQ(info.latency_components().size(), 2u);
   base::TimeTicks timestamp;
@@ -45,13 +45,13 @@ TEST(LatencyInfoTest, CoalesceTwoGSU) {
   info1.set_trace_id(1);
   info1.AddLatencyNumberWithTimestamp(
       INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT,
-      ToTestTimeTicks(1234), 1);
+      ToTestTimeTicks(1234));
   info1.set_scroll_update_delta(-3);
 
   info2.set_trace_id(2);
   info2.AddLatencyNumberWithTimestamp(
       INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT,
-      ToTestTimeTicks(2345), 1);
+      ToTestTimeTicks(2345));
   info2.set_scroll_update_delta(5);
 
   info1.CoalesceScrollUpdateWith(info2);

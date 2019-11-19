@@ -53,8 +53,6 @@ void WebOmniboxEditControllerImpl::OnAutocompleteAccept(
 }
 
 void WebOmniboxEditControllerImpl::OnInputInProgress(bool in_progress) {
-  if ([delegate_ locationBarModel])
-    [delegate_ locationBarModel]->set_input_in_progress(in_progress);
   // TODO(crbug.com/818649): see if this is really used.
   if (in_progress)
     [delegate_ locationBarBeganEdit];

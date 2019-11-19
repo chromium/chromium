@@ -30,8 +30,6 @@
 
 namespace blink {
 
-using namespace html_names;
-
 TextDocumentParser::TextDocumentParser(HTMLDocument& document,
                                        ParserSynchronizationPolicy sync_policy)
     : HTMLDocumentParser(document, sync_policy),
@@ -55,10 +53,10 @@ void TextDocumentParser::InsertFakePreElement() {
   // fake bytes through the front-end of the parser to avoid distrubing the
   // line/column number calculations.
   Vector<Attribute> attributes;
-  attributes.push_back(
-      Attribute(kStyleAttr, "word-wrap: break-word; white-space: pre-wrap;"));
-  AtomicHTMLToken fake_pre(HTMLToken::kStartTag, kPreTag.LocalName(),
-                           attributes);
+  attributes.push_back(Attribute(
+      html_names::kStyleAttr, "word-wrap: break-word; white-space: pre-wrap;"));
+  AtomicHTMLToken fake_pre(HTMLToken::kStartTag,
+                           html_names::kPreTag.LocalName(), attributes);
   TreeBuilder()->ConstructTree(&fake_pre);
 
   // The document could have been detached by an extension while the

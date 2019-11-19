@@ -9,7 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "mojo/core/embedder/embedder.h"
 #include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -24,7 +24,7 @@ VrTestSuite::~VrTestSuite() = default;
 void VrTestSuite::Initialize() {
   base::TestSuite::Initialize();
 
-  thread_bundle_ = std::make_unique<content::TestBrowserThreadBundle>();
+  task_environment_ = std::make_unique<content::BrowserTaskEnvironment>();
 
   mojo::core::Init();
 

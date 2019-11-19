@@ -7,12 +7,15 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -23,27 +26,38 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_switches.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/platform/web_input_event.h"
 
 class ReferrerPolicyTest : public InProcessBrowserTest {
  public:
   ReferrerPolicyTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    https_server_.AddDefaultHandlers(
-        base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+    // Subclasses might want to verify the requests that arrive at servers;
+    // register a default no-op handler that subclasses may override.
+    embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
+        &ReferrerPolicyTest::OnServerIncomingRequest, base::Unretained(this)));
+    https_server_.RegisterRequestMonitor(base::BindRepeating(
+        &ReferrerPolicyTest::OnServerIncomingRequest, base::Unretained(this)));
+
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     EXPECT_TRUE(embedded_test_server()->Start());
     EXPECT_TRUE(https_server_.Start());
   }
   ~ReferrerPolicyTest() override {}
 
- protected:
   enum ExpectedReferrer {
     EXPECT_EMPTY_REFERRER,
     EXPECT_FULL_REFERRER,
     EXPECT_ORIGIN_AS_REFERRER
   };
+
+ protected:
+  virtual void OnServerIncomingRequest(const net::test_server::HttpRequest&) {}
 
   // Returns the expected title for the tab with the given (full) referrer and
   // the expected modification of it.
@@ -76,40 +90,13 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
         GetExpectedTitle(url, EXPECT_ORIGIN_AS_REFERRER));
   }
 
-  // Returns a string representation of a given |referrer_policy|.
-  std::string ReferrerPolicyToString(
-      network::mojom::ReferrerPolicy referrer_policy) {
-    switch (referrer_policy) {
-      case network::mojom::ReferrerPolicy::kDefault:
-        return "no-meta";
-      case network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade:
-        return "default";
-      case network::mojom::ReferrerPolicy::kOrigin:
-        return "origin";
-      case network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin:
-        return "origin-when-crossorigin";
-      case network::mojom::ReferrerPolicy::kSameOrigin:
-        return "same-origin";
-      case network::mojom::ReferrerPolicy::kStrictOrigin:
-        return "strict-origin";
-      case network::mojom::ReferrerPolicy::kAlways:
-        return "always";
-      case network::mojom::ReferrerPolicy::kNever:
-        return "never";
-      case network::mojom::ReferrerPolicy::
-          kNoReferrerWhenDowngradeOriginWhenCrossOrigin:
-        return "reduce-referrer-granularity";
-    }
-    NOTREACHED();
-    return "";
-  }
-
   enum StartOnProtocol { START_ON_HTTP, START_ON_HTTPS, };
 
   enum LinkType { REGULAR_LINK, LINK_WITH_TARGET_BLANK, };
 
   enum RedirectType {
-    NO_REDIRECT,
+    NO_REDIRECT,        // direct navigation via HTTP
+    HTTPS_NO_REDIRECT,  // direct navigation via HTTPS
     SERVER_REDIRECT_FROM_HTTPS_TO_HTTP,
     SERVER_REDIRECT_FROM_HTTP_TO_HTTP,
     SERVER_REDIRECT_FROM_HTTP_TO_HTTPS
@@ -145,6 +132,10 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
         redirect_url = embedded_test_server()->GetURL(
             "/referrer_policy/referrer-policy-log.html");
         break;
+      case HTTPS_NO_REDIRECT:
+        redirect_url =
+            https_server_.GetURL("/referrer_policy/referrer-policy-log.html");
+        break;
       case SERVER_REDIRECT_FROM_HTTPS_TO_HTTP:
         redirect_url = https_server_.GetURL(
             std::string("/server-redirect?") +
@@ -169,7 +160,7 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
 
     std::string relative_url =
         std::string("/referrer_policy/referrer-policy-start.html?") +
-        "policy=" + ReferrerPolicyToString(referrer_policy) +
+        "policy=" + content::ReferrerPolicyToString(referrer_policy) +
         "&redirect=" + redirect_url.spec() + "&link=" +
         (button == blink::WebMouseEvent::Button::kNoButton ? "false" : "true") +
         "&target=" + (link_type == LINK_WITH_TARGET_BLANK ? "_blank" : "");
@@ -179,8 +170,7 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
                                   : embedded_test_server();
     const GURL start_url = start_test_server->GetURL(relative_url);
 
-    ui_test_utils::WindowedTabAddedNotificationObserver tab_added_observer(
-        content::NotificationService::AllSources());
+    ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
     base::string16 expected_title =
         GetExpectedTitle(start_url, expected_referrer);
@@ -208,8 +198,7 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
     if (disposition == WindowOpenDisposition::CURRENT_TAB) {
       EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
     } else {
-      tab_added_observer.Wait();
-      tab = tab_added_observer.GetTab();
+      tab = add_tab.Wait();
       EXPECT_TRUE(tab);
       content::TitleWatcher title_watcher2(tab, expected_title);
 
@@ -241,20 +230,10 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
   net::EmbeddedTestServer https_server_;
 };
 
-class ReferrerPolicyWithReduceReferrerGranularityFlagTest
-    : public ReferrerPolicyTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kReducedReferrerGranularity);
-  }
-};
-
 // The basic behavior of referrer policies is covered by layout tests in
 // http/tests/security/referrer-policy-*. These tests cover (hopefully) all
 // code paths chrome uses to navigate. To keep the number of combinations down,
 // we only test the "origin" policy here.
-//
-// Some tests are marked as FAILS, see http://crbug.com/124750
 
 // Content initiated navigation, from HTTP to HTTP.
 IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, Origin) {
@@ -673,25 +652,315 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest,
                   blink::WebMouseEvent::Button::kLeft, EXPECT_EMPTY_REFERRER);
 }
 
-// Reduced 'referer' granularity flag tests.
+// Parameters for testing functionality imposing ad-hoc restrictions
+// on the behavior of referrers, for instance absolute caps like
+// "never send referrers" (as of writing, features::kNoReferrers)
+// or "on cross-origin requests, never send more than the initiator's
+// origin" (features::kCapReferrerToOriginOnCrossOrigin).
+//
+// These tests assume a default policy of no-referrer-when-downgrade.
+struct ReferrerOverrideParams {
+  base::Optional<base::Feature> feature_to_enable;
+  network::mojom::ReferrerPolicy baseline_policy;
+  network::mojom::ReferrerPolicy expected_policy;
 
-// User initiated navigation, from HTTP to HTTPS via server redirect.
-IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, HttpLeftClickRedirectDefaultNoFlag) {
-  RunReferrerTest(network::mojom::ReferrerPolicy::kDefault, START_ON_HTTP,
-                  REGULAR_LINK, SERVER_REDIRECT_FROM_HTTP_TO_HTTPS,
-                  WindowOpenDisposition::CURRENT_TAB,
-                  blink::WebMouseEvent::Button::kLeft, EXPECT_FULL_REFERRER,
-                  network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade);
+  ReferrerPolicyTest::ExpectedReferrer same_origin_nav,  // HTTP -> HTTP
+      cross_origin_nav,                                  // HTTP -> HTTP
+      cross_origin_downgrade_nav,  // HTTPS -> HTTP, cross-origin
+      same_origin_to_cross_origin_redirect,
+      cross_origin_to_same_origin_redirect, same_origin_subresource,
+      same_origin_to_cross_origin_subresource_redirect;
+} kReferrerOverrideParams[] = {
+    {.feature_to_enable = features::kNoReferrers,
+     .baseline_policy = network::mojom::ReferrerPolicy::kAlways,
+     // The renderer's "have we completely disabled referrers?"
+     // implementation resets requests' referrer policies to the default when
+     // it excises their referrers.
+     .expected_policy =
+         content::Referrer::NetReferrerPolicyToBlinkReferrerPolicy(
+             content::Referrer::GetDefaultReferrerPolicy()),
+     .same_origin_nav = ReferrerPolicyTest::EXPECT_EMPTY_REFERRER,
+     .cross_origin_nav = ReferrerPolicyTest::EXPECT_EMPTY_REFERRER,
+     .cross_origin_downgrade_nav = ReferrerPolicyTest::EXPECT_EMPTY_REFERRER,
+     .same_origin_to_cross_origin_redirect =
+         ReferrerPolicyTest::EXPECT_EMPTY_REFERRER,
+     .cross_origin_to_same_origin_redirect =
+         ReferrerPolicyTest::EXPECT_EMPTY_REFERRER,
+     .same_origin_subresource = ReferrerPolicyTest::EXPECT_EMPTY_REFERRER,
+     .same_origin_to_cross_origin_subresource_redirect =
+         ReferrerPolicyTest::EXPECT_EMPTY_REFERRER},
+    {
+        .feature_to_enable =
+            network::features::kCapReferrerToOriginOnCrossOrigin,
+        .baseline_policy = network::mojom::ReferrerPolicy::kAlways,
+        // Applying the cap doesn't change the "referrer policy"
+        // attribute of a request
+        .expected_policy = network::mojom::ReferrerPolicy::kAlways,
+        .same_origin_nav = ReferrerPolicyTest::EXPECT_FULL_REFERRER,
+        .cross_origin_nav = ReferrerPolicyTest::EXPECT_ORIGIN_AS_REFERRER,
+        .cross_origin_downgrade_nav =
+            ReferrerPolicyTest::EXPECT_ORIGIN_AS_REFERRER,
+        .same_origin_to_cross_origin_redirect =
+            ReferrerPolicyTest::EXPECT_ORIGIN_AS_REFERRER,
+        // Referrer policies get applied to whatever the current referrer is:
+        // in the case of a cross-origin -> same-origin redirect, we already
+        // will have truncated the referrer to the initiating origin
+        .cross_origin_to_same_origin_redirect =
+            ReferrerPolicyTest::EXPECT_ORIGIN_AS_REFERRER,
+        .same_origin_subresource = ReferrerPolicyTest::EXPECT_FULL_REFERRER,
+        .same_origin_to_cross_origin_subresource_redirect =
+            ReferrerPolicyTest::EXPECT_ORIGIN_AS_REFERRER,
+    },
+    {
+        .feature_to_enable = features::kReducedReferrerGranularity,
+        .baseline_policy = network::mojom::ReferrerPolicy::kDefault,
+        // kDefault gets resolved into a concrete policy when making requests
+        .expected_policy = network::mojom::ReferrerPolicy::
+            kNoReferrerWhenDowngradeOriginWhenCrossOrigin,
+        .same_origin_nav = ReferrerPolicyTest::EXPECT_FULL_REFERRER,
+        .cross_origin_nav = ReferrerPolicyTest::EXPECT_ORIGIN_AS_REFERRER,
+        .cross_origin_downgrade_nav = ReferrerPolicyTest::EXPECT_EMPTY_REFERRER,
+        .same_origin_to_cross_origin_redirect =
+            ReferrerPolicyTest::EXPECT_ORIGIN_AS_REFERRER,
+        .cross_origin_to_same_origin_redirect =
+            ReferrerPolicyTest::EXPECT_ORIGIN_AS_REFERRER,
+        .same_origin_subresource = ReferrerPolicyTest::EXPECT_FULL_REFERRER,
+        .same_origin_to_cross_origin_subresource_redirect =
+            ReferrerPolicyTest::EXPECT_ORIGIN_AS_REFERRER,
+    },
+};
+
+class ReferrerOverrideTest
+    : public ReferrerPolicyTest,
+      public ::testing::WithParamInterface<ReferrerOverrideParams> {
+ public:
+  ReferrerOverrideTest() {
+    if (GetParam().feature_to_enable)
+      scoped_feature_list_.InitAndEnableFeature(*GetParam().feature_to_enable);
+  }
+
+  // Callback to verify that HTTP requests have the correct headers;
+  // currently, this is used on subresource-request tests. (See the comment
+  // on RequestCheck, below.)
+  void OnServerIncomingRequest(
+      const net::test_server::HttpRequest& request) final {
+    if (!check_on_requests_)
+      return;
+
+    if (request.relative_url != check_on_requests_->destination_url_to_match)
+      return;
+
+    auto it = request.headers.find("Referer");
+
+    if (check_on_requests_->expected_spec.empty()) {
+      EXPECT_TRUE(it == request.headers.end());
+    } else {
+      EXPECT_TRUE(it != request.headers.end() &&
+                  it->second == check_on_requests_->expected_spec);
+    }
+  }
+
+ protected:
+  // If "check_on_requests_" is set, for each HTTP request that arrives at
+  // either of the embedded test servers ("embedded_test_server()" and
+  // "https_server_"), if the relative URL equals that stored in
+  // "destination_url_to_match", OnServerIncomingRequest will assert
+  // that the provided Referer header's value equals the value of
+  // "expected_spec".
+  struct RequestCheck {
+    std::string expected_spec;
+    std::string destination_url_to_match;
+  };
+  base::Optional<RequestCheck> check_on_requests_;
+
+  // Test that the correct referrer is sent along with
+  // a subresource request.
+  // Parameter semantics are the same as for
+  // ReferrerPolicyTest::RunReferrerTest.
+  void RunSubresourceTest(StartOnProtocol start_protocol,
+                          RedirectType redirect,
+                          network::mojom::ReferrerPolicy baseline_policy,
+                          ExpectedReferrer expectation) {
+    GURL image_url;
+    switch (redirect) {
+      case NO_REDIRECT:
+        image_url = embedded_test_server()->GetURL("/referrer_policy/logo.gif");
+        break;
+      case HTTPS_NO_REDIRECT:
+        image_url = https_server_.GetURL("/referrer_policy/logo.gif");
+        break;
+      case SERVER_REDIRECT_FROM_HTTPS_TO_HTTP:
+        image_url = https_server_.GetURL(
+            std::string("/server-redirect?") +
+            embedded_test_server()->GetURL("/referrer_policy/logo.gif").spec());
+        break;
+      case SERVER_REDIRECT_FROM_HTTP_TO_HTTP:
+        image_url = embedded_test_server()->GetURL(
+            std::string("/server-redirect?") +
+            embedded_test_server()->GetURL("/referrer_policy/logo.gif").spec());
+        break;
+      case SERVER_REDIRECT_FROM_HTTP_TO_HTTPS:
+        image_url = embedded_test_server()->GetURL(
+            std::string("/server-redirect?") +
+            https_server_.GetURL("/referrer_policy/logo.gif").spec());
+        break;
+    }
+
+    std::string relative_url =
+        std::string("/referrer_policy/referrer-policy-subresource.html?") +
+        "policy=" + content::ReferrerPolicyToString(baseline_policy) +
+        "&redirect=" + image_url.spec();
+
+    auto* start_server = start_protocol == START_ON_HTTPS
+                             ? &https_server_
+                             : embedded_test_server();
+    const GURL start_url = start_server->GetURL(relative_url);
+
+    content::WebContents* tab =
+        browser()->tab_strip_model()->GetActiveWebContents();
+
+    check_on_requests_ = RequestCheck{"", "/referrer_policy/logo.gif"};
+    switch (expectation) {
+      case ReferrerPolicyTest::EXPECT_EMPTY_REFERRER:
+        check_on_requests_->expected_spec = "";
+        break;
+      case ReferrerPolicyTest::EXPECT_FULL_REFERRER:
+        check_on_requests_->expected_spec = start_url.spec();
+        break;
+      case ReferrerPolicyTest::EXPECT_ORIGIN_AS_REFERRER:
+        check_on_requests_->expected_spec = start_url.GetWithEmptyPath().spec();
+        break;
+    }
+
+    // set by referrer-policy-subresource.html JS after the embedded image loads
+    base::string16 expected_title(base::ASCIIToUTF16("loaded"));
+    std::unique_ptr<content::TitleWatcher> title_watcher(
+        new content::TitleWatcher(tab, expected_title));
+    ui_test_utils::NavigateToURL(browser(), start_url);
+
+    // Wait for the page to load; during the load, since check_on_requests_ is
+    // nonempty, OnServerIncomingRequest will validate the referrers.
+    EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    WithOverrideParams,
+    ReferrerOverrideTest,
+    ::testing::ValuesIn(kReferrerOverrideParams),
+    [](const ::testing::TestParamInfo<ReferrerOverrideParams>& info) {
+      if (info.param.feature_to_enable)
+        return info.param.feature_to_enable->name;
+      return "(no feature)";
+    });
+
+IN_PROC_BROWSER_TEST_P(ReferrerOverrideTest, SameOriginNavigation) {
+  RunReferrerTest(GetParam().baseline_policy, START_ON_HTTP, REGULAR_LINK,
+                  NO_REDIRECT, WindowOpenDisposition::CURRENT_TAB,
+                  blink::WebMouseEvent::Button::kNoButton,
+                  GetParam().same_origin_nav, GetParam().expected_policy);
 }
 
-IN_PROC_BROWSER_TEST_F(ReferrerPolicyWithReduceReferrerGranularityFlagTest,
-                       HttpLeftClickRedirectDefaultFlag) {
-  network::mojom::ReferrerPolicy expected_referrer_policy = network::mojom::
-      ReferrerPolicy::kNoReferrerWhenDowngradeOriginWhenCrossOrigin;
+IN_PROC_BROWSER_TEST_P(ReferrerOverrideTest, CrossOriginNavigation) {
+  RunReferrerTest(GetParam().baseline_policy, START_ON_HTTP, REGULAR_LINK,
+                  HTTPS_NO_REDIRECT, WindowOpenDisposition::CURRENT_TAB,
+                  blink::WebMouseEvent::Button::kNoButton,
+                  GetParam().cross_origin_nav, GetParam().expected_policy);
+}
 
-  RunReferrerTest(network::mojom::ReferrerPolicy::kDefault, START_ON_HTTP,
-                  REGULAR_LINK, SERVER_REDIRECT_FROM_HTTP_TO_HTTPS,
+IN_PROC_BROWSER_TEST_P(ReferrerOverrideTest, CrossOriginDowngradeNavigation) {
+  RunReferrerTest(GetParam().baseline_policy, START_ON_HTTPS, REGULAR_LINK,
+                  NO_REDIRECT, WindowOpenDisposition::CURRENT_TAB,
+                  blink::WebMouseEvent::Button::kNoButton,
+                  GetParam().cross_origin_downgrade_nav,
+                  GetParam().expected_policy);
+}
+
+IN_PROC_BROWSER_TEST_P(ReferrerOverrideTest, CrossOriginRedirect) {
+  RunReferrerTest(GetParam().baseline_policy, START_ON_HTTP, REGULAR_LINK,
+                  SERVER_REDIRECT_FROM_HTTP_TO_HTTPS,
                   WindowOpenDisposition::CURRENT_TAB,
-                  blink::WebMouseEvent::Button::kLeft,
-                  EXPECT_ORIGIN_AS_REFERRER, expected_referrer_policy);
+                  blink::WebMouseEvent::Button::kNoButton,
+                  GetParam().same_origin_to_cross_origin_redirect,
+                  GetParam().expected_policy);
+}
+
+IN_PROC_BROWSER_TEST_P(ReferrerOverrideTest, CrossOriginToSameOriginRedirect) {
+  RunReferrerTest(GetParam().baseline_policy, START_ON_HTTP, REGULAR_LINK,
+                  SERVER_REDIRECT_FROM_HTTPS_TO_HTTP,
+                  WindowOpenDisposition::CURRENT_TAB,
+                  blink::WebMouseEvent::Button::kNoButton,
+                  GetParam().cross_origin_to_same_origin_redirect,
+                  GetParam().expected_policy);
+}
+
+IN_PROC_BROWSER_TEST_P(ReferrerOverrideTest, SameOriginSubresource) {
+  RunSubresourceTest(START_ON_HTTP, NO_REDIRECT, GetParam().baseline_policy,
+                     GetParam().same_origin_subresource);
+}
+
+IN_PROC_BROWSER_TEST_P(ReferrerOverrideTest,
+                       SameOriginToCrossOriginSubresourceRedirect) {
+  RunSubresourceTest(
+      START_ON_HTTP, SERVER_REDIRECT_FROM_HTTP_TO_HTTPS,
+      GetParam().baseline_policy,
+      GetParam().same_origin_to_cross_origin_subresource_redirect);
+}
+
+// Most of the functionality of the referrer-cap flag is covered by
+// ReferrerOverrideTest; these couple additional tests test the flag's
+// interaction with other referrer policies
+class ReferrerPolicyCapReferrerToOriginOnCrossOriginTest
+    : public ReferrerPolicyTest {
+ public:
+  ReferrerPolicyCapReferrerToOriginOnCrossOriginTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        network::features::kCapReferrerToOriginOnCrossOrigin);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that capping referrer granularity at origin on cross-origin requests
+// correctly defers to a more restrictive referrer policy on a
+// cross-origin navigation.
+IN_PROC_BROWSER_TEST_F(ReferrerPolicyCapReferrerToOriginOnCrossOriginTest,
+                       HonorsMoreRestrictivePolicyOnNavigation) {
+  RunReferrerTest(network::mojom::ReferrerPolicy::kSameOrigin, START_ON_HTTPS,
+                  REGULAR_LINK, NO_REDIRECT /*direct navigation x-origin*/,
+                  WindowOpenDisposition::CURRENT_TAB,
+                  blink::WebMouseEvent::Button::kLeft, EXPECT_EMPTY_REFERRER);
+}
+
+// Test that capping referrer granularity at origin on cross-origin requests
+// correctly defers to a more restrictive referrer policy on a
+// cross-origin redirect.
+IN_PROC_BROWSER_TEST_F(ReferrerPolicyCapReferrerToOriginOnCrossOriginTest,
+                       HonorsMoreRestrictivePolicyOnRedirect) {
+  RunReferrerTest(network::mojom::ReferrerPolicy::kStrictOrigin, START_ON_HTTPS,
+                  REGULAR_LINK, SERVER_REDIRECT_FROM_HTTPS_TO_HTTP,
+                  WindowOpenDisposition::CURRENT_TAB,
+                  blink::WebMouseEvent::Button::kLeft, EXPECT_EMPTY_REFERRER);
+}
+
+// Test that, when the cross-origin referrer cap is on but we also have the
+// "no referrers at all" pref set, we send no referrer at all on cross-origin
+// requests.
+IN_PROC_BROWSER_TEST_F(ReferrerPolicyCapReferrerToOriginOnCrossOriginTest,
+                       RespectsNoReferrerPref) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kEnableReferrers, false);
+  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+      ->FlushNetworkInterfaceForTesting();
+  RunReferrerTest(network::mojom::ReferrerPolicy::kAlways, START_ON_HTTPS,
+                  REGULAR_LINK, NO_REDIRECT, WindowOpenDisposition::CURRENT_TAB,
+                  blink::WebMouseEvent::Button::kLeft, EXPECT_EMPTY_REFERRER,
+                  // when the pref is set, the renderer sets the referrer policy
+                  // to the default on outgoing requests at the same time
+                  // it removes referrers
+                  content::Referrer::NetReferrerPolicyToBlinkReferrerPolicy(
+                      content::Referrer::GetDefaultReferrerPolicy()));
 }

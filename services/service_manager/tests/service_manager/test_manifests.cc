@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "services/service_manager/public/cpp/manifest_builder.h"
 #include "services/service_manager/public/mojom/constants.mojom.h"
-#include "services/service_manager/public/mojom/service_factory.mojom.h"
 #include "services/service_manager/tests/service_manager/service_manager.test-mojom.h"
 
 namespace service_manager {
@@ -29,9 +28,10 @@ const std::vector<Manifest>& GetTestManifests() {
            .WithOptions(ManifestOptionsBuilder()
                             .WithInstanceSharingPolicy(
                                 Manifest::InstanceSharingPolicy::kSingleton)
+                            .WithExecutionMode(
+                                Manifest::ExecutionMode::kStandaloneExecutable)
+                            .WithSandboxType("none")
                             .Build())
-           .ExposeCapability("service_manager:service_factory",
-                             Manifest::InterfaceList<mojom::ServiceFactory>())
            .RequireCapability(kTestTargetName, "")
            .PackageService(ManifestBuilder()
                                .WithServiceName(kTestRegularServiceName)
@@ -59,7 +59,7 @@ const std::vector<Manifest>& GetTestManifests() {
                    .Build())
            .Build(),
        ManifestBuilder()
-           .WithServiceName("service_manager_unittest")
+           .WithServiceName(kTestServiceName)
            .WithOptions(ManifestOptionsBuilder()
                             .WithInstanceSharingPolicy(
                                 Manifest::InstanceSharingPolicy::kSingleton)
@@ -79,6 +79,11 @@ const std::vector<Manifest>& GetTestManifests() {
            .Build(),
        ManifestBuilder()
            .WithServiceName(kTestTargetName)
+           .WithOptions(ManifestOptionsBuilder()
+                            .WithExecutionMode(
+                                Manifest::ExecutionMode::kStandaloneExecutable)
+                            .WithSandboxType("none")
+                            .Build())
            .RequireCapability(kTestTargetName, "")
            .RequireCapability(kTestServiceName, kCreateInstanceTestCapability)
            .Build()}};

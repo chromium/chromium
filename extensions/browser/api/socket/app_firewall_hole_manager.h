@@ -57,7 +57,7 @@ class AppFirewallHole {
   // This will hold the FirewallHole object if one is opened.
   std::unique_ptr<chromeos::FirewallHole> firewall_hole_;
 
-  base::WeakPtrFactory<AppFirewallHole> weak_factory_;
+  base::WeakPtrFactory<AppFirewallHole> weak_factory_{this};
 };
 
 // Tracks ports in the system firewall opened by an application so that they
@@ -92,7 +92,7 @@ class AppFirewallHoleManager : public KeyedService,
   ScopedObserver<AppWindowRegistry, AppWindowRegistry::Observer> observer_;
   std::multimap<std::string, AppFirewallHole*> tracked_holes_;
 
-  base::WeakPtrFactory<AppFirewallHoleManager> weak_factory_;
+  base::WeakPtrFactory<AppFirewallHoleManager> weak_factory_{this};
 };
 
 }  // namespace extensions

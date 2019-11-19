@@ -15,7 +15,7 @@
 #include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "media/base/audio_parameters.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -80,10 +80,9 @@ class MockMirroringDestination
             render_process_id_, render_frame_id_)) != candidates.end()) {
       result.insert(GlobalFrameRoutingId(render_process_id_, render_frame_id_));
     }
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(std::move(*results_callback), std::move(result),
-                       is_duplication_));
+    base::PostTask(FROM_HERE, {BrowserThread::IO},
+                   base::BindOnce(std::move(*results_callback),
+                                  std::move(result), is_duplication_));
   }
 
   media::AudioOutputStream* SimulateAddInput(
@@ -222,7 +221,7 @@ class AudioMirroringManagerTest : public testing::Test {
   }
 
  private:
-  TestBrowserThreadBundle thread_bundle_;
+  BrowserTaskEnvironment task_environment_;
   AudioParameters params_;
   AudioMirroringManager mirroring_manager_;
 

@@ -46,7 +46,7 @@ std::unique_ptr<base::DictionaryValue> GetSiteEngagementScoreDictForSettings(
 
   std::unique_ptr<base::DictionaryValue> value =
       base::DictionaryValue::From(settings->GetWebsiteSetting(
-          origin_url, origin_url, CONTENT_SETTINGS_TYPE_SITE_ENGAGEMENT,
+          origin_url, origin_url, ContentSettingsType::SITE_ENGAGEMENT,
           content_settings::ResourceIdentifier(), NULL));
 
   if (value.get())
@@ -281,7 +281,7 @@ void SiteEngagementScore::Commit() {
     return;
 
   settings_map_->SetWebsiteSettingDefaultScope(
-      origin_, GURL(), CONTENT_SETTINGS_TYPE_SITE_ENGAGEMENT,
+      origin_, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
       content_settings::ResourceIdentifier(), std::move(score_dict_));
 }
 

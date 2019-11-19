@@ -7,13 +7,14 @@
 
 #include "base/macros.h"
 
+@protocol NSObject;
 @class NSNotification;
 
 namespace web {
 
 // CookieNotificationBridge listens to
-// NSHTTPCookieManagerCookiesChangedNotification on the main thread and re-sends
-// it to the cookie store on the IO thread.
+// NSHTTPCookieManagerCookiesChangedNotification on the posting thread and
+// re-sends it to the cookie store on the IO thread.
 class CookieNotificationBridge {
  public:
   CookieNotificationBridge();
@@ -21,7 +22,10 @@ class CookieNotificationBridge {
 
  private:
   static void OnNotificationReceived(NSNotification* notification);
-  id observer_;
+
+  // Token returned by NSNotificationCenter upon registration. Owned by the
+  // bridge and used to unregister from NSNotificationCenter in destructor.
+  __strong id<NSObject> registration_;
 
   DISALLOW_COPY_AND_ASSIGN(CookieNotificationBridge);
 };

@@ -21,9 +21,9 @@ constexpr uint32_t kMaxBytesToDecode = 512;
 }  // namespace
 
 AudioMediaDataSource::AudioMediaDataSource(
-    mojom::AssistantMediaDataSourcePtr* interface_ptr,
+    mojo::PendingReceiver<mojom::AssistantMediaDataSource> receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : binding_(this, mojo::MakeRequest(interface_ptr)),
+    : receiver_(this, std::move(receiver)),
       task_runner_(task_runner),
       weak_factory_(this) {}
 

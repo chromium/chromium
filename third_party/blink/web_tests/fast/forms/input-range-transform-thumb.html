@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<title>This tests that a 3D transform on -webkit-slider-thumb does not cause a crash.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<input id=target type="range">
+<style>
+  input {
+    -webkit-appearance: none;
+  }
+  input::-webkit-slider-runnable-track {
+    background: black;
+  }
+  input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 40px;
+    width: 40px;
+    background: red;
+    transform: translateZ(20px);
+  }
+</style>
+
+<script>
+  async_test(t => {
+    var input = document.getElementById('target');
+    var rect = input.getBoundingClientRect();
+    // Click on the left 1/3 of the slider.
+    var x = rect.left + rect.width / 3;
+    var y = rect.top + rect.height / 2;
+    chrome.gpuBenchmarking.pointerActionSequence([{
+      source: 'mouse',
+        actions: [
+          { name: 'pointerMove', x: x, y: y },
+          { name: 'pointerDown', x: x, y: y },
+          { name: 'pointerUp' }
+          ]
+      }], t.step_func_done(() => {}));
+  });
+</script>
+Passes if it does not crash.

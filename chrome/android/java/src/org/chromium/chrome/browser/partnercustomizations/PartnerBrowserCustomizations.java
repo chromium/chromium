@@ -9,23 +9,23 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeVersionInfo;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.chrome.browser.util.UrlUtilities;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -299,7 +299,8 @@ public class PartnerBrowserCustomizations {
         initializeAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         // Cancel the initialization if it reaches timeout.
-        ThreadUtils.postOnUiThreadDelayed(() -> initializeAsyncTask.cancel(true), timeoutMs);
+        PostTask.postDelayedTask(
+                UiThreadTaskTraits.DEFAULT, () -> initializeAsyncTask.cancel(true), timeoutMs);
     }
 
     /**
@@ -325,7 +326,7 @@ public class PartnerBrowserCustomizations {
     public static void setOnInitializeAsyncFinished(final Runnable callback, long timeoutMs) {
         sInitializeAsyncCallbacks.add(callback);
 
-        ThreadUtils.postOnUiThreadDelayed(() -> {
+        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
             if (sInitializeAsyncCallbacks.remove(callback)) callback.run();
         }, sIsInitialized ? 0 : timeoutMs);
     }

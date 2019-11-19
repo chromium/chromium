@@ -1,9 +1,0 @@
-Every scrollbar should be cut off at the dotted line.
-
- 
- 
- 
- 
- 
- 
- 

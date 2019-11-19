@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial namespace CSS: original namespace defined
+PASS Partial namespace CSS: member names are unique
+PASS Partial interface CSSRule: original interface defined
+PASS Partial interface CSSRule: member names are unique
+FAIL CSSPropertyRule interface: existence and properties of interface object assert_own_property: self does not have own property "CSSPropertyRule" expected property "CSSPropertyRule" missing
+FAIL CSSPropertyRule interface object length assert_own_property: self does not have own property "CSSPropertyRule" expected property "CSSPropertyRule" missing
+FAIL CSSPropertyRule interface object name assert_own_property: self does not have own property "CSSPropertyRule" expected property "CSSPropertyRule" missing
+FAIL CSSPropertyRule interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSPropertyRule" expected property "CSSPropertyRule" missing
+FAIL CSSPropertyRule interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSPropertyRule" expected property "CSSPropertyRule" missing
+FAIL CSSPropertyRule interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSPropertyRule" expected property "CSSPropertyRule" missing
+FAIL CSSPropertyRule interface: attribute name assert_own_property: self does not have own property "CSSPropertyRule" expected property "CSSPropertyRule" missing
+FAIL CSSPropertyRule interface: attribute syntax assert_own_property: self does not have own property "CSSPropertyRule" expected property "CSSPropertyRule" missing
+FAIL CSSPropertyRule interface: attribute inherits assert_own_property: self does not have own property "CSSPropertyRule" expected property "CSSPropertyRule" missing
+FAIL CSSPropertyRule interface: attribute initialValue assert_own_property: self does not have own property "CSSPropertyRule" expected property "CSSPropertyRule" missing
+FAIL CSSRule interface: constant PROPERTY_RULE on interface object assert_own_property: expected property "PROPERTY_RULE" missing
+FAIL CSSRule interface: constant PROPERTY_RULE on interface prototype object assert_own_property: expected property "PROPERTY_RULE" missing
+PASS CSS namespace: operation escape(CSSOMString)
+PASS CSS namespace: operation registerProperty(PropertyDefinition)
+Harness: the test ran to completion.
+

@@ -51,13 +51,13 @@ struct WebRect {
 
   bool IsEmpty() const { return width <= 0 || height <= 0; }
 
-  WebRect() : x(0), y(0), width(0), height(0) {}
+  constexpr WebRect() : x(0), y(0), width(0), height(0) {}
 
-  WebRect(int x, int y, int width, int height)
+  constexpr WebRect(int x, int y, int width, int height)
       : x(x), y(y), width(width), height(height) {}
 
 #if INSIDE_BLINK
-  WebRect(const IntRect& r)
+  constexpr WebRect(const IntRect& r)
       : x(r.X()), y(r.Y()), width(r.Width()), height(r.Height()) {}
 
   WebRect& operator=(const IntRect& r) {
@@ -68,15 +68,15 @@ struct WebRect {
     return *this;
   }
 
-  operator IntRect() const { return IntRect(x, y, width, height); }
+  constexpr operator IntRect() const { return IntRect(x, y, width, height); }
 
-  explicit WebRect(const gfx::Rect& r)
+  constexpr explicit WebRect(const gfx::Rect& r)
       : x(r.x()), y(r.y()), width(r.width()), height(r.height()) {}
 
   // Note that this conversion clamps the size to be non-negative.
   explicit operator gfx::Rect() const { return gfx::Rect(x, y, width, height); }
 #else
-  WebRect(const gfx::Rect& r)
+  constexpr WebRect(const gfx::Rect& r)
       : x(r.x()), y(r.y()), width(r.width()), height(r.height()) {}
 
   WebRect& operator=(const gfx::Rect& r) {
@@ -88,7 +88,9 @@ struct WebRect {
   }
 
   // Note that this conversion clamps the size to be non-negative.
-  operator gfx::Rect() const { return gfx::Rect(x, y, width, height); }
+  constexpr operator gfx::Rect() const {
+    return gfx::Rect(x, y, width, height);
+  }
 #endif
 };
 

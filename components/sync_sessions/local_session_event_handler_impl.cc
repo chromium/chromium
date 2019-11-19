@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync_sessions/sync_sessions_client.h"
@@ -54,7 +55,7 @@ bool ScanForTabbedWindow(SyncedWindowDelegatesGetter* delegates_getter) {
   for (const auto& window_iter_pair :
        delegates_getter->GetSyncedWindowDelegates()) {
     const SyncedWindowDelegate* window_delegate = window_iter_pair.second;
-    if (window_delegate->IsTypeTabbed() && IsWindowSyncable(*window_delegate)) {
+    if (window_delegate->IsTypeNormal() && IsWindowSyncable(*window_delegate)) {
       return true;
     }
   }
@@ -218,7 +219,7 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
     if (found_tabs) {
       SyncedSessionWindow* synced_session_window =
           current_session->windows[window_id].get();
-      if (window_delegate->IsTypeTabbed()) {
+      if (window_delegate->IsTypeNormal()) {
         synced_session_window->window_type =
             sync_pb::SessionWindow_BrowserType_TYPE_TABBED;
       } else if (window_delegate->IsTypePopup()) {
@@ -250,14 +251,10 @@ void LocalSessionEventHandlerImpl::AssociateTab(
   DCHECK(!tab_delegate->IsPlaceholderTab());
 
   if (tab_delegate->IsBeingDestroyed()) {
-    task_tracker_.CleanTabTasks(tab_delegate->GetSessionId());
     // Do nothing else. By not proactively adding the tab to the session, it
     // will be removed if necessary during subsequent cleanup.
     return;
   }
-
-  // Ensure the task tracker has up to date task ids for this tab.
-  UpdateTaskTracker(tab_delegate);
 
   if (!tab_delegate->ShouldSync(sessions_client_)) {
     return;
@@ -290,7 +287,7 @@ void LocalSessionEventHandlerImpl::AssociateTab(
   specifics->set_session_tag(current_session_tag_);
   specifics->set_tab_node_id(tab_node_id);
   GetTabSpecificsFromDelegate(*tab_delegate).Swap(specifics->mutable_tab());
-  WriteTasksIntoSpecifics(specifics->mutable_tab());
+  WriteTasksIntoSpecifics(specifics->mutable_tab(), tab_delegate);
 
   // Update the tracker's session representation. Timestamp will be overwriten,
   // so we set a null time first to prevent the update from being ignored, if
@@ -310,51 +307,25 @@ void LocalSessionEventHandlerImpl::AssociateTab(
   }
 }
 
-void LocalSessionEventHandlerImpl::UpdateTaskTracker(
-    SyncedTabDelegate* const tab_delegate) {
-  TabTasks* tab_tasks = task_tracker_.GetTabTasks(
-      tab_delegate->GetSessionId(), tab_delegate->GetSourceTabID());
-
-  // Iterate through all navigations in the tab to ensure they all have a task
-  // id set (it's possible some haven't been seen before, such as when a tab
-  // is restored).
-  for (int i = 0; i < tab_delegate->GetEntryCount(); ++i) {
-    sessions::SerializedNavigationEntry serialized_entry;
-    tab_delegate->GetSerializedNavigationAtIndex(i, &serialized_entry);
-
-    int nav_id = serialized_entry.unique_id();
-    int64_t global_id = serialized_entry.timestamp().ToInternalValue();
-    tab_tasks->UpdateWithNavigation(
-        nav_id, tab_delegate->GetTransitionAtIndex(i), global_id);
-  }
-}
-
 void LocalSessionEventHandlerImpl::WriteTasksIntoSpecifics(
-    sync_pb::SessionTab* tab_specifics) {
-  TabTasks* tab_tasks = task_tracker_.GetTabTasks(
-      SessionID::FromSerializedValue(tab_specifics->tab_id()),
-      /*parent_tab_id=*/SessionID::InvalidValue());
+    sync_pb::SessionTab* tab_specifics,
+    SyncedTabDelegate* tab_delegate) {
   for (int i = 0; i < tab_specifics->navigation_size(); i++) {
     // Excluding blocked navigations, which are appended at tail.
     if (tab_specifics->navigation(i).blocked_state() ==
         sync_pb::TabNavigation::STATE_BLOCKED) {
       break;
     }
-
-    std::vector<int64_t> task_ids = tab_tasks->GetTaskIdsForNavigation(
+    int64_t task_id = tab_delegate->GetTaskIdForNavigationId(
         tab_specifics->navigation(i).unique_id());
-    if (task_ids.empty()) {
-      continue;
-    }
+    int64_t parent_task_id = tab_delegate->GetParentTaskIdForNavigationId(
+        tab_specifics->navigation(i).unique_id());
+    int64_t root_task_id = tab_delegate->GetRootTaskIdForNavigationId(
+        tab_specifics->navigation(i).unique_id());
 
-    tab_specifics->mutable_navigation(i)->set_task_id(task_ids.back());
-    // Pop the task id of navigation self.
-    task_ids.pop_back();
-    tab_specifics->mutable_navigation(i)->clear_ancestor_task_id();
-    for (auto ancestor_task_id : task_ids) {
-      tab_specifics->mutable_navigation(i)->add_ancestor_task_id(
-          ancestor_task_id);
-    }
+    tab_specifics->mutable_navigation(i)->set_task_id(task_id);
+    tab_specifics->mutable_navigation(i)->add_ancestor_task_id(root_task_id);
+    tab_specifics->mutable_navigation(i)->add_ancestor_task_id(parent_task_id);
   }
 }
 
@@ -425,6 +396,10 @@ sync_pb::SessionTab LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegate(
 
     sync_pb::TabNavigation* navigation = specifics.add_navigation();
     SessionNavigationToSyncData(serialized_entry).Swap(navigation);
+
+    const std::string page_language = tab_delegate.GetPageLanguageAtIndex(i);
+    if (!page_language.empty())
+      navigation->set_page_language(page_language);
 
     if (is_supervised) {
       navigation->set_blocked_state(

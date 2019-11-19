@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_PENDING_USER_INPUT_TYPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_PENDING_USER_INPUT_TYPE_H_
 
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
 namespace blink {
 namespace scheduler {
 
@@ -56,6 +58,8 @@ inline constexpr bool operator==(PendingUserInputType a,
 
 // A wrapper around a set of input types that have been flagged as pending.
 class PLATFORM_EXPORT PendingUserInputInfo {
+  DISALLOW_NEW();
+
  public:
   constexpr explicit PendingUserInputInfo(PendingUserInputType mask)
       : mask_(mask) {}

@@ -34,11 +34,10 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/histogram.h"
-#include "third_party/blink/renderer/platform/memory_pressure_listener.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 #include "v8/include/v8.h"
 
 #if defined(OS_ANDROID)
@@ -46,8 +45,7 @@ static size_t GetMemoryUsage() {
   size_t usage =
       base::ProcessMetrics::CreateCurrentProcessMetrics()->GetMallocUsage() +
       WTF::Partitions::TotalActiveBytes() +
-      blink::ProcessHeap::TotalAllocatedObjectSize() +
-      blink::ProcessHeap::TotalMarkedObjectSize();
+      blink::ProcessHeap::TotalAllocatedObjectSize();
   v8::HeapStatistics v8_heap_statistics;
   blink::V8PerIsolateData::MainThreadIsolate()->GetHeapStatistics(
       &v8_heap_statistics);
@@ -70,7 +68,7 @@ void V8GCForContextDispose::NotifyContextDisposed(
     bool is_main_frame,
     WindowProxy::FrameReuseStatus frame_reuse_status) {
   did_dispose_context_for_main_frame_ = is_main_frame;
-  last_context_disposal_time_ = WTF::CurrentTime();
+  last_context_disposal_time_ = base::Time::Now().ToDoubleT();
 #if defined(OS_ANDROID)
   // When a low end device is in a low memory situation we should prioritize
   // memory use and trigger a V8+Blink GC. However, on Android, if the frame
@@ -102,8 +100,8 @@ void V8GCForContextDispose::NotifyIdle() {
   double max_time_since_last_context_disposal = .2;
   if (!did_dispose_context_for_main_frame_ && !pseudo_idle_timer_.IsActive() &&
       last_context_disposal_time_ + max_time_since_last_context_disposal >=
-          WTF::CurrentTime()) {
-    pseudo_idle_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+          base::Time::Now().ToDoubleT()) {
+    pseudo_idle_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
   }
 }
 
@@ -114,7 +112,7 @@ V8GCForContextDispose& V8GCForContextDispose::Instance() {
 
 void V8GCForContextDispose::PseudoIdleTimerFired(TimerBase*) {
   V8PerIsolateData::MainThreadIsolate()->IdleNotificationDeadline(
-      CurrentTimeTicksInSeconds());
+      base::TimeTicks::Now().since_origin().InSecondsF());
   Reset();
 }
 

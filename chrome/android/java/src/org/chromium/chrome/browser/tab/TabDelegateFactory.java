@@ -4,61 +4,40 @@
 
 package org.chromium.chrome.browser.tab;
 
-import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
+import org.chromium.chrome.browser.externalnav.ExternalNavigationHandler;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 
 /**
- * A factory class to create {@link Tab} related delegates.
+ * An interface for factory to create {@link Tab} related delegates.
  */
-public class TabDelegateFactory {
+public interface TabDelegateFactory {
     /**
      * Creates the {@link WebContentsDelegateAndroid} the tab will be initialized with.
      * @param tab The associated {@link Tab}.
      * @return The {@link WebContentsDelegateAndroid} to be used for this tab.
      */
-    public TabWebContentsDelegateAndroid createWebContentsDelegate(Tab tab) {
-        return new TabWebContentsDelegateAndroid(tab);
-    }
+    TabWebContentsDelegateAndroid createWebContentsDelegate(Tab tab);
 
     /**
-     * Creates the {@link InterceptNavigationDelegate} the tab will be initialized with.
+     * Creates the {@link ExternalNavigationHandler} the tab will use for its
+     * {@link InterceptNavigationDelegate}.
      * @param tab The associated {@link Tab}.
-     * @return The {@link InterceptNavigationDelegate} to be used for this tab.
+     * @return The {@link ExternalNavigationHandler} to be used for this tab.
      */
-    public InterceptNavigationDelegateImpl createInterceptNavigationDelegate(Tab tab) {
-        return new InterceptNavigationDelegateImpl(tab);
-    }
+    ExternalNavigationHandler createExternalNavigationHandler(Tab tab);
 
     /**
      * Creates the {@link ContextMenuPopulator} the tab will be initialized with.
      * @param tab The associated {@link Tab}.
      * @return The {@link ContextMenuPopulator} to be used for this tab.
      */
-    public ContextMenuPopulator createContextMenuPopulator(Tab tab) {
-        return new ChromeContextMenuPopulator(new TabContextMenuItemDelegate(tab),
-                ChromeContextMenuPopulator.ContextMenuMode.NORMAL);
-    }
-
-    /**
-     * Return true if app banners are to be permitted in this tab. May need to be overridden.
-     * @return true if app banners are permitted, and false otherwise.
-     */
-    public boolean canShowAppBanners() {
-        return true;
-    }
+    ContextMenuPopulator createContextMenuPopulator(Tab tab);
 
     /**
      * Creates the {@link BrowserControlsVisibilityDelegate} the tab will be initialized with.
      * @param tab The associated {@link Tab}.
-     * @return {@link BrowserControlsVisibilityDelegate} to be used for the given tab.
      */
-    public BrowserControlsVisibilityDelegate createBrowserControlsVisibilityDelegate(Tab tab) {
-        return new TabStateBrowserControlsVisibilityDelegate(tab);
-    }
-
-    public TabDelegateFactory createNewTabDelegateFactory() {
-        return new TabDelegateFactory();
-    }
+    BrowserControlsVisibilityDelegate createBrowserControlsVisibilityDelegate(Tab tab);
 }

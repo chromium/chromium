@@ -10,17 +10,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.Browser;
-import android.support.customtabs.CustomTabsIntent;
+
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.download.DownloadActivity;
 import org.chromium.chrome.browser.download.DownloadInfo;
@@ -28,14 +31,13 @@ import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadNotifier;
 import org.chromium.chrome.browser.download.DownloadSharedPreferenceEntry;
 import org.chromium.chrome.browser.download.DownloadSharedPreferenceHelper;
+import org.chromium.chrome.browser.flags.FeatureUtilities;
 import org.chromium.chrome.browser.offlinepages.OfflinePageOrigin;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
-import org.chromium.chrome.browser.util.FeatureUtilities;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
@@ -58,23 +60,22 @@ public class OfflinePageDownloadBridge {
      */
     public static OfflinePageDownloadBridge getInstance() {
         if (sInstance == null) {
-            sInstance = new OfflinePageDownloadBridge(
-                    Profile.getLastUsedProfile().getOriginalProfile());
+            sInstance = new OfflinePageDownloadBridge();
         }
         return sInstance;
     }
 
-    private OfflinePageDownloadBridge(Profile profile) {
-        // If |profile| is incognito profile, switch to the regular one since
-        // downloads are shared between them.
-        mNativeOfflinePageDownloadBridge =
-                sIsTesting ? 0L : nativeInit(profile.getOriginalProfile());
+    private OfflinePageDownloadBridge() {
+        mNativeOfflinePageDownloadBridge = sIsTesting
+                ? 0L
+                : OfflinePageDownloadBridgeJni.get().init(OfflinePageDownloadBridge.this);
     }
 
     /** Destroys the native portion of the bridge. */
     public void destroy() {
         if (mNativeOfflinePageDownloadBridge != 0) {
-            nativeDestroy(mNativeOfflinePageDownloadBridge);
+            OfflinePageDownloadBridgeJni.get().destroy(
+                    mNativeOfflinePageDownloadBridge, OfflinePageDownloadBridge.this);
             mNativeOfflinePageDownloadBridge = 0;
         }
     }
@@ -154,8 +155,7 @@ public class OfflinePageDownloadBridge {
                 context, customTabIntent.intent);
         intent.setPackage(context.getPackageName());
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE,
-                CustomTabIntentDataProvider.CustomTabsUiType.OFFLINE_PAGE);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.OFFLINE_PAGE);
 
         IntentHandler.addTrustedIntentExtras(intent);
         if (!(context instanceof Activity)) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -176,7 +176,7 @@ public class OfflinePageDownloadBridge {
      * @param origin the object encapsulating application origin of the request.
      */
     public static void startDownload(Tab tab, OfflinePageOrigin origin) {
-        nativeStartDownload(tab, origin.encodeAsJsonString());
+        OfflinePageDownloadBridgeJni.get().startDownload(tab, origin.encodeAsJsonString());
     }
 
     /**
@@ -264,7 +264,10 @@ public class OfflinePageDownloadBridge {
         return null;
     }
 
-    private native long nativeInit(Profile profile);
-    private native void nativeDestroy(long nativeOfflinePageDownloadBridge);
-    private static native void nativeStartDownload(Tab tab, String origin);
+    @NativeMethods
+    interface Natives {
+        long init(OfflinePageDownloadBridge caller);
+        void destroy(long nativeOfflinePageDownloadBridge, OfflinePageDownloadBridge caller);
+        void startDownload(Tab tab, String origin);
+    }
 }

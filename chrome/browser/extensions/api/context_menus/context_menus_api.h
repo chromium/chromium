@@ -9,7 +9,7 @@
 
 namespace extensions {
 
-class ContextMenusCreateFunction : public UIThreadExtensionFunction {
+class ContextMenusCreateFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("contextMenus.create", CONTEXTMENUS_CREATE)
 
@@ -20,7 +20,7 @@ class ContextMenusCreateFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class ContextMenusUpdateFunction : public UIThreadExtensionFunction {
+class ContextMenusUpdateFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("contextMenus.update", CONTEXTMENUS_UPDATE)
 
@@ -31,7 +31,7 @@ class ContextMenusUpdateFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class ContextMenusRemoveFunction : public UIThreadExtensionFunction {
+class ContextMenusRemoveFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("contextMenus.remove", CONTEXTMENUS_REMOVE)
 
@@ -42,7 +42,7 @@ class ContextMenusRemoveFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class ContextMenusRemoveAllFunction : public UIThreadExtensionFunction {
+class ContextMenusRemoveAllFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("contextMenus.removeAll", CONTEXTMENUS_REMOVEALL)
 

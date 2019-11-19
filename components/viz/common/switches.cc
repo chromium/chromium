@@ -10,15 +10,27 @@
 
 namespace switches {
 
+// Screen width is useful for debugging. Shipping implementations should detect
+// this.
+const char kDeJellyScreenWidth[] = "de-jelly-screen-width";
+
 // The default number of the BeginFrames to wait to activate a surface with
 // dependencies.
 const char kDeadlineToSynchronizeSurfaces[] =
     "deadline-to-synchronize-surfaces";
 
-// Enables multi-client Surface synchronization. In practice, this indicates
-// that LayerTreeHost expects to be given a valid viz::LocalSurfaceId provided
-// by the parent compositor.
-const char kEnableSurfaceSynchronization[] = "enable-surface-synchronization";
+// Disables begin frame limiting in both cc scheduler and display scheduler.
+// Also implies --disable-gpu-vsync (see //ui/gl/gl_switches.h).
+const char kDisableFrameRateLimit[] = "disable-frame-rate-limit";
+
+// Experimental de-jelly support.
+const char kEnableDeJelly[] = "enable-de-jelly";
+
+// Enable compositing individual elements via hardware overlays when
+// permitted by device.
+// Setting the flag to "single-fullscreen" will try to promote a single
+// fullscreen overlay and use it as main framebuffer where possible.
+const char kEnableHardwareOverlays[] = "enable-hardware-overlays";
 
 // Enables inspecting Viz Display Compositor objects. Default port is 9229.
 // For local inspection use chrome://inspect#other
@@ -32,13 +44,19 @@ const char kEnableVizHitTestDebug[] = "enable-viz-hit-test-debug";
 const char kRunAllCompositorStagesBeforeDraw[] =
     "run-all-compositor-stages-before-draw";
 
+// Adds a DebugBorderDrawQuad to the top of the root RenderPass showing the
+// damage rect after surface aggregation. Note that when enabled this feature
+// sets the entire output rect as damaged after adding the quad to highlight the
+// real damage rect, which could hide damage rect problems.
+const char kShowAggregatedDamage[] = "show-aggregated-damage";
+
+// Show debug borders for DC layers - red for overlays and blue for underlays.
+// The debug borders are offset from the layer rect by a few pixels for clarity.
+const char kShowDCLayerDebugBorders[] = "show-dc-layer-debug-borders";
+
 // Enables the viz hit-test logic (HitTestAggregator and HitTestQuery), with
 // hit-test data coming from surface layer.
 const char kUseVizHitTestSurfaceLayer[] = "use-viz-hit-test-surface-layer";
-
-// Disables begin frame limiting in both cc scheduler and display scheduler.
-// Also implies --disable-gpu-vsync (see //ui/gl/gl_switches.h).
-const char kDisableFrameRateLimit[] = "disable-frame-rate-limit";
 
 base::Optional<uint32_t> GetDeadlineToSynchronizeSurfaces() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

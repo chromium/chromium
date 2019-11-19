@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/util/type_safety/strong_alias.h"
 #include "media/base/media_export.h"
 #include "media/base/stream_parser.h"
 
@@ -15,12 +16,15 @@ namespace media {
 class MEDIA_EXPORT MediaTrack {
  public:
   enum Type { Text, Audio, Video };
-  using Id = std::string;
+  using Id = util::StrongAlias<class IdTag, std::string>;
+  using Kind = util::StrongAlias<class KindTag, std::string>;
+  using Label = util::StrongAlias<class LabelTag, std::string>;
+  using Language = util::StrongAlias<class LanguageTag, std::string>;
   MediaTrack(Type type,
              StreamParser::TrackId bytestream_track_id,
-             const std::string& kind,
-             const std::string& label,
-             const std::string& lang);
+             const Kind& kind,
+             const Label& label,
+             const Language& lang);
   ~MediaTrack();
 
   Type type() const { return type_; }
@@ -28,14 +32,14 @@ class MEDIA_EXPORT MediaTrack {
   StreamParser::TrackId bytestream_track_id() const {
     return bytestream_track_id_;
   }
-  const std::string& kind() const { return kind_; }
-  const std::string& label() const { return label_; }
-  const std::string& language() const { return language_; }
+  const Kind& kind() const { return kind_; }
+  const Label& label() const { return label_; }
+  const Language& language() const { return language_; }
 
   Id id() const { return id_; }
   void set_id(Id id) {
-    DCHECK(id_.empty());
-    DCHECK(!id.empty());
+    DCHECK(id_.value().empty());
+    DCHECK(!id.value().empty());
     id_ = id;
   }
 
@@ -55,9 +59,9 @@ class MEDIA_EXPORT MediaTrack {
 
   // These properties are read from input streams by stream parsers as specified
   // in https://dev.w3.org/html5/html-sourcing-inband-tracks/.
-  std::string kind_;
-  std::string label_;
-  std::string language_;
+  Kind kind_;
+  Label label_;
+  Language language_;
 };
 
 // Helper for logging.

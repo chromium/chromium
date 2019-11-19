@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Feature-Policy header {"battery" : []} disallows the top-level document. assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Feature-Policy header {"battery" : []} disallows same-origin iframes. assert_false: navigator.getBattery() expected false got true
+FAIL Feature-Policy header {"battery" : []} disallows cross-origin iframes. assert_false: navigator.getBattery() expected false got true
+Harness: the test ran to completion.
+

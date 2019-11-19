@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL click on host with delegatesFocus, #aboveSlot tabindex = 2, #slot and #slotted tabindex = 1 assert_equals: expected Element node <div tabindex="2">aboveSlot</div> but got null
+Harness: the test ran to completion.
+

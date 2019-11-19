@@ -5,6 +5,7 @@
 #include "chromecast/media/cma/backend/audio_decoder_wrapper.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/logging.h"
 #include "chromecast/media/cma/backend/media_pipeline_backend_manager.h"
@@ -53,21 +54,15 @@ class RevokedAudioDecoderWrapper : public DestructableAudioDecoder {
 }  // namespace
 
 ActiveAudioDecoderWrapper::ActiveAudioDecoderWrapper(
-    MediaPipelineBackendManager* backend_manager,
     MediaPipelineBackend::AudioDecoder* backend_decoder,
     AudioContentType type,
     MediaPipelineBackendManager::BufferDelegate* buffer_delegate)
-    : backend_manager_(backend_manager),
-      decoder_(backend_decoder),
+    : decoder_(backend_decoder),
       content_type_(type),
       buffer_delegate_(buffer_delegate),
       initialized_(false),
       delegate_active_(false),
-      global_volume_multiplier_(1.0f),
       stream_volume_multiplier_(1.0f) {
-  DCHECK(backend_manager_);
-
-  backend_manager_->AddAudioDecoder(this);
   if (buffer_delegate_) {
     buffer_delegate_->OnStreamStarted();
   }
@@ -77,27 +72,12 @@ ActiveAudioDecoderWrapper::~ActiveAudioDecoderWrapper() {
   if (buffer_delegate_) {
     buffer_delegate_->OnStreamStopped();
   }
-  backend_manager_->RemoveAudioDecoder(this);
 }
 
 void ActiveAudioDecoderWrapper::OnInitialized() {
   initialized_ = true;
   if (!delegate_active_) {
-    float volume = stream_volume_multiplier_ * global_volume_multiplier_;
-    decoder_.SetVolume(volume);
-  }
-}
-
-void ActiveAudioDecoderWrapper::SetGlobalVolumeMultiplier(float multiplier) {
-  global_volume_multiplier_ = multiplier;
-  if (!delegate_active_) {
-    float volume = stream_volume_multiplier_ * global_volume_multiplier_;
-    if (initialized_) {
-      decoder_.SetVolume(volume);
-    }
-    if (buffer_delegate_) {
-      buffer_delegate_->OnSetVolume(volume);
-    }
+    decoder_.SetVolume(stream_volume_multiplier_);
   }
 }
 
@@ -118,13 +98,17 @@ CmaBackend::BufferStatus ActiveAudioDecoderWrapper::PushBuffer(
     // Restore original volume.
     if (delegate_active_) {
       delegate_active_ = false;
-      if (!decoder_.SetVolume(stream_volume_multiplier_ *
-                              global_volume_multiplier_)) {
+      if (!decoder_.SetVolume(stream_volume_multiplier_)) {
         LOG(ERROR) << "SetVolume failed";
       }
     }
   }
-  return decoder_.PushBuffer(buffer.get());
+
+  // Retain the buffer. Backend expects pipeline to hold the buffer until
+  // Decoder::Delegate::OnBufferComplete is called.
+  // TODO: Release the buffer at a proper time.
+  pushed_buffer_ = std::move(buffer);
+  return decoder_.PushBuffer(pushed_buffer_.get());
 }
 
 bool ActiveAudioDecoderWrapper::SetConfig(const AudioConfig& config) {
@@ -135,16 +119,15 @@ bool ActiveAudioDecoderWrapper::SetConfig(const AudioConfig& config) {
 }
 
 bool ActiveAudioDecoderWrapper::SetVolume(float multiplier) {
-  stream_volume_multiplier_ = std::max(0.0f, std::min(multiplier, 1.0f));
-  float volume = stream_volume_multiplier_ * global_volume_multiplier_;
+  stream_volume_multiplier_ = std::max(0.0f, multiplier);
   if (buffer_delegate_) {
-    buffer_delegate_->OnSetVolume(volume);
+    buffer_delegate_->OnSetVolume(stream_volume_multiplier_);
   }
 
   if (delegate_active_ || !initialized_) {
     return true;
   }
-  return decoder_.SetVolume(volume);
+  return decoder_.SetVolume(stream_volume_multiplier_);
 }
 
 ActiveAudioDecoderWrapper::RenderingDelay
@@ -163,13 +146,12 @@ bool ActiveAudioDecoderWrapper::RequiresDecryption() {
 }
 
 AudioDecoderWrapper::AudioDecoderWrapper(
-    MediaPipelineBackendManager* backend_manager,
     MediaPipelineBackend::AudioDecoder* backend_decoder,
     AudioContentType type,
     MediaPipelineBackendManager::BufferDelegate* buffer_delegate)
     : decoder_revoked_(false) {
   audio_decoder_ = std::make_unique<ActiveAudioDecoderWrapper>(
-      backend_manager, backend_decoder, type, buffer_delegate);
+      backend_decoder, type, buffer_delegate);
 }
 
 AudioDecoderWrapper::AudioDecoderWrapper(AudioContentType type)

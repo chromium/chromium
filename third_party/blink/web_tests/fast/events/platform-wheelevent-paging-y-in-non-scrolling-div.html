@@ -1,63 +1,69 @@
-<html>
-    <head>
-        <script src="../../resources/js-test.js"></script>
-        <script>
-            var givenScrollTop = 2;
-            var givenScrollLeft = 0;
-            var expectedScrollTop = 0;
-            var expectedScrollLeft = 0;
-            var pixelsPerWheelTick = 40;
-            var event;
-            var div;
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script>
+    const scrollDelta = 2;
+    const test = async_test("Page-based wheel scrolls provide correct delta " +
+                            "in event handler, don't scroll if there's no " +
+                            "overflow in direction.");
 
-            if (window.testRunner)
-                testRunner.waitUntilDone();
+    if (window.testRunner)
+        testRunner.waitUntilDone();
 
-            function dispatchWheelEvent()
-            {
-                var overflowElement = document.getElementById("overflow");
-                if (overflowElement)
-                    overflowElement.addEventListener("mousewheel", mousewheelHandler, false);
+    function mousewheelHandler(e)
+    {
+      test.step(() => {
+        const overflowElement = document.getElementById("overflow");
+        assert_equals(e.wheelDeltaY, scrollDelta * -3);
+        assert_equals(e.wheelDeltaX, 0);
+        assert_equals(e.wheelDelta, scrollDelta * -3);
+        assert_equals(overflowElement.scrollTop, 0);
+      });
 
-                if (window.eventSender) {
-                    eventSender.mouseMoveTo(100, 110);
-                    eventSender.continuousMouseScrollBy(-window.givenScrollLeft, -window.givenScrollTop, true);
-                }
+      test.done();
+    }
 
-                setTimeout('checkOffsets();', 100);
-            }
+    window.onload = async () => {
+      const overflowElement = document.getElementById("overflow");
+      overflowElement.addEventListener("mousewheel", mousewheelHandler, false);
 
-            function checkOffsets()
-            {
-                div = document.getElementById("overflow");
-                shouldBe("div.scrollTop", "window.expectedScrollTop");
-                shouldBe("div.scrollLeft", "window.expectedScrollLeft");
+      // TODO(bokan): This should really be using gpuBenchmarking or similar to
+      // ensure the wheels are injected at the browser level, however,
+      // gpuBenchmarking today doesn't support "page" granularity wheels.
+      if (window.eventSender) {
+        eventSender.mouseMoveTo(100, 110);
+        eventSender.continuousMouseScrollBy(0, -scrollDelta, true);
+      }
+    };
+</script>
+<style>
+  body {
+    margin: 0;
+  }
 
-                if (window.testRunner)
-                    testRunner.notifyDone();
-            }
+  #overflow {
+    border:2px solid black;
+    overflow:auto;
+    white-space:nowrap;
+    height:200px;
+    width:200px;
+  }
 
-            function mousewheelHandler(e)
-            {
-                event = e;
-                shouldBe("event.wheelDeltaY", "window.givenScrollTop*-3");
-                shouldBe("event.wheelDeltaX", "0");
+  #container {
+    height: 185px;
+    width: 600px;
+  }
 
-                if (e.wheelDeltaY)
-                    shouldBe("event.wheelDelta", "window.givenScrollTop*-3");
-                else
-                    shouldBe("event.wheelDelta", "0");
-            }
-        </script>
-    </head>
+  .box {
+    height:181px;
+    width:300px;
+    display:inline-block;
+  }
+</style>
 
-    <body style="margin:0" onload="setTimeout('dispatchWheelEvent();', 100)">
-        <div id="overflow" style="border:2px solid black;overflow:auto;white-space:nowrap;height:200px;width:200px;">
-        <div style="height:185px;width:600px;">
-          <div style="border:0px;background-color:red;height:181px;width:300px;display:inline-block;"></div>
-          <div style="border:0px;background-color:green;height:181px;width:300px;display:inline-block;"></div>
-        </div>
-        </div>
-        <div id="console"></div>
-    </body>
-</html>
+<div id="overflow">
+  <div id="container">
+    <div class="box" style="background-color:red"></div>
+    <div class="box" style="background-color:green"></div>
+  </div>
+</div>

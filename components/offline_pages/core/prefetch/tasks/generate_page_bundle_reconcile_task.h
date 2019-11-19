@@ -34,7 +34,7 @@ class GeneratePageBundleReconcileTask : public Task {
   PrefetchStore* prefetch_store_;
   PrefetchNetworkRequestFactory* request_factory_;
 
-  base::WeakPtrFactory<GeneratePageBundleReconcileTask> weak_factory_;
+  base::WeakPtrFactory<GeneratePageBundleReconcileTask> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(GeneratePageBundleReconcileTask);
 };
 

@@ -24,14 +24,14 @@ TEST_F(InsertParagraphSeparatorCommandTest,
           "</table>"),
       SetSelectionOptions());
 
-  InsertParagraphSeparatorCommand* command =
-      InsertParagraphSeparatorCommand::Create(GetDocument());
+  auto* command =
+      MakeGarbageCollected<InsertParagraphSeparatorCommand>(GetDocument());
   // Crash should not be observed here.
   command->Apply();
 
   EXPECT_EQ(
       "<table contenteditable>"
-      "    <colgroup style=\"-webkit-appearance:radio;\">|<br></colgroup>"
+      "|    <colgroup style=\"-webkit-appearance:radio;\"></colgroup>"
       "</table>",
       GetSelectionTextFromBody());
 }
@@ -47,13 +47,13 @@ TEST_F(InsertParagraphSeparatorCommandTest,
                              "</table>"),
       SetSelectionOptions());
 
-  InsertParagraphSeparatorCommand* command =
-      InsertParagraphSeparatorCommand::Create(GetDocument());
+  auto* command =
+      MakeGarbageCollected<InsertParagraphSeparatorCommand>(GetDocument());
   // Crash should not be observed here.
   command->Apply();
   EXPECT_EQ(
       "<table contenteditable>"
-      "    <colgroup style=\"-webkit-appearance:radio;\">|<br>"
+      "|    <colgroup style=\"-webkit-appearance:radio;\">"
       "        <col>"
       "    </colgroup>"
       "</table>",
@@ -78,8 +78,8 @@ TEST_F(InsertParagraphSeparatorCommandTest, CrashWithCaptionBeforeBody) {
           .Build(),
       SetSelectionOptions());
 
-  InsertParagraphSeparatorCommand* command =
-      InsertParagraphSeparatorCommand::Create(GetDocument());
+  auto* command =
+      MakeGarbageCollected<InsertParagraphSeparatorCommand>(GetDocument());
   // Shouldn't crash inside.
   EXPECT_FALSE(command->Apply());
   EXPECT_EQ(

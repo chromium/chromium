@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  This update manifest points to the ./extension.crx file. "mock.http" is a
+  placeholder that gets substituted with the test server address in runtime.
+-->
+<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
+  <app appid='ngjobkbdodapjbbncmagbccommkggmnj'>
+    <updatecheck
+        codebase='http://mock.http/extensions/signin_screen_manual_test_extension/extension_signed_by_webstore.crx'
+        version='2.0' />
+   </app>
+</gupdate>

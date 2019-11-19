@@ -1,0 +1,97 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome_cleaner.mojom;
+
+import "chrome/chrome_cleaner/mojom/footprints.mojom";
+import "chrome/chrome_cleaner/mojom/string16_embedded_nulls.mojom";
+import "chrome/chrome_cleaner/mojom/windows_handle.mojom";
+import "mojo/public/mojom/base/process_id.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+
+enum KnownFolder {
+  kWindows = 0,
+  kProgramFiles = 1,
+  kProgramFilesX86 = 2,
+  kAppData = 3,
+};
+
+struct StringSid {
+  mojo_base.mojom.String16 value;
+};
+
+struct ScheduledTaskAction {
+  FilePath path;
+  FilePath working_dir;
+  mojo_base.mojom.String16 arguments;
+};
+
+struct ScheduledTask {
+  mojo_base.mojom.String16 name;
+  mojo_base.mojom.String16 description;
+  array<ScheduledTaskAction> actions;
+};
+
+struct UserInformation {
+  mojo_base.mojom.String16 name;
+  mojo_base.mojom.String16 domain;
+  // User account type (SID_NAME_USE). See
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/aa379601(v=vs.85).aspx
+  uint32 account_type;
+};
+
+// Passes requests that do not mutate the system from the low-privilege sandbox
+// target process to the high-privilege broker process. It is implemented in
+// EngineRequestsImpl in engines/broker.
+//
+// This interface is used in scanning and cleaning mode.
+interface EngineRequests {
+  // Calls ::GetFileAttributes on the given path and returns the result in
+  // |attributes|. |result| is set to the value of ::GetLastError or to a
+  // validation error code from sandbox_error_code.h
+  SandboxGetFileAttributes(FilePath file_name) =>
+    (uint32 result, uint32 attributes);
+
+  // Converts the given KnownFolder Id to its folder path.
+  SandboxGetKnownFolderPath(KnownFolder folder_id) =>
+    (bool result, FilePath folder_path);
+
+  // Gets all of the processes currently running on the machine.
+  SandboxGetProcesses() =>
+      (bool result, array<mojo_base.mojom.ProcessId> processes);
+
+  // Gets all the tasks on the system.
+  SandboxGetTasks() => (bool result, array<ScheduledTask> tasks);
+
+  // Returns the path to the executable of the given process.
+  SandboxGetProcessImagePath(mojo_base.mojom.ProcessId pid) =>
+    (bool result, FilePath image_path);
+
+  // Gets all of the modules loaded into memory for the given process.
+  SandboxGetLoadedModules(mojo_base.mojom.ProcessId pid) =>
+    (bool result, array<mojo_base.mojom.String16> modules);
+
+  // Gets the command line for the given process.
+  SandboxGetProcessCommandLine(mojo_base.mojom.ProcessId pid) =>
+    (bool result, mojo_base.mojom.String16 command_line);
+
+  // Gets the given UserInformation values for |sid|.
+  SandboxGetUserInfoFromSID(StringSid sid) => (bool result,
+                                               UserInformation user_info);
+
+  // Gets a read-only registry key handle to the given key.
+  // |dw_access| may specify KEY_WOW64_32KEY or KEY_WOW64_64KEY. |root_key| must
+  // be non-null, and |sub_key| can't have any null characters.
+  SandboxOpenReadOnlyRegistry(WindowsHandle root_key,
+          mojo_base.mojom.String16 sub_key, uint32 dw_access) =>
+    (uint32 result, WindowsHandle reg_handle);
+
+  // Gets a read-only registry key handle to the given key.
+  // |dw_access| may not specify KEY_WOW64_32KEY or KEY_WOW64_64KEY.
+  // ||root_key| may be null, and |sub_key| may have null characters.
+  SandboxNtOpenReadOnlyRegistry(WindowsHandle root_key,
+                                String16EmbeddedNulls sub_key,
+                                uint32 dw_access) =>
+    (uint32 result, WindowsHandle reg_handle);
+};

@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS service-worker
-FAIL serviceWorker.controller.postMessage should be able to transfer a ReadableStream promise_test: Unhandled rejection with value: "BAD: TypeError: Cannot read property 'constructor' of null"
-FAIL postMessage in a service worker should be able to transfer ReadableStream promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'constructor' of null"
-Harness: the test ran to completion.
-

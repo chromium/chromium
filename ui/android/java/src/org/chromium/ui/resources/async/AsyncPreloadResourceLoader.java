@@ -99,7 +99,6 @@ public class AsyncPreloadResourceLoader extends ResourceLoader {
 
     private void registerResource(Resource resource, int resourceId) {
         notifyLoadFinished(resourceId, resource);
-        if (resource != null) resource.getBitmap().recycle();
         mOutstandingLoads.remove(resourceId);
     }
 

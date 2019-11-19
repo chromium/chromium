@@ -52,6 +52,11 @@ Polymer({
 
     /** @private */
     showErrorDialog_: Boolean,
+
+    // <if expr="chromeos">
+    /** @type settings.BlockingRequestManager */
+    tokenRequestManager: Object
+    // </if>
   },
 
   listeners: {
@@ -177,11 +182,22 @@ Polymer({
     this.async(() => this.fire('passwords-export-dialog-close'));
   },
 
+  /** @private */
+  onExportTap_: function() {
+    // <if expr="chromeos">
+    this.tokenRequestManager.request(this.exportPasswords_.bind(this));
+    // </if>
+    // <if expr="not chromeos">
+    this.exportPasswords_();
+    // </if>
+  },
+
   /**
-   * Fires an event that should trigger the password export process.
+   * Tells the PasswordsPrivate API to export saved passwords in a .csv pending
+   * security checks.
    * @private
    */
-  onExportTap_: function() {
+  exportPasswords_: function() {
     this.passwordManager_.exportPasswords(() => {
       if (chrome.runtime.lastError &&
           chrome.runtime.lastError.message == 'in-progress') {

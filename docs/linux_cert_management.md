@@ -1,11 +1,5 @@
 # Linux Cert Management
 
-*** note
-**NOTE:** SSL client authentication with personal certificates does not work
-completely in Linux, see [issue 16830](https://crbug.com/16830) and
-[issue 25241](https://crbug.com/25241).
-***
-
 The easy way to manage certificates is navigate to chrome://settings/search#ssl.
 Then click on the "Manage Certificates" button. This will load a built-in
 interface for managing certificates.

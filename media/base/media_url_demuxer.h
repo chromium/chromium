@@ -35,21 +35,24 @@ class MEDIA_EXPORT MediaUrlDemuxer : public Demuxer {
   MediaUrlDemuxer(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
       const GURL& media_url,
-      const GURL& site_for_cookies);
+      const GURL& site_for_cookies,
+      const url::Origin& top_frame_origin,
+      bool allow_credentials,
+      bool is_hls);
   ~MediaUrlDemuxer() override;
 
   // MediaResource interface.
   std::vector<DemuxerStream*> GetAllStreams() override;
-  MediaUrlParams GetMediaUrlParams() const override;
+  const MediaUrlParams& GetMediaUrlParams() const override;
   MediaResource::Type GetType() const override;
+  void ForwardDurationChangeToDemuxerHost(base::TimeDelta duration) override;
 
   // Demuxer interface.
   std::string GetDisplayName() const override;
-  void Initialize(DemuxerHost* host,
-                  const PipelineStatusCB& status_cb) override;
+  void Initialize(DemuxerHost* host, PipelineStatusCallback status_cb) override;
   void StartWaitingForSeek(base::TimeDelta seek_time) override;
   void CancelPendingSeek(base::TimeDelta seek_time) override;
-  void Seek(base::TimeDelta time, const PipelineStatusCB& status_cb) override;
+  void Seek(base::TimeDelta time, PipelineStatusCallback status_cb) override;
   void Stop() override;
   void AbortPendingReads() override;
   base::TimeDelta GetStartTime() const override;
@@ -64,6 +67,7 @@ class MEDIA_EXPORT MediaUrlDemuxer : public Demuxer {
 
  private:
   MediaUrlParams params_;
+  DemuxerHost* host_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

@@ -4,12 +4,8 @@
 
 /** @fileoverview Runs the WebUI resources tests. */
 
-/** @const {string} Path to source root. */
-const ROOT_PATH = '../../../../../';
-
 // Polymer BrowserTest fixture.
-GEN_INCLUDE(
-    [ROOT_PATH + 'chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 /**
  * Test fixture for Polymer Settings elements.
@@ -25,9 +21,6 @@ WebUIResourcesBrowserTest.prototype = {
   get browsePreload() {
     throw 'this is abstract and should be overridden by subclasses';
   },
-
-  /** @override */
-  extraLibraries: PolymerTest.getLibraries(ROOT_PATH),
 
   /** @override */
   setUp: function() {

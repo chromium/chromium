@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.preferences;
 
 import android.content.Context;
-import android.preference.Preference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceViewHolder;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -27,10 +28,10 @@ public class TextAndButtonPreference extends Preference {
     }
 
     @Override
-    protected void onBindView(View view) {
-        super.onBindView(view);
+    public void onBindViewHolder(PreferenceViewHolder holder) {
+        super.onBindViewHolder(holder);
 
-        View button = view.findViewById(R.id.preference_click_target);
+        View button = holder.findViewById(R.id.preference_click_target);
         button.setClickable(true);
         button.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -86,11 +86,11 @@ class MEDIA_EXPORT SourceBufferState {
   // Gets invoked when the system is experiencing memory pressure, i.e. there's
   // not enough free memory. The |media_time| is the media playback position at
   // the time of memory pressure notification (needed for accurate GC). The
-  // |memory_pressure_listener| indicates memory pressure severity. The
+  // |memory_pressure_level| indicates memory pressure severity. The
   // |force_instant_gc| is used to force the MSE garbage collection algorithm to
   // be run right away, without waiting for the next append.
   void OnMemoryPressure(
-      DecodeTimestamp media_time,
+      base::TimeDelta media_time,
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level,
       bool force_instant_gc);
 

@@ -33,7 +33,7 @@ void LoginPromptBrowserTestObserver::Observe(
 }
 
 void LoginPromptBrowserTestObserver::AddHandler(LoginHandler* handler) {
-  ASSERT_FALSE(base::ContainsValue(handlers_, handler));
+  ASSERT_FALSE(base::Contains(handlers_, handler));
   handlers_.push_back(handler);
 }
 

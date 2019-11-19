@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser;
 
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.net.ProxyChangeListener;
 
 /**
@@ -18,7 +19,7 @@ public class ContentViewStaticsImpl {
      * @param suspend true if timers should be suspended.
      */
     public static void setWebKitSharedTimersSuspended(boolean suspend) {
-        nativeSetWebKitSharedTimersSuspended(suspend);
+        ContentViewStaticsImplJni.get().setWebKitSharedTimersSuspended(suspend);
     }
 
     /**
@@ -37,7 +38,9 @@ public class ContentViewStaticsImpl {
         ProxyChangeListener.setEnabled(false);
     }
 
-    // Native functions
-
-    private static native void nativeSetWebKitSharedTimersSuspended(boolean suspend);
+    @NativeMethods
+    interface Natives {
+        // Native functions
+        void setWebKitSharedTimersSuspended(boolean suspend);
+    }
 }

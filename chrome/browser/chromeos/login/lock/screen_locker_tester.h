@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOGIN_LOCK_SCREEN_LOCKER_TESTER_H_
 #define CHROME_BROWSER_CHROMEOS_LOGIN_LOCK_SCREEN_LOCKER_TESTER_H_
 
-#include <memory>
 #include <string>
 
-#include "ash/public/interfaces/login_screen_test_api.test-mojom.h"
+#include "base/macros.h"
 
 class AccountId;
 
@@ -31,25 +30,19 @@ class ScreenLockerTester {
   bool IsLocked();
 
   // Returns true if Restart button is visible.
-  bool IsRestartButtonShown();
+  bool IsLockRestartButtonShown();
 
   // Returns true if Shutdown button is visible.
-  bool IsShutdownButtonShown();
+  bool IsLockShutdownButtonShown();
+
+  // Returns true if there is an auth error button on the lock screen.
+  bool IsAuthErrorBubbleShown();
 
   // Enters and submits the given password for the given account.
   void UnlockWithPassword(const AccountId& account_id,
                           const std::string& password);
 
-  // Returns LoginShelfView update count.
-  int64_t GetUiUpdateCount();
-
-  // Blocks until LoginShelfView::ui_update_count() is creater then
-  // |previous_update_count|.
-  void WaitForUiUpdate(int64_t previous_update_count);
-
  private:
-  ash::mojom::LoginScreenTestApiPtr test_api_;
-
   DISALLOW_COPY_AND_ASSIGN(ScreenLockerTester);
 };
 

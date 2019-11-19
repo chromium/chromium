@@ -9,8 +9,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/android/download/duplicate_download_infobar_delegate.h"
-#include "jni/DuplicateDownloadInfoBar_jni.h"
+#include "chrome/android/chrome_jni_headers/DuplicateDownloadInfoBar_jni.h"
+#include "chrome/browser/download/android/duplicate_download_infobar_delegate.h"
 
 using android::DuplicateDownloadInfoBarDelegate;
 

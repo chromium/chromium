@@ -1,0 +1,38 @@
+<!--
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:Invoke_Invoked*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<div>
+  <button aria-label="button" id="btn">test-button</button>
+</div>
+<div>
+  <span aria-label="span_onclick" id="span1" onclick="dummy_function()">test-span1</span>
+</div>
+<div>
+  <span aria-label="span_should_not_fire_event" id="span2">test-span2</span>
+</div>
+<div>
+  <a aria-label="link" id="link" href="#">text-link</a>
+</div>
+<div>
+  <input aria-label="checkbox_should_not_fire_event" type="checkbox" id="checkbox" name="checkbox" />
+</div>
+<div>
+    <button aria-label="toggle_button_should_not_fire_event" id="toggle_button" role="button" aria-pressed="false"></button>
+</div>
+<script>
+  function dummy_function() { }
+  function go() {
+    document.getElementById('btn').click();
+    document.getElementById('span1').click();
+    document.getElementById('span2').click();
+    document.getElementById('link').click();
+    document.getElementById('checkbox').click();
+    document.getElementById('toggle_button').click();
+  }
+</script>
+</body>
+</html>

@@ -23,6 +23,10 @@ class FilterViewBinder implements ViewBinder<PropertyModel, FilterView, Property
             view.setTabSelectedCallback(model.get(FilterProperties.CHANGE_LISTENER));
         } else if (propertyKey == FilterProperties.SHOW_TABS) {
             view.setShowTabs(model.get(FilterProperties.SHOW_TABS));
+        } else if (propertyKey == FilterProperties.FILES_TAB_TITLE) {
+            view.setFilesTabTitle(model.get(FilterProperties.FILES_TAB_TITLE));
+        } else if (propertyKey == FilterProperties.PREFETCH_TAB_TITLE) {
+            view.setPrefetchTabTitle(model.get(FilterProperties.PREFETCH_TAB_TITLE));
         }
     }
 }

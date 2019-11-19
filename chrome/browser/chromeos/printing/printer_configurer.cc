@@ -5,9 +5,7 @@
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
 
 #include <map>
-#include <memory>
 #include <set>
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -15,25 +13,23 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/hash/md5.h"
 #include "base/logging.h"
-#include "base/md5.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/printing/ppd_provider_factory.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "chrome/browser/local_discovery/endpoint_resolver.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon_client.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_thread.h"
-#include "net/base/host_port_pair.h"
-#include "net/base/ip_endpoint.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 
 const std::map<const std::string, const std::string>&
@@ -98,17 +94,23 @@ PrinterSetupResult PrinterSetupResultFromDbusErrorCode(
                                     : PrinterSetupResult::kDbusError;
 }
 
+// Records whether a |printer| contains a valid PpdReference defined as having
+// either autoconf or a ppd reference set.
+void RecordValidPpdReference(const Printer& printer) {
+  const auto& ppd_ref = printer.ppd_reference();
+  // A PpdReference is valid if exactly one field is set in PpdReference.
+  int refs = ppd_ref.autoconf ? 1 : 0;
+  refs += !ppd_ref.user_supplied_ppd_url.empty() ? 1 : 0;
+  refs += !ppd_ref.effective_make_and_model.empty() ? 1 : 0;
+  base::UmaHistogramBoolean("Printing.CUPS.ValidPpdReference", refs == 1);
+}
+
 // Configures printers by downloading PPDs then adding them to CUPS through
 // debugd.  This class must be used on the UI thread.
 class PrinterConfigurerImpl : public PrinterConfigurer {
  public:
   explicit PrinterConfigurerImpl(Profile* profile)
-      : endpoint_resolver_(new local_discovery::EndpointResolver()),
-        ppd_provider_(CreatePpdProvider(profile)),
-        weak_factory_(this) {}
-
-  PrinterConfigurerImpl(const PrinterConfigurerImpl&) = delete;
-  PrinterConfigurerImpl& operator=(const PrinterConfigurerImpl&) = delete;
+      : ppd_provider_(CreatePpdProvider(profile)) {}
 
   ~PrinterConfigurerImpl() override {}
 
@@ -118,41 +120,9 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     DCHECK(!printer.id().empty());
     DCHECK(!printer.uri().empty());
     PRINTER_LOG(USER) << printer.make_and_model() << " Printer setup requested";
+    // Record if autoconf and a PPD are set.  crbug.com/814374.
+    RecordValidPpdReference(printer);
 
-    if (!printer.RequiresIpResolution()) {
-      StartConfiguration(printer, std::move(callback));
-      return;
-    }
-
-    // Ensure that |address| is non-empty before attempting to resolve it.
-    // If the uri in |printer| does not contain both a hostname and a port
-    // number then GetHostAndPort() will return an empty string.
-    auto address = printer.GetHostAndPort();
-    if (address.IsEmpty()) {
-      // Return an error and abort printer setup. If we attempt to call
-      // EndpointResolver::Start() with an empty address then it will fail
-      // silently without returning into the callback.
-      PRINTER_LOG(ERROR) << "Address is invalid";
-      std::move(callback).Run(PrinterSetupResult::kPrinterUnreachable);
-      return;
-    }
-
-    PRINTER_LOG(DEBUG) << printer.make_and_model()
-                       << " Resolving IP: " << address.ToString();
-
-    // Resolve the uri to an ip with a mutable copy of the printer.
-    endpoint_resolver_->Start(
-        address, base::BindOnce(&PrinterConfigurerImpl::OnIpResolved,
-                                weak_factory_.GetWeakPtr(),
-                                std::make_unique<Printer>(printer),
-                                std::move(callback)));
-  }
-
- private:
-  // Run installation for a printer with a resolved uri.  |callback| is called
-  // with the result of the setup when it is complete.
-  void StartConfiguration(const Printer& printer,
-                          PrinterSetupCallback callback) {
     if (!printer.IsIppEverywhere()) {
       PRINTER_LOG(DEBUG) << printer.make_and_model() << " Lookup PPD";
       ppd_provider_->ResolvePpd(
@@ -167,38 +137,13 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
                        << " Attempting autoconf setup";
     auto* client = DBusThreadManager::Get()->GetDebugDaemonClient();
     client->CupsAddAutoConfiguredPrinter(
-        printer.id(), printer.UriForCups(),
+        printer.id(), printer.uri(),
         base::BindOnce(&PrinterConfigurerImpl::OnAddedPrinter,
                        weak_factory_.GetWeakPtr(), printer,
                        std::move(callback)));
   }
 
-  // Callback for when the IP for a zeroconf printer has been resolved.  If the
-  // request was successful, sets the |effective_uri| on |printer| with
-  // |endpoint| then continues setup. |cb| is called with a result reporting the
-  // success or failure of the setup operation, eventually.
-  void OnIpResolved(std::unique_ptr<Printer> printer,
-                    PrinterSetupCallback cb,
-                    const net::IPEndPoint& endpoint) {
-    bool address_resolved = endpoint.address().IsValid();
-    UMA_HISTOGRAM_BOOLEAN("Printing.CUPS.AddressResolutionResult",
-                          address_resolved);
-    if (!address_resolved) {
-      PRINTER_LOG(ERROR) << printer->make_and_model()
-                         << " IP Resolution failed";
-      // |endpoint| does not have a valid address. Address was not resolved.
-      std::move(cb).Run(kPrinterUnreachable);
-      return;
-    }
-
-    PRINTER_LOG(EVENT) << printer->make_and_model()
-                       << " IP Resolution succeeded";
-    std::string effective_uri = printer->ReplaceHostAndPort(endpoint);
-    printer->set_effective_uri(effective_uri);
-
-    StartConfiguration(*printer, std::move(cb));
-  }
-
+ private:
   // Receive the callback from the debug daemon client once we attempt to
   // add the printer.
   void OnAddedPrinter(const Printer& printer,
@@ -222,7 +167,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
 
     PRINTER_LOG(EVENT) << printer.make_and_model() << " Manual printer setup";
     client->CupsAddManuallyConfiguredPrinter(
-        printer.id(), printer.UriForCups(), ppd_contents,
+        printer.id(), printer.uri(), ppd_contents,
         base::BindOnce(&PrinterConfigurerImpl::OnAddedPrinter,
                        weak_factory_.GetWeakPtr(), printer, std::move(cb)));
   }
@@ -304,9 +249,10 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
     }
   }
 
-  std::unique_ptr<local_discovery::EndpointResolver> endpoint_resolver_;
   scoped_refptr<PpdProvider> ppd_provider_;
-  base::WeakPtrFactory<PrinterConfigurerImpl> weak_factory_;
+  base::WeakPtrFactory<PrinterConfigurerImpl> weak_factory_{this};
+
+  DISALLOW_COPY_AND_ASSIGN(PrinterConfigurerImpl);
 };
 
 }  // namespace
@@ -316,7 +262,7 @@ std::string PrinterConfigurer::SetupFingerprint(const Printer& printer) {
   base::MD5Context ctx;
   base::MD5Init(&ctx);
   base::MD5Update(&ctx, printer.id());
-  base::MD5Update(&ctx, printer.UriForCups());
+  base::MD5Update(&ctx, printer.uri());
   base::MD5Update(&ctx, printer.ppd_reference().user_supplied_ppd_url);
   base::MD5Update(&ctx, printer.ppd_reference().effective_make_and_model);
   char autoconf = printer.ppd_reference().autoconf ? 1 : 0;
@@ -324,6 +270,12 @@ std::string PrinterConfigurer::SetupFingerprint(const Printer& printer) {
   base::MD5Digest digest;
   base::MD5Final(&digest, &ctx);
   return std::string(reinterpret_cast<char*>(&digest.a[0]), sizeof(digest.a));
+}
+
+// static
+void PrinterConfigurer::RecordUsbPrinterSetupSource(
+    UsbPrinterSetupSource source) {
+  base::UmaHistogramEnumeration("Printing.CUPS.UsbSetupSource", source);
 }
 
 // static
@@ -337,7 +289,10 @@ std::ostream& operator<<(std::ostream& out, const PrinterSetupResult& result) {
       out << "fatal error";
       break;
     case kSuccess:
-      out << "success";
+      out << "add success";
+      break;
+    case kEditSuccess:
+      out << "edit success";
       break;
     case kPrinterUnreachable:
       out << "printer unreachable";

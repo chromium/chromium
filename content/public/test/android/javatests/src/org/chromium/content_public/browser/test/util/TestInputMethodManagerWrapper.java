@@ -25,7 +25,7 @@ import java.util.List;
  * Overrides InputMethodManagerWrapper for testing purposes.
  */
 public class TestInputMethodManagerWrapper implements InputMethodManagerWrapper {
-    private static final String TAG = "cr_Ime";
+    private static final String TAG = "Ime";
 
     private final InputConnectionProvider mInputConnectionProvider;
     private InputConnection mInputConnection;

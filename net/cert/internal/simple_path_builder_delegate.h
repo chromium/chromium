@@ -53,7 +53,8 @@ class NET_EXPORT SimplePathBuilderDelegate : public CertPathBuilderDelegate {
   bool IsPublicKeyAcceptable(EVP_PKEY* public_key, CertErrors* errors) override;
 
   // No-op implementation.
-  void CheckPathAfterVerification(CertPathBuilderResultPath* path) override;
+  void CheckPathAfterVerification(const CertPathBuilder& path_builder,
+                                  CertPathBuilderResultPath* path) override;
 
  private:
   bool IsAcceptableDigest(DigestAlgorithm digest) const WARN_UNUSED_RESULT;

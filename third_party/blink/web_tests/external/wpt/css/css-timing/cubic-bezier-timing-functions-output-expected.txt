@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL cubic-bezier easing with input progress greater than 1 assert_approx_equals: The left of the animation should be approximately 98.8706654939602 at 230ms expected 98.8706654939602 +/- 0.01 but got 98.3585
-FAIL cubic-bezier easing with input progress greater than 1 and where the tangent on the upper boundary is infinity assert_approx_equals: The left of the animation should be approximately 106.31755608768113 at 230ms expected 106.31755608768113 +/- 0.01 but got 107.559
-FAIL cubic-bezier easing with input progress less than 0 assert_approx_equals: The left of the animation should be approximately -16.589193103032184 at 10ms expected -16.589193103032184 +/- 0.01 but got -18.0387
-FAIL cubic-bezier easing with input progress less than 0 and where the tangent on the lower boundary is infinity assert_approx_equals: The left of the animation should be approximately -6.317556087681108 at 770ms expected -6.317556087681108 +/- 0.01 but got -7.55879
-Harness: the test ran to completion.
-

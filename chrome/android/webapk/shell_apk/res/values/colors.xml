@@ -8,4 +8,5 @@
     <color name="black_alpha_38">#61000000</color>
     <color name="black_alpha_54">#8A000000</color>
     <color name="black_alpha_87">#DE000000</color>
+    <color name="white_adaptive_ic_launcher_background">#FFFFFF</color>
 </resources>

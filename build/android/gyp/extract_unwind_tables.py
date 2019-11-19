@@ -20,7 +20,7 @@ format. The first table contains function addresses and an index into the
 UNW_DATA table. The second table contains one or more rows for the function
 unwind information.
 
-The output file starts with 4 bytes counting the size of UNW_INDEX in bytes.
+The output file starts with 4 bytes counting the number of entries in UNW_INDEX.
 Then UNW_INDEX table and UNW_DATA table.
 
 UNW_INDEX contains two columns of N rows each, where N is the number of
@@ -240,7 +240,7 @@ def _WriteCfiData(cfi_data, out_file):
   func_addr_to_index[previous_func_end + 2] = _CANT_UNWIND
 
   # Write the size of UNW_INDEX file in bytes.
-  _Write4Bytes(out_file, len(func_addr_to_index) * 6)
+  _Write4Bytes(out_file, len(func_addr_to_index))
 
   # Write the UNW_INDEX table. First list of addresses and then indices.
   sorted_unw_index = sorted(func_addr_to_index.iteritems())

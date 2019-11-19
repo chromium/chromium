@@ -21,7 +21,7 @@ class SingletonHwnd;
 // use a SingletonHwndHotKeyObserver instead for each hot key.
 class GFX_EXPORT SingletonHwndObserver {
  public:
-  typedef base::Callback<void(HWND, UINT, WPARAM, LPARAM)> WndProc;
+  using WndProc = base::RepeatingCallback<void(HWND, UINT, WPARAM, LPARAM)>;
 
   explicit SingletonHwndObserver(const WndProc& wnd_proc);
   ~SingletonHwndObserver();

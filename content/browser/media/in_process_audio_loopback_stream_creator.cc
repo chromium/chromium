@@ -17,10 +17,11 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/common/service_manager_connection.h"
+#include "content/public/browser/system_connector.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/user_input_monitor.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/connector.h"
 
 namespace content {
@@ -43,13 +44,14 @@ class StreamCreatedCallbackAdapter final
 
   // mojom::RendererAudioInputStreamFactoryClient implementation.
   void StreamCreated(
-      media::mojom::AudioInputStreamPtr stream,
-      media::mojom::AudioInputStreamClientRequest client_request,
+      mojo::PendingRemote<media::mojom::AudioInputStream> stream,
+      mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
+          client_receiver,
       media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
       bool initially_muted,
       const base::Optional<base::UnguessableToken>& stream_id) override {
     DCHECK(!initially_muted);  // Loopback streams shouldn't be started muted.
-    callback_.Run(std::move(stream), std::move(client_request),
+    callback_.Run(std::move(stream), std::move(client_receiver),
                   std::move(data_pipe));
   }
 
@@ -64,32 +66,28 @@ void CreateLoopbackStreamHelper(
     AudioStreamBroker::LoopbackSource* loopback_source,
     const media::AudioParameters& params,
     uint32_t total_segments,
-    mojom::RendererAudioInputStreamFactoryClientPtrInfo client_ptr_info) {
+    mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient>
+        client_remote) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   const bool mute_source = true;
-  mojom::RendererAudioInputStreamFactoryClientPtr client;
-  client.Bind(std::move(client_ptr_info));
-
   factory->CreateLoopbackStream(-1, -1, loopback_source, params, total_segments,
-                                mute_source, std::move(client));
+                                mute_source, std::move(client_remote));
 }
 
 void CreateSystemWideLoopbackStreamHelper(
     ForwardingAudioStreamFactory::Core* factory,
     const media::AudioParameters& params,
     uint32_t total_segments,
-    mojom::RendererAudioInputStreamFactoryClientPtrInfo client_ptr_info) {
+    mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient>
+        client_remote) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   const bool enable_agc = false;
-  mojom::RendererAudioInputStreamFactoryClientPtr client;
-  client.Bind(std::move(client_ptr_info));
-
   factory->CreateInputStream(
       -1, -1, media::AudioDeviceDescription::kLoopbackWithMuteDeviceId, params,
       total_segments, enable_agc, nullptr /* processing_config */,
-      std::move(client));
+      std::move(client_remote));
 }
 
 }  // namespace
@@ -100,9 +98,7 @@ InProcessAudioLoopbackStreamCreator::InProcessAudioLoopbackStreamCreator()
                    ? static_cast<media::UserInputMonitorBase*>(
                          BrowserMainLoop::GetInstance()->user_input_monitor())
                    : nullptr,
-               content::ServiceManagerConnection::GetForProcess()
-                   ->GetConnector()
-                   ->Clone(),
+               content::GetSystemConnector()->Clone(),
                AudioStreamBrokerFactory::CreateImpl()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
@@ -117,24 +113,23 @@ void InProcessAudioLoopbackStreamCreator::CreateLoopbackStream(
     uint32_t total_segments,
     const StreamCreatedCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  mojom::RendererAudioInputStreamFactoryClientPtrInfo client;
-  mojo::MakeStrongBinding(
+  mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient> client;
+  mojo::MakeSelfOwnedReceiver(
       std::make_unique<StreamCreatedCallbackAdapter>(callback),
-      mojo::MakeRequest(&client));
+      client.InitWithNewPipeAndPassReceiver());
   // Deletion of factory_.core() is posted to the IO thread when |factory_| is
   // destroyed, so Unretained is safe below.
   if (loopback_source) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&CreateLoopbackStreamHelper, factory_.core(),
-                       static_cast<WebContentsImpl*>(loopback_source)
-                           ->GetAudioStreamFactory()
-                           ->core(),
-                       params, total_segments, std::move(client)));
+    base::PostTask(FROM_HERE, {BrowserThread::IO},
+                   base::BindOnce(&CreateLoopbackStreamHelper, factory_.core(),
+                                  static_cast<WebContentsImpl*>(loopback_source)
+                                      ->GetAudioStreamFactory()
+                                      ->core(),
+                                  params, total_segments, std::move(client)));
     return;
   }
   // A null |frame_of_source_web_contents| requests system-wide loopback.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&CreateSystemWideLoopbackStreamHelper, factory_.core(),
                      params, total_segments, std::move(client)));

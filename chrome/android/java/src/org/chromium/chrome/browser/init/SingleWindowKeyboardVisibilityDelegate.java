@@ -8,9 +8,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
-import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
 
@@ -25,7 +25,7 @@ public class SingleWindowKeyboardVisibilityDelegate extends ActivityKeyboardVisi
 
     @Override
     public boolean isKeyboardShowing(Context context, View view) {
-        Activity activity = WindowAndroid.activityFromContext(context);
+        Activity activity = ContextUtils.activityFromContext(context);
         if (activity == null && view != null && view.getContext() instanceof Activity) {
             activity = (Activity) view.getContext();
         }

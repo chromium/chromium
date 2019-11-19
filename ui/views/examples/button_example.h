@@ -35,9 +35,8 @@ class VIEWS_EXAMPLES_EXPORT ButtonExample : public ExampleBase,
 
   // Example buttons.
   LabelButton* label_button_ = nullptr;
-  LabelButton* styled_button_ = nullptr;
-  LabelButton* disabled_button_ = nullptr;
   MdTextButton* md_button_ = nullptr;
+  MdTextButton* md_disabled_button_ = nullptr;
   MdTextButton* md_default_button_ = nullptr;
   ImageButton* image_button_ = nullptr;
 

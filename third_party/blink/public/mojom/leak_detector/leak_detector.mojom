@@ -12,7 +12,6 @@ struct LeakDetectionResult {
   uint32 number_of_live_layout_objects;
   uint32 number_of_live_resources;
   uint32 number_of_live_context_lifecycle_state_observers;
-  uint32 number_of_live_script_promises;
   uint32 number_of_live_frames;
   uint32 number_of_live_v8_per_context_data;
   uint32 number_of_worker_global_scopes;

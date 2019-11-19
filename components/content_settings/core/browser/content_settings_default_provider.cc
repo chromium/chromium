@@ -129,83 +129,71 @@ DefaultProvider::DefaultProvider(PrefService* prefs, bool incognito)
   // Read global defaults.
   ReadDefaultSettings();
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "ContentSettings.DefaultCookiesSetting",
-      IntToContentSetting(prefs_->GetInteger(
-          GetPrefName(CONTENT_SETTINGS_TYPE_COOKIES))),
-      CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION(
-      "ContentSettings.DefaultPopupsSetting",
-      IntToContentSetting(prefs_->GetInteger(
-          GetPrefName(CONTENT_SETTINGS_TYPE_POPUPS))),
-      CONTENT_SETTING_NUM_SETTINGS);
+  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultCookiesSetting",
+                            IntToContentSetting(prefs_->GetInteger(
+                                GetPrefName(ContentSettingsType::COOKIES))),
+                            CONTENT_SETTING_NUM_SETTINGS);
+  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultPopupsSetting",
+                            IntToContentSetting(prefs_->GetInteger(
+                                GetPrefName(ContentSettingsType::POPUPS))),
+                            CONTENT_SETTING_NUM_SETTINGS);
 #if !defined(OS_IOS) && !defined(OS_ANDROID)
-  UMA_HISTOGRAM_ENUMERATION(
-      "ContentSettings.DefaultImagesSetting",
-      IntToContentSetting(prefs_->GetInteger(
-          GetPrefName(CONTENT_SETTINGS_TYPE_IMAGES))),
-      CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION(
-      "ContentSettings.DefaultPluginsSetting",
-      IntToContentSetting(prefs_->GetInteger(
-          GetPrefName(CONTENT_SETTINGS_TYPE_PLUGINS))),
-      CONTENT_SETTING_NUM_SETTINGS);
+  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultImagesSetting",
+                            IntToContentSetting(prefs_->GetInteger(
+                                GetPrefName(ContentSettingsType::IMAGES))),
+                            CONTENT_SETTING_NUM_SETTINGS);
+  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultPluginsSetting",
+                            IntToContentSetting(prefs_->GetInteger(
+                                GetPrefName(ContentSettingsType::PLUGINS))),
+                            CONTENT_SETTING_NUM_SETTINGS);
 #endif
 
 #if !defined(OS_IOS)
-  UMA_HISTOGRAM_ENUMERATION(
-      "ContentSettings.DefaultJavaScriptSetting",
-      IntToContentSetting(prefs_->GetInteger(
-          GetPrefName(CONTENT_SETTINGS_TYPE_JAVASCRIPT))),
-      CONTENT_SETTING_NUM_SETTINGS);
+  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultJavaScriptSetting",
+                            IntToContentSetting(prefs_->GetInteger(
+                                GetPrefName(ContentSettingsType::JAVASCRIPT))),
+                            CONTENT_SETTING_NUM_SETTINGS);
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "ContentSettings.DefaultLocationSetting",
-      IntToContentSetting(prefs_->GetInteger(
-          GetPrefName(CONTENT_SETTINGS_TYPE_GEOLOCATION))),
-      CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION(
-      "ContentSettings.DefaultNotificationsSetting",
-      IntToContentSetting(prefs_->GetInteger(
-          GetPrefName(CONTENT_SETTINGS_TYPE_NOTIFICATIONS))),
-      CONTENT_SETTING_NUM_SETTINGS);
+  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultLocationSetting",
+                            IntToContentSetting(prefs_->GetInteger(
+                                GetPrefName(ContentSettingsType::GEOLOCATION))),
+                            CONTENT_SETTING_NUM_SETTINGS);
+  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultNotificationsSetting",
+                            IntToContentSetting(prefs_->GetInteger(GetPrefName(
+                                ContentSettingsType::NOTIFICATIONS))),
+                            CONTENT_SETTING_NUM_SETTINGS);
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "ContentSettings.DefaultMediaStreamMicSetting",
-      IntToContentSetting(prefs_->GetInteger(
-          GetPrefName(CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC))),
-      CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION(
-      "ContentSettings.DefaultMediaStreamCameraSetting",
-      IntToContentSetting(prefs_->GetInteger(
-          GetPrefName(CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA))),
-      CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION(
-      "ContentSettings.DefaultMIDISysExSetting",
-      IntToContentSetting(prefs_->GetInteger(
-          GetPrefName(CONTENT_SETTINGS_TYPE_MIDI_SYSEX))),
-      CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION(
-      "ContentSettings.DefaultWebBluetoothGuardSetting",
-      IntToContentSetting(prefs_->GetInteger(
-          GetPrefName(CONTENT_SETTINGS_TYPE_BLUETOOTH_GUARD))),
-      CONTENT_SETTING_NUM_SETTINGS);
-  UMA_HISTOGRAM_ENUMERATION(
-      "ContentSettings.DefaultAutoplaySetting",
-      IntToContentSetting(prefs_->GetInteger(
-          GetPrefName(CONTENT_SETTINGS_TYPE_AUTOPLAY))),
-      CONTENT_SETTING_NUM_SETTINGS);
+  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultMediaStreamMicSetting",
+                            IntToContentSetting(prefs_->GetInteger(GetPrefName(
+                                ContentSettingsType::MEDIASTREAM_MIC))),
+                            CONTENT_SETTING_NUM_SETTINGS);
+  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultMediaStreamCameraSetting",
+                            IntToContentSetting(prefs_->GetInteger(GetPrefName(
+                                ContentSettingsType::MEDIASTREAM_CAMERA))),
+                            CONTENT_SETTING_NUM_SETTINGS);
+  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultMIDISysExSetting",
+                            IntToContentSetting(prefs_->GetInteger(
+                                GetPrefName(ContentSettingsType::MIDI_SYSEX))),
+                            CONTENT_SETTING_NUM_SETTINGS);
+  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultWebBluetoothGuardSetting",
+                            IntToContentSetting(prefs_->GetInteger(GetPrefName(
+                                ContentSettingsType::BLUETOOTH_GUARD))),
+                            CONTENT_SETTING_NUM_SETTINGS);
+  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultAutoplaySetting",
+                            IntToContentSetting(prefs_->GetInteger(
+                                GetPrefName(ContentSettingsType::AUTOPLAY))),
+                            CONTENT_SETTING_NUM_SETTINGS);
   UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultSubresourceFilterSetting",
                             IntToContentSetting(prefs_->GetInteger(
-                                GetPrefName(CONTENT_SETTINGS_TYPE_ADS))),
+                                GetPrefName(ContentSettingsType::ADS))),
                             CONTENT_SETTING_NUM_SETTINGS);
   UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultSoundSetting",
                             IntToContentSetting(prefs_->GetInteger(
-                                GetPrefName(CONTENT_SETTINGS_TYPE_SOUND))),
+                                GetPrefName(ContentSettingsType::SOUND))),
                             CONTENT_SETTING_NUM_SETTINGS);
   UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultUsbGuardSetting",
                             IntToContentSetting(prefs_->GetInteger(
-                                GetPrefName(CONTENT_SETTINGS_TYPE_USB_GUARD))),
+                                GetPrefName(ContentSettingsType::USB_GUARD))),
                             CONTENT_SETTING_NUM_SETTINGS);
 #endif
   pref_change_registrar_.Init(prefs_);
@@ -225,7 +213,7 @@ bool DefaultProvider::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     const ResourceIdentifier& resource_identifier,
-    base::Value* in_value) {
+    std::unique_ptr<base::Value>&& in_value) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
 
@@ -237,7 +225,7 @@ bool DefaultProvider::SetWebsiteSetting(
 
   // Put |in_value| in a scoped pointer to ensure that it gets cleaned up
   // properly if we don't pass on the ownership.
-  std::unique_ptr<base::Value> value(in_value);
+  std::unique_ptr<base::Value> value(std::move(in_value));
 
   // The default settings may not be directly modified for OTR sessions.
   // Instead, they are synced to the main profile's setting.
@@ -345,7 +333,7 @@ void DefaultProvider::OnPreferenceChanged(const std::string& name) {
     return;
 
   // Find out which content setting the preference corresponds to.
-  ContentSettingsType content_type = CONTENT_SETTINGS_TYPE_DEFAULT;
+  ContentSettingsType content_type = ContentSettingsType::DEFAULT;
 
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
@@ -356,7 +344,7 @@ void DefaultProvider::OnPreferenceChanged(const std::string& name) {
     }
   }
 
-  if (content_type == CONTENT_SETTINGS_TYPE_DEFAULT) {
+  if (content_type == ContentSettingsType::DEFAULT) {
     NOTREACHED() << "A change of the preference " << name << " was observed, "
                     "but the preference could not be mapped to a content "
                     "settings type.";
@@ -399,7 +387,7 @@ void DefaultProvider::DiscardObsoletePreferences() {
 
   // ALLOW-by-default is an obsolete pref value for plugins (Flash). Erase that
   // pref and fall back to the default behavior - but preserve other values.
-  const std::string& plugins_pref = GetPrefName(CONTENT_SETTINGS_TYPE_PLUGINS);
+  const std::string& plugins_pref = GetPrefName(ContentSettingsType::PLUGINS);
   if (IntToContentSetting(prefs_->GetInteger(plugins_pref)) ==
       ContentSetting::CONTENT_SETTING_ALLOW) {
     prefs_->ClearPref(plugins_pref);

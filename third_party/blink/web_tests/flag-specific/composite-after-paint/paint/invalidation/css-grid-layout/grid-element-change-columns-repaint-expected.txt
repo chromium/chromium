@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutGrid DIV class='grid min-content'",
+          "rect": [8, 48, 250, 50],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutNGBlockFlow DIV class='sizedToGridArea'",
+          "rect": [58, 48, 50, 50],
+          "reason": "incremental"
+        }
+      ]
+    }
+  ]
+}
+

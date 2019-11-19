@@ -7,6 +7,7 @@
 
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
 
@@ -64,7 +65,7 @@ class LazyEventDispatchUtil : public ExtensionRegistryObserver {
   content::BrowserContext* browser_context_;
   base::ObserverList<Observer>::Unchecked observers_;
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LazyEventDispatchUtil);
 };

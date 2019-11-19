@@ -26,6 +26,18 @@
 
 // Implementation notes
 //
+// On Windows, when building the FOO library (that is, when FOO_EXPORT expands
+// to __declspec(dllexport)), we want the two lines to expand to:
+//
+//     extern template class foo<bar>;
+//     template class FOO_EXPORT foo<bar>;
+//
+// In all other cases (non-Windows, and Windows when using the FOO library (that
+// is when FOO_EXPORT expands to __declspec(dllimport)), we want:
+//
+//     extern template class FOO_EXPORT foo<bar>;
+//     template class foo<bar>;
+//
 // The implementation of this header uses some subtle macro semantics to
 // detect what the provided FOO_EXPORT value was defined as and then
 // to dispatch to appropriate macro definitions.  Unfortunately,

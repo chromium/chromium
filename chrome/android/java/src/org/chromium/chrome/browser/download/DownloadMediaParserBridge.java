@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download;
 
 import org.chromium.base.Callback;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * A JNI bridge that owns a native side DownloadMediaParser, which parses media file safely in an
@@ -21,15 +22,17 @@ public class DownloadMediaParserBridge {
      */
     public DownloadMediaParserBridge(
             String mimeType, String filePath, Callback<DownloadMediaData> callback) {
-        mNativeDownloadMediaParserBridge = nativeInit(mimeType, filePath, callback);
+        mNativeDownloadMediaParserBridge = DownloadMediaParserBridgeJni.get().init(
+                DownloadMediaParserBridge.this, mimeType, filePath, callback);
     }
 
     /**
      * Destroys the native object of DownloadMediaParser. This will result in the utility process
      * being destroyed.
      */
-    public void destory() {
-        nativeDestory(mNativeDownloadMediaParserBridge);
+    public void destroy() {
+        DownloadMediaParserBridgeJni.get().destroy(
+                mNativeDownloadMediaParserBridge, DownloadMediaParserBridge.this);
         mNativeDownloadMediaParserBridge = 0;
     }
 
@@ -38,12 +41,16 @@ public class DownloadMediaParserBridge {
      */
     public void start() {
         if (mNativeDownloadMediaParserBridge != 0) {
-            nativeStart(mNativeDownloadMediaParserBridge);
+            DownloadMediaParserBridgeJni.get().start(
+                    mNativeDownloadMediaParserBridge, DownloadMediaParserBridge.this);
         }
     }
 
-    private native long nativeInit(
-            String mimeType, String filePath, Callback<DownloadMediaData> callback);
-    private native void nativeDestory(long nativeDownloadMediaParserBridge);
-    private native void nativeStart(long nativeDownloadMediaParserBridge);
+    @NativeMethods
+    interface Natives {
+        long init(DownloadMediaParserBridge caller, String mimeType, String filePath,
+                Callback<DownloadMediaData> callback);
+        void destroy(long nativeDownloadMediaParserBridge, DownloadMediaParserBridge caller);
+        void start(long nativeDownloadMediaParserBridge, DownloadMediaParserBridge caller);
+    }
 }

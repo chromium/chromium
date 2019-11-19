@@ -23,7 +23,7 @@ const CGFloat kAlphaChangeAnimationDuration = 0.35;
 
 @interface LegacyInfobarContainerViewController () <FullscreenUIElement> {
   // Observer that notifies this object of fullscreen events.
-  std::unique_ptr<FullscreenControllerObserver> _fullscreenObserver;
+  std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
 }
 
 // Whether the controller's view is currently available.
@@ -61,16 +61,15 @@ const CGFloat kAlphaChangeAnimationDuration = 0.35;
   [super viewDidAppear:animated];
   self.visible = YES;
 
-  if (!_fullscreenObserver) {
-    _fullscreenObserver = std::make_unique<FullscreenUIUpdater>(self);
-    self.fullscreenController->AddObserver(_fullscreenObserver.get());
+  if (!_fullscreenUIUpdater && !self.disableFullscreenSupport) {
+    _fullscreenUIUpdater =
+        std::make_unique<FullscreenUIUpdater>(self.fullscreenController, self);
   }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-  if (_fullscreenObserver) {
-    self.fullscreenController->RemoveObserver(_fullscreenObserver.get());
-    _fullscreenObserver = nullptr;
+  if (_fullscreenUIUpdater && !self.disableFullscreenSupport) {
+    _fullscreenUIUpdater = nullptr;
   }
 
   self.visible = NO;
@@ -79,11 +78,9 @@ const CGFloat kAlphaChangeAnimationDuration = 0.35;
 
 #pragma mark - InfobarConsumer
 
-- (void)addInfoBarWithDelegate:(id<InfobarUIDelegate>)infoBarDelegate
-                      position:(NSInteger)position {
-  DCHECK_LE(static_cast<NSUInteger>(position), [[self.view subviews] count]);
+- (void)addInfoBarWithDelegate:(id<InfobarUIDelegate>)infoBarDelegate {
   UIView* infoBarView = infoBarDelegate.view;
-  [self.view insertSubview:infoBarView atIndex:position];
+  [self.view addSubview:infoBarView];
   infoBarView.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
     [infoBarView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
@@ -92,6 +89,11 @@ const CGFloat kAlphaChangeAnimationDuration = 0.35;
     [infoBarView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
     [infoBarView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
   ]];
+}
+
+- (void)infobarManagerWillChange {
+  // NO-OP. This legacy container doesn't need to clean up any state after the
+  // InfobarManager has changed.
 }
 
 - (void)setUserInteractionEnabled:(BOOL)enabled {
@@ -106,11 +108,15 @@ const CGFloat kAlphaChangeAnimationDuration = 0.35;
       CGRectGetMaxY([self.positioner parentView].frame) - height;
   containerFrame.size.height = height;
 
+  __weak __typeof(self) weakSelf = self;
   auto completion = ^(BOOL finished) {
-    if (!self.visible)
+    __typeof(self) strongSelf = weakSelf;
+    // Return if weakSelf has been niled or is not visible since there's no view
+    // to send an A11y post notification to.
+    if (!strongSelf.visible)
       return;
     UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
-                                    self.view);
+                                    strongSelf.view);
   };
 
   ProceduralBlock frameUpdates = ^{

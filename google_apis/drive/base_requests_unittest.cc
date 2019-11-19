@@ -10,20 +10,22 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "google_apis/drive/drive_api_requests.h"
 #include "google_apis/drive/dummy_auth_service.h"
 #include "google_apis/drive/request_sender.h"
 #include "google_apis/drive/test_util.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_network_service_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,7 +50,7 @@ class FakeUrlFetchRequest : public UrlFetchRequestBase {
  protected:
   GURL GetURL() const override { return url_; }
   void ProcessURLFetchResults(
-      const network::ResourceResponseHead* response_head,
+      const network::mojom::URLResponseHead* response_head,
       base::FilePath response_file,
       std::string response_body) override {
     callback_.Run(GetErrorCode());
@@ -112,42 +114,41 @@ class FakeMultipartUploadRequest : public MultipartUploadRequestBase {
 class BaseRequestsTest : public testing::Test {
  public:
   BaseRequestsTest() : response_code_(net::HTTP_OK) {
-    network::mojom::NetworkServicePtr network_service_ptr;
-    network::mojom::NetworkServiceRequest network_service_request =
-        mojo::MakeRequest(&network_service_ptr);
-    network_service_ =
-        network::NetworkService::Create(std::move(network_service_request),
-                                        /*netlog=*/nullptr);
+    mojo::Remote<network::mojom::NetworkService> network_service_remote;
+    network_service_ = network::NetworkService::Create(
+        network_service_remote.BindNewPipeAndPassReceiver());
     network::mojom::NetworkContextParamsPtr context_params =
         network::mojom::NetworkContextParams::New();
-    context_params->enable_data_url_support = true;
-    network_service_ptr->CreateNetworkContext(
-        mojo::MakeRequest(&network_context_), std::move(context_params));
+    network_service_remote->CreateNetworkContext(
+        network_context_.BindNewPipeAndPassReceiver(),
+        std::move(context_params));
 
-    network::mojom::NetworkServiceClientPtr network_service_client_ptr;
+    mojo::PendingRemote<network::mojom::NetworkServiceClient>
+        network_service_client_remote;
     network_service_client_ =
         std::make_unique<network::TestNetworkServiceClient>(
-            mojo::MakeRequest(&network_service_client_ptr));
-    network_service_ptr->SetClient(std::move(network_service_client_ptr),
-                                   network::mojom::NetworkServiceParams::New());
+            network_service_client_remote.InitWithNewPipeAndPassReceiver());
+    network_service_remote->SetClient(
+        std::move(network_service_client_remote),
+        network::mojom::NetworkServiceParams::New());
 
     network::mojom::URLLoaderFactoryParamsPtr params =
         network::mojom::URLLoaderFactoryParams::New();
     params->process_id = network::mojom::kBrowserProcessId;
     params->is_corb_enabled = false;
     network_context_->CreateURLLoaderFactory(
-        mojo::MakeRequest(&url_loader_factory_), std::move(params));
+        url_loader_factory_.BindNewPipeAndPassReceiver(), std::move(params));
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             url_loader_factory_.get());
   }
 
   void SetUp() override {
-    sender_.reset(new RequestSender(
-        std::make_unique<DummyAuthService>(), test_shared_loader_factory_,
-        scoped_task_environment_.GetMainThreadTaskRunner(),
-        std::string(), /* custom user agent */
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+    sender_.reset(new RequestSender(std::make_unique<DummyAuthService>(),
+                                    test_shared_loader_factory_,
+                                    task_environment_.GetMainThreadTaskRunner(),
+                                    std::string(), /* custom user agent */
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
 
     test_server_.RegisterRequestHandler(
         base::Bind(&BaseRequestsTest::HandleRequest, base::Unretained(this)));
@@ -158,7 +159,7 @@ class BaseRequestsTest : public testing::Test {
     // Deleting the sender here will delete all request objects.
     sender_.reset();
     // Wait for any DeleteSoon tasks to run.
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -171,12 +172,12 @@ class BaseRequestsTest : public testing::Test {
     return std::move(response);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_{
-      base::test::ScopedTaskEnvironment::MainThreadType::IO};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
   std::unique_ptr<network::mojom::NetworkService> network_service_;
   std::unique_ptr<network::mojom::NetworkServiceClient> network_service_client_;
-  network::mojom::NetworkContextPtr network_context_;
-  network::mojom::URLLoaderFactoryPtr url_loader_factory_;
+  mojo::Remote<network::mojom::NetworkContext> network_context_;
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       test_shared_loader_factory_;
   std::unique_ptr<RequestSender> sender_;
@@ -191,7 +192,7 @@ typedef BaseRequestsTest MultipartUploadRequestBaseTest;
 TEST_F(BaseRequestsTest, ParseValidJson) {
   std::unique_ptr<base::Value> json(ParseJson(kValidJsonString));
 
-  base::DictionaryValue* root_dict = NULL;
+  base::DictionaryValue* root_dict = nullptr;
   ASSERT_TRUE(json);
   ASSERT_TRUE(json->GetAsDictionary(&root_dict));
 

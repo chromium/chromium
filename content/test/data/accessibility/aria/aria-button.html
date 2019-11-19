@@ -7,6 +7,9 @@
 @WIN-ALLOW:ia2_hypertext=*
 @WIN-ALLOW:PRESSED
 @WIN-ALLOW:xml-roles:*
+@AURALINUX-ALLOW:haspopup*
+@AURALINUX-ALLOW:pressed
+@AURALINUX-ALLOW:xml-roles:*
 @BLINK-ALLOW:haspopup*
 -->
 <!DOCTYPE html>
@@ -17,6 +20,9 @@
   <div tabindex=2 role="button" aria-pressed="false">Button3</div>
   <div tabindex=3 role="button" aria-haspopup="true">Button4</div>
   <div tabindex=4 role="button" aria-haspopup="false">Button5</div>
+
   <div tabindex=5 role="button">Complex button <input></div>
+  <div tabindex=6 role="button" aria-pressed="true">Complex toggle button <input></div>
+  <div tabindex=7 role="button" aria-haspopup="true">Complex pop up button <input></div>
 </body>
 </html>

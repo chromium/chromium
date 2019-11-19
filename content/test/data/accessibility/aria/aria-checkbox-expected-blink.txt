@@ -1,12 +1,13 @@
 rootWebArea
-++checkBox name='CheckBox1' checkedState=true
-++checkBox name='CheckBox2' checkedState=false
-++checkBox name='CheckBox3' checkedState=mixed
-++checkBox name='CheckBox4' checkedState=false
-++checkBox name='Complex checkbox' checkedState=false
-++++staticText name='Complex '
-++++++inlineTextBox name='Complex '
-++++textField
-++++++genericContainer
-++++staticText name=' checkbox'
-++++++inlineTextBox name=' checkbox'
+++genericContainer ignored
+++++checkBox name='CheckBox1' checkedState=true
+++++checkBox name='CheckBox2' checkedState=false
+++++checkBox name='CheckBox3' checkedState=mixed
+++++checkBox name='CheckBox4' checkedState=false
+++++checkBox name='Complex checkbox' checkedState=false
+++++++staticText name='Complex '
+++++++++inlineTextBox name='Complex '
+++++++textField
+++++++++genericContainer
+++++++staticText name=' checkbox'
+++++++++inlineTextBox name=' checkbox'

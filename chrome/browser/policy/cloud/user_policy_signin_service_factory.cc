@@ -9,7 +9,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/policy/cloud/user_cloud_policy_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
@@ -40,7 +39,6 @@ UserPolicySigninServiceFactory::UserPolicySigninServiceFactory()
         "UserPolicySigninService",
         BrowserContextDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(UserCloudPolicyManagerFactory::GetInstance());
 }
 
 UserPolicySigninServiceFactory::~UserPolicySigninServiceFactory() {}
@@ -74,7 +72,7 @@ KeyedService* UserPolicySigninServiceFactory::BuildServiceInstanceFor(
 
   UserPolicySigninService* service = new UserPolicySigninService(
       profile, g_browser_process->local_state(), device_management_service,
-      UserCloudPolicyManagerFactory::GetForBrowserContext(context),
+      profile->GetUserCloudPolicyManager(),
       IdentityManagerFactory::GetForProfile(profile),
       g_browser_process->shared_url_loader_factory());
   return service;

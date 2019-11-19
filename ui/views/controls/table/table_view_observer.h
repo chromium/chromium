@@ -13,7 +13,7 @@ namespace views {
 // TableViewObserver is notified about the TableView selection.
 class VIEWS_EXPORT TableViewObserver {
  public:
-  virtual ~TableViewObserver() {}
+  virtual ~TableViewObserver() = default;
 
   // Invoked when the selection changes.
   virtual void OnSelectionChanged() = 0;

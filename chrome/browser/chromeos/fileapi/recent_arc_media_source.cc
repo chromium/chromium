@@ -22,9 +22,9 @@
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/chromeos/fileapi/recent_file.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/common/file_system.mojom.h"
+#include "components/arc/mojom/file_system.mojom.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/fileapi/external_mount_points.h"
+#include "storage/browser/file_system/external_mount_points.h"
 
 using content::BrowserThread;
 
@@ -110,7 +110,7 @@ class RecentArcMediaSource::MediaRoot {
   // corresponding file is not (yet) found.
   std::map<std::string, base::Optional<RecentFile>> document_id_to_file_;
 
-  base::WeakPtrFactory<MediaRoot> weak_ptr_factory_;
+  base::WeakPtrFactory<MediaRoot> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaRoot);
 };
@@ -119,8 +119,7 @@ RecentArcMediaSource::MediaRoot::MediaRoot(const std::string& root_id,
                                            Profile* profile)
     : root_id_(root_id),
       profile_(profile),
-      relative_mount_path_(GetRelativeMountPath(root_id)),
-      weak_ptr_factory_(this) {
+      relative_mount_path_(GetRelativeMountPath(root_id)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -279,7 +278,7 @@ RecentArcMediaSource::MediaRoot::BuildDocumentsProviderUrl(
 }
 
 RecentArcMediaSource::RecentArcMediaSource(Profile* profile)
-    : profile_(profile), weak_ptr_factory_(this) {
+    : profile_(profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const char* root_id : kMediaDocumentsProviderRootIds)
     roots_.emplace_back(std::make_unique<MediaRoot>(root_id, profile_));

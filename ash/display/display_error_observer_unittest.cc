@@ -4,43 +4,19 @@
 
 #include "ash/display/display_error_observer.h"
 
+#include <memory>
+
 #include "ash/display/display_util.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
-#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/types/display_snapshot.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/view.h"
-#include "ui/views/widget/widget.h"
 
 namespace ash {
-
-namespace {
-
-std::unique_ptr<display::DisplaySnapshot> CreateTestDisplaySnapshot(
-    int64_t id,
-    const gfx::Size& size,
-    display::DisplayConnectionType type) {
-  return std::make_unique<display::DisplaySnapshot>(
-      id, /*origin=*/gfx::Point(0, 0), size, type,
-      /*is_aspect_preserving_scaling=*/false, /*has_overscan=*/false,
-      /*has_color_correction_matrix=*/false,
-      /*color_correction_in_linear_space=*/false,
-      /*color_space=*/gfx::ColorSpace(), /*display_name=*/std::string(),
-      /*sys_path=*/base::FilePath(),
-      /*modes=*/display::DisplaySnapshot::DisplayModeList(),
-      /*edid=*/std::vector<uint8_t>(), /*current_mode=*/nullptr,
-      /*native_mode=*/nullptr, /*product_id=*/0,
-      display::kInvalidYearOfManufacture, /*maximum_cursor_size=*/gfx::Size(),
-      /*has_associated_crtc=*/true);
-}
-
-}  // namespace
 
 class DisplayErrorObserverTest : public AshTestBase {
  protected:
@@ -50,7 +26,7 @@ class DisplayErrorObserverTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    observer_.reset(new DisplayErrorObserver());
+    observer_ = std::make_unique<DisplayErrorObserver>();
   }
 
  protected:
@@ -114,19 +90,22 @@ TEST_F(DisplayErrorObserverTest, FailureWithInternalDisplay) {
   const int64_t external_display_id = display_manager()->GetDisplayAt(1).id();
   display::test::ScopedSetInternalDisplayId set_internal(display_manager(),
                                                          internal_display_id);
-  auto snapshot1 =
-      CreateTestDisplaySnapshot(internal_display_id, {200, 200},
-                                display::DISPLAY_CONNECTION_TYPE_INTERNAL);
-
+  auto snapshot1 = display::FakeDisplaySnapshot::Builder()
+                       .SetId(internal_display_id)
+                       .SetNativeMode({200, 200})
+                       .SetType(display::DISPLAY_CONNECTION_TYPE_INTERNAL)
+                       .Build();
   observer()->OnDisplayModeChangeFailed(
       {snapshot1.get()}, display::MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
   EXPECT_TRUE(GetMessageContents().empty());
 
   // Failure in both displays, user will see a notification even though one of
   // them is the internal display.
-  auto snapshot2 =
-      CreateTestDisplaySnapshot(external_display_id, {300, 300},
-                                display::DISPLAY_CONNECTION_TYPE_UNKNOWN);
+  auto snapshot2 = display::FakeDisplaySnapshot::Builder()
+                       .SetId(external_display_id)
+                       .SetNativeMode({300, 300})
+                       .SetType(display::DISPLAY_CONNECTION_TYPE_UNKNOWN)
+                       .Build();
   observer()->OnDisplayModeChangeFailed(
       {snapshot1.get(), snapshot2.get()},
       display::MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);

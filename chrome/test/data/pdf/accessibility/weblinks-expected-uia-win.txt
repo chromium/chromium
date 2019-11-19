@@ -1,0 +1,14 @@
+group
+++document
+++++region Name='Page 1'
+++++++group
+++++++++description Name='Hello, '
+++++++++link Name='http://yahoo.com'
+++++++++description Name='! nice meeting you<newline>'
+++++++group
+++++++++description Name='Goodbye, '
+++++++++link Name='http://bing.com'
+++++++++description Name='! nice meeting you<newline>'
+++++++group
+++++++++description Name='Bye, '
+++++++++link Name='http://google.com'

@@ -26,7 +26,9 @@ class MEDIA_EXPORT VideoDecodeStatsDB {
   struct MEDIA_EXPORT VideoDescKey {
     static VideoDescKey MakeBucketedKey(VideoCodecProfile codec_profile,
                                         const gfx::Size& size,
-                                        int frame_rate);
+                                        int frame_rate,
+                                        std::string key_system,
+                                        bool use_hw_secure_codecs);
 
     // Returns a concise string representation of the key for storing in DB.
     std::string Serialize() const;
@@ -38,12 +40,16 @@ class MEDIA_EXPORT VideoDecodeStatsDB {
     const VideoCodecProfile codec_profile;
     const gfx::Size size;
     const int frame_rate;
+    const std::string key_system;
+    const bool use_hw_secure_codecs;
 
    private:
     // All key's should be "bucketed" using MakeBucketedKey(...).
     VideoDescKey(VideoCodecProfile codec_profile,
                  const gfx::Size& size,
-                 int frame_rate);
+                 int frame_rate,
+                 std::string key_system,
+                 bool use_hw_secure_codecs);
   };
 
   // DecodeStatsEntry saved to identify the capabilities related to a given

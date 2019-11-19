@@ -23,14 +23,19 @@
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_offset.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
-inline SVGFEOffsetElement::SVGFEOffsetElement(Document& document)
+SVGFEOffsetElement::SVGFEOffsetElement(Document& document)
     : SVGFilterPrimitiveStandardAttributes(svg_names::kFEOffsetTag, document),
-      dx_(SVGAnimatedNumber::Create(this, svg_names::kDxAttr, 0.0f)),
-      dy_(SVGAnimatedNumber::Create(this, svg_names::kDyAttr, 0.0f)),
-      in1_(SVGAnimatedString::Create(this, svg_names::kInAttr)) {
+      dx_(MakeGarbageCollected<SVGAnimatedNumber>(this,
+                                                  svg_names::kDxAttr,
+                                                  0.0f)),
+      dy_(MakeGarbageCollected<SVGAnimatedNumber>(this,
+                                                  svg_names::kDyAttr,
+                                                  0.0f)),
+      in1_(MakeGarbageCollected<SVGAnimatedString>(this, svg_names::kInAttr)) {
   AddToPropertyMap(dx_);
   AddToPropertyMap(dy_);
   AddToPropertyMap(in1_);
@@ -42,8 +47,6 @@ void SVGFEOffsetElement::Trace(blink::Visitor* visitor) {
   visitor->Trace(in1_);
   SVGFilterPrimitiveStandardAttributes::Trace(visitor);
 }
-
-DEFINE_NODE_FACTORY(SVGFEOffsetElement)
 
 void SVGFEOffsetElement::SvgAttributeChanged(const QualifiedName& attr_name) {
   if (attr_name == svg_names::kInAttr || attr_name == svg_names::kDxAttr ||
@@ -62,8 +65,8 @@ FilterEffect* SVGFEOffsetElement::Build(SVGFilterBuilder* filter_builder,
       AtomicString(in1_->CurrentValue()->Value()));
   DCHECK(input1);
 
-  FilterEffect* effect = FEOffset::Create(filter, dx_->CurrentValue()->Value(),
-                                          dy_->CurrentValue()->Value());
+  auto* effect = MakeGarbageCollected<FEOffset>(
+      filter, dx_->CurrentValue()->Value(), dy_->CurrentValue()->Value());
   effect->InputEffects().push_back(input1);
   return effect;
 }

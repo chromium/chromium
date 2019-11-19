@@ -18,6 +18,10 @@ class CdmProxyContext;
 class Decryptor;
 class MediaCryptoContext;
 
+#if defined(OS_FUCHSIA)
+class FuchsiaCdmContext;
+#endif
+
 // An interface representing the context that a media player needs from a
 // content decryption module (CDM) to decrypt (and decode) encrypted buffers.
 // Typically this will be passed to the media player (e.g. using SetCdm()).
@@ -90,6 +94,12 @@ class MEDIA_EXPORT CdmContext {
   virtual MediaCryptoContext* GetMediaCryptoContext();
 #endif
 
+#if defined(OS_FUCHSIA)
+  // Returns FuchsiaCdmContext interface when the context is backed by Fuchsia
+  // CDM. Otherwise returns nullptr.
+  virtual FuchsiaCdmContext* GetFuchsiaCdmContext();
+#endif
+
  protected:
   CdmContext();
 
@@ -99,7 +109,7 @@ class MEDIA_EXPORT CdmContext {
 
 // Callback to notify that the CdmContext has been completely attached to
 // the media pipeline. Parameter indicates whether the operation succeeded.
-typedef base::Callback<void(bool)> CdmAttachedCB;
+typedef base::OnceCallback<void(bool)> CdmAttachedCB;
 
 // A dummy implementation of CdmAttachedCB.
 MEDIA_EXPORT void IgnoreCdmAttached(bool success);

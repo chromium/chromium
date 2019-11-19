@@ -16,18 +16,16 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "base/values.h"
 #include "net/log/net_log_event_type.h"
-#include "net/log/net_log_parameters_callback.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
-#include "net/log/test_net_log_entry.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::trace_event::TraceLog;
@@ -83,7 +81,7 @@ void EnableTraceLogWithoutNetLog() {
   EnableTraceLog(disabled_netlog_category);
 }
 
-class TraceNetLogObserverTest : public TestWithScopedTaskEnvironment {
+class TraceNetLogObserverTest : public TestWithTaskEnvironment {
  public:
   TraceNetLogObserverTest() {
     TraceLog* tracelog = TraceLog::GetInstance();
@@ -205,8 +203,7 @@ TEST_F(TraceNetLogObserverTest, TracingDisabledDuringOnAddEntry) {
 }
 
 TEST_F(TraceNetLogObserverTest, TraceEventCaptured) {
-  TestNetLogEntry::List entries;
-  net_log()->GetEntries(&entries);
+  auto entries = net_log()->GetEntries();
   EXPECT_TRUE(entries.empty());
 
   trace_net_log_observer()->WatchForTraceStart(net_log());
@@ -217,7 +214,7 @@ TEST_F(TraceNetLogObserverTest, TraceEventCaptured) {
   net_log_with_source.BeginEvent(NetLogEventType::URL_REQUEST_START_JOB);
   net_log_with_source.EndEvent(NetLogEventType::REQUEST_ALIVE);
 
-  net_log()->GetEntries(&entries);
+  entries = net_log()->GetEntries();
   EXPECT_EQ(3u, entries.size());
   EndTraceAndFlush();
   trace_net_log_observer()->StopWatchForTraceStart();
@@ -272,8 +269,7 @@ TEST_F(TraceNetLogObserverTest, EnableAndDisableTracing) {
   EndTraceAndFlush();
   trace_net_log_observer()->StopWatchForTraceStart();
 
-  TestNetLogEntry::List entries;
-  net_log()->GetEntries(&entries);
+  auto entries = net_log()->GetEntries();
   EXPECT_EQ(3u, entries.size());
   EXPECT_EQ(2u, trace_events()->GetSize());
   const base::DictionaryValue* item1 = nullptr;
@@ -312,8 +308,7 @@ TEST_F(TraceNetLogObserverTest, DestroyObserverWhileTracing) {
 
   EndTraceAndFlush();
 
-  TestNetLogEntry::List entries;
-  net_log()->GetEntries(&entries);
+  auto entries = net_log()->GetEntries();
   EXPECT_EQ(2u, entries.size());
   EXPECT_EQ(1u, trace_events()->GetSize());
 
@@ -341,8 +336,7 @@ TEST_F(TraceNetLogObserverTest, DestroyObserverWhileNotTracing) {
 
   EndTraceAndFlush();
 
-  TestNetLogEntry::List entries;
-  net_log()->GetEntries(&entries);
+  auto entries = net_log()->GetEntries();
   EXPECT_EQ(3u, entries.size());
   EXPECT_EQ(0u, trace_events()->GetSize());
 }
@@ -359,8 +353,7 @@ TEST_F(TraceNetLogObserverTest, CreateObserverAfterTracingStarts) {
 
   EndTraceAndFlush();
 
-  TestNetLogEntry::List entries;
-  net_log()->GetEntries(&entries);
+  auto entries = net_log()->GetEntries();
   EXPECT_EQ(3u, entries.size());
   EXPECT_EQ(1u, trace_events()->GetSize());
 }
@@ -380,8 +373,7 @@ TEST_F(TraceNetLogObserverTest,
 
   EndTraceAndFlush();
 
-  TestNetLogEntry::List entries;
-  net_log()->GetEntries(&entries);
+  auto entries = net_log()->GetEntries();
   EXPECT_EQ(3u, entries.size());
   EXPECT_EQ(0u, trace_events()->GetSize());
 }
@@ -389,18 +381,15 @@ TEST_F(TraceNetLogObserverTest,
 TEST_F(TraceNetLogObserverTest, EventsWithAndWithoutParameters) {
   trace_net_log_observer()->WatchForTraceStart(net_log());
   EnableTraceLogWithNetLog();
-  NetLogParametersCallback net_log_callback;
-  std::string param = "bar";
-  net_log_callback = NetLog::StringCallback("foo", &param);
 
-  net_log()->AddGlobalEntry(NetLogEventType::CANCELLED, net_log_callback);
+  net_log()->AddGlobalEntryWithStringParams(NetLogEventType::CANCELLED, "foo",
+                                            "bar");
   net_log()->AddGlobalEntry(NetLogEventType::REQUEST_ALIVE);
 
   EndTraceAndFlush();
   trace_net_log_observer()->StopWatchForTraceStart();
 
-  TestNetLogEntry::List entries;
-  net_log()->GetEntries(&entries);
+  auto entries = net_log()->GetEntries();
   EXPECT_EQ(2u, entries.size());
   EXPECT_EQ(2u, trace_events()->GetSize());
   const base::DictionaryValue* item1 = nullptr;
@@ -438,7 +427,7 @@ TEST_F(TraceNetLogObserverTest, EventsWithAndWithoutParameters) {
 }
 
 TEST(TraceNetLogObserverCategoryTest, DisabledCategory) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   TraceNetLogObserver observer;
   NetLog net_log;
   observer.WatchForTraceStart(&net_log);
@@ -455,7 +444,7 @@ TEST(TraceNetLogObserverCategoryTest, DisabledCategory) {
 }
 
 TEST(TraceNetLogObserverCategoryTest, EnabledCategory) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   TraceNetLogObserver observer;
   NetLog net_log;
   observer.WatchForTraceStart(&net_log);

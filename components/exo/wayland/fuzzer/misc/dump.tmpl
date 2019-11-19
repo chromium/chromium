@@ -1,0 +1,25 @@
+Copyright 2019 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+
+{% for protocol in protocol_names %}
+PROTOCOL: {{protocol}}
+{% endfor %}
+
+{% for interface in interfaces %}
+INTERFACE: {{interface}}
+{% endfor %}
+
+{% for interface in interfaces %}
+{% for message in interface.requests + interface.events %}
+MESSAGE: {{interface.name}} {{message}}
+{% endfor %}
+{% endfor %}
+
+{% for interface in interfaces %}
+{% for message in interface.requests + interface.events %}
+{% for arg in message.args %}
+ARG: {{interface.name}} {{message.name}} {{arg}}
+{% endfor %}
+{% endfor %}
+{% endfor %}

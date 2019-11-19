@@ -22,7 +22,7 @@ BookmarkSubMenuModel::~BookmarkSubMenuModel() {}
 
 void BookmarkSubMenuModel::Build(Browser* browser) {
   bool is_submenu_visible =
-      delegate()->IsCommandIdVisible(IDC_BOOKMARK_PAGE) ||
+      delegate()->IsCommandIdVisible(IDC_BOOKMARK_THIS_TAB) ||
       delegate()->IsCommandIdVisible(IDC_BOOKMARK_ALL_TABS);
 #if defined(OS_WIN)
   is_submenu_visible |=
@@ -30,8 +30,8 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
 #endif
 
   if (is_submenu_visible) {
-    AddItemWithStringId(IDC_BOOKMARK_PAGE, IDS_BOOKMARK_THIS_PAGE);
-    AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_OPEN_PAGES);
+    AddItemWithStringId(IDC_BOOKMARK_THIS_TAB, IDS_BOOKMARK_THIS_TAB);
+    AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS);
 
 #if defined(OS_WIN)
     AddItemWithStringId(IDC_PIN_TO_START_SCREEN, IDS_PIN_TO_START_SCREEN);

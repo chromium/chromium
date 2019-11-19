@@ -113,10 +113,6 @@ cr.define('settings_test', function() {
              <dialog>${text}</dialog>
              <iron-icon>${text}</iron-icon>
              <iron-list>${text}</iron-list>
-             <paper-icon-button>${text}</paper-icon-button>
-             <paper-icon-button-light>
-               <button>${text}</button>
-             </paper-icon-button-light>
              <paper-ripple>${text}</paper-ripple>
              <paper-spinner-lite>${text}</paper-spinner-lite>
              <slot>${text}</slot>
@@ -252,6 +248,41 @@ cr.define('settings_test', function() {
           }, 1);
         });
       });
+    });
+
+    test('match text outside of a settings section', async function() {
+      document.body.innerHTML = `
+          <div id="mydiv">Match</div>
+          <settings-section></settings-section>`;
+
+      const section = document.querySelector('settings-section');
+      const mydiv = document.querySelector('#mydiv');
+
+      await searchManager.search('Match', document.body);
+      assertTrue(section.hiddenBySearch);
+
+      const highlight = mydiv.querySelector('.search-highlight-wrapper');
+      assertTrue(!!highlight);
+
+      const searchHits = highlight.querySelectorAll('.search-highlight-hit');
+      assertEquals(1, searchHits.length);
+      assertEquals('Match', searchHits[0].textContent);
+    });
+
+    test('associated control causes search highlight bubble', async () => {
+      document.body.innerHTML = `
+          <settings-section>
+            <button></button>
+            <settings-subpage>
+              hello
+            </settings-subpage>
+          </settings-section>`;
+      const subpage = document.querySelector('settings-subpage');
+      subpage.associatedControl = document.querySelector('button');
+
+      await searchManager.search('hello', document.body);
+
+      assertEquals(1, document.querySelectorAll('.search-bubble').length);
     });
   });
 });

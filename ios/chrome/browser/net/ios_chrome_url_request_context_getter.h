@@ -44,13 +44,6 @@ class IOSChromeURLRequestContextGetter : public net::URLRequestContextGetter {
       const ChromeBrowserStateIOData* io_data,
       ProtocolHandlerMap* protocol_handlers);
 
-  // Create an instance for an original profile for an app with isolated
-  // storage. This is expected to get called on UI thread.
-  static IOSChromeURLRequestContextGetter* CreateForIsolatedApp(
-      net::URLRequestContextGetter* main_context,
-      const ChromeBrowserStateIOData* io_data,
-      const base::FilePath& partition_path);
-
   // Discard reference to URLRequestContext and inform observers of shutdown.
   // Must be called before destruction. May only be called on IO thread.
   void NotifyContextShuttingDown();

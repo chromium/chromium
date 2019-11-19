@@ -1,0 +1,26 @@
+<structured-metrics-configuration>
+<!-- Structured metrics is under development and isn't available for use yet. -->
+
+<event name="TestEvent">
+  <owner>tby@chromium.org</owner>
+  <summary>
+    Event for unit testing, do not use.
+  </summary>
+  <metric name="ValueOne" kind="hashed">
+    <summary>
+      A per-user keyed hashed value.
+    </summary>
+  </metric>
+  <metric name="ValueTwo" kind="hashed">
+    <summary>
+      A per-user keyed hashed value.
+    </summary>
+  </metric>
+  <metric name="ValueThree" kind="unhashed">
+    <summary>
+      An unhashed value, recorded as-is.
+    </summary>
+  </metric>
+</event>
+
+</structured-metrics-configuration>

@@ -5,8 +5,12 @@
 assert(current_os == "fuchsia")
 
 declare_args() {
-  # Path to Fuchsia SDK.
+  # Paths to Fuchsia SDKs.
   fuchsia_sdk = "//third_party/fuchsia-sdk/sdk"
+
+  # TODO(steveroe): Make linux-x64 and linux-arm64 sdk paths match
+  # when the linux-arm64 sdk is retrieved from GCS.
+  fuchsia_arm64_sdk = "//third_party/fuchsia-sdk-arm64"
 }
 
 # Compute the arch-specific path to packages' dynamic library dependencies.
@@ -18,5 +22,10 @@ if (current_cpu == "arm64") {
   assert(false, "No libraries available for architecture: $current_cpu")
 }
 
-# Compute the qemu path.
+# Compute the emulator paths.
+aemu_root = "//third_party/aemu-${host_os}-${host_cpu}"
 qemu_root = "//third_party/qemu-${host_os}-${host_cpu}"
+qemu_arm64_root = "//third_party/qemu-${host_os}-arm64"
+
+# Compute the path to the arch-specific boot image directory.
+boot_image_root = "${fuchsia_sdk}/../images/${target_cpu}"

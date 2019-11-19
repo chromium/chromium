@@ -80,6 +80,8 @@ void ScrollInputHandler::UpdateRootLayerStateForSynchronousInputHandler(
     float min_page_scale_factor,
     float max_page_scale_factor) {}
 
-void ScrollInputHandler::DeliverInputForBeginFrame() {}
+void ScrollInputHandler::DeliverInputForBeginFrame(
+    const viz::BeginFrameArgs& args) {}
+void ScrollInputHandler::DeliverInputForHighLatencyMode() {}
 
 }  // namespace ui

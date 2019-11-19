@@ -7,7 +7,7 @@ FAIL XHR method GET with MIME type image/png assert_equals: expected "Hello, Wor
 PASS XHR method POST with MIME type text/plain
 PASS XHR method PUT with MIME type text/plain
 PASS XHR method DELETE with MIME type text/plain
-FAIL XHR method HEAD with MIME type text/plain assert_equals: expected "" but got "Hello, World!"
+PASS XHR method HEAD with MIME type text/plain
 PASS XHR method UNICORN with MIME type text/plain
 Harness: the test ran to completion.
 

@@ -13,11 +13,10 @@ namespace gcm {
 GCMDelayedTaskController::GCMDelayedTaskController() : ready_(false) {
 }
 
-GCMDelayedTaskController::~GCMDelayedTaskController() {
-}
+GCMDelayedTaskController::~GCMDelayedTaskController() = default;
 
-void GCMDelayedTaskController::AddTask(const base::Closure& task) {
-  delayed_tasks_.push_back(task);
+void GCMDelayedTaskController::AddTask(base::OnceClosure task) {
+  delayed_tasks_.push_back(std::move(task));
 }
 
 void GCMDelayedTaskController::SetReady() {
@@ -33,7 +32,7 @@ void GCMDelayedTaskController::RunTasks() {
   DCHECK(ready_);
 
   for (size_t i = 0; i < delayed_tasks_.size(); ++i)
-    delayed_tasks_[i].Run();
+    std::move(delayed_tasks_[i]).Run();
   delayed_tasks_.clear();
 }
 

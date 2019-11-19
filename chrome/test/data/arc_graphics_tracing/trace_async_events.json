@@ -1,0 +1,5 @@
+{
+  "traceEvents":[],
+  "systemTraceEvents":"            app1-14141 [001] ...1     1.100000: tracing_mark_write: S|1141|async1|1\n            app2-14142 [001] ...1     1.200000: tracing_mark_write: S|1142|async2|2\n            app1-14141 [001] ...1     1.300000: tracing_mark_write: F|1141|async1|1\n            app2-14142 [001] ...1     1.400000: tracing_mark_write: F|1142|async2|2\n"
+}
+

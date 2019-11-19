@@ -4,6 +4,8 @@
 
 #include "ui/wm/core/capture_controller.h"
 
+#include <memory>
+
 #include "base/logging.h"
 #include "base/macros.h"
 #include "ui/aura/env.h"
@@ -31,8 +33,7 @@ using DesktopCaptureControllerTest = ViewsInteractiveUITestBase;
 // received the gesture event.
 class DesktopViewInputTest : public View {
  public:
-  DesktopViewInputTest()
-      : received_gesture_event_(false) {}
+  DesktopViewInputTest() = default;
 
   void OnGestureEvent(ui::GestureEvent* event) override {
     received_gesture_event_ = true;
@@ -47,7 +48,7 @@ class DesktopViewInputTest : public View {
   bool received_gesture_event() const { return received_gesture_event_; }
 
  private:
-  bool received_gesture_event_;
+  bool received_gesture_event_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(DesktopViewInputTest);
 };
@@ -60,7 +61,7 @@ views::Widget* CreateWidget() {
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.native_widget = new DesktopNativeWidgetAura(widget);
   params.bounds = gfx::Rect(0, 0, 200, 100);
-  widget->Init(params);
+  widget->Init(std::move(params));
   widget->Show();
   return widget;
 }
@@ -77,12 +78,12 @@ TEST_F(DesktopCaptureControllerTest, ResetMouseHandlers) {
   EXPECT_FALSE(w1->HasCapture());
   aura::WindowEventDispatcher* w1_dispatcher =
       w1->GetNativeView()->GetHost()->dispatcher();
-  EXPECT_TRUE(w1_dispatcher->mouse_pressed_handler() != NULL);
-  EXPECT_TRUE(w1_dispatcher->mouse_moved_handler() != NULL);
+  EXPECT_TRUE(w1_dispatcher->mouse_pressed_handler() != nullptr);
+  EXPECT_TRUE(w1_dispatcher->mouse_moved_handler() != nullptr);
   w2->SetCapture(w2->GetRootView());
   EXPECT_TRUE(w2->HasCapture());
-  EXPECT_TRUE(w1_dispatcher->mouse_pressed_handler() == NULL);
-  EXPECT_TRUE(w1_dispatcher->mouse_moved_handler() == NULL);
+  EXPECT_TRUE(w1_dispatcher->mouse_pressed_handler() == nullptr);
+  EXPECT_TRUE(w1_dispatcher->mouse_moved_handler() == nullptr);
   w2->ReleaseCapture();
   RunPendingMessages();
 }
@@ -106,12 +107,12 @@ TEST_F(DesktopCaptureControllerTest, CaptureWindowInputEventTest) {
   params.bounds = gfx::Rect(50, 50, 650, 650);
   params.native_widget = test::CreatePlatformNativeWidgetImpl(
       params, widget1.get(), test::kStubCapture, nullptr);
-  widget1->Init(params);
+  widget1->Init(std::move(params));
   internal::RootView* root1 =
       static_cast<internal::RootView*>(widget1->GetRootView());
 
-  desktop_position_client1.reset(
-      new DesktopScreenPositionClient(params.context->GetRootWindow()));
+  desktop_position_client1 = std::make_unique<DesktopScreenPositionClient>(
+      params.context->GetRootWindow());
   aura::client::SetScreenPositionClient(
       widget1->GetNativeView()->GetRootWindow(),
       desktop_position_client1.get());
@@ -128,12 +129,12 @@ TEST_F(DesktopCaptureControllerTest, CaptureWindowInputEventTest) {
   params.bounds = gfx::Rect(50, 50, 650, 650);
   params.native_widget = test::CreatePlatformNativeWidgetImpl(
       params, widget2.get(), test::kStubCapture, nullptr);
-  widget2->Init(params);
+  widget2->Init(std::move(params));
 
   internal::RootView* root2 =
       static_cast<internal::RootView*>(widget2->GetRootView());
-  desktop_position_client2.reset(
-      new DesktopScreenPositionClient(params.context->GetRootWindow()));
+  desktop_position_client2 = std::make_unique<DesktopScreenPositionClient>(
+      params.context->GetRootWindow());
   aura::client::SetScreenPositionClient(
       widget2->GetNativeView()->GetRootWindow(),
       desktop_position_client2.get());

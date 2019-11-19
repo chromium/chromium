@@ -5,11 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_CACHED_STORAGE_AREA_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_CACHED_STORAGE_AREA_H_
 
-#include "mojo/public/cpp/bindings/associated_binding.h"
-#include "mojo/public/cpp/bindings/associated_interface_ptr.h"
-#include "mojo/public/cpp/bindings/interface_ptr.h"
+#include "base/trace_event/memory_dump_provider.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom-blink.h"
-#include "third_party/blink/public/platform/web_scoped_virtual_time_pauser.h"
+#include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/storage/storage_area_map.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -29,7 +32,8 @@ namespace blink {
 // objects.
 class MODULES_EXPORT CachedStorageArea
     : public mojom::blink::StorageAreaObserver,
-      public RefCounted<CachedStorageArea> {
+      public RefCounted<CachedStorageArea>,
+      public base::trace_event::MemoryDumpProvider {
  public:
   // Instances of this class are used to identify the "source" of any changes
   // made to this storage area, as well as to dispatch any incoming change
@@ -62,12 +66,12 @@ class MODULES_EXPORT CachedStorageArea
 
   static scoped_refptr<CachedStorageArea> CreateForLocalStorage(
       scoped_refptr<const SecurityOrigin> origin,
-      mojo::InterfacePtr<mojom::blink::StorageArea> area,
+      mojo::PendingRemote<mojom::blink::StorageArea> area,
       scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
       InspectorEventListener* listener);
   static scoped_refptr<CachedStorageArea> CreateForSessionStorage(
       scoped_refptr<const SecurityOrigin> origin,
-      mojo::AssociatedInterfacePtr<mojom::blink::StorageArea> area,
+      mojo::PendingAssociatedRemote<mojom::blink::StorageArea> area,
       scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
       InspectorEventListener* listener);
 
@@ -84,7 +88,8 @@ class MODULES_EXPORT CachedStorageArea
   // Returns the (unique) id allocated for this source for testing purposes.
   String RegisterSource(Source* source);
 
-  size_t memory_used() const { return map_ ? map_->quota_used() : 0; }
+  size_t quota_used() const { return map_ ? map_->quota_used() : 0; }
+  size_t memory_used() const { return map_ ? map_->memory_used() : 0; }
 
   // Only public to allow tests to parametrize on this type.
   enum class FormatOption {
@@ -95,12 +100,12 @@ class MODULES_EXPORT CachedStorageArea
 
  private:
   CachedStorageArea(scoped_refptr<const SecurityOrigin> origin,
-                    mojo::InterfacePtr<mojom::blink::StorageArea> area,
+                    mojo::PendingRemote<mojom::blink::StorageArea> area,
                     scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
                     InspectorEventListener* listener);
   CachedStorageArea(
       scoped_refptr<const SecurityOrigin> origin,
-      mojo::AssociatedInterfacePtr<mojom::blink::StorageArea> area,
+      mojo::PendingAssociatedRemote<mojom::blink::StorageArea> area,
       scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
       InspectorEventListener* listener);
 
@@ -123,6 +128,10 @@ class MODULES_EXPORT CachedStorageArea
                   const String& source) override;
   void AllDeleted(const String& source) override;
   void ShouldSendOldValueOnMutations(bool value) override;
+
+  // base::trace_event::MemoryDumpProvider:
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
 
   // Common helper for KeyAdded() and KeyChanged()
   void KeyAddedOrChanged(const Vector<uint8_t>& key,
@@ -172,17 +181,17 @@ class MODULES_EXPORT CachedStorageArea
   bool should_send_old_value_on_mutations_ = true;
 
   // Depending on if this is a session storage or local storage area only one of
-  // |mojo_area_ptr_| and |mojo_area_associated_ptr_| will be non-null. Either
-  // way |mojo_area_| will be equal to the non-null one.
+  // |mojo_area_remote_| and |mojo_area_associated_remote_| will be non-null.
+  // Either way |mojo_area_| will be equal to the non-null one.
+  mojo::Remote<mojom::blink::StorageArea> mojo_area_remote_;
+  mojo::AssociatedRemote<mojom::blink::StorageArea>
+      mojo_area_associated_remote_;
   mojom::blink::StorageArea* mojo_area_;
-  mojo::InterfacePtr<mojom::blink::StorageArea> mojo_area_ptr_;
-  mojo::AssociatedInterfacePtr<mojom::blink::StorageArea>
-      mojo_area_associated_ptr_;
-  mojo::AssociatedBinding<mojom::blink::StorageAreaObserver> binding_;
+  mojo::AssociatedReceiver<mojom::blink::StorageAreaObserver> receiver_{this};
 
   Persistent<HeapHashMap<WeakMember<Source>, String>> areas_;
 
-  base::WeakPtrFactory<CachedStorageArea> weak_factory_;
+  base::WeakPtrFactory<CachedStorageArea> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CachedStorageArea);
 };

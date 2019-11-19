@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL 2024  ONE DOT LEADER may appear at line start if de and loose assert_true: expected true got false
+FAIL 2025  TWO DOT LEADER may appear at line start if de and loose assert_true: expected true got false
+FAIL 2026  HORIZONTAL ELLIPSIS may appear at line start if de and loose assert_true: expected true got false
+FAIL 22EF  MIDLINE HORIZONTAL ELLIPSIS may appear at line start if de and loose assert_true: expected true got false
+FAIL FE19  PRESENTATION FORM FOR VERTICAL HORIZONTAL ELLIPSIS may appear at line start if de and loose assert_true: expected true got false
+Harness: the test ran to completion.
+

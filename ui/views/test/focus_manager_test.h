@@ -17,6 +17,8 @@ class FocusChangeListener;
 
 class FocusManagerTest : public ViewsTestBase, public WidgetDelegate {
  public:
+  using FocusChangeReason = FocusManager::FocusChangeReason;
+
   FocusManagerTest();
   ~FocusManagerTest() override;
 

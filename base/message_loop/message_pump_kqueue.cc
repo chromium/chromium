@@ -254,7 +254,7 @@ bool MessagePumpKqueue::WatchFileDescriptor(int fd,
     DLOG(ERROR) << "Cannot use the same FdWatchController on two different FDs";
     return false;
   }
-  controller->Reset();
+  StopWatchingFileDescriptor(controller);
 
   std::vector<kevent64_s> events;
 
@@ -304,12 +304,12 @@ bool MessagePumpKqueue::StopWatchingMachPort(
     event.ident = port;
     event.filter = EVFILT_MACHPORT;
     event.flags = EV_DELETE;
+    --event_count_;
     int rv = ChangeOneEvent(kqueue_, &event);
     if (rv < 0) {
       DPLOG(ERROR) << "kevent64";
       return false;
     }
-    --event_count_;
   }
 
   return true;
@@ -341,10 +341,7 @@ bool MessagePumpKqueue::StopWatchingFileDescriptor(
 
   int rv = HANDLE_EINTR(kevent64(kqueue_.get(), events.data(), events.size(),
                                  nullptr, 0, 0, nullptr));
-  if (rv < 0) {
-    DPLOG(ERROR) << "StopWatchingFileDescriptor kevent64";
-    return false;
-  }
+  DPLOG_IF(ERROR, rv < 0) << "StopWatchingFileDescriptor kevent64";
 
   // The keys for the IDMap aren't recorded anywhere (they're attached to the
   // kevent object in the kernel), so locate the entries by controller pointer.
@@ -356,7 +353,8 @@ bool MessagePumpKqueue::StopWatchingFileDescriptor(
   }
 
   event_count_ -= events.size();
-  return true;
+
+  return rv >= 0;
 }
 
 bool MessagePumpKqueue::DoInternalWork(Delegate::NextWorkInfo* next_work_info) {
@@ -412,6 +410,7 @@ bool MessagePumpKqueue::ProcessEvents(int count) {
         // watching.
         controller->Reset();
         fd_controllers_.Remove(event->udata);
+        --event_count_;
       }
 
       if (event->filter == EVFILT_READ) {

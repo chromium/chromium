@@ -16,10 +16,11 @@
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }
 
 namespace extensions {
-class EventPageTracker;
+class ProcessManager;
 }
 
 namespace media_router {
@@ -51,6 +52,8 @@ class EventPageRequestManager : public KeyedService {
   // requests. Otherwise the extension will be woken up the next time a request
   // is received.
   virtual void OnMojoConnectionError();
+
+  content::WebContents* GetEventPageWebContents();
 
   const std::string& media_route_provider_extension_id() const {
     return media_route_provider_extension_id_;
@@ -122,7 +125,7 @@ class EventPageRequestManager : public KeyedService {
   // Allows the extension to be monitored for suspend, and woken.
   // This is a reference to a BrowserContext keyed service that outlives this
   // instance.
-  extensions::EventPageTracker* event_page_tracker_;
+  extensions::ProcessManager* extension_process_manager_;
 
   int wakeup_attempt_count_ = 0;
 
@@ -133,7 +136,7 @@ class EventPageRequestManager : public KeyedService {
   MediaRouteProviderWakeReason current_wake_reason_ =
       MediaRouteProviderWakeReason::TOTAL_COUNT;
 
-  base::WeakPtrFactory<EventPageRequestManager> weak_factory_;
+  base::WeakPtrFactory<EventPageRequestManager> weak_factory_{this};
 };
 
 }  // namespace media_router

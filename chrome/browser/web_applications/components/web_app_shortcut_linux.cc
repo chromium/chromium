@@ -9,6 +9,7 @@
 #include "base/base_paths.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/nix/xdg_util.h"
@@ -28,12 +29,6 @@
 namespace {
 
 const char kDirectoryFilename[] = "chrome-apps.directory";
-
-#if BUILDFLAG(ENABLE_APP_LIST)
-// The Categories for the App Launcher desktop shortcut. Should be the same as
-// the Chrome desktop shortcut, so they are in the same sub-menu.
-const char kAppListCategories[] = "Network;WebBrowser;";
-#endif
 
 std::string CreateShortcutIcon(const gfx::ImageFamily& icon_images,
                                const base::FilePath& shortcut_filename) {
@@ -225,9 +220,8 @@ void DeleteShortcutInApplicationsMenu(
   shell_integration_linux::LaunchXdgUtility(argv, &exit_code);
 }
 
-bool CreateDesktopShortcut(
-    const web_app::ShortcutInfo& shortcut_info,
-    const web_app::ShortcutLocations& creation_locations) {
+bool CreateDesktopShortcut(const ShortcutInfo& shortcut_info,
+                           const ShortcutLocations& creation_locations) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -241,7 +235,7 @@ bool CreateDesktopShortcut(
       DeleteShortcutOnDesktop(shortcut_filename);
 
     if (creation_locations.applications_menu_location !=
-        web_app::APP_MENU_LOCATION_NONE) {
+        APP_MENU_LOCATION_NONE) {
       DeleteShortcutInApplicationsMenu(shortcut_filename, base::FilePath());
     }
   } else {
@@ -269,21 +263,20 @@ bool CreateDesktopShortcut(
     std::string contents = shell_integration_linux::GetDesktopFileContents(
         chrome_exe_path, app_name, shortcut_info.url,
         shortcut_info.extension_id, shortcut_info.title, icon_name,
-        shortcut_info.profile_path, "", false);
+        shortcut_info.profile_path, "", "", false);
     success = CreateShortcutOnDesktop(shortcut_filename, contents);
   }
 
-  if (creation_locations.applications_menu_location ==
-      web_app::APP_MENU_LOCATION_NONE) {
+  if (creation_locations.applications_menu_location == APP_MENU_LOCATION_NONE) {
     return success;
   }
 
   base::FilePath directory_filename;
   std::string directory_contents;
   switch (creation_locations.applications_menu_location) {
-    case web_app::APP_MENU_LOCATION_HIDDEN:
+    case APP_MENU_LOCATION_HIDDEN:
       break;
-    case web_app::APP_MENU_LOCATION_SUBDIR_CHROMEAPPS:
+    case APP_MENU_LOCATION_SUBDIR_CHROMEAPPS:
       directory_filename = base::FilePath(kDirectoryFilename);
       directory_contents = shell_integration_linux::GetDirectoryFileContents(
           shell_integration::GetAppShortcutsSubdirName(), "");
@@ -298,8 +291,9 @@ bool CreateDesktopShortcut(
   std::string contents = shell_integration_linux::GetDesktopFileContents(
       chrome_exe_path, app_name, shortcut_info.url, shortcut_info.extension_id,
       shortcut_info.title, icon_name, shortcut_info.profile_path, "",
+      base::JoinString(shortcut_info.mime_types, ";"),
       creation_locations.applications_menu_location ==
-          web_app::APP_MENU_LOCATION_HIDDEN);
+          APP_MENU_LOCATION_HIDDEN);
   success = CreateShortcutInApplicationsMenu(shortcut_filename, contents,
                                              directory_filename,
                                              directory_contents) &&
@@ -308,7 +302,7 @@ bool CreateDesktopShortcut(
   return success;
 }
 
-web_app::ShortcutLocations GetExistingShortcutLocations(
+ShortcutLocations GetExistingShortcutLocations(
     base::Environment* env,
     const base::FilePath& profile_path,
     const std::string& extension_id) {
@@ -319,7 +313,7 @@ web_app::ShortcutLocations GetExistingShortcutLocations(
                                       desktop_path);
 }
 
-web_app::ShortcutLocations GetExistingShortcutLocations(
+ShortcutLocations GetExistingShortcutLocations(
     base::Environment* env,
     const base::FilePath& profile_path,
     const std::string& extension_id,
@@ -330,7 +324,7 @@ web_app::ShortcutLocations GetExistingShortcutLocations(
   base::FilePath shortcut_filename =
       GetAppShortcutFilename(profile_path, extension_id);
   DCHECK(!shortcut_filename.empty());
-  web_app::ShortcutLocations locations;
+  ShortcutLocations locations;
 
   // Determine whether there is a shortcut on desktop.
   if (!desktop_path.empty()) {
@@ -348,8 +342,8 @@ web_app::ShortcutLocations GetExistingShortcutLocations(
     locations.applications_menu_location =
         shell_integration_linux::internal::GetNoDisplayFromDesktopFile(
             shortcut_contents)
-            ? web_app::APP_MENU_LOCATION_HIDDEN
-            : web_app::APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
+            ? APP_MENU_LOCATION_HIDDEN
+            : APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
   }
 
   return locations;
@@ -420,8 +414,8 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
 void DeletePlatformShortcuts(const base::FilePath& web_app_path,
                              const ShortcutInfo& shortcut_info) {
 #if !defined(OS_CHROMEOS)
-  web_app::DeleteDesktopShortcuts(shortcut_info.profile_path,
-                                  shortcut_info.extension_id);
+  DeleteDesktopShortcuts(shortcut_info.profile_path,
+                         shortcut_info.extension_id);
 #endif
 }
 
@@ -434,7 +428,7 @@ void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
   std::unique_ptr<base::Environment> env(base::Environment::Create());
 
   // Find out whether shortcuts are already installed.
-  ShortcutLocations creation_locations = web_app::GetExistingShortcutLocations(
+  ShortcutLocations creation_locations = GetExistingShortcutLocations(
       env.get(), shortcut_info.profile_path, shortcut_info.extension_id);
 
   // Always create a hidden shortcut in applications if a visible one is not
@@ -449,7 +443,7 @@ void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
 
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
 #if !defined(OS_CHROMEOS)
-  web_app::DeleteAllDesktopShortcuts(profile_path);
+  DeleteAllDesktopShortcuts(profile_path);
 #endif
 }
 

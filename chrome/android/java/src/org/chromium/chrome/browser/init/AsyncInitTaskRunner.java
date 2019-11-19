@@ -4,18 +4,23 @@
 
 package org.chromium.chrome.browser.init;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.library_loader.LibraryPrefetcher;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.library_loader.ProcessInitException;
-import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeVersionInfo;
+import org.chromium.chrome.browser.flags.FeatureUtilities;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.concurrent.Executor;
 
@@ -37,10 +42,16 @@ public abstract class AsyncInitTaskRunner {
         return ChromeVersionInfo.isOfficialBuild();
     }
 
-    private class FetchSeedTask extends AsyncTask<Void> {
+    @VisibleForTesting
+    void prefetchLibrary() {
+        LibraryPrefetcher.asyncPrefetchLibrariesToMemory();
+    }
+
+    private class FetchSeedTask implements Runnable {
         private final String mRestrictMode;
         private final String mMilestone;
         private final String mChannel;
+        private boolean mShouldRun = true;
 
         public FetchSeedTask(String restrictMode) {
             mRestrictMode = restrictMode;
@@ -49,15 +60,24 @@ public abstract class AsyncInitTaskRunner {
         }
 
         @Override
-        protected Void doInBackground() {
+        public void run() {
             VariationsSeedFetcher.get().fetchSeed(mRestrictMode, mMilestone, mChannel);
-            return null;
+            PostTask.postTask(UiThreadTaskTraits.BOOTSTRAP, new Runnable() {
+                @Override
+                public void run() {
+                    if (!shouldRun()) return;
+                    mFetchingVariations = false;
+                    tasksPossiblyComplete(true);
+                }
+            });
         }
 
-        @Override
-        protected void onPostExecute(Void result) {
-            mFetchingVariations = false;
-            tasksPossiblyComplete(true);
+        public synchronized void cancel() {
+            mShouldRun = false;
+        }
+
+        private synchronized boolean shouldRun() {
+            return mShouldRun;
         }
 
         private String getChannelString() {
@@ -98,7 +118,7 @@ public abstract class AsyncInitTaskRunner {
                 @Override
                 public void onResult(String restrictMode) {
                     mFetchSeedTask = new FetchSeedTask(restrictMode);
-                    mFetchSeedTask.executeOnExecutor(getFetchSeedExecutor());
+                    PostTask.postTask(TaskTraits.USER_BLOCKING, mFetchSeedTask);
                 }
             });
         }
@@ -125,7 +145,7 @@ public abstract class AsyncInitTaskRunner {
      *
      * @return true iff loading succeeded.
      */
-    private static boolean loadNativeLibrary() {
+    private boolean loadNativeLibrary() {
         try {
             LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_BROWSER);
             // The prefetch is done after the library load for two reasons:
@@ -138,7 +158,7 @@ public abstract class AsyncInitTaskRunner {
             // generally startup on some devices, most likely by
             // competing for IO.
             // For experimental results, see http://crbug.com/460438.
-            LibraryLoader.getInstance().asyncPrefetchLibrariesToMemory();
+            prefetchLibrary();
         } catch (ProcessInitException e) {
             return false;
         }
@@ -149,21 +169,19 @@ public abstract class AsyncInitTaskRunner {
         ThreadUtils.assertOnUiThread();
 
         if (!result) {
-            if (mFetchSeedTask != null) mFetchSeedTask.cancel(true);
+            if (mFetchSeedTask != null) mFetchSeedTask.cancel();
             onFailure();
         }
 
         if (mLibraryLoaded && !mFetchingVariations) {
+            if (FeatureUtilities.isNetworkServiceWarmUpEnabled()) {
+                ChildProcessLauncherHelper.warmUp(ContextUtils.getApplicationContext(), false);
+            }
             if (mAllocateChildConnection) {
-                ChildProcessLauncherHelper.warmUp(ContextUtils.getApplicationContext());
+                ChildProcessLauncherHelper.warmUp(ContextUtils.getApplicationContext(), true);
             }
             onSuccess();
         }
-    }
-
-    @VisibleForTesting
-    protected Executor getFetchSeedExecutor() {
-        return AsyncTask.THREAD_POOL_EXECUTOR;
     }
 
     @VisibleForTesting

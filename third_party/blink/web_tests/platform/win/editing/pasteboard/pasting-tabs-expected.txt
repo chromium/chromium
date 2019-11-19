@@ -18,7 +18,7 @@ layer at (0,0) size 800x600
       LayoutBlockFlow {DIV} at (0,92) size 784x20
         LayoutText {#text} at (0,0) size 38x19
           text run at (0,0) width 38: "Tab->"
-        LayoutInline {SPAN} at (0,0) size 26x19
+        LayoutInline {SPAN} at (38,0) size 26x19
           LayoutText {#text} at (38,0) size 26x19
             text run at (38,0) width 26: "\x{9}"
         LayoutText {#text} at (64,0) size 38x19

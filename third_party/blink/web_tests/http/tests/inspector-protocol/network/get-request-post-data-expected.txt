@@ -30,6 +30,6 @@ Data included: true, has post data: true
 Data length: 64
 Testing request body eviction
 Data included: true, has post data: true
-Data length: 512
+Did not fetch data: No post data available for the request
 Did not fetch data: No post data available for the request
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/cellular_setup_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/cellular_setup_resources_map.cc"
+            type="resource_file_map_source" />
+    <output filename="grit/cellular_setup_resources_map.h"
+            type="resource_map_header" />
+    <output filename="cellular_setup_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <structures>
+      <structure name="IDR_CELLULAR_SETUP_I18N_SETUP_HTML"
+                 file="i18n_setup.html"
+                 type="chrome_html" />
+      <structure name="IDR_CELLULAR_SETUP_CELLULAR_SETUP_DIALOG_HTML"
+                 file="cellular_setup_dialog.html"
+                 flattenhtml="true"
+                 allowexternalscript="true"
+                 type="chrome_html" />
+    </structures>
+  </release>
+</grit>

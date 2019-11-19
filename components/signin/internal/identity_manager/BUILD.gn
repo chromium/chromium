@@ -1,0 +1,200 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This target forms the core of the IdentityManager implementation
+# (//components/signin/public/identity_manager/identity_manager.*).
+source_set("identity_manager") {
+  sources = [
+    "account_fetcher_service.cc",
+    "account_fetcher_service.h",
+    "account_info_fetcher.cc",
+    "account_info_fetcher.h",
+    "account_info_util.cc",
+    "account_info_util.h",
+    "account_tracker_service.cc",
+    "account_tracker_service.h",
+    "accounts_cookie_mutator_impl.cc",
+    "accounts_cookie_mutator_impl.h",
+    "child_account_info_fetcher_android.cc",
+    "child_account_info_fetcher_android.h",
+    "diagnostics_provider_impl.cc",
+    "diagnostics_provider_impl.h",
+    "gaia_cookie_manager_service.cc",
+    "gaia_cookie_manager_service.h",
+    "oauth2_token_service_delegate_android.cc",
+    "oauth2_token_service_delegate_android.h",
+    "oauth_multilogin_helper.cc",
+    "oauth_multilogin_helper.h",
+    "oauth_multilogin_token_fetcher.cc",
+    "oauth_multilogin_token_fetcher.h",
+    "primary_account_manager.cc",
+    "primary_account_manager.h",
+    "primary_account_mutator_impl.cc",
+    "primary_account_mutator_impl.h",
+    "primary_account_policy_manager.h",
+    "profile_oauth2_token_service.cc",
+    "profile_oauth2_token_service.h",
+    "profile_oauth2_token_service_builder.cc",
+    "profile_oauth2_token_service_builder.h",
+    "profile_oauth2_token_service_delegate.cc",
+    "profile_oauth2_token_service_delegate.h",
+    "profile_oauth2_token_service_delegate_chromeos.cc",
+    "profile_oauth2_token_service_delegate_chromeos.h",
+    "profile_oauth2_token_service_delegate_ios.h",
+    "profile_oauth2_token_service_delegate_ios.mm",
+    "profile_oauth2_token_service_observer.h",
+    "ubertoken_fetcher_impl.cc",
+    "ubertoken_fetcher_impl.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_buildflags",
+    "//components/webdata/common",
+    "//google_apis",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/mojom",
+  ]
+
+  deps = [
+    "//components/image_fetcher/core",
+    "//components/prefs",
+    "//components/signin/public/webdata",
+    "//services/network/public/cpp",
+    "//ui/gfx",
+  ]
+
+  if (is_android) {
+    deps += [
+      "//components/signin/core/browser/android:jni_headers",
+      "//components/signin/internal/base",
+    ]
+  } else {
+    sources += [
+      "mutable_profile_oauth2_token_service_delegate.cc",
+      "mutable_profile_oauth2_token_service_delegate.h",
+    ]
+  }
+
+  if (is_chromeos) {
+    public_deps += [ "//chromeos/components/account_manager" ]
+
+    deps += [
+      "//chromeos/constants",
+      "//components/user_manager",
+    ]
+  } else {
+    sources += [
+      "primary_account_policy_manager_impl.cc",
+      "primary_account_policy_manager_impl.h",
+    ]
+
+    public_deps += [ "//components/prefs" ]
+  }
+
+  if (!is_android && !is_ios) {
+    sources += [
+      "accounts_mutator_impl.cc",
+      "accounts_mutator_impl.h",
+    ]
+  }
+
+  if (is_ios) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+
+    deps += [ "//components/signin/public/identity_manager/ios" ]
+  }
+
+  if (is_ios || is_android) {
+    sources += [
+      "device_accounts_synchronizer_impl.cc",
+      "device_accounts_synchronizer_impl.h",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "account_info_util_unittest.cc",
+    "account_tracker_service_unittest.cc",
+    "gaia_cookie_manager_service_unittest.cc",
+    "oauth2_token_service_delegate_android_unittest.cc",
+    "oauth_multilogin_helper_unittest.cc",
+    "oauth_multilogin_token_fetcher_unittest.cc",
+    "primary_account_manager_unittest.cc",
+    "primary_account_policy_manager_impl_unittest.cc",
+    "profile_oauth2_token_service_delegate_chromeos_unittest.cc",
+    "profile_oauth2_token_service_delegate_ios_unittest.mm",
+    "profile_oauth2_token_service_delegate_unittest.cc",
+    "profile_oauth2_token_service_unittest.cc",
+    "ubertoken_fetcher_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":identity_manager",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/image_fetcher/core",
+    "//components/image_fetcher/core:test_support",
+    "//components/os_crypt:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_buildflags",
+    "//components/signin/public/base:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/webdata",
+    "//components/sync_preferences:test_support",
+    "//components/webdata/common",
+    "//google_apis",
+    "//net",
+    "//net:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos) {
+    sources -= [ "primary_account_policy_manager_impl_unittest.cc" ]
+
+    deps += [ "//chromeos/components/account_manager" ]
+  }
+
+  if (is_ios) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+
+    deps += [ "//components/signin/public/identity_manager/ios:test_support" ]
+  }
+
+  if (!is_android) {
+    sources += [ "mutable_profile_oauth2_token_service_delegate_unittest.cc" ]
+  }
+}
+
+# This target contains test support that backs the test support for
+# IdentityManager.
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_profile_oauth2_token_service.cc",
+    "fake_profile_oauth2_token_service.h",
+    "fake_profile_oauth2_token_service_delegate.cc",
+    "fake_profile_oauth2_token_service_delegate.h",
+  ]
+
+  public_deps = [
+    ":identity_manager",
+    "//base",
+    "//google_apis:test_support",
+  ]
+}

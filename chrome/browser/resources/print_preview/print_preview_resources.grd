@@ -11,27 +11,140 @@
     <output filename="print_preview_resources.pak" type="data_package" />
   </outputs>
   <release seq="1">
+    <includes>
+      <!-- Generated Polymer 3 elements -->
+      <include name="IDR_PRINT_PREVIEW_UI_APP_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/app.js"
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
+      <include name="IDR_PRINT_PREVIEW_UI_SIDEBAR_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/sidebar.js"
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
+      <include name="IDR_PRINT_PREVIEW_UI_MARGIN_CONTROL_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/margin_control.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_MARGIN_CONTROL_CONTAINER_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/margin_control_container.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_PREVIEW_AREA_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/preview_area.js"
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
+      <include name="IDR_PRINT_PREVIEW_UI_HEADER_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/header.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_BUTTON_STRIP_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/button_strip.js"
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
+      <include name="IDR_PRINT_PREVIEW_UI_SETTINGS_SECTION_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/settings_section.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_SETTINGS_SELECT_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/settings_select.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_DESTINATION_SELECT_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/destination_select.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_DESTINATION_SETTINGS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/destination_settings.js"
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
+    <if expr="chromeos">
+      <include name="IDR_PRINT_PREVIEW_UI_PIN_SETTINGS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/pin_settings.js"
+               use_base_dir="false" type="BINDATA"/>
+    </if>
+      <include name="IDR_PRINT_PREVIEW_UI_PAGES_SETTINGS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/pages_settings.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_COPIES_SETTINGS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/copies_settings.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_LAYOUT_SETTINGS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/layout_settings.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_COLOR_SETTINGS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/color_settings.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_MEDIA_SIZE_SETTINGS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/media_size_settings.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_MARGINS_SETTINGS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/margins_settings.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_DPI_SETTINGS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/dpi_settings.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_DUPLEX_SETTINGS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/duplex_settings.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_SCALING_SETTINGS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/scaling_settings.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_PAGES_PER_SHEET_SETTINGS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/pages_per_sheet_settings.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_OTHER_OPTIONS_SETTINGS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/other_options_settings.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_ADVANCED_OPTIONS_SETTINGS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/advanced_options_settings.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_MORE_SETTINGS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/more_settings.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_ADVANCED_SETTINGS_DIALOG_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/advanced_settings_dialog.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_ADVANCED_SETTINGS_ITEM_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/advanced_settings_item.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_NUMBER_SETTINGS_SECTION_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/number_settings_section.js"
+               use_base_dir="false" type="BINDATA"/>
+    <if expr="not chromeos">
+      <include name="IDR_PRINT_PREVIEW_UI_LINK_CONTAINER_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/link_container.js"
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
+    </if>
+      <include name="IDR_PRINT_PREVIEW_UI_DESTINATION_DIALOG_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/destination_dialog.js"
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
+      <include name="IDR_PRINT_PREVIEW_UI_DESTINATION_LIST_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/destination_list.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_DESTINATION_LIST_ITEM_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/destination_list_item.js"
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
+      <include name="IDR_PRINT_PREVIEW_UI_PROVISIONAL_DESTINATION_RESOLVER_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/provisional_destination_resolver.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_PRINT_PREVIEW_SEARCH_BOX_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/print_preview_search_box.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_PRINT_PREVIEW_SHARED_CSS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/print_preview_shared_css.js"
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
+      <include name="IDR_PRINT_PREVIEW_UI_PRINT_PREVIEW_VARS_CSS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/print_preview_vars_css.js"
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
+      <include name="IDR_PRINT_PREVIEW_UI_THROBBER_CSS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/throbber_css.js"
+               use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_PRINT_PREVIEW_UI_ICONS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/icons.js"
+               use_base_dir="false" type="BINDATA"/>
+    </includes>
     <structures>
-      <structure name="IDR_PRINT_PREVIEW_NEW_HTML"
-                 file="print_preview_new.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_APP_HTML"
-                 file="new/app.html"
+      <structure name="IDR_PRINT_PREVIEW_HTML"
+                 file="print_preview.html"
                  type="chrome_html"
                  preprocess="true" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_APP_JS"
-                 file="new/app.js"
+      <structure name="IDR_PRINT_PREVIEW_JS"
+                 file="print_preview.js"
                  type="chrome_html"
                  preprocess="true" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_MODEL_HTML"
-                 file="new/model.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_MODEL_JS"
-                 file="new/model.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_CLOUD_PRINT_INTERFACE_HTML"
-                 file="cloud_print_interface.html"
-                 type="chrome_html" />
+      <structure name="IDR_PRINT_PREVIEW_DATA_MODEL_JS"
+                 file="data/model.js"
+                 type="chrome_html"
+                 preprocess="true" />
       <structure name="IDR_PRINT_PREVIEW_CLOUD_PRINT_INTERFACE_JS"
                  file="cloud_print_interface.js"
                  type="chrome_html" />
@@ -42,348 +155,91 @@
       <structure name="IDR_PRINT_PREVIEW_CLOUD_PRINT_INTERFACE_NATIVE_JS"
                  file="cloud_print_interface_native.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_CLOUD_PRINT_INTERFACE_MANAGER_HTML"
-                 file="cloud_print_interface_manager.html"
-                 type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_CLOUD_PRINT_INTERFACE_MANAGER_JS"
                  file="cloud_print_interface_manager.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NATIVE_LAYER_HTML"
-                 file="native_layer.html"
                  type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_NATIVE_LAYER_JS"
                  file="native_layer.js"
                  type="chrome_html"
                  preprocess="true" />
-      <structure name="IDR_PRINT_PREVIEW_DATA_DESTINATION_HTML"
-                 file="data/destination.html"
-                 type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_DATA_DESTINATION_JS"
                  file="data/destination.js"
                  type="chrome_html"
                  preprocess="true" />
-      <structure name="IDR_PRINT_PREVIEW_DATA_DESTINATION_MATCH_HTML"
-                 file="data/destination_match.html"
-                 type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_DATA_DESTINATION_MATCH_JS"
                  file="data/destination_match.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_DATA_DESTINATION_STORE_HTML"
-                 file="data/destination_store.html"
+    <if expr="chromeos">
+      <structure name="IDR_PRINT_PREVIEW_DATA_DESTINATION_POLICIES_JS"
+                 file="data/destination_policies.js"
                  type="chrome_html" />
+    </if>
       <structure name="IDR_PRINT_PREVIEW_DATA_DESTINATION_STORE_JS"
                  file="data/destination_store.js"
                  type="chrome_html"
                  preprocess="true" />
-      <structure name="IDR_PRINT_PREVIEW_DATA_CLOUD_PARSERS_HTML"
-                 file="data/cloud_parsers.html"
-                 type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_DATA_CLOUD_PARSERS_JS"
                  file="data/cloud_parsers.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_DATA_LOCAL_PARSERS_HTML"
-                 file="data/local_parsers.html"
                  type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_DATA_LOCAL_PARSERS_JS"
                  file="data/local_parsers.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_DATA_INVITATION_HTML"
-                 file="data/invitation.html"
-                 type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_DATA_INVITATION_JS"
                  file="data/invitation.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_DATA_INVITATION_STORE_HTML"
-                 file="data/invitation_store.html"
                  type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_DATA_INVITATION_STORE_JS"
                  file="data/invitation_store.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_DATA_MARGINS_HTML"
-                 file="data/margins.html"
-                 type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_DATA_MARGINS_JS"
                  file="data/margins.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_DATA_USER_INFO_HTML"
-                 file="data/user_info.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_DATA_USER_INFO_JS"
-                 file="data/user_info.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_METRICS_HTML"
-                 file="metrics.html"
+      <structure name="IDR_PRINT_PREVIEW_DATA_USER_MANAGER_JS"
+                 file="data/user_manager.js"
                  type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_METRICS_JS"
                  file="metrics.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_PRINT_PREVIEW_UTILS_HTML"
-                 file="print_preview_utils.html"
-                 type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_PRINT_PREVIEW_UTILS_JS"
                  file="print_preview_utils.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_DATA_DOCUMENT_INFO_HTML"
-                 file="data/document_info.html"
+      <structure name="IDR_PRINT_PREVIEW_PRINT_DARK_MODE_BEHAVIOR_JS"
+                 file="dark_mode_behavior.js"
                  type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_DATA_DOCUMENT_INFO_JS"
                  file="data/document_info.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_DATA_SIZE_HTML"
-                 file="data/size.html"
+      <structure name="IDR_PRINT_PREVIEW_DATA_SCALING_JS"
+                 file="data/scaling.js"
                  type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_DATA_SIZE_JS"
                  file="data/size.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_DATA_COORDINATE2D_HTML"
-                 file="data/coordinate2d.html"
-                 type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_DATA_COORDINATE2D_JS"
                  file="data/coordinate2d.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_DATA_MEASUREMENT_SYSTEM_HTML"
-                 file="data/measurement_system.html"
                  type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_DATA_MEASUREMENT_SYSTEM_JS"
                  file="data/measurement_system.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_DATA_PRINTABLE_AREA_HTML"
-                 file="data/printable_area.html"
-                 type="chrome_html" />
       <structure name="IDR_PRINT_PREVIEW_DATA_PRINTABLE_AREA_JS"
                  file="data/printable_area.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_MARGIN_CONTROL_HTML"
-                 file="new/margin_control.html"
+      <structure name="IDR_PRINT_PREVIEW_UI_PLUGIN_PROXY_JS"
+                 file="ui/plugin_proxy.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_MARGIN_CONTROL_JS"
-                 file="new/margin_control.js"
+      <structure name="IDR_PRINT_PREVIEW_UI_SETTINGS_BEHAVIOR_JS"
+                 file="ui/settings_behavior.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_MARGIN_CONTROL_CONTAINER_HTML"
-                 file="new/margin_control_container.html"
+      <structure name="IDR_PRINT_PREVIEW_UI_INPUT_BEHAVIOR_JS"
+                 file="ui/input_behavior.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_MARGIN_CONTROL_CONTAINER_JS"
-                 file="new/margin_control_container.js"
+      <structure name="IDR_PRINT_PREVIEW_UI_SELECT_BEHAVIOR_JS"
+                 file="ui/select_behavior.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_PREVIEW_AREA_HTML"
-                 file="new/preview_area.html"
+      <structure name="IDR_PRINT_PREVIEW_DATA_STATE_JS"
+                 file="data/state.js"
                  type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_PREVIEW_AREA_JS"
-                 file="new/preview_area.js"
-                 type="chrome_html"
-                 preprocess="true" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_PLUGIN_PROXY_HTML"
-                 file="new/plugin_proxy.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_PLUGIN_PROXY_JS"
-                 file="new/plugin_proxy.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_HEADER_HTML"
-                 file="new/header.html"
-                 type="chrome_html"
-                 preprocess="true" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_HEADER_JS"
-                 file="new/header.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_SETTINGS_BEHAVIOR_HTML"
-                 file="new/settings_behavior.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_SETTINGS_BEHAVIOR_JS"
-                 file="new/settings_behavior.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_INPUT_BEHAVIOR_HTML"
-                 file="new/input_behavior.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_INPUT_BEHAVIOR_JS"
-                 file="new/input_behavior.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_SELECT_BEHAVIOR_HTML"
-                 file="new/select_behavior.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_SELECT_BEHAVIOR_JS"
-                 file="new/select_behavior.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_STATE_HTML"
-                 file="new/state.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_STATE_JS"
-                 file="new/state.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_SETTINGS_SECTION_HTML"
-                 file="new/settings_section.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_SETTINGS_SECTION_JS"
-                 file="new/settings_section.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_SETTINGS_SELECT_HTML"
-                 file="new/settings_select.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_SETTINGS_SELECT_JS"
-                 file="new/settings_select.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_DESTINATION_SELECT_HTML"
-                 file="new/destination_select.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_DESTINATION_SELECT_JS"
-                 file="new/destination_select.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_DESTINATION_SETTINGS_HTML"
-                 file="new/destination_settings.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_DESTINATION_SETTINGS_JS"
-                 file="new/destination_settings.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_PAGES_SETTINGS_HTML"
-                 file="new/pages_settings.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_PAGES_SETTINGS_JS"
-                 file="new/pages_settings.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_COPIES_SETTINGS_HTML"
-                 file="new/copies_settings.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_COPIES_SETTINGS_JS"
-                 file="new/copies_settings.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_LAYOUT_SETTINGS_HTML"
-                 file="new/layout_settings.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_LAYOUT_SETTINGS_JS"
-                 file="new/layout_settings.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_COLOR_SETTINGS_HTML"
-                 file="new/color_settings.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_COLOR_SETTINGS_JS"
-                 file="new/color_settings.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_MEDIA_SIZE_SETTINGS_HTML"
-                 file="new/media_size_settings.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_MEDIA_SIZE_SETTINGS_JS"
-                 file="new/media_size_settings.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_MARGINS_SETTINGS_HTML"
-                 file="new/margins_settings.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_MARGINS_SETTINGS_JS"
-                 file="new/margins_settings.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_DPI_SETTINGS_HTML"
-                 file="new/dpi_settings.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_DPI_SETTINGS_JS"
-                 file="new/dpi_settings.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_SCALING_SETTINGS_HTML"
-                 file="new/scaling_settings.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_SCALING_SETTINGS_JS"
-                 file="new/scaling_settings.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_PAGES_PER_SHEET_SETTINGS_HTML"
-                 file="new/pages_per_sheet_settings.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_PAGES_PER_SHEET_SETTINGS_JS"
-                 file="new/pages_per_sheet_settings.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_OTHER_OPTIONS_SETTINGS_HTML"
-                 file="new/other_options_settings.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_OTHER_OPTIONS_SETTINGS_JS"
-                 file="new/other_options_settings.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_ADVANCED_OPTIONS_SETTINGS_HTML"
-                 file="new/advanced_options_settings.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_MORE_SETTINGS_JS"
-                 file="new/more_settings.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_MORE_SETTINGS_HTML"
-                 file="new/more_settings.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_ADVANCED_OPTIONS_SETTINGS_JS"
-                 file="new/advanced_options_settings.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_ADVANCED_SETTINGS_DIALOG_HTML"
-                 file="new/advanced_settings_dialog.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_ADVANCED_SETTINGS_DIALOG_JS"
-                 file="new/advanced_settings_dialog.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_ADVANCED_SETTINGS_ITEM_HTML"
-                 file="new/advanced_settings_item.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_ADVANCED_SETTINGS_ITEM_JS"
-                 file="new/advanced_settings_item.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_NUMBER_SETTINGS_SECTION_HTML"
-                 file="new/number_settings_section.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_NUMBER_SETTINGS_SECTION_JS"
-                 file="new/number_settings_section.js"
-                 type="chrome_html" />
-      <if expr="not chromeos">
-        <structure name="IDR_PRINT_PREVIEW_NEW_LINK_CONTAINER_HTML"
-                   file="new/link_container.html"
-                   type="chrome_html"
-                   preprocess="true" />
-        <structure name="IDR_PRINT_PREVIEW_NEW_LINK_CONTAINER_JS"
-                   file="new/link_container.js"
-                   type="chrome_html"
-                   preprocess="true" />
-      </if>
-      <structure name="IDR_PRINT_PREVIEW_NEW_DESTINATION_DIALOG_HTML"
-                 file="new/destination_dialog.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_DESTINATION_DIALOG_JS"
-                 file="new/destination_dialog.js"
-                 type="chrome_html"
-                 preprocess="true" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_DESTINATION_LIST_HTML"
-                 file="new/destination_list.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_DESTINATION_LIST_JS"
-                 file="new/destination_list.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_DESTINATION_LIST_ITEM_HTML"
-                 file="new/destination_list_item.html"
-                 type="chrome_html"
-                 preprocess="true" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_DESTINATION_LIST_ITEM_JS"
-                 file="new/destination_list_item.js"
-                 type="chrome_html"
-                 preprocess="true" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_PROVISIONAL_DESTINATION_RESOLVER_HTML"
-                 file="new/provisional_destination_resolver.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_PROVISIONAL_DESTINATION_RESOLVER_JS"
-                 file="new/provisional_destination_resolver.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_PRINT_PREVIEW_SEARCH_BOX_HTML"
-                 file="new/print_preview_search_box.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_PRINT_PREVIEW_SEARCH_BOX_JS"
-                 file="new/print_preview_search_box.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_HIGHLIGHT_UTILS_HTML"
-                 file="new/highlight_utils.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_HIGHLIGHT_UTILS_JS"
-                 file="new/highlight_utils.js"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_PRINT_PREVIEW_SHARED_CSS_HTML"
-                 file="new/print_preview_shared_css.html"
-                 type="chrome_html"
-                 preprocess="true" />
-      <structure name="IDR_PRINT_PREVIEW_NEW_THROBBER_CSS_HTML"
-                 file="new/throbber_css.html"
-                 type="chrome_html"/>
-      <structure name="IDR_PRINT_PREVIEW_NEW_STRINGS_HTML"
-                 file="new/strings.html"
-                 type="chrome_html" />
-      <structure name="IDR_PRINT_PREVIEW_ICONS_HTML"
-                 file="icons.html"
+      <structure name="IDR_PRINT_PREVIEW_UI_HIGHLIGHT_UTILS_JS"
+                 file="ui/highlight_utils.js"
                  type="chrome_html" />
     </structures>
   </release>

@@ -11,15 +11,8 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/uint8_array.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-
-namespace WTF {
-
-class ArrayBufferContents;
-
-}  // namespace WTF
 
 namespace gpu {
 namespace gles2 {
@@ -41,9 +34,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
       sk_sp<SkImage>,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> = nullptr);
   static scoped_refptr<StaticBitmapImage> Create(PaintImage);
-  static scoped_refptr<StaticBitmapImage> Create(scoped_refptr<Uint8Array>&&,
-                                                 const SkImageInfo&);
-  static scoped_refptr<StaticBitmapImage> Create(WTF::ArrayBufferContents&,
+  static scoped_refptr<StaticBitmapImage> Create(sk_sp<SkData> data,
                                                  const SkImageInfo&);
 
   bool IsStaticBitmapImage() const override { return true; }
@@ -75,6 +66,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   virtual bool CopyToTexture(gpu::gles2::GLES2Interface*,
                              GLenum,
                              GLuint,
+                             GLint,
                              bool,
                              bool,
                              const IntPoint&,
@@ -106,7 +98,6 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
     return mailbox;
   }
   virtual const gpu::SyncToken& GetSyncToken() const;
-  virtual void UpdateSyncToken(gpu::SyncToken) { NOTREACHED(); }
   virtual bool IsPremultiplied() const { return true; }
 
   // Methods have exactly the same implementation for all sub-classes
@@ -116,12 +107,16 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
       sk_sp<SkColorSpace>,
       SkColorType = kN32_SkColorType);
 
-  static bool ConvertToArrayBufferContents(
-      scoped_refptr<StaticBitmapImage> src_image,
-      WTF::ArrayBufferContents& dest_contents,
-      const IntRect&,
-      const CanvasColorParams&,
-      bool is_accelerated = false);
+  static size_t GetSizeInBytes(const IntRect& rect,
+                               const CanvasColorParams& color_params);
+
+  static bool MayHaveStrayArea(scoped_refptr<StaticBitmapImage> src_image,
+                               const IntRect& rect);
+
+  static bool CopyToByteArray(scoped_refptr<StaticBitmapImage> src_image,
+                              base::span<uint8_t> dst,
+                              const IntRect&,
+                              const CanvasColorParams&);
 
  protected:
   // Helper for sub-classes

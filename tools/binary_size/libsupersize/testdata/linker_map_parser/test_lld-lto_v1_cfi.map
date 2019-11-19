@@ -1,0 +1,138 @@
+# Test Linker map for LLD with ThinLTO, "v1" format, focusing on changes
+# introduced CFI.
+# .map files actually don't have comments and blank lines! These are added to
+# improve documentation, and are stripped by tests.
+
+# First line is needed to identify .map file type.
+     VMA      LMA     Size Align Out     In      Symbol
+# .rodata can have CFI byte arrays (start with other symbols).
+  23dd00   23dd00   6725ea   256 .rodata
+  23dd00   23dd00        4     8         obj/v8/v8_external_snapshot/embedded.o:(.rodata)
+  23dd00   23dd00        0     1                 v8_Default_embedded_blob_size_
+  23dd08   23dd08        8     8         obj/third_party/crashpad/crashpad/client/libclient.a(client/crashpad_info_note.o):(.rodata)
+  23dd08   23dd08        0     1                 CRASHPAD_NOTE_REFERENCE
+  23dd10   23dd10       20    16         obj/third_party/ffmpeg/libffmpeg_internal.a(ffmpeg_internal/fft_neon.o):(.rodata)
+  23dd10   23dd10       10     1                 pmmp
+  23dd20   23dd20       10     1                 mppm
+  23dd30   23dd30   2de399     1         <internal>:(.rodata)
+  51c0cc   51c0cc        4     4         ../../third_party/android_ndk/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libandroid_support.a(locale.o):(.rodata.__emutls_t._ZL16g_current_locale)
+  51c0cc   51c0cc        4     1                 __emutls_t._ZL16g_current_locale
+  51c0cc   51c0cc        0     1                 $d
+
+# CFI byte arrays.
+# See: https://clang.llvm.org/docs/ControlFlowIntegrityDesign.html
+  51d2a0   51d2a0    2d5ed    16         lto.tmp:(.rodata..L__unnamed_3117)
+  51d2a0   51d2a0        1     1                 __typeid__ZTSN3IPC8ListenerE_byte_array
+  51d2a0   51d2a0        1     1                 __typeid__ZTSN4mojo15MessageReceiverE_byte_array
+  51d2a0   51d2a0        1     1                 __typeid__ZTSN5blink10NameClientE_byte_array
+  51d2a0   51d2a0        1     1                 __typeid__ZTSN5blink17DisplayItemClientE_byte_array
+  51d2a0   51d2a0        1     1                 __typeid__ZTSN5blink21GarbageCollectedMixinE_byte_array
+  51d2a0   51d2a0        1     1                 __typeid__ZTSN5blink24ContextLifecycleObserverE_byte_array
+  51d2a0   51d2a0        1     1                 __typeid__ZTSN5blink25ActiveScriptWrappableBaseE_byte_array
+  51d2a0   51d2a0        1     1                 __typeid__ZTSN7content19WebContentsObserverE_byte_array
+  52b7f9   52b7f9        1     1                 __typeid__ZTSN4base16SupportsUserData4DataE_byte_array
+  52c545   52c545        1     1                 __typeid__ZTSN5blink21ImageResourceObserverE_byte_array
+  52cb35   52cb35        1     1                 __typeid__ZTS12KeyedService_byte_array
+  52cf3b   52cf3b        1     1                 __typeid__ZTSN3IPC6SenderE_byte_array
+  534325   534325        1     1                 __typeid__ZTSN5blink15ScriptWrappableE_byte_array
+  535ffd   535ffd        1     1                 __typeid__ZTSN4base11trace_event18MemoryDumpProviderE_byte_array
+  5365da   5365da        1     1                 __typeid__ZTSN5blink23MediaControlElementBaseE_byte_array
+  537859   537859        1     1                 __typeid__ZTSN5blink11EventTargetE_byte_array
+  538ce2   538ce2        1     1                 .Lbits_use.897
+  538ce2   538ce2        1     1                 .Lbits_use.898
+  538ce2   538ce2        1     1                 .Lbits_use.899
+  538ce2   538ce2        1     1                 .Lbits_use.900
+  538ce2   538ce2        1     1                 .Lbits_use.902
+  538ce2   538ce2        1     1                 .Lbits_use.903
+  538ce2   538ce2        1     1                 .Lbits_use.904
+  538ce2   538ce2        1     1                 __typeid__ZTSN5blink4NodeE_byte_array
+  538d9a   538d9a        1     1                 __typeid__ZTSN5blink13ContainerNodeE_byte_array
+  53a031   53a031        1     1                 .Lbits_use.905
+  53a031   53a031        1     1                 __typeid__ZTSN5blink7ElementE_byte_array
+  53b4a6   53b4a6        1     1                 __typeid__ZTSN5blink10SupplementINS_8DocumentEEE_byte_array
+  53c784   53c784        1     1                 __typeid__ZTSN5blink13ListedElementE_byte_array
+  53c9d0   53c9d0        1     1                 __typeid__ZTSN5blink11HTMLElementE_byte_array
+  53db35   53db35        1     1                 __typeid__ZTSN5blink14FormAssociatedE_byte_array
+  53e2bd   53e2bd        1     1                 __typeid__ZTSN7content20NotificationObserverE_byte_array
+  53ea6e   53ea6e        1     1                 __typeid__ZTSN7network5mojom16URLLoaderFactoryE_byte_array
+  53ea98   53ea98        1     1                 __typeid__ZTSN7network5mojom15URLLoaderClientE_byte_array
+# Snip out many examples (pretend that the previous symbol was huge).
+  54a84b   54a84b        1     1                 __typeid__ZTSN5blink32PresentationAvailabilityObserverE_byte_array
+  54a84b   54a84b        1     1                 __typeid__ZTSN5blink7UIEventE_byte_array
+  54a84b   54a84b        1     1                 __typeid__ZTSN6syncer15ChangeProcessorE_byte_array
+  54a84b   54a84b        1     1                 __typeid__ZTSN7content20ServiceWorkerVersion8ObserverE_byte_array
+  54a84b   54a84b        1     1                 __typeid__ZTSN7content31BrowserChildProcessHostDelegateE_byte_array
+  54a84c   54a84c        1     1                 __typeid__ZTSN5blink10SupplementINS_16ExecutionContextEEE_byte_array
+
+# Other sections.
+  8b02ec   8b02ec     5e24     4 .ARM.extab
+  8b02ec   8b02ec        c     4         ../../third_party/android_ndk/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libandroid_support.a(locale.o):(.ARM.extab.text.uselocale)
+  8b02ec   8b02ec        0     1                 $d
+  8b02f8   8b02f8        c     4         ../../third_party/android_ndk/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libandroid_support.a(locale.o):(.ARM.extab.text.newlocale)
+  8b02f8   8b02f8        0     1                 $d
+
+# .text can contain L.cfi.jumptable (start with other symbols).
+  8b6140   8b6140  299d5dc    64 .text
+  8b6140   8b6140      cdc    32         obj/third_party/boringssl/boringssl_asm/chacha-armv4.o:(.text)
+  8b6144   8b6144        0     1                 $d.0
+  8b6180   8b6180        0     1                 $a.1
+  8b6180   8b6180      3f0     1                 ChaCha20_ctr32
+  8b6580   8b6580      89c     1                 ChaCha20_neon
+
+# Sample L.cfi.jumptable.
+ 29da300  29da300       10    16         lto.tmp:(.text..L.cfi.jumptable.2091)
+ 29da300  29da300        1     1                 __typeid__ZTSF15vpx_codec_err_tP18vpx_codec_alg_privPK9vpx_imagelmlmE_global_addr
+ 29da300  29da300       10     1                 vp8e_encode$7d077cb90f9945e3a735fb4eb6fe8afc
+ 29da308  29da308       10     1                 encoder_encode$34c1039d90d239ad455f8ef2e0009211
+ 29da310  29da310       28    16         lto.tmp:(.text..L.cfi.jumptable.2093)
+ 29da310  29da310       28     1                 base::internal::Invoker<base::internal::BindState<void (extensions::image_writer::WriteFromUrlOperation::*)(base::FilePath), base::internal::UnretainedWrapper<extensions::image_writer::WriteFromUrlOperation> >, void (base::FilePath)>::RunOnce(base::internal::BindStateBase*, base::FilePath&&)
+ 29da310  29da310        1     1                 __typeid__ZTSFvPN4base8internal13BindStateBaseEONS_8FilePathEE_global_addr
+ 29da318  29da318       28     1                 base::internal::Invoker<base::internal::BindState<void (extensions::ExtensionDownloader::*)(base::FilePath), base::internal::UnretainedWrapper<extensions::ExtensionDownloader> >, void (base::FilePath)>::RunOnce(base::internal::BindStateBase*, base::FilePath&&)
+ 29da320  29da320       28     1                 base::internal::Invoker<base::internal::BindState<void (cloud_print::PrivetURLLoader::*)(base::FilePath), base::WeakPtr<cloud_print::PrivetURLLoader> >, void (base::FilePath)>::RunOnce(base::internal::BindStateBase*, base::FilePath&&)
+ 29da328  29da328       28     1                 base::internal::Invoker<base::internal::BindState<void (FileDownloader::*)(base::FilePath), base::internal::UnretainedWrapper<FileDownloader> >, void (base::FilePath)>::RunOnce(base::internal::BindStateBase*, base::FilePath&&)
+ 29da330  29da330       28     1                 _ZN4base8internal7InvokerINS0_9BindStateIZN13update_client18NetworkFetcherImpl14DownloadToFileERK4GURLRKNS_8FilePathENS_12OnceCallbackIFvS7_ilEEENS_17RepeatingCallbackIFvlEEENSB_IFvS8_ilEEEE3$_1JPN7network15SimpleURLLoaderESI_EEEFvS8_EE7RunOnceEPNS0_13BindStateBaseEOS8_$465b209000b54f7cf2bdcf6c53188e38
+ 29da340  29da340        8    16         lto.tmp:(.text..L.cfi.jumptable.2094)
+ 29da340  29da340        1     1                 __typeid__ZTSFlPvS_miE_global_addr
+ 29da340  29da340        8     1                 fseek_file_func$bb5c8d26f6b2986183d5943acbc61f67
+ 29da350  29da350        5    16         thinlto-cache/Thin-82ee80.tmp.o:(.text.main)
+ 29da350  29da350        5     1                 main
+
+# Demangled symbols that end with ' (.cfi)'.
+ 2a59fb0  2a59fb0       18    16         thinlto-cache/Thin-7c598e.tmp.o:(.text._ZN4base8internal34DestructorAtExitLazyInstanceTraitsI22ChromeContentGpuClientE3NewEPv.cfi)
+ 2a59fb0  2a59fb0       18     1                 base::internal::DestructorAtExitLazyInstanceTraits<ChromeContentGpuClient>::New(void*) (.cfi)
+ 2a59fd0  2a59fd0       1f    16         thinlto-cache/Thin-7c598e.tmp.o:(.text._ZN4base12LazyInstanceI22ChromeContentGpuClientNS_8internal34DestructorAtExitLazyInstanceTraitsIS1_EEE6OnExitEPv.cfi)
+ 2a59fd0  2a59fd0       1f     1                 base::LazyInstance<ChromeContentGpuClient, base::internal::DestructorAtExitLazyInstanceTraits<ChromeContentGpuClient> >::OnExit(void*) (.cfi)
+ 2a59ff0  2a59ff0       18    16         thinlto-cache/Thin-7c598e.tmp.o:(.text._ZN4base8internal34DestructorAtExitLazyInstanceTraitsI27ChromeContentRendererClientE3NewEPv.cfi)
+ 2a59ff0  2a59ff0       18     1                 base::internal::DestructorAtExitLazyInstanceTraits<ChromeContentRendererClient>::New(void*) (.cfi)
+ 2a5a010  2a5a010       1f    16         thinlto-cache/Thin-7c598e.tmp.o:(.text._ZN4base12LazyInstanceI27ChromeContentRendererClientNS_8internal34DestructorAtExitLazyInstanceTraitsIS1_EEE6OnExitEPv.cfi)
+ 2a5a010  2a5a010       1f     1                 base::LazyInstance<ChromeContentRendererClient, base::internal::DestructorAtExitLazyInstanceTraits<ChromeContentRendererClient> >::OnExit(void*) (.cfi)
+ 2a5a030  2a5a030       18    16         thinlto-cache/Thin-7c598e.tmp.o:(.text._ZN4base8internal34DestructorAtExitLazyInstanceTraitsI26ChromeContentUtilityClientE3NewEPv.cfi)
+ 2a5a030  2a5a030       18     1                 base::internal::DestructorAtExitLazyInstanceTraits<ChromeContentUtilityClient>::New(void*) (.cfi)
+
+# .data.re.ro can have __typeid_ usages that are unrelated to CFI (start with other symbols).
+ 3255000  3255000   2514e4    16 .data.rel.ro
+ 3255000  3255000       3c     4         obj/third_party/ffmpeg/libffmpeg_internal.a(ffmpeg_internal/fft_vfp.o):(.data.rel.ro)
+ 3255000  3255000       3c     1                 fft_tab_vfp
+ 325503c  325503c       3c     4         obj/third_party/ffmpeg/libffmpeg_internal.a(ffmpeg_internal/fft_neon.o):(.data.rel.ro)
+ 325503c  325503c       3c     1                 fft_tab_neon
+
+# __typeid_ usages that are unrelated to CFI.
+ 325e5c0  325e5c0       38    16         lto.tmp:(.data.rel.ro..L__unnamed_306)
+ 325e5c0  325e5c0       1c     1                 vtable for content::BackgroundSyncContextImpl
+ 325e5c8  325e5c8        1     1                 __typeid__ZTSN7content21BackgroundSyncContextE_global_addr
+ 325e5c8  325e5c8        1     1                 __typeid__ZTSN7content25BackgroundSyncContextImplE_global_addr
+ 325e5e0  325e5e0       18     1                 vtable for content::BackgroundSyncContext
+ 325e600  325e600       64    16         lto.tmp:(.data.rel.ro..L__unnamed_307)
+ 325e600  325e600       64     1                 vtable for content::BackgroundSyncManager
+ 325e608  325e608        1     1                 __typeid__ZTSN7content21BackgroundSyncManagerE_global_addr
+
+ 326e3a0  326e3a0       14    16         lto.tmp:(.data.rel.ro..L__unnamed_769)
+ 326e3a0  326e3a0       14     1                 _ZTVN12v8_inspector12_GLOBAL__N_120HeapSnapshotProgressE$5c43413d323f2f7febefe6cf2f4ba25c
+ 326e3a8  326e3a8        1     1                 __typeid_1$5c43413d323f2f7febefe6cf2f4ba25c_global_addr
+ 326e3a8  326e3a8        1     1                 __typeid__ZTSN2v815ActivityControlE_global_addr
+
+ 923d5e0  923d5e0      128    16         lto.tmp:(.data.rel.ro..L__unnamed_1426)
+ 923d5f0  923d5f0       78     1                 vtable for media::ClearKeyProperties
+ 923d600  923d600        1     1                 __typeid__ZTSN5media19KeySystemPropertiesE_96_unique_member
+ 923d600  923d600        1     1                 __typeid__ZTSN5media19KeySystemPropertiesE_global_addr
+ 923d690  923d690       78     1                 vtable for cdm::ExternalClearKeyProperties

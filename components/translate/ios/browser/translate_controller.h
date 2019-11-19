@@ -15,7 +15,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/translate/core/common/translate_errors.h"
-#include "ios/web/public/web_state/web_state_observer.h"
+#import "ios/web/public/web_state.h"
+#include "ios/web/public/web_state_observer.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
 @class JsTranslateManager;
@@ -27,7 +28,6 @@ class DictionaryValue;
 
 namespace web {
 class NavigationContext;
-class WebState;
 }  // namespace web
 
 namespace translate {
@@ -91,7 +91,6 @@ class TranslateController : public web::WebStateObserver {
   bool OnJavascriptCommandReceived(const base::DictionaryValue& command,
                                    const GURL& url,
                                    bool interacting,
-                                   bool is_main_frame,
                                    web::WebFrame* sender_frame);
   // Methods to handle specific JavaScript commands.
   // Return false if the command is invalid.
@@ -122,6 +121,9 @@ class TranslateController : public web::WebStateObserver {
   std::set<std::unique_ptr<network::SimpleURLLoader>> request_fetchers_;
   // Used to fetch additional scripts needed for translate.
   std::unique_ptr<network::SimpleURLLoader> script_fetcher_;
+
+  // Subscription for JS message.
+  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
 
   Observer* observer_;
   base::scoped_nsobject<JsTranslateManager> js_manager_;

@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -18,11 +17,13 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,6 +34,7 @@
 #include "base/version.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_bstr.h"
+#include "base/win/win_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/install_static/install_util.h"
@@ -137,11 +139,10 @@ HRESULT CoGetClassObjectAsAdmin(gfx::AcceleratedWidget hwnd,
 
   // For Vista+, need to instantiate the class factory via the elevation
   // moniker. This ensures that the UAC dialog shows up.
-  wchar_t class_id_as_string[MAX_PATH] = {};
-  StringFromGUID2(class_id, class_id_as_string, base::size(class_id_as_string));
+  auto class_id_as_string = base::win::String16FromGUID(class_id);
 
   base::string16 elevation_moniker_name = base::StringPrintf(
-      L"Elevation:Administrator!clsid:%ls", class_id_as_string);
+      L"Elevation:Administrator!clsid:%ls", class_id_as_string.c_str());
 
   BIND_OPTS3 bind_opts;
   // An explicit memset is needed rather than relying on value initialization
@@ -194,6 +195,12 @@ HRESULT CreateGoogleUpdate3WebClass(
       nullptr, IID_PPV_ARGS(google_update->GetAddressOf()));
 }
 
+// Returns the process-wide storage for the state of the last update check.
+base::Optional<UpdateState>* GetLastUpdateStateStorage() {
+  static base::NoDestructor<base::Optional<UpdateState>> storage;
+  return storage.get();
+}
+
 // UpdateCheckDriver -----------------------------------------------------------
 
 // A driver that is created and destroyed on the caller's thread and drives
@@ -239,14 +246,15 @@ class UpdateCheckDriver {
   // steps that failed.
   HRESULT BeginUpdateCheckInternal(GoogleUpdateErrorCode* error_code);
 
-  // Sets status_ to UPGRADE_ERROR, error_code_ to |error_code|, hresult_ to
-  // |hresult|, installer_exit_code_ to |installer_exit_code|, and
-  // html_error_message_ to a composition of all values suitable for display
-  // to the user. This call should be followed by deletion of the driver,
-  // which will result in callers being notified via their delegates.
+  // Sets status_ to UPGRADE_ERROR, update_state_.error_code to |error_code|,
+  // update_state_.hresult to |hresult|, update_state_.installer_exit_code to
+  // |installer_exit_code|, and html_error_message_ to a composition of all
+  // values suitable for display to the user. This call should be followed by
+  // deletion of the driver, which will result in callers being notified via
+  // their delegates.
   void OnUpgradeError(GoogleUpdateErrorCode error_code,
                       HRESULT hresult,
-                      int installer_exit_code,
+                      base::Optional<int> installer_exit_code,
                       const base::string16& error_string);
 
   // Returns true if |current_state| and |state_value| can be obtained from the
@@ -264,14 +272,13 @@ class UpdateCheckDriver {
   // https://code.google.com/p/omaha/source/browse/trunk/base/error.h). In case
   // Chrome's installer failed during execution, |installer_exit_code| may be
   // populated with its process exit code (see enum installer::InstallStatus in
-  // chrome/installer/util/util_constants.h); otherwise, it will be -1.
-  // |error_string| will be populated with a completion message if one is
-  // provided by Google Update.
+  // chrome/installer/util/util_constants.h). |error_string| will be populated
+  // with a completion message if one is provided by Google Update.
   bool IsErrorState(const Microsoft::WRL::ComPtr<ICurrentState>& current_state,
                     CurrentState state_value,
                     GoogleUpdateErrorCode* error_code,
                     HRESULT* hresult,
-                    int* installer_exit_code,
+                    base::Optional<int>* installer_exit_code,
                     base::string16* error_string) const;
 
   // Returns true if |current_state| and |state_value| constitute a final state
@@ -349,11 +356,8 @@ class UpdateCheckDriver {
   // The results of the update check to be logged via UMA and/or reported to the
   // caller.
   GoogleUpdateUpgradeStatus status_;
-  GoogleUpdateErrorCode error_code_;
+  UpdateState update_state_;
   base::string16 html_error_message_;
-  base::string16 new_version_;
-  HRESULT hresult_;
-  int installer_exit_code_;
 
   DISALLOW_COPY_AND_ASSIGN(UpdateCheckDriver);
 };
@@ -387,11 +391,11 @@ UpdateCheckDriver::UpdateCheckDriver(
     bool install_update_if_possible,
     gfx::AcceleratedWidget elevation_window,
     const base::WeakPtr<UpdateCheckDelegate>& delegate)
-    : task_runner_(
-          g_update_driver_task_runner
-              ? g_update_driver_task_runner
-              : base::CreateCOMSTATaskRunnerWithTraits(
-                    {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
+    : task_runner_(g_update_driver_task_runner
+                       ? g_update_driver_task_runner
+                       : base::CreateCOMSTATaskRunner(
+                             {base::ThreadPool(), base::MayBlock(),
+                              base::TaskPriority::USER_VISIBLE})),
       result_runner_(base::SequencedTaskRunnerHandle::Get()),
       locale_(locale),
       install_update_if_possible_(install_update_if_possible),
@@ -400,25 +404,28 @@ UpdateCheckDriver::UpdateCheckDriver(
       allowed_retries_(kGoogleAllowedRetries),
       system_level_install_(false),
       last_reported_progress_(0),
-      status_(UPGRADE_ERROR),
-      error_code_(GOOGLE_UPDATE_NO_ERROR),
-      hresult_(S_OK),
-      installer_exit_code_(-1) {}
+      status_(UPGRADE_ERROR) {}
 
 UpdateCheckDriver::~UpdateCheckDriver() {
   DCHECK(result_runner_->RunsTasksInCurrentSequence());
   // If there is an error, then error_code must not be blank, and vice versa.
-  DCHECK_NE(status_ == UPGRADE_ERROR, error_code_ == GOOGLE_UPDATE_NO_ERROR);
+  DCHECK_NE(status_ == UPGRADE_ERROR,
+            update_state_.error_code == GOOGLE_UPDATE_NO_ERROR);
+
+  *GetLastUpdateStateStorage() = update_state_;
+
   UMA_HISTOGRAM_ENUMERATION("GoogleUpdate.UpgradeResult", status_,
                             NUM_UPGRADE_STATUS);
   if (status_ == UPGRADE_ERROR) {
-    UMA_HISTOGRAM_ENUMERATION("GoogleUpdate.UpdateErrorCode", error_code_,
-                              NUM_ERROR_CODES);
-    if (FAILED(hresult_))
-      base::UmaHistogramSparse("GoogleUpdate.ErrorHresult", hresult_);
-    if (installer_exit_code_ != -1) {
+    UMA_HISTOGRAM_ENUMERATION("GoogleUpdate.UpdateErrorCode",
+                              update_state_.error_code, NUM_ERROR_CODES);
+    if (FAILED(update_state_.hresult)) {
+      base::UmaHistogramSparse("GoogleUpdate.ErrorHresult",
+                               update_state_.hresult);
+    }
+    if (update_state_.installer_exit_code) {
       base::UmaHistogramSparse("GoogleUpdate.InstallerExitCode",
-                               installer_exit_code_);
+                               *update_state_.installer_exit_code);
     }
   }
 
@@ -429,12 +436,14 @@ UpdateCheckDriver::~UpdateCheckDriver() {
 
   for (const auto& delegate : delegates_) {
     if (delegate) {
-      if (status_ == UPGRADE_ERROR)
-        delegate->OnError(error_code_, html_error_message_, new_version_);
-      else if (install_update_if_possible_)
-        delegate->OnUpgradeComplete(new_version_);
-      else
-        delegate->OnUpdateCheckComplete(new_version_);
+      if (status_ == UPGRADE_ERROR) {
+        delegate->OnError(update_state_.error_code, html_error_message_,
+                          update_state_.new_version);
+      } else if (install_update_if_possible_) {
+        delegate->OnUpgradeComplete(update_state_.new_version);
+      } else {
+        delegate->OnUpdateCheckComplete(update_state_.new_version);
+      }
     }
   }
 }
@@ -480,7 +489,7 @@ void UpdateCheckDriver::BeginUpdateCheck() {
   }
 
   DCHECK(FAILED(hresult));
-  OnUpgradeError(error_code, hresult, -1, base::string16());
+  OnUpgradeError(error_code, hresult, base::nullopt, base::string16());
   result_runner_->DeleteSoon(FROM_HERE, this);
 }
 
@@ -609,7 +618,7 @@ bool UpdateCheckDriver::IsErrorState(
     CurrentState state_value,
     GoogleUpdateErrorCode* error_code,
     HRESULT* hresult,
-    int* installer_exit_code,
+    base::Optional<int>* installer_exit_code,
     base::string16* error_string) const {
   if (state_value == STATE_ERROR) {
     // In general, errors reported by Google Update fall under this category
@@ -618,7 +627,7 @@ bool UpdateCheckDriver::IsErrorState(
 
     // In general, the exit code of Chrome's installer is unknown (see special
     // case below).
-    *installer_exit_code = -1;
+    installer_exit_code->reset();
 
     // Report the error_code provided by Google Update if possible, or the
     // reason it wasn't possible otherwise.
@@ -654,7 +663,7 @@ bool UpdateCheckDriver::IsErrorState(
       // Report a failure to start the install as a general error while trying
       // to interact with Google Update.
       *error_code = GOOGLE_UPDATE_ONDEMAND_CLASS_REPORTED_ERROR;
-      *installer_exit_code = -1;
+      installer_exit_code->reset();
       return true;
     }
     // Return false for handling in IsIntermediateState.
@@ -766,30 +775,31 @@ void UpdateCheckDriver::PollGoogleUpdate() {
   CurrentState state_value = STATE_INIT;
   HRESULT hresult = S_OK;
   GoogleUpdateErrorCode error_code = GOOGLE_UPDATE_NO_ERROR;
-  int installer_exit_code = -1;
+  base::Optional<int> installer_exit_code;
   base::string16 error_string;
   GoogleUpdateUpgradeStatus upgrade_status = UPGRADE_ERROR;
   base::string16 new_version;
   int progress = 0;
 
   if (!GetCurrentState(&state, &state_value, &hresult)) {
-    OnUpgradeError(GOOGLE_UPDATE_ONDEMAND_CLASS_REPORTED_ERROR, hresult, -1,
-                   base::string16());
+    OnUpgradeError(GOOGLE_UPDATE_ONDEMAND_CLASS_REPORTED_ERROR, hresult,
+                   base::nullopt, base::string16());
   } else if (IsErrorState(state, state_value, &error_code, &hresult,
                           &installer_exit_code, &error_string)) {
     OnUpgradeError(error_code, hresult, installer_exit_code, error_string);
   } else if (IsFinalState(state, state_value, &upgrade_status, &new_version)) {
     status_ = upgrade_status;
-    error_code_ = GOOGLE_UPDATE_NO_ERROR;
+    update_state_.error_code = GOOGLE_UPDATE_NO_ERROR;
     html_error_message_.clear();
     if (!new_version.empty())
-      new_version_ = new_version;
-    hresult_ = S_OK;
-    installer_exit_code_ = -1;
+      update_state_.new_version = new_version;
+    update_state_.hresult = S_OK;
+    update_state_.installer_exit_code.reset();
   } else if (IsIntermediateState(state, state_value, &new_version, &progress)) {
-    bool got_new_version = new_version_.empty() && !new_version.empty();
+    bool got_new_version =
+        update_state_.new_version.empty() && !new_version.empty();
     if (got_new_version)
-      new_version_ = new_version;
+      update_state_.new_version = new_version;
     // Give the caller this status update if it differs from the last one given.
     if (got_new_version || progress != last_reported_progress_) {
       last_reported_progress_ = progress;
@@ -797,9 +807,10 @@ void UpdateCheckDriver::PollGoogleUpdate() {
       // It is safe to post this task with an unretained pointer since the task
       // is guaranteed to run before a subsequent DeleteSoon is handled.
       result_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&UpdateCheckDriver::NotifyUpgradeProgress,
-                                    base::Unretained(this),
-                                    last_reported_progress_, new_version_));
+          FROM_HERE,
+          base::BindOnce(&UpdateCheckDriver::NotifyUpgradeProgress,
+                         base::Unretained(this), last_reported_progress_,
+                         update_state_.new_version));
     }
 
     // Schedule the next check.
@@ -824,12 +835,12 @@ void UpdateCheckDriver::PollGoogleUpdate() {
 
 void UpdateCheckDriver::OnUpgradeError(GoogleUpdateErrorCode error_code,
                                        HRESULT hresult,
-                                       int installer_exit_code,
+                                       base::Optional<int> installer_exit_code,
                                        const base::string16& error_string) {
   status_ = UPGRADE_ERROR;
-  error_code_ = error_code;
-  hresult_ = hresult;
-  installer_exit_code_ = installer_exit_code;
+  update_state_.error_code = error_code;
+  update_state_.hresult = hresult;
+  update_state_.installer_exit_code = installer_exit_code;
 
   // Some specific result codes have dedicated messages.
   if (hresult == GOOPDATE_E_APP_USING_EXTERNAL_UPDATER) {
@@ -838,13 +849,14 @@ void UpdateCheckDriver::OnUpgradeError(GoogleUpdateErrorCode error_code,
     return;
   }
 
-  base::string16 html_error_msg =
-      base::StringPrintf(L"%d: <a href='%ls0x%X' target=_blank>0x%X</a>",
-                         error_code_, base::UTF8ToUTF16(
-                             chrome::kUpgradeHelpCenterBaseURL).c_str(),
-                         hresult_, hresult_);
-  if (installer_exit_code_ != -1)
-    html_error_msg += base::StringPrintf(L": %d", installer_exit_code_);
+  base::string16 html_error_msg = base::StringPrintf(
+      L"%d: <a href='%ls0x%X' target=_blank>0x%X</a>", update_state_.error_code,
+      base::UTF8ToUTF16(chrome::kUpgradeHelpCenterBaseURL).c_str(),
+      update_state_.hresult, update_state_.hresult);
+  if (update_state_.installer_exit_code) {
+    html_error_msg +=
+        L": " + base::NumberToString16(*update_state_.installer_exit_code);
+  }
   if (system_level_install_)
     html_error_msg += L" -- system level";
   if (error_string.empty()) {
@@ -870,6 +882,17 @@ void BeginUpdateCheck(
                                     elevation_window, delegate);
 }
 
+// UpdateState -----------------------------------------------------------------
+
+UpdateState::UpdateState() = default;
+UpdateState::UpdateState(const UpdateState&) = default;
+UpdateState::UpdateState(UpdateState&&) = default;
+UpdateState& UpdateState::operator=(UpdateState&&) = default;
+UpdateState::~UpdateState() = default;
+
+base::Optional<UpdateState> GetLastUpdateState() {
+  return *GetLastUpdateStateStorage();
+}
 
 // Private API exposed for testing. --------------------------------------------
 
@@ -886,7 +909,7 @@ void SetGoogleUpdateFactoryForTesting(
 }
 
 // TODO(calamity): Remove once a MockTimer is implemented in
-// ScopedTaskEnvironment. See https://crbug.com/708584.
+// TaskEnvironment. See https://crbug.com/708584.
 void SetUpdateDriverTaskRunnerForTesting(
     base::SingleThreadTaskRunner* task_runner) {
   g_update_driver_task_runner = task_runner;

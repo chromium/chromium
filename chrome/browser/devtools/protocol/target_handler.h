@@ -34,6 +34,8 @@ class TargetHandler : public protocol::Target::Backend {
       protocol::Maybe<int> height,
       protocol::Maybe<std::string> browser_context_id,
       protocol::Maybe<bool> enable_begin_frame_control,
+      protocol::Maybe<bool> new_window,
+      protocol::Maybe<bool> background,
       std::string* out_target_id) override;
 
  private:

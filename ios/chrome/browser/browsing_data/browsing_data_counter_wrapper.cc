@@ -22,7 +22,7 @@
 #include "ios/chrome/browser/history/web_history_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
-#include "ios/chrome/browser/web_data_service_factory.h"
+#include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 
 namespace {
 

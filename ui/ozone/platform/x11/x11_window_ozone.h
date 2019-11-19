@@ -5,46 +5,43 @@
 #ifndef UI_OZONE_PLATFORM_X11_X11_WINDOW_OZONE_H_
 #define UI_OZONE_PLATFORM_X11_X11_WINDOW_OZONE_H_
 
+#include <array>
+#include <memory>
+
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "ui/base/x/x11_window.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
-#include "ui/events/platform/x11/x11_event_source_libevent.h"
-#include "ui/platform_window/x11/x11_window_base.h"
+#include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/events/x/x11_window_event_manager.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/x/x11_types.h"
+#include "ui/platform_window/x11/x11_window.h"
 
 namespace ui {
 
-class X11WindowManagerOzone;
-
 // PlatformWindow implementation for X11 Ozone. PlatformEvents are ui::Events.
-class X11WindowOzone : public X11WindowBase,
-                       public PlatformEventDispatcher,
-                       public XEventDispatcher {
+class X11WindowOzone : public X11Window, public XEventDispatcher {
  public:
-  X11WindowOzone(X11WindowManagerOzone* window_manager,
-                 PlatformWindowDelegate* delegate,
-                 const gfx::Rect& bounds);
+  explicit X11WindowOzone(PlatformWindowDelegate* delegate);
   ~X11WindowOzone() override;
 
-  // Called by |window_manager_| once capture is set to another X11WindowOzone.
-  void OnLostCapture();
-
-  // PlatformWindow:
+  // Overridden from PlatformWindow:
   void PrepareForShutdown() override;
-  void SetCapture() override;
-  void ReleaseCapture() override;
   void SetCursor(PlatformCursor cursor) override;
 
-  // XEventDispatcher:
+  // Overridden from ui::XEventDispatcher:
   void CheckCanDispatchNextPlatformEvent(XEvent* xev) override;
   void PlatformEventDispatchFinished() override;
   PlatformEventDispatcher* GetPlatformEventDispatcher() override;
   bool DispatchXEvent(XEvent* event) override;
 
  private:
+  // X11Window overrides:
+  void SetPlatformEventDispatcher() override;
+
   // PlatformEventDispatcher:
   bool CanDispatchEvent(const PlatformEvent& event) override;
-  uint32_t DispatchEvent(const PlatformEvent& event) override;
-
-  X11WindowManagerOzone* window_manager_;
 
   // Tells if this dispatcher can process next translated event based on a
   // previous check in ::CheckCanDispatchNextPlatformEvent based on a XID

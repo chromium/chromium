@@ -11,7 +11,10 @@
 #include <tuple>
 #include <vector>
 
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/stream_socket.h"
@@ -115,8 +118,9 @@ class FakeSocket : public net::StreamSocket {
 
 class FakeSocketClient : public mojom::P2PSocketClient {
  public:
-  FakeSocketClient(mojom::P2PSocketPtr socket,
-                   mojom::P2PSocketClientRequest client_request);
+  FakeSocketClient(
+      mojo::PendingRemote<mojom::P2PSocket> socket,
+      mojo::PendingReceiver<mojom::P2PSocketClient> client_receiver);
   ~FakeSocketClient() override;
 
   // mojom::P2PSocketClient interface.
@@ -125,24 +129,24 @@ class FakeSocketClient : public mojom::P2PSocketClient {
   MOCK_METHOD1(SendComplete, void(const P2PSendPacketMetrics&));
   void IncomingTcpConnection(
       const net::IPEndPoint& endpoint,
-      network::mojom::P2PSocketPtr socket,
-      network::mojom::P2PSocketClientRequest client_request);
+      mojo::PendingRemote<network::mojom::P2PSocket> socket,
+      mojo::PendingReceiver<network::mojom::P2PSocketClient> client_receiver);
   MOCK_METHOD3(DataReceived,
                void(const net::IPEndPoint&,
                     const std::vector<int8_t>&,
                     base::TimeTicks));
 
-  bool connection_error() { return connection_error_; }
+  bool connection_error() { return disconnect_error_; }
   size_t num_accepted() { return accepted_.size(); }
   void CloseAccepted();
 
  private:
-  mojom::P2PSocketPtr socket_;
-  mojo::Binding<mojom::P2PSocketClient> binding_;
-  bool connection_error_ = false;
+  mojo::Remote<mojom::P2PSocket> socket_;
+  mojo::Receiver<mojom::P2PSocketClient> receiver_;
+  bool disconnect_error_ = false;
 
-  std::list<std::pair<network::mojom::P2PSocketPtr,
-                      network::mojom::P2PSocketClientRequest>>
+  std::list<std::pair<mojo::PendingRemote<network::mojom::P2PSocket>,
+                      mojo::PendingReceiver<network::mojom::P2PSocketClient>>>
       accepted_;
 };
 
@@ -159,8 +163,8 @@ MATCHER_P(MatchMessage, type, "") {
 
 MATCHER_P2(MatchSendPacketMetrics, rtc_packet_id, test_start_time, "") {
   return arg.rtc_packet_id == rtc_packet_id &&
-         arg.send_time >= test_start_time &&
-         arg.send_time <= base::TimeTicks::Now();
+         arg.send_time_ms >= test_start_time &&
+         arg.send_time_ms <= rtc::TimeMillis();
 }
 
 }  // namespace network

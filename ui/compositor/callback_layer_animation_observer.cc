@@ -38,22 +38,18 @@ CallbackLayerAnimationObserver::CallbackLayerAnimationObserver(
           &CallbackLayerAnimationObserver::DummyAnimationStartedCallback)),
       animation_ended_callback_(animation_ended_callback) {}
 
-CallbackLayerAnimationObserver::~CallbackLayerAnimationObserver() {
-  if (destroyed_)
-    *destroyed_ = true;
-}
+CallbackLayerAnimationObserver::~CallbackLayerAnimationObserver() {}
 
 void CallbackLayerAnimationObserver::SetActive() {
   active_ = true;
 
-  bool destroyed = false;
-  destroyed_ = &destroyed;
+  base::WeakPtr<CallbackLayerAnimationObserver> weak_this =
+      weak_factory_.GetWeakPtr();
 
   CheckAllSequencesStarted();
 
-  if (destroyed)
+  if (!weak_this)
     return;
-  destroyed_ = nullptr;
 
   CheckAllSequencesCompleted();
 }
@@ -110,19 +106,17 @@ void CallbackLayerAnimationObserver::CheckAllSequencesStarted() {
 void CallbackLayerAnimationObserver::CheckAllSequencesCompleted() {
   if (active_ && GetNumSequencesCompleted() == attached_sequence_count_) {
     active_ = false;
-    bool destroyed = false;
-    destroyed_ = &destroyed;
-
+    base::WeakPtr<CallbackLayerAnimationObserver> weak_this =
+        weak_factory_.GetWeakPtr();
     bool should_delete = animation_ended_callback_.Run(*this);
 
-    if (destroyed) {
+    if (!weak_this) {
       if (should_delete)
         LOG(WARNING) << "CallbackLayerAnimationObserver was explicitly "
                         "destroyed AND was requested to be destroyed via the "
                         "AnimationEndedCallback's return value.";
       return;
     }
-    destroyed_ = nullptr;
 
     if (should_delete)
       delete this;

@@ -8,12 +8,17 @@ blink_modules_sources("imagecapture") {
   sources = [
     "image_capture.cc",
     "image_capture.h",
+    "image_capture_frame_grabber.cc",
+    "image_capture_frame_grabber.h",
     "media_settings_range.h",
     "photo_capabilities.cc",
     "photo_capabilities.h",
   ]
 
   deps = [
+    "//media",
     "//media/capture/mojom:image_capture_blink",
+    "//skia",
+    "//third_party/libyuv",
   ]
 }

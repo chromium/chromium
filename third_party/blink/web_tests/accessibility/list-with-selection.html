@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <ul id="ul">
   <li>Item1</li>
@@ -24,7 +23,7 @@
 </ol>
 
 <script>
-  test_after_layout_and_paint(function() {
+  test(function() {
     if (!window.accessibilityController)
       return;
 
@@ -35,11 +34,11 @@
 
       // Select both items in the list.
       axList.setSelectedTextRange(0, 2);
-      let selectionText = 'Item1\nItem2';
       assert_equals(axList.selectionAnchorOffset, 0, id);
-      assert_equals(axList.selectionFocusOffset, 5, id);
+      assert_equals(axList.selectionFocusOffset, 2, id);
 
       let selection = window.getSelection();
+      let selectionText = 'Item1\nItem2';
       assert_equals(selection.toString(), selectionText, id);
 
       if (window.testRunner)

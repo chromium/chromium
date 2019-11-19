@@ -8,10 +8,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.customtabs.CustomTabsService;
-import android.support.customtabs.CustomTabsSessionToken;
 
-import org.chromium.base.ContextUtils;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsService;
+import androidx.browser.customtabs.CustomTabsSessionToken;
+
 import org.chromium.chrome.browser.browserservices.Origin;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
@@ -29,7 +31,7 @@ public class CustomTabsConnectionService extends CustomTabsService {
     public void onCreate() {
         ProcessInitializationHandler.getInstance().initializePreNative();
         // Kick off the first access to avoid random StrictMode violations in clients.
-        RequestThrottler.loadInBackground(getApplication());
+        RequestThrottler.loadInBackground();
         super.onCreate();
     }
 
@@ -80,7 +82,9 @@ public class CustomTabsConnectionService extends CustomTabsService {
     @Override
     protected boolean requestPostMessageChannel(CustomTabsSessionToken sessionToken,
             Uri postMessageOrigin) {
-        return mConnection.requestPostMessageChannel(sessionToken, new Origin(postMessageOrigin));
+        Origin origin = Origin.create(postMessageOrigin);
+        if (origin == null) return false;
+        return mConnection.requestPostMessageChannel(sessionToken, origin);
     }
 
     @Override
@@ -92,8 +96,10 @@ public class CustomTabsConnectionService extends CustomTabsService {
 
     @Override
     protected boolean validateRelationship(
-            CustomTabsSessionToken sessionToken, int relation, Uri origin, Bundle extras) {
-        return mConnection.validateRelationship(sessionToken, relation, new Origin(origin), extras);
+            CustomTabsSessionToken sessionToken, int relation, Uri originAsUri, Bundle extras) {
+        Origin origin = Origin.create(originAsUri);
+        if (origin == null) return false;
+        return mConnection.validateRelationship(sessionToken, relation, origin, extras);
     }
 
     @Override
@@ -102,10 +108,17 @@ public class CustomTabsConnectionService extends CustomTabsService {
         return super.cleanUpSession(sessionToken);
     }
 
+
+    @Override
+    protected boolean receiveFile(@NonNull CustomTabsSessionToken sessionToken, @NonNull Uri uri,
+            int purpose, @Nullable Bundle extras) {
+        return mConnection.receiveFile(sessionToken, uri, purpose, extras);
+    }
+
     private boolean isFirstRunDone() {
         if (mBindIntent == null) return true;
-        boolean firstRunNecessary = FirstRunFlowSequencer.checkIfFirstRunIsNecessary(
-                ContextUtils.getApplicationContext(), mBindIntent, false);
+        boolean firstRunNecessary =
+                FirstRunFlowSequencer.checkIfFirstRunIsNecessary(mBindIntent, false);
         if (!firstRunNecessary) {
             mBindIntent = null;
             return true;

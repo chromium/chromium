@@ -62,10 +62,10 @@ public abstract class GcmUpstreamSenderService extends IntentService {
 
   @Override
   protected void onHandleIntent(Intent intent) {
-    if (AndroidChannelPreferences.getGcmChannelType(this) != GcmChannelType.GCM_UPSTREAM) {
-      logger.warning("Incorrect channel type for using GCM Upstream");
-      return;
-    }
+      if (AndroidChannelPreferences.getGcmChannelType() != GcmChannelType.GCM_UPSTREAM) {
+          logger.warning("Incorrect channel type for using GCM Upstream");
+          return;
+      }
     if (intent == null) {
       return;
     }
@@ -104,10 +104,10 @@ public abstract class GcmUpstreamSenderService extends IntentService {
    * to the data center.
    */
   private void handleGcmRegIdChange() {
-    byte[] bufferedMessage = AndroidChannelPreferences.takeBufferedMessage(this);
-    if (bufferedMessage != null) {
-      sendUpstreamMessage(bufferedMessage);
-    }
+      byte[] bufferedMessage = AndroidChannelPreferences.takeBufferedMessage();
+      if (bufferedMessage != null) {
+          sendUpstreamMessage(bufferedMessage);
+      }
   }
   
   /**
@@ -118,7 +118,7 @@ public abstract class GcmUpstreamSenderService extends IntentService {
     NetworkEndpointId endpointId = getNetworkEndpointId(this);
     if (endpointId == null) {
       logger.info("Buffering message to the data center: no GCM registration id");
-      AndroidChannelPreferences.bufferMessage(this, message);
+      AndroidChannelPreferences.bufferMessage(message);
       return;
     }
     Bundle dataBundle = new Bundle();
@@ -147,12 +147,12 @@ public abstract class GcmUpstreamSenderService extends IntentService {
   
   
   static NetworkEndpointId getNetworkEndpointId(Context context) {
-    String registrationToken = AndroidChannelPreferences.getRegistrationToken(context);
-    if (registrationToken == null || registrationToken.isEmpty()) {
-      logger.warning("No GCM registration token; cannot determine our network endpoint id: %s",
-          registrationToken);
-      return null;
-    }
+      String registrationToken = AndroidChannelPreferences.getRegistrationToken();
+      if (registrationToken == null || registrationToken.isEmpty()) {
+          logger.warning("No GCM registration token; cannot determine our network endpoint id: %s",
+                  registrationToken);
+          return null;
+      }
     return CommonProtos.newAndroidEndpointId(registrationToken,
         GcmSharedConstants.ANDROID_ENDPOINT_ID_CLIENT_KEY,
         context.getPackageName(), AndroidChannelConstants.CHANNEL_VERSION);

@@ -3,31 +3,53 @@
 # found in the LICENSE file.
 
 import("//net/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
-source_set("network_public") {
+source_set("network_impl") {
   sources = [
     "net/network_chromium.h",
-  ]
-
-  deps = [
-    "//base",
-  ]
-}
-
-source_set("network") {
-  sources = [
     "net/network_impl.cc",
     "net/network_impl.h",
   ]
 
-  visibility = [ ":*" ]
-
   deps = [
-    ":network_public",
+    ":update_client",
     "//base",
     "//net",
     "//services/network/public/cpp:cpp",
     "//url",
+  ]
+}
+
+source_set("unzip_impl") {
+  sources = [
+    "unzip/unzip_impl.cc",
+    "unzip/unzip_impl.h",
+  ]
+  deps = [
+    ":update_client",
+    "//components/services/unzip/public/cpp",
+  ]
+}
+
+source_set("patch_impl") {
+  sources = [
+    "patch/patch_impl.cc",
+    "patch/patch_impl.h",
+  ]
+  deps = [
+    ":update_client",
+    "//components/services/patch/public/cpp",
+    "//components/services/patch/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+group("common_impl") {
+  public_deps = [
+    ":network_impl",
+    ":patch_impl",
+    ":unzip_impl",
   ]
 }
 
@@ -55,6 +77,7 @@ static_library("update_client") {
     "crx_update_item.h",
     "network.cc",
     "network.h",
+    "patcher.h",
     "persisted_data.cc",
     "persisted_data.h",
     "ping_manager.cc",
@@ -67,14 +90,10 @@ static_library("update_client") {
     "protocol_parser.h",
     "protocol_parser_json.cc",
     "protocol_parser_json.h",
-    "protocol_parser_xml.cc",
-    "protocol_parser_xml.h",
     "protocol_serializer.cc",
     "protocol_serializer.h",
     "protocol_serializer_json.cc",
     "protocol_serializer_json.h",
-    "protocol_serializer_xml.cc",
-    "protocol_serializer_xml.h",
     "request_sender.cc",
     "request_sender.h",
     "task.h",
@@ -83,6 +102,7 @@ static_library("update_client") {
     "task_traits.h",
     "task_update.cc",
     "task_update.h",
+    "unzipper.h",
     "update_checker.cc",
     "update_checker.h",
     "update_client.cc",
@@ -105,31 +125,16 @@ static_library("update_client") {
     "utils.h",
   ]
 
-  # Allows callers to include the network factory through "update_client" deps.
-  public_deps = [
-    ":network_public",
-  ]
-
   deps = [
-    ":network",
-    ":network_public",
     "//base",
+    "//build:branding_buildflags",
     "//components/client_update_protocol",
     "//components/crx_file",
-    "//components/data_use_measurement/core",
     "//components/prefs",
-    "//components/services/patch/public/cpp",
-    "//components/services/unzip/public/cpp",
     "//components/version_info:version_info",
     "//courgette:courgette_lib",
     "//crypto",
-    "//third_party/libxml",
     "//url",
-  ]
-
-  allow_circular_includes_from = [
-    ":network",
-    ":network_public",
   ]
 }
 
@@ -149,16 +154,16 @@ static_library("test_support") {
   ]
 
   deps = [
+    ":network_impl",
+    ":patch_impl",
+    ":unzip_impl",
     "//base",
     "//components/prefs",
-    "//components/services/patch:lib",
-    "//components/services/unzip:lib",
+    "//components/services/patch:in_process",
+    "//components/services/unzip:in_process",
     "//mojo/public/cpp/bindings",
     "//net:test_support",
     "//services/network:test_support",
-    "//services/service_manager/public/cpp",
-    "//services/service_manager/public/cpp/test:test_support",
-    "//services/service_manager/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
     "//url",
@@ -179,15 +184,10 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/update_client/jebgalgnebhfojomionfpkfelancnnkf.crx",
     "//components/test/data/update_client/runaction_test_win.crx3",
     "//components/test/data/update_client/updatecheck_reply_1.json",
-    "//components/test/data/update_client/updatecheck_reply_1.xml",
     "//components/test/data/update_client/updatecheck_reply_4.json",
-    "//components/test/data/update_client/updatecheck_reply_4.xml",
     "//components/test/data/update_client/updatecheck_reply_noupdate.json",
-    "//components/test/data/update_client/updatecheck_reply_noupdate.xml",
     "//components/test/data/update_client/updatecheck_reply_parse_error.json",
-    "//components/test/data/update_client/updatecheck_reply_parse_error.xml",
     "//components/test/data/update_client/updatecheck_reply_unknownapp.json",
-    "//components/test/data/update_client/updatecheck_reply_unknownapp.xml",
   ]
   outputs = [
     "{{bundle_resources_dir}}/" +
@@ -204,10 +204,8 @@ source_set("unit_tests") {
     "persisted_data_unittest.cc",
     "ping_manager_unittest.cc",
     "protocol_parser_json_unittest.cc",
-    "protocol_parser_xml_unittest.cc",
     "protocol_serializer_json_unittest.cc",
     "protocol_serializer_unittest.cc",
-    "protocol_serializer_xml_unittest.cc",
     "request_sender_unittest.cc",
     "update_checker_unittest.cc",
     "update_client_unittest.cc",
@@ -221,26 +219,48 @@ source_set("unit_tests") {
   }
 
   deps = [
-    ":network",
+    ":network_impl",
+    ":patch_impl",
     ":test_support",
     ":unit_tests_bundle_data",
+    ":unzip_impl",
     ":update_client",
     "//base",
+    "//build:branding_buildflags",
     "//components/crx_file",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//components/services/patch:lib",
+    "//components/services/patch:in_process",
     "//components/version_info:version_info",
     "//courgette:courgette_lib",
     "//net:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp:cpp",
     "//services/network/public/cpp:cpp_base",
-    "//services/service_manager/public/cpp",
-    "//services/service_manager/public/cpp/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/libxml",
     "//third_party/re2",
   ]
+}
+
+fuzzer_test("update_client_protocol_serializer_fuzzer") {
+  sources = [
+    "protocol_serializer_fuzzer.cc",
+  ]
+  deps = [
+    ":update_client",
+    "//base:base",
+  ]
+  seed_corpus = "fuzzer_corpuses/protocol_serializer/"
+}
+
+fuzzer_test("update_client_protocol_parser_fuzzer") {
+  sources = [
+    "protocol_parser_fuzzer.cc",
+  ]
+  deps = [
+    ":update_client",
+    "//base:base",
+  ]
+  seed_corpus = "fuzzer_corpuses/protocol_parser/"
 }

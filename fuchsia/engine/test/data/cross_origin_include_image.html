@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+  </head>
+  <body>
+    <img src="alternate://1x1.gif" name="picture">
+    <script>
+      window.onload = function() {
+        if (picture.width == 1 && picture.height == 1)
+          document.title = "image fetched";
+        else
+          document.title = "image rejected";
+      }
+    </script>
+  </body>
+</html>

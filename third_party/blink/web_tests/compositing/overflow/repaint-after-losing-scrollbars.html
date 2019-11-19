@@ -7,7 +7,7 @@ width: 100px;
 height:100px;
 background-color: green;
 position:absolute;
-transform:translateZ(0);
+will-change:transform;
 overflow:auto;
 }
 
@@ -20,7 +20,7 @@ background-color: red;
 }
 
 .content {
-transform: translateZ(0);
+will-change: transform;
 position:absolute;
 width:10px;
 height:10px;
@@ -58,14 +58,10 @@ function finishTest() {
     document.getElementById("both").classList.remove("wide"); // third div loses both
     document.getElementById("both").classList.remove("tall"); // vertical and horizontal scrollbars
     document.getElementById("corner").classList.remove("resizeWidget"); // bottom div loses a resize corner but no scrollbars
-  if (window.testRunner)
-      testRunner.notifyDone();
 }
 
-if (window.testRunner) {
-    testRunner.dumpAsTextWithPixelResults();
+if (window.testRunner)
     testRunner.waitUntilDone();
-}
 
-runAfterLayoutAndPaint(finishTest);
+runAfterLayoutAndPaint(finishTest, true);
 </script>

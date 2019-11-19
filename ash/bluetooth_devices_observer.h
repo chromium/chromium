@@ -60,7 +60,7 @@ class BluetoothDevicesObserver : public device::BluetoothAdapter::Observer {
   // bluetooth device's status changes.
   AdapterOrDeviceChangedCallback adapter_or_device_changed_callback_;
 
-  base::WeakPtrFactory<BluetoothDevicesObserver> weak_factory_;
+  base::WeakPtrFactory<BluetoothDevicesObserver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothDevicesObserver);
 };

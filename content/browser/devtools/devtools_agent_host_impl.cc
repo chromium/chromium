@@ -9,9 +9,11 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/observer_list.h"
 #include "base/stl_util.h"
 #include "content/browser/devtools/devtools_manager.h"
+#include "content/browser/devtools/devtools_stream_file.h"
 #include "content/browser/devtools/forwarding_agent_host.h"
 #include "content/browser/devtools/protocol/page.h"
 #include "content/browser/devtools/protocol/security_handler.h"
@@ -197,6 +199,15 @@ void DevToolsAgentHostImpl::InspectElement(RenderFrameHost* frame_host,
 
 std::string DevToolsAgentHostImpl::GetId() {
   return id_;
+}
+
+std::string DevToolsAgentHostImpl::CreateIOStreamFromData(
+    scoped_refptr<base::RefCountedMemory> data) {
+  scoped_refptr<DevToolsStreamFile> stream =
+      DevToolsStreamFile::Create(GetIOContext(), true /* binary */);
+  std::string text(reinterpret_cast<const char*>(data->front()), data->size());
+  stream->Append(std::make_unique<std::string>(text));
+  return stream->handle();
 }
 
 std::string DevToolsAgentHostImpl::GetParentId() {

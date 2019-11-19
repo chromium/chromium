@@ -5,14 +5,14 @@
 #ifndef COMPONENTS_DOM_DISTILLER_IOS_DISTILLER_PAGE_IOS_H_
 #define COMPONENTS_DOM_DISTILLER_IOS_DISTILLER_PAGE_IOS_H_
 
-#include <memory>
 #include <objc/objc.h>
+#include <memory>
 #include <string>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/dom_distiller/core/distiller_page.h"
-#include "ios/web/public/web_state/web_state_observer.h"
+#include "ios/web/public/web_state_observer.h"
 #include "url/gurl.h"
 
 namespace web {

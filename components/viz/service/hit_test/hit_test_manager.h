@@ -12,7 +12,7 @@
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/viz_service_export.h"
-#include "services/viz/public/interfaces/hit_test/hit_test_region_list.mojom.h"
+#include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom.h"
 
 namespace viz {
 
@@ -24,16 +24,16 @@ class LatestLocalSurfaceIdLookupDelegate;
 class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
  public:
   explicit HitTestManager(SurfaceManager* surface_manager);
-  virtual ~HitTestManager();
+  ~HitTestManager() override;
 
   // SurfaceObserver:
   void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override {}
   void OnSurfaceActivated(const SurfaceId& surface_id,
                           base::Optional<base::TimeDelta> duration) override;
-  void OnSurfaceDestroyed(const SurfaceId& surface_id) override {}
+  void OnSurfaceMarkedForDestruction(const SurfaceId& surface_id) override {}
   bool OnSurfaceDamaged(const SurfaceId& surface_id,
                         const BeginFrameAck& ack) override;
-  void OnSurfaceDiscarded(const SurfaceId& surface_id) override;
+  void OnSurfaceDestroyed(const SurfaceId& surface_id) override;
   void OnSurfaceDamageExpected(const SurfaceId& surface_id,
                                const BeginFrameArgs& args) override {}
 

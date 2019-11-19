@@ -78,25 +78,6 @@ class GooglePlayMusicDesktopStory(_MediaStory):
                                            self.NAVIGATE_SELECTOR)
 
 
-class SoundCloudDesktopStory(_MediaStory):
-  """Load soundcloud.com, search for "Smooth Jazz", then play a song."""
-  NAME = 'play:media:soundcloud'
-  URL = 'https://soundcloud.com'
-  TAGS = [story_tags.YEAR_2016]
-
-  PLAY_SELECTOR = '.sc-button-play.playButton.sc-button.sc-button-xlarge'
-  STOP_SELECTOR = '.playControl.playControls__icon.sc-ir.playing'
-  TIME_SELECTOR = '.playbackTimeline__timePassed>span[aria-hidden=true]'
-  SEARCH_SELECTOR = '.headerSearch'
-  SEARCH_QUERY = 'SSmooth Jazz'  # First S for some reason gets omitted.
-
-  def _NavigateToMedia(self, action_runner):
-    self._WaitForAndClickElementBySelector(action_runner, self.SEARCH_SELECTOR)
-    action_runner.Wait(1)  # Add 1 second wait to make the browsing realistic.
-    action_runner.EnterText(self.SEARCH_QUERY)
-    action_runner.PressKey('Return')
-
-
 class SoundCloudDesktopStory2018(_MediaStory):
   """Load soundcloud.com, search for "Smooth Jazz", then play a song."""
   NAME = 'play:media:soundcloud:2018'

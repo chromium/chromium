@@ -6,7 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_CRASH_MEMORY_METRICS_REPORTER_IMPL_H_
 
 #include "base/files/scoped_file.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
 #include "third_party/blink/public/mojom/crash/crash_memory_metrics_reporter.mojom-blink.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
@@ -20,7 +21,8 @@ class CONTROLLER_EXPORT CrashMemoryMetricsReporterImpl
       public MemoryUsageMonitor::Observer {
  public:
   static CrashMemoryMetricsReporterImpl& Instance();
-  static void Bind(mojom::blink::CrashMemoryMetricsReporterRequest);
+  static void Bind(
+      mojo::PendingReceiver<mojom::blink::CrashMemoryMetricsReporter> receiver);
   static OomInterventionMetrics MemoryUsageToMetrics(MemoryUsage);
 
   ~CrashMemoryMetricsReporterImpl() override;
@@ -48,7 +50,7 @@ class CONTROLLER_EXPORT CrashMemoryMetricsReporterImpl
   void WriteIntoSharedMemory(const OomInterventionMetrics& metrics);
 
   base::WritableSharedMemoryMapping shared_metrics_mapping_;
-  mojo::Binding<mojom::blink::CrashMemoryMetricsReporter> binding_;
+  mojo::Receiver<mojom::blink::CrashMemoryMetricsReporter> receiver_{this};
 };
 }  // namespace blink
 

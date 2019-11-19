@@ -17,6 +17,7 @@ cca.models = cca.models || {};
 /**
  * Creates the gallery model controller.
  * @constructor
+ * @implements {cca.models.ResultSaver}
  */
 cca.models.Gallery = function() {
   /**
@@ -87,11 +88,15 @@ cca.models.Gallery.Picture.parseTimestamp_ = function(pictureEntry) {
   var name = cca.models.FileSystem.regulatePictureName(pictureEntry);
   // Match numeric parts from filenames, e.g. IMG_'yyyyMMdd_HHmmss (n)'.jpg.
   // Assume no more than one picture taken within one millisecond.
+  // Use String.raw instead of /...regex.../ here to avoid breaking syntax
+  // highlight on gerrit.
   var match = name.match(
-      /_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})(?: \((\d+)\))?/);
-  return match ? new Date(num(match[1]), num(match[2]) - 1, num(match[3]),
-      num(match[4]), num(match[5]), num(match[6]),
-      match[7] ? num(match[7]) : 0) : new Date(0);
+      String.raw`_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})(?: \((\d+)\))?/`);
+  return match ?
+      new Date(
+          num(match[1]), num(match[2]) - 1, num(match[3]), num(match[4]),
+          num(match[5]), num(match[6]), match[7] ? num(match[7]) : 0) :
+      new Date(0);
 };
 
 cca.models.Gallery.Picture.prototype = {
@@ -285,36 +290,59 @@ cca.models.Gallery.prototype.wrapPicture_ = function(
 };
 
 /**
- * Saves a picture that will also be added to the pictures' model.
- * @param {Blob} blob Data of the picture to be added.
- * @param {boolean} isMotionPicture Picture to be added is a video.
- * @return {!Promise} Promise for the operation.
+ * @override
  */
-cca.models.Gallery.prototype.savePicture = function(blob, isMotionPicture) {
+cca.models.Gallery.prototype.savePhoto = function(blob, name) {
   // TODO(yuli): models.Gallery listens to models.FileSystem's file-added event
   // and then add a new picture into the model.
   var saved = new Promise((resolve) => {
-    if (isMotionPicture) {
-      resolve(blob);
-    } else {
-      // Ignore errors since it is better to save something than nothing.
-      // TODO(yuli): Support showing images by EXIF orientation instead.
-      cca.util.orientPhoto(blob, resolve, () => resolve(blob));
-    }
-  }).then((blob) => {
-    return cca.models.FileSystem.savePicture(isMotionPicture, blob);
-  }).then((pictureEntry) => {
-    return this.wrapPicture_(pictureEntry);
-  });
+                // Ignore errors since it is better to save something than
+                // nothing.
+                // TODO(yuli): Support showing images by EXIF orientation
+                // instead.
+                cca.util.orientPhoto(blob, resolve, () => resolve(blob));
+              })
+                  .then((blob) => {
+                    return cca.models.FileSystem.saveBlob(blob, name);
+                  })
+                  .then((pictureEntry) => {
+                    return this.wrapPicture_(pictureEntry);
+                  });
 
-  return Promise.all([this.loaded_, saved]).then(([pictures, picture]) => {
-    // Insert the picture into the sorted pictures' model.
-    for (var index = pictures.length - 1; index >= 0; index--) {
-      if (picture.timestamp >= pictures[index].timestamp) {
-        break;
-      }
+  return saved.then((picture) => this.addPicture_(picture));
+};
+
+/**
+ * @override
+ */
+cca.models.Gallery.prototype.startSaveVideo = async function() {
+  const tempFile = await cca.models.FileSystem.createTempVideoFile();
+  return cca.models.FileVideoSaver.create(tempFile);
+};
+
+/**
+ * @override
+ */
+cca.models.Gallery.prototype.finishSaveVideo = async function(video, name) {
+  const tempFile = await video.endWrite();
+  const savedFile = await cca.models.FileSystem.saveVideo(tempFile, name);
+  const picture = await this.wrapPicture_(savedFile);
+  await this.addPicture_(picture);
+};
+
+/**
+ * Adds a picture into gallery.
+ * @param {cca.models.Gallery.Picture} picture Picture to be added.
+ * @private
+ */
+cca.models.Gallery.prototype.addPicture_ = async function(picture) {
+  const pictures = await this.loaded_;
+  // Insert the picture into the sorted pictures' model.
+  for (var index = pictures.length - 1; index >= 0; index--) {
+    if (picture.timestamp >= pictures[index].timestamp) {
+      break;
     }
-    pictures.splice(index + 1, 0, picture);
-    this.notifyObservers_('onPictureAdded', picture);
-  });
+  }
+  pictures.splice(index + 1, 0, picture);
+  this.notifyObservers_('onPictureAdded', picture);
 };

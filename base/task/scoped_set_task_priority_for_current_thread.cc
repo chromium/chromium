@@ -34,7 +34,7 @@ ScopedSetTaskPriorityForCurrentThread::
 TaskPriority GetTaskPriorityForCurrentThread() {
   const TaskPriority* priority =
       tls_task_priority_for_current_thread.Get().Get();
-  return priority ? *priority : TaskPriority::USER_VISIBLE;
+  return priority ? *priority : TaskPriority::USER_BLOCKING;
 }
 
 }  // namespace internal

@@ -34,7 +34,7 @@ interface SVGMaskElement : SVGElement {
     [MeasureAs=SVG1DOMMaskElement] readonly attribute SVGAnimatedLength height;
 };
 
-// SVGMaskElement implements SVGUnitTypes;
+// SVGMaskElement includes SVGUnitTypes;
 
 // TODO(foolip): The following is not part of any spec. https://crbug.com/701893
-SVGMaskElement implements SVGTests;
+SVGMaskElement includes SVGTests;

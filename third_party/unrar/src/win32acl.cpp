@@ -1,5 +1,3 @@
-namespace third_party_unrar {
-
 static void SetACLPrivileges();
 
 static bool ReadSacl=false;
@@ -135,5 +133,3 @@ bool SetPrivilege(LPCTSTR PrivName)
 
   return Success;
 }
-
-}  // namespace third_party_unrar

@@ -388,7 +388,7 @@ void PatchServiceManagerCalls() {
   if (is_patched)
     return;
   const char* service_provider_dll =
-      (base::win::GetVersion() >= base::win::VERSION_WIN8
+      (base::win::GetVersion() >= base::win::Version::WIN8
            ? "api-ms-win-service-management-l1-1-0.dll"
            : "advapi32.dll");
 

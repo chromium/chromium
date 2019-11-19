@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Report-only policy not allowed in meta tag</title>
+    <meta name="timeout" content="long">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-    <title>Report-only policy not allowed in meta tag</title>
     <!-- CSP headers
          Content-Security-Policy: script-src 'unsafe-inline' 'self'
          -->
@@ -33,6 +34,12 @@
       script.defer = true;
       script.src = '../support/checkReport.sub.js?reportExists=false'
       document.body.appendChild(script);
+
+      // Immediately declare a test so that the harness does not infer
+      // completion if the image loads before the script.
+      var checkReportTest = async_test("checkReport tests loaded");
+      script.onload = checkReportTest.step_func_done();
+      script.onerror = checkReportTest.unreached_func();
     });
   </script>
 </body>

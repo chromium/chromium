@@ -11,13 +11,10 @@
 #include "base/token.h"
 #include "base/values.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/test_service_manager_listener.h"
-#include "content/public/common/service_manager_connection.h"
 #include "content/public/test/test_utils.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/safe_xml_parser.h"
-#include "services/data_decoder/public/mojom/constants.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace {
 
@@ -34,22 +31,9 @@ class SafeXmlParserTest : public InProcessBrowserTest {
   ~SafeXmlParserTest() override = default;
 
  protected:
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    listener_.Init();
-  }
-
-  uint32_t GetServiceStartCount(const std::string& service_name) const {
-    return listener_.GetServiceStartCount(service_name);
-  }
-
   // Parses |xml| and compares its parsed representation with |expected_json|.
-  // If a |batch_id| is provided, it is passed to the ParseXml call (to group
-  // parsing of multiple XML documents in the same utility process).
   // If |expected_json| is empty, the XML parsing is expected to fail.
-  void TestParse(base::StringPiece xml,
-                 const std::string& expected_json,
-                 const base::Token& batch_id = base::Token{}) {
+  void TestParse(base::StringPiece xml, const std::string& expected_json) {
     SCOPED_TRACE(xml);
 
     base::RunLoop run_loop;
@@ -59,34 +43,28 @@ class SafeXmlParserTest : public InProcessBrowserTest {
       DCHECK(expected_value) << "Bad test, incorrect JSON: " << expected_json;
     }
 
-    data_decoder::ParseXml(
-        content::ServiceManagerConnection::GetForProcess()->GetConnector(),
+    data_decoder::DataDecoder::ParseXmlIsolated(
         xml.as_string(),
         base::BindOnce(&SafeXmlParserTest::XmlParsingDone,
                        base::Unretained(this), run_loop.QuitClosure(),
-                       std::move(expected_value)),
-        batch_id);
+                       std::move(expected_value)));
     run_loop.Run();
   }
 
  private:
   void XmlParsingDone(base::Closure quit_loop_closure,
                       std::unique_ptr<base::Value> expected_value,
-                      std::unique_ptr<base::Value> actual_value,
-                      const base::Optional<std::string>& error) {
+                      data_decoder::DataDecoder::ValueOrError result) {
     base::ScopedClosureRunner runner(std::move(quit_loop_closure));
     if (!expected_value) {
-      EXPECT_FALSE(actual_value);
-      EXPECT_TRUE(error);
+      EXPECT_FALSE(result.value);
+      EXPECT_TRUE(result.error);
       return;
     }
-    EXPECT_FALSE(error);
-    ASSERT_TRUE(actual_value);
-    EXPECT_EQ(*expected_value, *actual_value);
+    EXPECT_FALSE(result.error);
+    ASSERT_TRUE(result.value);
+    EXPECT_EQ(*expected_value, *result.value);
   }
-
-  data_decoder::mojom::XmlParserPtr xml_parser_ptr_;
-  TestServiceManagerListener listener_;
 
   DISALLOW_COPY_AND_ASSIGN(SafeXmlParserTest);
 };
@@ -100,22 +78,3 @@ IN_PROC_BROWSER_TEST_F(SafeXmlParserTest, Parse) {
   TestParse(kTestXml, kTestJson);
 }
 
-// Tests that a new service is created for each SafeXmlParser::Parse() call.
-IN_PROC_BROWSER_TEST_F(SafeXmlParserTest, Isolation) {
-  constexpr size_t kParseCount = 5;
-  for (size_t i = 0; i < kParseCount; i++)
-    TestParse(kTestXml, kTestJson);
-  EXPECT_EQ(kParseCount,
-            GetServiceStartCount(data_decoder::mojom::kServiceName));
-}
-
-// Tests that using a batch ID allows service reuse.
-IN_PROC_BROWSER_TEST_F(SafeXmlParserTest, IsolationWithBatchId) {
-  constexpr base::Token kBatchId1{0, 1};
-  constexpr base::Token kBatchId2{0, 2};
-  for (int i = 0; i < 5; i++) {
-    TestParse(kTestXml, kTestJson, kBatchId1);
-    TestParse(kTestXml, kTestJson, kBatchId2);
-  }
-  EXPECT_EQ(2U, GetServiceStartCount(data_decoder::mojom::kServiceName));
-}

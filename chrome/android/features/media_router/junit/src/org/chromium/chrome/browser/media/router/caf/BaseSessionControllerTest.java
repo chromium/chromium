@@ -165,6 +165,18 @@ public class BaseSessionControllerTest {
     }
 
     @Test
+    public void testSessionLifecyleNotNotifiedAfterCallbackRemoved() {
+        mController.removeCallback(mNotificationController);
+
+        mController.attachToCastSession(mCastSession);
+        mController.onSessionStarted();
+        verify(mNotificationController, never()).onSessionStarted();
+
+        mController.onSessionEnded();
+        verify(mNotificationController, never()).onSessionEnded();
+    }
+
+    @Test
     public void testGetCapabilities() {
         mController.attachToCastSession(mCastSession);
 

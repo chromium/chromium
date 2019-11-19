@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<div id="container">
+  <embed id="plugin" type="application/x-blink-test-plugin"></embed>
+</div>
+<script>
+  // Changing an uninteresting attribute on the plugin shouldn't dispose and
+  // reinitialize the plugin on layout object reattach. Initializing the plugin
+  // in this test will dump a line of text into the console, and the expectation
+  // is to only get one such line, not two.
+  testRunner.dumpAsText();
+  document.body.offsetTop;
+  plugin.setAttribute("foobar", "rekemarengs");
+  container.style.display = "table";
+  document.body.offsetTop;
+</script>

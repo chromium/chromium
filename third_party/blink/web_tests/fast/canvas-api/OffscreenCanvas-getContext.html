@@ -34,5 +34,9 @@ test(function() {
     var bCanvas = new OffscreenCanvas(20, 20);
     var ctx4 = bCanvas.getContext("webgl");
     assert_true(ctx4 instanceof WebGLRenderingContext);
+
+    var cCanvas = new OffscreenCanvas(20,20);
+    var ctx5 = cCanvas.getContext("bitmaprenderer");
+    assert_true(ctx5 instanceof ImageBitmapRenderingContext);
 });
 </script>

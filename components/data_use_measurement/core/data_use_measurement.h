@@ -17,24 +17,13 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/data_use_measurement/core/data_use_user_data.h"
-#include "components/metrics/data_use_tracker.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
-class GURL;
-
-namespace net {
-class HttpResponseHeaders;
-class URLRequest;
-}
-
 namespace data_use_measurement {
-
-class DataUseAscriber;
-class URLRequestClassifier;
 
 // Records the data use of user traffic and various services in UMA histograms.
 // The UMA is broken down by network technology used (Wi-Fi vs cellular). On
@@ -64,35 +53,9 @@ class DataUseMeasurement
   static bool IsMetricsServiceRequest(
       int32_t network_traffic_annotation_hash_id);
 
-  // Returns the content-type saved in the request userdata when the response
-  // headers were received.
-  static DataUseUserData::DataUseContentType GetContentTypeForRequest(
-      const net::URLRequest& request);
-
   DataUseMeasurement(
-      std::unique_ptr<URLRequestClassifier> url_request_classifier,
-      DataUseAscriber* ascriber,
       network::NetworkConnectionTracker* network_connection_tracker);
   ~DataUseMeasurement() override;
-
-  // Called before a request is sent.
-  void OnBeforeURLRequest(net::URLRequest* request);
-
-  // Called right after a redirect response code was received for |request|.
-  void OnBeforeRedirect(const net::URLRequest& request,
-                        const GURL& new_location);
-
-  // Called when response headers are received for |request|.
-  void OnHeadersReceived(net::URLRequest* request,
-                         const net::HttpResponseHeaders* response_headers);
-
-  // Called when data is received or sent on the network, respectively.
-  void OnNetworkBytesReceived(const net::URLRequest& request,
-                              int64_t bytes_received);
-  void OnNetworkBytesSent(const net::URLRequest& request, int64_t bytes_sent);
-
-  // Indicates that |request| has been completed or failed.
-  void OnCompleted(const net::URLRequest& request, bool started);
 
 #if defined(OS_ANDROID)
   // This function should just be used for testing purposes. A change in
@@ -100,12 +63,6 @@ class DataUseMeasurement
   void OnApplicationStateChangeForTesting(
       base::android::ApplicationState application_state);
 #endif
-
-  // Updates the data use to metrics service. |is_metrics_service_usage|
-  // indicates if the data use is from metrics component.
-  virtual void UpdateDataUseToMetricsService(int64_t total_bytes,
-                                             bool is_cellular,
-                                             bool is_metrics_service_usage) = 0;
 
   void AddServicesDataUseObserver(ServicesDataUseObserver* observer);
   void RemoveServicesDataUseObserver(ServicesDataUseObserver* observer);
@@ -184,16 +141,6 @@ class DataUseMeasurement
       base::android::ApplicationState application_state);
 #endif
 
-  // Records the data use of the |request|, thus |request| must be non-null.
-  // |dir| is the direction (which is upstream or downstream) and |bytes| is the
-  // number of bytes in the direction.
-  void ReportDataUseUMA(const net::URLRequest& request,
-                        TrafficDirection dir,
-                        int64_t bytes);
-
-  // Reports the message size of the service requests.
-  void ReportServicesMessageSizeUMA(const net::URLRequest& request);
-
   // Records data use histograms split on TrafficDirection, AppState and
   // TabState.
   void RecordTabStateHistogram(TrafficDirection dir,
@@ -201,27 +148,9 @@ class DataUseMeasurement
                                bool is_tab_visible,
                                int64_t bytes) const;
 
-  // Records data use histograms split on page tranition.
-  void RecordPageTransitionUMA(const net::URLRequest& request) const;
-
-  // Records data use histograms of user traffic and services traffic split on
-  // content type, AppState and TabState.
-  void RecordContentTypeHistogram(
-      DataUseUserData::DataUseContentType content_type,
-      bool is_user_traffic,
-      DataUseUserData::AppState app_state,
-      bool is_tab_visible,
-      int64_t bytes);
-
   // NetworkConnectionObserver overrides
   void OnConnectionChanged(
       network::mojom::ConnectionType connection_type) override;
-
-  // Classifier for identifying if an URL request is user initiated.
-  std::unique_ptr<URLRequestClassifier> url_request_classifier_;
-
-  // DataUseAscriber used to get the attributes of data use.
-  DataUseAscriber* ascriber_;
 
 #if defined(OS_ANDROID)
   // Application listener store the last known state of the application in this

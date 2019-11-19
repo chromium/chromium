@@ -12,6 +12,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -19,6 +20,8 @@ namespace blink {
 // PostCancellableDelayedTask() and cancels the associated task on
 // TaskHandle::cancel() call or on TaskHandle destruction.
 class PLATFORM_EXPORT TaskHandle {
+  DISALLOW_NEW();
+
  public:
   class Runner;
 
@@ -53,6 +56,15 @@ class PLATFORM_EXPORT TaskHandle {
                              const base::Location&,
                              base::OnceClosure,
                              base::TimeDelta delay) WARN_UNUSED_RESULT;
+  friend PLATFORM_EXPORT TaskHandle
+  PostNonNestableCancellableTask(base::SequencedTaskRunner&,
+                                 const base::Location&,
+                                 base::OnceClosure) WARN_UNUSED_RESULT;
+  friend PLATFORM_EXPORT TaskHandle PostNonNestableDelayedCancellableTask(
+      base::SequencedTaskRunner&,
+      const base::Location&,
+      base::OnceClosure,
+      base::TimeDelta delay) WARN_UNUSED_RESULT;
 
   explicit TaskHandle(scoped_refptr<Runner>);
   scoped_refptr<Runner> runner_;
@@ -69,6 +81,15 @@ PostDelayedCancellableTask(base::SequencedTaskRunner&,
                            const base::Location&,
                            base::OnceClosure,
                            base::TimeDelta delay) WARN_UNUSED_RESULT;
+PLATFORM_EXPORT TaskHandle
+PostNonNestableCancellableTask(base::SequencedTaskRunner&,
+                               const base::Location&,
+                               base::OnceClosure) WARN_UNUSED_RESULT;
+PLATFORM_EXPORT TaskHandle
+PostNonNestableDelayedCancellableTask(base::SequencedTaskRunner&,
+                                      const base::Location&,
+                                      base::OnceClosure,
+                                      base::TimeDelta delay) WARN_UNUSED_RESULT;
 
 }  // namespace blink
 

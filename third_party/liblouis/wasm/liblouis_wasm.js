@@ -200,10 +200,9 @@ Module.expectedDataFileDownloads++;
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 7565, "filename": "/pt-pt-g1.utb"}, {"start": 7565, "audio": 0, "end": 397406, "filename": "/de-g2-core.cti"}, {"start": 397406, "audio": 0, "end": 398895, "filename": "/de-chess.ctb"}, {"start": 398895, "audio": 0, "end": 411319, "filename": "/cy-cy-g1.utb"}, {"start": 411319, "audio": 0, "end": 443705, "filename": "/no-no-latinLetterDef6Dots_diacritics.uti"}, {"start": 443705, "audio": 0, "end": 451485, "filename": "/fi.utb"}, {"start": 451485, "audio": 0, "end": 457168, "filename": "/fa-ir-g1.utb"}, {"start": 457168, "audio": 0, "end": 457715, "filename": "/cs.tbl"}, {"start": 457715, "audio": 0, "end": 471409, "filename": "/no-no.dis"}, {"start": 471409, "audio": 0, "end": 480029, "filename": "/Lv-Lv-g1.utb"}, {"start": 480029, "audio": 0, "end": 488764, "filename": "/sl-si-comp8.ctb"}, {"start": 488764, "audio": 0, "end": 494345, "filename": "/de-de-comp8.ctb"}, {"start": 494345, "audio": 0, "end": 494888, "filename": "/hy.tbl"}, {"start": 494888, "audio": 0, "end": 496624, "filename": "/ko-2006-g1.ctb"}, {"start": 496624, "audio": 0, "end": 503482, "filename": "/ar-ar-g1.utb"}, {"start": 503482, "audio": 0, "end": 1766000, "filename": "/zh-chn.ctb"}, {"start": 1766000, "audio": 0, "end": 1766549, "filename": "/vi.tbl"}, {"start": 1766549, "audio": 0, "end": 1778680, "filename": "/mn-MN-common.cti"}, {"start": 1778680, "audio": 0, "end": 1779968, "filename": "/hyph_pt_PT.dic"}, {"start": 1779968, "audio": 0, "end": 1780528, "filename": "/sa.tbl"}, {"start": 1780528, "audio": 0, "end": 1781173, "filename": "/de.tbl"}, {"start": 1781173, "audio": 0, "end": 1781712, "filename": "/eo.tbl"}, {"start": 1781712, "audio": 0, "end": 1782280, "filename": "/cy.tbl"}, {"start": 1782280, "audio": 0, "end": 1783261, "filename": "/litdigits6DotsPlusDot6.uti"}, {"start": 1783261, "audio": 0, "end": 1788812, "filename": "/ko.cti"}, {"start": 1788812, "audio": 0, "end": 1789700, "filename": "/mun.ctb"}, {"start": 1789700, "audio": 0, "end": 1790256, "filename": "/ar.tbl"}, {"start": 1790256, "audio": 0, "end": 1790379, "filename": "/hr-g1.tbl"}, {"start": 1790379, "audio": 0, "end": 1793305, "filename": "/eo-g1-x-system.ctb"}, {"start": 1793305, "audio": 0, "end": 1807596, "filename": "/fr-bfu-comp8.utb"}, {"start": 1807596, "audio": 0, "end": 1808137, "filename": "/ru.tbl"}, {"start": 1808137, "audio": 0, "end": 1810336, "filename": "/de-eurobrl6.dis"}, {"start": 1810336, "audio": 0, "end": 1851786, "filename": "/Makefile.in"}, {"start": 1851786, "audio": 0, "end": 1853921, "filename": "/en-us-comp6.ctb"}, {"start": 1853921, "audio": 0, "end": 1915319, "filename": "/hyph_da_DK.dic"}, {"start": 1915319, "audio": 0, "end": 1916535, "filename": "/mn-in-g1.utb"}, {"start": 1916535, "audio": 0, "end": 1938883, "filename": "/sk-chardefs.cti"}, {"start": 1938883, "audio": 0, "end": 2814987, "filename": "/hyph_hu_HU.dic"}, {"start": 2814987, "audio": 0, "end": 2815663, "filename": "/en_US.tbl"}, {"start": 2815663, "audio": 0, "end": 2840496, "filename": "/unicode-braille.utb"}, {"start": 2840496, "audio": 0, "end": 2843858, "filename": "/de-ch-accents.cti"}, {"start": 2843858, "audio": 0, "end": 2845603, "filename": "/de-de-g1.ctb"}, {"start": 2845603, "audio": 0, "end": 3888171, "filename": "/zh-tw.ctb"}, {"start": 3888171, "audio": 0, "end": 3888721, "filename": "/gd.tbl"}, {"start": 3888721, "audio": 0, "end": 3889342, "filename": "/no.tbl"}, {"start": 3889342, "audio": 0, "end": 3889885, "filename": "/mun.tbl"}, {"start": 3889885, "audio": 0, "end": 3890098, "filename": "/en_US-comp8-ext.tbl"}, {"start": 3890098, "audio": 0, "end": 3901320, "filename": "/malayalam.cti"}, {"start": 3901320, "audio": 0, "end": 3902212, "filename": "/kru.ctb"}, {"start": 3902212, "audio": 0, "end": 3925893, "filename": "/ko-g1-rules.cti"}, {"start": 3925893, "audio": 0, "end": 3926498, "filename": "/cvox-common.cti"}, {"start": 3926498, "audio": 0, "end": 3937462, "filename": "/sin.cti"}, {"start": 3937462, "audio": 0, "end": 3945024, "filename": "/cs-comp8.utb"}, {"start": 3945024, "audio": 0, "end": 3959643, "filename": "/cs-chardefs.cti"}, {"start": 3959643, "audio": 0, "end": 3960187, "filename": "/bg.tbl"}, {"start": 3960187, "audio": 0, "end": 3996654, "filename": "/hyph_en_US.dic"}, {"start": 3996654, "audio": 0, "end": 4003720, "filename": "/vi-g1.ctb"}, {"start": 4003720, "audio": 0, "end": 4190398, "filename": "/hyph_nn_NO.dic"}, {"start": 4190398, "audio": 0, "end": 4193226, "filename": "/de-de-accents.cti"}, {"start": 4193226, "audio": 0, "end": 4217014, "filename": "/en-us-comp8-ext.utb"}, {"start": 4217014, "audio": 0, "end": 4231393, "filename": "/de-chardefs6.cti"}, {"start": 4231393, "audio": 0, "end": 4244058, "filename": "/no-no-g2.ctb"}, {"start": 4244058, "audio": 0, "end": 4245123, "filename": "/digits6DotsPlusDot6.uti"}, {"start": 4245123, "audio": 0, "end": 4246478, "filename": "/sin.utb"}, {"start": 4246478, "audio": 0, "end": 4247695, "filename": "/gu-in-g1.utb"}, {"start": 4247695, "audio": 0, "end": 4249138, "filename": "/hr-digits.uti"}, {"start": 4249138, "audio": 0, "end": 4258400, "filename": "/no-no-chardefs6.uti"}, {"start": 4258400, "audio": 0, "end": 4273949, "filename": "/ukmaths_unicode_defs.cti"}, {"start": 4273949, "audio": 0, "end": 4275369, "filename": "/latinLetterDef6Dots.uti"}, {"start": 4275369, "audio": 0, "end": 4297833, "filename": "/el.ctb"}, {"start": 4297833, "audio": 0, "end": 4298370, "filename": "/ca.tbl"}, {"start": 4298370, "audio": 0, "end": 4306554, "filename": "/ga-g1.utb"}, {"start": 4306554, "audio": 0, "end": 4316921, "filename": "/bengali.cti"}, {"start": 4316921, "audio": 0, "end": 4317463, "filename": "/sl.tbl"}, {"start": 4317463, "audio": 0, "end": 4333699, "filename": "/hr-chardefs.cti"}, {"start": 4333699, "audio": 0, "end": 4334264, "filename": "/dra.tbl"}, {"start": 4334264, "audio": 0, "end": 4334824, "filename": "/gu.tbl"}, {"start": 4334824, "audio": 0, "end": 4350314, "filename": "/gr-pl-comp8.uti"}, {"start": 4350314, "audio": 0, "end": 4351204, "filename": "/pi.ctb"}, {"start": 4351204, "audio": 0, "end": 4387458, "filename": "/Makefile"}, {"start": 4387458, "audio": 0, "end": 4408932, "filename": "/nl-chardefs.uti"}, {"start": 4408932, "audio": 0, "end": 4409474, "filename": "/gez.tbl"}, {"start": 4409474, "audio": 0, "end": 4416402, "filename": "/ethio-g1.ctb"}, {"start": 4416402, "audio": 0, "end": 4420619, "filename": "/hyph_es_ES.dic"}, {"start": 4420619, "audio": 0, "end": 4421178, "filename": "/mr.tbl"}, {"start": 4421178, "audio": 0, "end": 4423223, "filename": "/en-ueb-math.ctb"}, {"start": 4423223, "audio": 0, "end": 4437550, "filename": "/da-dk-g26l.ctb"}, {"start": 4437550, "audio": 0, "end": 4439317, "filename": "/de-ch-g1.ctb"}, {"start": 4439317, "audio": 0, "end": 4446134, "filename": "/IPA.utb"}, {"start": 4446134, "audio": 0, "end": 4447795, "filename": "/no-no-8dot-fallback-6dot-g0.utb"}, {"start": 4447795, "audio": 0, "end": 4449012, "filename": "/np-in-g1.utb"}, {"start": 4449012, "audio": 0, "end": 4449930, "filename": "/digits6Dots.uti"}, {"start": 4449930, "audio": 0, "end": 4451664, "filename": "/ko-2006-g2.ctb"}, {"start": 4451664, "audio": 0, "end": 4479594, "filename": "/en-us-g2.ctb"}, {"start": 4479594, "audio": 0, "end": 4480484, "filename": "/dra.ctb"}, {"start": 4480484, "audio": 0, "end": 4483327, "filename": "/ru-letters.dis"}, {"start": 4483327, "audio": 0, "end": 4483867, "filename": "/pi.tbl"}, {"start": 4483867, "audio": 0, "end": 4493291, "filename": "/nl-NL-g0.utb"}, {"start": 4493291, "audio": 0, "end": 4500495, "filename": "/de-g0-core.uti"}, {"start": 4500495, "audio": 0, "end": 4503247, "filename": "/ru-unicode.dis"}, {"start": 4503247, "audio": 0, "end": 4503718, "filename": "/el.tbl"}, {"start": 4503718, "audio": 0, "end": 4509144, "filename": "/hy.ctb"}, {"start": 4509144, "audio": 0, "end": 4509686, "filename": "/tr.tbl"}, {"start": 4509686, "audio": 0, "end": 4512738, "filename": "/uk.utb"}, {"start": 4512738, "audio": 0, "end": 4514775, "filename": "/afr-za-g1.ctb"}, {"start": 4514775, "audio": 0, "end": 4518107, "filename": "/sr-g1.ctb"}, {"start": 4518107, "audio": 0, "end": 4526265, "filename": "/chardefs.cti"}, {"start": 4526265, "audio": 0, "end": 4533859, "filename": "/sv-1996.ctb"}, {"start": 4533859, "audio": 0, "end": 4535931, "filename": "/en-gb-comp8.ctb"}, {"start": 4535931, "audio": 0, "end": 4538536, "filename": "/sk-translation.cti"}, {"start": 4538536, "audio": 0, "end": 4539073, "filename": "/sr.tbl"}, {"start": 4539073, "audio": 0, "end": 4539638, "filename": "/ga.tbl"}, {"start": 4539638, "audio": 0, "end": 4551118, "filename": "/lt-6dot.utb"}, {"start": 4551118, "audio": 0, "end": 4558770, "filename": "/Pl-Pl-g1.utb"}, {"start": 4558770, "audio": 0, "end": 4566715, "filename": "/da-dk-g16.ctb"}, {"start": 4566715, "audio": 0, "end": 4599380, "filename": "/hu-hu-g2_exceptions.cti"}, {"start": 4599380, "audio": 0, "end": 4682905, "filename": "/hyph_nl_NL.dic"}, {"start": 4682905, "audio": 0, "end": 4691349, "filename": "/hr-translation.cti"}, {"start": 4691349, "audio": 0, "end": 4691909, "filename": "/as.tbl"}, {"start": 4691909, "audio": 0, "end": 4698965, "filename": "/he.ctb"}, {"start": 4698965, "audio": 0, "end": 4700799, "filename": "/printables.cti"}, {"start": 4700799, "audio": 0, "end": 4701450, "filename": "/en_GB.tbl"}, {"start": 4701450, "audio": 0, "end": 4703463, "filename": "/ru-chardefs.cti"}, {"start": 4703463, "audio": 0, "end": 4716902, "filename": "/da-dk-g08.ctb"}, {"start": 4716902, "audio": 0, "end": 4718184, "filename": "/es-g1.ctb"}, {"start": 4718184, "audio": 0, "end": 4719840, "filename": "/nl-BE.dis"}, {"start": 4719840, "audio": 0, "end": 4739178, "filename": "/no-no-8dot.utb"}, {"start": 4739178, "audio": 0, "end": 4740196, "filename": "/maketablelist.sh"}, {"start": 4740196, "audio": 0, "end": 4748300, "filename": "/en_CA.ctb"}, {"start": 4748300, "audio": 0, "end": 4756090, "filename": "/fi-fi.ctb"}, {"start": 4756090, "audio": 0, "end": 4768148, "filename": "/hu-chardefs.cti"}, {"start": 4768148, "audio": 0, "end": 4768693, "filename": "/mwr.tbl"}, {"start": 4768693, "audio": 0, "end": 4769373, "filename": "/zh_CHN.tbl"}, {"start": 4769373, "audio": 0, "end": 4813484, "filename": "/ur-pk-g2.ctb"}, {"start": 4813484, "audio": 0, "end": 4823278, "filename": "/en-ueb-g1.ctb"}, {"start": 4823278, "audio": 0, "end": 4831947, "filename": "/nl-BE-g0.utb"}, {"start": 4831947, "audio": 0, "end": 4832840, "filename": "/kok.ctb"}, {"start": 4832840, "audio": 0, "end": 4840964, "filename": "/iu-ca-g1.ctb"}, {"start": 4840964, "audio": 0, "end": 4842182, "filename": "/mr-in-g1.utb"}, {"start": 4842182, "audio": 0, "end": 5028860, "filename": "/hyph_nb_NO.dic"}, {"start": 5028860, "audio": 0, "end": 5029474, "filename": "/pt.tbl"}, {"start": 5029474, "audio": 0, "end": 5030747, "filename": "/mn-MN-g2.ctb"}, {"start": 5030747, "audio": 0, "end": 5031958, "filename": "/or-in-g1.utb"}, {"start": 5031958, "audio": 0, "end": 5041486, "filename": "/oriya.cti"}, {"start": 5041486, "audio": 0, "end": 5043018, "filename": "/ukmaths_single_cell_defs.cti"}, {"start": 5043018, "audio": 0, "end": 5054651, "filename": "/da-lt.ctb"}, {"start": 5054651, "audio": 0, "end": 5055210, "filename": "/awa.tbl"}, {"start": 5055210, "audio": 0, "end": 5064668, "filename": "/sv-1989.ctb"}, {"start": 5064668, "audio": 0, "end": 5065883, "filename": "/be-in-g1.utb"}, {"start": 5065883, "audio": 0, "end": 5066506, "filename": "/nl.tbl"}, {"start": 5066506, "audio": 0, "end": 5067723, "filename": "/si-in-g1.utb"}, {"start": 5067723, "audio": 0, "end": 5070941, "filename": "/tamil.cti"}, {"start": 5070941, "audio": 0, "end": 5085100, "filename": "/da-dk-g26l-lit.ctb"}, {"start": 5085100, "audio": 0, "end": 5087754, "filename": "/de-de-g2.ctb"}, {"start": 5087754, "audio": 0, "end": 5090072, "filename": "/sk-sk.utb"}, {"start": 5090072, "audio": 0, "end": 5090614, "filename": "/bh.tbl"}, {"start": 5090614, "audio": 0, "end": 5094977, "filename": "/en-us-g1.ctb"}, {"start": 5094977, "audio": 0, "end": 5100764, "filename": "/Es-Es-g1.utb"}, {"start": 5100764, "audio": 0, "end": 5101325, "filename": "/ml.tbl"}, {"start": 5101325, "audio": 0, "end": 5106193, "filename": "/Se-Se-g1.utb"}, {"start": 5106193, "audio": 0, "end": 5108631, "filename": "/en-us-brf.dis"}, {"start": 5108631, "audio": 0, "end": 5110263, "filename": "/en-us-comp8.ctb"}, {"start": 5110263, "audio": 0, "end": 5112381, "filename": "/tr-g1.ctb"}, {"start": 5112381, "audio": 0, "end": 5113597, "filename": "/pu-in-g1.utb"}, {"start": 5113597, "audio": 0, "end": 5130783, "filename": "/lt.ctb"}, {"start": 5130783, "audio": 0, "end": 5131401, "filename": "/nl_BE.tbl"}, {"start": 5131401, "audio": 0, "end": 5132620, "filename": "/sa-in-g1.utb"}, {"start": 5132620, "audio": 0, "end": 5133839, "filename": "/ks-in-g1.utb"}, {"start": 5133839, "audio": 0, "end": 5138454, "filename": "/hu-hu-comp8.ctb"}, {"start": 5138454, "audio": 0, "end": 5154002, "filename": "/marburg_unicode_defs.cti"}, {"start": 5154002, "audio": 0, "end": 5156116, "filename": "/ga-g2.ctb"}, {"start": 5156116, "audio": 0, "end": 5420377, "filename": "/zh-hk.ctb"}, {"start": 5420377, "audio": 0, "end": 5420913, "filename": "/sk.tbl"}, {"start": 5420913, "audio": 0, "end": 6093311, "filename": "/zhcn-g1.ctb"}, {"start": 6093311, "audio": 0, "end": 6093854, "filename": "/et.tbl"}, {"start": 6093854, "audio": 0, "end": 6095046, "filename": "/kh-in-g1.utb"}, {"start": 6095046, "audio": 0, "end": 6099773, "filename": "/hu-hu-g1.ctb"}, {"start": 6099773, "audio": 0, "end": 6101271, "filename": "/en-chess.ctb"}, {"start": 6101271, "audio": 0, "end": 6101562, "filename": "/zh_HK.tbl"}, {"start": 6101562, "audio": 0, "end": 6102121, "filename": "/ta.tbl"}, {"start": 6102121, "audio": 0, "end": 6102678, "filename": "/bra.tbl"}, {"start": 6102678, "audio": 0, "end": 6116741, "filename": "/no-no-generic.dis"}, {"start": 6116741, "audio": 0, "end": 6117299, "filename": "/ne.tbl"}, {"start": 6117299, "audio": 0, "end": 6122307, "filename": "/ro.ctb"}, {"start": 6122307, "audio": 0, "end": 6123811, "filename": "/haw-us-g1.ctb"}, {"start": 6123811, "audio": 0, "end": 6124350, "filename": "/ckb.tbl"}, {"start": 6124350, "audio": 0, "end": 6125566, "filename": "/hi-in-g1.utb"}, {"start": 6125566, "audio": 0, "end": 6136411, "filename": "/sl-si-g1.utb"}, {"start": 6136411, "audio": 0, "end": 6138000, "filename": "/ar-fa.utb"}, {"start": 6138000, "audio": 0, "end": 6164431, "filename": "/braille-patterns.cti"}, {"start": 6164431, "audio": 0, "end": 6184429, "filename": "/de-chardefs8.cti"}, {"start": 6184429, "audio": 0, "end": 6184987, "filename": "/sd.tbl"}, {"start": 6184987, "audio": 0, "end": 6190455, "filename": "/chr-us-g1.ctb"}, {"start": 6190455, "audio": 0, "end": 6197703, "filename": "/bo.ctb"}, {"start": 6197703, "audio": 0, "end": 6197831, "filename": "/lt-6dot.tbl"}, {"start": 6197831, "audio": 0, "end": 6211558, "filename": "/IPA-unicode-range.uti"}, {"start": 6211558, "audio": 0, "end": 6215015, "filename": "/ckb-translation.cti"}, {"start": 6215015, "audio": 0, "end": 6222997, "filename": "/da-dk-g16-lit.ctb"}, {"start": 6222997, "audio": 0, "end": 6223541, "filename": "/kru.tbl"}, {"start": 6223541, "audio": 0, "end": 6224960, "filename": "/compress.cti"}, {"start": 6224960, "audio": 0, "end": 6225917, "filename": "/litdigits6Dots.uti"}, {"start": 6225917, "audio": 0, "end": 6238895, "filename": "/da-dk-6miscChars.cti"}, {"start": 6238895, "audio": 0, "end": 6262341, "filename": "/gr-bb.ctb"}, {"start": 6262341, "audio": 0, "end": 6266647, "filename": "/cy-cy-g2.ctb"}, {"start": 6266647, "audio": 0, "end": 6271936, "filename": "/gd.ctb"}, {"start": 6271936, "audio": 0, "end": 6282603, "filename": "/hyph_eo.dic"}, {"start": 6282603, "audio": 0, "end": 6283580, "filename": "/ca-g1.ctb"}, {"start": 6283580, "audio": 0, "end": 6288911, "filename": "/cs-letterDef8Dots.uti"}, {"start": 6288911, "audio": 0, "end": 6290684, "filename": "/mn-MN-g1.utb"}, {"start": 6290684, "audio": 0, "end": 6299083, "filename": "/fi-fi-8dot.ctb"}, {"start": 6299083, "audio": 0, "end": 6305513, "filename": "/bg.ctb"}, {"start": 6305513, "audio": 0, "end": 6306139, "filename": "/hu.tbl"}, {"start": 6306139, "audio": 0, "end": 6317129, "filename": "/fr-bfu-comp6.utb"}, {"start": 6317129, "audio": 0, "end": 6331745, "filename": "/uni-text.dis"}, {"start": 6331745, "audio": 0, "end": 6348997, "filename": "/pl-pl-comp8.ctb"}, {"start": 6348997, "audio": 0, "end": 6349907, "filename": "/gon.ctb"}, {"start": 6349907, "audio": 0, "end": 6364508, "filename": "/de-de.dis"}, {"start": 6364508, "audio": 0, "end": 6395059, "filename": "/hyph_pl_PL.dic"}, {"start": 6395059, "audio": 0, "end": 6396104, "filename": "/controlchars.cti"}, {"start": 6396104, "audio": 0, "end": 7105683, "filename": "/unicodedefs.cti"}, {"start": 7105683, "audio": 0, "end": 7107081, "filename": "/latinLetterDef8Dots.uti"}, {"start": 7107081, "audio": 0, "end": 7107623, "filename": "/mt.tbl"}, {"start": 7107623, "audio": 0, "end": 7108664, "filename": "/sot-za-g1.ctb"}, {"start": 7108664, "audio": 0, "end": 7123357, "filename": "/se-se.dis"}, {"start": 7123357, "audio": 0, "end": 7136288, "filename": "/hu-hu-g2.ctb"}, {"start": 7136288, "audio": 0, "end": 7136868, "filename": "/pl.tbl"}, {"start": 7136868, "audio": 0, "end": 7148866, "filename": "/vi.ctb"}, {"start": 7148866, "audio": 0, "end": 7159383, "filename": "/hr-comp8.utb"}, {"start": 7159383, "audio": 0, "end": 7160723, "filename": "/cs-g1.ctb"}, {"start": 7160723, "audio": 0, "end": 7162384, "filename": "/ko-g2.ctb"}, {"start": 7162384, "audio": 0, "end": 7162929, "filename": "/fi.tbl"}, {"start": 7162929, "audio": 0, "end": 7168177, "filename": "/sk-sk-g1.utb"}, {"start": 7168177, "audio": 0, "end": 7176873, "filename": "/kannada.cti"}, {"start": 7176873, "audio": 0, "end": 7188384, "filename": "/fi2.ctb"}, {"start": 7188384, "audio": 0, "end": 7332719, "filename": "/fr-bfu-g2.ctb"}, {"start": 7332719, "audio": 0, "end": 7333278, "filename": "/kn.tbl"}, {"start": 7333278, "audio": 0, "end": 7333820, "filename": "/lt.tbl"}, {"start": 7333820, "audio": 0, "end": 7339251, "filename": "/nl-g0.uti"}, {"start": 7339251, "audio": 0, "end": 7348856, "filename": "/gujarati.cti"}, {"start": 7348856, "audio": 0, "end": 7359097, "filename": "/se-se.ctb"}, {"start": 7359097, "audio": 0, "end": 7359637, "filename": "/sv.tbl"}, {"start": 7359637, "audio": 0, "end": 7359928, "filename": "/zh_TW.tbl"}, {"start": 7359928, "audio": 0, "end": 7360854, "filename": "/loweredDigits6Dots.uti"}, {"start": 7360854, "audio": 0, "end": 7381292, "filename": "/en-us-mathtext.ctb"}, {"start": 7381292, "audio": 0, "end": 7382502, "filename": "/ckb-g1.ctb"}, {"start": 7382502, "audio": 0, "end": 7383438, "filename": "/loweredDigits8Dots.uti"}, {"start": 7383438, "audio": 0, "end": 7383980, "filename": "/bo.tbl"}, {"start": 7383980, "audio": 0, "end": 7396120, "filename": "/fr-bfu-comp68.cti"}, {"start": 7396120, "audio": 0, "end": 7397630, "filename": "/hr-g1.ctb"}, {"start": 7397630, "audio": 0, "end": 7401125, "filename": "/no-no-g0.utb"}, {"start": 7401125, "audio": 0, "end": 7412461, "filename": "/ru.ctb"}, {"start": 7412461, "audio": 0, "end": 7413353, "filename": "/ne.ctb"}, {"start": 7413353, "audio": 0, "end": 7420319, "filename": "/sr-chardefs.cti"}, {"start": 7420319, "audio": 0, "end": 7424229, "filename": "/ko-2006.cti"}, {"start": 7424229, "audio": 0, "end": 7445471, "filename": "/is-chardefs8.cti"}, {"start": 7445471, "audio": 0, "end": 7459413, "filename": "/en-ueb-chardefs.uti"}, {"start": 7459413, "audio": 0, "end": 7459956, "filename": "/ro.tbl"}, {"start": 7459956, "audio": 0, "end": 7488439, "filename": "/da-dk-g26.ctb"}, {"start": 7488439, "audio": 0, "end": 7493584, "filename": "/fa-ir-comp8.ctb"}, {"start": 7493584, "audio": 0, "end": 7513845, "filename": "/no-no-comp8.ctb"}, {"start": 7513845, "audio": 0, "end": 7515360, "filename": "/marburg_single_cell_defs.cti"}, {"start": 7515360, "audio": 0, "end": 7515521, "filename": "/README"}, {"start": 7515521, "audio": 0, "end": 7532017, "filename": "/nemethdefs.cti"}, {"start": 7532017, "audio": 0, "end": 7553760, "filename": "/hyph_cs_CZ.dic"}, {"start": 7553760, "audio": 0, "end": 7558796, "filename": "/et-g0.utb"}, {"start": 7558796, "audio": 0, "end": 7569101, "filename": "/boxes.ctb"}, {"start": 7569101, "audio": 0, "end": 7569660, "filename": "/bn.tbl"}, {"start": 7569660, "audio": 0, "end": 7571497, "filename": "/de-ch-g0.utb"}, {"start": 7571497, "audio": 0, "end": 7572095, "filename": "/en_CA.tbl"}, {"start": 7572095, "audio": 0, "end": 7572987, "filename": "/bh.ctb"}, {"start": 7572987, "audio": 0, "end": 7573915, "filename": "/digits8Dots.uti"}, {"start": 7573915, "audio": 0, "end": 7956263, "filename": "/ko-chars.cti"}, {"start": 7956263, "audio": 0, "end": 7957482, "filename": "/ml-in-g1.utb"}, {"start": 7957482, "audio": 0, "end": 7958642, "filename": "/de-ch-g2.ctb"}, {"start": 7958642, "audio": 0, "end": 7960428, "filename": "/de-de-g0.utb"}, {"start": 7960428, "audio": 0, "end": 7967858, "filename": "/is-chardefs6.cti"}, {"start": 7967858, "audio": 0, "end": 8009464, "filename": "/da-dk-g28.ctb"}, {"start": 8009464, "audio": 0, "end": 8010956, "filename": "/corrections.cti"}, {"start": 8010956, "audio": 0, "end": 8039657, "filename": "/it-it-comp8.utb"}, {"start": 8039657, "audio": 0, "end": 8061217, "filename": "/pt-pt-g2.ctb"}, {"start": 8061217, "audio": 0, "end": 8072835, "filename": "/da-dk-octobraille.dis"}, {"start": 8072835, "audio": 0, "end": 8074397, "filename": "/us-table.dis"}, {"start": 8074397, "audio": 0, "end": 8082621, "filename": "/ru-ru.dis"}, {"start": 8082621, "audio": 0, "end": 8083170, "filename": "/hr-comp8.tbl"}, {"start": 8083170, "audio": 0, "end": 8084385, "filename": "/ka-in-g1.utb"}, {"start": 8084385, "audio": 0, "end": 8084942, "filename": "/or.tbl"}, {"start": 8084942, "audio": 0, "end": 8085500, "filename": "/te.tbl"}, {"start": 8085500, "audio": 0, "end": 8116759, "filename": "/hyph_sv_SE.dic"}, {"start": 8116759, "audio": 0, "end": 8117304, "filename": "/is.tbl"}, {"start": 8117304, "audio": 0, "end": 8118517, "filename": "/te-in-g1.utb"}, {"start": 8118517, "audio": 0, "end": 8393118, "filename": "/ko-g2-rules.cti"}, {"start": 8393118, "audio": 0, "end": 8397223, "filename": "/et.ctb"}, {"start": 8397223, "audio": 0, "end": 8405983, "filename": "/ckb-chardefs.cti"}, {"start": 8405983, "audio": 0, "end": 9020111, "filename": "/zhcn-g2.ctb"}, {"start": 9020111, "audio": 0, "end": 9039862, "filename": "/da-dk-g26-lit.ctb"}, {"start": 9039862, "audio": 0, "end": 9041517, "filename": "/es-translation.cti"}, {"start": 9041517, "audio": 0, "end": 9042060, "filename": "/gon.tbl"}, {"start": 9042060, "audio": 0, "end": 9070122, "filename": "/en-us-interline.ctb"}, {"start": 9070122, "audio": 0, "end": 9106923, "filename": "/hyph_de_DE.dic"}, {"start": 9106923, "audio": 0, "end": 9107472, "filename": "/lv.tbl"}, {"start": 9107472, "audio": 0, "end": 9109129, "filename": "/ko-g1.ctb"}, {"start": 9109129, "audio": 0, "end": 9110345, "filename": "/as-in-g1.utb"}, {"start": 9110345, "audio": 0, "end": 9110906, "filename": "/mni.tbl"}, {"start": 9110906, "audio": 0, "end": 9290456, "filename": "/en-ueb-g2.ctb"}, {"start": 9290456, "audio": 0, "end": 9297279, "filename": "/es-old.dis"}, {"start": 9297279, "audio": 0, "end": 9299355, "filename": "/en-us-compbrl.ctb"}, {"start": 9299355, "audio": 0, "end": 9299896, "filename": "/he.tbl"}, {"start": 9299896, "audio": 0, "end": 9301112, "filename": "/aw-in-g1.utb"}, {"start": 9301112, "audio": 0, "end": 9311371, "filename": "/gurumuki.cti"}, {"start": 9311371, "audio": 0, "end": 9311930, "filename": "/pa.tbl"}, {"start": 9311930, "audio": 0, "end": 9315704, "filename": "/no-no-g1.ctb"}, {"start": 9315704, "audio": 0, "end": 9317188, "filename": "/spaces.ctb"}, {"start": 9317188, "audio": 0, "end": 9347286, "filename": "/da-dk-g28l.ctb"}, {"start": 9347286, "audio": 0, "end": 9359629, "filename": "/en-gb-g1.utb"}, {"start": 9359629, "audio": 0, "end": 9366458, "filename": "/es-new.dis"}, {"start": 9366458, "audio": 0, "end": 9368916, "filename": "/eo-g1.ctb"}, {"start": 9368916, "audio": 0, "end": 9372415, "filename": "/en-in-g1.ctb"}, {"start": 9372415, "audio": 0, "end": 9383836, "filename": "/ur-pk-g1.utb"}, {"start": 9383836, "audio": 0, "end": 9384414, "filename": "/es.tbl"}, {"start": 9384414, "audio": 0, "end": 9394565, "filename": "/telugu.cti"}, {"start": 9394565, "audio": 0, "end": 9468180, "filename": "/de-g1-core.cti"}, {"start": 9468180, "audio": 0, "end": 9470703, "filename": "/cs-translation.cti"}, {"start": 9470703, "audio": 0, "end": 9476714, "filename": "/Makefile.am"}, {"start": 9476714, "audio": 0, "end": 9496268, "filename": "/en-GB-g2.ctb"}, {"start": 9496268, "audio": 0, "end": 9502171, "filename": "/is.ctb"}, {"start": 9502171, "audio": 0, "end": 9503385, "filename": "/br-in-g1.utb"}, {"start": 9503385, "audio": 0, "end": 9505591, "filename": "/hyph_it_IT.dic"}, {"start": 9505591, "audio": 0, "end": 9518936, "filename": "/no-no-generic.ctb"}, {"start": 9518936, "audio": 0, "end": 9521993, "filename": "/pt-pt-comp8.ctb"}, {"start": 9521993, "audio": 0, "end": 9529972, "filename": "/hyph_fr_FR.dic"}, {"start": 9529972, "audio": 0, "end": 9535062, "filename": "/ru-litbrl.ctb"}, {"start": 9535062, "audio": 0, "end": 9536417, "filename": "/hu-backtranslate-correction.dis"}, {"start": 9536417, "audio": 0, "end": 9603953, "filename": "/hyph_ru.dic"}, {"start": 9603953, "audio": 0, "end": 9622280, "filename": "/no-no-g3.ctb"}, {"start": 9622280, "audio": 0, "end": 9622818, "filename": "/hi.tbl"}, {"start": 9622818, "audio": 0, "end": 9630637, "filename": "/no-no-braillo-047-01.dis"}, {"start": 9630637, "audio": 0, "end": 9635318, "filename": "/tr.ctb"}, {"start": 9635318, "audio": 0, "end": 9639801, "filename": "/it-it-comp6.utb"}, {"start": 9639801, "audio": 0, "end": 9642968, "filename": "/eurodefs.cti"}, {"start": 9642968, "audio": 0, "end": 9657626, "filename": "/ca-chardefs.cti"}, {"start": 9657626, "audio": 0, "end": 9658294, "filename": "/de_CH.tbl"}, {"start": 9658294, "audio": 0, "end": 9676853, "filename": "/wiskunde-chardefs.cti"}, {"start": 9676853, "audio": 0, "end": 9680733, "filename": "/ru-compbrl.ctb"}, {"start": 9680733, "audio": 0, "end": 9796495, "filename": "/hu-exceptionwords.cti"}, {"start": 9796495, "audio": 0, "end": 9803399, "filename": "/Es-Es-G0.utb"}, {"start": 9803399, "audio": 0, "end": 9805490, "filename": "/de-eurobrl6u.dis"}, {"start": 9805490, "audio": 0, "end": 9816984, "filename": "/fi1.ctb"}, {"start": 9816984, "audio": 0, "end": 9822958, "filename": "/unicode.dis"}, {"start": 9822958, "audio": 0, "end": 9827509, "filename": "/mt.ctb"}, {"start": 9827509, "audio": 0, "end": 9828402, "filename": "/mwr.ctb"}, {"start": 9828402, "audio": 0, "end": 9837701, "filename": "/devanagari.cti"}, {"start": 9837701, "audio": 0, "end": 9859351, "filename": "/text_nabcc.dis"}, {"start": 9859351, "audio": 0, "end": 9867654, "filename": "/da-dk.dis"}, {"start": 9867654, "audio": 0, "end": 9868212, "filename": "/kha.tbl"}, {"start": 9868212, "audio": 0, "end": 9871888, "filename": "/ukchardefs.cti"}, {"start": 9871888, "audio": 0, "end": 9886172, "filename": "/es-chardefs.cti"}, {"start": 9886172, "audio": 0, "end": 9887604, "filename": "/sk-g1.ctb"}, {"start": 9887604, "audio": 0, "end": 9894307, "filename": "/countries.cti"}, {"start": 9894307, "audio": 0, "end": 9904888, "filename": "/ru-ru-g1.utb"}, {"start": 9904888, "audio": 0, "end": 9905433, "filename": "/kok.tbl"}, {"start": 9905433, "audio": 0, "end": 9919508, "filename": "/da-dk-g18.ctb"}, {"start": 9919508, "audio": 0, "end": 9921055, "filename": "/mao-nz-g1.ctb"}, {"start": 9921055, "audio": 0, "end": 9977132, "filename": "/hyph_brl_da_dk.dic"}, {"start": 9977132, "audio": 0, "end": 9977715, "filename": "/it.tbl"}, {"start": 9977715, "audio": 0, "end": 9982628, "filename": "/ta-ta-g1.ctb"}, {"start": 9982628, "audio": 0, "end": 9983672, "filename": "/tsn-za-g1.ctb"}, {"start": 9983672, "audio": 0, "end": 9984558, "filename": "/ta.ctb"}], "remote_package_size": 9984558, "package_uuid": "27dac3f3-bc97-441f-9c56-50890c5cde65"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 7819, "filename": "/no-no-braillo-047-01.dis"}, {"start": 7819, "audio": 0, "end": 50043, "filename": "/Makefile.in"}, {"start": 50043, "audio": 0, "end": 78616, "filename": "/da-dk-g26.ctb"}, {"start": 78616, "audio": 0, "end": 82833, "filename": "/hyph_es_ES.dic"}, {"start": 82833, "audio": 0, "end": 83751, "filename": "/digits6Dots.uti"}, {"start": 83751, "audio": 0, "end": 94715, "filename": "/sin.cti"}, {"start": 94715, "audio": 0, "end": 118502, "filename": "/en-us-comp8-ext.utb"}, {"start": 118502, "audio": 0, "end": 129169, "filename": "/hyph_eo.dic"}, {"start": 129169, "audio": 0, "end": 138802, "filename": "/de-accents.cti"}, {"start": 138802, "audio": 0, "end": 139563, "filename": "/zh_CHN.tbl"}, {"start": 139563, "audio": 0, "end": 140779, "filename": "/mn-in-g1.utb"}, {"start": 140779, "audio": 0, "end": 140940, "filename": "/README"}, {"start": 140940, "audio": 0, "end": 156430, "filename": "/gr-pl-comp8.uti"}, {"start": 156430, "audio": 0, "end": 156995, "filename": "/gez.tbl"}, {"start": 156995, "audio": 0, "end": 157598, "filename": "/es.tbl"}, {"start": 157598, "audio": 0, "end": 158524, "filename": "/loweredDigits6Dots.uti"}, {"start": 158524, "audio": 0, "end": 167293, "filename": "/sl-si-comp8.ctb"}, {"start": 167293, "audio": 0, "end": 175751, "filename": "/hr-translation.cti"}, {"start": 175751, "audio": 0, "end": 176066, "filename": "/zh_HK.tbl"}, {"start": 176066, "audio": 0, "end": 178168, "filename": "/spaces.uti"}, {"start": 178168, "audio": 0, "end": 183342, "filename": "/fa-ir-comp8.ctb"}, {"start": 183342, "audio": 0, "end": 183908, "filename": "/ml.tbl"}, {"start": 183908, "audio": 0, "end": 184477, "filename": "/is.tbl"}, {"start": 184477, "audio": 0, "end": 228659, "filename": "/ur-pk-g2.ctb"}, {"start": 228659, "audio": 0, "end": 229218, "filename": "/sr.tbl"}, {"start": 229218, "audio": 0, "end": 240711, "filename": "/lt-6dot.utb"}, {"start": 240711, "audio": 0, "end": 262454, "filename": "/hyph_cs_CZ.dic"}, {"start": 262454, "audio": 0, "end": 264892, "filename": "/en-us-brf.dis"}, {"start": 264892, "audio": 0, "end": 278619, "filename": "/IPA-unicode-range.uti"}, {"start": 278619, "audio": 0, "end": 304111, "filename": "/el.ctb"}, {"start": 304111, "audio": 0, "end": 304671, "filename": "/pl.tbl"}, {"start": 304671, "audio": 0, "end": 316007, "filename": "/ru.ctb"}, {"start": 316007, "audio": 0, "end": 352102, "filename": "/de-g1-core-patterns.dic"}, {"start": 352102, "audio": 0, "end": 354301, "filename": "/de-eurobrl6.dis"}, {"start": 354301, "audio": 0, "end": 367561, "filename": "/sl-si-g1.utb"}, {"start": 367561, "audio": 0, "end": 368125, "filename": "/sa.tbl"}, {"start": 368125, "audio": 0, "end": 376556, "filename": "/fi-fi-8dot.ctb"}, {"start": 376556, "audio": 0, "end": 396610, "filename": "/no-no-8dot.utb"}, {"start": 396610, "audio": 0, "end": 404120, "filename": "/pt-pt-g1.utb"}, {"start": 404120, "audio": 0, "end": 417248, "filename": "/hu-hu-g2.ctb"}, {"start": 417248, "audio": 0, "end": 417839, "filename": "/lt.tbl"}, {"start": 417839, "audio": 0, "end": 418399, "filename": "/sd.tbl"}, {"start": 418399, "audio": 0, "end": 419003, "filename": "/ar.tbl"}, {"start": 419003, "audio": 0, "end": 419579, "filename": "/hy.tbl"}, {"start": 419579, "audio": 0, "end": 426842, "filename": "/en-nabcc.utb"}, {"start": 426842, "audio": 0, "end": 430204, "filename": "/hu-hu-g1_braille_input.cti"}, {"start": 430204, "audio": 0, "end": 440721, "filename": "/hr-comp8.utb"}, {"start": 440721, "audio": 0, "end": 442766, "filename": "/en-ueb-math.ctb"}, {"start": 442766, "audio": 0, "end": 444448, "filename": "/mao-nz-g1.ctb"}, {"start": 444448, "audio": 0, "end": 452427, "filename": "/hyph_fr_FR.dic"}, {"start": 452427, "audio": 0, "end": 467976, "filename": "/ukmaths_unicode_defs.cti"}, {"start": 467976, "audio": 0, "end": 471210, "filename": "/ukchardefs.cti"}, {"start": 471210, "audio": 0, "end": 1733747, "filename": "/zh-chn.ctb"}, {"start": 1733747, "audio": 0, "end": 1734963, "filename": "/aw-in-g1.utb"}, {"start": 1734963, "audio": 0, "end": 1767574, "filename": "/hu-hu-g2_exceptions.cti"}, {"start": 1767574, "audio": 0, "end": 1771617, "filename": "/ru-compbrl.ctb"}, {"start": 1771617, "audio": 0, "end": 1776906, "filename": "/gd.ctb"}, {"start": 1776906, "audio": 0, "end": 1958283, "filename": "/en-ueb-g2.ctb"}, {"start": 1958283, "audio": 0, "end": 1968542, "filename": "/gurumuki.cti"}, {"start": 1968542, "audio": 0, "end": 1969101, "filename": "/ca.tbl"}, {"start": 1969101, "audio": 0, "end": 1978400, "filename": "/devanagari.cti"}, {"start": 1978400, "audio": 0, "end": 1978982, "filename": "/hr-comp8.tbl"}, {"start": 1978982, "audio": 0, "end": 1983533, "filename": "/mt.ctb"}, {"start": 1983533, "audio": 0, "end": 2258309, "filename": "/ko-g2-rules.cti"}, {"start": 2258309, "audio": 0, "end": 2259526, "filename": "/gu-in-g1.utb"}, {"start": 2259526, "audio": 0, "end": 2260881, "filename": "/hu-backtranslate-correction.dis"}, {"start": 2260881, "audio": 0, "end": 2262235, "filename": "/cs-g1.ctb"}, {"start": 2262235, "audio": 0, "end": 2290300, "filename": "/en-us-interline.ctb"}, {"start": 2290300, "audio": 0, "end": 2290905, "filename": "/cvox-common.cti"}, {"start": 2290905, "audio": 0, "end": 2292121, "filename": "/as-in-g1.utb"}, {"start": 2292121, "audio": 0, "end": 2292682, "filename": "/awa.tbl"}, {"start": 2292682, "audio": 0, "end": 2479360, "filename": "/hyph_nn_NO.dic"}, {"start": 2479360, "audio": 0, "end": 2490106, "filename": "/no-no-chardefs6.uti"}, {"start": 2490106, "audio": 0, "end": 2506078, "filename": "/hr-chardefs.cti"}, {"start": 2506078, "audio": 0, "end": 2530766, "filename": "/de-g0-core.uti"}, {"start": 2530766, "audio": 0, "end": 2533812, "filename": "/eurodefs.cti"}, {"start": 2533812, "audio": 0, "end": 2541877, "filename": "/iu-ca-g1.ctb"}, {"start": 2541877, "audio": 0, "end": 2558204, "filename": "/de-chardefs6.cti"}, {"start": 2558204, "audio": 0, "end": 2568302, "filename": "/ar-ar-g2.ctb"}, {"start": 2568302, "audio": 0, "end": 2588300, "filename": "/de-chardefs8.cti"}, {"start": 2588300, "audio": 0, "end": 2596863, "filename": "/ckb-chardefs.cti"}, {"start": 2596863, "audio": 0, "end": 2602764, "filename": "/is.ctb"}, {"start": 2602764, "audio": 0, "end": 2615338, "filename": "/tr-g2.ctb"}, {"start": 2615338, "audio": 0, "end": 2619358, "filename": "/no-no-g1.ctb"}, {"start": 2619358, "audio": 0, "end": 2620284, "filename": "/bh.ctb"}, {"start": 2620284, "audio": 0, "end": 2620841, "filename": "/bra.tbl"}, {"start": 2620841, "audio": 0, "end": 2627670, "filename": "/es-new.dis"}, {"start": 2627670, "audio": 0, "end": 2641787, "filename": "/da-dk-g18.ctb"}, {"start": 2641787, "audio": 0, "end": 2660006, "filename": "/Lv-Lv-g1.utb"}, {"start": 2660006, "audio": 0, "end": 2691265, "filename": "/hyph_sv_SE.dic"}, {"start": 2691265, "audio": 0, "end": 2693725, "filename": "/eo-g1.ctb"}, {"start": 2693725, "audio": 0, "end": 2699886, "filename": "/Makefile.am"}, {"start": 2699886, "audio": 0, "end": 2700476, "filename": "/gd.tbl"}, {"start": 2700476, "audio": 0, "end": 2737277, "filename": "/hyph_de_DE.dic"}, {"start": 2737277, "audio": 0, "end": 2738671, "filename": "/de-g1-core.cti"}, {"start": 2738671, "audio": 0, "end": 2752196, "filename": "/da-dk-g08.ctb"}, {"start": 2752196, "audio": 0, "end": 2775877, "filename": "/ko-g1-rules.cti"}, {"start": 2775877, "audio": 0, "end": 2779209, "filename": "/sr-g1.ctb"}, {"start": 2779209, "audio": 0, "end": 3161557, "filename": "/ko-chars.cti"}, {"start": 3161557, "audio": 0, "end": 3165073, "filename": "/en-in-g1.ctb"}, {"start": 3165073, "audio": 0, "end": 3185869, "filename": "/no-no-comp8.ctb"}, {"start": 3185869, "audio": 0, "end": 3188075, "filename": "/hyph_it_IT.dic"}, {"start": 3188075, "audio": 0, "end": 3188633, "filename": "/or.tbl"}, {"start": 3188633, "audio": 0, "end": 3190122, "filename": "/de-chess.ctb"}, {"start": 3190122, "audio": 0, "end": 3191163, "filename": "/sot-za-g1.ctb"}, {"start": 3191163, "audio": 0, "end": 3192988, "filename": "/mn-MN-g1.utb"}, {"start": 3192988, "audio": 0, "end": 3194407, "filename": "/compress.cti"}, {"start": 3194407, "audio": 0, "end": 3201224, "filename": "/IPA.utb"}, {"start": 3201224, "audio": 0, "end": 3222784, "filename": "/pt-pt-g2.ctb"}, {"start": 3222784, "audio": 0, "end": 3242865, "filename": "/nl-chardefs.uti"}, {"start": 3242865, "audio": 0, "end": 3254359, "filename": "/fi1.ctb"}, {"start": 3254359, "audio": 0, "end": 3254905, "filename": "/kru.tbl"}, {"start": 3254905, "audio": 0, "end": 3256122, "filename": "/np-in-g1.utb"}, {"start": 3256122, "audio": 0, "end": 3263754, "filename": "/sv-1996.ctb"}, {"start": 3263754, "audio": 0, "end": 3264360, "filename": "/en_CA.tbl"}, {"start": 3264360, "audio": 0, "end": 3265425, "filename": "/digits6DotsPlusDot6.uti"}, {"start": 3265425, "audio": 0, "end": 3266845, "filename": "/latinLetterDef6Dots.uti"}, {"start": 3266845, "audio": 0, "end": 3294775, "filename": "/en-us-g2.ctb"}, {"start": 3294775, "audio": 0, "end": 3295985, "filename": "/ckb-g1.ctb"}, {"start": 3295985, "audio": 0, "end": 3298590, "filename": "/sk-translation.cti"}, {"start": 3298590, "audio": 0, "end": 3305020, "filename": "/nl-g0.uti"}, {"start": 3305020, "audio": 0, "end": 3305977, "filename": "/litdigits6Dots.uti"}, {"start": 3305977, "audio": 0, "end": 3310697, "filename": "/grc-international-en.utb"}, {"start": 3310697, "audio": 0, "end": 3311262, "filename": "/mni.tbl"}, {"start": 3311262, "audio": 0, "end": 3319572, "filename": "/nl-BE-g0.utb"}, {"start": 3319572, "audio": 0, "end": 3320500, "filename": "/digits8Dots.uti"}, {"start": 3320500, "audio": 0, "end": 3325536, "filename": "/et-g0.utb"}, {"start": 3325536, "audio": 0, "end": 3326099, "filename": "/eo.tbl"}, {"start": 3326099, "audio": 0, "end": 3333760, "filename": "/Pl-Pl-g1.utb"}, {"start": 3333760, "audio": 0, "end": 3340463, "filename": "/countries.cti"}, {"start": 3340463, "audio": 0, "end": 3346437, "filename": "/unicode.dis"}, {"start": 3346437, "audio": 0, "end": 3372868, "filename": "/braille-patterns.cti"}, {"start": 3372868, "audio": 0, "end": 3375010, "filename": "/no-no-8dot-fallback-6dot-g0.utb"}, {"start": 3375010, "audio": 0, "end": 3375176, "filename": "/lt-6dot.tbl"}, {"start": 3375176, "audio": 0, "end": 3375750, "filename": "/mt.tbl"}, {"start": 3375750, "audio": 0, "end": 3380056, "filename": "/cy-cy-g2.ctb"}, {"start": 3380056, "audio": 0, "end": 3393034, "filename": "/da-dk-6miscChars.cti"}, {"start": 3393034, "audio": 0, "end": 3409338, "filename": "/grc-international-composed.uti"}, {"start": 3409338, "audio": 0, "end": 3410382, "filename": "/tsn-za-g1.ctb"}, {"start": 3410382, "audio": 0, "end": 3415390, "filename": "/ro.ctb"}, {"start": 3415390, "audio": 0, "end": 3420323, "filename": "/ta-ta-g1.ctb"}, {"start": 3420323, "audio": 0, "end": 3445156, "filename": "/unicode-braille.utb"}, {"start": 3445156, "audio": 0, "end": 3446554, "filename": "/latinLetterDef8Dots.uti"}, {"start": 3446554, "audio": 0, "end": 3447114, "filename": "/ne.tbl"}, {"start": 3447114, "audio": 0, "end": 3448948, "filename": "/printables.cti"}, {"start": 3448948, "audio": 0, "end": 3449485, "filename": "/sl.tbl"}, {"start": 3449485, "audio": 0, "end": 3451652, "filename": "/en-us-compbrl.uti"}, {"start": 3451652, "audio": 0, "end": 3452869, "filename": "/si-in-g1.utb"}, {"start": 3452869, "audio": 0, "end": 3457550, "filename": "/tr.ctb"}, {"start": 3457550, "audio": 0, "end": 3458112, "filename": "/kn.tbl"}, {"start": 3458112, "audio": 0, "end": 3459349, "filename": "/es-g1.ctb"}, {"start": 3459349, "audio": 0, "end": 3467453, "filename": "/en_CA.ctb"}, {"start": 3467453, "audio": 0, "end": 3550978, "filename": "/hyph_nl_NL.dic"}, {"start": 3550978, "audio": 0, "end": 3553096, "filename": "/tr-g1.ctb"}, {"start": 3553096, "audio": 0, "end": 3558303, "filename": "/ru-litbrl.ctb"}, {"start": 3558303, "audio": 0, "end": 3560172, "filename": "/ko-2006-g2.ctb"}, {"start": 3560172, "audio": 0, "end": 3560712, "filename": "/pi.tbl"}, {"start": 3560712, "audio": 0, "end": 3561256, "filename": "/gon.tbl"}, {"start": 3561256, "audio": 0, "end": 3564797, "filename": "/ckb-translation.cti"}, {"start": 3564797, "audio": 0, "end": 3565774, "filename": "/ca-g1.ctb"}, {"start": 3565774, "audio": 0, "end": 3573380, "filename": "/cs-comp8.utb"}, {"start": 3573380, "audio": 0, "end": 3578023, "filename": "/ga-g2.ctb"}, {"start": 3578023, "audio": 0, "end": 3582128, "filename": "/et.ctb"}, {"start": 3582128, "audio": 0, "end": 3623940, "filename": "/da-dk-g28.ctb"}, {"start": 3623940, "audio": 0, "end": 3631751, "filename": "/fi.utb"}, {"start": 3631751, "audio": 0, "end": 3633283, "filename": "/ukmaths_single_cell_defs.cti"}, {"start": 3633283, "audio": 0, "end": 3633582, "filename": "/no.tbl"}, {"start": 3633582, "audio": 0, "end": 3634526, "filename": "/gon.ctb"}, {"start": 3634526, "audio": 0, "end": 3635100, "filename": "/bo.tbl"}, {"start": 3635100, "audio": 0, "end": 3649716, "filename": "/uni-text.dis"}, {"start": 3649716, "audio": 0, "end": 3658999, "filename": "/en-ueb-g1.ctb"}, {"start": 3658999, "audio": 0, "end": 3689550, "filename": "/hyph_pl_PL.dic"}, {"start": 3689550, "audio": 0, "end": 3715083, "filename": "/es-g2.ctb"}, {"start": 3715083, "audio": 0, "end": 3718556, "filename": "/grc-international-common.uti"}, {"start": 3718556, "audio": 0, "end": 3733249, "filename": "/se-se.dis"}, {"start": 3733249, "audio": 0, "end": 3749695, "filename": "/grc-international-decomposed.uti"}, {"start": 3749695, "audio": 0, "end": 3766529, "filename": "/lt.ctb"}, {"start": 3766529, "audio": 0, "end": 3767089, "filename": "/te.tbl"}, {"start": 3767089, "audio": 0, "end": 3775149, "filename": "/da-dk-g16-lit.ctb"}, {"start": 3775149, "audio": 0, "end": 3776504, "filename": "/sin.utb"}, {"start": 3776504, "audio": 0, "end": 3777947, "filename": "/hr-digits.uti"}, {"start": 3777947, "audio": 0, "end": 3781023, "filename": "/uk.utb"}, {"start": 3781023, "audio": 0, "end": 3786623, "filename": "/ko.cti"}, {"start": 3786623, "audio": 0, "end": 3796228, "filename": "/gujarati.cti"}, {"start": 3796228, "audio": 0, "end": 3826376, "filename": "/da-dk-g28l.ctb"}, {"start": 3826376, "audio": 0, "end": 3848026, "filename": "/text_nabcc.dis"}, {"start": 3848026, "audio": 0, "end": 3848953, "filename": "/kok.ctb"}, {"start": 3848953, "audio": 0, "end": 3849523, "filename": "/ta.tbl"}, {"start": 3849523, "audio": 0, "end": 4113784, "filename": "/zh-hk.ctb"}, {"start": 4113784, "audio": 0, "end": 4120821, "filename": "/Es-Es-G0.utb"}, {"start": 4120821, "audio": 0, "end": 4128671, "filename": "/ar-ar-comp8.utb"}, {"start": 4128671, "audio": 0, "end": 4133154, "filename": "/en-us-g1.ctb"}, {"start": 4133154, "audio": 0, "end": 4135527, "filename": "/mn-MN-common.cti"}, {"start": 4135527, "audio": 0, "end": 4136103, "filename": "/et.tbl"}, {"start": 4136103, "audio": 0, "end": 4136665, "filename": "/sv.tbl"}, {"start": 4136665, "audio": 0, "end": 4281009, "filename": "/fr-bfu-g2.ctb"}, {"start": 4281009, "audio": 0, "end": 4287439, "filename": "/bg.ctb"}, {"start": 4287439, "audio": 0, "end": 4289578, "filename": "/en-gb-comp8.ctb"}, {"start": 4289578, "audio": 0, "end": 4303222, "filename": "/no-no.dis"}, {"start": 4303222, "audio": 0, "end": 4305012, "filename": "/ko-g2.ctb"}, {"start": 4305012, "audio": 0, "end": 4309921, "filename": "/hu-hu-g1.ctb"}, {"start": 4309921, "audio": 0, "end": 4312880, "filename": "/eo-g1-x-system.ctb"}, {"start": 4312880, "audio": 0, "end": 4988814, "filename": "/zhcn-g1.ctb"}, {"start": 4988814, "audio": 0, "end": 4989795, "filename": "/litdigits6DotsPlusDot6.uti"}, {"start": 4989795, "audio": 0, "end": 4990813, "filename": "/maketablelist.sh"}, {"start": 4990813, "audio": 0, "end": 5008146, "filename": "/pl-pl-comp8.ctb"}, {"start": 5008146, "audio": 0, "end": 5012911, "filename": "/Se-Se-g1.utb"}, {"start": 5012911, "audio": 0, "end": 5013511, "filename": "/cy.tbl"}, {"start": 5013511, "audio": 0, "end": 5016354, "filename": "/ru-letters.dis"}, {"start": 5016354, "audio": 0, "end": 5024377, "filename": "/da-dk-g16.ctb"}, {"start": 5024377, "audio": 0, "end": 5026033, "filename": "/nl-BE.dis"}, {"start": 5026033, "audio": 0, "end": 5037544, "filename": "/fi2.ctb"}, {"start": 5037544, "audio": 0, "end": 5038759, "filename": "/be-in-g1.utb"}, {"start": 5038759, "audio": 0, "end": 5039972, "filename": "/te-in-g1.utb"}, {"start": 5039972, "audio": 0, "end": 5046303, "filename": "/no-no-g0.utb"}, {"start": 5046303, "audio": 0, "end": 5046883, "filename": "/dra.tbl"}, {"start": 5046883, "audio": 0, "end": 5054984, "filename": "/en-chardefs.cti"}, {"start": 5054984, "audio": 0, "end": 5071480, "filename": "/nemethdefs.cti"}, {"start": 5071480, "audio": 0, "end": 5072041, "filename": "/ckb.tbl"}, {"start": 5072041, "audio": 0, "end": 5072961, "filename": "/ta.ctb"}, {"start": 5072961, "audio": 0, "end": 5087374, "filename": "/da-dk-g26l.ctb"}, {"start": 5087374, "audio": 0, "end": 5123841, "filename": "/hyph_en_US.dic"}, {"start": 5123841, "audio": 0, "end": 5142609, "filename": "/no-no-g3.ctb"}, {"start": 5142609, "audio": 0, "end": 5143535, "filename": "/kru.ctb"}, {"start": 5143535, "audio": 0, "end": 5146058, "filename": "/cs-translation.cti"}, {"start": 5146058, "audio": 0, "end": 5146629, "filename": "/lv.tbl"}, {"start": 5146629, "audio": 0, "end": 5147530, "filename": "/unicode-without-blank.dis"}, {"start": 5147530, "audio": 0, "end": 5263483, "filename": "/hu-exceptionwords.cti"}, {"start": 5263483, "audio": 0, "end": 5268178, "filename": "/hu-hu-comp8.ctb"}, {"start": 5268178, "audio": 0, "end": 5268742, "filename": "/as.tbl"}, {"start": 5268742, "audio": 0, "end": 5274417, "filename": "/fa-ir-g1.utb"}, {"start": 5274417, "audio": 0, "end": 5276789, "filename": "/sk-sk.utb"}, {"start": 5276789, "audio": 0, "end": 5298031, "filename": "/is-chardefs8.cti"}, {"start": 5298031, "audio": 0, "end": 5301123, "filename": "/pt-pt-comp8.ctb"}, {"start": 5301123, "audio": 0, "end": 5362341, "filename": "/hyph_brl_da_dk.dic"}, {"start": 5362341, "audio": 0, "end": 5371869, "filename": "/oriya.cti"}, {"start": 5371869, "audio": 0, "end": 5392317, "filename": "/en-us-mathtext.ctb"}, {"start": 5392317, "audio": 0, "end": 5402622, "filename": "/boxes.ctb"}, {"start": 5402622, "audio": 0, "end": 5404713, "filename": "/de-eurobrl6u.dis"}, {"start": 5404713, "audio": 0, "end": 5406490, "filename": "/ko-2006-g1.ctb"}, {"start": 5406490, "audio": 0, "end": 5407382, "filename": "/ne.ctb"}, {"start": 5407382, "audio": 0, "end": 5416878, "filename": "/sv-1989.ctb"}, {"start": 5416878, "audio": 0, "end": 5609446, "filename": "/de-g2-core-patterns.dic"}, {"start": 5609446, "audio": 0, "end": 5618252, "filename": "/nl-NL-g0.utb"}, {"start": 5618252, "audio": 0, "end": 5619814, "filename": "/us-table.dis"}, {"start": 5619814, "audio": 0, "end": 5620340, "filename": "/cs.tbl"}, {"start": 5620340, "audio": 0, "end": 5642371, "filename": "/sk-chardefs.cti"}, {"start": 5642371, "audio": 0, "end": 5646225, "filename": "/wordcx.dis"}, {"start": 5646225, "audio": 0, "end": 5646773, "filename": "/kok.tbl"}, {"start": 5646773, "audio": 0, "end": 5647396, "filename": "/nl_BE.tbl"}, {"start": 5647396, "audio": 0, "end": 5652852, "filename": "/chr-us-g1.ctb"}, {"start": 5652852, "audio": 0, "end": 5839530, "filename": "/hyph_nb_NO.dic"}, {"start": 5839530, "audio": 0, "end": 5840089, "filename": "/kha.tbl"}, {"start": 5840089, "audio": 0, "end": 5852607, "filename": "/cy-cy-g1.utb"}, {"start": 5852607, "audio": 0, "end": 5853238, "filename": "/hu.tbl"}, {"start": 5853238, "audio": 0, "end": 5860119, "filename": "/sr-chardefs.cti"}, {"start": 5860119, "audio": 0, "end": 5865450, "filename": "/cs-letterDef8Dots.uti"}, {"start": 5865450, "audio": 0, "end": 5870651, "filename": "/sk-sk-g1.utb"}, {"start": 5870651, "audio": 0, "end": 5871239, "filename": "/tr-g2.tbl"}, {"start": 5871239, "audio": 0, "end": 5872613, "filename": "/de-g2.ctb"}, {"start": 5872613, "audio": 0, "end": 5872935, "filename": "/zh_TW.tbl"}, {"start": 5872935, "audio": 0, "end": 5873509, "filename": "/tr.tbl"}, {"start": 5873509, "audio": 0, "end": 5878140, "filename": "/en-us-comp6.ctb"}, {"start": 5878140, "audio": 0, "end": 5878703, "filename": "/ru.tbl"}, {"start": 5878703, "audio": 0, "end": 5879267, "filename": "/it.tbl"}, {"start": 5879267, "audio": 0, "end": 5880959, "filename": "/ko-g1.ctb"}, {"start": 5880959, "audio": 0, "end": 5882175, "filename": "/hi-in-g1.utb"}, {"start": 5882175, "audio": 0, "end": 5949711, "filename": "/hyph_ru.dic"}, {"start": 5949711, "audio": 0, "end": 5950999, "filename": "/hyph_pt_PT.dic"}, {"start": 5950999, "audio": 0, "end": 5952191, "filename": "/kh-in-g1.utb"}, {"start": 5952191, "audio": 0, "end": 5953410, "filename": "/ks-in-g1.utb"}, {"start": 5953410, "audio": 0, "end": 5953974, "filename": "/gu.tbl"}, {"start": 5953974, "audio": 0, "end": 5954532, "filename": "/hi.tbl"}, {"start": 5954532, "audio": 0, "end": 5991290, "filename": "/Makefile"}, {"start": 5991290, "audio": 0, "end": 5992800, "filename": "/hr-g1.ctb"}, {"start": 5992800, "audio": 0, "end": 6012288, "filename": "/en-ueb-chardefs.uti"}, {"start": 6012288, "audio": 0, "end": 6012864, "filename": "/ro.tbl"}, {"start": 6012864, "audio": 0, "end": 6037706, "filename": "/afr-za-g2.ctb"}, {"start": 6037706, "audio": 0, "end": 6046409, "filename": "/kannada.cti"}, {"start": 6046409, "audio": 0, "end": 6057984, "filename": "/da-dk-octobraille.dis"}, {"start": 6057984, "audio": 0, "end": 6059499, "filename": "/marburg_single_cell_defs.cti"}, {"start": 6059499, "audio": 0, "end": 6060997, "filename": "/en-chess.ctb"}, {"start": 6060997, "audio": 0, "end": 6064223, "filename": "/ga-g1.utb"}, {"start": 6064223, "audio": 0, "end": 6076256, "filename": "/vi.ctb"}, {"start": 6076256, "audio": 0, "end": 6076818, "filename": "/bn.tbl"}, {"start": 6076818, "audio": 0, "end": 6087440, "filename": "/ru-ru-g1.utb"}, {"start": 6087440, "audio": 0, "end": 6100918, "filename": "/no-no-generic.ctb"}, {"start": 6100918, "audio": 0, "end": 7479065, "filename": "/zh-tw.ctb"}, {"start": 7479065, "audio": 0, "end": 7479697, "filename": "/nl.tbl"}, {"start": 7479697, "audio": 0, "end": 7491330, "filename": "/da-lt.ctb"}, {"start": 7491330, "audio": 0, "end": 7492548, "filename": "/mr-in-g1.utb"}, {"start": 7492548, "audio": 0, "end": 7522029, "filename": "/de-g2-core.cti"}, {"start": 7522029, "audio": 0, "end": 7526435, "filename": "/it-it-comp6.utb"}, {"start": 7526435, "audio": 0, "end": 7535827, "filename": "/ar-ar-g1.utb"}, {"start": 7535827, "audio": 0, "end": 7542786, "filename": "/vi-g1.ctb"}, {"start": 7542786, "audio": 0, "end": 7543708, "filename": "/mun.ctb"}, {"start": 7543708, "audio": 0, "end": 7544927, "filename": "/ml-in-g1.utb"}, {"start": 7544927, "audio": 0, "end": 7545972, "filename": "/controlchars.cti"}, {"start": 7545972, "audio": 0, "end": 7547186, "filename": "/br-in-g1.utb"}, {"start": 7547186, "audio": 0, "end": 7550580, "filename": "/afr-za-g1.ctb"}, {"start": 7550580, "audio": 0, "end": 7552072, "filename": "/corrections.cti"}, {"start": 7552072, "audio": 0, "end": 7564209, "filename": "/fr-bfu-comp68.cti"}, {"start": 7564209, "audio": 0, "end": 7565114, "filename": "/dra.ctb"}, {"start": 7565114, "audio": 0, "end": 7579456, "filename": "/ca-chardefs.cti"}, {"start": 7579456, "audio": 0, "end": 7586512, "filename": "/he.ctb"}, {"start": 7586512, "audio": 0, "end": 7590471, "filename": "/ko-2006.cti"}, {"start": 7590471, "audio": 0, "end": 7591045, "filename": "/vi.tbl"}, {"start": 7591045, "audio": 0, "end": 7619778, "filename": "/it-it-comp8.utb"}, {"start": 7619778, "audio": 0, "end": 7620994, "filename": "/pu-in-g1.utb"}, {"start": 7620994, "audio": 0, "end": 7630332, "filename": "/de-de-comp8.ctb"}, {"start": 7630332, "audio": 0, "end": 7642033, "filename": "/hu-chardefs.cti"}, {"start": 7642033, "audio": 0, "end": 7660592, "filename": "/wiskunde-chardefs.cti"}, {"start": 7660592, "audio": 0, "end": 7663810, "filename": "/tamil.cti"}, {"start": 7663810, "audio": 0, "end": 7676711, "filename": "/no-no-g2.ctb"}, {"start": 7676711, "audio": 0, "end": 7676857, "filename": "/hr-g1.tbl"}, {"start": 7676857, "audio": 0, "end": 7677419, "filename": "/pa.tbl"}, {"start": 7677419, "audio": 0, "end": 7684667, "filename": "/bo.ctb"}, {"start": 7684667, "audio": 0, "end": 7691783, "filename": "/ethio-g1.ctb"}, {"start": 7691783, "audio": 0, "end": 7692707, "filename": "/pi.ctb"}, {"start": 7692707, "audio": 0, "end": 7706675, "filename": "/es-chardefs.cti"}, {"start": 7706675, "audio": 0, "end": 7707219, "filename": "/bh.tbl"}, {"start": 7707219, "audio": 0, "end": 7708742, "filename": "/de-g1.ctb"}, {"start": 7708742, "audio": 0, "end": 7718983, "filename": "/se-se.ctb"}, {"start": 7718983, "audio": 0, "end": 7720448, "filename": "/haw-us-g1.ctb"}, {"start": 7720448, "audio": 0, "end": 7728672, "filename": "/ru-ru.dis"}, {"start": 7728672, "audio": 0, "end": 7742845, "filename": "/no-no-generic.dis"}, {"start": 7742845, "audio": 0, "end": 7754522, "filename": "/fr-bfu-comp6.utb"}, {"start": 7754522, "audio": 0, "end": 7787328, "filename": "/no-no-latinLetterDef6Dots_diacritics.uti"}, {"start": 7787328, "audio": 0, "end": 7787938, "filename": "/pt.tbl"}, {"start": 7787938, "audio": 0, "end": 7790323, "filename": "/de-accents-detailed.cti"}, {"start": 7790323, "audio": 0, "end": 7800474, "filename": "/telugu.cti"}, {"start": 7800474, "audio": 0, "end": 7812007, "filename": "/ur-pk-g1.utb"}, {"start": 7812007, "audio": 0, "end": 7826309, "filename": "/cs-chardefs.cti"}, {"start": 7826309, "audio": 0, "end": 7826857, "filename": "/mwr.tbl"}, {"start": 7826857, "audio": 0, "end": 7828289, "filename": "/sk-g1.ctb"}, {"start": 7828289, "audio": 0, "end": 7833715, "filename": "/hy.ctb"}, {"start": 7833715, "audio": 0, "end": 7834272, "filename": "/sk.tbl"}, {"start": 7834272, "audio": 0, "end": 7848517, "filename": "/da-dk-g26l-lit.ctb"}, {"start": 7848517, "audio": 0, "end": 7863118, "filename": "/de-de.dis"}, {"start": 7863118, "audio": 0, "end": 8480469, "filename": "/zhcn-g2.ctb"}, {"start": 8480469, "audio": 0, "end": 8487292, "filename": "/es-old.dis"}, {"start": 8487292, "audio": 0, "end": 8498514, "filename": "/malayalam.cti"}, {"start": 8498514, "audio": 0, "end": 8500146, "filename": "/en-us-comp8.ctb"}, {"start": 8500146, "audio": 0, "end": 8508449, "filename": "/da-dk.dis"}, {"start": 8508449, "audio": 0, "end": 8509660, "filename": "/or-in-g1.utb"}, {"start": 8509660, "audio": 0, "end": 8529314, "filename": "/en-GB-g2.ctb"}, {"start": 8529314, "audio": 0, "end": 8536456, "filename": "/is-chardefs6.cti"}, {"start": 8536456, "audio": 0, "end": 8546823, "filename": "/bengali.cti"}, {"start": 8546823, "audio": 0, "end": 8547092, "filename": "/en_US-comp8-ext.tbl"}, {"start": 8547092, "audio": 0, "end": 8547670, "filename": "/bg.tbl"}, {"start": 8547670, "audio": 0, "end": 8609068, "filename": "/hyph_da_DK.dic"}, {"start": 8609068, "audio": 0, "end": 8609751, "filename": "/en_US.tbl"}, {"start": 8609751, "audio": 0, "end": 8622291, "filename": "/en-gb-g1.utb"}, {"start": 8622291, "audio": 0, "end": 8623506, "filename": "/ka-in-g1.utb"}, {"start": 8623506, "audio": 0, "end": 8639054, "filename": "/marburg_unicode_defs.cti"}, {"start": 8639054, "audio": 0, "end": 8640681, "filename": "/de-g0.utb"}, {"start": 8640681, "audio": 0, "end": 8642694, "filename": "/ru-chardefs.cti"}, {"start": 8642694, "audio": 0, "end": 8643621, "filename": "/mwr.ctb"}, {"start": 8643621, "audio": 0, "end": 8644165, "filename": "/mun.tbl"}, {"start": 8644165, "audio": 0, "end": 8646917, "filename": "/ru-unicode.dis"}, {"start": 8646917, "audio": 0, "end": 8647853, "filename": "/loweredDigits8Dots.uti"}, {"start": 8647853, "audio": 0, "end": 8648532, "filename": "/en_GB.tbl"}, {"start": 8648532, "audio": 0, "end": 8650353, "filename": "/mn-MN-g2.ctb"}, {"start": 8650353, "audio": 0, "end": 8650915, "filename": "/mr.tbl"}, {"start": 8650915, "audio": 0, "end": 8651487, "filename": "/he.tbl"}, {"start": 8651487, "audio": 0, "end": 8665847, "filename": "/fr-bfu-comp8.utb"}, {"start": 8665847, "audio": 0, "end": 8685688, "filename": "/da-dk-g26-lit.ctb"}, {"start": 8685688, "audio": 0, "end": 9561792, "filename": "/hyph_hu_HU.dic"}, {"start": 9561792, "audio": 0, "end": 9563011, "filename": "/sa-in-g1.utb"}], "remote_package_size": 9563011, "package_uuid": "44fbc30b-5073-4849-9b7d-133432ec4d60"});
 
 })();
-
 
 
 
@@ -220,13 +219,11 @@ for (key in Module) {
   }
 }
 
-Module['arguments'] = [];
-Module['thisProgram'] = './this.program';
-Module['quit'] = function(status, toThrow) {
+var arguments_ = [];
+var thisProgram = './this.program';
+var quit_ = function(status, toThrow) {
   throw toThrow;
 };
-Module['preRun'] = [];
-Module['postRun'] = [];
 
 // Determine the runtime environment we are in. You can customize this by
 // setting the ENVIRONMENT setting at compile time (see settings.js).
@@ -234,30 +231,46 @@ Module['postRun'] = [];
 var ENVIRONMENT_IS_WEB = false;
 var ENVIRONMENT_IS_WORKER = false;
 var ENVIRONMENT_IS_NODE = false;
+var ENVIRONMENT_HAS_NODE = false;
 var ENVIRONMENT_IS_SHELL = false;
 ENVIRONMENT_IS_WEB = typeof window === 'object';
 ENVIRONMENT_IS_WORKER = typeof importScripts === 'function';
-ENVIRONMENT_IS_NODE = typeof process === 'object' && typeof require === 'function' && !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_WORKER;
+// A web environment like Electron.js can have Node enabled, so we must
+// distinguish between Node-enabled environments and Node environments per se.
+// This will allow the former to do things like mount NODEFS.
+// Extended check using process.versions fixes issue #8816.
+// (Also makes redundant the original check that 'require' is a function.)
+ENVIRONMENT_HAS_NODE = typeof process === 'object' && typeof process.versions === 'object' && typeof process.versions.node === 'string';
+ENVIRONMENT_IS_NODE = ENVIRONMENT_HAS_NODE && !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_WORKER;
 ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIRONMENT_IS_WORKER;
 
 if (Module['ENVIRONMENT']) {
   throw new Error('Module.ENVIRONMENT has been deprecated. To force the environment, use the ENVIRONMENT compile-time option (for example, -s ENVIRONMENT=web or -s ENVIRONMENT=node)');
 }
 
+
 // Three configurations we can be running in:
 // 1) We could be the application main() thread running in the main JS UI thread. (ENVIRONMENT_IS_WORKER == false and ENVIRONMENT_IS_PTHREAD == false)
 // 2) We could be the application main() thread proxied to worker. (with Emscripten -s PROXY_TO_WORKER=1) (ENVIRONMENT_IS_WORKER == true, ENVIRONMENT_IS_PTHREAD == false)
 // 3) We could be an application pthread running in a worker. (ENVIRONMENT_IS_WORKER == true and ENVIRONMENT_IS_PTHREAD == true)
+
+
+
 
 // `/` should be present at the end if `scriptDirectory` is not empty
 var scriptDirectory = '';
 function locateFile(path) {
   if (Module['locateFile']) {
     return Module['locateFile'](path, scriptDirectory);
-  } else {
-    return scriptDirectory + path;
   }
+  return scriptDirectory + path;
 }
+
+// Hooks that are implemented differently in different runtime environments.
+var read_,
+    readAsync,
+    readBinary,
+    setWindowTitle;
 
 if (ENVIRONMENT_IS_NODE) {
   scriptDirectory = __dirname + '/';
@@ -267,7 +280,7 @@ if (ENVIRONMENT_IS_NODE) {
   var nodeFS;
   var nodePath;
 
-  Module['read'] = function shell_read(filename, binary) {
+  read_ = function shell_read(filename, binary) {
     var ret;
       if (!nodeFS) nodeFS = require('fs');
       if (!nodePath) nodePath = require('path');
@@ -276,8 +289,8 @@ if (ENVIRONMENT_IS_NODE) {
     return binary ? ret : ret.toString();
   };
 
-  Module['readBinary'] = function readBinary(filename) {
-    var ret = Module['read'](filename, true);
+  readBinary = function readBinary(filename) {
+    var ret = read_(filename, true);
     if (!ret.buffer) {
       ret = new Uint8Array(ret);
     }
@@ -286,10 +299,10 @@ if (ENVIRONMENT_IS_NODE) {
   };
 
   if (process['argv'].length > 1) {
-    Module['thisProgram'] = process['argv'][1].replace(/\\/g, '/');
+    thisProgram = process['argv'][1].replace(/\\/g, '/');
   }
 
-  Module['arguments'] = process['argv'].slice(2);
+  arguments_ = process['argv'].slice(2);
 
   // MODULARIZE will export the module in the proper place outside, we don't need to export here
 
@@ -299,11 +312,10 @@ if (ENVIRONMENT_IS_NODE) {
       throw ex;
     }
   });
-  // Currently node will swallow unhandled rejections, but this behavior is
-  // deprecated, and in the future it will exit with error status.
+
   process['on']('unhandledRejection', abort);
 
-  Module['quit'] = function(status) {
+  quit_ = function(status) {
     process['exit'](status);
   };
 
@@ -313,12 +325,12 @@ if (ENVIRONMENT_IS_SHELL) {
 
 
   if (typeof read != 'undefined') {
-    Module['read'] = function shell_read(f) {
+    read_ = function shell_read(f) {
       return read(f);
     };
   }
 
-  Module['readBinary'] = function readBinary(f) {
+  readBinary = function readBinary(f) {
     var data;
     if (typeof readbuffer === 'function') {
       return new Uint8Array(readbuffer(f));
@@ -329,15 +341,22 @@ if (ENVIRONMENT_IS_SHELL) {
   };
 
   if (typeof scriptArgs != 'undefined') {
-    Module['arguments'] = scriptArgs;
+    arguments_ = scriptArgs;
   } else if (typeof arguments != 'undefined') {
-    Module['arguments'] = arguments;
+    arguments_ = arguments;
   }
 
   if (typeof quit === 'function') {
-    Module['quit'] = function(status) {
+    quit_ = function(status) {
       quit(status);
-    }
+    };
+  }
+
+  if (typeof print !== 'undefined') {
+    // Prefer to use print/printErr where they exist, as they usually work better.
+    if (typeof console === 'undefined') console = {};
+    console.log = print;
+    console.warn = console.error = typeof printErr !== 'undefined' ? printErr : print;
   }
 } else
 if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
@@ -362,7 +381,7 @@ if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
   }
 
 
-  Module['read'] = function shell_read(url) {
+  read_ = function shell_read(url) {
       var xhr = new XMLHttpRequest();
       xhr.open('GET', url, false);
       xhr.send(null);
@@ -370,7 +389,7 @@ if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
   };
 
   if (ENVIRONMENT_IS_WORKER) {
-    Module['readBinary'] = function readBinary(url) {
+    readBinary = function readBinary(url) {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url, false);
         xhr.responseType = 'arraybuffer';
@@ -379,7 +398,7 @@ if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
     };
   }
 
-  Module['readAsync'] = function readAsync(url, onload, onerror) {
+  readAsync = function readAsync(url, onload, onerror) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.responseType = 'arraybuffer';
@@ -394,7 +413,7 @@ if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
     xhr.send(null);
   };
 
-  Module['setWindowTitle'] = function(title) { document.title = title };
+  setWindowTitle = function(title) { document.title = title };
 } else
 {
   throw new Error('environment detection error');
@@ -402,12 +421,8 @@ if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
 
 // Set up the out() and err() hooks, which are how we can print to stdout or
 // stderr, respectively.
-// If the user provided Module.print or printErr, use that. Otherwise,
-// console.log is checked first, as 'print' on the web will open a print dialogue
-// printErr is preferable to console.warn (works better in shells)
-// bind(console) is necessary to fix IE/Edge closed dev tools panel behavior.
-var out = Module['print'] || (typeof console !== 'undefined' ? console.log.bind(console) : (typeof print !== 'undefined' ? print : null));
-var err = Module['printErr'] || (typeof printErr !== 'undefined' ? printErr : ((typeof console !== 'undefined' && console.warn.bind(console)) || out));
+var out = Module['print'] || console.log.bind(console);
+var err = Module['printErr'] || console.warn.bind(console);
 
 // Merge back in the overrides
 for (key in moduleOverrides) {
@@ -417,13 +432,33 @@ for (key in moduleOverrides) {
 }
 // Free the object hierarchy contained in the overrides, this lets the GC
 // reclaim data used e.g. in memoryInitializerRequest, which is a large typed array.
-moduleOverrides = undefined;
+moduleOverrides = null;
+
+// Emit code to handle expected values on the Module object. This applies Module.x
+// to the proper local x. This has two benefits: first, we only emit it if it is
+// expected to arrive, and second, by using a local everywhere else that can be
+// minified.
+if (Module['arguments']) arguments_ = Module['arguments'];if (!Object.getOwnPropertyDescriptor(Module, 'arguments')) Object.defineProperty(Module, 'arguments', { get: function() { abort('Module.arguments has been replaced with plain arguments_') } });
+if (Module['thisProgram']) thisProgram = Module['thisProgram'];if (!Object.getOwnPropertyDescriptor(Module, 'thisProgram')) Object.defineProperty(Module, 'thisProgram', { get: function() { abort('Module.thisProgram has been replaced with plain thisProgram') } });
+if (Module['quit']) quit_ = Module['quit'];if (!Object.getOwnPropertyDescriptor(Module, 'quit')) Object.defineProperty(Module, 'quit', { get: function() { abort('Module.quit has been replaced with plain quit_') } });
 
 // perform assertions in shell.js after we set up out() and err(), as otherwise if an assertion fails it cannot print the message
+// Assertions on removed incoming Module JS APIs.
 assert(typeof Module['memoryInitializerPrefixURL'] === 'undefined', 'Module.memoryInitializerPrefixURL option was removed, use Module.locateFile instead');
 assert(typeof Module['pthreadMainPrefixURL'] === 'undefined', 'Module.pthreadMainPrefixURL option was removed, use Module.locateFile instead');
 assert(typeof Module['cdInitializerPrefixURL'] === 'undefined', 'Module.cdInitializerPrefixURL option was removed, use Module.locateFile instead');
 assert(typeof Module['filePackagePrefixURL'] === 'undefined', 'Module.filePackagePrefixURL option was removed, use Module.locateFile instead');
+assert(typeof Module['read'] === 'undefined', 'Module.read option was removed (modify read_ in JS)');
+assert(typeof Module['readAsync'] === 'undefined', 'Module.readAsync option was removed (modify readAsync in JS)');
+assert(typeof Module['readBinary'] === 'undefined', 'Module.readBinary option was removed (modify readBinary in JS)');
+assert(typeof Module['setWindowTitle'] === 'undefined', 'Module.setWindowTitle option was removed (modify setWindowTitle in JS)');
+if (!Object.getOwnPropertyDescriptor(Module, 'read')) Object.defineProperty(Module, 'read', { get: function() { abort('Module.read has been replaced with plain read_') } });
+if (!Object.getOwnPropertyDescriptor(Module, 'readAsync')) Object.defineProperty(Module, 'readAsync', { get: function() { abort('Module.readAsync has been replaced with plain readAsync') } });
+if (!Object.getOwnPropertyDescriptor(Module, 'readBinary')) Object.defineProperty(Module, 'readBinary', { get: function() { abort('Module.readBinary has been replaced with plain readBinary') } });
+// TODO: add when SDL2 is fixed if (!Object.getOwnPropertyDescriptor(Module, 'setWindowTitle')) Object.defineProperty(Module, 'setWindowTitle', { get: function() { abort('Module.setWindowTitle has been replaced with plain setWindowTitle') } });
+
+
+// TODO remove when SDL2 is fixed (also see above)
 
 
 
@@ -443,32 +478,23 @@ stackSave = stackRestore = stackAlloc = function() {
 };
 
 function staticAlloc(size) {
-  assert(!staticSealed);
-  var ret = STATICTOP;
-  STATICTOP = (STATICTOP + size + 15) & -16;
-  assert(STATICTOP < TOTAL_MEMORY, 'not enough memory for static allocation - increase TOTAL_MEMORY');
-  return ret;
+  abort('staticAlloc is no longer available at runtime; instead, perform static allocations at compile time (using makeStaticAlloc)');
 }
 
 function dynamicAlloc(size) {
   assert(DYNAMICTOP_PTR);
   var ret = HEAP32[DYNAMICTOP_PTR>>2];
   var end = (ret + size + 15) & -16;
-  HEAP32[DYNAMICTOP_PTR>>2] = end;
-  if (end >= TOTAL_MEMORY) {
-    var success = enlargeMemory();
-    if (!success) {
-      HEAP32[DYNAMICTOP_PTR>>2] = ret;
-      return 0;
-    }
+  if (end > _emscripten_get_heap_size()) {
+    abort('failure to dynamicAlloc - memory growth etc. is not supported there, call malloc/sbrk directly');
   }
+  HEAP32[DYNAMICTOP_PTR>>2] = end;
   return ret;
 }
 
 function alignMemory(size, factor) {
   if (!factor) factor = STACK_ALIGN; // stack alignment (16-byte) by default
-  var ret = size = Math.ceil(size / factor) * factor;
-  return ret;
+  return Math.ceil(size / factor) * factor;
 }
 
 function getNativeTypeSize(type) {
@@ -484,7 +510,7 @@ function getNativeTypeSize(type) {
         return 4; // A pointer
       } else if (type[0] === 'i') {
         var bits = parseInt(type.substr(1));
-        assert(bits % 8 === 0);
+        assert(bits % 8 === 0, 'getNativeTypeSize invalid bits ' + bits + ', type ' + type);
         return bits / 8;
       } else {
         return 0;
@@ -515,11 +541,112 @@ var asm2wasmImports = { // special asm2wasm imports
 var jsCallStartIndex = 1;
 var functionPointers = new Array(1);
 
-// 'sig' parameter is only used on LLVM wasm backend
-function addFunction(func, sig) {
-  if (typeof sig === 'undefined') {
-    err('warning: addFunction(): You should provide a wasm function signature string as a second argument. This is not necessary for asm.js and asm2wasm, but is required for the LLVM wasm backend, so it is recommended for full portability.');
+// Wraps a JS function as a wasm function with a given signature.
+// In the future, we may get a WebAssembly.Function constructor. Until then,
+// we create a wasm module that takes the JS function as an import with a given
+// signature, and re-exports that as a wasm function.
+function convertJsFunctionToWasm(func, sig) {
+
+  // The module is static, with the exception of the type section, which is
+  // generated based on the signature passed in.
+  var typeSection = [
+    0x01, // id: section,
+    0x00, // length: 0 (placeholder)
+    0x01, // count: 1
+    0x60, // form: func
+  ];
+  var sigRet = sig.slice(0, 1);
+  var sigParam = sig.slice(1);
+  var typeCodes = {
+    'i': 0x7f, // i32
+    'j': 0x7e, // i64
+    'f': 0x7d, // f32
+    'd': 0x7c, // f64
+  };
+
+  // Parameters, length + signatures
+  typeSection.push(sigParam.length);
+  for (var i = 0; i < sigParam.length; ++i) {
+    typeSection.push(typeCodes[sigParam[i]]);
   }
+
+  // Return values, length + signatures
+  // With no multi-return in MVP, either 0 (void) or 1 (anything else)
+  if (sigRet == 'v') {
+    typeSection.push(0x00);
+  } else {
+    typeSection = typeSection.concat([0x01, typeCodes[sigRet]]);
+  }
+
+  // Write the overall length of the type section back into the section header
+  // (excepting the 2 bytes for the section id and length)
+  typeSection[1] = typeSection.length - 2;
+
+  // Rest of the module is static
+  var bytes = new Uint8Array([
+    0x00, 0x61, 0x73, 0x6d, // magic ("\0asm")
+    0x01, 0x00, 0x00, 0x00, // version: 1
+  ].concat(typeSection, [
+    0x02, 0x07, // import section
+      // (import "e" "f" (func 0 (type 0)))
+      0x01, 0x01, 0x65, 0x01, 0x66, 0x00, 0x00,
+    0x07, 0x05, // export section
+      // (export "f" (func 0 (type 0)))
+      0x01, 0x01, 0x66, 0x00, 0x00,
+  ]));
+
+   // We can compile this wasm module synchronously because it is very small.
+  // This accepts an import (at "e.f"), that it reroutes to an export (at "f")
+  var module = new WebAssembly.Module(bytes);
+  var instance = new WebAssembly.Instance(module, {
+    e: {
+      f: func
+    }
+  });
+  var wrappedFunc = instance.exports.f;
+  return wrappedFunc;
+}
+
+// Add a wasm function to the table.
+function addFunctionWasm(func, sig) {
+  var table = wasmTable;
+  var ret = table.length;
+
+  // Grow the table
+  try {
+    table.grow(1);
+  } catch (err) {
+    if (!err instanceof RangeError) {
+      throw err;
+    }
+    throw 'Unable to grow wasm table. Use a higher value for RESERVED_FUNCTION_POINTERS or set ALLOW_TABLE_GROWTH.';
+  }
+
+  // Insert new element
+  try {
+    // Attempting to call this with JS function will cause of table.set() to fail
+    table.set(ret, func);
+  } catch (err) {
+    if (!err instanceof TypeError) {
+      throw err;
+    }
+    assert(typeof sig !== 'undefined', 'Missing signature argument to addFunction');
+    var wrapped = convertJsFunctionToWasm(func, sig);
+    table.set(ret, wrapped);
+  }
+
+  return ret;
+}
+
+function removeFunctionWasm(index) {
+  // TODO(sbc): Look into implementing this to allow re-using of table slots
+}
+
+// 'sig' parameter is required for the llvm backend but only when func is not
+// already a WebAssembly function.
+function addFunction(func, sig) {
+
+
   var base = 0;
   for (var i = base; i < base + 1; i++) {
     if (!functionPointers[i]) {
@@ -528,9 +655,11 @@ function addFunction(func, sig) {
     }
   }
   throw 'Finished up all reserved function pointers. Use a higher value for RESERVED_FUNCTION_POINTERS.';
+
 }
 
 function removeFunction(index) {
+
   functionPointers[index-jsCallStartIndex] = null;
 }
 
@@ -584,21 +713,17 @@ var tempRet0 = 0;
 
 var setTempRet0 = function(value) {
   tempRet0 = value;
-}
+};
 
 var getTempRet0 = function() {
   return tempRet0;
-}
+};
 
 function getCompilerSetting(name) {
   throw 'You must build with -s RETAIN_COMPILER_SETTINGS=1 for getCompilerSetting or emscripten_get_compiler_setting to work';
 }
 
 var Runtime = {
-  // FIXME backwards compatibility layer for ports. Support some Runtime.*
-  //       for now, fix it there, then remove it from here. That way we
-  //       can minimize any period of breakage.
-  dynCall: dynCall, // for SDL2 port
   // helpful errors
   getTempRet0: function() { abort('getTempRet0() is now a top-level function, after removing the Runtime object. Remove "Runtime."') },
   staticAlloc: function() { abort('staticAlloc() is now a top-level function, after removing the Runtime object. Remove "Runtime."') },
@@ -612,6 +737,8 @@ var Runtime = {
 var GLOBAL_BASE = 1024;
 
 
+
+
 // === Preamble library stuff ===
 
 // Documentation for the public APIs defined in this file must be updated in:
@@ -623,104 +750,17 @@ var GLOBAL_BASE = 1024;
 //    is up at http://kripken.github.io/emscripten-site/docs/api_reference/preamble.js.html
 
 
+var wasmBinary;if (Module['wasmBinary']) wasmBinary = Module['wasmBinary'];if (!Object.getOwnPropertyDescriptor(Module, 'wasmBinary')) Object.defineProperty(Module, 'wasmBinary', { get: function() { abort('Module.wasmBinary has been replaced with plain wasmBinary') } });
+var noExitRuntime;if (Module['noExitRuntime']) noExitRuntime = Module['noExitRuntime'];if (!Object.getOwnPropertyDescriptor(Module, 'noExitRuntime')) Object.defineProperty(Module, 'noExitRuntime', { get: function() { abort('Module.noExitRuntime has been replaced with plain noExitRuntime') } });
 
-//========================================
-// Runtime essentials
-//========================================
 
-// whether we are quitting the application. no code should run after this.
-// set in exit() and abort()
-var ABORT = false;
-
-// set by exit() and abort().  Passed to 'onExit' handler.
-// NOTE: This is also used as the process return code code in shell environments
-// but only when noExitRuntime is false.
-var EXITSTATUS = 0;
-
-/** @type {function(*, string=)} */
-function assert(condition, text) {
-  if (!condition) {
-    abort('Assertion failed: ' + text);
-  }
+if (typeof WebAssembly !== 'object') {
+  abort('No WebAssembly support found. Build with -s WASM=0 to target JavaScript instead.');
 }
 
-var globalScope = this;
 
-// Returns the C function with a specified identifier (for C++, you need to do manual name mangling)
-function getCFunc(ident) {
-  var func = Module['_' + ident]; // closure exported function
-  assert(func, 'Cannot call unknown function ' + ident + ', make sure it is exported');
-  return func;
-}
-
-var JSfuncs = {
-  // Helpers for cwrap -- it can't refer to Runtime directly because it might
-  // be renamed by closure, instead it calls JSfuncs['stackSave'].body to find
-  // out what the minified function name is.
-  'stackSave': function() {
-    stackSave()
-  },
-  'stackRestore': function() {
-    stackRestore()
-  },
-  // type conversion from js to c
-  'arrayToC' : function(arr) {
-    var ret = stackAlloc(arr.length);
-    writeArrayToMemory(arr, ret);
-    return ret;
-  },
-  'stringToC' : function(str) {
-    var ret = 0;
-    if (str !== null && str !== undefined && str !== 0) { // null string
-      // at most 4 bytes per UTF-8 code point, +1 for the trailing '\0'
-      var len = (str.length << 2) + 1;
-      ret = stackAlloc(len);
-      stringToUTF8(str, ret, len);
-    }
-    return ret;
-  }
-};
-
-// For fast lookup of conversion functions
-var toC = {
-  'string': JSfuncs['stringToC'], 'array': JSfuncs['arrayToC']
-};
-
-
-// C calling interface.
-function ccall(ident, returnType, argTypes, args, opts) {
-  function convertReturnValue(ret) {
-    if (returnType === 'string') return Pointer_stringify(ret);
-    if (returnType === 'boolean') return Boolean(ret);
-    return ret;
-  }
-
-  var func = getCFunc(ident);
-  var cArgs = [];
-  var stack = 0;
-  assert(returnType !== 'array', 'Return type should not be "array".');
-  if (args) {
-    for (var i = 0; i < args.length; i++) {
-      var converter = toC[argTypes[i]];
-      if (converter) {
-        if (stack === 0) stack = stackSave();
-        cArgs[i] = converter(args[i]);
-      } else {
-        cArgs[i] = args[i];
-      }
-    }
-  }
-  var ret = func.apply(null, cArgs);
-  ret = convertReturnValue(ret);
-  if (stack !== 0) stackRestore(stack);
-  return ret;
-}
-
-function cwrap(ident, returnType, argTypes, opts) {
-  return function() {
-    return ccall(ident, returnType, argTypes, arguments, opts);
-  }
-}
+// In MINIMAL_RUNTIME, setValue() and getValue() are only available when building with safe heap enabled, for heap safety checking.
+// In traditional runtime, setValue() and getValue() are always available (although their use is highly discouraged due to perf penalties)
 
 /** @type {function(number, number, string, boolean=)} */
 function setValue(ptr, value, type, noSafe) {
@@ -755,11 +795,104 @@ function getValue(ptr, type, noSafe) {
   return null;
 }
 
+
+
+
+
+// Wasm globals
+
+var wasmMemory;
+
+// Potentially used for direct table calls.
+var wasmTable;
+
+
+//========================================
+// Runtime essentials
+//========================================
+
+// whether we are quitting the application. no code should run after this.
+// set in exit() and abort()
+var ABORT = false;
+
+// set by exit() and abort().  Passed to 'onExit' handler.
+// NOTE: This is also used as the process return code code in shell environments
+// but only when noExitRuntime is false.
+var EXITSTATUS = 0;
+
+/** @type {function(*, string=)} */
+function assert(condition, text) {
+  if (!condition) {
+    abort('Assertion failed: ' + text);
+  }
+}
+
+// Returns the C function with a specified identifier (for C++, you need to do manual name mangling)
+function getCFunc(ident) {
+  var func = Module['_' + ident]; // closure exported function
+  assert(func, 'Cannot call unknown function ' + ident + ', make sure it is exported');
+  return func;
+}
+
+// C calling interface.
+function ccall(ident, returnType, argTypes, args, opts) {
+  // For fast lookup of conversion functions
+  var toC = {
+    'string': function(str) {
+      var ret = 0;
+      if (str !== null && str !== undefined && str !== 0) { // null string
+        // at most 4 bytes per UTF-8 code point, +1 for the trailing '\0'
+        var len = (str.length << 2) + 1;
+        ret = stackAlloc(len);
+        stringToUTF8(str, ret, len);
+      }
+      return ret;
+    },
+    'array': function(arr) {
+      var ret = stackAlloc(arr.length);
+      writeArrayToMemory(arr, ret);
+      return ret;
+    }
+  };
+
+  function convertReturnValue(ret) {
+    if (returnType === 'string') return UTF8ToString(ret);
+    if (returnType === 'boolean') return Boolean(ret);
+    return ret;
+  }
+
+  var func = getCFunc(ident);
+  var cArgs = [];
+  var stack = 0;
+  assert(returnType !== 'array', 'Return type should not be "array".');
+  if (args) {
+    for (var i = 0; i < args.length; i++) {
+      var converter = toC[argTypes[i]];
+      if (converter) {
+        if (stack === 0) stack = stackSave();
+        cArgs[i] = converter(args[i]);
+      } else {
+        cArgs[i] = args[i];
+      }
+    }
+  }
+  var ret = func.apply(null, cArgs);
+
+  ret = convertReturnValue(ret);
+  if (stack !== 0) stackRestore(stack);
+  return ret;
+}
+
+function cwrap(ident, returnType, argTypes, opts) {
+  return function() {
+    return ccall(ident, returnType, argTypes, arguments, opts);
+  }
+}
+
 var ALLOC_NORMAL = 0; // Tries to use _malloc()
 var ALLOC_STACK = 1; // Lives for the duration of the current function call
-var ALLOC_STATIC = 2; // Cannot be freed
-var ALLOC_DYNAMIC = 3; // Cannot be freed except through sbrk
-var ALLOC_NONE = 4; // Do not allocate
+var ALLOC_DYNAMIC = 2; // Cannot be freed except through sbrk
+var ALLOC_NONE = 3; // Do not allocate
 
 // allocate(): This is for internal use. You can use it yourself as well, but the interface
 //             is a little tricky (see docs right below). The reason is that it is optimized
@@ -791,7 +924,9 @@ function allocate(slab, types, allocator, ptr) {
   if (allocator == ALLOC_NONE) {
     ret = ptr;
   } else {
-    ret = [typeof _malloc === 'function' ? _malloc : staticAlloc, stackAlloc, staticAlloc, dynamicAlloc][allocator === undefined ? ALLOC_STATIC : allocator](Math.max(size, singleType ? 1 : types.length));
+    ret = [_malloc,
+    stackAlloc,
+    dynamicAlloc][allocator](Math.max(size, singleType ? 1 : types.length));
   }
 
   if (zeroinit) {
@@ -846,42 +981,16 @@ function allocate(slab, types, allocator, ptr) {
 
 // Allocate memory during any stage of startup - static memory early on, dynamic memory later, malloc when ready
 function getMemory(size) {
-  if (!staticSealed) return staticAlloc(size);
   if (!runtimeInitialized) return dynamicAlloc(size);
   return _malloc(size);
 }
 
+
+
+
 /** @type {function(number, number=)} */
 function Pointer_stringify(ptr, length) {
-  if (length === 0 || !ptr) return '';
-  // Find the length, and check for UTF while doing so
-  var hasUtf = 0;
-  var t;
-  var i = 0;
-  while (1) {
-    assert(ptr + i < TOTAL_MEMORY);
-    t = HEAPU8[(((ptr)+(i))>>0)];
-    hasUtf |= t;
-    if (t == 0 && !length) break;
-    i++;
-    if (length && i == length) break;
-  }
-  if (!length) length = i;
-
-  var ret = '';
-
-  if (hasUtf < 128) {
-    var MAX_CHUNK = 1024; // split up into chunks, because .apply on a huge string can overflow the stack
-    var curr;
-    while (length > 0) {
-      curr = String.fromCharCode.apply(String, HEAPU8.subarray(ptr, ptr + Math.min(length, MAX_CHUNK)));
-      ret = ret ? ret + curr : curr;
-      ptr += MAX_CHUNK;
-      length -= MAX_CHUNK;
-    }
-    return ret;
-  }
-  return UTF8ToString(ptr);
+  abort("this function has been removed - you should use UTF8ToString(ptr, maxBytesToRead) instead!");
 }
 
 // Given a pointer 'ptr' to a null-terminated ASCII-encoded string in the emscripten HEAP, returns
@@ -890,7 +999,7 @@ function Pointer_stringify(ptr, length) {
 function AsciiToString(ptr) {
   var str = '';
   while (1) {
-    var ch = HEAP8[((ptr++)>>0)];
+    var ch = HEAPU8[((ptr++)>>0)];
     if (!ch) return str;
     str += String.fromCharCode(ch);
   }
@@ -903,49 +1012,47 @@ function stringToAscii(str, outPtr) {
   return writeAsciiToMemory(str, outPtr, false);
 }
 
+
 // Given a pointer 'ptr' to a null-terminated UTF8-encoded string in the given array that contains uint8 values, returns
 // a copy of that string as a Javascript String object.
 
 var UTF8Decoder = typeof TextDecoder !== 'undefined' ? new TextDecoder('utf8') : undefined;
-function UTF8ArrayToString(u8Array, idx) {
+
+/**
+ * @param {number} idx
+ * @param {number=} maxBytesToRead
+ * @return {string}
+ */
+function UTF8ArrayToString(u8Array, idx, maxBytesToRead) {
+  var endIdx = idx + maxBytesToRead;
   var endPtr = idx;
   // TextDecoder needs to know the byte length in advance, it doesn't stop on null terminator by itself.
   // Also, use the length info to avoid running tiny strings through TextDecoder, since .subarray() allocates garbage.
-  while (u8Array[endPtr]) ++endPtr;
+  // (As a tiny code save trick, compare endPtr against endIdx using a negation, so that undefined means Infinity)
+  while (u8Array[endPtr] && !(endPtr >= endIdx)) ++endPtr;
 
   if (endPtr - idx > 16 && u8Array.subarray && UTF8Decoder) {
     return UTF8Decoder.decode(u8Array.subarray(idx, endPtr));
   } else {
-    var u0, u1, u2, u3, u4, u5;
-
     var str = '';
-    while (1) {
+    // If building with TextDecoder, we have already computed the string length above, so test loop end condition against that
+    while (idx < endPtr) {
       // For UTF8 byte structure, see:
       // http://en.wikipedia.org/wiki/UTF-8#Description
       // https://www.ietf.org/rfc/rfc2279.txt
       // https://tools.ietf.org/html/rfc3629
-      u0 = u8Array[idx++];
-      if (!u0) return str;
+      var u0 = u8Array[idx++];
       if (!(u0 & 0x80)) { str += String.fromCharCode(u0); continue; }
-      u1 = u8Array[idx++] & 63;
+      var u1 = u8Array[idx++] & 63;
       if ((u0 & 0xE0) == 0xC0) { str += String.fromCharCode(((u0 & 31) << 6) | u1); continue; }
-      u2 = u8Array[idx++] & 63;
+      var u2 = u8Array[idx++] & 63;
       if ((u0 & 0xF0) == 0xE0) {
         u0 = ((u0 & 15) << 12) | (u1 << 6) | u2;
       } else {
-        u3 = u8Array[idx++] & 63;
-        if ((u0 & 0xF8) == 0xF0) {
-          u0 = ((u0 & 7) << 18) | (u1 << 12) | (u2 << 6) | u3;
-        } else {
-          u4 = u8Array[idx++] & 63;
-          if ((u0 & 0xFC) == 0xF8) {
-            u0 = ((u0 & 3) << 24) | (u1 << 18) | (u2 << 12) | (u3 << 6) | u4;
-          } else {
-            u5 = u8Array[idx++] & 63;
-            u0 = ((u0 & 1) << 30) | (u1 << 24) | (u2 << 18) | (u3 << 12) | (u4 << 6) | u5;
-          }
-        }
+        if ((u0 & 0xF8) != 0xF0) warnOnce('Invalid UTF-8 leading byte 0x' + u0.toString(16) + ' encountered when deserializing a UTF-8 string on the asm.js/wasm heap to a JS string!');
+        u0 = ((u0 & 7) << 18) | (u1 << 12) | (u2 << 6) | (u8Array[idx++] & 63);
       }
+
       if (u0 < 0x10000) {
         str += String.fromCharCode(u0);
       } else {
@@ -954,13 +1061,26 @@ function UTF8ArrayToString(u8Array, idx) {
       }
     }
   }
+  return str;
 }
 
-// Given a pointer 'ptr' to a null-terminated UTF8-encoded string in the emscripten HEAP, returns
-// a copy of that string as a Javascript String object.
-
-function UTF8ToString(ptr) {
-  return UTF8ArrayToString(HEAPU8,ptr);
+// Given a pointer 'ptr' to a null-terminated UTF8-encoded string in the emscripten HEAP, returns a
+// copy of that string as a Javascript String object.
+// maxBytesToRead: an optional length that specifies the maximum number of bytes to read. You can omit
+//                 this parameter to scan the string until the first \0 byte. If maxBytesToRead is
+//                 passed, and the string at [ptr, ptr+maxBytesToReadr[ contains a null byte in the
+//                 middle, then the string will cut short at that byte index (i.e. maxBytesToRead will
+//                 not produce a string of exact length [ptr, ptr+maxBytesToRead[)
+//                 N.B. mixing frequent uses of UTF8ToString() with and without maxBytesToRead may
+//                 throw JS JIT optimizations off, so it is worth to consider consistently using one
+//                 style or the other.
+/**
+ * @param {number} ptr
+ * @param {number=} maxBytesToRead
+ * @return {string}
+ */
+function UTF8ToString(ptr, maxBytesToRead) {
+  return ptr ? UTF8ArrayToString(HEAPU8, ptr, maxBytesToRead) : '';
 }
 
 // Copies the given Javascript String object 'str' to the given byte array at address 'outIdx',
@@ -1003,24 +1123,10 @@ function stringToUTF8Array(str, outU8Array, outIdx, maxBytesToWrite) {
       outU8Array[outIdx++] = 0xE0 | (u >> 12);
       outU8Array[outIdx++] = 0x80 | ((u >> 6) & 63);
       outU8Array[outIdx++] = 0x80 | (u & 63);
-    } else if (u <= 0x1FFFFF) {
-      if (outIdx + 3 >= endIdx) break;
-      outU8Array[outIdx++] = 0xF0 | (u >> 18);
-      outU8Array[outIdx++] = 0x80 | ((u >> 12) & 63);
-      outU8Array[outIdx++] = 0x80 | ((u >> 6) & 63);
-      outU8Array[outIdx++] = 0x80 | (u & 63);
-    } else if (u <= 0x3FFFFFF) {
-      if (outIdx + 4 >= endIdx) break;
-      outU8Array[outIdx++] = 0xF8 | (u >> 24);
-      outU8Array[outIdx++] = 0x80 | ((u >> 18) & 63);
-      outU8Array[outIdx++] = 0x80 | ((u >> 12) & 63);
-      outU8Array[outIdx++] = 0x80 | ((u >> 6) & 63);
-      outU8Array[outIdx++] = 0x80 | (u & 63);
     } else {
-      if (outIdx + 5 >= endIdx) break;
-      outU8Array[outIdx++] = 0xFC | (u >> 30);
-      outU8Array[outIdx++] = 0x80 | ((u >> 24) & 63);
-      outU8Array[outIdx++] = 0x80 | ((u >> 18) & 63);
+      if (outIdx + 3 >= endIdx) break;
+      if (u >= 0x200000) warnOnce('Invalid Unicode code point 0x' + u.toString(16) + ' encountered when serializing a JS string to an UTF-8 string on the asm.js/wasm heap! (Valid unicode code points should be in range 0-0x1FFFFF).');
+      outU8Array[outIdx++] = 0xF0 | (u >> 18);
       outU8Array[outIdx++] = 0x80 | ((u >> 12) & 63);
       outU8Array[outIdx++] = 0x80 | ((u >> 6) & 63);
       outU8Array[outIdx++] = 0x80 | (u & 63);
@@ -1042,7 +1148,6 @@ function stringToUTF8(str, outPtr, maxBytesToWrite) {
 }
 
 // Returns the number of bytes the given Javascript string takes if encoded as a UTF8 byte array, EXCLUDING the null terminator byte.
-
 function lengthBytesUTF8(str) {
   var len = 0;
   for (var i = 0; i < str.length; ++i) {
@@ -1050,22 +1155,14 @@ function lengthBytesUTF8(str) {
     // See http://unicode.org/faq/utf_bom.html#utf16-3
     var u = str.charCodeAt(i); // possibly a lead surrogate
     if (u >= 0xD800 && u <= 0xDFFF) u = 0x10000 + ((u & 0x3FF) << 10) | (str.charCodeAt(++i) & 0x3FF);
-    if (u <= 0x7F) {
-      ++len;
-    } else if (u <= 0x7FF) {
-      len += 2;
-    } else if (u <= 0xFFFF) {
-      len += 3;
-    } else if (u <= 0x1FFFFF) {
-      len += 4;
-    } else if (u <= 0x3FFFFFF) {
-      len += 5;
-    } else {
-      len += 6;
-    }
+    if (u <= 0x7F) ++len;
+    else if (u <= 0x7FF) len += 2;
+    else if (u <= 0xFFFF) len += 3;
+    else len += 4;
   }
   return len;
 }
+
 
 // Given a pointer 'ptr' to a null-terminated UTF16LE-encoded string in the emscripten HEAP, returns
 // a copy of that string as a Javascript String object.
@@ -1226,262 +1323,6 @@ function allocateUTF8OnStack(str) {
   return ret;
 }
 
-function demangle(func) {
-  warnOnce('warning: build with  -s DEMANGLE_SUPPORT=1  to link in libcxxabi demangling');
-  return func;
-}
-
-function demangleAll(text) {
-  var regex =
-    /__Z[\w\d_]+/g;
-  return text.replace(regex,
-    function(x) {
-      var y = demangle(x);
-      return x === y ? x : (y + ' [' + x + ']');
-    });
-}
-
-function jsStackTrace() {
-  var err = new Error();
-  if (!err.stack) {
-    // IE10+ special cases: It does have callstack info, but it is only populated if an Error object is thrown,
-    // so try that as a special-case.
-    try {
-      throw new Error(0);
-    } catch(e) {
-      err = e;
-    }
-    if (!err.stack) {
-      return '(no stack trace available)';
-    }
-  }
-  return err.stack.toString();
-}
-
-function stackTrace() {
-  var js = jsStackTrace();
-  if (Module['extraStackTrace']) js += '\n' + Module['extraStackTrace']();
-  return demangleAll(js);
-}
-
-// Memory management
-
-var PAGE_SIZE = 16384;
-var WASM_PAGE_SIZE = 65536;
-var ASMJS_PAGE_SIZE = 16777216;
-var MIN_TOTAL_MEMORY = 16777216;
-
-function alignUp(x, multiple) {
-  if (x % multiple > 0) {
-    x += multiple - (x % multiple);
-  }
-  return x;
-}
-
-var HEAP,
-/** @type {ArrayBuffer} */
-  buffer,
-/** @type {Int8Array} */
-  HEAP8,
-/** @type {Uint8Array} */
-  HEAPU8,
-/** @type {Int16Array} */
-  HEAP16,
-/** @type {Uint16Array} */
-  HEAPU16,
-/** @type {Int32Array} */
-  HEAP32,
-/** @type {Uint32Array} */
-  HEAPU32,
-/** @type {Float32Array} */
-  HEAPF32,
-/** @type {Float64Array} */
-  HEAPF64;
-
-function updateGlobalBuffer(buf) {
-  Module['buffer'] = buffer = buf;
-}
-
-function updateGlobalBufferViews() {
-  Module['HEAP8'] = HEAP8 = new Int8Array(buffer);
-  Module['HEAP16'] = HEAP16 = new Int16Array(buffer);
-  Module['HEAP32'] = HEAP32 = new Int32Array(buffer);
-  Module['HEAPU8'] = HEAPU8 = new Uint8Array(buffer);
-  Module['HEAPU16'] = HEAPU16 = new Uint16Array(buffer);
-  Module['HEAPU32'] = HEAPU32 = new Uint32Array(buffer);
-  Module['HEAPF32'] = HEAPF32 = new Float32Array(buffer);
-  Module['HEAPF64'] = HEAPF64 = new Float64Array(buffer);
-}
-
-var STATIC_BASE, STATICTOP, staticSealed; // static area
-var STACK_BASE, STACKTOP, STACK_MAX; // stack area
-var DYNAMIC_BASE, DYNAMICTOP_PTR; // dynamic area handled by sbrk
-
-  STATIC_BASE = STATICTOP = STACK_BASE = STACKTOP = STACK_MAX = DYNAMIC_BASE = DYNAMICTOP_PTR = 0;
-  staticSealed = false;
-
-
-// Initializes the stack cookie. Called at the startup of main and at the startup of each thread in pthreads mode.
-function writeStackCookie() {
-  assert((STACK_MAX & 3) == 0);
-  HEAPU32[(STACK_MAX >> 2)-1] = 0x02135467;
-  HEAPU32[(STACK_MAX >> 2)-2] = 0x89BACDFE;
-}
-
-function checkStackCookie() {
-  if (HEAPU32[(STACK_MAX >> 2)-1] != 0x02135467 || HEAPU32[(STACK_MAX >> 2)-2] != 0x89BACDFE) {
-    abort('Stack overflow! Stack cookie has been overwritten, expected hex dwords 0x89BACDFE and 0x02135467, but received 0x' + HEAPU32[(STACK_MAX >> 2)-2].toString(16) + ' ' + HEAPU32[(STACK_MAX >> 2)-1].toString(16));
-  }
-  // Also test the global address 0 for integrity.
-  if (HEAP32[0] !== 0x63736d65 /* 'emsc' */) throw 'Runtime error: The application has corrupted its heap memory area (address zero)!';
-}
-
-function abortStackOverflow(allocSize) {
-  abort('Stack overflow! Attempted to allocate ' + allocSize + ' bytes on the stack, but stack has only ' + (STACK_MAX - stackSave() + allocSize) + ' bytes available!');
-}
-
-
-function abortOnCannotGrowMemory() {
-  abort('Cannot enlarge memory arrays. Either (1) compile with  -s TOTAL_MEMORY=X  with X higher than the current value ' + TOTAL_MEMORY + ', (2) compile with  -s ALLOW_MEMORY_GROWTH=1  which allows increasing the size at runtime, or (3) if you want malloc to return NULL (0) instead of this abort, compile with  -s ABORTING_MALLOC=0 ');
-}
-
-
-function enlargeMemory() {
-  abortOnCannotGrowMemory();
-}
-
-
-var TOTAL_STACK = Module['TOTAL_STACK'] || 5242880;
-var TOTAL_MEMORY = Module['TOTAL_MEMORY'] || 167772160;
-if (TOTAL_MEMORY < TOTAL_STACK) err('TOTAL_MEMORY should be larger than TOTAL_STACK, was ' + TOTAL_MEMORY + '! (TOTAL_STACK=' + TOTAL_STACK + ')');
-
-// Initialize the runtime's memory
-// check for full engine support (use string 'subarray' to avoid closure compiler confusion)
-assert(typeof Int32Array !== 'undefined' && typeof Float64Array !== 'undefined' && Int32Array.prototype.subarray !== undefined && Int32Array.prototype.set !== undefined,
-       'JS engine does not provide full typed array support');
-
-
-
-// Use a provided buffer, if there is one, or else allocate a new one
-if (Module['buffer']) {
-  buffer = Module['buffer'];
-  assert(buffer.byteLength === TOTAL_MEMORY, 'provided buffer should be ' + TOTAL_MEMORY + ' bytes, but it is ' + buffer.byteLength);
-} else {
-  // Use a WebAssembly memory where available
-  if (typeof WebAssembly === 'object' && typeof WebAssembly.Memory === 'function') {
-    assert(TOTAL_MEMORY % WASM_PAGE_SIZE === 0);
-    Module['wasmMemory'] = new WebAssembly.Memory({ 'initial': TOTAL_MEMORY / WASM_PAGE_SIZE, 'maximum': TOTAL_MEMORY / WASM_PAGE_SIZE });
-    buffer = Module['wasmMemory'].buffer;
-  } else
-  {
-    buffer = new ArrayBuffer(TOTAL_MEMORY);
-  }
-  assert(buffer.byteLength === TOTAL_MEMORY);
-  Module['buffer'] = buffer;
-}
-updateGlobalBufferViews();
-
-
-function getTotalMemory() {
-  return TOTAL_MEMORY;
-}
-
-// Endianness check (note: assumes compiler arch was little-endian)
-  HEAP32[0] = 0x63736d65; /* 'emsc' */
-HEAP16[1] = 0x6373;
-if (HEAPU8[2] !== 0x73 || HEAPU8[3] !== 0x63) throw 'Runtime error: expected the system to be little-endian!';
-
-function callRuntimeCallbacks(callbacks) {
-  while(callbacks.length > 0) {
-    var callback = callbacks.shift();
-    if (typeof callback == 'function') {
-      callback();
-      continue;
-    }
-    var func = callback.func;
-    if (typeof func === 'number') {
-      if (callback.arg === undefined) {
-        Module['dynCall_v'](func);
-      } else {
-        Module['dynCall_vi'](func, callback.arg);
-      }
-    } else {
-      func(callback.arg === undefined ? null : callback.arg);
-    }
-  }
-}
-
-var __ATPRERUN__  = []; // functions called before the runtime is initialized
-var __ATINIT__    = []; // functions called during startup
-var __ATMAIN__    = []; // functions called when main() is to be run
-var __ATEXIT__    = []; // functions called during shutdown
-var __ATPOSTRUN__ = []; // functions called after the main() is called
-
-var runtimeInitialized = false;
-var runtimeExited = false;
-
-
-function preRun() {
-  // compatibility - merge in anything from Module['preRun'] at this time
-  if (Module['preRun']) {
-    if (typeof Module['preRun'] == 'function') Module['preRun'] = [Module['preRun']];
-    while (Module['preRun'].length) {
-      addOnPreRun(Module['preRun'].shift());
-    }
-  }
-  callRuntimeCallbacks(__ATPRERUN__);
-}
-
-function ensureInitRuntime() {
-  checkStackCookie();
-  if (runtimeInitialized) return;
-  runtimeInitialized = true;
-  callRuntimeCallbacks(__ATINIT__);
-}
-
-function preMain() {
-  checkStackCookie();
-  callRuntimeCallbacks(__ATMAIN__);
-}
-
-function exitRuntime() {
-  checkStackCookie();
-  callRuntimeCallbacks(__ATEXIT__);
-  runtimeExited = true;
-}
-
-function postRun() {
-  checkStackCookie();
-  // compatibility - merge in anything from Module['postRun'] at this time
-  if (Module['postRun']) {
-    if (typeof Module['postRun'] == 'function') Module['postRun'] = [Module['postRun']];
-    while (Module['postRun'].length) {
-      addOnPostRun(Module['postRun'].shift());
-    }
-  }
-  callRuntimeCallbacks(__ATPOSTRUN__);
-}
-
-function addOnPreRun(cb) {
-  __ATPRERUN__.unshift(cb);
-}
-
-function addOnInit(cb) {
-  __ATINIT__.unshift(cb);
-}
-
-function addOnPreMain(cb) {
-  __ATMAIN__.unshift(cb);
-}
-
-function addOnExit(cb) {
-  __ATEXIT__.unshift(cb);
-}
-
-function addOnPostRun(cb) {
-  __ATPOSTRUN__.unshift(cb);
-}
-
 // Deprecated: This function should not be called because it is unsafe and does not provide
 // a maximum length limit of how many bytes it is allowed to write. Prefer calling the
 // function stringToUTF8Array() instead, which takes in a maximum length that can be used
@@ -1516,6 +1357,240 @@ function writeAsciiToMemory(str, buffer, dontAddNull) {
   if (!dontAddNull) HEAP8[((buffer)>>0)]=0;
 }
 
+
+
+
+// Memory management
+
+var PAGE_SIZE = 16384;
+var WASM_PAGE_SIZE = 65536;
+var ASMJS_PAGE_SIZE = 16777216;
+
+function alignUp(x, multiple) {
+  if (x % multiple > 0) {
+    x += multiple - (x % multiple);
+  }
+  return x;
+}
+
+var HEAP,
+/** @type {ArrayBuffer} */
+  buffer,
+/** @type {Int8Array} */
+  HEAP8,
+/** @type {Uint8Array} */
+  HEAPU8,
+/** @type {Int16Array} */
+  HEAP16,
+/** @type {Uint16Array} */
+  HEAPU16,
+/** @type {Int32Array} */
+  HEAP32,
+/** @type {Uint32Array} */
+  HEAPU32,
+/** @type {Float32Array} */
+  HEAPF32,
+/** @type {Float64Array} */
+  HEAPF64;
+
+function updateGlobalBufferAndViews(buf) {
+  buffer = buf;
+  Module['HEAP8'] = HEAP8 = new Int8Array(buf);
+  Module['HEAP16'] = HEAP16 = new Int16Array(buf);
+  Module['HEAP32'] = HEAP32 = new Int32Array(buf);
+  Module['HEAPU8'] = HEAPU8 = new Uint8Array(buf);
+  Module['HEAPU16'] = HEAPU16 = new Uint16Array(buf);
+  Module['HEAPU32'] = HEAPU32 = new Uint32Array(buf);
+  Module['HEAPF32'] = HEAPF32 = new Float32Array(buf);
+  Module['HEAPF64'] = HEAPF64 = new Float64Array(buf);
+}
+
+
+var STATIC_BASE = 1024,
+    STACK_BASE = 40240,
+    STACKTOP = STACK_BASE,
+    STACK_MAX = 5283120,
+    DYNAMIC_BASE = 5283120,
+    DYNAMICTOP_PTR = 40208;
+
+assert(STACK_BASE % 16 === 0, 'stack must start aligned');
+assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
+
+
+
+var TOTAL_STACK = 5242880;
+if (Module['TOTAL_STACK']) assert(TOTAL_STACK === Module['TOTAL_STACK'], 'the stack size can no longer be determined at runtime')
+
+var INITIAL_TOTAL_MEMORY = Module['TOTAL_MEMORY'] || 167772160;if (!Object.getOwnPropertyDescriptor(Module, 'TOTAL_MEMORY')) Object.defineProperty(Module, 'TOTAL_MEMORY', { get: function() { abort('Module.TOTAL_MEMORY has been replaced with plain INITIAL_TOTAL_MEMORY') } });
+
+assert(INITIAL_TOTAL_MEMORY >= TOTAL_STACK, 'TOTAL_MEMORY should be larger than TOTAL_STACK, was ' + INITIAL_TOTAL_MEMORY + '! (TOTAL_STACK=' + TOTAL_STACK + ')');
+
+// check for full engine support (use string 'subarray' to avoid closure compiler confusion)
+assert(typeof Int32Array !== 'undefined' && typeof Float64Array !== 'undefined' && Int32Array.prototype.subarray !== undefined && Int32Array.prototype.set !== undefined,
+       'JS engine does not provide full typed array support');
+
+
+
+
+
+
+
+  if (Module['wasmMemory']) {
+    wasmMemory = Module['wasmMemory'];
+  } else
+  {
+    wasmMemory = new WebAssembly.Memory({
+      'initial': INITIAL_TOTAL_MEMORY / WASM_PAGE_SIZE
+      ,
+      'maximum': INITIAL_TOTAL_MEMORY / WASM_PAGE_SIZE
+    });
+  }
+
+
+if (wasmMemory) {
+  buffer = wasmMemory.buffer;
+}
+
+// If the user provides an incorrect length, just use that length instead rather than providing the user to
+// specifically provide the memory length with Module['TOTAL_MEMORY'].
+INITIAL_TOTAL_MEMORY = buffer.byteLength;
+assert(INITIAL_TOTAL_MEMORY % WASM_PAGE_SIZE === 0);
+updateGlobalBufferAndViews(buffer);
+
+HEAP32[DYNAMICTOP_PTR>>2] = DYNAMIC_BASE;
+
+
+// Initializes the stack cookie. Called at the startup of main and at the startup of each thread in pthreads mode.
+function writeStackCookie() {
+  assert((STACK_MAX & 3) == 0);
+  HEAPU32[(STACK_MAX >> 2)-1] = 0x02135467;
+  HEAPU32[(STACK_MAX >> 2)-2] = 0x89BACDFE;
+}
+
+function checkStackCookie() {
+  var cookie1 = HEAPU32[(STACK_MAX >> 2)-1];
+  var cookie2 = HEAPU32[(STACK_MAX >> 2)-2];
+  if (cookie1 != 0x02135467 || cookie2 != 0x89BACDFE) {
+    abort('Stack overflow! Stack cookie has been overwritten, expected hex dwords 0x89BACDFE and 0x02135467, but received 0x' + cookie2.toString(16) + ' ' + cookie1.toString(16));
+  }
+  // Also test the global address 0 for integrity.
+  // We don't do this with ASan because ASan does its own checks for this.
+  if (HEAP32[0] !== 0x63736d65 /* 'emsc' */) abort('Runtime error: The application has corrupted its heap memory area (address zero)!');
+}
+
+function abortStackOverflow(allocSize) {
+  abort('Stack overflow! Attempted to allocate ' + allocSize + ' bytes on the stack, but stack has only ' + (STACK_MAX - stackSave() + allocSize) + ' bytes available!');
+}
+
+
+  HEAP32[0] = 0x63736d65; /* 'emsc' */
+
+
+
+// Endianness check (note: assumes compiler arch was little-endian)
+HEAP16[1] = 0x6373;
+if (HEAPU8[2] !== 0x73 || HEAPU8[3] !== 0x63) throw 'Runtime error: expected the system to be little-endian!';
+
+function abortFnPtrError(ptr, sig) {
+	abort("Invalid function pointer " + ptr + " called with signature '" + sig + "'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this). Build with ASSERTIONS=2 for more info.");
+}
+
+
+
+function callRuntimeCallbacks(callbacks) {
+  while(callbacks.length > 0) {
+    var callback = callbacks.shift();
+    if (typeof callback == 'function') {
+      callback();
+      continue;
+    }
+    var func = callback.func;
+    if (typeof func === 'number') {
+      if (callback.arg === undefined) {
+        Module['dynCall_v'](func);
+      } else {
+        Module['dynCall_vi'](func, callback.arg);
+      }
+    } else {
+      func(callback.arg === undefined ? null : callback.arg);
+    }
+  }
+}
+
+var __ATPRERUN__  = []; // functions called before the runtime is initialized
+var __ATINIT__    = []; // functions called during startup
+var __ATMAIN__    = []; // functions called when main() is to be run
+var __ATEXIT__    = []; // functions called during shutdown
+var __ATPOSTRUN__ = []; // functions called after the main() is called
+
+var runtimeInitialized = false;
+var runtimeExited = false;
+
+
+function preRun() {
+
+  if (Module['preRun']) {
+    if (typeof Module['preRun'] == 'function') Module['preRun'] = [Module['preRun']];
+    while (Module['preRun'].length) {
+      addOnPreRun(Module['preRun'].shift());
+    }
+  }
+
+  callRuntimeCallbacks(__ATPRERUN__);
+}
+
+function initRuntime() {
+  checkStackCookie();
+  assert(!runtimeInitialized);
+  runtimeInitialized = true;
+  if (!Module["noFSInit"] && !FS.init.initialized) FS.init();
+TTY.init();
+  callRuntimeCallbacks(__ATINIT__);
+}
+
+function preMain() {
+  checkStackCookie();
+  FS.ignorePermissions = false;
+  callRuntimeCallbacks(__ATMAIN__);
+}
+
+function exitRuntime() {
+  checkStackCookie();
+  runtimeExited = true;
+}
+
+function postRun() {
+  checkStackCookie();
+
+  if (Module['postRun']) {
+    if (typeof Module['postRun'] == 'function') Module['postRun'] = [Module['postRun']];
+    while (Module['postRun'].length) {
+      addOnPostRun(Module['postRun'].shift());
+    }
+  }
+
+  callRuntimeCallbacks(__ATPOSTRUN__);
+}
+
+function addOnPreRun(cb) {
+  __ATPRERUN__.unshift(cb);
+}
+
+function addOnInit(cb) {
+  __ATINIT__.unshift(cb);
+}
+
+function addOnPreMain(cb) {
+  __ATMAIN__.unshift(cb);
+}
+
+function addOnExit(cb) {
+}
+
+function addOnPostRun(cb) {
+  __ATPOSTRUN__.unshift(cb);
+}
+
 function unSign(value, bits, ignore) {
   if (value >= 0) {
     return value;
@@ -1536,6 +1611,7 @@ function reSign(value, bits, ignore) {
   }
   return value;
 }
+
 
 assert(Math.imul, 'This browser does not support Math.imul(), build with LEGACY_VM_SUPPORT or POLYFILL_OLD_MATH_FUNCTIONS to add in a polyfill');
 assert(Math.fround, 'This browser does not support Math.fround(), build with LEGACY_VM_SUPPORT or POLYFILL_OLD_MATH_FUNCTIONS to add in a polyfill');
@@ -1564,6 +1640,8 @@ var Math_max = Math.max;
 var Math_clz32 = Math.clz32;
 var Math_trunc = Math.trunc;
 
+
+
 // A counter of dependencies for calling run(). If we need to
 // do asynchronous work before running, increment this and
 // decrement it. Incrementing must happen in a place like
@@ -1587,9 +1665,11 @@ function getUniqueRunDependency(id) {
 
 function addRunDependency(id) {
   runDependencies++;
+
   if (Module['monitorRunDependencies']) {
     Module['monitorRunDependencies'](runDependencies);
   }
+
   if (id) {
     assert(!runDependencyTracking[id]);
     runDependencyTracking[id] = 1;
@@ -1621,9 +1701,11 @@ function addRunDependency(id) {
 
 function removeRunDependency(id) {
   runDependencies--;
+
   if (Module['monitorRunDependencies']) {
     Module['monitorRunDependencies'](runDependencies);
   }
+
   if (id) {
     assert(runDependencyTracking[id]);
     delete runDependencyTracking[id];
@@ -1647,8 +1729,8 @@ Module["preloadedImages"] = {}; // maps url to image data
 Module["preloadedAudios"] = {}; // maps url to audio data
 
 
-
 var memoryInitializer = null;
+
 
 
 
@@ -1673,272 +1755,165 @@ function isDataURI(filename) {
 
 
 
-function integrateWasmJS() {
-  // wasm.js has several methods for creating the compiled code module here:
-  //  * 'native-wasm' : use native WebAssembly support in the browser
-  //  * 'interpret-s-expr': load s-expression code from a .wast and interpret
-  //  * 'interpret-binary': load binary wasm and interpret
-  //  * 'interpret-asm2wasm': load asm.js code, translate to wasm, and interpret
-  //  * 'asmjs': no wasm, just load the asm.js code and use that (good for testing)
-  // The method is set at compile time (BINARYEN_METHOD)
-  // The method can be a comma-separated list, in which case, we will try the
-  // options one by one. Some of them can fail gracefully, and then we can try
-  // the next.
+var wasmBinaryFile = 'liblouis_wasm.wasm';
+if (!isDataURI(wasmBinaryFile)) {
+  wasmBinaryFile = locateFile(wasmBinaryFile);
+}
 
-  // inputs
+function getBinary() {
+  try {
+    if (wasmBinary) {
+      return new Uint8Array(wasmBinary);
+    }
 
-  var method = 'native-wasm';
-
-  var wasmTextFile = 'liblouis_wasm.wast';
-  var wasmBinaryFile = 'liblouis_wasm.wasm';
-  var asmjsCodeFile = 'liblouis_wasm.temp.asm.js';
-
-  if (!isDataURI(wasmTextFile)) {
-    wasmTextFile = locateFile(wasmTextFile);
+    if (readBinary) {
+      return readBinary(wasmBinaryFile);
+    } else {
+      throw "both async and sync fetching of the wasm failed";
+    }
   }
-  if (!isDataURI(wasmBinaryFile)) {
-    wasmBinaryFile = locateFile(wasmBinaryFile);
+  catch (err) {
+    abort(err);
   }
-  if (!isDataURI(asmjsCodeFile)) {
-    asmjsCodeFile = locateFile(asmjsCodeFile);
+}
+
+function getBinaryPromise() {
+  // if we don't have the binary yet, and have the Fetch api, use that
+  // in some environments, like Electron's render process, Fetch api may be present, but have a different context than expected, let's only use it on the Web
+  if (!wasmBinary && (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) && typeof fetch === 'function') {
+    return fetch(wasmBinaryFile, { credentials: 'same-origin' }).then(function(response) {
+      if (!response['ok']) {
+        throw "failed to load wasm binary file at '" + wasmBinaryFile + "'";
+      }
+      return response['arrayBuffer']();
+    }).catch(function () {
+      return getBinary();
+    });
   }
+  // Otherwise, getBinary should be able to get it synchronously
+  return new Promise(function(resolve, reject) {
+    resolve(getBinary());
+  });
+}
 
-  // utilities
 
-  var wasmPageSize = 64*1024;
 
+// Create the wasm instance.
+// Receives the wasm imports, returns the exports.
+function createWasm(env) {
+
+  // prepare imports
   var info = {
-    'global': null,
-    'env': null,
-    'asm2wasm': asm2wasmImports,
-    'parent': Module // Module inside wasm-js.cpp refers to wasm-js.cpp; this allows access to the outside program.
+    'env': env
+    ,
+    'global': {
+      'NaN': NaN,
+      'Infinity': Infinity
+    },
+    'global.Math': Math,
+    'asm2wasm': asm2wasmImports
   };
-
-  var exports = null;
-
-
-  function mergeMemory(newBuffer) {
-    // The wasm instance creates its memory. But static init code might have written to
-    // buffer already, including the mem init file, and we must copy it over in a proper merge.
-    // TODO: avoid this copy, by avoiding such static init writes
-    // TODO: in shorter term, just copy up to the last static init write
-    var oldBuffer = Module['buffer'];
-    if (newBuffer.byteLength < oldBuffer.byteLength) {
-      err('the new buffer in mergeMemory is smaller than the previous one. in native wasm, we should grow memory here');
-    }
-    var oldView = new Int8Array(oldBuffer);
-    var newView = new Int8Array(newBuffer);
+  // Load the wasm module and create an instance of using native support in the JS engine.
+  // handle a generated wasm instance, receiving its exports and
+  // performing other necessary setup
+  function receiveInstance(instance, module) {
+    var exports = instance.exports;
+    Module['asm'] = exports;
+    removeRunDependency('wasm-instantiate');
+  }
+   // we can't run yet (except in a pthread, where we have a custom sync instantiator)
+  addRunDependency('wasm-instantiate');
 
 
-    newView.set(oldView);
-    updateGlobalBuffer(newBuffer);
-    updateGlobalBufferViews();
+  // Async compilation can be confusing when an error on the page overwrites Module
+  // (for example, if the order of elements is wrong, and the one defining Module is
+  // later), so we save Module and check it later.
+  var trueModule = Module;
+  function receiveInstantiatedSource(output) {
+    // 'output' is a WebAssemblyInstantiatedSource object which has both the module and instance.
+    // receiveInstance() will swap in the exports (to Module.asm) so they can be called
+    assert(Module === trueModule, 'the Module object should not be replaced during async compilation - perhaps the order of HTML elements is wrong?');
+    trueModule = null;
+      // TODO: Due to Closure regression https://github.com/google/closure-compiler/issues/3193, the above line no longer optimizes out down to the following line.
+      // When the regression is fixed, can restore the above USE_PTHREADS-enabled path.
+    receiveInstance(output['instance']);
   }
 
-  function getBinary() {
-    try {
-      if (Module['wasmBinary']) {
-        return new Uint8Array(Module['wasmBinary']);
-      }
-      if (Module['readBinary']) {
-        return Module['readBinary'](wasmBinaryFile);
-      } else {
-        throw "both async and sync fetching of the wasm failed";
-      }
-    }
-    catch (err) {
-      abort(err);
-    }
-  }
 
-  function getBinaryPromise() {
-    // if we don't have the binary yet, and have the Fetch api, use that
-    // in some environments, like Electron's render process, Fetch api may be present, but have a different context than expected, let's only use it on the Web
-    if (!Module['wasmBinary'] && (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) && typeof fetch === 'function') {
-      return fetch(wasmBinaryFile, { credentials: 'same-origin' }).then(function(response) {
-        if (!response['ok']) {
-          throw "failed to load wasm binary file at '" + wasmBinaryFile + "'";
-        }
-        return response['arrayBuffer']();
-      }).catch(function () {
-        return getBinary();
-      });
-    }
-    // Otherwise, getBinary should be able to get it synchronously
-    return new Promise(function(resolve, reject) {
-      resolve(getBinary());
+  function instantiateArrayBuffer(receiver) {
+    return getBinaryPromise().then(function(binary) {
+      return WebAssembly.instantiate(binary, info);
+    }).then(receiver, function(reason) {
+      err('failed to asynchronously prepare wasm: ' + reason);
+      abort(reason);
     });
   }
 
-  // do-method functions
-
-
-  function doNativeWasm(global, env, providedBuffer) {
-    if (typeof WebAssembly !== 'object') {
-      // when the method is just native-wasm, our error message can be very specific
-      abort('No WebAssembly support found. Build with -s WASM=0 to target JavaScript instead.');
-      err('no native wasm support detected');
-      return false;
-    }
-    // prepare memory import
-    if (!(Module['wasmMemory'] instanceof WebAssembly.Memory)) {
-      err('no native wasm Memory in use');
-      return false;
-    }
-    env['memory'] = Module['wasmMemory'];
-    // Load the wasm module and create an instance of using native support in the JS engine.
-    info['global'] = {
-      'NaN': NaN,
-      'Infinity': Infinity
-    };
-    info['global.Math'] = Math;
-    info['env'] = env;
-    // handle a generated wasm instance, receiving its exports and
-    // performing other necessary setup
-    function receiveInstance(instance, module) {
-      exports = instance.exports;
-      if (exports.memory) mergeMemory(exports.memory);
-      Module['asm'] = exports;
-      Module["usingWasm"] = true;
-      removeRunDependency('wasm-instantiate');
-    }
-    addRunDependency('wasm-instantiate');
-
-    // User shell pages can write their own Module.instantiateWasm = function(imports, successCallback) callback
-    // to manually instantiate the Wasm module themselves. This allows pages to run the instantiation parallel
-    // to any other async startup actions they are performing.
-    if (Module['instantiateWasm']) {
-      try {
-        return Module['instantiateWasm'](info, receiveInstance);
-      } catch(e) {
-        err('Module.instantiateWasm callback failed with error: ' + e);
-        return false;
-      }
-    }
-
-    // Async compilation can be confusing when an error on the page overwrites Module
-    // (for example, if the order of elements is wrong, and the one defining Module is
-    // later), so we save Module and check it later.
-    var trueModule = Module;
-    function receiveInstantiatedSource(output) {
-      // 'output' is a WebAssemblyInstantiatedSource object which has both the module and instance.
-      // receiveInstance() will swap in the exports (to Module.asm) so they can be called
-      assert(Module === trueModule, 'the Module object should not be replaced during async compilation - perhaps the order of HTML elements is wrong?');
-      trueModule = null;
-      receiveInstance(output['instance'], output['module']);
-    }
-    function instantiateArrayBuffer(receiver) {
-      getBinaryPromise().then(function(binary) {
-        return WebAssembly.instantiate(binary, info);
-      }).then(receiver, function(reason) {
-        err('failed to asynchronously prepare wasm: ' + reason);
-        abort(reason);
-      });
-    }
-    // Prefer streaming instantiation if available.
-    if (!Module['wasmBinary'] &&
+  // Prefer streaming instantiation if available.
+  function instantiateAsync() {
+    if (!wasmBinary &&
         typeof WebAssembly.instantiateStreaming === 'function' &&
         !isDataURI(wasmBinaryFile) &&
         typeof fetch === 'function') {
-      WebAssembly.instantiateStreaming(fetch(wasmBinaryFile, { credentials: 'same-origin' }), info)
-        .then(receiveInstantiatedSource, function(reason) {
-          // We expect the most common failure cause to be a bad MIME type for the binary,
-          // in which case falling back to ArrayBuffer instantiation should work.
-          err('wasm streaming compile failed: ' + reason);
-          err('falling back to ArrayBuffer instantiation');
-          instantiateArrayBuffer(receiveInstantiatedSource);
-        });
+      fetch(wasmBinaryFile, { credentials: 'same-origin' }).then(function (response) {
+        var result = WebAssembly.instantiateStreaming(response, info);
+        return result.then(receiveInstantiatedSource, function(reason) {
+            // We expect the most common failure cause to be a bad MIME type for the binary,
+            // in which case falling back to ArrayBuffer instantiation should work.
+            err('wasm streaming compile failed: ' + reason);
+            err('falling back to ArrayBuffer instantiation');
+            instantiateArrayBuffer(receiveInstantiatedSource);
+          });
+      });
     } else {
-      instantiateArrayBuffer(receiveInstantiatedSource);
+      return instantiateArrayBuffer(receiveInstantiatedSource);
     }
-    return {}; // no exports yet; we'll fill them in later
+  }
+  // User shell pages can write their own Module.instantiateWasm = function(imports, successCallback) callback
+  // to manually instantiate the Wasm module themselves. This allows pages to run the instantiation parallel
+  // to any other async startup actions they are performing.
+  if (Module['instantiateWasm']) {
+    try {
+      var exports = Module['instantiateWasm'](info, receiveInstance);
+      return exports;
+    } catch(e) {
+      err('Module.instantiateWasm callback failed with error: ' + e);
+      return false;
+    }
   }
 
-
-  // We may have a preloaded value in Module.asm, save it
-  Module['asmPreload'] = Module['asm'];
-
-  // Memory growth integration code
-
-  var asmjsReallocBuffer = Module['reallocBuffer'];
-
-  var wasmReallocBuffer = function(size) {
-    var PAGE_MULTIPLE = Module["usingWasm"] ? WASM_PAGE_SIZE : ASMJS_PAGE_SIZE; // In wasm, heap size must be a multiple of 64KB. In asm.js, they need to be multiples of 16MB.
-    size = alignUp(size, PAGE_MULTIPLE); // round up to wasm page size
-    var old = Module['buffer'];
-    var oldSize = old.byteLength;
-    if (Module["usingWasm"]) {
-      // native wasm support
-      try {
-        var result = Module['wasmMemory'].grow((size - oldSize) / wasmPageSize); // .grow() takes a delta compared to the previous size
-        if (result !== (-1 | 0)) {
-          // success in native wasm memory growth, get the buffer from the memory
-          return Module['buffer'] = Module['wasmMemory'].buffer;
-        } else {
-          return null;
-        }
-      } catch(e) {
-        console.error('Module.reallocBuffer: Attempted to grow from ' + oldSize  + ' bytes to ' + size + ' bytes, but got error: ' + e);
-        return null;
-      }
-    }
-  };
-
-  Module['reallocBuffer'] = function(size) {
-    if (finalMethod === 'asmjs') {
-      return asmjsReallocBuffer(size);
-    } else {
-      return wasmReallocBuffer(size);
-    }
-  };
-
-  // we may try more than one; this is the final one, that worked and we are using
-  var finalMethod = '';
-
-  // Provide an "asm.js function" for the application, called to "link" the asm.js module. We instantiate
-  // the wasm module at that time, and it receives imports and provides exports and so forth, the app
-  // doesn't need to care that it is wasm or polyfilled wasm or asm.js.
-
-  Module['asm'] = function(global, env, providedBuffer) {
-    // import table
-    if (!env['table']) {
-      var TABLE_SIZE = Module['wasmTableSize'];
-      if (TABLE_SIZE === undefined) TABLE_SIZE = 1024; // works in binaryen interpreter at least
-      var MAX_TABLE_SIZE = Module['wasmMaxTableSize'];
-      if (typeof WebAssembly === 'object' && typeof WebAssembly.Table === 'function') {
-        if (MAX_TABLE_SIZE !== undefined) {
-          env['table'] = new WebAssembly.Table({ 'initial': TABLE_SIZE, 'maximum': MAX_TABLE_SIZE, 'element': 'anyfunc' });
-        } else {
-          env['table'] = new WebAssembly.Table({ 'initial': TABLE_SIZE, element: 'anyfunc' });
-        }
-      } else {
-        env['table'] = new Array(TABLE_SIZE); // works in binaryen interpreter at least
-      }
-      Module['wasmTable'] = env['table'];
-    }
-
-    if (!env['__memory_base']) {
-      env['__memory_base'] = Module['STATIC_BASE']; // tell the memory segments where to place themselves
-    }
-    if (!env['__table_base']) {
-      env['__table_base'] = 0; // table starts at 0 by default, in dynamic linking this will change
-    }
-
-    // try the methods. each should return the exports if it succeeded
-
-    var exports;
-    exports = doNativeWasm(global, env, providedBuffer);
-
-    assert(exports, 'no binaryen method succeeded. consider enabling more options, like interpreting, if you want that: http://kripken.github.io/emscripten-site/docs/compiling/WebAssembly.html#binaryen-methods');
-
-
-    return exports;
-  };
-
-  var methodHandler = Module['asm']; // note our method handler, as we may modify Module['asm'] later
+  instantiateAsync();
+  return {}; // no exports yet; we'll fill them in later
 }
 
-integrateWasmJS();
+// Provide an "asm.js function" for the application, called to "link" the asm.js module. We instantiate
+// the wasm module at that time, and it receives imports and provides exports and so forth, the app
+// doesn't need to care that it is wasm or asm.js.
+
+Module['asm'] = function(global, env, providedBuffer) {
+  // memory was already allocated (so js could use the buffer)
+  env['memory'] = wasmMemory
+  ;
+  // import table
+  env['table'] = wasmTable = new WebAssembly.Table({
+    'initial': 84,
+    'maximum': 84,
+    'element': 'anyfunc'
+  });
+  // With the wasm backend __memory_base and __table_base and only needed for
+  // relocatable output.
+  env['__memory_base'] = 1024; // tell the memory segments where to place themselves
+  // table starts at 0 by default (even in dynamic linking, for the main module)
+  env['__table_base'] = 0;
+
+  var exports = createWasm(env);
+  assert(exports, 'binaryen setup failed (no wasm support?)');
+  return exports;
+};
+
+// Globals used by JS i64 conversions
+var tempDouble;
+var tempI64;
 
 // === Body ===
 
@@ -1948,9 +1923,7 @@ var ASM_CONSTS = [];
 
 
 
-STATIC_BASE = GLOBAL_BASE;
-
-STATICTOP = STATIC_BASE + 43008;
+// STATICTOP = STATIC_BASE + 39216;
 /* global initializers */  __ATINIT__.push({ func: function() { ___emscripten_environ_constructor() } });
 
 
@@ -1959,12 +1932,9 @@ STATICTOP = STATIC_BASE + 43008;
 
 
 
-var STATIC_BUMP = 43008;
-Module["STATIC_BASE"] = STATIC_BASE;
-Module["STATIC_BUMP"] = STATIC_BUMP;
 
 /* no memory initializer */
-var tempDoublePtr = STATICTOP; STATICTOP += 16;
+var tempDoublePtr = 40224
 assert(tempDoublePtr % 8 == 0);
 
 function copyTempFloat(ptr) { // functions, because inlining this code increases code size too much
@@ -1988,6 +1958,44 @@ function copyTempDouble(ptr) {
 // {{PRE_LIBRARY}}
 
 
+  function demangle(func) {
+      warnOnce('warning: build with  -s DEMANGLE_SUPPORT=1  to link in libcxxabi demangling');
+      return func;
+    }
+
+  function demangleAll(text) {
+      var regex =
+        /\b__Z[\w\d_]+/g;
+      return text.replace(regex,
+        function(x) {
+          var y = demangle(x);
+          return x === y ? x : (y + ' [' + x + ']');
+        });
+    }
+
+  function jsStackTrace() {
+      var err = new Error();
+      if (!err.stack) {
+        // IE10+ special cases: It does have callstack info, but it is only populated if an Error object is thrown,
+        // so try that as a special-case.
+        try {
+          throw new Error(0);
+        } catch(e) {
+          err = e;
+        }
+        if (!err.stack) {
+          return '(no stack trace available)';
+        }
+      }
+      return err.stack.toString();
+    }
+
+  function stackTrace() {
+      var js = jsStackTrace();
+      if (Module['extraStackTrace']) js += '\n' + Module['extraStackTrace']();
+      return demangleAll(js);
+    }
+
   
   var ENV={};function ___buildEnvironment(environ) {
       // WARNING: Arbitrary limit!
@@ -2004,8 +2012,9 @@ function copyTempDouble(ptr) {
         ENV['PATH'] = '/';
         ENV['PWD'] = '/';
         ENV['HOME'] = '/home/web_user';
-        ENV['LANG'] = 'C.UTF-8';
-        ENV['_'] = Module['thisProgram'];
+        // Browser language detection #8751
+        ENV['LANG'] = ((typeof navigator === 'object' && navigator.languages && navigator.languages[0]) || 'C').replace('-', '_') + '.UTF-8';
+        ENV['_'] = thisProgram;
         // Allocate memory.
         poolPtr = getMemory(TOTAL_ENV_SIZE);
         envPtr = getMemory(MAX_ENV_VALUES * 4);
@@ -2045,21 +2054,10 @@ function copyTempDouble(ptr) {
 
   
   
-  
-  var ERRNO_CODES={EPERM:1,ENOENT:2,ESRCH:3,EINTR:4,EIO:5,ENXIO:6,E2BIG:7,ENOEXEC:8,EBADF:9,ECHILD:10,EAGAIN:11,EWOULDBLOCK:11,ENOMEM:12,EACCES:13,EFAULT:14,ENOTBLK:15,EBUSY:16,EEXIST:17,EXDEV:18,ENODEV:19,ENOTDIR:20,EISDIR:21,EINVAL:22,ENFILE:23,EMFILE:24,ENOTTY:25,ETXTBSY:26,EFBIG:27,ENOSPC:28,ESPIPE:29,EROFS:30,EMLINK:31,EPIPE:32,EDOM:33,ERANGE:34,ENOMSG:42,EIDRM:43,ECHRNG:44,EL2NSYNC:45,EL3HLT:46,EL3RST:47,ELNRNG:48,EUNATCH:49,ENOCSI:50,EL2HLT:51,EDEADLK:35,ENOLCK:37,EBADE:52,EBADR:53,EXFULL:54,ENOANO:55,EBADRQC:56,EBADSLT:57,EDEADLOCK:35,EBFONT:59,ENOSTR:60,ENODATA:61,ETIME:62,ENOSR:63,ENONET:64,ENOPKG:65,EREMOTE:66,ENOLINK:67,EADV:68,ESRMNT:69,ECOMM:70,EPROTO:71,EMULTIHOP:72,EDOTDOT:73,EBADMSG:74,ENOTUNIQ:76,EBADFD:77,EREMCHG:78,ELIBACC:79,ELIBBAD:80,ELIBSCN:81,ELIBMAX:82,ELIBEXEC:83,ENOSYS:38,ENOTEMPTY:39,ENAMETOOLONG:36,ELOOP:40,EOPNOTSUPP:95,EPFNOSUPPORT:96,ECONNRESET:104,ENOBUFS:105,EAFNOSUPPORT:97,EPROTOTYPE:91,ENOTSOCK:88,ENOPROTOOPT:92,ESHUTDOWN:108,ECONNREFUSED:111,EADDRINUSE:98,ECONNABORTED:103,ENETUNREACH:101,ENETDOWN:100,ETIMEDOUT:110,EHOSTDOWN:112,EHOSTUNREACH:113,EINPROGRESS:115,EALREADY:114,EDESTADDRREQ:89,EMSGSIZE:90,EPROTONOSUPPORT:93,ESOCKTNOSUPPORT:94,EADDRNOTAVAIL:99,ENETRESET:102,EISCONN:106,ENOTCONN:107,ETOOMANYREFS:109,EUSERS:87,EDQUOT:122,ESTALE:116,ENOTSUP:95,ENOMEDIUM:123,EILSEQ:84,EOVERFLOW:75,ECANCELED:125,ENOTRECOVERABLE:131,EOWNERDEAD:130,ESTRPIPE:86};
-  
-  var ERRNO_MESSAGES={0:"Success",1:"Not super-user",2:"No such file or directory",3:"No such process",4:"Interrupted system call",5:"I/O error",6:"No such device or address",7:"Arg list too long",8:"Exec format error",9:"Bad file number",10:"No children",11:"No more processes",12:"Not enough core",13:"Permission denied",14:"Bad address",15:"Block device required",16:"Mount device busy",17:"File exists",18:"Cross-device link",19:"No such device",20:"Not a directory",21:"Is a directory",22:"Invalid argument",23:"Too many open files in system",24:"Too many open files",25:"Not a typewriter",26:"Text file busy",27:"File too large",28:"No space left on device",29:"Illegal seek",30:"Read only file system",31:"Too many links",32:"Broken pipe",33:"Math arg out of domain of func",34:"Math result not representable",35:"File locking deadlock error",36:"File or path name too long",37:"No record locks available",38:"Function not implemented",39:"Directory not empty",40:"Too many symbolic links",42:"No message of desired type",43:"Identifier removed",44:"Channel number out of range",45:"Level 2 not synchronized",46:"Level 3 halted",47:"Level 3 reset",48:"Link number out of range",49:"Protocol driver not attached",50:"No CSI structure available",51:"Level 2 halted",52:"Invalid exchange",53:"Invalid request descriptor",54:"Exchange full",55:"No anode",56:"Invalid request code",57:"Invalid slot",59:"Bad font file fmt",60:"Device not a stream",61:"No data (for no delay io)",62:"Timer expired",63:"Out of streams resources",64:"Machine is not on the network",65:"Package not installed",66:"The object is remote",67:"The link has been severed",68:"Advertise error",69:"Srmount error",70:"Communication error on send",71:"Protocol error",72:"Multihop attempted",73:"Cross mount point (not really error)",74:"Trying to read unreadable message",75:"Value too large for defined data type",76:"Given log. name not unique",77:"f.d. invalid for this operation",78:"Remote address changed",79:"Can   access a needed shared lib",80:"Accessing a corrupted shared lib",81:".lib section in a.out corrupted",82:"Attempting to link in too many libs",83:"Attempting to exec a shared library",84:"Illegal byte sequence",86:"Streams pipe error",87:"Too many users",88:"Socket operation on non-socket",89:"Destination address required",90:"Message too long",91:"Protocol wrong type for socket",92:"Protocol not available",93:"Unknown protocol",94:"Socket type not supported",95:"Not supported",96:"Protocol family not supported",97:"Address family not supported by protocol family",98:"Address already in use",99:"Address not available",100:"Network interface is not configured",101:"Network is unreachable",102:"Connection reset by network",103:"Connection aborted",104:"Connection reset by peer",105:"No buffer space available",106:"Socket is already connected",107:"Socket is not connected",108:"Can't send after socket shutdown",109:"Too many references",110:"Connection timed out",111:"Connection refused",112:"Host is down",113:"Host is unreachable",114:"Socket already connected",115:"Connection already in progress",116:"Stale file handle",122:"Quota exceeded",123:"No medium (in tape drive)",125:"Operation canceled",130:"Previous owner died",131:"State not recoverable"};
-  
-  function ___setErrNo(value) {
-      if (Module['___errno_location']) HEAP32[((Module['___errno_location']())>>2)]=value;
-      else err('failed to set errno from JS');
-      return value;
-    }
-  
-  var PATH={splitPath:function (filename) {
+  var PATH={splitPath:function(filename) {
         var splitPathRe = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
         return splitPathRe.exec(filename).slice(1);
-      },normalizeArray:function (parts, allowAboveRoot) {
+      },normalizeArray:function(parts, allowAboveRoot) {
         // if the path tries to go above the root, `up` ends up > 0
         var up = 0;
         for (var i = parts.length - 1; i >= 0; i--) {
@@ -2081,7 +2079,7 @@ function copyTempDouble(ptr) {
           }
         }
         return parts;
-      },normalize:function (path) {
+      },normalize:function(path) {
         var isAbsolute = path.charAt(0) === '/',
             trailingSlash = path.substr(-1) === '/';
         // Normalize the path
@@ -2095,7 +2093,7 @@ function copyTempDouble(ptr) {
           path += '/';
         }
         return (isAbsolute ? '/' : '') + path;
-      },dirname:function (path) {
+      },dirname:function(path) {
         var result = PATH.splitPath(path),
             root = result[0],
             dir = result[1];
@@ -2108,20 +2106,29 @@ function copyTempDouble(ptr) {
           dir = dir.substr(0, dir.length - 1);
         }
         return root + dir;
-      },basename:function (path) {
+      },basename:function(path) {
         // EMSCRIPTEN return '/'' for '/', not an empty string
         if (path === '/') return '/';
         var lastSlash = path.lastIndexOf('/');
         if (lastSlash === -1) return path;
         return path.substr(lastSlash+1);
-      },extname:function (path) {
+      },extname:function(path) {
         return PATH.splitPath(path)[3];
-      },join:function () {
+      },join:function() {
         var paths = Array.prototype.slice.call(arguments, 0);
         return PATH.normalize(paths.join('/'));
-      },join2:function (l, r) {
+      },join2:function(l, r) {
         return PATH.normalize(l + '/' + r);
-      },resolve:function () {
+      }};
+  
+  
+  function ___setErrNo(value) {
+      if (Module['___errno_location']) HEAP32[((Module['___errno_location']())>>2)]=value;
+      else err('failed to set errno from JS');
+      return value;
+    }
+  
+  var PATH_FS={resolve:function() {
         var resolvedPath = '',
           resolvedAbsolute = false;
         for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
@@ -2141,9 +2148,9 @@ function copyTempDouble(ptr) {
           return !!p;
         }), !resolvedAbsolute).join('/');
         return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
-      },relative:function (from, to) {
-        from = PATH.resolve(from).substr(1);
-        to = PATH.resolve(to).substr(1);
+      },relative:function(from, to) {
+        from = PATH_FS.resolve(from).substr(1);
+        to = PATH_FS.resolve(to).substr(1);
         function trim(arr) {
           var start = 0;
           for (; start < arr.length; start++) {
@@ -2175,7 +2182,7 @@ function copyTempDouble(ptr) {
       }};
   
   var TTY={ttys:[],init:function () {
-        // https://github.com/kripken/emscripten/pull/1555
+        // https://github.com/emscripten-core/emscripten/pull/1555
         // if (ENVIRONMENT_IS_NODE) {
         //   // currently, FS.init does not distinguish if process.stdin is a file or TTY
         //   // device, it always assumes it's a TTY device. because of this, we're forcing
@@ -2183,8 +2190,8 @@ function copyTempDouble(ptr) {
         //   // with text files until FS.init can be refactored.
         //   process['stdin']['setEncoding']('utf8');
         // }
-      },shutdown:function () {
-        // https://github.com/kripken/emscripten/pull/1555
+      },shutdown:function() {
+        // https://github.com/emscripten-core/emscripten/pull/1555
         // if (ENVIRONMENT_IS_NODE) {
         //   // inolen: any idea as to why node -e 'process.stdin.read()' wouldn't exit immediately (with process.stdin being a tty)?
         //   // isaacs: because now it's reading from the stream, you've expressed interest in it, so that read() kicks off a _read() which creates a ReadReq operation
@@ -2193,24 +2200,24 @@ function copyTempDouble(ptr) {
         //   // isaacs: do process.stdin.pause() and i'd think it'd probably close the pending call
         //   process['stdin']['pause']();
         // }
-      },register:function (dev, ops) {
+      },register:function(dev, ops) {
         TTY.ttys[dev] = { input: [], output: [], ops: ops };
         FS.registerDevice(dev, TTY.stream_ops);
-      },stream_ops:{open:function (stream) {
+      },stream_ops:{open:function(stream) {
           var tty = TTY.ttys[stream.node.rdev];
           if (!tty) {
-            throw new FS.ErrnoError(ERRNO_CODES.ENODEV);
+            throw new FS.ErrnoError(19);
           }
           stream.tty = tty;
           stream.seekable = false;
-        },close:function (stream) {
+        },close:function(stream) {
           // flush any pending line data
           stream.tty.ops.flush(stream.tty);
-        },flush:function (stream) {
+        },flush:function(stream) {
           stream.tty.ops.flush(stream.tty);
-        },read:function (stream, buffer, offset, length, pos /* ignored */) {
+        },read:function(stream, buffer, offset, length, pos /* ignored */) {
           if (!stream.tty || !stream.tty.ops.get_char) {
-            throw new FS.ErrnoError(ERRNO_CODES.ENXIO);
+            throw new FS.ErrnoError(6);
           }
           var bytesRead = 0;
           for (var i = 0; i < length; i++) {
@@ -2218,10 +2225,10 @@ function copyTempDouble(ptr) {
             try {
               result = stream.tty.ops.get_char(stream.tty);
             } catch (e) {
-              throw new FS.ErrnoError(ERRNO_CODES.EIO);
+              throw new FS.ErrnoError(5);
             }
             if (result === undefined && bytesRead === 0) {
-              throw new FS.ErrnoError(ERRNO_CODES.EAGAIN);
+              throw new FS.ErrnoError(11);
             }
             if (result === null || result === undefined) break;
             bytesRead++;
@@ -2231,35 +2238,28 @@ function copyTempDouble(ptr) {
             stream.node.timestamp = Date.now();
           }
           return bytesRead;
-        },write:function (stream, buffer, offset, length, pos) {
+        },write:function(stream, buffer, offset, length, pos) {
           if (!stream.tty || !stream.tty.ops.put_char) {
-            throw new FS.ErrnoError(ERRNO_CODES.ENXIO);
+            throw new FS.ErrnoError(6);
           }
-          var i = 0;
           try {
-            if (offset === 0 && length === 0) {
-              // musl implements an fflush using a write of a NULL buffer of size 0
-              stream.tty.ops.flush(stream.tty);
-            } else {
-              while (i < length) {
-                stream.tty.ops.put_char(stream.tty, buffer[offset+i]);
-                i++;
-              }
+            for (var i = 0; i < length; i++) {
+              stream.tty.ops.put_char(stream.tty, buffer[offset+i]);
             }
           } catch (e) {
-            throw new FS.ErrnoError(ERRNO_CODES.EIO);
+            throw new FS.ErrnoError(5);
           }
           if (length) {
             stream.node.timestamp = Date.now();
           }
           return i;
-        }},default_tty_ops:{get_char:function (tty) {
+        }},default_tty_ops:{get_char:function(tty) {
           if (!tty.input.length) {
             var result = null;
             if (ENVIRONMENT_IS_NODE) {
               // we will read data by chunks of BUFSIZE
               var BUFSIZE = 256;
-              var buf = new Buffer(BUFSIZE);
+              var buf = Buffer.alloc ? Buffer.alloc(BUFSIZE) : new Buffer(BUFSIZE);
               var bytesRead = 0;
   
               var isPosixPlatform = (process.platform != 'win32'); // Node doesn't offer a direct check, so test by exclusion
@@ -2289,8 +2289,8 @@ function copyTempDouble(ptr) {
               } else {
                 result = null;
               }
-  
-            } else if (typeof window != 'undefined' &&
+            } else
+            if (typeof window != 'undefined' &&
               typeof window.prompt == 'function') {
               // Browser.
               result = window.prompt('Input: ');  // returns null on cancel
@@ -2310,38 +2310,38 @@ function copyTempDouble(ptr) {
             tty.input = intArrayFromString(result, true);
           }
           return tty.input.shift();
-        },put_char:function (tty, val) {
+        },put_char:function(tty, val) {
           if (val === null || val === 10) {
             out(UTF8ArrayToString(tty.output, 0));
             tty.output = [];
           } else {
             if (val != 0) tty.output.push(val); // val == 0 would cut text output off in the middle.
           }
-        },flush:function (tty) {
+        },flush:function(tty) {
           if (tty.output && tty.output.length > 0) {
             out(UTF8ArrayToString(tty.output, 0));
             tty.output = [];
           }
-        }},default_tty1_ops:{put_char:function (tty, val) {
+        }},default_tty1_ops:{put_char:function(tty, val) {
           if (val === null || val === 10) {
             err(UTF8ArrayToString(tty.output, 0));
             tty.output = [];
           } else {
             if (val != 0) tty.output.push(val);
           }
-        },flush:function (tty) {
+        },flush:function(tty) {
           if (tty.output && tty.output.length > 0) {
             err(UTF8ArrayToString(tty.output, 0));
             tty.output = [];
           }
         }}};
   
-  var MEMFS={ops_table:null,mount:function (mount) {
+  var MEMFS={ops_table:null,mount:function(mount) {
         return MEMFS.createNode(null, '/', 16384 | 511 /* 0777 */, 0);
-      },createNode:function (parent, name, mode, dev) {
+      },createNode:function(parent, name, mode, dev) {
         if (FS.isBlkdev(mode) || FS.isFIFO(mode)) {
           // no supported
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
+          throw new FS.ErrnoError(1);
         }
         if (!MEMFS.ops_table) {
           MEMFS.ops_table = {
@@ -2418,44 +2418,31 @@ function copyTempDouble(ptr) {
           parent.contents[name] = node;
         }
         return node;
-      },getFileDataAsRegularArray:function (node) {
+      },getFileDataAsRegularArray:function(node) {
         if (node.contents && node.contents.subarray) {
           var arr = [];
           for (var i = 0; i < node.usedBytes; ++i) arr.push(node.contents[i]);
           return arr; // Returns a copy of the original data.
         }
         return node.contents; // No-op, the file contents are already in a JS array. Return as-is.
-      },getFileDataAsTypedArray:function (node) {
+      },getFileDataAsTypedArray:function(node) {
         if (!node.contents) return new Uint8Array;
         if (node.contents.subarray) return node.contents.subarray(0, node.usedBytes); // Make sure to not return excess unused bytes.
         return new Uint8Array(node.contents);
-      },expandFileStorage:function (node, newCapacity) {
-        // If we are asked to expand the size of a file that already exists, revert to using a standard JS array to store the file
-        // instead of a typed array. This makes resizing the array more flexible because we can just .push() elements at the back to
-        // increase the size.
-        if (node.contents && node.contents.subarray && newCapacity > node.contents.length) {
-          node.contents = MEMFS.getFileDataAsRegularArray(node);
-          node.usedBytes = node.contents.length; // We might be writing to a lazy-loaded file which had overridden this property, so force-reset it.
-        }
-  
-        if (!node.contents || node.contents.subarray) { // Keep using a typed array if creating a new storage, or if old one was a typed array as well.
-          var prevCapacity = node.contents ? node.contents.length : 0;
-          if (prevCapacity >= newCapacity) return; // No need to expand, the storage was already large enough.
-          // Don't expand strictly to the given requested limit if it's only a very small increase, but instead geometrically grow capacity.
-          // For small filesizes (<1MB), perform size*2 geometric increase, but for large sizes, do a much more conservative size*1.125 increase to
-          // avoid overshooting the allocation cap by a very large margin.
-          var CAPACITY_DOUBLING_MAX = 1024 * 1024;
-          newCapacity = Math.max(newCapacity, (prevCapacity * (prevCapacity < CAPACITY_DOUBLING_MAX ? 2.0 : 1.125)) | 0);
-          if (prevCapacity != 0) newCapacity = Math.max(newCapacity, 256); // At minimum allocate 256b for each file when expanding.
-          var oldContents = node.contents;
-          node.contents = new Uint8Array(newCapacity); // Allocate new storage.
-          if (node.usedBytes > 0) node.contents.set(oldContents.subarray(0, node.usedBytes), 0); // Copy old data over to the new storage.
-          return;
-        }
-        // Not using a typed array to back the file storage. Use a standard JS array instead.
-        if (!node.contents && newCapacity > 0) node.contents = [];
-        while (node.contents.length < newCapacity) node.contents.push(0);
-      },resizeFileStorage:function (node, newSize) {
+      },expandFileStorage:function(node, newCapacity) {
+        var prevCapacity = node.contents ? node.contents.length : 0;
+        if (prevCapacity >= newCapacity) return; // No need to expand, the storage was already large enough.
+        // Don't expand strictly to the given requested limit if it's only a very small increase, but instead geometrically grow capacity.
+        // For small filesizes (<1MB), perform size*2 geometric increase, but for large sizes, do a much more conservative size*1.125 increase to
+        // avoid overshooting the allocation cap by a very large margin.
+        var CAPACITY_DOUBLING_MAX = 1024 * 1024;
+        newCapacity = Math.max(newCapacity, (prevCapacity * (prevCapacity < CAPACITY_DOUBLING_MAX ? 2.0 : 1.125)) | 0);
+        if (prevCapacity != 0) newCapacity = Math.max(newCapacity, 256); // At minimum allocate 256b for each file when expanding.
+        var oldContents = node.contents;
+        node.contents = new Uint8Array(newCapacity); // Allocate new storage.
+        if (node.usedBytes > 0) node.contents.set(oldContents.subarray(0, node.usedBytes), 0); // Copy old data over to the new storage.
+        return;
+      },resizeFileStorage:function(node, newSize) {
         if (node.usedBytes == newSize) return;
         if (newSize == 0) {
           node.contents = null; // Fully decommit when requesting a resize to zero.
@@ -2476,7 +2463,7 @@ function copyTempDouble(ptr) {
         if (node.contents.length > newSize) node.contents.length = newSize;
         else while (node.contents.length < newSize) node.contents.push(0);
         node.usedBytes = newSize;
-      },node_ops:{getattr:function (node) {
+      },node_ops:{getattr:function(node) {
           var attr = {};
           // device numbers reuse inode numbers.
           attr.dev = FS.isChrdev(node.mode) ? node.id : 1;
@@ -2503,7 +2490,7 @@ function copyTempDouble(ptr) {
           attr.blksize = 4096;
           attr.blocks = Math.ceil(attr.size / attr.blksize);
           return attr;
-        },setattr:function (node, attr) {
+        },setattr:function(node, attr) {
           if (attr.mode !== undefined) {
             node.mode = attr.mode;
           }
@@ -2513,11 +2500,11 @@ function copyTempDouble(ptr) {
           if (attr.size !== undefined) {
             MEMFS.resizeFileStorage(node, attr.size);
           }
-        },lookup:function (parent, name) {
-          throw FS.genericErrors[ERRNO_CODES.ENOENT];
-        },mknod:function (parent, name, mode, dev) {
+        },lookup:function(parent, name) {
+          throw FS.genericErrors[2];
+        },mknod:function(parent, name, mode, dev) {
           return MEMFS.createNode(parent, name, mode, dev);
-        },rename:function (old_node, new_dir, new_name) {
+        },rename:function(old_node, new_dir, new_name) {
           // if we're overwriting a directory at new_name, make sure it's empty.
           if (FS.isDir(old_node.mode)) {
             var new_node;
@@ -2527,7 +2514,7 @@ function copyTempDouble(ptr) {
             }
             if (new_node) {
               for (var i in new_node.contents) {
-                throw new FS.ErrnoError(ERRNO_CODES.ENOTEMPTY);
+                throw new FS.ErrnoError(39);
               }
             }
           }
@@ -2536,16 +2523,16 @@ function copyTempDouble(ptr) {
           old_node.name = new_name;
           new_dir.contents[new_name] = old_node;
           old_node.parent = new_dir;
-        },unlink:function (parent, name) {
+        },unlink:function(parent, name) {
           delete parent.contents[name];
-        },rmdir:function (parent, name) {
+        },rmdir:function(parent, name) {
           var node = FS.lookupNode(parent, name);
           for (var i in node.contents) {
-            throw new FS.ErrnoError(ERRNO_CODES.ENOTEMPTY);
+            throw new FS.ErrnoError(39);
           }
           delete parent.contents[name];
-        },readdir:function (node) {
-          var entries = ['.', '..']
+        },readdir:function(node) {
+          var entries = ['.', '..'];
           for (var key in node.contents) {
             if (!node.contents.hasOwnProperty(key)) {
               continue;
@@ -2553,16 +2540,16 @@ function copyTempDouble(ptr) {
             entries.push(key);
           }
           return entries;
-        },symlink:function (parent, newname, oldpath) {
+        },symlink:function(parent, newname, oldpath) {
           var node = MEMFS.createNode(parent, newname, 511 /* 0777 */ | 40960, 0);
           node.link = oldpath;
           return node;
-        },readlink:function (node) {
+        },readlink:function(node) {
           if (!FS.isLink(node.mode)) {
-            throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+            throw new FS.ErrnoError(22);
           }
           return node.link;
-        }},stream_ops:{read:function (stream, buffer, offset, length, position) {
+        }},stream_ops:{read:function(stream, buffer, offset, length, position) {
           var contents = stream.node.contents;
           if (position >= stream.node.usedBytes) return 0;
           var size = Math.min(stream.node.usedBytes - position, length);
@@ -2573,7 +2560,7 @@ function copyTempDouble(ptr) {
             for (var i = 0; i < size; i++) buffer[offset + i] = contents[position + i];
           }
           return size;
-        },write:function (stream, buffer, offset, length, position, canOwn) {
+        },write:function(stream, buffer, offset, length, position, canOwn) {
   
           if (!length) return 0;
           var node = stream.node;
@@ -2605,7 +2592,7 @@ function copyTempDouble(ptr) {
           }
           node.usedBytes = Math.max(node.usedBytes, position+length);
           return length;
-        },llseek:function (stream, offset, whence) {
+        },llseek:function(stream, offset, whence) {
           var position = offset;
           if (whence === 1) {  // SEEK_CUR.
             position += stream.position;
@@ -2615,15 +2602,15 @@ function copyTempDouble(ptr) {
             }
           }
           if (position < 0) {
-            throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+            throw new FS.ErrnoError(22);
           }
           return position;
-        },allocate:function (stream, offset, length) {
+        },allocate:function(stream, offset, length) {
           MEMFS.expandFileStorage(stream.node, offset + length);
           stream.node.usedBytes = Math.max(stream.node.usedBytes, offset + length);
-        },mmap:function (stream, buffer, offset, length, position, prot, flags) {
+        },mmap:function(stream, buffer, offset, length, position, prot, flags) {
           if (!FS.isFile(stream.node.mode)) {
-            throw new FS.ErrnoError(ERRNO_CODES.ENODEV);
+            throw new FS.ErrnoError(19);
           }
           var ptr;
           var allocated;
@@ -2645,16 +2632,19 @@ function copyTempDouble(ptr) {
               }
             }
             allocated = true;
+            // malloc() can lead to growing the heap. If targeting the heap, we need to
+            // re-acquire the heap buffer object in case growth had occurred.
+            var fromHeap = (buffer.buffer == HEAP8.buffer);
             ptr = _malloc(length);
             if (!ptr) {
-              throw new FS.ErrnoError(ERRNO_CODES.ENOMEM);
+              throw new FS.ErrnoError(12);
             }
-            buffer.set(contents, ptr);
+            (fromHeap ? HEAP8 : buffer).set(contents, ptr);
           }
           return { ptr: ptr, allocated: allocated };
-        },msync:function (stream, buffer, offset, length, mmapFlags) {
+        },msync:function(stream, buffer, offset, length, mmapFlags) {
           if (!FS.isFile(stream.node.mode)) {
-            throw new FS.ErrnoError(ERRNO_CODES.ENODEV);
+            throw new FS.ErrnoError(19);
           }
           if (mmapFlags & 2) {
             // MAP_PRIVATE calls need not to be synced back to underlying fs
@@ -2666,16 +2656,16 @@ function copyTempDouble(ptr) {
           return 0;
         }}};
   
-  var IDBFS={dbs:{},indexedDB:function () {
+  var IDBFS={dbs:{},indexedDB:function() {
         if (typeof indexedDB !== 'undefined') return indexedDB;
         var ret = null;
         if (typeof window === 'object') ret = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
         assert(ret, 'IDBFS used, but indexedDB not supported');
         return ret;
-      },DB_VERSION:21,DB_STORE_NAME:"FILE_DATA",mount:function (mount) {
+      },DB_VERSION:21,DB_STORE_NAME:"FILE_DATA",mount:function(mount) {
         // reuse all of the core MEMFS functionality
         return MEMFS.mount.apply(null, arguments);
-      },syncfs:function (mount, populate, callback) {
+      },syncfs:function(mount, populate, callback) {
         IDBFS.getLocalSet(mount, function(err, local) {
           if (err) return callback(err);
   
@@ -2688,7 +2678,7 @@ function copyTempDouble(ptr) {
             IDBFS.reconcile(src, dst, callback);
           });
         });
-      },getDB:function (name, callback) {
+      },getDB:function(name, callback) {
         // check the cache first
         var db = IDBFS.dbs[name];
         if (db) {
@@ -2731,7 +2721,7 @@ function copyTempDouble(ptr) {
           callback(this.error);
           e.preventDefault();
         };
-      },getLocalSet:function (mount, callback) {
+      },getLocalSet:function(mount, callback) {
         var entries = {};
   
         function isRealDir(p) {
@@ -2763,7 +2753,7 @@ function copyTempDouble(ptr) {
         }
   
         return callback(null, { type: 'local', entries: entries });
-      },getRemoteSet:function (mount, callback) {
+      },getRemoteSet:function(mount, callback) {
         var entries = {};
   
         IDBFS.getDB(mount.mountpoint, function(err, db) {
@@ -2794,7 +2784,7 @@ function copyTempDouble(ptr) {
             return callback(e);
           }
         });
-      },loadLocalEntry:function (path, callback) {
+      },loadLocalEntry:function(path, callback) {
         var stat, node;
   
         try {
@@ -2815,7 +2805,7 @@ function copyTempDouble(ptr) {
         } else {
           return callback(new Error('node type not supported'));
         }
-      },storeLocalEntry:function (path, entry, callback) {
+      },storeLocalEntry:function(path, entry, callback) {
         try {
           if (FS.isDir(entry.mode)) {
             FS.mkdir(path, entry.mode);
@@ -2832,7 +2822,7 @@ function copyTempDouble(ptr) {
         }
   
         callback(null);
-      },removeLocalEntry:function (path, callback) {
+      },removeLocalEntry:function(path, callback) {
         try {
           var lookup = FS.lookupPath(path);
           var stat = FS.stat(path);
@@ -2847,28 +2837,28 @@ function copyTempDouble(ptr) {
         }
   
         callback(null);
-      },loadRemoteEntry:function (store, path, callback) {
+      },loadRemoteEntry:function(store, path, callback) {
         var req = store.get(path);
         req.onsuccess = function(event) { callback(null, event.target.result); };
         req.onerror = function(e) {
           callback(this.error);
           e.preventDefault();
         };
-      },storeRemoteEntry:function (store, path, entry, callback) {
+      },storeRemoteEntry:function(store, path, entry, callback) {
         var req = store.put(entry, path);
         req.onsuccess = function() { callback(null); };
         req.onerror = function(e) {
           callback(this.error);
           e.preventDefault();
         };
-      },removeRemoteEntry:function (store, path, callback) {
+      },removeRemoteEntry:function(store, path, callback) {
         var req = store.delete(path);
         req.onsuccess = function() { callback(null); };
         req.onerror = function(e) {
           callback(this.error);
           e.preventDefault();
         };
-      },reconcile:function (src, dst, callback) {
+      },reconcile:function(src, dst, callback) {
         var total = 0;
   
         var create = [];
@@ -2896,27 +2886,26 @@ function copyTempDouble(ptr) {
         }
   
         var errored = false;
-        var completed = 0;
         var db = src.type === 'remote' ? src.db : dst.db;
         var transaction = db.transaction([IDBFS.DB_STORE_NAME], 'readwrite');
         var store = transaction.objectStore(IDBFS.DB_STORE_NAME);
   
         function done(err) {
-          if (err) {
-            if (!done.errored) {
-              done.errored = true;
-              return callback(err);
-            }
-            return;
-          }
-          if (++completed >= total) {
-            return callback(null);
+          if (err && !errored) {
+            errored = true;
+            return callback(err);
           }
         };
   
         transaction.onerror = function(e) {
           done(this.error);
           e.preventDefault();
+        };
+  
+        transaction.oncomplete = function(e) {
+          if (!errored) {
+            callback(null);
+          }
         };
   
         // sort paths in ascending order so directory entries are created
@@ -2946,7 +2935,7 @@ function copyTempDouble(ptr) {
         });
       }};
   
-  var NODEFS={isWindows:false,staticInit:function () {
+  var NODEFS={isWindows:false,staticInit:function() {
         NODEFS.isWindows = !!process.platform.match(/^win/);
         var flags = process["binding"]("constants");
         // Node.js 4 compatibility: it has no namespaces for constants
@@ -2969,11 +2958,11 @@ function copyTempDouble(ptr) {
         // Buffer.alloc has been added with Buffer.from together, so check it instead
         return Buffer.alloc ? Buffer.from(arrayBuffer) : new Buffer(arrayBuffer);
       },mount:function (mount) {
-        assert(ENVIRONMENT_IS_NODE);
+        assert(ENVIRONMENT_HAS_NODE);
         return NODEFS.createNode(null, '/', NODEFS.getMode(mount.opts.root), 0);
       },createNode:function (parent, name, mode, dev) {
         if (!FS.isDir(mode) && !FS.isFile(mode) && !FS.isLink(mode)) {
-          throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+          throw new FS.ErrnoError(22);
         }
         var node = FS.createNode(parent, name, mode);
         node.node_ops = NODEFS.node_ops;
@@ -2990,7 +2979,7 @@ function copyTempDouble(ptr) {
           }
         } catch (e) {
           if (!e.code) throw e;
-          throw new FS.ErrnoError(ERRNO_CODES[e.code]);
+          throw new FS.ErrnoError(-e.errno); // syscall errnos are negated, node's are not
         }
         return stat.mode;
       },realPath:function (node) {
@@ -3002,7 +2991,7 @@ function copyTempDouble(ptr) {
         parts.push(node.mount.opts.root);
         parts.reverse();
         return PATH.join.apply(null, parts);
-      },flagsForNode:function (flags) {
+      },flagsForNode:function(flags) {
         flags &= ~0x200000 /*O_PATH*/; // Ignore this flag from musl, otherwise node.js fails to open the file.
         flags &= ~0x800 /*O_NONBLOCK*/; // Ignore this flag from musl, otherwise node.js fails to open the file.
         flags &= ~0x8000 /*O_LARGEFILE*/; // Ignore this flag from musl, otherwise node.js fails to open the file.
@@ -3018,16 +3007,16 @@ function copyTempDouble(ptr) {
         if (!flags) {
           return newFlags;
         } else {
-          throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+          throw new FS.ErrnoError(22);
         }
-      },node_ops:{getattr:function (node) {
+      },node_ops:{getattr:function(node) {
           var path = NODEFS.realPath(node);
           var stat;
           try {
             stat = fs.lstatSync(path);
           } catch (e) {
             if (!e.code) throw e;
-            throw new FS.ErrnoError(ERRNO_CODES[e.code]);
+            throw new FS.ErrnoError(-e.errno);
           }
           // node.js v0.10.20 doesn't report blksize and blocks on Windows. Fake them with default blksize of 4096.
           // See http://support.microsoft.com/kb/140365
@@ -3052,7 +3041,7 @@ function copyTempDouble(ptr) {
             blksize: stat.blksize,
             blocks: stat.blocks
           };
-        },setattr:function (node, attr) {
+        },setattr:function(node, attr) {
           var path = NODEFS.realPath(node);
           try {
             if (attr.mode !== undefined) {
@@ -3069,7 +3058,7 @@ function copyTempDouble(ptr) {
             }
           } catch (e) {
             if (!e.code) throw e;
-            throw new FS.ErrnoError(ERRNO_CODES[e.code]);
+            throw new FS.ErrnoError(-e.errno);
           }
         },lookup:function (parent, name) {
           var path = PATH.join2(NODEFS.realPath(parent), name);
@@ -3087,7 +3076,7 @@ function copyTempDouble(ptr) {
             }
           } catch (e) {
             if (!e.code) throw e;
-            throw new FS.ErrnoError(ERRNO_CODES[e.code]);
+            throw new FS.ErrnoError(-e.errno);
           }
           return node;
         },rename:function (oldNode, newDir, newName) {
@@ -3097,41 +3086,41 @@ function copyTempDouble(ptr) {
             fs.renameSync(oldPath, newPath);
           } catch (e) {
             if (!e.code) throw e;
-            throw new FS.ErrnoError(ERRNO_CODES[e.code]);
+            throw new FS.ErrnoError(-e.errno);
           }
-        },unlink:function (parent, name) {
+        },unlink:function(parent, name) {
           var path = PATH.join2(NODEFS.realPath(parent), name);
           try {
             fs.unlinkSync(path);
           } catch (e) {
             if (!e.code) throw e;
-            throw new FS.ErrnoError(ERRNO_CODES[e.code]);
+            throw new FS.ErrnoError(-e.errno);
           }
-        },rmdir:function (parent, name) {
+        },rmdir:function(parent, name) {
           var path = PATH.join2(NODEFS.realPath(parent), name);
           try {
             fs.rmdirSync(path);
           } catch (e) {
             if (!e.code) throw e;
-            throw new FS.ErrnoError(ERRNO_CODES[e.code]);
+            throw new FS.ErrnoError(-e.errno);
           }
-        },readdir:function (node) {
+        },readdir:function(node) {
           var path = NODEFS.realPath(node);
           try {
             return fs.readdirSync(path);
           } catch (e) {
             if (!e.code) throw e;
-            throw new FS.ErrnoError(ERRNO_CODES[e.code]);
+            throw new FS.ErrnoError(-e.errno);
           }
-        },symlink:function (parent, newName, oldPath) {
+        },symlink:function(parent, newName, oldPath) {
           var newPath = PATH.join2(NODEFS.realPath(parent), newName);
           try {
             fs.symlinkSync(oldPath, newPath);
           } catch (e) {
             if (!e.code) throw e;
-            throw new FS.ErrnoError(ERRNO_CODES[e.code]);
+            throw new FS.ErrnoError(-e.errno);
           }
-        },readlink:function (node) {
+        },readlink:function(node) {
           var path = NODEFS.realPath(node);
           try {
             path = fs.readlinkSync(path);
@@ -3139,7 +3128,7 @@ function copyTempDouble(ptr) {
             return path;
           } catch (e) {
             if (!e.code) throw e;
-            throw new FS.ErrnoError(ERRNO_CODES[e.code]);
+            throw new FS.ErrnoError(-e.errno);
           }
         }},stream_ops:{open:function (stream) {
           var path = NODEFS.realPath(stream.node);
@@ -3149,7 +3138,7 @@ function copyTempDouble(ptr) {
             }
           } catch (e) {
             if (!e.code) throw e;
-            throw new FS.ErrnoError(ERRNO_CODES[e.code]);
+            throw new FS.ErrnoError(-e.errno);
           }
         },close:function (stream) {
           try {
@@ -3158,7 +3147,7 @@ function copyTempDouble(ptr) {
             }
           } catch (e) {
             if (!e.code) throw e;
-            throw new FS.ErrnoError(ERRNO_CODES[e.code]);
+            throw new FS.ErrnoError(-e.errno);
           }
         },read:function (stream, buffer, offset, length, position) {
           // Node.js < 6 compatibility: node errors on 0 length reads
@@ -3166,13 +3155,13 @@ function copyTempDouble(ptr) {
           try {
             return fs.readSync(stream.nfd, NODEFS.bufferFrom(buffer.buffer), offset, length, position);
           } catch (e) {
-            throw new FS.ErrnoError(ERRNO_CODES[e.code]);
+            throw new FS.ErrnoError(-e.errno);
           }
         },write:function (stream, buffer, offset, length, position) {
           try {
             return fs.writeSync(stream.nfd, NODEFS.bufferFrom(buffer.buffer), offset, length, position);
           } catch (e) {
-            throw new FS.ErrnoError(ERRNO_CODES[e.code]);
+            throw new FS.ErrnoError(-e.errno);
           }
         },llseek:function (stream, offset, whence) {
           var position = offset;
@@ -3184,13 +3173,13 @@ function copyTempDouble(ptr) {
                 var stat = fs.fstatSync(stream.nfd);
                 position += stat.size;
               } catch (e) {
-                throw new FS.ErrnoError(ERRNO_CODES[e.code]);
+                throw new FS.ErrnoError(-e.errno);
               }
             }
           }
   
           if (position < 0) {
-            throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+            throw new FS.ErrnoError(22);
           }
   
           return position;
@@ -3257,7 +3246,7 @@ function copyTempDouble(ptr) {
           parent.contents[name] = node;
         }
         return node;
-      },node_ops:{getattr:function (node) {
+      },node_ops:{getattr:function(node) {
           return {
             dev: 1,
             ino: undefined,
@@ -3273,24 +3262,24 @@ function copyTempDouble(ptr) {
             blksize: 4096,
             blocks: Math.ceil(node.size / 4096),
           };
-        },setattr:function (node, attr) {
+        },setattr:function(node, attr) {
           if (attr.mode !== undefined) {
             node.mode = attr.mode;
           }
           if (attr.timestamp !== undefined) {
             node.timestamp = attr.timestamp;
           }
-        },lookup:function (parent, name) {
-          throw new FS.ErrnoError(ERRNO_CODES.ENOENT);
+        },lookup:function(parent, name) {
+          throw new FS.ErrnoError(2);
         },mknod:function (parent, name, mode, dev) {
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
+          throw new FS.ErrnoError(1);
         },rename:function (oldNode, newDir, newName) {
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
-        },unlink:function (parent, name) {
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
-        },rmdir:function (parent, name) {
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
-        },readdir:function (node) {
+          throw new FS.ErrnoError(1);
+        },unlink:function(parent, name) {
+          throw new FS.ErrnoError(1);
+        },rmdir:function(parent, name) {
+          throw new FS.ErrnoError(1);
+        },readdir:function(node) {
           var entries = ['.', '..'];
           for (var key in node.contents) {
             if (!node.contents.hasOwnProperty(key)) {
@@ -3299,10 +3288,10 @@ function copyTempDouble(ptr) {
             entries.push(key);
           }
           return entries;
-        },symlink:function (parent, newName, oldPath) {
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
-        },readlink:function (node) {
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
+        },symlink:function(parent, newName, oldPath) {
+          throw new FS.ErrnoError(1);
+        },readlink:function(node) {
+          throw new FS.ErrnoError(1);
         }},stream_ops:{read:function (stream, buffer, offset, length, position) {
           if (position >= stream.node.size) return 0;
           var chunk = stream.node.contents.slice(position, position + length);
@@ -3310,7 +3299,7 @@ function copyTempDouble(ptr) {
           buffer.set(new Uint8Array(ab), offset);
           return chunk.size;
         },write:function (stream, buffer, offset, length, position) {
-          throw new FS.ErrnoError(ERRNO_CODES.EIO);
+          throw new FS.ErrnoError(5);
         },llseek:function (stream, offset, whence) {
           var position = offset;
           if (whence === 1) {  // SEEK_CUR.
@@ -3321,20 +3310,18 @@ function copyTempDouble(ptr) {
             }
           }
           if (position < 0) {
-            throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+            throw new FS.ErrnoError(22);
           }
           return position;
         }}};
   
-  var _stdin=STATICTOP; STATICTOP += 16;;
+  var ERRNO_MESSAGES={0:"Success",1:"Not super-user",2:"No such file or directory",3:"No such process",4:"Interrupted system call",5:"I/O error",6:"No such device or address",7:"Arg list too long",8:"Exec format error",9:"Bad file number",10:"No children",11:"No more processes",12:"Not enough core",13:"Permission denied",14:"Bad address",15:"Block device required",16:"Mount device busy",17:"File exists",18:"Cross-device link",19:"No such device",20:"Not a directory",21:"Is a directory",22:"Invalid argument",23:"Too many open files in system",24:"Too many open files",25:"Not a typewriter",26:"Text file busy",27:"File too large",28:"No space left on device",29:"Illegal seek",30:"Read only file system",31:"Too many links",32:"Broken pipe",33:"Math arg out of domain of func",34:"Math result not representable",35:"File locking deadlock error",36:"File or path name too long",37:"No record locks available",38:"Function not implemented",39:"Directory not empty",40:"Too many symbolic links",42:"No message of desired type",43:"Identifier removed",44:"Channel number out of range",45:"Level 2 not synchronized",46:"Level 3 halted",47:"Level 3 reset",48:"Link number out of range",49:"Protocol driver not attached",50:"No CSI structure available",51:"Level 2 halted",52:"Invalid exchange",53:"Invalid request descriptor",54:"Exchange full",55:"No anode",56:"Invalid request code",57:"Invalid slot",59:"Bad font file fmt",60:"Device not a stream",61:"No data (for no delay io)",62:"Timer expired",63:"Out of streams resources",64:"Machine is not on the network",65:"Package not installed",66:"The object is remote",67:"The link has been severed",68:"Advertise error",69:"Srmount error",70:"Communication error on send",71:"Protocol error",72:"Multihop attempted",73:"Cross mount point (not really error)",74:"Trying to read unreadable message",75:"Value too large for defined data type",76:"Given log. name not unique",77:"f.d. invalid for this operation",78:"Remote address changed",79:"Can   access a needed shared lib",80:"Accessing a corrupted shared lib",81:".lib section in a.out corrupted",82:"Attempting to link in too many libs",83:"Attempting to exec a shared library",84:"Illegal byte sequence",86:"Streams pipe error",87:"Too many users",88:"Socket operation on non-socket",89:"Destination address required",90:"Message too long",91:"Protocol wrong type for socket",92:"Protocol not available",93:"Unknown protocol",94:"Socket type not supported",95:"Not supported",96:"Protocol family not supported",97:"Address family not supported by protocol family",98:"Address already in use",99:"Address not available",100:"Network interface is not configured",101:"Network is unreachable",102:"Connection reset by network",103:"Connection aborted",104:"Connection reset by peer",105:"No buffer space available",106:"Socket is already connected",107:"Socket is not connected",108:"Can't send after socket shutdown",109:"Too many references",110:"Connection timed out",111:"Connection refused",112:"Host is down",113:"Host is unreachable",114:"Socket already connected",115:"Connection already in progress",116:"Stale file handle",122:"Quota exceeded",123:"No medium (in tape drive)",125:"Operation canceled",130:"Previous owner died",131:"State not recoverable"};
   
-  var _stdout=STATICTOP; STATICTOP += 16;;
-  
-  var _stderr=STATICTOP; STATICTOP += 16;;var FS={root:null,mounts:[],devices:{},streams:[],nextInode:1,nameTable:null,currentPath:"/",initialized:false,ignorePermissions:true,trackingDelegate:{},tracking:{openFlags:{READ:1,WRITE:2}},ErrnoError:null,genericErrors:{},filesystems:null,syncFSRequests:0,handleFSError:function (e) {
+  var ERRNO_CODES={EPERM:1,ENOENT:2,ESRCH:3,EINTR:4,EIO:5,ENXIO:6,E2BIG:7,ENOEXEC:8,EBADF:9,ECHILD:10,EAGAIN:11,EWOULDBLOCK:11,ENOMEM:12,EACCES:13,EFAULT:14,ENOTBLK:15,EBUSY:16,EEXIST:17,EXDEV:18,ENODEV:19,ENOTDIR:20,EISDIR:21,EINVAL:22,ENFILE:23,EMFILE:24,ENOTTY:25,ETXTBSY:26,EFBIG:27,ENOSPC:28,ESPIPE:29,EROFS:30,EMLINK:31,EPIPE:32,EDOM:33,ERANGE:34,ENOMSG:42,EIDRM:43,ECHRNG:44,EL2NSYNC:45,EL3HLT:46,EL3RST:47,ELNRNG:48,EUNATCH:49,ENOCSI:50,EL2HLT:51,EDEADLK:35,ENOLCK:37,EBADE:52,EBADR:53,EXFULL:54,ENOANO:55,EBADRQC:56,EBADSLT:57,EDEADLOCK:35,EBFONT:59,ENOSTR:60,ENODATA:61,ETIME:62,ENOSR:63,ENONET:64,ENOPKG:65,EREMOTE:66,ENOLINK:67,EADV:68,ESRMNT:69,ECOMM:70,EPROTO:71,EMULTIHOP:72,EDOTDOT:73,EBADMSG:74,ENOTUNIQ:76,EBADFD:77,EREMCHG:78,ELIBACC:79,ELIBBAD:80,ELIBSCN:81,ELIBMAX:82,ELIBEXEC:83,ENOSYS:38,ENOTEMPTY:39,ENAMETOOLONG:36,ELOOP:40,EOPNOTSUPP:95,EPFNOSUPPORT:96,ECONNRESET:104,ENOBUFS:105,EAFNOSUPPORT:97,EPROTOTYPE:91,ENOTSOCK:88,ENOPROTOOPT:92,ESHUTDOWN:108,ECONNREFUSED:111,EADDRINUSE:98,ECONNABORTED:103,ENETUNREACH:101,ENETDOWN:100,ETIMEDOUT:110,EHOSTDOWN:112,EHOSTUNREACH:113,EINPROGRESS:115,EALREADY:114,EDESTADDRREQ:89,EMSGSIZE:90,EPROTONOSUPPORT:93,ESOCKTNOSUPPORT:94,EADDRNOTAVAIL:99,ENETRESET:102,EISCONN:106,ENOTCONN:107,ETOOMANYREFS:109,EUSERS:87,EDQUOT:122,ESTALE:116,ENOTSUP:95,ENOMEDIUM:123,EILSEQ:84,EOVERFLOW:75,ECANCELED:125,ENOTRECOVERABLE:131,EOWNERDEAD:130,ESTRPIPE:86};var FS={root:null,mounts:[],devices:{},streams:[],nextInode:1,nameTable:null,currentPath:"/",initialized:false,ignorePermissions:true,trackingDelegate:{},tracking:{openFlags:{READ:1,WRITE:2}},ErrnoError:null,genericErrors:{},filesystems:null,syncFSRequests:0,handleFSError:function(e) {
         if (!(e instanceof FS.ErrnoError)) throw e + ' : ' + stackTrace();
         return ___setErrNo(e.errno);
-      },lookupPath:function (path, opts) {
-        path = PATH.resolve(FS.cwd(), path);
+      },lookupPath:function(path, opts) {
+        path = PATH_FS.resolve(FS.cwd(), path);
         opts = opts || {};
   
         if (!path) return { path: '', node: null };
@@ -3350,7 +3337,7 @@ function copyTempDouble(ptr) {
         }
   
         if (opts.recurse_count > 8) {  // max recursive lookup of 8
-          throw new FS.ErrnoError(ERRNO_CODES.ELOOP);
+          throw new FS.ErrnoError(40);
         }
   
         // split the path
@@ -3385,20 +3372,20 @@ function copyTempDouble(ptr) {
             var count = 0;
             while (FS.isLink(current.mode)) {
               var link = FS.readlink(current_path);
-              current_path = PATH.resolve(PATH.dirname(current_path), link);
+              current_path = PATH_FS.resolve(PATH.dirname(current_path), link);
   
               var lookup = FS.lookupPath(current_path, { recurse_count: opts.recurse_count });
               current = lookup.node;
   
               if (count++ > 40) {  // limit max consecutive symlinks to 40 (SYMLOOP_MAX).
-                throw new FS.ErrnoError(ERRNO_CODES.ELOOP);
+                throw new FS.ErrnoError(40);
               }
             }
           }
         }
   
         return { path: current_path, node: current };
-      },getPath:function (node) {
+      },getPath:function(node) {
         var path;
         while (true) {
           if (FS.isRoot(node)) {
@@ -3409,7 +3396,7 @@ function copyTempDouble(ptr) {
           path = path ? node.name + '/' + path : node.name;
           node = node.parent;
         }
-      },hashName:function (parentid, name) {
+      },hashName:function(parentid, name) {
         var hash = 0;
   
   
@@ -3417,11 +3404,11 @@ function copyTempDouble(ptr) {
           hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
         }
         return ((parentid + hash) >>> 0) % FS.nameTable.length;
-      },hashAddNode:function (node) {
+      },hashAddNode:function(node) {
         var hash = FS.hashName(node.parent.id, node.name);
         node.name_next = FS.nameTable[hash];
         FS.nameTable[hash] = node;
-      },hashRemoveNode:function (node) {
+      },hashRemoveNode:function(node) {
         var hash = FS.hashName(node.parent.id, node.name);
         if (FS.nameTable[hash] === node) {
           FS.nameTable[hash] = node.name_next;
@@ -3435,7 +3422,7 @@ function copyTempDouble(ptr) {
             current = current.name_next;
           }
         }
-      },lookupNode:function (parent, name) {
+      },lookupNode:function(parent, name) {
         var err = FS.mayLookup(parent);
         if (err) {
           throw new FS.ErrnoError(err, parent);
@@ -3449,7 +3436,7 @@ function copyTempDouble(ptr) {
         }
         // if we failed to find it in the cache, call into the VFS
         return FS.lookup(parent, name);
-      },createNode:function (parent, name, mode, rdev) {
+      },createNode:function(parent, name, mode, rdev) {
         if (!FS.FSNode) {
           FS.FSNode = function(parent, name, mode, rdev) {
             if (!parent) {
@@ -3497,64 +3484,64 @@ function copyTempDouble(ptr) {
         FS.hashAddNode(node);
   
         return node;
-      },destroyNode:function (node) {
+      },destroyNode:function(node) {
         FS.hashRemoveNode(node);
-      },isRoot:function (node) {
+      },isRoot:function(node) {
         return node === node.parent;
-      },isMountpoint:function (node) {
+      },isMountpoint:function(node) {
         return !!node.mounted;
-      },isFile:function (mode) {
+      },isFile:function(mode) {
         return (mode & 61440) === 32768;
-      },isDir:function (mode) {
+      },isDir:function(mode) {
         return (mode & 61440) === 16384;
-      },isLink:function (mode) {
+      },isLink:function(mode) {
         return (mode & 61440) === 40960;
-      },isChrdev:function (mode) {
+      },isChrdev:function(mode) {
         return (mode & 61440) === 8192;
-      },isBlkdev:function (mode) {
+      },isBlkdev:function(mode) {
         return (mode & 61440) === 24576;
-      },isFIFO:function (mode) {
+      },isFIFO:function(mode) {
         return (mode & 61440) === 4096;
-      },isSocket:function (mode) {
+      },isSocket:function(mode) {
         return (mode & 49152) === 49152;
-      },flagModes:{"r":0,"rs":1052672,"r+":2,"w":577,"wx":705,"xw":705,"w+":578,"wx+":706,"xw+":706,"a":1089,"ax":1217,"xa":1217,"a+":1090,"ax+":1218,"xa+":1218},modeStringToFlags:function (str) {
+      },flagModes:{"r":0,"rs":1052672,"r+":2,"w":577,"wx":705,"xw":705,"w+":578,"wx+":706,"xw+":706,"a":1089,"ax":1217,"xa":1217,"a+":1090,"ax+":1218,"xa+":1218},modeStringToFlags:function(str) {
         var flags = FS.flagModes[str];
         if (typeof flags === 'undefined') {
           throw new Error('Unknown file open mode: ' + str);
         }
         return flags;
-      },flagsToPermissionString:function (flag) {
+      },flagsToPermissionString:function(flag) {
         var perms = ['r', 'w', 'rw'][flag & 3];
         if ((flag & 512)) {
           perms += 'w';
         }
         return perms;
-      },nodePermissions:function (node, perms) {
+      },nodePermissions:function(node, perms) {
         if (FS.ignorePermissions) {
           return 0;
         }
         // return 0 if any user, group or owner bits are set.
         if (perms.indexOf('r') !== -1 && !(node.mode & 292)) {
-          return ERRNO_CODES.EACCES;
+          return 13;
         } else if (perms.indexOf('w') !== -1 && !(node.mode & 146)) {
-          return ERRNO_CODES.EACCES;
+          return 13;
         } else if (perms.indexOf('x') !== -1 && !(node.mode & 73)) {
-          return ERRNO_CODES.EACCES;
+          return 13;
         }
         return 0;
-      },mayLookup:function (dir) {
+      },mayLookup:function(dir) {
         var err = FS.nodePermissions(dir, 'x');
         if (err) return err;
-        if (!dir.node_ops.lookup) return ERRNO_CODES.EACCES;
+        if (!dir.node_ops.lookup) return 13;
         return 0;
-      },mayCreate:function (dir, name) {
+      },mayCreate:function(dir, name) {
         try {
           var node = FS.lookupNode(dir, name);
-          return ERRNO_CODES.EEXIST;
+          return 17;
         } catch (e) {
         }
         return FS.nodePermissions(dir, 'wx');
-      },mayDelete:function (dir, name, isdir) {
+      },mayDelete:function(dir, name, isdir) {
         var node;
         try {
           node = FS.lookupNode(dir, name);
@@ -3567,31 +3554,31 @@ function copyTempDouble(ptr) {
         }
         if (isdir) {
           if (!FS.isDir(node.mode)) {
-            return ERRNO_CODES.ENOTDIR;
+            return 20;
           }
           if (FS.isRoot(node) || FS.getPath(node) === FS.cwd()) {
-            return ERRNO_CODES.EBUSY;
+            return 16;
           }
         } else {
           if (FS.isDir(node.mode)) {
-            return ERRNO_CODES.EISDIR;
+            return 21;
           }
         }
         return 0;
-      },mayOpen:function (node, flags) {
+      },mayOpen:function(node, flags) {
         if (!node) {
-          return ERRNO_CODES.ENOENT;
+          return 2;
         }
         if (FS.isLink(node.mode)) {
-          return ERRNO_CODES.ELOOP;
+          return 40;
         } else if (FS.isDir(node.mode)) {
           if (FS.flagsToPermissionString(flags) !== 'r' || // opening for write
               (flags & 512)) { // TODO: check for O_SEARCH? (== search for dir only)
-            return ERRNO_CODES.EISDIR;
+            return 21;
           }
         }
         return FS.nodePermissions(node, FS.flagsToPermissionString(flags));
-      },MAX_OPEN_FDS:4096,nextfd:function (fd_start, fd_end) {
+      },MAX_OPEN_FDS:4096,nextfd:function(fd_start, fd_end) {
         fd_start = fd_start || 0;
         fd_end = fd_end || FS.MAX_OPEN_FDS;
         for (var fd = fd_start; fd <= fd_end; fd++) {
@@ -3599,10 +3586,10 @@ function copyTempDouble(ptr) {
             return fd;
           }
         }
-        throw new FS.ErrnoError(ERRNO_CODES.EMFILE);
-      },getStream:function (fd) {
+        throw new FS.ErrnoError(24);
+      },getStream:function(fd) {
         return FS.streams[fd];
-      },createStream:function (stream, fd_start, fd_end) {
+      },createStream:function(stream, fd_start, fd_end) {
         if (!FS.FSStream) {
           FS.FSStream = function(){};
           FS.FSStream.prototype = {};
@@ -3633,9 +3620,9 @@ function copyTempDouble(ptr) {
         stream.fd = fd;
         FS.streams[fd] = stream;
         return stream;
-      },closeStream:function (fd) {
+      },closeStream:function(fd) {
         FS.streams[fd] = null;
-      },chrdev_stream_ops:{open:function (stream) {
+      },chrdev_stream_ops:{open:function(stream) {
           var device = FS.getDevice(stream.node.rdev);
           // override node's stream ops with the device's
           stream.stream_ops = device.stream_ops;
@@ -3643,19 +3630,19 @@ function copyTempDouble(ptr) {
           if (stream.stream_ops.open) {
             stream.stream_ops.open(stream);
           }
-        },llseek:function () {
-          throw new FS.ErrnoError(ERRNO_CODES.ESPIPE);
-        }},major:function (dev) {
+        },llseek:function() {
+          throw new FS.ErrnoError(29);
+        }},major:function(dev) {
         return ((dev) >> 8);
-      },minor:function (dev) {
+      },minor:function(dev) {
         return ((dev) & 0xff);
-      },makedev:function (ma, mi) {
+      },makedev:function(ma, mi) {
         return ((ma) << 8 | (mi));
-      },registerDevice:function (dev, ops) {
+      },registerDevice:function(dev, ops) {
         FS.devices[dev] = { stream_ops: ops };
-      },getDevice:function (dev) {
+      },getDevice:function(dev) {
         return FS.devices[dev];
-      },getMounts:function (mount) {
+      },getMounts:function(mount) {
         var mounts = [];
         var check = [mount];
   
@@ -3668,7 +3655,7 @@ function copyTempDouble(ptr) {
         }
   
         return mounts;
-      },syncfs:function (populate, callback) {
+      },syncfs:function(populate, callback) {
         if (typeof(populate) === 'function') {
           callback = populate;
           populate = false;
@@ -3709,13 +3696,13 @@ function copyTempDouble(ptr) {
           }
           mount.type.syncfs(mount, populate, done);
         });
-      },mount:function (type, opts, mountpoint) {
+      },mount:function(type, opts, mountpoint) {
         var root = mountpoint === '/';
         var pseudo = !mountpoint;
         var node;
   
         if (root && FS.root) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBUSY);
+          throw new FS.ErrnoError(16);
         } else if (!root && !pseudo) {
           var lookup = FS.lookupPath(mountpoint, { follow_mount: false });
   
@@ -3723,11 +3710,11 @@ function copyTempDouble(ptr) {
           node = lookup.node;
   
           if (FS.isMountpoint(node)) {
-            throw new FS.ErrnoError(ERRNO_CODES.EBUSY);
+            throw new FS.ErrnoError(16);
           }
   
           if (!FS.isDir(node.mode)) {
-            throw new FS.ErrnoError(ERRNO_CODES.ENOTDIR);
+            throw new FS.ErrnoError(20);
           }
         }
   
@@ -3760,7 +3747,7 @@ function copyTempDouble(ptr) {
         var lookup = FS.lookupPath(mountpoint, { follow_mount: false });
   
         if (!FS.isMountpoint(lookup.node)) {
-          throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+          throw new FS.ErrnoError(22);
         }
   
         // destroy the nodes for this mount, and all its child mounts
@@ -3789,34 +3776,34 @@ function copyTempDouble(ptr) {
         var idx = node.mount.mounts.indexOf(mount);
         assert(idx !== -1);
         node.mount.mounts.splice(idx, 1);
-      },lookup:function (parent, name) {
+      },lookup:function(parent, name) {
         return parent.node_ops.lookup(parent, name);
-      },mknod:function (path, mode, dev) {
+      },mknod:function(path, mode, dev) {
         var lookup = FS.lookupPath(path, { parent: true });
         var parent = lookup.node;
         var name = PATH.basename(path);
         if (!name || name === '.' || name === '..') {
-          throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+          throw new FS.ErrnoError(22);
         }
         var err = FS.mayCreate(parent, name);
         if (err) {
           throw new FS.ErrnoError(err);
         }
         if (!parent.node_ops.mknod) {
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
+          throw new FS.ErrnoError(1);
         }
         return parent.node_ops.mknod(parent, name, mode, dev);
-      },create:function (path, mode) {
+      },create:function(path, mode) {
         mode = mode !== undefined ? mode : 438 /* 0666 */;
         mode &= 4095;
         mode |= 32768;
         return FS.mknod(path, mode, 0);
-      },mkdir:function (path, mode) {
+      },mkdir:function(path, mode) {
         mode = mode !== undefined ? mode : 511 /* 0777 */;
         mode &= 511 | 512;
         mode |= 16384;
         return FS.mknod(path, mode, 0);
-      },mkdirTree:function (path, mode) {
+      },mkdirTree:function(path, mode) {
         var dirs = path.split('/');
         var d = '';
         for (var i = 0; i < dirs.length; ++i) {
@@ -3825,24 +3812,24 @@ function copyTempDouble(ptr) {
           try {
             FS.mkdir(d, mode);
           } catch(e) {
-            if (e.errno != ERRNO_CODES.EEXIST) throw e;
+            if (e.errno != 17) throw e;
           }
         }
-      },mkdev:function (path, mode, dev) {
+      },mkdev:function(path, mode, dev) {
         if (typeof(dev) === 'undefined') {
           dev = mode;
           mode = 438 /* 0666 */;
         }
         mode |= 8192;
         return FS.mknod(path, mode, dev);
-      },symlink:function (oldpath, newpath) {
-        if (!PATH.resolve(oldpath)) {
-          throw new FS.ErrnoError(ERRNO_CODES.ENOENT);
+      },symlink:function(oldpath, newpath) {
+        if (!PATH_FS.resolve(oldpath)) {
+          throw new FS.ErrnoError(2);
         }
         var lookup = FS.lookupPath(newpath, { parent: true });
         var parent = lookup.node;
         if (!parent) {
-          throw new FS.ErrnoError(ERRNO_CODES.ENOENT);
+          throw new FS.ErrnoError(2);
         }
         var newname = PATH.basename(newpath);
         var err = FS.mayCreate(parent, newname);
@@ -3850,10 +3837,10 @@ function copyTempDouble(ptr) {
           throw new FS.ErrnoError(err);
         }
         if (!parent.node_ops.symlink) {
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
+          throw new FS.ErrnoError(1);
         }
         return parent.node_ops.symlink(parent, newname, oldpath);
-      },rename:function (old_path, new_path) {
+      },rename:function(old_path, new_path) {
         var old_dirname = PATH.dirname(old_path);
         var new_dirname = PATH.dirname(new_path);
         var old_name = PATH.basename(old_path);
@@ -3866,24 +3853,24 @@ function copyTempDouble(ptr) {
           lookup = FS.lookupPath(new_path, { parent: true });
           new_dir = lookup.node;
         } catch (e) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBUSY);
+          throw new FS.ErrnoError(16);
         }
-        if (!old_dir || !new_dir) throw new FS.ErrnoError(ERRNO_CODES.ENOENT);
+        if (!old_dir || !new_dir) throw new FS.ErrnoError(2);
         // need to be part of the same mount
         if (old_dir.mount !== new_dir.mount) {
-          throw new FS.ErrnoError(ERRNO_CODES.EXDEV);
+          throw new FS.ErrnoError(18);
         }
         // source must exist
         var old_node = FS.lookupNode(old_dir, old_name);
         // old path should not be an ancestor of the new path
-        var relative = PATH.relative(old_path, new_dirname);
+        var relative = PATH_FS.relative(old_path, new_dirname);
         if (relative.charAt(0) !== '.') {
-          throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+          throw new FS.ErrnoError(22);
         }
         // new path should not be an ancestor of the old path
-        relative = PATH.relative(new_path, old_dirname);
+        relative = PATH_FS.relative(new_path, old_dirname);
         if (relative.charAt(0) !== '.') {
-          throw new FS.ErrnoError(ERRNO_CODES.ENOTEMPTY);
+          throw new FS.ErrnoError(39);
         }
         // see if the new path already exists
         var new_node;
@@ -3911,10 +3898,10 @@ function copyTempDouble(ptr) {
           throw new FS.ErrnoError(err);
         }
         if (!old_dir.node_ops.rename) {
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
+          throw new FS.ErrnoError(1);
         }
         if (FS.isMountpoint(old_node) || (new_node && FS.isMountpoint(new_node))) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBUSY);
+          throw new FS.ErrnoError(16);
         }
         // if we are going to change the parent, check write permissions
         if (new_dir !== old_dir) {
@@ -3947,7 +3934,7 @@ function copyTempDouble(ptr) {
         } catch(e) {
           console.log("FS.trackingDelegate['onMovePath']('"+old_path+"', '"+new_path+"') threw an exception: " + e.message);
         }
-      },rmdir:function (path) {
+      },rmdir:function(path) {
         var lookup = FS.lookupPath(path, { parent: true });
         var parent = lookup.node;
         var name = PATH.basename(path);
@@ -3957,10 +3944,10 @@ function copyTempDouble(ptr) {
           throw new FS.ErrnoError(err);
         }
         if (!parent.node_ops.rmdir) {
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
+          throw new FS.ErrnoError(1);
         }
         if (FS.isMountpoint(node)) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBUSY);
+          throw new FS.ErrnoError(16);
         }
         try {
           if (FS.trackingDelegate['willDeletePath']) {
@@ -3976,14 +3963,14 @@ function copyTempDouble(ptr) {
         } catch(e) {
           console.log("FS.trackingDelegate['onDeletePath']('"+path+"') threw an exception: " + e.message);
         }
-      },readdir:function (path) {
+      },readdir:function(path) {
         var lookup = FS.lookupPath(path, { follow: true });
         var node = lookup.node;
         if (!node.node_ops.readdir) {
-          throw new FS.ErrnoError(ERRNO_CODES.ENOTDIR);
+          throw new FS.ErrnoError(20);
         }
         return node.node_ops.readdir(node);
-      },unlink:function (path) {
+      },unlink:function(path) {
         var lookup = FS.lookupPath(path, { parent: true });
         var parent = lookup.node;
         var name = PATH.basename(path);
@@ -3996,10 +3983,10 @@ function copyTempDouble(ptr) {
           throw new FS.ErrnoError(err);
         }
         if (!parent.node_ops.unlink) {
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
+          throw new FS.ErrnoError(1);
         }
         if (FS.isMountpoint(node)) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBUSY);
+          throw new FS.ErrnoError(16);
         }
         try {
           if (FS.trackingDelegate['willDeletePath']) {
@@ -4015,29 +4002,29 @@ function copyTempDouble(ptr) {
         } catch(e) {
           console.log("FS.trackingDelegate['onDeletePath']('"+path+"') threw an exception: " + e.message);
         }
-      },readlink:function (path) {
+      },readlink:function(path) {
         var lookup = FS.lookupPath(path);
         var link = lookup.node;
         if (!link) {
-          throw new FS.ErrnoError(ERRNO_CODES.ENOENT);
+          throw new FS.ErrnoError(2);
         }
         if (!link.node_ops.readlink) {
-          throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+          throw new FS.ErrnoError(22);
         }
-        return PATH.resolve(FS.getPath(link.parent), link.node_ops.readlink(link));
-      },stat:function (path, dontFollow) {
+        return PATH_FS.resolve(FS.getPath(link.parent), link.node_ops.readlink(link));
+      },stat:function(path, dontFollow) {
         var lookup = FS.lookupPath(path, { follow: !dontFollow });
         var node = lookup.node;
         if (!node) {
-          throw new FS.ErrnoError(ERRNO_CODES.ENOENT);
+          throw new FS.ErrnoError(2);
         }
         if (!node.node_ops.getattr) {
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
+          throw new FS.ErrnoError(1);
         }
         return node.node_ops.getattr(node);
-      },lstat:function (path) {
+      },lstat:function(path) {
         return FS.stat(path, true);
-      },chmod:function (path, mode, dontFollow) {
+      },chmod:function(path, mode, dontFollow) {
         var node;
         if (typeof path === 'string') {
           var lookup = FS.lookupPath(path, { follow: !dontFollow });
@@ -4046,21 +4033,21 @@ function copyTempDouble(ptr) {
           node = path;
         }
         if (!node.node_ops.setattr) {
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
+          throw new FS.ErrnoError(1);
         }
         node.node_ops.setattr(node, {
           mode: (mode & 4095) | (node.mode & ~4095),
           timestamp: Date.now()
         });
-      },lchmod:function (path, mode) {
+      },lchmod:function(path, mode) {
         FS.chmod(path, mode, true);
-      },fchmod:function (fd, mode) {
+      },fchmod:function(fd, mode) {
         var stream = FS.getStream(fd);
         if (!stream) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBADF);
+          throw new FS.ErrnoError(9);
         }
         FS.chmod(stream.node, mode);
-      },chown:function (path, uid, gid, dontFollow) {
+      },chown:function(path, uid, gid, dontFollow) {
         var node;
         if (typeof path === 'string') {
           var lookup = FS.lookupPath(path, { follow: !dontFollow });
@@ -4069,23 +4056,23 @@ function copyTempDouble(ptr) {
           node = path;
         }
         if (!node.node_ops.setattr) {
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
+          throw new FS.ErrnoError(1);
         }
         node.node_ops.setattr(node, {
           timestamp: Date.now()
           // we ignore the uid / gid for now
         });
-      },lchown:function (path, uid, gid) {
+      },lchown:function(path, uid, gid) {
         FS.chown(path, uid, gid, true);
-      },fchown:function (fd, uid, gid) {
+      },fchown:function(fd, uid, gid) {
         var stream = FS.getStream(fd);
         if (!stream) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBADF);
+          throw new FS.ErrnoError(9);
         }
         FS.chown(stream.node, uid, gid);
-      },truncate:function (path, len) {
+      },truncate:function(path, len) {
         if (len < 0) {
-          throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+          throw new FS.ErrnoError(22);
         }
         var node;
         if (typeof path === 'string') {
@@ -4095,13 +4082,13 @@ function copyTempDouble(ptr) {
           node = path;
         }
         if (!node.node_ops.setattr) {
-          throw new FS.ErrnoError(ERRNO_CODES.EPERM);
+          throw new FS.ErrnoError(1);
         }
         if (FS.isDir(node.mode)) {
-          throw new FS.ErrnoError(ERRNO_CODES.EISDIR);
+          throw new FS.ErrnoError(21);
         }
         if (!FS.isFile(node.mode)) {
-          throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+          throw new FS.ErrnoError(22);
         }
         var err = FS.nodePermissions(node, 'w');
         if (err) {
@@ -4111,24 +4098,24 @@ function copyTempDouble(ptr) {
           size: len,
           timestamp: Date.now()
         });
-      },ftruncate:function (fd, len) {
+      },ftruncate:function(fd, len) {
         var stream = FS.getStream(fd);
         if (!stream) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBADF);
+          throw new FS.ErrnoError(9);
         }
         if ((stream.flags & 2097155) === 0) {
-          throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+          throw new FS.ErrnoError(22);
         }
         FS.truncate(stream.node, len);
-      },utime:function (path, atime, mtime) {
+      },utime:function(path, atime, mtime) {
         var lookup = FS.lookupPath(path, { follow: true });
         var node = lookup.node;
         node.node_ops.setattr(node, {
           timestamp: Math.max(atime, mtime)
         });
-      },open:function (path, flags, mode, fd_start, fd_end) {
+      },open:function(path, flags, mode, fd_start, fd_end) {
         if (path === "") {
-          throw new FS.ErrnoError(ERRNO_CODES.ENOENT);
+          throw new FS.ErrnoError(2);
         }
         flags = typeof flags === 'string' ? FS.modeStringToFlags(flags) : flags;
         mode = typeof mode === 'undefined' ? 438 /* 0666 */ : mode;
@@ -4157,7 +4144,7 @@ function copyTempDouble(ptr) {
           if (node) {
             // if O_CREAT and O_EXCL are set, error out if the node already exists
             if ((flags & 128)) {
-              throw new FS.ErrnoError(ERRNO_CODES.EEXIST);
+              throw new FS.ErrnoError(17);
             }
           } else {
             // node doesn't exist, try to create it
@@ -4166,7 +4153,7 @@ function copyTempDouble(ptr) {
           }
         }
         if (!node) {
-          throw new FS.ErrnoError(ERRNO_CODES.ENOENT);
+          throw new FS.ErrnoError(2);
         }
         // can't truncate a device
         if (FS.isChrdev(node.mode)) {
@@ -4174,7 +4161,7 @@ function copyTempDouble(ptr) {
         }
         // if asked only for a directory, then this must be one
         if ((flags & 65536) && !FS.isDir(node.mode)) {
-          throw new FS.ErrnoError(ERRNO_CODES.ENOTDIR);
+          throw new FS.ErrnoError(20);
         }
         // check permissions, if this is not a file we just created now (it is ok to
         // create and write to a file with read-only permissions; it is read-only
@@ -4230,9 +4217,9 @@ function copyTempDouble(ptr) {
           console.log("FS.trackingDelegate['onOpenFile']('"+path+"', flags) threw an exception: " + e.message);
         }
         return stream;
-      },close:function (stream) {
+      },close:function(stream) {
         if (FS.isClosed(stream)) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBADF);
+          throw new FS.ErrnoError(9);
         }
         if (stream.getdents) stream.getdents = null; // free readdir state
         try {
@@ -4245,58 +4232,61 @@ function copyTempDouble(ptr) {
           FS.closeStream(stream.fd);
         }
         stream.fd = null;
-      },isClosed:function (stream) {
+      },isClosed:function(stream) {
         return stream.fd === null;
-      },llseek:function (stream, offset, whence) {
+      },llseek:function(stream, offset, whence) {
         if (FS.isClosed(stream)) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBADF);
+          throw new FS.ErrnoError(9);
         }
         if (!stream.seekable || !stream.stream_ops.llseek) {
-          throw new FS.ErrnoError(ERRNO_CODES.ESPIPE);
+          throw new FS.ErrnoError(29);
+        }
+        if (whence != 0 /* SEEK_SET */ && whence != 1 /* SEEK_CUR */ && whence != 2 /* SEEK_END */) {
+          throw new FS.ErrnoError(22);
         }
         stream.position = stream.stream_ops.llseek(stream, offset, whence);
         stream.ungotten = [];
         return stream.position;
-      },read:function (stream, buffer, offset, length, position) {
+      },read:function(stream, buffer, offset, length, position) {
         if (length < 0 || position < 0) {
-          throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+          throw new FS.ErrnoError(22);
         }
         if (FS.isClosed(stream)) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBADF);
+          throw new FS.ErrnoError(9);
         }
         if ((stream.flags & 2097155) === 1) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBADF);
+          throw new FS.ErrnoError(9);
         }
         if (FS.isDir(stream.node.mode)) {
-          throw new FS.ErrnoError(ERRNO_CODES.EISDIR);
+          throw new FS.ErrnoError(21);
         }
         if (!stream.stream_ops.read) {
-          throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+          throw new FS.ErrnoError(22);
         }
         var seeking = typeof position !== 'undefined';
         if (!seeking) {
           position = stream.position;
         } else if (!stream.seekable) {
-          throw new FS.ErrnoError(ERRNO_CODES.ESPIPE);
+          throw new FS.ErrnoError(29);
         }
         var bytesRead = stream.stream_ops.read(stream, buffer, offset, length, position);
         if (!seeking) stream.position += bytesRead;
         return bytesRead;
-      },write:function (stream, buffer, offset, length, position, canOwn) {
+      },write:function(stream, buffer, offset, length, position, canOwn) {
         if (length < 0 || position < 0) {
-          throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+          throw new FS.ErrnoError(22);
         }
         if (FS.isClosed(stream)) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBADF);
+          throw new FS.ErrnoError(9);
         }
         if ((stream.flags & 2097155) === 0) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBADF);
+          throw new FS.ErrnoError(9);
         }
         if (FS.isDir(stream.node.mode)) {
-          throw new FS.ErrnoError(ERRNO_CODES.EISDIR);
+          throw new FS.ErrnoError(21);
         }
         if (!stream.stream_ops.write) {
-          throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+          throw new FS.ErrnoError(22);
         }
         if (stream.flags & 1024) {
           // seek to the end before writing in append mode
@@ -4306,55 +4296,65 @@ function copyTempDouble(ptr) {
         if (!seeking) {
           position = stream.position;
         } else if (!stream.seekable) {
-          throw new FS.ErrnoError(ERRNO_CODES.ESPIPE);
+          throw new FS.ErrnoError(29);
         }
         var bytesWritten = stream.stream_ops.write(stream, buffer, offset, length, position, canOwn);
         if (!seeking) stream.position += bytesWritten;
         try {
           if (stream.path && FS.trackingDelegate['onWriteToFile']) FS.trackingDelegate['onWriteToFile'](stream.path);
         } catch(e) {
-          console.log("FS.trackingDelegate['onWriteToFile']('"+path+"') threw an exception: " + e.message);
+          console.log("FS.trackingDelegate['onWriteToFile']('"+stream.path+"') threw an exception: " + e.message);
         }
         return bytesWritten;
-      },allocate:function (stream, offset, length) {
+      },allocate:function(stream, offset, length) {
         if (FS.isClosed(stream)) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBADF);
+          throw new FS.ErrnoError(9);
         }
         if (offset < 0 || length <= 0) {
-          throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
+          throw new FS.ErrnoError(22);
         }
         if ((stream.flags & 2097155) === 0) {
-          throw new FS.ErrnoError(ERRNO_CODES.EBADF);
+          throw new FS.ErrnoError(9);
         }
         if (!FS.isFile(stream.node.mode) && !FS.isDir(stream.node.mode)) {
-          throw new FS.ErrnoError(ERRNO_CODES.ENODEV);
+          throw new FS.ErrnoError(19);
         }
         if (!stream.stream_ops.allocate) {
-          throw new FS.ErrnoError(ERRNO_CODES.EOPNOTSUPP);
+          throw new FS.ErrnoError(95);
         }
         stream.stream_ops.allocate(stream, offset, length);
-      },mmap:function (stream, buffer, offset, length, position, prot, flags) {
-        // TODO if PROT is PROT_WRITE, make sure we have write access
+      },mmap:function(stream, buffer, offset, length, position, prot, flags) {
+        // User requests writing to file (prot & PROT_WRITE != 0).
+        // Checking if we have permissions to write to the file unless
+        // MAP_PRIVATE flag is set. According to POSIX spec it is possible
+        // to write to file opened in read-only mode with MAP_PRIVATE flag,
+        // as all modifications will be visible only in the memory of
+        // the current process.
+        if ((prot & 2) !== 0
+            && (flags & 2) === 0
+            && (stream.flags & 2097155) !== 2) {
+          throw new FS.ErrnoError(13);
+        }
         if ((stream.flags & 2097155) === 1) {
-          throw new FS.ErrnoError(ERRNO_CODES.EACCES);
+          throw new FS.ErrnoError(13);
         }
         if (!stream.stream_ops.mmap) {
-          throw new FS.ErrnoError(ERRNO_CODES.ENODEV);
+          throw new FS.ErrnoError(19);
         }
         return stream.stream_ops.mmap(stream, buffer, offset, length, position, prot, flags);
-      },msync:function (stream, buffer, offset, length, mmapFlags) {
+      },msync:function(stream, buffer, offset, length, mmapFlags) {
         if (!stream || !stream.stream_ops.msync) {
           return 0;
         }
         return stream.stream_ops.msync(stream, buffer, offset, length, mmapFlags);
-      },munmap:function (stream) {
+      },munmap:function(stream) {
         return 0;
-      },ioctl:function (stream, cmd, arg) {
+      },ioctl:function(stream, cmd, arg) {
         if (!stream.stream_ops.ioctl) {
-          throw new FS.ErrnoError(ERRNO_CODES.ENOTTY);
+          throw new FS.ErrnoError(25);
         }
         return stream.stream_ops.ioctl(stream, cmd, arg);
-      },readFile:function (path, opts) {
+      },readFile:function(path, opts) {
         opts = opts || {};
         opts.flags = opts.flags || 'r';
         opts.encoding = opts.encoding || 'binary';
@@ -4374,7 +4374,7 @@ function copyTempDouble(ptr) {
         }
         FS.close(stream);
         return ret;
-      },writeFile:function (path, data, opts) {
+      },writeFile:function(path, data, opts) {
         opts = opts || {};
         opts.flags = opts.flags || 'w';
         var stream = FS.open(path, opts.flags, opts.mode);
@@ -4388,26 +4388,26 @@ function copyTempDouble(ptr) {
           throw new Error('Unsupported data type');
         }
         FS.close(stream);
-      },cwd:function () {
+      },cwd:function() {
         return FS.currentPath;
-      },chdir:function (path) {
+      },chdir:function(path) {
         var lookup = FS.lookupPath(path, { follow: true });
         if (lookup.node === null) {
-          throw new FS.ErrnoError(ERRNO_CODES.ENOENT);
+          throw new FS.ErrnoError(2);
         }
         if (!FS.isDir(lookup.node.mode)) {
-          throw new FS.ErrnoError(ERRNO_CODES.ENOTDIR);
+          throw new FS.ErrnoError(20);
         }
         var err = FS.nodePermissions(lookup.node, 'x');
         if (err) {
           throw new FS.ErrnoError(err);
         }
         FS.currentPath = lookup.path;
-      },createDefaultDirectories:function () {
+      },createDefaultDirectories:function() {
         FS.mkdir('/tmp');
         FS.mkdir('/home');
         FS.mkdir('/home/web_user');
-      },createDefaultDevices:function () {
+      },createDefaultDevices:function() {
         // create /dev
         FS.mkdir('/dev');
         // setup /dev/null
@@ -4425,16 +4425,25 @@ function copyTempDouble(ptr) {
         FS.mkdev('/dev/tty1', FS.makedev(6, 0));
         // setup /dev/[u]random
         var random_device;
-        if (typeof crypto !== 'undefined') {
+        if (typeof crypto === 'object' && typeof crypto['getRandomValues'] === 'function') {
           // for modern web browsers
           var randomBuffer = new Uint8Array(1);
           random_device = function() { crypto.getRandomValues(randomBuffer); return randomBuffer[0]; };
-        } else if (ENVIRONMENT_IS_NODE) {
-          // for nodejs
-          random_device = function() { return require('crypto')['randomBytes'](1)[0]; };
-        } else {
-          // default for ES5 platforms
-          random_device = function() { abort("random_device"); /*Math.random() is not safe for random number generation, so this fallback random_device implementation aborts... see kripken/emscripten/pull/7096 */ };
+        } else
+        if (ENVIRONMENT_IS_NODE) {
+          // for nodejs with or without crypto support included
+          try {
+            var crypto_module = require('crypto');
+            // nodejs has crypto support
+            random_device = function() { return crypto_module['randomBytes'](1)[0]; };
+          } catch (e) {
+            // nodejs doesn't have crypto support
+          }
+        } else
+        {}
+        if (!random_device) {
+          // we couldn't find a proper implementation, as Math.random() is not suitable for /dev/random, see emscripten-core/emscripten/pull/7096
+          random_device = function() { abort("no cryptographic support found for random_device. consider polyfilling it if you want to use something insecure like Math.random(), e.g. put this in a --pre-js: var crypto = { getRandomValues: function(array) { for (var i = 0; i < array.length; i++) array[i] = (Math.random()*256)|0 } };"); };
         }
         FS.createDevice('/dev', 'random', random_device);
         FS.createDevice('/dev', 'urandom', random_device);
@@ -4442,7 +4451,7 @@ function copyTempDouble(ptr) {
         // just create the tmp dirs that reside in it commonly
         FS.mkdir('/dev/shm');
         FS.mkdir('/dev/shm/tmp');
-      },createSpecialDirectories:function () {
+      },createSpecialDirectories:function() {
         // create /proc/self/fd which allows /proc/self/fd/6 => readlink gives the name of the stream for fd 6 (see test_unistd_ttyname)
         FS.mkdir('/proc');
         FS.mkdir('/proc/self');
@@ -4454,7 +4463,7 @@ function copyTempDouble(ptr) {
               lookup: function(parent, name) {
                 var fd = +name;
                 var stream = FS.getStream(fd);
-                if (!stream) throw new FS.ErrnoError(ERRNO_CODES.EBADF);
+                if (!stream) throw new FS.ErrnoError(9);
                 var ret = {
                   parent: null,
                   mount: { mountpoint: 'fake' },
@@ -4467,7 +4476,7 @@ function copyTempDouble(ptr) {
             return node;
           }
         }, {}, '/proc/self/fd');
-      },createStandardStreams:function () {
+      },createStandardStreams:function() {
         // TODO deprecate the old functionality of a single
         // input / output callback and that utilizes FS.createDevice
         // and instead require a unique set of stream ops
@@ -4494,14 +4503,12 @@ function copyTempDouble(ptr) {
   
         // open default streams for the stdin, stdout and stderr devices
         var stdin = FS.open('/dev/stdin', 'r');
-        assert(stdin.fd === 0, 'invalid handle for stdin (' + stdin.fd + ')');
-  
         var stdout = FS.open('/dev/stdout', 'w');
-        assert(stdout.fd === 1, 'invalid handle for stdout (' + stdout.fd + ')');
-  
         var stderr = FS.open('/dev/stderr', 'w');
+        assert(stdin.fd === 0, 'invalid handle for stdin (' + stdin.fd + ')');
+        assert(stdout.fd === 1, 'invalid handle for stdout (' + stdout.fd + ')');
         assert(stderr.fd === 2, 'invalid handle for stderr (' + stderr.fd + ')');
-      },ensureErrnoError:function () {
+      },ensureErrnoError:function() {
         if (FS.ErrnoError) return;
         FS.ErrnoError = function ErrnoError(errno, node) {
           this.node = node;
@@ -4516,18 +4523,23 @@ function copyTempDouble(ptr) {
           };
           this.setErrno(errno);
           this.message = ERRNO_MESSAGES[errno];
-          // Node.js compatibility: assigning on this.stack fails on Node 4 (but fixed on Node 8)
-          if (this.stack) Object.defineProperty(this, "stack", { value: (new Error).stack, writable: true });
-          if (this.stack) this.stack = demangleAll(this.stack);
+  
+          // Try to get a maximally helpful stack trace. On Node.js, getting Error.stack
+          // now ensures it shows what we want.
+          if (this.stack) {
+            // Define the stack property for Node.js 4, which otherwise errors on the next line.
+            Object.defineProperty(this, "stack", { value: (new Error).stack, writable: true });
+            this.stack = demangleAll(this.stack);
+          }
         };
         FS.ErrnoError.prototype = new Error();
         FS.ErrnoError.prototype.constructor = FS.ErrnoError;
         // Some errors may happen quite a bit, to avoid overhead we reuse them (and suffer a lack of stack info)
-        [ERRNO_CODES.ENOENT].forEach(function(code) {
+        [2].forEach(function(code) {
           FS.genericErrors[code] = new FS.ErrnoError(code);
           FS.genericErrors[code].stack = '<generic error, no stack>';
         });
-      },staticInit:function () {
+      },staticInit:function() {
         FS.ensureErrnoError();
   
         FS.nameTable = new Array(4096);
@@ -4544,7 +4556,7 @@ function copyTempDouble(ptr) {
           'NODEFS': NODEFS,
           'WORKERFS': WORKERFS,
         };
-      },init:function (input, output, error) {
+      },init:function(input, output, error) {
         assert(!FS.init.initialized, 'FS.init was previously called. If you want to initialize later with custom parameters, remove any earlier calls (note that one is automatically added to the generated code)');
         FS.init.initialized = true;
   
@@ -4556,7 +4568,7 @@ function copyTempDouble(ptr) {
         Module['stderr'] = error || Module['stderr'];
   
         FS.createStandardStreams();
-      },quit:function () {
+      },quit:function() {
         FS.init.initialized = false;
         // force-flush all streams, so we get musl std streams printed out
         var fflush = Module['_fflush'];
@@ -4569,20 +4581,20 @@ function copyTempDouble(ptr) {
           }
           FS.close(stream);
         }
-      },getMode:function (canRead, canWrite) {
+      },getMode:function(canRead, canWrite) {
         var mode = 0;
         if (canRead) mode |= 292 | 73;
         if (canWrite) mode |= 146;
         return mode;
-      },joinPath:function (parts, forceRelative) {
+      },joinPath:function(parts, forceRelative) {
         var path = PATH.join.apply(null, parts);
         if (forceRelative && path[0] == '/') path = path.substr(1);
         return path;
-      },absolutePath:function (relative, base) {
-        return PATH.resolve(base, relative);
-      },standardizePath:function (path) {
+      },absolutePath:function(relative, base) {
+        return PATH_FS.resolve(base, relative);
+      },standardizePath:function(path) {
         return PATH.normalize(path);
-      },findObject:function (path, dontResolveLastLink) {
+      },findObject:function(path, dontResolveLastLink) {
         var ret = FS.analyzePath(path, dontResolveLastLink);
         if (ret.exists) {
           return ret.object;
@@ -4590,7 +4602,7 @@ function copyTempDouble(ptr) {
           ___setErrNo(ret.error);
           return null;
         }
-      },analyzePath:function (path, dontResolveLastLink) {
+      },analyzePath:function(path, dontResolveLastLink) {
         // operate from within the context of the symlink's target
         try {
           var lookup = FS.lookupPath(path, { follow: !dontResolveLastLink });
@@ -4617,11 +4629,11 @@ function copyTempDouble(ptr) {
           ret.error = e.errno;
         };
         return ret;
-      },createFolder:function (parent, name, canRead, canWrite) {
+      },createFolder:function(parent, name, canRead, canWrite) {
         var path = PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name);
         var mode = FS.getMode(canRead, canWrite);
         return FS.mkdir(path, mode);
-      },createPath:function (parent, path, canRead, canWrite) {
+      },createPath:function(parent, path, canRead, canWrite) {
         parent = typeof parent === 'string' ? parent : FS.getPath(parent);
         var parts = path.split('/').reverse();
         while (parts.length) {
@@ -4636,11 +4648,11 @@ function copyTempDouble(ptr) {
           parent = current;
         }
         return current;
-      },createFile:function (parent, name, properties, canRead, canWrite) {
+      },createFile:function(parent, name, properties, canRead, canWrite) {
         var path = PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name);
         var mode = FS.getMode(canRead, canWrite);
         return FS.create(path, mode);
-      },createDataFile:function (parent, name, data, canRead, canWrite, canOwn) {
+      },createDataFile:function(parent, name, data, canRead, canWrite, canOwn) {
         var path = name ? PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name) : parent;
         var mode = FS.getMode(canRead, canWrite);
         var node = FS.create(path, mode);
@@ -4658,7 +4670,7 @@ function copyTempDouble(ptr) {
           FS.chmod(node, mode);
         }
         return node;
-      },createDevice:function (parent, name, input, output) {
+      },createDevice:function(parent, name, input, output) {
         var path = PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name);
         var mode = FS.getMode(!!input, !!output);
         if (!FS.createDevice.major) FS.createDevice.major = 64;
@@ -4682,10 +4694,10 @@ function copyTempDouble(ptr) {
               try {
                 result = input();
               } catch (e) {
-                throw new FS.ErrnoError(ERRNO_CODES.EIO);
+                throw new FS.ErrnoError(5);
               }
               if (result === undefined && bytesRead === 0) {
-                throw new FS.ErrnoError(ERRNO_CODES.EAGAIN);
+                throw new FS.ErrnoError(11);
               }
               if (result === null || result === undefined) break;
               bytesRead++;
@@ -4701,7 +4713,7 @@ function copyTempDouble(ptr) {
               try {
                 output(buffer[offset+i]);
               } catch (e) {
-                throw new FS.ErrnoError(ERRNO_CODES.EIO);
+                throw new FS.ErrnoError(5);
               }
             }
             if (length) {
@@ -4711,20 +4723,20 @@ function copyTempDouble(ptr) {
           }
         });
         return FS.mkdev(path, mode, dev);
-      },createLink:function (parent, name, target, canRead, canWrite) {
+      },createLink:function(parent, name, target, canRead, canWrite) {
         var path = PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name);
         return FS.symlink(target, path);
-      },forceLoadFile:function (obj) {
+      },forceLoadFile:function(obj) {
         if (obj.isDevice || obj.isFolder || obj.link || obj.contents) return true;
         var success = true;
         if (typeof XMLHttpRequest !== 'undefined') {
           throw new Error("Lazy loading should have been performed (contents set) in createLazyFile, but it was not. Lazy loading only works in web workers. Use --embed-file or --preload-file in emcc on the main thread.");
-        } else if (Module['read']) {
+        } else if (read_) {
           // Command-line.
           try {
             // WARNING: Can't read binary files in V8's d8 or tracemonkey's js, as
             //          read() will try to parse UTF8.
-            obj.contents = intArrayFromString(Module['read'](obj.url), true);
+            obj.contents = intArrayFromString(read_(obj.url), true);
             obj.usedBytes = obj.contents.length;
           } catch (e) {
             success = false;
@@ -4732,9 +4744,9 @@ function copyTempDouble(ptr) {
         } else {
           throw new Error('Cannot load without read() or XMLHttpRequest.');
         }
-        if (!success) ___setErrNo(ERRNO_CODES.EIO);
+        if (!success) ___setErrNo(5);
         return success;
-      },createLazyFile:function (parent, name, url, canRead, canWrite) {
+      },createLazyFile:function(parent, name, url, canRead, canWrite) {
         // Lazy chunked Uint8Array (implements get and length from Uint8Array). Actual getting is abstracted away for eventual reuse.
         function LazyUint8Array() {
           this.lengthKnown = false;
@@ -4747,10 +4759,10 @@ function copyTempDouble(ptr) {
           var chunkOffset = idx % this.chunkSize;
           var chunkNum = (idx / this.chunkSize)|0;
           return this.getter(chunkNum)[chunkOffset];
-        }
+        };
         LazyUint8Array.prototype.setDataGetter = function LazyUint8Array_setDataGetter(getter) {
           this.getter = getter;
-        }
+        };
         LazyUint8Array.prototype.cacheLength = function LazyUint8Array_cacheLength() {
           // Find length
           var xhr = new XMLHttpRequest();
@@ -4813,7 +4825,7 @@ function copyTempDouble(ptr) {
           this._length = datalength;
           this._chunkSize = chunkSize;
           this.lengthKnown = true;
-        }
+        };
         if (typeof XMLHttpRequest !== 'undefined') {
           if (!ENVIRONMENT_IS_WORKER) throw 'Cannot do synchronous binary XHRs outside webworkers in modern browsers. Use --embed-file or --preload-file in emcc';
           var lazyArray = new LazyUint8Array();
@@ -4864,7 +4876,7 @@ function copyTempDouble(ptr) {
           var fn = node.stream_ops[key];
           stream_ops[key] = function forceLoadLazyFile() {
             if (!FS.forceLoadFile(node)) {
-              throw new FS.ErrnoError(ERRNO_CODES.EIO);
+              throw new FS.ErrnoError(5);
             }
             return fn.apply(null, arguments);
           };
@@ -4872,7 +4884,7 @@ function copyTempDouble(ptr) {
         // use a custom read function
         stream_ops.read = function stream_ops_read(stream, buffer, offset, length, position) {
           if (!FS.forceLoadFile(node)) {
-            throw new FS.ErrnoError(ERRNO_CODES.EIO);
+            throw new FS.ErrnoError(5);
           }
           var contents = stream.node.contents;
           if (position >= contents.length)
@@ -4892,11 +4904,11 @@ function copyTempDouble(ptr) {
         };
         node.stream_ops = stream_ops;
         return node;
-      },createPreloadedFile:function (parent, name, url, canRead, canWrite, onload, onerror, dontCreateFile, canOwn, preFinish) {
+      },createPreloadedFile:function(parent, name, url, canRead, canWrite, onload, onerror, dontCreateFile, canOwn, preFinish) {
         Browser.init(); // XXX perhaps this method should move onto Browser?
         // TODO we should allow people to just pass in a complete filename instead
         // of parent and name being that we just join them anyways
-        var fullname = name ? PATH.resolve(PATH.join2(parent, name)) : parent;
+        var fullname = name ? PATH_FS.resolve(PATH.join2(parent, name)) : parent;
         var dep = getUniqueRunDependency('cp ' + fullname); // might have several active requests for the same fullname
         function processData(byteArray) {
           function finish(byteArray) {
@@ -4928,11 +4940,11 @@ function copyTempDouble(ptr) {
         } else {
           processData(url);
         }
-      },indexedDB:function () {
+      },indexedDB:function() {
         return window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-      },DB_NAME:function () {
+      },DB_NAME:function() {
         return 'EM_FS_' + window.location.pathname;
-      },DB_VERSION:20,DB_STORE_NAME:"FILE_DATA",saveFilesToDB:function (paths, onload, onerror) {
+      },DB_VERSION:20,DB_STORE_NAME:"FILE_DATA",saveFilesToDB:function(paths, onload, onerror) {
         onload = onload || function(){};
         onerror = onerror || function(){};
         var indexedDB = FS.indexedDB();
@@ -4962,7 +4974,7 @@ function copyTempDouble(ptr) {
           transaction.onerror = onerror;
         };
         openRequest.onerror = onerror;
-      },loadFilesFromDB:function (paths, onload, onerror) {
+      },loadFilesFromDB:function(paths, onload, onerror) {
         onload = onload || function(){};
         onerror = onerror || function(){};
         var indexedDB = FS.indexedDB();
@@ -5000,7 +5012,7 @@ function copyTempDouble(ptr) {
           transaction.onerror = onerror;
         };
         openRequest.onerror = onerror;
-      }};var SYSCALLS={DEFAULT_POLLMASK:5,mappings:{},umask:511,calculateAt:function (dirfd, path) {
+      }};var SYSCALLS={DEFAULT_POLLMASK:5,mappings:{},umask:511,calculateAt:function(dirfd, path) {
         if (path[0] !== '/') {
           // relative path
           var dir;
@@ -5008,19 +5020,19 @@ function copyTempDouble(ptr) {
             dir = FS.cwd();
           } else {
             var dirstream = FS.getStream(dirfd);
-            if (!dirstream) throw new FS.ErrnoError(ERRNO_CODES.EBADF);
+            if (!dirstream) throw new FS.ErrnoError(9);
             dir = dirstream.path;
           }
           path = PATH.join2(dir, path);
         }
         return path;
-      },doStat:function (func, path, buf) {
+      },doStat:function(func, path, buf) {
         try {
           var stat = func(path);
         } catch (e) {
           if (e && e.node && PATH.normalize(path) !== PATH.normalize(FS.getPath(e.node))) {
             // an error occurred while trying to look up the path; we should just report ENOTDIR
-            return -ERRNO_CODES.ENOTDIR;
+            return -20;
           }
           throw e;
         }
@@ -5033,28 +5045,28 @@ function copyTempDouble(ptr) {
         HEAP32[(((buf)+(24))>>2)]=stat.gid;
         HEAP32[(((buf)+(28))>>2)]=stat.rdev;
         HEAP32[(((buf)+(32))>>2)]=0;
-        HEAP32[(((buf)+(36))>>2)]=stat.size;
-        HEAP32[(((buf)+(40))>>2)]=4096;
-        HEAP32[(((buf)+(44))>>2)]=stat.blocks;
-        HEAP32[(((buf)+(48))>>2)]=(stat.atime.getTime() / 1000)|0;
-        HEAP32[(((buf)+(52))>>2)]=0;
-        HEAP32[(((buf)+(56))>>2)]=(stat.mtime.getTime() / 1000)|0;
+        (tempI64 = [stat.size>>>0,(tempDouble=stat.size,(+(Math_abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math_min((+(Math_floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math_ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(40))>>2)]=tempI64[0],HEAP32[(((buf)+(44))>>2)]=tempI64[1]);
+        HEAP32[(((buf)+(48))>>2)]=4096;
+        HEAP32[(((buf)+(52))>>2)]=stat.blocks;
+        HEAP32[(((buf)+(56))>>2)]=(stat.atime.getTime() / 1000)|0;
         HEAP32[(((buf)+(60))>>2)]=0;
-        HEAP32[(((buf)+(64))>>2)]=(stat.ctime.getTime() / 1000)|0;
+        HEAP32[(((buf)+(64))>>2)]=(stat.mtime.getTime() / 1000)|0;
         HEAP32[(((buf)+(68))>>2)]=0;
-        HEAP32[(((buf)+(72))>>2)]=stat.ino;
+        HEAP32[(((buf)+(72))>>2)]=(stat.ctime.getTime() / 1000)|0;
+        HEAP32[(((buf)+(76))>>2)]=0;
+        (tempI64 = [stat.ino>>>0,(tempDouble=stat.ino,(+(Math_abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math_min((+(Math_floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math_ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(80))>>2)]=tempI64[0],HEAP32[(((buf)+(84))>>2)]=tempI64[1]);
         return 0;
-      },doMsync:function (addr, stream, len, flags) {
+      },doMsync:function(addr, stream, len, flags) {
         var buffer = new Uint8Array(HEAPU8.subarray(addr, addr + len));
         FS.msync(stream, buffer, 0, len, flags);
-      },doMkdir:function (path, mode) {
+      },doMkdir:function(path, mode) {
         // remove a trailing slash, if one - /a/b/ has basename of '', but
         // we want to create b in the context of this function
         path = PATH.normalize(path);
         if (path[path.length-1] === '/') path = path.substr(0, path.length-1);
         FS.mkdir(path, mode, 0);
         return 0;
-      },doMknod:function (path, mode, dev) {
+      },doMknod:function(path, mode, dev) {
         // we don't want this in the JS API as it uses mknod to create all nodes.
         switch (mode & 61440) {
           case 32768:
@@ -5063,12 +5075,12 @@ function copyTempDouble(ptr) {
           case 4096:
           case 49152:
             break;
-          default: return -ERRNO_CODES.EINVAL;
+          default: return -22;
         }
         FS.mknod(path, mode, dev);
         return 0;
-      },doReadlink:function (path, buf, bufsize) {
-        if (bufsize <= 0) return -ERRNO_CODES.EINVAL;
+      },doReadlink:function(path, buf, bufsize) {
+        if (bufsize <= 0) return -22;
         var ret = FS.readlink(path);
   
         var len = Math.min(bufsize, lengthBytesUTF8(ret));
@@ -5079,27 +5091,30 @@ function copyTempDouble(ptr) {
         HEAP8[buf+len] = endChar;
   
         return len;
-      },doAccess:function (path, amode) {
+      },doAccess:function(path, amode) {
         if (amode & ~7) {
           // need a valid mode
-          return -ERRNO_CODES.EINVAL;
+          return -22;
         }
         var node;
         var lookup = FS.lookupPath(path, { follow: true });
         node = lookup.node;
+        if (!node) {
+          return -2;
+        }
         var perms = '';
         if (amode & 4) perms += 'r';
         if (amode & 2) perms += 'w';
         if (amode & 1) perms += 'x';
         if (perms /* otherwise, they've just passed F_OK */ && FS.nodePermissions(node, perms)) {
-          return -ERRNO_CODES.EACCES;
+          return -13;
         }
         return 0;
-      },doDup:function (path, flags, suggestFD) {
+      },doDup:function(path, flags, suggestFD) {
         var suggest = FS.getStream(suggestFD);
         if (suggest) FS.close(suggest);
         return FS.open(path, flags, 0, suggestFD, suggestFD).fd;
-      },doReadv:function (stream, iov, iovcnt, offset) {
+      },doReadv:function(stream, iov, iovcnt, offset) {
         var ret = 0;
         for (var i = 0; i < iovcnt; i++) {
           var ptr = HEAP32[(((iov)+(i*8))>>2)];
@@ -5110,7 +5125,7 @@ function copyTempDouble(ptr) {
           if (curr < len) break; // nothing more to read
         }
         return ret;
-      },doWritev:function (stream, iov, iovcnt, offset) {
+      },doWritev:function(stream, iov, iovcnt, offset) {
         var ret = 0;
         for (var i = 0; i < iovcnt; i++) {
           var ptr = HEAP32[(((iov)+(i*8))>>2)];
@@ -5120,43 +5135,40 @@ function copyTempDouble(ptr) {
           ret += curr;
         }
         return ret;
-      },varargs:0,get:function (varargs) {
+      },varargs:0,get:function(varargs) {
         SYSCALLS.varargs += 4;
         var ret = HEAP32[(((SYSCALLS.varargs)-(4))>>2)];
         return ret;
-      },getStr:function () {
-        var ret = Pointer_stringify(SYSCALLS.get());
+      },getStr:function() {
+        var ret = UTF8ToString(SYSCALLS.get());
         return ret;
-      },getStreamFromFD:function () {
+      },getStreamFromFD:function() {
         var stream = FS.getStream(SYSCALLS.get());
-        if (!stream) throw new FS.ErrnoError(ERRNO_CODES.EBADF);
+        if (!stream) throw new FS.ErrnoError(9);
         return stream;
-      },getSocketFromFD:function () {
-        var socket = SOCKFS.getSocket(SYSCALLS.get());
-        if (!socket) throw new FS.ErrnoError(ERRNO_CODES.EBADF);
-        return socket;
-      },getSocketAddress:function (allowNull) {
-        var addrp = SYSCALLS.get(), addrlen = SYSCALLS.get();
-        if (allowNull && addrp === 0) return null;
-        var info = __read_sockaddr(addrp, addrlen);
-        if (info.errno) throw new FS.ErrnoError(info.errno);
-        info.addr = DNS.lookup_addr(info.addr) || info.addr;
-        return info;
-      },get64:function () {
+      },get64:function() {
         var low = SYSCALLS.get(), high = SYSCALLS.get();
         if (low >= 0) assert(high === 0);
         else assert(high === -1);
         return low;
-      },getZero:function () {
+      },getZero:function() {
         assert(SYSCALLS.get() === 0);
       }};function ___syscall140(which, varargs) {SYSCALLS.varargs = varargs;
   try {
    // llseek
       var stream = SYSCALLS.getStreamFromFD(), offset_high = SYSCALLS.get(), offset_low = SYSCALLS.get(), result = SYSCALLS.get(), whence = SYSCALLS.get();
-      // NOTE: offset_high is unused - Emscripten's off_t is 32-bit
-      var offset = offset_low;
+      var HIGH_OFFSET = 0x100000000; // 2^32
+      // use an unsigned operator on low and shift high by 32-bits
+      var offset = offset_high * HIGH_OFFSET + (offset_low >>> 0);
+  
+      var DOUBLE_LIMIT = 0x20000000000000; // 2^53
+      // we also check for equality since DOUBLE_LIMIT + 1 == DOUBLE_LIMIT
+      if (offset <= -DOUBLE_LIMIT || offset >= DOUBLE_LIMIT) {
+        return -75;
+      }
+  
       FS.llseek(stream, offset, whence);
-      HEAP32[((result)>>2)]=stream.position;
+      (tempI64 = [stream.position>>>0,(tempDouble=stream.position,(+(Math_abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math_min((+(Math_floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math_ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[((result)>>2)]=tempI64[0],HEAP32[(((result)+(4))>>2)]=tempI64[1]);
       if (stream.getdents && offset === 0 && whence === 0) stream.getdents = null; // reset readdir state
       return 0;
     } catch (e) {
@@ -5205,11 +5217,17 @@ function copyTempDouble(ptr) {
       if (!stream.getdents) {
         stream.getdents = FS.readdir(stream.path);
       }
+  
+      var struct_size = 280;
       var pos = 0;
-      while (stream.getdents.length > 0 && pos + 268 <= count) {
+      var off = FS.llseek(stream, 0, 1);
+  
+      var idx = Math.floor(off / struct_size);
+  
+      while (idx < stream.getdents.length && pos + struct_size <= count) {
         var id;
         var type;
-        var name = stream.getdents.pop();
+        var name = stream.getdents[idx];
         if (name[0] === '.') {
           id = 1;
           type = 4; // DT_DIR
@@ -5221,13 +5239,15 @@ function copyTempDouble(ptr) {
                  FS.isLink(child.mode) ? 10 :   // DT_LNK, symbolic link.
                  8;                             // DT_REG, regular file.
         }
-        HEAP32[((dirp + pos)>>2)]=id;
-        HEAP32[(((dirp + pos)+(4))>>2)]=stream.position;
-        HEAP16[(((dirp + pos)+(8))>>1)]=268;
-        HEAP8[(((dirp + pos)+(10))>>0)]=type;
-        stringToUTF8(name, dirp + pos + 11, 256);
-        pos += 268;
+        (tempI64 = [id>>>0,(tempDouble=id,(+(Math_abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math_min((+(Math_floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math_ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[((dirp + pos)>>2)]=tempI64[0],HEAP32[(((dirp + pos)+(4))>>2)]=tempI64[1]);
+        (tempI64 = [(idx + 1) * struct_size>>>0,(tempDouble=(idx + 1) * struct_size,(+(Math_abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math_min((+(Math_floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math_ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((dirp + pos)+(8))>>2)]=tempI64[0],HEAP32[(((dirp + pos)+(12))>>2)]=tempI64[1]);
+        HEAP16[(((dirp + pos)+(16))>>1)]=280;
+        HEAP8[(((dirp + pos)+(18))>>0)]=type;
+        stringToUTF8(name, dirp + pos + 19, 256);
+        pos += struct_size;
+        idx += 1;
       }
+      FS.llseek(stream, idx * struct_size, 0);
       return pos;
     } catch (e) {
     if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) abort(e);
@@ -5243,7 +5263,7 @@ function copyTempDouble(ptr) {
         case 0: {
           var arg = SYSCALLS.get();
           if (arg < 0) {
-            return -ERRNO_CODES.EINVAL;
+            return -22;
           }
           var newStream;
           newStream = FS.open(stream.path, stream.flags, 0, arg);
@@ -5260,7 +5280,8 @@ function copyTempDouble(ptr) {
           return 0;
         }
         case 12:
-        case 12: {
+        /* case 12: Currently in musl F_GETLK64 has same value as F_GETLK, so omitted to avoid duplicate case blocks. If that changes, uncomment this */ {
+          
           var arg = SYSCALLS.get();
           var offset = 0;
           // We're always unlocked.
@@ -5269,18 +5290,20 @@ function copyTempDouble(ptr) {
         }
         case 13:
         case 14:
-        case 13:
-        case 14:
+        /* case 13: Currently in musl F_SETLK64 has same value as F_SETLK, so omitted to avoid duplicate case blocks. If that changes, uncomment this */
+        /* case 14: Currently in musl F_SETLKW64 has same value as F_SETLKW, so omitted to avoid duplicate case blocks. If that changes, uncomment this */
+          
+          
           return 0; // Pretend that the locking is successful.
         case 16:
         case 8:
-          return -ERRNO_CODES.EINVAL; // These are for sockets. We don't have them fully implemented yet.
+          return -22; // These are for sockets. We don't have them fully implemented yet.
         case 9:
           // musl trusts getown return values, due to a bug where they must be, as they overlap with errors. just return -1 here, so fnctl() returns that, and we set errno ourselves.
-          ___setErrNo(ERRNO_CODES.EINVAL);
+          ___setErrNo(22);
           return -1;
         default: {
-          return -ERRNO_CODES.EINVAL;
+          return -22;
         }
       }
     } catch (e) {
@@ -5292,7 +5315,7 @@ function copyTempDouble(ptr) {
   function ___syscall5(which, varargs) {SYSCALLS.varargs = varargs;
   try {
    // open
-      var pathname = SYSCALLS.getStr(), flags = SYSCALLS.get(), mode = SYSCALLS.get() // optional TODO
+      var pathname = SYSCALLS.getStr(), flags = SYSCALLS.get(), mode = SYSCALLS.get(); // optional TODO
       var stream = FS.open(pathname, flags, mode);
       return stream.fd;
     } catch (e) {
@@ -5308,7 +5331,7 @@ function copyTempDouble(ptr) {
       switch (op) {
         case 21509:
         case 21505: {
-          if (!stream.tty) return -ERRNO_CODES.ENOTTY;
+          if (!stream.tty) return -25;
           return 0;
         }
         case 21510:
@@ -5317,18 +5340,18 @@ function copyTempDouble(ptr) {
         case 21506:
         case 21507:
         case 21508: {
-          if (!stream.tty) return -ERRNO_CODES.ENOTTY;
+          if (!stream.tty) return -25;
           return 0; // no-op, not actually adjusting terminal settings
         }
         case 21519: {
-          if (!stream.tty) return -ERRNO_CODES.ENOTTY;
+          if (!stream.tty) return -25;
           var argp = SYSCALLS.get();
           HEAP32[((argp)>>2)]=0;
           return 0;
         }
         case 21520: {
-          if (!stream.tty) return -ERRNO_CODES.ENOTTY;
-          return -ERRNO_CODES.EINVAL; // not supported
+          if (!stream.tty) return -25;
+          return -22; // not supported
         }
         case 21531: {
           var argp = SYSCALLS.get();
@@ -5337,14 +5360,14 @@ function copyTempDouble(ptr) {
         case 21523: {
           // TODO: in theory we should write to the winsize struct that gets
           // passed in, but for now musl doesn't read anything on it
-          if (!stream.tty) return -ERRNO_CODES.ENOTTY;
+          if (!stream.tty) return -25;
           return 0;
         }
         case 21524: {
           // TODO: technically, this ioctl call should change the window size.
           // but, since emscripten doesn't have any concept of a terminal window
           // yet, we'll just silently throw it away as we do TIOCGWINSZ
-          if (!stream.tty) return -ERRNO_CODES.ENOTTY;
+          if (!stream.tty) return -25;
           return 0;
         }
         default: abort('bad ioctl syscall ' + op);
@@ -5369,20 +5392,21 @@ function copyTempDouble(ptr) {
 
   function ___unlock() {}
 
-  
-  function __exit(status) {
+  function _emscripten_get_heap_size() {
+      return HEAP8.length;
+    }
+
+  function _exit(status) {
       // void _exit(int status);
       // http://pubs.opengroup.org/onlinepubs/000095399/functions/exit.html
       exit(status);
-    }function _exit(status) {
-      __exit(status);
     }
 
   function _getenv(name) {
       // char *getenv(const char *name);
       // http://pubs.opengroup.org/onlinepubs/009695399/functions/getenv.html
       if (name === 0) return 0;
-      name = Pointer_stringify(name);
+      name = UTF8ToString(name);
       if (!ENV.hasOwnProperty(name)) return 0;
   
       if (_getenv.ret) _free(_getenv.ret);
@@ -5390,37 +5414,43 @@ function copyTempDouble(ptr) {
       return _getenv.ret;
     }
 
-   
+  function _llvm_stackrestore(p) {
+      var self = _llvm_stacksave;
+      var ret = self.LLVM_SAVEDSTACKS[p];
+      self.LLVM_SAVEDSTACKS.splice(p, 1);
+      stackRestore(ret);
+    }
+
+  function _llvm_stacksave() {
+      var self = _llvm_stacksave;
+      if (!self.LLVM_SAVEDSTACKS) {
+        self.LLVM_SAVEDSTACKS = [];
+      }
+      self.LLVM_SAVEDSTACKS.push(stackSave());
+      return self.LLVM_SAVEDSTACKS.length-1;
+    }
 
   
   function _emscripten_memcpy_big(dest, src, num) {
       HEAPU8.set(HEAPU8.subarray(src, src+num), dest);
-      return dest;
+    }
+  
+   
+
+   
+
+   
+
+  
+  
+  function abortOnCannotGrowMemory(requestedSize) {
+      abort('Cannot enlarge memory arrays to size ' + requestedSize + ' bytes (OOM). Either (1) compile with  -s TOTAL_MEMORY=X  with X higher than the current value ' + HEAP8.length + ', (2) compile with  -s ALLOW_MEMORY_GROWTH=1  which allows increasing the size at runtime, or (3) if you want malloc to return NULL (0) instead of this abort, compile with  -s ABORTING_MALLOC=0 ');
+    }function _emscripten_resize_heap(requestedSize) {
+      abortOnCannotGrowMemory(requestedSize);
     } 
 
-   
-
-   
-
-   
-
-FS.staticInit();__ATINIT__.unshift(function() { if (!Module["noFSInit"] && !FS.init.initialized) FS.init() });__ATMAIN__.push(function() { FS.ignorePermissions = false });__ATEXIT__.push(function() { FS.quit() });Module["FS_createFolder"] = FS.createFolder;Module["FS_createPath"] = FS.createPath;Module["FS_createDataFile"] = FS.createDataFile;Module["FS_createPreloadedFile"] = FS.createPreloadedFile;Module["FS_createLazyFile"] = FS.createLazyFile;Module["FS_createLink"] = FS.createLink;Module["FS_createDevice"] = FS.createDevice;Module["FS_unlink"] = FS.unlink;;
-__ATINIT__.unshift(function() { TTY.init() });__ATEXIT__.push(function() { TTY.shutdown() });;
-if (ENVIRONMENT_IS_NODE) { var fs = require("fs"); var NODEJS_PATH = require("path"); NODEFS.staticInit(); };
-DYNAMICTOP_PTR = staticAlloc(4);
-
-STACK_BASE = STACKTOP = alignMemory(STATICTOP);
-
-STACK_MAX = STACK_BASE + TOTAL_STACK;
-
-DYNAMIC_BASE = alignMemory(STACK_MAX);
-
-HEAP32[DYNAMICTOP_PTR>>2] = DYNAMIC_BASE;
-
-staticSealed = true; // seal the static portion of memory
-
-assert(DYNAMIC_BASE < TOTAL_MEMORY, "TOTAL_MEMORY not big enough for stack");
-
+FS.staticInit();Module["FS_createFolder"] = FS.createFolder;Module["FS_createPath"] = FS.createPath;Module["FS_createDataFile"] = FS.createDataFile;Module["FS_createPreloadedFile"] = FS.createPreloadedFile;Module["FS_createLazyFile"] = FS.createLazyFile;Module["FS_createLink"] = FS.createLink;Module["FS_createDevice"] = FS.createDevice;Module["FS_unlink"] = FS.unlink;;
+if (ENVIRONMENT_HAS_NODE) { var fs = require("fs"); var NODEJS_PATH = require("path"); NODEFS.staticInit(); };
 var ASSERTIONS = true;
 
 // Copyright 2017 The Emscripten Authors.  All rights reserved.
@@ -5453,23 +5483,22 @@ function intArrayToString(array) {
 }
 
 
+// ASM_LIBRARY EXTERN PRIMITIVES: Int8Array,Int32Array
 
-function nullFunc_ii(x) { err("Invalid function pointer called with signature 'ii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  err("Build with ASSERTIONS=2 for more info.");abort(x) }
-
-function nullFunc_iii(x) { err("Invalid function pointer called with signature 'iii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  err("Build with ASSERTIONS=2 for more info.");abort(x) }
-
-function nullFunc_iiii(x) { err("Invalid function pointer called with signature 'iiii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  err("Build with ASSERTIONS=2 for more info.");abort(x) }
-
-function nullFunc_vi(x) { err("Invalid function pointer called with signature 'vi'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  err("Build with ASSERTIONS=2 for more info.");abort(x) }
-
-function nullFunc_vii(x) { err("Invalid function pointer called with signature 'vii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  err("Build with ASSERTIONS=2 for more info.");abort(x) }
-
-Module['wasmTableSize'] = 76;
-
-Module['wasmMaxTableSize'] = 76;
+function nullFunc_ii(x) { abortFnPtrError(x, 'ii'); }
+function nullFunc_iidiiii(x) { abortFnPtrError(x, 'iidiiii'); }
+function nullFunc_iii(x) { abortFnPtrError(x, 'iii'); }
+function nullFunc_iiii(x) { abortFnPtrError(x, 'iiii'); }
+function nullFunc_jiji(x) { abortFnPtrError(x, 'jiji'); }
+function nullFunc_vi(x) { abortFnPtrError(x, 'vi'); }
+function nullFunc_vii(x) { abortFnPtrError(x, 'vii'); }
 
 function jsCall_ii(index,a1) {
     return functionPointers[index](a1);
+}
+
+function jsCall_iidiiii(index,a1,a2,a3,a4,a5,a6) {
+    return functionPointers[index](a1,a2,a3,a4,a5,a6);
 }
 
 function jsCall_iii(index,a1,a2) {
@@ -5477,6 +5506,10 @@ function jsCall_iii(index,a1,a2) {
 }
 
 function jsCall_iiii(index,a1,a2,a3) {
+    return functionPointers[index](a1,a2,a3);
+}
+
+function jsCall_jiji(index,a1,a2,a3) {
     return functionPointers[index](a1,a2,a3);
 }
 
@@ -5488,765 +5521,551 @@ function jsCall_vii(index,a1,a2) {
     functionPointers[index](a1,a2);
 }
 
-Module.asmGlobalArg = {};
+var asmGlobalArg = {};
 
-Module.asmLibraryArg = { "abort": abort, "assert": assert, "enlargeMemory": enlargeMemory, "getTotalMemory": getTotalMemory, "setTempRet0": setTempRet0, "getTempRet0": getTempRet0, "abortOnCannotGrowMemory": abortOnCannotGrowMemory, "abortStackOverflow": abortStackOverflow, "nullFunc_ii": nullFunc_ii, "nullFunc_iii": nullFunc_iii, "nullFunc_iiii": nullFunc_iiii, "nullFunc_vi": nullFunc_vi, "nullFunc_vii": nullFunc_vii, "jsCall_ii": jsCall_ii, "jsCall_iii": jsCall_iii, "jsCall_iiii": jsCall_iiii, "jsCall_vi": jsCall_vi, "jsCall_vii": jsCall_vii, "___buildEnvironment": ___buildEnvironment, "___lock": ___lock, "___setErrNo": ___setErrNo, "___syscall140": ___syscall140, "___syscall145": ___syscall145, "___syscall146": ___syscall146, "___syscall195": ___syscall195, "___syscall220": ___syscall220, "___syscall221": ___syscall221, "___syscall5": ___syscall5, "___syscall54": ___syscall54, "___syscall6": ___syscall6, "___unlock": ___unlock, "__exit": __exit, "_emscripten_memcpy_big": _emscripten_memcpy_big, "_exit": _exit, "_getenv": _getenv, "DYNAMICTOP_PTR": DYNAMICTOP_PTR, "tempDoublePtr": tempDoublePtr, "STACKTOP": STACKTOP, "STACK_MAX": STACK_MAX };
+var asmLibraryArg = {
+  "abort": abort,
+  "setTempRet0": setTempRet0,
+  "getTempRet0": getTempRet0,
+  "abortStackOverflow": abortStackOverflow,
+  "nullFunc_ii": nullFunc_ii,
+  "nullFunc_iidiiii": nullFunc_iidiiii,
+  "nullFunc_iii": nullFunc_iii,
+  "nullFunc_iiii": nullFunc_iiii,
+  "nullFunc_jiji": nullFunc_jiji,
+  "nullFunc_vi": nullFunc_vi,
+  "nullFunc_vii": nullFunc_vii,
+  "jsCall_ii": jsCall_ii,
+  "jsCall_iidiiii": jsCall_iidiiii,
+  "jsCall_iii": jsCall_iii,
+  "jsCall_iiii": jsCall_iiii,
+  "jsCall_jiji": jsCall_jiji,
+  "jsCall_vi": jsCall_vi,
+  "jsCall_vii": jsCall_vii,
+  "___buildEnvironment": ___buildEnvironment,
+  "___lock": ___lock,
+  "___setErrNo": ___setErrNo,
+  "___syscall140": ___syscall140,
+  "___syscall145": ___syscall145,
+  "___syscall146": ___syscall146,
+  "___syscall195": ___syscall195,
+  "___syscall220": ___syscall220,
+  "___syscall221": ___syscall221,
+  "___syscall5": ___syscall5,
+  "___syscall54": ___syscall54,
+  "___syscall6": ___syscall6,
+  "___unlock": ___unlock,
+  "_emscripten_get_heap_size": _emscripten_get_heap_size,
+  "_emscripten_memcpy_big": _emscripten_memcpy_big,
+  "_emscripten_resize_heap": _emscripten_resize_heap,
+  "_exit": _exit,
+  "_getenv": _getenv,
+  "_llvm_stackrestore": _llvm_stackrestore,
+  "_llvm_stacksave": _llvm_stacksave,
+  "abortOnCannotGrowMemory": abortOnCannotGrowMemory,
+  "demangle": demangle,
+  "demangleAll": demangleAll,
+  "jsStackTrace": jsStackTrace,
+  "stackTrace": stackTrace,
+  "tempDoublePtr": tempDoublePtr,
+  "DYNAMICTOP_PTR": DYNAMICTOP_PTR
+};
 // EMSCRIPTEN_START_ASM
 var asm =Module["asm"]// EMSCRIPTEN_END_ASM
-(Module.asmGlobalArg, Module.asmLibraryArg, buffer);
+(asmGlobalArg, asmLibraryArg, buffer);
 
-var real____emscripten_environ_constructor = asm["___emscripten_environ_constructor"]; asm["___emscripten_environ_constructor"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real____emscripten_environ_constructor.apply(null, arguments);
-};
-
-var real____errno_location = asm["___errno_location"]; asm["___errno_location"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real____errno_location.apply(null, arguments);
-};
-
-var real___get_environ = asm["__get_environ"]; asm["__get_environ"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___get_environ.apply(null, arguments);
-};
-
-var real___lou_allocMem = asm["__lou_allocMem"]; asm["__lou_allocMem"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_allocMem.apply(null, arguments);
-};
-
-var real___lou_backTranslateWithTracing = asm["__lou_backTranslateWithTracing"]; asm["__lou_backTranslateWithTracing"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_backTranslateWithTracing.apply(null, arguments);
-};
-
-var real___lou_charHash = asm["__lou_charHash"]; asm["__lou_charHash"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_charHash.apply(null, arguments);
-};
-
-var real___lou_defaultTableResolver = asm["__lou_defaultTableResolver"]; asm["__lou_defaultTableResolver"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_defaultTableResolver.apply(null, arguments);
-};
-
-var real___lou_extParseChars = asm["__lou_extParseChars"]; asm["__lou_extParseChars"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_extParseChars.apply(null, arguments);
-};
-
-var real___lou_extParseDots = asm["__lou_extParseDots"]; asm["__lou_extParseDots"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_extParseDots.apply(null, arguments);
-};
-
-var real___lou_findOpcodeName = asm["__lou_findOpcodeName"]; asm["__lou_findOpcodeName"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_findOpcodeName.apply(null, arguments);
-};
-
-var real___lou_findOpcodeNumber = asm["__lou_findOpcodeNumber"]; asm["__lou_findOpcodeNumber"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_findOpcodeNumber.apply(null, arguments);
-};
-
-var real___lou_getALine = asm["__lou_getALine"]; asm["__lou_getALine"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_getALine.apply(null, arguments);
-};
-
-var real___lou_getCharFromDots = asm["__lou_getCharFromDots"]; asm["__lou_getCharFromDots"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_getCharFromDots.apply(null, arguments);
-};
-
-var real___lou_getDotsForChar = asm["__lou_getDotsForChar"]; asm["__lou_getDotsForChar"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_getDotsForChar.apply(null, arguments);
-};
-
-var real___lou_getLastTableList = asm["__lou_getLastTableList"]; asm["__lou_getLastTableList"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_getLastTableList.apply(null, arguments);
-};
-
-var real___lou_getTablePath = asm["__lou_getTablePath"]; asm["__lou_getTablePath"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_getTablePath.apply(null, arguments);
-};
-
-var real___lou_handlePassVariableAction = asm["__lou_handlePassVariableAction"]; asm["__lou_handlePassVariableAction"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_handlePassVariableAction.apply(null, arguments);
-};
-
-var real___lou_handlePassVariableTest = asm["__lou_handlePassVariableTest"]; asm["__lou_handlePassVariableTest"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_handlePassVariableTest.apply(null, arguments);
-};
-
-var real___lou_logMessage = asm["__lou_logMessage"]; asm["__lou_logMessage"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_logMessage.apply(null, arguments);
-};
-
-var real___lou_logWidecharBuf = asm["__lou_logWidecharBuf"]; asm["__lou_logWidecharBuf"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_logWidecharBuf.apply(null, arguments);
-};
-
-var real___lou_outOfMemory = asm["__lou_outOfMemory"]; asm["__lou_outOfMemory"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_outOfMemory.apply(null, arguments);
-};
-
-var real___lou_pattern_check = asm["__lou_pattern_check"]; asm["__lou_pattern_check"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_pattern_check.apply(null, arguments);
-};
-
-var real___lou_pattern_compile = asm["__lou_pattern_compile"]; asm["__lou_pattern_compile"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_pattern_compile.apply(null, arguments);
-};
-
-var real___lou_pattern_reverse = asm["__lou_pattern_reverse"]; asm["__lou_pattern_reverse"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_pattern_reverse.apply(null, arguments);
-};
-
-var real___lou_resetPassVariables = asm["__lou_resetPassVariables"]; asm["__lou_resetPassVariables"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_resetPassVariables.apply(null, arguments);
-};
-
-var real___lou_resolveTable = asm["__lou_resolveTable"]; asm["__lou_resolveTable"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_resolveTable.apply(null, arguments);
-};
-
-var real___lou_showAttributes = asm["__lou_showAttributes"]; asm["__lou_showAttributes"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_showAttributes.apply(null, arguments);
-};
-
-var real___lou_showDots = asm["__lou_showDots"]; asm["__lou_showDots"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_showDots.apply(null, arguments);
-};
-
-var real___lou_showString = asm["__lou_showString"]; asm["__lou_showString"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_showString.apply(null, arguments);
-};
-
-var real___lou_stringHash = asm["__lou_stringHash"]; asm["__lou_stringHash"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_stringHash.apply(null, arguments);
-};
-
-var real___lou_translateWithTracing = asm["__lou_translateWithTracing"]; asm["__lou_translateWithTracing"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real___lou_translateWithTracing.apply(null, arguments);
-};
-
-var real__fflush = asm["_fflush"]; asm["_fflush"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__fflush.apply(null, arguments);
-};
-
-var real__free = asm["_free"]; asm["_free"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__free.apply(null, arguments);
-};
-
-var real__llvm_bswap_i32 = asm["_llvm_bswap_i32"]; asm["_llvm_bswap_i32"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__llvm_bswap_i32.apply(null, arguments);
-};
-
-var real__lou_backTranslate = asm["_lou_backTranslate"]; asm["_lou_backTranslate"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_backTranslate.apply(null, arguments);
-};
-
-var real__lou_backTranslateString = asm["_lou_backTranslateString"]; asm["_lou_backTranslateString"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_backTranslateString.apply(null, arguments);
-};
-
-var real__lou_charSize = asm["_lou_charSize"]; asm["_lou_charSize"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_charSize.apply(null, arguments);
-};
-
-var real__lou_charToDots = asm["_lou_charToDots"]; asm["_lou_charToDots"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_charToDots.apply(null, arguments);
-};
-
-var real__lou_checkTable = asm["_lou_checkTable"]; asm["_lou_checkTable"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_checkTable.apply(null, arguments);
-};
-
-var real__lou_compileString = asm["_lou_compileString"]; asm["_lou_compileString"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_compileString.apply(null, arguments);
-};
-
-var real__lou_dotsToChar = asm["_lou_dotsToChar"]; asm["_lou_dotsToChar"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_dotsToChar.apply(null, arguments);
-};
-
-var real__lou_findTable = asm["_lou_findTable"]; asm["_lou_findTable"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_findTable.apply(null, arguments);
-};
-
-var real__lou_findTables = asm["_lou_findTables"]; asm["_lou_findTables"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_findTables.apply(null, arguments);
-};
-
-var real__lou_free = asm["_lou_free"]; asm["_lou_free"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_free.apply(null, arguments);
-};
-
-var real__lou_getDataPath = asm["_lou_getDataPath"]; asm["_lou_getDataPath"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_getDataPath.apply(null, arguments);
-};
-
-var real__lou_getEmphClasses = asm["_lou_getEmphClasses"]; asm["_lou_getEmphClasses"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_getEmphClasses.apply(null, arguments);
-};
-
-var real__lou_getTable = asm["_lou_getTable"]; asm["_lou_getTable"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_getTable.apply(null, arguments);
-};
-
-var real__lou_getTableInfo = asm["_lou_getTableInfo"]; asm["_lou_getTableInfo"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_getTableInfo.apply(null, arguments);
-};
-
-var real__lou_getTypeformForEmphClass = asm["_lou_getTypeformForEmphClass"]; asm["_lou_getTypeformForEmphClass"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_getTypeformForEmphClass.apply(null, arguments);
-};
-
-var real__lou_hyphenate = asm["_lou_hyphenate"]; asm["_lou_hyphenate"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_hyphenate.apply(null, arguments);
-};
-
-var real__lou_indexTables = asm["_lou_indexTables"]; asm["_lou_indexTables"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_indexTables.apply(null, arguments);
-};
-
-var real__lou_listTables = asm["_lou_listTables"]; asm["_lou_listTables"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_listTables.apply(null, arguments);
-};
-
-var real__lou_logEnd = asm["_lou_logEnd"]; asm["_lou_logEnd"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_logEnd.apply(null, arguments);
-};
-
-var real__lou_logFile = asm["_lou_logFile"]; asm["_lou_logFile"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_logFile.apply(null, arguments);
-};
-
-var real__lou_logPrint = asm["_lou_logPrint"]; asm["_lou_logPrint"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_logPrint.apply(null, arguments);
-};
-
-var real__lou_readCharFromFile = asm["_lou_readCharFromFile"]; asm["_lou_readCharFromFile"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_readCharFromFile.apply(null, arguments);
-};
-
-var real__lou_registerLogCallback = asm["_lou_registerLogCallback"]; asm["_lou_registerLogCallback"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_registerLogCallback.apply(null, arguments);
-};
-
-var real__lou_registerTableResolver = asm["_lou_registerTableResolver"]; asm["_lou_registerTableResolver"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_registerTableResolver.apply(null, arguments);
-};
-
-var real__lou_setDataPath = asm["_lou_setDataPath"]; asm["_lou_setDataPath"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_setDataPath.apply(null, arguments);
-};
-
-var real__lou_setLogLevel = asm["_lou_setLogLevel"]; asm["_lou_setLogLevel"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_setLogLevel.apply(null, arguments);
-};
-
-var real__lou_translate = asm["_lou_translate"]; asm["_lou_translate"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_translate.apply(null, arguments);
-};
-
-var real__lou_translatePrehyphenated = asm["_lou_translatePrehyphenated"]; asm["_lou_translatePrehyphenated"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_translatePrehyphenated.apply(null, arguments);
-};
-
-var real__lou_translateString = asm["_lou_translateString"]; asm["_lou_translateString"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_translateString.apply(null, arguments);
-};
-
-var real__lou_version = asm["_lou_version"]; asm["_lou_version"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__lou_version.apply(null, arguments);
-};
-
-var real__malloc = asm["_malloc"]; asm["_malloc"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__malloc.apply(null, arguments);
-};
-
-var real__memmove = asm["_memmove"]; asm["_memmove"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__memmove.apply(null, arguments);
-};
-
-var real__sbrk = asm["_sbrk"]; asm["_sbrk"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__sbrk.apply(null, arguments);
-};
-
-var real_establishStackSpace = asm["establishStackSpace"]; asm["establishStackSpace"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real_establishStackSpace.apply(null, arguments);
-};
-
-var real_setThrew = asm["setThrew"]; asm["setThrew"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real_setThrew.apply(null, arguments);
-};
-
-var real_stackAlloc = asm["stackAlloc"]; asm["stackAlloc"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real_stackAlloc.apply(null, arguments);
-};
-
-var real_stackRestore = asm["stackRestore"]; asm["stackRestore"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real_stackRestore.apply(null, arguments);
-};
-
-var real_stackSave = asm["stackSave"]; asm["stackSave"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real_stackSave.apply(null, arguments);
-};
 Module["asm"] = asm;
 var ___emscripten_environ_constructor = Module["___emscripten_environ_constructor"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["___emscripten_environ_constructor"].apply(null, arguments) };
+  return Module["asm"]["___emscripten_environ_constructor"].apply(null, arguments)
+};
+
 var ___errno_location = Module["___errno_location"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["___errno_location"].apply(null, arguments) };
+  return Module["asm"]["___errno_location"].apply(null, arguments)
+};
+
 var __get_environ = Module["__get_environ"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__get_environ"].apply(null, arguments) };
+  return Module["asm"]["__get_environ"].apply(null, arguments)
+};
+
 var __lou_allocMem = Module["__lou_allocMem"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_allocMem"].apply(null, arguments) };
+  return Module["asm"]["__lou_allocMem"].apply(null, arguments)
+};
+
 var __lou_backTranslateWithTracing = Module["__lou_backTranslateWithTracing"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_backTranslateWithTracing"].apply(null, arguments) };
+  return Module["asm"]["__lou_backTranslateWithTracing"].apply(null, arguments)
+};
+
 var __lou_charHash = Module["__lou_charHash"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_charHash"].apply(null, arguments) };
+  return Module["asm"]["__lou_charHash"].apply(null, arguments)
+};
+
+var __lou_charToFallbackDots = Module["__lou_charToFallbackDots"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["__lou_charToFallbackDots"].apply(null, arguments)
+};
+
 var __lou_defaultTableResolver = Module["__lou_defaultTableResolver"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_defaultTableResolver"].apply(null, arguments) };
+  return Module["asm"]["__lou_defaultTableResolver"].apply(null, arguments)
+};
+
 var __lou_extParseChars = Module["__lou_extParseChars"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_extParseChars"].apply(null, arguments) };
+  return Module["asm"]["__lou_extParseChars"].apply(null, arguments)
+};
+
 var __lou_extParseDots = Module["__lou_extParseDots"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_extParseDots"].apply(null, arguments) };
+  return Module["asm"]["__lou_extParseDots"].apply(null, arguments)
+};
+
 var __lou_findOpcodeName = Module["__lou_findOpcodeName"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_findOpcodeName"].apply(null, arguments) };
+  return Module["asm"]["__lou_findOpcodeName"].apply(null, arguments)
+};
+
 var __lou_findOpcodeNumber = Module["__lou_findOpcodeNumber"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_findOpcodeNumber"].apply(null, arguments) };
+  return Module["asm"]["__lou_findOpcodeNumber"].apply(null, arguments)
+};
+
 var __lou_getALine = Module["__lou_getALine"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_getALine"].apply(null, arguments) };
+  return Module["asm"]["__lou_getALine"].apply(null, arguments)
+};
+
 var __lou_getCharFromDots = Module["__lou_getCharFromDots"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_getCharFromDots"].apply(null, arguments) };
+  return Module["asm"]["__lou_getCharFromDots"].apply(null, arguments)
+};
+
+var __lou_getCurrentDisplayTable = Module["__lou_getCurrentDisplayTable"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["__lou_getCurrentDisplayTable"].apply(null, arguments)
+};
+
 var __lou_getDotsForChar = Module["__lou_getDotsForChar"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_getDotsForChar"].apply(null, arguments) };
-var __lou_getLastTableList = Module["__lou_getLastTableList"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_getLastTableList"].apply(null, arguments) };
+  return Module["asm"]["__lou_getDotsForChar"].apply(null, arguments)
+};
+
 var __lou_getTablePath = Module["__lou_getTablePath"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_getTablePath"].apply(null, arguments) };
+  return Module["asm"]["__lou_getTablePath"].apply(null, arguments)
+};
+
 var __lou_handlePassVariableAction = Module["__lou_handlePassVariableAction"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_handlePassVariableAction"].apply(null, arguments) };
+  return Module["asm"]["__lou_handlePassVariableAction"].apply(null, arguments)
+};
+
 var __lou_handlePassVariableTest = Module["__lou_handlePassVariableTest"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_handlePassVariableTest"].apply(null, arguments) };
+  return Module["asm"]["__lou_handlePassVariableTest"].apply(null, arguments)
+};
+
+var __lou_isValidMode = Module["__lou_isValidMode"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["__lou_isValidMode"].apply(null, arguments)
+};
+
 var __lou_logMessage = Module["__lou_logMessage"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_logMessage"].apply(null, arguments) };
+  return Module["asm"]["__lou_logMessage"].apply(null, arguments)
+};
+
 var __lou_logWidecharBuf = Module["__lou_logWidecharBuf"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_logWidecharBuf"].apply(null, arguments) };
+  return Module["asm"]["__lou_logWidecharBuf"].apply(null, arguments)
+};
+
 var __lou_outOfMemory = Module["__lou_outOfMemory"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_outOfMemory"].apply(null, arguments) };
+  return Module["asm"]["__lou_outOfMemory"].apply(null, arguments)
+};
+
 var __lou_pattern_check = Module["__lou_pattern_check"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_pattern_check"].apply(null, arguments) };
+  return Module["asm"]["__lou_pattern_check"].apply(null, arguments)
+};
+
 var __lou_pattern_compile = Module["__lou_pattern_compile"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_pattern_compile"].apply(null, arguments) };
+  return Module["asm"]["__lou_pattern_compile"].apply(null, arguments)
+};
+
 var __lou_pattern_reverse = Module["__lou_pattern_reverse"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_pattern_reverse"].apply(null, arguments) };
+  return Module["asm"]["__lou_pattern_reverse"].apply(null, arguments)
+};
+
 var __lou_resetPassVariables = Module["__lou_resetPassVariables"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_resetPassVariables"].apply(null, arguments) };
+  return Module["asm"]["__lou_resetPassVariables"].apply(null, arguments)
+};
+
 var __lou_resolveTable = Module["__lou_resolveTable"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_resolveTable"].apply(null, arguments) };
+  return Module["asm"]["__lou_resolveTable"].apply(null, arguments)
+};
+
 var __lou_showAttributes = Module["__lou_showAttributes"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_showAttributes"].apply(null, arguments) };
+  return Module["asm"]["__lou_showAttributes"].apply(null, arguments)
+};
+
 var __lou_showDots = Module["__lou_showDots"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_showDots"].apply(null, arguments) };
+  return Module["asm"]["__lou_showDots"].apply(null, arguments)
+};
+
 var __lou_showString = Module["__lou_showString"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_showString"].apply(null, arguments) };
+  return Module["asm"]["__lou_showString"].apply(null, arguments)
+};
+
 var __lou_stringHash = Module["__lou_stringHash"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_stringHash"].apply(null, arguments) };
+  return Module["asm"]["__lou_stringHash"].apply(null, arguments)
+};
+
 var __lou_translateWithTracing = Module["__lou_translateWithTracing"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["__lou_translateWithTracing"].apply(null, arguments) };
+  return Module["asm"]["__lou_translateWithTracing"].apply(null, arguments)
+};
+
+var __lou_unknownDots = Module["__lou_unknownDots"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["__lou_unknownDots"].apply(null, arguments)
+};
+
 var _fflush = Module["_fflush"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_fflush"].apply(null, arguments) };
+  return Module["asm"]["_fflush"].apply(null, arguments)
+};
+
 var _free = Module["_free"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_free"].apply(null, arguments) };
-var _llvm_bswap_i32 = Module["_llvm_bswap_i32"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_llvm_bswap_i32"].apply(null, arguments) };
+  return Module["asm"]["_free"].apply(null, arguments)
+};
+
 var _lou_backTranslate = Module["_lou_backTranslate"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_backTranslate"].apply(null, arguments) };
+  return Module["asm"]["_lou_backTranslate"].apply(null, arguments)
+};
+
 var _lou_backTranslateString = Module["_lou_backTranslateString"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_backTranslateString"].apply(null, arguments) };
+  return Module["asm"]["_lou_backTranslateString"].apply(null, arguments)
+};
+
 var _lou_charSize = Module["_lou_charSize"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_charSize"].apply(null, arguments) };
+  return Module["asm"]["_lou_charSize"].apply(null, arguments)
+};
+
 var _lou_charToDots = Module["_lou_charToDots"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_charToDots"].apply(null, arguments) };
+  return Module["asm"]["_lou_charToDots"].apply(null, arguments)
+};
+
 var _lou_checkTable = Module["_lou_checkTable"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_checkTable"].apply(null, arguments) };
+  return Module["asm"]["_lou_checkTable"].apply(null, arguments)
+};
+
 var _lou_compileString = Module["_lou_compileString"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_compileString"].apply(null, arguments) };
+  return Module["asm"]["_lou_compileString"].apply(null, arguments)
+};
+
 var _lou_dotsToChar = Module["_lou_dotsToChar"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_dotsToChar"].apply(null, arguments) };
+  return Module["asm"]["_lou_dotsToChar"].apply(null, arguments)
+};
+
 var _lou_findTable = Module["_lou_findTable"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_findTable"].apply(null, arguments) };
+  return Module["asm"]["_lou_findTable"].apply(null, arguments)
+};
+
 var _lou_findTables = Module["_lou_findTables"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_findTables"].apply(null, arguments) };
+  return Module["asm"]["_lou_findTables"].apply(null, arguments)
+};
+
 var _lou_free = Module["_lou_free"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_free"].apply(null, arguments) };
+  return Module["asm"]["_lou_free"].apply(null, arguments)
+};
+
 var _lou_getDataPath = Module["_lou_getDataPath"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_getDataPath"].apply(null, arguments) };
+  return Module["asm"]["_lou_getDataPath"].apply(null, arguments)
+};
+
 var _lou_getEmphClasses = Module["_lou_getEmphClasses"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_getEmphClasses"].apply(null, arguments) };
+  return Module["asm"]["_lou_getEmphClasses"].apply(null, arguments)
+};
+
 var _lou_getTable = Module["_lou_getTable"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_getTable"].apply(null, arguments) };
+  return Module["asm"]["_lou_getTable"].apply(null, arguments)
+};
+
 var _lou_getTableInfo = Module["_lou_getTableInfo"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_getTableInfo"].apply(null, arguments) };
+  return Module["asm"]["_lou_getTableInfo"].apply(null, arguments)
+};
+
 var _lou_getTypeformForEmphClass = Module["_lou_getTypeformForEmphClass"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_getTypeformForEmphClass"].apply(null, arguments) };
+  return Module["asm"]["_lou_getTypeformForEmphClass"].apply(null, arguments)
+};
+
 var _lou_hyphenate = Module["_lou_hyphenate"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_hyphenate"].apply(null, arguments) };
+  return Module["asm"]["_lou_hyphenate"].apply(null, arguments)
+};
+
 var _lou_indexTables = Module["_lou_indexTables"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_indexTables"].apply(null, arguments) };
+  return Module["asm"]["_lou_indexTables"].apply(null, arguments)
+};
+
 var _lou_listTables = Module["_lou_listTables"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_listTables"].apply(null, arguments) };
+  return Module["asm"]["_lou_listTables"].apply(null, arguments)
+};
+
 var _lou_logEnd = Module["_lou_logEnd"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_logEnd"].apply(null, arguments) };
+  return Module["asm"]["_lou_logEnd"].apply(null, arguments)
+};
+
 var _lou_logFile = Module["_lou_logFile"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_logFile"].apply(null, arguments) };
+  return Module["asm"]["_lou_logFile"].apply(null, arguments)
+};
+
 var _lou_logPrint = Module["_lou_logPrint"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_logPrint"].apply(null, arguments) };
+  return Module["asm"]["_lou_logPrint"].apply(null, arguments)
+};
+
 var _lou_readCharFromFile = Module["_lou_readCharFromFile"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_readCharFromFile"].apply(null, arguments) };
+  return Module["asm"]["_lou_readCharFromFile"].apply(null, arguments)
+};
+
 var _lou_registerLogCallback = Module["_lou_registerLogCallback"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_registerLogCallback"].apply(null, arguments) };
+  return Module["asm"]["_lou_registerLogCallback"].apply(null, arguments)
+};
+
 var _lou_registerTableResolver = Module["_lou_registerTableResolver"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_registerTableResolver"].apply(null, arguments) };
+  return Module["asm"]["_lou_registerTableResolver"].apply(null, arguments)
+};
+
 var _lou_setDataPath = Module["_lou_setDataPath"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_setDataPath"].apply(null, arguments) };
+  return Module["asm"]["_lou_setDataPath"].apply(null, arguments)
+};
+
 var _lou_setLogLevel = Module["_lou_setLogLevel"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_setLogLevel"].apply(null, arguments) };
+  return Module["asm"]["_lou_setLogLevel"].apply(null, arguments)
+};
+
 var _lou_translate = Module["_lou_translate"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_translate"].apply(null, arguments) };
+  return Module["asm"]["_lou_translate"].apply(null, arguments)
+};
+
 var _lou_translatePrehyphenated = Module["_lou_translatePrehyphenated"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_translatePrehyphenated"].apply(null, arguments) };
+  return Module["asm"]["_lou_translatePrehyphenated"].apply(null, arguments)
+};
+
 var _lou_translateString = Module["_lou_translateString"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_translateString"].apply(null, arguments) };
+  return Module["asm"]["_lou_translateString"].apply(null, arguments)
+};
+
 var _lou_version = Module["_lou_version"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_lou_version"].apply(null, arguments) };
+  return Module["asm"]["_lou_version"].apply(null, arguments)
+};
+
 var _malloc = Module["_malloc"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_malloc"].apply(null, arguments) };
+  return Module["asm"]["_malloc"].apply(null, arguments)
+};
+
 var _memcpy = Module["_memcpy"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_memcpy"].apply(null, arguments) };
+  return Module["asm"]["_memcpy"].apply(null, arguments)
+};
+
 var _memmove = Module["_memmove"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_memmove"].apply(null, arguments) };
+  return Module["asm"]["_memmove"].apply(null, arguments)
+};
+
 var _memset = Module["_memset"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_memset"].apply(null, arguments) };
+  return Module["asm"]["_memset"].apply(null, arguments)
+};
+
 var _sbrk = Module["_sbrk"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_sbrk"].apply(null, arguments) };
+  return Module["asm"]["_sbrk"].apply(null, arguments)
+};
+
 var establishStackSpace = Module["establishStackSpace"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["establishStackSpace"].apply(null, arguments) };
-var runPostSets = Module["runPostSets"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["runPostSets"].apply(null, arguments) };
-var setThrew = Module["setThrew"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["setThrew"].apply(null, arguments) };
+  return Module["asm"]["establishStackSpace"].apply(null, arguments)
+};
+
 var stackAlloc = Module["stackAlloc"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["stackAlloc"].apply(null, arguments) };
+  return Module["asm"]["stackAlloc"].apply(null, arguments)
+};
+
 var stackRestore = Module["stackRestore"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["stackRestore"].apply(null, arguments) };
+  return Module["asm"]["stackRestore"].apply(null, arguments)
+};
+
 var stackSave = Module["stackSave"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["stackSave"].apply(null, arguments) };
+  return Module["asm"]["stackSave"].apply(null, arguments)
+};
+
 var dynCall_ii = Module["dynCall_ii"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_ii"].apply(null, arguments) };
+  return Module["asm"]["dynCall_ii"].apply(null, arguments)
+};
+
+var dynCall_iidiiii = Module["dynCall_iidiiii"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["dynCall_iidiiii"].apply(null, arguments)
+};
+
 var dynCall_iii = Module["dynCall_iii"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_iii"].apply(null, arguments) };
+  return Module["asm"]["dynCall_iii"].apply(null, arguments)
+};
+
 var dynCall_iiii = Module["dynCall_iiii"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_iiii"].apply(null, arguments) };
+  return Module["asm"]["dynCall_iiii"].apply(null, arguments)
+};
+
+var dynCall_jiji = Module["dynCall_jiji"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["dynCall_jiji"].apply(null, arguments)
+};
+
 var dynCall_vi = Module["dynCall_vi"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_vi"].apply(null, arguments) };
+  return Module["asm"]["dynCall_vi"].apply(null, arguments)
+};
+
 var dynCall_vii = Module["dynCall_vii"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_vii"].apply(null, arguments) };
+  return Module["asm"]["dynCall_vii"].apply(null, arguments)
+};
 ;
 
 
@@ -6263,33 +6082,32 @@ Module["setValue"] = setValue;
 Module["getValue"] = getValue;
 Module["allocate"] = allocate;
 Module["getMemory"] = getMemory;
-Module["Pointer_stringify"] = Pointer_stringify;
-if (!Module["AsciiToString"]) Module["AsciiToString"] = function() { abort("'AsciiToString' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["stringToAscii"]) Module["stringToAscii"] = function() { abort("'stringToAscii' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["UTF8ArrayToString"]) Module["UTF8ArrayToString"] = function() { abort("'UTF8ArrayToString' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["UTF8ToString"]) Module["UTF8ToString"] = function() { abort("'UTF8ToString' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["stringToUTF8Array"]) Module["stringToUTF8Array"] = function() { abort("'stringToUTF8Array' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["stringToUTF8"]) Module["stringToUTF8"] = function() { abort("'stringToUTF8' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["lengthBytesUTF8"]) Module["lengthBytesUTF8"] = function() { abort("'lengthBytesUTF8' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "AsciiToString")) Module["AsciiToString"] = function() { abort("'AsciiToString' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "stringToAscii")) Module["stringToAscii"] = function() { abort("'stringToAscii' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "UTF8ArrayToString")) Module["UTF8ArrayToString"] = function() { abort("'UTF8ArrayToString' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "UTF8ToString")) Module["UTF8ToString"] = function() { abort("'UTF8ToString' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "stringToUTF8Array")) Module["stringToUTF8Array"] = function() { abort("'stringToUTF8Array' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "stringToUTF8")) Module["stringToUTF8"] = function() { abort("'stringToUTF8' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "lengthBytesUTF8")) Module["lengthBytesUTF8"] = function() { abort("'lengthBytesUTF8' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 Module["UTF16ToString"] = UTF16ToString;
 Module["stringToUTF16"] = stringToUTF16;
-if (!Module["lengthBytesUTF16"]) Module["lengthBytesUTF16"] = function() { abort("'lengthBytesUTF16' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["UTF32ToString"]) Module["UTF32ToString"] = function() { abort("'UTF32ToString' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["stringToUTF32"]) Module["stringToUTF32"] = function() { abort("'stringToUTF32' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["lengthBytesUTF32"]) Module["lengthBytesUTF32"] = function() { abort("'lengthBytesUTF32' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["allocateUTF8"]) Module["allocateUTF8"] = function() { abort("'allocateUTF8' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["stackTrace"]) Module["stackTrace"] = function() { abort("'stackTrace' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["addOnPreRun"]) Module["addOnPreRun"] = function() { abort("'addOnPreRun' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["addOnInit"]) Module["addOnInit"] = function() { abort("'addOnInit' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["addOnPreMain"]) Module["addOnPreMain"] = function() { abort("'addOnPreMain' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["addOnExit"]) Module["addOnExit"] = function() { abort("'addOnExit' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["addOnPostRun"]) Module["addOnPostRun"] = function() { abort("'addOnPostRun' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["writeStringToMemory"]) Module["writeStringToMemory"] = function() { abort("'writeStringToMemory' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["writeArrayToMemory"]) Module["writeArrayToMemory"] = function() { abort("'writeArrayToMemory' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["writeAsciiToMemory"]) Module["writeAsciiToMemory"] = function() { abort("'writeAsciiToMemory' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "lengthBytesUTF16")) Module["lengthBytesUTF16"] = function() { abort("'lengthBytesUTF16' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "UTF32ToString")) Module["UTF32ToString"] = function() { abort("'UTF32ToString' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "stringToUTF32")) Module["stringToUTF32"] = function() { abort("'stringToUTF32' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "lengthBytesUTF32")) Module["lengthBytesUTF32"] = function() { abort("'lengthBytesUTF32' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "allocateUTF8")) Module["allocateUTF8"] = function() { abort("'allocateUTF8' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "stackTrace")) Module["stackTrace"] = function() { abort("'stackTrace' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "addOnPreRun")) Module["addOnPreRun"] = function() { abort("'addOnPreRun' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "addOnInit")) Module["addOnInit"] = function() { abort("'addOnInit' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "addOnPreMain")) Module["addOnPreMain"] = function() { abort("'addOnPreMain' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "addOnExit")) Module["addOnExit"] = function() { abort("'addOnExit' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "addOnPostRun")) Module["addOnPostRun"] = function() { abort("'addOnPostRun' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "writeStringToMemory")) Module["writeStringToMemory"] = function() { abort("'writeStringToMemory' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "writeArrayToMemory")) Module["writeArrayToMemory"] = function() { abort("'writeArrayToMemory' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "writeAsciiToMemory")) Module["writeAsciiToMemory"] = function() { abort("'writeAsciiToMemory' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 Module["addRunDependency"] = addRunDependency;
 Module["removeRunDependency"] = removeRunDependency;
-if (!Module["ENV"]) Module["ENV"] = function() { abort("'ENV' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "ENV")) Module["ENV"] = function() { abort("'ENV' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
 Module["FS"] = FS;
 Module["FS_createFolder"] = FS.createFolder;
 Module["FS_createPath"] = FS.createPath;
@@ -6299,35 +6117,43 @@ Module["FS_createLazyFile"] = FS.createLazyFile;
 Module["FS_createLink"] = FS.createLink;
 Module["FS_createDevice"] = FS.createDevice;
 Module["FS_unlink"] = FS.unlink;
-if (!Module["GL"]) Module["GL"] = function() { abort("'GL' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["staticAlloc"]) Module["staticAlloc"] = function() { abort("'staticAlloc' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["dynamicAlloc"]) Module["dynamicAlloc"] = function() { abort("'dynamicAlloc' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["warnOnce"]) Module["warnOnce"] = function() { abort("'warnOnce' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["loadDynamicLibrary"]) Module["loadDynamicLibrary"] = function() { abort("'loadDynamicLibrary' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["loadWebAssemblyModule"]) Module["loadWebAssemblyModule"] = function() { abort("'loadWebAssemblyModule' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["getLEB"]) Module["getLEB"] = function() { abort("'getLEB' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["getFunctionTables"]) Module["getFunctionTables"] = function() { abort("'getFunctionTables' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["alignFunctionTables"]) Module["alignFunctionTables"] = function() { abort("'alignFunctionTables' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["registerFunctions"]) Module["registerFunctions"] = function() { abort("'registerFunctions' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["addFunction"]) Module["addFunction"] = function() { abort("'addFunction' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["removeFunction"]) Module["removeFunction"] = function() { abort("'removeFunction' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["getFuncWrapper"]) Module["getFuncWrapper"] = function() { abort("'getFuncWrapper' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["prettyPrint"]) Module["prettyPrint"] = function() { abort("'prettyPrint' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["makeBigInt"]) Module["makeBigInt"] = function() { abort("'makeBigInt' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["dynCall"]) Module["dynCall"] = function() { abort("'dynCall' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["getCompilerSetting"]) Module["getCompilerSetting"] = function() { abort("'getCompilerSetting' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["stackSave"]) Module["stackSave"] = function() { abort("'stackSave' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["stackRestore"]) Module["stackRestore"] = function() { abort("'stackRestore' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["stackAlloc"]) Module["stackAlloc"] = function() { abort("'stackAlloc' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["establishStackSpace"]) Module["establishStackSpace"] = function() { abort("'establishStackSpace' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["print"]) Module["print"] = function() { abort("'print' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Module["printErr"]) Module["printErr"] = function() { abort("'printErr' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };Module["ALLOC_NORMAL"] = ALLOC_NORMAL;
-if (!Module["ALLOC_STACK"]) Object.defineProperty(Module, "ALLOC_STACK", { get: function() { abort("'ALLOC_STACK' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") } });
-if (!Module["ALLOC_STATIC"]) Object.defineProperty(Module, "ALLOC_STATIC", { get: function() { abort("'ALLOC_STATIC' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") } });
-if (!Module["ALLOC_DYNAMIC"]) Object.defineProperty(Module, "ALLOC_DYNAMIC", { get: function() { abort("'ALLOC_DYNAMIC' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") } });
-if (!Module["ALLOC_NONE"]) Object.defineProperty(Module, "ALLOC_NONE", { get: function() { abort("'ALLOC_NONE' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") } });
+if (!Object.getOwnPropertyDescriptor(Module, "GL")) Module["GL"] = function() { abort("'GL' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "dynamicAlloc")) Module["dynamicAlloc"] = function() { abort("'dynamicAlloc' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "loadDynamicLibrary")) Module["loadDynamicLibrary"] = function() { abort("'loadDynamicLibrary' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "loadWebAssemblyModule")) Module["loadWebAssemblyModule"] = function() { abort("'loadWebAssemblyModule' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "getLEB")) Module["getLEB"] = function() { abort("'getLEB' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "getFunctionTables")) Module["getFunctionTables"] = function() { abort("'getFunctionTables' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "alignFunctionTables")) Module["alignFunctionTables"] = function() { abort("'alignFunctionTables' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "registerFunctions")) Module["registerFunctions"] = function() { abort("'registerFunctions' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "addFunction")) Module["addFunction"] = function() { abort("'addFunction' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "removeFunction")) Module["removeFunction"] = function() { abort("'removeFunction' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "getFuncWrapper")) Module["getFuncWrapper"] = function() { abort("'getFuncWrapper' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "prettyPrint")) Module["prettyPrint"] = function() { abort("'prettyPrint' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "makeBigInt")) Module["makeBigInt"] = function() { abort("'makeBigInt' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "dynCall")) Module["dynCall"] = function() { abort("'dynCall' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "getCompilerSetting")) Module["getCompilerSetting"] = function() { abort("'getCompilerSetting' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "stackSave")) Module["stackSave"] = function() { abort("'stackSave' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "stackRestore")) Module["stackRestore"] = function() { abort("'stackRestore' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "stackAlloc")) Module["stackAlloc"] = function() { abort("'stackAlloc' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "establishStackSpace")) Module["establishStackSpace"] = function() { abort("'establishStackSpace' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "print")) Module["print"] = function() { abort("'print' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "printErr")) Module["printErr"] = function() { abort("'printErr' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "getTempRet0")) Module["getTempRet0"] = function() { abort("'getTempRet0' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "setTempRet0")) Module["setTempRet0"] = function() { abort("'setTempRet0' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "callMain")) Module["callMain"] = function() { abort("'callMain' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+Module["Pointer_stringify"] = Pointer_stringify;
+if (!Object.getOwnPropertyDescriptor(Module, "warnOnce")) Module["warnOnce"] = function() { abort("'warnOnce' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "writeStackCookie")) Module["writeStackCookie"] = function() { abort("'writeStackCookie' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "checkStackCookie")) Module["checkStackCookie"] = function() { abort("'checkStackCookie' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+if (!Object.getOwnPropertyDescriptor(Module, "abortStackOverflow")) Module["abortStackOverflow"] = function() { abort("'abortStackOverflow' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") };Module["ALLOC_NORMAL"] = ALLOC_NORMAL;
+if (!Object.getOwnPropertyDescriptor(Module, "ALLOC_STACK")) Object.defineProperty(Module, "ALLOC_STACK", { get: function() { abort("'ALLOC_STACK' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") } });
+if (!Object.getOwnPropertyDescriptor(Module, "ALLOC_DYNAMIC")) Object.defineProperty(Module, "ALLOC_DYNAMIC", { get: function() { abort("'ALLOC_DYNAMIC' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") } });
+if (!Object.getOwnPropertyDescriptor(Module, "ALLOC_NONE")) Object.defineProperty(Module, "ALLOC_NONE", { get: function() { abort("'ALLOC_NONE' was not exported. add it to EXTRA_EXPORTED_RUNTIME_METHODS (see the FAQ)") } });
+Module["calledRun"] = calledRun;
 
 
+
+var calledRun;
 
 // Modularize mode returns a function, which can be called to
 // create instances. The instances provide a then() method,
@@ -6338,7 +6164,7 @@ if (!Module["ALLOC_NONE"]) Object.defineProperty(Module, "ALLOC_NONE", { get: fu
 Module['then'] = function(func) {
   // We may already be ready to run code at this time. if
   // so, just queue a call to the callback.
-  if (Module['calledRun']) {
+  if (calledRun) {
     func(Module);
   } else {
     // we are not ready to call then() yet. we must call it
@@ -6354,25 +6180,21 @@ Module['then'] = function(func) {
 
 /**
  * @constructor
- * @extends {Error}
  * @this {ExitStatus}
  */
 function ExitStatus(status) {
   this.name = "ExitStatus";
   this.message = "Program terminated with exit(" + status + ")";
   this.status = status;
-};
-ExitStatus.prototype = new Error();
-ExitStatus.prototype.constructor = ExitStatus;
+}
 
-var initialStackTop;
 var calledMain = false;
 
 dependenciesFulfilled = function runCaller() {
   // If run has never been called, and we should call run (INVOKE_RUN is true, and Module.noInitialRun is not false)
-  if (!Module['calledRun']) run();
-  if (!Module['calledRun']) dependenciesFulfilled = runCaller; // try this again later, after new deps are fulfilled
-}
+  if (!calledRun) run();
+  if (!calledRun) dependenciesFulfilled = runCaller; // try this again later, after new deps are fulfilled
+};
 
 
 
@@ -6380,7 +6202,7 @@ dependenciesFulfilled = function runCaller() {
 
 /** @type {function(Array=)} */
 function run(args) {
-  args = args || Module['arguments'];
+  args = args || arguments_;
 
   if (runDependencies > 0) {
     return;
@@ -6391,15 +6213,17 @@ function run(args) {
   preRun();
 
   if (runDependencies > 0) return; // a preRun added a dependency, run will be called later
-  if (Module['calledRun']) return; // run may have just been called through dependencies being fulfilled just in this very frame
 
   function doRun() {
-    if (Module['calledRun']) return; // run may have just been called while the async setStatus time below was happening
+    // run may have just been called through dependencies being fulfilled just in this very frame,
+    // or while the async setStatus time below was happening
+    if (calledRun) return;
+    calledRun = true;
     Module['calledRun'] = true;
 
     if (ABORT) return;
 
-    ensureInitRuntime();
+    initRuntime();
 
     preMain();
 
@@ -6418,7 +6242,8 @@ function run(args) {
       }, 1);
       doRun();
     }, 1);
-  } else {
+  } else
+  {
     doRun();
   }
   checkStackCookie();
@@ -6434,7 +6259,7 @@ function checkUnflushedContent() {
   // builds we do so just for this check, and here we see if there is any
   // content to flush, that is, we check if there would have been
   // something a non-ASSERTIONS build would have not seen.
-  // How we flush the streams depends on whether we are in FILESYSTEM=0
+  // How we flush the streams depends on whether we are in SYSCALLS_REQUIRE_FILESYSTEM=0
   // mode (which has its own special function for this; otherwise, all
   // the code is inside libc)
   var print = out;
@@ -6447,19 +6272,16 @@ function checkUnflushedContent() {
     var flush = Module['_fflush'];
     if (flush) flush(0);
     // also flush in the JS FS layer
-    var hasFS = true;
-    if (hasFS) {
-      ['stdout', 'stderr'].forEach(function(name) {
-        var info = FS.analyzePath('/dev/' + name);
-        if (!info) return;
-        var stream = info.object;
-        var rdev = stream.rdev;
-        var tty = TTY.ttys[rdev];
-        if (tty && tty.output && tty.output.length) {
-          has = true;
-        }
-      });
-    }
+    ['stdout', 'stderr'].forEach(function(name) {
+      var info = FS.analyzePath('/dev/' + name);
+      if (!info) return;
+      var stream = info.object;
+      var rdev = stream.rdev;
+      var tty = TTY.ttys[rdev];
+      if (tty && tty.output && tty.output.length) {
+        has = true;
+      }
+    });
   } catch(e) {}
   out = print;
   err = printErr;
@@ -6475,11 +6297,11 @@ function exit(status, implicit) {
   // don't need to do anything here and can just leave. if the status is
   // non-zero, though, then we need to report it.
   // (we may have warned about this earlier, if a situation justifies doing so)
-  if (implicit && Module['noExitRuntime'] && status === 0) {
+  if (implicit && noExitRuntime && status === 0) {
     return;
   }
 
-  if (Module['noExitRuntime']) {
+  if (noExitRuntime) {
     // if exit() was called, we may warn the user if the runtime isn't actually being shut down
     if (!implicit) {
       err('exit(' + status + ') called, but EXIT_RUNTIME is not set, so halting execution but not exiting the runtime or preventing further async execution (build with EXIT_RUNTIME=1, if you want a true shutdown)');
@@ -6488,14 +6310,13 @@ function exit(status, implicit) {
 
     ABORT = true;
     EXITSTATUS = status;
-    STACKTOP = initialStackTop;
 
     exitRuntime();
 
     if (Module['onExit']) Module['onExit'](status);
   }
 
-  Module['quit'](status, new ExitStatus(status));
+  quit_(status, new ExitStatus(status));
 }
 
 var abortDecorators = [];
@@ -6505,13 +6326,9 @@ function abort(what) {
     Module['onAbort'](what);
   }
 
-  if (what !== undefined) {
-    out(what);
-    err(what);
-    what = JSON.stringify(what)
-  } else {
-    what = '';
-  }
+  what += '';
+  out(what);
+  err(what);
 
   ABORT = true;
   EXITSTATUS = 1;
@@ -6535,7 +6352,7 @@ if (Module['preInit']) {
 }
 
 
-  Module["noExitRuntime"] = true;
+  noExitRuntime = true;
 
 run();
 
@@ -6547,30 +6364,16 @@ run();
 
 
 
-if(this) {
-	this.liblouisBuilds = this.liblouisBuilds || {};
-
-	var version;
-	try {
-		version = this.ccall('lou_version', 'string', [], []);
-	} catch(e) {
-		version = "unknown";
-	}
-
-	this.liblouisBuilds[version] = this.liblouisBuilds[version] || [];
-	this.liblouisBuilds[version].push(Module);
-}
 
 
-
-  return liblouisBuild;
+  return liblouisBuild
 }
 );
 })();
 if (typeof exports === 'object' && typeof module === 'object')
-    module.exports = liblouisBuild;
-  else if (typeof define === 'function' && define['amd'])
-    define([], function() { return liblouisBuild; });
-  else if (typeof exports === 'object')
-    exports["liblouisBuild"] = liblouisBuild;
-  
+      module.exports = liblouisBuild;
+    else if (typeof define === 'function' && define['amd'])
+      define([], function() { return liblouisBuild; });
+    else if (typeof exports === 'object')
+      exports["liblouisBuild"] = liblouisBuild;
+    

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_STORAGE_AREA_MAP_H_
 
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -38,6 +38,7 @@ class MODULES_EXPORT StorageAreaMap {
   bool RemoveItem(const String& key, String* old_value);
 
   size_t quota_used() const { return quota_used_; }
+  size_t memory_used() const { return memory_used_; }
   size_t quota() const { return quota_; }
 
  private:
@@ -55,6 +56,7 @@ class MODULES_EXPORT StorageAreaMap {
   mutable unsigned last_key_index_;
 
   size_t quota_used_ = 0;
+  size_t memory_used_ = 0;
   const size_t quota_;
 };
 

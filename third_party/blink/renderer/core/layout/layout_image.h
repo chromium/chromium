@@ -87,15 +87,6 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
   const char* GetName() const override { return "LayoutImage"; }
 
-  // When an image element violates feature policy optimized image policies, it
-  // should be rendered with a placeholder image.
-  // https://github.com/WICG/feature-policy/blob/master/policies/optimized-images.md
-  bool IsImagePolicyViolated() const;
-
-  // For image policies that require layout input, report the policy violation
-  // every time when the image is being repainted.
-  void ReportImagePolicyViolation() const;
-
   void UpdateAfterLayout() override;
 
  protected:
@@ -121,10 +112,10 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   bool IsImage() const override { return true; }
 
   void PaintReplaced(const PaintInfo&,
-                     const LayoutPoint& paint_offset) const override;
+                     const PhysicalOffset& paint_offset) const override;
 
   bool ForegroundIsKnownToBeOpaqueInRect(
-      const LayoutRect& local_rect,
+      const PhysicalRect& local_rect,
       unsigned max_depth_to_test) const final;
   bool ComputeBackgroundIsKnownToBeObscured() const final;
 
@@ -134,15 +125,15 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
   void ImageNotifyFinished(ImageResourceContent*) final;
   bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation& location_in_container,
-                   const LayoutPoint& accumulated_offset,
+                   const HitTestLocation&,
+                   const PhysicalOffset& accumulated_offset,
                    HitTestAction) final;
 
   void InvalidatePaintAndMarkForLayoutIfNeeded(CanDeferInvalidation);
   void UpdateIntrinsicSizeIfNeeded(const LayoutSize&);
   bool NeedsLayoutOnIntrinsicSizeChange() const;
-  // Override intrinsic sizing info by HTMLImageElement "intrinsicsize"
-  // attribute if enabled and exists.
+  // Override intrinsic sizing info to default if "unsized-media"
+  // is disabled and the element has no sizing info.
   bool OverrideIntrinsicSizingInfo(IntrinsicSizingInfo&) const;
   FloatSize ImageSizeOverriddenByIntrinsicSize(float multiplier) const;
   IntSize GetOverriddenIntrinsicSize() const;
@@ -162,11 +153,6 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   // This field stores whether this image is generated with 'content'.
   bool is_generated_content_;
   float image_device_pixel_ratio_;
-
-  // This flag indicate if the image violates the 'oversized-images' policy.
-  // When the policy is violated, the image should be rendered as a placeholder
-  // image.
-  bool is_oversized_image_;
 };
 
 DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutImage, IsLayoutImage());

@@ -17,22 +17,29 @@ namespace content {
 class DevToolsAgentHostImpl;
 class DevToolsIOContext;
 class DevToolsURLLoaderInterceptor;
+class RenderProcessHost;
 struct InterceptedRequestInfo;
 
 namespace protocol {
 
 class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
  public:
-  explicit FetchHandler(DevToolsIOContext* io_context);
+  using UpdateLoaderFactoriesCallback =
+      base::RepeatingCallback<void(base::OnceClosure)>;
+
+  FetchHandler(DevToolsIOContext* io_context,
+               UpdateLoaderFactoriesCallback update_loader_factories_callback);
   ~FetchHandler() override;
 
   static std::vector<FetchHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
 
   bool MaybeCreateProxyForInterception(
-      RenderFrameHostImpl* rfh,
+      RenderProcessHost* rph,
+      const base::UnguessableToken& frame_token,
       bool is_navigation,
       bool is_download,
-      network::mojom::URLLoaderFactoryRequest* target_factory_request);
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory>*
+          target_factory_receiver);
 
  private:
   // DevToolsDomainHandler
@@ -40,8 +47,9 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
   Response Disable() override;
 
   // Protocol methods.
-  Response Enable(Maybe<Array<Fetch::RequestPattern>> patterns,
-                  Maybe<bool> handleAuth) override;
+  void Enable(Maybe<Array<Fetch::RequestPattern>> patterns,
+              Maybe<bool> handleAuth,
+              std::unique_ptr<EnableCallback> callback) override;
 
   void FailRequest(const String& fetchId,
                    const String& errorReason,
@@ -49,7 +57,8 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
   void FulfillRequest(
       const String& fetchId,
       int responseCode,
-      std::unique_ptr<Array<Fetch::HeaderEntry>> responseHeaders,
+      Maybe<Array<Fetch::HeaderEntry>> responseHeaders,
+      Maybe<Binary> binaryResponseHeaders,
       Maybe<Binary> body,
       Maybe<String> responsePhrase,
       std::unique_ptr<FulfillRequestCallback> callback) override;
@@ -83,7 +92,8 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
   DevToolsIOContext* const io_context_;
   std::unique_ptr<Fetch::Frontend> frontend_;
   std::unique_ptr<DevToolsURLLoaderInterceptor> interceptor_;
-  base::WeakPtrFactory<FetchHandler> weak_factory_;
+  UpdateLoaderFactoriesCallback update_loader_factories_callback_;
+  base::WeakPtrFactory<FetchHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FetchHandler);
 };

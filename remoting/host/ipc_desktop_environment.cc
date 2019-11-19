@@ -97,8 +97,7 @@ IpcDesktopEnvironmentFactory::IpcDesktopEnvironmentFactory(
     : audio_task_runner_(audio_task_runner),
       caller_task_runner_(caller_task_runner),
       io_task_runner_(io_task_runner),
-      daemon_channel_(daemon_channel),
-      connector_factory_(this) {}
+      daemon_channel_(daemon_channel) {}
 
 IpcDesktopEnvironmentFactory::~IpcDesktopEnvironmentFactory() = default;
 

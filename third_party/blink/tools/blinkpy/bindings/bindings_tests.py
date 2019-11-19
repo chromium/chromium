@@ -34,6 +34,7 @@ from blinkpy.common.system.executive import Executive
 
 from blinkpy.common import path_finder
 path_finder.add_bindings_scripts_dir_to_sys_path()
+path_finder.add_build_scripts_dir_to_sys_path()
 
 from code_generator_v8 import CodeGeneratorDictionaryImpl
 from code_generator_v8 import CodeGeneratorV8
@@ -47,6 +48,7 @@ from idl_compiler import (generate_bindings,
                           generate_union_type_containers,
                           generate_dictionary_impl,
                           generate_callback_function_impl)
+from json5_generator import Json5File
 from utilities import ComponentInfoProviderCore
 from utilities import ComponentInfoProviderModules
 from utilities import get_file_contents
@@ -68,9 +70,9 @@ TBR=someone in third_party/blink/renderer/bindings/OWNERS or WATCHLISTS:bindings
 
 SOURCE_PATH = path_finder.get_source_dir()
 DEPENDENCY_IDL_FILES = frozenset([
-    'test_implements.idl',
-    'test_implements_2.idl',
-    'test_implements_3.idl',
+    'test_interface_mixin.idl',
+    'test_interface_mixin_2.idl',
+    'test_interface_mixin_3.idl',
     'test_interface_partial.idl',
     'test_interface_partial_2.idl',
     'test_interface_partial_3.idl',
@@ -103,7 +105,7 @@ def TemporaryDirectory():
         shutil.rmtree(name)
 
 
-def generate_interface_dependencies():
+def generate_interface_dependencies(runtime_enabled_features):
     def idl_paths_recursive(directory):
         # This is slow, especially on Windows, due to os.walk making
         # excess stat() calls. Faster versions may appear in Python 3.5 or
@@ -137,7 +139,7 @@ def generate_interface_dependencies():
         # To avoid this issue, we need to clear relative_dir here.
         for value in info['interfaces_info'].itervalues():
             value['relative_dir'] = ''
-        component_info = info_collector.get_component_info_as_dict()
+        component_info = info_collector.get_component_info_as_dict(runtime_enabled_features)
         return info, component_info
 
     # We compute interfaces info for *all* IDL files, not just test IDL
@@ -275,8 +277,18 @@ def bindings_tests(output_directory, verbose, suppress_diff):
             return False
         return True
 
+    def make_runtime_features_dict():
+        input_filename = os.path.join(TEST_INPUT_DIRECTORY, 'runtime_enabled_features.json5')
+        json5_file = Json5File.load_from_files([input_filename])
+        features_map = {}
+        for feature in json5_file.name_dictionaries:
+            features_map[str(feature['name'])] = {
+                'in_origin_trial': feature['in_origin_trial']
+            }
+        return features_map
+
     try:
-        generate_interface_dependencies()
+        generate_interface_dependencies(make_runtime_features_dict())
         for component in COMPONENT_DIRECTORY:
             output_dir = os.path.join(output_directory, component)
             if not os.path.exists(output_dir):

@@ -8,6 +8,8 @@ sure network traffic annoations are syntactically and semantically correct and
 all required functions are annotated.
 """
 
+from __future__ import print_function
+
 import os
 import argparse
 import sys

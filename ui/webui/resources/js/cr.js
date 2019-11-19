@@ -200,6 +200,10 @@ var cr = cr || function(global) {
    * @param {PropertyKind=} opt_kind What kind of underlying storage to use.
    * @param {function(*, *):void=} opt_setHook A function to run after the
    *     property is set, but before the propertyChange event is fired.
+   *
+   * TODO(crbug.com/425829): This function makes use of deprecated getter or
+   * setter functions.
+   * @suppress {deprecated}
    */
   function defineProperty(obj, name, opt_kind, opt_setHook) {
     if (typeof obj == 'function') {
@@ -208,11 +212,18 @@ var cr = cr || function(global) {
 
     const kind = /** @type {PropertyKind} */ (opt_kind || PropertyKind.JS);
 
+    // TODO(crbug.com/425829): Remove above suppression once we no longer use
+    // deprecated functions lookupGetter, defineGetter, lookupSetter, and
+    // defineSetter.
+    // eslint-disable-next-line no-restricted-properties
     if (!obj.__lookupGetter__(name)) {
+      // eslint-disable-next-line no-restricted-properties
       obj.__defineGetter__(name, getGetter(name, kind));
     }
 
+    // eslint-disable-next-line no-restricted-properties
     if (!obj.__lookupSetter__(name)) {
+      // eslint-disable-next-line no-restricted-properties
       obj.__defineSetter__(name, getSetter(name, kind, opt_setHook));
     }
   }
@@ -227,19 +238,6 @@ var cr = cr || function(global) {
    */
   function createUid() {
     return uidCounter++;
-  }
-
-  /**
-   * Returns a unique ID for the item. This mutates the item so it needs to be
-   * an object
-   * @param {!Object} item The item to get the unique ID for.
-   * @return {number} The unique ID for the item.
-   */
-  function getUid(item) {
-    if (item.hasOwnProperty('uid')) {
-      return item.uid;
-    }
-    return item.uid = createUid();
   }
 
   /**
@@ -304,28 +302,6 @@ var cr = cr || function(global) {
     ctor.getInstance = function() {
       return ctor.instance_ || (ctor.instance_ = new ctor());
     };
-  }
-
-  /**
-   * Forwards public APIs to private implementations.
-   * @param {Function} ctor Constructor that have private implementations in its
-   *     prototype.
-   * @param {Array<string>} methods List of public method names that have their
-   *     underscored counterparts in constructor's prototype.
-   * @param {string=} opt_target Selector for target node.
-   */
-  function makePublic(ctor, methods, opt_target) {
-    methods.forEach(function(method) {
-      ctor[method] = function() {
-        const target = opt_target ?
-            // Disable document.getElementById restriction since cr.js should
-            // not depend on util.js.
-            // eslint-disable-next-line no-restricted-properties
-            document.getElementById(opt_target) :
-            ctor.getInstance();
-        return target[method + '_'].apply(target, arguments);
-      };
-    });
   }
 
   /**
@@ -443,14 +419,11 @@ var cr = cr || function(global) {
 
   return {
     addSingletonGetter: addSingletonGetter,
-    createUid: createUid,
     define: define,
     defineProperty: defineProperty,
     dispatchPropertyChange: dispatchPropertyChange,
     dispatchSimpleEvent: dispatchSimpleEvent,
     exportPath: exportPath,
-    getUid: getUid,
-    makePublic: makePublic,
     PropertyKind: PropertyKind,
 
     // C++ <-> JS communication related methods.
@@ -459,10 +432,6 @@ var cr = cr || function(global) {
     sendWithPromise: sendWithPromise,
     webUIListenerCallback: webUIListenerCallback,
     webUIResponse: webUIResponse,
-
-    get doc() {
-      return document;
-    },
 
     /** Whether we are using a Mac or not. */
     get isMac() {
@@ -491,7 +460,16 @@ var cr = cr || function(global) {
 
     /** Whether this is on iOS. */
     get isIOS() {
-      return /iPad|iPhone|iPod/.test(navigator.platform);
+      return (
+          /CriOS/.test(navigator.userAgent) ||
+          // TODO(crbug.com/998999): Fix navigator.userAgent such that it
+          // reliable returns a user agent string containing "CriOS" and
+          // the following fallback test can be removed.
+          // iPads are returning "MacIntel" for iOS 13 (devices & simulators).
+          // Chrome on macOS also returns "MacIntel" for navigator.platform,
+          // but navigator.userAgent includes /Safari/.
+          (/iPad|iPhone|iPod|MacIntel/.test(navigator.platform) &&
+           !(/Safari/.test(navigator.userAgent))));
     }
   };
 }(this);

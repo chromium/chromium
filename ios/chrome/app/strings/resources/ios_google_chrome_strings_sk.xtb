@@ -1,39 +1,36 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
-<translation id="1326317727527857210">Ak chcete získať karty z ďalších svojich zariadení, prihláste sa do Chromu.</translation>
+<translation id="1282031177488366470">Pomoc so zlepšovaním funkcií a výkonu Chromu</translation>
+<translation id="1682483655351012182">Synchronizácia údajov Chromu</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1816764564654397850">Upozornenie o ochrane súkromia v prehliadači Google Chrome</translation>
 <translation id="1863312987075920112">Používaním tejto aplikácie vyjadrujete súhlas so <ph name="BEGIN_LINK_TOS" />zmluvnými podmienkami<ph name="END_LINK_TOS" /> a <ph name="BEGIN_LINK_PRIVACY" />upozornením o ochrane súkromia<ph name="END_LINK_PRIVACY" /> prehliadača Chrome.</translation>
-<translation id="1984705450038014246">Synchronizovať údaje Chromu</translation>
 <translation id="2147651015520127414">Chrome overil, že certifikát tohto webu vydal vydavateľ <ph name="ISSUER" />.</translation>
 <translation id="2199719347983604670">Údaje zo synchronizácie Chromu</translation>
-<translation id="2334084861041072223">Copyright <ph name="YEAR" /> Google Inc. Všetky práva vyhradené.</translation>
-<translation id="2342981853652716282">Prihláste sa do Chromu a získajte svoje záložky, heslá a ďalšie nastavenia na všetkých zariadeniach.</translation>
 <translation id="2347208864470321755">Po zapnutí tejto funkcie bude prehliadač Chrome ponúkať preloženie stránok napísaných v inom jazyku pomocou služby Prekladač Google. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="2441696206556358796">Ak chcete ukladať fotky, klepnite na Nastavenia a povoľte Chromu používať fotky</translation>
 <translation id="2576431527583832481">Prehliadač Chrome bol práve vylepšený. K dispozícii je nová verzia.</translation>
 <translation id="257708665678654955">Chcete, aby prehliadač Google Chrome nabudúce ponúkol možnosť prekladu stránok tohto webu v jazyku <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="3030414234702425231">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje Chromu budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>
-<translation id="3148434565183091099">Ak chcete mať záložky na všetkých zariadeniach, prihláste sa do Chromu.</translation>
 <translation id="3148688391461398285">Získajte lepšie prostredie v prehliadači Chrome na základe svojej polohy.</translation>
 <translation id="3167189358072330585">Váš účet nefunguje v prehliadači Google Chrome. Kontaktujte správcu domény alebo sa prihláste pomocou bežného účtu Google.</translation>
 <translation id="3196546062792660320">Vaše účty sú na webe, čím Chrome šetrí váš čas. Účty môžete pridávať alebo odstraňovať v nastaveniach.</translation>
 <translation id="3282568296779691940">Prihlásenie do prehliadača Chrome</translation>
 <translation id="3345341804167540816">Používajte prehliadač Chrome kdekoľvek</translation>
 <translation id="384394811301901750">Google Chrome momentálne nemôže použiť váš fotoaparát</translation>
-<translation id="3870154837782082782">Spoločnosť Google Inc.</translation>
 <translation id="3980220367029651214">Účet na synchronizáciu <ph name="USER_EMAIL1" /> prepínate na účet <ph name="USER_EMAIL2" />. Vaše existujúce údaje prehliadača Chrome spravuje doména <ph name="DOMAIN" />. Touto akciou odstránite údaje z príslušného zariadenia, avšak naďalej zostanú v účte <ph name="USER_EMAIL1" />.</translation>
 <translation id="3988789688219830639">Google Chrome nemá prístup k vašim fotkám ani videám. Prístup povolíte v časti Nastavenia systému iOS &gt; Súkromie &gt; Fotky.</translation>
-<translation id="4099578267706723511">Odosielanie štatistík používania a prehľadu chýb pomôže Googlu zlepšiť Chrome.</translation>
+<translation id="4099578267706723511">Odosielať štatistiky používania a prehľady chýb Googlu a pomáhať tak zlepšovať Chrome</translation>
 <translation id="415767770115540173">Služby Google môžu v prehliadači Chrome vďaka údajom o polohe fungovať lepšie.</translation>
-<translation id="424864128008805179">Odhlásiť sa z prehliadača Chrome?</translation>
-<translation id="447252321002412580">Pomáhať s vylepšovaním funkcií a výkonu Chromu</translation>
+<translation id="424864128008805179">Odhlásiť sa z Chromu?</translation>
+<translation id="4249068189593983585">Tip pre Chrome: ďalšie možnosti karty získate pridržaním tlačidla „Zobraziť karty“ na paneli s nástrojmi, ktorý sa nachádza v dolnej alebo hornej časti obrazovky.</translation>
 <translation id="4523886039239821078">Niektoré doplnky spôsobujú zlyhanie prehliadača Chrome. Odinštalujte ich.</translation>
-<translation id="4615174829807303908">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />. Týmto odstránite údaje prehliadača Chrome z príslušného zariadenia, avšak zostanú naďalej vo vašom účte Google.</translation>
 <translation id="5389212809648216794">Google Chrome nemôže použiť váš fotoaparát, pretože ho práve používa iná aplikácia</translation>
+<translation id="5621912349729388018"><ph name="BEGIN_LINK" />Aktualizované zmluvné podmienky prehliadača Chrome<ph name="END_LINK" /></translation>
 <translation id="5639704535586432836">Otvorte Nastavenia &gt; Súkromie &gt; Fotoaparát &gt; Google Chrome a zapnite fotoaparát.</translation>
 <translation id="5642200033778930880">Google Chrome nemôže použiť váš fotoaparát v režime Rozdelené zobrazenie</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5854621639439811139">Tip pre Chrome: niektoré tlačidlá sa teraz nachádzajú v dolnej časti obrazovky, napríklad Dopredu, Späť a Hľadať.</translation>
 <translation id="6036420186814142909">Prehliadač Google Chrome obsahuje funkcie, ktoré vám pomôžu spravovať objem internetových dát a rýchlosť načítania webových stránok.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -46,14 +43,12 @@
 <translation id="7172660552945675509">Tip: <ph name="BEGIN_LINK" />Presuňte Chrome do doku<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome používa overenie Face ID na zaistenie oprávneného prístupu k heslám.</translation>
 <translation id="7265369419224458312">Priamo tu môžete pristupovať ku kartám, ktoré máte otvorené na počítači. Stačí otvoriť Chrome na počítači, prejsť do ponuky a vybrať možnosť „Prihlásiť sa do prehliadača Chrome…“.</translation>
-<translation id="728488472449859922">Zapnutie čítačky QR prehliadača Google Chrome</translation>
 <translation id="7400722733683201933">O aplikácii Google Chrome</translation>
-<translation id="7437998757836447326">Odhlásenie z prehliadača Chrome</translation>
 <translation id="756809126120519699">Údaje Chromu boli vymazané</translation>
 <translation id="7626032353295482388">Víta vás prehliadač Chrome</translation>
+<translation id="7698568245838009292">Chrome chce použiť fotoaparát</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>
 <translation id="840168496893712993">Niektoré doplnky spôsobujú zlyhanie prehliadača Chrome. Skúste ich odinštalovať.</translation>
 <translation id="8459495907675268833">Vybraté údaje boli odstránené z Chromu a synchronizovaných zariadení. Váš účet Google môže mať na adrese history.google.com ďalšie formy histórie prehliadania, ako napríklad vyhľadávania a aktivity v iných službách Google.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8606668294522778825">Google Chrome vám môže uľahčiť prehliadanie pomocou webových služieb. Vybrané webové služby môžete podľa potreby vypnúť. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
-<translation id="96145293669295453">Tip pre Chrome: ďalšie možnosti kariet získate pridržaním tlačidla Zobraziť karty na paneli s nástrojmi, ktorý sa nachádza v dolnej alebo hornej časti obrazovky.</translation>
 </translationbundle>

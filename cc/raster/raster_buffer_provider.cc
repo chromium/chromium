@@ -45,7 +45,7 @@ bool IsSupportedPlaybackToMemoryFormat(viz::ResourceFormat format) {
     case viz::BGRX_1010102:
     case viz::YVU_420:
     case viz::YUV_420_BIPLANAR:
-    case viz::UYVY_422:
+    case viz::P010:
       return false;
   }
   NOTREACHED();
@@ -72,9 +72,13 @@ void RasterBufferProvider::PlaybackToMemory(
 
   DCHECK(IsSupportedPlaybackToMemoryFormat(format)) << format;
 
+  SkColorType color_type =
+      ResourceFormatToClosestSkColorType(gpu_compositing, format);
+
   // Uses kPremul_SkAlphaType since the result is not known to be opaque.
-  SkImageInfo info =
-      SkImageInfo::MakeN32(size.width(), size.height(), kPremul_SkAlphaType);
+  SkImageInfo info = SkImageInfo::Make(size.width(), size.height(), color_type,
+                                       kPremul_SkAlphaType,
+                                       target_color_space.ToSkColorSpace());
 
   // Use unknown pixel geometry to disable LCD text.
   SkSurfaceProps surface_props(0, kUnknown_SkPixelGeometry);
@@ -100,19 +104,18 @@ void RasterBufferProvider::PlaybackToMemory(
       // invalid content, just crash the renderer and try again.
       // See: http://crbug.com/721744.
       CHECK(surface);
-      raster_source->PlaybackToCanvas(surface->getCanvas(), target_color_space,
-                                      content_size, canvas_bitmap_rect,
-                                      canvas_playback_rect, transform,
-                                      playback_settings);
+      raster_source->PlaybackToCanvas(surface->getCanvas(), content_size,
+                                      canvas_bitmap_rect, canvas_playback_rect,
+                                      transform, playback_settings);
       return;
     }
     case viz::RGBA_4444: {
       sk_sp<SkSurface> surface = SkSurface::MakeRaster(info, &surface_props);
       // TODO(reveman): Improve partial raster support by reducing the size of
       // playback rect passed to PlaybackToCanvas. crbug.com/519070
-      raster_source->PlaybackToCanvas(
-          surface->getCanvas(), target_color_space, content_size,
-          canvas_bitmap_rect, canvas_bitmap_rect, transform, playback_settings);
+      raster_source->PlaybackToCanvas(surface->getCanvas(), content_size,
+                                      canvas_bitmap_rect, canvas_bitmap_rect,
+                                      transform, playback_settings);
 
       TRACE_EVENT0("cc",
                    "RasterBufferProvider::PlaybackToMemory::ConvertRGBA4444");
@@ -141,7 +144,7 @@ void RasterBufferProvider::PlaybackToMemory(
     case viz::BGRX_1010102:
     case viz::YVU_420:
     case viz::YUV_420_BIPLANAR:
-    case viz::UYVY_422:
+    case viz::P010:
       NOTREACHED();
       return;
   }

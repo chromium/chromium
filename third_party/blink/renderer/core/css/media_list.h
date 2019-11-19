@@ -72,18 +72,6 @@ class MediaList final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static MediaList* Create(scoped_refptr<MediaQuerySet> media_queries,
-                           CSSStyleSheet* parent_sheet) {
-    return MakeGarbageCollected<MediaList>(std::move(media_queries),
-                                           parent_sheet);
-  }
-
-  static MediaList* Create(scoped_refptr<MediaQuerySet> media_queries,
-                           CSSRule* parent_rule) {
-    return MakeGarbageCollected<MediaList>(std::move(media_queries),
-                                           parent_rule);
-  }
-
   MediaList(scoped_refptr<MediaQuerySet>, CSSStyleSheet* parent_sheet);
   MediaList(scoped_refptr<MediaQuerySet>, CSSRule* parent_rule);
 

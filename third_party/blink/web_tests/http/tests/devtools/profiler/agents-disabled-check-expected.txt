@@ -3,19 +3,19 @@ Test that if a profiler is working all the agents are disabled.
 --> SDK.targetManager.suspendAllTargets();
 frontend: {"id":<number>,"method":"Debugger.disable"}
 frontend: {"id":<number>,"method":"Debugger.setAsyncCallStackDepth","params":{"maxDepth":0}}
-frontend: {"id":<number>,"method":"Overlay.setPausedInDebuggerMessage"}
 frontend: {"id":<number>,"method":"DOM.disable"}
 frontend: {"id":<number>,"method":"CSS.disable"}
-frontend: {"id":<number>,"method":"Overlay.setSuspended","params":{"suspended":true}}
+frontend: {"id":<number>,"method":"Overlay.disable"}
 frontend: {"id":<number>,"method":"Target.setAutoAttach","params":{"autoAttach":true,"waitForDebuggerOnStart":false,"flatten":true}}
 
 --> SDK.targetManager.resumeAllTargets();
-frontend: {"id":<number>,"method":"Debugger.enable"}
+frontend: {"id":<number>,"method":"Debugger.enable","params":{"maxScriptsCacheSize":100000000}}
 frontend: {"id":<number>,"method":"Debugger.setPauseOnExceptions","params":{"state":"none"}}
 frontend: {"id":<number>,"method":"Debugger.setAsyncCallStackDepth","params":{"maxDepth":32}}
 frontend: {"id":<number>,"method":"DOM.enable"}
 frontend: {"id":<number>,"method":"CSS.enable"}
-frontend: {"id":<number>,"method":"Overlay.setSuspended","params":{"suspended":false}}
+frontend: {"id":<number>,"method":"Overlay.enable"}
+frontend: {"id":<number>,"method":"Overlay.setShowViewportSizeOnResize","params":{"show":true}}
 frontend: {"id":<number>,"method":"Target.setAutoAttach","params":{"autoAttach":true,"waitForDebuggerOnStart":true,"flatten":true}}
 
 --> done

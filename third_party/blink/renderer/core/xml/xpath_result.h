@@ -59,11 +59,6 @@ class XPathResult final : public ScriptWrappable {
     kFirstOrderedNodeType = 9
   };
 
-  static XPathResult* Create(xpath::EvaluationContext& context,
-                             const xpath::Value& value) {
-    return MakeGarbageCollected<XPathResult>(context, value);
-  }
-
   XPathResult(xpath::EvaluationContext&, const xpath::Value&);
 
   void ConvertTo(uint16_t type, ExceptionState&);

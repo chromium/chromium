@@ -1,0 +1,24 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package games;
+
+import "game_image.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message Game {
+  // URL at which the Web game can be played.
+  string url = 1;
+
+  string title = 2;
+
+  reserved 5;
+
+  int32 id = 3;
+
+  repeated GameImage images = 4;
+}

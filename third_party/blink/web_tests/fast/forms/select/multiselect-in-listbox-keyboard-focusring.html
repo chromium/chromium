@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<body>
+
+<select id="multiselect" multiple="multiple">
+    <option value="option 1">Option 1</option>
+    <option value="option 2">Option 2</option>
+    <option value="option 3">Option 3</option>
+</select>
+
+<script>
+var multiselect = document.getElementById('multiselect');
+multiselect.focus();
+
+var isMacOSX = navigator.userAgent.indexOf("Mac") != -1;
+var ctrlKey  = isMacOSX ? "metaKey" : "ctrlKey";
+
+if (window.eventSender) {
+    eventSender.keyDown("ArrowDown");
+    eventSender.keyDown("ArrowDown", ctrlKey);
+    eventSender.keyDown("ArrowDown", ctrlKey);
+}
+</script>
+</body>
+</html>

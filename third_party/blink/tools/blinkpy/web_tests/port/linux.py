@@ -110,13 +110,15 @@ class LinuxPort(base.Port):
 
     def setup_test_run(self):
         super(LinuxPort, self).setup_test_run()
-        if not self._start_xvfb():
-            return SYS_DEPS_EXIT_STATUS
+        if self.get_option('use_xvfb'):
+            if not self._start_xvfb():
+                return SYS_DEPS_EXIT_STATUS
         self._setup_dummy_home_dir()
 
     def clean_up_test_run(self):
         super(LinuxPort, self).clean_up_test_run()
-        self._stop_xvfb(save_logs=False)
+        if self.get_option('use_xvfb'):
+            self._stop_xvfb(save_logs=False)
         self._clean_up_dummy_home_dir()
 
     #

@@ -103,42 +103,6 @@
       ]
     },
     {
-      "id": 12,
-      "description": "Drivers older than 2009-01 on Windows are possibly unreliable",
-      "cr_bugs": [72979, 89802, 315205],
-      "os": {
-        "type": "win"
-      },
-      "driver_date": {
-        "op": "<",
-        "value": "2009.1"
-      },
-      "exceptions": [
-        {
-          "vendor_id": "0x8086",
-          "device_id": ["0x29a2"],
-          "driver_version": {
-            "op": ">=",
-            "value": "7.15.10.1624"
-          }
-        },
-        {
-          "vendor_id": "0x1414",
-          "device_id": ["0x02c1"]
-        },
-        {
-          "driver_vendor": "swiftshader"
-        },
-        {
-          "vendor_id": "0xffff",
-          "device_id": ["0xfffe"]
-        }
-      ],
-      "features": [
-        "all"
-      ]
-    },
-    {
       "id": 17,
       "description": "Older Intel mesa drivers are crash-prone",
       "cr_bugs": [76703, 164555, 225200, 340886],
@@ -287,7 +251,6 @@
       },
       "vendor_id": "0x10de",
       "gl_vendor": "(?i)nouveau.*",
-      "driver_vendor": "Mesa",
       "features": [
         "all"
       ]
@@ -448,8 +411,9 @@
       },
       "vendor_id": "0x10de",
       "driver_version": {
+        "comment": "INF_version: 8.15.11.8593; date: 05/14/2009",
         "op": "=",
-        "value": "185.93"
+        "value": "8.15.11.8593"
       },
       "features": [
         "accelerated_video_decode"
@@ -499,8 +463,9 @@
       },
       "vendor_id": "0x10de",
       "driver_version": {
+        "comment": "INF_version: 8.17.11.9621; date: 01/11/2010",
         "op": "=",
-        "value": "196.21"
+        "value": "8.17.11.9621"
       },
       "features": [
         "flash_stage3d_baseline"
@@ -515,8 +480,9 @@
       },
       "vendor_id": "0x10de",
       "driver_version": {
+        "comment": "INF_version: 7.15.11.8267; date: 05/12/2009",
         "op": "=",
-        "value": "182.67"
+        "value": "7.15.11.8267"
       },
       "features": [
         "flash_stage3d_baseline"
@@ -531,6 +497,7 @@
       },
       "vendor_id": "0x8086",
       "driver_version": {
+        "comment": "INF_version: 8.15.10.2021; date: 12/14/2009",
         "op": "<",
         "value": "8.15.10.2021"
       },
@@ -558,10 +525,9 @@
       "os": {
         "type": "win"
       },
-      "driver_vendor": "Microsoft",
+      "vendor_id": "0x1414",
       "exceptions": [
         {
-          "vendor_id": "0x1414",
           "device_id": ["0x02c1"]
         }
       ],
@@ -598,6 +564,7 @@
       },
       "vendor_id": "0x8086",
       "driver_version": {
+        "comment": "INF_version: 8.15.10.2702; date: 03/11/2013",
         "op": "<=",
         "value": "8.15.10.2702"
       },
@@ -642,6 +609,7 @@
       },
       "vendor_id": "0x8086",
       "driver_version": {
+        "comment": "INF_version: 10.18.10.3308; date: 09/16/2013",
         "op": "=",
         "value": "10.18.10.3308"
       },
@@ -658,8 +626,9 @@
       },
       "vendor_id": "0x1002",
       "driver_version": {
+        "comment": "INF_version: 13.152.1.8000; date: 10/08/2013",
         "op": "=",
-        "value": "13.152.1.8000"
+        "value": "8.17.10.1230"
       },
       "features": [
         "accelerated_video_decode"
@@ -674,9 +643,10 @@
       },
       "vendor_id": "0x1002",
       "driver_version": {
+        "comment": "INF_version: 8.810.4.5000, 8.970.100.1100; date: 4/7/2011, 04/29/2013",
         "op": "between",
-        "value": "8.810.4.5000",
-        "value2": "8.970.100.1100"
+        "value": "8.17.10.1060",
+        "value2": "8.17.10.1129"
       },
       "features": [
         "accelerated_video_decode"
@@ -691,9 +661,10 @@
       },
       "vendor_id": "0x10de",
       "driver_version": {
+        "comment": "INF_version: 8.17.12.5729, 8.17.12.8026; date: 05/22/2010, 08/03/2011",
         "op": "between",
-        "value": "257.29",
-        "value2": "280.26"
+        "value": "8.17.12.5729",
+        "value2": "8.17.12.8026"
       },
       "features": [
         "accelerated_video_decode"
@@ -708,9 +679,10 @@
       },
       "vendor_id": "0x10de",
       "driver_version": {
+        "comment": "INF_version: 9.18.13.0783, 9.18.13.1090; date: 1/31/2013, 12/29/2012",
         "op": "between",
-        "value": "307.83",
-        "value2": "310.90"
+        "value": "9.18.13.0783",
+        "value2": "9.18.13.1090"
       },
       "features": [
         "accelerated_video_decode"
@@ -735,7 +707,10 @@
       "os": {
         "type": "linux"
       },
-      "direct_rendering": false,
+      "direct_rendering_version": {
+        "op": "<",
+        "value": "2"
+      },
       "features": [
         "all"
       ]
@@ -1178,8 +1153,9 @@
             "value": "5.0"
           },
           "driver_version": {
+            "comment": "INF_version: 15.20.1006.0001; date: 02/20/2015",
             "op": ">=",
-            "value": "15.201"
+            "value": "8.17.10.1366"
           },
           "gl_renderer": ".*Direct3D11.*"
         },
@@ -1197,14 +1173,16 @@
       },
       "vendor_id": "0x1002",
       "driver_version": {
+        "comment": "INF_version: 16.200.1035.1001; date: 07/05/2016",
         "op": ">",
-        "value": "16.200.1035.1001"
+        "value": "8.17.10.1460"
       },
       "exceptions": [
         {
           "driver_version": {
+            "comment": "INF_version: 21.19.384.0; date: 12/04/2016",
             "op": ">=",
-            "value": "21.19.384.0"
+            "value": "8.17.10.1507"
           }
         }
       ],
@@ -1364,8 +1342,8 @@
     },
     {
       "id": 137,
-      "description": "GPU rasterization on CrOS is blacklisted on anything but Intel, Imagination, or AMD GPUs for now.",
-      "cr_bugs": [684094],
+      "description": "GPU rasterization on CrOS is blacklisted on anything but Intel, Mali T8/G, Imagination, Freedreno, or AMD GPU/drivers for now.",
+      "cr_bugs": [684094, 996858, 1020500],
       "os": {
         "type": "chromeos"
       },
@@ -1374,6 +1352,11 @@
       ],
       "exceptions": [
         { "vendor_id": "0x8086" },
+        { "gl_vendor": "freedreno" },
+        { "gl_renderer": "Mali-T8.*",
+          "subpixel_font_rendering": "unsupported"},
+        { "gl_renderer": "Mali-G.*",
+          "subpixel_font_rendering": "unsupported"},
         { "gl_renderer": "PowerVR.*" },
         { "vendor_id": "0x1002" }
       ]
@@ -1388,8 +1371,12 @@
       "vendor_id": "0x1002",
       "driver_version": {
         "op": "between",
-        "value": "15.301",
-        "value2": "15.302"
+
+        "comment": "INF_version: 15.301.1101.0000; date: 12/01/2015",
+        "value": "8.17.10.1429",
+
+        "comment2": "INF_version: 15.301.2601.1002; date: 07/08/2016",
+        "value2": "8.17.10.1433"
       },
       "features": [
         "gpu_rasterization"
@@ -1428,8 +1415,9 @@
       },
       "vendor_id": "0x10de",
       "driver_version": {
+        "comment": "INF_version: 8.17.12.6973",
         "op": "<=",
-        "value": "269.73"
+        "value": "8.17.12.6973"
       },
       "features": [
         "accelerated_webgl2"
@@ -1455,9 +1443,9 @@
         "type": "win"
       },
       "vendor_id": "0x1002",
-      "driver_date": {
+      "driver_version": {
         "op": "<",
-        "value": "2011.1"
+        "value": "8.17.10.1070"
       },
       "features": [
         "accelerated_webgl2"
@@ -1472,8 +1460,9 @@
       },
       "vendor_id": "0x8086",
       "driver_version": {
+        "comment": "INF_version: 8.16.0.0",
         "op": "<",
-        "value": "8.16"
+        "value": "8.16.0.0"
       },
       "features": [
         "accelerated_webgl2"
@@ -1490,9 +1479,9 @@
           "value": "10"
         }
       },
-      "driver_date": {
+      "driver_version": {
         "op": "<",
-        "value": "2016.6"
+        "value": "20.19.0.32837"
       },
       "multi_gpu_style": "amd_switchable",
       "features": [
@@ -1645,10 +1634,10 @@
       "vendor_id": "0x8086",
       "gpu_series": [
         "intel_sandybridge",
-        "intel_valleyview",
+        "intel_baytrail",
         "intel_ivybridge",
         "intel_haswell",
-        "intel_cherryview",
+        "intel_cherrytrail",
         "intel_broadwell",
         "intel_apollolake",
         "intel_skylake",
@@ -1730,6 +1719,59 @@
       },
       "features": [
         "all"
+      ]
+    },
+    {
+      "id": 162,
+      "cr_bugs": [963000],
+      "description": "Metal is very crashy on macOS 10.12",
+      "os": {
+        "type": "macosx",
+        "version": {
+          "op": "=",
+          "value": "10.12"
+        }
+      },
+      "features": [
+        "metal"
+      ]
+    },
+    {
+      "id": 163,
+      "description": "Intel drivers older than 2010 on Windows are possibly unreliable",
+      "cr_bugs": [72979, 89802, 315205, 977432],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "op": "<",
+        "value": "8.15.10.2262"
+      },
+      "features": [
+        "accelerated_webgl",
+        "flash3d",
+        "flash_stage3d",
+        "accelerated_2d_canvas"
+      ]
+    },
+    {
+      "id": 164,
+      "description": "NVidia drivers older than 2010 on Windows are possibly unreliable",
+      "cr_bugs": [72979, 89802, 315205, 977432],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x10de",
+      "driver_version": {
+        "op": "<",
+        "value": "8.17.11.9621"
+      },
+      "features": [
+        "accelerated_webgl",
+        "flash3d",
+        "flash_stage3d",
+        "accelerated_2d_canvas"
       ]
     }
   ]

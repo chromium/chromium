@@ -1,0 +1,35 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":os_powerwash_dialog",
+    ":os_reset_browser_proxy",
+    ":os_reset_page",
+  ]
+}
+
+js_library("os_powerwash_dialog") {
+  deps = [
+    ":os_reset_browser_proxy",
+    "../..:lifetime_browser_proxy",
+  ]
+}
+
+js_library("os_reset_page") {
+  deps = [
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink",
+  ]
+}
+
+js_library("os_reset_browser_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}

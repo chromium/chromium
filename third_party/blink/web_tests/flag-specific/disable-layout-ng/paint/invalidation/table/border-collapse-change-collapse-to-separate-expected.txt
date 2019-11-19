@@ -1,0 +1,28 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [8, 8, 212, 108],
+          "reason": "disappeared"
+        },
+        {
+          "object": "LayoutTableCell TD",
+          "rect": [118, 10, 108, 108],
+          "reason": "appeared"
+        },
+        {
+          "object": "LayoutTableCell TD",
+          "rect": [10, 10, 106, 108],
+          "reason": "appeared"
+        }
+      ]
+    }
+  ]
+}
+

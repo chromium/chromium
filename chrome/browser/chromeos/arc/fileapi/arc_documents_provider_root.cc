@@ -16,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_util.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/mime_util.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -74,11 +75,16 @@ const ArcDocumentsProviderRoot::WatcherData
 ArcDocumentsProviderRoot::ArcDocumentsProviderRoot(
     ArcFileSystemOperationRunner* runner,
     const std::string& authority,
-    const std::string& root_document_id)
+    const std::string& root_document_id,
+    const std::string& root_id,
+    bool read_only,
+    const std::vector<std::string>& mime_types)
     : runner_(runner),
       authority_(authority),
       root_document_id_(root_document_id),
-      weak_ptr_factory_(this) {
+      root_id_(root_id),
+      read_only_(read_only),
+      mime_types_(mime_types) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   runner_->AddObserver(this);
 }
@@ -118,24 +124,78 @@ void ArcDocumentsProviderRoot::GetFileInfo(const base::FilePath& path,
 
   ResolveToDocumentId(
       parent,
-      base::Bind(&ArcDocumentsProviderRoot::GetFileInfoWithParentDocumentId,
-                 weak_ptr_factory_.GetWeakPtr(), base::Passed(&callback),
-                 basename));
+      base::BindOnce(&ArcDocumentsProviderRoot::GetFileInfoWithParentDocumentId,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     basename));
 }
 
 void ArcDocumentsProviderRoot::ReadDirectory(const base::FilePath& path,
                                              ReadDirectoryCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ResolveToDocumentId(
-      path, base::Bind(&ArcDocumentsProviderRoot::ReadDirectoryWithDocumentId,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       base::Passed(std::move(callback))));
+      path,
+      base::BindOnce(&ArcDocumentsProviderRoot::ReadDirectoryWithDocumentId,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcDocumentsProviderRoot::DeleteFile(const base::FilePath& path,
+                                          StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  ResolveToDocumentId(
+      path,
+      base::BindOnce(&ArcDocumentsProviderRoot::DeleteFileWithDocumentId,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcDocumentsProviderRoot::CreateFile(const base::FilePath& path,
+                                          StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  ResolveToDocumentId(
+      path, base::BindOnce(
+                &ArcDocumentsProviderRoot::CreateFileAfterConflictCheck,
+                weak_ptr_factory_.GetWeakPtr(), std::move(callback), path));
+}
+
+void ArcDocumentsProviderRoot::CreateDirectory(const base::FilePath& path,
+                                               StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  ResolveToDocumentId(
+      path, base::BindOnce(
+                &ArcDocumentsProviderRoot::CreateDirectoryAfterConflictCheck,
+                weak_ptr_factory_.GetWeakPtr(), std::move(callback), path));
+}
+
+void ArcDocumentsProviderRoot::CopyFileLocal(const base::FilePath& src_path,
+                                             const base::FilePath& dest_path,
+                                             StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (src_path == dest_path) {
+    std::move(callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
+    return;
+  }
+  ResolveToDocumentId(
+      src_path,
+      base::BindOnce(&ArcDocumentsProviderRoot::CopyFileWithSourceDocumentId,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     dest_path, src_path.BaseName().value()));
+}
+
+void ArcDocumentsProviderRoot::MoveFileLocal(const base::FilePath& src_path,
+                                             const base::FilePath& dest_path,
+                                             StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (src_path.DirName() == dest_path.DirName()) {
+    RenameFileInternal(src_path, dest_path.BaseName().value(),
+                       std::move(callback));
+  } else {
+    MoveFileInternal(src_path, dest_path, std::move(callback));
+  }
 }
 
 void ArcDocumentsProviderRoot::AddWatcher(
     const base::FilePath& path,
-    const WatcherCallback& watcher_callback,
-    const StatusCallback& callback) {
+    const WatcherNotificationCallback& watcher_callback,
+    const WatcherStatusCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (path_to_watcher_data_.count(path)) {
     callback.Run(base::File::FILE_ERROR_FAILED);
@@ -157,8 +217,9 @@ void ArcDocumentsProviderRoot::AddWatcher(
   callback.Run(base::File::FILE_OK);
 }
 
-void ArcDocumentsProviderRoot::RemoveWatcher(const base::FilePath& path,
-                                             const StatusCallback& callback) {
+void ArcDocumentsProviderRoot::RemoveWatcher(
+    const base::FilePath& path,
+    const WatcherStatusCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto iter = path_to_watcher_data_.find(path);
   if (iter == path_to_watcher_data_.end()) {
@@ -180,12 +241,32 @@ void ArcDocumentsProviderRoot::RemoveWatcher(const base::FilePath& path,
 
 void ArcDocumentsProviderRoot::ResolveToContentUrl(
     const base::FilePath& path,
-    const ResolveToContentUrlCallback& callback) {
+    ResolveToContentUrlCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ResolveToDocumentId(
+      path, base::BindOnce(
+                &ArcDocumentsProviderRoot::ResolveToContentUrlWithDocumentId,
+                weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcDocumentsProviderRoot::GetMetadata(const base::FilePath& path,
+                                           GetMetadataCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (path.IsAbsolute()) {
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND, {});
+    return;
+  }
+  if (read_only_) {
+    // We can return default metadata for read-only roots without Mojo calls,
+    // since all properties on ExtraFileMetadata are about write capabilities.
+    std::move(callback).Run(base::File::FILE_OK, {});
+    return;
+  }
+  ResolveToDocumentId(
       path,
-      base::Bind(&ArcDocumentsProviderRoot::ResolveToContentUrlWithDocumentId,
-                 weak_ptr_factory_.GetWeakPtr(), callback));
+      base::BindOnce(&ArcDocumentsProviderRoot::GetMetadataWithDocumentId,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ArcDocumentsProviderRoot::SetDirectoryCacheExpireSoonForTesting() {
@@ -212,9 +293,9 @@ void ArcDocumentsProviderRoot::GetFileInfoWithParentDocumentId(
   }
   ReadDirectoryInternal(
       parent_document_id, false /* force_refresh */,
-      base::Bind(&ArcDocumentsProviderRoot::GetFileInfoWithNameToDocumentMap,
-                 weak_ptr_factory_.GetWeakPtr(), base::Passed(&callback),
-                 basename));
+      base::BindOnce(
+          &ArcDocumentsProviderRoot::GetFileInfoWithNameToDocumentMap,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback), basename));
 }
 
 void ArcDocumentsProviderRoot::GetFileInfoWithNameToDocumentMap(
@@ -258,9 +339,9 @@ void ArcDocumentsProviderRoot::ReadDirectoryWithDocumentId(
   }
   ReadDirectoryInternal(
       document_id, true /* force_refresh */,
-      base::Bind(&ArcDocumentsProviderRoot::ReadDirectoryWithNameToDocumentMap,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 base::Passed(std::move(callback))));
+      base::BindOnce(
+          &ArcDocumentsProviderRoot::ReadDirectoryWithNameToDocumentMap,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ArcDocumentsProviderRoot::ReadDirectoryWithNameToDocumentMap(
@@ -285,10 +366,299 @@ void ArcDocumentsProviderRoot::ReadDirectoryWithNameToDocumentMap(
   std::move(callback).Run(base::File::FILE_OK, std::move(files));
 }
 
+void ArcDocumentsProviderRoot::DeleteFileWithDocumentId(
+    StatusCallback callback,
+    const std::string& document_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (document_id.empty()) {
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
+    return;
+  }
+
+  runner_->DeleteDocument(
+      authority_, document_id,
+      base::BindOnce(&ArcDocumentsProviderRoot::OnFileDeleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcDocumentsProviderRoot::OnFileDeleted(StatusCallback callback,
+                                             bool success) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  std::move(callback).Run(success ? base::File::FILE_OK
+                                  : base::File::FILE_ERROR_FAILED);
+}
+
+void ArcDocumentsProviderRoot::CreateFileAfterConflictCheck(
+    StatusCallback callback,
+    const base::FilePath& path,
+    const std::string& document_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!document_id.empty()) {
+    std::move(callback).Run(base::File::FILE_ERROR_EXISTS);
+    return;
+  }
+  ResolveToDocumentId(
+      path.DirName(),
+      base::BindOnce(&ArcDocumentsProviderRoot::CreateFileWithParentDocumentId,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     path.BaseName()));
+}
+
+void ArcDocumentsProviderRoot::CreateFileWithParentDocumentId(
+    StatusCallback callback,
+    const base::FilePath& basename,
+    const std::string& parent_document_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (parent_document_id.empty()) {
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
+    return;
+  }
+  std::string mime_type;
+  if (!net::GetMimeTypeFromFile(basename, &mime_type))
+    mime_type = "application/octet-stream";
+  runner_->CreateDocument(
+      authority_, parent_document_id, mime_type, basename.value(),
+      base::BindOnce(&ArcDocumentsProviderRoot::OnFileCreated,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     parent_document_id));
+}
+
+void ArcDocumentsProviderRoot::CreateDirectoryAfterConflictCheck(
+    StatusCallback callback,
+    const base::FilePath& path,
+    const std::string& document_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!document_id.empty()) {
+    std::move(callback).Run(base::File::FILE_ERROR_EXISTS);
+    return;
+  }
+  ResolveToDocumentId(
+      path.DirName(),
+      base::BindOnce(
+          &ArcDocumentsProviderRoot::CreateDirectoryWithParentDocumentId,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          path.BaseName()));
+}
+
+void ArcDocumentsProviderRoot::CreateDirectoryWithParentDocumentId(
+    StatusCallback callback,
+    const base::FilePath& basename,
+    const std::string& parent_document_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (parent_document_id.empty()) {
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
+    return;
+  }
+  runner_->CreateDocument(
+      authority_, parent_document_id, kAndroidDirectoryMimeType,
+      basename.value(),
+      base::BindOnce(&ArcDocumentsProviderRoot::OnFileCreated,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     parent_document_id));
+}
+
+void ArcDocumentsProviderRoot::OnFileCreated(
+    StatusCallback callback,
+    const std::string& parent_document_id,
+    mojom::DocumentPtr document) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (document.is_null()) {
+    std::move(callback).Run(base::File::FILE_ERROR_FAILED);
+    return;
+  }
+  // Invalidate directory cache as the directory content is updated.
+  ClearDirectoryCache(parent_document_id);
+  std::move(callback).Run(base::File::FILE_OK);
+}
+
+void ArcDocumentsProviderRoot::RenameFileInternal(
+    const base::FilePath& path,
+    const std::string& display_name,
+    StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  ResolveToDocumentId(
+      path, base::BindOnce(&ArcDocumentsProviderRoot::RenameFileWithDocumentId,
+                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                           display_name));
+}
+
+void ArcDocumentsProviderRoot::RenameFileWithDocumentId(
+    StatusCallback callback,
+    const std::string& display_name,
+    const std::string& document_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (document_id.empty()) {
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
+    return;
+  }
+  // TODO(fukino): Consider updating MIME type of the document based when the
+  // file extension is changed.
+  runner_->RenameDocument(
+      authority_, document_id, display_name,
+      base::BindOnce(&ArcDocumentsProviderRoot::OnFileRenamed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcDocumentsProviderRoot::OnFileRenamed(StatusCallback callback,
+                                             mojom::DocumentPtr document) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (document.is_null()) {
+    std::move(callback).Run(base::File::FILE_ERROR_FAILED);
+    return;
+  }
+  std::move(callback).Run(base::File::FILE_OK);
+}
+
+void ArcDocumentsProviderRoot::CopyFileWithSourceDocumentId(
+    StatusCallback callback,
+    const base::FilePath& target_path,
+    const std::string& source_display_name,
+    const std::string& source_document_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (source_document_id.empty()) {
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
+    return;
+  }
+  const std::string target_display_name = target_path.BaseName().value();
+  const std::string target_display_name_to_rename =
+      source_display_name == target_display_name ? "" : target_display_name;
+  ResolveToDocumentId(
+      target_path.DirName(),
+      base::BindOnce(
+          &ArcDocumentsProviderRoot::CopyFileWithTargetParentDocumentId,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          source_document_id, target_display_name_to_rename));
+}
+
+void ArcDocumentsProviderRoot::CopyFileWithTargetParentDocumentId(
+    StatusCallback callback,
+    const std::string& source_document_id,
+    const std::string& target_display_name_to_rename,
+    const std::string& target_parent_document_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (target_parent_document_id.empty()) {
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
+    return;
+  }
+  runner_->CopyDocument(
+      authority_, source_document_id, target_parent_document_id,
+      base::BindOnce(&ArcDocumentsProviderRoot::OnFileCopied,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     target_display_name_to_rename));
+}
+
+void ArcDocumentsProviderRoot::OnFileCopied(
+    StatusCallback callback,
+    const std::string& target_display_name_to_rename,
+    mojom::DocumentPtr document) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (document.is_null()) {
+    std::move(callback).Run(base::File::FILE_ERROR_FAILED);
+    return;
+  }
+  if (target_display_name_to_rename.empty()) {
+    std::move(callback).Run(base::File::FILE_OK);
+    return;
+  }
+  RenameFileWithDocumentId(std::move(callback), target_display_name_to_rename,
+                           document->document_id);
+}
+
+void ArcDocumentsProviderRoot::MoveFileInternal(
+    const base::FilePath& source_path,
+    const base::FilePath& target_path,
+    StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  ResolveToDocumentId(
+      source_path,
+      base::BindOnce(&ArcDocumentsProviderRoot::MoveFileWithSourceDocumentId,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     source_path.DirName(), target_path,
+                     source_path.BaseName().value()));
+}
+
+void ArcDocumentsProviderRoot::MoveFileWithSourceDocumentId(
+    StatusCallback callback,
+    const base::FilePath& source_parent_path,
+    const base::FilePath& target_path,
+    const std::string& source_display_name,
+    const std::string& source_document_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (source_document_id.empty()) {
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
+    return;
+  }
+  ResolveToDocumentId(
+      source_parent_path,
+      base::BindOnce(
+          &ArcDocumentsProviderRoot::MoveFileWithSourceParentDocumentId,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          source_document_id, target_path, source_display_name));
+}
+
+void ArcDocumentsProviderRoot::MoveFileWithSourceParentDocumentId(
+    StatusCallback callback,
+    const std::string& source_document_id,
+    const base::FilePath& target_path,
+    const std::string& source_display_name,
+    const std::string& source_parent_document_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (source_parent_document_id.empty()) {
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
+    return;
+  }
+  const std::string target_display_name = target_path.BaseName().value();
+  const std::string target_display_name_to_rename =
+      source_display_name == target_display_name ? "" : target_display_name;
+  ResolveToDocumentId(
+      target_path.DirName(),
+      base::BindOnce(
+          &ArcDocumentsProviderRoot::MoveFileWithTargetParentDocumentId,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          source_document_id, source_parent_document_id,
+          target_display_name_to_rename));
+}
+
+void ArcDocumentsProviderRoot::MoveFileWithTargetParentDocumentId(
+    StatusCallback callback,
+    const std::string& source_document_id,
+    const std::string& source_parent_document_id,
+    const std::string& target_display_name_to_rename,
+    const std::string& target_parent_document_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (target_parent_document_id.empty()) {
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
+    return;
+  }
+  runner_->MoveDocument(
+      authority_, source_document_id, source_parent_document_id,
+      target_parent_document_id,
+      base::BindOnce(&ArcDocumentsProviderRoot::OnFileMoved,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     target_display_name_to_rename));
+}
+
+void ArcDocumentsProviderRoot::OnFileMoved(
+    StatusCallback callback,
+    const std::string& target_display_name_to_rename,
+    mojom::DocumentPtr document) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (document.is_null()) {
+    std::move(callback).Run(base::File::FILE_ERROR_FAILED);
+    return;
+  }
+  if (target_display_name_to_rename.empty()) {
+    std::move(callback).Run(base::File::FILE_OK);
+    return;
+  }
+  RenameFileWithDocumentId(std::move(callback), target_display_name_to_rename,
+                           document->document_id);
+}
+
 void ArcDocumentsProviderRoot::AddWatcherWithDocumentId(
     const base::FilePath& path,
     uint64_t watcher_request_id,
-    const WatcherCallback& watcher_callback,
+    const WatcherNotificationCallback& watcher_callback,
     const std::string& document_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -331,8 +701,9 @@ void ArcDocumentsProviderRoot::OnWatcherAddedButRemoved(bool success) {
   // Ignore |success|.
 }
 
-void ArcDocumentsProviderRoot::OnWatcherRemoved(const StatusCallback& callback,
-                                                bool success) {
+void ArcDocumentsProviderRoot::OnWatcherRemoved(
+    const WatcherStatusCallback& callback,
+    bool success) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   callback.Run(success ? base::File::FILE_OK : base::File::FILE_ERROR_FAILED);
 }
@@ -347,68 +718,98 @@ bool ArcDocumentsProviderRoot::IsWatcherInflightRequestCanceled(
 }
 
 void ArcDocumentsProviderRoot::ResolveToContentUrlWithDocumentId(
-    const ResolveToContentUrlCallback& callback,
+    ResolveToContentUrlCallback callback,
     const std::string& document_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (document_id.empty()) {
-    callback.Run(GURL());
+    std::move(callback).Run(GURL());
     return;
   }
-  callback.Run(BuildDocumentUrl(authority_, document_id));
+  std::move(callback).Run(BuildDocumentUrl(authority_, document_id));
+}
+
+void ArcDocumentsProviderRoot::GetMetadataWithDocumentId(
+    GetMetadataCallback callback,
+    const std::string& document_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (document_id.empty()) {
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND, {});
+    return;
+  }
+  runner_->GetDocument(
+      authority_, document_id,
+      base::BindOnce(&ArcDocumentsProviderRoot::OnMetadataGotten,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcDocumentsProviderRoot::OnMetadataGotten(GetMetadataCallback callback,
+                                                mojom::DocumentPtr document) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (document.is_null()) {
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND, {});
+    return;
+  }
+  ExtraFileMetadata metadata;
+  metadata.supports_delete = document->supports_delete;
+  metadata.supports_rename = document->supports_rename;
+  metadata.dir_supports_create = document->dir_supports_create;
+  std::move(callback).Run(base::File::FILE_OK, metadata);
 }
 
 void ArcDocumentsProviderRoot::ResolveToDocumentId(
     const base::FilePath& path,
-    const ResolveToDocumentIdCallback& callback) {
+    ResolveToDocumentIdCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<base::FilePath::StringType> components;
   path.GetComponents(&components);
-  ResolveToDocumentIdRecursively(root_document_id_, components, callback);
+  ResolveToDocumentIdRecursively(root_document_id_, components,
+                                 std::move(callback));
 }
 
 void ArcDocumentsProviderRoot::ResolveToDocumentIdRecursively(
     const std::string& document_id,
     const std::vector<base::FilePath::StringType>& components,
-    const ResolveToDocumentIdCallback& callback) {
+    ResolveToDocumentIdCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (components.empty()) {
-    callback.Run(document_id);
+    std::move(callback).Run(document_id);
     return;
   }
   ReadDirectoryInternal(
       document_id, false /* force_refresh */,
-      base::Bind(&ArcDocumentsProviderRoot::
-                     ResolveToDocumentIdRecursivelyWithNameToDocumentMap,
-                 weak_ptr_factory_.GetWeakPtr(), components, callback));
+      base::BindOnce(&ArcDocumentsProviderRoot::
+                         ResolveToDocumentIdRecursivelyWithNameToDocumentMap,
+                     weak_ptr_factory_.GetWeakPtr(), components,
+                     std::move(callback)));
 }
 
 void ArcDocumentsProviderRoot::
     ResolveToDocumentIdRecursivelyWithNameToDocumentMap(
         const std::vector<base::FilePath::StringType>& components,
-        const ResolveToDocumentIdCallback& callback,
+        ResolveToDocumentIdCallback callback,
         base::File::Error error,
         const NameToDocumentMap& mapping) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!components.empty());
   if (error != base::File::FILE_OK) {
-    callback.Run(std::string());
+    std::move(callback).Run(std::string());
     return;
   }
   auto iter = mapping.find(components[0]);
   if (iter == mapping.end()) {
-    callback.Run(std::string());
+    std::move(callback).Run(std::string());
     return;
   }
   ResolveToDocumentIdRecursively(iter->second->document_id,
                                  std::vector<base::FilePath::StringType>(
                                      components.begin() + 1, components.end()),
-                                 callback);
+                                 std::move(callback));
 }
 
 void ArcDocumentsProviderRoot::ReadDirectoryInternal(
     const std::string& document_id,
     bool force_refresh,
-    const ReadDirectoryInternalCallback& callback) {
+    ReadDirectoryInternalCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Use cache if possible. Note that we do not invalidate it immediately
@@ -416,14 +817,14 @@ void ArcDocumentsProviderRoot::ReadDirectoryInternal(
   if (!force_refresh) {
     auto iter = directory_cache_.find(document_id);
     if (iter != directory_cache_.end()) {
-      callback.Run(base::File::FILE_OK, iter->second.mapping);
+      std::move(callback).Run(base::File::FILE_OK, iter->second.mapping);
       return;
     }
   }
 
   auto& pending_callbacks = pending_callbacks_map_[document_id];
   bool read_in_flight = !pending_callbacks.empty();
-  pending_callbacks.emplace_back(callback);
+  pending_callbacks.emplace_back(std::move(callback));
 
   if (read_in_flight) {
     // There is already an in-flight ReadDirectoryInternal() call, so
@@ -453,8 +854,9 @@ void ArcDocumentsProviderRoot::ReadDirectoryInternalWithChildDocuments(
   pending_callbacks_map_.erase(iter);
 
   if (!maybe_children) {
-    for (const auto& callback : pending_callbacks)
-      callback.Run(base::File::FILE_ERROR_NOT_FOUND, NameToDocumentMap());
+    for (auto& callback : pending_callbacks)
+      std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND,
+                              NameToDocumentMap());
     return;
   }
 
@@ -501,8 +903,8 @@ void ArcDocumentsProviderRoot::ReadDirectoryInternalWithChildDocuments(
       base::Bind(&ArcDocumentsProviderRoot::ClearDirectoryCache,
                  weak_ptr_factory_.GetWeakPtr(), document_id));
 
-  for (const auto& callback : pending_callbacks)
-    callback.Run(base::File::FILE_OK, cache.mapping);
+  for (auto& callback : pending_callbacks)
+    std::move(callback).Run(base::File::FILE_OK, cache.mapping);
 }
 
 void ArcDocumentsProviderRoot::ClearDirectoryCache(

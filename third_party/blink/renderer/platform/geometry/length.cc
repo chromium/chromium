@@ -96,14 +96,8 @@ Length Length::BlendMixedTypes(const Length& from,
                                ValueRange range) const {
   DCHECK(from.IsSpecified());
   DCHECK(IsSpecified());
-  PixelsAndPercent from_pixels_and_percent = from.GetPixelsAndPercent();
-  PixelsAndPercent to_pixels_and_percent = GetPixelsAndPercent();
-  const float pixels = blink::Blend(from_pixels_and_percent.pixels,
-                                    to_pixels_and_percent.pixels, progress);
-  const float percent = blink::Blend(from_pixels_and_percent.percent,
-                                     to_pixels_and_percent.percent, progress);
   return Length(
-      CalculationValue::Create(PixelsAndPercent(pixels, percent), range));
+      AsCalculationValue()->Blend(*from.AsCalculationValue(), progress, range));
 }
 
 Length Length::BlendSameTypes(const Length& from,
@@ -133,27 +127,33 @@ PixelsAndPercent Length::GetPixelsAndPercent() const {
   }
 }
 
+scoped_refptr<CalculationValue> Length::AsCalculationValue() const {
+  if (IsCalculated())
+    return &GetCalculationValue();
+  return CalculationValue::Create(GetPixelsAndPercent(), kValueRangeAll);
+}
+
 Length Length::SubtractFromOneHundredPercent() const {
-  PixelsAndPercent result = GetPixelsAndPercent();
-  result.pixels = -result.pixels;
-  result.percent = 100 - result.percent;
-  if (result.pixels && result.percent)
-    return Length(CalculationValue::Create(result, kValueRangeAll));
-  if (result.percent)
-    return Length::Percent(result.percent);
-  return Length::Fixed(result.pixels);
+  if (IsPercent())
+    return Length::Percent(100 - Value());
+  DCHECK(IsSpecified());
+  scoped_refptr<CalculationValue> result =
+      AsCalculationValue()->SubtractFromOneHundredPercent();
+  if (result->IsExpression() ||
+      (result->Pixels() != 0 && result->Percent() != 0)) {
+    return Length(std::move(result));
+  }
+  if (result->Percent())
+    return Length::Percent(result->Percent());
+  return Length::Fixed(result->Pixels());
 }
 
 Length Length::Zoom(double factor) const {
   switch (GetType()) {
     case kFixed:
       return Length::Fixed(GetFloatValue() * factor);
-    case kCalculated: {
-      PixelsAndPercent result = GetPixelsAndPercent();
-      result.pixels *= factor;
-      return Length(CalculationValue::Create(
-          result, GetCalculationValue().GetValueRange()));
-    }
+    case kCalculated:
+      return Length(GetCalculationValue().Zoom(factor));
     default:
       return *this;
   }

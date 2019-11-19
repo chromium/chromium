@@ -14,8 +14,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_local.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
@@ -38,7 +40,7 @@ base::subtle::Atomic32 GLContext::total_gl_contexts_ = 0;
 // static
 bool GLContext::switchable_gpus_supported_ = false;
 // static
-GpuPreference GLContext::forced_gpu_preference_ = GpuPreferenceNone;
+GpuPreference GLContext::forced_gpu_preference_ = GpuPreference::kDefault;
 
 GLContext::ScopedReleaseCurrent::ScopedReleaseCurrent() : canceled_(false) {}
 
@@ -60,6 +62,9 @@ GLContext::GLContext(GLShareGroup* share_group) : share_group_(share_group) {
 }
 
 GLContext::~GLContext() {
+#if defined(OS_MACOSX)
+  DCHECK(!HasBackpressureFences());
+#endif
   share_group_->RemoveContext(this);
   if (GetCurrent() == this) {
     SetCurrent(nullptr);
@@ -89,21 +94,21 @@ void GLContext::SetSwitchableGPUsSupported() {
 
 // static
 void GLContext::SetForcedGpuPreference(GpuPreference gpu_preference) {
-  DCHECK_EQ(GpuPreferenceNone, forced_gpu_preference_);
+  DCHECK_EQ(GpuPreference::kDefault, forced_gpu_preference_);
   forced_gpu_preference_ = gpu_preference;
 }
 
 // static
 GpuPreference GLContext::AdjustGpuPreference(GpuPreference gpu_preference) {
   switch (forced_gpu_preference_) {
-    case GpuPreferenceNone:
+    case GpuPreference::kDefault:
       return gpu_preference;
-    case PreferIntegratedGpu:
-    case PreferDiscreteGpu:
+    case GpuPreference::kLowPower:
+    case GpuPreference::kHighPerformance:
       return forced_gpu_preference_;
     default:
       NOTREACHED();
-      return GpuPreferenceNone;
+      return GpuPreference::kDefault;
   }
 }
 
@@ -149,7 +154,7 @@ YUVToRGBConverter* GLContext::GetYUVToRGBConverter(
 
 CurrentGL* GLContext::GetCurrentGL() {
   if (!static_bindings_initialized_) {
-    driver_gl_.reset(new DriverGL);
+    driver_gl_ = std::make_unique<DriverGL>();
     driver_gl_->InitializeStaticBindings();
 
     gl_api_.reset(CreateGLApi(driver_gl_.get()));
@@ -157,16 +162,16 @@ CurrentGL* GLContext::GetCurrentGL() {
 
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kEnableGPUServiceTracing)) {
-      trace_gl_api_.reset(new TraceGLApi(final_api));
+      trace_gl_api_ = std::make_unique<TraceGLApi>(final_api);
       final_api = trace_gl_api_.get();
     }
 
     if (GetDebugGLBindingsInitializedGL()) {
-      debug_gl_api_.reset(new DebugGLApi(final_api));
+      debug_gl_api_ = std::make_unique<DebugGLApi>(final_api);
       final_api = debug_gl_api_.get();
     }
 
-    current_gl_.reset(new CurrentGL);
+    current_gl_ = std::make_unique<CurrentGL>();
     current_gl_->Driver = driver_gl_.get();
     current_gl_->Api = final_api;
     current_gl_->Version = version_info_.get();
@@ -193,13 +198,82 @@ void GLContext::DirtyVirtualContextState() {
 }
 
 #if defined(OS_MACOSX)
+constexpr uint64_t kInvalidFenceId = 0;
+
 uint64_t GLContext::BackpressureFenceCreate() {
-  return 0;
+  TRACE_EVENT0("gpu", "GLContextEGL::BackpressureFenceCreate");
+
+  // This flush will trigger a crash if FlushForDriverCrashWorkaround is not
+  // called sufficiently frequently.
+  glFlush();
+
+  if (gl::GLFence::IsSupported()) {
+    next_backpressure_fence_ += 1;
+    backpressure_fences_[next_backpressure_fence_] = GLFence::Create();
+    return next_backpressure_fence_;
+  }
+  glFinish();
+  return kInvalidFenceId;
 }
 
-void GLContext::BackpressureFenceWait(uint64_t fence) {}
+void GLContext::BackpressureFenceWait(uint64_t fence_id) {
+  TRACE_EVENT0("gpu", "GLContext::BackpressureFenceWait");
+  if (fence_id == kInvalidFenceId) {
+    return;
+  }
 
-void GLContext::FlushForDriverCrashWorkaround() {}
+  // If a fence is not found, then it has already been waited on.
+  auto found = backpressure_fences_.find(fence_id);
+  if (found == backpressure_fences_.end())
+    return;
+  std::unique_ptr<GLFence> fence = std::move(found->second);
+  backpressure_fences_.erase(found);
+
+  // While we could call GLFence::ClientWait, this performs a busy wait on
+  // Mac, leading to high CPU usage. Instead we poll with a 1ms delay. This
+  // should have minimal impact, as we will only hit this path when we are
+  // more than one frame (16ms) behind.
+  //
+  // Note that on some platforms (10.9), fences appear to sometimes get
+  // lost and will never pass. Add a 32ms timeout to prevent these
+  // situations from causing a GPU process hang.
+  // https://crbug.com/618075
+  bool fence_completed = false;
+  for (int poll_iter = 0; !fence_completed && poll_iter < 32; ++poll_iter) {
+    if (poll_iter > 0) {
+      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+    }
+    {
+      TRACE_EVENT0("gpu", "GLFence::HasCompleted");
+      fence_completed = fence->HasCompleted();
+    }
+  }
+  if (!fence_completed) {
+    TRACE_EVENT0("gpu", "Finish");
+    // We timed out waiting for the above fence, just issue a glFinish.
+    glFinish();
+  }
+  fence.reset();
+
+  // Waiting on |fence_id| has implicitly waited on all previous fences, so
+  // remove them.
+  while (backpressure_fences_.begin()->first < fence_id)
+    backpressure_fences_.erase(backpressure_fences_.begin());
+}
+
+bool GLContext::HasBackpressureFences() const {
+  return !backpressure_fences_.empty();
+}
+
+void GLContext::DestroyBackpressureFences() {
+  backpressure_fences_.clear();
+}
+
+void GLContext::FlushForDriverCrashWorkaround() {
+  if (!IsCurrent(nullptr))
+    return;
+  glFlush();
+}
 #endif
 
 bool GLContext::HasExtension(const char* name) {
@@ -227,6 +301,7 @@ bool GLContext::LosesAllContextsOnContextLost() {
     case kGLImplementationDesktopGL:
       return false;
     case kGLImplementationEGLGLES2:
+    case kGLImplementationEGLANGLE:
     case kGLImplementationSwiftShaderGL:
       return true;
     case kGLImplementationAppleGL:
@@ -283,8 +358,9 @@ void GLContext::SetGLStateRestorer(GLStateRestorer* state_restorer) {
   state_restorer_ = base::WrapUnique(state_restorer);
 }
 
-bool GLContext::WasAllocatedUsingRobustnessExtension() {
-  return false;
+GLenum GLContext::CheckStickyGraphicsResetStatus() {
+  DCHECK(IsCurrent(nullptr));
+  return GL_NO_ERROR;
 }
 
 void GLContext::InitializeDynamicBindings() {

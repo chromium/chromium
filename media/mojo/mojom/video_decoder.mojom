@@ -1,0 +1,177 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "gpu/ipc/common/sync_token.mojom";
+import "media/mojo/mojom/media_log.mojom";
+import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/color_space.mojom";
+
+// Serializable rule for matching VideoDecoderConfigs.
+struct SupportedVideoDecoderConfig {
+  // Range of VideoCodecProfiles to match, inclusive.
+  VideoCodecProfile profile_min;
+  VideoCodecProfile profile_max;
+
+  // Range of coded sizes to match, inclusive in each dimension.
+  gfx.mojom.Size coded_size_min;
+  gfx.mojom.Size coded_size_max;
+
+  // Match configs that have encryption configured.
+  bool allow_encrypted;
+
+  // Do not match configs that do not have encryption configured. This is used
+  // on Android when the internal software decoder is preferred over the
+  // platform decoder (eg. when the platform decoder is a software decoder).
+  bool require_encrypted;
+};
+
+// Identifies a CommandBufferStub. MediaGpuChannelManager is responsible
+// for minting |channel_token| values.
+struct CommandBufferId {
+  mojo_base.mojom.UnguessableToken channel_token;
+  int32 route_id;
+};
+
+[Native]
+struct OverlayInfo;
+
+// Interface for releasing remote VideoFrames. It is separated from VideoDecoder
+// so that VideoFrames can outlive their VideoDecoder.
+interface VideoFrameHandleReleaser {
+  // Signals that the VideoFrame identified by |release_token| should be
+  // released. |release_sync_token| indicates the last use of the VideoFrame
+  // (in a GPU command buffer) by the client.
+  //
+  // TODO(sandersd): Do we need release notification for non-texture
+  // VideoFrames? If so, |release_sync_token| should be optional.
+  ReleaseVideoFrame(mojo_base.mojom.UnguessableToken release_token,
+                    gpu.mojom.SyncToken release_sync_token);
+};
+
+// Identifier to select between multiple underlying VideoDecoder implementations
+// to back a mojo VideoDecoder service.
+[Native]
+enum VideoDecoderImplementation;
+
+// A Mojo equivalent of media::VideoDecoder. In practice, this is used for
+// hardware decode offloading; in this case the client is a <video> tag running
+// in a renderer, and the implementation is running in the GPU process.
+interface VideoDecoder {
+  // Returns a list of supported configs. It is expected that Initialize() will
+  // fail for any config that does not match an entry in this list.  Note that
+  // this returns a map for all VideoDecoderImplementation types, since it's
+  // much more convenient; we always want all of them.
+  //
+  // May be called before Construct().
+  GetSupportedConfigs() =>
+      (map<VideoDecoderImplementation,
+           array<SupportedVideoDecoderConfig>> supported_configs);
+
+  // Initialize the decoder. This must be called before any method other than
+  // GetSupportedConfigs().
+  //
+  // |client| provides asynchronous client methods to the VideoDecoder, such
+  // as delivery of decoded VideoFrame outputs.
+  //
+  // When a VideoFrame is delivered to |client|, the VideoDecoder may continue
+  // to retain a reference to the VideoFrame. In this case a |release_token| is
+  // included. The client shall use |video_frame_handle_releaser| to signal
+  // that the retained VideoFrame should be released (even after the
+  // VideoDecoder is torn down). This enables ordinary VideoFrames in the client
+  // process to depend on resources held by the service, without significantly
+  // complicating VideoFrame serialization.
+  //
+  // |decoder_buffer_pipe| is used to transfer the encoded data for each
+  // DecoderBuffer.
+  //
+  // |command_buffer_id|, when present, identifies a CommandBufferStub that
+  // the VideoDecoder can use for GL operations. Implementations that require GL
+  // will fail Initialize() if |command_buffer_id| is not provided.
+  //
+  // |implementation| selects the underlying VideoDecoder implementation.  Not
+  // all implementations are supported.  Initialize() will fail if
+  // |implementation| is not supported.
+  //
+  // TODO(sandersd): Rename to Initialize() if/when
+  // media::VideoDecoder::Initialize() is renamed to Configure().
+  Construct(
+      pending_associated_remote<VideoDecoderClient> client,
+      pending_associated_remote<MediaLog> media_log,
+      pending_receiver<VideoFrameHandleReleaser> video_frame_handle_releaser,
+      handle<data_pipe_consumer> decoder_buffer_pipe,
+      CommandBufferId? command_buffer_id,
+      VideoDecoderImplementation implementation,
+      gfx.mojom.ColorSpace target_color_space);
+
+  // Configure (or reconfigure) the decoder. This must be called before decoding
+  // any frames, and must not be called while there are pending Initialize(),
+  // Decode(), or Reset() requests.
+  //
+  // If |low_delay| is true, the decoder must output frames as soon as possible;
+  // in particular, it must not wait for another Decode() request, except as
+  // required for frame reordering. Implementations must fail initialization if
+  // they cannot satisfy this requirement.
+  //
+  // On completion, the callback also includes |needs_bitstream_conversion|,
+  // indicating whether decode buffers need bitstream conversion, and
+  // |max_decode_requests|, the maximum number of concurrent Decode() requests
+  // the implementation supports.
+  //
+  // |cdm_id| must refer to a valid CDM if |config.is_encrypted()|.  It is not
+  // used for unencrypted streams.
+  Initialize(VideoDecoderConfig config, bool low_delay, int32 cdm_id) =>
+      (bool success, bool needs_bitstream_conversion,
+       int32 max_decode_requests);
+
+  // Request decoding of exactly one frame or an EOS buffer. This must not be
+  // called while there are pending Initialize(), Reset(), or Decode(EOS)
+  // requests.
+  //
+  // Implementations must eventually execute the callback, even if Decode() is
+  // not called again. It is not required that the decode status match the
+  // actual result of decoding the buffer, only that decode errors are
+  // eventually reported (such as at EOS).
+  //
+  // If |buffer| is an EOS buffer, implementations must execute all other
+  // pending Decode() callbacks and output all pending frames before executing
+  // the Decode(EOS) callback. (That is, they must flush.)
+  Decode(DecoderBuffer buffer) => (DecodeStatus status);
+
+  // Reset the decoder. All ongoing Decode() requests must be completed or
+  // aborted before executing the callback. This must not be called while there
+  // is a pending Initialize() request.
+  Reset() => ();
+
+  // Inform the decoder that new OverlayInfo is available.
+  OnOverlayInfoChanged(OverlayInfo overlay_info);
+};
+
+interface VideoDecoderClient {
+  // Output a decoded frame. Frames are output in presentation order.
+  //
+  // When |can_read_without_stalling| is false, preroll should be disabled. This
+  // is necessary if the decoder cannot guarantee that it can output another
+  // frame, for example if output buffers are limited or configuration changes
+  // require the return of all outstanding frames.
+  //
+  // If |release_token| is provided, the client shall call
+  // VideoFrameHandleReleaser::Release() when it is finished using |frame|.
+  OnVideoFrameDecoded(VideoFrame frame,
+                      bool can_read_without_stalling,
+                      mojo_base.mojom.UnguessableToken? release_token);
+
+  // Called when the remote decoder is waiting because of |reason|, e.g. waiting
+  // for decryption key.
+  OnWaiting(WaitingReason reason);
+
+  // Request to be notified when the current OverlayInfo changes. This results
+  // in at least one call to OnOverlayInfoChanged() for the initial OverlayInfo.
+  // |restart_for_transitions| sets whether the decoder should be restarted on
+  // overlay transitions instead of receiving a call to OnOverlayInfoChanged().
+  RequestOverlayInfo(bool restart_for_transitions);
+};

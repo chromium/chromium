@@ -1,0 +1,104 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom;
+
+import "ash/public/mojom/ime_info.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "ui/base/ime/chromeos/public/mojom/ime_keyset.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Interface for ash client (e.g. Chrome) to send input method info to ash.
+interface ImeController {
+  // Sets the client interface.
+  SetClient(pending_remote<ImeControllerClient> client);
+
+  // Updates the cached IME information and refreshes the IME menus.
+  // |current_ime_id| is empty when there is no active IME yet.
+  RefreshIme(string current_ime_id,
+             array<ImeInfo> available_imes,
+             array<ImeMenuItem> menu_items);
+
+  // Shows an icon in the IME menu indicating that IMEs are controlled by device
+  // policy.
+  SetImesManagedByPolicy(bool managed);
+
+  // Shows the IME menu on the shelf instead of inside the system tray menu.
+  // Users with multiple IMEs that have multiple configurable properties (e.g.
+  // some Chinese IMEs) prefer this to keeping the IME menu under the primary
+  // system tray menu.
+  ShowImeMenuOnShelf(bool show);
+
+  // Report caps lock state changes from chrome (which is the source of truth)
+  // to the tray.
+  UpdateCapsLockState(bool enabled);
+
+  // Report keyboard layout changes from chrome (which is the source of truth)
+  // This is also called when a connection is first established between
+  // ImeController and ImeControllerClient.
+  // The layout name is a XKB keyboard layout name (e.g. "us").
+  OnKeyboardLayoutNameChanged(string layout_name);
+
+  // Report the enabled state of the various extra input options (currently
+  // emoji, handwriting, and voice input). |is_extra_input_options_enabled| set
+  // to false will disable all extra input option UI regardless of the enabled
+  // state of the individual options (which will be ingored).
+  SetExtraInputOptionsEnabledState(bool is_extra_input_options_enabled,
+                                   bool is_emoji_enabled,
+                                   bool is_handwriting_enabled,
+                                   bool is_voice_enabled);
+
+  // Show the mode indicator view (e.g. a bubble with "DV" for Dvorak).
+  // The view fades out after a delay and close itself.
+  // The anchor bounds is in the universal screen coordinates in DIP.
+  ShowModeIndicator(gfx.mojom.Rect anchor_bounds,
+                    mojo_base.mojom.String16 ime_short_name);
+};
+
+// Interface for ash to send input method requests to its client (e.g. Chrome).
+interface ImeControllerClient {
+  // Switches to the next input method. Does nothing if only one input method
+  // is installed.
+  SwitchToNextIme();
+
+  // Switches to the last used input method. Does nothing if only one input
+  // method is installed.
+  SwitchToLastUsedIme();
+
+  // Switches to an input method by |id|. Does nothing if the input method is
+  // not installed. The ID is usually the output of a call like
+  // chromeos::extension_ime_util::GetInputMethodIDByEngineID("xkb:jp::jpn"),
+  // see that function for details. Shows a bubble with the input method short
+  // name when |show_message| is true.
+  SwitchImeById(string id, bool show_message);
+
+  // Activates an input method menu item. The |key| must be a value from the
+  // ImeMenuItems provided via RefreshIme. Does nothing if the |key| is invalid.
+  ActivateImeMenuItem(string key);
+
+  // When the caps lock state change originates from the tray (i.e. clicking the
+  // caps lock toggle from the settings menu from the caps lock icon), from an
+  // accelerator (e.g. pressing Alt + Search), or from the debug UI (i.e.
+  // toggling the caps lock button), propagate the change to the client without
+  // sending a change notification back.
+  // TODO(crbug/759435): Ideally this interaction should only be to disable the
+  // caps lock.
+  SetCapsLockEnabled(bool enabled);
+
+  // Notifies the mirroring state change to the client where IME lives (e.g.
+  // Chrome), so that the IME can behave according to the state.
+  UpdateMirroringState(bool enabled);
+
+  // Notifies the casting state change to the client where IME lives (e.g.
+  // Chrome), so that the IME can behave according to the state.
+  UpdateCastingState(bool enabled);
+
+  // Overrides the keyboard keyset (emoji, handwriting or voice). If keyset is
+  // 'kNone', we switch to the default keyset. Because this is asynchronous,
+  // any code that needs the keyset to be updated first must use the callback.
+  OverrideKeyboardKeyset(chromeos.input_method.mojom.ImeKeyset keyset) => ();
+
+  // Show the current mode.
+  ShowModeIndicator();
+};

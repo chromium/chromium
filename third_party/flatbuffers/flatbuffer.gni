@@ -128,10 +128,8 @@ template("flatbuffer") {
     public_deps = [
       # The generated headers reference headers within FlatBuffers, so
       # dependencies must be able to find those headers too.
-      "//third_party/flatbuffers",
-    ]
-    deps = [
       ":$action_name",
+      "//third_party/flatbuffers",
     ]
 
     # This will link any libraries in the deps (the use of invoker.deps in the

@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_action.h"
@@ -43,8 +42,6 @@
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_features.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -56,17 +53,10 @@ const char* kInjectionSucceededMessage = "injection succeeded";
 scoped_refptr<const extensions::Extension> CreateExtension(
     const std::string& name,
     bool has_browser_action) {
-  extensions::DictionaryBuilder manifest;
-  manifest.Set("name", name).
-           Set("description", "an extension").
-           Set("manifest_version", 2).
-           Set("version", "1.0");
+  extensions::ExtensionBuilder builder(name);
   if (has_browser_action)
-    manifest.Set("browser_action", extensions::DictionaryBuilder().Build());
-  return extensions::ExtensionBuilder()
-      .SetManifest(manifest.Build())
-      .SetID(crx_file::id_util::GenerateId(name))
-      .Build();
+    builder.SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION);
+  return builder.Build();
 }
 
 class BlockedActionWaiter
@@ -398,25 +388,12 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest,
     EXPECT_FALSE(first_controller->IsShowingPopup());
     EXPECT_TRUE(second_controller->IsShowingPopup());
   }
-
-  {
-    // Clicking on the second extension's browser action a second time should
-    // result in closing the popup.
-    content::WindowedNotificationObserver observer(
-        extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-        content::NotificationService::AllSources());
-    browser_actions_bar()->Press(1);
-    observer.Wait();
-    EXPECT_FALSE(browser_actions_bar()->HasPopup());
-    EXPECT_FALSE(first_controller->IsShowingPopup());
-    EXPECT_FALSE(second_controller->IsShowingPopup());
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest,
                        OverflowedBrowserActionPopupTest) {
   std::unique_ptr<BrowserActionTestUtil> overflow_bar =
-      browser_actions_bar()->CreateOverflowBar();
+      browser_actions_bar()->CreateOverflowBar(browser());
 
   // Load up two extensions that have browser action popups.
   base::FilePath data_dir =
@@ -503,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest,
                        OverflowedBrowserActionPopupTestRemoval) {
   std::unique_ptr<BrowserActionTestUtil> overflow_bar =
-      browser_actions_bar()->CreateOverflowBar();
+      browser_actions_bar()->CreateOverflowBar(browser());
 
   // Install an extension and shrink the visible count to zero so the extension
   // is overflowed.
@@ -595,9 +572,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest, RemovePoppedOutAction) {
   toolbar_actions_bar->PopOutAction(toolbar_actions_bar->GetActions()[2], false,
                                     closure);
   EXPECT_EQ(2, browser_actions_bar()->VisibleBrowserActions());
-  ASSERT_TRUE(toolbar_actions_bar->popped_out_action());
+  ASSERT_TRUE(toolbar_actions_bar->GetPoppedOutAction());
   EXPECT_EQ(extension3->id(),
-            toolbar_actions_bar->popped_out_action()->GetId());
+            toolbar_actions_bar->GetPoppedOutAction()->GetId());
 
   // Remove extension 2 - there should still be one left in the overflow
   // (extension 2) and one left on the main bar (extension 1).
@@ -605,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest, RemovePoppedOutAction) {
       extension3->id(), extensions::UnloadedExtensionReason::DISABLE);
   EXPECT_EQ(1, browser_actions_bar()->VisibleBrowserActions());
   EXPECT_EQ(2, browser_actions_bar()->NumberOfBrowserActions());
-  EXPECT_FALSE(toolbar_actions_bar->popped_out_action());
+  EXPECT_FALSE(toolbar_actions_bar->GetPoppedOutAction());
 
   // Add back extension 3, and reduce visible size to 0.
   extension_service()->AddExtension(extension3.get());
@@ -618,16 +595,16 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest, RemovePoppedOutAction) {
   toolbar_actions_bar->PopOutAction(toolbar_actions_bar->GetActions()[1], false,
                                     closure);
   EXPECT_EQ(1, browser_actions_bar()->VisibleBrowserActions());
-  ASSERT_TRUE(toolbar_actions_bar->popped_out_action());
+  ASSERT_TRUE(toolbar_actions_bar->GetPoppedOutAction());
   EXPECT_EQ(extension2->id(),
-            toolbar_actions_bar->popped_out_action()->GetId());
+            toolbar_actions_bar->GetPoppedOutAction()->GetId());
 
   // Remove extension 2 - the remaining two should both be overflowed.
   extension_service()->UnloadExtension(
       extension2->id(), extensions::UnloadedExtensionReason::DISABLE);
   EXPECT_EQ(0, browser_actions_bar()->VisibleBrowserActions());
   EXPECT_EQ(2, browser_actions_bar()->NumberOfBrowserActions());
-  EXPECT_FALSE(toolbar_actions_bar->popped_out_action());
+  EXPECT_FALSE(toolbar_actions_bar->GetPoppedOutAction());
 
   // Finally, set visible count to 1, pop out extension 1, and remove it. There
   // should only be one action left on the bar.
@@ -637,14 +614,14 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest, RemovePoppedOutAction) {
   toolbar_actions_bar->PopOutAction(toolbar_actions_bar->GetActions()[1], false,
                                     closure);
   EXPECT_EQ(2, browser_actions_bar()->VisibleBrowserActions());
-  ASSERT_TRUE(toolbar_actions_bar->popped_out_action());
+  ASSERT_TRUE(toolbar_actions_bar->GetPoppedOutAction());
   EXPECT_EQ(extension3->id(),
-            toolbar_actions_bar->popped_out_action()->GetId());
+            toolbar_actions_bar->GetPoppedOutAction()->GetId());
   extension_service()->UnloadExtension(
       extension3->id(), extensions::UnloadedExtensionReason::DISABLE);
   EXPECT_EQ(1, browser_actions_bar()->VisibleBrowserActions());
   EXPECT_EQ(1, browser_actions_bar()->NumberOfBrowserActions());
-  EXPECT_FALSE(toolbar_actions_bar->popped_out_action());
+  EXPECT_FALSE(toolbar_actions_bar->GetPoppedOutAction());
 }
 
 // A test that runs in incognito mode.
@@ -692,12 +669,6 @@ class BrowserActionsBarRuntimeHostPermissionsBrowserTest
 
   BrowserActionsBarRuntimeHostPermissionsBrowserTest() = default;
   ~BrowserActionsBarRuntimeHostPermissionsBrowserTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    BrowserActionsBarBrowserTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kRuntimeHostPermissions);
-  }
 
   void SetUpOnMainThread() override {
     BrowserActionsBarBrowserTest::SetUpOnMainThread();
@@ -752,7 +723,6 @@ class BrowserActionsBarRuntimeHostPermissionsBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   extensions::TestExtensionDir extension_dir_;
   scoped_refptr<const extensions::Extension> extension_;
 
@@ -990,10 +960,7 @@ class BrowserActionsBarUiBrowserTest
   void WaitForUserDismissal() override {
     // Since this UI is shown in the browser's toolbar, just consider closing
     // the browser to be dismissal.
-    content::WindowedNotificationObserver observer(
-        chrome::NOTIFICATION_BROWSER_CLOSED,
-        content::NotificationService::AllSources());
-    observer.Wait();
+    ui_test_utils::WaitForBrowserToClose();
   }
 
  private:

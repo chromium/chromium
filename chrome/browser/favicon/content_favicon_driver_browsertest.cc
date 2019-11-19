@@ -16,6 +16,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -38,11 +39,9 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/url_request/url_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/url_constants.h"
-
-const base::FilePath::CharType kDocRoot[] =
-    FILE_PATH_LITERAL("chrome/test/data");
 
 namespace {
 
@@ -94,7 +93,7 @@ class TestURLLoaderInterceptor {
 class PendingTaskWaiter : public content::WebContentsObserver {
  public:
   explicit PendingTaskWaiter(content::WebContents* web_contents)
-      : WebContentsObserver(web_contents), weak_factory_(this) {}
+      : WebContentsObserver(web_contents) {}
   ~PendingTaskWaiter() override {}
 
   void AlsoRequireUrl(const GURL& url) { required_url_ = url; }
@@ -156,7 +155,7 @@ class PendingTaskWaiter : public content::WebContentsObserver {
   base::Closure quit_closure_;
   GURL required_url_;
   base::Optional<base::string16> required_title_;
-  base::WeakPtrFactory<PendingTaskWaiter> weak_factory_;
+  base::WeakPtrFactory<PendingTaskWaiter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PendingTaskWaiter);
 };
@@ -222,12 +221,13 @@ class ContentFaviconDriverTest : public InProcessBrowserTest {
 
   favicon_base::FaviconRawBitmapResult GetFaviconForPageURL(
       const GURL& url,
-      favicon_base::IconType icon_type) {
+      favicon_base::IconType icon_type,
+      int desired_size_in_dip) {
     std::vector<favicon_base::FaviconRawBitmapResult> results;
     base::CancelableTaskTracker tracker;
     base::RunLoop loop;
     favicon_service()->GetFaviconForPageURL(
-        url, {icon_type}, /*desired_size_in_dip=*/0,
+        url, {icon_type}, desired_size_in_dip,
         base::Bind(
             [](std::vector<favicon_base::FaviconRawBitmapResult>* save_results,
                base::RunLoop* loop,
@@ -244,6 +244,12 @@ class ContentFaviconDriverTest : public InProcessBrowserTest {
         return result;
     }
     return favicon_base::FaviconRawBitmapResult();
+  }
+
+  favicon_base::FaviconRawBitmapResult GetFaviconForPageURL(
+      const GURL& url,
+      favicon_base::IconType icon_type) {
+    return GetFaviconForPageURL(url, icon_type, /*desired_size_in_dip=*/0);
   }
 
  private:
@@ -698,11 +704,24 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
 }
 #endif
 
+class ContentFaviconDriverTestWithAutoupgradesDisabled
+    : public ContentFaviconDriverTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentFaviconDriverTest::SetUpCommandLine(command_line);
+    feature_list.InitAndDisableFeature(
+        blink::features::kMixedContentAutoupgrade);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list;
+};
+
 // Checks that a favicon loaded over HTTP is blocked on a secure page.
-IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
+IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTestWithAutoupgradesDisabled,
                        MixedContentInsecureFaviconBlocked) {
   net::EmbeddedTestServer ssl_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  ssl_server.AddDefaultHandlers(base::FilePath(kDocRoot));
+  ssl_server.AddDefaultHandlers(GetChromeTestDataDir());
   ASSERT_TRUE(ssl_server.Start());
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -733,10 +752,10 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
 }
 
 // Checks that a favicon loaded over HTTPS is allowed on a secure page.
-IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
+IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTestWithAutoupgradesDisabled,
                        MixedContentSecureFaviconAllowed) {
   net::EmbeddedTestServer ssl_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  ssl_server.AddDefaultHandlers(base::FilePath(kDocRoot));
+  ssl_server.AddDefaultHandlers(GetChromeTestDataDir());
   ASSERT_TRUE(ssl_server.Start());
 
   const GURL favicon_url =
@@ -753,4 +772,18 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
   waiter.Wait();
 
   EXPECT_TRUE(url_interceptor.was_loaded(favicon_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, SVGFavicon) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url =
+      embedded_test_server()->GetURL("/favicon/page_with_svg_favicon.html");
+
+  PendingTaskWaiter waiter(web_contents());
+  ui_test_utils::NavigateToURL(browser(), url);
+  waiter.Wait();
+
+  auto result = GetFaviconForPageURL(url, favicon_base::IconType::kFavicon, 16);
+  EXPECT_EQ(gfx::Size(16, 16), result.pixel_size);
+  EXPECT_NE(nullptr, result.bitmap_data);
 }

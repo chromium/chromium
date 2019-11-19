@@ -4,9 +4,9 @@
 
 #include "chrome/browser/chromeos/login/login_auth_recorder.h"
 
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
-#include "chrome/browser/ui/ash/tablet_mode_client.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/session_manager/core/session_manager.h"
 
@@ -40,7 +40,7 @@ class LoginAuthRecorderTest : public InProcessBrowserTest {
   }
 
   void EnableTabletMode(bool enable) {
-    TabletModeClient::Get()->OnTabletModeToggled(enable);
+    ash::ShellTestApi().SetTabletModeEnabledForTest(enable);
   }
 
   LoginAuthRecorder* metrics_recorder() {

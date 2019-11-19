@@ -1,6 +1,5 @@
 file://media/OWNERS
 olka@chromium.org
-maxmorin@chromium.org
 miu@chromium.org
 
 per-file media_devices_*=guidou@chromium.org

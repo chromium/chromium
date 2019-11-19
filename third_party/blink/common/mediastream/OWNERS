@@ -4,5 +4,5 @@ hbos@chromium.org
 per-file *_mojom_traits*.*=set noparent
 per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
 
-# TEAM: media-capture-and-streams@grotations.appspotmail.com
+# TEAM: webrtc-dev@chromium.org
 # COMPONENT: Blink>GetUserMedia

@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
+#include "base/process/kill.h"
 #include "base/scoped_native_library.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/windows_version.h"
@@ -61,7 +62,7 @@ void TestWin10NonSystemFont(bool is_success_test) {
               sandbox::SBOX_ALL_OK);
   }
 
-  base::string16 test_command = L"CheckWin10FontLoad \"";
+  std::wstring test_command = L"CheckWin10FontLoad \"";
   test_command += font_path.value().c_str();
   test_command += L"\"";
 
@@ -80,17 +81,26 @@ void TestWin10NonSystemFont(bool is_success_test) {
 //
 // Trigger test child process (with or without mitigation enabled).
 //------------------------------------------------------------------------------
-void TestWin10MsSigned(bool expect_success,
+void TestWin10MsSigned(int expected,
                        bool enable_mitigation,
-                       bool use_ms_signed_binary) {
+                       bool delayed,
+                       bool use_ms_signed_binary,
+                       bool add_dll_permission,
+                       bool add_directory_permission) {
   sandbox::TestRunner runner;
   sandbox::TargetPolicy* policy = runner.GetPolicy();
 
   if (enable_mitigation) {
     // Enable the ForceMsSigned mitigation.
-    EXPECT_EQ(policy->SetDelayedProcessMitigations(
-                  sandbox::MITIGATION_FORCE_MS_SIGNED_BINS),
-              sandbox::SBOX_ALL_OK);
+    if (delayed) {
+      EXPECT_EQ(policy->SetDelayedProcessMitigations(
+                    sandbox::MITIGATION_FORCE_MS_SIGNED_BINS),
+                sandbox::SBOX_ALL_OK);
+    } else {
+      EXPECT_EQ(policy->SetProcessMitigations(
+                    sandbox::MITIGATION_FORCE_MS_SIGNED_BINS),
+                sandbox::SBOX_ALL_OK);
+    }
   }
 
   // Choose the appropriate DLL and make sure the sandbox allows access to it.
@@ -101,21 +111,34 @@ void TestWin10MsSigned(bool expect_success,
   } else {
     EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &dll_path));
     dll_path = dll_path.Append(hooking_dll::g_hook_dll_file);
+
+    if (add_dll_permission) {
+      EXPECT_EQ(sandbox::SBOX_ALL_OK,
+                policy->AddRule(sandbox::TargetPolicy::SUBSYS_SIGNED_BINARY,
+                                sandbox::TargetPolicy::SIGNED_ALLOW_LOAD,
+                                dll_path.value().c_str()));
+    }
+    if (add_directory_permission) {
+      base::FilePath exe_path;
+      EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+      EXPECT_EQ(sandbox::SBOX_ALL_OK,
+                policy->AddRule(
+                    sandbox::TargetPolicy::SUBSYS_SIGNED_BINARY,
+                    sandbox::TargetPolicy::SIGNED_ALLOW_LOAD,
+                    exe_path.DirName().AppendASCII("*.dll").value().c_str()));
+    }
   }
   EXPECT_TRUE(runner.AddFsRule(sandbox::TargetPolicy::FILES_ALLOW_READONLY,
                                dll_path.value().c_str()));
-
   // Set up test string.
-  base::string16 test = L"TestDllLoad \"";
+  std::wstring test = L"TestDllLoad \"";
   test += dll_path.value().c_str();
   test += L"\"";
 
   // Note: ERROR_INVALID_IMAGE_HASH is being displayed in a system pop-up when
-  //       the DLL load is attempted, but the value returned from the test
-  //       process itself is SBOX_TEST_FAILED.
-  EXPECT_EQ((expect_success ? sandbox::SBOX_TEST_SUCCEEDED
-                            : sandbox::SBOX_TEST_FAILED),
-            runner.RunTest(test.c_str()));
+  //       the DLL load is attempted for delayed mitigations, but the value
+  //       returned from the test process itself is SBOX_TEST_FAILED.
+  EXPECT_EQ(expected, runner.RunTest(test.c_str()));
 }
 
 }  // namespace
@@ -207,7 +230,11 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
         return SBOX_TEST_NOT_FOUND;
       }
       if (!policy.DisallowWin32kSystemCalls)
-        return SBOX_TEST_FAILED;
+        return SBOX_TEST_FIRST_ERROR;
+
+      // Check if we can call a Win32k API. Fail if it succeeds.
+      if (::GetDC(nullptr))
+        return SBOX_TEST_SECOND_ERROR;
 
       break;
     }
@@ -398,7 +425,7 @@ SBOX_TESTS_COMMAND int TestDllLoad(int argc, wchar_t** argv) {
   if (argc < 1 || !argv[0])
     return SBOX_TEST_INVALID_PARAMETER;
 
-  base::string16 dll = argv[0];
+  std::wstring dll = argv[0];
   base::ScopedNativeLibrary test_dll((base::FilePath(dll)));
   if (test_dll.is_valid())
     return SBOX_TEST_SUCCEEDED;
@@ -485,7 +512,7 @@ SBOX_TESTS_COMMAND int TestChildProcess(int argc, wchar_t** argv) {
     return SBOX_TEST_INVALID_PARAMETER;
 
   bool process_finishes = true;
-  base::string16 arg2 = argv[1];
+  std::wstring arg2 = argv[1];
   if (arg2.compare(L"false") == 0)
     process_finishes = false;
 
@@ -494,7 +521,7 @@ SBOX_TESTS_COMMAND int TestChildProcess(int argc, wchar_t** argv) {
     desired_exit_code = wcstoul(argv[2], nullptr, 0);
   }
 
-  base::string16 cmd = argv[0];
+  std::wstring cmd = argv[0];
   base::LaunchOptions options = base::LaunchOptionsForTest();
   base::Process setup_proc = base::LaunchProcess(cmd.c_str(), options);
 
@@ -534,7 +561,7 @@ SBOX_TESTS_COMMAND int TestChildProcess(int argc, wchar_t** argv) {
 #if !defined(_WIN64)
 // DEP is always enabled on 64-bit.  Only test on x86.
 TEST(ProcessMitigationsTest, CheckDepWin7) {
-  if (base::win::GetVersion() > base::win::VERSION_WIN7)
+  if (base::win::GetVersion() > base::win::Version::WIN7)
     return;
 
   TestRunner runner;
@@ -559,10 +586,10 @@ TEST(ProcessMitigationsTest, CheckDepWin7) {
 // This test validates that setting the MITIGATION_DEP*
 // mitigations enables the setting on a process.
 TEST(ProcessMitigationsTest, CheckDepWin8PolicySuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
-  base::string16 test_command = L"CheckPolicy ";
+  std::wstring test_command = L"CheckPolicy ";
   test_command += std::to_wstring(TESTPOLICY_DEP);
 
   //---------------------------------
@@ -600,10 +627,10 @@ TEST(ProcessMitigationsTest, CheckDepWin8PolicySuccess) {
 //------------------------------------------------------------------------------
 
 TEST(ProcessMitigationsTest, CheckWin8AslrPolicySuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
-  base::string16 test_command = L"CheckPolicy ";
+  std::wstring test_command = L"CheckPolicy ";
   test_command += std::to_wstring(TESTPOLICY_ASLR);
 
 //---------------------------------------------
@@ -628,10 +655,10 @@ TEST(ProcessMitigationsTest, CheckWin8AslrPolicySuccess) {
 //------------------------------------------------------------------------------
 
 TEST(ProcessMitigationsTest, CheckWin8StrictHandlePolicySuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
-  base::string16 test_command = L"CheckPolicy ";
+  std::wstring test_command = L"CheckPolicy ";
   test_command += std::to_wstring(TESTPOLICY_STRICTHANDLE);
 
   //---------------------------------
@@ -655,10 +682,10 @@ TEST(ProcessMitigationsTest, CheckWin8StrictHandlePolicySuccess) {
 // This test validates that setting the MITIGATION_NON_SYSTEM_FONTS_DISABLE
 // mitigation enables the setting on a process.
 TEST(ProcessMitigationsTest, CheckWin10NonSystemFontLockDownPolicySuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10)
+  if (base::win::GetVersion() < base::win::Version::WIN10)
     return;
 
-  base::string16 test_command = L"CheckPolicy ";
+  std::wstring test_command = L"CheckPolicy ";
   test_command += std::to_wstring(TESTPOLICY_NONSYSFONT);
 
   //---------------------------------
@@ -686,19 +713,19 @@ TEST(ProcessMitigationsTest, CheckWin10NonSystemFontLockDownPolicySuccess) {
 // This test validates that we can load a non-system font if the
 // MITIGATION_NON_SYSTEM_FONTS_DISABLE mitigation is NOT set.
 TEST(ProcessMitigationsTest, CheckWin10NonSystemFontLockDownLoadSuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10)
+  if (base::win::GetVersion() < base::win::Version::WIN10)
     return;
 
-  TestWin10NonSystemFont(true);
+  TestWin10NonSystemFont(true /* is_success_test */);
 }
 
 // This test validates that setting the MITIGATION_NON_SYSTEM_FONTS_DISABLE
 // mitigation prevents the loading of a non-system font.
 TEST(ProcessMitigationsTest, CheckWin10NonSystemFontLockDownLoadFailure) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10)
+  if (base::win::GetVersion() < base::win::Version::WIN10)
     return;
 
-  TestWin10NonSystemFont(false);
+  TestWin10NonSystemFont(false /* is_success_test */);
 }
 
 //------------------------------------------------------------------------------
@@ -711,11 +738,11 @@ TEST(ProcessMitigationsTest, CheckWin10NonSystemFontLockDownLoadFailure) {
 
 // This test validates that setting the MITIGATION_FORCE_MS_SIGNED_BINS
 // mitigation enables the setting on a process.
-TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicySuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_TH2)
+TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicySuccessDelayed) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_TH2)
     return;
 
-  base::string16 test_command = L"CheckPolicy ";
+  std::wstring test_command = L"CheckPolicy ";
   test_command += std::to_wstring(TESTPOLICY_MSSIGNED);
 
 //---------------------------------
@@ -736,81 +763,176 @@ TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicySuccess) {
 #endif  // !defined(COMPONENT_BUILD)
 }
 
+// This test validates that setting the MITIGATION_FORCE_MS_SIGNED_BINS
+// mitigation enables the setting on a process when non-delayed.
+TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicySuccess) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_TH2)
+    return;
+
+  std::wstring test_command = L"CheckPolicy ";
+  test_command += std::to_wstring(TESTPOLICY_MSSIGNED);
+
+  //---------------------------------
+  // 1) Test setting post-startup.
+  // **Only test if NOT component build, otherwise component DLLs are not signed
+  //   by MS and prevent process setup.
+  // **Only test post-startup, otherwise this test executable has dependencies
+  //   on DLLs that are not signed by MS and they prevent process startup.
+  //---------------------------------
+  TestRunner runner2;
+  sandbox::TargetPolicy* policy = runner2.GetPolicy();
+
+  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
+            SBOX_ALL_OK);
+  // In a component build, the DLLs must be allowed to load.
+#if defined(COMPONENT_BUILD)
+  base::FilePath exe_path;
+  EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  // Allow all *.dll in current directory to load.
+  EXPECT_EQ(
+      sandbox::SBOX_ALL_OK,
+      policy->AddRule(sandbox::TargetPolicy::SUBSYS_SIGNED_BINARY,
+                      sandbox::TargetPolicy::SIGNED_ALLOW_LOAD,
+                      exe_path.DirName().AppendASCII("*.dll").value().c_str()));
+#endif  // defined(COMPONENT_BUILD)
+
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
+}
 // This test validates that we can load an unsigned DLL if the
 // MITIGATION_FORCE_MS_SIGNED_BINS mitigation is NOT set.
 TEST(ProcessMitigationsTest, CheckWin10MsSigned_Success) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_TH2)
+  if (base::win::GetVersion() < base::win::Version::WIN10_TH2)
     return;
 
-  HANDLE mutex =
-      ::CreateMutexW(nullptr, false, hooking_dll::g_hooking_dll_mutex);
-  EXPECT_TRUE(mutex);
-  EXPECT_EQ(WAIT_OBJECT_0,
-            ::WaitForSingleObject(mutex, SboxTestEventTimeout()));
+  ScopedTestMutex mutex(hooking_dll::g_hooking_dll_mutex);
 
-  // Expect success; Do not enable mitigation; Use non MS-signed binary.
-  TestWin10MsSigned(true, false, false);
-
-  EXPECT_TRUE(::ReleaseMutex(mutex));
-  EXPECT_TRUE(::CloseHandle(mutex));
+  TestWin10MsSigned(sandbox::SBOX_TEST_SUCCEEDED /* expected */,
+                    false /* enable_mitigation */,
+                    false /* delayed */,
+                    false /* use_ms_signed_binary */,
+                    false /* add_dll_permission */,
+                    false /* add_directory_permission */);
 }
 
 // This test validates that setting the MITIGATION_FORCE_MS_SIGNED_BINS
 // mitigation prevents the loading of an unsigned DLL.
 TEST(ProcessMitigationsTest, CheckWin10MsSigned_Failure) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_TH2)
+  if (base::win::GetVersion() < base::win::Version::WIN10_TH2)
     return;
 
-  HANDLE mutex =
-      ::CreateMutexW(nullptr, false, hooking_dll::g_hooking_dll_mutex);
-  EXPECT_TRUE(mutex);
-  EXPECT_EQ(WAIT_OBJECT_0,
-            ::WaitForSingleObject(mutex, SboxTestEventTimeout()));
+  ScopedTestMutex mutex(hooking_dll::g_hooking_dll_mutex);
 
-  // Expect failure; Enable mitigation; Use non MS-signed binary.
-  TestWin10MsSigned(false, true, false);
+  TestWin10MsSigned(sandbox::SBOX_TEST_FAILED /* expected */,
+                    true /* enable_mitigation */,
+                    true /* delayed */,
+                    false /* use_ms_signed_binary */,
+                    false /* add_dll_permission */,
+                    false /* add_directory_permission */);
+}
 
-  EXPECT_TRUE(::ReleaseMutex(mutex));
-  EXPECT_TRUE(::CloseHandle(mutex));
+// ASAN doesn't initialize early enough for the intercepts in NtCreateSection to
+// be able to use std::unique_ptr, so disable pre-launch CIG on ASAN builds.
+#if !defined(ADDRESS_SANITIZER)
+#define MAYBE_CheckWin10MsSignedWithIntercept_Success \
+  CheckWin10MsSignedWithIntercept_Success
+#define MAYBE_CheckWin10MsSigned_FailurePreSpawn \
+  CheckWin10MsSigned_FailurePreSpawn
+#else
+#define MAYBE_CheckWin10MsSignedWithIntercept_Success \
+  DISABLED_CheckWin10MsSignedWithIntercept_Success
+#define MAYBE_CheckWin10MsSigned_FailurePreSpawn \
+  DISABLED_CheckWin10MsSigned_FailurePreSpawn
+#endif
+
+// This test validates that setting the MITIGATION_FORCE_MS_SIGNED_BINS
+// mitigation allows the loading of an unsigned DLL if intercept in place.
+TEST(ProcessMitigationsTest, MAYBE_CheckWin10MsSignedWithIntercept_Success) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_TH2)
+    return;
+
+  ScopedTestMutex mutex(hooking_dll::g_hooking_dll_mutex);
+
+  // Expect success; Enable mitigation; Use non MS-signed binary.
+#if defined(COMPONENT_BUILD)
+  // In a component build, add the directory to the allowed list.
+  TestWin10MsSigned(sandbox::SBOX_TEST_SUCCEEDED /* expected */,
+                    true /* enable_mitigation */,
+                    false /* delayed */,
+                    false /* use_ms_signed_binary */,
+                    true /* add_dll_permission */,
+                    true /* add_directory_permission */);
+#else
+  TestWin10MsSigned(sandbox::SBOX_TEST_SUCCEEDED /* expected */,
+                    true /* enable_mitigation */,
+                    false /* delayed */,
+                    false /* use_ms_signed_binary */,
+                    true /* add_dll_permission */,
+                    false /* add_directory_permission */);
+#endif  // defined(COMPONENT_BUILD)
+}
+
+// This test validates that setting the MITIGATION_FORCE_MS_SIGNED_BINS
+// mitigation pre-load prevents the loading of an unsigned DLL.
+TEST(ProcessMitigationsTest, MAYBE_CheckWin10MsSigned_FailurePreSpawn) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_TH2)
+    return;
+
+  ScopedTestMutex mutex(hooking_dll::g_hooking_dll_mutex);
+
+  // Other code in base/process relies on this invariant.
+  static_assert(
+      base::win::kStatusInvalidImageHashExitCode == STATUS_INVALID_IMAGE_HASH,
+      "Invalid hash exit code does not match between base and sandbox.");
+
+#if defined(COMPONENT_BUILD)
+  // In a component build, the executable will fail to start-up because
+  // imports e.g. base.dll cannot be resolved.
+  int expected = STATUS_INVALID_IMAGE_HASH;
+#else
+  // In a non-component build, the process will start, but the unsigned
+  // DLL will fail to load inside the test itself.
+  int expected = sandbox::SBOX_TEST_FAILED;
+#endif
+
+  TestWin10MsSigned(expected /* expected */,
+                    true /* enable_mitigation */,
+                    false /* delayed */,
+                    false /* use_ms_signed_binary */,
+                    false /* add_dll_permission */,
+                    false /* add_directory_permission */);
 }
 
 // This test validates that we can load a signed Microsoft DLL if the
 // MITIGATION_FORCE_MS_SIGNED_BINS mitigation is NOT set.  Very basic
 // sanity test.
 TEST(ProcessMitigationsTest, CheckWin10MsSigned_MsBaseline) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_TH2)
+  if (base::win::GetVersion() < base::win::Version::WIN10_TH2)
     return;
 
-  HANDLE mutex =
-      ::CreateMutexW(nullptr, false, hooking_dll::g_hooking_dll_mutex);
-  EXPECT_TRUE(mutex);
-  EXPECT_EQ(WAIT_OBJECT_0,
-            ::WaitForSingleObject(mutex, SboxTestEventTimeout()));
+  ScopedTestMutex mutex(hooking_dll::g_hooking_dll_mutex);
 
-  // Expect success; Do not enable mitigation; Use MS-signed binary.
-  TestWin10MsSigned(true, false, true);
-
-  EXPECT_TRUE(::ReleaseMutex(mutex));
-  EXPECT_TRUE(::CloseHandle(mutex));
+  TestWin10MsSigned(sandbox::SBOX_TEST_SUCCEEDED /* expected */,
+                    false /* enable_mitigation */,
+                    false /* delayed */,
+                    true /* use_ms_signed_binary */,
+                    false /* add_dll_permission */,
+                    false /* add_directory_permission */);
 }
 
 // This test validates that setting the MITIGATION_FORCE_MS_SIGNED_BINS
 // mitigation still allows the load of an MS-signed DLL.
 TEST(ProcessMitigationsTest, CheckWin10MsSigned_MsSuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_TH2)
+  if (base::win::GetVersion() < base::win::Version::WIN10_TH2)
     return;
 
-  HANDLE mutex =
-      ::CreateMutexW(nullptr, false, hooking_dll::g_hooking_dll_mutex);
-  EXPECT_TRUE(mutex);
-  EXPECT_EQ(WAIT_OBJECT_0,
-            ::WaitForSingleObject(mutex, SboxTestEventTimeout()));
+  ScopedTestMutex mutex(hooking_dll::g_hooking_dll_mutex);
 
-  // Expect success; Enable mitigation; Use MS-signed binary.
-  TestWin10MsSigned(true, true, true);
-
-  EXPECT_TRUE(::ReleaseMutex(mutex));
-  EXPECT_TRUE(::CloseHandle(mutex));
+  TestWin10MsSigned(sandbox::SBOX_TEST_SUCCEEDED /* expected */,
+                    true /* enable_mitigation */,
+                    true /* delayed */,
+                    true /* use_ms_signed_binary */,
+                    false /* add_dll_permission */,
+                    false /* add_directory_permission */);
 }
 
 //------------------------------------------------------------------------------
@@ -838,7 +960,7 @@ TEST(ProcessMitigationsTest, CheckChildProcessSuccess) {
   EXPECT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &cmd));
   cmd = cmd.Append(L"calc.exe");
 
-  base::string16 test_command = L"TestChildProcess \"";
+  std::wstring test_command = L"TestChildProcess \"";
   test_command += cmd.value().c_str();
   test_command += L"\" false";
 
@@ -862,7 +984,7 @@ TEST(ProcessMitigationsTest, CheckChildProcessFailure) {
   EXPECT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &cmd));
   cmd = cmd.Append(L"calc.exe");
 
-  base::string16 test_command = L"TestChildProcess \"";
+  std::wstring test_command = L"TestChildProcess \"";
   test_command += cmd.value().c_str();
   test_command += L"\" false";
 
@@ -888,7 +1010,7 @@ TEST(ProcessMitigationsTest, CheckChildProcessAbnormalExit) {
   EXPECT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &cmd));
   cmd = cmd.Append(L"calc.exe");
 
-  base::string16 test_command = L"TestChildProcess \"";
+  std::wstring test_command = L"TestChildProcess \"";
   test_command += cmd.value().c_str();
   test_command += L"\" false ";
   test_command += std::to_wstring(STATUS_ACCESS_VIOLATION);
@@ -907,10 +1029,10 @@ TEST(ProcessMitigationsTest, CheckChildProcessAbnormalExit) {
 // on a process.
 TEST(ProcessMitigationsTest,
      CheckWin10RestrictIndirectBranchPredictionPolicySuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_RS3)
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS3)
     return;
 
-  base::string16 test_command = L"CheckPolicy ";
+  std::wstring test_command = L"CheckPolicy ";
   test_command += std::to_wstring(TESTPOLICY_RESTRICTINDIRECTBRANCHPREDICTION);
 
   //---------------------------------

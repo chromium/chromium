@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/power_monitor/power_observer.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
@@ -49,11 +48,11 @@ class UploadDataStream;
 class URLRequestStatus;
 class X509Certificate;
 
-class NET_EXPORT URLRequestJob : public base::PowerObserver {
+class NET_EXPORT URLRequestJob {
  public:
   explicit URLRequestJob(URLRequest* request,
                          NetworkDelegate* network_delegate);
-  ~URLRequestJob() override;
+  virtual ~URLRequestJob();
 
   // Returns the request that owns this job.
   URLRequest* request() const {
@@ -104,12 +103,6 @@ class NET_EXPORT URLRequestJob : public base::PowerObserver {
   // error. This is just the backend for URLRequest::Read, see that function for
   // more info.
   int Read(IOBuffer* buf, int buf_size);
-
-  // Stops further caching of this request, if any. For more info, see
-  // URLRequest::StopCaching().
-  virtual void StopCaching();
-
-  virtual bool GetFullRequestHeaders(HttpRequestHeaders* headers) const;
 
   // Get the number of bytes received from network. The values returned by this
   // will never decrease over the lifetime of the URLRequestJob.
@@ -180,9 +173,9 @@ class NET_EXPORT URLRequestJob : public base::PowerObserver {
   // obtaining the credentials passing them to SetAuth.
   virtual bool NeedsAuth();
 
-  // Fills the authentication info with the server's response.
-  virtual void GetAuthChallengeInfo(
-      scoped_refptr<AuthChallengeInfo>* auth_info);
+  // Returns a copy of the authentication challenge that came with the server's
+  // response.
+  virtual std::unique_ptr<AuthChallengeInfo> GetAuthChallengeInfo();
 
   // Resend the request with authentication credentials.
   virtual void SetAuth(const AuthCredentials& credentials);
@@ -228,10 +221,6 @@ class NET_EXPORT URLRequestJob : public base::PowerObserver {
   // See url_request.h for details.
   virtual IPEndPoint GetResponseRemoteEndpoint() const;
 
-  // base::PowerObserver methods:
-  // We invoke URLRequestJob::Kill on suspend (crbug.com/4606).
-  void OnSuspend() override;
-
   // Called after a NetworkDelegate has been informed that the URLRequest
   // will be destroyed. This is used to track that no pending callbacks
   // exist at destruction time of the URLRequestJob, unless they have been
@@ -253,18 +242,31 @@ class NET_EXPORT URLRequestJob : public base::PowerObserver {
   // from the remote party with the actual response headers recieved.
   virtual void SetResponseHeadersCallback(ResponseHeadersCallback callback) {}
 
-  // Given |policy|, |referrer|, and |destination|, returns the
-  // referrer URL mandated by |request|'s referrer policy.
-  static GURL ComputeReferrerForPolicy(URLRequest::ReferrerPolicy policy,
-                                       const GURL& original_referrer,
-                                       const GURL& destination);
+  // Given |policy|, |referrer|, an optional |initiator|, and |destination|,
+  // returns the referrer URL mandated by |request|'s referrer policy. If the
+  // initiator does not have a value, which is the case for many
+  // browser-initiated requests, we fallback to using the origin of |referrer|.
+  //
+  // If |same_origin_out_for_metrics| is non-null, saves to
+  // |*same_origin_out_for_metrics| whether |initiator| and |destination| are
+  // cross-origin.
+  // (This allows reporting in a UMA whether the request is same-origin, without
+  // recomputing that information.)
+  static GURL ComputeReferrerForPolicy(
+      URLRequest::ReferrerPolicy policy,
+      const GURL& original_referrer,
+      const base::Optional<url::Origin>& initiator,
+      const GURL& destination,
+      bool* same_origin_out_for_metrics = nullptr);
 
  protected:
   // Notifies the job that a certificate is requested.
   void NotifyCertificateRequested(SSLCertRequestInfo* cert_request_info);
 
   // Notifies the job about an SSL certificate error.
-  void NotifySSLCertificateError(const SSLInfo& ssl_info, bool fatal);
+  void NotifySSLCertificateError(int net_error,
+                                 const SSLInfo& ssl_info,
+                                 bool fatal);
 
   // Delegates to URLRequest.
   bool CanGetCookies(const CookieList& cookie_list) const;
@@ -279,16 +281,16 @@ class NET_EXPORT URLRequestJob : public base::PowerObserver {
   // Notifies the job that headers have been received.
   void NotifyHeadersComplete();
 
+  // Called when the final set headers have been received (no more redirects to
+  // follow, and no more auth challenges that will be responded to).
+  void NotifyFinalHeadersReceived();
+
   // Notifies the request that a start error has occurred.
   void NotifyStartError(const URLRequestStatus& status);
 
   // Used as an asynchronous callback for Kill to notify the URLRequest
   // that we were canceled.
   void NotifyCanceled();
-
-  // Notifies the job the request should be restarted.
-  // Should only be called if the job has not started a response.
-  void NotifyRestartRequired();
 
   // See corresponding functions in url_request.h.
   void OnCallToDelegate(NetLogEventType type);
@@ -400,17 +402,6 @@ class NET_EXPORT URLRequestJob : public base::PowerObserver {
   // the URLRequest::Delegate.
   void NotifyDone();
 
-  // Subclasses may implement this method to record packet arrival times.
-  // The default implementation does nothing.  Only invoked when bytes have been
-  // read since the last invocation.
-  virtual void UpdatePacketReadTimes();
-
-
-  // Notify the network delegate that more bytes have been received or sent over
-  // the network, if bytes have been received or sent since the previous
-  // notification.
-  void MaybeNotifyNetworkBytes();
-
   // Indicates that the job is done producing data, either it has completed
   // all the data or an error has been encountered. Set exclusively by
   // NotifyDone so that it is kept in sync with the request.
@@ -447,21 +438,11 @@ class NET_EXPORT URLRequestJob : public base::PowerObserver {
   // The network delegate to use with this request, if any.
   NetworkDelegate* network_delegate_;
 
-  // The value from GetTotalReceivedBytes() the last time
-  // MaybeNotifyNetworkBytes() was called. Used to calculate how bytes have been
-  // newly received since the last notification.
-  int64_t last_notified_total_received_bytes_;
-
-  // The value from GetTotalSentBytes() the last time MaybeNotifyNetworkBytes()
-  // was called. Used to calculate how bytes have been newly sent since the last
-  // notification.
-  int64_t last_notified_total_sent_bytes_;
-
   // Non-null if ReadRawData() returned ERR_IO_PENDING, and the read has not
   // completed.
   CompletionOnceCallback read_raw_callback_;
 
-  base::WeakPtrFactory<URLRequestJob> weak_factory_;
+  base::WeakPtrFactory<URLRequestJob> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(URLRequestJob);
 };

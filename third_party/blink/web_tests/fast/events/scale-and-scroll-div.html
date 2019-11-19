@@ -1,122 +1,104 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <style>
-        ::-webkit-scrollbar {
-            width: 0px;
-            height: 0px;
-        }
-        #bluebox {
-          width: 100px;
-          height: 100px;
-          background: blue;
-          padding: 0px;
-          margin: 0px;
-        }
-        #redbox {
-          width: 100px;
-          height: 100px;
-          background: red;
-          padding: 0px;
-          margin: 0px;
-        }
-    </style>
-    <script>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='../../resources/gesture-util.js'></script>
+<style>
+    ::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+    }
+    #bluebox {
+      width: 100px;
+      height: 100px;
+      background: blue;
+      padding: 0px;
+      margin: 0px;
+    }
+    #redbox {
+      width: 100px;
+      height: 100px;
+      background: red;
+      padding: 0px;
+      margin: 0px;
+    }
+</style>
+<script>
+  const floatPrecision = 0.1;
+  const scrollDistance = 10;
 
-      var floatPrecision = 0.1;
-      var scrollDistance = 10;
-      var expectedScrollDistance;
-      var scrollBox;
-      var integerScrollOffset = true;
+  async function scroll(scaleFactor, msg) {
+      const scrollBox = document.getElementById("scrollbox");
+      let expectedScrollDistance;
 
-      function scroll(scaleFactor) {
-          if (integerScrollOffset)
-              expectedScrollDistance = Math.floor(scrollDistance/scaleFactor);
-          else
-              expectedScrollDistance = scrollDistance/scaleFactor;
+      if (internals.runtimeFlags.fractionalScrollOffsetsEnabled)
+          expectedScrollDistance = scrollDistance/scaleFactor;
+      else
+          expectedScrollDistance = Math.floor(scrollDistance/scaleFactor);
 
-          scrollBox.scrollTop = 0;
+      scrollBox.scrollTop = 0;
 
-          eventSender.gestureScrollBegin(10, 100);
-          for(var i = 0; i < scrollDistance; ++i) {
-              eventSender.gestureScrollUpdate(0, -1);
-          }
-          eventSender.gestureScrollEnd(0, 0);
+      let location = { x: 10, y: 100 };
+      await smoothScroll(scrollDistance,
+                         location.x,
+                         location.y,
+                         GestureSourceType.TOUCH_INPUT,
+                         'down',
+                         SPEED_INSTANT);
 
-          shouldBeCloseTo('scrollBox.scrollTop', expectedScrollDistance, floatPrecision);
+      assert_approx_equals(scrollBox.scrollTop,
+                           expectedScrollDistance,
+                           floatPrecision,
+                           msg + " - scroll down.");
 
-          scrollBox.scrollTop = 20;
+      scrollBox.scrollTop = 20;
 
-          eventSender.gestureScrollBegin(10, 300);
-          for(var i = 0; i < scrollDistance; ++i) {
-              eventSender.gestureScrollUpdate(0, 1);
-          }
-          eventSender.gestureScrollEnd(0, 0);
+      location = { x: 10, y: 300 };
+      await smoothScroll(scrollDistance,
+                         location.x,
+                         location.y,
+                         GestureSourceType.TOUCH_INPUT,
+                         'up',
+                         SPEED_INSTANT);
 
-          if (integerScrollOffset)
-              expectedScrollDistance = Math.floor(20 - scrollDistance/scaleFactor);
-          else
-              expectedScrollDistance = 20 - scrollDistance/scaleFactor;
+      if (internals.runtimeFlags.fractionalScrollOffsetsEnabled)
+          expectedScrollDistance = 20 - scrollDistance/scaleFactor;
+      else
+          expectedScrollDistance = Math.floor(20 - scrollDistance/scaleFactor);
 
-          shouldBeCloseTo('scrollBox.scrollTop', expectedScrollDistance, floatPrecision);
-      }
+      assert_approx_equals(scrollBox.scrollTop,
+                           expectedScrollDistance,
+                           floatPrecision,
+                           msg +  " - scroll up.");
+  }
 
-      function scaleWithEventSender(scaleFactor) {
-          if (window.internals) {
-             internals.setPageScaleFactor(scaleFactor);
-          }
-      }
+  window.onload = () => {
+    promise_test(async () => {
+      window.internals.setPageScaleFactor(1.0);
+      await scroll(1.0, "Scrolling unscaled div");
 
-      function test() {
-              scrollBox = document.getElementById("scrollbox");
+      window.internals.setPageScaleFactor(1.5);
+      await scroll(1.5, "Scrolling 1.5 scaled div");
 
-              debug('Scrolling unscaled div');
-              scaleWithEventSender(1.0);
-              scroll(1.0);
-              debug('Scrolling 1.5 scaled div');
-              scaleWithEventSender(1.5);
-              scroll(1.5);
-              debug('Scrolling 1.63 scaled div');
-              scaleWithEventSender(1.63);
-              scroll(1.63);
-              debug('Scrolling 2.0 scaled div');
-              scaleWithEventSender(2.0);
-              scroll(2.0);
-      }
+      window.internals.setPageScaleFactor(1.63);
+      await scroll(1.63, "Scrolling 1.63 scaled div");
 
-     function run_test() {
-         if (window.eventSender && window.internals) {
-            description('This tests that a div scrolled by gesture touch while the page is scaled still scrolls at the rate of the touch');
+      window.internals.setPageScaleFactor(2.0);
+      await scroll(2.0, "Scrolling 2.0 scaled div");
+    }, "div touch scrolled under pinch-zoom scrolls at correct rate");
 
-            if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
-                internals.settings.setPreferCompositingToLCDTextEnabled(true);
-                integerScrollOffset = false;
-            }
-            test();
-
-          } else {
-            debug('eventSender not detected. Not running test.');
-          }
-      }
-    </script>
-    <script src="../../resources/js-test.js"></script>
-</head>
-<body onload="run_test();">
-    <div id="scrollbox" style="left:0; top:0; width:500px; height:500px; position:absolute; overflow-y: scroll; overflow-x: scroll;">
-      <div id="bluebox"></div>
-      <div id="redbox"></div>
-      <div id="bluebox"></div>
-      <div id="redbox"></div>
-      <div id="bluebox"></div>
-      <div id="redbox"></div>
-      <div id="bluebox"></div>
-      <div id="redbox"></div>
-      <div id="bluebox"></div>
-      <div id="redbox"></div>
-      <div id="bluebox"></div>
-      <div id="redbox"></div>
-    </div>
-
-    <div id="console"></div>
-</body>
-</html>
+  };
+</script>
+<div id="scrollbox" style="left:0; top:0; width:500px; height:500px; position:absolute; overflow-y: scroll; overflow-x: scroll;">
+  <div id="bluebox"></div>
+  <div id="redbox"></div>
+  <div id="bluebox"></div>
+  <div id="redbox"></div>
+  <div id="bluebox"></div>
+  <div id="redbox"></div>
+  <div id="bluebox"></div>
+  <div id="redbox"></div>
+  <div id="bluebox"></div>
+  <div id="redbox"></div>
+  <div id="bluebox"></div>
+  <div id="redbox"></div>
+</div>

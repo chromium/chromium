@@ -8,20 +8,23 @@ body {
   margin: 0;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 /** Typography -------------------------------------------------------------- */
 
 .content {
   /* This is identical to the default background color. It's necessary to set it
      for the case when a theme with a background image is installed. */
-  background-color: rgb(50, 54, 57);
-  color: rgb(189, 193, 198);
+  background-color: rgb(53, 54, 58);
+  color: rgb(232, 234, 237);  /* --google-grey-200 */
   font-size: calc(100% - 2px);
   line-height: calc(100% + 6px);
   min-width: 240px;
 }
 
 h1 {
-  color: rgb(218, 220, 224);
   font-size: calc(100% + 8px);
   font-weight: 400;
   line-height: calc(100% + 8px);
@@ -97,18 +100,57 @@ em {
   }
 }
 
+/** Cookie Controls --------------------------------------------------------- */
+
+#cookie-controls {
+  align-items: center;
+  background-color: rgb(60, 64, 67); /* --google-grey-800 */
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  padding: 12px 20px;
+}
+
+#cookie-controls-description {
+  flex: 1;
+  padding-inline-end: 12px;
+}
+
+#cookie-controls-description em {
+  display: block;
+}
+
+#cookie-controls-toggle,
+#cookie-controls-tooltip-icon-wrapper {
+  flex: none;
+}
+
+#cookie-controls-toggle:not(:defined) {
+  width: 34px;
+}
+
+#cookie-controls-tooltip-icon-wrapper {
+  /* calc(var(--cr-icon-size) + var(--cr-controlled-by-spacing)) */
+  /* Using actual numbers because the above definitions are lazy-loaded. */
+  width: 44px;
+}
+
+#cookie-controls-tooltip-icon-wrapper > a {
+  color: inherit;
+}
+
 /** Layout ------------------------------------------------------------------ */
 
 /* Align the content, icon, and title to to the center. */
 .content {
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline-end: auto;
+  margin-inline-start: auto;
   max-width: 600px;
 }
 
 .icon {
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline-end: auto;
+  margin-inline-start: auto;
 }
 
 h1 {
@@ -116,24 +158,20 @@ h1 {
 }
 
 /* Align the two columns of bulletpoints next to each other. */
+#bulletpoints-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
 .bulletpoints {
-  float: left;
+  flex-basis: 285px;  /* (600px - 30px) / 2. */
+  flex-grow: 1;
+  flex-shrink: 0;
 }
 
-html[dir=rtl] .bulletpoints {
-  float: right;
-}
-
-.bulletpoints + .bulletpoints {
-  clear: right;
-}
-
-html[dir=rtl] .bulletpoints + .bulletpoints {
-  clear: left;
-}
-
-.clearer {
-  clear: both;
+.bulletpoints.first {
+  margin-inline-end: 30px;
 }
 
 /* On narrow screens, align everything to the left. */
@@ -151,11 +189,6 @@ html[dir=rtl] .bulletpoints + .bulletpoints {
   h1 {
     text-align: start;
   }
-
-  .bulletpoints + .bulletpoints,
-  html[dir=rtl] .bulletpoints + .bulletpoints {
-    clear: both;
-  }
 }
 
 /** Paddings and margins ---------------------------------------------------- */
@@ -165,29 +198,21 @@ html[dir=rtl] .bulletpoints + .bulletpoints {
   padding-inline-start: 16px;
 }
 
-/* Margins of floating elements don't collapse. The margin for bulletpoints
- * will usually be provided by a neighboring element. */
-.bulletpoints {
-  margin: 0;
-}
-
-.bulletpoints + .bulletpoints {
-  margin-inline-start: 40px;
-}
-
-.bulletpoints + .bulletpoints.too-wide {
-  margin-inline-start: 0;
-  margin-top: 1.5rem;
-}
-
 /* Wide screens. */
 @media (min-width: 720px) {
   .icon,
   h1,
   #subtitle,
   .learn-more-button {
-    margin-bottom: 1.5rem;
     margin-top: 1.5rem;
+  }
+
+  .icon,
+  h1,
+  #subtitle,
+  .bulletpoints,
+  #cookie-controls {
+    margin-bottom: 1.5rem;
   }
 
   .content {
@@ -221,13 +246,15 @@ html[dir=rtl] .bulletpoints + .bulletpoints {
   /* Smaller vertical margins on very short screens. */
   @media (max-height: 320px) {
     h1,
-    #subtitle,
-    .learn-more-button {
+    #subtitle {
       margin-bottom: 16px;
       margin-top: 16px;
     }
 
-    .icon {
+    .learn-more-button,
+    .bulletpoints,
+    .icon,
+    #cookie-controls {
       margin-bottom: 16px;
     }
   }
@@ -236,22 +263,21 @@ html[dir=rtl] .bulletpoints + .bulletpoints {
 /* Narrow screens */
 @media (max-width: 720px) {
   .content {
-    padding: 72px 32px;
     min-width: 176px;
+    padding: 72px 32px;
   }
 
   .icon,
   h1,
-  #subtitle,
-  .learn-more-button {
+  #subtitle {
     margin-bottom: 1.5rem;
     margin-top: 1.5rem;
   }
 
-  /* The two columns of bulletpoints are moved under each other. */
-  .bulletpoints + .bulletpoints {
-    margin-inline-start: 0;
-    margin-top: 1.5rem;
+  .bulletpoints,
+  .learn-more-button,
+  #cookie-controls {
+    margin-bottom: 1.5rem;
   }
 
   /* Smaller offsets on smaller screens. */
@@ -262,14 +288,15 @@ html[dir=rtl] .bulletpoints + .bulletpoints {
 
     .icon,
     h1,
-    #subtitle,
-    .learn-more-button {
+    #subtitle {
       margin-bottom: 1rem;
       margin-top: 1rem;
     }
 
-    .bulletpoints + .bulletpoints {
-      margin-top: 1rem;
+    .bulletpoints,
+    .learn-more-button,
+    #cookie-controls {
+      margin-bottom: 1rem;
     }
   }
 
@@ -294,7 +321,7 @@ html[dir=rtl] .bulletpoints + .bulletpoints {
 @media (max-width: 240px) {
   .content {
     min-width: 192px;
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-inline-end: 24px;
+    padding-inline-start: 24px;
   }
 }

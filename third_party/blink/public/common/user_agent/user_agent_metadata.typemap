@@ -12,4 +12,4 @@ traits_headers =
 sources = [
   "//third_party/blink/common/user_agent/user_agent_mojom_traits.cc",
 ]
-type_mappings = [ "blink.mojom.UserAgentMetadata=blink::UserAgentMetadata" ]
+type_mappings = [ "blink.mojom.UserAgentMetadata=::blink::UserAgentMetadata" ]

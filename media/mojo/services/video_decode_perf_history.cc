@@ -12,11 +12,11 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/key_systems.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/capabilities/learning_helper.h"
-#include "media/mojo/interfaces/media_types.mojom.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "media/mojo/mojom/media_types.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -24,18 +24,34 @@ namespace media {
 
 namespace {
 
-const double kMaxSmoothDroppedFramesPercentParamDefault = .10;
+const double kMaxSmoothDroppedFramesPercentParamDefault = .05;
 
 }  // namespace
 
 const char VideoDecodePerfHistory::kMaxSmoothDroppedFramesPercentParamName[] =
     "smooth_threshold";
 
+const char
+    VideoDecodePerfHistory::kEmeMaxSmoothDroppedFramesPercentParamName[] =
+        "eme_smooth_threshold";
+
 // static
-double VideoDecodePerfHistory::GetMaxSmoothDroppedFramesPercent() {
-  return base::GetFieldTrialParamByFeatureAsDouble(
+double VideoDecodePerfHistory::GetMaxSmoothDroppedFramesPercent(bool is_eme) {
+  double threshold = base::GetFieldTrialParamByFeatureAsDouble(
       kMediaCapabilitiesWithParameters, kMaxSmoothDroppedFramesPercentParamName,
       kMaxSmoothDroppedFramesPercentParamDefault);
+
+  // For EME, the precedence of overrides is:
+  // 1. EME specific override, |k*Eme*MaxSmoothDroppedFramesPercentParamName
+  // 2. Non-EME override, |kMaxSmoothDroppedFramesPercentParamName|
+  // 3. |kMaxSmoothDroppedFramesPercentParamDefault|
+  if (is_eme) {
+    threshold = base::GetFieldTrialParamByFeatureAsDouble(
+        kMediaCapabilitiesWithParameters,
+        kEmeMaxSmoothDroppedFramesPercentParamName, threshold);
+  }
+
+  return threshold;
 }
 
 VideoDecodePerfHistory::VideoDecodePerfHistory(
@@ -43,8 +59,7 @@ VideoDecodePerfHistory::VideoDecodePerfHistory(
     learning::FeatureProviderFactoryCB feature_factory_cb)
     : db_(std::move(db)),
       db_init_status_(UNINITIALIZED),
-      feature_factory_cb_(std::move(feature_factory_cb)),
-      weak_ptr_factory_(this) {
+      feature_factory_cb_(std::move(feature_factory_cb)) {
   DVLOG(2) << __func__;
   DCHECK(db_);
 
@@ -59,11 +74,11 @@ VideoDecodePerfHistory::~VideoDecodePerfHistory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void VideoDecodePerfHistory::BindRequest(
-    mojom::VideoDecodePerfHistoryRequest request) {
+void VideoDecodePerfHistory::BindReceiver(
+    mojo::PendingReceiver<mojom::VideoDecodePerfHistory> receiver) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bindings_.AddBinding(this, std::move(request));
+  receivers_.Add(this, std::move(receiver));
 }
 
 void VideoDecodePerfHistory::InitDatabase() {
@@ -124,7 +139,8 @@ void VideoDecodePerfHistory::GetPerfInfo(mojom::PredictionFeaturesPtr features,
 
   VideoDecodeStatsDB::VideoDescKey video_key =
       VideoDecodeStatsDB::VideoDescKey::MakeBucketedKey(
-          features->profile, features->video_size, features->frames_per_sec);
+          features->profile, features->video_size, features->frames_per_sec,
+          features->key_system, features->use_hw_secure_codecs);
 
   db_->GetDecodeStats(
       video_key, base::BindOnce(&VideoDecodePerfHistory::OnGotStatsForRequest,
@@ -133,6 +149,7 @@ void VideoDecodePerfHistory::GetPerfInfo(mojom::PredictionFeaturesPtr features,
 }
 
 void VideoDecodePerfHistory::AssessStats(
+    const VideoDecodeStatsDB::VideoDescKey& key,
     const VideoDecodeStatsDB::DecodeStatsEntry* stats,
     bool* is_smooth,
     bool* is_power_efficient) {
@@ -157,7 +174,9 @@ void VideoDecodePerfHistory::AssessStats(
 
   *is_power_efficient =
       percent_power_efficient >= kMinPowerEfficientDecodedFramePercent;
-  *is_smooth = percent_dropped <= GetMaxSmoothDroppedFramesPercent();
+
+  *is_smooth = percent_dropped <=
+               GetMaxSmoothDroppedFramesPercent(!key.key_system.empty());
 }
 
 void VideoDecodePerfHistory::OnGotStatsForRequest(
@@ -174,7 +193,7 @@ void VideoDecodePerfHistory::OnGotStatsForRequest(
   double percent_dropped = 0;
   double percent_power_efficient = 0;
 
-  AssessStats(stats.get(), &is_smooth, &is_power_efficient);
+  AssessStats(video_key, stats.get(), &is_smooth, &is_power_efficient);
 
   if (stats && stats->frames_decoded) {
     DCHECK(database_success);
@@ -207,19 +226,21 @@ VideoDecodePerfHistory::SaveCallback VideoDecodePerfHistory::GetSaveCallback() {
 }
 
 void VideoDecodePerfHistory::SavePerfRecord(ukm::SourceId source_id,
+                                            learning::FeatureValue origin,
                                             bool is_top_frame,
                                             mojom::PredictionFeatures features,
                                             mojom::PredictionTargets targets,
                                             uint64_t player_id,
                                             base::OnceClosure save_done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(3) << __func__
-           << base::StringPrintf(
-                  " profile:%s size:%s fps:%d decoded:%d dropped:%d",
-                  GetProfileName(features.profile).c_str(),
-                  features.video_size.ToString().c_str(),
-                  features.frames_per_sec, targets.frames_decoded,
-                  targets.frames_dropped);
+  DVLOG(3)
+      << __func__
+      << base::StringPrintf(
+             " profile:%s size:%s fps:%d decoded:%d dropped:%d efficient:%d",
+             GetProfileName(features.profile).c_str(),
+             features.video_size.ToString().c_str(), features.frames_per_sec,
+             targets.frames_decoded, targets.frames_dropped,
+             targets.frames_power_efficient);
 
   if (db_init_status_ == FAILED) {
     DVLOG(3) << __func__ << " Can't save stats. No DB!";
@@ -230,21 +251,22 @@ void VideoDecodePerfHistory::SavePerfRecord(ukm::SourceId source_id,
   if (db_init_status_ != COMPLETE) {
     init_deferred_api_calls_.push_back(base::BindOnce(
         &VideoDecodePerfHistory::SavePerfRecord, weak_ptr_factory_.GetWeakPtr(),
-        source_id, is_top_frame, std::move(features), std::move(targets),
-        player_id, std::move(save_done_cb)));
+        source_id, origin, is_top_frame, std::move(features),
+        std::move(targets), player_id, std::move(save_done_cb)));
     InitDatabase();
     return;
   }
 
   VideoDecodeStatsDB::VideoDescKey video_key =
       VideoDecodeStatsDB::VideoDescKey::MakeBucketedKey(
-          features.profile, features.video_size, features.frames_per_sec);
+          features.profile, features.video_size, features.frames_per_sec,
+          features.key_system, features.use_hw_secure_codecs);
   VideoDecodeStatsDB::DecodeStatsEntry new_stats(
       targets.frames_decoded, targets.frames_dropped,
       targets.frames_power_efficient);
 
   if (learning_helper_)
-    learning_helper_->AppendStats(video_key, new_stats);
+    learning_helper_->AppendStats(video_key, origin, new_stats);
 
   // Get past perf info and report UKM metrics before saving this record.
   db_->GetDecodeStats(
@@ -322,9 +344,14 @@ void VideoDecodePerfHistory::ReportUkmMetrics(
   builder.SetVideo_NaturalHeight(video_key.size.height());
   builder.SetVideo_NaturalWidth(video_key.size.width());
 
+  if (!video_key.key_system.empty()) {
+    builder.SetVideo_EME_KeySystem(GetKeySystemIntForUKM(video_key.key_system));
+    builder.SetVideo_EME_UseHwSecureCodecs(video_key.use_hw_secure_codecs);
+  }
+
   bool past_is_smooth = false;
   bool past_is_efficient = false;
-  AssessStats(past_stats, &past_is_smooth, &past_is_efficient);
+  AssessStats(video_key, past_stats, &past_is_smooth, &past_is_efficient);
   builder.SetPerf_ApiWouldClaimIsSmooth(past_is_smooth);
   builder.SetPerf_ApiWouldClaimIsPowerEfficient(past_is_efficient);
   if (past_stats) {
@@ -340,7 +367,7 @@ void VideoDecodePerfHistory::ReportUkmMetrics(
 
   bool new_is_smooth = false;
   bool new_is_efficient = false;
-  AssessStats(&new_stats, &new_is_smooth, &new_is_efficient);
+  AssessStats(video_key, &new_stats, &new_is_smooth, &new_is_efficient);
   builder.SetPerf_RecordIsSmooth(new_is_smooth);
   builder.SetPerf_RecordIsPowerEfficient(new_is_efficient);
   builder.SetPerf_VideoFramesDecoded(new_stats.frames_decoded);

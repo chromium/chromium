@@ -23,9 +23,9 @@ class BrowserAccessibilityManager;
 typedef bool (*AccessibilityMatchPredicate)(BrowserAccessibility* start_element,
                                             BrowserAccessibility* this_element);
 
-#define DECLARE_ACCESSIBILITY_PREDICATE(PredicateName)    \
-  bool PredicateName(BrowserAccessibility* start_element, \
-                     BrowserAccessibility* this_element)
+#define DECLARE_ACCESSIBILITY_PREDICATE(PredicateName)                   \
+  CONTENT_EXPORT bool PredicateName(BrowserAccessibility* start_element, \
+                                    BrowserAccessibility* this_element)
 
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityArticlePredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityBlockquotePredicate);
@@ -51,6 +51,7 @@ DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityListItemPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityLiveRegionPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityMainPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityMediaPredicate);
+DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityPopupButtonPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityRadioButtonPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityRadioGroupPredicate);
 DECLARE_ACCESSIBILITY_PREDICATE(AccessibilityTablePredicate);
@@ -111,8 +112,9 @@ class CONTENT_EXPORT OneShotAccessibilityTreeSearch {
   // If true, wraps to the last element.
   void SetCanWrapToLastElement(bool can_wrap_to_last_element);
 
-  // If true, only considers nodes that aren't invisible or offscreen.
-  void SetVisibleOnly(bool visible_only);
+  // If true, only considers nodes that aren't offscreen.
+  // Programmatically hidden elements are always skipped.
+  void SetOnscreenOnly(bool onscreen_only);
 
   // Restricts the matches to only nodes where |text| is found as a
   // substring of any of that node's accessible text, including its
@@ -142,7 +144,7 @@ class CONTENT_EXPORT OneShotAccessibilityTreeSearch {
   int result_limit_;
   bool immediate_descendants_only_;
   bool can_wrap_to_last_element_;
-  bool visible_only_;
+  bool onscreen_only_;
   std::string search_text_;
 
   std::vector<AccessibilityMatchPredicate> predicates_;

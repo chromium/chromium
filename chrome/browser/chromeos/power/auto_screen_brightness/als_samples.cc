@@ -25,20 +25,27 @@ void AmbientLightSampleBuffer::SaveToBuffer(
   Prune(sample.sample_time);
 }
 
-base::Optional<double> AmbientLightSampleBuffer::AverageAmbient(
+void AmbientLightSampleBuffer::ClearBuffer() {
+  samples_.clear();
+}
+
+base::Optional<AlsAvgStdDev> AmbientLightSampleBuffer::AverageAmbientWithStdDev(
     base::TimeTicks now) {
-  const auto add_lux = [](double lux, const Sample& sample) {
-    return lux + sample.lux;
-  };
-
   Prune(now);
-
-  if (samples_.empty()) {
+  if (samples_.empty())
     return base::nullopt;
-  } else {
-    return std::accumulate(samples_.begin(), samples_.end(), 0.0, add_lux) /
-           samples_.size();
+
+  const size_t count = samples_.size();
+  double avg = 0;
+  double stddev = 0;
+  for (const auto& sample : samples_) {
+    avg += sample.lux;
+    stddev += sample.lux * sample.lux;
   }
+
+  avg = avg / count;
+  return base::Optional<AlsAvgStdDev>(
+      {avg, std::sqrt(stddev / count - avg * avg)});
 }
 
 size_t AmbientLightSampleBuffer::NumberOfSamples(base::TimeTicks now) {

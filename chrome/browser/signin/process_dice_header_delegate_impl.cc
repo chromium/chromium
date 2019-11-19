@@ -8,10 +8,10 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "chrome/common/webui_url_constants.h"
+#include "chrome/common/url_constants.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "services/identity/public/cpp/identity_manager.h"
 #include "url/gurl.h"
 
 namespace {
@@ -19,7 +19,7 @@ namespace {
 void RedirectToNtp(content::WebContents* contents) {
   VLOG(1) << "RedirectToNtp";
   contents->GetController().LoadURL(
-      GURL(chrome::kChromeUINewTabURL), content::Referrer(),
+      GURL(chrome::kChromeSearchLocalNtpUrl), content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
 }
 
@@ -28,7 +28,7 @@ void RedirectToNtp(content::WebContents* contents) {
 ProcessDiceHeaderDelegateImpl::ProcessDiceHeaderDelegateImpl(
     content::WebContents* web_contents,
     signin::AccountConsistencyMethod account_consistency,
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     bool is_sync_signin_tab,
     EnableSyncCallback enable_sync_callback,
     ShowSigninErrorCallback show_signin_error_callback,
@@ -63,7 +63,8 @@ bool ProcessDiceHeaderDelegateImpl::ShouldEnableSync() {
   return true;
 }
 
-void ProcessDiceHeaderDelegateImpl::EnableSync(const std::string& account_id) {
+void ProcessDiceHeaderDelegateImpl::EnableSync(
+    const CoreAccountId& account_id) {
   if (!ShouldEnableSync()) {
     // No special treatment is needed if the user is not enabling sync.
     return;

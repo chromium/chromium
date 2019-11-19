@@ -1,4 +1,0 @@
-Test CustomEvents on workers. Should print "SUCCESS".
-
-SUCCESS
-

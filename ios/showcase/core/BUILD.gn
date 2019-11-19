@@ -24,6 +24,27 @@ source_set("core") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("main_eg2") {
+  testonly = true
+  sources = [
+    "main.mm",
+  ]
+  deps = [
+    ":core",
+    "//base",
+    "//ios/chrome/browser/ui/settings",
+    "//ios/chrome/browser/ui/toolbar/keyboard_assist",
+
+    # Needed to disable the tests hooks.
+    "//ios/chrome/test/earl_grey:hooks",
+
+    # Needed for including ios/chrome/browser/ui.
+    "//ios/chrome/browser/tabs:tabs_internal",
+  ]
+  libs = [ "UIKit.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 source_set("main") {
   sources = [
     "main.mm",
@@ -31,26 +52,48 @@ source_set("main") {
   deps = [
     ":core",
     "//base",
+    "//ios/chrome/browser/ui/settings",
+    "//ios/chrome/browser/ui/toolbar/keyboard_assist",
 
     # Needed to disable the tests hooks.
     "//ios/chrome/app:tests_fake_hook",
 
     # Needed for including ios/chrome/browser/ui.
     "//ios/chrome/browser/tabs:tabs_internal",
-    "//ios/chrome/browser/ui:ui_internal",
   ]
   libs = [ "UIKit.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg_tests") {
+  defines = [ "CHROME_EARL_GREY_1" ]
   testonly = true
   sources = [
     "showcase_egtest.mm",
   ]
   deps = [
     "//ios/showcase/test",
+    "//ios/testing/earl_grey:earl_grey_support",
     "//ios/third_party/earl_grey:earl_grey+link",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "showcase_egtest.mm",
+  ]
+  deps = [
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/showcase/test:eg2_test",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+  libs = [ "UIKit.framework" ]
 }

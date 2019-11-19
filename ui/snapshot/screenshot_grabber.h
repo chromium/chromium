@@ -72,7 +72,7 @@ class SNAPSHOT_EXPORT ScreenshotGrabber {
   std::unique_ptr<ScopedCursorHider> cursor_hider_;
 #endif
 
-  base::WeakPtrFactory<ScreenshotGrabber> factory_;
+  base::WeakPtrFactory<ScreenshotGrabber> factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ScreenshotGrabber);
 };

@@ -85,7 +85,7 @@ int GetContentProcessType(
 
 BackgroundProfilingTriggers::BackgroundProfilingTriggers(
     ProfilingProcessHost* host)
-    : host_(host), weak_ptr_factory_(this) {
+    : host_(host) {
   DCHECK(host_);
 }
 
@@ -169,7 +169,7 @@ void BackgroundProfilingTriggers::OnReceivedMemoryDump(
 
   // Sample a control population.
   for (const auto& proc : dump->process_dumps()) {
-    if (base::ContainsValue(profiled_pids, proc.pid()) &&
+    if (base::Contains(profiled_pids, proc.pid()) &&
         ShouldTriggerControlReport(
             GetContentProcessType(proc.process_type()))) {
       TriggerMemoryReport("MEMLOG_CONTROL_TRIGGER");
@@ -180,7 +180,7 @@ void BackgroundProfilingTriggers::OnReceivedMemoryDump(
   // Detect whether memory footprint is too high and send a memlog report.
   bool should_send_report = false;
   for (const auto& proc : dump->process_dumps()) {
-    if (!base::ContainsValue(profiled_pids, proc.pid()))
+    if (!base::Contains(profiled_pids, proc.pid()))
       continue;
 
     uint32_t private_footprint_kb = proc.os_dump().private_footprint_kb;
@@ -205,7 +205,7 @@ void BackgroundProfilingTriggers::OnReceivedMemoryDump(
     // Clear the watermark for all non-profiled pids.
     for (auto it = pmf_at_last_upload_.begin();
          it != pmf_at_last_upload_.end();) {
-      if (base::ContainsValue(profiled_pids, it->first)) {
+      if (base::Contains(profiled_pids, it->first)) {
         ++it;
       } else {
         it = pmf_at_last_upload_.erase(it);

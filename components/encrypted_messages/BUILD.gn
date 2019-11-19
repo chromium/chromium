@@ -6,7 +6,6 @@ import("//third_party/protobuf/proto_library.gni")
 
 static_library("encrypted_messages") {
   sources = [
-    "encrypted_message.proto",
     "message_encrypter.cc",
     "message_encrypter.h",
   ]

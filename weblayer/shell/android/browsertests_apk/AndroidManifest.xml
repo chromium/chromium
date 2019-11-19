@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+ -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.chromium.weblayer_browsertests_apk">
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <application android:name="WebLayerBrowserTestsApplication" android:label="WebLayerBrowserTests">
+        <activity android:name="WebLayerBrowserTestsActivity"
+                  android:launchMode="singleTask"
+                  android:theme="@android:style/Theme.Holo.Light.NoActionBar"
+                  android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
+                  android:windowSoftInputMode="adjustPan|stateUnspecified">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <meta-data android:name="org.chromium.weblayer.WebLayerPackage"
+                   android:value="org.chromium.weblayer_browsertests_apk"/>
+    </application>
+
+    <instrumentation android:name="org.chromium.native_test.NativeTestInstrumentationTestRunner"
+            android:label="WebLayerBrowserTests"
+            android:targetPackage="org.chromium.weblayer_browsertests_apk"
+            chromium-junit3="true"/>
+</manifest>

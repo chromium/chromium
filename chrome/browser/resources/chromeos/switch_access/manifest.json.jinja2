@@ -3,9 +3,9 @@
   "key": "{{key}}",
 {% endif %}
   "manifest_version": 2,
-  "name": "TODO: Translated Switch access name",
+  "name": "__MSG_SWITCH_ACCESS_NAME__",
   "version": "{{set_version}}",
-  "description": "TODO: Translated Switch access description",
+  "description": "__MSG_SWITCH_ACCESS_DESCRIPTION__",
 {% if is_guest_manifest == '1' %}
   "incognito": "split",
 {% endif %}
@@ -15,25 +15,38 @@
       "closure_shim.js",
       "commands.js",
       "constants.js",
-      "keyboard_handler.js",
+      "event_helper.js",
+      "focus_ring_manager.js",
       "menu_manager.js",
+      "metrics.js",
       "navigation_manager.js",
-      "prefs.js",
+      "nodes/switch_access_node.js",
+      "nodes/node_wrapper.js",
+      "nodes/back_button_node.js",
+      "nodes/group_node.js",
+      "nodes/keyboard_node.js",
+      "nodes/system_menu_node.js",
+      "preferences.js",
+      "rect_helper.js",
       "switch_access.js",
       "switch_access_constants.js",
       "switch_access_predicate.js",
-      "text_input_manager.js",
+      "text_navigation_manager.js",
       "tree_walker.js",
       "background.js"
     ]
   },
   "permissions": [
     "accessibilityPrivate",
-    "storage",
+    "clipboard",
+    "clipboardRead",
+    "commandLinePrivate",
+    "metricsPrivate",
+    "settingsPrivate",
     "tabs"
   ],
   "automation": {
     "desktop": true
   },
-  "options_page": "options.html"
+  "default_locale": "en"
 }

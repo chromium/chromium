@@ -11,33 +11,20 @@
 namespace ui {
 
 namespace {
-bool g_has_swizzled_method = false;
 AccessibilityFocusOverrider::Client* g_overridden_focused_element = nil;
-
-// Swizzled method for -[NSApplication accessibilityFocusedUIElement]. This
-// will return the overridden element if one is present. Otherwise, it will
-// return the key window.
-id SwizzledAccessibilityFocusedUIElement(NSApplication* app, SEL) {
-  if (g_overridden_focused_element)
-    return g_overridden_focused_element->GetAccessibilityFocusedUIElement();
-  return [[app keyWindow] accessibilityFocusedUIElement];
-}
 }  // namespace
 
 AccessibilityFocusOverrider::AccessibilityFocusOverrider(Client* client)
-    : client_(client) {
-  if (!g_has_swizzled_method) {
-    Method method = class_getInstanceMethod(
-        [NSApplication class], @selector(accessibilityFocusedUIElement));
-    method_setImplementation(method,
-                             (IMP)SwizzledAccessibilityFocusedUIElement);
-    g_has_swizzled_method = true;
-  }
-}
+    : client_(client) {}
 
 AccessibilityFocusOverrider::~AccessibilityFocusOverrider() {
   if (g_overridden_focused_element == client_)
     g_overridden_focused_element = nullptr;
+}
+
+void AccessibilityFocusOverrider::SetAppIsRemote(bool app_is_remote) {
+  app_is_remote_ = app_is_remote;
+  UpdateOverriddenKeyElement();
 }
 
 void AccessibilityFocusOverrider::SetWindowIsKey(bool window_is_key) {
@@ -52,11 +39,18 @@ void AccessibilityFocusOverrider::SetViewIsFirstResponder(
 }
 
 void AccessibilityFocusOverrider::UpdateOverriddenKeyElement() {
-  if (window_is_key_ && view_is_first_responder_) {
+  if (app_is_remote_ && window_is_key_ && view_is_first_responder_) {
     g_overridden_focused_element = client_;
   } else if (g_overridden_focused_element == client_) {
     g_overridden_focused_element = nullptr;
   }
+}
+
+// static
+id AccessibilityFocusOverrider::GetFocusedUIElement() {
+  if (g_overridden_focused_element)
+    return g_overridden_focused_element->GetAccessibilityFocusedUIElement();
+  return nil;
 }
 
 }  // namespace ui

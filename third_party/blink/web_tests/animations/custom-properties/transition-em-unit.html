@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+  CSS.registerProperty({
+    name: '--x',
+    syntax: '<length>',
+    inherits: false,
+    initialValue: '0px'
+  });
+  CSS.registerProperty({
+    name: '--y',
+    syntax: '<integer>',
+    inherits: false,
+    initialValue: '0'
+  });
+</script>
+<style>
+#target1 {
+  font-size: 10px;
+  --x: 10em;
+  transition: --x 3600s steps(2, start);
+}
+#target1.test {
+  font-size: 20px;
+}
+#target2 {
+  font-size: 10px;
+  --x: 100px;
+  --y: 0;
+  transition: --x 0.1s, --y 0.1s;
+}
+#target2.test {
+  --x: 10em;
+  --y: 10;
+}
+</style>
+<div id="target1"></div>
+<div id="target2"></div>
+<script>
+
+test(() => {
+  target1.offsetTop;
+  target1.classList.toggle('test');
+  let s = getComputedStyle(target1);
+  assert_equals(s.getPropertyValue('--x'), '150px');
+}, 'Transition starts when computed value changes via em unit');
+
+promise_test(async () => {
+  target2.offsetTop;
+
+  // Collect all transitionstart events.
+  let start_events = [];
+  target2.addEventListener('transitionstart', (e) => start_events.push(e));
+
+  // Wait for any transitionend.
+  await new Promise((resolve, reject) => {
+    target2.addEventListener('transitionend', resolve);
+    target2.classList.toggle('test');
+  });
+
+  // --y should transition, but --x should not.
+  assert_equals(start_events.length, 1);
+}, 'No transition when computed value does not change');
+
+</script>

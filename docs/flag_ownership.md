@@ -60,7 +60,9 @@ burden. The flags team will probably only approve your non-expiring flag if:
 If you have a non-expiring flag, the flags team requires a comment in the json
 file as to the rationale that it be non-expiring. A quick sentence or two will
 be fine. Yes, we are aware that, technically, JSON files can't have comments.
-Don't worry about it.
+Don't worry about it. You'll also need to add your flag to the permitted list in
+[`chrome/browser/flag-never-expire-list.json`](https://cs.chromium.org/chromium/src/chrome/browser/flag-never-expire-list.json?sq=package:chromium&q=flag-never-expire-list.json&g=0&l=1)
+which will require approval from the flags team.
 
 ## What Should My Expiry Be?
 

@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+FAIL Property color-scheme value '' computes to 'normal' assert_true: color-scheme doesn't seem to be supported in the computed style expected true got false
+FAIL Property color-scheme value 'normal' computes to 'normal' assert_true: color-scheme doesn't seem to be supported in the computed style expected true got false
+FAIL Property color-scheme value 'light dark' computes to 'light dark' assert_true: color-scheme doesn't seem to be supported in the computed style expected true got false
+FAIL Property color-scheme value 'dark light' computes to 'dark light' assert_true: color-scheme doesn't seem to be supported in the computed style expected true got false
+FAIL Property color-scheme value 'light unknown' computes to 'light unknown' assert_true: color-scheme doesn't seem to be supported in the computed style expected true got false
+FAIL Property color-scheme value 'only light' computes to 'only light' assert_true: color-scheme doesn't seem to be supported in the computed style expected true got false
+FAIL Property color-scheme value 'light light' computes to 'light light' assert_true: color-scheme doesn't seem to be supported in the computed style expected true got false
+FAIL Property color-scheme value 'light only' computes to 'light only' assert_true: color-scheme doesn't seem to be supported in the computed style expected true got false
+FAIL Property color-scheme value 'initial' computes to 'normal' assert_true: color-scheme doesn't seem to be supported in the computed style expected true got false
+FAIL Property color-scheme value 'inherit' computes to 'normal' assert_true: color-scheme doesn't seem to be supported in the computed style expected true got false
+FAIL Property color-scheme value 'unset' computes to 'normal' assert_true: color-scheme doesn't seem to be supported in the computed style expected true got false
+FAIL Property color-scheme value 'revert' computes to 'normal' assert_true: color-scheme doesn't seem to be supported in the computed style expected true got false
+FAIL Property color-scheme value 'default' computes to 'normal' assert_true: color-scheme doesn't seem to be supported in the computed style expected true got false
+FAIL Property color-scheme value 'none' computes to 'normal' assert_true: color-scheme doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

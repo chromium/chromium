@@ -1,0 +1,93 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+import "components/tracing/common/background_tracing_agent.mojom";
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/generic_pending_receiver.mojom";
+import "services/service_manager/public/mojom/service.mojom";
+
+// The primordial interface child processes use to push requests to their
+// browser-side host object.
+interface ChildProcessHost {
+  // Requests that the browser bind |receiver| on behalf of the child process.
+  // Whether or not the interface type encapsulated by |receiver| is supported
+  // depends on the process type and potentially on the Content embedder.
+  BindHostReceiver(mojo_base.mojom.GenericPendingReceiver receiver);
+};
+
+// An interface bound on the browser's IO thread to accept a ChildProcessHost
+// receiver from the child process. A remote to this interface is sent to child
+// processes via |ChildProcess.Initialize()| so that the child process may in
+// turn send back a ChildProcessHost receiver for the browser to bind. This
+// allows the child process to begin queuing messages on its ChildProcessHost
+// immediately upon startup without first waiting for
+// |ChildProcess.Initialize()|.
+//
+// NOTE: This is a separate interface and message rather than a simple reply to
+// |ChildProcess.Initialize()| because RenderProcessHostImpl binds its
+// ChildProcess remote on the main thread, and the ChildProcessHost receiver
+// needs to be accepted and bound on the IO thread without a main-thread hop.
+interface ChildProcessHostBootstrap {
+  BindProcessHost(pending_receiver<ChildProcessHost> receiver);
+};
+
+// A control interface the browser uses to drive the behavior of all types of
+// Content child processes.
+interface ChildProcess {
+  // The first message sent by the process host to the child process. This is
+  // sent to allow the child process to bootstrap its own ChildProcessHost
+  // interface, to which it may have already queued messages.
+  Initialize(pending_remote<ChildProcessHostBootstrap> boostrap);
+
+  // Tells the child process that it's safe to shutdown.
+  ProcessShutdown();
+
+  // Requests the child process send its Mach task port to the caller.
+  [EnableIf=is_mac]
+  GetTaskPort() => (handle task_port);
+
+  // Tells the child process to begin or end IPC message logging.
+  [EnableIf=ipc_logging]
+  SetIPCLoggingEnabled(bool on);
+
+  // Used to configure triggering for background tracing of child processes.
+  GetBackgroundTracingAgentProvider(
+      pending_receiver<tracing.mojom.BackgroundTracingAgentProvider> receiver);
+
+  // Force the child process to crash immediately (i.e. a hard crash, no
+  // cleanup, generating a crash report).
+  CrashHungProcess();
+
+  // Tells the child process to run an instance of a service named
+  // |service_name|, binding it to |receiver|. This is used by the browser to
+  // support launching of packaged services within Utility or GPU processes.
+  //
+  // DEPRECATED: |BindServiceInterface()| should be used instead. This will be
+  // removed soon.
+  RunService(string service_name,
+             pending_receiver<service_manager.mojom.Service> receiver);
+
+  // Requests that the process bind a receiving pipe targeting the service
+  // interface named by |receiver|.
+  //
+  // TODO(crbug.com/977637): Rename this to |RunService()| once the above method
+  // is removed.
+  BindServiceInterface(mojo_base.mojom.GenericPendingReceiver receiver);
+
+  // Requests that the process bind a receiving pipe targeting the interface
+  // named by |receiver|. Unlike |BindServiceInterface()| this may be used to
+  // bind arbitrary interfaces on many different types of child processes.
+  // Calls to this method generally end up in
+  // |ChildThreadImpl::OnBindReceiver()|.
+  //
+  // Whether or not the interface type encapsulated by |receiver| is supported
+  // depends on the process type and potentially on the Content embedder.
+  BindReceiver(mojo_base.mojom.GenericPendingReceiver receiver);
+
+  // Sets the coverage file for the child process.
+  [EnableIf=clang_coverage]
+  SetCoverageFile(mojo_base.mojom.File file);
+};

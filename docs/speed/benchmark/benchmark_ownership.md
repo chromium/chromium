@@ -34,7 +34,7 @@ There can be multiple owners of a benchmark, for example if there are multiple t
 
 ### C++ Perf Benchmarks
 1. Open [`src/tools/perf/core/perf_data_generator.py`](https://cs.chromium.org/chromium/src/tools/perf/core/perf_data_generator.py).
-1. Find the BenchmarkMetadata for the benchmark. It will be in a dictionary named `NON_TELEMETRY_BENCHMARKS` or `NON_WATERFALL_BENCHMARKS`.
+1. Find the BenchmarkMetadata for the benchmark. It will be in a dictionary named `GTEST_BENCHMARKS`.
 1. Update the email (first field of `BenchmarkMetadata`).
 1. Run `tools/perf/generate_perf_data` to update `tools/perf/benchmark.csv`.
 1. Upload `perf_data_generator.py` and `benchmark.csv` to a CL for review. Please add any previous owners to the review.

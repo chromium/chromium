@@ -1,0 +1,14 @@
+{
+  "name": "Fake Google Pay",
+  "short_name": "Fake Google Pay",
+  "icons": [{
+    "src": "icon.png",
+    "sizes": "48x48",
+    "type": "image/png"
+  }],
+  "serviceworker": {
+    "src": "app.js",
+    "use_cache": false,
+    "scope": "/pay"
+  }
+}

@@ -3,16 +3,8 @@
  * found in the LICENSE file. */
 
 [slot='subtitle'] {
-  color: #5F6368;
+  color: rgb(95, 99, 104);
   font-weight: 400; /* roboto-regular */
-}
-
-[slot='bottom-buttons'] {
-  padding: 0 34px;
-}
-
-[slot='footer'] {
-  padding: 50px 0 0;
 }
 
 #fingerprintUnlockIcon {
@@ -25,11 +17,16 @@
   width: 210px;
 }
 
-#sensorLocation {
-  background-image:
-      url(chrome://theme/IDR_LOGIN_FINGERPRINT_SCANNER_ANIMATION);
-  background-size: 352px 242px;
+#sensorLocationContainer {
   height: 242px;
   width: 352px;
+}
+
+#sensorLocation {
+  background-image:
+      url(chrome://oobe/fingerprint_scanner_animation.png);
+  background-size: 352px 242px;
+  height: 100%;
+  width: 100%;
 }
 

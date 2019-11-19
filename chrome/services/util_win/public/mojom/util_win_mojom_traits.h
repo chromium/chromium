@@ -9,8 +9,8 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"
-#include "chrome/browser/conflicts/module_info_util_win.h"
-#include "chrome/browser/conflicts/module_info_win.h"
+#include "chrome/browser/win/conflicts/module_info.h"
+#include "chrome/browser/win/conflicts/module_info_util.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "ui/shell_dialogs/execute_select_file_win.h"

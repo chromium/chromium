@@ -14,6 +14,8 @@ var cca = cca || {};
  */
 cca.nav = cca.nav || {};
 
+cca.App = cca.App || {};
+
 /**
  * All views stacked in ascending z-order (DOM order) for navigation, and only
  * the topmost visible view is active (clickable/focusable).
@@ -34,8 +36,17 @@ cca.nav.topmostIndex_ = -1;
 cca.nav.setup = function(views) {
   cca.nav.views_ = views;
   // Manage all tabindex usages in cca.nav for navigation.
-  document.querySelectorAll('[tabindex]').forEach(
-      (element) => cca.util.makeUnfocusableByMouse(element));
+  document.querySelectorAll('[tabindex]')
+      .forEach(
+          (element) => cca.util.makeUnfocusableByMouse(
+              /** @type {!HTMLElement} */ (element)));
+  document.body.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      cca.state.set('tab-navigation', true);
+    }
+  });
+  document.body.addEventListener(
+      'pointerdown', () => cca.state.set('tab-navigation', false));
 };
 
 /**
@@ -204,6 +215,17 @@ cca.nav.onKeyPressed = function(event) {
       break;
     case 'Ctrl-Shift-C':
       openInspector('element');
+      break;
+    case 'Ctrl-Shift-E':
+      (async () => {
+        if (!await cca.mojo.DeviceOperator.isSupported()) {
+          cca.toast.show('error_msg_expert_mode_not_supported');
+          return;
+        }
+        const newState = !cca.state.get('expert');
+        cca.state.set('expert', newState);
+        cca.proxy.browserProxy.localStorageSet({expert: newState});
+      })();
       break;
     default:
       // Make the topmost visible view handle the pressed key.

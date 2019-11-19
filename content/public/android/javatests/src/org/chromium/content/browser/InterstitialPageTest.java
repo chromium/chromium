@@ -12,16 +12,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.InterstitialPageDelegateAndroid;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_shell_apk.ContentShellActivity;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
@@ -48,12 +48,14 @@ public class InterstitialPageTest {
         }
 
         public boolean isInterstitialShowing() throws ExecutionException {
-            return ThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
-                @Override
-                public Boolean call() throws Exception {
-                    return mInterstitialShowing;
-                }
-            }).booleanValue();
+            return TestThreadUtils
+                    .runOnUiThreadBlocking(new Callable<Boolean>() {
+                        @Override
+                        public Boolean call() {
+                            return mInterstitialShowing;
+                        }
+                    })
+                    .booleanValue();
         }
 
         @Override
@@ -68,7 +70,7 @@ public class InterstitialPageTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         ContentShellActivity activity = mActivityTestRule.launchContentShellWithUrl(URL);
         Assert.assertNotNull(activity);
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
@@ -90,7 +92,7 @@ public class InterstitialPageTest {
     @Test
     @LargeTest
     @Feature({"Navigation"})
-    @RetryOnFailure
+    @DisabledTest(message = "crbug.com/1022324")
     public void testCloseInterstitial() throws ExecutionException {
         final String proceedCommand = "PROCEED";
         final String htmlContent = "<html>"
@@ -114,10 +116,10 @@ public class InterstitialPageTest {
                 proceed();
             }
         };
-        TestWebContentsObserver observer = ThreadUtils.runOnUiThreadBlocking(
-                new Callable<TestWebContentsObserver>() {
+        TestWebContentsObserver observer =
+                TestThreadUtils.runOnUiThreadBlocking(new Callable<TestWebContentsObserver>() {
                     @Override
-                    public TestWebContentsObserver call() throws Exception {
+                    public TestWebContentsObserver call() {
                         delegate.showInterstitialPage(URL, mActivityTestRule.getWebContents());
                         return new TestWebContentsObserver(mActivityTestRule.getWebContents());
                     }

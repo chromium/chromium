@@ -15,8 +15,7 @@ class WorkerGlobalScope;
 // ModuleScriptFetcher for retrieving an installed ServiceWorker script
 // from ServiceWorker's script storage.
 class CORE_EXPORT InstalledServiceWorkerModuleScriptFetcher final
-    : public GarbageCollectedFinalized<
-          InstalledServiceWorkerModuleScriptFetcher>,
+    : public GarbageCollected<InstalledServiceWorkerModuleScriptFetcher>,
       public ModuleScriptFetcher {
   USING_GARBAGE_COLLECTED_MIXIN(InstalledServiceWorkerModuleScriptFetcher);
 
@@ -26,6 +25,7 @@ class CORE_EXPORT InstalledServiceWorkerModuleScriptFetcher final
   // Implements ModuleScriptFetcher.
   void Fetch(FetchParameters&,
              ResourceFetcher*,
+             const Modulator* modulator_for_built_in_modules,
              ModuleGraphLevel,
              ModuleScriptFetcher::Client*) override;
 

@@ -8,7 +8,6 @@ generate_jni("minidump_uploader_jni_headers") {
   sources = [
     "android/java/src/org/chromium/components/minidump_uploader/CrashReportMimeWriter.java",
   ]
-  jni_package = "components/minidump_uploader"
 }
 
 static_library("minidump_uploader") {
@@ -30,7 +29,8 @@ static_library("minidump_uploader") {
 android_library("minidump_uploader_java") {
   deps = [
     "//base:base_java",
-    "//third_party/android_deps:android_support_annotations_java",
+    "//base:jni_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
   ]
 
   java_files = [
@@ -46,6 +46,7 @@ android_library("minidump_uploader_java") {
     "android/java/src/org/chromium/components/minidump_uploader/util/HttpURLConnectionFactoryImpl.java",
     "android/java/src/org/chromium/components/minidump_uploader/util/NetworkPermissionUtil.java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 android_library("minidump_uploader_javatests") {

@@ -23,7 +23,7 @@ TEST(CFGSupportTests, DISABLED_MsIndirectFailure) {
   // CFG is only supported on >= Win8.1 Update 3.
   // Not checking for update, since test infra is updated and it would add
   // a lot of complexity.
-  if (base::win::GetVersion() < base::win::VERSION_WIN8_1)
+  if (base::win::GetVersion() < base::win::Version::WIN8_1)
     return;
 
   const wchar_t* exe_filename = L"cfi_unittest_exe.exe";

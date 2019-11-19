@@ -34,6 +34,8 @@ namespace {
 
 // Hardcode these constants to avoid dependences on //chrome and //content.
 const char kChromeUIScheme[] = "chrome";
+const char kDevToolsScheme[] = "devtools";
+const char kDevToolsFallbackScheme[] = "chrome-devtools";
 const char kChromeUIDefaultHost[] = "version";
 const char kViewSourceScheme[] = "view-source";
 
@@ -442,8 +444,10 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
     }
   }
 
-  // Proceed with about and chrome schemes, but not file or nonstandard schemes.
+  // Proceed with about, chrome, and devtools schemes,
+  // but not file or nonstandard schemes.
   if ((scheme != url::kAboutScheme) && (scheme != kChromeUIScheme) &&
+      (scheme != kDevToolsScheme) && (scheme != kDevToolsFallbackScheme) &&
       !url::IsStandard(scheme.c_str(),
                        url::Component(0, static_cast<int>(scheme.length())))) {
     return scheme;
@@ -459,6 +463,14 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
     // Have the GURL parser do the heavy lifting for us.
     url::ParseFileSystemURL(text->data(), text_length, parts);
     return scheme;
+  }
+
+  if (scheme == kDevToolsFallbackScheme) {
+    // Have the GURL parser do the heavy lifting for us.
+    url::ParseStandardURL(text->data(), text_length, parts);
+    // Now replace the fallback scheme alias with the real one
+    parts->scheme.reset();
+    return kDevToolsScheme;
   }
 
   if (parts->scheme.is_valid()) {
@@ -551,11 +563,11 @@ GURL FixupURL(const std::string& text, const std::string& desired_tld) {
     return GURL();
   }
 
-  // 'about:blank' is special-cased in various places in the code so it
-  // shouldn't be transformed into 'chrome://blank' as the code below will do.
+  // 'about:blank' and 'about:srcdoc' are special-cased in various places in the
+  // code and shouldn't use the chrome: scheme.
   if (base::LowerCaseEqualsASCII(scheme, url::kAboutScheme)) {
     GURL about_url(base::ToLowerASCII(trimmed));
-    if (about_url.IsAboutBlank())
+    if (about_url.IsAboutBlank() || about_url.IsAboutSrcdoc())
       return about_url;
   }
 
@@ -563,12 +575,18 @@ GURL FixupURL(const std::string& text, const std::string& desired_tld) {
   bool chrome_url =
       (scheme == url::kAboutScheme) || (scheme == kChromeUIScheme);
 
+  // Parse and rebuild devtools: and the fallback chrome-devtools: URLs.
+  bool devtools_url =
+      (scheme == kDevToolsScheme) || (scheme == kDevToolsFallbackScheme);
+
   // For some schemes whose layouts we understand, we rebuild it.
-  if (chrome_url ||
+  if (chrome_url || devtools_url ||
       url::IsStandard(scheme.c_str(),
                       url::Component(0, static_cast<int>(scheme.length())))) {
-    // Replace the about: scheme with the chrome: scheme.
-    std::string url(chrome_url ? kChromeUIScheme : scheme);
+    // Replace the about: scheme with the chrome: scheme, or
+    // chrome-devtoools: scheme with the devtools: scheme.
+    std::string url(chrome_url ? kChromeUIScheme
+                               : devtools_url ? kDevToolsScheme : scheme);
     url.append(url::kStandardSchemeSeparator);
 
     // We need to check whether the |username| is valid because it is our
@@ -684,7 +702,9 @@ bool IsEquivalentScheme(const std::string& scheme1,
                         const std::string& scheme2) {
   return scheme1 == scheme2 ||
          (scheme1 == url::kAboutScheme && scheme2 == kChromeUIScheme) ||
-         (scheme1 == kChromeUIScheme && scheme2 == url::kAboutScheme);
+         (scheme1 == kChromeUIScheme && scheme2 == url::kAboutScheme) ||
+         (scheme1 == kDevToolsScheme && scheme2 == kDevToolsFallbackScheme) ||
+         (scheme1 == kDevToolsFallbackScheme && scheme2 == kDevToolsScheme);
 }
 
 }  // namespace url_formatter

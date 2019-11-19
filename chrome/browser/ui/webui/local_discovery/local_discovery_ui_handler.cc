@@ -79,13 +79,13 @@ void ReadDevicesList(const CloudPrintPrinterList::DeviceList& devices,
                      const std::set<std::string>& local_ids,
                      base::ListValue* devices_list) {
   for (const auto& i : devices) {
-    if (base::ContainsKey(local_ids, i.id)) {
+    if (base::Contains(local_ids, i.id)) {
       devices_list->Append(CreateDeviceInfo(i));
     }
   }
 
   for (const auto& i : devices) {
-    if (!base::ContainsKey(local_ids, i.id)) {
+    if (!base::Contains(local_ids, i.id)) {
       devices_list->Append(CreateDeviceInfo(i));
     }
   }
@@ -119,7 +119,7 @@ LocalDiscoveryUIHandler::LocalDiscoveryUIHandler()
 
 LocalDiscoveryUIHandler::~LocalDiscoveryUIHandler() {
   Profile* profile = Profile::FromWebUI(web_ui());
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   if (identity_manager)
     identity_manager->RemoveObserver(this);
@@ -193,7 +193,7 @@ void LocalDiscoveryUIHandler::HandleStart(const base::ListValue* args) {
         cloud_print::PrivetHTTPAsynchronousFactory::CreateInstance(
             url_loader_factory);
 
-    identity::IdentityManager* identity_manager =
+    signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     if (identity_manager)
       identity_manager->AddObserver(this);
@@ -300,8 +300,7 @@ void LocalDiscoveryUIHandler::OnPrivetRegisterClaimToken(
     const GURL& url) {
   web_ui()->CallJavascriptFunctionUnsafe(
       "local_discovery.onRegistrationConfirmedOnPrinter");
-  if (!base::ContainsKey(device_descriptions_,
-                         current_http_client_->GetName())) {
+  if (!base::Contains(device_descriptions_, current_http_client_->GetName())) {
     SendRegisterError();
     return;
   }
@@ -459,7 +458,7 @@ void LocalDiscoveryUIHandler::SendRegisterDone(
 
 std::string LocalDiscoveryUIHandler::GetSyncAccount() const {
   Profile* profile = Profile::FromWebUI(web_ui());
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
   std::string email;
@@ -516,7 +515,7 @@ std::unique_ptr<GCDApiFlow> LocalDiscoveryUIHandler::CreateApiFlow() {
   if (!profile)
     return std::unique_ptr<GCDApiFlow>();
 
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   if (!(identity_manager && identity_manager->HasPrimaryAccount()))
     return std::unique_ptr<GCDApiFlow>();

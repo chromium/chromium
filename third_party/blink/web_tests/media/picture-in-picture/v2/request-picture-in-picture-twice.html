@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<title>Test request Picture-in-Picture on two elements</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../../../external/wpt/picture-in-picture/resources/picture-in-picture-helpers.js"></script>
+<script src="utils.js"></script>
+<body></body>
+<script>
+const options = { height: 1, width: 1 };
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const element1 = document.createElement('div');
+  const element2 = document.createElement('div');
+  await test_driver.bless('request Picture-in-Picture');
+  const promise = element1.requestPictureInPicture(options);
+  await promise_rejects(t, 'NotAllowedError', element2.requestPictureInPicture(options));
+  return promise;
+}, 'request Picture-in-Picture consumes user gesture');
+
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const video = await loadVideo(window.document, '../../content/test.ogv');
+  await test_driver.bless('request Picture-in-Picture');
+  await video.requestPictureInPicture();
+  assert_equals(document.pictureInPictureElement, video);
+
+  const element = document.createElement('div');
+  return element.requestPictureInPicture({ height: 1, width: 1 });
+}, 'request Picture-in-Picture does not require user gesture if document.pictureInPictureElement is set');
+</script>

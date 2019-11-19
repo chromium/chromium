@@ -7,15 +7,14 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
-#include "components/login/screens/screen_context.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
 namespace chromeos {
 
-class BaseScreenDelegate;
 class DemoPreferencesScreenView;
 
 // Controls demo mode preferences. The screen can be shown during OOBE. It
@@ -24,19 +23,28 @@ class DemoPreferencesScreen
     : public BaseScreen,
       public input_method::InputMethodManager::Observer {
  public:
-  DemoPreferencesScreen(BaseScreenDelegate* base_screen_delegate,
-                        DemoPreferencesScreenView* view);
+  enum class Result { COMPLETED, CANCELED };
+
+  using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
+  DemoPreferencesScreen(DemoPreferencesScreenView* view,
+                        const ScreenExitCallback& exit_callback);
   ~DemoPreferencesScreen() override;
+
+  void SetLocale(const std::string& locale);
+  void SetInputMethod(const std::string& input_method);
+  void SetDemoModeCountry(const std::string& country_id);
 
   // BaseScreen:
   void Show() override;
   void Hide() override;
   void OnUserAction(const std::string& action_id) override;
-  void OnContextKeyUpdated(const ::login::ScreenContext::KeyType& key) override;
 
   // Called when view is being destroyed. If Screen is destroyed earlier
   // then it has to call Bind(nullptr).
   void OnViewDestroyed(DemoPreferencesScreenView* view);
+
+ protected:
+  ScreenExitCallback* exit_callback() { return &exit_callback_; }
 
  private:
   // InputMethodManager::Observer:
@@ -55,10 +63,12 @@ class DemoPreferencesScreen
   // restored if user presses back button.
   std::string initial_input_method_;
 
-  ScopedObserver<input_method::InputMethodManager, DemoPreferencesScreen>
-      input_manager_observer_;
+  ScopedObserver<input_method::InputMethodManager,
+                 input_method::InputMethodManager::Observer>
+      input_manager_observer_{this};
 
   DemoPreferencesScreenView* view_;
+  ScreenExitCallback exit_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(DemoPreferencesScreen);
 };

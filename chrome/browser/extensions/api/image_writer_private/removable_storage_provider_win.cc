@@ -15,6 +15,7 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -197,7 +198,7 @@ RemovableStorageProvider::PopulateDeviceList() {
   SP_DEVICE_INTERFACE_DATA interface_data;
   interface_data.cbSize = sizeof(SP_INTERFACE_DEVICE_DATA);
 
-  scoped_refptr<StorageDeviceList> device_list(new StorageDeviceList());
+  auto device_list = base::MakeRefCounted<StorageDeviceList>();
   while (SetupDiEnumDeviceInterfaces(
       interface_enumerator,
       NULL,                    // Device Info data.

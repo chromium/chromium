@@ -11,18 +11,12 @@
     "dependencies": ["permission:accessibilityPrivate"],
     "contexts": ["blessed_extension"]
   },
-  // TODO(crbug/837773) De-dupe automation later.
-  "automationInternal": {
-    "internal": true,
-    "dependencies": ["manifest:automation"],
-    "contexts": ["blessed_extension"]
-  },
-  "automation": {
-    "dependencies": ["manifest:automation"],
-    "contexts": ["blessed_extension"]
-  },
   "brailleDisplayPrivate": {
     "dependencies": ["permission:brailleDisplayPrivate"],
+    "contexts": ["blessed_extension"]
+  },
+  "commandLinePrivate": {
+    "dependencies": ["permission:commandLinePrivate"],
     "contexts": ["blessed_extension"]
   },
   "i18n": {
@@ -37,7 +31,7 @@
     "contexts": ["blessed_extension"]
   },
   "extension.getURL": {
-    "contexts": ["blessed_extension", "unblessed_extension", "content_script", "extension_service_worker"]
+    "contexts": ["blessed_extension", "unblessed_extension", "content_script"]
   },
   "extension.getViews": [
     {
@@ -107,7 +101,7 @@
   "tabs": [{
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
-    "contexts": ["blessed_extension", "extension_service_worker"]
+    "contexts": ["blessed_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],

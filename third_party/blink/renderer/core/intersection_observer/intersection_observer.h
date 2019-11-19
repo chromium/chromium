@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -92,6 +91,7 @@ class CORE_EXPORT IntersectionObserver final
       const Vector<float>& thresholds,
       Document* document,
       EventCallback callback,
+      DeliveryBehavior behavior = kDeliverDuringPostLifecycleSteps,
       ThresholdInterpretation semantics = kFractionOfTarget,
       DOMHighResTimeStamp delay = 0,
       bool track_visbility = false,
@@ -131,13 +131,20 @@ class CORE_EXPORT IntersectionObserver final
   bool RootIsImplicit() const { return root_is_implicit_; }
 
   bool AlwaysReportRootBounds() const { return always_report_root_bounds_; }
+  bool NeedsOcclusionTracking() const {
+    return trackVisibility() && !observations_.IsEmpty();
+  }
 
   DOMHighResTimeStamp GetTimeStamp() const;
   DOMHighResTimeStamp GetEffectiveDelay() const;
-  const Length& TopMargin() const { return top_margin_; }
-  const Length& RightMargin() const { return right_margin_; }
-  const Length& BottomMargin() const { return bottom_margin_; }
-  const Length& LeftMargin() const { return left_margin_; }
+  const Vector<Length>& RootMargin() const { return root_margin_; }
+  const Length& TopMargin() const { return root_margin_[0]; }
+  const Length& RightMargin() const { return root_margin_[1]; }
+  const Length& BottomMargin() const { return root_margin_[2]; }
+  const Length& LeftMargin() const { return root_margin_[3]; }
+
+  bool ComputeIntersections(unsigned flags);
+
   void SetNeedsDelivery();
   DeliveryBehavior GetDeliveryBehavior() const;
   void Deliver();
@@ -156,17 +163,14 @@ class CORE_EXPORT IntersectionObserver final
   static void SetThrottleDelayEnabledForTesting(bool);
 
  private:
-  void ClearWeakMembers(Visitor*);
+  void ProcessCustomWeakness(const WeakCallbackInfo&);
 
-  const TraceWrapperMember<IntersectionObserverDelegate> delegate_;
-  WeakMember<Element> root_;
+  const Member<IntersectionObserverDelegate> delegate_;
+  UntracedMember<Element> root_;
   HeapLinkedHashSet<WeakMember<IntersectionObservation>> observations_;
   Vector<float> thresholds_;
   DOMHighResTimeStamp delay_;
-  Length top_margin_;
-  Length right_margin_;
-  Length bottom_margin_;
-  Length left_margin_;
+  Vector<Length> root_margin_;
   unsigned root_is_implicit_ : 1;
   unsigned track_visibility_ : 1;
   unsigned track_fraction_of_root_ : 1;

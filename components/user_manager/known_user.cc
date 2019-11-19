@@ -25,7 +25,8 @@ namespace {
 // placed in this list.
 const char kKnownUsers[] = "KnownUsers";
 
-// Known user preferences keys (stored in Local State).
+// Known user preferences keys (stored in Local State). All keys should be
+// listed in kReservedKeys below.
 
 // Key of canonical e-mail value.
 const char kCanonicalEmail[] = "email";
@@ -41,6 +42,9 @@ const char kAccountTypeKey[] = "account_type";
 
 // Key of whether this user ID refers to a SAML user.
 const char kUsingSAMLKey[] = "using_saml";
+
+// Key of whether this user authenticated via SAML using the principals API.
+const char kIsUsingSAMLPrincipalsAPI[] = "using_saml_principals_api";
 
 // Key of Device Id.
 const char kDeviceId[] = "device_id";
@@ -64,6 +68,25 @@ const char kProfileRequiresPolicy[] = "profile_requires_policy";
 // Key of the boolean flag telling if user is ephemeral and should be removed
 // from the local state on logout.
 const char kIsEphemeral[] = "is_ephemeral";
+
+// Key of the list value that stores challenge-response authentication keys.
+const char kChallengeResponseKeys[] = "challenge_response_keys";
+
+// List containing all the known user preferences keys.
+const char* kReservedKeys[] = {kCanonicalEmail,
+                               kGAIAIdKey,
+                               kObjGuidKey,
+                               kAccountTypeKey,
+                               kUsingSAMLKey,
+                               kIsUsingSAMLPrincipalsAPI,
+                               kDeviceId,
+                               kGAPSCookie,
+                               kReauthReasonKey,
+                               kGaiaIdMigration,
+                               kMinimalMigrationAttempted,
+                               kProfileRequiresPolicy,
+                               kIsEphemeral,
+                               kChallengeResponseKeys};
 
 PrefService* GetLocalState() {
   if (!UserManager::IsInitialized())
@@ -126,6 +149,19 @@ void UpdateIdentity(const AccountId& account_id, base::DictionaryValue& dict) {
   }
   dict.SetString(kAccountTypeKey,
                  AccountId::AccountTypeToString(account_id.GetAccountType()));
+}
+
+void ClearPref(const AccountId& account_id, const std::string& path) {
+  const base::DictionaryValue* user_pref_dict = nullptr;
+  if (!FindPrefs(account_id, &user_pref_dict))
+    return;
+
+  base::Value updated_user_pref = user_pref_dict->Clone();
+  base::DictionaryValue* updated_user_pref_dict;
+  updated_user_pref.GetAsDictionary(&updated_user_pref_dict);
+
+  updated_user_pref_dict->RemovePath(path);
+  UpdatePrefs(account_id, *updated_user_pref_dict, true);
 }
 
 }  // namespace
@@ -206,13 +242,6 @@ bool GetStringPref(const AccountId& account_id,
 void SetStringPref(const AccountId& account_id,
                    const std::string& path,
                    const std::string& in_value) {
-  PrefService* local_state = GetLocalState();
-
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-
-  ListPrefUpdate update(local_state, kKnownUsers);
   base::DictionaryValue dict;
   dict.SetString(path, in_value);
   UpdatePrefs(account_id, dict, false);
@@ -231,13 +260,6 @@ bool GetBooleanPref(const AccountId& account_id,
 void SetBooleanPref(const AccountId& account_id,
                     const std::string& path,
                     const bool in_value) {
-  PrefService* local_state = GetLocalState();
-
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-
-  ListPrefUpdate update(local_state, kKnownUsers);
   base::DictionaryValue dict;
   dict.SetBoolean(path, in_value);
   UpdatePrefs(account_id, dict, false);
@@ -255,16 +277,36 @@ bool GetIntegerPref(const AccountId& account_id,
 void SetIntegerPref(const AccountId& account_id,
                     const std::string& path,
                     const int in_value) {
-  PrefService* local_state = GetLocalState();
-
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-
-  ListPrefUpdate update(local_state, kKnownUsers);
   base::DictionaryValue dict;
   dict.SetInteger(path, in_value);
   UpdatePrefs(account_id, dict, false);
+}
+
+bool GetPref(const AccountId& account_id,
+             const std::string& path,
+             const base::Value** out_value) {
+  const base::DictionaryValue* user_pref_dict = nullptr;
+  if (!FindPrefs(account_id, &user_pref_dict))
+    return false;
+
+  *out_value = user_pref_dict->FindPath(path);
+  return *out_value != nullptr;
+}
+
+void SetPref(const AccountId& account_id,
+             const std::string& path,
+             base::Value in_value) {
+  base::DictionaryValue dict;
+  dict.SetPath(path, std::move(in_value));
+  UpdatePrefs(account_id, dict, false);
+}
+
+void RemovePref(const AccountId& account_id, const std::string& path) {
+  // Prevent removing keys that are used internally.
+  for (const std::string& key : kReservedKeys)
+    CHECK_NE(path, key);
+
+  ClearPref(account_id, path);
 }
 
 AccountId GetAccountId(const std::string& user_email,
@@ -485,6 +527,23 @@ bool IsUsingSAML(const AccountId& account_id) {
   return false;
 }
 
+void USER_MANAGER_EXPORT
+UpdateIsUsingSAMLPrincipalsAPI(const AccountId& account_id,
+                               bool is_using_saml_principals_api) {
+  SetBooleanPref(account_id, kIsUsingSAMLPrincipalsAPI,
+                 is_using_saml_principals_api);
+}
+
+bool USER_MANAGER_EXPORT
+GetIsUsingSAMLPrincipalsAPI(const AccountId& account_id) {
+  bool is_using_saml_principals_api;
+  if (GetBooleanPref(account_id, kIsUsingSAMLPrincipalsAPI,
+                     &is_using_saml_principals_api)) {
+    return is_using_saml_principals_api;
+  }
+  return false;
+}
+
 void SetProfileRequiresPolicy(const AccountId& account_id,
                               ProfileRequiresPolicy required) {
   DCHECK_NE(required, ProfileRequiresPolicy::kUnknown);
@@ -499,6 +558,10 @@ ProfileRequiresPolicy GetProfileRequiresPolicy(const AccountId& account_id) {
                            : ProfileRequiresPolicy::kNoPolicyRequired;
   }
   return ProfileRequiresPolicy::kUnknown;
+}
+
+void ClearProfileRequiresPolicy(const AccountId& account_id) {
+  ClearPref(account_id, kProfileRequiresPolicy);
 }
 
 void UpdateReauthReason(const AccountId& account_id, const int reauth_reason) {
@@ -525,6 +588,18 @@ void SetUserHomeMinimalMigrationAttempted(const AccountId& account_id,
                                           bool minimal_migration_attempted) {
   SetBooleanPref(account_id, kMinimalMigrationAttempted,
                  minimal_migration_attempted);
+}
+
+void SetChallengeResponseKeys(const AccountId& account_id, base::Value value) {
+  DCHECK(value.is_list());
+  SetPref(account_id, kChallengeResponseKeys, std::move(value));
+}
+
+base::Value GetChallengeResponseKeys(const AccountId& account_id) {
+  const base::Value* value = nullptr;
+  if (!GetPref(account_id, kChallengeResponseKeys, &value) || !value->is_list())
+    return base::Value();
+  return value->Clone();
 }
 
 void RemovePrefs(const AccountId& account_id) {

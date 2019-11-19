@@ -14,7 +14,9 @@
 // use with other accessibility classes.
 class AXTreeSourceAura : public views::AXTreeSourceViews {
  public:
-  AXTreeSourceAura(views::AXAuraObjWrapper* root, const ui::AXTreeID& tree_id);
+  AXTreeSourceAura(views::AXAuraObjWrapper* root,
+                   const ui::AXTreeID& tree_id,
+                   views::AXAuraObjCache* cache);
   ~AXTreeSourceAura() override;
 
   // AXTreeSource:

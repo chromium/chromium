@@ -189,7 +189,7 @@ class TriggerManager {
   // Keeps track of how often triggers fire and throttles them when needed.
   std::unique_ptr<TriggerThrottler> trigger_throttler_;
 
-  base::WeakPtrFactory<TriggerManager> weak_factory_;
+  base::WeakPtrFactory<TriggerManager> weak_factory_{this};
   // WeakPtrFactory should be last, don't add any members below it.
   DISALLOW_COPY_AND_ASSIGN(TriggerManager);
 };

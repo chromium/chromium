@@ -61,7 +61,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleHttpAuthRequest(
     return nullptr;
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
-  if (base::ContainsKey(request.headers, "Authorization")) {
+  if (base::Contains(request.headers, "Authorization")) {
     http_response->set_code(net::HTTP_OK);
     http_response->set_content("Success!");
   } else {
@@ -83,8 +83,7 @@ class BrowsingDataRemoverImplBrowserTest : public ContentBrowserTest {
     // Use localhost instead of 127.0.0.1, as HSTS isn't allowed on IPs.
     ssl_server_.SetSSLConfig(
         net::test_server::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
-    ssl_server_.AddDefaultHandlers(
-        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+    ssl_server_.AddDefaultHandlers(GetTestDataFilePath());
     ssl_server_.RegisterRequestHandler(base::BindRepeating(&HandleHstsRequest));
     ssl_server_.RegisterRequestHandler(
         base::BindRepeating(&HandleHttpAuthRequest));
@@ -180,7 +179,8 @@ class BrowsingDataRemoverImplBrowserTest : public ContentBrowserTest {
     // on all platforms.
     bool login_requested = false;
     ShellContentBrowserClient::Get()->set_login_request_callback(
-        base::BindLambdaForTesting([&]() { login_requested = true; }));
+        base::BindLambdaForTesting(
+            [&](bool is_main_frame /* unused */) { login_requested = true; }));
 
     GURL url = ssl_server_.GetURL(kHttpAuthPath);
     bool navigation_suceeded = NavigateToURL(shell(), url);

@@ -14,21 +14,21 @@
 #include "third_party/khronos/GLES2/gl2.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/transform.h"
-#include "ui/gl/gl_utils.h"
+#include "ui/gl/color_space_utils.h"
 
 namespace cc {
 
 PixelTestOutputSurface::PixelTestOutputSurface(
     scoped_refptr<viz::ContextProvider> context_provider,
     bool flipped_output_surface)
-    : OutputSurface(std::move(context_provider)), weak_ptr_factory_(this) {
+    : OutputSurface(std::move(context_provider)) {
   capabilities_.flipped_output_surface = flipped_output_surface;
   capabilities_.supports_stencil = true;
 }
 
 PixelTestOutputSurface::PixelTestOutputSurface(
     std::unique_ptr<viz::SoftwareOutputDevice> software_device)
-    : OutputSurface(std::move(software_device)), weak_ptr_factory_(this) {
+    : OutputSurface(std::move(software_device)) {
   capabilities_.supports_stencil = true;
 }
 
@@ -58,7 +58,7 @@ void PixelTestOutputSurface::Reshape(const gfx::Size& size,
   if (context_provider()) {
     context_provider()->ContextGL()->ResizeCHROMIUM(
         size.width(), size.height(), device_scale_factor,
-        gl::GetGLColorSpace(color_space), has_alpha);
+        gl::ColorSpaceUtils::GetGLColorSpace(color_space), has_alpha);
   } else {
     software_device()->Resize(size, device_scale_factor);
   }
@@ -77,14 +77,11 @@ void PixelTestOutputSurface::SwapBuffers(viz::OutputSurfaceFrame frame) {
 }
 
 void PixelTestOutputSurface::SwapBuffersCallback() {
-  client_->DidReceiveSwapBuffersAck();
+  base::TimeTicks now = base::TimeTicks::Now();
+  gfx::SwapTimings timings = {now, now};
+  client_->DidReceiveSwapBuffersAck(timings);
   client_->DidReceivePresentationFeedback(
       gfx::PresentationFeedback(base::TimeTicks::Now(), base::TimeDelta(), 0));
-}
-
-viz::OverlayCandidateValidator*
-PixelTestOutputSurface::GetOverlayCandidateValidator() const {
-  return nullptr;
 }
 
 bool PixelTestOutputSurface::IsDisplayedAsOverlayPlane() const {
@@ -108,6 +105,13 @@ uint32_t PixelTestOutputSurface::GetFramebufferCopyTextureFormat() {
 
 unsigned PixelTestOutputSurface::UpdateGpuFence() {
   return 0;
+}
+
+void PixelTestOutputSurface::SetUpdateVSyncParametersCallback(
+    viz::UpdateVSyncParametersCallback callback) {}
+
+gfx::OverlayTransform PixelTestOutputSurface::GetDisplayTransform() {
+  return gfx::OVERLAY_TRANSFORM_NONE;
 }
 
 }  // namespace cc

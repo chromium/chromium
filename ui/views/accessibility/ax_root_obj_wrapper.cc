@@ -17,8 +17,9 @@
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/accessibility/ax_window_obj_wrapper.h"
 
-AXRootObjWrapper::AXRootObjWrapper(views::AXAuraObjCache::Delegate* delegate)
-    : delegate_(delegate) {
+AXRootObjWrapper::AXRootObjWrapper(views::AXAuraObjCache::Delegate* delegate,
+                                   views::AXAuraObjCache* cache)
+    : AXAuraObjWrapper(cache), delegate_(delegate) {
   if (display::Screen::GetScreen())
     display::Screen::GetScreen()->AddObserver(this);
 }
@@ -31,7 +32,7 @@ AXRootObjWrapper::~AXRootObjWrapper() {
 bool AXRootObjWrapper::HasChild(views::AXAuraObjWrapper* child) {
   std::vector<views::AXAuraObjWrapper*> children;
   GetChildren(&children);
-  return base::ContainsValue(children, child);
+  return base::Contains(children, child);
 }
 
 bool AXRootObjWrapper::IsIgnored() {
@@ -39,12 +40,12 @@ bool AXRootObjWrapper::IsIgnored() {
 }
 
 views::AXAuraObjWrapper* AXRootObjWrapper::GetParent() {
-  return NULL;
+  return nullptr;
 }
 
 void AXRootObjWrapper::GetChildren(
     std::vector<views::AXAuraObjWrapper*>* out_children) {
-  views::AXAuraObjCache::GetInstance()->GetTopLevelWindows(out_children);
+  aura_obj_cache_->GetTopLevelWindows(out_children);
 }
 
 void AXRootObjWrapper::Serialize(ui::AXNodeData* out_node_data) {

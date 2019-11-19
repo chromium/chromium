@@ -11,6 +11,7 @@
 #include "base/format_macros.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -63,9 +64,8 @@ Action::~Action() {}
 // refcount is one.  However, there are likely to be other stray references in
 // many cases that will prevent this optimization.
 scoped_refptr<Action> Action::Clone() const {
-  scoped_refptr<Action> clone(
-      new Action(
-          extension_id(), time(), action_type(), api_name(), action_id()));
+  auto clone = base::MakeRefCounted<Action>(
+      extension_id(), time(), action_type(), api_name(), action_id());
   if (args())
     clone->set_args(base::WrapUnique(args()->DeepCopy()));
   clone->set_page_url(page_url());

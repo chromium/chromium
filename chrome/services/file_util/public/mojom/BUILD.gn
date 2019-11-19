@@ -2,16 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//mojo/public/tools/bindings/mojom.gni")
 import("//build/config/features.gni")
+import("//components/safe_browsing/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
-    "constants.mojom",
+    "file_util_service.mojom",
   ]
 
   if (safe_browsing_mode == 1) {
     sources += [ "safe_archive_analyzer.mojom" ]
+    enabled_features = [ "full_safe_browsing" ]
   }
 
   public_deps = [
@@ -20,6 +22,6 @@ mojom("mojom") {
 
   if (is_chromeos) {
     sources += [ "zip_file_creator.mojom" ]
-    public_deps += [ "//components/services/filesystem/public/interfaces" ]
+    public_deps += [ "//components/services/filesystem/public/mojom" ]
   }
 }

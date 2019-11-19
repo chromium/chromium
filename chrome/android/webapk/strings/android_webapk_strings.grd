@@ -139,6 +139,30 @@
       <message name="IDS_NOTIFICATION_CHANNEL_NAME" desc="The user visible name of the default notification channel of the WebAPK.">
         General
       </message>
+      <message name="IDS_SHORTCUT_1_NAME" desc="The name of the first shortcut." translateable="false">
+        Shortcut 1
+      </message>
+      <message name="IDS_SHORTCUT_1_SHORT_NAME" desc="The short name of the first shortcut." translateable="false">
+        Shortcut 1
+      </message>
+      <message name="IDS_SHORTCUT_2_NAME" desc="The name of the second shortcut." translateable="false">
+        Shortcut 2
+      </message>
+      <message name="IDS_SHORTCUT_2_SHORT_NAME" desc="The short name of the second shortcut." translateable="false">
+        Shortcut 2
+      </message>
+      <message name="IDS_SHORTCUT_3_NAME" desc="The name of the third shortcut." translateable="false">
+        Shortcut 3
+      </message>
+      <message name="IDS_SHORTCUT_3_SHORT_NAME" desc="The short name of the third shortcut." translateable="false">
+        Shortcut 3
+      </message>
+      <message name="IDS_SHORTCUT_4_NAME" desc="The name of the fourth shortcut." translateable="false">
+        Shortcut 4
+      </message>
+      <message name="IDS_SHORTCUT_4_SHORT_NAME" desc="The short name of the fourth shortcut." translateable="false">
+        Shortcut 4
+      </message>
     </messages>
   </release>
 </grit>

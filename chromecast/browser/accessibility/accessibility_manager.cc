@@ -7,6 +7,7 @@
 #include "chromecast/graphics/accessibility/focus_ring_controller.h"
 #include "chromecast/graphics/accessibility/fullscreen_magnification_controller.h"
 #include "chromecast/graphics/cast_window_manager_aura.h"
+#include "chromecast/graphics/cast_window_tree_host_aura.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/wm/public/activation_client.h"

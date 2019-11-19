@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,12 +37,12 @@ TEST(SysinfoTest, NumCPUs) {
 }
 
 TEST(SysinfoTest, NominalCPUFrequency) {
-#if !(defined(__aarch64__) && defined(__linux__))
+#if !(defined(__aarch64__) && defined(__linux__)) && !defined(__EMSCRIPTEN__)
   EXPECT_GE(NominalCPUFrequency(), 1000.0)
       << "NominalCPUFrequency() did not return a reasonable value";
 #else
-  // TODO(absl-team): Aarch64 cannot read the CPU frequency from sysfs, so we
-  // get back 1.0. Fix once the value is available.
+  // Aarch64 cannot read the CPU frequency from sysfs, so we get back 1.0.
+  // Emscripten does not have a sysfs to read from at all.
   EXPECT_EQ(NominalCPUFrequency(), 1.0)
       << "CPU frequency detection was fixed! Please update unittest.";
 #endif

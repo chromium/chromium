@@ -1,0 +1,22 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//cc/cc.gni")
+
+cc_component("ipc") {
+  output_name = "cc_ipc"
+
+  sources = [
+    "cc_param_traits.cc",
+    "cc_param_traits_macros.h",
+  ]
+
+  defines = [ "IS_CC_IPC_IMPL" ]
+
+  public_deps = [
+    "//base",
+    "//cc",
+    "//ipc",
+  ]
+}

@@ -29,7 +29,7 @@ const char kWebUIResourcesHost[] = "resources";
 
 // Maps a path name (i.e. "/js/path.js") to a resource map entry. Returns
 // nullptr if not found.
-const GzippedGritResourceMap* PathToResource(const std::string& path) {
+const GritResourceMap* PathToResource(const std::string& path) {
   for (size_t i = 0; i < kWebuiResourcesSize; ++i) {
     if (path == kWebuiResources[i].name)
       return &kWebuiResources[i];
@@ -50,7 +50,7 @@ std::string SharedResourcesDataSourceIOS::GetSource() const {
 void SharedResourcesDataSourceIOS::StartDataRequest(
     const std::string& path,
     const URLDataSourceIOS::GotDataCallback& callback) {
-  const GzippedGritResourceMap* resource = PathToResource(path);
+  const GritResourceMap* resource = PathToResource(path);
   DCHECK(resource) << " path: " << path;
   scoped_refptr<base::RefCountedMemory> bytes;
 
@@ -72,11 +72,6 @@ std::string SharedResourcesDataSourceIOS::GetMimeType(
   std::string mime_type;
   net::GetMimeTypeFromFile(base::FilePath().AppendASCII(path), &mime_type);
   return mime_type;
-}
-
-bool SharedResourcesDataSourceIOS::IsGzipped(const std::string& path) const {
-  const GzippedGritResourceMap* resource = PathToResource(path);
-  return resource && resource->gzipped;
 }
 
 }  // namespace web

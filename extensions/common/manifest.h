@@ -80,6 +80,7 @@ class Manifest {
     TYPE_LEGACY_PACKAGED_APP = 5,
     TYPE_PLATFORM_APP = 6,
     TYPE_SHARED_MODULE = 7,
+    TYPE_LOGIN_SCREEN_EXTENSION = 8,
 
     // New enum values must go above here.
     NUM_LOAD_TYPES
@@ -92,10 +93,8 @@ class Manifest {
 
   // Whether the |location| is external or not.
   static inline bool IsExternalLocation(Location location) {
-    return location == EXTERNAL_PREF ||
-           location == EXTERNAL_REGISTRY ||
-           location == EXTERNAL_PREF_DOWNLOAD ||
-           location == EXTERNAL_POLICY ||
+    return location == EXTERNAL_PREF || location == EXTERNAL_REGISTRY ||
+           location == EXTERNAL_PREF_DOWNLOAD || location == EXTERNAL_POLICY ||
            location == EXTERNAL_POLICY_DOWNLOAD ||
            location == EXTERNAL_COMPONENT;
   }
@@ -108,15 +107,13 @@ class Manifest {
   // Whether extensions with |location| are auto-updatable or not.
   static inline bool IsAutoUpdateableLocation(Location location) {
     // Only internal and external extensions can be autoupdated.
-    return location == INTERNAL ||
-           IsExternalLocation(location);
+    return location == INTERNAL || IsExternalLocation(location);
   }
 
   // Whether the |location| is a source of extensions force-installed through
   // policy.
   static inline bool IsPolicyLocation(Location location) {
-    return location == EXTERNAL_POLICY ||
-           location == EXTERNAL_POLICY_DOWNLOAD;
+    return location == EXTERNAL_POLICY || location == EXTERNAL_POLICY_DOWNLOAD;
   }
 
   // Whether the |location| is an extension intended to be an internal part of
@@ -136,12 +133,20 @@ class Manifest {
   }
 
   // Returns the Manifest::Type for the given |value|.
-  static Type GetTypeFromManifestValue(const base::DictionaryValue& value);
+  static Type GetTypeFromManifestValue(const base::DictionaryValue& value,
+                                       bool for_login_screen = false);
 
   // Returns true if an item with the given |location| should always be loaded,
   // even if extensions are otherwise disabled.
   static bool ShouldAlwaysLoadExtension(Manifest::Location location,
                                         bool is_theme);
+
+  // Creates a Manifest for a login screen context. Note that this won't always
+  // result in a Manifest of TYPE_LOGIN_SCREEN_EXTENSION, since other items
+  // (like platform apps) may be installed in the same login screen profile.
+  static std::unique_ptr<Manifest> CreateManifestForLoginScreen(
+      Location location,
+      std::unique_ptr<base::DictionaryValue> value);
 
   Manifest(Location location, std::unique_ptr<base::DictionaryValue> value);
   virtual ~Manifest();
@@ -178,6 +183,9 @@ class Manifest {
     return type_ == TYPE_LEGACY_PACKAGED_APP;
   }
   bool is_extension() const { return type_ == TYPE_EXTENSION; }
+  bool is_login_screen_extension() const {
+    return type_ == TYPE_LOGIN_SCREEN_EXTENSION;
+  }
   bool is_shared_module() const { return type_ == TYPE_SHARED_MODULE; }
 
   // These access the wrapped manifest value, returning false when the property
@@ -219,6 +227,9 @@ class Manifest {
   const base::DictionaryValue* value() const { return value_.get(); }
 
  private:
+  Manifest(Location location,
+           std::unique_ptr<base::DictionaryValue> value,
+           bool for_login_screen);
   // Returns true if the extension can specify the given |path|.
   bool CanAccessPath(const std::string& path) const;
   bool CanAccessPath(const base::span<const base::StringPiece> path) const;

@@ -1,1 +1,0 @@
-This test case should produce a sine-wave stroked with 1px black.

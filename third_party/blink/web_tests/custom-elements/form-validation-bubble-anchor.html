@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<style>
+control-element {
+  display: inline-block;
+  width: 10em;
+  height: 2em;
+}
+</style>
+<body>
+<script>
+class ControlElement extends HTMLElement {
+  static formAssociated = true;
+  constructor() {
+    super();
+    this.i = this.attachInternals();
+  }
+}
+customElements.define('control-element', ControlElement);
+
+test(() => {
+  let control = new ControlElement();
+  assert_throws('NotFoundError', () => {
+    control.i.setValidity({patternMismatch: true}, 'p', document.body);
+  }, 'not a descendant');
+  assert_throws('NotFoundError', () => {
+    control.i.setValidity({patternMismatch: true}, 'p', control);
+  }, 'self');
+  control.innerHTML = '<span>';
+  assert_throws('NotFoundError', () => {
+    control.i.setValidity({patternMismatch: true}, 'p', control);
+  }, 'self with a child');
+
+  let shadow = control.attachShadow({mode:'open'});
+  let anchor = document.createElement('div');
+  shadow.appendChild(anchor);
+  control.i.setValidity({badInput: true}, 'b', anchor);
+}, 'setValidity() should throw if the anchor argument is not a shadow-including-descendant of the target');
+
+async_test(t => {
+  assert_own_property(window, 'internals');
+  document.body.insertAdjacentHTML('afterbegin', '<control-element tabindex=0><input><button></button></control-element>');
+  let control = document.body.querySelector('control-element');
+  let innerField = control.querySelector('input');
+  control.i.setValidity({tooLong: true}, 'Too long', innerField);
+  control.i.reportValidity();
+  assert_false(internals.isValidationMessageVisible(control));
+  assert_true(internals.isValidationMessageVisible(innerField));
+  assert_equals(document.activeElement, innerField);
+
+  let innerButton = control.querySelector('button');
+  control.i.setValidity({tooLong: true}, 'Too long', innerButton);
+  // Validation bubble closes if a different anchor is set.
+  assert_false(internals.isValidationMessageVisible(innerField));
+  assert_false(internals.isValidationMessageVisible(innerButton));
+
+  control.i.reportValidity();
+  assert_false(internals.isValidationMessageVisible(innerField));
+  assert_true(internals.isValidationMessageVisible(innerButton));
+  assert_equals(document.activeElement, innerButton);
+
+  innerButton.blur();
+  requestAnimationFrame(t.step_func_done(() => {
+    assert_false(internals.isValidationMessageVisible(innerField));
+    assert_false(internals.isValidationMessageVisible(innerButton));
+  }));
+}, 'Validation bubble is shown on the anchor element, and removing focus ' +
+    'from the anchor closes the validation bubble.');
+</script>
+</body>

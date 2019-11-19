@@ -370,7 +370,7 @@ SimpleGeolocationRequest::~SimpleGeolocationRequest() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // If callback is not empty, request is cancelled.
-  if (!callback_.is_null()) {
+  if (callback_) {
     RecordUmaResponseTime(base::Time::Now() - request_started_at_, false);
     RecordUmaResult(SIMPLE_GEOLOCATION_REQUEST_RESULT_CANCELLED, retries_);
   }
@@ -442,7 +442,7 @@ void SimpleGeolocationRequest::StartRequest() {
   request->url = request_url_;
   request->method = "POST";
   request->load_flags = net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
-  request->allow_credentials = false;
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(request), NO_TRAFFIC_ANNOTATION_YET);
@@ -458,8 +458,8 @@ void SimpleGeolocationRequest::StartRequest() {
                      base::Unretained(this)));
 }
 
-void SimpleGeolocationRequest::MakeRequest(const ResponseCallback& callback) {
-  callback_ = callback;
+void SimpleGeolocationRequest::MakeRequest(ResponseCallback callback) {
+  callback_ = std::move(callback);
   request_url_ = GeolocationRequestURL(service_url_);
   timeout_timer_.Start(
       FROM_HERE, timeout_, this, &SimpleGeolocationRequest::OnTimeout);
@@ -530,14 +530,14 @@ void SimpleGeolocationRequest::ReplyAndDestroySelf(
   timeout_timer_.Stop();
   request_scheduled_.Stop();
 
-  ResponseCallback callback = callback_;
+  ResponseCallback callback = std::move(callback_);
 
   // Empty callback is used to identify "completed or not yet started request".
   callback_.Reset();
 
   // callback.Run() usually destroys SimpleGeolocationRequest, because this is
   // the way callback is implemented in GeolocationProvider.
-  callback.Run(position_, server_error, elapsed);
+  std::move(callback).Run(position_, server_error, elapsed);
   // "this" is already destroyed here.
 }
 

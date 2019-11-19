@@ -1,0 +1,50 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1250, 585],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutImage IMG",
+          "rect": [704, 0, 214, 232],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutImage IMG",
+          "rect": [454, 0, 214, 232],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutImage IMG",
+          "rect": [0, 0, 214, 232],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment ' '",
+          "rect": [700, 217, 4, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment ' '",
+          "rect": [450, 217, 4, 19],
+          "reason": "geometry"
+        }
+      ]
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 585],
+      "bounds": [800, 15],
+      "paintInvalidations": [
+        {
+          "object": "HorizontalScrollbar",
+          "rect": [0, 0, 800, 15],
+          "reason": "scroll control"
+        }
+      ]
+    }
+  ]
+}
+

@@ -80,8 +80,8 @@ class WebPepperSocketImpl final : public WebPepperSocket {
   WebString subprotocol_;
   bool is_closing_or_closed_;
   // |buffered_amount_| includes |buffered_amount_after_close_|.
-  unsigned long buffered_amount_;
-  unsigned long buffered_amount_after_close_;
+  uint64_t buffered_amount_;
+  uint64_t buffered_amount_after_close_;
 };
 
 }  // namespace blink

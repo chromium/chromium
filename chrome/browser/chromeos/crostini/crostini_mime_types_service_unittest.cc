@@ -12,7 +12,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using vm_tools::apps::MimeTypes;
@@ -45,7 +45,7 @@ class CrostiniMimeTypesServiceTest : public testing::Test {
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   CrostiniTestHelper crostini_test_helper_;
 

@@ -10,13 +10,14 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/process/process_handle.h"
 #include "content/common/pepper_file_util.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/plugin_module.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
 #include "content/renderer/render_thread_impl.h"
+#include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "ppapi/c/pp_instance.h"
 
 using ppapi::ArrayBufferVar;
@@ -31,14 +32,14 @@ HostArrayBufferVar::HostArrayBufferVar(uint32_t size_in_bytes)
 HostArrayBufferVar::HostArrayBufferVar(const WebArrayBuffer& buffer)
     : buffer_(buffer), valid_(true) {}
 
-HostArrayBufferVar::HostArrayBufferVar(uint32_t size_in_bytes,
-                                       base::SharedMemoryHandle handle)
+HostArrayBufferVar::HostArrayBufferVar(
+    uint32_t size_in_bytes,
+    const base::UnsafeSharedMemoryRegion& region)
     : buffer_(WebArrayBuffer::Create(size_in_bytes, 1 /* element_size */)) {
-  base::SharedMemory s(handle, true);
-  valid_ = s.Map(size_in_bytes);
-  if (valid_) {
-    memcpy(buffer_.Data(), s.memory(), size_in_bytes);
-    s.Unmap();
+  base::WritableSharedMemoryMapping shm_mapping =
+      region.MapAt(0, size_in_bytes);
+  if (shm_mapping.IsValid()) {
+    memcpy(buffer_.Data(), shm_mapping.memory(), size_in_bytes);
   }
 }
 
@@ -61,26 +62,24 @@ uint32_t HostArrayBufferVar::ByteLength() {
 bool HostArrayBufferVar::CopyToNewShmem(
     PP_Instance instance,
     int* host_shm_handle_id,
-    base::SharedMemoryHandle* plugin_shm_handle) {
-  std::unique_ptr<base::SharedMemory> shm(
-      RenderThread::Get()
-          ->HostAllocateSharedMemoryBuffer(ByteLength())
-          .release());
-  if (!shm)
+    base::UnsafeSharedMemoryRegion* plugin_shm_region) {
+  base::UnsafeSharedMemoryRegion shm =
+      mojo::CreateUnsafeSharedMemoryRegion(ByteLength());
+  if (!shm.IsValid())
     return false;
 
-  shm->Map(ByteLength());
-  memcpy(shm->memory(), Map(), ByteLength());
-  shm->Unmap();
+  base::WritableSharedMemoryMapping shm_mapping = shm.MapAt(0, ByteLength());
+  if (!shm_mapping.IsValid())
+    return false;
+  memcpy(shm_mapping.memory(), Map(), ByteLength());
 
-  // Duplicate the handle here; the SharedMemory destructor closes
+  // Duplicate the handle here; the UnsafeSharedMemoryRegion destructor closes
   // its handle on us.
   HostGlobals* hg = HostGlobals::Get();
   PluginModule* pm = hg->GetModule(hg->GetModuleForInstance(instance));
 
-  *plugin_shm_handle =
-      pm->renderer_ppapi_host()->ShareSharedMemoryHandleWithRemote(
-          shm->handle());
+  *plugin_shm_region =
+      pm->renderer_ppapi_host()->ShareUnsafeSharedMemoryRegionWithRemote(shm);
   *host_shm_handle_id = -1;
   return true;
 }

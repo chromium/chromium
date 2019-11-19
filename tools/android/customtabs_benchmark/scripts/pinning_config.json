@@ -1,0 +1,14 @@
+{
+  "url": "https://en.m.wikipedia.org/wiki/Science",
+  "warmup": false,
+  "skip_launcher_activity": false,
+  "speculation_mode": "disabled",
+  "delay_to_may_launch_url": -1,
+  "delay_to_launch_url": 3000,
+  "cold": false,
+  "pinning_benchmark": true,
+  "pin_filename": "/data/app/com.google.android.apps.chrome-tdw2k9YrmoNz01HnObBJHg==/base.apk",
+  "pin_offset": 18690048,
+  "extra_brief_memory_mb": [40, 40],
+  "pin_length": [0, 47816496]
+}

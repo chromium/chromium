@@ -9,19 +9,18 @@
 #include "base/command_line.h"
 #include "base/optional.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chromeos/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/chromeos/login/enrollment/enterprise_enrollment_helper_mock.h"
 #include "chrome/browser/chromeos/login/enrollment/mock_enrollment_screen.h"
-#include "chrome/browser/chromeos/login/screens/mock_base_screen_delegate.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
 #include "chrome/browser/chromeos/policy/enrollment_status_chromeos.h"
-#include "chrome/browser/chromeos/settings/stub_install_attributes.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/tpm/stub_install_attributes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
@@ -37,7 +36,7 @@ class EnrollmentScreenUnitTest : public testing::Test {
   // Creates the EnrollmentScreen and sets required parameters.
   virtual void SetUpEnrollmentScreen() {
     enrollment_screen_ = std::make_unique<EnrollmentScreen>(
-        &mock_delegate_, &mock_view_,
+        &mock_view_,
         base::BindRepeating(&EnrollmentScreenUnitTest::HandleScreenExit,
                             base::Unretained(this)));
 
@@ -49,7 +48,6 @@ class EnrollmentScreenUnitTest : public testing::Test {
     runner_.task_runner()->FastForwardBy(time);
   }
 
-  MockBaseScreenDelegate* GetBaseScreenDelegate() { return &mock_delegate_; }
   MockEnrollmentScreenView* GetMockScreenView() { return &mock_view_; }
 
   // testing::Test:
@@ -77,14 +75,13 @@ class EnrollmentScreenUnitTest : public testing::Test {
     last_screen_result_ = screen_result;
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   // Replace main thread's task runner with a mock for duration of test.
   base::ScopedMockTimeMessageLoopTaskRunner runner_;
 
   ScopedStubInstallAttributes test_install_attributes_;
 
   // Objects required by the EnrollmentScreen that can be re-used.
-  MockBaseScreenDelegate mock_delegate_;
   MockEnrollmentScreenView mock_view_;
 
   DISALLOW_COPY_AND_ASSIGN(EnrollmentScreenUnitTest);
@@ -335,9 +332,9 @@ TEST_F(MultiLicenseEnrollmentScreenUnitTest, TestLicenseSelection) {
   std::unique_ptr<EnterpriseEnrollmentHelperMock> mock =
       std::make_unique<EnterpriseEnrollmentHelperMock>();
   auto* mock_ref = mock.get();
-  EXPECT_CALL(*mock, EnrollUsingAuthCode(_, _))
+  EXPECT_CALL(*mock, EnrollUsingAuthCode(_))
       .Times(AnyNumber())
-      .WillRepeatedly(Invoke([mock_ref](const std::string&, bool) {
+      .WillRepeatedly(Invoke([mock_ref](const std::string&) {
         EnrollmentLicenseMap licenses;
         static_cast<EnrollmentScreen*>(mock_ref->status_consumer())
             ->OnMultipleLicensesAvailable(licenses);

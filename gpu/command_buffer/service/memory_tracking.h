@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/command_buffer/common/command_buffer_id.h"
 
 namespace gpu {
 
@@ -20,6 +21,20 @@ namespace gpu {
 // statistics to the global GpuMemoryManager.
 class MemoryTracker {
  public:
+  // Observe all changes in memory notified to this MemoryTracker.
+  class Observer {
+   public:
+    Observer() = default;
+    virtual ~Observer() = default;
+
+    virtual void OnMemoryAllocatedChange(CommandBufferId id,
+                                         uint64_t old_size,
+                                         uint64_t new_size) = 0;
+
+   private:
+    DISALLOW_COPY_AND_ASSIGN(Observer);
+  };
+
   virtual ~MemoryTracker() = default;
   virtual void TrackMemoryAllocatedChange(uint64_t delta) = 0;
   virtual uint64_t GetSize() const = 0;

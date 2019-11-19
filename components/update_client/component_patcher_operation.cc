@@ -15,7 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/services/patch/public/cpp/patch.h"
+#include "components/update_client/patcher.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
@@ -42,13 +42,13 @@ const char kInput[] = "input";
 const char kPatch[] = "patch";
 
 DeltaUpdateOp* CreateDeltaUpdateOp(const std::string& operation,
-                                   service_manager::Connector* connector) {
+                                   scoped_refptr<Patcher> patcher) {
   if (operation == "copy") {
     return new DeltaUpdateOpCopy();
   } else if (operation == "create") {
     return new DeltaUpdateOpCreate();
   } else if (operation == "bsdiff" || operation == "courgette") {
-    return new DeltaUpdateOpPatch(operation, connector);
+    return new DeltaUpdateOpPatch(operation, patcher);
   }
   return nullptr;
 }
@@ -163,8 +163,8 @@ void DeltaUpdateOpCreate::DoRun(ComponentPatcher::Callback callback) {
 }
 
 DeltaUpdateOpPatch::DeltaUpdateOpPatch(const std::string& operation,
-                                       service_manager::Connector* connector)
-    : operation_(operation), connector_(connector) {
+                                       scoped_refptr<Patcher> patcher)
+    : operation_(operation), patcher_(patcher) {
   DCHECK(operation == kBsdiff || operation == kCourgette);
 }
 
@@ -191,10 +191,15 @@ UnpackerError DeltaUpdateOpPatch::DoParseArguments(
 }
 
 void DeltaUpdateOpPatch::DoRun(ComponentPatcher::Callback callback) {
-  patch::Patch(connector_, operation_, input_abs_path_, patch_abs_path_,
-               output_abs_path_,
-               base::BindOnce(&DeltaUpdateOpPatch::DonePatching, this,
-                              std::move(callback)));
+  if (operation_ == kBsdiff) {
+    patcher_->PatchBsdiff(input_abs_path_, patch_abs_path_, output_abs_path_,
+                          base::BindOnce(&DeltaUpdateOpPatch::DonePatching,
+                                         this, std::move(callback)));
+  } else {
+    patcher_->PatchCourgette(input_abs_path_, patch_abs_path_, output_abs_path_,
+                             base::BindOnce(&DeltaUpdateOpPatch::DonePatching,
+                                            this, std::move(callback)));
+  }
 }
 
 void DeltaUpdateOpPatch::DonePatching(ComponentPatcher::Callback callback,

@@ -5,12 +5,14 @@
 #include "chrome/browser/android/contextualsearch/contextual_search_field_trial.h"
 
 #include "base/command_line.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/android/chrome_feature_list.h"
+#include "components/contextual_search/core/browser/public.h"
 #include "components/variations/variations_associated_data.h"
 
 namespace {
 
-const char kContextualSearchFieldTrialName[] = "ContextualSearch";
 const char kFalseValue[] = "false";
 const char kAnyNonEmptyValue[] = "1";
 const char kContextualSearchResolverUrl[] = "contextual-search-resolver-url";
@@ -20,7 +22,6 @@ const char kContextualSearchSampleSurroundingSizeParamName[] =
 const char kContextualSearchSendURLDisabledParamName[] = "disable_send_url";
 const char kContextualSearchDecodeMentionsDisabledParamName[] =
     "disable_decode_mentions";
-const char kContextualCardsVersionParamName[] = "contextual_cards_version";
 
 // The default size of the content surrounding the selection to gather, allowing
 // room for other parameters.
@@ -85,9 +86,9 @@ bool ContextualSearchFieldTrial::IsDecodeMentionsDisabled() {
 }
 
 int ContextualSearchFieldTrial::GetContextualCardsVersion() {
-  return GetIntParamValueOrDefault(kContextualCardsVersionParamName, 0,
-                                   &is_contextual_cards_version_cached_,
-                                   &contextual_cards_version_);
+  return GetIntParamValueOrDefault(
+      contextual_search::kContextualCardsVersionParamName, 0,
+      &is_contextual_cards_version_cached_, &contextual_cards_version_);
 }
 
 bool ContextualSearchFieldTrial::GetBooleanParam(const std::string& name,
@@ -117,6 +118,17 @@ int ContextualSearchFieldTrial::GetIntParamValueOrDefault(
     std::string param_string = GetSwitch(name);
     if (param_string.empty())
       param_string = GetParam(name);
+    // If we still didn't get a param, try getting a Feature param.
+    if (param_string.empty()) {
+      // First check the Contextual Search Definitions feature.
+      param_string = base::GetFieldTrialParamValueByFeature(
+          chrome::android::kContextualSearchDefinitions, name);
+    }
+    if (param_string.empty()) {
+      // Now check for the Contextual Search Simplified Server feature.
+      param_string = base::GetFieldTrialParamValueByFeature(
+          chrome::android::kContextualSearchSimplifiedServer, name);
+    }
 
     int param_int;
     if (!param_string.empty() && base::StringToInt(param_string, &param_int))
@@ -139,6 +151,6 @@ std::string ContextualSearchFieldTrial::GetSwitch(const std::string& name) {
 }
 
 std::string ContextualSearchFieldTrial::GetParam(const std::string& name) {
-  return variations::GetVariationParamValue(kContextualSearchFieldTrialName,
-                                            name);
+  return variations::GetVariationParamValue(
+      contextual_search::kContextualSearchFieldTrialName, name);
 }

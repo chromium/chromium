@@ -86,7 +86,7 @@ class OmniboxController : public AutocompleteControllerDelegate {
   // some time to extract these fields and use a tighter structure here.
   AutocompleteMatch current_match_;
 
-  base::WeakPtrFactory<OmniboxController> weak_ptr_factory_;
+  base::WeakPtrFactory<OmniboxController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OmniboxController);
 };

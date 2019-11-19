@@ -23,10 +23,16 @@ class PaymentRequestShippingOptionSelectionMediatorTest
       public PlatformTest {
  protected:
   // PlatformTest:
-  void SetUp() override { DoSetUp(); }
+  void SetUp() override {
+    PlatformTest::SetUp();
+    DoSetUp();
+  }
 
   // PlatformTest:
-  void TearDown() override { DoTearDown(); }
+  void TearDown() override {
+    DoTearDown();
+    PlatformTest::TearDown();
+  }
 
   // Returns a PaymentDetails instance with two unselected shipping options.
   payments::PaymentDetails CreateDetailsWithUnselectedShippingOptions() {

@@ -139,6 +139,25 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreAppsV1) {
   EXPECT_EQ(4u, total_count);  // Default browser() + 3 app windows
 }
 
+IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreNoDevtools) {
+  // Create devtools.
+  CreateBrowserWithParams(Browser::CreateParams::CreateForDevTools(profile()));
+
+  TurnOnSessionRestore();
+}
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreNoDevtools) {
+  size_t total_count = 0;
+  size_t devtools_count = 0;
+  for (auto* browser : *BrowserList::GetInstance()) {
+    ++total_count;
+    if (browser->is_type_devtools())
+      ++devtools_count;
+  }
+  EXPECT_EQ(1u, total_count);
+  EXPECT_EQ(0u, devtools_count);
+}
+
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreMaximized) {
   // One browser window is always created by default.
   ASSERT_TRUE(browser());

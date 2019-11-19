@@ -7,7 +7,6 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <errno.h>
 #include <stddef.h>
-#include <sys/socket.h>
 #include <sys/un.h>
 
 #include <memory>
@@ -92,13 +91,11 @@ MockLaunchd::MockLaunchd(
     const base::FilePath& file,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     base::OnceClosure quit_closure,
-    bool create_socket,
     bool as_service)
     : file_(file),
       pipe_name_(GetServiceProcessServerName()),
       main_task_runner_(std::move(main_task_runner)),
       quit_closure_(std::move(quit_closure)),
-      create_socket_(create_socket),
       as_service_(as_service),
       restart_called_(false),
       remove_called_(false),
@@ -122,46 +119,6 @@ bool MockLaunchd::GetJobInfo(const std::string& label,
   return true;
 }
 
-bool MockLaunchd::CheckIn(const std::string& socket_key,
-                          mac::services::JobCheckinInfo* info) {
-  checkin_called_ = true;
-
-  info->program = file_.value();
-  if (!create_socket_)
-    return true;
-
-  int local_pipe = -1;
-  EXPECT_TRUE(as_service_);
-
-  // Create unix_addr structure.
-  struct sockaddr_un unix_addr = {0};
-  unix_addr.sun_family = AF_UNIX;
-  size_t path_len = base::strlcpy(unix_addr.sun_path, pipe_name_.c_str(),
-                                  sizeof(unix_addr.sun_path));
-  DCHECK_EQ(pipe_name_.length(), path_len);
-  unix_addr.sun_len = SUN_LEN(&unix_addr);
-
-  CFSocketSignature signature;
-  signature.protocolFamily = PF_UNIX;
-  signature.socketType = SOCK_STREAM;
-  signature.protocol = 0;
-  size_t unix_addr_len = offsetof(struct sockaddr_un, sun_path) + path_len + 1;
-  base::ScopedCFTypeRef<CFDataRef> address(
-      CFDataCreate(NULL, reinterpret_cast<UInt8*>(&unix_addr), unix_addr_len));
-  signature.address = address;
-
-  CFSocketRef socket =
-      CFSocketCreateWithSocketSignature(NULL, &signature, 0, NULL, NULL);
-
-  local_pipe = CFSocketGetNative(socket);
-  EXPECT_NE(-1, local_pipe) << "errno: " << errno;
-  if (local_pipe == -1)
-    return false;
-
-  info->socket = local_pipe;
-  return true;
-}
-
 bool MockLaunchd::RemoveJob(const std::string& label) {
   remove_called_ = true;
   std::move(quit_closure_).Run();
@@ -180,21 +137,12 @@ bool MockLaunchd::RestartJob(Domain domain,
 CFMutableDictionaryRef MockLaunchd::CreatePlistFromFile(Domain domain,
                                                         Type type,
                                                         CFStringRef name) {
-  mac::services::JobCheckinInfo info;
-  NSString* socket_key = @"ServiceProcessSocket";
-  if (!CheckIn(base::SysNSStringToUTF8(socket_key), &info))
-    return nil;
-
-  NSString* ns_program = base::SysUTF8ToNSString(info.program);
+  NSString* ns_program = base::SysUTF8ToNSString(file_.value());
 
   NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithDictionary:@{
     @LAUNCH_JOBKEY_PROGRAM : ns_program,
     @LAUNCH_JOBKEY_PROGRAMARGUMENTS : @[ ns_program ],
   }];
-
-  if (create_socket_) {
-    dict[@LAUNCH_JOBKEY_SOCKETS] = @{socket_key : @(info.socket)};
-  }
 
   // Callers expect to be given a reference but dictionaryWithDictionary: is
   // autoreleased, so it's necessary to do a manual retain here.

@@ -32,7 +32,6 @@ content::WebUIDataSource* CreateUkmHTMLSource() {
   source->AddResourcePath("ukm_internals.js", IDR_UKM_INTERNALS_JS);
   source->AddResourcePath("ukm_internals.css", IDR_UKM_INTERNALS_CSS);
   source->SetDefaultResource(IDR_UKM_INTERNALS_HTML);
-  source->UseGzip();
   return source;
 }
 

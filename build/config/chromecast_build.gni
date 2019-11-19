@@ -10,12 +10,21 @@ declare_args() {
   # Linux and Android.
   is_chromecast = false
 
+  # If true, IS_CAST_DEBUG_BUILD() will evaluate to 1 in version.h. Otherwise,
+  # it will evaluate to 0. Overriding this when is_debug=false is useful for
+  # doing engineering builds.
+  cast_is_debug = is_debug
+
   # chromecast_branding is used to include or exclude Google-branded components.
   # Set it to "public" for a Chromium build.
   chromecast_branding = "public"
 
   # Set this true for an audio-only Chromecast build.
   is_cast_audio_only = false
+
+  # If non empty, rpath of executables is set to this.
+  # If empty, default value is used.
+  target_rpath = ""
 }
 
 # Note(slan): This arg depends on the value of is_chromecast, and thus must be
@@ -29,6 +38,44 @@ declare_args() {
   # TODO(slan): Remove instances of this when x86 is a fully supported platform.
   is_cast_desktop_build = is_chromecast && target_os == "linux" &&
                           (target_cpu == "x86" || target_cpu == "x64")
+}
+
+declare_args() {
+  # True to enable the cast renderer.  It is enabled by default for linux and
+  # android audio only builds.
+  enable_cast_renderer =
+      is_chromecast && (is_linux || (is_cast_audio_only && is_android))
+}
+
+# Configures media options for cast.  See media/media_options.gni
+cast_mojo_media_services = []
+cast_mojo_media_host = "none"
+
+if (enable_cast_renderer) {
+  # In this path, mojo media services are hosted in two processes:
+  # 1. "renderer" and "cdm" run in browser process. This is hard coded in the
+  # code.
+  # 2. "video_decoder" runs in the process specified by "cast_mojo_media_host".
+  cast_mojo_media_services = [
+    "cdm",
+    "renderer",
+  ]
+
+  if (!is_cast_audio_only) {
+    cast_mojo_media_services += [ "video_decoder" ]
+  }
+
+  cast_mojo_media_host = "gpu"
+} else if (is_android && !is_cast_audio_only) {
+  # On Android, all the enabled mojo media services run in the process specified
+  # by "cast_mojo_media_host".
+  cast_mojo_media_services = [
+    "cdm",
+    "audio_decoder",
+    "video_decoder",
+  ]
+
+  cast_mojo_media_host = "gpu"
 }
 
 # Assert that Chromecast is being built for a supported platform.

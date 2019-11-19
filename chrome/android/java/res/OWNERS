@@ -3,7 +3,7 @@
 # we don't want them.
 set noparent
 
-file://ui/android/java/res/OWNERS
+file://ui/android/java/res/LAYOUT_OWNERS
 
 # New Tab Page changes only:
 mvanouwerkerk@chromium.org

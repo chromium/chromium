@@ -1,0 +1,71 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_EXO_WAYLAND_FUZZER_HARNESS_H_
+#define COMPONENTS_EXO_WAYLAND_FUZZER_HARNESS_H_
+
+#include <memory>
+#include <map>
+
+#include <wayland-util.h>
+#include "base/macros.h"
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "components/exo/wayland/fuzzer/actions.pb.h"
+
+// Forwards declarations for the wayland-defined structs.
+{% for interface in interfaces %}
+  struct {{interface.name}};
+{% endfor %}
+
+namespace exo {
+namespace wayland_fuzzer {
+
+// When using LPM to fuzz wayland, the wayland_fuzzer::actions proto defines the
+// sequence of events that the fuzzer wants to perform. It then falls to this
+// harness to actually convert that sequence into the relevant calls, as if it
+// were a normal wayland client.
+class Harness {
+ public:
+  Harness();
+
+  ~Harness();
+
+  void Run(const actions::action& current_step);
+
+  void Run(const actions::actions& all_steps);
+
+  {% for interface in interfaces %}
+    std::vector<::{{interface.name}}*> {{interface.name}}_list_;
+
+    void add_{{interface.name}}({{interface.cpp_type}} new_obj) {
+      {{interface.name}}_list_.push_back(new_obj);
+    }
+
+    void remove_{{interface.name}}(uint32_t idx) {
+      if (idx < {{interface.name}}_list_.size())
+        {{interface.name}}_list_[idx] = nullptr;
+    }
+
+    {{interface.cpp_type}} get_{{interface.name}}(uint32_t idx) const {
+      return idx < {{interface.name}}_list_.size()
+        ? {{interface.name}}_list_[idx]
+        : nullptr;
+    }
+    {% if interface.is_global %}
+      std::vector<std::pair<uint32_t, uint32_t>> {{interface.name}}_globals_;
+    {% endif %}
+  {% endfor %}
+
+  int GetFileDescriptor(int id);
+
+ private:
+  std::map<int, base::UnsafeSharedMemoryRegion> shared_memory_map_;
+
+  DISALLOW_COPY_AND_ASSIGN(Harness);
+};
+
+}  // namespace wayland_fuzzer
+}  // namespace exo
+
+#endif  // COMPONENTS_EXO_WAYLAND_FUZZER_HARNESS_H_

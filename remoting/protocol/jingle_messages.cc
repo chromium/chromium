@@ -8,7 +8,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/name_value_map.h"
-#include "remoting/base/remoting_bot.h"
 #include "remoting/protocol/content_description.h"
 #include "remoting/protocol/session_plugin.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"

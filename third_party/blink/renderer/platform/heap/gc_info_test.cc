@@ -15,8 +15,8 @@ TEST(GCInfoTest, InitialEmpty) {
 
 TEST(GCInfoTest, ResizeToMaxIndex) {
   GCInfoTable table;
-  GCInfo info = {nullptr, nullptr, nullptr, false, false};
-  std::atomic_uint32_t slot{0};
+  GCInfo info = {nullptr, nullptr, nullptr, false};
+  std::atomic<std::uint32_t> slot{0};
   for (uint32_t i = 0; i < (GCInfoTable::kMaxIndex - 1); i++) {
     slot = 0;
     uint32_t index = table.EnsureGCInfoIndex(&info, &slot);

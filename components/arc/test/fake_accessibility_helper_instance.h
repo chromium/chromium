@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/arc/common/accessibility_helper.mojom.h"
+#include "components/arc/mojom/accessibility_helper.mojom.h"
 
 namespace arc {
 
@@ -31,6 +31,8 @@ class FakeAccessibilityHelperInstance
   bool explore_by_touch_enabled() { return explore_by_touch_enabled_; }
   void RefreshWithExtraData(mojom::AccessibilityActionDataPtr action_data_ptr,
                             RefreshWithExtraDataCallback callback) override;
+
+  void SetCaptionStyle(mojom::CaptionStylePtr style_ptr) override;
 
  private:
   mojom::AccessibilityFilterType filter_type_ =

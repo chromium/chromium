@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -33,6 +34,7 @@ class BookmarkManagerPrivateApiUnitTest : public ExtensionServiceTestBase {
     node_id_ = base::NumberToString(node->id());
   }
 
+  const bookmarks::BookmarkModel* model() const { return model_; }
   std::string node_id() const { return node_id_; }
 
  private:
@@ -47,20 +49,32 @@ class BookmarkManagerPrivateApiUnitTest : public ExtensionServiceTestBase {
 // Regression test for https://crbug.com/739260.
 TEST_F(BookmarkManagerPrivateApiUnitTest, RunOnDeletedNode) {
   // Remove our only bookmark node.
-  scoped_refptr<BookmarksRemoveFunction> remove_function(
-      new BookmarksRemoveFunction());
+  auto remove_function = base::MakeRefCounted<BookmarksRemoveFunction>();
   api_test_utils::RunFunction(remove_function.get(),
                               base::StringPrintf("[\"%s\"]", node_id().c_str()),
                               profile());
 
   // Call bookmarkManagerPrivate.copy() with the removed bookmark node's id.
-  scoped_refptr<BookmarkManagerPrivateCopyFunction> copy_function(
-      new BookmarkManagerPrivateCopyFunction());
+  auto copy_function =
+      base::MakeRefCounted<BookmarkManagerPrivateCopyFunction>();
   EXPECT_EQ(
       "Could not find bookmark nodes with given ids.",
       api_test_utils::RunFunctionAndReturnError(
           copy_function.get(),
           base::StringPrintf("[[\"%s\"]]", node_id().c_str()), profile()));
+}
+
+// Tests that calling bookmarkManagerPrivate.cut() to cut a permanent bookmark
+// node into the clipboard gracefully fails.
+// Regression test for https://crbug.com/1021829.
+TEST_F(BookmarkManagerPrivateApiUnitTest, RunCutOnPermanentNode) {
+  auto cut_function = base::MakeRefCounted<BookmarkManagerPrivateCutFunction>();
+  std::string node_id =
+      base::NumberToString(model()->bookmark_bar_node()->id());
+  EXPECT_EQ("Can't modify the root bookmark folders.",
+            api_test_utils::RunFunctionAndReturnError(
+                cut_function.get(),
+                base::StringPrintf("[[\"%s\"]]", node_id.c_str()), profile()));
 }
 
 }  // namespace extensions

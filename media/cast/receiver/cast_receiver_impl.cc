@@ -197,11 +197,11 @@ void CastReceiverImpl::EmitDecodedVideoFrame(
     FrameId frame_id,
     RtpTimeTicks rtp_timestamp,
     const base::TimeTicks& playout_time,
-    const scoped_refptr<VideoFrame>& video_frame,
+    scoped_refptr<VideoFrame> video_frame,
     bool is_continuous) {
   DCHECK(cast_environment->CurrentlyOn(CastEnvironment::MAIN));
 
-  if (video_frame.get()) {
+  if (video_frame) {
     // TODO(miu): This is reporting incorrect timestamp and delay.
     // http://crbug.com/547251
     std::unique_ptr<FrameEvent> playout_event(new FrameEvent());
@@ -220,7 +220,7 @@ void CastReceiverImpl::EmitDecodedVideoFrame(
                          (playout_time - base::TimeTicks()).InMicroseconds());
   }
 
-  callback.Run(video_frame, playout_time, is_continuous);
+  callback.Run(std::move(video_frame), playout_time, is_continuous);
 }
 
 }  // namespace cast

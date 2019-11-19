@@ -7,11 +7,13 @@
 
 #include <stddef.h>
 
+#include <map>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "ash/app_list/model/app_list_model_export.h"
-#include "ash/public/interfaces/app_list.mojom.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/sync/model/string_ordinal.h"
@@ -20,11 +22,8 @@
 class FastShowPickler;
 
 namespace ash {
+enum class AppListConfigType;
 class AppListControllerImpl;
-}  // namespace ash
-
-namespace app_list {
-
 class AppListItemList;
 class AppListItemListTest;
 class AppListItemObserver;
@@ -34,11 +33,13 @@ class AppListModel;
 // and action to be executed when the AppListItemView is activated.
 class APP_LIST_MODEL_EXPORT AppListItem {
  public:
+  using AppListItemMetadata = ash::AppListItemMetadata;
+
   explicit AppListItem(const std::string& id);
   virtual ~AppListItem();
 
-  void SetIcon(const gfx::ImageSkia& icon);
-  const gfx::ImageSkia& icon() const { return metadata_->icon; }
+  void SetIcon(ash::AppListConfigType config_type, const gfx::ImageSkia& icon);
+  const gfx::ImageSkia& GetIcon(ash::AppListConfigType config_type) const;
 
   const std::string& GetDisplayName() const {
     return short_name_.empty() ? name() : short_name_;
@@ -60,14 +61,12 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   const std::string& folder_id() const { return metadata_->folder_id; }
   const syncer::StringOrdinal& position() const { return metadata_->position; }
 
-  void SetMetadata(ash::mojom::AppListItemMetadataPtr metadata) {
+  void SetMetadata(std::unique_ptr<AppListItemMetadata> metadata) {
     metadata_ = std::move(metadata);
   }
-  const ash::mojom::AppListItemMetadata* GetMetadata() const {
-    return metadata_.get();
-  }
-  ash::mojom::AppListItemMetadataPtr CloneMetadata() const {
-    return metadata_.Clone();
+  const AppListItemMetadata* GetMetadata() const { return metadata_.get(); }
+  std::unique_ptr<AppListItemMetadata> CloneMetadata() const {
+    return std::make_unique<AppListItemMetadata>(*metadata_);
   }
 
   void AddObserver(AppListItemObserver* observer);
@@ -78,15 +77,13 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   virtual const char* GetItemType() const;
 
   // Returns the item matching |id| contained in this item (e.g. if the item is
-  // a folder), or NULL if the item was not found or this is not a container.
+  // a folder), or nullptr if the item was not found or this is not a container.
   virtual AppListItem* FindChildItem(const std::string& id);
 
   // Returns the number of child items if it has any (e.g. is a folder) or 0.
   virtual size_t ChildItemCount() const;
 
-  // Utility functions for sync integration tests.
-  virtual bool CompareForTest(const AppListItem* other) const;
-  virtual std::string ToDebugString() const;
+  std::string ToDebugString() const;
 
   bool is_folder() const { return metadata_->is_folder; }
 
@@ -97,7 +94,7 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
  protected:
   // Subclasses also have mutable access to the metadata ptr.
-  ash::mojom::AppListItemMetadata* metadata() { return metadata_.get(); }
+  AppListItemMetadata* metadata() { return metadata_.get(); }
 
   friend class ::FastShowPickler;
   friend class ash::AppListControllerImpl;
@@ -130,7 +127,13 @@ class APP_LIST_MODEL_EXPORT AppListItem {
  private:
   friend class AppListModelTest;
 
-  ash::mojom::AppListItemMetadataPtr metadata_;
+  std::unique_ptr<AppListItemMetadata> metadata_;
+
+  // Contains icons for AppListConfigTypes different than kShared. For kShared
+  // config type, the item will always use the icon provided by |metadata_|.
+  // This is currently used for folder icons only (which are all generated in
+  // ash), when app_list_features::kScalableAppList feature is enabled.
+  std::map<ash::AppListConfigType, gfx::ImageSkia> per_config_icons_;
 
   // A shortened name for the item, used for display.
   std::string short_name_;
@@ -143,6 +146,6 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   DISALLOW_COPY_AND_ASSIGN(AppListItem);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_MODEL_APP_LIST_ITEM_H_

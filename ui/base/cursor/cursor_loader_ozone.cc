@@ -66,6 +66,7 @@ void CursorLoaderOzone::SetPlatformCursor(gfx::NativeCursor* cursor) {
     platform = factory_->GetDefaultCursor(native_type);
   }
 
+  cursor->set_device_scale_factor(scale());
   cursor->SetPlatformCursor(platform);
 }
 

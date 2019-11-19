@@ -16,7 +16,7 @@ BufferedMessageSender::~BufferedMessageSender() = default;
 void BufferedMessageSender::SendMessages(
     const MediaRoute::Id& route_id,
     std::vector<mojom::RouteMessagePtr> messages) {
-  if (base::ContainsKey(active_routes_, route_id)) {
+  if (base::Contains(active_routes_, route_id)) {
     media_router_->OnRouteMessagesReceived(route_id, std::move(messages));
   } else {
     auto& buffer = buffered_messages_[route_id];

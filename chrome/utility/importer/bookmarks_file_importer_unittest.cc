@@ -28,7 +28,6 @@ TEST(BookmarksFileImporterTest, CanImportURL) {
     { "chrome://version", true },
     { "chrome://chrome-urls", true },
     { "chrome://kill", true },
-    { "chrome://chrome", true },
     { "chrome://about", true },
     { "about:version", true },
     { "about:blank", true },

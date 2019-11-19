@@ -22,7 +22,7 @@ class BackgroundPageWatcher : public ProcessManagerObserver {
   BackgroundPageWatcher(ProcessManager* process_manager,
                         const Extension* extension);
 
-  ~BackgroundPageWatcher();
+  ~BackgroundPageWatcher() override;
 
   // Returns when the background page is open. If the background page is
   // already open, returns immediately.

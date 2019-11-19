@@ -41,8 +41,7 @@ class PrefetchedPagesTrackerImpl
       offline_pages::OfflinePageModel* model,
       const offline_pages::OfflinePageItem& added_page) override;
   void OfflinePageDeleted(
-      const offline_pages::OfflinePageModel::DeletedPageInfo& page_info)
-      override;
+      const offline_pages::OfflinePageItem& deleted_page) override;
 
  private:
   void OfflinePagesLoaded(const std::vector<offline_pages::OfflinePageItem>&
@@ -61,7 +60,7 @@ class PrefetchedPagesTrackerImpl
 
   std::vector<base::OnceCallback<void()>> initialization_completed_callbacks_;
 
-  base::WeakPtrFactory<PrefetchedPagesTrackerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<PrefetchedPagesTrackerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrefetchedPagesTrackerImpl);
 };

@@ -14,7 +14,7 @@ traits_headers = [
 ]
 
 type_mappings = [
-  "blink.mojom.MediaDeviceType=blink::MediaDeviceType",
-  "blink.mojom.MediaDeviceInfo=blink::WebMediaDeviceInfo",
-  "blink.mojom.FacingMode=media::VideoFacingMode",
+  "blink.mojom.MediaDeviceType=::blink::MediaDeviceType",
+  "blink.mojom.MediaDeviceInfo=::blink::WebMediaDeviceInfo",
+  "blink.mojom.FacingMode=::media::VideoFacingMode",
 ]

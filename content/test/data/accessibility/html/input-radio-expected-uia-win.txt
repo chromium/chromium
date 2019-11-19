@@ -1,0 +1,13 @@
+document
+++form
+++++radio SelectionItem.IsSelected=false
+++++description Name='Radio1'
+++++separator Name='<newline>'
+++++radio SelectionItem.IsSelected=false
+++++description Name='Radio2'
+++form
+++++radio Name='Radio3' SelectionItem.IsSelected=false
+++++radio Name='Radio4' SelectionItem.IsSelected=true
+++form
+++++radio Name='Radio5' SelectionItem.IsSelected=false
+++++radio Name='Radio6' SelectionItem.IsSelected=true

@@ -84,7 +84,9 @@ void silk_warped_autocorrelation_FIX_neon(
         silk_assert( ( order & 1 ) == 0 );
         silk_assert( 2 * QS - QC >= 0 );
 
-        ALLOC( input_QST, length + 2 * MAX_SHAPE_LPC_ORDER, opus_int32 );
+        /* The additional +4 is to ensure a later vld1q_s32 call does not overflow.               */
+        /* Strictly, only +3 is needed but +4 simplifies initialization using the 4x32 neon load. */
+        ALLOC( input_QST, length + 2 * MAX_SHAPE_LPC_ORDER + 4, opus_int32 );
 
         input_QS = input_QST;
         /* input_QS has zero paddings in the beginning and end. */
@@ -110,6 +112,8 @@ void silk_warped_autocorrelation_FIX_neon(
         for( ; n < length; n++, input_QS++ ) {
             input_QS[ 0 ] = silk_LSHIFT32( (opus_int32)input[ n ], QS );
         }
+        vst1q_s32( input_QS, vdupq_n_s32( 0 ) );
+        input_QS += 4;
         vst1q_s32( input_QS, vdupq_n_s32( 0 ) );
         input_QS += 4;
         vst1q_s32( input_QS, vdupq_n_s32( 0 ) );
@@ -153,7 +157,8 @@ void silk_warped_autocorrelation_FIX_neon(
             opus_int o = orderT;
             int32x4_t state_QS_s32x4[ 3 ][ 2 ];
 
-            ALLOC( state, length + orderT, opus_int32 );
+            /* The additional +4 is to ensure a later vld1q_s32 call does not overflow. */
+            ALLOC( state, length + order + 4, opus_int32 );
             state_QS_s32x4[ 2 ][ 1 ] = vdupq_n_s32( 0 );
 
             /* Calculate 8 taps of all inputs in each loop. */

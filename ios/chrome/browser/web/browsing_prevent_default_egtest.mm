@@ -9,13 +9,14 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/app/web_view_interaction_test_util.h"
+#import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#include "ios/chrome/test/scoped_block_popups_pref.h"
+#include "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
+#import "ios/web/public/web_state.h"
 #include "url/url_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -23,7 +24,6 @@
 #endif
 
 using chrome_test_util::GetOriginalBrowserState;
-using chrome_test_util::TapWebViewElementWithId;
 
 namespace {
 
@@ -50,8 +50,7 @@ GURL GetTestUrl() {
 - (void)runTestAndVerifyNoNavigationForLinkID:(const std::string&)linkID {
   // Disable popup blocking, because that will mask failures that try to open
   // new tabs.
-  ScopedBlockPopupsPref scoper(CONTENT_SETTING_ALLOW,
-                               GetOriginalBrowserState());
+  ScopedBlockPopupsPref scoper(CONTENT_SETTING_ALLOW);
   web::test::SetUpFileBasedHttpServer();
 
   const GURL testURL = GetTestUrl();
@@ -60,9 +59,11 @@ GURL GetTestUrl() {
 
   // Tap on the test link and wait for the page to display "Click done", as an
   // indicator that the element was tapped.
-  GREYAssert(TapWebViewElementWithId(linkID), @"Failed to tap %s",
-             linkID.c_str());
-  [ChromeEarlGrey waitForWebViewContainingText:"Click done"];
+  [ChromeEarlGrey
+      tapWebStateElementWithID:
+          [NSString stringWithCString:linkID.c_str()
+                             encoding:[NSString defaultCStringEncoding]]];
+  [ChromeEarlGrey waitForWebStateContainingText:"Click done"];
 
   // Check that no navigation occurred and no new tabs were opened.
   [ChromeEarlGrey waitForMainTabCount:1];
@@ -89,8 +90,7 @@ GURL GetTestUrl() {
 - (void)testPreventDefaultOverridesWindowOpen {
   // Disable popup blocking, because that will mask failures that try to open
   // new tabs.
-  ScopedBlockPopupsPref scoper(CONTENT_SETTING_ALLOW,
-                               GetOriginalBrowserState());
+  ScopedBlockPopupsPref scoper(CONTENT_SETTING_ALLOW);
   web::test::SetUpFileBasedHttpServer();
 
   const GURL testURL = GetTestUrl();
@@ -98,7 +98,7 @@ GURL GetTestUrl() {
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Tap on the test link.
-  [ChromeEarlGrey tapWebViewElementWithID:@"overrides-window-open"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"overrides-window-open"];
 
   // Check that the tab navigated to about:blank and no new tabs were opened.
   [[GREYCondition

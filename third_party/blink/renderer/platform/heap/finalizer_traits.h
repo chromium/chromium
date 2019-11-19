@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_FINALIZER_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_FINALIZER_TRAITS_H_
 
+#include <type_traits>
+
+#include "base/template_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace WTF {
@@ -16,18 +19,51 @@ class ListHashSetNode;
 
 namespace blink {
 
-// The FinalizerTraitImpl specifies how to finalize objects. Objects that
-// inherit from GarbageCollectedFinalized are finalized by calling their
-// |Finalize| method which by default will call the destructor on the object.
-template <typename T, bool isGarbageCollectedFinalized>
+namespace internal {
+
+template <typename T, typename = void>
+struct HasFinalizeGarbageCollectedObject : std::false_type {};
+
+template <typename T>
+struct HasFinalizeGarbageCollectedObject<
+    T,
+    base::void_t<decltype(std::declval<T>().FinalizeGarbageCollectedObject())>>
+    : std::true_type {};
+
+// The FinalizerTraitImpl specifies how to finalize objects.
+template <typename T, bool isFinalized>
 struct FinalizerTraitImpl;
 
 template <typename T>
 struct FinalizerTraitImpl<T, true> {
+ private:
   STATIC_ONLY(FinalizerTraitImpl);
+  struct Custom {
+    static void Call(void* obj) {
+      static_cast<T*>(obj)->FinalizeGarbageCollectedObject();
+    }
+  };
+  struct Destructor {
+    static void Call(void* obj) {
+// The garbage collector differs from regular C++ here as it remembers whether
+// an object's base class has a virtual destructor. In case there is no virtual
+// destructor present, the object is always finalized through its leaf type. In
+// other words: there is no finalization through a base pointer.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdelete-non-abstract-non-virtual-dtor"
+      static_cast<T*>(obj)->~T();
+#pragma GCC diagnostic pop
+    }
+  };
+  using FinalizeImpl =
+      std::conditional_t<HasFinalizeGarbageCollectedObject<T>::value,
+                         Custom,
+                         Destructor>;
+
+ public:
   static void Finalize(void* obj) {
     static_assert(sizeof(T), "T must be fully defined");
-    static_cast<T*>(obj)->FinalizeGarbageCollectedObject();
+    FinalizeImpl::Call(obj);
   }
 };
 
@@ -39,21 +75,18 @@ struct FinalizerTraitImpl<T, false> {
   }
 };
 
+}  // namespace internal
+
 // The FinalizerTrait is used to determine if a type requires finalization and
 // what finalization means.
-//
-// By default classes that inherit from GarbageCollectedFinalized need
-// finalization and finalization means calling the |Finalize| method of the
-// object. The FinalizerTrait can be specialized if the default behavior is not
-// desired.
 template <typename T>
 struct FinalizerTrait {
   STATIC_ONLY(FinalizerTrait);
-  static const bool kNonTrivialFinalizer =
-      WTF::IsSubclassOfTemplate<typename std::remove_const<T>::type,
-                                GarbageCollectedFinalized>::value;
+  static constexpr bool kNonTrivialFinalizer =
+      internal::HasFinalizeGarbageCollectedObject<T>::value ||
+      !std::is_trivially_destructible<typename std::remove_cv<T>::type>::value;
   static void Finalize(void* obj) {
-    FinalizerTraitImpl<T, kNonTrivialFinalizer>::Finalize(obj);
+    internal::FinalizerTraitImpl<T, kNonTrivialFinalizer>::Finalize(obj);
   }
 };
 
@@ -66,32 +99,32 @@ class HeapHashTableBacking;
 template <typename T, typename U, typename V>
 struct FinalizerTrait<LinkedHashSet<T, U, V, HeapAllocator>> {
   STATIC_ONLY(FinalizerTrait);
-  static const bool kNonTrivialFinalizer = true;
+  static constexpr bool kNonTrivialFinalizer = true;
   static void Finalize(void* obj) {
-    FinalizerTraitImpl<LinkedHashSet<T, U, V, HeapAllocator>,
-                       kNonTrivialFinalizer>::Finalize(obj);
+    internal::FinalizerTraitImpl<LinkedHashSet<T, U, V, HeapAllocator>,
+                                 kNonTrivialFinalizer>::Finalize(obj);
   }
 };
 
 template <typename T, typename Allocator>
 struct FinalizerTrait<WTF::ListHashSetNode<T, Allocator>> {
   STATIC_ONLY(FinalizerTrait);
-  static const bool kNonTrivialFinalizer =
+  static constexpr bool kNonTrivialFinalizer =
       !std::is_trivially_destructible<T>::value;
   static void Finalize(void* obj) {
-    FinalizerTraitImpl<WTF::ListHashSetNode<T, Allocator>,
-                       kNonTrivialFinalizer>::Finalize(obj);
+    internal::FinalizerTraitImpl<WTF::ListHashSetNode<T, Allocator>,
+                                 kNonTrivialFinalizer>::Finalize(obj);
   }
 };
 
 template <typename T, size_t inlineCapacity>
 struct FinalizerTrait<Vector<T, inlineCapacity, HeapAllocator>> {
   STATIC_ONLY(FinalizerTrait);
-  static const bool kNonTrivialFinalizer =
+  static constexpr bool kNonTrivialFinalizer =
       inlineCapacity && VectorTraits<T>::kNeedsDestruction;
   static void Finalize(void* obj) {
-    FinalizerTraitImpl<Vector<T, inlineCapacity, HeapAllocator>,
-                       kNonTrivialFinalizer>::Finalize(obj);
+    internal::FinalizerTraitImpl<Vector<T, inlineCapacity, HeapAllocator>,
+                                 kNonTrivialFinalizer>::Finalize(obj);
   }
 };
 
@@ -101,8 +134,8 @@ struct FinalizerTrait<Deque<T, inlineCapacity, HeapAllocator>> {
   static const bool kNonTrivialFinalizer =
       inlineCapacity && VectorTraits<T>::kNeedsDestruction;
   static void Finalize(void* obj) {
-    FinalizerTraitImpl<Deque<T, inlineCapacity, HeapAllocator>,
-                       kNonTrivialFinalizer>::Finalize(obj);
+    internal::FinalizerTraitImpl<Deque<T, inlineCapacity, HeapAllocator>,
+                                 kNonTrivialFinalizer>::Finalize(obj);
   }
 };
 
@@ -112,8 +145,8 @@ struct FinalizerTrait<HeapHashTableBacking<Table>> {
   static const bool kNonTrivialFinalizer =
       !std::is_trivially_destructible<typename Table::ValueType>::value;
   static void Finalize(void* obj) {
-    FinalizerTraitImpl<HeapHashTableBacking<Table>,
-                       kNonTrivialFinalizer>::Finalize(obj);
+    internal::FinalizerTraitImpl<HeapHashTableBacking<Table>,
+                                 kNonTrivialFinalizer>::Finalize(obj);
   }
 };
 
@@ -122,8 +155,8 @@ struct FinalizerTrait<HeapVectorBacking<T, Traits>> {
   STATIC_ONLY(FinalizerTrait);
   static const bool kNonTrivialFinalizer = Traits::kNeedsDestruction;
   static void Finalize(void* obj) {
-    FinalizerTraitImpl<HeapVectorBacking<T, Traits>,
-                       kNonTrivialFinalizer>::Finalize(obj);
+    internal::FinalizerTraitImpl<HeapVectorBacking<T, Traits>,
+                                 kNonTrivialFinalizer>::Finalize(obj);
   }
 };
 

@@ -14,6 +14,8 @@ This is meant to be used on a Mach-O executable. If a dSYM is present, use
 dump-static-initializers.py instead.
 """
 
+from __future__ import print_function
+
 import optparse
 import subprocess
 import sys
@@ -28,9 +30,9 @@ def ShowModuleInitializers(binary):
     return
   symbols = SymbolizeAddresses(binary, initializers)
 
-  print binary
+  print(binary)
   for initializer in zip(initializers, symbols):
-    print '%s @ %s' % initializer
+    print('%s @ %s' % initializer)
 
 
 def GetModuleInitializers(binary):

@@ -32,14 +32,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_MIDI_ACCESS_H_
 
 #include <memory>
-#include "media/midi/midi_service.mojom-blink.h"
+#include "media/midi/midi_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_access_initializer.h"
-#include "third_party/blink/renderer/modules/webmidi/midi_accessor.h"
-#include "third_party/blink/renderer/modules/webmidi/midi_accessor_client.h"
+#include "third_party/blink/renderer/modules/webmidi/midi_dispatcher.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -54,22 +53,22 @@ class MIDIOutputMap;
 class MIDIAccess final : public EventTargetWithInlineData,
                          public ActiveScriptWrappable<MIDIAccess>,
                          public ContextLifecycleObserver,
-                         public MIDIAccessorClient {
+                         public MIDIDispatcher::Client {
   DEFINE_WRAPPERTYPEINFO();
   USING_GARBAGE_COLLECTED_MIXIN(MIDIAccess);
   USING_PRE_FINALIZER(MIDIAccess, Dispose);
 
  public:
   static MIDIAccess* Create(
-      std::unique_ptr<MIDIAccessor> accessor,
+      std::unique_ptr<MIDIDispatcher> dispatcher,
       bool sysex_enabled,
       const Vector<MIDIAccessInitializer::PortDescriptor>& ports,
       ExecutionContext* execution_context) {
-    return MakeGarbageCollected<MIDIAccess>(std::move(accessor), sysex_enabled,
-                                            ports, execution_context);
+    return MakeGarbageCollected<MIDIAccess>(
+        std::move(dispatcher), sysex_enabled, ports, execution_context);
   }
 
-  MIDIAccess(std::unique_ptr<MIDIAccessor>,
+  MIDIAccess(std::unique_ptr<MIDIDispatcher>,
              bool sysex_enabled,
              const Vector<MIDIAccessInitializer::PortDescriptor>&,
              ExecutionContext*);
@@ -97,7 +96,7 @@ class MIDIAccess final : public EventTargetWithInlineData,
   // ContextLifecycleObserver
   void ContextDestroyed(ExecutionContext*) override;
 
-  // MIDIAccessorClient
+  // MIDIDispatcher::Client
   void DidAddInputPort(const String& id,
                        const String& manufacturer,
                        const String& name,
@@ -120,14 +119,14 @@ class MIDIAccess final : public EventTargetWithInlineData,
   void DidReceiveMIDIData(unsigned port_index,
                           const unsigned char* data,
                           wtf_size_t length,
-                          TimeTicks time_stamp) override;
+                          base::TimeTicks time_stamp) override;
 
   // |timeStampInMilliseconds| is in the same time coordinate system as
   // performance.now().
   void SendMIDIData(unsigned port_index,
                     const unsigned char* data,
                     wtf_size_t length,
-                    TimeTicks time_stamp);
+                    base::TimeTicks time_stamp);
 
   // Eager finalization needed to promptly release m_accessor. Otherwise
   // its client back reference could end up being unsafely used during
@@ -137,7 +136,7 @@ class MIDIAccess final : public EventTargetWithInlineData,
  private:
   void Dispose();
 
-  std::unique_ptr<MIDIAccessor> accessor_;
+  std::unique_ptr<MIDIDispatcher> dispatcher_;
   bool sysex_enabled_;
   bool has_pending_activity_;
   HeapVector<Member<MIDIInput>> inputs_;

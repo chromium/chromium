@@ -77,7 +77,7 @@ SBOX_TESTS_COMMAND int File_Win32Create(int argc, wchar_t** argv) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
   }
 
-  base::string16 full_path = MakePathToSys(argv[0], false);
+  std::wstring full_path = MakePathToSys(argv[0], false);
   if (full_path.empty()) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
   }
@@ -110,7 +110,7 @@ SBOX_TESTS_COMMAND int File_CreateSys32(int argc, wchar_t** argv) {
   if (argc != 1)
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
 
-  base::string16 file(argv[0]);
+  std::wstring file(argv[0]);
   if (0 != _wcsnicmp(file.c_str(), kNTDevicePrefix, kNTDevicePrefixLen))
     file = MakePathToSys(argv[0], true);
 
@@ -148,7 +148,7 @@ SBOX_TESTS_COMMAND int File_OpenSys32(int argc, wchar_t** argv) {
   if (argc != 1)
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
 
-  base::string16 file = MakePathToSys(argv[0], true);
+  std::wstring file = MakePathToSys(argv[0], true);
   UNICODE_STRING object_name;
   RtlInitUnicodeString(&object_name, file.c_str());
 
@@ -172,7 +172,7 @@ SBOX_TESTS_COMMAND int File_OpenSys32(int argc, wchar_t** argv) {
 }
 
 SBOX_TESTS_COMMAND int File_GetDiskSpace(int argc, wchar_t** argv) {
-  base::string16 sys_path = MakePathToSys(L"", false);
+  std::wstring sys_path = MakePathToSys(L"", false);
   if (sys_path.empty()) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
   }
@@ -228,7 +228,7 @@ SBOX_TESTS_COMMAND int File_QueryAttributes(int argc, wchar_t** argv) {
   bool expect_directory = (L'd' == argv[1][0]);
 
   UNICODE_STRING object_name;
-  base::string16 file = MakePathToSys(argv[0], true);
+  std::wstring file = MakePathToSys(argv[0], true);
   RtlInitUnicodeString(&object_name, file.c_str());
 
   OBJECT_ATTRIBUTES obj_attributes = {};
@@ -262,8 +262,8 @@ SBOX_TESTS_COMMAND int File_QueryAttributes(int argc, wchar_t** argv) {
 // Tries to create a backup of calc.exe in system32 folder. This should fail
 // with ERROR_ACCESS_DENIED if everything is working as expected.
 SBOX_TESTS_COMMAND int File_CopyFile(int argc, wchar_t** argv) {
-  base::string16 calc_path = MakePathToSys(L"calc.exe", false);
-  base::string16 calc_backup_path = MakePathToSys(L"calc.exe.bak", false);
+  std::wstring calc_path = MakePathToSys(L"calc.exe", false);
+  std::wstring calc_backup_path = MakePathToSys(L"calc.exe.bak", false);
 
   if (::CopyFile(calc_path.c_str(), calc_backup_path.c_str(), FALSE))
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
@@ -296,8 +296,8 @@ TEST(FilePolicyTest, AllowNtCreateCalc) {
 }
 
 TEST(FilePolicyTest, AllowNtCreateWithNativePath) {
-  base::string16 calc = MakePathToSys(L"calc.exe", false);
-  base::string16 nt_path;
+  std::wstring calc = MakePathToSys(L"calc.exe", false);
+  std::wstring nt_path;
   ASSERT_TRUE(GetNtPathFromWin32Path(calc, &nt_path));
   TestRunner runner;
   runner.AddFsRule(TargetPolicy::FILES_ALLOW_READONLY, nt_path.c_str());
@@ -399,12 +399,12 @@ TEST(FilePolicyTest, AllowNtCreatePatternRule) {
   EXPECT_TRUE(runner.AddRuleSys32(TargetPolicy::FILES_ALLOW_ANY, L"App*.dll"));
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED,
-            runner.RunTest(L"File_OpenSys32 appmgmts.dll"));
+            runner.RunTest(L"File_OpenSys32 apphelp.dll"));
   EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(L"File_OpenSys32 appwiz.cpl"));
 
   runner.SetTestState(BEFORE_REVERT);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED,
-            runner.RunTest(L"File_OpenSys32 appmgmts.dll"));
+            runner.RunTest(L"File_OpenSys32 apphelp.dll"));
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"File_OpenSys32 appwiz.cpl"));
 }
 
@@ -424,7 +424,7 @@ TEST(FilePolicyTest, CheckNoLeak) {
 TEST(FilePolicyTest, TestQueryAttributesFile) {
   TestRunner runner;
   EXPECT_TRUE(
-      runner.AddRuleSys32(TargetPolicy::FILES_ALLOW_ANY, L"appmgmts.dll"));
+      runner.AddRuleSys32(TargetPolicy::FILES_ALLOW_ANY, L"apphelp.dll"));
   EXPECT_TRUE(
       runner.AddRuleSys32(TargetPolicy::FILES_ALLOW_ANY, L"notfound.exe"));
   EXPECT_TRUE(runner.AddRuleSys32(TargetPolicy::FILES_ALLOW_ANY, L"drivers"));
@@ -435,7 +435,7 @@ TEST(FilePolicyTest, TestQueryAttributesFile) {
             runner.RunTest(L"File_QueryAttributes drivers d"));
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED,
-            runner.RunTest(L"File_QueryAttributes appmgmts.dll f"));
+            runner.RunTest(L"File_QueryAttributes apphelp.dll f"));
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED,
             runner.RunTest(L"File_QueryAttributes ipconfig.exe f"));
@@ -592,9 +592,9 @@ TEST(FilePolicyTest, TestReparsePoint) {
   ASSERT_TRUE(::CreateDirectory(temp_file_name, nullptr));
 
   // Create a temporary file in the subfolder.
-  base::string16 subfolder = temp_file_name;
-  base::string16 temp_file_title = subfolder.substr(subfolder.rfind(L"\\") + 1);
-  base::string16 temp_file = subfolder + L"\\file_" + temp_file_title;
+  std::wstring subfolder = temp_file_name;
+  std::wstring temp_file_title = subfolder.substr(subfolder.rfind(L"\\") + 1);
+  std::wstring temp_file = subfolder + L"\\file_" + temp_file_title;
 
   HANDLE file = ::CreateFile(temp_file.c_str(), FILE_ALL_ACCESS,
                              FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
@@ -603,8 +603,8 @@ TEST(FilePolicyTest, TestReparsePoint) {
   ASSERT_TRUE(::CloseHandle(file));
 
   // Create a temporary file in the temp directory.
-  base::string16 temp_dir = temp_directory;
-  base::string16 temp_file_in_temp = temp_dir + L"file_" + temp_file_title;
+  std::wstring temp_dir = temp_directory;
+  std::wstring temp_file_in_temp = temp_dir + L"file_" + temp_file_title;
   file = ::CreateFile(temp_file_in_temp.c_str(), FILE_ALL_ACCESS,
                       FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
                       CREATE_ALWAYS, 0, nullptr);
@@ -612,12 +612,12 @@ TEST(FilePolicyTest, TestReparsePoint) {
   ASSERT_TRUE(::CloseHandle(file));
 
   // Give write access to the temp directory.
-  base::string16 temp_dir_wildcard = temp_dir + L"*";
+  std::wstring temp_dir_wildcard = temp_dir + L"*";
   EXPECT_TRUE(runner.AddFsRule(TargetPolicy::FILES_ALLOW_ANY,
                                temp_dir_wildcard.c_str()));
 
   // Prepare the command to execute.
-  base::string16 command_write;
+  std::wstring command_write;
   command_write += L"File_Create Write \"";
   command_write += temp_file;
   command_write += L"\"";
@@ -632,7 +632,7 @@ TEST(FilePolicyTest, TestReparsePoint) {
                             OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr);
   EXPECT_TRUE(INVALID_HANDLE_VALUE != dir);
 
-  base::string16 temp_dir_nt;
+  std::wstring temp_dir_nt;
   temp_dir_nt += L"\\??\\";
   temp_dir_nt += temp_dir;
   EXPECT_TRUE(SetReparsePoint(dir, temp_dir_nt.c_str()));
@@ -656,25 +656,25 @@ TEST(FilePolicyTest, TestReparsePoint) {
 }
 
 TEST(FilePolicyTest, CheckExistingNTPrefixEscape) {
-  base::string16 name = L"\\??\\NAME";
+  std::wstring name = L"\\??\\NAME";
 
-  base::string16 result = FixNTPrefixForMatch(name);
+  std::wstring result = FixNTPrefixForMatch(name);
 
   EXPECT_STREQ(result.c_str(), L"\\/?/?\\NAME");
 }
 
 TEST(FilePolicyTest, CheckEscapedNTPrefixNoEscape) {
-  base::string16 name = L"\\/?/?\\NAME";
+  std::wstring name = L"\\/?/?\\NAME";
 
-  base::string16 result = FixNTPrefixForMatch(name);
+  std::wstring result = FixNTPrefixForMatch(name);
 
   EXPECT_STREQ(result.c_str(), name.c_str());
 }
 
 TEST(FilePolicyTest, CheckMissingNTPrefixEscape) {
-  base::string16 name = L"C:\\NAME";
+  std::wstring name = L"C:\\NAME";
 
-  base::string16 result = FixNTPrefixForMatch(name);
+  std::wstring result = FixNTPrefixForMatch(name);
 
   EXPECT_STREQ(result.c_str(), L"\\/?/?\\C:\\NAME");
 }
@@ -682,7 +682,7 @@ TEST(FilePolicyTest, CheckMissingNTPrefixEscape) {
 TEST(FilePolicyTest, TestCopyFile) {
   // Check if the test is running Win8 or newer since
   // MITIGATION_STRICT_HANDLE_CHECKS is not supported on older systems.
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
   TestRunner runner;

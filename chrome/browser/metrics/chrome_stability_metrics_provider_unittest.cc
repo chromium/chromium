@@ -23,8 +23,8 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/process_type.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -48,7 +48,7 @@ class ChromeStabilityMetricsProviderTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeStabilityMetricsProviderTest);
 };
@@ -63,8 +63,10 @@ TEST_F(ChromeStabilityMetricsProviderTest, BrowserChildProcessObserverGpu) {
   child_process_data.metrics_name = kTestGpuProcessName;
 
   provider.BrowserChildProcessLaunchedAndConnected(child_process_data);
-  content::ChildProcessTerminationInfo abnormal_termination_info{
-      base::TERMINATION_STATUS_ABNORMAL_TERMINATION, 1};
+  content::ChildProcessTerminationInfo abnormal_termination_info;
+  abnormal_termination_info.status =
+      base::TERMINATION_STATUS_ABNORMAL_TERMINATION;
+  abnormal_termination_info.exit_code = 1;
   provider.BrowserChildProcessCrashed(child_process_data,
                                       abnormal_termination_info);
   provider.BrowserChildProcessCrashed(child_process_data,
@@ -94,8 +96,10 @@ TEST_F(ChromeStabilityMetricsProviderTest, BrowserChildProcessObserverUtility) {
 
   provider.BrowserChildProcessLaunchedAndConnected(child_process_data);
   const int kExitCode = 1;
-  content::ChildProcessTerminationInfo abnormal_termination_info{
-      base::TERMINATION_STATUS_ABNORMAL_TERMINATION, kExitCode};
+  content::ChildProcessTerminationInfo abnormal_termination_info;
+  abnormal_termination_info.status =
+      base::TERMINATION_STATUS_ABNORMAL_TERMINATION;
+  abnormal_termination_info.exit_code = kExitCode;
   provider.BrowserChildProcessCrashed(child_process_data,
                                       abnormal_termination_info);
   provider.BrowserChildProcessCrashed(child_process_data,
@@ -146,31 +150,35 @@ TEST_F(ChromeStabilityMetricsProviderTest, NotificationObserver) {
       rph_factory->CreateRenderProcessHost(profile, site_instance.get()));
 
   // Crash and abnormal termination should increment renderer crash count.
-  content::ChildProcessTerminationInfo crash_details{
-      base::TERMINATION_STATUS_PROCESS_CRASHED, 1};
+  content::ChildProcessTerminationInfo crash_details;
+  crash_details.status = base::TERMINATION_STATUS_PROCESS_CRASHED;
+  crash_details.exit_code = 1;
   provider.Observe(
       content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
       content::Source<content::RenderProcessHost>(host),
       content::Details<content::ChildProcessTerminationInfo>(&crash_details));
 
-  content::ChildProcessTerminationInfo term_details{
-      base::TERMINATION_STATUS_ABNORMAL_TERMINATION, 1};
+  content::ChildProcessTerminationInfo term_details;
+  term_details.status = base::TERMINATION_STATUS_ABNORMAL_TERMINATION;
+  term_details.exit_code = 1;
   provider.Observe(
       content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
       content::Source<content::RenderProcessHost>(host),
       content::Details<content::ChildProcessTerminationInfo>(&term_details));
 
   // Kill does not increment renderer crash count.
-  content::ChildProcessTerminationInfo kill_details{
-      base::TERMINATION_STATUS_PROCESS_WAS_KILLED, 1};
+  content::ChildProcessTerminationInfo kill_details;
+  kill_details.status = base::TERMINATION_STATUS_PROCESS_WAS_KILLED;
+  kill_details.exit_code = 1;
   provider.Observe(
       content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
       content::Source<content::RenderProcessHost>(host),
       content::Details<content::ChildProcessTerminationInfo>(&kill_details));
 
   // Failed launch increments failed launch count.
-  content::ChildProcessTerminationInfo failed_launch_details{
-      base::TERMINATION_STATUS_LAUNCH_FAILED, 1};
+  content::ChildProcessTerminationInfo failed_launch_details;
+  failed_launch_details.status = base::TERMINATION_STATUS_LAUNCH_FAILED;
+  failed_launch_details.exit_code = 1;
   provider.Observe(content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
                    content::Source<content::RenderProcessHost>(host),
                    content::Details<content::ChildProcessTerminationInfo>(

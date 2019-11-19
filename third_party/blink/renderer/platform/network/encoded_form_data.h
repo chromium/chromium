@@ -20,63 +20,53 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_ENCODED_FORM_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_ENCODED_FORM_DATA_H_
 
-#include "third_party/blink/renderer/platform/blob/blob_data.h"
+// This file is required via encoded_form_data.typemap. To avoid build
+// circularity issues, it should not transitively include anything that is
+// generated from a mojom_blink target.
+//
+// This requires some gymnastics below, to explicitly forward-declare the
+// required types without reference to the generator output headers.
+
+#include <utility>
+
+#include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-#include "services/network/public/mojom/data_pipe_getter.mojom-blink.h"
-
 namespace blink {
 
+namespace mojom {
+class FetchAPIRequestBodyDataView;
+}  // namespace mojom
+
 class BlobDataHandle;
-
-// Refcounted wrapper around a DataPipeGetter to allow sharing the move-only
-// type. This is only needed so EncodedFormData/FormDataElement have a copy
-// constructor.
-class PLATFORM_EXPORT WrappedDataPipeGetter final
-    : public RefCounted<WrappedDataPipeGetter> {
- public:
-  explicit WrappedDataPipeGetter(
-      network::mojom::blink::DataPipeGetterPtr data_pipe_getter)
-      : data_pipe_getter_(std::move(data_pipe_getter)) {}
-  ~WrappedDataPipeGetter() = default;
-
-  network::mojom::blink::DataPipeGetterPtr* GetPtr() {
-    return &data_pipe_getter_;
-  }
-
- private:
-  network::mojom::blink::DataPipeGetterPtr data_pipe_getter_;
-};
+class WrappedDataPipeGetter;
 
 class PLATFORM_EXPORT FormDataElement final {
   DISALLOW_NEW();
 
  public:
-  FormDataElement() : type_(kData) {}
-  explicit FormDataElement(const Vector<char>& array)
-      : type_(kData), data_(array) {}
+  FormDataElement();
+  explicit FormDataElement(const Vector<char>&);
   FormDataElement(const String& filename,
-                  long long file_start,
-                  long long file_length,
-                  double expected_file_modification_time)
-      : type_(kEncodedFile),
-        filename_(filename),
-        file_start_(file_start),
-        file_length_(file_length),
-        expected_file_modification_time_(expected_file_modification_time) {}
+                  int64_t file_start,
+                  int64_t file_length,
+                  double expected_file_modification_time);
   FormDataElement(const String& blob_uuid,
-                  scoped_refptr<BlobDataHandle> optional_handle)
-      : type_(kEncodedBlob),
-        blob_uuid_(blob_uuid),
-        optional_blob_data_handle_(std::move(optional_handle)) {}
-  explicit FormDataElement(
-      scoped_refptr<WrappedDataPipeGetter> data_pipe_getter)
-      : type_(kDataPipe), data_pipe_getter_(std::move(data_pipe_getter)) {}
+                  scoped_refptr<BlobDataHandle> optional_handle);
+  explicit FormDataElement(scoped_refptr<WrappedDataPipeGetter>);
+
+  FormDataElement(const FormDataElement&);
+  FormDataElement(FormDataElement&&);
+
+  ~FormDataElement();
+
+  FormDataElement& operator=(const FormDataElement&);
+  FormDataElement& operator=(FormDataElement&&);
 
   bool IsSafeToSendToAnotherThread() const;
 
@@ -85,32 +75,14 @@ class PLATFORM_EXPORT FormDataElement final {
   String filename_;
   String blob_uuid_;
   scoped_refptr<BlobDataHandle> optional_blob_data_handle_;
-  long long file_start_;
-  long long file_length_;
+  int64_t file_start_;
+  int64_t file_length_;
   double expected_file_modification_time_;
   scoped_refptr<WrappedDataPipeGetter> data_pipe_getter_;
 };
 
-inline bool operator==(const FormDataElement& a, const FormDataElement& b) {
-  if (&a == &b)
-    return true;
-
-  if (a.type_ != b.type_)
-    return false;
-  if (a.type_ == FormDataElement::kData)
-    return a.data_ == b.data_;
-  if (a.type_ == FormDataElement::kEncodedFile)
-    return a.filename_ == b.filename_ && a.file_start_ == b.file_start_ &&
-           a.file_length_ == b.file_length_ &&
-           a.expected_file_modification_time_ ==
-               b.expected_file_modification_time_;
-  if (a.type_ == FormDataElement::kEncodedBlob)
-    return a.blob_uuid_ == b.blob_uuid_;
-  if (a.type_ == FormDataElement::kDataPipe)
-    return a.data_pipe_getter_ == b.data_pipe_getter_;
-
-  return true;
-}
+PLATFORM_EXPORT bool operator==(const FormDataElement& a,
+                                const FormDataElement& b);
 
 inline bool operator!=(const FormDataElement& a, const FormDataElement& b) {
   return !(a == b);
@@ -128,7 +100,7 @@ class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
 
   static scoped_refptr<EncodedFormData> Create();
   static scoped_refptr<EncodedFormData> Create(const void*, wtf_size_t);
-  static scoped_refptr<EncodedFormData> Create(const CString&);
+  static scoped_refptr<EncodedFormData> Create(base::span<const char>);
   static scoped_refptr<EncodedFormData> Create(const Vector<char>&);
   scoped_refptr<EncodedFormData> Copy() const;
   scoped_refptr<EncodedFormData> DeepCopy() const;
@@ -137,8 +109,8 @@ class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
   void AppendData(const void* data, wtf_size_t);
   void AppendFile(const String& file_path);
   void AppendFileRange(const String& filename,
-                       long long start,
-                       long long length,
+                       int64_t start,
+                       int64_t length,
                        double expected_modification_time);
   void AppendBlob(const String& blob_uuid,
                   scoped_refptr<BlobDataHandle> optional_handle);
@@ -165,19 +137,21 @@ class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
   }
 
   static EncodingType ParseEncodingType(const String& type) {
-    if (DeprecatedEqualIgnoringCase(type, "text/plain"))
+    if (EqualIgnoringASCIICase(type, "text/plain"))
       return kTextPlain;
-    if (DeprecatedEqualIgnoringCase(type, "multipart/form-data"))
+    if (EqualIgnoringASCIICase(type, "multipart/form-data"))
       return kMultipartFormData;
     return kFormURLEncoded;
   }
 
   // Size of the elements making up the EncodedFormData.
-  unsigned long long SizeInBytes() const;
+  uint64_t SizeInBytes() const;
 
   bool IsSafeToSendToAnotherThread() const;
 
  private:
+  friend struct mojo::StructTraits<blink::mojom::FetchAPIRequestBodyDataView,
+                                   scoped_refptr<blink::EncodedFormData>>;
   EncodedFormData();
   EncodedFormData(const EncodedFormData&);
 
@@ -198,4 +172,4 @@ inline bool operator!=(const EncodedFormData& a, const EncodedFormData& b) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_ENCODED_FORM_DATA_H_

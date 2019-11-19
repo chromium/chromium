@@ -1,4 +1,4 @@
 [document web]
 ++[section]
 ++++[label]
-++++++[text] name='Label'
+++++++[static] name='Label'

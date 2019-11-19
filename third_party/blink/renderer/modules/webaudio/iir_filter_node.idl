@@ -4,6 +4,7 @@
 
 // See https://webaudio.github.io/web-audio-api/#iirfilternode
 [
+    Exposed=Window,
     Constructor(BaseAudioContext context, IIRFilterOptions options),
     RaisesException=Constructor,
     Measure

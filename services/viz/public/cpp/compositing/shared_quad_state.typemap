@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-mojom = "//services/viz/public/interfaces/compositing/shared_quad_state.mojom"
+mojom = "//services/viz/public/mojom/compositing/shared_quad_state.mojom"
 public_headers = [ "//components/viz/common/quads/shared_quad_state.h" ]
-traits_headers = [ "//services/viz/public/cpp/compositing/shared_quad_state_struct_traits.h" ]
-type_mappings = [ "viz.mojom.SharedQuadState=viz::SharedQuadState" ]
+traits_headers =
+    [ "//services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h" ]
+type_mappings = [ "viz.mojom.SharedQuadState=::viz::SharedQuadState" ]

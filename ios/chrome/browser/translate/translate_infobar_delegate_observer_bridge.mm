@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/translate/translate_infobar_delegate_observer_bridge.h"
 
+#include "base/logging.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -17,7 +19,9 @@ TranslateInfobarDelegateObserverBridge::TranslateInfobarDelegateObserverBridge(
 
 TranslateInfobarDelegateObserverBridge::
     ~TranslateInfobarDelegateObserverBridge() {
-  translate_infobar_delegate_->SetObserver(nullptr);
+  if (translate_infobar_delegate_) {
+    translate_infobar_delegate_->SetObserver(nullptr);
+  }
 }
 
 void TranslateInfobarDelegateObserverBridge::OnTranslateStepChanged(
@@ -28,7 +32,15 @@ void TranslateInfobarDelegateObserverBridge::OnTranslateStepChanged(
                      withErrorType:error_type];
 }
 
-BOOL TranslateInfobarDelegateObserverBridge::IsDeclinedByUser() {
+bool TranslateInfobarDelegateObserverBridge::IsDeclinedByUser() {
   return [owner_ translateInfoBarDelegateDidDismissWithoutInteraction:
                      translate_infobar_delegate_];
+}
+
+void TranslateInfobarDelegateObserverBridge::
+    OnTranslateInfoBarDelegateDestroyed(
+        translate::TranslateInfoBarDelegate* delegate) {
+  DCHECK_EQ(translate_infobar_delegate_, delegate);
+  translate_infobar_delegate_->SetObserver(nullptr);
+  translate_infobar_delegate_ = nullptr;
 }

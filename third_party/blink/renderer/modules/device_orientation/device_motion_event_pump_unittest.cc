@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/test/fake_sensor_and_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -24,7 +25,7 @@ namespace blink {
 using device::FakeSensorProvider;
 
 class MockDeviceMotionController final
-    : public GarbageCollectedFinalized<MockDeviceMotionController>,
+    : public GarbageCollected<MockDeviceMotionController>,
       public PlatformEventController {
   USING_GARBAGE_COLLECTED_MIXIN(MockDeviceMotionController);
 
@@ -75,15 +76,14 @@ class DeviceMotionEventPumpTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    device::mojom::SensorProviderPtrInfo sensor_provider_ptr_info;
-    sensor_provider_.Bind(mojo::MakeRequest(&sensor_provider_ptr_info));
+    mojo::PendingRemote<device::mojom::SensorProvider> sensor_provider;
+    sensor_provider_.Bind(sensor_provider.InitWithNewPipeAndPassReceiver());
     auto* motion_pump = MakeGarbageCollected<DeviceMotionEventPump>(
         base::ThreadTaskRunnerHandle::Get());
     motion_pump->SetSensorProviderForTesting(
-        device::mojom::blink::SensorProviderPtr(
-            device::mojom::blink::SensorProviderPtrInfo(
-                sensor_provider_ptr_info.PassHandle(),
-                device::mojom::SensorProvider::Version_)));
+        mojo::PendingRemote<device::mojom::blink::SensorProvider>(
+            sensor_provider.PassPipe(),
+            device::mojom::SensorProvider::Version_));
 
     controller_ = MakeGarbageCollected<MockDeviceMotionController>(motion_pump);
 
@@ -423,7 +423,7 @@ TEST_F(DeviceMotionEventPumpTest,
 // (crbug.com/421691)
 TEST_F(DeviceMotionEventPumpTest, PumpThrottlesEventRate) {
   // Confirm that the delay for pumping events is 60 Hz.
-  EXPECT_GE(60, WTF::Time::kMicrosecondsPerSecond /
+  EXPECT_GE(60, base::Time::kMicrosecondsPerSecond /
                     DeviceMotionEventPump::kDefaultPumpDelayMicroseconds);
 
   controller()->RegisterWithDispatcher();
@@ -439,7 +439,7 @@ TEST_F(DeviceMotionEventPumpTest, PumpThrottlesEventRate) {
   base::RunLoop loop;
   blink::scheduler::GetSingleThreadTaskRunnerForTesting()->PostDelayedTask(
       FROM_HERE, loop.QuitWhenIdleClosure(),
-      WTF::TimeDelta::FromMilliseconds(100));
+      base::TimeDelta::FromMilliseconds(100));
   loop.Run();
   controller()->motion_pump()->Stop();
 

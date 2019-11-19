@@ -7,9 +7,9 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_accept_languages.h"
-#include "ios/web_view/internal/pref_names.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -38,7 +38,7 @@ class TranslateAcceptLanguagesService : public KeyedService {
 
 TranslateAcceptLanguagesService::TranslateAcceptLanguagesService(
     PrefService* prefs)
-    : accept_languages_(prefs, prefs::kAcceptLanguages) {}
+    : accept_languages_(prefs, language::prefs::kAcceptLanguages) {}
 
 TranslateAcceptLanguagesService::~TranslateAcceptLanguagesService() = default;
 

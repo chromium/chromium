@@ -7,7 +7,8 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "remoting/host/host_status_monitor.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +24,8 @@ class HostPowerSaveBlockerTest : public testing::Test {
 
   void SetUp() override;
 
-  base::MessageLoopForUI ui_message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   base::Thread blocking_thread_;
   scoped_refptr<HostStatusMonitor> monitor_;
   std::unique_ptr<HostPowerSaveBlocker> blocker_;
@@ -34,11 +36,11 @@ HostPowerSaveBlockerTest::HostPowerSaveBlockerTest()
 
 void HostPowerSaveBlockerTest::SetUp() {
   ASSERT_TRUE(blocking_thread_.StartWithOptions(
-                  base::Thread::Options(base::MessageLoop::TYPE_IO, 0)) &&
+                  base::Thread::Options(base::MessagePumpType::IO, 0)) &&
               blocking_thread_.WaitUntilThreadStarted());
-  blocker_.reset(new HostPowerSaveBlocker(monitor_,
-                                          ui_message_loop_.task_runner(),
-                                          blocking_thread_.task_runner()));
+  blocker_.reset(new HostPowerSaveBlocker(
+      monitor_, task_environment_.GetMainThreadTaskRunner(),
+      blocking_thread_.task_runner()));
 }
 
 bool HostPowerSaveBlockerTest::is_activated() const {

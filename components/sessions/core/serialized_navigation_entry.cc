@@ -165,6 +165,14 @@ void SerializedNavigationEntry::WriteToPickle(int max_size,
     WriteStringToPickle(pickle, &bytes_written, max_size, entry.first);
     WriteStringToPickle(pickle, &bytes_written, max_size, entry.second);
   }
+
+  pickle->WriteInt64(task_id_);
+  pickle->WriteInt64(parent_task_id_);
+  pickle->WriteInt64(root_task_id_);
+
+  pickle->WriteInt(children_task_ids_.size());
+  for (auto& child_task_id : children_task_ids_)
+    pickle->WriteInt64(child_task_id);
 }
 
 bool SerializedNavigationEntry::ReadFromPickle(base::PickleIterator* iterator) {
@@ -243,6 +251,27 @@ bool SerializedNavigationEntry::ReadFromPickle(base::PickleIterator* iterator) {
         std::string value;
         if (iterator->ReadString(&key) && iterator->ReadString(&value))
           extended_info_map_[key] = value;
+      }
+    }
+
+    // Task IDs did not always exist in the written stream. As a result, we
+    // don't fail if they can't be read
+    if (!iterator->ReadInt64(&task_id_))
+      task_id_ = -1;
+
+    if (!iterator->ReadInt64(&parent_task_id_))
+      parent_task_id_ = -1;
+
+    if (!iterator->ReadInt64(&root_task_id_))
+      root_task_id_ = -1;
+
+    int children_task_ids_size = 0;
+    if (iterator->ReadInt(&children_task_ids_size) &&
+        children_task_ids_size > 0) {
+      for (int i = 0; i < children_task_ids_size; ++i) {
+        int64_t child_task_id;
+        if (iterator->ReadInt64(&child_task_id))
+          children_task_ids_.push_back(child_task_id);
       }
     }
   }

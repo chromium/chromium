@@ -14,8 +14,8 @@ namespace extensions {
 
 SystemInfoProvider::SystemInfoProvider()
     : is_waiting_for_completion_(false),
-      task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(),
+      task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
            /* default priority, */
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 

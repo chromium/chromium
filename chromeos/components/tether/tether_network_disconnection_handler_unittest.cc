@@ -8,7 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/components/tether/fake_active_host.h"
 #include "chromeos/components/tether/fake_disconnect_tethering_request_sender.h"
@@ -17,6 +17,7 @@
 #include "chromeos/components/tether/network_configuration_remover.h"
 #include "chromeos/components/tether/tether_session_completion_logger.h"
 #include "chromeos/network/network_state.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -115,7 +116,7 @@ class TetherNetworkDisconnectionHandlerTest : public testing::Test {
                            ->last_session_completion_reason());
   }
 
-  const base::test::ScopedTaskEnvironment scoped_task_environment_;
+  const base::test::TaskEnvironment task_environment_;
   NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
 
   std::string wifi_service_path_;
@@ -169,7 +170,7 @@ TEST_F(TetherNetworkDisconnectionHandlerTest,
   SetWiFiTechnologyStateEnabled(false);
 
   std::unique_ptr<NetworkState> network =
-      std::make_unique<NetworkState>(kWifiNetworkGuid);
+      std::make_unique<NetworkState>(wifi_service_path_);
   network->SetGuid(kWifiNetworkGuid);
   handler_->NetworkConnectionStateChanged(network.get());
 

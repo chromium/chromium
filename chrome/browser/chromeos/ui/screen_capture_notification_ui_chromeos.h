@@ -19,8 +19,9 @@ class ScreenCaptureNotificationUIChromeOS : public ScreenCaptureNotificationUI {
   ~ScreenCaptureNotificationUIChromeOS() override;
 
   // ScreenCaptureNotificationUI overrides.
-  gfx::NativeViewId OnStarted(base::OnceClosure stop_callback,
-                              base::RepeatingClosure source_callback) override;
+  gfx::NativeViewId OnStarted(
+      base::OnceClosure stop_callback,
+      content::MediaStreamUI::SourceCallback source_callback) override;
 
  private:
   void ProcessStopRequestFromUI();

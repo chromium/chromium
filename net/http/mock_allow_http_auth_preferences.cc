@@ -16,8 +16,9 @@ bool MockAllowHttpAuthPreferences::CanUseDefaultCredentials(
   return true;
 }
 
-bool MockAllowHttpAuthPreferences::CanDelegate(const GURL& auth_origin) const {
-  return true;
+HttpAuth::DelegationType MockAllowHttpAuthPreferences::GetDelegationType(
+    const GURL& auth_origin) const {
+  return HttpAuth::DelegationType::kUnconstrained;
 }
 
 }  // namespace net

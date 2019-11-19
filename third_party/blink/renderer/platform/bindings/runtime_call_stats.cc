@@ -17,9 +17,8 @@ namespace blink {
 
 // Wrapper function defined in WebKit.h
 void LogRuntimeCallStats() {
-  LOG(INFO)
-      << "\n"
-      << RuntimeCallStats::From(MainThreadIsolate())->ToString().Utf8().data();
+  LOG(INFO) << "\n"
+            << RuntimeCallStats::From(MainThreadIsolate())->ToString().Utf8();
 }
 
 namespace {
@@ -38,16 +37,16 @@ void RuntimeCallTimer::Start(RuntimeCallCounter* counter,
   DCHECK(!IsRunning());
   counter_ = counter;
   parent_ = parent;
-  start_ticks_ = TimeTicks(clock_->NowTicks());
+  start_ticks_ = base::TimeTicks(clock_->NowTicks());
   if (parent_)
     parent_->Pause(start_ticks_);
 }
 
 RuntimeCallTimer* RuntimeCallTimer::Stop() {
   DCHECK(IsRunning());
-  TimeTicks now = TimeTicks(clock_->NowTicks());
+  base::TimeTicks now = base::TimeTicks(clock_->NowTicks());
   elapsed_time_ += (now - start_ticks_);
-  start_ticks_ = TimeTicks();
+  start_ticks_ = base::TimeTicks();
   counter_->IncrementAndAddTime(elapsed_time_);
   if (parent_)
     parent_->Resume(now);
@@ -128,9 +127,8 @@ String RuntimeCallStats::ToString() const {
       "(ms)\n\n");
   for (int i = 0; i < number_of_counters_; i++) {
     const RuntimeCallCounter* counter = &counters_[i];
-    builder.Append(String::Format(row_format, counter->GetName(),
-                                  counter->GetCount(),
-                                  counter->GetTime().InMillisecondsF()));
+    builder.AppendFormat(row_format, counter->GetName(), counter->GetCount(),
+                         counter->GetTime().InMillisecondsF());
   }
 
 #if BUILDFLAG(RCS_COUNT_EVERYTHING)
@@ -178,12 +176,11 @@ Vector<RuntimeCallCounter*> RuntimeCallStats::CounterMapToSortedArray() const {
 
 void RuntimeCallStats::AddCounterMapStatsToBuilder(
     StringBuilder& builder) const {
-  builder.Append(String::Format("\nNumber of counters in map: %u\n\n",
-                                counter_map_.size()));
+  builder.AppendFormat("\nNumber of counters in map: %u\n\n",
+                       counter_map_.size());
   for (RuntimeCallCounter* counter : CounterMapToSortedArray()) {
-    builder.Append(String::Format(row_format, counter->GetName(),
-                                  counter->GetCount(),
-                                  counter->GetTime().InMillisecondsF()));
+    builder.AppendFormat(row_format, counter->GetName(), counter->GetCount(),
+                         counter->GetTime().InMillisecondsF());
   }
 }
 #endif
@@ -211,7 +208,7 @@ void RuntimeCallStatsScopedTracer::AddBeginTraceEventIfEnabled(
 }
 
 void RuntimeCallStatsScopedTracer::AddEndTraceEvent() {
-  std::unique_ptr<TracedValue> value = TracedValue::Create();
+  auto value = std::make_unique<TracedValue>();
   stats_->Dump(*value);
   stats_->SetInUse(false);
   TRACE_EVENT_END1(s_category_group_, s_name_, "runtime-call-stats",

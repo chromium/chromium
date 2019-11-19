@@ -18,8 +18,10 @@
 #include "base/threading/thread_checker.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_metrics.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service_observer.h"
+#include "components/data_reduction_proxy/core/common/data_reduction_proxy_server.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
@@ -33,7 +35,6 @@ class Clock;
 namespace data_reduction_proxy {
 
 class DataReductionProxyConfig;
-class DataReductionProxyIOData;
 class DataReductionProxyService;
 class DataReductionProxyCompressionStats;
 
@@ -63,42 +64,52 @@ class DataReductionProxySettingsObserver {
  public:
   // Notifies when the proxy server request header change.
   virtual void OnProxyRequestHeadersChanged(
-      const net::HttpRequestHeaders& headers) = 0;
+      const net::HttpRequestHeaders& headers) {}
 
   // Notifies when |DataReductionProxySettings::InitDataReductionProxySettings|
   // is finished.
-  virtual void OnSettingsInitialized() = 0;
+  virtual void OnSettingsInitialized() {}
+
+  // Notifies when Data Saver is enabled or disabled.
+  virtual void OnDataSaverEnabledChanged(bool enabled) {}
 };
 
 // Central point for configuring the data reduction proxy.
 // This object lives on the UI thread and all of its methods are expected to
 // be called from there.
-class DataReductionProxySettings : public DataReductionProxyServiceObserver {
+class DataReductionProxySettings {
  public:
   using SyntheticFieldTrialRegistrationCallback =
       base::Callback<bool(base::StringPiece, base::StringPiece)>;
 
-  DataReductionProxySettings();
+  explicit DataReductionProxySettings(bool is_off_the_record_profile);
   virtual ~DataReductionProxySettings();
 
-  // Initializes the Data Reduction Proxy with the name of the preference that
-  // controls enabling it, profile prefs and a |DataReductionProxyIOData|. The
-  // caller must ensure that all parameters remain alive for the lifetime of
-  // the |DataReductionProxySettings| instance.
+  // Initializes the Data Reduction Proxy with the profile prefs. The caller
+  // must ensure that all parameters remain alive for the lifetime of the
+  // |DataReductionProxySettings| instance.
   void InitDataReductionProxySettings(
-      const std::string& data_reduction_proxy_enabled_pref_name,
       PrefService* prefs,
-      DataReductionProxyIOData* io_data,
       std::unique_ptr<DataReductionProxyService> data_reduction_proxy_service);
 
   // Sets the |register_synthetic_field_trial_| callback and runs to register
-  // the DataReductionProxyEnabled and the DataReductionProxyLoFiEnabled
-  // synthetic field trial.
+  // the DataReductionProxyEnabled synthetic field trial.
   void SetCallbackToRegisterSyntheticFieldTrial(
       const SyntheticFieldTrialRegistrationCallback&
           on_data_reduction_proxy_enabled);
 
-  // Returns true if the proxy is enabled.
+  // Returns true if the Data Saver feature is enabled by the user on Android.
+  // This checks only the Data Saver prefs on Android or forcing flag on any
+  // platform. Does not check any holdback experiments. Note that this may be
+  // different from the value of |IsDataReductionProxyEnabled|.
+  static bool IsDataSaverEnabledByUser(bool is_off_the_record_profile,
+                                       PrefService* prefs);
+
+  // Enables or disables Data Saver, regardless of platform.
+  static void SetDataSaverEnabledForTesting(PrefService* prefs, bool enabled);
+
+  // Returns true if the Data Reduction HTTP Proxy is enabled. Note that this
+  // may be different from the value of |IsDataSaverEnabledByUser|.
   bool IsDataReductionProxyEnabled() const;
 
   // Returns true if the proxy can be used for the given url. This method does
@@ -156,8 +167,6 @@ class DataReductionProxySettings : public DataReductionProxyServiceObserver {
   // Sets the headers to use for requests to the compression server.
   void SetProxyRequestHeaders(const net::HttpRequestHeaders& headers);
 
-  void SetConfiguredProxies(const net::ProxyList& proxies);
-
   // Returns headers to use for requests to the compression server.
   const net::HttpRequestHeaders& GetProxyRequestHeaders() const;
 
@@ -171,10 +180,11 @@ class DataReductionProxySettings : public DataReductionProxyServiceObserver {
   void RemoveDataReductionProxySettingsObserver(
       DataReductionProxySettingsObserver* observer);
 
-  // Sets a config client that can be used to update Data Reduction Proxy
-  // settings when the network service is enabled.
-  void SetCustomProxyConfigClient(
-      network::mojom::CustomProxyConfigClientPtrInfo proxy_config_client);
+  // Addds a config client that can be used to update Data Reduction Proxy
+  // settings.
+  void AddCustomProxyConfigClient(
+      mojo::Remote<network::mojom::CustomProxyConfigClient>
+          proxy_config_client);
 
   DataReductionProxyService* data_reduction_proxy_service() {
     return data_reduction_proxy_service_.get();
@@ -196,7 +206,7 @@ class DataReductionProxySettings : public DataReductionProxyServiceObserver {
   void InitPrefMembers();
 
   // Virtualized for unit test support.
-  virtual PrefService* GetOriginalProfilePrefs();
+  virtual PrefService* GetOriginalProfilePrefs() const;
 
   // Metrics method. Subclasses should override if they wish to provide
   // alternatives.
@@ -235,14 +245,6 @@ class DataReductionProxySettings : public DataReductionProxyServiceObserver {
   FRIEND_TEST_ALL_PREFIXES(DataReductionProxySettingsTest,
                            CheckInitMetricsWhenNotAllowed);
   FRIEND_TEST_ALL_PREFIXES(DataReductionProxySettingsTest,
-                           TestLoFiImplicitOptOutClicksPerSession);
-  FRIEND_TEST_ALL_PREFIXES(DataReductionProxySettingsTest,
-                           TestLoFiImplicitOptOutConsecutiveSessions);
-  FRIEND_TEST_ALL_PREFIXES(DataReductionProxySettingsTest,
-                           TestLoFiImplicitOptOutHistograms);
-  FRIEND_TEST_ALL_PREFIXES(DataReductionProxySettingsTest,
-                           TestLoFiSessionStateHistograms);
-  FRIEND_TEST_ALL_PREFIXES(DataReductionProxySettingsTest,
                            TestSettingsEnabledStateHistograms);
   FRIEND_TEST_ALL_PREFIXES(DataReductionProxySettingsTest,
                            TestDaysSinceEnabled);
@@ -252,9 +254,6 @@ class DataReductionProxySettings : public DataReductionProxyServiceObserver {
                            TestDaysSinceEnabledExistingUser);
   FRIEND_TEST_ALL_PREFIXES(DataReductionProxySettingsTest,
                            TestDaysSinceSavingsCleared);
-
-  // Override of DataReductionProxyService::Observer.
-  void OnServiceInitialized() override;
 
   // Registers the trial "SyntheticDataReductionProxySetting" with the group
   // "Enabled" or "Disabled". Indicates whether the proxy is turned on or not.
@@ -269,25 +268,7 @@ class DataReductionProxySettings : public DataReductionProxyServiceObserver {
 
   void ResetDataReductionStatistics();
 
-  // Update IO thread objects in response to UI thread changes.
-  void UpdateIOData(bool at_startup);
-
-  // For tests.
-  void set_data_reduction_proxy_enabled_pref_name_for_test(
-      const std::string& data_reduction_proxy_enabled_pref_name) {
-    data_reduction_proxy_enabled_pref_name_ =
-        data_reduction_proxy_enabled_pref_name;
-  }
-
   bool unreachable_;
-
-  // A call to MaybeActivateDataReductionProxy may take place before the
-  // |data_reduction_proxy_service_| has received a DataReductionProxyIOData
-  // pointer. In that case, the operation against the IO objects will not
-  // succeed and |deferred_initialization_| will be set to true. When
-  // OnServiceInitialized is called, if |deferred_initialization_| is true,
-  // IO object calls will be performed at that time.
-  bool deferred_initialization_;
 
   // The number of requests to reload the page with images from the Lo-Fi
   // UI until Lo-Fi is disabled for the remainder of the session.
@@ -298,15 +279,11 @@ class DataReductionProxySettings : public DataReductionProxyServiceObserver {
   // a later session, or never.
   int lo_fi_consecutive_session_disables_;
 
-  BooleanPrefMember spdy_proxy_auth_enabled_;
-
   std::unique_ptr<DataReductionProxyService> data_reduction_proxy_service_;
 
-  // The name of the preference that controls enabling and disabling the Data
-  // Reduction Proxy.
-  std::string data_reduction_proxy_enabled_pref_name_;
-
   PrefService* prefs_;
+
+  PrefChangeRegistrar registrar_;
 
   // The caller must ensure that the |config_| outlives this instance.
   DataReductionProxyConfig* config_;
@@ -323,9 +300,13 @@ class DataReductionProxySettings : public DataReductionProxyServiceObserver {
   // The headers to use for requests to the proxy server.
   net::HttpRequestHeaders proxy_request_headers_;
 
-  net::ProxyList configured_proxies_;
+  // A list of CustomProxyConfigClients that may have been added before
+  // the DataReductionProxyService was available.
+  std::vector<mojo::Remote<network::mojom::CustomProxyConfigClient>>
+      proxy_config_clients_;
 
-  network::mojom::CustomProxyConfigClientPtrInfo proxy_config_client_;
+  // True if |this| was constructed for an off-the-record profile.
+  const bool is_off_the_record_profile_;
 
   base::ThreadChecker thread_checker_;
 

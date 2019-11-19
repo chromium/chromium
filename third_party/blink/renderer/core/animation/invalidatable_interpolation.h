@@ -31,14 +31,6 @@ namespace blink {
 // objects.
 class CORE_EXPORT InvalidatableInterpolation : public Interpolation {
  public:
-  static InvalidatableInterpolation* Create(
-      const PropertyHandle& property,
-      PropertySpecificKeyframe* start_keyframe,
-      PropertySpecificKeyframe* end_keyframe) {
-    return MakeGarbageCollected<InvalidatableInterpolation>(
-        property, start_keyframe, end_keyframe);
-  }
-
   InvalidatableInterpolation(const PropertyHandle& property,
                              PropertySpecificKeyframe* start_keyframe,
                              PropertySpecificKeyframe* end_keyframe)

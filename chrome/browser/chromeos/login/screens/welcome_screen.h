@@ -8,14 +8,13 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/interfaces/locale.mojom.h"
-#include "base/callback_forward.h"
+#include "ash/public/cpp/locale_update_controller.h"
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
 namespace chromeos {
@@ -31,14 +30,6 @@ struct LanguageSwitchResult;
 class WelcomeScreen : public BaseScreen,
                       public input_method::InputMethodManager::Observer {
  public:
-  class Delegate {
-   public:
-    virtual ~Delegate() {}
-
-    // Called when enable debugging screen is requested.
-    virtual void OnEnableDebuggingScreenRequested() = 0;
-  };
-
   class Observer {
    public:
     virtual ~Observer() {}
@@ -47,9 +38,7 @@ class WelcomeScreen : public BaseScreen,
     virtual void OnLanguageListReloaded() = 0;
   };
 
-  WelcomeScreen(BaseScreenDelegate* base_screen_delegate,
-                Delegate* delegate,
-                WelcomeView* view);
+  WelcomeScreen(WelcomeView* view, const base::RepeatingClosure& exit_callback);
   ~WelcomeScreen() override;
 
   static WelcomeScreen* Get(ScreenManager* manager);
@@ -81,19 +70,21 @@ class WelcomeScreen : public BaseScreen,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
- private:
   // BaseScreen implementation:
   void Show() override;
   void Hide() override;
   void OnUserAction(const std::string& action_id) override;
 
+ protected:
+  // Exposes exit callback to test overrides.
+  base::RepeatingClosure* exit_callback() { return &exit_callback_; }
+
+ private:
+
   // InputMethodManager::Observer implementation:
   void InputMethodChanged(input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
-
-  // Subscribe to timezone changes.
-  void InitializeTimezoneObserver();
 
   // Called when continue button is pressed.
   void OnContinueButtonPressed();
@@ -118,15 +109,12 @@ class WelcomeScreen : public BaseScreen,
   // Callback when the system timezone settings is changed.
   void OnSystemTimezoneChanged();
 
-  // Notifies locale change via mojom.
-  void ConnectToLocaleUpdateController();
+  // Notifies locale change via ash::LocaleUpdateController.
   void NotifyLocaleChange();
-  void OnLocaleChangeResult(ash::mojom::LocaleNotificationResult result);
-
-  std::unique_ptr<CrosSettings::ObserverSubscription> timezone_subscription_;
+  void OnLocaleChangeResult(ash::LocaleNotificationResult result);
 
   WelcomeView* view_ = nullptr;
-  Delegate* delegate_ = nullptr;
+  base::RepeatingClosure exit_callback_;
 
   std::string input_method_;
   std::string timezone_;
@@ -141,10 +129,7 @@ class WelcomeScreen : public BaseScreen,
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  // Ash's mojom::LocaleUpdateController
-  ash::mojom::LocaleUpdateControllerPtr locale_update_controller_ = nullptr;
-
-  base::WeakPtrFactory<WelcomeScreen> weak_factory_;
+  base::WeakPtrFactory<WelcomeScreen> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WelcomeScreen);
 };

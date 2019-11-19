@@ -458,7 +458,18 @@ void Metadata::Read() {
         LOG(ERROR) << "invalid string table index";
         return;
       }
-      reports.push_back(ReportDisk(record, report_dir_, string_table));
+      ReportDisk report_disk(record, report_dir_, string_table);
+
+      // There are no attachments on Windows so the total size is the main
+      // report size.
+      struct _stati64 statbuf;
+      if (_wstat64(report_disk.file_path.value().c_str(), &statbuf) == 0) {
+        report_disk.total_size = statbuf.st_size;
+      } else {
+        LOG(ERROR) << "failed to stat report";
+      }
+
+      reports.push_back(report_disk);
     }
   }
   reports_.swap(reports);

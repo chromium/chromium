@@ -214,17 +214,220 @@ BitstreamConverter::AnalysisResult HEVC::AnalyzeAnnexB(
     const uint8_t* buffer,
     size_t size,
     const std::vector<SubsampleEntry>& subsamples) {
+  DVLOG(3) << __func__;
   DCHECK(buffer);
 
   BitstreamConverter::AnalysisResult result;
+  result.is_conformant = false;  // Will change if needed before return.
 
   if (size == 0) {
     result.is_conformant = true;
     return result;
   }
 
-  // TODO(servolk): Implement this, see https://crbug.com/527595. For now, we
-  // report that neither conformance nor keyframe analyses were performed.
+  H265Parser parser;
+  parser.SetEncryptedStream(buffer, size, subsamples);
+
+  enum NALUOrderState {
+    kAUDAllowed,
+    kBeforeFirstVCL,
+    kAfterFirstVCL,
+    kEOBitstreamAllowed,
+    kNoMoreDataAllowed,
+  };
+
+  H265NALU nalu;
+  NALUOrderState order_state = kAUDAllowed;
+
+  // Rec. ITU-T H.265 v5 (02/2018)
+  // 7.4.2.4.4 Order of NAL units and coded pictures and their association to
+  // access units
+  while (true) {
+    H265Parser::Result h265_result = parser.AdvanceToNextNALU(&nalu);
+    if (h265_result == H265Parser::kEOStream) {
+      break;
+    }
+
+    if (h265_result != H265Parser::kOk) {
+      DCHECK_NE(h265_result, H265Parser::kUnsupportedStream)
+          << "AdvanceToNextNALU() returned kUnsupportedStream!";
+      return result;
+    }
+
+    DVLOG(3) << "nal_unit_type " << nalu.nal_unit_type;
+
+    // Definition of "access unit" and "base layer" is only applied to NALs with
+    // nuh_layer_id equals 0.
+    if (nalu.nuh_layer_id != 0) {
+      LOG(WARNING) << "Unrecognized layer ID " << nalu.nuh_layer_id
+                   << ", skip.";
+      continue;
+    }
+
+    if (order_state == kNoMoreDataAllowed) {
+      DVLOG(1) << "No more data is allowed after EOB_NUT.";
+      return result;
+    }
+
+    if (order_state == kEOBitstreamAllowed &&
+        nalu.nal_unit_type != H265NALU::EOB_NUT) {
+      DVLOG(1) << "Only EOB_NUT is allowed after EOS_NUT.";
+      return result;
+    }
+
+    switch (nalu.nal_unit_type) {
+      // When an access unit delimiter NAL unit with nuh_layer_id equal to 0 is
+      // present, it shall be the first NAL unit. There shall be at most one
+      // access unit delimiter NAL unit with nuh_layer_id equal to 0 in any
+      // access unit.
+      case H265NALU::AUD_NUT:
+        if (order_state > kAUDAllowed) {
+          DVLOG(1) << "Unexpected AUD in order_state " << order_state;
+          return result;
+        }
+        order_state = kBeforeFirstVCL;
+        break;
+
+      // When any VPS NAL units, SPS NAL units, PPS NAL units, prefix SEI NAL
+      // units, NAL units with nal_unit_type in the range of
+      // RSV_NVCL41..RSV_NVCL44, or NAL units with nal_unit_type in the range of
+      // UNSPEC48..UNSPEC55 are present, they shall not follow the last VCL NAL
+      // unit of the access unit.
+      case H265NALU::VPS_NUT:
+      case H265NALU::SPS_NUT:
+      case H265NALU::PPS_NUT:
+      case H265NALU::PREFIX_SEI_NUT:
+      case H265NALU::RSV_NVCL41:
+      case H265NALU::RSV_NVCL42:
+      case H265NALU::RSV_NVCL43:
+      case H265NALU::RSV_NVCL44:
+      case H265NALU::UNSPEC48:
+      case H265NALU::UNSPEC49:
+      case H265NALU::UNSPEC50:
+      case H265NALU::UNSPEC51:
+      case H265NALU::UNSPEC52:
+      case H265NALU::UNSPEC53:
+      case H265NALU::UNSPEC54:
+      case H265NALU::UNSPEC55:
+        if (order_state > kBeforeFirstVCL) {
+          DVLOG(1) << "Unexpected NALU type " << nalu.nal_unit_type
+                   << " in order_state " << order_state;
+          return result;
+        }
+        order_state = kBeforeFirstVCL;
+        break;
+
+      // NAL units having nal_unit_type equal to FD_NUT or SUFFIX_SEI_NUT or in
+      // the range of RSV_NVCL45..RSV_NVCL47 or UNSPEC56..UNSPEC63 shall not
+      // precede the first VCL NAL unit of the access unit.
+      case H265NALU::FD_NUT:
+      case H265NALU::SUFFIX_SEI_NUT:
+      case H265NALU::RSV_NVCL45:
+      case H265NALU::RSV_NVCL46:
+      case H265NALU::RSV_NVCL47:
+      case H265NALU::UNSPEC56:
+      case H265NALU::UNSPEC57:
+      case H265NALU::UNSPEC58:
+      case H265NALU::UNSPEC59:
+      case H265NALU::UNSPEC60:
+      case H265NALU::UNSPEC61:
+      case H265NALU::UNSPEC62:
+      case H265NALU::UNSPEC63:
+        if (order_state < kAfterFirstVCL) {
+          DVLOG(1) << "Unexpected NALU type " << nalu.nal_unit_type
+                   << " in order_state " << order_state;
+          return result;
+        }
+        break;
+
+      // When an end of sequence NAL unit with nuh_layer_id equal to 0 is
+      // present, it shall be the last NAL unit among all NAL units with
+      // nuh_layer_id equal to 0 in the access unit other than an end of
+      // bitstream NAL unit (when present).
+      case H265NALU::EOS_NUT:
+        if (order_state != kAfterFirstVCL) {
+          DVLOG(1) << "Unexpected EOS in order_state " << order_state;
+          return result;
+        }
+        order_state = kEOBitstreamAllowed;
+        break;
+
+      // When an end of bitstream NAL unit is present, it shall be the last NAL
+      // unit in the access unit.
+      case H265NALU::EOB_NUT:
+        if (order_state < kAfterFirstVCL) {
+          DVLOG(1) << "Unexpected EOB in order_state " << order_state;
+          return result;
+        }
+        order_state = kNoMoreDataAllowed;
+        break;
+
+      // VCL, non-IRAP
+      case H265NALU::TRAIL_N:
+      case H265NALU::TRAIL_R:
+      case H265NALU::TSA_N:
+      case H265NALU::TSA_R:
+      case H265NALU::STSA_N:
+      case H265NALU::STSA_R:
+      case H265NALU::RADL_N:
+      case H265NALU::RADL_R:
+      case H265NALU::RASL_N:
+      case H265NALU::RASL_R:
+      case H265NALU::RSV_VCL_N10:
+      case H265NALU::RSV_VCL_R11:
+      case H265NALU::RSV_VCL_N12:
+      case H265NALU::RSV_VCL_R13:
+      case H265NALU::RSV_VCL_N14:
+      case H265NALU::RSV_VCL_R15:
+      case H265NALU::RSV_VCL24:
+      case H265NALU::RSV_VCL25:
+      case H265NALU::RSV_VCL26:
+      case H265NALU::RSV_VCL27:
+      case H265NALU::RSV_VCL28:
+      case H265NALU::RSV_VCL29:
+      case H265NALU::RSV_VCL30:
+      case H265NALU::RSV_VCL31:
+        if (order_state > kAfterFirstVCL) {
+          DVLOG(1) << "Unexpected VCL in order_state " << order_state;
+          return result;
+        }
+
+        if (!result.is_keyframe.has_value())
+          result.is_keyframe = false;
+
+        order_state = kAfterFirstVCL;
+        break;
+
+      // VCL, IRAP
+      case H265NALU::BLA_W_LP:
+      case H265NALU::BLA_W_RADL:
+      case H265NALU::BLA_N_LP:
+      case H265NALU::IDR_W_RADL:
+      case H265NALU::IDR_N_LP:
+      case H265NALU::CRA_NUT:
+      case H265NALU::RSV_IRAP_VCL22:
+      case H265NALU::RSV_IRAP_VCL23:
+        if (order_state > kAfterFirstVCL) {
+          DVLOG(1) << "Unexpected VCL in order_state " << order_state;
+          return result;
+        }
+
+        if (!result.is_keyframe.has_value())
+          result.is_keyframe = true;
+
+        order_state = kAfterFirstVCL;
+        break;
+
+      default:
+        NOTREACHED() << "Unsupported NALU type " << nalu.nal_unit_type;
+    }
+  }
+
+  if (order_state < kAfterFirstVCL)
+    return result;
+
+  result.is_conformant = true;
+  DCHECK(result.is_keyframe.has_value());
   return result;
 }
 

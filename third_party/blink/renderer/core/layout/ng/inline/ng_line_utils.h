@@ -6,15 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_LINE_UTILS_H_
 
 #include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 
 namespace blink {
-
-class NGPaintFragment;
 
 // Returns the NG line box fragment containing the caret position of the given
 // position. Returns false if the position is not in Layout NG, or does not
 // have any caret position.
-const NGPaintFragment* NGContainingLineBoxOf(const PositionWithAffinity&);
+NGInlineCursor NGContainingLineBoxOf(const PositionWithAffinity&);
 
 // Returns true if the caret positions of the two positions are in the same NG
 // line box. Returns false in all other cases.

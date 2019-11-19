@@ -259,6 +259,7 @@ TEST_F(CursorManagerTest, MultipleEnableMouseEvents) {
 }
 
 TEST_F(CursorManagerTest, TestCursorClientObserver) {
+  cursor_manager_.SetCursor(ui::CursorType::kPointer);
   // Add two observers. Both should have OnCursorVisibilityChanged()
   // invoked when the visibility of the cursor changes.
   wm::TestingCursorClientObserver observer_a;
@@ -283,7 +284,7 @@ TEST_F(CursorManagerTest, TestCursorClientObserver) {
   EXPECT_FALSE(observer_a.is_cursor_visible());
   EXPECT_FALSE(observer_b.is_cursor_visible());
 
-  // Set the cursor set.
+  // Set the cursor size.
   cursor_manager_.SetCursorSize(ui::CursorSize::kLarge);
   EXPECT_TRUE(observer_a.did_cursor_size_change());
   EXPECT_EQ(ui::CursorSize::kLarge, observer_a.cursor_size());
@@ -324,6 +325,35 @@ TEST_F(CursorManagerTest, TestCursorClientObserver) {
   EXPECT_TRUE(observer_a.did_visibility_change());
   EXPECT_FALSE(observer_b.did_visibility_change());
   EXPECT_TRUE(observer_a.is_cursor_visible());
+
+  // Hide the cursor by changing the cursor type.
+  cursor_manager_.SetCursor(ui::CursorType::kPointer);
+  observer_a.reset();
+  cursor_manager_.SetCursor(ui::CursorType::kNone);
+  EXPECT_TRUE(observer_a.did_visibility_change());
+  EXPECT_FALSE(observer_a.is_cursor_visible());
+
+  // Show the cursor by changing the cursor type.
+  observer_a.reset();
+  cursor_manager_.SetCursor(ui::CursorType::kPointer);
+  EXPECT_TRUE(observer_a.did_visibility_change());
+  EXPECT_TRUE(observer_a.is_cursor_visible());
+
+  // Changing the type to another visible type doesn't cause unnecessary
+  // callbacks.
+  observer_a.reset();
+  cursor_manager_.SetCursor(ui::CursorType::kHand);
+  EXPECT_FALSE(observer_a.did_visibility_change());
+  EXPECT_FALSE(observer_a.is_cursor_visible());
+
+  // If the type is kNone, showing the cursor shouldn't cause observers to
+  // think that the cursor is now visible.
+  cursor_manager_.HideCursor();
+  cursor_manager_.SetCursor(ui::CursorType::kNone);
+  observer_a.reset();
+  cursor_manager_.ShowCursor();
+  EXPECT_TRUE(observer_a.did_visibility_change());
+  EXPECT_FALSE(observer_a.is_cursor_visible());
 }
 
 // This test validates that the cursor visiblity state is restored when a

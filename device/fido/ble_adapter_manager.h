@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/fido/ble/fido_ble_pairing_delegate.h"
@@ -32,7 +33,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BleAdapterManager
 
   void SetAdapterPower(bool set_power_on);
   void InitiatePairing(std::string fido_authenticator_id,
-                       std::string pin_code,
+                       base::Optional<std::string> pin_code,
                        base::OnceClosure success_callback,
                        base::OnceClosure error_callback);
 
@@ -52,7 +53,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BleAdapterManager
   FidoBlePairingDelegate pairing_delegate_;
   bool adapter_powered_on_programmatically_ = false;
 
-  base::WeakPtrFactory<BleAdapterManager> weak_factory_;
+  base::WeakPtrFactory<BleAdapterManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BleAdapterManager);
 };

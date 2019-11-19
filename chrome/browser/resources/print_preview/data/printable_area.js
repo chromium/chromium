@@ -2,59 +2,55 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('print_preview', function() {
-  'use strict';
+import {Coordinate2d} from './coordinate2d.js';
+import {Size} from './size.js';
 
-  class PrintableArea {
+export class PrintableArea {
+  /**
+   * Object describing the printable area of a page in the document.
+   * @param {!Coordinate2d} origin Top left corner of the
+   *     printable area of the document.
+   * @param {!Size} size Size of the printable area of the
+   *     document.
+   */
+  constructor(origin, size) {
     /**
-     * Object describing the printable area of a page in the document.
-     * @param {!print_preview.Coordinate2d} origin Top left corner of the
-     *     printable area of the document.
-     * @param {!print_preview.Size} size Size of the printable area of the
-     *     document.
+     * Top left corner of the printable area of the document.
+     * @type {!Coordinate2d}
+     * @private
      */
-    constructor(origin, size) {
-      /**
-       * Top left corner of the printable area of the document.
-       * @type {!print_preview.Coordinate2d}
-       * @private
-       */
-      this.origin_ = origin;
-
-      /**
-       * Size of the printable area of the document.
-       * @type {!print_preview.Size}
-       * @private
-       */
-      this.size_ = size;
-    }
+    this.origin_ = origin;
 
     /**
-     * @return {!print_preview.Coordinate2d} Top left corner of the printable
-     *     area of the document.
+     * Size of the printable area of the document.
+     * @type {!Size}
+     * @private
      */
-    get origin() {
-      return this.origin_;
-    }
-
-    /**
-     * @return {!print_preview.Size} Size of the printable area of the document.
-     */
-    get size() {
-      return this.size_;
-    }
-
-    /**
-     * @param {print_preview.PrintableArea} other Other printable area to check
-     *     for equality.
-     * @return {boolean} Whether another printable area is equal to this one.
-     */
-    equals(other) {
-      return other != null && this.origin_.equals(other.origin_) &&
-          this.size_.equals(other.size_);
-    }
+    this.size_ = size;
   }
 
-  // Export
-  return {PrintableArea: PrintableArea};
-});
+  /**
+   * @return {!Coordinate2d} Top left corner of the printable
+   *     area of the document.
+   */
+  get origin() {
+    return this.origin_;
+  }
+
+  /**
+   * @return {!Size} Size of the printable area of the document.
+   */
+  get size() {
+    return this.size_;
+  }
+
+  /**
+   * @param {PrintableArea} other Other printable area to check
+   *     for equality.
+   * @return {boolean} Whether another printable area is equal to this one.
+   */
+  equals(other) {
+    return other != null && this.origin_.equals(other.origin_) &&
+        this.size_.equals(other.size_);
+  }
+}

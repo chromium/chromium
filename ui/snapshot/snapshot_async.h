@@ -22,12 +22,12 @@ namespace ui {
 class SnapshotAsync {
  public:
   static void ScaleCopyOutputResult(
-      const GrabWindowSnapshotAsyncCallback& callback,
+      GrabWindowSnapshotAsyncCallback callback,
       const gfx::Size& target_size,
       std::unique_ptr<viz::CopyOutputResult> result);
 
   static void RunCallbackWithCopyOutputResult(
-      const GrabWindowSnapshotAsyncCallback& callback,
+      GrabWindowSnapshotAsyncCallback callback,
       std::unique_ptr<viz::CopyOutputResult> result);
 
  private:

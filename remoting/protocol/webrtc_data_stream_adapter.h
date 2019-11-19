@@ -54,6 +54,16 @@ class WebrtcDataStreamAdapter : public MessagePipe,
   void OnMessage(const webrtc::DataBuffer& buffer) override;
   void OnBufferedAmountChange(uint64_t previous_amount) override;
 
+  // Helpers for calling EventHandler methods asynchronously.
+  // webrtc::DataChannelObserver can be called synchronously mid-operation
+  // (e.g., in the middle of a Send operation). As such, it is important to let
+  // the stack unwind before doing any real work. Since this class doesn't
+  // control the EventHandler implementation, the safest approach is always to
+  // call the latter's methods asynchronously.
+  void InvokeOpenEvent();
+  void InvokeClosedEvent();
+  void InvokeMessageEvent(std::unique_ptr<CompoundBuffer> buffer);
+
   rtc::scoped_refptr<webrtc::DataChannelInterface> channel_;
 
   EventHandler* event_handler_ = nullptr;
@@ -63,7 +73,7 @@ class WebrtcDataStreamAdapter : public MessagePipe,
   // The data and done callbacks for queued but not yet sent messages.
   base::queue<PendingMessage> pending_messages_;
 
-  base::WeakPtrFactory<WebrtcDataStreamAdapter> weak_ptr_factory_;
+  base::WeakPtrFactory<WebrtcDataStreamAdapter> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebrtcDataStreamAdapter);
 };

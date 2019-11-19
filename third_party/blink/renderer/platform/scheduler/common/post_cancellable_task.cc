@@ -12,8 +12,7 @@ namespace blink {
 
 class TaskHandle::Runner : public WTF::ThreadSafeRefCounted<Runner> {
  public:
-  explicit Runner(base::OnceClosure task)
-      : task_(std::move(task)), weak_ptr_factory_(this) {}
+  explicit Runner(base::OnceClosure task) : task_(std::move(task)) {}
 
   base::WeakPtr<Runner> AsWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
 
@@ -50,7 +49,7 @@ class TaskHandle::Runner : public WTF::ThreadSafeRefCounted<Runner> {
 
  private:
   base::OnceClosure task_;
-  base::WeakPtrFactory<Runner> weak_ptr_factory_;
+  base::WeakPtrFactory<Runner> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Runner);
 };
@@ -137,6 +136,35 @@ TaskHandle PostDelayedCancellableTask(base::SequencedTaskRunner& task_runner,
   scoped_refptr<TaskHandle::Runner> runner =
       base::AdoptRef(new TaskHandle::Runner(std::move(task)));
   task_runner.PostDelayedTask(
+      location,
+      WTF::Bind(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
+                TaskHandle(runner)),
+      delay);
+  return TaskHandle(runner);
+}
+
+TaskHandle PostNonNestableCancellableTask(
+    base::SequencedTaskRunner& task_runner,
+    const base::Location& location,
+    base::OnceClosure task) {
+  DCHECK(task_runner.RunsTasksInCurrentSequence());
+  scoped_refptr<TaskHandle::Runner> runner =
+      base::AdoptRef(new TaskHandle::Runner(std::move(task)));
+  task_runner.PostNonNestableTask(
+      location, WTF::Bind(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
+                          TaskHandle(runner)));
+  return TaskHandle(runner);
+}
+
+TaskHandle PostNonNestableDelayedCancellableTask(
+    base::SequencedTaskRunner& task_runner,
+    const base::Location& location,
+    base::OnceClosure task,
+    base::TimeDelta delay) {
+  DCHECK(task_runner.RunsTasksInCurrentSequence());
+  scoped_refptr<TaskHandle::Runner> runner =
+      base::AdoptRef(new TaskHandle::Runner(std::move(task)));
+  task_runner.PostNonNestableDelayedTask(
       location,
       WTF::Bind(&TaskHandle::Runner::Run, runner->AsWeakPtr(),
                 TaskHandle(runner)),

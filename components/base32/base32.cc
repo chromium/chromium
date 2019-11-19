@@ -5,26 +5,17 @@
 #include "components/base32/base32.h"
 
 #include <stddef.h>
-#include <algorithm>
+
 #include <limits>
 
 #include "base/logging.h"
+#include "base/numerics/safe_math.h"
 
 namespace base32 {
-
-namespace {
-constexpr char kEncoding[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-}  // namespace
 
 std::string Base32Encode(base::StringPiece input, Base32EncodePolicy policy) {
   if (input.empty())
     return std::string();
-
-  if (input.size() > std::numeric_limits<size_t>::max() / 8) {
-    NOTREACHED()
-        << "Input is too large and would overflow encoded size computation.";
-    return std::string();
-  }
 
   // Per RFC4648, the output is formed of 8 characters per 40 bits of input and
   // another 8 characters for the last group of [1,39] bits in the input.
@@ -37,7 +28,8 @@ std::string Base32Encode(base::StringPiece input, Base32EncodePolicy policy) {
   // input and one more for the last [1,4] bits.
   // That is: ceil(input.size() * 8.0 / 5.0) ==
   //          (input.size() * 8 + 4) / 5.
-  const size_t unpadded_length = (input.size() * 8 + 4) / 5;
+  const size_t unpadded_length =
+      ((base::MakeCheckedNum(input.size()) * 8 + 4) / 5).ValueOrDie();
 
   std::string output;
   const size_t encoded_length = policy == Base32EncodePolicy::INCLUDE_PADDING
@@ -52,7 +44,7 @@ std::string Base32Encode(base::StringPiece input, Base32EncodePolicy policy) {
   int free_bits = 8;
   while (free_bits < 16) {
     // Extract the 5 leftmost bits in the stream
-    output.push_back(kEncoding[(bit_stream & 0xf800) >> 11]);
+    output.push_back(kEncoding[bit_stream >> 11]);
     bit_stream <<= 5;
     free_bits += 5;
 
@@ -65,7 +57,7 @@ std::string Base32Encode(base::StringPiece input, Base32EncodePolicy policy) {
   }
 
   if (policy == Base32EncodePolicy::INCLUDE_PADDING) {
-    output.append(padded_length - unpadded_length, '=');
+    output.append(padded_length - unpadded_length, kPaddingChar);
   }
 
   DCHECK_EQ(encoded_length, output.size());

@@ -48,7 +48,9 @@ base::Optional<uint64_t> GlobalMemoryDump::ProcessDump::GetMetric(
 
 GlobalMemoryDump::AggregatedMetrics::AggregatedMetrics(
     mojom::AggregatedMetricsPtr aggregated_metrics)
-    : aggregated_metrics_(std::move(aggregated_metrics)) {}
+    : aggregated_metrics_(aggregated_metrics.is_null()
+                              ? mojom::AggregatedMetrics::New()
+                              : std::move(aggregated_metrics)) {}
 
 GlobalMemoryDump::AggregatedMetrics::~AggregatedMetrics() = default;
 

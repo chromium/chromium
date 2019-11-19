@@ -4,10 +4,11 @@
 
 package org.chromium.content_public.browser;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.navigation_controller.LoadURLType;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.Referrer;
@@ -29,8 +30,8 @@ public class LoadUrlParams {
     // native code. Should not be accessed directly anywhere else outside of
     // this class.
     String mUrl;
-    // TODO(nasko,tedchoc): Don't use String to store initiator origin, as it
-    // is lossy format.
+    // TODO(nasko,tedchoc): https://crbug.com/980641: Don't use String to store
+    // initiator origin, as it is a lossy format.
     String mInitiatorOrigin;
     int mLoadUrlType;
     int mTransitionType;
@@ -520,12 +521,15 @@ public class LoadUrlParams {
         if (mBaseUrlForDataUrl == null && mLoadUrlType == LoadURLType.DATA) {
             return true;
         }
-        return nativeIsDataScheme(mBaseUrlForDataUrl);
+        return LoadUrlParamsJni.get().isDataScheme(mBaseUrlForDataUrl);
     }
 
-    /**
-     * Parses |url| as a GURL on the native side, and
-     * returns true if it's scheme is data:.
-     */
-    private static native boolean nativeIsDataScheme(String url);
+    @NativeMethods
+    interface Natives {
+        /**
+         * Parses |url| as a GURL on the native side, and
+         * returns true if it's scheme is data:.
+         */
+        boolean isDataScheme(String url);
+    }
 }

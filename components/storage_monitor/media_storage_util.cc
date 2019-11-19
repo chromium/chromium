@@ -101,9 +101,9 @@ bool MediaStorageUtil::CanCreateFileSystem(const std::string& device_id,
 void MediaStorageUtil::FilterAttachedDevices(DeviceIdSet* devices,
                                              const base::Closure& done) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTaskWithTraitsAndReply(
+  base::PostTaskAndReply(
       FROM_HERE,
-      {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock(),
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&FilterAttachedDevicesOnBackgroundSequence, devices),
       done);

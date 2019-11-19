@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 
+#include "ash/public/cpp/network_config_service.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
@@ -14,10 +15,10 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_util.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"  // nogncheck
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/common/content_features.h"
 
 namespace chromeos {
 
@@ -137,19 +138,15 @@ std::string InternetConfigDialog::GetDialogArgs() const {
 // InternetConfigDialogUI
 
 InternetConfigDialogUI::InternetConfigDialogUI(content::WebUI* web_ui)
-    : ui::WebDialogUI(web_ui) {
+    : ui::MojoWebDialogUI(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUIInternetConfigDialogHost);
 
   AddInternetStrings(source);
   source->AddLocalizedString("title", IDS_SETTINGS_INTERNET_CONFIG);
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
 #if BUILDFLAG(OPTIMIZE_WEBUI)
-  source->UseGzip();
-  source->SetDefaultResource(
-      base::FeatureList::IsEnabled(features::kWebUIPolymer2)
-          ? IDR_INTERNET_CONFIG_DIALOG_VULCANIZED_P2_HTML
-          : IDR_INTERNET_CONFIG_DIALOG_VULCANIZED_HTML);
+  source->SetDefaultResource(IDR_INTERNET_CONFIG_DIALOG_VULCANIZED_HTML);
   source->AddResourcePath("crisper.js", IDR_INTERNET_CONFIG_DIALOG_CRISPER_JS);
 #else
   source->SetDefaultResource(IDR_INTERNET_CONFIG_DIALOG_HTML);
@@ -158,8 +155,18 @@ InternetConfigDialogUI::InternetConfigDialogUI(content::WebUI* web_ui)
 #endif
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
+
+  // Add Mojo bindings to this WebUI so that Mojo calls can occur in JavaScript.
+  AddHandlerToRegistry(base::BindRepeating(
+      &InternetConfigDialogUI::BindCrosNetworkConfig, base::Unretained(this)));
 }
 
 InternetConfigDialogUI::~InternetConfigDialogUI() {}
+
+void InternetConfigDialogUI::BindCrosNetworkConfig(
+    mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
+        receiver) {
+  ash::GetNetworkConfigService(std::move(receiver));
+}
 
 }  // namespace chromeos

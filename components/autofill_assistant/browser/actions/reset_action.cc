@@ -12,15 +12,15 @@
 
 namespace autofill_assistant {
 
-ResetAction::ResetAction(const ActionProto& proto) : Action(proto) {
+ResetAction::ResetAction(ActionDelegate* delegate, const ActionProto& proto)
+    : Action(delegate, proto) {
   DCHECK(proto_.has_reset());
 }
 
 ResetAction::~ResetAction() {}
 
-void ResetAction::InternalProcessAction(ActionDelegate* delegate,
-                                        ProcessActionCallback callback) {
-  delegate->Restart();
+void ResetAction::InternalProcessAction(ProcessActionCallback callback) {
+  delegate_->Restart();
   UpdateProcessedAction(ACTION_APPLIED);
   std::move(callback).Run(std::move(processed_action_proto_));
 }

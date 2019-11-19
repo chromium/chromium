@@ -16,14 +16,20 @@ namespace net {
 // the system SSPI library calls.
 class MockSSPILibrary : public SSPILibrary {
  public:
-  MockSSPILibrary();
+  explicit MockSSPILibrary(const wchar_t* package);
   ~MockSSPILibrary() override;
 
-  // TODO(cbentzel): Only QuerySecurityPackageInfo and FreeContextBuffer
-  //                 are properly handled currently.
+  // Default max token length regardless of package name returned by
+  // QuerySecurityPackageInfo() if no expectations are set.
+  static constexpr unsigned long kDefaultMaxTokenLength = 1024;
+
   // SSPILibrary methods:
+
+  // AcquireCredentialsHandle() returns a handle that must be freed using
+  // FreeCredentialsHandle(). The credentials handle records the principal name.
+  //
+  // On return ptsExpiry is set to a constant.
   SECURITY_STATUS AcquireCredentialsHandle(LPWSTR pszPrincipal,
-                                           LPWSTR pszPackage,
                                            unsigned long fCredentialUse,
                                            void* pvLogonId,
                                            void* pvAuthData,
@@ -31,6 +37,26 @@ class MockSSPILibrary : public SSPILibrary {
                                            void* pvGetKeyArgument,
                                            PCredHandle phCredential,
                                            PTimeStamp ptsExpiry) override;
+
+  // InitializeSecurityContext() returns a handle in phContext that must be
+  // freed via FreeContextBuffer() or by passing it into another
+  // InitializeSecurityContext() call.
+  //
+  // On return ptsExpiry is set to a constant.
+  //
+  // The output buffer will contain a token consisting of the ASCII string:
+  //
+  //   "<source principal>'s token #<n> for <target principal>"
+  //
+  // <source principal> is the security principal derived from explicit
+  // credentials that were passed to a prior AcquireCredentialsHandle() call, or
+  // the string "<Default>" if ambient credentials were requested.
+  //
+  // <n> is the 1-based invocation counter for InitializeSecurityContext() for
+  // the same context.
+  //
+  // <target principal> is the contents of the pszTargetName. Note that the
+  // function expects the same target name on every invocation.
   SECURITY_STATUS InitializeSecurityContext(PCredHandle phCredential,
                                             PCtxtHandle phContext,
                                             SEC_WCHAR* pszTargetName,
@@ -43,8 +69,15 @@ class MockSSPILibrary : public SSPILibrary {
                                             PSecBufferDesc pOutput,
                                             unsigned long* contextAttr,
                                             PTimeStamp ptsExpiry) override;
-  SECURITY_STATUS QuerySecurityPackageInfo(LPWSTR pszPackageName,
-                                           PSecPkgInfoW* pkgInfo) override;
+
+  // QueryContextAttributesEx() supports querying the same attributes as
+  // required by HttpAuthSSPI.
+  SECURITY_STATUS QueryContextAttributesEx(PCtxtHandle phContext,
+                                           ULONG ulAttribute,
+                                           PVOID pBuffer,
+                                           ULONG cbBuffer) override;
+
+  SECURITY_STATUS QuerySecurityPackageInfo(PSecPkgInfoW* pkgInfo) override;
   SECURITY_STATUS FreeCredentialsHandle(PCredHandle phCredential) override;
   SECURITY_STATUS DeleteSecurityContext(PCtxtHandle phContext) override;
   SECURITY_STATUS FreeContextBuffer(PVOID pvContextBuffer) override;
@@ -53,30 +86,7 @@ class MockSSPILibrary : public SSPILibrary {
   //
   // Each expectation established by |ExpectSecurityQueryPackageInfo()| must be
   // matched by a call to |QuerySecurityPackageInfo()| during the lifetime of
-  // the MockSSPILibrary. The |expected_package| argument must equal the
-  // |*pszPackageName| argument to |QuerySecurityPackageInfo()| for there to be
-  // a match. The expectations also establish an explicit ordering.
-  //
-  // For example, this sequence will be successful.
-  //   MockSSPILibrary lib;
-  //   lib.ExpectQuerySecurityPackageInfo(L"NTLM", ...)
-  //   lib.ExpectQuerySecurityPackageInfo(L"Negotiate", ...)
-  //   lib.QuerySecurityPackageInfo(L"NTLM", ...)
-  //   lib.QuerySecurityPackageInfo(L"Negotiate", ...)
-  //
-  // This sequence will fail since the queries do not occur in the order
-  // established by the expectations.
-  //   MockSSPILibrary lib;
-  //   lib.ExpectQuerySecurityPackageInfo(L"NTLM", ...)
-  //   lib.ExpectQuerySecurityPackageInfo(L"Negotiate", ...)
-  //   lib.QuerySecurityPackageInfo(L"Negotiate", ...)
-  //   lib.QuerySecurityPackageInfo(L"NTLM", ...)
-  //
-  // This sequence will fail because there were not enough queries.
-  //   MockSSPILibrary lib;
-  //   lib.ExpectQuerySecurityPackageInfo(L"NTLM", ...)
-  //   lib.ExpectQuerySecurityPackageInfo(L"Negotiate", ...)
-  //   lib.QuerySecurityPackageInfo(L"NTLM", ...)
+  // the MockSSPILibrary. The expectations establish an explicit ordering.
   //
   // |response_code| is used as the return value for
   // |QuerySecurityPackageInfo()|. If |response_code| is SEC_E_OK,
@@ -86,13 +96,11 @@ class MockSSPILibrary : public SSPILibrary {
   // |package_info| is assigned to |*pkgInfo| in |QuerySecurityPackageInfo|.
   // The lifetime of |*package_info| should last at least until the matching
   // |QuerySecurityPackageInfo()| is called.
-  void ExpectQuerySecurityPackageInfo(const std::wstring& expected_package,
-                                      SECURITY_STATUS response_code,
+  void ExpectQuerySecurityPackageInfo(SECURITY_STATUS response_code,
                                       PSecPkgInfoW package_info);
 
  private:
   struct PackageQuery {
-    std::wstring expected_package;
     SECURITY_STATUS response_code;
     PSecPkgInfoW package_info;
   };
@@ -104,7 +112,13 @@ class MockSSPILibrary : public SSPILibrary {
 
   // Set of packages which should be freed.
   std::set<PSecPkgInfoW> expected_freed_packages_;
+
+  // These sets keep track of active credentials and contexts.
+  std::set<CredHandle> active_credentials_;
+  std::set<CtxtHandle> active_contexts_;
 };
+
+using MockAuthLibrary = MockSSPILibrary;
 
 }  // namespace net
 

@@ -8,9 +8,14 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+
+namespace message_center {
+class MessagePopupView;
+}  // namespace message_center
 
 namespace ash {
 
@@ -20,26 +25,28 @@ class TimeTrayItemView;
 
 class CurrentLocaleView;
 class ImeModeView;
-class ManagedDeviceView;
+class ManagedDeviceTrayItemView;
 class NotificationCounterView;
 class QuietModeView;
 class UnifiedSliderBubbleController;
 class UnifiedSystemTrayBubble;
 class UnifiedSystemTrayModel;
-class NetworkIconPurger;
+class UnifiedMessageCenterBubble;
 
-// UnifiedSystemTray is system menu of Chromium OS, which is typically
-// accessible from the button on the right bottom of the screen (Status Area).
-// The button shows multiple icons on it to indicate system status.
-// UnifiedSystemTrayBubble is the actual menu bubble shown on top of it when the
-// button is clicked.
+// The UnifiedSystemTray is the system menu of Chromium OS, which is a clickable
+// rounded rectangle typically located on the bottom right corner of the screen,
+// (called the Status Area). The system tray shows multiple icons on it to
+// indicate system status (e.g. time, power, etc.).
 //
-// UnifiedSystemTray is the view class of that button. It creates and owns
-// UnifiedSystemTrayBubble when it is clicked.
+// Note that the Status Area refers to the parent container of the
+// UnifiedSystemTray, which also includes other "trays" such as the ImeMenuTray,
+// SelectToSpeakTray, VirtualKeyboardTray, etc.
 //
-// UnifiedSystemTray is alternative implementation of SystemTray that is going
-// to replace the original one. Eventually, SystemTray will be removed.
-class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView {
+// UnifiedSystemTrayBubble is the actual menu bubble shown above the system tray
+// after the user clicks on it. The UnifiedSystemTrayBubble is created and owned
+// by this class.
+class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
+                                     public ShelfConfig::Observer {
  public:
   explicit UnifiedSystemTray(Shelf* shelf);
   ~UnifiedSystemTray() override;
@@ -52,11 +59,23 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView {
   // accelerator is shown.
   bool IsSliderBubbleShown() const;
 
+  // True if the bubble containing notifications is visible..
+  bool IsMessageCenterBubbleShown() const;
+
   // True if the bubble is active.
   bool IsBubbleActive() const;
 
   // Activates the system tray bubble.
   void ActivateBubble();
+
+  // Collapse the message center bubble.
+  void CollapseMessageCenter();
+
+  // Expand the message center bubble.
+  void ExpandMessageCenter();
+
+  // Ensure the quick settings bubble is collapsed.
+  void EnsureQuickSettingsCollapsed();
 
   // Ensure the system tray bubble is expanded.
   void EnsureBubbleExpanded();
@@ -67,6 +86,9 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView {
 
   // Shows main bubble with audio settings detailed view.
   void ShowAudioDetailedViewBubble();
+
+  // Shows main bubble with network settings detailed view.
+  void ShowNetworkDetailedViewBubble(bool show_by_click);
 
   // Return the bounds of the bubble in the screen.
   gfx::Rect GetBubbleBoundsInScreen() const;
@@ -87,6 +109,13 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView {
   // bubble is shown.
   void SetTrayBubbleHeight(int height);
 
+  // Focus the first notification in the message center.
+  void FocusFirstNotification();
+
+  bool FocusMessageCenter(bool reverse);
+
+  bool FocusQuickSettings(bool reverse);
+
   // TrayBackgroundView:
   bool PerformAction(const ui::Event& event) override;
   void ShowBubble(bool show_by_click) override;
@@ -101,8 +130,17 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView {
   void AddInkDropLayer(ui::Layer* ink_drop_layer) override;
   void RemoveInkDropLayer(ui::Layer* ink_drop_layer) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  const char* GetClassName() const override;
+
+  // ShelfConfig::Observer:
+  void OnShelfConfigUpdated() override;
 
   UnifiedSystemTrayModel* model() { return model_.get(); }
+  UnifiedSystemTrayBubble* bubble() { return bubble_.get(); }
+
+  UnifiedMessageCenterBubble* message_center_bubble() {
+    return message_center_bubble_.get();
+  }
 
  private:
   static const base::TimeDelta kNotificationCountUpdateDelay;
@@ -119,9 +157,15 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView {
   void UpdateNotificationInternal();
   void UpdateNotificationAfterDelay();
 
+  // Forwarded to UiDelegate.
+  message_center::MessagePopupView* GetPopupViewForNotificationID(
+      const std::string& notification_id);
+
   const std::unique_ptr<UiDelegate> ui_delegate_;
 
   std::unique_ptr<UnifiedSystemTrayBubble> bubble_;
+
+  std::unique_ptr<UnifiedMessageCenterBubble> message_center_bubble_;
 
   // Model class that stores UnifiedSystemTray's UI specific variables.
   const std::unique_ptr<UnifiedSystemTrayModel> model_;
@@ -129,11 +173,9 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView {
   const std::unique_ptr<UnifiedSliderBubbleController>
       slider_bubble_controller_;
 
-  const std::unique_ptr<NetworkIconPurger> network_icon_purger_;
-
   CurrentLocaleView* const current_locale_view_;
   ImeModeView* const ime_mode_view_;
-  ManagedDeviceView* const managed_device_view_;
+  ManagedDeviceTrayItemView* const managed_device_view_;
   NotificationCounterView* const notification_counter_item_;
   QuietModeView* const quiet_mode_view_;
   tray::TimeTrayItemView* const time_view_;

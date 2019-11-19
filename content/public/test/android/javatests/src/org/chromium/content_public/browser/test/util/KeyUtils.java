@@ -88,12 +88,9 @@ public class KeyUtils {
 
     private static void dispatchKeyEventToView(
             final Instrumentation i, final View v, final KeyEvent event) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                if (!v.dispatchKeyEventPreIme(event)) {
-                    v.dispatchKeyEvent(event);
-                }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (!v.dispatchKeyEventPreIme(event)) {
+                v.dispatchKeyEvent(event);
             }
         });
         if (!ThreadUtils.runningOnUiThread()) i.waitForIdleSync();
@@ -101,12 +98,7 @@ public class KeyUtils {
 
     private static void dispatchKeyEventToActivity(
             final Instrumentation i, final Activity a, final KeyEvent event) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                a.dispatchKeyEvent(event);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { a.dispatchKeyEvent(event); });
         i.waitForIdleSync();
     }
 }

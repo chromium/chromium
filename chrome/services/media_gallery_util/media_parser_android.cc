@@ -25,16 +25,14 @@ void OnVideoFrameExtracted(
 
 }  // namespace
 
-MediaParserAndroid::MediaParserAndroid(
-    std::unique_ptr<service_manager::ServiceContextRef> service_ref)
-    : MediaParser(std::move(service_ref)) {}
+MediaParserAndroid::MediaParserAndroid() = default;
 
 MediaParserAndroid::~MediaParserAndroid() = default;
 
 void MediaParserAndroid::ExtractVideoFrame(
     const std::string& mime_type,
     uint32_t total_size,
-    chrome::mojom::MediaDataSourcePtr media_data_source,
+    mojo::PendingRemote<chrome::mojom::MediaDataSource> media_data_source,
     MediaParser::ExtractVideoFrameCallback video_frame_callback) {
   auto data_source = std::make_unique<IPCDataSource>(
       std::move(media_data_source), static_cast<int64_t>(total_size));

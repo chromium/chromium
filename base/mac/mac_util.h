@@ -19,7 +19,7 @@ class FilePath;
 namespace mac {
 
 // Full screen modes, in increasing order of priority.  More permissive modes
-// take predecence.
+// take precedence.
 enum FullScreenMode {
   kFullScreenModeHideAll = 0,
   kFullScreenModeHideDock = 1,
@@ -112,23 +112,27 @@ BASE_EXPORT int MacOSXMinorVersion();
 
 }  // namespace internal
 
-// Run-time OS version checks. Use these instead of
+// Run-time OS version checks. Prefer @available in Objective-C files. If that
+// is not possible, use these functions instead of
 // base::SysInfo::OperatingSystemVersionNumbers. Prefer the "AtLeast" and
-// "AtMost" variants to those that check for a specific version, unless you
-// know for sure that you need to check for a specific version.
+// "AtMost" variants to those that check for a specific version, unless you know
+// for sure that you need to check for a specific version.
 
-#define DEFINE_IS_OS_FUNCS(V, TEST_DEPLOYMENT_TARGET) \
-  inline bool IsOS10_##V() {                          \
-    TEST_DEPLOYMENT_TARGET(>, V, false)               \
-    return internal::MacOSXMinorVersion() == V;       \
-  }                                                   \
-  inline bool IsAtLeastOS10_##V() {                   \
-    TEST_DEPLOYMENT_TARGET(>=, V, true)               \
-    return internal::MacOSXMinorVersion() >= V;       \
-  }                                                   \
-  inline bool IsAtMostOS10_##V() {                    \
-    TEST_DEPLOYMENT_TARGET(>, V, false)               \
-    return internal::MacOSXMinorVersion() <= V;       \
+#define DEFINE_IS_OS_FUNCS_CR_MIN_REQUIRED(V, TEST_DEPLOYMENT_TARGET) \
+  inline bool IsOS10_##V() {                                          \
+    TEST_DEPLOYMENT_TARGET(>, V, false)                               \
+    return internal::MacOSXMinorVersion() == V;                       \
+  }                                                                   \
+  inline bool IsAtMostOS10_##V() {                                    \
+    TEST_DEPLOYMENT_TARGET(>, V, false)                               \
+    return internal::MacOSXMinorVersion() <= V;                       \
+  }
+
+#define DEFINE_IS_OS_FUNCS(V, TEST_DEPLOYMENT_TARGET)           \
+  DEFINE_IS_OS_FUNCS_CR_MIN_REQUIRED(V, TEST_DEPLOYMENT_TARGET) \
+  inline bool IsAtLeastOS10_##V() {                             \
+    TEST_DEPLOYMENT_TARGET(>=, V, true)                         \
+    return internal::MacOSXMinorVersion() >= V;                 \
   }
 
 #define TEST_DEPLOYMENT_TARGET(OP, V, RET)                      \
@@ -136,26 +140,19 @@ BASE_EXPORT int MacOSXMinorVersion();
     return RET;
 #define IGNORE_DEPLOYMENT_TARGET(OP, V, RET)
 
-DEFINE_IS_OS_FUNCS(9, TEST_DEPLOYMENT_TARGET)
-DEFINE_IS_OS_FUNCS(10, TEST_DEPLOYMENT_TARGET)
+// Notes:
+// - When bumping the minimum version of the macOS required by Chromium, remove
+//   lines from below corresponding to versions of the macOS no longer
+//   supported. Ensure that the minimum supported version uses the
+//   DEFINE_IS_OS_FUNCS_CR_MIN_REQUIRED macro.
+// - When bumping the minimum version of the macOS SDK required to build
+//   Chromium, remove the #ifdef that switches between TEST_DEPLOYMENT_TARGET
+//   and IGNORE_DEPLOYMENT_TARGET.
 
-#ifdef MAC_OS_X_VERSION_10_11
+DEFINE_IS_OS_FUNCS_CR_MIN_REQUIRED(10, TEST_DEPLOYMENT_TARGET)
 DEFINE_IS_OS_FUNCS(11, TEST_DEPLOYMENT_TARGET)
-#else
-DEFINE_IS_OS_FUNCS(11, IGNORE_DEPLOYMENT_TARGET)
-#endif
-
-#ifdef MAC_OS_X_VERSION_10_12
 DEFINE_IS_OS_FUNCS(12, TEST_DEPLOYMENT_TARGET)
-#else
-DEFINE_IS_OS_FUNCS(12, IGNORE_DEPLOYMENT_TARGET)
-#endif
-
-#ifdef MAC_OS_X_VERSION_10_13
 DEFINE_IS_OS_FUNCS(13, TEST_DEPLOYMENT_TARGET)
-#else
-DEFINE_IS_OS_FUNCS(13, IGNORE_DEPLOYMENT_TARGET)
-#endif
 
 #ifdef MAC_OS_X_VERSION_10_14
 DEFINE_IS_OS_FUNCS(14, TEST_DEPLOYMENT_TARGET)
@@ -163,15 +160,22 @@ DEFINE_IS_OS_FUNCS(14, TEST_DEPLOYMENT_TARGET)
 DEFINE_IS_OS_FUNCS(14, IGNORE_DEPLOYMENT_TARGET)
 #endif
 
+#ifdef MAC_OS_X_VERSION_10_15
+DEFINE_IS_OS_FUNCS(15, TEST_DEPLOYMENT_TARGET)
+#else
+DEFINE_IS_OS_FUNCS(15, IGNORE_DEPLOYMENT_TARGET)
+#endif
+
 #undef IGNORE_DEPLOYMENT_TARGET
 #undef TEST_DEPLOYMENT_TARGET
+#undef DEFINE_IS_OS_FUNCS_CR_MIN_REQUIRED
 #undef DEFINE_IS_OS_FUNCS
 
 // This should be infrequently used. It only makes sense to use this to avoid
 // codepaths that are very likely to break on future (unreleased, untested,
 // unborn) OS releases, or to log when the OS is newer than any known version.
-inline bool IsOSLaterThan10_14_DontCallThis() {
-  return !IsAtMostOS10_14();
+inline bool IsOSLaterThan10_15_DontCallThis() {
+  return !IsAtMostOS10_15();
 }
 
 // Retrieve the system's model identifier string from the IOKit registry:
@@ -185,6 +189,14 @@ BASE_EXPORT bool ParseModelIdentifier(const std::string& ident,
                                       std::string* type,
                                       int32_t* major,
                                       int32_t* minor);
+
+// Returns an OS name + version string. e.g.:
+//
+//   "macOS Version 10.14.3 (Build 18D109)"
+//
+// Parts of this string change based on OS locale, so it's only useful for
+// displaying to the user.
+BASE_EXPORT std::string GetOSDisplayName();
 
 }  // namespace mac
 }  // namespace base

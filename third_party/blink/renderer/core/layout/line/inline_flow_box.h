@@ -79,9 +79,7 @@ class InlineFlowBox : public InlineBox {
 
 #if DCHECK_IS_ON()
   ~InlineFlowBox() override;
-#endif
 
-#ifndef NDEBUG
   void DumpLineTreeAndMark(StringBuilder&,
                            const InlineBox* = nullptr,
                            const char* = nullptr,
@@ -131,8 +129,8 @@ class InlineFlowBox : public InlineBox {
              LayoutUnit line_top,
              LayoutUnit line_bottom) const override;
   bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation& location_in_container,
-                   const LayoutPoint& accumulated_offset,
+                   const HitTestLocation&,
+                   const PhysicalOffset& accumulated_offset,
                    LayoutUnit line_top,
                    LayoutUnit line_bottom) override;
 
@@ -319,6 +317,12 @@ class InlineFlowBox : public InlineBox {
     return VisualOverflowIsSet()
                ? overflow_->visual_overflow->VisualOverflowRect()
                : FrameRectIncludingLineHeight(line_top, line_bottom);
+  }
+  PhysicalRect PhysicalVisualOverflowRect(LayoutUnit line_top,
+                                          LayoutUnit line_bottom) const {
+    LayoutRect rect = VisualOverflowRect(line_top, line_bottom);
+    FlipForWritingMode(rect);
+    return PhysicalRect(rect);
   }
   LayoutUnit LogicalLeftVisualOverflow() const {
     return VisualOverflowIsSet()

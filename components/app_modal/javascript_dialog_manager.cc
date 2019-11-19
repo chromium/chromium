@@ -163,42 +163,8 @@ void JavaScriptDialogManager::RunJavaScriptDialog(
       &javascript_dialog_extra_data_[web_contents];
 
   if (extra_data->suppress_javascript_messages_) {
-    // If a page tries to open dialogs in a tight loop, the number of
-    // suppressions logged can grow out of control. Arbitrarily cap the number
-    // logged at 100. That many suppressed dialogs is enough to indicate the
-    // page is doing something very hinky.
-    if (extra_data->suppressed_dialog_count_ < 100) {
-      // Log a suppressed dialog as one that opens and then closes immediately.
-      UMA_HISTOGRAM_MEDIUM_TIMES(
-          "JSDialogs.FineTiming.TimeBetweenDialogCreatedAndSameDialogClosed",
-          base::TimeDelta());
-
-      // Only increment the count if it's not already at the limit, to prevent
-      // overflow.
-      extra_data->suppressed_dialog_count_++;
-    }
-
     *did_suppress_message = true;
     return;
-  }
-
-  base::TimeTicks now = base::TimeTicks::Now();
-  if (!last_creation_time_.is_null()) {
-    // A new dialog has been created: log the time since the last one was
-    // created.
-    UMA_HISTOGRAM_MEDIUM_TIMES(
-        "JSDialogs.FineTiming.TimeBetweenDialogCreatedAndNextDialogCreated",
-        now - last_creation_time_);
-  }
-  last_creation_time_ = now;
-
-  // Also log the time since a dialog was closed, but only if this is the first
-  // dialog that was opened since the closing.
-  if (!last_close_time_.is_null()) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
-        "JSDialogs.FineTiming.TimeBetweenDialogClosedAndNextDialogCreated",
-        now - last_close_time_);
-    last_close_time_ = base::TimeTicks();
   }
 
   base::string16 dialog_title =
@@ -357,9 +323,6 @@ void JavaScriptDialogManager::OnDialogClosed(
   // lazy background page after the dialog closes. (Dialogs are closed before
   // their WebContents is destroyed so |web_contents| is still valid here.)
   extensions_client_->OnDialogClosed(web_contents);
-
-  last_close_time_ = base::TimeTicks::Now();
-
   std::move(callback).Run(success, user_input);
 }
 

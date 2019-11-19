@@ -11,7 +11,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/common/password_form.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -29,7 +29,8 @@ class LoginDatabaseIOSTest : public PlatformTest {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     base::FilePath login_db_path =
         temp_dir_.GetPath().AppendASCII("temp_login.db");
-    login_db_.reset(new password_manager::LoginDatabase(login_db_path));
+    login_db_.reset(new password_manager::LoginDatabase(
+        login_db_path, password_manager::IsAccountStore(false)));
     login_db_->Init();
   }
 
@@ -46,7 +47,7 @@ class LoginDatabaseIOSTest : public PlatformTest {
  protected:
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<LoginDatabase> login_db_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 void LoginDatabaseIOSTest::ClearKeychain() {
@@ -172,7 +173,7 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
                                         base::Time::FromDoubleT(250),
                                         /*changes=*/nullptr);
 
-  PasswordStore::FormDigest form = {PasswordForm::SCHEME_HTML,
+  PasswordStore::FormDigest form = {PasswordForm::Scheme::kHtml,
                                     "http://www.example.com", GURL()};
   std::vector<std::unique_ptr<PasswordForm>> logins;
   EXPECT_TRUE(login_db_->GetLogins(form, &logins));

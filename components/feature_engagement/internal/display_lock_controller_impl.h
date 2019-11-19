@@ -39,7 +39,7 @@ class DisplayLockControllerImpl : public DisplayLockController {
 
   THREAD_CHECKER(thread_checker_);
 
-  base::WeakPtrFactory<DisplayLockControllerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<DisplayLockControllerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DisplayLockControllerImpl);
 };

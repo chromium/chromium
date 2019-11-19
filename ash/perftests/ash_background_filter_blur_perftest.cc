@@ -6,7 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "cc/base/lap_timer.h"
+#include "base/timer/lap_timer.h"
 #include "testing/perf/perf_test.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
@@ -45,7 +45,7 @@ class AshBackgroundFilterBlurPerfTest : public AshTestBase {
 
   ui::Compositor* compositor_ = nullptr;
 
-  cc::LapTimer timer_;
+  base::LapTimer timer_;
 
   DISALLOW_COPY_AND_ASSIGN(AshBackgroundFilterBlurPerfTest);
 };

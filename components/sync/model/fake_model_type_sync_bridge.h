@@ -22,6 +22,8 @@
 
 namespace syncer {
 
+class ClientTagHash;
+
 // A basic, functional implementation of ModelTypeSyncBridge for testing
 // purposes. It uses the PREFERENCES type to provide a simple key/value
 // interface, and uses its own simple in-memory Store class.
@@ -31,7 +33,7 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
   static std::string ClientTagFromKey(const std::string& key);
 
   // Generates the tag hash for a given key.
-  static std::string TagHashFromKey(const std::string& key);
+  static ClientTagHash TagHashFromKey(const std::string& key);
 
   // Generates entity specifics for the given key and value.
   static sync_pb::EntitySpecifics GenerateSpecifics(const std::string& key,
@@ -122,9 +124,8 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
   std::string GetClientTag(const EntityData& entity_data) override;
   std::string GetStorageKey(const EntityData& entity_data) override;
   bool SupportsGetStorageKey() const override;
-  void SetSupportsGetStorageKey(bool supports_get_storage_key);
   ConflictResolution ResolveConflict(
-      const EntityData& local_data,
+      const std::string& storage_key,
       const EntityData& remote_data) const override;
   void ApplyStopSyncChanges(
       std::unique_ptr<MetadataChangeList> delete_metadata_change_list) override;
@@ -141,8 +142,20 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
   // test code here, this function is needed to manually copy it.
   static std::unique_ptr<EntityData> CopyEntityData(const EntityData& old_data);
 
-  // Sets storage key which will be ignored by bridge.
-  void SetKeyToIgnore(const std::string key);
+  // Influences the way the bridge produces storage key. If set to true, the
+  // bridge will compute a storage key deterministically from specifics, via
+  // GetStorageKey(). If set to false, it will return autoincrement-like storage
+  // keys that cannot be inferred from specifics, and exercise
+  // UpdateStorageKey() for remote changes to report storage keys.
+  void SetSupportsGetStorageKey(bool supports_get_storage_key);
+
+  // Returns the last generated autoincrement-like storage key, applicable only
+  // for the SetSupportsGetStorageKey(false) case (otherwise the storage key
+  // gets inferred deterministically from specifics).
+  std::string GetLastGeneratedStorageKey() const;
+
+  // Add values that will be ignored by bridge.
+  void AddValueToIgnore(const std::string& value);
 
   const Store& db() const { return *db_; }
   Store* mutable_db() { return db_.get(); }
@@ -155,13 +168,13 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
   // Applies |change_list| to the metadata store.
   void ApplyMetadataChangeList(std::unique_ptr<MetadataChangeList> change_list);
 
-  std::string GetStorageKeyImpl(const EntityData& entity_data);
+  std::string GenerateStorageKey(const EntityData& entity_data);
 
   // The conflict resolution to use for calls to ResolveConflict.
-  std::unique_ptr<ConflictResolution> conflict_resolution_;
+  ConflictResolution conflict_resolution_;
 
-  // The storage keys which bridge will ignore.
-  std::unordered_set<std::string> keys_to_ignore_;
+  // The keys that the bridge will ignore.
+  std::unordered_set<std::string> values_to_ignore_;
 
   // Whether an error should be produced on the next bridge call.
   bool error_next_ = false;
@@ -170,6 +183,11 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
   // responsible for calling UpdateStorageKey when processing new entities in
   // MergeSyncData/ApplySyncChanges.
   bool supports_get_storage_key_ = true;
+
+  // Last dynamically-generated storage key, for the case where
+  // |supports_get_storage_key_| == false (otherwise the storage key gets
+  // inferred deterministically from specifics).
+  int last_generated_storage_key_ = 0;
 };
 
 }  // namespace syncer

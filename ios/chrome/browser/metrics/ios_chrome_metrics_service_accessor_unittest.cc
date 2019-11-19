@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 #include "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
+#include "build/branding_buildflags.h"
 
-#include "base/base_switches.h"
-#include "base/command_line.h"
 #include "base/macros.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -28,7 +27,7 @@ class IOSChromeMetricsServiceAccessorTest : public PlatformTest {
 };
 
 TEST_F(IOSChromeMetricsServiceAccessorTest, MetricsReportingEnabled) {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const char* pref = metrics::prefs::kMetricsReportingEnabled;
   GetLocalState()->SetDefaultPrefValue(pref, base::Value(false));
 
@@ -41,18 +40,8 @@ TEST_F(IOSChromeMetricsServiceAccessorTest, MetricsReportingEnabled) {
   GetLocalState()->ClearPref(pref);
   EXPECT_FALSE(
       IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
-
-  // If field trials are forced, metrics should always be disabled, regardless
-  // of the value of the pref.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kForceFieldTrials);
-  EXPECT_FALSE(
-      IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
-  GetLocalState()->SetBoolean(pref, true);
-  EXPECT_FALSE(
-      IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
 #else
-  // Metrics Reporting is never enabled when GOOGLE_CHROME_BUILD is undefined.
+  // Metrics Reporting is never enabled when GOOGLE_CHROME_BRANDING is not set.
   EXPECT_FALSE(
       IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
 #endif

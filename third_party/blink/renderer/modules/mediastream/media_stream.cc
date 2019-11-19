@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_event.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/mediastream/media_stream_center.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
 namespace blink {
@@ -185,8 +185,8 @@ MediaStream::MediaStream(ExecutionContext* context,
     video_components.push_back((*iter)->Component());
   }
 
-  descriptor_ =
-      MediaStreamDescriptor::Create(audio_components, video_components);
+  descriptor_ = MakeGarbageCollected<MediaStreamDescriptor>(audio_components,
+                                                            video_components);
   descriptor_->SetClient(this);
 
   audio_tracks_ = audio_tracks;
@@ -478,7 +478,7 @@ void MediaStream::ScheduleDispatchEvent(Event* event) {
   scheduled_events_.push_back(event);
 
   if (!scheduled_event_timer_.IsActive())
-    scheduled_event_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+    scheduled_event_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 }
 
 void MediaStream::ScheduledEventTimerFired(TimerBase*) {

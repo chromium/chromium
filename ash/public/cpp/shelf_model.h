@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/shelf_item.h"
-#include "ash/public/interfaces/shelf.mojom.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 
@@ -32,6 +31,10 @@ ASH_PUBLIC_EXPORT extern const char kBackButtonId[];
 // Model used for shelf items. Owns ShelfItemDelegates but does not create them.
 class ASH_PUBLIC_EXPORT ShelfModel {
  public:
+  // Get or set a weak pointer to the singleton ShelfModel instance, not owned.
+  static ShelfModel* Get();
+  static void SetInstance(ShelfModel* shelf_model);
+
   ShelfModel();
   ~ShelfModel();
 
@@ -57,6 +60,12 @@ class ASH_PUBLIC_EXPORT ShelfModel {
 
   // Removes the item at |index|.
   void RemoveItemAt(int index);
+
+  // Removes the item with id |shelf_id| and passes ownership of its
+  // ShelfItemDelegate to the caller. This is useful if you want to remove an
+  // item from the shelf temporarily and be able to restore its behavior later.
+  std::unique_ptr<ShelfItemDelegate> RemoveItemAndTakeShelfItemDelegate(
+      const ShelfID& shelf_id);
 
   // Moves the item at |index| to |target_index|. |target_index| is in terms
   // of the model *after* the item at |index| is removed.

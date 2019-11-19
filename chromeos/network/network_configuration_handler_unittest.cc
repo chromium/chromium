@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/network/network_configuration_handler.h"
+
 #include <stddef.h>
 
 #include <map>
@@ -12,16 +14,16 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_shill_profile_client.h"
-#include "chromeos/dbus/fake_shill_service_client.h"
-#include "chromeos/network/network_configuration_handler.h"
+#include "chromeos/dbus/shill/shill_clients.h"
+#include "chromeos/dbus/shill/shill_manager_client.h"
+#include "chromeos/dbus/shill/shill_profile_client.h"
+#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_configuration_observer.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state.h"
@@ -146,7 +148,7 @@ class TestNetworkStateHandlerObserver
 class NetworkConfigurationHandlerTest : public testing::Test {
  public:
   NetworkConfigurationHandlerTest() {
-    DBusThreadManager::Initialize();
+    shill_clients::InitializeFakes();
 
     network_state_handler_ = NetworkStateHandler::InitializeForTest();
     // Note: NetworkConfigurationHandler's contructor is private, so
@@ -169,7 +171,7 @@ class NetworkConfigurationHandlerTest : public testing::Test {
     network_configuration_handler_.reset();
     network_state_handler_.reset();
 
-    DBusThreadManager::Shutdown();
+    shill_clients::Shutdown();
   }
 
   void SuccessCallback(const std::string& callback_name) {
@@ -258,7 +260,7 @@ class NetworkConfigurationHandlerTest : public testing::Test {
                                 const std::string& key,
                                 std::string* result) {
     ShillServiceClient::TestInterface* service_test =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        ShillServiceClient::Get()->GetTestInterface();
     const base::DictionaryValue* properties =
         service_test->GetServiceProperties(service_path);
     if (!properties)
@@ -296,21 +298,20 @@ class NetworkConfigurationHandlerTest : public testing::Test {
     return true;
   }
 
-  FakeShillServiceClient* GetShillServiceClient() {
-    return static_cast<FakeShillServiceClient*>(
-        DBusThreadManager::Get()->GetShillServiceClient());
+  ShillServiceClient::TestInterface* GetShillServiceClient() {
+    return ShillServiceClient::Get()->GetTestInterface();
   }
 
-  FakeShillProfileClient* GetShillProfileClient() {
-    return static_cast<FakeShillProfileClient*>(
-        DBusThreadManager::Get()->GetShillProfileClient());
+  ShillProfileClient::TestInterface* GetShillProfileClient() {
+    return ShillProfileClient::Get()->GetTestInterface();
   }
 
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<TestNetworkStateHandlerObserver>
       network_state_handler_observer_;
-  base::MessageLoopForUI message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   std::string success_callback_name_;
   std::string get_properties_path_;
   std::unique_ptr<base::DictionaryValue> get_properties_;
@@ -474,9 +475,8 @@ TEST_F(NetworkConfigurationHandlerTest, CreateConfiguration) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(success);
-  // In FakeShillManagerClient, instead of re-implementing shill's behavior,
-  // guid is used for service_path.
-  EXPECT_EQ(service_path, kGuid);
+  EXPECT_EQ(service_path,
+            GetShillServiceClient()->FindServiceMatchingGUID(kGuid));
   EXPECT_EQ(guid, kGuid);
 }
 
@@ -676,7 +676,7 @@ TEST_F(NetworkConfigurationHandlerTest, AlwaysOnVpn) {
       shill::kAlwaysOnVpnPackageProperty, base::Value(vpn_package),
       base::DoNothing(), base::Bind(&ErrorCallback));
 
-  DBusThreadManager::Get()->GetShillManagerClient()->GetProperties(
+  ShillManagerClient::Get()->GetProperties(
       Bind(&NetworkConfigurationHandlerTest::ManagerGetPropertiesCallback,
            base::Unretained(this), "ManagerGetProperties"));
   base::RunLoop().RunUntilIdle();

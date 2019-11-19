@@ -103,6 +103,22 @@ public class ContentViewScrollingTest {
         });
     }
 
+    private void waitForScrollToPosition(final int x, final int y) {
+        CriteriaHelper.pollInstrumentationThread(new Criteria() {
+            @Override
+            public boolean isSatisfied() {
+                // Scrolling and flinging don't result in exact coordinates.
+                final int threshold = 5;
+
+                boolean xCorrect = (mCoordinates.getScrollXPixInt() < x + threshold
+                        && mCoordinates.getScrollXPixInt() > x - threshold);
+                boolean yCorrect = (mCoordinates.getScrollYPixInt() < y + threshold
+                        && mCoordinates.getScrollYPixInt() > y - threshold);
+                return xCorrect && yCorrect;
+            }
+        });
+    }
+
     private void waitForViewportInitialization() {
         CriteriaHelper.pollInstrumentationThread(new Criteria() {
             @Override
@@ -112,7 +128,7 @@ public class ContentViewScrollingTest {
         });
     }
 
-    private void fling(final int vx, final int vy) throws Throwable {
+    private void fling(final int vx, final int vy) {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
@@ -122,7 +138,7 @@ public class ContentViewScrollingTest {
         });
     }
 
-    private void scrollTo(final int x, final int y) throws Throwable {
+    private void scrollTo(final int x, final int y) {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
@@ -131,7 +147,7 @@ public class ContentViewScrollingTest {
         });
     }
 
-    private void scrollBy(final int dx, final int dy) throws Throwable {
+    private void scrollBy(final int dx, final int dy) {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
@@ -140,8 +156,7 @@ public class ContentViewScrollingTest {
         });
     }
 
-    private void scrollWithJoystick(final float deltaAxisX, final float deltaAxisY)
-            throws Throwable {
+    private void scrollWithJoystick(final float deltaAxisX, final float deltaAxisY) {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
@@ -157,7 +172,7 @@ public class ContentViewScrollingTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mActivityTestRule.launchContentShellWithUrl(LARGE_PAGE);
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mCoordinates = mActivityTestRule.getRenderCoordinates();
@@ -172,7 +187,7 @@ public class ContentViewScrollingTest {
     @SmallTest
     @Feature({"Main"})
     @RetryOnFailure
-    public void testFling() throws Throwable {
+    public void testFling() {
         // Scaling the initial velocity by the device scale factor ensures that
         // it's of sufficient magnitude for all displays densities.
         float deviceScaleFactor = InstrumentationRegistry.getInstrumentation()
@@ -205,10 +220,44 @@ public class ContentViewScrollingTest {
 
     @Test
     @SmallTest
+    @Feature({"Main"})
+    @RetryOnFailure
+    public void testFlingDistance() {
+        // Scaling the initial velocity by the device scale factor ensures that
+        // it's of sufficient magnitude for all displays densities.
+        float deviceScaleFactor = InstrumentationRegistry.getInstrumentation()
+                                          .getTargetContext()
+                                          .getResources()
+                                          .getDisplayMetrics()
+                                          .density;
+        int velocity = (int) (1000 * deviceScaleFactor);
+        // Expected total fling distance calculated by FlingCurve with initial
+        // velocity 1000.
+        int expected_dist = (int) (180 * deviceScaleFactor);
+
+        // Vertical fling to lower-left.
+        fling(0, -velocity);
+        waitForScrollToPosition(0, expected_dist);
+
+        // Horizontal fling to lower-right.
+        fling(-velocity, 0);
+        waitForScrollToPosition(expected_dist, expected_dist);
+
+        // Vertical fling to upper-right.
+        fling(0, velocity);
+        waitForScrollToPosition(expected_dist, 0);
+
+        // Horizontal fling to top-left.
+        fling(velocity, 0);
+        waitForScrollToPosition(0, 0);
+    }
+
+    @Test
+    @SmallTest
     @RerunWithUpdatedContainerView
     @Feature({"Main"})
     @RetryOnFailure
-    public void testScrollTo() throws Throwable {
+    public void testScrollTo() {
         // Vertical scroll to lower-left.
         scrollTo(0, 2500);
         waitForScroll(true, false);
@@ -235,7 +284,7 @@ public class ContentViewScrollingTest {
     @RerunWithUpdatedContainerView
     @Feature({"Main"})
     @RetryOnFailure
-    public void testScrollBy() throws Throwable {
+    public void testScrollBy() {
         scrollTo(0, 0);
         waitForScroll(true, true);
 
@@ -267,7 +316,7 @@ public class ContentViewScrollingTest {
     @Test
     @SmallTest
     @Feature({"Main"})
-    public void testJoystickScroll() throws Throwable {
+    public void testJoystickScroll() {
         scrollTo(0, 0);
         waitForScroll(true, true);
 
@@ -302,7 +351,7 @@ public class ContentViewScrollingTest {
     @RerunWithUpdatedContainerView
     @Feature({"Main"})
     @RetryOnFailure
-    public void testOverScroll() throws Throwable {
+    public void testOverScroll() {
         // Overscroll lower-left.
         scrollTo(-10000, 10000);
         waitForScroll(true, false);
@@ -333,7 +382,7 @@ public class ContentViewScrollingTest {
     @RerunWithUpdatedContainerView
     @Feature({"Main"})
     @RetryOnFailure
-    public void testOnScrollChanged() throws Throwable {
+    public void testOnScrollChanged() {
         final int scrollToX = mCoordinates.getScrollXPixInt() + 2500;
         final int scrollToY = mCoordinates.getScrollYPixInt() + 2500;
         final TestInternalAccessDelegate accessDelegate = new TestInternalAccessDelegate();

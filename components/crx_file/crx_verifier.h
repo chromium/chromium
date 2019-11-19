@@ -16,9 +16,11 @@ class FilePath;
 namespace crx_file {
 
 enum class VerifierFormat {
-  CRX2_OR_CRX3,               // Accept Crx2 or Crx3.
-  CRX3,                       // Accept only Crx3.
-  CRX3_WITH_PUBLISHER_PROOF,  // Accept only Crx3 with a publisher proof.
+  CRX3,                            // Accept only Crx3.
+  CRX3_WITH_TEST_PUBLISHER_PROOF,  // Accept only Crx3 with a test or production
+                                   // publisher proof.
+  CRX3_WITH_PUBLISHER_PROOF,       // Accept only Crx3 with a production
+                                   // publisher proof.
 };
 
 enum class VerifierResult {

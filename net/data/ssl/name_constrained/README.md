@@ -1,4 +1,4 @@
-# Certificate Blacklist
+# Certificate Blocklist
 
 This directory contains a number of certificates and public keys which are to be
 treated as named-constrained during certiicate validation within Chromium-based

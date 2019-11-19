@@ -33,8 +33,12 @@ namespace {
 class PageActionApiTest : public ExtensionApiTest {
  protected:
   ExtensionAction* GetPageAction(const Extension& extension) {
-    return ExtensionActionManager::Get(browser()->profile())->
-        GetPageAction(extension);
+    ExtensionAction* extension_action =
+        ExtensionActionManager::Get(browser()->profile())
+            ->GetExtensionAction(extension);
+    return extension_action->action_type() == ActionInfo::TYPE_PAGE
+               ? extension_action
+               : nullptr;
   }
 };
 

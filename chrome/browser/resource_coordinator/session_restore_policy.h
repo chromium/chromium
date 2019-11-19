@@ -302,7 +302,7 @@ class SessionRestorePolicy {
   // It's possible for this policy object to be destroyed while it has posted
   // notifications in flight. The messages are bound to a weak pointer so that
   // they are not delivered after the policy object is destroyed.
-  base::WeakPtrFactory<SessionRestorePolicy> weak_factory_;
+  base::WeakPtrFactory<SessionRestorePolicy> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SessionRestorePolicy);
 };

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const SwitchAccessCommand = chrome.accessibilityPrivate.SwitchAccessCommand;
 /**
  * Class to run and get details about user commands.
  */
@@ -12,72 +13,57 @@ class Commands {
   constructor(switchAccess) {
     /**
      * SwitchAccess reference.
-     *
      * @private {SwitchAccessInterface}
      */
     this.switchAccess_ = switchAccess;
 
     /**
-     * A map from command name to the default key code and function binding for
-     * the command.
-     *
-     * @private {!Object<string, {keyCode: string, callback:function(): void}>}
+     * A map from command name to the function binding for the command.
+     * @private {!Map<!SwitchAccessCommand, !function(): void>}
      */
     this.commandMap_ = this.buildCommandMap_();
+
+    this.init_();
   }
 
   /**
-   * Return a list of the names of all user commands.
-   *
-   * @return {!Array<string>}
+   * Starts listening for Switch Access command events.
+   * @private
    */
-  getCommands() {
-    return Object.keys(this.commandMap_);
-  }
-
-  /**
-   * Return the default key code for a command.
-   *
-   * @param {string} command
-   * @return {number}
-   */
-  getDefaultKeyCodeFor(command) {
-    return this.commandMap_[command]['defaultKeyCode'];
+  init_() {
+    chrome.accessibilityPrivate.onSwitchAccessCommand.addListener(
+        this.runCommand_.bind(this));
   }
 
   /**
    * Run the function binding for the specified command.
-   *
-   * @param {string} command
+   * @param {!SwitchAccessCommand} command
+   * @private
    */
-  runCommand(command) {
-    this.commandMap_[command]['binding']();
+  runCommand_(command) {
+    this.commandMap_.get(command)();
+    this.switchAccess_.restartAutoScan();
   }
 
   /**
-   * Build the object that maps from command name to the default key code and
-   * function binding for the command.
-   *
-   * @return {!Object<string, {keyCode: string, callback: function(): void}>}
+   * Build a map from command name to the function binding for the command.
+   * @return {!Map<!SwitchAccessCommand, !function(): void>}
+   * @private
    */
   buildCommandMap_() {
-    return {
-      'next': {
-        'defaultKeyCode': 51, /* '3' key */
-        'binding': this.switchAccess_.moveForward.bind(this.switchAccess_)
-      },
-      'previous': {
-        'defaultKeyCode': 50, /* '2' key */
-        'binding': this.switchAccess_.moveBackward.bind(this.switchAccess_)
-      },
-      'select': {
-        'defaultKeyCode': 49, /* '1' key */
-        'binding': this.switchAccess_.selectCurrentNode.bind(this.switchAccess_)
-      },
-      'menu': {
-        'defaultKeyCode': 52, /* '4' key */
-        'binding': this.switchAccess_.enterMenu.bind(this.switchAccess_)
-      }
-    };
+    return new Map([
+      [
+        SwitchAccessCommand.SELECT,
+        this.switchAccess_.enterMenu.bind(this.switchAccess_)
+      ],
+      [
+        SwitchAccessCommand.NEXT,
+        this.switchAccess_.moveForward.bind(this.switchAccess_)
+      ],
+      [
+        SwitchAccessCommand.PREVIOUS,
+        this.switchAccess_.moveBackward.bind(this.switchAccess_)
+      ]
+    ]);
   }
 }

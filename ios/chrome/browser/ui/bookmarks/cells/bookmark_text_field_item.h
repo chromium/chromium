@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
 @class BookmarkTextFieldItem;
-@protocol TextFieldStyling;
 
 // Delegates the cell's text field's events.
 @protocol BookmarkTextFieldItemDelegate<UITextFieldDelegate>

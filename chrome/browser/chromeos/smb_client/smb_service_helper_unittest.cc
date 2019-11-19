@@ -22,8 +22,24 @@ class SmbServiceHelperTest : public ::testing::Test {
   std::string realm_;
 
   bool ParseUserPrincipalName(const char* user_principal_name_) {
+    user_name_ = "";
+    realm_ = "";
     return ::chromeos::smb_client::ParseUserPrincipalName(user_principal_name_,
                                                           &user_name_, &realm_);
+  }
+
+  bool ParseDownLevelLogonName(const char* down_level_logon_name) {
+    user_name_ = "";
+    realm_ = "";
+    return ::chromeos::smb_client::ParseDownLevelLogonName(
+        down_level_logon_name, &user_name_, &realm_);
+  }
+
+  bool ParseUserName(const char* down_level_logon_name) {
+    user_name_ = "";
+    realm_ = "";
+    return ::chromeos::smb_client::ParseUserName(down_level_logon_name,
+                                                 &user_name_, &realm_);
   }
 
  private:
@@ -96,6 +112,39 @@ TEST_F(SmbServiceHelperTest, ParseUPNFail_NoUpnAt) {
 // .b.c fails (no user name@ and initial . is invalid, anyway).
 TEST_F(SmbServiceHelperTest, ParseUPNFail_NoUpnAtButDot) {
   EXPECT_FALSE(ParseUserPrincipalName(".company.domain"));
+}
+
+TEST_F(SmbServiceHelperTest, ParseDownLevelLogonName) {
+  EXPECT_TRUE(ParseDownLevelLogonName("domain\\user"));
+  EXPECT_EQ(user_name_, "user");
+  EXPECT_EQ(realm_, "DOMAIN");
+
+  EXPECT_FALSE(ParseDownLevelLogonName("user"));
+  EXPECT_FALSE(ParseDownLevelLogonName("\\user"));
+  EXPECT_FALSE(ParseDownLevelLogonName("domain\\"));
+  EXPECT_FALSE(ParseDownLevelLogonName("domain\\user\\foo"));
+}
+
+TEST_F(SmbServiceHelperTest, ParseUserName) {
+  EXPECT_TRUE(ParseUserName("plainusername"));
+  EXPECT_EQ(user_name_, "plainusername");
+  EXPECT_EQ(realm_, "");
+
+  EXPECT_TRUE(ParseUserPrincipalName("user@domain.com"));
+  EXPECT_EQ(user_name_, "user");
+  EXPECT_EQ(realm_, "DOMAIN.COM");
+
+  EXPECT_TRUE(ParseDownLevelLogonName("domain\\user"));
+  EXPECT_EQ(user_name_, "user");
+  EXPECT_EQ(realm_, "DOMAIN");
+
+  EXPECT_FALSE(ParseUserPrincipalName("user@"));
+  EXPECT_EQ(user_name_, "");
+  EXPECT_EQ(realm_, "");
+
+  EXPECT_FALSE(ParseDownLevelLogonName("\\user"));
+  EXPECT_EQ(user_name_, "");
+  EXPECT_EQ(realm_, "");
 }
 
 }  // namespace smb_client

@@ -6,7 +6,6 @@
 
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/widget_finder.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ui/views/accessible_pane_view.h"
@@ -20,7 +19,10 @@ namespace ash {
 namespace {
 
 bool HasFocusableWindow() {
-  return !Shell::Get()->mru_window_tracker()->BuildMruWindowList().empty();
+  return !Shell::Get()
+              ->mru_window_tracker()
+              ->BuildMruWindowList(kActiveDesk)
+              .empty();
 }
 
 }  // namespace
@@ -40,9 +42,9 @@ void FocusCycler::RemoveWidget(views::Widget* widget) {
 }
 
 void FocusCycler::RotateFocus(Direction direction) {
-  aura::Window* window = wm::GetActiveWindow();
+  aura::Window* window = window_util::GetActiveWindow();
   if (window) {
-    views::Widget* widget = GetInternalWidgetForWindow(window);
+    views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
     // First try to rotate focus within the active widget. If that succeeds,
     // we're done.
     if (widget &&
@@ -82,12 +84,12 @@ void FocusCycler::RotateFocus(Direction direction) {
     if (index == browser_index) {
       // Activate the most recently active browser window.
       MruWindowTracker::WindowList mru_windows(
-          Shell::Get()->mru_window_tracker()->BuildMruWindowList());
+          Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk));
       if (mru_windows.empty())
         break;
       auto* window = mru_windows.front();
-      wm::GetWindowState(window)->Activate();
-      views::Widget* widget = GetInternalWidgetForWindow(window);
+      WindowState::Get(window)->Activate();
+      views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
       if (!widget)
         break;
       views::FocusManager* focus_manager = widget->GetFocusManager();
@@ -106,7 +108,7 @@ void FocusCycler::RotateFocus(Direction direction) {
 
 bool FocusCycler::FocusWidget(views::Widget* widget) {
   // If the target is PIP window, temporarily make it activatable.
-  if (wm::GetWindowState(widget->GetNativeWindow())->IsPip())
+  if (WindowState::Get(widget->GetNativeWindow())->IsPip())
     widget->widget_delegate()->SetCanActivate(true);
 
   // Note: It is not necessary to set the focus directly to the pane since that

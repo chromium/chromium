@@ -8,9 +8,6 @@
   await TestRunner.loadModule('network_test_runner');
   await TestRunner.showPanel('timeline');
 
-  await ProductRegistry.instance();
-  NetworkTestRunner.resetProductRegistry();
-  NetworkTestRunner.addProductRegistryEntry('*.google.com', 'Google');
   TestRunner.addResult('');
 
   var sessionId = '6.23';
@@ -565,7 +562,6 @@
   var timeline = UI.panels.timeline;
   timeline._setModel(PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
 
-  await ProductRegistry.instance();
   var groupByEnum = Timeline.AggregatedTimelineTreeView.GroupBy;
   for (var grouping of Object.values(groupByEnum)) {
     testEventTree('CallTree', grouping);

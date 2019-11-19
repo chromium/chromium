@@ -9,10 +9,12 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
 class Document;
+class ScriptState;
 class SecurityOrigin;
 
 // DOMFeaturePolicy provides an interface for feature policy introspection of a
@@ -26,17 +28,20 @@ class CORE_EXPORT DOMFeaturePolicy : public ScriptWrappable {
   // Implementation of methods of the policy interface:
   // Returns whether or not the given feature is allowed on the origin of the
   // document that owns the policy.
-  bool allowsFeature(const String& feature) const;
+  bool allowsFeature(ScriptState* script_state, const String& feature) const;
   // Returns whether or not the given feature is allowed on the origin of the
   // given URL.
-  bool allowsFeature(const String& feature, const String& url) const;
+  bool allowsFeature(ScriptState* script_state,
+                     const String& feature,
+                     const String& url) const;
   // Returns a list of feature names that are supported by the user agent.
-  Vector<String> features() const;
+  Vector<String> features(ScriptState* script_state) const;
   // Returns a list of feature names that are allowed on the self origin.
-  Vector<String> allowedFeatures() const;
+  Vector<String> allowedFeatures(ScriptState* script_state) const;
   // Returns a list of feature name that are allowed on the origin of the given
   // URL.
-  Vector<String> getAllowlistForFeature(const String& url) const;
+  Vector<String> getAllowlistForFeature(ScriptState* script_state,
+                                        const String& url) const;
 
   // Inform the DOMFeaturePolicy object when the container policy on its frame
   // element has changed.

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "gpu/ipc/common/command_buffer_id.h"
 
 // Macro to reduce code duplication when logging memory in
 // GpuCommandBufferMemoryTracker. This is needed as the UMA_HISTOGRAM_* macros
@@ -36,18 +37,18 @@
 namespace gpu {
 
 GpuCommandBufferMemoryTracker::GpuCommandBufferMemoryTracker(
-    int client_id,
+    CommandBufferId command_buffer_id,
     uint64_t client_tracing_id,
-    uint64_t context_group_tracing_id,
     ContextType context_type,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : client_id_(client_id),
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    Observer* observer)
+    : command_buffer_id_(command_buffer_id),
       client_tracing_id_(client_tracing_id),
-      context_group_tracing_id_(context_group_tracing_id),
       context_type_(context_type),
       memory_pressure_listener_(base::BindRepeating(
           &GpuCommandBufferMemoryTracker::LogMemoryStatsPressure,
-          base::Unretained(this))) {
+          base::Unretained(this))),
+      observer_(observer) {
   // Set up |memory_stats_timer_| to call LogMemoryPeriodic periodically
   // via the provided |task_runner|.
   memory_stats_timer_.SetTaskRunner(std::move(task_runner));
@@ -61,7 +62,10 @@ GpuCommandBufferMemoryTracker::~GpuCommandBufferMemoryTracker() {
 }
 
 void GpuCommandBufferMemoryTracker::TrackMemoryAllocatedChange(uint64_t delta) {
+  uint64_t old_size = size_;
   size_ += delta;
+  if (observer_)
+    observer_->OnMemoryAllocatedChange(command_buffer_id_, old_size, size_);
 }
 
 uint64_t GpuCommandBufferMemoryTracker::GetSize() const {
@@ -73,11 +77,11 @@ uint64_t GpuCommandBufferMemoryTracker::ClientTracingId() const {
 }
 
 int GpuCommandBufferMemoryTracker::ClientId() const {
-  return client_id_;
+  return ChannelIdFromCommandBufferId(command_buffer_id_);
 }
 
 uint64_t GpuCommandBufferMemoryTracker::ContextGroupTracingId() const {
-  return context_group_tracing_id_;
+  return command_buffer_id_.GetUnsafeValue();
 }
 
 void GpuCommandBufferMemoryTracker::LogMemoryStatsPeriodic() {

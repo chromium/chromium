@@ -26,7 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_INITIATOR_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_INITIATOR_INFO_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
@@ -38,12 +38,10 @@ struct FetchInitiatorInfo {
   FetchInitiatorInfo()
       : name(),
         position(TextPosition::BelowRangePosition()),
-        start_time(0.0),
         is_link_preload(false) {}
 
   AtomicString name;
   TextPosition position;
-  double start_time;
   bool is_link_preload;
   String imported_module_referrer;
 };

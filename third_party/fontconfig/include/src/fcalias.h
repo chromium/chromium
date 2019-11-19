@@ -28,6 +28,8 @@ extern __typeof (FcConfigHome) IA__FcConfigHome FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcConfigHome IA__FcConfigHome
 extern __typeof (FcConfigEnableHome) IA__FcConfigEnableHome FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcConfigEnableHome IA__FcConfigEnableHome
+extern __typeof (FcConfigGetFilename) IA__FcConfigGetFilename FC_ATTRIBUTE_VISIBILITY_HIDDEN;
+#define FcConfigGetFilename IA__FcConfigGetFilename
 extern __typeof (FcConfigFilename) IA__FcConfigFilename FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcConfigFilename IA__FcConfigFilename
 extern __typeof (FcConfigCreate) IA__FcConfigCreate FC_ATTRIBUTE_VISIBILITY_HIDDEN;

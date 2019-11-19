@@ -127,7 +127,7 @@ class ModelLoader {
   base::SequenceChecker fetch_sequence_checker_;
 
   // Used to protect the delayed callback to StartFetchModel()
-  base::WeakPtrFactory<ModelLoader> weak_factory_;
+  base::WeakPtrFactory<ModelLoader> weak_factory_{this};
 
   friend class ClientSideDetectionServiceTest;
   friend class ModelLoaderTest;

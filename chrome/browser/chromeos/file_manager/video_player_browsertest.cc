@@ -16,13 +16,6 @@ class VideoPlayerBrowserTestBase : public FileManagerBrowserTestBase {
   VideoPlayerBrowserTestBase() = default;
 
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        chromeos::switches::kEnableVideoPlayerChromecastSupport);
-
-    FileManagerBrowserTestBase::SetUpCommandLine(command_line);
-  }
-
   GuestMode GetGuestMode() const override { return MODE; }
 
   const char* GetTestCaseName() const override {

@@ -42,7 +42,7 @@ public class ActivityAssignerTest {
 
     @Before
     @SuppressWarnings("unchecked")
-    public void setUp() throws Exception {
+    public void setUp() {
         RecordHistogram.setDisabledForTests(true);
         mContext = new AdvancedMockContext(ContextUtils.getApplicationContext());
         mPreferences = new HashMap[ActivityAssigner.ActivityAssignerNamespace.NUM_ENTRIES];
@@ -54,7 +54,7 @@ public class ActivityAssignerTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         RecordHistogram.setDisabledForTests(false);
     }
 

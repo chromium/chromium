@@ -27,7 +27,7 @@ constexpr FrameSinkId kChildFrameSink2(65564, 1);
 
 base::flat_set<SurfaceId> MakeReferenceSet(
     std::initializer_list<SurfaceId> surface_ids) {
-  return base::flat_set<SurfaceId>(surface_ids, base::KEEP_FIRST_OF_DUPES);
+  return base::flat_set<SurfaceId>(surface_ids);
 }
 
 SurfaceId MakeSurfaceId(const FrameSinkId& frame_sink_id, uint32_t parent_id) {

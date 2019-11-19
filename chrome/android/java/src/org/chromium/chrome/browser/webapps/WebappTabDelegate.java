@@ -7,12 +7,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.StrictMode;
 import android.provider.Browser;
-import android.support.customtabs.CustomTabsIntent;
+
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.LaunchSourceType;
@@ -75,34 +77,30 @@ public class WebappTabDelegate extends TabDelegate {
             return false;
         }
 
-        // See http://crbug.com/613977 for more context.
-        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
-        try {
-            List<ResolveInfo> handlers =
-                    ContextUtils.getApplicationContext().getPackageManager().queryIntentActivities(
-                            intent, PackageManager.GET_RESOLVED_FILTER);
+        List<ResolveInfo> handlers = PackageManagerUtils.queryIntentActivities(
+                intent, PackageManager.GET_RESOLVED_FILTER);
 
-            boolean foundSpecializedHandler = false;
+        boolean foundSpecializedHandler = false;
 
-            for (String result : ExternalNavigationDelegateImpl.getSpecializedHandlersWithFilter(
-                         handlers, null)) {
-                if (result.equals(mApkPackageName)) {
-                    // Current WebAPK matches and this is a HTTP(s) link. Don't intercept so that we
-                    // can launch a CCT. See http://crbug.com/831806 for more context.
-                    return false;
-                } else {
-                    foundSpecializedHandler = true;
-                }
+        for (String result :
+                ExternalNavigationDelegateImpl.getSpecializedHandlersWithFilter(handlers, null)) {
+            if (result.equals(mApkPackageName)) {
+                // Current WebAPK matches and this is a HTTP(s) link. Don't intercept so that we
+                // can launch a CCT. See http://crbug.com/831806 for more context.
+                return false;
+            } else {
+                foundSpecializedHandler = true;
             }
+        }
 
-            // Launch a native app iff there is a specialized handler for a given URL.
-            if (foundSpecializedHandler) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // Launch a native app iff there is a specialized handler for a given URL.
+        if (foundSpecializedHandler) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            // StartActivity may cause StrictMode violations on Android K.
+            try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                 ContextUtils.getApplicationContext().startActivity(intent);
-                return true;
             }
-        } finally {
-            StrictMode.setThreadPolicy(oldPolicy);
+            return true;
         }
 
         return false;

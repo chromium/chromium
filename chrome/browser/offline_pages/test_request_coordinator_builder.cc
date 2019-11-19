@@ -14,7 +14,6 @@
 #include "components/offline_pages/core/background/request_queue_store.h"
 #include "components/offline_pages/core/background/scheduler_stub.h"
 #include "components/offline_pages/core/background/test_request_queue_store.h"
-#include "components/offline_pages/core/offline_pages_ukm_reporter_stub.h"
 #include "content/public/browser/browser_context.h"
 
 namespace offline_pages {
@@ -40,13 +39,10 @@ std::unique_ptr<KeyedService> BuildTestRequestCoordinator(
   std::unique_ptr<Offliner> offliner(new OfflinerStub());
   std::unique_ptr<Scheduler> scheduler_stub(new SchedulerStub());
 
-  std::unique_ptr<OfflinePagesUkmReporter> ukm_reporter_stub(
-      new OfflinePagesUkmReporterStub());
-
   return std::unique_ptr<RequestCoordinator>(new RequestCoordinator(
       std::move(policy), std::move(offliner), std::move(queue),
       std::move(scheduler_stub), g_browser_process->network_quality_tracker(),
-      std::move(ukm_reporter_stub), std::make_unique<ActiveTabInfo>()));
+      std::make_unique<ActiveTabInfo>()));
 }
 
 }  // namespace offline_pages

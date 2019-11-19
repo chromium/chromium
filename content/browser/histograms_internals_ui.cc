@@ -36,7 +36,6 @@ WebUIDataSource* CreateHistogramsHTMLSource() {
 
   source->AddResourcePath(kHistogramsUIJs, IDR_HISTOGRAMS_INTERNALS_JS);
   source->SetDefaultResource(IDR_HISTOGRAMS_INTERNALS_HTML);
-  source->UseGzip();
   return source;
 }
 
@@ -81,7 +80,7 @@ void HistogramsMessageHandler::HandleRequestHistograms(
     std::string ascii_output;
     histogram->WriteHTMLGraph(&ascii_output);
     ascii_output += "<br><hr><br>";
-    histograms_list.GetList().emplace_back(std::move(ascii_output));
+    histograms_list.Append(std::move(ascii_output));
   }
 
   ResolveJavascriptCallback(base::Value(callback_id),

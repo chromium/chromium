@@ -1,0 +1,89 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module paint_preview.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+
+// Status codes for the PaintPreviewRecorder.
+enum PaintPreviewStatus {
+  // Everything worked as intended.
+  kOk,
+
+  // The service was already performing a capture of the frame.
+  kAlreadyCapturing,
+
+  // Capturing the SkPicture for the frame failed or the file provided was bad.
+  kCaptureFailed,
+
+  // The GUID provided for the document collides with another in progress
+  // capture.
+  kGuidCollision,
+
+  // Failed to create the file for serialization of the SkPicture.
+  kFileCreationError,
+
+  // Indicates that the capture was at least partially complete but there was an
+  // error.
+  kPartialSuccess,
+
+  // Indicates that the capture failed entirely.
+  kFailed,
+};
+
+struct PaintPreviewCaptureParams {
+  // GUID for the Paint Preview (used to associate subframes to main frame).
+  mojo_base.mojom.UnguessableToken guid;
+
+  // Clip rect for the capture. An empty |clip_rect| will be treated as
+  // unclipped and will default to the frame (document) size.
+  gfx.mojom.Rect clip_rect;
+
+  // Used to identify if the capture request is for the main frame.
+  bool is_main_frame;
+
+  // File to write the SkPicture to (write-only). A separate file should be
+  // created for each RenderFrame.
+  mojo_base.mojom.File file;
+};
+
+struct LinkData {
+  // URL of the link.
+  url.mojom.Url url;
+
+  // Rect for the link.
+  gfx.mojom.Rect rect;
+};
+
+struct PaintPreviewCaptureResponse {
+  // Routing ID of the frame.
+  uint64 id;
+
+  // Map between subframe content IDs and the RenderFrameProxy Routing ID.
+  map<uint32, uint64> content_id_proxy_id_map;
+
+  // A list of links within the frame.
+  array<LinkData> links;
+};
+
+// Service for capturing a paint preview of a RenderFrame's contents. This
+// includes both the visual contents (as an SkPicture) and hyperlinks
+// for the frame.
+interface PaintPreviewRecorder {
+  // Captures a paint preview of the RenderFrame that receives the request.
+  //
+  // This interface is used for both the main frame and sub frames.
+  // Out-of-process subframes are handled by making requests back to the browser
+  // via the RenderFrameProxy. The browser handles dispatching these requests to
+  // the correct RenderFrame and aggregating all the outputs.
+  //
+  // Returns a status, and if |status| == kOK a valid instance of
+  // PaintPreviewCaptureResponse.
+  CapturePaintPreview(PaintPreviewCaptureParams params) =>
+    (PaintPreviewStatus status,
+     PaintPreviewCaptureResponse response);
+};

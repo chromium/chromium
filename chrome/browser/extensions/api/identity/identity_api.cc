@@ -43,7 +43,7 @@ namespace extensions {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const base::Feature kExtensionsAllAccountsFeature{
-    "ExtensionsAllAccounts", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ExtensionsAllAccounts", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 IdentityTokenCacheValue::IdentityTokenCacheValue()

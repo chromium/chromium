@@ -32,14 +32,6 @@ namespace blink {
 
 class RemoveNodeCommand final : public SimpleEditCommand {
  public:
-  static RemoveNodeCommand* Create(
-      Node* node,
-      ShouldAssumeContentIsAlwaysEditable
-          should_assume_content_is_always_editable) {
-    return MakeGarbageCollected<RemoveNodeCommand>(
-        node, should_assume_content_is_always_editable);
-  }
-
   explicit RemoveNodeCommand(Node*, ShouldAssumeContentIsAlwaysEditable);
 
   void Trace(Visitor*) override;

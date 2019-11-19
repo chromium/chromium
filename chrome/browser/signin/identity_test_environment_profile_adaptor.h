@@ -8,17 +8,17 @@
 #include <string>
 
 #include "chrome/test/base/testing_profile.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "services/identity/public/cpp/identity_test_environment.h"
 
-// Adaptor that supports identity::IdentityTestEnvironment's usage in testing
+// Adaptor that supports signin::IdentityTestEnvironment's usage in testing
 // contexts where the relevant fake objects must be injected via the
 // BrowserContextKeyedServiceFactory infrastructure as the production code
 // accesses IdentityManager via that infrastructure. Before using this
 // class, please consider whether you can change the production code in question
 // to take in the relevant dependencies directly rather than obtaining them from
 // the Profile; this is both cleaner in general and allows for direct usage of
-// identity::IdentityTestEnvironment in the test.
+// signin::IdentityTestEnvironment in the test.
 class IdentityTestEnvironmentProfileAdaptor {
  public:
   // Creates and returns a TestingProfile that has been configured with the set
@@ -39,13 +39,13 @@ class IdentityTestEnvironmentProfileAdaptor {
   static std::unique_ptr<TestingProfile>
   CreateProfileForIdentityTestEnvironment(TestingProfile::Builder& builder);
 
-  // Sets the testing factories that identity::IdentityTestEnvironment
+  // Sets the testing factories that signin::IdentityTestEnvironment
   // requires explicitly on a Profile that is passed to it.
   // See the above variant for comments on common parameters.
   static void SetIdentityTestEnvironmentFactoriesOnBrowserContext(
       content::BrowserContext* browser_context);
 
-  // Appends the set of testing factories that identity::IdentityTestEnvironment
+  // Appends the set of testing factories that signin::IdentityTestEnvironment
   // requires to |factories_to_append_to|, which should be the set of testing
   // factories supplied to TestingProfile (via one of the various mechanisms for
   // doing so). Prefer the above API if possible, as it is less fragile. This
@@ -57,17 +57,10 @@ class IdentityTestEnvironmentProfileAdaptor {
   static void AppendIdentityTestEnvironmentFactories(
       TestingProfile::TestingFactories* factories_to_append_to);
 
-  // Returns the set of testing factories that identity::IdentityTestEnvironment
+  // Returns the set of testing factories that signin::IdentityTestEnvironment
   // requires, which can be useful to configure profiles for services that do
   // not require any other testing factory than the ones specified in here.
   static TestingProfile::TestingFactories GetIdentityTestEnvironmentFactories();
-
-  // Returns the set of testing factories that identity::IdentityTestEnvironment
-  // requires, plus an extra testing factories that creates an IdentityManager
-  // instance with its primary account set.
-  static TestingProfile::TestingFactories
-  GetIdentityTestEnvironmentFactoriesWithPrimaryAccountSet(
-      const std::string& email);
 
   // Constructs an adaptor that associates an IdentityTestEnvironment instance
   // with |profile| via the relevant backing objects. Note that
@@ -82,12 +75,17 @@ class IdentityTestEnvironmentProfileAdaptor {
 
   // Returns the IdentityTestEnvironment associated with this object (and
   // implicitly with the Profile passed to this object's constructor).
-  identity::IdentityTestEnvironment* identity_test_env() {
+  signin::IdentityTestEnvironment* identity_test_env() {
     return &identity_test_env_;
   }
 
  private:
-  identity::IdentityTestEnvironment identity_test_env_;
+  // Testing factory that creates an IdentityManager
+  // with a FakeProfileOAuth2TokenService.
+  static std::unique_ptr<KeyedService> BuildIdentityManagerForTests(
+      content::BrowserContext* context);
+
+  signin::IdentityTestEnvironment identity_test_env_;
 
   DISALLOW_COPY_AND_ASSIGN(IdentityTestEnvironmentProfileAdaptor);
 };

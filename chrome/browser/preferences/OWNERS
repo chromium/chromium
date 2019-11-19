@@ -1,0 +1,6 @@
+chouinard@chromium.org
+hnakashima@chromium.org
+
+per-file *ChromePreferenceKeys.java=*
+
+# COMPONENT: Internals>Preferences

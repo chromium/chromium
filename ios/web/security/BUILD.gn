@@ -1,0 +1,74 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+
+source_set("security") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//ios/web/common",
+    "//ios/web/common:web_view_creation_util",
+    "//ios/web/js_messaging",
+    "//ios/web/navigation:core",
+    "//ios/web/navigation:navigation_manager_util",
+    "//ios/web/public",
+    "//ios/web/public/security",
+    "//ios/web/web_state:web_state_impl_header",
+    "//net",
+    "//ui/gfx/geometry",
+  ]
+
+  sources = [
+    "cert_host_pair.cc",
+    "cert_host_pair.h",
+    "cert_policy.cc",
+    "cert_verification_error.h",
+    "certificate_policy_cache.cc",
+    "crw_cert_verification_controller.h",
+    "crw_cert_verification_controller.mm",
+    "crw_ssl_status_updater.h",
+    "crw_ssl_status_updater.mm",
+    "ssl_status.cc",
+    "web_interstitial_impl.h",
+    "web_interstitial_impl.mm",
+    "wk_web_view_security_util.h",
+    "wk_web_view_security_util.mm",
+  ]
+}
+
+source_set("unittests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  deps = [
+    ":security",
+    "//base",
+    "//base/test:test_support",
+    "//crypto",
+    "//ios/testing:ocmock_support",
+    "//ios/web",
+    "//ios/web/navigation",
+    "//ios/web/public",
+    "//ios/web/public/security",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//ios/web/test/fakes",
+    "//ios/web/web_state:web_state_impl_header",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  sources = [
+    "cert_host_pair_unittest.cc",
+    "cert_policy_unittest.cc",
+    "crw_cert_verification_controller_unittest.mm",
+    "crw_ssl_status_updater_unittest.mm",
+    "ssl_status_unittest.cc",
+    "web_interstitial_unittest.mm",
+    "wk_web_view_security_util_unittest.mm",
+  ]
+}

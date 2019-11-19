@@ -7,12 +7,13 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/address_i18n.h"
-#include "components/autofill/core/browser/autofill_country.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/address_i18n.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/payments/core/payment_options_provider.h"
 #include "components/payments/core/payment_request_data_util.h"
@@ -177,6 +178,36 @@ bool PaymentsProfileComparator::IsShippingComplete(
            GetRequiredProfileFieldsForShipping());
 }
 
+void PaymentsProfileComparator::RecordMissingFieldsOfShippingProfile(
+    const autofill::AutofillProfile* profile) const {
+  // We should not record anything when no shipping fields is required.
+  if (GetRequiredProfileFieldsForShipping() == kNone)
+    return;
+
+  // Record any required fields that are missing.
+  PaymentsProfileComparator::ProfileFields missing_fields =
+      GetMissingProfileFields(profile) & GetRequiredProfileFieldsForShipping();
+  if (missing_fields != kNone) {
+    base::UmaHistogramSparse("PaymentRequest.MissingShippingFields",
+                             missing_fields);
+  }
+}
+
+void PaymentsProfileComparator::RecordMissingFieldsOfContactProfile(
+    const autofill::AutofillProfile* profile) const {
+  // We should not record anything when no contact fields is required.
+  if (GetRequiredProfileFieldsForContact() == kNone)
+    return;
+
+  // Record any required fields that are missing.
+  PaymentsProfileComparator::ProfileFields missing_fields =
+      GetMissingProfileFields(profile) & GetRequiredProfileFieldsForContact();
+  if (missing_fields != kNone) {
+    base::UmaHistogramSparse("PaymentRequest.MissingContactFields",
+                             missing_fields);
+  }
+}
+
 base::string16 PaymentsProfileComparator::GetStringForMissingContactFields(
     const autofill::AutofillProfile& profile) const {
   return GetStringForMissingFields(GetMissingProfileFields(&profile) &
@@ -209,7 +240,7 @@ void PaymentsProfileComparator::Invalidate(
 PaymentsProfileComparator::ProfileFields
 PaymentsProfileComparator::ComputeMissingFields(
     const autofill::AutofillProfile& profile) const {
-  ProfileFields missing = 0;
+  ProfileFields missing = kNone;
 
   if (!profile.HasInfo(autofill::NAME_FULL))
     missing |= kName;
@@ -242,7 +273,7 @@ PaymentsProfileComparator::ComputeMissingFields(
 
 PaymentsProfileComparator::ProfileFields
 PaymentsProfileComparator::GetRequiredProfileFieldsForContact() const {
-  ProfileFields required = 0;
+  ProfileFields required = kNone;
   if (options_.request_payer_name())
     required |= kName;
   if (options_.request_payer_phone())
@@ -254,13 +285,13 @@ PaymentsProfileComparator::GetRequiredProfileFieldsForContact() const {
 
 PaymentsProfileComparator::ProfileFields
 PaymentsProfileComparator::GetRequiredProfileFieldsForShipping() const {
-  return options_.request_shipping() ? (kAddress | kName | kPhone) : 0;
+  return options_.request_shipping() ? (kAddress | kName | kPhone) : kNone;
 }
 
 base::string16 PaymentsProfileComparator::GetStringForMissingFields(
     PaymentsProfileComparator::ProfileFields fields) const {
   switch (fields) {
-    case 0:
+    case kNone:
       // No bits are set, so no fields are missing.
       return base::string16();
     case kName:

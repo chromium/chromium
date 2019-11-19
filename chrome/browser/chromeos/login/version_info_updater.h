@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
 namespace device {
@@ -40,6 +41,9 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
 
     // Called when the device info should be updated.
     virtual void OnDeviceInfoUpdated(const std::string& bluetooth_name) = 0;
+
+    // Called when ADB sideloading status should be updated.
+    virtual void OnAdbSideloadStatusUpdated(bool enabled) = 0;
   };
 
   explicit VersionInfoUpdater(Delegate* delegate);
@@ -51,6 +55,9 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
   // Starts fetching version info. The delegate will be notified when update
   // is received.
   void StartUpdate(bool is_official_build);
+
+  // Determine whether the system information will be displayed forcedly.
+  base::Optional<bool> IsSystemInfoEnforced() const;
 
  private:
   // policy::CloudPolicyStore::Observer interface:
@@ -76,6 +83,11 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
   // Callback from device::BluetoothAdapterFactory::GetAdapter.
   void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
+  // Callback from SessionManagerClient::QueryAdbSideload.
+  void OnQueryAdbSideload(
+      SessionManagerClient::AdbSideloadResponseCode response_code,
+      bool enabled);
+
   // Information pieces for version label.
   std::string version_text_;
   std::string serial_number_text_;
@@ -93,7 +105,7 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
   // Weak pointer factory so we can give our callbacks for invocation
   // at a later time without worrying that they will actually try to
   // happen after the lifetime of this object.
-  base::WeakPtrFactory<VersionInfoUpdater> weak_pointer_factory_;
+  base::WeakPtrFactory<VersionInfoUpdater> weak_pointer_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VersionInfoUpdater);
 };

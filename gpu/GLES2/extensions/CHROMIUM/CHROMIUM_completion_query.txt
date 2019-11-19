@@ -1,0 +1,60 @@
+Name
+
+    CHROMIUM_completion_query
+
+Name Strings
+
+    GL_CHROMIUM_completion_query
+
+Version
+
+    Last Modified Date: May 7, 2019
+
+Dependencies
+
+    OpenGL ES 2.0 is required.
+
+    GL_KHR_parallel_shader_compile is required.
+
+Overview
+
+    This extension provides a same query mechanism as the COMPLETION_STATUS_KHR
+    in GL_KHR_parallel_shader_compile, which indicates whether the program
+    linking or shader compilation has completed. The major advantage of this
+    query is that it doesn't incurs an expensive round-trip to the GPU thread.
+    So it's much cheaper for polling. You can use it this way:
+        glBeginQueryEXT(PROGRAM_COMPLETION_QUERY_CHROMIUM, query);
+        glLinkProgram(program);
+        glEndQueryEXT(PROGRAM_COMPLETION_QUERY_CHROMIUM);
+        GLuint available = 0u;
+        glGetQueryObjectuivEXT(query, GL_QUERY_RESULT_AVAILABLE, &available);
+        if (available)
+        {
+          GLuint result = 0u;
+          glGetQueryObjectuivEXT(query, GL_QUERY_RESULT, &result);
+        }
+    If 'available' returns true, that's equivalent to COMPLETION_STATUS_KHR
+    returning true. Then LINK_STATUS can be obtained from 'result'.
+
+New Procedures and Functions
+
+    None.
+
+Errors
+
+    None.
+
+New Tokens
+
+    Accepted by the <target> parameter of BeginQueryEXT, EndQueryEXT,
+    and GetQueryObjectuivEXT:
+
+        PROGRAM_COMPLETION_QUERY_CHROMIUM                     0x6009
+
+New State
+
+    None.
+
+Revision History
+
+    5/3/2019   Documented the extension

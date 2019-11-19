@@ -1,6 +1,0 @@
-
-
-============== Back Forward List ==============
-        http://127.0.0.1:8000/history/resources/navigation-with-user-gesture.html
-curr->  http://127.0.0.1:8000/resources/notify-done.html
-===============================================

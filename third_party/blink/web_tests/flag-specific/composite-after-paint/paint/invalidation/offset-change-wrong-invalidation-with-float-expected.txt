@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow (positioned) UL id='submenu'",
+          "rect": [48, 94, 40, 20],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment '\u25E6 '",
+          "rect": [70, 94, 7, 19],
+          "reason": "disappeared"
+        }
+      ]
+    }
+  ]
+}
+

@@ -14,11 +14,8 @@
 #include "content/common/content_export.h"
 #include "content/public/common/input_event_ack_state.h"
 #include "content/public/common/screen_info.h"
+#include "third_party/blink/public/platform/viewport_intersection_state.h"
 #include "ui/gfx/geometry/rect.h"
-
-#if defined(USE_AURA)
-#include "services/ws/public/mojom/window_tree.mojom.h"
-#endif
 
 namespace blink {
 class WebGestureEvent;
@@ -122,20 +119,6 @@ class CONTENT_EXPORT FrameConnectorDelegate {
       const gfx::PointF& point,
       const viz::SurfaceId& surface_id);
 
-  // Given a point in the coordinate space of a different Surface, transform
-  // it into the coordinate space for this view (corresponding to
-  // local_surface_id).
-  // TransformPointToLocalCoordSpaceLegacy() can only transform points between
-  // surfaces where one is embedded (not necessarily directly) within the
-  // other, and will return false if this is not the case. For points that can
-  // be in sibling surfaces, they must first be converted to the root
-  // surface's coordinate space.
-  virtual bool TransformPointToLocalCoordSpaceLegacy(
-      const gfx::PointF& point,
-      const viz::SurfaceId& original_surface,
-      const viz::SurfaceId& local_surface_id,
-      gfx::PointF* transformed_point);
-
   // Transform a point into the coordinate space of the root
   // RenderWidgetHostView, for the current view's coordinate space.
   // Returns false if |target_view| and |view_| do not have the same root
@@ -167,27 +150,17 @@ class CONTENT_EXPORT FrameConnectorDelegate {
   // Cause the root RenderWidgetHostView to become focused.
   virtual void FocusRootView() {}
 
-  // Locks the mouse. Returns true if mouse is locked.
-  virtual bool LockMouse();
+  // Locks the mouse, if |request_unadjusted_movement_| is true, try setting the
+  // unadjusted movement mode. Returns true if mouse is locked.
+  virtual bool LockMouse(bool request_unadjusted_movement);
 
   // Unlocks the mouse if the mouse is locked.
   virtual void UnlockMouse() {}
 
-  // Returns a rect that represents the intersection of the current view's
-  // content bounds with the top-level browser viewport.
-  const gfx::Rect& viewport_intersection_rect() const {
-    return viewport_intersection_rect_;
+  // Returns the state of the frame's intersection with the top-level viewport.
+  const blink::ViewportIntersectionState& intersection_state() const {
+    return intersection_state_;
   }
-
-  // Returns a rect in physical pixels that indicates the area of the current
-  // view's content bounds that should be rastered by the compositor.
-  const gfx::Rect& compositor_visible_rect() const {
-    return compositor_visible_rect_;
-  }
-
-  // Returns whether the current view may be occluded or distorted (e.g, with
-  // CSS opacity or transform) in the parent view.
-  bool occluded_or_obscured() const { return occluded_or_obscured_; }
 
   // Returns the viz::LocalSurfaceIdAllocation propagated from the parent to be
   // used by this child frame.
@@ -244,13 +217,6 @@ class CONTENT_EXPORT FrameConnectorDelegate {
   // zoom-for-dsf is enabled, and in DIP if not.
   virtual void SetScreenSpaceRect(const gfx::Rect& screen_space_rect);
 
-#if defined(USE_AURA)
-  // Embeds a WindowTreeClient in the parent. This results in the parent
-  // creating a window in the ui server so that this can render to the screen.
-  virtual void EmbedRendererWindowTreeClientInParent(
-      ws::mojom::WindowTreeClientPtr window_tree_client) {}
-#endif
-
   // Called by RenderWidgetHostViewChildFrame when the child frame has updated
   // its visual properties and its viz::LocalSurfaceId has changed.
   virtual void DidUpdateVisualProperties(
@@ -267,12 +233,8 @@ class CONTENT_EXPORT FrameConnectorDelegate {
   RenderWidgetHostViewChildFrame* view_ = nullptr;
 
   // This is here rather than in the implementation class so that
-  // ViewportIntersection() can return a reference.
-  gfx::Rect viewport_intersection_rect_;
-
-  gfx::Rect compositor_visible_rect_;
-
-  bool occluded_or_obscured_ = false;
+  // intersection_state() can return a reference.
+  blink::ViewportIntersectionState intersection_state_;
 
   ScreenInfo screen_info_;
   gfx::Size local_frame_size_in_dip_;

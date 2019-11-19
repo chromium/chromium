@@ -51,18 +51,9 @@ extern NSString* KSUpdateCheckSuccessfulKey;
 extern NSString* KSUpdateCheckSuccessfullyInstalledKey;
 
 extern NSString* KSRegistrationRemoveExistingTag;
-
-extern NSString* KSReportingAttributeValueKey;
-extern NSString* KSReportingAttributeExpirationDateKey;
-extern NSString* KSReportingAttributeAggregationTypeKey;
 #define KSRegistrationPreserveExistingTag nil
 
 }  // namespace keystone_registration
-
-typedef enum {
-  kKSReportingAggregationSum = 0,  // Adds attribute value across user accounts
-  kKSReportingAggregationDefault = kKSReportingAggregationSum,
-} KSReportingAggregationType;
 
 @interface KSRegistration : NSObject
 
@@ -73,31 +64,11 @@ typedef enum {
 - (BOOL)promoteWithParameters:(NSDictionary*)args
                 authorization:(AuthorizationRef)authorization;
 
-- (BOOL)setActive;
-- (BOOL)setActiveWithReportingAttributes:(NSArray*)reportingAttributes
-                                   error:(NSError**)error;
+- (BOOL)setActiveWithError:(NSError**)error;
 - (void)checkForUpdateWasUserInitiated:(BOOL)userInitiated;
 - (void)startUpdate;
 - (keystone_registration::KSRegistrationTicketType)ticketType;
 
 @end  // @interface KSRegistration
-
-
-// Declarations of the Keystone attribute reporting bits needed here.
-// Full definition is at:
-// //depot/googlemac/opensource/update-engine/Common/KSReportingAttribute.h
-@interface KSReportingAttribute : NSObject
-
-@end  // @interface KSReportingAttribute
-
-@interface KSUnsignedReportingAttribute : KSReportingAttribute
-
-+ (KSUnsignedReportingAttribute *)reportingAttributeWithValue:(uint32_t)value
-               name:(NSString *)name
-    aggregationType:(KSReportingAggregationType)aggregationType
-              error:(NSError **)error;
-
-@end  // @interface KSUnsignedReportingAttribute
-
 
 #endif  // CHROME_BROWSER_MAC_KEYSTONE_REGISTRATION_H_

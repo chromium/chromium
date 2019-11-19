@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+</style>
+
+<div id="first" tabindex="0">First</div>
+<div id="second" tabindex="0">Second</div>
+<div id="third" tabindex="0">Third</div>
+
+<script>
+  if (accessibilityController) {
+    accessibilityController.reset();
+  }
+
+  var resultMap = [
+    ["Down", "first"],
+    ["Down", "second"],
+    ["Down", "third"],
+  ];
+
+  // This test checks basic movement operation of the "focusless spatial
+  // navigation" feature. This feature puts spatial navigation into a mode that
+  // moves a visual-only indicator, rather than page focus.
+  let no_focus_test = async_test("Focusless SpatNav");
+  let first = document.getElementById("first")
+  let second = document.getElementById("second")
+  let third = document.getElementById("third")
+
+  first.addEventListener("focus", no_focus_test.unreached_func(
+      "Focusless SpatNav should not cause focus event on 'first'"));
+  second.addEventListener("focus", no_focus_test.unreached_func(
+      "Focusless SpatNav should not cause focus event on 'second'"));
+  third.addEventListener("focus", no_focus_test.unreached_func(
+      "Focusless SpatNav should not cause focus event on 'third'"));
+
+  let postAssertsFunc = no_focus_test.step_func_done(() => {
+    assert_equals(document.activeElement, document.body,
+        "Focus should not have been changed");
+  });
+
+  snav.assertFocusMoves(resultMap,
+                        true /* enableSpatnav */,
+                        postAssertsFunc,
+                        true /* focuslessSpatNav */ );
+</script>

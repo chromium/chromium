@@ -8,9 +8,9 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/supports_user_data.h"
+#include "content/public/android/content_jni_headers/SmartSelectionClient_jni.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/SmartSelectionClient_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
@@ -50,9 +50,7 @@ SmartSelectionClient::SmartSelectionClient(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     WebContents* web_contents)
-    : java_ref_(env, obj),
-      web_contents_(web_contents),
-      weak_ptr_factory_(this) {
+    : java_ref_(env, obj), web_contents_(web_contents) {
   DCHECK(!web_contents_->GetUserData(kSmartSelectionClientUDKey));
   web_contents_->SetUserData(kSmartSelectionClientUDKey,
                              std::make_unique<UserData>(this));
@@ -79,8 +77,8 @@ void SmartSelectionClient::RequestSurroundingText(
   }
 
   focused_frame->RequestTextSurroundingSelection(
-      base::Bind(&SmartSelectionClient::OnSurroundingTextReceived,
-                 weak_ptr_factory_.GetWeakPtr(), callback_data),
+      base::BindOnce(&SmartSelectionClient::OnSurroundingTextReceived,
+                     weak_ptr_factory_.GetWeakPtr(), callback_data),
       num_extra_characters);
 }
 
@@ -92,8 +90,8 @@ void SmartSelectionClient::CancelAllRequests(
 
 void SmartSelectionClient::OnSurroundingTextReceived(int callback_data,
                                                      const base::string16& text,
-                                                     int start,
-                                                     int end) {
+                                                     uint32_t start,
+                                                     uint32_t end) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (!obj.is_null()) {

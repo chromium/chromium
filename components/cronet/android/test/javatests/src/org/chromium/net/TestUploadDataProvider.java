@@ -16,22 +16,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * An UploadDataProvider implementation used in tests.
  */
-class TestUploadDataProvider extends UploadDataProvider {
+public class TestUploadDataProvider extends UploadDataProvider {
     // Indicates whether all success callbacks are synchronous or asynchronous.
     // Doesn't apply to errors.
-    enum SuccessCallbackMode {
-        SYNC,
-        ASYNC
-    };
+    public enum SuccessCallbackMode { SYNC, ASYNC }
 
     // Indicates whether failures should throw exceptions, invoke callbacks
     // synchronously, or invoke callback asynchronously.
-    enum FailMode {
-        NONE,
-        THROWN,
-        CALLBACK_SYNC,
-        CALLBACK_ASYNC
-    };
+    public enum FailMode { NONE, THROWN, CALLBACK_SYNC, CALLBACK_ASYNC }
 
     private ArrayList<byte[]> mReads = new ArrayList<byte[]>();
     private final SuccessCallbackMode mSuccessCallbackMode;
@@ -61,7 +53,8 @@ class TestUploadDataProvider extends UploadDataProvider {
     private AtomicBoolean mClosed = new AtomicBoolean(false);
     private ConditionVariable mAwaitingClose = new ConditionVariable(false);
 
-    TestUploadDataProvider(SuccessCallbackMode successCallbackMode, final Executor executor) {
+    public TestUploadDataProvider(
+            SuccessCallbackMode successCallbackMode, final Executor executor) {
         mSuccessCallbackMode = successCallbackMode;
         mExecutor = executor;
     }

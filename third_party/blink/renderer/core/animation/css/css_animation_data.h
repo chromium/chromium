@@ -16,9 +16,8 @@ namespace blink {
 
 class CSSAnimationData final : public CSSTimingData {
  public:
-  static std::unique_ptr<CSSAnimationData> Create() {
-    return base::WrapUnique(new CSSAnimationData);
-  }
+  CSSAnimationData();
+  explicit CSSAnimationData(const CSSAnimationData&);
 
   std::unique_ptr<CSSAnimationData> Clone() const {
     return base::WrapUnique(new CSSAnimationData(*this));
@@ -60,9 +59,6 @@ class CSSAnimationData final : public CSSTimingData {
   static EAnimPlayState InitialPlayState() { return EAnimPlayState::kPlaying; }
 
  private:
-  CSSAnimationData();
-  explicit CSSAnimationData(const CSSAnimationData&);
-
   Vector<AtomicString> name_list_;
   Vector<double> iteration_count_list_;
   Vector<Timing::PlaybackDirection> direction_list_;

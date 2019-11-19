@@ -1,0 +1,3 @@
+Tests that virtual time isn't stalled by aborted client-side redirect.
+Aborting request to http://test.com/redirect
+page says: DONE

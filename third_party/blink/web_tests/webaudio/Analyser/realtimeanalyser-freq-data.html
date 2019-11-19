@@ -27,7 +27,12 @@
       let audit = Audit.createTaskRunner();
 
       // Options for basic tests of the AnalyserNode frequency domain data.  The
-      // thresholds are experimentally determined.
+      // thresholds are experimentally determined.  The threshold for the byte
+      // frequency results could in general be off by 1 depending on very minor
+      // differences in computing the FFT value and converting it to a byte
+      // value (because Math.floor must be used).  For the tests that fail, set
+      // |byteThreshold| to 1.  Using any threshold larger than this is a
+      // serious error in the implementation of the AnalyserNode FFT.
       let testConfig = [
         {
           order: 5,
@@ -42,7 +47,7 @@
         {order: 7, floatRelError: 1.1473e-6},
         {order: 8, floatRelError: 1.0442e-6},
         {order: 9, floatRelError: 2.6427e-5},
-        {order: 10, floatRelError: 2.9771e-5},
+        {order: 10, floatRelError: 2.9771e-5, byteThreshold: 1},
         {order: 11, floatRelError: 1.3456e-5},
         {order: 12, floatRelError: 4.6116e-7},
         {order: 13, floatRelError: 3.2106e-7},
@@ -170,8 +175,9 @@
                   expected, analyser.minDecibels, analyser.maxDecibels);
 
               should(byteFreqData, analyser.fftSize + '-point byte FFT')
-                  .beCloseToArray(expectedByteData, 0);
-
+                  .beCloseToArray(
+                      expectedByteData,
+                      {absoluteThreshold: options.byteThreshold || 0});
             })
             .then(context.resume.bind(context));
 

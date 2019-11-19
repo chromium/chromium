@@ -30,7 +30,7 @@ bool DefaultBrowserIsDisabledByPolicy() {
 
 }  // namespace
 
-DefaultBrowserHandler::DefaultBrowserHandler() : weak_ptr_factory_(this) {}
+DefaultBrowserHandler::DefaultBrowserHandler() {}
 
 DefaultBrowserHandler::~DefaultBrowserHandler() {}
 
@@ -64,8 +64,11 @@ void DefaultBrowserHandler::OnJavascriptDisallowed() {
 }
 
 void DefaultBrowserHandler::RequestDefaultBrowserState(
-    const base::ListValue* /*args*/) {
+    const base::ListValue* args) {
   AllowJavascript();
+
+  CHECK_EQ(args->GetSize(), 1U);
+  CHECK(args->GetString(0, &check_default_callback_id_));
 
   default_browser_worker_->StartCheckIsDefault();
 }
@@ -103,7 +106,12 @@ void DefaultBrowserHandler::OnDefaultBrowserWorkerFinished(
       state == shell_integration::UNKNOWN_DEFAULT);
   dict.SetBoolean("isDisabledByPolicy", DefaultBrowserIsDisabledByPolicy());
 
-  FireWebUIListener("browser-default-state-changed", dict);
+  if (!check_default_callback_id_.empty()) {
+    ResolveJavascriptCallback(base::Value(check_default_callback_id_), dict);
+    check_default_callback_id_.clear();
+  } else {
+    FireWebUIListener("browser-default-state-changed", dict);
+  }
 }
 
 }  // namespace settings

@@ -11,7 +11,7 @@ android_resources("android_media_resources") {
   resource_dirs = [ "java/res" ]
   deps = [
     "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/android_deps:android_support_v7_mediarouter_java",
+    "//third_party/android_deps:com_android_support_mediarouter_v7_java",
   ]
 }
 
@@ -21,6 +21,6 @@ android_library("android_media_java") {
   deps = [
     ":android_media_resources",
     "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/android_deps:android_support_v7_mediarouter_java",
+    "//third_party/android_deps:com_android_support_mediarouter_v7_java",
   ]
 }

@@ -26,18 +26,8 @@ var createTestForImageBitmap = function(detectorType, resultSize) {
 };
 
 // These tests verify that a Detector's detect() works on an ImageBitmap on
-// workers. Use the mock mojo server implemented in mock-*detection.js.
+// workers. Use the mock mojo server implemented in mock-textdetection.js.
 generate_tests(createTestForImageBitmap, [
-  [
-    "Face",
-    "Face",
-    3 // Number of faces
-  ],
-  [
-    "Barcode",
-    "Barcode",
-    2 // Number of barcodes
-  ],
   [
     "Text",
     "Text",

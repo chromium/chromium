@@ -1,0 +1,17 @@
+<!--
+@WAIT-FOR:done
+-->
+<div>
+  Cats
+  <span id="collapsed" style="visibility:visible;">
+      <input type="checkbox" aria-label="checkbox">
+  </span>
+  <div><code>pending</code></div>
+</div>
+
+<script>
+  setTimeout(()=> {
+    document.getElementById('collapsed').style.visibility = 'collapsed';
+    document.querySelector('code').innerText = 'done';
+  }, 200);
+</script>

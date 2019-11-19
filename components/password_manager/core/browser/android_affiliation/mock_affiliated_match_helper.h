@@ -61,14 +61,14 @@ class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
 
   void GetAffiliatedAndroidRealms(
       const PasswordStore::FormDigest& observed_form,
-      const AffiliatedRealmsCallback& result_callback) override;
+      AffiliatedRealmsCallback result_callback) override;
   void GetAffiliatedWebRealms(
       const PasswordStore::FormDigest& android_form,
-      const AffiliatedRealmsCallback& result_callback) override;
+      AffiliatedRealmsCallback result_callback) override;
 
   void InjectAffiliationAndBrandingInformation(
       std::vector<std::unique_ptr<autofill::PasswordForm>> forms,
-      const PasswordFormsCallback& result_callback) override;
+      PasswordFormsCallback result_callback) override;
 
   DISALLOW_COPY_AND_ASSIGN(MockAffiliatedMatchHelper);
 };

@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "net/cert/cert_net_fetcher.h"
@@ -18,10 +18,11 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/http/http_server_properties_impl.h"
+#include "net/http/http_server_properties.h"
+#include "net/quic/quic_context.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/gtest_util.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/test/url_request/url_request_hanging_read_job.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_filter.h"
@@ -60,7 +61,8 @@ class RequestContext : public URLRequestContext {
     storage_.set_ssl_config_service(
         std::make_unique<SSLConfigServiceDefaults>());
     storage_.set_http_server_properties(
-        std::make_unique<HttpServerPropertiesImpl>());
+        std::make_unique<HttpServerProperties>());
+    storage_.set_quic_context(std::make_unique<QuicContext>());
 
     HttpNetworkSession::Context session_context;
     session_context.host_resolver = host_resolver();
@@ -71,6 +73,7 @@ class RequestContext : public URLRequestContext {
     session_context.proxy_resolution_service = proxy_resolution_service();
     session_context.ssl_config_service = ssl_config_service();
     session_context.http_server_properties = http_server_properties();
+    session_context.quic_context = quic_context();
     storage_.set_http_network_session(std::make_unique<HttpNetworkSession>(
         HttpNetworkSession::Params(), session_context));
     storage_.set_http_transaction_factory(std::make_unique<HttpCache>(
@@ -134,7 +137,8 @@ class CertNetFetcherImplTest : public PlatformTest {
   CertNetFetcher* fetcher() const { return fetcher_.get(); }
 
   void CreateFetcherOnNetworkThread(base::WaitableEvent* done) {
-    fetcher_ = CreateCertNetFetcher(&state_->context);
+    fetcher_ = base::MakeRefCounted<CertNetFetcherImpl>();
+    fetcher_->SetURLRequestContext(&state_->context);
     done->Signal();
   }
 
@@ -177,7 +181,7 @@ class CertNetFetcherImplTest : public PlatformTest {
   void StartNetworkThread() {
     // Start the network thread.
     network_thread_.reset(new base::Thread("network thread"));
-    base::Thread::Options options(base::MessageLoop::TYPE_IO, 0);
+    base::Thread::Options options(base::MessagePumpType::IO, 0);
     EXPECT_TRUE(network_thread_->StartWithOptions(options));
 
     // Initialize the URLRequestContext (and wait till it has completed).
@@ -223,7 +227,7 @@ class CertNetFetcherImplTest : public PlatformTest {
 
   EmbeddedTestServer test_server_;
   std::unique_ptr<base::Thread> network_thread_;
-  scoped_refptr<CertNetFetcher> fetcher_;
+  scoped_refptr<CertNetFetcherImpl> fetcher_;
 
   std::unique_ptr<NetworkThreadState> state_;
 };
@@ -231,7 +235,7 @@ class CertNetFetcherImplTest : public PlatformTest {
 // Installs URLRequestHangingReadJob handlers and clears them on teardown.
 class CertNetFetcherImplTestWithHangingReadHandler
     : public CertNetFetcherImplTest,
-      public WithScopedTaskEnvironment {
+      public WithTaskEnvironment {
  protected:
   void SetUp() override { URLRequestHangingReadJob::AddUrlHandler(); }
 
@@ -300,7 +304,7 @@ TEST_F(CertNetFetcherImplTest, HttpStatusCode) {
     GURL url = test_server_.GetURL("/404.html");
     std::unique_ptr<CertNetFetcher::Request> request =
         StartRequest(fetcher(), url);
-    VerifyFailure(ERR_FAILED, request.get());
+    VerifyFailure(ERR_HTTP_RESPONSE_CODE_FAILURE, request.get());
   }
 
   // Response was HTTP status 500.
@@ -308,7 +312,7 @@ TEST_F(CertNetFetcherImplTest, HttpStatusCode) {
     GURL url = test_server_.GetURL("/500.html");
     std::unique_ptr<CertNetFetcher::Request> request =
         StartRequest(fetcher(), url);
-    VerifyFailure(ERR_FAILED, request.get());
+    VerifyFailure(ERR_HTTP_RESPONSE_CODE_FAILURE, request.get());
   }
 }
 

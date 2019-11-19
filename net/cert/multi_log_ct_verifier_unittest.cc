@@ -24,7 +24,7 @@
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
-#include "net/log/test_net_log_entry.h"
+#include "net/log/test_net_log_util.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/ct_test_util.h"
 #include "net/test/test_data_directory.h"
@@ -41,19 +41,11 @@ namespace {
 const char kHostname[] = "example.com";
 const char kLogDescription[] = "somelog";
 
-class MockSCTObserver : public CTVerifier::Observer {
- public:
-  MOCK_METHOD3(OnSCTVerified,
-               void(base::StringPiece hostname,
-                    X509Certificate* cert,
-                    const ct::SignedCertificateTimestamp* sct));
-};
-
 class MultiLogCTVerifierTest : public ::testing::Test {
  public:
   void SetUp() override {
-    scoped_refptr<const CTLogVerifier> log(CTLogVerifier::Create(
-        ct::GetTestPublicKey(), kLogDescription, "dns.example.com"));
+    scoped_refptr<const CTLogVerifier> log(
+        CTLogVerifier::Create(ct::GetTestPublicKey(), kLogDescription));
     ASSERT_TRUE(log);
     log_verifiers_.push_back(log);
 
@@ -73,25 +65,23 @@ class MultiLogCTVerifierTest : public ::testing::Test {
   }
 
   bool CheckForEmbeddedSCTInNetLog(const TestNetLog& net_log) {
-    TestNetLogEntry::List entries;
-    net_log.GetEntries(&entries);
+    auto entries = net_log.GetEntries();
     if (entries.size() != 2)
       return false;
 
-    const TestNetLogEntry& received = entries[0];
-    std::string embedded_scts;
-    if (!received.GetStringValue("embedded_scts", &embedded_scts))
-      return false;
-    if (embedded_scts.empty())
+    auto embedded_scts =
+        GetOptionalStringValueFromParams(entries[0], "embedded_scts");
+    if (!embedded_scts || embedded_scts->empty())
       return false;
 
-    const TestNetLogEntry& parsed = entries[1];
-    base::ListValue* scts;
-    if (!parsed.GetListValue("scts", &scts) || scts->GetSize() != 1) {
+    const NetLogEntry& parsed = entries[1];
+    const base::ListValue* scts;
+    if (!GetListValueFromParams(parsed, "scts", &scts) ||
+        scts->GetSize() != 1) {
       return false;
     }
 
-    base::DictionaryValue* the_sct;
+    const base::DictionaryValue* the_sct;
     if (!scts->GetDictionary(0, &the_sct))
       return false;
 
@@ -141,7 +131,7 @@ class MultiLogCTVerifierTest : public ::testing::Test {
     base::Histogram* histogram = static_cast<base::Histogram*>(
         base::StatisticsRecorder::FindHistogram(histogram_name));
 
-    if (histogram == NULL)
+    if (histogram == nullptr)
       return 0;
 
     std::unique_ptr<base::HistogramSamples> samples =
@@ -249,32 +239,6 @@ TEST_F(MultiLogCTVerifierTest, CountsSingleEmbeddedSCTInOriginsHistogram) {
   int old_embedded_count = NumEmbeddedSCTsInHistogram();
   ASSERT_TRUE(CheckPrecertificateVerification(embedded_sct_chain_));
   EXPECT_EQ(old_embedded_count + 1, NumEmbeddedSCTsInHistogram());
-}
-
-TEST_F(MultiLogCTVerifierTest, NotifiesOfValidSCT) {
-  MockSCTObserver observer;
-  verifier_->SetObserver(&observer);
-
-  EXPECT_CALL(observer, OnSCTVerified(base::StringPiece(kHostname),
-                                      embedded_sct_chain_.get(), _));
-  ASSERT_TRUE(VerifySinglePrecertificateChain(embedded_sct_chain_));
-}
-
-TEST_F(MultiLogCTVerifierTest, StopsNotifyingCorrectly) {
-  MockSCTObserver observer;
-  verifier_->SetObserver(&observer);
-
-  EXPECT_CALL(observer, OnSCTVerified(base::StringPiece(kHostname),
-                                      embedded_sct_chain_.get(), _))
-      .Times(1);
-  ASSERT_TRUE(VerifySinglePrecertificateChain(embedded_sct_chain_));
-  Mock::VerifyAndClearExpectations(&observer);
-
-  EXPECT_CALL(observer, OnSCTVerified(base::StringPiece(kHostname),
-                                      embedded_sct_chain_.get(), _))
-      .Times(0);
-  verifier_->SetObserver(nullptr);
-  ASSERT_TRUE(VerifySinglePrecertificateChain(embedded_sct_chain_));
 }
 
 }  // namespace

@@ -86,14 +86,24 @@ struct VIZ_COMMON_EXPORT BeginFrameArgs {
     return base::TimeDelta::FromMicroseconds(16666);
   }
 
-  // This is a hard-coded deadline adjustment that assumes 60Hz, to be used in
-  // cases where a good estimated draw time is not known. Using 1/3 of the vsync
-  // as the default adjustment gives the Browser the last 1/3 of a frame to
-  // produce output, the Renderer Impl thread the middle 1/3 of a frame to
-  // produce ouput, and the Renderer Main thread the first 1/3 of a frame to
-  // produce output.
-  static constexpr base::TimeDelta DefaultEstimatedParentDrawTime() {
-    return base::TimeDelta::FromMicroseconds(16666 / 3);
+  // This is the preferred interval to use when the producer can animate at the
+  // max interval supported by the Display.
+  static constexpr base::TimeDelta MinInterval() {
+    return base::TimeDelta::Min();
+  }
+
+  // This is a hard-coded deadline adjustment used by the display compositor.
+  // Using 1/3 of the vsync as the default adjustment gives the display
+  // compositor the last 1/3 of a frame to produce output, the client impl
+  // thread the middle 1/3 of a frame to produce output, and the client's main
+  // thread the first 1/3 of a frame to produce output.
+  static constexpr float kDefaultEstimatedDisplayDrawTimeRatio = 1.f / 3;
+
+  // Returns how much time the display should reserve for draw and swap if the
+  // BeginFrame interval is |interval|.
+  static base::TimeDelta DefaultEstimatedDisplayDrawTime(
+      base::TimeDelta interval) {
+    return interval * kDefaultEstimatedDisplayDrawTimeRatio;
   }
 
   bool IsValid() const { return interval >= base::TimeDelta(); }
@@ -101,8 +111,12 @@ struct VIZ_COMMON_EXPORT BeginFrameArgs {
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue() const;
   void AsValueInto(base::trace_event::TracedValue* dict) const;
 
+  // The time at which the frame started. Used, for example, by animations to
+  // decide to slow down or skip ahead.
   base::TimeTicks frame_time;
+  // The time by which the receiving pipeline stage should do its work.
   base::TimeTicks deadline;
+  // The inverse of the desired frame rate.
   base::TimeDelta interval;
 
   // |source_id| and |sequence_number| identify a BeginFrame within a single

@@ -1,0 +1,6 @@
+# Only for adding and removing flags.
+per-file about_flags.*=*
+per-file ios_chrome_flag_descriptions.*=*
+
+# TEAM: ios-directory-owners@chromium.org
+# OS: iOS

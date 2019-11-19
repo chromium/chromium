@@ -47,6 +47,7 @@ class MEDIA_EXPORT AudioOutputDispatcherImpl : public AudioOutputDispatcher {
   void StopStream(AudioOutputProxy* stream_proxy) override;
   void StreamVolumeSet(AudioOutputProxy* stream_proxy, double volume) override;
   void CloseStream(AudioOutputProxy* stream_proxy) override;
+  void FlushStream(AudioOutputProxy* stream_proxy) override;
 
   // Returns true if there are any open AudioOutputProxy objects.
   bool HasOutputProxies() const;
@@ -87,7 +88,7 @@ class MEDIA_EXPORT AudioOutputDispatcherImpl : public AudioOutputDispatcher {
   AudioLogMap audio_logs_;
   int audio_stream_id_;
 
-  base::WeakPtrFactory<AudioOutputDispatcherImpl> weak_factory_;
+  base::WeakPtrFactory<AudioOutputDispatcherImpl> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AudioOutputDispatcherImpl);
 };
 

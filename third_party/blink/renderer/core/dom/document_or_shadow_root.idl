@@ -5,9 +5,8 @@
 // https://dom.spec.whatwg.org/#mixin-documentorshadowroot
 // https://w3c.github.io/webcomponents/spec/shadow/#extensions-to-the-documentorshadowroot-mixin
 [
-    LegacyTreatAsPartialInterface,
-    NoInterfaceObject
-] interface DocumentOrShadowRoot {
+    LegacyTreatAsPartialInterface
+] interface mixin DocumentOrShadowRoot {
     // Selection API
     // https://w3c.github.io/selection-api/#extensions-to-document-interface
     [Affects=Nothing] Selection? getSelection();
@@ -23,5 +22,5 @@
     // Fullscreen API
     // https://fullscreen.spec.whatwg.org/
     [LenientSetter] readonly attribute Element? fullscreenElement;
-    [RaisesException=Setter] attribute FrozenArray<CSSStyleSheet> adoptedStyleSheets;
+    [MeasureAs=AdoptedStyleSheets, RaisesException=Setter] attribute FrozenArray<CSSStyleSheet> adoptedStyleSheets;
 };

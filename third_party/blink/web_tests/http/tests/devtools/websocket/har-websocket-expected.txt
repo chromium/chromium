@@ -1,0 +1,34 @@
+Verifies that HAR exports contain websocket messages
+messages: [
+  {
+    "type": "receive",
+    "opcode": 1,
+    "data": "last message"
+  },
+  {
+    "type": "receive",
+    "opcode": 1,
+    "data": "text message"
+  },
+  {
+    "type": "receive",
+    "opcode": 2,
+    "data": "YmluYXJ5IG1lc3NhZ2U="
+  },
+  {
+    "type": "send",
+    "opcode": 1,
+    "data": "last message"
+  },
+  {
+    "type": "send",
+    "opcode": 1,
+    "data": "text message"
+  },
+  {
+    "type": "send",
+    "opcode": 2,
+    "data": "YmluYXJ5IG1lc3NhZ2U="
+  }
+]
+

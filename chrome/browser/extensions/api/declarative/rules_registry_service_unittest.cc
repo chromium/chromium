@@ -15,8 +15,8 @@
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "extensions/browser/api/declarative/test_rules_registry.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
@@ -63,7 +63,7 @@ class RulesRegistryServiceTest : public testing::Test {
   }
 
  protected:
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(RulesRegistryServiceTest, TestConstructionAndMultiThreading) {
@@ -85,22 +85,22 @@ TEST_F(RulesRegistryServiceTest, TestConstructionAndMultiThreading) {
   EXPECT_TRUE(registry_service.GetRulesRegistry(key, "io").get());
   EXPECT_FALSE(registry_service.GetRulesRegistry(key, "foo").get());
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&InsertRule, registry_service.GetRulesRegistry(key, "ui"),
                      "ui_task"));
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&InsertRule, registry_service.GetRulesRegistry(key, "io"),
                      "io_task"));
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&VerifyNumberOfRules,
                      registry_service.GetRulesRegistry(key, "ui"), 1));
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&VerifyNumberOfRules,
                      registry_service.GetRulesRegistry(key, "io"), 1));
@@ -121,12 +121,12 @@ TEST_F(RulesRegistryServiceTest, TestConstructionAndMultiThreading) {
           .Build();
   registry_service.SimulateExtensionUninstalled(extension.get());
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&VerifyNumberOfRules,
                      registry_service.GetRulesRegistry(key, "ui"), 0));
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&VerifyNumberOfRules,
                      registry_service.GetRulesRegistry(key, "io"), 0));

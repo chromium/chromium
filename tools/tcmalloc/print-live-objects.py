@@ -7,6 +7,8 @@
 HeapProfilerDumpLiveObjects.
 """
 
+from __future__ import print_function
+
 import os
 import re
 import subprocess
@@ -14,10 +16,11 @@ import sys
 import tempfile
 
 def usage():
-  print """\
+  print("""\
 Usage:
   tools/tcmalloc/print-live-objects.py out/Debug/chrome leaks.dmp
-"""
+""")
+
 
 def LoadDump(dump_file):
   result = []
@@ -29,7 +32,7 @@ def LoadDump(dump_file):
       line_no = line_no + 1
       matches = leakfmt.match(line)
       if not matches:
-        print "%s: could not parse line %d, skipping" % (dump_file, line_no)
+        print("%s: could not parse line %d, skipping" % (dump_file, line_no))
       else:
         trace = { "size": int(matches.group(1)),
                   "address": matches.group(2),
@@ -67,7 +70,7 @@ def Symbolize(binary, traces):
 
 def Main(argv):
   if sys.platform != 'linux2':
-    print 'print-live-objects.py requires addr2line only present on Linux.'
+    print('print-live-objects.py requires addr2line only present on Linux.')
     sys.exit(1)
 
   if len(argv) != 3:
@@ -78,13 +81,13 @@ def Main(argv):
   Symbolize(argv[1], traces)
 
   if not traces:
-    print "No leaks found!"
+    print("No leaks found!")
 
   for trace in sorted(traces, key=lambda x: -x["size"]):
-    print "Leak of %d bytes at address %s" % (trace["size"], trace["address"])
+    print("Leak of %d bytes at address %s" % (trace["size"], trace["address"]))
     for frame in trace["frames"]:
-      print "  %s (%s)" % (frame["name"], frame["location"])
-    print ""
+      print("  %s (%s)" % (frame["name"], frame["location"]))
+    print("")
 
 
 if __name__ == '__main__':

@@ -14,7 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
 #include "base/synchronization/lock.h"
@@ -39,7 +39,7 @@ class VolumeControlInternal {
     }
 
     base::Thread::Options options;
-    options.message_loop_type = base::MessageLoop::TYPE_IO;
+    options.message_pump_type = base::MessagePumpType::IO;
     thread_.StartWithOptions(options);
   }
 
@@ -214,9 +214,6 @@ float VolumeControl::DbFSToVolume(float db) {
   db = base::ClampToRange(db, kMinVolumeDbfs, kMaxVolumeDbfs);
   return (db - kMinVolumeDbfs) / (kMaxVolumeDbfs - kMinVolumeDbfs);
 }
-
-// static
-void VolumeControl::SetPowerSaveMode(bool power_save_on) {}
 
 }  // namespace media
 }  // namespace chromecast

@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.download.home.list.holder;
 
-import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.CallSuper;
 import android.view.View;
 import android.widget.ImageView;
+
+import androidx.annotation.CallSuper;
 
 import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.list.ListItem;
@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.download.home.list.ListProperties;
 import org.chromium.chrome.browser.download.home.list.view.AsyncImageView;
 import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
 import org.chromium.chrome.browser.download.home.view.SelectionView;
-import org.chromium.chrome.browser.widget.ListMenuButton;
+import org.chromium.chrome.browser.ui.widget.ListMenuButton;
 import org.chromium.chrome.download.R;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemVisuals;
@@ -82,8 +82,11 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
                     () -> properties.get(ListProperties.CALLBACK_SHARE).onResult(offlineItem);
             mDeleteCallback =
                     () -> properties.get(ListProperties.CALLBACK_REMOVE).onResult(offlineItem);
-            mRenameCallback =
-                    () -> properties.get(ListProperties.CALLBACK_RENAME).onResult(offlineItem);
+
+            if (properties.get(ListProperties.CALLBACK_RENAME) != null) {
+                mRenameCallback =
+                        () -> properties.get(ListProperties.CALLBACK_RENAME).onResult(offlineItem);
+            }
             mMore.setClickable(!properties.get(ListProperties.SELECTION_MODE_ACTIVE));
         }
 
@@ -96,16 +99,23 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
 
         // Push 'thumbnail' state.
         if (mThumbnail != null) {
-            mThumbnail.setImageResizer(
-                    new BitmapResizer(mThumbnail, Filters.fromOfflineItem(offlineItem)));
-            mThumbnail.setAsyncImageDrawable((consumer, width, height) -> {
-                return properties.get(ListProperties.PROVIDER_VISUALS)
-                        .getVisuals(offlineItem, width, height, (id, visuals) -> {
-                            consumer.onResult(onThumbnailRetrieved(visuals));
-                        });
-            }, offlineItem.id);
+            if (offlineItem.ignoreVisuals) {
+                mThumbnail.setVisibility(View.GONE);
+                mThumbnail.setImageDrawable(null);
+            } else {
+                mThumbnail.setVisibility(View.VISIBLE);
+                mThumbnail.setImageResizer(
+                        new BitmapResizer(mThumbnail, Filters.fromOfflineItem(offlineItem)));
+                mThumbnail.setAsyncImageDrawable((consumer, width, height) -> {
+                    return properties.get(ListProperties.PROVIDER_VISUALS)
+                            .getVisuals(offlineItem, width, height, (id, visuals) -> {
+                                consumer.onResult(onThumbnailRetrieved(visuals));
+                            });
+                }, offlineItem.id);
+            }
         }
-        // TODO(hesen): Add a new property in OfflineItem, set false for now.
+
+        mCanRename = mRenameCallback != null && offlineItem.canRename;
     }
 
     @Override
@@ -182,25 +192,33 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
 
         @Override
         public void maybeResizeImage(Drawable drawable) {
-            if (!(drawable instanceof BitmapDrawable)) return;
+            Matrix matrix = null;
 
-            Matrix matrix = upscaleBitmapIfNecessary(((BitmapDrawable) drawable).getBitmap());
+            if (drawable instanceof BitmapDrawable) {
+                matrix = upscaleBitmapIfNecessary((BitmapDrawable) drawable);
+            }
+
             mImageView.setImageMatrix(matrix);
             mImageView.setScaleType(
                     matrix == null ? ImageView.ScaleType.CENTER_CROP : ImageView.ScaleType.MATRIX);
         }
 
-        private Matrix upscaleBitmapIfNecessary(Bitmap bitmap) {
-            if (bitmap == null) return null;
+        private Matrix upscaleBitmapIfNecessary(BitmapDrawable drawable) {
+            if (drawable == null) return null;
 
-            float scale = computeScaleFactor(bitmap);
+            int width = drawable.getBitmap().getWidth();
+            int height = drawable.getBitmap().getHeight();
+
+            float scale = computeScaleFactor(width, height);
             if (scale <= 1.f) return null;
 
             // Compute the required matrix to scale and center the bitmap.
+            float dx = (mImageView.getWidth() - width * scale) / 2.f;
+            float dy = (mImageView.getHeight() - height * scale) / 2.f;
+
             Matrix matrix = new Matrix();
-            matrix.setScale(scale, scale);
-            matrix.postTranslate((mImageView.getWidth() - scale * bitmap.getWidth()) * 0.5f,
-                    (mImageView.getHeight() - scale * bitmap.getHeight()) * 0.5f);
+            matrix.postScale(scale, scale);
+            matrix.postTranslate(dx, dy);
             return matrix;
         }
 
@@ -209,9 +227,9 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
          * dimensions. The scaled bitmap will be centered inside the view. No scaling if the
          * dimensions are comparable.
          */
-        private float computeScaleFactor(Bitmap bitmap) {
-            float widthRatio = (float) mImageView.getWidth() / bitmap.getWidth();
-            float heightRatio = (float) mImageView.getHeight() / bitmap.getHeight();
+        private float computeScaleFactor(int width, int height) {
+            float widthRatio = (float) mImageView.getWidth() / width;
+            float heightRatio = (float) mImageView.getHeight() / height;
 
             UmaUtils.recordImageViewRequiredStretch(widthRatio, heightRatio, mFilter);
             if (Math.max(widthRatio, heightRatio) < IMAGE_VIEW_MAX_SCALE_FACTOR) return 1.f;

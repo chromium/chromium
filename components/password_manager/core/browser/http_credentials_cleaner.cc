@@ -92,7 +92,7 @@ void HttpCredentialCleaner::OnHSTSQueryResult(
     return;
   }
 
-  if (base::ContainsKey(user_it->second, form->password_value)) {
+  if (base::Contains(user_it->second, form->password_value)) {
     // The password store contains the same credentials (signon_realm, scheme,
     // username and password) on HTTPS version of the form.
     base::UmaHistogramEnumeration(

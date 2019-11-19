@@ -97,7 +97,7 @@ class FcmConnectionEstablisher : public ConnectionEstablisher {
   static const int kMaxRetryCount;
   static const base::TimeDelta kRetryDelay;
 
-  base::WeakPtrFactory<FcmConnectionEstablisher> weak_ptr_factory_;
+  base::WeakPtrFactory<FcmConnectionEstablisher> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FcmConnectionEstablisher);
 };

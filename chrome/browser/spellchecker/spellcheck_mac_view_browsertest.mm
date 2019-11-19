@@ -12,7 +12,7 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
-#include "chrome/browser/spellchecker/test/spellcheck_content_browser_client.h"
+#include "chrome/browser/spellchecker/test/spellcheck_panel_browsertest_helper.h"
 #endif
 
 namespace {
@@ -24,9 +24,7 @@ class SpellCheckMacViewBrowserTest : public InProcessBrowserTest {
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 IN_PROC_BROWSER_TEST_F(SpellCheckMacViewBrowserTest, SpellCheckPanelVisible) {
-  spellcheck::SpellCheckContentBrowserClient browser_client;
-  content::ContentBrowserClient* old_browser_client =
-      content::SetBrowserClientForTesting(&browser_client);
+  spellcheck::SpellCheckPanelBrowserTestHelper test_helper;
 
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -36,12 +34,11 @@ IN_PROC_BROWSER_TEST_F(SpellCheckMacViewBrowserTest, SpellCheckPanelVisible) {
   SEL show_guess_panel = NSSelectorFromString(@"showGuessPanel:");
   [web_contents->GetRenderWidgetHostView()->GetNativeView().GetNativeNSView()
       performSelector:show_guess_panel];
-  browser_client.RunUntilBind();
+  test_helper.RunUntilBind();
   spellcheck::SpellCheckMockPanelHost* host =
-      browser_client.GetSpellCheckMockPanelHostForProcess(
+      test_helper.GetSpellCheckMockPanelHostForProcess(
           web_contents->GetMainFrame()->GetProcess());
   EXPECT_TRUE(host->SpellingPanelVisible());
-  content::SetBrowserClientForTesting(old_browser_client);
 }
 #endif
 

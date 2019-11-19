@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import os.path
 import re
 import shutil
@@ -193,8 +195,8 @@ class BrowserLauncher(object):
                            self.options.nacl_exe_stdout, True)
     self.SetStandardStream(env, 'NACL_EXE_STDERR',
                            self.options.nacl_exe_stderr, True)
-    print 'ENV:', ' '.join(['='.join(pair) for pair in env.iteritems()])
-    print 'LAUNCHING: %s' % ' '.join(cmd)
+    print('ENV:', ' '.join(['='.join(pair) for pair in env.items()]))
+    print('LAUNCHING: %s' % ' '.join(cmd))
     sys.stdout.flush()
     self.browser_process = RunCommand(cmd, env=env)
 
@@ -267,7 +269,6 @@ class ChromeLauncher(BrowserLauncher):
             # on Windows (see
             # https://code.google.com/p/chromium/issues/detail?id=171836)
             '--enable-logging',
-            '--disable-web-resources',
             # This prevents Chrome from making "hidden" network requests at
             # startup and navigation.  These requests could be a source of
             # non-determinism, and they also add noise to the netlogs.
@@ -277,7 +278,6 @@ class ChromeLauncher(BrowserLauncher):
             '--no-first-run',
             '--no-default-browser-check',
             '--log-level=1',
-            '--safebrowsing-disable-auto-update',
             '--disable-default-apps',
             # Suppress metrics reporting.  This prevents misconfigured bots,
             # people testing at their desktop, etc from poisoning the UMA data.

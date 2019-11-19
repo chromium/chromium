@@ -77,8 +77,7 @@ gfx::Rect WebContentsViewChildFrame::GetViewBounds() const {
   return gfx::Rect();
 }
 
-void WebContentsViewChildFrame::CreateView(const gfx::Size& initial_size,
-                                           gfx::NativeView context) {
+void WebContentsViewChildFrame::CreateView(gfx::NativeView context) {
   // The WebContentsViewChildFrame does not have a native view.
 }
 

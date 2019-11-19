@@ -6,6 +6,8 @@ source_set("crash_report") {
   sources = [
     "breakpad_helper.h",
     "breakpad_helper.mm",
+    "crash_loop_detection_util.h",
+    "crash_loop_detection_util.mm",
     "crash_report_multi_parameter.h",
     "crash_report_multi_parameter.mm",
     "crash_report_user_application_state.h",
@@ -58,9 +60,10 @@ source_set("crash_report_internal") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:serialisation",
-    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/chrome/browser/web_state_list",
     "//ios/web",
@@ -74,6 +77,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "breakpad_helper_unittest.mm",
+    "crash_loop_detection_util_unittest.mm",
     "crash_restore_helper_unittest.mm",
   ]
   deps = [
@@ -84,8 +88,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/sessions:serialisation",
-    "//ios/chrome/test/base",
     "//ios/chrome/test/ocmock",
+    "//ios/testing:block_swizzler",
     "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",

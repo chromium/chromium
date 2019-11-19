@@ -38,7 +38,7 @@ class ContextFeaturesClient;
 class Document;
 class Page;
 
-class ContextFeatures final : public GarbageCollectedFinalized<ContextFeatures>,
+class ContextFeatures final : public GarbageCollected<ContextFeatures>,
                               public Supplement<Page> {
   USING_GARBAGE_COLLECTED_MIXIN(ContextFeatures);
 
@@ -86,11 +86,6 @@ CORE_EXPORT void ProvideContextFeaturesTo(
     Page&,
     std::unique_ptr<ContextFeaturesClient>);
 void ProvideContextFeaturesToDocumentFrom(Document&, Page&);
-
-inline ContextFeatures* ContextFeatures::Create(
-    std::unique_ptr<ContextFeaturesClient> client) {
-  return MakeGarbageCollected<ContextFeatures>(std::move(client));
-}
 
 inline bool ContextFeatures::IsEnabled(Document* document,
                                        FeatureType type,

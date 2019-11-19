@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -24,7 +24,7 @@
 #include "media/filters/file_data_source.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 
 namespace media {
 
@@ -117,10 +117,10 @@ void StreamReader::Read() {
   base::TimeDelta timestamp;
 
   base::RunLoop run_loop;
-  streams_[index]->Read(
-      base::Bind(&StreamReader::OnReadDone, base::Unretained(this),
-                 base::ThreadTaskRunnerHandle::Get(),
-                 run_loop.QuitWhenIdleClosure(), &end_of_stream, &timestamp));
+  streams_[index]->Read(base::BindOnce(
+      &StreamReader::OnReadDone, base::Unretained(this),
+      base::ThreadTaskRunnerHandle::Get(), run_loop.QuitWhenIdleClosure(),
+      &end_of_stream, &timestamp));
   run_loop.Run();
 
   CHECK(end_of_stream || timestamp != media::kNoTimestamp);
@@ -176,7 +176,7 @@ static void RunDemuxerBenchmark(const std::string& filename) {
   NullMediaLog media_log_;
   for (int i = 0; i < kBenchmarkIterations; ++i) {
     // Setup.
-    base::test::ScopedTaskEnvironment scoped_task_environment_;
+    base::test::TaskEnvironment task_environment_;
     DemuxerHostImpl demuxer_host;
     FileDataSource data_source;
     ASSERT_TRUE(data_source.Initialize(file_path));
@@ -207,9 +207,9 @@ static void RunDemuxerBenchmark(const std::string& filename) {
     base::RunLoop().RunUntilIdle();
   }
 
-  perf_test::PrintResult("demuxer_bench", "", filename,
-                         kBenchmarkIterations / total_time.InSecondsF(),
-                         "runs/s", true);
+  perf_test::PerfResultReporter reporter("demuxer_bench", filename);
+  reporter.RegisterImportantMetric("", "runs/s");
+  reporter.AddResult("", kBenchmarkIterations / total_time.InSecondsF());
 }
 
 class DemuxerPerfTest : public testing::TestWithParam<const char*> {};

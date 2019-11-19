@@ -5,6 +5,8 @@
 #ifndef UI_OZONE_DEMO_SKIA_SKIA_RENDERER_FACTORY_H_
 #define UI_OZONE_DEMO_SKIA_SKIA_RENDERER_FACTORY_H_
 
+#include <memory>
+
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/demo/renderer_factory.h"
@@ -29,9 +31,6 @@ class SkiaRendererFactory : public RendererFactory {
                                            const gfx::Size& size) override;
 
  private:
-  // Helper for applications that do GL on main thread.
-  OzoneGpuTestHelper gpu_helper_;
-
   DISALLOW_COPY_AND_ASSIGN(SkiaRendererFactory);
 };
 

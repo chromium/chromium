@@ -45,7 +45,6 @@ void WebTestRuntimeFlags::Reset() {
   set_dump_ping_loader_callbacks(false);
   set_dump_user_gesture_in_frame_load_callbacks(false);
   set_dump_resource_load_callbacks(false);
-  set_dump_resource_response_mime_types(false);
   set_dump_navigation_policy(false);
 
   set_dump_title_changes(false);
@@ -54,7 +53,7 @@ void WebTestRuntimeFlags::Reset() {
 
   set_stay_on_page_after_handling_before_unload(false);
 
-  set_have_top_loading_frame(false);
+  set_have_loading_frame(false);
 
   set_can_open_windows(false);
 

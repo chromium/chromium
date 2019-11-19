@@ -25,7 +25,6 @@ class UpdateRecommendedMessageBox : public views::DialogDelegate {
 
   // Overridden from views::DialogDelegate:
   bool Accept() override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
 
   // Overridden from views::WidgetDelegate:
   bool ShouldShowWindowTitle() const override;
